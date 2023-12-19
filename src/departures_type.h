@@ -32,10 +32,10 @@ typedef enum {
 
 struct CallAt {
 	StationID station;
-	DateTicks scheduled_date;
+	DateTicksScaled scheduled_date;
 
 	CallAt(const StationID& s) : station(s), scheduled_date(0) { }
-	CallAt(const StationID& s, const DateTicks& t) : station(s), scheduled_date(t) { }
+	CallAt(const StationID& s, DateTicksScaled t) : station(s), scheduled_date(t) { }
 	CallAt(const CallAt& c) : station(c.station), scheduled_date(c.scheduled_date) { }
 
 	inline bool operator==(const CallAt& c) const {
@@ -82,7 +82,7 @@ struct Departure {
 	DepartureType type;                    ///< The type of the departure (departure or arrival)
 	const Vehicle *vehicle;                ///< The vehicle performing this departure
 	const Order *order;                    ///< The order corresponding to this departure
-	uint scheduled_waiting_time;           ///< Scheduled waiting time if scheduled dispatch is used
+	Ticks scheduled_waiting_time;          ///< Scheduled waiting time if scheduled dispatch is used
 	Departure() : terminus(INVALID_STATION), via(INVALID_STATION), via2(INVALID_STATION), vehicle(nullptr), order(nullptr) { }
 
 	inline bool operator==(const Departure& d) const {
@@ -93,12 +93,21 @@ struct Departure {
 		}
 
 		return
-			(this->scheduled_date / DATE_UNIT_SIZE) == (d.scheduled_date / DATE_UNIT_SIZE) &&
+			(this->scheduled_date.base() / DATE_UNIT_SIZE) == (d.scheduled_date.base() / DATE_UNIT_SIZE) &&
 			this->vehicle->type == d.vehicle->type &&
 			this->via == d.via &&
 			this->via2 == d.via2 &&
 			this->type == d.type
 			;
+	}
+
+	inline Ticks EffectiveWaitingTime() const
+	{
+		if (this->scheduled_waiting_time > 0) {
+			return this->scheduled_waiting_time;
+		} else {
+			return this->order->GetWaitTime();
+		}
 	}
 };
 

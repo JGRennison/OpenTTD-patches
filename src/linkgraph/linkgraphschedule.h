@@ -66,7 +66,7 @@ public:
 	bool IsJoinWithUnfinishedJobDue() const;
 	void JoinNext();
 	void SpawnAll();
-	void ShiftDates(int interval);
+	void ShiftDates(DateDelta interval);
 
 	/**
 	 * Queue a link graph for execution.

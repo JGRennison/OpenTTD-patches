@@ -181,13 +181,13 @@ struct SetDateWindow : Window {
 
 struct SetMinutesWindow : SetDateWindow
 {
-	Minutes minutes;
+	TickMinutes minutes;
 
 	/** Constructor. */
 	SetMinutesWindow(WindowDesc *desc, WindowNumber window_number, Window *parent, DateTicksScaled initial_date, Year min_year, Year max_year,
 				SetDateCallback *callback, StringID button_text, StringID button_tooltip) :
-			SetDateWindow(desc, window_number, parent, initial_date, min_year, max_year, callback, button_text, button_tooltip),
-			minutes(initial_date / _settings_time.ticks_per_minute)
+			SetDateWindow(desc, window_number, parent, 0, min_year, max_year, callback, button_text, button_tooltip),
+			minutes(_settings_time.ToTickMinutes(initial_date))
 	{
 	}
 
@@ -208,7 +208,7 @@ struct SetMinutesWindow : SetDateWindow
 					SetDParam(0, i);
 					list.emplace_back(new DropDownListStringItem(STR_JUST_INT, i, false));
 				}
-				selected = MINUTES_MINUTE(minutes);
+				selected = this->minutes.ClockMinute();
 				break;
 
 			case WID_SD_MONTH:
@@ -216,7 +216,7 @@ struct SetMinutesWindow : SetDateWindow
 					SetDParam(0, i);
 					list.emplace_back(new DropDownListStringItem(STR_JUST_INT, i, false));
 				}
-				selected = MINUTES_HOUR(minutes);
+				selected = this->minutes.ClockHour();
 
 				break;
 		}
@@ -253,8 +253,8 @@ struct SetMinutesWindow : SetDateWindow
 	virtual void SetStringParameters(int widget) const override
 	{
 		switch (widget) {
-			case WID_SD_DAY:   SetDParam(0, MINUTES_MINUTE(minutes)); break;
-			case WID_SD_MONTH: SetDParam(0, MINUTES_HOUR(minutes)); break;
+			case WID_SD_DAY:   SetDParam(0, this->minutes.ClockMinute()); break;
+			case WID_SD_MONTH: SetDParam(0, this->minutes.ClockHour()); break;
 		}
 	}
 
@@ -269,7 +269,7 @@ struct SetMinutesWindow : SetDateWindow
 
 			case WID_SD_SET_DATE:
 				if (this->callback != nullptr) {
-					this->callback(this, ((DateTicks)minutes - _settings_time.clock_offset) * (DateTicksScaled)_settings_time.ticks_per_minute);
+					this->callback(this, _settings_time.FromTickMinutes(this->minutes));
 				}
 				this->Close();
 				break;
@@ -278,19 +278,23 @@ struct SetMinutesWindow : SetDateWindow
 
 	virtual void OnDropdownSelect(int widget, int index) override
 	{
-		Minutes current = 0;
+		const TickMinutes now = _settings_time.NowInTickMinutes();
+		TickMinutes current = 0;
 		switch (widget) {
 			case WID_SD_DAY:
-				current = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), MINUTES_HOUR(minutes), index);
+				current = now.ToSameDayClockTime(now.ClockHour(), index);
 				break;
 
 			case WID_SD_MONTH:
-				current = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), index, MINUTES_MINUTE(minutes));
+				current = now.ToSameDayClockTime(index, now.ClockMinute());
 				break;
+
+			default:
+				return;
 		}
 
-		if (current < (CURRENT_MINUTE - 60)) current += 60 * 24;
-		minutes = current;
+		if (current < (now - 60)) current += 60 * 24;
+		this->minutes = current;
 
 		this->SetDirty();
 	}

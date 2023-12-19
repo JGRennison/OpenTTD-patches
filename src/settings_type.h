@@ -135,6 +135,22 @@ struct TimeSettings {
 	bool   time_in_minutes;                  ///< whether to use the hh:mm conversion when printing dates
 	uint16 ticks_per_minute;                 ///< how many ticks per minute
 	uint16 clock_offset;                     ///< clock offset in minutes
+
+	TickMinutes ToTickMinutes(DateTicksScaled ticks) const
+	{
+		return (ticks.base() / this->ticks_per_minute) + this->clock_offset;
+	}
+
+	TickMinutes NowInTickMinutes() const
+	{
+		extern DateTicksScaled _scaled_date_ticks;
+		return this->ToTickMinutes(_scaled_date_ticks);
+	}
+
+	DateTicksScaled FromTickMinutes(TickMinutes minutes) const
+	{
+		return (minutes.base() - this->clock_offset) * this->ticks_per_minute;
+	}
 };
 
 /** Settings related to the GUI and other stuff that is not saved in the savegame. */

@@ -20,6 +20,6 @@
 DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehicle *> &vehicles, DepartureType type = D_DEPARTURE,
 		bool show_vehicles_via = false, bool show_pax = true, bool show_freight = true);
 
-DateTicksScaled GetDeparturesMaxTicksAhead();
+Ticks GetDeparturesMaxTicksAhead();
 
 #endif /* DEPARTURES_FUNC_H */

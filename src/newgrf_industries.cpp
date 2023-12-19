@@ -271,7 +271,7 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte param_setID, byte layout
 			return this->industry->founder | (is_ai ? 0x10000 : 0) | (colours << 24);
 		}
 
-		case 0x46: return this->industry->construction_date; // Date when built - long format - (in days)
+		case 0x46: return this->industry->construction_date.base(); // Date when built - long format - (in days)
 
 		/* Override flags from GS */
 		case 0x47: return this->industry->ctlflags;
@@ -362,7 +362,7 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte param_setID, byte layout
 			if (cargo == CT_INVALID) return 0;
 			int index = this->industry->GetCargoAcceptedIndex(cargo);
 			if (index < 0) return 0; // invalid cargo
-			if (variable == 0x6E) return this->industry->last_cargo_accepted_at[index];
+			if (variable == 0x6E) return this->industry->last_cargo_accepted_at[index].base();
 			if (variable == 0x6F) return this->industry->incoming_cargo_waiting[index];
 			NOT_REACHED();
 		}

@@ -729,7 +729,7 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 			}
 
 		case 0x4B: // Long date of last service
-			return v->date_of_last_service_newgrf;
+			return v->date_of_last_service_newgrf.base();
 
 		case 0x4C: // Current maximum speed in NewGRF units
 			if (!v->IsPrimaryVehicle()) return 0;
@@ -1118,7 +1118,7 @@ static uint32 VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object,
 			}
 			case 0x48: return Engine::Get(this->self_type)->flags; // Vehicle Type Info
 			case 0x49: return _cur_year; // 'Long' format build year
-			case 0x4B: return _date; // Long date of last service
+			case 0x4B: return _date.base(); // Long date of last service
 			case 0x92: return ClampTo<uint16>(_date - DAYS_TILL_ORIGINAL_BASE_YEAR); // Date of last service
 			case 0x93: return GB(ClampTo<uint16>(_date - DAYS_TILL_ORIGINAL_BASE_YEAR), 8, 8);
 			case 0xC4: return Clamp(_cur_year, ORIGINAL_BASE_YEAR, ORIGINAL_MAX_YEAR) - ORIGINAL_BASE_YEAR; // Build year

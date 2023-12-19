@@ -863,8 +863,8 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 			if (slot > -1) {
 				just_started = !HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 				SetBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
-				v->lateness_counter = _scaled_date_ticks - slot + wait_offset;
-				ds.SetScheduledDispatchLastDispatch(slot - ds.GetScheduledDispatchStartTick());
+				v->lateness_counter = (_scaled_date_ticks - slot + wait_offset).AsTicks();
+				ds.SetScheduledDispatchLastDispatch((slot - ds.GetScheduledDispatchStartTick()).AsTicks());
 				set_scheduled_dispatch = true;
 			}
 		}
@@ -890,7 +890,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		if (!set_scheduled_dispatch) just_started = !HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 
 		if (v->timetable_start != 0) {
-			v->lateness_counter = (int32)(_scaled_date_ticks - v->timetable_start);
+			v->lateness_counter = (_scaled_date_ticks - v->timetable_start).AsTicks();
 			v->timetable_start = 0;
 		}
 

@@ -979,6 +979,6 @@ public:
 	inline const DispatchSchedule &GetDispatchScheduleByIndex(uint index) const { return this->dispatch_schedules[index]; }
 };
 
-void ShiftOrderDates(int interval);
+void ShiftOrderDates(DateDelta interval);
 
 #endif /* ORDER_BASE_H */

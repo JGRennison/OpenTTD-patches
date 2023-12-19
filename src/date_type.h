@@ -10,16 +10,8 @@
 #ifndef DATE_TYPE_H
 #define DATE_TYPE_H
 
-typedef int32  Date;      ///< The type to store our dates in
-typedef uint16 DateFract; ///< The fraction of a date we're in, i.e. the number of ticks since the last date changeover
-typedef int32  Ticks;     ///< The type to store ticks in
-typedef int32 DateTicks;  ///< The type to store dates in when tick-precision is required
-typedef int64 DateTicksScaled;  ///< The type to store dates scaled by the day length factor in when tick-precision is required
-typedef int64  Minutes;   ///< The type to store minutes in
-
-typedef int32  Year;  ///< Type for the year, note: 0 based, i.e. starts at the year 0.
-typedef uint8  Month; ///< Type for the month, note: 0 based, i.e. 0 = January, 11 = December.
-typedef uint8  Day;   ///< Type for the day of the month, note: 1 based, first day of a month is 1.
+#include "core/strong_typedef_type.hpp"
+#include "core/math_func.hpp"
 
 /**
  * 1 day is 74 ticks; _date_fract used to be uint16 and incremented by 885. On
@@ -33,6 +25,104 @@ static const int DAYS_IN_LEAP_YEAR = 366; ///< sometimes, you need one day more.
 static const int MONTHS_IN_YEAR    =  12; ///< months per year
 
 static const int SECONDS_PER_DAY   = 2;   ///< approximate seconds per day, not for precise calculations
+
+typedef uint16 DateFract; ///< The fraction of a date we're in, i.e. the number of ticks since the last date changeover
+typedef int32  Ticks;     ///< The type to store ticks in
+
+typedef int32  Year;  ///< Type for the year, note: 0 based, i.e. starts at the year 0.
+typedef uint8  Month; ///< Type for the month, note: 0 based, i.e. 0 = January, 11 = December.
+typedef uint8  Day;   ///< Type for the day of the month, note: 1 based, first day of a month is 1.
+
+/* The type to store our dates in */
+using DateDelta = StrongType::Typedef<int32_t, struct DateDeltaTag, StrongType::Compare, StrongType::IntegerScalable>;
+using Date = StrongType::Typedef<int32_t, struct DateTag, StrongType::Compare, StrongType::IntegerDelta<DateDelta>>;
+
+/* Mixin for DateTicks */
+struct DateTicksOperations {
+	template <typename TType, typename TBaseType>
+	struct mixin {
+	private:
+		TBaseType GetBase() const { return static_cast<const TType &>(*this).base(); }
+
+	public:
+		Date ToDate() const { return this->GetBase() / DAY_TICKS; }
+		DateFract ToDateFractRemainder() const { return this->GetBase() % DAY_TICKS; }
+	};
+};
+
+/* The type to store dates in when tick-precision is required */
+using DateTicksDelta = StrongType::Typedef<int32_t, struct DateTicksDeltaTag, StrongType::Compare, StrongType::IntegerScalable>;
+using DateTicks = StrongType::Typedef<int32_t, struct DateTicksTag, StrongType::Compare, StrongType::IntegerDelta<DateTicksDelta>, DateTicksOperations>;
+
+/* Mixin for DateTicksScaledDelta */
+struct DateTicksScaledDeltaOperations {
+	template <typename TType, typename TBaseType>
+	struct mixin {
+	private:
+		TBaseType GetBase() const { return static_cast<const TType &>(*this).base(); }
+
+	public:
+		Ticks AsTicks() const { return (Ticks)this->GetBase(); }
+	};
+};
+
+/* The type to store dates scaled by the day length factor in when tick-precision is required */
+using DateTicksScaledDelta = StrongType::Typedef<int64_t, struct DateTicksScaledDeltaTag, StrongType::Compare, StrongType::IntegerScalable, DateTicksScaledDeltaOperations>;
+using DateTicksScaled = StrongType::Typedef<int64_t, struct DateTicksScaledTag, StrongType::Compare, StrongType::IntegerDelta<DateTicksScaledDelta>>;
+
+/* Mixin for TickMinutes, ClockFaceMinutes */
+struct MinuteOperations {
+	template <typename TType, typename TBaseType>
+	struct mixin {
+	private:
+		TBaseType GetBase() const { return static_cast<const TType &>(*this).base(); }
+
+	public:
+		int ClockMinute() const { return this->GetBase() % 60; }
+		int ClockHour() const { return (this->GetBase() / 60) % 24; }
+		int ClockHHMM() const { return (this->ClockHour() * 100) + this->ClockMinute(); }
+	};
+};
+
+/* Mixin for ClockFaceMinutes */
+struct ClockFaceMinuteOperations {
+	template <typename TType, typename TBaseType>
+	struct mixin {
+		static constexpr TType FromClockFace(int hours, int minutes)
+		{
+			return (TBaseType(hours) * 60) + minutes;
+		}
+	};
+};
+
+/* The type to store general clock-face minutes in (i.e. 0..1440) */
+using ClockFaceMinutes = StrongType::Typedef<int, struct ClockFaceMinutesTag, StrongType::Compare, StrongType::Integer, MinuteOperations, ClockFaceMinuteOperations>;
+
+/* Mixin for TickMinutes */
+struct TickMinuteOperations {
+	template <typename TType, typename TBaseType>
+	struct mixin {
+	private:
+		TBaseType GetBase() const { return static_cast<const TType &>(*this).base(); }
+
+	public:
+		TType ToSameDayClockTime(int hour, int minute) const
+		{
+			TBaseType day = DivTowardsNegativeInf<TBaseType>(this->GetBase(), 1440);
+			return (day * 1440) + (hour * 60) + minute;
+		}
+
+		ClockFaceMinutes ToClockFaceMinutes() const
+		{
+			TBaseType minutes = this->GetBase() % 1440;
+			if (minutes < 0) minutes += 1440;
+			return minutes;
+		}
+	};
+};
+
+/* The type to store DateTicksScaled-based minutes in */
+using TickMinutes = StrongType::Typedef<int64_t, struct TickMinutesTag, StrongType::Compare, StrongType::Integer, MinuteOperations, TickMinuteOperations>;
 
 #define DATE_UNIT_SIZE (_settings_time.time_in_minutes ? _settings_time.ticks_per_minute : (DAY_TICKS * _settings_game.economy.day_length_factor))
 
@@ -52,48 +142,41 @@ static const int INDUSTRY_CUT_TREE_TICKS  = INDUSTRY_PRODUCE_TICKS * 2; ///< cyc
  */
 
 /** The minimum starting year/base year of the original TTD */
-static const Year ORIGINAL_BASE_YEAR = 1920;
+static constexpr Year ORIGINAL_BASE_YEAR = 1920;
 /** The original ending year */
-static const Year ORIGINAL_END_YEAR  = 2051;
+static constexpr Year ORIGINAL_END_YEAR  = 2051;
 /** The maximum year of the original TTD */
-static const Year ORIGINAL_MAX_YEAR  = 2090;
-
-/**
- * Calculate the number of leap years till a given year.
- *
- * Each passed leap year adds one day to the 'day count'.
- *
- * A special case for the year 0 as no year has been passed,
- * but '(year - 1) / 4' does not yield '-1' to counteract the
- * '+1' at the end of the formula as divisions round to zero.
- *
- * @param year the year to get the leap years till.
- * @return the number of leap years.
- */
-#define LEAP_YEARS_TILL(year) ((year) == 0 ? 0 : ((year) - 1) / 4 - ((year) - 1) / 100 + ((year) - 1) / 400 + 1)
+static constexpr Year ORIGINAL_MAX_YEAR  = 2090;
 
 /**
  * Calculate the date of the first day of a given year.
  * @param year the year to get the first day of.
  * @return the date.
  */
-#define DAYS_TILL(year) (DAYS_IN_YEAR * (year) + LEAP_YEARS_TILL(year))
+static constexpr Date DateAtStartOfYear(Year year)
+{
+	int32 year_as_int = year;
+	uint number_of_leap_years = (year == 0) ? 0 : ((year_as_int - 1) / 4 - (year_as_int - 1) / 100 + (year_as_int - 1) / 400 + 1);
+
+	/* Hardcode the number of days in a year because we can't access CalendarTime from here. */
+	return (365 * year_as_int) + number_of_leap_years;
+}
 
 /**
  * The offset in days from the '_date == 0' till
  * 'ConvertYMDToDate(ORIGINAL_BASE_YEAR, 0, 1)'
  */
-#define DAYS_TILL_ORIGINAL_BASE_YEAR DAYS_TILL(ORIGINAL_BASE_YEAR)
+static constexpr Date DAYS_TILL_ORIGINAL_BASE_YEAR = DateAtStartOfYear(ORIGINAL_BASE_YEAR);
 
-static const Date MIN_DATE = 0;
+static constexpr Date MIN_DATE = 0;
 
 /** The absolute minimum & maximum years in OTTD */
-static const Year MIN_YEAR = 0;
+static constexpr Year MIN_YEAR = 0;
 
 /** The default starting year */
-static const Year DEF_START_YEAR = 1950;
+static constexpr Year DEF_START_YEAR = 1950;
 /** The default scoring end year */
-static const Year DEF_END_YEAR = ORIGINAL_END_YEAR - 1;
+static constexpr Year DEF_END_YEAR = ORIGINAL_END_YEAR - 1;
 
 /**
  * MAX_YEAR, nicely rounded value of the number of years that can
@@ -102,22 +185,7 @@ static const Year DEF_END_YEAR = ORIGINAL_END_YEAR - 1;
 static const Year MAX_YEAR  = 5000000;
 
 /** The number of days till the last day */
-#define MAX_DAY (DAYS_TILL(MAX_YEAR + 1) - 1)
-
-/** The day when converting to minutes */
-#define MINUTES_DAY(minutes) (minutes / 1440)
-
-/** The hour when converting to minutes */
-#define MINUTES_HOUR(minutes) ((minutes / 60) % 24)
-
-/** The day when converting to minutes */
-#define MINUTES_MINUTE(minutes) (minutes % 60)
-
-/** Convert minutes to a date */
-#define MINUTES_DATE(day, hour, minute) ((day * 1440) + (hour * 60) + minute)
-
-/** Get the current date in minutes */
-#define CURRENT_MINUTE (_scaled_date_ticks / _settings_time.ticks_per_minute)
+static constexpr Date MAX_DATE = DateAtStartOfYear(MAX_YEAR + 1) - 1;
 
 /**
  * Data structure to convert between Date and triplet (year, month, and day).
@@ -129,8 +197,9 @@ struct YearMonthDay {
 	Day   day;    ///< Day (1..31)
 };
 
-static const Year  INVALID_YEAR  = -1; ///< Representation of an invalid year
-static const Date  INVALID_DATE  = -1; ///< Representation of an invalid date
-static const Ticks INVALID_TICKS = -1; ///< Representation of an invalid number of ticks
+static constexpr Year       INVALID_YEAR        = -1; ///< Representation of an invalid year
+static constexpr Date       INVALID_DATE        = -1; ///< Representation of an invalid date
+static constexpr DateTicks  INVALID_DATE_TICKS  = -1; ///< Representation of an invalid date ticks
+static constexpr Ticks      INVALID_TICKS       = -1; ///< Representation of an invalid number of ticks
 
 #endif /* DATE_TYPE_H */

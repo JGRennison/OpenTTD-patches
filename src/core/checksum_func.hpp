@@ -44,7 +44,7 @@ inline bool ShouldLogUpdateStateChecksum()
 	return _networking && (!_network_server || (NetworkClientSocket::IsValidID(0) && NetworkClientSocket::Get(0)->status != NetworkClientSocket::STATUS_INACTIVE));
 }
 #	define DEBUG_UPDATESTATECHECKSUM(str, ...) if (ShouldLogUpdateStateChecksum()) DEBUG(statecsum, 0, "date{%08x; %02x; %02x}; %04x; %02x; " OTTD_PRINTFHEX64PAD "; %s:%d " str, \
-		_date, _date_fract, _tick_skip_counter, _frame_counter, (byte)_current_company, _state_checksum.state, __FILE__, __LINE__, __VA_ARGS__);
+		_date.base(), _date_fract, _tick_skip_counter, _frame_counter, (byte)_current_company, _state_checksum.state, __FILE__, __LINE__, __VA_ARGS__);
 #else
 #	define DEBUG_UPDATESTATECHECKSUM(str, ...)
 #endif /* RANDOM_DEBUG */

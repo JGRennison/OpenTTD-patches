@@ -2490,7 +2490,7 @@ DEF_CONSOLE_CMD(ConMergeLinkgraphJobsAsap)
 		return true;
 	}
 
-	for (LinkGraphJob *lgj : LinkGraphJob::Iterate()) lgj->ShiftJoinDate((((_date * DAY_TICKS) + _date_fract) - lgj->JoinDateTicks()) / DAY_TICKS);
+	for (LinkGraphJob *lgj : LinkGraphJob::Iterate()) lgj->ShiftJoinDate((NowDateTicks() - lgj->JoinDateTicks()).base() / DAY_TICKS);
 	return true;
 }
 
@@ -2739,14 +2739,14 @@ DEF_CONSOLE_CMD(ConDumpLinkgraphJobs)
 	IConsolePrintF(CC_DEFAULT, PRINTF_SIZE " link graph jobs", LinkGraphJob::GetNumItems());
 	for (const LinkGraphJob *lgj : LinkGraphJob::Iterate()) {
 		YearMonthDay start_ymd;
-		ConvertDateToYMD(lgj->StartDateTicks() / DAY_TICKS, &start_ymd);
+		ConvertDateToYMD(lgj->StartDateTicks().ToDate(), &start_ymd);
 		YearMonthDay join_ymd;
-		ConvertDateToYMD(lgj->JoinDateTicks() / DAY_TICKS, &join_ymd);
+		ConvertDateToYMD(lgj->JoinDateTicks().ToDate(), &join_ymd);
 		IConsolePrintF(CC_DEFAULT, "  Job: %5u, nodes: %u, cost: " OTTD_PRINTF64U ", start: (%u, %4i-%02i-%02i, %i), end: (%u, %4i-%02i-%02i, %i), duration: %u",
 				lgj->index, lgj->Graph().Size(), lgj->Graph().CalculateCostEstimate(),
-				lgj->StartDateTicks(), start_ymd.year, start_ymd.month + 1, start_ymd.day, lgj->StartDateTicks() % DAY_TICKS,
-				lgj->JoinDateTicks(), join_ymd.year, join_ymd.month + 1, join_ymd.day, lgj->JoinDateTicks() % DAY_TICKS,
-				lgj->JoinDateTicks() - lgj->StartDateTicks());
+				lgj->StartDateTicks().base(), start_ymd.year, start_ymd.month + 1, start_ymd.day, lgj->StartDateTicks().ToDateFractRemainder(),
+				lgj->JoinDateTicks().base(), join_ymd.year, join_ymd.month + 1, join_ymd.day, lgj->JoinDateTicks().ToDateFractRemainder(),
+				(lgj->JoinDateTicks() - lgj->StartDateTicks()).base());
 	 }
 	return true;
 }
@@ -3686,20 +3686,20 @@ DEF_CONSOLE_CMD(ConIfDay)
 
 DEF_CONSOLE_CMD(ConIfHour)
 {
-	Minutes minutes = _scaled_date_ticks / _settings_time.ticks_per_minute + _settings_time.clock_offset;
-	return ConConditionalCommon(argc, argv,  MINUTES_HOUR(minutes), "the current hour (in game, assuming time is in minutes)", "if_hour");
+	TickMinutes minutes = _settings_time.NowInTickMinutes();
+	return ConConditionalCommon(argc, argv, minutes.ClockHour(), "the current hour (in game, assuming time is in minutes)", "if_hour");
 }
 
 DEF_CONSOLE_CMD(ConIfMinute)
 {
-	Minutes minutes = _scaled_date_ticks / _settings_time.ticks_per_minute + _settings_time.clock_offset;
-	return ConConditionalCommon(argc, argv, MINUTES_MINUTE(minutes), "the current minute (in game, assuming time is in minutes)", "if_minute");
+	TickMinutes minutes = _settings_time.NowInTickMinutes();
+	return ConConditionalCommon(argc, argv, minutes.ClockMinute(), "the current minute (in game, assuming time is in minutes)", "if_minute");
 }
 
 DEF_CONSOLE_CMD(ConIfHourMinute)
 {
-	Minutes minutes = _scaled_date_ticks / _settings_time.ticks_per_minute + _settings_time.clock_offset;
-	return ConConditionalCommon(argc, argv, (MINUTES_HOUR(minutes) * 100) + MINUTES_MINUTE(minutes), "the current hour and minute 0000 - 2359 (in game, assuming time is in minutes)", "if_hour_minute");
+	TickMinutes minutes = _settings_time.NowInTickMinutes();
+	return ConConditionalCommon(argc, argv, minutes.ClockHHMM(), "the current hour and minute 0000 - 2359 (in game, assuming time is in minutes)", "if_hour_minute");
 }
 
 #ifdef _DEBUG

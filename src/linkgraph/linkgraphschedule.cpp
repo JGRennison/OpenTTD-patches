@@ -200,7 +200,7 @@ void LinkGraphSchedule::SpawnAll()
  * graph jobs by the number of days given.
  * @param interval Number of days to be added or subtracted.
  */
-void LinkGraphSchedule::ShiftDates(int interval)
+void LinkGraphSchedule::ShiftDates(DateDelta interval)
 {
 	for (LinkGraph *lg : LinkGraph::Iterate()) lg->ShiftDates(interval);
 	for (LinkGraphJob *lgj : LinkGraphJob::Iterate()) lgj->ShiftJoinDate(interval);
@@ -285,7 +285,7 @@ void LinkGraphJobGroup::JoinThread()
 	auto flush_bucket = [&]() {
 		if (!bucket_cost) return;
 		DEBUG(linkgraph, 2, "LinkGraphJobGroup::ExecuteJobSet: Creating Job Group: jobs: " PRINTF_SIZE ", cost: %u, join after: %d",
-				bucket.size(), bucket_cost, bucket_join_date - ((_date * DAY_TICKS) + _date_fract));
+				bucket.size(), bucket_cost, (bucket_join_date - NowDateTicks()).base());
 		auto group = std::make_shared<LinkGraphJobGroup>(constructor_token(), std::move(bucket));
 		group->SpawnThread();
 		bucket_cost = 0;
@@ -321,9 +321,9 @@ void StateGameLoop_LinkGraphPauseControl()
 	} else if (_pause_mode == PM_UNPAUSED && _tick_skip_counter == 0) {
 		if (_settings_game.economy.day_length_factor == 1) {
 			if (_date_fract != LinkGraphSchedule::SPAWN_JOIN_TICK - 2) return;
-			if (_date % _settings_game.linkgraph.recalc_interval != (_settings_game.linkgraph.recalc_interval / SECONDS_PER_DAY) / 2) return;
+			if (_date.base() % _settings_game.linkgraph.recalc_interval != (_settings_game.linkgraph.recalc_interval / SECONDS_PER_DAY) / 2) return;
 		} else {
-			int date_ticks = ((_date * DAY_TICKS) + _date_fract - (LinkGraphSchedule::SPAWN_JOIN_TICK - 2));
+			int date_ticks = (NowDateTicks() - (LinkGraphSchedule::SPAWN_JOIN_TICK - 2)).base();
 			int interval = std::max<int>(2, (_settings_game.linkgraph.recalc_interval * DAY_TICKS / (SECONDS_PER_DAY * _settings_game.economy.day_length_factor)));
 			if (date_ticks % interval != interval / 2) return;
 		}
@@ -358,10 +358,10 @@ void OnTick_LinkGraph()
 	if (_settings_game.economy.day_length_factor == 1) {
 		if (_date_fract != LinkGraphSchedule::SPAWN_JOIN_TICK) return;
 		interval = _settings_game.linkgraph.recalc_interval / SECONDS_PER_DAY;
-		offset = _date % interval;
+		offset = _date.base() % interval;
 	} else {
 		interval = std::max<int>(2, (_settings_game.linkgraph.recalc_interval * DAY_TICKS / (SECONDS_PER_DAY * _settings_game.economy.day_length_factor)));
-		offset = ((_date * DAY_TICKS) + _date_fract - LinkGraphSchedule::SPAWN_JOIN_TICK) % interval;
+		offset = (NowDateTicks() - LinkGraphSchedule::SPAWN_JOIN_TICK).base() % interval;
 	}
 	if (offset == 0) {
 		LinkGraphSchedule::instance.SpawnNext();

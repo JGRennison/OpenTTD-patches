@@ -287,10 +287,10 @@ public:
 	static const uint MIN_TIMEOUT_DISTANCE = 32;
 
 	/** Number of days before deleting links served only by vehicles stopped in depot. */
-	static const uint STALE_LINK_DEPOT_TIMEOUT = 1024;
+	static constexpr DateDelta STALE_LINK_DEPOT_TIMEOUT = 1024;
 
-	/** Minimum number of days between subsequent compressions of a LG. */
-	static const uint COMPRESSION_INTERVAL = 256 * DAY_TICKS;
+	/** Minimum number of ticks between subsequent compressions of a LG. */
+	static constexpr DateTicksScaledDelta COMPRESSION_INTERVAL = 256 * DAY_TICKS;
 
 	/**
 	 * Scale a value from a link graph of age orig_age for usage in one of age
@@ -314,7 +314,7 @@ public:
 	LinkGraph(CargoID cargo) : cargo(cargo), last_compression(_scaled_date_ticks) {}
 
 	void Init(uint size);
-	void ShiftDates(int interval);
+	void ShiftDates(DateDelta interval);
 	void Compress();
 	void Merge(LinkGraph *other);
 
@@ -365,7 +365,7 @@ public:
 	 */
 	inline uint Monthly(uint base) const
 	{
-		return (static_cast<uint64>(base) * 30 * DAY_TICKS * _settings_game.economy.day_length_factor) / std::max<uint64>(_scaled_date_ticks - this->last_compression, DAY_TICKS);
+		return (static_cast<uint64>(base) * 30 * DAY_TICKS * _settings_game.economy.day_length_factor) / std::max<uint64>((_scaled_date_ticks - this->last_compression).base(), DAY_TICKS);
 	}
 
 	NodeID AddNode(const Station *st);
@@ -392,7 +392,7 @@ protected:
 	friend upstream_sl::SlLinkgraphNode;
 	friend upstream_sl::SlLinkgraphEdge;
 
-	friend void AdjustLinkGraphScaledTickBase(int64 delta);
+	friend void AdjustLinkGraphScaledTickBase(DateTicksScaledDelta delta);
 	friend void LinkGraphFixupLastCompressionAfterLoad();
 
 	CargoID cargo;         ///< Cargo of this component's link graph.

@@ -147,7 +147,7 @@ bool HasRoadTypeAvail(const CompanyID company, RoadType roadtype)
 		if (rti->label == 0) return false;
 
 		/* Not yet introduced at this date. */
-		if (IsInsideMM(rti->introduction_date, 0, MAX_DAY) && rti->introduction_date > _date) return false;
+		if (IsInsideMM(rti->introduction_date, 0, MAX_DATE.base()) && rti->introduction_date > _date) return false;
 
 		/*
 		 * Do not allow building hidden road types, except when a town may build it.
@@ -209,7 +209,7 @@ RoadTypes AddDateIntroducedRoadTypes(RoadTypes current, Date date)
 		if (rti->label == 0) continue;
 
 		/* Not date introduced. */
-		if (!IsInsideMM(rti->introduction_date, 0, MAX_DAY)) continue;
+		if (!IsInsideMM(rti->introduction_date, 0, MAX_DATE.base())) continue;
 
 		/* Not yet introduced at this date. */
 		if (rti->introduction_date > date) continue;
@@ -277,7 +277,7 @@ RoadTypes GetRoadTypes(bool introduces)
 		}
 	}
 
-	if (introduces) return AddDateIntroducedRoadTypes(rts, MAX_DAY);
+	if (introduces) return AddDateIntroducedRoadTypes(rts, MAX_DATE);
 	return rts;
 }
 

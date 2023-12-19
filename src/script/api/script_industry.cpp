@@ -52,7 +52,7 @@
 {
 	Industry *i = Industry::GetIfValid(industry_id);
 	if (i == nullptr) return ScriptDate::DATE_INVALID;
-	return (ScriptDate::Date)i->construction_date;
+	return (ScriptDate::Date)i->construction_date.base();
 }
 
 /* static */ bool ScriptIndustry::SetText(IndustryID industry_id, Text *text)
@@ -230,11 +230,11 @@
 	if (i == nullptr) return ScriptDate::DATE_INVALID;
 
 	if (cargo_type == CT_INVALID) {
-		return (ScriptDate::Date)std::accumulate(std::begin(i->last_cargo_accepted_at), std::end(i->last_cargo_accepted_at), 0, [](Date a, Date b) { return std::max(a, b); });
+		return (ScriptDate::Date)std::accumulate(std::begin(i->last_cargo_accepted_at), std::end(i->last_cargo_accepted_at), Date(0), [](Date a, Date b) { return std::max(a, b); }).base();
 	} else {
 		int index = i->GetCargoAcceptedIndex(cargo_type);
 		if (index < 0) return ScriptDate::DATE_INVALID;
-		return (ScriptDate::Date)i->last_cargo_accepted_at[index];
+		return (ScriptDate::Date)i->last_cargo_accepted_at[index].base();
 	}
 }
 

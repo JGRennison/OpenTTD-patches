@@ -120,7 +120,7 @@ void ClearAllSignalSpeedRestrictions()
 	_signal_speeds.clear();
 }
 
-void AdjustAllSignalSpeedRestrictionTickValues(DateTicksScaled delta)
+void AdjustAllSignalSpeedRestrictionTickValues(DateTicksScaledDelta delta)
 {
 	for (auto &it : _signal_speeds) {
 		it.second.time_stamp += delta;
@@ -7558,15 +7558,15 @@ int GetTrainEstimatedMaxAchievableSpeed(const Train *train, int mass, const int 
 
 void SetSignalTrainAdaptationSpeed(const Train *v, TileIndex tile, uint16 track)
 {
-	SignalSpeedKey speed_key = {
-		speed_key.signal_tile = tile,
-		speed_key.signal_track = track,
-		speed_key.last_passing_train_dir = v->GetVehicleTrackdir()
-	};
-	SignalSpeedValue speed_value = {
-		speed_value.train_speed = v->First()->cur_speed,
-		speed_value.time_stamp = GetSpeedRestrictionTimeout(v->First())
-	};
+	SignalSpeedKey speed_key = {};
+	speed_key.signal_tile = tile;
+	speed_key.signal_track = track;
+	speed_key.last_passing_train_dir = v->GetVehicleTrackdir();
+
+	SignalSpeedValue speed_value = {};
+	speed_value.train_speed = v->First()->cur_speed;
+	speed_value.time_stamp = GetSpeedRestrictionTimeout(v->First());
+
 	_signal_speeds[speed_key] = speed_value;
 }
 

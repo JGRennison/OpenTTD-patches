@@ -179,7 +179,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendWelcome()
 	p->Send_string(""); // Used to be map-name.
 	p->Send_uint32(_settings_game.game_creation.generation_seed);
 	p->Send_uint8 (_settings_game.game_creation.landscape);
-	p->Send_uint32(ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1));
+	p->Send_uint32(ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1).base());
 	p->Send_uint16(MapSizeX());
 	p->Send_uint16(MapSizeY());
 
@@ -209,7 +209,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendDate()
 {
 	Packet *p = new Packet(ADMIN_PACKET_SERVER_DATE);
 
-	p->Send_uint32(_date);
+	p->Send_uint32(_date.base());
 	this->SendPacket(p);
 
 	return NETWORK_RECV_STATUS_OKAY;
@@ -245,7 +245,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendClientInfo(const NetworkC
 	p->Send_string(cs == nullptr ? "" : const_cast<NetworkAddress &>(cs->client_address).GetHostname());
 	p->Send_string(ci->client_name);
 	p->Send_uint8 (0); // Used to be language
-	p->Send_uint32(ci->join_date);
+	p->Send_uint32(ci->join_date.base());
 	p->Send_uint8 (ci->client_playas);
 
 	this->SendPacket(p);

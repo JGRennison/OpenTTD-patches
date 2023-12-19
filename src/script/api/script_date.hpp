@@ -31,7 +31,7 @@ public:
 	 * compose valid date values for a known year, month and day.
 	 */
 	enum Date {
-		DATE_INVALID = ::INVALID_DATE, ///< A value representing an invalid date.
+		DATE_INVALID = ::INVALID_DATE.base(), ///< A value representing an invalid date.
 	};
 
 	/**
@@ -96,9 +96,9 @@ public:
 
 	static SQInteger GetCurrentScaledDateTicks();
 
-	static SQInteger GetHour(DateTicksScaled ticks);
+	static SQInteger GetHour(SQInteger ticks);
 
-	static SQInteger GetMinute(DateTicksScaled ticks);
+	static SQInteger GetMinute(SQInteger ticks);
 };
 
 #endif /* SCRIPT_DATE_HPP */

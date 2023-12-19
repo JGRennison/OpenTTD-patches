@@ -674,9 +674,9 @@ bool DispatchSchedule::UpdateScheduledDispatchToDate(DateTicksScaled now)
 {
 	bool update_windows = false;
 	if (this->GetScheduledDispatchStartTick() == 0) {
-		DateTicksScaled start = now - (now % this->GetScheduledDispatchDuration());
+		DateTicksScaled start = now - (now.base() % this->GetScheduledDispatchDuration());
 		this->SetScheduledDispatchStartTick(start);
-		int64 last_dispatch = -start;
+		int64 last_dispatch = -(start.base());
 		if (last_dispatch < INT_MIN && _settings_game.game_time.time_in_minutes) {
 			/* Advance by multiples of 24 hours */
 			const int64 day = 24 * 60 * _settings_game.game_time.ticks_per_minute;

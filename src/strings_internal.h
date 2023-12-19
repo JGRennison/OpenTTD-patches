@@ -13,6 +13,7 @@
 #include "strings_func.h"
 #include "string_func.h"
 #include "core/span_type.hpp"
+#include "core/strong_typedef_type.hpp"
 
 #include <array>
 
@@ -155,11 +156,11 @@ public:
 		this->parameters[n].string_view = nullptr;
 	}
 
-	//template <typename T, std::enable_if_t<std::is_base_of<StrongTypedefBase, T>::value, int> = 0>
-	//void SetParam(size_t n, T v)
-	//{
-	//	SetParam(n, v.base());
-	//}
+	template <typename T, std::enable_if_t<std::is_base_of<StrongTypedefBase, T>::value, int> = 0>
+	void SetParam(size_t n, T v)
+	{
+		SetParam(n, v.base());
+	}
 
 	void SetParam(size_t n, const char *str)
 	{

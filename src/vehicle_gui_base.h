@@ -55,7 +55,7 @@ struct GUIVehicleGroup {
 		});
 	}
 
-	Date GetOldestVehicleAge() const
+	DateDelta GetOldestVehicleAge() const
 	{
 		const Vehicle *oldest = *std::max_element(this->vehicles_begin, this->vehicles_end, [](const Vehicle *v_a, const Vehicle *v_b) {
 			return v_a->age < v_b->age;

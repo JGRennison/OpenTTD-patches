@@ -2418,16 +2418,16 @@ void AgeVehicle(Vehicle *v)
 	/* Stop if a virtual vehicle */
 	if (HasBit(v->subtype, GVSF_VIRTUAL)) return;
 
-	if (v->age < MAX_DAY) {
+	if (v->age < MAX_DATE.AsDelta()) {
 		v->age++;
 		if (v->IsPrimaryVehicle() && v->age == VEHICLE_PROFIT_MIN_AGE + 1) GroupStatistics::VehicleReachedMinAge(v);
 	}
 
 	if (!v->IsPrimaryVehicle() && (v->type != VEH_TRAIN || !Train::From(v)->IsEngine())) return;
 
-	int age = v->age - v->max_age;
+	DateDelta age = v->age - v->max_age;
 	for (int i = 0; i <= 4; i++) {
-		if (age == DateAtStartOfYear(i)) {
+		if (age == DateAtStartOfYear(i).AsDelta()) {
 			v->reliability_spd_dec <<= 1;
 			break;
 		}
@@ -4649,7 +4649,7 @@ void DumpVehicleStats(char *buffer, const char *last)
 	buffer += seprintf(buffer, last, "  %10s: %5u\n", "total", (uint)Vehicle::GetNumItems());
 }
 
-void AdjustVehicleScaledTickBase(int64 delta)
+void AdjustVehicleScaledTickBase(DateTicksScaledDelta delta)
 {
 	for (Vehicle *v : Vehicle::Iterate()) {
 		if (v->timetable_start != 0) v->timetable_start += delta;
@@ -4662,10 +4662,10 @@ void AdjustVehicleScaledTickBase(int64 delta)
 	}
 }
 
-void ShiftVehicleDates(int interval)
+void ShiftVehicleDates(DateDelta interval)
 {
 	for (Vehicle *v : Vehicle::Iterate()) {
-		v->date_of_last_service = std::max(v->date_of_last_service + interval, 0);
+		v->date_of_last_service = std::max<Date>(v->date_of_last_service + interval, 0);
 	}
 	/* date_of_last_service_newgrf is not updated here as it must stay stable
 	 * for vehicles outside of a depot. */

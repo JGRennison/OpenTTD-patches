@@ -4452,11 +4452,11 @@ void DeleteStaleLinks(Station *from)
 			Station *to = Station::Get((*lg)[to_id].Station());
 			assert(to->goods[c].node == to_id);
 			assert(_date >= edge.LastUpdate());
-			uint timeout = std::max<uint>((LinkGraph::MIN_TIMEOUT_DISTANCE + (DistanceManhattan(from->xy, to->xy) >> 3)) / _settings_game.economy.day_length_factor, 1);
-			if (edge.LastAircraftUpdate() != INVALID_DATE && (uint)(_date - edge.LastAircraftUpdate()) > timeout) {
+			DateDelta timeout = std::max<uint>((LinkGraph::MIN_TIMEOUT_DISTANCE + (DistanceManhattan(from->xy, to->xy) >> 3)) / _settings_game.economy.day_length_factor, 1);
+			if (edge.LastAircraftUpdate() != INVALID_DATE && (_date - edge.LastAircraftUpdate()) > timeout) {
 				edge.ClearAircraft();
 			}
-			if ((uint)(_date - edge.LastUpdate()) > timeout) {
+			if ((_date - edge.LastUpdate()) > timeout) {
 				bool updated = false;
 
 				if (auto_distributed) {
@@ -4488,7 +4488,7 @@ void DeleteStaleLinks(Station *from)
 						// Only run LinkRefresher if vehicle was not already in the cache
 						if (res.second) {
 							/* Do not refresh links of vehicles that have been stopped in depot for a long time. */
-							if (!v->IsStoppedInDepot() || static_cast<uint>(_date - v->date_of_last_service) <=
+							if (!v->IsStoppedInDepot() || (_date - v->date_of_last_service) <=
 									LinkGraph::STALE_LINK_DEPOT_TIMEOUT) {
 								edge_helper.RecordSize();
 								LinkRefresher::Run(v, false); // Don't allow merging. Otherwise lg might get deleted.
@@ -4520,11 +4520,11 @@ void DeleteStaleLinks(Station *from)
 					if (ge.data != nullptr) ge.data->flows.DeleteFlows(to->index);
 					RerouteCargo(from, c, to->index, from->index);
 				}
-			} else if (edge.LastUnrestrictedUpdate() != INVALID_DATE && (uint)(_date - edge.LastUnrestrictedUpdate()) > timeout) {
+			} else if (edge.LastUnrestrictedUpdate() != INVALID_DATE && (_date - edge.LastUnrestrictedUpdate()) > timeout) {
 				edge.Restrict();
 				if (ge.data != nullptr) ge.data->flows.RestrictFlows(to->index);
 				RerouteCargo(from, c, to->index, from->index);
-			} else if (edge.LastRestrictedUpdate() != INVALID_DATE && (uint)(_date - edge.LastRestrictedUpdate()) > timeout) {
+			} else if (edge.LastRestrictedUpdate() != INVALID_DATE && (_date - edge.LastRestrictedUpdate()) > timeout) {
 				edge.Release();
 			}
 
@@ -4643,7 +4643,7 @@ void OnTick_Station()
 void StationDailyLoop()
 {
 	// Only record cargo history every second day.
-	if (_date % 2 != 0) {
+	if (_date.base() % 2 != 0) {
 		for (Station *st : Station::Iterate()) {
 			st->UpdateCargoHistory();
 		}

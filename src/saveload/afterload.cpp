@@ -1790,19 +1790,19 @@ bool AfterLoadGame()
 	/* Time starts at 0 instead of 1920.
 	 * Account for this in older games by adding an offset */
 	if (IsSavegameVersionBefore(SLV_31)) {
-		_date += DAYS_TILL_ORIGINAL_BASE_YEAR;
+		_date += DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
 		SetScaledTickVariables();
 		ConvertDateToYMD(_date, &_cur_date_ymd);
 		UpdateCachedSnowLine();
 
-		for (Station *st : Station::Iterate())   st->build_date      += DAYS_TILL_ORIGINAL_BASE_YEAR;
-		for (Waypoint *wp : Waypoint::Iterate()) wp->build_date      += DAYS_TILL_ORIGINAL_BASE_YEAR;
-		for (Engine *e : Engine::Iterate())      e->intro_date       += DAYS_TILL_ORIGINAL_BASE_YEAR;
+		for (Station *st : Station::Iterate())   st->build_date      += DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
+		for (Waypoint *wp : Waypoint::Iterate()) wp->build_date      += DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
+		for (Engine *e : Engine::Iterate())      e->intro_date       += DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
 		for (Company *c : Company::Iterate()) c->inaugurated_year += ORIGINAL_BASE_YEAR;
 		for (Industry *i : Industry::Iterate())  i->last_prod_year   += ORIGINAL_BASE_YEAR;
 
 		for (Vehicle *v : Vehicle::Iterate()) {
-			v->date_of_last_service += DAYS_TILL_ORIGINAL_BASE_YEAR;
+			v->date_of_last_service += DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
 			v->build_year += ORIGINAL_BASE_YEAR;
 		}
 	}
@@ -3603,7 +3603,7 @@ bool AfterLoadGame()
 			/* If the start date is 0, the vehicle is not waiting to start and can be ignored. */
 			if (v->timetable_start == 0) continue;
 
-			v->timetable_start += _scaled_date_ticks - _tick_counter;
+			v->timetable_start += _scaled_date_ticks.base() - _tick_counter;
 		}
 	} else if (!SlXvIsFeaturePresent(XSLFI_TIMETABLES_START_TICKS, 3)) {
 		extern btree::btree_map<VehicleID, uint16> _old_timetable_start_subticks_map;
@@ -3612,10 +3612,10 @@ bool AfterLoadGame()
 			if (v->timetable_start == 0) continue;
 
 			if (SlXvIsFeatureMissing(XSLFI_TIMETABLES_START_TICKS)) {
-				v->timetable_start *= DAY_TICKS;
+				v->timetable_start.edit_base() *= DAY_TICKS;
 			}
 
-			v->timetable_start = DateTicksToScaledDateTicks(v->timetable_start);
+			v->timetable_start = DateTicksToScaledDateTicks(v->timetable_start.base());
 
 			if (SlXvIsFeaturePresent(XSLFI_TIMETABLES_START_TICKS, 2, 2)) {
 				v->timetable_start += _old_timetable_start_subticks_map[v->index];
@@ -4194,7 +4194,7 @@ bool AfterLoadGame()
 
 		for (OrderList *order_list : OrderList::Iterate()) {
 			for (DispatchSchedule &ds : order_list->GetScheduledDispatchScheduleSet()) {
-				DateTicksScaled start_tick = DateToScaledDateTicks(ds.GetScheduledDispatchStartTick()) + _old_scheduled_dispatch_start_full_date_fract_map[&ds];
+				DateTicksScaled start_tick = DateToScaledDateTicks(ds.GetScheduledDispatchStartTick().base()) + _old_scheduled_dispatch_start_full_date_fract_map[&ds];
 				ds.SetScheduledDispatchStartTick(start_tick);
 			}
 		}

@@ -39,7 +39,7 @@ SaveLoadTable GetLinkGraphDesc()
 
 void GetLinkGraphJobDayLengthScaleAfterLoad(LinkGraphJob *lgj)
 {
-	lgj->join_date_ticks *= DAY_TICKS;
+	lgj->join_date_ticks.edit_base() *= DAY_TICKS;
 	lgj->join_date_ticks += LinkGraphSchedule::SPAWN_JOIN_TICK;
 
 	uint recalc_scale;

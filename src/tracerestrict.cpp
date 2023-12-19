@@ -2371,17 +2371,17 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 
 int GetTraceRestrictTimeDateValue(TraceRestrictTimeDateValueField type)
 {
-	Minutes minutes = (_scaled_date_ticks / _settings_game.game_time.ticks_per_minute) + _settings_game.game_time.clock_offset;
+	const TickMinutes now = _settings_game.game_time.NowInTickMinutes();
 
 	switch (type) {
 		case TRTDVF_MINUTE:
-			return MINUTES_MINUTE(minutes);
+			return now.ClockMinute();
 
 		case TRTDVF_HOUR:
-			return MINUTES_HOUR(minutes);
+			return now.ClockHour();
 
 		case TRTDVF_HOUR_MINUTE:
-			return (MINUTES_HOUR(minutes) * 100) + MINUTES_MINUTE(minutes);
+			return now.ClockHHMM();
 
 		case TRTDVF_DAY:
 			return _cur_date_ymd.day;
@@ -2396,17 +2396,17 @@ int GetTraceRestrictTimeDateValue(TraceRestrictTimeDateValueField type)
 
 int GetTraceRestrictTimeDateValueFromDate(TraceRestrictTimeDateValueField type, DateTicksScaled scaled_date_ticks)
 {
-	Minutes minutes = (scaled_date_ticks / _settings_game.game_time.ticks_per_minute) + _settings_game.game_time.clock_offset;
+	const TickMinutes minutes = _settings_game.game_time.ToTickMinutes(scaled_date_ticks);
 
 	switch (type) {
 		case TRTDVF_MINUTE:
-			return MINUTES_MINUTE(minutes);
+			return minutes.ClockMinute();
 
 		case TRTDVF_HOUR:
-			return MINUTES_HOUR(minutes);
+			return minutes.ClockHour();
 
 		case TRTDVF_HOUR_MINUTE:
-			return (MINUTES_HOUR(minutes) * 100) + MINUTES_MINUTE(minutes);
+			return minutes.ClockHHMM();
 
 		case TRTDVF_DAY: {
 			YearMonthDay ymd;

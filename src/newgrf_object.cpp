@@ -281,7 +281,7 @@ static uint32 GetCountAndDistanceOfClosestInstance(uint32 local_id, uint32 grfid
 				break;
 
 			/* Construction date */
-			case 0x42: return _date;
+			case 0x42: return _date.base();
 
 			/* Object founder information */
 			case 0x44: return _current_company;
@@ -325,7 +325,7 @@ static uint32 GetCountAndDistanceOfClosestInstance(uint32 local_id, uint32 grfid
 		case 0x41: return GetTileSlope(this->tile) << 8 | GetTerrainType(this->tile);
 
 		/* Construction date */
-		case 0x42: return this->obj->build_date;
+		case 0x42: return this->obj->build_date.base();
 
 		/* Animation counter */
 		case 0x43: return GetAnimationFrame(this->tile);

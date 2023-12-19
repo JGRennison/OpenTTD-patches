@@ -287,7 +287,7 @@ protected:
 	/** Sort servers by the number of days the game is running */
 	static bool NGameYearsSorter(NetworkGameList * const &a, NetworkGameList * const &b)
 	{
-		auto r = a->info.game_date - a->info.start_date - b->info.game_date + b->info.start_date;
+		auto r = a->info.game_date.base() - a->info.start_date.base() - b->info.game_date.base() + b->info.start_date.base();
 		return (r != 0) ? r < 0: NGameDateSorter(a, b);
 	}
 
@@ -650,11 +650,11 @@ public:
 			DrawString(tr, invite_or_address); // server address / invite code
 			tr.top += GetCharacterHeight(FS_NORMAL);
 
-			SetDParam(0, sel->info.start_date);
+			SetDParam(0, sel->info.start_date.base());
 			DrawString(tr, STR_NETWORK_SERVER_LIST_START_DATE); // start date
 			tr.top += GetCharacterHeight(FS_NORMAL);
 
-			SetDParam(0, sel->info.game_date);
+			SetDParam(0, sel->info.game_date.base());
 			DrawString(tr, STR_NETWORK_SERVER_LIST_CURRENT_DATE); // current date
 			tr.top += GetCharacterHeight(FS_NORMAL);
 

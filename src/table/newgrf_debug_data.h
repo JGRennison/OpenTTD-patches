@@ -1428,7 +1428,7 @@ class NIHSignals : public NIHelper {
 				if (it.second.IsOutOfDate()) {
 					b += seprintf(b, lastof(buffer), ", expired");
 				} else {
-					b += seprintf(b, lastof(buffer), ", expires in %u ticks", (uint)(it.second.time_stamp - _scaled_date_ticks));
+					b += seprintf(b, lastof(buffer), ", expires in %u ticks", (uint)(it.second.time_stamp - _scaled_date_ticks).base());
 				}
 				output.print(buffer);
 			}
@@ -1532,7 +1532,7 @@ class NIHObject : public NIHelper {
 				ConvertDateToYMD(spec->introduction_date, &ymd);
 				char *b = buffer + seprintf(buffer, lastof(buffer), " intro: %4i-%02i-%02i",
 						ymd.year, ymd.month + 1, ymd.day);
-				if (spec->end_of_life_date < MAX_DAY) {
+				if (spec->end_of_life_date < MAX_DATE) {
 					ConvertDateToYMD(spec->end_of_life_date, &ymd);
 					seprintf(b, lastof(buffer), ", end of life: %4i-%02i-%02i",
 							ymd.year, ymd.month + 1, ymd.day);

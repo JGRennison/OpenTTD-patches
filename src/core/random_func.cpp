@@ -72,7 +72,7 @@ void SetRandomSeed(uint32 seed)
 uint32 DoRandom(int line, const char *file)
 {
 	if (_networking && (!_network_server || (NetworkClientSocket::IsValidID(0) && NetworkClientSocket::Get(0)->status != NetworkClientSocket::STATUS_INACTIVE))) {
-		DEBUG(random, 0, "date{%08x; %02x; %02x}; %04x; %02x; %s:%d", _date, _date_fract, _tick_skip_counter, _frame_counter, (byte)_current_company, file, line);
+		DEBUG(random, 0, "date{%08x; %02x; %02x}; %04x; %02x; %s:%d", _date.base(), _date_fract, _tick_skip_counter, _frame_counter, (byte)_current_company, file, line);
 	}
 
 	return _random.Next();

@@ -44,15 +44,15 @@ extern void ClearOutOfDateSignalSpeedRestrictions();
 
 void CheckScaledDateTicksWrap()
 {
-	DateTicksScaled tick_adjust = 0;
+	DateTicksScaledDelta tick_adjust = 0;
 	auto get_tick_adjust = [&](DateTicksScaled target) {
 		int32 rounding = _settings_time.time_in_minutes * 1440;
-		return target - (target % rounding);
+		return target.AsDelta() - (target.base() % rounding);
 	};
 	if (_scaled_date_ticks >= ((int64)1 << 60)) {
 		tick_adjust = get_tick_adjust(_scaled_date_ticks);
 	} else if (_scaled_date_ticks <= -((int64)1 << 60)) {
-		tick_adjust = -get_tick_adjust(-_scaled_date_ticks);
+		tick_adjust = -get_tick_adjust(-(_scaled_date_ticks.base()));
 	} else {
 		return;
 	}
@@ -60,13 +60,13 @@ void CheckScaledDateTicksWrap()
 	_scaled_date_ticks_offset -= tick_adjust;
 	_scaled_date_ticks -= tick_adjust;
 
-	extern void AdjustAllSignalSpeedRestrictionTickValues(DateTicksScaled delta);
+	extern void AdjustAllSignalSpeedRestrictionTickValues(DateTicksScaledDelta delta);
 	AdjustAllSignalSpeedRestrictionTickValues(-tick_adjust);
 
-	extern void AdjustVehicleScaledTickBase(int64 delta);
+	extern void AdjustVehicleScaledTickBase(DateTicksScaledDelta delta);
 	AdjustVehicleScaledTickBase(-tick_adjust);
 
-	extern void AdjustLinkGraphScaledTickBase(int64 delta);
+	extern void AdjustLinkGraphScaledTickBase(DateTicksScaledDelta delta);
 	AdjustLinkGraphScaledTickBase(-tick_adjust);
 }
 
@@ -106,7 +106,7 @@ void SetDate(Date date, DateFract fract, bool preserve_scaled_ticks)
 
 void SetScaledTickVariables()
 {
-	_scaled_date_ticks = ((((DateTicksScaled)_date * DAY_TICKS) + _date_fract) * _settings_game.economy.day_length_factor) + _tick_skip_counter + _scaled_date_ticks_offset;
+	_scaled_date_ticks = ((int64)(DateToDateTicks(_date, _date_fract).base()) * _settings_game.economy.day_length_factor) + _tick_skip_counter + _scaled_date_ticks_offset;
 }
 
 #define M(a, b) ((a << 5) | b)
@@ -160,8 +160,8 @@ void ConvertDateToYMD(Date date, YearMonthDay *ymd)
 	 */
 
 	/* There are 97 leap years in 400 years */
-	Year yr = 400 * (date / (DAYS_IN_YEAR * 400 + 97));
-	int rem = date % (DAYS_IN_YEAR * 400 + 97);
+	Year yr = 400 * (date.base() / (DAYS_IN_YEAR * 400 + 97));
+	int rem = date.base() % (DAYS_IN_YEAR * 400 + 97);
 	uint16 x;
 
 	if (rem >= DAYS_IN_YEAR * 100 + 25) {
@@ -216,7 +216,7 @@ Date ConvertYMDToDate(Year year, Month month, Day day)
 	/* Account for the missing of the 29th of February in non-leap years */
 	if (!IsLeapYear(year) && days >= ACCUM_MAR) days--;
 
-	return DAYS_TILL(year) + days;
+	return DateAtStartOfYear(year) + days;
 }
 
 /** Functions used by the IncreaseDate function */

@@ -2459,7 +2459,7 @@ static void DoAcquireCompany(Company *c, bool hostile_takeover)
 {
 	CompanyID ci = c->index;
 
-	DEBUG(desync, 1, "buy_company: date{%08x; %02x; %02x}, buyer: %u, bought: %u", _date, _date_fract, _tick_skip_counter, (uint) _current_company, (uint) ci);
+	DEBUG(desync, 1, "buy_company: date{%08x; %02x; %02x}, buyer: %u, bought: %u", _date.base(), _date_fract, _tick_skip_counter, (uint) _current_company, (uint) ci);
 
 	CompanyNewsInformation *cni = new CompanyNewsInformation(c, Company::Get(_current_company));
 

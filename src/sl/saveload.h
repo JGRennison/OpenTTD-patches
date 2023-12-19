@@ -17,6 +17,7 @@
 #include "../scope.h"
 #include "../core/ring_buffer.hpp"
 #include "../core/tinystring_type.hpp"
+#include "../core/strong_typedef_type.hpp"
 
 #include <stdarg.h>
 #include <vector>
@@ -338,7 +339,7 @@ static inline constexpr bool SlCheckPrimitiveTypeVar(VarType type)
 	if (GetVarMemType(type) == SLE_VAR_CNAME) {
 		return std::is_same_v<T, char *> || std::is_same_v<T, const char *> || std::is_same_v<T, TinyString>;
 	}
-	if (!std::is_integral_v<T> && !std::is_enum_v<T> && !sl_is_instance<T, OverflowSafeInt>{}) return false;
+	if (!std::is_integral_v<T> && !std::is_enum_v<T> && !sl_is_instance<T, OverflowSafeInt>{} && !std::is_base_of_v<StrongTypedefBase, T>) return false;
 	return sizeof(T) == SlVarSize(type);
 }
 

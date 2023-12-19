@@ -38,7 +38,7 @@ inline Date ConvertYMDToDate(const YearMonthDay &ymd)
 	return ConvertYMDToDate(ymd.year, ymd.month, ymd.day);
 }
 
-#define _cur_year (static_cast<Year>(_cur_date_ymd.year))
+#define _cur_year (_cur_date_ymd.year)
 
 /**
  * Checks whether the given year is a leap year or not.
@@ -52,22 +52,22 @@ static inline bool IsLeapYear(Year yr)
 
 static inline Date ScaledDateTicksToDate(DateTicksScaled ticks)
 {
-	return (ticks - _scaled_date_ticks_offset) / (DAY_TICKS * _settings_game.economy.day_length_factor);
+	return (ticks.base() - _scaled_date_ticks_offset.base()) / (DAY_TICKS * _settings_game.economy.day_length_factor);
 }
 
 static inline DateTicksScaled DateToScaledDateTicks(Date date)
 {
-	return ((int64)date * DAY_TICKS * _settings_game.economy.day_length_factor) + _scaled_date_ticks_offset;
+	return ((int64)date.base() * DAY_TICKS * _settings_game.economy.day_length_factor) + _scaled_date_ticks_offset.base();
 }
 
 static inline DateTicks ScaledDateTicksToDateTicks(DateTicksScaled ticks)
 {
-	return (ticks - _scaled_date_ticks_offset) / _settings_game.economy.day_length_factor;
+	return (ticks.base() - _scaled_date_ticks_offset.base()) / _settings_game.economy.day_length_factor;
 }
 
 static inline DateTicksScaled DateTicksToScaledDateTicks(DateTicks date_ticks)
 {
-	return ((int64)date_ticks * _settings_game.economy.day_length_factor) + _scaled_date_ticks_offset;
+	return ((int64)date_ticks.base() * _settings_game.economy.day_length_factor) + _scaled_date_ticks_offset.base();
 }
 
 /**
@@ -77,21 +77,27 @@ static inline DateTicksScaled DateTicksToScaledDateTicks(DateTicks date_ticks)
  */
 static constexpr Year DateToYear(Date date)
 {
-	return date / DAYS_IN_LEAP_YEAR;
+	return date.base() / DAYS_IN_LEAP_YEAR;
 }
 
-/**
- * Calculate the date of the first day of a given year.
- * @param year the year to get the first day of.
- * @return the date.
- */
-static constexpr Date DateAtStartOfYear(Year year)
+static constexpr Year DateDeltaToYears(DateDelta date)
 {
-	int32 year_as_int = year;
-	uint number_of_leap_years = (year == 0) ? 0 : ((year_as_int - 1) / 4 - (year_as_int - 1) / 100 + (year_as_int - 1) / 400 + 1);
+	return date.base() / DAYS_IN_LEAP_YEAR;
+}
 
-	/* Hardcode the number of days in a year because we can't access CalendarTime from here. */
-	return (365 * year_as_int) + number_of_leap_years;
+static constexpr DateTicks DateToDateTicks(Date date, DateFract fract = 0)
+{
+	return (date.base() * DAY_TICKS) + fract;
+}
+
+static constexpr DateTicksDelta DateDeltaToDateTicksDelta(DateDelta date, DateFract fract = 0)
+{
+	return (date.base() * DAY_TICKS) + fract;
+}
+
+static inline DateTicks NowDateTicks()
+{
+	return DateToDateTicks(_date, _date_fract);
 }
 
 #endif /* DATE_FUNC_H */

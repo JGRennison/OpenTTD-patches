@@ -413,6 +413,7 @@ static_assert(SIZE_MAX >= UINT32_MAX);
 #	define GetString OTTD_GetString
 #	define DrawString OTTD_DrawString
 #	define CloseConnection OTTD_CloseConnection
+#	define DateDelta OTTD_DateDelta
 #endif /* __APPLE__ */
 
 #if defined(__GNUC__) || defined(__clang__)

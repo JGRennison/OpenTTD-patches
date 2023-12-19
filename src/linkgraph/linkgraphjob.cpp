@@ -28,8 +28,8 @@ INSTANTIATE_POOL_METHODS(LinkGraphJob)
 
 static DateTicks GetLinkGraphJobJoinDateTicks(uint duration_multiplier)
 {
-	DateTicks ticks = (_settings_game.linkgraph.recalc_time * DAY_TICKS * duration_multiplier) / (SECONDS_PER_DAY * _settings_game.economy.day_length_factor);
-	return ticks + (_date * DAY_TICKS) + _date_fract;
+	DateTicksDelta ticks = (_settings_game.linkgraph.recalc_time * DAY_TICKS * duration_multiplier) / (SECONDS_PER_DAY * _settings_game.economy.day_length_factor);
+	return ticks + NowDateTicks();
 }
 
 /**
@@ -44,7 +44,7 @@ LinkGraphJob::LinkGraphJob(const LinkGraph &orig, uint duration_multiplier) :
 		link_graph(orig),
 		settings(_settings_game.linkgraph),
 		join_date_ticks(GetLinkGraphJobJoinDateTicks(duration_multiplier)),
-		start_date_ticks((_date * DAY_TICKS) + _date_fract),
+		start_date_ticks(NowDateTicks()),
 		job_completed(false),
 		job_aborted(false)
 {

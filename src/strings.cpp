@@ -454,16 +454,19 @@ static char *FormatBytes(char *buff, int64 number, const char *last)
 
 static char *FormatWallClockString(char *buff, DateTicksScaled ticks, const char *last, bool show_date, uint case_index)
 {
-	Minutes minutes = ticks / _settings_time.ticks_per_minute + _settings_time.clock_offset;
+	TickMinutes minutes = _settings_time.ToTickMinutes(ticks);
 	char hour[3], minute[3];
-	seprintf(hour,   lastof(hour),   "%02i", (int) MINUTES_HOUR(minutes)  );
-	seprintf(minute, lastof(minute), "%02i", (int) MINUTES_MINUTE(minutes));
+	seprintf(hour,   lastof(hour),   "%02i", minutes.ClockHour());
+	seprintf(minute, lastof(minute), "%02i", minutes.ClockMinute());
 	if (show_date) {
-		int64 final_arg = ScaledDateTicksToDate(ticks);
+		Date date = ScaledDateTicksToDate(ticks);
+		int64 final_arg;
 		if (_settings_client.gui.date_with_time == 1) {
 			YearMonthDay ymd;
-			ConvertDateToYMD(final_arg, &ymd);
+			ConvertDateToYMD(date, &ymd);
 			final_arg = ymd.year;
+		} else {
+			final_arg = date.base();
 		}
 		auto tmp_params = MakeParameters(hour, minute, final_arg);
 		return FormatString(buff, GetStringPtr(STR_FORMAT_DATE_MINUTES + _settings_client.gui.date_with_time), tmp_params, last, case_index);

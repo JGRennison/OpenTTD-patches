@@ -57,5 +57,5 @@
 {
 	if (!IsValidBaseStation(station_id)) return ScriptDate::DATE_INVALID;
 
-	return (ScriptDate::Date)::BaseStation::Get(station_id)->build_date;
+	return (ScriptDate::Date)::BaseStation::Get(station_id)->build_date.base();
 }

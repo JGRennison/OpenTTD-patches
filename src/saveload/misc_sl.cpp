@@ -104,7 +104,7 @@ struct DATEChunkHandler : ChunkHandler {
 		this->LoadCommon(_date_check_desc, _date_check_sl_compat);
 
 		if (IsSavegameVersionBefore(SLV_31)) {
-			_load_check_data.current_date += DAYS_TILL_ORIGINAL_BASE_YEAR;
+			_load_check_data.current_date += DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
 		}
 	}
 };

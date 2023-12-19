@@ -262,7 +262,7 @@ public:
 	 * settings have to be brutally const-casted in order to populate them.
 	 */
 	LinkGraphJob() : settings(_settings_game.linkgraph),
-			join_date_ticks(INVALID_DATE), start_date_ticks(INVALID_DATE), job_completed(false), job_aborted(false) {}
+			join_date_ticks(INVALID_DATE_TICKS), start_date_ticks(INVALID_DATE_TICKS), job_completed(false), job_aborted(false) {}
 
 	LinkGraphJob(const LinkGraph &orig, uint duration_multiplier);
 	~LinkGraphJob();
@@ -297,7 +297,7 @@ public:
 	 * @param tick_offset Optional number of ticks to add to the current date
 	 * @return True if job should be finished by now, false if not.
 	 */
-	inline bool IsScheduledToBeJoined(int tick_offset = 0) const { return this->join_date_ticks <= (_date * DAY_TICKS) + _date_fract + tick_offset; }
+	inline bool IsScheduledToBeJoined(int tick_offset = 0) const { return this->join_date_ticks <= NowDateTicks() + tick_offset; }
 
 	/**
 	 * Get the date when the job should be finished.
@@ -315,10 +315,10 @@ public:
 	 * Change the start and join dates on date cheating.
 	 * @param interval Number of days to add.
 	 */
-	inline void ShiftJoinDate(int interval)
+	inline void ShiftJoinDate(DateDelta interval)
 	{
-		this->join_date_ticks += interval * DAY_TICKS;
-		this->start_date_ticks += interval * DAY_TICKS;
+		this->join_date_ticks += DateDeltaToDateTicksDelta(interval);
+		this->start_date_ticks += DateDeltaToDateTicksDelta(interval);
 	}
 
 	/**

@@ -484,7 +484,7 @@ uint Engine::GetDisplayMaxTractiveEffort() const
  * Returns the vehicle's (not model's!) life length in days.
  * @return the life length
  */
-Date Engine::GetLifeLengthInDays() const
+DateDelta Engine::GetLifeLengthInDays() const
 {
 	/* Assume leap years; this gives the player a bit more than the given amount of years, but never less. */
 	return static_cast<int32_t>(this->info.lifelength + _settings_game.vehicle.extend_vehicle_life) * DAYS_IN_LEAP_YEAR;
@@ -752,7 +752,7 @@ void StartupOneEngine(Engine *e, Date aging_date, uint32 seed, Date no_introduce
 	SavedRandomSeeds saved_seeds;
 	SaveRandomSeeds(&saved_seeds);
 	SetRandomSeed(_settings_game.game_creation.generation_seed ^ seed ^
-	              ei->base_intro ^
+	              ei->base_intro.base() ^
 	              e->type ^
 	              e->GetGRFID());
 	uint32 r = Random();
@@ -760,9 +760,9 @@ void StartupOneEngine(Engine *e, Date aging_date, uint32 seed, Date no_introduce
 	/* Don't randomise the start-date in the first two years after gamestart to ensure availability
 	 * of engines in early starting games.
 	 * Note: TTDP uses fixed 1922 */
-	e->intro_date = ei->base_intro <= ConvertYMDToDate(_settings_game.game_creation.starting_year + 2, 0, 1) ? ei->base_intro : (Date)GB(r, 0, 9) + ei->base_intro;
+	e->intro_date = ei->base_intro <= ConvertYMDToDate(_settings_game.game_creation.starting_year + 2, 0, 1) ? ei->base_intro : (DateDelta)GB(r, 0, 9) + ei->base_intro;
 	if (e->intro_date <= _date && e->intro_date <= no_introduce_after_date) {
-		e->age = (aging_date - e->intro_date) >> 5;
+		e->age = (aging_date - e->intro_date).base() >> 5;
 		e->company_avail = MAX_UVALUE(CompanyMask);
 		e->flags |= ENGINE_AVAILABLE;
 	}
@@ -774,7 +774,7 @@ void StartupOneEngine(Engine *e, Date aging_date, uint32 seed, Date no_introduce
 	}
 
 	SetRandomSeed(_settings_game.game_creation.generation_seed ^ seed ^
-	              (re->index << 16) ^ (re->info.base_intro << 12) ^ (re->info.decay_speed << 8) ^
+	              (re->index << 16) ^ (re->info.base_intro.base() << 12) ^ (re->info.decay_speed << 8) ^
 	              (re->info.lifelength << 4) ^ re->info.retire_early ^
 	              e->type ^
 	              e->GetGRFID());

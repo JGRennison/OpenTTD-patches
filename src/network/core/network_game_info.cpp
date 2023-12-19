@@ -235,8 +235,8 @@ void SerializeNetworkGameInfo(Packet *p, const NetworkServerGameInfo *info, bool
 	}
 
 	/* NETWORK_GAME_INFO_VERSION = 3 */
-	p->Send_uint32(info->game_date);
-	p->Send_uint32(info->start_date);
+	p->Send_uint32(info->game_date.base());
+	p->Send_uint32(info->start_date.base());
 
 	/* NETWORK_GAME_INFO_VERSION = 2 */
 	p->Send_uint8 (info->companies_max);
@@ -275,8 +275,8 @@ void SerializeNetworkGameInfoExtended(Packet *p, const NetworkServerGameInfo *in
 
 	p->Send_uint8(version); // version num
 
-	p->Send_uint32(info->game_date);
-	p->Send_uint32(info->start_date);
+	p->Send_uint32(info->game_date.base());
+	p->Send_uint32(info->start_date.base());
 	p->Send_uint8 (info->companies_max);
 	p->Send_uint8 (info->companies_on);
 	p->Send_uint8 (info->clients_max); // Used to be max-spectators
@@ -400,8 +400,8 @@ void DeserializeNetworkGameInfo(Packet *p, NetworkGameInfo *info, const GameInfo
 		}
 
 		case 3:
-			info->game_date      = Clamp(p->Recv_uint32(), 0, MAX_DATE);
-			info->start_date     = Clamp(p->Recv_uint32(), 0, MAX_DATE);
+			info->game_date      = Clamp(p->Recv_uint32(), 0, MAX_DATE.base());
+			info->start_date     = Clamp(p->Recv_uint32(), 0, MAX_DATE.base());
 			FALLTHROUGH;
 
 		case 2:
@@ -455,8 +455,8 @@ void DeserializeNetworkGameInfoExtended(Packet *p, NetworkGameInfo *info)
 
 	NewGRFSerializationType newgrf_serialisation = NST_GRFID_MD5;
 
-	info->game_date      = Clamp(p->Recv_uint32(), 0, MAX_DATE);
-	info->start_date     = Clamp(p->Recv_uint32(), 0, MAX_DATE);
+	info->game_date      = Clamp(p->Recv_uint32(), 0, MAX_DATE.base());
+	info->start_date     = Clamp(p->Recv_uint32(), 0, MAX_DATE.base());
 	info->companies_max  = p->Recv_uint8 ();
 	info->companies_on   = p->Recv_uint8 ();
 	p->Recv_uint8(); // Used to contain max-spectators.

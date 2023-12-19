@@ -198,7 +198,7 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 				DateTicksScaled slot = GetScheduledDispatchTime(predicted_ds, _scaled_date_ticks + sum + order->GetTimetabledWait());
 				predicted_ds.ReturnSchedule(ds);
 				if (slot <= -1) return;
-				sum = slot - _scaled_date_ticks;
+				sum = (slot - _scaled_date_ticks).AsTicks();
 				predicted = true;
 				no_offset = true;
 			} else {
@@ -239,7 +239,7 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
  */
 static void ChangeTimetableStartIntl(uint32 p1, DateTicksScaled date)
 {
-	DoCommandPEx(0, p1, 0, (uint64)date, CMD_SET_TIMETABLE_START | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
+	DoCommandPEx(0, p1, 0, (uint64)date.base(), CMD_SET_TIMETABLE_START | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
 }
 
 /**
@@ -906,12 +906,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 				if (_settings_time.time_in_minutes && _settings_client.gui.timetable_start_text_entry) {
 					this->set_start_date_all = v->orders->IsCompleteTimetable() && _ctrl_pressed;
 					StringID str = STR_JUST_INT;
-					uint64 time = _scaled_date_ticks;
-					time /= _settings_time.ticks_per_minute;
-					time += _settings_time.clock_offset;
-					time %= (24 * 60);
-					time = (time % 60) + (((time / 60) % 24) * 100);
-					SetDParam(0, time);
+					SetDParam(0, _settings_time.NowInTickMinutes().ClockHHMM());
 					ShowQueryString(str, STR_TIMETABLE_STARTING_DATE, 31, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else {
 					ShowSetDateWindow(this, v->index | (_ctrl_pressed ? 1U << 20 : 0),
@@ -1123,12 +1118,12 @@ struct TimetableWindow : GeneralVehicleWindow {
 				if (val >= 0 && end && *end == 0) {
 					uint minutes = (val % 100) % 60;
 					uint hours = (val / 100) % 24;
-					DateTicksScaled time = MINUTES_DATE(MINUTES_DAY(CURRENT_MINUTE), hours, minutes);
-					time -= _settings_time.clock_offset;
+					const TickMinutes now = _settings_time.NowInTickMinutes();
+					TickMinutes time = now.ToSameDayClockTime(hours, minutes);
 
-					if (time < (CURRENT_MINUTE - 60)) time += 60 * 24;
-					time *= _settings_time.ticks_per_minute;
-					ChangeTimetableStartIntl(v->index | (this->set_start_date_all ? 1 << 20 : 0), time);
+					if (time < (now - 60)) time += 60 * 24;
+
+					ChangeTimetableStartIntl(v->index | (this->set_start_date_all ? 1 << 20 : 0), _settings_time.FromTickMinutes(time));
 				}
 				break;
 			}

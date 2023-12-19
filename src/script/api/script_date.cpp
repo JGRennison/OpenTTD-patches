@@ -25,7 +25,7 @@
 
 /* static */ ScriptDate::Date ScriptDate::GetCurrentDate()
 {
-	return (ScriptDate::Date)_date;
+	return (ScriptDate::Date)_date.base();
 }
 
 /* static */ SQInteger ScriptDate::GetDayLengthFactor()
@@ -66,7 +66,7 @@
 	if (day_of_month < 1 || day_of_month > 31) return DATE_INVALID;
 	if (year < 0 || year > MAX_YEAR) return DATE_INVALID;
 
-	return (ScriptDate::Date)::ConvertYMDToDate(year, month - 1, day_of_month);
+	return (ScriptDate::Date)::ConvertYMDToDate(year, month - 1, day_of_month).base();
 }
 
 /* static */ SQInteger ScriptDate::GetSystemTime()
@@ -88,17 +88,17 @@
 
 /* static */ SQInteger ScriptDate::GetCurrentScaledDateTicks()
 {
-	return _scaled_date_ticks;
+	return _scaled_date_ticks.base();
 }
 
-/* static */ SQInteger ScriptDate::GetHour(DateTicksScaled ticks)
+/* static */ SQInteger ScriptDate::GetHour(SQInteger ticks)
 {
-	Minutes minutes = (ticks / _settings_game.game_time.ticks_per_minute) + _settings_game.game_time.clock_offset;
-	return MINUTES_HOUR(minutes);
+	TickMinutes minutes = _settings_game.game_time.ToTickMinutes(DateTicksScaled(ticks));
+	return minutes.ClockHour();
 }
 
-/* static */ SQInteger ScriptDate::GetMinute(DateTicksScaled ticks)
+/* static */ SQInteger ScriptDate::GetMinute(SQInteger ticks)
 {
-	Minutes minutes = (ticks / _settings_game.game_time.ticks_per_minute) + _settings_game.game_time.clock_offset;
-	return MINUTES_MINUTE(minutes);
+	TickMinutes minutes = _settings_game.game_time.ToTickMinutes(DateTicksScaled(ticks));
+	return minutes.ClockMinute();
 }

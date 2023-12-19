@@ -949,7 +949,7 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			}
 
 			NetworkServerNewCompany(c, ci);
-			DEBUG(desync, 1, "new_company: date{%08x; %02x; %02x}, company_id: %u", _date, _date_fract, _tick_skip_counter, c->index);
+			DEBUG(desync, 1, "new_company: date{%08x; %02x; %02x}, company_id: %u", _date.base(), _date_fract, _tick_skip_counter, c->index);
 			break;
 		}
 
@@ -967,7 +967,7 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			Company *c = DoStartupNewCompany(DSNC_AI, company_id);
 			if (c != nullptr) {
 				NetworkServerNewCompany(c, nullptr);
-				DEBUG(desync, 1, "new_company_ai: date{%08x; %02x; %02x}, company_id: %u", _date, _date_fract, _tick_skip_counter, c->index);
+				DEBUG(desync, 1, "new_company_ai: date{%08x; %02x; %02x}, company_id: %u", _date.base(), _date_fract, _tick_skip_counter, c->index);
 			}
 			break;
 		}
@@ -984,7 +984,7 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 			if (!(flags & DC_EXEC)) return CommandCost();
 
-			DEBUG(desync, 1, "delete_company: date{%08x; %02x; %02x}, company_id: %u, reason: %u", _date, _date_fract, _tick_skip_counter, company_id, reason);
+			DEBUG(desync, 1, "delete_company: date{%08x; %02x; %02x}, company_id: %u, reason: %u", _date.base(), _date_fract, _tick_skip_counter, company_id, reason);
 
 			CompanyNewsInformation *cni = new CompanyNewsInformation(c);
 

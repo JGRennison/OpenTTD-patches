@@ -395,7 +395,7 @@ static bool FixTTOEngines()
 		for (uint i = 0; i < lengthof(_orig_aircraft_vehicle_info); i++, j++) new (GetTempDataEngine(j)) Engine(VEH_AIRCRAFT, i);
 	}
 
-	Date aging_date = std::min(_date + DAYS_TILL_ORIGINAL_BASE_YEAR, ConvertYMDToDate(2050, 0, 1));
+	Date aging_date = std::min(_date + DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta(), ConvertYMDToDate(2050, 0, 1));
 
 	for (EngineID i = 0; i < 256; i++) {
 		int oi = ttd_to_tto[i];
@@ -403,17 +403,17 @@ static bool FixTTOEngines()
 
 		if (oi == 255) {
 			/* Default engine is used */
-			_date += DAYS_TILL_ORIGINAL_BASE_YEAR;
+			_date += DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
 			StartupOneEngine(e, aging_date, 0, INT_MAX);
 			CalcEngineReliability(e, false);
-			e->intro_date -= DAYS_TILL_ORIGINAL_BASE_YEAR;
-			_date -= DAYS_TILL_ORIGINAL_BASE_YEAR;
+			e->intro_date -= DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
+			_date -= DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
 
 			/* Make sure for example monorail and maglev are available when they should be */
 			if (_date >= e->intro_date && HasBit(e->info.climates, 0)) {
 				e->flags |= ENGINE_AVAILABLE;
 				e->company_avail = MAX_UVALUE(CompanyMask);
-				e->age = _date > e->intro_date ? (_date - e->intro_date) / 30 : 0;
+				e->age = _date > e->intro_date ? (_date - e->intro_date).base() / 30 : 0;
 			}
 		} else {
 			/* Using data from TTO savegame */

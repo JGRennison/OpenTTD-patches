@@ -59,7 +59,7 @@ struct StatusBarWindow : Window {
 	int ticker_scroll;
 	GUITimer ticker_timer;
 	GUITimer reminder_timeout;
-	int64 last_minute = 0;
+	TickMinutes last_minute = 0;
 
 	static const int TICKER_STOP    = 1640; ///< scrolling is finished when counter reaches this value
 	static const int REMINDER_START = 1350; ///< time in ms for reminder notification (red dot on the right) to stay
@@ -211,9 +211,12 @@ struct StatusBarWindow : Window {
 	{
 		if (_pause_mode != PM_UNPAUSED) return;
 
-		if (_settings_time.time_in_minutes && this->last_minute != CURRENT_MINUTE) {
-			this->last_minute = CURRENT_MINUTE;
-			this->SetWidgetDirty(WID_S_LEFT);
+		if (_settings_time.time_in_minutes) {
+			const TickMinutes now = _settings_time.NowInTickMinutes();
+			if (this->last_minute != now) {
+				this->last_minute = now;
+				this->SetWidgetDirty(WID_S_LEFT);
+			}
 		}
 
 		if (this->ticker_scroll < TICKER_STOP) { // Scrolling text

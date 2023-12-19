@@ -94,9 +94,9 @@ WChar GetDecimalSeparatorChar();
  * @param n Index of the string parameter.
  * @param v Value of the string parameter.
  */
-static inline void SetDParam(size_t n, uint64 v)
-{
-	_global_string_params.SetParam(n, v);
+template <typename T>
+static inline void SetDParam(size_t n, T &&v) {
+	_global_string_params.SetParam(n, std::forward<T>(v));
 }
 
 void SetDParamMaxValue(size_t n, uint64 max_value, uint min_count = 0, FontSize size = FS_NORMAL);

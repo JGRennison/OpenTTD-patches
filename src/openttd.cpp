@@ -1554,7 +1554,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 			desync_level = 1;
 			if (HasChickenBit(DCBF_DESYNC_CHECK_NO_GENERAL)) flags &= ~CHECK_CACHE_GENERAL;
 		}
-		if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_PERIODIC_SIGNALS)) && desync_level < 2 && _scaled_date_ticks % 256 == 0) {
+		if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_PERIODIC_SIGNALS)) && desync_level < 2 && _scaled_date_ticks.base() % 256 == 0) {
 			if (!SignalInfraTotalMatches()) desync_level = 2;
 		}
 
@@ -1562,7 +1562,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 		 * always to aid testing of caches. */
 		if (desync_level < 1) return;
 
-		if (desync_level == 1 && _scaled_date_ticks % 500 != 0) return;
+		if (desync_level == 1 && _scaled_date_ticks.base() % 500 != 0) return;
 	}
 
 	SCOPE_INFO_FMT([flags], "CheckCaches: %X", flags);
@@ -2103,10 +2103,10 @@ void StateGameLoop()
 		CallWindowGameTickEvent();
 		NewsLoop();
 	} else {
-		if (_debug_desync_level > 2 && _tick_skip_counter == 0 && _date_fract == 0 && (_date & 0x1F) == 0) {
+		if (_debug_desync_level > 2 && _tick_skip_counter == 0 && _date_fract == 0 && (_date.base() & 0x1F) == 0) {
 			/* Save the desync savegame if needed. */
 			char name[MAX_PATH];
-			seprintf(name, lastof(name), "dmp_cmds_%08x_%08x.sav", _settings_game.game_creation.generation_seed, _date);
+			seprintf(name, lastof(name), "dmp_cmds_%08x_%08x.sav", _settings_game.game_creation.generation_seed, _date.base());
 			SaveOrLoad(name, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, false);
 		}
 
@@ -2124,7 +2124,7 @@ void StateGameLoop()
 		}
 
 		if (!(_game_mode == GM_MENU || _game_mode == GM_BOOTSTRAP) && !_settings_client.gui.autosave_realtime &&
-				(_scaled_date_ticks % (_settings_client.gui.autosave_interval * (_settings_game.economy.tick_rate == TRM_MODERN ? (60000 / 27) : (60000 / 30)))) == 0) {
+				(_scaled_date_ticks.base() % (_settings_client.gui.autosave_interval * (_settings_game.economy.tick_rate == TRM_MODERN ? (60000 / 27) : (60000 / 30)))) == 0) {
 			_do_autosave = true;
 			_check_special_modes = true;
 			SetWindowDirty(WC_STATUS_BAR, 0);

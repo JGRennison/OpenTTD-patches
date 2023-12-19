@@ -162,7 +162,7 @@ static void Check_DATE()
 {
 	SlGlobList(_date_check_desc);
 	if (IsSavegameVersionBefore(SLV_31)) {
-		_load_check_data.current_date += DAYS_TILL_ORIGINAL_BASE_YEAR;
+		_load_check_data.current_date += DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
 	}
 }
 

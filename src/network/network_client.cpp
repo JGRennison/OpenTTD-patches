@@ -331,7 +331,7 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 
 				ShowNetworkError(STR_NETWORK_ERROR_DESYNC);
 				DEBUG(desync, 1, "sync_err: date{%08x; %02x; %02x} {%x, " OTTD_PRINTFHEX64 "} != {%x, " OTTD_PRINTFHEX64 "}"
-						, _date, _date_fract, _tick_skip_counter, _sync_seed_1, _sync_state_checksum, _random.state[0], _state_checksum.state);
+						, _date.base(), _date_fract, _tick_skip_counter, _sync_seed_1, _sync_state_checksum, _random.state[0], _state_checksum.state);
 				DEBUG(net, 0, "Sync error detected!");
 
 				std::string desync_log;
@@ -632,7 +632,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncLog(const std::strin
 NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncMessage(const char *msg)
 {
 	Packet *p = new Packet(PACKET_CLIENT_DESYNC_MSG, SHRT_MAX);
-	p->Send_uint32(_date);
+	p->Send_uint32(_date.base());
 	p->Send_uint16(_date_fract);
 	p->Send_uint8(_tick_skip_counter);
 	p->Send_string(msg);
