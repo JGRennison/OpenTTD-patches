@@ -1752,6 +1752,12 @@ static void ViewportAddLandscape()
 				/* Outside of map. If we are on the north border of the map, there may still be a bridge visible,
 				 * so we need to loop over more rows to possibly find one. */
 				if ((tilecoord.x <= 0 || tilecoord.y <= 0) && min_visible_height < potential_bridge_height + MAX_TILE_EXTENT_TOP) last_row = false;
+
+				if (_settings_game.construction.map_edge_mode == 2 && _cur_ti.tileh == SLOPE_FLAT && _cur_ti.z == 0 && min_visible_height <= 0) {
+					last_row = false;
+					AddTileSpriteToDraw(SPR_FLAT_WATER_TILE, PAL_NONE, _cur_ti.x, _cur_ti.y, _cur_ti.z);
+					continue;
+				}
 			}
 
 			if (tile_visible) {
@@ -3255,34 +3261,39 @@ static inline TileIndex ViewportMapGetMostSignificantTileType(const Viewport * c
 	return result;
 }
 
+static uint32 ViewportMapVoidColour()
+{
+	return (_settings_game.construction.map_edge_mode == 2) ? _vp_map_water_colour[SLOPE_FLAT] : 0;
+}
+
 /** Get the colour of a tile, can be 32bpp RGB or 8bpp palette index. */
 template <bool is_32bpp, bool show_slope>
 uint32 ViewportMapGetColour(const Viewport * const vp, int x, int y, const uint colour_index)
 {
-	if (x >= static_cast<int>(MapMaxX() * TILE_SIZE) || y >= static_cast<int>(MapMaxY() * TILE_SIZE)) return 0;
+	if (x >= static_cast<int>(MapMaxX() * TILE_SIZE) || y >= static_cast<int>(MapMaxY() * TILE_SIZE)) return ViewportMapVoidColour();
 
 	/* Very approximative but fast way to get the tile when taking Z into account. */
 	const TileIndex tile_tmp = TileVirtXY(std::max(0, x), std::max(0, y));
 	const int z = TileHeight(tile_tmp) * 4;
 	if (x + z < 0 || y + z < 0 || static_cast<uint>(x + z) >= MapSizeX() << 4) {
 		/* Wrapping of tile X coordinate causes a graphic glitch below south west border. */
-		return 0;
+		return ViewportMapVoidColour();
 	}
 	TileIndex tile = TileVirtXY(x + z, y + z);
-	if (tile >= MapSize()) return 0;
+	if (tile >= MapSize()) return ViewportMapVoidColour();
 	const int z2 = TileHeight(tile) * 4;
 	if (unlikely(z2 != z)) {
 		const int approx_z = (z + z2) / 2;
 		if (x + approx_z < 0 || y + approx_z < 0 || static_cast<uint>(x + approx_z) >= MapSizeX() << 4) {
 			/* Wrapping of tile X coordinate causes a graphic glitch below south west border. */
-			return 0;
+			return ViewportMapVoidColour();
 		}
 		tile = TileVirtXY(x + approx_z, y + approx_z);
-		if (tile >= MapSize()) return 0;
+		if (tile >= MapSize()) return ViewportMapVoidColour();
 	}
 	TileType tile_type = MP_VOID;
 	tile = ViewportMapGetMostSignificantTileType(vp, tile, &tile_type);
-	if (tile_type == MP_VOID) return 0;
+	if (tile_type == MP_VOID) return ViewportMapVoidColour();
 
 	/* Return the colours. */
 	switch (vp->map_type) {

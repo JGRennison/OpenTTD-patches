@@ -508,6 +508,7 @@ struct ConstructionSettings {
 	uint8  industry_platform;                ///< the amount of flat land around an industry
 	bool   freeform_edges;                   ///< allow terraforming the tiles at the map edges
 	bool   flood_from_edges;                 ///< whether water floods from map edges
+	uint8  map_edge_mode;                    ///< map edge mode
 	uint8  extra_tree_placement;             ///< (dis)allow building extra trees in-game
 	uint8  trees_around_snow_line_range;     ///< range around snowline for mixed and arctic forest.
 	bool   trees_around_snow_line_enabled;   ///< enable mixed and arctic forest around snowline, and no trees above snowline

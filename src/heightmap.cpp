@@ -473,6 +473,11 @@ void FixSlopes()
 			}
 		}
 	}
+
+	extern bool CheckMapEdgesAreWater();
+	if (_settings_game.construction.map_edge_mode != 0 && !CheckMapEdgesAreWater()) {
+		_settings_game.construction.map_edge_mode = 0;
+	}
 }
 
 /**

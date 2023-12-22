@@ -1462,6 +1462,15 @@ static void ViewportMapLandscapeModeChanged(int32 new_value)
 	MarkAllViewportMapLandscapesDirty();
 }
 
+static void MarkAllViewportsDirty(int32 new_value)
+{
+	extern void MarkAllViewportMapLandscapesDirty();
+	MarkAllViewportMapLandscapesDirty();
+
+	extern void MarkWholeNonMapViewportsDirty();
+	MarkWholeNonMapViewportsDirty();
+}
+
 static void UpdateLinkgraphColours(int32 new_value)
 {
 	BuildLinkStatsLegend();
@@ -1653,6 +1662,35 @@ static void UpdateFreeformEdges(int32 new_value)
 		}
 	}
 	MarkWholeScreenDirty();
+}
+
+bool CheckMapEdgesAreWater()
+{
+	auto check_tile = [&](uint x, uint y) -> bool {
+		int h = 0;
+		Slope slope = GetTilePixelSlopeOutsideMap(x, y, &h);
+		return slope == SLOPE_FLAT && h == 0;
+	};
+	for (uint x = 0; x <= MapMaxX(); x++) {
+		if (!check_tile(x, 0) || !check_tile(x, MapMaxY())) return false;
+	}
+	for (uint y = 1; y < MapMaxY(); y++) {
+		if (!check_tile(0, y) || !check_tile(MapMaxX(), y)) return false;
+	}
+
+	return true;
+}
+
+static bool CheckMapEdgeMode(int32 &new_value)
+{
+	if (_game_mode == GM_MENU || !_settings_game.construction.freeform_edges || new_value == 0) return true;
+
+	if (!CheckMapEdgesAreWater()) {
+		ShowErrorMessage(STR_CONFIG_SETTING_EDGES_NOT_WATER, INVALID_STRING_ID, WL_ERROR);
+		return false;
+	}
+
+	return true;
 }
 
 /**

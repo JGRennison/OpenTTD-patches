@@ -227,7 +227,15 @@ CommandCost CmdTerraformLand(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
 			assert(t < MapSize());
 			/* MP_VOID tiles can be terraformed but as tunnels and bridges
 			 * cannot go under / over these tiles they don't need checking. */
-			if (IsTileType(t, MP_VOID)) continue;
+			if (IsTileType(t, MP_VOID)) {
+				if (_settings_game.construction.map_edge_mode != 0) {
+					CommandCost err(STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP);
+					err.SetTile(t);
+					return err;
+				} else {
+					continue;
+				}
+			}
 
 			/* Find new heights of tile corners */
 			int z_N = TerraformGetHeightOfTile(&ts, t + TileDiffXY(0, 0));
