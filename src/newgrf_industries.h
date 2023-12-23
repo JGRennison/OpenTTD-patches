@@ -12,12 +12,18 @@
 
 #include "newgrf_town.h"
 
+struct IndustryLocationDistanceCache {
+	uint16 distances[NUM_INDUSTRYTYPES];
+};
+
 /** Resolver for industry scopes. */
 struct IndustriesScopeResolver : public ScopeResolver {
 	TileIndex tile;     ///< Tile owned by the industry.
+	uint32 random_bits; ///< Random bits of the new industry.
 	Industry *industry; ///< %Industry being resolved.
 	IndustryType type;  ///< Type of the industry.
-	uint32 random_bits; ///< Random bits of the new industry.
+
+	mutable std::unique_ptr<IndustryLocationDistanceCache> location_distance_cache;
 
 	/**
 	 * Scope resolver for industries.
@@ -28,7 +34,7 @@ struct IndustriesScopeResolver : public ScopeResolver {
 	 * @param random_bits Random bits of the new industry.
 	 */
 	IndustriesScopeResolver(ResolverObject &ro, TileIndex tile, Industry *industry, IndustryType type, uint32 random_bits = 0)
-		: ScopeResolver(ro), tile(tile), industry(industry), type(type), random_bits(random_bits)
+		: ScopeResolver(ro), tile(tile), random_bits(random_bits), industry(industry), type(type)
 	{
 	}
 
@@ -36,6 +42,9 @@ struct IndustriesScopeResolver : public ScopeResolver {
 	uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const override;
 	uint32 GetTriggers() const override;
 	void StorePSA(uint pos, int32 value) override;
+
+	uint32 GetCountAndDistanceOfClosestInstance(byte param_setID, byte layout_filter, bool town_filter, uint32 mask) const;
+	uint32 GetClosestIndustry(IndustryType type) const;
 };
 
 /** Resolver for industries. */
