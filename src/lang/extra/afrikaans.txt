@@ -12,6 +12,9 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Vliegtuie
 STR_CONFIG_SETTING_AUTOSAVE                                     :Outostoor: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Tyd tussen outomatiese spelstore
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Vertoon rooster in "ticks" liewer as dae: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Wys die rystye in tydroosters in speletjie "ticks" inplaas van dae
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Wissel deursigtigheid vir laai aanwysers. Ctrl+klik om te sluit
 
 # Tracerestrict GUI

@@ -13,6 +13,9 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Aéronefs
 STR_CONFIG_SETTING_AUTOSAVE                                     :Sauvegarde automatique{NBSP}: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Sélectionner l'intervalle de temps entre les sauvegardes automatiques
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Afficher l'horaire en ticks plutôt qu'en jours{NBSP}: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Affiche les temps de trajets dans les horaires en ticks plutôt qu'en jours
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Transparence des indicateurs de chargement.{}Ctrl-clic pour verrouiller.
 
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Temps de trajet moyen{NBSP}: {STRING}

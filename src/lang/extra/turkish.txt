@@ -12,6 +12,9 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Uçaklar
 STR_CONFIG_SETTING_AUTOSAVE                                     :Otomatik kaydet: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Otomatik oyun kaydetme sıklığını seçin
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Zaman tablosunda gün yerine işlemci zamanı kullan: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Zaman çizelgelerinde yolculuk sürelerini gün yerine oyun zamanı cinsinden göster
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Transparan yükleme göstergesi. Kilitlemek için Ctrl ile tıklayın
 
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Ortalama seyahat süresi: {STRING}

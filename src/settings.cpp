@@ -1324,13 +1324,8 @@ static void ZoomMinMaxChanged(int32 new_value)
 	extern void UpdateFontHeightCache();
 	ConstrainAllViewportsZoom();
 	GfxClearSpriteCache();
-	if (_settings_client.gui.zoom_min > _gui_zoom) {
-		/* Restrict GUI zoom if it is no longer available. */
-		_gui_zoom = _settings_client.gui.zoom_min;
-		UpdateCursorSize();
-		UpdateRouteStepSpriteSize();
-		UpdateFontHeightCache();
-		LoadStringWidthTable();
+	InvalidateWindowClassesData(WC_SPRITE_ALIGNER);
+	if (AdjustGUIZoom(AGZM_MANUAL)) {
 		ReInitAllWindows(false);
 	}
 }

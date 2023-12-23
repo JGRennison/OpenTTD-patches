@@ -12,6 +12,8 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Aviadiloj
 STR_CONFIG_SETTING_AUTOSAVE                                     :Aŭtomata konservado: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Elektu intervalon inter aŭtomataj konservadoj de la ludo
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Montru horaron laŭ tikoj anstataŭ laŭ tagoj: {STRING}
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Baskuligi travideblecon de ŝarĝindikiloj. Ctrl+Klaku por ŝlosi
 
 # Tracerestrict GUI

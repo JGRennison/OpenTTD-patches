@@ -12,6 +12,9 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Авіятра�
 STR_CONFIG_SETTING_AUTOSAVE                                     :Аўтазахаваньні: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Азначце інтэрвал паміж аўтаматычнымі захаваньнямі
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Паказваць расклад ў «ціках» замест дзён: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Паказваць у раскладзе час падарожжа ў гульнёвых "ціках" замест дзён.
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Пераключыць празрыстасьць для індыкатараў загрузкі. Ctrl+клік — заблякаваць.
 
 # Tracerestrict GUI

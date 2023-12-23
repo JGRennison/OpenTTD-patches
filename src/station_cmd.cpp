@@ -2597,18 +2597,19 @@ uint8 GetAirportNoiseLevelForDistance(const AirportSpec *as, uint distance)
  * Finds the town nearest to given airport. Based on minimal manhattan distance to any airport's tile.
  * If two towns have the same distance, town with lower index is returned.
  * @param as airport's description
+ * @param tile origin tile (top corner of the airport)
  * @param it An iterator over all airport tiles
  * @param[out] mindist Minimum distance to town
  * @return nearest town to airport
  */
-Town *AirportGetNearestTown(const AirportSpec *as, const TileIterator &it, uint &mindist)
+Town *AirportGetNearestTown(const AirportSpec *as, TileIndex tile, const TileIterator &it, uint &mindist)
 {
 	assert(Town::GetNumItems() > 0);
 
 	Town *nearest = nullptr;
 
-	uint perimeter_min_x = TileX(it);
-	uint perimeter_min_y = TileY(it);
+	uint perimeter_min_x = TileX(tile);
+	uint perimeter_min_y = TileY(tile);
 	uint perimeter_max_x = perimeter_min_x + as->size_x - 1;
 	uint perimeter_max_y = perimeter_min_y + as->size_y - 1;
 
@@ -2616,6 +2617,8 @@ Town *AirportGetNearestTown(const AirportSpec *as, const TileIterator &it, uint 
 
 	std::unique_ptr<TileIterator> copy(it.Clone());
 	for (TileIndex cur_tile = *copy; cur_tile != INVALID_TILE; cur_tile = ++*copy) {
+		assert(IsInsideBS(TileX(cur_tile), perimeter_min_x, as->size_x));
+		assert(IsInsideBS(TileY(cur_tile), perimeter_min_y, as->size_y));
 		if (TileX(cur_tile) == perimeter_min_x || TileX(cur_tile) == perimeter_max_x || TileY(cur_tile) == perimeter_min_y || TileY(cur_tile) == perimeter_max_y) {
 			Town *t = CalcClosestTownFromTile(cur_tile, mindist + 1);
 			if (t == nullptr) continue;
@@ -2643,7 +2646,7 @@ void UpdateAirportsNoise()
 			const AirportSpec *as = st->airport.GetSpec();
 			AirportTileIterator it(st);
 			uint dist;
-			Town *nearest = AirportGetNearestTown(as, it, dist);
+			Town *nearest = AirportGetNearestTown(as, st->airport.tile, it, dist);
 			nearest->noise_reached += GetAirportNoiseLevelForDistance(as, dist);
 		}
 	}
@@ -2757,14 +2760,14 @@ CommandCost CmdBuildAirport(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 
 	/* The noise level is the noise from the airport and reduce it to account for the distance to the town center. */
 	uint dist;
-	Town *nearest = AirportGetNearestTown(as, iter, dist);
+	Town *nearest = AirportGetNearestTown(as, tile, iter, dist);
 	uint newnoise_level = nearest->noise_reached + GetAirportNoiseLevelForDistance(as, dist);
 
 	if (action == AIRPORT_UPGRADE) {
 		const AirportSpec *old_as = st->airport.GetSpec();
 		AirportTileTableIterator old_iter(old_as->table[st->airport.layout], st->airport.tile);
 		uint old_dist;
-		Town *old_nearest = AirportGetNearestTown(old_as, old_iter, old_dist);
+		Town *old_nearest = AirportGetNearestTown(old_as, st->airport.tile, old_iter, old_dist);
 		if (old_nearest == nearest) {
 			newnoise_level -= GetAirportNoiseLevelForDistance(old_as, old_dist);
 		}
@@ -2823,7 +2826,7 @@ CommandCost CmdBuildAirport(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
 			const AirportSpec *old_as = st->airport.GetSpec();
 			AirportTileTableIterator old_iter(old_as->table[st->airport.layout], st->airport.tile);
 			uint old_dist;
-			Town *old_nearest = AirportGetNearestTown(old_as, old_iter, old_dist);
+			Town *old_nearest = AirportGetNearestTown(old_as, st->airport.tile, old_iter, old_dist);
 
 			if (old_nearest != nearest) {
 				old_nearest->noise_reached -= GetAirportNoiseLevelForDistance(old_as, old_dist);
@@ -2918,7 +2921,7 @@ static CommandCost RemoveAirport(TileIndex tile, DoCommandFlag flags)
 		 * need of recalculation */
 		AirportTileIterator it(st);
 		uint dist;
-		Town *nearest = AirportGetNearestTown(as, it, dist);
+		Town *nearest = AirportGetNearestTown(as, st->airport.tile, it, dist);
 		nearest->noise_reached -= GetAirportNoiseLevelForDistance(as, dist);
 
 		if (_settings_game.economy.station_noise_level) {

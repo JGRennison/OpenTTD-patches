@@ -2345,22 +2345,22 @@ bool AdjustGUIZoom(AdjustGUIZoomMode mode)
 	ZoomLevel old_font_zoom = _font_zoom;
 	int old_scale = _gui_scale;
 	UpdateGUIZoom();
-	if (old_scale == _gui_scale) return false;
+	if (old_scale == _gui_scale && old_gui_zoom == _gui_zoom) return false;
 
-	/* Reload sprites if sprite zoom level has changed. */
+	/* Update cursors if sprite zoom level has changed. */
 	if (old_gui_zoom != _gui_zoom) {
-		GfxClearSpriteCache();
 		VideoDriver::GetInstance()->ClearSystemSprites();
 		UpdateCursorSize();
 		if (mode != AGZM_STARTUP) UpdateRouteStepSpriteSize();
-	} else if (old_font_zoom != _font_zoom) {
+	}
+	if (old_font_zoom != _font_zoom) {
 		GfxClearFontSpriteCache();
 	}
-
 	ClearFontCache();
 	UpdateFontHeightCache();
 	LoadStringWidthTable();
-	ReInitAllWindows(false);
+
+	SetupWidgetDimensions();
 	UpdateAllVirtCoords();
 	if (mode != AGZM_STARTUP) FixTitleGameZoom();
 
@@ -2374,11 +2374,9 @@ bool AdjustGUIZoom(AdjustGUIZoomMode mode)
 		if (mode == AGZM_AUTOMATIC) {
 			w->left   = (w->left   * _gui_scale) / old_scale;
 			w->top    = (w->top    * _gui_scale) / old_scale;
-			w->width  = (w->width  * _gui_scale) / old_scale;
-			w->height = (w->height * _gui_scale) / old_scale;
 		}
 		if (w->viewport != nullptr) {
-			w->viewport->zoom = Clamp(ZoomLevel(w->viewport->zoom - zoom_shift), _settings_client.gui.zoom_min, _settings_client.gui.zoom_max);
+			w->viewport->zoom = static_cast<ZoomLevel>(Clamp(w->viewport->zoom - zoom_shift, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max));
 		}
 	}
 

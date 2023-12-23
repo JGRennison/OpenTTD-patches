@@ -698,6 +698,9 @@ STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_ANYWHERE         :任意位置
 STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED                   :{WHITE}不能更改设置...
 STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED_NEWGRF            :{WHITE}...有NewGRF依赖此设置
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :使用时间标记而不是天为单位： {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :时间表以ticks而不是天显示。
+
 STR_CHEAT_EDIT_MONEY_QUERY_CAPT                                 :{WHITE}增加或减少现金
 STR_CHEAT_INFLATION_COST                                        :{LTBLUE}改变支出通胀因子: {ORANGE}{DECIMAL}
 STR_CHEAT_INFLATION_COST_QUERY_CAPT                             :{WHITE}改变支出通胀因子

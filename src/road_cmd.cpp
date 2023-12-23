@@ -2523,6 +2523,8 @@ static const Roadside _town_road_types[][2] = {
 	{ ROADSIDE_STREET_LIGHTS, ROADSIDE_PAVED }
 };
 
+static_assert(lengthof(_town_road_types) == HZB_END);
+
 static const Roadside _town_road_types_2[][2] = {
 	{ ROADSIDE_GRASS,         ROADSIDE_GRASS },
 	{ ROADSIDE_PAVED,         ROADSIDE_PAVED },
@@ -2530,6 +2532,8 @@ static const Roadside _town_road_types_2[][2] = {
 	{ ROADSIDE_STREET_LIGHTS, ROADSIDE_PAVED },
 	{ ROADSIDE_STREET_LIGHTS, ROADSIDE_PAVED }
 };
+
+static_assert(lengthof(_town_road_types_2) == HZB_END);
 
 
 static void TileLoop_Road(TileIndex tile)

@@ -15,9 +15,11 @@
 #include "../fios.h"
 #include "../strings_type.h"
 #include "../core/span_type.hpp"
+#include "../core/ring_buffer.hpp"
 #include <optional>
 #include <string>
 #include <vector>
+#include <list>
 
 extern SaveLoadVersion _sl_version;
 extern byte            _sl_minor_version;
@@ -317,18 +319,107 @@ struct SaveLoadCompat {
 };
 
 /**
+ * Get the NumberType of a setting. This describes the integer type
+ * as it is represented in memory
+ * @param type VarType holding information about the variable-type
+ * @return the SLE_VAR_* part of a variable-type description
+ */
+static inline constexpr VarType GetVarMemType(VarType type)
+{
+	return type & 0xF0; // GB(type, 4, 4) << 4;
+}
+
+/**
+ * Get the FileType of a setting. This describes the integer type
+ * as it is represented in a savegame/file
+ * @param type VarType holding information about the file-type
+ * @return the SLE_FILE_* part of a variable-type description
+ */
+static inline VarType GetVarFileType(VarType type)
+{
+	return type & 0xF; // GB(type, 0, 4);
+}
+
+/**
+ * Check if the given saveload type is a numeric type.
+ * @param conv the type to check
+ * @return True if it's a numeric type.
+ */
+static inline constexpr bool IsNumericType(VarType conv)
+{
+	return GetVarMemType(conv) <= SLE_VAR_U64;
+}
+
+/**
+ * Return expect size in bytes of a VarType
+ * @param type VarType to get size of.
+ * @return size of type in bytes.
+ */
+static inline constexpr size_t SlVarSize(VarType type)
+{
+	switch (GetVarMemType(type)) {
+		case SLE_VAR_BL: return sizeof(bool);
+		case SLE_VAR_I8: return sizeof(int8_t);
+		case SLE_VAR_U8: return sizeof(uint8_t);
+		case SLE_VAR_I16: return sizeof(int16_t);
+		case SLE_VAR_U16: return sizeof(uint16_t);
+		case SLE_VAR_I32: return sizeof(int32_t);
+		case SLE_VAR_U32: return sizeof(uint32_t);
+		case SLE_VAR_I64: return sizeof(int64_t);
+		case SLE_VAR_U64: return sizeof(uint64_t);
+		case SLE_VAR_NULL: return sizeof(void *);
+		case SLE_VAR_STR: return sizeof(std::string);
+		case SLE_VAR_STRQ: return sizeof(std::string);
+		case SLE_VAR_NAME: return sizeof(std::string);
+		default: NOT_REACHED();
+	}
+}
+
+/**
+ * Check if a saveload cmd/type/length entry matches the size of the variable.
+ * @param cmd SaveLoadType of entry.
+ * @param type VarType of entry.
+ * @param length Array length of entry.
+ * @param size Actual size of variable.
+ * @return true iff the sizes match.
+ */
+static inline constexpr bool SlCheckVarSize(SaveLoadType cmd, VarType type, size_t length, size_t size)
+{
+	switch (cmd) {
+		case SL_VAR: return SlVarSize(type) == size;
+		case SL_REF: return sizeof(void *) == size;
+		case SL_STR: return sizeof(void *) == size;
+		case SL_STDSTR: return SlVarSize(type) == size;
+		case SL_ARR: return SlVarSize(type) * length <= size; // Partial load of array is permitted.
+		case SL_RING: return sizeof(ring_buffer<void *>) == size;
+		case SL_VECTOR: return sizeof(std::vector<void *>) == size;
+		case SL_REFLIST: return sizeof(std::list<void *>) == size;
+		case SL_REFRING: return sizeof(ring_buffer<void *>) == size;
+		case SL_REFVEC: return sizeof(std::vector<void *>) == size;
+		case SL_SAVEBYTE: return true;
+		default: NOT_REACHED();
+	}
+}
+
+/**
  * Storage of simple variables, references (pointers), and arrays.
  * @param cmd      Load/save type. @see SaveLoadType
  * @param name     Field name for table chunks.
  * @param base     Name of the class or struct containing the variable.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
+ * @param length   Number of elements in the array.
  * @param from     First savegame version that has the field.
  * @param to       Last savegame version that has the field.
  * @param extra    Extra data to pass to the address callback function.
  * @note In general, it is better to use one of the SLE_* macros below.
  */
-#define SLE_GENERAL_NAME(cmd, name, base, variable, type, length, from, to, extra) SaveLoad {name, cmd, type, length, from, to, cpp_sizeof(base, variable), [] (void *b, size_t) -> void * { assert(b != nullptr); return const_cast<void *>(static_cast<const void *>(std::addressof(static_cast<base *>(b)->variable))); }, extra, nullptr}
+#define SLE_GENERAL_NAME(cmd, name, base, variable, type, length, from, to, extra) \
+	SaveLoad {name, cmd, type, length, from, to, cpp_sizeof(base, variable), [] (void *b, size_t) -> void * { \
+		static_assert(SlCheckVarSize(cmd, type, length, sizeof(static_cast<base *>(b)->variable))); \
+		assert(b != nullptr); \
+		return const_cast<void *>(static_cast<const void *>(std::addressof(static_cast<base *>(b)->variable))); \
+	}, extra, nullptr}
 
 /**
  * Storage of simple variables, references (pointers), and arrays with a custom name.
@@ -336,6 +427,7 @@ struct SaveLoadCompat {
  * @param base     Name of the class or struct containing the variable.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
+ * @param length   Number of elements in the array.
  * @param from     First savegame version that has the field.
  * @param to       Last savegame version that has the field.
  * @param extra    Extra data to pass to the address callback function.
@@ -545,7 +637,10 @@ struct SaveLoadCompat {
  * @param extra    Extra data to pass to the address callback function.
  * @note In general, it is better to use one of the SLEG_* macros below.
  */
-#define SLEG_GENERAL(name, cmd, variable, type, length, from, to, extra) SaveLoad {name, cmd, type, length, from, to, sizeof(variable), [] (void *, size_t) -> void * { return static_cast<void *>(std::addressof(variable)); }, extra, nullptr}
+#define SLEG_GENERAL(name, cmd, variable, type, length, from, to, extra) \
+	SaveLoad {name, cmd, type, length, from, to, sizeof(variable), [] (void *, size_t) -> void * { \
+		static_assert(SlCheckVarSize(cmd, type, length, sizeof(variable))); \
+		return static_cast<void *>(std::addressof(variable)); }, extra, nullptr}
 
 /**
  * Storage of a global variable in some savegame versions.
@@ -773,38 +868,6 @@ static inline bool IsSavegameVersionBefore(SaveLoadVersion major, byte minor = 0
 static inline bool IsSavegameVersionBeforeOrAt(SaveLoadVersion major)
 {
 	return _sl_version <= major;
-}
-
-/**
- * Get the NumberType of a setting. This describes the integer type
- * as it is represented in memory
- * @param type VarType holding information about the variable-type
- * @return the SLE_VAR_* part of a variable-type description
- */
-static inline VarType GetVarMemType(VarType type)
-{
-	return type & 0xF0; // GB(type, 4, 4) << 4;
-}
-
-/**
- * Get the FileType of a setting. This describes the integer type
- * as it is represented in a savegame/file
- * @param type VarType holding information about the file-type
- * @return the SLE_FILE_* part of a variable-type description
- */
-static inline VarType GetVarFileType(VarType type)
-{
-	return type & 0xF; // GB(type, 0, 4);
-}
-
-/**
- * Check if the given saveload type is a numeric type.
- * @param conv the type to check
- * @return True if it's a numeric type.
- */
-static inline bool IsNumericType(VarType conv)
-{
-	return GetVarMemType(conv) <= SLE_VAR_U64;
 }
 
 /**

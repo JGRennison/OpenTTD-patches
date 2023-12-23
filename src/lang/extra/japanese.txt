@@ -19,6 +19,9 @@ STR_CONFIG_SETTING_INTERFACE_WALLCLOCK                          :{ORANGE}時刻
 STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}ダイヤ
 STR_CONFIG_SETTING_INTERFACE_ADV_SIGNALS                        :{ORANGE}信号
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :ダイヤの時間単位にゲーム時を使用: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :ダイヤで行程時間を定めるために使われる時間単位を「日」ではなく「ゲーム時」にします。1日は約74ゲーム時に相当します
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}積み降ろしインジケーターの透過表示を切り替えます。{}Ctrl+クリックでロックします
 
 # Tracerestrict GUI

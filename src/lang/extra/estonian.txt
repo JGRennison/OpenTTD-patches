@@ -13,6 +13,9 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Õhusõidukid
 STR_CONFIG_SETTING_AUTOSAVE                                     :Salvestusväłp: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Vali välpsalvestuste vaheline ajavahemik
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Graafik on sammudes, mitte päevades: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Graafikus on ajad märgitud mitte päevades, vaid sammudes
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Vaheta laadimisnäidikute läbipaistvust. Ctrl+klõps lukustab
 
 # Tracerestrict GUI

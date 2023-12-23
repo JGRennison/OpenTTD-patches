@@ -9,6 +9,9 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :รถยนต
 STR_VEHICLE_TYPE_SHIPS                                          :เรือ
 STR_VEHICLE_TYPE_AIRCRAFT                                       :อากาศยาน
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :แสดงตารางเวลาในแบบติ๊กแทนแบบวัน: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :แสดงเวลาในการเดินทางในตารางเวลาเป็น ticks แทนที่ days
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}เปิด/ปิด การโปร่งใสของตัวบอกการบรรทุกของ. กด Ctrl+Click สำหรับการล็อก
 
 # Tracerestrict GUI

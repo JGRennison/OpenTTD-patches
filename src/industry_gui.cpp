@@ -41,6 +41,7 @@
 #include "zoom_func.h"
 #include "querystring_gui.h"
 #include "stringfilter_type.h"
+#include "hotkeys.h"
 
 #include "table/strings.h"
 
@@ -409,16 +410,13 @@ public:
 
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_DPI_SCROLLBAR);
+		/* Show scenario editor tools in editor. */
+		if (_game_mode != GM_EDITOR) {
+			this->GetWidget<NWidgetStacked>(WID_DPI_SCENARIO_EDITOR_PANE)->SetDisplayedPlane(SZSP_HORIZONTAL);
+		}
 		this->FinishInitNested(0);
 
 		this->SetButtons();
-
-		/* Show scenario editor tools in editor. */
-		if (_game_mode != GM_EDITOR) {
-			auto *se_tools = this->GetWidget<NWidgetStacked>(WID_DPI_SCENARIO_EDITOR_PANE);
-			se_tools->SetDisplayedPlane(SZSP_HORIZONTAL);
-			this->ReInit();
-		}
 	}
 
 	void OnInit() override
@@ -1249,7 +1247,7 @@ static const NWidgetPart _nested_industry_directory_widgets[] = {
 	EndContainer(),
 };
 
-typedef GUIList<const Industry *, const std::pair<CargoID, CargoID> &> GUIIndustryList;
+typedef GUIList<const Industry *, const CargoID &, const std::pair<CargoID, CargoID> &> GUIIndustryList;
 
 /** Special cargo filter criteria */
 enum CargoFilterSpecialType {
@@ -1306,7 +1304,10 @@ static bool CargoFilter(const Industry * const *industry, const std::pair<CargoI
 
 static GUIIndustryList::FilterFunction * const _filter_funcs[] = { &CargoFilter };
 
-
+/** Enum referring to the Hotkeys in the industry directory window */
+enum IndustryDirectoryHotkeys {
+	IDHK_FOCUS_FILTER_BOX, ///< Focus the filter box
+};
 /**
  * The list of industries.
  */
@@ -1319,7 +1320,7 @@ protected:
 	static const StringID sorter_names[];
 	static GUIIndustryList::SortFunction * const sorter_funcs[];
 
-	GUIIndustryList industries;
+	GUIIndustryList industries{IndustryDirectoryWindow::produced_cargo_filter};
 	Scrollbar *vscroll;
 	Scrollbar *hscroll;
 
@@ -1339,13 +1340,13 @@ protected:
 	};
 
 	/**
-	 * Set cargo filter list item index.
-	 * @param index The index of the cargo to be set
+	 * Set produced cargo filter for the industry list.
+	 * @param cid The cargo to be set
 	 */
-	void SetProducedCargoFilterIndex(byte index)
+	void SetProducedCargoFilter(CargoID cid)
 	{
-		if (this->produced_cargo_filter_criteria != index) {
-			this->produced_cargo_filter_criteria = index;
+		if (this->produced_cargo_filter_criteria != cid) {
+			this->produced_cargo_filter_criteria = cid;
 			/* deactivate filter if criteria is 'Show All', activate it otherwise */
 			bool is_filtering_necessary = this->produced_cargo_filter_criteria != CF_ANY || this->accepted_cargo_filter_criteria != CF_ANY;
 
@@ -1356,13 +1357,13 @@ protected:
 	}
 
 	/**
-	 * Set cargo filter list item index.
-	 * @param index The index of the cargo to be set
+	 * Set accepted cargo filter for the industry list.
+	 * @param index The cargo to be set
 	 */
-	void SetAcceptedCargoFilterIndex(byte index)
+	void SetAcceptedCargoFilter(CargoID cid)
 	{
-		if (this->accepted_cargo_filter_criteria != index) {
-			this->accepted_cargo_filter_criteria = index;
+		if (this->accepted_cargo_filter_criteria != cid) {
+			this->accepted_cargo_filter_criteria = cid;
 			/* deactivate filter if criteria is 'Show All', activate it otherwise */
 			bool is_filtering_necessary = this->produced_cargo_filter_criteria != CF_ANY || this->accepted_cargo_filter_criteria != CF_ANY;
 
@@ -1490,7 +1491,7 @@ protected:
 	}
 
 	/** Sort industries by name */
-	static bool IndustryNameSorter(const Industry * const &a, const Industry * const &b)
+	static bool IndustryNameSorter(const Industry * const &a, const Industry * const &b, const CargoID &)
 	{
 		int r = StrNaturalCompare(a->GetCachedName(), b->GetCachedName()); // Sort by name (natural sorting).
 		if (r == 0) return a->index < b->index;
@@ -1498,21 +1499,20 @@ protected:
 	}
 
 	/** Sort industries by type and name */
-	static bool IndustryTypeSorter(const Industry * const &a, const Industry * const &b)
+	static bool IndustryTypeSorter(const Industry * const &a, const Industry * const &b, const CargoID &filter)
 	{
 		int it_a = 0;
 		while (it_a != NUM_INDUSTRYTYPES && a->type != _sorted_industry_types[it_a]) it_a++;
 		int it_b = 0;
 		while (it_b != NUM_INDUSTRYTYPES && b->type != _sorted_industry_types[it_b]) it_b++;
 		int r = it_a - it_b;
-		return (r == 0) ? IndustryNameSorter(a, b) : r < 0;
+		return (r == 0) ? IndustryNameSorter(a, b, filter) : r < 0;
 	}
 
 	/** Sort industries by production and name */
-	static bool IndustryProductionSorter(const Industry * const &a, const Industry * const &b)
+	static bool IndustryProductionSorter(const Industry * const &a, const Industry * const &b, const CargoID &filter)
 	{
-		CargoID filter = IndustryDirectoryWindow::produced_cargo_filter;
-		if (filter == CF_NONE) return IndustryTypeSorter(a, b);
+		if (filter == CF_NONE) return IndustryTypeSorter(a, b, filter);
 
 		uint prod_a = 0, prod_b = 0;
 		for (uint i = 0; i < lengthof(a->produced_cargo); i++) {
@@ -1526,14 +1526,14 @@ protected:
 		}
 		int r = prod_a - prod_b;
 
-		return (r == 0) ? IndustryTypeSorter(a, b) : r < 0;
+		return (r == 0) ? IndustryTypeSorter(a, b, filter) : r < 0;
 	}
 
 	/** Sort industries by transported cargo and name */
-	static bool IndustryTransportedCargoSorter(const Industry * const &a, const Industry * const &b)
+	static bool IndustryTransportedCargoSorter(const Industry * const &a, const Industry * const &b, const CargoID &filter)
 	{
 		int r = GetCargoTransportedSortValue(a) - GetCargoTransportedSortValue(b);
-		return (r == 0) ? IndustryNameSorter(a, b) : r < 0;
+		return (r == 0) ? IndustryNameSorter(a, b, filter) : r < 0;
 	}
 
 	/**
@@ -1680,7 +1680,7 @@ public:
 
 				/* Setup a clipping rectangle... */
 				DrawPixelInfo tmp_dpi;
-				if (!FillDrawPixelInfo(&tmp_dpi, ir.left, ir.top, ir.Width(), ir.Height())) return;
+				if (!FillDrawPixelInfo(&tmp_dpi, ir)) return;
 				/* ...but keep coordinates relative to the window. */
 				tmp_dpi.left += ir.left;
 				tmp_dpi.top += ir.top;
@@ -1758,8 +1758,9 @@ public:
 		list.push_back(std::make_unique<DropDownListStringItem>(this->GetCargoFilterLabel(CF_NONE), CF_NONE, false));
 
 		/* Add cargos */
+		Dimension d = GetLargestCargoIconSize();
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-			list.push_back(std::make_unique<DropDownListStringItem>(cs->name, cs->Index(), false));
+			list.push_back(std::make_unique<DropDownListIconItem>(d, cs->GetCargoIcon(), PAL_NONE, cs->name, cs->Index(), false));
 		}
 
 		return list;
@@ -1811,13 +1812,13 @@ public:
 			}
 
 			case WID_ID_FILTER_BY_ACC_CARGO: {
-				this->SetAcceptedCargoFilterIndex(index);
+				this->SetAcceptedCargoFilter(index);
 				this->BuildSortIndustriesList();
 				break;
 			}
 
 			case WID_ID_FILTER_BY_PROD_CARGO: {
-				this->SetProducedCargoFilterIndex(index);
+				this->SetProducedCargoFilter(index);
 				this->BuildSortIndustriesList();
 				break;
 			}
@@ -1872,7 +1873,28 @@ public:
 				break;
 		}
 	}
+
+	EventState OnHotkey(int hotkey) override
+	{
+		switch (hotkey) {
+			case IDHK_FOCUS_FILTER_BOX:
+				this->SetFocusedWidget(WID_ID_FILTER);
+				SetFocusedWindow(this); // The user has asked to give focus to the text box, so make sure this window is focused.
+				break;
+			default:
+				return ES_NOT_HANDLED;
+		}
+		return ES_HANDLED;
+	}
+
+	static HotkeyList hotkeys;
 };
+
+static Hotkey industrydirectory_hotkeys[] = {
+	Hotkey('F', "focus_filter_box", IDHK_FOCUS_FILTER_BOX),
+	HOTKEY_LIST_END
+};
+HotkeyList IndustryDirectoryWindow::hotkeys("industrydirectory", industrydirectory_hotkeys);
 
 Listing IndustryDirectoryWindow::last_sorting = {false, 0};
 
@@ -1901,7 +1923,8 @@ static WindowDesc _industry_directory_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_industries", 428, 190,
 	WC_INDUSTRY_DIRECTORY, WC_NONE,
 	0,
-	std::begin(_nested_industry_directory_widgets), std::end(_nested_industry_directory_widgets)
+	std::begin(_nested_industry_directory_widgets), std::end(_nested_industry_directory_widgets),
+	&IndustryDirectoryWindow::hotkeys
 );
 
 void ShowIndustryDirectory()
@@ -2985,7 +3008,7 @@ struct IndustryCargoesWindow : public Window {
 
 		Rect ir = r.Shrink(WidgetDimensions::scaled.bevel);
 		DrawPixelInfo tmp_dpi;
-		if (!FillDrawPixelInfo(&tmp_dpi, ir.left, ir.top, ir.Width(), ir.Height())) return;
+		if (!FillDrawPixelInfo(&tmp_dpi, ir)) return;
 		AutoRestoreBackup dpi_backup(_cur_dpi, &tmp_dpi);
 
 		int left_pos = WidgetDimensions::scaled.frametext.left - WidgetDimensions::scaled.bevel.left;
@@ -3125,8 +3148,9 @@ struct IndustryCargoesWindow : public Window {
 
 			case WID_IC_CARGO_DROPDOWN: {
 				DropDownList lst;
+				Dimension d = GetLargestCargoIconSize();
 				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-					lst.push_back(std::make_unique<DropDownListStringItem>(cs->name, cs->Index(), false));
+					lst.push_back(std::make_unique<DropDownListIconItem>(d, cs->GetCargoIcon(), PAL_NONE, cs->name, cs->Index(), false));
 				}
 				if (!lst.empty()) {
 					int selected = (this->ind_cargo >= NUM_INDUSTRYTYPES) ? (int)(this->ind_cargo - NUM_INDUSTRYTYPES) : -1;

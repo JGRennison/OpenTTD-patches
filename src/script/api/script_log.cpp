@@ -58,7 +58,7 @@
 
 	/* Also still print to debug window */
 	DEBUG(script, level, "[%d] [%c] %s", (uint)ScriptObject::GetRootCompany(), logc, line.text.c_str());
-	InvalidateWindowData(WC_SCRIPT_DEBUG, 0, ScriptObject::GetRootCompany());
+	InvalidateWindowClassesData(WC_SCRIPT_DEBUG, ScriptObject::GetRootCompany());
 }
 
 /* static */ void ScriptLog::LogOnce(ScriptLogTypes::ScriptLogType level, std::string &&message)

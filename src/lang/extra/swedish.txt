@@ -13,6 +13,9 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Flygplan
 STR_CONFIG_SETTING_AUTOSAVE                                     :Autospara: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Välj intervall mellan automatisk sparande
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Visa tidtabeller räknat i ticks istället för dagar: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Visa restider i tidtabeller i antal tick istället för dagar
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Växla genomskinlighet för lastningsindikatorer. Ctrl+klick för att låsa
 
 # Tracerestrict GUI

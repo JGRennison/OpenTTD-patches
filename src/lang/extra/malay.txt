@@ -12,6 +12,8 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Pesawat
 STR_CONFIG_SETTING_AUTOSAVE                                     :Simpanan automatik:{STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Pilih jarak waktu antara menyimpankan permainan automatik
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Tunjukkan jadual menggunakan tanda rait dan bukan hari: {STRING}
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Teluskan penunjuk muatan atau tidak. Ctrl+Klik untuk mengunci
 
 # Tracerestrict GUI

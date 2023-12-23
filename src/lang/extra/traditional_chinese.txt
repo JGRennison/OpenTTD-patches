@@ -12,6 +12,9 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :飛機
 STR_CONFIG_SETTING_AUTOSAVE                                     :自動儲存：{STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :選擇自動存檔的週期。
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :顯示時刻表時以刻度數目取代日為單位：{STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :在時刻表上以刻度數目取代日數顯示運行時間。
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}切換裝載進度指示是否透明。按住 CTRL 點選可鎖定
 
 # Tracerestrict GUI

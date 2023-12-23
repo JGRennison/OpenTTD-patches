@@ -24,6 +24,9 @@ STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE_HELPTEXT              :Если вкл
 STR_CONFIG_SETTING_REPAIR_COST                                  :Стоимость ремонта: 1/{STRING} полной стоимости тс
 STR_CONFIG_SETTING_REPAIR_COST_HELPTEXT                         :Стоимость ремонта одной поломки транспортного средства
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Графики движения в «тиках», а не днях: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Измерять время в графиках движения игровыми «тиками», а не днями. 1 день равен 74 «тикам».
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Переключение прозрачности индикаторов загрузки. Ctrl+щелчок - заблокировать.
 
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Среднее время в пути: {STRING}

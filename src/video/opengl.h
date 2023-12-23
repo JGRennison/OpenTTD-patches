@@ -108,7 +108,7 @@ public:
 	/* SpriteEncoder */
 
 	uint GetSpriteAlignment() override { return 1u << (ZOOM_LVL_SPR_COUNT - 1); }
-	Sprite *Encode(const SpriteLoader::Sprite *sprite, AllocatorProc *allocator) override;
+	Sprite *Encode(const SpriteLoader::SpriteCollection &sprite, AllocatorProc *allocator) override;
 };
 
 

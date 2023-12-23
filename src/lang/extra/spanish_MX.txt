@@ -13,6 +13,9 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Aeronaves
 STR_CONFIG_SETTING_AUTOSAVE                                     :Guardado automático: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Intervalo entre guardados automáticos de la partida
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Mostrar tiempo de viaje en ticks en lugar de días: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Mostrar los tiempos de viaje en los itinerarios en impulsos de reloj de sistema (ticks) en lugar de días
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Transparencia de indicadores de embarque. Ctrl+Clic para bloquear
 
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Tiempo promedio de viaje: {STRING}

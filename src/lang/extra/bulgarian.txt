@@ -8,6 +8,9 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Самолет�
 STR_CONFIG_SETTING_AUTOSAVE                                     :Автоматично запазване: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Изберете интервал между автоматично запаметяване на играта
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Разписанието в цикли вместо дни: {STRING.n}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Показва времената за придвижване в таблиците в игрови единици, вместо в дни
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Вклучи прозрачност за товарещи указатели. Ctrl+Click за заключване
 
 # Tracerestrict GUI

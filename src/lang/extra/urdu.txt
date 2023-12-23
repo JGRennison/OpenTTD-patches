@@ -12,6 +12,8 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :ہوایی جہ
 STR_CONFIG_SETTING_AUTOSAVE                                     :Autosave: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :گیم بچانے کا وقفا چنیں
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :اوقات کا جدول دنوں کی بجائے ٹِکس میں دکھائیں: {STRING}
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}لوڈ کرنے کے نشانوں کی شفافیت کی تدویم کریں۔ محدوظ کرنے کے لئے Ctrl+Click دبائیں
 
 # Tracerestrict GUI

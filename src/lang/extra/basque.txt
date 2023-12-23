@@ -12,6 +12,9 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Hegazkinak
 STR_CONFIG_SETTING_AUTOSAVE                                     :Auto-gordea: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Partida gordetze automatikoaren bitartea aukeratu
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Ordutegiak tick-etan erakutsi egunetan erakutsi ordez: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Erakutsi denbora tauletako denbora jokoaren uniteetan egunak erabili ordez
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Zama adierazleen gardentasuna aldatu. Ktrl+Klik blokeatzeko
 
 # Tracerestrict GUI

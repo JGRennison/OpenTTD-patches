@@ -12,6 +12,9 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Fleantugen
 STR_CONFIG_SETTING_AUTOSAVE                                     :Automatysk bewarje: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Selektearje de tiid tusken automatysk bewarje fan it spul
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Toan tsjinstregeling yn tikken yn stee fan yn dagen: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Lit reistiden sjen in tikken yn stee fan yn dagen op tsjinstregelings
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

@@ -21,7 +21,7 @@
 #include <iterator>
 #include <numeric>
 
-typedef GUIList<const Vehicle*, CargoID> GUIVehicleList;
+typedef GUIList<const Vehicle*, std::nullptr_t, CargoID> GUIVehicleList;
 
 struct GUIVehicleGroup {
 	VehicleList::const_iterator vehicles_begin;    ///< Pointer to beginning element of this vehicle group.
@@ -64,7 +64,7 @@ struct GUIVehicleGroup {
 	}
 };
 
-typedef GUIList<GUIVehicleGroup, CargoID> GUIVehicleGroupList;
+typedef GUIList<GUIVehicleGroup, std::nullptr_t, CargoID> GUIVehicleGroupList;
 
 struct BaseVehicleListWindow : public Window {
 	enum GroupBy : byte {
@@ -88,6 +88,7 @@ public:
 	VehicleID vehicle_sel;                      ///< Selected vehicle
 	CargoID cargo_filter_criteria;              ///< Selected cargo filter index
 	uint order_arrow_width;                     ///< Width of the arrow in the small order list.
+	CargoTypes used_cargoes;
 
 	typedef GUIVehicleGroupList::SortFunction VehicleGroupSortFunction;
 	typedef GUIVehicleList::SortFunction VehicleIndividualSortFunction;
@@ -130,11 +131,11 @@ public:
 	void SortVehicleList();
 	void CountOwnVehicles();
 	void BuildVehicleList();
-	void SetCargoFilterIndex(int index);
+	void SetCargoFilter(byte index);
 	void SetCargoFilterArray();
 	void FilterVehicleList();
 	StringID GetCargoFilterLabel(CargoID cid) const;
-	DropDownList BuildCargoDropDownList() const;
+	DropDownList BuildCargoDropDownList(bool full) const;
 	Dimension GetActionDropdownSize(bool show_autoreplace, bool show_group, bool show_template_replace, StringID change_order_str = 0);
 	DropDownList BuildActionDropdownList(bool show_autoreplace, bool show_group, bool show_template_replace,
 			StringID change_order_str = 0, bool show_create_group = false, bool consider_top_level = false);

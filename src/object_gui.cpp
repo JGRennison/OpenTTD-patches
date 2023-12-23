@@ -43,7 +43,7 @@ enum BuildObjectHotkeys {
 
 /** The window used for building objects. */
 class BuildObjectWindow : public Window {
-	typedef GUIList<ObjectClassID, StringFilter &> GUIObjectClassList; ///< Type definition for the list to hold available object classes.
+	typedef GUIList<ObjectClassID, std::nullptr_t, StringFilter &> GUIObjectClassList; ///< Type definition for the list to hold available object classes.
 
 	static const uint EDITBOX_MAX_SIZE = 16; ///< The maximum number of characters for the filter edit box.
 
@@ -335,14 +335,15 @@ public:
 
 				DrawPixelInfo tmp_dpi;
 				/* Set up a clipping area for the preview. */
-				if (FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.Width(), r.Height())) {
+				Rect ir = r.Shrink(WidgetDimensions::scaled.bevel);
+				if (FillDrawPixelInfo(&tmp_dpi, ir)) {
 					AutoRestoreBackup dpi_backup(_cur_dpi, &tmp_dpi);
 					if (spec->grf_prop.grffile == nullptr) {
 						extern const DrawTileSprites _objects[];
 						const DrawTileSprites *dts = &_objects[spec->grf_prop.local_id];
-						DrawOrigTileSeqInGUI(r.Width() / 2 - 1, (r.Height() + matrix_height / 2) / 2 - this->object_margin - ScaleSpriteTrad(TILE_PIXELS), dts, PAL_NONE);
+						DrawOrigTileSeqInGUI(ir.Width() / 2 - 1, (ir.Height() + matrix_height / 2) / 2 - this->object_margin - ScaleSpriteTrad(TILE_PIXELS), dts, PAL_NONE);
 					} else {
-						DrawNewObjectTileInGUI(r.Width() / 2 - 1, (r.Height() + matrix_height / 2) / 2 - this->object_margin - ScaleSpriteTrad(TILE_PIXELS), spec, GB(widget, 16, 16));
+						DrawNewObjectTileInGUI(ir.Width() / 2 - 1, (ir.Height() + matrix_height / 2) / 2 - this->object_margin - ScaleSpriteTrad(TILE_PIXELS), spec, GB(widget, 16, 16));
 					}
 				}
 				break;
@@ -355,21 +356,22 @@ public:
 				const ObjectSpec *spec = objclass->GetSpec(obj_index);
 				if (spec == nullptr) break;
 
-				if (!spec->IsAvailable()) {
-					GfxFillRect(r.Shrink(WidgetDimensions::scaled.bevel), PC_BLACK, FILLRECT_CHECKER);
-				}
 				DrawPixelInfo tmp_dpi;
 				/* Set up a clipping area for the preview. */
-				if (FillDrawPixelInfo(&tmp_dpi, r.left, r.top, r.Width(), r.Height())) {
+				Rect ir = r.Shrink(WidgetDimensions::scaled.bevel);
+				if (FillDrawPixelInfo(&tmp_dpi, ir)) {
 					AutoRestoreBackup dpi_backup(_cur_dpi, &tmp_dpi);
 					if (spec->grf_prop.grffile == nullptr) {
 						extern const DrawTileSprites _objects[];
 						const DrawTileSprites *dts = &_objects[spec->grf_prop.local_id];
-						DrawOrigTileSeqInGUI(r.Width() / 2 - 1, r.Height() - this->object_margin - ScaleSpriteTrad(TILE_PIXELS), dts, PAL_NONE);
+						DrawOrigTileSeqInGUI(ir.Width() / 2 - 1, ir.Height() - this->object_margin - ScaleSpriteTrad(TILE_PIXELS), dts, PAL_NONE);
 					} else {
-						DrawNewObjectTileInGUI(r.Width() / 2 - 1, r.Height() - this->object_margin - ScaleSpriteTrad(TILE_PIXELS), spec,
+						DrawNewObjectTileInGUI(ir.Width() / 2 - 1, ir.Height() - this->object_margin - ScaleSpriteTrad(TILE_PIXELS), spec,
 								std::min<int>(_selected_object_view, spec->views - 1));
 					}
+				}
+				if (!spec->IsAvailable()) {
+					GfxFillRect(ir, PC_BLACK, FILLRECT_CHECKER);
 				}
 				break;
 			}

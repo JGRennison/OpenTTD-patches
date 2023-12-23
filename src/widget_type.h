@@ -39,6 +39,12 @@ enum ArrowWidgetValues {
 	AWV_RIGHT,    ///< Force the arrow to the right
 };
 
+/** WidgetData values for a resize box widget. */
+enum ResizeWidgetValues {
+	RWV_SHOW_BEVEL, ///< Bevel of resize box is shown.
+	RWV_HIDE_BEVEL, ///< Bevel of resize box is hidden.
+};
+
 /**
  * Window widget types, nested widget types, and nested widget part types.
  */
@@ -482,7 +488,7 @@ public:
 	NWidgetCore *GetWidgetFromPos(int x, int y) override;
 	void FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets) override;
 
-	void SetDisplayedPlane(int plane);
+	bool SetDisplayedPlane(int plane);
 
 	int shown_plane; ///< Plane being displayed (for #NWID_SELECTION only).
 	int index;       ///< If non-negative, index in the #Window::nested_array.

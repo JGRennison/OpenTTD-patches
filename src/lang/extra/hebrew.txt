@@ -12,6 +12,9 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :כלי טייס
 STR_CONFIG_SETTING_AUTOSAVE                                     :שמירה אוטומטית: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :בחר פרק זמן בין שמירות אוטומטיות
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :{STRING} :הצג לוח זמנים בפעימות במקום בימים
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :הצג זמני נסיעה בלוחות זמנים בפעימות משחק במקום בימים
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}שנה שקיפות עבור מצביעי הטענה. Ctrl+לחיצה לנעילה
 
 # Tracerestrict GUI

@@ -1568,9 +1568,9 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters &arg
 			case SCC_TT_TICKS_LONG: // {TT_TICKS_LONG}
 				if (_settings_client.gui.timetable_in_ticks) {
 					auto tmp_params = MakeParameters(args.GetNextParameter<int64>());
-					buff = FormatString(buff, GetStringPtr(STR_TIMETABLE_TICKS), tmp_params, last);
+					buff = FormatString(buff, GetStringPtr(STR_UNITS_TICKS), tmp_params, last);
 				} else {
-					StringID str = _settings_time.time_in_minutes ? STR_TIMETABLE_MINUTES : STR_TIMETABLE_DAYS;
+					StringID str = _settings_time.time_in_minutes ? STR_TIMETABLE_MINUTES : STR_UNITS_DAYS;
 					int64 ticks = args.GetNextParameter<int64>();
 					int64 ratio = DATE_UNIT_SIZE;
 					int64 units = ticks / ratio;

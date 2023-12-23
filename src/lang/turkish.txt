@@ -256,6 +256,10 @@ STR_UNITS_HEIGHT_IMPERIAL                                       :{DECIMAL}{NBSP}
 STR_UNITS_HEIGHT_METRIC                                         :{DECIMAL}{NBSP}m
 STR_UNITS_HEIGHT_SI                                             :{DECIMAL}{NBSP}m
 
+STR_UNITS_DAYS                                                  :{COMMA}{NBSP}gün{P "ler" }
+STR_UNITS_SECONDS                                               :{COMMA}{NBSP}saniye{P "ler" }
+STR_UNITS_TICKS                                                 :{COMMA}{NBSP}tik{P "ler" }
+
 # Common window strings
 STR_LIST_FILTER_TITLE                                           :{BLACK}Filtre:
 STR_LIST_FILTER_OSKTITLE                                        :{BLACK}Listeyi filtrelemek için anahtar sözcük girin
@@ -517,6 +521,7 @@ STR_ABOUT_MENU_ABOUT_OPENTTD                                    :'OpenTTD' Hakk�
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Nesne hizalayıcı
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Çerçeveleri aç/kapa
 STR_ABOUT_MENU_TOGGLE_DIRTY_BLOCKS                              :Kirli blokları renklendir/renklendirme
+STR_ABOUT_MENU_TOGGLE_WIDGET_OUTLINES                           :Araç ana hatlarını değiştir
 
 # Place in highscore window
 ###length 15
@@ -718,8 +723,7 @@ STR_PLAYLIST_TOOLTIP_CLICK_TO_ADD_TRACK                         :{BLACK}Kullanı
 STR_PLAYLIST_TOOLTIP_CLICK_TO_REMOVE_TRACK                      :{BLACK}Kullanılan programdan kaldırılacak parçaya tıklayın (Özel1 veya Özel2 için)
 
 # Highscore window
-STR_HIGHSCORE_TOP_COMPANIES_WHO_REACHED                         :{BIG_FONT}{BLACK} {NUM}
-STR_HIGHSCORE_TOP_COMPANIES_NETWORK_GAME                        :{BIG_FONT}{BLACK} {NUM} senesindeki şirket ligi
+STR_HIGHSCORE_TOP_COMPANIES                                     :{BIG_FONT}{BLACK}En iyi şirketler
 STR_HIGHSCORE_POSITION                                          :{BIG_FONT}{BLACK}{COMMA}.
 STR_HIGHSCORE_PERFORMANCE_TITLE_BUSINESSMAN                     :İş insanı
 STR_HIGHSCORE_PERFORMANCE_TITLE_ENTREPRENEUR                    :Girişimci
@@ -1073,6 +1077,7 @@ STR_GAME_OPTIONS_BASE_MUSIC                                     :{BLACK}Temel m�
 STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :{BLACK}Kullanılacak temel müzik kümesini seçin
 STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :{BLACK}Temel müzik hakkında daha fazla bilgi
 
+STR_BASESET_STATUS                                              :{STRING} {RED}({NUM} eksik/bozuk dosya{P "lar" })
 
 STR_ERROR_RESOLUTION_LIST_FAILED                                :{WHITE}Desteklenen çözünürlük listesi alınamadı
 STR_ERROR_FULLSCREEN_FAILED                                     :{WHITE}Tam ekran kipi başarısız
@@ -1655,8 +1660,12 @@ STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS_HELPTEXT              :Araçları grup
 STR_CONFIG_SETTING_LOADING_INDICATORS                           :Araç yükleme bilgisini göster: {STRING}
 STR_CONFIG_SETTING_LOADING_INDICATORS_HELPTEXT                  :Yükleme veya boşaltma yapan araçların üzerinde yükleme işaretlerinin görünüp görünmeyeceğini seçin
 
-STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Zaman tablosunda gün yerine işlemci zamanı kullan: {STRING}
-STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Zaman çizelgelerinde yolculuk sürelerini gün yerine oyun zamanı cinsinden göster
+STR_CONFIG_SETTING_TIMETABLE_MODE                               :Birim zaman için zaman çizelgesi: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_MODE_HELPTEXT                      :Araç zaman çizelgeleri için kullanılan zaman birimlerini seçin
+###length 3
+STR_CONFIG_SETTING_TIMETABLE_MODE_DAYS                          :Gün
+STR_CONFIG_SETTING_TIMETABLE_MODE_SECONDS                       :Saniye
+STR_CONFIG_SETTING_TIMETABLE_MODE_TICKS                         :tikler
 
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE             :Çıkış ve varışları çizelgelerde göster: {STRING}
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :Zaman çizelgelerinde tahmini varış ve ayrılış zamanlarını göster
@@ -2345,7 +2354,7 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Bu oyun 
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Parola koy
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Erişimi kısıtlamak için oyuna parola koy
 
-STR_NETWORK_START_SERVER_VISIBILITY_LABEL                       :{BLACK}Görünürlük
+STR_NETWORK_START_SERVER_VISIBILITY_LABEL                       :{BLACK}Görünürlük:
 STR_NETWORK_START_SERVER_VISIBILITY_TOOLTIP                     :{BLACK}Halka açık listelemede öbür oyuncuların sizin sunucunuzu görüp göremeyeceği
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} istemci
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}Azami istemci sayısı:
@@ -2580,7 +2589,7 @@ STR_CONTENT_SEARCH_EXTERNAL_TOOLTIP                             :{BLACK}OpenTTD'
 STR_CONTENT_SEARCH_EXTERNAL_DISCLAIMER_CAPTION                  :{WHITE}OpenTTD'den çıkıyorsunuz!
 STR_CONTENT_SEARCH_EXTERNAL_DISCLAIMER                          :{WHITE}Harici sitelerden içerik indirmenin şart ve koşulları değişiklik gösterir.{}İndirdiğiniz içeriği OpenTTD'ye nasıl kuracağınıza dair talimatlar için harici sitelere bakmalısınız.{}Devam etmek istiyor musunuz?
 STR_CONTENT_FILTER_TITLE                                        :{BLACK}Etiket/isim süzgeci:
-STR_CONTENT_OPEN_URL                                            :{BLACK}İnternet sitesine git
+STR_CONTENT_OPEN_URL                                            :{BLACK}Website
 STR_CONTENT_OPEN_URL_TOOLTIP                                    :{BLACK}Bu içeriğin internet sitesi
 STR_CONTENT_DOWNLOAD_CAPTION                                    :{BLACK}İndir
 STR_CONTENT_DOWNLOAD_CAPTION_TOOLTIP                            :{BLACK}Seçili içeriği indirmeye başla
@@ -3366,6 +3375,7 @@ STR_SAVE_PRESET_SAVE                                            :{BLACK}Kaydet
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Ön ayarı geçerli seçili isimle kaydet
 
 # NewGRF parameters window
+STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Temel grafik parametrelerini değiştirin
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}NewGRF parametrelerini değiştir
 STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Kapat
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Sıfırla
@@ -4564,8 +4574,6 @@ STR_TIMETABLE_STAY_FOR_ESTIMATED                                :({STRING} kalma
 STR_TIMETABLE_AND_TRAVEL_FOR_ESTIMATED                          :({STRING} için seyahat, hareket saati yok)
 STR_TIMETABLE_STAY_FOR                                          :{STRING} bekle
 STR_TIMETABLE_AND_TRAVEL_FOR                                    :ve şuraya sefer yap: {STRING}
-STR_TIMETABLE_DAYS                                              :{COMMA}{NBSP}gün
-STR_TIMETABLE_TICKS                                             :{COMMA}{NBSP}birim
 
 STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}Bu zaman çizelgesinin bitmesi {STRING} sürecek
 STR_TIMETABLE_TOTAL_TIME_INCOMPLETE                             :{BLACK}Bu zaman çizelgesinin bitmesi en az {STRING} sürecek (tamamı hesaplanmadı)
@@ -4574,10 +4582,13 @@ STR_TIMETABLE_STATUS_ON_TIME                                    :{BLACK}Bu araç
 STR_TIMETABLE_STATUS_LATE                                       :{BLACK}Bu araç {STRING} geç çalışıyor
 STR_TIMETABLE_STATUS_EARLY                                      :{BLACK}Bu araç {STRING} erken çalışıyor
 STR_TIMETABLE_STATUS_NOT_STARTED                                :{BLACK}Bu çizelge henüz başlatılmadı
-STR_TIMETABLE_STATUS_START_AT                                   :{BLACK}Bu çizelge {STRING} tarihinde başlayacak
+STR_TIMETABLE_STATUS_START_AT_DATE                              :{BLACK}Bu zaman çizelgesi {STRING} itibariyla başlayacak
+STR_TIMETABLE_STATUS_START_IN_SECONDS                           :{BLACK}Bu zaman çizelgesi {COMMA} saniye içinde başlayacak
 
-STR_TIMETABLE_STARTING_DATE                                     :{BLACK}Başlangıç tarihi
-STR_TIMETABLE_STARTING_DATE_TOOLTIP                             :{BLACK}Bu zaman çizelgesinin başlangıcı olarak bir tarih seçin. Ctrl+Tıklama eğer komuta zaman çizelgesi uygulanmışsa bu komutu paylaşan tüm araçlara göreli komutlarını baz alarak belirtilen tarihten itibaren eşit dağıtır.
+STR_TIMETABLE_START                                             :{BLACK}Zaman Çizelgesini Başlat
+STR_TIMETABLE_START_TOOLTIP                                     :{BLACK}Bu zaman çizelgesinin ne zaman başlayacağını seçin. Sipariş tamamen zaman çizelgesine uygunsa, Ctrl+Tıklama bu sırayı paylaşan tüm araçların startını göreceli sıralarına göre eşit olarak dağıtır
+
+STR_TIMETABLE_START_SECONDS_QUERY                               :Zaman çizelgesinin başlamasına saniyeler kaldı
 
 STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}Zamanı değiştir
 STR_TIMETABLE_WAIT_TIME_TOOLTIP                                 :{BLACK}Seçili talimatın harcaması gereken süreyi değiştir. Ctrl+Tıklama bütün talimatların süresini değiştirir
@@ -4601,8 +4612,10 @@ STR_TIMETABLE_EXPECTED                                          :{BLACK}Beklenen
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Programlanan
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Beklenen ile programlanan arasında geçiş yap
 
-STR_TIMETABLE_ARRIVAL                                           :A: {COLOUR}{DATE_TINY}
-STR_TIMETABLE_DEPARTURE                                         :D: {COLOUR}{DATE_TINY}
+STR_TIMETABLE_ARRIVAL_DATE                                      :A: {COLOUR}{DATE_TINY}
+STR_TIMETABLE_DEPARTURE_DATE                                    :D: {COLOUR}{DATE_TINY}
+STR_TIMETABLE_ARRIVAL_SECONDS_IN_FUTURE                         :A: {COLOUR}{COMMA} saniye
+STR_TIMETABLE_DEPARTURE_SECONDS_IN_FUTURE                       :{COLOUR}{COMMA} saniye
 
 
 # Date window (for timetable)
@@ -4705,9 +4718,12 @@ STR_TEXTFILE_NAVBACK_TOOLTIP                                    :{BLACK}Gezinme 
 STR_TEXTFILE_NAVFORWARD_TOOLTIP                                 :{BLACK}Gezinme geçmişinde ileri dönme
 STR_TEXTFILE_WRAP_TEXT                                          :{WHITE}Metni kaydır
 STR_TEXTFILE_WRAP_TEXT_TOOLTIP                                  :{BLACK}Metni, okumak için gezinmeyi önlemek üzere kaydır
-STR_TEXTFILE_VIEW_README                                        :{BLACK}Benioku dosyasını göster
+STR_TEXTFILE_VIEW_README                                        :{BLACK}Benioku
+STR_TEXTFILE_VIEW_README_TOOLTIP                                :Bu içeriğe ilişkin benioku dosyasını görüntüle
 STR_TEXTFILE_VIEW_CHANGELOG                                     :{BLACK}Değişiklik kayıtları
+STR_TEXTFILE_VIEW_CHANGELOG_TOOLTIP                             :Bu içerik için değişiklik günlüğünü görüntüle
 STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}Lisans
+STR_TEXTFILE_VIEW_LICENCE_TOOLTIP                               :Bu içeriğin lisansını incele
 ###length 5
 STR_TEXTFILE_README_CAPTION                                     :{WHITE}{STRING} adlı {STRING}'nin benioku dosyası
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}{STRING} adlı {STRING}'nin değişiklik kaydı
@@ -5170,6 +5186,7 @@ STR_ERROR_CAN_T_TIMETABLE_VEHICLE                               :{WHITE}Aracın 
 STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS                       :{WHITE}Araçlar sadece istasyonlarda bekleyebilir
 STR_ERROR_TIMETABLE_NOT_STOPPING_HERE                           :{WHITE}Araç bu istasyonda durmuyor
 STR_ERROR_TIMETABLE_INCOMPLETE                                  :{WHITE}... zaman çizelgesi eksik
+STR_ERROR_TIMETABLE_NOT_STARTED                                 :{WHITE}... zaman çizelgesi henüz başlamadı
 
 # Sign related errors
 STR_ERROR_TOO_MANY_SIGNS                                        :{WHITE}... çok fazla tabela var

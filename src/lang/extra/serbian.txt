@@ -13,6 +13,9 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Letelice
 STR_CONFIG_SETTING_AUTOSAVE                                     :Autočuvanje: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Odabir vremenskog intervala između dve automatski sačuvane igre
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Prikazati red vožnje u diskretnim otkucajima: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Prikaži vreme putovanja u redu vožnje u diskretnim otkucajima umesto u danima
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Promena prozirnosti pokazatelja utovara. Sa Ctrl+klik se zaključava
 
 # Tracerestrict GUI

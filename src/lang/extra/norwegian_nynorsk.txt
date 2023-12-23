@@ -12,6 +12,8 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Luftfartøy
 STR_CONFIG_SETTING_AUTOSAVE                                     :Autolaging: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Vel intervall for automatisk lagring av spel
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Syne rutetabell i tikk i staden for dagar: {STRING}
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Byt gjennomsyn for lasteindikatorar. Ctrl+klikk for å låsa.
 
 # Tracerestrict GUI

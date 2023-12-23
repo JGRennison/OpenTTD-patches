@@ -12,6 +12,9 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Letala
 STR_CONFIG_SETTING_AUTOSAVE                                     :Samodejno shrani: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Izberi časovni interval samodejnega shranjevanja igre
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Prikaz urnikov v pikah namesto dneh: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Prikaži čase potovanja v časovnih tabelah kot enote igre namesto dni.
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Preklop na prosojnost za prikaz polnenja. Ctrl+Klik za zaklepanje
 
 # Tracerestrict GUI

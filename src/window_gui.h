@@ -53,12 +53,12 @@ struct WidgetDimensions {
 	RectPadding closebox;
 	RectPadding captiontext;  ///< Offsets of text within a caption.
 	RectPadding dropdowntext; ///< Offsets of text within a dropdown widget.
+	RectPadding dropdownlist; ///< Offsets used by a dropdown list itself.
 	RectPadding modalpopup;   ///< Padding for a modal popup.
 	RectPadding picker;       ///< Padding for a picker (dock, station, etc) window.
 	RectPadding sparse;       ///< Padding used for 'sparse' widget window, usually containing multiple frames.
 	RectPadding sparse_resize; ///< Padding used for a resizeable 'sparse' widget window, usually containing multiple frames.
 
-	int pressed;              ///< Offset for contents of depressed widget.
 	int vsep_picker;          ///< Vertical spacing of picker-window widgets.
 	int vsep_normal;          ///< Normal vertical spacing.
 	int vsep_sparse;          ///< Normal vertical spacing for 'sparse' widget window.
@@ -283,8 +283,10 @@ public:
 	WindowFlags flags;          ///< Window flags
 	WindowNumber window_number; ///< Window number within the window class
 
-	uint8 timeout_timer;      ///< Timer value of the WF_TIMEOUT for flags.
-	uint8 white_border_timer; ///< Timer value of the WF_WHITE_BORDER for flags.
+	int scale; ///< Scale of this window -- used to determine how to resize.
+
+	uint8_t timeout_timer;      ///< Timer value of the WF_TIMEOUT for flags.
+	uint8_t white_border_timer; ///< Timer value of the WF_WHITE_BORDER for flags.
 
 	int left;   ///< x position of left edge of the window
 	int top;    ///< y position of top edge of the window

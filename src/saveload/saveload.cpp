@@ -1421,58 +1421,8 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld)
 	return 0;
 }
 
-/**
- * Check whether the variable size of the variable in the saveload configuration
- * matches with the actual variable size.
- * @param sld The saveload configuration to test.
- */
-[[maybe_unused]] static bool IsVariableSizeRight(const SaveLoad &sld)
-{
-	if (GetVarMemType(sld.conv) == SLE_VAR_NULL) return true;
-
-	switch (sld.cmd) {
-		case SL_VAR:
-			switch (GetVarMemType(sld.conv)) {
-				case SLE_VAR_BL:
-					return sld.size == sizeof(bool);
-				case SLE_VAR_I8:
-				case SLE_VAR_U8:
-					return sld.size == sizeof(int8);
-				case SLE_VAR_I16:
-				case SLE_VAR_U16:
-					return sld.size == sizeof(int16);
-				case SLE_VAR_I32:
-				case SLE_VAR_U32:
-					return sld.size == sizeof(int32);
-				case SLE_VAR_I64:
-				case SLE_VAR_U64:
-					return sld.size == sizeof(int64);
-				case SLE_VAR_NAME:
-					return sld.size == sizeof(std::string);
-				default:
-					return sld.size == sizeof(void *);
-			}
-		case SL_REF:
-			/* These should all be pointer sized. */
-			return sld.size == sizeof(void *);
-
-		case SL_STR:
-			/* These should be pointer sized, or fixed array. */
-			return sld.size == sizeof(void *) || sld.size == sld.length;
-
-		case SL_STDSTR:
-			/* These should be all pointers to std::string. */
-			return sld.size == sizeof(std::string);
-
-		default:
-			return true;
-	}
-}
-
 static bool SlObjectMember(void *object, const SaveLoad &sld)
 {
-	assert_msg(IsVariableSizeRight(sld), "%s, size: %u, length: %u, cmd: %u, conv: 0x%02X", sld.name.c_str(), (uint) sld.size, sld.length, sld.cmd, sld.conv);
-
 	if (!SlIsObjectValidInSavegame(sld)) return false;
 
 	VarType conv = GB(sld.conv, 0, 8);

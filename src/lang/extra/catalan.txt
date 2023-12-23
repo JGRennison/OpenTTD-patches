@@ -13,6 +13,9 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Avions
 STR_CONFIG_SETTING_AUTOSAVE                                     :Desada automàtica: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Selecciona l'interval entre desades automàtiques de les partides.
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Mostra horaris amb marques en lloc de dies: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Mostra els temps de viatge als horaris en marques en lloc de dies
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Commuta la transparència dels indicadors de càrrega. Ctrl+Clic per bloquejar
 
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Temps de viatge mitjà: {STRING}

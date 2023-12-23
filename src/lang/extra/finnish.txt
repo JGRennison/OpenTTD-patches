@@ -13,6 +13,9 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Ilma-alukset
 STR_CONFIG_SETTING_AUTOSAVE                                     :Automaattitallennus: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Valitse aikaväli automaattisille pelitallennuksille
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Näytä aikataulu askelina päivien sijaan: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Näytä aikataulun ajat päivien sijasta askelina
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Muuta lastausilmaisimien läpinäkyvyyttä. Ctrl+napsautus lukitsee.
 
 # Tracerestrict GUI

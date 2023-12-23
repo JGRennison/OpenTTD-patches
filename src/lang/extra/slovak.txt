@@ -13,6 +13,9 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Lietadlá
 STR_CONFIG_SETTING_AUTOSAVE                                     :Automatické ukladanie: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Vyberte interval pre automatické ukladanie hry
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Zobraziť cestovné poriadky v tiknutiach namiesto dní: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Zobrazí časy cestovania v cestovnom poriadku v herných tiknutiach namiesto dní
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Prepnúť priehľadnosť ukazateľov nakladania. Ctrl+klik uzamkne nastavenie
 
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Priemerný čas cesty: {STRING}

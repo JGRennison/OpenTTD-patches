@@ -28,7 +28,8 @@ struct Dimension {
 	uint width;
 	uint height;
 
-	Dimension(uint w = 0, uint h = 0) : width(w), height(h) {};
+	constexpr Dimension() : width(0), height(0) {}
+	constexpr Dimension(uint w, uint h) : width(w), height(h) {}
 
 	bool operator< (const Dimension &other) const
 	{
@@ -214,7 +215,7 @@ struct Rect {
 	/**
 	 * Test if a point falls inside this Rect.
 	 * @param pt the point to test.
-	 * @return true iif the point falls inside the Rect.
+	 * @return true iff the point falls inside the Rect.
 	 */
 	inline bool Contains(const Point &pt) const
 	{

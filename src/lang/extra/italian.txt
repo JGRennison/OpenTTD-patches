@@ -13,6 +13,9 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Aeromobili
 STR_CONFIG_SETTING_AUTOSAVE                                     :Salvataggi automatici: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Seleziona l'intervallo fra i salvataggi automatici della partita
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Mostra le tabelle orarie in tick piuttosto che in giorni: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Mostra il tempo di viaggio in tick del simulatore invece che in giorni
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Attiva/disattiva la trasparenza degli indicatori di caricamento. CTRL+clic per bloccare
 
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}tempo medio di percorrenza: {STRING}

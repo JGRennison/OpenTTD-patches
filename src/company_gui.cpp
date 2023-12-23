@@ -621,36 +621,15 @@ static const LiveryClass _livery_class[LS_END] = {
 	LC_ROAD, LC_ROAD,
 };
 
-class DropDownListColourItem : public DropDownListStringItem {
+/**
+ * Colour selection list item, with icon and string components.
+ * @tparam TSprite Recolourable sprite to draw as icon.
+ */
+template <SpriteID TSprite = SPR_SQUARE>
+class DropDownListColourItem : public DropDownIcon<DropDownString<DropDownListItem>> {
 public:
-	DropDownListColourItem(int result, bool masked) : DropDownListStringItem(result >= COLOUR_END ? STR_COLOUR_DEFAULT : _colour_dropdown[result], result, masked) {}
-
-	uint Width() const override
+	DropDownListColourItem(int colour, bool masked) : DropDownIcon<DropDownString<DropDownListItem>>(TSprite, PALETTE_RECOLOUR_START + (colour % COLOUR_END), colour < COLOUR_END ? _colour_dropdown[colour] : STR_COLOUR_DEFAULT, colour, masked)
 	{
-		return ScaleGUITrad(28) + WidgetDimensions::scaled.hsep_normal + GetStringBoundingBox(this->String()).width + WidgetDimensions::scaled.dropdowntext.Horizontal();
-	}
-
-	uint Height() const override
-	{
-		return std::max(GetCharacterHeight(FS_NORMAL), ScaleGUITrad(12) + WidgetDimensions::scaled.vsep_normal);
-	}
-
-	bool Selectable() const override
-	{
-		return true;
-	}
-
-	void Draw(const Rect &r, bool sel, Colours) const override
-	{
-		bool rtl = _current_text_dir == TD_RTL;
-		int icon_y = CenterBounds(r.top, r.bottom, 0);
-		int text_y = CenterBounds(r.top, r.bottom, GetCharacterHeight(FS_NORMAL));
-		Rect tr = r.Shrink(WidgetDimensions::scaled.dropdowntext);
-		DrawSprite(SPR_VEH_BUS_SIDE_VIEW, PALETTE_RECOLOUR_START + (this->result % COLOUR_END),
-				   rtl ? tr.right - ScaleGUITrad(14) : tr.left + ScaleGUITrad(14),
-				   icon_y);
-		tr = tr.Indent(ScaleGUITrad(28) + WidgetDimensions::scaled.hsep_normal, rtl);
-		DrawString(tr.left, tr.right, text_y, this->String(), sel ? TC_WHITE : TC_BLACK);
 	}
 };
 
@@ -706,10 +685,10 @@ private:
 		if (default_livery != nullptr) {
 			/* Add COLOUR_END to put the colour out of range, but also allow us to show what the default is */
 			default_col = (primary ? default_livery->colour1 : default_livery->colour2) + COLOUR_END;
-			list.push_back(std::make_unique<DropDownListColourItem>(default_col, false));
+			list.push_back(std::make_unique<DropDownListColourItem<>>(default_col, false));
 		}
 		for (uint i = 0; i < lengthof(_colour_dropdown); i++) {
-			list.push_back(std::make_unique<DropDownListColourItem>(i, HasBit(used_colours, i)));
+			list.push_back(std::make_unique<DropDownListColourItem<>>(i, HasBit(used_colours, i)));
 		}
 
 		byte sel = (default_livery == nullptr || HasBit(livery->in_use, primary ? 0 : 1)) ? (primary ? livery->colour1 : livery->colour2) : default_col;
@@ -969,9 +948,10 @@ public:
 			y += this->line_height;
 		};
 
+		const Company *c = Company::Get((CompanyID)this->window_number);
+
 		if (livery_class < LC_GROUP_RAIL) {
 			int pos = this->vscroll->GetPosition();
-			const Company *c = Company::Get((CompanyID)this->window_number);
 			for (LiveryScheme scheme = LS_DEFAULT; scheme < LS_END; scheme++) {
 				if (_livery_class[scheme] == this->livery_class && HasBit(_loaded_newgrf_features.used_liveries, scheme)) {
 					if (pos-- > 0) continue;
@@ -982,8 +962,9 @@ public:
 			uint max = static_cast<uint>(std::min<size_t>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->groups.size()));
 			for (uint i = this->vscroll->GetPosition(); i < max; ++i) {
 				const Group *g = this->groups[i];
+				const bool livery_set = HasBit(g->livery.in_use, 0);
 				SetDParam(0, g->index);
-				draw_livery(STR_GROUP_NAME, g->livery, this->sel == g->index, false, this->indents[i] * WidgetDimensions::scaled.hsep_indent);
+				draw_livery(STR_GROUP_NAME, livery_set ? g->livery : c->livery[LS_DEFAULT], this->sel == g->index, livery_set, this->indents[i] * WidgetDimensions::scaled.hsep_indent);
 			}
 		}
 	}
@@ -1511,12 +1492,9 @@ public:
 				*size = maxdim(*size, GetStringBoundingBox(STR_FACE_MOUSTACHE));
 				break;
 
-			case WID_SCMF_FACE: {
-				Dimension face_size = GetScaledSpriteSize(SPR_GRADIENT);
-				size->width  = std::max(size->width,  face_size.width);
-				size->height = std::max(size->height, face_size.height);
+			case WID_SCMF_FACE:
+				*size = maxdim(*size, GetScaledSpriteSize(SPR_GRADIENT));
 				break;
-			}
 
 			case WID_SCMF_HAS_MOUSTACHE_EARRING:
 			case WID_SCMF_HAS_GLASSES:
@@ -2362,69 +2340,38 @@ struct CompanyWindow : Window
 			bool reinit = false;
 
 			/* Button bar selection. */
-			int plane = local ? CWP_BUTTONS_LOCAL : CWP_BUTTONS_OTHER;
-			NWidgetStacked *wi = this->GetWidget<NWidgetStacked>(WID_C_SELECT_BUTTONS);
-			if (plane != wi->shown_plane) {
-				wi->SetDisplayedPlane(plane);
-				this->InvalidateData();
-				reinit = true;
-			}
+			reinit |= this->GetWidget<NWidgetStacked>(WID_C_SELECT_BUTTONS)->SetDisplayedPlane(local ? CWP_BUTTONS_LOCAL : CWP_BUTTONS_OTHER);
 
 			/* Build HQ button handling. */
-			plane = (local && c->location_of_HQ == INVALID_TILE) ? CWP_VB_BUILD : CWP_VB_VIEW;
-			wi = this->GetWidget<NWidgetStacked>(WID_C_SELECT_VIEW_BUILD_HQ);
-			if (plane != wi->shown_plane) {
-				wi->SetDisplayedPlane(plane);
-				reinit = true;
-			}
+			reinit |= this->GetWidget<NWidgetStacked>(WID_C_SELECT_VIEW_BUILD_HQ)->SetDisplayedPlane((local && c->location_of_HQ == INVALID_TILE) ? CWP_VB_BUILD : CWP_VB_VIEW);
 
 			this->SetWidgetDisabledState(WID_C_VIEW_HQ, c->location_of_HQ == INVALID_TILE);
 
 			/* Enable/disable 'Relocate HQ' button. */
-			plane = (!local || c->location_of_HQ == INVALID_TILE) ? CWP_RELOCATE_HIDE : CWP_RELOCATE_SHOW;
-			wi = this->GetWidget<NWidgetStacked>(WID_C_SELECT_RELOCATE);
-			if (plane != wi->shown_plane) {
-				wi->SetDisplayedPlane(plane);
-				reinit = true;
-			}
+			reinit |= this->GetWidget<NWidgetStacked>(WID_C_SELECT_RELOCATE)->SetDisplayedPlane((!local || c->location_of_HQ == INVALID_TILE) ? CWP_RELOCATE_HIDE : CWP_RELOCATE_SHOW);
 
 			/* Owners of company */
-			plane = SZSP_HORIZONTAL;
-			for (uint i = 0; i < lengthof(c->share_owners); i++) {
-				if (c->share_owners[i] != INVALID_COMPANY) {
-					plane = 0;
-					break;
+			{
+				int plane = SZSP_HORIZONTAL;
+				for (uint i = 0; i < lengthof(c->share_owners); i++) {
+					if (c->share_owners[i] != INVALID_COMPANY) {
+						plane = 0;
+						break;
+					}
 				}
-			}
-			wi = this->GetWidget<NWidgetStacked>(WID_C_SELECT_DESC_OWNERS);
-			if (plane != wi->shown_plane) {
-				wi->SetDisplayedPlane(plane);
-				reinit = true;
+				reinit |= this->GetWidget<NWidgetStacked>(WID_C_SELECT_DESC_OWNERS)->SetDisplayedPlane(plane);
 			}
 
 			/* Enable/disable 'Give money' button. */
-			plane = ((local || (_local_company == COMPANY_SPECTATOR)) ? SZSP_NONE : 0);
-			wi = this->GetWidget<NWidgetStacked>(WID_C_SELECT_GIVE_MONEY);
-			if (plane != wi->shown_plane) {
-				wi->SetDisplayedPlane(plane);
-				reinit = true;
-			}
+			reinit |= this->GetWidget<NWidgetStacked>(WID_C_SELECT_GIVE_MONEY)->SetDisplayedPlane((local || _local_company == COMPANY_SPECTATOR || !_settings_game.economy.give_money) ? SZSP_NONE : 0);
+
 			/* Enable/disable 'Hostile Takeover' button. */
-			plane = ((local || _local_company == COMPANY_SPECTATOR || !c->is_ai || _networking || _settings_game.economy.allow_shares) ? SZSP_NONE : 0);
-			wi = this->GetWidget<NWidgetStacked>(WID_C_SELECT_HOSTILE_TAKEOVER);
-			if (plane != wi->shown_plane) {
-				wi->SetDisplayedPlane(plane);
-				reinit = true;
-			}
+			reinit |= this->GetWidget<NWidgetStacked>(WID_C_SELECT_HOSTILE_TAKEOVER)->SetDisplayedPlane((local || _local_company == COMPANY_SPECTATOR || !c->is_ai || _networking || _settings_game.economy.allow_shares) ? SZSP_NONE : 0);
 
 			/* Multiplayer buttons. */
-			plane = ((!_networking) ? (int)SZSP_NONE : (int)(local ? CWP_MP_C_PWD : CWP_MP_C_JOIN));
-			wi = this->GetWidget<NWidgetStacked>(WID_C_SELECT_MULTIPLAYER);
-			if (plane != wi->shown_plane) {
-				wi->SetDisplayedPlane(plane);
-				reinit = true;
-			}
-			this->SetWidgetDisabledState(WID_C_COMPANY_JOIN,   c->is_ai);
+			reinit |= this->GetWidget<NWidgetStacked>(WID_C_SELECT_MULTIPLAYER)->SetDisplayedPlane((!_networking) ? (int)SZSP_NONE : (int)(local ? CWP_MP_C_PWD : CWP_MP_C_JOIN));
+
+			this->SetWidgetDisabledState(WID_C_COMPANY_JOIN, c->is_ai);
 
 			if (reinit) {
 				this->ReInit();
@@ -2438,12 +2385,9 @@ struct CompanyWindow : Window
 	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
-			case WID_C_FACE: {
-				Dimension face_size = GetScaledSpriteSize(SPR_GRADIENT);
-				size->width  = std::max(size->width,  face_size.width);
-				size->height = std::max(size->height, face_size.height);
+			case WID_C_FACE:
+				*size = maxdim(*size, GetScaledSpriteSize(SPR_GRADIENT));
 				break;
-			}
 
 			case WID_C_DESC_COLOUR_SCHEME_EXAMPLE: {
 				Point offset;

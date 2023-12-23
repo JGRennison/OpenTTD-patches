@@ -12,6 +12,9 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Awyrennau
 STR_CONFIG_SETTING_AUTOSAVE                                     :Awtogadw: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Dewis pa mor aml y dylid awtogadw gemau
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Dangos amserlen fesul ticiau yn hytrach na dyddiau: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Dangos amseroedd teithio mewn amserlenni mewn ticiau yn hytrach na dyddiau
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Toglu tryloywder ar gyfer dangosyddion llwytho. Ctrl+Clic i gloi
 
 # Tracerestrict GUI

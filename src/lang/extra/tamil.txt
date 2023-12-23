@@ -10,6 +10,9 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :விமான
 STR_CONFIG_SETTING_AUTOSAVE                                     :தானியங்கிபதிவு: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :தானியங்கி விளையாட்டு சேமிப்புகளுக்கு இடையில் இடைவெளியைத் தேர்ந்தெடுக்கவும்
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :கால அட்டவணையை நாட்களில் அல்லாமல் சொடுக்குகளில் காட்டு: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :கால அட்டவணையை நாட்களில் அல்லாமல் சொடுக்குகளில் காட்டு
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

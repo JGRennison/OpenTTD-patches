@@ -9,6 +9,9 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Bifreiðir
 STR_VEHICLE_TYPE_SHIPS                                          :Skip
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Flugvélar
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Birta áætlanir í slögum frekar en dögum: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Sýna ferðatíma í áætlun í slögum frekar en dögum
+
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Virkja/afvirkja gegnsæji hleðslumæla. Ctrl+smella til að læsa
 
 # Tracerestrict GUI

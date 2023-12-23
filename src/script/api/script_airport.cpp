@@ -15,7 +15,7 @@
 
 #include "../../safeguards.h"
 
-extern Town *AirportGetNearestTown(const struct AirportSpec *as, const TileIterator &it, uint &mindist);
+extern Town *AirportGetNearestTown(const struct AirportSpec *as, TileIndex tile, const TileIterator &it, uint &mindist);
 extern uint8 GetAirportNoiseLevelForDistance(const struct AirportSpec *as, uint distance);
 
 /* static */ bool ScriptAirport::IsValidAirportType(AirportType type)
@@ -142,7 +142,7 @@ extern uint8 GetAirportNoiseLevelForDistance(const struct AirportSpec *as, uint 
 	if (_settings_game.economy.station_noise_level) {
 		AirportTileTableIterator it(as->table[0], tile);
 		uint dist;
-		AirportGetNearestTown(as, it, dist);
+		AirportGetNearestTown(as, tile, it, dist);
 		return GetAirportNoiseLevelForDistance(as, dist);
 	}
 
@@ -158,7 +158,7 @@ extern uint8 GetAirportNoiseLevelForDistance(const struct AirportSpec *as, uint 
 	if (!as->IsWithinMapBounds(0, tile)) return INVALID_TOWN;
 
 	uint dist;
-	return AirportGetNearestTown(as, AirportTileTableIterator(as->table[0], tile), dist)->index;
+	return AirportGetNearestTown(as, tile, AirportTileTableIterator(as->table[0], tile), dist)->index;
 }
 
 /* static */ SQInteger ScriptAirport::GetMaintenanceCostFactor(AirportType type)

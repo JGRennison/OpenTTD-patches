@@ -597,6 +597,9 @@ STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_OFF              :Aus
 STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_WITHIN_TOWN      :Innerhalb des Einzugsgebiets
 STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_ANYWHERE         :Überall
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Fahrpläne in Ticks anstatt in Tagen anzeigen: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Zeige Fahrtzeiten in Fahrplänen in Ticks statt Tagen
+
 STR_CHEAT_EDIT_MONEY_QUERY_CAPT                                 :{WHITE}Erhöhe oder verringere das verfügbare Geld
 STR_CHEAT_INFLATION_COST                                        :{LTBLUE}Ändere Inflationsfaktor der Kosten: {ORANGE}{DECIMAL}
 STR_CHEAT_INFLATION_COST_QUERY_CAPT                             :{WHITE}Ändert den Faktor der Inflation der Kosten

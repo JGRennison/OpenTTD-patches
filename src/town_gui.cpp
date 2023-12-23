@@ -38,6 +38,7 @@
 #include "core/random_func.hpp"
 #include "town_kdtree.h"
 #include "zoom_func.h"
+#include "hotkeys.h"
 
 #include "widgets/town_widget.h"
 #include "table/strings.h"
@@ -48,7 +49,7 @@
 
 TownKdtree _town_local_authority_kdtree(&Kdtree_TownXYFunc);
 
-typedef GUIList<const Town*> GUITownList;
+typedef GUIList<const Town*, const bool &> GUITownList;
 
 static void PlaceProc_House(TileIndex tile);
 
@@ -56,7 +57,7 @@ static const NWidgetPart _nested_town_authority_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
 		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_TA_CAPTION), SetDataTip(STR_LOCAL_AUTHORITY_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_TA_ZONE_BUTTON), SetMinimalSize(50, 0), SetMinimalTextLines(1, WidgetDimensions::unscaled.framerect.Vertical() + 2), SetDataTip(STR_LOCAL_AUTHORITY_ZONE, STR_LOCAL_AUTHORITY_ZONE_TOOLTIP),
+		NWidget(WWT_TEXTBTN, COLOUR_BROWN, WID_TA_ZONE_BUTTON), SetMinimalSize(50, 0), SetDataTip(STR_LOCAL_AUTHORITY_ZONE, STR_LOCAL_AUTHORITY_ZONE_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
 		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
@@ -864,7 +865,7 @@ static const NWidgetPart _nested_town_directory_widgets[] = {
 			NWidget(WWT_PANEL, COLOUR_BROWN, WID_TD_LIST), SetDataTip(0x0, STR_TOWN_DIRECTORY_LIST_TOOLTIP),
 							SetFill(1, 0), SetResize(1, 1), SetScrollbar(WID_TD_SCROLLBAR), EndContainer(),
 			NWidget(WWT_PANEL, COLOUR_BROWN),
-				NWidget(WWT_TEXT, COLOUR_BROWN, WID_TD_WORLD_POPULATION), SetPadding(2, 0, 2, 2), SetMinimalTextLines(1, 0), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_TOWN_DIRECTORY_INFO, STR_NULL),
+				NWidget(WWT_TEXT, COLOUR_BROWN, WID_TD_WORLD_POPULATION), SetPadding(2, 0, 2, 2), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_TOWN_DIRECTORY_INFO, STR_NULL),
 			EndContainer(),
 		EndContainer(),
 		NWidget(NWID_VERTICAL),
@@ -872,6 +873,11 @@ static const NWidgetPart _nested_town_directory_widgets[] = {
 			NWidget(WWT_RESIZEBOX, COLOUR_BROWN),
 		EndContainer(),
 	EndContainer(),
+};
+
+/** Enum referring to the Hotkeys in the town directory window */
+enum TownDirectoryHotkeys {
+	TDHK_FOCUS_FILTER_BOX, ///< Focus the filter box
 };
 
 /** Town directory window class. */
@@ -887,7 +893,7 @@ private:
 	StringFilter string_filter;             ///< Filter for towns
 	QueryString townname_editbox;           ///< Filter editbox
 
-	GUITownList towns;
+	GUITownList towns{TownDirectoryWindow::last_sorting.order};
 
 	Scrollbar *vscroll;
 
@@ -916,31 +922,31 @@ private:
 	}
 
 	/** Sort by town name */
-	static bool TownNameSorter(const Town * const &a, const Town * const &b)
+	static bool TownNameSorter(const Town * const &a, const Town * const &b, const bool &)
 	{
 		return StrNaturalCompare(a->GetCachedName(), b->GetCachedName()) < 0; // Sort by name (natural sorting).
 	}
 
 	/** Sort by population (default descending, as big towns are of the most interest). */
-	static bool TownPopulationSorter(const Town * const &a, const Town * const &b)
+	static bool TownPopulationSorter(const Town * const &a, const Town * const &b, const bool &order)
 	{
-		uint32 a_population = a->cache.population;
-		uint32 b_population = b->cache.population;
-		if (a_population == b_population) return TownDirectoryWindow::TownNameSorter(a, b);
+		uint32_t a_population = a->cache.population;
+		uint32_t b_population = b->cache.population;
+		if (a_population == b_population) return TownDirectoryWindow::TownNameSorter(a, b, order);
 		return a_population < b_population;
 	}
 
 	/** Sort by town rating */
-	static bool TownRatingSorter(const Town * const &a, const Town * const &b)
+	static bool TownRatingSorter(const Town * const &a, const Town * const &b, const bool &order)
 	{
-		bool before = !TownDirectoryWindow::last_sorting.order; // Value to get 'a' before 'b'.
+		bool before = !order; // Value to get 'a' before 'b'.
 
 		/* Towns without rating are always after towns with rating. */
 		if (HasBit(a->have_ratings, _local_company)) {
 			if (HasBit(b->have_ratings, _local_company)) {
-				int16 a_rating = a->ratings[_local_company];
-				int16 b_rating = b->ratings[_local_company];
-				if (a_rating == b_rating) return TownDirectoryWindow::TownNameSorter(a, b);
+				int16_t a_rating = a->ratings[_local_company];
+				int16_t b_rating = b->ratings[_local_company];
+				if (a_rating == b_rating) return TownDirectoryWindow::TownNameSorter(a, b, order);
 				return a_rating < b_rating;
 			}
 			return before;
@@ -948,8 +954,8 @@ private:
 		if (HasBit(b->have_ratings, _local_company)) return !before;
 
 		/* Sort unrated towns always on ascending town name. */
-		if (before) return TownDirectoryWindow::TownNameSorter(a, b);
-		return TownDirectoryWindow::TownNameSorter(b, a);
+		if (before) return TownDirectoryWindow::TownNameSorter(a, b, order);
+		return TownDirectoryWindow::TownNameSorter(b, a, order);
 	}
 
 public:
@@ -1190,7 +1196,28 @@ public:
 				this->towns.ForceResort();
 		}
 	}
+
+	EventState OnHotkey(int hotkey) override
+	{
+		switch (hotkey) {
+			case TDHK_FOCUS_FILTER_BOX:
+				this->SetFocusedWidget(WID_TD_FILTER);
+				SetFocusedWindow(this); // The user has asked to give focus to the text box, so make sure this window is focused.
+				break;
+			default:
+				return ES_NOT_HANDLED;
+		}
+		return ES_HANDLED;
+	}
+
+	static HotkeyList hotkeys;
 };
+
+static Hotkey towndirectory_hotkeys[] = {
+	Hotkey('F', "focus_filter_box", TDHK_FOCUS_FILTER_BOX),
+	HOTKEY_LIST_END
+};
+HotkeyList TownDirectoryWindow::hotkeys("towndirectory", towndirectory_hotkeys);
 
 Listing TownDirectoryWindow::last_sorting = {false, 0};
 
@@ -1213,7 +1240,8 @@ static WindowDesc _town_directory_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_towns", 208, 202,
 	WC_TOWN_DIRECTORY, WC_NONE,
 	0,
-	std::begin(_nested_town_directory_widgets), std::end(_nested_town_directory_widgets)
+	std::begin(_nested_town_directory_widgets), std::end(_nested_town_directory_widgets),
+	&TownDirectoryWindow::hotkeys
 );
 
 void ShowTownDirectory()

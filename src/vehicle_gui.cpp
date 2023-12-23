@@ -238,6 +238,14 @@ void BaseVehicleListWindow::BuildVehicleList()
 
 	GenerateVehicleSortList(&this->vehicles, this->vli);
 
+	CargoTypes used = 0;
+	for (const Vehicle *v : this->vehicles) {
+		for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
+			if (u->cargo_cap > 0) SetBit(used, u->cargo_type);
+		}
+	}
+	this->used_cargoes = used;
+
 	if (this->grouping == GB_NONE) {
 		uint max_unitnumber = 0;
 		for (auto it = this->vehicles.begin(); it != this->vehicles.end(); ++it) {
@@ -289,11 +297,14 @@ static GUIVehicleGroupList::FilterFunction * const _filter_funcs[] = {
 	&GroupCargoFilter,
 };
 
-/** Set cargo filter list item index. */
-void BaseVehicleListWindow::SetCargoFilterIndex(int index)
+/**
+ * Set cargo filter for the vehicle group list.
+ * @param cid The cargo to be set.
+ */
+void BaseVehicleListWindow::SetCargoFilter(CargoID cid)
 {
-	if (this->cargo_filter_criteria != index) {
-		this->cargo_filter_criteria = index;
+	if (this->cargo_filter_criteria != cid) {
+		this->cargo_filter_criteria = cid;
 		/* Deactivate filter if criteria is 'Show All', activate it otherwise. */
 		this->vehgroups.SetFilterState(this->cargo_filter_criteria != CF_ANY);
 		this->vehgroups.SetFilterType(0);
@@ -368,7 +379,12 @@ StringID BaseVehicleListWindow::GetCargoFilterLabel(CargoID cid) const
 	}
 }
 
-DropDownList BaseVehicleListWindow::BuildCargoDropDownList() const
+/**
+ * Build drop down list for cargo filter selection.
+ * @param full If true, build list with all cargo types, instead of only used cargo types.
+ * @return Drop down list for cargo filter.
+ */
+DropDownList BaseVehicleListWindow::BuildCargoDropDownList(bool full) const
 {
 	DropDownList list;
 
@@ -380,8 +396,10 @@ DropDownList BaseVehicleListWindow::BuildCargoDropDownList() const
 	list.push_back(std::make_unique<DropDownListStringItem>(this->GetCargoFilterLabel(CF_NONE), CF_NONE, false));
 
 	/* Add cargos */
+	Dimension d = GetLargestCargoIconSize();
 	for (const CargoSpec *cs : _sorted_cargo_specs) {
-		list.push_back(std::make_unique<DropDownListStringItem>(cs->name, cs->Index(), false));
+		if (!full && !HasBit(this->used_cargoes, cs->Index())) continue;
+		list.push_back(std::make_unique<DropDownListIconItem>(d, cs->GetCargoIcon(), PAL_NONE, cs->name, cs->Index(), false, !HasBit(this->used_cargoes, cs->Index())));
 	}
 
 	return list;
@@ -2274,7 +2292,7 @@ public:
 				break;
 
 			case WID_VL_FILTER_BY_CARGO:
-				size->width = std::max(size->width, GetDropDownListDimension(this->BuildCargoDropDownList()).width + padding.width);
+				size->width = std::max(size->width, GetDropDownListDimension(this->BuildCargoDropDownList(true)).width + padding.width);
 				break;
 
 			case WID_VL_MANAGE_VEHICLES_DROPDOWN: {
@@ -2409,7 +2427,7 @@ public:
 				return;
 
 			case WID_VL_FILTER_BY_CARGO: // Cargo filter dropdown
-				ShowDropDownList(this, this->BuildCargoDropDownList(), this->cargo_filter_criteria, widget);
+				ShowDropDownList(this, this->BuildCargoDropDownList(false), this->cargo_filter_criteria, widget);
 				break;
 
 			case WID_VL_LIST: { // Matrix to show vehicles
@@ -2485,7 +2503,7 @@ public:
 				break;
 
 			case WID_VL_FILTER_BY_CARGO:
-				this->SetCargoFilterIndex(index);
+				this->SetCargoFilter(index);
 				break;
 
 			case WID_VL_MANAGE_VEHICLES_DROPDOWN:
@@ -3890,10 +3908,9 @@ public:
 		/* Draw the flag plus orders. */
 		bool rtl = (_current_text_dir == TD_RTL);
 		uint icon_width = std::max({GetScaledSpriteSize(SPR_WARNING_SIGN).width, GetScaledSpriteSize(SPR_FLAG_VEH_STOPPED).width, GetScaledSpriteSize(SPR_FLAG_VEH_RUNNING).width});
-		int lowered = this->IsWidgetLowered(widget) ? WidgetDimensions::scaled.pressed : 0;
-		Rect tr = r.Shrink(WidgetDimensions::scaled.framerect).Translate(lowered, lowered);
+		Rect tr = r.Shrink(WidgetDimensions::scaled.framerect);
 		SpriteID image = ((v->vehstatus & VS_STOPPED) != 0) ? SPR_FLAG_VEH_STOPPED : (HasBit(v->vehicle_flags, VF_PATHFINDER_LOST)) ? SPR_WARNING_SIGN : SPR_FLAG_VEH_RUNNING;
-		DrawSpriteIgnorePadding(image, PAL_NONE, tr.WithWidth(icon_width, rtl), false, SA_CENTER);
+		DrawSpriteIgnorePadding(image, PAL_NONE, tr.WithWidth(icon_width, rtl), SA_CENTER);
 		tr = tr.Indent(icon_width + WidgetDimensions::scaled.imgbtn.Horizontal(), rtl);
 		DrawString(tr.left, tr.right, CenterBounds(tr.top, tr.bottom, GetCharacterHeight(FS_NORMAL)), str, text_colour, SA_HOR_CENTER);
 	}

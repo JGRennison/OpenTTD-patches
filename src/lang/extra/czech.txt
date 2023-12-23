@@ -680,6 +680,9 @@ STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_ANYWHERE         :všude
 STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED                   :{WHITE}Nelze změnit nastavení...
 STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED_NEWGRF            :{WHITE}...nastavení je sledováno souborem NewGRF
 
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Zobrazit jízdní řády v cyklech místo ve dnech: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Ukazuje cestovní časy v jízdních řádech
+
 STR_CHEAT_EDIT_MONEY_QUERY_CAPT                                 :{WHITE}Přidat nebo odebrat peníze
 STR_CHEAT_INFLATION_COST                                        :{LTBLUE}Změnit faktor inflace nákladů: {ORANGE}{DECIMAL}
 STR_CHEAT_INFLATION_COST_QUERY_CAPT                             :{WHITE}Změnit faktor inflace nákladů
