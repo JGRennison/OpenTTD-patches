@@ -16,6 +16,11 @@ struct IndustryLocationDistanceCache {
 	uint16 distances[NUM_INDUSTRYTYPES];
 };
 
+struct IndustryLocationDistanceAndCountCache {
+	uint16 distances[NUM_INDUSTRYTYPES];
+	uint8 counts[NUM_INDUSTRYTYPES];
+};
+
 /** Resolver for industry scopes. */
 struct IndustriesScopeResolver : public ScopeResolver {
 	TileIndex tile;     ///< Tile owned by the industry.
@@ -24,6 +29,7 @@ struct IndustriesScopeResolver : public ScopeResolver {
 	IndustryType type;  ///< Type of the industry.
 
 	mutable std::unique_ptr<IndustryLocationDistanceCache> location_distance_cache;
+	mutable std::unique_ptr<IndustryLocationDistanceAndCountCache> town_location_distance_cache;
 
 	/**
 	 * Scope resolver for industries.

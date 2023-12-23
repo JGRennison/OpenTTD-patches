@@ -145,6 +145,23 @@ uint32 IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(byte param_
 		 * In either case, just do the regular var67 */
 		if (mask & 0xFFFF) closest_dist = this->GetClosestIndustry(ind_index);
 		if (mask & 0xFF0000) count = ClampTo<byte>(Industry::GetIndustryTypeCount(ind_index));
+	} else if (layout_filter == 0 && town_filter) {
+		/* Count only those which match the same industry type and town */
+		std::unique_ptr<IndustryLocationDistanceAndCountCache> &cache = this->town_location_distance_cache;
+		if (cache == nullptr) {
+			cache = std::make_unique<IndustryLocationDistanceAndCountCache>();
+			MemSetT(cache->distances, 0xFF, NUM_INDUSTRYTYPES);
+			MemSetT(cache->counts, 0, NUM_INDUSTRYTYPES);
+			for (const Industry *i : Industry::Iterate()) {
+				if (i == this->industry || i->type >= NUM_INDUSTRYTYPES || i->town != this->industry->town) continue;
+
+				uint dist = DistanceManhattan(this->tile, i->location.tile);
+				if (dist < (uint)cache->distances[i->type]) cache->distances[i->type] = (uint16)dist;
+				cache->counts[i->type] = ClampTo<uint8>(cache->counts[i->type] + 1);
+			}
+		}
+		closest_dist = cache->distances[ind_index];
+		count = cache->counts[ind_index];
 	} else {
 		/* Count only those who match the same industry type and layout filter
 		 * Unfortunately, we have to do it manually */
