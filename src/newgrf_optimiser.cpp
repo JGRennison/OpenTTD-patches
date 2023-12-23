@@ -2547,7 +2547,31 @@ static void OptimiseVarAction2DeterministicSpriteResolveJumps(DeterministicSprit
 	}
 }
 
-static const size_t MAX_PROC_INLINE_ADJUST_COUNT = 5;
+static const size_t MAX_PROC_INLINE_ADJUST_COUNT = 8;
+
+static bool IsVariableInlinable(uint16 variable, GrfSpecFeature feature)
+{
+	/* Always available global variables */
+	if (variable <= 0x03) return true;
+	if (variable == 0x06) return true;
+	if (variable >= 0x09 && variable <= 0x12) return true;
+	if (variable == 0x18) return true;
+	if (variable >= 0x1A && variable <= 0x1E) return true;
+	if (variable >= 0x20 && variable <= 0x24) return true;
+
+	/* Temp storage, procedure call, GRF param */
+	if (variable >= 0x7D && variable <= 0x7F) return true;
+
+	/* Perm storage */
+	if (variable == 0x7C) return feature == GSF_AIRPORTS || feature == GSF_INDUSTRIES;
+
+	if (feature == GSF_INDUSTRIES) {
+		/* Special case: allow inlining variables 67, 68, even though these are not strictly always available */
+		if (variable >= 0x67 && variable <= 0x68) return true;
+	}
+
+	return false;
+}
 
 static void OptimiseVarAction2CheckInliningCandidate(DeterministicSpriteGroup *group, std::vector<DeterministicSpriteGroupAdjust> &saved_adjusts)
 {
@@ -2557,13 +2581,7 @@ static void OptimiseVarAction2CheckInliningCandidate(DeterministicSpriteGroup *g
 	for (const DeterministicSpriteGroupAdjust &adjust : group->adjusts) {
 		uint variable = adjust.variable;
 		if (variable == 0x7B) variable = adjust.parameter;
-		if (variable == 0xC || variable == 0x10 || variable == 0x18 || variable == 0x1A || (variable >= 0x7D && variable <= 0x7F)) {
-			// OK
-		} else if (variable == 0x7C) {
-			if (group->feature != GSF_AIRPORTS && group->feature != GSF_INDUSTRIES) return;
-		} else {
-			return;
-		}
+		if (!IsVariableInlinable(variable, group->feature)) return;
 	}
 
 	group->dsg_flags |= DSGF_INLINE_CANDIDATE;

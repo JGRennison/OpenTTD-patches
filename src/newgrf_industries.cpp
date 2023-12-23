@@ -224,6 +224,11 @@ static uint32 GetCountAndDistanceOfClosestInstance(byte param_setID, byte layout
 	const IndustrySpec *indspec = GetIndustrySpec(this->type);
 
 	if (this->industry == nullptr) {
+		/* Unconditionally allow these, with a dummy result, so that they can be considered always available for optimisation purposes */
+		if (variable == 0x67 || variable == 0x68) {
+			return 0 | 0xFFFF;
+		}
+
 		DEBUG(grf, 1, "Unhandled variable 0x%X (no available industry) in callback 0x%x", variable, this->ro.callback);
 
 		extra->available = false;
