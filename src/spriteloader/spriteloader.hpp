@@ -14,6 +14,7 @@
 #include "../core/enum_type.hpp"
 #include "../gfx_type.h"
 #include "sprite_file_type.hpp"
+#include <array>
 
 struct Sprite;
 typedef void *AllocatorProc(size_t size);
