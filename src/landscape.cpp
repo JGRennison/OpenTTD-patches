@@ -1235,6 +1235,7 @@ static void BuildRiver(TileIndex begin, TileIndex end)
 	finder.EndNodeCheck = River_EndNodeCheck;
 	finder.FoundEndNode = River_FoundEndNode;
 	finder.user_target = &end;
+	finder.max_search_nodes = AYSTAR_DEF_MAX_SEARCH_NODES;
 
 	finder.Init(1 << RIVER_HASH_SIZE);
 
