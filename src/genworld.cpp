@@ -36,6 +36,7 @@
 #include "tgp.h"
 #include "signal_func.h"
 #include "newgrf_industrytiles.h"
+#include "station_func.h"
 
 #include "safeguards.h"
 
@@ -63,6 +64,8 @@ GenWorldInfo _gw;
 /** Whether we are generating the map or not. */
 bool _generating_world;
 
+extern bool _town_noise_no_update;
+
 class AbortGenerateWorldSignal { };
 
 /**
@@ -71,6 +74,7 @@ class AbortGenerateWorldSignal { };
 static void CleanupGeneration()
 {
 	_generating_world = false;
+	_town_noise_no_update = false;
 
 	SetMouseCursorBusy(false);
 	/* Show all vital windows again, because we have hidden them */
@@ -94,6 +98,7 @@ static void _GenerateWorld()
 
 	try {
 		_generating_world = true;
+		_town_noise_no_update = true;
 		if (_network_dedicated) DEBUG(net, 3, "Generating map, please wait...");
 		/* Set the Random() seed to generation_seed so we produce the same map with the same seed */
 		_random.SetSeed(_settings_game.game_creation.generation_seed);
@@ -156,6 +161,8 @@ static void _GenerateWorld()
 		IncreaseGeneratingWorldProgress(GWP_GAME_INIT);
 		StartupDisasters();
 		_generating_world = false;
+		_town_noise_no_update = false;
+		UpdateAirportsNoise();
 
 		/* No need to run the tile loop in the scenario editor. */
 		if (_gw.mode != GWM_EMPTY) {
