@@ -1528,8 +1528,7 @@ static void SlRefList(void *list, SLRefType conv)
 		case SLA_SAVE: {
 			SlWriteUint32((uint32)l->size());
 
-			typename PtrList::iterator iter;
-			for (iter = l->begin(); iter != l->end(); ++iter) {
+			for (auto iter = l->begin(); iter != l->end(); ++iter) {
 				void *ptr = *iter;
 				SlWriteUint32((uint32)ReferenceToInt(ptr, conv));
 			}
@@ -1538,6 +1537,9 @@ static void SlRefList(void *list, SLRefType conv)
 		case SLA_LOAD_CHECK:
 		case SLA_LOAD: {
 			size_t length = IsSavegameVersionBefore(SLV_69) ? SlReadUint16() : SlReadUint32();
+			if constexpr (!std::is_same_v<PtrList, std::list<void *>>) {
+				l->reserve(length);
+			}
 
 			/* Load each reference and push to the end of the list */
 			for (size_t i = 0; i < length; i++) {
@@ -1547,13 +1549,8 @@ static void SlRefList(void *list, SLRefType conv)
 			break;
 		}
 		case SLA_PTRS: {
-			PtrList temp = *l;
-
-			l->clear();
-			typename PtrList::iterator iter;
-			for (iter = temp.begin(); iter != temp.end(); ++iter) {
-				void *ptr = IntToReference((size_t)*iter, conv);
-				l->push_back(ptr);
+			for (auto iter = l->begin(); iter != l->end(); ++iter) {
+				*iter = IntToReference((size_t)*iter, conv);
 			}
 			break;
 		}
