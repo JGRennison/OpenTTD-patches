@@ -22,6 +22,7 @@
 
 static bool _town_zone_radii_no_update = false;
 
+extern bool _town_noise_no_update;
 extern bool IsGetTownZonesCallbackHandlerPresent();
 
 HouseID SLGetCleanHouseType(TileIndex t, bool old_map_position)
@@ -372,6 +373,7 @@ static void Ptrs_TOWN()
 
 void SlResetTNNC()
 {
+	_town_noise_no_update = false;
 	_town_zone_radii_no_update = false;
 }
 
@@ -379,19 +381,31 @@ void Save_TNNC()
 {
 	assert(_sl_xv_feature_versions[XSLFI_TNNC_CHUNK] != 0);
 
-	if (!IsNetworkServerSave() || !IsGetTownZonesCallbackHandlerPresent()) {
+	if (!IsNetworkServerSave()) {
 		SlSetLength(0);
 		return;
 	}
 
-	SlSetLength(4 + (Town::GetNumItems() * (1 + lengthof(TownCache::squared_town_zone_radius)) * 4));
+	size_t length = 8 + (Town::GetNumItems() * 6);
+	uint32 flags = 0;
 
+	if (IsGetTownZonesCallbackHandlerPresent()) {
+		flags |= 1;
+		length += lengthof(TownCache::squared_town_zone_radius) * 4;
+	}
+
+	SlSetLength(length);
+
+	SlWriteUint32(flags);
 	SlWriteUint32((uint32)Town::GetNumItems());
 
 	for (const Town *t : Town::Iterate()) {
 		SlWriteUint32(t->index);
-		for (uint i = 0; i < lengthof(TownCache::squared_town_zone_radius); i++) {
-			SlWriteUint32(t->cache.squared_town_zone_radius[i]);
+		SlWriteUint16(t->noise_reached);
+		if (flags & 2) {
+			for (uint i = 0; i < lengthof(TownCache::squared_town_zone_radius); i++) {
+				SlWriteUint32(t->cache.squared_town_zone_radius[i]);
+			}
 		}
 	}
 }
@@ -405,13 +419,19 @@ void Load_TNNC()
 		return;
 	}
 
-	_town_zone_radii_no_update = true;
-
+	const uint32 flags = SlReadUint32();
 	const uint32 count = SlReadUint32();
+
+	_town_noise_no_update = true;
+	_town_zone_radii_no_update = (flags & 1);
+
 	for (uint32 idx = 0; idx < count; idx++) {
 		Town *t = Town::Get(SlReadUint32());
-		for (uint i = 0; i < lengthof(TownCache::squared_town_zone_radius); i++) {
-			t->cache.squared_town_zone_radius[i] = SlReadUint32();
+		t->noise_reached = SlReadUint16();
+		if (flags & 1) {
+			for (uint i = 0; i < lengthof(TownCache::squared_town_zone_radius); i++) {
+				t->cache.squared_town_zone_radius[i] = SlReadUint32();
+			}
 		}
 	}
 }
