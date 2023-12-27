@@ -720,12 +720,12 @@ bool IndustryTemporarilyRefusesCargo(Industry *ind, CargoID cargo_type)
 	return false;
 }
 
-void DumpIndustrySpriteGroup(const IndustrySpec *spec, DumpSpriteGroupPrinter print)
+void DumpIndustrySpriteGroup(const IndustrySpec *spec, SpriteGroupDumper &dumper)
 {
-	DumpSpriteGroup(spec->grf_prop.spritegroup[0], std::move(print));
+	dumper.DumpSpriteGroup(spec->grf_prop.spritegroup[0], 0);
 }
 
-void DumpIndustryTileSpriteGroup(const IndustryTileSpec *spec, DumpSpriteGroupPrinter print)
+void DumpIndustryTileSpriteGroup(const IndustryTileSpec *spec, SpriteGroupDumper &dumper)
 {
-	DumpSpriteGroup(spec->grf_prop.spritegroup[0], std::move(print));
+	dumper.DumpSpriteGroup(spec->grf_prop.spritegroup[0], 0);
 }

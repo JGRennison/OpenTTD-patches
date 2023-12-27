@@ -293,16 +293,15 @@ bool IsGetTownZonesCallbackHandlerPresent()
 	return false;
 }
 
-void DumpGenericCallbackSpriteGroups(GrfSpecFeature feature, DumpSpriteGroupPrinter print)
+void DumpGenericCallbackSpriteGroups(GrfSpecFeature feature, SpriteGroupDumper &dumper)
 {
-	SpriteGroupDumper dumper(print);
 	bool first = true;
 	for (GenericCallbackList::const_reverse_iterator it = _gcl[feature].rbegin(); it != _gcl[feature].rend(); ++it) {
-		if (!first) print(nullptr, DSGPO_PRINT, 0, "");
+		if (!first) dumper.Print("");
 		char buffer[64];
 		seprintf(buffer, lastof(buffer), "GRF: %08X, town zone cb enabled: %s",
 				BSWAP32(it->file->grfid), HasBit(it->file->observed_feature_tests, GFTOF_TOWN_ZONE_CALLBACK) ? "yes" : "no");
-		print(nullptr, DSGPO_PRINT, 0, buffer);
+		dumper.Print(buffer);
 		first = false;
 		dumper.DumpSpriteGroup(it->group, 0);
 	}

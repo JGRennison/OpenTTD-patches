@@ -1660,7 +1660,7 @@ void AnalyseEngineCallbacks()
 	}
 }
 
-void DumpVehicleSpriteGroup(const Vehicle *v, DumpSpriteGroupPrinter print)
+void DumpVehicleSpriteGroup(const Vehicle *v, SpriteGroupDumper &dumper)
 {
 	char buffer[512];
 	const Engine *e = Engine::Get(v->engine_type);
@@ -1670,7 +1670,7 @@ void DumpVehicleSpriteGroup(const Vehicle *v, DumpSpriteGroupPrinter print)
 		root_spritegroup = GetWagonOverrideSpriteSet(v->engine_type, v->cargo_type, v->GetGroundVehicleCache()->first_engine);
 		if (root_spritegroup != nullptr) {
 			seprintf(buffer, lastof(buffer), "Wagon Override for cargo: %u, engine type: %u", v->cargo_type, v->GetGroundVehicleCache()->first_engine);
-			print(nullptr, DSGPO_PRINT, 0, buffer);
+			dumper.Print(buffer);
 		}
 	}
 
@@ -1684,15 +1684,14 @@ void DumpVehicleSpriteGroup(const Vehicle *v, DumpSpriteGroupPrinter print)
 			root_spritegroup = e->grf_prop.spritegroup[CT_DEFAULT];
 			seprintf(buffer, lastof(buffer), "CT_DEFAULT");
 		}
-		print(nullptr, DSGPO_PRINT, 0, buffer);
+		dumper.Print(buffer);
 	}
 
-	SpriteGroupDumper dumper(print);
 	dumper.DumpSpriteGroup(root_spritegroup, 0);
 
 	for (uint i = 0; i < NUM_CARGO + 2; i++) {
 		if (e->grf_prop.spritegroup[i] != root_spritegroup && e->grf_prop.spritegroup[i] != nullptr) {
-			print(nullptr, DSGPO_PRINT, 0, "");
+			dumper.Print("");
 			switch (i) {
 				case CT_DEFAULT:
 					seprintf(buffer, lastof(buffer), "OTHER SPRITE GROUP: CT_DEFAULT");
@@ -1704,14 +1703,14 @@ void DumpVehicleSpriteGroup(const Vehicle *v, DumpSpriteGroupPrinter print)
 					seprintf(buffer, lastof(buffer), "OTHER SPRITE GROUP: Cargo: %u", i);
 					break;
 			}
-			print(nullptr, DSGPO_PRINT, 0, buffer);
+			dumper.Print(buffer);
 			dumper.DumpSpriteGroup(e->grf_prop.spritegroup[i], 0);
 		}
 	}
 	for (const WagonOverride &wo : e->overrides) {
 		if (wo.group != root_spritegroup && wo.group != nullptr) {
-			print(nullptr, DSGPO_PRINT, 0, "");
-			print(nullptr, DSGPO_PRINT, 0, "OTHER SPRITE GROUP: Wagon override");
+			dumper.Print("");
+			dumper.Print("OTHER SPRITE GROUP: Wagon override");
 			dumper.DumpSpriteGroup(wo.group, 0);
 		}
 	}

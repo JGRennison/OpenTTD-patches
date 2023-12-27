@@ -770,7 +770,7 @@ enum DumpSpriteGroupPrintOp {
 using DumpSpriteGroupPrinter = std::function<void(const SpriteGroup *, DumpSpriteGroupPrintOp, uint32, const char *)>;
 
 struct SpriteGroupDumper {
-	static bool use_shadows;
+	bool use_shadows = false;
 
 private:
 	char buffer[1024];
@@ -794,9 +794,13 @@ public:
 	{
 		this->DumpSpriteGroup(sg, "", flags);
 	}
+
+	void Print(const char *msg)
+	{
+		this->print_fn(nullptr, DSGPO_PRINT, 0, msg);
+	}
 };
 
-void DumpSpriteGroup(const SpriteGroup *sg, DumpSpriteGroupPrinter print);
 uint32 EvaluateDeterministicSpriteGroupAdjust(DeterministicSpriteGroupSize size, const DeterministicSpriteGroupAdjust &adjust, ScopeResolver *scope, uint32 last_value, uint32 value);
 
 #endif /* NEWGRF_SPRITEGROUP_H */

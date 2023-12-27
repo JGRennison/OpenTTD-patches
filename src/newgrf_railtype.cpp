@@ -272,7 +272,7 @@ uint8 GetReverseRailTypeTranslation(RailType railtype, const GRFFile *grffile)
 	return 0xFF;
 }
 
-void DumpRailTypeSpriteGroup(RailType rt, DumpSpriteGroupPrinter print)
+void DumpRailTypeSpriteGroup(RailType rt, SpriteGroupDumper &dumper)
 {
 	char buffer[64];
 	const RailTypeInfo *rti = GetRailTypeInfo(rt);
@@ -294,13 +294,11 @@ void DumpRailTypeSpriteGroup(RailType rt, DumpSpriteGroupPrinter print)
 	};
 	static_assert(lengthof(sprite_group_names) == RTSG_END);
 
-	SpriteGroupDumper dumper(print);
-
 	bool non_first_group = false;
 	for (RailTypeSpriteGroup rtsg = (RailTypeSpriteGroup)0; rtsg < RTSG_END; rtsg = (RailTypeSpriteGroup)(rtsg + 1)) {
 		if (rti->group[rtsg] != nullptr) {
 			if (non_first_group) {
-				print(nullptr, DSGPO_PRINT, 0, "");
+				dumper.Print("");
 			} else {
 				non_first_group = true;
 			}
@@ -309,7 +307,7 @@ void DumpRailTypeSpriteGroup(RailType rt, DumpSpriteGroupPrinter print)
 			if (rti->grffile[rtsg] != nullptr) {
 				b += seprintf(b, lastof(buffer), ", GRF: %08X", BSWAP32(rti->grffile[rtsg]->grfid));
 			}
-			print(nullptr, DSGPO_PRINT, 0, buffer);
+			dumper.Print(buffer);
 			dumper.DumpSpriteGroup(rti->group[rtsg], 0);
 		}
 	}

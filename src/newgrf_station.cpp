@@ -1032,7 +1032,7 @@ void StationUpdateCachedTriggers(BaseStation *st)
 	}
 }
 
-void DumpStationSpriteGroup(const StationSpec *statspec, BaseStation *st, DumpSpriteGroupPrinter print)
+void DumpStationSpriteGroup(const StationSpec *statspec, BaseStation *st, SpriteGroupDumper &dumper)
 {
 	char buffer[512];
 
@@ -1052,14 +1052,13 @@ void DumpStationSpriteGroup(const StationSpec *statspec, BaseStation *st, DumpSp
 			seprintf(buffer, lastof(buffer), "Cargo: %u", ro.station_scope.cargo_type);
 			break;
 	}
-	print(nullptr, DSGPO_PRINT, 0, buffer);
+	dumper.Print(buffer);
 
-	SpriteGroupDumper dumper(print);
 	dumper.DumpSpriteGroup(ro.root_spritegroup, 0);
 
 	for (uint i = 0; i < NUM_CARGO + 3; i++) {
 		if (statspec->grf_prop.spritegroup[i] != ro.root_spritegroup && statspec->grf_prop.spritegroup[i] != nullptr) {
-			print(nullptr, DSGPO_PRINT, 0, "");
+			dumper.Print("");
 			switch (i) {
 				case CT_DEFAULT:
 					seprintf(buffer, lastof(buffer), "OTHER SPRITE GROUP: CT_DEFAULT");
@@ -1074,7 +1073,7 @@ void DumpStationSpriteGroup(const StationSpec *statspec, BaseStation *st, DumpSp
 					seprintf(buffer, lastof(buffer), "OTHER SPRITE GROUP: Cargo: %u", i);
 					break;
 			}
-			print(nullptr, DSGPO_PRINT, 0, buffer);
+			dumper.Print(buffer);
 			dumper.DumpSpriteGroup(statspec->grf_prop.spritegroup[i], 0);
 		}
 	}

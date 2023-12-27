@@ -168,7 +168,7 @@ uint8 GetReverseRoadTypeTranslation(RoadType roadtype, const GRFFile *grffile)
 	return 0xFF;
 }
 
-void DumpRoadTypeSpriteGroup(RoadType rt, DumpSpriteGroupPrinter print)
+void DumpRoadTypeSpriteGroup(RoadType rt, SpriteGroupDumper &dumper)
 {
 	char buffer[64];
 	const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
@@ -189,8 +189,6 @@ void DumpRoadTypeSpriteGroup(RoadType rt, DumpSpriteGroupPrinter print)
 	};
 	static_assert(lengthof(sprite_group_names) == ROTSG_END);
 
-	SpriteGroupDumper dumper(print);
-
 	for (RoadTypeSpriteGroup rtsg = (RoadTypeSpriteGroup)0; rtsg < ROTSG_END; rtsg = (RoadTypeSpriteGroup)(rtsg + 1)) {
 		if (rti->group[rtsg] != nullptr) {
 			char *b = buffer;
@@ -198,9 +196,9 @@ void DumpRoadTypeSpriteGroup(RoadType rt, DumpSpriteGroupPrinter print)
 			if (rti->grffile[rtsg] != nullptr) {
 				b += seprintf(b, lastof(buffer), ", GRF: %08X", BSWAP32(rti->grffile[rtsg]->grfid));
 			}
-			print(nullptr, DSGPO_PRINT, 0, buffer);
+			dumper.Print(buffer);
 			dumper.DumpSpriteGroup(rti->group[rtsg], 0);
-			print(nullptr, DSGPO_PRINT, 0, "");
+			dumper.Print("");
 		}
 	}
 }

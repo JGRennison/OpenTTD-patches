@@ -680,7 +680,7 @@ void StationUpdateRoadStopCachedTriggers(BaseStation *st)
 	}
 }
 
-void DumpRoadStopSpriteGroup(const BaseStation *st, const RoadStopSpec *spec, DumpSpriteGroupPrinter print)
+void DumpRoadStopSpriteGroup(const BaseStation *st, const RoadStopSpec *spec, SpriteGroupDumper &dumper)
 {
 	CargoID ctype = CT_DEFAULT_NA;
 
@@ -703,5 +703,5 @@ void DumpRoadStopSpriteGroup(const BaseStation *st, const RoadStopSpec *spec, Du
 		ctype = CT_DEFAULT;
 	}
 
-	DumpSpriteGroup(spec->grf_prop.spritegroup[ctype], std::move(print));
+	dumper.DumpSpriteGroup(spec->grf_prop.spritegroup[ctype], 0);
 }

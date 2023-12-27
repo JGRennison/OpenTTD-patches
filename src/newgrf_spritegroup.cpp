@@ -589,8 +589,6 @@ static char *DumpSpriteGroupAdjust(char *p, const char *last, const Deterministi
 	return p;
 }
 
-bool SpriteGroupDumper::use_shadows = false;
-
 void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *padding, uint flags)
 {
 	uint32 highlight_tag = 0;
@@ -671,7 +669,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 			const std::vector<DeterministicSpriteGroupRange> *ranges = &(dsg->ranges);
 			bool calculated_result = dsg->calculated_result;
 
-			if (SpriteGroupDumper::use_shadows) {
+			if (this->use_shadows) {
 				auto iter = _deterministic_sg_shadows.find(dsg);
 				if (iter != _deterministic_sg_shadows.end()) {
 					default_group = iter->second.default_group;
@@ -786,7 +784,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 
 			const std::vector<const SpriteGroup *> *groups = &(rsg->groups);
 
-			if (SpriteGroupDumper::use_shadows) {
+			if (this->use_shadows) {
 				auto iter = _randomized_sg_shadows.find(rsg);
 				if (iter != _randomized_sg_shadows.end()) {
 					groups = &(iter->second.groups);
@@ -929,10 +927,4 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 			break;
 		}
 	}
-}
-
-void DumpSpriteGroup(const SpriteGroup *sg, DumpSpriteGroupPrinter print)
-{
-	SpriteGroupDumper dumper(std::move(print));
-	dumper.DumpSpriteGroup(sg, 0);
 }

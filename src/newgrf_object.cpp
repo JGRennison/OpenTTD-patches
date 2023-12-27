@@ -639,7 +639,7 @@ void TriggerObjectAnimation(Object *o, ObjectAnimationTrigger trigger, const Obj
 	}
 }
 
-void DumpObjectSpriteGroup(const ObjectSpec *spec, DumpSpriteGroupPrinter print)
+void DumpObjectSpriteGroup(const ObjectSpec *spec, SpriteGroupDumper &dumper)
 {
-	DumpSpriteGroup(spec->grf_prop.spritegroup[0], std::move(print));
+	dumper.DumpSpriteGroup(spec->grf_prop.spritegroup[0], 0);
 }

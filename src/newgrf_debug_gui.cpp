@@ -223,7 +223,7 @@ public:
 	}
 
 	virtual void ExtraInfo(uint index, NIExtraInfoOutput &output) const {}
-	virtual void SpriteDump(uint index, DumpSpriteGroupPrinter print) const {}
+	virtual void SpriteDump(uint index, SpriteGroupDumper &dumper) const {}
 	virtual bool ShowExtraInfoOnly(uint index) const { return false; };
 	virtual bool ShowExtraInfoIncludingGRFIDOnly(uint index) const { return false; };
 	virtual bool ShowSpriteDumpButton(uint index) const { return false; };
@@ -566,12 +566,11 @@ struct NewGRFInspectWindow : Window {
 		const_cast<NewGRFInspectWindow *>(this)->highlight_tag_lines.clear();
 		const_cast<NewGRFInspectWindow *>(this)->nfo_line_lines.clear();
 		if (this->sprite_dump) {
-			SpriteGroupDumper::use_shadows = this->sprite_dump_unopt;
 			bool collapsed = false;
 			const SpriteGroup *collapse_group = nullptr;
 			uint collapse_lines = 0;
 			char tmp_buf[256];
-			nih->SpriteDump(index, [&](const SpriteGroup *group, DumpSpriteGroupPrintOp operation, uint32 highlight_tag, const char *buf) {
+			SpriteGroupDumper dumper([&](const SpriteGroup *group, DumpSpriteGroupPrintOp operation, uint32 highlight_tag, const char *buf) {
 				if (this->log_console && operation == DSGPO_PRINT) DEBUG(misc, 0, "  %s", buf);
 
 				if (operation == DSGPO_NFO_LINE) {
@@ -623,7 +622,8 @@ struct NewGRFInspectWindow : Window {
 				}
 				::DrawString(ir.left, ir.right, ir.top + (scroll_offset * this->resize.step_height), buf, colour);
 			});
-			SpriteGroupDumper::use_shadows = false;
+			dumper.use_shadows = this->sprite_dump_unopt;
+			nih->SpriteDump(index, dumper);
 			return;
 		} else {
 			NewGRFInspectWindow *this_mutable = const_cast<NewGRFInspectWindow *>(this);

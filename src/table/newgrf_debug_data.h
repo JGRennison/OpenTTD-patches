@@ -661,10 +661,10 @@ class NIHVehicle : public NIHelper {
 		output.print(buffer);
 	}
 
-	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
+	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
-		extern void DumpVehicleSpriteGroup(const Vehicle *v, DumpSpriteGroupPrinter print);
-		DumpVehicleSpriteGroup(Vehicle::Get(index), std::move(print));
+		extern void DumpVehicleSpriteGroup(const Vehicle *v, SpriteGroupDumper &dumper);
+		DumpVehicleSpriteGroup(Vehicle::Get(index), dumper);
 	}
 };
 
@@ -813,10 +813,10 @@ class NIHStation : public NIHelper {
 		}
 	}
 
-	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
+	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
-		extern void DumpStationSpriteGroup(const StationSpec *statspec, BaseStation *st, DumpSpriteGroupPrinter print);
-		DumpStationSpriteGroup(GetStationSpec(index), BaseStation::GetByTile(index), std::move(print));
+		extern void DumpStationSpriteGroup(const StationSpec *statspec, BaseStation *st, SpriteGroupDumper &dumper);
+		DumpStationSpriteGroup(GetStationSpec(index), BaseStation::GetByTile(index), dumper);
 	}
 };
 
@@ -919,9 +919,9 @@ class NIHHouse : public NIHelper {
 		}
 	}
 
-	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
+	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
-		DumpSpriteGroup(HouseSpec::Get(GetHouseType(index))->grf_prop.spritegroup[0], std::move(print));
+		dumper.DumpSpriteGroup(HouseSpec::Get(GetHouseType(index))->grf_prop.spritegroup[0], 0);
 	}
 };
 
@@ -992,12 +992,12 @@ class NIHIndustryTile : public NIHelper {
 		}
 	}
 
-	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
+	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
 		const IndustryTileSpec *indts = GetIndustryTileSpec(GetIndustryGfx(index));
 		if (indts) {
-			extern void DumpIndustryTileSpriteGroup(const IndustryTileSpec *spec, DumpSpriteGroupPrinter print);
-			DumpIndustryTileSpriteGroup(indts, std::move(print));
+			extern void DumpIndustryTileSpriteGroup(const IndustryTileSpec *spec, SpriteGroupDumper &dumper);
+			DumpIndustryTileSpriteGroup(indts, dumper);
 		}
 	}
 };
@@ -1227,12 +1227,12 @@ class NIHIndustry : public NIHelper {
 		}
 	}
 
-	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
+	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
 		const IndustrySpec *spec = (const IndustrySpec *)this->GetSpec(index);
 		if (spec) {
-			extern void DumpIndustrySpriteGroup(const IndustrySpec *spec, DumpSpriteGroupPrinter print);
-			DumpIndustrySpriteGroup(spec, std::move(print));
+			extern void DumpIndustrySpriteGroup(const IndustrySpec *spec, SpriteGroupDumper &dumper);
+			DumpIndustrySpriteGroup(spec, dumper);
 		}
 	}
 };
@@ -1307,9 +1307,9 @@ class NIHCargo : public NIHelper {
 		output.print(buffer);
 	}
 
-	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
+	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
-		DumpSpriteGroup(CargoSpec::Get(index)->group, std::move(print));
+		dumper.DumpSpriteGroup(CargoSpec::Get(index)->group, 0);
 	}
 };
 
@@ -1435,10 +1435,10 @@ class NIHSignals : public NIHelper {
 		}
 	}
 
-	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
+	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
-		extern void DumpNewSignalsSpriteGroups(DumpSpriteGroupPrinter print);
-		DumpNewSignalsSpriteGroups(std::move(print));
+		extern void DumpNewSignalsSpriteGroups(SpriteGroupDumper &dumper);
+		DumpNewSignalsSpriteGroups(dumper);
 	}
 };
 
@@ -1576,10 +1576,10 @@ class NIHObject : public NIHelper {
 		}
 	}
 
-	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
+	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
-		extern void DumpObjectSpriteGroup(const ObjectSpec *spec, DumpSpriteGroupPrinter print);
-		DumpObjectSpriteGroup(ObjectSpec::GetByTile(index), std::move(print));
+		extern void DumpObjectSpriteGroup(const ObjectSpec *spec, SpriteGroupDumper &dumper);
+		DumpObjectSpriteGroup(ObjectSpec::GetByTile(index), dumper);
 	}
 };
 
@@ -1705,10 +1705,10 @@ class NIHRailType : public NIHelper {
 		}
 	}
 
-	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
+	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
-		extern void DumpRailTypeSpriteGroup(RailType rt, DumpSpriteGroupPrinter print);
-		DumpRailTypeSpriteGroup(GetTileRailType(index), std::move(print));
+		extern void DumpRailTypeSpriteGroup(RailType rt, SpriteGroupDumper &dumper);
+		DumpRailTypeSpriteGroup(GetTileRailType(index), dumper);
 	}
 };
 
@@ -1924,10 +1924,10 @@ class NIHTown : public NIHelper {
 		}
 	}
 
-	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
+	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
-		extern void DumpGenericCallbackSpriteGroups(GrfSpecFeature feature, DumpSpriteGroupPrinter print);
-		DumpGenericCallbackSpriteGroups(GSF_FAKE_TOWNS, std::move(print));
+		extern void DumpGenericCallbackSpriteGroups(GrfSpecFeature feature, SpriteGroupDumper &dumper);
+		DumpGenericCallbackSpriteGroups(GSF_FAKE_TOWNS, dumper);
 	}
 };
 
@@ -2156,14 +2156,14 @@ class NIHRoadType : public NIHelper {
 		writeInfo(RTT_TRAM);
 	}
 
-	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
+	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
 		for (RoadTramType rtt : { RTT_ROAD, RTT_TRAM }) {
 			RoadType rt = GetRoadType(index, rtt);
 			if (rt == INVALID_ROADTYPE) continue;
 
-			extern void DumpRoadTypeSpriteGroup(RoadType rt, DumpSpriteGroupPrinter print);
-			DumpRoadTypeSpriteGroup(rt, print);
+			extern void DumpRoadTypeSpriteGroup(RoadType rt, SpriteGroupDumper &dumper);
+			DumpRoadTypeSpriteGroup(rt, dumper);
 		}
 	}
 };
@@ -2257,10 +2257,10 @@ class NIHRoadStop : public NIHelper {
 		}
 	}
 
-	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
+	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
-		extern void DumpRoadStopSpriteGroup(const BaseStation *st, const RoadStopSpec *spec, DumpSpriteGroupPrinter print);
-		DumpRoadStopSpriteGroup(BaseStation::GetByTile(index), GetRoadStopSpec(index), std::move(print));
+		extern void DumpRoadStopSpriteGroup(const BaseStation *st, const RoadStopSpec *spec, SpriteGroupDumper &dumper);
+		DumpRoadStopSpriteGroup(BaseStation::GetByTile(index), GetRoadStopSpec(index), dumper);
 	}
 };
 
@@ -2319,10 +2319,10 @@ class NIHNewLandscape : public NIHelper {
 		}
 	}
 
-	/* virtual */ void SpriteDump(uint index, DumpSpriteGroupPrinter print) const override
+	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
-		extern void DumpNewLandscapeRocksSpriteGroups(DumpSpriteGroupPrinter print);
-		DumpNewLandscapeRocksSpriteGroups(std::move(print));
+		extern void DumpNewLandscapeRocksSpriteGroups(SpriteGroupDumper &dumper);
+		DumpNewLandscapeRocksSpriteGroups(dumper);
 	}
 };
 

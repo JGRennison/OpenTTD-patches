@@ -104,15 +104,14 @@ NewLandscapeResolverObject::NewLandscapeResolverObject(const GRFFile *grffile, c
 	}
 }
 
-void DumpNewLandscapeRocksSpriteGroups(DumpSpriteGroupPrinter print)
+void DumpNewLandscapeRocksSpriteGroups(SpriteGroupDumper &dumper)
 {
-	SpriteGroupDumper dumper(print);
 	bool first = true;
 	for (const GRFFile *grf : _new_landscape_rocks_grfs) {
-		if (!first) print(nullptr, DSGPO_PRINT, 0, "");
+		if (!first) dumper.Print("");
 		char buffer[64];
 		seprintf(buffer, lastof(buffer), "GRF: %08X", BSWAP32(grf->grfid));
-		print(nullptr, DSGPO_PRINT, 0, buffer);
+		dumper.Print(buffer);
 		first = false;
 		dumper.DumpSpriteGroup(grf->new_rocks_group, 0);
 	}
