@@ -56,7 +56,7 @@ static bool IsLabelPrintable(uint32 l)
 	return true;
 }
 
-struct dumper {
+struct label_dumper {
 	inline const char *Label(uint32 label)
 	{
 		if (IsLabelPrintable(label)) {
@@ -92,7 +92,7 @@ static void DumpRailTypeList(NIExtraInfoOutput &output, const char *prefix, Rail
 		seprintf(buffer, lastof(buffer), "%s%02u %s%s",
 				prefix,
 				(uint) rt,
-				dumper().Label(rti->label),
+				label_dumper().Label(rti->label),
 				HasBit(mark, rt) ? " !!!" : "");
 		output.print(buffer);
 	}
@@ -110,7 +110,7 @@ static void DumpRoadTypeList(NIExtraInfoOutput &output, const char *prefix, Road
 				prefix,
 				(uint) rt,
 				RoadTypeIsTram(rt) ? "Tram" : "Road",
-				dumper().Label(rti->label));
+				label_dumper().Label(rti->label));
 		output.print(buffer);
 	}
 }
@@ -297,7 +297,7 @@ class NIHVehicle : public NIHelper {
 
 			output.register_next_line_click_flag_toggle(8 << flag_shift);
 			seprintf(buffer, lastof(buffer), "  [%c] Railtype: %u (%s), compatible_railtypes: 0x" OTTD_PRINTFHEX64 ", acceleration type: %u",
-					(output.flags & (8 << flag_shift)) ? '-' : '+', t->railtype, dumper().RailTypeLabel(t->railtype), t->compatible_railtypes, t->GetAccelerationType());
+					(output.flags & (8 << flag_shift)) ? '-' : '+', t->railtype, label_dumper().RailTypeLabel(t->railtype), t->compatible_railtypes, t->GetAccelerationType());
 			output.print(buffer);
 			if (output.flags & (8 << flag_shift)) {
 				DumpRailTypeList(output, "    ", t->compatible_railtypes);
@@ -454,7 +454,7 @@ class NIHVehicle : public NIHelper {
 
 			output.register_next_line_click_flag_toggle(8 << flag_shift);
 			seprintf(buffer, lastof(buffer), "  [%c] Roadtype: %u (%s), Compatible: 0x" OTTD_PRINTFHEX64,
-					(output.flags & (8 << flag_shift)) ? '-' : '+', rv->roadtype, dumper().RoadTypeLabel(rv->roadtype), rv->compatible_roadtypes);
+					(output.flags & (8 << flag_shift)) ? '-' : '+', rv->roadtype, label_dumper().RoadTypeLabel(rv->roadtype), rv->compatible_roadtypes);
 			output.print(buffer);
 			if (output.flags & (8 << flag_shift)) {
 				DumpRoadTypeList(output, "    ", rv->compatible_roadtypes);
@@ -607,7 +607,7 @@ class NIHVehicle : public NIHelper {
 				if (e->type == VEH_TRAIN) {
 					const RailTypeInfo *rti = GetRailTypeInfo(e->u.rail.railtype);
 					seprintf(buffer, lastof(buffer), "    Railtype: %u (%s), Compatible: 0x" OTTD_PRINTFHEX64 ", Powered: 0x" OTTD_PRINTFHEX64 ", All compatible: 0x" OTTD_PRINTFHEX64,
-							e->u.rail.railtype, dumper().RailTypeLabel(e->u.rail.railtype), rti->compatible_railtypes, rti->powered_railtypes, rti->all_compatible_railtypes);
+							e->u.rail.railtype, label_dumper().RailTypeLabel(e->u.rail.railtype), rti->compatible_railtypes, rti->powered_railtypes, rti->all_compatible_railtypes);
 					output.print(buffer);
 					static const char *engine_types[] = {
 						"SINGLEHEAD",
@@ -621,7 +621,7 @@ class NIHVehicle : public NIHelper {
 					output.register_next_line_click_flag_toggle(16 << flag_shift);
 					const RoadTypeInfo* rti = GetRoadTypeInfo(e->u.road.roadtype);
 					seprintf(buffer, lastof(buffer), "    [%c] Roadtype: %u (%s), Powered: 0x" OTTD_PRINTFHEX64,
-							(output.flags & (16 << flag_shift)) ? '-' : '+', e->u.road.roadtype, dumper().RoadTypeLabel(e->u.road.roadtype), rti->powered_roadtypes);
+							(output.flags & (16 << flag_shift)) ? '-' : '+', e->u.road.roadtype, label_dumper().RoadTypeLabel(e->u.road.roadtype), rti->powered_roadtypes);
 					output.print(buffer);
 					if (output.flags & (16 << flag_shift)) {
 						DumpRoadTypeList(output, "      ", rti->powered_roadtypes);
@@ -1611,7 +1611,7 @@ static void PrintTypeLabels(char *buffer, const char *last, const char *prefix, 
 		for (size_t i = 0; i < alternate_labels_count; i++) {
 			if (i != 0) b += seprintf(b, last, ", ");
 			uint32 l = alternate_labels[i];
-			b += seprintf(b, last, "%s", dumper().Label(l));
+			b += seprintf(b, last, "%s", label_dumper().Label(l));
 		}
 		print(buffer);
 	}
@@ -1643,7 +1643,7 @@ class NIHRailType : public NIHelper {
 
 		auto writeRailType = [&](RailType type) {
 			const RailTypeInfo *info = GetRailTypeInfo(type);
-			seprintf(buffer, lastof(buffer), "  Type: %u (%s)", type, dumper().RailTypeLabel(type));
+			seprintf(buffer, lastof(buffer), "  Type: %u (%s)", type, label_dumper().RailTypeLabel(type));
 			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "  Flags: %c%c%c%c%c%c",
 					HasBit(info->flags, RTF_CATENARY) ? 'c' : '-',
@@ -2124,7 +2124,7 @@ class NIHRoadType : public NIHelper {
 
 			char buffer[1024];
 			const RoadTypeInfo* rti = GetRoadTypeInfo(type);
-			seprintf(buffer, lastof(buffer), "  %s Type: %u (%s)", rtt == RTT_TRAM ? "Tram" : "Road", type, dumper().RoadTypeLabel(type));
+			seprintf(buffer, lastof(buffer), "  %s Type: %u (%s)", rtt == RTT_TRAM ? "Tram" : "Road", type, label_dumper().RoadTypeLabel(type));
 			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "    Flags: %c%c%c%c%c",
 					HasBit(rti->flags, ROTF_CATENARY) ? 'c' : '-',
