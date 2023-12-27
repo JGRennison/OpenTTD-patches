@@ -623,6 +623,7 @@ struct NewGRFInspectWindow : Window {
 				::DrawString(ir.left, ir.right, ir.top + (scroll_offset * this->resize.step_height), buf, colour);
 			});
 			dumper.use_shadows = this->sprite_dump_unopt;
+			dumper.more_details = HasBit(_misc_debug_flags, MDF_NEWGRF_SG_DUMP_MORE_DETAIL);
 			nih->SpriteDump(index, dumper);
 			return;
 		} else {

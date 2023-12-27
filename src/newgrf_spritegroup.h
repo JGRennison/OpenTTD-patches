@@ -771,6 +771,7 @@ using DumpSpriteGroupPrinter = std::function<void(const SpriteGroup *, DumpSprit
 
 struct SpriteGroupDumper {
 	bool use_shadows = false;
+	bool more_details = false;
 
 private:
 	char buffer[1024];
@@ -785,6 +786,7 @@ private:
 		SGDF_RANGE            = 1 << 1,
 	};
 
+	char *DumpSpriteGroupAdjust(char *p, const char *last, const DeterministicSpriteGroupAdjust &adjust, const char *padding, uint32 &highlight_tag, uint &conditional_indent);
 	void DumpSpriteGroup(const SpriteGroup *sg, const char *prefix, uint flags);
 
 public:
