@@ -3024,14 +3024,16 @@ static void ConvertRoadTypeOwner(TileIndex tile, uint num_pieces, Owner owner, R
 	switch (owner) {
 	case OWNER_NONE:
 		SetRoadOwner(tile, GetRoadTramType(to_type), (Owner)_current_company);
-		UpdateCompanyRoadInfrastructure(to_type, _current_company, num_pieces);
+		if (num_pieces > 0) UpdateCompanyRoadInfrastructure(to_type, _current_company, num_pieces);
 		break;
 
 	default:
-		c = Company::Get(owner);
-		c->infrastructure.road[from_type] -= num_pieces;
-		c->infrastructure.road[to_type] += num_pieces;
-		DirtyCompanyInfrastructureWindows(c->index);
+		if (num_pieces > 0) {
+			c = Company::Get(owner);
+			c->infrastructure.road[from_type] -= num_pieces;
+			c->infrastructure.road[to_type] += num_pieces;
+			DirtyCompanyInfrastructureWindows(c->index);
+		}
 		break;
 	}
 }
@@ -3225,20 +3227,21 @@ CommandCost CmdConvertRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 
 			if (flags & DC_EXEC) {
 				/* Update the company infrastructure counters. */
+				SubtractRoadTunnelBridgeInfrastructure(tile, endtile);
+
 				if (owner == _current_company) {
-					ConvertRoadTypeOwner(tile, tile_pieces, owner, from_type, to_type);
+					ConvertRoadTypeOwner(tile, 0, owner, from_type, to_type);
 					if (include_middle) {
-						ConvertRoadTypeOwner(endtile, end_pieces, owner, from_type, to_type);
+						ConvertRoadTypeOwner(endtile, 0, owner, from_type, to_type);
 						SetTunnelBridgeOwner(tile, endtile, _current_company);
 					}
-				} else {
-					UpdateCompanyRoadInfrastructure(from_type, owner, -(int)(tile_pieces + end_pieces));
-					UpdateCompanyRoadInfrastructure(to_type, owner, tile_pieces + end_pieces);
 				}
 
 				/* Perform the conversion */
 				SetRoadType(tile, rtt, to_type);
 				if (include_middle) SetRoadType(endtile, rtt, to_type);
+
+				AddRoadTunnelBridgeInfrastructure(tile, endtile);
 
 				FindVehicleOnPos(tile, VEH_ROAD, &affected_rvs, &UpdateRoadVehPowerProc);
 				FindVehicleOnPos(endtile, VEH_ROAD, &affected_rvs, &UpdateRoadVehPowerProc);
