@@ -2611,8 +2611,8 @@ Town *AirportGetNearestTown(const AirportSpec *as, Direction rotation, TileIndex
 
 	Town *nearest = nullptr;
 
-	int width = as->size_x;
-	int height = as->size_y;
+	auto width = as->size_x;
+	auto height = as->size_y;
 	if (rotation == DIR_E || rotation == DIR_W) std::swap(width, height);
 
 	uint perimeter_min_x = TileX(tile);
@@ -2648,7 +2648,7 @@ Town *AirportGetNearestTown(const AirportSpec *as, Direction rotation, TileIndex
  * @param[out] mindist Minimum distance to town
  * @return nearest town to airport
  */
-Town *AirportGetNearestTown(const Station *st, uint &mindist)
+static Town *AirportGetNearestTown(const Station *st, uint &mindist)
 {
 	return AirportGetNearestTown(st->airport.GetSpec(), st->airport.rotation, st->airport.tile, AirportTileIterator(st), mindist);
 }
