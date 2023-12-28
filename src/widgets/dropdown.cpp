@@ -39,8 +39,7 @@ static WindowDesc _dropdown_desc(__FILE__, __LINE__,
 
 /** Drop-down menu window */
 struct DropdownWindow : Window {
-	WindowClass parent_wnd_class; ///< Parent window class.
-	WindowNumber parent_wnd_num;  ///< Parent window number.
+	WindowToken parent_wnd_token; ///< Parent window token.
 	int parent_button;            ///< Parent widget number where the window is dropped from.
 	Rect wi_rect;                 ///< Rect of the button that opened the dropdown.
 	const DropDownList list;      ///< List with dropdown menu items.
@@ -77,8 +76,7 @@ struct DropdownWindow : Window {
 	{
 		assert(!this->list.empty());
 
-		this->parent_wnd_class = parent->window_class;
-		this->parent_wnd_num   = parent->window_number;
+		this->parent_wnd_token = parent->GetWindowToken();
 
 		this->CreateNestedTree();
 
@@ -100,7 +98,7 @@ struct DropdownWindow : Window {
 		this->SetDirty();
 		this->Window::Close();
 
-		Window *w2 = FindWindowById(this->parent_wnd_class, this->parent_wnd_num);
+		Window *w2 = FindWindowByToken(this->parent_wnd_token);
 		if (w2 != nullptr) {
 			Point pt = _cursor.pos;
 			pt.x -= w2->left;
@@ -267,7 +265,7 @@ struct DropdownWindow : Window {
 
 	virtual void OnMouseLoop() override
 	{
-		Window *w2 = FindWindowById(this->parent_wnd_class, this->parent_wnd_num);
+		Window *w2 = FindWindowByToken(this->parent_wnd_token);
 		if (w2 == nullptr) {
 			this->Close();
 			return;
@@ -318,7 +316,7 @@ struct DropdownWindow : Window {
 	virtual void OnFocus(Window *previously_focused_window) override
 	{
 		if (this->sync_parent_focus & DDSF_RECV_FOCUS) {
-			Window *parent = FindWindowById(this->parent_wnd_class, this->parent_wnd_num);
+			Window *parent = FindWindowByToken(this->parent_wnd_token);
 			if (parent) parent->OnFocus(previously_focused_window);
 		}
 	}
@@ -326,7 +324,7 @@ struct DropdownWindow : Window {
 	virtual void OnFocusLost(bool closing, Window *newly_focused_window) override
 	{
 		if (this->sync_parent_focus & DDSF_LOST_FOCUS) {
-			Window *parent = FindWindowById(this->parent_wnd_class, this->parent_wnd_num);
+			Window *parent = FindWindowByToken(this->parent_wnd_token);
 			if (parent) parent->OnFocusLost(false, newly_focused_window);
 		}
 	}
@@ -438,8 +436,7 @@ int HideDropDownMenu(Window *pw)
 
 		DropdownWindow *dw = dynamic_cast<DropdownWindow*>(w);
 		assert(dw != nullptr);
-		if (pw->window_class == dw->parent_wnd_class &&
-				pw->window_number == dw->parent_wnd_num) {
+		if (pw->GetWindowToken() == dw->parent_wnd_token) {
 			int parent_button = dw->parent_button;
 			dw->Close();
 			return parent_button;
@@ -453,6 +450,12 @@ void GetParentWindowInfo(Window *w, WindowClass &parent_wc, WindowNumber &parent
 {
 	DropdownWindow *dw = dynamic_cast<DropdownWindow*>(w);
 	assert(dw != nullptr);
-	parent_wc = dw->parent_wnd_class;
-	parent_wn = dw->parent_wnd_num;
+	Window *parent = FindWindowByToken(dw->parent_wnd_token);
+	if (parent != nullptr) {
+		parent_wc = parent->window_class;
+		parent_wn = parent->window_number;
+	} else {
+		parent_wc = WC_INVALID;
+		parent_wn = 0;
+	}
 }
