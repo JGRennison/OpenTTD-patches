@@ -1191,8 +1191,7 @@ STR_NEWGRF_INSPECT_SPRITE_DUMP                                  :{BLACK}S
 STR_NEWGRF_INSPECT_SPRITE_DUMP_TOOLTIP                          :{BLACK}Zobrazí aktuální posloupnost spritů
 STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT                            :{BLACK}U
 STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP                    :{BLACK}Zobrazí skupiny spritů bez užití jakékoli optimalizace.{}{}Vyžaduje znovunačítání NewGRF, nebylo-li dříve zapnuto (misc_debug 10).
-STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO                             :{BLACK}P
-STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO_TOOLTIP                     :{BLACK}Přejít na číslo spritu...
+STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO                             :Přejít na číslo spritu...
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP                    :{BLACK}Kliknutí zvýrazní skupinu spritů{}Shift+kliknutí sbalí skupinu spritů{}Ctrl+kliknutí zvýrazní dočasný registr úložiště
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS                    :Návěstidla
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :Neimplementované přemapované feature ID: název: {2:STRING}, mapováno na: {5:HEX} (sprite {3:NUM})

@@ -3353,8 +3353,7 @@ DEF_CONSOLE_CMD(ConMiscDebug)
 		IConsoleHelp("  4: MDF_ZONING_RS_TROPIC_ZONE");
 		IConsoleHelp("  8: MDF_ZONING_RS_ANIMATED_TILE");
 		IConsoleHelp(" 10: MDF_NEWGRF_SG_SAVE_RAW");
-		IConsoleHelp(" 20: MDF_NEWGRF_SG_DUMP_MORE_DETAIL");
-		IConsoleHelp(" 40: MDF_SPECIAL_CMDS");
+		IConsoleHelp(" 20: MDF_SPECIAL_CMDS");
 		return true;
 	}
 

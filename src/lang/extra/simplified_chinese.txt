@@ -1210,8 +1210,7 @@ STR_NEWGRF_INSPECT_SPRITE_DUMP                                  :{BLACK}S
 STR_NEWGRF_INSPECT_SPRITE_DUMP_TOOLTIP                          :{BLACK}显示当前Sprite链
 STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT                            :{BLACK}U
 STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP                    :{BLACK}在没有应用任何优化的情况下显示Sprite组{}{}如果之前没有启用，则需要重新加载NewGRF (misc_debug 10)
-STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO                             :{BLACK}G
-STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO_TOOLTIP                     :{BLACK}滚动Sprite编号
+STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO                             :滚动Sprite编号
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP                    :{BLACK}点击高亮Sprite组{}Shift+点击折叠Sprite组{}Ctrl+点击高亮临时存储寄存器
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS                    :信号
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :未生效的重映射特性 ID: name: {2:STRING}，mapped to: {5:HEX} (sprite {3:NUM})

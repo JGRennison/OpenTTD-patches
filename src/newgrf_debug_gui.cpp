@@ -45,6 +45,7 @@
 
 #include "newgrf_config.h"
 
+#include "widgets/dropdown_type.h"
 #include "widgets/newgrf_debug_widget.h"
 
 #include "table/strings.h"
@@ -324,6 +325,7 @@ struct NewGRFInspectWindow : Window {
 	bool log_console = false;
 	bool sprite_dump = false;
 	bool sprite_dump_unopt = false;
+	bool sprite_dump_more_details = false;
 
 	uint32 extra_info_flags = 0;
 	btree::btree_map<int, uint> extra_info_click_flag_toggles;
@@ -333,6 +335,11 @@ struct NewGRFInspectWindow : Window {
 	btree::btree_map<int, uint32> highlight_tag_lines;
 	uint32 selected_highlight_tags[6] = {};
 	btree::btree_set<const SpriteGroup *> collapsed_groups;
+
+	enum DropDownOptions {
+		NGIWDDO_GOTO_SPRITE,
+		NGIWDDO_MORE_DETAILS,
+	};
 
 	/**
 	 * Check whether the given variable has a parameter.
@@ -400,9 +407,9 @@ struct NewGRFInspectWindow : Window {
 		bool show_sprite_dump_button = GetFeatureHelper(wno)->ShowSpriteDumpButton(::GetFeatureIndex(wno));
 		this->GetWidget<NWidgetStacked>(WID_NGRFI_SPRITE_DUMP_SEL)->SetDisplayedPlane(show_sprite_dump_button ? 0 : SZSP_NONE);
 		this->GetWidget<NWidgetStacked>(WID_NGRFI_SPRITE_DUMP_UNOPT_SEL)->SetDisplayedPlane(show_sprite_dump_button ? 0 : SZSP_NONE);
-		this->GetWidget<NWidgetStacked>(WID_NGRFI_SPRITE_DUMP_GOTO_SEL)->SetDisplayedPlane(show_sprite_dump_button ? 0 : SZSP_NONE);
+		this->GetWidget<NWidgetStacked>(WID_NGRFI_OPTIONS_SEL)->SetDisplayedPlane(show_sprite_dump_button ? 0 : SZSP_NONE);
 		this->SetWidgetDisabledState(WID_NGRFI_SPRITE_DUMP_UNOPT, true);
-		this->SetWidgetDisabledState(WID_NGRFI_SPRITE_DUMP_GOTO, true);
+		this->SetWidgetDisabledState(WID_NGRFI_SPRITE_DUMP_OPTIONS, true);
 		this->FinishInitNested(wno);
 
 		this->vscroll->SetCount(0);
@@ -623,7 +630,7 @@ struct NewGRFInspectWindow : Window {
 				::DrawString(ir.left, ir.right, ir.top + (scroll_offset * this->resize.step_height), buf, colour);
 			});
 			dumper.use_shadows = this->sprite_dump_unopt;
-			dumper.more_details = HasBit(_misc_debug_flags, MDF_NEWGRF_SG_DUMP_MORE_DETAIL);
+			dumper.more_details = this->sprite_dump_more_details;
 			nih->SpriteDump(index, dumper);
 			return;
 		} else {
@@ -947,11 +954,11 @@ struct NewGRFInspectWindow : Window {
 				this->sprite_dump = !this->sprite_dump;
 				this->SetWidgetLoweredState(WID_NGRFI_SPRITE_DUMP, this->sprite_dump);
 				this->SetWidgetDisabledState(WID_NGRFI_SPRITE_DUMP_UNOPT, !this->sprite_dump || !UnOptimisedSpriteDumpOK());
-				this->SetWidgetDisabledState(WID_NGRFI_SPRITE_DUMP_GOTO, !this->sprite_dump);
+				this->SetWidgetDisabledState(WID_NGRFI_SPRITE_DUMP_OPTIONS, !this->sprite_dump);
 				this->GetWidget<NWidgetCore>(WID_NGRFI_MAINPANEL)->SetToolTip(this->sprite_dump ? STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP : STR_NULL);
 				this->SetWidgetDirty(WID_NGRFI_SPRITE_DUMP);
 				this->SetWidgetDirty(WID_NGRFI_SPRITE_DUMP_UNOPT);
-				this->SetWidgetDirty(WID_NGRFI_SPRITE_DUMP_GOTO);
+				this->SetWidgetDirty(WID_NGRFI_SPRITE_DUMP_OPTIONS);
 				this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
 				this->SetWidgetDirty(WID_NGRFI_SCROLLBAR);
 				break;
@@ -981,11 +988,33 @@ struct NewGRFInspectWindow : Window {
 				break;
 			}
 
-			case WID_NGRFI_SPRITE_DUMP_GOTO: {
+			case WID_NGRFI_SPRITE_DUMP_OPTIONS: {
+				DropDownList list;
+				list.push_back(std::make_unique<DropDownListStringItem>(STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO, NGIWDDO_GOTO_SPRITE, false));
+				list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
+				list.push_back(std::make_unique<DropDownListCheckedItem>(this->sprite_dump_more_details, STR_NEWGRF_INSPECT_SPRITE_DUMP_MORE_DETAILS, NGIWDDO_MORE_DETAILS, false));
+
+				ShowDropDownList(this, std::move(list), 0, WID_NGRFI_SPRITE_DUMP_OPTIONS, 140);
+				break;
+			}
+		}
+	}
+
+	void OnDropdownSelect(int widget, int index) override
+	{
+		if (widget != WID_NGRFI_SPRITE_DUMP_OPTIONS) return;
+
+		switch (index) {
+			case NGIWDDO_GOTO_SPRITE:
 				this->current_edit_param = 0;
 				ShowQueryString(STR_EMPTY, STR_SPRITE_ALIGNER_GOTO_CAPTION, 10, this, CS_NUMERAL, QSF_NONE);
 				break;
-			}
+			case NGIWDDO_MORE_DETAILS:
+				this->sprite_dump_more_details = !this->sprite_dump_more_details;
+				this->SetDirty();
+				break;
+			default:
+				break;
 		}
 	}
 
@@ -1044,8 +1073,8 @@ static const NWidgetPart _nested_newgrf_inspect_chain_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_NGRFI_CAPTION), SetDataTip(STR_NEWGRF_INSPECT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NGRFI_SPRITE_DUMP_GOTO_SEL),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NGRFI_SPRITE_DUMP_GOTO), SetDataTip(STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO, STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO_TOOLTIP),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NGRFI_OPTIONS_SEL),
+			NWidget(WWT_IMGBTN, COLOUR_GREY, WID_NGRFI_SPRITE_DUMP_OPTIONS), SetDataTip(SPR_ARROW_DOWN, STR_NEWGRF_INSPECT_SPRITE_DUMP_OPTIONS),
 		EndContainer(),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NGRFI_SPRITE_DUMP_UNOPT_SEL),
 			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_NGRFI_SPRITE_DUMP_UNOPT), SetDataTip(STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT, STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP),
@@ -1081,8 +1110,8 @@ static const NWidgetPart _nested_newgrf_inspect_widgets[] = {
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_NGRFI_CAPTION), SetDataTip(STR_NEWGRF_INSPECT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NGRFI_PARENT), SetDataTip(STR_NEWGRF_INSPECT_PARENT_BUTTON, STR_NEWGRF_INSPECT_PARENT_TOOLTIP),
-		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NGRFI_SPRITE_DUMP_GOTO_SEL),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NGRFI_SPRITE_DUMP_GOTO), SetDataTip(STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO, STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO_TOOLTIP),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NGRFI_OPTIONS_SEL),
+			NWidget(WWT_IMGBTN, COLOUR_GREY, WID_NGRFI_SPRITE_DUMP_OPTIONS), SetDataTip(SPR_ARROW_DOWN, STR_NEWGRF_INSPECT_SPRITE_DUMP_OPTIONS),
 		EndContainer(),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NGRFI_SPRITE_DUMP_UNOPT_SEL),
 			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_NGRFI_SPRITE_DUMP_UNOPT), SetDataTip(STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT, STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP),

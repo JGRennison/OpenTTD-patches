@@ -26,8 +26,8 @@ enum NewGRFInspectWidgets {
 	WID_NGRFI_SPRITE_DUMP_SEL, ///< Selection widget for WID_NGRFI_SPRITE_DUMP
 	WID_NGRFI_SPRITE_DUMP_UNOPT, ///< Dump unoptimised sprite group
 	WID_NGRFI_SPRITE_DUMP_UNOPT_SEL, ///< Selection widget for WID_NGRFI_SPRITE_DUMP_UNOPT
-	WID_NGRFI_SPRITE_DUMP_GOTO, ///< Goto sprite
-	WID_NGRFI_SPRITE_DUMP_GOTO_SEL, ///< Selection widget for WID_NGRFI_SPRITE_DUMP_GOTO
+	WID_NGRFI_SPRITE_DUMP_OPTIONS, ///< Options dropdown
+	WID_NGRFI_OPTIONS_SEL, ///< Selection widget for WID_NGRFI_SPRITE_DUMP_OPTIONS
 };
 
 /** Widgets of the #SpriteAlignerWindow class. */
