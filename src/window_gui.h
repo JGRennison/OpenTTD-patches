@@ -255,6 +255,8 @@ struct Window : ZeroedMemoryAllocator {
 	WindowClass window_class;        ///< Window class
 
 private:
+	WindowToken window_token;
+
 	/**
 	 * Helper allocation function to disallow something.
 	 * Don't allow arrays; arrays of Windows are pointless as you need
@@ -333,6 +335,8 @@ public:
 	void FinishInitNested(WindowNumber window_number = 0);
 
 	void ChangeWindowClass(WindowClass cls);
+
+	WindowToken GetWindowToken() const { return this->window_token; }
 
 	/**
 	 * Set the timeout flag of the window and initiate the timer.

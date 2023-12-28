@@ -119,6 +119,7 @@ WindowDesc::WindowDesc(const char * const file, const int line, WindowPosition d
 	default_height_trad(def_height_trad)
 {
 	if (_window_descs == nullptr) _window_descs = new std::vector<WindowDesc*>();
+
 	_window_descs->push_back(this);
 }
 
@@ -1146,6 +1147,20 @@ Window *FindWindowByClass(WindowClass cls)
 }
 
 /**
+ * Find any window by its token.
+ * @param token Window token
+ * @return Pointer to the found window, or \c nullptr if not available
+ */
+Window *FindWindowByToken(WindowToken token)
+{
+	for (Window *w : Window::IterateFromBack()) {
+		if (w->GetWindowToken() == token) return w;
+	}
+
+	return nullptr;
+}
+
+/**
  * Get the main window, i.e. FindWindowById(WC_MAIN_WINDOW, 0).
  * If the main window is not available, this function will trigger an assert.
  * @return Pointer to the main window.
@@ -1891,6 +1906,9 @@ void Window::InitNested(WindowNumber window_number)
  */
 Window::Window(WindowDesc *desc) : window_desc(desc), scale(_gui_scale), mouse_capture_widget(-1)
 {
+	static uint64_t last_window_token = 0;
+	last_window_token++;
+	this->window_token = WindowToken(last_window_token);
 }
 
 /**

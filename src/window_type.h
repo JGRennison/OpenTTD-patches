@@ -10,6 +10,8 @@
 #ifndef WINDOW_TYPE_H
 #define WINDOW_TYPE_H
 
+#include "core/strong_typedef_type.hpp"
+
 /** %Window numbers. */
 enum WindowNumberEnum {
 	WN_GAME_OPTIONS_AI = 0,          ///< AI settings.
@@ -818,5 +820,7 @@ enum EventState {
 	ES_HANDLED,     ///< The passed event is handled.
 	ES_NOT_HANDLED, ///< The passed event is not handled.
 };
+
+using WindowToken = StrongType::Typedef<uint64_t, struct WindowTokenTag, StrongType::Compare>;
 
 #endif /* WINDOW_TYPE_H */

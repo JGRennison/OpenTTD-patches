@@ -18,6 +18,7 @@
 
 Window *FindWindowById(WindowClass cls, WindowNumber number);
 Window *FindWindowByClass(WindowClass cls);
+Window *FindWindowByToken(WindowToken token);
 Window *GetMainWindow();
 void ChangeWindowOwner(Owner old_owner, Owner new_owner);
 
