@@ -50,6 +50,8 @@
 
 #include "table/strings.h"
 
+#include <array>
+
 #include "safeguards.h"
 
 /** The sprite picker. */
@@ -323,6 +325,7 @@ struct NewGRFInspectWindow : Window {
 
 	bool auto_refresh = false;
 	bool log_console = false;
+	bool click_to_mark_mode = false;
 	bool sprite_dump = false;
 	bool sprite_dump_unopt = false;
 	bool sprite_dump_more_details = false;
@@ -333,12 +336,17 @@ struct NewGRFInspectWindow : Window {
 	btree::btree_map<int, uint16> nfo_line_lines;
 	const SpriteGroup *selected_sprite_group = nullptr;
 	btree::btree_map<int, uint32> highlight_tag_lines;
-	uint32 selected_highlight_tags[6] = {};
 	btree::btree_set<const SpriteGroup *> collapsed_groups;
+
+	std::array<uint32, 6> selected_highlight_tags = {};
+	std::array<const SpriteGroup *, 8> marked_groups = {};
 
 	enum DropDownOptions {
 		NGIWDDO_GOTO_SPRITE,
+		NGIWDDO_CLEAR,
 		NGIWDDO_MORE_DETAILS,
+		NGIWDDO_CLICK_TO_HIGHLIGHT,
+		NGIWDDO_CLICK_TO_MARK,
 	};
 
 	/**
@@ -573,6 +581,9 @@ struct NewGRFInspectWindow : Window {
 		const_cast<NewGRFInspectWindow *>(this)->highlight_tag_lines.clear();
 		const_cast<NewGRFInspectWindow *>(this)->nfo_line_lines.clear();
 		if (this->sprite_dump) {
+			const bool rtl = _current_text_dir == TD_RTL;
+			Rect sprite_ir = ir.Indent(WidgetDimensions::scaled.hsep_normal * 3, rtl);
+
 			bool collapsed = false;
 			const SpriteGroup *collapse_group = nullptr;
 			uint collapse_lines = 0;
@@ -627,7 +638,18 @@ struct NewGRFInspectWindow : Window {
 						}
 					}
 				}
-				::DrawString(ir.left, ir.right, ir.top + (scroll_offset * this->resize.step_height), buf, colour);
+				if (group != nullptr) {
+					for (uint i = 0; i < lengthof(this->marked_groups); i++) {
+						if (this->marked_groups[i] == group) {
+							static const uint8 mark_colours[] = { PC_YELLOW, PC_GREEN, PC_ORANGE, PC_DARK_BLUE, PC_RED, PC_LIGHT_BLUE, 0xAE /* purple */, 0x6C /* brown */ };
+							static_assert(lengthof(this->marked_groups) == lengthof(mark_colours));
+							Rect mark_ir = ir.Indent(WidgetDimensions::scaled.hsep_normal, rtl).WithWidth(WidgetDimensions::scaled.hsep_normal, rtl).Translate(0, (scroll_offset * this->resize.step_height));
+							GfxFillRect(mark_ir.left, mark_ir.top, mark_ir.right, mark_ir.top + this->resize.step_height - 1, mark_colours[i]);
+							break;
+						}
+					}
+				}
+				::DrawString(sprite_ir.left, sprite_ir.right, sprite_ir.top + (scroll_offset * this->resize.step_height), buf, colour);
 			});
 			dumper.use_shadows = this->sprite_dump_unopt;
 			dumper.more_details = this->sprite_dump_more_details;
@@ -820,24 +842,35 @@ struct NewGRFInspectWindow : Window {
 		return true;
 	}
 
-	void SelectHighlightTag(uint32 tag)
+	template <typename T, typename V>
+	void SelectTagArrayItem(T &items, V value)
 	{
-		for (uint i = 0; i < lengthof(this->selected_highlight_tags); i++) {
-			if (this->selected_highlight_tags[i] == tag) {
-				this->selected_highlight_tags[i] = 0;
+		for (size_t i = 0; i < items.size(); i++) {
+			if (items[i] == value) {
+				items[i] = V{};
 				return;
 			}
 		}
-		for (uint i = 0; i < lengthof(this->selected_highlight_tags); i++) {
-			if (this->selected_highlight_tags[i] == 0) {
-				this->selected_highlight_tags[i] = tag;
+		for (size_t i = 0; i < items.size(); i++) {
+			if (!items[i]) {
+				items[i] = value;
 				return;
 			}
 		}
-		this->selected_highlight_tags[lengthof(this->selected_highlight_tags) - 1] = tag;
+		items[items.size() - 1] = value;
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void SelectHighlightTag(uint32 tag)
+	{
+		this->SelectTagArrayItem(this->selected_highlight_tags, tag);
+	}
+
+	void SelectMarkedGroup(const SpriteGroup *group)
+	{
+		this->SelectTagArrayItem(this->marked_groups, group);
+	}
+
+	void OnClick(Point pt, int widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_NGRFI_PARENT: {
@@ -892,14 +925,20 @@ struct NewGRFInspectWindow : Window {
 							}
 							this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
 						}
-
 					} else {
 						const SpriteGroup *group = nullptr;
 						auto iter = this->sprite_group_lines.find(line);
 						if (iter != this->sprite_group_lines.end()) group = iter->second;
-						if (group != nullptr || this->selected_sprite_group != nullptr) {
-							this->selected_sprite_group = (group == this->selected_sprite_group) ? nullptr : group;
-							this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
+						if (this->click_to_mark_mode) {
+							if (group != nullptr) {
+								this->SelectMarkedGroup(group);
+								this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
+							}
+						} else {
+							if (group != nullptr || this->selected_sprite_group != nullptr) {
+								this->selected_sprite_group = (group == this->selected_sprite_group) ? nullptr : group;
+								this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
+							}
 						}
 					}
 					return;
@@ -955,7 +994,6 @@ struct NewGRFInspectWindow : Window {
 				this->SetWidgetLoweredState(WID_NGRFI_SPRITE_DUMP, this->sprite_dump);
 				this->SetWidgetDisabledState(WID_NGRFI_SPRITE_DUMP_UNOPT, !this->sprite_dump || !UnOptimisedSpriteDumpOK());
 				this->SetWidgetDisabledState(WID_NGRFI_SPRITE_DUMP_OPTIONS, !this->sprite_dump);
-				this->GetWidget<NWidgetCore>(WID_NGRFI_MAINPANEL)->SetToolTip(this->sprite_dump ? STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP : STR_NULL);
 				this->SetWidgetDirty(WID_NGRFI_SPRITE_DUMP);
 				this->SetWidgetDirty(WID_NGRFI_SPRITE_DUMP_UNOPT);
 				this->SetWidgetDirty(WID_NGRFI_SPRITE_DUMP_OPTIONS);
@@ -991,6 +1029,10 @@ struct NewGRFInspectWindow : Window {
 			case WID_NGRFI_SPRITE_DUMP_OPTIONS: {
 				DropDownList list;
 				list.push_back(std::make_unique<DropDownListStringItem>(STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO, NGIWDDO_GOTO_SPRITE, false));
+				list.push_back(std::make_unique<DropDownListStringItem>(STR_NEWGRF_INSPECT_SPRITE_DUMP_CLEAR, NGIWDDO_CLEAR, false));
+				list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
+				list.push_back(std::make_unique<DropDownListCheckedItem>(!this->click_to_mark_mode, STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_HIGHLIGHT, NGIWDDO_CLICK_TO_HIGHLIGHT, false));
+				list.push_back(std::make_unique<DropDownListCheckedItem>(this->click_to_mark_mode, STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_MARK, NGIWDDO_CLICK_TO_MARK, false));
 				list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
 				list.push_back(std::make_unique<DropDownListCheckedItem>(this->sprite_dump_more_details, STR_NEWGRF_INSPECT_SPRITE_DUMP_MORE_DETAILS, NGIWDDO_MORE_DETAILS, false));
 
@@ -1009,8 +1051,22 @@ struct NewGRFInspectWindow : Window {
 				this->current_edit_param = 0;
 				ShowQueryString(STR_EMPTY, STR_SPRITE_ALIGNER_GOTO_CAPTION, 10, this, CS_NUMERAL, QSF_NONE);
 				break;
+			case NGIWDDO_CLEAR:
+				this->selected_highlight_tags.fill(0);
+				this->marked_groups.fill(nullptr);
+				this->selected_sprite_group = nullptr;
+				this->SetDirty();
+				break;
 			case NGIWDDO_MORE_DETAILS:
 				this->sprite_dump_more_details = !this->sprite_dump_more_details;
+				this->SetDirty();
+				break;
+			case NGIWDDO_CLICK_TO_HIGHLIGHT:
+				this->click_to_mark_mode = false;
+				break;
+			case NGIWDDO_CLICK_TO_MARK:
+				this->click_to_mark_mode = true;
+				this->selected_sprite_group = nullptr;
 				this->SetDirty();
 				break;
 			default:
@@ -1066,6 +1122,21 @@ struct NewGRFInspectWindow : Window {
 		}
 		this->redraw_panel = false;
 		this->redraw_scrollbar = false;
+	}
+
+	virtual bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
+	{
+		if (widget == WID_NGRFI_MAINPANEL && this->sprite_dump) {
+			_temp_special_strings[0] = GetString(this->click_to_mark_mode ? STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_MARK : STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT);
+			_temp_special_strings[0] += "\n";
+			_temp_special_strings[0] += GetString(STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_COLLAPSE);
+			_temp_special_strings[0] += "\n";
+			_temp_special_strings[0] += GetString(STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT_TEMP);
+			GuiShowTooltips(this, SPECSTR_TEMP_START, close_cond);
+			return true;
+		}
+
+		return false;
 	}
 };
 

@@ -1275,9 +1275,15 @@ STR_NEWGRF_INSPECT_SPRITE_DUMP_TOOLTIP                          :{BLACK}Display 
 STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT                            :{BLACK}U
 STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP                    :{BLACK}Display sprite groups without any optimisations applied.{}{}Requires reloading NewGRFs if not previously enabled (misc_debug 10).
 STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO                             :Scroll to sprite number
+STR_NEWGRF_INSPECT_SPRITE_DUMP_CLEAR                            :Clear highlighting/marking
 STR_NEWGRF_INSPECT_SPRITE_DUMP_MORE_DETAILS                     :Show more details
+STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_HIGHLIGHT               :Click to highlight
+STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_MARK                    :Click to mark
 STR_NEWGRF_INSPECT_SPRITE_DUMP_OPTIONS                          :{BLACK}Options and extra commands
-STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP                    :{BLACK}Click to highlight sprite group{}Shift+Click to collapse sprite group{}Ctrl+Click to highlight temporary storage register
+STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT          :{BLACK}Click to highlight sprite group
+STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_MARK               :{BLACK}Click to mark sprite group
+STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_COLLAPSE           :{BLACK}Shift+Click to collapse sprite group
+STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT_TEMP     :{BLACK}Ctrl+Click to highlight temporary storage register
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS                    :Signals
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :Unimplemented remapped feature ID: name: {2:RAW_STRING}, mapped to: {5:HEX} (sprite {3:NUM})
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY                   :Unimplemented remapped Action 0 property feature: {4:HEX}, name: {2:RAW_STRING}, mapped to: {5:HEX} (sprite {3:NUM})

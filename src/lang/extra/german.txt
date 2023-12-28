@@ -1092,7 +1092,9 @@ STR_NEWGRF_INSPECT_SPRITE_DUMP_TOOLTIP                          :{BLACK}Aktuelle
 STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT                            :{BLACK}U
 STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP                    :{BLACK}Zeige Sprite-Gruppe ohne jede Optimierung an.{}{}Wenn nicht vorher aktiviert, müssen NewGRFs erneut geladen werden (misc_debug 10).
 STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO                             :Scrolle zum Sprite Nummer
-STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP                    :{BLACK}Klicke, um Sprite-Gruppe hervorzuheben{}Umschalt+Klick, um die Sprite-Gruppe zu schließen{}Strg+Klick, um temporäres Speicherregister hervorzuheben
+STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT          :{BLACK}Klicke, um Sprite-Gruppe hervorzuheben
+STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_COLLAPSE           :{BLACK}Umschalt+Klick, um die Sprite-Gruppe zu schließen
+STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT_TEMP     :{BLACK}Strg+Klick, um temporäres Speicherregister hervorzuheben
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS                    :Signale
 
 STR_NEWGRF_TOO_MANY_STRINGS                                     :{WHITE}Nicht genügend String-IDs für alle NewGRFs vorhanden.
