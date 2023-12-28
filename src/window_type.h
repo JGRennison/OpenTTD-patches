@@ -695,7 +695,7 @@ enum WindowClass {
 
 	/**
 	 * Script debug window; %Window numbers:
-	 *   - 0 = #ScriptDebugWidgets
+	 *   - Ascending value = #ScriptDebugWidgets
 	 */
 	WC_SCRIPT_DEBUG,
 

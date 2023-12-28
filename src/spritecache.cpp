@@ -378,6 +378,19 @@ static bool ResizeSprites(SpriteLoader::SpriteCollection &sprite, unsigned int s
 {
 	ZoomLevel first_avail = static_cast<ZoomLevel>(FindFirstBit(sprite_avail));
 	ZoomLevel first_needed = static_cast<ZoomLevel>(FindFirstBit(zoom_levels));
+
+	/* Upscale to desired sprite_min_zoom if provided sprite only had zoomed in versions. */
+	if (first_avail < _settings_client.gui.sprite_zoom_min) {
+		const unsigned int below_min_zoom_mask = (1 << _settings_client.gui.sprite_zoom_min) - 1;
+		if ((zoom_levels & below_min_zoom_mask) != 0 && !HasBit(sprite_avail, _settings_client.gui.sprite_zoom_min)) {
+			if (!HasBit(sprite_avail, ZOOM_LVL_OUT_2X)) ResizeSpriteOut(sprite, ZOOM_LVL_OUT_2X, false);
+			if (_settings_client.gui.sprite_zoom_min == ZOOM_LVL_OUT_4X) ResizeSpriteOut(sprite, ZOOM_LVL_OUT_4X, false);
+			sprite_avail &= ~below_min_zoom_mask;
+			SetBit(sprite_avail, _settings_client.gui.sprite_zoom_min);
+			first_avail = _settings_client.gui.sprite_zoom_min;
+		}
+	}
+
 	ZoomLevel start = std::min(first_avail, first_needed);
 
 	bool needed = false;
