@@ -45,6 +45,7 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_64X                             :64x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128x
 
 ##after STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED
+##default-translation STR_COLOUR_DEFAULT
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_DEFAULT                    :Default
 
 ##after STR_ORDER_CONDITIONAL_MAX_RELIABILITY
@@ -354,6 +355,7 @@ STR_CONFIG_SETTING_COAST_TROPICS_WIDTH                          :Tropics width a
 STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_HELPTEXT                 :Controls the width of the tropic zone that surrounds coasts in sub-tropic landscape.
 
 ###length 4
+##default-translation STR_COLOUR_DEFAULT
 STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_DEFAULT                  :Default
 STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_MEDIUM                   :Medium
 STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_LARGE                    :Large
@@ -487,6 +489,7 @@ STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS            :Round up auto-f
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_HELPTEXT   :Timetable times adjusted by timetable automation are not rounded. A day at a day length of 1 is 74 ticks.{}By default the game ticks per minute value is used if using minutes, otherwise 74 ticks is used.
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_VALUE      :{COMMA}{NBSP}tick{P 0 "" s}
 ###setting-zero-is-special
+##default-translation STR_COLOUR_DEFAULT
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_DEFAULT    :Default
 
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE                            :Default road/tram types (after new game/game load): {STRING2}
@@ -568,6 +571,7 @@ STR_CONFIG_SETTING_FLOOD_FROM_EDGES_HELPTEXT                    :Whether water f
 
 STR_CONFIG_SETTING_MAP_EDGE_MODE                                :Map edge behaviour: {STRING2}
 STR_CONFIG_SETTING_MAP_EDGE_MODE_HELPTEXT                       :Whether raising the map edges above sea-level is allowed, and how the void area outside the map is displayed
+##default-translation STR_COLOUR_DEFAULT
 STR_CONFIG_SETTING_MAP_EDGE_MODE_DEFAULT                        :Default
 STR_CONFIG_SETTING_MAP_EDGE_MODE_SEA_LEVEL                      :Map edges restricted to sea level
 STR_CONFIG_SETTING_MAP_EDGE_MODE_SEA_LEVEL_OUTSIDE_WATER        :Map edges restricted to sea level, outside map shown as water
@@ -788,6 +792,7 @@ STR_BUILD_SIGNAL_SEMAPHORE_PROG_TOOLTIP                         :{BLACK}Programm
 STR_BUILD_SIGNAL_SEMAPHORE_NO_ENTRY_TOOLTIP                     :{BLACK}No-Entry Signal (semaphore){}A path signal allows more than one train to enter a signal block at the same time, if the train can reserve a path to a safe stopping point. No-entry signals can't be passed from the front side
 STR_BUILD_SIGNAL_ELECTRIC_PROG_TOOLTIP                          :{BLACK}Programmable Pre-Signal (electric){}The programmable pre-signal is a combo-signal which can be programmed to behave in complex ways.
 STR_BUILD_SIGNAL_ELECTRIC_NO_ENTRY_TOOLTIP                      :{BLACK}No-Entry Signal (electric){}A path signal allows more than one train to enter a signal block at the same time, if the train can reserve a path to a safe stopping point. No-entry signals can't be passed from the front side
+##default-translation STR_COLOUR_DEFAULT
 STR_BUILD_SIGNAL_DEFAULT_STYLE                                  :Default
 STR_BUILD_SIGNAL_STYLE_TOOLTIP                                  :{BLACK}Select signal style
 
