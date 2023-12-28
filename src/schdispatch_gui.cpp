@@ -18,6 +18,7 @@
 #include "string_func.h"
 #include "spritecache.h"
 #include "gfx_func.h"
+#include "company_base.h"
 #include "company_func.h"
 #include "date_func.h"
 #include "date_gui.h"
@@ -160,7 +161,15 @@ static void AddNewScheduledDispatchSchedule(VehicleID vindex)
 	DateTicksScaled start_tick;
 	uint32 duration;
 
-	if (_settings_time.time_in_minutes) {
+	const Company *c = Company::GetIfValid(_local_company);
+	if (c != nullptr && c->settings.default_sched_dispatch_duration != 0) {
+		/* Use duration from setting, set start time to be integer multiple of duration */
+
+		const TickMinutes now = _settings_time.NowInTickMinutes();
+		start_tick = _settings_time.FromTickMinutes(now - (now.base() % c->settings.default_sched_dispatch_duration));
+
+		duration = c->settings.default_sched_dispatch_duration * _settings_time.ticks_per_minute;
+	} else if (_settings_time.time_in_minutes) {
 		/* Set to 00:00 of today, and 1 day */
 
 		start_tick = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(0, 0));

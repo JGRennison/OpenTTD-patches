@@ -492,6 +492,13 @@ STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_VALUE      :{COMMA}{NBSP}ti
 ##default-translation STR_COLOUR_DEFAULT
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_DEFAULT    :Default
 
+STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION          :Default duration for new dispatch schedules: {STRING2}
+STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_HELPTEXT :This sets the default duration for new dispatch schedules. The default is 24 hours (1440 minutes). (When timetabling in days the default is 1 year).
+STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_VALUE    :{COMMA}{NBSP}minute{P 0 "" s}
+###setting-zero-is-special
+##default-translation STR_COLOUR_DEFAULT
+STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_DEFAULT  :Default
+
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE                            :Default road/tram types (after new game/game load): {STRING2}
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_HELPTEXT                   :Road/tram types to select after starting or loading a game. 'first available' selects the oldest type of road/tram, 'last available' selects the newest type of road/tram, 'most used' selects the type which is currently most in use, and 'default' selects the default type
 
