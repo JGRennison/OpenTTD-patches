@@ -84,7 +84,7 @@ const byte _openttd_revision_tagged = ${REV_ISTAG};
  * It should never contain things like "beta", but only the release version
  * we are compatible with.
  */
-const char _openttd_content_version[] = "13.3";
+const char _openttd_content_version[] = "13.4";
 
 /**
  * The NewGRF revision of OTTD:
