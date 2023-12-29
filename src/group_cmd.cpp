@@ -287,17 +287,29 @@ const Livery *GetParentLivery(const Group *g)
 	return &pg->livery;
 }
 
-static inline bool IsGroupDescendantOfGroup(const Group *g, const Group *top)
+static inline bool IsGroupDescendantOfGroupID(const Group *g, const GroupID top_gid, const Owner owner)
 {
-	if (g->owner != top->owner) return false;
+	if (g->owner != owner) return false;
 
 	while (true) {
+		if (g->parent == top_gid) return true;
 		if (g->parent == INVALID_GROUP) return false;
-		if (g->parent == top->index) return true;
 		g = Group::Get(g->parent);
 	}
 
 	NOT_REACHED();
+}
+
+static inline bool IsGroupDescendantOfGroup(const Group *g, const Group *top)
+{
+	return IsGroupDescendantOfGroupID(g, top->index, top->owner);
+}
+
+static inline bool IsGroupIDDescendantOfGroupID(const GroupID gid, const GroupID top_gid, const Owner owner)
+{
+	if (IsTopLevelGroupID(gid) || gid == INVALID_GROUP) return false;
+
+	return IsGroupDescendantOfGroupID(Group::Get(gid), top_gid, owner);
 }
 
 template <typename F>
@@ -317,34 +329,58 @@ void IterateDescendantsOfGroup(GroupID id_top, F func)
 	if (top != nullptr) IterateDescendantsOfGroup<F>(top, func);
 }
 
+static void PropagateChildLiveryResetVehicleCache(const Group *g)
+{
+	/* Company colour data is indirectly cached. */
+	for (Vehicle *v : Vehicle::Iterate()) {
+		if (v->IsPrimaryVehicle() && (v->group_id == g->index || IsGroupIDDescendantOfGroupID(v->group_id, g->index, g->owner))) {
+			for (Vehicle *u = v; u != nullptr; u = u->Next()) {
+				u->colourmap = PAL_NONE;
+				u->InvalidateNewGRFCache();
+				u->InvalidateImageCache();
+			}
+		}
+	}
+}
+
+static void PropagateChildLivery(const GroupID top_gid, const Owner owner, const Livery &top_livery)
+{
+	for (Group *g : Group::Iterate()) {
+		if (g->owner != owner) continue;
+
+		Livery livery = g->livery;
+
+		const Group *pg = g;
+		bool is_descendant = (g->index == top_gid);
+		while (!is_descendant) {
+			if (pg->parent == top_gid) {
+				is_descendant = true;
+				break;
+			}
+			if (pg->parent == INVALID_GROUP) break;
+			pg = Group::Get(pg->parent);
+			if (!HasBit(livery.in_use, 0)) livery.colour1 = pg->livery.colour1;
+			if (!HasBit(livery.in_use, 1)) livery.colour2 = pg->livery.colour2;
+			livery.in_use |= pg->livery.in_use;
+		}
+		if (is_descendant) {
+			if (!HasBit(livery.in_use, 0)) livery.colour1 = top_livery.colour1;
+			if (!HasBit(livery.in_use, 1)) livery.colour2 = top_livery.colour2;
+			g->livery.colour1 = livery.colour1;
+			g->livery.colour2 = livery.colour2;
+		}
+	}
+}
+
 /**
- * Propagate a livery change to a group's children.
- * @param g Group.
  * Propagate a livery change to a group's children, and optionally update cached vehicle colourmaps.
  * @param g Group to propagate colours to children.
  * @param reset_cache Reset colourmap of vehicles in this group.
  */
 static void PropagateChildLivery(const Group *g, bool reset_cache)
 {
-	if (reset_cache) {
-		/* Company colour data is indirectly cached. */
-		for (Vehicle *v : Vehicle::Iterate()) {
-			if (v->group_id == g->index && (!v->IsGroundVehicle() || v->IsFrontEngine())) {
-				for (Vehicle *u = v; u != nullptr; u = u->Next()) {
-					u->colourmap = PAL_NONE;
-					u->InvalidateNewGRFCache();
-				}
-			}
-		}
-	}
-
-	for (Group *cg : Group::Iterate()) {
-		if (cg->parent == g->index) {
-			if (!HasBit(cg->livery.in_use, 0)) cg->livery.colour1 = g->livery.colour1;
-			if (!HasBit(cg->livery.in_use, 1)) cg->livery.colour2 = g->livery.colour2;
-			PropagateChildLivery(cg, reset_cache);
-		}
-	}
+	PropagateChildLivery(g->index, g->owner, g->livery);
+	if (reset_cache) PropagateChildLiveryResetVehicleCache(g);
 }
 
 /**
@@ -354,13 +390,7 @@ static void PropagateChildLivery(const Group *g, bool reset_cache)
  */
 void UpdateCompanyGroupLiveries(const Company *c)
 {
-	for (Group *g : Group::Iterate()) {
-		if (g->owner == c->index && g->parent == INVALID_GROUP) {
-			if (!HasBit(g->livery.in_use, 0)) g->livery.colour1 = c->livery[LS_DEFAULT].colour1;
-			if (!HasBit(g->livery.in_use, 1)) g->livery.colour2 = c->livery[LS_DEFAULT].colour2;
-			PropagateChildLivery(g, false);
-		}
-	}
+	PropagateChildLivery(INVALID_GROUP, c->index, c->livery[LS_DEFAULT]);
 }
 
 Group::Group(Owner owner)
