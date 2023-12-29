@@ -957,6 +957,17 @@ static CommandCost CheckRoadSlope(Slope tileh, RoadBits *pieces, RoadBits existi
 }
 
 /**
+ * Checks the tile and returns whether the current player is allowed to convert the roadtype to another roadtype without taking ownership
+ * @param owner the tile owner.
+ * @param rtt Road/tram type.
+ * @return whether the road is convertible
+ */
+static bool CanConvertUnownedRoadType(Owner owner, RoadTramType rtt)
+{
+	return (owner == OWNER_NONE || (owner == OWNER_TOWN && rtt == RTT_ROAD));
+}
+
+/**
  * Build a piece of road.
  * @param tile tile where to build road
  * @param flags operation to perform
@@ -1297,6 +1308,14 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 					} else {
 						RoadType other_end_rt = GetRoadType(other_end, rtt);
 						if (other_end_rt != rt) {
+							/* Also check owner of the other side of the bridge, in case it differs */
+							Owner other_end_owner = GetRoadOwner(other_end, rtt);
+							if (!CanConvertUnownedRoadType(other_end_owner, rtt)) {
+								CommandCost ret = CheckOwnership(other_end_owner, other_end);
+								if (ret.Failed()) {
+									return ret;
+								}
+							}
 							if (HasPowerOnRoad(other_end_rt, rt)) {
 								cost.AddCost(CountBits(other_end_existing) * RoadConvertCost(other_end_rt, rt));
 							} else {
@@ -2991,17 +3010,6 @@ static Vehicle *UpdateRoadVehPowerProc(Vehicle *v, void *data)
 }
 
 /**
- * Checks the tile and returns whether the current player is allowed to convert the roadtype to another roadtype without taking ownership
- * @param owner the tile owner.
- * @param rtt Road/tram type.
- * @return whether the road is convertible
- */
-static bool CanConvertUnownedRoadType(Owner owner, RoadTramType rtt)
-{
-	return (owner == OWNER_NONE || (owner == OWNER_TOWN && rtt == RTT_ROAD));
-}
-
-/**
  * Convert the ownership of the RoadType of the tile if applicable
  * @param tile the tile of which convert ownership
  * @param num_pieces the count of the roadbits to assign to the new owner
@@ -3185,6 +3193,18 @@ CommandCost CmdConvertRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 			 * it would cause assert because of different test and exec runs */
 			if (include_middle && endtile < tile) {
 				if (OrthogonalTileArea(area_start, area_end).Contains(endtile)) continue;
+			}
+
+			if (IsBridge(tile) && include_middle) {
+				/* Also check owner of the other side of the bridge, in case it differs */
+				Owner end_owner = GetRoadOwner(endtile, rtt);
+				if (!CanConvertUnownedRoadType(end_owner, rtt)) {
+					CommandCost ret = CheckOwnership(end_owner, endtile);
+					if (ret.Failed()) {
+						error = ret;
+						continue;
+					}
+				}
 			}
 
 			/* When not converting rail <-> el. rail, any vehicle cannot be in tunnel/bridge */
