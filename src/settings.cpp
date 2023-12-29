@@ -3484,12 +3484,6 @@ void SaveSettingsPlyx()
 {
 	SettingsExtSave current_setting;
 
-	static const SaveLoad _settings_plyx_desc[] = {
-		SLE_VAR(SettingsExtSave, flags,          SLE_UINT32),
-		SLE_STR(SettingsExtSave, name,           SLE_STR, 0),
-		SLE_VAR(SettingsExtSave, setting_length, SLE_UINT32),
-	};
-
 	std::vector<uint32> company_setting_counts;
 
 	size_t length = 8;
@@ -3538,7 +3532,7 @@ void SaveSettingsPlyx()
 			current_setting.flags = 0;
 			current_setting.name = sd->patx_name;
 			current_setting.setting_length = setting_length;
-			SlObject(&current_setting, _settings_plyx_desc);
+			SlObject(&current_setting, _settings_ext_save_desc);
 			SlObjectMember(&(c->settings), sd->save);
 		}
 	}
