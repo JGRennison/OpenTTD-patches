@@ -2409,14 +2409,12 @@ int GetTraceRestrictTimeDateValueFromDate(TraceRestrictTimeDateValueField type, 
 			return minutes.ClockHHMM();
 
 		case TRTDVF_DAY: {
-			YearMonthDay ymd;
-			ConvertDateToYMD(ScaledDateTicksToDate(scaled_date_ticks), &ymd);
+			YearMonthDay ymd = ConvertDateToYMD(ScaledDateTicksToDate(scaled_date_ticks));
 			return ymd.day;
 		}
 
 		case TRTDVF_MONTH: {
-			YearMonthDay ymd;
-			ConvertDateToYMD(ScaledDateTicksToDate(scaled_date_ticks), &ymd);
+			YearMonthDay ymd = ConvertDateToYMD(ScaledDateTicksToDate(scaled_date_ticks));
 			return ymd.month + 1;
 		}
 

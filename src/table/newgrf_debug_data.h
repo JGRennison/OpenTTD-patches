@@ -557,10 +557,8 @@ class NIHVehicle : public NIHelper {
 						caps++;
 					}
 				}
-				YearMonthDay ymd;
-				ConvertDateToYMD(e->intro_date, &ymd);
-				YearMonthDay base_ymd;
-				ConvertDateToYMD(e->info.base_intro, &base_ymd);
+				YearMonthDay ymd = ConvertDateToYMD(e->intro_date);
+				YearMonthDay base_ymd = ConvertDateToYMD(e->info.base_intro);
 				seprintf(buffer, lastof(buffer), "    Intro: %4i-%02i-%02i (base: %4i-%02i-%02i), Age: %u, Base life: %u, Durations: %u %u %u (sum: %u)",
 						ymd.year, ymd.month + 1, ymd.day, base_ymd.year, base_ymd.month + 1, base_ymd.day,
 						e->age, e->info.base_life, e->duration_phase_1, e->duration_phase_2, e->duration_phase_3,
@@ -1528,12 +1526,11 @@ class NIHObject : public NIHelper {
 			output.print(buffer);
 
 			{
-				YearMonthDay ymd;
-				ConvertDateToYMD(spec->introduction_date, &ymd);
+				YearMonthDay ymd = ConvertDateToYMD(spec->introduction_date);
 				char *b = buffer + seprintf(buffer, lastof(buffer), " intro: %4i-%02i-%02i",
 						ymd.year, ymd.month + 1, ymd.day);
 				if (spec->end_of_life_date < MAX_DATE) {
-					ConvertDateToYMD(spec->end_of_life_date, &ymd);
+					ymd = ConvertDateToYMD(spec->end_of_life_date);
 					seprintf(b, lastof(buffer), ", end of life: %4i-%02i-%02i",
 							ymd.year, ymd.month + 1, ymd.day);
 				}
@@ -1679,8 +1676,7 @@ class NIHRailType : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  Cost multiplier: %u/8, Maintenance multiplier: %u/8", info->cost_multiplier, info->maintenance_multiplier);
 			output.print(buffer);
 
-			YearMonthDay ymd;
-			ConvertDateToYMD(info->introduction_date, &ymd);
+			YearMonthDay ymd = ConvertDateToYMD(info->introduction_date);
 			seprintf(buffer, lastof(buffer), "  Introduction date: %4i-%02i-%02i", ymd.year, ymd.month + 1, ymd.day);
 			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "  Intro required railtypes: 0x" OTTD_PRINTFHEX64, info->introduction_required_railtypes);

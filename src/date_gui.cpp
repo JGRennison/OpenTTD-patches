@@ -57,7 +57,7 @@ struct SetDateWindow : Window {
 		this->FinishInitNested(window_number);
 
 		if (initial_date == 0) initial_date = _date;
-		ConvertDateToYMD(initial_date, &this->date);
+		this->date = ConvertDateToYMD(initial_date);
 		this->date.year = Clamp(this->date.year, min_year, max_year);
 	}
 

@@ -665,8 +665,7 @@ static void DumpSubCommandLogEntry(char *&buffer, const char *last, const Comman
 			return (entry.log_flags & CLEF_SCRIPT_ASYNC) ? 'A' : 'a';
 		};
 
-		YearMonthDay ymd;
-		ConvertDateToYMD(entry.date, &ymd);
+		YearMonthDay ymd = ConvertDateToYMD(entry.date);
 		buffer += seprintf(buffer, last, "%4i-%02i-%02i, %2i, %3i", ymd.year, ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter);
 		if (_networking) {
 			buffer += seprintf(buffer, last, ", %08X", entry.frame_counter);

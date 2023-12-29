@@ -651,8 +651,7 @@ static void ClearLastVariant(EngineID engine_id, VehicleType type)
 static void RetireEngineIfPossible(Engine *e, int age_threshold)
 {
 	if (_settings_game.vehicle.no_expire_vehicles_after > 0) {
-		YearMonthDay ymd;
-		ConvertDateToYMD(e->intro_date, &ymd);
+		YearMonthDay ymd = ConvertDateToYMD(e->intro_date);
 		if ((ymd.year * 12) + ymd.month + age_threshold >= _settings_game.vehicle.no_expire_vehicles_after * 12) return;
 	}
 
@@ -725,8 +724,7 @@ void SetYearEngineAgingStops()
 		if (e->type == VEH_TRAIN && e->u.rail.railveh_type == RAILVEH_WAGON) continue;
 
 		/* Base year ending date on half the model life */
-		YearMonthDay ymd;
-		ConvertDateToYMD(ei->base_intro + (static_cast<int32_t>(ei->lifelength) * DAYS_IN_LEAP_YEAR) / 2, &ymd);
+		YearMonthDay ymd = ConvertDateToYMD(ei->base_intro + (static_cast<int32_t>(ei->lifelength) * DAYS_IN_LEAP_YEAR) / 2);
 
 		_year_engine_aging_stops = std::max(_year_engine_aging_stops, ymd.year);
 	}
@@ -779,14 +777,25 @@ void StartupOneEngine(Engine *e, Date aging_date, uint32 seed, Date no_introduce
 	              e->type ^
 	              e->GetGRFID());
 
-	r = Random();
-	e->reliability_start = GB(r, 16, 14) + 0x7AE0;
-	e->reliability_max   = GB(r,  0, 14) + 0xBFFF;
+	/* Base reliability defined as a percentage of UINT16_MAX. */
+	const uint16_t RELIABILITY_START = UINT16_MAX * 48 / 100;
+	const uint16_t RELIABILITY_MAX   = UINT16_MAX * 75 / 100;
+	const uint16_t RELIABILITY_FINAL = UINT16_MAX * 25 / 100;
+
+	static_assert(RELIABILITY_START == 0x7AE0);
+	static_assert(RELIABILITY_MAX   == 0xBFFF);
+	static_assert(RELIABILITY_FINAL == 0x3FFF);
 
 	r = Random();
-	e->reliability_final = GB(r, 16, 14) + 0x3FFF;
+	/* 14 bits gives a value between 0 and 16383, which is up to an additional 25%p reliability on top of the base reliability. */
+	e->reliability_start = GB(r, 16, 14) + RELIABILITY_START;
+	e->reliability_max   = GB(r,  0, 14) + RELIABILITY_MAX;
+
+	r = Random();
+	e->reliability_final = GB(r, 16, 14) + RELIABILITY_FINAL;
+
 	e->duration_phase_1 = GB(r, 0, 5) + 7;
-	e->duration_phase_2 = GB(r, 5, 4) + ei->base_life * 12 - 96;
+	e->duration_phase_2 = std::max(0, int(GB(r, 5, 4)) + ei->base_life * 12 - 96);
 	e->duration_phase_3 = GB(r, 9, 7) + 120;
 
 	RestoreRandomSeeds(saved_seeds);

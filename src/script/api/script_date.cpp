@@ -37,8 +37,7 @@
 {
 	if (date < 0) return DATE_INVALID;
 
-	::YearMonthDay ymd;
-	::ConvertDateToYMD(date, &ymd);
+	::YearMonthDay ymd = ::ConvertDateToYMD(date);
 	return ymd.year;
 }
 
@@ -46,8 +45,7 @@
 {
 	if (date < 0) return DATE_INVALID;
 
-	::YearMonthDay ymd;
-	::ConvertDateToYMD(date, &ymd);
+	::YearMonthDay ymd = ::ConvertDateToYMD(date);
 	return ymd.month + 1;
 }
 
@@ -55,8 +53,7 @@
 {
 	if (date < 0) return DATE_INVALID;
 
-	::YearMonthDay ymd;
-	::ConvertDateToYMD(date, &ymd);
+	::YearMonthDay ymd = ::ConvertDateToYMD(date);
 	return ymd.day;
 }
 

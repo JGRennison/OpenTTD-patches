@@ -1792,7 +1792,7 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_31)) {
 		_date += DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
 		SetScaledTickVariables();
-		ConvertDateToYMD(_date, &_cur_date_ymd);
+		_cur_date_ymd = ConvertDateToYMD(_date);
 		UpdateCachedSnowLine();
 
 		for (Station *st : Station::Iterate())   st->build_date      += DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
@@ -4297,6 +4297,10 @@ bool AfterLoadGame()
 		for (Vehicle *v : Vehicle::Iterate()) {
 			v->date_of_last_service_newgrf = v->date_of_last_service;
 		}
+	}
+
+	for (Company *c : Company::Iterate()) {
+		UpdateCompanyLiveries(c);
 	}
 
 	/*

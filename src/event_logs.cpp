@@ -90,8 +90,7 @@ char *DumpSpecialEventsLog(char *buffer, const char *last)
 		}
 		const SpecialEventLogEntry &entry = _special_event_log.log[log_index];
 
-		YearMonthDay ymd;
-		ConvertDateToYMD(entry.date, &ymd);
+		YearMonthDay ymd = ConvertDateToYMD(entry.date);
 		buffer += seprintf(buffer, last, " %3u | %4i-%02i-%02i, %2i, %3i | cc: %3u, lc: %3u | %s\n",
 				i, ymd.year, ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter, (uint) entry.current_company, (uint) entry.local_company, entry.msg.c_str());
 	}

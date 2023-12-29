@@ -399,13 +399,11 @@ void ClearDesyncMsgLog()
 char *DumpDesyncMsgLog(char *buffer, const char *last)
 {
 	buffer = _desync_msg_log.Dump(buffer, last, "Desync Msg Log", [](int display_num, char *buffer, const char *last, const DesyncMsgLogEntry &entry) -> int {
-		YearMonthDay ymd;
-		ConvertDateToYMD(entry.date, &ymd);
+		YearMonthDay ymd = ConvertDateToYMD(entry.date);
 		return seprintf(buffer, last, "%5u | %4i-%02i-%02i, %2i, %3i | %s\n", display_num, ymd.year, ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter, entry.msg.c_str());
 	});
 	buffer = _remote_desync_msg_log.Dump(buffer, last, "Remote Client Desync Msg Log", [](int display_num, char *buffer, const char *last, const DesyncMsgLogEntry &entry) -> int {
-		YearMonthDay ymd;
-		ConvertDateToYMD(entry.date, &ymd);
+		YearMonthDay ymd = ConvertDateToYMD(entry.date);
 		return seprintf(buffer, last, "%5u | Client %5u | %4i-%02i-%02i, %2i, %3i | %s\n", display_num, entry.src_id, ymd.year, ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter, entry.msg.c_str());
 	});
 	return buffer;

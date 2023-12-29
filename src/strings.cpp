@@ -462,8 +462,7 @@ static char *FormatWallClockString(char *buff, DateTicksScaled ticks, const char
 		Date date = ScaledDateTicksToDate(ticks);
 		int64 final_arg;
 		if (_settings_client.gui.date_with_time == 1) {
-			YearMonthDay ymd;
-			ConvertDateToYMD(date, &ymd);
+			YearMonthDay ymd = ConvertDateToYMD(date);
 			final_arg = ymd.year;
 		} else {
 			final_arg = date.base();
@@ -487,8 +486,7 @@ static char *FormatTimeHHMMString(char *buff, uint time, const char *last, uint 
 
 static char *FormatYmdString(char *buff, Date date, const char *last, uint case_index)
 {
-	YearMonthDay ymd;
-	ConvertDateToYMD(date, &ymd);
+	YearMonthDay ymd = ConvertDateToYMD(date);
 
 	auto tmp_params = MakeParameters(ymd.day + STR_DAY_NUMBER_1ST - 1, STR_MONTH_ABBREV_JAN + ymd.month, ymd.year);
 	return FormatString(buff, GetStringPtr(STR_FORMAT_DATE_LONG), tmp_params, last, case_index);
@@ -496,8 +494,7 @@ static char *FormatYmdString(char *buff, Date date, const char *last, uint case_
 
 static char *FormatMonthAndYear(char *buff, Date date, const char *last, uint case_index)
 {
-	YearMonthDay ymd;
-	ConvertDateToYMD(date, &ymd);
+	YearMonthDay ymd = ConvertDateToYMD(date);
 
 	auto tmp_params = MakeParameters(STR_MONTH_JAN + ymd.month, ymd.year);
 	return FormatString(buff, GetStringPtr(STR_FORMAT_DATE_SHORT), tmp_params, last, case_index);
@@ -505,8 +502,7 @@ static char *FormatMonthAndYear(char *buff, Date date, const char *last, uint ca
 
 static char *FormatTinyOrISODate(char *buff, Date date, StringID str, const char *last)
 {
-	YearMonthDay ymd;
-	ConvertDateToYMD(date, &ymd);
+	YearMonthDay ymd = ConvertDateToYMD(date);
 
 	/* Day and month are zero-padded with ZEROFILL_NUM, hence the two 2s. */
 	auto tmp_params = MakeParameters(ymd.day, 2, ymd.month + 1, 2, ymd.year);

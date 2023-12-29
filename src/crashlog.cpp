@@ -484,8 +484,7 @@ char *CrashLog::LogRecentNews(char *buffer, const char *last) const
 
 	int i = 0;
 	for (NewsItem *news = _latest_news; i < 32 && news != nullptr; news = news->prev, i++) {
-		YearMonthDay ymd;
-		ConvertDateToYMD(news->date, &ymd);
+		YearMonthDay ymd = ConvertDateToYMD(news->date);
 		buffer += seprintf(buffer, last, "(%i-%02i-%02i) StringID: %u, Type: %u, Ref1: %u, %u, Ref2: %u, %u\n",
 		                   ymd.year, ymd.month + 1, ymd.day, news->string_id, news->type,
 		                   news->reftype1, news->ref1, news->reftype2, news->ref2);
@@ -665,8 +664,7 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 		extern uint8  _last_sync_tick_skip_counter;
 		extern uint32 _last_sync_frame_counter;
 
-		YearMonthDay ymd;
-		ConvertDateToYMD(_last_sync_date, &ymd);
+		YearMonthDay ymd = ConvertDateToYMD(_last_sync_date);
 		buffer += seprintf(buffer, last, "Last sync at: %i-%02i-%02i (%i, %i), %08X\n",
 				ymd.year, ymd.month + 1, ymd.day, _last_sync_date_fract, _last_sync_tick_skip_counter, _last_sync_frame_counter);
 	}
@@ -731,8 +729,7 @@ char *CrashLog::FillInconsistencyLog(char *buffer, const char *last, const Incon
 		extern uint8  _last_sync_tick_skip_counter;
 		extern uint32 _last_sync_frame_counter;
 
-		YearMonthDay ymd;
-		ConvertDateToYMD(_last_sync_date, &ymd);
+		YearMonthDay ymd = ConvertDateToYMD(_last_sync_date);
 		buffer += seprintf(buffer, last, "Last sync at: %i-%02i-%02i (%i, %i), %08X\n",
 				ymd.year, ymd.month + 1, ymd.day, _last_sync_date_fract, _last_sync_tick_skip_counter, _last_sync_frame_counter);
 	}

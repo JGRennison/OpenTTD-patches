@@ -108,8 +108,7 @@ static int32 ClickChangeDateCheat(int32 p1, int32 p2)
 	p1 = Clamp(p1, MIN_YEAR, MAX_YEAR);
 	if (p1 == _cur_year) return _cur_year;
 
-	YearMonthDay ymd;
-	ConvertDateToYMD(_date, &ymd);
+	YearMonthDay ymd = ConvertDateToYMD(_date);
 	Date new_date = ConvertYMDToDate(p1, ymd.month, ymd.day);
 
 	/* Shift cached dates. */

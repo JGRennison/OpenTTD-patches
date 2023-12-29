@@ -90,11 +90,9 @@ void SetDate(Date date, DateFract fract, bool preserve_scaled_ticks)
 {
 	assert(fract < DAY_TICKS);
 
-	YearMonthDay ymd;
-
 	_date = date;
 	_date_fract = fract;
-	ConvertDateToYMD(date, &ymd);
+	YearMonthDay ymd = ConvertDateToYMD(date);
 	_cur_date_ymd = ymd;
 	if (preserve_scaled_ticks) {
 		RebaseScaledDateTicksBase();
@@ -153,7 +151,7 @@ static const uint16 _accum_days_for_month[] = {
  * @param date the date to convert from
  * @param ymd  the year, month and day to write to
  */
-void ConvertDateToYMD(Date date, YearMonthDay *ymd)
+YearMonthDay ConvertDateToYMD(Date date)
 {
 	/* Year determination in multiple steps to account for leap
 	 * years. First do the large steps, then the smaller ones.
@@ -195,11 +193,14 @@ void ConvertDateToYMD(Date date, YearMonthDay *ymd)
 	/* Skip the 29th of February in non-leap years */
 	if (!IsLeapYear(yr) && rem >= ACCUM_MAR - 1) rem++;
 
-	ymd->year = yr;
+	YearMonthDay ymd;
+	ymd.year = yr;
 
 	x = _month_date_from_year_day[rem];
-	ymd->month = x >> 5;
-	ymd->day = x & 0x1F;
+	ymd.month = x >> 5;
+	ymd.day = x & 0x1F;
+
+	return ymd;
 }
 
 /**
@@ -345,8 +346,7 @@ void IncreaseDate()
 	/* increase day counter */
 	_date++;
 
-	YearMonthDay ymd;
-	ConvertDateToYMD(_date, &ymd);
+	YearMonthDay ymd = ConvertDateToYMD(_date);
 
 	/* check if we entered a new month? */
 	bool new_month = ymd.month != _cur_date_ymd.month;

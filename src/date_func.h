@@ -29,7 +29,7 @@ extern DateFract _game_load_date_fract;
 extern uint8 _game_load_tick_skip_counter;
 
 void SetDate(Date date, DateFract fract, bool preserve_scaled_ticks = true);
-void ConvertDateToYMD(Date date, YearMonthDay *ymd);
+YearMonthDay ConvertDateToYMD(Date date);
 Date ConvertYMDToDate(Year year, Month month, Day day);
 void SetScaledTickVariables();
 

@@ -2455,15 +2455,12 @@ void NetworkServerNewCompany(const Company *c, NetworkClientInfo *ci)
 char *NetworkServerDumpClients(char *buffer, const char *last)
 {
 	for (NetworkClientInfo *ci : NetworkClientInfo::Iterate()) {
-		YearMonthDay ymd;
-		ConvertDateToYMD(ci->join_date, &ymd);
 		buffer += seprintf(buffer, last, "  #%d: name: '%s', company: %u",
 				ci->client_id,
 				ci->client_name.c_str(),
 				ci->client_playas);
 		if (ci->join_date != 0) {
-			YearMonthDay ymd;
-			ConvertDateToYMD(ci->join_date, &ymd);
+			YearMonthDay ymd = ConvertDateToYMD(ci->join_date);
 			buffer += seprintf(buffer, last, ", joined: %4i-%02i-%02i, %i, %i, frame: %08X",
 					ymd.year, ymd.month + 1, ymd.day, ci->join_date_fract, ci->join_tick_skip_counter, ci->join_frame);
 		}
