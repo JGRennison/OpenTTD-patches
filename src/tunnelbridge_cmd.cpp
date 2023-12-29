@@ -2884,45 +2884,30 @@ static TrackStatus GetTileTrackStatus_TunnelBridge(TileIndex tile, TransportType
 
 static void UpdateRoadTunnelBridgeInfrastructure(TileIndex begin, TileIndex end, bool add) {
 	/* A full diagonal road has two road bits. */
-	const uint middle_len = 2 * GetTunnelBridgeLength(begin, end) * TUNNELBRIDGE_TRACKBIT_FACTOR;
-	const uint len = middle_len + (4 * TUNNELBRIDGE_TRACKBIT_FACTOR);
+	const uint half_middle_len = GetTunnelBridgeLength(begin, end) * TUNNELBRIDGE_TRACKBIT_FACTOR;
+	const uint half_len = half_middle_len + (2 * TUNNELBRIDGE_TRACKBIT_FACTOR);
 
-	for (RoadTramType rtt : _roadtramtypes) {
-		RoadType rt = GetRoadType(begin, rtt);
-		if (rt == INVALID_ROADTYPE) continue;
-		Company * const c = Company::GetIfValid(GetRoadOwner(begin, rtt));
-		if (c != nullptr) {
-			uint infra = 0;
-			if (IsBridge(begin)) {
-				const RoadBits bits = GetCustomBridgeHeadRoadBits(begin, rtt);
-				infra += CountBits(bits) * TUNNELBRIDGE_TRACKBIT_FACTOR;
-				if (bits & DiagDirToRoadBits(GetTunnelBridgeDirection(begin))) {
-					infra += middle_len;
+	for (TileIndex t : { begin, end }) {
+		for (RoadTramType rtt : _roadtramtypes) {
+			RoadType rt = GetRoadType(t, rtt);
+			if (rt == INVALID_ROADTYPE) continue;
+			Company * const c = Company::GetIfValid(GetRoadOwner(t, rtt));
+			if (c != nullptr) {
+				uint infra = 0;
+				if (IsBridge(t)) {
+					const RoadBits bits = GetCustomBridgeHeadRoadBits(t, rtt);
+					infra += CountBits(bits) * TUNNELBRIDGE_TRACKBIT_FACTOR;
+					if (bits & DiagDirToRoadBits(GetTunnelBridgeDirection(t))) {
+						infra += half_middle_len;
+					}
+				} else {
+					infra += half_len;
 				}
-			} else {
-				infra += len;
-			}
-			if (add) {
-				c->infrastructure.road[rt] += infra;
-			} else {
-				c->infrastructure.road[rt] -= infra;
-			}
-		}
-	}
-	for (RoadTramType rtt : _roadtramtypes) {
-		RoadType rt = GetRoadType(end, rtt);
-		if (rt == INVALID_ROADTYPE) continue;
-		Company * const c = Company::GetIfValid(GetRoadOwner(end, rtt));
-		if (c != nullptr) {
-			uint infra = 0;
-			if (IsBridge(end)) {
-				const RoadBits bits = GetCustomBridgeHeadRoadBits(end, rtt);
-				infra += CountBits(bits) * TUNNELBRIDGE_TRACKBIT_FACTOR;
-			}
-			if (add) {
-				c->infrastructure.road[rt] += infra;
-			} else {
-				c->infrastructure.road[rt] -= infra;
+				if (add) {
+					c->infrastructure.road[rt] += infra;
+				} else {
+					c->infrastructure.road[rt] -= infra;
+				}
 			}
 		}
 	}
