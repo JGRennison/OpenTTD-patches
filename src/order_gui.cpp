@@ -169,7 +169,7 @@ public:
 		this->order = v->GetOrder(order_id);
 		this->set_to_all_dropdown_sel = 0;
 
-		this->CreateNestedTree(desc);
+		this->CreateNestedTree();
 		this->GetWidget<NWidgetCore>(WID_CTO_CAPTION)->SetDataTip(STR_CARGO_TYPE_ORDERS_LOAD_CAPTION + this->variant, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS);
 		this->GetWidget<NWidgetCore>(WID_CTO_HEADER)->SetDataTip(STR_CARGO_TYPE_ORDERS_LOAD_TITLE + this->variant, STR_NULL);
 		this->GetWidget<NWidgetStacked>(WID_CTO_SELECT)->SetDisplayedPlane((_sorted_standard_cargo_specs.size() >= 32) ? 0 : SZSP_NONE);

@@ -331,7 +331,7 @@ public:
 	virtual ptrdiff_t GetTextCharacterAtPosition(const Point &pt) const;
 
 	void InitNested(WindowNumber number = 0);
-	void CreateNestedTree(bool fill_nested = true);
+	void CreateNestedTree();
 	void FinishInitNested(WindowNumber window_number = 0);
 
 	void ChangeWindowClass(WindowClass cls);

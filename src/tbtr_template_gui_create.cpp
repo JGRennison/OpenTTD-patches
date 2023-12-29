@@ -141,7 +141,7 @@ private:
 public:
 	TemplateCreateWindow(WindowDesc* _wdesc, TemplateVehicle *to_edit, bool *window_open) : Window(_wdesc)
 	{
-		this->CreateNestedTree(_wdesc != nullptr);
+		this->CreateNestedTree();
 		this->hscroll = this->GetScrollbar(TCW_SCROLLBAR_H_NEW_TMPL);
 		this->vscroll = this->GetScrollbar(TCW_SCROLLBAR_V_NEW_TMPL);
 		this->FinishInitNested(VEH_TRAIN);

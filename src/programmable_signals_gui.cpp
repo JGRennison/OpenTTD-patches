@@ -257,7 +257,7 @@ public:
 		this->track = ref.track;
 		this->selected_instruction = -1;
 
-		this->CreateNestedTree(desc);
+		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(PROGRAM_WIDGET_SCROLLBAR);
 		this->GetWidget<NWidgetStacked>(PROGRAM_WIDGET_SEL_TOP_AUX)->SetDisplayedPlane(SZSP_NONE);
 		this->current_aux_plane = SZSP_NONE;
