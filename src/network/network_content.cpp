@@ -613,12 +613,18 @@ void ClientNetworkContentSocketHandler::OnReceiveData(const char *data, size_t l
 	assert(data == nullptr || length != 0);
 
 	/* Ignore any latent data coming from a connection we closed. */
-	if (this->http_response_index == -2) return;
+	if (this->http_response_index == -2) {
+		if (data != nullptr) {
+			free(data);
+		}
+		return;
+	}
 
 	if (this->http_response_index == -1) {
 		if (data != nullptr) {
 			/* Append the rest of the response. */
 			this->http_response.insert(this->http_response.end(), data, data + length);
+			free(data);
 			return;
 		} else {
 			/* Make sure the response is properly terminated. */
@@ -638,7 +644,9 @@ void ClientNetworkContentSocketHandler::OnReceiveData(const char *data, size_t l
 			/* Just received the data. */
 			this->OnDownloadProgress(this->curInfo, (int)length);
 		}
+
 		/* Nothing more to do now. */
+		free(data);
 		return;
 	}
 

@@ -394,5 +394,7 @@ void NetworkSurveyHandler::OnReceiveData(const char *data, size_t)
 	if (data == nullptr) {
 		Debug(net, 1, "Survey: survey results sent");
 		this->loaded.notify_all();
+	} else {
+		free(data);
 	}
 }

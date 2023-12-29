@@ -26,7 +26,7 @@ struct HTTPCallback {
 
 	/**
 	 * We're receiving data.
-	 * @param data   the received data, nullptr when all data has been received.
+	 * @param data   the received data, nullptr when all data has been received. The implementation is responsible for freeing the data.
 	 * @param length the amount of received data, 0 when all data has been received.
 	 * @note When nullptr is sent the HTTP socket handler is closed/freed.
 	 */
