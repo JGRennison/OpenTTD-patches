@@ -143,7 +143,7 @@ void debug_print(const char *dbg, const char *buf)
 	if (_debug_socket != INVALID_SOCKET) {
 		char buf2[1024 + 32];
 
-		seprintf(buf2, lastof(buf2), "%sdbg: [%s] %s\n", GetLogPrefix(), dbg, buf);
+		seprintf(buf2, lastof(buf2), "%sdbg: [%s] %s\n", log_prefix().GetLogPrefix(), dbg, buf);
 
 		/* Prevent sending a message concurrently, as that might cause interleaved messages. */
 		static std::mutex _debug_socket_mutex;
@@ -157,7 +157,7 @@ void debug_print(const char *dbg, const char *buf)
 	if (strcmp(dbg, "desync") == 0) {
 		static FILE *f = FioFOpenFile("commands-out.log", "wb", AUTOSAVE_DIR);
 		if (f != nullptr) {
-			fprintf(f, "%s%s\n", GetLogPrefix(), buf);
+			fprintf(f, "%s%s\n", log_prefix().GetLogPrefix(), buf);
 			fflush(f);
 		}
 #ifdef RANDOM_DEBUG
@@ -191,7 +191,7 @@ void debug_print(const char *dbg, const char *buf)
 	}
 
 	char buffer[512];
-	seprintf(buffer, lastof(buffer), "%sdbg: [%s] %s\n", GetLogPrefix(), dbg, buf);
+	seprintf(buffer, lastof(buffer), "%sdbg: [%s] %s\n", log_prefix().GetLogPrefix(), dbg, buf);
 
 	str_strip_colours(buffer);
 
@@ -323,15 +323,14 @@ std::string GetDebugString()
  * the date, otherwise it returns nothing.
  * @return the prefix for logs (do not free), never nullptr
  */
-const char *GetLogPrefix()
+const char *log_prefix::GetLogPrefix()
 {
-	static char _log_prefix[24];
 	if (_settings_client.gui.show_date_in_logs) {
-		LocalTime::Format(_log_prefix, lastof(_log_prefix), "[%Y-%m-%d %H:%M:%S] ");
+		LocalTime::Format(this->buffer, lastof(this->buffer), "[%Y-%m-%d %H:%M:%S] ");
 	} else {
-		*_log_prefix = '\0';
+		this->buffer[0] = '\0';
 	}
-	return _log_prefix;
+	return this->buffer;
 }
 
 struct DesyncMsgLogEntry {

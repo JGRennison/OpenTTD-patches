@@ -53,7 +53,8 @@ static void IConsoleWriteToLogFile(const char *string)
 {
 	if (_iconsole_output_file != nullptr) {
 		/* if there is an console output file ... also print it there */
-		const char *header = GetLogPrefix();
+		log_prefix prefix_writer;
+		const char *header = prefix_writer.GetLogPrefix();
 		if ((strlen(header) != 0 && fwrite(header, strlen(header), 1, _iconsole_output_file) != 1) ||
 				fwrite(string, strlen(string), 1, _iconsole_output_file) != 1 ||
 				fwrite("\n", 1, 1, _iconsole_output_file) != 1) {
@@ -115,7 +116,7 @@ void IConsolePrint(TextColour colour_code, const char *string)
 
 	if (_network_dedicated) {
 		NetworkAdminConsole("console", str);
-		fprintf(stdout, "%s%s\n", GetLogPrefix(), str);
+		fprintf(stdout, "%s%s\n", log_prefix().GetLogPrefix(), str);
 		fflush(stdout);
 		IConsoleWriteToLogFile(str);
 		free(str); // free duplicated string since it's not used anymore

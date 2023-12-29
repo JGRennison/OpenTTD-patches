@@ -131,6 +131,13 @@ std::string GetDebugString();
 void ShowInfo(const char *str);
 void CDECL ShowInfoF(const char *str, ...) WARN_FORMAT(1, 2);
 
+struct log_prefix {
+	const char *GetLogPrefix();
+
+private:
+	char buffer[24];
+};
+
 const char *GetLogPrefix();
 
 void ClearDesyncMsgLog();
