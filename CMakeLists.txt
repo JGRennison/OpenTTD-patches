@@ -550,6 +550,7 @@ string(REGEX REPLACE "(^|;)-D" "\\1" CFG_DEFS "${CFG_DEFS}")
 get_property(CFG_DEFS_2 DIRECTORY . PROPERTY COMPILE_DEFINITIONS)
 list(APPEND CFG_DEFS ${CFG_DEFS_2})
 list(FILTER CFG_DEFS EXCLUDE REGEX "_DIR=")
+list(FILTER CFG_DEFS EXCLUDE REGEX "SURVEY_KEY=")
 
 # Generate a target to determine version, which is execute every 'make' run
 add_custom_target(find_version
