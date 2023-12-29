@@ -364,6 +364,7 @@ target_link_libraries(${OPENTTD_LIB}
 target_link_libraries(openttd
     openttd::media
     openttd::basesets
+    openttd::binfiles
 )
 
 if(HAIKU)
