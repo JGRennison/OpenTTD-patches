@@ -1748,6 +1748,15 @@ void TraceRestrictCheckRefreshSignals(const TraceRestrictProgram *prog, size_t o
 	}
 }
 
+void TraceRestrictCheckRefreshSingleSignal(const TraceRestrictProgram *prog, TraceRestrictRefId ref, TraceRestrictProgramActionsUsedFlags old_actions_used_flags)
+{
+	if (((old_actions_used_flags ^ prog->actions_used_flags) & TRPAUF_RESERVE_THROUGH_ALWAYS)) {
+		TileIndex tile = GetTraceRestrictRefIdTileIndex(ref);
+		Track track = GetTraceRestrictRefIdTrack(ref);
+		if (IsTileType(tile, MP_RAILWAY)) UpdateSignalReserveThroughBit(tile, track, true);
+	}
+}
+
 /**
  * Gets the signal program for the tile ref @p ref
  * An empty program will be constructed if none exists, and @p create_new is true, unless the pool is full
@@ -2203,6 +2212,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 		if (prog->items.size() == 0 && prog->refcount == 1) {
 			// program is empty, and this tile is the only reference to it
 			// so delete it, as it's redundant
+			TraceRestrictCheckRefreshSingleSignal(prog, MakeTraceRestrictRefId(tile, track), old_actions_used_flags);
 			TraceRestrictRemoveProgramMapping(MakeTraceRestrictRefId(tile, track));
 		} else {
 			TraceRestrictCheckRefreshSignals(prog, old_size, old_actions_used_flags);
@@ -2327,6 +2337,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 			}
 
 			TraceRestrictCreateProgramMapping(self, source_prog);
+			TraceRestrictCheckRefreshSingleSignal(source_prog, self, static_cast<TraceRestrictProgramActionsUsedFlags>(0));
 			break;
 		}
 
@@ -2350,6 +2361,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 
 				new_prog->items.swap(items);
 				new_prog->Validate();
+				TraceRestrictCheckRefreshSingleSignal(new_prog, self, static_cast<TraceRestrictProgramActionsUsedFlags>(0));
 			}
 			break;
 		}
