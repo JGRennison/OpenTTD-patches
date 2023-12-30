@@ -1438,6 +1438,25 @@ class NIHSignals : public NIHelper {
 		extern void DumpNewSignalsSpriteGroups(SpriteGroupDumper &dumper);
 		DumpNewSignalsSpriteGroups(dumper);
 	}
+
+	/* virtual */ bool ShowOptionsDropDown(uint index) const override
+	{
+		return true;
+	}
+
+	/* virtual */ void FillOptionsDropDown(uint index, DropDownList &list) const override
+	{
+		list.push_back(std::make_unique<DropDownListStringItem>(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE, 0, !IsTileType(index, MP_RAILWAY)));
+	}
+
+	/* virtual */ void OnOptionsDropdownSelect(uint index, int selected) const override
+	{
+		switch (selected) {
+			case 0:
+				ShowNewGRFInspectWindow(GSF_RAILTYPES, index);
+				break;
+		}
+	}
 };
 
 static const NIFeature _nif_signals = {
@@ -1705,6 +1724,30 @@ class NIHRailType : public NIHelper {
 	{
 		extern void DumpRailTypeSpriteGroup(RailType rt, SpriteGroupDumper &dumper);
 		DumpRailTypeSpriteGroup(GetTileRailType(index), dumper);
+	}
+
+	/* virtual */ bool ShowOptionsDropDown(uint index) const override
+	{
+		return true;
+	}
+
+	/* virtual */ void FillOptionsDropDown(uint index, DropDownList &list) const override
+	{
+		list.push_back(std::make_unique<DropDownListStringItem>(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE, 0, !IsLevelCrossingTile(index)));
+		list.push_back(std::make_unique<DropDownListStringItem>(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS, 1, !(IsTileType(index, MP_RAILWAY) && HasSignals(index))));
+	}
+
+	/* virtual */ void OnOptionsDropdownSelect(uint index, int selected) const override
+	{
+		switch (selected) {
+			case 0:
+				ShowNewGRFInspectWindow(GSF_ROADTYPES, index);
+				break;
+
+			case 1:
+				ShowNewGRFInspectWindow(GSF_SIGNALS, index);
+				break;
+		}
 	}
 };
 
@@ -2160,6 +2203,25 @@ class NIHRoadType : public NIHelper {
 
 			extern void DumpRoadTypeSpriteGroup(RoadType rt, SpriteGroupDumper &dumper);
 			DumpRoadTypeSpriteGroup(rt, dumper);
+		}
+	}
+
+	/* virtual */ bool ShowOptionsDropDown(uint index) const override
+	{
+		return true;
+	}
+
+	/* virtual */ void FillOptionsDropDown(uint index, DropDownList &list) const override
+	{
+		list.push_back(std::make_unique<DropDownListStringItem>(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE, 0, !IsLevelCrossingTile(index)));
+	}
+
+	/* virtual */ void OnOptionsDropdownSelect(uint index, int selected) const override
+	{
+		switch (selected) {
+			case 0:
+				ShowNewGRFInspectWindow(GSF_RAILTYPES, index);
+				break;
 		}
 	}
 };
