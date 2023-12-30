@@ -26,6 +26,7 @@
 #include "../clear_map.h"
 #include "../tunnelbridge.h"
 #include "../train_speed_adaptation.h"
+#include "../tracerestrict.h"
 
 /* Helper for filling property tables */
 #define NIP(prop, base, variable, type, name) { name, (ptrdiff_t)cpp_offsetof(base, variable), cpp_sizeof(base, variable), prop, type }
@@ -2127,6 +2128,108 @@ static const NIFeature _nif_station_struct = {
 	new NIHStationStruct(),
 };
 
+class NIHTraceRestrict : public NIHelper {
+	bool IsInspectable(uint index) const override        { return true; }
+	bool ShowExtraInfoOnly(uint index) const override    { return true; }
+	uint GetParent(uint index) const override            { return UINT32_MAX; }
+	const void *GetInstance(uint index)const override    { return nullptr; }
+	const void *GetSpec(uint index) const override       { return nullptr; }
+
+	void SetStringParameters(uint index) const override
+	{
+		SetDParam(0, STR_NEWGRF_INSPECT_CAPTION_TRACERESTRICT);
+		SetDParam(1, GetTraceRestrictRefIdTileIndex(static_cast<TraceRestrictRefId>(index)));
+		SetDParam(2, GetTraceRestrictRefIdTrack(static_cast<TraceRestrictRefId>(index)));
+	}
+
+	uint32 GetGRFID(uint index) const override           { return 0; }
+
+	uint Resolve(uint index, uint var, uint param, GetVariableExtra *extra) const override
+	{
+		return 0;
+	}
+
+	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
+	{
+		TraceRestrictRefId ref = static_cast<TraceRestrictRefId>(index);
+		const TraceRestrictProgram *prog = GetTraceRestrictProgram(ref, false);
+
+		if (prog == nullptr) {
+			output.print("No program");
+			return;
+		}
+
+		char buffer[1024];
+		seprintf(buffer, lastof(buffer), "Index: %u", prog->index);
+		output.print(buffer);
+		output.print("");
+
+		seprintf(buffer, lastof(buffer), "Actions used: 0x%X", prog->actions_used_flags);
+		output.print(buffer);
+		auto check_action = [&](TraceRestrictProgramActionsUsedFlags flag, const char *label) {
+			if (prog->actions_used_flags & flag) {
+				seprintf(buffer, lastof(buffer), "  %s", label);
+				output.print(buffer);
+			}
+		};
+#define CA(f) check_action(TRPAUF_##f, #f);
+		CA(PF)
+		CA(RESERVE_THROUGH)
+		CA(LONG_RESERVE)
+		CA(WAIT_AT_PBS)
+		CA(SLOT_ACQUIRE)
+		CA(SLOT_RELEASE_BACK)
+		CA(SLOT_RELEASE_FRONT)
+		CA(PBS_RES_END_WAIT)
+		CA(PBS_RES_END_SLOT)
+		CA(REVERSE)
+		CA(SPEED_RESTRICTION)
+		CA(TRAIN_NOT_STUCK)
+		CA(CHANGE_COUNTER)
+		CA(NO_PBS_BACK_PENALTY)
+		CA(SLOT_ACQUIRE_ON_RES)
+		CA(SPEED_ADAPTATION)
+		CA(PBS_RES_END_SIMULATE)
+		CA(RESERVE_THROUGH_ALWAYS)
+		CA(CMB_SIGNAL_MODE_CTRL)
+		CA(ORDER_CONDITIONALS)
+#undef CA
+		output.print("");
+
+		seprintf(buffer, lastof(buffer), "Ref count: %u", prog->refcount);
+		output.print(buffer);
+		const TraceRestrictRefId *refs = prog->GetRefIdsPtr();
+		for (uint32 i = 0; i < prog->refcount; i++) {
+			TileIndex tile = GetTraceRestrictRefIdTileIndex(refs[i]);
+			seprintf(buffer, lastof(buffer), "  %X x %X, track: %X", TileX(tile), TileY(tile), GetTraceRestrictRefIdTrack(refs[i]));
+			output.print(buffer);
+		}
+		output.print("");
+
+		seprintf(buffer, lastof(buffer), "Program: items: %u, instructions: %u", (uint)prog->items.size(), (uint)prog->GetInstructionCount());
+		output.print(buffer);
+		auto iter = prog->items.begin();
+		auto end = prog->items.end();
+		while (iter != end) {
+			if (IsTraceRestrictDoubleItem(*iter)) {
+				seprintf(buffer, lastof(buffer), "  %08X %08X", *iter, *(iter + 1));
+				iter += 2;
+			} else {
+				seprintf(buffer, lastof(buffer), "  %08X", *iter);
+				++iter;
+			}
+			output.print(buffer);
+		}
+	}
+};
+
+static const NIFeature _nif_tracerestrict = {
+	nullptr,
+	nullptr,
+	nullptr,
+	new NIHTraceRestrict(),
+};
+
 /*** NewGRF road types ***/
 
 static const NIVariable _niv_roadtypes[] = {
@@ -2418,5 +2521,6 @@ static const NIFeature * const _nifeatures[] = {
 	&_nif_newlandscape, // GSF_NEWLANDSCAPE
 	&_nif_town,         // GSF_FAKE_TOWNS
 	&_nif_station_struct,  // GSF_FAKE_STATION_STRUCT
+	&_nif_tracerestrict,   // GSF_FAKE_TRACERESTRICT
 };
 static_assert(lengthof(_nifeatures) == GSF_FAKE_END);

@@ -97,6 +97,7 @@ enum GrfSpecFeature : uint8 {
 	GSF_REAL_FEATURE_END = GSF_NEWLANDSCAPE,
 
 	GSF_FAKE_STATION_STRUCT = GSF_END,  ///< Fake station struct GrfSpecFeature for NewGRF debugging
+	GSF_FAKE_TRACERESTRICT,   ///< Fake routing restriction GrfSpecFeature for debugging
 	GSF_FAKE_END,             ///< End of the fake features
 
 	GSF_ERROR_ON_USE = 0xFE,  ///< An invalid value which generates an immediate error on mapping

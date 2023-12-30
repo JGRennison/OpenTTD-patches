@@ -47,6 +47,7 @@
 #include "infrastructure_func.h"
 #include "zoom_func.h"
 #include "group_gui_list.h"
+#include "newgrf_debug.h"
 #include "core/span_type.hpp"
 #include "3rdparty/cpp-btree/btree_map.h"
 
@@ -2756,6 +2757,16 @@ public:
 		return ES_NOT_HANDLED;
 	}
 
+	bool IsNewGRFInspectable() const override
+	{
+		return true;
+	}
+
+	void ShowNewGRFInspectWindow() const override
+	{
+		::ShowNewGRFInspectWindow(GSF_FAKE_TRACERESTRICT, MakeTraceRestrictRefId(this->tile, this->track));
+	}
+
 private:
 	/**
 	 * Helper function to make start and end instructions (these are not stored in the actual program)
@@ -3519,6 +3530,7 @@ static const NWidgetPart _nested_program_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, TR_WIDGET_CAPTION), SetDataTip(STR_TRACE_RESTRICT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_DEBUGBOX, COLOUR_GREY),
 		NWidget(WWT_IMGBTN, COLOUR_GREY, TR_WIDGET_HIGHLIGHT), SetMinimalSize(12, 12), SetDataTip(SPR_SHARED_ORDERS_ICON, STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
