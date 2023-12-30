@@ -11,6 +11,7 @@
 #define ALLOC_TYPE_HPP
 
 #include "alloc_func.hpp"
+#include <memory>
 
 /**
  * A reusable buffer that can be used for places that temporary allocate
@@ -123,6 +124,87 @@ struct FreeDeleter
 struct NoOpDeleter
 {
 	void operator()(const void* ptr) {}
+};
+
+/**
+ * A wrapper around std::unique_ptr<T[]> which also stores the size.
+ */
+template <typename T>
+class UniqueBuffer {
+private:
+	std::unique_ptr<T[]> buffer; ///< The real data buffer
+	size_t buffer_size = 0;      ///< Number of T elements in the buffer
+
+public:
+	void swap(UniqueBuffer &other) noexcept
+	{
+		std::swap(this->buffer, other.buffer);
+		std::swap(this->buffer_size, other.buffer_size);
+	}
+
+	void reset(size_t size = 0)
+	{
+		if (size > 0) {
+			this->buffer.reset(new T[size]);
+		} else {
+			this->buffer.reset();
+		}
+		this->buffer_size = size;
+	}
+
+	T *get() const noexcept
+	{
+		return this->buffer.get();
+	}
+
+	size_t size() const noexcept
+	{
+		return this->buffer_size;
+	}
+
+	T& operator[](size_t i) const noexcept
+	{
+		return this->buffer[i];
+	}
+
+	UniqueBuffer() noexcept {}
+
+	UniqueBuffer(const UniqueBuffer &other) = delete;
+
+	UniqueBuffer(UniqueBuffer &&other) noexcept
+	{
+		this->swap(other);
+	}
+
+	UniqueBuffer(size_t size)
+	{
+		this->reset(size);
+	}
+
+	UniqueBuffer(std::unique_ptr<T[]> buffer, size_t size) : buffer(std::move(buffer)), buffer_size(size) {}
+
+	UniqueBuffer& operator=(const UniqueBuffer &other) = delete;
+
+	UniqueBuffer& operator=(UniqueBuffer &&other) noexcept
+	{
+		this->swap(other);
+		return *this;
+	}
+
+	bool operator==(std::nullptr_t) const noexcept
+	{
+		return this->buffer == nullptr;
+	}
+
+	bool operator!=(std::nullptr_t) const noexcept
+	{
+		return this->buffer != nullptr;
+	}
+
+	explicit operator bool() const noexcept
+	{
+		return (bool)this->buffer;
+	}
 };
 
 #endif /* ALLOC_TYPE_HPP */
