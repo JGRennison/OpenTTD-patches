@@ -617,6 +617,8 @@ void ClientNetworkContentSocketHandler::OnReceiveData(UniqueBuffer<char> data)
 		return;
 	}
 
+	this->lastActivity = std::chrono::steady_clock::now();
+
 	if (this->http_response_index == -1) {
 		if (data != nullptr) {
 			/* Append the rest of the response. */
