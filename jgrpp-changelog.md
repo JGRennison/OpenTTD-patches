@@ -2,6 +2,21 @@
 
 * * *
 
+### v0.56.2 (2023-12-30)
+* Fix signals incorrectly being considered always reserve through even after the program was modified to remove this, in some cases.
+* Fix high-speed trains reversing at waypoints/behind signals failing to stop and reverse in some cases.
+* Fix incorrect graphics/behaviour and blocked/wire/pylon states with certain rail station NewGRFs.
+* Fix incorrect time conversions to/from minutes when using clock offsets in some cases.
+* Fix infrastructure totals and road/tram type conversion behaviour when using road/tram bridges where the two ends have different road/tram owners.
+* Fix online content downloads halting before completion or causing crashes in some cases.
+* Add setting to allow auto-fill signal dragging to skip over stations/waypoints.
+* Add setting for map edge behaviour, and whether to display the area outside map as water.
+* Add a company setting to set the default dispatch schedule duration.
+* Increase sign text length limit.
+* Remove "Show cargo type filter in vehicle lists" setting, now always enabled.
+* Enable the opt-in OpenTTD survey functionality: https://survey.openttd.org/participate.
+* Bump trunk base from commit ab535c0a8665e6380c5037d7b6f0a507fc91d36a to commit feb94d233d8fdceff193a4c59298960d8148d470.
+
 ### v0.56.1 (2023-12-08)
 * Fix crash which could occur when using some languages (which use grammatical gender).
 * Fix crash which could occur when the config file is an older version or has missing sections.

@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.56.1
+## JGR's Patchpack version 0.56.2
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -58,6 +58,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Remember the last-used signal type between games.
 * Add client setting to show the introduction year for train wagons.
 * Add setting for rail depot maximum speed.
+* Add setting to allow auto-fill signal dragging to skip over stations/waypoints.
 
 #### Roads and Road Vehicles
 
@@ -259,6 +260,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add zoom in support to the minimap window.
 * Add setting to increase the size of the main toolbar.
 * Add cargo filtering and a show by cargo mode to the company delivered cargo graph.
+* Add setting to display the area outside of the map as water.
 
 #### Limits
 
