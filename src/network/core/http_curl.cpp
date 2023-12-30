@@ -195,11 +195,11 @@ void HttpThread()
 			HTTPThreadSafeCallback *callback = static_cast<HTTPThreadSafeCallback *>(userdata);
 
 			/* Copy the buffer out of CURL. OnReceiveData() will free it when done. */
-			char *buffer = size * nmemb == 0 ? nullptr : MallocT<char>(size * nmemb);
+			UniqueBuffer<char> buffer(size * nmemb);
 			if (buffer != nullptr) {
-				memcpy(buffer, ptr, size * nmemb);
+				memcpy(buffer.get(), ptr, size * nmemb);
 			}
-			callback->OnReceiveData(buffer, size * nmemb);
+			callback->OnReceiveData(std::move(buffer));
 
 			return size * nmemb;
 		});
@@ -223,7 +223,7 @@ void HttpThread()
 
 		if (res == CURLE_OK) {
 			Debug(net, 1, "HTTP request succeeded");
-			request->callback.OnReceiveData(nullptr, 0);
+			request->callback.OnReceiveData({});
 		} else {
 			long status_code = 0;
 			curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &status_code);

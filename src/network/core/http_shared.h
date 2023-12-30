@@ -24,11 +24,10 @@ private:
 	/** Entries on the queue for later handling. */
 	class Callback {
 	public:
-		Callback(const char *data, size_t length) : data(data), length(length), failure(false) {}
-		Callback() : data(nullptr), length(0), failure(true) {}
+		Callback(UniqueBuffer<char> data) : data(std::move(data)), failure(false) {}
+		Callback() : data({}), failure(true) {}
 
-		const char *data;
-		size_t length;
+		UniqueBuffer<char> data;
 		bool failure;
 	};
 
@@ -45,10 +44,10 @@ public:
 	/**
 	 * Similar to HTTPCallback::OnReceiveData, but thread-safe.
 	 */
-	void OnReceiveData(const char *data, size_t length)
+	void OnReceiveData(UniqueBuffer<char> data)
 	{
 		std::lock_guard<std::mutex> lock(this->mutex);
-		this->queue.emplace_back(data, length);
+		this->queue.emplace_back(std::move(data));
 	}
 
 	/**
@@ -66,7 +65,7 @@ public:
 			if (item.failure) {
 				this->callback->OnFailure();
 			} else {
-				this->callback->OnReceiveData(item.data, item.length);
+				this->callback->OnReceiveData(std::move(item.data));
 			}
 		}
 
@@ -101,13 +100,6 @@ public:
 	{
 		std::lock_guard<std::mutex> lock(this->mutex);
 
-		/* Free all data that was not handled. */
-		for (auto &item : this->queue) {
-			if (!item.failure) {
-				free(item.data);
-			}
-
-		}
 		queue.clear();
 		queue_cv.notify_all();
 	}

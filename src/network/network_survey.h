@@ -20,7 +20,7 @@
 class NetworkSurveyHandler : public HTTPCallback {
 protected:
 	void OnFailure() override;
-	void OnReceiveData(const char *data, size_t length) override;
+	void OnReceiveData(UniqueBuffer<char> data) override;
 	bool IsCancelled() const override { return false; }
 
 public:

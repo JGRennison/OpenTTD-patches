@@ -159,14 +159,14 @@ void NetworkHTTPRequest::WinHttpCallback(DWORD code, void *info, DWORD length)
 
 			/* Next step: read the data in a temporary allocated buffer.
 			 * The buffer will be free'd by OnReceiveData() in the next step. */
-			char *buffer = size == 0 ? nullptr : MallocT<char>(size);
+			char *buffer = size == 0 ? nullptr : new char[size];
 			WinHttpReadData(this->request, buffer, size, 0);
 		} break;
 
 		case WINHTTP_CALLBACK_STATUS_READ_COMPLETE:
 			Debug(net, 4, "HTTP callback: {} bytes", length);
 
-			this->callback.OnReceiveData(static_cast<char *>(info), length);
+			this->callback.OnReceiveData(UniqueBuffer<char>(std::unique_ptr<char[]>(static_cast<char *>(info)), length));
 
 			if (length == 0) {
 				/* Next step: no more data available: request is finished. */

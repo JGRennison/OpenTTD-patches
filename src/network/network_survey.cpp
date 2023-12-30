@@ -389,12 +389,10 @@ void NetworkSurveyHandler::OnFailure()
 	this->loaded.notify_all();
 }
 
-void NetworkSurveyHandler::OnReceiveData(const char *data, size_t)
+void NetworkSurveyHandler::OnReceiveData(UniqueBuffer<char> data)
 {
 	if (data == nullptr) {
 		Debug(net, 1, "Survey: survey results sent");
 		this->loaded.notify_all();
-	} else {
-		free(data);
 	}
 }

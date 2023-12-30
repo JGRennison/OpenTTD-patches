@@ -13,6 +13,7 @@
 #define NETWORK_CORE_HTTP_H
 
 #include "tcp.h"
+#include "../../src/core/alloc_type.hpp"
 
 constexpr int HTTP_429_TOO_MANY_REQUESTS = 429;
 
@@ -26,11 +27,11 @@ struct HTTPCallback {
 
 	/**
 	 * We're receiving data.
-	 * @param data   the received data, nullptr when all data has been received. The implementation is responsible for freeing the data.
+	 * @param data   the received data, nullptr when all data has been received.
 	 * @param length the amount of received data, 0 when all data has been received.
 	 * @note When nullptr is sent the HTTP socket handler is closed/freed.
 	 */
-	virtual void OnReceiveData(const char *data, size_t length) = 0;
+	virtual void OnReceiveData(UniqueBuffer<char> data) = 0;
 
 	/**
 	 * Check if there is a request to cancel the transfer.
