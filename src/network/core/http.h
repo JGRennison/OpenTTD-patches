@@ -13,7 +13,7 @@
 #define NETWORK_CORE_HTTP_H
 
 #include "tcp.h"
-#include "../../src/core/alloc_type.hpp"
+#include "../../core/alloc_type.hpp"
 
 constexpr int HTTP_429_TOO_MANY_REQUESTS = 429;
 
