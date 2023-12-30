@@ -230,6 +230,9 @@ public:
 	virtual bool ShowExtraInfoOnly(uint index) const { return false; };
 	virtual bool ShowExtraInfoIncludingGRFIDOnly(uint index) const { return false; };
 	virtual bool ShowSpriteDumpButton(uint index) const { return false; };
+	virtual bool ShowOptionsDropDown(uint index) const { return false; }
+	virtual void FillOptionsDropDown(uint index, DropDownList &list) const { return; }
+	virtual void OnOptionsDropdownSelect(uint index, int selected) const { return; }
 
 protected:
 	/**
@@ -329,6 +332,7 @@ struct NewGRFInspectWindow : Window {
 	bool sprite_dump = false;
 	bool sprite_dump_unopt = false;
 	bool sprite_dump_more_details = false;
+	bool show_dropdown = false;
 
 	uint32 extra_info_flags = 0;
 	btree::btree_map<int, uint> extra_info_click_flag_toggles;
@@ -413,11 +417,14 @@ struct NewGRFInspectWindow : Window {
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_NGRFI_SCROLLBAR);
 		bool show_sprite_dump_button = GetFeatureHelper(wno)->ShowSpriteDumpButton(::GetFeatureIndex(wno));
+		bool show_options = GetFeatureHelper(wno)->ShowOptionsDropDown(::GetFeatureIndex(wno));
+		this->show_dropdown = show_sprite_dump_button || show_options;
 		this->GetWidget<NWidgetStacked>(WID_NGRFI_SPRITE_DUMP_SEL)->SetDisplayedPlane(show_sprite_dump_button ? 0 : SZSP_NONE);
 		this->GetWidget<NWidgetStacked>(WID_NGRFI_SPRITE_DUMP_UNOPT_SEL)->SetDisplayedPlane(show_sprite_dump_button ? 0 : SZSP_NONE);
-		this->GetWidget<NWidgetStacked>(WID_NGRFI_OPTIONS_SEL)->SetDisplayedPlane(show_sprite_dump_button ? 0 : SZSP_NONE);
+		this->GetWidget<NWidgetStacked>(WID_NGRFI_OPTIONS_SEL)->SetDisplayedPlane(this->show_dropdown ? 0 : SZSP_NONE);
 		this->SetWidgetDisabledState(WID_NGRFI_SPRITE_DUMP_UNOPT, true);
-		this->SetWidgetDisabledState(WID_NGRFI_SPRITE_DUMP_OPTIONS, true);
+		this->SetWidgetDisabledState(WID_NGRFI_SPRITE_DUMP_OPTIONS, !show_sprite_dump_button);
+		this->SetWidgetDisabledState(WID_NGRFI_MAIN_OPTIONS, !show_options);
 		this->FinishInitNested(wno);
 
 		this->vscroll->SetCount(0);
@@ -993,10 +1000,13 @@ struct NewGRFInspectWindow : Window {
 				this->sprite_dump = !this->sprite_dump;
 				this->SetWidgetLoweredState(WID_NGRFI_SPRITE_DUMP, this->sprite_dump);
 				this->SetWidgetDisabledState(WID_NGRFI_SPRITE_DUMP_UNOPT, !this->sprite_dump || !UnOptimisedSpriteDumpOK());
-				this->SetWidgetDisabledState(WID_NGRFI_SPRITE_DUMP_OPTIONS, !this->sprite_dump);
+				if (this->show_dropdown) {
+					this->GetWidget<NWidgetStacked>(WID_NGRFI_OPTIONS_SEL)->SetDisplayedPlane(this->sprite_dump ? 1 : 0);
+				}
 				this->SetWidgetDirty(WID_NGRFI_SPRITE_DUMP);
 				this->SetWidgetDirty(WID_NGRFI_SPRITE_DUMP_UNOPT);
 				this->SetWidgetDirty(WID_NGRFI_SPRITE_DUMP_OPTIONS);
+				this->SetWidgetDirty(WID_NGRFI_MAIN_OPTIONS);
 				this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
 				this->SetWidgetDirty(WID_NGRFI_SCROLLBAR);
 				break;
@@ -1039,11 +1049,23 @@ struct NewGRFInspectWindow : Window {
 				ShowDropDownList(this, std::move(list), 0, WID_NGRFI_SPRITE_DUMP_OPTIONS, 140);
 				break;
 			}
+
+			case WID_NGRFI_MAIN_OPTIONS: {
+				DropDownList list;
+				GetFeatureHelper(this->window_number)->FillOptionsDropDown(this->GetFeatureIndex(), list);
+				ShowDropDownList(this, std::move(list), 0, WID_NGRFI_MAIN_OPTIONS, 140);
+				break;
+			}
 		}
 	}
 
 	void OnDropdownSelect(int widget, int index) override
 	{
+		if (widget == WID_NGRFI_MAIN_OPTIONS) {
+			GetFeatureHelper(this->window_number)->OnOptionsDropdownSelect(this->GetFeatureIndex(), index);
+			return;
+		}
+
 		if (widget != WID_NGRFI_SPRITE_DUMP_OPTIONS) return;
 
 		switch (index) {
@@ -1145,6 +1167,7 @@ static const NWidgetPart _nested_newgrf_inspect_chain_widgets[] = {
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_NGRFI_CAPTION), SetDataTip(STR_NEWGRF_INSPECT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NGRFI_OPTIONS_SEL),
+			NWidget(WWT_IMGBTN, COLOUR_GREY, WID_NGRFI_MAIN_OPTIONS), SetDataTip(SPR_ARROW_DOWN, STR_NEWGRF_INSPECT_SPRITE_DUMP_OPTIONS),
 			NWidget(WWT_IMGBTN, COLOUR_GREY, WID_NGRFI_SPRITE_DUMP_OPTIONS), SetDataTip(SPR_ARROW_DOWN, STR_NEWGRF_INSPECT_SPRITE_DUMP_OPTIONS),
 		EndContainer(),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NGRFI_SPRITE_DUMP_UNOPT_SEL),
@@ -1182,6 +1205,7 @@ static const NWidgetPart _nested_newgrf_inspect_widgets[] = {
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_NGRFI_CAPTION), SetDataTip(STR_NEWGRF_INSPECT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NGRFI_PARENT), SetDataTip(STR_NEWGRF_INSPECT_PARENT_BUTTON, STR_NEWGRF_INSPECT_PARENT_TOOLTIP),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NGRFI_OPTIONS_SEL),
+			NWidget(WWT_IMGBTN, COLOUR_GREY, WID_NGRFI_MAIN_OPTIONS), SetDataTip(SPR_ARROW_DOWN, STR_NEWGRF_INSPECT_SPRITE_DUMP_OPTIONS),
 			NWidget(WWT_IMGBTN, COLOUR_GREY, WID_NGRFI_SPRITE_DUMP_OPTIONS), SetDataTip(SPR_ARROW_DOWN, STR_NEWGRF_INSPECT_SPRITE_DUMP_OPTIONS),
 		EndContainer(),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_NGRFI_SPRITE_DUMP_UNOPT_SEL),
