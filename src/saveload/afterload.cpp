@@ -4347,7 +4347,8 @@ bool AfterLoadGame()
 	extern void YapfCheckRailSignalPenalties();
 	YapfCheckRailSignalPenalties();
 
-	UpdateExtraAspectsVariable();
+	bool update_always_reserve_through = SlXvIsFeaturePresent(XSLFI_REALISTIC_TRAIN_BRAKING, 8, 10);
+	UpdateExtraAspectsVariable(update_always_reserve_through);
 
 	if (_networking && !_network_server) {
 		SlProcessVENC();

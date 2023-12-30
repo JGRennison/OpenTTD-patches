@@ -195,7 +195,7 @@ void UpdateLookaheadCombinedNormalShuntSignalDeferred(TileIndex tile, Trackdir t
 void FlushDeferredAspectUpdates();
 void FlushDeferredDetermineCombineNormalShuntMode(Train *v);
 void UpdateAllSignalAspects();
-void UpdateExtraAspectsVariable();
+void UpdateExtraAspectsVariable(bool update_always_reserve_through = false);
 void InitialiseExtraAspectsVariable();
 bool IsRailSpecialSignalAspect(TileIndex tile, Track track);
 

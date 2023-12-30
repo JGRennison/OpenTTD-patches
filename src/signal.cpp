@@ -1892,7 +1892,7 @@ static bool DetermineExtraAspectsVariable()
 	return changed;
 }
 
-void UpdateExtraAspectsVariable()
+void UpdateExtraAspectsVariable(bool update_always_reserve_through)
 {
 	std::array<NewSignalStyleMapping, MAX_NEW_SIGNAL_STYLES> new_mapping;
 	DetermineSignalStyleMapping(new_mapping);
@@ -1915,6 +1915,8 @@ void UpdateExtraAspectsVariable()
 		if (_extra_aspects > 0) UpdateAllSignalAspects();
 		UpdateAllBlockSignals();
 		MarkWholeScreenDirty();
+	} else if (update_always_reserve_through) {
+		UpdateAllSignalReserveThroughBits();
 	}
 }
 
