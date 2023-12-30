@@ -1329,6 +1329,7 @@ void DumpTileSignalsInfo(char *buffer, const char *last, uint index, NIExtraInfo
 			const SignalState state = GetSignalStateByTrackdir(index, td);
 			b += seprintf(b, last, "  trackdir: %d, state: %d", td, state);
 			if (_extra_aspects > 0 && state == SIGNAL_STATE_GREEN) seprintf(b, last, ", aspect: %d", GetSignalAspect(index, TrackdirToTrack(td)));
+			if (GetSignalAlwaysReserveThrough(index, TrackdirToTrack(td))) seprintf(b, last, ", always reserve through");
 			output.print(buffer);
 		}
 	}
