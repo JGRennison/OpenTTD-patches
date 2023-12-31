@@ -208,6 +208,8 @@ STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS_HELPTEXT :열차의 무�
 
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF                             :모든 신호기를 기본 그래픽으로 표시: {STRING}
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT                    :모든 신호기를 NewGRF의 신호기 그래픽을 사용하는 대신, 기본 신호기 그래픽으로 표시합니다. NewGRF에서 제공하는 신호기 그래픽을 사용할 수 없거나 명확하지 않은 경우에 이 설정을 사용하면 신호기의 현시 상태와 종류를 보기가 쉬워집니다.
+STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT_EXTRA              :{STRING}{}"경로 제한 신호기에만" 모드를 사용하면 경로 제한이 있는 기본 신호기를 파란 기둥으로 표시 설정이 켜져있고 NewGRF가 경로 제한 신호기 그래픽을 변경하지 않는 경우, 경로 제한 프로그램이 있는 전자식 신호기에 기본 신호기 그래픽을 사용합니다.
+STR_CONFIG_SETTING_SHOW_ALL_SIG_RESTRICTED_RECOLOUR             :경로 제한 신호기에만
 
 STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES             :고급 경로 제한 기능 표시: {STRING}
 STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :고급 경로 제한 기능을 표시합니다. 이 설정을 끄면, 일부 고급 기능이 인터페이스에 표시되지 않습니다. 하지만 다른 플레이어까지 숨겨진 고급 경로 제한 기능을 사용할 수 없도록 하지는 않습니다.
@@ -277,6 +279,9 @@ STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION_HELPTEXT          :이 설정을 �
 
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :고급 다리/터널 신호기 활성화: {STRING}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :다리와 터널 위 신호기 시뮬레이션 고급 모드를 활성화합니다. 이 설정을 끄면, 고급 모드에 있지 않은 다리와 터널을 고급 모드로 변경할 수 없지만 다른 플레이어는 이 설정을 켜서 고급 모드를 사용할 수 있습니다.
+
+STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_RECOLOUR                 :경로 제한이 있는 기본 신호기를 파란 기둥으로 표시: {STRING}
+STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_RECOLOUR_HELPTEXT        :기본 신호기 그래픽을 사용하는 경우 경로 제한 프로그램이 있는 전자식 신호기의 기둥을 파란색으로 보여줍니다. NewGRF으로 추가된 신호기에는 적용되지 않습니다. 이 설정을 이용하면 경로 제한 프로그램이 있는 신호기를 더 쉽게 알아볼 수 있습니다.
 
 STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED                    :속력에 따라 선로 정렬: {STRING}
 STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED_HELPTEXT           :기본 정렬 방식 대신 호환성과 속력을 기준으로 선로를 정렬하여 표시합니다.
@@ -444,6 +449,12 @@ STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_HELPTEXT   :자동 시간�
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_VALUE      :{COMMA}틱
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_DEFAULT    :기본
 
+STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION          :새로운 배차 간격에 사용할 기본 시간 간격: {STRING}
+STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_HELPTEXT :새로운 배차 간격에서 사용할 기본 배차 시간 간격을 설정합니다. 기본값은 24시간(1440분)입니다. (시간표를 일 단위로 설정할 경우 기본값은 1년입니다.)
+STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_VALUE    :{COMMA}분
+
+STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_DEFAULT  :기본
+
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE                            :도로/전차 형식 기본값 설정 (게임 시작/불러온 후): {STRING}
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_HELPTEXT                   :게임을 새로 시작하거나 불러온 뒤에 사용할 도로/전차의 종류를 선택합니다. '처음 사용 가능한 것'은 가장 오래된 도로/전차 종류를 선택하고, '최신 기술의 철도'는 가장 최신에 나온 도로/전차 종류를 선택하며 '가장 많이 사용한 것'은 현재 가장 많이 사용한 철도 종류를 선택하며, '기본값'은 기본 종류를 선택합니다.
 
@@ -519,6 +530,13 @@ STR_CONFIG_SETTING_MIN_LAND_AREA_ZERO                           :끄기
 
 STR_CONFIG_SETTING_FLOOD_FROM_EDGES                             :지도 가장자리에서 물이 들이침: {STRING}
 STR_CONFIG_SETTING_FLOOD_FROM_EDGES_HELPTEXT                    :지도 가장자리로부터 해수면의 가장자리 칸으로 물이 들이치게 할지를 선택합니다
+
+STR_CONFIG_SETTING_MAP_EDGE_MODE                                :지도 가장자리 표시: {STRING}
+STR_CONFIG_SETTING_MAP_EDGE_MODE_HELPTEXT                       :지도 가장자리를 해수면 위로 올리는 것을 허용하는지 여부와 지도 외부의 공백 영역을 어떻게 표시할지 설정합니다.
+
+STR_CONFIG_SETTING_MAP_EDGE_MODE_DEFAULT                        :기본
+STR_CONFIG_SETTING_MAP_EDGE_MODE_SEA_LEVEL                      :지도 가장자리는 반드시 해수면이어야 함
+STR_CONFIG_SETTING_MAP_EDGE_MODE_SEA_LEVEL_OUTSIDE_WATER        :지도 가장자리는 반드시 해수면이어야 하고, 외부 공백을 물로 표시
 
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE                        :조정된 눈 쌓인 나무: {STRING}
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_HELPTEXT               :아한대 기후에서의 설선 근처의 눈 쌓인 나무의 개수를 조정합니다. 설선 위에는 나무가 적어집니다. 설선에서는 온대 기후의 나무와 눈 쌓인 나무가 공존할 것입니다. 설선 아래에선 온대 기후의 나무가 자랄 것입니다.
@@ -701,6 +719,9 @@ STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_OFF              :끄기
 STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_WITHIN_TOWN      :도시 안에만
 STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_ANYWHERE         :어디에나
 
+STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS                   :드래그로 신호기 자동 설치시 역/경유지 무시: {STRING}
+STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS_HELPTEXT          :신호기를 CTRL + 드래그하여 놓을 때의 행동을 선택합니다. 이 설정을 끄면, 신호기는 역/경유지 칸까지만 설치됩니다. 이 설정을 켜면, 역/경유지의 너머까지 신호기가 계속 설치됩니다.
+
 STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED                   :{WHITE}설정을 변경할 수 없습니다...
 STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED_NEWGRF            :{WHITE}...NewGRF가 사용 중인 설정입니다
 
@@ -718,11 +739,13 @@ STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE                          :*** {STRING} �
 STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY                             :*** {1:STRING} 님에게 {2:CURRENCY_LONG}만큼의 돈을 보냈습니다
 STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION                  :{STRING} ({COMPANY})
 
-STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}적재율을 보여줄 지 선택합니다. 고정하려면 CTRL+클릭하세요
-STR_TRANSPARENT_TUNNELS_TOOLTIP                                 :{BLACK}터널 안의 차량의 투명도 전환. 고정하려면 CTRL+클릭하세요.
+STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}적재율을 보여줄 지 선택합니다. 고정하려면 CTRL + 클릭하세요
+STR_TRANSPARENT_TUNNELS_TOOLTIP                                 :{BLACK}터널 안의 차량의 투명도 전환. 고정하려면 CTRL + 클릭하세요.
 
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}평균 운행 시간: {STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}수송량: {CARGO_LONG}
+STR_LINKGRAPH_STATS_TOOLTIP_USAGE                               :{}사용량: {CARGO_LONG}
+STR_LINKGRAPH_STATS_TOOLTIP_PLANNED                             :{}계획됨: {CARGO_LONG}
 STR_LINKGRAPH_STATS_TOOLTIP_DISTANCE                            :맨해튼 거리: {COMMA}칸{}직선 거리: {COMMA}칸
 
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL                         :{BLACK}다각건설 모드로 선로를 건설합니다. CTRL 키를 누르면 건설/철거모드를 바꿀 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
@@ -1003,7 +1026,7 @@ STR_TRACE_RESTRICT_SHARE_TOOLTIP                                :{BLACK}다른 �
 STR_TRACE_RESTRICT_UNSHARE_TOOLTIP                              :{BLACK}다른 신호기와의 구문 공유를 해제합니다.
 STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA                          :{STRING}{}{BLACK}CTRL + 클릭하면 다른 신호기가 이 프로그램을 공유하도록 만듭니다
 STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}경로 탐색 제한
-STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}선택하려면 구문을 클릭하십시오.{}구문에서 지정된 장소가 있다면, 지정된 장소로 가려면 구문을 Ctrl+클릭하십시오.
+STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}선택하려면 구문을 클릭하십시오.{}구문에서 지정된 장소가 있다면, 지정된 장소로 가려면 구문을 CTRL + 클릭하십시오.
 STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP                            :{BLACK}이 프로그램을 공유하는 모든 신호기를 선택하여 표시합니다.
 STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING           :{STRING} {PUSH_COLOUR}{RED}(현실적인 감속을 켜야 함){POP_COLOUR}
 STR_TRACE_RESTRICT_WARNING_SIGNAL_MODE_CONTROL_ONLY             :{STRING} {PUSH_COLOUR}{RED}(신호기 모드 조작 행동 전용){POP_COLOUR}
@@ -1218,10 +1241,17 @@ STR_NEWGRF_INSPECT_SPRITE_DUMP_TOOLTIP                          :{BLACK}현재 �
 STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT                            :{BLACK}U
 STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP                    :{BLACK}모든 최적화가 적용되지 않은 스프라이트 그룹을 보여줍니다.{}이전에 활성화한 적이 없다면 NewGRF을 다시 불러와야 합니다. (misc_debug 10).
 STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO                             :특정 스프라이트 번호로 이동합니다
-STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT          :{BLACK}스프라이트 그룹을 강조 표시하려면 클릭하세요
-STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_COLLAPSE           :{BLACK}SHIFT+클릭하면 스프라이트 그룹을 접거나 펼 수 있습니다.
-STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT_TEMP     :{BLACK}Ctrl+클릭하면 임시 저장 레지스터를 강조 표시합니다.
+STR_NEWGRF_INSPECT_SPRITE_DUMP_CLEAR                            :하이라이팅/마킹 초기화
+STR_NEWGRF_INSPECT_SPRITE_DUMP_MORE_DETAILS                     :더 자세히 표시
+STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_HIGHLIGHT               :하이라이트하려면 클릭
+STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_MARK                    :마킹하려면 클릭
+STR_NEWGRF_INSPECT_SPRITE_DUMP_OPTIONS                          :{BLACK}설정 및 추가 명령어
+STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT          :{BLACK}스프라이트 그룹을 강조 표시하려면 클릭
+STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_MARK               :{BLACK}스프라이트 그룹을 마킹하려면 클릭
+STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_COLLAPSE           :{BLACK}SHIFT + 클릭하면 스프라이트 그룹을 접거나 펼 수 있습니다.
+STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT_TEMP     :{BLACK}CTRL + 클릭하면 임시 저장 레지스터를 강조 표시합니다.
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS                    :신호기
+STR_NEWGRF_INSPECT_CAPTION_TRACERESTRICT                        :{HEX}/{HEX}에 있는 경로 제한 프로그램
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :구현되지 않은 재배치된 기능 ID: 이름: {2:STRING}, 재배치: {5:HEX} (스프라이트 {3:NUM})
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY                   :구현되지 않은 재배치된 액션 0 속성 특성: {4:HEX}, 이름: {2:STRING}, 재배치: {5:HEX} (스프라이트 {3:NUM})
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_ACTION5_TYPE               :구현되지 않은 재배치된 액션 5 종류: 이름: {2:STRING}, 재배치: {4:HEX} (스프라이트 {3:NUM})
@@ -1265,7 +1295,7 @@ STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}이 역�
 STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}이 역의 시간표에 진입 중인 자동차 표시
 STR_DEPARTURES_SHOW_SHIPS_TOOLTIP                               :{BLACK}이 역의 시간표에 다가오는 선박 표시
 STR_DEPARTURES_SHOW_AIRCRAFT_TOOLTIP                            :{BLACK}이 역의 시간표에 다가오는 항공기 표시
-STR_DEPARTURES_SHOW_TYPE_TOOLTIP_CTRL_SUFFIX                    :{BLACK}{STRING}. CTRL+클릭하면 이 차량 종류만 보여줍니다
+STR_DEPARTURES_SHOW_TYPE_TOOLTIP_CTRL_SUFFIX                    :{BLACK}{STRING}. CTRL + 클릭하면 이 차량 종류만 보여줍니다
 STR_DEPARTURES_EMPTY                                            :{ORANGE}시간표가 지정된 차량이 없습니다.
 STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}표시할 정보를 선택하십시오.
 STR_DEPARTURES_TIME                                             :{ORANGE}{DATE_WALLCLOCK_TINY}
@@ -1352,8 +1382,8 @@ STR_CONFIG_DEPARTURE_MERGE_IDENTICAL_HELPTEXT                   :동일한 정�
 
 STR_WAYPOINT_VIEW_HIDE_VIEWPORT_LABEL                           :{BLACK}이 경유지의 이름 감추기
 
-STR_FINANCES_BORROW_TOOLTIP_EXTRA                               :{BLACK}{STRING}. SHIFT+클릭하면 빌릴 양을 직접 입력할 수 있습니다
-STR_FINANCES_REPAY_TOOLTIP_EXTRA                                :{BLACK}{STRING}. SHIFT+클릭하면 갚을 양을 직접 입력할 수 있습니다
+STR_FINANCES_BORROW_TOOLTIP_EXTRA                               :{BLACK}{STRING}. SHIFT + 클릭하면 빌릴 양을 직접 입력할 수 있습니다
+STR_FINANCES_REPAY_TOOLTIP_EXTRA                                :{BLACK}{STRING}. SHIFT + 클릭하면 갚을 양을 직접 입력할 수 있습니다
 STR_FINANCES_BORROW_QUERY_CAPT                                  :{WHITE}빌릴 돈의 양을 입력하세요
 STR_FINANCES_REPAY_QUERY_CAPT                                   :{WHITE}갚을 돈의 양을 입력하세요
 
@@ -1426,10 +1456,10 @@ STR_BUY_VEHICLE_TRAIN_BUY_LOCOMOTIVE_BUTTON                     :{BLACK}기관�
 STR_BUY_VEHICLE_TRAIN_BUY_WAGON_BUTTON                          :{BLACK}객화차 구입
 STR_BUY_VEHICLE_TRAIN_BUY_REFIT_LOCOMOTIVE_BUTTON               :{BLACK}기관차 구입 및 개조
 STR_BUY_VEHICLE_TRAIN_BUY_REFIT_WAGON_BUTTON                    :{BLACK}객화차 구입 및 개조
-STR_BUY_VEHICLE_TRAIN_BUY_LOCOMOTIVE_TOOLTIP                    :{BLACK}선택한 기관차나 동력차를 구입합니다. SHIFT+클릭으로 예상 구입 비용을 볼 수 있습니다
-STR_BUY_VEHICLE_TRAIN_BUY_WAGON_TOOLTIP                         :{BLACK}선택한 객화차를 구입합니다. SHIFT+클릭으로 예상 구입 비용을 볼 수 있습니다
-STR_BUY_VEHICLE_TRAIN_BUY_REFIT_LOCOMOTIVE_TOOLTIP              :{BLACK}선택한 기관차나 동력차를 구입하고 개조합니다. SHIFT+클릭하면 예상 비용을 볼 수 있습니다
-STR_BUY_VEHICLE_TRAIN_BUY_REFIT_WAGON_TOOLTIP                   :{BLACK}선택한 객화차를 구입하고 개조합니다. SHIFT+클릭하면 예상 비용을 볼 수 있습니다
+STR_BUY_VEHICLE_TRAIN_BUY_LOCOMOTIVE_TOOLTIP                    :{BLACK}선택한 기관차나 동력차를 구입합니다. SHIFT + 클릭으로 예상 구입 비용을 볼 수 있습니다
+STR_BUY_VEHICLE_TRAIN_BUY_WAGON_TOOLTIP                         :{BLACK}선택한 객화차를 구입합니다. SHIFT + 클릭으로 예상 구입 비용을 볼 수 있습니다
+STR_BUY_VEHICLE_TRAIN_BUY_REFIT_LOCOMOTIVE_TOOLTIP              :{BLACK}선택한 기관차나 동력차를 구입하고 개조합니다. SHIFT + 클릭하면 예상 비용을 볼 수 있습니다
+STR_BUY_VEHICLE_TRAIN_BUY_REFIT_WAGON_TOOLTIP                   :{BLACK}선택한 객화차를 구입하고 개조합니다. SHIFT + 클릭하면 예상 비용을 볼 수 있습니다
 STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_BUTTON                  :{BLACK}기관차 이름 지정
 STR_BUY_VEHICLE_TRAIN_RENAME_WAGON_BUTTON                       :{BLACK}객화차 이름 지정
 STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_TOOLTIP                 :{BLACK}기관차나 동력차의 모델명을 변경합니다
@@ -1438,8 +1468,8 @@ STR_BUY_VEHICLE_TRAIN_RENAME_WAGON_TOOLTIP                      :{BLACK}객화�
 STR_QUERY_RENAME_TRAIN_TYPE_LOCOMOTIVE_CAPTION                  :{WHITE}기관차의 모델명을 변경합니다
 STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION                       :{WHITE}객화차의 모델명을 변경합니다
 
-STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT                    :{STRING} SHIFT+클릭해서 선택합니다.
-STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU                             :{BLACK}기지로 보내는 것을 취소합니다. Ctrl+클릭하면 메뉴를 엽니다. Shift+클릭해서 선택합니다.
+STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT                    :{STRING} SHIFT + 클릭해서 선택합니다.
+STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU                             :{BLACK}기지로 보내는 것을 취소합니다. CTRL + 클릭하면 메뉴를 엽니다. SHIFT + 클릭해서 선택합니다.
 
 STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA                     :{STRING}{BLACK}{}SHIFT + 클릭하면 창에 포커스가 없어도 경로 오버레이를 보여줄지 여부를 전환할 수 있습니다
 
@@ -1580,7 +1610,7 @@ STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}경로 �
 STR_ORDERS_OCCUPANCY_PERCENT                                    :{NUM}%
 
 STR_ORDERS_NEW_GROUP_TOOLTIP                                    :{BLACK}한 차량으로 그룹 만들기
-STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP_EXTRA            :{STRING}{}{BLACK}CTRL+클릭하면 차량 하나로 그룹을 만들 수 있습니다
+STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP_EXTRA            :{STRING}{}{BLACK}CTRL + 클릭하면 차량 하나로 그룹을 만들 수 있습니다
 
 STR_ORDER_GO_TO_WAYPOINT_REVERSE                                :완행 경유 {WAYPOINT} (회차)
 STR_ORDER_GO_NON_STOP_TO_WAYPOINT_REVERSE                       :직행 경유 {WAYPOINT} (회차)
@@ -1649,7 +1679,7 @@ STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME             :{PUSH_COLOUR}{R
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_SCHEDULE_INDEX           :{NUM}{NBSP}-{NBSP}
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NAMED_SCHEDULE           :{STRING}{NBSP}-{NBSP}
 
-STR_TIMETABLE_LOCK_ORDER_TIME_TOOLTIP                           :{BLACK}선택된 경로의 시간 값을 고정하거나 고정 해제합니다.(Ctrl+클릭하면 모두 고정하거나 고정 해제).{}고정된 시간 값은 자동 시간 설정이나 자동 시간표가 변경하지 않습니다.
+STR_TIMETABLE_LOCK_ORDER_TIME_TOOLTIP                           :{BLACK}선택된 경로의 시간 값을 고정하거나 고정 해제합니다.(CTRL + 클릭하면 모두 고정하거나 고정 해제).{}고정된 시간 값은 자동 시간 설정이나 자동 시간표가 변경하지 않습니다.
 
 STR_TIMETABLE_LEAVE_EARLY_ORDER                                 :[시간표 대기 무시]
 STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ANY                        :[아무 화물이나 가득 실으면 시간표 대기 무시]
@@ -1957,7 +1987,7 @@ STR_SCHDISPATCH_ENABLED                                         :{BLACK}활성�
 STR_SCHDISPATCH_ENABLED_TOOLTIP                                 :{BLACK}배차 일정을 활성화합니다. 자동 배차 조절과 같이 사용할 수 없습니다.
 STR_SCHDISPATCH_ADD                                             :{BLACK}출발 슬롯 추가
 STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}이 일정에 새 출발 슬롯을 추가합니다.
-STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA                               :{BLACK}{STRING} CTRL+클릭하면 여러 출발 슬록을 한 번에 추가할 수 있습니다.
+STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA                               :{BLACK}{STRING} CTRL + 클릭하면 여러 출발 슬록을 한 번에 추가할 수 있습니다.
 STR_SCHDISPATCH_ADD_CAPTION                                     :{BLACK}출발 슬롯
 STR_SCHDISPATCH_DURATION                                        :{BLACK}반복 주기
 STR_SCHDISPATCH_DURATION_TOOLTIP                                :{BLACK}이 일정의 반복 주기를 설정합니다.
@@ -2045,7 +2075,7 @@ STR_REFIT_SHIP_PART                                             :{NUM}번 부품
 
 STR_VERY_REDUCED                                                :매우 드묾
 
-STR_STATION_VIEW_RENAME_TOOLTIP_EXTRA                           :{BLACK}{STRING}{}("{STRING}" 버튼을 CTRL+클릭하면 새 기본 이름을 생성할 수 있습니다).{}{}CTRL+클릭해서 다른 역과 이름을 바꿀 수 있습니다.
+STR_STATION_VIEW_RENAME_TOOLTIP_EXTRA                           :{BLACK}{STRING}{}("{STRING}" 버튼을 CTRL + 클릭하면 새 기본 이름을 생성할 수 있습니다).{}{}CTRL + 클릭해서 다른 역과 이름을 바꿀 수 있습니다.
 STR_ERROR_CAN_T_EXCHANGE_STATION_NAMES                          :{WHITE}역 이름을 바꿀 수 없습니다...
 STR_ERROR_STATIONS_NOT_IN_SAME_TOWN                             :{WHITE}... 역이 같은 도시 안에 있지 않습니다
 STR_ERROR_STATION_ATTACHED_TO_INDUSTRY                          :{WHITE}... 역이 산업시설과 연관되어 있습니다
@@ -2064,8 +2094,8 @@ STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}
 
 STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}회사 지분의 25%를 매입
 STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}회사 지분의 25%를 매도
-STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}이 회사 지분의 25%를 매입합니다. SHIFT+클릭으로 예상 매입 가격을 볼 수 있습니다
-STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}이 회사 지분의 25%를 매도합니다. SHIFT+클릭으로 예상 매도 가격을 볼 수 있습니다
+STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}이 회사 지분의 25%를 매입합니다. SHIFT + 클릭으로 예상 매입 가격을 볼 수 있습니다
+STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}이 회사 지분의 25%를 매도합니다. SHIFT + 클릭으로 예상 매도 가격을 볼 수 있습니다
 
 STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}이 회사 지분의 25%를 매입할 수 없습니다...
 STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}이 회사 지분의 25%를 매도할 수 없습니다...
