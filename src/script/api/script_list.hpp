@@ -15,6 +15,9 @@
 #include "../../3rdparty/cpp-btree/safe_btree_set.h"
 #include "../../3rdparty/cpp-btree/safe_btree_map.h"
 
+/** Maximum number of operations allowed for valuating a list. */
+static const int MAX_VALUATE_OPS = 500000;
+
 class ScriptListSorter;
 
 /**
