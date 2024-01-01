@@ -1336,7 +1336,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters &arg
 				StringID string_id = args.GetNextParameter<StringID>();
 				if (game_script && GetStringTab(string_id) != TEXT_TAB_GAMESCRIPT_START) break;
 				uint size = b - SCC_STRING1 + 1;
-				if (game_script && size > args.GetDataLeft()) {
+				if (size > args.GetDataLeft()) {
 					buff = strecpy(buff, "(too many parameters)", last);
 				} else {
 					StringParameters sub_args(args, size);
