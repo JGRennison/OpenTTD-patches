@@ -12,7 +12,7 @@ jobs:
   macos:
     name: MacOS
 
-    runs-on: macos-12
+    runs-on: macos-latest
     env:
       MACOSX_DEPLOYMENT_TARGET: 10.13
 
@@ -26,6 +26,20 @@ jobs:
       run: |
         tar -xf source.tar.gz --strip-components=1
 
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Enable Rust cache
+      uses: Swatinem/rust-cache@v2
+
+    - name: Setup vcpkg caching
+      uses: actions/github-script@v6
+      with:
+        script: |
+          core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+          core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+          core.exportVariable('VCPKG_BINARY_SOURCES', 'clear;x-gha,readwrite')
+
     - name: Install dependencies
       env:
         HOMEBREW_NO_AUTO_UPDATE: 1
@@ -33,38 +47,6 @@ jobs:
       run: |
         brew install \
           pandoc \
-          pkg-config \
-          # EOF
-
-    - name: Prepare cache key
-      id: key
-      run: |
-        echo "image=$ImageOS-$ImageVersion" >> $GITHUB_OUTPUT
-
-    - name: Enable vcpkg cache
-      uses: actions/cache@v3
-      with:
-        path: /usr/local/share/vcpkg/installed
-        key: ${{ steps.key.outputs.image }}-vcpkg-release-1 # Increase the number whenever dependencies are modified
-        restore-keys: |
-          ${{ steps.key.outputs.image }}-vcpkg-release
-          ${{ steps.key.outputs.image }}-vcpkg-x64
-
-    - name: Prepare vcpkg
-      run: |
-        vcpkg install \
-          curl:x64-osx \
-          curl:arm64-osx \
-          liblzma:x64-osx \
-          liblzma:arm64-osx \
-          libpng:x64-osx \
-          libpng:arm64-osx \
-          lzo:x64-osx \
-          lzo:arm64-osx \
-          zlib:x64-osx \
-          zlib:arm64-osx \
-          zstd:x64-osx \
-          zstd:arm64-osx \
           # EOF
 
     - name: Install GCC problem matcher

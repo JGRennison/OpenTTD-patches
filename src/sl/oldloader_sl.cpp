@@ -396,6 +396,7 @@ static bool FixTTOEngines()
 	}
 
 	Date aging_date = std::min(_date + DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta(), ConvertYMDToDate(2050, 0, 1));
+	YearMonthDay aging_ymd = ConvertDateToYMD(aging_date);
 
 	for (EngineID i = 0; i < 256; i++) {
 		int oi = ttd_to_tto[i];
@@ -404,7 +405,7 @@ static bool FixTTOEngines()
 		if (oi == 255) {
 			/* Default engine is used */
 			_date += DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
-			StartupOneEngine(e, aging_date, 0, INT_MAX);
+			StartupOneEngine(e, aging_date, aging_ymd, 0, INT_MAX);
 			CalcEngineReliability(e, false);
 			e->intro_date -= DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
 			_date -= DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();

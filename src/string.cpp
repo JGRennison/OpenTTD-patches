@@ -340,6 +340,8 @@ void StrMakeValidInPlace(char *str, StringValidationSettings settings)
  */
 std::string StrMakeValid(std::string_view str, StringValidationSettings settings)
 {
+	if (str.empty()) return {};
+
 	auto buf = str.data();
 	auto last = buf + str.size() - 1;
 

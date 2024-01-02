@@ -344,7 +344,7 @@ static bool RoadToolbar_CtrlChanged(Window *w)
 	if (w->IsWidgetDisabled(WID_ROT_REMOVE)) return false;
 
 	/* allow ctrl to switch remove mode only for these widgets */
-	for (uint i = WID_ROT_ROAD_X; i <= WID_ROT_AUTOROAD; i++) {
+	for (WidgetID i = WID_ROT_ROAD_X; i <= WID_ROT_AUTOROAD; i++) {
 		if (w->IsWidgetLowered(i)) {
 			ToggleRoadButton_Remove(w);
 			return true;
@@ -460,7 +460,7 @@ struct BuildRoadToolbarWindow : Window {
 		this->ReInit();
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		if (widget == WID_ROT_CAPTION) {
 			if (this->rti->max_speed > 0) {
@@ -528,7 +528,7 @@ struct BuildRoadToolbarWindow : Window {
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		_remove_button_clicked = false;
 		_one_way_button_clicked = false;
@@ -1135,13 +1135,15 @@ struct BuildRoadDepotWindow : public PickerWindowBase {
 		this->LowerWidget(_build_depot_direction + WID_BROD_DEPOT_NE);
 		if (RoadTypeIsTram(_cur_roadtype)) {
 			this->GetWidget<NWidgetCore>(WID_BROD_CAPTION)->widget_data = STR_BUILD_DEPOT_TRAM_ORIENTATION_CAPTION;
-			for (int i = WID_BROD_DEPOT_NE; i <= WID_BROD_DEPOT_NW; i++) this->GetWidget<NWidgetCore>(i)->tool_tip = STR_BUILD_DEPOT_TRAM_ORIENTATION_SELECT_TOOLTIP;
+			for (WidgetID i = WID_BROD_DEPOT_NE; i <= WID_BROD_DEPOT_NW; i++) {
+				this->GetWidget<NWidgetCore>(i)->tool_tip = STR_BUILD_DEPOT_TRAM_ORIENTATION_SELECT_TOOLTIP;
+			}
 		}
 
 		this->FinishInitNested(TRANSPORT_ROAD);
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (!IsInsideMM(widget, WID_BROD_DEPOT_NE, WID_BROD_DEPOT_NW + 1)) return;
 
@@ -1149,7 +1151,7 @@ struct BuildRoadDepotWindow : public PickerWindowBase {
 		size->height = ScaleGUITrad(48) + WidgetDimensions::scaled.fullbevel.Vertical();
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (!IsInsideMM(widget, WID_BROD_DEPOT_NE, WID_BROD_DEPOT_NW + 1)) return;
 
@@ -1163,7 +1165,7 @@ struct BuildRoadDepotWindow : public PickerWindowBase {
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_BROD_DEPOT_NW:
@@ -1325,7 +1327,7 @@ public:
 		const RoadTypeInfo *rti = GetRoadTypeInfo(_cur_roadtype);
 		this->GetWidget<NWidgetCore>(WID_BROS_CAPTION)->widget_data = rti->strings.picker_title[rs];
 
-		for (uint i = RoadTypeIsTram(_cur_roadtype) ? WID_BROS_STATION_X : WID_BROS_STATION_NE; i < WID_BROS_LT_OFF; i++) {
+		for (WidgetID i = RoadTypeIsTram(_cur_roadtype) ? WID_BROS_STATION_X : WID_BROS_STATION_NE; i < WID_BROS_LT_OFF; i++) {
 			this->GetWidget<NWidgetCore>(i)->tool_tip = rti->strings.picker_tooltip[rs];
 		}
 
@@ -1455,7 +1457,7 @@ public:
 		return ES_HANDLED;
 	}
 
-	void OnEditboxChanged(int widget) override
+	void OnEditboxChanged(WidgetID widget) override
 	{
 		if (widget == WID_BROS_FILTER_EDITBOX) {
 			string_filter.SetFilterTerm(this->filter_editbox.text.buf);
@@ -1503,7 +1505,7 @@ public:
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_BROS_NEWST_LIST: {
@@ -1571,9 +1573,9 @@ public:
 		}
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
-		switch (GB(widget, 0, 16)) {
+		switch (widget) {
 			case WID_BROS_STATION_NE:
 			case WID_BROS_STATION_SE:
 			case WID_BROS_STATION_SW:
@@ -1616,7 +1618,7 @@ public:
 			}
 
 			case WID_BROS_IMAGE: {
-				uint16_t type = GB(widget, 16, 16);
+				uint16_t type = this->GetWidget<NWidgetBase>(widget)->GetParentWidget<NWidgetMatrix>()->GetCurrentElement();
 				assert(type < _roadstop_gui_settings.roadstop_count);
 
 				const RoadStopSpec *spec = RoadStopClass::Get(_roadstop_gui_settings.roadstop_class)->GetSpec(type);
@@ -1655,7 +1657,7 @@ public:
 		}
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		if (widget == WID_BROS_SHOW_NEWST_TYPE) {
 			const RoadStopSpec *roadstopspec = RoadStopClass::Get(_roadstop_gui_settings.roadstop_class)->GetSpec(_roadstop_gui_settings.roadstop_type);
@@ -1663,9 +1665,9 @@ public:
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
-		switch (GB(widget, 0, 16)) {
+		switch (widget) {
 			case WID_BROS_STATION_NE:
 			case WID_BROS_STATION_SE:
 			case WID_BROS_STATION_SW:
@@ -1706,7 +1708,7 @@ public:
 			}
 
 			case WID_BROS_IMAGE: {
-				uint16_t y = GB(widget, 16, 16);
+				uint16_t y = this->GetWidget<NWidgetBase>(widget)->GetParentWidget<NWidgetMatrix>()->GetCurrentElement();
 				if (y >= _roadstop_gui_settings.roadstop_count) return;
 
 				const RoadStopSpec *spec = RoadStopClass::Get(_roadstop_gui_settings.roadstop_class)->GetSpec(y);
@@ -1717,7 +1719,7 @@ public:
 				/* Check station availability callback */
 				_roadstop_gui_settings.roadstop_type = y;
 
-				this->GetWidget<NWidgetMatrix>(WID_BROS_MATRIX)->SetClicked(_roadstop_gui_settings.roadstop_type);
+				this->GetWidget<NWidgetBase>(widget)->GetParentWidget<NWidgetMatrix>()->SetClicked(_roadstop_gui_settings.roadstop_type);
 
 				if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 				this->SetDirty();
@@ -2022,7 +2024,7 @@ struct BuildRoadWaypointWindow : PickerWindowBase {
 		this->PickerWindowBase::Close();
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_BROW_WAYPOINT_MATRIX:
@@ -2041,7 +2043,7 @@ struct BuildRoadWaypointWindow : PickerWindowBase {
 		}
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		if (widget == WID_BROW_NAME) {
 			if (!this->list.empty() && IsInsideBS(_cur_waypoint_type, 0, this->waypoints->GetSpecCount())) {
@@ -2063,11 +2065,11 @@ struct BuildRoadWaypointWindow : PickerWindowBase {
 		this->DrawWidgets();
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
-		switch (GB(widget, 0, 16)) {
+		switch (widget) {
 			case WID_BROW_WAYPOINT: {
-				uint16_t type = this->list.at(GB(widget, 16, 16));
+				uint16_t type = this->list.at(this->GetWidget<NWidgetBase>(widget)->GetParentWidget<NWidgetMatrix>()->GetCurrentElement());
 				const RoadStopSpec *spec = this->waypoints->GetSpec(type);
 				DrawPixelInfo tmp_dpi;
 				if (FillDrawPixelInfo(&tmp_dpi, r)) {
@@ -2087,11 +2089,11 @@ struct BuildRoadWaypointWindow : PickerWindowBase {
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
-		switch (GB(widget, 0, 16)) {
+		switch (widget) {
 			case WID_BROW_WAYPOINT: {
-				uint16_t sel = GB(widget, 16, 16);
+				uint16_t sel = this->GetWidget<NWidgetBase>(widget)->GetParentWidget<NWidgetMatrix>()->GetCurrentElement();
 				assert(sel < this->list.size());
 				uint16_t type = this->list.at(sel);
 
@@ -2128,7 +2130,7 @@ struct BuildRoadWaypointWindow : PickerWindowBase {
 		this->list.ForceRebuild();
 	}
 
-	void OnEditboxChanged(int wid) override
+	void OnEditboxChanged(WidgetID wid) override
 	{
 		if (wid == WID_BROW_FILTER) {
 			this->string_filter.SetFilterTerm(this->editbox.text.buf);
@@ -2406,7 +2408,7 @@ void ShowBuildRoadStopPickerAndSelect(StationType station_type, const RoadStopSp
 	BuildRoadToolbarWindow *w = GetRoadToolbarWindowForRoadStop(spec, rtt_preferred);
 	if (w == nullptr) return;
 
-	auto trigger_widget = [&](int widget) {
+	auto trigger_widget = [&](WidgetID widget) {
 		if (!w->IsWidgetLowered(widget)) {
 			w->OnHotkey(widget);
 		}

@@ -1114,7 +1114,7 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 	BuildLandLegend();
 }
 
-/* virtual */ void SmallMapWindow::SetStringParameters(int widget) const
+/* virtual */ void SmallMapWindow::SetStringParameters(WidgetID widget) const
 {
 	switch (widget) {
 		case WID_SM_CAPTION:
@@ -1192,7 +1192,7 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 	this->DrawWidgets();
 }
 
-/* virtual */ void SmallMapWindow::DrawWidget(const Rect &r, int widget) const
+/* virtual */ void SmallMapWindow::DrawWidget(const Rect &r, WidgetID widget) const
 {
 	switch (widget) {
 		case WID_SM_MAP: {
@@ -1392,7 +1392,7 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 	return (column * number_of_rows) + line;
 }
 
-/* virtual */ void SmallMapWindow::OnMouseOver([[maybe_unused]] Point pt, int widget)
+/* virtual */ void SmallMapWindow::OnMouseOver([[maybe_unused]] Point pt, WidgetID widget)
 {
 	IndustryType new_highlight = INVALID_INDUSTRYTYPE;
 	if (widget == WID_SM_LEGEND && this->map_type == SMT_INDUSTRY) {
@@ -1409,7 +1409,7 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 	}
 }
 
-/* virtual */ void SmallMapWindow::OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count)
+/* virtual */ void SmallMapWindow::OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count)
 {
 	switch (widget) {
 		case WID_SM_MAP: { // Map window
@@ -1555,7 +1555,7 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 	this->SetDirty();
 }
 
-/* virtual */ bool SmallMapWindow::OnRightClick([[maybe_unused]] Point pt, int widget)
+/* virtual */ bool SmallMapWindow::OnRightClick([[maybe_unused]] Point pt, WidgetID widget)
 {
 	if (widget != WID_SM_MAP || _scrolling_viewport) return false;
 
@@ -1747,8 +1747,9 @@ public:
 
 	void SetupSmallestSize(Window *w) override
 	{
-		NWidgetBase *display = this->head;
-		NWidgetBase *bar = display->next;
+		assert(this->children.size() == 2);
+		NWidgetBase *display = this->children.front().get();
+		NWidgetBase *bar = this->children.back().get();
 
 		display->SetupSmallestSize(w);
 		bar->SetupSmallestSize(w);
@@ -1770,8 +1771,9 @@ public:
 		this->current_x = given_width;
 		this->current_y = given_height;
 
-		NWidgetBase *display = this->head;
-		NWidgetBase *bar = display->next;
+		assert(this->children.size() == 2);
+		NWidgetBase *display = this->children.front().get();
+		NWidgetBase *bar = this->children.back().get();
 
 		if (sizing == ST_SMALLEST) {
 			this->smallest_x = given_width;
@@ -1837,12 +1839,12 @@ static const NWidgetPart _nested_smallmap_bar[] = {
 	EndContainer(),
 };
 
-static NWidgetBase *SmallMapDisplay(int *biggest_index)
+static std::unique_ptr<NWidgetBase> SmallMapDisplay()
 {
-	NWidgetContainer *map_display = new NWidgetSmallmapDisplay;
+	std::unique_ptr<NWidgetBase> map_display = std::make_unique<NWidgetSmallmapDisplay>();
 
-	MakeNWidgets(std::begin(_nested_smallmap_display), std::end(_nested_smallmap_display), biggest_index, map_display);
-	MakeNWidgets(std::begin(_nested_smallmap_bar), std::end(_nested_smallmap_bar), biggest_index, map_display);
+	map_display = MakeNWidgets(std::begin(_nested_smallmap_display), std::end(_nested_smallmap_display), std::move(map_display));
+	map_display = MakeNWidgets(std::begin(_nested_smallmap_bar), std::end(_nested_smallmap_bar), std::move(map_display));
 	return map_display;
 }
 

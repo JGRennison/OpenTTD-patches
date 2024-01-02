@@ -260,7 +260,7 @@ public:
 		this->Window::Close();
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case TRW_WIDGET_TOP_MATRIX:
@@ -312,7 +312,7 @@ public:
 		}
 	}
 
-	virtual void SetStringParameters(int widget) const override
+	virtual void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case TRW_CAPTION:
@@ -321,7 +321,7 @@ public:
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const override
+	virtual void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case TRW_WIDGET_TOP_MATRIX: {
@@ -404,7 +404,7 @@ public:
 		this->DrawWidgets();
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count) override
+	virtual void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
 		if (this->editInProgress) return;
 
@@ -495,7 +495,7 @@ public:
 				ShowDropDownList(this, GetRailTypeDropDownList(true, true), this->sel_railtype, TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN);
 				break;
 			case TRW_WIDGET_TOP_MATRIX: {
-				uint16 newindex = (uint16)((pt.y - this->nested_array[TRW_WIDGET_TOP_MATRIX]->pos_y) / (GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.matrix.Vertical()) ) + this->vscroll[0]->GetPosition();
+				uint16 newindex = (uint16)((pt.y - this->GetWidget<NWidgetBase>(TRW_WIDGET_TOP_MATRIX)->pos_y) / (GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.matrix.Vertical()) ) + this->vscroll[0]->GetPosition();
 				if (newindex == this->selected_group_index || newindex >= this->groups.size()) {
 					this->selected_group_index = -1;
 				} else if (newindex < this->groups.size()) {
@@ -505,7 +505,7 @@ public:
 				break;
 			}
 			case TRW_WIDGET_BOTTOM_MATRIX: {
-				uint16 newindex = (uint16)((pt.y - this->nested_array[TRW_WIDGET_BOTTOM_MATRIX]->pos_y) / this->bottom_matrix_item_size) + this->vscroll[1]->GetPosition();
+				uint16 newindex = (uint16)((pt.y - this->GetWidget<NWidgetBase>(TRW_WIDGET_BOTTOM_MATRIX)->pos_y) / this->bottom_matrix_item_size) + this->vscroll[1]->GetPosition();
 				if (newindex == this->selected_template_index || newindex >= templates.size()) {
 					this->selected_template_index = -1;
 				} else if (newindex < templates.size()) {
@@ -560,7 +560,7 @@ public:
 		this->RaiseButtons();
 	}
 
-	virtual void OnDropdownSelect(int widget, int index) override
+	virtual void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		RailType temp = (RailType) index;
 		if (temp == this->sel_railtype) return; // we didn't select a new one. No need to change anything

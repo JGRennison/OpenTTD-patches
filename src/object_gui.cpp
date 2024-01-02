@@ -182,7 +182,7 @@ public:
 		assert(ObjectClass::Get(_selected_object_class)->GetUISpecCount() > 0); // object GUI should be disabled elsewise
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_BO_OBJECT_NAME: {
@@ -210,7 +210,7 @@ public:
 		this->object_margin = ScaleGUITrad(4);
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_BO_CLASS_LIST: {
@@ -302,9 +302,9 @@ public:
 		}
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
-		switch (GB(widget, 0, 16)) {
+		switch (widget) {
 			case WID_BO_CLASS_LIST: {
 				Rect mr = r.Shrink(WidgetDimensions::scaled.matrix);
 				uint pos = 0;
@@ -331,7 +331,8 @@ public:
 				 * look nice in all layouts, we use the 4x4 layout (smallest previews) as starting point. For the bigger
 				 * previews in the layouts with less views we add space homogeneously on all sides, so the 4x4 preview-rectangle
 				 * is centered in the 2x1, 1x2 resp. 1x1 buttons. */
-				uint matrix_height = this->GetWidget<NWidgetMatrix>(WID_BO_OBJECT_MATRIX)->current_y;
+				const NWidgetMatrix *matrix = this->GetWidget<NWidgetBase>(widget)->GetParentWidget<NWidgetMatrix>();
+				uint matrix_height = matrix->current_y;
 
 				DrawPixelInfo tmp_dpi;
 				/* Set up a clipping area for the preview. */
@@ -343,7 +344,7 @@ public:
 						const DrawTileSprites *dts = &_objects[spec->grf_prop.local_id];
 						DrawOrigTileSeqInGUI(ir.Width() / 2 - 1, (ir.Height() + matrix_height / 2) / 2 - this->object_margin - ScaleSpriteTrad(TILE_PIXELS), dts, PAL_NONE);
 					} else {
-						DrawNewObjectTileInGUI(ir.Width() / 2 - 1, (ir.Height() + matrix_height / 2) / 2 - this->object_margin - ScaleSpriteTrad(TILE_PIXELS), spec, GB(widget, 16, 16));
+						DrawNewObjectTileInGUI(ir.Width() / 2 - 1, (ir.Height() + matrix_height / 2) / 2 - this->object_margin - ScaleSpriteTrad(TILE_PIXELS), spec, matrix->GetCurrentElement());
 					}
 				}
 				break;
@@ -351,7 +352,7 @@ public:
 
 			case WID_BO_SELECT_IMAGE: {
 				ObjectClass *objclass = ObjectClass::Get(_selected_object_class);
-				int obj_index = objclass->GetIndexFromUI(GB(widget, 16, 16));
+				int obj_index = objclass->GetIndexFromUI(this->GetWidget<NWidgetBase>(widget)->GetParentWidget<NWidgetMatrix>()->GetCurrentElement());
 				if (obj_index < 0) break;
 				const ObjectSpec *spec = objclass->GetSpec(obj_index);
 				if (spec == nullptr) break;
@@ -531,9 +532,9 @@ public:
 		this->vscroll->SetCapacityFromWidget(this, WID_BO_CLASS_LIST);
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
-		switch (GB(widget, 0, 16)) {
+		switch (widget) {
 			case WID_BO_CLASS_LIST: {
 				auto it = this->vscroll->GetScrolledItemFromWidget(this->object_classes, pt.y, this, widget);
 				if (it == this->object_classes.end()) break;
@@ -545,14 +546,14 @@ public:
 
 			case WID_BO_SELECT_IMAGE: {
 				ObjectClass *objclass = ObjectClass::Get(_selected_object_class);
-				int num_clicked = objclass->GetIndexFromUI(GB(widget, 16, 16));
+				int num_clicked = objclass->GetIndexFromUI(this->GetWidget<NWidgetBase>(widget)->GetParentWidget<NWidgetMatrix>()->GetCurrentElement());
 				if (num_clicked >= 0 && objclass->GetSpec(num_clicked)->IsAvailable()) this->SelectOtherObject(num_clicked);
 				break;
 			}
 
 			case WID_BO_OBJECT_SPRITE:
 				if (_selected_object_index != -1) {
-					_selected_object_view = GB(widget, 16, 16);
+					_selected_object_view = this->GetWidget<NWidgetBase>(widget)->GetParentWidget<NWidgetMatrix>()->GetCurrentElement();
 					this->SelectOtherObject(_selected_object_index); // Re-select the object for a different view.
 				}
 				break;
@@ -616,7 +617,7 @@ public:
 		return ES_HANDLED;
 	}
 
-	void OnEditboxChanged(int widget) override
+	void OnEditboxChanged(WidgetID widget) override
 	{
 		if (widget == WID_BO_FILTER) {
 			string_filter.SetFilterTerm(this->filter_editbox.text.buf);

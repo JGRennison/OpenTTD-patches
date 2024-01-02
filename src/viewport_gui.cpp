@@ -85,7 +85,7 @@ public:
 		this->viewport->map_type = (ViewportMapType) _settings_client.gui.default_viewport_map_mode;
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_EV_CAPTION:
@@ -95,7 +95,7 @@ public:
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_EV_ZOOM_IN: DoZoomInOutWindow(ZOOM_IN,  this); break;
@@ -141,7 +141,7 @@ public:
 		this->viewport->dest_scrollpos_y = this->viewport->scrollpos_y;
 	}
 
-	bool OnRightClick([[maybe_unused]] Point pt, int widget) override
+	bool OnRightClick([[maybe_unused]] Point pt, WidgetID widget) override
 	{
 		return widget == WID_EV_VIEWPORT;
 	}
@@ -157,7 +157,7 @@ public:
 		}
 	}
 
-	virtual void OnMouseOver(Point pt, int widget) override
+	virtual void OnMouseOver(Point pt, WidgetID widget) override
 	{
 		if (pt.x != -1 && IsViewportMouseHoverActive()) {
 			/* Show tooltip with last month production or town name */

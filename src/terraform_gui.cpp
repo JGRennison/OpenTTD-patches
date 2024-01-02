@@ -221,7 +221,7 @@ struct TerraformToolbarWindow : Window {
 		SetWidgetDisabledState(WID_TT_BUY_LAND, _settings_game.construction.purchase_land_permitted == 0);
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		if (widget < WID_TT_BUTTONS_START) return;
 
@@ -628,7 +628,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget != WID_ETT_DOTS) return;
 
@@ -636,7 +636,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 		size->height = std::max<uint>(size->height, ScaleGUITrad(31));
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (widget != WID_ETT_DOTS) return;
 
@@ -653,7 +653,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 		} while (--n);
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		if (widget < WID_ETT_BUTTONS_START) return;
 
@@ -731,9 +731,9 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 
 	void OnTimeout() override
 	{
-		for (uint i = WID_ETT_START; i < this->nested_array_size; i++) {
-			if (i == WID_ETT_BUTTONS_START) i = WID_ETT_BUTTONS_END; // skip the buttons
-			this->RaiseWidgetWhenLowered(i);
+		for (const auto &pair : this->widget_lookup) {
+			if (pair.first < WID_ETT_START || (pair.first >= WID_ETT_BUTTONS_START && pair.first < WID_ETT_BUTTONS_END)) continue; // skip the buttons
+			this->RaiseWidgetWhenLowered(pair.first);
 		}
 	}
 

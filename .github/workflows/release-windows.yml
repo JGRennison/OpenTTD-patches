@@ -39,45 +39,24 @@ jobs:
       run: |
         tar -xf source.tar.gz --strip-components=1
 
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Enable Rust cache
+      uses: Swatinem/rust-cache@v2
+
+    - name: Setup vcpkg caching
+      uses: actions/github-script@v6
+      with:
+        script: |
+          core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+          core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+          core.exportVariable('VCPKG_BINARY_SOURCES', 'clear;x-gha,readwrite')
+
     - name: Install dependencies
       shell: bash
       run: |
         choco install pandoc
-
-    - name: Prepare cache key
-      id: key
-      shell: powershell
-      run: |
-        # Work around caching failure with GNU tar
-        New-Item -Type Junction -Path vcpkg -Target c:\vcpkg
-
-        Write-Output "image=$env:ImageOS-$env:ImageVersion" >> $env:GITHUB_OUTPUT
-
-    - name: Enable vcpkg cache
-      uses: actions/cache@v3
-      with:
-        path: vcpkg/installed
-        key: ${{ steps.key.outputs.image }}-vcpkg-${{ matrix.arch }}-1 # Increase the number whenever dependencies are modified
-        restore-keys: |
-          ${{ steps.key.outputs.image }}-vcpkg-${{ matrix.arch }}
-
-    - name: Prepare vcpkg
-      shell: bash
-      run: |
-        vcpkg install --triplet=${{ matrix.arch }}-windows-static \
-          liblzma \
-          libpng \
-          lzo \
-          zlib \
-          zstd \
-          # EOF
-
-        # arm64-windows-static is not (yet) supported for breakpad.
-        if [ "${{ matrix.arch }}" != "arm64" ]; then
-          vcpkg install --triplet=${{ matrix.arch }}-windows-static \
-            breakpad \
-            # EOF
-        fi
 
     - name: Install MSVC problem matcher
       uses: ammaraskar/msvc-problem-matcher@master

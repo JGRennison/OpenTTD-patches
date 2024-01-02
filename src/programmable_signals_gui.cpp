@@ -267,7 +267,7 @@ public:
 		RebuildInstructionList();
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count) override
+	virtual void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
 		switch (widget) {
 			case PROGRAM_WIDGET_INSTRUCTION_LIST: {
@@ -537,7 +537,7 @@ public:
 		}
 	}
 
-	virtual void OnDropdownSelect(int widget, int index) override
+	virtual void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		SignalInstruction *ins = this->GetSelected();
 		if (!ins) return;
@@ -603,7 +603,7 @@ public:
 		}
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case PROGRAM_WIDGET_INSTRUCTION_LIST:
@@ -624,7 +624,7 @@ public:
 		this->DrawWidgets();
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const override
+	virtual void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (widget != PROGRAM_WIDGET_INSTRUCTION_LIST) return;
 
@@ -649,7 +649,7 @@ public:
 	}
 
 
-	virtual void SetStringParameters(int widget) const override
+	virtual void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case PROGRAM_WIDGET_COND_VALUE: {

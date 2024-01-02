@@ -73,7 +73,7 @@ struct GameManualTextfileWindow : public TextfileWindow {
 		this->OnClick({ 0, 0 }, WID_TF_WRAPTEXT, 1);
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		if (widget == WID_TF_CAPTION) {
 			SetDParamStr(0, this->filename);
@@ -85,7 +85,7 @@ struct GameManualTextfileWindow : public TextfileWindow {
 		if (this->filename == CHANGELOG_FILENAME) {
 			this->link_anchors.clear();
 			this->AfterLoadChangelog();
-			this->GetWidget<NWidgetStacked>(WID_TF_SEL_JUMPLIST)->SetDisplayedPlane(this->jumplist.empty() ? SZSP_HORIZONTAL : 0);
+			if (this->GetWidget<NWidgetStacked>(WID_TF_SEL_JUMPLIST)->SetDisplayedPlane(this->jumplist.empty() ? SZSP_HORIZONTAL : 0)) this->ReInit();
 		} else {
 			this->TextfileWindow::AfterLoadText();
 		}
@@ -129,7 +129,7 @@ struct HelpWindow : public Window {
 		this->EnableTextfileButton(LICENSE_FILENAME, WID_HW_LICENSE);
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_HW_README:

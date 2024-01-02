@@ -11,7 +11,7 @@
 #define WIDGETS_PLANS_WIDGET_H
 
 /** Widgets of the #PlansWindow class. */
-enum PlansWidgets {
+enum PlansWidgets : WidgetID {
 	WID_PLN_CAPTION,        ///< Caption of the window.
 	WID_PLN_LIST,
 	WID_PLN_SCROLLBAR,

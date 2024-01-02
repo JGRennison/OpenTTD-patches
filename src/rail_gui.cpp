@@ -370,7 +370,7 @@ static bool RailToolbar_CtrlChanged(Window *w)
 	if (w->IsWidgetDisabled(WID_RAT_REMOVE)) return false;
 
 	/* allow ctrl to switch remove mode only for these widgets */
-	for (uint i = WID_RAT_BUILD_NS; i <= WID_RAT_BUILD_STATION; i++) {
+	for (WidgetID i = WID_RAT_BUILD_NS; i <= WID_RAT_BUILD_STATION; i++) {
 		if ((i <= WID_RAT_POLYRAIL || i >= WID_RAT_BUILD_WAYPOINT) && w->IsWidgetLowered(i)) {
 			ToggleRailButton_Remove(w);
 			return true;
@@ -557,7 +557,7 @@ struct BuildRailToolbarWindow : Window {
 		this->ReInit();
 	}
 
-	void UpdateRemoveWidgetStatus(int clicked_widget)
+	void UpdateRemoveWidgetStatus(WidgetID clicked_widget)
 	{
 		switch (clicked_widget) {
 			case WID_RAT_REMOVE:
@@ -588,7 +588,7 @@ struct BuildRailToolbarWindow : Window {
 		}
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		if (widget == WID_RAT_CAPTION) {
 			const RailTypeInfo *rti = GetRailTypeInfo(this->railtype);
@@ -602,7 +602,7 @@ struct BuildRailToolbarWindow : Window {
 		}
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (widget == WID_RAT_POLYRAIL) {
 			Dimension d = GetSpriteSize(SPR_BLOT);
@@ -611,7 +611,7 @@ struct BuildRailToolbarWindow : Window {
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
 		if (widget < WID_RAT_BUILD_NS) return;
 
@@ -742,7 +742,7 @@ struct BuildRailToolbarWindow : Window {
 		if (_ctrl_pressed) RailToolbar_CtrlChanged(this);
 	}
 
-	virtual bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
+	virtual bool OnTooltip(Point pt, WidgetID widget, TooltipCloseCondition close_cond) override
 	{
 		if (widget == WID_RAT_CONVERT_RAIL) {
 			SetDParam(0, STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL);
@@ -1344,7 +1344,7 @@ public:
 		return ES_HANDLED;
 	}
 
-	void OnEditboxChanged(int widget) override
+	void OnEditboxChanged(WidgetID widget) override
 	{
 		if (widget == WID_BRAS_FILTER_EDITBOX) {
 			string_filter.SetFilterTerm(this->filter_editbox.text.buf);
@@ -1403,7 +1403,7 @@ public:
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_BRAS_NEWST_LIST: {
@@ -1459,11 +1459,11 @@ public:
 		}
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		DrawPixelInfo tmp_dpi;
 
-		switch (GB(widget, 0, 16)) {
+		switch (widget) {
 			case WID_BRAS_PLATFORM_DIR_X: {
 				/* Set up a clipping area for the '/' station preview */
 				Rect ir = r.Shrink(WidgetDimensions::scaled.bevel);
@@ -1508,7 +1508,7 @@ public:
 			}
 
 			case WID_BRAS_IMAGE: {
-				uint16_t type = GB(widget, 16, 16);
+				uint16_t type = this->GetWidget<NWidgetBase>(widget)->GetParentWidget<NWidgetMatrix>()->GetCurrentElement();
 				assert(type < _railstation.station_count);
 				/* Check station availability callback */
 				const StationSpec *statspec = StationClass::Get(_railstation.station_class)->GetSpec(type);
@@ -1538,7 +1538,7 @@ public:
 		}
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		if (widget == WID_BRAS_SHOW_NEWST_TYPE) {
 			const StationSpec *statspec = StationClass::Get(_railstation.station_class)->GetSpec(_railstation.station_type);
@@ -1546,9 +1546,9 @@ public:
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
-		switch (GB(widget, 0, 16)) {
+		switch (widget) {
 			case WID_BRAS_PLATFORM_DIR_X:
 			case WID_BRAS_PLATFORM_DIR_Y:
 				this->RaiseWidget(_railstation.orientation + WID_BRAS_PLATFORM_DIR_X);
@@ -1682,7 +1682,7 @@ public:
 			}
 
 			case WID_BRAS_IMAGE: {
-				uint16_t y = GB(widget, 16, 16);
+				uint16_t y = this->GetWidget<NWidgetBase>(widget)->GetParentWidget<NWidgetMatrix>()->GetCurrentElement();
 				if (y >= _railstation.station_count) return;
 
 				/* Check station availability callback */
@@ -1692,7 +1692,7 @@ public:
 				_railstation.station_type = y;
 
 				this->CheckSelectedSize(statspec);
-				this->GetWidget<NWidgetMatrix>(WID_BRAS_MATRIX)->SetClicked(_railstation.station_type);
+				this->GetWidget<NWidgetBase>(widget)->GetParentWidget<NWidgetMatrix>()->SetClicked(_railstation.station_type);
 
 				if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 				this->SetDirty();
@@ -1868,7 +1868,7 @@ private:
 	 * @param widget_index index of this widget in the window
 	 * @param image        the sprite to draw
 	 */
-	void DrawSignalSprite(const Rect &r, int widget_index, PalSpriteID image) const
+	void DrawSignalSprite(const Rect &r, WidgetID widget_index, PalSpriteID image) const
 	{
 		Point offset;
 		Dimension sprite_size = GetSpriteSize(image.sprite, &offset);
@@ -1884,10 +1884,10 @@ private:
 
 	void SetDisableStates()
 	{
-		for (int widget = WID_BS_SEMAPHORE_NORM; widget <= WID_BS_SEMAPHORE_NO_ENTRY; widget++) {
+		for (WidgetID widget = WID_BS_SEMAPHORE_NORM; widget <= WID_BS_SEMAPHORE_NO_ENTRY; widget++) {
 			this->SetWidgetDisabledState(widget, _cur_signal_style > 0 && !HasBit(_new_signal_styles[_cur_signal_style - 1].semaphore_mask, TypeForClick(widget - WID_BS_SEMAPHORE_NORM)));
 		}
-		for (int widget = WID_BS_ELECTRIC_NORM; widget <= WID_BS_ELECTRIC_NO_ENTRY; widget++) {
+		for (WidgetID widget = WID_BS_ELECTRIC_NORM; widget <= WID_BS_ELECTRIC_NO_ENTRY; widget++) {
 			this->SetWidgetDisabledState(widget, _cur_signal_style > 0 && !HasBit(_new_signal_styles[_cur_signal_style - 1].electric_mask, TypeForClick(widget - WID_BS_ELECTRIC_NORM)));
 		}
 		if (_cur_signal_style > 0) {
@@ -2009,7 +2009,7 @@ public:
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget == WID_BS_DRAG_SIGNALS_DENSITY_LABEL) {
 			/* Two digits for signals density. */
@@ -2022,7 +2022,7 @@ public:
 		}
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_BS_DRAG_SIGNALS_DENSITY_LABEL:
@@ -2035,7 +2035,7 @@ public:
 		}
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (IsInsideMM(widget, WID_BS_SEMAPHORE_NORM, WID_BS_ELECTRIC_NO_ENTRY + 1)) {
 			/* Extract signal from widget number. */
@@ -2089,7 +2089,7 @@ public:
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_BS_SEMAPHORE_NORM:
@@ -2184,7 +2184,7 @@ public:
 		this->InvalidateData();
 	}
 
-	virtual void OnDropdownSelect(int widget, int index) override
+	virtual void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		switch (widget) {
 			case WID_BS_STYLE:
@@ -2352,7 +2352,7 @@ struct BuildRailDepotWindow : public PickerWindowBase {
 		this->LowerWidget(_build_depot_direction + WID_BRAD_DEPOT_NE);
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (!IsInsideMM(widget, WID_BRAD_DEPOT_NE, WID_BRAD_DEPOT_NW + 1)) return;
 
@@ -2360,7 +2360,7 @@ struct BuildRailDepotWindow : public PickerWindowBase {
 		size->height = ScaleGUITrad(48) + WidgetDimensions::scaled.fullbevel.Vertical();
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (!IsInsideMM(widget, WID_BRAD_DEPOT_NE, WID_BRAD_DEPOT_NW + 1)) return;
 
@@ -2374,7 +2374,7 @@ struct BuildRailDepotWindow : public PickerWindowBase {
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_BRAD_DEPOT_NE:
@@ -2507,7 +2507,7 @@ struct BuildRailWaypointWindow : PickerWindowBase {
 		this->PickerWindowBase::Close(data);
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_BRW_WAYPOINT_MATRIX:
@@ -2526,7 +2526,7 @@ struct BuildRailWaypointWindow : PickerWindowBase {
 		}
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		if (widget == WID_BRW_NAME) {
 			if (!this->list.empty() && IsInsideBS(_cur_waypoint_type, 0, this->waypoints->GetSpecCount())) {
@@ -2548,11 +2548,11 @@ struct BuildRailWaypointWindow : PickerWindowBase {
 		this->DrawWidgets();
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
-		switch (GB(widget, 0, 16)) {
+		switch (widget) {
 			case WID_BRW_WAYPOINT: {
-				uint16_t type = this->list.at(GB(widget, 16, 16));
+				uint16_t type = this->list.at(this->GetWidget<NWidgetBase>(widget)->GetParentWidget<NWidgetMatrix>()->GetCurrentElement());
 				const StationSpec *statspec = this->waypoints->GetSpec(type);
 
 				DrawPixelInfo tmp_dpi;
@@ -2571,11 +2571,11 @@ struct BuildRailWaypointWindow : PickerWindowBase {
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
-		switch (GB(widget, 0, 16)) {
+		switch (widget) {
 			case WID_BRW_WAYPOINT: {
-				uint16_t sel = GB(widget, 16, 16);
+				uint16_t sel = this->GetWidget<NWidgetBase>(widget)->GetParentWidget<NWidgetMatrix>()->GetCurrentElement();
 				assert(sel < this->list.size());
 				uint16_t type = this->list.at(sel);
 
@@ -2584,7 +2584,7 @@ struct BuildRailWaypointWindow : PickerWindowBase {
 				if (!IsStationAvailable(statspec)) return;
 
 				_cur_waypoint_type = type;
-				this->GetWidget<NWidgetMatrix>(WID_BRW_WAYPOINT_MATRIX)->SetClicked(sel);
+				this->GetWidget<NWidgetBase>(widget)->GetParentWidget<NWidgetMatrix>()->SetClicked(sel);
 				if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 				this->SetDirty();
 				break;
@@ -2613,7 +2613,7 @@ struct BuildRailWaypointWindow : PickerWindowBase {
 		this->list.ForceRebuild();
 	}
 
-	void OnEditboxChanged(int wid) override
+	void OnEditboxChanged(WidgetID wid) override
 	{
 		if (wid == WID_BRW_FILTER) {
 			this->string_filter.SetFilterTerm(this->editbox.text.buf);
@@ -2863,7 +2863,7 @@ void ShowBuildRailStationPickerAndSelect(StationType station_type, const Station
 	}
 	if (w == nullptr) return;
 
-	auto trigger_widget = [&](int widget) {
+	auto trigger_widget = [&](WidgetID widget) {
 		if (!w->IsWidgetLowered(widget)) {
 			w->OnHotkey(widget);
 		}

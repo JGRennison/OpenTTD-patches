@@ -71,7 +71,7 @@ struct SetDateWindow : Window {
 	 * Helper function to construct the dropdown.
 	 * @param widget the dropdown widget to create the dropdown for
 	 */
-	virtual void ShowDateDropDown(int widget)
+	virtual void ShowDateDropDown(WidgetID widget)
 	{
 		int selected;
 		DropDownList list;
@@ -105,7 +105,7 @@ struct SetDateWindow : Window {
 		ShowDropDownList(this, std::move(list), selected, widget);
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		Dimension d = {0, 0};
 		switch (widget) {
@@ -134,7 +134,7 @@ struct SetDateWindow : Window {
 		*size = d;
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_SD_DAY:   SetDParam(0, this->date.day - 1 + STR_DAY_NUMBER_1ST); break;
@@ -143,7 +143,7 @@ struct SetDateWindow : Window {
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_SD_DAY:
@@ -160,7 +160,7 @@ struct SetDateWindow : Window {
 		}
 	}
 
-	void OnDropdownSelect(int widget, int index) override
+	void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		switch (widget) {
 			case WID_SD_DAY:
@@ -195,7 +195,7 @@ struct SetMinutesWindow : SetDateWindow
 	 * Helper function to construct the dropdown.
 	 * @param widget the dropdown widget to create the dropdown for
 	 */
-	virtual void ShowDateDropDown(int widget) override
+	virtual void ShowDateDropDown(WidgetID widget) override
 	{
 		int selected;
 		DropDownList list;
@@ -224,7 +224,7 @@ struct SetMinutesWindow : SetDateWindow
 		ShowDropDownList(this, std::move(list), selected, widget);
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		Dimension d = {0, 0};
 		switch (widget) {
@@ -250,7 +250,7 @@ struct SetMinutesWindow : SetDateWindow
 		*size = d;
 	}
 
-	virtual void SetStringParameters(int widget) const override
+	virtual void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_SD_DAY:   SetDParam(0, this->minutes.ClockMinute()); break;
@@ -258,7 +258,7 @@ struct SetMinutesWindow : SetDateWindow
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count) override
+	virtual void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_SD_DAY:
@@ -276,7 +276,7 @@ struct SetMinutesWindow : SetDateWindow
 		}
 	}
 
-	virtual void OnDropdownSelect(int widget, int index) override
+	virtual void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		const TickMinutes now = _settings_time.NowInTickMinutes();
 		TickMinutes current = 0;

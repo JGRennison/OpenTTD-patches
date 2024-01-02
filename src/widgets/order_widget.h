@@ -13,7 +13,7 @@
 #include "../cargo_type.h"
 
 /** Widgets of the #OrdersWindow class. */
-enum OrderWidgets {
+enum OrderWidgets : WidgetID {
 	WID_O_CAPTION,                   ///< Caption of the window.
 	WID_O_TIMETABLE_VIEW,            ///< Toggle timetable view.
 	WID_O_ORDER_LIST,                ///< Order list panel.

@@ -187,7 +187,7 @@ public:
 		this->Window::Close();
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		if (widget == WID_CTO_HEADER) {
 			(*size).height = std::max((*size).height, (uint) GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical());
@@ -203,7 +203,7 @@ public:
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const override
+	virtual void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (WID_CTO_CARGO_LABEL_FIRST <= widget && widget <= WID_CTO_CARGO_LABEL_LAST) {
 			Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
@@ -227,7 +227,7 @@ public:
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count) override
+	virtual void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
 		if (!this->CheckOrderStillValid()) {
 			this->Close();
@@ -245,7 +245,7 @@ public:
 		}
 	}
 
-	virtual void OnDropdownSelect(int widget, int action_type) override
+	virtual void OnDropdownSelect(WidgetID widget, int action_type) override
 	{
 		if (!this->CheckOrderStillValid()) {
 			this->Close();
@@ -283,7 +283,7 @@ public:
 		}
 	}
 
-	virtual void SetStringParameters(int widget) const override
+	virtual void SetStringParameters(WidgetID widget) const override
 	{
 		if (!this->CheckOrderStillValid()) {
 			return;
@@ -330,14 +330,12 @@ public:
 /**
  * Make a list of panel for each available cargo type.
  * Each panel contains a label to display the cargo name.
- * @param biggest_index Storage for collecting the biggest index used in the returned tree
  * @return A vertical container of cargo type orders rows.
  * @post \c *biggest_index contains the largest used index in the tree.
  */
-static NWidgetBase *MakeCargoTypeOrdersRows(int *biggest_index, bool right)
+static std::unique_ptr<NWidgetBase> MakeCargoTypeOrdersRows(bool right)
 {
-
-	NWidgetVertical *ver = new NWidgetVertical;
+	std::unique_ptr<NWidgetVertical> ver = std::make_unique<NWidgetVertical>();
 
 	const bool dual_column = (_sorted_standard_cargo_specs.size() >= 32);
 	if (right && !dual_column) return ver;
@@ -346,34 +344,36 @@ static NWidgetBase *MakeCargoTypeOrdersRows(int *biggest_index, bool right)
 
 	for (int i = (right ? 1 : 0); i < (int)_sorted_standard_cargo_specs.size(); i += increment) {
 		/* Cargo row */
-		NWidgetBackground *panel = new NWidgetBackground(WWT_PANEL, COLOUR_GREY, WID_CTO_CARGO_ROW_FIRST + i);
-		ver->Add(panel);
-		NWidgetHorizontal *horiz = new NWidgetHorizontal;
-		panel->Add(horiz);
+		std::unique_ptr<NWidgetBackground> panel = std::make_unique<NWidgetBackground>(WWT_PANEL, COLOUR_GREY, WID_CTO_CARGO_ROW_FIRST + i);
+		std::unique_ptr<NWidgetHorizontal> horiz = std::make_unique<NWidgetHorizontal>();
+
 		/* Cargo label */
-		NWidgetBackground *label = new NWidgetBackground(WWT_PANEL, COLOUR_GREY, WID_CTO_CARGO_LABEL_FIRST + i);
+		std::unique_ptr<NWidgetBackground> label = std::make_unique<NWidgetBackground>(WWT_PANEL, COLOUR_GREY, WID_CTO_CARGO_LABEL_FIRST + i);
 		label->SetFill(1, 0);
 		label->SetResize(1, 0);
-		horiz->Add(label);
+		horiz->Add(std::move(label));
+
 		/* Orders dropdown */
-		NWidgetLeaf *dropdown = new NWidgetLeaf(WWT_DROPDOWN, COLOUR_GREY, WID_CTO_CARGO_DROPDOWN_FIRST + i, STR_NULL, STR_EMPTY);
+		std::unique_ptr<NWidgetLeaf> dropdown = std::make_unique<NWidgetLeaf>(WWT_DROPDOWN, COLOUR_GREY, WID_CTO_CARGO_DROPDOWN_FIRST + i, STR_NULL, STR_EMPTY);
 		dropdown->SetFill(1, 0);
 		dropdown->SetResize(1, 0);
-		horiz->Add(dropdown);
+		horiz->Add(std::move(dropdown));
+
+		panel->Add(std::move(horiz));
+		ver->Add(std::move(panel));
 	}
 
-	*biggest_index = WID_CTO_CARGO_DROPDOWN_LAST;
 	return ver;
 }
 
-static NWidgetBase *MakeCargoTypeOrdersRowsLeft(int *biggest_index)
+static std::unique_ptr<NWidgetBase> MakeCargoTypeOrdersRowsLeft()
 {
-	return MakeCargoTypeOrdersRows(biggest_index, false);
+	return MakeCargoTypeOrdersRows(false);
 }
 
-static NWidgetBase *MakeCargoTypeOrdersRowsRight(int *biggest_index)
+static std::unique_ptr<NWidgetBase> MakeCargoTypeOrdersRowsRight()
 {
-	return MakeCargoTypeOrdersRows(biggest_index, true);
+	return MakeCargoTypeOrdersRows(true);
 }
 
 /** Widgets definition of CargoTypeOrdersWindow. */
@@ -1907,7 +1907,7 @@ public:
 		this->GeneralVehicleWindow::Close();
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_O_OCCUPANCY_LIST:
@@ -2382,7 +2382,7 @@ public:
 		this->DrawWidgets();
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_O_ORDER_LIST:
@@ -2517,7 +2517,7 @@ public:
 		DrawString(left, right, r.top + offset + clicked, STR_ORDERS_TIMETABLE_VIEW, TC_FROMSTRING, SA_HOR_CENTER);
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_O_COND_VALUE: {
@@ -2682,7 +2682,7 @@ public:
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_O_ORDER_LIST: {
@@ -3214,7 +3214,7 @@ public:
 		}
 	}
 
-	void OnDropdownSelect(int widget, int index) override
+	void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		switch (widget) {
 			case WID_O_NON_STOP:
@@ -3351,7 +3351,7 @@ public:
 		}
 	}
 
-	void OnDragDrop(Point pt, int widget) override
+	void OnDragDrop(Point pt, WidgetID widget) override
 	{
 		switch (widget) {
 			case WID_O_ORDER_LIST: {
@@ -3525,7 +3525,7 @@ public:
 		}
 	}
 
-	void OnMouseDrag(Point pt, int widget) override
+	void OnMouseDrag(Point pt, WidgetID widget) override
 	{
 		if (this->selected_order != -1 && widget == WID_O_ORDER_LIST) {
 			/* An order is dragged.. */
@@ -3565,7 +3565,7 @@ public:
 		}
 	}
 
-	bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
+	bool OnTooltip(Point pt, WidgetID widget, TooltipCloseCondition close_cond) override
 	{
 		switch (widget) {
 			case WID_O_SHARED_ORDER_LIST: {

@@ -73,7 +73,7 @@ class LandInfoWindow : public Window {
 public:
 	TileIndex tile;
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (widget != WID_LI_BACKGROUND) return;
 
@@ -89,7 +89,7 @@ public:
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget != WID_LI_BACKGROUND) return;
 
@@ -375,7 +375,7 @@ public:
 		::ShowNewGRFInspectWindow(GetGrfSpecFeature(this->tile), this->tile);
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_LI_LOCATION:
@@ -522,7 +522,7 @@ struct AboutWindow : public Window {
 		this->text_position = this->GetWidget<NWidgetBase>(WID_A_SCROLLING_TEXT)->pos_y + this->GetWidget<NWidgetBase>(WID_A_SCROLLING_TEXT)->current_y;
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		if (widget == WID_A_WEBSITE) SetDParamStr(0, "Main project website: https://www.openttd.org");
 		if (widget == WID_A_WEBSITE1) SetDParamStr(0, "Patchpack thread: https://www.tt-forums.net/viewtopic.php?f=33&t=73469");
@@ -530,7 +530,7 @@ struct AboutWindow : public Window {
 		if (widget == WID_A_COPYRIGHT) SetDParamStr(0, _openttd_revision_year);
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget != WID_A_SCROLLING_TEXT) return;
 
@@ -550,7 +550,7 @@ struct AboutWindow : public Window {
 		this->timer.SetInterval(TIMER_INTERVAL / GetCharacterHeight(FS_NORMAL));
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (widget != WID_A_SCROLLING_TEXT) return;
 
@@ -752,7 +752,7 @@ struct TooltipsWindow : public Window
 		return pt;
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget != WID_TT_BACKGROUND) return;
 		if (this->params.size() == 0) {
@@ -769,7 +769,7 @@ struct TooltipsWindow : public Window
 		size->height += WidgetDimensions::scaled.framerect.Vertical()    + WidgetDimensions::scaled.fullbevel.Vertical();
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (widget != WID_TT_BACKGROUND) return;
 		GfxFillRect(r, PC_BLACK);
@@ -837,7 +837,7 @@ void GuiShowTooltips(Window *parent, StringID str, TooltipCloseCondition close_t
 	new TooltipsWindow(parent, str, paramcount, close_tooltip);
 }
 
-void QueryString::HandleEditBox(Window *w, int wid)
+void QueryString::HandleEditBox(Window *w, WidgetID wid)
 {
 	if (w->IsWidgetGloballyFocused(wid) && this->text.HandleCaret()) {
 		w->SetWidgetDirty(wid);
@@ -852,7 +852,7 @@ static int GetCaretWidth()
 	return GetCharacterWidth(FS_NORMAL, '_');
 }
 
-void QueryString::DrawEditBox(const Window *w, int wid) const
+void QueryString::DrawEditBox(const Window *w, WidgetID wid) const
 {
 	const NWidgetLeaf *wi = w->GetWidget<NWidgetLeaf>(wid);
 
@@ -904,7 +904,7 @@ void QueryString::DrawEditBox(const Window *w, int wid) const
  * @param wid Widget index.
  * @return Top-left location of the caret, relative to the window.
  */
-Point QueryString::GetCaretPosition(const Window *w, int wid) const
+Point QueryString::GetCaretPosition(const Window *w, WidgetID wid) const
 {
 	const NWidgetLeaf *wi = w->GetWidget<NWidgetLeaf>(wid);
 
@@ -933,7 +933,7 @@ Point QueryString::GetCaretPosition(const Window *w, int wid) const
  * @param to End of the string range.
  * @return Rectangle encompassing the string range, relative to the window.
  */
-Rect QueryString::GetBoundingRect(const Window *w, int wid, const char *from, const char *to) const
+Rect QueryString::GetBoundingRect(const Window *w, WidgetID wid, const char *from, const char *to) const
 {
 	const NWidgetLeaf *wi = w->GetWidget<NWidgetLeaf>(wid);
 
@@ -964,7 +964,7 @@ Rect QueryString::GetBoundingRect(const Window *w, int wid, const char *from, co
  * @param pt Position to test.
  * @return Index of the character position or -1 if no character is at the position.
  */
-ptrdiff_t QueryString::GetCharAtPosition(const Window *w, int wid, const Point &pt) const
+ptrdiff_t QueryString::GetCharAtPosition(const Window *w, WidgetID wid, const Point &pt) const
 {
 	const NWidgetLeaf *wi = w->GetWidget<NWidgetLeaf>(wid);
 
@@ -986,7 +986,7 @@ ptrdiff_t QueryString::GetCharAtPosition(const Window *w, int wid, const Point &
 	return ::GetCharAtPosition(tb->buf, pt.x - delta - r.left);
 }
 
-void QueryString::ClickEditBox(Window *w, Point pt, int wid, int click_count, bool focus_changed)
+void QueryString::ClickEditBox(Window *w, Point pt, WidgetID wid, int click_count, bool focus_changed)
 {
 	const NWidgetLeaf *wi = w->GetWidget<NWidgetLeaf>(wid);
 
@@ -1070,7 +1070,7 @@ struct QueryStringWindow : public Window
 		this->ReInit();
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget == WID_QS_DEFAULT && (this->flags & QSF_ENABLE_DEFAULT) == 0) {
 			/* We don't want this widget to show! */
@@ -1084,7 +1084,7 @@ struct QueryStringWindow : public Window
 		}
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (widget != WID_QS_WARNING) return;
 
@@ -1094,7 +1094,7 @@ struct QueryStringWindow : public Window
 		}
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		if (widget == WID_QS_CAPTION) SetDParam(0, this->editbox.caption);
 	}
@@ -1109,7 +1109,7 @@ struct QueryStringWindow : public Window
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_QS_DEFAULT:
@@ -1231,7 +1231,7 @@ struct QueryWindow : public Window {
 		this->SetDirty();
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_Q_CAPTION:
@@ -1250,7 +1250,7 @@ struct QueryWindow : public Window {
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget != WID_Q_TEXT) return;
 
@@ -1262,7 +1262,7 @@ struct QueryWindow : public Window {
 		*size = d;
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (widget != WID_Q_TEXT) return;
 
@@ -1272,7 +1272,7 @@ struct QueryWindow : public Window {
 				this->message_str, TC_FROMSTRING, SA_CENTER);
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_Q_YES: {

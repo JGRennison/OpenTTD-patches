@@ -12,16 +12,11 @@ jobs:
   linux:
     name: Linux (Generic)
 
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     container:
       # manylinux2014 is based on CentOS 7, but already has a lot of things
       # installed and preconfigured. It makes it easier to build OpenTTD.
       image: quay.io/pypa/manylinux2014_x86_64
-      volumes:
-      - /usr/local/share/vcpkg:/vcpkg
-      env:
-        ImageOS: ${{ env.ImageOS }}
-        ImageVersion: ${{ env.ImageVersion }}
 
     steps:
     - name: Download source
@@ -33,18 +28,37 @@ jobs:
       run: |
         tar -xf source.tar.gz --strip-components=1
 
-    - name: Prepare cache key
-      id: key
+    # curl is too old for most of the tools to work properly. For example,
+    # rust-toolchain doesn't work properly, neither vcpkg caching.
+    # The easier solution here is to upgrade curl.
+    - name: Update curl
       run: |
-        echo "image=$ImageOS-$ImageVersion" >> $GITHUB_OUTPUT
+        yum install -y \
+          openssl-devel \
+          # EOF
 
-    - name: Enable vcpkg cache
-      uses: actions/cache@v3
+        mkdir /curl
+        cd /curl
+        curl -o curl-7.81.0.zip https://curl.se/download/curl-7.81.0.zip
+        unzip curl-7.81.0.zip
+        cd curl-7.81.0
+        ./configure --with-ssl --with-zlib --prefix=/usr --libdir=/usr/lib64
+        make -j $(nproc)
+        make install
+
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Enable Rust cache
+      uses: Swatinem/rust-cache@v2
+
+    - name: Setup vcpkg caching
+      uses: actions/github-script@v6
       with:
-        path: /vcpkg/installed
-        key: ${{ steps.key.outputs.image }}-vcpkg-release-1 # Increase the number whenever dependencies are modified
-        restore-keys: |
-          ${{ steps.key.outputs.image }}-vcpkg-release
+        script: |
+          core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+          core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+          core.exportVariable('VCPKG_BINARY_SOURCES', 'clear;x-gha,readwrite')
 
     - name: Install dependencies
       run: |
@@ -84,6 +98,14 @@ jobs:
           cmake --build . -j $(nproc)
           cmake --install .
         )
+
+        # The container we use is old enough, that it doesn't know SHF_COMPRESSED.
+        # But, breakpad needs this symbol to exist. So we patch it in our system
+        # libraries.
+        (
+          cd /
+          patch -p1 < ${GITHUB_WORKSPACE}/os/linux/shf-compressed.patch
+        )
         echo "::endgroup::"
 
         echo "::group::Install audio drivers"
@@ -100,29 +122,22 @@ jobs:
         # We use vcpkg for our dependencies, to get more up-to-date version.
         echo "::group::Install vcpkg and dependencies"
 
-        # Make Python3 available for other packages.
-        /vcpkg/vcpkg install python3
-        ln -sf /vcpkg/installed/x64-linux/tools/python3/python3.[0-9][0-9] /usr/bin/python3
+        git clone https://github.com/microsoft/vcpkg /vcpkg
 
-        # SDL2 needs dbus, but dbus default install comes with libsystemd
-        # and some of libsystemd deps fail to build on our quite old linux.
-        # So just install basic dbus without any extra deps.
-        /vcpkg/vcpkg install dbus[core]
+        (
+          cd /vcpkg
+          ./bootstrap-vcpkg.sh -disableMetrics
+        )
 
-        # Now we can install OpenTTD dependencies
-        /vcpkg/vcpkg install \
-          curl[http2] \
-          fontconfig \
-          freetype \
-          harfbuzz \
-          icu \
-          liblzma \
-          libpng \
-          lzo \
-          sdl2 \
-          zlib \
-          zstd \
-          # EOF
+        # Make Python3 available for other packages. This needs to be done
+        # first, as otherwise dependencies fail to build because Python3 is
+        # not available.
+        (
+          cd /
+
+          /vcpkg/vcpkg install python3
+          ln -sf /vcpkg/installed/x64-linux/tools/python3/python3.[0-9][0-9] /usr/bin/python3
+        )
         echo "::endgroup::"
 
     - name: Install GCC problem matcher

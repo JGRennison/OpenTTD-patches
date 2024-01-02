@@ -736,7 +736,7 @@ void SetYearEngineAgingStops()
  * @param aging_date The date used for age calculations.
  * @param seed Random seed.
  */
-void StartupOneEngine(Engine *e, Date aging_date, uint32 seed, Date no_introduce_after_date)
+void StartupOneEngine(Engine *e, Date aging_date, const YearMonthDay &aging_ymd, uint32 seed, Date no_introduce_after_date)
 {
 	const EngineInfo *ei = &e->info;
 
@@ -760,7 +760,11 @@ void StartupOneEngine(Engine *e, Date aging_date, uint32 seed, Date no_introduce
 	 * Note: TTDP uses fixed 1922 */
 	e->intro_date = ei->base_intro <= ConvertYMDToDate(_settings_game.game_creation.starting_year + 2, 0, 1) ? ei->base_intro : (DateDelta)GB(r, 0, 9) + ei->base_intro;
 	if (e->intro_date <= _date && e->intro_date <= no_introduce_after_date) {
-		e->age = (aging_date - e->intro_date).base() >> 5;
+		YearMonthDay intro_ymd = ConvertDateToYMD(e->intro_date);
+		int aging_months = aging_ymd.year * 12 + aging_ymd.month;
+		int intro_months = intro_ymd.year * 12 + intro_ymd.month;
+		if (intro_ymd.day > 1) intro_months++; // Engines are introduced at the first month start at/after intro date.
+		e->age = aging_months - intro_months;
 		e->company_avail = MAX_UVALUE(CompanyMask);
 		e->flags |= ENGINE_AVAILABLE;
 	}
@@ -821,6 +825,7 @@ void StartupEngines()
 		aging_stop_year = std::min<Year>(aging_stop_year, std::max<Year>(_settings_game.vehicle.no_introduce_vehicles_after, _settings_game.vehicle.no_expire_vehicles_after));
 	}
 	const Date aging_date = std::min(_date, ConvertYMDToDate(aging_stop_year, 0, 1));
+	const YearMonthDay aging_ymd = ConvertDateToYMD(aging_date);
 
 	Date no_introduce_after_date = INT_MAX;
 	if (_settings_game.vehicle.no_introduce_vehicles_after > 0) {
@@ -830,7 +835,7 @@ void StartupEngines()
 	uint32 seed = Random();
 
 	for (Engine *e : Engine::Iterate()) {
-		StartupOneEngine(e, aging_date, seed, no_introduce_after_date);
+		StartupOneEngine(e, aging_date, aging_ymd, seed, no_introduce_after_date);
 	}
 	for (Engine *e : Engine::Iterate()) {
 		CalcEngineReliability(e, false);

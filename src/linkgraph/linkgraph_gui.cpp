@@ -642,56 +642,54 @@ void LinkGraphOverlay::SetCompanyMask(CompanyMask company_mask)
 }
 
 /** Make a number of rows with buttons for each company for the linkgraph legend window. */
-NWidgetBase *MakeCompanyButtonRowsLinkGraphGUI(int *biggest_index)
+std::unique_ptr<NWidgetBase> MakeCompanyButtonRowsLinkGraphGUI()
 {
-	return MakeCompanyButtonRows(biggest_index, WID_LGL_COMPANY_FIRST, WID_LGL_COMPANY_LAST, COLOUR_GREY, 3, STR_NULL);
+	return MakeCompanyButtonRows(WID_LGL_COMPANY_FIRST, WID_LGL_COMPANY_LAST, COLOUR_GREY, 3, STR_NULL);
 }
 
-NWidgetBase *MakeSaturationLegendLinkGraphGUI(int *biggest_index)
+std::unique_ptr<NWidgetBase> MakeSaturationLegendLinkGraphGUI()
 {
-	NWidgetVertical *panel = new NWidgetVertical(NC_EQUALSIZE);
+	auto panel = std::make_unique<NWidgetVertical>(NC_EQUALSIZE);
 	for (uint i = 0; i < lengthof(LinkGraphOverlay::LINK_COLOURS[0]); ++i) {
-		NWidgetBackground * wid = new NWidgetBackground(WWT_PANEL, COLOUR_DARK_GREEN, i + WID_LGL_SATURATION_FIRST);
+		auto wid = std::make_unique<NWidgetBackground>(WWT_PANEL, COLOUR_DARK_GREEN, i + WID_LGL_SATURATION_FIRST);
 		wid->SetMinimalSize(50, 0);
 		wid->SetMinimalTextLines(1, 0, FS_SMALL);
 		wid->SetFill(1, 1);
 		wid->SetResize(0, 0);
-		panel->Add(wid);
+		panel->Add(std::move(wid));
 	}
-	*biggest_index = WID_LGL_SATURATION_LAST;
 	return panel;
 }
 
-NWidgetBase *MakeCargoesLegendLinkGraphGUI(int *biggest_index)
+std::unique_ptr<NWidgetBase> MakeCargoesLegendLinkGraphGUI()
 {
 	uint num_cargo = static_cast<uint>(_sorted_cargo_specs.size());
 	static const uint ENTRIES_PER_COL = 5;
-	NWidgetHorizontal *panel = new NWidgetHorizontal(NC_EQUALSIZE);
-	NWidgetVertical *col = nullptr;
+	auto panel = std::make_unique<NWidgetHorizontal>(NC_EQUALSIZE);
+	std::unique_ptr<NWidgetVertical> col = nullptr;
 
 	for (uint i = 0; i < num_cargo; ++i) {
 		if (i % ENTRIES_PER_COL == 0) {
-			if (col != nullptr) panel->Add(col);
-			col = new NWidgetVertical(NC_EQUALSIZE);
+			if (col != nullptr) panel->Add(std::move(col));
+			col = std::make_unique<NWidgetVertical>(NC_EQUALSIZE);
 		}
-		NWidgetBackground * wid = new NWidgetBackground(WWT_PANEL, COLOUR_GREY, i + WID_LGL_CARGO_FIRST);
+		auto wid = std::make_unique<NWidgetBackground>(WWT_PANEL, COLOUR_GREY, i + WID_LGL_CARGO_FIRST);
 		wid->SetMinimalSize(25, 0);
 		wid->SetMinimalTextLines(1, 0, FS_SMALL);
 		wid->SetFill(1, 1);
 		wid->SetResize(0, 0);
-		col->Add(wid);
+		col->Add(std::move(wid));
 	}
 	/* Fill up last row */
 	for (uint i = num_cargo; i < Ceil(num_cargo, ENTRIES_PER_COL); ++i) {
-		NWidgetSpacer *spc = new NWidgetSpacer(25, 0);
+		auto spc = std::make_unique<NWidgetSpacer>(25, 0);
 		spc->SetMinimalTextLines(1, 0, FS_SMALL);
 		spc->SetFill(1, 1);
 		spc->SetResize(0, 0);
-		col->Add(spc);
+		col->Add(std::move(spc));
 	}
 	/* If there are no cargo specs defined, then col won't have been created so don't add it. */
-	if (col != nullptr) panel->Add(col);
-	*biggest_index = WID_LGL_CARGO_LAST;
+	if (col != nullptr) panel->Add(std::move(col));
 	return panel;
 }
 
@@ -772,7 +770,7 @@ void LinkGraphLegendWindow::SetOverlay(LinkGraphOverlay *overlay)
 	}
 }
 
-void LinkGraphLegendWindow::UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize)
+void LinkGraphLegendWindow::UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize)
 {
 	if (IsInsideMM(widget, WID_LGL_SATURATION_FIRST, WID_LGL_SATURATION_LAST + 1)) {
 		StringID str = STR_NULL;
@@ -799,7 +797,7 @@ void LinkGraphLegendWindow::UpdateWidgetSize(int widget, Dimension *size, [[mayb
 	}
 }
 
-void LinkGraphLegendWindow::DrawWidget(const Rect &r, int widget) const
+void LinkGraphLegendWindow::DrawWidget(const Rect &r, WidgetID widget) const
 {
 	Rect br = r.Shrink(WidgetDimensions::scaled.bevel);
 	if (IsInsideMM(widget, WID_LGL_COMPANY_FIRST, WID_LGL_COMPANY_LAST + 1)) {
@@ -830,7 +828,7 @@ void LinkGraphLegendWindow::DrawWidget(const Rect &r, int widget) const
 	}
 }
 
-bool LinkGraphLegendWindow::OnTooltip([[maybe_unused]] Point, int widget, TooltipCloseCondition close_cond)
+bool LinkGraphLegendWindow::OnTooltip([[maybe_unused]] Point, WidgetID widget, TooltipCloseCondition close_cond)
 {
 	if (IsInsideMM(widget, WID_LGL_COMPANY_FIRST, WID_LGL_COMPANY_LAST + 1)) {
 		if (this->IsWidgetDisabled(widget)) {
@@ -878,7 +876,7 @@ void LinkGraphLegendWindow::UpdateOverlayCargoes()
 	this->overlay->SetCargoMask(mask);
 }
 
-void LinkGraphLegendWindow::OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count)
+void LinkGraphLegendWindow::OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count)
 {
 	/* Check which button is clicked */
 	if (IsInsideMM(widget, WID_LGL_COMPANY_FIRST, WID_LGL_COMPANY_LAST + 1)) {

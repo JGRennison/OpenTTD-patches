@@ -189,7 +189,7 @@ struct SignListWindow : Window, SignList {
 		this->DrawWidgets();
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_SIL_LIST: {
@@ -223,12 +223,12 @@ struct SignListWindow : Window, SignList {
 		}
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		if (widget == WID_SIL_CAPTION) SetDParam(0, this->vscroll->GetCount());
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_SIL_LIST: {
@@ -260,7 +260,7 @@ struct SignListWindow : Window, SignList {
 		this->vscroll->SetCapacityFromWidget(this, WID_SIL_LIST, WidgetDimensions::scaled.framerect.Vertical());
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_SIL_LIST: {
@@ -296,7 +296,7 @@ struct SignListWindow : Window, SignList {
 		return ES_HANDLED;
 	}
 
-	void OnEditboxChanged(int widget) override
+	void OnEditboxChanged(WidgetID widget) override
 	{
 		if (widget == WID_SIL_FILTER_TEXT) this->SetFilterString(this->filter_editbox.text.buf);
 	}
@@ -475,7 +475,7 @@ struct SignWindow : Window, SignList {
 		return next ? this->signs.front() : this->signs.back();
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_QES_CAPTION:
@@ -484,7 +484,7 @@ struct SignWindow : Window, SignList {
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_QES_LOCATION: {

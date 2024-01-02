@@ -11,7 +11,7 @@
 #define WIDGETS_STATION_WIDGET_H
 
 /** Widgets of the #StationViewWindow class. */
-enum StationViewWidgets {
+enum StationViewWidgets : WidgetID {
 	WID_SV_CAPTION,            ///< Caption of the window.
 	WID_SV_GROUP,              ///< label for "group by"
 	WID_SV_GROUP_BY,           ///< 'Group by' button
@@ -34,7 +34,7 @@ enum StationViewWidgets {
 };
 
 /** Widgets of the #CompanyStationsWindow class. */
-enum StationListWidgets {
+enum StationListWidgets : WidgetID {
 	/* Name starts with ST instead of S, because of collision with SaveLoadWidgets */
 	WID_STL_CAPTION,        ///< Caption of the window.
 	WID_STL_LIST,           ///< The main panel, list of stations.
@@ -58,7 +58,7 @@ enum StationListWidgets {
 };
 
 /** Widgets of the #SelectStationWindow class. */
-enum JoinStationWidgets {
+enum JoinStationWidgets : WidgetID {
 	WID_JS_CAPTION,   // Caption of the window.
 	WID_JS_PANEL,     // Main panel.
 	WID_JS_SCROLLBAR, // Scrollbar of the panel.

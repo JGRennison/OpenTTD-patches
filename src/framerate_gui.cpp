@@ -507,7 +507,7 @@ struct FramerateWindow : Window {
 		}
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_FRW_CAPTION:
@@ -535,7 +535,7 @@ struct FramerateWindow : Window {
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_FRW_RATE_GAMELOOP:
@@ -646,7 +646,7 @@ struct FramerateWindow : Window {
 		}
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_FRW_TIMES_NAMES: {
@@ -688,7 +688,7 @@ struct FramerateWindow : Window {
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_FRW_TIMES_NAMES:
@@ -761,7 +761,7 @@ struct FrametimeGraphWindow : Window {
 		this->InitNested(number);
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_FGW_CAPTION:
@@ -776,7 +776,7 @@ struct FrametimeGraphWindow : Window {
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget == WID_FGW_GRAPH) {
 			SetDParam(0, 100);
@@ -893,7 +893,7 @@ struct FrametimeGraphWindow : Window {
 		return (value - src_min) * dst_diff / src_diff + dst_min;
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (widget == WID_FGW_GRAPH) {
 			const TimingMeasurement *durations  = _pf_data[this->element].durations;

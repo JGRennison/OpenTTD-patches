@@ -219,9 +219,9 @@ using DropDownListCheckedItem = DropDownCheck<DropDownString<DropDownListItem>>;
  */
 typedef std::vector<std::unique_ptr<const DropDownListItem>> DropDownList;
 
-void ShowDropDownListAt(Window *w, DropDownList &&list, int selected, int button, Rect wi_rect, Colours wi_colour, bool instant_close = false, DropDownSyncFocus sync_parent_focus = DDSF_NONE);
+void ShowDropDownListAt(Window *w, DropDownList &&list, int selected, WidgetID button, Rect wi_rect, Colours wi_colour, bool instant_close = false, DropDownSyncFocus sync_parent_focus = DDSF_NONE);
 
-void ShowDropDownList(Window *w, DropDownList &&list, int selected, int button, uint width = 0, bool instant_close = false, DropDownSyncFocus sync_parent_focus = DDSF_NONE);
+void ShowDropDownList(Window *w, DropDownList &&list, int selected, WidgetID button, uint width = 0, bool instant_close = false, DropDownSyncFocus sync_parent_focus = DDSF_NONE);
 
 Dimension GetDropDownListDimension(const DropDownList &list);
 

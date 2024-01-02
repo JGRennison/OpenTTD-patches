@@ -93,21 +93,21 @@ class NWidgetServerListHeader : public NWidgetContainer {
 public:
 	NWidgetServerListHeader() : NWidgetContainer(NWID_HORIZONTAL)
 	{
-		NWidgetLeaf *leaf = new NWidgetLeaf(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NG_NAME, STR_NETWORK_SERVER_LIST_GAME_NAME, STR_NETWORK_SERVER_LIST_GAME_NAME_TOOLTIP);
+		auto leaf = std::make_unique<NWidgetLeaf>(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NG_NAME, STR_NETWORK_SERVER_LIST_GAME_NAME, STR_NETWORK_SERVER_LIST_GAME_NAME_TOOLTIP);
 		leaf->SetResize(1, 0);
 		leaf->SetFill(1, 0);
-		this->Add(leaf);
+		this->Add(std::move(leaf));
 
-		this->Add(new NWidgetLeaf(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NG_CLIENTS, STR_NETWORK_SERVER_LIST_CLIENTS_CAPTION, STR_NETWORK_SERVER_LIST_CLIENTS_CAPTION_TOOLTIP));
-		this->Add(new NWidgetLeaf(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NG_MAPSIZE, STR_NETWORK_SERVER_LIST_MAP_SIZE_CAPTION, STR_NETWORK_SERVER_LIST_MAP_SIZE_CAPTION_TOOLTIP));
-		this->Add(new NWidgetLeaf(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NG_DATE, STR_NETWORK_SERVER_LIST_DATE_CAPTION, STR_NETWORK_SERVER_LIST_DATE_CAPTION_TOOLTIP));
-		this->Add(new NWidgetLeaf(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NG_YEARS, STR_NETWORK_SERVER_LIST_YEARS_CAPTION, STR_NETWORK_SERVER_LIST_YEARS_CAPTION_TOOLTIP));
+		this->Add(std::make_unique<NWidgetLeaf>(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NG_CLIENTS, STR_NETWORK_SERVER_LIST_CLIENTS_CAPTION, STR_NETWORK_SERVER_LIST_CLIENTS_CAPTION_TOOLTIP));
+		this->Add(std::make_unique<NWidgetLeaf>(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NG_MAPSIZE, STR_NETWORK_SERVER_LIST_MAP_SIZE_CAPTION, STR_NETWORK_SERVER_LIST_MAP_SIZE_CAPTION_TOOLTIP));
+		this->Add(std::make_unique<NWidgetLeaf>(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NG_DATE, STR_NETWORK_SERVER_LIST_DATE_CAPTION, STR_NETWORK_SERVER_LIST_DATE_CAPTION_TOOLTIP));
+		this->Add(std::make_unique<NWidgetLeaf>(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NG_YEARS, STR_NETWORK_SERVER_LIST_YEARS_CAPTION, STR_NETWORK_SERVER_LIST_YEARS_CAPTION_TOOLTIP));
 
-		leaf = new NWidgetLeaf(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NG_INFO, STR_EMPTY, STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP);
+		leaf = std::make_unique<NWidgetLeaf>(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NG_INFO, STR_EMPTY, STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP);
 		leaf->SetMinimalSize(14 + GetSpriteSize(SPR_LOCK, nullptr, ZOOM_LVL_OUT_4X).width
 		                        + GetSpriteSize(SPR_BLOT, nullptr, ZOOM_LVL_OUT_4X).width, 12);
 		leaf->SetFill(0, 1);
-		this->Add(leaf);
+		this->Add(std::move(leaf));
 	}
 
 	void SetupSmallestSize(Window *w) override
@@ -119,18 +119,18 @@ public:
 		this->resize_y = 0; // We never resize in this direction
 
 		/* First initialise some variables... */
-		for (NWidgetBase *child_wid = this->head; child_wid != nullptr; child_wid = child_wid->next) {
+		for (const auto &child_wid : this->children) {
 			child_wid->SetupSmallestSize(w);
 			this->smallest_y = std::max(this->smallest_y, child_wid->smallest_y + child_wid->padding.Vertical());
 		}
 
 		/* ... then in a second pass make sure the 'current' sizes are set. Won't change for most widgets. */
-		for (NWidgetBase *child_wid = this->head; child_wid != nullptr; child_wid = child_wid->next) {
+		for (const auto &child_wid : this->children) {
 			child_wid->current_x = child_wid->smallest_x;
 			child_wid->current_y = this->smallest_y;
 		}
 
-		this->smallest_x = this->head->smallest_x + this->tail->smallest_x; // First and last are always shown, rest not
+		this->smallest_x = this->children.front()->smallest_x + this->children.back()->smallest_x; // First and last are always shown, rest not
 	}
 
 	void AssignSizePosition(SizingType sizing, int x, int y, uint given_width, uint given_height, bool rtl) override
@@ -142,27 +142,38 @@ public:
 		this->current_x = given_width;
 		this->current_y = given_height;
 
-		given_width -= this->tail->smallest_x;
+		given_width -= this->children.back()->smallest_x;
 		/* The first and last widget are always visible, determine which other should be visible */
-		for (NWidgetBase *child_wid = this->head->next; child_wid->next != nullptr; child_wid = child_wid->next) {
-			if (given_width > ScaleGUITrad(MINIMUM_NAME_WIDTH_BEFORE_NEW_HEADER) + child_wid->smallest_x && child_wid->prev->current_x != 0) {
-				given_width -= child_wid->smallest_x;
-				child_wid->current_x = child_wid->smallest_x; /* Make visible. */
-			} else {
-				child_wid->current_x = 0; /* Make invisible. */
+		if (this->children.size() > 2) {
+			auto first = std::next(std::begin(this->children));
+			auto last = std::prev(std::end(this->children));
+			for (auto it = first; it != last; ++it) {
+				auto &child_wid = *it;
+				if (given_width > ScaleGUITrad(MINIMUM_NAME_WIDTH_BEFORE_NEW_HEADER) + child_wid->smallest_x && (*std::prev(it))->current_x != 0) {
+					given_width -= child_wid->smallest_x;
+					child_wid->current_x = child_wid->smallest_x; /* Make visible. */
+				} else {
+					child_wid->current_x = 0; /* Make invisible. */
+				}
 			}
 		}
 
 		/* All remaining space goes to the first (name) widget */
-		this->head->current_x = given_width;
+		this->children.front()->current_x = given_width;
 
 		/* Now assign the widgets to their rightful place */
 		uint position = 0; // Place to put next child relative to origin of the container.
-		for (NWidgetBase *child_wid = rtl ? this->tail : this->head; child_wid != nullptr; child_wid = rtl ? child_wid->prev : child_wid->next) {
+		auto assign_position = [&](const std::unique_ptr<NWidgetBase> &child_wid) {
 			if (child_wid->current_x != 0) {
 				child_wid->AssignSizePosition(sizing, x + position, y, child_wid->current_x, this->current_y, rtl);
 				position += child_wid->current_x;
 			}
+		};
+
+		if (rtl) {
+			std::for_each(std::rbegin(this->children), std::rend(this->children), assign_position);
+		} else {
+			std::for_each(std::begin(this->children), std::end(this->children), assign_position);
 		}
 	}
 };
@@ -470,7 +481,7 @@ public:
 		this->flag_offset = this->blot_offset + ScaleGUITrad(2) + GetSpriteSize(SPR_BLOT).width;
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_NG_MATRIX:
@@ -516,7 +527,7 @@ public:
 		}
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_NG_MATRIX: {
@@ -674,7 +685,7 @@ public:
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_NG_CANCEL: // Cancel button
@@ -808,7 +819,7 @@ public:
 		return state;
 	}
 
-	void OnEditboxChanged(int wid) override
+	void OnEditboxChanged(WidgetID wid) override
 	{
 		switch (wid) {
 			case WID_NG_FILTER: {
@@ -865,10 +876,9 @@ GUIGameServerList::FilterFunction * const NetworkGameWindow::filter_funcs[] = {
 	&NGameSearchFilter
 };
 
-static NWidgetBase *MakeResizableHeader(int *biggest_index)
+static std::unique_ptr<NWidgetBase> MakeResizableHeader()
 {
-	*biggest_index = std::max<int>(*biggest_index, WID_NG_INFO);
-	return new NWidgetServerListHeader();
+	return std::make_unique<NWidgetServerListHeader>();
 }
 
 static const NWidgetPart _nested_network_game_widgets[] = {
@@ -974,7 +984,7 @@ void ShowNetworkGameWindow()
 }
 
 struct NetworkStartServerWindow : public Window {
-	byte widget_id;              ///< The widget that has the pop-up input menu
+	WidgetID widget_id;          ///< The widget that has the pop-up input menu
 	QueryString name_editbox;    ///< Server name editbox.
 
 	NetworkStartServerWindow(WindowDesc *desc) : Window(desc), name_editbox(NETWORK_NAME_LENGTH)
@@ -987,7 +997,7 @@ struct NetworkStartServerWindow : public Window {
 		this->SetFocusedWidget(WID_NSS_GAMENAME);
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_NSS_CONNTYPE_BTN:
@@ -1004,7 +1014,7 @@ struct NetworkStartServerWindow : public Window {
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_NSS_CONNTYPE_BTN:
@@ -1015,7 +1025,7 @@ struct NetworkStartServerWindow : public Window {
 		}
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_NSS_SETPWD:
@@ -1024,7 +1034,7 @@ struct NetworkStartServerWindow : public Window {
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_NSS_CANCEL: // Cancel button
@@ -1102,7 +1112,7 @@ struct NetworkStartServerWindow : public Window {
 		}
 	}
 
-	void OnDropdownSelect(int widget, int index) override
+	void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		switch (widget) {
 			case WID_NSS_CONNTYPE_BTN:
@@ -1667,7 +1677,7 @@ public:
 		this->SetWidgetDisabledState(WID_CL_SERVER_NAME_EDIT, !_network_server);
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_CL_SERVER_VISIBILITY:
@@ -1695,7 +1705,7 @@ public:
 		this->vscroll->SetCapacityFromWidget(this, WID_CL_MATRIX);
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_CL_SERVER_NAME:
@@ -1730,7 +1740,7 @@ public:
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_CL_SERVER_NAME_EDIT:
@@ -1764,7 +1774,7 @@ public:
 		}
 	}
 
-	bool OnTooltip([[maybe_unused]] Point pt, int widget, TooltipCloseCondition close_cond) override
+	bool OnTooltip([[maybe_unused]] Point pt, WidgetID widget, TooltipCloseCondition close_cond) override
 	{
 		switch (widget) {
 			case WID_CL_MATRIX: {
@@ -1803,7 +1813,7 @@ public:
 		return false;
 	}
 
-	void OnDropdownClose(Point pt, int widget, int index, bool instant_close) override
+	void OnDropdownClose(Point pt, WidgetID widget, int index, bool instant_close) override
 	{
 		/* If you close the dropdown outside the list, don't take any action. */
 		if (widget == WID_CL_MATRIX) return;
@@ -1811,7 +1821,7 @@ public:
 		Window::OnDropdownClose(pt, widget, index, instant_close);
 	}
 
-	void OnDropdownSelect(int widget, int index) override
+	void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		switch (widget) {
 			case WID_CL_SERVER_VISIBILITY:
@@ -2021,7 +2031,7 @@ public:
 		}
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_CL_MATRIX: {
@@ -2057,7 +2067,7 @@ public:
 		}
 	}
 
-	void OnMouseOver([[maybe_unused]] Point pt, int widget) override
+	void OnMouseOver([[maybe_unused]] Point pt, WidgetID widget) override
 	{
 		if (widget != WID_CL_MATRIX) {
 			if (this->hover_index != -1) {
@@ -2093,7 +2103,7 @@ struct NetworkJoinStatusWindow : Window {
 		this->InitNested(WN_NETWORK_STATUS_WINDOW_JOIN);
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_NJS_PROGRESS_BAR: {
@@ -2144,7 +2154,7 @@ struct NetworkJoinStatusWindow : Window {
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_NJS_PROGRESS_BAR:
@@ -2170,7 +2180,7 @@ struct NetworkJoinStatusWindow : Window {
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		if (widget == WID_NJS_CANCELOK) { // Disconnect button
 			NetworkDisconnect();
@@ -2259,14 +2269,14 @@ struct NetworkCompanyPasswordWindow : public Window {
 		this->ReInit();
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget == WID_NCP_WARNING) {
 			*size = this->warning_size;
 		}
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (widget != WID_NCP_WARNING) return;
 
@@ -2283,7 +2293,7 @@ struct NetworkCompanyPasswordWindow : public Window {
 		NetworkChangeCompanyPassword(_local_company, this->password_editbox.text.buf);
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_NCP_OK:
@@ -2365,14 +2375,14 @@ struct NetworkAskRelayWindow : public Window {
 		this->Window::Close();
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget == WID_NAR_TEXT) {
 			*size = GetStringBoundingBox(STR_NETWORK_ASK_RELAY_TEXT);
 		}
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (widget == WID_NAR_TEXT) {
 			DrawStringMultiLine(r, STR_NETWORK_ASK_RELAY_TEXT, TC_FROMSTRING, SA_CENTER);
@@ -2387,7 +2397,7 @@ struct NetworkAskRelayWindow : public Window {
 		this->SetDirty();
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_NAR_TEXT:
@@ -2397,7 +2407,7 @@ struct NetworkAskRelayWindow : public Window {
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_NAR_NO:
@@ -2468,14 +2478,14 @@ struct NetworkAskSurveyWindow : public Window {
 		this->InitNested(0);
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		if (widget == WID_NAS_TEXT) {
 			*size = GetStringBoundingBox(STR_NETWORK_ASK_SURVEY_TEXT);
 		}
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (widget == WID_NAS_TEXT) {
 			DrawStringMultiLine(r, STR_NETWORK_ASK_SURVEY_TEXT, TC_BLACK, SA_CENTER);
@@ -2490,7 +2500,7 @@ struct NetworkAskSurveyWindow : public Window {
 		this->SetDirty();
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_NAS_PREVIEW:

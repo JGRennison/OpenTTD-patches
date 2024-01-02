@@ -206,7 +206,7 @@ public:
 		}
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		if (widget == WID_TA_CAPTION) {
 			SetDParam(0, this->window_number);
@@ -239,7 +239,7 @@ public:
 		}
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_TA_ACTION_INFO:
@@ -346,7 +346,7 @@ public:
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_TA_ACTION_INFO: {
@@ -378,7 +378,7 @@ public:
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_TA_ZONE_BUTTON: {
@@ -473,7 +473,7 @@ public:
 	}
 
 
-	virtual void OnDropdownSelect(int widget, int index) override
+	virtual void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		switch (widget) {
 			case WID_TA_SETTING: {
@@ -541,7 +541,7 @@ public:
 		this->Window::Close();
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		if (widget == WID_TV_CAPTION) SetDParam(0, this->town->index);
 	}
@@ -556,7 +556,7 @@ public:
 		this->DrawWidgets();
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (widget != WID_TV_INFO) return;
 
@@ -649,7 +649,7 @@ public:
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_TV_CENTER_VIEW: // scroll to location
@@ -684,7 +684,7 @@ public:
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_TV_INFO:
@@ -976,7 +976,7 @@ public:
 		this->townname_editbox.cancel_button = QueryString::ACTION_CLEAR;
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_TD_WORLD_POPULATION:
@@ -1001,7 +1001,7 @@ public:
 		return t->larger_town ? STR_TOWN_DIRECTORY_CITY : STR_TOWN_DIRECTORY_TOWN;
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_TD_SORT_ORDER:
@@ -1048,7 +1048,7 @@ public:
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_TD_SORT_ORDER: {
@@ -1102,7 +1102,7 @@ public:
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_TD_SORT_ORDER: // Click on sort order button
@@ -1139,7 +1139,7 @@ public:
 		}
 	}
 
-	void OnDropdownSelect(int widget, int index) override
+	void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		if (widget != WID_TD_SORT_CRITERIA) return;
 
@@ -1167,7 +1167,7 @@ public:
 		this->vscroll->SetCapacityFromWidget(this, WID_TD_LIST);
 	}
 
-	void OnEditboxChanged(int wid) override
+	void OnEditboxChanged(WidgetID wid) override
 	{
 		if (wid == WID_TD_FILTER) {
 			this->string_filter.SetFilterTerm(this->townname_editbox.text.buf);
@@ -1363,13 +1363,13 @@ public:
 			if (_settings_game.economy.found_town != TF_CUSTOM_LAYOUT) town_layout = _settings_game.economy.town_layout;
 		}
 
-		for (int i = WID_TF_SIZE_SMALL; i <= WID_TF_SIZE_RANDOM; i++) {
+		for (WidgetID i = WID_TF_SIZE_SMALL; i <= WID_TF_SIZE_RANDOM; i++) {
 			this->SetWidgetLoweredState(i, i == WID_TF_SIZE_SMALL + this->town_size);
 		}
 
 		this->SetWidgetLoweredState(WID_TF_CITY, this->city);
 
-		for (int i = WID_TF_LAYOUT_ORIGINAL; i <= WID_TF_LAYOUT_RANDOM; i++) {
+		for (WidgetID i = WID_TF_LAYOUT_ORIGINAL; i <= WID_TF_LAYOUT_RANDOM; i++) {
 			this->SetWidgetLoweredState(i, i == WID_TF_LAYOUT_ORIGINAL + this->town_layout);
 		}
 
@@ -1396,7 +1396,7 @@ public:
 		if (success && !_shift_pressed) this->RandomTownName();
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_TF_NEW_TOWN:
@@ -1731,7 +1731,7 @@ public:
 		}
 	}
 
-	virtual void SetStringParameters(int widget) const override
+	virtual void SetStringParameters(WidgetID widget) const override
 	{
 		if (widget == WID_HP_CAPTION) {
 			if (this->house_list.NumHouseSets() == 1) SetDParamStr(0, this->house_list.GetNameOfHouseSet(0));
@@ -1844,7 +1844,7 @@ public:
 		}
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_HP_HOUSE_SETS: {
@@ -1920,9 +1920,9 @@ public:
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const override
+	virtual void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
-		switch (GB(widget, 0, 16)) {
+		switch (widget) {
 			case WID_HP_HOUSE_SETS: {
 				int y = r.top + WidgetDimensions::scaled.matrix.top;
 				for (uint i = 0; i < this->house_list.NumHouseSets(); i++) {
@@ -1940,7 +1940,7 @@ public:
 				break;
 
 			case WID_HP_HOUSE_SELECT: {
-				HouseID house = this->house_list.GetHouseAtOffset(this->house_set, GB(widget, 16, 16));
+				HouseID house = this->house_list.GetHouseAtOffset(this->house_set, this->GetWidget<NWidgetBase>(widget)->GetParentWidget<NWidgetMatrix>()->GetCurrentElement());
 				int lowered = (house == _cur_house) ? 1 : 0;
 				DrawHouseImage(house,
 						r.left  + WidgetDimensions::scaled.matrix.left  + lowered, r.top    + WidgetDimensions::scaled.matrix.top    + lowered,
@@ -1955,9 +1955,9 @@ public:
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count) override
+	virtual void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
-		switch (GB(widget, 0, 16)) {
+		switch (widget) {
 			case WID_HP_HOUSE_SETS: {
 				uint index = (uint)(pt.y - this->GetWidget<NWidgetBase>(widget)->pos_y) / this->line_height;
 				if (index < this->house_list.NumHouseSets() && index != this->house_set) this->SelectOtherHouse(index, 0);
@@ -1965,7 +1965,7 @@ public:
 			}
 
 			case WID_HP_HOUSE_SELECT:
-				this->SelectOtherHouse(this->house_set, GB(widget, 16, 16));
+				this->SelectOtherHouse(this->house_set, this->GetWidget<NWidgetBase>(widget)->GetParentWidget<NWidgetMatrix>()->GetCurrentElement());
 				break;
 		}
 	}
@@ -2076,7 +2076,7 @@ struct SelectTownWindow : Window {
 		this->FinishInitNested();
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		if (widget != WID_ST_PANEL) return;
 
@@ -2094,7 +2094,7 @@ struct SelectTownWindow : Window {
 		*size = d;
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (widget != WID_ST_PANEL) return;
 
@@ -2108,7 +2108,7 @@ struct SelectTownWindow : Window {
 		}
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
 		if (widget != WID_ST_PANEL) return;
 

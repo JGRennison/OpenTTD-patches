@@ -217,7 +217,7 @@ public:
 		UpdateButtonState();
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count) override
+	virtual void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
 		switch(widget) {
 			case TCW_NEW_TMPL_PANEL: {
@@ -286,7 +286,7 @@ public:
 		this->SetDirty();
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const override
+	virtual void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch(widget) {
 			case TCW_NEW_TMPL_PANEL: {
@@ -391,7 +391,7 @@ public:
 		}
 	}
 
-	virtual bool OnRightClick(Point pt, int widget) override
+	virtual bool OnRightClick(Point pt, WidgetID widget) override
 	{
 		if (widget != TCW_NEW_TMPL_PANEL) return false;
 
@@ -443,7 +443,7 @@ public:
 		return true;
 	}
 
-	virtual void OnDragDrop(Point pt, int widget) override
+	virtual void OnDragDrop(Point pt, WidgetID widget) override
 	{
 		switch (widget) {
 			case TCW_NEW_TMPL_PANEL: {
@@ -504,7 +504,7 @@ public:
 		this->SetDirty();
 	}
 
-	virtual void OnMouseDrag(Point pt, int widget) override
+	virtual void OnMouseDrag(Point pt, WidgetID widget) override
 	{
 		if (this->sel == INVALID_VEHICLE) return;
 

@@ -108,7 +108,7 @@ struct PlansWindow : Window {
 		this->Window::Close();
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count) override
+	virtual void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_PLN_NEW:
@@ -222,7 +222,7 @@ struct PlansWindow : Window {
 		}
 	}
 
-	virtual void OnDropdownSelect(int widget, int index) override
+	virtual void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		switch (widget) {
 			case WID_PLN_COLOUR:
@@ -262,7 +262,7 @@ struct PlansWindow : Window {
 		this->DrawWidgets();
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const override
+	virtual void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_PLN_LIST: {
@@ -316,7 +316,7 @@ struct PlansWindow : Window {
 		}
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_PLN_COLOUR:
@@ -330,7 +330,7 @@ struct PlansWindow : Window {
 		this->vscroll->SetCapacityFromWidget(this, WID_PLN_LIST, WidgetDimensions::scaled.framerect.Vertical());
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_PLN_LIST:

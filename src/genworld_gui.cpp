@@ -438,7 +438,7 @@ static const StringID _variety[]     = {STR_VARIETY_NONE, STR_VARIETY_VERY_LOW, 
 static_assert(lengthof(_num_inds) == ID_END + 1);
 
 struct GenerateLandscapeWindow : public Window {
-	uint widget_id;
+	WidgetID widget_id;
 	uint x;
 	uint y;
 	std::string name;
@@ -479,7 +479,7 @@ struct GenerateLandscapeWindow : public Window {
 	}
 
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_GL_START_DATE_TEXT:      SetDParam(0, ConvertYMDToDate(_settings_newgame.game_creation.starting_year, 0, 1)); break;
@@ -643,7 +643,7 @@ struct GenerateLandscapeWindow : public Window {
 		this->SetDirty();
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		Dimension d{0, (uint)GetCharacterHeight(FS_NORMAL)};
 		const StringID *strs = nullptr;
@@ -752,7 +752,7 @@ struct GenerateLandscapeWindow : public Window {
 		*size = maxdim(*size, d);
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_GL_TEMPERATE:
@@ -1002,7 +1002,7 @@ struct GenerateLandscapeWindow : public Window {
 		}
 	}
 
-	void OnDropdownSelect(int widget, int index) override
+	void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		switch (widget) {
 			case WID_GL_MAPSIZE_X_PULLDOWN:
@@ -1217,7 +1217,7 @@ void StartNewGameWithoutGUI(uint32 seed)
 
 struct CreateScenarioWindow : public Window
 {
-	uint widget_id;
+	WidgetID widget_id;
 
 	void SetDropDownColor()
 	{
@@ -1234,7 +1234,7 @@ struct CreateScenarioWindow : public Window
 		SetDropDownColor();
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_CS_START_DATE_TEXT:
@@ -1270,7 +1270,7 @@ struct CreateScenarioWindow : public Window
 		this->DrawWidgets();
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		StringID str = STR_JUST_INT;
 		switch (widget) {
@@ -1303,7 +1303,7 @@ struct CreateScenarioWindow : public Window
 		*size = maxdim(*size, d);
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_CS_TEMPERATE:
@@ -1375,7 +1375,7 @@ struct CreateScenarioWindow : public Window
 		this->RaiseWidgetsWhenLowered(WID_CS_START_DATE_DOWN, WID_CS_START_DATE_UP, WID_CS_FLAT_LAND_HEIGHT_DOWN, WID_CS_FLAT_LAND_HEIGHT_UP);
 	}
 
-	void OnDropdownSelect(int widget, int index) override
+	void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		switch (widget) {
 			case WID_CS_MAPSIZE_X_PULLDOWN: _settings_newgame.game_creation.map_x = index; break;
@@ -1544,7 +1544,7 @@ struct GenerateProgressWindow : public Window {
 		this->InitNested();
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_GP_ABORT:
@@ -1559,7 +1559,7 @@ struct GenerateProgressWindow : public Window {
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_GP_PROGRESS_BAR: {
@@ -1580,7 +1580,7 @@ struct GenerateProgressWindow : public Window {
 		}
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_GP_PROGRESS_BAR: {

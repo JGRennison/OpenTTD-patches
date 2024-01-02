@@ -433,14 +433,14 @@ struct NewGRFInspectWindow : Window {
 		this->OnInvalidateData(0, true);
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		if (widget != WID_NGRFI_CAPTION) return;
 
 		GetFeatureHelper(this->window_number)->SetStringParameters(this->GetFeatureIndex());
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_NGRFI_VEH_CHAIN: {
@@ -486,7 +486,7 @@ struct NewGRFInspectWindow : Window {
 		::DrawString(r.Shrink(WidgetDimensions::scaled.frametext).Shrink(0, offset * this->resize.step_height, 0, 0), buf, TC_BLACK);
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_NGRFI_VEH_CHAIN: {
@@ -877,7 +877,7 @@ struct NewGRFInspectWindow : Window {
 		this->SelectTagArrayItem(this->marked_groups, group);
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_NGRFI_PARENT: {
@@ -1059,7 +1059,7 @@ struct NewGRFInspectWindow : Window {
 		}
 	}
 
-	void OnDropdownSelect(int widget, int index) override
+	void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		if (widget == WID_NGRFI_MAIN_OPTIONS) {
 			GetFeatureHelper(this->window_number)->OnOptionsDropdownSelect(this->GetFeatureIndex(), index);
@@ -1146,7 +1146,7 @@ struct NewGRFInspectWindow : Window {
 		this->redraw_scrollbar = false;
 	}
 
-	virtual bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
+	virtual bool OnTooltip(Point pt, WidgetID widget, TooltipCloseCondition close_cond) override
 	{
 		if (widget == WID_NGRFI_MAINPANEL && this->sprite_dump) {
 			_temp_special_strings[0] = GetString(this->click_to_mark_mode ? STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_MARK : STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT);
@@ -1418,7 +1418,7 @@ struct SpriteAlignerWindow : Window {
 		this->InvalidateData(0, true);
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		const Sprite *spr = GetSprite(this->current_sprite, SpriteType::Normal, ZoomMask(ZOOM_LVL_GUI));
 		switch (widget) {
@@ -1452,7 +1452,7 @@ struct SpriteAlignerWindow : Window {
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_SA_SPRITE:
@@ -1470,7 +1470,7 @@ struct SpriteAlignerWindow : Window {
 		}
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_SA_SPRITE: {
@@ -1522,7 +1522,7 @@ struct SpriteAlignerWindow : Window {
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_SA_PREVIOUS:

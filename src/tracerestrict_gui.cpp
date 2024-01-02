@@ -1809,7 +1809,7 @@ public:
 		this->Window::Close();
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count) override
+	virtual void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
 		switch (widget) {
 			case TR_WIDGET_INSTRUCTION_LIST: {
@@ -2282,7 +2282,7 @@ public:
 		TraceRestrictDoCommandP(tile, track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 	}
 
-	virtual void OnDropdownSelect(int widget, int index) override
+	virtual void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		TraceRestrictItem item = GetSelected();
 		if (item == 0 || index < 0 || this->selected_instruction < 1) {
@@ -2384,7 +2384,7 @@ public:
 
 	virtual void OnPlaceObject(Point pt, TileIndex tile) override
 	{
-		int widget = this->current_placement_widget;
+		WidgetID widget = this->current_placement_widget;
 		if (widget != TR_WIDGET_SHARE_ONTO) {
 			this->ResetObjectToPlaceAction();
 
@@ -2431,7 +2431,7 @@ public:
 	/**
 	 * Common OnPlaceObject handler for program management actions which involve clicking on a signal
 	 */
-	void OnPlaceObjectSignal(Point pt, TileIndex source_tile, int widget, int error_message)
+	void OnPlaceObjectSignal(Point pt, TileIndex source_tile, WidgetID widget, int error_message)
 	{
 		if (!IsPlainRailTile(source_tile) && !IsRailTunnelBridgeTile(source_tile)) {
 			ShowErrorMessage(error_message, STR_ERROR_THERE_IS_NO_RAILROAD_TRACK, WL_INFO);
@@ -2504,7 +2504,7 @@ public:
 	/**
 	 * Common OnPlaceObject handler for instruction value modification actions which involve selecting an order target
 	 */
-	void OnPlaceObjectDestination(Point pt, TileIndex tile, int widget, int error_message)
+	void OnPlaceObjectDestination(Point pt, TileIndex tile, WidgetID widget, int error_message)
 	{
 		TraceRestrictItem item = GetSelected();
 		if (GetTraceRestrictTypeProperties(item).value_type != TRVT_ORDER) return;
@@ -2543,7 +2543,7 @@ public:
 	/**
 	 * Common OnPlaceObject handler for instruction value modification actions which involve selecting a signal tile value
 	 */
-	void OnPlaceObjectSignalTileValue(Point pt, TileIndex tile, int widget, int error_message)
+	void OnPlaceObjectSignalTileValue(Point pt, TileIndex tile, WidgetID widget, int error_message)
 	{
 		TraceRestrictItem item = GetSelected();
 		TraceRestrictValueType val_type = GetTraceRestrictTypeProperties(item).value_type;
@@ -2576,7 +2576,7 @@ public:
 	/**
 	 * Common OnPlaceObject handler for instruction value modification actions which involve selecting a tile value
 	 */
-	void OnPlaceObjectTileValue(Point pt, TileIndex tile, int widget, int error_message)
+	void OnPlaceObjectTileValue(Point pt, TileIndex tile, WidgetID widget, int error_message)
 	{
 		TraceRestrictItem item = GetSelected();
 		TraceRestrictValueType val_type = GetTraceRestrictTypeProperties(item).value_type;
@@ -2591,7 +2591,7 @@ public:
 		this->ResetObjectToPlaceAction();
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case TR_WIDGET_INSTRUCTION_LIST:
@@ -2616,7 +2616,7 @@ public:
 		this->DrawWidgets();
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const override
+	virtual void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (widget != TR_WIDGET_INSTRUCTION_LIST) return;
 
@@ -2659,7 +2659,7 @@ public:
 		}
 	}
 
-	virtual void SetStringParameters(int widget) const override
+	virtual void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case TR_WIDGET_VALUE_INT: {
@@ -2725,7 +2725,7 @@ public:
 		}
 	}
 
-	bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
+	bool OnTooltip(Point pt, WidgetID widget, TooltipCloseCondition close_cond) override
 	{
 		switch (widget) {
 			case TR_WIDGET_SHARE: {
@@ -2929,7 +2929,7 @@ private:
 
 	void UpdatePlaceObjectPlanes()
 	{
-		int widget = this->current_placement_widget;
+		WidgetID widget = this->current_placement_widget;
 
 		if (!(widget == TR_WIDGET_COPY || widget == TR_WIDGET_COPY_APPEND)) {
 			NWidgetStacked *copy_sel = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_COPY);
@@ -3451,7 +3451,7 @@ private:
 	/**
 	 * Helper function to set or unset a SetObjectToPlaceWnd, for the given widget and cursor type
 	 */
-	void SetObjectToPlaceAction(int widget, CursorID cursor)
+	void SetObjectToPlaceAction(WidgetID widget, CursorID cursor)
 	{
 		if (this->current_placement_widget != -1 && widget != this->current_placement_widget) {
 			ResetObjectToPlace();
@@ -3880,7 +3880,7 @@ public:
 		this->Window::Close();
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_TRSL_LIST_SLOTS: {
@@ -3952,7 +3952,7 @@ public:
 		this->SetDirty();
 	}
 
-	virtual void SetStringParameters(int widget) const override
+	virtual void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_TRSL_FILTER_BY_CARGO:
@@ -4000,7 +4000,7 @@ public:
 		this->DrawWidgets();
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const override
+	virtual void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_TRSL_ALL_VEHICLES:
@@ -4041,7 +4041,7 @@ public:
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count) override
+	virtual void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_TRSL_SORT_BY_ORDER: // Flip sorting method ascending/descending
@@ -4116,7 +4116,7 @@ public:
 		}
 	}
 
-	void OnDragDrop_Vehicle(Point pt, int widget)
+	void OnDragDrop_Vehicle(Point pt, WidgetID widget)
 	{
 		switch (widget) {
 			case WID_TRSL_ALL_VEHICLES: // All vehicles
@@ -4165,7 +4165,7 @@ public:
 		}
 	}
 
-	virtual void OnDragDrop(Point pt, int widget) override
+	virtual void OnDragDrop(Point pt, WidgetID widget) override
 	{
 		if (this->vehicle_sel != INVALID_VEHICLE) OnDragDrop_Vehicle(pt, widget);
 
@@ -4192,7 +4192,7 @@ public:
 		this->vscroll->SetCapacityFromWidget(this, WID_TRSL_LIST_VEHICLE);
 	}
 
-	virtual void OnDropdownSelect(int widget, int index) override
+	virtual void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		switch (widget) {
 			case WID_TRSL_SORT_BY_DROPDOWN:
@@ -4226,7 +4226,7 @@ public:
 		this->SetWidgetDirty(WID_TRSL_LIST_VEHICLE);
 	}
 
-	virtual void OnMouseDrag(Point pt, int widget) override
+	virtual void OnMouseDrag(Point pt, WidgetID widget) override
 	{
 		if (this->vehicle_sel == INVALID_VEHICLE) return;
 
@@ -4471,7 +4471,7 @@ public:
 		this->owner = this->ctr_company;
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_TRCL_LIST_COUNTERS: {
@@ -4534,7 +4534,7 @@ public:
 		this->DrawWidgets();
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const override
+	virtual void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_TRCL_LIST_COUNTERS: {
@@ -4564,7 +4564,7 @@ public:
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count) override
+	virtual void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_TRCL_LIST_COUNTERS: { // Matrix

@@ -249,7 +249,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		return this->vehicle->orders->GetDispatchScheduleByIndex(this->schedule_index);
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_SCHDISPATCH_MATRIX: {
@@ -347,7 +347,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		this->DrawWidgets();
 	}
 
-	virtual void SetStringParameters(int widget) const override
+	virtual void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_SCHDISPATCH_CAPTION:
@@ -374,7 +374,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		}
 	}
 
-	virtual bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
+	virtual bool OnTooltip(Point pt, WidgetID widget, TooltipCloseCondition close_cond) override
 	{
 		switch (widget) {
 			case WID_SCHDISPATCH_ADD: {
@@ -440,7 +440,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		}
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const override
+	virtual void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		const Vehicle *v = this->vehicle;
 
@@ -658,7 +658,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		return 1;
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count) override
+	virtual void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
 		const Vehicle *v = this->vehicle;
 
@@ -809,7 +809,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		}
 	}
 
-	void OnDropdownSelect(int widget, int index) override
+	void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		switch (widget) {
 			case WID_SCHDISPATCH_MANAGEMENT: {
@@ -1092,7 +1092,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 		return pt;
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		Dimension d = {0, 0};
 		switch (widget) {
@@ -1130,7 +1130,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 		*size = d;
 	}
 
-	virtual void SetStringParameters(int widget) const override
+	virtual void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_SCHDISPATCH_ADD_SLOT_START_HOUR:   SetDParam(0, start.ClockHour()); break;
@@ -1142,7 +1142,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count) override
+	virtual void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
 		auto handle_hours_dropdown = [&](ClockFaceMinutes current) {
 			DropDownList list;
@@ -1189,7 +1189,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 		}
 	}
 
-	virtual void OnDropdownSelect(int widget, int index) override
+	virtual void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		switch (widget) {
 			case WID_SCHDISPATCH_ADD_SLOT_START_HOUR:

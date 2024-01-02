@@ -116,7 +116,7 @@ protected:
 	virtual void DrawDeparturesListItems(const Rect &r) const;
 	void DeleteDeparturesList(DepartureList* list);
 
-	void ToggleCargoFilter(int widget, bool &flag)
+	void ToggleCargoFilter(WidgetID widget, bool &flag)
 	{
 		flag = !flag;
 		this->SetWidgetLoweredState(widget, flag);
@@ -302,7 +302,7 @@ public:
 		}
 	}
 
-	virtual void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_DB_LIST:
@@ -313,7 +313,7 @@ public:
 		}
 	}
 
-	virtual void SetStringParameters(int widget) const override
+	virtual void SetStringParameters(WidgetID widget) const override
 	{
 		if (widget == WID_DB_CAPTION) {
 			const Station *st = Station::Get(this->station);
@@ -321,7 +321,7 @@ public:
 		}
 	}
 
-	virtual bool OnTooltip(Point pt, int widget, TooltipCloseCondition close_cond) override
+	virtual bool OnTooltip(Point pt, WidgetID widget, TooltipCloseCondition close_cond) override
 	{
 		switch (widget) {
 			case WID_DB_SHOW_TRAINS:
@@ -337,7 +337,7 @@ public:
 		}
 	}
 
-	virtual void OnClick(Point pt, int widget, int click_count) override
+	virtual void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_DB_SHOW_TRAINS:   // Show trains to this station
@@ -532,7 +532,7 @@ public:
 		this->DrawWidgets();
 	}
 
-	virtual void DrawWidget(const Rect &r, int widget) const override
+	virtual void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_DB_LIST:

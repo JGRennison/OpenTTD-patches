@@ -221,7 +221,7 @@ struct NewGRFParametersWindow : public Window {
 		return this->HasParameterInfo(nr) ? this->grf_config->param_info[nr].value() : GetDummyParameterInfo(nr);
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_NP_NUMPAR_DEC:
@@ -264,7 +264,7 @@ struct NewGRFParametersWindow : public Window {
 		}
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_NP_NUMPAR:
@@ -273,7 +273,7 @@ struct NewGRFParametersWindow : public Window {
 		}
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (widget == WID_NP_DESCRIPTION) {
 			if (!this->HasParameterInfo(this->clicked_row)) return;
@@ -342,7 +342,7 @@ struct NewGRFParametersWindow : public Window {
 		this->DrawWidgets();
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_NP_NUMPAR_DEC:
@@ -464,7 +464,7 @@ struct NewGRFParametersWindow : public Window {
 		this->SetDirty();
 	}
 
-	void OnDropdownSelect(int widget, int index) override
+	void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		if (widget != WID_NP_SETTING_DROPDOWN) return;
 		assert(this->clicked_dropdown);
@@ -473,7 +473,7 @@ struct NewGRFParametersWindow : public Window {
 		this->SetDirty();
 	}
 
-	void OnDropdownClose(Point, int widget, int, bool) override
+	void OnDropdownClose(Point, WidgetID widget, int, bool) override
 	{
 		if (widget != WID_NP_SETTING_DROPDOWN) return;
 		/* We cannot raise the dropdown button just yet. OnClick needs some hint, whether
@@ -577,7 +577,7 @@ struct NewGRFTextfileWindow : public TextfileWindow {
 		this->LoadTextfile(textfile, NEWGRF_DIR);
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		if (widget == WID_TF_CAPTION) {
 			SetDParam(0, STR_CONTENT_TYPE_NEWGRF);
@@ -756,7 +756,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_NS_FILE_LIST:
@@ -814,7 +814,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		this->vscroll2->SetCapacityFromWidget(this, WID_NS_AVAIL_LIST);
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_NS_PRESET_LIST:
@@ -863,7 +863,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		return pal;
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_NS_FILE_LIST: {
@@ -955,7 +955,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		if (widget >= WID_NS_NEWGRF_TEXTFILE && widget < WID_NS_NEWGRF_TEXTFILE + TFT_CONTENT_END) {
 			if (this->active_sel == nullptr && this->avail_sel == nullptr) return;
@@ -1197,7 +1197,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		this->CloseChildWindows(WC_QUERY_STRING); // Remove the parameter query window
 	}
 
-	void OnDropdownSelect(int widget, int index) override
+	void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		if (widget != WID_NS_PRESET_LIST) return;
 		if (!this->editable) return;
@@ -1383,7 +1383,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		return ES_HANDLED;
 	}
 
-	void OnEditboxChanged(int widget) override
+	void OnEditboxChanged(WidgetID widget) override
 	{
 		if (!this->editable) return;
 
@@ -1395,7 +1395,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		}
 	}
 
-	void OnDragDrop(Point pt, int widget) override
+	void OnDragDrop(Point pt, WidgetID widget) override
 	{
 		if (!this->editable) return;
 
@@ -1443,7 +1443,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		}
 	}
 
-	void OnMouseDrag(Point pt, int widget) override
+	void OnMouseDrag(Point pt, WidgetID widget) override
 	{
 		if (!this->editable) return;
 
@@ -1622,27 +1622,22 @@ NewGRFWindow::GUIGRFConfigList::FilterFunction * const NewGRFWindow::filter_func
  * - two column mode, put the #acs and the #avs underneath each other and the #inf next to it, or
  * - three column mode, put the #avs, #acs, and #inf each in its own column.
  */
-class NWidgetNewGRFDisplay : public NWidgetContainer {
+class NWidgetNewGRFDisplay : public NWidgetBase {
 public:
 	static const uint MAX_EXTRA_INFO_WIDTH;    ///< Maximal additional width given to the panel.
 	static const uint MIN_EXTRA_FOR_3_COLUMNS; ///< Minimal additional width needed before switching to 3 columns.
 
-	NWidgetBase *avs; ///< Widget with the available grfs list and buttons.
-	NWidgetBase *acs; ///< Widget with the active grfs list and buttons.
-	NWidgetBase *inf; ///< Info panel.
+	std::unique_ptr<NWidgetBase> avs; ///< Widget with the available grfs list and buttons.
+	std::unique_ptr<NWidgetBase> acs; ///< Widget with the active grfs list and buttons.
+	std::unique_ptr<NWidgetBase> inf; ///< Info panel.
 	bool editable;    ///< Editable status of the parent NewGRF window (if \c false, drop all widgets that make the window editable).
 
-	NWidgetNewGRFDisplay(NWidgetBase *avs, NWidgetBase *acs, NWidgetBase *inf) : NWidgetContainer(NWID_HORIZONTAL)
+	NWidgetNewGRFDisplay(std::unique_ptr<NWidgetBase> &&avs, std::unique_ptr<NWidgetBase> &&acs, std::unique_ptr<NWidgetBase> &&inf) : NWidgetBase(NWID_CUSTOM)
+		, avs(std::move(avs))
+		, acs(std::move(acs))
+		, inf(std::move(inf))
+		, editable(true) // Temporary setting, 'real' value is set in SetupSmallestSize().
 	{
-		this->avs = avs;
-		this->acs = acs;
-		this->inf = inf;
-
-		this->Add(this->avs);
-		this->Add(this->acs);
-		this->Add(this->inf);
-
-		this->editable = true; // Temporary setting, 'real' value is set in SetupSmallestSize().
 	}
 
 	void SetupSmallestSize(Window *w) override
@@ -1805,6 +1800,13 @@ public:
 				this->inf->AssignSizePosition(sizing, x, y + this->inf->padding.top, inf_width, inf_height, rtl);
 			}
 		}
+	}
+
+	void FillWidgetLookup(WidgetLookup &widget_lookup) override
+	{
+		this->avs->FillWidgetLookup(widget_lookup);
+		this->acs->FillWidgetLookup(widget_lookup);
+		this->inf->FillWidgetLookup(widget_lookup);
 	}
 
 	NWidgetCore *GetWidgetFromPos(int x, int y) override
@@ -1970,18 +1972,13 @@ static const NWidgetPart _nested_newgrf_infopanel_widgets[] = {
 };
 
 /** Construct nested container widget for managing the lists and the info panel of the NewGRF GUI. */
-NWidgetBase* NewGRFDisplay(int *biggest_index)
+std::unique_ptr<NWidgetBase> NewGRFDisplay()
 {
-	NWidgetBase *avs = MakeNWidgets(std::begin(_nested_newgrf_availables_widgets), std::end(_nested_newgrf_availables_widgets), biggest_index, nullptr);
+	std::unique_ptr<NWidgetBase> avs = MakeNWidgets(std::begin(_nested_newgrf_availables_widgets), std::end(_nested_newgrf_availables_widgets), nullptr);
+	std::unique_ptr<NWidgetBase> acs = MakeNWidgets(std::begin(_nested_newgrf_actives_widgets), std::end(_nested_newgrf_actives_widgets), nullptr);
+	std::unique_ptr<NWidgetBase> inf = MakeNWidgets(std::begin(_nested_newgrf_infopanel_widgets), std::end(_nested_newgrf_infopanel_widgets), nullptr);
 
-	int biggest2;
-	NWidgetBase *acs = MakeNWidgets(std::begin(_nested_newgrf_actives_widgets), std::end(_nested_newgrf_actives_widgets), &biggest2, nullptr);
-	*biggest_index = std::max(*biggest_index, biggest2);
-
-	NWidgetBase *inf = MakeNWidgets(std::begin(_nested_newgrf_infopanel_widgets), std::end(_nested_newgrf_infopanel_widgets), &biggest2, nullptr);
-	*biggest_index = std::max(*biggest_index, biggest2);
-
-	return new NWidgetNewGRFDisplay(avs, acs, inf);
+	return std::make_unique<NWidgetNewGRFDisplay>(std::move(avs), std::move(acs), std::move(inf));
 }
 
 /* Widget definition of the manage newgrfs window */
@@ -2137,7 +2134,7 @@ struct SavePresetWindow : public Window {
 		if (initial_text != nullptr) this->presetname_editbox.text.Assign(initial_text);
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_SVP_PRESET_LIST: {
@@ -2154,7 +2151,7 @@ struct SavePresetWindow : public Window {
 		}
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_SVP_PRESET_LIST: {
@@ -2178,7 +2175,7 @@ struct SavePresetWindow : public Window {
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_SVP_PRESET_LIST: {
@@ -2252,7 +2249,7 @@ struct ScanProgressWindow : public Window {
 		this->InitNested(1);
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_SP_PROGRESS_BAR: {
@@ -2275,7 +2272,7 @@ struct ScanProgressWindow : public Window {
 		}
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_SP_PROGRESS_BAR: {

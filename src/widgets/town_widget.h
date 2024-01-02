@@ -11,7 +11,7 @@
 #define WIDGETS_TOWN_WIDGET_H
 
 /** Widgets of the #TownDirectoryWindow class. */
-enum TownDirectoryWidgets {
+enum TownDirectoryWidgets : WidgetID {
 	WID_TD_SORT_ORDER,       ///< Direction of sort dropdown.
 	WID_TD_SORT_CRITERIA,    ///< Criteria of sort dropdown.
 	WID_TD_FILTER,           ///< Filter of name.
@@ -21,7 +21,7 @@ enum TownDirectoryWidgets {
 };
 
 /** Widgets of the #TownAuthorityWindow class. */
-enum TownAuthorityWidgets {
+enum TownAuthorityWidgets : WidgetID {
 	WID_TA_CAPTION,      ///< Caption of window.
 	WID_TA_ZONE_BUTTON,  ///< Turn on/off showing local authority zone.
 	WID_TA_RATING_INFO,  ///< Overview with ratings for each company.
@@ -34,7 +34,7 @@ enum TownAuthorityWidgets {
 };
 
 /** Widgets of the #TownViewWindow class. */
-enum TownViewWidgets {
+enum TownViewWidgets : WidgetID {
 	WID_TV_CAPTION,        ///< Caption of window.
 	WID_TV_VIEWPORT,       ///< View of the center of the town.
 	WID_TV_INFO,           ///< General information about the town.
@@ -47,7 +47,7 @@ enum TownViewWidgets {
 };
 
 /** Widgets of the #FoundTownWindow class. */
-enum TownFoundingWidgets {
+enum TownFoundingWidgets : WidgetID {
 	WID_TF_NEW_TOWN,          ///< Create a new town.
 	WID_TF_RANDOM_TOWN,       ///< Randomly place a town.
 	WID_TF_MANY_RANDOM_TOWNS, ///< Randomly place many towns.
@@ -67,7 +67,7 @@ enum TownFoundingWidgets {
 };
 
 /** Widgets of the #HousePickerWindow class. */
-enum HousePickerWidgets {
+enum HousePickerWidgets : WidgetID {
 	WID_HP_CAPTION,
 	WID_HP_MAIN_PANEL_SEL,      ///< Selection widget to show/hide the main panel.
 	WID_HP_HOUSE_SETS_SEL,      ///< Selection widget to show/hide the list of house sets.
@@ -88,7 +88,7 @@ enum HousePickerWidgets {
 };
 
 /** Widgets of the #SelectTownWindow class. */
-enum SelectTownWidgets {
+enum SelectTownWidgets : WidgetID {
 	WID_ST_CAPTION,   ///< Caption of the window.
 	WID_ST_PANEL,     ///< Main panel.
 	WID_ST_SCROLLBAR, ///< Scrollbar of the panel.

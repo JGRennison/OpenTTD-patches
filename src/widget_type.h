@@ -17,6 +17,7 @@
 #include "gfx_func.h"
 #include "gfx_type.h"
 #include "window_type.h"
+#include "3rdparty/cpp-btree/btree_map.h"
 
 #include <vector>
 
@@ -50,7 +51,7 @@ enum ResizeWidgetValues {
  */
 enum WidgetType : uint8 {
 	/* Window widget types. */
-	WWT_EMPTY,      ///< Empty widget, place holder to reserve space in widget array
+	WWT_EMPTY,      ///< Empty widget, place holder to reserve space in widget tree.
 
 	WWT_PANEL,      ///< Simple depressed panel
 	WWT_INSET,      ///< Pressed (inset) panel, most commonly used as combo box _text_ area
@@ -87,6 +88,7 @@ enum WidgetType : uint8 {
 	NWID_BUTTON_DROPDOWN, ///< Button with a drop-down.
 	NWID_HSCROLLBAR,      ///< Horizontal scrollbar
 	NWID_VSCROLLBAR,      ///< Vertical scrollbar
+	NWID_CUSTOM,          ///< General Custom widget.
 
 	/* Nested widget part types. */
 	WPT_RESIZE,       ///< Widget part for specifying resizing.
@@ -133,6 +135,9 @@ enum SizingType {
 class NWidgetCore;
 class Scrollbar;
 
+/** Lookup between widget IDs and NWidget objects. */
+using WidgetLookup = btree::btree_map<WidgetID, class NWidgetBase *>;
+
 /**
  * Baseclass for nested widgets.
  * @invariant After initialization, \f$current\_x = smallest\_x + n * resize\_x, for n \geq 0\f$.
@@ -147,10 +152,38 @@ public:
 	virtual void SetupSmallestSize(Window *w) = 0;
 	virtual void AssignSizePosition(SizingType sizing, int x, int y, uint given_width, uint given_height, bool rtl) = 0;
 
-	virtual void FillNestedArray(NWidgetBase **array, uint length) = 0;
+	virtual void FillWidgetLookup(WidgetLookup &widget_lookup) = 0;
 
 	virtual NWidgetCore *GetWidgetFromPos(int x, int y) = 0;
 	virtual NWidgetBase *GetWidgetOfType(WidgetType tp);
+
+	/**
+	 * Get parent widget of type NWID.
+	 * @tparam NWID Type of the nested widget.
+	 * @returns Parent widget, or nullptr if no widget of the specified type is found.
+	 */
+	template <class NWID>
+	NWID *GetParentWidget()
+	{
+		for (NWidgetBase *nwid_parent = this->parent; nwid_parent != nullptr; nwid_parent = nwid_parent->parent) {
+			if (NWID *nwid = dynamic_cast<NWID *>(nwid_parent); nwid != nullptr) return nwid;
+		}
+		return nullptr;
+	}
+
+	/**
+	 * Get parent widget of type NWID.
+	 * @tparam NWID Type of the nested widget.
+	 * @returns Parent widget, or nullptr if no widget of the specified type is found.
+	 */
+	template <class NWID>
+	const NWID *GetParentWidget() const
+	{
+		for (const NWidgetBase *nwid_parent = this->parent; nwid_parent != nullptr; nwid_parent = nwid_parent->parent) {
+			if (const NWID *nwid = dynamic_cast<const NWID *>(nwid_parent); nwid != nullptr) return nwid;
+		}
+		return nullptr;
+	}
 
 	virtual bool IsHighlighted() const { return false; }
 	virtual TextColour GetHighlightColour() const { return TC_INVALID; }
@@ -217,11 +250,10 @@ public:
 	int pos_x;            ///< Horizontal position of top-left corner of the widget in the window.
 	int pos_y;            ///< Vertical position of top-left corner of the widget in the window.
 
-	NWidgetBase *next;    ///< Pointer to next widget in container. Managed by parent container widget.
-	NWidgetBase *prev;    ///< Pointer to previous widget in container. Managed by parent container widget.
-
 	RectPadding padding;    ///< Padding added to the widget. Managed by parent container widget. (parent container may swap left and right for RTL)
 	RectPadding uz_padding; ///< Unscaled padding, for resize calculation.
+
+	NWidgetBase *parent; ///< Parent widget of this widget, automatically filled in when added to container.
 
 	inline bool IsOutsideDrawArea() const
 	{
@@ -342,10 +374,9 @@ DECLARE_ENUM_AS_BIT_SET(NWidgetDisplay)
  */
 class NWidgetCore : public NWidgetResizeBase {
 public:
-	NWidgetCore(WidgetType tp, Colours colour, uint fill_x, uint fill_y, uint32 widget_data, StringID tool_tip);
+	NWidgetCore(WidgetType tp, Colours colour, WidgetID index, uint fill_x, uint fill_y, uint32_t widget_data, StringID tool_tip);
 
-	void SetIndex(int index);
-	void SetDataTip(uint32 widget_data, StringID tool_tip);
+	void SetDataTip(uint32_t widget_data, StringID tool_tip);
 	void SetToolTip(StringID tool_tip);
 	void SetTextStyle(TextColour colour, FontSize size);
 	void SetAlignment(StringAlignment align);
@@ -355,7 +386,7 @@ public:
 	inline void SetDisabled(bool disabled);
 	inline bool IsDisabled() const;
 
-	void FillNestedArray(NWidgetBase **array, uint length) override;
+	void FillWidgetLookup(WidgetLookup &widget_lookup) override;
 	NWidgetCore *GetWidgetFromPos(int x, int y) override;
 	bool IsHighlighted() const override;
 	TextColour GetHighlightColour() const override;
@@ -364,10 +395,10 @@ public:
 
 	NWidgetDisplay disp_flags; ///< Flags that affect display and interaction with the widget.
 	Colours colour;            ///< Colour of this widget.
-	int index;                 ///< Index of the nested widget in the widget array of the window (\c -1 means 'not used').
-	uint32 widget_data;        ///< Data of the widget. @see Widget::data
+	const WidgetID index;      ///< Index of the nested widget (\c -1 means 'not used').
+	uint32_t widget_data;      ///< Data of the widget. @see Widget::data
 	StringID tool_tip;         ///< Tooltip of the widget. @see Widget::tootips
-	int scrollbar_index;       ///< Index of an attached scrollbar.
+	WidgetID scrollbar_index;  ///< Index of an attached scrollbar.
 	TextColour highlight_colour; ///< Colour of highlight.
 	TextColour text_colour;    ///< Colour of text within widget.
 	FontSize text_size;        ///< Size of text within widget.
@@ -433,25 +464,23 @@ inline bool NWidgetCore::IsDisabled() const
  */
 class NWidgetContainer : public NWidgetBase {
 public:
-	NWidgetContainer(WidgetType tp);
-	~NWidgetContainer();
+	NWidgetContainer(WidgetType tp) : NWidgetBase(tp) { }
 
 	void AdjustPaddingForZoom() override;
-	void Add(NWidgetBase *wid);
-	void FillNestedArray(NWidgetBase **array, uint length) override;
+	void Add(std::unique_ptr<NWidgetBase> &&wid);
+	void FillWidgetLookup(WidgetLookup &widget_lookup) override;
 
 	void Draw(const Window *w) override;
 	NWidgetCore *GetWidgetFromPos(int x, int y) override;
 	void FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets) override;
 
 	/** Return whether the container is empty. */
-	inline bool IsEmpty() { return head == nullptr; }
+	inline bool IsEmpty() { return this->children.empty(); }
 
 	NWidgetBase *GetWidgetOfType(WidgetType tp) override;
 
 protected:
-	NWidgetBase *head; ///< Pointer to first widget in container.
-	NWidgetBase *tail; ///< Pointer to last widget in container.
+	std::vector<std::unique_ptr<NWidgetBase>> children; ///< Child widgets in contaier.
 };
 
 /** Display planes with zero size for #NWidgetStacked. */
@@ -475,14 +504,12 @@ enum StackedZeroSizePlanes {
  */
 class NWidgetStacked : public NWidgetContainer {
 public:
-	NWidgetStacked();
-
-	void SetIndex(int index);
+	NWidgetStacked(WidgetID index);
 
 	void AdjustPaddingForZoom() override;
 	void SetupSmallestSize(Window *w) override;
 	void AssignSizePosition(SizingType sizing, int x, int y, uint given_width, uint given_height, bool rtl) override;
-	void FillNestedArray(NWidgetBase **array, uint length) override;
+	void FillWidgetLookup(WidgetLookup &widget_lookup) override;
 
 	void Draw(const Window *w) override;
 	NWidgetCore *GetWidgetFromPos(int x, int y) override;
@@ -491,7 +518,7 @@ public:
 	bool SetDisplayedPlane(int plane);
 
 	int shown_plane; ///< Plane being displayed (for #NWID_SELECTION only).
-	int index;       ///< If non-negative, index in the #Window::nested_array.
+	const WidgetID index; ///< If non-negative, index in the #Window::widget_lookup.
 	bool independent_planes = false; ///< If true, treat planes as independent for layout purposes.
 };
 
@@ -576,26 +603,26 @@ public:
  */
 class NWidgetMatrix : public NWidgetPIPContainer {
 public:
-	NWidgetMatrix();
+	NWidgetMatrix(Colours colour, WidgetID index);
 
-	void SetIndex(int index);
-	void SetColour(Colours colour);
 	void SetClicked(int clicked);
 	void SetCount(int count);
 	void SetScrollbar(Scrollbar *sb);
+	int GetCurrentElement() const;
 
 	void SetupSmallestSize(Window *w) override;
 	void AssignSizePosition(SizingType sizing, int x, int y, uint given_width, uint given_height, bool rtl) override;
-	void FillNestedArray(NWidgetBase **array, uint length) override;
+	void FillWidgetLookup(WidgetLookup &widget_lookup) override;
 
 	NWidgetCore *GetWidgetFromPos(int x, int y) override;
 	void FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets) override;
 	void Draw(const Window *w) override;
 protected:
-	int index;      ///< If non-negative, index in the #Window::nested_array.
+	const WidgetID index; ///< If non-negative, index in the #Window::widget_lookup.
 	Colours colour; ///< Colour of this widget.
-	int clicked;    ///< The currently clicked widget.
-	int count;      ///< Amount of valid widgets.
+	int clicked;    ///< The currently clicked element.
+	int count;      ///< Amount of valid elements.
+	int current_element; ///< The element currently being processed.
 	Scrollbar *sb;  ///< The scrollbar we're associated with.
 private:
 	int widget_w;   ///< The width of the child widget including inter spacing.
@@ -616,7 +643,7 @@ public:
 	NWidgetSpacer(int width, int height);
 
 	void SetupSmallestSize(Window *w) override;
-	void FillNestedArray(NWidgetBase **array, uint length) override;
+	void FillWidgetLookup(WidgetLookup &widget_lookup) override;
 
 	void Draw(const Window *w) override;
 	void SetDirty(Window *w) override;
@@ -630,10 +657,9 @@ public:
  */
 class NWidgetBackground : public NWidgetCore {
 public:
-	NWidgetBackground(WidgetType tp, Colours colour, int index, NWidgetPIPContainer *child = nullptr);
-	~NWidgetBackground();
+	NWidgetBackground(WidgetType tp, Colours colour, WidgetID index, std::unique_ptr<NWidgetPIPContainer> child = nullptr);
 
-	void Add(NWidgetBase *nwid);
+	void Add(std::unique_ptr<NWidgetBase> &&nwid);
 	void SetPIP(uint8_t pip_pre, uint8_t pip_inter, uint8_t pip_post);
 	void SetPIPRatio(uint8_t pip_ratio_pre, uint8_t pip_ratio_inter, uint8_t pip_ratio_post);
 
@@ -641,7 +667,7 @@ public:
 	void SetupSmallestSize(Window *w) override;
 	void AssignSizePosition(SizingType sizing, int x, int y, uint given_width, uint given_height, bool rtl) override;
 
-	void FillNestedArray(NWidgetBase **array, uint length) override;
+	void FillWidgetLookup(WidgetLookup &widget_lookup) override;
 
 	void Draw(const Window *w) override;
 	NWidgetCore *GetWidgetFromPos(int x, int y) override;
@@ -649,7 +675,7 @@ public:
 	void FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets) override;
 
 private:
-	NWidgetPIPContainer *child; ///< Child widget.
+	std::unique_ptr<NWidgetPIPContainer> child; ///< Child widget.
 };
 
 /**
@@ -663,7 +689,7 @@ private:
  */
 class NWidgetViewport : public NWidgetCore {
 public:
-	NWidgetViewport(int index);
+	NWidgetViewport(WidgetID index);
 
 	void SetupSmallestSize(Window *w) override;
 	void Draw(const Window *w) override;
@@ -780,7 +806,7 @@ public:
 		this->SetPosition(this->pos);
 	}
 
-	void SetCapacityFromWidget(Window *w, int widget, int padding = 0);
+	void SetCapacityFromWidget(Window *w, WidgetID widget, int padding = 0);
 
 	/**
 	 * Sets the position of the first visible element
@@ -829,7 +855,7 @@ public:
 		}
 	}
 
-	int GetScrolledRowFromWidget(int clickpos, const Window * const w, int widget, int padding = 0, int line_height = -1) const;
+	int GetScrolledRowFromWidget(int clickpos, const Window * const w, WidgetID widget, int padding = 0, int line_height = -1) const;
 
 	/**
 	 * Return an iterator pointing to the element of a scrolled widget that a user clicked in.
@@ -842,7 +868,7 @@ public:
 	 * @return Iterator to the element clicked at. If clicked at a wrong position, returns as interator to the end of the container.
 	 */
 	template <typename Tcontainer>
-	typename Tcontainer::iterator GetScrolledItemFromWidget(Tcontainer &container, int clickpos, const Window * const w, int widget, int padding = 0, int line_height = -1) const
+	typename Tcontainer::iterator GetScrolledItemFromWidget(Tcontainer &container, int clickpos, const Window * const w, WidgetID widget, int padding = 0, int line_height = -1) const
 	{
 		assert(this->GetCount() == container.size()); // Scrollbar and container size must match.
 		int row = this->GetScrolledRowFromWidget(clickpos, w, widget, padding, line_height);
@@ -863,7 +889,7 @@ public:
  */
 class NWidgetScrollbar : public NWidgetCore, public Scrollbar {
 public:
-	NWidgetScrollbar(WidgetType tp, Colours colour, int index);
+	NWidgetScrollbar(WidgetType tp, Colours colour, WidgetID index);
 
 	void SetupSmallestSize(Window *w) override;
 	void Draw(const Window *w) override;
@@ -883,7 +909,7 @@ private:
  */
 class NWidgetLeaf : public NWidgetCore {
 public:
-	NWidgetLeaf(WidgetType tp, Colours colour, int index, uint32 data, StringID tip);
+	NWidgetLeaf(WidgetType tp, Colours colour, WidgetID index, uint32_t data, StringID tip);
 
 	void SetupSmallestSize(Window *w) override;
 	void Draw(const Window *w) override;
@@ -1002,7 +1028,7 @@ struct NWidgetPartDataTip {
  */
 struct NWidgetPartWidget {
 	Colours colour; ///< Widget colour.
-	int16 index;    ///< Widget index in the widget array.
+	WidgetID index; ///< Index of the widget.
 };
 
 /**
@@ -1049,11 +1075,9 @@ struct NWidgetPartAlignment {
 
 /**
  * Pointer to function returning a nested widget.
- * @param biggest_index Pointer to storage for collecting the biggest index used in the nested widget.
  * @return Nested widget (tree).
- * @post \c *biggest_index must contain the value of the biggest index in the returned tree.
  */
-typedef NWidgetBase *NWidgetFunctionType(int *biggest_index);
+typedef std::unique_ptr<NWidgetBase> NWidgetFunctionType();
 
 /**
  * Partial widget specification to allow NWidgets to be written nested.
@@ -1315,7 +1339,7 @@ static inline NWidgetPart SetPIPRatio(uint8_t ratio_pre, uint8_t ratio_inter, ui
  * @param index Widget index of the scrollbar.
  * @ingroup NestedWidgetParts
  */
-static inline NWidgetPart SetScrollbar(int index)
+static inline NWidgetPart SetScrollbar(WidgetID index)
 {
 	NWidgetPart part;
 
@@ -1329,12 +1353,12 @@ static inline NWidgetPart SetScrollbar(int index)
  * Widget part function for starting a new 'real' widget.
  * @param tp  Type of the new nested widget.
  * @param col Colour of the new widget.
- * @param idx Index of the widget in the widget array.
+ * @param idx Index of the widget.
  * @note with #WWT_PANEL, #WWT_FRAME, #WWT_INSET, a new container is started.
  *       Child widgets must have a index bigger than the parent index.
  * @ingroup NestedWidgetParts
  */
-static inline NWidgetPart NWidget(WidgetType tp, Colours col, int16 idx = -1)
+static inline NWidgetPart NWidget(WidgetType tp, Colours col, int idx = -1)
 {
 	NWidgetPart part;
 
@@ -1377,10 +1401,10 @@ static inline NWidgetPart NWidgetFunction(NWidgetFunctionType *func_ptr)
 }
 
 bool IsContainerWidgetType(WidgetType tp);
-NWidgetContainer *MakeNWidgets(const NWidgetPart *nwid_begin, const NWidgetPart *nwid_end, int *biggest_index, NWidgetContainer *container);
-NWidgetContainer *MakeWindowNWidgetTree(const NWidgetPart *nwid_begin, const NWidgetPart *nwid_end, int *biggest_index, NWidgetStacked **shade_select);
+std::unique_ptr<NWidgetBase> MakeNWidgets(const NWidgetPart *nwid_begin, const NWidgetPart *nwid_end, std::unique_ptr<NWidgetBase> container);
+std::unique_ptr<NWidgetBase> MakeWindowNWidgetTree(const NWidgetPart *nwid_begin, const NWidgetPart *nwid_end, NWidgetStacked **shade_select);
 
-NWidgetBase *MakeCompanyButtonRows(int *biggest_index, int widget_first, int widget_last, Colours button_colour, int max_length, StringID button_tooltip);
+std::unique_ptr<NWidgetBase> MakeCompanyButtonRows(WidgetID widget_first, WidgetID widget_last, Colours button_colour, int max_length, StringID button_tooltip);
 
 void SetupWidgetDimensions();
 

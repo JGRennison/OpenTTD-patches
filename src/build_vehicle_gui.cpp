@@ -1858,7 +1858,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		return list;
 	}
 
-	void OnClick([[maybe_unused]] Point pt, int widget, [[maybe_unused]] int click_count) override
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_BV_SORT_ASCENDING_DESCENDING:
@@ -1987,7 +1987,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		this->eng_list.ForceRebuild();
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_BV_CAPTION:
@@ -2022,7 +2022,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_BV_LIST:
@@ -2063,7 +2063,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		}
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_BV_LIST:
@@ -2124,7 +2124,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		DoCommandP(0, this->rename_engine, 0, CMD_RENAME_ENGINE | CMD_MSG(STR_ERROR_CAN_T_RENAME_TRAIN_TYPE + this->vehicle_type), nullptr, str);
 	}
 
-	void OnDropdownSelect(int widget, int index) override
+	void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		switch (widget) {
 			case WID_BV_SORT_DROPDOWN:
@@ -2154,7 +2154,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		this->vscroll->SetCapacityFromWidget(this, WID_BV_LIST);
 	}
 
-	void OnEditboxChanged(int wid) override
+	void OnEditboxChanged(WidgetID wid) override
 	{
 		if (wid == WID_BV_FILTER) {
 			this->string_filter.SetFilterTerm(this->vehicle_editbox.text.buf);
@@ -2730,7 +2730,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		}
 	}
 
-	bool OnClickList(Point pt, int widget, PanelState &state, bool column)
+	bool OnClickList(Point pt, WidgetID widget, PanelState &state, bool column)
 	{
 		const uint i = state.vscroll->GetScrolledRowFromWidget(pt.y, this, widget);
 		const size_t num_items = state.eng_list.size();
@@ -2757,7 +2757,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		return false;
 	}
 
-	void OnClick(Point pt, int widget, int click_count) override
+	void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
 		if (widget == WID_BV_COMB_BUILD) {
 			widget = !this->wagon_selected ? WID_BV_BUILD_LOCO : WID_BV_BUILD_WAGON;
@@ -2918,7 +2918,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		}
 	}
 
-	void SetStringParameters(int widget) const override
+	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_BV_CAPTION: {
@@ -2994,7 +2994,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		}
 	}
 
-	void UpdateWidgetSize(int widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
 		switch (widget) {
 			case WID_BV_LIST_LOCO: {
@@ -3052,7 +3052,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		}
 	}
 
-	void DrawWidget(const Rect &r, int widget) const override
+	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_BV_LIST_LOCO: {
@@ -3146,7 +3146,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		}
 	}
 
-	void OnDropdownSelect(int widget, int index) override
+	void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		switch (widget) {
 			case WID_BV_SORT_DROPDOWN_LOCO: {
@@ -3199,7 +3199,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		this->wagon.vscroll->SetCapacityFromWidget(this, WID_BV_LIST_WAGON);
 	}
 
-	void OnEditboxChanged(int wid) override
+	void OnEditboxChanged(WidgetID wid) override
 	{
 		if (wid == WID_BV_FILTER_LOCO) {
 			this->loco.string_filter.SetFilterTerm(this->loco.vehicle_editbox.text.buf);
