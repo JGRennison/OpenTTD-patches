@@ -2785,13 +2785,14 @@ public:
 				if (order == nullptr) break;
 
 				DropDownList list;
-				list.emplace_back(new DropDownListStringItem(STR_ORDER_DUPLICATE_ORDER, 0, false));
-				if (order->IsType(OT_CONDITIONAL)) list.emplace_back(new DropDownListStringItem(STR_ORDER_CHANGE_JUMP_TARGET, 1, false));
+				list.push_back(std::make_unique<DropDownListStringItem>(STR_ORDER_DUPLICATE_ORDER, 0, false));
+				if (order->IsType(OT_CONDITIONAL)) list.push_back(std::make_unique<DropDownListStringItem>(STR_ORDER_CHANGE_JUMP_TARGET, 1, false));
 				if (!order->IsType(OT_IMPLICIT)) {
-					list.emplace_back(new DropDownListItem(-1, false));
-					list.emplace_back(new DropDownListStringItem(STR_COLOUR_DEFAULT, 0x100 + INVALID_COLOUR, false));
+					list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
+					const Colours current_colour = order->GetColour();
+					list.push_back(std::make_unique<DropDownListCheckedItem>(current_colour == INVALID_COLOUR, STR_COLOUR_DEFAULT, 0x100 + INVALID_COLOUR, false));
 					auto add_colour = [&](Colours colour) {
-						list.emplace_back(new DropDownListStringItem(STR_COLOUR_DARK_BLUE + colour, 0x100 + colour, false));
+						list.push_back(std::make_unique<DropDownListCheckedItem>(current_colour == colour, STR_COLOUR_DARK_BLUE + colour, 0x100 + colour, false));
 					};
 					add_colour(COLOUR_YELLOW);
 					add_colour(COLOUR_LIGHT_BLUE);
@@ -2799,7 +2800,7 @@ public:
 					add_colour(COLOUR_ORANGE);
 					add_colour(COLOUR_PINK);
 				}
-				ShowDropDownList(this, std::move(list), 0x100 + order->GetColour(), widget, 0, false, DDSF_LOST_FOCUS);
+				ShowDropDownList(this, std::move(list), -1, widget, 0, false, DDSF_LOST_FOCUS);
 				break;
 			}
 
