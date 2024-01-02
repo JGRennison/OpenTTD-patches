@@ -2787,6 +2787,28 @@ public:
 				DropDownList list;
 				list.push_back(std::make_unique<DropDownListStringItem>(STR_ORDER_DUPLICATE_ORDER, 0, false));
 				if (order->IsType(OT_CONDITIONAL)) list.push_back(std::make_unique<DropDownListStringItem>(STR_ORDER_CHANGE_JUMP_TARGET, 1, false));
+
+				if (this->vehicle->type == VEH_TRAIN && order->IsType(OT_GOTO_STATION) && (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
+					const OrderStopLocation osl = order->GetStopLocation();
+					list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
+					list.push_back(std::make_unique<DropDownListCheckedItem>(osl == OSL_PLATFORM_NEAR_END, STR_ORDER_STOP_LOCATION_NEAR_END, 0x200 + OSL_PLATFORM_NEAR_END, false));
+					list.push_back(std::make_unique<DropDownListCheckedItem>(osl == OSL_PLATFORM_MIDDLE, STR_ORDER_STOP_LOCATION_MIDDLE, 0x200 + OSL_PLATFORM_MIDDLE, false));
+					list.push_back(std::make_unique<DropDownListCheckedItem>(osl == OSL_PLATFORM_FAR_END, STR_ORDER_STOP_LOCATION_FAR_END, 0x200 + OSL_PLATFORM_FAR_END, false));
+					if (osl == OSL_PLATFORM_THROUGH || _settings_client.gui.show_adv_load_mode_features) {
+						bool allowed = _settings_client.gui.show_adv_load_mode_features;
+						if (allowed) {
+							for (const Vehicle *u = this->vehicle; u != nullptr; u = u->Next()) {
+								/* Passengers may not be through-loaded */
+								if (u->cargo_cap > 0 && IsCargoInClass(u->cargo_type, CC_PASSENGERS)) {
+									allowed = false;
+									break;
+								}
+							}
+						}
+						list.push_back(std::make_unique<DropDownListCheckedItem>(osl == OSL_PLATFORM_THROUGH, STR_ORDER_STOP_LOCATION_THROUGH, 0x200 + OSL_PLATFORM_THROUGH, !allowed));
+					}
+				}
+
 				if (!order->IsType(OT_IMPLICIT)) {
 					list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
 					const Colours current_colour = order->GetColour();
@@ -3334,6 +3356,10 @@ public:
 				}
 				if (index >= 0x100 && index <= 0x100 + INVALID_COLOUR) {
 					this->ModifyOrder(this->OrderGetSel(), MOF_COLOUR | (index & 0xFF) << 8);
+					break;
+				}
+				if (index >= 0x200 && index < 0x200 + OSL_END) {
+					this->ModifyOrder(this->OrderGetSel(), MOF_STOP_LOCATION | (index & 0xFF) << 8);
 					break;
 				}
 				switch (index) {
