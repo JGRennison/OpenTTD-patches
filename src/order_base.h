@@ -967,7 +967,9 @@ public:
 
 	void FreeChain(bool keep_orderlist = false);
 
+#ifdef WITH_ASSERT
 	void DebugCheckSanity() const;
+#endif
 	bool CheckOrderListIndexing() const;
 
 	inline std::vector<DispatchSchedule> &GetScheduledDispatchScheduleSet() { return this->dispatch_schedules; }

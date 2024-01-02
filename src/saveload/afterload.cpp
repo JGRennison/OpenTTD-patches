@@ -3972,9 +3972,11 @@ bool AfterLoadGame()
 				}
 			}
 		}
+#ifdef WITH_ASSERT
 		for (OrderList *order_list : OrderList::Iterate()) {
 			order_list->DebugCheckSanity();
 		}
+#endif
 	}
 
 	if (SlXvIsFeaturePresent(XSLFI_TRAIN_THROUGH_LOAD, 0, 1)) {

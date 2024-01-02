@@ -1981,9 +1981,11 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 			}
 		}
 
+#ifdef WITH_ASSERT
 		for (OrderList *order_list : OrderList::Iterate()) {
 			order_list->DebugCheckSanity();
 		}
+#endif
 
 		extern void ValidateVehicleTickCaches();
 		ValidateVehicleTickCaches();
