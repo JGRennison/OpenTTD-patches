@@ -49,7 +49,7 @@ Tunnel::~Tunnel()
 		tunnel_tile_index_map.erase(this->tile_s);
 	}
 
-	bool have_erased = false;
+	[[maybe_unused]] bool have_erased = false;
 	const auto key = GetTunnelAxisHeightCacheKey(this);
 	for (auto it = tunnel_axis_height_index.lower_bound(key); it != tunnel_axis_height_index.end() && it->first == key; ++it) {
 		if (it->second == this) {

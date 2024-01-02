@@ -836,7 +836,7 @@ static void PublicRoad_FoundEndNode(AyStar *aystar, OpenListNode *current)
 			// We only get here if we have a parent and we're not adjacent to it. River/Tunnel time!
 			const DiagDirection road_direction = DiagdirBetweenTiles(tile, path->parent->node.tile);
 
-			auto end_tile = INVALID_TILE;
+			[[maybe_unused]] auto end_tile = INVALID_TILE;
 
 			const Slope tile_slope = GetTileSlope(tile);
 			if (IsUpwardsSlope(tile_slope, road_direction)) {

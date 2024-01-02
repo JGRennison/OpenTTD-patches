@@ -3430,7 +3430,7 @@ private:
 	 * Show a drop down list using @p list_set, setting the pre-selected item to the one corresponding to @p value
 	 * This asserts if @p value is not in @p list_set, and @p missing_ok is false
 	 */
-	void ShowCompanyDropDownListWithValue(CompanyID value, bool missing_ok, int button)
+	void ShowCompanyDropDownListWithValue(CompanyID value, [[maybe_unused]] bool missing_ok, int button)
 	{
 		DropDownList list;
 
