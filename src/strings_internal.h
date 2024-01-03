@@ -16,12 +16,13 @@
 #include "core/strong_typedef_type.hpp"
 
 #include <array>
+#include <variant>
+
+struct StringParameter;
 
 /** The data required to format and validate a single parameter of a string. */
 struct StringParameter {
-	uint64_t data; ///< The data of the parameter.
-	const char *string_view; ///< The string value, if it has any.
-	std::unique_ptr<std::string> string; ///< Copied string value, if it has any.
+	std::variant<uint64_t, const char *, std::unique_ptr<std::string>> data; ///< The data of the parameter, non-owning string value, or owned string value.
 	char32_t type; ///< The #StringControlCode to interpret this data with when it's the first parameter, otherwise '\0'.
 };
 
@@ -98,7 +99,7 @@ public:
 	T GetNextParameter()
 	{
 		auto ptr = GetNextParameterPointer();
-		return static_cast<T>(ptr == nullptr ? 0 : ptr->data);
+		return static_cast<T>(ptr != nullptr && std::holds_alternative<uint64_t>(ptr->data) ? std::get<uint64_t>(ptr->data) : 0);
 	}
 
 	/**
@@ -111,7 +112,14 @@ public:
 	{
 		auto ptr = GetNextParameterPointer();
 		if (ptr == nullptr) return nullptr;
-		return ptr->string != nullptr ? ptr->string->c_str() : ptr->string_view;
+
+		if (std::holds_alternative<const char *>(ptr->data)) {
+			return std::get<const char *>(ptr->data);
+		} else if (std::holds_alternative<std::unique_ptr<std::string>>(ptr->data)) {
+			return std::get<std::unique_ptr<std::string>>(ptr->data)->c_str();
+		} else {
+			return nullptr;
+		}
 	}
 
 	/**
@@ -156,8 +164,6 @@ public:
 	{
 		assert(n < this->parameters.size());
 		this->parameters[n].data = v;
-		this->parameters[n].string.reset();
-		this->parameters[n].string_view = nullptr;
 	}
 
 	template <typename T, std::enable_if_t<std::is_base_of<StrongTypedefBase, T>::value, int> = 0>
@@ -169,24 +175,26 @@ public:
 	void SetParam(size_t n, const char *str)
 	{
 		assert(n < this->parameters.size());
-		this->parameters[n].data = 0;
-		this->parameters[n].string.reset();
-		this->parameters[n].string_view = str;
+		this->parameters[n].data = str;
 	}
 
 	void SetParam(size_t n, std::string str)
 	{
 		assert(n < this->parameters.size());
-		this->parameters[n].data = 0;
-		this->parameters[n].string = std::make_unique<std::string>(std::move(str));
-		this->parameters[n].string_view = nullptr;
+		this->parameters[n].data = std::make_unique<std::string>(std::move(str));
+	}
+
+	void SetParam(size_t n, span<StringParameter> params)
+	{
+		assert(n < this->parameters.size());
+		this->parameters[n].data = params;
 	}
 
 	uint64_t GetParam(size_t n) const
 	{
 		assert(n < this->parameters.size());
-		assert(this->parameters[n].string_view == nullptr && this->parameters[n].string == nullptr);
-		return this->parameters[n].data;
+		assert(std::holds_alternative<uint64_t>(this->parameters[n].data));
+		return std::get<uint64_t>(this->parameters[n].data);
 	}
 
 	/**
@@ -197,8 +205,14 @@ public:
 	const char *GetParamStr(size_t n) const
 	{
 		assert(n < this->parameters.size());
-		auto &param = this->parameters[n];
-		return param.string != nullptr ? param.string->c_str() : param.string_view;
+
+		if (std::holds_alternative<const char *>(this->parameters[n].data)) {
+			return std::get<const char *>(this->parameters[n].data);
+		} else if (std::holds_alternative<std::unique_ptr<std::string>>(this->parameters[n].data)) {
+			return std::get<std::unique_ptr<std::string>>(this->parameters[n].data)->c_str();
+		} else {
+			return nullptr;
+		}
 	}
 };
 
