@@ -105,6 +105,8 @@ void SetDParamMaxDigits(size_t n, uint count, FontSize size = FS_NORMAL);
 void SetDParamStr(size_t n, const char *str);
 void SetDParamStr(size_t n, std::string str);
 
+void SetDParamSubString(size_t n, const SubStringWithParameters &sub_string);
+
 void CopyInDParam(const span<const StringParameterBackup> backup, uint offset = 0);
 void CopyOutDParam(std::vector<StringParameterBackup> &backup, size_t num);
 bool HaveDParamChanged(const std::vector<StringParameterBackup> &backup);

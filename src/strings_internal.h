@@ -20,9 +20,17 @@
 
 struct StringParameter;
 
+/** The data representing a string ID with associated parameters, which can be used as a string parameter. */
+struct SubStringWithParameters {
+	StringID string_id;
+	span<StringParameter> parameters;
+
+	SubStringWithParameters(StringID string_id, span<StringParameter> parameters) : string_id(string_id), parameters(parameters) {}
+};
+
 /** The data required to format and validate a single parameter of a string. */
 struct StringParameter {
-	std::variant<uint64_t, const char *, std::unique_ptr<std::string>> data; ///< The data of the parameter, non-owning string value, or owned string value.
+	std::variant<uint64_t, const char *, std::unique_ptr<std::string>, std::unique_ptr<SubStringWithParameters>> data; ///< The data of the parameter, non-owning string value, owned string value, or nested parameter span.
 	char32_t type; ///< The #StringControlCode to interpret this data with when it's the first parameter, otherwise '\0'.
 };
 
@@ -49,6 +57,15 @@ public:
 		parent(&parent),
 		parameters(parent.parameters.subspan(parent.offset, size))
 	{}
+
+	StringParameters(const SubStringWithParameters &sub_string) :
+		parameters(sub_string.parameters)
+	{}
+
+	SubStringWithParameters AsSubStringWithParameters(StringID string_id) const
+	{
+		return SubStringWithParameters(string_id, this->parameters);
+	}
 
 	void PrepareForNextRun();
 	void SetTypeOfNextParameter(char32_t type) { this->next_type = type; }
@@ -122,6 +139,16 @@ public:
 		}
 	}
 
+	const SubStringWithParameters &GetNextParameterSubString()
+	{
+		return *std::get<std::unique_ptr<SubStringWithParameters>>(GetNextParameterPointer()->data);
+	}
+
+	bool HasNextParameterSubString() const
+	{
+		return this->offset < this->parameters.size() && std::holds_alternative<std::unique_ptr<SubStringWithParameters>>(this->parameters[this->offset].data);
+	}
+
 	/**
 	 * Get a new instance of StringParameters that is a "range" into the
 	 * remaining existing parameters. Upon destruction the offset in the parent
@@ -184,10 +211,10 @@ public:
 		this->parameters[n].data = std::make_unique<std::string>(std::move(str));
 	}
 
-	void SetParam(size_t n, span<StringParameter> params)
+	void SetParam(size_t n, const SubStringWithParameters &sub_string)
 	{
 		assert(n < this->parameters.size());
-		this->parameters[n].data = params;
+		this->parameters[n].data = std::make_unique<SubStringWithParameters>(sub_string);;
 	}
 
 	uint64_t GetParam(size_t n) const

@@ -332,6 +332,16 @@ void SetDParamStr(size_t n, std::string str)
 }
 
 /**
+ * This function is used to "bind" the SubStringWithParameters to a OpenTTD dparam slot.
+ * @param n slot of the string
+ * @param sub_string SubStringWithParameters to bind
+ */
+void SetDParamSubString(size_t n, const SubStringWithParameters &sub_string)
+{
+	_global_string_params.SetParam(n, sub_string);
+}
+
+/**
  * Format a number into a string.
  * @param buff      the buffer to write to
  * @param number    the number to write down
@@ -1119,6 +1129,18 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters &arg
 			continue;
 		}
 
+		auto handle_substring = [&]() -> bool {
+			if (!args.HasNextParameterSubString()) return false;
+
+			const SubStringWithParameters &sub_string = args.GetNextParameterSubString();
+
+			if (game_script && GetStringTab(sub_string.string_id) != TEXT_TAB_GAMESCRIPT_START) return true;
+			StringParameters sub_args(sub_string);
+			buff = GetStringWithArgs(buff, sub_string.string_id, sub_args, last, next_substr_case_index, game_script);
+			next_substr_case_index = 0;
+			return true;
+		};
+
 		args.SetTypeOfNextParameter(b);
 		switch (b) {
 			case SCC_ENCODED: {
@@ -1313,6 +1335,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters &arg
 			}
 
 			case SCC_STRING: {// {STRING}
+				if (handle_substring()) break;
 				StringID string_id = args.GetNextParameter<StringID>();
 				if (game_script && GetStringTab(string_id) != TEXT_TAB_GAMESCRIPT_START) break;
 				/* It's prohibited for the included string to consume any arguments. */
@@ -1330,6 +1353,7 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters &arg
 			case SCC_STRING6:
 			case SCC_STRING7:
 			case SCC_STRING8: { // {STRING1..8}
+				if (handle_substring()) break;
 				/* Strings that consume arguments */
 				StringID string_id = args.GetNextParameter<StringID>();
 				if (game_script && GetStringTab(string_id) != TEXT_TAB_GAMESCRIPT_START) break;
