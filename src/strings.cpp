@@ -1315,10 +1315,8 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters &arg
 			case SCC_STRING: {// {STRING}
 				StringID string_id = args.GetNextParameter<StringID>();
 				if (game_script && GetStringTab(string_id) != TEXT_TAB_GAMESCRIPT_START) break;
-				/* WARNING. It's prohibited for the included string to consume any arguments.
-				 * For included strings that consume argument, you should use STRING1, STRING2 etc.
-				 * To debug stuff you can set argv to nullptr and it will tell you */
-				StringParameters tmp_params(args, 0);
+				/* It's prohibited for the included string to consume any arguments. */
+				StringParameters tmp_params(args, game_script ? args.GetDataLeft() : 0);
 				buff = GetStringWithArgs(buff, string_id, tmp_params, last, next_substr_case_index, game_script);
 				next_substr_case_index = 0;
 				break;
@@ -1339,8 +1337,9 @@ static char *FormatString(char *buff, const char *str_arg, StringParameters &arg
 				if (size > args.GetDataLeft()) {
 					buff = strecpy(buff, "(too many parameters)", last);
 				} else {
-					StringParameters sub_args(args, size);
+					StringParameters sub_args(args, game_script ? args.GetDataLeft() : size);
 					buff = GetStringWithArgs(buff, string_id, sub_args, last, next_substr_case_index, game_script);
+					args.AdvanceOffset(size);
 				}
 				next_substr_case_index = 0;
 				break;

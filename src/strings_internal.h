@@ -42,19 +42,12 @@ protected:
 public:
 	/**
 	 * Create a new StringParameters instance that can reference part of the data of
-	 * the given partent instance.
+	 * the given parent instance.
 	 */
 	StringParameters(StringParameters &parent, size_t size) :
 		parent(&parent),
 		parameters(parent.parameters.subspan(parent.offset, size))
 	{}
-
-	~StringParameters()
-	{
-		if (this->parent != nullptr) {
-			this->parent->offset += this->parameters.size();
-		}
-	}
 
 	void PrepareForNextRun();
 	void SetTypeOfNextParameter(char32_t type) { this->next_type = type; }
@@ -82,6 +75,17 @@ public:
 		 */
 		assert(offset < this->parameters.size() || this->offset == offset);
 		this->offset = offset;
+	}
+
+	/**
+	 * Advance the offset within the string from where to return the next result of
+	 * \c GetInt64 or \c GetInt32.
+	 * @param advance The amount to advance the offset by.
+	 */
+	void AdvanceOffset(size_t advance)
+	{
+		this->offset += advance;
+		assert(this->offset <= this->parameters.size());
 	}
 
 	/**
@@ -226,7 +230,7 @@ public:
 		return *this;
 	}
 
-	ArrayStringParameters(const ArrayStringParameters& other) = delete;
+	ArrayStringParameters(const ArrayStringParameters &other) = delete;
 	ArrayStringParameters& operator=(const ArrayStringParameters &other) = delete;
 };
 

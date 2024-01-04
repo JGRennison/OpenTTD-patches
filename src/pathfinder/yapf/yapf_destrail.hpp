@@ -40,7 +40,7 @@ public:
 	typedef typename Node::Key Key;               ///< key to hash tables
 
 	/** to access inherited path finder */
-	Tpf& Yapf()
+	Tpf &Yapf()
 	{
 		return *static_cast<Tpf *>(this);
 	}
@@ -83,7 +83,7 @@ public:
 	typedef typename Types::TrackFollower TrackFollower; ///< TrackFollower. Need to typedef for gcc 2.95
 
 	/** to access inherited path finder */
-	Tpf& Yapf()
+	Tpf &Yapf()
 	{
 		return *static_cast<Tpf *>(this);
 	}
@@ -131,7 +131,7 @@ protected:
 	bool         m_any_depot;
 
 	/** to access inherited path finder */
-	Tpf& Yapf()
+	Tpf &Yapf()
 	{
 		return *static_cast<Tpf *>(this);
 	}

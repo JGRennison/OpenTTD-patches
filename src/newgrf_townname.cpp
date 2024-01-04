@@ -90,7 +90,7 @@ void InitGRFTownGeneratorNames()
 	}
 }
 
-const std::vector<StringID>& GetGRFTownNameList()
+const std::vector<StringID> &GetGRFTownNameList()
 {
 	return _grf_townname_names;
 }

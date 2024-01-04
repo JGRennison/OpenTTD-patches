@@ -1164,7 +1164,7 @@ static void NewVehicleAvailable(Engine *e)
 	} else if (e->type == VEH_ROAD) {
 		/* maybe make another road type available */
 		assert(e->u.road.roadtype < ROADTYPE_END);
-		for (Company* c : Company::Iterate()) c->avail_roadtypes = AddDateIntroducedRoadTypes(c->avail_roadtypes | GetRoadTypeInfo(e->u.road.roadtype)->introduces_roadtypes, _date);
+		for (Company *c : Company::Iterate()) c->avail_roadtypes = AddDateIntroducedRoadTypes(c->avail_roadtypes | GetRoadTypeInfo(e->u.road.roadtype)->introduces_roadtypes, _date);
 	}
 
 	/* Only broadcast event if AIs are able to build this vehicle type. */

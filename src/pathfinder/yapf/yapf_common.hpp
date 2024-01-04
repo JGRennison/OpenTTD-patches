@@ -24,7 +24,7 @@ protected:
 	TrackdirBits m_orgTrackdirs;                  ///< origin trackdir mask
 
 	/** to access inherited path finder */
-	inline Tpf& Yapf()
+	inline Tpf &Yapf()
 	{
 		/* use two lines to avoid false-positive Undefined Behavior Sanitizer warnings when alignof(Tpf) > alignof(*this) and *this does not meet alignof(Tpf) */
 		Tpf *p = static_cast<Tpf *>(this);
@@ -70,7 +70,7 @@ protected:
 	bool        m_treat_first_red_two_way_signal_as_eol; ///< in some cases (leaving station) we need to handle first two-way signal differently
 
 	/** to access inherited path finder */
-	inline Tpf& Yapf()
+	inline Tpf &Yapf()
 	{
 		/* use two lines to avoid false-positive Undefined Behavior Sanitizer warnings when alignof(Tpf) > alignof(*this) and *this does not meet alignof(Tpf) */
 		Tpf *p = static_cast<Tpf *>(this);

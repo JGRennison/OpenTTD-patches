@@ -53,6 +53,6 @@ uint32 GetGRFTownNameId(uint16 gen);
 uint16 GetGRFTownNameType(uint16 gen);
 StringID GetGRFTownNameName(uint16 gen);
 
-const std::vector<StringID>& GetGRFTownNameList();
+const std::vector<StringID> &GetGRFTownNameList();
 
 #endif /* NEWGRF_TOWNNAME_H */

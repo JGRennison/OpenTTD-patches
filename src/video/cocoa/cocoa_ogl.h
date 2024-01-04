@@ -50,7 +50,7 @@ protected:
 	void *GetVideoPointer() override;
 	void ReleaseVideoPointer() override;
 
-	NSView* AllocateDrawView() override;
+	NSView *AllocateDrawView() override;
 };
 
 class FVideoDriver_CocoaOpenGL : public DriverFactoryBase {

@@ -90,7 +90,7 @@ struct RoadStopScopeResolver : public ScopeResolver {
 	uint8 view;                                 ///< Station axis.
 	RoadType roadtype;                          ///< Road type (used when no tile)
 
-	RoadStopScopeResolver(ResolverObject& ro, BaseStation* st, const RoadStopSpec *roadstopspec, TileIndex tile, RoadType roadtype, StationType type, uint8 view = 0)
+	RoadStopScopeResolver(ResolverObject &ro, BaseStation *st, const RoadStopSpec *roadstopspec, TileIndex tile, RoadType roadtype, StationType type, uint8 view = 0)
 		: ScopeResolver(ro), tile(tile), st(st), roadstopspec(roadstopspec), type(type), view(view), roadtype(roadtype)
 		{
 
@@ -115,7 +115,7 @@ struct RoadStopResolverObject : public ResolverObject {
 	RoadStopScopeResolver roadstop_scope; ///< The stop scope resolver.
 	TownScopeResolver *town_scope;        ///< The town scope resolver (created on the first call).
 
-	RoadStopResolverObject(const RoadStopSpec* roadstopspec, BaseStation* st, TileIndex tile, RoadType roadtype, StationType type, uint8 view, CallbackID callback = CBID_NO_CALLBACK, uint32 param1 = 0, uint32 param2 = 0);
+	RoadStopResolverObject(const RoadStopSpec *roadstopspec, BaseStation *st, TileIndex tile, RoadType roadtype, StationType type, uint8 view, CallbackID callback = CBID_NO_CALLBACK, uint32 param1 = 0, uint32 param2 = 0);
 	~RoadStopResolverObject();
 
 	ScopeResolver* GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, VarSpriteGroupScopeOffset relative = 0) override {
