@@ -1767,7 +1767,7 @@ STR_ERROR_SIGNAL_CHANGES                                        :{WHITE}O númer
 STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}A pont é demasiado baixa para unha estación
 STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION                       :{WHITE}Os piares da ponte obstrúen a estación
 STR_ERROR_CHUNNEL_THROUGH_MAP_BORDER                            :{WHITE}O túnel baixo a auga remataría fora do mapa
-STR_ERROR_CHUNNEL_RAMP                                          :{WHITE}... só se permite a lonxitude de rampa entre 5 e {NUM} cadros para túneis baixo a auga.
+STR_ERROR_CHUNNEL_RAMP                                          :{WHITE}... só se permite a lonxitude de rampa entre {NUM} e {NUM} cadros para túneis baixo a auga.
 STR_ERROR_TUNNEL_TOO_MANY                                       :{WHITE}... demasiados túneis
 STR_ERROR_NO_DRILLING_ABOVE_CHUNNEL                             :{WHITE}Non se permiten pozos petrolíferos por riba de túneis baixo a auga.
 STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY_FOR_CHUNNEL                 :{WHITE}Necesítanse 3 cadros para pasar baixo o outro túnel.

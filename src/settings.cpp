@@ -1991,6 +1991,19 @@ static bool DefaultSignalsSettingGUI(SettingOnGuiCtrlData &data)
 	}
 }
 
+static bool ChunnelSettingGUI(SettingOnGuiCtrlData &data)
+{
+	switch (data.type) {
+		case SOGCT_DESCRIPTION_TEXT:
+			SetDParam(0, 3);
+			SetDParam(1, 8);
+			return true;
+
+		default:
+			return false;
+	}
+}
+
 /* End - GUI callbacks */
 
 /**

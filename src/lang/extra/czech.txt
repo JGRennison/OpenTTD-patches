@@ -1735,7 +1735,7 @@ STR_ERROR_SIGNAL_CHANGES                                        :{WHITE}Počet v
 STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}Most je na stanici příliš nízký
 STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION                       :{WHITE}Pilíře mostu překáží stanici
 STR_ERROR_CHUNNEL_THROUGH_MAP_BORDER                            :{WHITE}Podmořský tunel by končil mimo mapu
-STR_ERROR_CHUNNEL_RAMP                                          :{WHITE}... podmořské tunely musí mít nájezdovou rampu v délce od 5 do {NUM} políček.
+STR_ERROR_CHUNNEL_RAMP                                          :{WHITE}... podmořské tunely musí mít nájezdovou rampu v délce od {NUM} do {NUM} políček.
 STR_ERROR_TUNNEL_TOO_MANY                                       :{WHITE}... příliš mnoho tunelů
 STR_ERROR_NO_DRILLING_ABOVE_CHUNNEL                             :{WHITE}Nad podmořskými tunely není povolen provoz ropných vrtů.
 STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY_FOR_CHUNNEL                 :{WHITE}Na průjezd pod druhým tunelem jsou zapotřebí tři políčka

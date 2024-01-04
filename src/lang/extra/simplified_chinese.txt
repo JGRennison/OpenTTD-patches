@@ -1761,7 +1761,7 @@ STR_ERROR_SIGNAL_CHANGES                                        :{WHITE}太多�
 STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}桥梁相对车站太低
 STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION                       :{WHITE}桥柱与车站冲突
 STR_ERROR_CHUNNEL_THROUGH_MAP_BORDER                            :{WHITE}水下隧道出口将超出地图边界
-STR_ERROR_CHUNNEL_RAMP                                          :{WHITE}...只有斜坡的长度在5和{NUM}之间的格子是被允许建设水下隧道的
+STR_ERROR_CHUNNEL_RAMP                                          :{WHITE}...只有斜坡的长度在{NUM}和{NUM}之间的格子是被允许建设水下隧道的
 STR_ERROR_TUNNEL_TOO_MANY                                       :{WHITE}...太多隧道
 STR_ERROR_NO_DRILLING_ABOVE_CHUNNEL                             :{WHITE}水下隧道上方不允许存在油井
 STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY_FOR_CHUNNEL                 :{WHITE}要下穿其他隧道必须有三格以上的余量
