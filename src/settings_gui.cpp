@@ -1082,11 +1082,7 @@ struct SettingEntry : BaseSettingEntry {
 	void SetButtons(byte new_val);
 	StringID GetHelpText() const;
 
-	struct SetValueDParamsTempData {
-		char buffer[512];
-	};
-
-	void SetValueDParams(uint first_param, int32 value, std::unique_ptr<SetValueDParamsTempData> &tempdata) const;
+	void SetValueDParams(uint first_param, int32 value) const;
 
 protected:
 	SettingEntry(const IntSettingDesc *setting);
@@ -1456,19 +1452,17 @@ static const void *ResolveObject(const GameSettings *settings_ptr, const IntSett
  * @param first_param First DParam to use
  * @param value Setting value to set params for.
  */
-void SettingEntry::SetValueDParams(uint first_param, int32 value, std::unique_ptr<SettingEntry::SetValueDParamsTempData> &tempdata) const
+void SettingEntry::SetValueDParams(uint first_param, int32 value) const
 {
 	if (this->setting->IsBoolSetting()) {
 		SetDParam(first_param++, value != 0 ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
 	} else if (this->setting->flags & SF_DEC1SCALE) {
-		tempdata.reset(new SettingEntry::SetValueDParamsTempData());
 		double scale = std::exp2(((double)value) / 10);
 		int log = -std::min(0, (int)std::floor(std::log10(scale)) - 2);
 
-		auto tmp_params = MakeParameters(value, (int64)(scale * std::pow(10.f, (float)log)), log);
-		GetStringWithArgs(tempdata->buffer, this->setting->str_val, tmp_params, lastof(tempdata->buffer));
 		SetDParam(first_param++, STR_JUST_RAW_STRING);
-		SetDParamStr(first_param++, tempdata->buffer);
+		auto tmp_params = MakeParameters(value, (int64)(scale * std::pow(10.f, (float)log)), log);
+		SetDParamStr(first_param++, GetStringWithArgs(this->setting->str_val, tmp_params));
 	} else {
 		if ((this->setting->flags & SF_ENUM) != 0) {
 			StringID str = STR_UNDEFINED;
@@ -1531,8 +1525,7 @@ void SettingEntry::DrawSetting(GameSettings *settings_ptr, int left, int right, 
 
 void SettingEntry::DrawSettingString(uint left, uint right, int y, bool highlight, int32 value) const
 {
-	std::unique_ptr<SettingEntry::SetValueDParamsTempData> tempdata;
-	this->SetValueDParams(1, value, tempdata);
+	this->SetValueDParams(1, value);
 	int edge = DrawString(left, right, y, this->setting->str, highlight ? TC_WHITE : TC_LIGHT_BLUE);
 	if (this->setting->flags & SF_GUI_ADVISE_DEFAULT && value != this->setting->def && edge != 0) {
 		const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
@@ -1558,8 +1551,7 @@ void CargoDestPerCargoSettingEntry::DrawSettingString(uint left, uint right, int
 	assert(this->setting->str == STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO);
 	SetDParam(0, CargoSpec::Get(this->cargo)->name);
 	SetDParam(1, STR_CONFIG_SETTING_VALUE);
-	std::unique_ptr<SettingEntry::SetValueDParamsTempData> tempdata;
-	this->SetValueDParams(2, value, tempdata);
+	this->SetValueDParams(2, value);
 	DrawString(left, right, y, STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM, highlight ? TC_WHITE : TC_LIGHT_BLUE);
 }
 
@@ -2740,8 +2732,7 @@ struct GameSettingsWindow : Window {
 					DrawString(tr, STR_CONFIG_SETTING_TYPE);
 					tr.top += GetCharacterHeight(FS_NORMAL);
 
-					std::unique_ptr<SettingEntry::SetValueDParamsTempData> tempdata;
-					this->last_clicked->SetValueDParams(0, sd->def, tempdata);
+					this->last_clicked->SetValueDParams(0, sd->def);
 					DrawString(tr, STR_CONFIG_SETTING_DEFAULT_VALUE);
 					tr.top += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
 

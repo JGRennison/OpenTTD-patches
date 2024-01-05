@@ -1346,8 +1346,7 @@ public:
 		if (!this->townnamevalid) {
 			this->townname_editbox.text.DeleteAll();
 		} else {
-			GetTownName(this->townname_editbox.text.buf, &this->params, this->townnameparts, &this->townname_editbox.text.buf[this->townname_editbox.text.max_bytes - 1]);
-			this->townname_editbox.text.UpdateSize();
+			this->townname_editbox.text.Assign(GetTownName(&this->params, this->townnameparts));
 		}
 		UpdateOSKOriginalText(this, WID_TF_TOWN_NAME_EDITBOX);
 
@@ -1384,9 +1383,8 @@ public:
 			name = this->townname_editbox.text.buf;
 		} else {
 			/* If user changed the name, send it */
-			char buf[MAX_LENGTH_TOWN_NAME_CHARS * MAX_CHAR_LENGTH];
-			GetTownName(buf, &this->params, this->townnameparts, lastof(buf));
-			if (strcmp(buf, this->townname_editbox.text.buf) != 0) name = this->townname_editbox.text.buf;
+			std::string original_name = GetTownName(&this->params, this->townnameparts);
+			if (original_name != this->townname_editbox.text.buf) name = this->townname_editbox.text.buf;
 		}
 
 		bool success = DoCommandP(tile, this->town_size | this->city << 2 | this->town_layout << 3 | random << 6,
@@ -1558,9 +1556,7 @@ public:
 		const GRFFile *gf = HouseSpec::Get(this->GetHouseAtOffset(house_set, 0))->grf_prop.grffile;
 		if (gf != nullptr) return GetGRFConfig(gf->grfid)->GetName();
 
-		static char name[DRAW_STRING_BUFFER];
-		GetString(name, STR_BASIC_HOUSE_SET_NAME, lastof(name));
-		return name;
+		return GetStringPtr(STR_BASIC_HOUSE_SET_NAME);
 	}
 
 	/**
@@ -1812,8 +1808,7 @@ public:
 				}
 
 				case WID_HP_HOUSE_ACCEPTANCE: {
-					static char buff[DRAW_STRING_BUFFER] = "";
-					char *str = buff;
+					std::string buff;
 					CargoArray cargo{};
 					CargoTypes dummy = 0;
 					AddAcceptedHouseCargo(this->display_house, INVALID_TILE, cargo, &dummy);
@@ -1823,10 +1818,10 @@ public:
 						SetDParam(0, cargo[i] < 8 ? STR_HOUSE_BUILD_CARGO_VALUE_EIGHTS : STR_HOUSE_BUILD_CARGO_VALUE_JUST_NAME);
 						SetDParam(1, cargo[i]);
 						SetDParam(2, CargoSpec::Get(i)->name);
-						str = GetString(str, str == buff ? STR_HOUSE_BUILD_CARGO_FIRST : STR_HOUSE_BUILD_CARGO_SEPARATED, lastof(buff));
+						GetString(StringBuilder(buff), buff.empty() ? STR_HOUSE_BUILD_CARGO_FIRST : STR_HOUSE_BUILD_CARGO_SEPARATED);
 					}
-					if (str == buff) GetString(buff, STR_JUST_NOTHING, lastof(buff));
-					SetDParamStr(0, buff);
+					if (buff.empty()) GetString(StringBuilder(buff), STR_JUST_NOTHING);
+					SetDParamStr(0, std::move(buff));
 					break;
 				}
 

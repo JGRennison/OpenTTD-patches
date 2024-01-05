@@ -1063,7 +1063,6 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				SetDParam(3, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator());
 				SetDParam(4, order->GetXData());
 			} else if (ocv == OCV_CARGO_WAITING_AMOUNT) {
-				char buf[512] = "";
 				ArrayStringParameters<10> tmp_params;
 				StringID substr;
 
@@ -1089,8 +1088,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 					tmp_params.SetParam(7, order->GetConditionValue());
 					tmp_params.SetParam(8, GB(order->GetXData(), 0, 16));
 				}
-				char *end = GetStringWithArgs(buf, substr, tmp_params, lastof(buf));
-				_temp_special_strings[0].assign(buf, end);
+				_temp_special_strings[0] = GetStringWithArgs(substr, tmp_params);
 				SetDParam(0, SPECSTR_TEMP_START);
 			} else if (ocv == OCV_COUNTER_VALUE) {
 				if (TraceRestrictCounter::IsValidID(GB(order->GetXData(), 16, 16))) {
@@ -1117,10 +1115,8 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				if (GB(order->GetXData(), 0, 16) != UINT16_MAX) {
 					const DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(GB(order->GetXData(), 0, 16));
 					if (ds.ScheduleName().empty()) {
-						char buf[256];
 						auto tmp_params = MakeParameters(GB(order->GetXData(), 0, 16) + 1);
-						char *end = GetStringWithArgs(buf, STR_TIMETABLE_ASSIGN_SCHEDULE_ID, tmp_params, lastof(buf));
-						_temp_special_strings[0].assign(buf, end);
+						_temp_special_strings[0] = GetStringWithArgs(STR_TIMETABLE_ASSIGN_SCHEDULE_ID, tmp_params);
 					} else {
 						_temp_special_strings[0] = ds.ScheduleName();
 					}

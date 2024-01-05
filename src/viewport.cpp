@@ -1950,15 +1950,16 @@ void ViewportSign::UpdatePosition(ZoomLevel maxzoom, int center, int top, String
 
 	this->top = top;
 
-	char buffer[DRAW_STRING_BUFFER];
+	std::string buffer;
 
-	GetString(buffer, str, lastof(buffer));
+	GetString(StringBuilder(buffer), str);
 	this->width_normal = WidgetDimensions::scaled.fullbevel.left + Align(GetStringBoundingBox(buffer).width, 2) + WidgetDimensions::scaled.fullbevel.right;
 	this->center = center;
 
 	/* zoomed out version */
 	if (str_small != STR_NULL) {
-		GetString(buffer, str_small, lastof(buffer));
+		buffer.clear();
+		GetString(StringBuilder(buffer), str_small);
 	}
 	this->width_small = WidgetDimensions::scaled.fullbevel.left + Align(GetStringBoundingBox(buffer, FS_SMALL).width, 2) + WidgetDimensions::scaled.fullbevel.right;
 

@@ -54,7 +54,7 @@ struct TextRefStack *CreateTextRefStackBackup();
 void RestoreTextRefStackBackup(struct TextRefStack *backup);
 
 class StringParameters;
-uint RemapNewGRFStringControlCode(uint scc, char *buf_start, char **buff, const char **str, StringParameters &parameters, bool modify_parameters);
+uint RemapNewGRFStringControlCode(uint scc, std::string *buffer, const char **str, StringParameters &parameters, bool modify_parameters);
 
 /** Mapping of language data between a NewGRF and OpenTTD. */
 struct LanguageMap {

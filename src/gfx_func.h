@@ -97,9 +97,6 @@ enum AdjustGUIZoomMode {
 };
 bool AdjustGUIZoom(AdjustGUIZoomMode mode);
 
-/** Size of the buffer used for drawing strings. */
-static const int DRAW_STRING_BUFFER = 2048;
-
 void RedrawScreenRect(int left, int top, int right, int bottom);
 
 Dimension GetSpriteSize(SpriteID sprid, Point *offset = nullptr, ZoomLevel zoom = ZOOM_LVL_GUI);

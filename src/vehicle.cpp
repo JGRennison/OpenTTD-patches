@@ -425,16 +425,11 @@ void ShowNewGrfVehicleError(EngineID engine, StringID part1, StringID part2, GRF
 		if (!_networking) DoCommand(0, critical ? PM_PAUSED_ERROR : PM_PAUSED_NORMAL, 1, DC_EXEC, CMD_PAUSE);
 	}
 
-	/* debug output */
-	char buffer[512];
-
 	SetDParamStr(0, grfconfig->GetName());
-	GetString(buffer, part1, lastof(buffer));
-	DEBUG(grf, 0, "%s", buffer + 3);
+	DEBUG(grf, 0, "%s", strip_leading_colours(GetString(part1)));
 
 	SetDParam(1, engine);
-	GetString(buffer, part2, lastof(buffer));
-	DEBUG(grf, 0, "%s", buffer + 3);
+	DEBUG(grf, 0, "%s", strip_leading_colours(GetString(part2)));
 }
 
 /**
@@ -4642,7 +4637,7 @@ void DumpVehicleStats(char *buffer, const char *last)
 	for (auto &it : cstatmap) {
 		buffer += seprintf(buffer, last, "%u: ", (uint) it.first);
 		SetDParam(0, it.first);
-		buffer = GetString(buffer, STR_COMPANY_NAME, last);
+		buffer = strecpy(buffer, GetString(STR_COMPANY_NAME).c_str(), last, true);
 		buffer += seprintf(buffer, last, "\n");
 
 		auto line = [&](vtypestats &vs, const char *type) {

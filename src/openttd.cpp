@@ -870,10 +870,11 @@ int openttd_main(int argc, char *argv[])
 				fprintf(stderr, "Failed to open savegame\n");
 				if (_load_check_data.HasErrors()) {
 					InitializeLanguagePacks(); // A language pack is needed for GetString()
-					char buf[256];
+					std::string buf;
 					SetDParamStr(0, _load_check_data.error_msg);
-					GetString(buf, _load_check_data.error, lastof(buf));
-					fprintf(stderr, "%s\n", buf);
+					GetString(StringBuilder(buf), _load_check_data.error);
+					buf += '\n';
+					fputs(buf.c_str(), stderr);
 				}
 				return ret;
 			}
@@ -1508,7 +1509,7 @@ void WriteVehicleInfo(char *&p, const char *last, const Vehicle *u, const Vehicl
 	p += seprintf(p, last, ": type %i, vehicle %i (%i), company %i, unit number %i, wagon %i, engine: ",
 			(int)u->type, u->index, v->index, (int)u->owner, v->unitnumber, length);
 	SetDParam(0, u->engine_type);
-	p = GetString(p, STR_ENGINE_NAME, last);
+	p = strecpy(p, GetString(STR_ENGINE_NAME).c_str(), last, true);
 	uint32 grfid = u->GetGRFID();
 	if (grfid) {
 		p += seprintf(p, last, ", GRF: %08X", BSWAP32(grfid));

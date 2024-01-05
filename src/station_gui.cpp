@@ -2774,12 +2774,11 @@ private:
 	const CargoSpec *cs;
 	bool newgrf_rating_used;
 
-	static const uint RATING_TOOLTIP_LINE_BUFF_SIZE = 512;
 	static const uint RATING_TOOLTIP_MAX_LINES = 9;
 	static const uint RATING_TOOLTIP_NEWGRF_INDENT = 20;
 
 public:
-	char data[RATING_TOOLTIP_MAX_LINES + 1][RATING_TOOLTIP_LINE_BUFF_SIZE] {};
+	std::string data[RATING_TOOLTIP_MAX_LINES + 1]{};
 
 	StationRatingTooltipWindow(Window *parent, const Station *st, const CargoSpec *cs) : Window(&_station_rating_tooltip_desc)
 	{
@@ -2813,7 +2812,7 @@ public:
 		const GoodsEntry *ge = &this->st->goods[this->cs->Index()];
 
 		SetDParam(0, this->cs->name);
-		GetString(this->data[0], STR_STATION_RATING_TOOLTIP_RATING_DETAILS, lastof(this->data[0]));
+		this->data[0] = GetString(STR_STATION_RATING_TOOLTIP_RATING_DETAILS);
 
 		if (!ge->HasRating()) {
 			this->data[1][0] = '\0';
@@ -2831,7 +2830,7 @@ public:
 		if (_cheats.station_rating.value) {
 			total_rating = 255;
 			skip = true;
-			GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_USING_CHEAT, lastof(this->data[line_nr]));
+			this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_USING_CHEAT);
 			line_nr++;
 		} else if (HasBit(cs->callback_mask, CBM_CARGO_STATION_RATING_CALC)) {
 
@@ -2845,14 +2844,13 @@ public:
 
 				SetDParam(0, STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_0 + (new_grf_rating <= 0 ? 0 : 1));
 				SetDParam(1, new_grf_rating);
-				GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_NEWGRF_RATING, lastof(this->data[line_nr]));
+				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_NEWGRF_RATING);
 				line_nr++;
 
 				const uint last_speed = ge->HasVehicleEverTriedLoading() && ge->IsSupplyAllowed() ? ge->last_speed : 0xFF;
 				SetDParam(0, std::min<uint>(last_speed, 0xFFu));
 
-				switch (ge->last_vehicle_type)
-				{
+				switch (ge->last_vehicle_type) {
 					case VEH_TRAIN:
 						SetDParam(1, STR_STATION_RATING_TOOLTIP_TRAIN);
 						break;
@@ -2869,18 +2867,15 @@ public:
 						SetDParam(1, STR_STATION_RATING_TOOLTIP_INVALID);
 						break;
 				}
-
-				GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED, lastof(this->data[line_nr]));
+				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED);
 				line_nr++;
 
 				SetDParam(0, std::min(ge->max_waiting_cargo, 0xFFFFu));
-				GetString(this->data[line_nr],
-					STR_STATION_RATING_TOOLTIP_NEWGRF_WAITUNITS,
-						  lastof(this->data[line_nr]));
+				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_NEWGRF_WAITUNITS);
 				line_nr++;
 
 				SetDParam(0, ge->time_since_pickup * STATION_RATING_TICKS / (DAY_TICKS * _settings_game.economy.day_length_factor));
-				GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_NEWGRF_WAITTIME, lastof(this->data[line_nr]));
+				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_NEWGRF_WAITTIME);
 				line_nr++;
 			}
 		}
@@ -2906,8 +2901,7 @@ public:
 				SetDParam(4, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
 				SetDParam(5, rounded_speed_rating);
 
-				switch (ge->last_vehicle_type)
-				{
+				switch (ge->last_vehicle_type) {
 					case VEH_TRAIN:
 						SetDParam(6, STR_STATION_RATING_TOOLTIP_TRAIN);
 						break;
@@ -2924,8 +2918,7 @@ public:
 						SetDParam(6, STR_STATION_RATING_TOOLTIP_INVALID);
 						break;
 				}
-
-				GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_SPEED, lastof(this->data[line_nr]));
+				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_SPEED);
 				line_nr++;
 
 				total_rating += speed_rating;
@@ -2954,11 +2947,7 @@ public:
 				SetDParam(4, ge->time_since_pickup * STATION_RATING_TICKS / (DAY_TICKS * _settings_game.economy.day_length_factor));
 				SetDParam(5, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
 				SetDParam(6, RoundRating(wait_time_rating));
-				GetString(this->data[line_nr],
-					(ge->last_vehicle_type == VEH_SHIP) ?
-						STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP :
-						STR_STATION_RATING_TOOLTIP_WAITTIME,
-					lastof(this->data[line_nr]));
+				this->data[line_nr] = GetString((ge->last_vehicle_type == VEH_SHIP) ? STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP : STR_STATION_RATING_TOOLTIP_WAITTIME);
 				line_nr++;
 
 				total_rating += wait_time_rating;
@@ -2986,9 +2975,7 @@ public:
 				SetDParam(3, ge->max_waiting_cargo);
 				SetDParam(4, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
 				SetDParam(5, RoundRating(cargo_rating));
-				GetString(this->data[line_nr],
-				          STR_STATION_RATING_TOOLTIP_WAITUNITS,
-				          lastof(this->data[line_nr]));
+				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_WAITUNITS);
 				line_nr++;
 
 				total_rating += cargo_rating;
@@ -3004,7 +2991,7 @@ public:
 				SetDParam(2, (statue_rating > 0) ? STR_STATION_RATING_TOOLTIP_STATUE_YES : STR_STATION_RATING_TOOLTIP_STATUE_NO);
 				SetDParam(3, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
 				SetDParam(4, (statue_rating > 0) ? 10 : 0);
-				GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_STATUE, lastof(this->data[line_nr]));
+				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_STATUE);
 				line_nr++;
 
 				total_rating += statue_rating;
@@ -3030,7 +3017,7 @@ public:
 				SetDParam(3, ge->last_age);
 				SetDParam(4, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
 				SetDParam(5, RoundRating(age_rating));
-				GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_AGE, lastof(this->data[line_nr]));
+				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_AGE);
 				line_nr++;
 
 				total_rating += age_rating;
@@ -3041,7 +3028,7 @@ public:
 
 		if (detailed) {
 			SetDParam(0, ToPercent8(total_rating));
-			GetString(this->data[line_nr], STR_STATION_RATING_TOOLTIP_TOTAL_RATING, lastof(this->data[line_nr]));
+			this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_TOTAL_RATING);
 			line_nr++;
 		}
 
@@ -3055,7 +3042,7 @@ public:
 		size->height = WidgetDimensions::scaled.framerect.Vertical() + 2;
 
 		for (uint i = 0; i <= RATING_TOOLTIP_MAX_LINES; i++) {
-			if (StrEmpty(this->data[i])) break;
+			if (this->data[i].empty()) break;
 
 			uint width = GetStringBoundingBox(this->data[i]).width + WidgetDimensions::scaled.framerect.Horizontal() + 2;
 			if (this->newgrf_rating_used && i >= 2 && i <= 4) {
@@ -3084,15 +3071,14 @@ public:
 		y += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
 
 		for (uint i = 1; i <= RATING_TOOLTIP_MAX_LINES; i++) {
-			if (StrEmpty(this->data[i])) break;
+			if (this->data[i].empty()) break;
 
 			int left = left0, right = right0;
 
 			if (this->newgrf_rating_used && i >= 2 && i <= 4) {
 				if (_current_text_dir == TD_RTL) {
 					right -= RATING_TOOLTIP_NEWGRF_INDENT;
-				}
-				else {
+				} else {
 					left += RATING_TOOLTIP_NEWGRF_INDENT;
 				}
 			}

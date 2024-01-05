@@ -50,7 +50,7 @@ const char *scope_dumper::CompanyInfo(int company_id)
 	const char *last = lastof(this->buffer);
 	b += seprintf(b, last, "%d (", company_id);
 	SetDParam(0, company_id);
-	b = GetString(b, STR_COMPANY_NAME, last);
+	b = strecpy(b, GetString(STR_COMPANY_NAME).c_str(), last);
 	b += seprintf(b, last, ")");
 	return buffer;
 }
@@ -79,7 +79,7 @@ const char *scope_dumper::VehicleInfo(const Vehicle *v)
 
 			default:
 				SetDParam(0, v->index);
-				b = GetString(b, STR_VEHICLE_NAME, last);
+				b = strecpy(b, GetString(STR_VEHICLE_NAME).c_str(), last);
 				break;
 		}
 		if (v->type < VEH_COMPANY_END) {
@@ -95,7 +95,7 @@ const char *scope_dumper::VehicleInfo(const Vehicle *v)
 				return this->buffer;
 			}
 			SetDParam(0, v->First()->index);
-			b = GetString(b, STR_VEHICLE_NAME, last);
+			b = strecpy(b, GetString(STR_VEHICLE_NAME).c_str(), last);
 			b += seprintf(b, last, ", ");
 			dump_flags(v->First());
 			b += seprintf(b, last, ")");
@@ -116,7 +116,7 @@ const char *scope_dumper::StationInfo(const BaseStation *st)
 		const bool waypoint = Waypoint::IsExpected(st);
 		b += seprintf(b, last, "%s: %u: (", waypoint ? "waypoint" : "station", st->index);
 		SetDParam(0, st->index);
-		b = GetString(b, waypoint ? STR_WAYPOINT_NAME : STR_STATION_NAME, last);
+		b = strecpy(b, GetString(waypoint ? STR_WAYPOINT_NAME : STR_STATION_NAME).c_str(), last);
 		b += seprintf(b, last, ", c:%d, facil: ", (int) st->owner);
 		auto dump_facil = [&](char c, StationFacility flag) {
 			if (st->facilities & flag) b += seprintf(b, last, "%c", c);

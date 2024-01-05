@@ -265,7 +265,6 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 {
 	SetDParamStr(0, name);
 
-	char message_src[256];
 	StringID strid;
 	switch (action) {
 		case NETWORK_ACTION_SERVER_MESSAGE:
@@ -294,8 +293,7 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 
 		case NETWORK_ACTION_GIVE_MONEY: {
 			SetDParam(1, data.auxdata >> 16);
-			GetString(message_src, STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION, lastof(message_src));
-			SetDParamStr(0, message_src);
+			SetDParamStr(0, GetString(STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION));
 
 			extern byte GetCurrentGrfLangID();
 			byte lang_id = GetCurrentGrfLangID();
@@ -317,7 +315,8 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 		default:                            strid = STR_NETWORK_CHAT_ALL; break;
 	}
 
-	char message[1024];
+	std::string message;
+	StringBuilder builder(message);
 	SetDParamStr(1, str);
 	SetDParam(2, data.data);
 	SetDParamStr(3, data_str);
@@ -326,12 +325,12 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 	 * right-to-left characters depending on the context. As the next text might be an user's name, the
 	 * user name's characters will influence the direction of the "***" instead of the language setting
 	 * of the game. Manually set the direction of the "***" by inserting a text-direction marker. */
-	char *msg_ptr = message + Utf8Encode(message, _current_text_dir == TD_LTR ? CHAR_TD_LRM : CHAR_TD_RLM);
-	GetString(msg_ptr, strid, lastof(message));
+	builder.Utf8Encode(_current_text_dir == TD_LTR ? CHAR_TD_LRM : CHAR_TD_RLM);
+	GetString(builder, strid);
 
-	DEBUG(desync, 1, "msg: %s; %s", debug_date_dumper().HexDate(), message);
-	IConsolePrintF(colour, "%s", message);
-	NetworkAddChatMessage(colour, _settings_client.gui.network_chat_timeout, message);
+	DEBUG(desync, 1, "msg: %s; %s", debug_date_dumper().HexDate(), message.c_str());
+	IConsolePrintF(colour, "%s", message.c_str());
+	NetworkAddChatMessage(colour, _settings_client.gui.network_chat_timeout, message.c_str());
 }
 
 /* Calculate the frame-lag of a client */

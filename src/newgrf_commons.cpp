@@ -522,17 +522,14 @@ void ErrorUnknownCallbackResult(uint32 grfid, uint16 cbid, uint16 cb_res)
 		ShowErrorMessage(STR_NEWGRF_BUGGY, STR_NEWGRF_BUGGY_UNKNOWN_CALLBACK_RESULT, WL_CRITICAL);
 	}
 
-	/* debug output */
-	char buffer[512];
-
 	SetDParamStr(0, grfconfig->GetName());
-	GetString(buffer, STR_NEWGRF_BUGGY, lastof(buffer));
-	DEBUG(grf, 0, "%s", buffer + 3);
+	std::string buffer = GetString(STR_NEWGRF_BUGGY);
+	DEBUG(grf, 0, "%s", strip_leading_colours(buffer));
 
 	SetDParam(1, cbid);
 	SetDParam(2, cb_res);
-	GetString(buffer, STR_NEWGRF_BUGGY_UNKNOWN_CALLBACK_RESULT, lastof(buffer));
-	DEBUG(grf, 0, "%s", buffer + 3);
+	buffer = GetString(STR_NEWGRF_BUGGY_UNKNOWN_CALLBACK_RESULT);
+	DEBUG(grf, 0, "%s", strip_leading_colours(buffer));
 }
 
 /**

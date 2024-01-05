@@ -547,6 +547,20 @@ void str_strip_colours(char *str)
 	*dst = '\0';
 }
 
+/** Advances the pointer over any colour codes at the start of the string */
+const char *strip_leading_colours(const char *str)
+{
+	char32_t c;
+
+	do {
+		size_t len = Utf8Decode(&c, str);
+		if (c < SCC_BLUE || c > SCC_BLACK) break;
+		str += len;
+	} while (c != '\0');
+
+	return str;
+}
+
 std::string str_strip_all_scc(const char *str)
 {
 	std::string out;
@@ -847,6 +861,11 @@ size_t Utf8Encode(char *buf, WChar c)
 size_t Utf8Encode(std::ostreambuf_iterator<char> &buf, WChar c)
 {
 	return Utf8Encode<std::ostreambuf_iterator<char> &>(buf, c);
+}
+
+size_t Utf8Encode(std::back_insert_iterator<std::string> &buf, char32_t c)
+{
+	return Utf8Encode<std::back_insert_iterator<std::string> &>(buf, c);
 }
 
 /**

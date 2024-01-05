@@ -631,10 +631,8 @@ static void Load_SLXI()
 	};
 
 	auto version_error = [](StringID str, const char *feature, int64 p1, int64 p2) {
-		char buf[256];
 		auto tmp_params = MakeParameters(_sl_xv_version_label.empty() ? STR_EMPTY : STR_GAME_SAVELOAD_FROM_VERSION, _sl_xv_version_label, feature, p1, p2);
-		GetStringWithArgs(buf, str, tmp_params, lastof(buf));
-		SlError(STR_JUST_RAW_STRING, buf);
+		SlError(STR_JUST_RAW_STRING, GetStringWithArgs(str, tmp_params));
 	};
 
 	uint32 item_count = SlReadUint32();

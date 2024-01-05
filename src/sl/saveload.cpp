@@ -3147,14 +3147,11 @@ void SetSaveLoadError(StringID str)
 }
 
 /** Get the string representation of the error message */
-const char *GetSaveLoadErrorString()
+std::string GetSaveLoadErrorString()
 {
 	SetDParam(0, _sl.error_str);
 	SetDParamStr(1, _sl.extra_msg);
-
-	static char err_str[512];
-	GetString(err_str, _sl.action == SLA_SAVE ? STR_ERROR_GAME_SAVE_FAILED : STR_ERROR_GAME_LOAD_FAILED, lastof(err_str));
-	return err_str;
+	return GetString(_sl.action == SLA_SAVE ? STR_ERROR_GAME_SAVE_FAILED : STR_ERROR_GAME_LOAD_FAILED);
 }
 
 /** Show a gui message when saving has failed */
@@ -3198,7 +3195,7 @@ static SaveOrLoadResult SaveFileToDisk(bool threaded)
 		 * cancelled due to a client disconnecting. */
 		if (_sl.error_str != STR_NETWORK_ERROR_LOSTCONNECTION) {
 			/* Skip the "colour" character */
-			DEBUG(sl, 0, "%s", GetSaveLoadErrorString() + 3);
+			DEBUG(sl, 0, "%s", strip_leading_colours(GetSaveLoadErrorString()));
 			asfp = SaveFileError;
 		}
 
@@ -3644,7 +3641,7 @@ SaveOrLoadResult LoadWithFilter(LoadFilter *reader)
 		ClearSaveLoadState();
 
 		/* Skip the "colour" character */
-		DEBUG(sl, 0, "%s", GetSaveLoadErrorString() + 3);
+		DEBUG(sl, 0, "%s", strip_leading_colours(GetSaveLoadErrorString()));
 
 		return SL_REINIT;
 	}
@@ -3744,7 +3741,7 @@ SaveOrLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, 
 		ClearSaveLoadState();
 
 		/* Skip the "colour" character */
-		if (fop != SLO_CHECK) DEBUG(sl, 0, "%s", GetSaveLoadErrorString() + 3);
+		if (fop != SLO_CHECK) DEBUG(sl, 0, "%s", strip_leading_colours(GetSaveLoadErrorString()));
 
 		/* A saver/loader exception!! reinitialize all variables to prevent crash! */
 		return (fop == SLO_LOAD) ? SL_REINIT : SL_ERROR;
@@ -3758,23 +3755,22 @@ SaveOrLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, 
  */
 void DoAutoOrNetsave(FiosNumberedSaveName &counter, bool threaded, FiosNumberedSaveName *lt_counter)
 {
-	char buf[MAX_PATH];
+	std::string filename;
 
 	if (_settings_client.gui.keep_all_autosave) {
-		GenerateDefaultSaveName(buf, lastof(buf));
-		strecat(buf, counter.Extension().c_str(), lastof(buf));
+		filename = GenerateDefaultSaveName() + counter.Extension();
 	} else {
-		strecpy(buf, counter.Filename().c_str(), lastof(buf));
+		filename = counter.Filename();
 		if (lt_counter != nullptr && counter.GetLastNumber() == 0) {
 			std::string lt_path = lt_counter->FilenameUsingMaxSaves(_settings_client.gui.max_num_lt_autosaves);
-			DEBUG(sl, 2, "Renaming autosave '%s' to long-term file '%s'", buf, lt_path.c_str());
+			DEBUG(sl, 2, "Renaming autosave '%s' to long-term file '%s'", filename.c_str(), lt_path.c_str());
 			std::string dir = FioFindDirectory(AUTOSAVE_DIR);
-			FioRenameFile(dir + buf, dir + lt_path);
+			FioRenameFile(dir + filename, dir + lt_path);
 		}
 	}
 
-	DEBUG(sl, 2, "Autosaving to '%s'", buf);
-	if (SaveOrLoad(buf, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, threaded, SMF_ZSTD_OK) != SL_OK) {
+	DEBUG(sl, 2, "Autosaving to '%s'", filename.c_str());
+	if (SaveOrLoad(filename, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, threaded, SMF_ZSTD_OK) != SL_OK) {
 		ShowErrorMessage(STR_ERROR_AUTOSAVE_FAILED, INVALID_STRING_ID, WL_ERROR);
 	}
 }
@@ -3787,11 +3783,9 @@ void DoExitSave()
 }
 
 /**
- * Fill the buffer with the default name for a savegame *or* screenshot.
- * @param buf the buffer to write to.
- * @param last the last element in the buffer.
+ * Get the default name for a savegame *or* screenshot.
  */
-void GenerateDefaultSaveName(char *buf, const char *last)
+std::string GenerateDefaultSaveName()
 {
 	/* Check if we have a name for this map, which is the name of the first
 	 * available company. When there's no company available we'll use
@@ -3816,8 +3810,9 @@ void GenerateDefaultSaveName(char *buf, const char *last)
 	SetDParam(2, _date);
 
 	/* Get the correct string (special string for when there's not company) */
-	GetString(buf, !Company::IsValidID(cid) ? STR_SAVEGAME_NAME_SPECTATOR : STR_SAVEGAME_NAME_DEFAULT, last);
-	SanitizeFilename(buf);
+	std::string filename = GetString(!Company::IsValidID(cid) ? STR_SAVEGAME_NAME_SPECTATOR : STR_SAVEGAME_NAME_DEFAULT);
+	SanitizeFilename(filename);
+	return filename;
 }
 
 /**

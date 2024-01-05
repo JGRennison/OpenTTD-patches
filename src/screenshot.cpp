@@ -43,8 +43,8 @@ static const char * const HEIGHTMAP_NAME  = "heightmap";  ///< Default filename 
 std::string _screenshot_format_name;  ///< Extension of the current screenshot format (corresponds with #_cur_screenshot_format).
 uint _num_screenshot_formats;         ///< Number of available screenshot formats.
 uint _cur_screenshot_format;          ///< Index of the currently selected screenshot format in #_screenshot_formats.
-static char _screenshot_name[128];    ///< Filename of the screenshot file.
-char _full_screenshot_name[MAX_PATH]; ///< Pathname of the screenshot file.
+static std::string _screenshot_name;  ///< Filename of the screenshot file.
+std::string _full_screenshot_path;    ///< Pathname of the screenshot file.
 uint _heightmap_highest_peak;         ///< When saving a heightmap, this contains the highest peak on the map.
 
 static const char *_screenshot_aux_text_key = nullptr;
@@ -700,47 +700,47 @@ static void LargeWorldCallback(void *userdata, void *buf, uint y, uint pitch, ui
  */
 static const char *MakeScreenshotName(const char *default_fn, const char *ext, bool crashlog = false)
 {
-	bool generate = StrEmpty(_screenshot_name);
+	bool generate = _screenshot_name.empty();
 
 	if (generate) {
 		if (_game_mode == GM_EDITOR || _game_mode == GM_MENU || _local_company == COMPANY_SPECTATOR) {
-			strecpy(_screenshot_name, default_fn, lastof(_screenshot_name));
+			_screenshot_name = default_fn;
 		} else {
-			GenerateDefaultSaveName(_screenshot_name, lastof(_screenshot_name));
+			_screenshot_name = GenerateDefaultSaveName();
 		}
 	}
 
-	size_t len = strlen(_screenshot_name);
+	size_t len = _screenshot_name.size();
 
 	/* Handle user-specified filenames ending in %d or # with automatic numbering */
 	if (len >= 2 && _screenshot_name[len - 2] == '%' && _screenshot_name[len - 1] == 'd') {
 		generate = true;
-		len -= 2;
-		_screenshot_name[len] = '\0';
+		_screenshot_name.resize(len - 2);
 	} else if (len >= 1 && _screenshot_name[len - 1] == '#') {
 		generate = true;
-		len -= 1;
-		_screenshot_name[len] = '\0';
+		_screenshot_name.resize(len - 1);
 	}
 
+	len = _screenshot_name.size();
+
 	/* Add extension to screenshot file */
-	seprintf(&_screenshot_name[len], lastof(_screenshot_name), ".%s", ext);
+	_screenshot_name += '.';
+	_screenshot_name += ext;
 
 	const char *screenshot_dir = crashlog ? _personal_dir.c_str() : FiosGetScreenshotDir();
 
 	for (uint serial = 1;; serial++) {
-		if (seprintf(_full_screenshot_name, lastof(_full_screenshot_name), "%s%s", screenshot_dir, _screenshot_name) >= (int)lengthof(_full_screenshot_name)) {
-			/* We need more characters than MAX_PATH -> end with error */
-			_full_screenshot_name[0] = '\0';
-			break;
-		}
+		_full_screenshot_path = screenshot_dir;
+		_full_screenshot_path += _screenshot_name;
+
 		if (!generate) break; // allow overwriting of non-automatic filenames
-		if (!FileExists(_full_screenshot_name)) break;
+		if (!FileExists(_full_screenshot_path)) break;
 		/* If file exists try another one with same name, but just with a higher index */
-		seprintf(&_screenshot_name[len], lastof(_screenshot_name) - len, "#%u.%s", serial, ext);
+		_screenshot_name.erase(len);
+		_screenshot_name += stdstr_fmt("#%u.%s", serial, ext);
 	}
 
-	return _full_screenshot_name;
+	return _full_screenshot_path.c_str();
 }
 
 /** Make a screenshot of the current screen. */
@@ -983,8 +983,7 @@ static bool RealMakeScreenshot(ScreenshotType t, std::string name, uint32 width,
 		SetScreenshotWindowHidden(false);
 	}
 
-	_screenshot_name[0] = '\0';
-	if (!name.empty()) strecpy(_screenshot_name, name.c_str(), lastof(_screenshot_name));
+	_screenshot_name = name;
 
 	bool ret;
 	switch (t) {
@@ -1332,8 +1331,8 @@ static void IndustryScreenCallback(void *userdata, void *buf, uint y, uint pitch
  */
 bool MakeMinimapWorldScreenshot(const char *name)
 {
-	_screenshot_name[0] = '\0';
-	if (name != nullptr) strecpy(_screenshot_name, name, lastof(_screenshot_name));
+	_screenshot_name.clear();
+	if (name != nullptr) _screenshot_name.assign(name);
 
 	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
 	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), MinimapScreenCallback, nullptr, MapSizeX(), MapSizeY(), 32, _cur_palette.palette);
@@ -1344,8 +1343,8 @@ bool MakeMinimapWorldScreenshot(const char *name)
  */
 bool MakeTopographyScreenshot(const char *name)
 {
-	_screenshot_name[0] = '\0';
-	if (name != nullptr) strecpy(_screenshot_name, name, lastof(_screenshot_name));
+	_screenshot_name.clear();
+	if (name != nullptr) _screenshot_name.assign(name);
 
 	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
 	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), TopographyScreenCallback, nullptr, MapSizeX(), MapSizeY(), 32, _cur_palette.palette);
@@ -1356,8 +1355,8 @@ bool MakeTopographyScreenshot(const char *name)
  */
 bool MakeIndustryScreenshot(const char *name)
 {
-	_screenshot_name[0] = '\0';
-	if (name != nullptr) strecpy(_screenshot_name, name, lastof(_screenshot_name));
+	_screenshot_name.clear();
+	if (name != nullptr) _screenshot_name.assign(name);
 
 	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
 	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), IndustryScreenCallback, nullptr, MapSizeX(), MapSizeY(), 32, _cur_palette.palette);

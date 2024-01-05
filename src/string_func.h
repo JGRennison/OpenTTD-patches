@@ -49,6 +49,14 @@ void StrMakeValidInPlace(char *str, StringValidationSettings settings = SVS_REPL
 
 const char *str_fix_scc_encoded(char *str, const char *last) NOACCESS(2);
 void str_strip_colours(char *str);
+const char *strip_leading_colours(const char *str);
+
+inline const char *strip_leading_colours(const std::string &str)
+{
+	return strip_leading_colours(str.c_str());
+}
+
+
 std::string str_strip_all_scc(const char *str);
 char *str_replace_wchar(char *str, const char *last, WChar find, WChar replace);
 bool strtolower(char *str);
@@ -99,25 +107,26 @@ static inline size_t ttd_strnlen(const char *str, size_t maxlen)
 	return t - str;
 }
 
-bool IsValidChar(WChar key, CharSetFilter afilter);
+bool IsValidChar(char32_t key, CharSetFilter afilter);
 
-size_t Utf8Decode(WChar *c, const char *s);
-size_t Utf8Encode(char *buf, WChar c);
-size_t Utf8Encode(std::ostreambuf_iterator<char> &buf, WChar c);
+size_t Utf8Decode(char32_t *c, const char *s);
+size_t Utf8Encode(char *buf, char32_t c);
+size_t Utf8Encode(std::ostreambuf_iterator<char> &buf, char32_t c);
+size_t Utf8Encode(std::back_insert_iterator<std::string> &buf, char32_t c);
 size_t Utf8TrimString(char *s, size_t maxlen);
 
 
-static inline WChar Utf8Consume(const char **s)
+static inline char32_t Utf8Consume(const char **s)
 {
-	WChar c;
+	char32_t c;
 	*s += Utf8Decode(&c, *s);
 	return c;
 }
 
 template <class Titr>
-static inline WChar Utf8Consume(Titr &s)
+static inline char32_t Utf8Consume(Titr &s)
 {
-	WChar c;
+	char32_t c;
 	s += Utf8Decode(&c, &*s);
 	return c;
 }
@@ -127,7 +136,7 @@ static inline WChar Utf8Consume(Titr &s)
  * @param c Unicode character.
  * @return Length of UTF-8 encoding for character.
  */
-static inline int8 Utf8CharLen(WChar c)
+static inline int8_t Utf8CharLen(char32_t c)
 {
 	if (c < 0x80)       return 1;
 	if (c < 0x800)      return 2;
@@ -146,7 +155,7 @@ static inline int8 Utf8CharLen(WChar c)
  * @param c char to query length of
  * @return requested size
  */
-static inline int8 Utf8EncodedCharLen(char c)
+static inline int8_t Utf8EncodedCharLen(char c)
 {
 	if (GB(c, 3, 5) == 0x1E) return 4;
 	if (GB(c, 4, 4) == 0x0E) return 3;
@@ -214,7 +223,7 @@ static inline bool Utf16IsTrailSurrogate(uint c)
  * @param trail Trail surrogate code point.
  * @return Decoded Unicode character.
  */
-static inline WChar Utf16DecodeSurrogate(uint lead, uint trail)
+static inline char32_t Utf16DecodeSurrogate(uint lead, uint trail)
 {
 	return 0x10000 + (((lead - 0xD800) << 10) | (trail - 0xDC00));
 }
@@ -224,7 +233,7 @@ static inline WChar Utf16DecodeSurrogate(uint lead, uint trail)
  * @param c Pointer to one or two UTF-16 code points.
  * @return Decoded Unicode character.
  */
-static inline WChar Utf16DecodeChar(const uint16 *c)
+static inline char32_t Utf16DecodeChar(const uint16_t *c)
 {
 	if (Utf16IsLeadSurrogate(c[0])) {
 		return Utf16DecodeSurrogate(c[0], c[1]);
@@ -239,7 +248,7 @@ static inline WChar Utf16DecodeChar(const uint16 *c)
  * @return true iff the character is used to influence
  *         the text direction.
  */
-static inline bool IsTextDirectionChar(WChar c)
+static inline bool IsTextDirectionChar(char32_t c)
 {
 	switch (c) {
 		case CHAR_TD_LRM:
@@ -256,7 +265,7 @@ static inline bool IsTextDirectionChar(WChar c)
 	}
 }
 
-static inline bool IsPrintable(WChar c)
+static inline bool IsPrintable(char32_t c)
 {
 	if (c < 0x20)   return false;
 	if (c < 0xE000) return true;
@@ -271,7 +280,7 @@ static inline bool IsPrintable(WChar c)
  * @return a boolean value whether 'c' is a whitespace character or not
  * @see http://www.fileformat.info/info/unicode/category/Zs/list.htm
  */
-static inline bool IsWhitespace(WChar c)
+static inline bool IsWhitespace(char32_t c)
 {
 	return c == 0x0020 /* SPACE */ || c == 0x3000; /* IDEOGRAPHIC SPACE */
 }

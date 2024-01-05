@@ -553,10 +553,8 @@ void UpdateAllStationVirtCoords()
 
 void BaseStation::FillCachedName() const
 {
-	char buf[MAX_LENGTH_STATION_NAME_CHARS * MAX_CHAR_LENGTH];
 	auto tmp_params = MakeParameters(this->index);
-	char *end = GetStringWithArgs(buf, Waypoint::IsExpected(this) ? STR_WAYPOINT_NAME : STR_STATION_NAME, tmp_params, lastof(buf));
-	this->cached_name.assign(buf, end);
+	this->cached_name = GetStringWithArgs(Waypoint::IsExpected(this) ? STR_WAYPOINT_NAME : STR_STATION_NAME, tmp_params);
 }
 
 void ClearAllStationCachedNames()

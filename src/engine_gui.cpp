@@ -169,29 +169,27 @@ uint GetTotalCapacityOfArticulatedParts(EngineID engine)
 
 static StringID GetEngineInfoCapacityString(EngineID engine)
 {
-	char buffer[1024];
-
 	CargoArray cap = GetCapacityOfArticulatedParts(engine);
 	if (cap.GetSum<uint>() == 0) {
 		/* no cargo at all */
 		auto tmp_params = MakeParameters(CT_INVALID, 0);
-		GetStringWithArgs(buffer, STR_JUST_CARGO, tmp_params, lastof(buffer));
+		_temp_special_strings[1] = GetStringWithArgs(STR_JUST_CARGO, tmp_params);
 	} else {
-		char *b = buffer;
+		std::string buffer;
 		for (uint i = 0; i < NUM_CARGO; i++) {
 			if (cap[i] == 0) continue;
 
-			if (b != buffer) {
+			if (!buffer.empty()) {
 				auto tmp_params = MakeParameters();
-				b = GetStringWithArgs(b, STR_COMMA_SEPARATOR, tmp_params, lastof(buffer));
+				GetStringWithArgs(StringBuilder(buffer), STR_COMMA_SEPARATOR, tmp_params);
 			}
 
 			auto tmp_params = MakeParameters(i, cap[i]);
-			b = GetStringWithArgs(b, STR_JUST_CARGO, tmp_params, lastof(buffer));
+			GetStringWithArgs(StringBuilder(buffer), STR_JUST_CARGO, tmp_params);
 		}
+		_temp_special_strings[1] = std::move(buffer);
 	}
 
-	_temp_special_strings[1].assign(buffer);
 	return SPECSTR_TEMP_START + 1;
 }
 

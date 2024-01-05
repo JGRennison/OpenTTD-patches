@@ -875,20 +875,16 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 							}
 						}
 
-						char buf[256] = "";
 						auto tmp_params = MakeParameters(Waypoint::IsValidID(id) ? STR_WAYPOINT_NAME : STR_STATION_NAME, id, icon_via);
-						char *end = GetStringWithArgs(buf, STR_DEPARTURES_VIA_DESCRIPTOR, tmp_params, lastof(buf));
-						_temp_special_strings[temp_str].assign(buf, end);
+						_temp_special_strings[temp_str] = GetStringWithArgs(STR_DEPARTURES_VIA_DESCRIPTOR, tmp_params);
 					};
 					get_single_via_string(0, via);
 
 					if (via2 != INVALID_STATION) {
 						get_single_via_string(1, via2);
 
-						char buf[512] = "";
 						auto tmp_params = MakeParameters(SPECSTR_TEMP_START, SPECSTR_TEMP_START + 1);
-						char *end = GetStringWithArgs(buf, STR_DEPARTURES_VIA_AND, tmp_params, lastof(buf));
-						_temp_special_strings[0].assign(buf, end);
+						_temp_special_strings[0] = GetStringWithArgs(STR_DEPARTURES_VIA_AND, tmp_params);
 					}
 
 					SetDParam(offset, SPECSTR_TEMP_START);
@@ -987,11 +983,11 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 		/* RTL languages can be handled in the language file, e.g. by having the following: */
 		/* STR_DEPARTURES_CALLING_AT_STATION      :{STATION}, {RAW_STRING} */
 		/* STR_DEPARTURES_CALLING_AT_LAST_STATION :{STATION} & {RAW_STRING}*/
-		char buffer[512], scratch[512];
+		std::string buffer;
 
 		if (d->calling_at.size() != 0) {
 			SetDParam(0, (d->calling_at[0]).station);
-			GetString(scratch, STR_DEPARTURES_CALLING_AT_FIRST_STATION, lastof(scratch));
+			std::string calling_at_buffer = GetString(STR_DEPARTURES_CALLING_AT_FIRST_STATION);
 
 			StationID continues_to = INVALID_STATION;
 
@@ -1008,29 +1004,25 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 						continues_to = d->calling_at[d->calling_at.size() - 1].station;
 						break;
 					}
-					SetDParamStr(0, scratch);
+					SetDParamStr(0, std::move(calling_at_buffer));
 					SetDParam(1, s);
-					GetString(buffer, STR_DEPARTURES_CALLING_AT_STATION, lastof(buffer));
-					strncpy(scratch, buffer, sizeof(scratch));
+					calling_at_buffer = GetString(STR_DEPARTURES_CALLING_AT_STATION);
 				}
 
 				/* Finally, finish off with " and <station>". */
-				SetDParamStr(0, scratch);
+				SetDParamStr(0, std::move(calling_at_buffer));
 				SetDParam(1, d->calling_at[i].station);
-				GetString(buffer, STR_DEPARTURES_CALLING_AT_LAST_STATION, lastof(buffer));
-				strncpy(scratch, buffer, sizeof(scratch));
+				calling_at_buffer = GetString(STR_DEPARTURES_CALLING_AT_LAST_STATION);
 			}
 
-			SetDParamStr(1, scratch);
+			SetDParamStr(1, std::move(calling_at_buffer));
 			if (continues_to == INVALID_STATION) {
 				SetDParam(0, STR_DEPARTURES_CALLING_AT_LIST);
 			} else {
 				SetDParam(0, STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS);
 				SetDParam(2, continues_to);
 			}
-			GetString(buffer, size_prefix, lastof(buffer));
-		} else {
-			buffer[0] = 0;
+			buffer = GetString(size_prefix);
 		}
 
 		int list_width = (GetStringBoundingBox(buffer, _settings_client.gui.departure_larger_font ? FS_NORMAL : FS_SMALL)).width;

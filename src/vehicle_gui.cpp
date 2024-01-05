@@ -987,7 +987,6 @@ struct RefitWindow : public Window {
 	{
 		std::string &name = this->ship_part_names[v->index];
 		if (name.empty()) {
-			char buffer[128] = "";
 			const Vehicle *front = v->First();
 			uint offset = 0;
 			for (const Vehicle *u = front; u != v; u = u->Next()) offset++;
@@ -997,14 +996,11 @@ struct RefitWindow : public Window {
 				assert(grffile != nullptr);
 
 				StartTextRefStackUsage(grffile, 6);
-				char *end = GetString(buffer, GetGRFStringID(grffile->grfid, 0xD000 + callback), lastof(buffer));
+				name = GetString(GetGRFStringID(grffile->grfid, 0xD000 + callback));
 				StopTextRefStackUsage();
-
-				name.assign(buffer, end - buffer);
 			} else {
 				SetDParam(0, offset + 1);
-				char *end = GetString(buffer, STR_REFIT_SHIP_PART, lastof(buffer));
-				name.assign(buffer, end - buffer);
+				name = GetString(STR_REFIT_SHIP_PART);
 			}
 		}
 		return name;
@@ -3201,18 +3197,14 @@ struct VehicleDetailsWindow : Window {
 					std::vector<TraceRestrictSlotID> slots;
 					TraceRestrictGetVehicleSlots(v->index, slots);
 
-					char text_buffer[512];
-					char *buffer = text_buffer;
-					const char * const last = lastof(text_buffer);
 					SetDParam(0, slots.size());
-					buffer = GetString(buffer, STR_TRACE_RESTRICT_SLOT_LIST_HEADER, last);
+					std::string buffer = GetString(STR_TRACE_RESTRICT_SLOT_LIST_HEADER);
 
 					for (size_t i = 0; i < slots.size(); i++) {
-						if (i != 0) buffer = GetString(buffer, STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR, last);
-						buffer = strecpy(buffer, TraceRestrictSlot::Get(slots[i])->name.c_str(), last);
+						if (i != 0) GetString(StringBuilder(buffer), STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR);
+						buffer += TraceRestrictSlot::Get(slots[i])->name;
 					}
-					SetDParamStr(0, text_buffer);
-					DrawString(tr, STR_JUST_RAW_STRING);
+					DrawString(tr, buffer);
 					tr.top += GetCharacterHeight(FS_NORMAL);
 				}
 

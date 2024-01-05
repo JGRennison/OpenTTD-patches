@@ -901,7 +901,7 @@ void CrashLog::CloseCrashLogFile()
 	if (_screen.width < 1 || _screen.height < 1 || _screen.dst_ptr == nullptr) return false;
 
 	bool res = MakeScreenshot(SC_CRASHLOG, name);
-	if (res) strecpy(filename, _full_screenshot_name, filename_last);
+	if (res) strecpy(filename, _full_screenshot_path.c_str(), filename_last);
 	return res;
 }
 

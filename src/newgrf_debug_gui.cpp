@@ -542,9 +542,8 @@ struct NewGRFInspectWindow : Window {
 
 		if (this->log_console) {
 			GetFeatureHelper(this->window_number)->SetStringParameters(this->GetFeatureIndex());
-			char buf[1024];
-			GetString(buf, STR_NEWGRF_INSPECT_CAPTION, lastof(buf));
-			DEBUG(misc, 0, "*** %s ***", buf + Utf8EncodedCharLen(buf[0]));
+			std::string buf = GetString(STR_NEWGRF_INSPECT_CAPTION);
+			if (!buf.empty()) DEBUG(misc, 0, "*** %s ***", strip_leading_colours(buf));
 		}
 
 		uint index = this->GetFeatureIndex();
@@ -807,9 +806,7 @@ struct NewGRFInspectWindow : Window {
 						NOT_REACHED();
 				}
 
-				char buffer[64];
-				GetString(buffer, string, lastof(buffer));
-				this->DrawString(r, i++, "  %02x: %s (%s)", nip->prop, buffer, nip->name);
+				this->DrawString(r, i++, "  %02x: %s (%s)", nip->prop, GetString(string).c_str(), nip->name);
 			}
 		}
 

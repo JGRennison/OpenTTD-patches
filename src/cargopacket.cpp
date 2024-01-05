@@ -73,28 +73,31 @@ inline void IterateCargoPacketDeferredPayments(CargoPacketID index, bool erase_r
 	}
 }
 
-void DumpCargoPacketDeferredPaymentStats(char *buffer, const char *last)
+std::string DumpCargoPacketDeferredPaymentStats()
 {
 	Money payments[256][4] = {};
 	for (auto &it : _cargo_packet_deferred_payments) {
 		payments[GB(it.first, 24, 8)][GB(it.first, 22, 2)] += it.second;
 	}
+
+	std::string buffer;
 	for (uint i = 0; i < 256; i++) {
 		for (uint j = 0; j < 4; j++) {
 			if (payments[i][j] != 0) {
 				SetDParam(0, i);
-				buffer = GetString(buffer, STR_COMPANY_NAME, last);
-				buffer += seprintf(buffer, last, " (");
-				buffer = GetString(buffer, STR_REPLACE_VEHICLE_TRAIN + j, last);
-				buffer += seprintf(buffer, last, "): ");
+				GetString(StringBuilder(buffer), STR_COMPANY_NAME);
+				buffer += " (";
+				GetString(StringBuilder(buffer), STR_REPLACE_VEHICLE_TRAIN + j);
+				buffer += "): ";
 				SetDParam(0, payments[i][j]);
-				buffer = GetString(buffer, STR_JUST_CURRENCY_LONG, last);
-				buffer += seprintf(buffer, last, "\n");
+				GetString(StringBuilder(buffer), STR_JUST_CURRENCY_LONG);
+				buffer += '\n';
 			}
 		}
 	}
-	buffer += seprintf(buffer, last, "Deferred payment count: %u\n", (uint) _cargo_packet_deferred_payments.size());
-	buffer += seprintf(buffer, last, "Total cargo packets: %u\n", (uint)CargoPacket::GetNumItems());
+	buffer += stdstr_fmt("Deferred payment count: %u\n", (uint) _cargo_packet_deferred_payments.size());
+	buffer += stdstr_fmt("Total cargo packets: %u\n", (uint)CargoPacket::GetNumItems());
+	return buffer;
 }
 
 /**

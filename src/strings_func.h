@@ -65,9 +65,7 @@ static inline StringID MakeStringID(StringTab tab, uint index)
 	return (tab << TAB_SIZE_BITS) + index;
 }
 
-char *GetString(char *buffr, StringID string, const char *last);
 std::string GetString(StringID string);
-char *GetStringWithArgs(char *buffr, StringID string, StringParameters &args, const char *last, uint case_index = 0, bool game_script = false);
 const char *GetStringPtr(StringID string);
 uint32 GetStringGRFID(StringID string);
 

@@ -1354,33 +1354,25 @@ void CommandCost::UseTextRefStack(const GRFFile *grffile, uint num_registers)
 
 std::string CommandCost::SummaryMessage(StringID cmd_msg) const
 {
-	char buf[DRAW_STRING_BUFFER];
-	this->WriteSummaryMessage(buf, lastof(buf), cmd_msg);
-	return buf;
-}
-
-int CommandCost::WriteSummaryMessage(char *buf, char *last, StringID cmd_msg) const
-{
 	if (this->Succeeded()) {
-		return seprintf(buf, last, "Success: cost: " OTTD_PRINTF64, (int64) this->GetCost());
+		return stdstr_fmt("Success: cost: " OTTD_PRINTF64, (int64) this->GetCost());
 	} else {
 		const uint textref_stack_size = this->GetTextRefStackSize();
 		if (textref_stack_size > 0) StartTextRefStackUsage(this->GetTextRefStackGRF(), textref_stack_size, this->GetTextRefStack());
 
-		char *b = buf;
-		b += seprintf(b, last, "Failed: cost: " OTTD_PRINTF64, (int64) this->GetCost());
+		std::string buf = stdstr_fmt("Failed: cost: " OTTD_PRINTF64, (int64) this->GetCost());
 		if (cmd_msg != 0) {
-			b += seprintf(b, last, " ");
-			b = GetString(b, cmd_msg, last);
+			buf += ' ';
+			GetString(StringBuilder(buf), cmd_msg);
 		}
 		if (this->message != INVALID_STRING_ID) {
-			b += seprintf(b, last, " ");
-			b = GetString(b, this->message, last);
+			buf += ' ';
+			GetString(StringBuilder(buf), this->message);
 		}
 
 		if (textref_stack_size > 0) StopTextRefStackUsage();
 
-		return b - buf;
+		return buf;
 	}
 }
 

@@ -787,20 +787,20 @@ std::string GenerateAutoNameForVehicleGroup(const Vehicle *v)
 
 	CargoTypes cargoes = GetVehicleCargoList(v);
 
-	char group_name[512];
+	StringID str;
 	if (town_from == town_to || town_to == nullptr) {
 		SetDParam(0, town_from->index);
 		SetDParam(1, (cargoes != 0) ? STR_VEHICLE_AUTO_GROUP_CARGO_LIST : STR_EMPTY);
 		SetDParam(2, cargoes);
-		GetString(group_name, STR_VEHICLE_AUTO_GROUP_LOCAL_ROUTE, lastof(group_name));
+		str = STR_VEHICLE_AUTO_GROUP_LOCAL_ROUTE;
 	} else {
 		SetDParam(0, town_from->index);
 		SetDParam(1, town_to->index);
 		SetDParam(2, (cargoes != 0) ? STR_VEHICLE_AUTO_GROUP_CARGO_LIST : STR_EMPTY);
 		SetDParam(3, cargoes);
-		GetString(group_name, STR_VEHICLE_AUTO_GROUP_ROUTE, lastof(group_name));
+		str = STR_VEHICLE_AUTO_GROUP_ROUTE;
 	}
-	return std::string(group_name);
+	return GetString(str);
 }
 
 /**

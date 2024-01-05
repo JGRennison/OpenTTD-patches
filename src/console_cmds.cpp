@@ -1895,9 +1895,8 @@ DEF_CONSOLE_CMD(ConCompanies)
 
 	for (const Company *c : Company::Iterate()) {
 		/* Grab the company name */
-		char company_name[512];
 		SetDParam(0, c->index);
-		GetString(company_name, STR_COMPANY_NAME, lastof(company_name));
+		std::string company_name = GetString(STR_COMPANY_NAME);
 
 		const char *password_state = "";
 		if (c->is_ai) {
@@ -1906,10 +1905,8 @@ DEF_CONSOLE_CMD(ConCompanies)
 			password_state = _network_company_states[c->index].password.empty() ? "unprotected" : "protected";
 		}
 
-		char colour[512];
-		GetString(colour, STR_COLOUR_DARK_BLUE + _company_colours[c->index], lastof(colour));
 		IConsolePrintF(CC_INFO, "#:%d(%s) Company Name: '%s'  Year Founded: %d  Money: " OTTD_PRINTF64 "  Loan: " OTTD_PRINTF64 "  Value: " OTTD_PRINTF64 "  (T:%d, R:%d, P:%d, S:%d) %s",
-			c->index + 1, colour, company_name,
+			c->index + 1, GetStringPtr(STR_COLOUR_DARK_BLUE + _company_colours[c->index]), company_name.c_str(),
 			c->inaugurated_year, (int64)c->money, (int64)c->current_loan, (int64)CalculateCompanyValue(c),
 			c->group_all[VEH_TRAIN].num_vehicle,
 			c->group_all[VEH_ROAD].num_vehicle,
@@ -2076,14 +2073,11 @@ DEF_CONSOLE_CMD(ConCompanyPasswordHashes)
 
 	for (const Company *c : Company::Iterate()) {
 		/* Grab the company name */
-		char company_name[512];
 		SetDParam(0, c->index);
-		GetString(company_name, STR_COMPANY_NAME, lastof(company_name));
+		std::string company_name = GetString(STR_COMPANY_NAME);
 
-		char colour[512];
-		GetString(colour, STR_COLOUR_DARK_BLUE + _company_colours[c->index], lastof(colour));
 		IConsolePrintF(CC_INFO, "#:%d(%s) Company Name: '%s'  Hash: '%s'",
-			c->index + 1, colour, company_name, _network_company_states[c->index].password.c_str());
+			c->index + 1, GetStringPtr(STR_COLOUR_DARK_BLUE + _company_colours[c->index]), company_name.c_str(), _network_company_states[c->index].password.c_str());
 	}
 
 	return true;
@@ -2472,10 +2466,8 @@ DEF_CONSOLE_CMD(ConResetBlockedHeliports)
 		if (!occupied) {
 			st->airport.flags = 0;
 			count++;
-			char buffer[256];
 			SetDParam(0, st->index);
-			GetString(buffer, STR_STATION_NAME, lastof(buffer));
-			IConsolePrintF(CC_DEFAULT, "Unblocked: %s", buffer);
+			IConsolePrintF(CC_DEFAULT, "Unblocked: %s", GetString(STR_STATION_NAME).c_str());
 		}
 	}
 
@@ -2635,10 +2627,8 @@ DEF_CONSOLE_CMD(ConDumpCpdpStats)
 		return true;
 	}
 
-	extern void DumpCargoPacketDeferredPaymentStats(char *buffer, const char *last);
-	char buffer[32768];
-	DumpCargoPacketDeferredPaymentStats(buffer, lastof(buffer));
-	PrintLineByLine(buffer);
+	extern std::string DumpCargoPacketDeferredPaymentStats();
+	PrintLineByLine(DumpCargoPacketDeferredPaymentStats());
 	return true;
 }
 

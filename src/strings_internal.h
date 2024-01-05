@@ -10,7 +10,6 @@
 #ifndef STRINGS_INTERNAL_H
 #define STRINGS_INTERNAL_H
 
-#include "strings_func.h"
 #include "string_func.h"
 #include "core/span_type.hpp"
 #include "core/strong_typedef_type.hpp"
@@ -346,6 +345,21 @@ public:
 	{
 		return (*this->string)[index];
 	}
+
+	std::string *GetTargetString()
+	{
+		return this->string;
+	}
 };
+
+void GetStringWithArgs(StringBuilder builder, StringID string, StringParameters &args, uint case_index = 0, bool game_script = false);
+std::string GetStringWithArgs(StringID string, StringParameters &args);
+
+void GetString(StringBuilder builder, StringID string);
+
+/* Do not leak the StringBuilder to everywhere. */
+void GenerateTownNameString(StringBuilder builder, size_t lang, uint32_t seed);
+void GetTownName(StringBuilder builder, const struct Town *t);
+void GRFTownNameGenerate(StringBuilder builder, uint32_t grfid, uint16_t gen, uint32_t seed);
 
 #endif /* STRINGS_INTERNAL_H */

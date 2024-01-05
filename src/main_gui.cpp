@@ -53,9 +53,8 @@ void CcGiveMoney(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2
 	if (result.Failed() || !_settings_game.economy.give_money || !_networking) return;
 
 	/* Inform the company of the action of one of its clients (controllers). */
-	char msg[64];
 	SetDParam(0, p1);
-	GetString(msg, STR_COMPANY_NAME, lastof(msg));
+	std::string msg = GetString(STR_COMPANY_NAME);
 
 	/*
 	 * bits 31-16: source company

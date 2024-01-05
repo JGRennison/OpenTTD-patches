@@ -709,7 +709,7 @@ struct TooltipsWindow : public Window
 	StringID string_id;               ///< String to display as tooltip.
 	std::vector<StringParameterBackup> params; ///< The string parameters.
 	TooltipCloseCondition close_cond; ///< Condition for closing the window.
-	char buffer[DRAW_STRING_BUFFER];  ///< Text to draw
+	std::string buffer;               ///< Text to draw
 	int viewport_virtual_left;        ///< Owner viewport state: left
 	int viewport_virtual_top;         ///< Owner viewport state: top
 	bool delete_next_mouse_loop;      ///< Delete window on the next mouse loop
@@ -721,7 +721,7 @@ struct TooltipsWindow : public Window
 		CopyOutDParam(this->params, paramcount);
 		this->close_cond = close_tooltip;
 		this->delete_next_mouse_loop = false;
-		if (this->params.size() == 0) GetString(this->buffer, str, lastof(this->buffer)); // Get the text while params are available
+		if (this->params.size() == 0) this->buffer = GetString(str); // Get the text while params are available
 		if (close_tooltip == TCC_HOVER_VIEWPORT) {
 			this->viewport_virtual_left = parent->viewport->virtual_left;
 			this->viewport_virtual_top = parent->viewport->virtual_top;
@@ -1025,19 +1025,7 @@ struct QueryStringWindow : public Window
 	QueryStringWindow(StringID str, StringID caption, uint max_bytes, uint max_chars, WindowDesc *desc, Window *parent, CharSetFilter afilter, QueryStringFlags flags) :
 			Window(desc), editbox(max_bytes, max_chars)
 	{
-		assert(parent != nullptr);
-
-		char *last_of = &this->editbox.text.buf[this->editbox.text.max_bytes - 1];
-		GetString(this->editbox.text.buf, str, last_of);
-		StrMakeValidInPlace(this->editbox.text.buf, last_of, SVS_NONE);
-
-		/* Make sure the name isn't too long for the text buffer in the number of
-		 * characters (not bytes). max_chars also counts the '\0' characters. */
-		while (Utf8StringLength(this->editbox.text.buf) + 1 > this->editbox.text.max_chars) {
-			*Utf8PrevChar(this->editbox.text.buf + strlen(this->editbox.text.buf)) = '\0';
-		}
-
-		this->editbox.text.UpdateSize();
+		this->editbox.text.Assign(str);
 
 		if ((flags & QSF_ACCEPT_UNCHANGED) == 0) this->editbox.orig = this->editbox.text.buf;
 

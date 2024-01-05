@@ -222,15 +222,6 @@ public:
 	 */
 	std::string SummaryMessage(StringID cmd_msg = 0) const;
 
-	/**
-	 * Write a string summarising the command result
-	 * @param buf buffer to write to
-	 * @param last last byte in buffer
-	 * @param cmd_msg optional failure string as passed to DoCommand
-	 * @return the number of bytes written
-	 */
-	int WriteSummaryMessage(char *buf, char *last, StringID cmd_msg = 0) const;
-
 	bool IsSuccessWithMessage() const
 	{
 		return this->Succeeded() && this->message != INVALID_STRING_ID;

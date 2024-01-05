@@ -493,7 +493,7 @@ class NIHVehicle : public NIHelper {
 				b = buffer + seprintf(buffer, lastof(buffer), "  %s [%d, %d, %d], %u, ",
 						info.id == v->index ? "*" : " ", info.order_count, info.order_ticks, info.cumulative_ticks, info.id);
 				SetDParam(0, info.id);
-				b = GetString(b, STR_VEHICLE_NAME, lastof(buffer));
+				b = strecpy(b, GetString(STR_VEHICLE_NAME).c_str(), lastof(buffer), true);
 				b += seprintf(b, lastof(buffer), ", lateness: %d", Vehicle::Get(info.id)->lateness_counter);
 				output.print(buffer);
 			}
