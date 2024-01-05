@@ -144,8 +144,8 @@ struct Pool : PoolBase {
 	template <class T>
 	struct PoolIterator {
 		typedef T value_type;
-		typedef T* pointer;
-		typedef T& reference;
+		typedef T *pointer;
+		typedef T &reference;
 		typedef size_t difference_type;
 		typedef std::forward_iterator_tag iterator_category;
 
@@ -188,8 +188,8 @@ struct Pool : PoolBase {
 	template <class T, class F>
 	struct PoolIteratorFiltered {
 		typedef T value_type;
-		typedef T* pointer;
-		typedef T& reference;
+		typedef T *pointer;
+		typedef T &reference;
 		typedef size_t difference_type;
 		typedef std::forward_iterator_tag iterator_category;
 

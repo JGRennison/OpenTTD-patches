@@ -1494,7 +1494,7 @@ struct SpriteAlignerWindow : Window {
 				DrawSprite(this->current_sprite, PAL_NONE, x, y, nullptr, SpriteAlignerWindow::zoom);
 
 				Rect outline = {0, 0, UnScaleByZoom(spr->width, SpriteAlignerWindow::zoom) - 1, UnScaleByZoom(spr->height, SpriteAlignerWindow::zoom) - 1};
-				outline = outline.Translate(x + UnScaleByZoom(spr->x_offs, SpriteAlignerWindow::zoom),y + UnScaleByZoom(spr->y_offs, SpriteAlignerWindow::zoom));
+				outline = outline.Translate(x + UnScaleByZoom(spr->x_offs, SpriteAlignerWindow::zoom), y + UnScaleByZoom(spr->y_offs, SpriteAlignerWindow::zoom));
 				DrawRectOutline(outline.Expand(1), PC_LIGHT_BLUE, 1, 1);
 
 				if (SpriteAlignerWindow::crosshair) {

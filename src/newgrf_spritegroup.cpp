@@ -246,7 +246,7 @@ uint32 EvaluateDeterministicSpriteGroupAdjust(DeterministicSpriteGroupSize size,
 	}
 }
 
-static bool RangeHighComparator(const DeterministicSpriteGroupRange& range, uint32 value)
+static bool RangeHighComparator(const DeterministicSpriteGroupRange &range, uint32_t value)
 {
 	return range.high < value;
 }

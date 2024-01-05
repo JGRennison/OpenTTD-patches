@@ -26,10 +26,10 @@
 extern "C" {
 	typedef const struct __CTRunDelegate * CTRunDelegateRef;
 
-	typedef void (*CTRunDelegateDeallocateCallback) (void* refCon);
-	typedef CGFloat (*CTRunDelegateGetAscentCallback) (void* refCon);
-	typedef CGFloat (*CTRunDelegateGetDescentCallback) (void* refCon);
-	typedef CGFloat (*CTRunDelegateGetWidthCallback) (void* refCon);
+	typedef void (*CTRunDelegateDeallocateCallback) (void *refCon);
+	typedef CGFloat (*CTRunDelegateGetAscentCallback) (void *refCon);
+	typedef CGFloat (*CTRunDelegateGetDescentCallback) (void *refCon);
+	typedef CGFloat (*CTRunDelegateGetWidthCallback) (void *refCon);
 	typedef struct {
 		CFIndex                         version;
 		CTRunDelegateDeallocateCallback dealloc;
@@ -45,7 +45,7 @@ extern "C" {
 
 	extern const CFStringRef kCTRunDelegateAttributeName AVAILABLE_MAC_OS_X_VERSION_10_5_AND_LATER;
 
-	CTRunDelegateRef CTRunDelegateCreate(const CTRunDelegateCallbacks* callbacks, void* refCon) AVAILABLE_MAC_OS_X_VERSION_10_5_AND_LATER;
+	CTRunDelegateRef CTRunDelegateCreate(const CTRunDelegateCallbacks *callbacks, void *refCon) AVAILABLE_MAC_OS_X_VERSION_10_5_AND_LATER;
 }
 #endif /* HAVE_OSX_109_SDK */
 
@@ -62,7 +62,7 @@ class CoreTextParagraphLayout : public ParagraphLayouter {
 private:
 	const CoreTextParagraphLayoutFactory::CharType *text_buffer;
 	ptrdiff_t length;
-	const FontMap& font_map;
+	const FontMap &font_map;
 
 	CFAutoRelease<CTTypesetterRef> typesetter;
 

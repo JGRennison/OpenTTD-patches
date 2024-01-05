@@ -715,7 +715,7 @@ void CcSetVirtualTrain(const CommandCost &result, TileIndex tile, uint32 p1, uin
 {
 	if (result.Failed()) return;
 
-	Window* window = FindWindowById(WC_CREATE_TEMPLATE, 0);
+	Window *window = FindWindowById(WC_CREATE_TEMPLATE, 0);
 	if (window) {
 		Train* train = Train::From(Vehicle::Get(_new_vehicle_id));
 		((TemplateCreateWindow*)window)->SetVirtualTrain(train);
@@ -727,7 +727,7 @@ void CcVirtualTrainWagonsMoved(const CommandCost &result, TileIndex tile, uint32
 {
 	if (result.Failed()) return;
 
-	Window* window = FindWindowById(WC_CREATE_TEMPLATE, 0);
+	Window *window = FindWindowById(WC_CREATE_TEMPLATE, 0);
 	if (window) {
 		((TemplateCreateWindow*)window)->RearrangeVirtualTrain();
 		window->InvalidateData();
@@ -738,7 +738,7 @@ void CcDeleteVirtualTrain(const CommandCost &result, TileIndex tile, uint32 p1, 
 {
 	if (result.Failed()) return;
 
-	Window* window = FindWindowById(WC_CREATE_TEMPLATE, 0);
+	Window *window = FindWindowById(WC_CREATE_TEMPLATE, 0);
 	if (window) {
 		((TemplateCreateWindow*)window)->VirtualVehicleDeleted(GB(p1, 0, 20));
 		window->InvalidateData();

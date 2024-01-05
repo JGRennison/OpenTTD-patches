@@ -858,7 +858,7 @@ struct BuildRoadToolbarWindow : Window {
 
 Window *CreateRoadTramToolbarForRoadType(RoadType roadtype, RoadTramType rtt)
 {
-	Window* w = nullptr;
+	Window *w = nullptr;
 	switch (_game_mode) {
 		case GM_NORMAL:
 			w = ShowBuildRoadToolbar(roadtype);
@@ -883,7 +883,7 @@ Window *CreateRoadTramToolbarForRoadType(RoadType roadtype, RoadTramType rtt)
  */
 static EventState RoadTramToolbarGlobalHotkeys(int hotkey, RoadType last_build, RoadTramType rtt)
 {
-	Window* w = CreateRoadTramToolbarForRoadType(last_build, rtt);
+	Window *w = CreateRoadTramToolbarForRoadType(last_build, rtt);
 
 	if (w == nullptr) return ES_NOT_HANDLED;
 	return w->OnHotkey(hotkey);

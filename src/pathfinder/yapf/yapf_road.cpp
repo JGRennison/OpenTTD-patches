@@ -41,7 +41,7 @@ protected:
 	CYapfCostRoadT() : m_max_cost(0) {};
 
 	/** to access inherited path finder */
-	Tpf& Yapf()
+	Tpf &Yapf()
 	{
 		/* use two lines to avoid false-positive Undefined Behavior Sanitizer warnings when alignof(Tpf) > alignof(*this) and *this does not meet alignof(Tpf) */
 		Tpf *p = static_cast<Tpf *>(this);
@@ -231,7 +231,7 @@ public:
 	typedef typename Node::Key Key;                      ///< key to hash tables
 
 	/** to access inherited path finder */
-	Tpf& Yapf()
+	Tpf &Yapf()
 	{
 		return *static_cast<Tpf *>(this);
 	}
@@ -308,7 +308,7 @@ public:
 
 protected:
 	/** to access inherited path finder */
-	Tpf& Yapf()
+	Tpf &Yapf()
 	{
 		return *static_cast<Tpf *>(this);
 	}
@@ -410,7 +410,7 @@ public:
 
 protected:
 	/** to access inherited path finder */
-	inline Tpf& Yapf()
+	inline Tpf &Yapf()
 	{
 		return *static_cast<Tpf *>(this);
 	}
