@@ -26,6 +26,7 @@
 
 #include <stdarg.h>
 #include <iosfwd>
+#include <iterator>
 
 #include "core/bitmath_func.hpp"
 #include "core/span_type.hpp"
