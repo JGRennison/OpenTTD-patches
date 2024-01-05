@@ -21,4 +21,10 @@
  */
 #define Debug(name, level, format_string, ...) if ((level) == 0 || _debug_ ## name ## _level >= (level)) debug_print(#name, fmt::format(FMT_STRING(format_string), ## __VA_ARGS__).c_str())
 
+void NORETURN usererror_str(const char *msg);
+void NORETURN fatalerror_str(const char *msg);
+
+#define UserError(format_string, ...) usererror_str(fmt::format(FMT_STRING(format_string), ## __VA_ARGS__).c_str())
+#define FatalError(format_string, ...) fatalerror_str(fmt::format(FMT_STRING(format_string), ## __VA_ARGS__).c_str())
+
 #endif /* DEBUG_FMT_H */

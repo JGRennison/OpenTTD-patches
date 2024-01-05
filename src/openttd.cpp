@@ -139,6 +139,22 @@ std::mutex _music_driver_mutex;
 static std::string _music_driver_params;
 static std::atomic<bool> _music_inited;
 
+void NORETURN usererror_str(const char *msg)
+{
+	ShowOSErrorBox(msg, false);
+	if (VideoDriver::GetInstance() != nullptr) VideoDriver::GetInstance()->Stop();
+
+#ifdef __EMSCRIPTEN__
+	emscripten_exit_pointerlock();
+	/* In effect, the game ends here. As emscripten_set_main_loop() caused
+	 * the stack to be unwound, the code after MainLoop() in
+	 * openttd_main() is never executed. */
+	EM_ASM(if (window["openttd_abort"]) openttd_abort());
+#endif
+
+	_exit(1);
+}
+
 /**
  * Error handling for fatal user errors.
  * @param s the string to print.
@@ -153,18 +169,18 @@ void CDECL usererror(const char *s, ...)
 	vseprintf(buf, lastof(buf), s, va);
 	va_end(va);
 
-	ShowOSErrorBox(buf, false);
-	if (VideoDriver::GetInstance() != nullptr) VideoDriver::GetInstance()->Stop();
+	usererror_str(buf);
+}
 
-#ifdef __EMSCRIPTEN__
-	emscripten_exit_pointerlock();
-	/* In effect, the game ends here. As emscripten_set_main_loop() caused
-	 * the stack to be unwound, the code after MainLoop() in
-	 * openttd_main() is never executed. */
-	EM_ASM(if (window["openttd_abort"]) openttd_abort());
-#endif
+static void NORETURN fatalerror_common(const char *msg)
+{
+	if (VideoDriver::GetInstance() == nullptr || VideoDriver::GetInstance()->HasGUI()) {
+		ShowOSErrorBox(msg, true);
+	}
 
-	_exit(1);
+	/* Set the error message for the crash log and then invoke it. */
+	CrashLog::SetErrorMessage(msg);
+	DoOSAbort();
 }
 
 /**
@@ -183,13 +199,14 @@ void CDECL error(const char *s, ...)
 	vseprintf(buf, lastof(buf), s, va);
 	va_end(va);
 
-	if (VideoDriver::GetInstance() == nullptr || VideoDriver::GetInstance()->HasGUI()) {
-		ShowOSErrorBox(buf, true);
-	}
+	fatalerror_common(buf);
+}
 
-	/* Set the error message for the crash log and then invoke it. */
-	CrashLog::SetErrorMessage(buf);
-	DoOSAbort();
+void fatalerror_str(const char *msg)
+{
+	if (CrashLog::HaveAlreadyCrashed()) DoOSAbort();
+
+	fatalerror_common(msg);
 }
 
 void CDECL assert_msg_error(int line, const char *file, const char *expr, const char *extra, const char *str, ...)
