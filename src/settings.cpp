@@ -831,6 +831,12 @@ bool IntSettingDesc::IsSameValue(const IniItem *item, void *object) const
 	return item_value == object_value;
 }
 
+bool IntSettingDesc::IsDefaultValue(void *object) const
+{
+	int32_t object_value = this->Read(object);
+	return this->def == object_value;
+}
+
 void StringSettingDesc::FormatValue(char *buf, const char *last, const void *object) const
 {
 	const std::string &str = this->Read(object);
@@ -859,9 +865,21 @@ bool StringSettingDesc::IsSameValue(const IniItem *item, void *object) const
 	return item->value->compare(str) == 0;
 }
 
+bool StringSettingDesc::IsDefaultValue(void *object) const
+{
+	const std::string &str = this->Read(object);
+	return this->def == str;
+}
+
 bool ListSettingDesc::IsSameValue(const IniItem *item, void *object) const
 {
 	/* Checking for equality is way more expensive than just writing the value. */
+	return false;
+}
+
+bool ListSettingDesc::IsDefaultValue(void *) const
+{
+	/* Defaults of lists are often complicated, and hard to compare. */
 	return false;
 }
 

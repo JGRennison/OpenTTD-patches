@@ -165,6 +165,14 @@ struct SettingDesc {
 	 * @return True if the value is definitely the same (might be false when the same).
 	 */
 	virtual bool IsSameValue(const IniItem *item, void *object) const = 0;
+
+	/**
+	 * Check whether the value is the same as the default value.
+	 *
+	 * @param object The object the setting is in.
+	 * @return true iff the value is the default value.
+	 */
+	virtual bool IsDefaultValue(void *object) const = 0;
 };
 
 /** Base integer type, including boolean, settings. Only these are shown in the settings UI. */
@@ -219,6 +227,7 @@ struct IntSettingDesc : SettingDesc {
 	virtual void FormatIntValue(char *buf, const char *last, uint32 value) const;
 	void ParseValue(const IniItem *item, void *object) const override;
 	bool IsSameValue(const IniItem *item, void *object) const override;
+	bool IsDefaultValue(void *object) const override;
 	int32 Read(const void *object) const;
 
 private:
@@ -309,6 +318,7 @@ struct StringSettingDesc : SettingDesc {
 	void FormatValue(char *buf, const char *last, const void *object) const override;
 	void ParseValue(const IniItem *item, void *object) const override;
 	bool IsSameValue(const IniItem *item, void *object) const override;
+	bool IsDefaultValue(void *object) const override;
 	const std::string &Read(const void *object) const;
 
 private:
@@ -326,6 +336,7 @@ struct ListSettingDesc : SettingDesc {
 	void FormatValue(char *buf, const char *last, const void *object) const override;
 	void ParseValue(const IniItem *item, void *object) const override;
 	bool IsSameValue(const IniItem *item, void *object) const override;
+	bool IsDefaultValue(void *object) const override;
 };
 
 /** Placeholder for settings that have been removed, but might still linger in the savegame. */
@@ -338,6 +349,7 @@ struct NullSettingDesc : SettingDesc {
 	void FormatValue(char *buf, const char *last, const void *object) const override { NOT_REACHED(); }
 	void ParseValue(const IniItem *item, void *object) const override { NOT_REACHED(); }
 	bool IsSameValue(const IniItem *item, void *object) const override { NOT_REACHED(); }
+	bool IsDefaultValue(void *object) const override { NOT_REACHED(); }
 };
 
 typedef std::initializer_list<std::unique_ptr<const SettingDesc>> SettingTable;
