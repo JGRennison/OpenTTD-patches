@@ -420,6 +420,17 @@ void StrTrimInPlace(std::string &str)
 	StrRightTrimInPlace(str);
 }
 
+const char *StrLastPathSegment(const char *path)
+{
+	const char *best = path;
+	for (; *path != '\0'; path++) {
+		if (*path == PATHSEPCHAR || *path == '/') {
+			if (*(path + 1) != '\0') best = path + 1;
+		}
+	}
+	return best;
+}
+
 /**
  * Check whether the given string starts with the given prefix.
  * @param str    The string to look at.

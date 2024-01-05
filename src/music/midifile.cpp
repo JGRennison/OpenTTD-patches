@@ -1051,12 +1051,7 @@ std::string MidiFile::GetSMFFile(const MusicSongInfo &song)
 
 	char basename[MAX_PATH];
 	{
-		const char *fnstart = strrchr(song.filename.c_str(), PATHSEPCHAR);
-		if (fnstart == nullptr) {
-			fnstart = song.filename.c_str();
-		} else {
-			fnstart++;
-		}
+		const char *fnstart = StrLastPathSegment(song.filename);
 
 		/* Remove all '.' characters from filename */
 		char *wp = basename;

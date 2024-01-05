@@ -66,6 +66,13 @@ bool strtolower(std::string &str, std::string::size_type offs = 0);
 [[nodiscard]] bool StrValid(const char *str, const char *last) NOACCESS(2);
 void StrTrimInPlace(std::string &str);
 
+const char *StrLastPathSegment(const char *path);
+
+inline const char *StrLastPathSegment(const std::string &path)
+{
+	return StrLastPathSegment(path.c_str());
+}
+
 [[nodiscard]] bool StrStartsWith(const std::string_view str, const std::string_view prefix);
 [[nodiscard]] bool StrStartsWithIgnoreCase(std::string_view str, const std::string_view prefix);
 [[nodiscard]] bool StrEndsWith(const std::string_view str, const std::string_view suffix);
