@@ -223,7 +223,7 @@ void SerializeNetworkGameInfo(Packet *p, const NetworkServerGameInfo *info, bool
 		for (c = info->grfconfig; c != nullptr; c = c->next) {
 			if (!HasBit(c->flags, GCF_STATIC)) count++;
 		}
-		p->Send_uint8(std::min<uint>(count, NETWORK_MAX_GRF_COUNT)); // Send number of GRFs
+		p->Send_uint8(ClampTo<uint8>(std::min<uint>(count, NETWORK_MAX_GRF_COUNT))); // Send number of GRFs
 
 		/* Send actual GRF Identifications */
 		for (c = info->grfconfig; c != nullptr; c = c->next) {

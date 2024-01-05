@@ -603,7 +603,7 @@ struct NewGRFInspectWindow : Window {
 					if (iter != lines.end() && iter->first == (int)highlight_tag) {
 						/* Already stored, don't insert again */
 					} else {
-						lines.insert(iter, std::make_pair<int, uint16>(highlight_tag, std::min<uint>(UINT16_MAX, i)));
+						lines.insert(iter, std::make_pair<int, uint16>(highlight_tag, ClampTo<uint16>(i)));
 					}
 				}
 
