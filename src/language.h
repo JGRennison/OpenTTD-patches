@@ -91,7 +91,7 @@ static_assert(sizeof(LanguagePackHeader) % 4 == 0);
 
 /** Metadata about a single language. */
 struct LanguageMetadata : public LanguagePackHeader {
-	char file[MAX_PATH]; ///< Name of the file we read this data from.
+	std::string file; ///< Name of the file we read this data from.
 };
 
 /** Type for the list of language meta data. */

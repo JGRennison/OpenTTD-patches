@@ -2404,13 +2404,14 @@ static void GetLanguageList(const char *path)
 			if (extension == nullptr || strcmp(extension, ".lng") != 0) continue;
 
 			LanguageMetadata lmd;
-			seprintf(lmd.file, lastof(lmd.file), "%s%s", path, d_name.c_str());
+			lmd.file = path;
+			lmd.file += d_name;
 
 			/* Check whether the file is of the correct version */
-			if (!GetLanguageFileHeader(lmd.file, &lmd)) {
-				DEBUG(misc, 3, "%s is not a valid language file", lmd.file);
+			if (!GetLanguageFileHeader(lmd.file.c_str(), &lmd)) {
+				DEBUG(misc, 3, "%s is not a valid language file", lmd.file.c_str());
 			} else if (GetLanguage(lmd.newgrflangid) != nullptr) {
-				DEBUG(misc, 3, "%s's language ID is already known", lmd.file);
+				DEBUG(misc, 3, "%s's language ID is already known", lmd.file.c_str());
 			} else {
 				_languages.push_back(lmd);
 			}
