@@ -543,6 +543,7 @@ add_files(
     vehicle_type.h
     vehiclelist.cpp
     vehiclelist.h
+    vehiclelist_func.h
     viewport.cpp
     viewport_func.h
     viewport_gui.cpp
