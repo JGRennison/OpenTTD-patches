@@ -1128,6 +1128,11 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 			if (str_stack.empty()) break;
 			const char *&str = str_stack.top();
 
+			if (_scan_for_gender_data && !builder.GetTargetString()->empty()) {
+				/* Early exit when scanning for gender data if target string is already non-empty */
+				return;
+			}
+
 			if (SCC_NEWGRF_FIRST <= b && b <= SCC_NEWGRF_LAST) {
 				/* We need to pass some stuff as it might be modified. */
 				StringParameters remaining = args.GetRemainingParameters();
@@ -1276,6 +1281,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 					if (_scan_for_gender_data) {
 						builder.Utf8Encode(SCC_GENDER_INDEX);
 						builder += *str++;
+						return; // Exit early
 					} else {
 						str++;
 					}
