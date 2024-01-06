@@ -1038,12 +1038,13 @@ struct TimetableWindow : GeneralVehicleWindow {
 				bool leave_type_disabled = (order == nullptr) ||
 							((!(order->IsType(OT_GOTO_STATION) || (order->IsType(OT_GOTO_DEPOT) && !(order->GetDepotActionType() & ODATFB_HALT))) ||
 								(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) && !order->IsType(OT_CONDITIONAL));
+				OrderLeaveType current = order != nullptr ? order->GetLeaveType() : OLT_END;
 				DropDownList list;
-				list.emplace_back(new DropDownListStringItem(STR_TIMETABLE_LEAVE_NORMAL, OLT_NORMAL, leave_type_disabled));
-				list.emplace_back(new DropDownListStringItem(STR_TIMETABLE_LEAVE_EARLY, OLT_LEAVE_EARLY, leave_type_disabled));
-				list.emplace_back(new DropDownListStringItem(STR_TIMETABLE_LEAVE_EARLY_FULL_ANY, OLT_LEAVE_EARLY_FULL_ANY, leave_type_disabled || !order->IsType(OT_GOTO_STATION)));
-				list.emplace_back(new DropDownListStringItem(STR_TIMETABLE_LEAVE_EARLY_FULL_ALL, OLT_LEAVE_EARLY_FULL_ALL, leave_type_disabled || !order->IsType(OT_GOTO_STATION)));
-				ShowDropDownList(this, std::move(list), order != nullptr ? order->GetLeaveType() : -1, WID_VT_EXTRA);
+				list.emplace_back(std::make_unique<DropDownListCheckedItem>(current == OLT_NORMAL, STR_TIMETABLE_LEAVE_NORMAL, OLT_NORMAL, leave_type_disabled));
+				list.emplace_back(std::make_unique<DropDownListCheckedItem>(current == OLT_LEAVE_EARLY, STR_TIMETABLE_LEAVE_EARLY, OLT_LEAVE_EARLY, leave_type_disabled));
+				list.emplace_back(std::make_unique<DropDownListCheckedItem>(current == OLT_LEAVE_EARLY_FULL_ANY, STR_TIMETABLE_LEAVE_EARLY_FULL_ANY, OLT_LEAVE_EARLY_FULL_ANY, leave_type_disabled || !order->IsType(OT_GOTO_STATION)));
+				list.emplace_back(std::make_unique<DropDownListCheckedItem>(current == OLT_LEAVE_EARLY_FULL_ALL, STR_TIMETABLE_LEAVE_EARLY_FULL_ALL, OLT_LEAVE_EARLY_FULL_ALL, leave_type_disabled || !order->IsType(OT_GOTO_STATION)));
+				ShowDropDownList(this, std::move(list), -1, widget, 0, false, DDSF_LOST_FOCUS);
 				break;
 			}
 
