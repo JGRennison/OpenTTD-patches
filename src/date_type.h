@@ -71,11 +71,21 @@ using DateTicksScaledDelta = StrongType::Typedef<int64_t, struct DateTicksScaled
 using DateTicksScaled = StrongType::Typedef<int64_t, struct DateTicksScaledTag, StrongType::Compare, StrongType::IntegerDelta<DateTicksScaledDelta>>;
 
 /* Mixin for TickMinutes, ClockFaceMinutes */
+template <bool TNegativeCheck>
 struct MinuteOperations {
 	template <typename TType, typename TBaseType>
 	struct mixin {
 	private:
-		TBaseType GetBase() const { return static_cast<const TType &>(*this).base(); }
+		TBaseType GetBase() const
+		{
+			TBaseType value = static_cast<const TType &>(*this).base();
+			if constexpr (TNegativeCheck) {
+				if (value < 0) {
+					value = (value % 1440) + 1440;
+				}
+			}
+			return value;
+		}
 
 	public:
 		int ClockMinute() const { return this->GetBase() % 60; }
@@ -96,7 +106,7 @@ struct ClockFaceMinuteOperations {
 };
 
 /* The type to store general clock-face minutes in (i.e. 0..1440) */
-using ClockFaceMinutes = StrongType::Typedef<int, struct ClockFaceMinutesTag, StrongType::Compare, StrongType::Integer, MinuteOperations, ClockFaceMinuteOperations>;
+using ClockFaceMinutes = StrongType::Typedef<int, struct ClockFaceMinutesTag, StrongType::Compare, StrongType::Integer, MinuteOperations<false>, ClockFaceMinuteOperations>;
 
 /* Mixin for TickMinutes */
 struct TickMinuteOperations {
@@ -122,7 +132,7 @@ struct TickMinuteOperations {
 };
 
 /* The type to store DateTicksScaled-based minutes in */
-using TickMinutes = StrongType::Typedef<int64_t, struct TickMinutesTag, StrongType::Compare, StrongType::Integer, MinuteOperations, TickMinuteOperations>;
+using TickMinutes = StrongType::Typedef<int64_t, struct TickMinutesTag, StrongType::Compare, StrongType::Integer, MinuteOperations<true>, TickMinuteOperations>;
 
 #define DATE_UNIT_SIZE (_settings_time.time_in_minutes ? _settings_time.ticks_per_minute : (DAY_TICKS * _settings_game.economy.day_length_factor))
 
