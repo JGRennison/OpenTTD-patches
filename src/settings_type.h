@@ -308,6 +308,7 @@ struct GUISettings : public TimeSettings {
 	bool   show_vehicle_group_hierarchy_name;///< Show the full group hierarchy in vehicle names
 	bool   show_order_number_vehicle_view;   ///< Show order number in vehicle view window
 	bool   hide_default_stop_location;       ///< Hide default stop location for orders
+	bool   show_rail_polyline_tool;          ///< Show rail polyline tool
 
 	uint16 console_backlog_timeout;          ///< the minimum amount of time items should be in the console backlog before they will be removed in ~3 seconds granularity.
 	uint16 console_backlog_length;           ///< the minimum amount of items in the console backlog before items will be removed.

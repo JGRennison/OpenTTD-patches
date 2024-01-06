@@ -319,6 +319,9 @@ STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW_HELPTEXT   :When enabled, t
 STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION                   :Hide default order stop locations: {STRING2}
 STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION_HELPTEXT          :When enabled, hide the order stop location when it matches the default.
 
+STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL                              :Show rail polyline tool: {STRING2}
+STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL_HELPTEXT                     :When enabled, the rail construction toolbar includes a button to build using the polyline mode.
+
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Enable signals on bridges/tunnels advanced modes: {STRING2}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Enables use of advanced modes of signal simulation on bridges and tunnels. When disabled, bridges/tunnels which are not already in an advanced mode cannot be changed to an advanced mode, however other players may choose to enable this setting and use an advanced mode.
 
@@ -793,7 +796,7 @@ STR_LINKGRAPH_STATS_TOOLTIP_USAGE                               :{}Usage: {CARGO
 STR_LINKGRAPH_STATS_TOOLTIP_PLANNED                             :{}Planned: {CARGO_LONG}
 STR_LINKGRAPH_STATS_TOOLTIP_DISTANCE                            :Manhattan Distance: {COMMA} tile{P 0 "" s}{}Bird Fly Distance: {COMMA} tile{P 1 "" s}
 
-STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL                         :{BLACK}Build railway track using the Polyline mode. Ctrl toggles build/remove for railway construction. Shift toggles building/showing cost estimate
+STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL                         :{BLACK}Build railway track using the polyline mode. Ctrl toggles build/remove for railway construction. Shift toggles building/showing cost estimate
 
 STR_BUILD_SIGNAL_SEMAPHORE_PROG_TOOLTIP                         :{BLACK}Programmable Pre-Signal (semaphore){}The programmable pre-signal is a combo-signal which can be programmed to behave in complex ways.
 STR_BUILD_SIGNAL_SEMAPHORE_NO_ENTRY_TOOLTIP                     :{BLACK}No-Entry Signal (semaphore){}A path signal allows more than one train to enter a signal block at the same time, if the train can reserve a path to a safe stopping point. No-entry signals can't be passed from the front side

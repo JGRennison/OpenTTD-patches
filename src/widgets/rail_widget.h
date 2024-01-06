@@ -20,6 +20,7 @@ enum RailToolbarWidgets : WidgetID {
 	WID_RAT_BUILD_Y,        ///< Build rail along the game grid Y axis.
 	WID_RAT_AUTORAIL,       ///< Autorail tool.
 	WID_RAT_POLYRAIL,       ///< Polyline rail tool.
+	WID_RAT_POLYRAIL_SEL,   ///< Select widget for polyline rail tool.
 	WID_RAT_DEMOLISH,       ///< Destroy something with dynamite!
 	WID_RAT_BUILD_DEPOT,    ///< Build a depot.
 	WID_RAT_BUILD_WAYPOINT, ///< Build a waypoint.

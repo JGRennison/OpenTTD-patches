@@ -513,6 +513,9 @@ struct BuildRailToolbarWindow : Window {
 		this->SetupRailToolbar(railtype);
 		this->DisableWidget(WID_RAT_REMOVE);
 		this->last_user_action = INVALID_WID_RAT;
+		if (!_settings_client.gui.show_rail_polyline_tool) {
+			this->GetWidget<NWidgetStacked>(WID_RAT_POLYRAIL_SEL)->SetDisplayedPlane(SZSP_NONE);
+		}
 
 		if (_settings_client.gui.link_terraform_toolbar) ShowTerraformToolbar(this);
 	}
@@ -643,6 +646,7 @@ struct BuildRailToolbarWindow : Window {
 				break;
 
 			case WID_RAT_POLYRAIL: {
+				if (!_settings_client.gui.show_rail_polyline_tool) break;
 				bool was_snap = CurrentlySnappingRailPlacement();
 				bool was_open = this->IsWidgetLowered(WID_RAT_POLYRAIL);
 				bool do_snap;
@@ -759,6 +763,7 @@ struct BuildRailToolbarWindow : Window {
 		switch (hotkey) {
 			case HOTKEY_POLYRAIL:
 			case HOTKEY_NEW_POLYRAIL:
+				if (!_settings_client.gui.show_rail_polyline_tool) return ES_HANDLED;
 				/* Indicate to the OnClick that the action comes from a hotkey rather
 				 * then from a click and that the CTRL state should be ignored. */
 				this->last_user_action = hotkey;
@@ -959,6 +964,18 @@ struct BuildRailToolbarWindow : Window {
 		if (this->IsWidgetLowered(WID_RAT_BUILD_WAYPOINT)) CheckRedrawWaypointCoverage(this, false);
 	}
 
+	void OnInvalidateData(int data = 0, bool gui_scope = true) override
+	{
+		if (!gui_scope) return;
+
+		if (this->GetWidget<NWidgetStacked>(WID_RAT_POLYRAIL_SEL)->SetDisplayedPlane(_settings_client.gui.show_rail_polyline_tool ? 0 : SZSP_NONE)) {
+			if (this->IsWidgetLowered(WID_RAT_POLYRAIL)) {
+				ResetObjectToPlace();
+			}
+			this->ReInit();
+		}
+	}
+
 	static HotkeyList hotkeys;
 };
 
@@ -1019,8 +1036,10 @@ static const NWidgetPart _nested_build_rail_widgets[] = {
 						SetFill(0, 1), SetMinimalSize(22, 22), SetDataTip(SPR_IMG_RAIL_NW, STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TRACK),
 		NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WID_RAT_AUTORAIL),
 						SetFill(0, 1), SetMinimalSize(22, 22), SetDataTip(SPR_IMG_AUTORAIL, STR_RAIL_TOOLBAR_TOOLTIP_BUILD_AUTORAIL),
-		NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WID_RAT_POLYRAIL),
-						SetFill(0, 1), SetMinimalSize(22, 22), SetDataTip(SPR_IMG_AUTORAIL, STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_RAT_POLYRAIL_SEL),
+			NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WID_RAT_POLYRAIL),
+							SetFill(0, 1), SetMinimalSize(22, 22), SetDataTip(SPR_IMG_AUTORAIL, STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL),
+		EndContainer(),
 
 		NWidget(WWT_PANEL, COLOUR_DARK_GREEN), SetMinimalSize(4, 22), EndContainer(),
 
