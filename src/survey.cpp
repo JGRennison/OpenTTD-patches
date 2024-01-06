@@ -60,6 +60,9 @@
 #ifdef WITH_LIBLZMA
 #	include <lzma.h>
 #endif
+#ifdef WITH_ZSTD
+#include <zstd.h>
+#endif
 #ifdef WITH_LZO
 #include <lzo/lzo1x.h>
 #endif
@@ -134,6 +137,9 @@ void SurveyCompiler(nlohmann::json &survey)
 #if defined(_MSC_VER)
 	survey["name"] = "MSVC";
 	survey["version"] = _MSC_VER;
+#elif defined(__clang__)
+	survey["name"] = "clang";
+	survey["version"] = __clang_version__;
 #elif defined(__ICC) && defined(__GNUC__)
 	survey["name"] = "ICC";
 	survey["version"] = __ICC;
@@ -367,6 +373,10 @@ void SurveyLibraries(nlohmann::json &survey)
 
 #ifdef WITH_LIBLZMA
 	survey["lzma"] = lzma_version_string();
+#endif
+
+#ifdef WITH_ZSTD
+	survey["zstd"] = ZSTD_versionString();
 #endif
 
 #ifdef WITH_LZO
