@@ -69,7 +69,7 @@ static const StringID _autosave_dropdown[] = {
 };
 
 /** Available settings for autosave intervals. */
-static const uint32 _autosave_dropdown_to_minutes[] = {
+static const uint32_t _autosave_dropdown_to_minutes[] = {
 	0, ///< never
 	10,
 	30,
@@ -223,7 +223,7 @@ struct GameOptionsWindow : Window {
 		switch (widget) {
 			case WID_GO_CURRENCY_DROPDOWN: { // Setup currencies dropdown
 				*selected_index = this->opt->locale.currency;
-				uint64 disabled = _game_mode == GM_MENU ? 0LL : ~GetMaskOfAllowedCurrencies();
+				uint64_t disabled = _game_mode == GM_MENU ? 0LL : ~GetMaskOfAllowedCurrencies();
 
 				/* Add non-custom currencies; sorted naturally */
 				for (const CurrencySpec &currency : _currency_specs) {
@@ -1082,12 +1082,12 @@ struct SettingEntry : BaseSettingEntry {
 	void SetButtons(byte new_val);
 	StringID GetHelpText() const;
 
-	void SetValueDParams(uint first_param, int32 value) const;
+	void SetValueDParams(uint first_param, int32_t value) const;
 
 protected:
 	SettingEntry(const IntSettingDesc *setting);
 	virtual void DrawSetting(GameSettings *settings_ptr, int left, int right, int y, bool highlight) const override;
-	virtual void DrawSettingString(uint left, uint right, int y, bool highlight, int32 value) const;
+	virtual void DrawSettingString(uint left, uint right, int y, bool highlight, int32_t value) const;
 
 private:
 	bool IsVisibleByRestrictionMode(RestrictionMode mode) const;
@@ -1120,7 +1120,7 @@ struct CargoDestPerCargoSettingEntry : SettingEntry {
 	bool UpdateFilterState(SettingFilter &filter, bool force_visible) override;
 
 protected:
-	void DrawSettingString(uint left, uint right, int y, bool highlight, int32 value) const override;
+	void DrawSettingString(uint left, uint right, int y, bool highlight, int32_t value) const override;
 };
 
 /** Conditionally hidden standard setting */
@@ -1369,8 +1369,8 @@ bool SettingEntry::IsVisibleByRestrictionMode(RestrictionMode mode) const
 
 	/* Read the current value. */
 	const void *object = ResolveObject(&GetGameSettings(), sd);
-	int64 current_value = sd->Read(object);
-	int64 filter_value;
+	int64_t current_value = sd->Read(object);
+	int64_t filter_value;
 
 	if (mode == RM_CHANGED_AGAINST_DEFAULT) {
 		/* This entry shall only be visible, if the value deviates from its default value. */
@@ -1452,7 +1452,7 @@ static const void *ResolveObject(const GameSettings *settings_ptr, const IntSett
  * @param first_param First DParam to use
  * @param value Setting value to set params for.
  */
-void SettingEntry::SetValueDParams(uint first_param, int32 value) const
+void SettingEntry::SetValueDParams(uint first_param, int32_t value) const
 {
 	if (this->setting->IsBoolSetting()) {
 		SetDParam(first_param++, value != 0 ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
@@ -1461,7 +1461,7 @@ void SettingEntry::SetValueDParams(uint first_param, int32 value) const
 		int log = -std::min(0, (int)std::floor(std::log10(scale)) - 2);
 
 		SetDParam(first_param++, STR_JUST_RAW_STRING);
-		auto tmp_params = MakeParameters(value, (int64)(scale * std::pow(10.f, (float)log)), log);
+		auto tmp_params = MakeParameters(value, (int64_t)(scale * std::pow(10.f, (float)log)), log);
 		SetDParamStr(first_param++, GetStringWithArgs(this->setting->str_val, tmp_params));
 	} else {
 		if ((this->setting->flags & SF_ENUM) != 0) {
@@ -1508,7 +1508,7 @@ void SettingEntry::DrawSetting(GameSettings *settings_ptr, int left, int right, 
 	bool editable = sd->IsEditable();
 
 	SetDParam(0, STR_CONFIG_SETTING_VALUE);
-	int32 value = sd->Read(ResolveObject(settings_ptr, sd));
+	int32_t value = sd->Read(ResolveObject(settings_ptr, sd));
 	if (sd->IsBoolSetting()) {
 		/* Draw checkbox for boolean-value either on/off */
 		DrawBoolButton(buttons_left, button_y, value != 0, editable);
@@ -1518,12 +1518,12 @@ void SettingEntry::DrawSetting(GameSettings *settings_ptr, int left, int right, 
 	} else {
 		/* Draw [<][>] boxes for settings of an integer-type */
 		DrawArrowButtons(buttons_left, button_y, COLOUR_YELLOW, state,
-				editable && value != (sd->flags & SF_GUI_0_IS_SPECIAL ? 0 : sd->min), editable && (uint32)value != sd->max);
+				editable && value != (sd->flags & SF_GUI_0_IS_SPECIAL ? 0 : sd->min), editable && (uint32_t)value != sd->max);
 	}
 	this->DrawSettingString(text_left, text_right, y + (SETTING_HEIGHT - GetCharacterHeight(FS_NORMAL)) / 2, highlight, value);
 }
 
-void SettingEntry::DrawSettingString(uint left, uint right, int y, bool highlight, int32 value) const
+void SettingEntry::DrawSettingString(uint left, uint right, int y, bool highlight, int32_t value) const
 {
 	this->SetValueDParams(1, value);
 	int edge = DrawString(left, right, y, this->setting->str, highlight ? TC_WHITE : TC_LIGHT_BLUE);
@@ -1546,7 +1546,7 @@ void CargoDestPerCargoSettingEntry::Init(byte level)
 	BaseSettingEntry::Init(level);
 }
 
-void CargoDestPerCargoSettingEntry::DrawSettingString(uint left, uint right, int y, bool highlight, int32 value) const
+void CargoDestPerCargoSettingEntry::DrawSettingString(uint left, uint right, int y, bool highlight, int32_t value) const
 {
 	assert(this->setting->str == STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO);
 	SetDParam(0, CargoSpec::Get(this->cargo)->name);
@@ -2858,7 +2858,7 @@ struct GameSettingsWindow : Window {
 			return;
 		}
 
-		int32 value = sd->Read(ResolveObject(settings_ptr, sd));
+		int32_t value = sd->Read(ResolveObject(settings_ptr, sd));
 
 		/* clicked on the icon on the left side. Either scroller, bool on/off or dropdown */
 		if (x < SETTING_BUTTON_WIDTH && (sd->flags & (SF_GUI_DROPDOWN | SF_ENUM))) {
@@ -2915,7 +2915,7 @@ struct GameSettingsWindow : Window {
 			this->SetDirty();
 		} else if (x < SETTING_BUTTON_WIDTH) {
 			this->SetDisplayedHelpText(pe);
-			int32 oldvalue = value;
+			int32_t oldvalue = value;
 
 			if (sd->IsBoolSetting()) {
 				value ^= 1;
@@ -2924,7 +2924,7 @@ struct GameSettingsWindow : Window {
 				 * 50-steps you should be able to get from min to max,
 				 * unless specified otherwise in the 'interval' variable
 				 * of the current setting. */
-				uint32 step = (sd->interval == 0) ? ((sd->max - sd->min) / 50) : sd->interval;
+				uint32_t step = (sd->interval == 0) ? ((sd->max - sd->min) / 50) : sd->interval;
 				if (step == 0) step = 1;
 
 				/* don't allow too fast scrolling */
@@ -2937,10 +2937,10 @@ struct GameSettingsWindow : Window {
 				if (x >= SETTING_BUTTON_WIDTH / 2) {
 					value += step;
 					if (sd->min < 0) {
-						assert((int32)sd->max >= 0);
-						if (value > (int32)sd->max) value = (int32)sd->max;
+						assert((int32_t)sd->max >= 0);
+						if (value > (int32_t)sd->max) value = (int32_t)sd->max;
 					} else {
-						if ((uint32)value > sd->max) value = (int32)sd->max;
+						if ((uint32_t)value > sd->max) value = (int32_t)sd->max;
 					}
 					if (value < sd->min) value = sd->min; // skip between "disabled" and minimum
 				} else {
@@ -2967,7 +2967,7 @@ struct GameSettingsWindow : Window {
 		} else {
 			/* Only open editbox if clicked for the second time, and only for types where it is sensible for. */
 			if (this->last_clicked == pe && !sd->IsBoolSetting() && !(sd->flags & (SF_GUI_DROPDOWN | SF_ENUM))) {
-				int64 value64 = value;
+				int64_t value64 = value;
 				/* Show the correct currency or velocity translated value */
 				if (sd->flags & SF_GUI_CURRENCY) value64 *= _currency->rate;
 				if (sd->flags & SF_GUI_VELOCITY) value64 = ConvertKmhishSpeedToDisplaySpeed((uint)value64, VEH_TRAIN);
@@ -3009,7 +3009,7 @@ struct GameSettingsWindow : Window {
 		assert(this->valuewindow_entry != nullptr);
 		const IntSettingDesc *sd = this->valuewindow_entry->setting;
 
-		int32 value;
+		int32_t value;
 		if (!StrEmpty(str)) {
 			long long llvalue;
 			if (sd->flags & SF_DECIMAL1 || (sd->flags & SF_GUI_VELOCITY && _settings_game.locale.units_velocity == 3)) {
@@ -3021,7 +3021,7 @@ struct GameSettingsWindow : Window {
 			/* Save the correct currency-translated value */
 			if (sd->flags & SF_GUI_CURRENCY) llvalue /= _currency->rate;
 
-			value = ClampTo<int32>(llvalue);
+			value = ClampTo<int32_t>(llvalue);
 
 			/* Save the correct velocity-translated value */
 			if (sd->flags & SF_GUI_VELOCITY) value = ConvertDisplaySpeedToKmhishSpeed(value, VEH_TRAIN);

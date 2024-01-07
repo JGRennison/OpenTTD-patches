@@ -54,7 +54,7 @@ static const StringID _cargo_type_load_order_drowdown[] = {
 	STR_ORDER_DROP_NO_LOADING,            // OLFB_NO_LOAD
 	INVALID_STRING_ID
 };
-static const uint32 _cargo_type_load_order_drowdown_hidden_mask = 0xA; // 01010
+static const uint32_t _cargo_type_load_order_drowdown_hidden_mask = 0xA; // 01010
 
 /** Cargo type orders strings for unload dropdowns. */
 static const StringID _cargo_type_unload_order_drowdown[] = {
@@ -65,12 +65,12 @@ static const StringID _cargo_type_unload_order_drowdown[] = {
 	STR_ORDER_DROP_NO_UNLOADING,       // OUFB_NO_UNLOAD
 	INVALID_STRING_ID
 };
-static const uint32 _cargo_type_unload_order_drowdown_hidden_mask = 0x8; // 01000
+static const uint32_t _cargo_type_unload_order_drowdown_hidden_mask = 0x8; // 01000
 
 DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &selected, VehicleType vehtype, bool show_other_types);
 DropDownList GetCounterDropDownList(Owner owner, TraceRestrictCounterID ctr_id, int &selected);
 
-static bool ModifyOrder(const Vehicle *v, VehicleOrderID order_id, uint32 p2, bool error_msg = true, const char *text = nullptr)
+static bool ModifyOrder(const Vehicle *v, VehicleOrderID order_id, uint32_t p2, bool error_msg = true, const char *text = nullptr)
 {
 	return DoCommandPEx(v->tile, v->index, p2, order_id, CMD_MODIFY_ORDER | (error_msg ? CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER) : 0), nullptr, text, nullptr);
 }
@@ -85,11 +85,11 @@ private:
 	VehicleOrderID order_count; ///< Count of the orders of the vehicle owning this window
 	const Order *order;         ///< Order pointer at construction time;
 
-	static const uint8 CARGO_ICON_WIDTH  = 12;
-	static const uint8 CARGO_ICON_HEIGHT =  8;
+	static const uint8_t CARGO_ICON_WIDTH  = 12;
+	static const uint8_t CARGO_ICON_HEIGHT =  8;
 
 	const StringID *cargo_type_order_dropdown; ///< Strings used to populate order dropdowns.
-	uint32 cargo_type_order_dropdown_hmask;    ///< Hidden mask for order dropdowns.
+	uint32_t cargo_type_order_dropdown_hmask;  ///< Hidden mask for order dropdowns.
 
 	uint max_cargo_name_width;     ///< Greatest width of cargo names.
 	uint max_cargo_dropdown_width; ///< Greatest width of order names.
@@ -123,7 +123,7 @@ private:
 		for (int i = 0; i < (int)_sorted_standard_cargo_specs.size(); i++) {
 			const CargoSpec *cs = _sorted_cargo_specs[i];
 			const CargoID cargo_id = cs->Index();
-			uint8 order_type = (this->variant == CTOWV_LOAD) ? (uint8) order->GetCargoLoadTypeRaw(cargo_id) : (uint8) order->GetCargoUnloadTypeRaw(cargo_id);
+			uint8_t order_type = (this->variant == CTOWV_LOAD) ? (uint8_t) order->GetCargoLoadTypeRaw(cargo_id) : (uint8_t) order->GetCargoUnloadTypeRaw(cargo_id);
 			this->GetWidget<NWidgetCore>(WID_CTO_CARGO_DROPDOWN_FIRST + i)->SetDataTip(this->cargo_type_order_dropdown[order_type], tooltip);
 		}
 		this->GetWidget<NWidgetCore>(WID_CTO_SET_TO_ALL_DROPDOWN)->widget_data = this->cargo_type_order_dropdown[this->set_to_all_dropdown_sel];
@@ -134,10 +134,10 @@ private:
 	 * @param cargo_id The cargo index for wich we want the load/unload type.
 	 * @return an OrderLoadFlags if \c load_variant = true, an OrderUnloadFlags otherwise.
 	 */
-	uint8 GetOrderActionTypeForCargo(CargoID cargo_id)
+	uint8_t GetOrderActionTypeForCargo(CargoID cargo_id)
 	{
 		const Order *order = this->vehicle->GetOrder(this->order_id);
-		return (this->variant == CTOWV_LOAD) ? (uint8) order->GetCargoLoadTypeRaw(cargo_id) : (uint8) order->GetCargoUnloadTypeRaw(cargo_id);
+		return (this->variant == CTOWV_LOAD) ? (uint8_t) order->GetCargoLoadTypeRaw(cargo_id) : (uint8_t) order->GetCargoUnloadTypeRaw(cargo_id);
 	}
 
 	bool CheckOrderStillValid() const
@@ -255,7 +255,7 @@ public:
 		if (WID_CTO_CARGO_DROPDOWN_FIRST <= widget && widget <= WID_CTO_CARGO_DROPDOWN_LAST) {
 			const CargoSpec *cs = _sorted_cargo_specs[widget - WID_CTO_CARGO_DROPDOWN_FIRST];
 			const CargoID cargo_id = cs->Index();
-			uint8 order_action_type = this->GetOrderActionTypeForCargo(cargo_id);
+			uint8_t order_action_type = this->GetOrderActionTypeForCargo(cargo_id);
 
 			if (action_type == order_action_type) return;
 
@@ -1570,12 +1570,12 @@ private:
 		}
 	}
 
-	bool InsertNewOrder(uint64 order_pack)
+	bool InsertNewOrder(uint64_t order_pack)
 	{
 		return DoCommandPEx(this->vehicle->tile, this->vehicle->index, this->OrderGetSel(), order_pack, CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER), nullptr, nullptr, 0);
 	}
 
-	bool ModifyOrder(VehicleOrderID sel_ord, uint32 p2, bool error_msg = true, const char *text = nullptr)
+	bool ModifyOrder(VehicleOrderID sel_ord, uint32_t p2, bool error_msg = true, const char *text = nullptr)
 	{
 		return ::ModifyOrder(this->vehicle, sel_ord, p2, error_msg, text);
 	}
@@ -2465,7 +2465,7 @@ public:
 			/* Don't draw anything if it extends past the end of the window. */
 			if (!this->vscroll->IsVisible(i)) break;
 
-			uint8 occupancy = order->GetOccupancy();
+			uint8_t occupancy = order->GetOccupancy();
 			if (occupancy > 0) {
 				SetDParam(0, occupancy - 1);
 				TextColour colour;
@@ -2859,7 +2859,7 @@ public:
 						case OPOS_DEPARTURE_VIA:        sel =  7; break;
 						default: NOT_REACHED();
 					}
-					uint32 hidden_mask = 0;
+					uint32_t hidden_mask = 0;
 					if (_settings_client.gui.show_adv_tracerestrict_features) {
 						bool have_counters = false;
 						for (const TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
@@ -3617,15 +3617,15 @@ static Hotkey order_hotkeys[] = {
 	Hotkey('F', "delete", OHK_DELETE),
 	Hotkey('G', "goto", OHK_GOTO),
 	Hotkey('H', "nonstop", OHK_NONSTOP),
-	Hotkey((uint16)0, "via", OHK_VIA),
+	Hotkey((uint16_t)0, "via", OHK_VIA),
 	Hotkey('J', "fullload", OHK_FULLLOAD),
 	Hotkey('K', "unload", OHK_UNLOAD),
-	Hotkey((uint16)0, "nearest_depot", OHK_NEAREST_DEPOT),
-	Hotkey((uint16)0, "always_service", OHK_ALWAYS_SERVICE),
-	Hotkey((uint16)0, "transfer", OHK_TRANSFER),
-	Hotkey((uint16)0, "no_unload", OHK_NO_UNLOAD),
-	Hotkey((uint16)0, "no_load", OHK_NO_LOAD),
-	Hotkey((uint16)0, "close", OHK_CLOSE),
+	Hotkey((uint16_t)0, "nearest_depot", OHK_NEAREST_DEPOT),
+	Hotkey((uint16_t)0, "always_service", OHK_ALWAYS_SERVICE),
+	Hotkey((uint16_t)0, "transfer", OHK_TRANSFER),
+	Hotkey((uint16_t)0, "no_unload", OHK_NO_UNLOAD),
+	Hotkey((uint16_t)0, "no_load", OHK_NO_LOAD),
+	Hotkey((uint16_t)0, "close", OHK_CLOSE),
 	HOTKEY_LIST_END
 };
 HotkeyList OrdersWindow::hotkeys("order", order_hotkeys);

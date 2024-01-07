@@ -39,27 +39,27 @@ typedef bool (ScriptAsyncModeProc)();
 class ScriptStorage {
 friend class ScriptObject;
 private:
-	ScriptModeProc *mode;             ///< The current build mode we are int.
-	class ScriptObject *mode_instance; ///< The instance belonging to the current build mode.
+	ScriptModeProc *mode;                    ///< The current build mode we are int.
+	class ScriptObject *mode_instance;       ///< The instance belonging to the current build mode.
 	ScriptAsyncModeProc *async_mode;         ///< The current command async mode we are in.
 	class ScriptObject *async_mode_instance; ///< The instance belonging to the current command async mode.
-	CompanyID root_company;          ///< The root company, the company that the script really belongs to.
-	CompanyID company;               ///< The current company.
+	CompanyID root_company;                  ///< The root company, the company that the script really belongs to.
+	CompanyID company;                       ///< The current company.
 
 	uint delay;                      ///< The ticks of delay each DoCommand has.
 	bool allow_do_command;           ///< Is the usage of DoCommands restricted?
 
 	CommandCost costs;               ///< The costs the script is tracking.
 	Money last_cost;                 ///< The last cost of the command.
-	uint32 last_result;              ///< The last result data of the command.
+	uint32_t last_result;            ///< The last result data of the command.
 	uint last_error;                 ///< The last error of the command.
 	bool last_command_res;           ///< The last result of the command.
 
 	TileIndex last_tile;             ///< The last tile passed to a command.
-	uint32 last_p1;                  ///< The last p1 passed to a command.
-	uint32 last_p2;                  ///< The last p2 passed to a command.
-	uint64 last_p3;                  ///< The last p3 passed to a command.
-	uint32 last_cmd;                 ///< The last cmd passed to a command.
+	uint32_t last_p1;                ///< The last p1 passed to a command.
+	uint32_t last_p2;                ///< The last p2 passed to a command.
+	uint64_t last_p3;                ///< The last p3 passed to a command.
+	uint32_t last_cmd;               ///< The last cmd passed to a command.
 
 	VehicleID new_vehicle_id;        ///< The ID of the new Vehicle.
 	SignID new_sign_id;              ///< The ID of the new Sign.

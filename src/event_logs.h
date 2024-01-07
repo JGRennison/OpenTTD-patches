@@ -13,7 +13,7 @@
 #include "core/enum_type.hpp"
 #include <time.h>
 
-enum GameEventFlags : uint32 {
+enum GameEventFlags : uint32_t {
 	GEF_COMPANY_DELETE       = 1 << 0, ///< (d) A company has been deleted
 	GEF_COMPANY_MERGE        = 1 << 1, ///< (m) A company has been bought by another
 	GEF_RELOAD_NEWGRF        = 1 << 2, ///< (n) ReloadNewGRFData() has been called

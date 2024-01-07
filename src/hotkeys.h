@@ -20,17 +20,17 @@
  * a list of keycodes and a number to help identifying this hotkey.
  */
 struct Hotkey {
-	Hotkey(uint16 default_keycode, const char *name, int num);
-	Hotkey(const uint16 *default_keycodes, const char *name, int num);
+	Hotkey(uint16_t default_keycode, const char *name, int num);
+	Hotkey(const uint16_t *default_keycodes, const char *name, int num);
 
-	void AddKeycode(uint16 keycode);
+	void AddKeycode(uint16_t keycode);
 
 	const char *name;
 	int num;
-	btree::btree_set<uint16> keycodes;
+	btree::btree_set<uint16_t> keycodes;
 };
 
-#define HOTKEY_LIST_END Hotkey((uint16)0, nullptr, -1)
+#define HOTKEY_LIST_END Hotkey((uint16_t)0, nullptr, -1)
 
 struct IniFile;
 
@@ -46,7 +46,7 @@ struct HotkeyList {
 	void Load(const IniFile &ini);
 	void Save(IniFile &ini) const;
 
-	int CheckMatch(uint16 keycode, bool global_only = false) const;
+	int CheckMatch(uint16_t keycode, bool global_only = false) const;
 
 	GlobalHotkeyHandlerFunc global_hotkey_handler;
 private:
@@ -60,12 +60,12 @@ private:
 	HotkeyList(const HotkeyList &other);
 };
 
-bool IsQuitKey(uint16 keycode);
+bool IsQuitKey(uint16_t keycode);
 
 void LoadHotkeysFromConfig();
 void SaveHotkeysToConfig();
 
 
-void HandleGlobalHotkeys(WChar key, uint16 keycode);
+void HandleGlobalHotkeys(char32_t key, uint16_t keycode);
 
 #endif /* HOTKEYS_H */

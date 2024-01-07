@@ -389,21 +389,21 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 ClientNetworkGameSocketHandler * ClientNetworkGameSocketHandler::my_client = nullptr;
 
 /** Last frame we performed an ack. */
-static uint32 last_ack_frame;
+static uint32_t last_ack_frame;
 
 /** One bit of 'entropy' used to generate a salt for the company passwords. */
-static uint32 _company_password_game_seed;
+static uint32_t _company_password_game_seed;
 /** Network server's x25519 public key, used for key derivation */
 static byte _server_x25519_pub_key[32];
 /** Key message ID counter */
-static uint64 _next_key_message_id;
+static uint64_t _next_key_message_id;
 /** The other bit of 'entropy' used to generate a salt for the server, rcon, and settings passwords. */
 static std::string _password_server_id;
 /** The other bit of 'entropy' used to generate a salt for the company passwords. */
 static std::string _company_password_server_id;
 
 /** Maximum number of companies of the currently joined server. */
-static uint8 _network_server_max_companies;
+static uint8_t _network_server_max_companies;
 /** The current name of the server you are on. */
 std::string _network_server_name;
 
@@ -446,10 +446,10 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendKeyPasswordPacket(PacketTy
 	if (payload != nullptr) buffer.Send_string(*payload);
 
 	/* Message authentication code */
-	uint8 mac[16];
+	uint8_t mac[16];
 
 	/* Use only once per key: random */
-	uint8 nonce[24];
+	uint8_t nonce[24];
 	NetworkRandomBytesWithFallback(nonce, 24);
 
 	/* Encrypt in place, use first half of hash as key */
@@ -619,7 +619,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncLog(const std::strin
 	for (size_t offset = 0; offset < log.size();) {
 		Packet *p = new Packet(PACKET_CLIENT_DESYNC_LOG, SHRT_MAX);
 		size_t size = std::min<size_t>(log.size() - offset, SHRT_MAX - 2 - p->Size());
-		p->Send_uint16((uint16)size);
+		p->Send_uint16((uint16_t)size);
 		p->Send_binary((const byte *)(log.data() + offset), size);
 		my_client->SendPacket(p);
 
@@ -646,7 +646,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncSyncData()
 	if (_network_sync_record_counts.empty()) return NETWORK_RECV_STATUS_OKAY;
 
 	uint total = 0;
-	for (uint32 count : _network_sync_record_counts) {
+	for (uint32_t count : _network_sync_record_counts) {
 		total += count;
 	}
 
@@ -656,9 +656,9 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncSyncData()
 	}
 
 	Packet *p = new Packet(PACKET_CLIENT_DESYNC_SYNC_DATA, SHRT_MAX);
-	p->Send_uint32((uint32)_network_sync_record_counts.size());
-	uint32 offset = 0;
-	for (uint32 count : _network_sync_record_counts) {
+	p->Send_uint32((uint32_t)_network_sync_record_counts.size());
+	uint32_t offset = 0;
+	for (uint32_t count : _network_sync_record_counts) {
 		p->Send_uint32(count);
 		for (uint i = 0; i < count; i++) {
 			const NetworkSyncRecord &record = _network_sync_records[offset + i];
@@ -1012,7 +1012,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_MAP_DATA(Packet
 	/* We are still receiving data, put it to the file */
 	this->savegame->AddPacket(p);
 
-	_network_join_bytes = (uint32)this->savegame->written_bytes;
+	_network_join_bytes = (uint32_t)this->savegame->written_bytes;
 	SetWindowDirty(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
 
 	return NETWORK_RECV_STATUS_OKAY;
@@ -1099,7 +1099,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_FRAME(Packet *p
 	}
 #endif
 	/* Receive the token. */
-	if (p->CanReadFromPacket(sizeof(uint8))) this->token = p->Recv_uint8();
+	if (p->CanReadFromPacket(sizeof(uint8_t))) this->token = p->Recv_uint8();
 
 	DEBUG(net, 7, "Received FRAME %d", _frame_counter_server);
 
@@ -1381,7 +1381,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_COMPANY_UPDATE(
 {
 	if (this->status < STATUS_ACTIVE) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 
-	static_assert(sizeof(_network_company_passworded) <= sizeof(uint16));
+	static_assert(sizeof(_network_company_passworded) <= sizeof(uint16_t));
 	_network_company_passworded = p->Recv_uint16();
 	SetWindowClassesDirty(WC_COMPANY);
 

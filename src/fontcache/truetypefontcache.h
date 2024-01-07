@@ -56,14 +56,14 @@ protected:
 	GlyphEntry *GetGlyphPtr(GlyphID key);
 	void SetGlyphPtr(GlyphID key, const GlyphEntry *glyph, bool duplicate = false);
 
-	virtual const void *InternalGetFontTable(uint32 tag, size_t &length) = 0;
+	virtual const void *InternalGetFontTable(uint32_t tag, size_t &length) = 0;
 	virtual const Sprite *InternalGetGlyph(GlyphID key, bool aa) = 0;
 
 public:
 	TrueTypeFontCache(FontSize fs, int pixels);
 	virtual ~TrueTypeFontCache();
 	int GetFontSize() const override { return this->used_size; }
-	void SetUnicodeGlyph(WChar key, SpriteID sprite) override { this->parent->SetUnicodeGlyph(key, sprite); }
+	void SetUnicodeGlyph(char32_t key, SpriteID sprite) override { this->parent->SetUnicodeGlyph(key, sprite); }
 
 	virtual void InitializeUnicodeGlyphMap() override
 	{
@@ -73,7 +73,7 @@ public:
 
 
 	const Sprite *GetGlyph(GlyphID key) override;
-	const void *GetFontTable(uint32 tag, size_t &length) override;
+	const void *GetFontTable(uint32_t tag, size_t &length) override;
 	void ClearFontCache() override;
 	uint GetGlyphWidth(GlyphID key) override;
 	bool GetDrawGlyphShadow() override;

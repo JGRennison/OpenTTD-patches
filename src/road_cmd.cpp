@@ -224,7 +224,7 @@ static DiagDirection OneWaySideJunctionRoadRoadBitsToDiagDir(RoadBits bits)
 	 * ROAD_NW (bit 0) -> DIAGDIR_SW (2)
 	 * ROAD_NE (bit 3) -> DIAGDIR_NW (3)
 	 */
-	uint8 bit = FIND_FIRST_BIT(bits ^ ROAD_ALL);
+	uint8_t bit = FIND_FIRST_BIT(bits ^ ROAD_ALL);
 	bit ^= 3;
 	return (DiagDirection)((bit + 3 + (_settings_game.vehicle.road_side * 2)) % 4);
 }
@@ -236,7 +236,7 @@ inline bool IsOneWaySideJunctionRoadDRDsPresent(TileIndex tile, DiagDirection di
 	TileIndexDiffC ti = TileIndexDiffCByDiagDir(dir);
 	TileIndex ahead = AddTileIndexDiffCWrap(tile, ti);
 	if (ahead == INVALID_TILE || GetOneWayRoadTileDisallowedRoadDirections(ahead) != diagdir_to_drd[dir]) return false;
-	TileIndex behind = AddTileIndexDiffCWrap(tile, { (int16)(-ti.x), (int16)(-ti.y) });
+	TileIndex behind = AddTileIndexDiffCWrap(tile, { (int16_t)(-ti.x), (int16_t)(-ti.y) });
 	if (behind == INVALID_TILE || GetOneWayRoadTileDisallowedRoadDirections(behind) != diagdir_to_drd[dir]) return false;
 	return true;
 }
@@ -298,7 +298,7 @@ enum InterpolateRoadResult {
 	IRR_IN
 };
 
-static TileIndex InterpolateRoadFollowTileStep(TileIndex tile, uint8 bit)
+static TileIndex InterpolateRoadFollowTileStep(TileIndex tile, uint8_t bit)
 {
 	DiagDirection outgoing = (DiagDirection)(bit ^ 3);
 	if (IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeDirection(tile) == outgoing) {
@@ -313,7 +313,7 @@ static TileIndex InterpolateRoadFollowTileStep(TileIndex tile, uint8 bit)
 	return next;
 }
 
-static InterpolateRoadResult InterpolateRoadFollowRoadBit(TileIndex tile, uint8 bit)
+static InterpolateRoadResult InterpolateRoadFollowRoadBit(TileIndex tile, uint8_t bit)
 {
 	const TileIndex start = tile;
 	do {
@@ -337,14 +337,14 @@ static InterpolateRoadResult InterpolateRoadFollowRoadBit(TileIndex tile, uint8 
 	return IRR_NONE;
 }
 
-static void InterpolateRoadFollowRoadBitSetState(TileIndex tile, uint8 bit, InterpolateRoadResult irr)
+static void InterpolateRoadFollowRoadBitSetState(TileIndex tile, uint8_t bit, InterpolateRoadResult irr)
 {
 	const TileIndex start = tile;
 	do {
 		if (irr == IRR_NONE) {
 			SetRoadCachedOneWayState(tile, RCOWS_NORMAL);
 		} else {
-			uint8 inbit = FIND_FIRST_BIT(GetAnyRoadBits(tile, RTT_ROAD, true) & ~(1 << bit));
+			uint8_t inbit = FIND_FIRST_BIT(GetAnyRoadBits(tile, RTT_ROAD, true) & ~(1 << bit));
 			/*   inbit    bit      piece    Outgoing Trackdir       IRR_IN case
 			 *
 			 *    0        1       ROAD_W   TRACKDIR_LEFT_S         RCOWS_NON_JUNCTION_A
@@ -364,7 +364,7 @@ static void InterpolateRoadFollowRoadBitSetState(TileIndex tile, uint8 bit, Inte
 			 *    3        2       ROAD_E   TRACKDIR_RIGHT_S        RCOWS_NON_JUNCTION_A
 			 */
 
-			const uint16 bits_to_rcows = 0x3B10;
+			const uint16_t bits_to_rcows = 0x3B10;
 			SetRoadCachedOneWayState(tile, (RoadCachedOneWayState)(irr ^ (HasBit(bits_to_rcows, (inbit << 2) | bit) ? 0 : 3)));
 		}
 		_road_cache_one_way_state_pending_interpolate_tiles.erase(tile);
@@ -396,8 +396,8 @@ static void InterpolateRoadCachedOneWayStates()
 		const RoadBits bits = GetAnyRoadBits(tile, RTT_ROAD, true);
 		if (CountBits(bits) != 2) continue;
 
-		uint8 first_bit = FIND_FIRST_BIT(bits);
-		uint8 second_bit = FIND_FIRST_BIT(KillFirstBit(bits));
+		uint8_t first_bit = FIND_FIRST_BIT(bits);
+		uint8_t second_bit = FIND_FIRST_BIT(KillFirstBit(bits));
 		InterpolateRoadResult first_irr = InterpolateRoadFollowRoadBit(tile, first_bit);
 		InterpolateRoadResult second_irr = first_irr;
 		if (first_irr != IRR_NONE) {
@@ -979,7 +979,7 @@ static bool CanConvertUnownedRoadType(Owner owner, RoadTramType rtt)
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	CompanyID company = _current_company;
 	CommandCost cost(EXPENSES_CONSTRUCTION);
@@ -1548,7 +1548,7 @@ static bool CanConnectToRoad(TileIndex tile, RoadType rt, DiagDirection dir)
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildLongRoad(TileIndex start_tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdBuildLongRoad(TileIndex start_tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	DisallowedRoadDirections drd = DRD_NORTHBOUND;
 
@@ -1650,7 +1650,7 @@ CommandCost CmdBuildLongRoad(TileIndex start_tile, DoCommandFlag flags, uint32 p
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdRemoveLongRoad(TileIndex start_tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdRemoveLongRoad(TileIndex start_tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 
@@ -1738,7 +1738,7 @@ CommandCost CmdRemoveLongRoad(TileIndex start_tile, DoCommandFlag flags, uint32 
  * @todo When checking for the tile slope,
  * distinguish between "Flat land required" and "land sloped in wrong direction"
  */
-CommandCost CmdBuildRoadDepot(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdBuildRoadDepot(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	DiagDirection dir = Extract<DiagDirection, 0, 2>(p1);
 
@@ -1862,7 +1862,7 @@ static CommandCost ClearTile_Road(TileIndex tile, DoCommandFlag flags)
 
 
 struct DrawRoadTileStruct {
-	uint16 image;
+	uint16_t image;
 	byte subcoord_x;
 	byte subcoord_y;
 };
@@ -2747,7 +2747,7 @@ static TrackStatus GetTileTrackStatus_Road(TileIndex tile, TransportType mode, u
 
 					trackdirbits = TrackBitsToTrackdirBits(AxisToTrackBits(axis));
 					auto is_non_colliding = [&]() -> bool {
-						uint8 rtfield = GB(sub_mode, 8, 8);
+						uint8_t rtfield = GB(sub_mode, 8, 8);
 						if (rtfield == 0) return false;
 						RoadType rt = (RoadType)(rtfield - 1);
 						return HasBit(_roadtypes_non_train_colliding, rt);
@@ -3058,7 +3058,7 @@ static void ConvertRoadTypeOwner(TileIndex tile, uint num_pieces, Owner owner, R
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdConvertRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdConvertRoad(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	RoadType to_type = Extract<RoadType, 0, 6>(p2);
 

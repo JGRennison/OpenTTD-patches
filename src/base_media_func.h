@@ -66,7 +66,7 @@ bool BaseSet<T, Tnum_files, Tsearch_in_tars>::FillSetDetails(const IniFile &ini,
 
 	fetch_metadata("shortname");
 	for (uint i = 0; (*item->value)[i] != '\0' && i < 4; i++) {
-		this->shortname |= ((uint8)(*item->value)[i]) << (i * 8);
+		this->shortname |= ((uint8_t)(*item->value)[i]) << (i * 8);
 	}
 
 	fetch_metadata("version");

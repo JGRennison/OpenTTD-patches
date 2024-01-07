@@ -13,7 +13,7 @@
 #include "stdafx.h"
 #include "tile_type.h"
 
-typedef uint16 PlanID;
+typedef uint16_t PlanID;
 struct PlanLine;
 struct Plan;
 

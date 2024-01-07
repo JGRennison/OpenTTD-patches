@@ -13,17 +13,17 @@
  * chunk IDs which are associated with an extended feature, these can be discarded if the feature is discarded.
  * This information is stored in the SLXI chunk, the contents of which has the following format:
  *
- * uint32                               chunk version
- * uint32                               chunk flags
- * uint32                               number of sub chunks/features
+ * uint32_t                             chunk version
+ * uint32_t                             chunk flags
+ * uint32_t                             number of sub chunks/features
  *     For each of N sub chunk/feature:
- *     uint32                           feature flags (SlxiSubChunkFlags)
- *     uint16                           feature version
+ *     uint32_t                         feature flags (SlxiSubChunkFlags)
+ *     uint16_t                         feature version
  *     SLE_STR                          feature name
- *     uint32*                          extra data length [only present iff feature flags & XSCF_EXTRA_DATA_PRESENT]
+ *     uint32_t*                        extra data length [only present iff feature flags & XSCF_EXTRA_DATA_PRESENT]
  *         N bytes                      extra data
- *     uint32*                          chunk ID list count [only present iff feature flags & XSCF_CHUNK_ID_LIST_PRESENT]
- *         N x uint32                   chunk ID list
+ *     uint32_t*                        chunk ID list count [only present iff feature flags & XSCF_CHUNK_ID_LIST_PRESENT]
+ *         N x uint32_t                 chunk ID list
  *
  * Extended features as recorded in the SLXI chunk, above, MAY add, remove, change, or otherwise modify fields in chunks
  * not owned by the feature and therefore not listed in the sub chunk/feature information in the SLXI chunk.
@@ -51,27 +51,27 @@
 
 #include "../safeguards.h"
 
-std::array<uint16, XSLFI_SIZE> _sl_xv_feature_versions;        ///< array of all known feature types and their current versions
-std::array<uint16, XSLFI_SIZE> _sl_xv_feature_static_versions; ///< array of all known feature types and their static current version versions
-bool _sl_is_ext_version;                                       ///< is this an extended savegame version, with more info in the SLXI chunk?
-bool _sl_is_faked_ext;                                         ///< is this a faked extended savegame version, with no SLXI chunk? See: SlXvCheckSpecialSavegameVersions.
-bool _sl_maybe_springpp;                                       ///< is this possibly a SpringPP savegame?
-bool _sl_maybe_chillpp;                                        ///< is this possibly a ChillPP v8 savegame?
-bool _sl_upstream_mode;                                        ///< load game using upstream loader
-std::vector<uint32> _sl_xv_discardable_chunk_ids;              ///< list of chunks IDs which we can discard if no chunk loader exists
-std::string _sl_xv_version_label;                              ///< optional SLXI version label
-SaveLoadVersion _sl_xv_upstream_version;                       ///< optional SLXI upstream version
+std::array<uint16_t, XSLFI_SIZE> _sl_xv_feature_versions;        ///< array of all known feature types and their current versions
+std::array<uint16_t, XSLFI_SIZE> _sl_xv_feature_static_versions; ///< array of all known feature types and their static current version versions
+bool _sl_is_ext_version;                                         ///< is this an extended savegame version, with more info in the SLXI chunk?
+bool _sl_is_faked_ext;                                           ///< is this a faked extended savegame version, with no SLXI chunk? See: SlXvCheckSpecialSavegameVersions.
+bool _sl_maybe_springpp;                                         ///< is this possibly a SpringPP savegame?
+bool _sl_maybe_chillpp;                                          ///< is this possibly a ChillPP v8 savegame?
+bool _sl_upstream_mode;                                          ///< load game using upstream loader
+std::vector<uint32_t> _sl_xv_discardable_chunk_ids;              ///< list of chunks IDs which we can discard if no chunk loader exists
+std::string _sl_xv_version_label;                                ///< optional SLXI version label
+SaveLoadVersion _sl_xv_upstream_version;                         ///< optional SLXI upstream version
 
-static const uint32 _sl_xv_slxi_chunk_version = 0;             ///< current version of SLXI chunk
+static const uint32_t _sl_xv_slxi_chunk_version = 0;             ///< current version of SLXI chunk
 
-static void loadVL(const SlxiSubChunkInfo *info, uint32 length);
-static uint32 saveVL(const SlxiSubChunkInfo *info, bool dry_run);
-static void loadUV(const SlxiSubChunkInfo *info, uint32 length);
-static uint32 saveUV(const SlxiSubChunkInfo *info, bool dry_run);
-static void loadLC(const SlxiSubChunkInfo *info, uint32 length);
-static uint32 saveLC(const SlxiSubChunkInfo *info, bool dry_run);
-static void loadSTC(const SlxiSubChunkInfo *info, uint32 length);
-static uint32 saveSTC(const SlxiSubChunkInfo *info, bool dry_run);
+static void loadVL(const SlxiSubChunkInfo *info, uint32_t length);
+static uint32_t saveVL(const SlxiSubChunkInfo *info, bool dry_run);
+static void loadUV(const SlxiSubChunkInfo *info, uint32_t length);
+static uint32_t saveUV(const SlxiSubChunkInfo *info, bool dry_run);
+static void loadLC(const SlxiSubChunkInfo *info, uint32_t length);
+static uint32_t saveLC(const SlxiSubChunkInfo *info, bool dry_run);
+static void loadSTC(const SlxiSubChunkInfo *info, uint32_t length);
+static uint32_t saveSTC(const SlxiSubChunkInfo *info, bool dry_run);
 
 const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_VERSION_LABEL,                    XSCF_IGNORABLE_ALL,       1,   1, "version_label",                    saveVL,  loadVL,  nullptr          },
@@ -222,7 +222,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
  * and return the combination of the two tests using the operator defined in the constructor.
  * Otherwise just returns the result of the savegame version test
  */
-bool SlXvFeatureTest::IsFeaturePresent(const std::array<uint16, XSLFI_SIZE> &feature_versions, SaveLoadVersion savegame_version, SaveLoadVersion savegame_version_from, SaveLoadVersion savegame_version_to) const
+bool SlXvFeatureTest::IsFeaturePresent(const std::array<uint16_t, XSLFI_SIZE> &feature_versions, SaveLoadVersion savegame_version, SaveLoadVersion savegame_version_from, SaveLoadVersion savegame_version_to) const
 {
 	bool savegame_version_ok = savegame_version >= savegame_version_from && savegame_version < savegame_version_to;
 
@@ -248,7 +248,7 @@ bool SlXvFeatureTest::IsFeaturePresent(const std::array<uint16, XSLFI_SIZE> &fea
 /**
  * Returns true if @p feature is present and has a version inclusively bounded by @p min_version and @p max_version
  */
-bool SlXvIsFeaturePresent(const std::array<uint16, XSLFI_SIZE> &feature_versions, SlXvFeatureIndex feature, uint16 min_version, uint16 max_version)
+bool SlXvIsFeaturePresent(const std::array<uint16_t, XSLFI_SIZE> &feature_versions, SlXvFeatureIndex feature, uint16_t min_version, uint16_t max_version)
 {
 	assert(feature < XSLFI_SIZE);
 	return feature_versions[feature] >= min_version && feature_versions[feature] <= max_version;
@@ -498,7 +498,7 @@ void SlXvChillPPSpecialSavegameVersions()
 /**
  * Return true if this chunk has been marked as discardable
  */
-bool SlXvIsChunkDiscardable(uint32 id)
+bool SlXvIsChunkDiscardable(uint32_t id)
 {
 	for (size_t i = 0; i < _sl_xv_discardable_chunk_ids.size(); i++) {
 		if (_sl_xv_discardable_chunk_ids[i] == id) {
@@ -512,7 +512,7 @@ bool SlXvIsChunkDiscardable(uint32 id)
  * Writes a chunk ID list string to the savegame, returns the number of chunks written
  * In dry run mode, only returns the number of chunk which would have been written
  */
-static uint32 WriteChunkIdList(const char *chunk_list, bool dry_run)
+static uint32_t WriteChunkIdList(const char *chunk_list, bool dry_run)
 {
 	unsigned int chunk_count = 0;  // number of chunks output
 	unsigned int id_offset = 0;    // how far are we into the ID
@@ -543,10 +543,10 @@ static void Save_SLXI()
 	};
 
 	// calculate lengths
-	uint32 item_count = 0;
-	uint32 length = 12;
-	std::vector<uint32> extra_data_lengths;
-	std::vector<uint32> chunk_counts;
+	uint32_t item_count = 0;
+	uint32_t length = 12;
+	std::vector<uint32_t> extra_data_lengths;
+	std::vector<uint32_t> chunk_counts;
 	extra_data_lengths.resize(XSLFI_SIZE);
 	chunk_counts.resize(XSLFI_SIZE);
 	const SlxiSubChunkInfo *info = _sl_xv_sub_chunk_infos;
@@ -554,16 +554,16 @@ static void Save_SLXI()
 		if (_sl_xv_feature_versions[info->index] > 0) {
 			item_count++;
 			length += 6;
-			length += (uint32)SlCalcObjLength(info, _xlsi_sub_chunk_desc);
+			length += (uint32_t)SlCalcObjLength(info, _xlsi_sub_chunk_desc);
 			if (info->save_proc) {
-				uint32 extra_data_length = info->save_proc(info, true);
+				uint32_t extra_data_length = info->save_proc(info, true);
 				if (extra_data_length) {
 					extra_data_lengths[info->index] = extra_data_length;
 					length += 4 + extra_data_length;
 				}
 			}
 			if (info->chunk_list) {
-				uint32 chunk_count = WriteChunkIdList(info->chunk_list, true);
+				uint32_t chunk_count = WriteChunkIdList(info->chunk_list, true);
 				if (chunk_count) {
 					chunk_counts[info->index] = chunk_count;
 					length += 4 * (1 + chunk_count);
@@ -581,12 +581,12 @@ static void Save_SLXI()
 	// write data
 	info = _sl_xv_sub_chunk_infos;
 	for (; info->index != XSLFI_NULL; ++info) {
-		uint16 save_version = _sl_xv_feature_versions[info->index];
+		uint16_t save_version = _sl_xv_feature_versions[info->index];
 		if (save_version > 0) {
 			SlxiSubChunkFlags flags = info->flags;
 			assert(!(flags & (XSCF_EXTRA_DATA_PRESENT | XSCF_CHUNK_ID_LIST_PRESENT)));
-			uint32 extra_data_length = extra_data_lengths[info->index];
-			uint32 chunk_count = chunk_counts[info->index];
+			uint32_t extra_data_length = extra_data_lengths[info->index];
+			uint32_t chunk_count = chunk_counts[info->index];
 			if (extra_data_length > 0) flags |= XSCF_EXTRA_DATA_PRESENT;
 			if (chunk_count > 0) flags |= XSCF_CHUNK_ID_LIST_PRESENT;
 			SlWriteUint32(flags);
@@ -618,10 +618,10 @@ static void Load_SLXI()
 	SlXvResetState();
 	_sl_is_ext_version = true;
 
-	uint32 version = SlReadUint32();
+	uint32_t version = SlReadUint32();
 	if (version > _sl_xv_slxi_chunk_version) SlErrorCorruptFmt("SLXI chunk: version: %u is too new (expected max: %u)", version, _sl_xv_slxi_chunk_version);
 
-	uint32 chunk_flags = SlReadUint32();
+	uint32_t chunk_flags = SlReadUint32();
 	// flags are not in use yet, reserve for future expansion
 	if (chunk_flags != 0) SlErrorCorruptFmt("SLXI chunk: unknown chunk header flags: 0x%X", chunk_flags);
 
@@ -630,15 +630,15 @@ static void Load_SLXI()
 		SLEG_STR(name_buffer, SLE_STRB),
 	};
 
-	auto version_error = [](StringID str, const char *feature, int64 p1, int64 p2) {
+	auto version_error = [](StringID str, const char *feature, int64_t p1, int64_t p2) {
 		auto tmp_params = MakeParameters(_sl_xv_version_label.empty() ? STR_EMPTY : STR_GAME_SAVELOAD_FROM_VERSION, _sl_xv_version_label, feature, p1, p2);
 		SlError(STR_JUST_RAW_STRING, GetStringWithArgs(str, tmp_params));
 	};
 
-	uint32 item_count = SlReadUint32();
-	for (uint32 i = 0; i < item_count; i++) {
+	uint32_t item_count = SlReadUint32();
+	for (uint32_t i = 0; i < item_count; i++) {
 		SlxiSubChunkFlags flags = static_cast<SlxiSubChunkFlags>(SlReadUint32());
-		uint16 version = SlReadUint16();
+		uint16_t version = SlReadUint16();
 		SlGlobList(xlsi_sub_chunk_name_desc);
 
 		// linearly scan through feature list until found name match
@@ -669,7 +669,7 @@ static void Load_SLXI()
 
 				_sl_xv_feature_versions[info->index] = version;
 				if (flags & XSCF_EXTRA_DATA_PRESENT) {
-					uint32 extra_data_size = SlReadUint32();
+					uint32_t extra_data_size = SlReadUint32();
 					if (extra_data_size) {
 						if (info->load_proc) {
 							size_t read = SlGetBytesRead();
@@ -701,9 +701,9 @@ static void Load_SLXI()
 		// at this point the extra data field should have been consumed
 		// handle chunk ID list field
 		if (flags & XSCF_CHUNK_ID_LIST_PRESENT) {
-			uint32 chunk_count = SlReadUint32();
-			for (uint32 j = 0; j < chunk_count; j++) {
-				uint32 chunk_id = SlReadUint32();
+			uint32_t chunk_count = SlReadUint32();
+			for (uint32_t j = 0; j < chunk_count; j++) {
+				uint32_t chunk_id = SlReadUint32();
 				if (discard_chunks) {
 					_sl_xv_discardable_chunk_ids.push_back(chunk_id);
 					DEBUG(sl, 2, "SLXI chunk: unknown feature: '%s', discarding chunk: %c%c%c%c", name_buffer, chunk_id >> 24, chunk_id >> 16, chunk_id >> 8, chunk_id);
@@ -713,27 +713,27 @@ static void Load_SLXI()
 	}
 }
 
-static void IgnoreWrongLengthExtraData(const SlxiSubChunkInfo *info, uint32 length)
+static void IgnoreWrongLengthExtraData(const SlxiSubChunkInfo *info, uint32_t length)
 {
 	DEBUG(sl, 1, "SLXI chunk: feature: '%s', version: %d, has data of wrong length: %u", info->name, _sl_xv_feature_versions[info->index], length);
 	ReadBuffer::GetCurrent()->SkipBytes(length);
 }
 
-static void loadVL(const SlxiSubChunkInfo *info, uint32 length)
+static void loadVL(const SlxiSubChunkInfo *info, uint32_t length)
 {
 	_sl_xv_version_label.resize(length);
 	ReadBuffer::GetCurrent()->CopyBytes(reinterpret_cast<byte *>(_sl_xv_version_label.data()), length);
 	DEBUG(sl, 2, "SLXI version label: %s", _sl_xv_version_label.c_str());
 }
 
-static uint32 saveVL(const SlxiSubChunkInfo *info, bool dry_run)
+static uint32_t saveVL(const SlxiSubChunkInfo *info, bool dry_run)
 {
 	const size_t length = strlen(_openttd_revision);
 	if (!dry_run) MemoryDumper::GetCurrent()->CopyBytes(reinterpret_cast<const byte *>(_openttd_revision), length);
-	return static_cast<uint32>(length);
+	return static_cast<uint32_t>(length);
 }
 
-static void loadUV(const SlxiSubChunkInfo *info, uint32 length)
+static void loadUV(const SlxiSubChunkInfo *info, uint32_t length)
 {
 	if (length == 2) {
 		_sl_xv_upstream_version = (SaveLoadVersion)SlReadUint16();
@@ -743,13 +743,13 @@ static void loadUV(const SlxiSubChunkInfo *info, uint32 length)
 	}
 }
 
-static uint32 saveUV(const SlxiSubChunkInfo *info, bool dry_run)
+static uint32_t saveUV(const SlxiSubChunkInfo *info, bool dry_run)
 {
 	if (!dry_run) SlWriteUint16(SL_MAX_VERSION - 1);
 	return 2;
 }
 
-static void loadLC(const SlxiSubChunkInfo *info, uint32 length)
+static void loadLC(const SlxiSubChunkInfo *info, uint32_t length)
 {
 	if (length == 1) {
 		_loaded_local_company = (CompanyID) ReadBuffer::GetCurrent()->ReadByte();
@@ -758,15 +758,15 @@ static void loadLC(const SlxiSubChunkInfo *info, uint32 length)
 	}
 }
 
-static uint32 saveLC(const SlxiSubChunkInfo *info, bool dry_run)
+static uint32_t saveLC(const SlxiSubChunkInfo *info, bool dry_run)
 {
 	if (!dry_run) MemoryDumper::GetCurrent()->WriteByte(_local_company);
 	return 1;
 }
 
-static void loadSTC(const SlxiSubChunkInfo *info, uint32 length)
+static void loadSTC(const SlxiSubChunkInfo *info, uint32_t length)
 {
-	extern uint64 _station_tile_cache_hash;
+	extern uint64_t _station_tile_cache_hash;
 	if (length == 8) {
 		_station_tile_cache_hash = SlReadUint64();
 	} else {
@@ -774,9 +774,9 @@ static void loadSTC(const SlxiSubChunkInfo *info, uint32 length)
 	}
 }
 
-static uint32 saveSTC(const SlxiSubChunkInfo *info, bool dry_run)
+static uint32_t saveSTC(const SlxiSubChunkInfo *info, bool dry_run)
 {
-	extern uint64 _station_tile_cache_hash;
+	extern uint64_t _station_tile_cache_hash;
 	if (!dry_run) SlWriteUint64(_station_tile_cache_hash);
 	return 8;
 }

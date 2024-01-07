@@ -87,15 +87,15 @@ extern Window *_z_back_window;
 extern Window *_first_window;
 extern Window *_focused_window;
 
-inline uint64 GetWindowUpdateNumber()
+inline uint64_t GetWindowUpdateNumber()
 {
-	extern uint64 _window_update_number;
+	extern uint64_t _window_update_number;
 	return _window_update_number;
 }
 
 inline void IncrementWindowUpdateNumber()
 {
-	extern uint64 _window_update_number;
+	extern uint64_t _window_update_number;
 	_window_update_number++;
 }
 
@@ -114,8 +114,8 @@ struct HotkeyList;
 
 struct WindowDescPreferences {
 	bool pref_sticky;              ///< Preferred stickyness.
-	int16 pref_width;              ///< User-preferred width of the window. Zero if unset.
-	int16 pref_height;             ///< User-preferred height of the window. Zero if unset.
+	int16_t pref_width;            ///< User-preferred width of the window. Zero if unset.
+	int16_t pref_height;           ///< User-preferred height of the window. Zero if unset.
 };
 
 /**
@@ -123,8 +123,8 @@ struct WindowDescPreferences {
  */
 struct WindowDesc {
 
-	WindowDesc(const char * const file, const int line, WindowPosition default_pos, const char *ini_key, int16 def_width_trad, int16 def_height_trad,
-			WindowClass window_class, WindowClass parent_class, uint32 flags,
+	WindowDesc(const char * const file, const int line, WindowPosition default_pos, const char *ini_key, int16_t def_width_trad, int16_t def_height_trad,
+			WindowClass window_class, WindowClass parent_class, uint32_t flags,
 			const NWidgetPart *nwid_begin, const NWidgetPart *nwid_end, HotkeyList *hotkeys = nullptr, WindowDesc *ini_parent = nullptr);
 
 	~WindowDesc();
@@ -135,9 +135,9 @@ struct WindowDesc {
 	WindowClass cls;               ///< Class of the window, @see WindowClass.
 	WindowClass parent_cls;        ///< Class of the parent window. @see WindowClass
 	const char *ini_key;           ///< Key to store window defaults in openttd.cfg. \c nullptr if nothing shall be stored.
-	uint32 flags;                  ///< Flags. @see WindowDefaultFlag
+	uint32_t flags;                ///< Flags. @see WindowDefaultFlag
 	const NWidgetPart *nwid_begin; ///< Beginning of nested widget parts describing the window.
-	const NWidgetPart *nwid_end; ///< Ending of nested widget parts describing the window.
+	const NWidgetPart *nwid_end;   ///< Ending of nested widget parts describing the window.
 	HotkeyList *hotkeys;           ///< Hotkeys for the window.
 	WindowDesc *ini_parent;        ///< Other window desc to use for WindowDescPreferences.
 
@@ -146,15 +146,15 @@ struct WindowDesc {
 	const WindowDescPreferences &GetPreferences() const;
 	WindowDescPreferences &GetPreferences() { return const_cast<WindowDescPreferences &>(const_cast<const WindowDesc*>(this)->GetPreferences()); }
 
-	int16 GetDefaultWidth() const;
-	int16 GetDefaultHeight() const;
+	int16_t GetDefaultWidth() const;
+	int16_t GetDefaultHeight() const;
 
 	static void LoadFromConfig();
 	static void SaveToConfig();
 
 private:
-	int16 default_width_trad;      ///< Preferred initial width of the window (pixels at 1x zoom).
-	int16 default_height_trad;     ///< Preferred initial height of the window (pixels at 1x zoom).
+	int16_t default_width_trad;      ///< Preferred initial width of the window (pixels at 1x zoom).
+	int16_t default_height_trad;     ///< Preferred initial height of the window (pixels at 1x zoom).
 
 	/**
 	 * Dummy private copy constructor to prevent compilers from
@@ -192,7 +192,7 @@ enum SortButtonState {
 /**
  * Window flags.
  */
-enum WindowFlags : uint16 {
+enum WindowFlags : uint16_t {
 	WF_TIMEOUT           = 1 <<  0, ///< Window timeout counter.
 
 	WF_DRAGGING          = 1 <<  3, ///< Window is being dragged.
@@ -221,13 +221,13 @@ static const int WHITE_BORDER_DURATION = 3; ///< The initial timeout value for W
  * @see InitializeViewport(), UpdateNextViewportPosition(), ApplyNextViewportPosition(), UpdateViewportCoordinates().
  */
 struct ViewportData : Viewport {
-	VehicleID follow_vehicle; ///< VehicleID to follow if following a vehicle, #INVALID_VEHICLE otherwise.
-	int32 scrollpos_x;        ///< Currently shown x coordinate (virtual screen coordinate of topleft corner of the viewport).
-	int32 scrollpos_y;        ///< Currently shown y coordinate (virtual screen coordinate of topleft corner of the viewport).
-	int32 dest_scrollpos_x;   ///< Current destination x coordinate to display (virtual screen coordinate of topleft corner of the viewport).
-	int32 dest_scrollpos_y;   ///< Current destination y coordinate to display (virtual screen coordinate of topleft corner of the viewport).
-	int32 next_scrollpos_x;   ///< Next x coordinate to display (virtual screen coordinate of topleft corner of the viewport).
-	int32 next_scrollpos_y;   ///< Next y coordinate to display (virtual screen coordinate of topleft corner of the viewport).
+	VehicleID follow_vehicle;          ///< VehicleID to follow if following a vehicle, #INVALID_VEHICLE otherwise.
+	int32_t scrollpos_x;               ///< Currently shown x coordinate (virtual screen coordinate of topleft corner of the viewport).
+	int32_t scrollpos_y;               ///< Currently shown y coordinate (virtual screen coordinate of topleft corner of the viewport).
+	int32_t dest_scrollpos_x;          ///< Current destination x coordinate to display (virtual screen coordinate of topleft corner of the viewport).
+	int32_t dest_scrollpos_y;          ///< Current destination y coordinate to display (virtual screen coordinate of topleft corner of the viewport).
+	int32_t next_scrollpos_x;          ///< Next x coordinate to display (virtual screen coordinate of topleft corner of the viewport).
+	int32_t next_scrollpos_y;          ///< Next y coordinate to display (virtual screen coordinate of topleft corner of the viewport).
 	bool force_update_overlay_pending; ///< Forced overlay update is pending (see SetViewportPosition)
 };
 
@@ -530,7 +530,7 @@ public:
 	void SetWidgetDirty(WidgetID widget_index);
 
 	void DrawWidgets() const;
-	void DrawViewport(uint8 display_flags) const;
+	void DrawViewport(uint8_t display_flags) const;
 	void DrawSortButtonState(WidgetID widget, SortButtonState state) const;
 	static int SortButtonWidth();
 
@@ -569,7 +569,7 @@ public:
 	 * @param window_number The window number of the new window.
 	 * @return Initial position of the top-left corner of the window.
 	 */
-	virtual Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number);
+	virtual Point OnInitialPosition(int16_t sm_width, int16_t sm_height, int window_number);
 
 	/**
 	 * The window must be repainted.
@@ -621,7 +621,7 @@ public:
 	 * @return #ES_HANDLED if the key press has been handled and no other
 	 *         window should receive the event.
 	 */
-	virtual EventState OnKeyPress(WChar key, uint16 keycode) { return ES_NOT_HANDLED; }
+	virtual EventState OnKeyPress(char32_t key, uint16_t keycode) { return ES_NOT_HANDLED; }
 
 	virtual EventState OnHotkey(int hotkey);
 

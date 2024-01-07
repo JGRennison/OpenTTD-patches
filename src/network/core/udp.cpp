@@ -35,7 +35,7 @@ NetworkUDPSocketHandler::NetworkUDPSocketHandler(NetworkAddressList *bind)
 		this->bind.emplace_back("", 0, AF_INET6);
 	}
 
-	this->fragment_token = ((uint64) InteractiveRandom()) | (((uint64) InteractiveRandom()) << 32);
+	this->fragment_token = ((uint64_t) InteractiveRandom()) | (((uint64_t) InteractiveRandom()) << 32);
 }
 
 
@@ -82,21 +82,21 @@ void NetworkUDPSocketHandler::SendPacket(Packet *p, NetworkAddress *recv, bool a
 	if (p->Size() > MTU) {
 		p->PrepareToSend();
 
-		uint64 token = this->fragment_token++;
+		uint64_t token = this->fragment_token++;
 		const uint PAYLOAD_MTU = MTU - (1 + 2 + 8 + 1 + 1 + 2);
 
 		const size_t packet_size = p->Size();
-		const uint8 frag_count = (uint8)((packet_size + PAYLOAD_MTU - 1) / PAYLOAD_MTU);
+		const uint8_t frag_count = (uint8_t)((packet_size + PAYLOAD_MTU - 1) / PAYLOAD_MTU);
 
 		Packet frag(PACKET_UDP_EX_MULTI);
-		uint8 current_frag = 0;
+		uint8_t current_frag = 0;
 		size_t offset = 0;
 		while (offset < packet_size) {
-			uint16 payload_size = (uint16)std::min<size_t>(PAYLOAD_MTU, packet_size - offset);
+			uint16_t payload_size = (uint16_t)std::min<size_t>(PAYLOAD_MTU, packet_size - offset);
 			frag.Send_uint64(token);
-			frag.Send_uint8 (current_frag);
-			frag.Send_uint8 (frag_count);
-			frag.Send_uint16 (payload_size);
+			frag.Send_uint8(current_frag);
+			frag.Send_uint8(frag_count);
+			frag.Send_uint16(payload_size);
 			frag.Send_binary(p->GetBufferData() + offset, payload_size);
 			current_frag++;
 			offset += payload_size;
@@ -210,10 +210,10 @@ void NetworkUDPSocketHandler::HandleUDPPacket(Packet *p, NetworkAddress *client_
 
 void NetworkUDPSocketHandler::Receive_EX_MULTI(Packet *p, NetworkAddress *client_addr)
 {
-	uint64 token        = p->Recv_uint64();
-	uint8 index         = p->Recv_uint8 ();
-	uint8 total         = p->Recv_uint8 ();
-	uint16 payload_size = p->Recv_uint16();
+	uint64_t token        = p->Recv_uint64();
+	uint8_t index         = p->Recv_uint8 ();
+	uint8_t total         = p->Recv_uint8 ();
+	uint16_t payload_size = p->Recv_uint16();
 
 	DEBUG(net, 6, "[udp] received multi-part packet from %s: " OTTD_PRINTFHEX64 ", %u/%u, %u bytes",
 			NetworkAddressDumper().GetAddressAsString(client_addr), token, index, total, payload_size);

@@ -427,9 +427,9 @@ static void FormatHexNumber(StringBuilder builder, uint64_t number)
 	fmt::format_to(builder, "0x{:X}", number);
 }
 
-WChar GetDecimalSeparatorChar()
+char32_t GetDecimalSeparatorChar()
 {
-	WChar decimal_char = '.';
+	char32_t decimal_char = '.';
 	const char *decimal_separator = _settings_game.locale.digit_decimal_separator.c_str();
 	if (StrEmpty(decimal_separator)) decimal_separator = _langpack.langpack->digit_decimal_separator;
 	if (!StrEmpty(decimal_separator)) Utf8Decode(&decimal_char, decimal_separator);
@@ -1903,7 +1903,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 				case SCC_VIEWPORT_TOWN_LABEL1:
 				case SCC_VIEWPORT_TOWN_LABEL2: { // {VIEWPORT_TOWN_LABEL1..2}
 					int32_t t = args.GetNextParameter<int32_t>();
-					uint64 data = args.GetNextParameter<uint64>();
+					uint64_t data = args.GetNextParameter<uint64_t>();
 
 					bool tiny = (b == SCC_VIEWPORT_TOWN_LABEL2);
 					StringID string_id = STR_VIEWPORT_TOWN_COLOUR;

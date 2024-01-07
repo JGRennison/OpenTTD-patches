@@ -26,19 +26,19 @@
 
 #include "safeguards.h"
 
-YearMonthDay _cur_date_ymd; ///< Current date as YearMonthDay struct
-Date      _date;       ///< Current date in days (day counter)
-DateFract _date_fract; ///< Fractional part of the day.
-uint64 _tick_counter;  ///< Ever incrementing tick counter for setting off various events
-uint8 _tick_skip_counter; ///< Counter for ticks, when only vehicles are moving and nothing else happens
-uint64 _scaled_tick_counter; ///< Tick counter in daylength-scaled ticks
-DateTicksScaled _scaled_date_ticks; ///< Date as ticks in daylength-scaled ticks
+YearMonthDay _cur_date_ymd;                ///< Current date as YearMonthDay struct
+Date      _date;                           ///< Current date in days (day counter)
+DateFract _date_fract;                     ///< Fractional part of the day.
+uint64_t _tick_counter;                    ///< Ever incrementing tick counter for setting off various events
+uint8_t _tick_skip_counter;                ///< Counter for ticks, when only vehicles are moving and nothing else happens
+uint64_t _scaled_tick_counter;             ///< Tick counter in daylength-scaled ticks
+DateTicksScaled _scaled_date_ticks;        ///< Date as ticks in daylength-scaled ticks
 DateTicksScaled _scaled_date_ticks_offset; ///< Offset to add when generating _scaled_date_ticks
-uint32    _quit_after_days;  ///< Quit after this many days of run time
+uint32_t    _quit_after_days;              ///< Quit after this many days of run time
 
 YearMonthDay _game_load_cur_date_ymd;
 DateFract _game_load_date_fract;
-uint8 _game_load_tick_skip_counter;
+uint8_t _game_load_tick_skip_counter;
 
 extern void ClearOutOfDateSignalSpeedRestrictions();
 
@@ -46,12 +46,12 @@ void CheckScaledDateTicksWrap()
 {
 	DateTicksScaledDelta tick_adjust = 0;
 	auto get_tick_adjust = [&](DateTicksScaled target) {
-		int32 rounding = _settings_time.time_in_minutes * 1440;
+		int32_t rounding = _settings_time.time_in_minutes * 1440;
 		return target.AsDelta() - (target.base() % rounding);
 	};
-	if (_scaled_date_ticks >= ((int64)1 << 60)) {
+	if (_scaled_date_ticks >= ((int64_t)1 << 60)) {
 		tick_adjust = get_tick_adjust(_scaled_date_ticks);
-	} else if (_scaled_date_ticks <= -((int64)1 << 60)) {
+	} else if (_scaled_date_ticks <= -((int64_t)1 << 60)) {
 		tick_adjust = -get_tick_adjust(-(_scaled_date_ticks.base()));
 	} else {
 		return;
@@ -104,11 +104,11 @@ void SetDate(Date date, DateFract fract, bool preserve_scaled_ticks)
 
 void SetScaledTickVariables()
 {
-	_scaled_date_ticks = ((int64)(DateToDateTicks(_date, _date_fract).base()) * _settings_game.economy.day_length_factor) + _tick_skip_counter + _scaled_date_ticks_offset;
+	_scaled_date_ticks = ((int64_t)(DateToDateTicks(_date, _date_fract).base()) * _settings_game.economy.day_length_factor) + _tick_skip_counter + _scaled_date_ticks_offset;
 }
 
 #define M(a, b) ((a << 5) | b)
-static const uint16 _month_date_from_year_day[] = {
+static const uint16_t _month_date_from_year_day[] = {
 	M( 0, 1), M( 0, 2), M( 0, 3), M( 0, 4), M( 0, 5), M( 0, 6), M( 0, 7), M( 0, 8), M( 0, 9), M( 0, 10), M( 0, 11), M( 0, 12), M( 0, 13), M( 0, 14), M( 0, 15), M( 0, 16), M( 0, 17), M( 0, 18), M( 0, 19), M( 0, 20), M( 0, 21), M( 0, 22), M( 0, 23), M( 0, 24), M( 0, 25), M( 0, 26), M( 0, 27), M( 0, 28), M( 0, 29), M( 0, 30), M( 0, 31),
 	M( 1, 1), M( 1, 2), M( 1, 3), M( 1, 4), M( 1, 5), M( 1, 6), M( 1, 7), M( 1, 8), M( 1, 9), M( 1, 10), M( 1, 11), M( 1, 12), M( 1, 13), M( 1, 14), M( 1, 15), M( 1, 16), M( 1, 17), M( 1, 18), M( 1, 19), M( 1, 20), M( 1, 21), M( 1, 22), M( 1, 23), M( 1, 24), M( 1, 25), M( 1, 26), M( 1, 27), M( 1, 28), M( 1, 29),
 	M( 2, 1), M( 2, 2), M( 2, 3), M( 2, 4), M( 2, 5), M( 2, 6), M( 2, 7), M( 2, 8), M( 2, 9), M( 2, 10), M( 2, 11), M( 2, 12), M( 2, 13), M( 2, 14), M( 2, 15), M( 2, 16), M( 2, 17), M( 2, 18), M( 2, 19), M( 2, 20), M( 2, 21), M( 2, 22), M( 2, 23), M( 2, 24), M( 2, 25), M( 2, 26), M( 2, 27), M( 2, 28), M( 2, 29), M( 2, 30), M( 2, 31),
@@ -140,7 +140,7 @@ enum DaysTillMonth {
 };
 
 /** Number of days to pass from the first day in the year before reaching the first of a month. */
-static const uint16 _accum_days_for_month[] = {
+static const uint16_t _accum_days_for_month[] = {
 	ACCUM_JAN, ACCUM_FEB, ACCUM_MAR, ACCUM_APR,
 	ACCUM_MAY, ACCUM_JUN, ACCUM_JUL, ACCUM_AUG,
 	ACCUM_SEP, ACCUM_OCT, ACCUM_NOV, ACCUM_DEC,
@@ -160,7 +160,7 @@ YearMonthDay ConvertDateToYMD(Date date)
 	/* There are 97 leap years in 400 years */
 	Year yr = 400 * (date.base() / (DAYS_IN_YEAR * 400 + 97));
 	int rem = date.base() % (DAYS_IN_YEAR * 400 + 97);
-	uint16 x;
+	uint16_t x;
 
 	if (rem >= DAYS_IN_YEAR * 100 + 25) {
 		/* There are 25 leap years in the first 100 years after
@@ -270,7 +270,7 @@ static void OnNewYear()
 		LinkGraphSchedule::instance.ShiftDates(-days_this_year);
 		ShiftOrderDates(-days_this_year);
 		ShiftVehicleDates(-days_this_year);
-		_scaled_date_ticks_offset += ((int64)days_this_year) * (DAY_TICKS * _settings_game.economy.day_length_factor);
+		_scaled_date_ticks_offset += ((int64_t)days_this_year) * (DAY_TICKS * _settings_game.economy.day_length_factor);
 
 		/* Because the _date wraps here, and text-messages expire by game-days, we have to clean out
 		 *  all of them if the date is set back, else those messages will hang for ever */
@@ -369,7 +369,7 @@ void IncreaseDate()
 	if (new_year) OnNewYear();
 }
 
-const char *debug_date_dumper::HexDate(Date date, DateFract date_fract, uint8 tick_skip_counter)
+const char *debug_date_dumper::HexDate(Date date, DateFract date_fract, uint8_t tick_skip_counter)
 {
 	seprintf(this->buffer, lastof(this->buffer), "date{%08x; %02x; %02x}", date.base(), date_fract, tick_skip_counter);
 	return this->buffer;

@@ -441,8 +441,8 @@ bool EnoughContiguousTilesMatchingCondition(TileIndex tile, uint threshold, Test
 
 	static_assert(MAX_MAP_TILES_BITS <= 30);
 
-	btree::btree_set<uint32> processed_tiles;
-	ring_buffer<uint32> candidates;
+	btree::btree_set<uint32_t> processed_tiles;
+	ring_buffer<uint32_t> candidates;
 	uint matching_count = 0;
 
 	auto process_tile = [&](TileIndex t, DiagDirection exclude_onward_dir) {
@@ -466,7 +466,7 @@ bool EnoughContiguousTilesMatchingCondition(TileIndex tile, uint threshold, Test
 	process_tile(tile, INVALID_DIAGDIR);
 
 	while (matching_count < threshold && !candidates.empty()) {
-		uint32 next = candidates.front();
+		uint32_t next = candidates.front();
 		candidates.pop_front();
 		TileIndex t = GB(next, 0, 30);
 		DiagDirection exclude_onward_dir = (DiagDirection)GB(next, 30, 2);
@@ -501,8 +501,8 @@ uint GetClosestWaterDistance(TileIndex tile, bool water)
 
 		/* going counter-clockwise around this square */
 		for (DiagDirection dir = DIAGDIR_BEGIN; dir < DIAGDIR_END; dir++) {
-			static const int8 ddx[DIAGDIR_END] = { -1,  1,  1, -1};
-			static const int8 ddy[DIAGDIR_END] = {  1,  1, -1, -1};
+			static const int8_t ddx[DIAGDIR_END] = { -1,  1,  1, -1};
+			static const int8_t ddy[DIAGDIR_END] = {  1,  1, -1, -1};
 
 			int dx = ddx[dir];
 			int dy = ddy[dir];

@@ -169,7 +169,7 @@
 	return ::Company::Get(company)->old_economy[quarter - 1].company_value;
 }
 
-/* static */ Money ScriptCompany::GetAnnualExpenseValue(CompanyID company, uint32 year_offset, ExpensesType expenses_type)
+/* static */ Money ScriptCompany::GetAnnualExpenseValue(CompanyID company, uint32_t year_offset, ExpensesType expenses_type)
 {
 	EnforcePrecondition(false, expenses_type < (ExpensesType)::EXPENSES_END);
 	EnforcePrecondition(false, year_offset <= 2);
@@ -211,7 +211,7 @@
 {
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, loan >= 0);
-	EnforcePrecondition(false, ((int64)loan % GetLoanInterval()) == 0);
+	EnforcePrecondition(false, ((int64_t)loan % GetLoanInterval()) == 0);
 	EnforcePrecondition(false, loan <= GetMaxLoanAmount());
 	EnforcePrecondition(false, (loan - GetLoanAmount() + GetBankBalance(COMPANY_SELF)) >= 0);
 
@@ -229,7 +229,7 @@
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, loan >= 0);
 
-	Money over_interval = (int64)loan % GetLoanInterval();
+	Money over_interval = (int64_t)loan % GetLoanInterval();
 	if (over_interval != 0) loan += GetLoanInterval() - over_interval;
 
 	EnforcePrecondition(false, loan <= GetMaxLoanAmount());
@@ -249,7 +249,7 @@
 	EnforcePrecondition(false, company != COMPANY_INVALID);
 
 	/* Network commands only allow 0 to indicate invalid tiles, not INVALID_TILE */
-	return ScriptObject::DoCommandEx(tile == INVALID_TILE ? 0 : tile, company | expenses_type << 8, 0, (uint64)(delta), CMD_CHANGE_BANK_BALANCE);
+	return ScriptObject::DoCommandEx(tile == INVALID_TILE ? 0 : tile, company | expenses_type << 8, 0, (uint64_t)(delta), CMD_CHANGE_BANK_BALANCE);
 }
 
 /* static */ bool ScriptCompany::BuildCompanyHQ(TileIndex tile)
@@ -303,7 +303,7 @@
 {
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, money >= 0);
-	EnforcePrecondition(false, (int64)money <= UINT32_MAX);
+	EnforcePrecondition(false, (int64_t)money <= UINT32_MAX);
 	return ScriptObject::DoCommand(0, 0, money, CMD_CHANGE_COMPANY_SETTING, "company.engine_renew_money");
 }
 

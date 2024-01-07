@@ -820,7 +820,7 @@ struct Window;
 struct WindowBase;
 
 /** Number to differentiate different windows of the same class */
-typedef int32 WindowNumber;
+typedef int32_t WindowNumber;
 
 /** State of handling an event. */
 enum EventState {

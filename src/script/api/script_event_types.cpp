@@ -46,7 +46,7 @@ CargoID ScriptEventEnginePreview::GetCargoType()
 	return CargoID(std::distance(std::cbegin(cap), it));
 }
 
-int32 ScriptEventEnginePreview::GetCapacity()
+int32_t ScriptEventEnginePreview::GetCapacity()
 {
 	if (!this->IsEngineValid()) return -1;
 	const Engine *e = ::Engine::Get(this->engine);
@@ -68,11 +68,11 @@ int32 ScriptEventEnginePreview::GetCapacity()
 	}
 }
 
-int32 ScriptEventEnginePreview::GetMaxSpeed()
+int32_t ScriptEventEnginePreview::GetMaxSpeed()
 {
 	if (!this->IsEngineValid()) return -1;
 	const Engine *e = ::Engine::Get(this->engine);
-	int32 max_speed = e->GetDisplayMaxSpeed(); // km-ish/h
+	int32_t max_speed = e->GetDisplayMaxSpeed(); // km-ish/h
 	if (e->type == VEH_AIRCRAFT) max_speed /= _settings_game.vehicle.plane_speed;
 	return max_speed;
 }
@@ -89,7 +89,7 @@ Money ScriptEventEnginePreview::GetRunningCost()
 	return ::Engine::Get(this->engine)->GetRunningCost();
 }
 
-int32 ScriptEventEnginePreview::GetVehicleType()
+int32_t ScriptEventEnginePreview::GetVehicleType()
 {
 	if (!this->IsEngineValid()) return ScriptVehicle::VT_INVALID;
 	switch (::Engine::Get(this->engine)->type) {

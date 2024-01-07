@@ -14,9 +14,9 @@
 #include "tilearea_type.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 
-typedef uint16 StationID;
-typedef uint16 RoadStopID;
-typedef uint16 DockID;
+typedef uint16_t StationID;
+typedef uint16_t RoadStopID;
+typedef uint16_t DockID;
 
 struct BaseStation;
 struct Station;

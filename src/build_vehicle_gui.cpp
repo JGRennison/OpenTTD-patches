@@ -573,7 +573,7 @@ static bool AircraftEngineCargoSorter(const GUIEngineListItem &a, const GUIEngin
 	const Engine *e_a = Engine::Get(a.engine_id);
 	const Engine *e_b = Engine::Get(b.engine_id);
 
-	uint16 mail_a, mail_b;
+	uint16_t mail_a, mail_b;
 	int va = e_a->GetDisplayDefaultCapacity(&mail_a);
 	int vb = e_b->GetDisplayDefaultCapacity(&mail_b);
 	int r = va - vb;
@@ -601,7 +601,7 @@ static bool AircraftEngineCapacityVsRunningCostSorter(const GUIEngineListItem &a
 	const Engine *e_a = Engine::Get(a.engine_id);
 	const Engine *e_b = Engine::Get(b.engine_id);
 
-	uint16 mail_a, mail_b;
+	uint16_t mail_a, mail_b;
 	int va = e_a->GetDisplayDefaultCapacity(&mail_a);
 	int vb = e_b->GetDisplayDefaultCapacity(&mail_b);
 
@@ -616,8 +616,8 @@ static bool AircraftEngineCapacityVsRunningCostSorter(const GUIEngineListItem &a
  */
 static bool AircraftRangeSorter(const GUIEngineListItem &a, const GUIEngineListItem &b)
 {
-	uint16 r_a = Engine::Get(a.engine_id)->GetRange();
-	uint16 r_b = Engine::Get(b.engine_id)->GetRange();
+	uint16_t r_a = Engine::Get(a.engine_id)->GetRange();
+	uint16_t r_b = Engine::Get(b.engine_id)->GetRange();
 
 	int r = r_a - r_b;
 
@@ -904,7 +904,7 @@ static int DrawRoadVehPurchaseInfo(int left, int right, int y, EngineID engine_n
 		y += GetCharacterHeight(FS_NORMAL);
 
 		/* Road vehicle weight - (including cargo) */
-		int16 weight = e->GetDisplayWeight();
+		int16_t weight = e->GetDisplayWeight();
 		SetDParam(0, weight);
 		SetDParam(1, GetCargoWeight(te.all_capacities, VEH_ROAD) + weight);
 		DrawString(left, right, y, STR_PURCHASE_INFO_WEIGHT_CWEIGHT);
@@ -1056,7 +1056,7 @@ static int DrawAircraftPurchaseInfo(int left, int right, int y, EngineID engine_
 	y += GetCharacterHeight(FS_NORMAL);
 
 	/* Aircraft range, if available. */
-	uint16 range = e->GetRange();
+	uint16_t range = e->GetRange();
 	if (range != 0) {
 		SetDParam(0, range);
 		DrawString(left, right, y, STR_PURCHASE_INFO_AIRCRAFT_RANGE);
@@ -1074,7 +1074,7 @@ static int DrawAircraftPurchaseInfo(int left, int right, int y, EngineID engine_
  */
 static std::optional<std::string> GetNewGRFAdditionalText(EngineID engine)
 {
-	uint16 callback = GetVehicleCallback(CBID_VEHICLE_ADDITIONAL_TEXT, 0, 0, engine, nullptr);
+	uint16_t callback = GetVehicleCallback(CBID_VEHICLE_ADDITIONAL_TEXT, 0, 0, engine, nullptr);
 	if (callback == CALLBACK_FAILED || callback == 0x400) return std::nullopt;
 	const GRFFile *grffile = Engine::Get(engine)->GetGRF();
 	assert(grffile != nullptr);
@@ -1217,7 +1217,7 @@ int DrawVehiclePurchaseInfo(int left, int right, int y, EngineID engine_number, 
  * @param show_count Whether to show the amount of engines or not
  * @param selected_group the group to list the engines of
  */
-void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_list, uint16 min, uint16 max, EngineID selected_id, bool show_count, GroupID selected_group)
+void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_list, uint16_t min, uint16_t max, EngineID selected_id, bool show_count, GroupID selected_group)
 {
 	static const int sprite_y_offsets[] = { -1, -1, -2, -2 };
 
@@ -1314,7 +1314,7 @@ void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_li
  */
 void DisplayVehicleSortDropDown(Window *w, const VehicleType vehicle_type, const int selected, const int button)
 {
-	uint32 hidden_mask = 0;
+	uint32_t hidden_mask = 0;
 	/* Disable sorting by power or tractive effort when the original acceleration model for road vehicles is being used. */
 	if (vehicle_type == VEH_ROAD && _settings_game.vehicle.roadveh_acceleration_model == AM_ORIGINAL) {
 		SetBit(hidden_mask, 3); // power
@@ -1925,7 +1925,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 				EngineID sel_eng = this->sel_engine;
 				if (sel_eng != INVALID_ENGINE) {
 					CommandCallback *callback;
-					uint32 cmd;
+					uint32_t cmd;
 					if (this->virtual_train_mode) {
 						callback = CcAddVirtualEngine;
 						cmd = CMD_BUILD_VIRTUAL_RAIL_VEHICLE;
@@ -2072,7 +2072,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 					r,
 					this->eng_list,
 					this->vscroll->GetPosition(),
-					static_cast<uint16>(std::min<size_t>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->eng_list.size())),
+					static_cast<uint16_t>(std::min<size_t>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->eng_list.size())),
 					this->sel_engine,
 					false,
 					DEFAULT_GROUP
@@ -2247,7 +2247,7 @@ static const StringID _sort_listing_wagon[8] = {
  */
 void DisplayLocomotiveSortDropDown(Window *w, int selected)
 {
-	uint32 hidden_mask = 0;
+	uint32_t hidden_mask = 0;
 	/* Disable sorting by tractive effort when the original acceleration model for trains is being used. */
 	if (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL) {
 		SetBit(hidden_mask, 4); // tractive effort
@@ -2262,7 +2262,7 @@ void DisplayLocomotiveSortDropDown(Window *w, int selected)
  */
 void DisplayWagonSortDropDown(Window *w, int selected)
 {
-	uint32 hidden_mask = 0;
+	uint32_t hidden_mask = 0;
 	/* Disable sorting by maximum speed when wagon speed is disabled. */
 	if (!_settings_game.vehicle.wagon_speed_limits) {
 		SetBit(hidden_mask, 2); // maximum speed
@@ -2700,7 +2700,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 	{
 		if (selected != INVALID_ENGINE) {
 			CommandCallback *callback;
-			uint32 cmd;
+			uint32_t cmd;
 			if (this->virtual_train_mode) {
 				callback = CcAddVirtualEngine;
 				cmd = CMD_BUILD_VIRTUAL_RAIL_VEHICLE;
@@ -3058,8 +3058,8 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			case WID_BV_LIST_LOCO: {
 				DrawEngineList(this->vehicle_type, r,
 					this->loco.eng_list, this->loco.vscroll->GetPosition(),
-					std::min<uint16>(this->loco.vscroll->GetPosition() + this->loco.vscroll->GetCapacity(),
-						static_cast<uint16>(this->loco.eng_list.size())), this->loco.sel_engine, false,
+					std::min<uint16_t>(this->loco.vscroll->GetPosition() + this->loco.vscroll->GetCapacity(),
+						static_cast<uint16_t>(this->loco.eng_list.size())), this->loco.sel_engine, false,
 					DEFAULT_GROUP);
 				break;
 			}
@@ -3072,8 +3072,8 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			case WID_BV_LIST_WAGON: {
 				DrawEngineList(this->vehicle_type, r,
 					this->wagon.eng_list, this->wagon.vscroll->GetPosition(),
-					std::min<uint16>(this->wagon.vscroll->GetPosition() + this->wagon.vscroll->GetCapacity(),
-						static_cast<uint16>(this->wagon.eng_list.size())), this->wagon.sel_engine, false,
+					std::min<uint16_t>(this->wagon.vscroll->GetPosition() + this->wagon.vscroll->GetCapacity(),
+						static_cast<uint16_t>(this->wagon.eng_list.size())), this->wagon.sel_engine, false,
 					DEFAULT_GROUP);
 				break;
 			}
@@ -3229,7 +3229,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 	}
 };
 
-void CcAddVirtualEngine(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcAddVirtualEngine(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Failed()) return;
 
@@ -3243,7 +3243,7 @@ void CcAddVirtualEngine(const CommandCost &result, TileIndex tile, uint32 p1, ui
 	}
 }
 
-void CcMoveNewVirtualEngine(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcMoveNewVirtualEngine(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Failed()) return;
 

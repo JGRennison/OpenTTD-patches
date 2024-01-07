@@ -217,7 +217,7 @@ public:
 
 	void LimitOpsTillSuspend(SQInteger suspend);
 
-	uint32 GetMaxOpsTillSuspend() const;
+	uint32_t GetMaxOpsTillSuspend() const;
 
 	/**
 	 * DoCommand callback function for all commands executed by scripts.
@@ -229,7 +229,7 @@ public:
 	 * @param cmd cmd as given to DoCommandPInternal.
 	 * @return true if we handled result.
 	 */
-	bool DoCommandCallback(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd);
+	bool DoCommandCallback(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd);
 
 	/**
 	 * Insert an event for this script.

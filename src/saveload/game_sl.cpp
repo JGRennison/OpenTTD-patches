@@ -121,7 +121,7 @@ struct GSDTChunkHandler : ChunkHandler {
 };
 
 static std::string _game_saveload_string;
-static uint32 _game_saveload_strings;
+static uint32_t _game_saveload_strings;
 
 class SlGameLanguageString : public DefaultSaveLoadHandler<SlGameLanguageString, LanguageStrings> {
 public:
@@ -142,9 +142,9 @@ public:
 
 	void Load(LanguageStrings *ls) const override
 	{
-		uint32 length = IsSavegameVersionBefore(SLV_SAVELOAD_LIST_LENGTH) ? _game_saveload_strings : (uint32)SlGetStructListLength(UINT32_MAX);
+		uint32_t length = IsSavegameVersionBefore(SLV_SAVELOAD_LIST_LENGTH) ? _game_saveload_strings : (uint32_t)SlGetStructListLength(UINT32_MAX);
 
-		for (uint32 i = 0; i < length; i++) {
+		for (uint32_t i = 0; i < length; i++) {
 			SlObject(nullptr, this->GetLoadDescription());
 			ls->lines.emplace_back(_game_saveload_string);
 		}

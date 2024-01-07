@@ -85,7 +85,7 @@ bool Packet::CanWriteToPacket(size_t bytes_to_write)
 	return this->Size() + bytes_to_write <= this->limit;
 }
 
-void Packet::WriteAtOffset_uint16(size_t offset, uint16 data)
+void Packet::WriteAtOffset_uint16(size_t offset, uint16_t data)
 {
 	assert(offset + 1 < this->buffer.size());
 	this->buffer[offset]     = GB(data, 0, 8);

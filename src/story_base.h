@@ -21,8 +21,8 @@ typedef Pool<StoryPageElement, StoryPageElementID, 64, 64000> StoryPageElementPo
 typedef Pool<StoryPage, StoryPageID, 64, 64000> StoryPagePool;
 extern StoryPageElementPool _story_page_element_pool;
 extern StoryPagePool _story_page_pool;
-extern uint32 _story_page_element_next_sort_value;
-extern uint32 _story_page_next_sort_value;
+extern uint32_t _story_page_element_next_sort_value;
+extern uint32_t _story_page_next_sort_value;
 
 /*
  * Each story page element is one of these types.
@@ -115,7 +115,7 @@ template <> struct EnumPropsT<StoryPageButtonCursor> : MakeEnumPropsT<StoryPageB
 
 /** Helper to construct packed "id" values for button-type StoryPageElement */
 struct StoryPageButtonData {
-	uint32 referenced_id;
+	uint32_t referenced_id;
 
 	void SetColour(Colours button_colour);
 	void SetFlags(StoryPageButtonFlags flags);
@@ -137,11 +137,11 @@ struct StoryPageButtonData {
  * page content. Each element only contain one type of content.
  **/
 struct StoryPageElement : StoryPageElementPool::PoolItem<&_story_page_element_pool> {
-	uint32 sort_value;         ///< A number that increases for every created story page element. Used for sorting. The id of a story page element is the pool index.
+	uint32_t sort_value;       ///< A number that increases for every created story page element. Used for sorting. The id of a story page element is the pool index.
 	StoryPageID page;          ///< Id of the page which the page element belongs to
 	StoryPageElementType type; ///< Type of page element
 
-	uint32 referenced_id;      ///< Id of referenced object (location, goal etc.)
+	uint32_t referenced_id;    ///< Id of referenced object (location, goal etc.)
 	std::string text;          ///< Static content text of page element
 
 	/**
@@ -157,7 +157,7 @@ struct StoryPageElement : StoryPageElementPool::PoolItem<&_story_page_element_po
 
 /** Struct about stories, current and completed */
 struct StoryPage : StoryPagePool::PoolItem<&_story_page_pool> {
-	uint32 sort_value;            ///< A number that increases for every created story page. Used for sorting. The id of a story page is the pool index.
+	uint32_t sort_value;          ///< A number that increases for every created story page. Used for sorting. The id of a story page is the pool index.
 	Date date;                    ///< Date when the page was created.
 	CompanyID company;            ///< StoryPage is for a specific company; INVALID_COMPANY if it is global
 

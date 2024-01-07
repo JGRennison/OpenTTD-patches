@@ -22,8 +22,8 @@
 #include <limits>
 #include <vector>
 
-typedef uint16 PacketSize; ///< Size of the whole packet.
-typedef uint8  PacketType; ///< Identifier for the packet
+typedef uint16_t PacketSize; ///< Size of the whole packet.
+typedef uint8_t  PacketType; ///< Identifier for the packet
 
 /**
  * Internal entity of a packet. As everything is sent as a packet,
@@ -75,7 +75,7 @@ public:
 
 	bool CanWriteToPacket(size_t bytes_to_write);
 
-	void WriteAtOffset_uint16(size_t offset, uint16);
+	void WriteAtOffset_uint16(size_t offset, uint16_t);
 
 	/* Reading/receiving of packets */
 	size_t ReadRawPacketSize() const;

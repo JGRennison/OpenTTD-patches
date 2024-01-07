@@ -26,7 +26,7 @@ namespace upstream_sl {
  * @param packed packed order
  * @return unpacked order
  */
-static Order UnpackVersion4Order(uint16 packed)
+static Order UnpackVersion4Order(uint16_t packed)
 {
 	return Order(GB(packed, 8, 8) << 16 | GB(packed, 4, 4) << 8 | GB(packed, 0, 4));
 }
@@ -36,7 +36,7 @@ static Order UnpackVersion4Order(uint16 packed)
  * @param packed packed order
  * @return unpacked order
  */
-Order UnpackOldOrder(uint16 packed)
+Order UnpackOldOrder(uint16_t packed)
 {
 	Order order = UnpackVersion4Order(packed);
 
@@ -88,9 +88,9 @@ struct ORDRChunkHandler : ChunkHandler {
 
 			if (IsSavegameVersionBefore(SLV_5)) {
 				/* Pre-version 5 had another layout for orders
-				 * (uint16 instead of uint32) */
-				len /= sizeof(uint16);
-				std::vector<uint16> orders(len);
+				 * (uint16_t instead of uint32_t) */
+				len /= sizeof(uint16_t);
+				std::vector<uint16_t> orders(len);
 
 				SlCopy(&orders[0], len, SLE_UINT16);
 
@@ -99,8 +99,8 @@ struct ORDRChunkHandler : ChunkHandler {
 					o->AssignOrder(UnpackVersion4Order(orders[i]));
 				}
 			} else if (IsSavegameVersionBefore(SLV_5, 2)) {
-				len /= sizeof(uint32);
-				std::vector<uint32> orders(len);
+				len /= sizeof(uint32_t);
+				std::vector<uint32_t> orders(len);
 
 				SlCopy(&orders[0], len, SLE_UINT32);
 

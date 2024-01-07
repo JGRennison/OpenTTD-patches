@@ -17,7 +17,7 @@
 struct HighScore {
 	std::string name; ///< The name of the companyy and president.
 	StringID title = INVALID_STRING_ID; ///< NOSAVE, has troubles with changing string-numbers.
-	uint16 score = 0; ///< The score for this high score. Do NOT change type, will break hs.dat
+	uint16_t score = 0; ///< The score for this high score. Do NOT change type, will break hs.dat
 };
 
 using HighScores = std::array<HighScore, 5>; ///< Record 5 high scores
@@ -26,9 +26,9 @@ extern HighScoresTable _highscore_table;
 
 void SaveToHighScore();
 void LoadFromHighScore();
-int8 SaveHighScoreValue(const Company *c);
-int8 SaveHighScoreValueNetwork();
+int8_t SaveHighScoreValue(const Company *c);
+int8_t SaveHighScoreValueNetwork();
 StringID EndGameGetPerformanceTitleFromValue(uint value);
-void ShowHighscoreTable(int difficulty = SP_CUSTOM, int8 rank = -1);
+void ShowHighscoreTable(int difficulty = SP_CUSTOM, int8_t rank = -1);
 
 #endif /* HIGHSCORE_H */

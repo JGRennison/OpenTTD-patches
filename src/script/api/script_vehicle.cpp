@@ -416,7 +416,7 @@
 	if (!IsValidVehicle(vehicle_id)) return -1;
 	if (!ScriptCargo::IsValidCargo(cargo)) return -1;
 
-	uint32 amount = 0;
+	uint32_t amount = 0;
 	for (const Vehicle *v = ::Vehicle::Get(vehicle_id); v != nullptr; v = v->Next()) {
 		if (v->cargo_type == cargo) amount += v->cargo_cap;
 	}
@@ -429,7 +429,7 @@
 	if (!IsValidVehicle(vehicle_id)) return -1;
 	if (!ScriptCargo::IsValidCargo(cargo)) return -1;
 
-	uint32 amount = 0;
+	uint32_t amount = 0;
 	for (const Vehicle *v = ::Vehicle::Get(vehicle_id); v != nullptr; v = v->Next()) {
 		if (v->cargo_type == cargo) amount += v->cargo.StoredCount();
 	}

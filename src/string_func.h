@@ -59,7 +59,7 @@ inline const char *strip_leading_colours(const std::string &str)
 
 
 std::string str_strip_all_scc(const char *str);
-char *str_replace_wchar(char *str, const char *last, WChar find, WChar replace);
+char *str_replace_wchar(char *str, const char *last, char32_t find, char32_t replace);
 bool strtolower(char *str);
 bool strtolower(std::string &str, std::string::size_type offs = 0);
 

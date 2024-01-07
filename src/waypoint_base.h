@@ -22,8 +22,8 @@ enum WaypointFlags {
 
 /** Representation of a waypoint. */
 struct Waypoint FINAL : SpecializedStation<Waypoint, true> {
-	uint16 town_cn;        ///< The N-1th waypoint for this town (consecutive number)
-	uint16 waypoint_flags; ///< Waypoint flags, see WaypointFlags
+	uint16_t town_cn;            ///< The N-1th waypoint for this town (consecutive number)
+	uint16_t waypoint_flags;     ///< Waypoint flags, see WaypointFlags
 
 	TileArea road_waypoint_area; ///< Tile area the road waypoint part covers
 
@@ -43,7 +43,7 @@ struct Waypoint FINAL : SpecializedStation<Waypoint, true> {
 		return IsRailWaypointTile(tile) && GetStationIndex(tile) == this->index;
 	}
 
-	uint32 GetNewGRFVariable(const struct ResolverObject &object, uint16 variable, byte parameter, bool *available) const override;
+	uint32_t GetNewGRFVariable(const struct ResolverObject &object, uint16_t variable, byte parameter, bool *available) const override;
 
 	void GetTileArea(TileArea *ta, StationType type) const override;
 

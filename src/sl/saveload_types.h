@@ -91,7 +91,7 @@ enum VarTypes {
 	SLF_ALLOW_NEWLINE   = 1 << 9, ///< Allow new lines in the strings.
 };
 
-typedef uint32 VarType;
+typedef uint32_t VarType;
 
 /** Type of data saved. */
 enum SaveLoadTypes {
@@ -120,7 +120,7 @@ struct SaveLoad {
 	bool global;         ///< should we load a global variable or a non-global one
 	SaveLoadType cmd;    ///< the action to take with the saved/loaded type, All types need different action
 	VarType conv;        ///< type of the variable to be saved, int
-	uint16 length;       ///< (conditional) length of the variable (eg. arrays) (max array size is 65536 elements)
+	uint16_t length;     ///< (conditional) length of the variable (eg. arrays) (max array size is 65536 elements)
 	SaveLoadVersion version_from; ///< save/load the variable starting from this savegame version
 	SaveLoadVersion version_to;   ///< save/load the variable until this savegame version
 	/* NOTE: This element either denotes the address of the variable for a global

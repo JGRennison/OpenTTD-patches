@@ -60,7 +60,7 @@ CompanyManagerFace _company_manager_face; ///< for company manager face storage 
 uint _cur_company_tick_index;             ///< used to generate a name for one company that doesn't have a name yet per tick
 
 CompanyMask _saved_PLYP_invalid_mask;
-std::vector<uint8> _saved_PLYP_data;
+std::vector<uint8_t> _saved_PLYP_data;
 
 CompanyPool _company_pool("Company"); ///< Pool of companies.
 INSTANTIATE_POOL_METHODS(Company)
@@ -70,16 +70,16 @@ INSTANTIATE_POOL_METHODS(Company)
  * @param name_1 Name of the company.
  * @param is_ai  A computer program is running for this company.
  */
-Company::Company(uint16 name_1, bool is_ai)
+Company::Company(uint16_t name_1, bool is_ai)
 {
 	this->name_1 = name_1;
 	this->location_of_HQ = INVALID_TILE;
 	this->is_ai = is_ai;
-	this->terraform_limit = (uint32)_settings_game.construction.terraform_frame_burst << 16;
+	this->terraform_limit = (uint32_t)_settings_game.construction.terraform_frame_burst << 16;
 	this->clear_limit     = _settings_game.construction.clear_frame_burst << 16;
-	this->tree_limit      = (uint32)(uint32)_settings_game.construction.tree_frame_burst << 16;
-	this->purchase_land_limit = (uint32)_settings_game.construction.purchase_land_frame_burst << 16;
-	this->build_object_limit = (uint32)_settings_game.construction.build_object_frame_burst << 16;
+	this->tree_limit      = (uint32_t)(uint32_t)_settings_game.construction.tree_frame_burst << 16;
+	this->purchase_land_limit = (uint32_t)_settings_game.construction.purchase_land_frame_burst << 16;
+	this->build_object_limit = (uint32_t)_settings_game.construction.build_object_frame_burst << 16;
 
 	std::fill(this->share_owners.begin(), this->share_owners.end(), INVALID_OWNER);
 	InvalidateWindowData(WC_PERFORMANCE_DETAIL, 0, INVALID_COMPANY);
@@ -386,7 +386,7 @@ static void GenerateCompanyName(Company *c)
 	Town *t = ClosestTownFromTile(c->last_build_coordinate, UINT_MAX);
 
 	StringID str;
-	uint32 strp;
+	uint32_t strp;
 	std::string buffer;
 	if (t->name.empty() && IsInsideMM(t->townnametype, SPECSTR_TOWNNAME_START, SPECSTR_TOWNNAME_LAST + 1)) {
 		str = t->townnametype - SPECSTR_TOWNNAME_START + SPECSTR_COMPANY_NAME_START;
@@ -588,7 +588,7 @@ Company *DoStartupNewCompany(DoStartupNewCompanyFlag flags, CompanyID company)
 	_company_colours[c->index] = (Colours)c->colour;
 
 	/* Scale the initial loan based on the inflation rounded down to the loan interval. The maximum loan has already been inflation adjusted. */
-	c->money = c->current_loan = std::min<int64>((INITIAL_LOAN * _economy.inflation_prices >> 16) / LOAN_INTERVAL * LOAN_INTERVAL, _economy.max_loan);
+	c->money = c->current_loan = std::min<int64_t>((INITIAL_LOAN * _economy.inflation_prices >> 16) / LOAN_INTERVAL * LOAN_INTERVAL, _economy.max_loan);
 
 	std::fill(c->share_owners.begin(), c->share_owners.end(), INVALID_OWNER);
 
@@ -631,7 +631,7 @@ TimeoutTimer<TimerGameTick> _new_competitor_timeout(0, []() {
 	if (_networking && Company::GetNumItems() >= _settings_client.network.max_companies) return;
 
 	/* count number of competitors */
-	uint8 n = 0;
+	uint8_t n = 0;
 	for (const Company *c : Company::Iterate()) {
 		if (c->is_ai) n++;
 	}
@@ -730,7 +730,7 @@ static void HandleBankruptcyTakeover(Company *c)
 	if (c->bankrupt_asked == MAX_UVALUE(CompanyMask)) return;
 
 	Company *best = nullptr;
-	int32 best_performance = -1;
+	int32_t best_performance = -1;
 
 	/* Ask the company with the highest performance history first */
 	for (Company *c2 : Company::Iterate()) {
@@ -789,11 +789,11 @@ void OnTick_Companies(bool main_tick)
 	}
 
 	if (_new_competitor_timeout.HasFired() && _game_mode != GM_MENU && AI::CanStartNew()) {
-		int32 timeout = _settings_game.difficulty.competitors_interval * 60 * TICKS_PER_SECOND;
+		int32_t timeout = _settings_game.difficulty.competitors_interval * 60 * TICKS_PER_SECOND;
 		/* If the interval is zero, start as many competitors as needed then check every ~10 minutes if a company went bankrupt and needs replacing. */
 		if (timeout == 0) {
 			/* count number of competitors */
-			uint8 n = 0;
+			uint8_t n = 0;
 			for (const Company *cc : Company::Iterate()) {
 				if (cc->is_ai) n++;
 			}
@@ -892,7 +892,7 @@ void CompanyAdminRemove(CompanyID company_id, CompanyRemoveReason reason)
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	InvalidateWindowData(WC_COMPANY_LEAGUE, 0, 0);
 	CompanyID company_id = (CompanyID)GB(p1, 16, 8);
@@ -1042,7 +1042,7 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdSetCompanyManagerFace(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdSetCompanyManagerFace(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	CompanyManagerFace cmf = (CompanyManagerFace)p2;
 
@@ -1080,7 +1080,7 @@ void UpdateCompanyLiveries(Company *c)
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdSetCompanyColour(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdSetCompanyColour(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	Colours colour = Extract<Colours, 0, 8>(p2);
 	LiveryScheme scheme = Extract<LiveryScheme, 0, 8>(p1);
@@ -1193,7 +1193,7 @@ static bool IsUniqueCompanyName(const char *name)
  * @param text the new name or an empty string when resetting to the default
  * @return the cost of this operation or an error
  */
-CommandCost CmdRenameCompany(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdRenameCompany(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	bool reset = StrEmpty(text);
 
@@ -1239,7 +1239,7 @@ static bool IsUniquePresidentName(const char *name)
  * @param text the new name or an empty string when resetting to the default
  * @return the cost of this operation or an error
  */
-CommandCost CmdRenamePresident(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdRenamePresident(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	bool reset = StrEmpty(text);
 
@@ -1307,9 +1307,9 @@ CompanyID GetDefaultLocalCompany()
  * Get total sum of all owned road bits.
  * @return Combined total road road bits.
  */
-uint32 CompanyInfrastructure::GetRoadTotal() const
+uint32_t CompanyInfrastructure::GetRoadTotal() const
 {
-	uint32 total = 0;
+	uint32_t total = 0;
 	for (RoadType rt = ROADTYPE_BEGIN; rt != ROADTYPE_END; rt++) {
 		if (RoadTypeIsRoad(rt)) total += this->road[rt];
 	}
@@ -1320,9 +1320,9 @@ uint32 CompanyInfrastructure::GetRoadTotal() const
  * Get total sum of all owned tram bits.
  * @return Combined total of tram road bits.
  */
-uint32 CompanyInfrastructure::GetTramTotal() const
+uint32_t CompanyInfrastructure::GetTramTotal() const
 {
-	uint32 total = 0;
+	uint32_t total = 0;
 	for (RoadType rt = ROADTYPE_BEGIN; rt != ROADTYPE_END; rt++) {
 		if (RoadTypeIsTram(rt)) total += this->road[rt];
 	}

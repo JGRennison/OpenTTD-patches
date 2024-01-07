@@ -12,7 +12,7 @@
 
 #include "road_map.h"
 
-typedef uint32 TunnelID; ///< Type for the unique identifier of tunnels.
+typedef uint32_t TunnelID; ///< Type for the unique identifier of tunnels.
 
 static const TunnelID TUNNEL_ID_MAP_LOOKUP = 0xFFFF; ///< Sentinel ID value to store in m2 to indiciate that the ID should be looked up instead
 
@@ -111,13 +111,13 @@ inline void SetTunnelIndex(TileIndex t, TunnelID id)
 	_m[t].m2 = (id >= TUNNEL_ID_MAP_LOOKUP) ? TUNNEL_ID_MAP_LOOKUP : id;
 }
 
-void SetTunnelSignalStyle(TileIndex t, TileIndex end, uint8 style);
+void SetTunnelSignalStyle(TileIndex t, TileIndex end, uint8_t style);
 
-inline uint8 GetTunnelSignalStyle(TileIndex t)
+inline uint8_t GetTunnelSignalStyle(TileIndex t)
 {
 	if (likely(!HasBit(_m[t].m3, 7))) return 0;
 
-	extern uint8 GetTunnelSignalStyleExtended(TileIndex t);
+	extern uint8_t GetTunnelSignalStyleExtended(TileIndex t);
 	return GetTunnelSignalStyleExtended(t);
 }
 

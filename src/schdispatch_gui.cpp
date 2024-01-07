@@ -66,9 +66,9 @@ enum SchdispatchWidgets {
  * @param p1 The p1 parameter to send to CmdScheduledDispatchSetStartDate
  * @param date the actually chosen date
  */
-static void SetScheduleStartDateIntl(uint32 p1, DateTicksScaled date)
+static void SetScheduleStartDateIntl(uint32_t p1, DateTicksScaled date)
 {
-	DoCommandPEx(0, p1, 0, (uint64)date.base(), CMD_SCHEDULED_DISPATCH_SET_START_DATE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
+	DoCommandPEx(0, p1, 0, (uint64_t)date.base(), CMD_SCHEDULED_DISPATCH_SET_START_DATE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
 }
 
 /**
@@ -86,7 +86,7 @@ static void SetScheduleStartDateCallback(const Window *w, DateTicksScaled date)
  * @param p1 The p1 parameter to send to CmdScheduledDispatchAdd
  * @param date the actually chosen date
  */
-static void ScheduleAddIntl(uint32 p1, DateTicksScaled date, uint extra_slots, uint offset, bool wrap_mode = false)
+static void ScheduleAddIntl(uint32_t p1, DateTicksScaled date, uint extra_slots, uint offset, bool wrap_mode = false)
 {
 	VehicleID veh = GB(p1, 0, 20);
 	uint schedule_index = GB(p1, 20, 12);
@@ -97,18 +97,18 @@ static void ScheduleAddIntl(uint32 p1, DateTicksScaled date, uint extra_slots, u
 
 	/* Make sure the time is the closest future to the timetable start */
 	DateTicksScaled start_tick = ds.GetScheduledDispatchStartTick();
-	uint32 duration = ds.GetScheduledDispatchDuration();
+	uint32_t duration = ds.GetScheduledDispatchDuration();
 	while (date > start_tick) date -= duration;
 	while (date < start_tick) date += duration;
 
 	if (extra_slots > 0 && offset > 0 && !wrap_mode) {
 		DateTicksScaled end_tick = start_tick + duration;
-		int64 max_extra_slots = (end_tick - 1 - date).base() / offset;
-		if (max_extra_slots < extra_slots) extra_slots = static_cast<uint>(std::max<int64>(0, max_extra_slots));
+		int64_t max_extra_slots = (end_tick - 1 - date).base() / offset;
+		if (max_extra_slots < extra_slots) extra_slots = static_cast<uint>(std::max<int64_t>(0, max_extra_slots));
 		extra_slots = std::min<uint>(extra_slots, UINT16_MAX);
 	}
 
-	DoCommandPEx(0, p1, (uint32)(date - start_tick).base(), (((uint64)extra_slots) << 32) | offset, CMD_SCHEDULED_DISPATCH_ADD | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
+	DoCommandPEx(0, p1, (uint32_t)(date - start_tick).base(), (((uint64_t)extra_slots) << 32) | offset, CMD_SCHEDULED_DISPATCH_ADD | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
 }
 
 /**
@@ -128,7 +128,7 @@ static void ScheduleAddCallback(const Window *w, DateTicksScaled date)
  * @param offsets list of all dispatch offsets in the schedule
  * @return maxinum number of vehicle required
  */
-static int CalculateMaxRequiredVehicle(Ticks timetable_duration, uint32 schedule_duration, std::vector<uint32> offsets)
+static int CalculateMaxRequiredVehicle(Ticks timetable_duration, uint32_t schedule_duration, std::vector<uint32_t> offsets)
 {
 	if (timetable_duration == INVALID_TICKS) return -1;
 	if (offsets.size() == 0) return -1;
@@ -137,9 +137,9 @@ static int CalculateMaxRequiredVehicle(Ticks timetable_duration, uint32 schedule
 	int required_loop = CeilDiv(timetable_duration, schedule_duration) + 1;
 
 	/* Create indice array to count maximum overlapping range */
-	std::vector<std::pair<uint32, int>> indices;
+	std::vector<std::pair<uint32_t, int>> indices;
 	for (int i = 0; i < required_loop; i++) {
-		for (uint32 offset : offsets) {
+		for (uint32_t offset : offsets) {
 			if (offset >= schedule_duration) continue;
 			indices.push_back(std::make_pair(i * schedule_duration + offset, 1));
 			indices.push_back(std::make_pair(i * schedule_duration + offset + timetable_duration, -1));
@@ -159,7 +159,7 @@ static int CalculateMaxRequiredVehicle(Ticks timetable_duration, uint32 schedule
 static void AddNewScheduledDispatchSchedule(VehicleID vindex)
 {
 	DateTicksScaled start_tick;
-	uint32 duration;
+	uint32_t duration;
 
 	const Company *c = Company::GetIfValid(_local_company);
 	if (c != nullptr && c->settings.default_sched_dispatch_duration != 0) {
@@ -181,7 +181,7 @@ static void AddNewScheduledDispatchSchedule(VehicleID vindex)
 		duration = 365 * DAY_TICKS;
 	}
 
-	DoCommandPEx(0, vindex, duration, (uint64)start_tick.base(), CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), CcAddNewSchDispatchSchedule, nullptr, 0);
+	DoCommandPEx(0, vindex, duration, (uint64_t)start_tick.base(), CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), CcAddNewSchDispatchSchedule, nullptr, 0);
 }
 
 struct SchdispatchWindow : GeneralVehicleWindow {
@@ -453,7 +453,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 				/* Set the row and number of boxes in each row based on the number of boxes drawn in the matrix */
 				const NWidgetCore *wid = this->GetWidget<NWidgetCore>(WID_SCHDISPATCH_MATRIX);
-				const uint16 rows_in_display = wid->current_y / wid->resize_y;
+				const uint16_t rows_in_display = wid->current_y / wid->resize_y;
 
 				const DispatchSchedule &ds = this->GetSelectedSchedule();
 
@@ -590,9 +590,9 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_L4);
 					y += GetCharacterHeight(FS_NORMAL);
 
-					uint32 duration = ds.GetScheduledDispatchDuration();
+					uint32_t duration = ds.GetScheduledDispatchDuration();
 					uint warnings = 0;
-					for (uint32 slot : ds.GetScheduledDispatch()) {
+					for (uint32_t slot : ds.GetScheduledDispatch()) {
 						if (slot >= duration) {
 							draw_warning(STR_SCHDISPATCH_SLOT_OUTSIDE_SCHEDULE);
 							warnings++;
@@ -645,7 +645,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		}
 	}
 
-	int32 ProcessDurationForQueryString(int32 duration) const
+	int32_t ProcessDurationForQueryString(int32_t duration) const
 	{
 		if (!_settings_client.gui.timetable_in_ticks) duration = RoundDivSU(duration, DATE_UNIT_SIZE);
 		return duration;
@@ -673,7 +673,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			}
 
 			case WID_SCHDISPATCH_ENABLED: {
-				uint32 p2 = 0;
+				uint32_t p2 = 0;
 				if (!HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) SetBit(p2, 0);
 
 				DoCommandP(0, v->index, p2, CMD_SCHEDULED_DISPATCH | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
@@ -865,7 +865,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				if (StrEmpty(str)) break;
 
 				char *end;
-				int32 val = std::strtoul(str, &end, 10);
+				int32_t val = std::strtoul(str, &end, 10);
 				if (val >= 0 && end != nullptr && *end == 0) {
 					uint minutes = (val % 100) % 60;
 					uint hours = (val / 100) % 24;
@@ -881,7 +881,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				if (StrEmpty(str)) break;
 
 				char *end;
-				int32 val = std::strtoul(str, &end, 10);
+				int32_t val = std::strtoul(str, &end, 10);
 				if (val >= 0 && end != nullptr && *end == 0) {
 					uint minutes = (val % 100) % 60;
 					uint hours = (val / 100) % 24;
@@ -977,7 +977,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	}
 };
 
-void CcAddNewSchDispatchSchedule(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcAddNewSchDispatchSchedule(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow*>(FindWindowById(WC_SCHDISPATCH_SLOTS, p1));
 	if (w != nullptr) {
@@ -987,7 +987,7 @@ void CcAddNewSchDispatchSchedule(const CommandCost &result, TileIndex tile, uint
 	}
 }
 
-void CcSwapSchDispatchSchedules(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcSwapSchDispatchSchedules(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow*>(FindWindowById(WC_SCHDISPATCH_SLOTS, p1));
 	if (w != nullptr) {
@@ -1086,7 +1086,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 		this->FinishInitNested(window_number);
 	}
 
-	Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number) override
+	Point OnInitialPosition(int16_t sm_width, int16_t sm_height, int window_number) override
 	{
 		Point pt = { this->parent->left + this->parent->width / 2 - sm_width / 2, this->parent->top + this->parent->height / 2 - sm_height / 2 };
 		return pt;

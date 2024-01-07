@@ -98,7 +98,7 @@ enum ChunkSaveLoadSpecialOpResult {
 	CSLSOR_DONT_SAVE_CHUNK,
 	CSLSOR_UPSTREAM_SAVE_CHUNK,
 };
-typedef ChunkSaveLoadSpecialOpResult ChunkSaveLoadSpecialProc(uint32, ChunkSaveLoadSpecialOp);
+typedef ChunkSaveLoadSpecialOpResult ChunkSaveLoadSpecialProc(uint32_t, ChunkSaveLoadSpecialOp);
 
 /** Type of a chunk. */
 enum ChunkType {
@@ -112,7 +112,7 @@ enum ChunkType {
 
 /** Handlers and description of chunk. */
 struct ChunkHandler {
-	uint32 id;                          ///< Unique ID (4 letters).
+	uint32_t id;                        ///< Unique ID (4 letters).
 	ChunkSaveLoadProc *save_proc;       ///< Save procedure of the chunk.
 	ChunkSaveLoadProc *load_proc;       ///< Load procedure of the chunk.
 	ChunkSaveLoadProc *ptrs_proc;       ///< Manipulate pointers in the chunk.
@@ -134,12 +134,12 @@ void SlExecWithSlVersion(SaveLoadVersion use_version, F proc)
 }
 
 namespace upstream_sl {
-	template <uint32 id, typename F>
+	template <uint32_t id, typename F>
 	ChunkHandler MakeUpstreamChunkHandler()
 	{
-		extern void SlLoadChunkByID(uint32);
-		extern void SlLoadCheckChunkByID(uint32);
-		extern void SlFixPointerChunkByID(uint32);
+		extern void SlLoadChunkByID(uint32_t);
+		extern void SlLoadCheckChunkByID(uint32_t);
+		extern void SlFixPointerChunkByID(uint32_t);
 
 		ChunkHandler ch = {
 			id,
@@ -149,7 +149,7 @@ namespace upstream_sl {
 			SlUnreachablePlaceholder,
 			CH_UNUSED
 		};
-		ch.special_proc = [](uint32 chunk_id, ChunkSaveLoadSpecialOp op) -> ChunkSaveLoadSpecialOpResult {
+		ch.special_proc = [](uint32_t chunk_id, ChunkSaveLoadSpecialOp op) -> ChunkSaveLoadSpecialOpResult {
 			assert(id == chunk_id);
 			switch (op) {
 				case CSLSO_PRE_LOAD:
@@ -176,12 +176,12 @@ namespace upstream_sl {
 		return ch;
 	}
 
-	template <uint32 id, typename F>
+	template <uint32_t id, typename F>
 	ChunkHandler MakeConditionallyUpstreamChunkHandler(ChunkSaveLoadProc *save_proc, ChunkSaveLoadProc *load_proc, ChunkSaveLoadProc *ptrs_proc, ChunkSaveLoadProc *load_check_proc, ChunkType type)
 	{
-		extern void SlLoadChunkByID(uint32);
-		extern void SlLoadCheckChunkByID(uint32);
-		extern void SlFixPointerChunkByID(uint32);
+		extern void SlLoadChunkByID(uint32_t);
+		extern void SlLoadCheckChunkByID(uint32_t);
+		extern void SlFixPointerChunkByID(uint32_t);
 
 		ChunkHandler ch = {
 			id,
@@ -191,7 +191,7 @@ namespace upstream_sl {
 			load_check_proc,
 			type
 		};
-		ch.special_proc = [](uint32 chunk_id, ChunkSaveLoadSpecialOp op) -> ChunkSaveLoadSpecialOpResult {
+		ch.special_proc = [](uint32_t chunk_id, ChunkSaveLoadSpecialOp op) -> ChunkSaveLoadSpecialOpResult {
 			assert(id == chunk_id);
 			switch (op) {
 				case CSLSO_PRE_LOAD:
@@ -307,16 +307,16 @@ inline constexpr size_t SlVarSize(VarType type)
 			return sizeof(bool);
 		case SLE_VAR_I8:
 		case SLE_VAR_U8:
-			return sizeof(int8);
+			return sizeof(int8_t);
 		case SLE_VAR_I16:
 		case SLE_VAR_U16:
-			return sizeof(int16);
+			return sizeof(int16_t);
 		case SLE_VAR_I32:
 		case SLE_VAR_U32:
-			return sizeof(int32);
+			return sizeof(int32_t);
 		case SLE_VAR_I64:
 		case SLE_VAR_U64:
-			return sizeof(int64);
+			return sizeof(int64_t);
 		case SLE_VAR_NAME:
 			return sizeof(std::string);
 		default:
@@ -925,8 +925,8 @@ inline void *GetVariableAddress(const void *object, const SaveLoad &sld)
 	return const_cast<byte *>((const byte *)object + (ptrdiff_t)sld.address);
 }
 
-int64 ReadValue(const void *ptr, VarType conv);
-void WriteValue(void *ptr, VarType conv, int64 val);
+int64_t ReadValue(const void *ptr, VarType conv);
+void WriteValue(void *ptr, VarType conv, int64_t val);
 
 void SlSetArrayIndex(uint index);
 int SlIterateArray();
@@ -945,10 +945,10 @@ size_t SlCalcObjLength(const void *object, const SaveLoadTable &slt);
 template <typename F>
 span<byte> SlSaveToTempBuffer(F proc)
 {
-	extern uint8 SlSaveToTempBufferSetup();
-	extern std::pair<byte *, size_t> SlSaveToTempBufferRestore(uint8 state);
+	extern uint8_t SlSaveToTempBufferSetup();
+	extern std::pair<byte *, size_t> SlSaveToTempBufferRestore(uint8_t state);
 
-	uint8 state = SlSaveToTempBufferSetup();
+	uint8_t state = SlSaveToTempBufferSetup();
 	proc();
 	auto result = SlSaveToTempBufferRestore(state);
 	return span<byte>(result.first, result.second);
@@ -961,15 +961,15 @@ span<byte> SlSaveToTempBuffer(F proc)
  * @return a vector containing the saved data
  */
 template <typename F>
-std::vector<uint8> SlSaveToVector(F proc)
+std::vector<uint8_t> SlSaveToVector(F proc)
 {
 	span<byte> result = SlSaveToTempBuffer(proc);
-	return std::vector<uint8>(result.begin(), result.end());
+	return std::vector<uint8_t>(result.begin(), result.end());
 }
 
 struct SlConditionallySaveState {
 	size_t current_len;
-	uint8 need_length;
+	uint8_t need_length;
 	bool nested;
 };
 

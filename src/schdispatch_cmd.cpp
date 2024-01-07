@@ -37,7 +37,7 @@
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatch(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdScheduledDispatch(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	VehicleID veh = GB(p1, 0, 20);
 
@@ -73,12 +73,12 @@ CommandCost CmdScheduledDispatch(TileIndex tile, DoCommandFlag flags, uint32 p1,
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchAdd(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdScheduledDispatchAdd(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	VehicleID veh = GB(p1, 0, 20);
 	uint schedule_index = GB(p1, 20, 12);
-	uint32 offset = GB(p3, 0, 32);
-	uint32 extra_slots = GB(p3, 32, 16);
+	uint32_t offset = GB(p3, 0, 32);
+	uint32_t extra_slots = GB(p3, 32, 16);
 
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
@@ -116,7 +116,7 @@ CommandCost CmdScheduledDispatchAdd(TileIndex tile, DoCommandFlag flags, uint32 
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchRemove(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdScheduledDispatchRemove(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	VehicleID veh = GB(p1, 0, 20);
 	uint schedule_index = GB(p1, 20, 12);
@@ -149,7 +149,7 @@ CommandCost CmdScheduledDispatchRemove(TileIndex tile, DoCommandFlag flags, uint
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchSetDuration(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdScheduledDispatchSetDuration(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	VehicleID veh = GB(p1, 0, 20);
 	uint schedule_index = GB(p1, 20, 12);
@@ -185,7 +185,7 @@ CommandCost CmdScheduledDispatchSetDuration(TileIndex tile, DoCommandFlag flags,
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchSetStartDate(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdScheduledDispatchSetStartDate(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	VehicleID veh = GB(p1, 0, 20);
 	uint schedule_index = GB(p1, 20, 12);
@@ -220,7 +220,7 @@ CommandCost CmdScheduledDispatchSetStartDate(TileIndex tile, DoCommandFlag flags
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchSetDelay(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdScheduledDispatchSetDelay(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	VehicleID veh = GB(p1, 0, 20);
 	uint schedule_index = GB(p1, 20, 12);
@@ -258,7 +258,7 @@ CommandCost CmdScheduledDispatchSetDelay(TileIndex tile, DoCommandFlag flags, ui
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchResetLastDispatch(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdScheduledDispatchResetLastDispatch(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	VehicleID veh = GB(p1, 0, 20);
 	uint schedule_index = GB(p1, 20, 12);
@@ -291,7 +291,7 @@ CommandCost CmdScheduledDispatchResetLastDispatch(TileIndex tile, DoCommandFlag 
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchClear(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdScheduledDispatchClear(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	VehicleID veh = GB(p1, 0, 20);
 	uint schedule_index = GB(p1, 20, 12);
@@ -325,7 +325,7 @@ CommandCost CmdScheduledDispatchClear(TileIndex tile, DoCommandFlag flags, uint3
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchAddNewSchedule(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdScheduledDispatchAddNewSchedule(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	VehicleID veh = GB(p1, 0, 20);
 
@@ -360,7 +360,7 @@ CommandCost CmdScheduledDispatchAddNewSchedule(TileIndex tile, DoCommandFlag fla
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchRemoveSchedule(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdScheduledDispatchRemoveSchedule(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	VehicleID veh = GB(p1, 0, 20);
 	uint schedule_index = GB(p1, 20, 12);
@@ -386,13 +386,13 @@ CommandCost CmdScheduledDispatchRemoveSchedule(TileIndex tile, DoCommandFlag fla
 				o->SetDispatchScheduleIndex(idx - 1);
 			}
 			if (o->IsType(OT_CONDITIONAL) && o->GetConditionVariable() == OCV_DISPATCH_SLOT) {
-				uint16 dispatch_slot = GB(o->GetXData(), 0, 16);
+				uint16_t dispatch_slot = GB(o->GetXData(), 0, 16);
 				if (dispatch_slot == UINT16_MAX) {
 					/* do nothing */
 				} else if (dispatch_slot == schedule_index) {
 					SB(o->GetXDataRef(), 0, 16, UINT16_MAX);
 				} else if (dispatch_slot > schedule_index) {
-					SB(o->GetXDataRef(), 0, 16, (uint16)(dispatch_slot - 1));
+					SB(o->GetXDataRef(), 0, 16, (uint16_t)(dispatch_slot - 1));
 				}
 			}
 		}
@@ -412,7 +412,7 @@ CommandCost CmdScheduledDispatchRemoveSchedule(TileIndex tile, DoCommandFlag fla
  * @param text name
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchRenameSchedule(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdScheduledDispatchRenameSchedule(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	VehicleID veh = GB(p1, 0, 20);
 	uint schedule_index = GB(p1, 20, 12);
@@ -455,7 +455,7 @@ CommandCost CmdScheduledDispatchRenameSchedule(TileIndex tile, DoCommandFlag fla
  * @param text name
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchDuplicateSchedule(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdScheduledDispatchDuplicateSchedule(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	VehicleID veh = GB(p1, 0, 20);
 	uint schedule_index = GB(p1, 20, 12);
@@ -491,7 +491,7 @@ CommandCost CmdScheduledDispatchDuplicateSchedule(TileIndex tile, DoCommandFlag 
  * @param text name
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchAppendVehicleSchedules(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdScheduledDispatchAppendVehicleSchedules(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	VehicleID veh1 = GB(p1, 0, 20);
 	VehicleID veh2 = GB(p2, 0, 20);
@@ -531,11 +531,11 @@ CommandCost CmdScheduledDispatchAppendVehicleSchedules(TileIndex tile, DoCommand
  * @param text name
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchAdjust(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdScheduledDispatchAdjust(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	VehicleID veh = GB(p1, 0, 20);
 	uint schedule_index = GB(p1, 20, 12);
-	int32 adjustment = p2;
+	int32_t adjustment = p2;
 
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
@@ -572,7 +572,7 @@ CommandCost CmdScheduledDispatchAdjust(TileIndex tile, DoCommandFlag flags, uint
  * @param unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchSwapSchedules(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdScheduledDispatchSwapSchedules(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	VehicleID veh = GB(p1, 0, 20);
 	uint schedule_index_1 = GB(p2, 0, 16);
@@ -600,7 +600,7 @@ CommandCost CmdScheduledDispatchSwapSchedules(TileIndex tile, DoCommandFlag flag
 				o->SetDispatchScheduleIndex((int)schedule_index_1);
 			}
 			if (o->IsType(OT_CONDITIONAL) && o->GetConditionVariable() == OCV_DISPATCH_SLOT) {
-				uint16 dispatch_slot = GB(o->GetXData(), 0, 16);
+				uint16_t dispatch_slot = GB(o->GetXData(), 0, 16);
 				if (dispatch_slot == schedule_index_1) {
 					SB(o->GetXDataRef(), 0, 16, schedule_index_2);
 				} else if (dispatch_slot == schedule_index_2) {
@@ -619,7 +619,7 @@ CommandCost CmdScheduledDispatchSwapSchedules(TileIndex tile, DoCommandFlag flag
  * Set scheduled dispatch slot list.
  * @param dispatch_list The offset time list, must be correctly sorted.
  */
-void DispatchSchedule::SetScheduledDispatch(std::vector<uint32> dispatch_list)
+void DispatchSchedule::SetScheduledDispatch(std::vector<uint32_t> dispatch_list)
 {
 	this->scheduled_dispatch = std::move(dispatch_list);
 	assert(std::is_sorted(this->scheduled_dispatch.begin(), this->scheduled_dispatch.end()));
@@ -630,7 +630,7 @@ void DispatchSchedule::SetScheduledDispatch(std::vector<uint32> dispatch_list)
  * Add new scheduled dispatch slot at offsets time.
  * @param offset The offset time to add.
  */
-void DispatchSchedule::AddScheduledDispatch(uint32 offset)
+void DispatchSchedule::AddScheduledDispatch(uint32_t offset)
 {
 	/* Maintain sorted list status */
 	auto insert_position = std::lower_bound(this->scheduled_dispatch.begin(), this->scheduled_dispatch.end(), offset);
@@ -645,7 +645,7 @@ void DispatchSchedule::AddScheduledDispatch(uint32 offset)
  * Remove scheduled dispatch slot at offsets time.
  * @param offset The offset time to remove.
  */
-void DispatchSchedule::RemoveScheduledDispatch(uint32 offset)
+void DispatchSchedule::RemoveScheduledDispatch(uint32_t offset)
 {
 	/* Maintain sorted list status */
 	auto erase_position = std::lower_bound(this->scheduled_dispatch.begin(), this->scheduled_dispatch.end(), offset);
@@ -659,13 +659,13 @@ void DispatchSchedule::RemoveScheduledDispatch(uint32 offset)
  * Adjust all scheduled dispatch slots by time adjustment.
  * @param adjust The time adjustment to add to each time slot.
  */
-void DispatchSchedule::AdjustScheduledDispatch(int32 adjust)
+void DispatchSchedule::AdjustScheduledDispatch(int32_t adjust)
 {
-	for (uint32 &time : this->scheduled_dispatch) {
-		int32 t = (int32)time + adjust;
+	for (uint32_t &time : this->scheduled_dispatch) {
+		int32_t t = (int32_t)time + adjust;
 		if (t < 0) t += GetScheduledDispatchDuration();
-		if (t >= (int32)GetScheduledDispatchDuration()) t -= (int32)GetScheduledDispatchDuration();
-		time = (uint32)t;
+		if (t >= (int32_t)GetScheduledDispatchDuration()) t -= (int32_t)GetScheduledDispatchDuration();
+		time = (uint32_t)t;
 	}
 	std::sort(this->scheduled_dispatch.begin(), this->scheduled_dispatch.end());
 }
@@ -676,13 +676,13 @@ bool DispatchSchedule::UpdateScheduledDispatchToDate(DateTicksScaled now)
 	if (this->GetScheduledDispatchStartTick() == 0) {
 		DateTicksScaled start = now - (now.base() % this->GetScheduledDispatchDuration());
 		this->SetScheduledDispatchStartTick(start);
-		int64 last_dispatch = -(start.base());
+		int64_t last_dispatch = -(start.base());
 		if (last_dispatch < INT_MIN && _settings_game.game_time.time_in_minutes) {
 			/* Advance by multiples of 24 hours */
-			const int64 day = 24 * 60 * _settings_game.game_time.ticks_per_minute;
-			this->scheduled_dispatch_last_dispatch = last_dispatch + (CeilDivT<int64>(INT_MIN - last_dispatch, day) * day);
+			const int64_t day = 24 * 60 * _settings_game.game_time.ticks_per_minute;
+			this->scheduled_dispatch_last_dispatch = last_dispatch + (CeilDivT<int64_t>(INT_MIN - last_dispatch, day) * day);
 		} else {
-			this->scheduled_dispatch_last_dispatch = ClampTo<int32>(last_dispatch);
+			this->scheduled_dispatch_last_dispatch = ClampTo<int32_t>(last_dispatch);
 		}
 	}
 	/* Most of the time this loop does not run. It makes sure start date in in past */

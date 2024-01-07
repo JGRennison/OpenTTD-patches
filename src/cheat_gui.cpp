@@ -45,7 +45,7 @@
  * This variable is semantically a constant value, but because the cheat
  * code requires to be able to write to the variable it is not constified.
  */
-static int32 _money_cheat_amount = 10000000;
+static int32_t _money_cheat_amount = 10000000;
 
 /**
  * Handle cheating of money.
@@ -56,9 +56,9 @@ static int32 _money_cheat_amount = 10000000;
  * @param p2 is -1 or +1 (down/up)
  * @return Amount of money cheat.
  */
-static int32 ClickMoneyCheat(int32 p1, int32 p2)
+static int32_t ClickMoneyCheat(int32_t p1, int32_t p2)
 {
-	DoCommandPEx(0, 0, 0, (uint64)(p2 * _money_cheat_amount), _network_server || _network_settings_access ? CMD_MONEY_CHEAT_ADMIN : CMD_MONEY_CHEAT);
+	DoCommandPEx(0, 0, 0, (uint64_t)(p2 * _money_cheat_amount), _network_server || _network_settings_access ? CMD_MONEY_CHEAT_ADMIN : CMD_MONEY_CHEAT);
 	return _money_cheat_amount;
 }
 
@@ -68,7 +68,7 @@ static int32 ClickMoneyCheat(int32 p1, int32 p2)
  * @param p2 is -1 or +1 (down/up)
  * @return The new company.
  */
-static int32 ClickChangeCompanyCheat(int32 p1, int32 p2)
+static int32_t ClickChangeCompanyCheat(int32_t p1, int32_t p2)
 {
 	while ((uint)p1 < Company::GetPoolSize()) {
 		if (Company::IsValidID((CompanyID)p1)) {
@@ -87,7 +87,7 @@ static int32 ClickChangeCompanyCheat(int32 p1, int32 p2)
  * @param p2 unused
  * @return New value allowing change of industry production.
  */
-static int32 ClickSetProdCheat(int32 p1, int32 p2)
+static int32_t ClickSetProdCheat(int32_t p1, int32_t p2)
 {
 	_cheats.setup_prod.value = (p1 != 0);
 	InvalidateWindowClassesData(WC_INDUSTRY_VIEW);
@@ -102,7 +102,7 @@ extern void EnginesMonthlyLoop();
  * @param p2 +1 (increase) or -1 (decrease).
  * @return New year.
  */
-static int32 ClickChangeDateCheat(int32 p1, int32 p2)
+static int32_t ClickChangeDateCheat(int32_t p1, int32_t p2)
 {
 	/* Don't allow changing to an invalid year, or the current year. */
 	p1 = Clamp(p1, MIN_YEAR, MAX_YEAR);
@@ -135,14 +135,14 @@ static int32 ClickChangeDateCheat(int32 p1, int32 p2)
  * @return New value (or unchanged old value) of the maximum
  *         allowed heightlevel value.
  */
-static int32 ClickChangeMaxHlCheat(int32 p1, int32 p2)
+static int32_t ClickChangeMaxHlCheat(int32_t p1, int32_t p2)
 {
 	p1 = Clamp(p1, MIN_MAP_HEIGHT_LIMIT, MAX_MAP_HEIGHT_LIMIT);
 
 	/* Check if at least one mountain on the map is higher than the new value.
 	 * If yes, disallow the change. */
 	for (TileIndex t = 0; t < MapSize(); t++) {
-		if ((int32)TileHeight(t) > p1) {
+		if ((int32_t)TileHeight(t) > p1) {
 			ShowErrorMessage(STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN, INVALID_STRING_ID, WL_ERROR);
 			/* Return old, unchanged value */
 			return _settings_game.construction.map_height_limit;
@@ -164,7 +164,7 @@ static int32 ClickChangeMaxHlCheat(int32 p1, int32 p2)
  * @param p1 The new value.
  * @param p2 Change direction (+1, +1), \c 0 for boolean settings.
  */
-typedef int32 CheckButtonClick(int32 p1, int32 p2);
+typedef int32_t CheckButtonClick(int32_t p1, int32_t p2);
 
 enum CheatNetworkMode {
 	CNM_ALL,
@@ -282,7 +282,7 @@ struct CheatWindow : Window {
 					/* Draw [<][>] boxes for settings of an integer-type */
 					DrawArrowButtons(button_left, y + button_y_offset, COLOUR_YELLOW, clicked - (i * 2), true, true);
 
-					uint64 val = (uint64)ReadValue(ce->variable, SLE_UINT64);
+					uint64_t val = (uint64_t)ReadValue(ce->variable, SLE_UINT64);
 					SetDParam(0, val * 1000 >> 16);
 					SetDParam(1, 3);
 					break;
@@ -297,7 +297,7 @@ struct CheatWindow : Window {
 				}
 
 				default: {
-					int32 val = (int32)ReadValue(ce->variable, ce->type);
+					int32_t val = (int32_t)ReadValue(ce->variable, ce->type);
 
 					/* Draw [<][>] boxes for settings of an integer-type */
 					DrawArrowButtons(button_left, y + button_y_offset, COLOUR_YELLOW, clicked - (i * 2), true, true);
@@ -397,7 +397,7 @@ struct CheatWindow : Window {
 		if (btn >= lengthof(_cheats_ui)) return;
 
 		const CheatEntry *ce = &_cheats_ui[btn];
-		int value = (int32)ReadValue(ce->variable, ce->type);
+		int value = (int32_t)ReadValue(ce->variable, ce->type);
 		int oldvalue = value;
 
 		if (btn == CHT_CHANGE_DATE && x >= WidgetDimensions::scaled.hsep_wide * 2 + this->box.width + SETTING_BUTTON_WIDTH) {
@@ -418,7 +418,7 @@ struct CheatWindow : Window {
 			return;
 		} else if (ce->type == SLF_ALLOW_CONTROL && x >= 20 + this->box.width + SETTING_BUTTON_WIDTH) {
 			clicked_widget = btn;
-			uint64 val = (uint64)ReadValue(ce->variable, SLE_UINT64);
+			uint64_t val = (uint64_t)ReadValue(ce->variable, SLE_UINT64);
 			SetDParam(0, val * 1000 >> 16);
 			SetDParam(1, 3);
 			StringID str = (btn == CHT_INFLATION_COST) ? STR_CHEAT_INFLATION_COST_QUERY_CAPT : STR_CHEAT_INFLATION_INCOME_QUERY_CAPT;
@@ -445,10 +445,10 @@ struct CheatWindow : Window {
 		switch (ce->type) {
 			case SLF_ALLOW_CONTROL: {
 				/* Change inflation factors */
-				uint64 oldvalue = (uint64)ReadValue(ce->variable, SLE_UINT64);
-				uint64 value = oldvalue + (uint64)(get_arrow_button_value() << 16);
-				value = Clamp<uint64>(value, 1 << 16, MAX_INFLATION);
-				DoCommandP(0, (uint32)btn, (uint32)value, CMD_CHEAT_SETTING);
+				uint64_t oldvalue = (uint64_t)ReadValue(ce->variable, SLE_UINT64);
+				uint64_t value = oldvalue + (uint64_t)(get_arrow_button_value() << 16);
+				value = Clamp<uint64_t>(value, 1 << 16, MAX_INFLATION);
+				DoCommandP(0, (uint32_t)btn, (uint32_t)value, CMD_CHEAT_SETTING);
 				if (value != oldvalue) register_arrow_button_clicked();
 				break;
 			}
@@ -470,9 +470,9 @@ struct CheatWindow : Window {
 
 		if (value != oldvalue) {
 			if (_networking || btn == CHT_STATION_RATING || btn == CHT_TOWN_RATING) {
-				if (btn != CHT_MONEY) DoCommandP(0, (uint32)btn, (uint32)value, CMD_CHEAT_SETTING);
+				if (btn != CHT_MONEY) DoCommandP(0, (uint32_t)btn, (uint32_t)value, CMD_CHEAT_SETTING);
 			} else {
-				WriteValue(ce->variable, ce->type, (int64)value);
+				WriteValue(ce->variable, ce->type, (int64_t)value);
 			}
 		}
 
@@ -498,7 +498,7 @@ struct CheatWindow : Window {
 			char tmp_buffer[32];
 			strecpy(tmp_buffer, str, lastof(tmp_buffer));
 			str_replace_wchar(tmp_buffer, lastof(tmp_buffer), GetDecimalSeparatorChar(), '.');
-			DoCommandP(0, (uint32)clicked_widget, (uint32)Clamp<uint64>(atof(tmp_buffer) * 65536.0, 1 << 16, MAX_INFLATION), CMD_CHEAT_SETTING);
+			DoCommandP(0, (uint32_t)clicked_widget, (uint32_t)Clamp<uint64_t>(atof(tmp_buffer) * 65536.0, 1 << 16, MAX_INFLATION), CMD_CHEAT_SETTING);
 			return;
 		}
 		if (ce->mode == CNM_MONEY) {
@@ -508,12 +508,12 @@ struct CheatWindow : Window {
 		}
 
 		if (_networking) return;
-		int oldvalue = (int32)ReadValue(ce->variable, ce->type);
+		int oldvalue = (int32_t)ReadValue(ce->variable, ce->type);
 		int value = atoi(str);
 		*ce->been_used = true;
 		value = ce->proc(value, value - oldvalue);
 
-		if (value != oldvalue) WriteValue(ce->variable, ce->type, (int64)value);
+		if (value != oldvalue) WriteValue(ce->variable, ce->type, (int64_t)value);
 		this->SetDirty();
 	}
 };

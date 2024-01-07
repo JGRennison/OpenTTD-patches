@@ -142,7 +142,7 @@ public:
 	 * Get a pointer to the animation buffer of the video back-end.
 	 * @return Pointer to the buffer or nullptr if no animation buffer is supported.
 	 */
-	inline uint8 *GetAnimBuffer()
+	inline uint8_t *GetAnimBuffer()
 	{
 		return this->anim_buffer;
 	}
@@ -361,7 +361,7 @@ protected:
 	std::recursive_mutex game_state_mutex;
 	std::mutex game_thread_wait_mutex;
 
-	uint8 *anim_buffer = nullptr; ///< Animation buffer, (not used by all drivers, here because it is accessed very frequently)
+	uint8_t *anim_buffer = nullptr; ///< Animation buffer, (not used by all drivers, here because it is accessed very frequently)
 
 	static void GameThreadThunk(VideoDriver *drv);
 

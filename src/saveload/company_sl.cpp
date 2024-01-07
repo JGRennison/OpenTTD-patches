@@ -31,7 +31,7 @@ namespace upstream_sl {
 
 /* We do need to read this single value, as the bigger it gets, the more data is stored */
 struct CompanyOldAI {
-	uint8 num_build_rec;
+	uint8_t num_build_rec;
 };
 
 class SlCompanyOldAIBuildRec : public DefaultSaveLoadHandler<SlCompanyOldAIBuildRec, CompanyOldAI> {
@@ -155,7 +155,7 @@ public:
 	void Load(CompanyProperties *c) const override
 	{
 		if (!IsSavegameVersionBefore(SLV_SAVELOAD_LIST_LENGTH)) {
-			c->num_valid_stat_ent = (uint8)SlGetStructListLength(UINT8_MAX);
+			c->num_valid_stat_ent = (uint8_t)SlGetStructListLength(UINT8_MAX);
 		}
 		if (c->num_valid_stat_ent > lengthof(c->old_economy)) SlErrorCorrupt("Too many old economy entries");
 

@@ -54,9 +54,9 @@
 #include "safeguards.h"
 
 /** Delay counter for considering the next disaster. */
-uint16 _disaster_delay;
+uint16_t _disaster_delay;
 
-static uint32 _disaster_vehicle_count = 0;
+static uint32_t _disaster_vehicle_count = 0;
 
 static void DisasterClearSquare(TileIndex tile)
 {
@@ -308,7 +308,7 @@ static bool DisasterTick_Zeppeliner(DisasterVehicle *v)
 		v->image_override = SPR_BLIMP_CRASHED;
 	} else if (v->age <= 300) {
 		if (GB(v->tick_counter, 0, 3) == 0) {
-			uint32 r = Random();
+			uint32_t r = Random();
 
 			CreateEffectVehicleRel(v,
 				GB(r, 0, 4) - 7,
@@ -444,7 +444,7 @@ static void DestructIndustry(Industry *i)
  * @param news_message The string that's used as news message.
  * @param industry_flag Only attack industries that have this flag set.
  */
-static bool DisasterTick_Aircraft(DisasterVehicle *v, uint16 image_override, bool leave_at_top, StringID news_message, IndustryBehaviour industry_flag)
+static bool DisasterTick_Aircraft(DisasterVehicle *v, uint16_t image_override, bool leave_at_top, StringID news_message, IndustryBehaviour industry_flag)
 {
 	v->tick_counter++;
 	v->image_override = (v->state == 1 && HasBit(v->tick_counter, 2)) ? image_override : 0;
@@ -462,7 +462,7 @@ static bool DisasterTick_Aircraft(DisasterVehicle *v, uint16 image_override, boo
 			Industry *i = Industry::Get(v->dest_tile); // Industry destructor calls ReleaseDisastersTargetingIndustry, so this is valid
 			int x = TileX(i->location.tile) * TILE_SIZE;
 			int y = TileY(i->location.tile) * TILE_SIZE;
-			uint32 r = Random();
+			uint32_t r = Random();
 
 			CreateEffectVehicleAbove(
 				GB(r,  0, 6) + x,
@@ -664,7 +664,7 @@ static bool DisasterTick_Big_Ufo_Destroyer(DisasterVehicle *v)
 		delete u;
 
 		for (int i = 0; i != 80; i++) {
-			uint32 r = Random();
+			uint32_t r = Random();
 			CreateEffectVehicleAbove(
 				GB(r, 0, 6) + v->x_pos - 32,
 				GB(r, 5, 6) + v->y_pos - 32,
@@ -736,7 +736,7 @@ static DisasterVehicleTickProc * const _disastervehicle_tick_procs[] = {
 bool DisasterVehicle::Tick()
 {
 	DEBUG_UPDATESTATECHECKSUM("DisasterVehicle::Tick: v: %u, x: %d, y: %d", this->index, this->x_pos, this->y_pos);
-	UpdateStateChecksum((((uint64) this->x_pos) << 32) | this->y_pos);
+	UpdateStateChecksum((((uint64_t) this->x_pos) << 32) | this->y_pos);
 	return _disastervehicle_tick_procs[this->subtype](this);
 }
 
@@ -874,7 +874,7 @@ static void Disaster_Submarine_Init(DisasterSubType subtype)
 
 	int y;
 	Direction dir;
-	uint32 r = Random();
+	uint32_t r = Random();
 	int x = TileX(r) * TILE_SIZE + TILE_SIZE / 2;
 
 	if (HasBit(r, 31)) {
@@ -1001,7 +1001,7 @@ void ReleaseDisastersTargetingIndustry(IndustryID i)
 		/* primary disaster vehicles that have chosen target */
 		if (v->subtype == ST_AIRPLANE || v->subtype == ST_HELICOPTER) {
 			/* if it has chosen target, and it is this industry (yes, dest_tile is IndustryID here), set order to "leaving map peacefully" */
-			if (v->state > 0 && v->dest_tile == (uint32)i) v->state = 3;
+			if (v->state > 0 && v->dest_tile == (uint32_t)i) v->state = 3;
 		}
 	}
 }

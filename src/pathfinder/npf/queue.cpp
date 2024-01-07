@@ -67,7 +67,7 @@ void BinaryHeap::Free()
  * Pushes an element into the queue, at the appropriate place for the queue.
  * Requires the queue pointer to be of an appropriate type, of course.
  */
-bool BinaryHeap::Push(uint32 item, int priority)
+bool BinaryHeap::Push(uint32_t item, int priority)
 {
 	if (this->size == this->max_size) return false;
 	dbg_assert(this->size < this->max_size);
@@ -113,7 +113,7 @@ bool BinaryHeap::Push(uint32 item, int priority)
  * known, which speeds up the deleting for some queue's. Should be -1
  * if not known.
  */
-bool BinaryHeap::Delete(uint32 item, int priority)
+bool BinaryHeap::Delete(uint32_t item, int priority)
 {
 	uint i = 0;
 
@@ -168,7 +168,7 @@ bool BinaryHeap::Delete(uint32 item, int priority)
  * Pops the first element from the queue. What exactly is the first element,
  * is defined by the exact type of queue.
  */
-uint32 BinaryHeap::Pop()
+uint32_t BinaryHeap::Pop()
 {
 	if (this->size == 0) return UINT32_MAX;
 

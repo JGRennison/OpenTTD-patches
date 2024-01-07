@@ -604,7 +604,7 @@ void ClearSnowLine()
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdLandscapeClear(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdLandscapeClear(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 	bool do_clear = false;
@@ -658,7 +658,7 @@ CommandCost CmdLandscapeClear(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdClearArea(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdClearArea(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	if (p1 >= MapSize()) return CMD_ERROR;
 
@@ -713,7 +713,7 @@ CommandCost CmdClearArea(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 
 TileIndex _cur_tileloop_tile;
 TileIndex _aux_tileloop_tile;
 
-static uint32 GetTileLoopFeedback()
+static uint32_t GetTileLoopFeedback()
 {
 	/* The pseudorandom sequence of tiles is generated using a Galois linear feedback
 	 * shift register (LFSR). This allows a deterministic pseudorandom ordering, but
@@ -721,7 +721,7 @@ static uint32 GetTileLoopFeedback()
 
 	/* Maximal length LFSR feedback terms, from 12-bit (for 64x64 maps) to 28-bit (for 16kx16k maps).
 	 * Extracted from http://www.ece.cmu.edu/~koopman/lfsr/ */
-	static const uint32 feedbacks[] = {
+	static const uint32_t feedbacks[] = {
 		0xD8F, 0x1296, 0x2496, 0x4357, 0x8679, 0x1030E, 0x206CD, 0x403FE, 0x807B8, 0x1004B2, 0x2006A8,
 		0x4004B2, 0x800B87, 0x10004F3, 0x200072D, 0x40006AE, 0x80009E3,
 	};
@@ -736,11 +736,11 @@ void SetupTileLoopCounts()
 	_tile_loop_counts.resize(_settings_game.economy.day_length_factor);
 	if (_settings_game.economy.day_length_factor == 0) return;
 
-	uint64 count_per_tick_fp16 = (static_cast<uint64>(1) << (MapLogX() + MapLogY() + 8)) / _settings_game.economy.day_length_factor;
-	uint64 accumulator = 0;
+	uint64_t count_per_tick_fp16 = (static_cast<uint64_t>(1) << (MapLogX() + MapLogY() + 8)) / _settings_game.economy.day_length_factor;
+	uint64_t accumulator = 0;
 	for (uint &count : _tile_loop_counts) {
 		accumulator += count_per_tick_fp16;
-		count = static_cast<uint32>(accumulator >> 16);
+		count = static_cast<uint32_t>(accumulator >> 16);
 		accumulator &= 0xFFFF;
 	}
 	if (accumulator > 0) _tile_loop_counts[0]++;
@@ -762,7 +762,7 @@ void RunTileLoop(bool apply_day_length)
 
 	PerformanceAccumulator framerate(PFE_GL_LANDSCAPE);
 
-	const uint32 feedback = GetTileLoopFeedback();
+	const uint32_t feedback = GetTileLoopFeedback();
 
 	TileIndex tile = _cur_tileloop_tile;
 	/* The LFSR cannot have a zeroed state. */
@@ -778,7 +778,7 @@ void RunTileLoop(bool apply_day_length)
 
 	while (count--) {
 		/* Get the next tile in sequence using a Galois LFSR. */
-		TileIndex next = (tile >> 1) ^ (-(int32)(tile & 1) & feedback);
+		TileIndex next = (tile >> 1) ^ (-(int32_t)(tile & 1) & feedback);
 		if (count > 0) {
 			PREFETCH_NTA(&_m[next]);
 		}
@@ -799,13 +799,13 @@ void RunAuxiliaryTileLoop()
 
 	PerformanceAccumulator framerate(PFE_GL_LANDSCAPE);
 
-	const uint32 feedback = GetTileLoopFeedback();
+	const uint32_t feedback = GetTileLoopFeedback();
 	uint count = 1 << (MapLogX() + MapLogY() - 8);
 	TileIndex tile = _aux_tileloop_tile;
 
 	while (count--) {
 		/* Get the next tile in sequence using a Galois LFSR. */
-		TileIndex next = (tile >> 1) ^ (-(int32)(tile & 1) & feedback);
+		TileIndex next = (tile >> 1) ^ (-(int32_t)(tile & 1) & feedback);
 		if (count > 0) {
 			PREFETCH_NTA(&_m[next]);
 		}
@@ -842,7 +842,7 @@ static const byte _genterrain_tbl_2[5] = {  0,  0,  0,  0, 33 };
 
 static void GenerateTerrain(int type, uint flag)
 {
-	uint32 r = Random();
+	uint32_t r = Random();
 
 	/* Choose one of the templates from the graphics file. */
 	const Sprite *templ = GetSprite((((r >> 24) * _genterrain_tbl_1[type]) >> 8) + _genterrain_tbl_2[type] + SPR_MAPGEN_BEGIN, SpriteType::MapGen, 0);
@@ -983,8 +983,8 @@ void DesertOrRainforestProcessTiles(const std::pair<const Rect16 *, const Rect16
 {
 	for (data = desert_rainforest_data.first; data != desert_rainforest_data.second; ++data) {
 		const Rect16 r = *data;
-		for (int16 x = r.left; x <= r.right; x++) {
-			for (int16 y = r.top; y <= r.bottom; y++) {
+		for (int16_t x = r.left; x <= r.right; x++) {
+			for (int16_t y = r.top; y <= r.bottom; y++) {
 				TileIndex t = AddTileIndexDiffCWrap(tile, { x, y });
 				if (handle_tile(t)) return;
 			}
@@ -1091,23 +1091,23 @@ static bool MakeLake(TileIndex tile, void *user_data)
 	if (_settings_game.game_creation.landscape == LT_TROPIC && GetTropicZone(tile) == TROPICZONE_DESERT && !_settings_game.game_creation.lakes_allowed_in_deserts) return false;
 
 	/* Offset from centre tile */
-	const int64 x_delta = (int)TileX(tile) - (int)TileX(data->centre);
-	const int64 y_delta = (int)TileY(tile) - (int)TileY(data->centre);
+	const int64_t x_delta = (int)TileX(tile) - (int)TileX(data->centre);
+	const int64_t y_delta = (int)TileY(tile) - (int)TileY(data->centre);
 
 	/* Rotate to new coordinate system */
-	const int64 a_delta = (x_delta * data->cos_fp + y_delta * data->sin_fp) >> 8;
-	const int64 b_delta = (-x_delta * data->sin_fp + y_delta * data->cos_fp) >> 8;
+	const int64_t a_delta = (x_delta * data->cos_fp + y_delta * data->sin_fp) >> 8;
+	const int64_t b_delta = (-x_delta * data->sin_fp + y_delta * data->cos_fp) >> 8;
 
 	int max_distance = data->max_distance;
 	if (max_distance >= 6) {
 		/* Vary radius a bit for larger lakes */
 		uint coord = (std::abs(x_delta) > std::abs(y_delta)) ? TileY(tile) : TileX(tile);
-		static const int8 offset_fuzz[4] = { 0, 1, 0, -1 };
+		static const int8_t offset_fuzz[4] = { 0, 1, 0, -1 };
 		max_distance += offset_fuzz[(coord / 3) & 3];
 	}
 
 	/* Check if inside ellipse */
-	if ((a_delta * a_delta) + ((data->secondary_axis_scale * b_delta * b_delta) >> 16) > ((int64)(max_distance * max_distance) << 16)) return false;
+	if ((a_delta * a_delta) + ((data->secondary_axis_scale * b_delta * b_delta) >> 16) > ((int64_t)(max_distance * max_distance) << 16)) return false;
 
 	for (DiagDirection d = DIAGDIR_BEGIN; d < DIAGDIR_END; d++) {
 		TileIndex t2 = tile + TileOffsByDiagDir(d);
@@ -1147,19 +1147,19 @@ static bool FlowsDown(TileIndex begin, TileIndex end)
 }
 
 /* AyStar callback for checking whether we reached our destination. */
-static int32 River_EndNodeCheck(const AyStar *aystar, const OpenListNode *current)
+static int32_t River_EndNodeCheck(const AyStar *aystar, const OpenListNode *current)
 {
 	return current->path.node.tile == *(TileIndex*)aystar->user_target ? AYSTAR_FOUND_END_NODE : AYSTAR_DONE;
 }
 
 /* AyStar callback for getting the cost of the current node. */
-static int32 River_CalculateG(AyStar *aystar, AyStarNode *current, OpenListNode *parent)
+static int32_t River_CalculateG(AyStar *aystar, AyStarNode *current, OpenListNode *parent)
 {
 	return 1 + RandomRange(_settings_game.game_creation.river_route_random);
 }
 
 /* AyStar callback for getting the estimated cost to the destination. */
-static int32 River_CalculateH(AyStar *aystar, AyStarNode *current, OpenListNode *parent)
+static int32_t River_CalculateH(AyStar *aystar, AyStarNode *current, OpenListNode *parent)
 {
 	return DistanceManhattan(*(TileIndex*)aystar->user_target, current->tile);
 }
@@ -1345,7 +1345,7 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 			data.sin_fp = RandomRange(1 << 17) - (1 << 16);
 
 			/* sin^2 + cos^2 = 1 */
-			data.cos_fp = IntSqrt64(((int64)1 << 32) - ((int64)data.sin_fp * (int64)data.sin_fp));
+			data.cos_fp = IntSqrt64(((int64_t)1 << 32) - ((int64_t)data.sin_fp * (int64_t)data.sin_fp));
 
 			CircularTileSearch(&lakeCenter, range, MakeLake, &data);
 			/* Call the search a second time so artefacts from going circular in one direction get (mostly) hidden. */
@@ -1511,7 +1511,7 @@ static void CalculateSnowLine()
  * Calculate the line (in height) between desert and tropic.
  * @return The height of the line between desert and tropic.
  */
-static uint8 CalculateDesertLine()
+static uint8_t CalculateDesertLine()
 {
 	if (_settings_game.game_creation.climate_threshold_mode != 0) return _settings_game.game_creation.rainforest_line_height;
 
@@ -1546,7 +1546,7 @@ void GenerateLandscape(byte mode)
 		}
 		switch (_settings_game.game_creation.landscape) {
 			case LT_ARCTIC: {
-				uint32 r = Random();
+				uint32_t r = Random();
 
 				for (uint i = ScaleByMapSize(GB(r, 0, 7) + 950); i != 0; --i) {
 					GenerateTerrain(2, 0);
@@ -1560,7 +1560,7 @@ void GenerateLandscape(byte mode)
 			}
 
 			case LT_TROPIC: {
-				uint32 r = Random();
+				uint32_t r = Random();
 
 				for (uint i = ScaleByMapSize(GB(r, 0, 7) + 170); i != 0; --i) {
 					GenerateTerrain(0, 0);
@@ -1580,7 +1580,7 @@ void GenerateLandscape(byte mode)
 			}
 
 			default: {
-				uint32 r = Random();
+				uint32_t r = Random();
 
 				assert(_settings_game.difficulty.quantity_sea_lakes != CUSTOM_SEA_LEVEL_NUMBER_DIFFICULTY);
 				uint i = ScaleByMapSize(GB(r, 0, 7) + (3 - _settings_game.difficulty.quantity_sea_lakes) * 256 + 100);

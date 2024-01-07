@@ -383,14 +383,14 @@ inline void SetSignalVariant(TileIndex t, Track track, SignalVariant v)
 	if (track == INVALID_TRACK) SB(_m[t].m2, 7, 1, v);
 }
 
-inline uint8 GetSignalAspect(TileIndex t, Track track)
+inline uint8_t GetSignalAspect(TileIndex t, Track track)
 {
 	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
 	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 3 : 0;
 	return GB(_me[t].m7, pos, 3);
 }
 
-inline void SetSignalAspect(TileIndex t, Track track, uint8 aspect)
+inline void SetSignalAspect(TileIndex t, Track track, uint8_t aspect)
 {
 	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
 	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 3 : 0;
@@ -402,14 +402,14 @@ inline bool NonZeroSignalStylePossiblyOnTile(TileIndex t)
 	return _me[t].m6 != 0;
 }
 
-inline uint8 GetSignalStyle(TileIndex t, Track track)
+inline uint8_t GetSignalStyle(TileIndex t, Track track)
 {
 	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
 	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 4 : 0;
 	return GB(_me[t].m6, pos, 4);
 }
 
-inline uint8 GetSignalStyleGeneric(TileIndex t, Track track)
+inline uint8_t GetSignalStyleGeneric(TileIndex t, Track track)
 {
 	switch (GetTileType(t)) {
 		case MP_RAILWAY:
@@ -421,7 +421,7 @@ inline uint8 GetSignalStyleGeneric(TileIndex t, Track track)
 	}
 }
 
-inline void SetSignalStyle(TileIndex t, Track track, uint8 style)
+inline void SetSignalStyle(TileIndex t, Track track, uint8_t style)
 {
 	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
 	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 4 : 0;

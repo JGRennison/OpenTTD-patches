@@ -67,7 +67,7 @@ inline StringID MakeStringID(StringTab tab, uint index)
 
 std::string GetString(StringID string);
 const char *GetStringPtr(StringID string);
-uint32 GetStringGRFID(StringID string);
+uint32_t GetStringGRFID(StringID string);
 
 uint ConvertKmhishSpeedToDisplaySpeed(uint speed, VehicleType type);
 uint ConvertDisplaySpeedToKmhishSpeed(uint speed, VehicleType type);
@@ -82,10 +82,10 @@ inline int64_t PackVelocity(uint speed, VehicleType type)
 {
 	/* Vehicle type is a byte, so packed into the top 8 bits of the 64-bit
 	 * parameter, although only values from 0-3 are relevant. */
-	return speed | (static_cast<uint64>(type) << 56);
+	return speed | (static_cast<uint64_t>(type) << 56);
 }
 
-WChar GetDecimalSeparatorChar();
+char32_t GetDecimalSeparatorChar();
 
 /**
  * Set a string parameter \a v at index \a n in the global string parameter array.
@@ -97,7 +97,7 @@ inline void SetDParam(size_t n, T &&v) {
 	_global_string_params.SetParam(n, std::forward<T>(v));
 }
 
-void SetDParamMaxValue(size_t n, uint64 max_value, uint min_count = 0, FontSize size = FS_NORMAL);
+void SetDParamMaxValue(size_t n, uint64_t max_value, uint min_count = 0, FontSize size = FS_NORMAL);
 void SetDParamMaxDigits(size_t n, uint count, FontSize size = FS_NORMAL);
 
 void SetDParamStr(size_t n, const char *str);
@@ -112,7 +112,7 @@ bool HaveDParamChanged(const std::vector<StringParameterBackup> &backup);
  * @param n Index of the string parameter.
  * @return Value of the requested string parameter.
  */
-inline uint64 GetDParam(size_t n)
+inline uint64_t GetDParam(size_t n)
 {
 	return _global_string_params.GetParam(n);
 }

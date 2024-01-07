@@ -44,10 +44,10 @@ enum ChunkType {
 
 /** Handlers and description of chunk. */
 struct ChunkHandler {
-	uint32 id;                          ///< Unique ID (4 letters).
+	uint32_t id;                        ///< Unique ID (4 letters).
 	ChunkType type;                     ///< Type of the chunk. @see ChunkType
 
-	ChunkHandler(uint32 id, ChunkType type) : id(id), type(type) {}
+	ChunkHandler(uint32_t id, ChunkType type) : id(id), type(type) {}
 
 	virtual ~ChunkHandler() = default;
 
@@ -263,7 +263,7 @@ enum VarTypes {
 	SLF_ALLOW_NEWLINE   = 1 << 9, ///< Allow new lines in the strings.
 };
 
-typedef uint32 VarType;
+typedef uint32_t VarType;
 
 /** Type of data saved. */
 enum SaveLoadType : byte {
@@ -294,7 +294,7 @@ struct SaveLoad {
 	std::string name;    ///< Name of this field (optional, used for tables).
 	SaveLoadType cmd;    ///< The action to take with the saved/loaded type, All types need different action.
 	VarType conv;        ///< Type of the variable to be saved; this field combines both FileVarType and MemVarType.
-	uint16 length;       ///< (Conditional) length of the variable (eg. arrays) (max array size is 65536 elements).
+	uint16_t length;     ///< (Conditional) length of the variable (eg. arrays) (max array size is 65536 elements).
 	SaveLoadVersion version_from;   ///< Save/load the variable starting from this savegame version.
 	SaveLoadVersion version_to;     ///< Save/load the variable before this savegame version.
 	size_t size;                    ///< The sizeof size.
@@ -313,7 +313,7 @@ struct SaveLoad {
  */
 struct SaveLoadCompat {
 	std::string name;             ///< Name of the field.
-	uint16 length;                ///< Length of the NULL field.
+	uint16_t length;              ///< Length of the NULL field.
 	SaveLoadVersion version_from; ///< Save/load the variable starting from this savegame version.
 	SaveLoadVersion version_to;   ///< Save/load the variable before this savegame version.
 };
@@ -888,8 +888,8 @@ inline void *GetVariableAddress(const void *object, const SaveLoad &sld)
 	return sld.address_proc(const_cast<void *>(object), sld.extra_data);
 }
 
-int64 ReadValue(const void *ptr, VarType conv);
-void WriteValue(void *ptr, VarType conv, int64 val);
+int64_t ReadValue(const void *ptr, VarType conv);
+void WriteValue(void *ptr, VarType conv, int64_t val);
 
 void SlSetArrayIndex(uint index);
 int SlIterateArray();

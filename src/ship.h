@@ -21,17 +21,17 @@ void GetShipSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, i
 WaterClass GetEffectiveWaterClass(TileIndex tile);
 
 /** Maximum segments of ship path cache */
-static const uint8 SHIP_PATH_CACHE_LENGTH = 32;
-static const uint8 SHIP_PATH_CACHE_MASK = (SHIP_PATH_CACHE_LENGTH - 1);
+static const uint8_t SHIP_PATH_CACHE_LENGTH = 32;
+static const uint8_t SHIP_PATH_CACHE_MASK = (SHIP_PATH_CACHE_LENGTH - 1);
 static_assert((SHIP_PATH_CACHE_LENGTH & SHIP_PATH_CACHE_MASK) == 0, ""); // Must be a power of 2
 
 struct ShipPathCache {
 	std::array<Trackdir, SHIP_PATH_CACHE_LENGTH> td;
-	uint8 start = 0;
-	uint8 count = 0;
+	uint8_t start = 0;
+	uint8_t count = 0;
 
 	inline bool empty() const { return this->count == 0; }
-	inline uint8 size() const { return this->count; }
+	inline uint8_t size() const { return this->count; }
 	inline bool full() const { return this->count >= SHIP_PATH_CACHE_LENGTH; }
 
 	inline void clear()
@@ -67,12 +67,12 @@ struct ShipPathCache {
  * All ships have this type.
  */
 struct Ship FINAL : public SpecializedVehicle<Ship, VEH_SHIP> {
-	TrackBits state;      ///< The "track" the ship is following.
+	TrackBits state;               ///< The "track" the ship is following.
 	std::unique_ptr<ShipPathCache> cached_path;   ///< Cached path.
-	Direction rotation;   ///< Visible direction.
-	int16 rotation_x_pos; ///< NOSAVE: X Position before rotation.
-	int16 rotation_y_pos; ///< NOSAVE: Y Position before rotation.
-	uint8 lost_count;     ///< Count of number of failed pathfinder attempts
+	Direction rotation;            ///< Visible direction.
+	int16_t rotation_x_pos;        ///< NOSAVE: X Position before rotation.
+	int16_t rotation_y_pos;        ///< NOSAVE: Y Position before rotation.
+	uint8_t lost_count;            ///< Count of number of failed pathfinder attempts
 	byte critical_breakdown_count; ///< Counter for the number of critical breakdowns since last service
 
 	/** We don't want GCC to zero our struct! It already is zeroed and has an index! */

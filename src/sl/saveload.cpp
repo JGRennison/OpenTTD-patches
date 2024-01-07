@@ -74,10 +74,10 @@ extern const SaveLoadVersion MAX_LOAD_SAVEGAME_VERSION = (SaveLoadVersion)(SL_MA
 
 const SaveLoadVersion SAVEGAME_VERSION_EXT = (SaveLoadVersion)(0x8000); ///< Savegame extension indicator mask
 
-SavegameType _savegame_type; ///< type of savegame we are loading
+SavegameType _savegame_type;      ///< type of savegame we are loading
 FileToSaveLoad _file_to_saveload; ///< File to save or load in the openttd loop.
 
-uint32 _ttdp_version;         ///< version of TTDP savegame (if applicable)
+uint32_t _ttdp_version;       ///< version of TTDP savegame (if applicable)
 SaveLoadVersion _sl_version;  ///< the major savegame version identifier
 byte   _sl_minor_version;     ///< the minor savegame version, DO NOT USE!
 std::string _savegame_format; ///< how to compress savegames
@@ -91,12 +91,12 @@ extern bool _sl_upstream_mode;
 namespace upstream_sl {
 	void SlNullPointers();
 	void SlLoadChunks();
-	void SlLoadChunkByID(uint32 id);
+	void SlLoadChunkByID(uint32_t id);
 	void SlLoadCheckChunks();
-	void SlLoadCheckChunkByID(uint32 id);
+	void SlLoadCheckChunkByID(uint32_t id);
 	void SlFixPointers();
-	void SlFixPointerChunkByID(uint32 id);
-	void SlSaveChunkChunkByID(uint32 id);
+	void SlFixPointerChunkByID(uint32_t id);
+	void SlSaveChunkChunkByID(uint32_t id);
 	void SlResetLoadState();
 }
 
@@ -531,13 +531,13 @@ int SlReadUint16()
 	return _sl.reader->RawReadUint16();
 }
 
-uint32 SlReadUint32()
+uint32_t SlReadUint32()
 {
 	_sl.reader->CheckBytes(4);
 	return _sl.reader->RawReadUint32();
 }
 
-uint64 SlReadUint64()
+uint64_t SlReadUint64()
 {
 	_sl.reader->CheckBytes(8);
 	return _sl.reader->RawReadUint64();
@@ -552,19 +552,19 @@ void SlWriteByte(byte b)
 	_sl.dumper->WriteByte(b);
 }
 
-void SlWriteUint16(uint16 v)
+void SlWriteUint16(uint16_t v)
 {
 	_sl.dumper->CheckBytes(2);
 	_sl.dumper->RawWriteUint16(v);
 }
 
-void SlWriteUint32(uint32 v)
+void SlWriteUint32(uint32_t v)
 {
 	_sl.dumper->CheckBytes(4);
 	_sl.dumper->RawWriteUint32(v);
 }
 
-void SlWriteUint64(uint64 v)
+void SlWriteUint64(uint64_t v)
 {
 	_sl.dumper->CheckBytes(8);
 	_sl.dumper->RawWriteUint64(v);
@@ -713,7 +713,7 @@ static inline uint SlCalcConvMemLen(VarType conv)
 			return SlReadArrayLength();
 
 		default:
-			uint8 type = GetVarMemType(conv) >> 4;
+			uint8_t type = GetVarMemType(conv) >> 4;
 			assert(type < lengthof(conv_mem_size));
 			return conv_mem_size[type];
 	}
@@ -727,7 +727,7 @@ static inline uint SlCalcConvMemLen(VarType conv)
  */
 static inline byte SlCalcConvFileLen(VarType conv)
 {
-	uint8 type = GetVarFileType(conv);
+	uint8_t type = GetVarFileType(conv);
 	if (type == SLE_FILE_VEHORDERID) return SlXvIsFeaturePresent(XSLFI_MORE_VEHICLE_ORDERS) ? 2 : 1;
 	static const byte conv_file_size[] = {1, 1, 2, 2, 4, 4, 8, 8, 2};
 	assert(type < lengthof(conv_file_size));
@@ -813,7 +813,7 @@ void SlSetLength(size_t length)
 					 * The lower 24 bits are normal
 					 * The uppermost 4 bits are bits 24:27
 					 *
-					 * If we have more than 28 bits, use an extra uint32 and
+					 * If we have more than 28 bits, use an extra uint32_t and
 					 * signal this using the extended chunk header */
 #ifdef POINTER_IS_64BIT
 					assert(length < (1LL << 32));
@@ -821,11 +821,11 @@ void SlSetLength(size_t length)
 					if (length >= (1 << 28)) {
 						/* write out extended chunk header */
 						SlWriteByte(CH_EXT_HDR);
-						SlWriteUint32(static_cast<uint32>(SLCEHF_BIG_RIFF));
+						SlWriteUint32(static_cast<uint32_t>(SLCEHF_BIG_RIFF));
 					}
-					SlWriteUint32(static_cast<uint32>((length & 0xFFFFFF) | ((length >> 24) << 28)));
+					SlWriteUint32(static_cast<uint32_t>((length & 0xFFFFFF) | ((length >> 24) << 28)));
 					if (length >= (1 << 28)) {
-						SlWriteUint32(static_cast<uint32>(length >> 28));
+						SlWriteUint32(static_cast<uint32_t>(length >> 28));
 					}
 					break;
 				case CH_ARRAY:
@@ -882,18 +882,18 @@ size_t SlGetFieldLength()
  * type, eg one with other flags because it is parsed
  * @return returns the value of the pointer-setting
  */
-int64 ReadValue(const void *ptr, VarType conv)
+int64_t ReadValue(const void *ptr, VarType conv)
 {
 	switch (GetVarMemType(conv)) {
-		case SLE_VAR_BL:  return (*(const bool *)ptr != 0);
-		case SLE_VAR_I8:  return *(const int8  *)ptr;
-		case SLE_VAR_U8:  return *(const byte  *)ptr;
-		case SLE_VAR_I16: return *(const int16 *)ptr;
-		case SLE_VAR_U16: return *(const uint16*)ptr;
-		case SLE_VAR_I32: return *(const int32 *)ptr;
-		case SLE_VAR_U32: return *(const uint32*)ptr;
-		case SLE_VAR_I64: return *(const int64 *)ptr;
-		case SLE_VAR_U64: return *(const uint64*)ptr;
+		case SLE_VAR_BL:  return (*(const bool   *)ptr != 0);
+		case SLE_VAR_I8:  return *(const int8_t  *)ptr;
+		case SLE_VAR_U8:  return *(const byte    *)ptr;
+		case SLE_VAR_I16: return *(const int16_t *)ptr;
+		case SLE_VAR_U16: return *(const uint16_t*)ptr;
+		case SLE_VAR_I32: return *(const int32_t *)ptr;
+		case SLE_VAR_U32: return *(const uint32_t*)ptr;
+		case SLE_VAR_I64: return *(const int64_t *)ptr;
+		case SLE_VAR_U64: return *(const uint64_t*)ptr;
 		case SLE_VAR_NULL:return 0;
 		default: NOT_REACHED();
 	}
@@ -906,18 +906,18 @@ int64 ReadValue(const void *ptr, VarType conv)
  *             with other flags. It is parsed upon read
  * @param val the new value being given to the variable
  */
-void WriteValue(void *ptr, VarType conv, int64 val)
+void WriteValue(void *ptr, VarType conv, int64_t val)
 {
 	switch (GetVarMemType(conv)) {
-		case SLE_VAR_BL:  *(bool  *)ptr = (val != 0);  break;
-		case SLE_VAR_I8:  *(int8  *)ptr = val; break;
-		case SLE_VAR_U8:  *(byte  *)ptr = val; break;
-		case SLE_VAR_I16: *(int16 *)ptr = val; break;
-		case SLE_VAR_U16: *(uint16*)ptr = val; break;
-		case SLE_VAR_I32: *(int32 *)ptr = val; break;
-		case SLE_VAR_U32: *(uint32*)ptr = val; break;
-		case SLE_VAR_I64: *(int64 *)ptr = val; break;
-		case SLE_VAR_U64: *(uint64*)ptr = val; break;
+		case SLE_VAR_BL:  *(bool    *)ptr = (val != 0);  break;
+		case SLE_VAR_I8:  *(int8_t  *)ptr = val; break;
+		case SLE_VAR_U8:  *(byte    *)ptr = val; break;
+		case SLE_VAR_I16: *(int16_t *)ptr = val; break;
+		case SLE_VAR_U16: *(uint16_t*)ptr = val; break;
+		case SLE_VAR_I32: *(int32_t *)ptr = val; break;
+		case SLE_VAR_U32: *(uint32_t*)ptr = val; break;
+		case SLE_VAR_I64: *(int64_t *)ptr = val; break;
+		case SLE_VAR_U64: *(uint64_t*)ptr = val; break;
 		case SLE_VAR_NAME: *reinterpret_cast<std::string *>(ptr) = CopyFromOldName(val); break;
 		case SLE_VAR_CNAME: *(TinyString*)ptr = CopyFromOldName(val); break;
 		case SLE_VAR_NULL: break;
@@ -938,7 +938,7 @@ static void SlSaveLoadConvGeneric(void *ptr, VarType conv)
 {
 	switch (action) {
 		case SLA_SAVE: {
-			int64 x = ReadValue(ptr, conv);
+			int64_t x = ReadValue(ptr, conv);
 
 			/* Write the value to the file and check if its value is in the desired range */
 			switch (GetVarFileType(conv)) {
@@ -949,7 +949,7 @@ static void SlSaveLoadConvGeneric(void *ptr, VarType conv)
 				case SLE_FILE_VEHORDERID:
 				case SLE_FILE_U16:assert(x >= 0 && x <= 65535);      SlWriteUint16(x);break;
 				case SLE_FILE_I32:
-				case SLE_FILE_U32:                                   SlWriteUint32((uint32)x);break;
+				case SLE_FILE_U32:                                   SlWriteUint32((uint32_t)x);break;
 				case SLE_FILE_I64:
 				case SLE_FILE_U64:                                   SlWriteUint64(x);break;
 				default: NOT_REACHED();
@@ -958,21 +958,21 @@ static void SlSaveLoadConvGeneric(void *ptr, VarType conv)
 		}
 		case SLA_LOAD_CHECK:
 		case SLA_LOAD: {
-			int64 x;
+			int64_t x;
 			/* Read a value from the file */
 			switch (GetVarFileType(conv)) {
-				case SLE_FILE_I8:  x = (int8  )SlReadByte();   break;
-				case SLE_FILE_U8:  x = (byte  )SlReadByte();   break;
-				case SLE_FILE_I16: x = (int16 )SlReadUint16(); break;
-				case SLE_FILE_U16: x = (uint16)SlReadUint16(); break;
-				case SLE_FILE_I32: x = (int32 )SlReadUint32(); break;
-				case SLE_FILE_U32: x = (uint32)SlReadUint32(); break;
-				case SLE_FILE_I64: x = (int64 )SlReadUint64(); break;
-				case SLE_FILE_U64: x = (uint64)SlReadUint64(); break;
-				case SLE_FILE_STRINGID: x = RemapOldStringID((uint16)SlReadUint16()); break;
+				case SLE_FILE_I8:  x = (int8_t  )SlReadByte();   break;
+				case SLE_FILE_U8:  x = (byte    )SlReadByte();   break;
+				case SLE_FILE_I16: x = (int16_t )SlReadUint16(); break;
+				case SLE_FILE_U16: x = (uint16_t)SlReadUint16(); break;
+				case SLE_FILE_I32: x = (int32_t )SlReadUint32(); break;
+				case SLE_FILE_U32: x = (uint32_t)SlReadUint32(); break;
+				case SLE_FILE_I64: x = (int64_t )SlReadUint64(); break;
+				case SLE_FILE_U64: x = (uint64_t)SlReadUint64(); break;
+				case SLE_FILE_STRINGID: x = RemapOldStringID((uint16_t)SlReadUint16()); break;
 				case SLE_FILE_VEHORDERID:
 					if (SlXvIsFeaturePresent(XSLFI_MORE_VEHICLE_ORDERS)) {
-						x = (uint16)SlReadUint16();
+						x = (uint16_t)SlReadUint16();
 					} else {
 						VehicleOrderID id = (byte)SlReadByte();
 						x = (id == 0xFF) ? INVALID_VEH_ORDER_ID : id;
@@ -1204,7 +1204,7 @@ static inline size_t SlCalcArrayLen(size_t length, VarType conv)
  * Save/Load an array.
  * @param array The array being manipulated
  * @param length The length of the array in elements
- * @param conv VarType type of the atomic array (int, byte, uint64, etc.)
+ * @param conv VarType type of the atomic array (int, byte, uint64_t, etc.)
  */
 void SlArray(void *array, size_t length, VarType conv)
 {
@@ -1227,7 +1227,7 @@ void SlArray(void *array, size_t length, VarType conv)
 		/* used for conversion of Money 32bit->64bit */
 		if (conv == (SLE_FILE_I32 | SLE_VAR_I64)) {
 			for (uint i = 0; i < length; i++) {
-				((int64*)array)[i] = (int32)BSWAP32(SlReadUint32());
+				((int64_t*)array)[i] = (int32_t)BSWAP32(SlReadUint32());
 			}
 			return;
 		}
@@ -1377,7 +1377,7 @@ void SlSaveLoadRef(void *ptr, VarType conv)
 {
 	switch (_sl.action) {
 		case SLA_SAVE:
-			SlWriteUint32((uint32)ReferenceToInt(*(void **)ptr, (SLRefType)conv));
+			SlWriteUint32((uint32_t)ReferenceToInt(*(void **)ptr, (SLRefType)conv));
 			break;
 		case SLA_LOAD_CHECK:
 		case SLA_LOAD:
@@ -1441,7 +1441,7 @@ public:
 
 		switch (_sl.action) {
 			case SLA_SAVE:
-				SlWriteUint32((uint32)list->size());
+				SlWriteUint32((uint32_t)list->size());
 
 				for (auto &item : *list) {
 					SlSaveLoadMember(cmd, &item, conv);
@@ -1526,11 +1526,11 @@ static void SlRefList(void *list, SLRefType conv)
 
 	switch (_sl.action) {
 		case SLA_SAVE: {
-			SlWriteUint32((uint32)l->size());
+			SlWriteUint32((uint32_t)l->size());
 
 			for (auto iter = l->begin(); iter != l->end(); ++iter) {
 				void *ptr = *iter;
-				SlWriteUint32((uint32)ReferenceToInt(ptr, conv));
+				SlWriteUint32((uint32_t)ReferenceToInt(ptr, conv));
 			}
 			break;
 		}
@@ -1579,7 +1579,7 @@ static void SlVarList(void *list, VarType conv)
 
 	switch (_sl.action) {
 		case SLA_SAVE: {
-			SlWriteUint32((uint32)l->size());
+			SlWriteUint32((uint32_t)l->size());
 
 			typename PtrList::iterator iter;
 			for (iter = l->begin(); iter != l->end(); ++iter) {
@@ -1618,14 +1618,14 @@ static inline size_t SlCalcRingLen(const void *ring, VarType conv)
 {
 	switch (GetVarMemType(conv)) {
 		case SLE_VAR_BL: return SlStorageHelper<ring_buffer, bool>::SlCalcLen(ring, conv);
-		case SLE_VAR_I8: return SlStorageHelper<ring_buffer, int8>::SlCalcLen(ring, conv);
-		case SLE_VAR_U8: return SlStorageHelper<ring_buffer, uint8>::SlCalcLen(ring, conv);
-		case SLE_VAR_I16: return SlStorageHelper<ring_buffer, int16>::SlCalcLen(ring, conv);
-		case SLE_VAR_U16: return SlStorageHelper<ring_buffer, uint16>::SlCalcLen(ring, conv);
-		case SLE_VAR_I32: return SlStorageHelper<ring_buffer, int32>::SlCalcLen(ring, conv);
-		case SLE_VAR_U32: return SlStorageHelper<ring_buffer, uint32>::SlCalcLen(ring, conv);
-		case SLE_VAR_I64: return SlStorageHelper<ring_buffer, int64>::SlCalcLen(ring, conv);
-		case SLE_VAR_U64: return SlStorageHelper<ring_buffer, uint64>::SlCalcLen(ring, conv);
+		case SLE_VAR_I8: return SlStorageHelper<ring_buffer, int8_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_U8: return SlStorageHelper<ring_buffer, uint8_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_I16: return SlStorageHelper<ring_buffer, int16_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_U16: return SlStorageHelper<ring_buffer, uint16_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_I32: return SlStorageHelper<ring_buffer, int32_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_U32: return SlStorageHelper<ring_buffer, uint32_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_I64: return SlStorageHelper<ring_buffer, int64_t>::SlCalcLen(ring, conv);
+		case SLE_VAR_U64: return SlStorageHelper<ring_buffer, uint64_t>::SlCalcLen(ring, conv);
 		default: NOT_REACHED();
 	}
 }
@@ -1639,14 +1639,14 @@ static void SlRing(void *ring, VarType conv)
 {
 	switch (GetVarMemType(conv)) {
 		case SLE_VAR_BL: SlStorageHelper<ring_buffer, bool>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_I8: SlStorageHelper<ring_buffer, int8>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_U8: SlStorageHelper<ring_buffer, uint8>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_I16: SlStorageHelper<ring_buffer, int16>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_U16: SlStorageHelper<ring_buffer, uint16>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_I32: SlStorageHelper<ring_buffer, int32>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_U32: SlStorageHelper<ring_buffer, uint32>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_I64: SlStorageHelper<ring_buffer, int64>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_U64: SlStorageHelper<ring_buffer, uint64>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_I8: SlStorageHelper<ring_buffer, int8_t>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_U8: SlStorageHelper<ring_buffer, uint8_t>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_I16: SlStorageHelper<ring_buffer, int16_t>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_U16: SlStorageHelper<ring_buffer, uint16_t>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_I32: SlStorageHelper<ring_buffer, int32_t>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_U32: SlStorageHelper<ring_buffer, uint32_t>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_I64: SlStorageHelper<ring_buffer, int64_t>::SlSaveLoad(ring, conv); break;
+		case SLE_VAR_U64: SlStorageHelper<ring_buffer, uint64_t>::SlSaveLoad(ring, conv); break;
 		default: NOT_REACHED();
 	}
 }
@@ -1705,9 +1705,9 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld)
 					const size_t size_len = SlCalcConvMemLen(sld.conv);
 					switch (size_len) {
 						case 1: return SlCalcVarListLen<std::vector<byte>>(GetVariableAddress(object, sld), 1);
-						case 2: return SlCalcVarListLen<std::vector<uint16>>(GetVariableAddress(object, sld), 2);
-						case 4: return SlCalcVarListLen<std::vector<uint32>>(GetVariableAddress(object, sld), 4);
-						case 8: return SlCalcVarListLen<std::vector<uint64>>(GetVariableAddress(object, sld), 8);
+						case 2: return SlCalcVarListLen<std::vector<uint16_t>>(GetVariableAddress(object, sld), 2);
+						case 4: return SlCalcVarListLen<std::vector<uint32_t>>(GetVariableAddress(object, sld), 4);
+						case 8: return SlCalcVarListLen<std::vector<uint64_t>>(GetVariableAddress(object, sld), 8);
 						default: NOT_REACHED();
 					}
 				}
@@ -1827,7 +1827,7 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 				case SL_REF: // Reference variable, translate
 					switch (action) {
 						case SLA_SAVE:
-							SlWriteUint32((uint32)ReferenceToInt(*(void **)ptr, (SLRefType)conv));
+							SlWriteUint32((uint32_t)ReferenceToInt(*(void **)ptr, (SLRefType)conv));
 							break;
 						case SLA_LOAD_CHECK:
 						case SLA_LOAD:
@@ -1852,9 +1852,9 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 					const size_t size_len = SlCalcConvMemLen(sld.conv);
 					switch (size_len) {
 						case 1: SlVarList<std::vector<byte>>(ptr, conv); break;
-						case 2: SlVarList<std::vector<uint16>>(ptr, conv); break;
-						case 4: SlVarList<std::vector<uint32>>(ptr, conv); break;
-						case 8: SlVarList<std::vector<uint64>>(ptr, conv); break;
+						case 2: SlVarList<std::vector<uint16_t>>(ptr, conv); break;
+						case 4: SlVarList<std::vector<uint32_t>>(ptr, conv); break;
+						case 8: SlVarList<std::vector<uint64_t>>(ptr, conv); break;
 						default: NOT_REACHED();
 					}
 					break;
@@ -1869,7 +1869,7 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 		 * object description to use. */
 		case SL_WRITEBYTE:
 			switch (action) {
-				case SLA_SAVE: SlWriteByte(*(uint8 *)ptr); break;
+				case SLA_SAVE: SlWriteByte(*(uint8_t *)ptr); break;
 				case SLA_LOAD_CHECK:
 				case SLA_LOAD:
 				case SLA_PTRS:
@@ -1995,7 +1995,7 @@ void SlAutolength(AutolengthProc *proc, void *arg)
 	_sl.dumper->CopyBytes(result.first, result.second);
 }
 
-uint8 SlSaveToTempBufferSetup()
+uint8_t SlSaveToTempBufferSetup()
 {
 	assert(_sl.action == SLA_SAVE);
 	NeedLength orig_need_length = _sl.need_length;
@@ -2003,10 +2003,10 @@ uint8 SlSaveToTempBufferSetup()
 	_sl.need_length = NL_NONE;
 	_sl.dumper->StartAutoLength();
 
-	return (uint8) orig_need_length;
+	return (uint8_t) orig_need_length;
 }
 
-std::pair<byte *, size_t> SlSaveToTempBufferRestore(uint8 state)
+std::pair<byte *, size_t> SlSaveToTempBufferRestore(uint8_t state)
 {
 	NeedLength orig_need_length = (NeedLength)state;
 
@@ -2224,7 +2224,7 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
 					if (ext_flags & SLCEHF_BIG_RIFF) SlErrorCorrupt("XSLFI_RIFF_HEADER_60_BIT and SLCEHF_BIG_RIFF both present");
 				}
 				if (ext_flags & SLCEHF_BIG_RIFF) {
-					uint64 full_len = len | (static_cast<uint64>(SlReadUint32()) << 28);
+					uint64_t full_len = len | (static_cast<uint64_t>(SlReadUint32()) << 28);
 					if (full_len >= (1LL << 32)) {
 						SlErrorCorruptFmt("Chunk size too large: " OTTD_PRINTFHEX64, full_len);
 					}
@@ -2321,7 +2321,7 @@ static void SlSaveChunks()
  * @param id the chunk in question
  * @return returns the appropriate chunkhandler
  */
-static const ChunkHandler *SlFindChunkHandler(uint32 id)
+static const ChunkHandler *SlFindChunkHandler(uint32_t id)
 {
 	for (auto &ch : ChunkHandlers()) if (ch.id == id) return &ch;
 	return nullptr;
@@ -2335,7 +2335,7 @@ static void SlLoadChunks()
 		return;
 	}
 
-	for (uint32 id = SlReadUint32(); id != 0; id = SlReadUint32()) {
+	for (uint32_t id = SlReadUint32(); id != 0; id = SlReadUint32()) {
 		DEBUG(sl, 2, "Loading chunk %c%c%c%c", id >> 24, id >> 16, id >> 8, id);
 		size_t read = 0;
 		if (_debug_sl_level >= 3) read = SlGetBytesRead();
@@ -2363,7 +2363,7 @@ static void SlLoadCheckChunks()
 		return;
 	}
 
-	uint32 id;
+	uint32_t id;
 	const ChunkHandler *ch;
 
 	for (id = SlReadUint32(); id != 0; id = SlReadUint32()) {
@@ -2508,16 +2508,16 @@ struct LZOLoadFilter : LoadFilter {
 		assert(ssize >= LZO_BUFFER_SIZE);
 
 		/* Buffer size is from the LZO docs plus the chunk header size. */
-		byte out[LZO_BUFFER_SIZE + LZO_BUFFER_SIZE / 16 + 64 + 3 + sizeof(uint32) * 2];
-		uint32 tmp[2];
-		uint32 size;
+		byte out[LZO_BUFFER_SIZE + LZO_BUFFER_SIZE / 16 + 64 + 3 + sizeof(uint32_t) * 2];
+		uint32_t tmp[2];
+		uint32_t size;
 		lzo_uint len = ssize;
 
 		/* Read header*/
 		if (this->chain->Read((byte*)tmp, sizeof(tmp)) != sizeof(tmp)) SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_READABLE, "File read failed");
 
 		/* Check if size is bad */
-		((uint32*)out)[0] = size = tmp[1];
+		((uint32_t*)out)[0] = size = tmp[1];
 
 		if (_sl_version != SL_MIN_VERSION) {
 			tmp[0] = TO_BE32(tmp[0]);
@@ -2527,13 +2527,13 @@ struct LZOLoadFilter : LoadFilter {
 		if (size >= sizeof(out)) SlErrorCorrupt("Inconsistent size");
 
 		/* Read block */
-		if (this->chain->Read(out + sizeof(uint32), size) != size) SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_READABLE);
+		if (this->chain->Read(out + sizeof(uint32_t), size) != size) SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_READABLE);
 
 		/* Verify checksum */
-		if (tmp[0] != lzo_adler32(0, out, size + sizeof(uint32))) SlErrorCorrupt("Bad checksum");
+		if (tmp[0] != lzo_adler32(0, out, size + sizeof(uint32_t))) SlErrorCorrupt("Bad checksum");
 
 		/* Decompress */
-		int ret = lzo1x_decompress_safe(out + sizeof(uint32) * 1, size, buf, &len, nullptr);
+		int ret = lzo1x_decompress_safe(out + sizeof(uint32_t) * 1, size, buf, &len, nullptr);
 		if (ret != LZO_E_OK) SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_READABLE);
 		return len;
 	}
@@ -2555,17 +2555,17 @@ struct LZOSaveFilter : SaveFilter {
 	{
 		const lzo_bytep in = buf;
 		/* Buffer size is from the LZO docs plus the chunk header size. */
-		byte out[LZO_BUFFER_SIZE + LZO_BUFFER_SIZE / 16 + 64 + 3 + sizeof(uint32) * 2];
+		byte out[LZO_BUFFER_SIZE + LZO_BUFFER_SIZE / 16 + 64 + 3 + sizeof(uint32_t) * 2];
 		byte wrkmem[LZO1X_1_MEM_COMPRESS];
 		lzo_uint outlen;
 
 		do {
 			/* Compress up to LZO_BUFFER_SIZE bytes at once. */
 			lzo_uint len = size > LZO_BUFFER_SIZE ? LZO_BUFFER_SIZE : (lzo_uint)size;
-			lzo1x_1_compress(in, len, out + sizeof(uint32) * 2, &outlen, wrkmem);
-			((uint32*)out)[1] = TO_BE32((uint32)outlen);
-			((uint32*)out)[0] = TO_BE32(lzo_adler32(0, out + sizeof(uint32), outlen + sizeof(uint32)));
-			this->chain->Write(out, outlen + sizeof(uint32) * 2);
+			lzo1x_1_compress(in, len, out + sizeof(uint32_t) * 2, &outlen, wrkmem);
+			((uint32_t*)out)[1] = TO_BE32((uint32_t)outlen);
+			((uint32_t*)out)[0] = TO_BE32(lzo_adler32(0, out + sizeof(uint32_t), outlen + sizeof(uint32_t)));
+			this->chain->Write(out, outlen + sizeof(uint32_t) * 2);
 
 			/* Move to next data chunk. */
 			size -= len;
@@ -2981,7 +2981,7 @@ DECLARE_ENUM_AS_BIT_SET(SaveLoadFormatFlags);
 /** The format for a reader/writer type of a savegame */
 struct SaveLoadFormat {
 	const char *name;                     ///< name of the compressor/decompressor (debug-only)
-	uint32 tag;                           ///< the 4-letter tag by which it is identified in the savegame
+	uint32_t tag;                         ///< the 4-letter tag by which it is identified in the savegame
 
 	LoadFilter *(*init_load)(LoadFilter *chain);                    ///< Constructor for the load filter.
 	SaveFilter *(*init_write)(SaveFilter *chain, byte compression); ///< Constructor for the save filter.
@@ -3175,7 +3175,7 @@ static SaveOrLoadResult SaveFileToDisk(bool threaded)
 		DEBUG(sl, 3, "Using compression format: %s, level: %u", fmt->name, compression);
 
 		/* We have written our stuff to memory, now write it to file! */
-		uint32 hdr[2] = { fmt->tag, TO_BE32((uint32) (SAVEGAME_VERSION | SAVEGAME_VERSION_EXT) << 16) };
+		uint32_t hdr[2] = { fmt->tag, TO_BE32((uint32_t) (SAVEGAME_VERSION | SAVEGAME_VERSION_EXT) << 16) };
 		_sl.sf->Write((byte*)hdr, sizeof(hdr));
 
 		_sl.sf = fmt->init_write(_sl.sf, compression);
@@ -3413,7 +3413,7 @@ static SaveOrLoadResult DoLoad(LoadFilter *reader, bool load_check)
 		SlResetTNNC();
 	});
 
-	uint32 hdr[2];
+	uint32_t hdr[2];
 	if (_sl.lf->Read((byte*)hdr, sizeof(hdr)) != sizeof(hdr)) SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_READABLE);
 
 	SaveLoadVersion original_sl_version = SL_MIN_VERSION;

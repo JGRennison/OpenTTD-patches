@@ -68,18 +68,18 @@ enum TrainReservationSignalLookAheadItemFlags {
 };
 
 struct TrainReservationLookAheadItem {
-	int32 start;
-	int32 end;
-	int16 z_pos;
+	int32_t start;
+	int32_t end;
+	int16_t z_pos;
 	/* gap: 2 bytes */
-	uint32 data_id;
-	uint16 data_aux;
+	uint32_t data_id;
+	uint16_t data_aux;
 	TrainReservationLookAheadItemType type;
 	/* gap: 1 byte */
 };
 
 struct TrainReservationLookAheadCurve {
-	int32 position;
+	int32_t position;
 	DirDiff dir_diff;
 };
 
@@ -93,62 +93,62 @@ enum TrainReservationLookAheadFlags {
 struct TrainReservationLookAhead {
 	TileIndex reservation_end_tile;       ///< Tile the reservation ends.
 	Trackdir  reservation_end_trackdir;   ///< The reserved trackdir on the end tile.
-	int32 current_position;               ///< Current position of the train on the reservation
-	int32 reservation_end_position;       ///< Position of the end of the reservation
-	int32 lookahead_end_position;         ///< Position of the end of the reservation within the lookahead distance
-	int32 next_extend_position;           ///< Next position to try extending the reservation at the sighting distance of the next mid-reservation signal
-	int16 reservation_end_z;              ///< The z coordinate of the reservation end
-	int16 tunnel_bridge_reserved_tiles;   ///< How many tiles a reservation into the tunnel/bridge currently extends into the wormhole
-	uint16 flags;                         ///< Flags (TrainReservationLookAheadFlags)
-	uint16 speed_restriction;
+	int32_t current_position;             ///< Current position of the train on the reservation
+	int32_t reservation_end_position;     ///< Position of the end of the reservation
+	int32_t lookahead_end_position;       ///< Position of the end of the reservation within the lookahead distance
+	int32_t next_extend_position;         ///< Next position to try extending the reservation at the sighting distance of the next mid-reservation signal
+	int16_t reservation_end_z;            ///< The z coordinate of the reservation end
+	int16_t tunnel_bridge_reserved_tiles; ///< How many tiles a reservation into the tunnel/bridge currently extends into the wormhole
+	uint16_t flags;                       ///< Flags (TrainReservationLookAheadFlags)
+	uint16_t speed_restriction;
 	ring_buffer<TrainReservationLookAheadItem> items;
 	ring_buffer<TrainReservationLookAheadCurve> curves;
-	int32 cached_zpos = 0;                ///< Cached z position as used in TrainDecelerationStats
-	uint8 zpos_refresh_remaining = 0;     ///< Remaining position updates before next refresh of cached_zpos
+	int32_t cached_zpos = 0;              ///< Cached z position as used in TrainDecelerationStats
+	uint8_t zpos_refresh_remaining = 0;   ///< Remaining position updates before next refresh of cached_zpos
 
-	int32 RealEndPosition() const
+	int32_t RealEndPosition() const
 	{
 		return this->reservation_end_position - (this->tunnel_bridge_reserved_tiles * TILE_SIZE);
 	}
 
-	void AddStation(int tiles, StationID id, int16 z_pos)
+	void AddStation(int tiles, StationID id, int16_t z_pos)
 	{
 		int end = this->RealEndPosition();
 		this->items.push_back({ end, end + (((int)TILE_SIZE) * tiles), z_pos, id, 0, TRLIT_STATION });
 	}
 
-	void AddReverse(int16 z_pos)
+	void AddReverse(int16_t z_pos)
 	{
 		int end = this->RealEndPosition();
 		this->items.push_back({ end, end, z_pos, 0, 0, TRLIT_REVERSE });
 	}
 
-	void AddTrackSpeedLimit(uint16 speed, int offset, int duration, int16 z_pos)
+	void AddTrackSpeedLimit(uint16_t speed, int offset, int duration, int16_t z_pos)
 	{
 		int end = this->RealEndPosition();
 		this->items.push_back({ end + offset, end + offset + duration, z_pos, speed, 0, TRLIT_TRACK_SPEED });
 	}
 
-	void AddSpeedRestriction(uint16 speed, int offset, int duration, int16 z_pos)
+	void AddSpeedRestriction(uint16_t speed, int offset, int duration, int16_t z_pos)
 	{
 		int end = this->RealEndPosition();
 		this->items.push_back({ end + offset, end + offset + duration, z_pos, speed, 0, TRLIT_SPEED_RESTRICTION });
 		this->speed_restriction = speed;
 	}
 
-	void AddSignal(uint16 target_speed, int offset, int16 z_pos, uint16 flags)
+	void AddSignal(uint16_t target_speed, int offset, int16_t z_pos, uint16_t flags)
 	{
 		int end = this->RealEndPosition();
 		this->items.push_back({ end + offset, end + offset, z_pos, target_speed, flags, TRLIT_SIGNAL });
 	}
 
-	void AddCurveSpeedLimit(uint16 target_speed, int offset, int16 z_pos)
+	void AddCurveSpeedLimit(uint16_t target_speed, int offset, int16_t z_pos)
 	{
 		int end = this->RealEndPosition();
 		this->items.push_back({ end + offset, end + offset, z_pos, target_speed, 0, TRLIT_CURVE_SPEED });
 	}
 
-	void AddSpeedAdaptation(TileIndex signal_tile, uint16 signal_track, int offset, int16 z_pos)
+	void AddSpeedAdaptation(TileIndex signal_tile, uint16_t signal_track, int offset, int16_t z_pos)
 	{
 		int end = this->RealEndPosition();
 		this->items.push_back({ end + offset, end + offset, z_pos, signal_tile, signal_track, TRLIT_SPEED_ADAPTATION });

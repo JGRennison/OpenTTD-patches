@@ -2260,29 +2260,29 @@ struct MainToolbarWindow : Window {
 	static HotkeyList hotkeys;
 };
 
-const uint16 _maintoolbar_pause_keys[] = {WKC_F1, WKC_PAUSE, 0};
-const uint16 _maintoolbar_zoomin_keys[] = {WKC_NUM_PLUS, WKC_EQUALS, WKC_SHIFT | WKC_EQUALS, WKC_SHIFT | WKC_F5, 0};
-const uint16 _maintoolbar_zoomout_keys[] = {WKC_NUM_MINUS, WKC_MINUS, WKC_SHIFT | WKC_MINUS, WKC_SHIFT | WKC_F6, 0};
-const uint16 _maintoolbar_smallmap_keys[] = {WKC_F4, 'M', 0};
+const uint16_t _maintoolbar_pause_keys[] = {WKC_F1, WKC_PAUSE, 0};
+const uint16_t _maintoolbar_zoomin_keys[] = {WKC_NUM_PLUS, WKC_EQUALS, WKC_SHIFT | WKC_EQUALS, WKC_SHIFT | WKC_F5, 0};
+const uint16_t _maintoolbar_zoomout_keys[] = {WKC_NUM_MINUS, WKC_MINUS, WKC_SHIFT | WKC_MINUS, WKC_SHIFT | WKC_F6, 0};
+const uint16_t _maintoolbar_smallmap_keys[] = {WKC_F4, 'M', 0};
 
 static Hotkey maintoolbar_hotkeys[] = {
 	Hotkey(_maintoolbar_pause_keys, "pause", MTHK_PAUSE),
-	Hotkey((uint16)0, "fastforward", MTHK_FASTFORWARD),
+	Hotkey((uint16_t)0, "fastforward", MTHK_FASTFORWARD),
 	Hotkey(WKC_F2, "settings", MTHK_SETTINGS),
 	Hotkey(WKC_F3, "saveload", MTHK_SAVEGAME),
-	Hotkey((uint16)0, "load_game", MTHK_LOADGAME),
+	Hotkey((uint16_t)0, "load_game", MTHK_LOADGAME),
 	Hotkey(_maintoolbar_smallmap_keys, "smallmap", MTHK_SMALLMAP),
 	Hotkey(WKC_F5, "town_list", MTHK_TOWNDIRECTORY),
 	Hotkey(WKC_F6, "subsidies", MTHK_SUBSIDIES),
 	Hotkey(WKC_F7, "station_list", MTHK_STATIONS),
 	Hotkey(WKC_F8, "finances", MTHK_FINANCES),
 	Hotkey(WKC_F9, "companies", MTHK_COMPANIES),
-	Hotkey((uint16)0, "story_book", MTHK_STORY),
-	Hotkey((uint16)0, "goal_list", MTHK_GOAL),
+	Hotkey((uint16_t)0, "story_book", MTHK_STORY),
+	Hotkey((uint16_t)0, "goal_list", MTHK_GOAL),
 	Hotkey(WKC_F10, "graphs", MTHK_GRAPHS),
 	Hotkey(WKC_F11, "league", MTHK_LEAGUE),
 	Hotkey(WKC_F12, "industry_list", MTHK_INDUSTRIES),
-	Hotkey((uint16)0, "industry_chains", MTHK_INDUSTRY_CHAINS),
+	Hotkey((uint16_t)0, "industry_chains", MTHK_INDUSTRY_CHAINS),
 	Hotkey(WKC_SHIFT | WKC_F1, "train_list", MTHK_TRAIN_LIST),
 	Hotkey(WKC_SHIFT | WKC_F2, "roadveh_list", MTHK_ROADVEH_LIST),
 	Hotkey(WKC_SHIFT | WKC_F3, "ship_list", MTHK_SHIP_LIST),
@@ -2291,29 +2291,29 @@ static Hotkey maintoolbar_hotkeys[] = {
 	Hotkey(_maintoolbar_zoomout_keys, "zoomout", MTHK_ZOOM_OUT),
 	Hotkey(WKC_SHIFT | WKC_F7, "build_rail", MTHK_BUILD_RAIL),
 	Hotkey(WKC_SHIFT | WKC_F8, "build_road", MTHK_BUILD_ROAD),
-	Hotkey((uint16)0, "build_tram", MTHK_BUILD_TRAM),
+	Hotkey((uint16_t)0, "build_tram", MTHK_BUILD_TRAM),
 	Hotkey(WKC_SHIFT | WKC_F9, "build_docks", MTHK_BUILD_DOCKS),
 	Hotkey(WKC_SHIFT | WKC_F10, "build_airport", MTHK_BUILD_AIRPORT),
 	Hotkey(WKC_SHIFT | WKC_F11, "build_trees", MTHK_BUILD_TREES),
 	Hotkey(WKC_SHIFT | WKC_F12, "music", MTHK_MUSIC),
-	Hotkey((uint16)0, "ai_debug", MTHK_SCRIPT_DEBUG),
+	Hotkey((uint16_t)0, "ai_debug", MTHK_SCRIPT_DEBUG),
 	Hotkey(WKC_CTRL  | 'S', "small_screenshot", MTHK_SMALL_SCREENSHOT),
 	Hotkey(WKC_CTRL  | 'P', "zoomedin_screenshot", MTHK_ZOOMEDIN_SCREENSHOT),
 	Hotkey(WKC_CTRL  | 'D', "defaultzoom_screenshot", MTHK_DEFAULTZOOM_SCREENSHOT),
-	Hotkey((uint16)0, "giant_screenshot", MTHK_GIANT_SCREENSHOT),
+	Hotkey((uint16_t)0, "giant_screenshot", MTHK_GIANT_SCREENSHOT),
 	Hotkey(WKC_CTRL | WKC_ALT | 'C', "cheats", MTHK_CHEATS),
 	Hotkey('L', "terraform", MTHK_TERRAFORM),
 	Hotkey('V', "extra_viewport", MTHK_EXTRA_VIEWPORT),
-	Hotkey((uint16)0, "client_list", MTHK_CLIENT_LIST),
-	Hotkey((uint16)0, "sign_list", MTHK_SIGN_LIST),
-	Hotkey((uint16)0, "land_info", MTHK_LANDINFO),
-	Hotkey((uint16)0, "picker_tool", MTHK_PICKER),
+	Hotkey((uint16_t)0, "client_list", MTHK_CLIENT_LIST),
+	Hotkey((uint16_t)0, "sign_list", MTHK_SIGN_LIST),
+	Hotkey((uint16_t)0, "land_info", MTHK_LANDINFO),
+	Hotkey((uint16_t)0, "picker_tool", MTHK_PICKER),
 	Hotkey('P', "plan_list", MTHK_PLAN_LIST),
 	Hotkey('Y', "link_graph_legend", MTHK_LINK_GRAPH_LEGEND),
-	Hotkey((uint16)0, "message_history", MTHK_MESSAGE_HISTORY),
-	Hotkey((uint16)0, "template_replacement", MTHK_TEMPLATE_REPLACEMENT),
-	Hotkey((uint16)0, "train_slots", MTHK_TRAIN_SLOTS),
-	Hotkey((uint16)0, "train_counters", MTHK_TRAIN_COUNTERS),
+	Hotkey((uint16_t)0, "message_history", MTHK_MESSAGE_HISTORY),
+	Hotkey((uint16_t)0, "template_replacement", MTHK_TEMPLATE_REPLACEMENT),
+	Hotkey((uint16_t)0, "train_slots", MTHK_TRAIN_SLOTS),
+	Hotkey((uint16_t)0, "train_counters", MTHK_TRAIN_COUNTERS),
 	HOTKEY_LIST_END
 };
 HotkeyList MainToolbarWindow::hotkeys("maintoolbar", maintoolbar_hotkeys);
@@ -2656,7 +2656,7 @@ struct ScenarioEditorToolbarWindow : Window {
 		/* Was 'cancel' pressed? */
 		if (str == nullptr) return;
 
-		int32 value;
+		int32_t value;
 		if (!StrEmpty(str)) {
 			value = atoi(str);
 		} else {
@@ -2673,24 +2673,24 @@ struct ScenarioEditorToolbarWindow : Window {
 
 static Hotkey scenedit_maintoolbar_hotkeys[] = {
 	Hotkey(_maintoolbar_pause_keys, "pause", MTEHK_PAUSE),
-	Hotkey((uint16)0, "fastforward", MTEHK_FASTFORWARD),
+	Hotkey((uint16_t)0, "fastforward", MTEHK_FASTFORWARD),
 	Hotkey(WKC_F2, "settings", MTEHK_SETTINGS),
 	Hotkey(WKC_F3, "saveload", MTEHK_SAVEGAME),
 	Hotkey(WKC_F4, "gen_land", MTEHK_GENLAND),
 	Hotkey(WKC_F5, "gen_town", MTEHK_GENTOWN),
 	Hotkey(WKC_F6, "gen_industry", MTEHK_GENINDUSTRY),
 	Hotkey(WKC_F7, "build_road", MTEHK_BUILD_ROAD),
-	Hotkey((uint16)0, "build_tram", MTEHK_BUILD_TRAM),
+	Hotkey((uint16_t)0, "build_tram", MTEHK_BUILD_TRAM),
 	Hotkey(WKC_F8, "build_docks", MTEHK_BUILD_DOCKS),
 	Hotkey(WKC_F9, "build_trees", MTEHK_BUILD_TREES),
 	Hotkey(WKC_F10, "build_sign", MTEHK_SIGN),
 	Hotkey(WKC_F11, "music", MTEHK_MUSIC),
 	Hotkey(WKC_F12, "land_info", MTEHK_LANDINFO),
-	Hotkey((uint16)0, "picker_tool", MTEHK_PICKER),
+	Hotkey((uint16_t)0, "picker_tool", MTEHK_PICKER),
 	Hotkey(WKC_CTRL  | 'S', "small_screenshot", MTEHK_SMALL_SCREENSHOT),
 	Hotkey(WKC_CTRL  | 'P', "zoomedin_screenshot", MTEHK_ZOOMEDIN_SCREENSHOT),
 	Hotkey(WKC_CTRL  | 'D', "defaultzoom_screenshot", MTEHK_DEFAULTZOOM_SCREENSHOT),
-	Hotkey((uint16)0, "giant_screenshot", MTEHK_GIANT_SCREENSHOT),
+	Hotkey((uint16_t)0, "giant_screenshot", MTEHK_GIANT_SCREENSHOT),
 	Hotkey(_maintoolbar_zoomin_keys, "zoomin", MTEHK_ZOOM_IN),
 	Hotkey(_maintoolbar_zoomout_keys, "zoomout", MTEHK_ZOOM_OUT),
 	Hotkey('L', "terraform", MTEHK_TERRAFORM),
@@ -2773,7 +2773,7 @@ MainToolbarScaleAdjuster::MainToolbarScaleAdjuster()
 		/* Bump scale to next integer multiple */
 		_gui_scale = Clamp(100 * ((_gui_scale / 100) + 1), MIN_INTERFACE_SCALE, MAX_INTERFACE_SCALE);
 
-		int8 new_zoom = ScaleGUITrad(1) <= 1 ? ZOOM_LVL_OUT_4X : ScaleGUITrad(1) >= 4 ? ZOOM_LVL_MIN : ZOOM_LVL_OUT_2X;
+		int8_t new_zoom = ScaleGUITrad(1) <= 1 ? ZOOM_LVL_OUT_4X : ScaleGUITrad(1) >= 4 ? ZOOM_LVL_MIN : ZOOM_LVL_OUT_2X;
 		_gui_zoom = static_cast<ZoomLevel>(Clamp(new_zoom, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max));
 		SetupWidgetDimensions();
 	}

@@ -16,7 +16,7 @@
 #include <array>
 #include <vector>
 
-enum SaveLoadVersion : uint16;
+enum SaveLoadVersion : uint16_t;
 
 /**
  * List of extended features, each feature has its own (16 bit) version
@@ -173,8 +173,8 @@ enum SlXvFeatureIndex {
 	XSLFI_SIZE,                                   ///< Total count of features, including null feature
 };
 
-extern std::array<uint16, XSLFI_SIZE> _sl_xv_feature_versions;
-extern std::array<uint16, XSLFI_SIZE> _sl_xv_feature_static_versions;
+extern std::array<uint16_t, XSLFI_SIZE> _sl_xv_feature_versions;
+extern std::array<uint16_t, XSLFI_SIZE> _sl_xv_feature_static_versions;
 
 /**
  * Operator to use when combining traditional savegame number test with an extended feature version test
@@ -188,11 +188,11 @@ enum SlXvFeatureTestOperator {
  * Structure to describe an extended feature version test, and how it combines with a traditional savegame version test
  */
 struct SlXvFeatureTest {
-	using TestFunctorPtr = bool (*)(uint16, bool, const std::array<uint16, XSLFI_SIZE> &);  ///< Return true if feature present, first parameter is standard savegame version, second is whether standard savegame version is within bounds
+	using TestFunctorPtr = bool (*)(uint16_t, bool, const std::array<uint16_t, XSLFI_SIZE> &);  ///< Return true if feature present, first parameter is standard savegame version, second is whether standard savegame version is within bounds
 
 private:
-	uint16 min_version;
-	uint16 max_version;
+	uint16_t min_version;
+	uint16_t max_version;
 	SlXvFeatureIndex feature;
 	SlXvFeatureTestOperator op;
 	TestFunctorPtr functor = nullptr;
@@ -201,13 +201,13 @@ public:
 	SlXvFeatureTest()
 			: min_version(0), max_version(0), feature(XSLFI_NULL), op(XSLFTO_OR) { }
 
-	SlXvFeatureTest(SlXvFeatureTestOperator op_, SlXvFeatureIndex feature_, uint16 min_version_ = 1, uint16 max_version_ = 0xFFFF)
+	SlXvFeatureTest(SlXvFeatureTestOperator op_, SlXvFeatureIndex feature_, uint16_t min_version_ = 1, uint16_t max_version_ = 0xFFFF)
 			: min_version(min_version_), max_version(max_version_), feature(feature_), op(op_) { }
 
 	SlXvFeatureTest(TestFunctorPtr functor_)
 			: min_version(0), max_version(0), feature(XSLFI_NULL), op(XSLFTO_OR), functor(functor_) { }
 
-	bool IsFeaturePresent(const std::array<uint16, XSLFI_SIZE> &feature_versions, SaveLoadVersion savegame_version, SaveLoadVersion savegame_version_from, SaveLoadVersion savegame_version_to) const;
+	bool IsFeaturePresent(const std::array<uint16_t, XSLFI_SIZE> &feature_versions, SaveLoadVersion savegame_version, SaveLoadVersion savegame_version_from, SaveLoadVersion savegame_version_to) const;
 
 	inline bool IsFeaturePresent(SaveLoadVersion savegame_version, SaveLoadVersion savegame_version_from, SaveLoadVersion savegame_version_to) const
 	{
@@ -215,9 +215,9 @@ public:
 	}
 };
 
-bool SlXvIsFeaturePresent(const std::array<uint16, XSLFI_SIZE> &feature_versions, SlXvFeatureIndex feature, uint16 min_version = 1, uint16 max_version = 0xFFFF);
+bool SlXvIsFeaturePresent(const std::array<uint16_t, XSLFI_SIZE> &feature_versions, SlXvFeatureIndex feature, uint16_t min_version = 1, uint16_t max_version = 0xFFFF);
 
-inline bool SlXvIsFeaturePresent(SlXvFeatureIndex feature, uint16 min_version = 1, uint16 max_version = 0xFFFF)
+inline bool SlXvIsFeaturePresent(SlXvFeatureIndex feature, uint16_t min_version = 1, uint16_t max_version = 0xFFFF)
 {
 	return SlXvIsFeaturePresent(_sl_xv_feature_versions, feature, min_version, max_version);
 }
@@ -225,7 +225,7 @@ inline bool SlXvIsFeaturePresent(SlXvFeatureIndex feature, uint16 min_version = 
 /**
  * Returns true if @p feature is missing (i.e. has a version of 0, or less than the specified minimum version)
  */
-inline bool SlXvIsFeatureMissing(SlXvFeatureIndex feature, uint16 min_version = 1)
+inline bool SlXvIsFeatureMissing(SlXvFeatureIndex feature, uint16_t min_version = 1)
 {
 	return !SlXvIsFeaturePresent(feature, min_version);
 }
@@ -233,7 +233,7 @@ inline bool SlXvIsFeatureMissing(SlXvFeatureIndex feature, uint16 min_version = 
 /**
  * Returns true if @p feature is missing (i.e. has a version of 0, or less than the specified minimum version)
  */
-inline bool SlXvIsFeatureMissing(const std::array<uint16, XSLFI_SIZE> &feature_versions, SlXvFeatureIndex feature, uint16 min_version = 1)
+inline bool SlXvIsFeatureMissing(const std::array<uint16_t, XSLFI_SIZE> &feature_versions, SlXvFeatureIndex feature, uint16_t min_version = 1)
 {
 	return !SlXvIsFeaturePresent(feature_versions, feature, min_version);
 }
@@ -257,15 +257,15 @@ DECLARE_ENUM_AS_BIT_SET(SlxiSubChunkFlags)
 
 struct SlxiSubChunkInfo;
 
-typedef uint32 SlxiSubChunkSaveProc(const SlxiSubChunkInfo *info, bool dry_run);  ///< sub chunk save procedure type, must return length and write no data when dry_run is true
-typedef void SlxiSubChunkLoadProc(const SlxiSubChunkInfo *info, uint32 length);   ///< sub chunk load procedure, must consume length bytes
+typedef uint32_t SlxiSubChunkSaveProc(const SlxiSubChunkInfo *info, bool dry_run);  ///< sub chunk save procedure type, must return length and write no data when dry_run is true
+typedef void SlxiSubChunkLoadProc(const SlxiSubChunkInfo *info, uint32_t length);   ///< sub chunk load procedure, must consume length bytes
 
 /** Handlers and description of chunk. */
 struct SlxiSubChunkInfo {
 	SlXvFeatureIndex index;                       ///< feature index, this is saved
 	SlxiSubChunkFlags flags;                      ///< flags, this is saved
-	uint16 save_version;                          ///< version to save
-	uint16 max_version;                           ///< maximum version to accept on load
+	uint16_t save_version;                        ///< version to save
+	uint16_t max_version;                         ///< maximum version to accept on load
 	const char *name;                             ///< feature name, this *IS* saved, so must be globally unique
 	SlxiSubChunkSaveProc *save_proc;              ///< save procedure of the sub chunk, this may be nullptr in which case no extra chunk data is saved
 	SlxiSubChunkLoadProc *load_proc;              ///< load procedure of the sub chunk, this may be nullptr in which case the extra chunk data must be missing or of 0 length
@@ -279,6 +279,6 @@ void SlXvSetStaticCurrentVersions();
 
 bool SlXvCheckSpecialSavegameVersions();
 
-bool SlXvIsChunkDiscardable(uint32 id);
+bool SlXvIsChunkDiscardable(uint32_t id);
 
 #endif /* SL_EXTENDED_VER_SL_H */

@@ -77,7 +77,7 @@ struct ReadBuffer {
 	inline int RawReadUint16()
 	{
 #if OTTD_ALIGNMENT == 0
-		int x = FROM_BE16(*((const unaligned_uint16*) this->bufp));
+		int x = FROM_BE16(*((const unaligned_uint16 *) this->bufp));
 		this->bufp += 2;
 		return x;
 #else
@@ -86,28 +86,28 @@ struct ReadBuffer {
 #endif
 	}
 
-	inline uint32 RawReadUint32()
+	inline uint32_t RawReadUint32()
 	{
 #if OTTD_ALIGNMENT == 0
-		uint32 x = FROM_BE32(*((const unaligned_uint32*) this->bufp));
+		uint32_t x = FROM_BE32(*((const unaligned_uint32 *) this->bufp));
 		this->bufp += 4;
 		return x;
 #else
-		uint32 x = this->RawReadUint16() << 16;
+		uint32_t x = this->RawReadUint16() << 16;
 		return x | this->RawReadUint16();
 #endif
 	}
 
-	inline uint64 RawReadUint64()
+	inline uint64_t RawReadUint64()
 	{
 #if OTTD_ALIGNMENT == 0
-		uint64 x = FROM_BE64(*((const unaligned_uint64*) this->bufp));
+		uint64_t x = FROM_BE64(*((const unaligned_uint64 *) this->bufp));
 		this->bufp += 8;
 		return x;
 #else
-		uint32 x = this->RawReadUint32();
-		uint32 y = this->RawReadUint32();
-		return (uint64)x << 32 | y;
+		uint32_t x = this->RawReadUint32();
+		uint32_t y = this->RawReadUint32();
+		return (uint64_t)x << 32 | y;
 #endif
 	}
 
@@ -214,7 +214,7 @@ struct MemoryDumper {
 		*this->buf++ = b;
 	}
 
-	inline void RawWriteUint16(uint16 v)
+	inline void RawWriteUint16(uint16_t v)
 	{
 #if OTTD_ALIGNMENT == 0
 		*((unaligned_uint16 *) this->buf) = TO_BE16(v);
@@ -225,7 +225,7 @@ struct MemoryDumper {
 		this->buf += 2;
 	}
 
-	inline void RawWriteUint32(uint32 v)
+	inline void RawWriteUint32(uint32_t v)
 	{
 #if OTTD_ALIGNMENT == 0
 		*((unaligned_uint32 *) this->buf) = TO_BE32(v);
@@ -238,7 +238,7 @@ struct MemoryDumper {
 		this->buf += 4;
 	}
 
-	inline void RawWriteUint64(uint64 v)
+	inline void RawWriteUint64(uint64_t v)
 	{
 #if OTTD_ALIGNMENT == 0
 		*((unaligned_uint64 *) this->buf) = TO_BE64(v);

@@ -89,7 +89,7 @@ TraceRestrictMapping _tracerestrictprogram_mapping;
  * List of pre-defined pathfinder penalty values
  * This is indexed by TraceRestrictPathfinderPenaltyPresetIndex
  */
-const uint16 _tracerestrict_pathfinder_penalty_preset_values[] = {
+const uint16_t _tracerestrict_pathfinder_penalty_preset_values[] = {
 	500,
 	2000,
 	8000,
@@ -273,7 +273,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 					condstack.pop_back();
 				}
 			} else {
-				uint16 condvalue = GetTraceRestrictValue(item);
+				uint16_t condvalue = GetTraceRestrictValue(item);
 				bool result = false;
 				switch(type) {
 					case TRIT_COND_UNDEFINED:
@@ -658,7 +658,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 								break;
 
 							case TRPPAF_PRESET: {
-								uint16 index = GetTraceRestrictValue(item);
+								uint16_t index = GetTraceRestrictValue(item);
 								assert(index < TRPPPI_END);
 								out.penalty += _tracerestrict_pathfinder_penalty_preset_values[index];
 								break;
@@ -1602,7 +1602,7 @@ void SetTraceRestrictValueDefault(TraceRestrictItem &item, TraceRestrictValueTyp
 /**
  * Set the type field of a TraceRestrictItem, and resets any other fields which are no longer valid/meaningful to sensible defaults
  */
-void SetTraceRestrictTypeAndNormalise(TraceRestrictItem &item, TraceRestrictItemType type, uint8 aux_data)
+void SetTraceRestrictTypeAndNormalise(TraceRestrictItem &item, TraceRestrictItemType type, uint8_t aux_data)
 {
 	if (item != 0) {
 		assert(GetTraceRestrictType(item) != TRIT_NULL);
@@ -1816,9 +1816,9 @@ void TraceRestrictNotifySignalRemoval(TileIndex tile, Track track)
 /**
  * Helper function to perform parameter bit-packing and call DoCommandP, for instruction modification actions
  */
-void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32 offset, uint32 value, StringID error_msg)
+void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg)
 {
-	uint32 p1 = 0;
+	uint32_t p1 = 0;
 	SB(p1, 0, 3, track);
 	SB(p1, 3, 5, type);
 	assert(offset < (1 << 16));
@@ -1868,7 +1868,7 @@ static CommandCost TraceRestrictCheckTileIsUsable(TileIndex tile, Track track)
  * Returns an appropriate default value for the second item of a dual-item instruction
  * @p item is the first item of the instruction
  */
-static uint32 GetDualInstructionInitialValue(TraceRestrictItem item)
+static uint32_t GetDualInstructionInitialValue(TraceRestrictItem item)
 {
 	switch (GetTraceRestrictType(item)) {
 		case TRIT_COND_PBS_ENTRY_SIGNAL:
@@ -1898,7 +1898,7 @@ template <typename T> void InstructionIteratorAdvance(T &iter)
 	iter = InstructionIteratorNext(iter);
 }
 
-CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictItem> &items, uint32 offset, bool shallow_mode)
+CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictItem> &items, uint32_t offset, bool shallow_mode)
 {
 	TraceRestrictItem old_item = *TraceRestrictProgram::InstructionAt(items, offset);
 	if (IsTraceRestrictConditional(old_item) && GetTraceRestrictCondFlags(old_item) != TRCF_OR) {
@@ -1913,7 +1913,7 @@ CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictItem> &ite
 			}
 		}
 
-		uint32 recursion_depth = 1;
+		uint32_t recursion_depth = 1;
 		std::vector<TraceRestrictItem>::iterator remove_start = TraceRestrictProgram::InstructionAt(items, offset);
 		std::vector<TraceRestrictItem>::iterator remove_end = InstructionIteratorNext(remove_start);
 
@@ -1984,7 +1984,7 @@ static CommandCost AdvanceItemEndIteratorForBlock(const std::vector<TraceRestric
 		}
 		if (GetTraceRestrictCondFlags(old_item) != 0) {
 			if (allow_elif) {
-				uint32 recursion_depth = 0;
+				uint32_t recursion_depth = 0;
 				for (; move_end != items.end(); InstructionIteratorAdvance(move_end)) {
 					TraceRestrictItem current_item = *move_end;
 					if (IsTraceRestrictConditional(current_item)) {
@@ -2009,7 +2009,7 @@ static CommandCost AdvanceItemEndIteratorForBlock(const std::vector<TraceRestric
 			return CMD_ERROR;
 		}
 
-		uint32 recursion_depth = 1;
+		uint32_t recursion_depth = 1;
 		// iterate until matching end block found
 		for (; move_end != items.end(); InstructionIteratorAdvance(move_end)) {
 			TraceRestrictItem current_item = *move_end;
@@ -2035,7 +2035,7 @@ static CommandCost AdvanceItemEndIteratorForBlock(const std::vector<TraceRestric
 	return CommandCost();
 }
 
-CommandCost TraceRestrictProgramMoveItemAt(std::vector<TraceRestrictItem> &items, uint32 &offset, bool up, bool shallow_mode)
+CommandCost TraceRestrictProgramMoveItemAt(std::vector<TraceRestrictItem> &items, uint32_t &offset, bool up, bool shallow_mode)
 {
 	std::vector<TraceRestrictItem>::iterator move_start = TraceRestrictProgram::InstructionAt(items, offset);
 	std::vector<TraceRestrictItem>::iterator move_end = InstructionIteratorNext(move_start);
@@ -2057,7 +2057,7 @@ CommandCost TraceRestrictProgramMoveItemAt(std::vector<TraceRestrictItem> &items
 	return CommandCost();
 }
 
-CommandCost TraceRestrictProgramDuplicateItemAt(std::vector<TraceRestrictItem> &items, uint32 offset)
+CommandCost TraceRestrictProgramDuplicateItemAt(std::vector<TraceRestrictItem> &items, uint32_t offset)
 {
 	std::vector<TraceRestrictItem>::iterator dup_start = TraceRestrictProgram::InstructionAt(items, offset);
 	std::vector<TraceRestrictItem>::iterator dup_end = InstructionIteratorNext(dup_start);
@@ -2074,7 +2074,7 @@ CommandCost TraceRestrictProgramDuplicateItemAt(std::vector<TraceRestrictItem> &
 	return CommandCost();
 }
 
-bool TraceRestrictProgramDuplicateItemAtDryRun(const std::vector<TraceRestrictItem> &items, uint32 offset)
+bool TraceRestrictProgramDuplicateItemAtDryRun(const std::vector<TraceRestrictItem> &items, uint32_t offset)
 {
 	std::vector<TraceRestrictItem>::iterator dup_start = TraceRestrictProgram::InstructionAt(const_cast<std::vector<TraceRestrictItem> &>(items), offset);
 	std::vector<TraceRestrictItem>::iterator dup_end = InstructionIteratorNext(dup_start);
@@ -2092,7 +2092,7 @@ bool TraceRestrictProgramDuplicateItemAtDryRun(const std::vector<TraceRestrictIt
  * @param p2 Item, for insert and modify operations. Flags for instruction move operations
  * @return the cost of this operation (which is free), or an error
  */
-CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	TraceRestrictDoCommandType type = static_cast<TraceRestrictDoCommandType>(GB(p1, 3, 5));
 
@@ -2101,7 +2101,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 	}
 
 	Track track = static_cast<Track>(GB(p1, 0, 3));
-	uint32 offset = GB(p1, 8, 16);
+	uint32_t offset = GB(p1, 8, 16);
 	TraceRestrictItem item = static_cast<TraceRestrictItem>(p2);
 
 	CommandCost ret = TraceRestrictCheckTileIsUsable(tile, track);
@@ -2116,7 +2116,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 		return_cmd_error(STR_TRACE_RESTRICT_ERROR_NO_PROGRAM);
 	}
 
-	uint32 offset_limit_exclusive = ((type == TRDCT_INSERT_ITEM) ? 1 : 0);
+	uint32_t offset_limit_exclusive = ((type == TRDCT_INSERT_ITEM) ? 1 : 0);
 	if (prog) offset_limit_exclusive += (uint)prog->items.size();
 
 	if (offset >= offset_limit_exclusive) {
@@ -2231,7 +2231,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 void TraceRestrictProgMgmtWithSourceDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type,
 		TileIndex source_tile, Track source_track, StringID error_msg)
 {
-	uint32 p1 = 0;
+	uint32_t p1 = 0;
 	SB(p1, 0, 3, track);
 	SB(p1, 3, 5, type);
 	SB(p1, 8, 3, source_track);
@@ -2246,7 +2246,7 @@ void TraceRestrictProgMgmtWithSourceDoCommandP(TileIndex tile, Track track, Trac
  * @param p2 Source tile, for share/copy operations
  * @return the cost of this operation (which is free), or an error
  */
-CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	TraceRestrictDoCommandType type = static_cast<TraceRestrictDoCommandType>(GB(p1, 3, 5));
 	Track track = static_cast<Track>(GB(p1, 0, 3));
@@ -2439,7 +2439,7 @@ int GetTraceRestrictTimeDateValueFromDate(TraceRestrictTimeDateValueField type, 
  * This is called when a station, waypoint or depot is about to be deleted
  * Scan program pool and change any references to it to the invalid station ID, to avoid dangling references
  */
-void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint16 index)
+void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint16_t index)
 {
 	for (TraceRestrictProgram *prog : TraceRestrictProgram::Iterate()) {
 		for (size_t i = 0; i < prog->items.size(); i++) {
@@ -2817,7 +2817,7 @@ static bool IsUniqueSlotName(const char *name)
  * @param text new slot name
  * @return the cost of this operation or an error
  */
-CommandCost CmdCreateTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdCreateTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	if (!TraceRestrictSlot::CanAllocateItem()) return CMD_ERROR;
 	if (StrEmpty(text)) return CMD_ERROR;
@@ -2853,7 +2853,7 @@ CommandCost CmdCreateTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdDeleteTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdDeleteTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(p1);
 	if (slot == nullptr || slot->owner != _current_company) return CMD_ERROR;
@@ -2884,7 +2884,7 @@ CommandCost CmdDeleteTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint
  * @param text the new name
  * @return the cost of this operation or an error
  */
-CommandCost CmdAlterTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdAlterTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(GB(p1, 0, 16));
 	if (slot == nullptr || slot->owner != _current_company) return CMD_ERROR;
@@ -2932,7 +2932,7 @@ CommandCost CmdAlterTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint3
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdAddVehicleTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdAddVehicleTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(p1);
 	Vehicle *v = Vehicle::GetIfValid(p2);
@@ -2958,7 +2958,7 @@ CommandCost CmdAddVehicleTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, 
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdRemoveVehicleTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdRemoveVehicleTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(p1);
 	Vehicle *v = Vehicle::GetIfValid(p2);
@@ -2972,9 +2972,9 @@ CommandCost CmdRemoveVehicleTraceRestrictSlot(TileIndex tile, DoCommandFlag flag
 	return CommandCost();
 }
 
-void TraceRestrictCounter::UpdateValue(int32 new_value)
+void TraceRestrictCounter::UpdateValue(int32_t new_value)
 {
-	new_value = std::max<int32>(0, new_value);
+	new_value = std::max<int32_t>(0, new_value);
 	if (new_value != this->value) {
 		this->value = new_value;
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT_COUNTERS);
@@ -2985,17 +2985,17 @@ void TraceRestrictCounter::UpdateValue(int32 new_value)
 	}
 }
 
-int32 TraceRestrictCounter::ApplyValue(int32 current, TraceRestrictCounterCondOpField op, int32 value)
+int32_t TraceRestrictCounter::ApplyValue(int32_t current, TraceRestrictCounterCondOpField op, int32_t value)
 {
 	switch (op) {
 		case TRCCOF_INCREASE:
-			return std::max<int32>(0, current + value);
+			return std::max<int32_t>(0, current + value);
 
 		case TRCCOF_DECREASE:
-			return std::max<int32>(0, current - value);
+			return std::max<int32_t>(0, current - value);
 
 		case TRCCOF_SET:
-			return std::max<int32>(0, value);
+			return std::max<int32_t>(0, value);
 
 		default:
 			NOT_REACHED();
@@ -3065,7 +3065,7 @@ void TraceRestrictRemoveCounterID(TraceRestrictCounterID index)
  * @param text new counter name
  * @return the cost of this operation or an error
  */
-CommandCost CmdCreateTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdCreateTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	if (!TraceRestrictCounter::CanAllocateItem()) return CMD_ERROR;
 	if (StrEmpty(text)) return CMD_ERROR;
@@ -3098,7 +3098,7 @@ CommandCost CmdCreateTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, u
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdDeleteTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdDeleteTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(p1);
 	if (ctr == nullptr || ctr->owner != _current_company) return CMD_ERROR;
@@ -3129,7 +3129,7 @@ CommandCost CmdDeleteTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, u
  * @param text the new name
  * @return the cost of this operation or an error
  */
-CommandCost CmdAlterTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdAlterTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(GB(p1, 0, 16));
 	if (ctr == nullptr || ctr->owner != _current_company) return CMD_ERROR;

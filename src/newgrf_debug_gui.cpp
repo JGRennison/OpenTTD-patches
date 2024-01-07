@@ -108,12 +108,12 @@ struct NICallback {
 	ptrdiff_t offset; ///< Offset of the variable in the class
 	byte read_size;   ///< The number of bytes (i.e. byte, word, dword etc) to read
 	byte cb_bit;      ///< The bit that needs to be set for this callback to be enabled
-	uint16 cb_id;     ///< The number of the callback
+	uint16_t cb_id;   ///< The number of the callback
 };
 /** Mask to show no bit needs to be enabled for the callback. */
 static const int CBM_NO_BIT = UINT8_MAX;
 
-enum NIVariableFlags : uint16 {
+enum NIVariableFlags : uint16_t {
 	NIVF_NONE                  = 0,
 	NIVF_SHOW_PARAMS           = 1 << 0,
 };
@@ -122,14 +122,14 @@ DECLARE_ENUM_AS_BIT_SET(NIVariableFlags)
 /** Representation on the NewGRF variables. */
 struct NIVariable {
 	const char *name;
-	uint16 var;
+	uint16_t var;
 	NIVariableFlags flags;
 };
 
 struct NIExtraInfoOutput {
 	std::function<void(const char *)> print;
 	std::function<void(uint)> register_next_line_click_flag_toggle;
-	uint32 flags;
+	uint32_t flags;
 };
 
 /** Helper class to wrap some functionality/queries in. */
@@ -177,7 +177,7 @@ public:
 	 * @param index index to check.
 	 * @return GRFID of the item. 0 means that the item is not inspectable.
 	 */
-	virtual uint32 GetGRFID(uint index) const = 0;
+	virtual uint32_t GetGRFID(uint index) const = 0;
 
 	/**
 	 * Resolve (action2) variable for a given index.
@@ -204,7 +204,7 @@ public:
 	 * @param grfid Parameter for the PSA. Only required for items with parameters.
 	 * @return Size of the persistent storage in indices.
 	 */
-	virtual uint GetPSASize(uint index, uint32 grfid) const
+	virtual uint GetPSASize(uint index, uint32_t grfid) const
 	{
 		return 0;
 	}
@@ -215,12 +215,12 @@ public:
 	 * @param grfid Parameter for the PSA. Only required for items with parameters.
 	 * @return Pointer to the first position of the storage array or nullptr if not present.
 	 */
-	virtual const int32 *GetPSAFirstPosition(uint index, uint32 grfid) const
+	virtual const int32_t *GetPSAFirstPosition(uint index, uint32_t grfid) const
 	{
 		return nullptr;
 	}
 
-	virtual std::vector<uint32> GetPSAGRFIDs(uint index) const
+	virtual std::vector<uint32_t> GetPSAGRFIDs(uint index) const
 	{
 		return {};
 	}
@@ -240,7 +240,7 @@ protected:
 	 * @param string the string to actually draw.
 	 * @param index  the (instance) index for the string.
 	 */
-	void SetSimpleStringParameters(StringID string, uint32 index) const
+	void SetSimpleStringParameters(StringID string, uint32_t index) const
 	{
 		SetDParam(0, string);
 		SetDParam(1, index);
@@ -253,7 +253,7 @@ protected:
 	 * @param index  the (instance) index for the string.
 	 * @param tile   the tile the object is at
 	 */
-	void SetObjectAtStringParameters(StringID string, uint32 index, TileIndex tile) const
+	void SetObjectAtStringParameters(StringID string, uint32_t index, TileIndex tile) const
 	{
 		SetDParam(0, STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT);
 		SetDParam(1, string);
@@ -309,16 +309,16 @@ static inline const NIHelper *GetFeatureHelper(uint window_number)
 /** Window used for inspecting NewGRFs. */
 struct NewGRFInspectWindow : Window {
 	/** The value for the variable 60 parameters. */
-	btree::btree_map<uint16, uint32> var60params;
+	btree::btree_map<uint16_t, uint32_t> var60params;
 
 	/** GRFID of the caller of this window, 0 if it has no caller. */
-	uint32 caller_grfid;
+	uint32_t caller_grfid;
 
 	/** For ground vehicles: Index in vehicle chain. */
 	uint chain_index;
 
 	/** The currently edited parameter, to update the right one. */
-	uint16 current_edit_param;
+	uint16_t current_edit_param;
 
 	Scrollbar *vscroll;
 
@@ -334,15 +334,15 @@ struct NewGRFInspectWindow : Window {
 	bool sprite_dump_more_details = false;
 	bool show_dropdown = false;
 
-	uint32 extra_info_flags = 0;
+	uint32_t extra_info_flags = 0;
 	btree::btree_map<int, uint> extra_info_click_flag_toggles;
 	btree::btree_map<int, const SpriteGroup *> sprite_group_lines;
-	btree::btree_map<int, uint16> nfo_line_lines;
+	btree::btree_map<int, uint16_t> nfo_line_lines;
 	const SpriteGroup *selected_sprite_group = nullptr;
-	btree::btree_map<int, uint32> highlight_tag_lines;
+	btree::btree_map<int, uint32_t> highlight_tag_lines;
 	btree::btree_set<const SpriteGroup *> collapsed_groups;
 
-	std::array<uint32, 6> selected_highlight_tags = {};
+	std::array<uint32_t, 6> selected_highlight_tags = {};
 	std::array<const SpriteGroup *, 8> marked_groups = {};
 
 	enum DropDownOptions {
@@ -367,7 +367,7 @@ struct NewGRFInspectWindow : Window {
 	 * Set the GRFID of the item opening this window.
 	 * @param grfid GRFID of the item opening this window, or 0 if not opened by other window.
 	 */
-	void SetCallerGRFID(uint32 grfid)
+	void SetCallerGRFID(uint32_t grfid)
 	{
 		this->caller_grfid = grfid;
 		this->SetDirty();
@@ -594,16 +594,16 @@ struct NewGRFInspectWindow : Window {
 			const SpriteGroup *collapse_group = nullptr;
 			uint collapse_lines = 0;
 			char tmp_buf[256];
-			SpriteGroupDumper dumper([&](const SpriteGroup *group, DumpSpriteGroupPrintOp operation, uint32 highlight_tag, const char *buf) {
+			SpriteGroupDumper dumper([&](const SpriteGroup *group, DumpSpriteGroupPrintOp operation, uint32_t highlight_tag, const char *buf) {
 				if (this->log_console && operation == DSGPO_PRINT) DEBUG(misc, 0, "  %s", buf);
 
 				if (operation == DSGPO_NFO_LINE) {
-					btree::btree_map<int, uint16> &lines = const_cast<NewGRFInspectWindow *>(this)->nfo_line_lines;
+					btree::btree_map<int, uint16_t> &lines = const_cast<NewGRFInspectWindow *>(this)->nfo_line_lines;
 					auto iter = lines.lower_bound(highlight_tag);
 					if (iter != lines.end() && iter->first == (int)highlight_tag) {
 						/* Already stored, don't insert again */
 					} else {
-						lines.insert(iter, std::make_pair<int, uint16>(highlight_tag, ClampTo<uint16>(i)));
+						lines.insert(iter, std::make_pair<int, uint16_t>(highlight_tag, ClampTo<uint16_t>(i)));
 					}
 				}
 
@@ -647,7 +647,7 @@ struct NewGRFInspectWindow : Window {
 				if (group != nullptr) {
 					for (uint i = 0; i < lengthof(this->marked_groups); i++) {
 						if (this->marked_groups[i] == group) {
-							static const uint8 mark_colours[] = { PC_YELLOW, PC_GREEN, PC_ORANGE, PC_DARK_BLUE, PC_RED, PC_LIGHT_BLUE, 0xAE /* purple */, 0x6C /* brown */ };
+							static const uint8_t mark_colours[] = { PC_YELLOW, PC_GREEN, PC_ORANGE, PC_DARK_BLUE, PC_RED, PC_LIGHT_BLUE, 0xAE /* purple */, 0x6C /* brown */ };
 							static_assert(lengthof(this->marked_groups) == lengthof(mark_colours));
 							Rect mark_ir = ir.Indent(WidgetDimensions::scaled.hsep_normal, rtl).WithWidth(WidgetDimensions::scaled.hsep_normal, rtl).Translate(0, (scroll_offset * this->resize.step_height));
 							GfxFillRect(mark_ir.left, mark_ir.top, mark_ir.right, mark_ir.top + this->resize.step_height - 1, mark_colours[i]);
@@ -673,7 +673,7 @@ struct NewGRFInspectWindow : Window {
 
 		if (nih->ShowExtraInfoOnly(index)) return;
 
-		uint32 grfid = nih->GetGRFID(index);
+		uint32_t grfid = nih->GetGRFID(index);
 		if (grfid) {
 			this->DrawString(r, i++, "GRF:");
 			this->DrawString(r, i++, "  ID: %08X", BSWAP32(grfid));
@@ -754,10 +754,10 @@ struct NewGRFInspectWindow : Window {
 			}
 		}
 
-		std::vector<uint32> psa_grfids = nih->GetPSAGRFIDs(index);
-		for (const uint32 grfid : psa_grfids) {
+		std::vector<uint32_t> psa_grfids = nih->GetPSAGRFIDs(index);
+		for (const uint32_t grfid : psa_grfids) {
 			uint psa_size = nih->GetPSASize(index, grfid);
-			const int32 *psa = nih->GetPSAFirstPosition(index, grfid);
+			const int32_t *psa = nih->GetPSAFirstPosition(index, grfid);
 			if (psa_size != 0 && psa != nullptr) {
 				if (nih->PSAWithParameter()) {
 					this->DrawString(r, i++, "Persistent storage [%08X]:", BSWAP32(grfid));
@@ -785,9 +785,9 @@ struct NewGRFInspectWindow : Window {
 				const void *ptr = (const byte *)base + nip->offset;
 				uint value;
 				switch (nip->read_size) {
-					case 1: value = *(const uint8  *)ptr; break;
-					case 2: value = *(const uint16 *)ptr; break;
-					case 4: value = *(const uint32 *)ptr; break;
+					case 1: value = *(const uint8_t  *)ptr; break;
+					case 2: value = *(const uint16_t *)ptr; break;
+					case 4: value = *(const uint32_t *)ptr; break;
 					default: NOT_REACHED();
 				}
 
@@ -817,9 +817,9 @@ struct NewGRFInspectWindow : Window {
 					const void *ptr = (const byte *)base_spec + nic->offset;
 					uint value;
 					switch (nic->read_size) {
-						case 1: value = *(const uint8  *)ptr; break;
-						case 2: value = *(const uint16 *)ptr; break;
-						case 4: value = *(const uint32 *)ptr; break;
+						case 1: value = *(const uint8_t  *)ptr; break;
+						case 2: value = *(const uint16_t *)ptr; break;
+						case 4: value = *(const uint32_t *)ptr; break;
 						default: NOT_REACHED();
 					}
 
@@ -864,7 +864,7 @@ struct NewGRFInspectWindow : Window {
 		items[items.size() - 1] = value;
 	}
 
-	void SelectHighlightTag(uint32 tag)
+	void SelectHighlightTag(uint32_t tag)
 	{
 		this->SelectTagArrayItem(this->selected_highlight_tags, tag);
 	}
@@ -909,7 +909,7 @@ struct NewGRFInspectWindow : Window {
 
 				if (this->sprite_dump) {
 					if (_ctrl_pressed) {
-						uint32 highlight_tag = 0;
+						uint32_t highlight_tag = 0;
 						auto iter = this->highlight_tag_lines.find(line);
 						if (iter != this->highlight_tag_lines.end()) highlight_tag = iter->second;
 						if (highlight_tag != 0) {
@@ -1250,7 +1250,7 @@ static WindowDesc _newgrf_inspect_desc(__FILE__, __LINE__,
  * @param index   The index/identifier of the feature to inspect.
  * @param grfid   GRFID of the item opening this window, or 0 if not opened by other window.
  */
-void ShowNewGRFInspectWindow(GrfSpecFeature feature, uint index, const uint32 grfid)
+void ShowNewGRFInspectWindow(GrfSpecFeature feature, uint index, const uint32_t grfid)
 {
 	if (index >= (1 << 27)) return;
 	if (!IsNewGRFInspectable(feature, index)) return;
@@ -1385,7 +1385,7 @@ GrfSpecFeature GetGrfSpecFeature(VehicleType type)
 
 /** Window used for aligning sprites. */
 struct SpriteAlignerWindow : Window {
-	typedef std::pair<int16, int16> XyOffs;    ///< Pair for x and y offsets of the sprite before alignment. First value contains the x offset, second value y offset.
+	typedef std::pair<int16_t, int16_t> XyOffs;///< Pair for x and y offsets of the sprite before alignment. First value contains the x offset, second value y offset.
 
 	SpriteID current_sprite;                   ///< The currently shown sprite.
 	Scrollbar *vscroll;

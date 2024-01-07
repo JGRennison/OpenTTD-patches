@@ -20,14 +20,14 @@
 #include <unordered_map>
 
 struct LongBridgeSignalStorage {
-	std::vector<uint64> signal_red_bits;
+	std::vector<uint64_t> signal_red_bits;
 };
 
 extern std::unordered_map<TileIndex, LongBridgeSignalStorage> _long_bridge_signal_sim_map;
 
-extern btree::btree_set<uint32> _bridge_signal_style_map;
+extern btree::btree_set<uint32_t> _bridge_signal_style_map;
 
-SignalState GetBridgeEntranceSimulatedSignalStateExtended(TileIndex t, uint16 signal);
+SignalState GetBridgeEntranceSimulatedSignalStateExtended(TileIndex t, uint16_t signal);
 
 enum {
 	BRIDGE_M2_SIGNAL_STATE_COUNT      = 11,
@@ -36,7 +36,7 @@ enum {
 	BRIDGE_M2_SIGNAL_STATE_EXT_FLAG   = 0x8000,
 };
 
-inline SignalState GetBridgeEntranceSimulatedSignalState(TileIndex t, uint16 signal)
+inline SignalState GetBridgeEntranceSimulatedSignalState(TileIndex t, uint16_t signal)
 {
 	if (signal < BRIDGE_M2_SIGNAL_STATE_COUNT) {
 		return GB(_m[t].m2, signal + BRIDGE_M2_SIGNAL_STATE_OFFSET, 1) ? SIGNAL_STATE_RED : SIGNAL_STATE_GREEN;
@@ -45,9 +45,9 @@ inline SignalState GetBridgeEntranceSimulatedSignalState(TileIndex t, uint16 sig
 	}
 }
 
-void SetBridgeEntranceSimulatedSignalStateExtended(TileIndex t, uint16 signal, SignalState state);
+void SetBridgeEntranceSimulatedSignalStateExtended(TileIndex t, uint16_t signal, SignalState state);
 
-inline void SetBridgeEntranceSimulatedSignalState(TileIndex t, uint16 signal, SignalState state)
+inline void SetBridgeEntranceSimulatedSignalState(TileIndex t, uint16_t signal, SignalState state)
 {
 	if (signal < BRIDGE_M2_SIGNAL_STATE_COUNT) {
 		SB(_m[t].m2, signal + BRIDGE_M2_SIGNAL_STATE_OFFSET, 1, (state == SIGNAL_STATE_RED) ? 1 : 0);
@@ -82,13 +82,13 @@ inline void ClearBridgeEntranceSimulatedSignals(TileIndex t)
 
 void ClearBridgeSimulatedSignalMapping();
 
-void SetBridgeSignalStyle(TileIndex t, uint8 style);
+void SetBridgeSignalStyle(TileIndex t, uint8_t style);
 
-inline uint8 GetBridgeSignalStyle(TileIndex t)
+inline uint8_t GetBridgeSignalStyle(TileIndex t)
 {
 	if (likely(!HasBit(_m[t].m3, 7))) return 0;
 
-	extern uint8 GetBridgeSignalStyleExtended(TileIndex t);
+	extern uint8_t GetBridgeSignalStyleExtended(TileIndex t);
 	return GetBridgeSignalStyleExtended(t);
 }
 

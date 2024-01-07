@@ -47,7 +47,7 @@ static void Save_STORY_PAGE_ELEMENT()
 static void Load_STORY_PAGE_ELEMENT()
 {
 	int index;
-	uint32 max_sort_value = 0;
+	uint32_t max_sort_value = 0;
 	while ((index = SlIterateArray()) != -1) {
 		StoryPageElement *s = new (index) StoryPageElement();
 		SlObject(s, _story_page_elements_desc);
@@ -81,7 +81,7 @@ static void Save_STORY_PAGE()
 static void Load_STORY_PAGE()
 {
 	int index;
-	uint32 max_sort_value = 0;
+	uint32_t max_sort_value = 0;
 	while ((index = SlIterateArray()) != -1) {
 		StoryPage *s = new (index) StoryPage();
 		SlObject(s, _story_pages_desc);

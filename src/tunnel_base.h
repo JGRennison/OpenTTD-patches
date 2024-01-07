@@ -20,16 +20,16 @@ extern TunnelPool _tunnel_pool;
 
 struct Tunnel : TunnelPool::PoolItem<&_tunnel_pool> {
 
-	TileIndex tile_n; // North tile of tunnel.
-	TileIndex tile_s; // South tile of tunnel.
-	uint8 height;     // Tunnel height
-	bool is_chunnel;  // Whether this tunnel is a chunnel
-	uint8 style;      // Style (new signals) of tunnel.
+	TileIndex tile_n; ///< North tile of tunnel.
+	TileIndex tile_s; ///< South tile of tunnel.
+	uint8_t height;   ///< Tunnel height
+	bool is_chunnel;  ///< Whether this tunnel is a chunnel
+	uint8_t style;    ///< Style (new signals) of tunnel.
 
 	Tunnel() {}
 	~Tunnel();
 
-	Tunnel(TileIndex tile_n, TileIndex tile_s, uint8 height, bool is_chunnel) : tile_n(tile_n), tile_s(tile_s), height(height), is_chunnel(is_chunnel)
+	Tunnel(TileIndex tile_n, TileIndex tile_s, uint8_t height, bool is_chunnel) : tile_n(tile_n), tile_s(tile_s), height(height), is_chunnel(is_chunnel)
 	{
 		this->UpdateIndexes();
 	}

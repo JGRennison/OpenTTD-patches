@@ -122,7 +122,7 @@ extern void DepotSortList(VehicleList *list);
  * @param p2 unused
  * @param cmd unused
  */
-void CcCloneVehicle(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcCloneVehicle(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Failed()) return;
 
@@ -400,7 +400,7 @@ struct DepotWindow : Window {
 			}
 		}
 
-		uint16 rows_in_display = wid->current_y / wid->resize_y;
+		uint16_t rows_in_display = wid->current_y / wid->resize_y;
 
 		uint num = this->vscroll->GetPosition() * this->num_columns;
 		uint maxval = static_cast<uint>(std::min<size_t>(this->vehicle_list.size(), num + (rows_in_display * this->num_columns)));
@@ -1135,7 +1135,7 @@ struct DepotWindow : Window {
 	 * In the case of airports, this is the station ID.
 	 * @return Depot or station ID of this window.
 	 */
-	inline uint16 GetDepotIndex() const
+	inline uint16_t GetDepotIndex() const
 	{
 		return (this->type == VEH_AIRCRAFT) ? ::GetStationIndex(this->window_number) : ::GetDepotIndex(this->window_number);
 	}
@@ -1191,7 +1191,7 @@ void DeleteDepotHighlightOfVehicle(const Vehicle *v)
 	}
 }
 
-enum DepotTooltipMode : uint8 {
+enum DepotTooltipMode : uint8_t {
 	DTM_OFF,
 	DTM_SIMPLE,
 	DTM_DETAILED

@@ -16,26 +16,26 @@
 
 #include "../../safeguards.h"
 
-/* static */ int64 ScriptInflation::GetPriceFactor()
+/* static */ int64_t ScriptInflation::GetPriceFactor()
 {
 	return _economy.inflation_prices;
 }
 
-/* static */ int64 ScriptInflation::GetPaymentFactor()
+/* static */ int64_t ScriptInflation::GetPaymentFactor()
 {
 	return _economy.inflation_payment;
 }
 
-/* static */ bool ScriptInflation::SetPriceFactor(int64 factor)
+/* static */ bool ScriptInflation::SetPriceFactor(int64_t factor)
 {
-	EnforcePrecondition(false, factor >= 1 << 16 && factor <= (int64)MAX_INFLATION);
-	if ((uint64)factor == _economy.inflation_prices) return true;
-	return ScriptObject::DoCommand(0, CHT_INFLATION_COST, (uint32)factor, CMD_CHEAT_SETTING);
+	EnforcePrecondition(false, factor >= 1 << 16 && factor <= (int64_t)MAX_INFLATION);
+	if ((uint64_t)factor == _economy.inflation_prices) return true;
+	return ScriptObject::DoCommand(0, CHT_INFLATION_COST, (uint32_t)factor, CMD_CHEAT_SETTING);
 }
 
-/* static */ bool ScriptInflation::SetPaymentFactor(int64 factor)
+/* static */ bool ScriptInflation::SetPaymentFactor(int64_t factor)
 {
-	EnforcePrecondition(false, factor >= 1 << 16 && factor <= (int64)MAX_INFLATION);
-	if ((uint64)factor == _economy.inflation_payment) return true;
-	return ScriptObject::DoCommand(0, CHT_INFLATION_INCOME, (uint32)factor, CMD_CHEAT_SETTING);
+	EnforcePrecondition(false, factor >= 1 << 16 && factor <= (int64_t)MAX_INFLATION);
+	if ((uint64_t)factor == _economy.inflation_payment) return true;
+	return ScriptObject::DoCommand(0, CHT_INFLATION_INCOME, (uint32_t)factor, CMD_CHEAT_SETTING);
 }

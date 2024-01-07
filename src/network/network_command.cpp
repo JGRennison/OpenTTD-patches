@@ -147,7 +147,7 @@ static CommandQueue _local_execution_queue;
  * @param company The company that wants to send the command
  * @param aux_data Auxiliary command data
  */
-void NetworkSendCommand(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, CompanyID company, const CommandAuxiliaryBase *aux_data)
+void NetworkSendCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd, CommandCallback *callback, const char *text, CompanyID company, const CommandAuxiliaryBase *aux_data)
 {
 	assert((cmd & CMD_FLAGS_MASK) == 0);
 
@@ -344,7 +344,7 @@ const char *NetworkGameSocketHandler::ReceiveCommand(Packet *p, CommandPacket *c
 
 	cp->callback = _callback_table[callback];
 
-	uint16 aux_data_size = p->Recv_uint16();
+	uint16_t aux_data_size = p->Recv_uint16();
 	if (aux_data_size > 0 && p->CanReadFromPacket(aux_data_size, true)) {
 		CommandAuxiliarySerialised *aux_data = new CommandAuxiliarySerialised();
 		cp->aux_data.reset(aux_data);
@@ -386,6 +386,6 @@ void NetworkGameSocketHandler::SendCommand(Packet *p, const CommandPacket *cp)
 	if (cp->aux_data != nullptr) {
 		CommandSerialisationBuffer serialiser(p->GetSerialisationBuffer(), p->GetSerialisationLimit());
 		cp->aux_data->Serialise(serialiser);
-		p->WriteAtOffset_uint16(aux_data_size_pos, (uint16)(p->Size() - aux_data_size_pos - 2));
+		p->WriteAtOffset_uint16(aux_data_size_pos, (uint16_t)(p->Size() - aux_data_size_pos - 2));
 	}
 }

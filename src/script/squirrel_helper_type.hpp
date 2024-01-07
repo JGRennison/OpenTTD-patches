@@ -13,7 +13,7 @@
 #include <vector>
 
 /** Definition of a simple array. */
-template <typename Titem = int32>
+template <typename Titem = int32_t>
 using Array = std::vector<Titem>;
 
 #endif /* SQUIRREL_HELPER_TYPE_HPP */

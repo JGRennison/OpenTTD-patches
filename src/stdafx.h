@@ -427,13 +427,13 @@ static_assert(SIZE_MAX >= UINT32_MAX);
 #endif /* __GNUC__ || __clang__ */
 
 #if defined(__GNUC__) || defined(__clang__)
-__attribute__((aligned(1))) typedef uint16 unaligned_uint16;
-__attribute__((aligned(1))) typedef uint32 unaligned_uint32;
-__attribute__((aligned(1))) typedef uint64 unaligned_uint64;
+__attribute__((aligned(1))) typedef uint16_t unaligned_uint16;
+__attribute__((aligned(1))) typedef uint32_t unaligned_uint32;
+__attribute__((aligned(1))) typedef uint64_t unaligned_uint64;
 #else
-typedef uint16 unaligned_uint16;
-typedef uint32 unaligned_uint32;
-typedef uint64 unaligned_uint64;
+typedef uint16_t unaligned_uint16;
+typedef uint32_t unaligned_uint32;
+typedef uint64_t unaligned_uint64;
 #endif /* __GNUC__ || __clang__ */
 
 /* For the FMT library we only want to use the headers, not link to some library. */
@@ -442,7 +442,7 @@ typedef uint64 unaligned_uint64;
 void NORETURN CDECL usererror(const char *str, ...) WARN_FORMAT(1, 2);
 void NORETURN CDECL error(const char *str, ...) WARN_FORMAT(1, 2);
 void NORETURN CDECL assert_msg_error(int line, const char *file, const char *expr, const char *extra, const char *str, ...) WARN_FORMAT(5, 6);
-const char *assert_tile_info(uint32 tile);
+const char *assert_tile_info(uint32_t tile);
 #define NOT_REACHED() error("NOT_REACHED triggered at line %i of %s", __LINE__, __FILE__)
 
 /* Asserts are enabled if NDEBUG isn't defined or WITH_ASSERT is defined. */

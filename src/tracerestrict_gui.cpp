@@ -174,16 +174,16 @@ static const StringID _program_insert_str[] = {
 	STR_TRACE_RESTRICT_SIGNAL_MODE_CONTROL,
 	INVALID_STRING_ID
 };
-static const uint32 _program_insert_else_hide_mask    = 8;     ///< disable bitmask for else
-static const uint32 _program_insert_or_if_hide_mask   = 4;     ///< disable bitmask for orif
-static const uint32 _program_insert_else_if_hide_mask = 2;     ///< disable bitmask for elif
-static const uint32 _program_wait_pbs_hide_mask = 0x200;       ///< disable bitmask for wait at PBS
-static const uint32 _program_reverse_hide_mask = 0x400;        ///< disable bitmask for reverse
-static const uint32 _program_speed_res_hide_mask = 0x800;      ///< disable bitmask for speed restriction
-static const uint32 _program_counter_hide_mask = 0x2000;       ///< disable bitmask for counter
-static const uint32 _program_penalty_adj_hide_mask = 0x4000;   ///< disable bitmask for penalty adjust
-static const uint32 _program_speed_adapt_hide_mask = 0x8000;   ///< disable bitmask for speed adaptation
-static const uint32 _program_signal_mode_hide_mask = 0x10000;  ///< disable bitmask for signal mode control
+static const uint32_t _program_insert_else_hide_mask    = 8;     ///< disable bitmask for else
+static const uint32_t _program_insert_or_if_hide_mask   = 4;     ///< disable bitmask for orif
+static const uint32_t _program_insert_else_if_hide_mask = 2;     ///< disable bitmask for elif
+static const uint32_t _program_wait_pbs_hide_mask = 0x200;       ///< disable bitmask for wait at PBS
+static const uint32_t _program_reverse_hide_mask = 0x400;        ///< disable bitmask for reverse
+static const uint32_t _program_speed_res_hide_mask = 0x800;      ///< disable bitmask for speed restriction
+static const uint32_t _program_counter_hide_mask = 0x2000;       ///< disable bitmask for counter
+static const uint32_t _program_penalty_adj_hide_mask = 0x4000;   ///< disable bitmask for penalty adjust
+static const uint32_t _program_speed_adapt_hide_mask = 0x8000;   ///< disable bitmask for speed adaptation
+static const uint32_t _program_signal_mode_hide_mask = 0x10000;  ///< disable bitmask for signal mode control
 static const uint _program_insert_val[] = {
 	TRIT_COND_UNDEFINED,                               // if block
 	TRIT_COND_UNDEFINED | (TRCF_ELSE << 16),           // elif block
@@ -532,7 +532,7 @@ static TraceRestrictItemType ItemTypeFromGuiType(TraceRestrictGuiItemType type)
 	return static_cast<TraceRestrictItemType>(type & 0xFFFF);
 }
 
-enum TraceRestrictDropDownListItemFlags : uint8 {
+enum TraceRestrictDropDownListItemFlags : uint8_t {
 	TRDDLIF_NONE                      =      0,
 	TRDDLIF_ADVANCED                  = 1 << 0,  ///< requires _settings_client.gui.show_adv_tracerestrict_features
 	TRDDLIF_REALISTIC_BRAKING         = 1 << 1,  ///< requires realistic braking
@@ -999,7 +999,7 @@ static uint ConvertIntegerValue(TraceRestrictValueType type, uint in, bool to_di
 
 		case TRVT_FORCE:
 			return to_display
-					? ConvertForceToDisplayForce(static_cast<int64>(in) * 1000)
+					? ConvertForceToDisplayForce(static_cast<int64_t>(in) * 1000)
 					: static_cast<uint>(ConvertDisplayForceToForce(in) / 1000);
 			break;
 
@@ -1019,7 +1019,7 @@ static uint ConvertIntegerValue(TraceRestrictValueType type, uint in, bool to_di
 /**
  * Convert integer values to decimal display units
  */
-static void ConvertValueToDecimal(TraceRestrictValueType type, uint in, int64 &value, int64 &decimal)
+static void ConvertValueToDecimal(TraceRestrictValueType type, uint in, int64_t &value, int64_t &decimal)
 {
 	switch (type) {
 		case TRVT_POWER_WEIGHT_RATIO:
@@ -1027,7 +1027,7 @@ static void ConvertValueToDecimal(TraceRestrictValueType type, uint in, int64 &v
 			break;
 
 		case TRVT_FORCE_WEIGHT_RATIO:
-			ConvertForceWeightRatioToDisplay(static_cast<int64>(in) * 1000, value, decimal);
+			ConvertForceWeightRatioToDisplay(static_cast<int64_t>(in) * 1000, value, decimal);
 			break;
 
 		case TRVT_SPEED:
@@ -1075,8 +1075,8 @@ enum CondFlagsDropDownType {
 	CFDDT_ORIF = TRCF_OR,     ///< This is an or-if block
 };
 
-static const uint32 _condflags_dropdown_else_hide_mask = 1;     ///< disable bitmask for CFDDT_ELSE
-static const uint32 _condflags_dropdown_else_if_hide_mask = 6;  ///< disable bitmask for CFDDT_ELIF and CFDDT_ORIF
+static const uint32_t _condflags_dropdown_else_hide_mask = 1;     ///< disable bitmask for CFDDT_ELSE
+static const uint32_t _condflags_dropdown_else_if_hide_mask = 6;  ///< disable bitmask for CFDDT_ELIF and CFDDT_ORIF
 
 static const StringID _condflags_dropdown_str[] = {
 	STR_TRACE_RESTRICT_CONDITIONAL_ELSE,
@@ -1119,7 +1119,7 @@ static uint GetPathfinderPenaltyDropdownIndex(TraceRestrictItem item)
 			return TRPPPI_END;
 
 		case TRPPAF_PRESET: {
-			uint16 index = GetTraceRestrictValue(item);
+			uint16_t index = GetTraceRestrictValue(item);
 			assert(index < TRPPPI_END);
 			return index;
 		}
@@ -1417,7 +1417,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				case TRVT_SLOT_INDEX_INT: {
 					assert(prog != nullptr);
 					assert(GetTraceRestrictType(item) == TRIT_COND_SLOT_OCCUPANCY);
-					uint32 value = *(TraceRestrictProgram::InstructionAt(prog->items, index - 1) + 1);
+					uint32_t value = *(TraceRestrictProgram::InstructionAt(prog->items, index - 1) + 1);
 					SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
 					SetDParam(1, GetTraceRestrictAuxField(item) ? STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING_SHORT : STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT);
 					if (GetTraceRestrictValue(item) == INVALID_TRACE_RESTRICT_SLOT_ID) {
@@ -1446,7 +1446,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				case TRVT_COUNTER_INDEX_INT: {
 					assert(prog != nullptr);
 					assert(GetTraceRestrictType(item) == TRIT_COND_COUNTER_VALUE);
-					uint32 value = *(TraceRestrictProgram::InstructionAt(prog->items, index - 1) + 1);
+					uint32_t value = *(TraceRestrictProgram::InstructionAt(prog->items, index - 1) + 1);
 					SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
 					if (GetTraceRestrictValue(item) == INVALID_TRACE_RESTRICT_COUNTER_ID) {
 						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR;
@@ -1466,7 +1466,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				case TRVT_TIME_DATE_INT: {
 					assert(prog != nullptr);
 					assert(GetTraceRestrictType(item) == TRIT_COND_TIME_DATE_VALUE);
-					uint32 value = *(TraceRestrictProgram::InstructionAt(prog->items, index - 1) + 1);
+					uint32_t value = *(TraceRestrictProgram::InstructionAt(prog->items, index - 1) + 1);
 					SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
 					instruction_string = GetTraceRestrictValue(item) == TRTDVF_HOUR_MINUTE ? STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_TIME_HHMM : STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER;
 					SetDParam(1, STR_TRACE_RESTRICT_TIME_MINUTE_ITEM + GetTraceRestrictValue(item));
@@ -1528,7 +1528,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 
 					case TRPPAF_PRESET: {
 						instruction_string = STR_TRACE_RESTRICT_PF_PENALTY_ITEM_PRESET;
-						uint16 idx = GetTraceRestrictValue(item);
+						uint16_t idx = GetTraceRestrictValue(item);
 						assert(idx < TRPPPI_END);
 						SetDParam(0, _pf_penalty_dropdown_str[idx]);
 						break;
@@ -1676,7 +1676,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				break;
 
 			case TRIT_COUNTER: {
-				uint32 value = *(TraceRestrictProgram::InstructionAt(prog->items, index - 1) + 1);
+				uint32_t value = *(TraceRestrictProgram::InstructionAt(prog->items, index - 1) + 1);
 				switch (static_cast<TraceRestrictCounterCondOpField>(GetTraceRestrictCondOp(item))) {
 					case TRCCOF_INCREASE:
 						instruction_string = STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM;
@@ -1869,8 +1869,8 @@ public:
 					return;
 				}
 
-				uint32 disabled = _program_insert_or_if_hide_mask;
-				uint32 hidden = 0;
+				uint32_t disabled = _program_insert_or_if_hide_mask;
+				uint32_t hidden = 0;
 				TraceRestrictItem item = this->GetSelected();
 				if (GetTraceRestrictType(item) == TRIT_COND_ENDIF ||
 						(IsTraceRestrictConditional(item) && GetTraceRestrictCondFlags(item) != 0)) {
@@ -1924,11 +1924,11 @@ public:
 					return;
 				}
 
-				uint32 p2 = 0;
+				uint32_t p2 = 0;
 				if (widget == TR_WIDGET_UP_BTN) p2 |= 1;
 				if (_ctrl_pressed) p2 |= 2;
 
-				uint32 offset = this->selected_instruction - 1;
+				uint32_t offset = this->selected_instruction - 1;
 
 				this->IsUpDownBtnUsable(widget == TR_WIDGET_UP_BTN, true);
 
@@ -1943,7 +1943,7 @@ public:
 					return;
 				}
 
-				uint32 offset = this->selected_instruction - 1;
+				uint32_t offset = this->selected_instruction - 1;
 				this->expecting_inserted_item = item;
 				TraceRestrictDoCommandP(tile, track, TRDCT_DUPLICATE_ITEM,
 						offset, 0, STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
@@ -1966,7 +1966,7 @@ public:
 					return;
 				}
 
-				uint32 disabled = 0;
+				uint32_t disabled = 0;
 				if (!ElseInsertionDryRun(true)) disabled |= _condflags_dropdown_else_hide_mask;
 				if (!ElseIfInsertionDryRun(true)) disabled |= _condflags_dropdown_else_if_hide_mask;
 
@@ -2029,7 +2029,7 @@ public:
 				TraceRestrictItem item = this->GetSelected();
 				TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
 				if (IsDecimalValueType(type)) {
-					int64 value, decimal;
+					int64_t value, decimal;
 					ConvertValueToDecimal(type, GetTraceRestrictValue(item), value, decimal);
 					SetDParam(0, value);
 					SetDParam(1, decimal);
@@ -2261,7 +2261,7 @@ public:
 			str_replace_wchar(tmp_buffer, lastof(tmp_buffer), GetDecimalSeparatorChar(), '.');
 			value = ConvertDecimalToValue(type, atof(tmp_buffer));
 			if (value >= (1 << TRIFA_VALUE_COUNT)) {
-				int64 value, decimal;
+				int64_t value, decimal;
 				ConvertValueToDecimal(type, (1 << TRIFA_VALUE_COUNT) - 1, value, decimal);
 				SetDParam(0, value);
 				SetDParam(1, decimal);
@@ -2358,7 +2358,7 @@ public:
 			case TR_WIDGET_VALUE_DROPDOWN: {
 				if (GetTraceRestrictTypeProperties(item).value_type == TRVT_PF_PENALTY) {
 					if (value == TRPPPI_END) {
-						uint16 penalty_value;
+						uint16_t penalty_value;
 						if (GetTraceRestrictAuxField(item) == TRPPAF_PRESET) {
 							penalty_value = _tracerestrict_pathfinder_penalty_preset_values[GetTraceRestrictValue(item)];
 						} else {
@@ -2682,7 +2682,7 @@ public:
 				TraceRestrictItem item = this->GetSelected();
 				TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
 				if (IsDecimalValueType(type)) {
-					int64 value, decimal;
+					int64_t value, decimal;
 					ConvertValueToDecimal(type, GetTraceRestrictValue(item), value, decimal);
 					SetDParam(0, value);
 					SetDParam(1, decimal);
@@ -2898,7 +2898,7 @@ private:
 		if (GetTraceRestrictType(item) == TRIT_NULL) return false;
 
 		std::vector<TraceRestrictItem> items = prog->items; // copy
-		uint32 offset = this->selected_instruction - 1;
+		uint32_t offset = this->selected_instruction - 1;
 		if (TraceRestrictProgramMoveItemAt(items, offset, up, _ctrl_pressed).Succeeded()) {
 			TraceRestrictProgramActionsUsedFlags actions_used_flags;
 			if (TraceRestrictProgram::Validate(items, actions_used_flags).Succeeded()) {
@@ -2917,7 +2917,7 @@ private:
 		TraceRestrictItem item = this->GetSelected();
 		if (GetTraceRestrictType(item) == TRIT_NULL) return false;
 
-		uint32 offset = this->selected_instruction - 1;
+		uint32_t offset = this->selected_instruction - 1;
 		if (TraceRestrictProgramDuplicateItemAtDryRun(prog->items, offset)) {
 			return true;
 		}
@@ -3416,7 +3416,7 @@ private:
 	 * This asserts if @p value is not in @p list_set, and @p missing_ok is false
 	 */
 	void ShowDropDownListWithValue(const TraceRestrictDropDownListSet *list_set, uint value, bool missing_ok,
-			int button, uint32 disabled_mask, uint32 hidden_mask)
+			int button, uint32_t disabled_mask, uint32_t hidden_mask)
 	{
 		this->drop_down_list_mapping[button] = list_set;
 		int selected = GetDropDownListIndexByValue(list_set, value, missing_ok);

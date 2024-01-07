@@ -165,7 +165,7 @@ void InitGRFGlobalVars()
 	extern uint _extra_station_names_used;
 	_extra_station_names_used = 0;
 
-	extern uint8 _extra_station_names_probability;
+	extern uint8_t _extra_station_names_probability;
 	_extra_station_names_probability = 0;
 
 	extern bool _allow_rocks_desert;
@@ -454,7 +454,7 @@ void GfxDetermineMainColours()
 {
 #if !defined(DEDICATED)
 	/* Water. */
-	extern uint32 _vp_map_water_colour[5];
+	extern uint32_t _vp_map_water_colour[5];
 	_vp_map_water_colour[0] = GetSpriteMainColour(SPR_FLAT_WATER_TILE, PAL_NONE);
 	if (BlitterFactory::GetCurrentBlitter()->GetScreenDepth() == 32) {
 		_vp_map_water_colour[1] = Blitter_32bppBase::MakeTransparent(_vp_map_water_colour[0], 256, 192).data; // lighter
@@ -464,7 +464,7 @@ void GfxDetermineMainColours()
 	}
 
 	/* Clear ground. */
-	extern uint32 _vp_map_vegetation_clear_colours[16][6][8];
+	extern uint32_t _vp_map_vegetation_clear_colours[16][6][8];
 	memset(_vp_map_vegetation_clear_colours, 0, sizeof(_vp_map_vegetation_clear_colours));
 	const struct {
 		byte min;
@@ -486,7 +486,7 @@ void GfxDetermineMainColours()
 	}
 
 	/* Trees. */
-	extern uint32 _vp_map_vegetation_tree_colours[16][5][MAX_TREE_COUNT_BY_LANDSCAPE];
+	extern uint32_t _vp_map_vegetation_tree_colours[16][5][MAX_TREE_COUNT_BY_LANDSCAPE];
 	const uint base  = _tree_base_by_landscape[_settings_game.game_creation.landscape];
 	const uint count = _tree_count_by_landscape[_settings_game.game_creation.landscape];
 	for (uint tg = 0; tg < 5; tg++) {
@@ -647,7 +647,7 @@ MD5File::ChecksumResult MD5File::CheckMD5(Subdirectory subdir, size_t max_size) 
 	size = std::min(size, max_size);
 
 	Md5 checksum;
-	uint8 buffer[1024];
+	uint8_t buffer[1024];
 	MD5Hash digest;
 	size_t len;
 

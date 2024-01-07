@@ -73,7 +73,7 @@ std::string _loadgame_DBGL_data;
 bool _save_DBGC_data = false;
 std::string _loadgame_DBGC_data;
 
-uint32 _misc_debug_flags;
+uint32_t _misc_debug_flags;
 
 struct DebugLevel {
 	const char *name;
@@ -336,8 +336,8 @@ const char *log_prefix::GetLogPrefix()
 struct DesyncMsgLogEntry {
 	Date date;
 	DateFract date_fract;
-	uint8 tick_skip_counter;
-	uint32 src_id;
+	uint8_t tick_skip_counter;
+	uint32_t src_id;
 	std::string msg;
 
 	DesyncMsgLogEntry() { }
@@ -416,7 +416,7 @@ void LogDesyncMsg(std::string msg)
 	_desync_msg_log.LogMsg(DesyncMsgLogEntry(std::move(msg)));
 }
 
-void LogRemoteDesyncMsg(Date date, DateFract date_fract, uint8 tick_skip_counter, uint32 src_id, std::string msg)
+void LogRemoteDesyncMsg(Date date, DateFract date_fract, uint8_t tick_skip_counter, uint32_t src_id, std::string msg)
 {
 	DesyncMsgLogEntry entry(std::move(msg));
 	entry.date = date;

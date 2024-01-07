@@ -129,8 +129,8 @@ void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev
 		const GroundVehicleCache *gcache = virt->GetGroundVehicleCache();
 		tmp->max_speed = virt->GetDisplayMaxSpeed();
 		tmp->power = gcache->cached_power;
-		tmp->empty_weight = std::max<uint32>(gcache->cached_weight - cargo_weight, 1);
-		tmp->full_weight = std::max<uint32>(gcache->cached_weight + full_cargo_weight - cargo_weight, 1);
+		tmp->empty_weight = std::max<uint32_t>(gcache->cached_weight - cargo_weight, 1);
+		tmp->full_weight = std::max<uint32_t>(gcache->cached_weight + full_cargo_weight - cargo_weight, 1);
 		tmp->max_te = gcache->cached_max_te;
 		tmp->air_drag = gcache->cached_air_drag;
 	}
@@ -160,7 +160,7 @@ TemplateVehicle* TemplateVehicleFromVirtualTrain(Train *virt)
 }
 
 // forward declaration, defined in train_cmd.cpp
-CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, uint16 data, uint32 user);
+CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, uint16_t data, uint32_t user);
 
 Train *DeleteVirtualTrain(Train *chain, Train *to_del)
 {
@@ -342,7 +342,7 @@ CommandCost CmdRefitTrainFromTemplate(Train *t, TemplateVehicle *tv, DoCommandFl
 
 	while (t && tv) {
 		// refit t as tv
-		uint32 cb = GetCmdRefitVeh(t);
+		uint32_t cb = GetCmdRefitVeh(t);
 
 		cost.AddCost(DoCommand(t->tile, t->index, tv->cargo_type | tv->cargo_subtype << 8 | (1 << 16) | (1 << 31), flags, cb));
 

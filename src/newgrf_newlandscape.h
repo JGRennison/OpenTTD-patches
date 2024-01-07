@@ -16,7 +16,7 @@
 
 extern std::vector<const GRFFile *> _new_landscape_rocks_grfs;
 
-enum NewLandscapeType : uint8 {
+enum NewLandscapeType : uint8_t {
 	NEW_LANDSCAPE_ROCKS,
 };
 
@@ -32,13 +32,13 @@ struct NewLandscapeScopeResolver : public ScopeResolver {
 	{
 	}
 
-	uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const override;
+	uint32_t GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra *extra) const override;
 };
 
 struct NewLandscapeResolverObject : public ResolverObject {
 	NewLandscapeScopeResolver newlandscape_scope;
 
-	NewLandscapeResolverObject(const GRFFile *grffile, const TileInfo *ti, NewLandscapeType landscape_type, uint32 param1 = 0, uint32 param2 = 0);
+	NewLandscapeResolverObject(const GRFFile *grffile, const TileInfo *ti, NewLandscapeType landscape_type, uint32_t param1 = 0, uint32_t param2 = 0);
 
 	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, VarSpriteGroupScopeOffset relative = 0) override
 	{

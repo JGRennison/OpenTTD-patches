@@ -240,11 +240,11 @@ void SortIndustryTypes()
  * @param p2     Additional data of the #CMD_BUILD_INDUSTRY command.
  * @param cmd    Unused.
  */
-void CcBuildIndustry(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcBuildIndustry(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Succeeded()) return;
 
-	uint8 indtype = GB(p1, 0, 8);
+	uint8_t indtype = GB(p1, 0, 8);
 	if (indtype < NUM_INDUSTRYTYPES) {
 		const IndustrySpec *indsp = GetIndustrySpec(indtype);
 		if (indsp->enabled) {
@@ -525,7 +525,7 @@ public:
 				icon.top    = r.top + (this->resize.step_height - this->legend.height + 1) / 2;
 				icon.bottom = icon.top + this->legend.height - 1;
 
-				for (uint16 i = this->vscroll->GetPosition(); this->vscroll->IsVisible(i) && i < this->vscroll->GetCount(); i++) {
+				for (uint16_t i = this->vscroll->GetPosition(); this->vscroll->IsVisible(i) && i < this->vscroll->GetCount(); i++) {
 					IndustryType type = this->list[i];
 					bool selected = this->selected_type == type;
 					const IndustrySpec *indsp = GetIndustrySpec(type);
@@ -573,7 +573,7 @@ public:
 
 				/* Get the additional purchase info text, if it has not already been queried. */
 				if (HasBit(indsp->callback_mask, CBM_IND_FUND_MORE_TEXT)) {
-					uint16 callback_res = GetIndustryCallback(CBID_INDUSTRY_FUND_MORE_TEXT, 0, 0, nullptr, this->selected_type, INVALID_TILE);
+					uint16_t callback_res = GetIndustryCallback(CBID_INDUSTRY_FUND_MORE_TEXT, 0, 0, nullptr, this->selected_type, INVALID_TILE);
 					if (callback_res != CALLBACK_FAILED && callback_res != 0x400) {
 						if (callback_res > 0x400) {
 							ErrorUnknownCallbackResult(indsp->grf_prop.grffile->grfid, CBID_INDUSTRY_FUND_MORE_TEXT, callback_res);
@@ -692,8 +692,8 @@ public:
 		bool success = true;
 		/* We do not need to protect ourselves against "Random Many Industries" in this mode */
 		const IndustrySpec *indsp = GetIndustrySpec(this->selected_type);
-		uint32 seed = InteractiveRandom();
-		uint32 layout_index = InteractiveRandomRange((uint32)indsp->layouts.size());
+		uint32_t seed = InteractiveRandom();
+		uint32_t layout_index = InteractiveRandomRange((uint32_t)indsp->layouts.size());
 
 		if (_game_mode == GM_EDITOR) {
 			/* Show error if no town exists at all */
@@ -946,7 +946,7 @@ public:
 
 		/* Get the extra message for the GUI */
 		if (HasBit(ind->callback_mask, CBM_IND_WINDOW_MORE_TEXT)) {
-			uint16 callback_res = GetIndustryCallback(CBID_INDUSTRY_WINDOW_MORE_TEXT, 0, 0, i, i->type, i->location.tile);
+			uint16_t callback_res = GetIndustryCallback(CBID_INDUSTRY_WINDOW_MORE_TEXT, 0, 0, i, i->type, i->location.tile);
 			if (callback_res != CALLBACK_FAILED && callback_res != 0x400) {
 				if (callback_res > 0x400) {
 					ErrorUnknownCallbackResult(ind->grf_prop.grffile->grfid, CBID_INDUSTRY_WINDOW_MORE_TEXT, callback_res);
@@ -1323,7 +1323,7 @@ protected:
 	StringFilter string_filter;                 ///< Filter for industries
 	QueryString industry_editbox;               ///< Filter editbox
 
-	enum class SorterType : uint8 {
+	enum class SorterType : uint8_t {
 		ByName,        ///< Sorter type to sort by name
 		ByType,        ///< Sorter type to sort by type
 		ByProduction,  ///< Sorter type to sort by production amount
@@ -1546,7 +1546,7 @@ protected:
 		/* Get industry productions (CargoID, production, suffix, transported) */
 		struct CargoInfo {
 			CargoID cargo_id;
-			uint16 production;
+			uint16_t production;
 			const char *suffix;
 			uint transported;
 		};

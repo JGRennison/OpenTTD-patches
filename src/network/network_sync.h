@@ -14,15 +14,15 @@
 
 /* Sync debugging */
 struct NetworkSyncRecord {
-	uint32 frame;
-	uint32 seed_1;
-	uint64 state_checksum;
+	uint32_t frame;
+	uint32_t seed_1;
+	uint64_t state_checksum;
 };
 extern ring_buffer<NetworkSyncRecord> _network_sync_records;
 extern ring_buffer<uint> _network_sync_record_counts;
 extern bool _record_sync_records;
 
-enum NetworkSyncRecordEvents : uint32 {
+enum NetworkSyncRecordEvents : uint32_t {
 	NSRE_BEGIN,
 	NSRE_CMD,
 	NSRE_AUX_TILE,

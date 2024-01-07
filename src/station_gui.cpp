@@ -474,7 +474,7 @@ public:
 		this->FinishInitNested(window_number);
 		this->owner = (Owner)this->window_number;
 
-		uint8 index = 0;
+		uint8_t index = 0;
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			if (HasBit(this->filter.cargoes, cs->Index())) {
 				this->LowerWidget(WID_STL_CARGOSTART + index);
@@ -1584,7 +1584,7 @@ struct StationViewWindow : public Window {
 		this->vscroll->SetCount(cargo.GetNumChildren()); // update scrollbar
 
 		byte have_veh_types = 0;
-		IterateOrderRefcountMapForDestinationID(st->index, [&](CompanyID cid, OrderType order_type, VehicleType veh_type, uint32 refcount) {
+		IterateOrderRefcountMapForDestinationID(st->index, [&](CompanyID cid, OrderType order_type, VehicleType veh_type, uint32_t refcount) {
 			SetBit(have_veh_types, veh_type);
 			return true;
 		});
@@ -1667,7 +1667,7 @@ struct StationViewWindow : public Window {
 		for (const auto &it : flows) {
 			StationID from = it.GetOrigin();
 			CargoDataEntry *source_entry = cargo_entry->InsertOrRetrieve(from);
-			uint32 prev_count = 0;
+			uint32_t prev_count = 0;
 			for (const auto &flow_it : it) {
 				StationID via = flow_it.second;
 				CargoDataEntry *via_entry = source_entry->InsertOrRetrieve(via);
@@ -1700,7 +1700,7 @@ struct StationViewWindow : public Window {
 				const FlowStatMap &flowmap = ge.data->flows;
 				FlowStatMap::const_iterator map_it = flowmap.find(source);
 				if (map_it != flowmap.end()) {
-					uint32 prev_count = 0;
+					uint32_t prev_count = 0;
 					for (FlowStat::const_iterator i = map_it->begin(); i != map_it->end(); ++i) {
 						tmp.InsertOrRetrieve(i->second)->Update(i->first - prev_count);
 						prev_count = i->first;
@@ -2790,7 +2790,7 @@ public:
 		CLRBITS(this->flags, WF_WHITE_BORDER);
 	}
 
-	Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number) override
+	Point OnInitialPosition(int16_t sm_width, int16_t sm_height, int window_number) override
 	{
 		const int scr_top = GetMainViewTop() + 2;
 		const int scr_bot = GetMainViewBottom() - 2;

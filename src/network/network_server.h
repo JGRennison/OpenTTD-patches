@@ -23,7 +23,7 @@ extern NetworkClientSocketPool _networkclientsocket_pool;
 /** Class for handling the server side of the game connection. */
 class ServerNetworkGameSocketHandler : public NetworkClientSocketPool::PoolItem<&_networkclientsocket_pool>, public NetworkGameSocketHandler, public TCPListenHandler<ServerNetworkGameSocketHandler, PACKET_SERVER_FULL, PACKET_SERVER_BANNED> {
 	NetworkGameKeys intl_keys;
-	uint64 min_key_message_id = 0;
+	uint64_t min_key_message_id = 0;
 	byte *rcon_reply_key = nullptr;
 
 protected:
@@ -49,7 +49,7 @@ protected:
 	NetworkRecvStatus Receive_CLIENT_MOVE(Packet *p) override;
 
 	NetworkRecvStatus SendGameInfo();
-	NetworkRecvStatus SendGameInfoExtended(PacketGameType reply_type, uint16 flags, uint16 version);
+	NetworkRecvStatus SendGameInfoExtended(PacketGameType reply_type, uint16_t flags, uint16_t version);
 	NetworkRecvStatus SendNewGRFCheck();
 	NetworkRecvStatus SendWelcome();
 	NetworkRecvStatus SendNeedGamePassword();
@@ -78,7 +78,7 @@ public:
 
 	byte lag_test;               ///< Byte used for lag-testing the client
 	byte last_token;             ///< The last random token we did send to verify the client is listening
-	uint32 last_token_frame;     ///< The last frame we received the right token
+	uint32_t last_token_frame;   ///< The last frame we received the right token
 	ClientStatus status;         ///< Status of this client
 	CommandQueue outgoing_queue; ///< The command-queue awaiting delivery
 	size_t receive_limit;        ///< Amount of bytes that we can receive at this moment
@@ -109,7 +109,7 @@ public:
 	NetworkRecvStatus SendQuit(ClientID client_id);
 	NetworkRecvStatus SendShutdown();
 	NetworkRecvStatus SendNewGame();
-	NetworkRecvStatus SendRConResult(uint16 colour, const std::string &command);
+	NetworkRecvStatus SendRConResult(uint16_t colour, const std::string &command);
 	NetworkRecvStatus SendRConDenied();
 	NetworkRecvStatus SendMove(ClientID client_id, CompanyID company_id);
 

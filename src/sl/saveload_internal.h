@@ -56,15 +56,15 @@ void AfterLoadTemplateVehiclesUpdate();
 void AfterLoadTemplateVehiclesUpdateImages();
 void AfterLoadTemplateVehiclesUpdateProperties();
 
-extern int32 _saved_scrollpos_x;
-extern int32 _saved_scrollpos_y;
+extern int32_t _saved_scrollpos_x;
+extern int32_t _saved_scrollpos_y;
 extern ZoomLevel _saved_scrollpos_zoom;
 
 extern SavegameType _savegame_type;
-extern uint32 _ttdp_version;
+extern uint32_t _ttdp_version;
 
-CompanyManagerFace ConvertFromOldCompanyManagerFace(uint32 face);
+CompanyManagerFace ConvertFromOldCompanyManagerFace(uint32_t face);
 
-Order UnpackOldOrder(uint16 packed);
+Order UnpackOldOrder(uint16_t packed);
 
 #endif /* SL_SAVELOAD_INTERNAL_H */

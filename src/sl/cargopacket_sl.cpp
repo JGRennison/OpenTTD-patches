@@ -17,7 +17,7 @@
 
 #include "../safeguards.h"
 
-extern btree::btree_map<uint64, Money> _cargo_packet_deferred_payments;
+extern btree::btree_map<uint64_t, Money> _cargo_packet_deferred_payments;
 
 /**
  * Savegame conversion for cargopackets.
@@ -223,8 +223,8 @@ void Load_CPDP()
 	uint last_cargo_packet_id = std::numeric_limits<uint32_t>::max();
 
 	for (uint i = 0; i < count; i++) {
-		uint64 k = SlReadUint64();
-		uint64 v = SlReadUint64();
+		uint64_t k = SlReadUint64();
+		uint64_t v = SlReadUint64();
 		_cargo_packet_deferred_payments[k] = v;
 		if (k >> 32 != last_cargo_packet_id) {
 			last_cargo_packet_id = k >> 32;

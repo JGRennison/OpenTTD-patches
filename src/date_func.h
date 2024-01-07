@@ -17,16 +17,16 @@
 extern YearMonthDay _cur_date_ymd;
 extern Date      _date;
 extern DateFract _date_fract;
-extern uint64    _tick_counter;
-extern uint8     _tick_skip_counter;
-extern uint64    _scaled_tick_counter;
+extern uint64_t  _tick_counter;
+extern uint8_t   _tick_skip_counter;
+extern uint64_t  _scaled_tick_counter;
 extern DateTicksScaled _scaled_date_ticks;
 extern DateTicksScaled _scaled_date_ticks_offset;
-extern uint32    _quit_after_days;
+extern uint32_t  _quit_after_days;
 
 extern YearMonthDay _game_load_cur_date_ymd;
 extern DateFract _game_load_date_fract;
-extern uint8 _game_load_tick_skip_counter;
+extern uint8_t _game_load_tick_skip_counter;
 
 void SetDate(Date date, DateFract fract, bool preserve_scaled_ticks = true);
 YearMonthDay ConvertDateToYMD(Date date);
@@ -57,7 +57,7 @@ inline Date ScaledDateTicksToDate(DateTicksScaled ticks)
 
 inline DateTicksScaled DateToScaledDateTicks(Date date)
 {
-	return ((int64)date.base() * DAY_TICKS * _settings_game.economy.day_length_factor) + _scaled_date_ticks_offset.base();
+	return ((int64_t)date.base() * DAY_TICKS * _settings_game.economy.day_length_factor) + _scaled_date_ticks_offset.base();
 }
 
 inline DateTicks ScaledDateTicksToDateTicks(DateTicksScaled ticks)
@@ -67,7 +67,7 @@ inline DateTicks ScaledDateTicksToDateTicks(DateTicksScaled ticks)
 
 inline DateTicksScaled DateTicksToScaledDateTicks(DateTicks date_ticks)
 {
-	return ((int64)date_ticks.base() * _settings_game.economy.day_length_factor) + _scaled_date_ticks_offset.base();
+	return ((int64_t)date_ticks.base() * _settings_game.economy.day_length_factor) + _scaled_date_ticks_offset.base();
 }
 
 /**
@@ -101,7 +101,7 @@ inline DateTicks NowDateTicks()
 }
 
 struct debug_date_dumper {
-	const char *HexDate(Date date, DateFract date_fract, uint8 tick_skip_counter);
+	const char *HexDate(Date date, DateFract date_fract, uint8_t tick_skip_counter);
 
 	inline const char *HexDate() { return this->HexDate(_date, _date_fract, _tick_skip_counter); }
 

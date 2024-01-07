@@ -11,7 +11,7 @@
 static size_t ConvertLandscape(const char *value);
 
 /* Callback function used in _settings[] as well as _gui_settings[] */
-static void UpdateTimeSettings(int32 new_value);
+static void UpdateTimeSettings(int32_t new_value);
 
 /* Callback function used for various settings */
 static bool CheckTTDPatchSettingFlag(uint flag);
@@ -42,7 +42,7 @@ static bool CheckTTDPatchSettingFlag(uint flag);
  *
  * The something part defines the type of variable to store. There are a
  * lot of types. Easy ones are:
- * - VAR:  any number type, 'type' field specifies what number. eg int8 or uint32
+ * - VAR:  any number type, 'type' field specifies what number. eg int8_t or uint32_t
  * - BOOL: a boolean number type
  * - STR:  a string or character. 'type' field specifies what string. Normal, string, or quoted
  * A bit more difficult to use are MMANY (meaning ManyOfMany) and OMANY (OneOfMany)

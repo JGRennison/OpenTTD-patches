@@ -33,7 +33,7 @@
  * Colours for the various "load" states of links. Ordered from "unused" to
  * "overloaded".
  */
-const uint8 LinkGraphOverlay::LINK_COLOURS[][12] = {
+const uint8_t LinkGraphOverlay::LINK_COLOURS[][12] = {
 {
 	0x0f, 0xd1, 0xd0, 0x57,
 	0x55, 0x53, 0xbf, 0xbd,
@@ -285,11 +285,11 @@ inline bool LinkGraphOverlay::IsLinkVisible(Point pta, Point ptb, const DrawPixe
 	 * See: https://en.wikipedia.org/wiki/Cohen%E2%80%93Sutherland_algorithm
 	 */
 
-	const uint8 INSIDE = 0; // 0000
-	const uint8 LEFT   = 1; // 0001
-	const uint8 RIGHT  = 2; // 0010
-	const uint8 BOTTOM = 4; // 0100
-	const uint8 TOP    = 8; // 1000
+	const uint8_t INSIDE = 0; // 0000
+	const uint8_t LEFT   = 1; // 0001
+	const uint8_t RIGHT  = 2; // 0010
+	const uint8_t BOTTOM = 4; // 0100
+	const uint8_t TOP    = 8; // 1000
 
 	int x0 = pta.x;
 	int y0 = pta.y;
@@ -297,7 +297,7 @@ inline bool LinkGraphOverlay::IsLinkVisible(Point pta, Point ptb, const DrawPixe
 	int y1 = ptb.y;
 
 	auto out_code = [&](int x, int y) -> unsigned char {
-		uint8 out = INSIDE;
+		uint8_t out = INSIDE;
 		if (x < left) {
 			out |= LEFT;
 		} else if (x > right) {
@@ -311,24 +311,24 @@ inline bool LinkGraphOverlay::IsLinkVisible(Point pta, Point ptb, const DrawPixe
 		return out;
 	};
 
-	uint8 c0 = out_code(x0, y0);
-	uint8 c1 = out_code(x1, y1);
+	uint8_t c0 = out_code(x0, y0);
+	uint8_t c1 = out_code(x1, y1);
 
 	while (true) {
 		if (c0 == 0 || c1 == 0) return true;
 		if ((c0 & c1) != 0) return false;
 
 		if (c0 & TOP) {           // point 0 is above the clip window
-			x0 = x0 + (int)(((int64) (x1 - x0)) * ((int64) (top - y0)) / ((int64) (y1 - y0)));
+			x0 = x0 + (int)(((int64_t) (x1 - x0)) * ((int64_t) (top - y0)) / ((int64_t) (y1 - y0)));
 			y0 = top;
 		} else if (c0 & BOTTOM) { // point 0 is below the clip window
-			x0 = x0 + (int)(((int64) (x1 - x0)) * ((int64) (bottom - y0)) / ((int64) (y1 - y0)));
+			x0 = x0 + (int)(((int64_t) (x1 - x0)) * ((int64_t) (bottom - y0)) / ((int64_t) (y1 - y0)));
 			y0 = bottom;
 		} else if (c0 & RIGHT) {  // point 0 is to the right of clip window
-			y0 = y0 + (int)(((int64) (y1 - y0)) * ((int64) (right - x0)) / ((int64) (x1 - x0)));
+			y0 = y0 + (int)(((int64_t) (y1 - y0)) * ((int64_t) (right - x0)) / ((int64_t) (x1 - x0)));
 			x0 = right;
 		} else if (c0 & LEFT) {   // point 0 is to the left of clip window
-			y0 = y0 + (int)(((int64) (y1 - y0)) * ((int64) (left - x0)) / ((int64) (x1 - x0)));
+			y0 = y0 + (int)(((int64_t) (y1 - y0)) * ((int64_t) (left - x0)) / ((int64_t) (x1 - x0)));
 			x0 = left;
 		}
 
@@ -348,7 +348,7 @@ inline bool LinkGraphOverlay::IsLinkVisible(Point pta, Point ptb, const DrawPixe
  * @param new_shared If the new link is shared.
  * @param cargo LinkProperties to write the information to.
  */
-/* static */ void LinkGraphOverlay::AddStats(CargoID new_cargo, uint new_cap, uint new_usg, uint new_plan, uint32 time, bool new_shared, LinkProperties &cargo)
+/* static */ void LinkGraphOverlay::AddStats(CargoID new_cargo, uint new_cap, uint new_usg, uint new_plan, uint32_t time, bool new_shared, LinkProperties &cargo)
 {
 	/* multiply the numbers by 32 in order to avoid comparing to 0 too often. */
 	if (cargo.capacity == 0 ||
@@ -505,8 +505,8 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 
 		/* Check the distance from the cursor to the line defined by the two stations. */
 		auto check_distance = [&]() -> bool {
-			int64 a = ((int64)(ptb.x - pta.x) * (int64)(pta.y - pt.y) - (int64)(pta.x - pt.x) * (int64)(ptb.y - pta.y));
-			int64 b = ((int64)(ptb.x - pta.x) * (int64)(ptb.x - pta.x) + (int64)(ptb.y - pta.y) * (int64)(ptb.y - pta.y));
+			int64_t a = ((int64_t)(ptb.x - pta.x) * (int64_t)(pta.y - pt.y) - (int64_t)(pta.x - pt.x) * (int64_t)(ptb.y - pta.y));
+			int64_t b = ((int64_t)(ptb.x - pta.x) * (int64_t)(ptb.x - pta.x) + (int64_t)(ptb.y - pta.y) * (int64_t)(ptb.y - pta.y));
 			if (b == 0) return false;
 			return ((a * a) / b) <= 16;
 		};
@@ -522,7 +522,7 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 			StringBuilder builder(buf);
 			buf[0] = 0;
 
-			auto add_travel_time = [&](uint32 time) {
+			auto add_travel_time = [&](uint32_t time) {
 				if (time > 0) {
 					if (_settings_time.time_in_minutes) {
 						SetDParam(0, STR_TIMETABLE_MINUTES);
@@ -556,7 +556,7 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 			}
 
 			/* Fill buf with more information if this is a bidirectional link. */
-			uint32 back_time = 0;
+			uint32_t back_time = 0;
 			for (LinkList::const_reverse_iterator j = std::next(i); j != this->cached_links.rend(); ++j) {
 				if (j->from_id == i->to_id && j->to_id == i->from_id) {
 					back_time = j->prop.time;
@@ -586,7 +586,7 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 				uint dx = Delta(TileX(t0), TileX(t1));
 				uint dy = Delta(TileY(t0), TileY(t1));
 				SetDParam(0, DistanceManhattan(t0, t1));
-				SetDParam(1, IntSqrt64(((uint64)dx * (uint64)dx) + ((uint64)dy * (uint64)dy))); // Avoid overflow in DistanceSquare
+				SetDParam(1, IntSqrt64(((uint64_t)dx * (uint64_t)dx) + ((uint64_t)dy * (uint64_t)dy))); // Avoid overflow in DistanceSquare
 				GetString(builder, STR_LINKGRAPH_STATS_TOOLTIP_DISTANCE);
 			}
 
@@ -807,7 +807,7 @@ void LinkGraphLegendWindow::DrawWidget(const Rect &r, WidgetID widget) const
 		DrawCompanyIcon(cid, CenterBounds(br.left, br.right, sprite_size.width), CenterBounds(br.top, br.bottom, sprite_size.height));
 	}
 	if (IsInsideMM(widget, WID_LGL_SATURATION_FIRST, WID_LGL_SATURATION_LAST + 1)) {
-		uint8 colour = LinkGraphOverlay::LINK_COLOURS[_settings_client.gui.linkgraph_colours][widget - WID_LGL_SATURATION_FIRST];
+		uint8_t colour = LinkGraphOverlay::LINK_COLOURS[_settings_client.gui.linkgraph_colours][widget - WID_LGL_SATURATION_FIRST];
 		GfxFillRect(br, colour);
 		StringID str = STR_NULL;
 		if (widget == WID_LGL_SATURATION_FIRST) {
@@ -854,7 +854,7 @@ bool LinkGraphLegendWindow::OnTooltip([[maybe_unused]] Point, WidgetID widget, T
  */
 void LinkGraphLegendWindow::UpdateOverlayCompanies()
 {
-	uint32 mask = 0;
+	uint32_t mask = 0;
 	for (uint c = 0; c < MAX_COMPANIES; c++) {
 		if (this->IsWidgetDisabled(c + WID_LGL_COMPANY_FIRST)) continue;
 		if (!this->IsWidgetLowered(c + WID_LGL_COMPANY_FIRST)) continue;

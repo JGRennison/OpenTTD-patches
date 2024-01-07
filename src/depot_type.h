@@ -10,7 +10,7 @@
 #ifndef DEPOT_TYPE_H
 #define DEPOT_TYPE_H
 
-typedef uint16 DepotID; ///< Type for the unique identifier of depots.
+typedef uint16_t DepotID; ///< Type for the unique identifier of depots.
 struct Depot;
 
 static const DepotID INVALID_DEPOT = UINT16_MAX;

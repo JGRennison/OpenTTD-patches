@@ -24,20 +24,20 @@ extern StationPool _station_pool;
 
 struct StationSpecList {
 	const StationSpec *spec;
-	uint32 grfid;      ///< GRF ID of this custom station
-	uint16 localidx;   ///< Station ID within GRF of station
+	uint32_t grfid;      ///< GRF ID of this custom station
+	uint16_t localidx;   ///< Station ID within GRF of station
 };
 
 struct RoadStopSpecList {
 	const RoadStopSpec *spec;
-	uint32 grfid;      ///< GRF ID of this custom road stop
-	uint16 localidx;   ///< Station ID within GRF of road stop
+	uint32_t grfid;      ///< GRF ID of this custom road stop
+	uint16_t localidx;   ///< Station ID within GRF of road stop
 };
 
 struct RoadStopTileData {
 	TileIndex tile;
-	uint8 random_bits;
-	uint8 animation_frame;
+	uint8_t random_bits;
+	uint8_t animation_frame;
 };
 
 /** StationRect - used to track station spread out rectangle - cheaper than scanning whole map */
@@ -82,10 +82,10 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 
 	Date build_date;                ///< Date of construction
 
-	uint16 random_bits;             ///< Random bits assigned to this station
+	uint16_t random_bits;           ///< Random bits assigned to this station
 	byte waiting_triggers;          ///< Waiting triggers (NewGRF) for this station
-	uint8 cached_anim_triggers;                ///< NOSAVE: Combined animation trigger bitmask, used to determine if trigger processing should happen.
-	uint8 cached_roadstop_anim_triggers;       ///< NOSAVE: Combined animation trigger bitmask for road stops, used to determine if trigger processing should happen.
+	uint8_t cached_anim_triggers;              ///< NOSAVE: Combined animation trigger bitmask, used to determine if trigger processing should happen.
+	uint8_t cached_roadstop_anim_triggers;     ///< NOSAVE: Combined animation trigger bitmask for road stops, used to determine if trigger processing should happen.
 	CargoTypes cached_cargo_triggers;          ///< NOSAVE: Combined cargo trigger bitmask
 	CargoTypes cached_roadstop_cargo_triggers; ///< NOSAVE: Combined cargo trigger bitmask for road stops
 
@@ -121,7 +121,7 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 	 * @param available will return false if ever the variable asked for does not exist
 	 * @return the value stored in the corresponding variable
 	 */
-	virtual uint32 GetNewGRFVariable(const struct ResolverObject &object, uint16 variable, byte parameter, bool *available) const = 0;
+	virtual uint32_t GetNewGRFVariable(const struct ResolverObject &object, uint16_t variable, byte parameter, bool *available) const = 0;
 
 	/**
 	 * Update the coordinated of the sign (as shown in the viewport).

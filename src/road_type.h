@@ -12,9 +12,9 @@
 
 #include "core/enum_type.hpp"
 
-extern uint32 _road_layout_change_counter;
+extern uint32_t _road_layout_change_counter;
 
-typedef uint32 RoadTypeLabel;
+typedef uint32_t RoadTypeLabel;
 
 static const RoadTypeLabel ROADTYPE_LABEL_ROAD = 'ROAD';
 static const RoadTypeLabel ROADTYPE_LABEL_TRAM = 'ELRL';
@@ -36,9 +36,9 @@ template <> struct EnumPropsT<RoadType> : MakeEnumPropsT<RoadType, byte, ROADTYP
 
 /**
  * The different roadtypes we support, but then a bitmask of them.
- * @note Must be treated as a uint64 type, narrowing it causes bit membership tests to give wrong results.
+ * @note Must be treated as a uint64_t type, narrowing it causes bit membership tests to give wrong results.
  */
-enum RoadTypes : uint64 {
+enum RoadTypes : uint64_t {
 	ROADTYPES_NONE     = 0,                                ///< No roadtypes
 	ROADTYPES_ROAD     = 1 << ROADTYPE_ROAD,               ///< Road
 	ROADTYPES_TRAM     = 1 << ROADTYPE_TRAM,               ///< Trams

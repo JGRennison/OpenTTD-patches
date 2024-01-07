@@ -44,7 +44,7 @@ static EngineID GetNextArticulatedPart(uint index, EngineID front_type, Vehicle 
 		return INVALID_ENGINE;
 	}
 
-	uint16 callback = GetVehicleCallback(CBID_VEHICLE_ARTIC_ENGINE, index, 0, front_type, front);
+	uint16_t callback = GetVehicleCallback(CBID_VEHICLE_ARTIC_ENGINE, index, 0, front_type, front);
 	if (callback == CALLBACK_FAILED) return INVALID_ENGINE;
 
 	if (front_engine->GetGRF()->grf_version < 8) {
@@ -143,7 +143,7 @@ void GetArticulatedPartsEngineIDs(EngineID engine_type, bool purchase_window, st
  * @param cargo_type returns the default cargo type, if needed
  * @return capacity
  */
-static inline uint16 GetVehicleDefaultCapacity(EngineID engine, CargoID *cargo_type)
+static inline uint16_t GetVehicleDefaultCapacity(EngineID engine, CargoID *cargo_type)
 {
 	const Engine *e = Engine::Get(engine);
 	CargoID cargo = (e->CanCarryCargo() ? e->GetDefaultCargoType() : (CargoID)CT_INVALID);
@@ -183,7 +183,7 @@ CargoArray GetCapacityOfArticulatedParts(EngineID engine)
 	const Engine *e = Engine::Get(engine);
 
 	CargoID cargo_type;
-	uint16 cargo_capacity = GetVehicleDefaultCapacity(engine, &cargo_type);
+	uint16_t cargo_capacity = GetVehicleDefaultCapacity(engine, &cargo_type);
 	if (cargo_type < NUM_CARGO) capacity[cargo_type] = cargo_capacity;
 
 	if (!e->IsArticulatedCallbackVehicleType()) return capacity;
@@ -212,7 +212,7 @@ CargoTypes GetCargoTypesOfArticulatedParts(EngineID engine)
 	const Engine *e = Engine::Get(engine);
 
 	CargoID cargo_type;
-	uint16 cargo_capacity = GetVehicleDefaultCapacity(engine, &cargo_type);
+	uint16_t cargo_capacity = GetVehicleDefaultCapacity(engine, &cargo_type);
 	if (cargo_type < NUM_CARGO && cargo_capacity > 0) SetBit(cargoes, cargo_type);
 
 	if (!e->IsArticulatedCallbackVehicleType()) return cargoes;

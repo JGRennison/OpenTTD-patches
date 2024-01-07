@@ -39,10 +39,10 @@ enum VehicleInvalidateWindowData {
 
 /** Extra information about refitted cargo and capacity */
 struct TestedEngineDetails {
-	Money cost;           ///< Refit cost
-	CargoID cargo;        ///< Cargo type
-	uint capacity;        ///< Cargo capacity
-	uint16 mail_capacity; ///< Mail capacity if available
+	Money cost;                  ///< Refit cost
+	CargoID cargo;               ///< Cargo type
+	uint capacity;               ///< Cargo capacity
+	uint16_t mail_capacity;      ///< Mail capacity if available
 	CargoArray all_capacities{}; ///< Capacities for all cargoes
 
 	void FillDefaultCapacities(const Engine *e);
@@ -146,7 +146,7 @@ inline bool HasFocusedVehicleChanged(const VehicleID vid, Window *ref_window)
 			case WC_VEHICLE_VIEW:
 			case WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS:
 			case WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS:
-				return ((uint32) wn != vid);
+				return ((uint32_t) wn != vid);
 		}
 	}
 

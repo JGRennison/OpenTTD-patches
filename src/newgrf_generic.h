@@ -47,9 +47,9 @@ static const IndustryType IT_AI_TOWN    = 0xFF; ///< The AI actually wants to tr
 void ResetGenericCallbacks();
 void AddGenericCallback(GrfSpecFeature feature, const GRFFile *file, const SpriteGroup *group);
 
-uint16 GetAiPurchaseCallbackResult(GrfSpecFeature feature, CargoID cargo_type, uint8 default_selection, IndustryType src_industry, IndustryType dst_industry, uint8 distance, AIConstructionEvent event, uint8 count, uint8 station_size, const GRFFile **file);
+uint16_t GetAiPurchaseCallbackResult(GrfSpecFeature feature, CargoID cargo_type, uint8_t default_selection, IndustryType src_industry, IndustryType dst_industry, uint8_t distance, AIConstructionEvent event, uint8_t count, uint8_t station_size, const GRFFile **file);
 void AmbientSoundEffectCallback(TileIndex tile);
-uint16 GetTownZonesCallback(Town *t);
+uint16_t GetTownZonesCallback(Town *t);
 
 /** Play an ambient sound effect for an empty tile. */
 inline void AmbientSoundEffect(TileIndex tile)

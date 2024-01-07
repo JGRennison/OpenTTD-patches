@@ -45,10 +45,10 @@ DECLARE_ENUM_AS_BIT_SET(BlitterSpriteFlags);
  * How all blitters should look like. Extend this class to make your own.
  */
 class Blitter : public SpriteEncoder {
-	uint8 screen_depth = 0;
+	uint8_t screen_depth = 0;
 
 protected:
-	void SetScreenDepth(uint8 depth)
+	void SetScreenDepth(uint8_t depth)
 	{
 		this->screen_depth = depth;
 		this->SetIs32BppSupported(depth > 8);
@@ -85,7 +85,7 @@ public:
 	 * Get the screen depth this blitter works for.
 	 *  This is either: 8, 16, 24 or 32.
 	 */
-	inline uint8 GetScreenDepth() const
+	inline uint8_t GetScreenDepth() const
 	{
 		return this->screen_depth;
 	}
@@ -123,7 +123,7 @@ public:
 	 * @param y The y position within video-buffer.
 	 * @param colour A 8bpp mapping colour.
 	 */
-	virtual void SetPixel(void *video, int x, int y, uint8 colour) = 0;
+	virtual void SetPixel(void *video, int x, int y, uint8_t colour) = 0;
 
 	/**
 	 * Draw a pixel with a given 32bpp colour on the video-buffer.
@@ -134,7 +134,7 @@ public:
 	 * @param colour A 8bpp mapping colour.
 	 * @param colour32 A 32bpp colour.
 	 */
-	virtual void SetPixel32(void *video, int x, int y, uint8 colour, uint32 colour32) = 0;
+	virtual void SetPixel32(void *video, int x, int y, uint8_t colour, uint32_t colour32) = 0;
 
 	/**
 	 * Draw a rectangle of pixels on the video-buffer.
@@ -146,7 +146,7 @@ public:
 	 * @param width The length of the lines.
 	 * @param pitch The pitch of the colours buffer
 	 */
-	virtual void SetRect(void *video, int x, int y, const uint8 *colours, uint lines, uint width, uint pitch) = 0;
+	virtual void SetRect(void *video, int x, int y, const uint8_t *colours, uint lines, uint width, uint pitch) = 0;
 
 	/**
 	 * Draw a rectangle of pixels on the video-buffer (no LookupColourInPalette).
@@ -158,7 +158,7 @@ public:
 	 * @param width The length of the lines.
 	 * @param pitch The pitch of the colours buffer.
 	 */
-	virtual void SetRect32(void *video, int x, int y, const uint32 *colours, uint lines, uint width, uint pitch) { NOT_REACHED(); };
+	virtual void SetRect32(void *video, int x, int y, const uint32_t *colours, uint lines, uint width, uint pitch) { NOT_REACHED(); };
 
 	/**
 	 * Make a single horizontal line in a single colour on the video-buffer.
@@ -167,7 +167,7 @@ public:
 	 * @param height The height of the line.
 	 * @param colour A 8bpp mapping colour.
 	 */
-	virtual void DrawRect(void *video, int width, int height, uint8 colour) = 0;
+	virtual void DrawRect(void *video, int width, int height, uint8_t colour) = 0;
 
 	/**
 	 * Make a single horizontal line in a single colour on the video-buffer.
@@ -178,7 +178,7 @@ public:
 	 * @param height The height of the line.
 	 * @param colour A 8bpp mapping colour.
 	 */
-	virtual void DrawRectAt(void *video, int x, int y, int width, int height, uint8 colour) = 0;
+	virtual void DrawRectAt(void *video, int x, int y, int width, int height, uint8_t colour) = 0;
 
 	/**
 	 * Draw a line with a given colour.
@@ -193,7 +193,7 @@ public:
 	 * @param width Line width.
 	 * @param dash Length of dashes for dashed lines. 0 means solid line.
 	 */
-	virtual void DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 colour, int width, int dash = 0) = 0;
+	virtual void DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8_t colour, int width, int dash = 0) = 0;
 
 	/**
 	 * Copy from a buffer to the screen.

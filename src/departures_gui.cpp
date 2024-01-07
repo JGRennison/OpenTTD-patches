@@ -95,7 +95,7 @@ protected:
 	bool departures_invalid;   ///< The departures and arrivals list are currently invalid.
 	bool vehicles_invalid;     ///< The vehicles list is currently invalid.
 	uint entry_height;         ///< The height of an entry in the departures list.
-	uint64 elapsed_ms;         ///< The number of milliseconds that have elapsed since the window was created. Used for scrolling text.
+	uint64_t elapsed_ms;       ///< The number of milliseconds that have elapsed since the window was created. Used for scrolling text.
 	int calc_tick_countdown;   ///< The number of ticks to wait until recomputing the departure list. Signed in case it goes below zero.
 	bool show_types[4];        ///< The vehicle types to show in the departure list.
 	bool departure_types[3];   ///< The types of departure to show in the departure list.
@@ -211,7 +211,7 @@ protected:
 		}
 
 		for (GroupID gid : groups) {
-			SetDParam(0, (uint64)(gid | GROUP_NAME_HIERARCHY));
+			SetDParam(0, (uint64_t)(gid | GROUP_NAME_HIERARCHY));
 			int width = (GetStringBoundingBox(STR_DEPARTURES_GROUP)).width + 4;
 			if (width > this->group_width) this->group_width = width;
 		}
@@ -401,7 +401,7 @@ public:
 				if (this->departures_invalid) return;
 
 				/* We need to find the departure corresponding to where the user clicked. */
-				uint32 id_v = (pt.y - this->GetWidget<NWidgetBase>(WID_DB_LIST)->pos_y) / this->entry_height;
+				uint32_t id_v = (pt.y - this->GetWidget<NWidgetBase>(WID_DB_LIST)->pos_y) / this->entry_height;
 
 				if (id_v >= this->vscroll->GetCapacity()) return; // click out of bounds
 
@@ -959,7 +959,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 			const int group_left = ltr ? text_right - PadWidth(toc_width) - group_width : text_left + PadWidth(toc_width);
 			const int group_right = ltr ? text_right - PadWidth(toc_width) : text_left + PadWidth(toc_width) + group_width;
 
-			SetDParam(0, (uint64)(d->vehicle->group_id | GROUP_NAME_HIERARCHY));
+			SetDParam(0, (uint64_t)(d->vehicle->group_id | GROUP_NAME_HIERARCHY));
 			DrawString(group_left, group_right, y + 1, STR_DEPARTURES_GROUP);
 		}
 
@@ -968,7 +968,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 			const int toc_left = ltr ? text_right - toc_width : text_left;
 			const int toc_right = ltr ? text_right : text_left + toc_width;
 
-			SetDParam(0, (uint64)(d->vehicle->owner));
+			SetDParam(0, (uint64_t)(d->vehicle->owner));
 			DrawString(toc_left, toc_right, y + 1, STR_DEPARTURES_TOC, TC_FROMSTRING, SA_RIGHT);
 		}
 
@@ -1044,7 +1044,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 			AutoRestoreBackup dpi_backup(_cur_dpi, &tmp_dpi);
 
 			/* The scrolling text starts out of view at the right of the screen and finishes when it is out of view at the left of the screen. */
-			int64 elapsed_scroll_px = this->elapsed_ms / 27;
+			int64_t elapsed_scroll_px = this->elapsed_ms / 27;
 			int pos = ltr
 				? text_right - (elapsed_scroll_px % (list_width + text_right - text_left))
 				:  text_left + (elapsed_scroll_px % (list_width + text_right - text_left));

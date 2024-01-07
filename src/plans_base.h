@@ -110,7 +110,7 @@ struct PlanLine {
 		}
 	}
 
-	void AddLineToCalculateCentreTile(uint64 &x, uint64 &y, uint32 &count) const
+	void AddLineToCalculateCentreTile(uint64_t &x, uint64_t &y, uint32_t &count) const
 	{
 		for (size_t i = 0; i < this->tiles.size(); i++) {
 			TileIndex t = this->tiles[i];
@@ -122,9 +122,9 @@ struct PlanLine {
 
 	TileIndex CalculateCentreTile() const
 	{
-		uint64 x = 0;
-		uint64 y = 0;
-		uint32 count = 0;
+		uint64_t x = 0;
+		uint64_t y = 0;
+		uint32_t count = 0;
 		this->AddLineToCalculateCentreTile(x, y, count);
 		if (count == 0) return INVALID_TILE;
 		return TileXY(x / count, y / count);
@@ -237,9 +237,9 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 
 	TileIndex CalculateCentreTile() const
 	{
-		uint64 x = 0;
-		uint64 y = 0;
-		uint32 count = 0;
+		uint64_t x = 0;
+		uint64_t y = 0;
+		uint32_t count = 0;
 		for (PlanLineVector::const_iterator it = lines.begin(); it != lines.end(); it++) {
 			(*it)->AddLineToCalculateCentreTile(x, y, count);
 		}

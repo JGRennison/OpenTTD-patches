@@ -535,7 +535,7 @@ struct ScriptSettingsWindow : public Window {
 	void OnQueryTextFinished(char *str) override
 	{
 		if (StrEmpty(str)) return;
-		int32 value = atoi(str);
+		int32_t value = atoi(str);
 
 		SetValue(value);
 	}
@@ -1248,15 +1248,15 @@ static Hotkey scriptdebug_hotkeys[] = {
 	Hotkey('7', "company_7", WID_SCRD_COMPANY_BUTTON_START + 6),
 	Hotkey('8', "company_8", WID_SCRD_COMPANY_BUTTON_START + 7),
 	Hotkey('9', "company_9", WID_SCRD_COMPANY_BUTTON_START + 8),
-	Hotkey((uint16)0, "company_10", WID_SCRD_COMPANY_BUTTON_START + 9),
-	Hotkey((uint16)0, "company_11", WID_SCRD_COMPANY_BUTTON_START + 10),
-	Hotkey((uint16)0, "company_12", WID_SCRD_COMPANY_BUTTON_START + 11),
-	Hotkey((uint16)0, "company_13", WID_SCRD_COMPANY_BUTTON_START + 12),
-	Hotkey((uint16)0, "company_14", WID_SCRD_COMPANY_BUTTON_START + 13),
-	Hotkey((uint16)0, "company_15", WID_SCRD_COMPANY_BUTTON_START + 14),
+	Hotkey((uint16_t)0, "company_10", WID_SCRD_COMPANY_BUTTON_START + 9),
+	Hotkey((uint16_t)0, "company_11", WID_SCRD_COMPANY_BUTTON_START + 10),
+	Hotkey((uint16_t)0, "company_12", WID_SCRD_COMPANY_BUTTON_START + 11),
+	Hotkey((uint16_t)0, "company_13", WID_SCRD_COMPANY_BUTTON_START + 12),
+	Hotkey((uint16_t)0, "company_14", WID_SCRD_COMPANY_BUTTON_START + 13),
+	Hotkey((uint16_t)0, "company_15", WID_SCRD_COMPANY_BUTTON_START + 14),
 	Hotkey('S', "settings", WID_SCRD_SETTINGS),
 	Hotkey('0', "game_script", WID_SCRD_SCRIPT_GAME),
-	Hotkey((uint16)0, "reload", WID_SCRD_RELOAD_TOGGLE),
+	Hotkey((uint16_t)0, "reload", WID_SCRD_RELOAD_TOGGLE),
 	Hotkey('B', "break_toggle", WID_SCRD_BREAK_STR_ON_OFF_BTN),
 	Hotkey('F', "break_string", WID_SCRD_BREAK_STR_EDIT_BOX),
 	Hotkey('C', "match_case", WID_SCRD_MATCH_CASE_BTN),

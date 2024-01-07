@@ -35,7 +35,7 @@
 #include "../safeguards.h"
 
 static bool _network_udp_server;         ///< Is the UDP server started?
-static uint16 _network_udp_broadcast;    ///< Timeout for the UDP broadcasts.
+static uint16_t _network_udp_broadcast;  ///< Timeout for the UDP broadcasts.
 
 /** Some information about a socket, which exists before the actual socket has been created to provide locking and the likes. */
 struct UDPSocket {
@@ -100,8 +100,8 @@ void ServerNetworkUDPSocketHandler::Receive_CLIENT_FIND_SERVER(Packet *p, Networ
 
 void ServerNetworkUDPSocketHandler::Reply_CLIENT_FIND_SERVER_extended(Packet *p, NetworkAddress *client_addr)
 {
-	[[maybe_unused]] uint16 flags = p->Recv_uint16();
-	uint16 version = p->Recv_uint16();
+	[[maybe_unused]] uint16_t flags = p->Recv_uint16();
+	uint16_t version = p->Recv_uint16();
 
 	Packet packet(PACKET_UDP_EX_SERVER_RESPONSE);
 	this->SendPacket(&packet, client_addr);

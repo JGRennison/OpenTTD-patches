@@ -858,7 +858,7 @@ bool AfterLoadGame()
 		}
 	}
 	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH, 3)) {
-		_scaled_tick_counter = (uint64)((_tick_counter * _settings_game.economy.day_length_factor) + _tick_skip_counter);
+		_scaled_tick_counter = (uint64_t)((_tick_counter * _settings_game.economy.day_length_factor) + _tick_skip_counter);
 	}
 
 	/* Update current year
@@ -1586,7 +1586,7 @@ bool AfterLoadGame()
 		/* m2 signal state bit allocation has shrunk */
 		for (TileIndex t = 0; t < map_size; t++) {
 			if (IsTileType(t, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL && IsBridge(t) && IsTunnelBridgeSignalSimulationEntrance(t)) {
-				extern void ShiftBridgeEntranceSimulatedSignalsExtended(TileIndex t, int shift, uint64 in);
+				extern void ShiftBridgeEntranceSimulatedSignalsExtended(TileIndex t, int shift, uint64_t in);
 				const uint shift = 15 - BRIDGE_M2_SIGNAL_STATE_COUNT;
 				ShiftBridgeEntranceSimulatedSignalsExtended(t, shift, GB(_m[t].m2, BRIDGE_M2_SIGNAL_STATE_COUNT, shift));
 				SB(_m[t].m2, 0, 15, GB(_m[t].m2, 0, 15) << shift);
@@ -2313,7 +2313,7 @@ bool AfterLoadGame()
 
 			/* Replace "house construction year" with "house age" */
 			if (IsTileType(t, MP_HOUSE) && IsHouseCompleted(t)) {
-				_m[t].m5 = ClampTo<uint8>(_cur_year - (_m[t].m5 + ORIGINAL_BASE_YEAR));
+				_m[t].m5 = ClampTo<uint8_t>(_cur_year - (_m[t].m5 + ORIGINAL_BASE_YEAR));
 			}
 		}
 	}
@@ -2684,7 +2684,7 @@ bool AfterLoadGame()
 		 *       So taking the 16 bit fractional part into account there are plenty of bits left
 		 *       for unmodified savegames ...
 		 */
-		uint64 aimed_inflation = (_economy.old_max_loan_unround << 16 | _economy.old_max_loan_unround_fract) / _settings_game.difficulty.max_loan;
+		uint64_t aimed_inflation = (_economy.old_max_loan_unround << 16 | _economy.old_max_loan_unround_fract) / _settings_game.difficulty.max_loan;
 
 		/* ... well, just clamp it then. */
 		if (aimed_inflation > MAX_INFLATION) aimed_inflation = MAX_INFLATION;
@@ -3134,7 +3134,7 @@ bool AfterLoadGame()
 		_settings_game.pf.reverse_at_signals = IsSavegameVersionBefore(SLV_100) || (_settings_game.pf.wait_oneway_signal != 255 && _settings_game.pf.wait_twoway_signal != 255 && _settings_game.pf.wait_for_pbs_path != 255);
 
 		for (Train *t : Train::Iterate()) {
-			_settings_game.vehicle.max_train_length = std::max<uint8>(_settings_game.vehicle.max_train_length, CeilDiv(t->gcache.cached_total_length, TILE_SIZE));
+			_settings_game.vehicle.max_train_length = std::max<uint8_t>(_settings_game.vehicle.max_train_length, CeilDiv(t->gcache.cached_total_length, TILE_SIZE));
 		}
 	}
 
@@ -3335,7 +3335,7 @@ bool AfterLoadGame()
 	}
 
 	if (IsSavegameVersionBefore(SLV_178)) {
-		extern uint8 _old_diff_level;
+		extern uint8_t _old_diff_level;
 		/* Initialise script settings profile */
 		_settings_game.script.settings_profile = IsInsideMM(_old_diff_level, SP_BEGIN, SP_END) ? _old_diff_level : (uint)SP_MEDIUM;
 	}
@@ -3364,7 +3364,7 @@ bool AfterLoadGame()
 
 	if (IsSavegameVersionBefore(SLV_184)) {
 		/* The global units configuration is split up in multiple configurations. */
-		extern uint8 _old_units;
+		extern uint8_t _old_units;
 		_settings_game.locale.units_velocity = Clamp(_old_units, 0, 2);
 		_settings_game.locale.units_power    = Clamp(_old_units, 0, 2);
 		_settings_game.locale.units_weight   = Clamp(_old_units, 1, 2);
@@ -3606,7 +3606,7 @@ bool AfterLoadGame()
 			v->timetable_start += _scaled_date_ticks.base() - _tick_counter;
 		}
 	} else if (!SlXvIsFeaturePresent(XSLFI_TIMETABLES_START_TICKS, 3)) {
-		extern btree::btree_map<VehicleID, uint16> _old_timetable_start_subticks_map;
+		extern btree::btree_map<VehicleID, uint16_t> _old_timetable_start_subticks_map;
 
 		for (Vehicle *v : Vehicle::Iterate()) {
 			if (v->timetable_start == 0) continue;
@@ -3885,7 +3885,7 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_GROUP_REPLACE_WAGON_REMOVAL)) {
 		/* Propagate wagon removal flag for compatibility */
 		/* Temporary bitmask of company wagon removal setting */
-		uint16 wagon_removal = 0;
+		uint16_t wagon_removal = 0;
 		for (const Company *c : Company::Iterate()) {
 			if (c->settings.renew_keep_length) SetBit(wagon_removal, c->index);
 		}
@@ -3902,7 +3902,7 @@ bool AfterLoadGame()
 	/* Use current order time to approximate last loading time */
 	if (IsSavegameVersionBefore(SLV_LAST_LOADING_TICK) && SlXvIsFeatureMissing(XSLFI_LAST_LOADING_TICK)) {
 		for (Vehicle *v : Vehicle::Iterate()) {
-			v->last_loading_tick = std::max(_scaled_tick_counter, static_cast<uint64>(v->current_order_time)) - v->current_order_time;
+			v->last_loading_tick = std::max(_scaled_tick_counter, static_cast<uint64_t>(v->current_order_time)) - v->current_order_time;
 		}
 	} else if (SlXvIsFeaturePresent(XSLFI_LAST_LOADING_TICK, 1, 1)) {
 		for (Vehicle *v : Vehicle::Iterate()) {
@@ -4192,7 +4192,7 @@ bool AfterLoadGame()
 		}
 	}
 	if (SlXvIsFeaturePresent(XSLFI_SCHEDULED_DISPATCH, 1, 4)) {
-		extern btree::btree_map<DispatchSchedule *, uint16> _old_scheduled_dispatch_start_full_date_fract_map;
+		extern btree::btree_map<DispatchSchedule *, uint16_t> _old_scheduled_dispatch_start_full_date_fract_map;
 
 		for (OrderList *order_list : OrderList::Iterate()) {
 			for (DispatchSchedule &ds : order_list->GetScheduledDispatchScheduleSet()) {

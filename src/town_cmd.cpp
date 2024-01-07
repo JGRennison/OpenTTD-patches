@@ -194,7 +194,7 @@ void Town::InitializeLayout(TownLayout layout)
 /* static */ Town *Town::GetRandom()
 {
 	if (Town::GetNumItems() == 0) return nullptr;
-	int num = RandomRange((uint16)Town::GetNumItems());
+	int num = RandomRange((uint16_t)Town::GetNumItems());
 	size_t index = MAX_UVALUE(size_t);
 
 	while (num >= 0) {
@@ -229,7 +229,7 @@ void Town::UpdateLabel()
 		if (r > RATING_GOOD)      town_rating++; // Very Good
 		if (r > RATING_VERYGOOD)  town_rating++; // Excellent and Outstanding
 
-		static const uint8 tcs[] = { TC_RED, TC_ORANGE, TC_YELLOW, TC_WHITE, TC_GREEN };
+		static const uint8_t tcs[] = { TC_RED, TC_ORANGE, TC_YELLOW, TC_WHITE, TC_GREEN };
 		this->town_label_rating = tcs[town_rating];
 	}
 }
@@ -237,9 +237,9 @@ void Town::UpdateLabel()
 /**
  * Get the second dparam value for town viewport labels
  */
-uint64 Town::LabelParam2() const
+uint64_t Town::LabelParam2() const
 {
-	uint64 value = this->cache.population;
+	uint64_t value = this->cache.population;
 	if (!(_game_mode == GM_EDITOR) && (_local_company < MAX_COMPANIES)) {
 		SB(value, 32, 8, this->town_label_rating);
 	} else {
@@ -275,7 +275,7 @@ enum TownGrowthResult {
 };
 
 static bool BuildTownHouse(Town *t, TileIndex tile);
-static Town *CreateRandomTown(uint attempts, uint32 townnameparts, TownSize size, bool city, TownLayout layout);
+static Town *CreateRandomTown(uint attempts, uint32_t townnameparts, TownSize size, bool city, TownLayout layout);
 
 static void TownDrawHouseLift(const TileInfo *ti)
 {
@@ -451,14 +451,14 @@ static Foundation GetFoundation_Town(TileIndex tile, Slope tileh)
 	if (hid >= NEW_HOUSE_OFFSET) {
 		const HouseSpec *hs = HouseSpec::Get(hid);
 		if (hs->grf_prop.spritegroup[0] != nullptr && HasBit(hs->callback_mask, CBM_HOUSE_DRAW_FOUNDATIONS)) {
-			uint32 callback_res = GetHouseCallback(CBID_HOUSE_DRAW_FOUNDATIONS, 0, 0, hid, Town::GetByTile(tile), tile);
+			uint32_t callback_res = GetHouseCallback(CBID_HOUSE_DRAW_FOUNDATIONS, 0, 0, hid, Town::GetByTile(tile), tile);
 			if (callback_res != CALLBACK_FAILED && !ConvertBooleanCallback(hs->grf_prop.grffile, CBID_HOUSE_DRAW_FOUNDATIONS, callback_res)) return FOUNDATION_NONE;
 		}
 	}
 	return FlatteningFoundation(tileh);
 }
 
-uint8 GetAnimatedTileSpeed_Town(TileIndex tile)
+uint8_t GetAnimatedTileSpeed_Town(TileIndex tile)
 {
 	if (GetHouseType(tile) >= NEW_HOUSE_OFFSET) {
 		return GetNewHouseTileAnimationSpeed(tile);
@@ -580,11 +580,11 @@ static void ChangePopulation(Town *t, int mod)
 /**
  * Determines the world population
  * Basically, count population of all towns, one by one
- * @return uint32 the calculated population of the world
+ * @return uint32_t the calculated population of the world
  */
-uint32 GetWorldPopulation()
+uint32_t GetWorldPopulation()
 {
-	uint32 pop = 0;
+	uint32_t pop = 0;
 	for (const Town *t : Town::Iterate()) pop += t->cache.population;
 	return pop;
 }
@@ -707,13 +707,13 @@ static void TileLoop_Town(TileIndex tile)
 	}
 
 	Town *t = Town::GetByTile(tile);
-	uint32 r = Random();
+	uint32_t r = Random();
 
 	StationFinder stations(TileArea(tile, 1, 1));
 
 	if (HasBit(hs->callback_mask, CBM_HOUSE_PRODUCE_CARGO)) {
 		for (uint i = 0; i < 256; i++) {
-			uint16 callback = GetHouseCallback(CBID_HOUSE_PRODUCE_CARGO, i, r, house_id, t, tile);
+			uint16_t callback = GetHouseCallback(CBID_HOUSE_PRODUCE_CARGO, i, r, house_id, t, tile);
 
 			if (callback == CALLBACK_FAILED || callback == CALLBACK_HOUSEPRODCARGO_END) break;
 
@@ -748,7 +748,7 @@ static void TileLoop_Town(TileIndex tile)
 				if (GB(_tick_counter, 8, 2) == GB(tile, 0, 2)) {
 					/* Make a bitmask with up to 32 bits set, one for each potential pax */
 					int genmax = (hs->population + 7) / 8;
-					uint32 genmask = (genmax >= 32) ? 0xFFFFFFFF : ((1 << genmax) - 1);
+					uint32_t genmask = (genmax >= 32) ? 0xFFFFFFFF : ((1 << genmax) - 1);
 					/* Mask random value by potential pax and count number of actual pax */
 					uint amt = CountBits(r & genmask);
 					/* Adjust and apply */
@@ -852,7 +852,7 @@ void AddProducedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &produce
 	if (HasBit(hs->callback_mask, CBM_HOUSE_PRODUCE_CARGO)) {
 		Town *t = (tile == INVALID_TILE) ? nullptr : Town::GetByTile(tile);
 		for (uint i = 0; i < 256; i++) {
-			uint16 callback = GetHouseCallback(CBID_HOUSE_PRODUCE_CARGO, i, 0, house_id, t, tile);
+			uint16_t callback = GetHouseCallback(CBID_HOUSE_PRODUCE_CARGO, i, 0, house_id, t, tile);
 
 			if (callback == CALLBACK_FAILED || callback == CALLBACK_HOUSEPRODCARGO_END) break;
 
@@ -890,13 +890,13 @@ void AddAcceptedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &accepta
 	CargoID accepts[lengthof(hs->accepts_cargo)];
 
 	/* Set the initial accepted cargo types */
-	for (uint8 i = 0; i < lengthof(accepts); i++) {
+	for (uint8_t i = 0; i < lengthof(accepts); i++) {
 		accepts[i] = hs->accepts_cargo[i];
 	}
 
 	/* Check for custom accepted cargo types */
 	if (HasBit(hs->callback_mask, CBM_HOUSE_ACCEPT_CARGO)) {
-		uint16 callback = GetHouseCallback(CBID_HOUSE_ACCEPT_CARGO, 0, 0, house_id, t, tile);
+		uint16_t callback = GetHouseCallback(CBID_HOUSE_ACCEPT_CARGO, 0, 0, house_id, t, tile);
 		if (callback != CALLBACK_FAILED) {
 			/* Replace accepted cargo types with translated values from callback */
 			accepts[0] = GetCargoTranslation(GB(callback,  0, 5), hs->grf_prop.grffile);
@@ -907,7 +907,7 @@ void AddAcceptedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &accepta
 
 	/* Check for custom cargo acceptance */
 	if (HasBit(hs->callback_mask, CBM_HOUSE_CARGO_ACCEPTANCE)) {
-		uint16 callback = GetHouseCallback(CBID_HOUSE_CARGO_ACCEPTANCE, 0, 0, house_id, t, tile);
+		uint16_t callback = GetHouseCallback(CBID_HOUSE_CARGO_ACCEPTANCE, 0, 0, house_id, t, tile);
 		if (callback != CALLBACK_FAILED) {
 			AddAcceptedCargoSetMask(accepts[0], GB(callback, 0, 4), acceptance, always_accepted);
 			AddAcceptedCargoSetMask(accepts[1], GB(callback, 4, 4), acceptance, always_accepted);
@@ -922,7 +922,7 @@ void AddAcceptedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &accepta
 	}
 
 	/* No custom acceptance, so fill in with the default values */
-	for (uint8 i = 0; i < lengthof(accepts); i++) {
+	for (uint8_t i = 0; i < lengthof(accepts); i++) {
 		AddAcceptedCargoSetMask(accepts[i], hs->cargo_acceptance[i], acceptance, always_accepted);
 	}
 }
@@ -978,7 +978,7 @@ static void TownTickHandler(Town *t)
 				i = t->growth_rate;
 			} else {
 				/* If growth failed wait a bit before retrying */
-				i = std::min<uint16>(t->growth_rate, TOWN_GROWTH_TICKS - 1);
+				i = std::min<uint16_t>(t->growth_rate, TOWN_GROWTH_TICKS - 1);
 			}
 		}
 		t->grow_counter = i;
@@ -1016,7 +1016,7 @@ RoadType GetTownRoadType()
 {
 	RoadType best_rt = ROADTYPE_ROAD;
 	const RoadTypeInfo *best = nullptr;
-	const uint16 assume_max_speed = 50;
+	const uint16_t assume_max_speed = 50;
 
 	for (RoadType rt = ROADTYPE_BEGIN; rt != ROADTYPE_END; rt++) {
 		if (RoadTypeIsTram(rt)) continue;
@@ -1488,7 +1488,7 @@ static bool GrowTownWithTunnel(const Town *t, const TileIndex tile, const DiagDi
 
 		/* Only tunnel under a mountain if the slope is continuous for at least 4 tiles. We want tunneling to be a last resort for large hills. */
 		TileIndex slope_tile = tile;
-		for (uint8 tiles = 0; tiles < 4; tiles++) {
+		for (uint8_t tiles = 0; tiles < 4; tiles++) {
 			if (!IsValidTile(slope_tile)) return false;
 			slope = GetTileSlope(slope_tile);
 			if (slope != InclinedSlope(tunnel_dir) && !IsSteepSlope(slope) && !IsSlopeWithOneCornerRaised(slope)) return false;
@@ -1502,7 +1502,7 @@ static bool GrowTownWithTunnel(const Town *t, const TileIndex tile, const DiagDi
 		max_tunnel_length = 5;
 	}
 
-	uint8 tunnel_length = 0;
+	uint8_t tunnel_length = 0;
 	TileIndex tunnel_tile = tile; // Iteratator to store the other end tile of the tunnel.
 
 	/* Find the end tile of the tunnel for length and continuation checks. */
@@ -1657,7 +1657,7 @@ static void GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, DiagDirection t
 				break;
 		}
 
-		const uint8 max_road_slope = t1->GetBuildMaxRoadSlope();
+		const uint8_t max_road_slope = t1->GetBuildMaxRoadSlope();
 		if (max_road_slope > 0 && ((rcmd == ROAD_X) || (rcmd == ROAD_Y))) {
 			/* Limit consecutive sloped road tiles */
 
@@ -1998,7 +1998,7 @@ static bool GrowTownAtRoad(Town *t, TileIndex tile)
  */
 static RoadBits GenRandomRoadBits()
 {
-	uint32 r = Random();
+	uint32_t r = Random();
 	uint a = GB(r, 0, 2);
 	uint b = GB(r, 8, 2);
 	if (a == b) b ^= 2;
@@ -2118,7 +2118,7 @@ void UpdateTownRadius(Town *t)
 
 	MemSetT(t->cache.squared_town_zone_radius, 0, lengthof(t->cache.squared_town_zone_radius));
 
-	uint16 cb_result = GetTownZonesCallback(t);
+	uint16_t cb_result = GetTownZonesCallback(t);
 	if (cb_result == 0) {
 		t->cache.squared_town_zone_radius[0] = GetRegister(0x100);
 		t->cache.squared_town_zone_radius[1] = GetRegister(0x101);
@@ -2170,7 +2170,7 @@ static void UpdateTownGrowth(Town *t);
  * @param layout The road layout of the town.
  * @param manual Was the town placed manually?
  */
-static void DoCreateTown(Town *t, TileIndex tile, uint32 townnameparts, TownSize size, bool city, TownLayout layout, bool manual)
+static void DoCreateTown(Town *t, TileIndex tile, uint32_t townnameparts, TownSize size, bool city, TownLayout layout, bool manual)
 {
 	t->xy = tile;
 	t->cache.num_houses = 0;
@@ -2308,14 +2308,14 @@ static bool IsUniqueTownName(const char *name)
  * @param text Custom name for the town. If empty, the town name parts will be used.
  * @return The cost of this operation or an error.
  */
-CommandCost CmdFoundTown(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdFoundTown(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	TownSize size = Extract<TownSize, 0, 2>(p1);
 	bool city = HasBit(p1, 2);
 	TownLayout layout = Extract<TownLayout, 3, 3>(p1);
 	TownNameParams par(_settings_game.game_creation.town_name);
 	bool random = HasBit(p1, 6);
-	uint32 townnameparts = p2;
+	uint32_t townnameparts = p2;
 
 	if (size >= TSZ_END) return CMD_ERROR;
 	if (layout >= NUM_TLS) return CMD_ERROR;
@@ -2535,7 +2535,7 @@ static TileIndex FindNearestGoodCoastalTownSpot(TileIndex tile, TownLayout layou
 	return INVALID_TILE;
 }
 
-static Town *CreateRandomTown(uint attempts, uint32 townnameparts, TownSize size, bool city, TownLayout layout)
+static Town *CreateRandomTown(uint attempts, uint32_t townnameparts, TownSize size, bool city, TownLayout layout)
 {
 	assert(_game_mode == GM_EDITOR || _generating_world); // These are the preconditions for CMD_DELETE_TOWN
 
@@ -2593,7 +2593,7 @@ bool GenerateTowns(TownLayout layout)
 	uint difficulty = (_game_mode != GM_EDITOR) ? _settings_game.difficulty.number_towns : 0;
 	uint total = (difficulty == (uint)CUSTOM_TOWN_NUMBER_DIFFICULTY) ? _settings_game.game_creation.custom_town_number : ScaleByMapSize(_num_initial_towns[difficulty] + (Random() & 7));
 	total = std::min<uint>(TownPool::MAX_SIZE, total);
-	uint32 townnameparts;
+	uint32_t townnameparts;
 	TownNames town_names;
 
 	SetGeneratingWorldProgress(GWP_TOWN, total);
@@ -2985,7 +2985,7 @@ static void DoBuildHouse(Town *t, TileIndex tile, HouseID house, byte random_bit
 	byte construction_stage = 0;
 
 	if (_generating_world || _game_mode == GM_EDITOR) {
-		uint32 r = Random();
+		uint32_t r = Random();
 
 		construction_stage = TOWN_HOUSE_COMPLETED;
 		if (Chance16(1, 7)) construction_stage = GB(r, 0, 2);
@@ -3014,7 +3014,7 @@ static void DoBuildHouse(Town *t, TileIndex tile, HouseID house, byte random_bit
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildHouse(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdBuildHouse(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	if (_game_mode != GM_EDITOR && // in scenario editor anyone can build a house
 			_current_company != OWNER_TOWN && // towns naturally can build houses
@@ -3226,7 +3226,7 @@ void ClearTownHouse(Town *t, TileIndex tile)
  * @param text the new name or an empty string when resetting to the default
  * @return the cost of this operation or an error
  */
-CommandCost CmdRenameTown(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdRenameTown(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	Town *t = Town::GetIfValid(p1);
 	if (t == nullptr) return CMD_ERROR;
@@ -3265,7 +3265,7 @@ CommandCost CmdRenameTown(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
  * @param text the new name or an empty string when resetting to the default
  * @return the cost of this operation or an error
  */
-CommandCost CmdRenameTownNonAdmin(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdRenameTownNonAdmin(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	if (_networking && !_settings_game.difficulty.rename_towns_in_multiplayer) return CMD_ERROR;
 
@@ -3296,14 +3296,14 @@ const CargoSpec *FindFirstCargoWithTownEffect(TownEffect effect)
  * @param text Unused.
  * @return Empty cost or an error.
  */
-CommandCost CmdTownCargoGoal(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdTownCargoGoal(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 
 	TownEffect te = (TownEffect)GB(p1, 16, 8);
 	if (te < TE_BEGIN || te >= TE_END) return CMD_ERROR;
 
-	uint16 index = GB(p1, 0, 16);
+	uint16_t index = GB(p1, 0, 16);
 	Town *t = Town::GetIfValid(index);
 	if (t == nullptr) return CMD_ERROR;
 
@@ -3329,7 +3329,7 @@ CommandCost CmdTownCargoGoal(TileIndex tile, DoCommandFlag flags, uint32 p1, uin
  * @param text The new text (empty to remove the text).
  * @return Empty cost or an error.
  */
-CommandCost CmdTownSetText(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdTownSetText(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 	Town *t = Town::GetIfValid(p1);
@@ -3353,7 +3353,7 @@ CommandCost CmdTownSetText(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
  * @param text Unused.
  * @return Empty cost or an error.
  */
-CommandCost CmdTownGrowthRate(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdTownGrowthRate(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 	if (GB(p2, 16, 16) != 0) return CMD_ERROR;
@@ -3389,11 +3389,11 @@ CommandCost CmdTownGrowthRate(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
  * @param tile Unused.
  * @param flags Type of operation.
  * @param p1 Bit 0..15 = Town ID to change, bit 16..23 = Company ID to change.
- * @param p2 Bit 0..15 = New rating of company (signed int16).
+ * @param p2 Bit 0..15 = New rating of company (signed int16_t).
  * @param text Unused.
  * @return Empty cost or an error.
  */
-CommandCost CmdTownRating(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdTownRating(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 
@@ -3404,7 +3404,7 @@ CommandCost CmdTownRating(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 	CompanyID company_id = (CompanyID)GB(p1, 16, 8);
 	if (!Company::IsValidID(company_id)) return CMD_ERROR;
 
-	int16 new_rating = Clamp((int16)GB(p2, 0, 16), RATING_MINIMUM, RATING_MAXIMUM);
+	int16_t new_rating = Clamp((int16_t)GB(p2, 0, 16), RATING_MINIMUM, RATING_MAXIMUM);
 	if (_cheats.town_rating.value) {
 		new_rating = RATING_MAXIMUM;
 	}
@@ -3425,7 +3425,7 @@ CommandCost CmdTownRating(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
  * @param text Unused.
  * @return Empty cost or an error.
  */
-CommandCost CmdExpandTown(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdExpandTown(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	if (_game_mode != GM_EDITOR && _current_company != OWNER_DEITY) return CMD_ERROR;
 	Town *t = Town::GetIfValid(p1);
@@ -3434,7 +3434,7 @@ CommandCost CmdExpandTown(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
 	if (flags & DC_EXEC) {
 		/* The more houses, the faster we grow */
 		if (p2 == 0) {
-			uint amount = RandomRange(ClampTo<uint16>(t->cache.num_houses / 10)) + 3;
+			uint amount = RandomRange(ClampTo<uint16_t>(t->cache.num_houses / 10)) + 3;
 			t->cache.num_houses += amount;
 			UpdateTownRadius(t);
 
@@ -3465,7 +3465,7 @@ CommandCost CmdExpandTown(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
  * @param text Unused.
  * @return Empty cost or an error.
  */
-CommandCost CmdDeleteTown(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdDeleteTown(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	if (_game_mode != GM_EDITOR && !_generating_world) return CMD_ERROR;
 	Town *t = Town::GetIfValid(p1);
@@ -3748,7 +3748,7 @@ static CommandCost TownActionFundBuildings(Town *t, DoCommandFlag flags)
 		 * tick-perfect and gives player some time window where they can
 		 * spam funding with the exact same efficiency.
 		 */
-		t->grow_counter = std::min<uint16>(t->grow_counter, 2 * TOWN_GROWTH_TICKS - (t->growth_rate - t->grow_counter) % TOWN_GROWTH_TICKS);
+		t->grow_counter = std::min<uint16_t>(t->grow_counter, 2 * TOWN_GROWTH_TICKS - (t->growth_rate - t->grow_counter) % TOWN_GROWTH_TICKS);
 
 		SetWindowDirty(WC_TOWN_VIEW, t->index);
 	}
@@ -3904,7 +3904,7 @@ uint GetMaskOfTownActions(int *nump, CompanyID cid, const Town *t)
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdDoTownAction(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdDoTownAction(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	Town *t = Town::GetIfValid(p1);
 	if (t == nullptr || p2 >= lengthof(_town_action_proc)) return CMD_ERROR;
@@ -3935,14 +3935,14 @@ CommandCost CmdDoTownAction(TileIndex tile, DoCommandFlag flags, uint32 p1, uint
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdOverrideTownSetting(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdOverrideTownSetting(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	Town *t = Town::GetIfValid(p1);
 	if (t == nullptr) return CMD_ERROR;
 
-	const uint8 setting = GB(p2, 0, 8);
+	const uint8_t setting = GB(p2, 0, 8);
 	const bool is_override = HasBit(p2, 16);
-	const uint8 value = GB(p2, 8, 8);
+	const uint8_t value = GB(p2, 8, 8);
 	switch (setting) {
 		case TSOF_OVERRIDE_GROWTH:
 			if (is_override && value != 0) return CMD_ERROR;
@@ -4002,7 +4002,7 @@ CommandCost CmdOverrideTownSetting(TileIndex tile, DoCommandFlag flags, uint32 p
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdOverrideTownSettingNonAdmin(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdOverrideTownSettingNonAdmin(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	if (_networking && !_settings_game.difficulty.override_town_settings_in_multiplayer) return CMD_ERROR;
 
@@ -4069,14 +4069,14 @@ static void UpdateTownRating(Town *t)
  * @param t The town to calculate grow counter for
  * @param prev_growth_rate Town growth rate before it changed (one that was used with grow counter to be updated)
  */
-static void UpdateTownGrowCounter(Town *t, uint16 prev_growth_rate)
+static void UpdateTownGrowCounter(Town *t, uint16_t prev_growth_rate)
 {
 	if (t->growth_rate == TOWN_GROWTH_RATE_NONE || t->IsTownGrowthDisabledByOverride()) return;
 	if (prev_growth_rate == TOWN_GROWTH_RATE_NONE) {
-		t->grow_counter = std::min<uint16>(t->growth_rate, t->grow_counter);
+		t->grow_counter = std::min<uint16_t>(t->growth_rate, t->grow_counter);
 		return;
 	}
-	t->grow_counter = RoundDivSU((uint32)t->grow_counter * (t->growth_rate + 1), prev_growth_rate + 1);
+	t->grow_counter = RoundDivSU((uint32_t)t->grow_counter * (t->growth_rate + 1), prev_growth_rate + 1);
 }
 
 /**
@@ -4108,13 +4108,13 @@ static uint GetNormalGrowthRate(Town *t)
 	 * Unserviced+unfunded towns get an additional malus in UpdateTownGrowth(),
 	 * so the "320" is actually not better than the "420".
 	 */
-	static const uint16 _grow_count_values[2][6] = {
+	static const uint16_t _grow_count_values[2][6] = {
 		{ 120, 120, 120, 100,  80,  60 }, // Fund new buildings has been activated
 		{ 320, 420, 300, 220, 160, 100 }  // Normal values
 	};
 
 	int n = CountActiveStations(t);
-	uint16 m = _grow_count_values[t->fund_buildings_months != 0 ? 0 : 1][std::min(n, 5)];
+	uint16_t m = _grow_count_values[t->fund_buildings_months != 0 ? 0 : 1][std::min(n, 5)];
 
 	int growth_multiplier;
 	if (_settings_game.economy.town_growth_rate == 0) {
@@ -4137,19 +4137,19 @@ static uint GetNormalGrowthRate(Town *t)
 		 * town_growth_cargo_transported percent of the growth rate is multiplied by the proportion of town cargoes transported.
 		 * The growth rate can only be decreased by this setting, not increased.
 		 */
-		uint32 inverse_m = UINT32_MAX / m;
-		auto calculate_cargo_ratio_fix15 = [](const TransportedCargoStat<uint32> &stat) -> uint32 {
-			return stat.old_max ? ((uint64) (stat.old_act << 15)) / stat.old_max : 1 << 15;
+		uint32_t inverse_m = UINT32_MAX / m;
+		auto calculate_cargo_ratio_fix15 = [](const TransportedCargoStat<uint32_t> &stat) -> uint32_t {
+			return stat.old_max ? ((uint64_t) (stat.old_act << 15)) / stat.old_max : 1 << 15;
 		};
-		uint32 cargo_ratio_fix16 = calculate_cargo_ratio_fix15(t->supplied[CT_PASSENGERS]) + calculate_cargo_ratio_fix15(t->supplied[CT_MAIL]);
-		uint64 cargo_dependant_part = (((uint64) cargo_ratio_fix16) * ((uint64) inverse_m) * _settings_game.economy.town_growth_cargo_transported) >> 16;
-		uint64 non_cargo_dependant_part = ((uint64) inverse_m) * (100 - _settings_game.economy.town_growth_cargo_transported);
-		uint64 total = (cargo_dependant_part + non_cargo_dependant_part);
+		uint32_t cargo_ratio_fix16 = calculate_cargo_ratio_fix15(t->supplied[CT_PASSENGERS]) + calculate_cargo_ratio_fix15(t->supplied[CT_MAIL]);
+		uint64_t cargo_dependant_part = (((uint64_t) cargo_ratio_fix16) * ((uint64_t) inverse_m) * _settings_game.economy.town_growth_cargo_transported) >> 16;
+		uint64_t non_cargo_dependant_part = ((uint64_t) inverse_m) * (100 - _settings_game.economy.town_growth_cargo_transported);
+		uint64_t total = (cargo_dependant_part + non_cargo_dependant_part);
 		if (total == 0) {
 			ClrBit(t->flags, TOWN_IS_GROWING);
 			return UINT16_MAX;
 		}
-		m = ((uint64) UINT32_MAX * 100) / total;
+		m = ((uint64_t) UINT32_MAX * 100) / total;
 	}
 
 	return TownTicksToGameTicks(m / (t->cache.num_houses / 50 + 1));
@@ -4388,7 +4388,7 @@ void UpdateAllTownRatings()
 			if (Company::IsValidID(_local_company) && HasBit(t->have_ratings, _local_company) && t->ratings[_local_company] <= 0) {
 				ZoningTownAuthorityRatingChange();
 			}
-			for (uint8 c : SetBitIterator(t->have_ratings)) {
+			for (uint8_t c : SetBitIterator(t->have_ratings)) {
 				t->ratings[c] = RATING_MAXIMUM;
 			}
 			if (t->have_ratings != 0) {
@@ -4494,7 +4494,7 @@ static CommandCost TerraformTile_Town(TileIndex tile, DoCommandFlag flags, int z
 			hs = HouseSpec::Get(house);
 			if (HasBit(hs->callback_mask, CBM_HOUSE_AUTOSLOPE)) {
 				/* If the callback fails, allow autoslope. */
-				uint16 res = GetHouseCallback(CBID_HOUSE_AUTOSLOPE, 0, 0, house, Town::GetByTile(tile), tile);
+				uint16_t res = GetHouseCallback(CBID_HOUSE_AUTOSLOPE, 0, 0, house, Town::GetByTile(tile), tile);
 				if (res != CALLBACK_FAILED && ConvertBooleanCallback(hs->grf_prop.grffile, CBID_HOUSE_AUTOSLOPE, res)) allow_terraform = false;
 			}
 

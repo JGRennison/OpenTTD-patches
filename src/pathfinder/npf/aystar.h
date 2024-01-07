@@ -89,7 +89,7 @@ struct AyStar;
  *  - #AYSTAR_FOUND_END_NODE : indicates this is the end tile
  *  - #AYSTAR_DONE : indicates this is not the end tile (or direction was wrong)
  */
-typedef int32 AyStar_EndNodeCheck(const AyStar *aystar, const OpenListNode *current);
+typedef int32_t AyStar_EndNodeCheck(const AyStar *aystar, const OpenListNode *current);
 
 /**
  * Calculate the G-value for the %AyStar algorithm.
@@ -97,14 +97,14 @@ typedef int32 AyStar_EndNodeCheck(const AyStar *aystar, const OpenListNode *curr
  *  - #AYSTAR_INVALID_NODE : indicates an item is not valid (e.g.: unwalkable)
  *  - Any value >= 0 : the g-value for this tile
  */
-typedef int32 AyStar_CalculateG(AyStar *aystar, AyStarNode *current, OpenListNode *parent);
+typedef int32_t AyStar_CalculateG(AyStar *aystar, AyStarNode *current, OpenListNode *parent);
 
 /**
  * Calculate the H-value for the %AyStar algorithm.
  * Mostly, this must return the distance (Manhattan way) between the current point and the end point.
  * @return The h-value for this tile (any value >= 0)
  */
-typedef int32 AyStar_CalculateH(AyStar *aystar, AyStarNode *current, OpenListNode *parent);
+typedef int32_t AyStar_CalculateH(AyStar *aystar, AyStarNode *current, OpenListNode *parent);
 
 /**
  * This function requests the tiles around the current tile and put them in #neighbours.
@@ -171,19 +171,19 @@ struct AyStar {
 
 protected:
 
-	inline uint32 HashKey(TileIndex tile, Trackdir td) const { return tile | (td << 28); }
+	inline uint32_t HashKey(TileIndex tile, Trackdir td) const { return tile | (td << 28); }
 
 	PodPool<PathNode*, sizeof(PathNode), 8192> closedlist_nodes;
-	robin_hood::unordered_flat_map<uint32, uint32> closedlist_hash;
+	robin_hood::unordered_flat_map<uint32_t, uint32_t> closedlist_hash;
 
 	BinaryHeap openlist_queue;  ///< The open queue.
 
 	PodPool<OpenListNode*, sizeof(OpenListNode), 8192> openlist_nodes;
-	robin_hood::unordered_flat_map<uint32, uint32> openlist_hash;
+	robin_hood::unordered_flat_map<uint32_t, uint32_t> openlist_hash;
 
 	void OpenListAdd(PathNode *parent, const AyStarNode *node, int f, int g);
-	uint32 OpenListIsInList(const AyStarNode *node);
-	std::pair<uint32, OpenListNode *> OpenListPop();
+	uint32_t OpenListIsInList(const AyStarNode *node);
+	std::pair<uint32_t, OpenListNode *> OpenListPop();
 
 	void ClosedListAdd(const PathNode *node);
 	PathNode *ClosedListIsInList(const AyStarNode *node);

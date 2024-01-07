@@ -84,7 +84,7 @@ enum TropicZone {
 /**
  * The index/ID of a Tile.
  */
-typedef uint32 TileIndex;
+typedef uint32_t TileIndex;
 
 /**
  * The very nice invalid tile marker

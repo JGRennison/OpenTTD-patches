@@ -16,12 +16,12 @@
 
 #include "../safeguards.h"
 
-static uint32 _jokerpp_separation_mode;
+static uint32_t _jokerpp_separation_mode;
 std::vector<OrderList *> _jokerpp_auto_separation;
 std::vector<OrderList *> _jokerpp_non_auto_separation;
 
-static uint16 _old_scheduled_dispatch_start_full_date_fract;
-btree::btree_map<DispatchSchedule *, uint16> _old_scheduled_dispatch_start_full_date_fract_map;
+static uint16_t _old_scheduled_dispatch_start_full_date_fract;
+btree::btree_map<DispatchSchedule *, uint16_t> _old_scheduled_dispatch_start_full_date_fract_map;
 
 /**
  * Converts this order from an old savegame's version;
@@ -29,7 +29,7 @@ btree::btree_map<DispatchSchedule *, uint16> _old_scheduled_dispatch_start_full_
  */
 void Order::ConvertFromOldSavegame()
 {
-	uint8 old_flags = this->flags;
+	uint8_t old_flags = this->flags;
 	this->flags = 0;
 
 	/* First handle non-stop - use value from savegame if possible, else use value from config file */
@@ -83,9 +83,9 @@ void Order::ConvertFromOldSavegame()
  * @param packed packed order
  * @return unpacked order
  */
-static Order UnpackVersion4Order(uint16 packed)
+static Order UnpackVersion4Order(uint16_t packed)
 {
-	return Order(((uint64) GB(packed, 8, 8)) << 24 | ((uint64) GB(packed, 4, 4)) << 8 | ((uint64) GB(packed, 0, 4)));
+	return Order(((uint64_t) GB(packed, 8, 8)) << 24 | ((uint64_t) GB(packed, 4, 4)) << 8 | ((uint64_t) GB(packed, 0, 4)));
 }
 
 /**
@@ -93,9 +93,9 @@ static Order UnpackVersion4Order(uint16 packed)
  * @param packed packed order
  * @return unpacked order
  */
-static Order UnpackVersion5Order(uint32 packed)
+static Order UnpackVersion5Order(uint32_t packed)
 {
-	return Order(((uint64) GB(packed, 16, 16)) << 24 | ((uint64) GB(packed, 8, 8)) << 8 | ((uint64) GB(packed, 0, 8)));
+	return Order(((uint64_t) GB(packed, 16, 16)) << 24 | ((uint64_t) GB(packed, 8, 8)) << 8 | ((uint64_t) GB(packed, 0, 8)));
 }
 
 /**
@@ -103,7 +103,7 @@ static Order UnpackVersion5Order(uint32 packed)
  * @param packed packed order
  * @return unpacked order
  */
-Order UnpackOldOrder(uint16 packed)
+Order UnpackOldOrder(uint16_t packed)
 {
 	Order order = UnpackVersion4Order(packed);
 
@@ -163,9 +163,9 @@ static void Load_ORDR()
 
 		if (IsSavegameVersionBefore(SLV_5)) {
 			/* Pre-version 5 had another layout for orders
-			 * (uint16 instead of uint32) */
-			len /= sizeof(uint16);
-			uint16 *orders = MallocT<uint16>(len + 1);
+			 * (uint16_t instead of uint32_t) */
+			len /= sizeof(uint16_t);
+			uint16_t *orders = MallocT<uint16_t>(len + 1);
 
 			SlArray(orders, len, SLE_UINT16);
 
@@ -176,8 +176,8 @@ static void Load_ORDR()
 
 			free(orders);
 		} else if (IsSavegameVersionBefore(SLV_5, 2)) {
-			len /= sizeof(uint32);
-			uint32 *orders = MallocT<uint32>(len + 1);
+			len /= sizeof(uint32_t);
+			uint32_t *orders = MallocT<uint32_t>(len + 1);
 
 			SlArray(orders, len, SLE_UINT32);
 

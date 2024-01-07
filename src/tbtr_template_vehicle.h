@@ -34,11 +34,11 @@
 struct TemplateVehicle;
 struct TemplateReplacement;
 
-typedef uint16 TemplateID;
+typedef uint16_t TemplateID;
 static const TemplateID INVALID_TEMPLATE = 0xFFFF;
 
-static const uint16 CONSIST_HEAD = 0x0;
-static const uint16 CONSIST_TAIL = 0xffff;
+static const uint16_t CONSIST_HEAD = 0x0;
+static const uint16_t CONSIST_TAIL = 0xffff;
 
 /** A pool allowing to store up to ~64k templates */
 typedef Pool<TemplateVehicle, TemplateID, 512, 64000> TemplatePool;
@@ -102,7 +102,7 @@ public:
 
 	EngineID engine_type;               ///< The type of engine used for this vehicle.
 	CargoID cargo_type;                 ///< type of cargo this vehicle is carrying
-	uint16 cargo_cap;                   ///< total capacity
+	uint16_t cargo_cap;                 ///< total capacity
 	byte cargo_subtype;
 
 	byte subtype;
@@ -110,16 +110,16 @@ public:
 
 	VehicleID index;
 
-	uint16 real_consist_length;
+	uint16_t real_consist_length;
 
-	uint16 max_speed;
-	uint32 power;
-	uint32 empty_weight;
-	uint32 full_weight;
-	uint32 max_te;
-	uint32 air_drag;
+	uint16_t max_speed;
+	uint32_t power;
+	uint32_t empty_weight;
+	uint32_t full_weight;
+	uint32_t max_te;
+	uint32_t air_drag;
 
-	uint32 ctrl_flags;                  ///< See: TemplateVehicleControlFlags
+	uint32_t ctrl_flags;                ///< See: TemplateVehicleControlFlags
 	std::string name;
 
 	VehicleSpriteSeq sprite_seq;                     ///< NOSAVE: Vehicle appearance.
@@ -184,8 +184,8 @@ public:
 	inline void SetWagon() { SetBit(this->subtype, GVSF_WAGON); }
 	inline void SetFreeWagon() { SetBit(this->subtype, GVSF_FREE_WAGON); }
 
-	inline uint16 GetRealLength() const { return this->real_consist_length; }
-	inline void SetRealLength(uint16 len) { this->real_consist_length = len; }
+	inline uint16_t GetRealLength() const { return this->real_consist_length; }
+	inline void SetRealLength(uint16_t len) { this->real_consist_length = len; }
 
 	int Length() const;
 
@@ -198,7 +198,7 @@ public:
 
 // TemplateReplacement stuff
 
-typedef Pool<TemplateReplacement, uint16, 16, 1024> TemplateReplacementPool;
+typedef Pool<TemplateReplacement, uint16_t, 16, 1024> TemplateReplacementPool;
 extern TemplateReplacementPool _template_replacement_pool;
 
 struct TemplateReplacement : TemplateReplacementPool::PoolItem<&_template_replacement_pool> {

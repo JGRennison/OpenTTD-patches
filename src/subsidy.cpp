@@ -243,7 +243,7 @@ void CreateSubsidy(CargoID cid, SourceType src_type, SourceID src, SourceType ds
  * @param text unused.
  * @return the cost of this operation or an error
  */
-CommandCost CmdCreateSubsidy(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdCreateSubsidy(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	if (!Subsidy::CanAllocateItem()) return CMD_ERROR;
 
@@ -341,13 +341,13 @@ bool FindSubsidyTownCargoRoute()
 	/* Passenger subsidies are not handled here. */
 	town_cargo_produced[CT_PASSENGERS] = 0;
 
-	uint8 cargo_count = town_cargo_produced.GetCount();
+	uint8_t cargo_count = town_cargo_produced.GetCount();
 
 	/* No cargo produced at all? */
 	if (cargo_count == 0) return false;
 
 	/* Choose a random cargo that is produced in the town. */
-	uint8 cargo_number = RandomRange(cargo_count);
+	uint8_t cargo_number = RandomRange(cargo_count);
 	CargoID cid;
 	for (cid = 0; cid < NUM_CARGO; cid++) {
 		if (town_cargo_produced[cid] > 0) {

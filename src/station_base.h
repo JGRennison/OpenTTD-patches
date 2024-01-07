@@ -47,12 +47,12 @@ enum ExtraStationNameInfoFlags {
 /** Extra station name string */
 struct ExtraStationNameInfo {
 	StringID str;
-	uint16 flags;
+	uint16_t flags;
 };
 
 extern std::array<ExtraStationNameInfo, MAX_EXTRA_STATION_NAMES> _extra_station_names;
 extern uint _extra_station_names_used;
-extern uint8 _extra_station_names_probability;
+extern uint8_t _extra_station_names_probability;
 
 class FlowStatMap;
 
@@ -73,7 +73,7 @@ public:
 #if OTTD_ALIGNMENT == 0
 		unaligned_uint32 first;
 #else
-		uint32 first;
+		uint32_t first;
 #endif
 		StationID second;
 	};
@@ -197,8 +197,8 @@ public:
 	inline const_iterator begin() const { return this->data(); }
 	inline iterator end() { return this->data() + this->count; }
 	inline const_iterator end() const { return this->data() + this->count; }
-	inline iterator upper_bound(uint32 key) { return std::upper_bound(this->begin(), this->end(), key); }
-	inline const_iterator upper_bound(uint32 key) const { return std::upper_bound(this->begin(), this->end(), key); }
+	inline iterator upper_bound(uint32_t key) { return std::upper_bound(this->begin(), this->end(), key); }
+	inline const_iterator upper_bound(uint32_t key) const { return std::upper_bound(this->begin(), this->end(), key); }
 
 	/**
 	 * Add some flow to the end of the shares map. Only do that if you know
@@ -211,7 +211,7 @@ public:
 	inline void AppendShare(StationID st, uint flow, bool restricted = false)
 	{
 		assert(flow > 0);
-		uint32 key = this->GetLastKey() + flow;
+		uint32_t key = this->GetLastKey() + flow;
 		if (unlikely(this->count >= 2)) {
 			if (this->count == 2) {
 				// convert inline buffer to ptr
@@ -222,7 +222,7 @@ public:
 				this->storage.ptr_shares.elem_capacity = 4;
 			} else if (this->count == this->storage.ptr_shares.elem_capacity) {
 				// grow buffer
-				uint16 new_size = this->storage.ptr_shares.elem_capacity * 2;
+				uint16_t new_size = this->storage.ptr_shares.elem_capacity * 2;
 				this->storage.ptr_shares.buffer = ReallocT<ShareEntry>(this->storage.ptr_shares.buffer, new_size);
 				this->storage.ptr_shares.elem_capacity = new_size;
 			}
@@ -318,26 +318,26 @@ public:
 	}
 
 	/* for save/load use only */
-	inline uint16 GetRawFlags() const
+	inline uint16_t GetRawFlags() const
 	{
 		return this->flags;
 	}
 
 	/* for save/load use only */
-	inline void SetRawFlags(uint16 flags)
+	inline void SetRawFlags(uint16_t flags)
 	{
 		this->flags = flags;;
 	}
 
 private:
-	uint32 GetLastKey() const
+	uint32_t GetLastKey() const
 	{
 		return this->data()[this->count - 1].first;
 	}
 
 	struct ptr_buffer {
 		ShareEntry *buffer;
-		uint16 elem_capacity;
+		uint16_t elem_capacity;
 	}
 #if OTTD_ALIGNMENT == 0 && (defined(__GNUC__) || defined(__clang__))
 	__attribute__((packed, aligned(4)))
@@ -353,9 +353,9 @@ private:
 	};
 	storage_union storage; ///< Shares of flow to be sent via specified station (or consumed locally).
 	uint unrestricted; ///< Limit for unrestricted shares.
-	uint16 count;
+	uint16_t count;
 	StationID origin;
-	uint16 flags;
+	uint16_t flags;
 };
 static_assert(std::is_nothrow_move_constructible<FlowStat>::value, "FlowStat must be nothrow move constructible");
 #if OTTD_ALIGNMENT == 0 && (defined(__GNUC__) || defined(__clang__))
@@ -366,8 +366,8 @@ template<typename cv_value, typename cv_container, typename cv_index_iter>
 class FlowStatMapIterator
 {
 	friend FlowStatMap;
-	friend FlowStatMapIterator<FlowStat, FlowStatMap, btree::btree_map<StationID, uint16>::iterator>;
-	friend FlowStatMapIterator<const FlowStat, const FlowStatMap, btree::btree_map<StationID, uint16>::const_iterator>;
+	friend FlowStatMapIterator<FlowStat, FlowStatMap, btree::btree_map<StationID, uint16_t>::iterator>;
+	friend FlowStatMapIterator<const FlowStat, const FlowStatMap, btree::btree_map<StationID, uint16_t>::const_iterator>;
 public:
 	typedef FlowStat value_type;
 	typedef cv_value& reference;
@@ -378,7 +378,7 @@ public:
 	FlowStatMapIterator(cv_container *fsm, cv_index_iter current) :
 		fsm(fsm), current(current) {}
 
-	FlowStatMapIterator(const FlowStatMapIterator<FlowStat, FlowStatMap, btree::btree_map<StationID, uint16>::iterator> &other) :
+	FlowStatMapIterator(const FlowStatMapIterator<FlowStat, FlowStatMap, btree::btree_map<StationID, uint16_t>::iterator> &other) :
 		fsm(other.fsm), current(other.current) {}
 
 	FlowStatMapIterator &operator=(const FlowStatMapIterator &) = default;
@@ -403,11 +403,11 @@ private:
 /** Flow descriptions by origin stations. */
 class FlowStatMap {
 	std::vector<FlowStat> flows_storage;
-	btree::btree_map<StationID, uint16> flows_index;
+	btree::btree_map<StationID, uint16_t> flows_index;
 
 public:
-	using iterator = FlowStatMapIterator<FlowStat, FlowStatMap, btree::btree_map<StationID, uint16>::iterator>;
-	using const_iterator = FlowStatMapIterator<const FlowStat, const FlowStatMap, btree::btree_map<StationID, uint16>::const_iterator>;
+	using iterator = FlowStatMapIterator<FlowStat, FlowStatMap, btree::btree_map<StationID, uint16_t>::iterator>;
+	using const_iterator = FlowStatMapIterator<const FlowStat, const FlowStatMap, btree::btree_map<StationID, uint16_t>::const_iterator>;
 
 	friend iterator;
 	friend const_iterator;
@@ -424,9 +424,9 @@ public:
 	void FinalizeLocalConsumption(StationID self);
 
 private:
-	btree::btree_map<StationID, uint16>::iterator erase_priv(btree::btree_map<StationID, uint16>::iterator iter)
+	btree::btree_map<StationID, uint16_t>::iterator erase_priv(btree::btree_map<StationID, uint16_t>::iterator iter)
 	{
-		uint16 index = iter->second;
+		uint16_t index = iter->second;
 		iter = this->flows_index.erase(iter);
 		if (index != this->flows_storage.size() - 1) {
 			this->flows_storage[index] = std::move(this->flows_storage.back());
@@ -477,7 +477,7 @@ public:
 	std::pair<iterator, bool> insert(FlowStat flow_stat)
 	{
 		StationID st = flow_stat.GetOrigin();
-		auto res = this->flows_index.insert(std::pair<StationID, uint16>(st, (uint16)this->flows_storage.size()));
+		auto res = this->flows_index.insert(std::pair<StationID, uint16_t>(st, (uint16_t)this->flows_storage.size()));
 		if (res.second) {
 			this->flows_storage.push_back(std::move(flow_stat));
 		}
@@ -486,7 +486,7 @@ public:
 
 	iterator insert(iterator hint, FlowStat flow_stat)
 	{
-		auto res = this->flows_index.insert(hint.current, std::pair<StationID, uint16>(flow_stat.GetOrigin(), (uint16)this->flows_storage.size()));
+		auto res = this->flows_index.insert(hint.current, std::pair<StationID, uint16_t>(flow_stat.GetOrigin(), (uint16_t)this->flows_storage.size()));
 		if (res->second == this->flows_storage.size()) {
 			this->flows_storage.push_back(std::move(flow_stat));
 		}
@@ -717,7 +717,7 @@ struct GoodsEntry {
 struct Airport : public TileArea {
 	Airport() : TileArea(INVALID_TILE, 0, 0) {}
 
-	uint64 flags;       ///< stores which blocks on the airport are taken. was 16 bit earlier on, then 32
+	uint64_t flags;     ///< stores which blocks on the airport are taken. was 16 bit earlier on, then 32
 	byte type;          ///< Type of this airport, @see AirportTypes
 	byte layout;        ///< Airport layout number.
 	Direction rotation; ///< How this airport is rotated.
@@ -886,8 +886,8 @@ public:
 	TileArea docking_station; ///< Tile area the docking tiles cover
 	std::vector<TileIndex> docking_tiles; ///< Tile vector the docking tiles cover
 
-	IndustryType indtype;    ///< Industry type to get the name from
-	uint16 extra_name_index; ///< Extra name index in use (or UINT16_MAX)
+	IndustryType indtype;      ///< Industry type to get the name from
+	uint16_t extra_name_index; ///< Extra name index in use (or UINT16_MAX)
 
 	BitmapTileArea catchment_tiles; ///< NOSAVE: Set of individual tiles covered by catchment area
 	uint station_tiles;             ///< NOSAVE: Count of station tiles owned by this station
@@ -904,9 +904,9 @@ public:
 	IndustryList industries_near; ///< Cached list of industries near the station that can accept cargo, @see DeliverGoodsToIndustry()
 	Industry *industry;           ///< NOSAVE: Associated industry for neutral stations. (Rebuilt on load from Industry->st)
 
-	CargoTypes station_cargo_history_cargoes;                                              ///< Bitmask of cargoes in station_cargo_history
-	uint8 station_cargo_history_offset;                                                    ///< Start offset in station_cargo_history cargo ring buffer
-	std::vector<std::array<uint16, MAX_STATION_CARGO_HISTORY_DAYS>> station_cargo_history; ///< Station history of waiting cargo, dynamic range compressed (see RXCompressUint)
+	CargoTypes station_cargo_history_cargoes;                                                ///< Bitmask of cargoes in station_cargo_history
+	uint8_t station_cargo_history_offset;                                                    ///< Start offset in station_cargo_history cargo ring buffer
+	std::vector<std::array<uint16_t, MAX_STATION_CARGO_HISTORY_DAYS>> station_cargo_history; ///< Station history of waiting cargo, dynamic range compressed (see RXCompressUint)
 
 	Station(TileIndex tile = INVALID_TILE);
 	~Station();
@@ -962,7 +962,7 @@ public:
 
 	bool IsWithinRangeOfDockingTile(TileIndex tile, uint max_distance) const;
 
-	uint32 GetNewGRFVariable(const ResolverObject &object, uint16 variable, byte parameter, bool *available) const override;
+	uint32_t GetNewGRFVariable(const ResolverObject &object, uint16_t variable, byte parameter, bool *available) const override;
 
 	void GetTileArea(TileArea *ta, StationType type) const override;
 };

@@ -97,7 +97,7 @@ private:
 	 * @param n The Nth set bit from which we want to know the position
 	 * @return The position of the Nth set bit
 	 */
-	static int GetNthSetBit(uint32 bits, int n)
+	static int GetNthSetBit(uint32_t bits, int n)
 	{
 		if (n >= 0) {
 			for (uint i : SetBitIterator(bits)) {
@@ -322,7 +322,7 @@ public:
 							}
 
 							case TSOF_OVERRIDE_BUILD_INCLINED_ROADS: {
-								uint8 max_slope = this->town->GetBuildMaxRoadSlope();
+								uint8_t max_slope = this->town->GetBuildMaxRoadSlope();
 								SetDParam(2, STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_VALUE + ((max_slope == 0) ? 1 : 0));
 								SetDParam(3, max_slope);
 								break;
@@ -419,7 +419,7 @@ public:
 				break;
 
 			case WID_TA_SETTING: {
-				uint8 idx = this->sel_index - 0x100;
+				uint8_t idx = this->sel_index - 0x100;
 				switch (idx) {
 					case TSOF_OVERRIDE_BUILD_ROADS:
 					case TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS:
@@ -478,7 +478,7 @@ public:
 		switch (widget) {
 			case WID_TA_SETTING: {
 				if (index < 0) break;
-				uint32 p2 = this->sel_index - 0x100;
+				uint32_t p2 = this->sel_index - 0x100;
 				if (index > 0) {
 					SetBit(p2, 16);
 					p2 |= (index - 1) << 8;
@@ -636,7 +636,7 @@ public:
 
 		/* only show the town noise, if the noise option is activated. */
 		if (_settings_game.economy.station_noise_level) {
-			uint16 max_noise = this->town->MaxTownNoise();
+			uint16_t max_noise = this->town->MaxTownNoise();
 			SetDParam(0, this->town->noise_reached);
 			SetDParam(1, max_noise);
 			DrawString(tr, max_noise == UINT16_MAX ? STR_TOWN_VIEW_NOISE_IN_TOWN_NO_LIMIT : STR_TOWN_VIEW_NOISE_IN_TOWN);
@@ -1250,7 +1250,7 @@ void ShowTownDirectory()
 	new TownDirectoryWindow(&_town_directory_desc);
 }
 
-void CcFoundTown(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcFoundTown(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Failed()) return;
 
@@ -1258,7 +1258,7 @@ void CcFoundTown(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2
 	if (!_settings_client.gui.persistent_buildingtools) ResetObjectToPlace();
 }
 
-void CcFoundRandomTown(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcFoundRandomTown(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Succeeded()) ScrollMainWindowToTile(Town::Get(_new_town_id)->xy);
 }
@@ -1322,7 +1322,7 @@ private:
 	bool city;              ///< Are we building a city?
 	QueryString townname_editbox; ///< Townname editbox
 	bool townnamevalid;     ///< Is generated town name valid?
-	uint32 townnameparts;   ///< Generated town name
+	uint32_t townnameparts;   ///< Generated town name
 	TownNameParams params;  ///< Town name parameters
 
 public:
@@ -1484,7 +1484,7 @@ void ShowFoundTownWindow()
 
 class GUIHouseList : public std::vector<HouseID> {
 protected:
-	std::vector<uint16> house_sets; ///< list of house sets, each item points the first house of the set in the houses array
+	std::vector<uint16_t> house_sets; ///< list of house sets, each item points the first house of the set in the houses array
 
 	static bool HouseSorter(const HouseID &a, const HouseID &b)
 	{
@@ -1602,7 +1602,7 @@ public:
 			}
 		}
 		/* put a terminator on the list to make counting easier */
-		this->house_sets.push_back((uint16)this->size());
+		this->house_sets.push_back((uint16_t)this->size());
 	}
 };
 
@@ -1828,7 +1828,7 @@ public:
 				case WID_HP_HOUSE_SUPPLY: {
 					CargoArray cargo{};
 					AddProducedHouseCargo(this->display_house, INVALID_TILE, cargo);
-					uint32 cargo_mask = 0;
+					uint32_t cargo_mask = 0;
 					for (uint i = 0; i < NUM_CARGO; i++) if (cargo[i] != 0) SetBit(cargo_mask, i);
 					SetDParam(0, cargo_mask);
 					break;

@@ -11,13 +11,13 @@
 #define RAIL_GUI_TYPE_H
 
 /** Settings for which signals are shown by the signal GUI. */
-enum SignalGUISettings : uint8 {
+enum SignalGUISettings : uint8_t {
 	SIGNAL_GUI_PATH = 0, ///< Show path signals only.
 	SIGNAL_GUI_ALL = 1,  ///< Show all signals, including block and presignals.
 };
 
 /** Settings for which signals are cycled through by control-clicking on the signal with the signal tool. */
-enum SignalCycleSettings : uint8 {
+enum SignalCycleSettings : uint8_t {
 	SIGNAL_CYCLE_PATH = 0, ///< Cycle through path signals only.
 	SIGNAL_CYCLE_ALL = 1,  ///< Cycle through all signals visible.
 };

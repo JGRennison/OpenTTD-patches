@@ -204,7 +204,7 @@ bool ShutdownSocket(SOCKET d, bool read, bool write, uint linger_timeout)
 {
 	if (!read && !write) return true;
 #ifdef _WIN32
-	LINGER ln = { 1U, (uint16) linger_timeout };
+	LINGER ln = { 1U, (uint16_t) linger_timeout };
 #else
 	struct linger ln = { 1, (int) linger_timeout };
 #endif

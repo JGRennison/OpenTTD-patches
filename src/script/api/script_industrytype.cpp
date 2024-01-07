@@ -122,8 +122,8 @@
 	EnforcePrecondition(false, CanBuildIndustry(industry_type));
 	EnforcePrecondition(false, ScriptMap::IsValidTile(tile));
 
-	uint32 seed = ScriptBase::Rand();
-	uint32 layout_index = ScriptBase::RandRange((uint32)::GetIndustrySpec(industry_type)->layouts.size());
+	uint32_t seed = ScriptBase::Rand();
+	uint32_t layout_index = ScriptBase::RandRange((uint32_t)::GetIndustrySpec(industry_type)->layouts.size());
 	return ScriptObject::DoCommand(tile, (1 << 16) | (layout_index << 8) | industry_type, seed, CMD_BUILD_INDUSTRY);
 }
 
@@ -132,7 +132,7 @@
 	EnforceDeityOrCompanyModeValid(false);
 	EnforcePrecondition(false, CanProspectIndustry(industry_type));
 
-	uint32 seed = ScriptBase::Rand();
+	uint32_t seed = ScriptBase::Rand();
 	return ScriptObject::DoCommand(0, industry_type, seed, CMD_BUILD_INDUSTRY);
 }
 

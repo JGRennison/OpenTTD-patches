@@ -636,7 +636,7 @@ public:
 /** Company livery colour scheme window. */
 struct SelectCompanyLiveryWindow : public Window {
 private:
-	uint32 sel;
+	uint32_t sel;
 	LiveryClass livery_class;
 	Dimension square;
 	uint rows;
@@ -645,9 +645,9 @@ private:
 	std::vector<int> indents;
 	Scrollbar *vscroll;
 
-	void ShowColourDropDownMenu(uint32 widget)
+	void ShowColourDropDownMenu(uint32_t widget)
 	{
-		uint32 used_colours = 0;
+		uint32_t used_colours = 0;
 		const Livery *livery, *default_livery = nullptr;
 		bool primary = widget == WID_SCL_PRI_COL_DROPDOWN;
 		byte default_col = 0;
@@ -1876,14 +1876,14 @@ struct CompanyInfrastructureWindow : Window
 		const Company *c = Company::Get((CompanyID)this->window_number);
 		Money total;
 
-		uint32 rail_total = c->infrastructure.GetRailTotal();
+		uint32_t rail_total = c->infrastructure.GetRailTotal();
 		for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
 			if (HasBit(this->railtypes, rt)) total += RailMaintenanceCost(rt, c->infrastructure.rail[rt], rail_total);
 		}
 		total += SignalMaintenanceCost(c->infrastructure.signal);
 
-		uint32 road_total = c->infrastructure.GetRoadTotal();
-		uint32 tram_total = c->infrastructure.GetTramTotal();
+		uint32_t road_total = c->infrastructure.GetRoadTotal();
+		uint32_t tram_total = c->infrastructure.GetTramTotal();
 		for (RoadType rt = ROADTYPE_BEGIN; rt != ROADTYPE_END; rt++) {
 			if (HasBit(this->roadtypes, rt)) total += RoadMaintenanceCost(rt, c->infrastructure.road[rt], RoadTypeIsRoad(rt) ? road_total : tram_total);
 		}
@@ -1966,17 +1966,17 @@ struct CompanyInfrastructureWindow : Window
 
 			case WID_CI_COUNT: {
 				/* Find the maximum count that is displayed. */
-				uint32 max_val = 1000;  // Some random number to reserve enough space.
+				uint32_t max_val = 1000;  // Some random number to reserve enough space.
 				Money max_cost = 10000; // Some random number to reserve enough space.
-				uint32 rail_total = c->infrastructure.GetRailTotal();
+				uint32_t rail_total = c->infrastructure.GetRailTotal();
 				for (RailType rt = RAILTYPE_BEGIN; rt < RAILTYPE_END; rt++) {
 					max_val = std::max(max_val, c->infrastructure.rail[rt]);
 					max_cost = std::max(max_cost, RailMaintenanceCost(rt, c->infrastructure.rail[rt], rail_total));
 				}
 				max_val = std::max(max_val, c->infrastructure.signal);
 				max_cost = std::max(max_cost, SignalMaintenanceCost(c->infrastructure.signal));
-				uint32 road_total = c->infrastructure.GetRoadTotal();
-				uint32 tram_total = c->infrastructure.GetTramTotal();
+				uint32_t road_total = c->infrastructure.GetRoadTotal();
+				uint32_t tram_total = c->infrastructure.GetTramTotal();
 				for (RoadType rt = ROADTYPE_BEGIN; rt < ROADTYPE_END; rt++) {
 					max_val = std::max(max_val, c->infrastructure.road[rt]);
 					max_cost = std::max(max_cost, RoadMaintenanceCost(rt, c->infrastructure.road[rt], RoadTypeIsRoad(rt) ? road_total : tram_total));
@@ -2102,7 +2102,7 @@ struct CompanyInfrastructureWindow : Window
 
 			case WID_CI_COUNT: {
 				/* Draw infrastructure count for each valid railtype. */
-				uint32 rail_total = c->infrastructure.GetRailTotal();
+				uint32_t rail_total = c->infrastructure.GetRailTotal();
 				for (const auto &rt : _sorted_railtypes) {
 					if (HasBit(this->railtypes, rt)) {
 						this->DrawCountLine(width, y, c->infrastructure.rail[rt], RailMaintenanceCost(rt, c->infrastructure.rail[rt], rail_total));
@@ -2114,7 +2114,7 @@ struct CompanyInfrastructureWindow : Window
 
 				y += GetCharacterHeight(FS_NORMAL) + EXP_SPACING;
 
-				uint32 road_total = c->infrastructure.GetRoadTotal();
+				uint32_t road_total = c->infrastructure.GetRoadTotal();
 				for (const auto &rt : _sorted_roadtypes) {
 					if (HasBit(this->roadtypes, rt) && RoadTypeIsRoad(rt)) {
 						this->DrawCountLine(width, y, c->infrastructure.road[rt], RoadMaintenanceCost(rt, c->infrastructure.road[rt], road_total));
@@ -2123,7 +2123,7 @@ struct CompanyInfrastructureWindow : Window
 
 				y += GetCharacterHeight(FS_NORMAL) + EXP_SPACING;
 
-				uint32 tram_total = c->infrastructure.GetTramTotal();
+				uint32_t tram_total = c->infrastructure.GetTramTotal();
 				for (const auto &rt : _sorted_roadtypes) {
 					if (HasBit(this->roadtypes, rt) && RoadTypeIsTram(rt)) {
 						this->DrawCountLine(width, y, c->infrastructure.road[rt], RoadMaintenanceCost(rt, c->infrastructure.road[rt], tram_total));

@@ -18,7 +18,7 @@
 static bool MockLoadNextSprite(int load_index)
 {
 	SpriteDataBuffer buffer;
-	buffer.Allocate((uint32)sizeof(Sprite));
+	buffer.Allocate((uint32_t)sizeof(Sprite));
 	memset(buffer.GetPtr(), 0, buffer.GetSize());
 
 	bool is_mapgen = IsMapgenSpriteID(load_index);

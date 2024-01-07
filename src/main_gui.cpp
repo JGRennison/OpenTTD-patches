@@ -48,7 +48,7 @@
 
 #include "safeguards.h"
 
-void CcGiveMoney(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcGiveMoney(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Failed() || !_settings_game.economy.give_money || !_networking) return;
 
@@ -60,7 +60,7 @@ void CcGiveMoney(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2
 	 * bits 31-16: source company
 	 * bits 15-0: target company
 	 */
-	uint64 auxdata = (p1 & 0xFFFF) | (((uint64) _local_company) << 16);
+	uint64_t auxdata = (p1 & 0xFFFF) | (((uint64_t) _local_company) << 16);
 
 	if (!_network_server) {
 		NetworkClientSendChat(NETWORK_ACTION_GIVE_MONEY, DESTTYPE_BROADCAST_SS, p2, msg, NetworkTextMessageData(result.GetCost(), auxdata));
@@ -97,7 +97,7 @@ bool HandlePlacePushButton(Window *w, WidgetID widget, CursorID cursor, HighLigh
 }
 
 
-void CcPlaySound_EXPLOSION(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcPlaySound_EXPLOSION(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Succeeded() && _settings_client.sound.confirm) SndPlayTileFx(SND_12_EXPLOSION, tile);
 }
@@ -550,12 +550,12 @@ struct MainWindow : Window
 	static HotkeyList hotkeys;
 };
 
-const uint16 _ghk_quit_keys[] = {'Q' | WKC_CTRL, 'Q' | WKC_META, 0};
-const uint16 _ghk_abandon_keys[] = {'W' | WKC_CTRL, 'W' | WKC_META, 0};
-const uint16 _ghk_chat_keys[] = {WKC_RETURN, 'T', 0};
-const uint16 _ghk_chat_all_keys[] = {WKC_SHIFT | WKC_RETURN, WKC_SHIFT | 'T', 0};
-const uint16 _ghk_chat_company_keys[] = {WKC_CTRL | WKC_RETURN, WKC_CTRL | 'T', 0};
-const uint16 _ghk_chat_server_keys[] = {WKC_CTRL | WKC_SHIFT | WKC_RETURN, WKC_CTRL | WKC_SHIFT | 'T', 0};
+const uint16_t _ghk_quit_keys[] = {'Q' | WKC_CTRL, 'Q' | WKC_META, 0};
+const uint16_t _ghk_abandon_keys[] = {'W' | WKC_CTRL, 'W' | WKC_META, 0};
+const uint16_t _ghk_chat_keys[] = {WKC_RETURN, 'T', 0};
+const uint16_t _ghk_chat_all_keys[] = {WKC_SHIFT | WKC_RETURN, WKC_SHIFT | 'T', 0};
+const uint16_t _ghk_chat_company_keys[] = {WKC_CTRL | WKC_RETURN, WKC_CTRL | 'T', 0};
+const uint16_t _ghk_chat_server_keys[] = {WKC_CTRL | WKC_SHIFT | WKC_RETURN, WKC_CTRL | WKC_SHIFT | 'T', 0};
 
 static Hotkey global_hotkeys[] = {
 	Hotkey(_ghk_quit_keys, "quit", GHK_QUIT),
@@ -563,7 +563,7 @@ static Hotkey global_hotkeys[] = {
 	Hotkey(WKC_BACKQUOTE, "console", GHK_CONSOLE),
 	Hotkey('B' | WKC_CTRL, "bounding_boxes", GHK_BOUNDING_BOXES),
 	Hotkey('I' | WKC_CTRL, "dirty_blocks", GHK_DIRTY_BLOCKS),
-	Hotkey((uint16)0,      "widget_outlines", GHK_WIDGET_OUTLINES),
+	Hotkey((uint16_t)0,    "widget_outlines", GHK_WIDGET_OUTLINES),
 	Hotkey('C', "center", GHK_CENTER),
 	Hotkey('Z', "center_zoom", GHK_CENTER_ZOOM),
 	Hotkey(WKC_ESC, "reset_object_to_place", GHK_RESET_OBJECT_TO_PLACE),
@@ -603,9 +603,9 @@ static Hotkey global_hotkeys[] = {
 	Hotkey(WKC_SPACE, "close_error", GHK_CLOSE_ERROR),
 	Hotkey(WKC_PAGEUP,   "previous_map_mode", GHK_CHANGE_MAP_MODE_PREV),
 	Hotkey(WKC_PAGEDOWN, "next_map_mode",     GHK_CHANGE_MAP_MODE_NEXT),
-	Hotkey((uint16)0,    "switch_viewport_route_overlay_mode", GHK_SWITCH_VIEWPORT_ROUTE_OVERLAY_MODE),
-	Hotkey((uint16)0,    "switch_viewport_map_slope_mode", GHK_SWITCH_VIEWPORT_MAP_SLOPE_MODE),
-	Hotkey((uint16)0,    "switch_viewport_map_height_mode", GHK_SWITCH_VIEWPORT_MAP_HEIGHT_MODE),
+	Hotkey((uint16_t)0,  "switch_viewport_route_overlay_mode", GHK_SWITCH_VIEWPORT_ROUTE_OVERLAY_MODE),
+	Hotkey((uint16_t)0,  "switch_viewport_map_slope_mode", GHK_SWITCH_VIEWPORT_MAP_SLOPE_MODE),
+	Hotkey((uint16_t)0,  "switch_viewport_map_height_mode", GHK_SWITCH_VIEWPORT_MAP_HEIGHT_MODE),
 	HOTKEY_LIST_END
 };
 HotkeyList MainWindow::hotkeys("global", global_hotkeys);
@@ -623,7 +623,7 @@ static WindowDesc _main_window_desc(__FILE__, __LINE__,
  * @param keycode The keycode that was pressed by the user.
  * @return True iff the keycode matches one of the hotkeys for 'quit'.
  */
-bool IsQuitKey(uint16 keycode)
+bool IsQuitKey(uint16_t keycode)
 {
 	int num = MainWindow::hotkeys.CheckMatch(keycode);
 	return num == GHK_QUIT;

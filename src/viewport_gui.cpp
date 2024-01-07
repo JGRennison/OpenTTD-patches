@@ -220,19 +220,19 @@ void ShowExtraViewportWindowForTileUnderCursor()
 	ShowExtraViewportWindow(pt.x != -1 ? TileVirtXY(pt.x, pt.y) : INVALID_TILE);
 }
 
-enum TownNameTooltipMode : uint8 {
+enum TownNameTooltipMode : uint8_t {
 	TNTM_OFF,
 	TNTM_ON_IF_HIDDEN,
 	TNTM_ALWAYS_ON
 };
 
-enum WaypointTooltipNameMode : uint8 {
+enum WaypointTooltipNameMode : uint8_t {
 	WTNM_OFF,
 	WTNM_ON_IF_HIDDEN,
 	WTNM_ALWAYS_ON
 };
 
-enum StationTooltipNameMode : uint8 {
+enum StationTooltipNameMode : uint8_t {
 	STNM_OFF,
 	STNM_ON_IF_HIDDEN,
 	STNM_ALWAYS_ON

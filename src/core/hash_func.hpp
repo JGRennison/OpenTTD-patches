@@ -14,7 +14,7 @@
  * Simple 32 bit to 32 bit hash
  * From MurmurHash3
  */
-inline uint32 SimpleHash32(uint32 h)
+inline uint32_t SimpleHash32(uint32_t h)
 {
 	h ^= h >> 16;
 	h *= 0x85ebca6b;

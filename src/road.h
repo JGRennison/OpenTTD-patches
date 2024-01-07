@@ -27,7 +27,7 @@ enum RoadTramType : bool {
 	RTT_TRAM,
 };
 
-enum RoadTramTypes : uint8 {
+enum RoadTramTypes : uint8_t {
 	RTTB_ROAD = 1 << RTT_ROAD,
 	RTTB_TRAM = 1 << RTT_TRAM,
 };
@@ -61,7 +61,7 @@ enum RoadTypeExtraFlag {
 };
 
 /** Roadtype extra flags. */
-enum RoadTypeExtraFlags : uint8 {
+enum RoadTypeExtraFlags : uint8_t {
 	RXTFB_NONE = 0,                                              ///< All flags cleared.
 	RXTFB_NOT_AVAILABLE_AI_GS   = 1 << RXTF_NOT_AVAILABLE_AI_GS,
 	RXTFB_NO_TOWN_MODIFICATION  = 1 << RXTF_NO_TOWN_MODIFICATION,
@@ -70,7 +70,7 @@ enum RoadTypeExtraFlags : uint8 {
 };
 DECLARE_ENUM_AS_BIT_SET(RoadTypeExtraFlags)
 
-enum RoadTypeCollisionMode : uint8 {
+enum RoadTypeCollisionMode : uint8_t {
 	RTCM_NORMAL = 0,
 	RTCM_NONE,
 	RTCM_ELEVATED,
@@ -164,17 +164,17 @@ public:
 	/**
 	 * Cost multiplier for building this road type
 	 */
-	uint16 cost_multiplier;
+	uint16_t cost_multiplier;
 
 	/**
 	 * Cost multiplier for maintenance of this road type
 	 */
-	uint16 maintenance_multiplier;
+	uint16_t maintenance_multiplier;
 
 	/**
 	 * Maximum speed for vehicles travelling on this road type
 	 */
-	uint16 max_speed;
+	uint16_t max_speed;
 
 	/**
 	 * Unique 32 bit road type identifier

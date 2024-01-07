@@ -49,7 +49,7 @@ inline TransportType GetTunnelBridgeTransportType(TileIndex t)
 	return (TransportType)GB(_m[t].m5, 2, 2);
 }
 
-inline uint8 GetTunnelBridgeGroundBits(TileIndex t)
+inline uint8_t GetTunnelBridgeGroundBits(TileIndex t)
 {
 	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
 	return GB(_me[t].m7, 5, 3);
@@ -77,7 +77,7 @@ inline bool IsRailTunnelBridgeTile(TileIndex t)
 	return IsTileType(t, MP_TUNNELBRIDGE) && (Extract<TransportType, 2, 2>(_m[t].m5) == TRANSPORT_RAIL);
 }
 
-inline void SetTunnelBridgeGroundBits(TileIndex t, uint8 bits)
+inline void SetTunnelBridgeGroundBits(TileIndex t, uint8_t bits)
 {
 	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
 	SB(_me[t].m7, 5, 3, bits);
@@ -525,25 +525,25 @@ inline void SetTunnelBridgePBS(TileIndex t, bool is_pbs)
 	SB(_me[t].m6, 6, 1, is_pbs ? 1 : 0);
 }
 
-inline uint8 GetTunnelBridgeEntranceSignalAspect(TileIndex t)
+inline uint8_t GetTunnelBridgeEntranceSignalAspect(TileIndex t)
 {
 	assert_tile(IsTunnelBridgeWithSignalSimulation(t), t);
 	return GB(_m[t].m3, 0, 3);
 }
 
-inline void SetTunnelBridgeEntranceSignalAspect(TileIndex t, uint8 aspect)
+inline void SetTunnelBridgeEntranceSignalAspect(TileIndex t, uint8_t aspect)
 {
 	assert_tile(IsTunnelBridgeWithSignalSimulation(t), t);
 	SB(_m[t].m3, 0, 3, aspect);
 }
 
-inline uint8 GetTunnelBridgeExitSignalAspect(TileIndex t)
+inline uint8_t GetTunnelBridgeExitSignalAspect(TileIndex t)
 {
 	assert_tile(IsTunnelBridgeWithSignalSimulation(t), t);
 	return GB(_m[t].m3, 3, 3);
 }
 
-inline void SetTunnelBridgeExitSignalAspect(TileIndex t, uint8 aspect)
+inline void SetTunnelBridgeExitSignalAspect(TileIndex t, uint8_t aspect)
 {
 	assert_tile(IsTunnelBridgeWithSignalSimulation(t), t);
 	SB(_m[t].m3, 3, 3, aspect);
@@ -601,23 +601,23 @@ inline Trackdir GetTunnelBridgeEntranceTrackdir(TileIndex t)
 	return GetTunnelBridgeEntranceTrackdir(t, GetTunnelBridgeDirection(t));
 }
 
-inline void SetTunnelBridgeSignalStyle(TileIndex t, TileIndex end, uint8 style)
+inline void SetTunnelBridgeSignalStyle(TileIndex t, TileIndex end, uint8_t style)
 {
 	if (style == 0 && !HasBit(_m[t].m3, 7)) return;
 
-	extern void SetTunnelBridgeSignalStyleExtended(TileIndex t, TileIndex end, uint8 style);
+	extern void SetTunnelBridgeSignalStyleExtended(TileIndex t, TileIndex end, uint8_t style);
 	SetTunnelBridgeSignalStyleExtended(t, end, style);
 }
 
-inline uint8 GetTunnelBridgeSignalStyle(TileIndex t)
+inline uint8_t GetTunnelBridgeSignalStyle(TileIndex t)
 {
 	if (likely(!HasBit(_m[t].m3, 7))) return 0;
 
 	if (IsTunnel(t)) {
-		extern uint8 GetTunnelSignalStyleExtended(TileIndex t);
+		extern uint8_t GetTunnelSignalStyleExtended(TileIndex t);
 		return GetTunnelSignalStyleExtended(t);
 	} else {
-		extern uint8 GetBridgeSignalStyleExtended(TileIndex t);
+		extern uint8_t GetBridgeSignalStyleExtended(TileIndex t);
 		return GetBridgeSignalStyleExtended(t);
 	}
 }

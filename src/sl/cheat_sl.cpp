@@ -106,12 +106,12 @@ static void Load_CHTX()
 
 	CheatsExtLoad current_cheat;
 
-	uint32 chunk_flags = SlReadUint32();
+	uint32_t chunk_flags = SlReadUint32();
 	// flags are not in use yet, reserve for future expansion
 	if (chunk_flags != 0) SlErrorCorruptFmt("CHTX chunk: unknown chunk header flags: 0x%X", chunk_flags);
 
-	uint32 cheat_count = SlReadUint32();
-	for (uint32 i = 0; i < cheat_count; i++) {
+	uint32_t cheat_count = SlReadUint32();
+	for (uint32_t i = 0; i < cheat_count; i++) {
 		SlObject(&current_cheat, _cheats_ext_load_desc);
 
 		bool found = false;
@@ -148,7 +148,7 @@ static void Save_CHTX()
 
 	SlAutolength([](void *) {
 		SlWriteUint32(0);                                                               // flags
-		SlWriteUint32((uint32)(lengthof(_extra_cheat_descs) + _unknown_cheats.size())); // cheat count
+		SlWriteUint32((uint32_t)(lengthof(_extra_cheat_descs) + _unknown_cheats.size())); // cheat count
 
 		for (uint j = 0; j < lengthof(_extra_cheat_descs); j++) {
 			CheatsExtSave save = { _extra_cheat_descs[j].name, *(_extra_cheat_descs[j].cht) };
@@ -165,9 +165,9 @@ static void Save_CHTX()
  * Internal structure used in SaveSettingsPatx() and SaveSettingsPlyx()
  */
 struct SettingsExtSave {
-	uint32 flags;
+	uint32_t flags;
 	const char *name;
-	uint32 setting_length;
+	uint32_t setting_length;
 };
 
 static const SaveLoad _settings_ext_save_desc[] = {

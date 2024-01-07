@@ -152,7 +152,7 @@ inline uint ScaleByMapSize1D(uint n)
  *
  * @see TileDiffXY(int, int)
  */
-typedef int32 TileIndexDiff;
+typedef int32_t TileIndexDiff;
 
 /**
  * Returns the TileIndex of a coordinate.

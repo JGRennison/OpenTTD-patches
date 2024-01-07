@@ -237,9 +237,9 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
  * @param p1 The p1 parameter to send to CmdSetTimetableStart
  * @param date the actually chosen date
  */
-static void ChangeTimetableStartIntl(uint32 p1, DateTicksScaled date)
+static void ChangeTimetableStartIntl(uint32_t p1, DateTicksScaled date)
 {
-	DoCommandPEx(0, p1, 0, (uint64)date.base(), CMD_SET_TIMETABLE_START | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
+	DoCommandPEx(0, p1, 0, (uint64_t)date.base(), CMD_SET_TIMETABLE_START | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
 }
 
 /**
@@ -992,7 +992,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 				break;
 
 			case WID_VT_AUTOFILL: { // Autofill the timetable.
-				uint32 p2 = 0;
+				uint32_t p2 = 0;
 				if (!HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE)) SetBit(p2, 0);
 				if (_ctrl_pressed) SetBit(p2, 1);
 				DoCommandP(0, v->index, p2, CMD_AUTOFILL_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
@@ -1005,14 +1005,14 @@ struct TimetableWindow : GeneralVehicleWindow {
 			}
 
 			case WID_VT_AUTOMATE: {
-				uint32 p2 = 0;
+				uint32_t p2 = 0;
 				if (!HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE)) SetBit(p2, 0);
 				DoCommandP(0, v->index, p2, CMD_AUTOMATE_TIMETABLE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 				break;
 			}
 
 			case WID_VT_AUTO_SEPARATION: {
-				uint32 p2 = 0;
+				uint32_t p2 = 0;
 				if (!HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) SetBit(p2, 0);
 				DoCommandP(0, v->index, p2, CMD_TIMETABLE_SEPARATION | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 				break;
@@ -1099,10 +1099,10 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 			case WID_VT_CHANGE_SPEED:
 			case WID_VT_CHANGE_TIME: {
-				uint32 p2;
+				uint32_t p2;
 				if (this->query_is_speed_query) {
-					uint64 display_speed = StrEmpty(str) ? 0 : std::strtoul(str, nullptr, 10);
-					uint64 val = ConvertDisplaySpeedToKmhishSpeed(display_speed, v->type);
+					uint64_t display_speed = StrEmpty(str) ? 0 : std::strtoul(str, nullptr, 10);
+					uint64_t val = ConvertDisplaySpeedToKmhishSpeed(display_speed, v->type);
 					p2 = std::min<uint>(val, UINT16_MAX);
 				} else {
 					p2 = ParseTimetableDuration(str);
@@ -1115,7 +1115,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 			case WID_VT_START_DATE: {
 				if (StrEmpty(str)) break;
 				char *end;
-				int32 val = std::strtol(str, &end, 10);
+				int32_t val = std::strtol(str, &end, 10);
 				if (val >= 0 && end && *end == 0) {
 					uint minutes = (val % 100) % 60;
 					uint hours = (val / 100) % 24;

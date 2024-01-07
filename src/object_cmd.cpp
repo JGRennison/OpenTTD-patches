@@ -41,7 +41,7 @@
 
 ObjectPool _object_pool("Object");
 INSTANTIATE_POOL_METHODS(Object)
-std::vector<uint16> Object::counts;
+std::vector<uint16_t> Object::counts;
 
 /**
  * Get the object associated with a tile.
@@ -90,7 +90,7 @@ void SetObjectFoundationType(TileIndex tile, Slope tileh, ObjectType type, const
 			return;
 		}
 
-		uint8 flags = spec->edge_foundation[Object::GetByTile(tile)->view];
+		uint8_t flags = spec->edge_foundation[Object::GetByTile(tile)->view];
 		DiagDirection edge = (DiagDirection)GB(flags, 0, 2);
 		Slope incline = InclinedSlope(edge);
 
@@ -133,7 +133,7 @@ void SetObjectFoundationType(TileIndex tile, Slope tileh, ObjectType type, const
  * @pre All preconditions for building the object at that location
  *      are met, e.g. slope and clearness of tiles are checked.
  */
-void BuildObject(ObjectType type, TileIndex tile, CompanyID owner, Town *town, uint8 view)
+void BuildObject(ObjectType type, TileIndex tile, CompanyID owner, Town *town, uint8_t view)
 {
 	const ObjectSpec *spec = ObjectSpec::Get(type);
 
@@ -158,7 +158,7 @@ void BuildObject(ObjectType type, TileIndex tile, CompanyID owner, Town *town, u
 	if ((spec->flags & OBJECT_FLAG_2CC_COLOUR) == 0) o->colour &= 0xF;
 
 	if (HasBit(spec->callback_mask, CBM_OBJ_COLOUR)) {
-		uint16 res = GetObjectCallback(CBID_OBJECT_COLOUR, o->colour, 0, spec, o, tile);
+		uint16_t res = GetObjectCallback(CBID_OBJECT_COLOUR, o->colour, 0, spec, o, tile);
 		if (res != CALLBACK_FAILED) {
 			if (res >= 0x100) ErrorUnknownCallbackResult(spec->grf_prop.grffile->grfid, CBID_OBJECT_COLOUR, res);
 			o->colour = GB(res, 0, 8);
@@ -264,13 +264,13 @@ static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlag flags);
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildObject(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdBuildObject(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 
 	ObjectType type = (ObjectType)GB(p1, 0, 16);
 	if (type >= ObjectSpec::Count()) return CMD_ERROR;
-	uint8 view = GB(p2, 0, 2);
+	uint8_t view = GB(p2, 0, 2);
 	const ObjectSpec *spec = ObjectSpec::Get(type);
 	if (_game_mode == GM_NORMAL && !spec->IsAvailable() && !_generating_world) return CMD_ERROR;
 	if ((_game_mode == GM_EDITOR || _generating_world) && !spec->WasEverAvailable()) return CMD_ERROR;
@@ -333,7 +333,7 @@ CommandCost CmdBuildObject(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
 		if (GetTileSlope(tile, &allowed_z) != SLOPE_FLAT) allowed_z++;
 
 		for (TileIndex t : ta) {
-			uint16 callback = CALLBACK_FAILED;
+			uint16_t callback = CALLBACK_FAILED;
 			if (HasBit(spec->callback_mask, CBM_OBJ_SLOPE_CHECK)) {
 				TileIndex diff = t - tile;
 				callback = GetObjectCallback(CBID_OBJECT_LAND_SLOPE_CHECK, GetTileSlope(t), TileY(diff) << 4 | TileX(diff), spec, nullptr, t, view);
@@ -459,7 +459,7 @@ CommandCost CmdBuildObject(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdPurchaseLandArea(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdPurchaseLandArea(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	if (p1 >= MapSize()) return CMD_ERROR;
 	if (_settings_game.construction.purchase_land_permitted == 0) return_cmd_error(STR_PURCHASE_LAND_NOT_PERMITTED);
@@ -515,14 +515,14 @@ CommandCost CmdPurchaseLandArea(TileIndex tile, DoCommandFlag flags, uint32 p1, 
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildObjectArea(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdBuildObjectArea(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	if (p1 >= MapSize()) return CMD_ERROR;
 	if (!_settings_game.construction.build_object_area_permitted) return_cmd_error(STR_BUILD_OBJECT_NOT_PERMITTED_BULK);
 
 	ObjectType type = (ObjectType)GB(p2, 3, 16);
 	if (type >= ObjectSpec::Count()) return CMD_ERROR;
-	uint8 view = GB(p2, 1, 2);
+	uint8_t view = GB(p2, 1, 2);
 	const ObjectSpec *spec = ObjectSpec::Get(type);
 	if (view >= spec->views) return CMD_ERROR;
 
@@ -582,7 +582,7 @@ static void DrawTile_Object(TileInfo *ti, DrawTileProcParams params)
 		type = OBJECT_TRANSMITTER;
 	} else if ((spec->flags & OBJECT_FLAG_HAS_NO_FOUNDATION) == 0) {
 		if (spec->ctrl_flags & OBJECT_CTRL_FLAG_EDGE_FOUNDATION) {
-			uint8 flags = spec->edge_foundation[obj->view];
+			uint8_t flags = spec->edge_foundation[obj->view];
 			DiagDirection edge = (DiagDirection)GB(flags, 0, 2);
 			Slope incline = InclinedSlope(edge);
 			Foundation foundation = GetFoundation_Object(ti->tile, ti->tileh);
@@ -1105,7 +1105,7 @@ void GenerateObjects()
 		/* Continue, if the object was never available till now or shall not be placed */
 		if (!spec.WasEverAvailable() || spec.generate_amount == 0) continue;
 
-		uint16 amount = spec.generate_amount;
+		uint16_t amount = spec.generate_amount;
 
 		/* Scale by map size */
 		if ((spec.flags & OBJECT_FLAG_SCALE_BY_WATER) && _settings_game.construction.freeform_edges) {
@@ -1131,7 +1131,7 @@ void GenerateObjects()
 					break;
 
 				default:
-					uint8 view = RandomRange(spec.views);
+					uint8_t view = RandomRange(spec.views);
 					if (CmdBuildObject(RandomTile(), DC_EXEC | DC_AUTO | DC_NO_TEST_TOWN_RATING | DC_NO_MODIFY_TOWN_RATING, spec.Index(), view, nullptr).Succeeded()) amount--;
 					break;
 			}
@@ -1175,7 +1175,7 @@ static void ChangeTileOwner_Object(TileIndex tile, Owner old_owner, Owner new_ow
 static int GetObjectEffectiveZ(TileIndex tile, const ObjectSpec *spec, int z, Slope tileh)
 {
 	if ((spec->ctrl_flags & OBJECT_CTRL_FLAG_EDGE_FOUNDATION) && !(spec->flags & OBJECT_FLAG_HAS_NO_FOUNDATION)) {
-		uint8 flags = spec->edge_foundation[Object::GetByTile(tile)->view];
+		uint8_t flags = spec->edge_foundation[Object::GetByTile(tile)->view];
 		DiagDirection edge = (DiagDirection)GB(flags, 0, 2);
 		if (!(flags & OBJECT_EF_FLAG_FOUNDATION_LOWER) && !(tileh & InclinedSlope(edge))) return z;
 	}
@@ -1215,7 +1215,7 @@ static CommandCost TerraformTile_Object(TileIndex tile, DoCommandFlag flags, int
 			/* Call callback 'disable autosloping for objects'. */
 			if (HasBit(spec->callback_mask, CBM_OBJ_AUTOSLOPE)) {
 				/* If the callback fails, allow autoslope. */
-				uint16 res = GetObjectCallback(CBID_OBJECT_AUTOSLOPE, 0, 0, spec, Object::GetByTile(tile), tile);
+				uint16_t res = GetObjectCallback(CBID_OBJECT_AUTOSLOPE, 0, 0, spec, Object::GetByTile(tile), tile);
 				if (res == CALLBACK_FAILED || !ConvertBooleanCallback(spec->grf_prop.grffile, CBID_OBJECT_AUTOSLOPE, res)) {
 					pre_success_checks();
 					return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_FOUNDATION]);

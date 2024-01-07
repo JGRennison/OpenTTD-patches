@@ -21,19 +21,19 @@ TunnelPool _tunnel_pool("Tunnel");
 INSTANTIATE_POOL_METHODS(Tunnel)
 
 static robin_hood::unordered_map<TileIndex, TunnelID> tunnel_tile_index_map;
-static btree::btree_multimap<uint64, Tunnel*> tunnel_axis_height_index;
+static btree::btree_multimap<uint64_t, Tunnel*> tunnel_axis_height_index;
 
-static uint64 GetTunnelAxisHeightCacheKey(TileIndex tile, uint8 height, bool y_axis) {
+static uint64_t GetTunnelAxisHeightCacheKey(TileIndex tile, uint8_t height, bool y_axis) {
 	if (y_axis) {
 		// tunnel extends along Y axis (DIAGDIR_SE from north end), has same X values
-		return TileX(tile) | (((uint64) height) << 24) | (((uint64) 1) << 32);
+		return TileX(tile) | (((uint64_t) height) << 24) | (((uint64_t) 1) << 32);
 	} else {
 		// tunnel extends along X axis (DIAGDIR_SW from north end), has same Y values
-		return TileY(tile) | (((uint64) height) << 24);
+		return TileY(tile) | (((uint64_t) height) << 24);
 	}
 }
 
-static inline uint64 GetTunnelAxisHeightCacheKey(const Tunnel* t) {
+static inline uint64_t GetTunnelAxisHeightCacheKey(const Tunnel* t) {
 	return GetTunnelAxisHeightCacheKey(t->tile_n, t->height, t->tile_s - t->tile_n > MapMaxX());
 }
 
@@ -135,7 +135,7 @@ bool IsTunnelInWay(TileIndex tile, int z, IsTunnelInWayFlags flags)
 	return IsTunnelInWaySingleAxis(tile, z, flags, false, 1) || IsTunnelInWaySingleAxis(tile, z, flags, true, TileOffsByDiagDir(DIAGDIR_SE));
 }
 
-void SetTunnelSignalStyle(TileIndex t, TileIndex end, uint8 style)
+void SetTunnelSignalStyle(TileIndex t, TileIndex end, uint8_t style)
 {
 	if (style == 0) {
 		/* Style already 0 */
@@ -150,7 +150,7 @@ void SetTunnelSignalStyle(TileIndex t, TileIndex end, uint8 style)
 	Tunnel::GetByTile(t)->style = style;
 }
 
-uint8 GetTunnelSignalStyleExtended(TileIndex t)
+uint8_t GetTunnelSignalStyleExtended(TileIndex t)
 {
 	return Tunnel::GetByTile(t)->style;
 }

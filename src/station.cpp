@@ -40,7 +40,7 @@ INSTANTIATE_POOL_METHODS(Station)
 
 std::array<ExtraStationNameInfo, MAX_EXTRA_STATION_NAMES> _extra_station_names;
 uint _extra_station_names_used;
-uint8 _extra_station_names_probability;
+uint8_t _extra_station_names_probability;
 
 const StationCargoList _empty_cargo_list{};
 const FlowStatMap _empty_flows{};
@@ -189,7 +189,7 @@ bool BaseStation::SetRoadStopTileData(TileIndex tile, byte data, bool animation)
 {
 	for (RoadStopTileData &tile_data : this->custom_roadstop_tile_data) {
 		if (tile_data.tile == tile) {
-			uint8 &value = animation ? tile_data.animation_frame : tile_data.random_bits;
+			uint8_t &value = animation ? tile_data.animation_frame : tile_data.random_bits;
 			if (value == data) return false;
 			value = data;
 			return true;
@@ -331,7 +331,7 @@ static uint GetTileCatchmentRadius(TileIndex tile, const Station *st)
 {
 	dbg_assert(IsTileType(tile, MP_STATION));
 
-	const int32 inc = _settings_game.station.catchment_increase;
+	const int32_t inc = _settings_game.station.catchment_increase;
 
 	if (_settings_game.station.modified_catchment) {
 		switch (GetStationType(tile)) {

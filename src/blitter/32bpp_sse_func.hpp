@@ -75,7 +75,7 @@ inline __m128i DistributeAlpha(const __m128i from, const __m128i &mask)
 GNU_TARGET(SSE_TARGET)
 inline __m128i AlphaBlendTwoPixels(__m128i src, __m128i dst, const __m128i &distribution_mask, const __m128i &pack_mask, const __m128i &alpha_mask)
 {
-	__m128i srcAB = _mm_unpacklo_epi8(src, _mm_setzero_si128());   // PUNPCKLBW, expand each uint8 into uint16
+	__m128i srcAB = _mm_unpacklo_epi8(src, _mm_setzero_si128());   // PUNPCKLBW, expand each uint8_t into uint16
 	__m128i dstAB = _mm_unpacklo_epi8(dst, _mm_setzero_si128());
 
 	__m128i alphaMaskAB = _mm_cmpgt_epi16(srcAB, _mm_setzero_si128()); // PCMPGTW (alpha > 0) ? 0xFFFF : 0
@@ -111,19 +111,19 @@ inline __m128i DarkenTwoPixels(__m128i src, __m128i dst, const __m128i &distribu
 
 IGNORE_UNINITIALIZED_WARNING_START
 GNU_TARGET(SSE_TARGET)
-static Colour ReallyAdjustBrightness(Colour colour, uint8 brightness)
+static Colour ReallyAdjustBrightness(Colour colour, uint8_t brightness)
 {
-	uint64 c16 = colour.b | (uint64) colour.g << 16 | (uint64) colour.r << 32;
+	uint64_t c16 = colour.b | (uint64_t) colour.g << 16 | (uint64_t) colour.r << 32;
 	c16 *= brightness;
-	uint64 c16_ob = c16; // Helps out of order execution.
+	uint64_t c16_ob = c16; // Helps out of order execution.
 	c16 /= Blitter_32bppBase::DEFAULT_BRIGHTNESS;
 	c16 &= 0x01FF01FF01FFULL;
 
 	/* Sum overbright (maximum for each rgb is 508, 9 bits, -255 is changed in -256 so we just have to take the 8 lower bits into account). */
 	c16_ob = (((c16_ob >> (8 + 7)) & 0x0100010001ULL) * 0xFF) & c16;
-	const uint ob = ((uint16) c16_ob + (uint16) (c16_ob >> 16) + (uint16) (c16_ob >> 32)) / 2;
+	const uint ob = ((uint16_t) c16_ob + (uint16_t) (c16_ob >> 16) + (uint16_t) (c16_ob >> 32)) / 2;
 
-	const uint32 alpha32 = colour.data & 0xFF000000;
+	const uint32_t alpha32 = colour.data & 0xFF000000;
 	__m128i ret;
 	LoadUint64(c16, ret);
 	if (ob != 0) {
@@ -224,7 +224,7 @@ inline void Blitter_32bppSSE4::Draw(const Blitter::BlitterParams *bp, ZoomLevel 
 	const MapValue *src_mv_line = (const MapValue *) &sd->data[si->mv_offset] + bp->skip_top * si->sprite_width;
 	const Colour *src_rgba_line = (const Colour *) ((const byte *) &sd->data[si->sprite_offset] + bp->skip_top * si->sprite_line_size);
 
-	uint32 bm_normal_brightness = 0;
+	uint32_t bm_normal_brightness = 0;
 	if (mode == BM_NORMAL_WITH_BRIGHTNESS) {
 		bm_normal_brightness = (DEFAULT_BRIGHTNESS + bp->brightness_adjust) << 8;
 		bm_normal_brightness |= bm_normal_brightness << 16;
@@ -304,7 +304,7 @@ inline void Blitter_32bppSSE4::Draw(const Blitter::BlitterParams *bp, ZoomLevel 
 				for (uint x = (uint) effective_width / 2; x > 0; x--) {
 					__m128i srcABCD = _mm_loadl_epi64((const __m128i*) src);
 					__m128i dstABCD = _mm_loadl_epi64((__m128i*) dst);
-					uint32 mvX2 = *((uint32 *) const_cast<MapValue *>(src_mv));
+					uint32_t mvX2 = *((uint32_t *) const_cast<MapValue *>(src_mv));
 
 					/* Remap colours. */
 					if (mvX2 & 0x00FF00FF) {
@@ -320,12 +320,12 @@ inline void Blitter_32bppSSE4::Draw(const Blitter::BlitterParams *bp, ZoomLevel 
 							m_colour = m != 0 ? m_colour : srcm; \
 							}
 #ifdef POINTER_IS_64BIT
-						uint64 srcs = _mm_cvtsi128_si64(srcABCD);
-						uint64 remapped_src = 0;
+						uint64_t srcs = _mm_cvtsi128_si64(srcABCD);
+						uint64_t remapped_src = 0;
 						CMOV_REMAP(c0, 0, srcs, mvX2);
 						remapped_src = c0.data;
 						CMOV_REMAP(c1, 0, srcs >> 32, mvX2 >> 16);
-						remapped_src |= (uint64) c1.data << 32;
+						remapped_src |= (uint64_t) c1.data << 32;
 						srcABCD = _mm_cvtsi64_si128(remapped_src);
 #else
 						Colour remapped_src[2];
@@ -414,7 +414,7 @@ bmcr_alpha_blend_single:
 				for (uint x = (uint) bp->width; x > 0; x--) {
 					if (src_mv->m == 0) {
 						if (src->a != 0) {
-							uint8 g = MakeDark(src->r, src->g, src->b);
+							uint8_t g = MakeDark(src->r, src->g, src->b);
 							*dst = ComposeColourRGBA(g, g, g, src->a, *dst);
 						}
 					} else {

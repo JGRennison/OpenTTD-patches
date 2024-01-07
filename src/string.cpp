@@ -192,7 +192,7 @@ const char *str_fix_scc_encoded(char *str, const char *last)
 		size_t len = Utf8EncodedCharLen(*str);
 		if ((len == 0 && str + 4 > last) || str + len > last) break;
 
-		WChar c;
+		char32_t c;
 		Utf8Decode(&c, str);
 		if (c == '\0') break;
 
@@ -244,7 +244,7 @@ static void StrMakeValid(T &dst, const char *str, const char *last, StringValida
 
 	while (str <= last && *str != '\0') {
 		size_t len = Utf8EncodedCharLen(*str);
-		WChar c;
+		char32_t c;
 		/* If the first byte does not look like the first byte of an encoded
 		 * character, i.e. encoded length is 0, then this byte is definitely bad
 		 * and it should be skipped.
@@ -371,7 +371,7 @@ bool StrValid(const char *str, const char *last)
 		 * within the encoding of an UTF8 character. */
 		if (len == 0 || str + len > last) return false;
 
-		WChar c;
+		char32_t c;
 		len = Utf8Decode(&c, str);
 		if (!IsPrintable(c) || (c >= SCC_SPRITE_START && c <= SCC_SPRITE_END)) {
 			return false;
@@ -539,7 +539,7 @@ bool StrEqualsIgnoreCase(const std::string_view str1, const std::string_view str
 void str_strip_colours(char *str)
 {
 	char *dst = str;
-	WChar c;
+	char32_t c;
 	size_t len;
 
 	for (len = Utf8Decode(&c, str); c != '\0'; len = Utf8Decode(&c, str)) {
@@ -577,7 +577,7 @@ std::string str_strip_all_scc(const char *str)
 	std::string out;
 	if (!str) return out;
 
-	WChar c;
+	char32_t c;
 	size_t len;
 
 	for (len = Utf8Decode(&c, str); c != '\0'; len = Utf8Decode(&c, str)) {
@@ -601,7 +601,7 @@ std::string str_strip_all_scc(const char *str)
  * @param replace The character to replace, may be 0 to not insert any character
  * @return The pointer to the terminating null-character in the string buffer
  */
-char *str_replace_wchar(char *str, const char *last, WChar find, WChar replace)
+char *str_replace_wchar(char *str, const char *last, char32_t find, char32_t replace)
 {
 	char *dst = str;
 
@@ -614,7 +614,7 @@ char *str_replace_wchar(char *str, const char *last, WChar find, WChar replace)
 		 * within the encoding of an UTF8 character. */
 		if ((len == 0 && str + 4 > last) || str + len > last) break;
 
-		WChar c;
+		char32_t c;
 		len = Utf8Decode(&c, str);
 		/* It's possible to encode the string termination character
 		 * into a multiple bytes. This prevents those termination
@@ -707,10 +707,10 @@ bool strtolower(std::string &str, std::string::size_type offs)
  * @param afilter the filter to use
  * @return true or false depending if the character is printable/valid or not
  */
-bool IsValidChar(WChar key, CharSetFilter afilter)
+bool IsValidChar(char32_t key, CharSetFilter afilter)
 {
 #if !defined(STRGEN) && !defined(SETTINGSGEN)
-	extern WChar GetDecimalSeparatorChar();
+	extern char32_t GetDecimalSeparatorChar();
 #endif
 	switch (afilter) {
 		case CS_ALPHANUMERAL:  return IsPrintable(key);
@@ -797,7 +797,7 @@ int CDECL seprintf(char *str, const char *last, const char *format, ...)
  * @param s Character stream to retrieve character from.
  * @return Number of characters in the sequence.
  */
-size_t Utf8Decode(WChar *c, const char *s)
+size_t Utf8Decode(char32_t *c, const char *s)
 {
 	dbg_assert(c != nullptr);
 
@@ -838,7 +838,7 @@ size_t Utf8Decode(WChar *c, const char *s)
  * @return Number of characters in the encoded sequence.
  */
 template <class T>
-inline size_t Utf8Encode(T buf, WChar c)
+inline size_t Utf8Encode(T buf, char32_t c)
 {
 	if (c < 0x80) {
 		*buf = c;
@@ -864,12 +864,12 @@ inline size_t Utf8Encode(T buf, WChar c)
 	return 1;
 }
 
-size_t Utf8Encode(char *buf, WChar c)
+size_t Utf8Encode(char *buf, char32_t c)
 {
 	return Utf8Encode<char *>(buf, c);
 }
 
-size_t Utf8Encode(std::ostreambuf_iterator<char> &buf, WChar c)
+size_t Utf8Encode(std::ostreambuf_iterator<char> &buf, char32_t c)
 {
 	return Utf8Encode<std::ostreambuf_iterator<char> &>(buf, c);
 }
@@ -1148,7 +1148,7 @@ public:
 		while (*s != '\0') {
 			size_t idx = s - string_base;
 
-			WChar c = Utf8Consume(&s);
+			char32_t c = Utf8Consume(&s);
 			if (c < 0x10000) {
 				this->utf16_str.push_back((UChar)c);
 			} else {
@@ -1203,7 +1203,7 @@ public:
 				 * break point, but we only want word starts. Move to the next location in
 				 * case the new position points to whitespace. */
 				while (pos != icu::BreakIterator::DONE &&
-						IsWhitespace(Utf16DecodeChar((const uint16 *)&this->utf16_str[pos]))) {
+						IsWhitespace(Utf16DecodeChar((const uint16_t *)&this->utf16_str[pos]))) {
 					int32_t new_pos = this->word_itr->next();
 					/* Don't set it to DONE if it was valid before. Otherwise we'll return END
 					 * even though the iterator wasn't at the end of the string before. */
@@ -1235,7 +1235,7 @@ public:
 				 * break point, but we only want word starts. Move to the previous location in
 				 * case the new position points to whitespace. */
 				while (pos != icu::BreakIterator::DONE &&
-						IsWhitespace(Utf16DecodeChar((const uint16 *)&this->utf16_str[pos]))) {
+						IsWhitespace(Utf16DecodeChar((const uint16_t *)&this->utf16_str[pos]))) {
 					int32_t new_pos = this->word_itr->previous();
 					/* Don't set it to DONE if it was valid before. Otherwise we'll return END
 					 * even though the iterator wasn't at the start of the string before. */
@@ -1297,13 +1297,13 @@ public:
 
 		switch (what) {
 			case ITER_CHARACTER: {
-				WChar c;
+				char32_t c;
 				this->cur_pos += Utf8Decode(&c, this->string + this->cur_pos);
 				return this->cur_pos;
 			}
 
 			case ITER_WORD: {
-				WChar c;
+				char32_t c;
 				/* Consume current word. */
 				size_t offs = Utf8Decode(&c, this->string + this->cur_pos);
 				while (this->cur_pos < this->len && !IsWhitespace(c)) {
@@ -1339,7 +1339,7 @@ public:
 
 			case ITER_WORD: {
 				const char *s = this->string + this->cur_pos;
-				WChar c;
+				char32_t c;
 				/* Consume preceding whitespace. */
 				do {
 					s = Utf8PrevChar(s);

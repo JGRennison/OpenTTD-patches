@@ -51,7 +51,7 @@ struct ANITChunkHandler : ChunkHandler {
 		}
 
 		if (IsSavegameVersionBefore(SLV_RIFF_TO_ARRAY)) {
-			size_t count = SlGetFieldLength() / sizeof(uint32);
+			size_t count = SlGetFieldLength() / sizeof(uint32_t);
 			_animated_tiles.clear();
 			for (uint i = 0; i < count; i++) {
 				_animated_tiles[SlReadUint32()] = {};

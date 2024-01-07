@@ -18,7 +18,7 @@
 /** Prices in pre 126 savegames */
 static void Load_PRIC()
 {
-	/* Old games store 49 base prices, very old games store them as int32 */
+	/* Old games store 49 base prices, very old games store them as int32_t */
 	int vt = IsSavegameVersionBefore(SLV_65) ? SLE_FILE_I32 : SLE_FILE_I64;
 	SlArray(nullptr, 49, vt | SLE_VAR_NULL);
 	SlArray(nullptr, 49, SLE_FILE_U16 | SLE_VAR_NULL);

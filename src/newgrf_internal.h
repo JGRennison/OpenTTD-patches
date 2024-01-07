@@ -22,7 +22,7 @@
 #include <vector>
 
 /** Base GRF ID for OpenTTD's base graphics GRFs. */
-static const uint32 OPENTTD_GRAPHICS_BASE_GRF_ID = BSWAP32(0xFF4F5400);
+static const uint32_t OPENTTD_GRAPHICS_BASE_GRF_ID = BSWAP32(0xFF4F5400);
 
 struct VarAction2GroupVariableTracking {
 	std::bitset<256> in;
@@ -33,8 +33,8 @@ struct VarAction2GroupVariableTracking {
 
 struct VarAction2ProcedureAnnotation {
 	std::bitset<256> stores;
-	uint32 special_register_values[16];
-	uint16 special_register_mask = 0;
+	uint32_t special_register_values[16];
+	uint16_t special_register_mask = 0;
 	bool unskippable = false;
 };
 
@@ -59,7 +59,7 @@ public:
 	SpriteFile *file;         ///< File of currently processed GRF file.
 	GRFFile *grffile;         ///< Currently processed GRF file.
 	GRFConfig *grfconfig;     ///< Config of the currently processed GRF file.
-	uint32 nfo_line;          ///< Currently processed pseudo sprite number in the GRF.
+	uint32_t nfo_line;        ///< Currently processed pseudo sprite number in the GRF.
 
 	/* Kind of return values when processing certain actions */
 	int skip_sprites;         ///< Number of pseudo sprites to skip before processing the next one. (-1 to skip to end of file)
@@ -226,31 +226,31 @@ DECLARE_ENUM_AS_BIT_SET(VarAction2AdjustInferenceFlags)
 
 struct VarAction2TempStoreInferenceVarSource {
 	DeterministicSpriteGroupAdjustType type;
-	uint16 variable;
+	uint16_t variable;
 	byte shift_num;
-	uint32 parameter;
-	uint32 and_mask;
-	uint32 add_val;
-	uint32 divmod_val;
+	uint32_t parameter;
+	uint32_t and_mask;
+	uint32_t add_val;
+	uint32_t divmod_val;
 };
 
 struct VarAction2TempStoreInference {
 	VarAction2AdjustInferenceFlags inference = VA2AIF_NONE;
-	uint32 store_constant = 0;
+	uint32_t store_constant = 0;
 	VarAction2TempStoreInferenceVarSource var_source;
 	uint version = 0;
 };
 
 struct VarAction2InferenceBackup {
 	VarAction2AdjustInferenceFlags inference = VA2AIF_NONE;
-	uint32 current_constant = 0;
+	uint32_t current_constant = 0;
 	uint adjust_size = 0;
 };
 
 struct VarAction2OptimiseState {
 	VarAction2AdjustInferenceFlags inference = VA2AIF_NONE;
-	uint32 current_constant = 0;
-	btree::btree_map<uint8, VarAction2TempStoreInference> temp_stores;
+	uint32_t current_constant = 0;
+	btree::btree_map<uint8_t, VarAction2TempStoreInference> temp_stores;
 	VarAction2InferenceBackup inference_backup;
 	VarAction2GroupVariableTracking *var_tracking = nullptr;
 	bool seen_procedure_call = false;
@@ -258,8 +258,8 @@ struct VarAction2OptimiseState {
 	bool check_expensive_vars = false;
 	bool enable_dse = false;
 	uint default_variable_version = 0;
-	uint32 special_register_store_values[16];
-	uint16 special_register_store_mask = 0;
+	uint32_t special_register_store_values[16];
+	uint16_t special_register_store_mask = 0;
 
 	inline VarAction2GroupVariableTracking *GetVarTracking(DeterministicSpriteGroup *group)
 	{
@@ -272,7 +272,7 @@ struct VarAction2OptimiseState {
 
 inline void OptimiseVarAction2PreCheckAdjust(VarAction2OptimiseState &state, const DeterministicSpriteGroupAdjust &adjust)
 {
-	uint16 variable = adjust.variable;
+	uint16_t variable = adjust.variable;
 	if (variable == 0x7B) variable = adjust.parameter;
 	if (variable == 0x1C) state.var_1C_present = true;
 }

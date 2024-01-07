@@ -114,7 +114,7 @@ struct AirportSpec {
 	TTDPAirportType ttd_airport_type;      ///< ttdpatch airport type (Small/Large/Helipad/Oilrig)
 	AirportClassID cls_id;                 ///< the class to which this airport type belongs
 	SpriteID preview_sprite;               ///< preview sprite for this airport
-	uint16 maintenance_cost;               ///< maintenance cost multiplier
+	uint16_t maintenance_cost;             ///< maintenance cost multiplier
 	/* Newgrf data */
 	bool enabled;                          ///< Entity still available (by default true). Newgrf can disable it, though.
 	struct GRFFileProps grf_prop;          ///< Properties related to the grf file.
@@ -165,9 +165,9 @@ struct AirportScopeResolver : public ScopeResolver {
 	{
 	}
 
-	uint32 GetRandomBits() const override;
-	uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const override;
-	void StorePSA(uint pos, int32 value) override;
+	uint32_t GetRandomBits() const override;
+	uint32_t GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra *extra) const override;
+	void StorePSA(uint pos, int32_t value) override;
 };
 
 
@@ -177,7 +177,7 @@ struct AirportResolverObject : public ResolverObject {
 	std::unique_ptr<TownScopeResolver> town_scope; ///< The town scope resolver (created on the first call).
 
 	AirportResolverObject(TileIndex tile, Station *st, byte airport_id, byte layout,
-			CallbackID callback = CBID_NO_CALLBACK, uint32 callback_param1 = 0, uint32 callback_param2 = 0);
+			CallbackID callback = CBID_NO_CALLBACK, uint32_t callback_param1 = 0, uint32_t callback_param2 = 0);
 
 	TownScopeResolver *GetTown();
 
@@ -196,9 +196,9 @@ struct AirportResolverObject : public ResolverObject {
 	}
 
 	GrfSpecFeature GetFeature() const override;
-	uint32 GetDebugID() const override;
+	uint32_t GetDebugID() const override;
 };
 
-StringID GetAirportTextCallback(const AirportSpec *as, byte layout, uint16 callback);
+StringID GetAirportTextCallback(const AirportSpec *as, byte layout, uint16_t callback);
 
 #endif /* NEWGRF_AIRPORT_H */

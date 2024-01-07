@@ -70,7 +70,7 @@ public:
 	struct BaseEdge {
 		uint capacity;                 ///< Capacity of the link.
 		uint usage;                    ///< Usage of the link.
-		uint64 travel_time_sum;        ///< Sum of the travel times of the link, in ticks.
+		uint64_t travel_time_sum;      ///< Sum of the travel times of the link, in ticks.
 		Date last_unrestricted_update; ///< When the unrestricted part of the link was last updated.
 		Date last_restricted_update;   ///< When the restricted part of the link was last updated.
 		Date last_aircraft_update;     ///< When aircraft capacity of the link was last updated.
@@ -124,7 +124,7 @@ public:
 		 * Get edge's average travel time.
 		 * @return Travel time, in ticks.
 		 */
-		uint32 TravelTime() const { return this->edge->travel_time_sum / this->edge->capacity; }
+		uint32_t TravelTime() const { return this->edge->travel_time_sum / this->edge->capacity; }
 
 		/**
 		 * Get the date of the last update to the edge's unrestricted capacity.
@@ -218,7 +218,7 @@ public:
 		 * @param edge Edge to be wrapped.
 		 */
 		Edge(BaseEdge &edge) : EdgeWrapper<BaseEdge>(edge) {}
-		void Update(uint capacity, uint usage, uint32 time, EdgeUpdateMode mode);
+		void Update(uint capacity, uint usage, uint32_t time, EdgeUpdateMode mode);
 		void Restrict() { this->edge->last_unrestricted_update = INVALID_DATE; }
 		void Release() { this->edge->last_restricted_update = INVALID_DATE; }
 		void ClearAircraft() { this->edge->last_aircraft_update = INVALID_DATE; }
@@ -365,17 +365,17 @@ public:
 	 */
 	inline uint Monthly(uint base) const
 	{
-		return (static_cast<uint64>(base) * 30 * DAY_TICKS * _settings_game.economy.day_length_factor) / std::max<uint64>((_scaled_date_ticks - this->last_compression).base(), DAY_TICKS);
+		return (static_cast<uint64_t>(base) * 30 * DAY_TICKS * _settings_game.economy.day_length_factor) / std::max<uint64_t>((_scaled_date_ticks - this->last_compression).base(), DAY_TICKS);
 	}
 
 	NodeID AddNode(const Station *st);
 	void RemoveNode(NodeID id);
 
-	void UpdateEdge(NodeID from, NodeID to, uint capacity, uint usage, uint32 time, EdgeUpdateMode mode);
+	void UpdateEdge(NodeID from, NodeID to, uint capacity, uint usage, uint32_t time, EdgeUpdateMode mode);
 	void RemoveEdge(NodeID from, NodeID to);
 
-	inline uint64 CalculateCostEstimate() const {
-		uint64 size_squared = (uint32)this->Size() * (uint32)this->Size();
+	inline uint64_t CalculateCostEstimate() const {
+		uint64_t size_squared = (uint32_t)this->Size() * (uint32_t)this->Size();
 		return size_squared * FindLastBit(size_squared * size_squared); // N^2 * 4log_2(N)
 	}
 

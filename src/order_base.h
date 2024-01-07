@@ -30,14 +30,14 @@ typedef Pool<Order, OrderID, 256, 0xFF0000> OrderPool;
 typedef Pool<OrderList, OrderListID, 128, 64000> OrderListPool;
 extern OrderPool _order_pool;
 extern OrderListPool _orderlist_pool;
-extern btree::btree_map<uint32, uint32> _order_destination_refcount_map;
+extern btree::btree_map<uint32_t, uint32_t> _order_destination_refcount_map;
 extern bool _order_destination_refcount_map_valid;
 
-inline uint32 OrderDestinationRefcountMapKey(DestinationID dest, CompanyID cid, OrderType order_type, VehicleType veh_type)
+inline uint32_t OrderDestinationRefcountMapKey(DestinationID dest, CompanyID cid, OrderType order_type, VehicleType veh_type)
 {
 	static_assert(sizeof(dest) == 2);
 	static_assert(OT_END <= 16);
-	return (((uint32) dest) << 16) | (((uint32) cid) << 8) | (((uint32) order_type) << 4) | ((uint32) veh_type);
+	return (((uint32_t) dest) << 16) | (((uint32_t) cid) << 8) | (((uint32_t) order_type) << 4) | ((uint32_t) veh_type);
 }
 
 template <typename F> void IterateOrderRefcountMapForDestinationID(DestinationID dest, F handler)
@@ -80,12 +80,12 @@ void ClearOrderDestinationRefcountMap();
  */
 
 struct OrderExtraInfo {
-	uint8 cargo_type_flags[NUM_CARGO] = {}; ///< Load/unload types for each cargo type.
-	uint32 xdata = 0;                       ///< Extra arbitrary data
-	uint32 xdata2 = 0;                      ///< Extra arbitrary data
-	uint16 dispatch_index = 0;              ///< Scheduled dispatch index + 1
-	uint8 xflags = 0;                       ///< Extra flags
-	uint8 colour = 0;                       ///< Order colour + 1
+	uint8_t cargo_type_flags[NUM_CARGO] = {}; ///< Load/unload types for each cargo type.
+	uint32_t xdata = 0;                       ///< Extra arbitrary data
+	uint32_t xdata2 = 0;                      ///< Extra arbitrary data
+	uint16_t dispatch_index = 0;              ///< Scheduled dispatch index + 1
+	uint8_t xflags = 0;                       ///< Extra flags
+	uint8_t colour = 0;                       ///< Order colour + 1
 };
 
 namespace upstream_sl {
@@ -102,9 +102,9 @@ namespace upstream_sl {
  */
 struct Order : OrderPool::PoolItem<&_order_pool> {
 private:
-	friend SaveLoadTable GetVehicleDescription(VehicleType vt); ///< Saving and loading the current order of vehicles.
-	friend void Load_VEHS();                                             ///< Loading of ancient vehicles.
-	friend SaveLoadTable GetOrderDescription();                          ///< Saving and loading of orders.
+	friend SaveLoadTable GetVehicleDescription(VehicleType vt);           ///< Saving and loading the current order of vehicles.
+	friend void Load_VEHS();                                              ///< Loading of ancient vehicles.
+	friend SaveLoadTable GetOrderDescription();                           ///< Saving and loading of orders.
 	friend upstream_sl::SaveLoadTable upstream_sl::GetOrderDescription(); ///< Saving and loading of orders.
 	friend upstream_sl::SlVehicleCommon;
 	friend upstream_sl::SlVehicleDisaster;
@@ -115,17 +115,17 @@ private:
 
 	std::unique_ptr<OrderExtraInfo> extra; ///< Extra order info
 
-	uint16 flags;         ///< Load/unload types, depot order/action types.
+	uint16_t flags;       ///< Load/unload types, depot order/action types.
 	DestinationID dest;   ///< The destination of the order.
-	uint8 type;           ///< The type of order + non-stop flags
+	uint8_t type;         ///< The type of order + non-stop flags
 
 	CargoID refit_cargo;  ///< Refit CargoID
 
-	uint8 occupancy;     ///< Estimate of vehicle occupancy on departure, for the current order, 0 indicates invalid, 1 - 101 indicate 0 - 100%
+	uint8_t occupancy;    ///< Estimate of vehicle occupancy on departure, for the current order, 0 indicates invalid, 1 - 101 indicate 0 - 100%
 
 	TimetableTicks wait_time;    ///< How long in ticks to wait at the destination.
 	TimetableTicks travel_time;  ///< How long in ticks the journey to this destination should take.
-	uint16 max_speed;            ///< How fast the vehicle may go on the way to the destination.
+	uint16_t max_speed;          ///< How fast the vehicle may go on the way to the destination.
 
 	void AllocExtraInfo();
 	void DeAllocExtraInfo();
@@ -135,35 +135,35 @@ private:
 		if (!this->extra) this->AllocExtraInfo();
 	}
 
-	inline uint8 GetXFlags() const
+	inline uint8_t GetXFlags() const
 	{
 		return this->extra != nullptr ? this->extra->xflags : 0;
 	}
 
-	inline uint8 &GetXFlagsRef()
+	inline uint8_t &GetXFlagsRef()
 	{
 		CheckExtraInfoAlloced();
 		return this->extra->xflags;
 	}
 
 public:
-	inline uint32 GetXData() const
+	inline uint32_t GetXData() const
 	{
 		return this->extra != nullptr ? this->extra->xdata : 0;
 	}
 
-	inline uint32 &GetXDataRef()
+	inline uint32_t &GetXDataRef()
 	{
 		CheckExtraInfoAlloced();
 		return this->extra->xdata;
 	}
 
-	inline uint32 GetXData2() const
+	inline uint32_t GetXData2() const
 	{
 		return this->extra != nullptr ? this->extra->xdata2 : 0;
 	}
 
-	inline uint32 &GetXData2Ref()
+	inline uint32_t &GetXData2Ref()
 	{
 		CheckExtraInfoAlloced();
 		return this->extra->xdata2;
@@ -174,7 +174,7 @@ public:
 	Order() : flags(0), refit_cargo(CT_NO_REFIT), max_speed(UINT16_MAX) {}
 	~Order();
 
-	Order(uint64 packed);
+	Order(uint64_t packed);
 
 	Order(const Order& other)
 	{
@@ -288,7 +288,7 @@ public:
 	 * @return whether to jump or not.
 	 * @pre IsType(OT_CONDITIONAL) && this->GetConditionVariable() == OCV_PERCENT.
 	 */
-	bool UpdateJumpCounter(uint8 percent, bool dry_run);
+	bool UpdateJumpCounter(uint8_t percent, bool dry_run);
 
 	/** How must the consist be loaded? */
 	inline OrderLoadFlags GetLoadType() const
@@ -390,11 +390,11 @@ public:
 	/** Get the order to skip to. */
 	inline VehicleOrderID GetConditionSkipToOrder() const { return this->flags; }
 	/** Get the value to base the skip on. */
-	inline uint16 GetConditionValue() const { return GB(this->dest, 0, 11); }
+	inline uint16_t GetConditionValue() const { return GB(this->dest, 0, 11); }
 	/** Get counter for the 'jump xx% of times' option */
-	inline int8 GetJumpCounter() const { return GB(this->GetXData(), 0, 8); }
+	inline int8_t GetJumpCounter() const { return GB(this->GetXData(), 0, 8); }
 	/** Get counter operation */
-	inline uint8 GetCounterOperation() const { return GB(this->flags, 0, 8); }
+	inline uint8_t GetCounterOperation() const { return GB(this->flags, 0, 8); }
 
 	/** Set how the consist must be loaded. */
 	inline void SetLoadType(OrderLoadFlags load_type)
@@ -455,11 +455,11 @@ public:
 	/** Get the order to skip to. */
 	inline void SetConditionSkipToOrder(VehicleOrderID order_id) { this->flags = order_id; }
 	/** Set the value to base the skip on. */
-	inline void SetConditionValue(uint16 value) { SB(this->dest, 0, 11, value); }
+	inline void SetConditionValue(uint16_t value) { SB(this->dest, 0, 11, value); }
 	/** Set counter for the 'jump xx% of times' option */
-	inline void SetJumpCounter(int8 jump_counter) { SB(this->GetXDataRef(), 0, 8, jump_counter); }
+	inline void SetJumpCounter(int8_t jump_counter) { SB(this->GetXDataRef(), 0, 8, jump_counter); }
 	/** Set counter operation */
-	inline void SetCounterOperation(uint8 op) { SB(this->flags, 0, 8, op); }
+	inline void SetCounterOperation(uint8_t op) { SB(this->flags, 0, 8, op); }
 
 	/* As conditional orders write their "skip to" order all over the flags, we cannot check the
 	 * flags to find out if timetabling is enabled. However, as conditional orders are never
@@ -496,7 +496,7 @@ public:
 	 * destination.
 	 * @return maximum speed.
 	 */
-	inline uint16 GetMaxSpeed() const { return this->max_speed; }
+	inline uint16_t GetMaxSpeed() const { return this->max_speed; }
 
 	/** Set if the wait time is explicitly timetabled (unless the order is conditional). */
 	inline void SetWaitTimetabled(bool timetabled)
@@ -532,7 +532,7 @@ public:
 	 * destination.
 	 * @param speed Speed to be set.
 	 */
-	inline void SetMaxSpeed(uint16 speed) { this->max_speed = speed; }
+	inline void SetMaxSpeed(uint16_t speed) { this->max_speed = speed; }
 
 	/** Does this order have a fixed wait time? */
 	inline bool IsWaitFixed() const { return HasBit(this->GetXFlags(), 1); }
@@ -574,13 +574,13 @@ public:
 	 * Get the occupancy value
 	 * @return occupancy
 	 */
-	inline uint8 GetOccupancy() const { return this->occupancy; }
+	inline uint8_t GetOccupancy() const { return this->occupancy; }
 
 	/**
 	 * Set the occupancy value
 	 * @param occupancy The occupancy to set
 	 */
-	inline void SetOccupancy(uint8 occupancy) { this->occupancy = occupancy; }
+	inline void SetOccupancy(uint8_t occupancy) { this->occupancy = occupancy; }
 
 	bool UseOccupancyValueForAverage() const;
 
@@ -610,7 +610,7 @@ public:
 	{
 		if (schedule_index != this->GetDispatchScheduleIndex()) {
 			this->CheckExtraInfoAlloced();
-			this->extra->dispatch_index = (uint16)(schedule_index + 1);
+			this->extra->dispatch_index = (uint16_t)(schedule_index + 1);
 		}
 	}
 
@@ -622,7 +622,7 @@ public:
 	/** Get order colour */
 	inline Colours GetColour() const
 	{
-		uint8 value = this->extra != nullptr ? this->extra->colour : 0;
+		uint8_t value = this->extra != nullptr ? this->extra->colour : 0;
 		return (Colours)(value - 1);
 	}
 
@@ -631,7 +631,7 @@ public:
 	{
 		if (colour != this->GetColour()) {
 			this->CheckExtraInfoAlloced();
-			this->extra->colour = ((uint8)colour) + 1;
+			this->extra->colour = ((uint8_t)colour) + 1;
 		}
 	}
 
@@ -651,8 +651,8 @@ public:
 	void AssignOrder(const Order &other);
 	bool Equals(const Order &other) const;
 
-	uint64 Pack() const;
-	uint16 MapOldOrder() const;
+	uint64_t Pack() const;
+	uint16_t MapOldOrder() const;
 	void ConvertFromOldSavegame();
 };
 
@@ -713,12 +713,12 @@ struct DispatchSchedule {
 private:
 	friend SaveLoadTable GetDispatchScheduleDescription();              ///< Saving and loading of dispatch schedules
 
-	std::vector<uint32> scheduled_dispatch;                             ///< Scheduled dispatch time
-	uint32 scheduled_dispatch_duration = 0;                             ///< Scheduled dispatch duration
+	std::vector<uint32_t> scheduled_dispatch;                           ///< Scheduled dispatch time
+	uint32_t scheduled_dispatch_duration = 0;                           ///< Scheduled dispatch duration
 	DateTicksScaled scheduled_dispatch_start_tick = -1;                 ///< Scheduled dispatch start tick
 	                                                                    ///  this counts to (DAY_TICK * _settings_game.economy.day_length_factor)
-	int32 scheduled_dispatch_last_dispatch = 0;                         ///< Last vehicle dispatched offset
-	int32 scheduled_dispatch_max_delay = 0;                             ///< Maximum allowed delay
+	int32_t scheduled_dispatch_last_dispatch = 0;                       ///< Last vehicle dispatched offset
+	int32_t scheduled_dispatch_max_delay = 0;                           ///< Maximum allowed delay
 
 	std::string name;                                                   ///< Name of dispatch schedule
 
@@ -735,12 +735,12 @@ public:
 	 * Get the vector of all scheduled dispatch slot
 	 * @return  first scheduled dispatch
 	 */
-	inline const std::vector<uint32> &GetScheduledDispatch() const { return this->scheduled_dispatch; }
+	inline const std::vector<uint32_t> &GetScheduledDispatch() const { return this->scheduled_dispatch; }
 
-	void SetScheduledDispatch(std::vector<uint32> dispatch_list);
-	void AddScheduledDispatch(uint32 offset);
-	void RemoveScheduledDispatch(uint32 offset);
-	void AdjustScheduledDispatch(int32 adjust);
+	void SetScheduledDispatch(std::vector<uint32_t> dispatch_list);
+	void AddScheduledDispatch(uint32_t offset);
+	void RemoveScheduledDispatch(uint32_t offset);
+	void AdjustScheduledDispatch(int32_t adjust);
 	void ClearScheduledDispatch() { this->scheduled_dispatch.clear(); }
 	bool UpdateScheduledDispatchToDate(DateTicksScaled now);
 	void UpdateScheduledDispatch(const Vehicle *v);
@@ -749,13 +749,13 @@ public:
 	 * Set the scheduled dispatch duration, in scaled tick
 	 * @param  duration  New duration
 	 */
-	inline void SetScheduledDispatchDuration(uint32 duration) { this->scheduled_dispatch_duration = duration; }
+	inline void SetScheduledDispatchDuration(uint32_t duration) { this->scheduled_dispatch_duration = duration; }
 
 	/**
 	 * Get the scheduled dispatch duration, in scaled tick
 	 * @return  scheduled dispatch duration
 	 */
-	inline uint32 GetScheduledDispatchDuration() const { return this->scheduled_dispatch_duration; }
+	inline uint32_t GetScheduledDispatchDuration() const { return this->scheduled_dispatch_duration; }
 
 	/**
 	 * Set the scheduled dispatch start
@@ -782,25 +782,25 @@ public:
 	 * Set the scheduled dispatch last dispatch offset, in scaled tick
 	 * @param  duration  New last dispatch offset
 	 */
-	inline void SetScheduledDispatchLastDispatch(int32 offset) { this->scheduled_dispatch_last_dispatch = offset; }
+	inline void SetScheduledDispatchLastDispatch(int32_t offset) { this->scheduled_dispatch_last_dispatch = offset; }
 
 	/**
 	 * Get the scheduled dispatch last dispatch offset, in scaled tick
 	 * @return  scheduled dispatch last dispatch
 	 */
-	inline int32 GetScheduledDispatchLastDispatch() const { return this->scheduled_dispatch_last_dispatch; }
+	inline int32_t GetScheduledDispatchLastDispatch() const { return this->scheduled_dispatch_last_dispatch; }
 
 	/**
 	 * Set the scheduled dispatch maximum allowed delay, in scaled tick
 	 * @param  delay  New maximum allow delay
 	 */
-	inline void SetScheduledDispatchDelay(int32 delay) { this->scheduled_dispatch_max_delay = delay; }
+	inline void SetScheduledDispatchDelay(int32_t delay) { this->scheduled_dispatch_max_delay = delay; }
 
 	/**
 	 * Get the scheduled dispatch maximum alowed delay, in scaled tick
 	 * @return  scheduled dispatch last dispatch
 	 */
-	inline int32 GetScheduledDispatchDelay() const { return this->scheduled_dispatch_max_delay; }
+	inline int32_t GetScheduledDispatchDelay() const { return this->scheduled_dispatch_max_delay; }
 
 	inline void BorrowSchedule(DispatchSchedule &other)
 	{

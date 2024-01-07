@@ -24,13 +24,13 @@ public:
 	}
 
 	void *MoveTo(void *video, int x, int y) override;
-	void SetPixel(void *video, int x, int y, uint8 colour) override;
-	void SetPixel32(void *video, int x, int y, uint8 colour, uint32 colour32) override;
-	void DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 colour, int width, int dash) override;
-	void SetRect(void *video, int x, int y, const uint8 *colours, uint lines, uint width, uint pitch) override;
-	void SetRect32(void *video, int x, int y, const uint32 *colours, uint lines, uint width, uint pitch) override;
-	void DrawRect(void *video, int width, int height, uint8 colour) override;
-	void DrawRectAt(void *video, int x, int y, int width, int height, uint8 colour) override;
+	void SetPixel(void *video, int x, int y, uint8_t colour) override;
+	void SetPixel32(void *video, int x, int y, uint8_t colour, uint32_t colour32) override;
+	void DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8_t colour, int width, int dash) override;
+	void SetRect(void *video, int x, int y, const uint8_t *colours, uint lines, uint width, uint pitch) override;
+	void SetRect32(void *video, int x, int y, const uint32_t *colours, uint lines, uint width, uint pitch) override;
+	void DrawRect(void *video, int width, int height, uint8_t colour) override;
+	void DrawRectAt(void *video, int x, int y, int width, int height, uint8_t colour) override;
 	void CopyFromBuffer(void *video, const void *src, int width, int height) override;
 	void CopyToBuffer(const void *video, void *dst, int width, int height) override;
 	void CopyImageToBuffer(const void *video, void *dst, int width, int height, int dst_pitch) override;
@@ -125,7 +125,7 @@ public:
 	 * @param b blue component
 	 * @return the brightness value of the new colour, now dark grey.
 	 */
-	static inline uint8 MakeDark(uint8 r, uint8 g, uint8 b)
+	static inline uint8_t MakeDark(uint8_t r, uint8_t g, uint8_t b)
 	{
 		/* Magic-numbers are ~66% of those used in MakeGrey() */
 		return ((r * 13063) + (g * 25647) + (b * 4981)) / 65536;
@@ -138,7 +138,7 @@ public:
 	 */
 	static inline Colour MakeDark(Colour colour)
 	{
-		uint8 d = MakeDark(colour.r, colour.g, colour.b);
+		uint8_t d = MakeDark(colour.r, colour.g, colour.b);
 
 		return Colour(d, d, d);
 	}
@@ -164,9 +164,9 @@ public:
 
 	static const int DEFAULT_BRIGHTNESS = 128;
 
-	static Colour ReallyAdjustBrightness(Colour colour, uint8 brightness);
+	static Colour ReallyAdjustBrightness(Colour colour, uint8_t brightness);
 
-	static inline Colour AdjustBrightness(Colour colour, uint8 brightness)
+	static inline Colour AdjustBrightness(Colour colour, uint8_t brightness)
 	{
 		/* Shortcut for normal brightness */
 		if (likely(brightness == DEFAULT_BRIGHTNESS)) return colour;
@@ -174,9 +174,9 @@ public:
 		return ReallyAdjustBrightness(colour, brightness);
 	}
 
-	static inline uint8 GetColourBrightness(Colour colour)
+	static inline uint8_t GetColourBrightness(Colour colour)
 	{
-		uint8 rgb_max = std::max(colour.r, std::max(colour.g, colour.b));
+		uint8_t rgb_max = std::max(colour.r, std::max(colour.g, colour.b));
 
 		/* Black pixel (8bpp or old 32bpp image), so use default value */
 		if (rgb_max == 0) rgb_max = DEFAULT_BRIGHTNESS;

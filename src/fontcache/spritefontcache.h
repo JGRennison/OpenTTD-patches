@@ -17,7 +17,7 @@
 class SpriteFontCache : public FontCache {
 private:
 	SpriteID **glyph_to_spriteid_map; ///< Mapping of glyphs to sprite IDs.
-	SpriteID GetUnicodeGlyph(WChar key);
+	SpriteID GetUnicodeGlyph(char32_t key);
 
 	void ClearGlyphToSpriteMap();
 public:

@@ -57,8 +57,8 @@ extern bool _ctrl_pressed;   ///< Is Ctrl pressed?
 extern bool _shift_pressed;  ///< Is Shift pressed?
 extern bool _invert_ctrl;
 extern bool _invert_shift;
-extern uint16 _game_speed;
-extern uint8 _milliseconds_per_tick;
+extern uint16_t _game_speed;
+extern uint8_t _milliseconds_per_tick;
 extern float _ticks_per_second;
 
 extern bool _left_button_down;
@@ -76,7 +76,7 @@ extern Palette _cur_palette; ///< Current palette
 extern DrawPixelInfo *_cur_dpi;
 
 void HandleToolbarHotkey(int hotkey);
-void HandleKeypress(uint keycode, WChar key);
+void HandleKeypress(uint keycode, char32_t key);
 void HandleTextInput(const char *str, bool marked = false, const char *caret = nullptr, const char *insert_location = nullptr, const char *replacement_end = nullptr);
 void HandleCtrlChanged();
 void HandleShiftChanged();
@@ -113,7 +113,7 @@ int DrawString(int left, int right, int top, StringID str, TextColour colour = T
 int DrawStringMultiLine(int left, int right, int top, int bottom, std::string_view str, TextColour colour = TC_FROMSTRING, StringAlignment align = (SA_TOP | SA_LEFT), bool underline = false, FontSize fontsize = FS_NORMAL);
 int DrawStringMultiLine(int left, int right, int top, int bottom, StringID str, TextColour colour = TC_FROMSTRING, StringAlignment align = (SA_TOP | SA_LEFT), bool underline = false, FontSize fontsize = FS_NORMAL);
 
-void DrawCharCentered(WChar c, const Rect &r, TextColour colour);
+void DrawCharCentered(char32_t c, const Rect &r, TextColour colour);
 
 void GfxFillRect(const DrawPixelInfo *dpi, int left, int top, int right, int bottom, int colour, FillRectMode mode = FILLRECT_OPAQUE);
 inline void GfxFillRect(int left, int top, int right, int bottom, int colour, FillRectMode mode = FILLRECT_OPAQUE) { GfxFillRect(_cur_dpi, left, top, right, bottom, colour, mode); }
@@ -208,10 +208,10 @@ void SortResolutions();
 bool ToggleFullScreen(bool fs);
 
 /* gfx.cpp */
-byte GetCharacterWidth(FontSize size, WChar key);
+byte GetCharacterWidth(FontSize size, char32_t key);
 byte GetDigitWidth(FontSize size = FS_NORMAL);
 void GetBroadestDigit(uint *front, uint *next, FontSize size = FS_NORMAL);
-uint64 GetBroadestDigitsValue(uint count, FontSize size = FS_NORMAL);
+uint64_t GetBroadestDigitsValue(uint count, FontSize size = FS_NORMAL);
 
 extern int font_height_cache[FS_END];
 

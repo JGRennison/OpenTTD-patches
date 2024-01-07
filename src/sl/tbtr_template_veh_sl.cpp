@@ -132,7 +132,7 @@ void AfterLoadTemplateVehiclesUpdateProperties()
 			StringID err;
 			Train* t = VirtualTrainFromTemplateVehicle(tv, err, 0);
 			if (t != nullptr) {
-				uint32 full_cargo_weight = 0;
+				uint32_t full_cargo_weight = 0;
 				for (Train *u = t; u != nullptr; u = u->Next()) {
 					full_cargo_weight += u->GetCargoWeight(u->cargo_cap);
 				}

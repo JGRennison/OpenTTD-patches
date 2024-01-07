@@ -12,7 +12,7 @@
 
 #include "../random_access_file_type.h"
 
-enum SpriteFileFlags : uint8 {
+enum SpriteFileFlags : uint8_t {
 	SFF_NONE                  = 0,
 	SFF_USERGRF               = 1 << 0,
 	SFF_PROGSIG               = 1 << 1,

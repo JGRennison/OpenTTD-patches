@@ -14,9 +14,9 @@
 
 struct AnalyseCallbackOperationIndustryTileData {
 	const IndustryTileLayout *layout;
-	uint64 check_mask;
-	uint64 *result_mask;
-	uint8 layout_index;
+	uint64_t check_mask;
+	uint64_t *result_mask;
+	uint8_t layout_index;
 	bool anim_state_at_offset;
 	bool check_anim_next_frame_cb;
 };

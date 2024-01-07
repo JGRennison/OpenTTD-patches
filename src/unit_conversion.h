@@ -17,10 +17,10 @@ uint ConvertWeightToDisplayWeight(uint weight);
 uint ConvertDisplayWeightToWeight(uint weight);
 uint ConvertPowerToDisplayPower(uint power);
 uint ConvertDisplayPowerToPower(uint power);
-int64 ConvertForceToDisplayForce(int64 force);
-int64 ConvertDisplayForceToForce(int64 force);
-void ConvertPowerWeightRatioToDisplay(int64 ratio, int64 &value, int64 &decimals);
-void ConvertForceWeightRatioToDisplay(int64 ratio, int64 &value, int64 &decimals);
+int64_t ConvertForceToDisplayForce(int64_t force);
+int64_t ConvertDisplayForceToForce(int64_t force);
+void ConvertPowerWeightRatioToDisplay(int64_t ratio, int64_t &value, int64_t &decimals);
+void ConvertForceWeightRatioToDisplay(int64_t ratio, int64_t &value, int64_t &decimals);
 uint ConvertDisplayToPowerWeightRatio(double in);
 uint ConvertDisplayToForceWeightRatio(double in);
 

@@ -17,7 +17,7 @@
 
 
 struct BinaryHeapNode {
-	uint32 item;
+	uint32_t item;
 	int priority;
 };
 
@@ -33,9 +33,9 @@ struct BinaryHeap {
 
 	void Init(uint max_size);
 
-	bool Push(uint32 item, int priority);
-	uint32 Pop();
-	bool Delete(uint32 item, int priority);
+	bool Push(uint32_t item, int priority);
+	uint32_t Pop();
+	bool Delete(uint32_t item, int priority);
 	void Clear();
 	void Free();
 

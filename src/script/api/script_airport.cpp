@@ -16,7 +16,7 @@
 #include "../../safeguards.h"
 
 extern Town *AirportGetNearestTown(const struct AirportSpec *as, Direction rotation, TileIndex tile, TileIterator &&it, uint &mindist);
-extern uint8 GetAirportNoiseLevelForDistance(const struct AirportSpec *as, uint distance);
+extern uint8_t GetAirportNoiseLevelForDistance(const struct AirportSpec *as, uint distance);
 
 /* static */ bool ScriptAirport::IsValidAirportType(AirportType type)
 {
@@ -171,5 +171,5 @@ extern uint8 GetAirportNoiseLevelForDistance(const struct AirportSpec *as, uint 
 {
 	if (!IsAirportInformationAvailable(type)) return -1;
 
-	return (int64)GetMaintenanceCostFactor(type) * _price[PR_INFRASTRUCTURE_AIRPORT] >> 3;
+	return (int64_t)GetMaintenanceCostFactor(type) * _price[PR_INFRASTRUCTURE_AIRPORT] >> 3;
 }

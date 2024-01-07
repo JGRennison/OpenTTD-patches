@@ -29,16 +29,16 @@ using TextEffectID = uint16_t;
 static const TextEffectID INVALID_TE_ID = UINT16_MAX;
 
 void MoveAllTextEffects(uint delta_ms);
-TextEffectID AddTextEffect(StringID msg, int x, int y, uint8 duration, TextEffectMode mode, uint64 param1 = 0, uint64 param2 = 0);
+TextEffectID AddTextEffect(StringID msg, int x, int y, uint8_t duration, TextEffectMode mode, uint64_t param1 = 0, uint64_t param2 = 0);
 void InitTextEffects();
 void DrawTextEffects(ViewportDrawerDynamic *vdd, DrawPixelInfo *dpi, bool load_transparent);
-void UpdateTextEffect(TextEffectID effect_id, StringID msg, uint64 param1 = 0, uint64 param2 = 0);
+void UpdateTextEffect(TextEffectID effect_id, StringID msg, uint64_t param1 = 0, uint64_t param2 = 0);
 void RemoveTextEffect(TextEffectID effect_id);
 void UpdateAllTextEffectVirtCoords();
 
 /* misc_gui.cpp */
-TextEffectID ShowFillingPercent(int x, int y, int z, uint8 percent, StringID colour);
-void UpdateFillingPercent(TextEffectID te_id, uint8 percent, StringID colour);
+TextEffectID ShowFillingPercent(int x, int y, int z, uint8_t percent, StringID colour);
+void UpdateFillingPercent(TextEffectID te_id, uint8_t percent, StringID colour);
 void HideFillingPercent(TextEffectID *te_id);
 
 void ShowCostOrIncomeAnimation(int x, int y, int z, Money cost);

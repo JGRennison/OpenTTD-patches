@@ -99,7 +99,7 @@ void ResetLabelMaps()
 
 /** Container for a label for SaveLoad system */
 struct LabelObject {
-	uint32 label;
+	uint32_t label;
 };
 
 static const SaveLoad _label_object_desc[] = {

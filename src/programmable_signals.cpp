@@ -80,7 +80,7 @@ SignalSimpleCondition::SignalSimpleCondition(SignalConditionCode code)
 	}
 }
 
-bool SignalConditionComparable::EvaluateComparable(uint32 var_val)
+bool SignalConditionComparable::EvaluateComparable(uint32_t var_val)
 {
 	switch (this->comparator) {
 		case SGC_EQUALS:            return var_val == this->value;
@@ -108,7 +108,7 @@ SignalVariableCondition::SignalVariableCondition(SignalConditionCode code)
 
 /*virtual*/ bool SignalVariableCondition::Evaluate(SignalVM &vm)
 {
-	uint32 var_val;
+	uint32_t var_val;
 	switch (this->cond_code) {
 		case PSC_NUM_GREEN:  var_val = vm.num_green; break;
 		case PSC_NUM_RED:    var_val = vm.num_exits - vm.num_green; break;
@@ -662,7 +662,7 @@ void SignalProgram::DebugPrintProgram()
  *       - Colour to set the signal to
  * @param text unused
  */
-CommandCost CmdInsertSignalInstruction(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdInsertSignalInstruction(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	Track track         = Extract<Track,        0,   3>(p1);
 	uint instruction_id = GB(p1, 3, 16);
@@ -737,7 +737,7 @@ CommandCost CmdInsertSignalInstruction(TileIndex tile, DoCommandFlag flags, uint
  *        - Bits 5-31: Tile on which signal is located
  * @param text unused
  */
-CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	Track track         = Extract<Track, 0, 3 >(p1);
 	uint instruction_id = GB(p1, 3, 16);
@@ -817,7 +817,7 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 					case PSC_NUM_RED: {
 						SignalVariableCondition *vc = static_cast<SignalVariableCondition*>(si->condition);
 						SignalConditionField f = (SignalConditionField) GB(p2, 1, 2);
-						uint32 val = GB(p2, 3, 27);
+						uint32_t val = GB(p2, 3, 27);
 						if (f == SCF_COMPARATOR) {
 							if (val > SGC_LAST) return_cmd_error(STR_ERR_PROGSIG_INVALID_COMPARATOR);
 							if (!exec) return CommandCost();
@@ -846,7 +846,7 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 					case PSC_SLOT_OCC_REM: {
 						SignalSlotCondition *sc = static_cast<SignalSlotCondition*>(si->condition);
 						SignalConditionField f = (SignalConditionField) GB(p2, 1, 2);
-						uint32 val = GB(p2, 3, 27);
+						uint32_t val = GB(p2, 3, 27);
 						if (f == SCF_COMPARATOR) {
 							if (val > SGC_LAST) return_cmd_error(STR_ERR_PROGSIG_INVALID_COMPARATOR);
 							if (!exec) return CommandCost();
@@ -866,7 +866,7 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 					case PSC_COUNTER: {
 						SignalCounterCondition *sc = static_cast<SignalCounterCondition*>(si->condition);
 						SignalConditionField f = (SignalConditionField) GB(p2, 1, 2);
-						uint32 val = GB(p2, 3, 27);
+						uint32_t val = GB(p2, 3, 27);
 						if (f == SCF_COMPARATOR) {
 							if (val > SGC_LAST) return_cmd_error(STR_ERR_PROGSIG_INVALID_COMPARATOR);
 							if (!exec) return CommandCost();
@@ -911,7 +911,7 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
  * @param p2 unused
  * @param text unused
  */
-CommandCost CmdRemoveSignalInstruction(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdRemoveSignalInstruction(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	Track track         = Extract<Track, 0, 3 >(p1);
 	uint instruction_id = GB(p1, 3, 16);
@@ -1048,7 +1048,7 @@ static void CloneInstructions(SignalProgram *prog, SignalInstruction *insert_bef
  *   - Tile of clone source signal
  * @param text unused
  */
-CommandCost CmdSignalProgramMgmt(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdSignalProgramMgmt(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	bool exec = (flags & DC_EXEC) != 0;
 

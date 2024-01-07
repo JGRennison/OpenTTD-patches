@@ -27,7 +27,7 @@ enum SaveLoadInvalidateWindowData {
 /** Deals with finding savegames */
 struct FiosItem {
 	FiosType type;
-	uint64 mtime;
+	uint64_t mtime;
 	std::string title;
 	std::string name;
 	bool operator< (const FiosItem &other) const;

@@ -45,8 +45,8 @@ bool _ctrl_pressed;   ///< Is Ctrl pressed?
 bool _shift_pressed;  ///< Is Shift pressed?
 bool _invert_ctrl;
 bool _invert_shift;
-uint16 _game_speed = 100; ///< Current game-speed; 100 is 1x, 0 is infinite.
-uint8 _milliseconds_per_tick = 27; ///< Milliseconds per tick
+uint16_t _game_speed = 100; ///< Current game-speed; 100 is 1x, 0 is infinite.
+uint8_t _milliseconds_per_tick = 27; ///< Milliseconds per tick
 float _ticks_per_second;           ///< Ticks per second
 bool _left_button_down;     ///< Is left mouse button pressed?
 bool _left_button_clicked;  ///< Is left mouse button clicked?
@@ -60,7 +60,7 @@ GameMode _game_mode;
 SwitchMode _switch_mode;  ///< The next mainloop command.
 std::chrono::steady_clock::time_point _switch_mode_time; ///< The time when the switch mode was requested.
 PauseMode _pause_mode;
-uint32 _pause_countdown;
+uint32_t _pause_countdown;
 std::string _switch_baseset;
 static bool _adjust_gui_zoom_startup_done = false;
 
@@ -81,7 +81,7 @@ struct GfxBlitterCtx {
 static void GfxMainBlitterViewport(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub = nullptr, SpriteID sprite_id = SPR_CURSOR_MOUSE);
 static void GfxMainBlitter(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub = nullptr, SpriteID sprite_id = SPR_CURSOR_MOUSE, ZoomLevel zoom = ZOOM_LVL_NORMAL);
 
-static ReusableBuffer<uint8> _cursor_backup;
+static ReusableBuffer<uint8_t> _cursor_backup;
 
 ZoomLevel _gui_zoom  = ZOOM_LVL_OUT_4X;     ///< GUI Zoom level
 ZoomLevel _font_zoom = _gui_zoom;           ///< Sprite font Zoom level (not clamped)
@@ -108,7 +108,7 @@ enum GfxDebugFlags {
 	GDF_SHOW_WIDGET_DIRTY,
 	GDF_SHOW_RECT_DIRTY,
 };
-uint32 _gfx_debug_flags;
+uint32_t _gfx_debug_flags;
 
 /**
  * Applies a certain FillRectMode-operation to a rectangle [left, right] x [top, bottom] on the screen.
@@ -153,7 +153,7 @@ void GfxFillRect(const DrawPixelInfo *dpi, int left, int top, int right, int bot
 
 	switch (mode) {
 		default: // FILLRECT_OPAQUE
-			blitter->DrawRect(dst, right, bottom, (uint8)colour);
+			blitter->DrawRect(dst, right, bottom, (uint8_t)colour);
 			break;
 
 		case FILLRECT_RECOLOUR:
@@ -163,7 +163,7 @@ void GfxFillRect(const DrawPixelInfo *dpi, int left, int top, int right, int bot
 		case FILLRECT_CHECKER: {
 			byte bo = (oleft - left + dpi->left + otop - top + dpi->top) & 1;
 			do {
-				for (int i = (bo ^= 1); i < right; i += 2) blitter->SetPixel(dst, i, 0, (uint8)colour);
+				for (int i = (bo ^= 1); i < right; i += 2) blitter->SetPixel(dst, i, 0, (uint8_t)colour);
 				dst = blitter->MoveTo(dst, 0, 1);
 			} while (--bottom > 0);
 			break;
@@ -290,7 +290,7 @@ void GfxFillPolygon(const std::vector<Point> &shape, int colour, FillRectMode mo
 			void *dst = blitter->MoveTo(dpi->dst_ptr, x1, y);
 			switch (mode) {
 				default: // FILLRECT_OPAQUE
-					blitter->DrawRect(dst, x2 - x1, 1, (uint8)colour);
+					blitter->DrawRect(dst, x2 - x1, 1, (uint8_t)colour);
 					break;
 				case FILLRECT_RECOLOUR:
 					blitter->DrawColourMappingRect(dst, x2 - x1, 1, GB(colour, 0, PALETTE_WIDTH));
@@ -299,7 +299,7 @@ void GfxFillPolygon(const std::vector<Point> &shape, int colour, FillRectMode mo
 					/* Fill every other pixel, offset such that the sum of filled pixels' X and Y coordinates is odd.
 					 * This creates a checkerboard effect. */
 					for (int x = (x1 + y) & 1; x < x2 - x1; x += 2) {
-						blitter->SetPixel(dst, x, 0, (uint8)colour);
+						blitter->SetPixel(dst, x, 0, (uint8_t)colour);
 					}
 					break;
 				case FILLRECT_FUNCTOR:
@@ -328,7 +328,7 @@ void GfxFillPolygon(const std::vector<Point> &shape, int colour, FillRectMode mo
  * @param width Width of the line.
  * @param dash Length of dashes for dashed lines. 0 means solid line.
  */
-static inline void GfxDoDrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 colour, int width, int dash = 0)
+static inline void GfxDoDrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8_t colour, int width, int dash = 0)
 {
 	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 
@@ -940,7 +940,7 @@ ptrdiff_t GetCharAtPosition(std::string_view str, int x, FontSize start_fontsize
  * @param colour      Colour to use, for details see _string_colourmap in
  *                    table/palettes.h or docs/ottd-colourtext-palette.png or the enum TextColour in gfx_type.h
  */
-void DrawCharCentered(WChar c, const Rect &r, TextColour colour)
+void DrawCharCentered(char32_t c, const Rect &r, TextColour colour)
 {
 	GfxBlitterCtx ctx(_cur_dpi);
 	ctx.SetColourRemap(colour);
@@ -1212,7 +1212,7 @@ static void GfxBlitter(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, in
  * @param zoom The zoom level at which to draw the sprites.
  * @return Pixel buffer, or nullptr if an 8bpp blitter is being used.
  */
-std::unique_ptr<uint32[]> DrawSpriteToRgbaBuffer(SpriteID spriteId, ZoomLevel zoom)
+std::unique_ptr<uint32_t[]> DrawSpriteToRgbaBuffer(SpriteID spriteId, ZoomLevel zoom)
 {
 	/* Invalid zoom level requested? */
 	if (zoom < _settings_client.gui.zoom_min || zoom > _settings_client.gui.zoom_max) return nullptr;
@@ -1225,7 +1225,7 @@ std::unique_ptr<uint32[]> DrawSpriteToRgbaBuffer(SpriteID spriteId, ZoomLevel zo
 	const Sprite *sprite = GetSprite(real_sprite, SpriteType::Normal, ZoomMask(zoom));
 	Dimension dim = GetSpriteSize(real_sprite, nullptr, zoom);
 	size_t dim_size = static_cast<size_t>(dim.width) * dim.height;
-	std::unique_ptr<uint32[]> result(new uint32[dim_size]);
+	std::unique_ptr<uint32_t[]> result(new uint32_t[dim_size]);
 	/* Set buffer to fully transparent. */
 	MemSetT(result.get(), 0, dim_size);
 
@@ -1259,7 +1259,7 @@ std::unique_ptr<uint32[]> DrawSpriteToRgbaBuffer(SpriteID spriteId, ZoomLevel zo
 
 	if (blitter->GetScreenDepth() == 8) {
 		/* Resolve palette. */
-		uint32 *dst = result.get();
+		uint32_t *dst = result.get();
 		const byte *src = pal_buffer.get();
 		for (size_t i = 0; i < dim_size; ++i) {
 			*dst++ = _cur_palette.palette[*src++].data;
@@ -1300,7 +1300,7 @@ void LoadStringWidthTable(bool monospace)
  * @param key   Character code glyph
  * @return Width of the character glyph
  */
-byte GetCharacterWidth(FontSize size, WChar key)
+byte GetCharacterWidth(FontSize size, char32_t key)
 {
 	/* Use _stringwidth_table cache if possible */
 	if (key >= 32 && key < 256) return _stringwidth_table[size][key - 32];
@@ -1328,12 +1328,12 @@ byte GetDigitWidth(FontSize size)
  * @param size  Font of the number
  * @return The number.
  */
-uint64 GetBroadestDigitsValue(uint count, FontSize size)
+uint64_t GetBroadestDigitsValue(uint count, FontSize size)
 {
 	uint front = 0;
 	uint next = 0;
 	GetBroadestDigit(&front, &next, size);
-	uint64 val = count > 1 ? front : next;
+	uint64_t val = count > 1 ? front : next;
 	for (; count > 1; count--) {
 		val = 10 * val + next;
 	}
@@ -1430,7 +1430,7 @@ void DrawMouseCursor()
 	_cursor.draw_size.x = width;
 	_cursor.draw_size.y = height;
 
-	uint8 *buffer = _cursor_backup.Allocate(blitter->BufferSize(_cursor.draw_size.x, _cursor.draw_size.y));
+	uint8_t *buffer = _cursor_backup.Allocate(blitter->BufferSize(_cursor.draw_size.x, _cursor.draw_size.y));
 
 	/* Make backup of stuff below cursor */
 	blitter->CopyToBuffer(blitter->MoveTo(_screen.dst_ptr, _cursor.draw_pos.x, _cursor.draw_pos.y), buffer, _cursor.draw_size.x, _cursor.draw_size.y);
@@ -1522,7 +1522,7 @@ static void DrawDirtyViewport(uint occlusion, int left, int top, int right, int 
 	if (_game_mode == GM_MENU) {
 		RedrawScreenRect(left, top, right, bottom);
 	} else {
-		extern void ViewportDrawChk(Viewport *vp, int left, int top, int right, int bottom, uint8 display_flags);
+		extern void ViewportDrawChk(Viewport *vp, int left, int top, int right, int bottom, uint8_t display_flags);
 		ViewportDrawChk(_dirty_viewport, left, top, right, bottom, _dirty_viewport_disp_flags);
 		VideoDriver::GetInstance()->MakeDirty(left, top, right - left, bottom - top);
 	}
@@ -2136,7 +2136,7 @@ void UpdateGUIZoom()
 		_gui_scale = Clamp(_gui_scale_cfg, MIN_INTERFACE_SCALE, MAX_INTERFACE_SCALE);
 	}
 
-	int8 new_zoom = ScaleGUITrad(1) <= 1 ? ZOOM_LVL_OUT_4X : ScaleGUITrad(1) >= 4 ? ZOOM_LVL_MIN : ZOOM_LVL_OUT_2X;
+	int8_t new_zoom = ScaleGUITrad(1) <= 1 ? ZOOM_LVL_OUT_4X : ScaleGUITrad(1) >= 4 ? ZOOM_LVL_MIN : ZOOM_LVL_OUT_2X;
 	/* Font glyphs should not be clamped to min/max zoom. */
 	_font_zoom = static_cast<ZoomLevel>(new_zoom);
 	/* Ensure the gui_zoom is clamped between min/max. */

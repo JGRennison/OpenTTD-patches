@@ -42,7 +42,7 @@ static int _smallmap_company_count;  ///< Number of entries in the owner legend.
 static int _smallmap_cargo_count;    ///< Number of cargos in the link stats legend.
 
 /** Link stat colours shown in legenda. */
-static uint8 _linkstat_colours_in_legenda[] = {0, 1, 3, 5, 7, 9, 11};
+static uint8_t _linkstat_colours_in_legenda[] = {0, 1, 3, 5, 7, 9, 11};
 
 /** Macro for ordinary entry of LegendAndColour */
 #define MK(a, b) {a, b, INVALID_INDUSTRYTYPE, 0, INVALID_COMPANY, true, false, false}
@@ -390,7 +390,7 @@ static TileType GetSmallMapTileType(TileIndex tile, TileType t)
  * @param t    Effective tile type of the tile (see #SmallMapWindow::GetTileColours).
  * @return The colour of tile in the small map in mode "Contour"
  */
-static inline uint32 GetSmallMapContoursPixels(TileIndex tile, TileType t)
+static inline uint32_t GetSmallMapContoursPixels(TileIndex tile, TileType t)
 {
 	const SmallMapColourScheme *cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
 	return ApplyMask(cs->height_colours[TileHeight(tile)], &_smallmap_contours_andor[GetSmallMapTileType(tile, t)]);
@@ -403,7 +403,7 @@ static inline uint32 GetSmallMapContoursPixels(TileIndex tile, TileType t)
  * @param t    Effective tile type of the tile (see #SmallMapWindow::GetTileColours).
  * @return The colour of tile in the small map in mode "Vehicles"
  */
-static inline uint32 GetSmallMapVehiclesPixels(TileIndex tile, TileType t)
+static inline uint32_t GetSmallMapVehiclesPixels(TileIndex tile, TileType t)
 {
 	const SmallMapColourScheme *cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
 	return ApplyMask(cs->default_colour, &_smallmap_vehicles_andor[GetSmallMapTileType(tile, t)]);
@@ -416,7 +416,7 @@ static inline uint32 GetSmallMapVehiclesPixels(TileIndex tile, TileType t)
  * @param t    Effective tile type of the tile (see #SmallMapWindow::GetTileColours).
  * @return The colour of tile in the small map in mode "Industries"
  */
-static inline uint32 GetSmallMapIndustriesPixels(TileIndex tile, TileType t)
+static inline uint32_t GetSmallMapIndustriesPixels(TileIndex tile, TileType t)
 {
 	const SmallMapColourScheme *cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
 	return ApplyMask(_smallmap_show_heightmap ? cs->height_colours[TileHeight(tile)] : cs->default_colour, &_smallmap_vehicles_andor[GetSmallMapTileType(tile, t)]);
@@ -429,7 +429,7 @@ static inline uint32 GetSmallMapIndustriesPixels(TileIndex tile, TileType t)
  * @param t    Effective tile type of the tile (see #SmallMapWindow::GetTileColours).
  * @return The colour of tile  in the small map in mode "Routes"
  */
-static inline uint32 GetSmallMapRoutesPixels(TileIndex tile, TileType t)
+static inline uint32_t GetSmallMapRoutesPixels(TileIndex tile, TileType t)
 {
 	switch (t) {
 		case MP_STATION:
@@ -485,7 +485,7 @@ static inline uint32 GetSmallMapRoutesPixels(TileIndex tile, TileType t)
  * @param t    Effective tile type of the tile (see #SmallMapWindow::GetTileColours).
  * @return The colour of tile in the small map in mode "link stats"
  */
-static inline uint32 GetSmallMapLinkStatsPixels(TileIndex tile, TileType t)
+static inline uint32_t GetSmallMapLinkStatsPixels(TileIndex tile, TileType t)
 {
 	return _smallmap_show_heightmap ? GetSmallMapContoursPixels(tile, t) : GetSmallMapRoutesPixels(tile, t);
 }
@@ -497,7 +497,7 @@ static inline uint32 GetSmallMapLinkStatsPixels(TileIndex tile, TileType t)
  * @param t    Effective tile type of the tile (see #SmallMapWindow::GetTileColours).
  * @return The colour of tile  in the smallmap in mode "Vegetation"
  */
-static inline uint32 GetSmallMapVegetationPixels(TileIndex tile, TileType t)
+static inline uint32_t GetSmallMapVegetationPixels(TileIndex tile, TileType t)
 {
 	switch (t) {
 		case MP_CLEAR:
@@ -595,7 +595,7 @@ static inline uint32 GetSmallMapVegetationPixels(TileIndex tile, TileType t)
  * @param t    Effective tile type of the tile (see #SmallMapWindow::GetTileColours).
  * @return The colour of tile in the small map in mode "Owner"
  */
-static inline uint32 GetSmallMapOwnerPixels(TileIndex tile, TileType t)
+static inline uint32_t GetSmallMapOwnerPixels(TileIndex tile, TileType t)
 {
 	Owner o;
 
@@ -713,7 +713,7 @@ void SmallMapWindow::SetZoomLevel(ZoomLevelChange change, const Point *zoom_pt)
  * @param ta Tile area to investigate.
  * @return Colours to display.
  */
-inline uint32 SmallMapWindow::GetTileColours(const TileArea &ta) const
+inline uint32_t SmallMapWindow::GetTileColours(const TileArea &ta) const
 {
 	int importance = 0;
 	TileIndex tile = INVALID_TILE; // Position of the most important tile.
@@ -829,8 +829,8 @@ void SmallMapWindow::DrawSmallMapColumn(void *dst, uint xc, uint yc, int pitch, 
 		}
 		ta.ClampToMap(); // Clamp to map boundaries (may contain MP_VOID tiles!).
 
-		uint32 val = this->GetTileColours(ta);
-		uint8 *val8 = (uint8 *)&val;
+		uint32_t val = this->GetTileColours(ta);
+		uint8_t *val8 = (uint8_t *)&val;
 		if (this->ui_zoom == 1) {
 			int idx = std::max(0, -start_pos);
 			if (y >= 0 && y < end_y) {
@@ -1100,7 +1100,7 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 	for (uint n = 0; n < lengthof(_heightmap_schemes); n++) {
 		/* The heights go from 0 up to and including maximum. */
 		int heights = _settings_game.construction.map_height_limit + 1;
-		_heightmap_schemes[n].height_colours = ReallocT<uint32>(_heightmap_schemes[n].height_colours, heights);
+		_heightmap_schemes[n].height_colours = ReallocT<uint32_t>(_heightmap_schemes[n].height_colours, heights);
 
 		for (int z = 0; z < heights; z++) {
 			size_t access_index = (_heightmap_schemes[n].colour_count * z) / heights;
@@ -1241,7 +1241,7 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 					i = 1;
 				}
 
-				uint8 legend_colour = tbl->colour;
+				uint8_t legend_colour = tbl->colour;
 
 				switch (this->map_type) {
 					case SMT_INDUSTRY:
@@ -1679,11 +1679,11 @@ Point SmallMapWindow::GetStationMiddle(const Station *st) const
  */
 void SmallMapWindow::TakeScreenshot()
 {
-	int32 width = (((MapMaxX() + MapMaxY()) * 2) * this->ui_zoom) / this->tile_zoom;
-	int32 height = ((MapMaxX() + MapMaxY() + 1) * this->ui_zoom) / this->tile_zoom;
+	int32_t width = (((MapMaxX() + MapMaxY()) * 2) * this->ui_zoom) / this->tile_zoom;
+	int32_t height = ((MapMaxX() + MapMaxY() + 1) * this->ui_zoom) / this->tile_zoom;
 
-	int32 saved_scroll_x = this->scroll_x;
-	int32 saved_scroll_y = this->scroll_y;
+	int32_t saved_scroll_x = this->scroll_x;
+	int32_t saved_scroll_y = this->scroll_y;
 	MakeSmallMapScreenshot(width, height, this);
 	this->scroll_x = saved_scroll_x;
 	this->scroll_y = saved_scroll_y;

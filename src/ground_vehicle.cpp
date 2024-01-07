@@ -25,10 +25,10 @@ void GroundVehicle<T, Type>::PowerChanged()
 	assert(this->First() == this);
 	const T *v = T::From(this);
 
-	uint32 total_power = 0;
-	uint32 max_te = 0;
-	uint32 number_of_parts = 0;
-	uint16 max_track_speed = this->vcache.cached_max_speed; // Max track speed in internal units.
+	uint32_t total_power = 0;
+	uint32_t max_te = 0;
+	uint32_t number_of_parts = 0;
+	uint16_t max_track_speed = this->vcache.cached_max_speed; // Max track speed in internal units.
 
 	this->CalculatePower(total_power, max_te, false);
 
@@ -36,7 +36,7 @@ void GroundVehicle<T, Type>::PowerChanged()
 		number_of_parts++;
 
 		/* Get minimum max speed for this track. */
-		uint16 track_speed = u->GetMaxTrackSpeed();
+		uint16_t track_speed = u->GetMaxTrackSpeed();
 		if (track_speed > 0) max_track_speed = std::min(max_track_speed, track_speed);
 	}
 
@@ -45,7 +45,7 @@ void GroundVehicle<T, Type>::PowerChanged()
 
 	/* If air drag is set to zero (default), the resulting air drag coefficient is dependent on max speed. */
 	if (air_drag_value == 0) {
-		uint16 max_speed = v->GetDisplayMaxSpeed();
+		uint16_t max_speed = v->GetDisplayMaxSpeed();
 		/* Simplification of the method used in TTDPatch. It uses <= 10 to change more steadily from 128 to 196. */
 		air_drag = (max_speed <= 10) ? 192 : std::max(2048 / max_speed, 1);
 	} else {
@@ -69,7 +69,7 @@ void GroundVehicle<T, Type>::PowerChanged()
 }
 
 template <class T, VehicleType Type>
-void GroundVehicle<T, Type>::CalculatePower(uint32& total_power, uint32& max_te, bool breakdowns) const {
+void GroundVehicle<T, Type>::CalculatePower(uint32_t &total_power, uint32_t &max_te, bool breakdowns) const {
 
 	total_power = 0;
 	max_te = 0;
@@ -77,7 +77,7 @@ void GroundVehicle<T, Type>::CalculatePower(uint32& total_power, uint32& max_te,
 	const T *v = T::From(this);
 
 	for (const T *u = v; u != nullptr; u = u->Next()) {
-		uint32 current_power = u->GetPower() + u->GetPoweredPartPower(u);
+		uint32_t current_power = u->GetPower() + u->GetPoweredPartPower(u);
 
 		if (breakdowns && u->breakdown_ctr == 1 && u->breakdown_type == BREAKDOWN_LOW_POWER) {
 			current_power = current_power * u->breakdown_severity / 256;
@@ -101,17 +101,17 @@ template <class T, VehicleType Type>
 void GroundVehicle<T, Type>::CargoChanged()
 {
 	assert(this->First() == this);
-	uint32 weight = 0;
-	uint64 mass_offset = 0;
-	uint32 veh_offset = 0;
-	uint16 articulated_weight = 0;
+	uint32_t weight = 0;
+	uint64_t mass_offset = 0;
+	uint32_t veh_offset = 0;
+	uint16_t articulated_weight = 0;
 
 	for (T *u = T::From(this); u != nullptr; u = u->Next()) {
-		uint32 current_weight = u->GetCargoWeight();
+		uint32_t current_weight = u->GetCargoWeight();
 		if (u->IsArticulatedPart()) {
 			current_weight += articulated_weight;
 		} else {
-			uint16 engine_weight = u->GetWeightWithoutCargo();
+			uint16_t engine_weight = u->GetWeightWithoutCargo();
 			uint part_count = u->GetEnginePartsCount();
 			articulated_weight = engine_weight / part_count;
 			current_weight += articulated_weight + (engine_weight % part_count);
@@ -150,16 +150,16 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 	/* Templated class used for function calls for performance reasons. */
 	const T *v = T::From(this);
 	/* Speed is used squared later on, so U16 * U16, and then multiplied by other values. */
-	int64 speed = v->GetCurrentSpeed(); // [km/h-ish]
+	int64_t speed = v->GetCurrentSpeed(); // [km/h-ish]
 
 	/* Weight is stored in tonnes. */
-	int32 mass = this->gcache.cached_weight;
+	int32_t mass = this->gcache.cached_weight;
 
 	/* Power is stored in HP, we need it in watts.
 	 * Each vehicle can have U16 power, 128 vehicles, HP -> watt
 	 * and km/h to m/s conversion below result in a maximum of
 	 * about 1.1E11, way more than 4.3E9 of int32. */
-	int64 power = this->gcache.cached_power * 746ll;
+	int64_t power = this->gcache.cached_power * 746ll;
 
 	/* This is constructed from:
 	 *  - axle resistance:  U16 power * 10 for 128 vehicles.
@@ -170,9 +170,9 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 	 *     * 8.4E9
 	 *  - air drag: 28 * (U8 drag + 3 * U8 drag * 128 vehicles / 20) * U16 speed * U16 speed
 	 *     * 6.2E14 before dividing by 1000
-	 * Sum is 6.3E11, more than 4.3E9 of int32, so int64 is needed.
+	 * Sum is 6.3E11, more than 4.3E9 of int32_t, so int64_t is needed.
 	 */
-	int64 resistance = 0;
+	int64_t resistance = 0;
 
 	int acceleration_type = v->GetAccelerationType();
 	bool maglev = (acceleration_type == 2);
@@ -185,7 +185,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 	}
 	/* Air drag; the air drag coefficient is in an arbitrary NewGRF-unit,
 	 * so we need some magic conversion factor. */
-	resistance += static_cast<int64>(area) * this->gcache.cached_air_drag * speed * speed / 1000;
+	resistance += static_cast<int64_t>(area) * this->gcache.cached_air_drag * speed * speed / 1000;
 
 	resistance += this->GetSlopeResistance();
 
@@ -195,10 +195,10 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 	int braking_power = power;
 
 	/* handle breakdown power reduction */
-	uint32 max_te = this->gcache.cached_max_te; // [N]
+	uint32_t max_te = this->gcache.cached_max_te; // [N]
 	if (Type == VEH_TRAIN && mode == AS_ACCEL && HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER)) {
 		/* We'd like to cache this, but changing cached_power has too many unwanted side-effects */
-		uint32 power_temp;
+		uint32_t power_temp;
 		this->CalculatePower(power_temp, max_te, true);
 		power = power_temp * 746ll;
 	}
@@ -206,8 +206,8 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 
 	/* Constructued from power, with need to multiply by 18 and assuming
 	 * low speed, it needs to be a 64 bit integer too. */
-	int64 force;
-	int64 braking_force;
+	int64_t force;
+	int64_t braking_force;
 	if (speed > 0) {
 		if (!maglev) {
 			/* Conversion factor from km/h to m/s is 5/18 to get [N] in the end. */
@@ -220,13 +220,13 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 		}
 	} else {
 		/* "Kickoff" acceleration. */
-		force = (mode == AS_ACCEL && !maglev) ? std::min<uint64>(max_te, power) : power;
+		force = (mode == AS_ACCEL && !maglev) ? std::min<uint64_t>(max_te, power) : power;
 		force = std::max(force, (mass * 8) + resistance);
 		braking_force = force;
 	}
 
 	if (Type == VEH_TRAIN && Train::From(this)->UsingRealisticBraking()) {
-		braking_power += (Train::From(this)->tcache.cached_braking_length * (int64)RBC_BRAKE_POWER_PER_LENGTH);
+		braking_power += (Train::From(this)->tcache.cached_braking_length * (int64_t)RBC_BRAKE_POWER_PER_LENGTH);
 	}
 
 	/* If power is 0 because of a breakdown, we make the force 0 if accelerating */
@@ -252,16 +252,16 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 		 * Then we apply a correction for multiengine trains, and in the end we shift it 16 bits to the right to get a 0-255 number.
 		 * @note A seperate correction for multiheaded engines is done in CheckVehicleBreakdown. We can't do that here because it would affect the whole consist.
 		 */
-		uint64 breakdown_factor = (uint64)abs(resistance) * (uint64)(this->cur_speed << 16);
-		breakdown_factor /= (std::max(force, (int64)100) * this->gcache.cached_max_track_speed);
-		breakdown_factor = std::min<uint64>((64 << 16) + (breakdown_factor * 128), 255 << 16);
+		uint64_t breakdown_factor = (uint64_t)abs(resistance) * (uint64_t)(this->cur_speed << 16);
+		breakdown_factor /= (std::max(force, (int64_t)100) * this->gcache.cached_max_track_speed);
+		breakdown_factor = std::min<uint64_t>((64 << 16) + (breakdown_factor * 128), 255 << 16);
 		if (Type == VEH_TRAIN && Train::From(this)->tcache.cached_num_engines > 1) {
 			/* For multiengine trains, breakdown chance is multiplied by 3 / (num_engines + 2) */
 			breakdown_factor *= 3;
 			breakdown_factor /= (Train::From(this)->tcache.cached_num_engines + 2);
 		}
 		/* breakdown_chance is at least 5 (5 / 128 = ~4% of the normal chance) */
-		this->breakdown_chance_factor = Clamp<uint64>(breakdown_factor >> 16, 5, 255);
+		this->breakdown_chance_factor = Clamp<uint64_t>(breakdown_factor >> 16, 5, 255);
 	}
 
 	int braking_accel;
@@ -269,13 +269,13 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 		/* Assume that every part of a train is braked, not just the engine.
 		 * Exceptionally heavy freight trains should still have a sensible braking distance.
 		 * The total braking force is generally larger than the total tractive force. */
-		braking_accel = ClampTo<int32>((-braking_force - resistance - (Train::From(this)->tcache.cached_braking_length * (int64)RBC_BRAKE_FORCE_PER_LENGTH)) / (mass * 4));
+		braking_accel = ClampTo<int32_t>((-braking_force - resistance - (Train::From(this)->tcache.cached_braking_length * (int64_t)RBC_BRAKE_FORCE_PER_LENGTH)) / (mass * 4));
 
 		/* Defensive driving: prevent ridiculously fast deceleration.
 		 * -130 corresponds to a braking distance of about 6.2 tiles from 160 km/h. */
 		braking_accel = std::max(braking_accel, -(GetTrainRealisticBrakingTargetDecelerationLimit(acceleration_type) + 10));
 	} else {
-		braking_accel = ClampTo<int32>(std::min<int64>(-braking_force - resistance, -10000) / mass);
+		braking_accel = ClampTo<int32_t>(std::min<int64_t>(-braking_force - resistance, -10000) / mass);
 	}
 
 	if (mode == AS_ACCEL) {
@@ -287,13 +287,13 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 		 * down hill will never slow down enough, and a vehicle that came up
 		 * a hill will never speed up enough to (eventually) get back to the
 		 * same (maximum) speed. */
-		int accel = ClampTo<int32>((force - resistance) / (mass * 4));
+		int accel = ClampTo<int32_t>((force - resistance) / (mass * 4));
 		accel = force < resistance ? std::min(-1, accel) : std::max(1, accel);
 		if (this->type == VEH_TRAIN) {
 			if(_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL &&
 					HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER)) {
 				/* We need to apply the power reducation for non-realistic acceleration here */
-				uint32 power;
+				uint32_t power;
 				CalculatePower(power, max_te, true);
 				accel = accel * power / this->gcache.cached_power;
 				accel -= this->acceleration >> 1;

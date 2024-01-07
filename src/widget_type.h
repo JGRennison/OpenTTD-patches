@@ -49,7 +49,7 @@ enum ResizeWidgetValues {
 /**
  * Window widget types, nested widget types, and nested widget part types.
  */
-enum WidgetType : uint8 {
+enum WidgetType : uint8_t {
 	/* Window widget types. */
 	WWT_EMPTY,      ///< Empty widget, place holder to reserve space in widget tree.
 
@@ -120,7 +120,7 @@ enum WidgetType : uint8 {
 /**
  * Base widget flags.
  */
-enum WidgetBaseFlags : uint8 {
+enum WidgetBaseFlags : uint8_t {
 	WBF_DIRTY            = 1 <<  0, ///< Widget is dirty.
 };
 DECLARE_ENUM_AS_BIT_SET(WidgetBaseFlags)
@@ -196,7 +196,7 @@ public:
 	 * @param bottom Amount of additional space below the widget.
 	 * @param left   Amount of additional space left of the widget.
 	 */
-	inline void SetPadding(uint8 top, uint8 right, uint8 bottom, uint8 left)
+	inline void SetPadding(uint8_t top, uint8_t right, uint8_t bottom, uint8_t left)
 	{
 		this->uz_padding.top = top;
 		this->uz_padding.right = right;
@@ -316,7 +316,7 @@ public:
 	void AdjustPaddingForZoom() override;
 	void SetMinimalSize(uint min_x, uint min_y);
 	void SetMinimalSizeAbsolute(uint min_x, uint min_y);
-	void SetMinimalTextLines(uint8 min_lines, uint8 spacing, FontSize size);
+	void SetMinimalTextLines(uint8_t min_lines, uint8_t spacing, FontSize size);
 	void SetFill(uint fill_x, uint fill_y);
 	void SetResize(uint resize_x, uint resize_y);
 
@@ -333,9 +333,9 @@ public:
 	uint uz_min_x; ///< Unscaled Minimal horizontal size of only this widget.
 	uint uz_min_y; ///< Unscaled Minimal vertical size of only this widget.
 
-	uint8 uz_text_lines;   ///< 'Unscaled' text lines, stored for resize calculation.
-	uint8 uz_text_spacing; ///< 'Unscaled' text padding, stored for resize calculation.
-	FontSize uz_text_size; ///< 'Unscaled' font size, stored for resize calculation.
+	uint8_t uz_text_lines;   ///< 'Unscaled' text lines, stored for resize calculation.
+	uint8_t uz_text_spacing; ///< 'Unscaled' text padding, stored for resize calculation.
+	FontSize uz_text_size;   ///< 'Unscaled' font size, stored for resize calculation.
 };
 
 /** Nested widget flags that affect display and interaction with 'real' widgets. */
@@ -694,7 +694,7 @@ public:
 	void SetupSmallestSize(Window *w) override;
 	void Draw(const Window *w) override;
 
-	void InitializeViewport(Window *w, uint32 follow_flags, ZoomLevel zoom);
+	void InitializeViewport(Window *w, uint32_t follow_flags, ZoomLevel zoom);
 	void UpdateViewportCoordinates(Window *w);
 };
 
@@ -704,10 +704,10 @@ public:
 class Scrollbar {
 private:
 	const bool is_vertical; ///< Scrollbar has vertical orientation.
-	uint16 count;           ///< Number of elements in the list.
-	uint16 cap;             ///< Number of visible elements of the scroll bar.
-	uint16 pos;             ///< Index of first visible item of the list.
-	uint16 stepsize;        ///< Distance to scroll, when pressing the buttons or using the wheel.
+	uint16_t count;         ///< Number of elements in the list.
+	uint16_t cap;           ///< Number of visible elements of the scroll bar.
+	uint16_t pos;           ///< Index of first visible item of the list.
+	uint16_t stepsize;      ///< Distance to scroll, when pressing the buttons or using the wheel.
 
 public:
 	/** Stepping sizes when scrolling */
@@ -725,7 +725,7 @@ public:
 	 * Gets the number of elements in the list
 	 * @return the number of elements
 	 */
-	inline uint16 GetCount() const
+	inline uint16_t GetCount() const
 	{
 		return this->count;
 	}
@@ -734,7 +734,7 @@ public:
 	 * Gets the number of visible elements of the scrollbar
 	 * @return the number of visible elements
 	 */
-	inline uint16 GetCapacity() const
+	inline uint16_t GetCapacity() const
 	{
 		return this->cap;
 	}
@@ -743,7 +743,7 @@ public:
 	 * Gets the position of the first visible element in the list
 	 * @return the position of the element
 	 */
-	inline uint16 GetPosition() const
+	inline uint16_t GetPosition() const
 	{
 		return this->pos;
 	}
@@ -753,7 +753,7 @@ public:
 	 * @param item to check
 	 * @return true iff the item is visible
 	 */
-	inline bool IsVisible(uint16 item) const
+	inline bool IsVisible(uint16_t item) const
 	{
 		return IsInsideBS(item, this->GetPosition(), this->GetCapacity());
 	}
@@ -785,7 +785,7 @@ public:
 	 */
 	void SetCount(size_t num)
 	{
-		assert(num <= MAX_UVALUE(uint16));
+		assert(num <= MAX_UVALUE(uint16_t));
 
 		this->count = ClampTo<uint16_t>(num);
 		/* Ensure position is within bounds */
@@ -799,7 +799,7 @@ public:
 	 */
 	void SetCapacity(size_t capacity)
 	{
-		assert(capacity <= MAX_UVALUE(uint16));
+		assert(capacity <= MAX_UVALUE(uint16_t));
 
 		this->cap = ClampTo<uint16_t>(capacity);
 		/* Ensure position is within bounds */
@@ -815,7 +815,7 @@ public:
 	 */
 	bool SetPosition(int position)
 	{
-		uint16 old_pos = this->pos;
+		uint16_t old_pos = this->pos;
 		this->pos = Clamp(position, 0, std::max(this->count - this->cap, 0));
 		return this->pos != old_pos;
 	}
@@ -879,7 +879,7 @@ public:
 		return it;
 	}
 
-	EventState UpdateListPositionOnKeyPress(int &list_position, uint16 keycode) const;
+	EventState UpdateListPositionOnKeyPress(int &list_position, uint16_t keycode) const;
 };
 
 /**
@@ -970,7 +970,7 @@ inline uint ComputeMaxSize(uint base, uint max_space, uint step)
  * @defgroup NestedWidgetParts Hierarchical widget parts
  * To make nested widgets easier to enter, nested widget parts have been created. They allow the tree to be defined in a flat array of parts.
  *
- * - Leaf widgets start with a #NWidget(WidgetType tp, Colours col, int16 idx) part.
+ * - Leaf widgets start with a #NWidget(WidgetType tp, Colours col, int16_t idx) part.
  *   Next, specify its properties with one or more of
  *   - #SetMinimalSize Define the minimal size of the widget.
  *   - #SetFill Define how the widget may grow to make it nicely.
@@ -1001,7 +1001,7 @@ inline uint ComputeMaxSize(uint base, uint max_space, uint step)
  *   so the widget does not support #SetPIP. #SetPadding is allowed though.
  *   Like the other container widgets, below the last child widgets, a #EndContainer part should be used to denote the end of the stacked widget.
  *
- * - Background widgets #NWidgetBackground start with a #NWidget(WidgetType tp, Colours col, int16 idx) part.
+ * - Background widgets #NWidgetBackground start with a #NWidget(WidgetType tp, Colours col, int16_t idx) part.
  *   What follows depends on how the widget is used.
  *   - If the widget is used as a leaf widget, that is, to create some space in the window to display a viewport or some text, use the properties of the
  *     leaf widgets to define how it behaves.
@@ -1018,7 +1018,7 @@ inline uint ComputeMaxSize(uint base, uint max_space, uint step)
  * @ingroup NestedWidgetParts
  */
 struct NWidgetPartDataTip {
-	uint32 data;      ///< Data value of the widget.
+	uint32_t data;    ///< Data value of the widget.
 	StringID tooltip; ///< Tooltip of the widget.
 };
 
@@ -1043,7 +1043,7 @@ struct NWidgetPartPaddings : RectPadding {
  * @ingroup NestedWidgetParts
  */
 struct NWidgetPartPIP {
-	uint8 pre, inter, post; ///< Amount of space before/between/after child widgets.
+	uint8_t pre, inter, post; ///< Amount of space before/between/after child widgets.
 };
 
 /**
@@ -1051,9 +1051,9 @@ struct NWidgetPartPIP {
  * @ingroup NestedWidgetParts
  */
 struct NWidgetPartTextLines {
-	uint8 lines;   ///< Number of text lines.
-	uint8 spacing; ///< Extra spacing around lines.
-	FontSize size; ///< Font size of text lines.
+	uint8_t lines;   ///< Number of text lines.
+	uint8_t spacing; ///< Extra spacing around lines.
+	FontSize size;   ///< Font size of text lines.
 };
 
 /**
@@ -1062,7 +1062,7 @@ struct NWidgetPartTextLines {
  */
 struct NWidgetPartTextStyle {
 	TextColour colour; ///< TextColour for DrawString.
-	FontSize size; ///< Font size of text.
+	FontSize size;     ///< Font size of text.
 };
 
 /**
@@ -1084,7 +1084,7 @@ typedef std::unique_ptr<NWidgetBase> NWidgetFunctionType();
  * @ingroup NestedWidgetParts
  */
 struct NWidgetPart {
-	WidgetType type;                         ///< Type of the part. @see NWidgetPartType.
+	WidgetType type;                     ///< Type of the part. @see NWidgetPartType.
 	union {
 		Point xy;                        ///< Part with an x/y size.
 		NWidgetPartDataTip data_tip;     ///< Part with a data/tooltip.

@@ -34,14 +34,14 @@ private:
 	FT_Face face;  ///< The font face associated with this font.
 
 	void SetFontSize(FontSize fs, FT_Face face, int pixels);
-	const void *InternalGetFontTable(uint32 tag, size_t &length) override;
+	const void *InternalGetFontTable(uint32_t tag, size_t &length) override;
 	const Sprite *InternalGetGlyph(GlyphID key, bool aa) override;
 
 public:
 	FreeTypeFontCache(FontSize fs, FT_Face face, int pixels);
 	~FreeTypeFontCache();
 	void ClearFontCache() override;
-	GlyphID MapCharToGlyph(WChar key) override;
+	GlyphID MapCharToGlyph(char32_t key) override;
 	std::string GetFontName() override { return stdstr_fmt("%s, %s", face->family_name, face->style_name); }
 	bool IsBuiltInFont() override { return false; }
 	const void *GetOSHandle() override { return &face; }
@@ -278,7 +278,7 @@ const Sprite *FreeTypeFontCache::InternalGetGlyph(GlyphID key, bool aa)
 }
 
 
-GlyphID FreeTypeFontCache::MapCharToGlyph(WChar key)
+GlyphID FreeTypeFontCache::MapCharToGlyph(char32_t key)
 {
 	assert(IsPrintable(key));
 
@@ -289,7 +289,7 @@ GlyphID FreeTypeFontCache::MapCharToGlyph(WChar key)
 	return FT_Get_Char_Index(this->face, key);
 }
 
-const void *FreeTypeFontCache::InternalGetFontTable(uint32 tag, size_t &length)
+const void *FreeTypeFontCache::InternalGetFontTable(uint32_t tag, size_t &length)
 {
 	FT_ULong len = 0;
 	FT_Byte *result = nullptr;

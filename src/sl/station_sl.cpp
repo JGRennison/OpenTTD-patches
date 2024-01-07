@@ -23,11 +23,11 @@
 #include "../safeguards.h"
 
 static byte _old_last_vehicle_type;
-static uint8 _num_specs;
-static uint8 _num_roadstop_specs;
-static uint32 _num_roadstop_custom_tiles;
+static uint8_t _num_specs;
+static uint8_t _num_roadstop_specs;
+static uint32_t _num_roadstop_custom_tiles;
 static std::vector<TileIndex> _custom_road_stop_tiles;
-static std::vector<uint16> _custom_road_stop_data;
+static std::vector<uint16_t> _custom_road_stop_data;
 
 /**
  * Update the buoy orders to be waypoint orders.
@@ -231,11 +231,11 @@ static const SaveLoad _old_station_desc[] = {
 	SLE_CONDNULL(32, SLV_2, SL_MAX_VERSION),
 };
 
-static uint16 _waiting_acceptance;
-static uint32 _num_flows;
-static uint16 _cargo_source;
-static uint32 _cargo_source_xy;
-static uint8  _cargo_periods;
+static uint16_t _waiting_acceptance;
+static uint32_t _num_flows;
+static uint16_t _cargo_source;
+static uint32_t _cargo_source_xy;
+static uint8_t  _cargo_periods;
 static Money  _cargo_feeder_share;
 static uint   _cargo_reserved_count;
 
@@ -252,13 +252,13 @@ static const SaveLoad _roadstop_speclist_desc[] = {
 };
 
 CargoPacketList _packets;
-uint32 _num_dests;
+uint32_t _num_dests;
 
 struct FlowSaveLoad {
 	FlowSaveLoad() : source(0), via(0), share(0), restricted(false) {}
 	StationID source;
 	StationID via;
-	uint32 share;
+	uint32_t share;
 	bool restricted;
 };
 
@@ -537,9 +537,9 @@ static void SetupDescs_ROADSTOP()
 
 static void RealSave_STNN(BaseStation *bst)
 {
-	_num_specs = (uint8)bst->speclist.size();
-	_num_roadstop_specs = (uint8)bst->roadstop_speclist.size();
-	_num_roadstop_custom_tiles = (uint32)bst->custom_roadstop_tile_data.size();
+	_num_specs = (uint8_t)bst->speclist.size();
+	_num_roadstop_specs = (uint8_t)bst->roadstop_speclist.size();
+	_num_roadstop_custom_tiles = (uint32_t)bst->custom_roadstop_tile_data.size();
 
 	bool waypoint = (bst->facilities & FACIL_WAYPOINT) != 0;
 	SlObjectSaveFiltered(bst, waypoint ? SaveLoadTable(_filtered_waypoint_desc) : SaveLoadTable(_filtered_station_desc));
@@ -552,8 +552,8 @@ static void RealSave_STNN(BaseStation *bst)
 			const GoodsEntryData *ged = st->goods[i].data.get();
 			if (ged != nullptr) {
 				_cargo_reserved_count = ged->cargo.ReservedCount();
-				_num_dests = (uint32)ged->cargo.Packets()->MapSize();
-				_num_flows = (uint32)ged->flows.size();
+				_num_dests = (uint32_t)ged->cargo.Packets()->MapSize();
+				_num_flows = (uint32_t)ged->flows.size();
 			} else {
 				_cargo_reserved_count = 0;
 				_num_dests = 0;
@@ -562,12 +562,12 @@ static void RealSave_STNN(BaseStation *bst)
 			SlObjectSaveFiltered(&st->goods[i], _filtered_goods_desc);
 			if (ged == nullptr) continue;
 			for (FlowStatMap::const_iterator outer_it(ged->flows.begin()); outer_it != ged->flows.end(); ++outer_it) {
-				uint32 sum_shares = 0;
+				uint32_t sum_shares = 0;
 				FlowSaveLoad flow;
 				flow.source = outer_it->GetOrigin();
 				dumper->CheckBytes(2 + 4);
 				dumper->RawWriteUint16(flow.source);
-				dumper->RawWriteUint32((uint32)outer_it->size());
+				dumper->RawWriteUint32((uint32_t)outer_it->size());
 				FlowStat::const_iterator inner_it(outer_it->begin());
 				const FlowStat::const_iterator end(outer_it->end());
 				for (; inner_it != end; ++inner_it) {
@@ -673,18 +673,18 @@ static void Load_STNN()
 				StationID prev_source = INVALID_STATION;
 				if (SlXvIsFeaturePresent(XSLFI_FLOW_STAT_FLAGS)) {
 					ge.data->flows.reserve(_num_flows);
-					for (uint32 j = 0; j < _num_flows; ++j) {
+					for (uint32_t j = 0; j < _num_flows; ++j) {
 						FlowSaveLoad flow;
 						buffer->CheckBytes(2 + 4);
 						flow.source = buffer->RawReadUint16();
-						uint32 flow_count = buffer->RawReadUint32();
+						uint32_t flow_count = buffer->RawReadUint32();
 
 						buffer->CheckBytes(2 + 4 + 1);
 						flow.via = buffer->RawReadUint16();
 						flow.share = buffer->RawReadUint32();
 						flow.restricted = (buffer->RawReadByte() != 0);
 						FlowStat *fs = &(*(ge.data->flows.insert(ge.data->flows.end(), FlowStat(flow.source, flow.via, flow.share, flow.restricted))));
-						for (uint32 k = 1; k < flow_count; ++k) {
+						for (uint32_t k = 1; k < flow_count; ++k) {
 							buffer->CheckBytes(2 + 4 + 1);
 							flow.via = buffer->RawReadUint16();
 							flow.share = buffer->RawReadUint32();
@@ -696,7 +696,7 @@ static void Load_STNN()
 				} else if (SlXvIsFeatureMissing(XSLFI_CHILLPP)) {
 					FlowSaveLoad flow;
 					FlowStat *fs = nullptr;
-					for (uint32 j = 0; j < _num_flows; ++j) {
+					for (uint32_t j = 0; j < _num_flows; ++j) {
 						// SlObject(&flow, _flow_desc); /* this is highly performance-sensitive, manually unroll */
 						buffer->CheckBytes(2 + 2 + 4);
 						flow.source = buffer->RawReadUint16();
@@ -740,13 +740,13 @@ static void Load_STNN()
 			st->station_cargo_history.resize(CountBits(st->station_cargo_history_cargoes));
 			buffer->CheckBytes(st->station_cargo_history.size() * MAX_STATION_CARGO_HISTORY_DAYS * 2);
 			for (auto &history : st->station_cargo_history) {
-				for (uint16 &amount : history) {
+				for (uint16_t &amount : history) {
 					amount = buffer->RawReadUint16();
 				}
 			}
 			if (SlXvIsFeaturePresent(XSLFI_STATION_CARGO_HISTORY, 1, 1)) {
 				for (auto &history : st->station_cargo_history) {
-					for (uint16 &amount : history) {
+					for (uint16_t &amount : history) {
 						amount = RXCompressUint(amount);
 					}
 				}
@@ -780,7 +780,7 @@ static void Load_STNN()
 
 		if (SlXvIsFeaturePresent(XSLFI_GRF_ROADSTOPS, 1, 1)) {
 			for (size_t i = 0; i < _custom_road_stop_tiles.size(); i++) {
-				bst->custom_roadstop_tile_data.push_back({ _custom_road_stop_tiles[i], (uint8)GB(_custom_road_stop_data[i], 0, 8), (uint8)GB(_custom_road_stop_data[i], 8, 8) });
+				bst->custom_roadstop_tile_data.push_back({ _custom_road_stop_tiles[i], (uint8_t)GB(_custom_road_stop_data[i], 0, 8), (uint8_t)GB(_custom_road_stop_data[i], 8, 8) });
 			}
 			_custom_road_stop_tiles.clear();
 			_custom_road_stop_data.clear();

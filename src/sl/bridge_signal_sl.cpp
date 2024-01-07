@@ -14,7 +14,7 @@
 
 /** stub save header struct */
 struct LongBridgeSignalStorageStub {
-	uint32 length;
+	uint32_t length;
 };
 
 static const SaveLoad _long_bridge_signal_storage_stub_desc[] = {
@@ -36,9 +36,9 @@ static void Load_XBSS()
 static void RealSave_XBSS(const LongBridgeSignalStorage *lbss)
 {
 	LongBridgeSignalStorageStub stub;
-	stub.length = (uint32)lbss->signal_red_bits.size();
+	stub.length = (uint32_t)lbss->signal_red_bits.size();
 	SlObject(&stub, _long_bridge_signal_storage_stub_desc);
-	SlArray(const_cast<uint64*>(lbss->signal_red_bits.data()), stub.length, SLE_UINT64);
+	SlArray(const_cast<uint64_t*>(lbss->signal_red_bits.data()), stub.length, SLE_UINT64);
 }
 
 static void Save_XBSS()
@@ -52,7 +52,7 @@ static void Save_XBSS()
 
 static void Load_XBST()
 {
-	size_t count = SlGetFieldLength() / sizeof(uint32);
+	size_t count = SlGetFieldLength() / sizeof(uint32_t);
 	for (size_t i = 0; i < count; i++) {
 		_bridge_signal_style_map.insert(SlReadUint32());
 	}
@@ -60,8 +60,8 @@ static void Load_XBST()
 
 static void Save_XBST()
 {
-	SlSetLength(_bridge_signal_style_map.size() * sizeof(uint32));
-	for (uint32 val : _bridge_signal_style_map) {
+	SlSetLength(_bridge_signal_style_map.size() * sizeof(uint32_t));
+	for (uint32_t val : _bridge_signal_style_map) {
 		SlWriteUint32(val);
 	}
 }

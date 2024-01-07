@@ -36,8 +36,8 @@ private:
 	static void InsertDefaults();
 
 public:
-	uint32 global_id; ///< Global ID for class, e.g. 'DFLT', 'WAYP', etc.
-	StringID name;    ///< Name of this class.
+	uint32_t global_id; ///< Global ID for class, e.g. 'DFLT', 'WAYP', etc.
+	StringID name;      ///< Name of this class.
 
 	void Insert(Tspec *spec);
 
@@ -54,7 +54,7 @@ public:
 	bool IsUIAvailable(uint index) const;
 
 	static void Reset();
-	static Tid Allocate(uint32 global_id);
+	static Tid Allocate(uint32_t global_id);
 	static void Assign(Tspec *spec);
 	static uint GetClassCount();
 	static uint GetUIClassCount();
@@ -63,7 +63,7 @@ public:
 	static bool IsClassIDValid(Tid cls_id);
 	static NewGRFClass *Get(Tid cls_id);
 
-	static const Tspec *GetByGrf(uint32 grfid, uint16 local_id, int *index);
+	static const Tspec *GetByGrf(uint32_t grfid, uint16_t local_id, int *index);
 };
 
 #endif /* NEWGRF_CLASS_H */

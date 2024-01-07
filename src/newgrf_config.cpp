@@ -204,7 +204,7 @@ GRFParameterInfo::GRFParameterInfo(uint nr) :
  * @param config The GRFConfig to get the value from.
  * @return The value of this parameter.
  */
-uint32 GRFParameterInfo::GetValue(struct GRFConfig *config) const
+uint32_t GRFParameterInfo::GetValue(struct GRFConfig *config) const
 {
 	/* GB doesn't work correctly with nbits == 32, so handle that case here. */
 	if (this->num_bit == 32) return config->param[this->param_nr];
@@ -216,7 +216,7 @@ uint32 GRFParameterInfo::GetValue(struct GRFConfig *config) const
  * @param config The GRFConfig to set the value in.
  * @param value The new value.
  */
-void GRFParameterInfo::SetValue(struct GRFConfig *config, uint32 value)
+void GRFParameterInfo::SetValue(struct GRFConfig *config, uint32_t value)
 {
 	/* SB doesn't work correctly with nbits == 32, so handle that case here. */
 	if (this->num_bit == 32) {
@@ -234,7 +234,7 @@ void GRFParameterInfo::SetValue(struct GRFConfig *config, uint32 value)
 void GRFParameterInfo::Finalize()
 {
 	this->complete_labels = true;
-	for (uint32 value = this->min_value; value <= this->max_value; value++) {
+	for (uint32_t value = this->min_value; value <= this->max_value; value++) {
 		if (this->value_names.count(value) == 0) {
 			this->complete_labels = false;
 			break;
@@ -246,7 +246,7 @@ void GRFParameterInfo::Finalize()
  * Update the palettes of the graphics from the config file.
  * Called when changing the default palette in advanced settings.
  */
-void UpdateNewGRFConfigPalette(int32 new_value)
+void UpdateNewGRFConfigPalette(int32_t new_value)
 {
 	for (GRFConfig *c = _grfconfig_newgame; c != nullptr; c = c->next) c->SetSuitablePalette();
 	for (GRFConfig *c = _grfconfig_static;  c != nullptr; c = c->next) c->SetSuitablePalette();
@@ -300,7 +300,7 @@ static const uint GRF_MD5_PENDING_MAX = 8;
 static void CalcGRFMD5SumFromState(const GRFMD5SumState &state)
 {
 	Md5 checksum;
-	uint8 buffer[1024];
+	uint8_t buffer[1024];
 	size_t len;
 	size_t size = state.size;
 	while ((len = fread(buffer, 1, (size > sizeof(buffer)) ? sizeof(buffer) : size, state.f)) != 0 && size != 0) {
@@ -788,7 +788,7 @@ void ScanNewGRFFiles(NewGRFScanCallback *callback)
  * @param desired_version Requested version
  * @return The matching grf, if it exists in #_all_grfs, else \c nullptr.
  */
-const GRFConfig *FindGRFConfig(uint32 grfid, FindGRFConfigMode mode, const MD5Hash *md5sum, uint32 desired_version)
+const GRFConfig *FindGRFConfig(uint32_t grfid, FindGRFConfigMode mode, const MD5Hash *md5sum, uint32_t desired_version)
 {
 	assert((mode == FGCM_EXACT) != (md5sum == nullptr));
 	const GRFConfig *best = nullptr;
@@ -814,7 +814,7 @@ const GRFConfig *FindGRFConfig(uint32 grfid, FindGRFConfigMode mode, const MD5Ha
  * @param mask  GRFID mask to allow for partial matching.
  * @return The grf config, if it exists, else \c nullptr.
  */
-GRFConfig *GetGRFConfig(uint32 grfid, uint32 mask)
+GRFConfig *GetGRFConfig(uint32_t grfid, uint32_t mask)
 {
 	GRFConfig *c;
 

@@ -93,19 +93,19 @@ protected:
 	/**
 	 * Executes a raw DoCommand for the script.
 	 */
-	static bool DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint cmd, const char *text = nullptr, const CommandAuxiliaryBase *aux_data = nullptr, Script_SuspendCallbackProc *callback = nullptr);
+	static bool DoCommandEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint cmd, const char *text = nullptr, const CommandAuxiliaryBase *aux_data = nullptr, Script_SuspendCallbackProc *callback = nullptr);
 
-	static bool DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint cmd, const std::string &text, const CommandAuxiliaryBase *aux_data = nullptr, Script_SuspendCallbackProc *callback = nullptr)
+	static bool DoCommandEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint cmd, const std::string &text, const CommandAuxiliaryBase *aux_data = nullptr, Script_SuspendCallbackProc *callback = nullptr)
 	{
 		return ScriptObject::DoCommandEx(tile, p1, p2, p3, cmd, text.c_str(), aux_data, callback);
 	}
 
-	static bool DoCommand(TileIndex tile, uint32 p1, uint32 p2, uint cmd, const char *text = nullptr, Script_SuspendCallbackProc *callback = nullptr)
+	static bool DoCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint cmd, const char *text = nullptr, Script_SuspendCallbackProc *callback = nullptr)
 	{
 		return ScriptObject::DoCommandEx(tile, p1, p2, 0, cmd, text, nullptr, callback);
 	}
 
-	static bool DoCommand(TileIndex tile, uint32 p1, uint32 p2, uint cmd, const std::string &text, Script_SuspendCallbackProc *callback = nullptr)
+	static bool DoCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint cmd, const std::string &text, Script_SuspendCallbackProc *callback = nullptr)
 	{
 		return ScriptObject::DoCommandEx(tile, p1, p2, 0, cmd, text.c_str(), nullptr, callback);
 	}
@@ -113,12 +113,12 @@ protected:
 	/**
 	 * Store the latest command executed by the script.
 	 */
-	static void SetLastCommand(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint cmd);
+	static void SetLastCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint cmd);
 
 	/**
 	 * Check if it's the latest command executed by the script.
 	 */
-	static bool CheckLastCommand(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint cmd);
+	static bool CheckLastCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint cmd);
 
 	/**
 	 * Sets the DoCommand costs counter to a value.
@@ -289,12 +289,12 @@ protected:
 	/**
 	 * Set the result data of the last command.
 	 */
-	static void SetLastCommandResultData(uint32 last_result);
+	static void SetLastCommandResultData(uint32_t last_result);
 
 	/**
 	 * Get the result data of the last command.
 	 */
-	static uint32 GetLastCommandResultData();
+	static uint32_t GetLastCommandResultData();
 
 	/**
 	 * Set a variable that can be used by callback functions to pass information.

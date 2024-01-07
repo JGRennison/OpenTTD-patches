@@ -55,7 +55,7 @@
 			HopSet seen_hops;
 			LinkRefresher refresher(v, &seen_hops, allow_merge, is_full_loading, iter_cargo_mask);
 
-			uint8 flags = 0;
+			uint8_t flags = 0;
 			if (iter_cargo_mask & have_cargo_mask) flags |= 1 << HAS_CARGO;
 			if (v->type == VEH_AIRCRAFT) flags |= 1 << AIRCRAFT;
 			refresher.RefreshLinks(first, first, { 0, TTT_NO_WAIT_TIME }, flags);
@@ -116,7 +116,7 @@ bool LinkRefresher::HandleRefit(CargoID refit_cargo)
 			v->cargo_subtype = GetBestFittingSubType(v, v, this->cargo);
 		}
 
-		uint16 mail_capacity = 0;
+		uint16_t mail_capacity = 0;
 		uint amount = e->DetermineCapacity(v, &mail_capacity);
 
 		/* Restore the original cargo type */
@@ -228,7 +228,7 @@ LinkRefresher::TimetableTravelTime LinkRefresher::UpdateTimetableTravelSoFar(con
  * @param num_hops Number of hops already taken by recursive calls to this method.
  * @return new next Order, and travel time so far.
  */
-std::pair<const Order *, LinkRefresher::TimetableTravelTime> LinkRefresher::PredictNextOrder(const Order *cur, const Order *next, LinkRefresher::TimetableTravelTime travel, uint8 flags, uint num_hops)
+std::pair<const Order *, LinkRefresher::TimetableTravelTime> LinkRefresher::PredictNextOrder(const Order *cur, const Order *next, LinkRefresher::TimetableTravelTime travel, uint8_t flags, uint num_hops)
 {
 	/* next is good if it's either nullptr (then the caller will stop the
 	 * evaluation) or if it's not conditional and the caller allows it to be
@@ -298,7 +298,7 @@ std::pair<const Order *, LinkRefresher::TimetableTravelTime> LinkRefresher::Pred
  * @param travel_estimate Estimated travel time, only valid if non-zero.
  * @param flags RefreshFlags to give hints about the previous link and state carried over from that.
  */
-void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint32 travel_estimate, uint8 flags)
+void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint32_t travel_estimate, uint8_t flags)
 {
 	StationID next_station = next->GetDestination();
 	Station *st = Station::GetIfValid(cur->GetDestination());
@@ -326,13 +326,13 @@ void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint32 tra
 			/* This estimates the travel time of the link as the time needed
 			 * to travel between the stations at half the max speed of the consist.
 			 * The result is in tiles/tick (= 2048 km-ish/h). */
-			uint32 time_estimate = DistanceManhattan(st->xy, st_to->xy) * 4096U / this->vehicle->GetDisplayMaxSpeed();
+			uint32_t time_estimate = DistanceManhattan(st->xy, st_to->xy) * 4096U / this->vehicle->GetDisplayMaxSpeed();
 
 			if (travel_estimate > 0) {
 				/* If a timetable-based time is available, use that, clamping it to be in the range (estimate / 3, estimate * 2)
 				 * of the distance/speed based estimate.
 				 * This is effectively clamping it to be within the estimated speed range: (max_speed / 4, max_speed * 1.5). */
-				time_estimate = Clamp<uint32>(travel_estimate, time_estimate / 3, time_estimate * 2);
+				time_estimate = Clamp<uint32_t>(travel_estimate, time_estimate / 3, time_estimate * 2);
 			}
 
 			if (HasBit(flags, AIRCRAFT)) restricted_mode |= EUM_AIRCRAFT;
@@ -375,7 +375,7 @@ void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint32 tra
  * @param flags RefreshFlags to give hints about the previous link and state carried over from that.
  * @param num_hops Number of hops already taken by recursive calls to this method.
  */
-void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, TimetableTravelTime travel, uint8 flags, uint num_hops)
+void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, TimetableTravelTime travel, uint8_t flags, uint num_hops)
 {
 	while (next != nullptr) {
 
@@ -429,7 +429,7 @@ void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, TimetableT
 		if (cur->IsType(OT_GOTO_STATION) || cur->IsType(OT_IMPLICIT)) {
 			if (cur->CanLeaveWithCargo(HasBit(flags, HAS_CARGO), FindFirstBit(this->cargo_mask))) {
 				SetBit(flags, HAS_CARGO);
-				this->RefreshStats(cur, next, ((travel.flags & TTT_INVALID) == 0 && travel.time_so_far > 0) ? (uint32)travel.time_so_far : 0, flags);
+				this->RefreshStats(cur, next, ((travel.flags & TTT_INVALID) == 0 && travel.time_so_far > 0) ? (uint32_t)travel.time_so_far : 0, flags);
 			} else {
 				ClrBit(flags, HAS_CARGO);
 			}

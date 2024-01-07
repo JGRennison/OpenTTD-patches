@@ -127,7 +127,7 @@ extern void RebuildTownCaches(bool cargo_update_required, bool old_map_position)
 extern void ShowOSErrorBox(const char *buf, bool system);
 extern void NORETURN DoOSAbort();
 extern std::string _config_file;
-extern uint64 _station_tile_cache_hash;
+extern uint64_t _station_tile_cache_hash;
 
 bool _save_config = false;
 bool _request_newgrf_scan = false;
@@ -236,7 +236,7 @@ void CDECL assert_msg_error(int line, const char *file, const char *expr, const 
 	DoOSAbort();
 }
 
-const char *assert_tile_info(uint32 tile) {
+const char *assert_tile_info(uint32_t tile) {
 	static char buffer[128];
 	DumpTileInfo(buffer, lastof(buffer), tile);
 	return buffer;
@@ -346,7 +346,7 @@ static void WriteSavegameInfo(const char *name)
 	extern SaveLoadVersion _sl_version;
 	extern std::string _sl_xv_version_label;
 	extern SaveLoadVersion _sl_xv_upstream_version;
-	uint32 last_ottd_rev = 0;
+	uint32_t last_ottd_rev = 0;
 	byte ever_modified = 0;
 	bool removed_newgrfs = false;
 
@@ -617,14 +617,14 @@ void OpenBrowser(const std::string &url)
 
 /** Callback structure of statements to be executed after the NewGRF scan. */
 struct AfterNewGRFScan : NewGRFScanCallback {
-	Year startyear = INVALID_YEAR;              ///< The start year.
-	uint32 generation_seed = GENERATE_NEW_SEED; ///< Seed for the new game.
-	std::string dedicated_host;                 ///< Hostname for the dedicated server.
-	uint16 dedicated_port = 0;                  ///< Port for the dedicated server.
-	std::string connection_string;              ///< Information about the server to connect to
-	std::string join_server_password;           ///< The password to join the server with.
-	std::string join_company_password;          ///< The password to join the company with.
-	bool save_config = true;                    ///< The save config setting.
+	Year startyear = INVALID_YEAR;                ///< The start year.
+	uint32_t generation_seed = GENERATE_NEW_SEED; ///< Seed for the new game.
+	std::string dedicated_host;                   ///< Hostname for the dedicated server.
+	uint16_t dedicated_port = 0;                  ///< Port for the dedicated server.
+	std::string connection_string;                ///< Information about the server to connect to
+	std::string join_server_password;             ///< The password to join the server with.
+	std::string join_company_password;            ///< The password to join the company with.
+	bool save_config = true;                      ///< The save config setting.
 
 	/**
 	 * Create a new callback.
@@ -1510,7 +1510,7 @@ void WriteVehicleInfo(char *&p, const char *last, const Vehicle *u, const Vehicl
 			(int)u->type, u->index, v->index, (int)u->owner, v->unitnumber, length);
 	SetDParam(0, u->engine_type);
 	p = strecpy(p, GetString(STR_ENGINE_NAME).c_str(), last, true);
-	uint32 grfid = u->GetGRFID();
+	uint32_t grfid = u->GetGRFID();
 	if (grfid) {
 		p += seprintf(p, last, ", GRF: %08X", BSWAP32(grfid));
 		GRFConfig *grfconfig = GetGRFConfig(grfid);
@@ -1944,7 +1944,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 		for (Vehicle *v : Vehicle::Iterate()) {
 			Money old_feeder_share = v->cargo.GetFeederShare();
 			uint old_count = v->cargo.TotalCount();
-			uint64 old_cargo_periods_in_transit = v->cargo.CargoPeriodsInTransit();
+			uint64_t old_cargo_periods_in_transit = v->cargo.CargoPeriodsInTransit();
 
 			v->cargo.InvalidateCache();
 
@@ -1965,7 +1965,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 				if (st->goods[c].data == nullptr) continue;
 
 				uint old_count = st->goods[c].data->cargo.TotalCount();
-				uint64 old_cargo_periods_in_transit = st->goods[c].data->cargo.CargoPeriodsInTransit();
+				uint64_t old_cargo_periods_in_transit = st->goods[c].data->cargo.CargoPeriodsInTransit();
 
 				st->goods[c].data->cargo.InvalidateCache();
 
@@ -2031,7 +2031,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 		if (!CargoPacket::ValidateDeferredCargoPayments()) CCLOG("Cargo packets deferred payments validation failed");
 
 		if (_order_destination_refcount_map_valid) {
-			btree::btree_map<uint32, uint32> saved_order_destination_refcount_map = std::move(_order_destination_refcount_map);
+			btree::btree_map<uint32_t, uint32_t> saved_order_destination_refcount_map = std::move(_order_destination_refcount_map);
 			for (auto iter = saved_order_destination_refcount_map.begin(); iter != saved_order_destination_refcount_map.end();) {
 				if (iter->second == 0) {
 					iter = saved_order_destination_refcount_map.erase(iter);
@@ -2069,7 +2069,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdDesyncCheck(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdDesyncCheck(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	if (flags & DC_EXEC) {
 		CheckCaches(true, nullptr, CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG);
@@ -2183,7 +2183,7 @@ void StateGameLoop()
 		if (_networking) {
 			RecordSyncEvent(NSRE_PRE_COMPANY_STATE);
 			for (Company *c : Company::Iterate()) {
-				DEBUG_UPDATESTATECHECKSUM("Company: %u, Money: " OTTD_PRINTF64, c->index, (int64)c->money);
+				DEBUG_UPDATESTATECHECKSUM("Company: %u, Money: " OTTD_PRINTF64, c->index, (int64_t)c->money);
 				UpdateStateChecksum(c->money);
 
 				for (uint i = 0; i < ROADTYPE_END; i++) {

@@ -44,35 +44,35 @@ struct LoggedChange {
 		} mode;
 		struct {
 			char *text;      ///< revision string, _openttd_revision
-			uint32 newgrf;   ///< _openttd_newgrf_version
-			uint16 slver;    ///< _sl_version
+			uint32_t newgrf; ///< _openttd_newgrf_version
+			uint16_t slver;  ///< _sl_version
 			byte modified;   ///< _openttd_revision_modified
 		} revision;
 		struct {
-			uint32 type;     ///< type of savegame, @see SavegameType
-			uint32 version;  ///< major and minor version OR ttdp version
+			uint32_t type;       ///< type of savegame, @see SavegameType
+			uint32_t version;    ///< major and minor version OR ttdp version
 		} oldver;
 		GRFIdentifier grfadd;    ///< ID and md5sum of added GRF
 		struct {
-			uint32 grfid;    ///< ID of removed GRF
+			uint32_t grfid;      ///< ID of removed GRF
 		} grfrem;
 		GRFIdentifier grfcompat; ///< ID and new md5sum of changed GRF
 		struct {
-			uint32 grfid;    ///< ID of GRF with changed parameters
+			uint32_t grfid;      ///< ID of GRF with changed parameters
 		} grfparam;
 		struct {
-			uint32 grfid;    ///< ID of moved GRF
-			int32 offset;    ///< offset, positive = move down
+			uint32_t grfid;      ///< ID of moved GRF
+			int32_t offset;      ///< offset, positive = move down
 		} grfmove;
 		struct {
-			char *name;      ///< name of the setting
-			int32 oldval;    ///< old value
-			int32 newval;    ///< new value
+			char *name;          ///< name of the setting
+			int32_t oldval;      ///< old value
+			int32_t newval;      ///< new value
 		} setting;
 		struct {
-			uint64 data;     ///< additional data
-			uint32 grfid;    ///< ID of problematic GRF
-			byte bug;        ///< type of bug, @see enum GRFBugs
+			uint64_t data;       ///< additional data
+			uint32_t grfid;      ///< ID of problematic GRF
+			byte bug;            ///< type of bug, @see enum GRFBugs
 		} grfbug;
 	};
 };
@@ -82,7 +82,7 @@ struct LoggedChange {
 struct LoggedAction {
 	std::vector<LoggedChange> changes; ///< Changes in this action
 	GamelogActionType at; ///< Type of action
-	uint64 tick;          ///< Tick when it happened
+	uint64_t tick;        ///< Tick when it happened
 };
 
 extern std::vector<LoggedAction> _gamelog_actions;

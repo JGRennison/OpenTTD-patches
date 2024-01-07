@@ -40,31 +40,31 @@ enum NewSignalStyleFlags {
 struct NewSignalStyle {
 	const GRFFile *grffile;
 	StringID name;
-	uint8 grf_local_id;
-	uint8 style_flags;
-	uint8 lookahead_extra_aspects;
-	uint8 semaphore_mask;
-	uint8 electric_mask;
+	uint8_t grf_local_id;
+	uint8_t style_flags;
+	uint8_t lookahead_extra_aspects;
+	uint8_t semaphore_mask;
+	uint8_t electric_mask;
 
 	PalSpriteID signals[SIGTYPE_END][2][2];
 };
 extern std::array<NewSignalStyle, MAX_NEW_SIGNAL_STYLES> _new_signal_styles;
 struct NewSignalStyleMapping {
-	uint32 grfid = 0;
-	uint8 grf_local_id = 0;
+	uint32_t grfid = 0;
+	uint8_t grf_local_id = 0;
 
 	inline bool operator==(const NewSignalStyleMapping& o) const { return grfid == o.grfid && grf_local_id == o.grf_local_id; }
 };
 extern std::array<NewSignalStyleMapping, MAX_NEW_SIGNAL_STYLES> _new_signal_style_mapping;
-extern uint8 _num_new_signal_styles;
-extern uint16 _enabled_new_signal_styles_mask;
+extern uint8_t _num_new_signal_styles;
+extern uint16_t _enabled_new_signal_styles_mask;
 
 /** Resolver for the new signals scope. */
 struct NewSignalsScopeResolver : public ScopeResolver {
 	TileIndex tile;      ///< Tracktile. For track on a bridge this is the southern bridgehead.
 	TileContext context; ///< Are we resolving sprites for the upper halftile, or on a bridge?
 	CustomSignalSpriteContext signal_context;
-	uint8 signal_style;
+	uint8_t signal_style;
 	const TraceRestrictProgram *prog;
 	uint z;
 
@@ -75,21 +75,21 @@ struct NewSignalsScopeResolver : public ScopeResolver {
 	 * @param context Are we resolving sprites for the upper halftile, or on a bridge?
 	 * @param signal_context Signal context.
 	 */
-	NewSignalsScopeResolver(ResolverObject &ro, TileIndex tile, TileContext context, CustomSignalSpriteContext signal_context, uint8 signal_style, const TraceRestrictProgram *prog, uint z)
+	NewSignalsScopeResolver(ResolverObject &ro, TileIndex tile, TileContext context, CustomSignalSpriteContext signal_context, uint8_t signal_style, const TraceRestrictProgram *prog, uint z)
 		: ScopeResolver(ro), tile(tile), context(context), signal_context(signal_context), signal_style(signal_style), prog(prog), z(z)
 	{
 	}
 
-	uint32 GetRandomBits() const override;
-	uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const override;
+	uint32_t GetRandomBits() const override;
+	uint32_t GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra *extra) const override;
 };
 
 /** Resolver object for rail types. */
 struct NewSignalsResolverObject : public ResolverObject {
 	NewSignalsScopeResolver newsignals_scope; ///< Resolver for the new signals scope.
 
-	NewSignalsResolverObject(const GRFFile *grffile, TileIndex tile, TileContext context, uint32 param1, uint32 param2,
-			CustomSignalSpriteContext signal_context, uint8 signal_style, const TraceRestrictProgram *prog = nullptr, uint z = 0);
+	NewSignalsResolverObject(const GRFFile *grffile, TileIndex tile, TileContext context, uint32_t param1, uint32_t param2,
+			CustomSignalSpriteContext signal_context, uint8_t signal_style, const TraceRestrictProgram *prog = nullptr, uint z = 0);
 
 	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, VarSpriteGroupScopeOffset relative = 0) override
 	{
@@ -104,7 +104,7 @@ struct NewSignalsResolverObject : public ResolverObject {
 	GrfSpecFeature GetFeature() const override;
 };
 
-uint GetNewSignalsRestrictedSignalsInfo(const TraceRestrictProgram *prog, TileIndex tile, uint8 signal_style);
+uint GetNewSignalsRestrictedSignalsInfo(const TraceRestrictProgram *prog, TileIndex tile, uint8_t signal_style);
 uint GetNewSignalsVerticalClearanceInfo(TileIndex tile, uint z);
 
 inline uint GetNewSignalsSignalContext(CustomSignalSpriteContext signal_context, TileIndex tile)
@@ -114,6 +114,6 @@ inline uint GetNewSignalsSignalContext(CustomSignalSpriteContext signal_context,
 	return result;
 }
 
-uint32 GetNewSignalsSideVariable();
+uint32_t GetNewSignalsSideVariable();
 
 #endif /* NEWGRF_NEWSIGNALS_H */

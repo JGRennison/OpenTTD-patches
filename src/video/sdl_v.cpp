@@ -245,7 +245,7 @@ bool VideoDriver_SDL::CreateMainSurface(uint w, uint h)
 		icon = SDL_LoadBMP(icon_path.c_str());
 		if (icon != nullptr) {
 			/* Get the colourkey, which will be magenta */
-			uint32 rgbmap = SDL_MapRGB(icon->format, 255, 0, 255);
+			uint32_t rgbmap = SDL_MapRGB(icon->format, 255, 0, 255);
 
 			SDL_SetColorKey(icon, SDL_SRCCOLORKEY, rgbmap);
 			SDL_WM_SetIcon(icon, nullptr);
@@ -378,7 +378,7 @@ bool VideoDriver_SDL::ClaimMousePointer()
 }
 
 struct SDLVkMapping {
-	uint16 vk_from;
+	uint16_t vk_from;
 	byte vk_count;
 	byte map_to;
 };
@@ -439,7 +439,7 @@ static const SDLVkMapping _vk_mapping[] = {
 	AS(SDLK_HASH,    WKC_HASH),
 };
 
-static uint ConvertSdlKeyIntoMy(SDL_keysym *sym, WChar *character)
+static uint ConvertSdlKeyIntoMy(SDL_keysym *sym, char32_t *character)
 {
 	const SDLVkMapping *map;
 	uint key = 0;
@@ -559,7 +559,7 @@ bool VideoDriver_SDL::PollEvent()
 					(ev.key.keysym.sym == SDLK_RETURN || ev.key.keysym.sym == SDLK_f)) {
 				ToggleFullScreen(!_fullscreen);
 			} else {
-				WChar character;
+				char32_t character;
 				uint keycode = ConvertSdlKeyIntoMy(&ev.key.keysym, &character);
 				HandleKeypress(keycode, character);
 			}
@@ -633,7 +633,7 @@ void VideoDriver_SDL::Stop()
 
 void VideoDriver_SDL::InputLoop()
 {
-	uint32 mod = SDL_GetModState();
+	uint32_t mod = SDL_GetModState();
 	int numkeys;
 	Uint8 *keys = SDL_GetKeyState(&numkeys);
 

@@ -229,27 +229,27 @@ public:
 	/**
 	 * Signal extra aspects
 	 */
-	uint8 signal_extra_aspects;
+	uint8_t signal_extra_aspects;
 
 	/**
 	 * Cost multiplier for building this rail type
 	 */
-	uint16 cost_multiplier;
+	uint16_t cost_multiplier;
 
 	/**
 	 * Cost multiplier for maintenance of this rail type
 	 */
-	uint16 maintenance_multiplier;
+	uint16_t maintenance_multiplier;
 
 	/**
 	 * Acceleration type of this rail type
 	 */
-	uint8 acceleration_type;
+	uint8_t acceleration_type;
 
 	/**
 	 * Maximum speed for vehicles travelling on this rail type
 	 */
-	uint16 max_speed;
+	uint16_t max_speed;
 
 	/**
 	 * Unique 32 bit rail type identifier

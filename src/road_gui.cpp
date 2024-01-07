@@ -62,8 +62,8 @@ struct RoadStopGUISettings {
 	DiagDirection orientation; // This replaces _road_station_picker_orientation
 
 	RoadStopClassID roadstop_class;
-	uint16 roadstop_type;
-	uint16 roadstop_count;
+	uint16_t roadstop_type;
+	uint16_t roadstop_count;
 };
 static RoadStopGUISettings _roadstop_gui_settings;
 
@@ -110,13 +110,13 @@ static bool IsRoadStopAvailable(const RoadStopSpec *roadstopspec, StationType ty
 
 	if (!HasBit(roadstopspec->callback_mask, CBM_ROAD_STOP_AVAIL)) return true;
 
-	uint16 cb_res = GetRoadStopCallback(CBID_STATION_AVAILABILITY, 0, 0, roadstopspec, nullptr, INVALID_TILE, _cur_roadtype, type, 0);
+	uint16_t cb_res = GetRoadStopCallback(CBID_STATION_AVAILABILITY, 0, 0, roadstopspec, nullptr, INVALID_TILE, _cur_roadtype, type, 0);
 	if (cb_res == CALLBACK_FAILED) return true;
 
 	return Convert8bitBooleanCallback(roadstopspec->grf_prop.grffile, CBID_STATION_AVAILABILITY, cb_res);
 }
 
-void CcPlaySound_CONSTRUCTION_OTHER(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcPlaySound_CONSTRUCTION_OTHER(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Succeeded() && _settings_client.sound.confirm) SndPlayTileFx(SND_1F_CONSTRUCTION_OTHER, tile);
 }
@@ -146,7 +146,7 @@ static void PlaceRoad_Bridge(TileIndex tile, Window *w)
  * @param p2 unused
  * @param cmd unused
  */
-void CcBuildRoadTunnel(const CommandCost &result, TileIndex start_tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcBuildRoadTunnel(const CommandCost &result, TileIndex start_tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Succeeded()) {
 		if (_settings_client.sound.confirm) SndPlayTileFx(SND_1F_CONSTRUCTION_OTHER, start_tile);
@@ -179,7 +179,7 @@ void ConnectRoadToStructure(TileIndex tile, DiagDirection direction)
 	}
 }
 
-void CcRoadDepot(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcRoadDepot(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Failed()) return;
 
@@ -207,7 +207,7 @@ void CcRoadDepot(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2
  * @param cmd Unused.
  * @see CmdBuildRoadStop
  */
-void CcRoadStop(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcRoadStop(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Failed()) return;
 
@@ -218,7 +218,7 @@ void CcRoadStop(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2,
 	bool connect_to_road = true;
 
 	RoadStopClassID spec_class = Extract<RoadStopClassID, 0, 8>(p3);
-	uint16 spec_index          = GB(p3, 16, 16);
+	uint16_t spec_index        = GB(p3, 16, 16);
 	if ((uint)spec_class < RoadStopClass::GetClassCount() && spec_index < RoadStopClass::Get(spec_class)->GetSpecCount()) {
 		const RoadStopSpec *roadstopspec = RoadStopClass::Get(spec_class)->GetSpec(spec_index);
 		if (roadstopspec != nullptr && HasBit(roadstopspec->flags, RSF_NO_AUTO_ROAD_CONNECTION)) connect_to_road = false;
@@ -244,9 +244,9 @@ void CcRoadStop(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2,
  * @param cmd Command to use.
  * @see CcRoadStop()
  */
-static void PlaceRoadStop(TileIndex start_tile, TileIndex end_tile, uint32 p2, uint32 cmd)
+static void PlaceRoadStop(TileIndex start_tile, TileIndex end_tile, uint32_t p2, uint32_t cmd)
 {
-	uint8 ddir = _roadstop_gui_settings.orientation;
+	uint8_t ddir = _roadstop_gui_settings.orientation;
 
 	if (ddir >= DIAGDIR_END) {
 		SetBit(p2, 1); // It's a drive-through stop.
@@ -256,7 +256,7 @@ static void PlaceRoadStop(TileIndex start_tile, TileIndex end_tile, uint32 p2, u
 	p2 |= INVALID_STATION << 16; // no station to join
 
 	TileArea ta(start_tile, end_tile);
-	CommandContainer cmdcont = NewCommandContainerBasic(ta.tile, (uint32)(ta.w | ta.h << 8), p2, cmd, CcRoadStop);
+	CommandContainer cmdcont = NewCommandContainerBasic(ta.tile, (uint32_t)(ta.w | ta.h << 8), p2, cmd, CcRoadStop);
 	cmdcont.p3 = (_roadstop_gui_settings.roadstop_type << 16) | _roadstop_gui_settings.roadstop_class;
 	ShowSelectStationIfNeeded(cmdcont, ta);
 }
@@ -776,7 +776,7 @@ struct BuildRoadToolbarWindow : Window {
 					 * else use the last 2 bits (X dir has
 					 * not the 3rd bit set) */
 
-					/* Even if _cur_roadtype_id is a uint8 we only use 5 bits so
+					/* Even if _cur_roadtype_id is a uint8_t we only use 5 bits so
 					 * we could ignore the last 3 bits and reuse them for other
 					 * flags */
 					_place_road_flag = (RoadFlags)((_place_road_flag & RF_DIR_Y) ? (_place_road_flag & 0x07) : (_place_road_flag >> 3));
@@ -794,8 +794,8 @@ struct BuildRoadToolbarWindow : Window {
 						if (_remove_button_clicked) {
 							DoCommandP(ta.tile, ta.w | ta.h << 8, (1 << 2), CMD_REMOVE_ROAD_STOP | CMD_MSG(STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT), CcPlaySound_CONSTRUCTION_OTHER);
 						} else {
-							uint32 p1 = ta.w | ta.h << 8 | _ctrl_pressed << 16 | (select_method == VPM_X_LIMITED ? AXIS_X : AXIS_Y) << 17;
-							uint32 p2 = ROADSTOP_CLASS_WAYP | INVALID_STATION << 16;
+							uint32_t p1 = ta.w | ta.h << 8 | _ctrl_pressed << 16 | (select_method == VPM_X_LIMITED ? AXIS_X : AXIS_Y) << 17;
+							uint32_t p2 = ROADSTOP_CLASS_WAYP | INVALID_STATION << 16;
 
 							CommandContainer cmdcont = NewCommandContainerBasic(ta.tile, p1, p2, CMD_BUILD_ROAD_WAYPOINT | CMD_MSG(STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT), CcPlaySound_CONSTRUCTION_OTHER);
 							cmdcont.p3 = _cur_waypoint_type;
@@ -1636,7 +1636,7 @@ public:
 					} else {
 						DiagDirection orientation = _roadstop_gui_settings.orientation;
 						if (orientation < DIAGDIR_END && HasBit(spec->flags, RSF_DRIVE_THROUGH_ONLY)) orientation = DIAGDIR_END;
-						DrawRoadStopTile(x, y, _cur_roadtype, spec, st, (uint8)orientation);
+						DrawRoadStopTile(x, y, _cur_roadtype, spec, st, (uint8_t)orientation);
 					}
 				}
 				if (!IsRoadStopAvailable(spec, st)) {
@@ -2114,7 +2114,7 @@ struct BuildRoadWaypointWindow : PickerWindowBase {
 		CheckRedrawWaypointCoverage(this, true);
 	}
 
-	void SelectWaypointSpec(uint16 spec_id)
+	void SelectWaypointSpec(uint16_t spec_id)
 	{
 		for (uint i = 0; i < (uint)this->list.size(); i++) {
 			if (this->list[i] == spec_id) {
@@ -2418,7 +2418,7 @@ void ShowBuildRoadStopPickerAndSelect(StationType station_type, const RoadStopSp
 		trigger_widget(WID_ROT_BUILD_WAYPOINT);
 
 		BuildRoadWaypointWindow *waypoint_window = dynamic_cast<BuildRoadWaypointWindow *>(FindWindowById(WC_BUILD_WAYPOINT, TRANSPORT_ROAD));
-		if (waypoint_window != nullptr) waypoint_window->SelectWaypointSpec((uint16)spec_id);
+		if (waypoint_window != nullptr) waypoint_window->SelectWaypointSpec((uint16_t)spec_id);
 	} else {
 		trigger_widget((station_type == STATION_BUS) ? WID_ROT_BUS_STATION : WID_ROT_TRUCK_STATION);
 

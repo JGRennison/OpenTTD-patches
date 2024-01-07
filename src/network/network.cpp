@@ -63,36 +63,36 @@ static_assert(NetworkClientInfoPool::MAX_SIZE == NetworkClientSocketPool::MAX_SI
 NetworkClientInfoPool _networkclientinfo_pool("NetworkClientInfo");
 INSTANTIATE_POOL_METHODS(NetworkClientInfo)
 
-bool _networking;         ///< are we in networking mode?
-bool _network_server;     ///< network-server is active
-bool _network_available;  ///< is network mode available?
-bool _network_dedicated;  ///< are we a dedicated server?
-bool _is_network_server;  ///< Does this client wants to be a network-server?
-bool _network_settings_access; ///< Can this client change server settings?
+bool _networking;                                       ///< are we in networking mode?
+bool _network_server;                                   ///< network-server is active
+bool _network_available;                                ///< is network mode available?
+bool _network_dedicated;                                ///< are we a dedicated server?
+bool _is_network_server;                                ///< Does this client wants to be a network-server?
+bool _network_settings_access;                          ///< Can this client change server settings?
 NetworkCompanyState *_network_company_states = nullptr; ///< Statistics about some companies.
-std::string _network_company_server_id; ///< Server ID string used for company passwords
-uint8 _network_company_password_storage_token[16]; ///< Non-secret token for storage of company passwords in savegames
-uint8 _network_company_password_storage_key[32]; ///< Key for storage of company passwords in savegames
-ClientID _network_own_client_id;      ///< Our client identifier.
-ClientID _redirect_console_to_client; ///< If not invalid, redirect the console output to a client.
-uint8 _network_reconnect;             ///< Reconnect timeout
-StringList _network_bind_list;        ///< The addresses to bind on.
-StringList _network_host_list;        ///< The servers we know.
-StringList _network_ban_list;         ///< The banned clients.
-uint32 _frame_counter_server;         ///< The frame_counter of the server, if in network-mode
-uint32 _frame_counter_max;            ///< To where we may go with our clients
-uint32 _frame_counter;                ///< The current frame.
-uint32 _last_sync_frame;              ///< Used in the server to store the last time a sync packet was sent to clients.
-NetworkAddressList _broadcast_list;   ///< List of broadcast addresses.
-uint32 _sync_seed_1;                  ///< Seed to compare during sync checks.
-uint64 _sync_state_checksum;          ///< State checksum to compare during sync checks.
-uint32 _sync_frame;                   ///< The frame to perform the sync check.
-Date   _last_sync_date;               ///< The game date of the last successfully received sync frame
-DateFract _last_sync_date_fract;      ///< "
-uint8  _last_sync_tick_skip_counter;  ///< "
-uint32 _last_sync_frame_counter;      ///< "
-bool _network_first_time;             ///< Whether we have finished joining or not.
-CompanyMask _network_company_passworded; ///< Bitmask of the password status of all companies.
+std::string _network_company_server_id;                 ///< Server ID string used for company passwords
+uint8_t _network_company_password_storage_token[16];    ///< Non-secret token for storage of company passwords in savegames
+uint8_t _network_company_password_storage_key[32];      ///< Key for storage of company passwords in savegames
+ClientID _network_own_client_id;                        ///< Our client identifier.
+ClientID _redirect_console_to_client;                   ///< If not invalid, redirect the console output to a client.
+uint8_t _network_reconnect;                             ///< Reconnect timeout
+StringList _network_bind_list;                          ///< The addresses to bind on.
+StringList _network_host_list;                          ///< The servers we know.
+StringList _network_ban_list;                           ///< The banned clients.
+uint32_t _frame_counter_server;                         ///< The frame_counter of the server, if in network-mode
+uint32_t _frame_counter_max;                            ///< To where we may go with our clients
+uint32_t _frame_counter;                                ///< The current frame.
+uint32_t _last_sync_frame;                              ///< Used in the server to store the last time a sync packet was sent to clients.
+NetworkAddressList _broadcast_list;                     ///< List of broadcast addresses.
+uint32_t _sync_seed_1;                                  ///< Seed to compare during sync checks.
+uint64_t _sync_state_checksum;                          ///< State checksum to compare during sync checks.
+uint32_t _sync_frame;                                   ///< The frame to perform the sync check.
+Date   _last_sync_date;                                 ///< The game date of the last successfully received sync frame
+DateFract _last_sync_date_fract;                        ///< "
+uint8_t  _last_sync_tick_skip_counter;                  ///< "
+uint32_t _last_sync_frame_counter;                      ///< "
+bool _network_first_time;                               ///< Whether we have finished joining or not.
+CompanyMask _network_company_passworded;                ///< Bitmask of the password status of all companies.
 
 ring_buffer<NetworkSyncRecord> _network_sync_records;
 ring_buffer<uint> _network_sync_record_counts;
@@ -195,7 +195,7 @@ std::string NetworkChangeCompanyPassword(CompanyID company_id, std::string passw
  * @param password_game_seed Game seed.
  * @return The hashed password.
  */
-std::string GenerateCompanyPasswordHash(const std::string &password, const std::string &password_server_id, uint32 password_game_seed)
+std::string GenerateCompanyPasswordHash(const std::string &password, const std::string &password_server_id, uint32_t password_game_seed)
 {
 	if (password.empty()) return password;
 
@@ -229,7 +229,7 @@ std::string GenerateCompanyPasswordHash(const std::string &password, const std::
  * @param password_game_seed Game seed.
  * @return The hashed password.
  */
-std::vector<uint8> GenerateGeneralPasswordHash(const std::string &password, const std::string &password_server_id, uint64 password_game_seed)
+std::vector<uint8_t> GenerateGeneralPasswordHash(const std::string &password, const std::string &password_server_id, uint64_t password_game_seed)
 {
 	if (password.empty()) return {};
 
@@ -532,7 +532,7 @@ std::string_view ParseCompanyFromConnectionString(const std::string &connection_
 		std::string_view company_string = ip.substr(offset + 1);
 		ip = ip.substr(0, offset);
 
-		uint8 company_value;
+		uint8_t company_value;
 		bool success = IntFromChars(company_string.data(), company_string.data() + company_string.size(), company_value);
 		if (success) {
 			if (company_value != COMPANY_NEW_COMPANY && company_value != COMPANY_SPECTATOR) {
@@ -566,7 +566,7 @@ std::string_view ParseCompanyFromConnectionString(const std::string &connection_
  * @param company_id        The company ID to set, if available.
  * @return A std::string_view into the connection string with the (IP) address part.
  */
-std::string_view ParseFullConnectionString(const std::string &connection_string, uint16 &port, CompanyID *company_id)
+std::string_view ParseFullConnectionString(const std::string &connection_string, uint16_t &port, CompanyID *company_id)
 {
 	std::string_view ip = ParseCompanyFromConnectionString(connection_string, company_id);
 
@@ -586,9 +586,9 @@ std::string_view ParseFullConnectionString(const std::string &connection_string,
  * @param default_port The port to use if none is given.
  * @return The normalized connection string.
  */
-std::string NormalizeConnectionString(const std::string &connection_string, uint16 default_port)
+std::string NormalizeConnectionString(const std::string &connection_string, uint16_t default_port)
 {
-	uint16 port = default_port;
+	uint16_t port = default_port;
 	std::string_view ip = ParseFullConnectionString(connection_string, port);
 	return std::string(ip) + ":" + std::to_string(port);
 }
@@ -601,9 +601,9 @@ std::string NormalizeConnectionString(const std::string &connection_string, uint
  * @param default_port The default port to set port to if not in connection_string.
  * @return A valid NetworkAddress of the parsed information.
  */
-NetworkAddress ParseConnectionString(const std::string &connection_string, uint16 default_port)
+NetworkAddress ParseConnectionString(const std::string &connection_string, uint16_t default_port)
 {
-	uint16 port = default_port;
+	uint16_t port = default_port;
 	std::string_view ip = ParseFullConnectionString(connection_string, port);
 	return NetworkAddress(ip, port);
 }
@@ -772,7 +772,7 @@ NetworkGameList *NetworkAddServer(const std::string &connection_string, bool man
  * @param addresses the list to write to.
  * @param port the port to bind to.
  */
-void GetBindAddresses(NetworkAddressList *addresses, uint16 port)
+void GetBindAddresses(NetworkAddressList *addresses, uint16_t port)
 {
 	for (const auto &iter : _network_bind_list) {
 		addresses->emplace_back(iter.c_str(), port);
@@ -1177,7 +1177,7 @@ void NetworkGameLoop()
 		static uint next_tick_skip_counter;
 		static std::unique_ptr<CommandPacket> cp;
 		static bool check_sync_state = false;
-		static uint32 sync_state[2];
+		static uint32_t sync_state[2];
 		if (f == nullptr && next_date == 0) {
 			DEBUG(desync, 0, "Cannot open commands.log");
 			next_date = 1;
@@ -1370,7 +1370,7 @@ static void NetworkGenerateServerId()
 
 std::string NetworkGenerateRandomKeyString(uint bytes)
 {
-	uint8 *key = AllocaM(uint8, bytes);
+	uint8_t *key = AllocaM(uint8_t, bytes);
 	NetworkRandomBytesWithFallback(key, bytes);
 
 	return FormatArrayAsHex({key, bytes});

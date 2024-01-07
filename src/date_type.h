@@ -14,7 +14,7 @@
 #include "core/math_func.hpp"
 
 /**
- * 1 day is 74 ticks; _date_fract used to be uint16 and incremented by 885. On
+ * 1 day is 74 ticks; _date_fract used to be uint16_t and incremented by 885. On
  *                    an overflow the new day begun and 65535 / 885 = 74.
  * 1 tick is approximately 27 ms.
  * 1 day is thus about 2 seconds (74 * 27 = 1998) on a machine that can run OpenTTD normally
@@ -26,12 +26,12 @@ static const int MONTHS_IN_YEAR    =  12; ///< months per year
 
 static const int SECONDS_PER_DAY   = 2;   ///< approximate seconds per day, not for precise calculations
 
-typedef uint16 DateFract; ///< The fraction of a date we're in, i.e. the number of ticks since the last date changeover
-typedef int32  Ticks;     ///< The type to store ticks in
+typedef uint16_t DateFract; ///< The fraction of a date we're in, i.e. the number of ticks since the last date changeover
+typedef int32_t  Ticks;     ///< The type to store ticks in
 
-typedef int32  Year;  ///< Type for the year, note: 0 based, i.e. starts at the year 0.
-typedef uint8  Month; ///< Type for the month, note: 0 based, i.e. 0 = January, 11 = December.
-typedef uint8  Day;   ///< Type for the day of the month, note: 1 based, first day of a month is 1.
+typedef int32_t  Year;  ///< Type for the year, note: 0 based, i.e. starts at the year 0.
+typedef uint8_t  Month; ///< Type for the month, note: 0 based, i.e. 0 = January, 11 = December.
+typedef uint8_t  Day;   ///< Type for the day of the month, note: 1 based, first day of a month is 1.
 
 /* The type to store our dates in */
 using DateDelta = StrongType::Typedef<int32_t, struct DateDeltaTag, StrongType::Compare, StrongType::IntegerScalable>;
@@ -165,7 +165,7 @@ static constexpr Year ORIGINAL_MAX_YEAR  = 2090;
  */
 static constexpr Date DateAtStartOfYear(Year year)
 {
-	int32 year_as_int = year;
+	int32_t year_as_int = year;
 	uint number_of_leap_years = (year == 0) ? 0 : ((year_as_int - 1) / 4 - (year_as_int - 1) / 100 + (year_as_int - 1) / 400 + 1);
 
 	/* Hardcode the number of days in a year because we can't access CalendarTime from here. */

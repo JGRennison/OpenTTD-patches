@@ -36,7 +36,7 @@ IndustryTileOverrideManager _industile_mngr(NEW_INDUSTRYTILEOFFSET, NUM_INDUSTRY
  * @param grf_id The GRF of the local type.
  * @return The industry type in the global scope.
  */
-IndustryType MapNewGRFIndustryType(IndustryType grf_type, uint32 grf_id)
+IndustryType MapNewGRFIndustryType(IndustryType grf_type, uint32_t grf_id)
 {
 	if (grf_type == IT_INVALID) return IT_INVALID;
 	if (!HasBit(grf_type, 7)) return GB(grf_type, 0, 7);
@@ -52,7 +52,7 @@ IndustryType MapNewGRFIndustryType(IndustryType grf_type, uint32 grf_id)
  * @param cur_grfid GRFID of the current callback chain
  * @return value encoded as per NFO specs
  */
-uint32 GetIndustryIDAtOffset(TileIndex tile, const Industry *i, uint32 cur_grfid)
+uint32_t GetIndustryIDAtOffset(TileIndex tile, const Industry *i, uint32_t cur_grfid)
 {
 	if (!i->TileBelongsToIndustry(tile)) {
 		/* No industry and/or the tile does not have the same industry as the one we match it with */
@@ -88,7 +88,7 @@ uint32 GetIndustryIDAtOffset(TileIndex tile, const Industry *i, uint32 cur_grfid
 	return 0xFF << 8 | indtsp->grf_prop.subst_id; // so just give it the substitute
 }
 
-uint32 IndustriesScopeResolver::GetClosestIndustry(IndustryType type) const
+uint32_t IndustriesScopeResolver::GetClosestIndustry(IndustryType type) const
 {
 	if (type >= NUM_INDUSTRYTYPES) return UINT32_MAX;
 
@@ -99,7 +99,7 @@ uint32 IndustriesScopeResolver::GetClosestIndustry(IndustryType type) const
 			if (i == this->industry || i->type >= NUM_INDUSTRYTYPES) continue;
 
 			uint dist = DistanceManhattan(this->tile, i->location.tile);
-			if (dist < (uint)this->location_distance_cache->distances[i->type]) this->location_distance_cache->distances[i->type] = (uint16)dist;
+			if (dist < (uint)this->location_distance_cache->distances[i->type]) this->location_distance_cache->distances[i->type] = (uint16_t)dist;
 		}
 	}
 	return this->location_distance_cache->distances[type];
@@ -114,11 +114,11 @@ uint32 IndustriesScopeResolver::GetClosestIndustry(IndustryType type) const
  * @param town_filter Do we filter on the same town as the current industry?
  * @return the formatted answer to the callback : rr(reserved) cc(count) dddd(manhattan distance of closest sister)
  */
-uint32 IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(byte param_setID, byte layout_filter, bool town_filter, uint32 mask) const
+uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(byte param_setID, byte layout_filter, bool town_filter, uint32_t mask) const
 {
-	uint32 GrfID = GetRegister(0x100);  ///< Get the GRFID of the definition to look for in register 100h
+	uint32_t GrfID = GetRegister(0x100);  ///< Get the GRFID of the definition to look for in register 100h
 	IndustryType ind_index;
-	uint32 closest_dist = UINT32_MAX;
+	uint32_t closest_dist = UINT32_MAX;
 	uint count = 0;
 
 	/* Determine what will be the industry type to look for */
@@ -156,8 +156,8 @@ uint32 IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(byte param_
 				if (i == this->industry || i->type >= NUM_INDUSTRYTYPES || i->town != this->industry->town) continue;
 
 				uint dist = DistanceManhattan(this->tile, i->location.tile);
-				if (dist < (uint)cache->distances[i->type]) cache->distances[i->type] = (uint16)dist;
-				cache->counts[i->type] = ClampTo<uint8>(cache->counts[i->type] + 1);
+				if (dist < (uint)cache->distances[i->type]) cache->distances[i->type] = (uint16_t)dist;
+				cache->counts[i->type] = ClampTo<uint8_t>(cache->counts[i->type] + 1);
 			}
 		}
 		closest_dist = cache->distances[ind_index];
@@ -177,7 +177,7 @@ uint32 IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(byte param_
 	return count << 16 | std::min<uint>(closest_dist, 0xFFFF);
 }
 
-/* virtual */ uint32 IndustriesScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
+/* virtual */ uint32_t IndustriesScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra *extra) const
 {
 	if (this->ro.callback == CBID_INDUSTRY_LOCATION) {
 		/* Variables available during construction check. */
@@ -236,13 +236,13 @@ uint32 IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(byte param_
 		case 0x40:
 		case 0x41:
 		case 0x42: { // waiting cargo, but only if those two callback flags are set
-			uint16 callback = indspec->callback_mask;
+			uint16_t callback = indspec->callback_mask;
 			if (HasBit(callback, CBM_IND_PRODUCTION_CARGO_ARRIVAL) || HasBit(callback, CBM_IND_PRODUCTION_256_TICKS)) {
 				if ((indspec->behaviour & INDUSTRYBEH_PROD_MULTI_HNDLING) != 0) {
 					if (this->industry->prod_level == 0) return 0;
-					return ClampTo<uint16>(this->industry->incoming_cargo_waiting[variable - 0x40] / this->industry->prod_level);
+					return ClampTo<uint16_t>(this->industry->incoming_cargo_waiting[variable - 0x40] / this->industry->prod_level);
 				} else {
-					return ClampTo<uint16>(this->industry->incoming_cargo_waiting[variable - 0x40]);
+					return ClampTo<uint16_t>(this->industry->incoming_cargo_waiting[variable - 0x40]);
 				}
 			} else {
 				return 0;
@@ -327,7 +327,7 @@ uint32 IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(byte param_
 			byte layout_filter = 0;
 			bool town_filter = false;
 			if (variable == 0x68) {
-				uint32 reg = GetRegister(0x101);
+				uint32_t reg = GetRegister(0x101);
 				layout_filter = GB(reg, 0, 8);
 				town_filter = HasBit(reg, 8);
 			}
@@ -431,7 +431,7 @@ uint32 IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(byte param_
 		case 0xB3: return this->industry->construction_type; // Construction type
 		case 0xB4: {
 			Date *latest = std::max_element(this->industry->last_cargo_accepted_at, endof(this->industry->last_cargo_accepted_at));
-			return ClampTo<uint16>((*latest) - DAYS_TILL_ORIGINAL_BASE_YEAR); // Date last cargo accepted since 1920 (in days)
+			return ClampTo<uint16_t>((*latest) - DAYS_TILL_ORIGINAL_BASE_YEAR); // Date last cargo accepted since 1920 (in days)
 		}
 	}
 
@@ -441,17 +441,17 @@ uint32 IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(byte param_
 	return UINT_MAX;
 }
 
-/* virtual */ uint32 IndustriesScopeResolver::GetRandomBits() const
+/* virtual */ uint32_t IndustriesScopeResolver::GetRandomBits() const
 {
 	return this->industry != nullptr ? this->industry->random : 0;
 }
 
-/* virtual */ uint32 IndustriesScopeResolver::GetTriggers() const
+/* virtual */ uint32_t IndustriesScopeResolver::GetTriggers() const
 {
 	return 0;
 }
 
-/* virtual */ void IndustriesScopeResolver::StorePSA(uint pos, int32 value)
+/* virtual */ void IndustriesScopeResolver::StorePSA(uint pos, int32_t value)
 {
 	if (this->industry->index == INVALID_INDUSTRY) return;
 
@@ -461,7 +461,7 @@ uint32 IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(byte param_
 
 		/* Create storage on first modification. */
 		const IndustrySpec *indsp = GetIndustrySpec(this->industry->type);
-		uint32 grfid = (indsp->grf_prop.grffile != nullptr) ? indsp->grf_prop.grffile->grfid : 0;
+		uint32_t grfid = (indsp->grf_prop.grffile != nullptr) ? indsp->grf_prop.grffile->grfid : 0;
 		assert(PersistentStorage::CanAllocateItem());
 		this->industry->psa = new PersistentStorage(grfid, GSF_INDUSTRIES, this->industry->location.tile);
 	}
@@ -490,8 +490,8 @@ static const GRFFile *GetGrffile(IndustryType type)
  * @param callback_param1 First parameter (var 10) of the callback.
  * @param callback_param2 Second parameter (var 18) of the callback.
  */
-IndustriesResolverObject::IndustriesResolverObject(TileIndex tile, Industry *indus, IndustryType type, uint32 random_bits,
-		CallbackID callback, uint32 callback_param1, uint32 callback_param2)
+IndustriesResolverObject::IndustriesResolverObject(TileIndex tile, Industry *indus, IndustryType type, uint32_t random_bits,
+		CallbackID callback, uint32_t callback_param1, uint32_t callback_param2)
 	: ResolverObject(GetGrffile(type), callback, callback_param1, callback_param2),
 	industries_scope(*this, tile, indus, type, random_bits),
 	town_scope(nullptr)
@@ -530,7 +530,7 @@ GrfSpecFeature IndustriesResolverObject::GetFeature() const
 	return GSF_INDUSTRIES;
 }
 
-uint32 IndustriesResolverObject::GetDebugID() const
+uint32_t IndustriesResolverObject::GetDebugID() const
 {
 	return GetIndustrySpec(this->industries_scope.type)->grf_prop.local_id;
 }
@@ -545,7 +545,7 @@ uint32 IndustriesResolverObject::GetDebugID() const
  * @param tile The tile associated with the callback.
  * @return The callback result.
  */
-uint16 GetIndustryCallback(CallbackID callback, uint32 param1, uint32 param2, Industry *industry, IndustryType type, TileIndex tile)
+uint16_t GetIndustryCallback(CallbackID callback, uint32_t param1, uint32_t param2, Industry *industry, IndustryType type, TileIndex tile)
 {
 	IndustriesResolverObject object(tile, industry, type, 0, callback, param1, param2);
 	return object.ResolveCallback();
@@ -562,7 +562,7 @@ uint16 GetIndustryCallback(CallbackID callback, uint32 param1, uint32 param2, In
  * @param creation_type The circumstances the industry is created under.
  * @return Succeeded or failed command.
  */
-CommandCost CheckIfCallBackAllowsCreation(TileIndex tile, IndustryType type, size_t layout, uint32 seed, uint16 initial_random_bits, Owner founder, IndustryAvailabilityCallType creation_type)
+CommandCost CheckIfCallBackAllowsCreation(TileIndex tile, IndustryType type, size_t layout, uint32_t seed, uint16_t initial_random_bits, Owner founder, IndustryAvailabilityCallType creation_type)
 {
 	const IndustrySpec *indspec = GetIndustrySpec(type);
 
@@ -578,7 +578,7 @@ CommandCost CheckIfCallBackAllowsCreation(TileIndex tile, IndustryType type, siz
 	ind.psa = nullptr;
 
 	IndustriesResolverObject object(tile, &ind, type, seed, CBID_INDUSTRY_LOCATION, 0, creation_type);
-	uint16 result = object.ResolveCallback();
+	uint16_t result = object.ResolveCallback();
 
 	/* Unlike the "normal" cases, not having a valid result means we allow
 	 * the building of the industry, as that's how it's done in TTDP. */
@@ -593,12 +593,12 @@ CommandCost CheckIfCallBackAllowsCreation(TileIndex tile, IndustryType type, siz
  * @param creation_type Reason to construct a new industry.
  * @return If the industry has no callback or allows building, \c true is returned. Otherwise, \c false is returned.
  */
-uint32 GetIndustryProbabilityCallback(IndustryType type, IndustryAvailabilityCallType creation_type, uint32 default_prob)
+uint32_t GetIndustryProbabilityCallback(IndustryType type, IndustryAvailabilityCallType creation_type, uint32_t default_prob)
 {
 	const IndustrySpec *indspec = GetIndustrySpec(type);
 
 	if (HasBit(indspec->callback_mask, CBM_IND_PROBABILITY)) {
-		uint16 res = GetIndustryCallback(CBID_INDUSTRY_PROBABILITY, 0, creation_type, nullptr, type, INVALID_TILE);
+		uint16_t res = GetIndustryCallback(CBID_INDUSTRY_PROBABILITY, 0, creation_type, nullptr, type, INVALID_TILE);
 		if (res != CALLBACK_FAILED) {
 			if (indspec->grf_prop.grffile->grf_version < 8) {
 				/* Disallow if result != 0 */
@@ -616,9 +616,9 @@ uint32 GetIndustryProbabilityCallback(IndustryType type, IndustryAvailabilityCal
 	return default_prob;
 }
 
-static int32 DerefIndProd(int field, bool use_register)
+static int32_t DerefIndProd(int field, bool use_register)
 {
-	return use_register ? (int32)GetRegister(field) : field;
+	return use_register ? (int32_t)GetRegister(field) : field;
 }
 
 /**
@@ -690,7 +690,7 @@ void IndustryProductionCallback(Industry *ind, int reason)
 			}
 		}
 
-		int32 again = DerefIndProd(group->again, deref);
+		int32_t again = DerefIndProd(group->again, deref);
 		if (again == 0) break;
 
 		SB(object.callback_param2, 24, 8, again);
@@ -712,7 +712,7 @@ bool IndustryTemporarilyRefusesCargo(Industry *ind, CargoID cargo_type)
 
 	const IndustrySpec *indspec = GetIndustrySpec(ind->type);
 	if (HasBit(indspec->callback_mask, CBM_IND_REFUSE_CARGO)) {
-		uint16 res = GetIndustryCallback(CBID_INDUSTRY_REFUSE_CARGO,
+		uint16_t res = GetIndustryCallback(CBID_INDUSTRY_REFUSE_CARGO,
 				0, indspec->grf_prop.grffile->cargo_map[cargo_type],
 				ind, ind->type, ind->location.tile);
 		if (res != CALLBACK_FAILED) return !ConvertBooleanCallback(indspec->grf_prop.grffile, CBID_INDUSTRY_REFUSE_CARGO, res);

@@ -40,7 +40,7 @@ static const uint ICON_BOTTOM_BORDERWIDTH = 12;
 struct IConsoleLine {
 	std::string buffer;     ///< The data to store.
 	TextColour colour;      ///< The colour of the line.
-	uint16 time;            ///< The amount of time the line is in the backlog.
+	uint16_t time;          ///< The amount of time the line is in the backlog.
 
 	IConsoleLine() : buffer(), colour(TC_BEGIN), time(0)
 	{
@@ -206,7 +206,7 @@ struct IConsoleWindow : Window
 		if (_iconsole_cmdline.HandleCaret()) this->SetDirty();
 	}
 
-	EventState OnKeyPress(WChar key, uint16 keycode) override
+	EventState OnKeyPress(char32_t key, uint16_t keycode) override
 	{
 		if (_focused_window != this) return ES_NOT_HANDLED;
 
@@ -485,8 +485,8 @@ static void IConsoleTabCompletion()
 			const char *cmdp = cmd_name;
 			while (true) {
 				const char *end = cmdp;
-				WChar a = Utf8Consume(cp);
-				WChar b = Utf8Consume(cmdp);
+				char32_t a = Utf8Consume(cp);
+				char32_t b = Utf8Consume(cmdp);
 				if (a == 0 || b == 0 || a != b) {
 					common_prefix.resize(end - cmd_name);
 					break;

@@ -59,7 +59,7 @@ typedef GUIList<BuildBridgeData> GUIBridgeList; ///< List of bridges, used in #B
  * - p2 = (bit 15-16) - transport type.
  * @param cmd unused
  */
-void CcBuildBridge(const CommandCost &result, TileIndex end_tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcBuildBridge(const CommandCost &result, TileIndex end_tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Failed()) return;
 	if (_settings_client.sound.confirm) SndPlayTileFx(SND_27_CONSTRUCTION_BRIDGE, end_tile);
@@ -92,7 +92,7 @@ private:
 	/* Internal variables */
 	TileIndex start_tile;
 	TileIndex end_tile;
-	uint32 type;
+	uint32_t type;
 	GUIBridgeList bridges;
 	int icon_width; ///< Scaled width of the the bridge icon sprite.
 	Scrollbar *vscroll;
@@ -120,7 +120,7 @@ private:
 		return (TransportType)(this->type >> 15);
 	}
 
-	void BuildBridge(uint8 i)
+	void BuildBridge(uint8_t i)
 	{
 		switch (this->GetTransportType()) {
 			case TRANSPORT_RAIL: _last_railbridge_type = this->bridges.at(i).index; break;
@@ -162,7 +162,7 @@ private:
 	}
 
 public:
-	BuildBridgeWindow(WindowDesc *desc, TileIndex start, TileIndex end, uint32 br_type, GUIBridgeList &&bl) : Window(desc),
+	BuildBridgeWindow(WindowDesc *desc, TileIndex start, TileIndex end, uint32_t br_type, GUIBridgeList &&bl) : Window(desc),
 		start_tile(start),
 		end_tile(end),
 		type(br_type),
@@ -226,7 +226,7 @@ public:
 		}
 	}
 
-	Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number) override
+	Point OnInitialPosition(int16_t sm_width, int16_t sm_height, int window_number) override
 	{
 		/* Position the window so hopefully the first bridge from the list is under the mouse pointer. */
 		NWidgetBase *list = this->GetWidget<NWidgetBase>(WID_BBS_BRIDGE_LIST);
@@ -258,9 +258,9 @@ public:
 		}
 	}
 
-	EventState OnKeyPress(WChar key, uint16 keycode) override
+	EventState OnKeyPress(char32_t key, uint16_t keycode) override
 	{
-		const uint8 i = keycode - '1';
+		const uint8_t i = keycode - '1';
 		if (i < 9 && i < this->bridges.size()) {
 			/* Build the requested bridge */
 			this->BuildBridge(i);
@@ -381,7 +381,7 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 	 * Bit 16,15 = transport type,
 	 *     14..8 = road/rail types,
 	 *      7..0 = type of bridge */
-	uint32 type = (transport_type << 15) | (road_rail_type << 8);
+	uint32_t type = (transport_type << 15) | (road_rail_type << 8);
 
 	/* The bridge length without ramps. */
 	const uint bridge_len = GetTunnelBridgeLength(start, end);
@@ -457,7 +457,7 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 				item.spec = GetBridgeSpec(brd_type);
 				/* Add to terraforming & bulldozing costs the cost of the
 				 * bridge itself (not computed with DC_QUERY_COST) */
-				item.cost = ret.GetCost() + (((int64)tot_bridgedata_len * _price[PR_BUILD_BRIDGE] * item.spec->price) >> 8) + infra_cost;
+				item.cost = ret.GetCost() + (((int64_t)tot_bridgedata_len * _price[PR_BUILD_BRIDGE] * item.spec->price) >> 8) + infra_cost;
 				any_available = true;
 			} else if (type_check.GetErrorMessage() != INVALID_STRING_ID && !query_per_bridge_type) {
 				type_errmsg = type_check.GetErrorMessage();

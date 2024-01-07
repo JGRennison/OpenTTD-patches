@@ -31,7 +31,7 @@ enum ViewportMapType {
 };
 
 struct ViewPortMapDrawVehiclesCache {
-	uint64 done_hash_bits[64];
+	uint64_t done_hash_bits[64];
 	std::vector<bool> vehicle_pixels;
 };
 
@@ -57,7 +57,7 @@ struct Viewport {
 	std::vector<bool> dirty_blocks;
 	uint dirty_blocks_per_column;
 	uint dirty_blocks_per_row;
-	uint8 dirty_block_left_margin;
+	uint8_t dirty_block_left_margin;
 	bool is_dirty = false;
 	bool is_drawn = false;
 	bool update_vehicles = false;
@@ -95,10 +95,10 @@ private:
 
 /** Location information about a sign as seen on the viewport */
 struct ViewportSign {
-	int32 center;        ///< The center position of the sign
-	int32 top;           ///< The top of the sign
-	uint16 width_normal; ///< The width when not zoomed out (normal font)
-	uint16 width_small;  ///< The width when zoomed out (small font)
+	int32_t center;        ///< The center position of the sign
+	int32_t top;           ///< The top of the sign
+	uint16_t width_normal; ///< The width when not zoomed out (normal font)
+	uint16_t width_small;  ///< The width when zoomed out (small font)
 
 	void UpdatePosition(ZoomLevel maxzoom, int center, int top, StringID str, StringID str_small = STR_NULL);
 	void MarkDirty(ZoomLevel maxzoom) const;
@@ -227,7 +227,7 @@ enum ViewportMarkDirtyFlags : byte {
 };
 DECLARE_ENUM_AS_BIT_SET(ViewportMarkDirtyFlags)
 
-enum class ChildScreenSpritePositionMode : uint8 {
+enum class ChildScreenSpritePositionMode : uint8_t {
 	Relative,
 	NonRelative,
 	Absolute,

@@ -13,20 +13,20 @@
 #include "newgrf_town.h"
 
 struct IndustryLocationDistanceCache {
-	uint16 distances[NUM_INDUSTRYTYPES];
+	uint16_t distances[NUM_INDUSTRYTYPES];
 };
 
 struct IndustryLocationDistanceAndCountCache {
-	uint16 distances[NUM_INDUSTRYTYPES];
-	uint8 counts[NUM_INDUSTRYTYPES];
+	uint16_t distances[NUM_INDUSTRYTYPES];
+	uint8_t counts[NUM_INDUSTRYTYPES];
 };
 
 /** Resolver for industry scopes. */
 struct IndustriesScopeResolver : public ScopeResolver {
-	TileIndex tile;     ///< Tile owned by the industry.
-	uint32 random_bits; ///< Random bits of the new industry.
-	Industry *industry; ///< %Industry being resolved.
-	IndustryType type;  ///< Type of the industry.
+	TileIndex tile;       ///< Tile owned by the industry.
+	uint32_t random_bits; ///< Random bits of the new industry.
+	Industry *industry;   ///< %Industry being resolved.
+	IndustryType type;    ///< Type of the industry.
 
 	mutable std::unique_ptr<IndustryLocationDistanceCache> location_distance_cache;
 	mutable std::unique_ptr<IndustryLocationDistanceAndCountCache> town_location_distance_cache;
@@ -39,18 +39,18 @@ struct IndustriesScopeResolver : public ScopeResolver {
 	 * @param type Type of the industry.
 	 * @param random_bits Random bits of the new industry.
 	 */
-	IndustriesScopeResolver(ResolverObject &ro, TileIndex tile, Industry *industry, IndustryType type, uint32 random_bits = 0)
+	IndustriesScopeResolver(ResolverObject &ro, TileIndex tile, Industry *industry, IndustryType type, uint32_t random_bits = 0)
 		: ScopeResolver(ro), tile(tile), random_bits(random_bits), industry(industry), type(type)
 	{
 	}
 
-	uint32 GetRandomBits() const override;
-	uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const override;
-	uint32 GetTriggers() const override;
-	void StorePSA(uint pos, int32 value) override;
+	uint32_t GetRandomBits() const override;
+	uint32_t GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra *extra) const override;
+	uint32_t GetTriggers() const override;
+	void StorePSA(uint pos, int32_t value) override;
 
-	uint32 GetCountAndDistanceOfClosestInstance(byte param_setID, byte layout_filter, bool town_filter, uint32 mask) const;
-	uint32 GetClosestIndustry(IndustryType type) const;
+	uint32_t GetCountAndDistanceOfClosestInstance(byte param_setID, byte layout_filter, bool town_filter, uint32_t mask) const;
+	uint32_t GetClosestIndustry(IndustryType type) const;
 };
 
 /** Resolver for industries. */
@@ -58,8 +58,8 @@ struct IndustriesResolverObject : public ResolverObject {
 	IndustriesScopeResolver industries_scope; ///< Scope resolver for the industry.
 	TownScopeResolver *town_scope;            ///< Scope resolver for the associated town (if needed and available, else \c nullptr).
 
-	IndustriesResolverObject(TileIndex tile, Industry *indus, IndustryType type, uint32 random_bits = 0,
-			CallbackID callback = CBID_NO_CALLBACK, uint32 callback_param1 = 0, uint32 callback_param2 = 0);
+	IndustriesResolverObject(TileIndex tile, Industry *indus, IndustryType type, uint32_t random_bits = 0,
+			CallbackID callback = CBID_NO_CALLBACK, uint32_t callback_param1 = 0, uint32_t callback_param2 = 0);
 	~IndustriesResolverObject();
 
 	TownScopeResolver *GetTown();
@@ -80,7 +80,7 @@ struct IndustriesResolverObject : public ResolverObject {
 	}
 
 	GrfSpecFeature GetFeature() const override;
-	uint32 GetDebugID() const override;
+	uint32_t GetDebugID() const override;
 };
 
 /** When should the industry(tile) be triggered for random bits? */
@@ -102,16 +102,16 @@ enum IndustryAvailabilityCallType {
 };
 
 /* in newgrf_industry.cpp */
-uint16 GetIndustryCallback(CallbackID callback, uint32 param1, uint32 param2, Industry *industry, IndustryType type, TileIndex tile);
-uint32 GetIndustryIDAtOffset(TileIndex new_tile, const Industry *i, uint32 cur_grfid);
+uint16_t GetIndustryCallback(CallbackID callback, uint32_t param1, uint32_t param2, Industry *industry, IndustryType type, TileIndex tile);
+uint32_t GetIndustryIDAtOffset(TileIndex new_tile, const Industry *i, uint32_t cur_grfid);
 void IndustryProductionCallback(Industry *ind, int reason);
-CommandCost CheckIfCallBackAllowsCreation(TileIndex tile, IndustryType type, size_t layout, uint32 seed, uint16 initial_random_bits, Owner founder, IndustryAvailabilityCallType creation_type);
-uint32 GetIndustryProbabilityCallback(IndustryType type, IndustryAvailabilityCallType creation_type, uint32 default_prob);
+CommandCost CheckIfCallBackAllowsCreation(TileIndex tile, IndustryType type, size_t layout, uint32_t seed, uint16_t initial_random_bits, Owner founder, IndustryAvailabilityCallType creation_type);
+uint32_t GetIndustryProbabilityCallback(IndustryType type, IndustryAvailabilityCallType creation_type, uint32_t default_prob);
 bool IndustryTemporarilyRefusesCargo(Industry *ind, CargoID cargo_type);
 
-IndustryType MapNewGRFIndustryType(IndustryType grf_type, uint32 grf_id);
+IndustryType MapNewGRFIndustryType(IndustryType grf_type, uint32_t grf_id);
 
 /* in newgrf_industrytiles.cpp*/
-uint32 GetNearbyIndustryTileInformation(byte parameter, TileIndex tile, IndustryID index, bool signed_offsets, bool grf_version8, uint32 mask);
+uint32_t GetNearbyIndustryTileInformation(byte parameter, TileIndex tile, IndustryID index, bool signed_offsets, bool grf_version8, uint32_t mask);
 
 #endif /* NEWGRF_INDUSTRIES_H */

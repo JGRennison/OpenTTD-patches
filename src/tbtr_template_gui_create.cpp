@@ -51,7 +51,7 @@
 class TemplateReplaceWindow;
 
 // some space in front of the virtual train in the matrix
-uint16 TRAIN_FRONT_SPACE = 16;
+uint16_t TRAIN_FRONT_SPACE = 16;
 
 enum TemplateReplaceCreateWindowWidgets {
 	TCW_CAPTION,
@@ -135,7 +135,7 @@ private:
 	VehicleID sel;
 	VehicleID vehicle_over;
 	bool sell_hovered;                ///< A vehicle is being dragged/hovered over the sell button.
-	uint32 template_index;
+	uint32_t template_index;
 	btree::btree_set<VehicleID> pending_deletions; ///< Vehicle IDs where deletion is in progress
 
 public:
@@ -345,7 +345,7 @@ public:
 					SetDParam(0, gcache->cached_weight);
 					SetDParam(3, gcache->cached_max_te);
 					DrawString(left, right, y, original_acceleration ? STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED : STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE);
-					uint32 full_cargo_weight = 0;
+					uint32_t full_cargo_weight = 0;
 					for (Train *train = this->virtual_train; train != nullptr; train = train->Next()) {
 						full_cargo_weight += train->GetCargoWeight(train->cargo_cap);
 					}
@@ -558,7 +558,7 @@ public:
 
 		if (virtual_train != nullptr) {
 			bool buildable = true;
-			uint32 full_cargo_weight = 0;
+			uint32_t full_cargo_weight = 0;
 			for (Train *train = virtual_train; train != nullptr; train = train->GetNextUnit()) {
 				width += train->GetDisplayImageWidth();
 				cargo_caps[train->cargo_type] += train->cargo_cap;
@@ -711,7 +711,7 @@ void ShowTemplateCreateWindow(TemplateVehicle *to_edit, bool *create_window_open
 	new TemplateCreateWindow(&_template_create_window_desc, to_edit, create_window_open);
 }
 
-void CcSetVirtualTrain(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcSetVirtualTrain(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Failed()) return;
 
@@ -723,7 +723,7 @@ void CcSetVirtualTrain(const CommandCost &result, TileIndex tile, uint32 p1, uin
 	}
 }
 
-void CcVirtualTrainWagonsMoved(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcVirtualTrainWagonsMoved(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Failed()) return;
 
@@ -734,7 +734,7 @@ void CcVirtualTrainWagonsMoved(const CommandCost &result, TileIndex tile, uint32
 	}
 }
 
-void CcDeleteVirtualTrain(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcDeleteVirtualTrain(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Failed()) return;
 

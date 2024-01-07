@@ -17,7 +17,7 @@
 struct Tile {
 	byte   type;        ///< The type (bits 4..7), bridges (2..3), rainforest/desert (0..1)
 	byte   height;      ///< The height of the northern corner.
-	uint16 m2;          ///< Primarily used for indices to towns, industries and stations
+	uint16_t m2;        ///< Primarily used for indices to towns, industries and stations
 	byte   m1;          ///< Primarily used for ownership information
 	byte   m3;          ///< General purpose
 	byte   m4;          ///< General purpose
@@ -31,9 +31,9 @@ static_assert(sizeof(Tile) == 8);
  * Look at docs/landscape.html for the exact meaning of the members.
  */
 struct TileExtended {
-	byte m6;   ///< General purpose
-	byte m7;   ///< Primarily used for newgrf support
-	uint16 m8; ///< General purpose
+	byte m6;     ///< General purpose
+	byte m7;     ///< Primarily used for newgrf support
+	uint16_t m8; ///< General purpose
 };
 
 /**
@@ -46,7 +46,7 @@ struct TileExtended {
  *
  * @see TileDiffXY(int, int)
  */
-typedef int32 TileIndexDiff;
+typedef int32_t TileIndexDiff;
 
 /**
  * A pair-construct of a TileIndexDiff.
@@ -55,8 +55,8 @@ typedef int32 TileIndexDiff;
  * tiles as a pair of x and y value.
  */
 struct TileIndexDiffC {
-	int16 x;        ///< The x value of the coordinate
-	int16 y;        ///< The y value of the coordinate
+	int16_t x;      ///< The x value of the coordinate
+	int16_t y;      ///< The y value of the coordinate
 };
 
 /** Minimal and maximal map width and height */

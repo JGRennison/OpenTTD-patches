@@ -52,7 +52,7 @@ extern TileIndex _aux_tileloop_tile;
 extern void ClearAllSignalSpeedRestrictions();
 extern void MakeNewgameSettingsLive();
 
-extern uint64 _station_tile_cache_hash;
+extern uint64_t _station_tile_cache_hash;
 
 void InitializeSound();
 void InitializeMusic();
@@ -79,10 +79,10 @@ std::string GenerateUid(std::string_view subject)
 {
 	extern void NetworkRandomBytesWithFallback(void *buf, size_t n);
 
-	uint8 random_bytes[32];
+	uint8_t random_bytes[32];
 	NetworkRandomBytesWithFallback(random_bytes, lengthof(random_bytes));
 
-	uint8 digest[16];
+	uint8_t digest[16];
 
 	crypto_blake2b_ctx ctx;
 	crypto_blake2b_init  (&ctx, lengthof(digest));

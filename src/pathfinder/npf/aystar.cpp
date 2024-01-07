@@ -48,7 +48,7 @@ PathNode *AyStar::ClosedListIsInList(const AyStarNode *node)
 void AyStar::ClosedListAdd(const PathNode *node)
 {
 	/* Add a node to the ClosedList */
-	std::pair<uint32, PathNode *> new_node = this->closedlist_nodes.Allocate();
+	std::pair<uint32_t, PathNode *> new_node = this->closedlist_nodes.Allocate();
 	*(new_node.second) = *node;
 
 	this->closedlist_hash[this->HashKey(node->node.tile, node->node.direction)] = new_node.first;
@@ -59,7 +59,7 @@ void AyStar::ClosedListAdd(const PathNode *node)
  * @param node Node to search.
  * @return If the node is available, it is returned, else \c UINT32_MAX is returned.
  */
-uint32 AyStar::OpenListIsInList(const AyStarNode *node)
+uint32_t AyStar::OpenListIsInList(const AyStarNode *node)
 {
 	const auto result = this->openlist_hash.find(this->HashKey(node->tile, node->direction));
 
@@ -71,11 +71,11 @@ uint32 AyStar::OpenListIsInList(const AyStarNode *node)
  * It deletes the returned node from the open list.
  * @returns the best node available, or \c nullptr of none is found.
  */
-std::pair<uint32, OpenListNode *> AyStar::OpenListPop()
+std::pair<uint32_t, OpenListNode *> AyStar::OpenListPop()
 {
 	/* Return the item the Queue returns.. the best next OpenList item. */
-	uint32 idx = this->openlist_queue.Pop();
-	if (idx == UINT32_MAX) return std::pair<uint32, OpenListNode *>(idx, nullptr);
+	uint32_t idx = this->openlist_queue.Pop();
+	if (idx == UINT32_MAX) return std::pair<uint32_t, OpenListNode *>(idx, nullptr);
 
 	OpenListNode *res = this->openlist_nodes[idx];
 	this->openlist_hash.erase(this->HashKey(res->path.node.tile, res->path.node.direction));
@@ -90,7 +90,7 @@ std::pair<uint32, OpenListNode *> AyStar::OpenListPop()
 void AyStar::OpenListAdd(PathNode *parent, const AyStarNode *node, int f, int g)
 {
 	/* Add a new Node to the OpenList */
-	uint32 idx;
+	uint32_t idx;
 	OpenListNode *new_node;
 	std::tie(idx, new_node) = this->openlist_nodes.Allocate();
 	new_node->g = g;
@@ -136,7 +136,7 @@ void AyStar::CheckTile(AyStarNode *current, OpenListNode *parent)
 	closedlist_parent = this->ClosedListIsInList(&parent->path.node);
 
 	/* Check if this item is already in the OpenList */
-	uint32 check_idx = this->OpenListIsInList(current);
+	uint32_t check_idx = this->OpenListIsInList(current);
 	if (check_idx != UINT32_MAX) {
 		OpenListNode *check = this->openlist_nodes[check_idx];
 
@@ -174,7 +174,7 @@ int AyStar::Loop()
 
 	/* Get the best node from OpenList */
 	OpenListNode *current;
-	uint32 current_idx;
+	uint32_t current_idx;
 	std::tie(current_idx, current) = this->OpenListPop();
 	/* If empty, drop an error */
 	if (current == nullptr) return AYSTAR_EMPTY_OPENLIST;

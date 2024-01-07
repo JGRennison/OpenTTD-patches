@@ -32,7 +32,7 @@ struct LinkProperties {
 	uint usage;    ///< Actual usage of the link.
 	uint planned;  ///< Planned usage of the link.
 	CargoID cargo; ///< Cargo type of the link.
-	uint32 time;   ///< Travel time of the link.
+	uint32_t time; ///< Travel time of the link.
 	bool shared;   ///< If this is a shared link to be drawn dashed.
 };
 
@@ -59,7 +59,7 @@ public:
 	typedef std::vector<StationSupplyInfo> StationSupplyList;
 	typedef std::vector<LinkInfo> LinkList;
 
-	static const uint8 LINK_COLOURS[][12];
+	static const uint8_t LINK_COLOURS[][12];
 
 	/**
 	 * Create a link graph overlay for the specified window.
@@ -102,7 +102,7 @@ protected:
 	Rect cached_region;                ///< Region covered by cached_links and cached_stations.
 	uint scale;                        ///< Width of link lines.
 	bool dirty;                        ///< Set if overlay should be rebuilt.
-	uint64 last_update_number = 0;     ///< Last window update number
+	uint64_t last_update_number = 0;     ///< Last window update number
 
 	Point GetStationMiddle(const Station *st) const;
 
@@ -114,7 +114,7 @@ protected:
 	bool IsPointVisible(Point pt, const DrawPixelInfo *dpi, int padding = 0) const;
 	void GetWidgetDpi(DrawPixelInfo *dpi, uint margin = 0) const;
 
-	static void AddStats(CargoID new_cargo, uint new_cap, uint new_usg, uint new_plan, uint32 time, bool new_shared, LinkProperties &cargo);
+	static void AddStats(CargoID new_cargo, uint new_cap, uint new_usg, uint new_plan, uint32_t time, bool new_shared, LinkProperties &cargo);
 	static void DrawVertex(const DrawPixelInfo *dpi, int x, int y, int size, int colour, int border_colour);
 };
 

@@ -38,7 +38,7 @@ namespace upstream_sl {
  *
  * Note that this list must not be reordered.
  */
-enum SaveLoadVersion : uint16 {
+enum SaveLoadVersion : uint16_t {
 	SL_MIN_VERSION,                         ///< First savegame version
 
 	SLV_1,                                  ///<   1.0         0.1.x, 0.2.x
@@ -292,7 +292,7 @@ enum SaveLoadVersion : uint16 {
 	SLV_198,                                ///< 198  PR#6763 Switch town growth rate and counter to actual game ticks
 	SLV_EXTEND_CARGOTYPES,                  ///< 199  PR#6802 Extend cargotypes to 64
 
-	SLV_EXTEND_RAILTYPES,                   ///< 200  PR#6805 Extend railtypes to 64, adding uint16 to map array.
+	SLV_EXTEND_RAILTYPES,                   ///< 200  PR#6805 Extend railtypes to 64, adding uint16_t to map array.
 	SLV_EXTEND_PERSISTENT_STORAGE,          ///< 201  PR#6885 Extend NewGRF persistent storages.
 	SLV_EXTEND_INDUSTRY_CARGO_SLOTS,        ///< 202  PR#6867 Increase industry cargo slots to 16 in, 16 out
 	SLV_SHIP_PATH_CACHE,                    ///< 203  PR#7072 Add path cache for ships
@@ -410,12 +410,12 @@ byte SlReadByte();
 void SlWriteByte(byte b);
 
 int SlReadUint16();
-uint32 SlReadUint32();
-uint64 SlReadUint64();
+uint32_t SlReadUint32();
+uint64_t SlReadUint64();
 
-void SlWriteUint16(uint16 v);
-void SlWriteUint32(uint32 v);
-void SlWriteUint64(uint64 v);
+void SlWriteUint16(uint16_t v);
+void SlWriteUint32(uint32_t v);
+void SlWriteUint64(uint64_t v);
 
 void SlSkipBytes(size_t length);
 

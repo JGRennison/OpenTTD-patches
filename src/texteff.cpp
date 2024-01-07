@@ -24,10 +24,10 @@ static TextEffectID _free_text_effect = 0;
 
 /** Container for all information about a text effect */
 struct TextEffect : public ViewportSign {
-	uint64 params_1;     ///< DParam parameter
-	uint64 params_2;     ///< second DParam parameter
+	uint64_t params_1;   ///< DParam parameter
+	uint64_t params_2;   ///< second DParam parameter
 	StringID string_id;  ///< String to draw for the text effect, if INVALID_STRING_ID then it's not valid
-	uint8 duration;      ///< How long the text effect should stay, in ticks (applies only when mode == TE_RISING)
+	uint8_t duration;    ///< How long the text effect should stay, in ticks (applies only when mode == TE_RISING)
 	TextEffectMode mode; ///< Type of text effect
 
 	/** Reset the text effect */
@@ -42,7 +42,7 @@ struct TextEffect : public ViewportSign {
 };
 
 /* Text Effects */
-TextEffectID AddTextEffect(StringID msg, int center, int y, uint8 duration, TextEffectMode mode, uint64 param1, uint64 param2)
+TextEffectID AddTextEffect(StringID msg, int center, int y, uint8_t duration, TextEffectMode mode, uint64_t param1, uint64_t param2)
 {
 	if (_game_mode == GM_MENU) return INVALID_TE_ID;
 
@@ -72,7 +72,7 @@ TextEffectID AddTextEffect(StringID msg, int center, int y, uint8 duration, Text
 	return i;
 }
 
-void UpdateTextEffect(TextEffectID te_id, StringID msg, uint64 param1, uint64 param2)
+void UpdateTextEffect(TextEffectID te_id, StringID msg, uint64_t param1, uint64_t param2)
 {
 	/* Update details */
 	TextEffect *te = _text_effects.data() + te_id;

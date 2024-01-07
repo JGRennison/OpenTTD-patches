@@ -48,7 +48,7 @@
 
 inline uint16_t ReadLE16Aligned(const void *x)
 {
-	return FROM_LE16(*(const uint16*)x);
+	return FROM_LE16(*(const uint16_t*)x);
 }
 
 inline uint16_t ReadLE16Unaligned(const void *x)
@@ -56,7 +56,7 @@ inline uint16_t ReadLE16Unaligned(const void *x)
 #if OTTD_ALIGNMENT == 1
 	return ((const byte*)x)[0] | ((const byte*)x)[1] << 8;
 #else
-	return FROM_LE16(*(const uint16*)x);
+	return FROM_LE16(*(const uint16_t*)x);
 #endif /* OTTD_ALIGNMENT == 1 */
 }
 

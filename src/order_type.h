@@ -12,11 +12,11 @@
 
 #include "core/enum_type.hpp"
 
-typedef uint16 VehicleOrderID;  ///< The index of an order within its current vehicle (not pool related)
-typedef uint32 OrderID;
-typedef uint16 OrderListID;
-typedef uint16 DestinationID;
-typedef uint32 TimetableTicks;
+typedef uint16_t VehicleOrderID;  ///< The index of an order within its current vehicle (not pool related)
+typedef uint32_t OrderID;
+typedef uint16_t OrderListID;
+typedef uint16_t DestinationID;
+typedef uint32_t TimetableTicks;
 
 /** Invalid vehicle order index (sentinel) */
 static const VehicleOrderID INVALID_VEH_ORDER_ID = 0xFFFF;

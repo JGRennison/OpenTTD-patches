@@ -26,12 +26,12 @@
 
 extern NetworkCompanyState *_network_company_states;
 extern std::string _network_company_server_id;
-extern uint8 _network_company_password_storage_token[16];
-extern uint8 _network_company_password_storage_key[32];
+extern uint8_t _network_company_password_storage_token[16];
+extern uint8_t _network_company_password_storage_key[32];
 
 extern ClientID _network_own_client_id;
 extern ClientID _redirect_console_to_client;
-extern uint8 _network_reconnect;
+extern uint8_t _network_reconnect;
 extern StringList _network_bind_list;
 extern StringList _network_host_list;
 extern StringList _network_ban_list;
@@ -50,7 +50,7 @@ void NetworkReboot();
 void NetworkDisconnect(bool close_admins = true);
 void NetworkGameLoop();
 void NetworkBackgroundLoop();
-std::string_view ParseFullConnectionString(const std::string &connection_string, uint16 &port, CompanyID *company_id = nullptr);
+std::string_view ParseFullConnectionString(const std::string &connection_string, uint16_t &port, CompanyID *company_id = nullptr);
 void NetworkStartDebugLog(const std::string &connection_string);
 void NetworkPopulateCompanyStats(NetworkCompanyStats *stats);
 

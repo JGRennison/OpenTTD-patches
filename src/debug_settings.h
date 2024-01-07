@@ -53,6 +53,6 @@ enum MiscDebugFlags {
 	MDF_NEWGRF_SG_SAVE_RAW,
 	MDF_SPECIAL_CMDS,
 };
-extern uint32 _misc_debug_flags;
+extern uint32_t _misc_debug_flags;
 
 #endif /* DEBUG_SETTINGS_H */

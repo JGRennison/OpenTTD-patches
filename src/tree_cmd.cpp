@@ -53,9 +53,9 @@ enum ExtraTreePlacement {
 /** Determines when to consider building more trees. */
 byte _trees_tick_ctr;
 
-static const uint16 DEFAULT_TREE_STEPS = 1000;             ///< Default number of attempts for placing trees.
-static const uint16 DEFAULT_RAINFOREST_TREE_STEPS = 15000; ///< Default number of attempts for placing extra trees at rainforest in tropic.
-static const uint16 EDITOR_TREE_DIV = 5;                   ///< Game editor tree generation divisor factor.
+static const uint16_t DEFAULT_TREE_STEPS = 1000;             ///< Default number of attempts for placing trees.
+static const uint16_t DEFAULT_RAINFOREST_TREE_STEPS = 15000; ///< Default number of attempts for placing extra trees at rainforest in tropic.
+static const uint16_t EDITOR_TREE_DIV = 5;                   ///< Game editor tree generation divisor factor.
 
 /**
  * Tests if a tile can be converted to MP_TREES
@@ -130,13 +130,13 @@ static void PlantTreesOnTile(TileIndex tile, TreeType treetype, uint count, uint
  * Previous value of _settings_game.construction.trees_around_snow_line_range
  * used to calculate _arctic_tree_occurance
  */
-static uint8 _previous_trees_around_snow_line_range = 255;
+static uint8_t _previous_trees_around_snow_line_range = 255;
 
 /**
  * Array of probabilities for artic trees to appear,
  * by normalised distance from snow line
  */
-static std::vector<uint8> _arctic_tree_occurance;
+static std::vector<uint8_t> _arctic_tree_occurance;
 
 /** Recalculate _arctic_tree_occurance */
 static void RecalculateArcticTreeOccuranceArray()
@@ -147,7 +147,7 @@ static void RecalculateArcticTreeOccuranceArray()
 	 * 256 * ((1 + (-3 * distance / range) / 6) ** 6)
 	 * ((256 - (128 * distance / range)) ** 6) >> (5 * 8);
 	 */
-	uint8 range = _settings_game.construction.trees_around_snow_line_range;
+	uint8_t range = _settings_game.construction.trees_around_snow_line_range;
 	_previous_trees_around_snow_line_range = range;
 	_arctic_tree_occurance.clear();
 	_arctic_tree_occurance.reserve((range * 5) / 4);
@@ -155,7 +155,7 @@ static void RecalculateArcticTreeOccuranceArray()
 	if (range == 0) return;
 	for (uint i = 1; i < 256; i++) {
 		uint x = 256 - ((128 * i) / range);
-		uint32 output = x;
+		uint32_t output = x;
 		output *= x;
 		output *= x;
 		output *= x;
@@ -164,7 +164,7 @@ static void RecalculateArcticTreeOccuranceArray()
 		output *= x;
 		output >>= 24;
 		if (output == 0) break;
-		_arctic_tree_occurance.push_back(static_cast<uint8>(output));
+		_arctic_tree_occurance.push_back(static_cast<uint8_t>(output));
 	}
 }
 
@@ -190,7 +190,7 @@ static TreeType GetRandomTreeType(TileIndex tile, uint seed)
 				return (TreeType)(seed * TREE_COUNT_SUB_ARCTIC / 256 + TREE_SUB_ARCTIC);
 			}
 
-			uint8 range = _settings_game.construction.trees_around_snow_line_range;
+			uint8_t range = _settings_game.construction.trees_around_snow_line_range;
 			if (range != _previous_trees_around_snow_line_range) RecalculateArcticTreeOccuranceArray();
 
 			int z = GetTileZ(tile);
@@ -235,7 +235,7 @@ static TreeType GetRandomTreeType(TileIndex tile, uint seed)
  * @param tile The tile to make a tree-tile from
  * @param r The randomness value from a Random() value
  */
-static void PlaceTree(TileIndex tile, uint32 r)
+static void PlaceTree(TileIndex tile, uint32_t r)
 {
 	TreeType tree = GetRandomTreeType(tile, GB(r, 24, 8));
 
@@ -263,7 +263,7 @@ static void PlaceTreeGroups(uint num_groups)
 		TileIndex center_tile = RandomTile();
 
 		for (uint i = 0; i < DEFAULT_TREE_STEPS; i++) {
-			uint32 r = Random();
+			uint32_t r = Random();
 			int x = GB(r, 0, 5) - 16;
 			int y = GB(r, 8, 5) - 16;
 			uint dist = abs(x) + abs(y);
@@ -282,7 +282,7 @@ static void PlaceTreeGroups(uint num_groups)
 static TileIndex FindTreePositionAtSameHeight(TileIndex tile, int height, uint steps)
 {
 	for (uint i = 0; i < steps; i++) {
-		const uint32 r = Random();
+		const uint32_t r = Random();
 		const int x = GB(r, 0, 5) - 16;
 		const int y = GB(r, 8, 5) - 16;
 		const TileIndex cur_tile = TileAddWrap(tile, x, y);
@@ -382,7 +382,7 @@ void PlaceTreesRandomly()
 	i = ScaleByMapSize(DEFAULT_TREE_STEPS);
 	if (_game_mode == GM_EDITOR) i /= EDITOR_TREE_DIV;
 	do {
-		uint32 r = Random();
+		uint32_t r = Random();
 		TileIndex tile = RandomTileSeed(r);
 
 		IncreaseGeneratingWorldProgress(GWP_TREE);
@@ -412,7 +412,7 @@ void PlaceTreesRandomly()
 		if (_game_mode == GM_EDITOR) i /= EDITOR_TREE_DIV;
 
 		do {
-			uint32 r = Random();
+			uint32_t r = Random();
 			TileIndex tile = RandomTileSeed(r);
 
 			IncreaseGeneratingWorldProgress(GWP_TREE);
@@ -464,14 +464,14 @@ uint PlaceTreeGroupAroundTile(TileIndex tile, TreeType treetype, uint radius, ui
 
 	for (; count > 0; count--) {
 		/* Simple quasi-normal distribution with range [-radius; radius) */
-		auto mkcoord = [&]() -> int32 {
-			const uint32 rand = InteractiveRandom();
-			const int32 dist = GB<int32>(rand, 0, 8) + GB<int32>(rand, 8, 8) + GB<int32>(rand, 16, 8) + GB<int32>(rand, 24, 8);
-			const int32 scu = dist * radius / 512;
+		auto mkcoord = [&]() -> int32_t {
+			const uint32_t rand = InteractiveRandom();
+			const int32_t dist = GB<int32_t>(rand, 0, 8) + GB<int32_t>(rand, 8, 8) + GB<int32_t>(rand, 16, 8) + GB<int32_t>(rand, 24, 8);
+			const int32_t scu = dist * radius / 512;
 			return scu - radius;
 		};
-		const int32 xofs = mkcoord();
-		const int32 yofs = mkcoord();
+		const int32_t xofs = mkcoord();
+		const int32_t yofs = mkcoord();
 		const TileIndex tile_to_plant = TileAddWrap(tile, xofs, yofs);
 		if (tile_to_plant != INVALID_TILE) {
 			if (IsTileType(tile_to_plant, MP_TREES) && GetTreeCount(tile_to_plant) < 4) {
@@ -546,7 +546,7 @@ void GenerateTrees()
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdPlantTree(TileIndex end_tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdPlantTree(TileIndex end_tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	StringID msg = INVALID_STRING_ID;
 	CommandCost cost(EXPENSES_OTHER);
@@ -831,7 +831,7 @@ static void TileLoopTreesDesert(TileIndex tile)
 				SND_44_RAINFOREST_3,
 				SND_48_RAINFOREST_4
 			};
-			uint32 r = Random();
+			uint32_t r = Random();
 
 			if (Chance16I(1, 200, r) && _settings_client.sound.ambient) SndPlayTileFx(forest_sounds[GB(r, 16, 2)], tile);
 			break;
@@ -867,7 +867,7 @@ static void TileLoopTreesAlps(TileIndex tile)
 			SetTreeGroundDensity(tile, GetTreeGround(tile), density);
 		} else {
 			if (GetTreeDensity(tile) == 3) {
-				uint32 r = Random();
+				uint32_t r = Random();
 				if (Chance16I(1, 200, r) && _settings_client.sound.ambient) {
 					SndPlayTileFx((r & 0x80000000) ? SND_39_ARCTIC_SNOW_2 : SND_34_ARCTIC_SNOW_1, tile);
 				}
@@ -910,7 +910,7 @@ static void TileLoop_Trees(TileIndex tile)
 	/* _tick_counter is incremented by 256 between each call, so ignore lower 8 bits.
 	 * Also, we add tile % 31 to spread the updates evenly over the map,
 	 * where 31 is just some prime number that looks ok. */
-	uint32 cycle = (uint32)((tile % 31) + (_tick_counter >> 8));
+	uint32_t cycle = (uint32_t)((tile % 31) + (_tick_counter >> 8));
 
 	/* Handle growth of grass (under trees/on MP_TREES tiles) at every 8th processings, like it's done for grass on MP_CLEAR tiles. */
 	if ((cycle & 7) == 7 && GetTreeGround(tile) == TREE_GROUND_GRASS) {
@@ -929,7 +929,7 @@ static void TileLoop_Trees(TileIndex tile)
 		if (_settings_game.construction.tree_growth_rate == 4) return;
 
 		/* slow, very slow, extremely slow */
-		uint16 grow_slowing_values[4] = { 0x10000 / 5, 0x10000 / 20, 0x10000 / 120, 0 };
+		uint16_t grow_slowing_values[4] = { 0x10000 / 5, 0x10000 / 20, 0x10000 / 120, 0 };
 
 		if (GB(Random(), 0, 16) >= grow_slowing_values[_settings_game.construction.tree_growth_rate - 1]) {
 			return;
@@ -1067,7 +1067,7 @@ void OnTick_Trees()
 	/* Don't spread trees if that's not allowed */
 	if (_settings_game.construction.extra_tree_placement == ETP_NO_SPREAD || _settings_game.construction.extra_tree_placement == ETP_NO_GROWTH_NO_SPREAD) return;
 
-	uint32 r;
+	uint32_t r;
 	TileIndex tile;
 	TreeType tree;
 

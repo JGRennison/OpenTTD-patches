@@ -282,7 +282,7 @@ DEF_CONSOLE_CMD(ConResetTile)
 	}
 
 	if (argc == 2) {
-		uint32 result;
+		uint32_t result;
 		if (GetArgumentInteger(&result, argv[1])) {
 			DoClearSquare((TileIndex)result);
 			return true;
@@ -321,7 +321,7 @@ DEF_CONSOLE_CMD(ConZoomToLevel)
 			return true;
 
 		case 2: {
-			uint32 level;
+			uint32_t level;
 			if (GetArgumentInteger(&level, argv[1])) {
 				/* In case ZOOM_LVL_MIN is more than 0, the next if statement needs to be amended.
 				 * A simple check for less than ZOOM_LVL_MIN does not work here because we are
@@ -370,7 +370,7 @@ DEF_CONSOLE_CMD(ConScrollToTile)
 	}
 	if (argc < 2) return false;
 
-	uint32 arg_index = 1;
+	uint32_t arg_index = 1;
 	bool instant = false;
 	if (strcmp(argv[arg_index], "instant") == 0) {
 		++arg_index;
@@ -379,7 +379,7 @@ DEF_CONSOLE_CMD(ConScrollToTile)
 
 	switch (argc - arg_index) {
 		case 1: {
-			uint32 result;
+			uint32_t result;
 			if (GetArgumentInteger(&result, argv[arg_index])) {
 				if (result >= MapSize()) {
 					IConsolePrint(CC_ERROR, "Tile does not exist");
@@ -392,7 +392,7 @@ DEF_CONSOLE_CMD(ConScrollToTile)
 		}
 
 		case 2: {
-			uint32 x, y;
+			uint32_t x, y;
 			if (GetArgumentInteger(&x, argv[arg_index]) && GetArgumentInteger(&y, argv[arg_index + 1])) {
 				if (x >= MapSizeX() || y >= MapSizeY()) {
 					IConsolePrint(CC_ERROR, "Tile does not exist");
@@ -427,7 +427,7 @@ DEF_CONSOLE_CMD(ConHighlightTile)
 			return true;
 
 		case 2: {
-			uint32 result;
+			uint32_t result;
 			if (GetArgumentInteger(&result, argv[1])) {
 				if (result >= MapSize()) {
 					IConsolePrint(CC_ERROR, "Tile does not exist");
@@ -440,7 +440,7 @@ DEF_CONSOLE_CMD(ConHighlightTile)
 		}
 
 		case 3: {
-			uint32 x, y;
+			uint32_t x, y;
 			if (GetArgumentInteger(&x, argv[1]) && GetArgumentInteger(&y, argv[2])) {
 				if (x >= MapSizeX() || y >= MapSizeY()) {
 					IConsolePrint(CC_ERROR, "Tile does not exist");
@@ -1651,10 +1651,10 @@ DEF_CONSOLE_CMD(ConScreenShot)
 	if (argc > 7) return false;
 
 	ScreenshotType type = SC_VIEWPORT;
-	uint32 width = 0;
-	uint32 height = 0;
+	uint32_t width = 0;
+	uint32_t height = 0;
 	std::string name{};
-	uint32 arg_index = 1;
+	uint32_t arg_index = 1;
 
 	if (argc > arg_index) {
 		if (strcmp(argv[arg_index], "viewport") == 0) {
@@ -1907,7 +1907,7 @@ DEF_CONSOLE_CMD(ConCompanies)
 
 		IConsolePrintF(CC_INFO, "#:%d(%s) Company Name: '%s'  Year Founded: %d  Money: " OTTD_PRINTF64 "  Loan: " OTTD_PRINTF64 "  Value: " OTTD_PRINTF64 "  (T:%d, R:%d, P:%d, S:%d) %s",
 			c->index + 1, GetStringPtr(STR_COLOUR_DARK_BLUE + _company_colours[c->index]), company_name.c_str(),
-			c->inaugurated_year, (int64)c->money, (int64)c->current_loan, (int64)CalculateCompanyValue(c),
+			c->inaugurated_year, (int64_t)c->money, (int64_t)c->current_loan, (int64_t)CalculateCompanyValue(c),
 			c->group_all[VEH_TRAIN].num_vehicle,
 			c->group_all[VEH_ROAD].num_vehicle,
 			c->group_all[VEH_AIRCRAFT].num_vehicle,
@@ -2512,7 +2512,7 @@ DEF_CONSOLE_CMD(ConDeleteVehicleID)
 	}
 
 	if (argc == 2) {
-		uint32 result;
+		uint32_t result;
 		if (GetArgumentInteger(&result, argv[1])) {
 			extern void ConsoleRemoveVehicle(VehicleID id);
 			ConsoleRemoveVehicle(result);
@@ -2531,18 +2531,18 @@ DEF_CONSOLE_CMD(ConRunTileLoopTile)
 	}
 
 	if (argc >= 2) {
-		uint32 tile;
+		uint32_t tile;
 		if (!GetArgumentInteger(&tile, argv[1])) return false;
 
 		if (tile >= MapSize()) {
 			IConsolePrint(CC_ERROR, "Tile does not exist");
 			return true;
 		}
-		uint32 count = 1;
+		uint32_t count = 1;
 		if (argc >= 3) {
 			if (!GetArgumentInteger(&count, argv[2])) return false;
 		}
-		for (uint32 i = 0; i < count; i++) {
+		for (uint32_t i = 0; i < count; i++) {
 			_tile_type_procs[GetTileType(tile)]->tile_loop_proc(tile);
 		}
 		return true;
@@ -2758,22 +2758,22 @@ DEF_CONSOLE_CMD(ConDumpRoadTypes)
 	IConsolePrintF(CC_DEFAULT, "    T = disallow tunnels");
 	IConsolePrintF(CC_DEFAULT, "    c = disallow collisions with trains for vehicles of this type");
 
-	btree::btree_map<uint32, const GRFFile *> grfs;
+	btree::btree_map<uint32_t, const GRFFile *> grfs;
 	for (RoadType rt = ROADTYPE_BEGIN; rt < ROADTYPE_END; rt++) {
 		const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
 		if (rti->label == 0) continue;
-		uint32 grfid = 0;
+		uint32_t grfid = 0;
 		const GRFFile *grf = rti->grffile[ROTSG_GROUND];
 		if (grf == nullptr) {
-			uint32 str_grfid = GetStringGRFID(rti->strings.name);
+			uint32_t str_grfid = GetStringGRFID(rti->strings.name);
 			if (str_grfid != 0) {
-				extern GRFFile *GetFileByGRFID(uint32 grfid);
+				extern GRFFile *GetFileByGRFID(uint32_t grfid);
 				grf = GetFileByGRFID(grfid);
 			}
 		}
 		if (grf != nullptr) {
 			grfid = grf->grfid;
-			grfs.insert(std::pair<uint32, const GRFFile *>(grfid, grf));
+			grfs.insert(std::pair<uint32_t, const GRFFile *>(grfid, grf));
 		}
 		IConsolePrintF(CC_DEFAULT, "  %02u %s %c%c%c%c, Flags: %c%c%c%c%c, Extra Flags: %c%c%c%c, GRF: %08X, %s",
 				(uint) rt,
@@ -2816,22 +2816,22 @@ DEF_CONSOLE_CMD(ConDumpRailTypes)
 	IConsolePrintF(CC_DEFAULT, "    p = signal graphics callback enabled for programmable pre-signals");
 	IConsolePrintF(CC_DEFAULT, "    r = signal graphics callback restricted signal flag enabled");
 
-	btree::btree_map<uint32, const GRFFile *> grfs;
+	btree::btree_map<uint32_t, const GRFFile *> grfs;
 	for (RailType rt = RAILTYPE_BEGIN; rt < RAILTYPE_END; rt++) {
 		const RailTypeInfo *rti = GetRailTypeInfo(rt);
 		if (rti->label == 0) continue;
-		uint32 grfid = 0;
+		uint32_t grfid = 0;
 		const GRFFile *grf = rti->grffile[RTSG_GROUND];
 		if (grf == nullptr) {
-			uint32 str_grfid = GetStringGRFID(rti->strings.name);
+			uint32_t str_grfid = GetStringGRFID(rti->strings.name);
 			if (str_grfid != 0) {
-				extern GRFFile *GetFileByGRFID(uint32 grfid);
+				extern GRFFile *GetFileByGRFID(uint32_t grfid);
 				grf = GetFileByGRFID(grfid);
 			}
 		}
 		if (grf != nullptr) {
 			grfid = grf->grfid;
-			grfs.insert(std::pair<uint32, const GRFFile *>(grfid, grf));
+			grfs.insert(std::pair<uint32_t, const GRFFile *>(grfid, grf));
 		}
 		IConsolePrintF(CC_DEFAULT, "  %02u %c%c%c%c, Flags: %c%c%c%c%c%c, Ctrl Flags: %c%c%c%c, GRF: %08X, %s",
 				(uint) rt,
@@ -2869,10 +2869,10 @@ DEF_CONSOLE_CMD(ConDumpBridgeTypes)
 	IConsolePrintF(CC_DEFAULT, "    t = not available to towns");
 	IConsolePrintF(CC_DEFAULT, "    s = not available to scripts (AI/GS)");
 
-	btree::btree_set<uint32> grfids;
+	btree::btree_set<uint32_t> grfids;
 	for (BridgeType bt = 0; bt < MAX_BRIDGES; bt++) {
 		const BridgeSpec *spec = GetBridgeSpec(bt);
-		uint32 grfid = GetStringGRFID(spec->material);
+		uint32_t grfid = GetStringGRFID(spec->material);
 		if (grfid != 0) grfids.insert(grfid);
 		IConsolePrintF(CC_DEFAULT, "  %02u Year: %7u, Min: %3u, Max: %5u, Flags: %02X, Ctrl Flags: %c%c%c%c, Pillars: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X, GRF: %08X, %s",
 				(uint) bt,
@@ -2900,8 +2900,8 @@ DEF_CONSOLE_CMD(ConDumpBridgeTypes)
 				GetStringPtr(spec->material)
 		);
 	}
-	for (uint32 grfid : grfids) {
-		extern GRFFile *GetFileByGRFID(uint32 grfid);
+	for (uint32_t grfid : grfids) {
+		extern GRFFile *GetFileByGRFID(uint32_t grfid);
 		const GRFFile *grffile = GetFileByGRFID(grfid);
 		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grfid), grffile ? grffile->filename.c_str() : "????");
 	}
@@ -2928,22 +2928,22 @@ DEF_CONSOLE_CMD(ConDumpCargoTypes)
 	IConsolePrintF(CC_DEFAULT, "    c = covered/sheltered");
 	IConsolePrintF(CC_DEFAULT, "    S = special");
 
-	btree::btree_map<uint32, const GRFFile *> grfs;
+	btree::btree_map<uint32_t, const GRFFile *> grfs;
 	for (CargoID i = 0; i < NUM_CARGO; i++) {
 		const CargoSpec *spec = CargoSpec::Get(i);
 		if (!spec->IsValid()) continue;
-		uint32 grfid = 0;
+		uint32_t grfid = 0;
 		const GRFFile *grf = spec->grffile;
 		if (grf == nullptr) {
-			uint32 str_grfid = GetStringGRFID(spec->name);
+			uint32_t str_grfid = GetStringGRFID(spec->name);
 			if (str_grfid != 0) {
-				extern GRFFile *GetFileByGRFID(uint32 grfid);
+				extern GRFFile *GetFileByGRFID(uint32_t grfid);
 				grf = GetFileByGRFID(grfid);
 			}
 		}
 		if (grf != nullptr) {
 			grfid = grf->grfid;
-			grfs.insert(std::pair<uint32, const GRFFile *>(grfid, grf));
+			grfs.insert(std::pair<uint32_t, const GRFFile *>(grfid, grf));
 		}
 		IConsolePrintF(CC_DEFAULT, "  %02u Bit: %2u, Label: %c%c%c%c, Callback mask: 0x%02X, Cargo class: %c%c%c%c%c%c%c%c%c%c%c, GRF: %08X, %s",
 				(uint) i,
@@ -3009,7 +3009,7 @@ DEF_CONSOLE_CMD(ConDumpTile)
 			return true;
 
 		case 2: {
-			uint32 result;
+			uint32_t result;
 			if (GetArgumentInteger(&result, argv[1])) {
 				if (result >= MapSize()) {
 					IConsolePrint(CC_ERROR, "Tile does not exist");
@@ -3023,7 +3023,7 @@ DEF_CONSOLE_CMD(ConDumpTile)
 		}
 
 		case 3: {
-			uint32 x, y;
+			uint32_t x, y;
 			if (GetArgumentInteger(&x, argv[1]) && GetArgumentInteger(&y, argv[2])) {
 				if (x >= MapSizeX() || y >= MapSizeY()) {
 					IConsolePrint(CC_ERROR, "Tile does not exist");
@@ -3090,14 +3090,14 @@ DEF_CONSOLE_CMD(ConDumpSignalStyles)
 	IConsolePrintF(CC_DEFAULT, "    r = realistic braking only");
 	IConsolePrintF(CC_DEFAULT, "  Extra aspects: %u", _extra_aspects);
 
-	btree::btree_map<uint32, const GRFFile *> grfs;
-	for (uint8 i = 0; i < _num_new_signal_styles; i++) {
+	btree::btree_map<uint32_t, const GRFFile *> grfs;
+	for (uint8_t i = 0; i < _num_new_signal_styles; i++) {
 		const NewSignalStyle &style = _new_signal_styles[i];
 
-		uint32 grfid = 0;
+		uint32_t grfid = 0;
 		if (style.grffile != nullptr) {
 			grfid = style.grffile->grfid;
-			grfs.insert(std::pair<uint32, const GRFFile *>(grfid, style.grffile));
+			grfs.insert(std::pair<uint32_t, const GRFFile *>(grfid, style.grffile));
 		}
 		IConsolePrintF(CC_DEFAULT, "  %2u: GRF: %08X, Local: %2u, Extra aspects: %3u, Flags: %c%c%c%c%c%c%c, %s",
 				(uint) (i + 1),
@@ -3236,7 +3236,7 @@ DEF_CONSOLE_CMD(ConViewportDebug)
 		return true;
 	}
 
-	extern uint32 _viewport_debug_flags;
+	extern uint32_t _viewport_debug_flags;
 	if (argc == 1) {
 		IConsolePrintF(CC_DEFAULT, "Viewport debug flags: %X", _viewport_debug_flags);
 	} else {
@@ -3297,7 +3297,7 @@ DEF_CONSOLE_CMD(ConGfxDebug)
 		return true;
 	}
 
-	extern uint32 _gfx_debug_flags;
+	extern uint32_t _gfx_debug_flags;
 	if (argc == 1) {
 		IConsolePrintF(CC_DEFAULT, "Gfx debug flags: %X", _gfx_debug_flags);
 	} else {
@@ -3549,7 +3549,7 @@ DEF_CONSOLE_CMD(ConNewGRFProfile)
 		if (started > 0) {
 			IConsolePrintF(CC_DEBUG, "Started profiling for GRFID%s %s", (started > 1) ? "s" : "", grfids.c_str());
 			if (argc >= 3) {
-				uint64 ticks = std::max(atoi(argv[2]), 1);
+				uint64_t ticks = std::max(atoi(argv[2]), 1);
 				NewGRFProfiler::StartTimer(ticks);
 				IConsolePrintF(CC_DEBUG, "Profiling will automatically stop after %u ticks.", (uint)ticks);
 			}
@@ -3609,7 +3609,7 @@ DEF_CONSOLE_CMD(ConRailTypeMapColourCtl)
 	}
 
 	RailType rt = (RailType)atoi(argv[1]);
-	uint8 map_colour = atoi(argv[2]);
+	uint8_t map_colour = atoi(argv[2]);
 
 	if (rt >= RAILTYPE_END) return true;
 	extern RailTypeInfo _railtypes[RAILTYPE_END];

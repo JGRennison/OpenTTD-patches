@@ -366,7 +366,7 @@ ScriptLogTypes::LogData &ScriptInstance::GetLogData()
  * First 1 byte indicating if there is a data blob at all.
  * 1 byte indicating the type of data.
  * The data itself, this differs per type:
- *  - integer: a binary representation of the integer (int32).
+ *  - integer: a binary representation of the integer (int32_t).
  *  - string:  First one byte with the string length, then a 0-terminated char
  *             array. The string can't be longer than 255 bytes (including
  *             terminating '\0').
@@ -394,7 +394,7 @@ ScriptLogTypes::LogData &ScriptInstance::GetLogData()
 			SlWriteByte(SQSL_INT);
 			SQInteger res;
 			sq_getinteger(vm, index, &res);
-			int64 value = (int64)res;
+			int64_t value = (int64_t)res;
 			SlArray(&value, 1, SLE_INT64);
 			return true;
 		}
@@ -564,7 +564,7 @@ bool ScriptInstance::IsPaused()
 	byte type = SlReadByte();
 	switch (type) {
 		case SQSL_INT: {
-			int64 value;
+			int64_t value;
 			SlArray(&value, 1, (IsSavegameVersionBefore(SLV_SCRIPT_INT64) && SlXvIsFeatureMissing(XSLFI_SCRIPT_INT64)) ? SLE_FILE_I32 | SLE_VAR_I64 : SLE_INT64);
 			if (data != nullptr) data->push_back((SQInteger)value);
 			return true;
@@ -758,16 +758,16 @@ void ScriptInstance::LimitOpsTillSuspend(SQInteger suspend)
 	}
 }
 
-uint32 ScriptInstance::GetMaxOpsTillSuspend() const
+uint32_t ScriptInstance::GetMaxOpsTillSuspend() const
 {
 	if (this->script_type == ScriptType::GS && (_pause_mode & PM_PAUSED_GAME_SCRIPT) != PM_UNPAUSED) {
 		/* Boost opcodes till suspend when paused due to game script */
-		return std::min<uint32>(250000, _settings_game.script.script_max_opcode_till_suspend * 10);
+		return std::min<uint32_t>(250000, _settings_game.script.script_max_opcode_till_suspend * 10);
 	}
 	return _settings_game.script.script_max_opcode_till_suspend;
 }
 
-bool ScriptInstance::DoCommandCallback(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+bool ScriptInstance::DoCommandCallback(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	ScriptObject::ActiveInstance active(this);
 

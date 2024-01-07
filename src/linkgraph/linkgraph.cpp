@@ -65,7 +65,7 @@ void LinkGraph::Compress()
 			if (edge.capacity < (1 << 16)) {
 				edge.travel_time_sum = edge.travel_time_sum * new_capacity / edge.capacity;
 			} else if (edge.travel_time_sum != 0) {
-				edge.travel_time_sum = std::max<uint64>(1, edge.travel_time_sum / 2);
+				edge.travel_time_sum = std::max<uint64_t>(1, edge.travel_time_sum / 2);
 			}
 			edge.capacity = new_capacity;
 			edge.usage /= 2;
@@ -79,8 +79,8 @@ void LinkGraph::Compress()
  */
 void LinkGraph::Merge(LinkGraph *other)
 {
-	uint32 age = ClampTo<uint32>(CeilDivT<int64>(_scaled_date_ticks.base() - this->last_compression.base() + 1, DAY_TICKS));
-	uint32 other_age = ClampTo<uint32>(CeilDivT<int64>(_scaled_date_ticks.base() - other->last_compression.base() + 1, DAY_TICKS));
+	uint32_t age = ClampTo<uint32_t>(CeilDivT<int64_t>(_scaled_date_ticks.base() - this->last_compression.base() + 1, DAY_TICKS));
+	uint32_t other_age = ClampTo<uint32_t>(CeilDivT<int64_t>(_scaled_date_ticks.base() - other->last_compression.base() + 1, DAY_TICKS));
 	NodeID first = this->Size();
 	this->nodes.reserve(first + other->Size());
 	for (NodeID node1 = 0; node1 < other->Size(); ++node1) {
@@ -167,11 +167,11 @@ NodeID LinkGraph::AddNode(const Station *st)
  * @param usage Usage to be added.
  * @param mode Update mode to be used.
  */
-static void AddEdge(LinkGraph::BaseEdge &edge, uint capacity, uint usage, uint32 travel_time, EdgeUpdateMode mode)
+static void AddEdge(LinkGraph::BaseEdge &edge, uint capacity, uint usage, uint32_t travel_time, EdgeUpdateMode mode)
 {
 	edge.capacity = capacity;
 	edge.usage = usage;
-	edge.travel_time_sum = static_cast<uint64>(travel_time) * capacity;
+	edge.travel_time_sum = static_cast<uint64_t>(travel_time) * capacity;
 	if (mode & EUM_UNRESTRICTED)  edge.last_unrestricted_update = _date;
 	if (mode & EUM_RESTRICTED) edge.last_restricted_update = _date;
 	if (mode & EUM_AIRCRAFT) edge.last_aircraft_update = _date;
@@ -185,7 +185,7 @@ static void AddEdge(LinkGraph::BaseEdge &edge, uint capacity, uint usage, uint32
  * @param usage Usage to be added.
  * @param mode Update mode to be used.
  */
-void LinkGraph::UpdateEdge(NodeID from, NodeID to, uint capacity, uint usage, uint32 travel_time, EdgeUpdateMode mode)
+void LinkGraph::UpdateEdge(NodeID from, NodeID to, uint capacity, uint usage, uint32_t travel_time, EdgeUpdateMode mode)
 {
 	assert(capacity > 0);
 	assert(usage <= capacity);
@@ -219,7 +219,7 @@ void LinkGraph::RemoveEdge(NodeID from, NodeID to)
  * @param travel_time Travel time to be added, in ticks.
  * @param mode Update mode to be applied.
  */
-void LinkGraph::Edge::Update(uint capacity, uint usage, uint32 travel_time, EdgeUpdateMode mode)
+void LinkGraph::Edge::Update(uint capacity, uint usage, uint32_t travel_time, EdgeUpdateMode mode)
 {
 	BaseEdge &edge = *(this->edge);
 	assert(edge.capacity > 0);
@@ -227,11 +227,11 @@ void LinkGraph::Edge::Update(uint capacity, uint usage, uint32 travel_time, Edge
 
 	if (mode & EUM_INCREASE) {
 		if (edge.travel_time_sum == 0) {
-			edge.travel_time_sum = static_cast<uint64>(edge.capacity + capacity) * travel_time;
+			edge.travel_time_sum = static_cast<uint64_t>(edge.capacity + capacity) * travel_time;
 		} else if (travel_time == 0) {
 			edge.travel_time_sum += (edge.travel_time_sum / edge.capacity) * capacity;
 		} else {
-			edge.travel_time_sum += static_cast<uint64>(travel_time) * capacity;
+			edge.travel_time_sum += static_cast<uint64_t>(travel_time) * capacity;
 		}
 		edge.capacity += capacity;
 		edge.usage += usage;
@@ -240,13 +240,13 @@ void LinkGraph::Edge::Update(uint capacity, uint usage, uint32 travel_time, Edge
 		 * the capacity increase. */
 		if (capacity > edge.capacity) {
 			if (travel_time == 0) {
-				edge.travel_time_sum = static_cast<uint64>(edge.travel_time_sum / edge.capacity) * capacity;
+				edge.travel_time_sum = static_cast<uint64_t>(edge.travel_time_sum / edge.capacity) * capacity;
 			} else {
-				edge.travel_time_sum += static_cast<uint64>(capacity - edge.capacity) * travel_time;
+				edge.travel_time_sum += static_cast<uint64_t>(capacity - edge.capacity) * travel_time;
 			}
 			edge.capacity = capacity;
 		} else if (edge.travel_time_sum == 0) {
-			edge.travel_time_sum = static_cast<uint64>(travel_time) * edge.capacity;
+			edge.travel_time_sum = static_cast<uint64_t>(travel_time) * edge.capacity;
 		}
 		edge.usage = std::max(edge.usage, usage);
 	}

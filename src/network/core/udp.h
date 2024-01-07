@@ -37,10 +37,10 @@ protected:
 	/** The opened sockets. */
 	SocketList sockets;
 
-	uint64 fragment_token;
+	uint64_t fragment_token;
 
 	struct FragmentSet {
-		uint64 token;
+		uint64_t token;
 		NetworkAddress address;
 		time_t create_time;
 		std::vector<std::string> fragments;

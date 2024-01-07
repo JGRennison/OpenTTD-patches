@@ -47,7 +47,7 @@ INSTANTIATE_POOL_METHODS(TemplateReplacement)
 
 robin_hood::unordered_flat_map<GroupID, TemplateID> _template_replacement_index;
 robin_hood::unordered_flat_map<GroupID, TemplateID> _template_replacement_index_recursive;
-static uint32 _template_replacement_index_recursive_guard = 0;
+static uint32_t _template_replacement_index_recursive_guard = 0;
 
 static void MarkTrainsInGroupAsPendingTemplateReplacement(GroupID gid, const TemplateVehicle *tv);
 

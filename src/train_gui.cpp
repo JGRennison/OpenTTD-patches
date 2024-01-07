@@ -20,7 +20,7 @@
 
 #include "safeguards.h"
 
-uint16 GetTrainVehicleMaxSpeed(const Train *u, const RailVehicleInfo *rvi_u, const Train *front);
+uint16_t GetTrainVehicleMaxSpeed(const Train *u, const RailVehicleInfo *rvi_u, const Train *front);
 
 /**
  * Callback for building wagons.
@@ -30,7 +30,7 @@ uint16 GetTrainVehicleMaxSpeed(const Train *u, const RailVehicleInfo *rvi_u, con
  * @param p2 Additional data for the command (for the #CommandProc)
  * @param cmd Unused.
  */
-void CcBuildWagon(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcBuildWagon(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Failed()) return;
 
@@ -232,7 +232,7 @@ static void TrainDetailsInfoTab(const Train *v, int left, int right, int y, byte
 {
 	const RailVehicleInfo *rvi = RailVehInfo(v->engine_type);
 	bool show_speed = !UsesWagonOverride(v) && (_settings_game.vehicle.wagon_speed_limits || rvi->railveh_type != RAILVEH_WAGON);
-	uint16 speed;
+	uint16_t speed;
 
 	if (rvi->railveh_type == RAILVEH_WAGON) {
 		SetDParam(0, PackEngineNameDParam(v->engine_type, EngineNameContext::VehicleDetails));
@@ -414,7 +414,7 @@ int GetTrainDetailsWndVScroll(VehicleID veh_id, TrainDetailsWindowTabs det_tab)
  * @param vscroll_cap Number of lines currently displayed
  * @param det_tab Selected details tab
  */
-void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16 vscroll_cap, TrainDetailsWindowTabs det_tab)
+void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16_t vscroll_cap, TrainDetailsWindowTabs det_tab)
 {
 	bool rtl = _current_text_dir == TD_RTL;
 	int line_height = r.Height();

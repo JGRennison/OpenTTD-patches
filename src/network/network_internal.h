@@ -20,7 +20,7 @@
 
 #include <vector>
 
-static const uint32 FIND_SERVER_EXTENDED_TOKEN = 0x2A49582A;
+static const uint32_t FIND_SERVER_EXTENDED_TOKEN = 0x2A49582A;
 
 #ifdef RANDOM_DEBUG
 /**
@@ -63,41 +63,41 @@ enum NetworkJoinStatus {
 	NETWORK_JOIN_STATUS_END,
 };
 
-extern uint32 _frame_counter_server; // The frame_counter of the server, if in network-mode
-extern uint32 _frame_counter_max; // To where we may go with our clients
-extern uint32 _frame_counter;
+extern uint32_t _frame_counter_server; // The frame_counter of the server, if in network-mode
+extern uint32_t _frame_counter_max; // To where we may go with our clients
+extern uint32_t _frame_counter;
 
-extern uint32 _last_sync_frame; // Used in the server to store the last time a sync packet was sent to clients.
+extern uint32_t _last_sync_frame; // Used in the server to store the last time a sync packet was sent to clients.
 
 /* networking settings */
 extern NetworkAddressList _broadcast_list;
 
-extern uint32 _sync_seed_1;
-extern uint64 _sync_state_checksum;
-extern uint32 _sync_frame;
+extern uint32_t _sync_seed_1;
+extern uint64_t _sync_state_checksum;
+extern uint32_t _sync_frame;
 extern Date   _last_sync_date;
 extern DateFract _last_sync_date_fract;
-extern uint8  _last_sync_tick_skip_counter;
-extern uint32  _last_sync_frame_counter;
+extern uint8_t  _last_sync_tick_skip_counter;
+extern uint32_t  _last_sync_frame_counter;
 extern bool _network_first_time;
 /* Vars needed for the join-GUI */
 extern NetworkJoinStatus _network_join_status;
-extern uint8 _network_join_waiting;
-extern uint32 _network_join_bytes;
-extern uint32 _network_join_bytes_total;
+extern uint8_t _network_join_waiting;
+extern uint32_t _network_join_bytes;
+extern uint32_t _network_join_bytes_total;
 extern ConnectionType _network_server_connection_type;
 extern std::string _network_server_invite_code;
 
 /* Variable available for clients. */
 extern std::string _network_server_name;
 
-extern uint8 _network_reconnect;
+extern uint8_t _network_reconnect;
 
 extern CompanyMask _network_company_passworded;
 
 void NetworkQueryServer(const std::string &connection_string);
 
-void GetBindAddresses(NetworkAddressList *addresses, uint16 port);
+void GetBindAddresses(NetworkAddressList *addresses, uint16_t port);
 struct NetworkGameList *NetworkAddServer(const std::string &connection_string, bool manually = true, bool never_expire = false);
 void NetworkRebuildHostList();
 void UpdateNetworkGameWindow();
@@ -124,7 +124,7 @@ struct CommandPacket : CommandContainer {
 	/** Make sure the pointer is nullptr. */
 	CommandPacket() : next(nullptr), frame(0), client_id(INVALID_CLIENT_ID), company(INVALID_COMPANY), my_cmd(false) {}
 	CommandPacket *next; ///< the next command packet (if in queue)
-	uint32 frame;        ///< the frame in which this packet is executed
+	uint32_t frame;      ///< the frame in which this packet is executed
 	ClientID client_id;  ///< originating client ID (or INVALID_CLIENT_ID if not specified)
 	CompanyID company;   ///< company that is executing the command
 	bool my_cmd;         ///< did the command originate from "me"
@@ -140,13 +140,13 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 uint NetworkCalculateLag(const NetworkClientSocket *cs);
 StringID GetNetworkErrorMsg(NetworkErrorCode err);
 bool NetworkMakeClientNameUnique(std::string &new_name);
-std::string GenerateCompanyPasswordHash(const std::string &password, const std::string &password_server_id, uint32 password_game_seed);
-std::vector<uint8> GenerateGeneralPasswordHash(const std::string &password, const std::string &password_server_id, uint64 password_game_seed);
+std::string GenerateCompanyPasswordHash(const std::string &password, const std::string &password_server_id, uint32_t password_game_seed);
+std::vector<uint8_t> GenerateGeneralPasswordHash(const std::string &password, const std::string &password_server_id, uint64_t password_game_seed);
 std::string NetworkGenerateRandomKeyString(uint bytes);
 
 std::string_view ParseCompanyFromConnectionString(const std::string &connection_string, CompanyID *company_id);
-NetworkAddress ParseConnectionString(const std::string &connection_string, uint16 default_port);
-std::string NormalizeConnectionString(const std::string &connection_string, uint16 default_port);
+NetworkAddress ParseConnectionString(const std::string &connection_string, uint16_t default_port);
+std::string NormalizeConnectionString(const std::string &connection_string, uint16_t default_port);
 
 void ClientNetworkEmergencySave();
 

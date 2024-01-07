@@ -55,10 +55,10 @@ void BuildOwnerLegend();
 
 /** Structure for holding relevant data for legends in small map */
 struct LegendAndColour {
-	uint8 colour;              ///< Colour of the item on the map.
+	uint8_t colour;            ///< Colour of the item on the map.
 	StringID legend;           ///< String corresponding to the coloured item.
 	IndustryType type;         ///< Type of industry. Only valid for industry entries.
-	uint8 height;              ///< Height in tiles. Only valid for height legend entries.
+	uint8_t height;            ///< Height in tiles. Only valid for height legend entries.
 	CompanyID company;         ///< Company to display. Only valid for company entries of the owner legend.
 	bool show_on_map;          ///< For filtering industries, if \c true, industry is shown on the map in colour.
 	bool end;                  ///< This is the end of the list.
@@ -90,7 +90,7 @@ protected:
 	static bool show_towns;       ///< Display town names in the smallmap.
 	static int map_height_limit;  ///< Currently used/cached map height limit.
 
-	static const uint INDUSTRY_MIN_NUMBER_OF_COLUMNS = 2; ///< Minimal number of columns in the #WID_SM_LEGEND widget for the #SMT_INDUSTRY legend.
+	static const uint INDUSTRY_MIN_NUMBER_OF_COLUMNS = 2;     ///< Minimal number of columns in the #WID_SM_LEGEND widget for the #SMT_INDUSTRY legend.
 	static const uint FORCE_REFRESH_PERIOD = 930;             ///< map is redrawn after that many milliseconds (default).
 	static const uint FORCE_REFRESH_PERIOD_VEH = 240;         ///< map is redrawn after that many milliseconds (modes with vehicles).
 	static const uint FORCE_REFRESH_PERIOD_LINK_GRAPH = 2850; ///< map is redrawn after that many milliseconds (link graph mode).
@@ -101,11 +101,11 @@ protected:
 	uint column_width;             ///< Width of a column in the #WID_SM_LEGEND widget.
 	uint legend_width;             ///< Width of legend 'blob'.
 
-	int32 scroll_x;  ///< Horizontal world coordinate of the base tile left of the top-left corner of the smallmap display.
-	int32 scroll_y;  ///< Vertical world coordinate of the base tile left of the top-left corner of the smallmap display.
-	int tile_zoom;   ///< Tile zoom level. Bigger number means more zoom-out (further away).
-	int ui_zoom;     ///< UI (pixel doubling) Zoom level. Bigger number means more zoom-in (closer).
-	int zoom = 1;    ///< Zoom level. Bigger number means more zoom-out (further away).
+	int32_t scroll_x;  ///< Horizontal world coordinate of the base tile left of the top-left corner of the smallmap display.
+	int32_t scroll_y;  ///< Vertical world coordinate of the base tile left of the top-left corner of the smallmap display.
+	int tile_zoom;     ///< Tile zoom level. Bigger number means more zoom-out (further away).
+	int ui_zoom;       ///< UI (pixel doubling) Zoom level. Bigger number means more zoom-in (closer).
+	int zoom = 1;      ///< Zoom level. Bigger number means more zoom-out (further away).
 
 	GUITimer refresh; ///< Refresh timer.
 	std::unique_ptr<LinkGraphOverlay> overlay;
@@ -192,7 +192,7 @@ protected:
 	void SetZoomLevel(ZoomLevelChange change, const Point *zoom_pt);
 	void SetOverlayCargoMask();
 	void SetupWidgetData();
-	uint32 GetTileColours(const TileArea &ta) const;
+	uint32_t GetTileColours(const TileArea &ta) const;
 
 	int GetPositionOnLegend(Point pt);
 

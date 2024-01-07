@@ -20,7 +20,7 @@
 typedef LinkGraph::BaseNode Node;
 typedef LinkGraph::BaseEdge Edge;
 
-static uint16 _num_nodes;
+static uint16_t _num_nodes;
 
 /**
  * Get a SaveLoad array for a link graph.
@@ -153,7 +153,7 @@ static void FilterDescs()
  */
 void Save_LinkGraph(LinkGraph &lg)
 {
-	uint16 size = lg.Size();
+	uint16_t size = lg.Size();
 	auto edge_iter = lg.edges.begin();
 	auto edge_end = lg.edges.end();
 	for (NodeID from = 0; from < size; ++from) {

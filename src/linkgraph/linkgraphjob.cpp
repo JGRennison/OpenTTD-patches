@@ -100,7 +100,7 @@ void LinkGraphJob::FinaliseJob()
 	/* Link graph has been merged into another one. */
 	if (!LinkGraph::IsValidID(this->link_graph.index)) return;
 
-	uint16 size = this->Size();
+	uint16_t size = this->Size();
 	for (NodeID node_id = 0; node_id < size; ++node_id) {
 		Node from = (*this)[node_id];
 
@@ -203,7 +203,7 @@ void LinkGraphJob::Init()
 	 * and the shortest route for other classes of cargo.
 	 * In-between stops are punished with a 1 tile or 1 day penalty. */
 	const bool express = IsLinkGraphCargoExpress(this->Cargo());
-	const uint16 aircraft_link_scale = this->Settings().aircraft_link_scale;
+	const uint16_t aircraft_link_scale = this->Settings().aircraft_link_scale;
 
 	size_t edge_count = 0;
 	for (auto &it : this->link_graph.GetEdges()) {

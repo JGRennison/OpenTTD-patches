@@ -49,7 +49,7 @@
 /**
  * Describes from which directions a specific slope can be flooded (if the tile is floodable at all).
  */
-static const uint8 _flood_from_dirs[] = {
+static const uint8_t _flood_from_dirs[] = {
 	(1 << DIR_NW) | (1 << DIR_SW) | (1 << DIR_SE) | (1 << DIR_NE), // SLOPE_FLAT
 	(1 << DIR_NE) | (1 << DIR_SE),                                 // SLOPE_W
 	(1 << DIR_NW) | (1 << DIR_NE),                                 // SLOPE_S
@@ -108,7 +108,7 @@ void ClearNeighbourNonFloodingStates(TileIndex tile)
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildShipDepot(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdBuildShipDepot(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	Axis axis = Extract<Axis, 0, 1>(p1);
 
@@ -434,7 +434,7 @@ static CommandCost RemoveLock(TileIndex tile, DoCommandFlag flags)
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildLock(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdBuildLock(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	DiagDirection dir = GetInclinedSlopeDirection(GetTileSlope(tile));
 	if (dir == INVALID_DIAGDIR) return_cmd_error(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
@@ -473,7 +473,7 @@ void MakeRiverAndModifyDesertZoneAround(TileIndex tile)
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdBuildCanal(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdBuildCanal(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	WaterClass wc = Extract<WaterClass, 0, 2>(p2);
 	if (p1 >= MapSize() || wc == WATER_CLASS_INVALID) return CMD_ERROR;
@@ -886,7 +886,7 @@ static void DrawWaterLock(const TileInfo *ti)
 	if (base == 0) {
 		/* If no custom graphics, use defaults. */
 		base = SPR_LOCK_BASE;
-		uint8 z_threshold = part == LOCK_PART_UPPER ? 8 : 0;
+		uint8_t z_threshold = part == LOCK_PART_UPPER ? 8 : 0;
 		zoffs = ti->z > z_threshold ? 24 : 0;
 	}
 
@@ -1216,7 +1216,7 @@ void DoFloodTile(TileIndex target)
 				const ObjectSpec *spec = ObjectSpec::GetByTile(target);
 				if ((spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) && (spec->ctrl_flags & OBJECT_CTRL_FLAG_EDGE_FOUNDATION)) {
 					Object *obj = Object::GetByTile(target);
-					uint8 flags = spec->edge_foundation[obj->view];
+					uint8_t flags = spec->edge_foundation[obj->view];
 					DiagDirection edge = (DiagDirection)GB(flags, 0, 2);
 					Slope incline = InclinedSlope(edge);
 					if (!(tileh & incline) && !(flags & OBJECT_EF_FLAG_FOUNDATION_LOWER)) {

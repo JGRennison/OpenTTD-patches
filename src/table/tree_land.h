@@ -17,8 +17,8 @@ static const byte _tree_count_by_landscape[4] = {12, 8, 12, 9};
 #define MAX_TREE_COUNT_BY_LANDSCAPE 12
 
 struct TreePos {
-	uint8 x;
-	uint8 y;
+	uint8_t x;
+	uint8_t y;
 };
 
 static const TreePos _tree_layout_xy[][4] = {

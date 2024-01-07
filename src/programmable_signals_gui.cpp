@@ -294,7 +294,7 @@ public:
 				SignalInstruction *ins = GetSelected();
 				if (ins == nullptr) return;
 
-				uint32 p1 = 0;
+				uint32_t p1 = 0;
 				SB(p1, 0, 3, this->track);
 				SB(p1, 3, 16, ins->Id());
 
@@ -498,7 +498,7 @@ public:
 			return;
 		}
 
-		uint32 p1 = 0, p2 = 0;
+		uint32_t p1 = 0, p2 = 0;
 		SB(p1, 0, 3, this->track);
 		SB(p1, 3, 16, si->Id());
 
@@ -522,7 +522,7 @@ public:
 
 			uint value = atoi(str);
 
-			uint32 p1 = 0, p2 = 0;
+			uint32_t p1 = 0, p2 = 0;
 			SB(p1, 0, 3, this->track);
 			SB(p1, 3, 16, si->Id());
 
@@ -541,7 +541,7 @@ public:
 
 		switch (widget) {
 			case PROGRAM_WIDGET_INSERT: {
-				uint64 p1 = 0;
+				uint64_t p1 = 0;
 				SB(p1, 0, 3, this->track);
 				SB(p1, 3, 16, ins->Id());
 				SB(p1, 19, 8, OpcodeForIndex(index));
@@ -552,7 +552,7 @@ public:
 			}
 
 			case PROGRAM_WIDGET_SET_STATE: {
-				uint64 p1 = 0;
+				uint64_t p1 = 0;
 				SB(p1, 0, 3, this->track);
 				SB(p1, 3, 16, ins->Id());
 
@@ -561,7 +561,7 @@ public:
 			}
 
 			case PROGRAM_WIDGET_COND_VARIABLE: {
-				uint64 p1 = 0, p2 = 0;
+				uint64_t p1 = 0, p2 = 0;
 				SB(p1, 0, 3, this->track);
 				SB(p1, 3, 16, ins->Id());
 
@@ -573,7 +573,7 @@ public:
 			}
 
 			case PROGRAM_WIDGET_COND_COMPARATOR: {
-				uint64 p1 = 0, p2 = 0;
+				uint64_t p1 = 0, p2 = 0;
 				SB(p1, 0, 3, this->track);
 				SB(p1, 3, 16, ins->Id());
 
@@ -587,7 +587,7 @@ public:
 
 			case PROGRAM_WIDGET_COND_SLOT:
 			case PROGRAM_WIDGET_COND_COUNTER: {
-				uint64 p1 = 0, p2 = 0;
+				uint64_t p1 = 0, p2 = 0;
 				SB(p1, 0, 3, this->track);
 				SB(p1, 3, 16, ins->Id());
 
@@ -971,7 +971,7 @@ static WindowDesc _program_desc(__FILE__, __LINE__,
 
 void ShowSignalProgramWindow(SignalReference ref)
 {
-	uint32 window_id = (ref.tile << 3) | ref.track;
+	uint32_t window_id = (ref.tile << 3) | ref.track;
 	if (BringWindowToFrontById(WC_SIGNAL_PROGRAM, window_id) != nullptr) return;
 
 	new ProgramWindow(&_program_desc, ref);

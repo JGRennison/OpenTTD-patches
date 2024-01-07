@@ -15,7 +15,7 @@
 #include "tbtr_template_vehicle.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 
-Train* VirtualTrainFromTemplateVehicle(const TemplateVehicle* tv, StringID &err, uint32 user);
+Train* VirtualTrainFromTemplateVehicle(const TemplateVehicle* tv, StringID &err, uint32_t user);
 
 void BuildTemplateGuiList(GUITemplateList*, Scrollbar*, Owner, RailType);
 

@@ -116,7 +116,7 @@ static std::vector<SaveLoad> GetSettingsDesc(bool is_loading)
 				error("Unexpected save conv for %s: 0x%02X", sd->name, sd->save.conv);
 		}
 
-		/* economy.town_growth_rate is int8 here, but uint8 in upstream saves */
+		/* economy.town_growth_rate is int8_t here, but uint8_t in upstream saves */
 		if (is_loading && !SlXvIsFeaturePresent(XSLFI_TABLE_PATS) && strcmp(sd->name, "economy.town_growth_rate") == 0) {
 			SB(new_type, 0, 4, SLE_FILE_U8);
 		}

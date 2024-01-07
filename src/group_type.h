@@ -10,13 +10,13 @@
 #ifndef GROUP_TYPE_H
 #define GROUP_TYPE_H
 
-typedef uint16 GroupID; ///< Type for all group identifiers.
+typedef uint16_t GroupID; ///< Type for all group identifiers.
 
 static const GroupID NEW_GROUP     = 0xFFFC; ///< Sentinel for a to-be-created group.
 static const GroupID ALL_GROUP     = 0xFFFD; ///< All vehicles are in this group.
 static const GroupID DEFAULT_GROUP = 0xFFFE; ///< Ungrouped vehicles are in this group.
 static const GroupID INVALID_GROUP = 0xFFFF; ///< Sentinel for invalid groups.
-static const uint32 GROUP_NAME_HIERARCHY = 0x80000000; ///< String constant to display the group name with its full hierarchy
+static const uint32_t GROUP_NAME_HIERARCHY = 0x80000000; ///< String constant to display the group name with its full hierarchy
 
 static const uint MAX_LENGTH_GROUP_NAME_CHARS = 128; ///< The maximum length of a group name in characters including '\0'
 

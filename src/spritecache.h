@@ -17,15 +17,15 @@
 
 /** Data structure describing a sprite. */
 struct Sprite {
-	uint32 size;   ///< Size of the allocation for this sprite structure
-	uint16 height; ///< Height of the sprite.
-	uint16 width;  ///< Width of the sprite.
-	int16 x_offs;  ///< Number of pixels to shift the sprite to the right.
-	int16 y_offs;  ///< Number of pixels to shift the sprite downwards.
-	uint32 lru;    ///< Sprite cache LRU of this sprite structure.
-	uint8 missing_zoom_levels; ///< Bitmask of zoom levels missing in data
-	Sprite *next = nullptr;    ///< Next sprite structure, this is the only member which may be changed after the sprite has been inserted in the sprite cache
-	byte data[];   ///< Sprite data.
+	uint32_t size;               ///< Size of the allocation for this sprite structure
+	uint16_t height;             ///< Height of the sprite.
+	uint16_t width;              ///< Width of the sprite.
+	int16_t x_offs;              ///< Number of pixels to shift the sprite to the right.
+	int16_t y_offs;              ///< Number of pixels to shift the sprite downwards.
+	uint32_t lru;                ///< Sprite cache LRU of this sprite structure.
+	uint8_t missing_zoom_levels; ///< Bitmask of zoom levels missing in data
+	Sprite *next = nullptr;      ///< Next sprite structure, this is the only member which may be changed after the sprite has been inserted in the sprite cache
+	byte data[];                 ///< Sprite data.
 };
 
 /*
@@ -43,16 +43,16 @@ extern uint _sprite_cache_size;
 typedef void *AllocatorProc(size_t size);
 
 void *SimpleSpriteAlloc(size_t size);
-void *GetRawSprite(SpriteID sprite, SpriteType type, uint8 zoom_levels, AllocatorProc *allocator = nullptr, SpriteEncoder *encoder = nullptr);
+void *GetRawSprite(SpriteID sprite, SpriteType type, uint8_t zoom_levels, AllocatorProc *allocator = nullptr, SpriteEncoder *encoder = nullptr);
 bool SpriteExists(SpriteID sprite);
 
 SpriteType GetSpriteType(SpriteID sprite);
 SpriteFile *GetOriginFile(SpriteID sprite);
-uint32 GetSpriteLocalID(SpriteID sprite);
+uint32_t GetSpriteLocalID(SpriteID sprite);
 uint GetSpriteCountForFile(const std::string &filename, SpriteID begin, SpriteID end);
 uint GetMaxSpriteID();
 
-inline const Sprite *GetSprite(SpriteID sprite, SpriteType type, uint8 zoom_levels)
+inline const Sprite *GetSprite(SpriteID sprite, SpriteType type, uint8_t zoom_levels)
 {
 	dbg_assert(type != SpriteType::Recolour);
 	return (Sprite*)GetRawSprite(sprite, type, zoom_levels);
@@ -72,26 +72,26 @@ void IncreaseSpriteLRU();
 SpriteFile &OpenCachedSpriteFile(const std::string &filename, Subdirectory subdir, bool palette_remap);
 
 void ReadGRFSpriteOffsets(SpriteFile &file);
-size_t GetGRFSpriteOffset(uint32 id);
+size_t GetGRFSpriteOffset(uint32_t id);
 bool LoadNextSprite(int load_index, SpriteFile &file, uint file_sprite_id);
-bool SkipSpriteData(SpriteFile &file, byte type, uint16 num);
+bool SkipSpriteData(SpriteFile &file, byte type, uint16_t num);
 void DupSprite(SpriteID old_spr, SpriteID new_spr);
 
-uint32 GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id);
+uint32_t GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id);
 
 struct SpritePointerHolder {
 private:
-	btree::btree_map<uint32, const void *> cache;
+	btree::btree_map<uint32_t, const void *> cache;
 
 public:
 	inline const Sprite *GetSprite(SpriteID sprite, SpriteType type) const
 	{
-		return (const Sprite*)(this->cache.find(sprite | (static_cast<uint32>(type) << 29))->second);
+		return (const Sprite*)(this->cache.find(sprite | (static_cast<uint32_t>(type) << 29))->second);
 	}
 
 	inline const byte *GetRecolourSprite(SpriteID sprite) const
 	{
-		return (const byte*)(this->cache.find(sprite | (static_cast<uint32>(SpriteType::Recolour) << 29))->second);
+		return (const byte*)(this->cache.find(sprite | (static_cast<uint32_t>(SpriteType::Recolour) << 29))->second);
 	}
 
 	void Clear()
@@ -101,12 +101,12 @@ public:
 
 	inline void CacheSprite(SpriteID sprite, SpriteType type, ZoomLevel zoom_level)
 	{
-		this->cache[sprite | (static_cast<uint32>(type) << 29)] = GetRawSprite(sprite, type, ZoomMask(zoom_level));
+		this->cache[sprite | (static_cast<uint32_t>(type) << 29)] = GetRawSprite(sprite, type, ZoomMask(zoom_level));
 	}
 
 	inline void CacheRecolourSprite(SpriteID sprite)
 	{
-		this->cache[sprite | (static_cast<uint32>(SpriteType::Recolour) << 29)] = GetRawSprite(sprite, SpriteType::Recolour, 0);
+		this->cache[sprite | (static_cast<uint32_t>(SpriteType::Recolour) << 29)] = GetRawSprite(sprite, SpriteType::Recolour, 0);
 	}
 };
 

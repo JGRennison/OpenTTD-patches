@@ -13,43 +13,43 @@
 
 #include "../core/bitmath_func.hpp"
 
-extern uint8 FindLastBit64(uint64 x);
+extern uint8_t FindLastBit64(uint64_t x);
 
 TEST_CASE("FindLastBit tests")
 {
-	CHECK(FindLastBit<uint8>(0) == 0);
-	CHECK(FindLastBit<uint16>(0) == 0);
-	CHECK(FindLastBit<uint32>(0) == 0);
-	CHECK(FindLastBit<uint64>(0) == 0);
+	CHECK(FindLastBit<uint8_t>(0) == 0);
+	CHECK(FindLastBit<uint16_t>(0) == 0);
+	CHECK(FindLastBit<uint32_t>(0) == 0);
+	CHECK(FindLastBit<uint64_t>(0) == 0);
 	CHECK(FindLastBit64(0) == 0);
 
 	for (uint i = 0; i < 8; i++) {
-		uint8 t = (uint8)(1 << i);
-		CHECK(FindLastBit<uint8>(t) == i);
-		CHECK(FindLastBit<uint16>(t) == i);
-		CHECK(FindLastBit<uint32>(t) == i);
-		CHECK(FindLastBit<uint64>(t) == i);
+		uint8_t t = (uint8_t)(1 << i);
+		CHECK(FindLastBit<uint8_t>(t) == i);
+		CHECK(FindLastBit<uint16_t>(t) == i);
+		CHECK(FindLastBit<uint32_t>(t) == i);
+		CHECK(FindLastBit<uint64_t>(t) == i);
 		CHECK(FindLastBit64(t) == i);
 	}
 
 	for (uint i = 8; i < 16; i++) {
-		uint16 t = (uint16)(1 << i);
-		CHECK(FindLastBit<uint16>(t) == i);
-		CHECK(FindLastBit<uint32>(t) == i);
-		CHECK(FindLastBit<uint64>(t) == i);
+		uint16_t t = (uint16_t)(1 << i);
+		CHECK(FindLastBit<uint16_t>(t) == i);
+		CHECK(FindLastBit<uint32_t>(t) == i);
+		CHECK(FindLastBit<uint64_t>(t) == i);
 		CHECK(FindLastBit64(t) == i);
 	}
 
 	for (uint i = 16; i < 32; i++) {
-		uint32 t = (1 << i);
-		CHECK(FindLastBit<uint32>(t) == i);
-		CHECK(FindLastBit<uint64>(t) == i);
+		uint32_t t = (1 << i);
+		CHECK(FindLastBit<uint32_t>(t) == i);
+		CHECK(FindLastBit<uint64_t>(t) == i);
 		CHECK(FindLastBit64(t) == i);
 	}
 
 	for (uint i = 32; i < 64; i++) {
-		uint64 t = (((uint64)1) << i);
-		CHECK(FindLastBit<uint64>(t) == i);
+		uint64_t t = (((uint64_t)1) << i);
+		CHECK(FindLastBit<uint64_t>(t) == i);
 		CHECK(FindLastBit64(t) == i);
 	}
 

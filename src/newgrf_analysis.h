@@ -16,7 +16,7 @@
 
 struct SpriteGroup;
 
-enum AnalyseCallbackOperationMode : uint8 {
+enum AnalyseCallbackOperationMode : uint8_t {
 	ACOM_CB_VAR,
 	ACOM_CB36_PROP,
 	ACOM_FIND_CB_RESULT,
@@ -28,7 +28,7 @@ enum AnalyseCallbackOperationMode : uint8 {
 
 struct AnalyseCallbackOperationIndustryTileData;
 
-enum AnalyseCallbackOperationResultFlags : uint8 {
+enum AnalyseCallbackOperationResultFlags : uint8_t {
 	ACORF_NONE                              = 0,
 	ACORF_CB_RESULT_FOUND                   = 1 << 0,
 	ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND  = 1 << 1,
@@ -38,16 +38,16 @@ DECLARE_ENUM_AS_BIT_SET(AnalyseCallbackOperationResultFlags)
 
 struct AnalyseCallbackOperation {
 	struct FindCBResultData {
-		uint16 callback;
+		uint16_t callback;
 		bool check_var_10;
-		uint8 var_10_value;
+		uint8_t var_10_value;
 	};
 
 	btree::btree_set<const SpriteGroup *> seen;
 	AnalyseCallbackOperationMode mode;
 	SpriteGroupCallbacksUsed callbacks_used = SGCU_NONE;
 	AnalyseCallbackOperationResultFlags result_flags = ACORF_NONE;
-	uint64 properties_used = 0;
+	uint64_t properties_used = 0;
 	union {
 		FindCBResultData cb_result;
 		AnalyseCallbackOperationIndustryTileData *indtile;

@@ -25,7 +25,7 @@
 #include "safeguards.h"
 
 std::string _keyboard_opt[2];
-static WChar _keyboard[2][OSK_KEYBOARD_ENTRIES];
+static char32_t _keyboard[2][OSK_KEYBOARD_ENTRIES];
 
 enum KeyStateBits {
 	KEYS_NONE,
@@ -105,7 +105,7 @@ struct OskWindow : public Window {
 	{
 		/* clicked a letter */
 		if (widget >= WID_OSK_LETTERS) {
-			WChar c = _keyboard[this->shift][widget - WID_OSK_LETTERS];
+			char32_t c = _keyboard[this->shift][widget - WID_OSK_LETTERS];
 
 			if (!IsValidChar(c, this->qs->text.afilter)) return;
 

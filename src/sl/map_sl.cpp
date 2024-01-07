@@ -21,8 +21,8 @@
 
 #include "../safeguards.h"
 
-static uint32 _map_dim_x;
-static uint32 _map_dim_y;
+static uint32_t _map_dim_x;
+static uint32_t _map_dim_y;
 
 extern bool _sl_maybe_chillpp;
 
@@ -88,7 +88,7 @@ static void Load_MAPH()
 	if (SlXvIsFeaturePresent(XSLFI_CHILLPP)) {
 		if (SlGetFieldLength() != 0) {
 			_sl_xv_feature_versions[XSLFI_HEIGHT_8_BIT] = 2;
-			std::array<uint16, MAP_SL_BUF_SIZE> buf;
+			std::array<uint16_t, MAP_SL_BUF_SIZE> buf;
 			TileIndex size = MapSize();
 
 			for (TileIndex i = 0; i != size;) {
@@ -121,7 +121,7 @@ static void Load_MAP1()
 
 static void Load_MAP2()
 {
-	std::array<uint16, MAP_SL_BUF_SIZE> buf;
+	std::array<uint16_t, MAP_SL_BUF_SIZE> buf;
 	TileIndex size = MapSize();
 
 	for (TileIndex i = 0; i != size;) {
@@ -203,7 +203,7 @@ static void Load_MAP7()
 
 static void Load_MAP8()
 {
-	std::array<uint16, MAP_SL_BUF_SIZE> buf;
+	std::array<uint16_t, MAP_SL_BUF_SIZE> buf;
 	TileIndex size = MapSize();
 
 	for (TileIndex i = 0; i != size;) {
@@ -228,8 +228,8 @@ static void Load_WMAP()
 		reader->CheckBytes(8);
 		_m[i].type = reader->RawReadByte();
 		_m[i].height = reader->RawReadByte();
-		uint16 m2 = reader->RawReadByte();
-		m2 |= ((uint16) reader->RawReadByte()) << 8;
+		uint16_t m2 = reader->RawReadByte();
+		m2 |= ((uint16_t) reader->RawReadByte()) << 8;
 		_m[i].m2 = m2;
 		_m[i].m1 = reader->RawReadByte();
 		_m[i].m3 = reader->RawReadByte();
@@ -252,8 +252,8 @@ static void Load_WMAP()
 			reader->CheckBytes(4);
 			_me[i].m6 = reader->RawReadByte();
 			_me[i].m7 = reader->RawReadByte();
-			uint16 m8 = reader->RawReadByte();
-			m8 |= ((uint16) reader->RawReadByte()) << 8;
+			uint16_t m8 = reader->RawReadByte();
+			m8 |= ((uint16_t) reader->RawReadByte()) << 8;
 			_me[i].m8 = m8;
 		}
 #endif
@@ -298,52 +298,52 @@ static void Save_WMAP()
 }
 
 struct MAPT {
-	typedef uint8 FieldT;
+	typedef uint8_t FieldT;
 	static const FieldT &GetField(TileIndex t) { return _m[t].type; }
 };
 
 struct MAPH {
-	typedef uint8 FieldT;
+	typedef uint8_t FieldT;
 	static const FieldT &GetField(TileIndex t) { return _m[t].height; }
 };
 
 struct MAP1 {
-	typedef uint8 FieldT;
+	typedef uint8_t FieldT;
 	static const FieldT &GetField(TileIndex t) { return _m[t].m1; }
 };
 
 struct MAP2 {
-	typedef uint16 FieldT;
+	typedef uint16_t FieldT;
 	static const FieldT &GetField(TileIndex t) { return _m[t].m2; }
 };
 
 struct MAP3 {
-	typedef uint8 FieldT;
+	typedef uint8_t FieldT;
 	static const FieldT &GetField(TileIndex t) { return _m[t].m3; }
 };
 
 struct MAP4 {
-	typedef uint8 FieldT;
+	typedef uint8_t FieldT;
 	static const FieldT &GetField(TileIndex t) { return _m[t].m4; }
 };
 
 struct MAP5 {
-	typedef uint8 FieldT;
+	typedef uint8_t FieldT;
 	static const FieldT &GetField(TileIndex t) { return _m[t].m5; }
 };
 
 struct MAP6 {
-	typedef uint8 FieldT;
+	typedef uint8_t FieldT;
 	static const FieldT &GetField(TileIndex t) { return _me[t].m6; }
 };
 
 struct MAP7 {
-	typedef uint8 FieldT;
+	typedef uint8_t FieldT;
 	static const FieldT &GetField(TileIndex t) { return _me[t].m7; }
 };
 
 struct MAP8 {
-	typedef uint16 FieldT;
+	typedef uint16_t FieldT;
 	static const FieldT &GetField(TileIndex t) { return _me[t].m8; }
 };
 
@@ -351,13 +351,13 @@ template <typename T>
 struct MAP_VarType {};
 
 template <>
-struct MAP_VarType<uint8>
+struct MAP_VarType<uint8_t>
 {
 	static const VarType var_type = SLE_UINT8;
 };
 
 template <>
-struct MAP_VarType<uint16>
+struct MAP_VarType<uint16_t>
 {
 	static const VarType var_type = SLE_UINT16;
 };
@@ -377,7 +377,7 @@ static void Save_MAP()
 	}
 }
 
-static ChunkSaveLoadSpecialOpResult Special_WMAP(uint32 chunk_id, ChunkSaveLoadSpecialOp op)
+static ChunkSaveLoadSpecialOpResult Special_WMAP(uint32_t chunk_id, ChunkSaveLoadSpecialOp op)
 {
 	switch (op) {
 		case CSLSO_SHOULD_SAVE_CHUNK:
@@ -390,7 +390,7 @@ static ChunkSaveLoadSpecialOpResult Special_WMAP(uint32 chunk_id, ChunkSaveLoadS
 	return CSLSOR_NONE;
 }
 
-static ChunkSaveLoadSpecialOpResult Special_MAP_Chunks(uint32 chunk_id, ChunkSaveLoadSpecialOp op)
+static ChunkSaveLoadSpecialOpResult Special_MAP_Chunks(uint32_t chunk_id, ChunkSaveLoadSpecialOp op)
 {
 	switch (op) {
 		case CSLSO_SHOULD_SAVE_CHUNK:

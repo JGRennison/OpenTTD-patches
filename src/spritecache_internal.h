@@ -30,13 +30,13 @@ class SpriteDataBuffer {
 	friend SpriteCache;
 
 	std::unique_ptr<void, FreeDeleter> ptr;
-	uint32 size = 0;
+	uint32_t size = 0;
 
 public:
 	void *GetPtr() { return this->ptr.get(); }
-	uint32 GetSize() { return this->size; }
+	uint32_t GetSize() { return this->size; }
 
-	void Allocate(uint32 size)
+	void Allocate(uint32_t size)
 	{
 		this->ptr.reset(MallocT<byte>(size));
 		this->size = size;
@@ -57,12 +57,12 @@ private:
 	std::unique_ptr<void, NoOpDeleter> ptr;
 
 public:
-	uint32 id;
+	uint32_t id;
 	uint count;
 
 	SpriteType type;     ///< In some cases a single sprite is misused by two NewGRFs. Once as real sprite and once as recolour sprite. If the recolour sprite gets into the cache it might be drawn as real sprite which causes enormous trouble.
-	uint8 total_missing_zoom_levels = 0; ///< Zoom levels missing entirely
-	uint16 flags;        ///< Control flags, see SpriteCacheCtrlFlags
+	uint8_t total_missing_zoom_levels = 0; ///< Zoom levels missing entirely
+	uint16_t flags;      ///< Control flags, see SpriteCacheCtrlFlags
 
 	void *GetPtr() { return this->ptr.get(); }
 	const void *GetPtr() const { return this->ptr.get(); }
@@ -103,7 +103,7 @@ public:
 		this->total_missing_zoom_levels = 0;
 	}
 
-	void RemoveByMissingZoomLevels(uint8 lvls)
+	void RemoveByMissingZoomLevels(uint8_t lvls)
 	{
 		Sprite *base = this->GetSpritePtr();
 		if (base == nullptr) {

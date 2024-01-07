@@ -91,7 +91,7 @@
 	switch (infra_type) {
 		case INFRASTRUCTURE_RAIL: {
 			Money cost;
-			uint32 rail_total = c->infrastructure.GetRailTotal();
+			uint32_t rail_total = c->infrastructure.GetRailTotal();
 			for (::RailType rt = ::RAILTYPE_BEGIN; rt != ::RAILTYPE_END; rt++) {
 				cost += RailMaintenanceCost(rt, c->infrastructure.rail[rt], rail_total);
 			}
@@ -103,7 +103,7 @@
 
 		case INFRASTRUCTURE_ROAD: {
 			Money cost;
-			uint32 road_total = c->infrastructure.GetRoadTotal();
+			uint32_t road_total = c->infrastructure.GetRoadTotal();
 			for (::RoadType rt = ::ROADTYPE_BEGIN; rt != ::ROADTYPE_END; rt++) {
 				cost += RoadMaintenanceCost(rt, c->infrastructure.road[rt], road_total);
 			}

@@ -259,24 +259,24 @@ static const SaveLoad _town_desc[] = {
 };
 
 static const SaveLoad _town_supplied_desc[] = {
-	SLE_CONDVAR(TransportedCargoStat<uint32>, old_max, SLE_UINT32, SLV_165, SL_MAX_VERSION),
-	SLE_CONDVAR(TransportedCargoStat<uint32>, new_max, SLE_UINT32, SLV_165, SL_MAX_VERSION),
-	SLE_CONDVAR(TransportedCargoStat<uint32>, old_act, SLE_UINT32, SLV_165, SL_MAX_VERSION),
-	SLE_CONDVAR(TransportedCargoStat<uint32>, new_act, SLE_UINT32, SLV_165, SL_MAX_VERSION),
+	SLE_CONDVAR(TransportedCargoStat<uint32_t>, old_max, SLE_UINT32, SLV_165, SL_MAX_VERSION),
+	SLE_CONDVAR(TransportedCargoStat<uint32_t>, new_max, SLE_UINT32, SLV_165, SL_MAX_VERSION),
+	SLE_CONDVAR(TransportedCargoStat<uint32_t>, old_act, SLE_UINT32, SLV_165, SL_MAX_VERSION),
+	SLE_CONDVAR(TransportedCargoStat<uint32_t>, new_act, SLE_UINT32, SLV_165, SL_MAX_VERSION),
 };
 
 static const SaveLoad _town_received_desc[] = {
-	SLE_CONDVAR(TransportedCargoStat<uint16>, old_max, SLE_UINT16, SLV_165, SL_MAX_VERSION),
-	SLE_CONDVAR(TransportedCargoStat<uint16>, new_max, SLE_UINT16, SLV_165, SL_MAX_VERSION),
-	SLE_CONDVAR(TransportedCargoStat<uint16>, old_act, SLE_UINT16, SLV_165, SL_MAX_VERSION),
-	SLE_CONDVAR(TransportedCargoStat<uint16>, new_act, SLE_UINT16, SLV_165, SL_MAX_VERSION),
+	SLE_CONDVAR(TransportedCargoStat<uint16_t>, old_max, SLE_UINT16, SLV_165, SL_MAX_VERSION),
+	SLE_CONDVAR(TransportedCargoStat<uint16_t>, new_max, SLE_UINT16, SLV_165, SL_MAX_VERSION),
+	SLE_CONDVAR(TransportedCargoStat<uint16_t>, old_act, SLE_UINT16, SLV_165, SL_MAX_VERSION),
+	SLE_CONDVAR(TransportedCargoStat<uint16_t>, new_act, SLE_UINT16, SLV_165, SL_MAX_VERSION),
 };
 
 static const SaveLoad _town_received_desc_spp[] = {
-	SLE_CONDVAR(TransportedCargoStat<uint16>, old_max, SLE_FILE_U32 | SLE_VAR_U16, SLV_165, SL_MAX_VERSION),
-	SLE_CONDVAR(TransportedCargoStat<uint16>, new_max, SLE_FILE_U32 | SLE_VAR_U16, SLV_165, SL_MAX_VERSION),
-	SLE_CONDVAR(TransportedCargoStat<uint16>, old_act, SLE_FILE_U32 | SLE_VAR_U16, SLV_165, SL_MAX_VERSION),
-	SLE_CONDVAR(TransportedCargoStat<uint16>, new_act, SLE_FILE_U32 | SLE_VAR_U16, SLV_165, SL_MAX_VERSION),
+	SLE_CONDVAR(TransportedCargoStat<uint16_t>, old_max, SLE_FILE_U32 | SLE_VAR_U16, SLV_165, SL_MAX_VERSION),
+	SLE_CONDVAR(TransportedCargoStat<uint16_t>, new_max, SLE_FILE_U32 | SLE_VAR_U16, SLV_165, SL_MAX_VERSION),
+	SLE_CONDVAR(TransportedCargoStat<uint16_t>, old_act, SLE_FILE_U32 | SLE_VAR_U16, SLV_165, SL_MAX_VERSION),
+	SLE_CONDVAR(TransportedCargoStat<uint16_t>, new_act, SLE_FILE_U32 | SLE_VAR_U16, SLV_165, SL_MAX_VERSION),
 };
 
 std::vector<SaveLoad> _filtered_town_desc;
@@ -350,8 +350,8 @@ static void Load_TOWN()
 
 		if ((!IsSavegameVersionBefore(SLV_166) && IsSavegameVersionBefore(SLV_REMOVE_TOWN_CARGO_CACHE)) || SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_MATRIX)) {
 			SlSkipBytes(4); // tile
-			uint16 w = SlReadUint16();
-			uint16 h = SlReadUint16();
+			uint16_t w = SlReadUint16();
+			uint16_t h = SlReadUint16();
 			if (w != 0) {
 				SlSkipBytes((SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_MATRIX) ? 8 : 4) * ((uint)(w / 4) * (uint)(h / 4)));
 			}
@@ -387,7 +387,7 @@ void Save_TNNC()
 	}
 
 	size_t length = 8 + (Town::GetNumItems() * 6);
-	uint32 flags = 0;
+	uint32_t flags = 0;
 
 	if (IsGetTownZonesCallbackHandlerPresent()) {
 		flags |= 1;
@@ -397,7 +397,7 @@ void Save_TNNC()
 	SlSetLength(length);
 
 	SlWriteUint32(flags);
-	SlWriteUint32((uint32)Town::GetNumItems());
+	SlWriteUint32((uint32_t)Town::GetNumItems());
 
 	for (const Town *t : Town::Iterate()) {
 		SlWriteUint32(t->index);
@@ -419,13 +419,13 @@ void Load_TNNC()
 		return;
 	}
 
-	const uint32 flags = SlReadUint32();
-	const uint32 count = SlReadUint32();
+	const uint32_t flags = SlReadUint32();
+	const uint32_t count = SlReadUint32();
 
 	_town_noise_no_update = true;
 	_town_zone_radii_no_update = (flags & 1);
 
-	for (uint32 idx = 0; idx < count; idx++) {
+	for (uint32_t idx = 0; idx < count; idx++) {
 		Town *t = Town::Get(SlReadUint32());
 		t->noise_reached = SlReadUint16();
 		if (flags & 1) {
@@ -436,7 +436,7 @@ void Load_TNNC()
 	}
 }
 
-static ChunkSaveLoadSpecialOpResult Special_TNNC(uint32 chunk_id, ChunkSaveLoadSpecialOp op)
+static ChunkSaveLoadSpecialOpResult Special_TNNC(uint32_t chunk_id, ChunkSaveLoadSpecialOp op)
 {
 	switch (op) {
 		case CSLSO_SHOULD_SAVE_CHUNK:

@@ -44,7 +44,7 @@ struct SpecialEventLogEntry {
 	std::string msg;
 	Date date;
 	DateFract date_fract;
-	uint8 tick_skip_counter;
+	uint8_t tick_skip_counter;
 	CompanyID current_company;
 	CompanyID local_company;
 

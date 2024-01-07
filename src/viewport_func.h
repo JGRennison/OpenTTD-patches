@@ -29,7 +29,7 @@ void ClearViewportCache(Viewport *vp);
 void ClearViewportLandPixelCache(Viewport *vp);
 void ClearViewportCaches();
 void DeleteWindowViewport(Window *w);
-void InitializeWindowViewport(Window *w, int x, int y, int width, int height, uint32 follow_flags, ZoomLevel zoom);
+void InitializeWindowViewport(Window *w, int x, int y, int width, int height, uint32_t follow_flags, ZoomLevel zoom);
 Viewport *IsPtInWindowViewport(const Window *w, int x, int y);
 Point TranslateXYToTileCoord(const Viewport *vp, int x, int y, bool clamp_to_map = true);
 Point GetTileBelowCursor();
@@ -73,10 +73,10 @@ inline void MaxZoomInOut(ZoomStateChange how, Window *w)
 void OffsetGroundSprite(int x, int y);
 
 void DrawGroundSprite(SpriteID image, PaletteID pal, const SubSprite *sub = nullptr, int extra_offs_x = 0, int extra_offs_y = 0);
-void DrawGroundSpriteAt(SpriteID image, PaletteID pal, int32 x, int32 y, int z, const SubSprite *sub = nullptr, int extra_offs_x = 0, int extra_offs_y = 0);
+void DrawGroundSpriteAt(SpriteID image, PaletteID pal, int32_t x, int32_t y, int z, const SubSprite *sub = nullptr, int extra_offs_x = 0, int extra_offs_y = 0);
 void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w, int h, int dz, int z, bool transparent = false, int bb_offset_x = 0, int bb_offset_y = 0, int bb_offset_z = 0, const SubSprite *sub = nullptr);
 void AddChildSpriteScreen(SpriteID image, PaletteID pal, int x, int y, bool transparent = false, const SubSprite *sub = nullptr, bool scale = true, ChildScreenSpritePositionMode position_mode = ChildScreenSpritePositionMode::Relative);
-void ViewportAddString(ViewportDrawerDynamic *vdd, const DrawPixelInfo *dpi, ZoomLevel small_from, const ViewportSign *sign, StringID string_normal, StringID string_small, StringID string_small_shadow, uint64 params_1, uint64 params_2 = 0, Colours colour = INVALID_COLOUR);
+void ViewportAddString(ViewportDrawerDynamic *vdd, const DrawPixelInfo *dpi, ZoomLevel small_from, const ViewportSign *sign, StringID string_normal, StringID string_small, StringID string_small_shadow, uint64_t params_1, uint64_t params_2 = 0, Colours colour = INVALID_COLOUR);
 
 
 void StartSpriteCombine();
@@ -94,7 +94,7 @@ void SetRedErrorSquare(TileIndex tile);
 void SetTileSelectSize(int w, int h);
 void SetTileSelectBigSize(int ox, int oy, int sx, int sy);
 
-void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint8 display_flags);
+void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint8_t display_flags);
 void ViewportDoDrawProcessAllPending();
 
 bool ScrollWindowToTile(TileIndex tile, Window *w, bool instant = false);

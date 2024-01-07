@@ -38,11 +38,11 @@ static std::vector<TileIndex> _path_tile;
 
 namespace upstream_sl {
 
-static uint8  _cargo_periods;
-static uint16 _cargo_source;
-static uint32 _cargo_source_xy;
-static uint16 _cargo_count;
-static uint16 _cargo_paid_for;
+static uint8_t  _cargo_periods;
+static uint16_t _cargo_source;
+static uint32_t _cargo_source_xy;
+static uint16_t _cargo_count;
+static uint16_t _cargo_paid_for;
 static Money  _cargo_feeder_share;
 
 class SlVehicleCommon : public DefaultSaveLoadHandler<SlVehicleCommon, Vehicle> {
@@ -271,7 +271,7 @@ public:
 		if (!_path_td.empty() && _path_td.size() <= RV_PATH_CACHE_SEGMENTS && _path_td.size() == _path_tile.size()) {
 			RoadVehicle *rv = RoadVehicle::From(v);
 			rv->cached_path.reset(new RoadVehPathCache());
-			rv->cached_path->count = (uint8)_path_td.size();
+			rv->cached_path->count = (uint8_t)_path_td.size();
 			for (size_t i = 0; i < _path_td.size(); i++) {
 				rv->cached_path->td[i] = _path_td[i];
 				rv->cached_path->tile[i] = _path_tile[i];
@@ -312,7 +312,7 @@ public:
 		if (!_path_td.empty() && _path_td.size() <= SHIP_PATH_CACHE_LENGTH) {
 			Ship *s = Ship::From(v);
 			s->cached_path.reset(new ShipPathCache());
-			s->cached_path->count = (uint8)_path_td.size();
+			s->cached_path->count = (uint8_t)_path_td.size();
 			for (size_t i = 0; i < _path_td.size(); i++) {
 				s->cached_path->td[i] = _path_td[i];
 			}

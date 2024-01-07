@@ -58,7 +58,7 @@ static bool _trace_restrict_button;          ///< trace restrict button in the s
 static bool _program_signal_button;          ///< program signal button in the signal GUI pressed
 static SignalVariant _cur_signal_variant;    ///< set the signal variant (for signal GUI)
 static SignalType _cur_signal_type;          ///< set the signal type (for signal GUI)
-static uint8 _cur_signal_style;              ///< set the signal style (for signal GUI)
+static uint8_t _cur_signal_style;            ///< set the signal style (for signal GUI)
 static uint _cur_signal_button;              ///< set the signal button (for signal GUI)
 
 extern TileIndex _rail_track_endtile; // rail_cmd.cpp
@@ -71,8 +71,8 @@ struct RailStationGUISettings {
 
 	bool newstations;                 ///< Are custom station definitions available?
 	StationClassID station_class;     ///< Currently selected custom station class (if newstations is \c true )
-	uint16 station_type;              ///< %Station type within the currently selected custom station class (if newstations is \c true )
-	uint16 station_count;             ///< Number of custom stations (if newstations is \c true )
+	uint16_t station_type;            ///< %Station type within the currently selected custom station class (if newstations is \c true )
+	uint16_t station_count;           ///< Number of custom stations (if newstations is \c true )
 };
 static RailStationGUISettings _railstation; ///< Settings of the station builder GUI
 
@@ -91,13 +91,13 @@ static bool IsStationAvailable(const StationSpec *statspec)
 {
 	if (statspec == nullptr || !HasBit(statspec->callback_mask, CBM_STATION_AVAIL)) return true;
 
-	uint16 cb_res = GetStationCallback(CBID_STATION_AVAILABILITY, 0, 0, statspec, nullptr, INVALID_TILE, _cur_railtype);
+	uint16_t cb_res = GetStationCallback(CBID_STATION_AVAILABILITY, 0, 0, statspec, nullptr, INVALID_TILE, _cur_railtype);
 	if (cb_res == CALLBACK_FAILED) return true;
 
 	return Convert8bitBooleanCallback(statspec->grf_prop.grffile, CBID_STATION_AVAILABILITY, cb_res);
 }
 
-void CcPlaySound_CONSTRUCTION_RAIL(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcPlaySound_CONSTRUCTION_RAIL(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Succeeded() && _settings_client.sound.confirm) SndPlayTileFx(SND_20_CONSTRUCTION_RAIL, tile);
 }
@@ -108,7 +108,7 @@ static CommandContainer GenericPlaceRailCmd(TileIndex tile, Track track)
 		tile,          // tile
 		_cur_railtype, // p1
 		track | (_settings_client.gui.auto_remove_signals << 3), // p2
-		(uint32) (_remove_button_clicked ?
+		(uint32_t) (_remove_button_clicked ?
 				CMD_REMOVE_SINGLE_RAIL | CMD_MSG(STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK) :
 				CMD_BUILD_SINGLE_RAIL | CMD_MSG(STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK)), // cmd
 		CcPlaySound_CONSTRUCTION_RAIL // callback
@@ -147,7 +147,7 @@ static const DiagDirection _place_depot_extra_dir[12] = {
 	DIAGDIR_NW, DIAGDIR_NE, DIAGDIR_NW, DIAGDIR_NE,
 };
 
-void CcRailDepot(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcRailDepot(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Failed()) return;
 
@@ -188,7 +188,7 @@ static void PlaceRail_Waypoint(TileIndex tile)
 	}
 }
 
-void CcStation(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcStation(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Failed()) return;
 
@@ -210,9 +210,9 @@ static void PlaceRail_Station(TileIndex tile)
 		VpStartPlaceSizing(tile, VPM_X_AND_Y_LIMITED, DDSP_BUILD_STATION);
 		VpSetPlaceSizingLimit(_settings_game.station.station_spread);
 	} else {
-		uint32 p1 = _cur_railtype | _railstation.orientation << 6 | _settings_client.gui.station_numtracks << 8 | _settings_client.gui.station_platlength << 16 | _ctrl_pressed << 24;
-		uint32 p2 = _railstation.station_class | INVALID_STATION << 16;
-		uint64 p3 = _railstation.station_type;
+		uint32_t p1 = _cur_railtype | _railstation.orientation << 6 | _settings_client.gui.station_numtracks << 8 | _settings_client.gui.station_platlength << 16 | _ctrl_pressed << 24;
+		uint32_t p2 = _railstation.station_class | INVALID_STATION << 16;
+		uint64_t p3 = _railstation.station_type;
 
 		int w = _settings_client.gui.station_numtracks;
 		int h = _settings_client.gui.station_platlength;
@@ -280,10 +280,10 @@ static void GenericPlaceSignals(TileIndex tile)
 	const Window *w = FindWindowById(WC_BUILD_SIGNAL, 0);
 
 	/* various bitstuffed elements for CmdBuildSingleSignal() */
-	uint32 p1 = track;
+	uint32_t p1 = track;
 
 	/* Which signals should we cycle through? */
-	uint8 cycle_types;
+	uint8_t cycle_types;
 
 	if (_settings_client.gui.cycle_signal_types == SIGNAL_CYCLE_ALL && (_settings_client.gui.signal_gui_mode == SIGNAL_GUI_ALL || _settings_game.vehicle.train_braking_model == TBM_REALISTIC)) {
 		cycle_types = SIGNAL_CYCLE_ALL;
@@ -332,7 +332,7 @@ static void PlaceRail_Bridge(TileIndex tile, Window *w)
 }
 
 /** Command callback for building a tunnel */
-void CcBuildRailTunnel(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcBuildRailTunnel(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Succeeded()) {
 		if (_settings_client.sound.confirm) SndPlayTileFx(SND_20_CONSTRUCTION_RAIL, tile);
@@ -420,8 +420,8 @@ static CommandContainer DoRailroadTrackCmd(TileIndex start_tile, TileIndex end_t
 	CommandContainer ret = NewCommandContainerBasic(
 		start_tile,                   // tile
 		end_tile,                     // p1
-		(uint32) (_cur_railtype | (track << 6) | (_settings_client.gui.auto_remove_signals << 13)), // p2
-		(uint32) (_remove_button_clicked ?
+		(uint32_t) (_cur_railtype | (track << 6) | (_settings_client.gui.auto_remove_signals << 13)), // p2
+		(uint32_t) (_remove_button_clicked ?
 				CMD_REMOVE_RAILROAD_TRACK | CMD_MSG(STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK) :
 				CMD_BUILD_RAILROAD_TRACK  | CMD_MSG(STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK)), // cmd
 		CcPlaySound_CONSTRUCTION_RAIL       // callback
@@ -463,8 +463,8 @@ static void HandleAutodirPlacement()
  */
 static void HandleAutoSignalPlacement()
 {
-	uint32 p2 = GB(_thd.drawstyle, 0, 3); // 0..5
-	uint64 p3 = 0;
+	uint32_t p2 = GB(_thd.drawstyle, 0, 3); // 0..5
+	uint64_t p3 = 0;
 
 	if ((_thd.drawstyle & HT_DRAG_MASK) == HT_RECT) { // one tile case
 		GenericPlaceSignals(TileVirtXY(_thd.selend.x, _thd.selend.y));
@@ -915,9 +915,9 @@ struct BuildRailToolbarWindow : Window {
 							DoCommandP(end_tile, start_tile, _ctrl_pressed ? 0 : 1, CMD_REMOVE_FROM_RAIL_WAYPOINT | CMD_MSG(STR_ERROR_CAN_T_REMOVE_TRAIN_WAYPOINT), CcPlaySound_CONSTRUCTION_RAIL);
 						} else {
 							TileArea ta(start_tile, end_tile);
-							uint32 p1 = _cur_railtype | (select_method == VPM_X_LIMITED ? AXIS_X : AXIS_Y) << 6 | ta.w << 8 | ta.h << 16 | _ctrl_pressed << 24;
-							uint32 p2 = STAT_CLASS_WAYP | INVALID_STATION << 16;
-							uint64 p3 = _cur_waypoint_type;
+							uint32_t p1 = _cur_railtype | (select_method == VPM_X_LIMITED ? AXIS_X : AXIS_Y) << 6 | ta.w << 8 | ta.h << 16 | _ctrl_pressed << 24;
+							uint32_t p2 = STAT_CLASS_WAYP | INVALID_STATION << 16;
+							uint64_t p3 = _cur_waypoint_type;
 
 							CommandContainer cmdcont = NewCommandContainerBasic(ta.tile, p1, p2, CMD_BUILD_RAIL_WAYPOINT | CMD_MSG(STR_ERROR_CAN_T_BUILD_TRAIN_WAYPOINT), CcPlaySound_CONSTRUCTION_RAIL);
 							cmdcont.p3 = p3;
@@ -993,9 +993,9 @@ static EventState RailToolbarGlobalHotkeys(int hotkey)
 	return w->OnHotkey(hotkey);
 }
 
-const uint16 _railtoolbar_autorail_keys[] = {'5', 'A' | WKC_GLOBAL_HOTKEY, 0};
-const uint16 _railtoolbar_polyrail_keys[] = {'Y', 'A' | WKC_CTRL | WKC_GLOBAL_HOTKEY, 0};
-const uint16 _railtoolbar_new_poly_keys[] = {'Y' | WKC_CTRL, 'A' | WKC_CTRL | WKC_SHIFT | WKC_GLOBAL_HOTKEY, 0};
+const uint16_t _railtoolbar_autorail_keys[] = {'5', 'A' | WKC_GLOBAL_HOTKEY, 0};
+const uint16_t _railtoolbar_polyrail_keys[] = {'Y', 'A' | WKC_CTRL | WKC_GLOBAL_HOTKEY, 0};
+const uint16_t _railtoolbar_new_poly_keys[] = {'Y' | WKC_CTRL, 'A' | WKC_CTRL | WKC_SHIFT | WKC_GLOBAL_HOTKEY, 0};
 
 static Hotkey railtoolbar_hotkeys[] = {
 	Hotkey('1', "build_ns", WID_RAT_BUILD_NS),
@@ -1103,9 +1103,9 @@ static void HandleStationPlacement(TileIndex start, TileIndex end)
 
 	if (_railstation.orientation == AXIS_X) Swap(numtracks, platlength);
 
-	uint32 p1 = _cur_railtype | _railstation.orientation << 6 | numtracks << 8 | platlength << 16 | _ctrl_pressed << 24;
-	uint32 p2 = _railstation.station_class | INVALID_STATION << 16;
-	uint64 p3 = _railstation.station_type;
+	uint32_t p1 = _cur_railtype | _railstation.orientation << 6 | numtracks << 8 | platlength << 16 | _ctrl_pressed << 24;
+	uint32_t p2 = _railstation.station_class | INVALID_STATION << 16;
+	uint64_t p3 = _railstation.station_type;
 
 	CommandContainer cmdcont = NewCommandContainerBasic(ta.tile, p1, p2, CMD_BUILD_RAIL_STATION | CMD_MSG(STR_ERROR_CAN_T_BUILD_RAILROAD_STATION), CcStation);
 	cmdcont.p3 = p3;
@@ -2250,23 +2250,23 @@ public:
 static Hotkey signaltoolbar_hotkeys[] = {
 	Hotkey('N', "routing_restriction", WID_BS_TRACE_RESTRICT),
 	Hotkey('K', "convert", WID_BS_CONVERT),
-	Hotkey((uint16)0, "program_signal", WID_BS_PROGRAM),
-	Hotkey((uint16)0, "semaphore_normal", WID_BS_SEMAPHORE_NORM),
-	Hotkey((uint16)0, "semaphore_entry", WID_BS_SEMAPHORE_ENTRY),
-	Hotkey((uint16)0, "semaphore_exit", WID_BS_SEMAPHORE_EXIT),
-	Hotkey((uint16)0, "semaphore_combo", WID_BS_SEMAPHORE_COMBO),
-	Hotkey((uint16)0, "semaphore_prog", WID_BS_SEMAPHORE_PROG),
-	Hotkey((uint16)0, "semaphore_pbs", WID_BS_SEMAPHORE_PBS),
-	Hotkey((uint16)0, "semaphore_pbs_oneway", WID_BS_SEMAPHORE_PBS_OWAY),
-	Hotkey((uint16)0, "semaphore_no_entry", WID_BS_SEMAPHORE_NO_ENTRY),
+	Hotkey((uint16_t)0, "program_signal", WID_BS_PROGRAM),
+	Hotkey((uint16_t)0, "semaphore_normal", WID_BS_SEMAPHORE_NORM),
+	Hotkey((uint16_t)0, "semaphore_entry", WID_BS_SEMAPHORE_ENTRY),
+	Hotkey((uint16_t)0, "semaphore_exit", WID_BS_SEMAPHORE_EXIT),
+	Hotkey((uint16_t)0, "semaphore_combo", WID_BS_SEMAPHORE_COMBO),
+	Hotkey((uint16_t)0, "semaphore_prog", WID_BS_SEMAPHORE_PROG),
+	Hotkey((uint16_t)0, "semaphore_pbs", WID_BS_SEMAPHORE_PBS),
+	Hotkey((uint16_t)0, "semaphore_pbs_oneway", WID_BS_SEMAPHORE_PBS_OWAY),
+	Hotkey((uint16_t)0, "semaphore_no_entry", WID_BS_SEMAPHORE_NO_ENTRY),
 	Hotkey('G', "signal_normal", WID_BS_ELECTRIC_NORM),
-	Hotkey((uint16)0, "signal_entry", WID_BS_ELECTRIC_ENTRY),
-	Hotkey((uint16)0, "signal_exit", WID_BS_ELECTRIC_EXIT),
-	Hotkey((uint16)0, "signal_combo", WID_BS_ELECTRIC_COMBO),
-	Hotkey((uint16)0, "signal_prog", WID_BS_ELECTRIC_PROG),
+	Hotkey((uint16_t)0, "signal_entry", WID_BS_ELECTRIC_ENTRY),
+	Hotkey((uint16_t)0, "signal_exit", WID_BS_ELECTRIC_EXIT),
+	Hotkey((uint16_t)0, "signal_combo", WID_BS_ELECTRIC_COMBO),
+	Hotkey((uint16_t)0, "signal_prog", WID_BS_ELECTRIC_PROG),
 	Hotkey('H', "signal_pbs", WID_BS_ELECTRIC_PBS),
 	Hotkey('J', "signal_pbs_oneway", WID_BS_ELECTRIC_PBS_OWAY),
-	Hotkey((uint16)0, "signal_no_entry", WID_BS_ELECTRIC_NO_ENTRY),
+	Hotkey((uint16_t)0, "signal_no_entry", WID_BS_ELECTRIC_NO_ENTRY),
 	HOTKEY_LIST_END
 };
 HotkeyList BuildSignalWindow::hotkeys("signaltoolbar", signaltoolbar_hotkeys);
@@ -2616,7 +2616,7 @@ struct BuildRailWaypointWindow : PickerWindowBase {
 		CheckRedrawWaypointCoverage(this, false);
 	}
 
-	void SelectWaypointSpec(uint16 spec_id)
+	void SelectWaypointSpec(uint16_t spec_id)
 	{
 		for (uint i = 0; i < (uint)this->list.size(); i++) {
 			if (this->list[i] == spec_id) {
@@ -2757,7 +2757,7 @@ static void SetDefaultRailGui()
  * Updates the current signal variant used in the signal GUI
  * to the one adequate to current year.
  */
-void ResetSignalVariant(int32 new_value)
+void ResetSignalVariant(int32_t new_value)
 {
 	SignalVariant new_variant = (_cur_year < _settings_client.gui.semaphore_build_before ? SIG_SEMAPHORE : SIG_ELECTRIC);
 
@@ -2892,7 +2892,7 @@ void ShowBuildRailStationPickerAndSelect(StationType station_type, const Station
 		trigger_widget(WID_RAT_BUILD_WAYPOINT);
 
 		BuildRailWaypointWindow *waypoint_window = dynamic_cast<BuildRailWaypointWindow *>(FindWindowById(WC_BUILD_WAYPOINT, TRANSPORT_RAIL));
-		if (waypoint_window != nullptr) waypoint_window->SelectWaypointSpec((uint16)spec_id);
+		if (waypoint_window != nullptr) waypoint_window->SelectWaypointSpec((uint16_t)spec_id);
 	} else {
 		trigger_widget(WID_RAT_BUILD_STATION);
 
@@ -2901,7 +2901,7 @@ void ShowBuildRailStationPickerAndSelect(StationType station_type, const Station
 	}
 }
 
-static void OpenBuildSignalWindow(BuildRailToolbarWindow *w, SignalVariant variant, SignalType type, uint8 style)
+static void OpenBuildSignalWindow(BuildRailToolbarWindow *w, SignalVariant variant, SignalType type, uint8_t style)
 {
 	if (!w->IsWidgetLowered(WID_RAT_BUILD_SIGNALS)) {
 		w->OnHotkey(WID_RAT_BUILD_SIGNALS);

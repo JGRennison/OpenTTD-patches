@@ -31,22 +31,22 @@ static const SaveLoad _roadstop_desc[] = {
 	SLE_REF(RoadStop, next,         REF_ROADSTOPS),
 };
 
-static uint16 _waiting_acceptance;
-static uint32 _old_num_flows;
-static uint16 _cargo_source;
-static uint32 _cargo_source_xy;
-static uint8  _cargo_periods;
+static uint16_t _waiting_acceptance;
+static uint32_t _old_num_flows;
+static uint16_t _cargo_source;
+static uint32_t _cargo_source_xy;
+static uint8_t  _cargo_periods;
 static Money  _cargo_feeder_share;
 
 CargoPacketList _packets;
-uint32 _old_num_dests;
+uint32_t _old_num_dests;
 uint _cargo_reserved_count;
 
 struct FlowSaveLoad {
 	FlowSaveLoad() : source(0), via(0), share(0), restricted(false) {}
 	StationID source;
 	StationID via;
-	uint32 share;
+	uint32_t share;
 	bool restricted;
 };
 
@@ -96,7 +96,7 @@ public:
 
 	void Load(BaseStation *bst) const override
 	{
-		uint8 num_specs = (uint8)SlGetStructListLength(UINT8_MAX);
+		uint8_t num_specs = (uint8_t)SlGetStructListLength(UINT8_MAX);
 
 		bst->speclist.resize(num_specs);
 		for (uint i = 0; i < num_specs; i++) {
@@ -124,7 +124,7 @@ public:
 
 	void Load(BaseStation *bst) const override
 	{
-		uint8 num_specs = (uint8)SlGetStructListLength(UINT8_MAX);
+		uint8_t num_specs = (uint8_t)SlGetStructListLength(UINT8_MAX);
 
 		bst->roadstop_speclist.resize(num_specs);
 		for (uint i = 0; i < num_specs; i++) {
@@ -191,7 +191,7 @@ public:
 		FlowSaveLoad flow;
 		FlowStat *fs = nullptr;
 		StationID prev_source = INVALID_STATION;
-		for (uint32 j = 0; j < num_flows; ++j) {
+		for (uint32_t j = 0; j < num_flows; ++j) {
 			SlObject(&flow, this->GetLoadDescription());
 			if (fs == nullptr || prev_source != flow.source) {
 				fs = &(*(ge->data->flows.insert(ge->data->flows.end(), FlowStat(flow.source, flow.via, flow.share, flow.restricted))));
@@ -344,7 +344,7 @@ public:
 	};
 	inline const static SaveLoadCompatTable compat_description = {};
 
-	static uint8 last_num_specs; ///< Number of specs of the last loaded station.
+	static uint8_t last_num_specs; ///< Number of specs of the last loaded station.
 
 	void Save(BaseStation *bst) const override
 	{
@@ -356,7 +356,7 @@ public:
 
 	void Load(BaseStation *bst) const override
 	{
-		uint32 num_tiles = (uint32)SlGetStructListLength(UINT32_MAX);
+		uint32_t num_tiles = (uint32_t)SlGetStructListLength(UINT32_MAX);
 		bst->custom_roadstop_tile_data.resize(num_tiles);
 		for (uint i = 0; i < num_tiles; i++) {
 			SlObject(&bst->custom_roadstop_tile_data[i], this->GetLoadDescription());

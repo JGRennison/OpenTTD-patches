@@ -442,7 +442,7 @@ struct NetworkChatWindow : public Window {
 		}
 	}
 
-	Point OnInitialPosition(int16 sm_width, int16 sm_height, int window_number) override
+	Point OnInitialPosition(int16_t sm_width, int16_t sm_height, int window_number) override
 	{
 		Point pt = { 0, _screen.height - sm_height - FindWindowById(WC_STATUS_BAR, 0)->height };
 		return pt;
@@ -470,7 +470,7 @@ struct NetworkChatWindow : public Window {
 		}
 	}
 
-	EventState OnKeyPress(WChar key, uint16 keycode) override
+	EventState OnKeyPress(char32_t key, uint16_t keycode) override
 	{
 		EventState state = ES_NOT_HANDLED;
 		if (keycode == WKC_TAB) {

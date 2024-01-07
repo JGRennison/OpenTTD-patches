@@ -106,10 +106,10 @@ using IndustryTileLayout = std::vector<IndustryTileLayoutTile>;
  */
 struct IndustrySpec {
 	std::vector<IndustryTileLayout> layouts;    ///< List of possible tile layouts for the industry
-	std::vector<uint64> layout_anim_masks;      ///< Animation inhibit masks for tile layouts for the industry
-	uint8 cost_multiplier;                      ///< Base construction cost multiplier.
-	uint32 removal_cost_multiplier;             ///< Base removal cost multiplier.
-	uint32 prospecting_chance;                  ///< Chance prospecting succeeds
+	std::vector<uint64_t> layout_anim_masks;    ///< Animation inhibit masks for tile layouts for the industry
+	uint8_t cost_multiplier;                    ///< Base construction cost multiplier.
+	uint32_t removal_cost_multiplier;           ///< Base removal cost multiplier.
+	uint32_t prospecting_chance;                ///< Chance prospecting succeeds
 	IndustryType conflicting[3];                ///< Industries this industry cannot be close to
 	byte check_proc;                            ///< Index to a procedure to check for conflicting circumstances
 	std::array<CargoID, INDUSTRY_NUM_OUTPUTS> produced_cargo{};
@@ -120,7 +120,7 @@ struct IndustrySpec {
 	 */
 	byte minimal_cargo;
 	std::array<CargoID, INDUSTRY_NUM_INPUTS> accepts_cargo{}; ///< 16 accepted cargoes.
-	uint16 input_cargo_multiplier[INDUSTRY_NUM_INPUTS][INDUSTRY_NUM_OUTPUTS]; ///< Input cargo multipliers (multiply amount of incoming cargo for the produced cargoes)
+	uint16_t input_cargo_multiplier[INDUSTRY_NUM_INPUTS][INDUSTRY_NUM_OUTPUTS]; ///< Input cargo multipliers (multiply amount of incoming cargo for the produced cargoes)
 	IndustryLifeType life_type;                 ///< This is also known as Industry production flag, in newgrf specs
 	byte climate_availability;                  ///< Bitmask, giving landscape enums as bit position
 	IndustryBehaviour behaviour;                ///< How this industry will behave, and how others entities can use it
@@ -133,11 +133,11 @@ struct IndustrySpec {
 	StringID station_name;                      ///< Default name for nearby station
 	byte appear_ingame[NUM_LANDSCAPE];          ///< Probability of appearance in game
 	byte appear_creation[NUM_LANDSCAPE];        ///< Probability of appearance during map creation
-	uint8 number_of_sounds;                     ///< Number of sounds available in the sounds array
-	const uint8 *random_sounds;                 ///< array of random sounds.
+	uint8_t number_of_sounds;                   ///< Number of sounds available in the sounds array
+	const uint8_t *random_sounds;               ///< array of random sounds.
 	/* Newgrf data */
-	uint16 callback_mask;                       ///< Bitmask of industry callbacks that have to be called
-	uint8 cleanup_flag;                         ///< flags indicating which data should be freed upon cleaning up
+	uint16_t callback_mask;                     ///< Bitmask of industry callbacks that have to be called
+	uint8_t cleanup_flag;                       ///< flags indicating which data should be freed upon cleaning up
 	bool enabled;                               ///< entity still available (by default true).newgrf can disable it, though
 	GRFFileProps grf_prop;                      ///< properties related to the grf file
 
@@ -156,7 +156,7 @@ struct IndustrySpec {
  */
 struct IndustryTileSpec {
 	std::array<CargoID, INDUSTRY_NUM_INPUTS> accepts_cargo; ///< Cargo accepted by this tile
-	std::array<int8_t, INDUSTRY_NUM_INPUTS> acceptance; ///< Level of acceptance per cargo type (signed, may be negative!)
+	std::array<int8_t, INDUSTRY_NUM_INPUTS> acceptance;     ///< Level of acceptance per cargo type (signed, may be negative!)
 	Slope slopes_refused;                 ///< slope pattern on which this tile cannot be built
 	byte anim_production;                 ///< Animation frame to start when goods are produced
 	byte anim_next;                       ///< Next frame in an animation
@@ -166,11 +166,11 @@ struct IndustryTileSpec {
 	 */
 	bool anim_state;
 	/* Newgrf data */
-	uint8 callback_mask;                  ///< Bitmask of industry tile callbacks that have to be called
-	AnimationInfo animation;              ///< Information about the animation (is it looping, how many loops etc)
+	uint8_t callback_mask;                  ///< Bitmask of industry tile callbacks that have to be called
+	AnimationInfo animation;                ///< Information about the animation (is it looping, how many loops etc)
 	IndustryTileSpecialFlags special_flags; ///< Bitmask of extra flags used by the tile
-	bool enabled;                         ///< entity still available (by default true).newgrf can disable it, though
-	GRFFileProps grf_prop;                ///< properties related to the grf file
+	bool enabled;                           ///< entity still available (by default true).newgrf can disable it, though
+	GRFFileProps grf_prop;                  ///< properties related to the grf file
 };
 
 /* industry_cmd.cpp*/
@@ -208,6 +208,6 @@ inline IndustryGfx GetTranslatedIndustryTileID(IndustryGfx gfx)
 	}
 }
 
-static const uint8 IT_INVALID = 255;
+static const uint8_t IT_INVALID = 255;
 
 #endif /* INDUSTRYTYPE_H */

@@ -27,7 +27,7 @@
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdAddPlan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdAddPlan(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	if (!Plan::CanAllocateItem()) return_cmd_error(STR_ERROR_TOO_MANY_PLANS);
 	Owner o = (Owner) p1;
@@ -49,7 +49,7 @@ struct PlanLineCmdData : public CommandAuxiliarySerialisable<PlanLineCmdData> {
 
 	virtual void Serialise(CommandSerialisationBuffer &buffer) const override
 	{
-		buffer.Send_uint32((uint32)this->tiles.size());
+		buffer.Send_uint32((uint32_t)this->tiles.size());
 		for (TileIndex t : this->tiles) {
 			buffer.Send_uint32(t);
 		}
@@ -57,7 +57,7 @@ struct PlanLineCmdData : public CommandAuxiliarySerialisable<PlanLineCmdData> {
 
 	CommandCost Deserialise(CommandDeserialisationBuffer &buffer)
 	{
-		uint32 size = buffer.Recv_uint32();
+		uint32_t size = buffer.Recv_uint32();
 		if (!buffer.CanRecvBytes(size * 4)) return CMD_ERROR;
 		this->tiles.resize(size);
 		for (uint i = 0; i < size; i++) {
@@ -84,7 +84,7 @@ bool AddPlanLine(PlanID plan, TileVector tiles)
  * @param aux_data auxiliary data
  * @return the cost of this operation or an error
  */
-CommandCost CmdAddPlanLine(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdAddPlanLine(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	Plan *p = Plan::GetIfValid(p1);
 	if (p == nullptr) return CMD_ERROR;
@@ -120,7 +120,7 @@ CommandCost CmdAddPlanLine(TileIndex tile, DoCommandFlag flags, uint32 p1, uint3
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdChangePlanVisibility(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdChangePlanVisibility(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	Plan *p = Plan::GetIfValid(p1);
 	if (p == nullptr) return CMD_ERROR;
@@ -151,7 +151,7 @@ CommandCost CmdChangePlanVisibility(TileIndex tile, DoCommandFlag flags, uint32 
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdChangePlanColour(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdChangePlanColour(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	Plan *p = Plan::GetIfValid(p1);
 	if (p == nullptr) return CMD_ERROR;
@@ -179,7 +179,7 @@ CommandCost CmdChangePlanColour(TileIndex tile, DoCommandFlag flags, uint32 p1, 
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdRemovePlan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdRemovePlan(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	Plan *p = Plan::GetIfValid(p1);
 	if (p == nullptr) return CMD_ERROR;
@@ -206,7 +206,7 @@ CommandCost CmdRemovePlan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32
  * @param text unused
  * @return the cost of this operation or an error
  */
-CommandCost CmdRemovePlanLine(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdRemovePlanLine(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	Plan *p = Plan::GetIfValid(p1);
 	if (p == nullptr) return CMD_ERROR;
@@ -236,7 +236,7 @@ CommandCost CmdRemovePlanLine(TileIndex tile, DoCommandFlag flags, uint32 p1, ui
 * @param text the new name
 * @return the cost of this operation or an error
 */
-CommandCost CmdRenamePlan(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdRenamePlan(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	if (text == nullptr) return CMD_ERROR;
 

@@ -22,8 +22,8 @@ protected:
 	uint total_files;      ///< Number of files to download
 	uint downloaded_files; ///< Number of files downloaded
 
-	uint32 cur_id;    ///< The current ID of the downloaded file
-	std::string name; ///< The current name of the downloaded file
+	uint32_t cur_id;    ///< The current ID of the downloaded file
+	std::string name;   ///< The current name of the downloaded file
 
 public:
 	/**

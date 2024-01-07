@@ -168,7 +168,7 @@ private:
 
 	Money money_this_year;
 	Money money_last_year;
-	uint32 occupancy_ratio;
+	uint32_t occupancy_ratio;
 
 	void AddChildren(GUIGroupList &source, GroupID parent, int indent)
 	{
@@ -388,7 +388,7 @@ private:
 	{
 		Money this_year = 0;
 		Money last_year = 0;
-		uint32 occupancy = 0;
+		uint32_t occupancy = 0;
 		uint vehicle_count = (uint)this->vehicles.size();
 
 		for (uint i = 0; i < vehicle_count; i++) {
@@ -400,7 +400,7 @@ private:
 			occupancy += v->trip_occupancy;
 		}
 
-		uint32 occupancy_ratio = vehicle_count ? occupancy / vehicle_count : 0;
+		uint32_t occupancy_ratio = vehicle_count ? occupancy / vehicle_count : 0;
 
 		bool ret = (this->money_this_year != this_year) || (this->money_last_year != last_year) || (occupancy_ratio != this->occupancy_ratio);
 		this->money_this_year = this_year;
@@ -609,7 +609,7 @@ public:
 				WID_GL_AVAILABLE_VEHICLES);
 
 		/* If not a default group and the group has replace protection, show an enabled replace sprite. */
-		uint16 protect_sprite = SPR_GROUP_REPLACE_OFF_TRAIN;
+		uint16_t protect_sprite = SPR_GROUP_REPLACE_OFF_TRAIN;
 		if (!IsDefaultGroupID(this->vli.index) && !IsAllGroupID(this->vli.index) && HasBit(Group::Get(this->vli.index)->flags, GroupFlags::GF_REPLACE_PROTECTION)) protect_sprite = SPR_GROUP_REPLACE_ON_TRAIN;
 		this->GetWidget<NWidgetCore>(WID_GL_REPLACE_PROTECTION)->widget_data = protect_sprite + this->vli.vtype;
 
@@ -1304,7 +1304,7 @@ static inline VehicleGroupWindow *FindVehicleGroupWindow(VehicleType vt, Owner o
  * @param cmd Unused.
  * @see CmdCreateGroup
  */
-void CcCreateGroup(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcCreateGroup(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Failed()) return;
 	assert(p1 <= VEH_AIRCRAFT);
@@ -1321,7 +1321,7 @@ void CcCreateGroup(const CommandCost &result, TileIndex tile, uint32 p1, uint32 
  * @param p2 Bit 0-19: Vehicle ID.
  * @param cmd Unused.
  */
-void CcAddVehicleNewGroup(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcAddVehicleNewGroup(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Failed()) return;
 	assert(Vehicle::IsValidID(GB(p2, 0, 20)));

@@ -102,7 +102,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	return GetStorage()->async_mode_instance;
 }
 
-/* static */ void ScriptObject::SetLastCommand(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+/* static */ void ScriptObject::SetLastCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	ScriptStorage *s = GetStorage();
 	DEBUG(script, 6, "SetLastCommand company=%02d tile=%06x p1=%08x p2=%08x p3=" OTTD_PRINTFHEX64PAD " cmd=%d", s->root_company, tile, p1, p2, p3, cmd);
@@ -113,7 +113,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	s->last_cmd = cmd & CMD_ID_MASK;
 }
 
-/* static */ bool ScriptObject::CheckLastCommand(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+/* static */ bool ScriptObject::CheckLastCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	ScriptStorage *s = GetStorage();
 	DEBUG(script, 6, "CheckLastCommand company=%02d tile=%06x p1=%08x p2=%08x p3=" OTTD_PRINTFHEX64PAD " cmd=%d", s->root_company, tile, p1, p2, p3, cmd);
@@ -160,12 +160,12 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	return GetStorage()->last_cost;
 }
 
-/* static */ void ScriptObject::SetLastCommandResultData(uint32 last_result)
+/* static */ void ScriptObject::SetLastCommandResultData(uint32_t last_result)
 {
 	GetStorage()->last_result = last_result;
 }
 
-/* static */ uint32 ScriptObject::GetLastCommandResultData()
+/* static */ uint32_t ScriptObject::GetLastCommandResultData()
 {
 	return GetStorage()->last_result;
 }
@@ -327,7 +327,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	return GetStorage()->callback_value[index];
 }
 
-/* static */ bool ScriptObject::DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint cmd, const char *text, const CommandAuxiliaryBase *aux_data, Script_SuspendCallbackProc *callback)
+/* static */ bool ScriptObject::DoCommandEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint cmd, const char *text, const CommandAuxiliaryBase *aux_data, Script_SuspendCallbackProc *callback)
 {
 	if (!ScriptObject::CanSuspend()) {
 		throw Script_FatalError("You are not allowed to execute any DoCommand (even indirect) in your constructor, Save(), Load(), and any valuator.");

@@ -22,7 +22,7 @@
 #include <vector>
 
 /** Various object behaviours. */
-enum ObjectFlags : uint16 {
+enum ObjectFlags : uint16_t {
 	OBJECT_FLAG_NONE               =       0, ///< Just nothing.
 	OBJECT_FLAG_ONLY_IN_SCENEDIT   = 1 <<  0, ///< Object can only be constructed in the scenario editor.
 	OBJECT_FLAG_CANNOT_REMOVE      = 1 <<  1, ///< Object can not be removed.
@@ -58,12 +58,12 @@ enum ObjectEdgeFoundationFlags {
 };
 DECLARE_ENUM_AS_BIT_SET(ObjectEdgeFoundationFlags)
 
-static const uint8 OBJECT_SIZE_1X1 = 0x11; ///< The value of a NewGRF's size property when the object is 1x1 tiles: low nibble for X, high nibble for Y.
+static const uint8_t OBJECT_SIZE_1X1 = 0x11; ///< The value of a NewGRF's size property when the object is 1x1 tiles: low nibble for X, high nibble for Y.
 
 void ResetObjects();
 
 /** Class IDs for objects. */
-enum ObjectClassID : uint16 {
+enum ObjectClassID : uint16_t {
 	OBJECT_CLASS_BEGIN   =      0, ///< The lowest valid value
 	OBJECT_CLASS_MAX     = 0xFFFF, ///< Maximum number of classes.
 	INVALID_OBJECT_CLASS = 0xFFFF, ///< Class for the less fortunate.
@@ -91,26 +91,26 @@ enum ObjectViewportMapType {
  */
 struct ObjectSpec {
 	/* 2 because of the "normal" and "buy" sprite stacks. */
-	GRFFilePropsBase<2> grf_prop; ///< Properties related the the grf file
-	AnimationInfo animation;      ///< Information about the animation.
-	ObjectClassID cls_id;         ///< The class to which this spec belongs.
-	StringID name;                ///< The name for this object.
+	GRFFilePropsBase<2> grf_prop;   ///< Properties related the the grf file
+	AnimationInfo animation;        ///< Information about the animation.
+	ObjectClassID cls_id;           ///< The class to which this spec belongs.
+	StringID name;                  ///< The name for this object.
 
-	uint8 climate;                ///< In which climates is this object available?
-	uint8 size;                   ///< The size of this objects; low nibble for X, high nibble for Y.
-	uint8 build_cost_multiplier;  ///< Build cost multiplier per tile.
-	uint8 clear_cost_multiplier;  ///< Clear cost multiplier per tile.
-	Date introduction_date;       ///< From when can this object be built.
-	Date end_of_life_date;        ///< When can't this object be built anymore.
-	ObjectFlags flags;            ///< Flags/settings related to the object.
-	ObjectCtrlFlags ctrl_flags;   ///< Extra control flags.
-	uint8 edge_foundation[4];     ///< Edge foundation flags
-	uint16 callback_mask;         ///< Bitmask of requested/allowed callbacks.
-	uint8 height;                 ///< The height of this structure, in heightlevels; max MAX_TILE_HEIGHT.
-	uint8 views;                  ///< The number of views.
-	uint8 generate_amount;        ///< Number of objects which are attempted to be generated per 256^2 map during world generation.
+	uint8_t climate;                ///< In which climates is this object available?
+	uint8_t size;                   ///< The size of this objects; low nibble for X, high nibble for Y.
+	uint8_t build_cost_multiplier;  ///< Build cost multiplier per tile.
+	uint8_t clear_cost_multiplier;  ///< Clear cost multiplier per tile.
+	Date introduction_date;         ///< From when can this object be built.
+	Date end_of_life_date;          ///< When can't this object be built anymore.
+	ObjectFlags flags;              ///< Flags/settings related to the object.
+	ObjectCtrlFlags ctrl_flags;     ///< Extra control flags.
+	uint8_t edge_foundation[4];     ///< Edge foundation flags
+	uint16_t callback_mask;         ///< Bitmask of requested/allowed callbacks.
+	uint8_t height;                 ///< The height of this structure, in heightlevels; max MAX_TILE_HEIGHT.
+	uint8_t views;                  ///< The number of views.
+	uint8_t generate_amount;        ///< Number of objects which are attempted to be generated per 256^2 map during world generation.
 	ObjectViewportMapType vport_map_type; ///< Viewport map type
-	uint16 vport_map_subtype;     ///< Viewport map subtype
+	uint16_t vport_map_subtype;     ///< Viewport map subtype
 
 	/**
 	 * Test if this object is enabled.
@@ -148,7 +148,7 @@ struct ObjectScopeResolver : public ScopeResolver {
 	struct Object *obj;     ///< The object the callback is ran for.
 	const ObjectSpec *spec; ///< Specification of the object type.
 	TileIndex tile;         ///< The tile related to the object.
-	uint8 view;             ///< The view of the object.
+	uint8_t view;           ///< The view of the object.
 
 	/**
 	 * Constructor of an object scope resolver.
@@ -157,13 +157,13 @@ struct ObjectScopeResolver : public ScopeResolver {
 	 * @param tile %Tile of the object.
 	 * @param view View of the object.
 	 */
-	ObjectScopeResolver(ResolverObject &ro, Object *obj, const ObjectSpec *spec, TileIndex tile, uint8 view = 0)
+	ObjectScopeResolver(ResolverObject &ro, Object *obj, const ObjectSpec *spec, TileIndex tile, uint8_t view = 0)
 		: ScopeResolver(ro), obj(obj), spec(spec), tile(tile), view(view)
 	{
 	}
 
-	uint32 GetRandomBits() const override;
-	uint32 GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const override;
+	uint32_t GetRandomBits() const override;
+	uint32_t GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra *extra) const override;
 };
 
 /** A resolver object to be used with feature 0F spritegroups. */
@@ -171,8 +171,8 @@ struct ObjectResolverObject : public ResolverObject {
 	ObjectScopeResolver object_scope; ///< The object scope resolver.
 	TownScopeResolver *town_scope;    ///< The town scope resolver (created on the first call).
 
-	ObjectResolverObject(const ObjectSpec *spec, Object *o, TileIndex tile, uint8 view = 0,
-			CallbackID callback = CBID_NO_CALLBACK, uint32 param1 = 0, uint32 param2 = 0);
+	ObjectResolverObject(const ObjectSpec *spec, Object *o, TileIndex tile, uint8_t view = 0,
+			CallbackID callback = CBID_NO_CALLBACK, uint32_t param1 = 0, uint32_t param2 = 0);
 	~ObjectResolverObject();
 
 	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, VarSpriteGroupScopeOffset relative = 0) override
@@ -193,7 +193,7 @@ struct ObjectResolverObject : public ResolverObject {
 	}
 
 	GrfSpecFeature GetFeature() const override;
-	uint32 GetDebugID() const override;
+	uint32_t GetDebugID() const override;
 
 private:
 	TownScopeResolver *GetTown();
@@ -205,12 +205,12 @@ typedef NewGRFClass<ObjectSpec, ObjectClassID, OBJECT_CLASS_MAX> ObjectClass;
 static const size_t OBJECT_SPRITE_GROUP_DEFAULT = 0;
 static const size_t OBJECT_SPRITE_GROUP_PURCHASE = 1;
 
-uint16 GetObjectCallback(CallbackID callback, uint32 param1, uint32 param2, const ObjectSpec *spec, Object *o, TileIndex tile, uint8 view = 0);
+uint16_t GetObjectCallback(CallbackID callback, uint32_t param1, uint32_t param2, const ObjectSpec *spec, Object *o, TileIndex tile, uint8_t view = 0);
 
 void DrawNewObjectTile(TileInfo *ti, const ObjectSpec *spec, int building_z_offset);
-void DrawNewObjectTileInGUI(int x, int y, const ObjectSpec *spec, uint8 view);
+void DrawNewObjectTileInGUI(int x, int y, const ObjectSpec *spec, uint8_t view);
 void AnimateNewObjectTile(TileIndex tile);
-uint8 GetNewObjectTileAnimationSpeed(TileIndex tile);
+uint8_t GetNewObjectTileAnimationSpeed(TileIndex tile);
 void TriggerObjectTileAnimation(Object *o, TileIndex tile, ObjectAnimationTrigger trigger, const ObjectSpec *spec);
 void TriggerObjectAnimation(Object *o, ObjectAnimationTrigger trigger, const ObjectSpec *spec);
 

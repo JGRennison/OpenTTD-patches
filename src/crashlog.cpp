@@ -215,7 +215,7 @@ char *CrashLog::LogOpenTTDVersion(char *buffer, const char *last) const
  */
 char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 {
-	auto pathfinder_name = [](uint8 pf) -> const char * {
+	auto pathfinder_name = [](uint8_t pf) -> const char * {
 		switch (pf) {
 			case VPF_NPF: return "NPF";
 			case VPF_YAPF: return "YAPF";
@@ -560,7 +560,7 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last)
 		buffer = this->TryCrashLogFaultSection(buffer, last, "network sync", [](CrashLog *self, char *buffer, const char *last) -> char * {
 			if (IsGameThread() && _record_sync_records && !_network_sync_records.empty()) {
 				uint total = 0;
-				for (uint32 count : _network_sync_record_counts) {
+				for (uint32_t count : _network_sync_record_counts) {
 					total += count;
 				}
 				NetworkSyncRecordEvents event = NSRE_BEGIN;
@@ -648,7 +648,7 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 		buffer += seprintf(buffer, last, "%s\n", info.desync_frame_info.c_str());
 	}
 
-	extern uint32 _frame_counter;
+	extern uint32_t _frame_counter;
 
 	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u), %08X\n",
 			_cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, _settings_game.economy.day_length_factor, _frame_counter);
@@ -661,8 +661,8 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 	if (!_network_server) {
 		extern Date   _last_sync_date;
 		extern DateFract _last_sync_date_fract;
-		extern uint8  _last_sync_tick_skip_counter;
-		extern uint32 _last_sync_frame_counter;
+		extern uint8_t  _last_sync_tick_skip_counter;
+		extern uint32_t _last_sync_frame_counter;
 
 		YearMonthDay ymd = ConvertDateToYMD(_last_sync_date);
 		buffer += seprintf(buffer, last, "Last sync at: %i-%02i-%02i (%i, %i), %08X\n",
@@ -713,7 +713,7 @@ char *CrashLog::FillInconsistencyLog(char *buffer, const char *last, const Incon
 	buffer += WriteScopeLog(buffer, last);
 #endif
 
-	extern uint32 _frame_counter;
+	extern uint32_t _frame_counter;
 
 	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u), %08X\n",
 			_cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, _settings_game.economy.day_length_factor, _frame_counter);
@@ -726,8 +726,8 @@ char *CrashLog::FillInconsistencyLog(char *buffer, const char *last, const Incon
 	if (_networking && !_network_server) {
 		extern Date   _last_sync_date;
 		extern DateFract _last_sync_date_fract;
-		extern uint8  _last_sync_tick_skip_counter;
-		extern uint32 _last_sync_frame_counter;
+		extern uint8_t  _last_sync_tick_skip_counter;
+		extern uint32_t _last_sync_frame_counter;
 
 		YearMonthDay ymd = ConvertDateToYMD(_last_sync_date);
 		buffer += seprintf(buffer, last, "Last sync at: %i-%02i-%02i (%i, %i), %08X\n",

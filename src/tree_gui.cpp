@@ -39,8 +39,8 @@ uint PlaceTreeGroupAroundTile(TileIndex tile, TreeType treetype, uint radius, ui
  */
 static Dimension GetMaxTreeSpriteSize()
 {
-	const uint16 base = _tree_base_by_landscape[_settings_game.game_creation.landscape];
-	const uint16 count = _tree_count_by_landscape[_settings_game.game_creation.landscape];
+	const uint16_t base = _tree_base_by_landscape[_settings_game.game_creation.landscape];
+	const uint16_t count = _tree_count_by_landscape[_settings_game.game_creation.landscape];
 
 	Dimension size, this_size;
 	Point offset;

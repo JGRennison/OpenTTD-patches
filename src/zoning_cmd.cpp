@@ -33,8 +33,8 @@
 Zoning _zoning;
 static const SpriteID ZONING_INVALID_SPRITE_ID = UINT_MAX;
 
-static btree::btree_set<uint32> _zoning_cache_inner;
-static btree::btree_set<uint32> _zoning_cache_outer;
+static btree::btree_set<uint32_t> _zoning_cache_inner;
+static btree::btree_set<uint32_t> _zoning_cache_outer;
 
 /**
  * Draw the zoning sprites.
@@ -377,7 +377,7 @@ inline SpriteID TileZoningSpriteEvaluationCached(TileIndex tile, Owner owner, Zo
 	if (ev_mode == ZEM_IND_UNSER && !IsTileType(tile, MP_INDUSTRY)) return ZONING_INVALID_SPRITE_ID;
 	if (ev_mode >= ZEM_STA_CATCH && ev_mode <= ZEM_IND_UNSER) {
 		// cacheable
-		btree::btree_set<uint32> &cache = is_inner ? _zoning_cache_inner : _zoning_cache_outer;
+		btree::btree_set<uint32_t> &cache = is_inner ? _zoning_cache_inner : _zoning_cache_outer;
 		auto iter = cache.lower_bound(tile << 3);
 		if (iter != cache.end() && *iter >> 3 == tile) {
 			switch (*iter & 7) {
@@ -488,7 +488,7 @@ void ZoningMarkDirtyStationCoverageArea(const Station *st, ZoningModeMask mask)
 				MarkTileDirtyByTile(TileXY(x, y), VMDF_NOT_MAP_MODE);
 			}
 		}
-		auto invalidate_cache_rect = [&](btree::btree_set<uint32> &cache) {
+		auto invalidate_cache_rect = [&](btree::btree_set<uint32_t> &cache) {
 			for (int y = rect.top; y <= rect.bottom; y++) {
 				auto iter = cache.lower_bound(TileXY(rect.left, y) << 3);
 				auto end_iter = iter;
@@ -529,7 +529,7 @@ void ClearZoningCaches()
 void SetZoningMode(bool inner, ZoningEvaluationMode mode)
 {
 	ZoningEvaluationMode &current_mode = inner ? _zoning.inner : _zoning.outer;
-	btree::btree_set<uint32> &cache = inner ? _zoning_cache_inner : _zoning_cache_outer;
+	btree::btree_set<uint32_t> &cache = inner ? _zoning_cache_inner : _zoning_cache_outer;
 
 	if (current_mode == mode) return;
 

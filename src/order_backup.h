@@ -20,7 +20,7 @@
 #include <vector>
 
 /** Unique identifier for an order backup. */
-typedef uint8 OrderBackupID;
+typedef uint8_t OrderBackupID;
 struct OrderBackup;
 
 /** The pool type for order backups. */
@@ -29,7 +29,7 @@ typedef Pool<OrderBackup, OrderBackupID, 1, 256> OrderBackupPool;
 extern OrderBackupPool _order_backup_pool;
 
 /** Flag to pass to the vehicle construction command when an order should be preserved. */
-static const uint32 MAKE_ORDER_BACKUP_FLAG = 1U << 31;
+static const uint32_t MAKE_ORDER_BACKUP_FLAG = 1U << 31;
 
 namespace upstream_sl {
 	SaveLoadTable GetOrderBackupDescription();
@@ -47,7 +47,7 @@ private:
 	friend void Load_BKOR();   ///< Creating empty orders upon savegame loading.
 	friend void Save_BKOR();   ///< Saving orders upon savegame saving.
 	friend upstream_sl::BKORChunkHandler;
-	uint32 user;               ///< The user that requested the backup.
+	uint32_t user;             ///< The user that requested the backup.
 	TileIndex tile;            ///< Tile of the depot where the order was changed.
 	GroupID group;             ///< The group the vehicle was part of.
 
@@ -60,18 +60,18 @@ private:
 
 	/** Creation for savegame restoration. */
 	OrderBackup() {}
-	OrderBackup(const Vehicle *v, uint32 user);
+	OrderBackup(const Vehicle *v, uint32_t user);
 
 	void DoRestore(Vehicle *v);
 
 public:
 	~OrderBackup();
 
-	static void Backup(const Vehicle *v, uint32 user);
-	static void Restore(Vehicle *v, uint32 user);
+	static void Backup(const Vehicle *v, uint32_t user);
+	static void Restore(Vehicle *v, uint32_t user);
 
-	static void ResetOfUser(TileIndex tile, uint32 user);
-	static void ResetUser(uint32 user);
+	static void ResetOfUser(TileIndex tile, uint32_t user);
+	static void ResetUser(uint32_t user);
 	static void Reset(TileIndex tile = INVALID_TILE, bool from_gui = true);
 
 	static void ClearGroup(GroupID group);

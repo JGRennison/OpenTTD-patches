@@ -27,10 +27,10 @@ static const SaveLoad _plan_desc[] = {
 static void RealSave_PLAN(Plan *p)
 {
 	SlObject(p, _plan_desc);
-	SlWriteUint32((uint32)p->lines.size());
+	SlWriteUint32((uint32_t)p->lines.size());
 	for (size_t i = 0; i < p->lines.size(); i++) {
 		PlanLine *pl = p->lines[i];
-		SlWriteUint32((uint32)pl->tiles.size());
+		SlWriteUint32((uint32_t)pl->tiles.size());
 		SlArray(pl->tiles.data(), pl->tiles.size(), SLE_UINT32);
 	}
 }

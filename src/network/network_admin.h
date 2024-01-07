@@ -35,7 +35,7 @@ protected:
 	NetworkRecvStatus Receive_ADMIN_PING(Packet *p) override;
 
 	NetworkRecvStatus SendProtocol();
-	NetworkRecvStatus SendPong(uint32 d1);
+	NetworkRecvStatus SendPong(uint32_t d1);
 public:
 	AdminUpdateFrequency update_frequency[ADMIN_UPDATE_END]; ///< Admin requested update intervals.
 	std::chrono::steady_clock::time_point connect_time;      ///< Time of connection.
@@ -63,7 +63,7 @@ public:
 	NetworkRecvStatus SendCompanyStats();
 
 	NetworkRecvStatus SendChat(NetworkAction action, DestType desttype, ClientID client_id, const std::string &msg, NetworkTextMessageData data);
-	NetworkRecvStatus SendRcon(uint16 colour, const std::string_view command);
+	NetworkRecvStatus SendRcon(uint16_t colour, const std::string_view command);
 	NetworkRecvStatus SendConsole(const std::string_view origin, const std::string_view command);
 	NetworkRecvStatus SendGameScript(const std::string_view json);
 	NetworkRecvStatus SendCmdNames();

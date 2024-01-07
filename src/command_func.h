@@ -32,9 +32,9 @@ static const CommandCost CMD_ERROR = CommandCost(INVALID_STRING_ID);
  */
 #define return_cmd_error(errcode) return CommandCost(errcode);
 
-CommandCost DoCommandEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, DoCommandFlag flags, uint32 cmd, const char *text = nullptr, const CommandAuxiliaryBase *aux_data = nullptr);
+CommandCost DoCommandEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, DoCommandFlag flags, uint32_t cmd, const char *text = nullptr, const CommandAuxiliaryBase *aux_data = nullptr);
 
-inline CommandCost DoCommand(TileIndex tile, uint32 p1, uint32 p2, DoCommandFlag flags, uint32 cmd, const char *text = nullptr)
+inline CommandCost DoCommand(TileIndex tile, uint32_t p1, uint32_t p2, DoCommandFlag flags, uint32_t cmd, const char *text = nullptr)
 {
 	return DoCommandEx(tile, p1, p2, 0, flags, cmd, text, 0);
 }
@@ -43,9 +43,9 @@ inline CommandCost DoCommand(const CommandContainer *container, DoCommandFlag fl
 	return DoCommandEx(container->tile, container->p1, container->p2, container->p3, flags, container->cmd & CMD_ID_MASK, container->text.c_str(), container->aux_data.get());
 }
 
-bool DoCommandPEx(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback = nullptr, const char *text = nullptr, const CommandAuxiliaryBase *aux_data = nullptr, bool my_cmd = true);
+bool DoCommandPEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd, CommandCallback *callback = nullptr, const char *text = nullptr, const CommandAuxiliaryBase *aux_data = nullptr, bool my_cmd = true);
 
-inline bool DoCommandP(TileIndex tile, uint32 p1, uint32 p2, uint32 cmd, CommandCallback *callback = nullptr, const char *text = nullptr, bool my_cmd = true)
+inline bool DoCommandP(TileIndex tile, uint32_t p1, uint32_t p2, uint32_t cmd, CommandCallback *callback = nullptr, const char *text = nullptr, bool my_cmd = true)
 {
 	return DoCommandPEx(tile, p1, p2, 0, cmd, callback, text, 0, my_cmd);
 }
@@ -55,18 +55,18 @@ inline bool DoCommandP(const CommandContainer *container, bool my_cmd = true)
 	return DoCommandPEx(container->tile, container->p1, container->p2, container->p3, container->cmd, container->callback, container->text.c_str(), container->aux_data.get(), my_cmd);
 }
 
-CommandCost DoCommandPScript(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only, bool asynchronous, const CommandAuxiliaryBase *aux_data);
-CommandCost DoCommandPInternal(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only, const CommandAuxiliaryBase *aux_data);
+CommandCost DoCommandPScript(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only, bool asynchronous, const CommandAuxiliaryBase *aux_data);
+CommandCost DoCommandPInternal(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only, const CommandAuxiliaryBase *aux_data);
 
-void NetworkSendCommand(TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd, CommandCallback *callback, const char *text, CompanyID company, const CommandAuxiliaryBase *aux_data);
+void NetworkSendCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd, CommandCallback *callback, const char *text, CompanyID company, const CommandAuxiliaryBase *aux_data);
 
 extern Money _additional_cash_required;
 
-bool IsValidCommand(uint32 cmd);
-CommandFlags GetCommandFlags(uint32 cmd);
-const char *GetCommandName(uint32 cmd);
+bool IsValidCommand(uint32_t cmd);
+CommandFlags GetCommandFlags(uint32_t cmd);
+const char *GetCommandName(uint32_t cmd);
 Money GetAvailableMoneyForCommand();
-bool IsCommandAllowedWhilePaused(uint32 cmd);
+bool IsCommandAllowedWhilePaused(uint32_t cmd);
 
 /**
  * Extracts the DC flags needed for DoCommand from the flags returned by GetCommandFlags

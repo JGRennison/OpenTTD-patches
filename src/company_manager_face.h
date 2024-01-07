@@ -129,7 +129,7 @@ inline void SetCompanyManagerFaceBits(CompanyManagerFace &cmf, CompanyManagerFac
  */
 inline void IncreaseCompanyManagerFaceBits(CompanyManagerFace &cmf, CompanyManagerFaceVariable cmfv, GenderEthnicity ge, int8_t amount)
 {
-	int8 val = GetCompanyManagerFaceBits(cmf, cmfv, ge) + amount; // the new value for the cmfv
+	int8_t val = GetCompanyManagerFaceBits(cmf, cmfv, ge) + amount; // the new value for the cmfv
 
 	/* scales the new value to the correct scope */
 	if (val >= _cmf_info[cmfv].valid_values[ge]) {

@@ -14,7 +14,7 @@
 #include "3rdparty/cpp-btree/btree_map.h"
 
 struct AnimatedTileInfo {
-	uint8 speed = 0;
+	uint8_t speed = 0;
 	bool pending_deletion = false;
 };
 

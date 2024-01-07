@@ -57,7 +57,7 @@ int GreatestCommonDivisor(int a, int b)
  */
 int DivideApprox(int a, int b)
 {
-	int random_like = (((int64) (a + b)) * ((int64) (a - b))) % b;
+	int random_like = (((int64_t) (a + b)) * ((int64_t) (a - b))) % b;
 
 	int remainder = a % b;
 
@@ -75,10 +75,10 @@ int DivideApprox(int a, int b)
  * @return Rounded integer square root.
  * @note Algorithm taken from http://en.wikipedia.org/wiki/Methods_of_computing_square_roots
  */
-uint32 IntSqrt(uint32 num)
+uint32_t IntSqrt(uint32_t num)
 {
-	uint32 res = 0;
-	uint32 bit = 1UL << 30; // Second to top bit number.
+	uint32_t res = 0;
+	uint32_t bit = 1UL << 30; // Second to top bit number.
 
 	/* 'bit' starts at the highest power of four <= the argument. */
 	while (bit > num) bit >>= 2;
@@ -105,10 +105,10 @@ uint32 IntSqrt(uint32 num)
  * @return Rounded integer square root.
  * @note Algorithm taken from http://en.wikipedia.org/wiki/Methods_of_computing_square_roots
  */
-uint32 IntSqrt64(uint64 num)
+uint32_t IntSqrt64(uint64_t num)
 {
-	uint64 res = 0;
-	uint64 bit = 1ULL << 62; // Second to top bit number.
+	uint64_t res = 0;
+	uint64_t bit = 1ULL << 62; // Second to top bit number.
 
 	/* 'bit' starts at the highest power of four <= the argument. */
 	while (bit > num) bit >>= 2;
@@ -126,7 +126,7 @@ uint32 IntSqrt64(uint64 num)
 	/* Arithmetic rounding to nearest integer. */
 	if (num > res) res++;
 
-	return (uint32)res;
+	return (uint32_t)res;
 }
 
 /**
@@ -135,10 +135,10 @@ uint32 IntSqrt64(uint64 num)
  * @return Rounded integer square root.
  * @note Algorithm taken from https://stackoverflow.com/a/56738014
  */
-uint32 IntCbrt(uint64 num)
+uint32_t IntCbrt(uint64_t num)
 {
-	uint64 r0 = 1;
-	uint64 r1 = 0;
+	uint64_t r0 = 1;
+	uint64_t r1 = 0;
 
 	if (num == 0) return 0;
 
@@ -160,23 +160,23 @@ uint32 IntCbrt(uint64 num)
 	}
 	while (r0 < r1);
 
-	return ((uint32) r1); /* floor(cbrt(x)); */
+	return ((uint32_t) r1); /* floor(cbrt(x)); */
 }
 
 /**
  * Compress unsigned integer into 16 bits, in a way that increases dynamic range, at the expense of precision for large values
  */
-uint16 RXCompressUint(uint32 num)
+uint16_t RXCompressUint(uint32_t num)
 {
 	if (num <= 0x100) return num;
 	if (num <= 0x7900) return 0x100 + ((num - 0x100) >> 3);
-	return std::min<uint32>(UINT16_MAX, 0x1000 + ((num - 0x7900) >> 6));
+	return std::min<uint32_t>(UINT16_MAX, 0x1000 + ((num - 0x7900) >> 6));
 }
 
 /**
  * Inverse of RXCompressUint
  */
-uint32 RXDecompressUint(uint16 num)
+uint32_t RXDecompressUint(uint16_t num)
 {
 	if (num > 0x1000) return ((num - 0x1000) << 6) + 0x7900;
 	if (num > 0x100) return ((num - 0x100) << 3) + 0x100;

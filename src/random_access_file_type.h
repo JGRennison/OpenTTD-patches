@@ -36,8 +36,8 @@ class RandomAccessFile {
 	byte buffer_start[BUFFER_SIZE];  ///< Local buffer when read from file.
 
 	byte ReadByteIntl();
-	uint16 ReadWordIntl();
-	uint32 ReadDwordIntl();
+	uint16_t ReadWordIntl();
+	uint32_t ReadDwordIntl();
 
 public:
 	RandomAccessFile(const std::string &filename, Subdirectory subdir);
@@ -58,13 +58,13 @@ public:
 		return this->ReadByteIntl();
 	}
 
-	inline uint16 ReadWord()
+	inline uint16_t ReadWord()
 	{
 		if (likely(this->buffer + 1 < this->buffer_end)) {
 #if OTTD_ALIGNMENT == 0
-			uint16 x = FROM_LE16(*((const unaligned_uint16*) this->buffer));
+			uint16_t x = FROM_LE16(*((const unaligned_uint16 *) this->buffer));
 #else
-			uint16 x = ((uint16)this->buffer[1] << 8) | this->buffer[0];
+			uint16_t x = ((uint16_t)this->buffer[1] << 8) | this->buffer[0];
 #endif
 			this->buffer += 2;
 			return x;
@@ -72,13 +72,13 @@ public:
 		return this->ReadWordIntl();
 	}
 
-	inline uint32 ReadDword()
+	inline uint32_t ReadDword()
 	{
 		if (likely(this->buffer + 3 < this->buffer_end)) {
 #if OTTD_ALIGNMENT == 0
-			uint32 x = FROM_LE32(*((const unaligned_uint32*) this->buffer));
+			uint32_t x = FROM_LE32(*((const unaligned_uint32 *) this->buffer));
 #else
-			uint32 x = ((uint32)this->buffer[3] << 24) | ((uint32)this->buffer[2] << 16) | ((uint32)this->buffer[1] << 8) | this->buffer[0];
+			uint32_t x = ((uint32_t)this->buffer[3] << 24) | ((uint32_t)this->buffer[2] << 16) | ((uint32_t)this->buffer[1] << 8) | this->buffer[0];
 #endif
 			this->buffer += 4;
 			return x;

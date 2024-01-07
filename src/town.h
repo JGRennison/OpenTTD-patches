@@ -29,14 +29,14 @@ struct BuildingCounts {
 };
 
 static const uint CUSTOM_TOWN_NUMBER_DIFFICULTY  = 4; ///< value for custom town number in difficulty settings
-static const uint CUSTOM_TOWN_MAX_NUMBER = 5000;  ///< this is the maximum number of towns a user can specify in customisation
+static const uint CUSTOM_TOWN_MAX_NUMBER = 5000;      ///< this is the maximum number of towns a user can specify in customisation
 
 static const TownID INVALID_TOWN = 0xFFFF;
 
-static const uint TOWN_GROWTH_WINTER = 0xFFFFFFFE; ///< The town only needs this cargo in the winter (any amount)
-static const uint TOWN_GROWTH_DESERT = 0xFFFFFFFF; ///< The town needs the cargo for growth when on desert (any amount)
-static const uint16 TOWN_GROWTH_RATE_NONE = 0xFFFF; ///< Special value for Town::growth_rate to disable town growth.
-static const uint16 MAX_TOWN_GROWTH_TICKS = 930; ///< Max amount of original town ticks that still fit into uint16, about equal to UINT16_MAX / TOWN_GROWTH_TICKS but slightly less to simplify calculations
+static const uint TOWN_GROWTH_WINTER = 0xFFFFFFFE;    ///< The town only needs this cargo in the winter (any amount)
+static const uint TOWN_GROWTH_DESERT = 0xFFFFFFFF;    ///< The town needs the cargo for growth when on desert (any amount)
+static const uint16_t TOWN_GROWTH_RATE_NONE = 0xFFFF; ///< Special value for Town::growth_rate to disable town growth.
+static const uint16_t MAX_TOWN_GROWTH_TICKS = 930;    ///< Max amount of original town ticks that still fit into uint16_t, about equal to UINT16_MAX / TOWN_GROWTH_TICKS but slightly less to simplify calculations
 
 /** Settings for town council attitudes. */
 enum TownCouncilAttitudes {
@@ -51,12 +51,12 @@ extern TownPool _town_pool;
 
 /** Data structure with cached data of towns. */
 struct TownCache {
-	uint32 num_houses;                        ///< Amount of houses
-	uint32 population;                        ///< Current population of people
-	TrackedViewportSign sign;                 ///< Location of name sign, UpdateVirtCoord updates this
-	PartOfSubsidy part_of_subsidy;            ///< Is this town a source/destination of a subsidy?
-	uint32 squared_town_zone_radius[HZB_END]; ///< UpdateTownRadius updates this given the house count
-	BuildingCounts<uint16> building_counts;   ///< The number of each type of building in the town
+	uint32_t num_houses;                        ///< Amount of houses
+	uint32_t population;                        ///< Current population of people
+	TrackedViewportSign sign;                   ///< Location of name sign, UpdateVirtCoord updates this
+	PartOfSubsidy part_of_subsidy;              ///< Is this town a source/destination of a subsidy?
+	uint32_t squared_town_zone_radius[HZB_END]; ///< UpdateTownRadius updates this given the house count
+	BuildingCounts<uint16_t> building_counts;   ///< The number of each type of building in the town
 };
 
 /** Town setting override flags */
@@ -76,37 +76,37 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	TownCache cache; ///< Container for all cacheable data.
 
 	/* Town name */
-	uint32 townnamegrfid;
-	uint16 townnametype;
-	uint32 townnameparts;
+	uint32_t townnamegrfid;
+	uint16_t townnametype;
+	uint32_t townnameparts;
 	TinyString name;                 ///< Custom town name. If empty, the town was not renamed and uses the generated name.
 	mutable std::string cached_name; ///< NOSAVE: Cache of the resolved name of the town, if not using a custom town name
 
-	byte flags;                    ///< See #TownFlags.
+	byte flags;                      ///< See #TownFlags.
 
-	byte override_flags;           ///< Bitmask of enabled flag overrides. See #TownSettingOverrideFlags.
-	byte override_values;          ///< Bitmask of flag override values. See #TownSettingOverrideFlags.
-	TownTunnelMode build_tunnels;  ///< If/when towns are allowed to build road tunnels (if TSOF_OVERRIDE_BUILD_TUNNELS set in override_flags)
-	uint8 max_road_slope;          ///< Maximum number of consecutive sloped road tiles which towns are allowed to build (if TSOF_OVERRIDE_BUILD_INCLINED_ROADS set in override_flags)
+	byte override_flags;             ///< Bitmask of enabled flag overrides. See #TownSettingOverrideFlags.
+	byte override_values;            ///< Bitmask of flag override values. See #TownSettingOverrideFlags.
+	TownTunnelMode build_tunnels;    ///< If/when towns are allowed to build road tunnels (if TSOF_OVERRIDE_BUILD_TUNNELS set in override_flags)
+	uint8_t max_road_slope;          ///< Maximum number of consecutive sloped road tiles which towns are allowed to build (if TSOF_OVERRIDE_BUILD_INCLINED_ROADS set in override_flags)
 
-	uint16 church_count;           ///< Number of church buildings in the town.
-	uint16 stadium_count;          ///< Number of stadium buildings in the town.
+	uint16_t church_count;           ///< Number of church buildings in the town.
+	uint16_t stadium_count;          ///< Number of stadium buildings in the town.
 
-	uint16 noise_reached;          ///< level of noise that all the airports are generating
+	uint16_t noise_reached;          ///< level of noise that all the airports are generating
 
-	CompanyMask statues;           ///< which companies have a statue?
+	CompanyMask statues;             ///< which companies have a statue?
 
 	/* Company ratings. */
-	CompanyMask have_ratings;      ///< which companies have a rating
-	uint8 unwanted[MAX_COMPANIES]; ///< how many months companies aren't wanted by towns (bribe)
-	CompanyID exclusivity;         ///< which company has exclusivity
-	uint8 exclusive_counter;       ///< months till the exclusivity expires
-	int16 ratings[MAX_COMPANIES];  ///< ratings of each company for this town
-	uint8 town_label_rating;       ///< Label dependent on _local_company rating.
+	CompanyMask have_ratings;        ///< which companies have a rating
+	uint8_t unwanted[MAX_COMPANIES]; ///< how many months companies aren't wanted by towns (bribe)
+	CompanyID exclusivity;           ///< which company has exclusivity
+	uint8_t exclusive_counter;       ///< months till the exclusivity expires
+	int16_t ratings[MAX_COMPANIES];  ///< ratings of each company for this town
+	uint8_t town_label_rating;       ///< Label dependent on _local_company rating.
 
-	TransportedCargoStat<uint32> supplied[NUM_CARGO]; ///< Cargo statistics about supplied cargo.
-	TransportedCargoStat<uint16> received[NUM_TE];    ///< Cargo statistics about received cargotypes.
-	uint32 goal[NUM_TE];                              ///< Amount of cargo required for the town to grow.
+	TransportedCargoStat<uint32_t> supplied[NUM_CARGO]; ///< Cargo statistics about supplied cargo.
+	TransportedCargoStat<uint16_t> received[NUM_TE];    ///< Cargo statistics about received cargotypes.
+	uint32_t goal[NUM_TE];                              ///< Amount of cargo required for the town to grow.
 
 	std::string text; ///< General text with additional information.
 
@@ -114,10 +114,10 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 
 	StationList stations_near;       ///< NOSAVE: List of nearby stations.
 
-	uint16 time_until_rebuild;       ///< time until we rebuild a house
+	uint16_t time_until_rebuild;     ///< time until we rebuild a house
 
-	uint16 grow_counter;             ///< counter to count when to grow, value is smaller than or equal to growth_rate
-	uint16 growth_rate;              ///< town growth rate
+	uint16_t grow_counter;           ///< counter to count when to grow, value is smaller than or equal to growth_rate
+	uint16_t growth_rate;            ///< town growth rate
 
 	byte fund_buildings_months;      ///< fund buildings program in action?
 	byte road_build_months;          ///< fund road reconstruction in action?
@@ -141,7 +141,7 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	void InitializeLayout(TownLayout layout);
 
 	void UpdateLabel();
-	uint64 LabelParam2() const;
+	uint64_t LabelParam2() const;
 
 	/**
 	 * Calculate the max town noise.
@@ -149,7 +149,7 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	 * entry in town_noise_population corresponding to the town's tolerance.
 	 * @return the maximum noise level the town will tolerate.
 	 */
-	inline uint16 MaxTownNoise() const
+	inline uint16_t MaxTownNoise() const
 	{
 		if (_settings_game.difficulty.town_council_tolerance == TOWN_COUNCIL_PERMISSIVE) return UINT16_MAX;
 
@@ -193,7 +193,7 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 		return HasBit(this->override_flags, TSOF_OVERRIDE_BUILD_TUNNELS) ? this->build_tunnels : _settings_game.economy.town_build_tunnels;
 	}
 
-	inline uint8 GetBuildMaxRoadSlope() const
+	inline uint8_t GetBuildMaxRoadSlope() const
 	{
 		return HasBit(this->override_flags, TSOF_OVERRIDE_BUILD_INCLINED_ROADS) ? this->max_road_slope : _settings_game.economy.town_max_road_slope;
 	}
@@ -210,7 +210,7 @@ private:
 	void FillCachedName() const;
 };
 
-uint32 GetWorldPopulation();
+uint32_t GetWorldPopulation();
 
 void UpdateAllTownVirtCoords();
 void ClearAllTownCachedNames();
@@ -322,10 +322,10 @@ void MakeDefaultName(T *obj)
 	 * If it wasn't using 'used' and 'idx', it would just search for increasing 'next',
 	 * but this way it is faster */
 
-	uint32 used = 0; // bitmap of used waypoint numbers, sliding window with 'next' as base
-	uint32 next = 0; // first number in the bitmap
-	uint32 idx  = 0; // index where we will stop
-	uint32 cid  = 0; // current index, goes to T::GetPoolSize()-1, then wraps to 0
+	uint32_t used = 0; // bitmap of used waypoint numbers, sliding window with 'next' as base
+	uint32_t next = 0; // first number in the bitmap
+	uint32_t idx  = 0; // index where we will stop
+	uint32_t cid  = 0; // current index, goes to T::GetPoolSize()-1, then wraps to 0
 
 	do {
 		T *lobj = T::GetIfValid(cid);
@@ -359,7 +359,7 @@ void MakeDefaultName(T *obj)
 		if (cid == T::GetPoolSize()) cid = 0; // wrap to zero...
 	} while (cid != idx);
 
-	obj->town_cn = (uint16)next; // set index...
+	obj->town_cn = (uint16_t)next; // set index...
 }
 
 /*

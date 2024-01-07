@@ -20,7 +20,7 @@
 
 std::vector<const GRFFile *> _new_landscape_rocks_grfs;
 
-/* virtual */ uint32 NewLandscapeScopeResolver::GetVariable(uint16 variable, uint32 parameter, GetVariableExtra *extra) const
+/* virtual */ uint32_t NewLandscapeScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra *extra) const
 {
 	if (unlikely(this->ti->tile == INVALID_TILE)) {
 		switch (variable) {
@@ -55,7 +55,7 @@ std::vector<const GRFFile *> _new_landscape_rocks_grfs;
 		case 0x60: {
 			TileIndex tile = this->ti->tile;
 			if (parameter != 0) tile = GetNearbyTile(parameter, tile); // only perform if it is required
-			uint32 result = 0;
+			uint32_t result = 0;
 			if (extra->mask & ~0x100) result |= GetNearbyTileInformation(tile, this->ro.grffile == nullptr || this->ro.grffile->grf_version >= 8, extra->mask);
 			if (extra->mask & 0x100) {
 				switch (this->landscape_type) {
@@ -86,7 +86,7 @@ GrfSpecFeature NewLandscapeResolverObject::GetFeature() const
 	return GSF_NEWLANDSCAPE;
 }
 
-NewLandscapeResolverObject::NewLandscapeResolverObject(const GRFFile *grffile, const TileInfo *ti, NewLandscapeType landscape_type, uint32 param1, uint32 param2)
+NewLandscapeResolverObject::NewLandscapeResolverObject(const GRFFile *grffile, const TileInfo *ti, NewLandscapeType landscape_type, uint32_t param1, uint32_t param2)
 	: ResolverObject(grffile, CBID_NO_CALLBACK, param1, param2), newlandscape_scope(*this, ti, landscape_type)
 {
 	if (grffile != nullptr) {

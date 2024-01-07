@@ -23,13 +23,13 @@
 
 /*
  * The next couple of functions make sure we can send
- *  uint8, uint16, uint32 and uint64 endian-safe
+ *  uint8_t, uint16_t, uint32_t and uint64_t endian-safe
  *  over the network. The least significant bytes are
  *  sent first.
  *
  *  So 0x01234567 would be sent as 67 45 23 01.
  *
- * A bool is sent as a uint8 where zero means false
+ * A bool is sent as a uint8_t where zero means false
  *  and non-zero means true.
  */
 
@@ -46,7 +46,7 @@ void BufferSend_bool(std::vector<byte> &buffer, size_t limit, bool data)
  * Package a 8 bits integer in the packet.
  * @param data The data to send.
  */
-void BufferSend_uint8(std::vector<byte> &buffer, size_t limit, uint8 data)
+void BufferSend_uint8(std::vector<byte> &buffer, size_t limit, uint8_t data)
 {
 	assert(BufferCanWriteToPacket(buffer, limit, sizeof(data)));
 	buffer.emplace_back(data);
@@ -56,12 +56,12 @@ void BufferSend_uint8(std::vector<byte> &buffer, size_t limit, uint8 data)
  * Package a 16 bits integer in the packet.
  * @param data The data to send.
  */
-void BufferSend_uint16(std::vector<byte> &buffer, size_t limit, uint16 data)
+void BufferSend_uint16(std::vector<byte> &buffer, size_t limit, uint16_t data)
 {
 	assert(BufferCanWriteToPacket(buffer, limit, sizeof(data)));
 	buffer.insert(buffer.end(), {
-		(uint8)GB(data,  0, 8),
-		(uint8)GB(data,  8, 8),
+		(uint8_t)GB(data,  0, 8),
+		(uint8_t)GB(data,  8, 8),
 	});
 }
 
@@ -69,14 +69,14 @@ void BufferSend_uint16(std::vector<byte> &buffer, size_t limit, uint16 data)
  * Package a 32 bits integer in the packet.
  * @param data The data to send.
  */
-void BufferSend_uint32(std::vector<byte> &buffer, size_t limit, uint32 data)
+void BufferSend_uint32(std::vector<byte> &buffer, size_t limit, uint32_t data)
 {
 	assert(BufferCanWriteToPacket(buffer, limit, sizeof(data)));
 	buffer.insert(buffer.end(), {
-		(uint8)GB(data,  0, 8),
-		(uint8)GB(data,  8, 8),
-		(uint8)GB(data, 16, 8),
-		(uint8)GB(data, 24, 8),
+		(uint8_t)GB(data,  0, 8),
+		(uint8_t)GB(data,  8, 8),
+		(uint8_t)GB(data, 16, 8),
+		(uint8_t)GB(data, 24, 8),
 	});
 }
 
@@ -84,18 +84,18 @@ void BufferSend_uint32(std::vector<byte> &buffer, size_t limit, uint32 data)
  * Package a 64 bits integer in the packet.
  * @param data The data to send.
  */
-void BufferSend_uint64(std::vector<byte> &buffer, size_t limit, uint64 data)
+void BufferSend_uint64(std::vector<byte> &buffer, size_t limit, uint64_t data)
 {
 	assert(BufferCanWriteToPacket(buffer, limit, sizeof(data)));
 	buffer.insert(buffer.end(), {
-		(uint8)GB(data,  0, 8),
-		(uint8)GB(data,  8, 8),
-		(uint8)GB(data, 16, 8),
-		(uint8)GB(data, 24, 8),
-		(uint8)GB(data, 32, 8),
-		(uint8)GB(data, 40, 8),
-		(uint8)GB(data, 48, 8),
-		(uint8)GB(data, 56, 8),
+		(uint8_t)GB(data,  0, 8),
+		(uint8_t)GB(data,  8, 8),
+		(uint8_t)GB(data, 16, 8),
+		(uint8_t)GB(data, 24, 8),
+		(uint8_t)GB(data, 32, 8),
+		(uint8_t)GB(data, 40, 8),
+		(uint8_t)GB(data, 48, 8),
+		(uint8_t)GB(data, 56, 8),
 	});
 }
 
@@ -147,8 +147,8 @@ void BufferSend_buffer(std::vector<byte> &buffer, size_t limit, const byte *data
 	assert(size <= UINT16_MAX);
 	assert(BufferCanWriteToPacket(buffer, limit, size + 2));
 	buffer.insert(buffer.end(), {
-		(uint8)GB(size,  0, 8),
-		(uint8)GB(size,  8, 8),
+		(uint8_t)GB(size,  0, 8),
+		(uint8_t)GB(size,  8, 8),
 	});
 	buffer.insert(buffer.end(), data, data + size);
 }

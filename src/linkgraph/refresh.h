@@ -41,10 +41,10 @@ protected:
 	 * Simulated cargo type and capacity for prediction of future links.
 	 */
 	struct RefitDesc {
-		CargoID cargo;    ///< Cargo type the vehicle will be carrying.
-		uint16 capacity;  ///< Capacity the vehicle will have.
-		uint16 remaining; ///< Capacity remaining from before the previous refit.
-		RefitDesc(CargoID cargo, uint16 capacity, uint16 remaining) :
+		CargoID cargo;      ///< Cargo type the vehicle will be carrying.
+		uint16_t capacity;  ///< Capacity the vehicle will have.
+		uint16_t remaining; ///< Capacity remaining from before the previous refit.
+		RefitDesc(CargoID cargo, uint16_t capacity, uint16_t remaining) :
 				cargo(cargo), capacity(capacity), remaining(remaining) {}
 	};
 
@@ -61,7 +61,7 @@ protected:
 		OrderID from;  ///< Last order where vehicle could interact with cargo or absolute first order.
 		OrderID to;    ///< Next order to be processed.
 		CargoID cargo; ///< Cargo the consist is probably carrying or CT_INVALID if unknown.
-		uint8 flags;   ///< Flags, for branches
+		uint8_t flags; ///< Flags, for branches
 
 		/**
 		 * Default constructor should not be called but has to be visible for
@@ -75,7 +75,7 @@ protected:
 		 * @param to Second order of the hop.
 		 * @param cargo Cargo the consist is probably carrying when passing the hop.
 		 */
-		Hop(OrderID from, OrderID to, CargoID cargo, uint8 flags = 0) : from(from), to(to), cargo(cargo), flags(flags) {}
+		Hop(OrderID from, OrderID to, CargoID cargo, uint8_t flags = 0) : from(from), to(to), cargo(cargo), flags(flags) {}
 		bool operator<(const Hop &other) const { return std::tie(this->from, this->to, this->cargo, this->flags) < std::tie(other.from, other.to, other.cargo, other.flags); }
 		bool operator==(const Hop &other) const { return std::tie(this->from, this->to, this->cargo, this->flags) == std::tie(other.from, other.to, other.cargo, other.flags); }
 		bool operator!=(const Hop &other) const { return !(*this == other); }
@@ -110,11 +110,11 @@ protected:
 
 	bool HandleRefit(CargoID refit_cargo);
 	void ResetRefit();
-	void RefreshStats(const Order *cur, const Order *next,uint32 travel_estimate, uint8 flags);
+	void RefreshStats(const Order *cur, const Order *next,uint32_t travel_estimate, uint8_t flags);
 	TimetableTravelTime UpdateTimetableTravelSoFar(const Order *from, const Order *to, TimetableTravelTime travel);
-	std::pair<const Order *, TimetableTravelTime> PredictNextOrder(const Order *cur, const Order *next, TimetableTravelTime travel, uint8 flags, uint num_hops = 0);
+	std::pair<const Order *, TimetableTravelTime> PredictNextOrder(const Order *cur, const Order *next, TimetableTravelTime travel, uint8_t flags, uint num_hops = 0);
 
-	void RefreshLinks(const Order *cur, const Order *next, TimetableTravelTime travel, uint8 flags, uint num_hops = 0);
+	void RefreshLinks(const Order *cur, const Order *next, TimetableTravelTime travel, uint8_t flags, uint num_hops = 0);
 };
 
 #endif /* REFRESH_H */

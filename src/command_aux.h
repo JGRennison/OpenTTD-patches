@@ -18,12 +18,12 @@
 #include <vector>
 
 struct CommandDeserialisationBuffer : public BufferDeserialisationHelper<CommandDeserialisationBuffer> {
-	const uint8 *buffer;
+	const uint8_t *buffer;
 	size_t size;
 	size_t pos = 0;
 	bool error = false;
 
-	CommandDeserialisationBuffer(const uint8 *buffer, size_t size) : buffer(buffer), size(size) {}
+	CommandDeserialisationBuffer(const uint8_t *buffer, size_t size) : buffer(buffer), size(size) {}
 
 	const byte *GetDeserialisationBuffer() const { return this->buffer; }
 	size_t GetDeserialisationBufferSize() const { return this->size; }
@@ -61,14 +61,14 @@ struct CommandAuxiliarySerialised : public CommandAuxiliaryBase {
 		return new CommandAuxiliarySerialised(*this);
 	}
 
-	virtual std::optional<span<const uint8>> GetDeserialisationSrc() const override { return span<const uint8>(this->serialised_data.data(), this->serialised_data.size()); }
+	virtual std::optional<span<const uint8_t>> GetDeserialisationSrc() const override { return span<const uint8_t>(this->serialised_data.data(), this->serialised_data.size()); }
 
 	virtual void Serialise(CommandSerialisationBuffer &buffer) const override { buffer.Send_binary(this->serialised_data.data(), this->serialised_data.size()); }
 };
 
 template <typename T>
 struct CommandAuxiliarySerialisable : public CommandAuxiliaryBase {
-	virtual std::optional<span<const uint8>> GetDeserialisationSrc() const override { return {}; }
+	virtual std::optional<span<const uint8_t>> GetDeserialisationSrc() const override { return {}; }
 
 	CommandAuxiliaryBase *Clone() const override
 	{
@@ -86,7 +86,7 @@ public:
 	inline CommandCost Load(const CommandAuxiliaryBase *base)
 	{
 		if (base == nullptr) return CMD_ERROR;
-		std::optional<span<const uint8>> deserialise_from = base->GetDeserialisationSrc();
+		std::optional<span<const uint8_t>> deserialise_from = base->GetDeserialisationSrc();
 		if (deserialise_from.has_value()) {
 			this->store = T();
 			CommandDeserialisationBuffer buffer(deserialise_from->begin(), deserialise_from->size());

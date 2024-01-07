@@ -48,7 +48,7 @@
  * @param face the face in the old format
  * @return the face in the new format
  */
-CompanyManagerFace ConvertFromOldCompanyManagerFace(uint32 face)
+CompanyManagerFace ConvertFromOldCompanyManagerFace(uint32_t face)
 {
 	CompanyManagerFace cmf = 0;
 	GenderEthnicity ge = GE_WM;
@@ -365,7 +365,7 @@ static const SaveLoad _company_economy_desc[] = {
 
 /* We do need to read this single value, as the bigger it gets, the more data is stored */
 struct CompanyOldAI {
-	uint8 num_build_rec;
+	uint8_t num_build_rec;
 };
 
 static const SaveLoad _company_ai_desc[] = {
@@ -584,7 +584,7 @@ static void Load_PLYP()
 	}
 	if (!_network_server) {
 		extern CompanyMask _saved_PLYP_invalid_mask;
-		extern std::vector<uint8> _saved_PLYP_data;
+		extern std::vector<uint8_t> _saved_PLYP_data;
 
 		_saved_PLYP_invalid_mask = invalid_mask;
 		_saved_PLYP_data.resize(size);
@@ -592,7 +592,7 @@ static void Load_PLYP()
 		return;
 	}
 
-	uint8 token[16];
+	uint8_t token[16];
 	ReadBuffer::GetCurrent()->CopyBytes(token, 16);
 	if (memcmp(token, _network_company_password_storage_token, 16) != 0) {
 		DEBUG(sl, 2, "Skipping encrypted company passwords");
@@ -600,25 +600,25 @@ static void Load_PLYP()
 		return;
 	}
 
-	uint8 nonce[24];
-	uint8 mac[16];
+	uint8_t nonce[24];
+	uint8_t mac[16];
 	ReadBuffer::GetCurrent()->CopyBytes(nonce, 24);
 	ReadBuffer::GetCurrent()->CopyBytes(mac, 16);
 
-	std::vector<uint8> buffer(size - 16 - 24 - 16);
+	std::vector<uint8_t> buffer(size - 16 - 24 - 16);
 	ReadBuffer::GetCurrent()->CopyBytes(buffer.data(), buffer.size());
 
 	if (crypto_aead_unlock(buffer.data(), mac, _network_company_password_storage_key, nonce, nullptr, 0, buffer.data(), buffer.size()) == 0) {
 		SlLoadFromBuffer(buffer.data(), buffer.size(), [invalid_mask]() {
 			_network_company_server_id.resize(SlReadUint32());
-			ReadBuffer::GetCurrent()->CopyBytes((uint8 *)_network_company_server_id.data(), _network_company_server_id.size());
+			ReadBuffer::GetCurrent()->CopyBytes((uint8_t *)_network_company_server_id.data(), _network_company_server_id.size());
 
 			while (true) {
-				uint16 cid = SlReadUint16();
+				uint16_t cid = SlReadUint16();
 				if (cid >= MAX_COMPANIES) break;
 				std::string password;
 				password.resize(SlReadUint32());
-				ReadBuffer::GetCurrent()->CopyBytes((uint8 *)password.data(), password.size());
+				ReadBuffer::GetCurrent()->CopyBytes((uint8_t *)password.data(), password.size());
 				if (!HasBit(invalid_mask, cid)) {
 					NetworkServerSetCompanyPassword((CompanyID)cid, password, true);
 				}
@@ -640,19 +640,19 @@ static void Save_PLYP()
 	}
 	if (!_network_server) {
 		extern CompanyMask _saved_PLYP_invalid_mask;
-		extern std::vector<uint8> _saved_PLYP_data;
+		extern std::vector<uint8_t> _saved_PLYP_data;
 
 		if (_saved_PLYP_data.empty()) {
 			SlSetLength(0);
 		} else {
 			SlSetLength(2 + _saved_PLYP_data.size());
 			SlWriteUint16(_saved_PLYP_invalid_mask);
-			MemoryDumper::GetCurrent()->CopyBytes((const uint8 *)_saved_PLYP_data.data(), _saved_PLYP_data.size());
+			MemoryDumper::GetCurrent()->CopyBytes((const uint8_t *)_saved_PLYP_data.data(), _saved_PLYP_data.size());
 		}
 		return;
 	}
 
-	uint8 nonce[24];    /* Use only once per key: random */
+	uint8_t nonce[24];    /* Use only once per key: random */
 	if (randombytes(nonce, 24) < 0) {
 		/* Can't get a random nonce, just give up */
 		SlSetLength(0);
@@ -660,21 +660,21 @@ static void Save_PLYP()
 	}
 
 	std::vector<byte> buffer = SlSaveToVector([]() {
-		SlWriteUint32((uint32)_network_company_server_id.size());
-		MemoryDumper::GetCurrent()->CopyBytes((const uint8 *)_network_company_server_id.data(), _network_company_server_id.size());
+		SlWriteUint32((uint32_t)_network_company_server_id.size());
+		MemoryDumper::GetCurrent()->CopyBytes((const uint8_t *)_network_company_server_id.data(), _network_company_server_id.size());
 
 		for (const Company *c : Company::Iterate()) {
 			SlWriteUint16(c->index);
 
 			const std::string &password = _network_company_states[c->index].password;
-			SlWriteUint32((uint32)password.size());
-			MemoryDumper::GetCurrent()->CopyBytes((const uint8 *)password.data(), password.size());
+			SlWriteUint32((uint32_t)password.size());
+			MemoryDumper::GetCurrent()->CopyBytes((const uint8_t *)password.data(), password.size());
 		}
 
 		SlWriteUint16(0xFFFF);
 
 		/* Add some random length padding to not make it too obvious from the length whether passwords are set or not */
-		uint8 padding[256];
+		uint8_t padding[256];
 		if (randombytes(padding, 256) >= 0) {
 			SlWriteByte(padding[0]);
 			MemoryDumper::GetCurrent()->CopyBytes(padding + 1, padding[0]);
@@ -684,7 +684,7 @@ static void Save_PLYP()
 	});
 
 
-	uint8 mac[16];    /* Message authentication code */
+	uint8_t mac[16];    /* Message authentication code */
 
 	/* Encrypt in place */
 	crypto_aead_lock(buffer.data(), mac, _network_company_password_storage_key, nonce, nullptr, 0, buffer.data(), buffer.size());

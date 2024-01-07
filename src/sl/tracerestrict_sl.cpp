@@ -44,7 +44,7 @@ static void Save_TRRM()
 
 /** program length save header struct */
 struct TraceRestrictProgramStub {
-	uint32 length;
+	uint32_t length;
 };
 
 static const SaveLoad _trace_restrict_program_stub_desc[] = {
@@ -95,7 +95,7 @@ static void Load_TRRP()
 static void RealSave_TRRP(TraceRestrictProgram *prog)
 {
 	TraceRestrictProgramStub stub;
-	stub.length = (uint32)prog->items.size();
+	stub.length = (uint32_t)prog->items.size();
 	SlObject(&stub, _trace_restrict_program_stub_desc);
 	SlArray(prog->items.data(), stub.length, SLE_UINT32);
 }
@@ -113,7 +113,7 @@ static void Save_TRRP()
 
 /** program length save header struct */
 struct TraceRestrictSlotStub {
-	uint32 length;
+	uint32_t length;
 };
 
 static const SaveLoad _trace_restrict_slot_stub_desc[] = {
@@ -151,7 +151,7 @@ static void RealSave_TRRS(TraceRestrictSlot *slot)
 {
 	SlObject(slot, _trace_restrict_slot_desc);
 	TraceRestrictSlotStub stub;
-	stub.length = (uint32)slot->occupants.size();
+	stub.length = (uint32_t)slot->occupants.size();
 	SlObject(&stub, _trace_restrict_slot_stub_desc);
 	if (stub.length) SlArray(slot->occupants.data(), stub.length, SLE_UINT32);
 }

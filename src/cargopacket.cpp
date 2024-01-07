@@ -28,7 +28,7 @@
 CargoPacketPool _cargopacket_pool("CargoPacket");
 INSTANTIATE_POOL_METHODS(CargoPacket)
 
-btree::btree_map<uint64, Money> _cargo_packet_deferred_payments;
+btree::btree_map<uint64_t, Money> _cargo_packet_deferred_payments;
 
 void ClearCargoPacketDeferredPayments() {
 	_cargo_packet_deferred_payments.clear();
@@ -36,10 +36,10 @@ void ClearCargoPacketDeferredPayments() {
 
 void ChangeOwnershipOfCargoPacketDeferredPayments(Owner old_owner, Owner new_owner)
 {
-	std::vector<std::pair<uint64, Money>> to_merge;
+	std::vector<std::pair<uint64_t, Money>> to_merge;
 	auto iter = _cargo_packet_deferred_payments.begin();
 	while (iter != _cargo_packet_deferred_payments.end()) {
-		uint64 k = iter->first;
+		uint64_t k = iter->first;
 		if ((CompanyID) GB(k, 24, 8) == old_owner) {
 			if (new_owner != INVALID_OWNER) {
 				SB(k, 24, 8, new_owner);
@@ -55,9 +55,9 @@ void ChangeOwnershipOfCargoPacketDeferredPayments(Owner old_owner, Owner new_own
 	}
 }
 
-inline uint64 CargoPacketDeferredPaymentKey(CargoPacketID id, CompanyID cid, VehicleType type)
+inline uint64_t CargoPacketDeferredPaymentKey(CargoPacketID id, CompanyID cid, VehicleType type)
 {
-	return (((uint64) id) << 32) | (cid << 24) | (type << 22);
+	return (((uint64_t) id) << 32) | (cid << 24) | (type << 22);
 }
 
 template <typename F>
@@ -194,7 +194,7 @@ CargoPacket *CargoPacket::Split(uint new_size)
 	this->feeder_share -= fs;
 
 	if (this->flags & CPF_HAS_DEFERRED_PAYMENT) {
-		std::vector<std::pair<uint64, Money>> to_add;
+		std::vector<std::pair<uint64_t, Money>> to_add;
 		IterateCargoPacketDeferredPayments(this->index, false, [&](Money &payment, CompanyID cid, VehicleType type) {
 			Money share = payment * new_size / static_cast<uint>(this->count);
 			payment -= share;
@@ -220,7 +220,7 @@ void CargoPacket::Merge(CargoPacket *cp)
 	this->feeder_share += cp->feeder_share;
 
 	if (cp->flags & CPF_HAS_DEFERRED_PAYMENT) {
-		std::vector<std::pair<uint64, Money>> to_merge;
+		std::vector<std::pair<uint64_t, Money>> to_merge;
 		IterateCargoPacketDeferredPayments(cp->index, true, [&](Money &payment, CompanyID cid, VehicleType type) {
 			to_merge.push_back({ CargoPacketDeferredPaymentKey(this->index, cid, type), payment });
 		});

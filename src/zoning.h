@@ -16,7 +16,7 @@
 /**
  * Zoning evaluation modes
  */
-enum ZoningEvaluationMode : uint8 {
+enum ZoningEvaluationMode : uint8_t {
 	ZEM_NOTHING = 0,   ///< No zoning action selected
 	ZEM_AUTHORITY,     ///< Check the local authority's opinion.
 	ZEM_CAN_BUILD,     ///< Check wither or not the player can build.

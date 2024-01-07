@@ -103,7 +103,7 @@ static int ScriptOrderPositionToRealOrderPosition(VehicleID vehicle_id, ScriptOr
 	return res;
 }
 
-/* static */ bool ScriptOrder::ScriptOrderModifyOrder(VehicleID vehicle_id, VehicleOrderID order_position, uint32 p2, Script_SuspendCallbackProc *callback)
+/* static */ bool ScriptOrder::ScriptOrderModifyOrder(VehicleID vehicle_id, VehicleOrderID order_position, uint32_t p2, Script_SuspendCallbackProc *callback)
 {
 	return ScriptObject::DoCommandEx(0, vehicle_id, p2, order_position, CMD_MODIFY_ORDER, nullptr, 0, callback);
 }
@@ -449,8 +449,8 @@ static int ScriptOrderPositionToRealOrderPosition(VehicleID vehicle_id, ScriptOr
 	EnforcePrecondition(false, IsGotoStationOrder(vehicle_id, order_position) || (IsGotoDepotOrder(vehicle_id, order_position) && refit_cargo != CT_AUTO_REFIT));
 	EnforcePrecondition(false, ScriptCargo::IsValidCargo(refit_cargo) || refit_cargo == CT_AUTO_REFIT || refit_cargo == CT_NO_REFIT);
 
-	uint32 p1 = vehicle_id;
-	uint32 p2 = refit_cargo | ScriptOrderPositionToRealOrderPosition(vehicle_id, ScriptOrder::ResolveOrderPosition(vehicle_id, order_position)) << 16;
+	uint32_t p1 = vehicle_id;
+	uint32_t p2 = refit_cargo | ScriptOrderPositionToRealOrderPosition(vehicle_id, ScriptOrder::ResolveOrderPosition(vehicle_id, order_position)) << 16;
 	return ScriptObject::DoCommand(0, p1, p2, CMD_ORDER_REFIT);
 }
 

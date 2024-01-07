@@ -185,7 +185,7 @@ struct PacketWriter : SaveFilter {
 
 		/* Fast-track the size to the client. */
 		this->map_size_packet.reset(new Packet(PACKET_SERVER_MAP_SIZE, SHRT_MAX));
-		this->map_size_packet->Send_uint32((uint32)this->total_size);
+		this->map_size_packet->Send_uint32((uint32_t)this->total_size);
 	}
 };
 
@@ -216,7 +216,7 @@ ServerNetworkGameSocketHandler::~ServerNetworkGameSocketHandler()
 	if (_redirect_console_to_client == this->client_id) _redirect_console_to_client = INVALID_CLIENT_ID;
 	OrderBackup::ResetUser(this->client_id);
 
-	extern void RemoveVirtualTrainsOfUser(uint32 user);
+	extern void RemoveVirtualTrainsOfUser(uint32_t user);
 	RemoveVirtualTrainsOfUser(this->client_id);
 
 	if (this->savegame != nullptr) {
@@ -265,7 +265,7 @@ bool ServerNetworkGameSocketHandler::ParseKeyPasswordPacket(Packet *p, NetworkSh
 	/* Decrypt in place, use first half of hash as key */
 	if (crypto_aead_unlock(message.data(), mac, ss.shared_data, nonce, client_pub_key, 32, message.data(), message.size()) == 0) {
 		SubPacketDeserialiser spd(p, message);
-		uint64 message_id = spd.Recv_uint64();
+		uint64_t message_id = spd.Recv_uint64();
 		if (message_id < this->min_key_message_id) {
 			/* ID has not increased monotonically, reject the message */
 			return false;
@@ -419,7 +419,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendGameInfo()
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
-NetworkRecvStatus ServerNetworkGameSocketHandler::SendGameInfoExtended(PacketGameType reply_type, uint16 flags, uint16 version)
+NetworkRecvStatus ServerNetworkGameSocketHandler::SendGameInfoExtended(PacketGameType reply_type, uint16_t flags, uint16_t version)
 {
 	Packet *p = new Packet(reply_type, SHRT_MAX);
 	SerializeNetworkGameInfoExtended(p, GetCurrentNetworkServerGameInfo(), flags, version);
@@ -483,7 +483,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendDesyncLog(const std::strin
 	for (size_t offset = 0; offset < log.size();) {
 		Packet *p = new Packet(PACKET_SERVER_DESYNC_LOG, SHRT_MAX);
 		size_t size = std::min<size_t>(log.size() - offset, SHRT_MAX - 2 - p->Size());
-		p->Send_uint16(static_cast<uint16>(size));
+		p->Send_uint16(static_cast<uint16_t>(size));
 		p->Send_binary((const byte *)(log.data() + offset), size);
 		this->SendPacket(p);
 
@@ -503,7 +503,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendNewGRFCheck()
 		if (!HasBit(c->flags, GCF_STATIC)) grf_count++;
 	}
 
-	p->Send_uint32 (grf_count);
+	p->Send_uint32(grf_count);
 	for (c = _grfconfig; c != nullptr; c = c->next) {
 		if (!HasBit(c->flags, GCF_STATIC)) SerializeGRFIdentifier(p, &c->ident);
 	}
@@ -835,7 +835,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendNewGame()
  * @param colour The colour of the result.
  * @param command The command that was executed.
  */
-NetworkRecvStatus ServerNetworkGameSocketHandler::SendRConResult(uint16 colour, const std::string &command)
+NetworkRecvStatus ServerNetworkGameSocketHandler::SendRConResult(uint16_t colour, const std::string &command)
 {
 	assert(this->rcon_reply_key != nullptr);
 
@@ -845,10 +845,10 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendRConResult(uint16 colour, 
 	buffer.Send_string(command);
 
 	/* Message authentication code */
-	uint8 mac[16];
+	uint8_t mac[16];
 
 	/* Use only once per key: random */
-	uint8 nonce[24];
+	uint8_t nonce[24];
 	NetworkRandomBytesWithFallback(nonce, 24);
 
 	/* Encrypt in place, use first half of hash as key */
@@ -893,7 +893,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendCompanyUpdate()
 {
 	Packet *p = new Packet(PACKET_SERVER_COMPANY_UPDATE, SHRT_MAX);
 
-	static_assert(sizeof(_network_company_passworded) <= sizeof(uint16));
+	static_assert(sizeof(_network_company_passworded) <= sizeof(uint16_t));
 	p->Send_uint16(_network_company_passworded);
 	this->SendPacket(p);
 	return NETWORK_RECV_STATUS_OKAY;
@@ -928,8 +928,8 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_GAME_INFO(Packe
 {
 	if (p->CanReadFromPacket(9) && p->Recv_uint32() == FIND_SERVER_EXTENDED_TOKEN) {
 		PacketGameType reply_type = (PacketGameType)p->Recv_uint8();
-		uint16 flags = p->Recv_uint16();
-		uint16 version = p->Recv_uint16();
+		uint16_t flags = p->Recv_uint16();
+		uint16_t version = p->Recv_uint16();
 		return this->SendGameInfoExtended(reply_type, flags, version);
 	} else {
 		return this->SendGameInfo();
@@ -970,7 +970,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_JOIN(Packet *p)
 	}
 
 	std::string client_revision = p->Recv_string(NETWORK_REVISION_LENGTH);
-	uint32 newgrf_version = p->Recv_uint32();
+	uint32_t newgrf_version = p->Recv_uint32();
 
 	/* Check if the client has revision control enabled */
 	if (!IsNetworkCompatibleVersion(client_revision.c_str()) || _openttd_newgrf_version != newgrf_version) {
@@ -1258,7 +1258,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet *p
 	char client_name[NETWORK_CLIENT_NAME_LENGTH];
 	NetworkErrorCode errorno = (NetworkErrorCode)p->Recv_uint8();
 	NetworkRecvStatus rx_status = p->CanReadFromPacket(1) ? (NetworkRecvStatus)p->Recv_uint8() : NETWORK_RECV_STATUS_OKAY;
-	int8 status = p->CanReadFromPacket(1) ? (int8)p->Recv_uint8() : -1;
+	int8_t status = p->CanReadFromPacket(1) ? (int8_t)p->Recv_uint8() : -1;
 	PacketGameType last_pkt_type = p->CanReadFromPacket(1) ? (PacketGameType)p->Recv_uint8() : PACKET_END;
 
 	/* The client was never joined.. thank the client for the packet, but ignore it */
@@ -1293,7 +1293,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet *p
 		this->SendDesyncLog(server_desync_log);
 
 		// decrease the sync frequency for this point onwards
-		_settings_client.network.sync_freq = std::min<uint16>(_settings_client.network.sync_freq, 16);
+		_settings_client.network.sync_freq = std::min<uint16_t>(_settings_client.network.sync_freq, 16);
 
 		// have the server and all clients run some sanity checks
 		NetworkSendCommand(0, 0, 0, 0, CMD_DESYNC_CHECK, nullptr, nullptr, _local_company, nullptr);
@@ -1321,18 +1321,18 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_DESYNC_MSG(Pack
 {
 	Date date = p->Recv_uint32();
 	DateFract date_fract = p->Recv_uint16();
-	uint8 tick_skip_counter = p->Recv_uint8();
+	uint8_t tick_skip_counter = p->Recv_uint8();
 	std::string msg;
 	p->Recv_string(msg);
 	DEBUG(desync, 0, "Client-id %d desync msg: %s", this->client_id, msg.c_str());
-	extern void LogRemoteDesyncMsg(Date date, DateFract date_fract, uint8 tick_skip_counter, uint32 src_id, std::string msg);
+	extern void LogRemoteDesyncMsg(Date date, DateFract date_fract, uint8_t tick_skip_counter, uint32_t src_id, std::string msg);
 	LogRemoteDesyncMsg(date, date_fract, tick_skip_counter, this->client_id, std::move(msg));
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
 NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_DESYNC_SYNC_DATA(Packet *p)
 {
-	uint32 frame_count = p->Recv_uint32();
+	uint32_t frame_count = p->Recv_uint32();
 
 	DEBUG(net, 2, "Received desync sync data: %u frames", frame_count);
 
@@ -1341,10 +1341,10 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_DESYNC_SYNC_DAT
 	size_t record_count_offset = 0;
 	size_t record_offset = 0;
 	for (uint i = 0; i < frame_count; i++) {
-		uint32 item_count = p->Recv_uint32();
+		uint32_t item_count = p->Recv_uint32();
 		if (item_count == 0) continue;
-		uint32 local_item_count = 0;
-		uint32 frame = 0;
+		uint32_t local_item_count = 0;
+		uint32_t frame = 0;
 		NetworkSyncRecordEvents event = NSRE_BEGIN;
 		for (uint j = 0; j < item_count; j++) {
 			if (j == 0) {
@@ -1360,8 +1360,8 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_DESYNC_SYNC_DAT
 			} else {
 				event = (NetworkSyncRecordEvents)p->Recv_uint32();
 			}
-			uint32 seed_1 = p->Recv_uint32();
-			uint64 state_checksum = p->Recv_uint64();
+			uint32_t seed_1 = p->Recv_uint32();
+			uint64_t state_checksum = p->Recv_uint64();
 			if (j == local_item_count) {
 				this->desync_frame_info = stdstr_fmt("Desync subframe count mismatch: extra client record: %08X, %s", frame, GetSyncRecordEventName(event));
 				return NETWORK_RECV_STATUS_OKAY;
@@ -1422,7 +1422,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ACK(Packet *p)
 		return this->SendError(NETWORK_ERROR_NOT_AUTHORIZED);
 	}
 
-	uint32 frame = p->Recv_uint32();
+	uint32_t frame = p->Recv_uint32();
 
 	/* The client is trying to catch up with the server */
 	if (this->status == STATUS_PRE_ACTIVE) {
@@ -1438,7 +1438,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ACK(Packet *p)
 	}
 
 	/* Get, and validate the token. */
-	uint8 token = p->Recv_uint8();
+	uint8_t token = p->Recv_uint8();
 	if (token == this->last_token) {
 		/* We differentiate between last_token_frame and last_frame so the lag
 		 * test uses the actual lag of the client instead of the lag for getting

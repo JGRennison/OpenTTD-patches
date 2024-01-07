@@ -31,7 +31,7 @@
  * @return The selected bits, aligned to a LSB.
  */
 template <typename T>
-debug_inline constexpr static uint GB(const T x, const uint8 s, const uint8 n)
+debug_inline constexpr static uint GB(const T x, const uint8_t s, const uint8_t n)
 {
 	return (x >> s) & (((T)1U << n) - 1);
 }
@@ -103,7 +103,7 @@ inline T AB(T &x, const uint8_t s, const uint8_t n, const U i)
  * @return True if the bit is set, false else.
  */
 template <typename T>
-debug_inline static bool HasBit(const T x, const uint8 y)
+debug_inline static bool HasBit(const T x, const uint8_t y)
 {
 	return (x & ((T)1U << y)) != 0;
 }
@@ -193,7 +193,7 @@ inline T ToggleBit(T &x, const uint8_t y)
 #else
 
 /** Lookup table to check which bit is set in a 6 bit variable */
-extern const uint8 _ffb_64[64];
+extern const uint8_t _ffb_64[64];
 
 /**
  * Returns the first non-zero bit in a 6-bit value (from right).
@@ -216,7 +216,7 @@ extern const uint8 _ffb_64[64];
  * @return The position of the first bit set, or 0 when value is 0
  */
 template <typename T>
-inline uint8 FindFirstBit(T value)
+inline uint8_t FindFirstBit(T value)
 {
 	static_assert(sizeof(T) <= sizeof(unsigned long long));
 #ifdef WITH_BITMATH_BUILTINS
@@ -230,11 +230,11 @@ inline uint8 FindFirstBit(T value)
 		return __builtin_ctzll(unsigned_value);
 	}
 #else
-	if (sizeof(T) <= sizeof(uint32)) {
-		extern uint8 FindFirstBit32(uint32 x);
+	if (sizeof(T) <= sizeof(uint32_t)) {
+		extern uint8_t FindFirstBit32(uint32_t x);
 		return FindFirstBit32(value);
 	} else {
-		extern uint8 FindFirstBit64(uint64 x);
+		extern uint8_t FindFirstBit64(uint64_t x);
 		return FindFirstBit64(value);
 	}
 #endif
@@ -247,7 +247,7 @@ inline uint8 FindFirstBit(T value)
  * @return The position of the last bit set, or 0 when value is 0
  */
 template <typename T>
-inline uint8 FindLastBit(T value)
+inline uint8_t FindLastBit(T value)
 {
 	static_assert(sizeof(T) <= sizeof(unsigned long long));
 #ifdef WITH_BITMATH_BUILTINS
@@ -261,7 +261,7 @@ inline uint8 FindLastBit(T value)
 		return __builtin_clzll(1) - __builtin_clzll(unsigned_value);
 	}
 #else
-	extern uint8 FindLastBit64(uint64 x);
+	extern uint8_t FindLastBit64(uint64_t x);
 	return FindLastBit64(value);
 #endif
 }
@@ -497,27 +497,27 @@ private:
 #if defined(__APPLE__)
 	/* Make endian swapping use Apple's macros to increase speed
 	 * (since it will use hardware swapping if available).
-	 * Even though they should return uint16 and uint32, we get
+	 * Even though they should return uint16_t and uint32_t, we get
 	 * warnings if we don't cast those (why?) */
-	#define BSWAP64(x) ((uint64)CFSwapInt64((uint64)(x)))
-	#define BSWAP32(x) ((uint32)CFSwapInt32((uint32)(x)))
-	#define BSWAP16(x) ((uint16)CFSwapInt16((uint16)(x)))
+	#define BSWAP64(x) ((uint64_t)CFSwapInt64((uint64_t)(x)))
+	#define BSWAP32(x) ((uint32_t)CFSwapInt32((uint32_t)(x)))
+	#define BSWAP16(x) ((uint16_t)CFSwapInt16((uint16_t)(x)))
 #elif defined(_MSC_VER)
 	/* MSVC has intrinsics for swapping, resulting in faster code */
-	#define BSWAP64(x) ((uint64)_byteswap_uint64((uint64)(x)))
-	#define BSWAP32(x) ((uint32)_byteswap_ulong((uint32)(x)))
-	#define BSWAP16(x) ((uint16)_byteswap_ushort((uint16)(x)))
+	#define BSWAP64(x) ((uint64_t)_byteswap_uint64((uint64_t)(x)))
+	#define BSWAP32(x) ((uint32_t)_byteswap_ulong((uint32_t)(x)))
+	#define BSWAP16(x) ((uint16_t)_byteswap_ushort((uint16_t)(x)))
 #else
 	/**
 	 * Perform a 64 bits endianness bitswap on x.
 	 * @param x the variable to bitswap
 	 * @return the bitswapped value.
 	 */
-	static inline uint64 BSWAP64(uint64 x)
+	static inline uint64_t BSWAP64(uint64_t x)
 	{
 #if !defined(__ICC) && (defined(__GNUC__) || defined(__clang__))
 		/* GCC >= 4.3 provides a builtin, resulting in faster code */
-		return (uint64)__builtin_bswap64((uint64)x);
+		return (uint64_t)__builtin_bswap64((uint64_t)x);
 #else
 		return ((x >> 56) & 0xFFULL) | ((x >> 40) & 0xFF00ULL) | ((x >> 24) & 0xFF0000ULL) | ((x >> 8) & 0xFF000000ULL) |
 				((x << 8) & 0xFF00000000ULL) | ((x << 24) & 0xFF0000000000ULL) | ((x << 40) & 0xFF000000000000ULL) | ((x << 56) & 0xFF00000000000000ULL);
@@ -530,11 +530,11 @@ private:
 	 * @param x the variable to bitswap
 	 * @return the bitswapped value.
 	 */
-	static inline uint32 BSWAP32(uint32 x)
+	static inline uint32_t BSWAP32(uint32_t x)
 	{
 #if !defined(__ICC) && (defined(__GNUC__) || defined(__clang__))
 		/* GCC >= 4.3 provides a builtin, resulting in faster code */
-		return (uint32)__builtin_bswap32((uint32)x);
+		return (uint32_t)__builtin_bswap32((uint32_t)x);
 #else
 		return ((x >> 24) & 0xFF) | ((x >> 8) & 0xFF00) | ((x << 8) & 0xFF0000) | ((x << 24) & 0xFF000000);
 #endif /* __GNUC__ || __clang__ */
@@ -545,11 +545,11 @@ private:
 	 * @param x the variable to bitswap
 	 * @return the bitswapped value.
 	 */
-	static inline uint16 BSWAP16(uint16 x)
+	static inline uint16_t BSWAP16(uint16_t x)
 	{
 #if !defined(__ICC) && (defined(__GNUC__) || defined(__clang__))
 		/* GCC >= 4.3 provides a builtin, resulting in faster code */
-		return (uint16)__builtin_bswap16((uint16)x);
+		return (uint16_t)__builtin_bswap16((uint16_t)x);
 #else
 		return (x >> 8) | (x << 8);
 #endif /* __GNUC__ || __clang__ */

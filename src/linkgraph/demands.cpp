@@ -300,16 +300,16 @@ void DemandCalculator::CalcDemand(LinkGraphJob &job, const std::vector<bool> &re
 				continue;
 			}
 
-			int32 supply = scaler.EffectiveSupply(job[from_id], job[to_id]);
+			int32_t supply = scaler.EffectiveSupply(job[from_id], job[to_id]);
 			assert(supply > 0);
 
 			/* Scale the distance by mod_dist around max_distance */
-			int32 distance = this->max_distance - (this->max_distance -
-					(int32)DistanceMaxPlusManhattan(job[from_id].XY(), job[to_id].XY())) *
+			int32_t distance = this->max_distance - (this->max_distance -
+					(int32_t)DistanceMaxPlusManhattan(job[from_id].XY(), job[to_id].XY())) *
 					this->mod_dist / 100;
 
 			/* Scale the accuracy by distance around accuracy / 2 */
-			int32 divisor = this->accuracy * (this->mod_dist - 50) / 100 +
+			int32_t divisor = this->accuracy * (this->mod_dist - 50) / 100 +
 					this->accuracy * distance / this->max_distance + 1;
 
 			assert(divisor > 0);

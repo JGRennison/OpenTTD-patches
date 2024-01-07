@@ -12,7 +12,7 @@
 
 #include <functional>
 
-enum CheckCachesFlags : uint32 {
+enum CheckCachesFlags : uint32_t {
 	CHECK_CACHE_NONE               =       0,
 	CHECK_CACHE_GENERAL            = 1 <<  0,
 	CHECK_CACHE_INFRA_TOTALS       = 1 <<  1,

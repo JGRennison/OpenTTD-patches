@@ -15,7 +15,7 @@
 /**
  * Pool-type container for POD data..
  */
-template <typename PTR, size_t SIZE, uint N_PER_CHUNK, typename IDX = uint32>
+template <typename PTR, size_t SIZE, uint N_PER_CHUNK, typename IDX = uint32_t>
 class PodPool {
 	static_assert(SIZE >= sizeof(IDX));
 

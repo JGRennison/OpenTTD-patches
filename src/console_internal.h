@@ -84,7 +84,7 @@ void IConsoleClearBuffer();
 void IConsoleStdLibRegister();
 
 /* Supporting functions */
-bool GetArgumentInteger(uint32 *value, const char *arg);
+bool GetArgumentInteger(uint32_t *value, const char *arg);
 
 void IConsoleGUIInit();
 void IConsoleGUIFree();

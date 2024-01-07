@@ -8,8 +8,8 @@
 /** @file unicode.h Character mapping for using Unicode characters in OTTD. */
 
 struct DefaultUnicodeMapping {
-	WChar code; ///< Unicode value
-	byte key;   ///< Character index of sprite
+	char32_t code; ///< Unicode value
+	byte key;      ///< Character index of sprite
 };
 
 static const byte CLRA = 0; ///< Identifier to clear all glyphs at this codepoint

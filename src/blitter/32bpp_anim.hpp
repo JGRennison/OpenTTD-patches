@@ -15,7 +15,7 @@
 /** The optimised 32 bpp blitter with palette animation. */
 class Blitter_32bppAnim : public Blitter_32bppOptimized {
 protected:
-	uint16 *anim_buf;    ///< In this buffer we keep track of the 8bpp indexes so we can do palette animation
+	uint16_t *anim_buf;  ///< In this buffer we keep track of the 8bpp indexes so we can do palette animation
 	void *anim_alloc;    ///< The raw allocated buffer, not necessarily aligned correctly
 	int anim_buf_width;  ///< The width of the animation buffer.
 	int anim_buf_pitch;  ///< The pitch of the animation buffer (width rounded up to 16 byte boundary).
@@ -37,13 +37,13 @@ public:
 
 	void Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom) override;
 	void DrawColourMappingRect(void *dst, int width, int height, PaletteID pal) override;
-	void SetPixel(void *video, int x, int y, uint8 colour) override;
-	void SetPixel32(void *video, int x, int y, uint8 colour, uint32 colour32) override;
-	void DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8 colour, int width, int dash) override;
-	void SetRect(void *video, int x, int y, const uint8 *colours, uint lines, uint width, uint pitch) override;
-	void SetRect32(void *video, int x, int y, const uint32 *colours, uint lines, uint width, uint pitch) override;
-	void DrawRect(void *video, int width, int height, uint8 colour) override;
-	void DrawRectAt(void *video, int x, int y, int width, int height, uint8 colour) override;
+	void SetPixel(void *video, int x, int y, uint8_t colour) override;
+	void SetPixel32(void *video, int x, int y, uint8_t colour, uint32_t colour32) override;
+	void DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8_t colour, int width, int dash) override;
+	void SetRect(void *video, int x, int y, const uint8_t *colours, uint lines, uint width, uint pitch) override;
+	void SetRect32(void *video, int x, int y, const uint32_t *colours, uint lines, uint width, uint pitch) override;
+	void DrawRect(void *video, int width, int height, uint8_t colour) override;
+	void DrawRectAt(void *video, int x, int y, int width, int height, uint8_t colour) override;
 	void CopyFromBuffer(void *video, const void *src, int width, int height) override;
 	void CopyToBuffer(const void *video, void *dst, int width, int height) override;
 	void ScrollBuffer(void *video, int left, int top, int width, int height, int scroll_x, int scroll_y) override;
@@ -62,9 +62,9 @@ public:
 		return this->palette.palette[index];
 	}
 
-	inline int ScreenToAnimOffset(const uint32 *video)
+	inline int ScreenToAnimOffset(const uint32_t *video)
 	{
-		int raw_offset = video - (const uint32 *)_screen.dst_ptr;
+		int raw_offset = video - (const uint32_t *)_screen.dst_ptr;
 		if (_screen.pitch == this->anim_buf_pitch) return raw_offset;
 		int lines = raw_offset / _screen.pitch;
 		int across = raw_offset % _screen.pitch;

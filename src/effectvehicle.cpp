@@ -43,7 +43,7 @@ static bool IncrementSprite(EffectVehicle *v, SpriteID last)
 
 static void ChimneySmokeInit(EffectVehicle *v)
 {
-	uint32 r = Random();
+	uint32_t r = Random();
 	v->sprite_seq.Set(SPR_CHIMNEY_SMOKE_0 + GB(r, 0, 3));
 	v->UpdateSpriteSeqBound();
 	v->progress = GB(r, 16, 3);
@@ -296,8 +296,8 @@ static const BulldozerMovement _bulldozer_movement[] = {
 };
 
 static const struct {
-	int8 x;
-	int8 y;
+	int8_t x;
+	int8_t y;
 } _inc_by_dir[] = {
 	{ -1,  0 },
 	{  0,  1 },
@@ -341,9 +341,9 @@ static void BubbleInit(EffectVehicle *v)
 }
 
 struct BubbleMovement {
-	int8 x:4;
-	int8 y:4;
-	int8 z:4;
+	int8_t x:4;
+	int8_t y:4;
+	int8_t z:4;
 	byte image:4;
 };
 
@@ -673,7 +673,7 @@ EffectVehicle *CreateEffectVehicleRel(const Vehicle *v, int x, int y, int z, Eff
 bool EffectVehicle::Tick()
 {
 	DEBUG_UPDATESTATECHECKSUM("EffectVehicle::Tick: v: %u, x: %d, y: %d", this->index, this->x_pos, this->y_pos);
-	UpdateStateChecksum((((uint64) this->x_pos) << 32) | this->y_pos);
+	UpdateStateChecksum((((uint64_t) this->x_pos) << 32) | this->y_pos);
 	return _effect_tick_procs[this->subtype](this);
 }
 

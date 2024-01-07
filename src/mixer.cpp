@@ -22,13 +22,13 @@
 
 struct MixerChannel {
 	/* pointer to allocated buffer memory */
-	int8 *memory;
+	int8_t *memory;
 
 	/* current position in memory */
-	uint32 pos;
-	uint32 frac_pos;
-	uint32 frac_speed;
-	uint32 samples_left;
+	uint32_t pos;
+	uint32_t frac_pos;
+	uint32_t frac_speed;
+	uint32_t samples_left;
 
 	/* Mixing volume */
 	int volume_left;
@@ -37,13 +37,13 @@ struct MixerChannel {
 	bool is16bit;
 };
 
-static std::atomic<uint8> _active_channels;
+static std::atomic<uint8_t> _active_channels;
 static MixerChannel _channels[8];
-static uint32 _play_rate = 11025;
-static uint32 _max_size = UINT_MAX;
+static uint32_t _play_rate = 11025;
+static uint32_t _max_size = UINT_MAX;
 static MxStreamCallback _music_stream = nullptr;
 static std::mutex _music_stream_mutex;
-static std::atomic<uint8> _effect_vol;
+static std::atomic<uint8_t> _effect_vol;
 
 /**
  * The theoretical maximum volume for a single sound sample. Multiple sound
@@ -106,7 +106,7 @@ static void mix_int16(MixerChannel *sc, int16_t *buffer, uint samples, uint8_t e
 	sc->pos = b - (const T *)sc->memory;
 }
 
-static void MxCloseChannel(uint8 channel_index)
+static void MxCloseChannel(uint8_t channel_index)
 {
 	_active_channels.fetch_and(~(1 << channel_index), std::memory_order_release);
 }
@@ -121,26 +121,26 @@ void MxMixSamples(void *buffer, uint samples)
 	}
 
 	/* Clear the buffer */
-	memset(buffer, 0, sizeof(int16) * 2 * samples);
+	memset(buffer, 0, sizeof(int16_t) * 2 * samples);
 
 	{
 		std::lock_guard<std::mutex> lock{ _music_stream_mutex };
 		/* Fetch music if a sampled stream is available */
-		if (_music_stream) _music_stream((int16*)buffer, samples);
+		if (_music_stream) _music_stream((int16_t*)buffer, samples);
 	}
 
 	/* Apply simple x^3 scaling to master effect volume. This increases the
 	 * perceived difference in loudness to better match expectations. effect_vol
 	 * is expected to be in the range 0-127 hence the division by 127 * 127 to
 	 * get back into range. */
-	uint8 effect_vol_setting = _effect_vol.load(std::memory_order_relaxed);
-	uint8 effect_vol = (effect_vol_setting *
+	uint8_t effect_vol_setting = _effect_vol.load(std::memory_order_relaxed);
+	uint8_t effect_vol = (effect_vol_setting *
 	                    effect_vol_setting *
 	                    effect_vol_setting) / (127 * 127);
 
 	/* Mix each channel */
-	uint8 active = _active_channels.load(std::memory_order_acquire);
-	for (uint8 idx : SetBitIterator(active)) {
+	uint8_t active = _active_channels.load(std::memory_order_acquire);
+	for (uint8_t idx : SetBitIterator(active)) {
 		MixerChannel *mc = &_channels[idx];
 		if (mc->is16bit) {
 			mix_int16<int16_t>(mc, (int16_t*)buffer, samples, effect_vol);
@@ -153,11 +153,11 @@ void MxMixSamples(void *buffer, uint samples)
 
 MixerChannel *MxAllocateChannel()
 {
-	uint8 currently_active = _active_channels.load(std::memory_order_acquire);
-	uint8 available = ~currently_active;
+	uint8_t currently_active = _active_channels.load(std::memory_order_acquire);
+	uint8_t available = ~currently_active;
 	if (available == 0) return nullptr;
 
-	uint8 channel_index = FindFirstBit(available);
+	uint8_t channel_index = FindFirstBit(available);
 
 	MixerChannel *mc = &_channels[channel_index];
 	free(mc->memory);
@@ -165,7 +165,7 @@ MixerChannel *MxAllocateChannel()
 	return mc;
 }
 
-void MxSetChannelRawSrc(MixerChannel *mc, int8 *mem, size_t size, uint rate, bool is16bit)
+void MxSetChannelRawSrc(MixerChannel *mc, int8_t *mem, size_t size, uint rate, bool is16bit)
 {
 	mc->memory = mem;
 	mc->frac_pos = 0;
@@ -202,7 +202,7 @@ void MxSetChannelVolume(MixerChannel *mc, uint volume, float pan)
 
 void MxActivateChannel(MixerChannel *mc)
 {
-	uint8 channel_index = mc - _channels;
+	uint8_t channel_index = mc - _channels;
 	_active_channels.fetch_or((1 << channel_index), std::memory_order_release);
 }
 
@@ -211,7 +211,7 @@ void MxActivateChannel(MixerChannel *mc)
  * @param music_callback Function that will be called to fill sample buffers with music data.
  * @return Sample rate of mixer, which the buffers supplied to the callback must be rendered at.
  */
-uint32 MxSetMusicSource(MxStreamCallback music_callback)
+uint32_t MxSetMusicSource(MxStreamCallback music_callback)
 {
 	std::lock_guard<std::mutex> lock{ _music_stream_mutex };
 	_music_stream = music_callback;
@@ -228,7 +228,7 @@ bool MxInitialize(uint rate)
 	return true;
 }
 
-void SetEffectVolume(uint8 volume)
+void SetEffectVolume(uint8_t volume)
 {
 	_effect_vol.store(volume, std::memory_order_relaxed);
 }

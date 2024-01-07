@@ -26,14 +26,14 @@ template <class T>
 class ring_buffer
 {
 	std::unique_ptr<byte, FreeDeleter> data;
-	uint32 head = 0;
-	uint32 count = 0;
-	uint32 mask = (uint32)-1;
+	uint32_t head = 0;
+	uint32_t count = 0;
+	uint32_t mask = (uint32_t)-1;
 
-	static uint32 round_up_size(uint32 size)
+	static uint32_t round_up_size(uint32_t size)
 	{
 		if (size <= 4) return 4;
-		uint8 bit = FindLastBit(size - 1);
+		uint8_t bit = FindLastBit(size - 1);
 		return 1 << (bit + 1);
 	}
 
@@ -43,15 +43,15 @@ class ring_buffer
 
 	protected:
 		const ring_buffer *ring = nullptr;
-		uint32 pos = 0;
+		uint32_t pos = 0;
 
 		ring_buffer_iterator_base() {}
 
-		ring_buffer_iterator_base(const ring_buffer *ring, uint32 pos)
+		ring_buffer_iterator_base(const ring_buffer *ring, uint32_t pos)
 				: ring(ring), pos(pos) {}
 
 	public:
-		uint32 debug_raw_position() const { return this->pos; }
+		uint32_t debug_raw_position() const { return this->pos; }
 	};
 
 public:
@@ -68,7 +68,7 @@ public:
 				: ring_buffer_iterator_base(other.ring, other.pos) {}
 
 	private:
-		ring_buffer_iterator(const ring_buffer *ring, uint32 pos)
+		ring_buffer_iterator(const ring_buffer *ring, uint32_t pos)
 				: ring_buffer_iterator_base(ring, pos) {}
 
 		void next()
@@ -92,9 +92,9 @@ public:
 		void move(std::ptrdiff_t delta)
 		{
 			if (REVERSE) {
-				this->pos -= (uint32)delta;
+				this->pos -= (uint32_t)delta;
 			} else {
-				this->pos += (uint32)delta;
+				this->pos += (uint32_t)delta;
 			}
 		}
 
@@ -185,9 +185,9 @@ public:
 		{
 			dbg_assert(this->ring == other.ring);
 			if (REVERSE) {
-				return (int32)(other.pos - this->pos);
+				return (int32_t)(other.pos - this->pos);
 			} else {
-				return (int32)(this->pos - other.pos);
+				return (int32_t)(this->pos - other.pos);
 			}
 		}
 	};
@@ -207,11 +207,11 @@ public:
 	template <typename U>
 	void construct_from(const U &other)
 	{
-		uint32 cap = round_up_size((uint32)other.size());
+		uint32_t cap = round_up_size((uint32_t)other.size());
 		this->data.reset(MallocT<byte>(cap * sizeof(T)));
 		this->mask = cap - 1;
 		this->head = 0;
-		this->count = (uint32)other.size();
+		this->count = (uint32_t)other.size();
 		byte *ptr = this->data.get();
 		for (const T &item : other) {
 			new (ptr) T(item);
@@ -247,7 +247,7 @@ public:
 			this->clear();
 			if (!other.empty()) {
 				if (other.size() > this->capacity()) {
-					uint32 cap = round_up_size(other.count);
+					uint32_t cap = round_up_size(other.count);
 					this->data.reset(MallocT<byte>(cap * sizeof(T)));
 					this->mask = cap - 1;
 				}
@@ -332,9 +332,9 @@ public:
 	}
 
 private:
-	void reallocate(uint32 new_cap)
+	void reallocate(uint32_t new_cap)
 	{
-		const uint32 cap = round_up_size(new_cap);
+		const uint32_t cap = round_up_size(new_cap);
 		byte *new_buf = MallocT<byte>(cap * sizeof(T));
 		byte *pos = new_buf;
 		for (T &item : *this) {
@@ -347,22 +347,22 @@ private:
 		this->data.reset(new_buf);
 	}
 
-	void *raw_ptr_at_pos(uint32 idx) const
+	void *raw_ptr_at_pos(uint32_t idx) const
 	{
 		return this->data.get() + (sizeof(T) * (idx & this->mask));
 	}
 
-	void *raw_ptr_at_offset(uint32 idx) const
+	void *raw_ptr_at_offset(uint32_t idx) const
 	{
 		return this->raw_ptr_at_pos(this->head + idx);
 	}
 
-	T *ptr_at_pos(uint32 idx) const
+	T *ptr_at_pos(uint32_t idx) const
 	{
 		return static_cast<T *>(this->raw_ptr_at_pos(idx));
 	}
 
-	T *ptr_at_offset(uint32 idx) const
+	T *ptr_at_offset(uint32_t idx) const
 	{
 		return static_cast<T *>(this->raw_ptr_at_offset(idx));
 	}
@@ -511,15 +511,15 @@ public:
 	}
 
 private:
-	uint32 setup_insert(uint32 pos, uint32 num)
+	uint32_t setup_insert(uint32_t pos, uint32_t num)
 	{
-		if (this->count + num > (uint32)this->capacity()) {
+		if (this->count + num > (uint32_t)this->capacity()) {
 			/* grow container */
-			const uint32 cap = round_up_size(this->count + num);
+			const uint32_t cap = round_up_size(this->count + num);
 			byte *new_buf = MallocT<byte>(cap * sizeof(T));
 			byte *write_to = new_buf;
-			const uint32 end = this->head + this->count;
-			for (uint32 idx = this->head; idx != end; idx++) {
+			const uint32_t end = this->head + this->count;
+			for (uint32_t idx = this->head; idx != end; idx++) {
 				if (idx == pos) {
 					/* gap for inserted items */
 					write_to += num * sizeof(T);
@@ -529,7 +529,7 @@ private:
 				item.~T();
 				write_to += sizeof(T);
 			}
-			uint32 res = pos - this->head;
+			uint32_t res = pos - this->head;
 			this->mask = cap - 1;
 			this->head = 0;
 			this->count += num;
@@ -548,17 +548,17 @@ private:
 			/* middle, move data */
 			if (pos - this->head < (this->count / 2)) {
 				/* closer to the beginning, shuffle those backwards */
-				const uint32 new_head = this->head - num;
-				const uint32 insert_start = pos - num;
-				for (uint32 idx = new_head; idx != this->head; idx++) {
+				const uint32_t new_head = this->head - num;
+				const uint32_t insert_start = pos - num;
+				for (uint32_t idx = new_head; idx != this->head; idx++) {
 					/* Move construct to move backwards into uninitialised region */
 					new (this->raw_ptr_at_pos(idx)) T(std::move(*(this->ptr_at_pos(idx + num))));
 				}
-				for (uint32 idx = this->head; idx != insert_start; idx++) {
+				for (uint32_t idx = this->head; idx != insert_start; idx++) {
 					/* Move assign to move backwards in initialised region */
 					*this->ptr_at_pos(idx) = std::move(*this->ptr_at_pos(idx + num));
 				}
-				for (uint32 idx = insert_start; idx != pos; idx++) {
+				for (uint32_t idx = insert_start; idx != pos; idx++) {
 					/* Destruct to leave space for inserts */
 					this->ptr_at_pos(idx)->~T();
 				}
@@ -567,18 +567,18 @@ private:
 				return insert_start;
 			} else {
 				/* closer to the end, shuffle those forwards */
-				const uint32 last_inserted = pos + num - 1;
-				const uint32 last = this->head + this->count - 1;
-				const uint32 new_last = last + num;
-				for (uint32 idx = new_last; idx != last; idx--) {
+				const uint32_t last_inserted = pos + num - 1;
+				const uint32_t last = this->head + this->count - 1;
+				const uint32_t new_last = last + num;
+				for (uint32_t idx = new_last; idx != last; idx--) {
 					/* Move construct to move forwards into uninitialised region */
 					new (this->raw_ptr_at_pos(idx)) T(std::move(*(this->ptr_at_pos(idx - num))));
 				}
-				for (uint32 idx = last; idx != last_inserted; idx--) {
+				for (uint32_t idx = last; idx != last_inserted; idx--) {
 					/* Move assign to move forwards in initialised region */
 					*this->ptr_at_pos(idx) = std::move(*this->ptr_at_pos(idx - num));
 				}
-				for (uint32 idx = last_inserted; idx != pos; idx--) {
+				for (uint32_t idx = last_inserted; idx != pos; idx--) {
 					/* Destruct to leave space for inserts */
 					this->ptr_at_pos(idx)->~T();
 				}
@@ -594,7 +594,7 @@ public:
 	{
 		dbg_assert(pos.ring == this);
 
-		uint32 new_pos = this->setup_insert(pos.pos, 1);
+		uint32_t new_pos = this->setup_insert(pos.pos, 1);
 		new (this->raw_ptr_at_pos(new_pos)) T(std::forward<Args>(args)...);
 		return iterator(this, new_pos);
 	}
@@ -615,8 +615,8 @@ public:
 
 		dbg_assert(pos.ring == this);
 
-		const uint32 new_pos_start = this->setup_insert(pos.pos, (uint32)count);
-		uint32 new_pos = new_pos_start;
+		const uint32_t new_pos_start = this->setup_insert(pos.pos, (uint32_t)count);
+		uint32_t new_pos = new_pos_start;
 		for (size_t i = 0; i != count; i++) {
 			new (this->raw_ptr_at_pos(new_pos)) T(value);
 			++new_pos;
@@ -631,8 +631,8 @@ public:
 
 		dbg_assert(pos.ring == this);
 
-		const uint32 new_pos_start = this->setup_insert(pos.pos, (uint32)std::distance(first, last));
-		uint32 new_pos = new_pos_start;
+		const uint32_t new_pos_start = this->setup_insert(pos.pos, (uint32_t)std::distance(first, last));
+		uint32_t new_pos = new_pos_start;
 		for (auto iter = first; iter != last; ++iter) {
 			new (this->raw_ptr_at_pos(new_pos)) T(*iter);
 			++new_pos;
@@ -646,11 +646,11 @@ public:
 	}
 
 private:
-	uint32 do_erase(uint32 pos, uint32 num)
+	uint32_t do_erase(uint32_t pos, uint32_t num)
 	{
 		if (pos == this->head) {
 			/* erase from beginning */
-			for (uint32 i = 0; i < num; i++) {
+			for (uint32_t i = 0; i < num; i++) {
 				this->ptr_at_pos(pos + i)->~T();
 			}
 			this->head += num;
@@ -658,19 +658,19 @@ private:
 			return this->head;
 		} else if (pos + num == this->head + this->count) {
 			/* erase from end */
-			for (uint32 i = 0; i < num; i++) {
+			for (uint32_t i = 0; i < num; i++) {
 				this->ptr_at_pos(pos + i)->~T();
 			}
 			this->count -= num;
 			return pos;
 		} else if (pos - this->head < this->head + this->count - (pos + num)) {
 			/* closer to the beginning, shuffle beginning forwards to fill gap */
-			const uint32 new_head = this->head + num;
-			const uint32 erase_end = pos + num;
-			for (uint32 idx = erase_end - 1; idx != new_head - 1; idx--) {
+			const uint32_t new_head = this->head + num;
+			const uint32_t erase_end = pos + num;
+			for (uint32_t idx = erase_end - 1; idx != new_head - 1; idx--) {
 				*this->ptr_at_pos(idx) = std::move(*this->ptr_at_pos(idx - num));
 			}
-			for (uint32 idx = new_head - 1; idx != this->head - 1; idx--) {
+			for (uint32_t idx = new_head - 1; idx != this->head - 1; idx--) {
 				this->ptr_at_pos(idx)->~T();
 			}
 			this->head = new_head;
@@ -678,12 +678,12 @@ private:
 			return pos + num;
 		} else {
 			/* closer to the end, shuffle end backwards to fill gap */
-			const uint32 current_end = this->head + this->count;
-			const uint32 new_end = current_end - num;
-			for (uint32 idx = pos; idx != new_end; idx++) {
+			const uint32_t current_end = this->head + this->count;
+			const uint32_t new_end = current_end - num;
+			for (uint32_t idx = pos; idx != new_end; idx++) {
 				*this->ptr_at_pos(idx) = std::move(*this->ptr_at_pos(idx + num));
 			}
-			for (uint32 idx = new_end; idx != current_end; idx++) {
+			for (uint32_t idx = new_end; idx != current_end; idx++) {
 				this->ptr_at_pos(idx)->~T();
 			}
 			this->count -= num;
@@ -712,24 +712,24 @@ public:
 	{
 		if (new_cap <= this->capacity()) return;
 
-		this->reallocate((uint32)new_cap);
+		this->reallocate((uint32_t)new_cap);
 	}
 
 	void resize(size_t new_size)
 	{
 		if (new_size < this->size()) {
-			for (uint32 i = (uint32)new_size; i != this->count; i++) {
+			for (uint32_t i = (uint32_t)new_size; i != this->count; i++) {
 				this->ptr_at_offset(i)->~T();
 			}
 		} else if (new_size > this->size()) {
 			if (new_size > this->capacity()) {
-				this->reallocate((uint32)new_size);
+				this->reallocate((uint32_t)new_size);
 			}
-			for (uint32 i = this->count; i != (uint32)new_size; i++) {
+			for (uint32_t i = this->count; i != (uint32_t)new_size; i++) {
 				new (this->raw_ptr_at_offset(i)) T();
 			}
 		}
-		this->count = (uint32)new_size;
+		this->count = (uint32_t)new_size;
 	}
 
 	void shrink_to_fit()
@@ -737,7 +737,7 @@ public:
 		if (this->empty()) {
 			this->clear();
 			this->data.reset();
-			this->mask = (uint32)-1;
+			this->mask = (uint32_t)-1;
 		} else if (round_up_size(this->count) < this->capacity()) {
 			this->reallocate(this->count);
 		}
@@ -745,12 +745,12 @@ public:
 
 	T &operator[](size_t index)
 	{
-		return *this->ptr_at_offset((uint32)index);
+		return *this->ptr_at_offset((uint32_t)index);
 	}
 
 	const T &operator[](size_t index) const
 	{
-		return *this->ptr_at_offset((uint32)index);
+		return *this->ptr_at_offset((uint32_t)index);
 	}
 };
 

@@ -87,7 +87,7 @@ static bool IsArrival(const Order *order, StationID station) {
 			!(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION));
 }
 
-static uint8 GetDepartureConditionalOrderMode(const Order *order, const Vehicle *v, DateTicksScaled eval_date)
+static uint8_t GetDepartureConditionalOrderMode(const Order *order, const Vehicle *v, DateTicksScaled eval_date)
 {
 	if (order->GetConditionVariable() == OCV_UNCONDITIONALLY) return 1;
 	if (order->GetConditionVariable() == OCV_TIME_DATE) {
@@ -116,8 +116,8 @@ static bool VehicleSetNextDepartureTime(Ticks *previous_departure, Ticks *waitin
 
 			DateTicksScaled actual_departure    = -1;
 			const DateTicksScaled begin_time    = ds.GetScheduledDispatchStartTick();
-			const uint32 dispatch_duration      = ds.GetScheduledDispatchDuration();
-			const int32 max_delay               = ds.GetScheduledDispatchDelay();
+			const uint32_t dispatch_duration    = ds.GetScheduledDispatchDuration();
+			const int32_t max_delay             = ds.GetScheduledDispatchDelay();
 
 			/* Earliest possible departure according to schedue */
 			DateTicksScaled earliest_departure = begin_time + ds.GetScheduledDispatchLastDispatch();
@@ -174,7 +174,7 @@ static bool VehicleSetNextDepartureTime(Ticks *previous_departure, Ticks *waitin
 static void ScheduledDispatchDepartureLocalFix(DepartureList *departure_list)
 {
 	/* Seperate departure by each shared order group */
-	btree::btree_map<uint32, std::vector<Departure*>> separated_departure;
+	btree::btree_map<uint32_t, std::vector<Departure*>> separated_departure;
 	for (Departure* departure : *departure_list) {
 		separated_departure[departure->vehicle->orders->index].push_back(departure);
 	}

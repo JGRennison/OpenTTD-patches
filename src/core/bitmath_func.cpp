@@ -14,7 +14,7 @@
 
 #ifndef WITH_BITMATH_BUILTINS
 
-const uint8 _ffb_64[64] = {
+const uint8_t _ffb_64[64] = {
 	0,  0,  1,  0,  2,  0,  1,  0,
 	3,  0,  1,  0,  2,  0,  1,  0,
 	4,  0,  1,  0,  2,  0,  1,  0,
@@ -25,13 +25,13 @@ const uint8 _ffb_64[64] = {
 	3,  0,  1,  0,  2,  0,  1,  0,
 };
 
-uint8 FindFirstBit32(uint32 x)
+uint8_t FindFirstBit32(uint32_t x)
 {
 	if (x == 0) return 0;
 	/* The macro FIND_FIRST_BIT is better to use when your x is
 	  not more than 128. */
 
-	uint8 pos = 0;
+	uint8_t pos = 0;
 
 	if ((x & 0x0000ffff) == 0) { x >>= 16; pos += 16; }
 	if ((x & 0x000000ff) == 0) { x >>= 8;  pos += 8;  }
@@ -42,11 +42,11 @@ uint8 FindFirstBit32(uint32 x)
 	return pos;
 }
 
-uint8 FindFirstBit64(uint64 x)
+uint8_t FindFirstBit64(uint64_t x)
 {
 	if (x == 0) return 0;
-	if ((x & 0x00000000ffffffffULL) != 0) return FindFirstBit32(static_cast<uint32>(x));
-	return FindFirstBit32(static_cast<uint32>(x >> 32)) + 32;
+	if ((x & 0x00000000ffffffffULL) != 0) return FindFirstBit32(static_cast<uint32_t>(x));
+	return FindFirstBit32(static_cast<uint32_t>(x >> 32)) + 32;
 }
 
 #endif
@@ -62,11 +62,11 @@ uint8 FindFirstBit64(uint64 x)
  * @param x The value to search
  * @return The position of the last bit set
  */
-uint8 FindLastBit64(uint64 x)
+uint8_t FindLastBit64(uint64_t x)
 {
 	if (x == 0) return 0;
 
-	uint8 pos = 0;
+	uint8_t pos = 0;
 
 	if ((x & 0xffffffff00000000ULL) != 0) { x >>= 32; pos += 32; }
 	if ((x & 0x00000000ffff0000ULL) != 0) { x >>= 16; pos += 16; }

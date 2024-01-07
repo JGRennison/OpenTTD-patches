@@ -420,11 +420,11 @@ inline T DivTowardsPositiveInf(T a, T b)
 	return (a / b) + (a % b > 0 ? 1 : 0);
 }
 
-uint32 IntSqrt(uint32 num);
-uint32 IntSqrt64(uint64 num);
-uint32 IntCbrt(uint64 num);
+uint32_t IntSqrt(uint32_t num);
+uint32_t IntSqrt64(uint64_t num);
+uint32_t IntCbrt(uint64_t num);
 
-uint16 RXCompressUint(uint32 num);
-uint32 RXDecompressUint(uint16 num);
+uint16_t RXCompressUint(uint32_t num);
+uint32_t RXDecompressUint(uint16_t num);
 
 #endif /* MATH_FUNC_HPP */

@@ -27,7 +27,7 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 	auto check_1A_range = [&]() -> bool {
 		if (this->GroupMayBeBypassed()) {
 			/* Not clear why some GRFs do this, perhaps a way of commenting out a branch */
-			uint32 value = (this->adjusts.size() == 1) ? EvaluateDeterministicSpriteGroupAdjust(this->size, this->adjusts[0], nullptr, 0, UINT_MAX) : 0;
+			uint32_t value = (this->adjusts.size() == 1) ? EvaluateDeterministicSpriteGroupAdjust(this->size, this->adjusts[0], nullptr, 0, UINT_MAX) : 0;
 			for (const auto &range : this->ranges) {
 				if (range.low <= value && value <= range.high) {
 					if (range.group != nullptr) range.group->AnalyseCallbacks(op);
@@ -46,7 +46,7 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 			return;
 		} else if (!(op.result_flags & ACORF_CB_RESULT_FOUND)) {
 			if (check_1A_range()) return;
-			auto check_var_filter = [&](uint8 var, uint value) -> bool {
+			auto check_var_filter = [&](uint8_t var, uint value) -> bool {
 				if (this->adjusts.size() == 1 && this->adjusts[0].variable == var && (this->adjusts[0].operation == DSGA_OP_ADD || this->adjusts[0].operation == DSGA_OP_RST)) {
 					const auto &adjust = this->adjusts[0];
 					if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
@@ -145,7 +145,7 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 				for (const auto &range : this->ranges) {
 					if (range.low == range.high) {
 						if (range.low < 64) {
-							if (find_cb_result(range.group, { CBID_VEHICLE_MODIFY_PROPERTY, true, (uint8)range.low })) {
+							if (find_cb_result(range.group, { CBID_VEHICLE_MODIFY_PROPERTY, true, (uint8_t)range.low })) {
 								SetBit(op.properties_used, range.low);
 								if (range.low == 0x9) {
 									/* Speed */
@@ -218,20 +218,20 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 			}
 		}
 		if (op.mode == ACOM_INDUSTRY_TILE && adjust.variable == 0x43 && adjust.type == DSGA_TYPE_NONE && this->var_scope == VSG_SCOPE_SELF) {
-			const uint32 effective_mask = adjust.and_mask << adjust.shift_num;
+			const uint32_t effective_mask = adjust.and_mask << adjust.shift_num;
 			if (effective_mask == 0xFFFF || effective_mask == 0xFF00 || effective_mask == 0x00FF) {
 				/* Relative position switch */
 				const bool use_x = effective_mask & 0xFF;
 				const bool use_y = effective_mask & 0xFF00;
-				uint64 default_mask = op.data.indtile->check_mask;
+				uint64_t default_mask = op.data.indtile->check_mask;
 				for (const auto &range : this->ranges) {
 					if (range.high - range.low < 32) {
-						uint64 new_check_mask = 0;
+						uint64_t new_check_mask = 0;
 						for (uint i = range.low; i <= range.high; i++) {
 							const uint offset = i << adjust.shift_num;
-							const int16 x = offset & 0xFF;
-							const int16 y = (offset >> 8) & 0xFF;
-							for (uint bit : SetBitIterator<uint, uint64>(op.data.indtile->check_mask)) {
+							const int16_t x = offset & 0xFF;
+							const int16_t y = (offset >> 8) & 0xFF;
+							for (uint bit : SetBitIterator<uint, uint64_t>(op.data.indtile->check_mask)) {
 								const TileIndexDiffC &ti = (*(op.data.indtile->layout))[bit].ti;
 								if ((!use_x || ti.x == x) && (!use_y || ti.y == y)) {
 									SetBit(new_check_mask, bit);

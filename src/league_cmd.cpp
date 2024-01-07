@@ -84,7 +84,7 @@ std::tuple<CommandCost, LeagueTableID> CmdCreateLeagueTable(DoCommandFlag flags,
  * @param link_target Id of the referenced object
  * @return the cost of this operation or an error
  */
-std::tuple<CommandCost, LeagueTableElementID> CmdCreateLeagueTableElement(DoCommandFlag flags, LeagueTableID table, int64 rating, CompanyID company, const std::string &text, const std::string &score, LinkType link_type, LinkTargetID link_target)
+std::tuple<CommandCost, LeagueTableElementID> CmdCreateLeagueTableElement(DoCommandFlag flags, LeagueTableID table, int64_t rating, CompanyID company, const std::string &text, const std::string &score, LinkType link_type, LinkTargetID link_target)
 {
 	if (_current_company != OWNER_DEITY) return { CMD_ERROR, INVALID_LEAGUE_TABLE_ELEMENT };
 	if (!LeagueTableElement::CanAllocateItem()) return { CMD_ERROR, INVALID_LEAGUE_TABLE_ELEMENT };
@@ -142,7 +142,7 @@ CommandCost CmdUpdateLeagueTableElementData(DoCommandFlag flags, LeagueTableElem
  * @param score String representation of the score associated with the element
  * @return the cost of this operation or an error
  */
-CommandCost CmdUpdateLeagueTableElementScore(DoCommandFlag flags, LeagueTableElementID element, int64 rating, const std::string &score)
+CommandCost CmdUpdateLeagueTableElementScore(DoCommandFlag flags, LeagueTableElementID element, int64_t rating, const std::string &score)
 {
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 	auto lte = LeagueTableElement::GetIfValid(element);
@@ -176,7 +176,7 @@ CommandCost CmdRemoveLeagueTableElement(DoCommandFlag flags, LeagueTableElementI
 	return CommandCost();
 }
 
-CommandCost CmdCreateLeagueTable(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdCreateLeagueTable(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	CommandAuxData<LeagueTableCmdData> data;
 	CommandCost ret = data.Load(aux_data);
@@ -187,14 +187,14 @@ CommandCost CmdCreateLeagueTable(TileIndex tile, DoCommandFlag flags, uint32 p1,
 	return res;
 }
 
-CommandCost CmdCreateLeagueTableElement(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdCreateLeagueTableElement(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	CommandAuxData<LeagueTableElementCmdData> data;
 	CommandCost ret = data.Load(aux_data);
 	if (ret.Failed()) return ret;
 
 	LeagueTableID table = GB(p1, 0, 8);
-	int64 rating = p3;
+	int64_t rating = p3;
 	CompanyID company = (CompanyID)GB(p1, 8, 8);
 	LinkType link_type = (LinkType)GB(p1, 16, 8);
 	LinkTargetID link_target = (LinkTargetID)p2;
@@ -204,7 +204,7 @@ CommandCost CmdCreateLeagueTableElement(TileIndex tile, DoCommandFlag flags, uin
 	return res;
 }
 
-CommandCost CmdUpdateLeagueTableElementData(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdUpdateLeagueTableElementData(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	LeagueTableElementID element = GB(p1, 0, 16);
 	CompanyID company = (CompanyID)GB(p1, 16, 8);
@@ -214,12 +214,12 @@ CommandCost CmdUpdateLeagueTableElementData(TileIndex tile, DoCommandFlag flags,
 	return CmdUpdateLeagueTableElementData(flags, element, company, text, link_type, link_target);
 }
 
-CommandCost CmdUpdateLeagueTableElementScore(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, uint64 p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdUpdateLeagueTableElementScore(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	return CmdUpdateLeagueTableElementScore(flags, p1, p3, text);
 }
 
-CommandCost CmdRemoveLeagueTableElement(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text)
+CommandCost CmdRemoveLeagueTableElement(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	return CmdRemoveLeagueTableElement(flags, p1);
 }

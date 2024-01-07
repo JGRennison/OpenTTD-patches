@@ -261,7 +261,7 @@ void MacOSSetThreadName(const char *name)
 	}
 }
 
-uint64 MacOSGetPhysicalMemory()
+uint64_t MacOSGetPhysicalMemory()
 {
 	return [ [ NSProcessInfo processInfo ] physicalMemory ];
 }

@@ -699,7 +699,7 @@ struct RefitWindow : public Window {
 	uint vehicle_margin;         ///< Margin to use while selecting vehicles when the vehicle image is centered.
 	int click_x;                 ///< Position of the first click while dragging.
 	VehicleID selected_vehicle;  ///< First vehicle in the current selection.
-	uint8 num_vehicles;          ///< Number of selected vehicles.
+	uint8_t num_vehicles;        ///< Number of selected vehicles.
 	bool auto_refit;             ///< Select cargo for auto-refitting.
 	bool is_virtual_train;       ///< TemplateReplacement, whether the selected vehicle is virtual
 	mutable std::map<VehicleID, std::string> ship_part_names; ///< Ship part name strings
@@ -990,7 +990,7 @@ struct RefitWindow : public Window {
 			const Vehicle *front = v->First();
 			uint offset = 0;
 			for (const Vehicle *u = front; u != v; u = u->Next()) offset++;
-			uint16 callback = GetVehicleCallback(XCBID_SHIP_REFIT_PART_NAME, offset, 0, front->engine_type, front);
+			uint16_t callback = GetVehicleCallback(XCBID_SHIP_REFIT_PART_NAME, offset, 0, front->engine_type, front);
 			if (callback != CALLBACK_FAILED && callback < 0x400) {
 				const GRFFile *grffile = v->GetGRF();
 				assert(grffile != nullptr);
@@ -1465,7 +1465,7 @@ uint ShowRefitOptionsList(int left, int right, int y, EngineID engine)
 StringID GetCargoSubtypeText(const Vehicle *v)
 {
 	if (HasBit(EngInfo(v->engine_type)->callback_mask, CBM_VEHICLE_CARGO_SUFFIX)) {
-		uint16 cb = GetVehicleCallback(CBID_VEHICLE_CARGO_SUFFIX, 0, 0, v->engine_type, v);
+		uint16_t cb = GetVehicleCallback(CBID_VEHICLE_CARGO_SUFFIX, 0, 0, v->engine_type, v);
 		if (cb != CALLBACK_FAILED) {
 			if (cb > 0x400) ErrorUnknownCallbackResult(v->GetGRFID(), CBID_VEHICLE_CARGO_SUFFIX, cb);
 			if (cb >= 0x400 || (v->GetGRF()->grf_version < 8 && cb == 0xFF)) cb = CALLBACK_FAILED;
@@ -1551,14 +1551,14 @@ static bool VehicleProfitThisYearSorter(const Vehicle * const &a, const Vehicle 
 /** Sort vehicles by last year profit */
 static bool VehicleProfitLastYearSorter(const Vehicle * const &a, const Vehicle * const &b)
 {
-	int r = ClampTo<int32>(a->GetDisplayProfitLastYear() - b->GetDisplayProfitLastYear());
+	int r = ClampTo<int32_t>(a->GetDisplayProfitLastYear() - b->GetDisplayProfitLastYear());
 	return (r != 0) ? r < 0 : VehicleNumberSorter(a, b);
 }
 
 /** Sort vehicles by lifetime profit */
 static bool VehicleProfitLifetimeSorter(const Vehicle * const &a, const Vehicle * const &b)
 {
-	int r = ClampTo<int32>(a->GetDisplayProfitLifetime() - b->GetDisplayProfitLifetime());
+	int r = ClampTo<int32_t>(a->GetDisplayProfitLifetime() - b->GetDisplayProfitLifetime());
 	return (r != 0) ? r < 0 : VehicleNumberSorter(a, b);
 }
 
@@ -1973,7 +1973,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 				}
 
 				case VST_AVERAGE_ORDER_OCCUPANCY: {
-					uint8 occupancy_average = v->GetOrderOccupancyAverage();
+					uint8_t occupancy_average = v->GetOrderOccupancyAverage();
 					if (occupancy_average >= 16) {
 						str = STR_VEHICLE_LIST_ORDER_OCCUPANCY_AVERAGE;
 						SetDParam(3, occupancy_average - 16);
@@ -2112,7 +2112,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 
 void BaseVehicleListWindow::UpdateSortingInterval()
 {
-	uint16 resort_interval = DAY_TICKS * 10;
+	uint16_t resort_interval = DAY_TICKS * 10;
 	if (this->grouping == GB_NONE && this->vehgroups.SortType() == VST_TIMETABLE_DELAY) resort_interval = DAY_TICKS;
 	this->vehgroups.SetResortInterval(resort_interval);
 }
@@ -2660,7 +2660,7 @@ static WindowDesc _vehicle_list_train_desc(__FILE__, __LINE__,
 	std::begin(_nested_vehicle_list), std::end(_nested_vehicle_list)
 );
 
-static void ShowVehicleListWindowLocal(CompanyID company, VehicleListType vlt, VehicleType vehicle_type, uint32 unique_number)
+static void ShowVehicleListWindowLocal(CompanyID company, VehicleListType vlt, VehicleType vehicle_type, uint32_t unique_number)
 {
 	if (!Company::IsValidID(company) && company != OWNER_NONE) return;
 
@@ -2699,7 +2699,7 @@ void ShowVehicleListWindow(CompanyID company, VehicleType vehicle_type, StationI
 
 void ShowVehicleListWindow(CompanyID company, VehicleType vehicle_type, TileIndex depot_tile)
 {
-	uint16 depot_airport_index;
+	uint16_t depot_airport_index;
 
 	if (vehicle_type == VEH_AIRCRAFT) {
 		depot_airport_index = GetStationIndex(depot_tile);
@@ -2814,7 +2814,7 @@ static const NWidgetPart _nested_train_vehicle_details_widgets[] = {
 
 
 extern int GetTrainDetailsWndVScroll(VehicleID veh_id, TrainDetailsWindowTabs det_tab);
-extern void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16 vscroll_cap, TrainDetailsWindowTabs det_tab);
+extern void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16_t vscroll_cap, TrainDetailsWindowTabs det_tab);
 extern void DrawRoadVehDetails(const Vehicle *v, const Rect &r);
 extern void DrawShipDetails(const Vehicle *v, const Rect &r);
 extern void DrawAircraftDetails(const Aircraft *v, const Rect &r);
@@ -3166,8 +3166,8 @@ struct VehicleDetailsWindow : Window {
 				byte total_engines = 0;
 				if (v->type == VEH_TRAIN) {
 					/* we want to draw the average reliability and total number of breakdowns */
-					uint32 total_reliability = 0;
-					uint16 total_breakdowns  = 0;
+					uint32_t total_reliability = 0;
+					uint16_t total_breakdowns  = 0;
 					for (const Vehicle *w = v; w != nullptr; w = w->Next()) {
 						if (Train::From(w)->IsEngine() || Train::From(w)->IsMultiheaded()) {
 							total_reliability += w->reliability;
@@ -3335,7 +3335,7 @@ struct VehicleDetailsWindow : Window {
 				const Vehicle *v = Vehicle::Get(this->window_number);
 				bool iscustom = index != 0;
 				bool ispercent = iscustom ? (index == 2) : Company::Get(v->owner)->settings.vehicle.servint_ispercent;
-				uint16 interval = GetServiceIntervalClamped(v->GetServiceInterval(), ispercent);
+				uint16_t interval = GetServiceIntervalClamped(v->GetServiceInterval(), ispercent);
 				DoCommandP(v->tile, v->index, interval | (iscustom << 16) | (ispercent << 17), CMD_CHANGE_SERVICE_INT | CMD_MSG(STR_ERROR_CAN_T_CHANGE_SERVICING));
 				break;
 			}
@@ -3469,7 +3469,7 @@ enum VehicleCommandTranslation {
 };
 
 /** Command codes for the shared buttons indexed by VehicleCommandTranslation and vehicle type. */
-static const uint32 _vehicle_command_translation_table[][4] = {
+static const uint32_t _vehicle_command_translation_table[][4] = {
 	{ // VCT_CMD_START_STOP
 		CMD_START_STOP_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_STOP_START_TRAIN),
 		CMD_START_STOP_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_STOP_START_ROAD_VEHICLE),
@@ -3497,7 +3497,7 @@ static const uint32 _vehicle_command_translation_table[][4] = {
  * @param p1 vehicle ID
  * @param p2 unused
  */
-void CcStartStopVehicle(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcStartStopVehicle(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Failed()) return;
 
@@ -3763,7 +3763,7 @@ public:
 				} else if (w->breakdown_type == BREAKDOWN_LOW_POWER) {
 					int percent;
 					if (v->type == VEH_TRAIN) {
-						uint32 power, te;
+						uint32_t power, te;
 						Train::From(v)->CalculatePower(power, te, true);
 						percent = (100 * power) / Train::From(v)->gcache.cached_power;
 					} else {
@@ -4286,7 +4286,7 @@ void StopGlobalFollowVehicle(const Vehicle *v)
  * @param p2 unused
  * @param cmd unused
  */
-void CcBuildPrimaryVehicle(const CommandCost &result, TileIndex tile, uint32 p1, uint32 p2, uint64 p3, uint32 cmd)
+void CcBuildPrimaryVehicle(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Failed()) return;
 

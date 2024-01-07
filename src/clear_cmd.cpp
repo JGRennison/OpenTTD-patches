@@ -80,7 +80,7 @@ inline SpriteID GetSpriteIDForRocksUsingOffset(const uint slope_to_sprite_offset
 	return ((HasGrfMiscBit(GMB_SECOND_ROCKY_TILE_SET) && (TileHash(x, y) & 1)) ? SPR_FLAT_ROCKY_LAND_2 : SPR_FLAT_ROCKY_LAND_1) + slope_to_sprite_offset;
 }
 
-bool DrawCustomSpriteIDForRocks(const TileInfo *ti, uint8 slope_to_sprite_offset, bool require_snow_flag)
+bool DrawCustomSpriteIDForRocks(const TileInfo *ti, uint8_t slope_to_sprite_offset, bool require_snow_flag)
 {
 	for (const GRFFile *grf : _new_landscape_rocks_grfs) {
 		if (require_snow_flag && !HasBit(grf->new_landscape_ctrl_flags, NLCF_ROCKS_DRAW_SNOWY_ENABLED)) continue;
@@ -166,7 +166,7 @@ static void DrawTile_Clear(TileInfo *ti, DrawTileProcParams params)
 
 		case CLEAR_ROCKS:
 			if (!params.no_ground_tiles) {
-				uint8 slope_to_sprite_offset = SlopeToSpriteOffset(ti->tileh);
+				uint8_t slope_to_sprite_offset = SlopeToSpriteOffset(ti->tileh);
 				if (DrawCustomSpriteIDForRocks(ti, slope_to_sprite_offset, false)) break;
 				DrawGroundSprite(GetSpriteIDForRocksUsingOffset(slope_to_sprite_offset, ti->x, ti->y), PAL_NONE);
 			}
@@ -181,7 +181,7 @@ static void DrawTile_Clear(TileInfo *ti, DrawTileProcParams params)
 
 		case CLEAR_SNOW:
 			if (!params.no_ground_tiles) {
-				uint8 slope_to_sprite_offset = SlopeToSpriteOffset(ti->tileh);
+				uint8_t slope_to_sprite_offset = SlopeToSpriteOffset(ti->tileh);
 				if (GetRawClearGround(ti->tile) == CLEAR_ROCKS && !_new_landscape_rocks_grfs.empty()) {
 					if (DrawCustomSpriteIDForRocks(ti, slope_to_sprite_offset, true)) break;
 				}
@@ -401,7 +401,7 @@ void GenerateClearTile()
 	/* add rocky tiles */
 	i = gi;
 	do {
-		uint32 r = Random();
+		uint32_t r = Random();
 		tile = RandomTileSeed(r);
 
 		IncreaseGeneratingWorldProgress(GWP_ROUGH_ROCKY);

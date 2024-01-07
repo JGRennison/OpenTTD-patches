@@ -40,7 +40,7 @@
 #include "command_func.h"
 #include "safeguards.h"
 
-uint32 _road_layout_change_counter = 0;
+uint32_t _road_layout_change_counter = 0;
 
 /** Whether to build public roads */
 enum PublicRoadsConstruction {
@@ -312,9 +312,9 @@ RoadType GetRoadTypeByLabel(RoadTypeLabel label, bool allow_alternate_labels)
 /*                                PUBLIC ROADS                               */
 /* ========================================================================= */
 
-CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text = nullptr);
-CommandCost CmdBuildTunnel(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text = nullptr);
-CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32 p1, uint32 p2, const char *text = nullptr);
+CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text = nullptr);
+CommandCost CmdBuildTunnel(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text = nullptr);
+CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text = nullptr);
 
 static RoadType _public_road_type;
 static const uint _public_road_hash_size = 8U; ///< The number of bits the hash for river finding should have.
@@ -450,7 +450,7 @@ static TileIndex BuildBridge(PathNode *current, TileIndex end_tile = INVALID_TIL
 	assert(!build_bridge || !available_bridge_types.empty());
 	if (available_bridge_types.empty()) return INVALID_TILE;
 
-	const auto bridge_type = available_bridge_types[build_bridge ? RandomRange(uint32(available_bridge_types.size())) : 0];
+	const auto bridge_type = available_bridge_types[build_bridge ? RandomRange((uint32_t)available_bridge_types.size()) : 0];
 
 	Backup cur_company(_current_company, OWNER_DEITY, FILE_LINE);
 	const auto build_bridge_cmd = CmdBuildBridge(end_tile, DC_AUTO | (build_bridge ? DC_EXEC : DC_NONE), start_tile, bridge_type | (_public_road_type << 8) | (TRANSPORT_ROAD << 15));
@@ -481,7 +481,7 @@ static TileIndex BuildRiverBridge(PathNode *current, const DiagDirection road_di
 		// should not force that on them. This is just to bridge rivers, not to make long bridges.
 		for (;
 			IsValidTile(tile) &&
-			(GetTunnelBridgeLength(start_tile, tile) <= std::min(_settings_game.construction.max_bridge_length, (uint16)3)) &&
+			(GetTunnelBridgeLength(start_tile, tile) <= std::min(_settings_game.construction.max_bridge_length, (uint16_t)3)) &&
 			(start_tile_z < (GetTileZ(tile) + _settings_game.construction.max_bridge_height)) &&
 			(GetTileZ(tile) <= start_tile_z);
 			tile += TileOffsByDiagDir(road_direction)) {
@@ -509,7 +509,7 @@ static TileIndex BuildRiverBridge(PathNode *current, const DiagDirection road_di
 		}
 	}
 
-	const auto bridge_type = available_bridge_types[build_bridge ? RandomRange(uint32(available_bridge_types.size())) : 0];
+	const auto bridge_type = available_bridge_types[build_bridge ? RandomRange((uint32_t)available_bridge_types.size()) : 0];
 
 	Backup cur_company(_current_company, OWNER_DEITY, FILE_LINE);
 	const auto build_bridge_cmd = CmdBuildBridge(end_tile, DC_AUTO | (build_bridge ? DC_EXEC : DC_NONE), start_tile, bridge_type | (_public_road_type << 8) | (TRANSPORT_ROAD << 15));
@@ -782,7 +782,7 @@ static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
 }
 
 /** AyStar callback for checking whether we reached our destination. */
-static int32 PublicRoad_EndNodeCheck(const AyStar *aystar, const OpenListNode *current)
+static int32_t PublicRoad_EndNodeCheck(const AyStar *aystar, const OpenListNode *current)
 {
 	return current->path.node.tile == static_cast<TileIndex>(reinterpret_cast<uintptr_t>(aystar->user_target)) ? AYSTAR_FOUND_END_NODE : AYSTAR_DONE;
 }
@@ -858,16 +858,16 @@ static void PublicRoad_FoundEndNode(AyStar *aystar, OpenListNode *current)
 	}
 }
 
-static const int32 BASE_COST_PER_TILE  = 1;      // Cost for existing road or tunnel/bridge.
-static const int32 COST_FOR_NEW_ROAD   = 10;    // Cost for building a new road.
-static const int32 COST_FOR_SLOPE      = 50;     // Additional cost if the road heads up or down a slope.
+static const int32_t BASE_COST_PER_TILE  = 1;     ///< Cost for existing road or tunnel/bridge.
+static const int32_t COST_FOR_NEW_ROAD   = 10;    ///< Cost for building a new road.
+static const int32_t COST_FOR_SLOPE      = 50;    ///< Additional cost if the road heads up or down a slope.
 
 /** AyStar callback for getting the cost of the current node. */
-static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *parent)
+static int32_t PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *parent)
 {
-	int32 cost = 0;
+	int32_t cost = 0;
 
-	const int32 distance = DistanceManhattan(parent->path.node.tile, current->tile);
+	const int32_t distance = DistanceManhattan(parent->path.node.tile, current->tile);
 
 	if (IsTileType(current->tile, MP_ROAD) || IsTileType(current->tile, MP_TUNNELBRIDGE)) {
 		cost += distance * BASE_COST_PER_TILE;
@@ -912,7 +912,7 @@ static int32 PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode *
 }
 
 /** AyStar callback for getting the estimated cost to the destination. */
-static int32 PublicRoad_CalculateH(AyStar *aystar, AyStarNode *current, OpenListNode *parent)
+static int32_t PublicRoad_CalculateH(AyStar *aystar, AyStarNode *current, OpenListNode *parent)
 {
 	return DistanceManhattan(static_cast<TileIndex>(reinterpret_cast<uintptr_t>(aystar->user_target)), current->tile) * BASE_COST_PER_TILE;
 }

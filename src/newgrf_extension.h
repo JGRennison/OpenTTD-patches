@@ -104,7 +104,7 @@ enum Action2VariableRemapIds {
 	A2VRI_TOWNS_XY,
 };
 
-enum GRFFeatureTestObservationFlag : uint8 {
+enum GRFFeatureTestObservationFlag : uint8_t {
 	GFTOF_MORE_ACTION2_IDS = 0,
 	GFTOF_TOWN_ZONE_CALLBACK,
 	GFTOF_MORE_VARACTION2_TYPES,
@@ -117,7 +117,7 @@ enum GRFFeatureTestObservationFlag : uint8 {
 /** Action14 feature definition */
 struct GRFFeatureInfo {
 	const char *name; // nullptr indicates the end of the list
-	uint16 version;
+	uint16_t version;
 	GRFFeatureTestObservationFlag observation_flag;
 
 	/** Create empty object used to identify the end of a list. */
@@ -127,7 +127,7 @@ struct GRFFeatureInfo {
 		observation_flag(GFTOF_INVALID)
 	{}
 
-	GRFFeatureInfo(const char *name, uint16 version, GRFFeatureTestObservationFlag observation_flag = GFTOF_INVALID) :
+	GRFFeatureInfo(const char *name, uint16_t version, GRFFeatureTestObservationFlag observation_flag = GFTOF_INVALID) :
 		name(name),
 		version(version),
 		observation_flag(observation_flag)

@@ -32,7 +32,7 @@ enum PersistentStorageMode {
  * so we have a generalised access to the virtual methods.
  */
 struct BasePersistentStorageArray {
-	uint32 grfid;    ///< GRFID associated to this persistent storage. A value of zero means "default".
+	uint32_t grfid;  ///< GRFID associated to this persistent storage. A value of zero means "default".
 	byte feature;    ///< NOSAVE: Used to identify in the owner of the array in debug output.
 	TileIndex tile;  ///< NOSAVE: Used to identify in the owner of the array in debug output.
 
@@ -78,7 +78,7 @@ struct PersistentStorageArray : BasePersistentStorageArray {
 	 * @param pos   the position to write at
 	 * @param value the value to write
 	 */
-	void StoreValue(uint pos, int32 value)
+	void StoreValue(uint pos, int32_t value)
 	{
 		/* Out of the scope of the array */
 		if (pos >= SIZE) return;
@@ -144,7 +144,7 @@ struct TemporaryStorageArray {
 	 * @param pos   the position to write at
 	 * @param value the value to write
 	 */
-	void StoreValue(uint pos, int32 value)
+	void StoreValue(uint pos, int32_t value)
 	{
 		/* Out of the scope of the array */
 		if (pos >= SIZE) return;
@@ -185,9 +185,9 @@ struct TemporaryStorageArray {
 
 void AddChangedPersistentStorage(BasePersistentStorageArray *storage);
 
-typedef PersistentStorageArray<int32, 16> OldPersistentStorage;
+typedef PersistentStorageArray<int32_t, 16> OldPersistentStorage;
 
-typedef uint32 PersistentStorageID;
+typedef uint32_t PersistentStorageID;
 
 struct PersistentStorage;
 typedef Pool<PersistentStorage, PersistentStorageID, 1, 0xFF000> PersistentStoragePool;
@@ -197,9 +197,9 @@ extern PersistentStoragePool _persistent_storage_pool;
 /**
  * Class for pooled persistent storage of data.
  */
-struct PersistentStorage : PersistentStorageArray<int32, 256>, PersistentStoragePool::PoolItem<&_persistent_storage_pool> {
+struct PersistentStorage : PersistentStorageArray<int32_t, 256>, PersistentStoragePool::PoolItem<&_persistent_storage_pool> {
 	/** We don't want GCC to zero our struct! It already is zeroed and has an index! */
-	PersistentStorage(const uint32 new_grfid, byte feature, TileIndex tile)
+	PersistentStorage(const uint32_t new_grfid, byte feature, TileIndex tile)
 	{
 		this->grfid = new_grfid;
 		this->feature = feature;

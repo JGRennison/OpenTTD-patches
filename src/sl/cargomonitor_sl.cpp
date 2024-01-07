@@ -17,7 +17,7 @@
 /** Temporary storage of cargo monitoring data for loading or saving it. */
 struct TempStorage {
 	CargoMonitorID number;
-	uint32 amount;
+	uint32_t amount;
 };
 
 /** Description of the #TempStorage structure for the purpose of load and save. */
@@ -73,7 +73,7 @@ static void LoadDelivery()
 
 		if (fix) storage.number = FixupCargoMonitor(storage.number);
 
-		std::pair<CargoMonitorID, uint32> p(storage.number, storage.amount);
+		std::pair<CargoMonitorID, uint32_t> p(storage.number, storage.amount);
 		_cargo_deliveries.insert(p);
 	}
 }
@@ -111,7 +111,7 @@ static void LoadPickup()
 
 		if (fix) storage.number = FixupCargoMonitor(storage.number);
 
-		std::pair<CargoMonitorID, uint32> p(storage.number, storage.amount);
+		std::pair<CargoMonitorID, uint32_t> p(storage.number, storage.amount);
 		_cargo_pickups.insert(p);
 	}
 }

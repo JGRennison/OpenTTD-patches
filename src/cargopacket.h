@@ -23,7 +23,7 @@
 #include "3rdparty/cpp-btree/btree_map.h"
 
 /** Unique identifier for a single cargo packet. */
-typedef uint32 CargoPacketID;
+typedef uint32_t CargoPacketID;
 struct CargoPacket;
 
 /** Type of the pool for cargo packets for a little over 16 million packets. */
@@ -57,14 +57,14 @@ private:
 		int32_t y;
 	};
 
-	uint16 count = 0;                              ///< The amount of cargo in this packet.
-	uint16 periods_in_transit = 0;                 ///< Amount of cargo aging periods this packet has been in transit.
+	uint16_t count = 0;                            ///< The amount of cargo in this packet.
+	uint16_t periods_in_transit = 0;               ///< Amount of cargo aging periods this packet has been in transit.
 	Money feeder_share = 0;                        ///< Value of feeder pickup to be paid for on delivery of cargo.
 	TileIndex source_xy = INVALID_TILE;            ///< The origin of the cargo.
 	Vector travelled = {0, 0};                     ///< If cargo is in station: the vector from the unload tile to the source tile. If in vehicle: an intermediate value.
 	SourceID source_id = INVALID_SOURCE;           ///< Index of industry/town/HQ, INVALID_SOURCE if unknown/invalid.
 	SourceType source_type = SourceType::Industry; ///< Type of \c source_id.
-	uint8 flags = 0;                               ///< NOSAVE: temporary flags
+	uint8_t flags = 0;                             ///< NOSAVE: temporary flags
 	StationID first_station = INVALID_STATION;     ///< The station where the cargo came from first.
 	StationID next_hop = INVALID_STATION;          ///< Station where the cargo wants to go next.
 
@@ -84,7 +84,7 @@ private:
 	friend void Load_CPDP();
 public:
 	/** Maximum number of items in a single cargo packet. */
-	static const uint16 MAX_COUNT = UINT16_MAX;
+	static const uint16_t MAX_COUNT = UINT16_MAX;
 
 	CargoPacket();
 	CargoPacket(StationID first_station, uint16_t count, SourceType source_type, SourceID source_id);
@@ -166,7 +166,7 @@ public:
 	 * Gets the number of 'items' in this packet.
 	 * @return Item count.
 	 */
-	inline uint16 Count() const
+	inline uint16_t Count() const
 	{
 		return this->count;
 	}
@@ -201,7 +201,7 @@ public:
 	 * it is capped at UINT16_MAX.
 	 * @return Length this cargo has been in transit.
 	 */
-	inline uint16 GetPeriodsInTransit() const
+	inline uint16_t GetPeriodsInTransit() const
 	{
 		return this->periods_in_transit;
 	}
@@ -318,10 +318,10 @@ public:
 	};
 
 protected:
-	uint count;                      ///< Cache for the number of cargo entities.
-	uint64 cargo_periods_in_transit; ///< Cache for the sum of number of cargo aging periods in transit of each entity; comparable to man-hours.
+	uint count;                        ///< Cache for the number of cargo entities.
+	uint64_t cargo_periods_in_transit; ///< Cache for the sum of number of cargo aging periods in transit of each entity; comparable to man-hours.
 
-	Tcont packets;                   ///< The cargo packets in this list.
+	Tcont packets;                     ///< The cargo packets in this list.
 
 	void AddToCache(const CargoPacket *cp);
 
@@ -364,7 +364,7 @@ public:
 		return this->count;
 	}
 
-	inline uint64 CargoPeriodsInTransit() const
+	inline uint64_t CargoPeriodsInTransit() const
 	{
 		return this->cargo_periods_in_transit;
 	}
