@@ -2874,7 +2874,7 @@ public:
 				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_NEWGRF_WAITUNITS);
 				line_nr++;
 
-				SetDParam(0, ge->time_since_pickup * STATION_RATING_TICKS / (DAY_TICKS * _settings_game.economy.day_length_factor));
+				SetDParam(0, (ge->time_since_pickup * STATION_RATING_TICKS) / DAY_TICKS);
 				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_NEWGRF_WAITTIME);
 				line_nr++;
 			}
@@ -2944,7 +2944,7 @@ public:
 				SetDParam(1, 51);
 				SetDParam(2, STR_STATION_RATING_TOOLTIP_WAITTIME_VALUE);
 				SetDParam(3, wait_time_stage);
-				SetDParam(4, ge->time_since_pickup * STATION_RATING_TICKS / (DAY_TICKS * _settings_game.economy.day_length_factor));
+				SetDParam(4, (ge->time_since_pickup * STATION_RATING_TICKS) / DAY_TICKS);
 				SetDParam(5, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
 				SetDParam(6, RoundRating(wait_time_rating));
 				this->data[line_nr] = GetString((ge->last_vehicle_type == VEH_SHIP) ? STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP : STR_STATION_RATING_TOOLTIP_WAITTIME);
