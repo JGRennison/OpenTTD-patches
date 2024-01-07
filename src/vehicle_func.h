@@ -169,7 +169,7 @@ Direction GetDirectionTowards(const Vehicle *v, int x, int y);
  * @param type Vehicle type being queried.
  * @return Vehicle type is buildable by a company.
  */
-static inline bool IsCompanyBuildableVehicleType(VehicleType type)
+inline bool IsCompanyBuildableVehicleType(VehicleType type)
 {
 	switch (type) {
 		case VEH_TRAIN:
@@ -187,7 +187,7 @@ static inline bool IsCompanyBuildableVehicleType(VehicleType type)
  * @param v Vehicle being queried.
  * @return Vehicle is buildable by a company.
  */
-static inline bool IsCompanyBuildableVehicleType(const BaseVehicle *v)
+inline bool IsCompanyBuildableVehicleType(const BaseVehicle *v)
 {
 	return IsCompanyBuildableVehicleType(v->type);
 }
@@ -205,42 +205,42 @@ extern const uint32 _veh_refit_proc_table[];
 extern const uint32 _send_to_depot_proc_table[];
 
 /* Functions to find the right command for certain vehicle type */
-static inline uint32 GetCmdBuildVeh(VehicleType type)
+inline uint32 GetCmdBuildVeh(VehicleType type)
 {
 	return _veh_build_proc_table[type];
 }
 
-static inline uint32 GetCmdBuildVeh(const BaseVehicle *v)
+inline uint32 GetCmdBuildVeh(const BaseVehicle *v)
 {
 	return GetCmdBuildVeh(v->type);
 }
 
-static inline uint32 GetCmdSellVeh(VehicleType type)
+inline uint32 GetCmdSellVeh(VehicleType type)
 {
 	return _veh_sell_proc_table[type];
 }
 
-static inline uint32 GetCmdSellVeh(const BaseVehicle *v)
+inline uint32 GetCmdSellVeh(const BaseVehicle *v)
 {
 	return GetCmdSellVeh(v->type);
 }
 
-static inline uint32 GetCmdRefitVeh(VehicleType type)
+inline uint32 GetCmdRefitVeh(VehicleType type)
 {
 	return _veh_refit_proc_table[type];
 }
 
-static inline uint32 GetCmdRefitVeh(const BaseVehicle *v)
+inline uint32 GetCmdRefitVeh(const BaseVehicle *v)
 {
 	return GetCmdRefitVeh(v->type);
 }
 
-static inline uint32 GetCmdSendToDepot(VehicleType type)
+inline uint32 GetCmdSendToDepot(VehicleType type)
 {
 	return _send_to_depot_proc_table[type];
 }
 
-static inline uint32 GetCmdSendToDepot(const BaseVehicle *v)
+inline uint32 GetCmdSendToDepot(const BaseVehicle *v)
 {
 	return GetCmdSendToDepot(v->type);
 }

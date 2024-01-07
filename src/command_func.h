@@ -73,7 +73,7 @@ bool IsCommandAllowedWhilePaused(uint32 cmd);
  * @param cmd_flags Flags from GetCommandFlags
  * @return flags for DoCommand
  */
-static inline DoCommandFlag CommandFlagsToDCFlags(CommandFlags cmd_flags)
+inline DoCommandFlag CommandFlagsToDCFlags(CommandFlags cmd_flags)
 {
 	DoCommandFlag flags = DC_NONE;
 	if (cmd_flags & CMD_NO_WATER) flags |= DC_NO_WATER;

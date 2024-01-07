@@ -45,27 +45,27 @@ inline Date ConvertYMDToDate(const YearMonthDay &ymd)
  * @param yr The year to check.
  * @return True if \c yr is a leap year, otherwise false.
  */
-static inline bool IsLeapYear(Year yr)
+inline bool IsLeapYear(Year yr)
 {
 	return yr % 4 == 0 && (yr % 100 != 0 || yr % 400 == 0);
 }
 
-static inline Date ScaledDateTicksToDate(DateTicksScaled ticks)
+inline Date ScaledDateTicksToDate(DateTicksScaled ticks)
 {
 	return (ticks.base() - _scaled_date_ticks_offset.base()) / (DAY_TICKS * _settings_game.economy.day_length_factor);
 }
 
-static inline DateTicksScaled DateToScaledDateTicks(Date date)
+inline DateTicksScaled DateToScaledDateTicks(Date date)
 {
 	return ((int64)date.base() * DAY_TICKS * _settings_game.economy.day_length_factor) + _scaled_date_ticks_offset.base();
 }
 
-static inline DateTicks ScaledDateTicksToDateTicks(DateTicksScaled ticks)
+inline DateTicks ScaledDateTicksToDateTicks(DateTicksScaled ticks)
 {
 	return (ticks.base() - _scaled_date_ticks_offset.base()) / _settings_game.economy.day_length_factor;
 }
 
-static inline DateTicksScaled DateTicksToScaledDateTicks(DateTicks date_ticks)
+inline DateTicksScaled DateTicksToScaledDateTicks(DateTicks date_ticks)
 {
 	return ((int64)date_ticks.base() * _settings_game.economy.day_length_factor) + _scaled_date_ticks_offset.base();
 }
@@ -75,27 +75,27 @@ static inline DateTicksScaled DateTicksToScaledDateTicks(DateTicks date_ticks)
  * @param date The date to consider.
  * @return the year.
  */
-static constexpr Year DateToYear(Date date)
+inline constexpr Year DateToYear(Date date)
 {
 	return date.base() / DAYS_IN_LEAP_YEAR;
 }
 
-static constexpr Year DateDeltaToYears(DateDelta date)
+inline constexpr Year DateDeltaToYears(DateDelta date)
 {
 	return date.base() / DAYS_IN_LEAP_YEAR;
 }
 
-static constexpr DateTicks DateToDateTicks(Date date, DateFract fract = 0)
+inline constexpr DateTicks DateToDateTicks(Date date, DateFract fract = 0)
 {
 	return (date.base() * DAY_TICKS) + fract;
 }
 
-static constexpr DateTicksDelta DateDeltaToDateTicksDelta(DateDelta date, DateFract fract = 0)
+inline constexpr DateTicksDelta DateDeltaToDateTicksDelta(DateDelta date, DateFract fract = 0)
 {
 	return (date.base() * DAY_TICKS) + fract;
 }
 
-static inline DateTicks NowDateTicks()
+inline DateTicks NowDateTicks()
 {
 	return DateToDateTicks(_date, _date_fract);
 }

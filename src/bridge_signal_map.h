@@ -36,7 +36,7 @@ enum {
 	BRIDGE_M2_SIGNAL_STATE_EXT_FLAG   = 0x8000,
 };
 
-static inline SignalState GetBridgeEntranceSimulatedSignalState(TileIndex t, uint16 signal)
+inline SignalState GetBridgeEntranceSimulatedSignalState(TileIndex t, uint16 signal)
 {
 	if (signal < BRIDGE_M2_SIGNAL_STATE_COUNT) {
 		return GB(_m[t].m2, signal + BRIDGE_M2_SIGNAL_STATE_OFFSET, 1) ? SIGNAL_STATE_RED : SIGNAL_STATE_GREEN;
@@ -47,7 +47,7 @@ static inline SignalState GetBridgeEntranceSimulatedSignalState(TileIndex t, uin
 
 void SetBridgeEntranceSimulatedSignalStateExtended(TileIndex t, uint16 signal, SignalState state);
 
-static inline void SetBridgeEntranceSimulatedSignalState(TileIndex t, uint16 signal, SignalState state)
+inline void SetBridgeEntranceSimulatedSignalState(TileIndex t, uint16 signal, SignalState state)
 {
 	if (signal < BRIDGE_M2_SIGNAL_STATE_COUNT) {
 		SB(_m[t].m2, signal + BRIDGE_M2_SIGNAL_STATE_OFFSET, 1, (state == SIGNAL_STATE_RED) ? 1 : 0);
@@ -58,7 +58,7 @@ static inline void SetBridgeEntranceSimulatedSignalState(TileIndex t, uint16 sig
 
 bool SetAllBridgeEntranceSimulatedSignalsGreenExtended(TileIndex t);
 
-static inline bool SetAllBridgeEntranceSimulatedSignalsGreen(TileIndex t)
+inline bool SetAllBridgeEntranceSimulatedSignalsGreen(TileIndex t)
 {
 	if (_m[t].m2 & BRIDGE_M2_SIGNAL_STATE_EXT_FLAG) {
 		return SetAllBridgeEntranceSimulatedSignalsGreenExtended(t);
@@ -71,7 +71,7 @@ static inline bool SetAllBridgeEntranceSimulatedSignalsGreen(TileIndex t)
 
 void ClearBridgeEntranceSimulatedSignalsExtended(TileIndex t);
 
-static inline void ClearBridgeEntranceSimulatedSignals(TileIndex t)
+inline void ClearBridgeEntranceSimulatedSignals(TileIndex t)
 {
 	if (_m[t].m2 & BRIDGE_M2_SIGNAL_STATE_EXT_FLAG) {
 		ClearBridgeEntranceSimulatedSignalsExtended(t);
@@ -84,7 +84,7 @@ void ClearBridgeSimulatedSignalMapping();
 
 void SetBridgeSignalStyle(TileIndex t, uint8 style);
 
-static inline uint8 GetBridgeSignalStyle(TileIndex t)
+inline uint8 GetBridgeSignalStyle(TileIndex t)
 {
 	if (likely(!HasBit(_m[t].m3, 7))) return 0;
 

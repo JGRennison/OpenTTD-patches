@@ -12,7 +12,7 @@
 #include <string>
 #include <limits>
 
-static inline void StrMakeValidInPlace(std::string &str, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK)
+inline void StrMakeValidInPlace(std::string &str, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK)
 {
 	if (str.empty()) return;
 	char *buf = str.data();

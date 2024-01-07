@@ -87,7 +87,7 @@ bool HasBridgeFlatRamp(Slope tileh, Axis axis);
  * @param i The type of bridge to get the specification for.
  * @return The specification.
  */
-static inline const BridgeSpec *GetBridgeSpec(BridgeType i)
+inline const BridgeSpec *GetBridgeSpec(BridgeType i)
 {
 	dbg_assert(i < lengthof(_bridge));
 	return &_bridge[i];

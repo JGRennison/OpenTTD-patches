@@ -22,7 +22,7 @@ static const TunnelID TUNNEL_ID_MAP_LOOKUP = 0xFFFF; ///< Sentinel ID value to s
  * @pre IsTileType(t, MP_TUNNELBRIDGE)
  * @return true if and only if this tile is a tunnel (entrance)
  */
-static inline bool IsTunnel(TileIndex t)
+inline bool IsTunnel(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
 	return !HasBit(_m[t].m5, 7);
@@ -33,7 +33,7 @@ static inline bool IsTunnel(TileIndex t)
  * @param t the tile that might be a tunnel
  * @return true if and only if this tile is a tunnel (entrance)
  */
-static inline bool IsTunnelTile(TileIndex t)
+inline bool IsTunnelTile(TileIndex t)
 {
 	return IsTileType(t, MP_TUNNELBRIDGE) && IsTunnel(t);
 }
@@ -44,7 +44,7 @@ static inline bool IsTunnelTile(TileIndex t)
  * @pre IsTunnelTile(t)
  * @return TunnelID
  */
-static inline TunnelID GetTunnelIndex(TileIndex t)
+inline TunnelID GetTunnelIndex(TileIndex t)
 {
 	extern TunnelID GetTunnelIndexByLookup(TileIndex t);
 
@@ -58,7 +58,7 @@ static inline TunnelID GetTunnelIndex(TileIndex t)
  * @param t the tile that might be a rail tunnel
  * @return true if it is a rail tunnel
  */
-static inline bool IsRailTunnelTile(TileIndex t)
+inline bool IsRailTunnelTile(TileIndex t)
 {
 	return IsTunnelTile(t) && (TransportType)GB(_m[t].m5, 2, 2) == TRANSPORT_RAIL;
 }
@@ -69,7 +69,7 @@ static inline bool IsRailTunnelTile(TileIndex t)
  * @param t the tile
  * @return reservation state
  */
-static inline bool HasTunnelReservation(TileIndex t)
+inline bool HasTunnelReservation(TileIndex t)
 {
 	dbg_assert_tile(IsRailTunnelTile(t), t);
 	return HasBit(_m[t].m5, 4);
@@ -81,7 +81,7 @@ static inline bool HasTunnelReservation(TileIndex t)
  * @param t the tile
  * @param b the reservation state
  */
-static inline void SetTunnelReservation(TileIndex t, bool b)
+inline void SetTunnelReservation(TileIndex t, bool b)
 {
 	dbg_assert_tile(IsRailTunnelTile(t), t);
 	SB(_m[t].m5, 4, 1, b ? 1 : 0);
@@ -105,7 +105,7 @@ bool IsTunnelInWay(TileIndex, int z, IsTunnelInWayFlags flags = ITIWF_NONE);
  * @param id the tunnel ID
  * @pre IsTunnelTile(t)
  */
-static inline void SetTunnelIndex(TileIndex t, TunnelID id)
+inline void SetTunnelIndex(TileIndex t, TunnelID id)
 {
 	dbg_assert_tile(IsTunnelTile(t), t);
 	_m[t].m2 = (id >= TUNNEL_ID_MAP_LOOKUP) ? TUNNEL_ID_MAP_LOOKUP : id;
@@ -113,7 +113,7 @@ static inline void SetTunnelIndex(TileIndex t, TunnelID id)
 
 void SetTunnelSignalStyle(TileIndex t, TileIndex end, uint8 style);
 
-static inline uint8 GetTunnelSignalStyle(TileIndex t)
+inline uint8 GetTunnelSignalStyle(TileIndex t)
 {
 	if (likely(!HasBit(_m[t].m3, 7))) return 0;
 
@@ -129,7 +129,7 @@ static inline uint8 GetTunnelSignalStyle(TileIndex t)
  * @param d the direction facing out of the tunnel
  * @param r the road type used in the tunnel
  */
-static inline void MakeRoadTunnel(TileIndex t, Owner o, TunnelID id, DiagDirection d, RoadType road_rt, RoadType tram_rt)
+inline void MakeRoadTunnel(TileIndex t, Owner o, TunnelID id, DiagDirection d, RoadType road_rt, RoadType tram_rt)
 {
 	SetTileType(t, MP_TUNNELBRIDGE);
 	SetTileOwner(t, o);
@@ -153,7 +153,7 @@ static inline void MakeRoadTunnel(TileIndex t, Owner o, TunnelID id, DiagDirecti
  * @param d the direction facing out of the tunnel
  * @param r the rail type used in the tunnel
  */
-static inline void MakeRailTunnel(TileIndex t, Owner o, TunnelID id, DiagDirection d, RailType r)
+inline void MakeRailTunnel(TileIndex t, Owner o, TunnelID id, DiagDirection d, RailType r)
 {
 	SetTileType(t, MP_TUNNELBRIDGE);
 	SetTileOwner(t, o);

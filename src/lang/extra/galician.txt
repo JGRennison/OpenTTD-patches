@@ -601,14 +601,12 @@ STR_CONFIG_SETTING_INTERFACE_WALLCLOCK                          :{ORANGE}Reloxo 
 STR_CONFIG_SETTING_INTERFACE_TIME_CLIENT                        :{ORANGE}Opcións do cliente
 STR_CONFIG_SETTING_INTERFACE_TIME_SAVEGAME                      :{ORANGE}Opcións da partida
 STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}Horarios
-STR_CONFIG_SETTING_INTERFACE_ADV_SIGNALS                        :{ORANGE}Sinais (avanzado)
+STR_CONFIG_SETTING_INTERFACE_SIGNALS                            :{ORANGE}Sinais
 STR_CONFIG_SETTING_INTERFACE_SAVE                               :{ORANGE}Gardado e autogardado
 STR_CONFIG_SETTING_INTERFACE_VEHICLE_WINDOWS                    :{ORANGE}Ventás dos vehículos
 STR_CONFIG_SETTING_GENWORLD_RIVERS_LAKES                        :{ORANGE}Ríos e lagoas
 STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST_PER_CARGO_OVERRIDE     :{ORANGE}Distribución de carga - por anulacións de carga
-STR_CONFIG_SETTING_ENVIRONMENT_TREES                            :{ORANGE}Árbores
 STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS                         :{ORANGE}Modo do mapa
-STR_CONFIG_SETTING_VIEWPORT_SIGNALS                             :{ORANGE}Sinais
 STR_CONFIG_SETTING_VEHICLE_ROUTE_OVERLAY                        :{ORANGE}Capa superposta da ruta do vehículo
 STR_CONFIG_SETTING_SHARING                                      :{ORANGE}Compartición de infraestrutura
 STR_CONFIG_SETTING_SCENARIO_EDITOR                              :{ORANGE}Editor de escenarios

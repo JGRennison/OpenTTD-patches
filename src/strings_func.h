@@ -28,7 +28,7 @@ extern ArrayStringParameters<20> _global_string_params;
  * @param str String identifier
  * @return StringTab from \a str
  */
-static inline StringTab GetStringTab(StringID str)
+inline StringTab GetStringTab(StringID str)
 {
 	StringTab result = (StringTab)(str >> TAB_SIZE_BITS);
 	if (result >= TEXT_TAB_NEWGRF_START) return TEXT_TAB_NEWGRF_START;
@@ -41,7 +41,7 @@ static inline StringTab GetStringTab(StringID str)
  * @param str String identifier
  * @return StringIndex from \a str
  */
-static inline uint GetStringIndex(StringID str)
+inline uint GetStringIndex(StringID str)
 {
 	return str - (GetStringTab(str) << TAB_SIZE_BITS);
 }
@@ -52,7 +52,7 @@ static inline uint GetStringIndex(StringID str)
  * @param index StringIndex
  * @return StringID composed from \a tab and \a index
  */
-static inline StringID MakeStringID(StringTab tab, uint index)
+inline StringID MakeStringID(StringTab tab, uint index)
 {
 	if (tab == TEXT_TAB_NEWGRF_START) {
 		assert(index < TAB_SIZE_NEWGRF);
@@ -78,7 +78,7 @@ uint ConvertDisplaySpeedToKmhishSpeed(uint speed, VehicleType type);
  * @param type Type of vehicle for parameter.
  * @return Bit-packed velocity and vehicle type, for use with SetDParam().
  */
-static inline int64 PackVelocity(uint speed, VehicleType type)
+inline int64_t PackVelocity(uint speed, VehicleType type)
 {
 	/* Vehicle type is a byte, so packed into the top 8 bits of the 64-bit
 	 * parameter, although only values from 0-3 are relevant. */
@@ -93,7 +93,7 @@ WChar GetDecimalSeparatorChar();
  * @param v Value of the string parameter.
  */
 template <typename T>
-static inline void SetDParam(size_t n, T &&v) {
+inline void SetDParam(size_t n, T &&v) {
 	_global_string_params.SetParam(n, std::forward<T>(v));
 }
 
@@ -112,7 +112,7 @@ bool HaveDParamChanged(const std::vector<StringParameterBackup> &backup);
  * @param n Index of the string parameter.
  * @return Value of the requested string parameter.
  */
-static inline uint64 GetDParam(size_t n)
+inline uint64 GetDParam(size_t n)
 {
 	return _global_string_params.GetParam(n);
 }

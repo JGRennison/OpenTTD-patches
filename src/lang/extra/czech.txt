@@ -580,14 +580,12 @@ STR_CONFIG_SETTING_INTERFACE_WALLCLOCK                          :{ORANGE}Nástě
 STR_CONFIG_SETTING_INTERFACE_TIME_CLIENT                        :{ORANGE}Nastavení klienta
 STR_CONFIG_SETTING_INTERFACE_TIME_SAVEGAME                      :{ORANGE}Nastavení této mapy
 STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}Jízdní řády
-STR_CONFIG_SETTING_INTERFACE_ADV_SIGNALS                        :{ORANGE}Návěstidla (pokročilé)
+STR_CONFIG_SETTING_INTERFACE_SIGNALS                            :{ORANGE}Návěstidla
 STR_CONFIG_SETTING_INTERFACE_SAVE                               :{ORANGE}Ukládání & automatické ukládání
 STR_CONFIG_SETTING_INTERFACE_VEHICLE_WINDOWS                    :{ORANGE}Okna vozidel
 STR_CONFIG_SETTING_GENWORLD_RIVERS_LAKES                        :{ORANGE}Řeky a jezera
 STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST_PER_CARGO_OVERRIDE     :{ORANGE}Distribuce nákladu - prolomit u jednotlivých druhů
-STR_CONFIG_SETTING_ENVIRONMENT_TREES                            :{ORANGE}Stromy
 STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS                         :{ORANGE}Režim mapy
-STR_CONFIG_SETTING_VIEWPORT_SIGNALS                             :{ORANGE}Návěstidla
 STR_CONFIG_SETTING_VEHICLE_ROUTE_OVERLAY                        :{ORANGE}Vykreslování trasy vozidla
 STR_CONFIG_SETTING_SHARING                                      :{ORANGE}Sdílení infrastruktury
 STR_CONFIG_SETTING_SCENARIO_EDITOR                              :{ORANGE}Editor scénáře

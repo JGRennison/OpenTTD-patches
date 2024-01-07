@@ -31,7 +31,7 @@
  * @pre i < 0x110
  * @return the value of the register
  */
-static inline uint32 GetRegister(uint i)
+inline uint32_t GetRegister(uint i)
 {
 	extern TemporaryStorageArray<int32, 0x110> _temp_store;
 	return _temp_store.GetValue(i);

@@ -65,7 +65,7 @@ void HandleZoomMessage(Window *w, const Viewport *vp, WidgetID widget_zoom_in, W
  * @param w   Window owning the viewport.
  * @pre \a how should not be #ZOOM_NONE.
  */
-static inline void MaxZoomInOut(ZoomStateChange how, Window *w)
+inline void MaxZoomInOut(ZoomStateChange how, Window *w)
 {
 	while (DoZoomInOutWindow(how, w)) {};
 }
@@ -122,7 +122,7 @@ void MarkTileDirtyByTile(const TileIndex tile, ViewportMarkDirtyFlags flags, int
  * @param bridge_level_offset Height of bridge on tile to also mark dirty. (Height level relative to north corner.)
  * @ingroup dirty
  */
-static inline void MarkTileDirtyByTile(TileIndex tile, ViewportMarkDirtyFlags flags = VMDF_NONE, int bridge_level_offset = 0)
+inline void MarkTileDirtyByTile(TileIndex tile, ViewportMarkDirtyFlags flags = VMDF_NONE, int bridge_level_offset = 0)
 {
 	MarkTileDirtyByTile(tile, flags, bridge_level_offset, TileHeight(tile));
 }

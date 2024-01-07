@@ -611,79 +611,79 @@ public:
 };
 
 /** Get TraceRestrictItem type field */
-static inline TraceRestrictItemType GetTraceRestrictType(TraceRestrictItem item)
+inline TraceRestrictItemType GetTraceRestrictType(TraceRestrictItem item)
 {
 	return static_cast<TraceRestrictItemType>(GB(item, TRIFA_TYPE_OFFSET, TRIFA_TYPE_COUNT));
 }
 
 /** Get TraceRestrictItem condition flags field */
-static inline TraceRestrictCondFlags GetTraceRestrictCondFlags(TraceRestrictItem item)
+inline TraceRestrictCondFlags GetTraceRestrictCondFlags(TraceRestrictItem item)
 {
 	return static_cast<TraceRestrictCondFlags>(GB(item, TRIFA_COND_FLAGS_OFFSET, TRIFA_COND_FLAGS_COUNT));
 }
 
 /** Get TraceRestrictItem condition operator field */
-static inline TraceRestrictCondOp GetTraceRestrictCondOp(TraceRestrictItem item)
+inline TraceRestrictCondOp GetTraceRestrictCondOp(TraceRestrictItem item)
 {
 	return static_cast<TraceRestrictCondOp>(GB(item, TRIFA_COND_OP_OFFSET, TRIFA_COND_OP_COUNT));
 }
 
 /** Get TraceRestrictItem auxiliary field */
-static inline uint8 GetTraceRestrictAuxField(TraceRestrictItem item)
+inline uint8 GetTraceRestrictAuxField(TraceRestrictItem item)
 {
 	return GB(item, TRIFA_AUX_FIELD_OFFSET, TRIFA_AUX_FIELD_COUNT);
 }
 
 /** Get TraceRestrictItem value field */
-static inline uint16 GetTraceRestrictValue(TraceRestrictItem item)
+inline uint16 GetTraceRestrictValue(TraceRestrictItem item)
 {
 	return static_cast<uint16>(GB(item, TRIFA_VALUE_OFFSET, TRIFA_VALUE_COUNT));
 }
 
 /** Set TraceRestrictItem type field */
-static inline void SetTraceRestrictType(TraceRestrictItem &item, TraceRestrictItemType type)
+inline void SetTraceRestrictType(TraceRestrictItem &item, TraceRestrictItemType type)
 {
 	SB(item, TRIFA_TYPE_OFFSET, TRIFA_TYPE_COUNT, type);
 }
 
 /** Set TraceRestrictItem condition operator field */
-static inline void SetTraceRestrictCondOp(TraceRestrictItem &item, TraceRestrictCondOp condop)
+inline void SetTraceRestrictCondOp(TraceRestrictItem &item, TraceRestrictCondOp condop)
 {
 	SB(item, TRIFA_COND_OP_OFFSET, TRIFA_COND_OP_COUNT, condop);
 }
 
 /** Set TraceRestrictItem condition flags field */
-static inline void SetTraceRestrictCondFlags(TraceRestrictItem &item, TraceRestrictCondFlags condflags)
+inline void SetTraceRestrictCondFlags(TraceRestrictItem &item, TraceRestrictCondFlags condflags)
 {
 	SB(item, TRIFA_COND_FLAGS_OFFSET, TRIFA_COND_FLAGS_COUNT, condflags);
 }
 
 /** Set TraceRestrictItem auxiliary field */
-static inline void SetTraceRestrictAuxField(TraceRestrictItem &item, uint8 data)
+inline void SetTraceRestrictAuxField(TraceRestrictItem &item, uint8 data)
 {
 	SB(item, TRIFA_AUX_FIELD_OFFSET, TRIFA_AUX_FIELD_COUNT, data);
 }
 
 /** Set TraceRestrictItem value field */
-static inline void SetTraceRestrictValue(TraceRestrictItem &item, uint16 value)
+inline void SetTraceRestrictValue(TraceRestrictItem &item, uint16 value)
 {
 	SB(item, TRIFA_VALUE_OFFSET, TRIFA_VALUE_COUNT, value);
 }
 
 /** Is TraceRestrictItemType a conditional type? */
-static inline bool IsTraceRestrictTypeConditional(TraceRestrictItemType type)
+inline bool IsTraceRestrictTypeConditional(TraceRestrictItemType type)
 {
 	return type >= TRIT_COND_BEGIN && type < TRIT_COND_END;
 }
 
 /** Is TraceRestrictItem type field a conditional type? */
-static inline bool IsTraceRestrictConditional(TraceRestrictItem item)
+inline bool IsTraceRestrictConditional(TraceRestrictItem item)
 {
 	return IsTraceRestrictTypeConditional(GetTraceRestrictType(item));
 }
 
 /** Is TraceRestrictItem a double-item type? */
-static inline bool IsTraceRestrictDoubleItem(TraceRestrictItem item)
+inline bool IsTraceRestrictDoubleItem(TraceRestrictItem item)
 {
 	const TraceRestrictItemType type = GetTraceRestrictType(item);
 	return type == TRIT_COND_PBS_ENTRY_SIGNAL || type == TRIT_COND_SLOT_OCCUPANCY || type == TRIT_COUNTER ||
@@ -755,7 +755,7 @@ void SetTraceRestrictTypeAndNormalise(TraceRestrictItem &item, TraceRestrictItem
 /**
  * Get TraceRestrictTypePropertySet for a given instruction, only looks at value field
  */
-static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceRestrictItem item)
+inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceRestrictItem item)
 {
 	TraceRestrictTypePropertySet out;
 
@@ -968,7 +968,7 @@ static inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceR
 }
 
 /** Is the aux field for this TraceRestrictItemType used as a subtype which changes the type of the value field? */
-static inline bool IsTraceRestrictTypeAuxSubtype(TraceRestrictItemType type)
+inline bool IsTraceRestrictTypeAuxSubtype(TraceRestrictItemType type)
 {
 	switch (type) {
 		case TRIT_COND_PHYS_PROP:
@@ -984,7 +984,7 @@ static inline bool IsTraceRestrictTypeAuxSubtype(TraceRestrictItemType type)
 }
 
 /** May this TraceRestrictItemType take a slot of a different (non-train) vehicle type */
-static inline bool IsTraceRestrictTypeNonMatchingVehicleTypeSlot(TraceRestrictItemType type)
+inline bool IsTraceRestrictTypeNonMatchingVehicleTypeSlot(TraceRestrictItemType type)
 {
 	switch (type) {
 		case TRIT_COND_SLOT_OCCUPANCY:
@@ -996,19 +996,19 @@ static inline bool IsTraceRestrictTypeNonMatchingVehicleTypeSlot(TraceRestrictIt
 }
 
 /** Get mapping ref ID from tile and track */
-static inline TraceRestrictRefId MakeTraceRestrictRefId(TileIndex t, Track track)
+inline TraceRestrictRefId MakeTraceRestrictRefId(TileIndex t, Track track)
 {
 	return (t << 3) | track;
 }
 
 /** Get tile from mapping ref ID */
-static inline TileIndex GetTraceRestrictRefIdTileIndex(TraceRestrictRefId ref)
+inline TileIndex GetTraceRestrictRefIdTileIndex(TraceRestrictRefId ref)
 {
 	return static_cast<TileIndex>(ref >> 3);
 }
 
 /** Get track from mapping ref ID */
-static inline Track GetTraceRestrictRefIdTrack(TraceRestrictRefId ref)
+inline Track GetTraceRestrictRefIdTrack(TraceRestrictRefId ref)
 {
 	return static_cast<Track>(ref & 7);
 }
@@ -1021,7 +1021,7 @@ TraceRestrictProgram *GetTraceRestrictProgram(TraceRestrictRefId ref, bool creat
 
 void TraceRestrictNotifySignalRemoval(TileIndex tile, Track track);
 
-static inline bool IsRestrictedSignalTile(TileIndex t)
+inline bool IsRestrictedSignalTile(TileIndex t)
 {
 	switch (GetTileType(t)) {
 		case MP_RAILWAY:
@@ -1036,7 +1036,7 @@ static inline bool IsRestrictedSignalTile(TileIndex t)
 /**
  * Gets the existing signal program for the tile identified by @p t and @p track, or nullptr
  */
-static inline const TraceRestrictProgram *GetExistingTraceRestrictProgram(TileIndex t, Track track)
+inline const TraceRestrictProgram *GetExistingTraceRestrictProgram(TileIndex t, Track track)
 {
 	if (IsRestrictedSignalTile(t)) {
 		return GetTraceRestrictProgram(MakeTraceRestrictRefId(t, track), false);

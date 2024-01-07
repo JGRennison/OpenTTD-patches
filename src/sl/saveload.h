@@ -261,7 +261,7 @@ DECLARE_ENUM_AS_BIT_SET(SaveLoadChunkExtHeaderFlags)
  * @param type VarType holding information about the variable-type
  * @return the SLE_VAR_* part of a variable-type description
  */
-static inline constexpr VarType GetVarMemType(VarType type)
+inline constexpr VarType GetVarMemType(VarType type)
 {
 	return type & 0xF0; // GB(type, 4, 4) << 4;
 }
@@ -272,7 +272,7 @@ static inline constexpr VarType GetVarMemType(VarType type)
  * @param type VarType holding information about the file-type
  * @return the SLE_FILE_* part of a variable-type description
  */
-static inline constexpr VarType GetVarFileType(VarType type)
+inline constexpr VarType GetVarFileType(VarType type)
 {
 	return type & 0xF; // GB(type, 0, 4);
 }
@@ -300,7 +300,7 @@ public:
  * @param type VarType to get size of.
  * @return size of type in bytes.
  */
-static inline constexpr size_t SlVarSize(VarType type)
+inline constexpr size_t SlVarSize(VarType type)
 {
 	switch (GetVarMemType(type)) {
 		case SLE_VAR_BL:
@@ -329,7 +329,7 @@ static inline constexpr size_t SlVarSize(VarType type)
  * matches with the actual variable size, for primitive types.
  */
 template <typename TYPE>
-static inline constexpr bool SlCheckPrimitiveTypeVar(VarType type)
+inline constexpr bool SlCheckPrimitiveTypeVar(VarType type)
 {
 	using T = typename std::remove_reference<TYPE>::type;
 
@@ -348,7 +348,7 @@ static inline constexpr bool SlCheckPrimitiveTypeVar(VarType type)
  * matches with the actual variable size, for array types.
  */
 template <typename TYPE>
-static inline constexpr bool SlCheckArrayTypeVar(VarType type, size_t length, bool top_level)
+inline constexpr bool SlCheckArrayTypeVar(VarType type, size_t length, bool top_level)
 {
 	using T = typename std::remove_reference<TYPE>::type;
 
@@ -371,7 +371,7 @@ static inline constexpr bool SlCheckArrayTypeVar(VarType type, size_t length, bo
  * matches with the actual variable size.
  */
 template <typename T>
-static inline constexpr bool SlCheckVar(SaveLoadType cmd, VarType type, size_t length)
+inline constexpr bool SlCheckVar(SaveLoadType cmd, VarType type, size_t length)
 {
 	if (GetVarMemType(type) == SLE_VAR_NULL) return true;
 
@@ -434,7 +434,7 @@ static inline constexpr bool SlCheckVar(SaveLoadType cmd, VarType type, size_t l
 }
 
 template <typename T, SaveLoadType cmd, VarType type, size_t length>
-static inline constexpr void *SlVarWrapper(void* ptr)
+inline constexpr void *SlVarWrapper(void* ptr)
 {
 	static_assert(SlCheckVar<T>(cmd, type, length));
 	return ptr;
@@ -856,7 +856,7 @@ static inline constexpr void *SlVarWrapper(void* ptr)
  * @param minor Minor number of the version to check against. If \a minor is 0 or not specified, only the major number is checked.
  * @return Savegame version is earlier than the specified version.
  */
-static inline bool IsSavegameVersionBefore(SaveLoadVersion major, byte minor = 0)
+inline bool IsSavegameVersionBefore(SaveLoadVersion major, byte minor = 0)
 {
 	extern SaveLoadVersion _sl_version;
 	extern byte            _sl_minor_version;
@@ -870,7 +870,7 @@ static inline bool IsSavegameVersionBefore(SaveLoadVersion major, byte minor = 0
  * @param major Major number of the version to check against.
  * @return Savegame version is at most the specified version.
  */
-static inline bool IsSavegameVersionUntil(SaveLoadVersion major)
+inline bool IsSavegameVersionUntil(SaveLoadVersion major)
 {
 	extern SaveLoadVersion _sl_version;
 	return _sl_version <= major;
@@ -883,7 +883,7 @@ static inline bool IsSavegameVersionUntil(SaveLoadVersion major)
  * @param version_to   Exclusive savegame version upper bound. SL_MAX_VERSION if no upper bound.
  * @return Active savegame version falls within the given range.
  */
-static inline bool SlIsObjectCurrentlyValid(SaveLoadVersion version_from, SaveLoadVersion version_to, SlXvFeatureTest ext_feature_test)
+inline bool SlIsObjectCurrentlyValid(SaveLoadVersion version_from, SaveLoadVersion version_to, SlXvFeatureTest ext_feature_test)
 {
 	extern const SaveLoadVersion SAVEGAME_VERSION;
 	if (!ext_feature_test.IsFeaturePresent(_sl_xv_feature_static_versions, SAVEGAME_VERSION, version_from, version_to)) return false;
@@ -896,7 +896,7 @@ static inline bool SlIsObjectCurrentlyValid(SaveLoadVersion version_from, SaveLo
  * @param conv the type to check
  * @return True if it's a numeric type.
  */
-static inline bool IsNumericType(VarType conv)
+inline bool IsNumericType(VarType conv)
 {
 	return GetVarMemType(conv) <= SLE_VAR_U64;
 }
@@ -907,7 +907,7 @@ static inline bool IsNumericType(VarType conv)
  * is taken. If non-null only the offset is stored in the union and we need
  * to add this to the address of the object
  */
-static inline void *GetVariableAddress(const void *object, const SaveLoad &sld)
+inline void *GetVariableAddress(const void *object, const SaveLoad &sld)
 {
 	/* Entry is a global address. */
 	if (sld.global) return sld.address;

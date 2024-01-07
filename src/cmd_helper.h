@@ -21,7 +21,7 @@
  * @tparam U The type of data passed to us.
  * @param v The data to extract the value from.
  */
-template<typename T, uint S, uint N, typename U> static inline T Extract(U v)
+template<typename T, uint S, uint N, typename U> inline T Extract(U v)
 {
 	/* Check if there are enough bits in v */
 	static_assert(N == EnumPropsT<T>::num_bits);

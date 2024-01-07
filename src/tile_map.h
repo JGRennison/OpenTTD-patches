@@ -42,7 +42,7 @@ debug_inline static uint TileHeight(TileIndex tile)
  * @param y Y coordinate of the tile, may be outside the map.
  * @return The height in the same unit as TileHeight.
  */
-static inline uint TileHeightOutsideMap(int x, int y)
+inline uint TileHeightOutsideMap(int x, int y)
 {
 	return TileHeight(TileXY(Clamp(x, 0, MapMaxX()), Clamp(y, 0, MapMaxY())));
 }
@@ -57,7 +57,7 @@ static inline uint TileHeightOutsideMap(int x, int y)
  * @pre tile < MapSize()
  * @pre height <= MAX_TILE_HEIGHT
  */
-static inline void SetTileHeight(TileIndex tile, uint height)
+inline void SetTileHeight(TileIndex tile, uint height)
 {
 	dbg_assert_msg(tile < MapSize(), "tile: 0x%X, size: 0x%X", tile, MapSize());
 	dbg_assert(height <= MAX_TILE_HEIGHT);
@@ -72,7 +72,7 @@ static inline void SetTileHeight(TileIndex tile, uint height)
  * @param tile The tile to get the height
  * @return The height of the tile in pixel
  */
-static inline uint TilePixelHeight(TileIndex tile)
+inline uint TilePixelHeight(TileIndex tile)
 {
 	return TileHeight(tile) * TILE_HEIGHT;
 }
@@ -84,7 +84,7 @@ static inline uint TilePixelHeight(TileIndex tile)
  * @param y Y coordinate of the tile, may be outside the map.
  * @return The height in pixels in the same unit as TilePixelHeight.
  */
-static inline uint TilePixelHeightOutsideMap(int x, int y)
+inline uint TilePixelHeightOutsideMap(int x, int y)
 {
 	return TileHeightOutsideMap(x, y) * TILE_HEIGHT;
 }
@@ -112,7 +112,7 @@ debug_inline static TileType GetTileType(TileIndex tile)
  * @return Whether the tile is in the interior of the map
  * @pre tile < MapSize()
  */
-static inline bool IsInnerTile(TileIndex tile)
+inline bool IsInnerTile(TileIndex tile)
 {
 	dbg_assert_msg(tile < MapSize(), "tile: 0x%X, size: 0x%X", tile, MapSize());
 
@@ -134,7 +134,7 @@ static inline bool IsInnerTile(TileIndex tile)
  * @pre tile < MapSize()
  * @pre type MP_VOID <=> tile is on the south-east or south-west edge.
  */
-static inline void SetTileType(TileIndex tile, TileType type)
+inline void SetTileType(TileIndex tile, TileType type)
 {
 	dbg_assert_msg(tile < MapSize(), "tile: 0x%X, size: 0x%X, type: %d", tile, MapSize(), type);
 	/* VOID tiles (and no others) are exactly allowed at the lower left and right
@@ -164,7 +164,7 @@ debug_inline static bool IsTileType(TileIndex tile, TileType type)
  * @param tile The tile to check
  * @return True if the tile is on the map and not one of MP_VOID.
  */
-static inline bool IsValidTile(TileIndex tile)
+inline bool IsValidTile(TileIndex tile)
 {
 	return tile < MapSize() && !IsTileType(tile, MP_VOID);
 }
@@ -181,7 +181,7 @@ static inline bool IsValidTile(TileIndex tile)
  * @pre IsValidTile(tile)
  * @pre The type of the tile must not be MP_HOUSE and MP_INDUSTRY
  */
-static inline Owner GetTileOwner(TileIndex tile)
+inline Owner GetTileOwner(TileIndex tile)
 {
 	dbg_assert_msg(IsValidTile(tile), "tile: 0x%X, size: 0x%X", tile, MapSize());
 	dbg_assert_msg(!IsTileType(tile, MP_HOUSE) && !IsTileType(tile, MP_INDUSTRY), "tile: 0x%X (%d)", tile, GetTileType(tile));
@@ -200,7 +200,7 @@ static inline Owner GetTileOwner(TileIndex tile)
  * @pre IsValidTile(tile)
  * @pre The type of the tile must not be MP_HOUSE and MP_INDUSTRY
  */
-static inline void SetTileOwner(TileIndex tile, Owner owner)
+inline void SetTileOwner(TileIndex tile, Owner owner)
 {
 	dbg_assert_msg(IsValidTile(tile), "tile: 0x%X, size: 0x%X, owner: %d", tile, MapSize(), owner);
 	dbg_assert_msg(!IsTileType(tile, MP_HOUSE) && !IsTileType(tile, MP_INDUSTRY), "tile: 0x%X (%d), owner: %d", tile, GetTileType(tile), owner);
@@ -215,7 +215,7 @@ static inline void SetTileOwner(TileIndex tile, Owner owner)
  * @param owner The owner to check against
  * @return True if a tile belongs the the given owner
  */
-static inline bool IsTileOwner(TileIndex tile, Owner owner)
+inline bool IsTileOwner(TileIndex tile, Owner owner)
 {
 	return GetTileOwner(tile) == owner;
 }
@@ -226,7 +226,7 @@ static inline bool IsTileOwner(TileIndex tile, Owner owner)
  * @param type the new type
  * @pre tile < MapSize()
  */
-static inline void SetTropicZone(TileIndex tile, TropicZone type)
+inline void SetTropicZone(TileIndex tile, TropicZone type)
 {
 	dbg_assert_msg(tile < MapSize(), "tile: 0x%X, size: 0x%X, type: %d", tile, MapSize(), type);
 	dbg_assert_msg(!IsTileType(tile, MP_VOID) || type == TROPICZONE_NORMAL, "tile: 0x%X (%d), type: %d", tile, GetTileType(tile), type);
@@ -239,7 +239,7 @@ static inline void SetTropicZone(TileIndex tile, TropicZone type)
  * @pre tile < MapSize()
  * @return the zone type
  */
-static inline TropicZone GetTropicZone(TileIndex tile)
+inline TropicZone GetTropicZone(TileIndex tile)
 {
 	dbg_assert_msg(tile < MapSize(), "tile: 0x%X, size: 0x%X", tile, MapSize());
 	return (TropicZone)GB(_m[tile].type, 0, 2);
@@ -251,7 +251,7 @@ static inline TropicZone GetTropicZone(TileIndex tile)
  * @pre IsTileType(t, MP_HOUSE) || IsTileType(t, MP_OBJECT) || IsTileType(t, MP_INDUSTRY) || IsTileType(t, MP_STATION)
  * @return frame number
  */
-static inline byte GetAnimationFrame(TileIndex t)
+inline byte GetAnimationFrame(TileIndex t)
 {
 	dbg_assert_msg(IsTileType(t, MP_HOUSE) || IsTileType(t, MP_OBJECT) || IsTileType(t, MP_INDUSTRY) || IsTileType(t, MP_STATION), "tile: 0x%X (%d)", t, GetTileType(t));
 	return _me[t].m7;
@@ -263,7 +263,7 @@ static inline byte GetAnimationFrame(TileIndex t)
  * @param frame the new frame number
  * @pre IsTileType(t, MP_HOUSE) || IsTileType(t, MP_OBJECT) || IsTileType(t, MP_INDUSTRY) || IsTileType(t, MP_STATION)
  */
-static inline void SetAnimationFrame(TileIndex t, byte frame)
+inline void SetAnimationFrame(TileIndex t, byte frame)
 {
 	dbg_assert_msg(IsTileType(t, MP_HOUSE) || IsTileType(t, MP_OBJECT) || IsTileType(t, MP_INDUSTRY) || IsTileType(t, MP_STATION), "tile: 0x%X (%d)", t, GetTileType(t));
 	_me[t].m7 = frame;
@@ -281,7 +281,7 @@ bool IsTileFlat(TileIndex tile, int *h = nullptr);
  * @param h    If not \c nullptr, pointer to storage of z height
  * @return Slope of the tile, except for the HALFTILE part
  */
-static inline Slope GetTilePixelSlope(TileIndex tile, int *h)
+inline Slope GetTilePixelSlope(TileIndex tile, int *h)
 {
 	Slope s = GetTileSlope(tile, h);
 	if (h != nullptr) *h *= TILE_HEIGHT;
@@ -295,7 +295,7 @@ Slope GetTilePixelSlopeOutsideMap(int x, int y, int *h);
  * @param tile Tile to compute height of
  * @return Minimum height of the tile
  */
-static inline int GetTilePixelZ(TileIndex tile)
+inline int GetTilePixelZ(TileIndex tile)
 {
 	return GetTileZ(tile) * TILE_HEIGHT;
 }
@@ -305,7 +305,7 @@ static inline int GetTilePixelZ(TileIndex tile)
  * @param tile Tile to compute height of
  * @return Maximum height of the tile
  */
-static inline int GetTileMaxPixelZ(TileIndex tile)
+inline int GetTileMaxPixelZ(TileIndex tile)
 {
 	return GetTileMaxZ(tile) * TILE_HEIGHT;
 }
@@ -317,7 +317,7 @@ static inline int GetTileMaxPixelZ(TileIndex tile)
  * @param y The Y coordinate
  * @return The hash of the tile
  */
-static inline uint TileHash(uint x, uint y)
+inline uint TileHash(uint x, uint y)
 {
 	uint hash = x >> 4;
 	hash ^= x >> 6;
@@ -335,7 +335,7 @@ static inline uint TileHash(uint x, uint y)
  * @param y The Y coordinate
  * @return The last two bits from hash of the tile
  */
-static inline uint TileHash2Bit(uint x, uint y)
+inline uint TileHash2Bit(uint x, uint y)
 {
 	return GB(TileHash(x, y), 0, 2);
 }

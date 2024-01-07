@@ -413,7 +413,7 @@ typedef std::map<SignalReference, SignalProgram*> ProgramList;
 extern ProgramList _signal_programs;
 
 /// Verifies that a SignalReference refers to a signal which has a program.
-static inline bool HasProgrammableSignals(SignalReference ref)
+inline bool HasProgrammableSignals(SignalReference ref)
 {
 	return IsTileType(ref.tile, MP_RAILWAY) && GetRailTileType(ref.tile) == RAIL_TILE_SIGNALS
 	    && IsPresignalProgrammable(ref.tile, ref.track);

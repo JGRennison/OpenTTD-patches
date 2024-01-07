@@ -192,7 +192,7 @@ public:
 	SpriteCache& operator=(SpriteCache &&other) = default;
 };
 
-static inline bool IsMapgenSpriteID(SpriteID sprite)
+inline bool IsMapgenSpriteID(SpriteID sprite)
 {
 	return IsInsideMM(sprite, SPR_MAPGEN_BEGIN, SPR_MAPGEN_END);
 }

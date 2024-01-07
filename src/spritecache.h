@@ -52,13 +52,13 @@ uint32 GetSpriteLocalID(SpriteID sprite);
 uint GetSpriteCountForFile(const std::string &filename, SpriteID begin, SpriteID end);
 uint GetMaxSpriteID();
 
-static inline const Sprite *GetSprite(SpriteID sprite, SpriteType type, uint8 zoom_levels)
+inline const Sprite *GetSprite(SpriteID sprite, SpriteType type, uint8 zoom_levels)
 {
 	dbg_assert(type != SpriteType::Recolour);
 	return (Sprite*)GetRawSprite(sprite, type, zoom_levels);
 }
 
-static inline const byte *GetNonSprite(SpriteID sprite, SpriteType type)
+inline const byte *GetNonSprite(SpriteID sprite, SpriteType type)
 {
 	dbg_assert(type == SpriteType::Recolour);
 	return (byte*)GetRawSprite(sprite, type, UINT8_MAX);

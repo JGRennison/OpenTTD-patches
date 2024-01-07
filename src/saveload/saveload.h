@@ -324,7 +324,7 @@ struct SaveLoadCompat {
  * @param type VarType holding information about the variable-type
  * @return the SLE_VAR_* part of a variable-type description
  */
-static inline constexpr VarType GetVarMemType(VarType type)
+inline constexpr VarType GetVarMemType(VarType type)
 {
 	return type & 0xF0; // GB(type, 4, 4) << 4;
 }
@@ -335,7 +335,7 @@ static inline constexpr VarType GetVarMemType(VarType type)
  * @param type VarType holding information about the file-type
  * @return the SLE_FILE_* part of a variable-type description
  */
-static inline VarType GetVarFileType(VarType type)
+inline constexpr VarType GetVarFileType(VarType type)
 {
 	return type & 0xF; // GB(type, 0, 4);
 }
@@ -345,7 +345,7 @@ static inline VarType GetVarFileType(VarType type)
  * @param conv the type to check
  * @return True if it's a numeric type.
  */
-static inline constexpr bool IsNumericType(VarType conv)
+inline constexpr bool IsNumericType(VarType conv)
 {
 	return GetVarMemType(conv) <= SLE_VAR_U64;
 }
@@ -355,7 +355,7 @@ static inline constexpr bool IsNumericType(VarType conv)
  * @param type VarType to get size of.
  * @return size of type in bytes.
  */
-static inline constexpr size_t SlVarSize(VarType type)
+inline constexpr size_t SlVarSize(VarType type)
 {
 	switch (GetVarMemType(type)) {
 		case SLE_VAR_BL: return sizeof(bool);
@@ -383,7 +383,7 @@ static inline constexpr size_t SlVarSize(VarType type)
  * @param size Actual size of variable.
  * @return true iff the sizes match.
  */
-static inline constexpr bool SlCheckVarSize(SaveLoadType cmd, VarType type, size_t length, size_t size)
+inline constexpr bool SlCheckVarSize(SaveLoadType cmd, VarType type, size_t length, size_t size)
 {
 	switch (cmd) {
 		case SL_VAR: return SlVarSize(type) == size;
@@ -853,7 +853,7 @@ static inline constexpr bool SlCheckVarSize(SaveLoadType cmd, VarType type, size
  * @param minor Minor number of the version to check against. If \a minor is 0 or not specified, only the major number is checked.
  * @return Savegame version is earlier than the specified version.
  */
-static inline bool IsSavegameVersionBefore(SaveLoadVersion major, byte minor = 0)
+inline bool IsSavegameVersionBefore(SaveLoadVersion major, byte minor = 0)
 {
 	return _sl_version < major || (minor > 0 && _sl_version == major && _sl_minor_version < minor);
 }
@@ -865,7 +865,7 @@ static inline bool IsSavegameVersionBefore(SaveLoadVersion major, byte minor = 0
  * @param major Major number of the version to check against.
  * @return Savegame version is at most the specified version.
  */
-static inline bool IsSavegameVersionBeforeOrAt(SaveLoadVersion major)
+inline bool IsSavegameVersionBeforeOrAt(SaveLoadVersion major)
 {
 	return _sl_version <= major;
 }
@@ -875,7 +875,7 @@ static inline bool IsSavegameVersionBeforeOrAt(SaveLoadVersion major)
  * everything else has a callback function that returns the address based
  * on the saveload data and the current object for non-globals.
  */
-static inline void *GetVariableAddress(const void *object, const SaveLoad &sld)
+inline void *GetVariableAddress(const void *object, const SaveLoad &sld)
 {
 	/* Entry is a null-variable, mostly used to read old savegames etc. */
 	if (GetVarMemType(sld.conv) == SLE_VAR_NULL) {

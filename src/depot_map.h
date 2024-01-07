@@ -15,7 +15,7 @@
 /**
  * Check if a tile is a depot and it is a depot of the given type.
  */
-static inline bool IsDepotTypeTile(TileIndex tile, TransportType type)
+inline bool IsDepotTypeTile(TileIndex tile, TransportType type)
 {
 	switch (type) {
 		default: NOT_REACHED();
@@ -38,7 +38,7 @@ static inline bool IsDepotTypeTile(TileIndex tile, TransportType type)
  * @param tile the tile to check
  * @return true if and only if there is a depot on the tile.
  */
-static inline bool IsDepotTile(TileIndex tile)
+inline bool IsDepotTile(TileIndex tile)
 {
 	return IsRailDepotTile(tile) || IsRoadDepotTile(tile) || IsShipDepotTile(tile) || IsHangarTile(tile);
 }
@@ -49,7 +49,7 @@ static inline bool IsDepotTile(TileIndex tile)
  * @pre IsRailDepotTile(t) || IsRoadDepotTile(t) || IsShipDepotTile(t)
  * @return DepotID
  */
-static inline DepotID GetDepotIndex(TileIndex t)
+inline DepotID GetDepotIndex(TileIndex t)
 {
 	/* Hangars don't have a Depot class, thus store no DepotID. */
 	dbg_assert_tile(IsRailDepotTile(t) || IsRoadDepotTile(t) || IsShipDepotTile(t), t);
@@ -62,7 +62,7 @@ static inline DepotID GetDepotIndex(TileIndex t)
  * @pre IsDepotTile(t)
  * @return the type of vehicles that can use the depot
  */
-static inline VehicleType GetDepotVehicleType(TileIndex t)
+inline VehicleType GetDepotVehicleType(TileIndex t)
 {
 	switch (GetTileType(t)) {
 		default: NOT_REACHED();

@@ -193,7 +193,7 @@ CommandCost CheckTrainInTunnelBridgePreventsTrackModification(TileIndex start, T
  * @param tracks the tracks to test
  * @return true if at least on of tracks is reserved
  */
-static inline bool HasReservedTracks(TileIndex tile, TrackBits tracks)
+inline bool HasReservedTracks(TileIndex tile, TrackBits tracks)
 {
 	return (GetReservedTrackbits(tile) & tracks) != TRACK_BIT_NONE;
 }

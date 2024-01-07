@@ -54,7 +54,7 @@ enum ZoomLevel : byte {
 };
 DECLARE_POSTFIX_INCREMENT(ZoomLevel)
 
-static inline uint8 ZoomMask(ZoomLevel level)
+inline uint8 ZoomMask(ZoomLevel level)
 {
 	return 1 << level;
 }

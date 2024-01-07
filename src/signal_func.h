@@ -22,7 +22,7 @@
 extern uint8 _extra_aspects;
 extern uint64 _aspect_cfg_hash;
 
-static inline uint8 GetMaximumSignalAspect()
+inline uint8 GetMaximumSignalAspect()
 {
 	return _extra_aspects + 1;
 }
@@ -43,7 +43,7 @@ extern bool _signal_sprite_oversized;
  * Maps a trackdir to the bit that stores its status in the map arrays, in the
  * direction along with the trackdir.
  */
-static inline byte SignalAlongTrackdir(Trackdir trackdir)
+inline byte SignalAlongTrackdir(Trackdir trackdir)
 {
 	extern const byte _signal_along_trackdir[TRACKDIR_END];
 	return _signal_along_trackdir[trackdir];
@@ -53,7 +53,7 @@ static inline byte SignalAlongTrackdir(Trackdir trackdir)
  * Maps a trackdir to the bit that stores its status in the map arrays, in the
  * direction against the trackdir.
  */
-static inline byte SignalAgainstTrackdir(Trackdir trackdir)
+inline byte SignalAgainstTrackdir(Trackdir trackdir)
 {
 	extern const byte _signal_against_trackdir[TRACKDIR_END];
 	return _signal_against_trackdir[trackdir];
@@ -63,73 +63,73 @@ static inline byte SignalAgainstTrackdir(Trackdir trackdir)
  * Maps a Track to the bits that store the status of the two signals that can
  * be present on the given track.
  */
-static inline byte SignalOnTrack(Track track)
+inline byte SignalOnTrack(Track track)
 {
 	extern const byte _signal_on_track[TRACK_END];
 	return _signal_on_track[track];
 }
 
 /// Is a given signal type a presignal entry signal?
-static inline bool IsEntrySignal(SignalType type)
+inline bool IsEntrySignal(SignalType type)
 {
 	return type == SIGTYPE_ENTRY || type == SIGTYPE_COMBO || type == SIGTYPE_PROG;
 }
 
 /// Is a given signal type a presignal exit signal?
-static inline bool IsExitSignal(SignalType type)
+inline bool IsExitSignal(SignalType type)
 {
 	return type == SIGTYPE_EXIT || type == SIGTYPE_COMBO || type == SIGTYPE_PROG;
 }
 
 /// Is a given signal type a presignal combo signal?
-static inline bool IsComboSignal(SignalType type)
+inline bool IsComboSignal(SignalType type)
 {
 	return type == SIGTYPE_COMBO || type == SIGTYPE_PROG;
 }
 
 /// Is a given signal type a PBS signal?
-static inline bool IsPbsSignal(SignalType type)
+inline bool IsPbsSignal(SignalType type)
 {
 	return _settings_game.vehicle.train_braking_model == TBM_REALISTIC || type == SIGTYPE_PBS || type == SIGTYPE_PBS_ONEWAY || type == SIGTYPE_NO_ENTRY;
 }
 
 /// Is a given signal type a PBS signal?
-static inline bool IsPbsSignalNonExtended(SignalType type)
+inline bool IsPbsSignalNonExtended(SignalType type)
 {
 	return type == SIGTYPE_PBS || type == SIGTYPE_PBS_ONEWAY;
 }
 
 /// Is this a programmable pre-signal?
-static inline bool IsProgrammableSignal(SignalType type)
+inline bool IsProgrammableSignal(SignalType type)
 {
 	return type == SIGTYPE_PROG;
 }
 
 /// Is this a programmable pre-signal?
-static inline bool IsNoEntrySignal(SignalType type)
+inline bool IsNoEntrySignal(SignalType type)
 {
 	return type == SIGTYPE_NO_ENTRY;
 }
 
 /** One-way signals can't be passed the 'wrong' way. */
-static inline bool IsOnewaySignal(SignalType type)
+inline bool IsOnewaySignal(SignalType type)
 {
 	return type != SIGTYPE_PBS && type != SIGTYPE_NO_ENTRY;
 }
 
 /// Is this signal type unsuitable for realistic braking?
-static inline bool IsSignalTypeUnsuitableForRealisticBraking(SignalType type)
+inline bool IsSignalTypeUnsuitableForRealisticBraking(SignalType type)
 {
 	return type == SIGTYPE_ENTRY || type == SIGTYPE_EXIT || type == SIGTYPE_COMBO || type == SIGTYPE_PROG;
 }
 
 /// Does a given signal have a PBS sprite?
-static inline bool IsSignalSpritePBS(SignalType type)
+inline bool IsSignalSpritePBS(SignalType type)
 {
 	return type >= SIGTYPE_FIRST_PBS_SPRITE;
 }
 
-static inline SignalType NextSignalType(SignalType cur, uint which_signals)
+inline SignalType NextSignalType(SignalType cur, uint which_signals)
 {
 	bool pbs   = true;
 	bool block = (which_signals == SIGNAL_CYCLE_ALL);

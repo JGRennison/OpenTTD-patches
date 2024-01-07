@@ -72,7 +72,7 @@ void DirtyVehicleListWindowForVehicle(const Vehicle *v);
  * @param type the vehicle type to look at
  * @return the height
  */
-static inline uint GetVehicleHeight(VehicleType type)
+inline uint GetVehicleHeight(VehicleType type)
 {
 	return (type == VEH_TRAIN || type == VEH_ROAD) ? 14 : 24;
 }
@@ -95,7 +95,7 @@ VehicleCellSize GetVehicleImageCellSize(VehicleType type, EngineImageType image_
  * @return corresponding window class
  * @note works only for company buildable vehicle types
  */
-static inline WindowClass GetWindowClassForVehicleType(VehicleType vt)
+inline WindowClass GetWindowClassForVehicleType(VehicleType vt)
 {
 	switch (vt) {
 		default: NOT_REACHED();
@@ -128,7 +128,7 @@ void SetMouseCursorVehicle(const Vehicle *v, EngineImageType image_type);
  * @param ref_window The window to check against.
  * @return True if the focused window is about specified vehicle.
  */
-static inline bool HasFocusedVehicleChanged(const VehicleID vid, Window *ref_window)
+inline bool HasFocusedVehicleChanged(const VehicleID vid, Window *ref_window)
 {
 	if (ref_window) {
 		WindowClass wc = ref_window->window_class;

@@ -30,7 +30,7 @@ void UpdateAllBlockSignals(Owner owner = INVALID_OWNER);
  * @param infra_owner The owner of the infrastructure.
  * @return            True if infrastructure usage is allowed, false otherwise.
  */
-static inline bool IsInfraUsageAllowed(VehicleType type, Owner veh_owner, Owner infra_owner)
+inline bool IsInfraUsageAllowed(VehicleType type, Owner veh_owner, Owner infra_owner)
 {
 	return infra_owner == veh_owner || infra_owner == OWNER_NONE || _settings_game.economy.infrastructure_sharing[type];
 }
@@ -42,7 +42,7 @@ static inline bool IsInfraUsageAllowed(VehicleType type, Owner veh_owner, Owner 
  * @param tile        The tile that may or may not be used.
  * @return            True if infrastructure usage is allowed, false otherwise.
  */
-static inline bool IsInfraTileUsageAllowed(VehicleType type, Owner veh_owner, TileIndex tile)
+inline bool IsInfraTileUsageAllowed(VehicleType type, Owner veh_owner, TileIndex tile)
 {
 	return IsInfraUsageAllowed(type, veh_owner, GetTileOwner(tile));
 }
@@ -57,7 +57,7 @@ static inline bool IsInfraTileUsageAllowed(VehicleType type, Owner veh_owner, Ti
  * @param tile        Tile of the infrastructure.
  * @return            CommandCost indicating success or failure.
  */
-static inline CommandCost CheckInfraUsageAllowed(VehicleType type, Owner infra_owner, TileIndex tile = 0)
+inline CommandCost CheckInfraUsageAllowed(VehicleType type, Owner infra_owner, TileIndex tile = 0)
 {
 	if (infra_owner == OWNER_NONE || _settings_game.economy.infrastructure_sharing[type]) return CommandCost();
 	return CheckOwnership(infra_owner, tile);
@@ -70,7 +70,7 @@ static inline CommandCost CheckInfraUsageAllowed(VehicleType type, Owner infra_o
  * @param o The company which may or may not control this vehicle.
  * @return  True if the given company is allowed to control this vehicle.
  */
-static inline bool IsVehicleControlAllowed(const Vehicle *v, Owner o)
+inline bool IsVehicleControlAllowed(const Vehicle *v, Owner o)
 {
 	return v->owner == o || (v->type == VEH_TRAIN && IsTileOwner(v->tile, o) && !v->IsChainInDepot());
 }
@@ -82,7 +82,7 @@ static inline bool IsVehicleControlAllowed(const Vehicle *v, Owner o)
  * @param v The vehicle which may or may not be controlled.
  * @return  CommandCost indicating success or failure.
  */
-static inline CommandCost CheckVehicleControlAllowed(const Vehicle *v)
+inline CommandCost CheckVehicleControlAllowed(const Vehicle *v)
 {
 	if (v->type == VEH_TRAIN && IsTileOwner(v->tile, _current_company) && !v->IsChainInDepot()) return CommandCost();
 	return CheckOwnership(v->owner);
@@ -96,7 +96,7 @@ static inline CommandCost CheckVehicleControlAllowed(const Vehicle *v)
  * @param o2 Second track owner.
  * @return   True if tracks of the two owners are part of the same signal block.
  */
-static inline bool IsOneSignalBlock(Owner o1, Owner o2)
+inline bool IsOneSignalBlock(Owner o1, Owner o2)
 {
 	return o1 == o2 || _settings_game.economy.infrastructure_sharing[VEH_TRAIN];
 }

@@ -601,14 +601,12 @@ STR_CONFIG_SETTING_INTERFACE_WALLCLOCK                          :{ORANGE}시계
 STR_CONFIG_SETTING_INTERFACE_TIME_CLIENT                        :{ORANGE}클라이언트 설정
 STR_CONFIG_SETTING_INTERFACE_TIME_SAVEGAME                      :{ORANGE}세이브파일 설정
 STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}시간표
-STR_CONFIG_SETTING_INTERFACE_ADV_SIGNALS                        :{ORANGE}신호기 (고급)
+STR_CONFIG_SETTING_INTERFACE_SIGNALS                            :{ORANGE}신호기
 STR_CONFIG_SETTING_INTERFACE_SAVE                               :{ORANGE}저장 & 자동 저장
 STR_CONFIG_SETTING_INTERFACE_VEHICLE_WINDOWS                    :{ORANGE}차량 창
 STR_CONFIG_SETTING_GENWORLD_RIVERS_LAKES                        :{ORANGE}강 & 호수
 STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST_PER_CARGO_OVERRIDE     :{ORANGE}화물 분배 - 화물별
-STR_CONFIG_SETTING_ENVIRONMENT_TREES                            :{ORANGE}나무
 STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS                         :{ORANGE}지도 모드
-STR_CONFIG_SETTING_VIEWPORT_SIGNALS                             :{ORANGE}신호기
 STR_CONFIG_SETTING_VEHICLE_ROUTE_OVERLAY                        :{ORANGE}차량 경로 오버레이
 STR_CONFIG_SETTING_SHARING                                      :{ORANGE}시설 공유
 STR_CONFIG_SETTING_SCENARIO_EDITOR                              :{ORANGE}시나리오 에디터

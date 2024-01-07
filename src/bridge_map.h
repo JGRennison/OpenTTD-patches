@@ -20,7 +20,7 @@
  * @pre IsTileType(t, MP_TUNNELBRIDGE)
  * @return true if the structure is a bridge one
  */
-static inline bool IsBridge(TileIndex t)
+inline bool IsBridge(TileIndex t)
 {
 	assert_tile(IsTileType(t, MP_TUNNELBRIDGE), t);
 	return HasBit(_m[t].m5, 7);
@@ -31,7 +31,7 @@ static inline bool IsBridge(TileIndex t)
  * @param t The tile to analyze
  * @return true if a bridge is present
  */
-static inline bool IsBridgeTile(TileIndex t)
+inline bool IsBridgeTile(TileIndex t)
 {
 	return IsTileType(t, MP_TUNNELBRIDGE) && IsBridge(t);
 }
@@ -41,7 +41,7 @@ static inline bool IsBridgeTile(TileIndex t)
  * @param t The tile to analyze
  * @return true if a bridge is detected above
  */
-static inline bool IsBridgeAbove(TileIndex t)
+inline bool IsBridgeAbove(TileIndex t)
 {
 	return GB(_m[t].type, 2, 2) != 0;
 }
@@ -52,7 +52,7 @@ static inline bool IsBridgeAbove(TileIndex t)
  * @pre IsBridgeTile(t)
  * @return The bridge type
  */
-static inline BridgeType GetBridgeType(TileIndex t)
+inline BridgeType GetBridgeType(TileIndex t)
 {
 	assert_tile(IsBridgeTile(t), t);
 	return GB(_me[t].m6, 2, 4);
@@ -64,7 +64,7 @@ static inline BridgeType GetBridgeType(TileIndex t)
  * @pre IsBridgeAbove(t)
  * @return the above mentioned axis
  */
-static inline Axis GetBridgeAxis(TileIndex t)
+inline Axis GetBridgeAxis(TileIndex t)
 {
 	assert_tile(IsBridgeAbove(t), t);
 	return (Axis)(GB(_m[t].type, 2, 2) - 1);
@@ -80,7 +80,7 @@ int GetBridgeHeight(TileIndex tile);
  * @param tile the bridge ramp tile to get the bridge height from
  * @return the height of the bridge in pixels
  */
-static inline int GetBridgePixelHeight(TileIndex tile)
+inline int GetBridgePixelHeight(TileIndex tile)
 {
 	return GetBridgeHeight(tile) * TILE_HEIGHT;
 }
@@ -90,7 +90,7 @@ static inline int GetBridgePixelHeight(TileIndex tile)
  * @param t the tile to remove the bridge from
  * @param a the axis of the bridge to remove
  */
-static inline void ClearSingleBridgeMiddle(TileIndex t, Axis a)
+inline void ClearSingleBridgeMiddle(TileIndex t, Axis a)
 {
 	ClrBit(_m[t].type, 2 + a);
 }
@@ -99,7 +99,7 @@ static inline void ClearSingleBridgeMiddle(TileIndex t, Axis a)
  * Removes bridges from the given, that is bridges along the X and Y axis.
  * @param t the tile to remove the bridge from
  */
-static inline void ClearBridgeMiddle(TileIndex t)
+inline void ClearBridgeMiddle(TileIndex t)
 {
 	ClearSingleBridgeMiddle(t, AXIS_X);
 	ClearSingleBridgeMiddle(t, AXIS_Y);
@@ -110,7 +110,7 @@ static inline void ClearBridgeMiddle(TileIndex t)
  * @param t the tile to add the bridge to
  * @param a the axis of the bridge to add
  */
-static inline void SetBridgeMiddle(TileIndex t, Axis a)
+inline void SetBridgeMiddle(TileIndex t, Axis a)
 {
 	SetBit(_m[t].type, 2 + a);
 }
@@ -124,7 +124,7 @@ static inline void SetBridgeMiddle(TileIndex t, Axis a)
  * @param tt         the transport type of the bridge
  * @note this function should not be called directly.
  */
-static inline void MakeBridgeRamp(TileIndex t, Owner o, BridgeType bridgetype, DiagDirection d, TransportType tt)
+inline void MakeBridgeRamp(TileIndex t, Owner o, BridgeType bridgetype, DiagDirection d, TransportType tt)
 {
 	SetTileType(t, MP_TUNNELBRIDGE);
 	SetTileOwner(t, o);
@@ -149,7 +149,7 @@ static inline void MakeBridgeRamp(TileIndex t, Owner o, BridgeType bridgetype, D
  * @param road_rt    the road type of the bridge
  * @param tram_rt    the tram type of the bridge
  */
-static inline void MakeRoadBridgeRamp(TileIndex t, Owner o, Owner owner_road, Owner owner_tram, BridgeType bridgetype, DiagDirection d, RoadType road_rt, RoadType tram_rt)
+inline void MakeRoadBridgeRamp(TileIndex t, Owner o, Owner owner_road, Owner owner_tram, BridgeType bridgetype, DiagDirection d, RoadType road_rt, RoadType tram_rt)
 {
 	MakeBridgeRamp(t, o, bridgetype, d, TRANSPORT_ROAD);
 	SetRoadOwner(t, RTT_ROAD, owner_road);
@@ -166,7 +166,7 @@ static inline void MakeRoadBridgeRamp(TileIndex t, Owner o, Owner owner_road, Ow
  * @param rt         the rail type of the bridge
  * @param upgrade    whether the bridge is an upgrade instead of a totally new bridge
  */
-static inline void MakeRailBridgeRamp(TileIndex t, Owner o, BridgeType bridgetype, DiagDirection d, RailType rt, bool upgrade)
+inline void MakeRailBridgeRamp(TileIndex t, Owner o, BridgeType bridgetype, DiagDirection d, RailType rt, bool upgrade)
 {
 	/* Backup bridge signal and custom bridgehead data. */
 	auto m2_backup = _m[t].m2;
@@ -202,7 +202,7 @@ static inline void MakeRailBridgeRamp(TileIndex t, Owner o, BridgeType bridgetyp
  * @param o          the new owner of the bridge ramp
  * @param d          the direction this ramp must be facing
  */
-static inline void MakeAqueductBridgeRamp(TileIndex t, Owner o, DiagDirection d)
+inline void MakeAqueductBridgeRamp(TileIndex t, Owner o, DiagDirection d)
 {
 	MakeBridgeRamp(t, o, 0, d, TRANSPORT_WATER);
 }
@@ -213,7 +213,7 @@ static inline void MakeAqueductBridgeRamp(TileIndex t, Owner o, DiagDirection d)
  * @pre IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TRANSPORT_ROAD
  * @return true if it is a custom bridge head
  */
-static inline bool IsRoadCustomBridgeHead(TileIndex t)
+inline bool IsRoadCustomBridgeHead(TileIndex t)
 {
 	assert_tile(IsBridgeTile(t) && (TransportType)GB(_m[t].m5, 2, 2) == TRANSPORT_ROAD, t);
 	return GB(_m[t].m2, 0, 8) != 0;
@@ -224,7 +224,7 @@ static inline bool IsRoadCustomBridgeHead(TileIndex t)
  * @param t The tile to analyze
  * @return true if it is a road bridge head with a custom bridge head
  */
-static inline bool IsRoadCustomBridgeHeadTile(TileIndex t)
+inline bool IsRoadCustomBridgeHeadTile(TileIndex t)
 {
 	return IsBridgeTile(t) && (TransportType)GB(_m[t].m5, 2, 2) == TRANSPORT_ROAD && IsRoadCustomBridgeHead(t);
 }
@@ -236,7 +236,7 @@ static inline bool IsRoadCustomBridgeHeadTile(TileIndex t)
  * @pre IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TRANSPORT_ROAD
  * @return road bits for the bridge head
  */
-static inline RoadBits GetCustomBridgeHeadRoadBits(TileIndex t, RoadTramType rtt)
+inline RoadBits GetCustomBridgeHeadRoadBits(TileIndex t, RoadTramType rtt)
 {
 	assert_tile(IsBridgeTile(t), t);
 	if (!HasTileRoadType(t, rtt)) return (RoadBits) 0;
@@ -250,7 +250,7 @@ static inline RoadBits GetCustomBridgeHeadRoadBits(TileIndex t, RoadTramType rtt
  * @pre IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TRANSPORT_ROAD
  * @return road bits for the bridge head
  */
-static inline RoadBits GetCustomBridgeHeadAllRoadBits(TileIndex t)
+inline RoadBits GetCustomBridgeHeadAllRoadBits(TileIndex t)
 {
 	return GetCustomBridgeHeadRoadBits(t, RTT_ROAD) | GetCustomBridgeHeadRoadBits(t, RTT_TRAM);
 }
@@ -263,7 +263,7 @@ static inline RoadBits GetCustomBridgeHeadAllRoadBits(TileIndex t)
  * @pre IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TRANSPORT_ROAD
  * @pre HasTileRoadType() must be set correctly before calling this
  */
-static inline void SetCustomBridgeHeadRoadBits(TileIndex t, RoadTramType rtt, RoadBits bits)
+inline void SetCustomBridgeHeadRoadBits(TileIndex t, RoadTramType rtt, RoadBits bits)
 {
 	assert_tile(IsBridgeTile(t), t);
 	if (HasTileRoadType(t, rtt)) {
@@ -280,7 +280,7 @@ static inline void SetCustomBridgeHeadRoadBits(TileIndex t, RoadTramType rtt, Ro
  * @param t The tile to analyze
  * @return true if it is a rail bridge head
  */
-static inline bool IsRailBridgeHeadTile(TileIndex t)
+inline bool IsRailBridgeHeadTile(TileIndex t)
 {
 	return IsBridgeTile(t) && (TransportType)GB(_m[t].m5, 2, 2) == TRANSPORT_RAIL;
 }
@@ -290,7 +290,7 @@ static inline bool IsRailBridgeHeadTile(TileIndex t)
  * @param t The tile to analyze
  * @return true if it is a flat rail bridge head
  */
-static inline bool IsFlatRailBridgeHeadTile(TileIndex t)
+inline bool IsFlatRailBridgeHeadTile(TileIndex t)
 {
 	return IsRailBridgeHeadTile(t) && HasBridgeFlatRamp(GetTileSlope(t), DiagDirToAxis((DiagDirection)GB(_m[t].m5, 0, 2)));
 }
@@ -301,7 +301,7 @@ static inline bool IsFlatRailBridgeHeadTile(TileIndex t)
  * @pre IsRailBridgeHeadTile(t)
  * @return road bits for the bridge head
  */
-static inline TrackBits GetCustomBridgeHeadTrackBits(TileIndex t)
+inline TrackBits GetCustomBridgeHeadTrackBits(TileIndex t)
 {
 	assert_tile(IsRailBridgeHeadTile(t), t);
 	return (TrackBits)GB(_m[t].m4, 0, 6);
@@ -313,7 +313,7 @@ static inline TrackBits GetCustomBridgeHeadTrackBits(TileIndex t)
  * @param b the new track bits for the tile
  * @pre IsRailBridgeHeadTile(t)
  */
-static inline void SetCustomBridgeHeadTrackBits(TileIndex t, TrackBits b)
+inline void SetCustomBridgeHeadTrackBits(TileIndex t, TrackBits b)
 {
 	assert_tile(IsRailBridgeHeadTile(t), t);
 	SB(_m[t].m4, 0, 6, b);
@@ -325,7 +325,7 @@ static inline void SetCustomBridgeHeadTrackBits(TileIndex t, TrackBits b)
  * @pre IsRailBridgeHeadTile(t)
  * @return true if it is a custom bridge head
  */
-static inline bool IsRailCustomBridgeHead(TileIndex t)
+inline bool IsRailCustomBridgeHead(TileIndex t)
 {
 	assert_tile(IsRailBridgeHeadTile(t), t);
 	return GetCustomBridgeHeadTrackBits(t) != DiagDirToDiagTrackBits((DiagDirection)GB(_m[t].m5, 0, 2));
@@ -336,7 +336,7 @@ static inline bool IsRailCustomBridgeHead(TileIndex t)
  * @param t The tile to analyze
  * @return true if it is a rail bridge head with a custom bridge head
  */
-static inline bool IsRailCustomBridgeHeadTile(TileIndex t)
+inline bool IsRailCustomBridgeHeadTile(TileIndex t)
 {
 	return IsRailBridgeHeadTile(t) && IsRailCustomBridgeHead(t);
 }
@@ -346,7 +346,7 @@ static inline bool IsRailCustomBridgeHeadTile(TileIndex t)
  * @param t The tile to analyze
  * @return true if it is a bridge head with a custom bridge head
  */
-static inline bool IsCustomBridgeHeadTile(TileIndex t)
+inline bool IsCustomBridgeHeadTile(TileIndex t)
 {
 	return IsRailCustomBridgeHeadTile(t) || IsRoadCustomBridgeHeadTile(t);
 }
@@ -357,7 +357,7 @@ static inline bool IsCustomBridgeHeadTile(TileIndex t)
  * @param t the tile
  * @return reserved track bits
  */
-static inline TrackBits GetBridgeReservationTrackBits(TileIndex t)
+inline TrackBits GetBridgeReservationTrackBits(TileIndex t)
 {
 	assert_tile(IsRailBridgeHeadTile(t), t);
 	byte track_b = GB(_m[t].m2, 0, 3);
@@ -372,7 +372,7 @@ static inline TrackBits GetBridgeReservationTrackBits(TileIndex t)
  * @param t the tile to change
  * @param b the track bits
  */
-static inline void SetBridgeReservationTrackBits(TileIndex t, TrackBits b)
+inline void SetBridgeReservationTrackBits(TileIndex t, TrackBits b)
 {
 	assert_tile(IsRailBridgeHeadTile(t), t);
 	assert(!TracksOverlap(b));
@@ -389,7 +389,7 @@ static inline void SetBridgeReservationTrackBits(TileIndex t, TrackBits b)
  * @param t the rack to reserve
  * @return true if successful
  */
-static inline bool TryReserveRailBridgeHead(TileIndex tile, Track t)
+inline bool TryReserveRailBridgeHead(TileIndex tile, Track t)
 {
 	assert_tile(IsRailBridgeHeadTile(tile), tile);
 	assert_tile(HasBit(GetCustomBridgeHeadTrackBits(tile), t), tile);
@@ -409,7 +409,7 @@ static inline bool TryReserveRailBridgeHead(TileIndex tile, Track t)
  * @param tile the tile
  * @param t the track to free
  */
-static inline void UnreserveRailBridgeHeadTrack(TileIndex tile, Track t)
+inline void UnreserveRailBridgeHeadTrack(TileIndex tile, Track t)
 {
 	assert_tile(IsRailBridgeHeadTile(tile), tile);
 	assert(HasBit(GetCustomBridgeHeadTrackBits(tile), t));
@@ -424,7 +424,7 @@ static inline void UnreserveRailBridgeHeadTrack(TileIndex tile, Track t)
  * @param t the tile
  * @return reservation state
  */
-static inline TrackBits GetAcrossBridgePossibleTrackBits(TileIndex t)
+inline TrackBits GetAcrossBridgePossibleTrackBits(TileIndex t)
 {
 	assert_tile(IsRailBridgeHeadTile(t), t);
 	return DiagdirReachesTracks(ReverseDiagDir((DiagDirection)GB(_m[t].m5, 0, 2)));
@@ -436,7 +436,7 @@ static inline TrackBits GetAcrossBridgePossibleTrackBits(TileIndex t)
  * @param t the tile
  * @return reservation state
  */
-static inline TrackBits GetAcrossBridgeReservationTrackBits(TileIndex t)
+inline TrackBits GetAcrossBridgeReservationTrackBits(TileIndex t)
 {
 	return GetBridgeReservationTrackBits(t) & GetAcrossBridgePossibleTrackBits(t);
 }
@@ -447,7 +447,7 @@ static inline TrackBits GetAcrossBridgeReservationTrackBits(TileIndex t)
  * @param t the tile
  * @return reservation state
  */
-static inline bool HasAcrossBridgeReservation(TileIndex t)
+inline bool HasAcrossBridgeReservation(TileIndex t)
 {
 	return GetAcrossBridgeReservationTrackBits(t) != TRACK_BIT_NONE;
 }
@@ -457,7 +457,7 @@ static inline bool HasAcrossBridgeReservation(TileIndex t)
  * @pre IsRailBridgeHeadTile(t)
  * @param tile the tile
  */
-static inline void UnreserveAcrossRailBridgeHead(TileIndex tile)
+inline void UnreserveAcrossRailBridgeHead(TileIndex tile)
 {
 	assert_tile(IsRailBridgeHeadTile(tile), tile);
 	TrackBits res = GetAcrossBridgeReservationTrackBits(tile);

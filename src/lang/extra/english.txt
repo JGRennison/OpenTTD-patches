@@ -667,14 +667,12 @@ STR_CONFIG_SETTING_INTERFACE_WALLCLOCK                          :{ORANGE}Wall cl
 STR_CONFIG_SETTING_INTERFACE_TIME_CLIENT                        :{ORANGE}Client settings
 STR_CONFIG_SETTING_INTERFACE_TIME_SAVEGAME                      :{ORANGE}Savegame settings
 STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}Timetables
-STR_CONFIG_SETTING_INTERFACE_ADV_SIGNALS                        :{ORANGE}Signals (advanced)
+STR_CONFIG_SETTING_INTERFACE_SIGNALS                            :{ORANGE}Signals
 STR_CONFIG_SETTING_INTERFACE_SAVE                               :{ORANGE}Save & Autosave
 STR_CONFIG_SETTING_INTERFACE_VEHICLE_WINDOWS                    :{ORANGE}Vehicle windows
 STR_CONFIG_SETTING_GENWORLD_RIVERS_LAKES                        :{ORANGE}Rivers & Lakes
 STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST_PER_CARGO_OVERRIDE     :{ORANGE}Cargo distribution - per cargo overrides
-STR_CONFIG_SETTING_ENVIRONMENT_TREES                            :{ORANGE}Trees
 STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS                         :{ORANGE}Map mode
-STR_CONFIG_SETTING_VIEWPORT_SIGNALS                             :{ORANGE}Signals
 STR_CONFIG_SETTING_VEHICLE_ROUTE_OVERLAY                        :{ORANGE}Vehicle route overlay
 STR_CONFIG_SETTING_SHARING                                      :{ORANGE}Infrastructure sharing
 STR_CONFIG_SETTING_SCENARIO_EDITOR                              :{ORANGE}Scenario Editor

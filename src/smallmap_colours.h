@@ -47,7 +47,7 @@ struct AndOr {
 	uint32 mand;
 };
 
-static inline uint32 ApplyMask(uint32 colour, const AndOr *mask)
+inline uint32 ApplyMask(uint32 colour, const AndOr *mask)
 {
 	return (colour & mask->mand) | mask->mor;
 }

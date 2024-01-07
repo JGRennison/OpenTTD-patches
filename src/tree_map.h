@@ -70,7 +70,7 @@ enum TreeGround {
  * @return The treetype of the given tile with trees
  * @pre Tile t must be of type MP_TREES
  */
-static inline TreeType GetTreeType(TileIndex t)
+inline TreeType GetTreeType(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_TREES), t);
 	return (TreeType)_m[t].m3;
@@ -85,7 +85,7 @@ static inline TreeType GetTreeType(TileIndex t)
  * @return The groundtype of the tile
  * @pre Tile must be of type MP_TREES
  */
-static inline TreeGround GetTreeGround(TileIndex t)
+inline TreeGround GetTreeGround(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_TREES), t);
 	return (TreeGround)GB(_m[t].m2, 6, 3);
@@ -110,7 +110,7 @@ static inline TreeGround GetTreeGround(TileIndex t)
  * @pre Tile must be of type MP_TREES
  * @see GetTreeCount
  */
-static inline uint GetTreeDensity(TileIndex t)
+inline uint GetTreeDensity(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_TREES), t);
 	return GB(_m[t].m2, 4, 2);
@@ -127,7 +127,7 @@ static inline uint GetTreeDensity(TileIndex t)
  * @param d The density to save with
  * @pre Tile must be of type MP_TREES
  */
-static inline void SetTreeGroundDensity(TileIndex t, TreeGround g, uint d)
+inline void SetTreeGroundDensity(TileIndex t, TreeGround g, uint d)
 {
 	dbg_assert_tile(IsTileType(t, MP_TREES), t); // XXX incomplete
 	SB(_m[t].m2, 4, 2, d);
@@ -146,7 +146,7 @@ static inline void SetTreeGroundDensity(TileIndex t, TreeGround g, uint d)
  * @return The number of trees (1-4)
  * @pre Tile must be of type MP_TREES
  */
-static inline uint GetTreeCount(TileIndex t)
+inline uint GetTreeCount(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_TREES), t);
 	return GB(_m[t].m5, 6, 2) + 1;
@@ -163,7 +163,7 @@ static inline uint GetTreeCount(TileIndex t)
  * @param c The value to add (or reduce) on the tree-count value
  * @pre Tile must be of type MP_TREES
  */
-static inline void AddTreeCount(TileIndex t, int c)
+inline void AddTreeCount(TileIndex t, int c)
 {
 	dbg_assert_tile(IsTileType(t, MP_TREES), t); // XXX incomplete
 	_m[t].m5 += ((uint) c) << 6;
@@ -178,7 +178,7 @@ static inline void AddTreeCount(TileIndex t, int c)
  * @return The tree growth status
  * @pre Tile must be of type MP_TREES
  */
-static inline uint GetTreeGrowth(TileIndex t)
+inline uint GetTreeGrowth(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_TREES), t);
 	return GB(_m[t].m5, 0, 3);
@@ -193,7 +193,7 @@ static inline uint GetTreeGrowth(TileIndex t)
  * @param a The value to add on the tree growth status
  * @pre Tile must be of type MP_TREES
  */
-static inline void AddTreeGrowth(TileIndex t, int a)
+inline void AddTreeGrowth(TileIndex t, int a)
 {
 	dbg_assert_tile(IsTileType(t, MP_TREES), t); // XXX incomplete
 	_m[t].m5 += a;
@@ -209,7 +209,7 @@ static inline void AddTreeGrowth(TileIndex t, int a)
  * @param g The new value
  * @pre Tile must be of type MP_TREES
  */
-static inline void SetTreeGrowth(TileIndex t, uint g)
+inline void SetTreeGrowth(TileIndex t, uint g)
 {
 	dbg_assert_tile(IsTileType(t, MP_TREES), t); // XXX incomplete
 	SB(_m[t].m5, 0, 3, g);
@@ -221,7 +221,7 @@ static inline void SetTreeGrowth(TileIndex t, uint g)
  * @param t The tile to clear the old tick counter
  * @pre Tile must be of type MP_TREES
  */
-static inline void ClearOldTreeCounter(TileIndex t)
+inline void ClearOldTreeCounter(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_TREES), t);
 	SB(_m[t].m2, 0, 4, 0);
@@ -239,7 +239,7 @@ static inline void ClearOldTreeCounter(TileIndex t)
  * @param ground the ground type
  * @param density the density (not the number of trees)
  */
-static inline void MakeTree(TileIndex t, TreeType type, uint count, uint growth, TreeGround ground, uint density)
+inline void MakeTree(TileIndex t, TreeType type, uint count, uint growth, TreeGround ground, uint density)
 {
 	SetTileType(t, MP_TREES);
 	SetTileOwner(t, OWNER_NONE);

@@ -49,7 +49,7 @@ void AllocateMap(uint size_x, uint size_y);
  * @note try to avoid using this one
  * @return 2^"return value" == MapSizeX()
  */
-static inline uint MapLogX()
+inline uint MapLogX()
 {
 	extern uint _map_log_x;
 	return _map_log_x;
@@ -60,7 +60,7 @@ static inline uint MapLogX()
  * @note try to avoid using this one
  * @return 2^"return value" == MapSizeY()
  */
-static inline uint MapLogY()
+inline uint MapLogY()
 {
 	extern uint _map_log_y;
 	return _map_log_y;
@@ -70,7 +70,7 @@ static inline uint MapLogY()
  * Get the size of the map along the X
  * @return the number of tiles along the X of the map
  */
-static inline uint MapSizeX()
+inline uint MapSizeX()
 {
 	extern uint _map_size_x;
 	return _map_size_x;
@@ -80,7 +80,7 @@ static inline uint MapSizeX()
  * Get the size of the map along the Y
  * @return the number of tiles along the Y of the map
  */
-static inline uint MapSizeY()
+inline uint MapSizeY()
 {
 	extern uint _map_size_y;
 	return _map_size_y;
@@ -90,7 +90,7 @@ static inline uint MapSizeY()
  * Get the size of the map
  * @return the number of tiles of the map
  */
-static inline uint MapSize()
+inline uint MapSize()
 {
 	extern uint _map_size;
 	return _map_size;
@@ -100,7 +100,7 @@ static inline uint MapSize()
  * Gets the maximum X coordinate within the map, including MP_VOID
  * @return the maximum X coordinate
  */
-static inline uint MapMaxX()
+inline uint MapMaxX()
 {
 	return MapSizeX() - 1;
 }
@@ -109,7 +109,7 @@ static inline uint MapMaxX()
  * Gets the maximum Y coordinate within the map, including MP_VOID
  * @return the maximum Y coordinate
  */
-static inline uint MapMaxY()
+inline uint MapMaxY()
 {
 	return MapSizeY() - 1;
 }
@@ -120,7 +120,7 @@ static inline uint MapMaxY()
  * @param n the value to scale
  * @return the scaled size
  */
-static inline uint ScaleByMapSize(uint n)
+inline uint ScaleByMapSize(uint n)
 {
 	/* Subtract 12 from shift in order to prevent integer overflow
 	 * for large values of n. It's safe since the min mapsize is 64x64. */
@@ -134,7 +134,7 @@ static inline uint ScaleByMapSize(uint n)
  * @param n the value to scale
  * @return the scaled size
  */
-static inline uint ScaleByMapSize1D(uint n)
+inline uint ScaleByMapSize1D(uint n)
 {
 	/* Normal circumference for the X+Y is 256+256 = 1<<9
 	 * Note, not actually taking the full circumference into account,
@@ -177,7 +177,7 @@ debug_inline static TileIndex TileXY(uint x, uint y)
  * @return The resulting offset value of the given coordinate
  * @see ToTileIndexDiff(TileIndexDiffC)
  */
-static inline TileIndexDiff TileDiffXY(int x, int y)
+inline TileIndexDiff TileDiffXY(int x, int y)
 {
 	/* Multiplication gives much better optimization on MSVC than shifting.
 	 * 0 << shift isn't optimized to 0 properly.
@@ -204,7 +204,7 @@ debug_inline static TileIndex TileVirtXY(uint x, uint y)
  * @param y The virtual y coordinate of the tile.
  * @return The TileIndex calculated by the coordinate.
  */
-static inline TileIndex TileVirtXYClampedToMap(int x, int y)
+inline TileIndex TileVirtXYClampedToMap(int x, int y)
 {
 	int safe_x = Clamp<int>(x, 0, MapMaxX() * TILE_SIZE);
 	int safe_y = Clamp<int>(y, 0, MapMaxY() * TILE_SIZE);
@@ -241,7 +241,7 @@ debug_inline static uint TileY(TileIndex tile)
  * @return The difference between two tiles.
  * @see TileDiffXY(int, int)
  */
-static inline TileIndexDiff ToTileIndexDiff(TileIndexDiffC tidc)
+inline TileIndexDiff ToTileIndexDiff(TileIndexDiffC tidc)
 {
 	return (((uint) tidc.y) << MapLogX()) + tidc.x;
 }
@@ -280,7 +280,7 @@ TileIndex TileAddSaturating(TileIndex tile, int addx, int addy);
  * @param dir The given direction
  * @return The offset as TileIndexDiffC value
  */
-static inline TileIndexDiffC TileIndexDiffCByDiagDir(DiagDirection dir)
+inline TileIndexDiffC TileIndexDiffCByDiagDir(DiagDirection dir)
 {
 	extern const TileIndexDiffC _tileoffs_by_diagdir[DIAGDIR_END];
 
@@ -294,7 +294,7 @@ static inline TileIndexDiffC TileIndexDiffCByDiagDir(DiagDirection dir)
  * @param dir The given direction
  * @return The offset as TileIndexDiffC value
  */
-static inline TileIndexDiffC TileIndexDiffCByDir(Direction dir)
+inline TileIndexDiffC TileIndexDiffCByDir(Direction dir)
 {
 	extern const TileIndexDiffC _tileoffs_by_dir[DIR_END];
 
@@ -312,7 +312,7 @@ static inline TileIndexDiffC TileIndexDiffCByDir(Direction dir)
  * @param diff The offset to add on the tile
  * @return The resulting TileIndex
  */
-static inline TileIndex AddTileIndexDiffCWrap(TileIndex tile, TileIndexDiffC diff)
+inline TileIndex AddTileIndexDiffCWrap(TileIndex tile, TileIndexDiffC diff)
 {
 	int x = TileX(tile) + diff.x;
 	int y = TileY(tile) + diff.y;
@@ -328,7 +328,7 @@ static inline TileIndex AddTileIndexDiffCWrap(TileIndex tile, TileIndexDiffC dif
  * @param tile_b to tile
  * @return the difference between tila_a and tile_b
  */
-static inline TileIndexDiffC TileIndexToTileIndexDiffC(TileIndex tile_a, TileIndex tile_b)
+inline TileIndexDiffC TileIndexToTileIndexDiffC(TileIndex tile_a, TileIndex tile_b)
 {
 	TileIndexDiffC difference;
 
@@ -353,7 +353,7 @@ uint DistanceFromEdgeDir(TileIndex, DiagDirection); ///< distance from the map e
  * @return The resulting TileIndexDiff
  * @see TileIndexDiffCByDiagDir
  */
-static inline TileIndexDiff TileOffsByDiagDir(DiagDirection dir)
+inline TileIndexDiff TileOffsByDiagDir(DiagDirection dir)
 {
 	extern const TileIndexDiffC _tileoffs_by_diagdir[DIAGDIR_END];
 
@@ -367,7 +367,7 @@ static inline TileIndexDiff TileOffsByDiagDir(DiagDirection dir)
  * @param dir The direction to convert from
  * @return The resulting TileIndexDiff
  */
-static inline TileIndexDiff TileOffsByDir(Direction dir)
+inline TileIndexDiff TileOffsByDir(Direction dir)
 {
 	extern const TileIndexDiffC _tileoffs_by_dir[DIR_END];
 
@@ -382,7 +382,7 @@ static inline TileIndexDiff TileOffsByDir(Direction dir)
  * @param dir The direction in which we want to step
  * @return the moved tile
  */
-static inline TileIndex TileAddByDir(TileIndex tile, Direction dir)
+inline TileIndex TileAddByDir(TileIndex tile, Direction dir)
 {
 	return TILE_ADD(tile, TileOffsByDir(dir));
 }
@@ -394,13 +394,13 @@ static inline TileIndex TileAddByDir(TileIndex tile, Direction dir)
  * @param dir The direction in which we want to step
  * @return the moved tile
  */
-static inline TileIndex TileAddByDiagDir(TileIndex tile, DiagDirection dir)
+inline TileIndex TileAddByDiagDir(TileIndex tile, DiagDirection dir)
 {
 	return TILE_ADD(tile, TileOffsByDiagDir(dir));
 }
 
 /** Checks if two tiles are adjacent */
-static inline bool AreTilesAdjacent(TileIndex a, TileIndex b)
+inline bool AreTilesAdjacent(TileIndex a, TileIndex b)
 {
 	return (std::abs((int)TileX(a) - (int)TileX(b)) <= 1) &&
 		   (std::abs((int)TileY(a) - (int)TileY(b)) <= 1);
@@ -413,7 +413,7 @@ static inline bool AreTilesAdjacent(TileIndex a, TileIndex b)
  * @param tile_to Destination tile
  * @return DiagDirection from tile_from towards tile_to, or INVALID_DIAGDIR if the tiles are not on an axis
  */
-static inline DiagDirection DiagdirBetweenTiles(TileIndex tile_from, TileIndex tile_to)
+inline DiagDirection DiagdirBetweenTiles(TileIndex tile_from, TileIndex tile_to)
 {
 	int dx = (int)TileX(tile_to) - (int)TileX(tile_from);
 	int dy = (int)TileY(tile_to) - (int)TileY(tile_from);
@@ -445,7 +445,7 @@ bool EnoughContiguousTilesMatchingCondition(TileIndex tile, uint threshold, Test
  * @param r the random 'seed'
  * @return a valid tile
  */
-static inline TileIndex RandomTileSeed(uint32 r)
+inline TileIndex RandomTileSeed(uint32_t r)
 {
 	return TILE_MASK(r);
 }

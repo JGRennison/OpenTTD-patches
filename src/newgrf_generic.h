@@ -52,7 +52,7 @@ void AmbientSoundEffectCallback(TileIndex tile);
 uint16 GetTownZonesCallback(Town *t);
 
 /** Play an ambient sound effect for an empty tile. */
-static inline void AmbientSoundEffect(TileIndex tile)
+inline void AmbientSoundEffect(TileIndex tile)
 {
 	/* Only run callback if enabled. */
 	if (!HasGrfMiscBit(GMB_AMBIENT_SOUND_CALLBACK)) return;

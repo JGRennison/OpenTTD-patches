@@ -60,7 +60,7 @@ enum IndustryGraphics {
  * @pre IsTileType(t, MP_INDUSTRY)
  * @return the industry ID
  */
-static inline IndustryID GetIndustryIndex(TileIndex t)
+inline IndustryID GetIndustryIndex(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_INDUSTRY), t);
 	return _m[t].m2;
@@ -72,7 +72,7 @@ static inline IndustryID GetIndustryIndex(TileIndex t)
  * @pre IsTileType(t, MP_INDUSTRY)
  * @return true if and only if the industry tile is fully built
  */
-static inline bool IsIndustryCompleted(TileIndex t)
+inline bool IsIndustryCompleted(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_INDUSTRY), t);
 	return HasBit(_m[t].m1, 7);
@@ -85,7 +85,7 @@ IndustryType GetIndustryType(TileIndex tile);
  * @param tile the tile to query
  * @pre IsTileType(tile, MP_INDUSTRY)
  */
-static inline void SetIndustryCompleted(TileIndex tile)
+inline void SetIndustryCompleted(TileIndex tile)
 {
 	dbg_assert_tile(IsTileType(tile, MP_INDUSTRY), tile);
 	SB(_m[tile].m1, 7, 1, 1);
@@ -97,7 +97,7 @@ static inline void SetIndustryCompleted(TileIndex tile)
  * @pre IsTileType(tile, MP_INDUSTRY)
  * @return the construction stage
  */
-static inline byte GetIndustryConstructionStage(TileIndex tile)
+inline byte GetIndustryConstructionStage(TileIndex tile)
 {
 	dbg_assert_tile(IsTileType(tile, MP_INDUSTRY), tile);
 	return IsIndustryCompleted(tile) ? (byte)INDUSTRY_COMPLETED : GB(_m[tile].m1, 0, 2);
@@ -109,7 +109,7 @@ static inline byte GetIndustryConstructionStage(TileIndex tile)
  * @param value the new construction stage
  * @pre IsTileType(tile, MP_INDUSTRY)
  */
-static inline void SetIndustryConstructionStage(TileIndex tile, byte value)
+inline void SetIndustryConstructionStage(TileIndex tile, byte value)
 {
 	dbg_assert_tile(IsTileType(tile, MP_INDUSTRY), tile);
 	SB(_m[tile].m1, 0, 2, value);
@@ -122,7 +122,7 @@ static inline void SetIndustryConstructionStage(TileIndex tile, byte value)
  * @pre IsTileType(t, MP_INDUSTRY)
  * @return the gfx ID
  */
-static inline IndustryGfx GetCleanIndustryGfx(TileIndex t)
+inline IndustryGfx GetCleanIndustryGfx(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_INDUSTRY), t);
 	return _m[t].m5 | (GB(_me[t].m6, 2, 1) << 8);
@@ -134,7 +134,7 @@ static inline IndustryGfx GetCleanIndustryGfx(TileIndex t)
  * @pre IsTileType(t, MP_INDUSTRY)
  * @return the gfx ID
  */
-static inline IndustryGfx GetIndustryGfx(TileIndex t)
+inline IndustryGfx GetIndustryGfx(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_INDUSTRY), t);
 	return GetTranslatedIndustryTileID(GetCleanIndustryGfx(t));
@@ -146,7 +146,7 @@ static inline IndustryGfx GetIndustryGfx(TileIndex t)
  * @pre IsTileType(t, MP_INDUSTRY)
  * @param gfx the graphics ID
  */
-static inline void SetIndustryGfx(TileIndex t, IndustryGfx gfx)
+inline void SetIndustryGfx(TileIndex t, IndustryGfx gfx)
 {
 	dbg_assert_tile(IsTileType(t, MP_INDUSTRY), t);
 	_m[t].m5 = GB(gfx, 0, 8);
@@ -159,7 +159,7 @@ static inline void SetIndustryGfx(TileIndex t, IndustryGfx gfx)
  * @pre IsTileType(tile, MP_INDUSTRY)
  * @return the construction counter
  */
-static inline byte GetIndustryConstructionCounter(TileIndex tile)
+inline byte GetIndustryConstructionCounter(TileIndex tile)
 {
 	dbg_assert_tile(IsTileType(tile, MP_INDUSTRY), tile);
 	return GB(_m[tile].m1, 2, 2);
@@ -171,7 +171,7 @@ static inline byte GetIndustryConstructionCounter(TileIndex tile)
  * @param value the new value for the construction counter
  * @pre IsTileType(tile, MP_INDUSTRY)
  */
-static inline void SetIndustryConstructionCounter(TileIndex tile, byte value)
+inline void SetIndustryConstructionCounter(TileIndex tile, byte value)
 {
 	dbg_assert_tile(IsTileType(tile, MP_INDUSTRY), tile);
 	SB(_m[tile].m1, 2, 2, value);
@@ -184,7 +184,7 @@ static inline void SetIndustryConstructionCounter(TileIndex tile, byte value)
  * @param tile the tile to query
  * @pre IsTileType(tile, MP_INDUSTRY)
  */
-static inline void ResetIndustryConstructionStage(TileIndex tile)
+inline void ResetIndustryConstructionStage(TileIndex tile)
 {
 	dbg_assert_tile(IsTileType(tile, MP_INDUSTRY), tile);
 	SB(_m[tile].m1, 0, 4, 0);
@@ -196,7 +196,7 @@ static inline void ResetIndustryConstructionStage(TileIndex tile)
  * @param tile the tile to get the animation loop number of
  * @pre IsTileType(tile, MP_INDUSTRY)
  */
-static inline byte GetIndustryAnimationLoop(TileIndex tile)
+inline byte GetIndustryAnimationLoop(TileIndex tile)
 {
 	dbg_assert_tile(IsTileType(tile, MP_INDUSTRY), tile);
 	return _m[tile].m4;
@@ -208,7 +208,7 @@ static inline byte GetIndustryAnimationLoop(TileIndex tile)
  * @param count the new animation frame number
  * @pre IsTileType(tile, MP_INDUSTRY)
  */
-static inline void SetIndustryAnimationLoop(TileIndex tile, byte count)
+inline void SetIndustryAnimationLoop(TileIndex tile, byte count)
 {
 	dbg_assert_tile(IsTileType(tile, MP_INDUSTRY), tile);
 	_m[tile].m4 = count;
@@ -221,7 +221,7 @@ static inline void SetIndustryAnimationLoop(TileIndex tile, byte count)
  * @pre IsTileType(tile, MP_INDUSTRY)
  * @return requested bits
  */
-static inline byte GetIndustryRandomBits(TileIndex tile)
+inline byte GetIndustryRandomBits(TileIndex tile)
 {
 	dbg_assert_tile(IsTileType(tile, MP_INDUSTRY), tile);
 	return _m[tile].m3;
@@ -234,7 +234,7 @@ static inline byte GetIndustryRandomBits(TileIndex tile)
  * @param bits the random bits
  * @pre IsTileType(tile, MP_INDUSTRY)
  */
-static inline void SetIndustryRandomBits(TileIndex tile, byte bits)
+inline void SetIndustryRandomBits(TileIndex tile, byte bits)
 {
 	dbg_assert_tile(IsTileType(tile, MP_INDUSTRY), tile);
 	_m[tile].m3 = bits;
@@ -247,7 +247,7 @@ static inline void SetIndustryRandomBits(TileIndex tile, byte bits)
  * @pre IsTileType(tile, MP_INDUSTRY)
  * @return requested triggers
  */
-static inline byte GetIndustryTriggers(TileIndex tile)
+inline byte GetIndustryTriggers(TileIndex tile)
 {
 	dbg_assert_tile(IsTileType(tile, MP_INDUSTRY), tile);
 	return GB(_me[tile].m6, 3, 3);
@@ -261,7 +261,7 @@ static inline byte GetIndustryTriggers(TileIndex tile)
  * @param triggers the triggers to set
  * @pre IsTileType(tile, MP_INDUSTRY)
  */
-static inline void SetIndustryTriggers(TileIndex tile, byte triggers)
+inline void SetIndustryTriggers(TileIndex tile, byte triggers)
 {
 	dbg_assert_tile(IsTileType(tile, MP_INDUSTRY), tile);
 	SB(_me[tile].m6, 3, 3, triggers);
@@ -275,7 +275,7 @@ static inline void SetIndustryTriggers(TileIndex tile, byte triggers)
  * @param random the random value
  * @param wc     the water class for this industry; only useful when build on water
  */
-static inline void MakeIndustry(TileIndex t, IndustryID index, IndustryGfx gfx, uint8 random, WaterClass wc)
+inline void MakeIndustry(TileIndex t, IndustryID index, IndustryGfx gfx, uint8 random, WaterClass wc)
 {
 	SetTileType(t, MP_INDUSTRY);
 	_m[t].m1 = 0;
