@@ -87,12 +87,12 @@ inline constexpr Year DateDeltaToYears(DateDelta date)
 
 inline constexpr DateTicks DateToDateTicks(Date date, DateFract fract = 0)
 {
-	return (date.base() * DAY_TICKS) + fract;
+	return ((int64_t)date.base() * DAY_TICKS) + fract;
 }
 
 inline constexpr DateTicksDelta DateDeltaToDateTicksDelta(DateDelta date, DateFract fract = 0)
 {
-	return (date.base() * DAY_TICKS) + fract;
+	return ((int64_t)date.base() * DAY_TICKS) + fract;
 }
 
 inline DateTicks NowDateTicks()

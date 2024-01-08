@@ -51,8 +51,8 @@ struct DateTicksOperations {
 };
 
 /* The type to store dates in when tick-precision is required */
-using DateTicksDelta = StrongType::Typedef<int32_t, struct DateTicksDeltaTag, StrongType::Compare, StrongType::IntegerScalable>;
-using DateTicks = StrongType::Typedef<int32_t, struct DateTicksTag, StrongType::Compare, StrongType::IntegerDelta<DateTicksDelta>, DateTicksOperations>;
+using DateTicksDelta = StrongType::Typedef<int64_t, struct DateTicksDeltaTag, StrongType::Compare, StrongType::IntegerScalable>;
+using DateTicks = StrongType::Typedef<int64_t, struct DateTicksTag, StrongType::Compare, StrongType::IntegerDelta<DateTicksDelta>, DateTicksOperations>;
 
 /* Mixin for DateTicksScaledDelta */
 struct DateTicksScaledDeltaOperations {

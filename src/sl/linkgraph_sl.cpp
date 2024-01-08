@@ -83,8 +83,10 @@ SaveLoadTable GetLinkGraphJobDesc()
 		}
 
 		const SaveLoad job_desc[] = {
-			SLE_VAR(LinkGraphJob, join_date_ticks,  SLE_INT32),
-			SLE_CONDVAR_X(LinkGraphJob, start_date_ticks,  SLE_INT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE)),
+			SLE_CONDVAR_X(LinkGraphJob, join_date_ticks,  SLE_FILE_I32 | SLE_VAR_I64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 0, 4)),
+			SLE_CONDVAR_X(LinkGraphJob, join_date_ticks,  SLE_INT64,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 5)),
+			SLE_CONDVAR_X(LinkGraphJob, start_date_ticks, SLE_FILE_I32 | SLE_VAR_I64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 1, 4)),
+			SLE_CONDVAR_X(LinkGraphJob, start_date_ticks, SLE_INT64,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 5)),
 			SLE_VAR(LinkGraphJob, link_graph.index, SLE_UINT16),
 		};
 

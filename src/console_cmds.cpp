@@ -2730,7 +2730,7 @@ DEF_CONSOLE_CMD(ConDumpLinkgraphJobs)
 	for (const LinkGraphJob *lgj : LinkGraphJob::Iterate()) {
 		YearMonthDay start_ymd = ConvertDateToYMD(lgj->StartDateTicks().ToDate());
 		YearMonthDay join_ymd = ConvertDateToYMD(lgj->JoinDateTicks().ToDate());
-		IConsolePrintF(CC_DEFAULT, "  Job: %5u, nodes: %u, cost: " OTTD_PRINTF64U ", start: (%u, %4i-%02i-%02i, %i), end: (%u, %4i-%02i-%02i, %i), duration: %u",
+		IConsolePrintF(CC_DEFAULT, "  Job: %5u, nodes: %u, cost: " OTTD_PRINTF64U ", start: (" OTTD_PRINTF64 ", %4i-%02i-%02i, %i), end: (" OTTD_PRINTF64 ", %4i-%02i-%02i, %i), duration: " OTTD_PRINTF64,
 				lgj->index, lgj->Graph().Size(), lgj->Graph().CalculateCostEstimate(),
 				lgj->StartDateTicks().base(), start_ymd.year, start_ymd.month + 1, start_ymd.day, lgj->StartDateTicks().ToDateFractRemainder(),
 				lgj->JoinDateTicks().base(), join_ymd.year, join_ymd.month + 1, join_ymd.day, lgj->JoinDateTicks().ToDateFractRemainder(),

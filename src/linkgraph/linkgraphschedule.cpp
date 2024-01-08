@@ -284,7 +284,7 @@ void LinkGraphJobGroup::JoinThread()
 	DateTicks bucket_join_date = 0;
 	auto flush_bucket = [&]() {
 		if (!bucket_cost) return;
-		DEBUG(linkgraph, 2, "LinkGraphJobGroup::ExecuteJobSet: Creating Job Group: jobs: " PRINTF_SIZE ", cost: %u, join after: %d",
+		DEBUG(linkgraph, 2, "LinkGraphJobGroup::ExecuteJobSet: Creating Job Group: jobs: " PRINTF_SIZE ", cost: %u, join after: " OTTD_PRINTF64,
 				bucket.size(), bucket_cost, (bucket_join_date - NowDateTicks()).base());
 		auto group = std::make_shared<LinkGraphJobGroup>(constructor_token(), std::move(bucket));
 		group->SpawnThread();

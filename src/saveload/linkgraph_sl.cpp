@@ -180,7 +180,7 @@ SaveLoadTable GetLinkGraphJobDesc()
 		SLE_VAR2(LinkGraphJob, "linkgraph.demand_size",           settings.demand_size,           SLE_UINT8),
 		SLE_VAR2(LinkGraphJob, "linkgraph.short_path_saturation", settings.short_path_saturation, SLE_UINT8),
 
-		SLE_VAR2(LinkGraphJob, "join_date", join_date_ticks,        SLE_INT32),
+		SLE_VAR2(LinkGraphJob, "join_date", join_date_ticks,        SLE_FILE_I32 | SLE_VAR_I64),
 		SLE_VAR(LinkGraphJob, link_graph.index, SLE_UINT16),
 		SLEG_STRUCT("linkgraph", SlLinkgraphJobProxy),
 	};
