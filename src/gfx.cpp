@@ -1183,8 +1183,17 @@ static void GfxBlitter(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, in
 		if (bp.width <= 0) return;
 	}
 
-	assert(bp.skip_left + bp.width <= UnScaleByZoom(sprite->width, zoom));
-	assert(bp.skip_top + bp.height <= UnScaleByZoom(sprite->height, zoom));
+#ifdef WITH_ASSERT
+	auto failure_info = [&]() -> std::string {
+		std::string msg = stdstr_fmt("sprite: %u, zoom: %u", sprite_id, zoom);
+		if (sub != nullptr) msg += stdstr_fmt(", sub(%d, %d, %d, %d)", sub->left, sub->top, sub->right, sub->bottom);
+		msg += stdstr_fmt("\nbp.skip_left: %u, bp.width: %u, sprite->width: %u, (%u)", bp.skip_left, bp.width, sprite->width, UnScaleByZoom(sprite->width, zoom));
+		msg += stdstr_fmt("\nbp.skip_top: %u, bp.height: %u, sprite->height: %u, (%u)", bp.skip_top, bp.height, sprite->height, UnScaleByZoom(sprite->height, zoom));
+		return msg;
+	};
+	assert_str(bp.skip_left + bp.width <= UnScaleByZoom(sprite->width, zoom), failure_info());
+	assert_str(bp.skip_top + bp.height <= UnScaleByZoom(sprite->height, zoom), failure_info());
+#endif
 
 	/* We do not want to catch the mouse. However we also use that spritenumber for unknown (text) sprites. */
 	if (_newgrf_debug_sprite_picker.mode == SPM_REDRAW && sprite_id != SPR_CURSOR_MOUSE) {
