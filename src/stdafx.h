@@ -433,6 +433,8 @@ typedef uint64_t unaligned_uint64;
 void NORETURN CDECL usererror(const char *str, ...) WARN_FORMAT(1, 2);
 void NORETURN CDECL error(const char *str, ...) WARN_FORMAT(1, 2);
 void NORETURN CDECL assert_msg_error(int line, const char *file, const char *expr, const char *extra, const char *str, ...) WARN_FORMAT(5, 6);
+void NORETURN assert_str_error(int line, const char *file, const char *expr, const char *str);
+void NORETURN assert_str_error(int line, const char *file, const char *expr, const std::string &str);
 const char *assert_tile_info(uint32_t tile);
 #define NOT_REACHED() error("NOT_REACHED triggered at line %i of %s", __LINE__, __FILE__)
 
@@ -443,12 +445,14 @@ const char *assert_tile_info(uint32_t tile);
 #	define assert_msg(expression, ...) if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, nullptr, __VA_ARGS__);
 #	define assert_msg_tile(expression, tile, ...) if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, assert_tile_info(tile), __VA_ARGS__);
 #	define assert_tile(expression, tile) if (unlikely(!(expression))) error("Assertion failed at line %i of %s: %s\n\t%s", __LINE__, __FILE__, #expression, assert_tile_info(tile));
+#	define assert_str(expression, str) if (unlikely(!(expression))) assert_str_error(__LINE__, __FILE__, #expression, str);
 #else
 #	undef assert
 #	define assert(expression)
 #	define assert_msg(expression, ...)
 #	define assert_msg_tile(expression, tile, ...)
 #	define assert_tile(expression, tile)
+#	define assert_str(expression, str)
 #endif
 #if (!defined(NDEBUG) || defined(WITH_ASSERT)) && !defined(FEWER_ASSERTS)
 #	define WITH_FULL_ASSERTS

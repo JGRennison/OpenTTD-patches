@@ -227,13 +227,19 @@ void CDECL assert_msg_error(int line, const char *file, const char *expr, const 
 	vseprintf(b, lastof(buf), str, va);
 	va_end(va);
 
-	if (VideoDriver::GetInstance() == nullptr || VideoDriver::GetInstance()->HasGUI()) {
-		ShowOSErrorBox(buf, true);
-	}
+	fatalerror_common(buf);
+}
 
-	/* Set the error message for the crash log and then invoke it. */
-	CrashLog::SetErrorMessage(buf);
-	DoOSAbort();
+void assert_str_error(int line, const char *file, const char *expr, const char *str)
+{
+	char buf[2048];
+	seprintf(buf, lastof(buf), "Assertion failed at line %i of %s: %s\n%s", line, file, expr, str);
+	fatalerror_common(buf);
+}
+
+void assert_str_error(int line, const char *file, const char *expr, const std::string &str)
+{
+	assert_str_error(line, file, expr, str.c_str());
 }
 
 const char *assert_tile_info(uint32_t tile) {
