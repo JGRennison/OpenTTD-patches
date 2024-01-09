@@ -13,19 +13,22 @@
 #include "tile_type.h"
 #include "map_func.h"
 
-using TWaterRegionPatchLabel = uint8_t;
-using TWaterRegionIndex = uint;
+#include <vector>
+#include <functional>
 
-constexpr int WATER_REGION_EDGE_LENGTH = 16;
-constexpr int WATER_REGION_NUMBER_OF_TILES = WATER_REGION_EDGE_LENGTH * WATER_REGION_EDGE_LENGTH;
+using TWaterRegionPatchLabel = uint8_t;
+using TWaterRegionIndex = uint32_t;
+
+constexpr uint32_t WATER_REGION_EDGE_LENGTH = 16;
+constexpr uint32_t WATER_REGION_NUMBER_OF_TILES = WATER_REGION_EDGE_LENGTH * WATER_REGION_EDGE_LENGTH;
 
 /**
  * Describes a single interconnected patch of water within a particular water region.
  */
 struct WaterRegionPatchDesc
 {
-	int x; ///< The X coordinate of the water region, i.e. X=2 is the 3rd water region along the X-axis
-	int y; ///< The Y coordinate of the water region, i.e. Y=2 is the 3rd water region along the Y-axis
+	uint32_t x; ///< The X coordinate of the water region, i.e. X=2 is the 3rd water region along the X-axis
+	uint32_t y; ///< The Y coordinate of the water region, i.e. Y=2 is the 3rd water region along the Y-axis
 	TWaterRegionPatchLabel label; ///< Unique label identifying the patch within the region
 
 	bool operator==(const WaterRegionPatchDesc &other) const { return x == other.x && y == other.y && label == other.label; }
@@ -38,10 +41,10 @@ struct WaterRegionPatchDesc
  */
 struct WaterRegionDesc
 {
-	int x; ///< The X coordinate of the water region, i.e. X=2 is the 3rd water region along the X-axis
-	int y; ///< The Y coordinate of the water region, i.e. Y=2 is the 3rd water region along the Y-axis
+	uint32_t x; ///< The X coordinate of the water region, i.e. X=2 is the 3rd water region along the X-axis
+	uint32_t y; ///< The Y coordinate of the water region, i.e. Y=2 is the 3rd water region along the Y-axis
 
-	WaterRegionDesc(const int x, const int y) : x(x), y(y) {}
+	WaterRegionDesc(const uint32_t x, const uint32_t y) : x(x), y(y) {}
 	WaterRegionDesc(const WaterRegionPatchDesc &water_region_patch) : x(water_region_patch.x), y(water_region_patch.y) {}
 
 	bool operator==(const WaterRegionDesc &other) const { return x == other.x && y == other.y; }

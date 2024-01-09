@@ -9,6 +9,7 @@
 
 #include "../../stdafx.h"
 #include "../../ship.h"
+#include "../../core/math_func.hpp"
 
 #include "yapf.hpp"
 #include "yapf_ship_regions.h"
@@ -18,7 +19,7 @@
 
 constexpr int DIRECT_NEIGHBOR_COST = 100;
 constexpr int NODES_PER_REGION = 4;
-constexpr int MAX_NUMBER_OF_NODES = 65536;
+constexpr uint32_t MAX_NUMBER_OF_NODES = 65536;
 
 /** Yapf Node Key that represents a single patch of interconnected water within a water region. */
 struct CYapfRegionPatchNodeKey {
@@ -37,7 +38,7 @@ struct CYapfRegionPatchNodeKey {
 
 inline uint ManhattanDistance(const CYapfRegionPatchNodeKey &a, const CYapfRegionPatchNodeKey &b)
 {
-	return (std::abs(a.m_water_region_patch.x - b.m_water_region_patch.x) + std::abs(a.m_water_region_patch.y - b.m_water_region_patch.y)) * DIRECT_NEIGHBOR_COST;
+	return (Delta(a.m_water_region_patch.x, b.m_water_region_patch.x) + Delta(a.m_water_region_patch.y, b.m_water_region_patch.y)) * DIRECT_NEIGHBOR_COST;
 }
 
 /** Yapf Node for water regions. */
@@ -195,7 +196,7 @@ public:
 
 		/* We reserve 4 nodes (patches) per water region. The vast majority of water regions have 1 or 2 regions so this should be a pretty
 		 * safe limit. We cap the limit at 65536 which is at a region size of 16x16 is equivalent to one node per region for a 4096x4096 map. */
-		Tpf pf(std::min(static_cast<int>(MapSize() * NODES_PER_REGION) / WATER_REGION_NUMBER_OF_TILES, MAX_NUMBER_OF_NODES));
+		Tpf pf(std::min(static_cast<uint32_t>(MapSize() * NODES_PER_REGION) / WATER_REGION_NUMBER_OF_TILES, MAX_NUMBER_OF_NODES));
 		pf.SetDestination(start_water_region_patch);
 
 		if (v->current_order.IsType(OT_GOTO_STATION)) {

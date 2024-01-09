@@ -19,6 +19,8 @@
 #include "follow_track.hpp"
 #include "ship.h"
 
+#include <array>
+
 using TWaterRegionTraversabilityBits = uint16_t;
 constexpr TWaterRegionPatchLabel FIRST_REGION_LABEL = 1;
 constexpr TWaterRegionPatchLabel INVALID_WATER_REGION_PATCH = 0;
@@ -28,13 +30,13 @@ static_assert(sizeof(TWaterRegionTraversabilityBits) * 8 == WATER_REGION_EDGE_LE
 static inline TrackBits GetWaterTracks(TileIndex tile) { return TrackStatusToTrackBits(GetTileTrackStatus(tile, TRANSPORT_WATER, 0)); }
 static inline bool IsAqueductTile(TileIndex tile) { return IsBridgeTile(tile) && GetTunnelBridgeTransportType(tile) == TRANSPORT_WATER; }
 
-static inline int GetWaterRegionX(TileIndex tile) { return TileX(tile) / WATER_REGION_EDGE_LENGTH; }
-static inline int GetWaterRegionY(TileIndex tile) { return TileY(tile) / WATER_REGION_EDGE_LENGTH; }
+static inline uint32_t GetWaterRegionX(TileIndex tile) { return TileX(tile) / WATER_REGION_EDGE_LENGTH; }
+static inline uint32_t GetWaterRegionY(TileIndex tile) { return TileY(tile) / WATER_REGION_EDGE_LENGTH; }
 
-static inline int GetWaterRegionMapSizeX() { return MapSizeX() / WATER_REGION_EDGE_LENGTH; }
-static inline int GetWaterRegionMapSizeY() { return MapSizeY() / WATER_REGION_EDGE_LENGTH; }
+static inline uint32_t GetWaterRegionMapSizeX() { return MapSizeX() / WATER_REGION_EDGE_LENGTH; }
+static inline uint32_t GetWaterRegionMapSizeY() { return MapSizeY() / WATER_REGION_EDGE_LENGTH; }
 
-static inline TWaterRegionIndex GetWaterRegionIndex(int region_x, int region_y) { return GetWaterRegionMapSizeX() * region_y + region_x; }
+static inline TWaterRegionIndex GetWaterRegionIndex(uint32_t region_x, uint32_t region_y) { return GetWaterRegionMapSizeX() * region_y + region_x; }
 static inline TWaterRegionIndex GetWaterRegionIndex(TileIndex tile) { return GetWaterRegionIndex(GetWaterRegionX(tile), GetWaterRegionY(tile)); }
 
 /**
@@ -66,7 +68,7 @@ private:
 	}
 
 public:
-	WaterRegion(int region_x, int region_y)
+	WaterRegion(uint32_t region_x, uint32_t region_y)
 		: tile_area(TileXY(region_x * WATER_REGION_EDGE_LENGTH, region_y * WATER_REGION_EDGE_LENGTH), WATER_REGION_EDGE_LENGTH, WATER_REGION_EDGE_LENGTH)
 	{}
 
@@ -168,9 +170,9 @@ public:
 		/* Calculate the traversability (whether the tile can be entered / exited) for all edges. Note that
 		 * we always follow the same X and Y scanning direction, this is important for comparisons later on! */
 		this->edge_traversability_bits.fill(0);
-		const int top_x = TileX(tile_area.tile);
-		const int top_y = TileY(tile_area.tile);
-		for (int i = 0; i < WATER_REGION_EDGE_LENGTH; ++i) {
+		const uint32_t top_x = TileX(tile_area.tile);
+		const uint32_t top_y = TileY(tile_area.tile);
+		for (uint32_t i = 0; i < WATER_REGION_EDGE_LENGTH; ++i) {
 			if (GetWaterTracks(TileXY(top_x + i, top_y)) & TRACK_BIT_3WAY_NW) SetBit(this->edge_traversability_bits[DIAGDIR_NW], i); // NW edge
 			if (GetWaterTracks(TileXY(top_x + i, top_y + WATER_REGION_EDGE_LENGTH - 1)) & TRACK_BIT_3WAY_SE) SetBit(this->edge_traversability_bits[DIAGDIR_SE], i); // SE edge
 			if (GetWaterTracks(TileXY(top_x, top_y + i)) & TRACK_BIT_3WAY_NE) SetBit(this->edge_traversability_bits[DIAGDIR_NE], i); // NE edge
@@ -189,16 +191,16 @@ public:
 
 std::vector<WaterRegion> _water_regions;
 
-TileIndex GetTileIndexFromLocalCoordinate(int region_x, int region_y, int local_x, int local_y)
+TileIndex GetTileIndexFromLocalCoordinate(uint32_t region_x, uint32_t region_y, uint32_t local_x, uint32_t local_y)
 {
-	assert(local_x >= 0 && local_y < WATER_REGION_EDGE_LENGTH);
-	assert(local_y >= 0 && local_y < WATER_REGION_EDGE_LENGTH);
+	assert(local_x < WATER_REGION_EDGE_LENGTH);
+	assert(local_y < WATER_REGION_EDGE_LENGTH);
 	return TileXY(WATER_REGION_EDGE_LENGTH * region_x + local_x, WATER_REGION_EDGE_LENGTH * region_y + local_y);
 }
 
-TileIndex GetEdgeTileCoordinate(int region_x, int region_y, DiagDirection side, int x_or_y)
+TileIndex GetEdgeTileCoordinate(uint32_t region_x, uint32_t region_y, DiagDirection side, uint32_t x_or_y)
 {
-	assert(x_or_y >= 0 && x_or_y < WATER_REGION_EDGE_LENGTH);
+	assert(x_or_y < WATER_REGION_EDGE_LENGTH);
 	switch (side) {
 		case DIAGDIR_NE: return GetTileIndexFromLocalCoordinate(region_x, region_y, 0, x_or_y);
 		case DIAGDIR_SW: return GetTileIndexFromLocalCoordinate(region_x, region_y, WATER_REGION_EDGE_LENGTH - 1, x_or_y);
@@ -208,7 +210,7 @@ TileIndex GetEdgeTileCoordinate(int region_x, int region_y, DiagDirection side, 
 	}
 }
 
-WaterRegion &GetUpdatedWaterRegion(uint16_t region_x, uint16_t region_y)
+WaterRegion &GetUpdatedWaterRegion(uint32_t region_x, uint32_t region_y)
 {
 	WaterRegion &result = _water_regions[GetWaterRegionIndex(region_x, region_y)];
 	result.UpdateIfNotInitialized();
@@ -266,8 +268,8 @@ WaterRegionPatchDesc GetWaterRegionPatchInfo(TileIndex tile)
  */
 void InvalidateWaterRegion(TileIndex tile)
 {
-	const int index = GetWaterRegionIndex(tile);
-	if (index > static_cast<int>(_water_regions.size())) return;
+	const uint32_t index = GetWaterRegionIndex(tile);
+	if (index > static_cast<uint32_t>(_water_regions.size())) return;
 	_water_regions[index].Invalidate();
 }
 
@@ -283,10 +285,11 @@ static inline void VisitAdjacentWaterRegionPatchNeighbors(const WaterRegionPatch
 	const WaterRegion &current_region = GetUpdatedWaterRegion(water_region_patch.x, water_region_patch.y);
 
 	const TileIndexDiffC offset = TileIndexDiffCByDiagDir(side);
-	const int nx = water_region_patch.x + offset.x;
-	const int ny = water_region_patch.y + offset.y;
+	/* Unsigned underflow is allowed here, not UB */
+	const uint32_t nx = water_region_patch.x + (uint32_t)offset.x;
+	const uint32_t ny = water_region_patch.y + (uint32_t)offset.y;
 
-	if (nx < 0 || ny < 0 || nx >= GetWaterRegionMapSizeX() || ny >= GetWaterRegionMapSizeY()) return;
+	if (nx >= GetWaterRegionMapSizeX() || ny >= GetWaterRegionMapSizeY()) return;
 
 	const WaterRegion &neighboring_region = GetUpdatedWaterRegion(nx, ny);
 	const DiagDirection opposite_side = ReverseDiagDir(side);
@@ -304,7 +307,7 @@ static inline void VisitAdjacentWaterRegionPatchNeighbors(const WaterRegionPatch
 	/* Multiple water patches can be reached from the current patch. Check each edge tile individually. */
 	static std::vector<TWaterRegionPatchLabel> unique_labels; // static and vector-instead-of-map for performance reasons
 	unique_labels.clear();
-	for (int x_or_y = 0; x_or_y < WATER_REGION_EDGE_LENGTH; ++x_or_y) {
+	for (uint32_t x_or_y = 0; x_or_y < WATER_REGION_EDGE_LENGTH; ++x_or_y) {
 		if (!HasBit(traversability_bits, x_or_y)) continue;
 
 		const TileIndex current_edge_tile = GetEdgeTileCoordinate(water_region_patch.x, water_region_patch.y, side, x_or_y);
@@ -355,8 +358,8 @@ void LoadWaterRegions(const std::vector<WaterRegionSaveLoadInfo> &save_load_info
 	_water_regions.reserve(save_load_info.size());
 	TWaterRegionIndex index = 0;
 	for (const auto &loaded_region_info : save_load_info) {
-		const int region_x = index % GetWaterRegionMapSizeX();
-		const int region_y = index / GetWaterRegionMapSizeX();
+		const uint32_t region_x = index % GetWaterRegionMapSizeX();
+		const uint32_t region_y = index / GetWaterRegionMapSizeX();
 		WaterRegion &region = _water_regions.emplace_back(region_x, region_y);
 		if (loaded_region_info.initialized) region.ForceUpdate();
 		index++;
@@ -371,8 +374,8 @@ void InitializeWaterRegions()
 	_water_regions.clear();
 	_water_regions.reserve(static_cast<size_t>(GetWaterRegionMapSizeX()) * GetWaterRegionMapSizeY());
 
-	for (int region_y = 0; region_y < GetWaterRegionMapSizeY(); region_y++) {
-		for (int region_x = 0; region_x < GetWaterRegionMapSizeX(); region_x++) {
+	for (uint32_t region_y = 0; region_y < GetWaterRegionMapSizeY(); region_y++) {
+		for (uint32_t region_x = 0; region_x < GetWaterRegionMapSizeX(); region_x++) {
 			_water_regions.emplace_back(region_x, region_y).ForceUpdate();
 		}
 	}
