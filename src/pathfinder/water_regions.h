@@ -21,6 +21,8 @@ using TWaterRegionIndex = uint32_t;
 
 constexpr uint32_t WATER_REGION_EDGE_LENGTH = 16;
 constexpr uint32_t WATER_REGION_NUMBER_OF_TILES = WATER_REGION_EDGE_LENGTH * WATER_REGION_EDGE_LENGTH;
+constexpr uint32_t WATER_REGION_EDGE_MASK = WATER_REGION_EDGE_LENGTH - 1;
+static_assert((WATER_REGION_EDGE_LENGTH & WATER_REGION_EDGE_MASK) == 0);
 
 /**
  * Describes a single interconnected patch of water within a particular water region.

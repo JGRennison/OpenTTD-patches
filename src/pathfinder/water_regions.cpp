@@ -39,6 +39,32 @@ static inline uint32_t GetWaterRegionMapSizeY() { return MapSizeY() / WATER_REGI
 static inline TWaterRegionIndex GetWaterRegionIndex(uint32_t region_x, uint32_t region_y) { return GetWaterRegionMapSizeX() * region_y + region_x; }
 static inline TWaterRegionIndex GetWaterRegionIndex(TileIndex tile) { return GetWaterRegionIndex(GetWaterRegionX(tile), GetWaterRegionY(tile)); }
 
+struct WaterRegionTileIterator {
+	uint32_t x;
+	uint32_t y;
+
+	inline operator TileIndex () const
+	{
+		return TileXY(this->x, this->y);
+	}
+
+	inline TileIndex operator *() const
+	{
+		return TileXY(this->x, this->y);
+	}
+
+	WaterRegionTileIterator& operator ++()
+	{
+		this->x++;
+		if ((this->x & WATER_REGION_EDGE_MASK) == 0)  {
+			/* reached end of row */
+			this->x -= WATER_REGION_EDGE_LENGTH;
+			this->y++;
+		}
+		return *this;
+	}
+};
+
 /**
  * Represents a square section of the map of a fixed size. Within this square individual unconnected patches of water are
  * identified using a Connected Component Labeling (CCL) algorithm. Note that all information stored in this class applies
@@ -49,11 +75,20 @@ class WaterRegion
 {
 private:
 	std::array<TWaterRegionTraversabilityBits, DIAGDIR_END> edge_traversability_bits{};
+	const uint32_t tile_x;
+	const uint32_t tile_y;
 	bool has_cross_region_aqueducts = false;
 	TWaterRegionPatchLabel number_of_patches = 0; // 0 = no water, 1 = one single patch of water, etc...
-	const OrthogonalTileArea tile_area;
 	std::array<TWaterRegionPatchLabel, WATER_REGION_NUMBER_OF_TILES> tile_patch_labels{};
 	bool initialized = false;
+
+	inline bool ContainsTile(TileIndex tile) const
+	{
+		const uint32_t x = TileX(tile);
+		const uint32_t y = TileY(tile);
+		return x >= this->tile_x && x < this->tile_x + WATER_REGION_EDGE_LENGTH
+				&& y >= this->tile_y && y < this->tile_y + WATER_REGION_EDGE_LENGTH;
+	}
 
 	/**
 	 * Returns the local index of the tile within the region. The N corner represents 0,
@@ -63,17 +98,17 @@ private:
 	 */
 	inline int GetLocalIndex(TileIndex tile) const
 	{
-		assert(this->tile_area.Contains(tile));
-		return (TileX(tile) - TileX(this->tile_area.tile)) + WATER_REGION_EDGE_LENGTH * (TileY(tile) - TileY(this->tile_area.tile));
+		assert(this->ContainsTile(tile));
+		return (TileX(tile) - this->tile_x) + WATER_REGION_EDGE_LENGTH * (TileY(tile) - this->tile_y);
 	}
 
 public:
 	WaterRegion(uint32_t region_x, uint32_t region_y)
-		: tile_area(TileXY(region_x * WATER_REGION_EDGE_LENGTH, region_y * WATER_REGION_EDGE_LENGTH), WATER_REGION_EDGE_LENGTH, WATER_REGION_EDGE_LENGTH)
+		: tile_x(region_x * WATER_REGION_EDGE_LENGTH), tile_y(region_y * WATER_REGION_EDGE_LENGTH)
 	{}
 
-	OrthogonalTileIterator begin() const { return this->tile_area.begin(); }
-	OrthogonalTileIterator end() const { return this->tile_area.end(); }
+	WaterRegionTileIterator begin() const { return { this->tile_x, this->tile_y }; }
+	WaterRegionTileIterator end() const { return { this->tile_x, this->tile_y + WATER_REGION_EDGE_LENGTH }; }
 
 	bool IsInitialized() const { return this->initialized; }
 
@@ -106,7 +141,7 @@ public:
 	 */
 	TWaterRegionPatchLabel GetLabel(TileIndex tile) const
 	{
-		assert(this->tile_area.Contains(tile));
+		assert(this->ContainsTile(tile));
 		return this->tile_patch_labels[GetLocalIndex(tile)];
 	}
 
@@ -120,25 +155,22 @@ public:
 
 		this->tile_patch_labels.fill(INVALID_WATER_REGION_PATCH);
 
-		for (const TileIndex tile : this->tile_area) {
-			if (IsAqueductTile(tile)) {
-				const TileIndex other_aqueduct_end = GetOtherBridgeEnd(tile);
-				if (!tile_area.Contains(other_aqueduct_end)) {
-					this->has_cross_region_aqueducts = true;
-					break;
-				}
-			}
-		}
-
 		TWaterRegionPatchLabel current_label = 1;
 		TWaterRegionPatchLabel highest_assigned_label = 0;
 
 		/* Perform connected component labeling. This uses a flooding algorithm that expands until no
 		 * additional tiles can be added. Only tiles inside the water region are considered. */
-		for (const TileIndex start_tile : tile_area) {
+		for (const TileIndex start_tile : *this) {
 			static std::vector<TileIndex> tiles_to_check;
 			tiles_to_check.clear();
 			tiles_to_check.push_back(start_tile);
+
+			if (!this->has_cross_region_aqueducts && IsAqueductTile(start_tile)) {
+				const TileIndex other_aqueduct_end = GetOtherBridgeEnd(start_tile);
+				if (!this->ContainsTile(other_aqueduct_end)) {
+					this->has_cross_region_aqueducts = true;
+				}
+			}
 
 			bool increase_label = false;
 			while (!tiles_to_check.empty()) {
@@ -157,7 +189,7 @@ public:
 				for (const Trackdir dir : SetTrackdirBitIterator(valid_dirs)) {
 					/* By using a TrackFollower we "play by the same rules" as the actual ship pathfinder */
 					CFollowTrackWater ft;
-					if (ft.Follow(tile, dir) && this->tile_area.Contains(ft.m_new_tile)) tiles_to_check.push_back(ft.m_new_tile);
+					if (ft.Follow(tile, dir) && this->ContainsTile(ft.m_new_tile)) tiles_to_check.push_back(ft.m_new_tile);
 				}
 			}
 
@@ -170,8 +202,8 @@ public:
 		/* Calculate the traversability (whether the tile can be entered / exited) for all edges. Note that
 		 * we always follow the same X and Y scanning direction, this is important for comparisons later on! */
 		this->edge_traversability_bits.fill(0);
-		const uint32_t top_x = TileX(tile_area.tile);
-		const uint32_t top_y = TileY(tile_area.tile);
+		const uint32_t top_x = this->tile_x;
+		const uint32_t top_y = this->tile_y;
 		for (uint32_t i = 0; i < WATER_REGION_EDGE_LENGTH; ++i) {
 			if (GetWaterTracks(TileXY(top_x + i, top_y)) & TRACK_BIT_3WAY_NW) SetBit(this->edge_traversability_bits[DIAGDIR_NW], i); // NW edge
 			if (GetWaterTracks(TileXY(top_x + i, top_y + WATER_REGION_EDGE_LENGTH - 1)) & TRACK_BIT_3WAY_SE) SetBit(this->edge_traversability_bits[DIAGDIR_SE], i); // SE edge
