@@ -960,7 +960,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}화폐 �
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 42
+###length 43
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :영국 파운드
 STR_GAME_OPTIONS_CURRENCY_USD                                   :미국 달러
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :유로
@@ -1778,6 +1778,8 @@ STR_CONFIG_SETTING_SERVINT_DISABLED                             :사용 안 함
 STR_CONFIG_SETTING_NOSERVICE                                    :차량 고장 설정을 껐으면 점검을 하지 않음: {STRING}
 STR_CONFIG_SETTING_NOSERVICE_HELPTEXT                           :이 설정을 켜면, 차량이 고장나지 않도록 설정되어 있는 경우 차량이 자동으로 점검을 하러 가지 않습니다
 
+STR_CONFIG_SETTING_STATION_LENGTH_LOADING_PENALTY               :역 길이보다 열차 길이가 긴 경우 적재 속도 감소: {STRING}
+STR_CONFIG_SETTING_STATION_LENGTH_LOADING_PENALTY_HELPTEXT      :이 설정을 켜면, 역 길이보다 길이가 긴 열차는 역 길이에 맞는 열차보다 적재/하차 속도가 느려지게 됩니다. 이 설정은 경로 탐색에는 영향을 미치지 않습니다.
 
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :화물차 속력 제한 적용: {STRING}
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :이 설정을 켜면, 화물차의 속력 제한값에 따라 열차의 최대 속력을 제한합니다.
@@ -2054,14 +2056,17 @@ STR_CONFIG_SETTING_ACCOUNTING                                   :회계
 STR_CONFIG_SETTING_VEHICLES                                     :차량
 STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :물리
 STR_CONFIG_SETTING_VEHICLES_ROUTING                             :경로
+STR_CONFIG_SETTING_VEHICLES_ORDERS                              :경로
 STR_CONFIG_SETTING_LIMITATIONS                                  :제한
 STR_CONFIG_SETTING_ACCIDENTS                                    :재앙 / 사고
 STR_CONFIG_SETTING_GENWORLD                                     :세계 제작
 STR_CONFIG_SETTING_ENVIRONMENT                                  :환경
+STR_CONFIG_SETTING_ENVIRONMENT_TIME                             :시간
 STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :지역 당국
 STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :도시
 STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :산업시설
 STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :화물 분배
+STR_CONFIG_SETTING_ENVIRONMENT_TREES                            :나무
 STR_CONFIG_SETTING_AI                                           :경쟁자
 STR_CONFIG_SETTING_AI_NPC                                       :컴퓨터 플레이어
 STR_CONFIG_SETTING_NETWORK                                      :네트워크
