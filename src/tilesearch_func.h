@@ -26,4 +26,14 @@ bool CircularTileSearch(TileIndex *tile, uint radius, uint w, uint h, TestTileOn
 
 bool EnoughContiguousTilesMatchingCondition(TileIndex tile, uint threshold, TestTileOnSearchProc proc, void *user_data);
 
+/**
+ * A callback function type for iterating tiles.
+ *
+ * @param tile The tile to test
+ * @param user_data additional data for the callback function to use
+ */
+typedef void TileIteratorProc(TileIndex tile, void *user_data);
+
+void IterateCurvedCircularTileArea(TileIndex centre_tile, uint diameter, TileIteratorProc proc, void *user_data);
+
 #endif /* TILESEARCH_FUNC_H */
