@@ -466,6 +466,26 @@ class NIHVehicle : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  Lost counter: %u",
 					s->lost_count);
 			output.print(buffer);
+			b = buffer + seprintf(buffer, lastof(buffer), "  Path cache: ");
+			if (!s->cached_path.empty()) {
+				b += seprintf(b, lastof(buffer), "length: %u", (uint)s->cached_path.size());
+				output.print(buffer);
+				b = buffer;
+				uint i = 0;
+				for (Trackdir td : s->cached_path) {
+					if ((i & 7) == 0) {
+						if (b > buffer) output.print(buffer);
+						b = buffer + seprintf(buffer, lastof(buffer), "    %X", td);
+					} else {
+						b += seprintf(b, lastof(buffer), ", %X", td);
+					}
+					i++;
+				}
+				if (b > buffer) output.print(buffer);
+			} else {
+				b += seprintf(b, lastof(buffer), "none");
+				output.print(buffer);
+			}
 		}
 		if (v->type == VEH_AIRCRAFT) {
 			const Aircraft *a = Aircraft::From(v);
