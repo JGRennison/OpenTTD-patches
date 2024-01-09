@@ -14,61 +14,26 @@
 
 #include "vehicle_base.h"
 #include "water_map.h"
+#include "core/ring_buffer.hpp"
 
 extern const DiagDirection _ship_search_directions[TRACK_END][DIAGDIR_END];
 
 void GetShipSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, int &yoffs, EngineImageType image_type);
 WaterClass GetEffectiveWaterClass(TileIndex tile);
 
+typedef ring_buffer<Trackdir> ShipPathCache;
+
 /** Maximum segments of ship path cache */
 static const uint8_t SHIP_PATH_CACHE_LENGTH = 32;
 static const uint8_t SHIP_PATH_CACHE_MASK = (SHIP_PATH_CACHE_LENGTH - 1);
 static_assert((SHIP_PATH_CACHE_LENGTH & SHIP_PATH_CACHE_MASK) == 0, ""); // Must be a power of 2
-
-struct ShipPathCache {
-	std::array<Trackdir, SHIP_PATH_CACHE_LENGTH> td;
-	uint8_t start = 0;
-	uint8_t count = 0;
-
-	inline bool empty() const { return this->count == 0; }
-	inline uint8_t size() const { return this->count; }
-	inline bool full() const { return this->count >= SHIP_PATH_CACHE_LENGTH; }
-
-	inline void clear()
-	{
-		this->start = 0;
-		this->count = 0;
-	}
-
-	inline Trackdir front() const { return this->td[this->start]; }
-	inline Trackdir back() const { return this->td[(this->start + this->count - 1) & SHIP_PATH_CACHE_MASK]; }
-
-	/* push an item to the front of the ring, if the ring is already full, the back item is overwritten */
-	inline void push_front(Trackdir td)
-	{
-		this->start = (this->start - 1) & SHIP_PATH_CACHE_MASK;
-		if (!this->full()) this->count++;
-		this->td[this->start] = td;
-	}
-
-	inline void pop_front()
-	{
-		this->start = (this->start + 1) & SHIP_PATH_CACHE_MASK;
-		this->count--;
-	}
-
-	inline void pop_back()
-	{
-		this->count--;
-	}
-};
 
 /**
  * All ships have this type.
  */
 struct Ship FINAL : public SpecializedVehicle<Ship, VEH_SHIP> {
 	TrackBits state;               ///< The "track" the ship is following.
-	std::unique_ptr<ShipPathCache> cached_path;   ///< Cached path.
+	ShipPathCache cached_path;     ///< Cached path.
 	Direction rotation;            ///< Visible direction.
 	int16_t rotation_x_pos;        ///< NOSAVE: X Position before rotation.
 	int16_t rotation_y_pos;        ///< NOSAVE: Y Position before rotation.
@@ -102,12 +67,6 @@ struct Ship FINAL : public SpecializedVehicle<Ship, VEH_SHIP> {
 	ClosestDepot FindClosestDepot() override;
 	void UpdateCache();
 	void SetDestTile(TileIndex tile) override;
-
-	inline ShipPathCache &GetOrCreatePathCache()
-	{
-		if (!this->cached_path) this->cached_path.reset(new ShipPathCache());
-		return *this->cached_path;
-	}
 };
 
 bool IsShipDestinationTile(TileIndex tile, StationID station);

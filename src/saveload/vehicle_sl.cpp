@@ -309,13 +309,9 @@ public:
 		if (v->type != VEH_SHIP) return;
 		SlObject(v, this->GetLoadDescription());
 
-		if (!_path_td.empty() && _path_td.size() <= SHIP_PATH_CACHE_LENGTH) {
+		if (!_path_td.empty()) {
 			Ship *s = Ship::From(v);
-			s->cached_path.reset(new ShipPathCache());
-			s->cached_path->count = (uint8_t)_path_td.size();
-			for (size_t i = 0; i < _path_td.size(); i++) {
-				s->cached_path->td[i] = _path_td[i];
-			}
+			s->cached_path.insert(s->cached_path.end(), _path_td.begin(), _path_td.end());
 		}
 		_path_td.clear();
 	}

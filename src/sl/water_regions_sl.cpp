@@ -5,18 +5,23 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file script_signlist.cpp Implementation of ScriptSignList and friends. */
+/** @file water_regions_sl.cpp Handles saving and loading of water region data */
+#include "../stdafx.h"
 
-#include "../../stdafx.h"
-#include "script_signlist.hpp"
-#include "script_sign.hpp"
-#include "../../signs_base.h"
+#include "saveload.h"
 
-#include "../../safeguards.h"
+extern SaveLoadVersion _sl_xv_upstream_version;
 
-ScriptSignList::ScriptSignList(HSQUIRRELVM vm)
+struct GetWaterRegionsLoadInfo
 {
-	ScriptList::FillList<Sign>(vm, this,
-		[](const Sign *s) { return ScriptSign::IsValidSign(s->index); }
-	);
-}
+	static SaveLoadVersion GetLoadVersion()
+	{
+		return _sl_xv_upstream_version != SL_MIN_VERSION ? _sl_xv_upstream_version : SLV_WATER_REGIONS;
+	}
+};
+
+static const ChunkHandler water_region_chunk_handlers[] = {
+	MakeUpstreamChunkHandler<'WRGN', GetWaterRegionsLoadInfo>(),
+};
+
+extern const ChunkHandlerTable _water_region_chunk_handlers(water_region_chunk_handlers);

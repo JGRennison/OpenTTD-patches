@@ -5,18 +5,17 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file script_signlist.cpp Implementation of ScriptSignList and friends. */
+ /** @file yapf_ship_regions.h Implementation of YAPF for water regions, which are used for finding intermediate ship destinations. */
+
+#ifndef YAPF_SHIP_REGIONS_H
+#define YAPF_SHIP_REGIONS_H
 
 #include "../../stdafx.h"
-#include "script_signlist.hpp"
-#include "script_sign.hpp"
-#include "../../signs_base.h"
+#include "../../tile_type.h"
+#include "../water_regions.h"
 
-#include "../../safeguards.h"
+struct Ship;
 
-ScriptSignList::ScriptSignList(HSQUIRRELVM vm)
-{
-	ScriptList::FillList<Sign>(vm, this,
-		[](const Sign *s) { return ScriptSign::IsValidSign(s->index); }
-	);
-}
+std::vector<WaterRegionPatchDesc> YapfShipFindWaterRegionPath(const Ship *v, TileIndex start_tile, int max_returned_path_length);
+
+#endif /* YAPF_SHIP_REGIONS_H */

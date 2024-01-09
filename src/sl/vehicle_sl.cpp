@@ -881,7 +881,7 @@ SaveLoadTable GetVehicleDescription(VehicleType vt)
 		SLE_WRITEBYTE(Vehicle, type),
 		SLE_VEH_INCLUDE(),
 		      SLE_VAR(Ship, state,                     SLE_UINT8),
-		SLEG_CONDVARVEC(_path_td,                      SLE_UINT8,                  SLV_SHIP_PATH_CACHE, SL_MAX_VERSION),
+		 SLE_CONDRING(Ship, cached_path,               SLE_UINT8,                SLV_SHIP_PATH_CACHE, SL_MAX_VERSION),
 		  SLE_CONDVAR(Ship, rotation,                  SLE_UINT8,                  SLV_SHIP_ROTATION, SL_MAX_VERSION),
 		SLE_CONDVAR_X(Ship, lost_count,                SLE_UINT8,                     SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SHIP_LOST_COUNTER)),
 		SLE_CONDVAR_X(Ship, critical_breakdown_count,  SLE_UINT8,                     SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_IMPROVED_BREAKDOWNS, 8)),
@@ -1047,17 +1047,6 @@ static void Save_VEHS()
 				}
 				_path_layout_ctr = rv->cached_path->layout_ctr;
 			}
-		} else if (v->type == VEH_SHIP) {
-			_path_td.clear();
-
-			Ship *s = Ship::From(v);
-			if (s->cached_path != nullptr && !s->cached_path->empty()) {
-				uint idx = s->cached_path->start;
-				for (uint i = 0; i < s->cached_path->size(); i++) {
-					_path_td.push_back(s->cached_path->td[idx]);
-					idx = (idx + 1) & SHIP_PATH_CACHE_MASK;
-				}
-			}
 		}
 		SlSetArrayIndex(v->index);
 		SlObjectSaveFiltered(v, GetVehicleDescriptionFiltered(v->type));
@@ -1145,13 +1134,6 @@ void Load_VEHS()
 				rv->cached_path->tile[i] = _path_tile[i];
 			}
 			rv->cached_path->layout_ctr = _path_layout_ctr;
-		} else if (vtype == VEH_SHIP && !_path_td.empty() && _path_td.size() <= SHIP_PATH_CACHE_LENGTH) {
-			Ship *s = Ship::From(v);
-			s->cached_path.reset(new ShipPathCache());
-			s->cached_path->count = (uint8_t)_path_td.size();
-			for (size_t i = 0; i < _path_td.size(); i++) {
-				s->cached_path->td[i] = _path_td[i];
-			}
 		}
 	}
 }

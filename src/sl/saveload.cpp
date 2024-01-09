@@ -302,6 +302,7 @@ static const std::vector<ChunkHandler> &ChunkHandlers()
 	extern const ChunkHandlerTable _tunnel_chunk_handlers;
 	extern const ChunkHandlerTable _train_speed_adaptation_chunk_handlers;
 	extern const ChunkHandlerTable _new_signal_chunk_handlers;
+	extern const ChunkHandlerTable _water_region_chunk_handlers;
 	extern const ChunkHandlerTable _debug_chunk_handlers;
 
 	/** List of all chunks in a savegame. */
@@ -350,6 +351,7 @@ static const std::vector<ChunkHandler> &ChunkHandlers()
 		_tunnel_chunk_handlers,
 		_train_speed_adaptation_chunk_handlers,
 		_new_signal_chunk_handlers,
+		_water_region_chunk_handlers,
 		_debug_chunk_handlers,
 	};
 

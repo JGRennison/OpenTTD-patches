@@ -74,6 +74,7 @@
 #include "../newgrf_industrytiles.h"
 #include "../timer/timer.h"
 #include "../timer/timer_game_tick.h"
+#include "../pathfinder/water_regions.h"
 
 
 #include "../sl/saveload_internal.h"
@@ -4397,6 +4398,8 @@ bool AfterLoadGame()
 		Company *c = DoStartupNewCompany(DSNC_DURING_LOAD);
 		c->settings = _settings_client.company;
 	}
+
+	if (IsSavegameVersionBefore(SLV_WATER_REGIONS) && SlXvIsFeatureMissing(XSLFI_WATER_REGIONS)) InitializeWaterRegions();
 
 	return true;
 }

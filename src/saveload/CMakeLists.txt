@@ -37,4 +37,5 @@ add_files(
     subsidy_sl.cpp
     town_sl.cpp
     vehicle_sl.cpp
+    water_regions_sl.cpp
 )
