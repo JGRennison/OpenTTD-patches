@@ -1115,8 +1115,7 @@ static bool MakeLake(TileIndex tile, void *user_data)
 			MakeRiver(tile, Random());
 			MarkTileDirtyByTile(tile);
 			/* Remove desert directly around the river tile. */
-			TileIndex t = tile;
-			CircularTileSearch(&t, _settings_game.game_creation.lake_tropics_width, RiverModifyDesertZone, nullptr);
+			IterateCurvedCircularTileArea(tile, _settings_game.game_creation.lake_tropics_width, RiverModifyDesertZone, nullptr);
 			return false;
 		}
 	}
@@ -1186,10 +1185,9 @@ static bool RiverMakeWider(TileIndex tile, void *data)
 	if (IsValidTile(tile) && !IsWaterTile(tile) && GetTileSlope(tile) == GetTileSlope(*(TileIndex *)data)) {
 		MakeRiver(tile, Random());
 		/* Remove desert directly around the river tile. */
-		TileIndex cur_tile = tile;
 
-		MarkTileDirtyByTile(cur_tile);
-		CircularTileSearch(&cur_tile, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
+		MarkTileDirtyByTile(tile);
+		IterateCurvedCircularTileArea(tile, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
 	}
 	return false;
 }
@@ -1213,7 +1211,7 @@ static void River_FoundEndNode(AyStar *aystar, OpenListNode *current)
 				CircularTileSearch(&tile, radius + RandomRange(1), RiverMakeWider, (void *)&path->node.tile);
 			} else {
 				/* Remove desert directly around the river tile. */
-				CircularTileSearch(&tile, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
+				IterateCurvedCircularTileArea(tile, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
 			}
 		}
 	}
@@ -1326,8 +1324,7 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 			MakeRiver(lakeCenter, Random());
 			MarkTileDirtyByTile(lakeCenter);
 			/* Remove desert directly around the river tile. */
-			CircularTileSearch(&lakeCenter, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
-			lakeCenter = end;
+			IterateCurvedCircularTileArea(lakeCenter, _settings_game.game_creation.river_tropics_width, RiverModifyDesertZone, nullptr);
 
 			// Setting lake size +- 25%
 			const auto random_percentage = 75 + RandomRange(50);
