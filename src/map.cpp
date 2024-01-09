@@ -475,6 +475,39 @@ bool EnoughContiguousTilesMatchingCondition(TileIndex tile, uint threshold, Test
 	return matching_count >= threshold;
 }
 
+void IterateCurvedCircularTileArea(TileIndex centre_tile, uint diameter, TileIteratorProc proc, void *user_data)
+{
+	const uint radius_sq = ((diameter * diameter) + 2) / 4;
+	const uint centre_radius = (diameter + 1) / 2;
+
+	const int centre_x = TileX(centre_tile);
+	const int centre_y = TileY(centre_tile);
+
+	/* Centre row */
+	for (int x = std::max<int>(0, centre_x - centre_radius); x <= std::min<int>(MapMaxX(), centre_x + centre_radius); x++) {
+		proc(TileXY(x, centre_y), user_data);
+	}
+
+	/* Other (shorter) rows */
+	for (uint offset = 1; offset <= centre_radius; offset++) {
+		const uint offset_sq = offset * offset;
+		uint half_width = 0;
+		while (offset_sq + (half_width * half_width) < radius_sq) {
+			half_width++;
+		}
+		const int x_left = std::max<int>(0, centre_x - half_width);
+		const int x_right = std::min<int>(MapMaxX(), centre_x + half_width);
+		auto iterate_row = [&](int y) {
+			if (y < 0 || y > (int)MapMaxY()) return;
+			for (int x = x_left; x <= x_right; x++) {
+				proc(TileXY(x, y), user_data);
+			}
+		};
+		iterate_row(centre_y - offset);
+		iterate_row(centre_y + offset);
+	}
+}
+
 /**
  * Finds the distance for the closest tile with water/land given a tile
  * @param tile  the tile to find the distance too
