@@ -49,6 +49,7 @@
 #include "depot_base.h"
 #include "object_map.h"
 #include "object_base.h"
+#include "tilesearch_func.h"
 #include "ai/ai.hpp"
 #include "game/game.hpp"
 #include "zoom_func.h"

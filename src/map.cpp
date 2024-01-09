@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "debug.h"
+#include "tilesearch_func.h"
 #include "core/alloc_func.hpp"
 #include "water_map.h"
 #include "string_func.h"

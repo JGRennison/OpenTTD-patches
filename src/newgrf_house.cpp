@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include "debug.h"
 #include "landscape.h"
+#include "tilesearch_func.h"
 #include "newgrf_house.h"
 #include "newgrf_spritegroup.h"
 #include "newgrf_text.h"

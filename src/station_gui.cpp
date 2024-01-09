@@ -33,6 +33,7 @@
 #include "zoom_func.h"
 #include "departures_gui.h"
 #include "graph_gui.h"
+#include "tilesearch_func.h"
 #include "zoning.h"
 #include "newgrf_debug.h"
 #include "roadveh.h"

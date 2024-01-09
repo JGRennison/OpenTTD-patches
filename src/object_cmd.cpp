@@ -33,6 +33,7 @@
 #include "newgrf_debug.h"
 #include "vehicle_func.h"
 #include "station_func.h"
+#include "tilesearch_func.h"
 
 #include "table/strings.h"
 #include "table/object_land.h"

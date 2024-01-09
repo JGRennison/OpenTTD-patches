@@ -33,6 +33,7 @@
 #include "sl/saveload.h"
 #include "framerate_type.h"
 #include "town.h"
+#include "tilesearch_func.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 #include "scope_info.h"
 #include "core/ring_buffer.hpp"

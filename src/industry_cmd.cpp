@@ -44,6 +44,7 @@
 #include "cmd_helper.h"
 #include "string_func.h"
 #include "event_logs.h"
+#include "tilesearch_func.h"
 
 #include "table/strings.h"
 #include "table/industry_land.h"

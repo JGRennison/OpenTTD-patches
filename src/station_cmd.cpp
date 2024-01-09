@@ -61,6 +61,7 @@
 #include "cheat_type.h"
 #include "newgrf_roadstop.h"
 #include "core/math_func.hpp"
+#include "tilesearch_func.h"
 
 #include "table/strings.h"
 

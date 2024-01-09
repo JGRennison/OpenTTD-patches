@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include "cmd_helper.h"
 #include "landscape.h"
+#include "tilesearch_func.h"
 #include "viewport_func.h"
 #include "command_func.h"
 #include "town.h"
