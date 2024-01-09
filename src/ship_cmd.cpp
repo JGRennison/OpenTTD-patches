@@ -791,6 +791,7 @@ static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks,
 
 			if (bits != INVALID_TRACK_BIT && bits != TRACK_BIT_NONE) {
 				*track_old = track;
+				v->cached_path.clear();
 				break;
 			}
 		}
