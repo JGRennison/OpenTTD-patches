@@ -36,7 +36,9 @@ static inline uint32_t GetWaterRegionY(TileIndex tile) { return TileY(tile) / WA
 static inline uint32_t GetWaterRegionMapSizeX() { return MapSizeX() / WATER_REGION_EDGE_LENGTH; }
 static inline uint32_t GetWaterRegionMapSizeY() { return MapSizeY() / WATER_REGION_EDGE_LENGTH; }
 
-static inline TWaterRegionIndex GetWaterRegionIndex(uint32_t region_x, uint32_t region_y) { return GetWaterRegionMapSizeX() * region_y + region_x; }
+static inline uint32_t GetWaterRegionYShift() { return MapLogX() - WATER_REGION_EDGE_LENGTH_LOG; }
+
+static inline TWaterRegionIndex GetWaterRegionIndex(uint32_t region_x, uint32_t region_y) { return (region_y << GetWaterRegionYShift()) + region_x; }
 static inline TWaterRegionIndex GetWaterRegionIndex(TileIndex tile) { return GetWaterRegionIndex(GetWaterRegionX(tile), GetWaterRegionY(tile)); }
 
 struct WaterRegionTileIterator {
@@ -390,8 +392,8 @@ void LoadWaterRegions(const std::vector<WaterRegionSaveLoadInfo> &save_load_info
 	_water_regions.reserve(save_load_info.size());
 	TWaterRegionIndex index = 0;
 	for (const auto &loaded_region_info : save_load_info) {
-		const uint32_t region_x = index % GetWaterRegionMapSizeX();
-		const uint32_t region_y = index / GetWaterRegionMapSizeX();
+		const uint32_t region_x = index & ((1 << GetWaterRegionYShift()) - 1);
+		const uint32_t region_y = index >> GetWaterRegionYShift();
 		WaterRegion &region = _water_regions.emplace_back(region_x, region_y);
 		if (loaded_region_info.initialized) region.ForceUpdate();
 		index++;
