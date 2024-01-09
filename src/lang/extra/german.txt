@@ -33,6 +33,9 @@ STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Sehr langsam
 
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :Alle {COMMA} Echtzeitminuten
 
+STR_RIVERS_VERY_MANY                                            :{RED}Sehr viele
+STR_RIVERS_EXTREMELY_MANY                                       :{RED}Extrem viele
+
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
@@ -79,9 +82,6 @@ STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE
 
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Eigener Zeitraum (Echtzeitminuten)
 STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT                    :{WHITE}Autosicherungsintervali in Echtzeitminuten
-
-STR_RIVERS_VERY_MANY                                            :{RED}Sehr viele
-STR_RIVERS_EXTREMELY_MANY                                       :{RED}Extrem viele
 
 STR_CONFIG_SETTING_ADVISED_LEAVE_DEFAULT                        :Es ist empfohlen, diese Einstellung auf dem Standardwert zu belassen
 

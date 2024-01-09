@@ -72,6 +72,10 @@ STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Very slow
 ##before STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_OFF
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :Every {COMMA}{NBSP}minute{P 0 "" s}
 
+##after STR_RIVERS_LOT
+STR_RIVERS_VERY_MANY                                            :{RED}Very many
+STR_RIVERS_EXTREMELY_MANY                                       :{RED}Extremely many
+
 ##end-after
 
 STR_COMMA_SEPARATOR                                             :,{SP}
@@ -130,9 +134,6 @@ STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE
 
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Custom interval (real-time minutes)
 STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT                    :{WHITE}Autosave interval in real-time minutes
-
-STR_RIVERS_VERY_MANY                                            :{RED}Very many
-STR_RIVERS_EXTREMELY_MANY                                       :{RED}Extremely many
 
 STR_CONFIG_SETTING_ADVISED_LEAVE_DEFAULT                        :You are advised to leave this setting at the default value
 

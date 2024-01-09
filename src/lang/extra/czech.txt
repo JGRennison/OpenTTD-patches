@@ -35,6 +35,9 @@ STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :velmi pomalá
 
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :Každých {COMMA} minut skutečného času
 
+STR_RIVERS_VERY_MANY                                            :{RED}Velice mnoho
+STR_RIVERS_EXTREMELY_MANY                                       :{RED}Extrémně mnoho
+
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
@@ -89,9 +92,6 @@ STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE
 
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Vlastní interval (minuty skutečného času)
 STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT                    :{WHITE}Interval automatického ukládání v minutách skutečného času
-
-STR_RIVERS_VERY_MANY                                            :{RED}Velice mnoho
-STR_RIVERS_EXTREMELY_MANY                                       :{RED}Extrémně mnoho
 
 STR_CONFIG_SETTING_ADVISED_LEAVE_DEFAULT                        :je ti doporučeno ponechat tohle nastavení na výchozí hodnotě
 

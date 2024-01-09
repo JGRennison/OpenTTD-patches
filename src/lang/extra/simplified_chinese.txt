@@ -35,6 +35,9 @@ STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :很慢
 
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :每{COMMA}现实分钟
 
+STR_RIVERS_VERY_MANY                                            :{RED}很多
+STR_RIVERS_EXTREMELY_MANY                                       :{RED}极多
+
 STR_COMMA_SEPARATOR                                             :,{SP}
 
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :英里/小时
@@ -91,9 +94,6 @@ STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE
 
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :自定义间隔 (按现实分钟)
 STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT                    :{WHITE}自动保存间隔 (按现实分钟)
-
-STR_RIVERS_VERY_MANY                                            :{RED}很多
-STR_RIVERS_EXTREMELY_MANY                                       :{RED}极多
 
 STR_CONFIG_SETTING_ADVISED_LEAVE_DEFAULT                        :建议将此设置保留为默认值
 

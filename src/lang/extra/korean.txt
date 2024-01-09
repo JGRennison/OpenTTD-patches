@@ -35,6 +35,9 @@ STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :더 느림
 
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :현실에서 매 {COMMA}분마다
 
+STR_RIVERS_VERY_MANY                                            :{RED}매우 많이
+STR_RIVERS_EXTREMELY_MANY                                       :{RED}아주 극히 많이
+
 STR_COMMA_SEPARATOR                                             :,{SP}
 
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
@@ -91,9 +94,6 @@ STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE
 
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :사용자 설정 (현실 분)
 STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT                    :{WHITE}자동 저장 간격 (단위: 현실 분)
-
-STR_RIVERS_VERY_MANY                                            :{RED}매우 많이
-STR_RIVERS_EXTREMELY_MANY                                       :{RED}아주 극히 많이
 
 STR_CONFIG_SETTING_ADVISED_LEAVE_DEFAULT                        :이 설정은 기본값으로 두는 것이 좋습니다
 

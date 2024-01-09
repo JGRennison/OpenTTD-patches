@@ -35,6 +35,9 @@ STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Moi lento
 
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :Cada {COMMA} minutos reais
 
+STR_RIVERS_VERY_MANY                                            :{RED}Moitísimos
+STR_RIVERS_EXTREMELY_MANY                                       :{RED}Extremadamente moitos
+
 STR_COMMA_SEPARATOR                                             :,{SP}
 
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
@@ -91,9 +94,6 @@ STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE
 
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Intervalo personalizado (minutos reais)
 STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT                    :{WHITE}Intervalo de autogardado en minutos reais
-
-STR_RIVERS_VERY_MANY                                            :{RED}Moitísimos
-STR_RIVERS_EXTREMELY_MANY                                       :{RED}Extremadamente moitos
 
 STR_CONFIG_SETTING_ADVISED_LEAVE_DEFAULT                        :Aconsellámoste deixar esta opción no valor por defecto
 
