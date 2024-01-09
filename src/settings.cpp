@@ -2097,6 +2097,8 @@ static void AILoadConfig(const IniFile &ini, const char *grpname)
 			}
 		}
 		if (item.value.has_value()) config->StringToSettings(*item.value);
+		c++;
+		if (c >= MAX_COMPANIES) break;
 	}
 }
 
