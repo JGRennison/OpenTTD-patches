@@ -23,53 +23,39 @@
 #include "core/random_func.hpp"
 #include "zoning.h"
 
+#include <initializer_list>
+
 enum ZoningToolbarWidgets {
 	ZTW_OUTER_DROPDOWN,
 	ZTW_INNER_DROPDOWN,
 	ZTW_CAPTION
 };
 
-static const StringID _zone_type_strings[] = {
-	STR_ZONING_NO_ZONING,
-	STR_ZONING_AUTHORITY,
-	STR_ZONING_CAN_BUILD,
-	STR_ZONING_STA_CATCH,
-	STR_ZONING_STA_CATCH_OPEN,
-	STR_ZONING_BUL_UNSER,
-	STR_ZONING_IND_UNSER,
-	STR_ZONING_TRACERESTRICT,
-	STR_ZONING_2x2_GRID,
-	STR_ZONING_3x3_GRID,
-	STR_ZONING_ONE_WAY_ROAD,
-	INVALID_STRING_ID
+struct ZoningModeInfo {
+	ZoningEvaluationMode mode;
+	StringID str;
+
+	ZoningModeInfo(ZoningEvaluationMode mode, StringID str) : mode(mode), str(str) {}
 };
 
-static const ZoningEvaluationMode _zone_type_modes[] = {
-	ZEM_NOTHING,
-	ZEM_AUTHORITY,
-	ZEM_CAN_BUILD,
-	ZEM_STA_CATCH,
-	ZEM_STA_CATCH_WIN,
-	ZEM_BUL_UNSER,
-	ZEM_IND_UNSER,
-	ZEM_TRACERESTRICT,
-	ZEM_2x2_GRID,
-	ZEM_3x3_GRID,
-	ZEM_ONE_WAY_ROAD,
+static const std::initializer_list<ZoningModeInfo> _zone_modes = {
+	ZoningModeInfo(ZEM_NOTHING,          STR_ZONING_NO_ZONING),
+	ZoningModeInfo(ZEM_AUTHORITY,        STR_ZONING_AUTHORITY),
+	ZoningModeInfo(ZEM_CAN_BUILD,        STR_ZONING_CAN_BUILD),
+	ZoningModeInfo(ZEM_STA_CATCH,        STR_ZONING_STA_CATCH),
+	ZoningModeInfo(ZEM_STA_CATCH_WIN,    STR_ZONING_STA_CATCH_OPEN),
+	ZoningModeInfo(ZEM_BUL_UNSER,        STR_ZONING_BUL_UNSER),
+	ZoningModeInfo(ZEM_IND_UNSER,        STR_ZONING_IND_UNSER),
+	ZoningModeInfo(ZEM_TRACERESTRICT,    STR_ZONING_TRACERESTRICT),
+	ZoningModeInfo(ZEM_2x2_GRID,         STR_ZONING_2x2_GRID),
+	ZoningModeInfo(ZEM_3x3_GRID,         STR_ZONING_3x3_GRID),
+	ZoningModeInfo(ZEM_ONE_WAY_ROAD,     STR_ZONING_ONE_WAY_ROAD),
 };
 
-static ZoningEvaluationMode DropDownIndexToZoningEvaluationMode(int index)
+static const ZoningModeInfo &ZoningEvaluationModeToInfo(ZoningEvaluationMode ev_mode)
 {
-	if (index < 0 || index >= (int) lengthof(_zone_type_modes)) {
-		return ZEM_NOTHING;
-	}
-	return _zone_type_modes[index];
-}
-
-static int ZoningEvaluationModeToDropDownIndex(ZoningEvaluationMode ev_mode)
-{
-	for (int i = 0; i < (int) lengthof(_zone_type_modes); i++) {
-		if (_zone_type_modes[i] == ev_mode) return i;
+	for (const ZoningModeInfo &info : _zone_modes) {
+		if (info.mode == ev_mode) return info;
 	}
 	NOT_REACHED();
 }
@@ -88,15 +74,24 @@ struct ZoningWindow : public Window {
 		this->DrawWidgets();
 	}
 
+	void ShowZoningDropDown(WidgetID widget, ZoningEvaluationMode current)
+	{
+		DropDownList list;
+		for (const ZoningModeInfo &info : _zone_modes) {
+			list.push_back(std::make_unique<DropDownListStringItem>(info.str, info.mode, false));
+		}
+		ShowDropDownList(this, std::move(list), current, widget);
+	}
+
 	void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
 		switch (widget) {
 			case ZTW_OUTER_DROPDOWN:
-				ShowDropDownMenu(this, _zone_type_strings, ZoningEvaluationModeToDropDownIndex(_zoning.outer), ZTW_OUTER_DROPDOWN, 0, 0);
+				this->ShowZoningDropDown(ZTW_OUTER_DROPDOWN, _zoning.outer);
 				break;
 
 			case ZTW_INNER_DROPDOWN:
-				ShowDropDownMenu(this, _zone_type_strings, ZoningEvaluationModeToDropDownIndex(_zoning.inner), ZTW_INNER_DROPDOWN, 0, 0);
+				this->ShowZoningDropDown(ZTW_INNER_DROPDOWN, _zoning.inner);
 				break;
 		}
 	}
@@ -105,11 +100,11 @@ struct ZoningWindow : public Window {
 	{
 		switch(widget) {
 			case ZTW_OUTER_DROPDOWN:
-				SetZoningMode(false, DropDownIndexToZoningEvaluationMode(index));
+				SetZoningMode(false, (ZoningEvaluationMode)index);
 				break;
 
 			case ZTW_INNER_DROPDOWN:
-				SetZoningMode(true, DropDownIndexToZoningEvaluationMode(index));
+				SetZoningMode(true, (ZoningEvaluationMode)index);
 				break;
 		}
 		this->InvalidateData();
@@ -119,31 +114,26 @@ struct ZoningWindow : public Window {
 	{
 		switch (widget) {
 			case ZTW_OUTER_DROPDOWN:
-				SetDParam(0, _zone_type_strings[ZoningEvaluationModeToDropDownIndex(_zoning.outer)]);
+			case ZTW_INNER_DROPDOWN: {
+				const ZoningModeInfo &info = ZoningEvaluationModeToInfo(widget == ZTW_OUTER_DROPDOWN ? _zoning.outer : _zoning.inner);
+				SetDParam(0, info.str);
 				break;
-
-			case ZTW_INNER_DROPDOWN:
-				SetDParam(0, _zone_type_strings[ZoningEvaluationModeToDropDownIndex(_zoning.inner)]);
-				break;
+			}
 		}
 	}
 
 	void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
 	{
-		const StringID *strs = nullptr;
 		switch (widget) {
 			case ZTW_OUTER_DROPDOWN:
 			case ZTW_INNER_DROPDOWN:
-				strs = _zone_type_strings;
+				for (const ZoningModeInfo &info : _zone_modes) {
+					*size = maxdim(*size, GetStringBoundingBox(info.str));
+				}
 				break;
 
 			default:
 				return;
-		}
-		if (strs != nullptr) {
-			while (*strs != INVALID_STRING_ID) {
-				*size = maxdim(*size, GetStringBoundingBox(*strs++));
-			}
 		}
 		size->width += padding.width;
 		size->height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.dropdowntext.Vertical();
