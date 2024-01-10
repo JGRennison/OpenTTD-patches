@@ -37,6 +37,8 @@
 #include "event_logs.h"
 #include "scope.h"
 #include "progress.h"
+#include "settings_type.h"
+#include "settings_internal.h"
 
 #include "ai/ai_info.hpp"
 #include "game/game.hpp"
@@ -509,6 +511,31 @@ char *CrashLog::LogCommandLog(char *buffer, const char *last) const
 }
 
 /**
+ * Writes the non-default settings to the buffer.
+ * @param buffer The begin where to write at.
+ * @param last   The last position in the buffer to write to.
+ * @return the position of the \c '\0' character after the buffer.
+ */
+char *CrashLog::LogSettings(char *buffer, const char *last) const
+{
+	buffer += seprintf(buffer, last, "Non-default settings:");
+
+	IterateSettingsTables([&](const SettingTable &table, void *object) {
+		for (auto &sd : table) {
+			/* Skip any old settings we no longer save/load. */
+			if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
+
+			if (sd->IsDefaultValue(object)) continue;
+			buffer += seprintf(buffer, last, "\n  %s: ", sd->name);
+			buffer = sd->FormatValue(buffer, last, object);
+		}
+	});
+
+	buffer += seprintf(buffer, last, "\n\n");
+	return buffer;
+}
+
+/**
  * Fill the crash log buffer with all data of a crash log.
  * @param buffer The begin where to write at.
  * @param last   The last position in the buffer to write to.
@@ -618,6 +645,9 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last)
 	buffer = this->TryCrashLogFaultSection(buffer, last, "command log", [](CrashLog *self, char *buffer, const char *last) -> char * {
 		return self->LogCommandLog(buffer, last);
 	});
+	buffer = this->TryCrashLogFaultSection(buffer, last, "settings", [](CrashLog *self, char *buffer, const char *last) -> char * {
+		return self->LogSettings(buffer, last);
+	});
 
 	buffer += seprintf(buffer, last, "*** End of OpenTTD Crash Report ***\n");
 	this->StopCrashLogFaultHandler();
@@ -682,6 +712,7 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 	buffer = this->LogGamelog(buffer, last);
 	buffer = this->LogRecentNews(buffer, last);
 	buffer = this->LogCommandLog(buffer, last);
+	buffer = this->LogSettings(buffer, last);
 	buffer = DumpDesyncMsgLog(buffer, last);
 
 	bool have_cache_log = false;
@@ -744,6 +775,7 @@ char *CrashLog::FillInconsistencyLog(char *buffer, const char *last, const Incon
 	buffer = this->LogGamelog(buffer, last);
 	buffer = this->LogRecentNews(buffer, last);
 	buffer = this->LogCommandLog(buffer, last);
+	buffer = this->LogSettings(buffer, last);
 	buffer = DumpDesyncMsgLog(buffer, last);
 
 	if (!info.check_caches_result.empty()) {

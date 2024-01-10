@@ -134,6 +134,7 @@ protected:
 	char *LogGamelog(char *buffer, const char *last) const;
 	char *LogRecentNews(char *buffer, const char *list) const;
 	char *LogCommandLog(char *buffer, const char *last) const;
+	char *LogSettings(char *buffer, const char *last) const;
 
 	virtual void StartCrashLogFaultHandler();
 	virtual void StopCrashLogFaultHandler();
