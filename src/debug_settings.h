@@ -21,6 +21,8 @@ enum ChickenBitFlags {
 	DCBF_DESYNC_CHECK_NO_GENERAL       = 4,
 	DCBF_DESYNC_CHECK_PERIODIC_SIGNALS = 5,
 	DCBF_CMD_NO_TEST_ALL               = 6,
+	DCBF_WATER_REGION_CLEAR            = 7,
+	DCBF_WATER_REGION_INIT_ALL         = 8,
 };
 
 inline bool HasChickenBit(ChickenBitFlags flag)

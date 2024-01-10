@@ -484,6 +484,28 @@ uint GetWaterRegionTileDebugColourIndex(TileIndex tile)
 	}
 }
 
+void DebugInvalidateAllWaterRegions()
+{
+	const uint32_t size_x = GetWaterRegionMapSizeX();
+	const uint32_t size_y = GetWaterRegionMapSizeY();
+	for (uint32_t y = 0; y < size_y; y++) {
+		for (uint32_t x = 0; x < size_x; x++) {
+			GetWaterRegionRef(x, y).Invalidate();
+		}
+	}
+}
+
+void DebugInitAllWaterRegions()
+{
+	const uint32_t size_x = GetWaterRegionMapSizeX();
+	const uint32_t size_y = GetWaterRegionMapSizeY();
+	for (uint32_t y = 0; y < size_y; y++) {
+		for (uint32_t x = 0; x < size_x; x++) {
+			GetWaterRegionRef(x, y).UpdateIfNotInitialized();
+		}
+	}
+}
+
 void WaterRegionCheckCaches(std::function<void(const char *)> log)
 {
 	char cclog_buffer[1024];

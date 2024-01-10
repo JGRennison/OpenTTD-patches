@@ -61,6 +61,7 @@
 #include "scope_info.h"
 #include "debug_settings.h"
 #include "network/network_sync.h"
+#include "pathfinder/water_regions.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 #include "3rdparty/cpp-btree/btree_map.h"
 #include "3rdparty/robin_hood/robin_hood.h"
@@ -1562,6 +1563,13 @@ void CallVehicleTicks()
 	RecordSyncEvent(NSRE_VEH_LOAD_UNLOAD);
 
 	if (!_tick_caches_valid || HasChickenBit(DCBF_VEH_TICK_CACHE)) RebuildVehicleTickCaches();
+
+	if (HasChickenBit(DCBF_WATER_REGION_CLEAR)) {
+		DebugInvalidateAllWaterRegions();
+	}
+	if (HasChickenBit(DCBF_WATER_REGION_INIT_ALL)) {
+		DebugInitAllWaterRegions();
+	}
 
 	Vehicle *v = nullptr;
 	SCOPE_INFO_FMT([&v], "CallVehicleTicks: %s", scope_dumper().VehicleInfo(v));
