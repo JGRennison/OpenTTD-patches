@@ -393,8 +393,9 @@ static bool LoadIntList(const char *str, void *array, int nelems, VarType type)
  * @param array pointer to the integer-arrays that is read from
  * @param nelems the number of elements the array holds.
  * @param type the type of elements the array holds (eg INT8, UINT16, etc.)
+ * @return The pointer to the terminating null-character in the destination buffer
  */
-void ListSettingDesc::FormatValue(char *buf, const char *last, const void *object) const
+char *ListSettingDesc::FormatValue(char *buf, const char *last, const void *object) const
 {
 	const byte *p = static_cast<const byte *>(GetVariableAddress(object, this->save));
 	int i, v = 0;
@@ -416,6 +417,7 @@ void ListSettingDesc::FormatValue(char *buf, const char *last, const void *objec
 			buf += seprintf(buf, last, (i == 0) ? "%u" : ",%u", v);
 		}
 	}
+	return buf;
 }
 
 char *OneOfManySettingDesc::FormatSingleValue(char *buf, const char *last, uint id) const
@@ -426,17 +428,17 @@ char *OneOfManySettingDesc::FormatSingleValue(char *buf, const char *last, uint 
 	return strecpy(buf, this->many[id].c_str(), last);
 }
 
-void OneOfManySettingDesc::FormatIntValue(char *buf, const char *last, uint32_t value) const
+char *OneOfManySettingDesc::FormatIntValue(char *buf, const char *last, uint32_t value) const
 {
-	this->FormatSingleValue(buf, last, value);
+	return this->FormatSingleValue(buf, last, value);
 }
 
-void ManyOfManySettingDesc::FormatIntValue(char *buf, const char *last, uint32_t value) const
+char *ManyOfManySettingDesc::FormatIntValue(char *buf, const char *last, uint32_t value) const
 {
 	uint bitmask = (uint)value;
 	if (bitmask == 0) {
 		buf[0] = '\0';
-		return;
+		return buf;
 	}
 	bool first = true;
 	for (uint id : SetBitIterator(bitmask)) {
@@ -444,6 +446,7 @@ void ManyOfManySettingDesc::FormatIntValue(char *buf, const char *last, uint32_t
 		buf = this->FormatSingleValue(buf, last, id);
 		first = false;
 	}
+	return buf;
 }
 
 /**
@@ -808,20 +811,20 @@ static void IniSaveSettings(IniFile &ini, const SettingTable &settings_table, co
 	}
 }
 
-void IntSettingDesc::FormatValue(char *buf, const char *last, const void *object) const
+char *IntSettingDesc::FormatValue(char *buf, const char *last, const void *object) const
 {
 	uint32_t i = (uint32_t)this->Read(object);
-	this->FormatIntValue(buf, last, i);
+	return this->FormatIntValue(buf, last, i);
 }
 
-void IntSettingDesc::FormatIntValue(char *buf, const char *last, uint32_t value) const
+char *IntSettingDesc::FormatIntValue(char *buf, const char *last, uint32_t value) const
 {
-	seprintf(buf, last, IsSignedVarMemType(this->save.conv) ? "%d" : "%u", value);
+	return buf + seprintf(buf, last, IsSignedVarMemType(this->save.conv) ? "%d" : "%u", value);
 }
 
-void BoolSettingDesc::FormatIntValue(char *buf, const char *last, uint32_t value) const
+char *BoolSettingDesc::FormatIntValue(char *buf, const char *last, uint32_t value) const
 {
-	strecpy(buf, (value != 0) ? "true" : "false", last);
+	return strecpy(buf, (value != 0) ? "true" : "false", last);
 }
 
 bool IntSettingDesc::IsSameValue(const IniItem *item, void *object) const
@@ -837,7 +840,7 @@ bool IntSettingDesc::IsDefaultValue(void *object) const
 	return this->def == object_value;
 }
 
-void StringSettingDesc::FormatValue(char *buf, const char *last, const void *object) const
+char *StringSettingDesc::FormatValue(char *buf, const char *last, const void *object) const
 {
 	const std::string &str = this->Read(object);
 	switch (GetVarMemType(this->save.conv)) {
@@ -847,12 +850,13 @@ void StringSettingDesc::FormatValue(char *buf, const char *last, const void *obj
 			if (str.empty()) {
 				buf[0] = '\0';
 			} else {
-				seprintf(buf, last, "\"%s\"", str.c_str());
+				buf += seprintf(buf, last, "\"%s\"", str.c_str());
 			}
 			break;
 
 		default: NOT_REACHED();
 	}
+	return buf;
 }
 
 bool StringSettingDesc::IsSameValue(const IniItem *item, void *object) const
