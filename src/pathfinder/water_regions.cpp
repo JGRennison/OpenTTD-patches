@@ -20,6 +20,7 @@
 #include "ship.h"
 
 #include <array>
+#include <vector>
 
 using TWaterRegionTraversabilityBits = uint16_t;
 constexpr TWaterRegionPatchLabel FIRST_REGION_LABEL = 1;
@@ -273,7 +274,7 @@ public:
 	}
 };
 
-std::vector<WaterRegion> _water_regions;
+std::unique_ptr<WaterRegion[]> _water_regions;
 
 TileIndex GetTileIndexFromLocalCoordinate(uint32_t region_x, uint32_t region_y, uint32_t local_x, uint32_t local_y)
 {
@@ -442,8 +443,7 @@ void VisitWaterRegionPatchNeighbors(const WaterRegionPatchDesc &water_region_pat
  */
 void InitializeWaterRegions()
 {
-	_water_regions.clear();
-	_water_regions.resize(static_cast<size_t>(GetWaterRegionMapSizeX()) * GetWaterRegionMapSizeY());
+	_water_regions.reset(new WaterRegion[GetWaterRegionMapSizeX() * GetWaterRegionMapSizeY()]);
 }
 
 uint GetWaterRegionTileDebugColourIndex(TileIndex tile)

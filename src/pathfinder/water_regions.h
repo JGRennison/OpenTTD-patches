@@ -13,7 +13,6 @@
 #include "tile_type.h"
 #include "map_func.h"
 
-#include <vector>
 #include <functional>
 
 using TWaterRegionPatchLabel = uint8_t;
