@@ -16,6 +16,7 @@ enum CheckCachesFlags : uint32_t {
 	CHECK_CACHE_NONE               =       0,
 	CHECK_CACHE_GENERAL            = 1 <<  0,
 	CHECK_CACHE_INFRA_TOTALS       = 1 <<  1,
+	CHECK_CACHE_WATER_REGIONS      = 1 <<  2,
 	CHECK_CACHE_ALL                = UINT16_MAX,
 	CHECK_CACHE_EMIT_LOG           = 1 << 16,
 };

@@ -260,6 +260,17 @@ public:
 	{
 		return this->wr.tile_patch_labels != nullptr;
 	}
+
+	TWaterRegionPatchLabelArray CopyPatchLabelArray() const
+	{
+		TWaterRegionPatchLabelArray out;
+		if (this->HasPatchStorage()) {
+			out = *this->wr.tile_patch_labels;
+		} else {
+			out.fill(this->NumberOfPatches() == 0 ? INVALID_WATER_REGION_PATCH : 1);
+		}
+		return out;
+	}
 };
 
 std::vector<WaterRegion> _water_regions;
@@ -471,4 +482,42 @@ uint GetWaterRegionTileDebugColourIndex(TileIndex tile)
 		default:
 			return 0;
 	}
+}
+
+void WaterRegionCheckCaches(std::function<void(const char *)> log)
+{
+	char cclog_buffer[1024];
+#define CCLOG(...) { \
+	char *cc_log_pos = cclog_buffer + seprintf(cclog_buffer, lastof(cclog_buffer), "Region: %u x %u to %u x %u: ", \
+			x * WATER_REGION_EDGE_LENGTH, y * WATER_REGION_EDGE_LENGTH, (x * WATER_REGION_EDGE_LENGTH) + WATER_REGION_EDGE_MASK, (y * WATER_REGION_EDGE_LENGTH) + WATER_REGION_EDGE_MASK); \
+	seprintf(cc_log_pos, lastof(cclog_buffer), __VA_ARGS__); \
+	DEBUG(desync, 0, "%s", cclog_buffer); \
+	if (log) log(cclog_buffer); \
+}
+
+	const uint32_t size_x = GetWaterRegionMapSizeX();
+	const uint32_t size_y = GetWaterRegionMapSizeY();
+	for (uint32_t y = 0; y < size_y; y++) {
+		for (uint32_t x = 0; x < size_x; x++) {
+			WaterRegionReference wr = GetWaterRegionRef(x, y);
+			if (!wr.IsInitialized()) continue;
+
+			const bool old_has_cross_region_aqueducts = wr.HasCrossRegionAqueducts();
+			const int old_number_of_patches = wr.NumberOfPatches();
+			const TWaterRegionPatchLabelArray old_patch_labels = wr.CopyPatchLabelArray();
+
+			wr.ForceUpdate();
+
+			if (old_has_cross_region_aqueducts != wr.HasCrossRegionAqueducts()) {
+				CCLOG("Has cross region aqueducts mismatch: %u -> %u", old_has_cross_region_aqueducts, wr.HasCrossRegionAqueducts());
+			}
+			if (old_number_of_patches != wr.NumberOfPatches()) {
+				CCLOG("Number of patches mismatch: %u -> %u", old_number_of_patches, wr.NumberOfPatches());
+			}
+			if (old_patch_labels != wr.CopyPatchLabelArray()) {
+				CCLOG("Patch label mismatch");
+			}
+		}
+	}
+#undef CCLOG
 }

@@ -2052,6 +2052,11 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 		}
 	}
 
+	if (flags & CHECK_CACHE_WATER_REGIONS) {
+		extern void WaterRegionCheckCaches(std::function<void(const char *)> log);
+		WaterRegionCheckCaches(log);
+	}
+
 	if ((flags & CHECK_CACHE_EMIT_LOG) && !saved_messages.empty()) {
 		InconsistencyExtraInfo info;
 		info.check_caches_result = std::move(saved_messages);
