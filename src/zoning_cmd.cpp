@@ -287,6 +287,15 @@ SpriteID TileZoneCheckTraceRestrictEvaluation(TileIndex tile, Owner owner)
 	if (unlikely(HasBit(_misc_debug_flags, MDF_ZONING_RS_ANIMATED_TILE)) && _animated_tiles.find(tile) != _animated_tiles.end()) {
 		return SPR_ZONING_INNER_HIGHLIGHT_YELLOW;
 	}
+	if (unlikely(HasBit(_misc_debug_flags, MDF_ZONING_RS_WATER_REGION))) {
+		extern uint GetWaterRegionTileDebugColourIndex(TileIndex tile);
+		uint colour_index = GetWaterRegionTileDebugColourIndex(tile);
+		if (colour_index == 0) {
+			return ZONING_INVALID_SPRITE_ID;
+		} else {
+			return std::min<SpriteID>(SPR_ZONING_INNER_HIGHLIGHT_RED + colour_index - 1, SPR_ZONING_INNER_HIGHLIGHT_YELLOW);
+		}
+	}
 
 	return ZONING_INVALID_SPRITE_ID;
 }

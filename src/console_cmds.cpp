@@ -3342,6 +3342,7 @@ DEF_CONSOLE_CMD(ConMiscDebug)
 		IConsoleHelp("  8: MDF_ZONING_RS_ANIMATED_TILE");
 		IConsoleHelp(" 10: MDF_NEWGRF_SG_SAVE_RAW");
 		IConsoleHelp(" 20: MDF_SPECIAL_CMDS");
+		IConsoleHelp(" 40: MDF_ZONING_RS_WATER_REGION");
 		return true;
 	}
 

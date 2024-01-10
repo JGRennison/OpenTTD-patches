@@ -399,3 +399,43 @@ void InitializeWaterRegions()
 		}
 	}
 }
+
+uint GetWaterRegionTileDebugColourIndex(TileIndex tile)
+{
+	const uint32_t sub_x = TileX(tile) & WATER_REGION_EDGE_MASK;
+	const uint32_t sub_y = TileY(tile) & WATER_REGION_EDGE_MASK;
+
+	auto get_edge_distance = [&](uint32_t sub) -> uint32_t {
+		if (sub > WATER_REGION_EDGE_LENGTH / 2) sub = WATER_REGION_EDGE_MASK - sub;
+		return sub;
+	};
+	uint32_t mode = std::min(get_edge_distance(sub_x), get_edge_distance(sub_y));
+
+	switch (mode) {
+		case 0: {
+			const WaterRegion &wr = _water_regions[GetWaterRegionIndex(tile)];
+			if (!wr.IsInitialized()) return 1;
+
+			return 2 + wr.NumberOfPatches();
+		}
+
+		case 1: {
+			const WaterRegion &wr = _water_regions[GetWaterRegionIndex(tile)];
+			if (!wr.IsInitialized()) return 0;
+
+			if (wr.CountPatchLabelOccurence(1) == WATER_REGION_NUMBER_OF_TILES) return 2;
+
+			return 0;
+		}
+
+		case 2: {
+			const WaterRegion &wr = _water_regions[GetWaterRegionIndex(tile)];
+			if (wr.IsInitialized() && wr.HasCrossRegionAqueducts()) return 9;
+
+			return 0;
+		}
+
+		default:
+			return 0;
+	}
+}

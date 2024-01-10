@@ -52,6 +52,7 @@ enum MiscDebugFlags {
 	MDF_ZONING_RS_ANIMATED_TILE,
 	MDF_NEWGRF_SG_SAVE_RAW,
 	MDF_SPECIAL_CMDS,
+	MDF_ZONING_RS_WATER_REGION,
 };
 extern uint32_t _misc_debug_flags;
 
