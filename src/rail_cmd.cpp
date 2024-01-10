@@ -40,6 +40,7 @@
 #include "news_func.h"
 #include "scope.h"
 #include "newgrf_newsignals.h"
+#include "pathfinder/water_regions.h"
 
 #include "table/strings.h"
 #include "table/railtypes.h"
@@ -3133,6 +3134,7 @@ static CommandCost ClearTile_Track(TileIndex tile, DoCommandFlag flags)
 					bool remove = IsDockingTile(tile);
 					DoClearSquare(tile);
 					if (remove) RemoveDockingTile(tile);
+					InvalidateWaterRegion(tile);
 				}
 				cost.AddCost(_price[PR_CLEAR_WATER]);
 			}
