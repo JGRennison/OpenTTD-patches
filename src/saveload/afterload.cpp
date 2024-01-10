@@ -4399,8 +4399,6 @@ bool AfterLoadGame()
 		c->settings = _settings_client.company;
 	}
 
-	if (IsSavegameVersionBefore(SLV_WATER_REGIONS) && SlXvIsFeatureMissing(XSLFI_WATER_REGIONS)) InitializeWaterRegions();
-
 	return true;
 }
 

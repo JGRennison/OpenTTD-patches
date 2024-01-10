@@ -19,6 +19,7 @@
 #include "follow_track.hpp"
 #include "ship.h"
 
+#include <algorithm>
 #include <array>
 
 using TWaterRegionTraversabilityBits = uint16_t;
@@ -221,6 +222,11 @@ public:
 	{
 		if (!this->initialized) ForceUpdate();
 	}
+
+	inline uint32_t CountPatchLabelOccurence(TWaterRegionPatchLabel label) const
+	{
+		return std::count(this->tile_patch_labels.begin(), this->tile_patch_labels.end(), label);
+	}
 };
 
 std::vector<WaterRegion> _water_regions;
@@ -379,27 +385,6 @@ void VisitWaterRegionPatchNeighbors(const WaterRegionPatchDesc &water_region_pat
 	}
 }
 
-std::vector<WaterRegionSaveLoadInfo> GetWaterRegionSaveLoadInfo()
-{
-	std::vector<WaterRegionSaveLoadInfo> result;
-	for (WaterRegion &region : _water_regions) result.push_back({ region.IsInitialized() });
-	return result;
-}
-
-void LoadWaterRegions(const std::vector<WaterRegionSaveLoadInfo> &save_load_info)
-{
-	_water_regions.clear();
-	_water_regions.reserve(save_load_info.size());
-	TWaterRegionIndex index = 0;
-	for (const auto &loaded_region_info : save_load_info) {
-		const uint32_t region_x = index & ((1 << GetWaterRegionYShift()) - 1);
-		const uint32_t region_y = index >> GetWaterRegionYShift();
-		WaterRegion &region = _water_regions.emplace_back(region_x, region_y);
-		if (loaded_region_info.initialized) region.ForceUpdate();
-		index++;
-	}
-}
-
 /**
  * Initializes all water regions. All water tiles will be scanned and interconnected water patches within regions will be identified.
  */
@@ -410,7 +395,7 @@ void InitializeWaterRegions()
 
 	for (uint32_t region_y = 0; region_y < GetWaterRegionMapSizeY(); region_y++) {
 		for (uint32_t region_x = 0; region_x < GetWaterRegionMapSizeX(); region_x++) {
-			_water_regions.emplace_back(region_x, region_y).ForceUpdate();
+			_water_regions.emplace_back(region_x, region_y);
 		}
 	}
 }

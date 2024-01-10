@@ -14,6 +14,7 @@
 #include "string_func.h"
 #include "rail_map.h"
 #include "tunnelbridge_map.h"
+#include "pathfinder/water_regions.h"
 #include "3rdparty/cpp-btree/btree_map.h"
 #include "core/ring_buffer.hpp"
 #include <array>
@@ -133,6 +134,8 @@ void AllocateMap(uint size_x, uint size_y)
 
 	_m = reinterpret_cast<Tile *>(buf);
 	_me = reinterpret_cast<TileExtended *>(buf + (_map_size * sizeof(Tile)));
+
+	InitializeWaterRegions();
 }
 
 

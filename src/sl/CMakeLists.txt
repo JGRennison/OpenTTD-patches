@@ -54,6 +54,5 @@ add_files(
     train_speed_adaptation.cpp
     tunnel_sl.cpp
     vehicle_sl.cpp
-    water_regions_sl.cpp
     waypoint_sl.cpp
 )

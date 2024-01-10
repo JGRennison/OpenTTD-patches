@@ -26,12 +26,6 @@ struct WRGNChunkHandler : ChunkHandler {
 	void Save() const override
 	{
 		SlTableHeader(_water_region_desc);
-
-		int index = 0;
-		for (WaterRegionSaveLoadInfo &region : GetWaterRegionSaveLoadInfo()) {
-			SlSetArrayIndex(index++);
-			SlObject(&region, _water_region_desc);
-		}
 	}
 
 	void Load() const override
@@ -40,14 +34,10 @@ struct WRGNChunkHandler : ChunkHandler {
 
 		int index;
 
-		std::vector<WaterRegionSaveLoadInfo> loaded_info;
 		while ((index = SlIterateArray()) != -1) {
 			WaterRegionSaveLoadInfo region_info;
 			SlObject(&region_info, slt);
-			loaded_info.push_back(std::move(region_info));
 		}
-
-		LoadWaterRegions(loaded_info);
 	}
 };
 

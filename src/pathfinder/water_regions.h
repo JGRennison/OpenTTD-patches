@@ -76,7 +76,4 @@ struct WaterRegionSaveLoadInfo
 	bool initialized;
 };
 
-std::vector<WaterRegionSaveLoadInfo> GetWaterRegionSaveLoadInfo();
-void LoadWaterRegions(const std::vector<WaterRegionSaveLoadInfo> &save_load_info);
-
 #endif /* WATER_REGIONS_H */
