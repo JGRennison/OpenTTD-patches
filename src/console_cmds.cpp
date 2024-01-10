@@ -3337,12 +3337,9 @@ DEF_CONSOLE_CMD(ConMiscDebug)
 	if (argc < 1 || argc > 2) {
 		IConsoleHelp("Debug: misc flags.  Usage: 'misc_debug [<flags>]'");
 		IConsoleHelp("  1: MDF_OVERHEAT_BREAKDOWN_OPEN_WIN");
-		IConsoleHelp("  2: MDF_ZONING_RS_WATER_FLOOD_STATE");
-		IConsoleHelp("  4: MDF_ZONING_RS_TROPIC_ZONE");
-		IConsoleHelp("  8: MDF_ZONING_RS_ANIMATED_TILE");
+		IConsoleHelp("  2: MDF_ZONING_DEBUG_MODES");
 		IConsoleHelp(" 10: MDF_NEWGRF_SG_SAVE_RAW");
 		IConsoleHelp(" 20: MDF_SPECIAL_CMDS");
-		IConsoleHelp(" 40: MDF_ZONING_RS_WATER_REGION");
 		return true;
 	}
 

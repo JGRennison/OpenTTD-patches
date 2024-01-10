@@ -29,7 +29,12 @@ enum ZoningEvaluationMode : uint8_t {
 	ZEM_3x3_GRID,      ///< Show 3x3 town road grid
 	ZEM_ONE_WAY_ROAD,  ///< Show one way roads
 
-	ZEM_END,           ///< End marker
+	ZEM_LAST_NORMAL_MODE = ZEM_ONE_WAY_ROAD,
+
+	ZEM_DBG_WATER_FLOOD,
+	ZEM_DBG_WATER_REGION,
+	ZEM_DBG_TROPIC_ZONE,
+	ZEM_DBG_ANIMATED_TILE,
 };
 
 /**
