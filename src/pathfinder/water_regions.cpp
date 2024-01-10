@@ -19,7 +19,6 @@
 #include "follow_track.hpp"
 #include "ship.h"
 
-#include <algorithm>
 #include <array>
 
 using TWaterRegionTraversabilityBits = uint16_t;
@@ -68,6 +67,8 @@ struct WaterRegionTileIterator {
 	}
 };
 
+using TWaterRegionPatchLabelArray = std::array<TWaterRegionPatchLabel, WATER_REGION_NUMBER_OF_TILES>;
+
 /**
  * Represents a square section of the map of a fixed size. Within this square individual unconnected patches of water are
  * identified using a Connected Component Labeling (CCL) algorithm. Note that all information stored in this class applies
@@ -79,11 +80,13 @@ class WaterRegion
 	friend class WaterRegionReference;
 
 	std::array<TWaterRegionTraversabilityBits, DIAGDIR_END> edge_traversability_bits{};
+	bool initialized = false;
 	bool has_cross_region_aqueducts = false;
 	TWaterRegionPatchLabel number_of_patches = 0; // 0 = no water, 1 = one single patch of water, etc...
-	std::array<TWaterRegionPatchLabel, WATER_REGION_NUMBER_OF_TILES> tile_patch_labels{};
-	bool initialized = false;
+	std::unique_ptr<TWaterRegionPatchLabelArray> tile_patch_labels;
 };
+
+static std::unique_ptr<TWaterRegionPatchLabelArray> _spare_labels;
 
 class WaterRegionReference {
 	const uint32_t tile_x;
@@ -108,6 +111,14 @@ class WaterRegionReference {
 	{
 		assert(this->ContainsTile(tile));
 		return (TileX(tile) - this->tile_x) + WATER_REGION_EDGE_LENGTH * (TileY(tile) - this->tile_y);
+	}
+
+	inline bool HasNonMatchingPatchLabel(TWaterRegionPatchLabel expected_label) const
+	{
+		for (TWaterRegionPatchLabel label : *this->wr.tile_patch_labels) {
+			if (label != expected_label) return true;
+		}
+		return false;
 	}
 
 public:
@@ -150,7 +161,10 @@ public:
 	TWaterRegionPatchLabel GetLabel(TileIndex tile) const
 	{
 		assert(this->ContainsTile(tile));
-		return this->wr.tile_patch_labels[this->GetLocalIndex(tile)];
+		if (this->wr.tile_patch_labels == nullptr) {
+			return this->NumberOfPatches() == 0 ? INVALID_WATER_REGION_PATCH : 1;
+		}
+		return (*this->wr.tile_patch_labels)[this->GetLocalIndex(tile)];
 	}
 
 	/**
@@ -161,7 +175,15 @@ public:
 	{
 		this->wr.has_cross_region_aqueducts = false;
 
-		this->wr.tile_patch_labels.fill(INVALID_WATER_REGION_PATCH);
+		if (this->wr.tile_patch_labels == nullptr) {
+			if (_spare_labels != nullptr) {
+				this->wr.tile_patch_labels = std::move(_spare_labels);
+			} else {
+				this->wr.tile_patch_labels = std::make_unique<TWaterRegionPatchLabelArray>();
+			}
+		}
+
+		this->wr.tile_patch_labels->fill(INVALID_WATER_REGION_PATCH);
 
 		TWaterRegionPatchLabel current_label = 1;
 		TWaterRegionPatchLabel highest_assigned_label = 0;
@@ -188,9 +210,10 @@ public:
 				const TrackdirBits valid_dirs = TrackBitsToTrackdirBits(GetWaterTracks(tile));
 				if (valid_dirs == TRACKDIR_BIT_NONE) continue;
 
-				if (this->wr.tile_patch_labels[GetLocalIndex(tile)] != INVALID_WATER_REGION_PATCH) continue;
+				TWaterRegionPatchLabel &tile_patch = (*this->wr.tile_patch_labels)[GetLocalIndex(tile)];
+				if (tile_patch != INVALID_WATER_REGION_PATCH) continue;
 
-				this->wr.tile_patch_labels[GetLocalIndex(tile)] = current_label;
+				tile_patch = current_label;
 				highest_assigned_label = current_label;
 				increase_label = true;
 
@@ -218,6 +241,11 @@ public:
 			if (GetWaterTracks(TileXY(top_x, top_y + i)) & TRACK_BIT_3WAY_NE) SetBit(this->wr.edge_traversability_bits[DIAGDIR_NE], i); // NE edge
 			if (GetWaterTracks(TileXY(top_x + WATER_REGION_EDGE_LENGTH - 1, top_y + i)) & TRACK_BIT_3WAY_SW) SetBit(this->wr.edge_traversability_bits[DIAGDIR_SW], i); // SW edge
 		}
+
+		if (this->wr.number_of_patches == 0 || (this->wr.number_of_patches == 1 && !this->HasNonMatchingPatchLabel(1))) {
+			/* No need for patch storage: trivial cases */
+			_spare_labels = std::move(this->wr.tile_patch_labels);
+		}
 	}
 
 	/**
@@ -228,9 +256,9 @@ public:
 		if (!this->wr.initialized) this->ForceUpdate();
 	}
 
-	inline uint32_t CountPatchLabelOccurence(TWaterRegionPatchLabel label) const
+	inline bool HasPatchStorage() const
 	{
-		return std::count(this->wr.tile_patch_labels.begin(), this->wr.tile_patch_labels.end(), label);
+		return this->wr.tile_patch_labels != nullptr;
 	}
 };
 
@@ -428,9 +456,7 @@ uint GetWaterRegionTileDebugColourIndex(TileIndex tile)
 
 		case 1: {
 			const WaterRegionReference wr = GetWaterRegionRef(tile);
-			if (!wr.IsInitialized()) return 0;
-
-			if (wr.CountPatchLabelOccurence(1) == WATER_REGION_NUMBER_OF_TILES) return 2;
+			if (wr.HasPatchStorage()) return 2;
 
 			return 0;
 		}
