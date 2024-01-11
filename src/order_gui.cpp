@@ -1169,8 +1169,16 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			break;
 		}
 
-		case OT_RELEASE_SLOT:
-			SetDParam(0, STR_ORDER_RELEASE_SLOT);
+		case OT_SLOT:
+			switch (order->GetSlotSubType()) {
+				case OSST_RELEASE:
+					SetDParam(0, STR_ORDER_RELEASE_SLOT);
+					break;
+
+				default:
+					NOT_REACHED();
+					break;
+			}
 			if (order->GetDestination() == INVALID_TRACE_RESTRICT_SLOT_ID) {
 				SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
 			} else {
@@ -2296,7 +2304,7 @@ public:
 					break;
 				}
 
-				case OT_RELEASE_SLOT: {
+				case OT_SLOT: {
 					if (row_sel != nullptr) {
 						row_sel->SetDisplayedPlane(DP_ROW_SLOT);
 					} else {
@@ -2612,7 +2620,7 @@ public:
 				VehicleOrderID sel = this->OrderGetSel();
 				const Order *order = this->vehicle->GetOrder(sel);
 
-				if (order != nullptr && order->IsType(OT_RELEASE_SLOT)) {
+				if (order != nullptr && order->IsType(OT_SLOT)) {
 					TraceRestrictSlotID value = order->GetDestination();
 					SetDParam(0, value);
 				}

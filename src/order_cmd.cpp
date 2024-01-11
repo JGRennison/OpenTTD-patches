@@ -242,8 +242,9 @@ void Order::MakeLoadingAdvance(StationID destination)
 
 void Order::MakeReleaseSlot()
 {
-	this->type = OT_RELEASE_SLOT;
+	this->type = OT_SLOT;
 	this->dest = INVALID_TRACE_RESTRICT_SLOT_ID;
+	this->flags = OSST_RELEASE;
 }
 
 void Order::MakeChangeCounter()
@@ -705,7 +706,7 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, Ca
 			});
 			if (invalid) return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION);
 		}
-	} while (next->IsType(OT_GOTO_DEPOT) || next->IsType(OT_RELEASE_SLOT) || next->IsType(OT_COUNTER) || next->IsType(OT_DUMMY) || next->IsType(OT_LABEL)
+	} while (next->IsType(OT_GOTO_DEPOT) || next->IsType(OT_SLOT) || next->IsType(OT_COUNTER) || next->IsType(OT_DUMMY) || next->IsType(OT_LABEL)
 			|| (next->IsBaseStationOrder() && next->GetDestination() == v->last_station_visited));
 
 	return CargoMaskedStationIDStack(cargo_mask, next->GetDestination());
@@ -1268,11 +1269,18 @@ CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID s
 			break;
 		}
 
-		case OT_RELEASE_SLOT: {
+		case OT_SLOT: {
 			TraceRestrictSlotID data = new_order.GetDestination();
 			if (data != INVALID_TRACE_RESTRICT_SLOT_ID) {
 				const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(data);
 				if (slot == nullptr || slot->vehicle_type != v->type) return CMD_ERROR;
+			}
+			switch (new_order.GetSlotSubType()) {
+				case OSST_RELEASE:
+					break;
+
+				default:
+					return CMD_ERROR;
 			}
 			break;
 		}
@@ -1839,7 +1847,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 				if (mof != MOF_COND_VARIABLE && mof != MOF_COND_COMPARATOR && mof != MOF_COND_VALUE && mof != MOF_COND_VALUE_2 && mof != MOF_COND_VALUE_3 && mof != MOF_COND_DESTINATION && mof != MOF_COND_STATION_ID) return CMD_ERROR;
 				break;
 
-			case OT_RELEASE_SLOT:
+			case OT_SLOT:
 				if (mof != MOF_SLOT) return CMD_ERROR;
 				break;
 
@@ -3239,10 +3247,14 @@ VehicleOrderID AdvanceOrderIndexDeferred(const Vehicle *v, VehicleOrderID index)
 					return index;
 				}
 
-			case OT_RELEASE_SLOT:
+			case OT_SLOT:
 				if (TraceRestrictSlot::IsValidID(order->GetDestination())) {
-					include(_pco_deferred_slot_releases, order->GetDestination());
-					container_unordered_remove(_pco_deferred_slot_acquires, order->GetDestination());
+					switch (order->GetSlotSubType()) {
+						case OSST_RELEASE:
+							include(_pco_deferred_slot_releases, order->GetDestination());
+							container_unordered_remove(_pco_deferred_slot_acquires, order->GetDestination());
+							break;
+					}
 				}
 				break;
 
@@ -3414,11 +3426,17 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 			break;
 		}
 
-		case OT_RELEASE_SLOT:
+		case OT_SLOT:
 			assert(!pbs_look_ahead);
 			if (order->GetDestination() != INVALID_TRACE_RESTRICT_SLOT_ID) {
 				TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(order->GetDestination());
-				if (slot != nullptr) slot->Vacate(v->index);
+				if (slot != nullptr) {
+					switch (order->GetSlotSubType()) {
+						case OSST_RELEASE:
+							slot->Vacate(v->index);
+							break;
+					}
+				}
 			}
 			UpdateVehicleTimetable(v, true);
 			v->IncrementRealOrderIndex();
@@ -3718,7 +3736,7 @@ const char *GetOrderTypeName(OrderType order_type)
 		"OT_IMPLICIT",
 		"OT_WAITING",
 		"OT_LOADING_ADVANCE",
-		"OT_RELEASE_SLOT",
+		"OT_SLOT",
 		"OT_COUNTER",
 		"OT_LABEL",
 	};

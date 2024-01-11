@@ -46,10 +46,14 @@ enum OrderType : byte {
 	OT_IMPLICIT      = 8,
 	OT_WAITING       = 9,
 	OT_LOADING_ADVANCE = 10,
-	OT_RELEASE_SLOT  = 11,
+	OT_SLOT          = 11,
 	OT_COUNTER       = 12,
 	OT_LABEL         = 13,
 	OT_END
+};
+
+enum OrderSlotSubType : byte {
+	OSST_RELEASE               = 0,
 };
 
 enum OrderLabelSubType : byte {

@@ -246,7 +246,7 @@ public:
 
 	/**
 	 * Gets the destination of this order.
-	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION) || IsType(OT_RELEASE_SLOT) || IsType(OT_COUNTER) || IsType(OT_LABEL).
+	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION) || IsType(OT_SLOT) || IsType(OT_COUNTER) || IsType(OT_LABEL).
 	 * @return the destination of the order.
 	 */
 	inline DestinationID GetDestination() const { return this->dest; }
@@ -254,7 +254,7 @@ public:
 	/**
 	 * Sets the destination of this order.
 	 * @param destination the new destination of the order.
-	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION) || IsType(OT_RELEASE_SLOT) || IsType(OT_COUNTER) || IsType(OT_LABEL).
+	 * @pre IsType(OT_GOTO_WAYPOINT) || IsType(OT_GOTO_DEPOT) || IsType(OT_GOTO_STATION) || IsType(OT_SLOT) || IsType(OT_COUNTER) || IsType(OT_LABEL).
 	 */
 	inline void SetDestination(DestinationID destination) { this->dest = destination; }
 
@@ -467,7 +467,7 @@ public:
 	 * explicitly set (but travel_time is actually unused for conditionals). */
 
 	/* Does this order not have any associated travel or wait times */
-	inline bool HasNoTimetableTimes() const { return this->IsType(OT_COUNTER) || this->IsType(OT_RELEASE_SLOT) || this->IsType(OT_LABEL); }
+	inline bool HasNoTimetableTimes() const { return this->IsType(OT_COUNTER) || this->IsType(OT_SLOT) || this->IsType(OT_LABEL); }
 
 	/** Does this order have an explicit wait time set? */
 	inline bool IsWaitTimetabled() const
@@ -633,6 +633,11 @@ public:
 			this->CheckExtraInfoAlloced();
 			this->extra->colour = ((uint8_t)colour) + 1;
 		}
+	}
+
+	inline OrderSlotSubType GetSlotSubType() const
+	{
+		return (OrderSlotSubType)GB(this->flags, 0, 8);
 	}
 
 	inline OrderLabelSubType GetLabelSubType() const
