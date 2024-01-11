@@ -172,7 +172,7 @@ static StringID GetEngineInfoCapacityString(EngineID engine)
 	CargoArray cap = GetCapacityOfArticulatedParts(engine);
 	if (cap.GetSum<uint>() == 0) {
 		/* no cargo at all */
-		auto tmp_params = MakeParameters(CT_INVALID, 0);
+		auto tmp_params = MakeParameters(INVALID_CARGO, 0);
 		_temp_special_strings[1] = GetStringWithArgs(STR_JUST_CARGO, tmp_params);
 	} else {
 		std::string buffer;

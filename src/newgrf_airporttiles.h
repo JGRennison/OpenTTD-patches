@@ -85,8 +85,8 @@ private:
 };
 
 void AnimateAirportTile(TileIndex tile);
-void AirportTileAnimationTrigger(Station *st, TileIndex tile, AirpAnimationTrigger trigger, CargoID cargo_type = CT_INVALID);
-void AirportAnimationTrigger(Station *st, AirpAnimationTrigger trigger, CargoID cargo_type = CT_INVALID);
+void AirportTileAnimationTrigger(Station *st, TileIndex tile, AirpAnimationTrigger trigger, CargoID cargo_type = INVALID_CARGO);
+void AirportAnimationTrigger(Station *st, AirpAnimationTrigger trigger, CargoID cargo_type = INVALID_CARGO);
 uint8_t GetAirportTileAnimationSpeed(TileIndex tile);
 bool DrawNewAirportTile(TileInfo *ti, Station *st, const AirportTileSpec *airts);
 

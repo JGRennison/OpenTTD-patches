@@ -83,8 +83,8 @@ Engine::Engine(VehicleType type, EngineID base)
 		this->info.base_life = 0xFF;
 		/* Set road vehicle tractive effort to the default value */
 		if (type == VEH_ROAD) this->u.road.tractive_effort = 0x4C;
-		/* Aircraft must have CT_INVALID as default, as there is no property */
-		if (type == VEH_AIRCRAFT) this->info.cargo_type = CT_INVALID;
+		/* Aircraft must have INVALID_CARGO as default, as there is no property */
+		if (type == VEH_AIRCRAFT) this->info.cargo_type = INVALID_CARGO;
 		/* Set visual effect to the default value */
 		switch (type) {
 			case VEH_TRAIN: this->u.rail.visual_effect = VE_DEFAULT; break;
@@ -183,7 +183,7 @@ bool Engine::CanCarryCargo() const
 
 		default: NOT_REACHED();
 	}
-	return this->GetDefaultCargoType() != CT_INVALID;
+	return this->GetDefaultCargoType() != INVALID_CARGO;
 }
 
 bool Engine::CanPossiblyCarryCargo() const
@@ -1364,7 +1364,7 @@ bool IsEngineRefittable(EngineID engine)
 	CargoID default_cargo = e->GetDefaultCargoType();
 	CargoTypes default_cargo_mask = 0;
 	SetBit(default_cargo_mask, default_cargo);
-	return default_cargo != CT_INVALID && ei->refit_mask != default_cargo_mask;
+	return default_cargo != INVALID_CARGO && ei->refit_mask != default_cargo_mask;
 }
 
 /**

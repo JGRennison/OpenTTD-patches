@@ -434,7 +434,7 @@ uint32_t Station::GetNewGRFVariable(const ResolverObject &object, uint16_t varia
 	if ((variable >= 0x60 && variable <= 0x65) || variable == 0x69) {
 		CargoID c = GetCargoTranslation(parameter, object.grffile);
 
-		if (c == CT_INVALID) {
+		if (c == INVALID_CARGO) {
 			switch (variable) {
 				case 0x62: return 0xFFFFFFFF;
 				case 0x64: return 0xFF00;
@@ -522,13 +522,13 @@ uint32_t Waypoint::GetNewGRFVariable(const ResolverObject &object, uint16_t vari
 	const Station *st = Station::From(this->station_scope.st);
 
 	switch (this->station_scope.cargo_type) {
-		case CT_INVALID:
-		case CT_DEFAULT_NA:
-		case CT_PURCHASE:
+		case INVALID_CARGO:
+		case SpriteGroupCargo::SG_DEFAULT_NA:
+		case SpriteGroupCargo::SG_PURCHASE:
 			cargo = 0;
 			break;
 
-		case CT_DEFAULT:
+		case SpriteGroupCargo::SG_DEFAULT:
 			for (const GoodsEntry &ge : st->goods) {
 				cargo += ge.CargoTotalCount();
 			}
@@ -585,11 +585,11 @@ StationResolverObject::StationResolverObject(const StationSpec *statspec, BaseSt
 	/* Invalidate all cached vars */
 	_svc.valid = 0;
 
-	CargoID ctype = CT_DEFAULT_NA;
+	CargoID ctype = SpriteGroupCargo::SG_DEFAULT_NA;
 
 	if (this->station_scope.st == nullptr) {
 		/* No station, so we are in a purchase list */
-		ctype = CT_PURCHASE;
+		ctype = SpriteGroupCargo::SG_PURCHASE;
 	} else if (Station::IsExpected(this->station_scope.st)) {
 		const Station *st = Station::From(this->station_scope.st);
 		/* Pick the first cargo that we have waiting */
@@ -603,7 +603,7 @@ StationResolverObject::StationResolverObject(const StationSpec *statspec, BaseSt
 	}
 
 	if (this->station_scope.statspec->grf_prop.spritegroup[ctype] == nullptr) {
-		ctype = CT_DEFAULT;
+		ctype = SpriteGroupCargo::SG_DEFAULT;
 	}
 
 	/* Remember the cargo type we've picked */
@@ -923,8 +923,8 @@ void TriggerStationAnimation(BaseStation *st, TileIndex trigger_tile, StationAni
 			const StationSpec *ss = GetStationSpec(tile);
 			if (ss != nullptr && HasBit(ss->animation.triggers, trigger)) {
 				CargoID cargo;
-				if (cargo_type == CT_INVALID) {
-					cargo = CT_INVALID;
+				if (cargo_type == INVALID_CARGO) {
+					cargo = INVALID_CARGO;
 				} else {
 					cargo = ss->grf_prop.grffile->cargo_map[cargo_type];
 				}
@@ -954,7 +954,7 @@ void TriggerStationRandomisation(Station *st, TileIndex trigger_tile, StationRan
 	/* Check the cached cargo trigger bitmask to see if we need
 	 * to bother with any further processing. */
 	if (st->cached_cargo_triggers == 0) return;
-	if (cargo_type != CT_INVALID && !HasBit(st->cached_cargo_triggers, cargo_type)) return;
+	if (cargo_type != INVALID_CARGO && !HasBit(st->cached_cargo_triggers, cargo_type)) return;
 
 	uint32_t whole_reseed = 0;
 	ETileArea area = ETileArea(st, trigger_tile, tas[trigger]);
@@ -978,7 +978,7 @@ void TriggerStationRandomisation(Station *st, TileIndex trigger_tile, StationRan
 				if ((ss->cargo_triggers & ~empty_mask) != 0) continue;
 			}
 
-			if (cargo_type == CT_INVALID || HasBit(ss->cargo_triggers, cargo_type)) {
+			if (cargo_type == INVALID_CARGO || HasBit(ss->cargo_triggers, cargo_type)) {
 				StationResolverObject object(ss, st, tile, INVALID_RAILTYPE, CBID_RANDOM_TRIGGER, 0);
 				object.waiting_triggers = st->waiting_triggers;
 
@@ -1039,14 +1039,14 @@ void DumpStationSpriteGroup(const StationSpec *statspec, BaseStation *st, Sprite
 	StationResolverObject ro(statspec, st, INVALID_TILE, INVALID_RAILTYPE);
 
 	switch (ro.station_scope.cargo_type) {
-		case CT_DEFAULT:
-			seprintf(buffer, lastof(buffer), "CT_DEFAULT");
+		case SpriteGroupCargo::SG_DEFAULT:
+			seprintf(buffer, lastof(buffer), "SG_DEFAULT");
 			break;
-		case CT_PURCHASE:
-			seprintf(buffer, lastof(buffer), "CT_PURCHASE");
+		case SpriteGroupCargo::SG_PURCHASE:
+			seprintf(buffer, lastof(buffer), "SG_PURCHASE");
 			break;
-		case CT_DEFAULT_NA:
-			seprintf(buffer, lastof(buffer), "CT_DEFAULT_NA");
+		case SpriteGroupCargo::SG_DEFAULT_NA:
+			seprintf(buffer, lastof(buffer), "SG_DEFAULT_NA");
 			break;
 		default:
 			seprintf(buffer, lastof(buffer), "Cargo: %u", ro.station_scope.cargo_type);
@@ -1060,14 +1060,14 @@ void DumpStationSpriteGroup(const StationSpec *statspec, BaseStation *st, Sprite
 		if (statspec->grf_prop.spritegroup[i] != ro.root_spritegroup && statspec->grf_prop.spritegroup[i] != nullptr) {
 			dumper.Print("");
 			switch (i) {
-				case CT_DEFAULT:
-					seprintf(buffer, lastof(buffer), "OTHER SPRITE GROUP: CT_DEFAULT");
+				case SpriteGroupCargo::SG_DEFAULT:
+					seprintf(buffer, lastof(buffer), "OTHER SPRITE GROUP: SG_DEFAULT");
 					break;
-				case CT_PURCHASE:
-					seprintf(buffer, lastof(buffer), "OTHER SPRITE GROUP: CT_PURCHASE");
+				case SpriteGroupCargo::SG_PURCHASE:
+					seprintf(buffer, lastof(buffer), "OTHER SPRITE GROUP: SG_PURCHASE");
 					break;
-				case CT_DEFAULT_NA:
-					seprintf(buffer, lastof(buffer), "OTHER SPRITE GROUP: CT_DEFAULT_NA");
+				case SpriteGroupCargo::SG_DEFAULT_NA:
+					seprintf(buffer, lastof(buffer), "OTHER SPRITE GROUP: SG_DEFAULT_NA");
 					break;
 				default:
 					seprintf(buffer, lastof(buffer), "OTHER SPRITE GROUP: Cargo: %u", i);

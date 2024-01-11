@@ -7110,7 +7110,7 @@ CommandCost CmdBuildVirtualRailVehicle(TileIndex tile, DoCommandFlag flags, uint
 
 	/* Validate the cargo type. */
 	CargoID cargo = GB(p1, 24, 8);
-	if (cargo >= NUM_CARGO && cargo != CT_INVALID) return CMD_ERROR;
+	if (cargo >= NUM_CARGO && cargo != INVALID_CARGO) return CMD_ERROR;
 
 	bool should_execute = (flags & DC_EXEC) != 0;
 
@@ -7122,7 +7122,7 @@ CommandCost CmdBuildVirtualRailVehicle(TileIndex tile, DoCommandFlag flags, uint
 			return_cmd_error(err);
 		}
 
-		if (cargo != CT_INVALID) {
+		if (cargo != INVALID_CARGO) {
 			CargoID default_cargo = Engine::Get(eid)->GetDefaultCargoType();
 			if (default_cargo != cargo) {
 				CommandCost refit_res = CmdRefitVehicle(tile, flags, train->index, cargo, nullptr);
@@ -7210,12 +7210,12 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 	const bool need_refit = (diff & TBTRDF_REFIT);
 	const bool refit_to_template = tv->refit_as_template;
 
-	CargoID store_refit_ct = CT_INVALID;
+	CargoID store_refit_ct = INVALID_CARGO;
 	uint16_t store_refit_csubt = 0;
 	// if a train shall keep its old refit, store the refit setting of its first vehicle
 	if (!refit_to_template) {
 		for (Train *getc = incoming; getc != nullptr; getc = getc->GetNextUnit()) {
-			if (getc->cargo_type != CT_INVALID && getc->cargo_cap > 0) {
+			if (getc->cargo_type != INVALID_CARGO && getc->cargo_cap > 0) {
 				store_refit_ct = getc->cargo_type;
 				break;
 			}
@@ -7276,7 +7276,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 				}
 
 				CargoID refit_cargo = refit_to_template ? cur_tmpl->cargo_type : store_refit_ct;
-				uint32_t refit_cmd = (refit_cargo != CT_INVALID) ? (refit_cargo << 24) : 0;
+				uint32_t refit_cmd = (refit_cargo != INVALID_CARGO) ? (refit_cargo << 24) : 0;
 				buy.AddCost(DoCommand(tile, cur_tmpl->engine_type | (1 << 16) | refit_cmd, 0, flags, CMD_BUILD_VEHICLE));
 			};
 			for (const TemplateVehicle *cur_tmpl = tv; cur_tmpl != nullptr; cur_tmpl = cur_tmpl->GetNextUnit()) {

@@ -718,7 +718,7 @@ static void TileLoop_Town(TileIndex tile)
 			if (callback == CALLBACK_FAILED || callback == CALLBACK_HOUSEPRODCARGO_END) break;
 
 			CargoID cargo = GetCargoTranslation(GB(callback, 8, 7), hs->grf_prop.grffile);
-			if (cargo == CT_INVALID) continue;
+			if (cargo == INVALID_CARGO) continue;
 
 			uint amt = GB(callback, 0, 8);
 			if (amt == 0) continue;
@@ -858,7 +858,7 @@ void AddProducedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &produce
 
 			CargoID cargo = GetCargoTranslation(GB(callback, 8, 7), hs->grf_prop.grffile);
 
-			if (cargo == CT_INVALID) continue;
+			if (cargo == INVALID_CARGO) continue;
 			produced[cargo]++;
 		}
 	} else {
@@ -878,7 +878,7 @@ static void AddProducedCargo_Town(TileIndex tile, CargoArray &produced)
 
 static inline void AddAcceptedCargoSetMask(CargoID cargo, uint amount, CargoArray &acceptance, CargoTypes *always_accepted)
 {
-	if (cargo == CT_INVALID || amount == 0) return;
+	if (cargo == INVALID_CARGO || amount == 0) return;
 	acceptance[cargo] += amount;
 	SetBit(*always_accepted, cargo);
 }

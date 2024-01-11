@@ -146,9 +146,9 @@ void GetArticulatedPartsEngineIDs(EngineID engine_type, bool purchase_window, st
 static inline uint16_t GetVehicleDefaultCapacity(EngineID engine, CargoID *cargo_type)
 {
 	const Engine *e = Engine::Get(engine);
-	CargoID cargo = (e->CanCarryCargo() ? e->GetDefaultCargoType() : (CargoID)CT_INVALID);
+	CargoID cargo = (e->CanCarryCargo() ? e->GetDefaultCargoType() : INVALID_CARGO);
 	if (cargo_type != nullptr) *cargo_type = cargo;
-	if (cargo == CT_INVALID) return 0;
+	if (cargo == INVALID_CARGO) return 0;
 	return e->GetDisplayDefaultCapacity();
 }
 
@@ -322,21 +322,21 @@ CargoTypes GetUnionOfArticulatedRefitMasks(EngineID engine, bool include_initial
  * Get cargo mask of all cargoes carried by an articulated vehicle.
  * Note: Vehicles not carrying anything are ignored
  * @param v the first vehicle in the chain
- * @param cargo_type returns the common CargoID if needed. (CT_INVALID if no part is carrying something or they are carrying different things)
+ * @param cargo_type returns the common CargoID if needed. (INVALID_CARGO if no part is carrying something or they are carrying different things)
  * @return cargo mask, may be 0 if the no vehicle parts have cargo capacity
  */
 CargoTypes GetCargoTypesOfArticulatedVehicle(const Vehicle *v, CargoID *cargo_type)
 {
 	CargoTypes cargoes = 0;
-	CargoID first_cargo = CT_INVALID;
+	CargoID first_cargo = INVALID_CARGO;
 
 	do {
-		if (v->cargo_type != CT_INVALID && v->GetEngine()->CanCarryCargo()) {
+		if (v->cargo_type != INVALID_CARGO && v->GetEngine()->CanCarryCargo()) {
 			SetBit(cargoes, v->cargo_type);
-			if (first_cargo == CT_INVALID) first_cargo = v->cargo_type;
+			if (first_cargo == INVALID_CARGO) first_cargo = v->cargo_type;
 			if (first_cargo != v->cargo_type) {
 				if (cargo_type != nullptr) {
-					*cargo_type = CT_INVALID;
+					*cargo_type = INVALID_CARGO;
 					cargo_type = nullptr;
 				}
 			}
@@ -353,7 +353,7 @@ CargoTypes GetCargoTypesOfArticulatedVehicle(const Vehicle *v, CargoID *cargo_ty
  * Returns the overall cargo of an articulated vehicle if all parts are refitted to the same cargo.
  * Note: Vehicles not carrying anything are ignored
  * @param v the first vehicle in the chain
- * @return the common CargoID. (CT_INVALID if no part is carrying something or they are carrying different things)
+ * @return the common CargoID. (INVALID_CARGO if no part is carrying something or they are carrying different things)
  */
 CargoID GetOverallCargoOfArticulatedVehicle(const Vehicle *v)
 {

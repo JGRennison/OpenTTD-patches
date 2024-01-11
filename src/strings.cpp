@@ -1481,9 +1481,9 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 				case SCC_CARGO_LONG: { // {CARGO_LONG}
 					/* First parameter is cargo type, second parameter is cargo count */
 					CargoID cargo = args.GetNextParameter<CargoID>();
-					if (cargo != CT_INVALID && cargo >= CargoSpec::GetArraySize()) break;
+					if (cargo != INVALID_CARGO && cargo >= CargoSpec::GetArraySize()) break;
 
-					StringID cargo_str = (cargo == CT_INVALID) ? STR_QUANTITY_N_A : CargoSpec::Get(cargo)->quantifier;
+					StringID cargo_str = (cargo == INVALID_CARGO) ? STR_QUANTITY_N_A : CargoSpec::Get(cargo)->quantifier;
 					auto tmp_args = MakeParameters(args.GetNextParameter<int64_t>());
 					GetStringWithArgs(builder, cargo_str, tmp_args);
 					break;

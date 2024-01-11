@@ -261,11 +261,11 @@ RoadStopResolverObject::RoadStopResolverObject(const RoadStopSpec *roadstopspec,
 
 	this->town_scope = nullptr;
 
-	CargoID ctype = CT_DEFAULT_NA;
+	CargoID ctype = SpriteGroupCargo::SG_DEFAULT_NA;
 
 	if (st == nullptr) {
 		/* No station, so we are in a purchase list */
-		ctype = CT_PURCHASE;
+		ctype = SpriteGroupCargo::SG_PURCHASE;
 	} else if (Station::IsExpected(st)) {
 		const Station *station = Station::From(st);
 		/* Pick the first cargo that we have waiting */
@@ -279,7 +279,7 @@ RoadStopResolverObject::RoadStopResolverObject(const RoadStopSpec *roadstopspec,
 	}
 
 	if (roadstopspec->grf_prop.spritegroup[ctype] == nullptr) {
-		ctype = CT_DEFAULT;
+		ctype = SpriteGroupCargo::SG_DEFAULT;
 	}
 
 	/* Remember the cargo type we've picked */
@@ -431,8 +431,8 @@ void TriggerRoadStopAnimation(BaseStation *st, TileIndex trigger_tile, StationAn
 		const RoadStopSpec *ss = GetRoadStopSpec(cur_tile);
 		if (ss != nullptr && HasBit(ss->animation.triggers, trigger)) {
 			CargoID cargo;
-			if (cargo_type == CT_INVALID) {
-				cargo = CT_INVALID;
+			if (cargo_type == INVALID_CARGO) {
+				cargo = INVALID_CARGO;
 			} else {
 				cargo = ss->grf_prop.grffile->cargo_map[cargo_type];
 			}
@@ -464,7 +464,7 @@ void TriggerRoadStopRandomisation(Station *st, TileIndex tile, RoadStopRandomTri
 	/* Check the cached cargo trigger bitmask to see if we need
 	 * to bother with any further processing. */
 	if (st->cached_roadstop_cargo_triggers == 0) return;
-	if (cargo_type != CT_INVALID && !HasBit(st->cached_roadstop_cargo_triggers, cargo_type)) return;
+	if (cargo_type != INVALID_CARGO && !HasBit(st->cached_roadstop_cargo_triggers, cargo_type)) return;
 
 	SetBit(st->waiting_triggers, trigger);
 
@@ -484,7 +484,7 @@ void TriggerRoadStopRandomisation(Station *st, TileIndex tile, RoadStopRandomTri
 			if ((ss->cargo_triggers & ~empty_mask) != 0) return;
 		}
 
-		if (cargo_type == CT_INVALID || HasBit(ss->cargo_triggers, cargo_type)) {
+		if (cargo_type == INVALID_CARGO || HasBit(ss->cargo_triggers, cargo_type)) {
 			RoadStopResolverObject object(ss, st, cur_tile, INVALID_ROADTYPE, GetStationType(cur_tile), GetStationGfx(cur_tile));
 			object.waiting_triggers = st->waiting_triggers;
 
@@ -682,11 +682,11 @@ void StationUpdateRoadStopCachedTriggers(BaseStation *st)
 
 void DumpRoadStopSpriteGroup(const BaseStation *st, const RoadStopSpec *spec, SpriteGroupDumper &dumper)
 {
-	CargoID ctype = CT_DEFAULT_NA;
+	CargoID ctype = SpriteGroupCargo::SG_DEFAULT_NA;
 
 	if (st == nullptr) {
 		/* No station, so we are in a purchase list */
-		ctype = CT_PURCHASE;
+		ctype = SpriteGroupCargo::SG_PURCHASE;
 	} else if (Station::IsExpected(st)) {
 		const Station *station = Station::From(st);
 		/* Pick the first cargo that we have waiting */
@@ -700,7 +700,7 @@ void DumpRoadStopSpriteGroup(const BaseStation *st, const RoadStopSpec *spec, Sp
 	}
 
 	if (spec->grf_prop.spritegroup[ctype] == nullptr) {
-		ctype = CT_DEFAULT;
+		ctype = SpriteGroupCargo::SG_DEFAULT;
 	}
 
 	dumper.DumpSpriteGroup(spec->grf_prop.spritegroup[ctype], 0);

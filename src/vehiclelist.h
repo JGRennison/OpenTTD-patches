@@ -52,18 +52,11 @@ struct VehicleListIdentifier {
 	VehicleListIdentifier() : type(), vtype(), company(), index() {}
 };
 
-/** Special cargo filter criteria */
-enum VehicleCargoFilterSpecialType {
-	CF_ANY     = CT_NO_REFIT,               ///< Show all vehicles independent of carried cargo (i.e. no filtering)
-	CF_NONE    = CT_INVALID,                ///< Show only vehicles which do not carry cargo (e.g. train engines)
-	CF_FREIGHT = CT_AUTO_REFIT,             ///< Show only vehicles which carry any freight (non-passenger) cargo
-};
-
 /** A list of vehicles. */
 typedef std::vector<const Vehicle *> VehicleList;
 
 bool VehicleCargoFilter(const Vehicle *v, const CargoID cid);
-bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &identifier, const CargoID cid = CF_ANY);
+bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &identifier, const CargoID cid = CargoFilterCriteria::CF_ANY);
 void BuildDepotVehicleList(VehicleType type, TileIndex tile, VehicleList *engine_list, VehicleList *wagon_list, bool individual_wagons = false);
 uint GetUnitNumberDigits(VehicleList &vehicles);
 

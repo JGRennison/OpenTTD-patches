@@ -799,7 +799,7 @@ struct NewGRFInspectWindow : Window {
 						break;
 
 					case NIT_CARGO:
-						string = value != CT_INVALID ? CargoSpec::Get(value)->name : STR_QUANTITY_N_A;
+						string = (value != INVALID_CARGO) ? CargoSpec::Get(value)->name : STR_QUANTITY_N_A;
 						break;
 
 					default:

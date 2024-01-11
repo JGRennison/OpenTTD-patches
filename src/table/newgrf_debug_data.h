@@ -248,7 +248,7 @@ class NIHVehicle : public NIHelper {
 		seprintf(buffer, lastof(buffer), "  V Cache: max speed: %u, cargo age period: %u, vis effect: %u",
 				v->vcache.cached_max_speed, v->vcache.cached_cargo_age_period, v->vcache.cached_vis_effect);
 		output.print(buffer);
-		if (v->cargo_type != CT_INVALID) {
+		if (v->cargo_type != INVALID_CARGO) {
 			seprintf(buffer, lastof(buffer), "  V Cargo: type: %u, sub type: %u, cap: %u, transfer: %u, deliver: %u, keep: %u, load: %u",
 					v->cargo_type, v->cargo_subtype, v->cargo_cap,
 					v->cargo.ActionCount(VehicleCargoList::MTA_TRANSFER), v->cargo.ActionCount(VehicleCargoList::MTA_DELIVER),
@@ -545,7 +545,7 @@ class NIHVehicle : public NIHelper {
 					if (root_spritegroup == nullptr) {
 						CargoID cargo = v->cargo_type;
 						assert(cargo < lengthof(e->grf_prop.spritegroup));
-						root_spritegroup = e->grf_prop.spritegroup[cargo] != nullptr ? e->grf_prop.spritegroup[cargo] : e->grf_prop.spritegroup[CT_DEFAULT];
+						root_spritegroup = e->grf_prop.spritegroup[cargo] != nullptr ? e->grf_prop.spritegroup[cargo] : e->grf_prop.spritegroup[SpriteGroupCargo::SG_DEFAULT];
 					}
 					auto iter = e->sprite_group_cb36_properties_used.find(root_spritegroup);
 					if (iter != e->sprite_group_cb36_properties_used.end()) {
@@ -1196,7 +1196,7 @@ class NIHIndustry : public NIHelper {
 				}
 				output.print("  Produces:");
 				for (uint i = 0; i < lengthof(ind->produced_cargo); i++) {
-					if (ind->produced_cargo[i] != CT_INVALID) {
+					if (ind->produced_cargo[i] != INVALID_CARGO) {
 						seprintf(buffer, lastof(buffer), "    %s:", GetStringPtr(CargoSpec::Get(ind->produced_cargo[i])->name));
 						output.print(buffer);
 						seprintf(buffer, lastof(buffer), "      Waiting: %u, rate: %u",
@@ -1212,7 +1212,7 @@ class NIHIndustry : public NIHelper {
 				}
 				output.print("  Accepts:");
 				for (uint i = 0; i < lengthof(ind->accepts_cargo); i++) {
-					if (ind->accepts_cargo[i] != CT_INVALID) {
+					if (ind->accepts_cargo[i] != INVALID_CARGO) {
 						seprintf(buffer, lastof(buffer), "    %s: waiting: %u",
 								GetStringPtr(CargoSpec::Get(ind->accepts_cargo[i])->name), ind->incoming_cargo_waiting[i]);
 						output.print(buffer);

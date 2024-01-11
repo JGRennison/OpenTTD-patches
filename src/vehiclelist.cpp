@@ -110,16 +110,16 @@ void BuildDepotVehicleList(VehicleType type, TileIndex tile, VehicleList *engine
 /** Cargo filter functions */
 bool VehicleCargoFilter(const Vehicle *v, const CargoID cid)
 {
-	if (cid == CF_ANY) {
+	if (cid == CargoFilterCriteria::CF_ANY) {
 		return true;
-	} else if (cid == CF_NONE) {
+	} else if (cid == CargoFilterCriteria::CF_NONE) {
 		for (const Vehicle *w = v; w != nullptr; w = w->Next()) {
 			if (w->cargo_cap > 0) {
 				return false;
 			}
 		}
 		return true;
-	} else if (cid == CF_FREIGHT) {
+	} else if (cid == CargoFilterCriteria::CF_FREIGHT) {
 		bool have_capacity = false;
 		for (const Vehicle *w = v; w != nullptr; w = w->Next()) {
 			if (w->cargo_cap) {
@@ -152,7 +152,7 @@ bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli
 	list->clear();
 
 	auto add_veh = [&](const Vehicle *v) {
-		if (cid == CF_ANY || VehicleCargoFilter(v, cid)) list->push_back(v);
+		if (cid == CargoFilterCriteria::CF_ANY || VehicleCargoFilter(v, cid)) list->push_back(v);
 	};
 
 	auto fill_all_vehicles = [&]() {

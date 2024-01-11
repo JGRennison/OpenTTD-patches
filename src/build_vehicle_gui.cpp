@@ -197,26 +197,21 @@ static const NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 	EndContainer(),
 };
 
-/** Special cargo filter criteria */
-static const CargoID CF_ANY     = CT_NO_REFIT;   ///< Show all vehicles independent of carried cargo (i.e. no filtering)
-static const CargoID CF_NONE    = CT_INVALID;    ///< Show only vehicles which do not carry cargo (e.g. train engines)
-static const CargoID CF_ENGINES = CT_AUTO_REFIT; ///< Show only engines (for rail vehicles only)
-
 bool _engine_sort_direction;                     ///< \c false = descending, \c true = ascending.
 byte _engine_sort_last_criteria[]       = {0, 0, 0, 0};                 ///< Last set sort criteria, for each vehicle type.
 bool _engine_sort_last_order[]          = {false, false, false, false}; ///< Last set direction of the sort order, for each vehicle type.
 bool _engine_sort_show_hidden_engines[] = {false, false, false, false}; ///< Last set 'show hidden engines' setting for each vehicle type.
 bool _engine_sort_show_hidden_locos     = false;                        ///< Last set 'show hidden locos' setting.
 bool _engine_sort_show_hidden_wagons    = false;                        ///< Last set 'show hidden wagons' setting.
-static CargoID _engine_sort_last_cargo_criteria[] = {CF_ANY, CF_ANY, CF_ANY, CF_ANY}; ///< Last set filter criteria, for each vehicle type.
+static CargoID _engine_sort_last_cargo_criteria[] = {CargoFilterCriteria::CF_ANY, CargoFilterCriteria::CF_ANY, CargoFilterCriteria::CF_ANY, CargoFilterCriteria::CF_ANY}; ///< Last set filter criteria, for each vehicle type.
 
 static byte _last_sort_criteria_loco      = 0;
 static bool _last_sort_order_loco         = false;
-static CargoID _last_filter_criteria_loco = CF_ANY;
+static CargoID _last_filter_criteria_loco = CargoFilterCriteria::CF_ANY;
 
 static byte _last_sort_criteria_wagon      = 0;
 static bool _last_sort_order_wagon         = false;
-static CargoID _last_filter_criteria_wagon = CF_ANY;
+static CargoID _last_filter_criteria_wagon = CargoFilterCriteria::CF_ANY;
 
 /**
  * Determines order of engines by engineID
@@ -749,13 +744,13 @@ const StringID _engine_sort_listing[][14] = {{
 /** Filters vehicles by cargo and engine (in case of rail vehicle). */
 static bool CargoAndEngineFilter(const GUIEngineListItem *item, const CargoID cid)
 {
-	if (cid == CF_ANY) {
+	if (cid == CargoFilterCriteria::CF_ANY) {
 		return true;
-	} else if (cid == CF_ENGINES) {
+	} else if (cid == CargoFilterCriteria::CF_ENGINES) {
 		return Engine::Get(item->engine_id)->GetPower() != 0;
 	} else {
 		CargoTypes refit_mask = GetUnionOfArticulatedRefitMasks(item->engine_id, true) & _standard_cargo_mask;
-		return (cid == CF_NONE ? refit_mask == 0 : HasBit(refit_mask, cid));
+		return (cid == CargoFilterCriteria::CF_NONE ? refit_mask == 0 : HasBit(refit_mask, cid));
 	}
 }
 
@@ -1116,7 +1111,7 @@ void TestedEngineDetails::FillDefaultCapacities(const Engine *e)
 		this->all_capacities[this->cargo] = this->capacity;
 		this->all_capacities[CT_MAIL] = this->mail_capacity;
 	}
-	if (this->all_capacities.GetCount() == 0) this->cargo = CT_INVALID;
+	if (this->all_capacities.GetCount() == 0) this->cargo = INVALID_CARGO;
 }
 
 /**
@@ -1163,7 +1158,7 @@ int DrawVehiclePurchaseInfo(int left, int right, int y, EngineID engine_number, 
 		int new_y = DrawCargoCapacityInfo(left, right, y, te, refittable);
 
 		if (new_y == y) {
-			SetDParam(0, CT_INVALID);
+			SetDParam(0, INVALID_CARGO);
 			SetDParam(2, STR_EMPTY);
 			DrawString(left, right, y, STR_PURCHASE_INFO_CAPACITY);
 			y += GetCharacterHeight(FS_NORMAL);
@@ -1409,7 +1404,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 	{
 		NWidgetCore *widget = this->GetWidget<NWidgetCore>(WID_BV_BUILD);
 
-		bool refit = this->sel_engine != INVALID_ENGINE && this->cargo_filter_criteria != CF_ANY && this->cargo_filter_criteria != CF_NONE;
+		bool refit = this->sel_engine != INVALID_ENGINE && this->cargo_filter_criteria != CargoFilterCriteria::CF_ANY && this->cargo_filter_criteria != CargoFilterCriteria::CF_NONE;
 		if (refit) refit = Engine::Get(this->sel_engine)->GetDefaultCargoType() != this->cargo_filter_criteria;
 
 		if (this->virtual_train_mode) {
@@ -1518,9 +1513,9 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 	StringID GetCargoFilterLabel(CargoID cid) const
 	{
 		switch (cid) {
-			case CF_ANY: return STR_PURCHASE_INFO_ALL_TYPES;
-			case CF_ENGINES: return STR_PURCHASE_INFO_ENGINES_ONLY;
-			case CF_NONE: return STR_PURCHASE_INFO_NONE;
+			case CargoFilterCriteria::CF_ANY: return STR_PURCHASE_INFO_ALL_TYPES;
+			case CargoFilterCriteria::CF_ENGINES: return STR_PURCHASE_INFO_ENGINES_ONLY;
+			case CargoFilterCriteria::CF_NONE: return STR_PURCHASE_INFO_NONE;
 			default: return CargoSpec::Get(cid)->name;
 		}
 	}
@@ -1530,16 +1525,16 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 	{
 		/* Set the last cargo filter criteria. */
 		this->cargo_filter_criteria = _engine_sort_last_cargo_criteria[this->vehicle_type];
-		if (this->cargo_filter_criteria < NUM_CARGO && !HasBit(_standard_cargo_mask, this->cargo_filter_criteria)) this->cargo_filter_criteria = CF_ANY;
+		if (this->cargo_filter_criteria < NUM_CARGO && !HasBit(_standard_cargo_mask, this->cargo_filter_criteria)) this->cargo_filter_criteria = CargoFilterCriteria::CF_ANY;
 
 		this->eng_list.SetFilterFuncs(_filter_funcs);
-		this->eng_list.SetFilterState(this->cargo_filter_criteria != CF_ANY);
+		this->eng_list.SetFilterState(this->cargo_filter_criteria != CargoFilterCriteria::CF_ANY);
 	}
 
 	void SelectEngine(EngineID engine)
 	{
 		CargoID cargo = this->cargo_filter_criteria;
-		if (cargo == CF_ANY || cargo == CF_ENGINES || cargo == CF_NONE) cargo = CT_INVALID;
+		if (cargo == CargoFilterCriteria::CF_ANY || cargo == CargoFilterCriteria::CF_ENGINES || cargo == CargoFilterCriteria::CF_NONE) cargo = INVALID_CARGO;
 
 		this->sel_engine = engine;
 		this->SetBuyVehicleText();
@@ -1549,13 +1544,13 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		const Engine *e = Engine::Get(this->sel_engine);
 		if (!e->CanPossiblyCarryCargo()) {
 			this->te.cost = 0;
-			this->te.cargo = CT_INVALID;
+			this->te.cargo = INVALID_CARGO;
 			this->te.all_capacities.Clear();
 			return;
 		}
 
 		if (this->virtual_train_mode) {
-			if (cargo != CT_INVALID && cargo != e->GetDefaultCargoType()) {
+			if (cargo != INVALID_CARGO && cargo != e->GetDefaultCargoType()) {
 				SavedRandomSeeds saved_seeds;
 				SaveRandomSeeds(&saved_seeds);
 				StringID err;
@@ -1565,7 +1560,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 					this->te.cost          = ret.GetCost();
 					this->te.capacity      = _returned_refit_capacity;
 					this->te.mail_capacity = _returned_mail_refit_capacity;
-					this->te.cargo         = (cargo == CT_INVALID) ? e->GetDefaultCargoType() : cargo;
+					this->te.cargo         = (cargo == INVALID_CARGO) ? e->GetDefaultCargoType() : cargo;
 					this->te.all_capacities = _returned_vehicle_capacities;
 					delete t;
 					RestoreRandomSeeds(saved_seeds);
@@ -1581,7 +1576,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 				this->te.cost          = ret.GetCost() - e->GetCost();
 				this->te.capacity      = _returned_refit_capacity;
 				this->te.mail_capacity = _returned_mail_refit_capacity;
-				this->te.cargo         = (cargo == CT_INVALID) ? e->GetDefaultCargoType() : cargo;
+				this->te.cargo         = (cargo == INVALID_CARGO) ? e->GetDefaultCargoType() : cargo;
 				this->te.all_capacities = _returned_vehicle_capacities;
 				return;
 			}
@@ -1839,14 +1834,14 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		DropDownList list;
 
 		/* Add item for disabling filtering. */
-		list.push_back(std::make_unique<DropDownListStringItem>(this->GetCargoFilterLabel(CF_ANY), CF_ANY, false));
+		list.push_back(std::make_unique<DropDownListStringItem>(this->GetCargoFilterLabel(CargoFilterCriteria::CF_ANY), CargoFilterCriteria::CF_ANY, false));
 		/* Specific filters for trains. */
 		if (this->vehicle_type == VEH_TRAIN) {
 			/* Add item for locomotives only in case of trains. */
-			list.push_back(std::make_unique<DropDownListStringItem>(this->GetCargoFilterLabel(CF_ENGINES), CF_ENGINES, false));
+			list.push_back(std::make_unique<DropDownListStringItem>(this->GetCargoFilterLabel(CargoFilterCriteria::CF_ENGINES), CargoFilterCriteria::CF_ENGINES, false));
 			/* Add item for vehicles not carrying anything, e.g. train engines.
 			 * This could also be useful for eyecandy vehicles of other types, but is likely too confusing for joe, */
-			list.push_back(std::make_unique<DropDownListStringItem>(this->GetCargoFilterLabel(CF_NONE), CF_NONE, false));
+			list.push_back(std::make_unique<DropDownListStringItem>(this->GetCargoFilterLabel(CargoFilterCriteria::CF_NONE), CargoFilterCriteria::CF_NONE, false));
 		}
 
 		/* Add cargos */
@@ -1935,7 +1930,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 						cmd = GetCmdBuildVeh(this->vehicle_type);
 					}
 					CargoID cargo = this->cargo_filter_criteria;
-					if (cargo == CF_ANY || cargo == CF_ENGINES || cargo == CF_NONE) cargo = CT_INVALID;
+					if (cargo == CargoFilterCriteria::CF_ANY || cargo == CargoFilterCriteria::CF_ENGINES || cargo == CargoFilterCriteria::CF_NONE) cargo = INVALID_CARGO;
 					DoCommandP(this->window_number, sel_eng | (cargo << 24), 0, cmd, callback);
 
 					/* Update last used variant in hierarchy and refresh if necessary. */
@@ -2140,7 +2135,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 					this->cargo_filter_criteria = index;
 					_engine_sort_last_cargo_criteria[this->vehicle_type] = this->cargo_filter_criteria;
 					/* deactivate filter if criteria is 'Show All', activate it otherwise */
-					this->eng_list.SetFilterState(this->cargo_filter_criteria != CF_ANY);
+					this->eng_list.SetFilterState(this->cargo_filter_criteria != CargoFilterCriteria::CF_ANY);
 					this->eng_list.ForceRebuild();
 					this->SelectEngine(this->sel_engine);
 				}
@@ -2301,7 +2296,8 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 	bool GetRefitButtonMode(const PanelState &state) const
 	{
-		bool refit = state.sel_engine != INVALID_ENGINE && state.cargo_filter[state.cargo_filter_criteria] != CF_ANY && state.cargo_filter[state.cargo_filter_criteria] != CF_NONE;
+		bool refit = state.sel_engine != INVALID_ENGINE && state.cargo_filter[state.cargo_filter_criteria] != CargoFilterCriteria::CF_ANY &&
+				state.cargo_filter[state.cargo_filter_criteria] != CargoFilterCriteria::CF_NONE;
 		if (refit) refit = Engine::Get(state.sel_engine)->GetDefaultCargoType() != state.cargo_filter[state.cargo_filter_criteria];
 		return refit;
 	}
@@ -2456,12 +2452,12 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		uint filter_items = 0;
 
 		/* Add item for disabling filtering. */
-		state.cargo_filter[filter_items] = CF_ANY;
+		state.cargo_filter[filter_items] = CargoFilterCriteria::CF_ANY;
 		state.cargo_filter_texts[filter_items] = STR_PURCHASE_INFO_ALL_TYPES;
 		filter_items++;
 
 		/* Add item for vehicles not carrying anything, e.g. train engines. */
-		state.cargo_filter[filter_items] = CF_NONE;
+		state.cargo_filter[filter_items] = CargoFilterCriteria::CF_NONE;
 		state.cargo_filter_texts[filter_items] = STR_PURCHASE_INFO_NONE;
 		filter_items++;
 
@@ -2487,7 +2483,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		}
 
 		state.eng_list.SetFilterFuncs(_filter_funcs);
-		state.eng_list.SetFilterState(state.cargo_filter[state.cargo_filter_criteria] != CF_ANY);
+		state.eng_list.SetFilterState(state.cargo_filter[state.cargo_filter_criteria] != CargoFilterCriteria::CF_ANY);
 	}
 
 	void SelectFirstEngine(PanelState &state)
@@ -2501,7 +2497,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 	void SelectEngine(PanelState &state, const EngineID engine)
 	{
 		CargoID cargo = state.cargo_filter[state.cargo_filter_criteria];
-		if (cargo == CF_ANY) cargo = CF_NONE;
+		if (cargo == CargoFilterCriteria::CF_ANY) cargo = CargoFilterCriteria::CF_NONE;
 
 		state.sel_engine = engine;
 
@@ -2510,13 +2506,13 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		const Engine *e = Engine::Get(state.sel_engine);
 		if (!e->CanPossiblyCarryCargo()) {
 			state.te.cost = 0;
-			state.te.cargo = CT_INVALID;
+			state.te.cargo = INVALID_CARGO;
 			state.te.all_capacities.Clear();
 			return;
 		}
 
 		if (this->virtual_train_mode) {
-			if (cargo != CT_INVALID && cargo != e->GetDefaultCargoType()) {
+			if (cargo != INVALID_CARGO && cargo != e->GetDefaultCargoType()) {
 				SavedRandomSeeds saved_seeds;
 				SaveRandomSeeds(&saved_seeds);
 				StringID err;
@@ -2526,7 +2522,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 					state.te.cost          = ret.GetCost();
 					state.te.capacity      = _returned_refit_capacity;
 					state.te.mail_capacity = _returned_mail_refit_capacity;
-					state.te.cargo         = (cargo == CT_INVALID) ? e->GetDefaultCargoType() : cargo;
+					state.te.cargo         = (cargo == INVALID_CARGO) ? e->GetDefaultCargoType() : cargo;
 					state.te.all_capacities = _returned_vehicle_capacities;
 					delete t;
 					RestoreRandomSeeds(saved_seeds);
@@ -2542,7 +2538,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				state.te.cost          = ret.GetCost() - e->GetCost();
 				state.te.capacity      = _returned_refit_capacity;
 				state.te.mail_capacity = _returned_mail_refit_capacity;
-				state.te.cargo         = (cargo == CT_INVALID) ? e->GetDefaultCargoType() : cargo;
+				state.te.cargo         = (cargo == INVALID_CARGO) ? e->GetDefaultCargoType() : cargo;
 				state.te.all_capacities = _returned_vehicle_capacities;
 				return;
 			}
@@ -2586,7 +2582,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 	{
 		const CargoID filter_type = state.cargo_filter[state.cargo_filter_criteria];
 		GUIEngineListItem item = {eid, eid, EngineDisplayFlags::None, 0};
-		return (filter_type == CF_ANY || CargoAndEngineFilter(&item, filter_type));
+		return (filter_type == CargoFilterCriteria::CF_ANY || CargoAndEngineFilter(&item, filter_type));
 	}
 
 	/** Filter by name and NewGRF extra text */
@@ -2709,7 +2705,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 						? CcBuildWagon : CcBuildPrimaryVehicle;
 				cmd = GetCmdBuildVeh(this->vehicle_type);
 			}
-			if (cargo == CF_ANY || cargo == CF_ENGINES) cargo = CF_NONE;
+			if (cargo == CargoFilterCriteria::CF_ANY || cargo == CargoFilterCriteria::CF_ENGINES) cargo = CargoFilterCriteria::CF_NONE;
 			DoCommandP(this->window_number, selected | (cargo << 24), 0, cmd, callback);
 
 			/* Update last used variant in hierarchy and refresh if necessary. */
@@ -3163,7 +3159,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 					this->loco.cargo_filter_criteria = static_cast<byte>(index);
 					_last_filter_criteria_loco = this->loco.cargo_filter[this->loco.cargo_filter_criteria];
 					/* deactivate filter if criteria is 'Show All', activate it otherwise */
-					this->loco.eng_list.SetFilterState(this->loco.cargo_filter[this->loco.cargo_filter_criteria] != CF_ANY);
+					this->loco.eng_list.SetFilterState(this->loco.cargo_filter[this->loco.cargo_filter_criteria] != CargoFilterCriteria::CF_ANY);
 					this->loco.eng_list.ForceRebuild();
 				}
 				break;
@@ -3183,7 +3179,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 					this->wagon.cargo_filter_criteria = static_cast<byte>(index);
 					_last_filter_criteria_wagon = this->wagon.cargo_filter[this->wagon.cargo_filter_criteria];
 					/* deactivate filter if criteria is 'Show All', activate it otherwise */
-					this->wagon.eng_list.SetFilterState(this->wagon.cargo_filter[this->wagon.cargo_filter_criteria] != CF_ANY);
+					this->wagon.eng_list.SetFilterState(this->wagon.cargo_filter[this->wagon.cargo_filter_criteria] != CargoFilterCriteria::CF_ANY);
 					this->wagon.eng_list.ForceRebuild();
 				}
 				break;

@@ -111,16 +111,16 @@ CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 
 	/* Validate the cargo type. */
 	CargoID cargo = GB(p1, 24, 8);
-	if (cargo >= NUM_CARGO && cargo != CT_INVALID) return CMD_ERROR;
+	if (cargo >= NUM_CARGO && cargo != INVALID_CARGO) return CMD_ERROR;
 
 	const Engine *e = Engine::Get(eid);
 	CommandCost value(EXPENSES_NEW_VEHICLES, e->GetCost());
 
 	/* Engines without valid cargo should not be available */
 	CargoID default_cargo = e->GetDefaultCargoType();
-	if (default_cargo == CT_INVALID) return CMD_ERROR;
+	if (default_cargo == INVALID_CARGO) return CMD_ERROR;
 
-	bool refitting = cargo != CT_INVALID && cargo != default_cargo;
+	bool refitting = cargo != INVALID_CARGO && cargo != default_cargo;
 
 	/* Check whether the number of vehicles we need to build can be built according to pool space. */
 	uint num_vehicles;
@@ -1550,7 +1550,7 @@ CommandCost CmdCloneVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 		DoCommandFlag build_flags = flags;
 		if ((flags & DC_EXEC) && !v->IsPrimaryVehicle()) build_flags |= DC_AUTOREPLACE;
 
-		CommandCost cost = DoCommand(tile, v->engine_type | (1 << 16) | (CT_INVALID << 24), 0, build_flags, GetCmdBuildVeh(v));
+		CommandCost cost = DoCommand(tile, v->engine_type | (1 << 16) | (INVALID_CARGO << 24), 0, build_flags, GetCmdBuildVeh(v));
 
 		if (cost.Failed()) {
 			/* Can't build a part, then sell the stuff we already made; clear up the mess */
@@ -1630,9 +1630,9 @@ CommandCost CmdCloneVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 				}
 			} else {
 				const Engine *e = v->GetEngine();
-				CargoID initial_cargo = (e->CanCarryCargo() ? e->GetDefaultCargoType() : (CargoID)CT_INVALID);
+				CargoID initial_cargo = (e->CanCarryCargo() ? e->GetDefaultCargoType() : INVALID_CARGO);
 
-				if (v->cargo_type != initial_cargo && initial_cargo != CT_INVALID) {
+				if (v->cargo_type != initial_cargo && initial_cargo != INVALID_CARGO) {
 					bool dummy;
 					total_cost.AddCost(GetRefitCost(nullptr, v->engine_type, v->cargo_type, v->cargo_subtype, &dummy));
 				}

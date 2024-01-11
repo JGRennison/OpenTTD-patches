@@ -376,11 +376,11 @@ static int ScriptOrderPositionToRealOrderPosition(VehicleID vehicle_id, ScriptOr
 
 /* static */ CargoID ScriptOrder::GetOrderRefit(VehicleID vehicle_id, OrderPosition order_position)
 {
-	if (!IsValidVehicleOrder(vehicle_id, order_position)) return CT_NO_REFIT;
-	if (order_position != ORDER_CURRENT && !IsGotoStationOrder(vehicle_id, order_position) && !IsGotoDepotOrder(vehicle_id, order_position)) return CT_NO_REFIT;
+	if (!IsValidVehicleOrder(vehicle_id, order_position)) return CARGO_NO_REFIT;
+	if (order_position != ORDER_CURRENT && !IsGotoStationOrder(vehicle_id, order_position) && !IsGotoDepotOrder(vehicle_id, order_position)) return CARGO_NO_REFIT;
 
 	const Order *order = ::ResolveOrder(vehicle_id, order_position);
-	return order->IsRefit() ? order->GetRefitCargo() : (CargoID)CT_NO_REFIT;
+	return order->IsRefit() ? order->GetRefitCargo() : CARGO_NO_REFIT;
 }
 
 /* static */ bool ScriptOrder::SetOrderJumpTo(VehicleID vehicle_id, OrderPosition order_position, OrderPosition jump_to)
@@ -446,8 +446,8 @@ static int ScriptOrderPositionToRealOrderPosition(VehicleID vehicle_id, ScriptOr
 {
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, IsValidVehicleOrder(vehicle_id, order_position));
-	EnforcePrecondition(false, IsGotoStationOrder(vehicle_id, order_position) || (IsGotoDepotOrder(vehicle_id, order_position) && refit_cargo != CT_AUTO_REFIT));
-	EnforcePrecondition(false, ScriptCargo::IsValidCargo(refit_cargo) || refit_cargo == CT_AUTO_REFIT || refit_cargo == CT_NO_REFIT);
+	EnforcePrecondition(false, IsGotoStationOrder(vehicle_id, order_position) || (IsGotoDepotOrder(vehicle_id, order_position) && refit_cargo != CARGO_AUTO_REFIT));
+	EnforcePrecondition(false, ScriptCargo::IsValidCargo(refit_cargo) || refit_cargo == CARGO_AUTO_REFIT || refit_cargo == CARGO_NO_REFIT);
 
 	uint32_t p1 = vehicle_id;
 	uint32_t p2 = refit_cargo | ScriptOrderPositionToRealOrderPosition(vehicle_id, ScriptOrder::ResolveOrderPosition(vehicle_id, order_position)) << 16;

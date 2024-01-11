@@ -23,7 +23,7 @@
  * Only the cargo type of the most saturated linkgraph is taken into account.
  */
 struct LinkProperties {
-	LinkProperties() : capacity(0), usage(0), planned(0), cargo(CT_INVALID), time(0), shared(false) {}
+	LinkProperties() : capacity(0), usage(0), planned(0), cargo(INVALID_CARGO), time(0), shared(false) {}
 
 	/** Return the usage of the link to display. */
 	uint Usage() const { return std::max(this->usage, this->planned); }

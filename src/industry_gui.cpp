@@ -166,7 +166,7 @@ enum CargoSuffixInOut {
  * @param ind the industry (nullptr if in fund window)
  * @param ind_type the industry type
  * @param indspec the industry spec
- * @param cargoes array with cargotypes. for CT_INVALID no suffix will be determined
+ * @param cargoes array with cargotypes. for INVALID_CARGO no suffix will be determined
  * @param suffixes is filled with the suffixes
  */
 template <typename TC, typename TS>
@@ -177,7 +177,7 @@ static inline void GetAllCargoSuffixes(CargoSuffixInOut use_input, CargoSuffixTy
 	if (indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED) {
 		/* Reworked behaviour with new many-in-many-out scheme */
 		for (uint j = 0; j < lengthof(suffixes); j++) {
-			if (cargoes[j] != CT_INVALID) {
+			if (cargoes[j] != INVALID_CARGO) {
 				byte local_id = indspec->grf_prop.grffile->cargo_map[cargoes[j]]; // should we check the value for valid?
 				uint cargotype = local_id << 16 | use_input;
 				GetCargoSuffix(cargotype, cst, ind, ind_type, indspec, suffixes[j]);
@@ -194,13 +194,13 @@ static inline void GetAllCargoSuffixes(CargoSuffixInOut use_input, CargoSuffixTy
 		}
 		switch (use_input) {
 			case CARGOSUFFIX_OUT:
-				if (cargoes[0] != CT_INVALID) GetCargoSuffix(3, cst, ind, ind_type, indspec, suffixes[0]);
-				if (cargoes[1] != CT_INVALID) GetCargoSuffix(4, cst, ind, ind_type, indspec, suffixes[1]);
+				if (cargoes[0] != INVALID_CARGO) GetCargoSuffix(3, cst, ind, ind_type, indspec, suffixes[0]);
+				if (cargoes[1] != INVALID_CARGO) GetCargoSuffix(4, cst, ind, ind_type, indspec, suffixes[1]);
 				break;
 			case CARGOSUFFIX_IN:
-				if (cargoes[0] != CT_INVALID) GetCargoSuffix(0, cst, ind, ind_type, indspec, suffixes[0]);
-				if (cargoes[1] != CT_INVALID) GetCargoSuffix(1, cst, ind, ind_type, indspec, suffixes[1]);
-				if (cargoes[2] != CT_INVALID) GetCargoSuffix(2, cst, ind, ind_type, indspec, suffixes[2]);
+				if (cargoes[0] != INVALID_CARGO) GetCargoSuffix(0, cst, ind, ind_type, indspec, suffixes[0]);
+				if (cargoes[1] != INVALID_CARGO) GetCargoSuffix(1, cst, ind, ind_type, indspec, suffixes[1]);
+				if (cargoes[2] != INVALID_CARGO) GetCargoSuffix(2, cst, ind, ind_type, indspec, suffixes[2]);
 				break;
 			default:
 				NOT_REACHED();
@@ -366,7 +366,7 @@ class BuildIndustryWindow : public Window {
 
 		size_t j = 0;
 		for (; j < cargolistlen; j++) {
-			if (cargolist[j] == CT_INVALID) continue;
+			if (cargolist[j] == INVALID_CARGO) continue;
 			if (firstcargo == cargolistlen) {
 				firstcargo = j;
 				j++;
@@ -385,7 +385,7 @@ class BuildIndustryWindow : public Window {
 		}
 
 		for (; j < cargolistlen; j++) {
-			if (cargolist[j] == CT_INVALID) continue;
+			if (cargolist[j] == INVALID_CARGO) continue;
 			SetDParam(0, CargoSpec::Get(cargolist[j])->name);
 			SetDParamStr(1, cargo_suffix[j].text);
 			GetString(StringBuilder(cargostring), STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION);
@@ -868,7 +868,7 @@ public:
 		bool stockpiling = HasBit(ind->callback_mask, CBM_IND_PRODUCTION_CARGO_ARRIVAL) || HasBit(ind->callback_mask, CBM_IND_PRODUCTION_256_TICKS);
 
 		for (byte j = 0; j < lengthof(i->accepts_cargo); j++) {
-			if (i->accepts_cargo[j] == CT_INVALID) continue;
+			if (i->accepts_cargo[j] == INVALID_CARGO) continue;
 			has_accept = true;
 			if (first) {
 				DrawString(ir, STR_INDUSTRY_VIEW_REQUIRES);
@@ -908,7 +908,7 @@ public:
 		int button_y_offset = (line_height - SETTING_BUTTON_HEIGHT) / 2;
 		first = true;
 		for (byte j = 0; j < lengthof(i->produced_cargo); j++) {
-			if (i->produced_cargo[j] == CT_INVALID) continue;
+			if (i->produced_cargo[j] == INVALID_CARGO) continue;
 			if (first) {
 				if (has_accept) ir.top += WidgetDimensions::scaled.vsep_wide;
 				DrawString(ir, STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE);
@@ -1004,7 +1004,7 @@ public:
 						if (pt.y >= this->production_offset_y) {
 							int row = (pt.y - this->production_offset_y) / this->cheat_line_height;
 							for (uint j = 0; j < lengthof(i->produced_cargo); j++) {
-								if (i->produced_cargo[j] == CT_INVALID) continue;
+								if (i->produced_cargo[j] == INVALID_CARGO) continue;
 								row--;
 								if (row < 0) {
 									line = (InfoLine)(IL_RATE1 + j);
@@ -1163,7 +1163,7 @@ static void UpdateIndustryProduction(Industry *i)
 	if (indspec->UsesOriginalEconomy()) i->RecomputeProductionMultipliers();
 
 	for (byte j = 0; j < lengthof(i->produced_cargo); j++) {
-		if (i->produced_cargo[j] != CT_INVALID) {
+		if (i->produced_cargo[j] != INVALID_CARGO) {
 			i->last_month_production[j] = ScaleQuantity(8 * i->production_rate[j], _settings_game.economy.industry_cargo_scale_factor);
 		}
 	}
@@ -1240,12 +1240,6 @@ static const NWidgetPart _nested_industry_directory_widgets[] = {
 
 typedef GUIList<const Industry *, const CargoID &, const std::pair<CargoID, CargoID> &> GUIIndustryList;
 
-/** Special cargo filter criteria */
-enum CargoFilterSpecialType {
-	CF_ANY  = CT_NO_REFIT, ///< Show all industries (i.e. no filtering)
-	CF_NONE = CT_INVALID,  ///< Show only industries which do not produce/accept cargo
-};
-
 /** Cargo filter functions */
 /**
  * Check whether an industry accepts and produces a certain cargo pair.
@@ -1261,11 +1255,11 @@ static bool CargoFilter(const Industry * const *industry, const std::pair<CargoI
 	bool accepted_cargo_matches;
 
 	switch (accepted_cargo) {
-		case CF_ANY:
+		case CargoFilterCriteria::CF_ANY:
 			accepted_cargo_matches = true;
 			break;
 
-		case CF_NONE:
+		case CargoFilterCriteria::CF_NONE:
 			accepted_cargo_matches = !(*industry)->IsCargoAccepted();
 			break;
 
@@ -1277,11 +1271,11 @@ static bool CargoFilter(const Industry * const *industry, const std::pair<CargoI
 	bool produced_cargo_matches;
 
 	switch (produced_cargo) {
-		case CF_ANY:
+		case CargoFilterCriteria::CF_ANY:
 			produced_cargo_matches = true;
 			break;
 
-		case CF_NONE:
+		case CargoFilterCriteria::CF_NONE:
 			produced_cargo_matches = !(*industry)->IsCargoProduced();
 			break;
 
@@ -1339,7 +1333,7 @@ protected:
 		if (this->produced_cargo_filter_criteria != cid) {
 			this->produced_cargo_filter_criteria = cid;
 			/* deactivate filter if criteria is 'Show All', activate it otherwise */
-			bool is_filtering_necessary = this->produced_cargo_filter_criteria != CF_ANY || this->accepted_cargo_filter_criteria != CF_ANY;
+			bool is_filtering_necessary = this->produced_cargo_filter_criteria != CargoFilterCriteria::CF_ANY || this->accepted_cargo_filter_criteria != CargoFilterCriteria::CF_ANY;
 
 			this->industries.SetFilterState(is_filtering_necessary);
 			this->industries.SetFilterType(0);
@@ -1356,7 +1350,7 @@ protected:
 		if (this->accepted_cargo_filter_criteria != cid) {
 			this->accepted_cargo_filter_criteria = cid;
 			/* deactivate filter if criteria is 'Show All', activate it otherwise */
-			bool is_filtering_necessary = this->produced_cargo_filter_criteria != CF_ANY || this->accepted_cargo_filter_criteria != CF_ANY;
+			bool is_filtering_necessary = this->produced_cargo_filter_criteria != CargoFilterCriteria::CF_ANY || this->accepted_cargo_filter_criteria != CargoFilterCriteria::CF_ANY;
 
 			this->industries.SetFilterState(is_filtering_necessary);
 			this->industries.SetFilterType(0);
@@ -1367,8 +1361,8 @@ protected:
 	StringID GetCargoFilterLabel(CargoID cid) const
 	{
 		switch (cid) {
-			case CF_ANY: return STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES;
-			case CF_NONE: return STR_INDUSTRY_DIRECTORY_FILTER_NONE;
+			case CargoFilterCriteria::CF_ANY: return STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES;
+			case CargoFilterCriteria::CF_NONE: return STR_INDUSTRY_DIRECTORY_FILTER_NONE;
 			default: return CargoSpec::Get(cid)->name;
 		}
 	}
@@ -1378,12 +1372,12 @@ protected:
 	 */
 	void SetCargoFilterArray()
 	{
-		this->produced_cargo_filter_criteria = CF_ANY;
-		this->accepted_cargo_filter_criteria = CF_ANY;
+		this->produced_cargo_filter_criteria = CargoFilterCriteria::CF_ANY;
+		this->accepted_cargo_filter_criteria = CargoFilterCriteria::CF_ANY;
 
 		this->industries.SetFilterFuncs(_filter_funcs);
 
-		bool is_filtering_necessary = this->produced_cargo_filter_criteria != CF_ANY || this->accepted_cargo_filter_criteria != CF_ANY;
+		bool is_filtering_necessary = this->produced_cargo_filter_criteria != CargoFilterCriteria::CF_ANY || this->accepted_cargo_filter_criteria != CargoFilterCriteria::CF_ANY;
 
 		this->industries.SetFilterState(is_filtering_necessary);
 	}
@@ -1445,7 +1439,7 @@ protected:
 	{
 		assert(id < lengthof(i->produced_cargo));
 
-		if (i->produced_cargo[id] == CT_INVALID) return -1;
+		if (i->produced_cargo[id] == INVALID_CARGO) return -1;
 		return ToPercent8(i->last_month_pct_transported[id]);
 	}
 
@@ -1459,11 +1453,11 @@ protected:
 	static int GetCargoTransportedSortValue(const Industry *i)
 	{
 		CargoID filter = IndustryDirectoryWindow::produced_cargo_filter;
-		if (filter == CF_NONE) return 0;
+		if (filter == CargoFilterCriteria::CF_NONE) return 0;
 
 		int percentage = 0, produced_cargo_count = 0;
 		for (uint id = 0; id < lengthof(i->produced_cargo); id++) {
-			if (filter == CF_ANY) {
+			if (filter == CargoFilterCriteria::CF_ANY) {
 				int transported = GetCargoTransportedPercentsIfValid(i, id);
 				if (transported != -1) {
 					produced_cargo_count++;
@@ -1503,13 +1497,13 @@ protected:
 	/** Sort industries by production and name */
 	static bool IndustryProductionSorter(const Industry * const &a, const Industry * const &b, const CargoID &filter)
 	{
-		if (filter == CF_NONE) return IndustryTypeSorter(a, b, filter);
+		if (filter == CargoFilterCriteria::CF_NONE) return IndustryTypeSorter(a, b, filter);
 
 		uint prod_a = 0, prod_b = 0;
 		for (uint i = 0; i < lengthof(a->produced_cargo); i++) {
-			if (filter == CF_ANY) {
-				if (a->produced_cargo[i] != CT_INVALID) prod_a += a->last_month_production[i];
-				if (b->produced_cargo[i] != CT_INVALID) prod_b += b->last_month_production[i];
+			if (filter == CargoFilterCriteria::CF_ANY) {
+				if (a->produced_cargo[i] != INVALID_CARGO) prod_a += a->last_month_production[i];
+				if (b->produced_cargo[i] != INVALID_CARGO) prod_b += b->last_month_production[i];
 			} else {
 				if (a->produced_cargo[i] == filter) prod_a += a->last_month_production[i];
 				if (b->produced_cargo[i] == filter) prod_b += b->last_month_production[i];
@@ -1553,7 +1547,7 @@ protected:
 		std::vector<CargoInfo> cargos;
 
 		for (byte j = 0; j < lengthof(i->produced_cargo); j++) {
-			if (i->produced_cargo[j] == CT_INVALID) continue;
+			if (i->produced_cargo[j] == INVALID_CARGO) continue;
 			cargos.push_back({ i->produced_cargo[j], i->last_month_production[j], cargo_suffix[j].text.c_str(), ToPercent8(i->last_month_pct_transported[j]) });
 		}
 
@@ -1580,7 +1574,7 @@ protected:
 		/* If the produced cargo filter is active then move the filtered cargo to the beginning of the list,
 		 * because this is the one the player interested in, and that way it is not hidden in the 'n' more cargos */
 		const CargoID cid = this->produced_cargo_filter_criteria;
-		if (cid != CF_ANY && cid != CF_NONE) {
+		if (cid != CargoFilterCriteria::CF_ANY && cid != CargoFilterCriteria::CF_NONE) {
 			auto filtered_ci = std::find_if(cargos.begin(), cargos.end(), [cid](const CargoInfo &ci) -> bool {
 				return ci.cargo_id == cid;
 			});
@@ -1689,7 +1683,7 @@ public:
 				const CargoID acf_cid = this->accepted_cargo_filter_criteria;
 				for (uint i = this->vscroll->GetPosition(); i < this->industries.size(); i++) {
 					TextColour tc = TC_FROMSTRING;
-					if (acf_cid != CF_ANY && acf_cid != CF_NONE) {
+					if (acf_cid != CargoFilterCriteria::CF_ANY && acf_cid != CargoFilterCriteria::CF_NONE) {
 						Industry *ind = const_cast<Industry *>(this->industries[i]);
 						if (IndustryTemporarilyRefusesCargo(ind, acf_cid)) {
 							tc = TC_GREY | TC_FORCED;
@@ -1744,9 +1738,9 @@ public:
 		DropDownList list;
 
 		/* Add item for disabling filtering. */
-		list.push_back(std::make_unique<DropDownListStringItem>(this->GetCargoFilterLabel(CF_ANY), CF_ANY, false));
+		list.push_back(std::make_unique<DropDownListStringItem>(this->GetCargoFilterLabel(CargoFilterCriteria::CF_ANY), CargoFilterCriteria::CF_ANY, false));
 		/* Add item for industries not producing anything, e.g. power plants */
-		list.push_back(std::make_unique<DropDownListStringItem>(this->GetCargoFilterLabel(CF_NONE), CF_NONE, false));
+		list.push_back(std::make_unique<DropDownListStringItem>(this->GetCargoFilterLabel(CargoFilterCriteria::CF_NONE), CargoFilterCriteria::CF_NONE, false));
 
 		/* Add cargos */
 		Dimension d = GetLargestCargoIconSize();
@@ -1906,7 +1900,7 @@ const StringID IndustryDirectoryWindow::sorter_names[] = {
 	INVALID_STRING_ID
 };
 
-CargoID IndustryDirectoryWindow::produced_cargo_filter = CF_ANY;
+CargoID IndustryDirectoryWindow::produced_cargo_filter = CargoFilterCriteria::CF_ANY;
 
 
 /** Window definition of the industry directory gui */
@@ -2000,15 +1994,15 @@ struct CargoesField {
 			CargoID other_accepted[MAX_CARGOES];   ///< Cargoes accepted but not used in this figure.
 		} industry; ///< Industry data (for #CFT_INDUSTRY).
 		struct {
-			CargoID vertical_cargoes[MAX_CARGOES]; ///< Cargoes running from top to bottom (cargo ID or #CT_INVALID).
+			CargoID vertical_cargoes[MAX_CARGOES]; ///< Cargoes running from top to bottom (cargo ID or #INVALID_CARGO).
 			uint8_t num_cargoes;                   ///< Number of cargoes.
-			CargoID supp_cargoes[MAX_CARGOES];     ///< Cargoes entering from the left (index in #vertical_cargoes, or #CT_INVALID).
+			CargoID supp_cargoes[MAX_CARGOES];     ///< Cargoes entering from the left (index in #vertical_cargoes, or #INVALID_CARGO).
 			uint8_t top_end;                       ///< Stop at the top of the vertical cargoes.
-			CargoID cust_cargoes[MAX_CARGOES];     ///< Cargoes leaving to the right (index in #vertical_cargoes, or #CT_INVALID).
+			CargoID cust_cargoes[MAX_CARGOES];     ///< Cargoes leaving to the right (index in #vertical_cargoes, or #INVALID_CARGO).
 			uint8_t bottom_end;                    ///< Stop at the bottom of the vertical cargoes.
 		} cargo; ///< Cargo data (for #CFT_CARGO).
 		struct {
-			CargoID cargoes[MAX_CARGOES];          ///< Cargoes to display (or #CT_INVALID).
+			CargoID cargoes[MAX_CARGOES];          ///< Cargoes to display (or #INVALID_CARGO).
 			bool left_align;                       ///< Align all cargo texts to the left (else align to the right).
 		} cargo_label;   ///< Label data (for #CFT_CARGO_LABEL).
 		StringID header; ///< Header text (for #CFT_HEADER).
@@ -2032,8 +2026,8 @@ struct CargoesField {
 	{
 		this->type = CFT_INDUSTRY;
 		this->u.industry.ind_type = ind_type;
-		std::fill(std::begin(this->u.industry.other_accepted), std::end(this->u.industry.other_accepted), CT_INVALID);
-		std::fill(std::begin(this->u.industry.other_produced), std::end(this->u.industry.other_produced), CT_INVALID);
+		std::fill(std::begin(this->u.industry.other_accepted), std::end(this->u.industry.other_accepted), INVALID_CARGO);
+		std::fill(std::begin(this->u.industry.other_produced), std::end(this->u.industry.other_produced), INVALID_CARGO);
 	}
 
 	/**
@@ -2045,7 +2039,7 @@ struct CargoesField {
 	int ConnectCargo(CargoID cargo, bool producer)
 	{
 		assert(this->type == CFT_CARGO);
-		if (cargo == CT_INVALID) return -1;
+		if (cargo == INVALID_CARGO) return -1;
 
 		/* Find the vertical cargo column carrying the cargo. */
 		int column = -1;
@@ -2058,10 +2052,10 @@ struct CargoesField {
 		if (column < 0) return -1;
 
 		if (producer) {
-			assert(this->u.cargo.supp_cargoes[column] == CT_INVALID);
+			assert(this->u.cargo.supp_cargoes[column] == INVALID_CARGO);
 			this->u.cargo.supp_cargoes[column]  = column;
 		} else {
-			assert(this->u.cargo.cust_cargoes[column] == CT_INVALID);
+			assert(this->u.cargo.cust_cargoes[column] == INVALID_CARGO);
 			this->u.cargo.cust_cargoes[column] = column;
 		}
 		return column;
@@ -2076,15 +2070,15 @@ struct CargoesField {
 		assert(this->type == CFT_CARGO);
 
 		for (uint i = 0; i < MAX_CARGOES; i++) {
-			if (this->u.cargo.supp_cargoes[i] != CT_INVALID) return true;
-			if (this->u.cargo.cust_cargoes[i] != CT_INVALID) return true;
+			if (this->u.cargo.supp_cargoes[i] != INVALID_CARGO) return true;
+			if (this->u.cargo.cust_cargoes[i] != INVALID_CARGO) return true;
 		}
 		return false;
 	}
 
 	/**
 	 * Make a piece of cargo column.
-	 * @param cargoes    Array of #CargoID (may contain #CT_INVALID).
+	 * @param cargoes    Array of #CargoID (may contain #INVALID_CARGO).
 	 * @param length     Number of cargoes in \a cargoes.
 	 * @param count      Number of cargoes to display (should be at least the number of valid cargoes, or \c -1 to let the method compute it).
 	 * @param top_end    This is the first cargo field of this column.
@@ -2096,7 +2090,7 @@ struct CargoesField {
 		this->type = CFT_CARGO;
 		auto insert = std::begin(this->u.cargo.vertical_cargoes);
 		for (size_t i = 0; insert != std::end(this->u.cargo.vertical_cargoes) && i < length; i++) {
-			if (cargoes[i] != CT_INVALID) {
+			if (cargoes[i] != INVALID_CARGO) {
 				*insert = cargoes[i];
 				++insert;
 			}
@@ -2104,16 +2098,16 @@ struct CargoesField {
 		this->u.cargo.num_cargoes = (count < 0) ? static_cast<uint8_t>(insert - std::begin(this->u.cargo.vertical_cargoes)) : count;
 		CargoIDComparator comparator;
 		std::sort(std::begin(this->u.cargo.vertical_cargoes), insert, comparator);
-		std::fill(insert, std::end(this->u.cargo.vertical_cargoes), CT_INVALID);
+		std::fill(insert, std::end(this->u.cargo.vertical_cargoes), INVALID_CARGO);
 		this->u.cargo.top_end = top_end;
 		this->u.cargo.bottom_end = bottom_end;
-		std::fill(std::begin(this->u.cargo.supp_cargoes), std::end(this->u.cargo.supp_cargoes), CT_INVALID);
-		std::fill(std::begin(this->u.cargo.cust_cargoes), std::end(this->u.cargo.cust_cargoes), CT_INVALID);
+		std::fill(std::begin(this->u.cargo.supp_cargoes), std::end(this->u.cargo.supp_cargoes), INVALID_CARGO);
+		std::fill(std::begin(this->u.cargo.cust_cargoes), std::end(this->u.cargo.cust_cargoes), INVALID_CARGO);
 	}
 
 	/**
 	 * Make a field displaying cargo type names.
-	 * @param cargoes    Array of #CargoID (may contain #CT_INVALID).
+	 * @param cargoes    Array of #CargoID (may contain #INVALID_CARGO).
 	 * @param length     Number of cargoes in \a cargoes.
 	 * @param left_align ALign texts to the left (else to the right).
 	 */
@@ -2122,7 +2116,7 @@ struct CargoesField {
 		this->type = CFT_CARGO_LABEL;
 		uint i;
 		for (i = 0; i < MAX_CARGOES && i < length; i++) this->u.cargo_label.cargoes[i] = cargoes[i];
-		for (; i < MAX_CARGOES; i++) this->u.cargo_label.cargoes[i] = CT_INVALID;
+		for (; i < MAX_CARGOES; i++) this->u.cargo_label.cargoes[i] = INVALID_CARGO;
 		this->u.cargo_label.left_align = left_align;
 	}
 
@@ -2202,13 +2196,13 @@ struct CargoesField {
 				}
 				ypos1 += CargoesField::cargo_border.height + (GetCharacterHeight(FS_NORMAL) - CargoesField::cargo_line.height) / 2;
 				for (uint i = 0; i < CargoesField::max_cargoes; i++) {
-					if (other_right[i] != CT_INVALID) {
+					if (other_right[i] != INVALID_CARGO) {
 						const CargoSpec *csp = CargoSpec::Get(other_right[i]);
 						int xp = xpos + industry_width + CargoesField::cargo_stub.width;
 						DrawHorConnection(xpos + industry_width, xp - 1, ypos1, csp);
 						GfxDrawLine(xp, ypos1, xp, ypos1 + CargoesField::cargo_line.height - 1, CARGO_LINE_COLOUR);
 					}
-					if (other_left[i] != CT_INVALID) {
+					if (other_left[i] != INVALID_CARGO) {
 						const CargoSpec *csp = CargoSpec::Get(other_left[i]);
 						int xp = xpos - CargoesField::cargo_stub.width;
 						DrawHorConnection(xp + 1, xpos - 1, ypos1, csp);
@@ -2246,7 +2240,7 @@ struct CargoesField {
 				}
 				ypos += CargoesField::cargo_border.height + vert_inter_industry_space / 2 + (GetCharacterHeight(FS_NORMAL) - CargoesField::cargo_line.height) / 2;
 				for (uint i = 0; i < MAX_CARGOES; i++) {
-					if (hor_left[i] != CT_INVALID) {
+					if (hor_left[i] != INVALID_CARGO) {
 						int col = hor_left[i];
 						int dx = 0;
 						const CargoSpec *csp = CargoSpec::Get(this->u.cargo.vertical_cargoes[col]);
@@ -2257,7 +2251,7 @@ struct CargoesField {
 						}
 						DrawHorConnection(xpos, cargo_base - dx, ypos, csp);
 					}
-					if (hor_right[i] != CT_INVALID) {
+					if (hor_right[i] != INVALID_CARGO) {
 						int col = hor_right[i];
 						int dx = 0;
 						const CargoSpec *csp = CargoSpec::Get(this->u.cargo.vertical_cargoes[col]);
@@ -2276,7 +2270,7 @@ struct CargoesField {
 			case CFT_CARGO_LABEL:
 				ypos += CargoesField::cargo_border.height + vert_inter_industry_space / 2;
 				for (uint i = 0; i < MAX_CARGOES; i++) {
-					if (this->u.cargo_label.cargoes[i] != CT_INVALID) {
+					if (this->u.cargo_label.cargoes[i] != INVALID_CARGO) {
 						const CargoSpec *csp = CargoSpec::Get(this->u.cargo_label.cargoes[i]);
 						DrawString(xpos + WidgetDimensions::scaled.framerect.left, xpos + industry_width - 1 - WidgetDimensions::scaled.framerect.right, ypos, csp->name, TC_WHITE,
 								(this->u.cargo_label.left_align) ? SA_LEFT : SA_RIGHT);
@@ -2295,7 +2289,7 @@ struct CargoesField {
 	 * @param left  Left industry neighbour if available (else \c nullptr should be supplied).
 	 * @param right Right industry neighbour if available (else \c nullptr should be supplied).
 	 * @param pt    Click position in the cargo field.
-	 * @return Cargo clicked at, or #CT_INVALID if none.
+	 * @return Cargo clicked at, or #INVALID_CARGO if none.
 	 */
 	CargoID CargoClickedAt(const CargoesField *left, const CargoesField *right, Point pt) const
 	{
@@ -2314,50 +2308,50 @@ struct CargoesField {
 		int vpos = vert_inter_industry_space / 2 + CargoesField::cargo_border.width;
 		uint row;
 		for (row = 0; row < MAX_CARGOES; row++) {
-			if (pt.y < vpos) return CT_INVALID;
+			if (pt.y < vpos) return INVALID_CARGO;
 			if (pt.y < vpos + GetCharacterHeight(FS_NORMAL)) break;
 			vpos += GetCharacterHeight(FS_NORMAL) + CargoesField::cargo_space.width;
 		}
-		if (row == MAX_CARGOES) return CT_INVALID;
+		if (row == MAX_CARGOES) return INVALID_CARGO;
 
 		/* row = 0 -> at first horizontal row, row = 1 -> second horizontal row, 2 = 3rd horizontal row. */
 		if (col == 0) {
-			if (this->u.cargo.supp_cargoes[row] != CT_INVALID) return this->u.cargo.vertical_cargoes[this->u.cargo.supp_cargoes[row]];
+			if (this->u.cargo.supp_cargoes[row] != INVALID_CARGO) return this->u.cargo.vertical_cargoes[this->u.cargo.supp_cargoes[row]];
 			if (left != nullptr) {
 				if (left->type == CFT_INDUSTRY) return left->u.industry.other_produced[row];
 				if (left->type == CFT_CARGO_LABEL && !left->u.cargo_label.left_align) return left->u.cargo_label.cargoes[row];
 			}
-			return CT_INVALID;
+			return INVALID_CARGO;
 		}
 		if (col == this->u.cargo.num_cargoes) {
-			if (this->u.cargo.cust_cargoes[row] != CT_INVALID) return this->u.cargo.vertical_cargoes[this->u.cargo.cust_cargoes[row]];
+			if (this->u.cargo.cust_cargoes[row] != INVALID_CARGO) return this->u.cargo.vertical_cargoes[this->u.cargo.cust_cargoes[row]];
 			if (right != nullptr) {
 				if (right->type == CFT_INDUSTRY) return right->u.industry.other_accepted[row];
 				if (right->type == CFT_CARGO_LABEL && right->u.cargo_label.left_align) return right->u.cargo_label.cargoes[row];
 			}
-			return CT_INVALID;
+			return INVALID_CARGO;
 		}
 		if (row >= col) {
 			/* Clicked somewhere in-between vertical cargo connection.
 			 * Since the horizontal connection is made in the same order as the vertical list, the above condition
 			 * ensures we are left-below the main diagonal, thus at the supplying side.
 			 */
-			if (this->u.cargo.supp_cargoes[row] == CT_INVALID) return CT_INVALID;
+			if (this->u.cargo.supp_cargoes[row] == INVALID_CARGO) return INVALID_CARGO;
 			return this->u.cargo.vertical_cargoes[this->u.cargo.supp_cargoes[row]];
 		} else {
 			/* Clicked at a customer connection. */
-			if (this->u.cargo.cust_cargoes[row] == CT_INVALID) return CT_INVALID;
+			if (this->u.cargo.cust_cargoes[row] == INVALID_CARGO) return INVALID_CARGO;
 			return this->u.cargo.vertical_cargoes[this->u.cargo.cust_cargoes[row]];
 		}
 		/* Clicked at a customer connection. */
 		if (IsValidCargoID(this->u.cargo.cust_cargoes[row])) return this->u.cargo.vertical_cargoes[this->u.cargo.cust_cargoes[row]];
-		return CT_INVALID;
+		return INVALID_CARGO;
 	}
 
 	/**
 	 * Decide what cargo the user clicked in the cargo label field.
 	 * @param pt Click position in the cargo label field.
-	 * @return Cargo clicked at, or #CT_INVALID if none.
+	 * @return Cargo clicked at, or #INVALID_CARGO if none.
 	 */
 	CargoID CargoLabelClickedAt(Point pt) const
 	{
@@ -2366,11 +2360,11 @@ struct CargoesField {
 		int vpos = vert_inter_industry_space / 2 + CargoesField::cargo_border.height;
 		uint row;
 		for (row = 0; row < MAX_CARGOES; row++) {
-			if (pt.y < vpos) return CT_INVALID;
+			if (pt.y < vpos) return INVALID_CARGO;
 			if (pt.y < vpos + GetCharacterHeight(FS_NORMAL)) break;
 			vpos += GetCharacterHeight(FS_NORMAL) + CargoesField::cargo_space.height;
 		}
-		if (row == MAX_CARGOES) return CT_INVALID;
+		if (row == MAX_CARGOES) return INVALID_CARGO;
 		return this->u.cargo_label.cargoes[row];
 	}
 
@@ -2425,7 +2419,7 @@ struct CargoesRow {
 		CargoesField *cargo_fld = this->columns + column + 1;
 		assert(ind_fld->type == CFT_INDUSTRY && cargo_fld->type == CFT_CARGO);
 
-		std::fill(std::begin(ind_fld->u.industry.other_produced), std::end(ind_fld->u.industry.other_produced), CT_INVALID);
+		std::fill(std::begin(ind_fld->u.industry.other_produced), std::end(ind_fld->u.industry.other_produced), INVALID_CARGO);
 
 		if (ind_fld->u.industry.ind_type < NUM_INDUSTRYTYPES) {
 			CargoID others[MAX_CARGOES]; // Produced cargoes not carried in the cargo column.
@@ -2440,7 +2434,7 @@ struct CargoesRow {
 
 			/* Allocate other cargoes in the empty holes of the horizontal cargo connections. */
 			for (uint i = 0; i < CargoesField::max_cargoes && other_count > 0; i++) {
-				if (cargo_fld->u.cargo.supp_cargoes[i] == CT_INVALID) ind_fld->u.industry.other_produced[i] = others[--other_count];
+				if (cargo_fld->u.cargo.supp_cargoes[i] == INVALID_CARGO) ind_fld->u.industry.other_produced[i] = others[--other_count];
 			}
 		} else {
 			/* Houses only display what is demanded. */
@@ -2459,7 +2453,7 @@ struct CargoesRow {
 	void MakeCargoLabel(int column, bool accepting)
 	{
 		CargoID cargoes[MAX_CARGOES];
-		std::fill(std::begin(cargoes), std::end(cargoes), CT_INVALID);
+		std::fill(std::begin(cargoes), std::end(cargoes), INVALID_CARGO);
 
 		CargoesField *label_fld = this->columns + column;
 		CargoesField *cargo_fld = this->columns + (accepting ? column - 1 : column + 1);
@@ -2483,7 +2477,7 @@ struct CargoesRow {
 		CargoesField *cargo_fld = this->columns + column - 1;
 		assert(ind_fld->type == CFT_INDUSTRY && cargo_fld->type == CFT_CARGO);
 
-		std::fill(std::begin(ind_fld->u.industry.other_accepted), std::end(ind_fld->u.industry.other_accepted), CT_INVALID);
+		std::fill(std::begin(ind_fld->u.industry.other_accepted), std::end(ind_fld->u.industry.other_accepted), INVALID_CARGO);
 
 		if (ind_fld->u.industry.ind_type < NUM_INDUSTRYTYPES) {
 			CargoID others[MAX_CARGOES]; // Accepted cargoes not carried in the cargo column.
@@ -2498,7 +2492,7 @@ struct CargoesRow {
 
 			/* Allocate other cargoes in the empty holes of the horizontal cargo connections. */
 			for (uint i = 0; i < CargoesField::max_cargoes && other_count > 0; i++) {
-				if (cargo_fld->u.cargo.cust_cargoes[i] == CT_INVALID) ind_fld->u.industry.other_accepted[i] = others[--other_count];
+				if (cargo_fld->u.cargo.cust_cargoes[i] == INVALID_CARGO) ind_fld->u.industry.other_accepted[i] = others[--other_count];
 			}
 		} else {
 			/* Houses only display what is demanded. */
@@ -2680,7 +2674,7 @@ struct IndustryCargoesWindow : public Window {
 	static bool HasCommonValidCargo(const CargoID *cargoes1, size_t length1, const CargoID *cargoes2, size_t length2)
 	{
 		while (length1 > 0) {
-			if (*cargoes1 != CT_INVALID) {
+			if (*cargoes1 != INVALID_CARGO) {
 				for (size_t i = 0; i < length2; i++) if (*cargoes1 == cargoes2[i]) return true;
 			}
 			cargoes1++;
@@ -2698,7 +2692,7 @@ struct IndustryCargoesWindow : public Window {
 	static bool HousesCanSupply(const CargoID *cargoes, size_t length)
 	{
 		for (size_t i = 0; i < length; i++) {
-			if (cargoes[i] == CT_INVALID) continue;
+			if (cargoes[i] == INVALID_CARGO) continue;
 			if (cargoes[i] == CT_PASSENGERS || cargoes[i] == CT_MAIL) return true;
 		}
 		return false;
@@ -2721,7 +2715,7 @@ struct IndustryCargoesWindow : public Window {
 			default: NOT_REACHED();
 		}
 		for (size_t i = 0; i < length; i++) {
-			if (cargoes[i] == CT_INVALID) continue;
+			if (cargoes[i] == INVALID_CARGO) continue;
 
 			for (uint h = 0; h < NUM_HOUSES; h++) {
 				HouseSpec *hs = HouseSpec::Get(h);
@@ -3095,13 +3089,13 @@ struct IndustryCargoesWindow : public Window {
 						CargoesField *lft = (fieldxy.x > 0) ? this->fields[fieldxy.y].columns + fieldxy.x - 1 : nullptr;
 						CargoesField *rgt = (fieldxy.x < 4) ? this->fields[fieldxy.y].columns + fieldxy.x + 1 : nullptr;
 						CargoID cid = fld->CargoClickedAt(lft, rgt, xy);
-						if (cid != CT_INVALID) this->ComputeCargoDisplay(cid);
+						if (cid != INVALID_CARGO) this->ComputeCargoDisplay(cid);
 						break;
 					}
 
 					case CFT_CARGO_LABEL: {
 						CargoID cid = fld->CargoLabelClickedAt(xy);
-						if (cid != CT_INVALID) this->ComputeCargoDisplay(cid);
+						if (cid != INVALID_CARGO) this->ComputeCargoDisplay(cid);
 						break;
 					}
 
@@ -3197,7 +3191,7 @@ struct IndustryCargoesWindow : public Window {
 		if (!CalculatePositionInWidget(pt, &fieldxy, &xy)) return false;
 
 		const CargoesField *fld = this->fields[fieldxy.y].columns + fieldxy.x;
-		CargoID cid = CT_INVALID;
+		CargoID cid = INVALID_CARGO;
 		switch (fld->type) {
 			case CFT_CARGO: {
 				CargoesField *lft = (fieldxy.x > 0) ? this->fields[fieldxy.y].columns + fieldxy.x - 1 : nullptr;
@@ -3220,7 +3214,7 @@ struct IndustryCargoesWindow : public Window {
 			default:
 				break;
 		}
-		if (cid != CT_INVALID && (this->ind_cargo < NUM_INDUSTRYTYPES || cid != this->ind_cargo - NUM_INDUSTRYTYPES)) {
+		if (cid != INVALID_CARGO && (this->ind_cargo < NUM_INDUSTRYTYPES || cid != this->ind_cargo - NUM_INDUSTRYTYPES)) {
 			const CargoSpec *csp = CargoSpec::Get(cid);
 			SetDParam(0, csp->name);
 			GuiShowTooltips(this, STR_INDUSTRY_CARGOES_CARGO_TOOLTIP, close_cond, 1);
@@ -3315,7 +3309,7 @@ void ShowIndustryTooltip(Window *w, const TileIndex tile)
 
 			for (size_t i = 0; i < accepted_cargo_count; ++i) {
 				CargoID required_cargo = industry->accepts_cargo[i];
-				if (required_cargo == CT_INVALID) {
+				if (required_cargo == INVALID_CARGO) {
 					continue;
 				}
 
@@ -3350,7 +3344,7 @@ void ShowIndustryTooltip(Window *w, const TileIndex tile)
 		if (stockpiling && _settings_client.gui.industry_tooltip_show_stockpiled) {
 			for (size_t i = 0; i < accepted_cargo_count; ++i) {
 				CargoID stockpiled_cargo = industry->accepts_cargo[i];
-				if (stockpiled_cargo == CT_INVALID) continue;
+				if (stockpiled_cargo == INVALID_CARGO) continue;
 
 				const CargoSuffix &suffix = suffixes[i];
 
@@ -3378,7 +3372,7 @@ void ShowIndustryTooltip(Window *w, const TileIndex tile)
 
 		for (size_t i = 0; i < produced_cargo_count; i++) {
 			CargoID produced_cargo = industry->produced_cargo[i];
-			if (produced_cargo == CT_INVALID) continue;
+			if (produced_cargo == INVALID_CARGO) continue;
 
 			if (!msg.empty()) msg += '\n';
 
