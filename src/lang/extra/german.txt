@@ -18,7 +18,7 @@ STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :Akzeptierte Fra
 STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :Freie Bahnsteige
 STR_ORDER_CONDITIONAL_PERCENT                                   :Prozent der Fälle
 STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :Slotauslastung
-STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :Zug im Zeitfenster
+STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :Zug im Slot
 STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :Frachtladezustand (Prozent)
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :Wartende Frachtmenge
 STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :Zählerwert
@@ -1331,7 +1331,7 @@ STR_ORDER_REVERSE_TOOLTIP                                       :{BLACK}Ändere 
 
 STR_ORDER_DROP_SELL_DEPOT                                       :Fahrzeug verkaufen
 
-STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :Fahrzeug im Zeitfenster
+STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :Fahrzeug im Slot
 
 STR_ORDER_CONDITIONAL_NEXT_STATION                              :nächste Station
 STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}Frachtart, die mit der Stationsinformation verglichen wird
@@ -1369,7 +1369,7 @@ STR_ORDERS_MANAGE_LIST_TOOLTIP                                  :{BLACK}Verwalte
 STR_ORDER_REVERSE_ORDER_LIST                                    :Kehre Auftragsliste um
 STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :Füge umgekehrte Auftragsliste an
 
-STR_ORDER_RELEASE_SLOT_BUTTON                                   :Zeitfenster freigeben
+STR_ORDER_RELEASE_SLOT_BUTTON                                   :Slot freigeben
 STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}Der freizugebende Zug-Slot
 
 STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}{STRING}%
