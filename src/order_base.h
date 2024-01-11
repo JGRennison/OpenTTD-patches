@@ -223,6 +223,7 @@ public:
 	void MakeWaiting();
 	void MakeLoadingAdvance(StationID destination);
 	void MakeReleaseSlot();
+	void MakeTryAcquireSlot();
 	void MakeChangeCounter();
 	void MakeLabel(OrderLabelSubType subtype);
 

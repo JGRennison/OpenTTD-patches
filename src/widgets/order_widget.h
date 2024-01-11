@@ -45,7 +45,7 @@ enum OrderWidgets : WidgetID {
 	WID_O_COND_AUX_VIA,              ///< Condition via button.
 	WID_O_COND_SCHED_TEST,           ///< Choose scheduled dispatch test.
 	WID_O_COND_AUX_STATION,          ///< Condition station button.
-	WID_O_RELEASE_SLOT,              ///< Choose slot to release.
+	WID_O_SLOT,                      ///< Choose slot to try acquire/release.
 	WID_O_COUNTER_OP,                ///< Choose counter operation.
 	WID_O_CHANGE_COUNTER,            ///< Choose counter to change.
 	WID_O_COUNTER_VALUE,             ///< Choose counter value.

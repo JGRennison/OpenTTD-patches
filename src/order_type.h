@@ -54,6 +54,7 @@ enum OrderType : byte {
 
 enum OrderSlotSubType : byte {
 	OSST_RELEASE               = 0,
+	OSST_TRY_ACQUIRE           = 1,
 };
 
 enum OrderLabelSubType : byte {

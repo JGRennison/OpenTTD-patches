@@ -1636,9 +1636,11 @@ STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :Append reversed
 STR_ORDER_DUPLICATE_ORDER                                       :Duplicate order
 STR_ORDER_CHANGE_JUMP_TARGET                                    :Change jump target
 
+STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON                               :Try acquire slot
 STR_ORDER_RELEASE_SLOT_BUTTON                                   :Release slot
 STR_ORDER_CHANGE_COUNTER_BUTTON                                 :Change counter
 STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}The train slot to release
+STR_ORDER_TRY_ACQUIRE_SLOT_TOOLTIP                              :{BLACK}The train slot to try to acquire
 
 STR_ORDER_CHANGE_COUNTER_TOOLTIP                                :{BLACK}The counter to change
 
@@ -1706,6 +1708,7 @@ STR_ORDER_CONDITIONAL_TIME_HHMM                                 :Jump to order {
 STR_ORDER_CONDITIONAL_TIMETABLE                                 :Jump to order {COMMA} when {STRING} {STRING} {TT_TICKS}
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DISPLAY                     :Jump to order {COMMA} when {STRING} {STRING} {STRING}
 
+STR_ORDER_TRY_ACQUIRE_SLOT                                      :Try to acquire slot: {STRING1}
 STR_ORDER_RELEASE_SLOT                                          :Release slot: {STRING1}
 
 STR_TIMETABLE_MINUTES                                           :{COMMA}{NBSP}minute{P "" s}
