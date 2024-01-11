@@ -1404,7 +1404,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 	{
 		NWidgetCore *widget = this->GetWidget<NWidgetCore>(WID_BV_BUILD);
 
-		bool refit = this->sel_engine != INVALID_ENGINE && this->cargo_filter_criteria != CargoFilterCriteria::CF_ANY && this->cargo_filter_criteria != CargoFilterCriteria::CF_NONE;
+		bool refit = this->sel_engine != INVALID_ENGINE && this->cargo_filter_criteria != CargoFilterCriteria::CF_ANY && this->cargo_filter_criteria != CargoFilterCriteria::CF_NONE && this->cargo_filter_criteria != CargoFilterCriteria::CF_ENGINES;
 		if (refit) refit = Engine::Get(this->sel_engine)->GetDefaultCargoType() != this->cargo_filter_criteria;
 
 		if (this->virtual_train_mode) {
@@ -2497,7 +2497,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 	void SelectEngine(PanelState &state, const EngineID engine)
 	{
 		CargoID cargo = state.cargo_filter[state.cargo_filter_criteria];
-		if (cargo == CargoFilterCriteria::CF_ANY) cargo = CargoFilterCriteria::CF_NONE;
+		if (cargo == CargoFilterCriteria::CF_ANY || cargo == CargoFilterCriteria::CF_ENGINES || cargo == CargoFilterCriteria::CF_NONE) cargo = INVALID_CARGO;
 
 		state.sel_engine = engine;
 
@@ -2705,7 +2705,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 						? CcBuildWagon : CcBuildPrimaryVehicle;
 				cmd = GetCmdBuildVeh(this->vehicle_type);
 			}
-			if (cargo == CargoFilterCriteria::CF_ANY || cargo == CargoFilterCriteria::CF_ENGINES) cargo = CargoFilterCriteria::CF_NONE;
+			if (cargo == CargoFilterCriteria::CF_ANY || cargo == CargoFilterCriteria::CF_ENGINES || cargo == CargoFilterCriteria::CF_NONE) cargo = INVALID_CARGO;
 			DoCommandP(this->window_number, selected | (cargo << 24), 0, cmd, callback);
 
 			/* Update last used variant in hierarchy and refresh if necessary. */
