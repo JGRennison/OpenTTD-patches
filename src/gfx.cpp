@@ -1086,6 +1086,16 @@ static void GfxBlitter(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, in
 	const DrawPixelInfo *dpi = ctx.dpi;
 	Blitter::BlitterParams bp;
 
+	if (sprite->width <= 0 || sprite->height <= 0) return;
+
+	while (HasBit(sprite->missing_zoom_levels, zoom)) {
+		sprite = sprite->next;
+		if (sprite == nullptr) {
+			DEBUG(sprite, 0, "Failed to draw sprite %u at zoom level %u as required zoom level is missing", sprite_id, zoom);
+			return;
+		}
+	}
+
 	if (SCALED_XY) {
 		/* Scale it */
 		x = ScaleByZoom(x, zoom);
@@ -1120,14 +1130,6 @@ static void GfxBlitter(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, in
 
 		x += ScaleByZoom(bp.skip_left, zoom);
 		y += ScaleByZoom(bp.skip_top, zoom);
-	}
-
-	while (sprite != nullptr && HasBit(sprite->missing_zoom_levels, zoom)) {
-		sprite = sprite->next;
-	}
-	if (sprite == nullptr) {
-		DEBUG(sprite, 0, "Failed to draw sprite %u at zoom level %u as required zoom level is missing", sprite_id, zoom);
-		return;
 	}
 
 	/* Copy the main data directly from the sprite */
