@@ -39,7 +39,6 @@ enum SettingFlag : uint32_t {
 	SF_DEC1SCALE               = 1 << 16, ///< also display a float representation of the scale of a decimal1 scale parameter
 	SF_RUN_CALLBACKS_ON_PARSE  = 1 << 17, ///< run callbacks when parsing from config file
 	SF_GUI_VELOCITY            = 1 << 18, ///< setting value is a velocity
-	SF_GUI_ADVISE_DEFAULT      = 1 << 19, ///< Advise the user to leave this setting at its default value
 	SF_ENUM_PRE_CB_VALIDATE    = 1 << 20, ///< Call the pre_check callback for enum incoming value validation
 	SF_CONVERT_BOOL_TO_INT     = 1 << 21, ///< Accept a boolean value when loading an int-type setting from the config file
 	SF_PATCH                   = 1 << 22, ///< Do not load from upstream table-mode PATS, also for GUI filtering of "patch" settings
@@ -89,6 +88,8 @@ enum SettingOnGuiCtrlType {
 	SOGCT_GUI_DROPDOWN_ORDER, ///< SF_GUI_DROPDOWN reordering callback
 	SOGCT_CFG_NAME,           ///< Config file name override
 	SOGCT_CFG_FALLBACK_NAME,  ///< Config file name within group fallback
+	SOGCT_GUI_SPRITE,         ///< Show sprite after setting value (i.e. warning)
+	SOGCT_GUI_WARNING_TEXT,   ///< Show warning text
 };
 
 struct SettingOnGuiCtrlData {
@@ -96,6 +97,7 @@ struct SettingOnGuiCtrlData {
 	StringID text;
 	int val;
 	const char *str = nullptr;
+	int output = 0;
 };
 
 struct IniItem;

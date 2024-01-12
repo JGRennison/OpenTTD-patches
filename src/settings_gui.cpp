@@ -1527,11 +1527,18 @@ void SettingEntry::DrawSettingString(uint left, uint right, int y, bool highligh
 {
 	this->SetValueDParams(1, value);
 	int edge = DrawString(left, right, y, this->setting->str, highlight ? TC_WHITE : TC_LIGHT_BLUE);
-	if (this->setting->flags & SF_GUI_ADVISE_DEFAULT && value != this->setting->def && edge != 0) {
-		const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
-		if ((int)warning_dimensions.height <= SETTING_HEIGHT) {
-			DrawSprite(SPR_WARNING_SIGN, 0, (_current_text_dir == TD_RTL) ? edge - warning_dimensions.width - 5 : edge + 5,
-					y + (((int)GetCharacterHeight(FS_NORMAL) - (int)warning_dimensions.height) / 2));
+
+	if (this->setting->guiproc != nullptr && edge != 0) {
+		SettingOnGuiCtrlData data;
+		data.type = SOGCT_GUI_SPRITE;
+		data.val = value;
+		if (this->setting->guiproc(data)) {
+			SpriteID sprite = (SpriteID)data.output;
+			const Dimension warning_dimensions = GetSpriteSize(sprite);
+			if ((int)warning_dimensions.height <= SETTING_HEIGHT) {
+				DrawSprite(sprite, 0, (_current_text_dir == TD_RTL) ? edge - warning_dimensions.width - 5 : edge + 5,
+						y + (((int)GetCharacterHeight(FS_NORMAL) - (int)warning_dimensions.height) / 2));
+			}
 		}
 	}
 }
@@ -2743,24 +2750,30 @@ struct GameSettingsWindow : Window {
 					DrawString(tr, STR_CONFIG_SETTING_DEFAULT_VALUE);
 					tr.top += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
 
-					if (sd->flags & SF_GUI_ADVISE_DEFAULT) {
-						const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
-						const int step_height = std::max<int>(warning_dimensions.height, GetCharacterHeight(FS_NORMAL));
-						const int text_offset_y = (step_height - GetCharacterHeight(FS_NORMAL)) / 2;
-						const int warning_offset_y = (step_height - warning_dimensions.height) / 2;
-						const bool rtl = _current_text_dir == TD_RTL;
+					if (sd->guiproc != nullptr) {
+						SettingOnGuiCtrlData data;
+						data.type = SOGCT_GUI_WARNING_TEXT;
+						data.text = STR_NULL;
+						data.val = sd->Read(ResolveObject(settings_ptr, sd));
+						if (sd->guiproc(data)) {
+							const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
+							const int step_height = std::max<int>(warning_dimensions.height, GetCharacterHeight(FS_NORMAL));
+							const int text_offset_y = (step_height - GetCharacterHeight(FS_NORMAL)) / 2;
+							const int warning_offset_y = (step_height - warning_dimensions.height) / 2;
+							const bool rtl = _current_text_dir == TD_RTL;
 
-						int left = tr.left;
-						int right = tr.right;
-						DrawSprite(SPR_WARNING_SIGN, 0, rtl ? right - warning_dimensions.width - 5 : left + 5, tr.top + warning_offset_y);
-						if (rtl) {
-							right -= (warning_dimensions.width + 10);
-						} else {
-							left += (warning_dimensions.width + 10);
+							int left = tr.left;
+							int right = tr.right;
+							DrawSprite(SPR_WARNING_SIGN, 0, rtl ? right - warning_dimensions.width - 5 : left + 5, tr.top + warning_offset_y);
+							if (rtl) {
+								right -= (warning_dimensions.width + 10);
+							} else {
+								left += (warning_dimensions.width + 10);
+							}
+							DrawString(left, right, tr.top + text_offset_y, data.text, TC_RED);
+
+							tr.top += step_height + WidgetDimensions::scaled.vsep_normal;
 						}
-						DrawString(left, right, tr.top + text_offset_y, STR_CONFIG_SETTING_ADVISED_LEAVE_DEFAULT, TC_RED);
-
-						tr.top += step_height + WidgetDimensions::scaled.vsep_normal;
 					}
 
 					DrawStringMultiLine(tr, this->last_clicked->GetHelpText(), TC_WHITE);
