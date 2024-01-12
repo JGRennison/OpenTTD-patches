@@ -19,6 +19,7 @@
 #include "../../gamelog.h"
 #include "../../sl/saveload.h"
 #include "../../video/video_driver.hpp"
+#include "../../library_loader.h"
 #include "../../screenshot.h"
 #include "../../debug.h"
 #include "../../settings_type.h"
@@ -334,22 +335,7 @@ static const uint MAX_FRAMES     = 64;
 
 /* virtual */ char *CrashLogWindows::LogStacktrace(char *buffer, const char *last) const
 {
-#define M(x) x "\0"
-	static const char dbg_import[] =
-		M("dbghelp.dll")
-		M("SymInitialize")
-		M("SymSetOptions")
-		M("SymCleanup")
-		M("StackWalk64")
-		M("SymFunctionTableAccess64")
-		M("SymGetModuleBase64")
-		M("SymGetModuleInfo64")
-		M("SymGetSymFromAddr64")
-		M("SymGetLineFromAddr64")
-		M("")
-		;
-#undef M
-
+	LibraryLoader dbghelp("dbghelp.dll");
 	struct ProcPtrs {
 		BOOL (WINAPI * pSymInitialize)(HANDLE, PCSTR, BOOL);
 		BOOL (WINAPI * pSymSetOptions)(DWORD);
@@ -360,12 +346,22 @@ static const uint MAX_FRAMES     = 64;
 		BOOL (WINAPI * pSymGetModuleInfo64)(HANDLE, DWORD64, PIMAGEHLP_MODULE64);
 		BOOL (WINAPI * pSymGetSymFromAddr64)(HANDLE, DWORD64, PDWORD64, PIMAGEHLP_SYMBOL64);
 		BOOL (WINAPI * pSymGetLineFromAddr64)(HANDLE, DWORD64, PDWORD, PIMAGEHLP_LINE64);
-	} proc;
+	} proc = {
+		dbghelp.GetFunction("SymInitialize"),
+		dbghelp.GetFunction("SymSetOptions"),
+		dbghelp.GetFunction("SymCleanup"),
+		dbghelp.GetFunction("StackWalk64"),
+		dbghelp.GetFunction("SymFunctionTableAccess64"),
+		dbghelp.GetFunction("SymGetModuleBase64"),
+		dbghelp.GetFunction("SymGetModuleInfo64"),
+		dbghelp.GetFunction("SymGetSymFromAddr64"),
+		dbghelp.GetFunction("SymGetLineFromAddr64"),
+	};
 
 	buffer += seprintf(buffer, last, "Decoded stack trace:\n");
 
 	/* Try to load the functions from the DLL, if that fails because of a too old dbghelp.dll, just skip it. */
-	if (LoadLibraryList((Function*)&proc, dbg_import)) {
+	if (!dbghelp.HasError()) {
 		/* Initialize symbol handler. */
 		HANDLE hCur = GetCurrentProcess();
 		proc.pSymInitialize(hCur, nullptr, TRUE);
@@ -522,12 +518,12 @@ static const uint MAX_FRAMES     = 64;
 	int ret = 0;
 	HMODULE dbghelp = LoadLibrary(L"dbghelp.dll");
 	if (dbghelp != nullptr) {
-		typedef BOOL (WINAPI *MiniDumpWriteDump_t)(HANDLE, DWORD, HANDLE,
+		typedef BOOL (WINAPI *MiniDumpWriteDumpT)(HANDLE, DWORD, HANDLE,
 				MINIDUMP_TYPE,
 				CONST PMINIDUMP_EXCEPTION_INFORMATION,
 				CONST PMINIDUMP_USER_STREAM_INFORMATION,
 				CONST PMINIDUMP_CALLBACK_INFORMATION);
-		MiniDumpWriteDump_t funcMiniDumpWriteDump = GetProcAddressT<MiniDumpWriteDump_t>(dbghelp, "MiniDumpWriteDump");
+		MiniDumpWriteDumpT funcMiniDumpWriteDump = (MiniDumpWriteDumpT) GetProcAddress(dbghelp, "MiniDumpWriteDump");
 		if (funcMiniDumpWriteDump != nullptr) {
 			seprintf(filename, filename_last, "%scrash.dmp", _personal_dir.c_str());
 			HANDLE file  = CreateFile(OTTD2FS(filename).c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, 0, 0);
@@ -751,7 +747,9 @@ static void CDECL CustomAbort(int)
 
 	using VEX_HANDLER_TYPE = LONG WINAPI (EXCEPTION_POINTERS *);
 	void* (WINAPI *AddVectoredExceptionHandler)(ULONG, VEX_HANDLER_TYPE*);
-	if (LoadLibraryList((Function*)&AddVectoredExceptionHandler, "kernel32.dll\0AddVectoredExceptionHandler\0\0")) {
+	static LibraryLoader _kernel32("Kernel32.dll");
+	AddVectoredExceptionHandler = _kernel32.GetFunction("AddVectoredExceptionHandler");
+	if (AddVectoredExceptionHandler != nullptr) {
 		AddVectoredExceptionHandler(1, VectoredExceptionHandler);
 	}
 }

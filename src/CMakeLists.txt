@@ -242,6 +242,7 @@ add_files(
     league_gui.h
     league_gui.cpp
     league_type.h
+    library_loader.h
     livery.h
     load_check.h
     main_gui.cpp

@@ -388,6 +388,7 @@ link_package(ZSTD TARGET ZSTD::ZSTD RECOMMENDED)
 
 if(NOT WIN32 AND NOT EMSCRIPTEN)
     link_package(CURL ENCOURAGED)
+    target_link_libraries(openttd_lib ${CMAKE_DL_LIBS})
 endif()
 
 if(NOT OPTION_DEDICATED)

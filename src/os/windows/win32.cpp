@@ -31,11 +31,16 @@
 #include <sys/stat.h>
 #include "../../language.h"
 #include "../../thread.h"
+#include "../../library_loader.h"
 #include <array>
 #include <map>
 #include <mutex>
 
 #include "../../safeguards.h"
+
+#if defined(__MINGW32__) && !defined(__MINGW64__) && !(_WIN32_IE >= 0x0500)
+#define SHGFP_TYPE_CURRENT 0
+#endif /* __MINGW32__ */
 
 static bool _has_console;
 static bool _cursor_disable = true;
@@ -51,30 +56,6 @@ bool MyShowCursor(bool show, bool toggle)
 	ShowCursor(show);
 
 	return !show;
-}
-
-/**
- * Helper function needed by dynamically loading libraries
- */
-bool LoadLibraryList(Function proc[], const char *dll)
-{
-	while (*dll != '\0') {
-		HMODULE lib;
-		lib = LoadLibrary(OTTD2FS(dll).c_str());
-
-		if (lib == nullptr) return false;
-		for (;;) {
-			Function p;
-
-			while (*dll++ != '\0') { /* Nothing */ }
-			if (*dll == '\0') break;
-			p = GetProcAddressT<Function>(lib, dll);
-			if (p == nullptr) return false;
-			*proc++ = p;
-		}
-		dll++;
-	}
-	return true;
 }
 
 void ShowOSErrorBox(const char *buf, bool system)
@@ -614,7 +595,8 @@ int OTTDStringCompare(std::string_view s1, std::string_view s2)
 #endif
 
 	if (first_time) {
-		_CompareStringEx = GetProcAddressT<PFNCOMPARESTRINGEX>(GetModuleHandle(L"Kernel32"), "CompareStringEx");
+		static LibraryLoader _kernel32("Kernel32.dll");
+		_CompareStringEx = _kernel32.GetFunction("CompareStringEx");
 		first_time = false;
 	}
 
@@ -657,7 +639,8 @@ int Win32StringContains(const std::string_view str, const std::string_view value
 	static bool first_time = true;
 
 	if (first_time) {
-		_FindNLSStringEx = GetProcAddressT<PFNFINDNLSSTRINGEX>(GetModuleHandle(L"Kernel32"), "FindNLSStringEx");
+		static LibraryLoader _kernel32("Kernel32.dll");
+		_FindNLSStringEx = _kernel32.GetFunction("FindNLSStringEx");
 		first_time = false;
 	}
 
@@ -704,7 +687,8 @@ void PerThreadSetup()
 
 void PerThreadSetupInit()
 {
-	LoadLibraryList((Function*)&_SetThreadStackGuarantee, "kernel32.dll\0SetThreadStackGuarantee\0\0");
+	static LibraryLoader _kernel32("Kernel32.dll");
+	_SetThreadStackGuarantee = _kernel32.GetFunction("SetThreadStackGuarantee");
 }
 
 bool IsMainThread()

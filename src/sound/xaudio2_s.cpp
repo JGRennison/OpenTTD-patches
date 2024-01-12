@@ -158,7 +158,7 @@ const char *SoundDriver_XAudio2::Start(const StringList &parm)
 		return "Failed to load XAudio2 DLL";
 	}
 
-	API_XAudio2Create xAudio2Create = GetProcAddressT<API_XAudio2Create>(_xaudio_dll_handle, "XAudio2Create");
+	API_XAudio2Create xAudio2Create = (API_XAudio2Create) GetProcAddress(_xaudio_dll_handle, "XAudio2Create");
 
 	if (xAudio2Create == nullptr)
 	{
