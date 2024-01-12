@@ -2063,7 +2063,7 @@ struct SelectTownWindow : Window {
 	CommandContainer cmd; ///< command to build the house (CMD_BUILD_HOUSE)
 	Scrollbar *vscroll;   ///< scrollbar for the town list
 
-	SelectTownWindow(WindowDesc *desc, const TownList &towns, const CommandContainer &cmd) : Window(desc), towns(towns), cmd(cmd)
+	SelectTownWindow(WindowDesc *desc, TownList towns, const CommandContainer &cmd) : Window(desc), towns(std::move(towns)), cmd(cmd)
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_ST_SCROLLBAR);
@@ -2146,10 +2146,10 @@ static WindowDesc _select_town_desc(__FILE__, __LINE__,
 	std::begin(_nested_select_town_widgets), std::end(_nested_select_town_widgets)
 );
 
-static void ShowSelectTownWindow(const TownList &towns, const CommandContainer &cmd)
+static void ShowSelectTownWindow(TownList towns, const CommandContainer &cmd)
 {
 	CloseWindowByClass(WC_SELECT_TOWN);
-	new SelectTownWindow(&_select_town_desc, towns, cmd);
+	new SelectTownWindow(&_select_town_desc, std::move(towns), cmd);
 }
 
 static void PlaceProc_House(TileIndex tile)
@@ -2210,7 +2210,7 @@ static void PlaceProc_House(TileIndex tile)
 		DoCommandP(&cmd);
 	} else {
 		if (!_settings_client.gui.persistent_buildingtools) CloseWindowById(WC_BUILD_HOUSE, 0);
-		ShowSelectTownWindow(towns, cmd);
+		ShowSelectTownWindow(std::move(towns), cmd);
 	}
 }
 
