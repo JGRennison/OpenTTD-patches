@@ -2026,6 +2026,33 @@ static bool ChunnelSettingGUI(SettingOnGuiCtrlData &data)
 	}
 }
 
+static bool TrainPathfinderSettingGUI(SettingOnGuiCtrlData &data)
+{
+	switch (data.type) {
+		case SOGCT_DESCRIPTION_TEXT:
+			SetDParam(0, data.text);
+			data.text = STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT_EXTRA;
+			return true;
+
+		case SOGCT_GUI_SPRITE:
+			if (data.val != VPF_YAPF) {
+				data.output = SPR_WARNING_SIGN;
+				return true;
+			}
+			return false;
+
+		case SOGCT_GUI_WARNING_TEXT:
+			if (data.val != VPF_YAPF) {
+				data.text = STR_CONFIG_SETTING_ADVISED_LEAVE_DEFAULT;
+				return true;
+			}
+			return false;
+
+		default:
+			return false;
+	}
+}
+
 /* End - GUI callbacks */
 
 /**
