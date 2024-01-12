@@ -2192,7 +2192,7 @@ static void PlaceProc_House(TileIndex tile)
 
 	if (towns.size() > 16 && _settings_client.scenario.house_ignore_zones == 2) {
 		std::sort(towns.begin(), towns.end(), [&](const TownID a, const TownID b) {
-			return DistanceSquare(tile, Town::Get(a)->xy) < DistanceSquare(tile, Town::Get(a)->xy);
+			return DistanceSquare(tile, Town::Get(a)->xy) < DistanceSquare(tile, Town::Get(b)->xy);
 		});
 		towns.resize(16);
 	}
