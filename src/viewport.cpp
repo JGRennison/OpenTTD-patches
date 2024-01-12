@@ -115,6 +115,7 @@
 #include "worker_thread.h"
 #include "vehiclelist.h"
 #include "core/backup_type.hpp"
+#include "3rdparty/robin_hood/robin_hood.h"
 
 #include <map>
 #include <vector>
@@ -345,11 +346,11 @@ uint _vp_route_step_string_width[4] = {};
 struct DrawnPathRouteTileLine {
 	TileIndex from_tile;
 	TileIndex to_tile;
-	bool order_match;
+	bool order_conditional;
 
 	bool operator==(const DrawnPathRouteTileLine &other) const
 	{
-		return std::tie(this->from_tile, this->to_tile, this->order_match) == std::tie(other.from_tile, other.to_tile, other.order_match);
+		return std::tie(this->from_tile, this->to_tile, this->order_conditional) == std::tie(other.from_tile, other.to_tile, other.order_conditional);
 	}
 
 	bool operator!=(const DrawnPathRouteTileLine &other) const
@@ -359,7 +360,7 @@ struct DrawnPathRouteTileLine {
 
 	bool operator<(const DrawnPathRouteTileLine &other) const
 	{
-		return std::tie(this->from_tile, this->to_tile, this->order_match) < std::tie(other.from_tile, other.to_tile, other.order_match);
+		return std::tie(this->from_tile, this->to_tile, this->order_conditional) < std::tie(other.from_tile, other.to_tile, other.order_conditional);
 	}
 };
 
@@ -370,6 +371,20 @@ private:
 	std::vector<DrawnPathRouteTileLine> route_paths;
 	std::vector<DrawnPathRouteTileLine> route_paths_last_mark_dirty;
 
+	struct PrepareRouteStepState {
+		robin_hood::unordered_flat_set<const Order *> visited;
+		uint lines_added;
+		TileIndex from_tile;
+
+		inline void reset(TileIndex from_tile)
+		{
+			this->visited.clear();
+			this->lines_added = 0;
+			this->from_tile = from_tile;
+		}
+	};
+
+	void PrepareVehicleRoutePathsConditionalOrder(const Vehicle *veh, const Order *order, PrepareRouteStepState &state, bool conditional, uint depth);
 	bool PrepareVehicleRouteSteps(const Vehicle *veh);
 	bool PrepareVehicleRoutePaths(const Vehicle *veh);
 	void MarkAllRouteStepsDirty(const Vehicle *veh);
@@ -2347,45 +2362,36 @@ static bool ViewportVehicleRouteShouldSkipOrder(const Order *order)
 	}
 }
 
-static inline TileIndex GetLastValidOrderLocation(const Vehicle *veh)
+void ViewportRouteOverlay::PrepareVehicleRoutePathsConditionalOrder(const Vehicle *veh, const Order *order, PrepareRouteStepState &state, bool conditional, uint depth)
 {
-	VehicleOrderID order_id = veh->GetNumOrders();
-	while (order_id > 0) {
-		order_id--;
-		const Order *order = veh->GetOrder(order_id);
-		if (ViewportVehicleRouteShouldSkipOrder(order)) continue;
-		TileIndex location = order->GetLocation(veh, veh->type == VEH_AIRCRAFT);
-		if (location != INVALID_TILE) return location;
-	}
-	return INVALID_TILE;
-}
+	/* Prevent excessive recursion */
+	if (depth >= 10) return;
 
-static inline std::pair<const Order *, bool> GetFinalOrder(const Vehicle *veh, const Order *order)
-{
-	// Use Floyd's cycle-finding algorithm to prevent endless loop
-	// due to a cycle formed by confitional orders.
-	auto cycle_check = order;
-
-	bool is_conditional = false;
-
-	while (order->IsType(OT_CONDITIONAL)) {
-		if (order->GetConditionVariable() != OCV_UNCONDITIONALLY) is_conditional = true;
-		order = veh->GetOrder(order->GetConditionSkipToOrder());
-
-		if (cycle_check->IsType(OT_CONDITIONAL)) {
-			cycle_check = veh->GetOrder(cycle_check->GetConditionSkipToOrder());
-
-			if (cycle_check->IsType(OT_CONDITIONAL)) {
-				cycle_check = veh->GetOrder(cycle_check->GetConditionSkipToOrder());
-			}
+	for (; order != nullptr && state.lines_added < 16; order = veh->orders->GetNext(order)) {
+		if (!state.visited.insert(order).second) {
+			/* Already visited this order */
+			return;
 		}
 
-		bool cycle_detected = (order->IsType(OT_CONDITIONAL) && (order == cycle_check));
+		if (ViewportVehicleRouteShouldSkipOrder(order)) continue;
 
-		if (cycle_detected) return std::pair<const Order *, bool>(nullptr, is_conditional);
+		if (order->IsType(OT_CONDITIONAL)) {
+			this->PrepareVehicleRoutePathsConditionalOrder(veh, veh->GetOrder(order->GetConditionSkipToOrder()), state,
+					conditional || order->GetConditionVariable() != OCV_UNCONDITIONALLY, depth + 1);
+			if (order->GetConditionVariable() == OCV_UNCONDITIONALLY) return;
+
+			continue;
+		}
+
+		const TileIndex to_tile = order->GetLocation(veh, veh->type == VEH_AIRCRAFT);
+		if (to_tile == INVALID_TILE) continue;
+
+		DrawnPathRouteTileLine path = { state.from_tile, to_tile, conditional };
+		if (path.from_tile > path.to_tile) std::swap(path.from_tile, path.to_tile);
+		this->route_paths.push_back(path);
+		state.lines_added++;
+		return;
 	}
-
-	return std::pair<const Order *, bool>(order, is_conditional);
 }
 
 bool ViewportRouteOverlay::PrepareVehicleRoutePaths(const Vehicle *veh)
@@ -2393,33 +2399,56 @@ bool ViewportRouteOverlay::PrepareVehicleRoutePaths(const Vehicle *veh)
 	if (veh == nullptr) return false;
 
 	if (this->route_paths.empty()) {
-		TileIndex from_tile = GetLastValidOrderLocation(veh);
-		if (from_tile == INVALID_TILE) return false;
+		PrepareRouteStepState state;
 
-		for (const Order *order : veh->Orders()) {
-			auto guard = scope_guard([&]() {
-				if (order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OCV_UNCONDITIONALLY) from_tile = INVALID_TILE;
-			});
-			const Order *final_order;
-			bool conditional;
-			std::tie(final_order, conditional) = GetFinalOrder(veh, order);
-			if (final_order == nullptr) continue;
-			if (ViewportVehicleRouteShouldSkipOrder(final_order)) continue;
-			const TileIndex to_tile = final_order->GetLocation(veh, veh->type == VEH_AIRCRAFT);
-			if (to_tile == INVALID_TILE) continue;
+		TileIndex from_tile = INVALID_TILE;
+		bool conditional = false;
+		auto handle_order = [&](const Order *order) -> bool {
+			if (ViewportVehicleRouteShouldSkipOrder(order)) return false;
+
+			if (order->IsType(OT_CONDITIONAL) && from_tile != INVALID_TILE) {
+				state.reset(from_tile);
+				this->PrepareVehicleRoutePathsConditionalOrder(veh, order, state,
+						conditional || order->GetConditionVariable() != OCV_UNCONDITIONALLY, 0);
+				if (order->GetConditionVariable() == OCV_UNCONDITIONALLY) {
+					from_tile = INVALID_TILE;
+					return true;
+				}
+				conditional = true;
+				return false;
+			}
+
+			const TileIndex to_tile = order->GetLocation(veh, veh->type == VEH_AIRCRAFT);
+			if (to_tile == INVALID_TILE) return false;
 
 			if (from_tile != INVALID_TILE) {
-				DrawnPathRouteTileLine path = { from_tile, to_tile, !conditional };
+				DrawnPathRouteTileLine path = { from_tile, to_tile, conditional };
 				if (path.from_tile > path.to_tile) std::swap(path.from_tile, path.to_tile);
 				this->route_paths.push_back(path);
 			}
 
-			const OrderType ot = order->GetType();
-			if (ot == OT_GOTO_STATION || ot == OT_GOTO_DEPOT || ot == OT_GOTO_WAYPOINT || ot == OT_IMPLICIT) from_tile = to_tile;
+			from_tile = to_tile;
+			conditional = false;
+
+			return true;
+		};
+		for (const Order *order : veh->Orders()) {
+			handle_order(order);
 		}
-		// remove duplicate lines
+		if (from_tile != INVALID_TILE) {
+			/* Handle wrap around from last order back to first */
+			for (const Order *order : veh->Orders()) {
+				if (handle_order(order)) break;
+			}
+		}
+
+		/* Remove duplicate lines */
 		std::sort(this->route_paths.begin(), this->route_paths.end());
-		this->route_paths.erase(std::unique(this->route_paths.begin(), this->route_paths.end()), this->route_paths.end());
+		auto unique_end = std::unique(this->route_paths.begin(), this->route_paths.end(), [](const DrawnPathRouteTileLine &a, const DrawnPathRouteTileLine &b) {
+			/* Consider elements with the same tile values but different order_conditional values as equal */
+			return a.from_tile == b.from_tile && a.to_tile == b.to_tile;
+		});
+		this->route_paths.erase(unique_end, this->route_paths.end());
 	}
 	return true;
 }
@@ -2455,7 +2484,7 @@ void ViewportRouteOverlay::DrawVehicleRoutePath(const Viewport *vp, ViewportDraw
 			GfxDrawLine(&dpi_for_text, from_x, from_y, to_x, to_y, PC_BLACK, 3, _settings_client.gui.dash_level_of_route_lines);
 			line_width = 1;
 		}
-		GfxDrawLine(&dpi_for_text, from_x, from_y, to_x, to_y, iter.order_match ? PC_WHITE : PC_YELLOW, line_width, _settings_client.gui.dash_level_of_route_lines);
+		GfxDrawLine(&dpi_for_text, from_x, from_y, to_x, to_y, iter.order_conditional ? PC_YELLOW : PC_WHITE, line_width, _settings_client.gui.dash_level_of_route_lines);
 	}
 }
 
