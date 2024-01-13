@@ -1681,18 +1681,27 @@ static void UpdateFreeformEdges(int32_t new_value)
 	MarkWholeScreenDirty();
 }
 
-bool CheckMapEdgesAreWater()
+bool CheckMapEdgesAreWater(bool allow_non_flat_void)
 {
-	auto check_tile = [&](uint x, uint y) -> bool {
+	auto check_tile = [&](uint x, uint y, Slope inner_edge) -> bool {
 		int h = 0;
 		Slope slope = GetTilePixelSlopeOutsideMap(x, y, &h);
-		return slope == SLOPE_FLAT && h == 0;
+		if (slope == SLOPE_FLAT && h == 0) return true;
+		if (allow_non_flat_void && h == 0 && (slope & inner_edge) == 0 && IsTileType(TileXY(x, y), MP_VOID)) return true;
+		return false;
 	};
-	for (uint x = 0; x <= MapMaxX(); x++) {
-		if (!check_tile(x, 0) || !check_tile(x, MapMaxY())) return false;
+	check_tile(        0,         0, SLOPE_S);
+	check_tile(        0, MapMaxY(), SLOPE_W);
+	check_tile(MapMaxX(),         0, SLOPE_E);
+	check_tile(MapMaxX(), MapMaxY(), SLOPE_N);
+
+	for (uint x = 1; x < MapMaxX(); x++) {
+		if (!check_tile(x, 0, SLOPE_SE)) return false;
+		if (!check_tile(x, MapMaxY(), SLOPE_NW)) return false;
 	}
 	for (uint y = 1; y < MapMaxY(); y++) {
-		if (!check_tile(0, y) || !check_tile(MapMaxX(), y)) return false;
+		if (!check_tile(0, y, SLOPE_SW)) return false;
+		if (!check_tile(MapMaxX(), y, SLOPE_NE)) return false;
 	}
 
 	return true;
@@ -1702,12 +1711,28 @@ static bool CheckMapEdgeMode(int32_t &new_value)
 {
 	if (_game_mode == GM_MENU || !_settings_game.construction.freeform_edges || new_value == 0) return true;
 
-	if (!CheckMapEdgesAreWater()) {
+	if (!CheckMapEdgesAreWater(true)) {
 		ShowErrorMessage(STR_CONFIG_SETTING_EDGES_NOT_WATER, INVALID_STRING_ID, WL_ERROR);
 		return false;
 	}
 
 	return true;
+}
+
+static void MapEdgeModeChanged(int32_t new_value)
+{
+	MarkAllViewportsDirty(new_value);
+
+	if (_game_mode == GM_MENU || !_settings_game.construction.freeform_edges || new_value == 0) return;
+
+	for (uint x = 0; x <= MapMaxX(); x++) {
+		SetTileHeight(TileXY(x, 0), 0);
+		SetTileHeight(TileXY(x, MapMaxY()), 0);
+	}
+	for (uint y = 1; y < MapMaxY(); y++) {
+		SetTileHeight(TileXY(0, y), 0);
+		SetTileHeight(TileXY(MapMaxX(), y), 0);
+	}
 }
 
 /**
