@@ -191,7 +191,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	uint num_columns;       ///< Number of columns.
 
 	uint item_count = 0;     ///< Number of scheduled item
-	bool last_departure_future; ///< True if last departure is currently displayed in the future
+	DateTicksScaled next_departure_update = INT64_MAX; ///< Time after which the last departure value should be re-drawn
 	uint warning_count = 0;
 	bool no_order_warning_pad = false;
 
@@ -279,7 +279,6 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				size->height = 6 * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
 				uint warning_count = this->warning_count;
 				if (this->no_order_warning_pad) {
-					warning_count++;
 					size->height -= GetCharacterHeight(FS_NORMAL);
 				}
 				if (warning_count > 0) {
@@ -432,11 +431,9 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 	virtual void OnGameTick() override
 	{
-		if (HasBit(this->vehicle->vehicle_flags, VF_SCHEDULED_DISPATCH) && this->IsScheduleSelected()) {
-			const DispatchSchedule &ds = this->GetSelectedSchedule();
-			if (((ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchLastDispatch()) > _scaled_date_ticks) != this->last_departure_future) {
-				SetWidgetDirty(WID_SCHDISPATCH_SUMMARY_PANEL);
-			}
+		if (_scaled_date_ticks >= this->next_departure_update) {
+			this->next_departure_update = INT64_MAX;
+			SetWidgetDirty(WID_SCHDISPATCH_SUMMARY_PANEL);
 		}
 	}
 
@@ -483,6 +480,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			}
 
 			case WID_SCHDISPATCH_SUMMARY_PANEL: {
+				const_cast<SchdispatchWindow*>(this)->next_departure_update = INT64_MAX;
 				Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
 				int y = ir.top;
 
@@ -492,6 +490,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				} else {
 					const DispatchSchedule &ds = this->GetSelectedSchedule();
 
+					uint warnings = 0;
 					auto draw_warning = [&](StringID text) {
 						const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
 						int step_height = std::max<int>(warning_dimensions.height, GetCharacterHeight(FS_NORMAL));
@@ -506,6 +505,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						}
 						DrawString(left, right, y + (step_height - GetCharacterHeight(FS_NORMAL)) / 2, text);
 						y += step_height;
+						warnings++;
 					};
 
 					bool have_conditional = false;
@@ -562,11 +562,30 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					}
 
 					const DateTicksScaled last_departure = ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchLastDispatch();
+					StringID str;
+					if (_scaled_date_ticks < last_departure) {
+						str = STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE;
+						const_cast<SchdispatchWindow*>(this)->next_departure_update = last_departure;
+					} else {
+						str = STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST;
+					}
 					SetDParam(0, last_departure);
-					const_cast<SchdispatchWindow*>(this)->last_departure_future = (last_departure > _scaled_date_ticks);
-					DrawString(ir.left, ir.right, y,
-							this->last_departure_future ? STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE : STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST);
+					DrawString(ir.left, ir.right, y, str);
 					y += GetCharacterHeight(FS_NORMAL);
+
+					if (_settings_time.time_in_minutes && last_departure > (_scaled_date_ticks + (1350 * (uint)_settings_time.ticks_per_minute))) {
+						/* If the departure slot is more than 23 hours ahead of now, show a warning */
+						const TickMinutes now = _settings_time.NowInTickMinutes();
+						const TickMinutes target = _settings_time.ToTickMinutes(last_departure);
+						const TickMinutes delta = target - now;
+						if (delta >= (23 * 60)) {
+							const uint hours = delta.base() / 60;
+							SetDParam(0, hours);
+							draw_warning(STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_FUTURE);
+
+							const_cast<SchdispatchWindow*>(this)->next_departure_update = _settings_time.FromTickMinutes(target - (hours * 60) + 1);
+						}
+					}
 
 					if (!have_conditional) {
 						const int required_vehicle = CalculateMaxRequiredVehicle(v->orders->GetTimetableTotalDuration(), ds.GetScheduledDispatchDuration(), ds.GetScheduledDispatch());
@@ -591,11 +610,9 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					y += GetCharacterHeight(FS_NORMAL);
 
 					uint32_t duration = ds.GetScheduledDispatchDuration();
-					uint warnings = 0;
 					for (uint32_t slot : ds.GetScheduledDispatch()) {
 						if (slot >= duration) {
 							draw_warning(STR_SCHDISPATCH_SLOT_OUTSIDE_SCHEDULE);
-							warnings++;
 							break;
 						}
 					}
