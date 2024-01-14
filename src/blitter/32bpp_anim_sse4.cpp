@@ -10,9 +10,9 @@
 #ifdef WITH_SSE
 
 #include "../stdafx.h"
+#include "../palette_func.h"
 #include "../video/video_driver.hpp"
 #include "../table/sprites.h"
-#include "../palette_func.h"
 #include "32bpp_anim_sse4.hpp"
 #include "32bpp_sse_func.hpp"
 

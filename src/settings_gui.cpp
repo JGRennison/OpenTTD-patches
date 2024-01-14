@@ -412,9 +412,14 @@ struct GameOptionsWindow : Window {
 		this->LowerWidget(widget);
 		GameOptionsWindow::active_tab = widget;
 
-		int pane = 0;
-		if (widget == WID_GO_TAB_GRAPHICS) pane = 1;
-		else if (widget == WID_GO_TAB_SOUND) pane = 2;
+		int pane;
+		switch (widget) {
+			case WID_GO_TAB_GENERAL: pane = 0; break;
+			case WID_GO_TAB_GRAPHICS: pane = 1; break;
+			case WID_GO_TAB_SOUND: pane = 2; break;
+			default: NOT_REACHED();
+		}
+
 		this->GetWidget<NWidgetStacked>(WID_GO_TAB_SELECTION)->SetDisplayedPlane(pane);
 		this->SetDirty();
 	}
@@ -467,7 +472,14 @@ struct GameOptionsWindow : Window {
 				break;
 			}
 
-			default: {
+			case WID_GO_CURRENCY_DROPDOWN:
+			case WID_GO_AUTOSAVE_DROPDOWN:
+			case WID_GO_LANG_DROPDOWN:
+			case WID_GO_RESOLUTION_DROPDOWN:
+			case WID_GO_REFRESH_RATE_DROPDOWN:
+			case WID_GO_BASE_GRF_DROPDOWN:
+			case WID_GO_BASE_SFX_DROPDOWN:
+			case WID_GO_BASE_MUSIC_DROPDOWN: {
 				int selected;
 				size->width = std::max(size->width, GetDropDownListDimension(this->BuildDropDownList(widget, &selected)).width + padding.width);
 				break;
@@ -650,7 +662,14 @@ struct GameOptionsWindow : Window {
 				OpenBrowser(BaseMusic::GetUsedSet()->url);
 				break;
 
-			default: {
+			case WID_GO_CURRENCY_DROPDOWN:
+			case WID_GO_AUTOSAVE_DROPDOWN:
+			case WID_GO_LANG_DROPDOWN:
+			case WID_GO_RESOLUTION_DROPDOWN:
+			case WID_GO_REFRESH_RATE_DROPDOWN:
+			case WID_GO_BASE_GRF_DROPDOWN:
+			case WID_GO_BASE_SFX_DROPDOWN:
+			case WID_GO_BASE_MUSIC_DROPDOWN: {
 				int selected;
 				DropDownList list = this->BuildDropDownList(widget, &selected);
 				if (!list.empty()) {
