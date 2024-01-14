@@ -2401,7 +2401,7 @@ public:
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
-		    case WID_VL_ORDER_VIEW: // Open the shared orders window
+			case WID_VL_ORDER_VIEW: // Open the shared orders window
 				assert(this->vli.type == VL_SHARED_ORDERS);
 				assert(!this->vehicles.empty());
 				ShowOrdersWindow(this->vehicles[0]);
