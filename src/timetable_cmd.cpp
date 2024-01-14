@@ -865,6 +865,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 				SetBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 				v->lateness_counter = (_scaled_date_ticks - slot + wait_offset).AsTicks();
 				ds.SetScheduledDispatchLastDispatch((slot - ds.GetScheduledDispatchStartTick()).AsTicks());
+				SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 				set_scheduled_dispatch = true;
 			}
 		}
