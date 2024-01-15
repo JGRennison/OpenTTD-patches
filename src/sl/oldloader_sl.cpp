@@ -1476,7 +1476,7 @@ static bool LoadOldGameDifficulty(LoadgameState *ls, int)
 static bool LoadOldMapPart1(LoadgameState *ls, int)
 {
 	if (_savegame_type == SGT_TTO) {
-		AllocateMap(OLD_MAP_SIZE, OLD_MAP_SIZE);
+		AllocateMap(256, 256);
 	}
 
 	for (uint i = 0; i < OLD_MAP_SIZE; i++) {
