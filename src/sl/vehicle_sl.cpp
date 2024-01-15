@@ -441,7 +441,12 @@ void AfterLoadVehicles(bool part_of_load)
 					for (RoadVehicle *u = rv; u != nullptr; u = u->Next()) {
 						u->roadtype = rv->roadtype;
 						u->compatible_roadtypes = rv->compatible_roadtypes;
-						if (GetRoadType(u->tile, GetRoadTramType(u->roadtype)) == INVALID_ROADTYPE) is_invalid = true;
+						if (IsSavegameVersionBefore(SLV_62)) {
+							/* Use simplified check before trams were introduced */
+							if (!MayTileTypeHaveRoad(GetTileType(u->tile))) is_invalid = true;
+						} else {
+							if (!MayHaveRoad(u->tile) || GetRoadType(u->tile, GetRoadTramType(u->roadtype)) == INVALID_ROADTYPE) is_invalid = true;
+						}
 					}
 
 					if (is_invalid && part_of_load) {

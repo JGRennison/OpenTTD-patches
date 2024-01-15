@@ -47,6 +47,24 @@ inline bool MayHaveRoad(TileIndex t)
 }
 
 /**
+ * Test whether a tile type can have road/tram types.
+ * @param type Tile type.
+ * @return true if tile type can have road/tram types.
+ */
+inline bool MayTileTypeHaveRoad(TileType type)
+{
+	switch (type) {
+		case MP_ROAD:
+		case MP_STATION:
+		case MP_TUNNELBRIDGE:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+/**
  * Get the type of the road tile.
  * @param t Tile to query.
  * @pre IsTileType(t, MP_ROAD)
