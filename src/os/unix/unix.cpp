@@ -202,7 +202,7 @@ std::string FS2OTTD(const std::string &name)
 
 #endif /* WITH_ICONV */
 
-void ShowInfo(const char *str)
+void ShowInfoI(const char *str)
 {
 	fprintf(stderr, "%s\n", str);
 }

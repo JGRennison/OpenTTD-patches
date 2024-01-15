@@ -471,7 +471,7 @@ static void CDECL HandleSavegameLoadCrash(int signum)
 			"Please file a bug report and attach this savegame.\n");
 	}
 
-	ShowInfo(buffer);
+	ShowInfoI(buffer);
 
 #ifdef WITH_SIGACTION
 	struct sigaction call;

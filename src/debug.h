@@ -128,8 +128,13 @@ std::string GetDebugString();
 }
 
 
-void ShowInfo(const char *str);
+void ShowInfoI(const char *str);
 void CDECL ShowInfoF(const char *str, ...) WARN_FORMAT(1, 2);
+
+inline void ShowInfoI(const std::string &str)
+{
+	ShowInfoI(str.c_str());
+}
 
 struct log_prefix {
 	const char *GetLogPrefix();

@@ -13,6 +13,8 @@
 #include "debug.h"
 #include "core/format.hpp"
 
+#define ShowInfo(format_string, ...) ShowInfoI(fmt::format(FMT_STRING(format_string), ## __VA_ARGS__))
+
 /**
  * Ouptut a line of debugging information.
  * @param name The category of debug information.

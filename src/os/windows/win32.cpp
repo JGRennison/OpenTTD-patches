@@ -274,7 +274,7 @@ void CreateConsole()
 		_close(fd);
 		CloseHandle(hand);
 
-		ShowInfo("Unable to open an output handle to the console. Check known-bugs.txt for details.");
+		ShowInfoI("Unable to open an output handle to the console. Check known-bugs.txt for details.");
 		return;
 	}
 
@@ -339,7 +339,7 @@ static INT_PTR CALLBACK HelpDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARAM
 	return FALSE;
 }
 
-void ShowInfo(const char *str)
+void ShowInfoI(const char *str)
 {
 	if (_has_console) {
 		fprintf(stderr, "%s\n", str);
