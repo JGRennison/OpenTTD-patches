@@ -2286,6 +2286,8 @@ DEF_CONSOLE_CMD(ConFont)
 		IConsolePrintF(CC_DEFAULT, "%s: \"%s\" %d %s [\"%s\" %d %s]", FontSizeToName(fs), fc->GetFontName().c_str(), fc->GetFontSize(), GetFontAAState(fs) ? "aa" : "noaa", setting->font.c_str(), setting->size, setting->aa ? "aa" : "noaa");
 	}
 
+	FontChanged();
+
 	return true;
 }
 

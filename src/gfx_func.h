@@ -97,6 +97,8 @@ enum AdjustGUIZoomMode {
 };
 bool AdjustGUIZoom(AdjustGUIZoomMode mode);
 
+void FontChanged();
+
 void RedrawScreenRect(int left, int top, int right, int bottom);
 
 Dimension GetSpriteSize(SpriteID sprid, Point *offset = nullptr, ZoomLevel zoom = ZOOM_LVL_GUI);

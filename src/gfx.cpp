@@ -2222,6 +2222,18 @@ bool AdjustGUIZoom(AdjustGUIZoomMode mode)
 	return true;
 }
 
+void FontChanged()
+{
+	extern void FlushDeparturesWindowTextCaches();
+	FlushDeparturesWindowTextCaches();
+
+	UpdateRouteStepSpriteSize();
+
+	SetupWidgetDimensions();
+	UpdateAllVirtCoords();
+	ReInitAllWindows(true);
+}
+
 void ChangeGameSpeed(bool enable_fast_forward)
 {
 	if (enable_fast_forward) {

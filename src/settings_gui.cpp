@@ -596,8 +596,8 @@ struct GameOptionsWindow : Window {
 				InitFontCache(false);
 				InitFontCache(true);
 				ClearFontCache();
-				SetupWidgetDimensions();
-				ReInitAllWindows(true);
+
+				FontChanged();
 				break;
 
 			case WID_GO_GUI_FONT_AA:
