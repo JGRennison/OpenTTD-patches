@@ -1376,32 +1376,6 @@ std::string NetworkGenerateRandomKeyString(uint bytes)
 	return FormatArrayAsHex({key, bytes});
 }
 
-class TCPNetworkDebugConnecter : TCPConnecter {
-private:
-	std::string connection_string;
-
-public:
-	TCPNetworkDebugConnecter(const std::string &connection_string) : TCPConnecter(connection_string, NETWORK_DEFAULT_DEBUGLOG_PORT), connection_string(connection_string) {}
-
-	void OnFailure() override
-	{
-		DEBUG(net, 0, "Failed to open connection to %s for redirecting DEBUG()", this->connection_string.c_str());
-	}
-
-	void OnConnect(SOCKET s) override
-	{
-		DEBUG(net, 3, "Redirecting DEBUG() to %s", this->connection_string.c_str());
-
-		extern SOCKET _debug_socket;
-		_debug_socket = s;
-	}
-};
-
-void NetworkStartDebugLog(const std::string &connection_string)
-{
-	new TCPNetworkDebugConnecter(connection_string);
-}
-
 /** This tries to launch the network for a given OS */
 void NetworkStartUp()
 {

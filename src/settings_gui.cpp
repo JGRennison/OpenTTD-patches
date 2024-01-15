@@ -58,6 +58,10 @@
 
 extern void FlushDeparturesWindowTextCaches();
 
+#if defined(WITH_FREETYPE) || defined(_WIN32) || defined(WITH_COCOA)
+#	define HAS_TRUETYPE_FONT
+#endif
+
 static const StringID _autosave_dropdown[] = {
 	STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_OFF,
 	STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_10_MINUTES,
@@ -581,6 +585,31 @@ struct GameOptionsWindow : Window {
 				break;
 			}
 
+#ifdef HAS_TRUETYPE_FONT
+			case WID_GO_GUI_FONT_SPRITE:
+				_fcsettings.prefer_sprite = !_fcsettings.prefer_sprite;
+
+				this->SetWidgetLoweredState(WID_GO_GUI_FONT_SPRITE, _fcsettings.prefer_sprite);
+				this->SetWidgetDisabledState(WID_GO_GUI_FONT_AA, _fcsettings.prefer_sprite);
+				this->SetDirty();
+
+				InitFontCache(false);
+				InitFontCache(true);
+				ClearFontCache();
+				SetupWidgetDimensions();
+				ReInitAllWindows(true);
+				break;
+
+			case WID_GO_GUI_FONT_AA:
+				_fcsettings.global_aa = !_fcsettings.global_aa;
+
+				this->SetWidgetLoweredState(WID_GO_GUI_FONT_AA, _fcsettings.global_aa);
+				this->SetDirty();
+
+				ClearFontCache();
+				break;
+#endif /* HAS_TRUETYPE_FONT */
+
 			case WID_GO_GUI_SCALE_MAIN_TOOLBAR: {
 				_settings_client.gui.bigger_main_toolbar = !_settings_client.gui.bigger_main_toolbar;
 
@@ -813,6 +842,12 @@ struct GameOptionsWindow : Window {
 
 		this->SetWidgetLoweredState(WID_GO_GUI_SCALE_AUTO, _gui_scale_cfg == -1);
 		this->SetWidgetLoweredState(WID_GO_GUI_SCALE_BEVEL_BUTTON, _settings_client.gui.scale_bevels);
+#ifdef HAS_TRUETYPE_FONT
+		this->SetWidgetLoweredState(WID_GO_GUI_FONT_SPRITE, _fcsettings.prefer_sprite);
+		this->SetWidgetLoweredState(WID_GO_GUI_FONT_AA, _fcsettings.global_aa);
+		this->SetWidgetDisabledState(WID_GO_GUI_FONT_AA, _fcsettings.prefer_sprite);
+#endif /* HAS_TRUETYPE_FONT */
+
 		this->SetWidgetLoweredState(WID_GO_GUI_SCALE_MAIN_TOOLBAR, _settings_client.gui.bigger_main_toolbar);
 
 		this->SetWidgetDisabledState(WID_GO_BASE_GRF_DROPDOWN, _game_mode != GM_MENU);
@@ -892,6 +927,16 @@ static const NWidgetPart _nested_game_options_widgets[] = {
 							NWidget(NWID_SPACER), SetMinimalSize(1, 0), SetFill(1, 0),
 							NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_GO_GUI_SCALE_MAIN_TOOLBAR), SetMinimalSize(21, 9), SetDataTip(STR_EMPTY, STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP),
 						EndContainer(),
+#ifdef HAS_TRUETYPE_FONT
+						NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
+							NWidget(WWT_TEXT, COLOUR_GREY), SetMinimalSize(0, 12), SetFill(1, 0), SetDataTip(STR_GAME_OPTIONS_GUI_FONT_SPRITE, STR_NULL),
+							NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_GO_GUI_FONT_SPRITE), SetMinimalSize(21, 9), SetDataTip(STR_EMPTY, STR_GAME_OPTIONS_GUI_FONT_SPRITE_TOOLTIP),
+						EndContainer(),
+						NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
+							NWidget(WWT_TEXT, COLOUR_GREY), SetMinimalSize(0, 12), SetFill(1, 0), SetDataTip(STR_GAME_OPTIONS_GUI_FONT_AA, STR_NULL),
+							NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_GO_GUI_FONT_AA), SetMinimalSize(21, 9), SetDataTip(STR_EMPTY, STR_GAME_OPTIONS_GUI_FONT_AA_TOOLTIP),
+						EndContainer(),
+#endif /* HAS_TRUETYPE_FONT */
 					EndContainer(),
 				EndContainer(),
 

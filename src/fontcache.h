@@ -114,9 +114,10 @@ public:
 	/**
 	 * Map a character into a glyph.
 	 * @param key The character.
+	 * @param fallback Allow fallback to the parent font.
 	 * @return The glyph ID used to draw the character.
 	 */
-	virtual GlyphID MapCharToGlyph(char32_t key) = 0;
+	virtual GlyphID MapCharToGlyph(char32_t key, bool fallback = true) = 0;
 
 	/**
 	 * Read a font table from the font.
@@ -221,6 +222,8 @@ struct FontCacheSettings {
 	FontCacheSubSetting medium; ///< The normal font size.
 	FontCacheSubSetting large;  ///< The largest font; mostly used for newspapers.
 	FontCacheSubSetting mono;   ///< The mono space font used for license/readme viewers.
+	bool prefer_sprite;         ///< Whether to prefer the built-in sprite font over resizable fonts.
+	bool global_aa;             ///< Whether to anti alias all font sizes.
 };
 
 extern FontCacheSettings _fcsettings;

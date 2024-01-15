@@ -96,7 +96,6 @@ void IConsolePrint(TextColour colour_code, const char *string)
 {
 	assert(IsValidConsoleColour(colour_code));
 
-	char *str;
 	if (_redirect_console_to_client != INVALID_CLIENT_ID) {
 		/* Redirect the string to the client */
 		NetworkServerSendRcon(_redirect_console_to_client, colour_code, string);
@@ -110,22 +109,18 @@ void IConsolePrint(TextColour colour_code, const char *string)
 
 	/* Create a copy of the string, strip it of colours and invalid
 	 * characters and (when applicable) assign it to the console buffer */
-	str = stredup(string);
-	str_strip_colours(str);
-	StrMakeValidInPlace(str);
+	std::string str = StrMakeValid(string, SVS_NONE);
 
 	if (_network_dedicated) {
 		NetworkAdminConsole("console", str);
-		fprintf(stdout, "%s%s\n", log_prefix().GetLogPrefix(), str);
+		fprintf(stdout, "%s%s\n", log_prefix().GetLogPrefix(), str.c_str());
 		fflush(stdout);
-		IConsoleWriteToLogFile(str);
-		free(str); // free duplicated string since it's not used anymore
+		IConsoleWriteToLogFile(str.c_str());
 		return;
 	}
 
-	IConsoleWriteToLogFile(str);
-	IConsoleGUIPrint(colour_code, str);
-	free(str);
+	IConsoleWriteToLogFile(str.c_str());
+	IConsoleGUIPrint(colour_code, std::move(str));
 }
 
 /**

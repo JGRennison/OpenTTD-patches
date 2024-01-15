@@ -17,6 +17,10 @@ set(BASESET_OTHER_SOURCE_FILES
         ${CMAKE_CURRENT_SOURCE_DIR}/openttd.grf
         ${CMAKE_CURRENT_SOURCE_DIR}/opntitle.dat
         ${CMAKE_CURRENT_SOURCE_DIR}/orig_extra.grf
+        ${CMAKE_CURRENT_SOURCE_DIR}/OpenTTD-Sans.ttf
+        ${CMAKE_CURRENT_SOURCE_DIR}/OpenTTD-Serif.ttf
+        ${CMAKE_CURRENT_SOURCE_DIR}/OpenTTD-Small.ttf
+        ${CMAKE_CURRENT_SOURCE_DIR}/OpenTTD-Mono.ttf
         ${CMAKE_CURRENT_SOURCE_DIR}/innerhighlight.grf
         ${CMAKE_CURRENT_SOURCE_DIR}/progsignals.grf
         ${CMAKE_CURRENT_SOURCE_DIR}/extra_signals.grf
@@ -73,7 +77,7 @@ foreach(BASESET_OTHER_SOURCE_FILE IN LISTS BASESET_OTHER_SOURCE_FILES)
     get_filename_component(BASESET_OTHER_SOURCE_FILE_NAME "${BASESET_OTHER_SOURCE_FILE}" NAME)
     set(BASESET_OTHER_BINARY_FILE "${CMAKE_BINARY_DIR}/baseset/${BASESET_OTHER_SOURCE_FILE_NAME}")
 
-    add_custom_command(OUTPUT ${BASESET_OTHER_BINARY_FILE}
+    add_custom_command_timestamp(OUTPUT ${BASESET_OTHER_BINARY_FILE}
             COMMAND ${CMAKE_COMMAND} -E copy
                     ${BASESET_OTHER_SOURCE_FILE}
                     ${BASESET_OTHER_BINARY_FILE}

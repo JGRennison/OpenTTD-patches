@@ -274,13 +274,15 @@ static void FindResolutions()
 {
 	_resolutions.clear();
 
-	for (int i = 0; i < SDL_GetNumDisplayModes(0); i++) {
-		SDL_DisplayMode mode;
-		SDL_GetDisplayMode(0, i, &mode);
+	for (int display = 0; display < SDL_GetNumVideoDisplays(); display++) {
+		for (int i = 0; i < SDL_GetNumDisplayModes(display); i++) {
+			SDL_DisplayMode mode;
+			SDL_GetDisplayMode(display, i, &mode);
 
-		if (mode.w < 640 || mode.h < 480) continue;
-		if (std::find(_resolutions.begin(), _resolutions.end(), Dimension(mode.w, mode.h)) != _resolutions.end()) continue;
-		_resolutions.emplace_back(mode.w, mode.h);
+			if (mode.w < 640 || mode.h < 480) continue;
+			if (std::find(_resolutions.begin(), _resolutions.end(), Dimension(mode.w, mode.h)) != _resolutions.end()) continue;
+			_resolutions.emplace_back(mode.w, mode.h);
+		}
 	}
 
 	/* We have found no resolutions, show the default list */
@@ -1003,7 +1005,7 @@ bool VideoDriver_SDL_Base::ToggleFullscreen(bool fullscreen)
 	if (fullscreen) {
 		/* Find fullscreen window size */
 		SDL_DisplayMode dm;
-		if (SDL_GetCurrentDisplayMode(0, &dm) < 0) {
+		if (SDL_GetCurrentDisplayMode(SDL_GetWindowDisplayIndex(this->sdl_window), &dm) < 0) {
 			DEBUG(driver, 0, "SDL_GetCurrentDisplayMode() failed: %s", SDL_GetError());
 		} else {
 			SDL_SetWindowSize(this->sdl_window, dm.w, dm.h);

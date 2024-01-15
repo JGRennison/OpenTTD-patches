@@ -528,9 +528,9 @@ static void IConsoleTabCompletion()
  * @param colour_code the colour of the command. Red in case of errors, etc.
  * @param str the message entered or output on the console (notice, error, etc.)
  */
-void IConsoleGUIPrint(TextColour colour_code, char *str)
+void IConsoleGUIPrint(TextColour colour_code, std::string str)
 {
-	_iconsole_buffer.push_front(IConsoleLine(str, colour_code));
+	_iconsole_buffer.push_front(IConsoleLine(std::move(str), colour_code));
 	SetWindowDirty(WC_CONSOLE, 0);
 }
 

@@ -9,6 +9,7 @@
 
 #include "../../stdafx.h"
 #include "../../debug.h"
+#include "../../debug_fmt.h"
 #include "../../blitter/factory.hpp"
 #include "../../core/alloc_func.hpp"
 #include "../../core/math_func.hpp"
@@ -279,13 +280,9 @@ void Win32FontCache::ClearFontCache()
 	return new_glyph.sprite;
 }
 
-/* virtual */ GlyphID Win32FontCache::MapCharToGlyph(char32_t key)
+/* virtual */ GlyphID Win32FontCache::MapCharToGlyph(char32_t key, bool allow_fallback)
 {
 	assert(IsPrintable(key));
-
-	if (key >= SCC_SPRITE_START && key <= SCC_SPRITE_END) {
-		return this->parent->MapCharToGlyph(key);
-	}
 
 	/* Convert characters outside of the BMP into surrogate pairs. */
 	WCHAR chars[2];
@@ -299,7 +296,8 @@ void Win32FontCache::ClearFontCache()
 	WORD glyphs[2] = { 0, 0 };
 	GetGlyphIndicesW(this->dc, chars, key >= 0x010000U ? 2 : 1, glyphs, GGI_MARK_NONEXISTING_GLYPHS);
 
-	return glyphs[0] != 0xFFFF ? glyphs[0] : 0;
+	if (glyphs[0] != 0xFFFF) return glyphs[0];
+	return allow_fallback && key >= SCC_SPRITE_START && key <= SCC_SPRITE_END ? this->parent->MapCharToGlyph(key) : 0;
 }
 
 /* virtual */ const void *Win32FontCache::InternalGetFontTable(uint32_t tag, size_t &length)
@@ -317,6 +315,66 @@ void Win32FontCache::ClearFontCache()
 }
 
 
+static bool TryLoadFontFromFile(const std::string &font_name, LOGFONT &logfont)
+{
+	wchar_t fontPath[MAX_PATH] = {};
+
+	/* See if this is an absolute path. */
+	if (FileExists(font_name)) {
+		convert_to_fs(font_name, fontPath, lengthof(fontPath));
+	} else {
+		/* Scan the search-paths to see if it can be found. */
+		std::string full_font = FioFindFullPath(BASE_DIR, font_name);
+		if (!full_font.empty()) {
+			convert_to_fs(font_name, fontPath, lengthof(fontPath));
+		}
+	}
+
+	if (fontPath[0] != 0) {
+		if (AddFontResourceEx(fontPath, FR_PRIVATE, 0) != 0) {
+			/* Try a nice little undocumented function first for getting the internal font name.
+			 * Some documentation is found at: http://www.undocprint.org/winspool/getfontresourceinfo */
+			static LibraryLoader _gdi32("gdi32.dll");
+			typedef BOOL(WINAPI *PFNGETFONTRESOURCEINFO)(LPCTSTR, LPDWORD, LPVOID, DWORD);
+			static PFNGETFONTRESOURCEINFO GetFontResourceInfo = _gdi32.GetFunction("GetFontResourceInfoW");
+
+			if (GetFontResourceInfo != nullptr) {
+				/* Try to query an array of LOGFONTs that describe the file. */
+				DWORD len = 0;
+				if (GetFontResourceInfo(fontPath, &len, nullptr, 2) && len >= sizeof(LOGFONT)) {
+					LOGFONT *buf = (LOGFONT *)new byte[len];
+					if (GetFontResourceInfo(fontPath, &len, buf, 2)) {
+						logfont = *buf; // Just use first entry.
+					}
+					delete[](byte *)buf;
+				}
+			}
+
+			/* No dice yet. Use the file name as the font face name, hoping it matches. */
+			if (logfont.lfFaceName[0] == 0) {
+				wchar_t fname[_MAX_FNAME];
+				_wsplitpath(fontPath, nullptr, nullptr, fname, nullptr);
+
+				wcsncpy_s(logfont.lfFaceName, lengthof(logfont.lfFaceName), fname, _TRUNCATE);
+				logfont.lfWeight = strcasestr(font_name.c_str(), " bold") != nullptr || strcasestr(font_name.c_str(), "-bold") != nullptr ? FW_BOLD : FW_NORMAL; // Poor man's way to allow selecting bold fonts.
+			}
+		}
+	}
+
+	return logfont.lfFaceName[0] != 0;
+}
+
+static void LoadWin32Font(FontSize fs, const LOGFONT &logfont, uint size, const char *font_name)
+{
+	HFONT font = CreateFontIndirect(&logfont);
+	if (font == nullptr) {
+		ShowInfo("Unable to use '{}' for {} font, Win32 reported error 0x{:X}, using sprite font instead", font_name, FontSizeToName(fs), GetLastError());
+		return;
+	}
+	DeleteObject(font);
+
+	new Win32FontCache(fs, logfont, size);
+}
 /**
  * Loads the GDI font.
  * If a GDI font description is present, e.g. from the automatic font
@@ -341,50 +399,8 @@ void LoadWin32Font(FontSize fs)
 		logfont = *(const LOGFONT *)settings->os_handle;
 	} else if (strchr(font_name, '.') != nullptr) {
 		/* Might be a font file name, try load it. */
-
-		wchar_t fontPath[MAX_PATH] = {};
-
-		/* See if this is an absolute path. */
-		if (FileExists(settings->font)) {
-			convert_to_fs(font_name, fontPath, lengthof(fontPath));
-		} else {
-			/* Scan the search-paths to see if it can be found. */
-			std::string full_font = FioFindFullPath(BASE_DIR, font_name);
-			if (!full_font.empty()) {
-				convert_to_fs(font_name, fontPath, lengthof(fontPath));
-			}
-		}
-
-		if (fontPath[0] != 0) {
-			if (AddFontResourceEx(fontPath, FR_PRIVATE, 0) != 0) {
-				/* Try a nice little undocumented function first for getting the internal font name.
-				 * Some documentation is found at: http://www.undocprint.org/winspool/getfontresourceinfo */
-				static LibraryLoader _gdi32("gdi32.dll");
-				typedef BOOL(WINAPI *PFNGETFONTRESOURCEINFO)(LPCTSTR, LPDWORD, LPVOID, DWORD);
-				static PFNGETFONTRESOURCEINFO GetFontResourceInfo = _gdi32.GetFunction("GetFontResourceInfoW");
-
-				if (GetFontResourceInfo != nullptr) {
-					/* Try to query an array of LOGFONTs that describe the file. */
-					DWORD len = 0;
-					if (GetFontResourceInfo(fontPath, &len, nullptr, 2) && len >= sizeof(LOGFONT)) {
-						LOGFONT *buf = (LOGFONT *)AllocaM(byte, len);
-						if (GetFontResourceInfo(fontPath, &len, buf, 2)) {
-							logfont = *buf; // Just use first entry.
-						}
-					}
-				}
-
-				/* No dice yet. Use the file name as the font face name, hoping it matches. */
-				if (logfont.lfFaceName[0] == 0) {
-					wchar_t fname[_MAX_FNAME];
-					_wsplitpath(fontPath, nullptr, nullptr, fname, nullptr);
-
-					wcsncpy_s(logfont.lfFaceName, lengthof(logfont.lfFaceName), fname, _TRUNCATE);
-					logfont.lfWeight = strcasestr(font_name, " bold") != nullptr || strcasestr(font_name, "-bold") != nullptr ? FW_BOLD : FW_NORMAL; // Poor man's way to allow selecting bold fonts.
-				}
-			} else {
-				ShowInfoF("Unable to load file '%s' for %s font, using default windows font selection instead", font_name, FontSizeToName(fs));
-			}
+		if (!TryLoadFontFromFile(settings->font, logfont)) {
+			ShowInfo("Unable to load file '{}' for {} font, using default windows font selection instead", font_name, FontSizeToName(fs));
 		}
 	}
 
@@ -393,12 +409,25 @@ void LoadWin32Font(FontSize fs)
 		convert_to_fs(font_name, logfont.lfFaceName, lengthof(logfont.lfFaceName));
 	}
 
-	HFONT font = CreateFontIndirect(&logfont);
-	if (font == nullptr) {
-		ShowInfoF("Unable to use '%s' for %s font, Win32 reported error 0x%lX, using sprite font instead", font_name, FontSizeToName(fs), GetLastError());
-		return;
-	}
-	DeleteObject(font);
+	LoadWin32Font(fs, logfont, settings->size, font_name);
+}
 
-	new Win32FontCache(fs, logfont, settings->size);
+/**
+ * Load a TrueType font from a file.
+ * @param fs The font size to load.
+ * @param file_name Path to the font file.
+ * @param size Requested font size.
+ */
+void LoadWin32Font(FontSize fs, const std::string &file_name, uint size)
+{
+	LOGFONT logfont;
+	MemSetT(&logfont, 0);
+	logfont.lfPitchAndFamily = fs == FS_MONO ? FIXED_PITCH : VARIABLE_PITCH;
+	logfont.lfCharSet = DEFAULT_CHARSET;
+	logfont.lfOutPrecision = OUT_OUTLINE_PRECIS;
+	logfont.lfClipPrecision = CLIP_DEFAULT_PRECIS;
+
+	if (TryLoadFontFromFile(file_name, logfont)) {
+		LoadWin32Font(fs, logfont, size, file_name.c_str());
+	}
 }
