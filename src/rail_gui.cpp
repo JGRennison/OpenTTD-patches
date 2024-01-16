@@ -2008,7 +2008,7 @@ public:
 		this->sig_sprite_bottom_offset = 0;
 
 		auto process_signals = [&](const PalSpriteID signals[SIGTYPE_END][2][2]) {
-			for (uint type = SIGTYPE_NORMAL; type < SIGTYPE_END; type++) {
+			for (uint type = SIGTYPE_BLOCK; type < SIGTYPE_END; type++) {
 				for (uint variant = SIG_ELECTRIC; variant <= SIG_SEMAPHORE; variant++) {
 					for (uint lowered = 0; lowered < 2; lowered++) {
 						Point offset;
@@ -2077,7 +2077,7 @@ public:
 	static SignalType TypeForClick(uint id)
 	{
 		switch (id) {
-			case 0: return SIGTYPE_NORMAL;
+			case 0: return SIGTYPE_BLOCK;
 			case 1: return SIGTYPE_ENTRY;
 			case 2: return SIGTYPE_EXIT;
 			case 3: return SIGTYPE_COMBO;
@@ -2087,14 +2087,14 @@ public:
 			case 7: return SIGTYPE_NO_ENTRY;
 			default:
 				assert(!"Bad signal type button ID");
-				return SIGTYPE_NORMAL;
+				return SIGTYPE_BLOCK;
 		}
 	}
 
 	static uint ClickForType(SignalType type)
 	{
 		switch (type) {
-			case SIGTYPE_NORMAL:     return 0;
+			case SIGTYPE_BLOCK:      return 0;
 			case SIGTYPE_ENTRY:      return 1;
 			case SIGTYPE_EXIT:       return 2;
 			case SIGTYPE_COMBO:      return 3;
@@ -2134,7 +2134,7 @@ public:
 				_cur_signal_variant = widget >= WID_BS_ELECTRIC_NORM ? SIG_ELECTRIC : SIG_SEMAPHORE;
 
 				/* Update default (last-used) signal type in config file. */
-				_settings_client.gui.default_signal_type = Clamp<SignalType>(_cur_signal_type, SIGTYPE_NORMAL, SIGTYPE_PBS_ONEWAY);
+				_settings_client.gui.default_signal_type = Clamp<SignalType>(_cur_signal_type, SIGTYPE_BLOCK, SIGTYPE_PBS_ONEWAY);
 
 				/* If 'remove' button of rail build toolbar is active, disable it. */
 				ClearRemoveState();
@@ -2941,7 +2941,7 @@ void ShowBuildRailToolbarWithPickTile(RailType railtype, TileIndex tile)
 			}
 			if (IsRailTunnelBridgeTile(tile) && IsTunnelBridgeWithSignalSimulation(tile) && HasTrack(GetTunnelBridgeTrackBits(tile), track)) {
 				OpenBuildSignalWindow(w, IsTunnelBridgeSemaphore(tile) ? SIG_SEMAPHORE : SIG_ELECTRIC,
-						IsTunnelBridgePBS(tile) ? SIGTYPE_PBS_ONEWAY : SIGTYPE_NORMAL, GetTunnelBridgeSignalStyle(tile));
+						IsTunnelBridgePBS(tile) ? SIGTYPE_PBS_ONEWAY : SIGTYPE_BLOCK, GetTunnelBridgeSignalStyle(tile));
 			}
 		}
 	}

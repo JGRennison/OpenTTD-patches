@@ -395,7 +395,7 @@ public:
 								case SIGTYPE_PROG:
 								case SIGTYPE_COMBO:
 								case SIGTYPE_EXIT:   cost += Yapf().PfGetSettings().rail_firstred_exit_penalty; break; // first signal is red pre-signal-exit
-								case SIGTYPE_NORMAL:
+								case SIGTYPE_BLOCK:
 								case SIGTYPE_ENTRY:  cost += Yapf().PfGetSettings().rail_firstred_penalty; break;
 								default: break;
 							}

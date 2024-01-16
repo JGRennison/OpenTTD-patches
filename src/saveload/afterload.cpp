@@ -3507,8 +3507,8 @@ bool AfterLoadGame()
 	if (SlXvIsFeaturePresent(XSLFI_JOKERPP)) {
 		for (TileIndex t = 0; t < map_size; t++) {
 			if (IsTileType(t, MP_RAILWAY) && HasSignals(t)) {
-				if (GetSignalType(t, TRACK_LOWER) == SIGTYPE_PROG) SetSignalType(t, TRACK_LOWER, SIGTYPE_NORMAL);
-				if (GetSignalType(t, TRACK_UPPER) == SIGTYPE_PROG) SetSignalType(t, TRACK_UPPER, SIGTYPE_NORMAL);
+				if (GetSignalType(t, TRACK_LOWER) == SIGTYPE_PROG) SetSignalType(t, TRACK_LOWER, SIGTYPE_BLOCK);
+				if (GetSignalType(t, TRACK_UPPER) == SIGTYPE_PROG) SetSignalType(t, TRACK_UPPER, SIGTYPE_BLOCK);
 			}
 		}
 		for (Vehicle *v : Vehicle::Iterate()) {
@@ -3534,8 +3534,8 @@ bool AfterLoadGame()
 	if (SlXvIsFeaturePresent(XSLFI_CHILLPP, SL_CHILLPP_232)) {
 		for (TileIndex t = 0; t < map_size; t++) {
 			if (IsTileType(t, MP_RAILWAY) && HasSignals(t)) {
-				if (GetSignalType(t, TRACK_LOWER) == 7) SetSignalType(t, TRACK_LOWER, SIGTYPE_NORMAL);
-				if (GetSignalType(t, TRACK_UPPER) == 7) SetSignalType(t, TRACK_UPPER, SIGTYPE_NORMAL);
+				if (GetSignalType(t, TRACK_LOWER) == 7) SetSignalType(t, TRACK_LOWER, SIGTYPE_BLOCK);
+				if (GetSignalType(t, TRACK_UPPER) == 7) SetSignalType(t, TRACK_UPPER, SIGTYPE_BLOCK);
 			}
 		}
 	}

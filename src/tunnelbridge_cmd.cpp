@@ -1777,7 +1777,7 @@ static void DrawTunnelBridgeRampSingleSignal(const TileInfo *ti, bool is_green, 
 	if (is_custom_sprite) {
 		sprite.sprite += position;
 	} else {
-		if (variant == SIG_ELECTRIC && type == SIGTYPE_NORMAL) {
+		if (variant == SIG_ELECTRIC && type == SIGTYPE_BLOCK) {
 			/* Normal electric signals are picked from original sprites. */
 			sprite = { SPR_ORIGINAL_SIGNALS_BASE + ((position << 1) + is_green), PAL_NONE };
 			if (_settings_client.gui.show_all_signal_default == SSDM_ON) sprite.sprite += SPR_DUP_ORIGINAL_SIGNALS_BASE - SPR_ORIGINAL_SIGNALS_BASE;
@@ -1793,7 +1793,7 @@ static void DrawTunnelBridgeRampSingleSignal(const TileInfo *ti, bool is_green, 
 	if (is_custom_sprite && show_restricted && style == 0 && _settings_client.gui.show_restricted_signal_recolour &&
 			_settings_client.gui.show_all_signal_default == SSDM_RESTRICTED_RECOLOUR && !result.restricted_valid && variant == SIG_ELECTRIC) {
 		/* Use duplicate sprite block, instead of GRF-specified signals */
-		sprite = { (type == SIGTYPE_NORMAL && variant == SIG_ELECTRIC) ? SPR_DUP_ORIGINAL_SIGNALS_BASE : SPR_DUP_SIGNALS_BASE - 16, PAL_NONE };
+		sprite = { (type == SIGTYPE_BLOCK && variant == SIG_ELECTRIC) ? SPR_DUP_ORIGINAL_SIGNALS_BASE : SPR_DUP_SIGNALS_BASE - 16, PAL_NONE };
 		sprite.sprite += type * 16 + variant * 64 + position * 2 + is_green + (IsSignalSpritePBS(type) ? 64 : 0);
 		is_custom_sprite = false;
 	}
@@ -1821,14 +1821,14 @@ static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
 	}
 
 	if (IsTunnelBridgeSignalSimulationExit(ti->tile)) {
-		SignalType type = SIGTYPE_NORMAL;
+		SignalType type = SIGTYPE_BLOCK;
 		if (IsTunnelBridgePBS(ti->tile)) {
 			type = IsTunnelBridgeSignalSimulationEntrance(ti->tile) ? SIGTYPE_PBS : SIGTYPE_PBS_ONEWAY;
 		}
 		DrawTunnelBridgeRampSingleSignal(ti, (GetTunnelBridgeExitSignalState(ti->tile) == SIGNAL_STATE_GREEN), position ^ 1, type, true);
 	}
 	if (IsTunnelBridgeSignalSimulationEntrance(ti->tile)) {
-		DrawTunnelBridgeRampSingleSignal(ti, (GetTunnelBridgeEntranceSignalState(ti->tile) == SIGNAL_STATE_GREEN), position, SIGTYPE_NORMAL, false);
+		DrawTunnelBridgeRampSingleSignal(ti, (GetTunnelBridgeEntranceSignalState(ti->tile) == SIGNAL_STATE_GREEN), position, SIGTYPE_BLOCK, false);
 	}
 }
 
@@ -1896,7 +1896,7 @@ static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_st
 			}
 
 			const RailTypeInfo *rti = GetRailTypeInfo(GetRailType(bridge_start_tile));
-			PalSpriteID sprite = GetCustomSignalSprite(rti, bridge_start_tile, SIGTYPE_NORMAL, variant, aspect, CSSC_BRIDGE_MIDDLE, style).sprite;
+			PalSpriteID sprite = GetCustomSignalSprite(rti, bridge_start_tile, SIGTYPE_BLOCK, variant, aspect, CSSC_BRIDGE_MIDDLE, style).sprite;
 
 			if (sprite.sprite != 0) {
 				sprite.sprite += position;
@@ -2222,10 +2222,10 @@ static void DrawTile_TunnelBridge(TileInfo *ti, DrawTileProcParams params)
 					}
 					const TraceRestrictProgram *prog = IsTunnelBridgeRestrictedSignal(ti->tile) ? GetExistingTraceRestrictProgram(ti->tile, t) : nullptr;
 					if (IsTunnelBridgeSignalSimulationEntrance(ti->tile)) {
-						DrawSingleSignal(ti->tile, rti, t, GetTunnelBridgeEntranceSignalState(ti->tile), image, position, SIGTYPE_NORMAL, variant, prog, CSSC_TUNNEL_BRIDGE_ENTRANCE);
+						DrawSingleSignal(ti->tile, rti, t, GetTunnelBridgeEntranceSignalState(ti->tile), image, position, SIGTYPE_BLOCK, variant, prog, CSSC_TUNNEL_BRIDGE_ENTRANCE);
 					}
 					if (IsTunnelBridgeSignalSimulationExit(ti->tile)) {
-						SignalType type = SIGTYPE_NORMAL;
+						SignalType type = SIGTYPE_BLOCK;
 						if (IsTunnelBridgePBS(ti->tile)) {
 							type = IsTunnelBridgeSignalSimulationEntrance(ti->tile) ? SIGTYPE_PBS : SIGTYPE_PBS_ONEWAY;
 						}

@@ -23,8 +23,8 @@ enum SignalVariant {
 
 
 /** Type of signal, i.e. how does the signal behave? */
-enum SignalType : uint8_t {
-	SIGTYPE_NORMAL     = 0, ///< normal signal
+enum SignalType : byte {
+	SIGTYPE_BLOCK      = 0, ///< block signal
 	SIGTYPE_ENTRY      = 1, ///< presignal block entry
 	SIGTYPE_EXIT       = 2, ///< presignal block exit
 	SIGTYPE_COMBO      = 3, ///< presignal inter-block
@@ -38,7 +38,7 @@ enum SignalType : uint8_t {
 	SIGTYPE_FIRST_PBS_SPRITE = SIGTYPE_PBS,
 };
 /** Helper information for extract tool. */
-template <> struct EnumPropsT<SignalType> : MakeEnumPropsT<SignalType, byte, SIGTYPE_NORMAL, SIGTYPE_END, SIGTYPE_END, 3> {};
+template <> struct EnumPropsT<SignalType> : MakeEnumPropsT<SignalType, byte, SIGTYPE_BLOCK, SIGTYPE_END, SIGTYPE_END, 3> {};
 
 /** Reference to a signal
  *

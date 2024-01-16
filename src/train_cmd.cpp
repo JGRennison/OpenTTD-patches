@@ -3750,7 +3750,7 @@ void FreeTrainTrackReservation(Train *v, TileIndex origin, Trackdir orig_td)
 					break;
 				} else {
 					/* Turn the signal back to red. */
-					if (GetSignalType(tile, TrackdirToTrack(td)) == SIGTYPE_NORMAL) {
+					if (GetSignalType(tile, TrackdirToTrack(td)) == SIGTYPE_BLOCK) {
 						update_signal = true;
 					} else {
 						SetSignalStateByTrackdir(tile, td, SIGNAL_STATE_RED);

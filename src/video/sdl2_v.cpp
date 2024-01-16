@@ -839,11 +839,6 @@ static const char *InitializeSDL()
 	FcitxInit();
 #endif
 
-	/* Explicitly disable hardware acceleration. Enabling this causes
-	 * UpdateWindowSurface() to update the window's texture instead of
-	 * its surface. */
-	SDL_SetHint(SDL_HINT_FRAMEBUFFER_ACCELERATION, "0");
-
 	/* Check if the video-driver is already initialized. */
 	if (SDL_WasInit(SDL_INIT_VIDEO) != 0) return nullptr;
 

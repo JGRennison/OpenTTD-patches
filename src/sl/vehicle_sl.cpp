@@ -22,6 +22,7 @@
 #include "../string_func.h"
 #include "../error.h"
 #include "../strings_func.h"
+#include "../economy_base.h"
 #include "../3rdparty/cpp-btree/btree_map.h"
 #include "../core/format.hpp"
 
@@ -203,6 +204,19 @@ void UpdateOldAircraft()
 			/* set new position x,y,z */
 			GetAircraftFlightLevelBounds(a, &a->z_pos, nullptr);
 			SetAircraftPosition(a, gp.x, gp.y, GetAircraftFlightLevel(a));
+		}
+	}
+
+	/* Clear aircraft from loading vehicles, if we bumped them into the air. */
+	for (Station *st : Station::Iterate()) {
+		for (auto iter = st->loading_vehicles.begin(); iter != st->loading_vehicles.end(); /* nothing */) {
+			Vehicle *v = *iter;
+			if (v->type == VEH_AIRCRAFT && !v->current_order.IsType(OT_LOADING)) {
+				iter = st->loading_vehicles.erase(iter);
+				delete v->cargo_payment;
+			} else {
+				++iter;
+			}
 		}
 	}
 }

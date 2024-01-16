@@ -91,7 +91,7 @@ void ResolveRailTypeGUISignalSprites(RailTypeInfo *rti, uint8_t style, PalSprite
 				spr += SPR_DUP_PROGSIGNAL_BASE - SPR_PROGSIGNAL_BASE;
 			} else if (type == SIGTYPE_NO_ENTRY) {
 				spr += SPR_DUP_EXTRASIGNAL_BASE - SPR_EXTRASIGNAL_BASE;
-			} else if (var == SIG_ELECTRIC && type == SIGTYPE_NORMAL) {
+			} else if (var == SIG_ELECTRIC && type == SIGTYPE_BLOCK) {
 				spr += SPR_DUP_ORIGINAL_SIGNALS_BASE - SPR_ORIGINAL_SIGNALS_BASE;
 			} else {
 				spr += SPR_DUP_SIGNALS_BASE - SPR_SIGNALS_BASE;
@@ -100,7 +100,7 @@ void ResolveRailTypeGUISignalSprites(RailTypeInfo *rti, uint8_t style, PalSprite
 		return spr;
 	};
 
-	for (SignalType type = SIGTYPE_NORMAL; type < SIGTYPE_END; type = (SignalType)(type + 1)) {
+	for (SignalType type = SIGTYPE_BLOCK; type < SIGTYPE_END; type = (SignalType)(type + 1)) {
 		for (SignalVariant var = SIG_ELECTRIC; var <= SIG_SEMAPHORE; var = (SignalVariant)(var + 1)) {
 			PalSpriteID red   = GetCustomSignalSprite(rti, INVALID_TILE, type, var, 0, CSSC_GUI, style).sprite;
 			if (red.sprite != 0) {
@@ -1742,10 +1742,10 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t p
 		} else if (convert_signal) {
 			/* convert button pressed */
 			if (ctrl_pressed || GetSignalVariant(tile, track) != sigvar || signal_style != GetSignalStyle(tile, track)) {
-				/* convert electric <-> semaphore and/or change style */
+				/* it costs money to change signal variant (light or semaphore) */
 				cost = CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_SIGNALS] + _price[PR_CLEAR_SIGNALS]);
 			} else {
-				/* it is free to change signal type: normal-pre-exit-combo */
+				/* it is free to change signal type (block, exit, entry, combo, path, etc) */
 				cost = CommandCost();
 			}
 
@@ -1764,7 +1764,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t p
 				if (!is_style_usable(GetSignalVariant(tile, track), GetSignalStyle(tile, track), 1 << new_sigtype)) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
 			}
 
-			/* it is free to change orientation/pre-exit-combo signals */
+			/* it is free to change orientation or number of signals on the tile (for block/presignals which allow signals in both directions) */
 			cost = CommandCost();
 		}
 	}
@@ -2038,7 +2038,7 @@ static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uin
 
 		sigtype = GetSignalType(tile, track);
 		/* Don't but copy entry or exit-signal type */
-		if (sigtype == SIGTYPE_ENTRY || sigtype == SIGTYPE_EXIT) sigtype = SIGTYPE_NORMAL;
+		if (sigtype == SIGTYPE_ENTRY || sigtype == SIGTYPE_EXIT) sigtype = SIGTYPE_BLOCK;
 
 		signal_style = GetSignalStyle(tile, track);
 	} else { // no signals exist, drag a two-way signal stretch
@@ -3202,8 +3202,8 @@ void DrawRestrictedSignal(SignalType type, SpriteID sprite, int x, int y, int z,
 		static const SubSprite lower_part_plain = { -50,  -5, 50,  50 };
 		static const SubSprite upper_part_plain = { -50, -50, 50, -6 };
 
-		AddSortableSpriteToDraw(sprite, SPR_TRACERESTRICT_BASE + 2, x, y, 1, 1, dz, z, false, 0, 0, bb_offset_z, (type == SIGTYPE_NORMAL) ? &lower_part_plain : &lower_part);
-		AddSortableSpriteToDraw(sprite,                   PAL_NONE, x, y, 1, 1, dz, z, false, 0, 0, bb_offset_z, (type == SIGTYPE_NORMAL) ? &upper_part_plain : &upper_part);
+		AddSortableSpriteToDraw(sprite, SPR_TRACERESTRICT_BASE + 2, x, y, 1, 1, dz, z, false, 0, 0, bb_offset_z, (type == SIGTYPE_BLOCK) ? &lower_part_plain : &lower_part);
+		AddSortableSpriteToDraw(sprite,                   PAL_NONE, x, y, 1, 1, dz, z, false, 0, 0, bb_offset_z, (type == SIGTYPE_BLOCK) ? &upper_part_plain : &upper_part);
 	} else if (type == SIGTYPE_PBS || type == SIGTYPE_PBS_ONEWAY) {
 		static const SubSprite lower_part = { -50, -10, 50,  50 };
 		static const SubSprite upper_part = { -50, -50, 50, -11 };
@@ -3296,7 +3296,7 @@ void DrawSingleSignal(TileIndex tile, const RailTypeInfo *rti, Track track, Sign
 		is_custom_sprite = !(file != nullptr && file->flags & SFF_PROGSIG);
 	} else {
 		/* Normal electric signals are stored in a different sprite block than all other signals. */
-		sprite = (type == SIGTYPE_NORMAL && variant == SIG_ELECTRIC) ? SPR_ORIGINAL_SIGNALS_BASE : SPR_SIGNALS_BASE - 16;
+		sprite = (type == SIGTYPE_BLOCK && variant == SIG_ELECTRIC) ? SPR_ORIGINAL_SIGNALS_BASE : SPR_SIGNALS_BASE - 16;
 		sprite += type * 16 + variant * 64 + image * 2 + condition + (IsSignalSpritePBS(type) ? 64 : 0);
 
 		SpriteFile *file = GetOriginFile(sprite);
@@ -3320,7 +3320,7 @@ void DrawSingleSignal(TileIndex tile, const RailTypeInfo *rti, Track track, Sign
 				sprite = SPR_DUP_EXTRASIGNAL_BASE + 8 + image;
 			}
 		} else {
-			sprite = (type == SIGTYPE_NORMAL && variant == SIG_ELECTRIC) ? SPR_DUP_ORIGINAL_SIGNALS_BASE : SPR_DUP_SIGNALS_BASE - 16;
+			sprite = (type == SIGTYPE_BLOCK && variant == SIG_ELECTRIC) ? SPR_DUP_ORIGINAL_SIGNALS_BASE : SPR_DUP_SIGNALS_BASE - 16;
 			sprite += type * 16 + variant * 64 + image * 2 + condition + (IsSignalSpritePBS(type) ? 64 : 0);
 		}
 		pal = PAL_NONE;

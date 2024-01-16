@@ -31,6 +31,16 @@ jobs:
     with:
       version: ${{ needs.source.outputs.version }}
 
+  linux-legacy:
+    name: Linux (Legacy)
+    needs: source
+
+    uses: ./.github/workflows/release-linux-legacy.yml
+    secrets: inherit
+
+    with:
+      survey_key: ${{ needs.source.outputs.survey_key }}
+
   linux:
     name: Linux (Generic)
     needs: source

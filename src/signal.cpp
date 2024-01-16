@@ -1868,7 +1868,7 @@ static bool DetermineExtraAspectsVariable()
 		if (HasBit(_new_signal_styles[i].style_flags, NSSF_REALISTIC_BRAKING_ONLY) && _settings_game.vehicle.train_braking_model != TBM_REALISTIC) {
 			mask = 0;
 		} else if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
-			mask &= (1 << SIGTYPE_NORMAL) | (1 << SIGTYPE_PBS) | (1 << SIGTYPE_PBS_ONEWAY) | (1 << SIGTYPE_NO_ENTRY);
+			mask &= (1 << SIGTYPE_BLOCK) | (1 << SIGTYPE_PBS) | (1 << SIGTYPE_PBS_ONEWAY) | (1 << SIGTYPE_NO_ENTRY);
 		}
 		if ((_new_signal_styles[i].electric_mask | _new_signal_styles[i].semaphore_mask) & mask) SetBit(_enabled_new_signal_styles_mask, i + 1);
 	}

@@ -135,17 +135,17 @@ inline SignalType NextSignalType(SignalType cur, uint which_signals)
 	bool block = (which_signals == SIGNAL_CYCLE_ALL);
 
 	switch(cur) {
-		case SIGTYPE_NORMAL:     return block ? SIGTYPE_ENTRY      : SIGTYPE_PBS;
+		case SIGTYPE_BLOCK:      return block ? SIGTYPE_ENTRY      : SIGTYPE_PBS;
 		case SIGTYPE_ENTRY:      return block ? SIGTYPE_EXIT       : SIGTYPE_PBS;
 		case SIGTYPE_EXIT:       return block ? SIGTYPE_COMBO      : SIGTYPE_PBS;
-		case SIGTYPE_COMBO:      return pbs   ? SIGTYPE_PBS        : SIGTYPE_NORMAL;
-		case SIGTYPE_PROG:       return pbs   ? SIGTYPE_PBS        : SIGTYPE_NORMAL;
-		case SIGTYPE_PBS:        return pbs   ? SIGTYPE_PBS_ONEWAY : SIGTYPE_NORMAL;
-		case SIGTYPE_PBS_ONEWAY: return block ? SIGTYPE_NORMAL     : SIGTYPE_PBS;
-		case SIGTYPE_NO_ENTRY:   return pbs   ? SIGTYPE_PBS        : SIGTYPE_NORMAL;
+		case SIGTYPE_COMBO:      return pbs   ? SIGTYPE_PBS        : SIGTYPE_BLOCK;
+		case SIGTYPE_PROG:       return pbs   ? SIGTYPE_PBS        : SIGTYPE_BLOCK;
+		case SIGTYPE_PBS:        return pbs   ? SIGTYPE_PBS_ONEWAY : SIGTYPE_BLOCK;
+		case SIGTYPE_PBS_ONEWAY: return block ? SIGTYPE_BLOCK      : SIGTYPE_PBS;
+		case SIGTYPE_NO_ENTRY:   return pbs   ? SIGTYPE_PBS        : SIGTYPE_BLOCK;
 		default:
 			DEBUG(map, 0, "Attempt to cycle from signal type %d", cur);
-			return SIGTYPE_NORMAL; // Fortunately mostly harmless
+			return SIGTYPE_BLOCK; // Fortunately mostly harmless
 	}
 }
 
