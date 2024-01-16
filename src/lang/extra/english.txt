@@ -559,11 +559,14 @@ STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO                     :No limit
 STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES                           :Towns are allowed to build bridges: {STRING2}
 STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT                  :Enabling this setting allows towns to build bridges
 
-STR_CONFIG_SETTING_TOWN_CARGO_FACTOR                            :Town cargo generation factor (less < 0 < more): {STRING2}
-STR_CONFIG_SETTING_TOWN_CARGO_FACTOR_HELPTEXT                   :Passenger, mail, and other town cargo production is scaled by approximately 2^factor (exponential)
+STR_CONFIG_SETTING_TOWN_CARGO_SCALE                             :Scale town cargo production: {STRING2}
+STR_CONFIG_SETTING_TOWN_CARGO_SCALE_HELPTEXT                    :Scale the cargo production of towns by this percentage.
 
-STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR                        :Industry cargo generation factor (less < 0 < more): {STRING2}
-STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR_HELPTEXT               :Primary industry cargo production is scaled by approximately 2^factor (exponential). This excludes tree-cutting industries.{}This is not guaranteed to be fully compatible with all industry NewGRFs.
+STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE                         :Scale industry cargo production: {STRING2}
+STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT                :Scale the cargo production of industries by this percentage.
+STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA          :{STRING}{}This excludes tree-cutting industries.{}This is not guaranteed to be fully compatible with all industry NewGRFs.
+
+STR_CONFIG_SETTING_CARGO_SCALE_VALUE                            :{NUM}%
 
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :No towns above height level: {STRING2}
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :No towns above the specified height level are built during map creation.

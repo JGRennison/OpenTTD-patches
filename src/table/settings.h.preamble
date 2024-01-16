@@ -93,6 +93,9 @@ static bool CheckTTDPatchSettingFlag(uint flag);
 #define SDT_VAR(base, var, type, flags, def, min, max, interval, str, strhelp, strval, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname)\
 	NSD(Int, SLE_GENERAL_X(SL_VAR, base, var, type, 1, from, to, extver), #var, flags, guiproc, startup, patxname, def, min, max, interval, str, strhelp, strval, cat, pre_check, post_callback, nullptr)
 
+#define SDT_VAR2(base, name, var, type, flags, def, min, max, interval, str, strhelp, strval, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname)\
+	NSD(Int, SLE_GENERAL_X(SL_VAR, base, var, type, 1, from, to, extver), name, flags, guiproc, startup, patxname, def, min, max, interval, str, strhelp, strval, cat, pre_check, post_callback, nullptr)
+
 #define SDT_ENUM(base, var, type, flags, def, str, strhelp, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname, enumlist)\
 	NSD(Int, SLE_GENERAL_X(SL_VAR, base, var, type, 1, from, to, extver), #var, flags | SF_ENUM, guiproc, startup, patxname, def, 0, 0, 0, str, strhelp, STR_NULL, cat, pre_check, post_callback, enumlist)
 

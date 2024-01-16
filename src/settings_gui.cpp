@@ -2457,6 +2457,7 @@ static SettingsContainer &GetSettingsTree()
 					town_zone->Add(new SettingEntry("economy.city_zone_3_mult"));
 					town_zone->Add(new SettingEntry("economy.city_zone_4_mult"));
 				}
+				towns->Add(new SettingEntry("economy.town_cargo_scale"));
 				towns->Add(new SettingEntry("economy.town_growth_rate"));
 				towns->Add(new SettingEntry("economy.town_growth_cargo_transported"));
 				towns->Add(new SettingEntry("economy.town_zone_calc_mode"));
@@ -2474,12 +2475,12 @@ static SettingsContainer &GetSettingsTree()
 				towns->Add(new SettingEntry("economy.min_town_land_area"));
 				towns->Add(new SettingEntry("economy.min_city_land_area"));
 				towns->Add(new SettingEntry("economy.town_cargogen_mode"));
-				towns->Add(new SettingEntry("economy.town_cargo_scale_factor"));
 				towns->Add(new SettingEntry("economy.random_road_reconstruction"));
 			}
 
 			SettingsPage *industries = environment->Add(new SettingsPage(STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES));
 			{
+				industries->Add(new SettingEntry("economy.industry_cargo_scale"));
 				industries->Add(new SettingEntry("difficulty.industry_density"));
 				industries->Add(new SettingEntry("construction.raw_industry_construction"));
 				industries->Add(new SettingEntry("construction.industry_platform"));
@@ -2487,7 +2488,6 @@ static SettingsContainer &GetSettingsTree()
 				industries->Add(new SettingEntry("game_creation.oil_refinery_limit"));
 				industries->Add(new SettingEntry("economy.type"));
 				industries->Add(new SettingEntry("station.serve_neutral_industries"));
-				industries->Add(new SettingEntry("economy.industry_cargo_scale_factor"));
 				industries->Add(new SettingEntry("station.station_delivery_mode"));
 			}
 

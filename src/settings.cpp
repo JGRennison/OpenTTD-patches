@@ -1854,6 +1854,7 @@ static void DayLengthChanged(int32_t new_value)
 	RebaseScaledDateTicksBase();
 
 	SetupTileLoopCounts();
+	UpdateCargoScalers();
 
 	MarkWholeScreenDirty();
 }
@@ -2072,6 +2073,19 @@ static bool TrainPathfinderSettingGUI(SettingOnGuiCtrlData &data)
 				return true;
 			}
 			return false;
+
+		default:
+			return false;
+	}
+}
+
+static bool IndustryCargoScaleGUI(SettingOnGuiCtrlData &data)
+{
+	switch (data.type) {
+		case SOGCT_DESCRIPTION_TEXT:
+			SetDParam(0, data.text);
+			data.text = STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA;
+			return true;
 
 		default:
 			return false;

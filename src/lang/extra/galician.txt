@@ -499,12 +499,6 @@ STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO                     :Sen límite
 STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES                           :As vilas poden construír pontes: {STRING}
 STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT                  :Habilitar isto permite as vilas construír pontes
 
-STR_CONFIG_SETTING_TOWN_CARGO_FACTOR                            :Factor de xeración de carga das vilas (menos < 0 < máis): {STRING}
-STR_CONFIG_SETTING_TOWN_CARGO_FACTOR_HELPTEXT                   :Os pasaxeiros, correo e outras cargas de produción nas vilas escálanse aproximadamente por 2^factor (exponencial)
-
-STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR                        :Factor de xeración de carga das industrias (menos < 0 < máis): {STRING}
-STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR_HELPTEXT               :A produción de carga das industrias primarias escálanse aproximadamente por 2^factor (exponencial). Isto exclúe as industrias de tala de árbores.{}Isto non garantiza ser completamente compatible con todos os NewGRFs de industria.
-
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :Sen vilas por enriba da altitude: {STRING}
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :Non se constrúen vilas por enriba da altitude especificada durante a creación do mapa.
 

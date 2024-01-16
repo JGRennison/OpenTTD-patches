@@ -493,12 +493,6 @@ STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO                     :无限制
 STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES                           :城镇被允许建造桥梁: {STRING}
 STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT                  :决定城镇是否可以建造桥梁
 
-STR_CONFIG_SETTING_TOWN_CARGO_FACTOR                            :城镇货物生成因子 (更少 < 0 < 更多): {STRING}
-STR_CONFIG_SETTING_TOWN_CARGO_FACTOR_HELPTEXT                   :旅客、邮件和其他城镇货物的生成倍数为2^因子 (实验性)
-
-STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR                        :工业货物生成因子 (更少 < 0 < 更多): {STRING}
-STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR_HELPTEXT               :原料工业货物的生成倍数为2^因子 (实验性){}这包括伐木工业{}可能与NewGRF工业冲突
-
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :城镇最高海拔: {STRING}
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :在此高度之上将没有城镇生成
 

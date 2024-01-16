@@ -25,6 +25,10 @@ extern Economy _economy;
 /* Prices and also the fractional part. */
 extern Prices _price;
 
+extern CargoScaler _town_cargo_scaler;
+extern CargoScaler _industry_cargo_scaler;
+extern CargoScaler _industry_inverse_cargo_scaler;
+
 int UpdateCompanyRatingAndValue(Company *c, bool update);
 void StartupIndustryDailyChanges(bool init_counter);
 
@@ -51,5 +55,7 @@ inline bool EconomyIsInRecession()
 
 uint ScaleQuantity(uint amount, int scale_factor, bool allow_trunc = false);
 uint ScaleQuantity(uint amount, int cf, int fine, bool allow_trunc = false);
+
+void UpdateCargoScalers();
 
 #endif /* ECONOMY_FUNC_H */

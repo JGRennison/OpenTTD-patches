@@ -3948,15 +3948,24 @@ bool AfterLoadGame()
 		}
 	}
 
-	if (SlXvIsFeatureMissing(XSLFI_TOWN_CARGO_ADJ)) {
-		_settings_game.economy.town_cargo_scale_factor = 0;
-	} else if (SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_ADJ, 1, 1)) {
-		/* Set 0.1 increment town cargo scale factor setting from old 1 increment setting */
-		_settings_game.economy.town_cargo_scale_factor = _settings_game.economy.old_town_cargo_factor * 10;
-	}
+	if (_file_to_saveload.abstract_ftype == FT_SCENARIO) {
+		/* Apply the new-game cargo scale values for scenarios */
+		_settings_game.economy.town_cargo_scale = _settings_newgame.economy.town_cargo_scale;
+		_settings_game.economy.industry_cargo_scale = _settings_newgame.economy.industry_cargo_scale;
+	} else {
+		if (SlXvIsFeatureMissing(XSLFI_TOWN_CARGO_ADJ)) {
+			_settings_game.economy.town_cargo_scale = 100;
+		} else if (SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_ADJ, 1, 1)) {
+			_settings_game.economy.town_cargo_scale = ScaleQuantity(100, _settings_game.old_economy.town_cargo_factor * 10);
+		} else if (SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_ADJ, 2, 2)) {
+			_settings_game.economy.town_cargo_scale = ScaleQuantity(100, _settings_game.old_economy.town_cargo_scale_factor);
+		}
 
-	if (SlXvIsFeatureMissing(XSLFI_INDUSTRY_CARGO_ADJ)) {
-		_settings_game.economy.industry_cargo_scale_factor = 0;
+		if (SlXvIsFeatureMissing(XSLFI_INDUSTRY_CARGO_ADJ)) {
+			_settings_game.economy.industry_cargo_scale = 100;
+		} else if (SlXvIsFeaturePresent(XSLFI_INDUSTRY_CARGO_ADJ, 1, 1)) {
+			_settings_game.economy.industry_cargo_scale = ScaleQuantity(100, _settings_game.old_economy.industry_cargo_scale_factor);
+		}
 	}
 
 	if (SlXvIsFeatureMissing(XSLFI_SAFER_CROSSINGS)) {
@@ -4361,6 +4370,8 @@ bool AfterLoadGame()
 
 	bool update_always_reserve_through = SlXvIsFeaturePresent(XSLFI_REALISTIC_TRAIN_BRAKING, 8, 10);
 	UpdateExtraAspectsVariable(update_always_reserve_through);
+
+	UpdateCargoScalers();
 
 	if (_networking && !_network_server) {
 		SlProcessVENC();

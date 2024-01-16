@@ -668,7 +668,7 @@ static void TownGenerateCargo(Town *t, CargoID ct, uint amount, StationFinder &s
 		amount = (amount + 1) >> 1;
 	}
 
-	amount = ScaleQuantity(amount, _settings_game.economy.town_cargo_scale_factor, true);
+	amount = _town_cargo_scaler.ScaleAllowTrunc(amount);
 
 	if (amount == 0) return;
 

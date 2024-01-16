@@ -109,6 +109,10 @@ Prices _price;
 Money _additional_cash_required;
 static PriceMultipliers _price_base_multiplier;
 
+CargoScaler _town_cargo_scaler;
+CargoScaler _industry_cargo_scaler;
+CargoScaler _industry_inverse_cargo_scaler;
+
 extern int GetAmountOwnedBy(const Company *c, Owner owner);
 
 /**
@@ -2688,4 +2692,16 @@ uint ScaleQuantity(uint amount, int cf, int fine, bool allow_trunc)
 	}
 
 	return amount;
+}
+
+uint CargoScaler::ScaleAllowTrunc(uint num)
+{
+	return this->ScaleWithBias(num, Random() & 0xFFFF);
+}
+
+void UpdateCargoScalers()
+{
+	_town_cargo_scaler.SetScale((_settings_game.economy.town_cargo_scale << 16) / 100);
+	_industry_cargo_scaler.SetScale((_settings_game.economy.industry_cargo_scale << 16) / 100);
+	_industry_inverse_cargo_scaler.SetScale((100 << 16) / std::max<uint>(1, _settings_game.economy.industry_cargo_scale));
 }

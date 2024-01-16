@@ -418,12 +418,6 @@ STR_CONFIG_SETTING_SIMULATE_SIGNALS_VALUE                       :{COMMA} Kachel{
 STR_CONFIG_SETTING_DAY_LENGTH_FACTOR                            :Faktor für Tageslänge: {STRING}
 STR_CONFIG_SETTING_DAY_LENGTH_FACTOR_HELPTEXT                   :Die Spielgeschwindigkeit wird um diesen Faktor reduziert.
 
-STR_CONFIG_SETTING_TOWN_CARGO_FACTOR                            :Faktor für die Erzeugung von städtischer Fracht (weniger < 0 < mehr): {STRING}
-STR_CONFIG_SETTING_TOWN_CARGO_FACTOR_HELPTEXT                   :Passagiere, Post und andere städtische Frachtproduktion wird um ungefähr 2^Faktor (exponentiell) skaliert.
-
-STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR                        :Faktor für die Erzeugung von Fracht durch Industrien (weniger < 0 < mehr): {STRING}
-STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR_HELPTEXT               :Die Frachterzeugung von Rohstoff-Industrien wird etwa um 2^Faktor skaliert (exponentiell). Ausgenommen sind Holz-erntende Industrien.{}Es wird keine Kompatibilität mit allen Industrie-NewGRFs garantiert.
-
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :Keine Städte in einer Höhe über: {STRING}
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :Während der Spielfelderstellung werden keine Städte oberhalb der angegebenen Höhe platziert.
 

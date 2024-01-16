@@ -499,12 +499,6 @@ STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO                     :제한 없음
 STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES                           :도시가 다리를 만드는 것을 허용: {STRING}
 STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT                  :도시가 다리를 만드는 허용하려면 이 설정을 켜세요
 
-STR_CONFIG_SETTING_TOWN_CARGO_FACTOR                            :도시 화물 생성 계수 (적음 < 0 < 많음): {STRING}
-STR_CONFIG_SETTING_TOWN_CARGO_FACTOR_HELPTEXT                   :도시가 생산하는 화물의 양을 2^(생성 계수)에 근접하게 조절합니다.
-
-STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR                        :산업시설 화물 생성 계수 (적음 < 0 < 많음): {STRING}
-STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR_HELPTEXT               :1차 산업시설이 생산하는 화물의 양을 2^(생성 계수)에 근접하게 조절합니다. 나무를 베는 산업시설에는 적용되지 않습니다.{}모든 산업시설 관련 NewGRF와 모두 호환되지는 않을 수 있습니다.
-
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :이 고도 위에는 도시를 생성하지 않음: {STRING}
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :지도를 생성할 때 특정 고도 위에는 도시를 만들지 않도록 만듭니다.
 

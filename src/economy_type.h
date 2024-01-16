@@ -253,4 +253,33 @@ enum TickRateMode : byte {
 	TRM_END,             ///< Used for iterations and limit testing
 };
 
+struct CargoScaler {
+private:
+	uint32_t scale16 = 1 << 16;
+
+	inline uint ScaleWithBias(uint num, uint32_t bias)
+	{
+		return (uint)((((uint64_t)num * (uint64_t)this->scale16) + bias) >> 16);
+	}
+
+public:
+	inline bool HasScaling() const
+	{
+		return this->scale16 != (1 << 16);
+	}
+
+	inline void SetScale(uint32_t scale16)
+	{
+		this->scale16 = scale16;
+	}
+
+	inline uint Scale(uint num)
+	{
+		if (num == 0) return 0;
+		return std::max<uint>(1, this->ScaleWithBias(num, 0x8000));
+	}
+
+	uint ScaleAllowTrunc(uint num);
+};
+
 #endif /* ECONOMY_TYPE_H */

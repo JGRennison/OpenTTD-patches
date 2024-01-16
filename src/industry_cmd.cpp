@@ -524,8 +524,9 @@ static bool TransportIndustryGoods(TileIndex tile)
 	const IndustrySpec *indspec = GetIndustrySpec(i->type);
 	bool moved_cargo = false;
 
+	const uint step_limit = _industry_cargo_scaler.Scale(255);
 	for (uint j = 0; j < lengthof(i->produced_cargo_waiting); j++) {
-		uint cw = std::min<uint>(i->produced_cargo_waiting[j], ScaleQuantity(255u, _settings_game.economy.industry_cargo_scale_factor));
+		uint cw = std::min<uint>(i->produced_cargo_waiting[j], step_limit);
 		if (cw > indspec->minimal_cargo && i->produced_cargo[j] != INVALID_CARGO) {
 			i->produced_cargo_waiting[j] -= cw;
 
@@ -1187,7 +1188,7 @@ static void ProduceIndustryGoodsFromRate(Industry *i, bool scale)
 		if (i->produced_cargo[j] == INVALID_CARGO) continue;
 		uint amount = i->production_rate[j];
 		if (amount != 0 && scale) {
-			amount = ScaleQuantity(amount, _settings_game.economy.industry_cargo_scale_factor);
+			amount = _industry_cargo_scaler.Scale(amount);
 		}
 		i->produced_cargo_waiting[j] = ClampTo<uint16_t>(i->produced_cargo_waiting[j] + amount);
 	}
@@ -1217,7 +1218,7 @@ static void ProduceIndustryGoods(Industry *i)
 
 	i->counter--;
 
-	const bool scale_ticks = (_settings_game.economy.industry_cargo_scale_factor != 0) && HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS);
+	const bool scale_ticks = _industry_cargo_scaler.HasScaling() && HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS);
 	if (scale_ticks) {
 		if ((i->counter % _scaled_production_ticks) == 0) {
 			if (HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS)) IndustryProductionCallback(i, 1);
@@ -1284,7 +1285,7 @@ void OnTick_Industry()
 
 	if (_game_mode == GM_EDITOR) return;
 
-	_scaled_production_ticks = ScaleQuantity(INDUSTRY_PRODUCE_TICKS, -_settings_game.economy.industry_cargo_scale_factor);
+	_scaled_production_ticks = _industry_inverse_cargo_scaler.Scale(INDUSTRY_PRODUCE_TICKS);
 	for (Industry *i : Industry::Iterate()) {
 		ProduceIndustryGoods(i);
 	}

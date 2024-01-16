@@ -481,12 +481,6 @@ STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO                     :bez omezení
 STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES                           :Města mohou stavět mosty: {STRING}
 STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT                  :Povolí městům výstavbu mostů
 
-STR_CONFIG_SETTING_TOWN_CARGO_FACTOR                            :Faktor produkce nákladu městy (méně < 0 < více): {STRING}
-STR_CONFIG_SETTING_TOWN_CARGO_FACTOR_HELPTEXT                   :Cestující, pošta a ostatní produkce nákladu městy zhruba odpovídá hodnotě 2^faktor (je závislá exponenciálně)
-
-STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR                        :Faktor produkce nákladu průmyslem (méně < 0 < více): {STRING}
-STR_CONFIG_SETTING_INDUSTRY_CARGO_FACTOR_HELPTEXT               :Produkce nákladu průmyslem zhruba odpovídá hodnotě 2^faktor (je závislá exponenciálně). Nezahrnuje průmysl založený na kácení lesů.{}Není zaručena úplná kompatibilita se všemi průmyslovými řetězci z NewGRF.
-
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :Žádná města nad výškovou úroveň: {STRING}
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :Nad stanovenou výškovou úrovní se nebudou při tvorbě mapy generovat žádná města.
 

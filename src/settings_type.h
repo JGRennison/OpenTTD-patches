@@ -762,15 +762,20 @@ struct EconomySettings {
 	TownTunnelMode town_build_tunnels;       ///< if/when towns are allowed to build road tunnels
 	uint8_t  town_max_road_slope;            ///< maximum number of consecutive sloped road tiles which towns are allowed to build
 	bool   allow_town_bridges;               ///< towns are allowed to build bridges
-	int8_t   old_town_cargo_factor;          ///< old power-of-two multiplier for town (passenger, mail) generation. May be negative.
-	int16_t  town_cargo_scale_factor;        ///< scaled power-of-two multiplier for town (passenger, mail) generation. May be negative.
-	int16_t  industry_cargo_scale_factor;    ///< scaled power-of-two multiplier for primary industry generation. May be negative.
 	bool   infrastructure_maintenance;       ///< enable monthly maintenance fee for owner infrastructure
+	uint16_t town_cargo_scale;               ///< scale cargo production of towns by this percentage.
+	uint16_t industry_cargo_scale;           ///< scale cargo production of industries by this percentage.
 	uint8_t  day_length_factor;              ///< factor which the length of day is multiplied
 	uint16_t random_road_reconstruction;     ///< chance out of 1000 per tile loop for towns to start random road re-construction
 	bool disable_inflation_newgrf_flag;      ///< Disable NewGRF inflation flag
 	CargoPaymentAlgorithm payment_algorithm; ///< Cargo payment algorithm
 	TickRateMode tick_rate;                  ///< Tick rate mode
+};
+
+struct OldEconomySettings {
+	int8_t   town_cargo_factor;              ///< old power-of-two multiplier for town (passenger, mail) generation. May be negative.
+	int16_t  town_cargo_scale_factor;        ///< scaled power-of-two multiplier for town (passenger, mail) generation. May be negative.
+	int16_t  industry_cargo_scale_factor;    ///< scaled power-of-two multiplier for primary industry generation. May be negative.
 };
 
 struct LinkGraphSettings {
@@ -878,6 +883,8 @@ struct GameSettings {
 	LocaleSettings       locale;             ///< settings related to used currency/unit system in the current game
 	DebugSettings        debug;              ///< debug settings
 	TimeSettings         game_time;          ///< time display settings.
+
+	OldEconomySettings   old_economy;
 };
 
 /** All settings that are only important for the local client. */
