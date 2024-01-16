@@ -1518,6 +1518,7 @@ static const void *ResolveObject(const GameSettings *settings_ptr, const IntSett
  */
 void SettingEntry::SetValueDParams(uint first_param, int32_t value) const
 {
+	const uint initial_first_param = first_param;
 	if (this->setting->IsBoolSetting()) {
 		SetDParam(first_param++, value != 0 ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
 	} else if (this->setting->flags & SF_DEC1SCALE) {
@@ -1546,6 +1547,13 @@ void SettingEntry::SetValueDParams(uint first_param, int32_t value) const
 			SetDParam(first_param++, this->setting->str_val + ((value == 0 && (this->setting->flags & SF_GUI_0_IS_SPECIAL) != 0) ? 1 : 0));
 		}
 		SetDParam(first_param++, value);
+	}
+	if (this->setting->guiproc != nullptr) {
+		SettingOnGuiCtrlData data;
+		data.type = SOGCT_VALUE_DPARAMS;
+		data.offset = initial_first_param;
+		data.val = value;
+		this->setting->guiproc(data);
 	}
 }
 

@@ -85,6 +85,7 @@ enum SettingType {
 
 enum SettingOnGuiCtrlType {
 	SOGCT_DESCRIPTION_TEXT,   ///< Description text callback
+	SOGCT_VALUE_DPARAMS,      ///< Value dparam override callback
 	SOGCT_GUI_DROPDOWN_ORDER, ///< SF_GUI_DROPDOWN reordering callback
 	SOGCT_CFG_NAME,           ///< Config file name override
 	SOGCT_CFG_FALLBACK_NAME,  ///< Config file name within group fallback
@@ -95,6 +96,7 @@ enum SettingOnGuiCtrlType {
 struct SettingOnGuiCtrlData {
 	SettingOnGuiCtrlType type;
 	StringID text;
+	uint offset;
 	int val;
 	const char *str = nullptr;
 	int output = 0;
