@@ -2701,7 +2701,16 @@ uint CargoScaler::ScaleAllowTrunc(uint num)
 
 void UpdateCargoScalers()
 {
-	_town_cargo_scaler.SetScale((_settings_game.economy.town_cargo_scale << 16) / 100);
-	_industry_cargo_scaler.SetScale((_settings_game.economy.industry_cargo_scale << 16) / 100);
-	_industry_inverse_cargo_scaler.SetScale((100 << 16) / std::max<uint>(1, _settings_game.economy.industry_cargo_scale));
+	uint town_scale = _settings_game.economy.town_cargo_scale;
+	if (_settings_game.economy.town_cargo_scale_mode == CSM_DAYLENGTH) {
+		town_scale = Clamp<uint>(town_scale * _settings_game.economy.day_length_factor, 1, 5000);
+	}
+	_town_cargo_scaler.SetScale((town_scale << 16) / 100);
+
+	uint industry_scale = _settings_game.economy.industry_cargo_scale;
+	if (_settings_game.economy.industry_cargo_scale_mode == CSM_DAYLENGTH) {
+		industry_scale = Clamp<uint>(industry_scale * _settings_game.economy.day_length_factor, 5, 3000);
+	}
+	_industry_cargo_scaler.SetScale((industry_scale << 16) / 100);
+	_industry_inverse_cargo_scaler.SetScale((100 << 16) / std::max<uint>(1, industry_scale));
 }

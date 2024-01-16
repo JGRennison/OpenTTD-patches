@@ -3952,6 +3952,8 @@ bool AfterLoadGame()
 		/* Apply the new-game cargo scale values for scenarios */
 		_settings_game.economy.town_cargo_scale = _settings_newgame.economy.town_cargo_scale;
 		_settings_game.economy.industry_cargo_scale = _settings_newgame.economy.industry_cargo_scale;
+		_settings_game.economy.town_cargo_scale_mode = _settings_newgame.economy.town_cargo_scale_mode;
+		_settings_game.economy.industry_cargo_scale_mode = _settings_newgame.economy.industry_cargo_scale_mode;
 	} else {
 		if (SlXvIsFeatureMissing(XSLFI_TOWN_CARGO_ADJ)) {
 			_settings_game.economy.town_cargo_scale = 100;
@@ -3960,11 +3962,17 @@ bool AfterLoadGame()
 		} else if (SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_ADJ, 2, 2)) {
 			_settings_game.economy.town_cargo_scale = ScaleQuantity(100, _settings_game.old_economy.town_cargo_scale_factor);
 		}
+		if (!SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_ADJ, 3)) {
+			_settings_game.economy.town_cargo_scale_mode = CSM_MONTHLY;
+		}
 
 		if (SlXvIsFeatureMissing(XSLFI_INDUSTRY_CARGO_ADJ)) {
 			_settings_game.economy.industry_cargo_scale = 100;
 		} else if (SlXvIsFeaturePresent(XSLFI_INDUSTRY_CARGO_ADJ, 1, 1)) {
 			_settings_game.economy.industry_cargo_scale = ScaleQuantity(100, _settings_game.old_economy.industry_cargo_scale_factor);
+		}
+		if (!SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_ADJ, 2)) {
+			_settings_game.economy.industry_cargo_scale_mode = CSM_MONTHLY;
 		}
 	}
 

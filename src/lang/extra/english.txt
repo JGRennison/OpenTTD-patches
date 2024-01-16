@@ -566,7 +566,18 @@ STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE                         :Scale industry 
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT                :Scale the cargo production of industries by this percentage.
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA          :{STRING}{}This excludes tree-cutting industries.{}This is not guaranteed to be fully compatible with all industry NewGRFs.
 
+STR_CONFIG_SETTING_TOWN_CARGO_SCALE_MODE                        :Time interval for town cargo production scaling: {STRING2}
+STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE                    :Time interval for industry cargo production scaling: {STRING2}
+
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :Monthly: The cargo production per month is scaled.{}{}Game-time: The cargo production per unit of game time is scaled, (the cargo production per month is also scaled by the day length factor). Very high scaling factors may not be achievable.
+STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE_HELPTEXT_EXTRA     :{STRING}{}Game-time mode is not guaranteed to be fully compatible with all industry NewGRFs.
+
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_MONTHLY                     :Monthly
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_GAME_TIME                   :Game-time
+
 STR_CONFIG_SETTING_CARGO_SCALE_VALUE                            :{NUM}%
+STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY                    :{NUM}% (monthly)
+STR_CONFIG_SETTING_CARGO_SCALE_VALUE_REAL_TIME                  :{NUM}% (game-time)
 
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :No towns above height level: {STRING2}
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :No towns above the specified height level are built during map creation.

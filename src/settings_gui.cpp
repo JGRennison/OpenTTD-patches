@@ -2466,6 +2466,7 @@ static SettingsContainer &GetSettingsTree()
 					town_zone->Add(new SettingEntry("economy.city_zone_4_mult"));
 				}
 				towns->Add(new SettingEntry("economy.town_cargo_scale"));
+				towns->Add(new SettingEntry("economy.town_cargo_scale_mode"));
 				towns->Add(new SettingEntry("economy.town_growth_rate"));
 				towns->Add(new SettingEntry("economy.town_growth_cargo_transported"));
 				towns->Add(new SettingEntry("economy.town_zone_calc_mode"));
@@ -2489,6 +2490,7 @@ static SettingsContainer &GetSettingsTree()
 			SettingsPage *industries = environment->Add(new SettingsPage(STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES));
 			{
 				industries->Add(new SettingEntry("economy.industry_cargo_scale"));
+				industries->Add(new SettingEntry("economy.industry_cargo_scale_mode"));
 				industries->Add(new SettingEntry("difficulty.industry_density"));
 				industries->Add(new SettingEntry("construction.raw_industry_construction"));
 				industries->Add(new SettingEntry("construction.industry_platform"));

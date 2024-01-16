@@ -2079,12 +2079,41 @@ static bool TrainPathfinderSettingGUI(SettingOnGuiCtrlData &data)
 	}
 }
 
+static bool TownCargoScaleGUI(SettingOnGuiCtrlData &data)
+{
+	switch (data.type) {
+		case SOGCT_VALUE_DPARAMS:
+			SetDParam(data.offset, STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY + GetGameSettings().economy.town_cargo_scale_mode);
+			return true;
+
+		default:
+			return false;
+	}
+}
+
 static bool IndustryCargoScaleGUI(SettingOnGuiCtrlData &data)
 {
 	switch (data.type) {
 		case SOGCT_DESCRIPTION_TEXT:
 			SetDParam(0, data.text);
 			data.text = STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA;
+			return true;
+
+		case SOGCT_VALUE_DPARAMS:
+			SetDParam(data.offset, STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY + GetGameSettings().economy.industry_cargo_scale_mode);
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+static bool IndustryCargoScaleModeGUI(SettingOnGuiCtrlData &data)
+{
+	switch (data.type) {
+		case SOGCT_DESCRIPTION_TEXT:
+			SetDParam(0, data.text);
+			data.text = STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE_HELPTEXT_EXTRA;
 			return true;
 
 		default:
