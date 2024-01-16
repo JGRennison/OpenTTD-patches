@@ -1703,6 +1703,9 @@ bool AfterLoadGame()
 				default:
 					break;
 			}
+			if (IsPlainRailTile(t) || (IsRailTunnelBridgeTile(t) && IsBridge(t))) {
+				SetSecondaryRailType(t, GetRailType(t));
+			}
 		}
 
 		for (Train *v : Train::Iterate()) {
