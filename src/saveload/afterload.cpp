@@ -3948,9 +3948,15 @@ bool AfterLoadGame()
 		}
 	}
 
-	/* Set 0.1 increment town cargo scale factor setting from old 1 increment setting */
-	if (!SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_ADJ, 2)) {
+	if (SlXvIsFeatureMissing(XSLFI_TOWN_CARGO_ADJ)) {
+		_settings_game.economy.town_cargo_scale_factor = 0;
+	} else if (SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_ADJ, 1, 1)) {
+		/* Set 0.1 increment town cargo scale factor setting from old 1 increment setting */
 		_settings_game.economy.town_cargo_scale_factor = _settings_game.economy.old_town_cargo_factor * 10;
+	}
+
+	if (SlXvIsFeatureMissing(XSLFI_INDUSTRY_CARGO_ADJ)) {
+		_settings_game.economy.industry_cargo_scale_factor = 0;
 	}
 
 	if (SlXvIsFeatureMissing(XSLFI_SAFER_CROSSINGS)) {
