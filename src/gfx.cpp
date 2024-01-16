@@ -2229,6 +2229,7 @@ void FontChanged()
 
 	UpdateRouteStepSpriteSize();
 
+	CheckForMissingGlyphs();
 	SetupWidgetDimensions();
 	UpdateAllVirtCoords();
 	ReInitAllWindows(true);
