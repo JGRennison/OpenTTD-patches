@@ -2,7 +2,7 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>JGR's Patchpack - NewGRF Road Stops Addition to NewGRF Specifications in NML</title>
+	<title>JGR's Patchpack - Additions to the NewGRF Road Stops Specification in NML</title>
 	<style type="text/css">
 		td li      { white-space: nowrap; text-align: left; }
 		th         { white-space: nowrap; text-align: center; }
@@ -13,10 +13,10 @@
 	</style>
 </head>
 <body>
-	<h2>NewGRF Road Stops Addition to NewGRF Specifications in JGR's Patchpack in NML</h2>
-	<p>This document describes the non-standard addition of the NewGRF road stops feature to the <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Main">Official OpenTTD NML Specifications</a>, as implemented in this patchpack, and the associated <a href="https://github.com/JGRennison/nml">NML fork</a></br>
-	This feature does not match OpenTTD PR #7955 in a number of key areas, this feature may not necessarily match implementations of NewGRF road stops in other patches, branches, etc.</br>
-	This feature as implemented here MAY also be present in other patchpacks.</p>
+	<h2>Additions to the NewGRF Road Stops Specification in JGR's Patchpack in NML</h2>
+	<p>This document describes the non-standard additions to the NewGRF road stops feature in the <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Main">Official OpenTTD NML Specifications</a>, as implemented in this patchpack, and the associated <a href="https://github.com/JGRennison/nml">NML fork</a><br />
+	The additions here are compatible with the specification and OpenTTD 14.0, such that GRFs can run on OpenTTD 14.0 and also optionally use patchpack extensions where available.</p>
+	<p>These additions and the official specification do not match the obsolete OpenTTD PR #7955 which used a different NewGRF interface.</p>
 
 	<p>The feature identifier is <span class="code">FEAT_ROADSTOPS</span>, (the PARENT scope for this feature is the road stop's station's town).<br />
 	There is no permanent storage associated with this feature.</p>
@@ -25,10 +25,9 @@
 
 	<p>See the associated <a href="newgrf-roadstops.html">non-NML document</a> for more details on the NewGRF road stops feature.</p>
 
-	<p>This feature will be automatically skipped when loaded into a version of OpenTTD which does not support this feature.<br />
-	If this feature is the only significant thing in this GRF, then <span class="code">extended_feature_test("road_stops")</span> SHOULD be called and some message, error or other form of
-	signalling to the user used to inform the user that this version of OpenTTD does not support the feature, if the return value is false.<br />
-	Otherwise the GRF could silently do nothing instead of the expected functionality, creating confusion for end users.</p>
+	<p>This feature will be automatically skipped when loaded into a version of OpenTTD which does not support this feature (before 14.0).<br />
+	If this feature is the only significant thing in this GRF, then <span class="code">version_openttd(14, 0) || extended_feature_test("road_stops")</span> MAY be called and some message, error or other form of
+	signalling to the user used to inform the user that this version of OpenTTD does not support the feature, if the value is false.</p>
 
 	<p><b>Sections:</b>
 	<ul>
@@ -58,7 +57,7 @@
 			Predefined classes include:<br />
 			<ul>
 				<li>DFLT - Default class</li>
-				<li>WAYP - Waypoints: All road waypoints must be put in this class</li>
+				<li>WAYP - Waypoints: All road waypoints must be put in this class. <b>Not in standard specification</b>.</li>
 			</ul>
 		</td></tr>
 		<tr><td>classname</td><td>string</td><td>You only need to set this for one object in every class. </td></tr>
@@ -70,7 +69,7 @@
 			<p><b>RST_DRAW_FLAG_DRIVE_THROUGH_ROAD_OVERLAY</b><br />
 			<span class="indent">Draw road overlays for drive-through stops.</span></p>
 			<p><b>RST_DRAW_FLAG_WAYPOINT_GROUND</b><br />
-			<span class="indent">Draw spritelayout ground sprite on top of underlying road (if unset, the spritelayout ground sprite is not drawn).</span></p>
+			<span class="indent">Draw spritelayout ground sprite on top of underlying road (if unset, the spritelayout ground sprite is not drawn). <b>Not in standard specification</b>.</span></p>
 		</td></tr>
 		<tr><td>cargo_random_triggers</td><td>cargo bitmask</td><td>Cargo bitmask to use for random triggers</td></tr>
 		<tr><td>animation_info</td><td>Array [ANIMATION_XXX, frame-count]</td><td>XXX = [LOOPING | NON_LOOPING], 1..253 frames</td></tr>
@@ -80,7 +79,7 @@
 			<p><b>RST_GENERAL_FLAG_RANDOM_ANIMATION</b><br />
 			<span class="indent">Animation callback requires random bits in variable <span class="code">extra_callback_info1</span>.</span></p>
 			<p><b>RST_GENERAL_FLAG_NO_ONE_WAY_OVERLAY</b><br />
-			<span class="indent">Do not show one way road overlay sprites, this should only be set if different graphics are provided for the different one-way states using the <span class="code">one_way_info</span> variable.</span></p>
+			<span class="indent">Do not show one way road overlay sprites, this should only be set if different graphics are provided for the different one-way states using the <span class="code">one_way_info</span> variable. <b>Not in standard specification</b>.</span></p>
 			<p><b>RST_GENERAL_FLAG_NO_CATENARY</b><br />
 			<span class="indent">Do not show catenary graphics. (This only takes effect from <span class="code">road_stops</span> version 2).</span></p>
 			<p><b>RST_GENERAL_FLAG_DRIVE_THROUGH_ONLY</b><br />
@@ -92,12 +91,12 @@
 			<p><b>RST_GENERAL_FLAG_BUILD_MENU_TRAM_ONLY</b><br />
 			<span class="indent">Only show in the tram build menu (not road). (This only takes effect from <span class="code">road_stops</span> version 4).</span></p>
 			<p><b>RST_GENERAL_FLAG_BUILD_MENU_DRAW_DISABLED_VIEWS</b><br />
-			<span class="indent">Use custom graphics for disabled road stop views. (This only takes effect from <span class="code">road_stops</span> version 8).</span></p>
+			<span class="indent">Use custom graphics for disabled road stop views. (This only takes effect from <span class="code">road_stops</span> version 8). <b>Not in standard specification</b>.</span></p>
 			<p><b>RST_GENERAL_FLAG_DRAW_MODE_REGISTER</b><br />
-			<span class="indent">Read the road stop draw mode from variable 0x100 (set using STORE_TEMP), this overrides the <span class="code">draw_mode</span> property. (This only takes effect from <span class="code">road_stops</span> version 9).</span></p>
+			<span class="indent">Read the road stop draw mode from variable 0x100 (set using STORE_TEMP), this overrides the <span class="code">draw_mode</span> property. (This only takes effect from <span class="code">road_stops</span> version 9). <b>Not in standard specification</b>.</span></p>
 		</td></tr>
-		<tr><td>minimum_bridge_height</td><td>Array of 6 items [0..255, ...]</td><td>Minimum clearances required for a bridge for each of the <a href="#roadstop_views">6 views/rotations</a> (or 0 to not allow any bridge). Values are given in height level units (1 level == 8px).</td></tr>
-		<tr><td>disallowed_bridge_pillars</td><td>Array of 6 items [bitmask(RST_BRIDGE_PILLAR_FLAG_, ...), ...]</td><td>
+		<tr><td>minimum_bridge_height<br /><b>Not in standard specification</b></td><td>Array of 6 items [0..255, ...]</td><td>Minimum clearances required for a bridge for each of the <a href="#roadstop_views">6 views/rotations</a> (or 0 to not allow any bridge). Values are given in height level units (1 level == 8px).</td></tr>
+		<tr><td>disallowed_bridge_pillars<br /><b>Not in standard specification</b></td><td>Array of 6 items [bitmask(RST_BRIDGE_PILLAR_FLAG_, ...), ...]</td><td>
 			<p>Which bridge pillars are disallowed on the tile for each of the <a href="#roadstop_views">6 views/rotations</a>.</p>
 			<p><b>RST_BRIDGE_PILLAR_FLAG_CORNER_W</b><br />
 			<span class="indent">Pillar in west corner</span></p>
@@ -117,7 +116,7 @@
 			<span class="indent">Pillar along entire north-west edge</span></p>
 		</td></tr>
 		<tr><td>cost_multipliers</td><td>[build_cost, clear_cost]</td><td>Build and clear cost multipliers, 16 is the same as a non-NewGRF road stop</td></tr>
-		<tr><td>height</td><td>0..255</td><td>Road stop height (in the build window), in height level units (1 level == 8px), see also: <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Objects#Object_properties">object height property</a>.</td></tr>
+		<tr><td>height<br /><b>Not in standard specification</b></td><td>0..255</td><td>Road stop height (in the build window), in height level units (1 level == 8px), see also: <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Objects#Object_properties">object height property</a>.</td></tr>
 	</table>
 
 	<h3 id="roadstop_variables">Road Stop Variables</h3>
@@ -127,7 +126,7 @@
 	<table>
 		<tr><th>Name</th><th>Value range</th><th>Comment</th></tr>
 		<tr><td>view</td><td>0..5</td><td>The <a href="#roadstop_views">view/rotation</a> of the road stop</td></tr>
-		<tr><td>stop_type</td><td>RST_TYPE_XXX</td><td>XXX = BUS | TRUCK | WAYPOINT</td></tr>
+		<tr><td>stop_type</td><td>RST_TYPE_XXX</td><td>XXX = BUS | TRUCK | WAYPOINT (<b>Not in standard specification</b>)</td></tr>
 		<tr><td>terrain_type</td><td>TILETYPE_XXX</td><td>XXX = NORMAL | DESERT | RAIN_FOREST | SNOW</td></tr>
 		<tr><td>tile_slope</td><td>SLOPE_XXX</td><td>See <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:List_of_tile_slopes">tile slopes</a> for an overview of possible values</td></tr>
 		<tr><td>has_road</td><td>0 | 1</td><td>1 is this road stop has road</td></tr>
@@ -145,9 +144,9 @@
 		<tr><td>waiting_triggers</td><td>0..255</td><td>Waiting triggers</td></tr>
 		<tr><td>random_bits</td><td>0..16777215</td><td>All random bits</td></tr>
 		<tr><td>random_bits_tile</td><td>0..255</td><td>Random bits (per tile), see also <a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Stations#Base_station_variables">random_bits_station</a></td></tr>
-		<tr><td>one_way_info</td><td>RST_OWI_XXX</td><td>One-way road information of drive-through stop tile<br />XXX = TWO_WAY | WEST_BOUND | EAST_BOUND | NO_ENTRY</td></tr>
-		<tr><td>one_way_info_inferred</td><td>RST_OWI_XXX</td><td>Inferred one-way road information of drive-through stop tile<br />XXX = TWO_WAY | WEST_BOUND | EAST_BOUND | NO_ENTRY</td></tr>
-		<tr><td>drawn_in_gui</td><td>0 | 1</td><td>1 if this road stop is being drawn in the build window</td></tr>
+		<tr><td>one_way_info<br /><b>Not in standard specification</b></td><td>RST_OWI_XXX</td><td>One-way road information of drive-through stop tile<br />XXX = TWO_WAY | WEST_BOUND | EAST_BOUND | NO_ENTRY</td></tr>
+		<tr><td>one_way_info_inferred<br /><b>Not in standard specification</b></td><td>RST_OWI_XXX</td><td>Inferred one-way road information of drive-through stop tile<br />XXX = TWO_WAY | WEST_BOUND | EAST_BOUND | NO_ENTRY</td></tr>
+		<tr><td>drawn_in_gui<br /><b>Not in standard specification</b></td><td>0 | 1</td><td>1 if this road stop is being drawn in the build window</td></tr>
 	</table>
 	<br />
 	Variables that require one or more parameters:
@@ -175,13 +174,13 @@
 		<tr><td>nearby_tile_one_way_info</td><td>x, y offset (-8..7)</td><td>RST_OWI_XXX</td><td>One-way state of nearby drive-through road stop tile</td></tr>
 		<tr><td>nearby_tile_road_stop_info</td><td>x, y offset (-8..7)</td><td></td><td>Above nearby road stop tile variables in one variable (all of variable 0x68)</td></tr>
 		<tr><td>nearby_tile_grfid</td><td>x, y offset (-8..7)</td><td>-1, 0 or a GRFID</td><td>Return value is -1 if the tile is not a road stop, 0 if the tile is a non-custom road stop, or else the GRFID of the NewGRF defining the road stop</td></tr>
-		<tr><td>nearby_tile_is_plain_road</td><td>x, y offset (-8..7)</td><td>0 | 1</td><td>Is nearby tile a plain road tile</td></tr>
-		<tr><td>nearby_tile_road_bits</td><td>x, y offset (-8..7)</td><td>bitmask(ROADBIT_XXX, ...)</td><td>XXX = [NW | SW | SE | NE]<br />Present road bits on nearby tile</td></tr>
-		<tr><td>nearby_tile_tram_bits</td><td>x, y offset (-8..7)</td><td>bitmask(ROADBIT_XXX, ...)</td><td>XXX = [NW | SW | SE | NE]<br />Present tram bits on nearby tile</td></tr>
-		<tr><td>nearby_tile_road_piece</td><td>x, y offset (-8..7)</td><td>0..18 | 0xFF</td><td>Present road piece and slope in <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Roadtypes#Road_underlay_.2802.29">sprite order</a>, or 0xFF if none</td></tr>
-		<tr><td>nearby_tile_tram_piece</td><td>x, y offset (-8..7)</td><td>0..18 | 0xFF</td><td>Present tram piece and slope in <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Roadtypes#Road_underlay_.2802.29">sprite order</a>, or 0xFF if none</td></tr>
-		<tr><td>nearby_tile_road_stop_info</td><td>x, y offset (-8..7)</td><td></td><td>Above nearby road tile variables in one variable (all of variable 0x6B)</td></tr>
-		<tr><td>nearby_tile_road_stop_info_v2</td><td>x, y offset (-8..7)</td><td></td><td>Above nearby road tile variables in one variable (all of variable roadstop_road_stop_info_nearby_tiles_v2)</td></tr>
+		<tr><td>nearby_tile_is_plain_road<br /><b>Not in standard specification</b></td><td>x, y offset (-8..7)</td><td>0 | 1</td><td>Is nearby tile a plain road tile</td></tr>
+		<tr><td>nearby_tile_road_bits<br /><b>Not in standard specification</b></td><td>x, y offset (-8..7)</td><td>bitmask(ROADBIT_XXX, ...)</td><td>XXX = [NW | SW | SE | NE]<br />Present road bits on nearby tile</td></tr>
+		<tr><td>nearby_tile_tram_bits<br /><b>Not in standard specification</b></td><td>x, y offset (-8..7)</td><td>bitmask(ROADBIT_XXX, ...)</td><td>XXX = [NW | SW | SE | NE]<br />Present tram bits on nearby tile</td></tr>
+		<tr><td>nearby_tile_road_piece<br /><b>Not in standard specification</b></td><td>x, y offset (-8..7)</td><td>0..18 | 0xFF</td><td>Present road piece and slope in <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Roadtypes#Road_underlay_.2802.29">sprite order</a>, or 0xFF if none</td></tr>
+		<tr><td>nearby_tile_tram_piece<br /><b>Not in standard specification</b></td><td>x, y offset (-8..7)</td><td>0..18 | 0xFF</td><td>Present tram piece and slope in <a href="https://newgrf-specs.tt-wiki.net/wiki/Action3/Roadtypes#Road_underlay_.2802.29">sprite order</a>, or 0xFF if none</td></tr>
+		<tr><td>nearby_tile_road_stop_info<br /><b>Not in standard specification</b></td><td>x, y offset (-8..7)</td><td></td><td>Above nearby road tile variables in one variable (all of variable 0x6B)</td></tr>
+		<tr><td>nearby_tile_road_stop_info_v2<br /><b>Not in standard specification</b></td><td>x, y offset (-8..7)</td><td></td><td>Above nearby road tile variables in one variable (all of variable roadstop_road_stop_info_nearby_tiles_v2)</td></tr>
 	</table>
 
 	<h3 id="roadstop_callbacks">Road Stop Callbacks</h3>
