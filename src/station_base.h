@@ -22,6 +22,7 @@
 #include "bitmap_type.h"
 #include "core/alloc_type.hpp"
 #include "core/endian_type.hpp"
+#include "core/span_type.hpp"
 #include "strings_type.h"
 #include <map>
 #include <vector>
@@ -504,6 +505,11 @@ public:
 	}
 
 	void SortStorage();
+
+	span<const FlowStat> IterateUnordered() const
+	{
+		return span<const FlowStat>(this->flows_storage.data(), this->flows_storage.size());
+	}
 };
 
 struct GoodsEntryData : ZeroedMemoryAllocator {

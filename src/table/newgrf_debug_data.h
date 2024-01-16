@@ -2109,7 +2109,7 @@ class NIHStationStruct : public NIHelper {
 				}
 				if (ge->data != nullptr && ge->data->flows.size() > 0) {
 					size_t total_shares = 0;
-					for (const FlowStat &fs : ge->data->flows) {
+					for (const FlowStat &fs : ge->data->flows.IterateUnordered()) {
 						total_shares += fs.size();
 					}
 					seprintf(buffer, lastof(buffer), "    Flows: %u, total shares: %u", (uint)ge->data->flows.size(), (uint)total_shares);

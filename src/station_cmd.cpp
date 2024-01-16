@@ -5629,7 +5629,7 @@ void FlowStatMap::RestrictFlows(StationID via)
 uint FlowStatMap::GetFlow() const
 {
 	uint ret = 0;
-	for (const FlowStat &it : *this) {
+	for (const FlowStat &it : this->IterateUnordered()) {
 		if (it.IsInvalid()) continue;
 		ret += (it.end() - 1)->first;
 	}
@@ -5644,7 +5644,7 @@ uint FlowStatMap::GetFlow() const
 uint FlowStatMap::GetFlowVia(StationID via) const
 {
 	uint ret = 0;
-	for (const FlowStat &it : *this) {
+	for (const FlowStat &it : this->IterateUnordered()) {
 		if (it.IsInvalid()) continue;
 		ret += it.GetShare(via);
 	}
