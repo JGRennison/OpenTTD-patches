@@ -1016,7 +1016,11 @@ static void AdvanceLookAheadPosition(Train *v)
 
 	if (v->lookahead->current_position == v->lookahead->next_extend_position) {
 		SetTrainReservationLookaheadEnd(v);
+
+		/* This may clear the lookahead if it has become invalid */
 		TryLongReserveChooseTrainTrackFromReservationEnd(v, true);
+		if (v->lookahead == nullptr) return;
+
 		v->lookahead->SetNextExtendPositionIfUnset();
 	}
 }
