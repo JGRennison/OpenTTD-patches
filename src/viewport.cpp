@@ -68,6 +68,8 @@
 #include "smallmap_colours.h"
 #include "table/tree_land.h"
 #include "blitter/32bpp_base.hpp"
+#include "blitter/8bpp_simple.hpp"
+#include "blitter/null.hpp"
 #include "core/math_func.hpp"
 #include "landscape.h"
 #include "viewport_func.h"
@@ -134,6 +136,11 @@
 
 Point _tile_fract_coords;
 
+#if defined(DEDICATED)
+using Blitter_8bppDrawing = Blitter_Null;
+#else
+using Blitter_8bppDrawing = Blitter_8bppSimple;
+#endif
 
 ViewportSignKdtree _viewport_sign_kdtree(&Kdtree_ViewportSignXYFunc);
 bool _viewport_sign_kdtree_valid = false;
@@ -3734,6 +3741,16 @@ static void ViewportProcessParentSprites(ViewportDrawerDynamic *vdd, uint data_i
 	}
 }
 
+static bool CheckViewportOverlayPixelRefresh(Viewport *vp)
+{
+	size_t screen_area = vp->ScreenArea();
+	if (vp->last_overlay_update_number == GetWindowUpdateNumber() && vp->overlay_pixel_cache.size() == screen_area) return false;
+
+	vp->last_overlay_update_number = GetWindowUpdateNumber();
+	vp->overlay_pixel_cache.assign(screen_area, 0xD7);
+	return true;
+}
+
 static void ViewportDoDrawPhase2(Viewport *vp, ViewportDrawerDynamic *vdd);
 static void ViewportDoDrawPhase3(Viewport *vp);
 static void ViewportDoDrawRenderJob(Viewport *vp, ViewportDrawerDynamic *vdd);
@@ -3775,6 +3792,22 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint
 
 	if (vp->overlay != nullptr && vp->overlay->GetCargoMask() != 0 && vp->overlay->GetCompanyMask() != 0) {
 		vp->overlay->PrepareDraw();
+
+		if (vp->zoom >= ZOOM_LVL_DRAW_MAP && CheckViewportOverlayPixelRefresh(vp)) {
+			DrawPixelInfo overlay_dpi;
+			overlay_dpi.dst_ptr = vp->overlay_pixel_cache.data();
+			overlay_dpi.height = vp->height;
+			overlay_dpi.width = vp->width;
+			overlay_dpi.pitch = vp->width;
+			overlay_dpi.zoom = ZOOM_LVL_NORMAL;
+			overlay_dpi.left = vp->left;
+			overlay_dpi.top = vp->top;
+
+			Blitter_8bppDrawing blitter;
+			BlitterFactory::TemporaryCurrentBlitterOverride current_blitter(&blitter);
+			TemporaryScreenPitchOverride screen_pitch(vp->width);
+			vp->overlay->Draw(&overlay_dpi);
+		}
 	}
 
 	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
@@ -3914,15 +3947,21 @@ static void ViewportDoDrawPhase2(Viewport *vp, ViewportDrawerDynamic *vdd)
 	}
 
 	if (vp->overlay != nullptr && vp->overlay->GetCargoMask() != 0 && vp->overlay->GetCompanyMask() != 0) {
-		/* translate to window coordinates */
-		DrawPixelInfo dp = vdd->dpi;
-		ZoomLevel zoom = vdd->dpi.zoom;
-		dp.zoom = ZOOM_LVL_NORMAL;
-		dp.width = UnScaleByZoom(dp.width, zoom);
-		dp.height = UnScaleByZoom(dp.height, zoom);
-		dp.left = vdd->offset_x + vp->left;
-		dp.top = vdd->offset_y + vp->top;
-		vp->overlay->Draw(&dp);
+		if (vp->zoom < ZOOM_LVL_DRAW_MAP) {
+			/* translate to window coordinates */
+			DrawPixelInfo dp = vdd->dpi;
+			ZoomLevel zoom = vdd->dpi.zoom;
+			dp.zoom = ZOOM_LVL_NORMAL;
+			dp.width = UnScaleByZoom(dp.width, zoom);
+			dp.height = UnScaleByZoom(dp.height, zoom);
+			dp.left = vdd->offset_x + vp->left;
+			dp.top = vdd->offset_y + vp->top;
+			vp->overlay->Draw(&dp);
+		} else {
+			const int pixel_cache_start = vdd->offset_x + (vdd->offset_y * vp->width);
+			BlitterFactory::GetCurrentBlitter()->SetRectNoD7(vdd->dpi.dst_ptr, 0, 0, vp->overlay_pixel_cache.data() + pixel_cache_start,
+					UnScaleByZoom(vdd->dpi.height, vdd->dpi.zoom), UnScaleByZoom(vdd->dpi.width, vdd->dpi.zoom), vp->width);
+		}
 	}
 
 	if (_settings_client.gui.show_vehicle_route_mode != 0 && _settings_client.gui.show_vehicle_route) ViewportDrawVehicleRoutePath(vp, vdd);
@@ -4142,6 +4181,8 @@ void UpdateViewportSizeZoom(Viewport *vp)
 		vp->map_draw_vehicles_cache.vehicle_pixels.clear();
 		vp->land_pixel_cache.clear();
 		vp->land_pixel_cache.shrink_to_fit();
+		vp->overlay_pixel_cache.clear();
+		vp->overlay_pixel_cache.shrink_to_fit();
 	}
 	vp->update_vehicles = true;
 	FillViewportCoverageRect();
