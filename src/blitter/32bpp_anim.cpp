@@ -441,7 +441,8 @@ void Blitter_32bppAnim::DrawLine(void *video, int x, int y, int x2, int y2, int 
 	}
 }
 
-void Blitter_32bppAnim::SetRect(void *video, int x, int y, const uint8_t *colours, uint lines, uint width, uint pitch)
+template <typename F>
+void Blitter_32bppAnim::SetRectGeneric(void *video, int x, int y, const uint8_t *colours, uint lines, uint width, uint pitch, F filter)
 {
 	Colour *dst = (Colour *)video + x + y * _screen.pitch;
 
@@ -449,7 +450,9 @@ void Blitter_32bppAnim::SetRect(void *video, int x, int y, const uint8_t *colour
 		do {
 			uint w = width;
 			do {
-				*dst = LookupColourInPalette(*colours);
+				if (filter(*colours)) {
+					*dst = LookupColourInPalette(*colours);
+				}
 				dst++;
 				colours++;
 			} while (--w);
@@ -461,8 +464,10 @@ void Blitter_32bppAnim::SetRect(void *video, int x, int y, const uint8_t *colour
 		do {
 			uint w = width;
 			do {
-				*dstanim = *colours | (DEFAULT_BRIGHTNESS << 8);
-				*dst = LookupColourInPalette(*colours);
+				if (filter(*colours)) {
+					*dstanim = *colours | (DEFAULT_BRIGHTNESS << 8);
+					*dst = LookupColourInPalette(*colours);
+				}
 				dst++;
 				dstanim++;
 				colours++;
@@ -472,6 +477,11 @@ void Blitter_32bppAnim::SetRect(void *video, int x, int y, const uint8_t *colour
 			colours += pitch - width;
 		} while (--lines);
 	}
+}
+
+void Blitter_32bppAnim::SetRect(void *video, int x, int y, const uint8_t *colours, uint lines, uint width, uint pitch)
+{
+	this->SetRectGeneric(video, x, y, colours, lines, width, pitch, [](uint8_t colour) -> bool { return true; });
 }
 
 void Blitter_32bppAnim::SetRect32(void *video, int x, int y, const uint32_t *colours, uint lines, uint width, uint pitch)
@@ -494,6 +504,11 @@ void Blitter_32bppAnim::SetRect32(void *video, int x, int y, const uint32_t *col
 			colours += pitch;
 		} while (--lines);
 	}
+}
+
+void Blitter_32bppAnim::SetRectNoD7(void *video, int x, int y, const uint8_t *colours, uint lines, uint width, uint pitch)
+{
+	this->SetRectGeneric(video, x, y, colours, lines, width, pitch, [](uint8_t colour) -> bool { return colour != 0xD7; });
 }
 
 void Blitter_32bppAnim::DrawRect(void *video, int width, int height, uint8_t colour)

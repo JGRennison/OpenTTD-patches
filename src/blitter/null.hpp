@@ -32,6 +32,7 @@ public:
 	void DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8_t colour, int width, int dash) override {};
 	void SetRect(void *video, int x, int y, const uint8_t *colours, uint lines, uint width, uint pitch) override {};
 	void SetRect32(void *video, int x, int y, const uint32_t *colours, uint lines, uint width, uint pitch) override {};
+	void SetRectNoD7(void *video, int x, int y, const uint8_t *colours, uint lines, uint width, uint pitch) override {};
 	void CopyFromBuffer(void *video, const void *src, int width, int height) override {};
 	void CopyToBuffer(const void *video, void *dst, int width, int height) override {};
 	void CopyImageToBuffer(const void *video, void *dst, int width, int height, int dst_pitch) override {};

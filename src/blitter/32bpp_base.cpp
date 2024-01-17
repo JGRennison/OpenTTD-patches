@@ -61,6 +61,21 @@ void Blitter_32bppBase::SetRect32(void *video, int x, int y, const uint32_t *col
 	} while (--lines);
 }
 
+void Blitter_32bppBase::SetRectNoD7(void *video, int x, int y, const uint8_t *colours, uint lines, uint width, uint pitch)
+{
+	Colour *dst = (Colour *)video + x + y * _screen.pitch;
+	do {
+		uint w = width;
+		do {
+			if (*colours != 0xD7) *dst = LookupColourInPalette(*colours);
+			dst++;
+			colours++;
+		} while (--w);
+		dst += _screen.pitch - width;
+		colours += pitch - width;
+	} while (--lines);
+}
+
 void Blitter_32bppBase::DrawRect(void *video, int width, int height, uint8_t colour)
 {
 	Colour colour32 = LookupColourInPalette(colour);

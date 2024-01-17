@@ -26,6 +26,7 @@ public:
 	void SetPixel32(void *video, int x, int y, uint8_t colour, uint32_t colour32) override;
 	void DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8_t colour, int width, int dash) override;
 	void SetRect(void *video, int x, int y, const uint8_t *colours, uint lines, uint width, uint pitch) override;
+	void SetRectNoD7(void *video, int x, int y, const uint8_t *colours, uint lines, uint width, uint pitch) override;
 	void DrawRect(void *video, int width, int height, uint8_t colour) override;
 	void DrawRectAt(void *video, int x, int y, int width, int height, uint8_t colour) override;
 	void CopyFromBuffer(void *video, const void *src, int width, int height) override;

@@ -161,6 +161,18 @@ public:
 	virtual void SetRect32(void *video, int x, int y, const uint32_t *colours, uint lines, uint width, uint pitch) { NOT_REACHED(); };
 
 	/**
+	 * Draw a rectangle of pixels on the video-buffer, skipping any pixels with the value 0xD7.
+	 * @param video The destination pointer (video-buffer).
+	 * @param x The x position within video-buffer.
+	 * @param y The y position within video-buffer.
+	 * @param colours A 8bpp colour mapping buffer.
+	 * @param lines The number of lines.
+	 * @param width The length of the lines.
+	 * @param pitch The pitch of the colours buffer
+	 */
+	virtual void SetRectNoD7(void *video, int x, int y, const uint8_t *colours, uint lines, uint width, uint pitch) = 0;
+
+	/**
 	 * Make a single horizontal line in a single colour on the video-buffer.
 	 * @param video The destination pointer (video-buffer).
 	 * @param width The length of the line.

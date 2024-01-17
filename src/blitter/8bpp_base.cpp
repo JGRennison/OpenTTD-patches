@@ -56,6 +56,18 @@ void Blitter_8bppBase::SetRect(void *video, int x, int y, const uint8_t *colours
 	} while (--lines);
 }
 
+void Blitter_8bppBase::SetRectNoD7(void *video, int x, int y, const uint8_t *colours, uint lines, uint width, uint pitch)
+{
+	uint8_t *dst = (uint8_t *)video + x + y * _screen.pitch;
+	do {
+		for (size_t i = 0; i < width; i++) {
+			if (colours[i] != 0xD7) dst[i] = colours[i];
+		}
+		dst += _screen.pitch;
+		colours += pitch;
+	} while (--lines);
+}
+
 void Blitter_8bppBase::DrawRect(void *video, int width, int height, uint8_t colour)
 {
 	do {

@@ -82,6 +82,27 @@ void Blitter_40bppAnim::SetRect32(void *video, int x, int y, const uint32_t *col
 	}
 }
 
+void Blitter_40bppAnim::SetRectNoD7(void *video, int x, int y, const uint8_t *colours, uint lines, uint width, uint pitch)
+{
+	if (_screen_disable_anim) {
+		Blitter_32bppOptimized::SetRectNoD7(video, x, y, colours, lines, width, pitch);
+	} else {
+		Colour *dst = (Colour *)video + x + y * _screen.pitch;
+		uint8_t *dstanim = ((uint32_t *)dst - (uint32_t *)_screen.dst_ptr) + VideoDriver::GetInstance()->GetAnimBuffer();
+		do {
+			for (uint i = 0; i < width; i++) {
+				if (colours[i] != 0xD7) {
+					dst[i] = _black_colour;
+					dstanim[i] = colours[i];
+				}
+			}
+			dst += _screen.pitch;
+			dstanim += _screen.pitch;
+			colours += pitch;
+		} while (--lines);
+	}
+}
+
 void Blitter_40bppAnim::DrawRect(void *video, int width, int height, uint8_t colour)
 {
 	if (_screen_disable_anim) {
