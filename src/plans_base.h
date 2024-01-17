@@ -203,12 +203,12 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 
 	bool ValidateNewLine();
 
-	bool IsListable()
+	bool IsListable() const
 	{
 		return (this->owner == _local_company || this->visible_by_all);
 	}
 
-	bool IsVisible()
+	bool IsVisible() const
 	{
 		if (!this->IsListable()) return false;
 		return this->visible;
