@@ -62,9 +62,11 @@ struct Viewport {
 	bool is_drawn = false;
 	bool update_vehicles = false;
 	uint64_t last_overlay_update_number = 0;
+	uint64_t last_plan_update_number = 0;
 	ViewPortMapDrawVehiclesCache map_draw_vehicles_cache;
 	std::vector<byte> land_pixel_cache;
 	std::vector<byte> overlay_pixel_cache;
+	std::vector<byte> plan_pixel_cache;
 
 	uint GetDirtyBlockWidthShift() const { return this->GetDirtyBlockShift(); }
 	uint GetDirtyBlockHeightShift() const { return this->GetDirtyBlockShift(); }

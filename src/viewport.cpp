@@ -326,6 +326,7 @@ struct ViewportDrawerDynamic {
 static void MarkRouteStepDirty(RouteStepsMap::const_iterator cit);
 static void MarkRouteStepDirty(const TileIndex tile, uint order_nr);
 static void HideMeasurementTooltips();
+static void ViewportDrawPlans(const Viewport *vp, DrawPixelInfo *plan_dpi);
 
 static std::unique_ptr<ViewportDrawerDynamic> _vdd;
 std::vector<std::unique_ptr<ViewportDrawerDynamic>> _spare_viewport_drawers;
@@ -480,20 +481,12 @@ static void FillViewportCoverageRect()
 	}
 }
 
-void ClearViewportLandPixelCache(Viewport *vp)
-{
-	vp->land_pixel_cache.assign(vp->land_pixel_cache.size(), 0xD7);
-}
+using ScrollViewportPixelCacheGenericFillRegion = void (*)(Viewport *vp, int x, int y, int width, int height);
 
-void ScrollViewportLandPixelCache(Viewport *vp, int offset_x, int offset_y)
+static bool ScrollViewportPixelCacheGeneric(Viewport *vp, std::vector<byte> &cache, int offset_x, int offset_y, uint pixel_width, ScrollViewportPixelCacheGenericFillRegion fill_region)
 {
-	if (vp->land_pixel_cache.empty()) return;
-	if (abs(offset_x) >= vp->width || abs(offset_y) >= vp->height) {
-		ClearViewportLandPixelCache(vp);
-		return;
-	}
-
-	const uint pixel_width = BlitterFactory::GetCurrentBlitter()->GetScreenDepth() / 8;
+	if (cache.empty()) return false;
+	if (abs(offset_x) >= vp->width || abs(offset_y) >= vp->height) return true;
 
 	int width = vp->width * pixel_width;
 	offset_x *= pixel_width;
@@ -504,27 +497,73 @@ void ScrollViewportLandPixelCache(Viewport *vp, int offset_x, int offset_y)
 
 	/* Blitter_8bppDrawing::ScrollBuffer can be used on 32 bit buffers if widths and offsets are suitably adjusted */
 	Blitter_8bppDrawing blitter;
-	blitter.ScrollBuffer(vp->land_pixel_cache.data(), 0, 0, width, height, offset_x, offset_y);
+	blitter.ScrollBuffer(cache.data(), 0, 0, width, height, offset_x, offset_y);
+
+	auto fill_rect = [&](int x, int y, int w, int h) {
+		blitter.DrawRectAt(cache.data(), x, y, w, h, 0xD7);
+		if (fill_region != nullptr) fill_region(vp, x, y, w, h);
+	};
 
 	int x = 0;
 	if (offset_x < 0) {
 		/* scrolling right, moving pixels left, fill in on right */
 		width += offset_x;
-		blitter.DrawRectAt(vp->land_pixel_cache.data(), width, 0, -offset_x, height, 0xD7);
+		fill_rect(width, 0, -offset_x, height);
 	} else if (offset_x > 0) {
 		/* scrolling left, moving pixels right, fill in on left */
-		blitter.DrawRectAt(vp->land_pixel_cache.data(), 0, 0, offset_x, height, 0xD7);
+		fill_rect(0, 0, offset_x, height);
 		width -= offset_x;
 		x += offset_x;
 	}
 	if (offset_y < 0) {
 		/* scrolling down, moving pixels up, fill in at bottom */
 		height += offset_y;
-		blitter.DrawRectAt(vp->land_pixel_cache.data(), x, height, width, -offset_y, 0xD7);
+		fill_rect(x, height, width, -offset_y);
 	} else if (offset_y > 0) {
 		/* scrolling up, moving pixels down, fill in at top */
-		blitter.DrawRectAt(vp->land_pixel_cache.data(), x, 0, width, offset_y, 0xD7);
+		fill_rect(x, 0, width, offset_y);
 	}
+	return false;
+}
+
+void ClearViewportLandPixelCache(Viewport *vp)
+{
+	vp->land_pixel_cache.assign(vp->land_pixel_cache.size(), 0xD7);
+}
+
+static void ScrollViewportLandPixelCache(Viewport *vp, int offset_x, int offset_y)
+{
+	bool clear = ScrollViewportPixelCacheGeneric(vp, vp->land_pixel_cache, offset_x, offset_y, BlitterFactory::GetCurrentBlitter()->GetScreenDepth() / 8, nullptr);
+	if (clear) ClearViewportLandPixelCache(vp);
+}
+
+static void ClearViewportPlanPixelCache(Viewport *vp)
+{
+	vp->plan_pixel_cache.clear();
+	vp->last_plan_update_number = 0;
+}
+
+static void ScrollPlanPixelCache(Viewport *vp, int offset_x, int offset_y)
+{
+	if (vp->last_plan_update_number != _plan_update_counter) {
+		ClearViewportPlanPixelCache(vp);
+		return;
+	}
+	bool clear = ScrollViewportPixelCacheGeneric(vp, vp->plan_pixel_cache, offset_x, offset_y, 1, [](Viewport *vp, int x, int y, int width, int height) {
+		DrawPixelInfo plan_dpi;
+		plan_dpi.dst_ptr = vp->plan_pixel_cache.data() + x + (y * vp->width);
+		plan_dpi.height = height;
+		plan_dpi.width = width;
+		plan_dpi.pitch = vp->width;
+		plan_dpi.zoom = ZOOM_LVL_NORMAL;
+		plan_dpi.left = UnScaleByZoomLower(vp->virtual_left, vp->zoom) + x;
+		plan_dpi.top = UnScaleByZoomLower(vp->virtual_top, vp->zoom) + y;
+
+		Blitter_8bppDrawing blitter;
+		BlitterFactory::TemporaryCurrentBlitterOverride current_blitter(&blitter);
+		ViewportDrawPlans(vp, &plan_dpi);
+	});
+	if (clear) ClearViewportPlanPixelCache(vp);
 }
 
 void ClearViewportCache(Viewport *vp)
@@ -873,6 +912,7 @@ static void SetViewportPosition(Window *w, int x, int y, bool force_update_overl
 		if (height > 0 && (move_offset.x != 0 || move_offset.y != 0)) {
 			SCOPE_INFO_FMT([&], "DoSetViewportPosition: %d, %d, %d, %d, %d, %d, %s", left, top, width, height, move_offset.x, move_offset.y, scope_dumper().WindowInfo(w));
 			ScrollViewportLandPixelCache(vp, move_offset.x, move_offset.y);
+			ScrollPlanPixelCache(vp, move_offset.x, move_offset.y);
 			w->viewport->update_vehicles = true;
 			DoSetViewportPosition((Window *) w->z_front, move_offset, left, top, width, height);
 			ClearViewportCache(w->viewport);
@@ -2724,18 +2764,13 @@ static void ViewportDrawVehicleRouteSteps(const Viewport * const vp)
 	}
 }
 
-void ViewportDrawPlans(const Viewport *vp)
+static void ViewportDrawPlans(const Viewport *vp, DrawPixelInfo *plan_dpi)
 {
-	if (!AreAnyPlansVisible()) return;
-
-	DrawPixelInfo dpi_for_text = _vdd->MakeDPIForText();
-	_cur_dpi = &dpi_for_text;
-
 	const Rect bounds = {
-		ScaleByZoom(dpi_for_text.left - 2, vp->zoom),
-		ScaleByZoom(dpi_for_text.top - 2, vp->zoom),
-		ScaleByZoom(dpi_for_text.left + dpi_for_text.width + 2, vp->zoom),
-		ScaleByZoom(dpi_for_text.top + dpi_for_text.height + 2, vp->zoom) + (int)(ZOOM_LVL_BASE * TILE_HEIGHT * _settings_game.construction.map_height_limit)
+		ScaleByZoom(plan_dpi->left - 2, vp->zoom),
+		ScaleByZoom(plan_dpi->top - 2, vp->zoom),
+		ScaleByZoom(plan_dpi->left + plan_dpi->width + 2, vp->zoom),
+		ScaleByZoom(plan_dpi->top + plan_dpi->height + 2, vp->zoom) + (int)(ZOOM_LVL_BASE * TILE_HEIGHT * _settings_game.construction.map_height_limit)
 	};
 
 	const int min_coord_delta = bounds.left / (int)(2 * ZOOM_LVL_BASE * TILE_SIZE);
@@ -2775,11 +2810,11 @@ void ViewportDrawPlans(const Viewport *vp)
 				const int to_x = UnScaleByZoom(to_pt.x, vp->zoom);
 				const int to_y = UnScaleByZoom(to_pt.y, vp->zoom);
 
-				GfxDrawLine(from_x, from_y, to_x, to_y, PC_BLACK, 3);
+				GfxDrawLine(plan_dpi, from_x, from_y, to_x, to_y, PC_BLACK, 3);
 				if (pl->focused) {
-					GfxDrawLine(from_x, from_y, to_x, to_y, PC_RED, 1);
+					GfxDrawLine(plan_dpi, from_x, from_y, to_x, to_y, PC_RED, 1);
 				} else {
-					GfxDrawLine(from_x, from_y, to_x, to_y, _colour_value[p->colour], 1);
+					GfxDrawLine(plan_dpi, from_x, from_y, to_x, to_y, _colour_value[p->colour], 1);
 				}
 			}
 		}
@@ -2806,11 +2841,9 @@ void ViewportDrawPlans(const Viewport *vp)
 			const int to_x = UnScaleByZoom(to_pt.x, vp->zoom);
 			const int to_y = UnScaleByZoom(to_pt.y, vp->zoom);
 
-			GfxDrawLine(from_x, from_y, to_x, to_y, _colour_value[_current_plan->colour], 3, 1);
+			GfxDrawLine(plan_dpi, from_x, from_y, to_x, to_y, _colour_value[_current_plan->colour], 3, 1);
 		}
 	}
-
-	_cur_dpi = nullptr;
 }
 
 #define SLOPIFY_COLOUR(tile, height, vF, vW, vS, vE, vN, action) { \
@@ -3867,6 +3900,30 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint
 		if (unlikely(_thd.place_mode == (HT_SPECIAL | HT_MAP) && (_thd.drawstyle & HT_DRAG_MASK) == HT_RECT && _thd.select_proc == DDSP_MEASURE)) ViewportMapDrawSelection(vp);
 		if (vp->zoom < ZOOM_LVL_OUT_256X) ViewportAddKdtreeSigns(_vdd.get(), &_vdd->dpi, true);
 
+		if (AreAnyPlansVisible()) {
+			if (vp->last_plan_update_number != _plan_update_counter) {
+				vp->last_plan_update_number = _plan_update_counter;
+
+				vp->plan_pixel_cache.assign(vp->ScreenArea(), 0xD7);
+
+				DrawPixelInfo plan_dpi;
+				plan_dpi.dst_ptr = vp->plan_pixel_cache.data();
+				plan_dpi.height = vp->height;
+				plan_dpi.width = vp->width;
+				plan_dpi.pitch = vp->width;
+				plan_dpi.zoom = ZOOM_LVL_NORMAL;
+				plan_dpi.left = UnScaleByZoomLower(vp->virtual_left, vp->zoom);
+				plan_dpi.top = UnScaleByZoomLower(vp->virtual_top, vp->zoom);
+
+				Blitter_8bppDrawing blitter;
+				BlitterFactory::TemporaryCurrentBlitterOverride current_blitter(&blitter);
+				TemporaryScreenPitchOverride screen_pitch(vp->width);
+				ViewportDrawPlans(vp, &plan_dpi);
+			}
+		} else {
+			vp->plan_pixel_cache.clear();
+		}
+
 		ViewportDoDrawPhase2(vp, _vdd.get());
 		ViewportDoDrawPhase3(vp);
 	} else {
@@ -4031,7 +4088,14 @@ static void ViewportDoDrawPhase3(Viewport *vp)
 	}
 	_cur_dpi = nullptr;
 
-	ViewportDrawPlans(vp);
+	if (vp->zoom < ZOOM_LVL_DRAW_MAP && AreAnyPlansVisible()) {
+		DrawPixelInfo plan_dpi = _vdd->MakeDPIForText();
+		ViewportDrawPlans(vp, &plan_dpi);
+	} else if (vp->zoom >= ZOOM_LVL_DRAW_MAP && !vp->plan_pixel_cache.empty()) {
+		const int pixel_cache_start = _vdd->offset_x + (_vdd->offset_y * vp->width);
+		BlitterFactory::GetCurrentBlitter()->SetRectNoD7(_vdd->dpi.dst_ptr, 0, 0, vp->plan_pixel_cache.data() + pixel_cache_start,
+				dp.height, dp.width, vp->width);
+	}
 
 	if (_vdd->display_flags & (ND_SHADE_GREY | ND_SHADE_DIMMED)) {
 		DrawPixelInfo dp = _vdd->MakeDPIForText();
@@ -4219,13 +4283,17 @@ void UpdateViewportSizeZoom(Viewport *vp)
 		} else {
 			vp->land_pixel_cache.assign(vp->ScreenArea(), 0xD7);
 		}
+		vp->plan_pixel_cache.clear();
 	} else {
 		vp->map_draw_vehicles_cache.vehicle_pixels.clear();
 		vp->land_pixel_cache.clear();
 		vp->land_pixel_cache.shrink_to_fit();
 		vp->overlay_pixel_cache.clear();
 		vp->overlay_pixel_cache.shrink_to_fit();
+		vp->plan_pixel_cache.clear();
+		vp->plan_pixel_cache.shrink_to_fit();
 	}
+	vp->last_plan_update_number = 0;
 	vp->update_vehicles = true;
 	FillViewportCoverageRect();
 }
