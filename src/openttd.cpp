@@ -93,6 +93,7 @@
 #include "timer/timer_game_realtime.h"
 #include "timer/timer_game_tick.h"
 #include "network/network_sync.h"
+#include "plans_func.h"
 
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
@@ -507,6 +508,7 @@ static void ShutdownGame()
 	ClearAllSignalSpeedRestrictions();
 
 	ClearZoningCaches();
+	InvalidatePlanCaches();
 	ClearOrderDestinationRefcountMap();
 
 	/* No NewGRFs were loaded when it was still bootstrapping. */

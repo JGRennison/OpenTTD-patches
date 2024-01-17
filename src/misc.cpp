@@ -41,6 +41,7 @@
 #include "tbtr_template_vehicle_func.h"
 #include "event_logs.h"
 #include "string_func.h"
+#include "plans_func.h"
 #include "3rdparty/monocypher/monocypher.h"
 
 #include "safeguards.h"
@@ -176,6 +177,7 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	ClearAllSignalSpeedRestrictions();
 
 	ClearZoningCaches();
+	InvalidatePlanCaches();
 	IntialiseOrderDestinationRefcountMap();
 
 	ResetPersistentNewGRFData();

@@ -58,6 +58,7 @@
 #include "pathfinder/yapf/yapf_cache.h"
 #include "debug_desync.h"
 #include "event_logs.h"
+#include "plans_func.h"
 
 #include "table/strings.h"
 #include "table/pricebase.h"
@@ -669,6 +670,8 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 
 	extern void MarkAllViewportMapLandscapesDirty();
 	MarkAllViewportMapLandscapesDirty();
+
+	InvalidatePlanCaches();
 }
 
 /**

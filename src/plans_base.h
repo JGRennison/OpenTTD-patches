@@ -36,6 +36,7 @@ struct PlanLine {
 	{
 		this->visible = true;
 		this->focused = false;
+		_plan_update_counter++;
 	}
 
 	~PlanLine()
@@ -46,6 +47,7 @@ struct PlanLine {
 	void Clear()
 	{
 		this->tiles.clear();
+		_plan_update_counter++;
 	}
 
 	bool AppendTile(TileIndex tile)
@@ -81,12 +83,16 @@ struct PlanLine {
 		if (this->tiles.size() * sizeof(TileIndex) >= MAX_CMD_TEXT_LENGTH) return false;
 
 		this->tiles.push_back(tile);
+		_plan_update_counter++;
 		return true;
 	}
 
 	void SetFocus(bool focused)
 	{
-		if (this->focused != focused) this->MarkDirty();
+		if (this->focused != focused) {
+			this->MarkDirty();
+			_plan_update_counter++;
+		}
 		this->focused = focused;
 	}
 
@@ -98,7 +104,10 @@ struct PlanLine {
 
 	void SetVisibility(bool visible)
 	{
-		if (this->visible != visible) this->MarkDirty();
+		if (this->visible != visible) {
+			this->MarkDirty();
+			_plan_update_counter++;
+		}
 		this->visible = visible;
 	}
 
@@ -176,6 +185,7 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 	void SetVisibility(bool visible, bool do_lines = true)
 	{
 		this->visible = visible;
+		_plan_update_counter++;
 
 		if (!do_lines) return;
 		for (PlanLineVector::iterator it = lines.begin(); it != lines.end(); it++) {

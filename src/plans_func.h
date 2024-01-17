@@ -12,9 +12,24 @@
 
 #include "plans_type.h"
 
-void ShowPlansWindow();
-
 extern Plan *_new_plan;
 extern Plan *_current_plan;
+extern uint64_t _plan_update_counter;
+extern uint64_t _last_plan_visibility_check;
+extern bool _last_plan_visibility_check_result;
+
+void ShowPlansWindow();
+void UpdateAreAnyPlansVisible();
+
+inline bool AreAnyPlansVisible()
+{
+	if (_plan_update_counter != _last_plan_visibility_check) UpdateAreAnyPlansVisible();
+	return _last_plan_visibility_check_result;
+}
+
+inline void InvalidatePlanCaches()
+{
+	_plan_update_counter++;
+}
 
 #endif /* PLANS_FUNC_H */

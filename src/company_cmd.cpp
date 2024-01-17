@@ -42,6 +42,7 @@
 #include "timer/timer.h"
 #include "timer/timer_game_tick.h"
 #include "tilehighlight_func.h"
+#include "plans_func.h"
 
 #include "table/strings.h"
 
@@ -147,6 +148,7 @@ void SetLocalCompany(CompanyID new_company)
 	InvalidateWindowClassesData(WC_SIGN_LIST, -1);
 	InvalidateWindowClassesData(WC_GOALS_LIST);
 	ClearZoningCaches();
+	InvalidatePlanCaches();
 }
 
 /**

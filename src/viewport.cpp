@@ -2726,7 +2726,7 @@ static void ViewportDrawVehicleRouteSteps(const Viewport * const vp)
 
 void ViewportDrawPlans(const Viewport *vp)
 {
-	if (Plan::GetNumItems() == 0 && !(_current_plan && _current_plan->temp_line->tiles.size() > 1)) return;
+	if (!AreAnyPlansVisible()) return;
 
 	DrawPixelInfo dpi_for_text = _vdd->MakeDPIForText();
 	_cur_dpi = &dpi_for_text;

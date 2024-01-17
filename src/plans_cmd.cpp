@@ -160,6 +160,7 @@ CommandCost CmdChangePlanColour(TileIndex tile, DoCommandFlag flags, uint32_t p1
 	if (ret.Failed()) return ret;
 	if (flags & DC_EXEC) {
 		p->colour = (Colours)p2;
+		_plan_update_counter++;
 		Window *w = FindWindowById(WC_PLANS, 0);
 		if (w) w->InvalidateData(INVALID_PLAN, false);
 		for (const PlanLine *line : p->lines) {
