@@ -179,6 +179,21 @@ public:
 	 * Create an instance of this Blitter-class.
 	 */
 	virtual Blitter *CreateInstance() = 0;
+
+	/* Scoped temporary current blitter override */
+	struct TemporaryCurrentBlitterOverride {
+		Blitter *old_blitter;
+
+		TemporaryCurrentBlitterOverride(Blitter *new_blitter) : old_blitter(*GetActiveBlitter())
+		{
+			*GetActiveBlitter() = new_blitter;
+		}
+
+		~TemporaryCurrentBlitterOverride()
+		{
+			*GetActiveBlitter() = this->old_blitter;
+		}
+	};
 };
 
 extern std::string _ini_blitter;
