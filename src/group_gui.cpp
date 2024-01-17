@@ -1009,8 +1009,12 @@ public:
 
 				std::string name = GenerateAutoNameForVehicleGroup(v);
 
-				DoCommandP(0, VehicleListIdentifier(_ctrl_pressed ? VL_SHARED_ORDERS : VL_SINGLE_VEH, v->type, v->owner, v->index).Pack(),
-						CargoFilterCriteria::CF_ANY, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), nullptr, name.c_str());
+				VehicleListType vli_type = VL_SINGLE_VEH;
+				if (_ctrl_pressed) {
+					vli_type = VL_SHARED_ORDERS;
+					v = v->FirstShared();
+				}
+				DoCommandP(0, VehicleListIdentifier(vli_type, v->type, v->owner, v->index).Pack(), CargoFilterCriteria::CF_ANY, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), nullptr, name.c_str());
 
 				break;
 			}
