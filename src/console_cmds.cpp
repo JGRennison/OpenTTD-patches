@@ -311,13 +311,18 @@ DEF_CONSOLE_CMD(ConZoomToLevel)
 					"- The lowest supported zoom-in level is %u.",
 				std::max(ZOOM_LVL_MIN, _settings_client.gui.zoom_min)
 			);
-			IConsolePrintF(
-				CC_WARNING,
-				_settings_client.gui.zoom_max < ZOOM_LVL_MAX ?
-					"- The highest zoom-out level allowed by current client settings is %u." :
-					"- The highest supported zoom-out level is %u.",
-				std::min(_settings_client.gui.zoom_max, ZOOM_LVL_MAX)
-			);
+
+			if (ZOOM_LVL_MIN < _settings_client.gui.zoom_min) {
+				IConsolePrintF(CC_WARNING, "The lowest zoom-in level allowed by current client settings is %u.", std::max(ZOOM_LVL_MIN, _settings_client.gui.zoom_min));
+			} else {
+				IConsolePrintF(CC_WARNING, "The lowest supported zoom-in level is %u.", std::max(ZOOM_LVL_MIN, _settings_client.gui.zoom_min));
+			}
+
+			if (_settings_client.gui.zoom_max < ZOOM_LVL_MAX) {
+				IConsolePrintF(CC_WARNING, "The highest zoom-out level allowed by current client settings is %u.", std::min(_settings_client.gui.zoom_max, ZOOM_LVL_MAX));
+			} else {
+				IConsolePrintF(CC_WARNING, "The highest supported zoom-out level is %u.", std::min(_settings_client.gui.zoom_max, ZOOM_LVL_MAX));
+			}
 			return true;
 
 		case 2: {
