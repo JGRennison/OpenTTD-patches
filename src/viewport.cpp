@@ -485,6 +485,48 @@ void ClearViewportLandPixelCache(Viewport *vp)
 	vp->land_pixel_cache.assign(vp->land_pixel_cache.size(), 0xD7);
 }
 
+void ScrollViewportLandPixelCache(Viewport *vp, int offset_x, int offset_y)
+{
+	if (vp->land_pixel_cache.empty()) return;
+	if (abs(offset_x) >= vp->width || abs(offset_y) >= vp->height) {
+		ClearViewportLandPixelCache(vp);
+		return;
+	}
+
+	const uint pixel_width = BlitterFactory::GetCurrentBlitter()->GetScreenDepth() / 8;
+
+	int width = vp->width * pixel_width;
+	offset_x *= pixel_width;
+
+	int height = vp->height;
+
+	TemporaryScreenPitchOverride screen_pitch(width);
+
+	/* Blitter_8bppDrawing::ScrollBuffer can be used on 32 bit buffers if widths and offsets are suitably adjusted */
+	Blitter_8bppDrawing blitter;
+	blitter.ScrollBuffer(vp->land_pixel_cache.data(), 0, 0, width, height, offset_x, offset_y);
+
+	int x = 0;
+	if (offset_x < 0) {
+		/* scrolling right, moving pixels left, fill in on right */
+		width += offset_x;
+		blitter.DrawRectAt(vp->land_pixel_cache.data(), width, 0, -offset_x, height, 0xD7);
+	} else if (offset_x > 0) {
+		/* scrolling left, moving pixels right, fill in on left */
+		blitter.DrawRectAt(vp->land_pixel_cache.data(), 0, 0, offset_x, height, 0xD7);
+		width -= offset_x;
+		x += offset_x;
+	}
+	if (offset_y < 0) {
+		/* scrolling down, moving pixels up, fill in at bottom */
+		height += offset_y;
+		blitter.DrawRectAt(vp->land_pixel_cache.data(), x, height, width, -offset_y, 0xD7);
+	} else if (offset_y > 0) {
+		/* scrolling up, moving pixels down, fill in at top */
+		blitter.DrawRectAt(vp->land_pixel_cache.data(), x, 0, width, offset_y, 0xD7);
+	}
+}
+
 void ClearViewportCache(Viewport *vp)
 {
 	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
@@ -829,8 +871,8 @@ static void SetViewportPosition(Window *w, int x, int y, bool force_update_overl
 		if (i >= 0) height -= i;
 
 		if (height > 0 && (move_offset.x != 0 || move_offset.y != 0)) {
-			ClearViewportLandPixelCache(vp);
 			SCOPE_INFO_FMT([&], "DoSetViewportPosition: %d, %d, %d, %d, %d, %d, %s", left, top, width, height, move_offset.x, move_offset.y, scope_dumper().WindowInfo(w));
+			ScrollViewportLandPixelCache(vp, move_offset.x, move_offset.y);
 			w->viewport->update_vehicles = true;
 			DoSetViewportPosition((Window *) w->z_front, move_offset, left, top, width, height);
 			ClearViewportCache(w->viewport);
