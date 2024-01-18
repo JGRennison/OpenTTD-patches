@@ -87,10 +87,12 @@ public:
 	void SetDirty() { this->dirty = true; }
 
 	/** Get a bitmask of the currently shown cargoes. */
-	CargoTypes GetCargoMask() { return this->cargo_mask; }
+	CargoTypes GetCargoMask() const { return this->cargo_mask; }
 
 	/** Get a bitmask of the currently shown companies. */
-	CompanyMask GetCompanyMask() { return this->company_mask; }
+	CompanyMask GetCompanyMask() const { return this->company_mask; }
+
+	uint64_t GetRebuildCounter() const { return this->rebuild_counter; }
 
 protected:
 	Window *window;                    ///< Window to be drawn into.
@@ -102,7 +104,8 @@ protected:
 	Rect cached_region;                ///< Region covered by cached_links and cached_stations.
 	uint scale;                        ///< Width of link lines.
 	bool dirty;                        ///< Set if overlay should be rebuilt.
-	uint64_t last_update_number = 0;     ///< Last window update number
+	uint64_t last_update_number = 0;   ///< Last window update number
+	uint64_t rebuild_counter = 0;      ///< Rebuild counter
 
 	Point GetStationMiddle(const Station *st) const;
 

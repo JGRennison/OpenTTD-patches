@@ -116,16 +116,25 @@ void LinkGraphOverlay::RebuildCache(bool incremental)
 		this->cached_links.clear();
 		this->cached_stations.clear();
 		this->last_update_number = GetWindowUpdateNumber();
+		this->rebuild_counter++;
 	}
 	if (this->company_mask == 0) return;
 
+	const Rect old_cached_region = this->cached_region;
 	DrawPixelInfo dpi;
 	bool cache_all = false;
 	if (this->window->viewport) {
 		const Viewport *vp = this->window->viewport;
 		const int pixel_margin = 256;
 		const int vp_margin = ScaleByZoom(pixel_margin, vp->zoom);
-		this->GetWidgetDpi(&dpi, pixel_margin);
+		if (vp->zoom < ZOOM_LVL_DRAW_MAP) {
+			this->GetWidgetDpi(&dpi, pixel_margin);
+		} else {
+			dpi.left = UnScaleByZoomLower(vp->virtual_left - vp_margin, vp->zoom);
+			dpi.top = UnScaleByZoomLower(vp->virtual_top - vp_margin, vp->zoom);
+			dpi.width = UnScaleByZoom(vp->virtual_width + vp_margin * 2, vp->zoom);
+			dpi.height = UnScaleByZoom(vp->virtual_height + vp_margin * 2, vp->zoom);
+		}
 		this->cached_region = Rect({ vp->virtual_left - vp_margin, vp->virtual_top - vp_margin,
 				vp->virtual_left + vp->virtual_width + vp_margin, vp->virtual_top + vp->virtual_height + vp_margin });
 	} else {
@@ -235,6 +244,26 @@ void LinkGraphOverlay::RebuildCache(bool incremental)
 	this->cached_links.reserve(this->cached_links.size() + link_cache_map.size());
 	for (auto &iter : link_cache_map) {
 		this->cached_links.push_back({ iter.first.first, iter.first.second, iter.second.from_pt, iter.second.to_pt, iter.second.prop });
+	}
+
+	if (incremental && (this->cached_stations.size() > previous_cached_stations_count || this->cached_links.size() > previous_cached_links_count)) {
+		/* Check if newly added stations/links are visible in previous cached area */
+		DrawPixelInfo old_dpi;
+		old_dpi.left = old_cached_region.left;
+		old_dpi.top = old_cached_region.top;
+		old_dpi.width = old_cached_region.right - old_cached_region.left;
+		old_dpi.height = old_cached_region.bottom - old_cached_region.top;
+
+		auto check_found = [&]() -> bool {
+			for (size_t i = previous_cached_stations_count; i < this->cached_stations.size(); i++) {
+				if (this->IsPointVisible(this->cached_stations[i].pt, &old_dpi)) return true;
+			}
+			for (size_t i = previous_cached_links_count; i < this->cached_links.size(); i++) {
+				if (this->IsLinkVisible(this->cached_links[i].from_pt, this->cached_links[i].to_pt, &old_dpi)) return true;
+			}
+			return false;
+		};
+		if (check_found()) this->rebuild_counter++;
 	}
 
 	if (previous_cached_stations_count > 0) {
@@ -364,17 +393,32 @@ inline bool LinkGraphOverlay::IsLinkVisible(Point pta, Point ptb, const DrawPixe
 
 void LinkGraphOverlay::RefreshDrawCache()
 {
+	static const Point INVALID_POINT = Point{ INT_MIN / 2, INT_MIN / 2 };
+
 	for (StationSupplyList::iterator i(this->cached_stations.begin()); i != this->cached_stations.end(); ++i) {
 		const Station *st = Station::GetIfValid(i->id);
-		if (st == nullptr) continue;
+		if (st == nullptr) {
+			i->pt = INVALID_POINT;
+			continue;
+		}
 
-		i->pt = this->GetStationMiddle(st);
+		Point new_pt = this->GetStationMiddle(st);
+		if (i->pt.x != new_pt.x || i->pt.y != new_pt.y) {
+			i->pt = new_pt;
+		}
 	}
+
 	for (LinkList::iterator i(this->cached_links.begin()); i != this->cached_links.end(); ++i) {
 		const Station *sta = Station::GetIfValid(i->from_id);
-		if (sta == nullptr) continue;
+		if (sta == nullptr) {
+			i->from_pt = i->to_pt = INVALID_POINT;
+			continue;
+		}
 		const Station *stb = Station::GetIfValid(i->to_id);
-		if (stb == nullptr) continue;
+		if (stb == nullptr) {
+			i->from_pt = i->to_pt = INVALID_POINT;
+			continue;
+		}
 
 		i->from_pt = this->GetStationMiddle(sta);
 		i->to_pt = this->GetStationMiddle(stb);
@@ -389,7 +433,7 @@ void LinkGraphOverlay::PrepareDraw()
 	if (this->dirty) {
 		this->RebuildCache();
 	}
-	if (this->last_update_number != GetWindowUpdateNumber()) {
+	if (this->last_update_number != GetWindowUpdateNumber() && this->window->viewport->zoom < ZOOM_LVL_DRAW_MAP) {
 		this->last_update_number = GetWindowUpdateNumber();
 		this->RefreshDrawCache();
 	}
@@ -414,8 +458,6 @@ void LinkGraphOverlay::DrawLinks(const DrawPixelInfo *dpi) const
 	int width = ScaleGUITrad(this->scale);
 	for (const auto &i : this->cached_links) {
 		if (!this->IsLinkVisible(i.from_pt, i.to_pt, dpi, width + 2)) continue;
-		if (!Station::IsValidID(i.from_id)) continue;
-		if (!Station::IsValidID(i.to_id)) continue;
 		this->DrawContent(dpi, i.from_pt, i.to_pt, i.prop);
 	}
 }

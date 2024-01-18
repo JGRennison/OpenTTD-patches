@@ -566,6 +566,32 @@ static void ScrollPlanPixelCache(Viewport *vp, int offset_x, int offset_y)
 	if (clear) ClearViewportPlanPixelCache(vp);
 }
 
+static void ScrollOrInvalidateOverlayPixelCache(Viewport *vp, int offset_x, int offset_y)
+{
+	if (vp->overlay_pixel_cache.empty()) return;
+
+	if (vp->zoom < ZOOM_LVL_DRAW_MAP || vp->last_overlay_rebuild_counter != vp->overlay->GetRebuildCounter()) {
+		vp->overlay_pixel_cache.clear();
+		return;
+	}
+
+	bool clear = ScrollViewportPixelCacheGeneric(vp, vp->overlay_pixel_cache, offset_x, offset_y, 1, [](Viewport *vp, int x, int y, int width, int height) {
+		DrawPixelInfo overlay_dpi;
+		overlay_dpi.dst_ptr = vp->overlay_pixel_cache.data() + x + (y * vp->width);
+		overlay_dpi.height = height;
+		overlay_dpi.width = width;
+		overlay_dpi.pitch = vp->width;
+		overlay_dpi.zoom = ZOOM_LVL_NORMAL;
+		overlay_dpi.left = UnScaleByZoomLower(vp->virtual_left, vp->zoom) + x;
+		overlay_dpi.top = UnScaleByZoomLower(vp->virtual_top, vp->zoom) + y;
+
+		Blitter_8bppDrawing blitter;
+		BlitterFactory::TemporaryCurrentBlitterOverride current_blitter(&blitter);
+		vp->overlay->Draw(&overlay_dpi);
+	});
+	if (clear) vp->overlay_pixel_cache.clear();
+}
+
 void ClearViewportCache(Viewport *vp)
 {
 	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
@@ -870,7 +896,11 @@ static void SetViewportPosition(Window *w, int x, int y, bool force_update_overl
 	vp->virtual_top = y;
 	UpdateViewportDirtyBlockLeftMargin(vp);
 
-	if (force_update_overlay || IsViewportOverlayOutsideCachedRegion(w)) RebuildViewportOverlay(w, true);
+	bool have_overlay = w->viewport->overlay != nullptr &&
+			w->viewport->overlay->GetCompanyMask() != 0 &&
+			w->viewport->overlay->GetCargoMask() != 0;
+
+	if (have_overlay && (force_update_overlay || !w->viewport->overlay->CacheStillValid())) RebuildViewportOverlay(w, true);
 
 	/* Viewport is bound to its left top corner, so it must be rounded down (UnScaleByZoomLower)
 	 * else glitch described in FS#1412 will happen (offset by 1 pixel with zoom level > NORMAL)
@@ -913,6 +943,7 @@ static void SetViewportPosition(Window *w, int x, int y, bool force_update_overl
 			SCOPE_INFO_FMT([&], "DoSetViewportPosition: %d, %d, %d, %d, %d, %d, %s", left, top, width, height, move_offset.x, move_offset.y, scope_dumper().WindowInfo(w));
 			ScrollViewportLandPixelCache(vp, move_offset.x, move_offset.y);
 			ScrollPlanPixelCache(vp, move_offset.x, move_offset.y);
+			if (have_overlay) ScrollOrInvalidateOverlayPixelCache(vp, move_offset.x, move_offset.y);
 			w->viewport->update_vehicles = true;
 			DoSetViewportPosition((Window *) w->z_front, move_offset, left, top, width, height);
 			ClearViewportCache(w->viewport);
@@ -3816,16 +3847,6 @@ static void ViewportProcessParentSprites(ViewportDrawerDynamic *vdd, uint data_i
 	}
 }
 
-static bool CheckViewportOverlayPixelRefresh(Viewport *vp)
-{
-	size_t screen_area = vp->ScreenArea();
-	if (vp->last_overlay_update_number == GetWindowUpdateNumber() && vp->overlay_pixel_cache.size() == screen_area) return false;
-
-	vp->last_overlay_update_number = GetWindowUpdateNumber();
-	vp->overlay_pixel_cache.assign(screen_area, 0xD7);
-	return true;
-}
-
 static void ViewportDoDrawPhase2(Viewport *vp, ViewportDrawerDynamic *vdd);
 static void ViewportDoDrawPhase3(Viewport *vp);
 static void ViewportDoDrawRenderJob(Viewport *vp, ViewportDrawerDynamic *vdd);
@@ -3868,15 +3889,19 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint
 	if (vp->overlay != nullptr && vp->overlay->GetCargoMask() != 0 && vp->overlay->GetCompanyMask() != 0) {
 		vp->overlay->PrepareDraw();
 
-		if (vp->zoom >= ZOOM_LVL_DRAW_MAP && CheckViewportOverlayPixelRefresh(vp)) {
+		if (vp->zoom >= ZOOM_LVL_DRAW_MAP && (vp->overlay_pixel_cache.empty() || vp->last_overlay_rebuild_counter != vp->overlay->GetRebuildCounter())) {
+			vp->last_overlay_rebuild_counter = vp->overlay->GetRebuildCounter();
+
+			vp->overlay_pixel_cache.assign(vp->ScreenArea(), 0xD7);
+
 			DrawPixelInfo overlay_dpi;
 			overlay_dpi.dst_ptr = vp->overlay_pixel_cache.data();
 			overlay_dpi.height = vp->height;
 			overlay_dpi.width = vp->width;
 			overlay_dpi.pitch = vp->width;
 			overlay_dpi.zoom = ZOOM_LVL_NORMAL;
-			overlay_dpi.left = vp->left;
-			overlay_dpi.top = vp->top;
+			overlay_dpi.left = UnScaleByZoomLower(vp->virtual_left, vp->zoom);
+			overlay_dpi.top = UnScaleByZoomLower(vp->virtual_top, vp->zoom);
 
 			Blitter_8bppDrawing blitter;
 			BlitterFactory::TemporaryCurrentBlitterOverride current_blitter(&blitter);
@@ -4283,6 +4308,7 @@ void UpdateViewportSizeZoom(Viewport *vp)
 		} else {
 			vp->land_pixel_cache.assign(vp->ScreenArea(), 0xD7);
 		}
+		vp->overlay_pixel_cache.clear();
 		vp->plan_pixel_cache.clear();
 	} else {
 		vp->map_draw_vehicles_cache.vehicle_pixels.clear();
@@ -5151,17 +5177,6 @@ void RebuildViewportOverlay(Window *w, bool incremental)
 			w->viewport->overlay->GetCargoMask() != 0) {
 		w->viewport->overlay->RebuildCache(incremental);
 		if (!incremental) w->SetDirty();
-	}
-}
-
-bool IsViewportOverlayOutsideCachedRegion(Window *w)
-{
-	if (w->viewport->overlay != nullptr &&
-			w->viewport->overlay->GetCompanyMask() != 0 &&
-			w->viewport->overlay->GetCargoMask() != 0) {
-		return !w->viewport->overlay->CacheStillValid();
-	} else {
-		return false;
 	}
 }
 
@@ -6567,12 +6582,23 @@ Point GetViewportStationMiddle(const Viewport *vp, const Station *st)
 {
 	int x = TileX(st->xy) * TILE_SIZE;
 	int y = TileY(st->xy) * TILE_SIZE;
-	int z = GetSlopePixelZ(Clamp(x, 0, MapSizeX() * TILE_SIZE - 1), Clamp(y, 0, MapSizeY() * TILE_SIZE - 1));
 
-	Point p = RemapCoords(x, y, z);
-	p.x = UnScaleByZoom(p.x - vp->virtual_left, vp->zoom) + vp->left;
-	p.y = UnScaleByZoom(p.y - vp->virtual_top, vp->zoom) + vp->top;
-	return p;
+	/* Be faster/less precise in viewport map mode, sub-pixel precision is not needed.
+	 * Don't rebase point into screen coordinates in viewport map mode.
+	 */
+	if (vp->zoom < ZOOM_LVL_DRAW_MAP) {
+		int z = GetSlopePixelZ(Clamp(x, 0, MapSizeX() * TILE_SIZE - 1), Clamp(y, 0, MapSizeY() * TILE_SIZE - 1));
+		Point p = RemapCoords(x, y, z);
+		p.x = UnScaleByZoom(p.x - vp->virtual_left, vp->zoom) + vp->left;
+		p.y = UnScaleByZoom(p.y - vp->virtual_top, vp->zoom) + vp->top;
+		return p;
+	} else {
+		int z = st->xy < MapSize() ? TILE_HEIGHT * TileHeight(st->xy) : 0;
+		Point p = RemapCoords(x, y, z);
+		p.x = UnScaleByZoomLower(p.x, vp->zoom);
+		p.y = UnScaleByZoomLower(p.y, vp->zoom);
+		return p;
+	}
 }
 
 /** Helper class for getting the best sprite sorter. */

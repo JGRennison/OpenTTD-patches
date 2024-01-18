@@ -103,7 +103,6 @@ bool ScrollWindowTo(int x, int y, int z, Window *w, bool instant = false);
 void UpdateActiveScrollingViewport(Window *w);
 
 void RebuildViewportOverlay(Window *w, bool incremental);
-bool IsViewportOverlayOutsideCachedRegion(Window *w);
 
 bool ScrollMainWindowToTile(TileIndex tile, bool instant = false);
 bool ScrollMainWindowTo(int x, int y, int z = -1, bool instant = false);
