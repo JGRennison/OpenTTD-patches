@@ -227,4 +227,19 @@ inline int GetCharacterHeight(FontSize size)
 	return font_height_cache[size];
 }
 
+/* Scoped temporary screen pitch override */
+struct TemporaryScreenPitchOverride {
+	int old_pitch;
+
+	TemporaryScreenPitchOverride(int new_pitch) : old_pitch(_screen.pitch)
+	{
+		_screen.pitch = new_pitch;
+	}
+
+	~TemporaryScreenPitchOverride()
+	{
+		_screen.pitch = this->old_pitch;
+	}
+};
+
 #endif /* GFX_FUNC_H */
