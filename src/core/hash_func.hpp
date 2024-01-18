@@ -25,4 +25,19 @@ inline uint32_t SimpleHash32(uint32_t h)
 	return h;
 }
 
+/**
+ * Simple 64 bit to 64 bit hash
+ * From MurmurHash3
+ */
+inline uint64_t SimpleHash64(uint64_t h)
+{
+	h ^= h >> 33;
+	h *= 0xff51afd7ed558ccdULL;
+	h ^= h >> 33;
+	h *= 0xc4ceb9fe1a85ec53ULL;
+	h ^= h >> 33;
+
+	return h;
+}
+
 #endif /* HASH_FUNC_HPP */
