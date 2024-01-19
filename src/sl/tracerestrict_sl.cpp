@@ -72,6 +72,20 @@ static void Load_TRRP()
 				if (IsTraceRestrictDoubleItem(item)) i++;
 			}
 		}
+		if (SlXvIsFeatureMissing(XSLFI_TRACE_RESTRICT, 17)) {
+			/* TRIT_SLOT subtype moved from cond op to combined aux and cond op field in version 17.
+			 * Do this for all previous versions to avoid cases where it is unexpectedly present despite the version,
+			 * e.g. in JokerPP and non-SLXI tracerestrict saves.
+			 */
+			for (size_t i = 0; i < prog->items.size(); i++) {
+				TraceRestrictItem &item = prog->items[i]; // note this is a reference
+				if (GetTraceRestrictType(item) == TRIT_SLOT) {
+					TraceRestrictSlotSubtypeField subtype = static_cast<TraceRestrictSlotSubtypeField>(GetTraceRestrictCondOp(item));
+					SetTraceRestrictCombinedAuxCondOpField(item, subtype);
+				}
+				if (IsTraceRestrictDoubleItem(item)) i++;
+			}
+		}
 		CommandCost validation_result = prog->Validate();
 		if (validation_result.Failed()) {
 			char str[4096];

@@ -727,7 +727,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						if (!input.permitted_slot_operations) break;
 						TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(GetTraceRestrictValue(item));
 						if (slot == nullptr || slot->vehicle_type != v->type) break;
-						switch (static_cast<TraceRestrictSlotCondOpField>(GetTraceRestrictCondOp(item))) {
+						switch (static_cast<TraceRestrictSlotSubtypeField>(GetTraceRestrictCombinedAuxCondOpField(item))) {
 							case TRSCOF_ACQUIRE_WAIT:
 								if (input.permitted_slot_operations & TRPISP_ACQUIRE) {
 									if (!slot->Occupy(v->index)) out.flags |= TRPRF_WAIT_AT_PBS;
@@ -1349,7 +1349,7 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 					break;
 
 				case TRIT_SLOT:
-					switch (static_cast<TraceRestrictSlotCondOpField>(GetTraceRestrictCondOp(item))) {
+					switch (static_cast<TraceRestrictSlotSubtypeField>(GetTraceRestrictCombinedAuxCondOpField(item))) {
 						case TRSCOF_ACQUIRE_WAIT:
 							actions_used_flags |= TRPAUF_SLOT_ACQUIRE | TRPAUF_SLOT_CONDITIONALS | TRPAUF_WAIT_AT_PBS;
 							break;

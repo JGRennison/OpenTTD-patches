@@ -810,7 +810,7 @@ static const TraceRestrictDropDownListSet _passes_through_cond_ops = {
 	_passes_through_cond_ops_str, _passes_through_cond_ops_val,
 };
 
-static const StringID _slot_op_cond_ops_str[] = {
+static const StringID _slot_op_subtypes_str[] = {
 	STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT,
 	STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE,
 	STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT,
@@ -821,7 +821,7 @@ static const StringID _slot_op_cond_ops_str[] = {
 	STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ON_RES,
 	INVALID_STRING_ID,
 };
-static const uint _slot_op_cond_ops_val[] = {
+static const uint _slot_op_subtypes_val[] = {
 	TRSCOF_ACQUIRE_WAIT,
 	TRSCOF_ACQUIRE_TRY,
 	TRSCOF_RELEASE_FRONT,
@@ -831,9 +831,9 @@ static const uint _slot_op_cond_ops_val[] = {
 	TRSCOF_PBS_RES_END_RELEASE,
 	TRSCOF_ACQUIRE_TRY_ON_RESERVE,
 };
-/** cargo conditional operators dropdown list set */
-static const TraceRestrictDropDownListSet _slot_op_cond_ops = {
-	_slot_op_cond_ops_str, _slot_op_cond_ops_val,
+/** slot op subtypes dropdown list set */
+static const TraceRestrictDropDownListSet _slot_op_subtypes = {
+	_slot_op_subtypes_str, _slot_op_subtypes_val,
 };
 
 static const StringID _counter_op_cond_ops_str[] = {
@@ -1588,7 +1588,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 				break;
 
 			case TRIT_SLOT:
-				switch (static_cast<TraceRestrictSlotCondOpField>(GetTraceRestrictCondOp(item))) {
+				switch (static_cast<TraceRestrictSlotSubtypeField>(GetTraceRestrictCombinedAuxCondOpField(item))) {
 					case TRSCOF_ACQUIRE_WAIT:
 						instruction_string = STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM;
 						break;
@@ -2002,7 +2002,7 @@ public:
 
 			case TR_WIDGET_SLOT_OP: {
 				TraceRestrictItem item = this->GetSelected();
-				this->ShowDropDownListWithValue(&_slot_op_cond_ops, GetTraceRestrictCondOp(item), false, TR_WIDGET_SLOT_OP, 0, 0);
+				this->ShowDropDownListWithValue(&_slot_op_subtypes, GetTraceRestrictCombinedAuxCondOpField(item), false, TR_WIDGET_SLOT_OP, 0, 0);
 				break;
 			}
 
@@ -2348,9 +2348,14 @@ public:
 			}
 
 			case TR_WIDGET_COMPARATOR:
-			case TR_WIDGET_SLOT_OP:
 			case TR_WIDGET_COUNTER_OP: {
 				SetTraceRestrictCondOp(item, static_cast<TraceRestrictCondOp>(value));
+				TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+				break;
+			}
+
+			case TR_WIDGET_SLOT_OP: {
+				SetTraceRestrictCombinedAuxCondOpField(item, value);
 				TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 				break;
 			}
@@ -3258,7 +3263,7 @@ private:
 							}
 
 							this->GetWidget<NWidgetCore>(TR_WIDGET_SLOT_OP)->widget_data =
-									GetDropDownStringByValue(&_slot_op_cond_ops, GetTraceRestrictCondOp(item));
+									GetDropDownStringByValue(&_slot_op_subtypes, GetTraceRestrictCombinedAuxCondOpField(item));
 							switch (GetTraceRestrictValue(item)) {
 								case INVALID_TRACE_RESTRICT_SLOT_ID:
 									this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->widget_data = STR_TRACE_RESTRICT_VARIABLE_UNDEFINED;

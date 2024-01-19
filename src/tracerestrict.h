@@ -377,9 +377,9 @@ enum TraceRestrictTimeDateValueField {
 };
 
 /**
- * TraceRestrictItem repurposed condition operator field, for slot operation type actions
+ * TraceRestrictItem subtype field, using the combined auxiliary and cond op bits, for slot operation type actions
  */
-enum TraceRestrictSlotCondOpField {
+enum TraceRestrictSlotSubtypeField {
 	TRSCOF_ACQUIRE_WAIT           = 0,       ///< acquire a slot, or wait at the current signal
 	TRSCOF_ACQUIRE_TRY            = 1,       ///< try to acquire a slot, or carry on otherwise
 	TRSCOF_RELEASE_BACK           = 2,       ///< release a slot (back of train)
@@ -388,7 +388,7 @@ enum TraceRestrictSlotCondOpField {
 	TRSCOF_PBS_RES_END_ACQ_TRY    = 5,       ///< PBS reservations ending at this signal: acquire a slot, or carry on otherwise
 	TRSCOF_PBS_RES_END_RELEASE    = 6,       ///< PBS reservations ending at this signal: release a slot
 	TRSCOF_ACQUIRE_TRY_ON_RESERVE = 7,       ///< try to acquire a slot (on reserve), or carry on otherwise
-	/* space up to 7 */
+	/* space up to 31 */
 };
 
 /**
