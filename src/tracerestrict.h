@@ -110,6 +110,9 @@ enum TraceRestrictItemFlagAllocation {
 	TRIFA_COND_OP_COUNT           = 3,
 	TRIFA_COND_OP_OFFSET          = 13,
 
+	TRIFA_CMB_AUX_COND_COUNT      = 5, ///< This aliases the AUX_FIELD and COND_OP fields as a single wider field
+	TRIFA_CMB_AUX_COND_OFFSET     = 11,
+
 	TRIFA_VALUE_COUNT             = 16,
 	TRIFA_VALUE_OFFSET            = 16,
 };
@@ -638,6 +641,12 @@ inline uint8_t GetTraceRestrictAuxField(TraceRestrictItem item)
 	return GB(item, TRIFA_AUX_FIELD_OFFSET, TRIFA_AUX_FIELD_COUNT);
 }
 
+/** Get TraceRestrictItem combined condition operator and auxiliary fields */
+inline uint8_t GetTraceRestrictCombinedAuxCondOpField(TraceRestrictItem item)
+{
+	return GB(item, TRIFA_CMB_AUX_COND_OFFSET, TRIFA_CMB_AUX_COND_COUNT);
+}
+
 /** Get TraceRestrictItem value field */
 inline uint16_t GetTraceRestrictValue(TraceRestrictItem item)
 {
@@ -666,6 +675,12 @@ inline void SetTraceRestrictCondFlags(TraceRestrictItem &item, TraceRestrictCond
 inline void SetTraceRestrictAuxField(TraceRestrictItem &item, uint8_t data)
 {
 	SB(item, TRIFA_AUX_FIELD_OFFSET, TRIFA_AUX_FIELD_COUNT, data);
+}
+
+/** Set TraceRestrictItem combined condition operator and auxiliary fields */
+inline void SetTraceRestrictCombinedAuxCondOpField(TraceRestrictItem &item, uint8_t data)
+{
+	SB(item, TRIFA_CMB_AUX_COND_OFFSET, TRIFA_CMB_AUX_COND_COUNT, data);
 }
 
 /** Set TraceRestrictItem value field */
