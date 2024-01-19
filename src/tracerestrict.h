@@ -115,10 +115,14 @@ enum TraceRestrictItemFlagAllocation {
 };
 
 /**
- * Enumeration of TraceRestrictItem type field
- * This is split into two halves:
- * * non-conditionals < TRIT_COND_BEGIN
- * * conditionals, >= TRIT_COND_BEGIN
+ * Enumeration of TraceRestrictItem type field.
+ * This has a width of 6 bits (0 - 63).
+ * This is split into three sections:
+ * * non-conditionals: 0 <= type < TRIT_COND_BEGIN
+ * * conditionals: TRIT_COND_BEGIN <= type < TRIT_COND_END
+ * * non-conditionals: TRIT_COND_END <= type < max (63)
+ *
+ * This was previously 5 bits (0 - 31), which is why it's in three sections, not two.
  */
 enum TraceRestrictItemType {
 	TRIT_NULL                     = 0,    ///< Null-type, not in programs and not valid for execution, mainly used with TraceRestrictNullTypeSpecialValue for start/end
