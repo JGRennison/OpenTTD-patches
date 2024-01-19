@@ -92,6 +92,17 @@ typedef uint32_t TraceRestrictItem;
  * to need future expansion, hence the reserved bits are placed
  * immediately after them.
  *
+ * This only applies to the first item of dual-item instructions.
+ *
+ *  0                   1                   2                   3
+ *  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |    Type   |   |Cond |Aux|Cond |             Value             |
+ * |           |   |Flags|   | Op  |                               |
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ *               |         |    |
+ *              Free     Combined wider field (TRIFA_CMB_AUX_COND)
+ *
  * COUNT values describe the field bit width
  * OFFSET values describe the field bit offset
  */
