@@ -387,6 +387,7 @@ enum TraceRestrictSlotSubtypeField {
 	TRSCOF_PBS_RES_END_ACQ_WAIT   = 4,       ///< PBS reservations ending at this signal: acquire a slot, or wait
 	TRSCOF_PBS_RES_END_ACQ_TRY    = 5,       ///< PBS reservations ending at this signal: acquire a slot, or carry on otherwise
 	TRSCOF_PBS_RES_END_RELEASE    = 6,       ///< PBS reservations ending at this signal: release a slot
+	TRSCOF_RELEASE_ON_RESERVE     = 7,       ///< release a slot (on reserve)
 	/* space up to 31 */
 };
 
@@ -459,7 +460,7 @@ enum TraceRestrictProgramActionsUsedFlags {
 	TRPAUF_RESERVE_THROUGH        = 1 << 1,  ///< Reserve through action is present
 	TRPAUF_LONG_RESERVE           = 1 << 2,  ///< Long reserve action is present
 	TRPAUF_WAIT_AT_PBS            = 1 << 3,  ///< Wait at PBS signal action is present
-	TRPAUF_SLOT_ACQUIRE           = 1 << 4,  ///< Slot acquire action is present
+	TRPAUF_SLOT_ACQUIRE           = 1 << 4,  ///< Slot acquire and/or release (on reserve) actions are present
 	TRPAUF_SLOT_RELEASE_BACK      = 1 << 5,  ///< Slot release (back) action is present
 	TRPAUF_SLOT_RELEASE_FRONT     = 1 << 6,  ///< Slot release (front) action is present
 	TRPAUF_PBS_RES_END_WAIT       = 1 << 7,  ///< PBS reservations ending at this signal wait action is present
@@ -482,7 +483,7 @@ DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
  * Enumeration for TraceRestrictProgramInput::permitted_slot_operations
  */
 enum TraceRestrictProgramInputSlotPermissions : uint8_t {
-	TRPISP_ACQUIRE                = 1 << 0,  ///< Slot acquire is permitted
+	TRPISP_ACQUIRE                = 1 << 0,  ///< Slot acquire and release (on reserve) are permitted
 	TRPISP_RELEASE_BACK           = 1 << 1,  ///< Slot release (back) is permitted
 	TRPISP_RELEASE_FRONT          = 1 << 2,  ///< Slot release (front) is permitted
 	TRPISP_PBS_RES_END_ACQUIRE    = 1 << 3,  ///< Slot acquire/release (PBS reservations ending at this signal) is permitted
