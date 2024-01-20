@@ -4251,18 +4251,27 @@ static void TryLongReserveChooseTrainTrack(Train *v, TileIndex tile, Trackdir td
 
 				bool long_reserve = !long_enough;
 				if (IsTunnelBridgeRestrictedSignal(exit_tile)) {
+					/* Test for TRPRF_LONG_RESERVE in a separate execution from TRPRF_WAIT_AT_PBS/slot operations.
+					 * This is to avoid prematurely acquiring slots on the exit signal before we try to make an exit reservation.
+					 */
 					const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(exit_tile, TrackdirToTrack(exit_td));
-					if (prog && prog->actions_used_flags & (TRPAUF_WAIT_AT_PBS | TRPAUF_SLOT_ACQUIRE | TRPAUF_SLOT_ACQUIRE_ON_RES | TRPAUF_LONG_RESERVE)) {
+					if (prog != nullptr && (prog->actions_used_flags & TRPAUF_LONG_RESERVE)) {
 						TraceRestrictProgramResult out;
 						if (long_reserve) out.flags |= TRPRF_LONG_RESERVE;
 						TraceRestrictProgramInput input(exit_tile, exit_td, nullptr, nullptr);
 						if (HasBit(lookahead_state.flags, CTTLASF_STOP_FOUND)) input.input_flags |= TRPIF_PASSED_STOP;
+						prog->Execute(v, input, out);
+						long_reserve = (out.flags & TRPRF_LONG_RESERVE);
+					}
+					if (!long_reserve) return;
+					if (prog != nullptr && prog->actions_used_flags & (TRPAUF_WAIT_AT_PBS | TRPAUF_SLOT_ACQUIRE | TRPAUF_SLOT_ACQUIRE_ON_RES)) {
+						TraceRestrictProgramResult out;
+						TraceRestrictProgramInput input(exit_tile, exit_td, nullptr, nullptr);
 						input.permitted_slot_operations = TRPISP_ACQUIRE | TRPISP_ACQUIRE_ON_RES;
 						prog->Execute(v, input, out);
 						if (out.flags & TRPRF_WAIT_AT_PBS) {
 							return;
 						}
-						long_reserve = (out.flags & TRPRF_LONG_RESERVE);
 					}
 				}
 				if (!long_reserve) return;
