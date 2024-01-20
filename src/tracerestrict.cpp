@@ -972,7 +972,7 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 	// static to avoid needing to re-alloc/resize on each execution
 	static std::vector<TraceRestrictCondStackFlags> condstack;
 	condstack.clear();
-	actions_used_flags = static_cast<TraceRestrictProgramActionsUsedFlags>(0);
+	actions_used_flags = TRPAUF_NONE;
 
 	static std::vector<TraceRestrictSlotID> pbs_res_end_released_slots;
 	pbs_res_end_released_slots.clear();
@@ -2301,7 +2301,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 				prog->items = source_prog->items; // copy
 				prog->Validate();
 
-				TraceRestrictCheckRefreshSignals(prog, 0, static_cast<TraceRestrictProgramActionsUsedFlags>(0));
+				TraceRestrictCheckRefreshSignals(prog, 0, TRPAUF_NONE);
 			}
 			break;
 		}
@@ -2337,7 +2337,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 			}
 
 			TraceRestrictCreateProgramMapping(self, source_prog);
-			TraceRestrictCheckRefreshSingleSignal(source_prog, self, static_cast<TraceRestrictProgramActionsUsedFlags>(0));
+			TraceRestrictCheckRefreshSingleSignal(source_prog, self, TRPAUF_NONE);
 			break;
 		}
 
@@ -2361,7 +2361,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 
 				new_prog->items.swap(items);
 				new_prog->Validate();
-				TraceRestrictCheckRefreshSingleSignal(new_prog, self, static_cast<TraceRestrictProgramActionsUsedFlags>(0));
+				TraceRestrictCheckRefreshSingleSignal(new_prog, self, TRPAUF_NONE);
 			}
 			break;
 		}

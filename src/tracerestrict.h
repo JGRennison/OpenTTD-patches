@@ -455,6 +455,7 @@ DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramResultFlags)
  * Enumeration for TraceRestrictProgram::actions_used_flags
  */
 enum TraceRestrictProgramActionsUsedFlags {
+	TRPAUF_NONE                   = 0,       ///< No flags set
 	TRPAUF_PF                     = 1 << 0,  ///< Pathfinder deny or penalty are present
 	TRPAUF_RESERVE_THROUGH        = 1 << 1,  ///< Reserve through action is present
 	TRPAUF_LONG_RESERVE           = 1 << 2,  ///< Long reserve action is present
@@ -564,7 +565,7 @@ private:
 public:
 
 	TraceRestrictProgram()
-			: refcount(0), actions_used_flags(static_cast<TraceRestrictProgramActionsUsedFlags>(0)) { }
+			: refcount(0), actions_used_flags(TRPAUF_NONE) { }
 
 	~TraceRestrictProgram()
 	{
