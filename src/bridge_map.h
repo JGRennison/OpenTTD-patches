@@ -181,9 +181,9 @@ inline void MakeRailBridgeRamp(TileIndex t, Owner o, BridgeType bridgetype, Diag
 	_me[t].m8 = rt;
 
 	if (upgrade) {
-		/* Restore bridge signal and custom bridgehead data if we're upgrading an existing bridge. */
+		/* Restore bridge signal, custom bridgehead and tracerestrict data if we're upgrading an existing bridge. */
 		_m[t].m2 = m2_backup;
-		SB(_m[t].m3, 0, 6, GB(m3_backup, 0, 6));
+		_m[t].m3 = m3_backup;
 		SB(_m[t].m4, 0, 6, GB(m4_backup, 0, 6));
 		SB(_m[t].m5, 4, 3, GB(m5_backup, 4, 3));
 		SB(_me[t].m6, 0, 2, GB(m6_backup, 0, 2));
