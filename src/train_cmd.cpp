@@ -5287,12 +5287,14 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
 				t->UpdatePosition();
 			}
 
-			bool ok = try_exit_reservation();
-			if (!ok && (t->lookahead->reservation_end_position >= t->lookahead->current_position && t->lookahead->reservation_end_position > t->lookahead->current_position + tile_margin)) {
+			bool ok;
+			if (t->lookahead->reservation_end_position >= t->lookahead->current_position && t->lookahead->reservation_end_position > t->lookahead->current_position + tile_margin) {
 				/* Reservation was made previously and was valid then.
 				 * To avoid unexpected braking due to stopping short of the lookahead end,
 				 * just carry on even if the end is not a safe waiting point now. */
 				ok = true;
+			} else {
+				ok = try_exit_reservation();
 			}
 			if (ok) {
 				if (_extra_aspects > 0) {
@@ -5464,6 +5466,30 @@ void HandleTraceRestrictSpeedRestrictionAction(const TraceRestrictProgramResult 
 		ClrBit(v->flags, VRF_SPEED_ADAPTATION_EXEMPT);
 		SetWindowDirty(WC_VEHICLE_DETAILS, v->index);
 	}
+}
+
+template <typename AllowSlotAcquireT, typename PostProcessResultT>
+void TrainControllerTraceRestrictFrontEvaluation(TileIndex tile, Trackdir dir, Train *v, TraceRestrictProgramActionsUsedFlags extra_action_used_flags, AllowSlotAcquireT allow_slot_acquire, PostProcessResultT post_process_result)
+{
+	const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(dir));
+	if (prog == nullptr) return;
+
+	TraceRestrictProgramActionsUsedFlags actions_used_flags = extra_action_used_flags | TRPAUF_SLOT_RELEASE_FRONT | TRPAUF_SPEED_RESTRICTION | TRPAUF_SPEED_ADAPTATION | TRPAUF_CHANGE_COUNTER;
+
+	const bool slot_acquire_allowed = allow_slot_acquire();
+	if (slot_acquire_allowed) actions_used_flags |= TRPAUF_SLOT_ACQUIRE;
+
+	if ((prog->actions_used_flags & actions_used_flags) == 0) return;
+
+	TraceRestrictProgramResult out;
+	TraceRestrictProgramInput input(tile, dir, nullptr, nullptr);
+	input.permitted_slot_operations = TRPISP_RELEASE_FRONT | TRPISP_CHANGE_COUNTER;
+	if (slot_acquire_allowed) input.permitted_slot_operations |= TRPISP_ACQUIRE;
+
+	prog->Execute(v, input, out);
+
+	HandleTraceRestrictSpeedRestrictionAction(out, v, dir);
+	post_process_result(out);
 }
 
 /**
@@ -5652,19 +5678,15 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						if (IsPlainRailTile(gp.new_tile) && HasSignals(gp.new_tile) && IsRestrictedSignal(gp.new_tile)) {
 							const Trackdir dir = FindFirstTrackdir(trackdirbits);
 							if (HasSignalOnTrack(gp.new_tile, TrackdirToTrack(dir))) {
-								const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(gp.new_tile, TrackdirToTrack(dir));
-								if (prog && prog->actions_used_flags & (TRPAUF_SLOT_ACQUIRE | TRPAUF_SLOT_RELEASE_FRONT | TRPAUF_REVERSE | TRPAUF_SPEED_RESTRICTION | TRPAUF_SPEED_ADAPTATION | TRPAUF_CHANGE_COUNTER)) {
-									TraceRestrictProgramResult out;
-									TraceRestrictProgramInput input(gp.new_tile, dir, nullptr, nullptr);
-									input.permitted_slot_operations = TRPISP_ACQUIRE | TRPISP_RELEASE_FRONT | TRPISP_CHANGE_COUNTER;
-									prog->Execute(v, input, out);
+								TrainControllerTraceRestrictFrontEvaluation(gp.new_tile, dir, v, TRPAUF_REVERSE, [&]() -> bool {
+									return !IsPbsSignal(GetSignalType(gp.new_tile, TrackdirToTrack(dir)));
+								}, [&](const TraceRestrictProgramResult &out) {
 									if (out.flags & TRPRF_REVERSE && GetSignalType(gp.new_tile, TrackdirToTrack(dir)) == SIGTYPE_PBS &&
 											!HasSignalOnTrackdir(gp.new_tile, dir)) {
 										v->reverse_distance = v->gcache.cached_total_length + (IsDiagonalTrack(TrackdirToTrack(dir)) ? 16 : 8);
 										SetWindowDirty(WC_VEHICLE_VIEW, v->index);
 									}
-									HandleTraceRestrictSpeedRestrictionAction(out, v, dir);
-								}
+								});
 							}
 						}
 					}
@@ -5810,14 +5832,10 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					if (v->IsFrontEngine() && IsTunnelBridgeSignalSimulationEntrance(old_tile) && (IsTunnelBridgeRestrictedSignal(old_tile) || _settings_game.vehicle.train_speed_adaptation)) {
 						const Trackdir trackdir = GetTunnelBridgeEntranceTrackdir(old_tile);
 						if (IsTunnelBridgeRestrictedSignal(old_tile)) {
-							const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(old_tile, TrackdirToTrack(trackdir));
-							if (prog && prog->actions_used_flags & (TRPAUF_SLOT_ACQUIRE | TRPAUF_SLOT_RELEASE_FRONT | TRPAUF_SPEED_RESTRICTION | TRPAUF_SPEED_ADAPTATION | TRPAUF_CHANGE_COUNTER)) {
-								TraceRestrictProgramResult out;
-								TraceRestrictProgramInput input(old_tile, trackdir, nullptr, nullptr);
-								input.permitted_slot_operations = TRPISP_ACQUIRE | TRPISP_RELEASE_FRONT | TRPISP_CHANGE_COUNTER;
-								prog->Execute(v, input, out);
-								HandleTraceRestrictSpeedRestrictionAction(out, v, trackdir);
-							}
+							TrainControllerTraceRestrictFrontEvaluation(old_tile, trackdir, v, TRPAUF_NONE, [&]() -> bool {
+								/* Only acquire slot when not using realistic braking, as the tunnel/bridge entrance otherwise acts as a block signal */
+								return _settings_game.vehicle.train_braking_model != TBM_REALISTIC;
+							}, [&](const TraceRestrictProgramResult &out) {});
 						}
 						if (_settings_game.vehicle.train_speed_adaptation) {
 							SetSignalTrainAdaptationSpeed(v, old_tile, TrackdirToTrack(trackdir));
@@ -5858,14 +5876,9 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						leaving = true;
 						if (IsTunnelBridgeRestrictedSignal(gp.new_tile) && IsTunnelBridgeSignalSimulationExit(gp.new_tile)) {
 							const Trackdir trackdir = GetTunnelBridgeExitTrackdir(gp.new_tile);
-							const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(gp.new_tile, TrackdirToTrack(trackdir));
-							if (prog && prog->actions_used_flags & (TRPAUF_SLOT_ACQUIRE | TRPAUF_SLOT_RELEASE_FRONT | TRPAUF_SPEED_RESTRICTION | TRPAUF_SPEED_ADAPTATION | TRPAUF_CHANGE_COUNTER)) {
-								TraceRestrictProgramResult out;
-								TraceRestrictProgramInput input(gp.new_tile, trackdir, nullptr, nullptr);
-								input.permitted_slot_operations = TRPISP_ACQUIRE | TRPISP_RELEASE_FRONT | TRPISP_CHANGE_COUNTER;
-								prog->Execute(v, input, out);
-								HandleTraceRestrictSpeedRestrictionAction(out, v, trackdir);
-							}
+							TrainControllerTraceRestrictFrontEvaluation(gp.new_tile, trackdir, v, TRPAUF_NONE, [&]() -> bool {
+								return !IsTunnelBridgeEffectivelyPBS(gp.new_tile);
+							}, [&](const TraceRestrictProgramResult &out) {});
 						}
 					} else {
 						if (IsTooCloseBehindTrain(v, gp.new_tile, v->wait_counter, distance == 0)) {
