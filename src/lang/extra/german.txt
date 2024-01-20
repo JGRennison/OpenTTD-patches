@@ -740,7 +740,6 @@ STR_TRACE_RESTRICT_SPEED_ADAPTATION_CONTROL                     :Konfiguration d
 STR_TRACE_RESTRICT_SIGNAL_MODE_CONTROL                          :Konfiguration der Signalmodi
 STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :erwerbe oder warte
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :versuche zu erwerben
-STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ON_RES                      :versuche zu erwerben (bei Reservierung)
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :löse (davor)
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK                            :löse (dahinter)
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :Pfadende: erwerbe oder warte
@@ -748,7 +747,6 @@ STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :Pfadende: versu
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :Pfadende: löse
 STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :Erwerbe Slot {STRING}{BLACK}{STRING}, oder warte am Pfadsignal
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :Versuche Slot {STRING}{BLACK}{STRING} zu erwerben, oder fahre weiter
-STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM_RES_ONLY               :Versuche Slot {STRING}{BLACK}{STRING} zu erwerben (bei Reservierung), oder fahre weiter
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :Löse Slot {STRING}{BLACK}{STRING} (vor dem Zug)
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :Löse Slot {STRING}{BLACK}{STRING} (hinter dem Zug)
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :Pfadreservierung endet hier: Erwerbe Slot: {STRING}{BLACK}{STRING}, oder warte am Beginn

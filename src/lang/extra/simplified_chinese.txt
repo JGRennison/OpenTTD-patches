@@ -848,7 +848,6 @@ STR_TRACE_RESTRICT_SPEED_ADAPTATION_CONTROL                     :速度调整控
 STR_TRACE_RESTRICT_SIGNAL_MODE_CONTROL                          :信号模式控制
 STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :捕获或等待
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :尝试捕获
-STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ON_RES                      :尝试捕获 (保持)
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :释放 (前)
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK                            :释放 (后)
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :路径结束: 捕获或等待
@@ -856,7 +855,6 @@ STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :路径结束: �
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :路径结束: 释放
 STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :捕获条目: {STRING}{BLACK}{STRING}，或等待路径信号
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :尝试捕获条目: {STRING}{BLACK}{STRING}，或总是维持
-STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM_RES_ONLY               :尝试捕获 (当路径释放) 条目: {STRING}{BLACK}{STRING}，或总是维持
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :释放条目: {STRING}{BLACK}{STRING} (车前)
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :释放条目: {STRING}{BLACK}{STRING} (车后)
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :路径预留在此结束: 捕获条目: {STRING}{BLACK}{STRING}，或在起点等待

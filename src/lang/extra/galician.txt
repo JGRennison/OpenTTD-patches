@@ -855,7 +855,6 @@ STR_TRACE_RESTRICT_SPEED_ADAPTATION_CONTROL                     :Control adaptat
 STR_TRACE_RESTRICT_SIGNAL_MODE_CONTROL                          :Control do modo de sinal
 STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :Adquirir ou agardar
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :Intentar adquirir
-STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ON_RES                      :Intentar adquirir (en reserva)
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :Liberar (diante)
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK                            :Liberar (detrás)
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :Fin PBS: Adquirir ou agardar
@@ -863,7 +862,6 @@ STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :Fin PBS: Intent
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :Fin PBS: Liberar
 STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :Adquirir slot: {STRING}{BLACK}{STRING}, ou agardar no sinal de ruta PBS
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :Intentar adquirir slot: {STRING}{BLACK}{STRING}, ou continuar de calquera xeito
-STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM_RES_ONLY               :Intentar adquirir (en reserva de ruta PBS) slot: {STRING}{BLACK}{STRING}, ou continuar de calquera xeito
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :Liberar slot: {STRING}{BLACK}{STRING} (diante do tren)
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :Liberar slot: {STRING}{BLACK}{STRING} (detrás do tren)
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :Reserva de ruta PBS remata aqui: Adquirir slot: {STRING}{BLACK}{STRING}, ou agardar no sinal de ruta PBS

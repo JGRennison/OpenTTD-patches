@@ -81,6 +81,10 @@ static void Load_TRRP()
 				TraceRestrictItem &item = prog->items[i]; // note this is a reference
 				if (GetTraceRestrictType(item) == TRIT_SLOT) {
 					TraceRestrictSlotSubtypeField subtype = static_cast<TraceRestrictSlotSubtypeField>(GetTraceRestrictCondOp(item));
+					if (subtype == 7) {
+						/* Was TRSCOF_ACQUIRE_TRY_ON_RESERVE */
+						subtype = TRSCOF_ACQUIRE_TRY;
+					}
 					SetTraceRestrictCombinedAuxCondOpField(item, subtype);
 				}
 				if (IsTraceRestrictDoubleItem(item)) i++;

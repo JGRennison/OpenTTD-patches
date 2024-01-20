@@ -737,7 +737,6 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 								break;
 
 							case TRSCOF_ACQUIRE_TRY:
-							case TRSCOF_ACQUIRE_TRY_ON_RESERVE:
 								if (input.permitted_slot_operations & TRPISP_ACQUIRE) {
 									slot->Occupy(v->index);
 								} else if (input.permitted_slot_operations & TRPISP_ACQUIRE_TEMP_STATE) {
@@ -1355,7 +1354,6 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 							break;
 
 						case TRSCOF_ACQUIRE_TRY:
-						case TRSCOF_ACQUIRE_TRY_ON_RESERVE:
 							actions_used_flags |= TRPAUF_SLOT_ACQUIRE;
 							break;
 

@@ -829,7 +829,6 @@ STR_TRACE_RESTRICT_SPEED_ADAPTATION_CONTROL                     :úprava adaptac
 STR_TRACE_RESTRICT_SIGNAL_MODE_CONTROL                          :úprava návěstního režimu
 STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :vstoupit nebo počkat
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :pokusit se o vstup
-STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ON_RES                      :pokusit se o vstup (při rezervaci)
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :uvolnit (čelo vlaku)
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK                            :uvolnit (konec vlaku)
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :koncové PBS: vstoupit nebo počkat
@@ -837,7 +836,6 @@ STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :koncové PBS: p
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :koncové PBS: uvolnit
 STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :vstoupit do slotu {STRING}{BLACK}{STRING} nebo čekat u PBS návěstidla,
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :pokusit se o vstup do slotu {STRING}{BLACK}{STRING} a bez ohledu na výsledek pokračovat,
-STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM_RES_ONLY               :pokusit se o vstup do slotu {STRING}{BLACK}{STRING} (při PBS rezervaci) a bez ohledu na výsledek pokračovat,
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :uvolnit slot {STRING}{BLACK}{STRING} při průjezdu čela vlaku kolem návěstidla,
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :uvolnit slot {STRING}{BLACK}{STRING} při průjezdu konce vlaku kolem návěstidla,
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :PBS rezervace končící zde: vstoupit do slotu {STRING}{BLACK}{STRING} nebo čekat u PBS návěstidla,
