@@ -3197,6 +3197,12 @@ struct VehicleDetailsWindow : Window {
 					std::vector<TraceRestrictSlotID> slots;
 					TraceRestrictGetVehicleSlots(v->index, slots);
 
+					std::sort(slots.begin(), slots.end(), [&](TraceRestrictSlotID a, TraceRestrictSlotID b) -> bool {
+						int r = StrNaturalCompare(TraceRestrictSlot::Get(a)->name, TraceRestrictSlot::Get(b)->name);
+						if (r == 0) return a < b;
+						return r < 0;
+					});
+
 					SetDParam(0, slots.size());
 					std::string buffer = GetString(STR_TRACE_RESTRICT_SLOT_LIST_HEADER);
 
