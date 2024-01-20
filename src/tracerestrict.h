@@ -500,6 +500,13 @@ enum TraceRestrictProgramInputFlags : uint8_t {
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramInputFlags)
 
+struct TraceRestrictSlotTemporaryState {
+	std::vector<TraceRestrictSlotID> veh_temporarily_added;
+	std::vector<TraceRestrictSlotID> veh_temporarily_removed;
+
+	void RevertTemporaryChanges(VehicleID veh);
+};
+
 /**
  * Execution input of a TraceRestrictProgram
  */
@@ -1144,14 +1151,10 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 
 	std::vector<SignalReference> progsig_dependants;
 
-	static std::vector<TraceRestrictSlotID> veh_temporarily_added;
-	static std::vector<TraceRestrictSlotID> veh_temporarily_removed;
-
 	static void RebuildVehicleIndex();
 	static bool ValidateVehicleIndex();
 	static void ValidateSlotOccupants(std::function<void(const char *)> log);
 	static void PreCleanPool();
-	static void RevertTemporaryChanges(VehicleID veh);
 
 	TraceRestrictSlot(CompanyID owner = INVALID_COMPANY, VehicleType type = VEH_TRAIN)
 	{
@@ -1174,9 +1177,9 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 
 	bool Occupy(VehicleID id, bool force = false);
 	bool OccupyDryRun(VehicleID ids);
-	bool OccupyDryRunUsingTemporaryState(VehicleID id);
+	bool OccupyUsingTemporaryState(VehicleID id, TraceRestrictSlotTemporaryState *state);
 	void Vacate(VehicleID id);
-	void VacateUsingTemporaryState(VehicleID id);
+	void VacateUsingTemporaryState(VehicleID id, TraceRestrictSlotTemporaryState *state);
 	void Clear();
 	void UpdateSignals();
 
