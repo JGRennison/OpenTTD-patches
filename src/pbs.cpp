@@ -1540,7 +1540,7 @@ void PBSWaitingPositionRestrictedSignalState::TraceRestrictExecuteResEndSlotIntl
 	if (prog->actions_used_flags & actions_used_flags) {
 		TraceRestrictProgramResult out;
 		TraceRestrictProgramInput input(this->tile, this->trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr);
-		input.permitted_slot_operations = TRPISP_PBS_RES_END_ACQUIRE | TRPISP_PBS_RES_END_RELEASE;
+		input.permitted_slot_operations = TRPISP_PBS_RES_END_ACQUIRE;
 		if (tb_entrance_slots) input.permitted_slot_operations = TRPISP_ACQUIRE;
 		prog->Execute(v, input, out);
 	}

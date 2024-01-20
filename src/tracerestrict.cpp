@@ -774,7 +774,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 								break;
 
 							case TRSCOF_PBS_RES_END_RELEASE:
-								if (input.permitted_slot_operations & TRPISP_PBS_RES_END_RELEASE) {
+								if (input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQUIRE) {
 									slot->Vacate(v->index);
 								} else if ((input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQ_DRY) && (this->actions_used_flags & TRPAUF_PBS_RES_END_SIMULATE)) {
 									slot->VacateUsingTemporaryState(v->index, &pbs_res_end_acq_dry_slot_temporary_state);

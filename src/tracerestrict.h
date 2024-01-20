@@ -486,11 +486,10 @@ enum TraceRestrictProgramInputSlotPermissions : uint8_t {
 	TRPISP_ACQUIRE                = 1 << 0,  ///< Slot acquire is permitted
 	TRPISP_RELEASE_BACK           = 1 << 1,  ///< Slot release (back) is permitted
 	TRPISP_RELEASE_FRONT          = 1 << 2,  ///< Slot release (front) is permitted
-	TRPISP_PBS_RES_END_ACQUIRE    = 1 << 3,  ///< Slot acquire (PBS reservations ending at this signal) is permitted
-	TRPISP_PBS_RES_END_ACQ_DRY    = 1 << 4,  ///< Dry-run slot acquire (PBS reservations ending at this signal) is permitted
-	TRPISP_PBS_RES_END_RELEASE    = 1 << 5,  ///< Slot release (PBS reservations ending at this signal) is permitted
+	TRPISP_PBS_RES_END_ACQUIRE    = 1 << 3,  ///< Slot acquire/release (PBS reservations ending at this signal) is permitted
+	TRPISP_PBS_RES_END_ACQ_DRY    = 1 << 4,  ///< Dry-run slot acquire/release (PBS reservations ending at this signal) is permitted
+	TRPISP_ACQUIRE_TEMP_STATE     = 1 << 5,  ///< Slot acquire/release is permitted, using temporary state, TraceRestrictProgramInput::slot_temporary_state must be set
 	TRPISP_CHANGE_COUNTER         = 1 << 6,  ///< Change counter value is permitted
-	TRPISP_ACQUIRE_TEMP_STATE     = 1 << 7,  ///< Slot acquire is permitted, using temporary state, TraceRestrictProgramInput::slot_temporary_state must be set
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramInputSlotPermissions)
 
