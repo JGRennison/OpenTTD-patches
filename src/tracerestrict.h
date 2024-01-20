@@ -506,7 +506,7 @@ struct TraceRestrictSlotTemporaryState {
 	std::vector<TraceRestrictSlotID> veh_temporarily_removed;
 
 	void RevertTemporaryChanges(VehicleID veh);
-	void ApplyTemporaryChanges(VehicleID veh);
+	void ApplyTemporaryChanges(const Vehicle *v);
 
 	bool IsEmpty() const
 	{
@@ -1185,17 +1185,17 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 		return false;
 	}
 
-	bool Occupy(VehicleID id, bool force = false);
+	bool Occupy(const Vehicle *v, bool force = false);
 	bool OccupyDryRun(VehicleID ids);
 	bool OccupyUsingTemporaryState(VehicleID id, TraceRestrictSlotTemporaryState *state);
-	void Vacate(VehicleID id);
+	void Vacate(const Vehicle *v);
 	void VacateUsingTemporaryState(VehicleID id, TraceRestrictSlotTemporaryState *state);
 	void Clear();
 	void UpdateSignals();
 
 private:
-	void AddIndex(VehicleID id);
-	void DeIndex(VehicleID id);
+	void AddIndex(const Vehicle *v);
+	void DeIndex(VehicleID id, const Vehicle *v);
 };
 
 /**

@@ -3078,9 +3078,9 @@ static std::vector<TraceRestrictSlotID> _pco_deferred_slot_releases;
 static btree::btree_map<TraceRestrictCounterID, int32_t> _pco_deferred_counter_values;
 static btree::btree_map<Order *, int8_t> _pco_deferred_original_percent_cond;
 
-static bool ExecuteVehicleInSlotOrderCondition(VehicleID vehicle, TraceRestrictSlot *slot, ProcessConditionalOrderMode mode, bool acquire)
+static bool ExecuteVehicleInSlotOrderCondition(const Vehicle *v, TraceRestrictSlot *slot, ProcessConditionalOrderMode mode, bool acquire)
 {
-	bool occupant = slot->IsOccupant(vehicle);
+	bool occupant = slot->IsOccupant(v->index);
 	if (mode == PCO_DEFERRED) {
 		if (occupant && find_index(_pco_deferred_slot_releases, slot->index) >= 0) {
 			occupant = false;
@@ -3090,10 +3090,10 @@ static bool ExecuteVehicleInSlotOrderCondition(VehicleID vehicle, TraceRestrictS
 	}
 	if (acquire) {
 		if (!occupant && mode == PCO_EXEC) {
-			occupant = slot->Occupy(vehicle);
+			occupant = slot->Occupy(v);
 		}
 		if (!occupant && mode == PCO_DEFERRED) {
-			occupant = slot->OccupyDryRun(vehicle);
+			occupant = slot->OccupyDryRun(v->index);
 			if (occupant) {
 				include(_pco_deferred_slot_acquires, slot->index);
 				container_unordered_remove(_pco_deferred_slot_releases, slot->index);
@@ -3180,7 +3180,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 					acquire = true;
 					occ = (occ == OCC_EQUALS) ? OCC_IS_TRUE : OCC_IS_FALSE;
 				}
-				bool occupant = ExecuteVehicleInSlotOrderCondition(v->index, slot, mode, acquire);
+				bool occupant = ExecuteVehicleInSlotOrderCondition(v, slot, mode, acquire);
 				skip_order = OrderConditionCompare(occ, occupant, value);
 			}
 			break;
@@ -3272,7 +3272,7 @@ VehicleOrderID AdvanceOrderIndexDeferred(const Vehicle *v, VehicleOrderID index)
 							container_unordered_remove(_pco_deferred_slot_acquires, order->GetDestination());
 							break;
 						case OSST_TRY_ACQUIRE:
-							ExecuteVehicleInSlotOrderCondition(v->index, TraceRestrictSlot::Get(order->GetDestination()), PCO_DEFERRED, true);
+							ExecuteVehicleInSlotOrderCondition(v, TraceRestrictSlot::Get(order->GetDestination()), PCO_DEFERRED, true);
 							break;
 					}
 				}
@@ -3321,10 +3321,10 @@ void FlushAdvanceOrderIndexDeferred(const Vehicle *v, bool apply)
 {
 	if (apply) {
 		for (TraceRestrictSlotID slot : _pco_deferred_slot_acquires) {
-			TraceRestrictSlot::Get(slot)->Occupy(v->index);
+			TraceRestrictSlot::Get(slot)->Occupy(v);
 		}
 		for (TraceRestrictSlotID slot : _pco_deferred_slot_releases) {
-			TraceRestrictSlot::Get(slot)->Vacate(v->index);
+			TraceRestrictSlot::Get(slot)->Vacate(v);
 		}
 		for (auto item : _pco_deferred_counter_values) {
 			TraceRestrictCounter::Get(item.first)->UpdateValue(item.second);
@@ -3453,10 +3453,10 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 				if (slot != nullptr) {
 					switch (order->GetSlotSubType()) {
 						case OSST_RELEASE:
-							slot->Vacate(v->index);
+							slot->Vacate(v);
 							break;
 						case OSST_TRY_ACQUIRE:
-							slot->Occupy(v->index);
+							slot->Occupy(v);
 							break;
 					}
 				}

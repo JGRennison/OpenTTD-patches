@@ -730,7 +730,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 						switch (static_cast<TraceRestrictSlotSubtypeField>(GetTraceRestrictCombinedAuxCondOpField(item))) {
 							case TRSCOF_ACQUIRE_WAIT:
 								if (input.permitted_slot_operations & TRPISP_ACQUIRE) {
-									if (!slot->Occupy(v->index)) out.flags |= TRPRF_WAIT_AT_PBS;
+									if (!slot->Occupy(v)) out.flags |= TRPRF_WAIT_AT_PBS;
 								} else if (input.permitted_slot_operations & TRPISP_ACQUIRE_TEMP_STATE) {
 									if (!slot->OccupyUsingTemporaryState(v->index, input.slot_temporary_state)) out.flags |= TRPRF_WAIT_AT_PBS;
 								}
@@ -738,7 +738,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 
 							case TRSCOF_ACQUIRE_TRY:
 								if (input.permitted_slot_operations & TRPISP_ACQUIRE) {
-									slot->Occupy(v->index);
+									slot->Occupy(v);
 								} else if (input.permitted_slot_operations & TRPISP_ACQUIRE_TEMP_STATE) {
 									slot->OccupyUsingTemporaryState(v->index, input.slot_temporary_state);
 								}
@@ -746,23 +746,23 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 
 							case TRSCOF_RELEASE_ON_RESERVE:
 								if (input.permitted_slot_operations & TRPISP_ACQUIRE) {
-									slot->Vacate(v->index);
+									slot->Vacate(v);
 								} else if (input.permitted_slot_operations & TRPISP_ACQUIRE_TEMP_STATE) {
 									slot->VacateUsingTemporaryState(v->index, input.slot_temporary_state);
 								}
 								break;
 
 							case TRSCOF_RELEASE_BACK:
-								if (input.permitted_slot_operations & TRPISP_RELEASE_BACK) slot->Vacate(v->index);
+								if (input.permitted_slot_operations & TRPISP_RELEASE_BACK) slot->Vacate(v);
 								break;
 
 							case TRSCOF_RELEASE_FRONT:
-								if (input.permitted_slot_operations & TRPISP_RELEASE_FRONT) slot->Vacate(v->index);
+								if (input.permitted_slot_operations & TRPISP_RELEASE_FRONT) slot->Vacate(v);
 								break;
 
 							case TRSCOF_PBS_RES_END_ACQ_WAIT:
 								if (input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQUIRE) {
-									if (!slot->Occupy(v->index)) out.flags |= TRPRF_PBS_RES_END_WAIT;
+									if (!slot->Occupy(v)) out.flags |= TRPRF_PBS_RES_END_WAIT;
 								} else if (input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQ_DRY) {
 									if (this->actions_used_flags & TRPAUF_PBS_RES_END_SIMULATE) {
 										if (!slot->OccupyUsingTemporaryState(v->index, &pbs_res_end_acq_dry_slot_temporary_state)) out.flags |= TRPRF_PBS_RES_END_WAIT;
@@ -774,7 +774,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 
 							case TRSCOF_PBS_RES_END_ACQ_TRY:
 								if (input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQUIRE) {
-									slot->Occupy(v->index);
+									slot->Occupy(v);
 								} else if ((input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQ_DRY) && (this->actions_used_flags & TRPAUF_PBS_RES_END_SIMULATE)) {
 									slot->OccupyUsingTemporaryState(v->index, &pbs_res_end_acq_dry_slot_temporary_state);
 								}
@@ -782,7 +782,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 
 							case TRSCOF_PBS_RES_END_RELEASE:
 								if (input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQUIRE) {
-									slot->Vacate(v->index);
+									slot->Vacate(v);
 								} else if ((input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQ_DRY) && (this->actions_used_flags & TRPAUF_PBS_RES_END_SIMULATE)) {
 									slot->VacateUsingTemporaryState(v->index, &pbs_res_end_acq_dry_slot_temporary_state);
 								}
@@ -2538,17 +2538,17 @@ void TraceRestrictUpdateCompanyID(CompanyID old_company, CompanyID new_company)
 static btree::btree_multimap<VehicleID, TraceRestrictSlotID> slot_vehicle_index;
 
 /**
- * Add vehicle ID to occupants if possible and not already an occupant
- * @param id Vehicle ID
+ * Add vehicle to occupants if possible and not already an occupant
+ * @param v Vehicle
  * @param force Add the vehicle even if the slot is at/over capacity
- * @return whether vehicle ID is now an occupant
+ * @return whether vehicle is now an occupant
  */
-bool TraceRestrictSlot::Occupy(VehicleID id, bool force)
+bool TraceRestrictSlot::Occupy(const Vehicle *v, bool force)
 {
-	if (this->IsOccupant(id)) return true;
+	if (this->IsOccupant(v->index)) return true;
 	if (this->occupants.size() >= this->max_occupancy && !force) return false;
-	this->occupants.push_back(id);
-	this->AddIndex(id);
+	this->occupants.push_back(v->index);
+	this->AddIndex(v);
 	this->UpdateSignals();
 	return true;
 }
@@ -2586,13 +2586,13 @@ bool TraceRestrictSlot::OccupyUsingTemporaryState(VehicleID id, TraceRestrictSlo
 }
 
 /**
- * Remove vehicle ID from occupants
- * @param id Vehicle ID
+ * Remove vehicle from occupants
+ * @param v Vehicle
  */
-void TraceRestrictSlot::Vacate(VehicleID id)
+void TraceRestrictSlot::Vacate(const Vehicle *v)
 {
-	if (container_unordered_remove(this->occupants, id)) {
-		this->DeIndex(id);
+	if (container_unordered_remove(this->occupants, v->index)) {
+		this->DeIndex(v->index, v);
 		this->UpdateSignals();
 	}
 }
@@ -2615,7 +2615,7 @@ void TraceRestrictSlot::VacateUsingTemporaryState(VehicleID id, TraceRestrictSlo
 void TraceRestrictSlot::Clear()
 {
 	for (VehicleID id : this->occupants) {
-		this->DeIndex(id);
+		this->DeIndex(id, nullptr);
 	}
 	this->occupants.clear();
 }
@@ -2627,16 +2627,25 @@ void TraceRestrictSlot::UpdateSignals() {
 	}
 }
 
-void TraceRestrictSlot::AddIndex(VehicleID id)
+/**
+ * Add vehicle to vehicle slot index
+ * @param v Vehicle pointer
+ */
+void TraceRestrictSlot::AddIndex(const Vehicle *v)
 {
-	slot_vehicle_index.insert({ id, this->index });
-	SetBit(Vehicle::Get(id)->vehicle_flags, VF_HAVE_SLOT);
-	SetWindowDirty(WC_VEHICLE_DETAILS, id);
+	slot_vehicle_index.insert({ v->index, this->index });
+	SetBit(const_cast<Vehicle *>(v)->vehicle_flags, VF_HAVE_SLOT);
+	SetWindowDirty(WC_VEHICLE_DETAILS, v->index);
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
 
 }
 
-void TraceRestrictSlot::DeIndex(VehicleID id)
+/**
+ * Remove vehicle from vehicle slot index
+ * @param id Vehicle ID
+ * @param v Vehicle pointer (optional) or nullptr
+ */
+void TraceRestrictSlot::DeIndex(VehicleID id, const Vehicle *v)
 {
 	auto start = slot_vehicle_index.lower_bound(id);
 	for (auto it = start; it != slot_vehicle_index.end() && it->first == id; ++it) {
@@ -2647,7 +2656,8 @@ void TraceRestrictSlot::DeIndex(VehicleID id)
 
 			if (is_first_in_range && (next == slot_vehicle_index.end() || next->first != id)) {
 				/* Only one item, which we've just erased, clear the vehicle flag */
-				ClrBit(Vehicle::Get(id)->vehicle_flags, VF_HAVE_SLOT);
+				if (v == nullptr) v = Vehicle::Get(id);
+				ClrBit(const_cast<Vehicle *>(v)->vehicle_flags, VF_HAVE_SLOT);
 			}
 			break;
 		}
@@ -2722,19 +2732,20 @@ void TraceRestrictSlotTemporaryState::RevertTemporaryChanges(VehicleID veh)
 }
 
 /** Apply any temporary changes */
-void TraceRestrictSlotTemporaryState::ApplyTemporaryChanges(VehicleID veh)
+void TraceRestrictSlotTemporaryState::ApplyTemporaryChanges(const Vehicle *v)
 {
+	VehicleID veh = v->index;
 	for (TraceRestrictSlotID id : this->veh_temporarily_added) {
 		TraceRestrictSlot *slot = TraceRestrictSlot::Get(id);
 		if (slot->IsOccupant(veh)) {
-			slot->AddIndex(veh);
+			slot->AddIndex(v);
 			slot->UpdateSignals();
 		}
 	}
 	for (TraceRestrictSlotID id : this->veh_temporarily_removed) {
 		TraceRestrictSlot *slot = TraceRestrictSlot::Get(id);
 		if (!slot->IsOccupant(veh)) {
-			slot->DeIndex(veh);
+			slot->DeIndex(v->index, v);
 			slot->UpdateSignals();
 		}
 	}
@@ -2982,7 +2993,7 @@ CommandCost CmdAddVehicleTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, 
 	if (v->type != slot->vehicle_type || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		slot->Occupy(v->index, true);
+		slot->Occupy(v, true);
 	}
 
 	return CommandCost();
@@ -3007,7 +3018,7 @@ CommandCost CmdRemoveVehicleTraceRestrictSlot(TileIndex tile, DoCommandFlag flag
 	if (v == nullptr) return CMD_ERROR; // permit removing vehicles of other owners from your own slot
 
 	if (flags & DC_EXEC) {
-		slot->Vacate(v->index);
+		slot->Vacate(v);
 	}
 
 	return CommandCost();

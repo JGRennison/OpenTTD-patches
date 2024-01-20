@@ -266,7 +266,7 @@ public:
 		}
 
 		/* This must be done before calling TraceRestrictExecuteResEndSlot */
-		temporary_slot_state.ApplyTemporaryChanges(Yapf().GetVehicle()->index);
+		temporary_slot_state.ApplyTemporaryChanges(Yapf().GetVehicle());
 
 		restricted_signal_state.TraceRestrictExecuteResEndSlot(Yapf().GetVehicle());
 
