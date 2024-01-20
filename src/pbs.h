@@ -183,6 +183,14 @@ struct PBSWaitingPositionRestrictedSignalState {
 	Trackdir  trackdir = INVALID_TRACKDIR;
 	bool defer_test_if_slot_conditional = false;
 	bool deferred_test = false;
+
+	inline void TraceRestrictExecuteResEndSlot(const Train *v)
+	{
+		if (this->prog != nullptr) this->TraceRestrictExecuteResEndSlotIntl(v);
+	}
+
+private:
+	void TraceRestrictExecuteResEndSlotIntl(const Train *v);
 };
 
 bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bool forbid_90deg = false, PBSWaitingPositionRestrictedSignalState *restricted_signal_state = nullptr);

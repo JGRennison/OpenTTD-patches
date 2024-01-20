@@ -265,19 +265,10 @@ public:
 			}
 		}
 
+		/* This must be done before calling TraceRestrictExecuteResEndSlot */
 		temporary_slot_state.ApplyTemporaryChanges(Yapf().GetVehicle()->index);
 
-		if (restricted_signal_state.prog != nullptr) {
-			const TraceRestrictProgram *prog = restricted_signal_state.prog;
-			if (prog != nullptr && prog->actions_used_flags & TRPAUF_PBS_RES_END_SLOT) {
-				extern TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const void *, TraceRestrictPBSEntrySignalAuxField mode);
-
-				TraceRestrictProgramResult out;
-				TraceRestrictProgramInput input(restricted_signal_state.tile, restricted_signal_state.trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr);
-				input.permitted_slot_operations = TRPISP_PBS_RES_END_ACQUIRE | TRPISP_PBS_RES_END_RELEASE;
-				prog->Execute(Yapf().GetVehicle(), input, out);
-			}
-		}
+		restricted_signal_state.TraceRestrictExecuteResEndSlot(Yapf().GetVehicle());
 
 		if (target != nullptr) target->okay = true;
 

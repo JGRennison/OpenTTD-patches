@@ -1531,6 +1531,21 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
 	return false;
 }
 
+void PBSWaitingPositionRestrictedSignalState::TraceRestrictExecuteResEndSlotIntl(const Train *v)
+{
+	TraceRestrictProgramActionsUsedFlags actions_used_flags = TRPAUF_PBS_RES_END_SLOT;
+	const bool tb_entrance_slots = _settings_game.vehicle.train_braking_model == TBM_REALISTIC && IsTunnelBridgeSignalSimulationEntranceTile(this->tile);
+	if (tb_entrance_slots) actions_used_flags |= TRPAUF_SLOT_ACQUIRE;
+
+	if (prog->actions_used_flags & actions_used_flags) {
+		TraceRestrictProgramResult out;
+		TraceRestrictProgramInput input(this->tile, this->trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr);
+		input.permitted_slot_operations = TRPISP_PBS_RES_END_ACQUIRE | TRPISP_PBS_RES_END_RELEASE;
+		if (tb_entrance_slots) input.permitted_slot_operations = TRPISP_ACQUIRE;
+		prog->Execute(v, input, out);
+	}
+}
+
 bool IsWaitingPositionFreeTraceRestrictExecute(const TraceRestrictProgram *prog, const Train *v, TileIndex tile, Trackdir trackdir)
 {
 	if (prog != nullptr && prog->actions_used_flags & TRPAUF_PBS_RES_END_WAIT) {
