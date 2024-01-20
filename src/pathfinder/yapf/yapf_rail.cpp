@@ -186,11 +186,38 @@ public:
 		}
 
 		/* Don't bother if the target is reserved. */
-		PBSWaitingPositionRestrictedSignalInfo restricted_signal_info;
-		if (!IsWaitingPositionFree(Yapf().GetVehicle(), m_res_dest, m_res_dest_td, false, &restricted_signal_info)) return false;
+		PBSWaitingPositionRestrictedSignalState restricted_signal_state;
+		restricted_signal_state.defer_test_if_slot_conditional = true;
+		if (!IsWaitingPositionFree(Yapf().GetVehicle(), m_res_dest, m_res_dest_td, false, &restricted_signal_state)) return false;
+
+		static TraceRestrictSlotTemporaryState temporary_slot_state;
+		assert(temporary_slot_state.IsEmpty());
+
+		struct IntermediaryTraceRestrictSignalInfo {
+			const TraceRestrictProgram *prog;
+			TileIndex tile;
+			Trackdir  trackdir;
+		};
+		/* Nodes are iterated in reverse order (from the target), but tiles within the node are iterated in forward order (towards the target).
+		 * intermediary_restricted_signals is in reverse order, (the first signal to evaluate at the end).
+		 */
+		static std::vector<IntermediaryTraceRestrictSignalInfo> intermediary_restricted_signals;
+		intermediary_restricted_signals.clear();
 
 		for (Node *node = m_res_node; node->m_parent != nullptr; node = node->m_parent) {
-			node->IterateTiles(Yapf().GetVehicle(), Yapf(), *this, &CYapfReserveTrack<Types>::ReserveSingleTrack);
+			const size_t intermediary_restricted_signals_current_size = intermediary_restricted_signals.size();
+			node->template IterateTiles<CYapfReserveTrack>(Yapf().GetVehicle(), Yapf(), [&](TileIndex tile, Trackdir td) -> bool {
+				/* Cheapest tests first */
+				if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile) && IsRestrictedSignal(tile) && HasSignalOnTrack(tile, TrackdirToTrack(td))) {
+					const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(td));
+					if (prog != nullptr && prog->actions_used_flags & (TRPAUF_WAIT_AT_PBS | TRPAUF_SLOT_ACQUIRE)) {
+						/* Insert at intermediary_restricted_signals_current_size, such that if there are multiple signals for this node, they end up in reverse order */
+						intermediary_restricted_signals.insert(intermediary_restricted_signals.begin() + intermediary_restricted_signals_current_size, { prog, tile, td });
+					}
+				}
+
+				return this->ReserveSingleTrack(tile, td);
+			});
 			if (m_res_fail_tile != INVALID_TILE) {
 				/* Reservation failed, undo. */
 				Node *fail_node = m_res_node;
@@ -201,17 +228,52 @@ public:
 					fail_node->IterateTiles(Yapf().GetVehicle(), Yapf(), *this, &CYapfReserveTrack<Types>::UnreserveSingleTrack);
 				} while (fail_node != node && (fail_node = fail_node->m_parent) != nullptr);
 
+				temporary_slot_state.RevertTemporaryChanges(Yapf().GetVehicle()->index);
 				return false;
 			}
 		}
 
-		if (restricted_signal_info.tile != INVALID_TILE) {
-			const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(restricted_signal_info.tile, TrackdirToTrack(restricted_signal_info.trackdir));
-			if (prog && prog->actions_used_flags & TRPAUF_PBS_RES_END_SLOT) {
+		auto undo_reservation = [&]() {
+			for (Node *node = m_res_node; node->m_parent != nullptr; node = node->m_parent) {
+				node->IterateTiles(Yapf().GetVehicle(), Yapf(), *this, &CYapfReserveTrack<Types>::UnreserveSingleTrack);
+			}
+			temporary_slot_state.RevertTemporaryChanges(Yapf().GetVehicle()->index);
+		};
+
+		/* Iterate in reverse order */
+		for (auto iter = intermediary_restricted_signals.rbegin(); iter != intermediary_restricted_signals.rend(); ++iter) {
+			extern TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const void *, TraceRestrictPBSEntrySignalAuxField mode);
+
+			TraceRestrictProgramInput input(iter->tile, iter->trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr);
+			input.permitted_slot_operations = TRPISP_ACQUIRE_TEMP_STATE;
+			input.slot_temporary_state = &temporary_slot_state;
+			TraceRestrictProgramResult out;
+			iter->prog->Execute(Yapf().GetVehicle(), input, out);
+			if (out.flags & TRPRF_WAIT_AT_PBS) {
+				/* Wait at PBS is set, take this as waiting at the start signal */
+				undo_reservation();
+				return false;
+			}
+		}
+
+		if (restricted_signal_state.deferred_test) {
+			/* The IsWaitingPositionFree restricted signal test was deferred due to possible slot changes during reservation, test it now */
+			if (!IsWaitingPositionFreeTraceRestrictExecute(restricted_signal_state.prog, Yapf().GetVehicle(), restricted_signal_state.tile, restricted_signal_state.trackdir)) {
+				/* Target is reserved, undo reservation */
+				undo_reservation();
+				return false;
+			}
+		}
+
+		temporary_slot_state.ApplyTemporaryChanges(Yapf().GetVehicle()->index);
+
+		if (restricted_signal_state.prog != nullptr) {
+			const TraceRestrictProgram *prog = restricted_signal_state.prog;
+			if (prog != nullptr && prog->actions_used_flags & TRPAUF_PBS_RES_END_SLOT) {
 				extern TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const void *, TraceRestrictPBSEntrySignalAuxField mode);
 
 				TraceRestrictProgramResult out;
-				TraceRestrictProgramInput input(restricted_signal_info.tile, restricted_signal_info.trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr);
+				TraceRestrictProgramInput input(restricted_signal_state.tile, restricted_signal_state.trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr);
 				input.permitted_slot_operations = TRPISP_PBS_RES_END_ACQUIRE | TRPISP_PBS_RES_END_RELEASE;
 				prog->Execute(Yapf().GetVehicle(), input, out);
 			}

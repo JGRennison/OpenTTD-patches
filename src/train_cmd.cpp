@@ -3844,6 +3844,7 @@ static PBSTileInfo ExtendTrainReservation(const Train *v, const PBSTileInfo &ori
 		/* Station, depot or waypoint are a possible target. */
 		bool target_seen = ft.m_is_station || (IsTileType(ft.m_new_tile, MP_RAILWAY) && !IsPlainRail(ft.m_new_tile));
 		if (target_seen || KillFirstBit(ft.m_new_td_bits) != TRACKDIR_BIT_NONE) {
+			target_seen_path:
 			/* Choice found or possible target encountered.
 			 * On finding a possible target, we need to stop and let the pathfinder handle the
 			 * remaining path. This is because we don't know if this target is in one of our
@@ -3866,20 +3867,30 @@ static PBSTileInfo ExtendTrainReservation(const Train *v, const PBSTileInfo &ori
 		cur_td = FindFirstTrackdir(ft.m_new_td_bits);
 
 		if (IsSafeWaitingPosition(v, tile, cur_td, true, _settings_game.pf.forbid_90_deg)) {
-			PBSWaitingPositionRestrictedSignalInfo restricted_signal_info;
-			bool wp_free = IsWaitingPositionFree(v, tile, cur_td, _settings_game.pf.forbid_90_deg, &restricted_signal_info);
+			PBSWaitingPositionRestrictedSignalState restricted_signal_state;
+			bool wp_free = IsWaitingPositionFree(v, tile, cur_td, _settings_game.pf.forbid_90_deg, &restricted_signal_state);
 			if (!(wp_free && TryReserveRailTrackdir(v, tile, cur_td))) break;
 			/* Safe position is all good, path valid and okay. */
-			if (restricted_signal_info.tile != INVALID_TILE) {
-				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(restricted_signal_info.tile, TrackdirToTrack(restricted_signal_info.trackdir));
-				if (prog && prog->actions_used_flags & TRPAUF_PBS_RES_END_SLOT) {
+			if (restricted_signal_state.prog != nullptr) {
+				const TraceRestrictProgram *prog = restricted_signal_state.prog;
+				if (prog != nullptr && (prog->actions_used_flags & TRPAUF_PBS_RES_END_SLOT)) {
 					TraceRestrictProgramResult out;
-					TraceRestrictProgramInput input(restricted_signal_info.tile, restricted_signal_info.trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr);
+					TraceRestrictProgramInput input(restricted_signal_state.tile, restricted_signal_state.trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr);
 					input.permitted_slot_operations = TRPISP_PBS_RES_END_ACQUIRE | TRPISP_PBS_RES_END_RELEASE;
 					prog->Execute(v, input, out);
 				}
 			}
 			return PBSTileInfo(tile, cur_td, true);
+		}
+
+		if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile) && IsRestrictedSignal(tile) && HasSignalOnTrack(tile, TrackdirToTrack(cur_td))) {
+			const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(cur_td));
+			if (prog != nullptr && prog->actions_used_flags & (TRPAUF_WAIT_AT_PBS | TRPAUF_SLOT_ACQUIRE)) {
+				/* The pathfinder must deal with this, because temporary slot states can't be nested.
+				 * See target_seen path above.
+				 */
+				goto target_seen_path;
+			}
 		}
 
 		if (!TryReserveRailTrackdir(v, tile, cur_td)) break;

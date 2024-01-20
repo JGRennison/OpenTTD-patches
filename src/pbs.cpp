@@ -1531,6 +1531,20 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
 	return false;
 }
 
+bool IsWaitingPositionFreeTraceRestrictExecute(const TraceRestrictProgram *prog, const Train *v, TileIndex tile, Trackdir trackdir)
+{
+	if (prog != nullptr && prog->actions_used_flags & TRPAUF_PBS_RES_END_WAIT) {
+		TraceRestrictProgramInput input(tile, trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr);
+		input.permitted_slot_operations = TRPISP_PBS_RES_END_ACQ_DRY;
+		TraceRestrictProgramResult out;
+		prog->Execute(v, input, out);
+		if (out.flags & TRPRF_PBS_RES_END_WAIT) {
+			return false;
+		}
+	}
+	return true;
+}
+
 /**
  * Check if a safe position is free.
  *
@@ -1538,9 +1552,10 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
  * @param tile The tile
  * @param trackdir The trackdir to test
  * @param forbid_90deg Don't allow trains to make 90 degree turns
+ * @param restricted_signal_state Restricted signal state in/out
  * @return True if the position is free
  */
-bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bool forbid_90deg, PBSWaitingPositionRestrictedSignalInfo *restricted_signal_info)
+bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bool forbid_90deg, PBSWaitingPositionRestrictedSignalState *restricted_signal_state)
 {
 	Track     track = TrackdirToTrack(trackdir);
 	TrackBits reserved = GetReservedTrackbits(tile);
@@ -1551,22 +1566,19 @@ bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bo
 	/* Not reserved and depot or not a pbs signal -> free. */
 	if (IsRailDepotTile(tile)) return true;
 
-	auto pbs_res_end_wait_test = [v, restricted_signal_info](TileIndex t, Trackdir td, bool tunnel_bridge) -> bool {
+	auto pbs_res_end_wait_test = [v, restricted_signal_state](TileIndex t, Trackdir td, bool tunnel_bridge) -> bool {
 		if (tunnel_bridge ? IsTunnelBridgeRestrictedSignal(t) : IsRestrictedSignal(t)) {
 			const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(t, TrackdirToTrack(td));
-			if (restricted_signal_info && prog) {
-				restricted_signal_info->tile = t;
-				restricted_signal_info->trackdir = td;
-			}
-			if (prog && prog->actions_used_flags & TRPAUF_PBS_RES_END_WAIT) {
-				TraceRestrictProgramInput input(t, td, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr);
-				input.permitted_slot_operations = TRPISP_PBS_RES_END_ACQ_DRY;
-				TraceRestrictProgramResult out;
-				prog->Execute(v, input, out);
-				if (out.flags & TRPRF_PBS_RES_END_WAIT) {
-					return false;
+			if (restricted_signal_state != nullptr && prog != nullptr) {
+				restricted_signal_state->prog = prog;
+				restricted_signal_state->tile = t;
+				restricted_signal_state->trackdir = td;
+				if (restricted_signal_state->defer_test_if_slot_conditional && (prog->actions_used_flags & TRPAUF_SLOT_CONDITIONALS) && (prog->actions_used_flags & TRPAUF_PBS_RES_END_WAIT)) {
+					restricted_signal_state->deferred_test = true;
+					return true;
 				}
 			}
+			return IsWaitingPositionFreeTraceRestrictExecute(prog, v, t, td);
 		}
 		return true;
 	};

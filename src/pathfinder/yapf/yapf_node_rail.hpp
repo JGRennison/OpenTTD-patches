@@ -194,15 +194,15 @@ struct CYapfRailNodeT
 		m_segment->m_last_td = td;
 	}
 
-	template <class Tbase, class Tfunc, class Tpf>
-	bool IterateTiles(const Train *v, Tpf &yapf, Tbase &obj, bool (Tfunc::*func)(TileIndex, Trackdir)) const
+	template <class Tbase, class Tpf, class Tfunc>
+	bool IterateTiles(const Train *v, Tpf &yapf, Tfunc func) const
 	{
 		typename Tbase::TrackFollower ft(v, yapf.GetCompatibleRailTypes());
 		TileIndex cur = base::GetTile();
 		Trackdir  cur_td = base::GetTrackdir();
 
 		while (cur != GetLastTile() || cur_td != GetLastTrackdir()) {
-			if (!((obj.*func)(cur, cur_td))) return false;
+			if (!(func(cur, cur_td))) return false;
 
 			if (!ft.Follow(cur, cur_td)) break;
 			cur = ft.m_new_tile;
@@ -210,7 +210,15 @@ struct CYapfRailNodeT
 			cur_td = FindFirstTrackdir(ft.m_new_td_bits);
 		}
 
-		return (obj.*func)(cur, cur_td);
+		return func(cur, cur_td);
+	}
+
+	template <class Tbase, class Tpf, class Tfunc>
+	bool IterateTiles(const Train *v, Tpf &yapf, Tbase &obj, bool (Tfunc::*func)(TileIndex, Trackdir)) const
+	{
+		return this->template IterateTiles<Tbase>(v, yapf, [&](TileIndex tile, Trackdir td) -> bool {
+			return (obj.*func)(tile, td);
+		});
 	}
 
 	template <class Tbase, class Tpf>

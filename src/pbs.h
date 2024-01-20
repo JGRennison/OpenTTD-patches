@@ -45,11 +45,6 @@ struct PBSTileInfo {
 	PBSTileInfo(TileIndex _t, Trackdir _td, bool _okay) : tile(_t), trackdir(_td), okay(_okay) {}
 };
 
-struct PBSWaitingPositionRestrictedSignalInfo {
-	TileIndex tile = INVALID_TILE;
-	Trackdir  trackdir = INVALID_TRACKDIR;
-};
-
 enum TrainReservationLookAheadItemType : byte {
 	TRLIT_STATION                = 0,     ///< Station/waypoint
 	TRLIT_REVERSE                = 1,     ///< Reverse behind signal
@@ -179,7 +174,19 @@ void SetTrainReservationLookaheadEnd(Train *v);
 void FillTrainReservationLookAhead(Train *v);
 bool TrainReservationPassesThroughTile(const Train *v, TileIndex search_tile);
 bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bool include_line_end, bool forbid_90deg = false);
-bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bool forbid_90deg = false, PBSWaitingPositionRestrictedSignalInfo *restricted_signal_info = nullptr);
+
+struct TraceRestrictProgram;
+
+struct PBSWaitingPositionRestrictedSignalState {
+	const TraceRestrictProgram *prog = nullptr;
+	TileIndex tile = INVALID_TILE;
+	Trackdir  trackdir = INVALID_TRACKDIR;
+	bool defer_test_if_slot_conditional = false;
+	bool deferred_test = false;
+};
+
+bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bool forbid_90deg = false, PBSWaitingPositionRestrictedSignalState *restricted_signal_state = nullptr);
+bool IsWaitingPositionFreeTraceRestrictExecute(const TraceRestrictProgram *prog, const Train *v, TileIndex tile, Trackdir trackdir);
 
 Train *GetTrainForReservation(TileIndex tile, Track track);
 CommandCost CheckTrainReservationPreventsTrackModification(TileIndex tile, Track track);
