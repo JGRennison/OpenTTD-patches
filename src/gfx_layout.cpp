@@ -248,9 +248,11 @@ Point Layouter::GetCharPosition(std::string_view::const_iterator ch) const
 	}
 
 	/* We couldn't find the code point index. */
-	if (str != ch) {
-		return { 0, 0 };
-	}
+	if (str != ch) return {0, 0};
+
+	/* Initial position, returned if character not found. */
+	static const Point zero = {0, 0};
+	const Point *position = &zero;
 
 	/* Valid character. */
 
@@ -260,16 +262,24 @@ Point Layouter::GetCharPosition(std::string_view::const_iterator ch) const
 		const auto &positions = run.GetPositions();
 		const auto &charmap = run.GetGlyphToCharMap();
 
-		for (int i = 0; i < run.GetGlyphCount(); i++) {
-			/* Matching glyph? Return position. */
-			if ((size_t)charmap[i] == index) {
-				return positions[i];
-			}
+		/* Run starts after our character, use the last found position. */
+		if ((size_t)charmap.front() > index) return *position;
+
+		position = positions.data();
+		for (auto it = charmap.begin(); it != charmap.end(); /* nothing */) {
+			/* Plain honest-to-$deity match. */
+			if ((size_t)*it == index) return *position;
+			++it;
+			if (it == charmap.end()) break;
+
+			/* We just passed our character, it's probably a ligature, use the last found position. */
+			if ((size_t)*it > index) return *position;
+			++position;
 		}
 	}
 
-	/* Code point index not found, just give up */
-	return { 0, 0 };
+	/* At the end of the run but still didn't find our character so probably a trailing ligature, use the last found position. */
+	return *position;
 }
 
 /**
