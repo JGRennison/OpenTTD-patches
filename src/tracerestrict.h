@@ -489,6 +489,7 @@ enum TraceRestrictProgramInputSlotPermissions : uint8_t {
 	TRPISP_PBS_RES_END_ACQ_DRY    = 1 << 4,  ///< Dry-run slot acquire (PBS reservations ending at this signal) is permitted
 	TRPISP_PBS_RES_END_RELEASE    = 1 << 5,  ///< Slot release (PBS reservations ending at this signal) is permitted
 	TRPISP_CHANGE_COUNTER         = 1 << 6,  ///< Change counter value is permitted
+	TRPISP_ACQUIRE_TEMP_STATE     = 1 << 7,  ///< Slot acquire is permitted, using temporary state, TraceRestrictProgramInput::slot_temporary_state must be set
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramInputSlotPermissions)
 
@@ -505,6 +506,12 @@ struct TraceRestrictSlotTemporaryState {
 	std::vector<TraceRestrictSlotID> veh_temporarily_removed;
 
 	void RevertTemporaryChanges(VehicleID veh);
+	void ApplyTemporaryChanges(VehicleID veh);
+
+	bool IsEmpty() const
+	{
+		return this->veh_temporarily_added.empty() && this->veh_temporarily_removed.empty();
+	}
 };
 
 /**
@@ -519,6 +526,7 @@ struct TraceRestrictProgramInput {
 	const void *previous_signal_ptr;              ///< Opaque pointer suitable to be passed to previous_signal_callback
 	TraceRestrictProgramInputSlotPermissions permitted_slot_operations; ///< Permitted slot operations
 	TraceRestrictProgramInputFlags input_flags;   ///< Input flags
+	TraceRestrictSlotTemporaryState *slot_temporary_state = nullptr; ///< Slot temporary state, must be set when permitted_slot_operations includes TRPISP_ACQUIRE_TEMP_STATE
 
 	TraceRestrictProgramInput(TileIndex tile_, Trackdir trackdir_, PreviousSignalProc *previous_signal_callback_, const void *previous_signal_ptr_)
 			: tile(tile_), trackdir(trackdir_), previous_signal_callback(previous_signal_callback_), previous_signal_ptr(previous_signal_ptr_),
@@ -1143,6 +1151,8 @@ static const uint MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS = 128; ///< The maxi
  * Slot type, used for slot operations
  */
 struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_pool> {
+	friend TraceRestrictSlotTemporaryState;
+
 	std::vector<VehicleID> occupants;
 	uint32_t max_occupancy = 1;
 	std::string name;
@@ -1184,6 +1194,7 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 	void UpdateSignals();
 
 private:
+	void AddIndex(VehicleID id);
 	void DeIndex(VehicleID id);
 };
 

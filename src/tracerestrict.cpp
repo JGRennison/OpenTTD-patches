@@ -731,11 +731,18 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 							case TRSCOF_ACQUIRE_WAIT:
 								if (input.permitted_slot_operations & TRPISP_ACQUIRE) {
 									if (!slot->Occupy(v->index)) out.flags |= TRPRF_WAIT_AT_PBS;
+								} else if (input.permitted_slot_operations & TRPISP_ACQUIRE_TEMP_STATE) {
+									if (!slot->OccupyUsingTemporaryState(v->index, input.slot_temporary_state)) out.flags |= TRPRF_WAIT_AT_PBS;
 								}
 								break;
 
 							case TRSCOF_ACQUIRE_TRY:
-								if (input.permitted_slot_operations & TRPISP_ACQUIRE) slot->Occupy(v->index);
+							case TRSCOF_ACQUIRE_TRY_ON_RESERVE:
+								if (input.permitted_slot_operations & TRPISP_ACQUIRE) {
+									slot->Occupy(v->index);
+								} else if (input.permitted_slot_operations & TRPISP_ACQUIRE_TEMP_STATE) {
+									slot->OccupyUsingTemporaryState(v->index, input.slot_temporary_state);
+								}
 								break;
 
 							case TRSCOF_RELEASE_BACK:
@@ -772,10 +779,6 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 								} else if ((input.permitted_slot_operations & TRPISP_PBS_RES_END_ACQ_DRY) && (this->actions_used_flags & TRPAUF_PBS_RES_END_SIMULATE)) {
 									slot->VacateUsingTemporaryState(v->index, &pbs_res_end_acq_dry_slot_temporary_state);
 								}
-								break;
-
-							case TRSCOF_ACQUIRE_TRY_ON_RESERVE:
-								if (input.permitted_slot_operations & TRPISP_ACQUIRE_ON_RES) slot->Occupy(v->index);
 								break;
 
 							default:
@@ -1351,6 +1354,7 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 							break;
 
 						case TRSCOF_ACQUIRE_TRY:
+						case TRSCOF_ACQUIRE_TRY_ON_RESERVE:
 							actions_used_flags |= TRPAUF_SLOT_ACQUIRE;
 							break;
 
@@ -1377,10 +1381,6 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 						case TRSCOF_PBS_RES_END_RELEASE:
 							actions_used_flags |= TRPAUF_PBS_RES_END_SLOT;
 							include(pbs_res_end_released_slots, GetTraceRestrictValue(item));
-							break;
-
-						case TRSCOF_ACQUIRE_TRY_ON_RESERVE:
-							actions_used_flags |= TRPAUF_SLOT_ACQUIRE_ON_RES;
 							break;
 
 						default:
@@ -2537,10 +2537,7 @@ bool TraceRestrictSlot::Occupy(VehicleID id, bool force)
 	if (this->IsOccupant(id)) return true;
 	if (this->occupants.size() >= this->max_occupancy && !force) return false;
 	this->occupants.push_back(id);
-	slot_vehicle_index.insert({ id, this->index });
-	SetBit(Vehicle::Get(id)->vehicle_flags, VF_HAVE_SLOT);
-	SetWindowDirty(WC_VEHICLE_DETAILS, id);
-	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+	this->AddIndex(id);
 	this->UpdateSignals();
 	return true;
 }
@@ -2617,6 +2614,15 @@ void TraceRestrictSlot::UpdateSignals() {
 		AddTrackToSignalBuffer(sr.tile, sr.track, GetTileOwner(sr.tile));
 		UpdateSignalsInBuffer();
 	}
+}
+
+void TraceRestrictSlot::AddIndex(VehicleID id)
+{
+	slot_vehicle_index.insert({ id, this->index });
+	SetBit(Vehicle::Get(id)->vehicle_flags, VF_HAVE_SLOT);
+	SetWindowDirty(WC_VEHICLE_DETAILS, id);
+	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+
 }
 
 void TraceRestrictSlot::DeIndex(VehicleID id)
@@ -2700,6 +2706,28 @@ void TraceRestrictSlotTemporaryState::RevertTemporaryChanges(VehicleID veh)
 		TraceRestrictSlot *slot = TraceRestrictSlot::Get(id);
 		include(slot->occupants, veh);
 	}
+	this->veh_temporarily_added.clear();
+	this->veh_temporarily_removed.clear();
+}
+
+/** Apply any temporary changes */
+void TraceRestrictSlotTemporaryState::ApplyTemporaryChanges(VehicleID veh)
+{
+	for (TraceRestrictSlotID id : this->veh_temporarily_added) {
+		TraceRestrictSlot *slot = TraceRestrictSlot::Get(id);
+		if (slot->IsOccupant(veh)) {
+			slot->AddIndex(veh);
+			slot->UpdateSignals();
+		}
+	}
+	for (TraceRestrictSlotID id : this->veh_temporarily_removed) {
+		TraceRestrictSlot *slot = TraceRestrictSlot::Get(id);
+		if (!slot->IsOccupant(veh)) {
+			slot->DeIndex(veh);
+			slot->UpdateSignals();
+		}
+	}
+
 	this->veh_temporarily_added.clear();
 	this->veh_temporarily_removed.clear();
 }
