@@ -77,8 +77,6 @@ static void CleanupGeneration()
 	_town_noise_no_update = false;
 
 	SetMouseCursorBusy(false);
-	/* Show all vital windows again, because we have hidden them */
-	if (_game_mode != GM_MENU) ShowVitalWindows();
 	SetModalProgress(false);
 	_gw.proc     = nullptr;
 	_gw.abortp   = nullptr;
@@ -196,6 +194,8 @@ static void _GenerateWorld()
 		ResetObjectToPlace();
 		_cur_company.Trash();
 		_current_company = _local_company = _gw.lc;
+		/* Show all vital windows again, because we have hidden them. */
+		if (_game_mode != GM_MENU) ShowVitalWindows();
 
 		SetGeneratingWorldProgress(GWP_GAME_START, 1);
 		/* Call any callback */
