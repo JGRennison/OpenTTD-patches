@@ -3058,7 +3058,6 @@ bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, 
 		}
 		offset = last % sched.GetScheduledDispatchDuration();
 	} else {
-		extern DateTicksScaled GetScheduledDispatchTime(const DispatchSchedule &ds, DateTicksScaled leave_time);
 		DateTicksScaled slot = GetScheduledDispatchTime(sched, _scaled_date_ticks);
 		offset = (slot - sched.GetScheduledDispatchStartTick()).base() % sched.GetScheduledDispatchDuration();
 	}

@@ -725,6 +725,7 @@ private:
 	                                                                    ///  this counts to (DAY_TICK * _settings_game.economy.day_length_factor)
 	int32_t scheduled_dispatch_last_dispatch = 0;                       ///< Last vehicle dispatched offset
 	int32_t scheduled_dispatch_max_delay = 0;                           ///< Maximum allowed delay
+	uint8_t scheduled_dispatch_flags = 0;                               ///< Flags
 
 	std::string name;                                                   ///< Name of dispatch schedule
 
@@ -734,7 +735,15 @@ private:
 		this->scheduled_dispatch_start_tick            = other.scheduled_dispatch_start_tick;
 		this->scheduled_dispatch_last_dispatch         = other.scheduled_dispatch_last_dispatch;
 		this->scheduled_dispatch_max_delay             = other.scheduled_dispatch_max_delay;
+		this->scheduled_dispatch_flags                 = other.scheduled_dispatch_flags;
 	}
+
+	/**
+	 * Flag bit numbers for scheduled_dispatch_flags
+	 */
+	enum ScheduledDispatchFlags {
+		SDF_REUSE_SLOTS                           = 0,  ///< Allow each dispatch slot to be used more than once
+	};
 
 public:
 	/**
@@ -801,6 +810,18 @@ public:
 	 * @param  delay  New maximum allow delay
 	 */
 	inline void SetScheduledDispatchDelay(int32_t delay) { this->scheduled_dispatch_max_delay = delay; }
+
+	/**
+	 * Get whether to re-use dispatch slots
+	 * @return  whether dispatch slots are re-used
+	 */
+	inline bool GetScheduledDispatchReuseSlots() const { return HasBit(this->scheduled_dispatch_flags, SDF_REUSE_SLOTS); }
+
+	/**
+	 * Set whether to re-use dispatch slots
+	 * @param  delay  New maximum allow delay
+	 */
+	inline void SetScheduledDispatchReuseSlots(bool reuse_slots) { SB(this->scheduled_dispatch_flags, SDF_REUSE_SLOTS, 1, reuse_slots ? 1 : 0); }
 
 	/**
 	 * Get the scheduled dispatch maximum alowed delay, in scaled tick

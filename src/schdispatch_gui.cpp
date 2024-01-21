@@ -226,6 +226,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		SCH_MD_REMOVE_SCHEDULE,
 		SCH_MD_DUPLICATE_SCHEDULE,
 		SCH_MD_APPEND_VEHICLE_SCHEDULES,
+		SCH_MD_REUSE_DEPARTURE_SLOTS,
 	};
 
 	bool IsScheduleSelected() const
@@ -276,7 +277,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			}
 
 			case WID_SCHDISPATCH_SUMMARY_PANEL:
-				size->height = 6 * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
+				size->height = 7 * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
 				uint warning_count = this->warning_count;
 				if (this->no_order_warning_pad) {
 					size->height -= GetCharacterHeight(FS_NORMAL);
@@ -395,6 +396,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				add_suffix(STR_SCHDISPATCH_REMOVE_SCHEDULE_TOOLTIP);
 				add_suffix(STR_SCHDISPATCH_DUPLICATE_SCHEDULE_TOOLTIP);
 				add_suffix(STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES_TOOLTIP);
+				add_suffix(STR_SCHDISPATCH_APPEND_REUSE_DEPARTURE_SLOTS_TOOLTIP);
 				GuiShowTooltips(this, SPECSTR_TEMP_START, close_cond);
 				return true;
 			}
@@ -484,6 +486,10 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
 				int y = ir.top;
 
+				auto set_next_departure_update = [&](DateTicksScaled time) {
+					if (time < this->next_departure_update) const_cast<SchdispatchWindow*>(this)->next_departure_update = time;
+				};
+
 				if (!HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) || !this->IsScheduleSelected()) {
 					y += GetCharacterHeight(FS_NORMAL);
 					DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_NOT_ENABLED);
@@ -506,6 +512,22 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						DrawString(left, right, y + (step_height - GetCharacterHeight(FS_NORMAL)) / 2, text);
 						y += step_height;
 						warnings++;
+					};
+
+					auto departure_time_warnings = [&](DateTicksScaled time) {
+						if (_settings_time.time_in_minutes && time > (_scaled_date_ticks + (1350 * (uint)_settings_time.ticks_per_minute))) {
+							/* If the departure slot is more than 23 hours ahead of now, show a warning */
+							const TickMinutes now = _settings_time.NowInTickMinutes();
+							const TickMinutes target = _settings_time.ToTickMinutes(time);
+							const TickMinutes delta = target - now;
+							if (delta >= (23 * 60)) {
+								const uint hours = delta.base() / 60;
+								SetDParam(0, hours);
+								draw_warning(STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_FUTURE);
+
+								set_next_departure_update(_settings_time.FromTickMinutes(target - (hours * 60) + 1));
+							}
+						}
 					};
 
 					bool have_conditional = false;
@@ -565,7 +587,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					StringID str;
 					if (_scaled_date_ticks < last_departure) {
 						str = STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE;
-						const_cast<SchdispatchWindow*>(this)->next_departure_update = last_departure;
+						set_next_departure_update(last_departure);
 					} else {
 						str = STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST;
 					}
@@ -573,21 +595,19 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					DrawString(ir.left, ir.right, y, str);
 					y += GetCharacterHeight(FS_NORMAL);
 
-					if (_settings_time.time_in_minutes && last_departure > (_scaled_date_ticks + (1350 * (uint)_settings_time.ticks_per_minute))) {
-						/* If the departure slot is more than 23 hours ahead of now, show a warning */
-						const TickMinutes now = _settings_time.NowInTickMinutes();
-						const TickMinutes target = _settings_time.ToTickMinutes(last_departure);
-						const TickMinutes delta = target - now;
-						if (delta >= (23 * 60)) {
-							const uint hours = delta.base() / 60;
-							SetDParam(0, hours);
-							draw_warning(STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_FUTURE);
+					departure_time_warnings(last_departure);
 
-							const_cast<SchdispatchWindow*>(this)->next_departure_update = _settings_time.FromTickMinutes(target - (hours * 60) + 1);
-						}
-					}
+					const DateTicksScaled next_departure = GetScheduledDispatchTime(ds, _scaled_date_ticks);
+					set_next_departure_update(next_departure + ds.GetScheduledDispatchDelay());
+					SetDParam(0, next_departure);
+					DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_NEXT_AVAILABLE_DEPARTURE);
+					y += GetCharacterHeight(FS_NORMAL);
 
-					if (!have_conditional) {
+					departure_time_warnings(next_departure);
+
+					if (ds.GetScheduledDispatchReuseSlots()) {
+						DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_REUSE_SLOTS_ENABLED);
+					} else if (!have_conditional) {
 						const int required_vehicle = CalculateMaxRequiredVehicle(v->orders->GetTimetableTotalDuration(), ds.GetScheduledDispatchDuration(), ds.GetScheduledDispatch());
 						if (required_vehicle > 0) {
 							SetDParam(0, required_vehicle);
@@ -742,6 +762,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 			case WID_SCHDISPATCH_MANAGEMENT: {
 				if (!this->IsScheduleSelected()) break;
+				const DispatchSchedule &schedule = this->GetSelectedSchedule();
 				DropDownList list;
 				auto add_item = [&](StringID string, int result) {
 					std::unique_ptr<DropDownListStringItem> item(new DropDownListStringItem(string, result, false));
@@ -753,6 +774,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				add_item(STR_SCHDISPATCH_REMOVE_SCHEDULE, SCH_MD_REMOVE_SCHEDULE);
 				add_item(STR_SCHDISPATCH_DUPLICATE_SCHEDULE, SCH_MD_DUPLICATE_SCHEDULE);
 				add_item(STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES, SCH_MD_APPEND_VEHICLE_SCHEDULES);
+				list.push_back(std::make_unique<DropDownListCheckedItem>(schedule.GetScheduledDispatchReuseSlots(), STR_SCHDISPATCH_APPEND_REUSE_DEPARTURE_SLOTS, SCH_MD_REUSE_DEPARTURE_SLOTS, false));
 				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGEMENT);
 				break;
 			}
@@ -858,6 +880,11 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 							SPR_CURSOR_CLONE_SHIP, SPR_CURSOR_CLONE_AIRPLANE
 						};
 						SetObjectToPlaceWnd(clone_icons[this->vehicle->type], PAL_NONE, HT_VEHICLE, this);
+						break;
+					}
+
+					case SCH_MD_REUSE_DEPARTURE_SLOTS: {
+						DoCommandP(0, this->vehicle->index | (this->schedule_index << 20), this->GetSelectedSchedule().GetScheduledDispatchReuseSlots() ? 0 : 1, CMD_SCHEDULED_DISPATCH_SET_REUSE_SLOTS | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 						break;
 					}
 				}

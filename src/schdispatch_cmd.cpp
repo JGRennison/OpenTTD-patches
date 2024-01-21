@@ -244,6 +244,39 @@ CommandCost CmdScheduledDispatchSetDelay(TileIndex tile, DoCommandFlag flags, ui
 }
 
 /**
+ * Set scheduled dispatch maximum allow delay
+ *
+ * @param tile Not used.
+ * @param flags Operation to perform.
+ * @param p1 Vehicle index
+ * @param p2 Whether to re-use slots
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdScheduledDispatchSetReuseSlots(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+{
+	VehicleID veh = GB(p1, 0, 20);
+	uint schedule_index = GB(p1, 20, 12);
+
+	Vehicle *v = Vehicle::GetIfValid(veh);
+	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
+
+	CommandCost ret = CheckOwnership(v->owner);
+	if (ret.Failed()) return ret;
+
+	if (v->orders == nullptr) return CMD_ERROR;
+
+	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
+
+	if (flags & DC_EXEC) {
+		v->orders->GetDispatchScheduleByIndex(schedule_index).SetScheduledDispatchReuseSlots(p2 != 0);
+		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
+	}
+
+	return CommandCost();
+}
+
+/**
  * Reset scheduled dispatch last dispatch vehicle time
  *
  * This is useful when the current duration is high, and the vehicle get dispatched at time in far future.
