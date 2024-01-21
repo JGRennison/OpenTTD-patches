@@ -525,6 +525,9 @@ bool TarScanner::AddFile(const std::string &filename, size_t basepath_length, co
 
 	_tar_list[this->subdir][filename] = std::string{};
 
+	std::string filename_base = filename;
+	SimplifyFileName(filename_base.data());
+
 	TarLinkList links; ///< Temporary list to collect links
 
 	TarHeader th;
@@ -583,7 +586,7 @@ bool TarScanner::AddFile(const std::string &filename, size_t basepath_length, co
 				SimplifyFileName(name);
 
 				DEBUG(misc, 6, "Found file in tar: %s (" PRINTF_SIZE " bytes, " PRINTF_SIZE " offset)", name, skip, pos);
-				if (_tar_filelist[this->subdir].insert(TarFileList::value_type(name, entry)).second) num++;
+				if (_tar_filelist[this->subdir].insert(TarFileList::value_type(filename_base + PATHSEPCHAR + name, entry)).second) num++;
 
 				break;
 			}
@@ -653,7 +656,7 @@ bool TarScanner::AddFile(const std::string &filename, size_t basepath_length, co
 
 				/* Store links in temporary list */
 				DEBUG(misc, 6, "Found link in tar: %s -> %s", name, dest);
-				links.insert(TarLinkList::value_type(name, dest));
+				links.insert(TarLinkList::value_type(filename_base + PATHSEPCHAR + name, filename_base + PATHSEPCHAR + dest));
 
 				break;
 			}
