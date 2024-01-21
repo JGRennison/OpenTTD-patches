@@ -21,6 +21,8 @@
 struct Point {
 	int x;
 	int y;
+
+	bool operator==(const Point&) const = default;
 };
 
 /** Dimensions (a width and height) of a rectangle in 2D */
