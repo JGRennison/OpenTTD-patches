@@ -252,7 +252,7 @@ static bool EngineIntroDateSorter(const GUIEngineListItem &a, const GUIEngineLis
 static bool EngineVehicleCountSorter(const GUIEngineListItem &a, const GUIEngineListItem &b)
 {
 	const GroupStatistics &stats = GroupStatistics::Get(_local_company, ALL_GROUP, Engine::Get(a.engine_id)->type);
-	const int r = ((int) stats.num_engines[a.engine_id]) - ((int) stats.num_engines[b.engine_id]);
+	const int r = ((int) stats.GetNumEngines(a.engine_id)) - ((int) stats.GetNumEngines(b.engine_id));
 
 	/* Use EngineID to sort instead since we want consistent sorting */
 	if (r == 0) return EngineNumberSorter(a, b);
