@@ -53,6 +53,7 @@ struct SignalReference {
 	TileIndex tile;
 	Track track;
 };
+DECLARE_ENUM_AS_ADDABLE(SignalType)
 
 /**
  * These are states in which a signal can be. Currently these are only two, so

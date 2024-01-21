@@ -897,7 +897,7 @@ private:
 	int current_aux_plane;
 };
 
-static const NWidgetPart _nested_program_widgets[] = {
+static constexpr NWidgetPart _nested_program_widgets[] = {
 	// Title bar
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),

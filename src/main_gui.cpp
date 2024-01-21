@@ -200,7 +200,7 @@ void FixTitleGameZoom(int zoom_adjust)
 	UpdateViewportSizeZoom(vp);
 }
 
-static const struct NWidgetPart _nested_main_window_widgets[] = {
+static constexpr NWidgetPart _nested_main_window_widgets[] = {
 	NWidget(NWID_VIEWPORT, INVALID_COLOUR, WID_M_VIEWPORT), SetResize(1, 1),
 };
 

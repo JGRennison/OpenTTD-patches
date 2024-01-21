@@ -37,6 +37,7 @@ enum VehicleType : byte {
 DECLARE_POSTFIX_INCREMENT(VehicleType)
 /** Helper information for extract tool. */
 template <> struct EnumPropsT<VehicleType> : MakeEnumPropsT<VehicleType, byte, VEH_TRAIN, VEH_END, VEH_INVALID, 3> {};
+DECLARE_ENUM_AS_ADDABLE(VehicleType)
 
 struct Vehicle;
 struct Train;

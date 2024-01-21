@@ -247,7 +247,7 @@ struct ScriptListWindow : public Window {
 };
 
 /** Widgets for the AI list window. */
-static const NWidgetPart _nested_script_list_widgets[] = {
+static constexpr NWidgetPart _nested_script_list_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_MAUVE),
 		NWidget(WWT_CAPTION, COLOUR_MAUVE, WID_SCRL_CAPTION), SetDataTip(STR_AI_LIST_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
@@ -604,7 +604,7 @@ private:
 };
 
 /** Widgets for the Script settings window. */
-static const NWidgetPart _nested_script_settings_widgets[] = {
+static constexpr NWidgetPart _nested_script_settings_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_MAUVE),
 		NWidget(WWT_CAPTION, COLOUR_MAUVE, WID_SCRS_CAPTION), SetDataTip(STR_AI_SETTINGS_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
@@ -1001,7 +1001,7 @@ struct ScriptDebugWindow : public Window {
 			bool dead = valid && Company::Get(i)->ai_instance->IsDead();
 			bool paused = valid && Company::Get(i)->ai_instance->IsPaused();
 
-			NWidgetCore *button = this->GetWidget<NWidgetCore>(i + WID_SCRD_COMPANY_BUTTON_START);
+			NWidgetCore *button = this->GetWidget<NWidgetCore>(WID_SCRD_COMPANY_BUTTON_START + i);
 			button->SetDisabled(!valid);
 			button->SetLowered(this->filter.script_debug_company == i);
 			SetScriptButtonColour(*button, dead, paused);
@@ -1266,7 +1266,7 @@ static Hotkey scriptdebug_hotkeys[] = {
 HotkeyList ScriptDebugWindow::hotkeys("aidebug", scriptdebug_hotkeys, ScriptDebugGlobalHotkeys);
 
 /** Widgets for the Script debug window. */
-static const NWidgetPart _nested_script_debug_widgets[] = {
+static constexpr NWidgetPart _nested_script_debug_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY), SetDataTip(STR_AI_DEBUG, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),

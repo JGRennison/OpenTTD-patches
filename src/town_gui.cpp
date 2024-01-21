@@ -53,7 +53,7 @@ typedef GUIList<const Town*, const bool &> GUITownList;
 
 static void PlaceProc_House(TileIndex tile);
 
-static const NWidgetPart _nested_town_authority_widgets[] = {
+static constexpr NWidgetPart _nested_town_authority_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
 		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_TA_CAPTION), SetDataTip(STR_LOCAL_AUTHORITY_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
@@ -775,7 +775,7 @@ public:
 	}
 };
 
-static const NWidgetPart _nested_town_game_view_widgets[] = {
+static constexpr NWidgetPart _nested_town_game_view_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
 		NWidget(WWT_PUSHIMGBTN, COLOUR_BROWN, WID_TV_CHANGE_NAME), SetMinimalSize(12, 14), SetDataTip(SPR_RENAME, STR_TOWN_VIEW_RENAME_TOOLTIP),
@@ -806,7 +806,7 @@ static WindowDesc _town_game_view_desc(__FILE__, __LINE__,
 	std::begin(_nested_town_game_view_widgets), std::end(_nested_town_game_view_widgets)
 );
 
-static const NWidgetPart _nested_town_editor_view_widgets[] = {
+static constexpr NWidgetPart _nested_town_editor_view_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
 		NWidget(WWT_PUSHIMGBTN, COLOUR_BROWN, WID_TV_CHANGE_NAME), SetMinimalSize(12, 14), SetDataTip(SPR_RENAME, STR_TOWN_VIEW_RENAME_TOOLTIP),
@@ -847,7 +847,7 @@ void ShowTownViewWindow(TownID town)
 	}
 }
 
-static const NWidgetPart _nested_town_directory_widgets[] = {
+static constexpr NWidgetPart _nested_town_directory_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
 		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_TOWN_DIRECTORY_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
@@ -1263,7 +1263,7 @@ void CcFoundRandomTown(const CommandCost &result, TileIndex tile, uint32_t p1, u
 	if (result.Succeeded()) ScrollMainWindowToTile(Town::Get(_new_town_id)->xy);
 }
 
-static const NWidgetPart _nested_found_town_widgets[] = {
+static constexpr NWidgetPart _nested_found_town_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_DARK_GREEN),
 		NWidget(WWT_CAPTION, COLOUR_DARK_GREEN), SetDataTip(STR_FOUND_TOWN_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),

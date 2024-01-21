@@ -26,7 +26,7 @@
 #include "../safeguards.h"
 
 /** Widgets for the configure AI window. */
-static const NWidgetPart _nested_ai_config_widgets[] = {
+static constexpr NWidgetPart _nested_ai_config_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_MAUVE),
 		NWidget(WWT_CAPTION, COLOUR_MAUVE), SetDataTip(STR_AI_CONFIG_CAPTION_AI, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),

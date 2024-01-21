@@ -158,7 +158,7 @@ struct ZoningWindow : public Window {
 	}
 };
 
-static const NWidgetPart _nested_zoning_widgets[] = {
+static constexpr NWidgetPart _nested_zoning_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, ZTW_CAPTION), SetDataTip(STR_ZONING_TOOLBAR, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),

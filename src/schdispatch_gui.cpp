@@ -1014,7 +1014,7 @@ void CcSwapSchDispatchSchedules(const CommandCost &result, TileIndex tile, uint3
 	}
 }
 
-static const NWidgetPart _nested_schdispatch_widgets[] = {
+static constexpr NWidgetPart _nested_schdispatch_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_SCHDISPATCH_RENAME), SetMinimalSize(12, 14), SetDataTip(SPR_RENAME, STR_SCHDISPATCH_RENAME_SCHEDULE_TOOLTIP),
@@ -1234,7 +1234,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 	}
 };
 
-static const NWidgetPart _nested_scheduled_dispatch_add_widgets[] = {
+static constexpr NWidgetPart _nested_scheduled_dispatch_add_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
 		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_TIME_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),

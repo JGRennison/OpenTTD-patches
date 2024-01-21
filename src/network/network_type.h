@@ -10,6 +10,8 @@
 #ifndef NETWORK_TYPE_H
 #define NETWORK_TYPE_H
 
+#include "../core/enum_type.hpp"
+
 /** How many clients can we have */
 static const uint MAX_CLIENTS = 255;
 
@@ -86,12 +88,13 @@ enum NetworkPasswordType {
  * Destination of our chat messages.
  * @warning The values of the enum items are part of the admin network API. Only append at the end.
  */
-enum DestType {
+enum DestType : byte {
 	DESTTYPE_BROADCAST, ///< Send message/notice to all clients (All)
 	DESTTYPE_TEAM,      ///< Send message/notice to everyone playing the same company (Team)
 	DESTTYPE_CLIENT,    ///< Send message/notice to only a certain client (Private)
 	DESTTYPE_BROADCAST_SS, ///< Send message/notice to all clients (All), but tag the broadcast to self as a self-send
 };
+DECLARE_ENUM_AS_ADDABLE(DestType)
 
 /**
  * Actions that can be used for NetworkTextMessage.

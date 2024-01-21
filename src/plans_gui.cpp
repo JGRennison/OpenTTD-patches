@@ -27,7 +27,7 @@
 #include "table/strings.h"
 #include "table/sprites.h"
 
-static const NWidgetPart _nested_plans_widgets[] = {
+static constexpr NWidgetPart _nested_plans_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_PLN_CAPTION), SetDataTip(STR_PLANS_CAPTION, STR_NULL),

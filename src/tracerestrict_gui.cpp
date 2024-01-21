@@ -3528,7 +3528,7 @@ private:
 	}
 };
 
-static const NWidgetPart _nested_program_widgets[] = {
+static constexpr NWidgetPart _nested_program_widgets[] = {
 	// Title bar
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
@@ -3667,7 +3667,7 @@ enum TraceRestrictSlotWindowWidgets {
 };
 
 
-static const NWidgetPart _nested_slot_widgets[] = {
+static constexpr NWidgetPart _nested_slot_widgets[] = {
 	NWidget(NWID_HORIZONTAL), // Window header
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_TRSL_CAPTION), SetDataTip(STR_TRACE_RESTRICT_SLOT_CAPTION, STR_NULL),
@@ -4350,7 +4350,7 @@ enum TraceRestrictCounterWindowWidgets {
 };
 
 
-static const NWidgetPart _nested_counter_widgets[] = {
+static constexpr NWidgetPart _nested_counter_widgets[] = {
 	NWidget(NWID_HORIZONTAL), // Window header
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_TRCL_CAPTION), SetDataTip(STR_TRACE_RESTRICT_COUNTER_CAPTION, STR_NULL),

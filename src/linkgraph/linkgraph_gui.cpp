@@ -736,7 +736,7 @@ std::unique_ptr<NWidgetBase> MakeCargoesLegendLinkGraphGUI()
 }
 
 
-static const NWidgetPart _nested_linkgraph_legend_widgets[] = {
+static constexpr NWidgetPart _nested_linkgraph_legend_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_DARK_GREEN),
 		NWidget(WWT_CAPTION, COLOUR_DARK_GREEN, WID_LGL_CAPTION), SetDataTip(STR_LINKGRAPH_LEGEND_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
@@ -897,9 +897,9 @@ bool LinkGraphLegendWindow::OnTooltip([[maybe_unused]] Point, WidgetID widget, T
 void LinkGraphLegendWindow::UpdateOverlayCompanies()
 {
 	uint32_t mask = 0;
-	for (uint c = 0; c < MAX_COMPANIES; c++) {
-		if (this->IsWidgetDisabled(c + WID_LGL_COMPANY_FIRST)) continue;
-		if (!this->IsWidgetLowered(c + WID_LGL_COMPANY_FIRST)) continue;
+	for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
+		if (this->IsWidgetDisabled(WID_LGL_COMPANY_FIRST + c)) continue;
+		if (!this->IsWidgetLowered(WID_LGL_COMPANY_FIRST + c)) continue;
 		SetBit(mask, c);
 	}
 	this->overlay->SetCompanyMask(mask);
@@ -912,7 +912,7 @@ void LinkGraphLegendWindow::UpdateOverlayCargoes()
 {
 	CargoTypes mask = 0;
 	for (uint c = 0; c < num_cargo; c++) {
-		if (!this->IsWidgetLowered(c + WID_LGL_CARGO_FIRST)) continue;
+		if (!this->IsWidgetLowered(WID_LGL_CARGO_FIRST + c)) continue;
 		SetBit(mask, _sorted_cargo_specs[c]->Index());
 	}
 	this->overlay->SetCargoMask(mask);
@@ -927,8 +927,8 @@ void LinkGraphLegendWindow::OnClick([[maybe_unused]] Point pt, WidgetID widget, 
 			this->UpdateOverlayCompanies();
 		}
 	} else if (widget == WID_LGL_COMPANIES_ALL || widget == WID_LGL_COMPANIES_NONE) {
-		for (uint c = 0; c < MAX_COMPANIES; c++) {
-			if (this->IsWidgetDisabled(c + WID_LGL_COMPANY_FIRST)) continue;
+		for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
+			if (this->IsWidgetDisabled(WID_LGL_COMPANY_FIRST + c)) continue;
 			this->SetWidgetLoweredState(WID_LGL_COMPANY_FIRST + c, widget == WID_LGL_COMPANIES_ALL);
 		}
 		this->UpdateOverlayCompanies();
@@ -959,6 +959,6 @@ void LinkGraphLegendWindow::OnInvalidateData([[maybe_unused]] int data, [[maybe_
 
 	/* Disable the companies who are not active */
 	for (CompanyID i = COMPANY_FIRST; i < MAX_COMPANIES; i++) {
-		this->SetWidgetDisabledState(i + WID_LGL_COMPANY_FIRST, !Company::IsValidID(i));
+		this->SetWidgetDisabledState(WID_LGL_COMPANY_FIRST + i, !Company::IsValidID(i));
 	}
 }

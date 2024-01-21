@@ -65,20 +65,21 @@ struct LegendAndColour {
 	bool col_break;            ///< Perform a column break and go further at the next column.
 };
 
+/** Types of legends in the #WID_SM_LEGEND widget. */
+enum SmallMapType : byte {
+	SMT_CONTOUR,
+	SMT_VEHICLES,
+	SMT_INDUSTRY,
+	SMT_LINKSTATS,
+	SMT_ROUTES,
+	SMT_VEGETATION,
+	SMT_OWNER,
+};
+DECLARE_ENUM_AS_ADDABLE(SmallMapType)
+
 /** Class managing the smallmap window. */
 class SmallMapWindow : public Window {
 protected:
-	/** Types of legends in the #WID_SM_LEGEND widget. */
-	enum SmallMapType {
-		SMT_CONTOUR,
-		SMT_VEHICLES,
-		SMT_INDUSTRY,
-		SMT_LINKSTATS,
-		SMT_ROUTES,
-		SMT_VEGETATION,
-		SMT_OWNER,
-	};
-
 	/** Available kinds of zoomlevel changes. */
 	enum ZoomLevelChange {
 		ZLC_INITIALIZE, ///< Initialize zoom level.

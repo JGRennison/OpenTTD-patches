@@ -582,6 +582,11 @@ enum FlaggedCommands {
 	CMD_ID_MASK               = 0x00FF, ///< mask for the command ID
 };
 
+inline constexpr Commands operator|(const Commands &lhs, const FlaggedCommands &rhs)
+{
+	return static_cast<Commands>(static_cast<uint32_t>(lhs) | static_cast<uint32_t>(rhs));
+}
+
 static_assert(CMD_END <= CMD_ID_MASK + 1);
 
 /**
