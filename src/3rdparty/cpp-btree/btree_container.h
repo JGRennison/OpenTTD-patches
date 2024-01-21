@@ -133,10 +133,6 @@ class btree_container {
     return true;
   }
 
-  bool operator!=(const self_type& other) const {
-    return !operator==(other);
-  }
-
   // Functor retrieval
   key_compare key_comp() const { return tree_.key_comp(); }
 

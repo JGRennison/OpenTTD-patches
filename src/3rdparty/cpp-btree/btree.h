@@ -796,11 +796,8 @@ struct btree_iterator {
   }
   void decrement_slow();
 
-  bool operator==(const const_iterator &x) const {
-    return node == x.node && position == x.position;
-  }
-  bool operator!=(const const_iterator &x) const {
-    return node != x.node || position != x.position;
+  friend bool operator==(const btree_iterator &a, const btree_iterator &b) noexcept {
+    return a.node == b.node && a.position == b.position;
   }
 
   // Accessors for the key/value the iterator is pointing at.

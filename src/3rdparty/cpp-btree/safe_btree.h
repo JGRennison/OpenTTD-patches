@@ -116,11 +116,8 @@ class safe_btree_iterator {
   }
 
   // Equality/inequality operators.
-  bool operator==(const const_iterator &x) const {
-    return iter() == x.iter();
-  }
-  bool operator!=(const const_iterator &x) const {
-    return iter() != x.iter();
+  friend bool operator==(const safe_btree_iterator &a, const safe_btree_iterator &b) noexcept {
+    return a.iter() == b.iter();
   }
 
   // Accessors for the key/value the iterator is pointing at.
