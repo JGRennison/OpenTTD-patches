@@ -199,6 +199,8 @@ void VideoDriver_Dedicated::MainLoop()
 	signal(SIGQUIT, DedicatedSignalHandler);
 #endif
 
+	SetSelfAsGameThread();
+
 	/* Load the dedicated server stuff */
 	_is_network_server = true;
 	_network_dedicated = true;
