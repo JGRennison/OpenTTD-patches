@@ -1044,7 +1044,11 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 	if (v->lateness_counter > (int)timetabled) {
 		Ticks cycle = v->orders->GetTimetableTotalDuration();
 		if (cycle != INVALID_TICKS && v->lateness_counter > cycle) {
-			v->lateness_counter %= cycle;
+			if (cycle == 0) {
+				v->lateness_counter = 0;
+			} else {
+				v->lateness_counter %= cycle;
+			}
 		}
 	}
 
