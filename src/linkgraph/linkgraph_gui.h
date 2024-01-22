@@ -34,6 +34,8 @@ struct LinkProperties {
 	CargoID cargo; ///< Cargo type of the link.
 	uint32_t time; ///< Travel time of the link.
 	bool shared;   ///< If this is a shared link to be drawn dashed.
+
+	bool operator==(const LinkProperties&) const = default;
 };
 
 /**
@@ -46,6 +48,8 @@ public:
 		StationID id;
 		uint quantity;
 		Point pt;
+
+		bool operator==(const StationSupplyInfo&) const = default;
 	};
 
 	struct LinkInfo {
@@ -54,6 +58,8 @@ public:
 		Point from_pt;
 		Point to_pt;
 		LinkProperties prop;
+
+		bool operator==(const LinkInfo&) const = default;
 	};
 
 	typedef std::vector<StationSupplyInfo> StationSupplyList;
@@ -73,6 +79,7 @@ public:
 			window(w), widget_id(wid), cargo_mask(cargo_mask), company_mask(company_mask), scale(scale), dirty(true)
 	{}
 
+	bool RebuildCacheCheckCahnged();
 	void RebuildCache(bool incremental = false);
 	bool CacheStillValid() const;
 	void MarkStationViewportLinksDirty(const Station *st);

@@ -271,8 +271,9 @@ struct MainWindow : Window
 			return;
 		}
 
-		this->viewport->overlay->SetDirty();
-		this->GetWidget<NWidgetBase>(WID_M_VIEWPORT)->SetDirty(this);
+		if (this->viewport->overlay->RebuildCacheCheckCahnged()) {
+			this->GetWidget<NWidgetBase>(WID_M_VIEWPORT)->SetDirty(this);
+		}
 	}
 
 	void OnPaint() override

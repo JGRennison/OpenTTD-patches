@@ -107,6 +107,30 @@ void LinkGraphOverlay::MarkStationViewportLinksDirty(const Station *st)
 }
 
 /**
+ * Rebuild the cache using RebuildCache, and return whether a re-draw is required.
+ */
+bool LinkGraphOverlay::RebuildCacheCheckCahnged()
+{
+	static LinkList prev_cached_links;
+	static StationSupplyList prev_cached_stations;
+
+	uint64_t prev_rebuild_counter = this->rebuild_counter;
+
+	prev_cached_links.swap(this->cached_links);
+	prev_cached_stations.swap(this->cached_stations);
+
+	this->RebuildCache(false);
+
+	if (prev_cached_links == this->cached_links && prev_cached_stations == this->cached_stations) {
+		/* No change */
+		this->rebuild_counter = prev_rebuild_counter;
+		return false;
+	}
+
+	return true;
+}
+
+/**
  * Rebuild the cache and recalculate which links and stations to be shown.
  */
 void LinkGraphOverlay::RebuildCache(bool incremental)
