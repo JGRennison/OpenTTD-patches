@@ -145,14 +145,8 @@ public:
 			return *this;
 		}
 
-		bool operator ==(const ring_buffer_iterator_base &other) const
-		{
-			return (this->ring == other.ring) && (this->pos == other.pos);
-		}
-
-		bool operator !=(const ring_buffer_iterator_base &other) const
-		{
-			return !operator ==(other);
+		friend bool operator==(const ring_buffer_iterator &a, const ring_buffer_iterator &b) noexcept {
+			return (a.ring == b.ring) && (a.pos == b.pos);
 		}
 
 		ring_buffer_iterator operator +(std::ptrdiff_t delta) const
@@ -201,6 +195,23 @@ public:
 	typedef ring_buffer_iterator<const T, false> const_iterator;
 	typedef ring_buffer_iterator<T, true> reverse_iterator;
 	typedef ring_buffer_iterator<const T, true> const_reverse_iterator;
+
+private:
+	static inline bool iter_equal(const ring_buffer_iterator_base &a, const ring_buffer_iterator_base &b) noexcept
+	{
+		return (a.ring == b.ring) && (a.pos == b.pos);
+	}
+
+public:
+	friend bool operator==(const const_iterator &a, const iterator &b) noexcept
+	{
+		return ring_buffer::iter_equal(a, b);
+	}
+
+	friend bool operator==(const const_reverse_iterator &a, const reverse_iterator &b) noexcept
+	{
+		return ring_buffer::iter_equal(a, b);
+	}
 
 	ring_buffer() = default;
 
@@ -300,11 +311,6 @@ public:
 			++other_iter;
 		}
 		return true;
-	}
-
-	bool operator != (const ring_buffer &other) const
-	{
-		return !operator ==(other);
 	}
 
 	size_t size() const
