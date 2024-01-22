@@ -224,7 +224,7 @@ void GRFParameterInfo::SetValue(struct GRFConfig *config, uint32_t value)
 	} else {
 		SB(config->param[this->param_nr], this->first_bit, this->num_bit, value);
 	}
-	config->num_params = std::max<uint>(config->num_params, this->param_nr + 1);
+	config->num_params = (uint8_t)std::max<uint>(config->num_params, this->param_nr + 1);
 	SetWindowDirty(WC_GAME_OPTIONS, WN_GAME_OPTIONS_NEWGRF_STATE);
 }
 
