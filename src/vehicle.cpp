@@ -4624,6 +4624,13 @@ void DumpVehicleStats(char *buffer, const char *last)
 		uint count[2] = { 0, 0 };
 
 		bool IsEmpty() const { return (count[0] | count[1]) == 0; }
+
+		vtypestats &operator+=(const vtypestats &other)
+		{
+			this->count[0] += other.count[0];
+			this->count[1] += other.count[1];
+			return *this;
+		}
 	};
 	struct cstats {
 		vtypestats vstats[VEH_END];
@@ -4642,28 +4649,43 @@ void DumpVehicleStats(char *buffer, const char *last)
 		cstats &cs = cstatmap[tv->owner];
 		cs.template_train.count[tv->Prev() != nullptr ? 1 : 0]++;
 	}
+
+	auto print_stats = [&](const cstats &cs, bool show_non_company) {
+		auto line = [&](const vtypestats &vs, const char *type) {
+			if (vs.count[0] || vs.count[1]) {
+				buffer += seprintf(buffer, last, "  %10s: primary: %5u, secondary: %5u\n", type, vs.count[0], vs.count[1]);
+			}
+		};
+		line(cs.vstats[VEH_TRAIN], "train");
+		line(cs.vstats[VEH_ROAD], "road");
+		line(cs.vstats[VEH_SHIP], "ship");
+		line(cs.vstats[VEH_AIRCRAFT], "aircraft");
+		if (show_non_company) {
+			line(cs.vstats[VEH_EFFECT], "effect");
+			line(cs.vstats[VEH_DISASTER], "disaster");
+		}
+		line(cs.virt_train, "virt train");
+		line(cs.template_train, "tmpl train");
+		buffer += seprintf(buffer, last, "\n");
+	};
+
+	cstats totals{};
 	for (auto &it : cstatmap) {
 		buffer += seprintf(buffer, last, "%u: ", (uint) it.first);
 		SetDParam(0, it.first);
 		buffer = strecpy(buffer, GetString(STR_COMPANY_NAME).c_str(), last, true);
 		buffer += seprintf(buffer, last, "\n");
+		print_stats(it.second, false);
 
-		auto line = [&](vtypestats &vs, const char *type) {
-			if (vs.count[0] || vs.count[1]) {
-				buffer += seprintf(buffer, last, "  %10s: primary: %5u, secondary: %5u\n", type, vs.count[0], vs.count[1]);
-			}
-		};
-		line(it.second.vstats[VEH_TRAIN], "train");
-		line(it.second.vstats[VEH_ROAD], "road");
-		line(it.second.vstats[VEH_SHIP], "ship");
-		line(it.second.vstats[VEH_AIRCRAFT], "aircraft");
-		line(it.second.vstats[VEH_EFFECT], "effect");
-		line(it.second.vstats[VEH_DISASTER], "disaster");
-		line(it.second.virt_train, "virt train");
-		line(it.second.template_train, "tmpl train");
-		buffer += seprintf(buffer, last, "\n");
+		for (VehicleType vt = VEH_BEGIN; vt != VEH_END; vt++) {
+			totals.vstats[vt] += it.second.vstats[vt];
+		}
+		totals.virt_train += it.second.virt_train;
+		totals.template_train += it.second.template_train;
 	}
-	buffer += seprintf(buffer, last, "  %10s: %5u\n", "total", (uint)Vehicle::GetNumItems());
+	buffer += seprintf(buffer, last, "Totals\n");
+	print_stats(totals, true);
+	buffer += seprintf(buffer, last, "Total vehicles: %u\n", (uint)Vehicle::GetNumItems());
 }
 
 void AdjustVehicleScaledTickBase(DateTicksScaledDelta delta)
