@@ -19,9 +19,6 @@
 
 #include "safeguards.h"
 
-static std::vector<struct TextEffect> _text_effects; ///< Text effects are stored there
-static TextEffectID _free_text_effect = 0;
-
 /** Container for all information about a text effect */
 struct TextEffect : public ViewportSign {
 	uint64_t params_1;   ///< DParam parameter
@@ -30,16 +27,21 @@ struct TextEffect : public ViewportSign {
 	uint8_t duration;    ///< How long the text effect should stay, in ticks (applies only when mode == TE_RISING)
 	TextEffectMode mode; ///< Type of text effect
 
-	/** Reset the text effect */
-	void Reset()
-	{
-		this->MarkDirty(ZOOM_LVL_OUT_8X);
-		this->width_normal = 0;
-		this->string_id = INVALID_STRING_ID;
-		this->params_1 = _free_text_effect;
-		_free_text_effect = this - _text_effects.data();
-	}
+	void Reset();
 };
+
+static std::vector<TextEffect> _text_effects; ///< Text effects are stored there
+static TextEffectID _free_text_effect = 0;
+
+/** Reset the text effect */
+void TextEffect::Reset()
+{
+	this->MarkDirty(ZOOM_LVL_OUT_8X);
+	this->width_normal = 0;
+	this->string_id = INVALID_STRING_ID;
+	this->params_1 = _free_text_effect;
+	_free_text_effect = this - _text_effects.data();
+}
 
 /* Text Effects */
 TextEffectID AddTextEffect(StringID msg, int center, int y, uint8_t duration, TextEffectMode mode, uint64_t param1, uint64_t param2)
