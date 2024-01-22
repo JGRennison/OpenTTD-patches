@@ -193,7 +193,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	uint item_count = 0;     ///< Number of scheduled item
 	DateTicksScaled next_departure_update = INT64_MAX; ///< Time after which the last departure value should be re-drawn
 	uint warning_count = 0;
-	bool no_order_warning_pad = false;
+	uint extra_line_count = 0;
 
 	SchdispatchWindow(WindowDesc *desc, WindowNumber window_number) :
 			GeneralVehicleWindow(desc, Vehicle::Get(window_number))
@@ -277,11 +277,8 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			}
 
 			case WID_SCHDISPATCH_SUMMARY_PANEL:
-				size->height = 7 * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
+				size->height = (5 + this->extra_line_count) * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical() + (WidgetDimensions::scaled.vsep_wide * 2);
 				uint warning_count = this->warning_count;
-				if (this->no_order_warning_pad) {
-					size->height -= GetCharacterHeight(FS_NORMAL);
-				}
 				if (warning_count > 0) {
 					const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
 					size->height += warning_count * std::max<int>(warning_dimensions.height, GetCharacterHeight(FS_NORMAL));
@@ -497,6 +494,8 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					const DispatchSchedule &ds = this->GetSelectedSchedule();
 
 					uint warnings = 0;
+					uint extra_lines = 0;
+
 					auto draw_warning = [&](StringID text) {
 						const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
 						int step_height = std::max<int>(warning_dimensions.height, GetCharacterHeight(FS_NORMAL));
@@ -541,10 +540,8 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 							schedule_order_index = n;
 						}
 					}
-					bool no_order_warning_pad = false;
 					if (schedule_order_index < 0) {
 						draw_warning(STR_SCHDISPATCH_NOT_ASSIGNED_TO_ORDER);
-						no_order_warning_pad = true;
 					} else {
 						const Order *order = v->GetOrder(schedule_order_index);
 						SetDParam(0, schedule_order_index + 1);
@@ -581,24 +578,44 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 						DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_ASSIGNED_TO_ORDER);
 						y += GetCharacterHeight(FS_NORMAL);
+						extra_lines++;
 					}
 
-					const DateTicksScaled last_departure = ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchLastDispatch();
-					StringID str;
-					if (last_departure == INVALID_SCHEDULED_DISPATCH_OFFSET) {
-						str = STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE;
-					} else if (_scaled_date_ticks < last_departure) {
-						str = STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE;
-						set_next_departure_update(last_departure);
-					} else {
-						str = STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST;
-					}
-					SetDParam(0, last_departure);
-					DrawString(ir.left, ir.right, y, str);
-					y += GetCharacterHeight(FS_NORMAL);
+					y += WidgetDimensions::scaled.vsep_wide;
 
-					if (last_departure != INVALID_SCHEDULED_DISPATCH_OFFSET) {
+					if (ds.GetScheduledDispatchLastDispatch() != INVALID_SCHEDULED_DISPATCH_OFFSET) {
+						const DateTicksScaled last_departure = ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchLastDispatch();
+						StringID str;
+						if (_scaled_date_ticks < last_departure) {
+							str = STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE;
+							set_next_departure_update(last_departure);
+						} else {
+							str = STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST;
+						}
+						SetDParam(0, last_departure);
+						DrawString(ir.left, ir.right, y, str);
+						y += GetCharacterHeight(FS_NORMAL);
+
 						departure_time_warnings(last_departure);
+
+						if (_settings_time.time_in_minutes && last_departure < (_scaled_date_ticks + (1350 * (uint)_settings_time.ticks_per_minute))) {
+							/* If the departure slot is more than 23 hours behind now, show a warning */
+							const TickMinutes now = _settings_time.NowInTickMinutes();
+							const TickMinutes target = _settings_time.ToTickMinutes(last_departure);
+							const TickMinutes delta = now - target;
+							if (delta >= (23 * 60)) {
+								const uint hours = delta.base() / 60;
+								SetDParam(0, hours);
+								DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_PAST);
+								extra_lines++;
+								y += GetCharacterHeight(FS_NORMAL);
+
+								set_next_departure_update(_settings_time.FromTickMinutes(target + ((hours + 1) * 60) + 1));
+							}
+						}
+					} else {
+						DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE);
+						y += GetCharacterHeight(FS_NORMAL);
 					}
 
 					const DateTicksScaled next_departure = GetScheduledDispatchTime(ds, _scaled_date_ticks);
@@ -609,16 +626,21 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 					departure_time_warnings(next_departure);
 
+					y += WidgetDimensions::scaled.vsep_wide;
+
 					if (ds.GetScheduledDispatchReuseSlots()) {
 						DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_REUSE_SLOTS_ENABLED);
+						extra_lines++;
+						y += GetCharacterHeight(FS_NORMAL);
 					} else if (!have_conditional) {
 						const int required_vehicle = CalculateMaxRequiredVehicle(v->orders->GetTimetableTotalDuration(), ds.GetScheduledDispatchDuration(), ds.GetScheduledDispatch());
 						if (required_vehicle > 0) {
 							SetDParam(0, required_vehicle);
 							DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_L1);
+							extra_lines++;
+							y += GetCharacterHeight(FS_NORMAL);
 						}
 					}
-					y += GetCharacterHeight(FS_NORMAL);
 
 					SetTimetableParams(0, ds.GetScheduledDispatchDuration(), true);
 					DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_L2);
@@ -641,10 +663,10 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						}
 					}
 
-					if (warnings != this->warning_count || no_order_warning_pad != this->no_order_warning_pad) {
+					if (warnings != this->warning_count || extra_lines != this->extra_line_count) {
 						SchdispatchWindow *mutable_this = const_cast<SchdispatchWindow *>(this);
 						mutable_this->warning_count = warnings;
-						mutable_this->no_order_warning_pad = no_order_warning_pad;
+						mutable_this->extra_line_count = extra_lines;
 						mutable_this->ReInit();
 					}
 				}

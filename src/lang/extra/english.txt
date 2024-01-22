@@ -2120,6 +2120,7 @@ STR_SCHDISPATCH_SLOT_OUTSIDE_SCHEDULE                           :{BLACK}One or m
 
 STR_SCHDISPATCH_NOT_ASSIGNED_TO_ORDER                           :{BLACK}This dispatch schedule is not assigned to an order.
 STR_SCHDISPATCH_ASSIGNED_TO_ORDER                               :{BLACK}This dispatch schedule is assigned to order {NUM}: {STRING2}.
+STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_PAST                       :{BLACK}This is more than {NUM} hours in the past.
 STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_FUTURE                     :{BLACK}This is more than {NUM} hours in the future.
 
 STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_START                       :{BLACK}Start:
