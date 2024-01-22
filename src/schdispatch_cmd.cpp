@@ -307,7 +307,7 @@ CommandCost CmdScheduledDispatchResetLastDispatch(TileIndex tile, DoCommandFlag 
 	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		v->orders->GetDispatchScheduleByIndex(schedule_index).SetScheduledDispatchLastDispatch(0);
+		v->orders->GetDispatchScheduleByIndex(schedule_index).SetScheduledDispatchLastDispatch(INVALID_SCHEDULED_DISPATCH_OFFSET);
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 	}
 
@@ -506,7 +506,7 @@ CommandCost CmdScheduledDispatchDuplicateSchedule(TileIndex tile, DoCommandFlag 
 
 	if (flags & DC_EXEC) {
 		DispatchSchedule &ds = v->orders->GetScheduledDispatchScheduleSet().emplace_back(v->orders->GetDispatchScheduleByIndex(schedule_index));
-		ds.SetScheduledDispatchLastDispatch(0);
+		ds.SetScheduledDispatchLastDispatch(INVALID_SCHEDULED_DISPATCH_OFFSET);
 		ds.UpdateScheduledDispatch(nullptr);
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 	}
@@ -545,7 +545,7 @@ CommandCost CmdScheduledDispatchAppendVehicleSchedules(TileIndex tile, DoCommand
 	if (flags & DC_EXEC) {
 		for (uint i = 0; i < v2->orders->GetScheduledDispatchScheduleCount(); i++) {
 			DispatchSchedule &ds = v1->orders->GetScheduledDispatchScheduleSet().emplace_back(v2->orders->GetDispatchScheduleByIndex(i));
-			ds.SetScheduledDispatchLastDispatch(0);
+			ds.SetScheduledDispatchLastDispatch(INVALID_SCHEDULED_DISPATCH_OFFSET);
 			ds.UpdateScheduledDispatch(nullptr);
 		}
 		SetTimetableWindowsDirty(v1, STWDF_SCHEDULED_DISPATCH);
@@ -721,16 +721,20 @@ bool DispatchSchedule::UpdateScheduledDispatchToDate(DateTicksScaled now)
 	/* Most of the time this loop does not run. It makes sure start date in in past */
 	while (this->GetScheduledDispatchStartTick() > now) {
 		OverflowSafeInt32 last_dispatch = this->scheduled_dispatch_last_dispatch;
-		last_dispatch += this->GetScheduledDispatchDuration();
-		this->scheduled_dispatch_last_dispatch = last_dispatch;
+		if (last_dispatch != INVALID_SCHEDULED_DISPATCH_OFFSET) {
+			last_dispatch += this->GetScheduledDispatchDuration();
+			this->scheduled_dispatch_last_dispatch = last_dispatch;
+		}
 		this->SetScheduledDispatchStartTick(this->GetScheduledDispatchStartTick() - this->GetScheduledDispatchDuration());
 		update_windows = true;
 	}
 	/* Most of the time this loop runs once. It makes sure the start date is as close to current time as possible. */
 	while (this->GetScheduledDispatchStartTick() + this->GetScheduledDispatchDuration() <= now) {
 		OverflowSafeInt32 last_dispatch = this->scheduled_dispatch_last_dispatch;
-		last_dispatch -= this->GetScheduledDispatchDuration();
-		this->scheduled_dispatch_last_dispatch = last_dispatch;
+		if (last_dispatch != INVALID_SCHEDULED_DISPATCH_OFFSET) {
+			last_dispatch -= this->GetScheduledDispatchDuration();
+			this->scheduled_dispatch_last_dispatch = last_dispatch;
+		}
 		this->SetScheduledDispatchStartTick(this->GetScheduledDispatchStartTick() + this->GetScheduledDispatchDuration());
 		update_windows = true;
 	}

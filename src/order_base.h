@@ -723,7 +723,7 @@ private:
 	uint32_t scheduled_dispatch_duration = 0;                           ///< Scheduled dispatch duration
 	DateTicksScaled scheduled_dispatch_start_tick = -1;                 ///< Scheduled dispatch start tick
 	                                                                    ///  this counts to (DAY_TICK * _settings_game.economy.day_length_factor)
-	int32_t scheduled_dispatch_last_dispatch = 0;                       ///< Last vehicle dispatched offset
+	int32_t scheduled_dispatch_last_dispatch = INVALID_SCHEDULED_DISPATCH_OFFSET; ///< Last vehicle dispatched offset
 	int32_t scheduled_dispatch_max_delay = 0;                           ///< Maximum allowed delay
 	uint8_t scheduled_dispatch_flags = 0;                               ///< Flags
 

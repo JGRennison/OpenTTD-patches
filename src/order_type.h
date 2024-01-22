@@ -32,6 +32,9 @@ static const OrderID INVALID_ORDER = 0xFFFFFF;
  */
 static const uint IMPLICIT_ORDER_ONLY_CAP = 32;
 
+/** Invalid scheduled dispatch offset from current schedule */
+static const int32_t INVALID_SCHEDULED_DISPATCH_OFFSET = INT32_MIN;
+
 /** Order types. It needs to be 8bits, because we save and load it as such */
 enum OrderType : byte {
 	OT_BEGIN         = 0,

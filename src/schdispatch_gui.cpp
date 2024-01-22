@@ -585,7 +585,9 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 					const DateTicksScaled last_departure = ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchLastDispatch();
 					StringID str;
-					if (_scaled_date_ticks < last_departure) {
+					if (last_departure == INVALID_SCHEDULED_DISPATCH_OFFSET) {
+						str = STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE;
+					} else if (_scaled_date_ticks < last_departure) {
 						str = STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE;
 						set_next_departure_update(last_departure);
 					} else {
@@ -595,7 +597,9 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					DrawString(ir.left, ir.right, y, str);
 					y += GetCharacterHeight(FS_NORMAL);
 
-					departure_time_warnings(last_departure);
+					if (last_departure != INVALID_SCHEDULED_DISPATCH_OFFSET) {
+						departure_time_warnings(last_departure);
+					}
 
 					const DateTicksScaled next_departure = GetScheduledDispatchTime(ds, _scaled_date_ticks);
 					set_next_departure_update(next_departure + ds.GetScheduledDispatchDelay());

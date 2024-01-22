@@ -789,12 +789,22 @@ void UpdateSeparationOrder(Vehicle *v_start)
 
 DateTicksScaled GetScheduledDispatchTime(const DispatchSchedule &ds, DateTicksScaled leave_time)
 {
-	DateTicksScaled first_slot            = -1;
-	const DateTicksScaled begin_time      = ds.GetScheduledDispatchStartTick() - (ds.GetScheduledDispatchReuseSlots() ? ds.GetScheduledDispatchDuration() : 0);
-	const int32_t last_dispatched_offset  = ds.GetScheduledDispatchReuseSlots() ? -1 : ds.GetScheduledDispatchLastDispatch();
-	const uint32_t dispatch_duration      = ds.GetScheduledDispatchDuration();
-	const int32_t max_delay               = ds.GetScheduledDispatchDelay();
-	const DateTicksScaled minimum         = leave_time - max_delay;
+	const uint32_t dispatch_duration = ds.GetScheduledDispatchDuration();
+	const int32_t max_delay          = ds.GetScheduledDispatchDelay();
+	const DateTicksScaled minimum    = leave_time - max_delay;
+	DateTicksScaled begin_time       = ds.GetScheduledDispatchStartTick();
+	if (ds.GetScheduledDispatchReuseSlots()) {
+		begin_time -= dispatch_duration;
+	}
+
+	int32_t last_dispatched_offset;
+	if (ds.GetScheduledDispatchLastDispatch() == INVALID_SCHEDULED_DISPATCH_OFFSET || ds.GetScheduledDispatchReuseSlots()) {
+		last_dispatched_offset = -1;
+	} else {
+		last_dispatched_offset = ds.GetScheduledDispatchLastDispatch();
+	}
+
+	DateTicksScaled first_slot = -1;
 
 	/* Find next available slots */
 	for (auto current_offset : ds.GetScheduledDispatch()) {

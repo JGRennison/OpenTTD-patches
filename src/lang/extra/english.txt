@@ -2105,6 +2105,7 @@ STR_SCHDISPATCH_RENAME_SCHEDULE_CAPTION                         :{WHITE}Name sch
 STR_ERROR_CAN_T_RENAME_SCHEDULE                                 :{WHITE}Can't name schedule...
 STR_SCHDISPATCH_MOVE_SCHEDULE                                   :{BLACK}Change position of current schedule in schedule list
 
+STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}No previous departures.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Last departure at {DATE_WALLCLOCK_TINY}.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}Last departure has not left yet, it will depart at {DATE_WALLCLOCK_TINY}.
 STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}This schedule requires {COMMA} vehicle{P "" s}.

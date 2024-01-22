@@ -3053,6 +3053,10 @@ bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, 
 	int32_t offset;
 	if (order->GetConditionValue() & 2) {
 		int32_t last = sched.GetScheduledDispatchLastDispatch();
+		if (last == INVALID_SCHEDULED_DISPATCH_OFFSET) {
+			/* No last dispatched */
+			return OrderConditionCompare(order->GetConditionComparator(), 0, 0);
+		}
 		if (last < 0) {
 			last += sched.GetScheduledDispatchDuration() * (1 + (-last / sched.GetScheduledDispatchDuration()));
 		}
@@ -3069,7 +3073,7 @@ bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, 
 		value = (offset == (int)sched.GetScheduledDispatch().front());
 	}
 
-	return OrderConditionCompare(order->GetConditionComparator(), value, 0);
+	return OrderConditionCompare(order->GetConditionComparator(), value ? 1 : 0, 0);
 }
 
 static std::vector<TraceRestrictSlotID> _pco_deferred_slot_acquires;
