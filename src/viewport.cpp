@@ -5037,7 +5037,7 @@ void RebuildViewportKdtree()
 	/* Reset biggest size sign seen */
 	_viewport_sign_maxwidth = 0;
 
-	if (_network_dedicated) {
+	if (IsHeadless()) {
 		_viewport_sign_kdtree_valid = false;
 		_viewport_sign_kdtree.Build<ViewportSignKdtreeItem*>(nullptr, nullptr);
 		return;

@@ -508,6 +508,7 @@ void Station::UpdateCargoHistory()
  */
 void Station::UpdateVirtCoord()
 {
+	if (IsHeadless()) return;
 	Point pt = RemapCoords2(TileX(this->xy) * TILE_SIZE, TileY(this->xy) * TILE_SIZE);
 
 	pt.y -= 32 * ZOOM_LVL_BASE;
@@ -546,6 +547,7 @@ void Station::MoveSign(TileIndex new_xy)
 /** Update the virtual coords needed to draw the station sign for all stations. */
 void UpdateAllStationVirtCoords()
 {
+	if (IsHeadless()) return;
 	for (BaseStation *st : BaseStation::Iterate()) {
 		st->UpdateVirtCoord();
 	}

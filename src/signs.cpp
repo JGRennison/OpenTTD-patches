@@ -15,6 +15,7 @@
 #include "strings_func.h"
 #include "core/pool_func.hpp"
 #include "viewport_kdtree.h"
+#include "network/network.h"
 
 #include "table/strings.h"
 
@@ -45,6 +46,7 @@ Sign::~Sign()
  */
 void Sign::UpdateVirtCoord()
 {
+	if (IsHeadless()) return;
 	Point pt = RemapCoords(this->x, this->y, this->z);
 
 	if (_viewport_sign_kdtree_valid && this->sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeSign(this->index));

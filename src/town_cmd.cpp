@@ -533,6 +533,7 @@ static bool IsCloseToTown(TileIndex tile, uint dist)
 /** Resize the sign (label) of the town after it changes population. */
 void Town::UpdateVirtCoord()
 {
+	if (IsHeadless()) return;
 	this->UpdateLabel();
 	Point pt = RemapCoords2(TileX(this->xy) * TILE_SIZE, TileY(this->xy) * TILE_SIZE);
 
@@ -550,6 +551,7 @@ void Town::UpdateVirtCoord()
 /** Update the virtual coords needed to draw the town sign for all towns. */
 void UpdateAllTownVirtCoords()
 {
+	if (IsHeadless()) return;
 	for (Town *t : Town::Iterate()) {
 		t->UpdateVirtCoord();
 	}
