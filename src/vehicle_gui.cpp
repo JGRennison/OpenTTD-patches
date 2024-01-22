@@ -3523,7 +3523,7 @@ void CcStartStopVehicle(const CommandCost &result, TileIndex tile, uint32_t p1, 
 void StartStopVehicle(const Vehicle *v, bool texteffect)
 {
 	assert(v->IsPrimaryVehicle());
-	DoCommandP(v->tile, v->index, 0, _vehicle_command_translation_table[VCT_CMD_START_STOP][v->type], texteffect ? CcStartStopVehicle : nullptr);
+	DoCommandP(v->tile, v->index, 0, _vehicle_command_translation_table[VCT_CMD_START_STOP][v->type], (texteffect && !IsHeadless()) ? CcStartStopVehicle : nullptr);
 }
 
 /** Strings for aircraft breakdown types */
