@@ -244,8 +244,13 @@ void AsymmetricScalerEq::SetDemands(LinkGraphJob &job, NodeID from_id, NodeID to
  */
 inline void Scaler::SetDemands(LinkGraphJob &job, NodeID from_id, NodeID to_id, uint demand_forw)
 {
+	if (demand_forw == 0) return;
+
 	job[from_id].DeliverSupply(demand_forw);
-	job.demand_map[std::make_pair(from_id, to_id)] += demand_forw;
+
+	uint &demand = job.demand_matrix[(from_id * job.Size()) + to_id];
+	if (demand == 0) job.demand_matrix_count++;
+	demand += demand_forw;
 }
 
 /**
@@ -437,6 +442,8 @@ DemandCalculator::DemandCalculator(LinkGraphJob &job) :
 	}
 	uint first_unseen = 0;
 	std::vector<bool> reachable_nodes(size);
+	job.demand_matrix.reset(new uint[size * size]{});
+	job.demand_matrix_count = 0;
 	do {
 		reachable_nodes.assign(size, false);
 		std::vector<NodeID> queue;
@@ -480,24 +487,23 @@ DemandCalculator::DemandCalculator(LinkGraphJob &job) :
 		}
 	} while (first_unseen < size);
 
-	if (job.demand_map.size() > 0) {
-		job.demand_annotation_store.resize(job.demand_map.size());
-		size_t start_idx = 0;
+	if (job.demand_matrix_count > 0) {
+		job.demand_annotation_store.resize(job.demand_matrix_count);
 		size_t idx = 0;
-		NodeID last_from = job.demand_map.begin()->first.first;
-		auto flush = [&]() {
-			job[last_from].SetDemandAnnotations({ job.demand_annotation_store.data() + start_idx, idx - start_idx });
-		};
-		for (auto &iter : job.demand_map) {
-			if (iter.first.first != last_from) {
-				flush();
-				last_from = iter.first.first;
-				start_idx = idx;
+		const uint *demand = job.demand_matrix.get();
+		for (NodeID from = 0; from != size; from++) {
+			const size_t start_idx = idx;
+			for (NodeID to = 0; to != size; to++) {
+				if (*demand != 0) {
+					job.demand_annotation_store[idx] = { to, *demand, *demand };
+					idx++;
+				}
+				demand++;
 			}
-			job.demand_annotation_store[idx] = { iter.first.second, iter.second, iter.second };
-			idx++;
+			if (idx != start_idx) {
+				job[from].SetDemandAnnotations({ job.demand_annotation_store.data() + start_idx, idx - start_idx });
+			}
 		}
-		flush();
-		job.demand_map.clear();
 	}
+	job.demand_matrix.reset();
 }

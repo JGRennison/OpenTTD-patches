@@ -152,7 +152,8 @@ protected:
 
 public:
 
-	btree::btree_map<std::pair<NodeID, NodeID>, uint> demand_map; ///< Demand map.
+	std::unique_ptr<uint[]> demand_matrix;                        ///< Demand matrix.
+	uint demand_matrix_count;                                     ///< Count of non-zero entries in demand_matrix.
 	std::vector<DemandAnnotation> demand_annotation_store;        ///< Demand annotation store.
 
 	DynUniformArenaAllocator path_allocator; ///< Arena allocator used for paths
