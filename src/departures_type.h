@@ -18,17 +18,17 @@
 #include <vector>
 
 /** Whether or not a vehicle has arrived for a departure. */
-typedef enum {
+enum DepartureStatus : uint8_t {
 	D_TRAVELLING = 0,
 	D_ARRIVED = 1,
 	D_CANCELLED = 2,
-} DepartureStatus;
+};
 
 /** The type of departures. */
-typedef enum {
+enum DepartureType : uint8_t {
 	D_DEPARTURE = 0,
 	D_ARRIVAL = 1,
-} DepartureType;
+};
 
 struct CallAt {
 	StationID station;

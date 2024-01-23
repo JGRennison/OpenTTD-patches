@@ -138,7 +138,7 @@ enum TraceRestrictItemFlagAllocation {
  *
  * This was previously 5 bits (0 - 31), which is why it's in three sections, not two.
  */
-enum TraceRestrictItemType {
+enum TraceRestrictItemType : uint8_t {
 	TRIT_NULL                     = 0,    ///< Null-type, not in programs and not valid for execution, mainly used with TraceRestrictNullTypeSpecialValue for start/end
 	TRIT_PF_DENY                  = 1,    ///< Pathfinder deny/allow
 	TRIT_PF_PENALTY               = 2,    ///< Add to pathfinder penalty
@@ -188,7 +188,7 @@ enum TraceRestrictItemType {
 /**
  * TraceRestrictItem condition flags field, only valid with conditional types (IsTraceRestrictTypeConditional() is true)
  */
-enum TraceRestrictCondFlags {
+enum TraceRestrictCondFlags : uint8_t {
 	TRCF_DEFAULT                  = 0,       ///< indicates end if for type: TRIT_COND_ENDIF, if otherwise
 	TRCF_ELSE                     = 1 << 0,  ///< indicates an else block for type: TRIT_COND_ENDIF, elif otherwise
 	TRCF_OR                       = 1 << 1,  ///< indicates an orif block, not valid with type: TRIT_COND_ENDIF
@@ -199,7 +199,7 @@ DECLARE_ENUM_AS_BIT_SET(TraceRestrictCondFlags)
 /**
  * Enumeration of TraceRestrictItemvalue type field when type is TRIT_NULL
  */
-enum TraceRestrictNullTypeSpecialValue {
+enum TraceRestrictNullTypeSpecialValue : uint8_t {
 	TRNTSV_NULL                   = 0,       ///< null, what you get when you zero-init a TraceRestrictItemvalue
 	TRNTSV_START                  = 1,       ///< start tag, generated within GUI
 	TRNTSV_END                    = 2,       ///< end tag, generated within GUI
@@ -208,7 +208,7 @@ enum TraceRestrictNullTypeSpecialValue {
 /**
  * Enumeration of TraceRestrictItemvalue type field when value type is TRVT_DIRECTION
  */
-enum TraceRestrictDirectionTypeSpecialValue {
+enum TraceRestrictDirectionTypeSpecialValue : uint8_t {
 	TRNTSV_NE                     = 0,       ///< DIAGDIR_NE: entering at NE tile edge
 	TRNTSV_SE                     = 1,       ///< DIAGDIR_SE: entering at SE tile edge
 	TRNTSV_SW                     = 2,       ///< DIAGDIR_SW: entering at SW tile edge
@@ -222,7 +222,7 @@ enum TraceRestrictDirectionTypeSpecialValue {
 /**
  * TraceRestrictItem condition operator field, only valid with conditional types (IsTraceRestrictTypeConditional() is true)
  */
-enum TraceRestrictCondOp {
+enum TraceRestrictCondOp : uint8_t {
 	TRCO_IS                       = 0,       ///< equality test, or can carry test for cargo
 	TRCO_ISNOT                    = 1,       ///< inequality test, or can't carry test for cargo
 	TRCO_LT                       = 2,       ///< less than test
@@ -235,7 +235,7 @@ enum TraceRestrictCondOp {
 /**
  * TraceRestrictItem auxiliary type field, for order type conditionals
  */
-enum TraceRestrictOrderCondAuxField {
+enum TraceRestrictOrderCondAuxField : uint8_t {
 	TROCAF_STATION                = 0,       ///< value field is a station StationID
 	TROCAF_WAYPOINT               = 1,       ///< value field is a waypoint StationID
 	TROCAF_DEPOT                  = 2,       ///< value field is a depot DepotID
@@ -245,7 +245,7 @@ enum TraceRestrictOrderCondAuxField {
 /**
  * TraceRestrictItem auxiliary type field, for physical property type conditionals
  */
-enum TraceRestrictPhysPropCondAuxField {
+enum TraceRestrictPhysPropCondAuxField : uint8_t {
 	TRPPCAF_WEIGHT                = 0,       ///< value field is a weight
 	TRPPCAF_POWER                 = 1,       ///< value field is a power
 	TRPPCAF_MAX_TE                = 2,       ///< value field is a tractive effort
@@ -255,7 +255,7 @@ enum TraceRestrictPhysPropCondAuxField {
 /**
  * TraceRestrictItem auxiliary type field, for physical property ratio type conditionals
  */
-enum TraceRestrictPhysPropRatioCondAuxField {
+enum TraceRestrictPhysPropRatioCondAuxField : uint8_t {
 	TRPPRCAF_POWER_WEIGHT         = 0,       ///< value field is a 100 * power / weight ratio
 	TRPPRCAF_MAX_TE_WEIGHT        = 1,       ///< value field is a 100 * tractive effort / weight ratio
 	/* space up to 3 */
@@ -264,7 +264,7 @@ enum TraceRestrictPhysPropRatioCondAuxField {
 /**
  * TraceRestrictItem auxiliary type field, for category type conditionals
  */
-enum TraceRestrictCatgeoryCondAuxField {
+enum TraceRestrictCatgeoryCondAuxField : uint8_t {
 	TRCCAF_ENGINE_CLASS           = 0,       ///< value field is an EngineClass type
 	/* space up to 3 */
 };
@@ -272,7 +272,7 @@ enum TraceRestrictCatgeoryCondAuxField {
 /**
  * TraceRestrictItem auxiliary type field, for TRIT_PF_PENALTY
  */
-enum TraceRestrictPathfinderPenaltyAuxField {
+enum TraceRestrictPathfinderPenaltyAuxField : uint8_t {
 	TRPPAF_VALUE                  = 0,       ///< value field is a the pathfinder penalty to use
 	TRPPAF_PRESET                 = 1,       ///< value field is a pathfinder penalty prefix index: TraceRestrictPathfinderPenaltyPresetIndex
 	/* space up to 3 */
@@ -281,7 +281,7 @@ enum TraceRestrictPathfinderPenaltyAuxField {
 /**
  * TraceRestrictItem auxiliary type field, for TRIT_COND_TARGET_DIRECTION
  */
-enum TraceRestrictTargetDirectionCondAuxField {
+enum TraceRestrictTargetDirectionCondAuxField : uint8_t {
 	TRTDCAF_CURRENT_ORDER         = 0,       ///< Current order
 	TRTDCAF_NEXT_ORDER            = 1,       ///< Next order
 	/* space up to 3 */
@@ -290,7 +290,7 @@ enum TraceRestrictTargetDirectionCondAuxField {
 /**
  * TraceRestrictItem value field, for TRIT_LONG_RESERVE
  */
-enum TraceRestrictLongReserveValueField {
+enum TraceRestrictLongReserveValueField : uint8_t {
 	TRLRVF_LONG_RESERVE                 = 0,     ///< Long reserve
 	TRLRVF_CANCEL_LONG_RESERVE          = 1,     ///< Cancel long reserve
 	TRLRVF_LONG_RESERVE_UNLESS_STOPPING = 2,     ///< Long reserve (unless passed stop)
@@ -299,7 +299,7 @@ enum TraceRestrictLongReserveValueField {
 /**
  * TraceRestrictItem value field, for TRIT_WAIT_AT_PBS
  */
-enum TraceRestrictWaitAtPbsValueField {
+enum TraceRestrictWaitAtPbsValueField : uint8_t {
 	TRWAPVF_WAIT_AT_PBS                = 0,       ///< Wait at PBS
 	TRWAPVF_CANCEL_WAIT_AT_PBS         = 1,       ///< Cancel wait at PBS
 	TRWAPVF_PBS_RES_END_WAIT           = 2,       ///< PBS reservations ending at this signal wait
@@ -309,7 +309,7 @@ enum TraceRestrictWaitAtPbsValueField {
 /**
  * TraceRestrictItem value field, for TRIT_REVERSE
  */
-enum TraceRestrictReverseValueField {
+enum TraceRestrictReverseValueField : uint8_t {
 	TRRVF_REVERSE                      = 0,       ///< Reverse
 	TRRVF_CANCEL_REVERSE               = 1,       ///< Cancel reverse
 };
@@ -317,7 +317,7 @@ enum TraceRestrictReverseValueField {
 /**
  * TraceRestrictItem value field, for TRIT_NEWS_CONTROL
  */
-enum TraceRestrictNewsControlField {
+enum TraceRestrictNewsControlField : uint8_t {
 	TRNCF_TRAIN_NOT_STUCK              = 0,       ///< Train is not stuck
 	TRNCF_CANCEL_TRAIN_NOT_STUCK       = 1,       ///< Cancel train is not stuck
 };
@@ -325,7 +325,7 @@ enum TraceRestrictNewsControlField {
 /**
  * TraceRestrictItem value field, for TRIT_PF_PENALTY_CONTROL
  */
-enum TraceRestrictPfPenaltyControlField {
+enum TraceRestrictPfPenaltyControlField : uint8_t {
 	TRPPCF_NO_PBS_BACK_PENALTY         = 0,       ///< Do not apply PBS signal back penalty
 	TRPPCF_CANCEL_NO_PBS_BACK_PENALTY  = 1,       ///< Cancel do not apply PBS signal back penalty
 };
@@ -333,7 +333,7 @@ enum TraceRestrictPfPenaltyControlField {
 /**
  * TraceRestrictItem value field, for TRIT_SPEED_ADAPTATION_CONTROL
  */
-enum TraceRestrictSpeedAdaptationControlField {
+enum TraceRestrictSpeedAdaptationControlField : uint8_t {
 	TRSACF_SPEED_ADAPT_EXEMPT          = 0,       ///< Make train exempt from speed adaptation
 	TRSACF_REMOVE_SPEED_ADAPT_EXEMPT   = 1,       ///< Remove train exempt from speed adaptation
 };
@@ -341,7 +341,7 @@ enum TraceRestrictSpeedAdaptationControlField {
 /**
  * TraceRestrictItem value field, for TRIT_SIGNAL_MODE_CONTROL
  */
-enum TraceRestrictSignalModeControlField {
+enum TraceRestrictSignalModeControlField : uint8_t {
 	TRSMCF_NORMAL_ASPECT               = 0,       ///< Combined normal/shunt aspect signals: use normal mode
 	TRSMCF_SHUNT_ASPECT                = 1,       ///< Combined normal/shunt aspect signals: use shunt mode
 };
@@ -349,7 +349,7 @@ enum TraceRestrictSignalModeControlField {
 /**
  * TraceRestrictItem value field, for TRIT_COND_TRAIN_STATUS
  */
-enum TraceRestrictTrainStatusValueField {
+enum TraceRestrictTrainStatusValueField : uint8_t {
 	TRTSVF_EMPTY                       =  0,      ///< Train is empty
 	TRTSVF_FULL                        =  1,      ///< Train is full
 	TRTSVF_BROKEN_DOWN                 =  2,      ///< Train is broken down
@@ -367,7 +367,7 @@ enum TraceRestrictTrainStatusValueField {
 /**
  * TraceRestrictItem value field, for TRIT_COND_TIME_DATE_VALUE
  */
-enum TraceRestrictTimeDateValueField {
+enum TraceRestrictTimeDateValueField : uint8_t {
 	TRTDVF_MINUTE                 =  0,      ///< Minute
 	TRTDVF_HOUR                   =  1,      ///< Hour
 	TRTDVF_HOUR_MINUTE            =  2,      ///< Hour and minute
@@ -379,7 +379,7 @@ enum TraceRestrictTimeDateValueField {
 /**
  * TraceRestrictItem subtype field, using the combined auxiliary and cond op bits, for slot operation type actions
  */
-enum TraceRestrictSlotSubtypeField {
+enum TraceRestrictSlotSubtypeField : uint8_t {
 	TRSCOF_ACQUIRE_WAIT           = 0,       ///< acquire a slot, or wait at the current signal
 	TRSCOF_ACQUIRE_TRY            = 1,       ///< try to acquire a slot, or carry on otherwise
 	TRSCOF_RELEASE_BACK           = 2,       ///< release a slot (back of train)
@@ -394,7 +394,7 @@ enum TraceRestrictSlotSubtypeField {
 /**
  * TraceRestrictItem auxiliary type field, for TRIT_COND_SLOT_OCCUPANCY
  */
-enum TraceRestrictSlotOccupancyCondAuxField {
+enum TraceRestrictSlotOccupancyCondAuxField : uint8_t {
 	TRSOCAF_OCCUPANTS             = 0,       ///< value field is the occupancy count of the slot
 	TRSOCAF_REMAINING             = 1,       ///< value field is the remaining occupancy of the slot
 	/* space up to 3 */
@@ -403,7 +403,7 @@ enum TraceRestrictSlotOccupancyCondAuxField {
 /**
  * TraceRestrictItem repurposed condition operator field, for counter operation type actions
  */
-enum TraceRestrictCounterCondOpField {
+enum TraceRestrictCounterCondOpField : uint8_t {
 	TRCCOF_INCREASE               = 0,       ///< increase counter by value
 	TRCCOF_DECREASE               = 1,       ///< decrease counter by value
 	TRCCOF_SET                    = 2,       ///< set counter to value
@@ -413,7 +413,7 @@ enum TraceRestrictCounterCondOpField {
 /**
  * TraceRestrictItem auxiliary type field, for TRIT_COND_PBS_ENTRY_SIGNAL
  */
-enum TraceRestrictPBSEntrySignalAuxField {
+enum TraceRestrictPBSEntrySignalAuxField : uint8_t {
 	TRPESAF_VEH_POS               = 0,       ///< vehicle position signal
 	TRPESAF_RES_END               = 1,       ///< reservation end signal
 	TRPESAF_RES_END_TILE          = 2,       ///< reservation end tile
@@ -424,7 +424,7 @@ enum TraceRestrictPBSEntrySignalAuxField {
  * TraceRestrictItem pathfinder penalty preset index
  * This may not be shortened, only lengthened, as preset indexes are stored in save games
  */
-enum TraceRestrictPathfinderPenaltyPresetIndex {
+enum TraceRestrictPathfinderPenaltyPresetIndex : uint8_t {
 	TRPPPI_SMALL                  = 0,       ///< small preset value
 	TRPPPI_MEDIUM                 = 1,       ///< medium preset value
 	TRPPPI_LARGE                  = 2,       ///< large preset value
@@ -434,7 +434,7 @@ enum TraceRestrictPathfinderPenaltyPresetIndex {
 /**
  * Enumeration for TraceRestrictProgramResult::flags
  */
-enum TraceRestrictProgramResultFlags {
+enum TraceRestrictProgramResultFlags : uint16_t {
 	TRPRF_DENY                    = 1 << 0,  ///< Pathfinder deny is set
 	TRPRF_RESERVE_THROUGH         = 1 << 1,  ///< Reserve through is set
 	TRPRF_LONG_RESERVE            = 1 << 2,  ///< Long reserve is set
@@ -454,7 +454,7 @@ DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramResultFlags)
 /**
  * Enumeration for TraceRestrictProgram::actions_used_flags
  */
-enum TraceRestrictProgramActionsUsedFlags {
+enum TraceRestrictProgramActionsUsedFlags : uint32_t {
 	TRPAUF_NONE                   = 0,       ///< No flags set
 	TRPAUF_PF                     = 1 << 0,  ///< Pathfinder deny or penalty are present
 	TRPAUF_RESERVE_THROUGH        = 1 << 1,  ///< Reserve through action is present
@@ -738,7 +738,7 @@ inline bool IsTraceRestrictDoubleItem(TraceRestrictItem item)
  * Categorisation of what is allowed in the TraceRestrictItem condition op field
  * see TraceRestrictTypePropertySet
  */
-enum TraceRestrictConditionOpType {
+enum TraceRestrictConditionOpType : uint8_t {
 	TRCOT_NONE                    = 0, ///< takes no condition op
 	TRCOT_BINARY                  = 1, ///< takes "is" and "is not" condition ops
 	TRCOT_ALL                     = 2, ///< takes all condition ops (i.e. all relational ops)
@@ -748,7 +748,7 @@ enum TraceRestrictConditionOpType {
  * Categorisation of what is in the TraceRestrictItem value field
  * see TraceRestrictTypePropertySet
  */
-enum TraceRestrictValueType {
+enum TraceRestrictValueType : uint8_t {
 	TRVT_NONE                     = 0, ///< value field not used (set to 0)
 	TRVT_SPECIAL                  = 1, ///< special handling of value field
 	TRVT_INT                      = 2, ///< takes an unsigned integer value
@@ -1092,7 +1092,7 @@ inline const TraceRestrictProgram *GetExistingTraceRestrictProgram(TileIndex t, 
 /**
  * Enumeration for command action type field, indicates what command to do
  */
-enum TraceRestrictDoCommandType {
+enum TraceRestrictDoCommandType : uint8_t {
 	TRDCT_INSERT_ITEM,                       ///< insert new instruction before offset field as given value
 	TRDCT_MODIFY_ITEM,                       ///< modify instruction at offset field to given value
 	TRDCT_MODIFY_DUAL_ITEM,                  ///< modify second item of dual-part instruction at offset field to given value

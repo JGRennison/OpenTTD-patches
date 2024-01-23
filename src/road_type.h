@@ -24,7 +24,7 @@ static const RoadTypeLabel ROADTYPE_LABEL_TRAM = 'ELRL';
  *
  * @note currently only ROADTYPE_ROAD and ROADTYPE_TRAM are supported.
  */
-enum RoadType {
+enum RoadType : uint8_t {
 	ROADTYPE_BEGIN   = 0,    ///< Used for iterations
 	ROADTYPE_ROAD    = 0,    ///< Basic road type
 	ROADTYPE_TRAM    = 1,    ///< Trams

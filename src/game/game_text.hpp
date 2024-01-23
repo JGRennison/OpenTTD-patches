@@ -11,7 +11,7 @@
 #define GAME_TEXT_HPP
 
 struct StringParam {
-	enum ParamType {
+	enum ParamType : uint8_t {
 		RAW_STRING,
 		STRING,
 		OTHER
