@@ -35,7 +35,11 @@ extern SimpleChecksum64 _state_checksum;
 
 inline void UpdateStateChecksum(uint64_t input)
 {
+#if defined(DEDICATED)
+	_state_checksum.Update(input);
+#else
 	if (_networking) _state_checksum.Update(input);
+#endif
 }
 
 #ifdef RANDOM_DEBUG
