@@ -2065,6 +2065,8 @@ STR_SCHDISPATCH_DURATION_CAPTION_DAY                            :{BLACK}Duration
 STR_SCHDISPATCH_DURATION_CAPTION_TICKS                          :{BLACK}Duration (ticks)
 STR_SCHDISPATCH_START                                           :{BLACK}Start Date
 STR_SCHDISPATCH_SET_START                                       :{BLACK}Set Start Date
+STR_SCHDISPATCH_START_TIME                                      :{BLACK}Start Time
+STR_SCHDISPATCH_SET_START_TIME                                  :{BLACK}Set Start Time
 STR_SCHDISPATCH_START_TOOLTIP                                   :{BLACK}Select a date to start this schedule.
 STR_SCHDISPATCH_START_CAPTION_MINUTE                            :{BLACK}Start time (hhmm)
 STR_SCHDISPATCH_DELAY                                           :{BLACK}Delay

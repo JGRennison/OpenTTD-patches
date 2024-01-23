@@ -338,6 +338,10 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_MANAGEMENT, disabled);
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_ADJUST, disabled || this->GetSelectedSchedule().GetScheduledDispatch().empty());
 
+		NWidgetCore *start_date_widget = this->GetWidget<NWidgetCore>(WID_SCHDISPATCH_SET_START_DATE);
+		start_date_widget->widget_data = _settings_time.time_in_minutes ? STR_SCHDISPATCH_START_TIME : STR_SCHDISPATCH_START;
+		start_date_widget->tool_tip = _settings_time.time_in_minutes ? STR_SCHDISPATCH_SET_START_TIME : STR_SCHDISPATCH_SET_START;
+
 		this->vscroll->SetCount(CeilDiv(this->item_count, this->num_columns));
 
 		this->SetWidgetLoweredState(WID_SCHDISPATCH_ENABLED, HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH));
