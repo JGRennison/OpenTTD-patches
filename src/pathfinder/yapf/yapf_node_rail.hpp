@@ -125,8 +125,6 @@ struct CYapfRailNodeT
 	CYapfRailSegment *m_segment;
 	uint16_t          m_num_signals_passed;
 	uint16_t          m_num_signals_res_through_passed;
-	TileIndex         m_last_non_reserve_through_signal_tile;
-	Trackdir          m_last_non_reserve_through_signal_td;
 	union {
 		uint32_t        m_inherited_flags;
 		struct {
@@ -139,6 +137,8 @@ struct CYapfRailNodeT
 	} flags_u;
 	SignalType        m_last_red_signal_type;
 	SignalType        m_last_signal_type;
+	Trackdir          m_last_non_reserve_through_signal_td;
+	TileIndex         m_last_non_reserve_through_signal_tile;
 
 	inline void Set(CYapfRailNodeT *parent, TileIndex tile, Trackdir td, bool is_choice)
 	{

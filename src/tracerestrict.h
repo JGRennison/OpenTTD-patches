@@ -483,6 +483,7 @@ DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
  * Enumeration for TraceRestrictProgramInput::permitted_slot_operations
  */
 enum TraceRestrictProgramInputSlotPermissions : uint8_t {
+	TRPISP_NONE                   = 0,       ///< No permissions
 	TRPISP_ACQUIRE                = 1 << 0,  ///< Slot acquire and release (on reserve) are permitted
 	TRPISP_RELEASE_BACK           = 1 << 1,  ///< Slot release (back) is permitted
 	TRPISP_RELEASE_FRONT          = 1 << 2,  ///< Slot release (front) is permitted
@@ -497,6 +498,7 @@ DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramInputSlotPermissions)
  * Enumeration for TraceRestrictProgramInput::input_flags
  */
 enum TraceRestrictProgramInputFlags : uint8_t {
+	TRPIF_NONE                    = 0,       ///< No flags set
 	TRPIF_PASSED_STOP             = 1 << 0,  ///< Train has passed stop
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramInputFlags)
@@ -522,16 +524,15 @@ struct TraceRestrictProgramInput {
 
 	TileIndex tile;                               ///< Tile of restrict signal, for direction testing
 	Trackdir trackdir;                            ///< Track direction on tile of restrict signal, for direction testing
+	TraceRestrictProgramInputFlags input_flags;   ///< Input flags
+	TraceRestrictProgramInputSlotPermissions permitted_slot_operations; ///< Permitted slot operations
 	PreviousSignalProc *previous_signal_callback; ///< Callback to retrieve tile and direction of previous signal, may be nullptr
 	const void *previous_signal_ptr;              ///< Opaque pointer suitable to be passed to previous_signal_callback
-	TraceRestrictProgramInputSlotPermissions permitted_slot_operations; ///< Permitted slot operations
-	TraceRestrictProgramInputFlags input_flags;   ///< Input flags
 	TraceRestrictSlotTemporaryState *slot_temporary_state = nullptr; ///< Slot temporary state, must be set when permitted_slot_operations includes TRPISP_ACQUIRE_TEMP_STATE
 
 	TraceRestrictProgramInput(TileIndex tile_, Trackdir trackdir_, PreviousSignalProc *previous_signal_callback_, const void *previous_signal_ptr_)
-			: tile(tile_), trackdir(trackdir_), previous_signal_callback(previous_signal_callback_), previous_signal_ptr(previous_signal_ptr_),
-			permitted_slot_operations(static_cast<TraceRestrictProgramInputSlotPermissions>(0)),
-			input_flags(static_cast<TraceRestrictProgramInputFlags>(0)) { }
+			: tile(tile_), trackdir(trackdir_), input_flags(TRPIF_NONE), permitted_slot_operations(TRPISP_NONE),
+			previous_signal_callback(previous_signal_callback_), previous_signal_ptr(previous_signal_ptr_) { }
 };
 
 /**
@@ -551,8 +552,8 @@ struct TraceRestrictProgramResult {
  * This is refcounted, see info at top of tracerestrict.cpp
  */
 struct TraceRestrictProgram : TraceRestrictProgramPool::PoolItem<&_tracerestrictprogram_pool> {
-	std::vector<TraceRestrictItem> items;
 	uint32_t refcount;
+	std::vector<TraceRestrictItem> items;
 	TraceRestrictProgramActionsUsedFlags actions_used_flags;
 
 private:
@@ -1153,12 +1154,11 @@ static const uint MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS = 128; ///< The maxi
 struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_pool> {
 	friend TraceRestrictSlotTemporaryState;
 
-	std::vector<VehicleID> occupants;
-	uint32_t max_occupancy = 1;
-	std::string name;
 	Owner owner;
 	VehicleType vehicle_type;
-
+	uint32_t max_occupancy = 1;
+	std::string name;
+	std::vector<VehicleID> occupants;
 	std::vector<SignalReference> progsig_dependants;
 
 	static void RebuildVehicleIndex();
@@ -1202,10 +1202,9 @@ private:
  * Counter type
  */
 struct TraceRestrictCounter : TraceRestrictCounterPool::PoolItem<&_tracerestrictcounter_pool> {
+	Owner owner;
 	int32_t value = 0;
 	std::string name;
-	Owner owner;
-
 	std::vector<SignalReference> progsig_dependants;
 
 	TraceRestrictCounter(CompanyID owner = INVALID_COMPANY)

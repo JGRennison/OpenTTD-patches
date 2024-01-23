@@ -25,7 +25,7 @@ struct Backup {
 	 * @param file Filename for debug output. Use FILE_LINE macro.
 	 * @param line Linenumber for debug output. Use FILE_LINE macro.
 	 */
-	Backup(T &original, const char * const file, const int line) : original(original), valid(true), original_value(original), file(file), line(line) {}
+	Backup(T &original, const char * const file, const int line) : original(original), file(file), line(line), valid(true), original_value(original) {}
 
 	/**
 	 * Backup variable and switch to new value.
@@ -35,7 +35,7 @@ struct Backup {
 	 * @param line Linenumber for debug output. Use FILE_LINE macro.
 	 */
 	template <typename U>
-	Backup(T &original, const U &new_value, const char * const file, const int line) : original(original), valid(true), original_value(original), file(file), line(line)
+	Backup(T &original, const U &new_value, const char * const file, const int line) : original(original), file(file), line(line), valid(true), original_value(original)
 	{
 		/* Note: We use a separate typename U, so type conversions are handled by assignment operator. */
 		original = new_value;
@@ -137,11 +137,10 @@ struct Backup {
 
 private:
 	T &original;
-	bool valid;
-	T original_value;
-
 	const char * const file;
 	const int line;
+	bool valid;
+	T original_value;
 };
 
 struct AutoRestoreBackupNoNewValueTag {};

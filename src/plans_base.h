@@ -144,15 +144,15 @@ struct PlanLine {
 
 struct Plan : PlanPool::PoolItem<&_plan_pool> {
 	Owner owner;
+	Colours colour;
+	Date creation_date;
 	PlanLineVector lines;
 	PlanLine *temp_line;
+	std::string name;
 	TileIndex last_tile;
 	bool visible;
 	bool visible_by_all;
 	bool show_lines;
-	Date creation_date;
-	std::string name;
-	Colours colour;
 
 	Plan(Owner owner = INVALID_OWNER)
 	{

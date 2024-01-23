@@ -268,6 +268,12 @@ struct ClosestDepot {
 
 /** %Vehicle data structure. */
 struct Vehicle : VehiclePool::PoolItem<&_vehicle_pool>, BaseVehicle, BaseConsist {
+	/* These are here for structure packing purposes */
+
+	CargoID cargo_type;                 ///< type of cargo this vehicle is carrying
+	EngineID engine_type;               ///< The type of engine used for this vehicle.
+	TileIndex tile;                     ///< Current tile index
+
 private:
 	Vehicle *next;                      ///< pointer to the next vehicle in the chain
 	Vehicle *previous;                  ///< NOSAVE: pointer to the previous vehicle in the chain
@@ -287,7 +293,12 @@ public:
 
 	static void PreCleanPool();
 
-	TileIndex tile;                     ///< Current tile index
+	Money profit_this_year;             ///< Profit this year << 8, low 8 bits are fract
+	Money profit_last_year;             ///< Profit last year << 8, low 8 bits are fract
+	Money profit_lifetime;              ///< Profit lifetime << 8, low 8 bits are fract
+	Money value;                        ///< Value of the vehicle
+
+	CargoPayment *cargo_payment;        ///< The cargo payment we're currently in
 
 	/**
 	 * Heading for this tile.
@@ -295,13 +306,6 @@ public:
 	 * but it can be used for heuristic purposes to estimate the distance.
 	 */
 	TileIndex dest_tile;
-
-	Money profit_this_year;             ///< Profit this year << 8, low 8 bits are fract
-	Money profit_last_year;             ///< Profit last year << 8, low 8 bits are fract
-	Money profit_lifetime;              ///< Profit lifetime << 8, low 8 bits are fract
-	Money value;                        ///< Value of the vehicle
-
-	CargoPayment *cargo_payment;        ///< The cargo payment we're currently in
 
 	/* Used for timetabling. */
 	uint32_t current_loading_time;      ///< How long loading took. Less than current_order_time if vehicle is early.
@@ -318,6 +322,8 @@ public:
 	byte breakdown_severity;            ///< severity of the breakdown. Note that lower means more severe
 	byte breakdown_type;                ///< Type of breakdown
 	byte breakdown_chance_factor;       ///< Improved breakdowns: current multiplier for breakdown_chance * 128, used for head vehicle only
+	Owner owner;                        ///< Which company owns the vehicle?
+
 	SpriteID colourmap;                 ///< NOSAVE: cached colour mapping
 
 	/* Related to age and service time */
@@ -338,13 +344,13 @@ public:
 	int32_t z_pos;                      ///< z coordinate.
 	Direction direction;                ///< facing
 
-	Owner owner;                        ///< Which company owns the vehicle?
 	/**
 	 * currently displayed sprite index
 	 * 0xfd == custom sprite, 0xfe == custom second head sprite
 	 * 0xff == reserved for another custom sprite
 	 */
 	byte spritenum;
+	UnitID unitnumber;                  ///< unit number, for display purposes only
 	VehicleSpriteSeq sprite_seq;        ///< Vehicle appearance.
 	Rect16 sprite_seq_bounds;
 	byte x_extent;                      ///< x-extent of vehicle bounding box
@@ -354,39 +360,41 @@ public:
 	int8_t y_bb_offs;                   ///< y offset of vehicle bounding box
 	int8_t x_offs;                      ///< x offset for vehicle sprite
 	int8_t y_offs;                      ///< y offset for vehicle sprite
-	EngineID engine_type;               ///< The type of engine used for this vehicle.
 
+	byte progress;                      ///< The percentage (if divided by 256) this vehicle already crossed the tile unit.
 	TextEffectID fill_percent_te_id;    ///< a text-effect id to a loading indicator object
-	UnitID unitnumber;                  ///< unit number, for display purposes only
+	uint16_t load_unload_ticks;         ///< Ticks to wait before starting next cycle.
 
 	uint16_t cur_speed;                 ///< current speed
 	byte subspeed;                      ///< fractional speed
 	byte acceleration;                  ///< used by train & aircraft
+
 	uint32_t motion_counter;            ///< counter to occasionally play a vehicle sound. (Also used as virtual train client ID).
-	byte progress;                      ///< The percentage (if divided by 256) this vehicle already crossed the tile unit.
 
 	uint16_t random_bits;               ///< Bits used for randomized variational spritegroups.
 	byte waiting_triggers;              ///< Triggers to be yet matched before rerandomizing the random bits.
+
+	byte cargo_subtype;                 ///< Used for livery refits (NewGRF variations)
 
 	StationID last_station_visited;     ///< The last station we stopped at.
 	StationID last_loading_station;     ///< Last station the vehicle has stopped at and could possibly leave from with any cargo loaded. (See VF_LAST_LOAD_ST_SEP).
 	uint64_t last_loading_tick;         ///< Last time (relative to _scaled_tick_counter) the vehicle has stopped at a station and could possibly leave with any cargo loaded. (See VF_LAST_LOAD_ST_SEP).
 
-	CargoID cargo_type;                 ///< type of cargo this vehicle is carrying
-	byte cargo_subtype;                 ///< Used for livery refits (NewGRF variations)
+	VehicleCargoList cargo;             ///< The cargo this vehicle is carrying
 	uint16_t cargo_cap;                 ///< total capacity
 	uint16_t refit_cap;                 ///< Capacity left over from before last refit.
-	VehicleCargoList cargo;             ///< The cargo this vehicle is carrying
 	uint16_t cargo_age_counter;         ///< Ticks till cargo is aged next.
 	int8_t trip_occupancy;              ///< NOSAVE: Occupancy of vehicle of the current trip (updated after leaving a station).
 
 	byte day_counter;                   ///< Increased by one for each day
 	byte tick_counter;                  ///< Increased by one for each tick
+	uint8_t order_occupancy_average;    ///< NOSAVE: order occupancy average. 0 = invalid, 1 = n/a, 16-116 = 0-100%
 	uint16_t running_ticks;             ///< Number of ticks this vehicle was not stopped this day
 
 	byte vehstatus;                     ///< Status
+	byte subtype;                       ///< subtype (Filled with values from #AircraftSubType/#DisasterSubType/#EffectVehicleType/#GroundVehicleSubtypeFlags)
+	GroupID group_id;                   ///< Index of group Pool array
 
-	uint8_t order_occupancy_average;    ///< NOSAVE: order occupancy average. 0 = invalid, 1 = n/a, 16-116 = 0-100%
 	Order current_order;                ///< The current order (+ status, like: loading)
 
 	union {
@@ -394,9 +402,6 @@ public:
 		Order *old_orders;              ///< Only used during conversion of old save games
 	};
 
-	uint16_t load_unload_ticks;         ///< Ticks to wait before starting next cycle.
-	GroupID group_id;                   ///< Index of group Pool array
-	byte subtype;                       ///< subtype (Filled with values from #AircraftSubType/#DisasterSubType/#EffectVehicleType/#GroundVehicleSubtypeFlags)
 	Direction cur_image_valid_dir;      ///< NOSAVE: direction for which cur_image does not need to be regenerated on the next tick
 
 	NewGRFCache grf_cache;              ///< Cache of often used calculated NewGRF values

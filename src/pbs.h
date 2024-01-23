@@ -88,6 +88,7 @@ enum TrainReservationLookAheadFlags {
 struct TrainReservationLookAhead {
 	TileIndex reservation_end_tile;       ///< Tile the reservation ends.
 	Trackdir  reservation_end_trackdir;   ///< The reserved trackdir on the end tile.
+	uint8_t zpos_refresh_remaining = 0;   ///< Remaining position updates before next refresh of cached_zpos
 	int32_t current_position;             ///< Current position of the train on the reservation
 	int32_t reservation_end_position;     ///< Position of the end of the reservation
 	int32_t lookahead_end_position;       ///< Position of the end of the reservation within the lookahead distance
@@ -99,7 +100,6 @@ struct TrainReservationLookAhead {
 	ring_buffer<TrainReservationLookAheadItem> items;
 	ring_buffer<TrainReservationLookAheadCurve> curves;
 	int32_t cached_zpos = 0;              ///< Cached z position as used in TrainDecelerationStats
-	uint8_t zpos_refresh_remaining = 0;   ///< Remaining position updates before next refresh of cached_zpos
 
 	int32_t RealEndPosition() const
 	{

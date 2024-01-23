@@ -38,10 +38,10 @@ struct CFollowTrackT
 	};
 
 	const VehicleType  *m_veh;           ///< moving vehicle
-	Owner               m_veh_owner;     ///< owner of the vehicle
 	TileIndex           m_old_tile;      ///< the origin (vehicle moved from) before move
-	Trackdir            m_old_td;        ///< the trackdir (the vehicle was on) before move
 	TileIndex           m_new_tile;      ///< the new tile (the vehicle has entered)
+	Owner               m_veh_owner;     ///< owner of the vehicle
+	Trackdir            m_old_td;        ///< the trackdir (the vehicle was on) before move
 	TrackdirBits        m_new_td_bits;   ///< the new set of available trackdirs
 	DiagDirection       m_exitdir;       ///< exit direction (leaving the old tile)
 	bool                m_is_tunnel;     ///< last turn passed tunnel

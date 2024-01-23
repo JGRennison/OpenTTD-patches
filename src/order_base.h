@@ -113,10 +113,11 @@ private:
 	friend void Load_VEOX();                                             ///< Saving and loading of orders.
 	friend void Save_VEOX();                                             ///< Saving and loading of orders.
 
-	std::unique_ptr<OrderExtraInfo> extra; ///< Extra order info
-
 	uint16_t flags;       ///< Load/unload types, depot order/action types.
 	DestinationID dest;   ///< The destination of the order.
+
+	std::unique_ptr<OrderExtraInfo> extra; ///< Extra order info
+
 	uint8_t type;         ///< The type of order + non-stop flags
 
 	CargoID refit_cargo;  ///< Refit CargoID
@@ -720,9 +721,8 @@ private:
 	friend SaveLoadTable GetDispatchScheduleDescription();              ///< Saving and loading of dispatch schedules
 
 	std::vector<uint32_t> scheduled_dispatch;                           ///< Scheduled dispatch time
-	uint32_t scheduled_dispatch_duration = 0;                           ///< Scheduled dispatch duration
 	DateTicksScaled scheduled_dispatch_start_tick = -1;                 ///< Scheduled dispatch start tick
-	                                                                    ///  this counts to (DAY_TICK * _settings_game.economy.day_length_factor)
+	uint32_t scheduled_dispatch_duration = 0;                           ///< Scheduled dispatch duration
 	int32_t scheduled_dispatch_last_dispatch = INVALID_SCHEDULED_DISPATCH_OFFSET; ///< Last vehicle dispatched offset
 	int32_t scheduled_dispatch_max_delay = 0;                           ///< Maximum allowed delay
 	uint8_t scheduled_dispatch_flags = 0;                               ///< Flags
@@ -858,10 +858,10 @@ private:
 	void ReindexOrderList();
 	Order *GetOrderAtFromList(int index) const;
 
-	Order *first;                     ///< First order of the order list.
-	std::vector<Order *> order_index; ///< NOSAVE: Vector index of order list.
 	VehicleOrderID num_manual_orders; ///< NOSAVE: How many manually added orders are there in the list.
 	uint num_vehicles;                ///< NOSAVE: Number of vehicles that share this order list.
+	Order *first;                     ///< First order of the order list.
+	std::vector<Order *> order_index; ///< NOSAVE: Vector index of order list.
 	Vehicle *first_shared;            ///< NOSAVE: pointer to the first vehicle in the shared order chain.
 
 	Ticks timetable_duration;         ///< NOSAVE: Total timetabled duration of the order list.
@@ -872,7 +872,7 @@ private:
 public:
 	/** Default constructor producing an invalid order list. */
 	OrderList(VehicleOrderID num_orders = INVALID_VEH_ORDER_ID)
-		: first(nullptr), num_manual_orders(0), num_vehicles(0), first_shared(nullptr),
+		: num_manual_orders(0), num_vehicles(0), first(nullptr), first_shared(nullptr),
 		  timetable_duration(0), total_duration(0) { }
 
 	/**

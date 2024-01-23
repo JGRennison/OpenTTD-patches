@@ -131,6 +131,9 @@ struct TrainCache {
  * 'Train' is either a loco or a wagon.
  */
 struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
+	TrackBits track;
+	RailType railtype;
+	uint32_t flags;
 	TrainCache tcache;
 
 	/* Link between the two ends of a multiheaded engine */
@@ -138,15 +141,10 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 
 	std::unique_ptr<TrainReservationLookAhead> lookahead;
 
-	uint32_t flags;
-
-	uint16_t crash_anim_pos; ///< Crash animation counter, also used for realistic braking train brake overheating
-
-	TrackBits track;
-	TrainForceProceeding force_proceed;
-	RailType railtype;
-	byte critical_breakdown_count; ///< Counter for the number of critical breakdowns since last service
 	RailTypes compatible_railtypes;
+
+	TrainForceProceeding force_proceed;
+	byte critical_breakdown_count; ///< Counter for the number of critical breakdowns since last service
 
 	/** Ticks waiting in front of a signal, ticks being stuck or a counter for forced proceeding through signals. */
 	uint16_t wait_counter;
@@ -155,6 +153,7 @@ struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
 	uint16_t tunnel_bridge_signal_num;
 	uint16_t speed_restriction;
 	uint16_t signal_speed_restriction;
+	uint16_t crash_anim_pos; ///< Crash animation counter, also used for realistic braking train brake overheating
 
 	/** We don't want GCC to zero our struct! It already is zeroed and has an index! */
 	Train() : GroundVehicleBase() {}

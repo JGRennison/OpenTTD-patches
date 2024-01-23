@@ -61,6 +61,9 @@ DECLARE_ENUM_AS_BIT_SET(IndustryControlFlags);
  * Defines the internal data of a functional industry.
  */
 struct Industry : IndustryPool::PoolItem<&_industry_pool> {
+	IndustryType type;                                          ///< Type of industry.
+	Owner owner;                                                ///< Owner of the industry.  Which SHOULD always be (imho) OWNER_NONE
+	Date construction_date;                                     ///< Date of the construction of the industry
 	TileArea location;                                          ///< Location of the industry
 	Town *town;                                                 ///< Nearest town
 	Station *neutral_station;                                   ///< Associated neutral station
@@ -74,27 +77,25 @@ struct Industry : IndustryPool::PoolItem<&_industry_pool> {
 	std::array<byte,    INDUSTRY_NUM_OUTPUTS> last_month_pct_transported{};   ///< percentage transported per cargo in the last full month
 	std::array<uint16_t,  INDUSTRY_NUM_OUTPUTS> last_month_production{};      ///< total units produced per cargo in the last full month
 	std::array<uint16_t,  INDUSTRY_NUM_OUTPUTS> last_month_transported{};     ///< total units transported per cargo in the last full month
+
+	StationList stations_near;          ///< NOSAVE: List of nearby stations.
+	mutable std::string cached_name;    ///< NOSAVE: Cache of the resolved name of the industry
+
 	uint16_t counter;                   ///< used for animation and/or production (if available cargo)
 	byte prod_level;                    ///< general production level
-
-	IndustryType type;                  ///< type of industry.
-	Owner owner;                        ///< owner of the industry.  Which SHOULD always be (imho) OWNER_NONE
 	byte random_colour;                 ///< randomized colour of the industry, for display purpose
 	Year last_prod_year;                ///< last year of production
 	byte was_cargo_delivered;           ///< flag that indicate this has been the closest industry chosen for cargo delivery by a station. see DeliverGoodsToIndustry
 	IndustryControlFlags ctlflags;      ///< flags overriding standard behaviours
 
 	PartOfSubsidy part_of_subsidy;      ///< NOSAVE: is this industry a source/destination of a subsidy?
-	StationList stations_near;          ///< NOSAVE: List of nearby stations.
-	mutable std::string cached_name;    ///< NOSAVE: Cache of the resolved name of the industry
 
 	Owner founder;                      ///< Founder of the industry
-	Date construction_date;             ///< Date of the construction of the industry
 	uint8_t construction_type;          ///< Way the industry was constructed (@see IndustryConstructionType)
-	Date last_cargo_accepted_at[INDUSTRY_NUM_INPUTS]; ///< Last day each cargo type was accepted by this industry
 	byte selected_layout;               ///< Which tile layout was used when creating the industry
 	Owner exclusive_supplier;           ///< Which company has exclusive rights to deliver cargo (INVALID_OWNER = anyone)
 	Owner exclusive_consumer;           ///< Which company has exclusive rights to take cargo (INVALID_OWNER = anyone)
+	Date last_cargo_accepted_at[INDUSTRY_NUM_INPUTS]; ///< Last day each cargo type was accepted by this industry
 	std::string text;                   ///< General text with additional information.
 
 	uint16_t random;                    ///< Random value used for randomisation of all kinds of things

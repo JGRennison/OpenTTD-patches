@@ -76,7 +76,7 @@ public:
 	 * @param scale Desired thickness of lines and size of station dots.
 	 */
 	LinkGraphOverlay(Window *w, WidgetID wid, CargoTypes cargo_mask, CompanyMask company_mask, uint scale) :
-			window(w), widget_id(wid), cargo_mask(cargo_mask), company_mask(company_mask), scale(scale), dirty(true)
+			window(w), widget_id(wid), cargo_mask(cargo_mask), scale(scale), company_mask(company_mask), dirty(true)
 	{}
 
 	bool RebuildCacheCheckChanged();
@@ -105,11 +105,11 @@ protected:
 	Window *window;                    ///< Window to be drawn into.
 	const WidgetID widget_id;          ///< ID of Widget in Window to be drawn to.
 	CargoTypes cargo_mask;             ///< Bitmask of cargos to be displayed.
-	CompanyMask company_mask;          ///< Bitmask of companies to be displayed.
 	LinkList cached_links;             ///< Cache for links to reduce recalculation.
 	StationSupplyList cached_stations; ///< Cache for stations to be drawn.
 	Rect cached_region;                ///< Region covered by cached_links and cached_stations.
 	uint scale;                        ///< Width of link lines.
+	CompanyMask company_mask;          ///< Bitmask of companies to be displayed.
 	bool dirty;                        ///< Set if overlay should be rebuilt.
 	uint64_t last_update_number = 0;   ///< Last window update number
 	uint64_t rebuild_counter = 0;      ///< Rebuild counter

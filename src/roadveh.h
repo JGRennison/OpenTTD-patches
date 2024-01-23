@@ -140,21 +140,19 @@ enum RoadVehicleFlags {
  * Buses, trucks and trams belong to this class.
  */
 struct RoadVehicle FINAL : public GroundVehicle<RoadVehicle, VEH_ROAD> {
-	std::unique_ptr<RoadVehPathCache> cached_path; ///< Cached path.
 	byte state;             ///< @see RoadVehicleStates
 	byte frame;
 	uint16_t blocked_ctr;
 	byte overtaking;        ///< Set to #RVSB_DRIVE_SIDE when overtaking, otherwise 0.
 	byte overtaking_ctr;    ///< The length of the current overtake attempt.
+	std::unique_ptr<RoadVehPathCache> cached_path; ///< Cached path.
+	RoadTypes compatible_roadtypes; ///< Roadtypes this consist is powered on.
 	uint16_t crashed_ctr;   ///< Animation counter when the vehicle has crashed. @see RoadVehIsCrashed
 	byte reverse_ctr;
+	byte critical_breakdown_count;  ///< Counter for the number of critical breakdowns since last service
+	uint8_t rvflags;                ///< Road vehicle flags
 
 	RoadType roadtype;              ///< Roadtype of this vehicle.
-	RoadTypes compatible_roadtypes; ///< Roadtypes this consist is powered on.
-
-	byte critical_breakdown_count;  ///< Counter for the number of critical breakdowns since last service
-
-	uint8_t rvflags;                ///< Road vehicle flags
 
 	/** We don't want GCC to zero our struct! It already is zeroed and has an index! */
 	RoadVehicle() : GroundVehicleBase() {}

@@ -115,14 +115,14 @@ struct SettingDescEnumEntry {
 /** Properties of config file settings. */
 struct SettingDesc {
 	SettingDesc(const SaveLoad &save, const char *name, SettingFlag flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name) :
-		name(name), flags(flags), guiproc(guiproc), startup(startup), save(save), patx_name(patx_name) {}
+		name(name), flags(flags), startup(startup), save(save), guiproc(guiproc), patx_name(patx_name) {}
 	virtual ~SettingDesc() = default;
 
 	const char *name;       ///< Name of the setting. Used in configuration file and for console
 	SettingFlag flags;      ///< Handles how a setting would show up in the GUI (text/currency, etc.)
-	OnGuiCtrl *guiproc;     ///< Callback procedure for GUI operations
 	bool startup;           ///< Setting has to be loaded directly at startup?
 	SaveLoad save;          ///< Internal structure (going to savegame, parts to config)
+	OnGuiCtrl *guiproc;     ///< Callback procedure for GUI operations
 
 	const char *patx_name;  ///< Name to save/load setting from in PATX chunk, if nullptr save/load from PATS chunk as normal
 

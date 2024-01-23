@@ -30,7 +30,7 @@ enum TileContext : uint8_t {
 /**
  * Flags to enable register usage in sprite layouts.
  */
-enum TileLayoutFlags {
+enum TileLayoutFlags : uint16_t {
 	TLF_NOTHING           = 0x00,
 
 	TLF_DODRAW            = 0x01,   ///< Only draw sprite if value of register TileLayoutRegisters::dodraw is non-zero.
@@ -50,7 +50,7 @@ enum TileLayoutFlags {
 	TLF_KNOWN_FLAGS       = 0xFF,   ///< Known flags. Any unknown set flag will disable the GRF.
 
 	/** Flags which are still required after loading the GRF. */
-	TLF_DRAWING_FLAGS     = ~TLF_CUSTOM_PALETTE,
+	TLF_DRAWING_FLAGS     = (uint16_t)~TLF_CUSTOM_PALETTE,
 
 	/** Flags which do not work for the (first) ground sprite. */
 	TLF_NON_GROUND_FLAGS  = TLF_BB_XY_OFFSET | TLF_BB_Z_OFFSET | TLF_CHILD_X_OFFSET | TLF_CHILD_Y_OFFSET,
@@ -90,11 +90,11 @@ inline uint GetConstructionStageOffset(uint construction_stage, uint num_sprites
  */
 struct TileLayoutRegisters {
 	TileLayoutFlags flags;       ///< Flags defining which members are valid and to be used.
+	uint16_t max_sprite_offset;  ///< Maximum offset to add to the sprite. (limited by size of the spriteset)
+	uint16_t max_palette_offset; ///< Maximum offset to add to the palette. (limited by size of the spriteset)
 	uint8_t dodraw;              ///< Register deciding whether the sprite shall be drawn at all. Non-zero means drawing.
 	uint8_t sprite;              ///< Register specifying a signed offset for the sprite.
 	uint8_t palette;             ///< Register specifying a signed offset for the palette.
-	uint16_t max_sprite_offset;  ///< Maximum offset to add to the sprite. (limited by size of the spriteset)
-	uint16_t max_palette_offset; ///< Maximum offset to add to the palette. (limited by size of the spriteset)
 	union {
 		uint8_t parent[3];       ///< Registers for signed offsets for the bounding box position of parent sprites.
 		uint8_t child[2];        ///< Registers for signed offsets for the position of child sprites.
