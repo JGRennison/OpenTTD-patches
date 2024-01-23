@@ -9,6 +9,7 @@
 
 #include "../../stdafx.h"
 #include "script_date.hpp"
+#include "script_timemode.hpp"
 #include "../../date_func.h"
 #include "../../settings_type.h"
 
@@ -25,7 +26,9 @@
 
 /* static */ ScriptDate::Date ScriptDate::GetCurrentDate()
 {
-	return (ScriptDate::Date)::CalTime::CurDate().base();
+	if (ScriptTimeMode::IsCalendarMode()) return (ScriptDate::Date)::CalTime::CurDate().base();
+
+	return (ScriptDate::Date)EconTime::CurDate().base();
 }
 
 /* static */ SQInteger ScriptDate::GetDayLengthFactor()
@@ -37,7 +40,12 @@
 {
 	if (date < 0) return DATE_INVALID;
 
-	::CalTime::YearMonthDay ymd = ::CalTime::ConvertDateToYMD(date);
+	if (ScriptTimeMode::IsCalendarMode()) {
+		::CalTime::YearMonthDay ymd = ::CalTime::ConvertDateToYMD(date);
+		return ymd.year.base();
+	}
+
+	::EconTime::YearMonthDay ymd = ::EconTime::ConvertDateToYMD(date);
 	return ymd.year.base();
 }
 
@@ -45,7 +53,12 @@
 {
 	if (date < 0) return DATE_INVALID;
 
-	::CalTime::YearMonthDay ymd = ::CalTime::ConvertDateToYMD(date);
+	if (ScriptTimeMode::IsCalendarMode()) {
+		::CalTime::YearMonthDay ymd = ::CalTime::ConvertDateToYMD(date);
+		return ymd.month + 1;
+	}
+
+	::EconTime::YearMonthDay ymd = ::EconTime::ConvertDateToYMD(date);
 	return ymd.month + 1;
 }
 
@@ -53,7 +66,12 @@
 {
 	if (date < 0) return DATE_INVALID;
 
-	::CalTime::YearMonthDay ymd = ::CalTime::ConvertDateToYMD(date);
+	if (ScriptTimeMode::IsCalendarMode()) {
+		::CalTime::YearMonthDay ymd = ::CalTime::ConvertDateToYMD(date);
+		return ymd.day;
+	}
+
+	::EconTime::YearMonthDay ymd = ::EconTime::ConvertDateToYMD(date);
 	return ymd.day;
 }
 
@@ -63,7 +81,9 @@
 	if (day_of_month < 1 || day_of_month > 31) return DATE_INVALID;
 	if (year < 0 || year > CalTime::MAX_YEAR) return DATE_INVALID;
 
-	return (ScriptDate::Date)::CalTime::ConvertYMDToDate(year, month - 1, day_of_month).base();
+	if (ScriptTimeMode::IsCalendarMode()) return (ScriptDate::Date)::CalTime::ConvertYMDToDate(year, month - 1, day_of_month).base();
+
+	return (ScriptDate::Date)::EconTime::ConvertYMDToDate(year, month - 1, day_of_month).base();
 }
 
 /* static */ SQInteger ScriptDate::GetSystemTime()
