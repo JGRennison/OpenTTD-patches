@@ -457,7 +457,7 @@ void LinkGraphOverlay::PrepareDraw()
 	if (this->dirty) {
 		this->RebuildCache();
 	}
-	if (this->last_update_number != GetWindowUpdateNumber() && this->window->viewport->zoom < ZOOM_LVL_DRAW_MAP) {
+	if (this->last_update_number != GetWindowUpdateNumber() && (this->window->viewport == nullptr || this->window->viewport->zoom < ZOOM_LVL_DRAW_MAP)) {
 		this->last_update_number = GetWindowUpdateNumber();
 		this->RefreshDrawCache();
 	}
