@@ -546,4 +546,14 @@ inline void free(const void *ptr)
 
 #define SINGLE_ARG(...) __VA_ARGS__
 
+#if defined(DEDICATED)
+inline constexpr bool IsHeadless() { return true; }
+#else
+inline bool IsHeadless()
+{
+	extern bool _network_dedicated;
+	return _network_dedicated;
+}
+#endif
+
 #endif /* STDAFX_H */
