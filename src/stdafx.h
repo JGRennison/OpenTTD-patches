@@ -122,6 +122,14 @@
 #	define EMPTY_BASES
 #endif
 
+#if defined(_MSC_VER) && _MSC_VER >= 1929
+#	define NO_UNIQUE_ADDRESS [[msvc::no_unique_address]]
+#elif defined(__has_cpp_attribute) && __has_cpp_attribute(no_unique_address)
+#	define NO_UNIQUE_ADDRESS [[no_unique_address]]
+#else
+#	define NO_UNIQUE_ADDRESS
+#endif
+
 /* Stuff for MSVC */
 #if defined(_MSC_VER)
 #	pragma once
