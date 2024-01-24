@@ -79,7 +79,7 @@ public:
 			window(w), widget_id(wid), cargo_mask(cargo_mask), company_mask(company_mask), scale(scale), dirty(true)
 	{}
 
-	bool RebuildCacheCheckCahnged();
+	bool RebuildCacheCheckChanged();
 	void RebuildCache(bool incremental = false);
 	bool CacheStillValid() const;
 	void MarkStationViewportLinksDirty(const Station *st);

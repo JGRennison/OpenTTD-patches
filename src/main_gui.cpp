@@ -271,7 +271,7 @@ struct MainWindow : Window
 			return;
 		}
 
-		if (this->viewport->overlay->RebuildCacheCheckCahnged()) {
+		if (this->viewport->overlay->RebuildCacheCheckChanged()) {
 			this->GetWidget<NWidgetBase>(WID_M_VIEWPORT)->SetDirty(this);
 		}
 	}
