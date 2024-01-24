@@ -86,7 +86,7 @@ struct NewGRFCache {
 	uint32_t consist_cargo_information; ///< Cache for NewGRF var 42. (Note: The cargotype is untranslated in the cache because the accessing GRF is yet unknown.)
 	uint32_t company_information;       ///< Cache for NewGRF var 43.
 	uint32_t position_in_vehicle;       ///< Cache for NewGRF var 4D.
-	uint8_t  cache_valid;               ///< Bitset that indicates which cache values are valid.
+	NO_UNIQUE_ADDRESS uint8_t cache_valid; ///< Bitset that indicates which cache values are valid.
 
 	bool operator==(const NewGRFCache&) const = default;
 };
@@ -404,9 +404,9 @@ public:
 		Order *old_orders;              ///< Only used during conversion of old save games
 	};
 
+	NO_UNIQUE_ADDRESS NewGRFCache grf_cache; ///< Cache of often used calculated NewGRF values
 	Direction cur_image_valid_dir;      ///< NOSAVE: direction for which cur_image does not need to be regenerated on the next tick
 
-	NewGRFCache grf_cache;              ///< Cache of often used calculated NewGRF values
 	VehicleCache vcache;                ///< Cache of often used vehicle values.
 
 	/**
