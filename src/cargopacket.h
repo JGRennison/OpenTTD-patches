@@ -318,10 +318,10 @@ public:
 	};
 
 protected:
-	uint count;                        ///< Cache for the number of cargo entities.
 	uint64_t cargo_periods_in_transit; ///< Cache for the sum of number of cargo aging periods in transit of each entity; comparable to man-hours.
 
-	Tcont packets;                     ///< The cargo packets in this list.
+	NO_UNIQUE_ADDRESS Tcont packets;   ///< The cargo packets in this list.
+	uint count;                        ///< Cache for the number of cargo entities.
 
 	void AddToCache(const CargoPacket *cp);
 
