@@ -160,7 +160,12 @@ struct VehicleCache {
 
 /** Sprite sequence for a vehicle part. */
 struct VehicleSpriteSeq {
+/* Reduce the size of struct Vehicle in dedicated builds */
+#if defined(DEDICATED)
+	PalSpriteID seq[1];
+#else
 	PalSpriteID seq[8];
+#endif
 	uint count;
 
 	bool operator==(const VehicleSpriteSeq &other) const
