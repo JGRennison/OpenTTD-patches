@@ -47,7 +47,7 @@
 
 /* static */ void ScriptController::Break(const std::string &message)
 {
-	if (_network_dedicated || !_settings_client.gui.ai_developer_tools) return;
+	if (IsHeadless() || !_settings_client.gui.ai_developer_tools) return;
 
 	ScriptObject::GetActiveInstance()->Pause();
 

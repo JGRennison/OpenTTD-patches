@@ -1971,7 +1971,7 @@ static void DecreaseWindowCounters()
 	if (hundredth_tick_timeout != 0) hundredth_tick_timeout--;
 
 	for (Window *w : Window::IterateFromFront()) {
-		if (!_network_dedicated && hundredth_tick_timeout == 0) w->OnHundredthTick();
+		if (!IsHeadless() && hundredth_tick_timeout == 0) w->OnHundredthTick();
 
 		if (_scroller_click_timeout == 0) {
 			/* Unclick scrollbar buttons if they are pressed. */
@@ -3277,7 +3277,7 @@ void UpdateWindows()
 
 	static GUITimer window_timer = GUITimer(1);
 	if (window_timer.Elapsed(delta_ms)) {
-		if (_network_dedicated) window_timer.SetInterval(MILLISECONDS_PER_TICK);
+		if (IsHeadless()) window_timer.SetInterval(MILLISECONDS_PER_TICK);
 
 		extern int _caret_timer;
 		_caret_timer += 3;
@@ -3298,7 +3298,7 @@ void UpdateWindows()
 
 	/* Skip the actual drawing on dedicated servers without screen.
 	 * But still empty the invalidation queues above. */
-	if (_network_dedicated) return;
+	if (IsHeadless()) return;
 
 	if (window_timer.HasElapsed()) {
 		window_timer.SetInterval(MILLISECONDS_PER_TICK);

@@ -243,7 +243,7 @@ void ShowHighscoreTable(int difficulty, int8_t ranking)
 void ShowEndGameChart()
 {
 	/* Dedicated server doesn't need the highscore window and neither does -v null. */
-	if (_network_dedicated || (!_networking && !Company::IsValidID(_local_company))) return;
+	if (IsHeadless() || (!_networking && !Company::IsValidID(_local_company))) return;
 
 	HideVitalWindows();
 	CloseWindowByClass(WC_ENDSCREEN);

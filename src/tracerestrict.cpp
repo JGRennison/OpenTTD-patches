@@ -1747,7 +1747,7 @@ void TraceRestrictCheckRefreshSignals(const TraceRestrictProgram *prog, size_t o
 		}
 	}
 
-	if (_network_dedicated) return;
+	if (IsHeadless()) return;
 
 	if (!((old_actions_used_flags ^ prog->actions_used_flags) & (TRPAUF_RESERVE_THROUGH_ALWAYS | TRPAUF_REVERSE))) return;
 

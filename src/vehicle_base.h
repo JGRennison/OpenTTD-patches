@@ -1483,7 +1483,7 @@ public:
 	inline void UpdateViewport(bool force_update, bool update_delta)
 	{
 		/* Skip updating sprites on dedicated servers without screen */
-		if (_network_dedicated) return;
+		if (IsHeadless()) return;
 
 		/* Explicitly choose method to call to prevent vtable dereference -
 		 * it gives ~3% runtime improvements in games with many vehicles */

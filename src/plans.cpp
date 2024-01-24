@@ -23,7 +23,7 @@ bool _last_plan_visibility_check_result = false;
 
 void PlanLine::UpdateVisualExtents()
 {
-	if (_network_dedicated) return;
+	if (IsHeadless()) return;
 
 	if (this->tiles.size() < 2) {
 		this->viewport_extents = { INT_MAX, INT_MAX, INT_MAX, INT_MAX };

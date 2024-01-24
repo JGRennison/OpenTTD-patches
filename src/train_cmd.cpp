@@ -7511,7 +7511,7 @@ void TrainBrakesOverheatedBreakdown(Vehicle *v)
 	Train *t = Train::From(v)->First();
 	if (t->breakdown_ctr != 0 || (t->vehstatus & VS_CRASHED)) return;
 
-	if (unlikely(HasBit(_misc_debug_flags, MDF_OVERHEAT_BREAKDOWN_OPEN_WIN)) && !_network_dedicated) {
+	if (unlikely(HasBit(_misc_debug_flags, MDF_OVERHEAT_BREAKDOWN_OPEN_WIN)) && !IsHeadless()) {
 		ShowVehicleViewWindow(t);
 	}
 

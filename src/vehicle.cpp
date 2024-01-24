@@ -2721,7 +2721,7 @@ void VehicleEnterDepot(Vehicle *v)
 void Vehicle::UpdateViewport(bool dirty)
 {
 	/* Skip updating sprites on dedicated servers without screen */
-	if (_network_dedicated) return;
+	if (IsHeadless()) return;
 
 	Rect new_coord = ConvertRect<Rect16, Rect>(this->sprite_seq_bounds);
 
