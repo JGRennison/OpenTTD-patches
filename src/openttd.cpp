@@ -1830,7 +1830,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 			length = 0;
 			for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
 				FillNewGRFVehicleCache(u);
-				if (memcmp(&grf_cache[length], &u->grf_cache, sizeof(NewGRFCache)) != 0) {
+				if (grf_cache[length] != u->grf_cache) {
 					CCLOGV("newgrf cache mismatch");
 				}
 				if (veh_cache[length].cached_max_speed != u->vcache.cached_max_speed || veh_cache[length].cached_cargo_age_period != u->vcache.cached_cargo_age_period ||

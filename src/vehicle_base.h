@@ -87,6 +87,8 @@ struct NewGRFCache {
 	uint32_t company_information;       ///< Cache for NewGRF var 43.
 	uint32_t position_in_vehicle;       ///< Cache for NewGRF var 4D.
 	uint8_t  cache_valid;               ///< Bitset that indicates which cache values are valid.
+
+	bool operator==(const NewGRFCache&) const = default;
 };
 
 /** Meaning of the various bits of the visual effect. */
