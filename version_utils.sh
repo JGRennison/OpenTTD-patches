@@ -83,9 +83,6 @@ function read_source {
 	handle_source "CMakeLists.txt" "$1"
 	while IFS=$'\n' read -r line; do
 		handle_source "$line" "$1"
-	done < <( find -L cmake -type f -name '*.cmake' -print | LC_ALL=C sort )
-	while IFS=$'\n' read -r line; do
-		handle_source "$line" "$1"
 	done < <( find -L src -type f \( -name 'CMakeLists.txt' -o -name '*.cpp' -o -name '*.c' -o -name '*.hpp' -o -name '*.h' -o -name '*.sq' -o -name '*.mm' -o -name '*.in' \) -print | LC_ALL=C sort )
 	while IFS=$'\n' read -r line; do
 		handle_source "$line" "$1"
