@@ -92,12 +92,12 @@ jobs:
       id: metadata
       run: |
         echo "::group::Prepare metadata files"
-        cmake -DGENERATE_OTTDREV=.ottdrev-build -P cmake/scripts/FindVersion.cmake
+        cmake -DGENERATE_OTTDREV=.ottdrev -P cmake/scripts/FindVersion.cmake
         ./.github/changelog.sh > .changelog
         TZ='UTC' date +"%Y-%m-%d %H:%M UTC" > .release_date
-        head -1 .ottdrev-build  | cut -f 1 -d$'\t' > .version
+        head -1 .ottdrev | cut -f 1 -d$'\t' > .version
 
-        if [ $(head -1 .ottdrev-build | cut -f 5 -d$'\t') = '1' ]; then
+        if [ $(head -1 .ottdrev | cut -f 5 -d$'\t') = '1' ]; then
           # Assume that all tags are always releases. Why else make a tag?
           IS_TAG="true"
 
