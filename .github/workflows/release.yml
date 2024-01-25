@@ -61,6 +61,16 @@ jobs:
     with:
       survey_key: ${{ needs.source.outputs.survey_key }}
 
+  linux-dedicated:
+    name: Linux (Dedicated)
+    needs: source
+
+    uses: ./.github/workflows/release-linux-dedicated.yml
+    secrets: inherit
+
+    with:
+      survey_key: ${{ needs.source.outputs.survey_key }}
+
   macos:
     name: MacOS
     needs: source
