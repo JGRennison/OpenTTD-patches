@@ -15,7 +15,6 @@
 #include "string_type.h"
 #include "gfx_type.h"
 #include "core/bitmath_func.hpp"
-#include "core/span_type.hpp"
 #include "vehicle_type.h"
 #include <array>
 #include <optional>
@@ -103,7 +102,7 @@ void SetDParamMaxDigits(size_t n, uint count, FontSize size = FS_NORMAL);
 void SetDParamStr(size_t n, const char *str);
 void SetDParamStr(size_t n, std::string str);
 
-void CopyInDParam(const span<const StringParameterBackup> backup, uint offset = 0);
+void CopyInDParam(const std::span<const StringParameterBackup> backup, uint offset = 0);
 void CopyOutDParam(std::vector<StringParameterBackup> &backup, size_t num);
 bool HaveDParamChanged(const std::vector<StringParameterBackup> &backup);
 

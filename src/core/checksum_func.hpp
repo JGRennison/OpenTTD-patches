@@ -20,6 +20,7 @@
 #include "../fileio_func.h"
 #include "../date_func.h"
 #include "../debug.h"
+#include <bit>
 #endif /* RANDOM_DEBUG */
 
 struct SimpleChecksum64 {
@@ -27,7 +28,7 @@ struct SimpleChecksum64 {
 
 	void Update(uint64_t input)
 	{
-		this->state = ROL(this->state, 1) ^ input ^ 0x123456789ABCDEF7ULL;
+		this->state = std::rotl(this->state, 1) ^ input ^ 0x123456789ABCDEF7ULL;
 	}
 };
 

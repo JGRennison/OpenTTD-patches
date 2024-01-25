@@ -13,7 +13,6 @@
 #include "economy_type.h"
 #include "strings_type.h"
 #include "tile_type.h"
-#include "core/span_type.hpp"
 #include <optional>
 #include <string>
 
@@ -714,7 +713,7 @@ struct CommandAuxiliaryBase {
 
 	virtual CommandAuxiliaryBase *Clone() const = 0;
 
-	virtual std::optional<span<const uint8_t>> GetDeserialisationSrc() const = 0;
+	virtual std::optional<std::span<const uint8_t>> GetDeserialisationSrc() const = 0;
 
 	virtual void Serialise(CommandSerialisationBuffer &buffer) const = 0;
 };

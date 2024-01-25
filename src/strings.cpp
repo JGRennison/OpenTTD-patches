@@ -132,7 +132,7 @@ void SetDParamMaxDigits(size_t n, uint count, FontSize size)
  * Copy the parameters from the backup into the global string parameter array.
  * @param backup The backup to copy from.
  */
-void CopyInDParam(const span<const StringParameterBackup> backup, uint offset)
+void CopyInDParam(const std::span<const StringParameterBackup> backup, uint offset)
 {
 	for (size_t i = 0; i < backup.size(); i++) {
 		auto &value = backup[i];

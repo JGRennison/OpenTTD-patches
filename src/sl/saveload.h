@@ -230,7 +230,7 @@ struct NullStruct {
 };
 
 /** A table of ChunkHandler entries. */
-using ChunkHandlerTable = span<const ChunkHandler>;
+using ChunkHandlerTable = std::span<const ChunkHandler>;
 
 /** Type of reference (#SLE_REF, #SLE_CONDREF). */
 enum SLRefType {
@@ -943,7 +943,7 @@ size_t SlCalcObjLength(const void *object, const SaveLoadTable &slt);
  * @return Span of the saved data, in the autolength temp buffer
  */
 template <typename F>
-span<byte> SlSaveToTempBuffer(F proc)
+std::span<byte> SlSaveToTempBuffer(F proc)
 {
 	extern uint8_t SlSaveToTempBufferSetup();
 	extern std::pair<byte *, size_t> SlSaveToTempBufferRestore(uint8_t state);
@@ -951,7 +951,7 @@ span<byte> SlSaveToTempBuffer(F proc)
 	uint8_t state = SlSaveToTempBufferSetup();
 	proc();
 	auto result = SlSaveToTempBufferRestore(state);
-	return span<byte>(result.first, result.second);
+	return std::span<byte>(result.first, result.second);
 }
 
 /**
@@ -963,7 +963,7 @@ span<byte> SlSaveToTempBuffer(F proc)
 template <typename F>
 std::vector<uint8_t> SlSaveToVector(F proc)
 {
-	span<byte> result = SlSaveToTempBuffer(proc);
+	std::span<byte> result = SlSaveToTempBuffer(proc);
 	return std::vector<uint8_t>(result.begin(), result.end());
 }
 

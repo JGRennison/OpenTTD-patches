@@ -48,7 +48,6 @@
 #include "zoom_func.h"
 #include "group_gui_list.h"
 #include "newgrf_debug.h"
-#include "core/span_type.hpp"
 #include "3rdparty/cpp-btree/btree_map.h"
 
 #include "safeguards.h"
@@ -549,9 +548,9 @@ struct TraceRestrictDropDownListItem {
 };
 
 /**
- * Return the appropriate type dropdown TraceRestrictDropDownListItem span for the given item type @p type
+ * Return the appropriate type dropdown TraceRestrictDropDownListItem std::span for the given item type @p type
  */
-static span<const TraceRestrictDropDownListItem> GetTypeDropDownListItems(TraceRestrictGuiItemType type)
+static std::span<const TraceRestrictDropDownListItem> GetTypeDropDownListItems(TraceRestrictGuiItemType type)
 {
 	static const TraceRestrictDropDownListItem actions[] = {
 		{ TRIT_PF_DENY,                  STR_TRACE_RESTRICT_PF_DENY,                  TRDDLIF_NONE },
@@ -602,9 +601,9 @@ static span<const TraceRestrictDropDownListItem> GetTypeDropDownListItems(TraceR
 	};
 
 	if (IsTraceRestrictTypeConditional(ItemTypeFromGuiType(type))) {
-		return span<const TraceRestrictDropDownListItem>(conditions);
+		return std::span<const TraceRestrictDropDownListItem>(conditions);
 	} else {
-		return span<const TraceRestrictDropDownListItem>(actions);
+		return std::span<const TraceRestrictDropDownListItem>(actions);
 	}
 }
 

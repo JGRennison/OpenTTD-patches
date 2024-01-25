@@ -19,6 +19,7 @@
 #include "saveload_internal.h"
 #include "oldloader.h"
 
+#include <bit>
 #include <exception>
 
 #include "../safeguards.h"
@@ -214,7 +215,7 @@ static bool VerifyOldNameChecksum(char *title, uint len)
 	uint16_t sum = 0;
 	for (uint i = 0; i < len - 2; i++) {
 		sum += title[i];
-		sum = ROL(sum, 1);
+		sum = std::rotl(sum, 1);
 	}
 
 	sum ^= 0xAAAA; // computed checksum

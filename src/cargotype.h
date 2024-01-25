@@ -16,7 +16,6 @@
 #include "strings_type.h"
 #include "landscape_type.h"
 #include "core/bitmath_func.hpp"
-#include "core/span_type.hpp"
 #include <vector>
 
 /** Globally unique label of a cargo type. */
@@ -200,7 +199,7 @@ Dimension GetLargestCargoIconSize();
 void InitializeSortedCargoSpecs();
 extern std::array<uint8_t, NUM_CARGO> _sorted_cargo_types;
 extern std::vector<const CargoSpec *> _sorted_cargo_specs;
-extern span<const CargoSpec *> _sorted_standard_cargo_specs;
+extern std::span<const CargoSpec *> _sorted_standard_cargo_specs;
 
 uint ConvertCargoQuantityToDisplayQuantity(CargoID cargo, uint quantity);
 uint ConvertDisplayQuantityToCargoQuantity(CargoID cargo, uint quantity);

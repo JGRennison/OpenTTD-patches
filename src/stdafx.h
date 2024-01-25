@@ -56,6 +56,7 @@
 #include <climits>
 #include <cassert>
 #include <memory>
+#include <span>
 #include <string>
 #include <inttypes.h>
 

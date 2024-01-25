@@ -14,7 +14,6 @@
 #include "../fileio_type.h"
 #include "../fios.h"
 #include "../strings_type.h"
-#include "../core/span_type.hpp"
 #include "../core/ring_buffer.hpp"
 #include <optional>
 #include <string>
@@ -83,10 +82,10 @@ struct ChunkHandler {
 using ChunkHandlerRef = std::reference_wrapper<const ChunkHandler>;
 
 /** A table of ChunkHandler entries. */
-using ChunkHandlerTable = span<const ChunkHandlerRef>;
+using ChunkHandlerTable = std::span<const ChunkHandlerRef>;
 
 /** A table of SaveLoadCompat entries. */
-using SaveLoadCompatTable = span<const struct SaveLoadCompat>;
+using SaveLoadCompatTable = std::span<const struct SaveLoadCompat>;
 
 /** Handler for saving/loading an object to/from disk. */
 class SaveLoadHandler {

@@ -11,7 +11,6 @@
 #define SERIALISATION_HPP
 
 #include "bitmath_func.hpp"
-#include "span_type.hpp"
 #include "../string_type.h"
 #include "../string_func.h"
 
@@ -269,13 +268,13 @@ public:
 	 * @param size   The size of the data.
 	 * @return The view of the data.
 	 */
-	span<const uint8_t> Recv_binary_view(size_t size)
+	std::span<const uint8_t> Recv_binary_view(size_t size)
 	{
 		if (!this->CanRecvBytes(size, true)) return {};
 
 		auto &pos = static_cast<T *>(this)->GetDeserialisationPosition();
 
-		span<const uint8_t> view { &this->GetBuffer()[pos], size };
+		std::span<const uint8_t> view { &this->GetBuffer()[pos], size };
 		pos += (decltype(pos)) size;
 
 		return view;
@@ -288,7 +287,7 @@ public:
 	 */
 	std::vector<uint8_t> Recv_binary(size_t size)
 	{
-		span<const uint8_t> view = this->Recv_binary_view(size);
+		std::span<const uint8_t> view = this->Recv_binary_view(size);
 
 		return { view.begin(), view.end() };
 	}
@@ -297,14 +296,14 @@ public:
 	 * Returns a view of a length-prefixed binary buffer from the packet.
 	 * @return The binary buffer.
 	 */
-	span<const uint8_t> Recv_buffer_view()
+	std::span<const uint8_t> Recv_buffer_view()
 	{
 		uint16_t length = this->Recv_uint16();
 
 		if (!this->CanRecvBytes(length, true)) return {};
 
 		auto &pos = static_cast<T *>(this)->GetDeserialisationPosition();
-		span<const uint8_t> buffer { &this->GetBuffer()[pos], length };
+		std::span<const uint8_t> buffer { &this->GetBuffer()[pos], length };
 		pos += length;
 
 		return buffer;
@@ -316,7 +315,7 @@ public:
 	 */
 	std::vector<uint8_t> Recv_buffer()
 	{
-		span<const uint8_t> view = this->Recv_buffer_view();
+		std::span<const uint8_t> view = this->Recv_buffer_view();
 
 		return { view.begin(), view.end() };
 	}

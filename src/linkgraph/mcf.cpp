@@ -134,8 +134,9 @@ public:
 	void SetNode(NodeID, NodeID node)
 	{
 		Node node_anno = this->job[node];
-		this->i = node_anno.GetEdges().begin();
-		this->end = node_anno.GetEdges().end();
+		std::span<Edge> edges = node_anno.GetEdges();
+		this->i = edges.data();
+		this->end = edges.data() + edges.size();
 		this->node = node;
 	}
 

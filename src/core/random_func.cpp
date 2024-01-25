@@ -10,6 +10,7 @@
 #include "../stdafx.h"
 #include "random_func.hpp"
 #include "bitmath_func.hpp"
+#include <bit>
 
 #ifdef RANDOM_DEBUG
 #include "../network/network.h"
@@ -33,8 +34,8 @@ uint32_t Randomizer::Next()
 	const uint32_t s = this->state[0];
 	const uint32_t t = this->state[1];
 
-	this->state[0] = s + ROR(t ^ 0x1234567F, 7) + 1;
-	return this->state[1] = ROR(s, 3) - 1;
+	this->state[0] = s + std::rotr(t ^ 0x1234567F, 7) + 1;
+	return this->state[1] = std::rotr(s, 3) - 1;
 }
 
 /**

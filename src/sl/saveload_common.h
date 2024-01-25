@@ -11,18 +11,17 @@
 #define SL_SAVELOAD_COMMON_H
 
 #include "../strings_type.h"
-#include "../core/span_type.hpp"
 
 struct SaveLoad;
 
 /** A table of SaveLoad entries. */
-using SaveLoadTable = span<const SaveLoad>;
+using SaveLoadTable = std::span<const SaveLoad>;
 
 namespace upstream_sl {
 	struct SaveLoad;
 
 	/** A table of SaveLoad entries. */
-	using SaveLoadTable = span<const SaveLoad>;
+	using SaveLoadTable = std::span<const SaveLoad>;
 }
 
 /** SaveLoad versions

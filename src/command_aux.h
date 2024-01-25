@@ -61,14 +61,14 @@ struct CommandAuxiliarySerialised : public CommandAuxiliaryBase {
 		return new CommandAuxiliarySerialised(*this);
 	}
 
-	virtual std::optional<span<const uint8_t>> GetDeserialisationSrc() const override { return span<const uint8_t>(this->serialised_data.data(), this->serialised_data.size()); }
+	virtual std::optional<std::span<const uint8_t>> GetDeserialisationSrc() const override { return std::span<const uint8_t>(this->serialised_data.data(), this->serialised_data.size()); }
 
 	virtual void Serialise(CommandSerialisationBuffer &buffer) const override { buffer.Send_binary(this->serialised_data.data(), this->serialised_data.size()); }
 };
 
 template <typename T>
 struct CommandAuxiliarySerialisable : public CommandAuxiliaryBase {
-	virtual std::optional<span<const uint8_t>> GetDeserialisationSrc() const override { return {}; }
+	virtual std::optional<std::span<const uint8_t>> GetDeserialisationSrc() const override { return {}; }
 
 	CommandAuxiliaryBase *Clone() const override
 	{
@@ -86,10 +86,10 @@ public:
 	inline CommandCost Load(const CommandAuxiliaryBase *base)
 	{
 		if (base == nullptr) return CMD_ERROR;
-		std::optional<span<const uint8_t>> deserialise_from = base->GetDeserialisationSrc();
+		std::optional<std::span<const uint8_t>> deserialise_from = base->GetDeserialisationSrc();
 		if (deserialise_from.has_value()) {
 			this->store = T();
-			CommandDeserialisationBuffer buffer(deserialise_from->begin(), deserialise_from->size());
+			CommandDeserialisationBuffer buffer(deserialise_from->data(), deserialise_from->size());
 			CommandCost res = this->store->Deserialise(buffer);
 			if (res.Failed()) return res;
 			if (buffer.error || buffer.pos != buffer.size) {

@@ -178,7 +178,7 @@ static void LoadSpriteTables()
 	const GraphicsSet *used_set = BaseGraphics::GetUsedSet();
 
 	SpriteFile &baseset_file = LoadGrfFile(used_set->files[GFT_BASE].filename, 0, PAL_DOS != used_set->palette);
-	if (StrStartsWith(used_set->name, "original_")) {
+	if (used_set->name.starts_with("original_")) {
 		baseset_file.flags |= SFF_OPENTTDGRF;
 	}
 

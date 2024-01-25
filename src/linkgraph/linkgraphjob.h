@@ -121,8 +121,8 @@ private:
 		uint received_demand;    ///< Received demand towards this node.
 		PathList paths;          ///< Paths through this node, sorted so that those with flow == 0 are in the back.
 		FlowStatMap flows;       ///< Planned flows to other nodes.
-		span<DemandAnnotation> demands; ///< Demand annotations belonging to this node.
-		span<Edge> edges;        ///< Edges with annotations belonging to this node.
+		std::span<DemandAnnotation> demands; ///< Demand annotations belonging to this node.
+		std::span<Edge> edges;               ///< Edges with annotations belonging to this node.
 		void Init(uint supply);
 	};
 
@@ -232,12 +232,12 @@ public:
 			this->node_anno.received_demand += amount;
 		}
 
-		span<DemandAnnotation> GetDemandAnnotations() const
+		std::span<DemandAnnotation> GetDemandAnnotations() const
 		{
 			return this->node_anno.demands;
 		}
 
-		void SetDemandAnnotations(span<DemandAnnotation> demands)
+		void SetDemandAnnotations(std::span<DemandAnnotation> demands)
 		{
 			this->node_anno.demands = demands;
 		}
@@ -252,7 +252,7 @@ public:
 			return empty_edge;
 		}
 
-		span<Edge> GetEdges()
+		std::span<Edge> GetEdges()
 		{
 			return this->node_anno.edges;
 		}

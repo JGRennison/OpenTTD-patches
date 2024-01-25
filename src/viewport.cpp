@@ -119,6 +119,7 @@
 #include "core/backup_type.hpp"
 #include "3rdparty/robin_hood/robin_hood.h"
 
+#include <bit>
 #include <map>
 #include <vector>
 #include <math.h>
@@ -6670,7 +6671,7 @@ static LineSnapPoint LineSnapPointAtRailTrackEndpoint(TileIndex tile, DiagDirect
 	SetBit(ret.dirs, DiagDirToDir(exit_dir));
 	SetBit(ret.dirs, ChangeDir(DiagDirToDir(exit_dir), DIRDIFF_45LEFT));
 	SetBit(ret.dirs, ChangeDir(DiagDirToDir(exit_dir), DIRDIFF_45RIGHT));
-	if (bidirectional) ret.dirs |= ROR<uint8_t>(ret.dirs, DIRDIFF_REVERSE);
+	if (bidirectional) ret.dirs |= std::rotr<uint8_t>(ret.dirs, DIRDIFF_REVERSE);
 
 	return ret;
 }
@@ -6785,7 +6786,7 @@ static void SetRailSnapTile(TileIndex tile)
 	for (DiagDirection dir = DIAGDIR_BEGIN; dir < DIAGDIR_END; dir++) {
 		_tile_snap_points.push_back(LineSnapPointAtRailTrackEndpoint(tile, dir, false));
 		LineSnapPoint &point = _tile_snap_points.back();
-		point.dirs = ROR<uint8_t>(point.dirs, DIRDIFF_REVERSE);
+		point.dirs = std::rotr<uint8_t>(point.dirs, DIRDIFF_REVERSE);
 	}
 }
 

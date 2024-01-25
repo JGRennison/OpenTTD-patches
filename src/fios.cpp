@@ -749,7 +749,7 @@ FiosNumberedSaveName::FiosNumberedSaveName(const std::string &prefix) : prefix(p
 
 	/* Callback for FiosFileScanner. */
 	static fios_getlist_callback_proc *proc = [](SaveLoadOperation fop, const std::string &file, const char *ext, char *title, const char *last) {
-		if (StrEqualsIgnoreCase(ext, ".sav") && StrStartsWith(file, _prefix)) return FIOS_TYPE_FILE;
+		if (StrEqualsIgnoreCase(ext, ".sav") && file.starts_with(_prefix)) return FIOS_TYPE_FILE;
 		return FIOS_TYPE_INVALID;
 	};
 

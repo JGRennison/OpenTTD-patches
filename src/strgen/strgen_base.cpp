@@ -16,6 +16,7 @@
 
 #include "strgen.h"
 
+#include <bit>
 
 #include "../table/strgen_tables.h"
 
@@ -109,7 +110,7 @@ LangString *StringData::Find(const std::string_view s)
 uint StringData::VersionHashStr(uint hash, const char *s) const
 {
 	for (; *s != '\0'; s++) {
-		hash = ROL(hash, 3) ^ *s;
+		hash = std::rotl(hash, 3) ^ *s;
 		hash = (hash & 1 ? hash >> 1 ^ 0xDEADBEEF : hash >> 1);
 	}
 	return hash;
