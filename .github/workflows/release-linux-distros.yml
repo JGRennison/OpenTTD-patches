@@ -18,8 +18,8 @@ jobs:
         include:
         - container_image: "ubuntu:20.04"
           bundle_name: "focal"
-          compiler: "g++"
-          c_compiler: "gcc"
+          compiler: "g++-10"
+          c_compiler: "gcc-10"
         - container_image: "ubuntu:22.04"
           bundle_name: "jammy"
           compiler: "g++"
