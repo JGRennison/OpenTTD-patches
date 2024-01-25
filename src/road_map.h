@@ -319,7 +319,7 @@ inline bool HasTownOwnedRoad(TileIndex t)
 }
 
 /** Which directions are disallowed ? */
-enum DisallowedRoadDirections {
+enum DisallowedRoadDirections : uint8_t {
 	DRD_NONE,       ///< None of the directions are disallowed
 	DRD_SOUTHBOUND, ///< All southbound traffic is disallowed (Trackdir 8-13 is allowed)
 	DRD_NORTHBOUND, ///< All northbound traffic is disallowed (Trackdir 0-5 is allowed)

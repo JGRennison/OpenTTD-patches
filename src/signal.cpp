@@ -360,7 +360,7 @@ static SigInfo ExploreSegment(Owner owner)
 					Track track = TrackBitsToTrack(tracks_masked); // mask TRACK_BIT_X and Y too
 					if (HasSignalOnTrack(tile, track)) { // now check whole track, not trackdir
 						SignalType sig = GetSignalType(tile, track);
-						Trackdir trackdir = (Trackdir)FindFirstBit((tracks * 0x101) & _enterdir_to_trackdirbits[enterdir]);
+						Trackdir trackdir = (Trackdir)FindFirstBit((tracks * 0x101U) & _enterdir_to_trackdirbits[enterdir]);
 						Trackdir reversedir = ReverseTrackdir(trackdir);
 						/* add (tile, reversetrackdir) to 'to-be-updated' set when there is
 						 * ANY conventional signal in REVERSE direction
@@ -616,7 +616,7 @@ uint8_t GetForwardAspectFollowingTrack(TileIndex tile, Trackdir trackdir)
 					tracks = reserved_bits;
 				}
 
-				Track track = (Track)FIND_FIRST_BIT(tracks);
+				Track track = (Track)FindFirstBit(tracks);
 				trackdir = TrackEnterdirToTrackdir(track, ReverseDiagDir(enterdir));
 
 				if (HasSignals(tile)) {
@@ -673,7 +673,7 @@ uint8_t GetForwardAspectFollowingTrack(TileIndex tile, Trackdir trackdir)
 					tracks = reserved_bits;
 				}
 
-				Track track = (Track)FIND_FIRST_BIT(tracks);
+				Track track = (Track)FindFirstBit(tracks);
 				trackdir = TrackEnterdirToTrackdir(track, ReverseDiagDir(enterdir));
 
 				if (IsTunnelBridgeWithSignalSimulation(tile) && HasTrack(GetAcrossTunnelBridgeTrackBits(tile), track)) {
@@ -1336,7 +1336,7 @@ void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8_t aspect)
 					tracks = reserved_bits;
 				}
 
-				Track track = (Track)FIND_FIRST_BIT(tracks);
+				Track track = (Track)FindFirstBit(tracks);
 				trackdir = TrackEnterdirToTrackdir(track, ReverseDiagDir(enterdir));
 
 				if (HasSignals(tile)) {
@@ -1404,7 +1404,7 @@ void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8_t aspect)
 					tracks = reserved_bits;
 				}
 
-				Track track = (Track)FIND_FIRST_BIT(tracks);
+				Track track = (Track)FindFirstBit(tracks);
 				trackdir = TrackEnterdirToTrackdir(track, ReverseDiagDir(enterdir));
 
 				if (TrackdirEntersTunnelBridge(tile, trackdir)) {

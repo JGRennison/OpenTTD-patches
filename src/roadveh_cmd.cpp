@@ -1255,7 +1255,7 @@ static Trackdir RoadFindPathToDest(RoadVehicle *v, TileIndex tile, DiagDirection
 			/* Vehicle expected a choice here, invalidate its path. */
 			v->cached_path->clear();
 		}
-		return_track(FindFirstBit2x64(trackdirs));
+		return_track(FindFirstBit(trackdirs));
 	}
 
 	/* Path cache is out of date, clear it */

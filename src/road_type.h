@@ -52,7 +52,7 @@ DECLARE_ENUM_AS_BIT_SET(RoadTypes)
  * This enumeration defines the possible road parts which
  * can be build on a tile.
  */
-enum RoadBits {
+enum RoadBits : uint8_t {
 	ROAD_NONE = 0U,                  ///< No road-part is build
 	ROAD_NW   = 1U,                  ///< North-west part
 	ROAD_SW   = 2U,                  ///< South-west part

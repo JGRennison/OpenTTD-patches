@@ -10,6 +10,7 @@
 #ifndef BITMATH_FUNC_HPP
 #define BITMATH_FUNC_HPP
 
+#include <bit>
 #include <type_traits>
 
 /**
@@ -186,110 +187,38 @@ inline T ToggleBit(T &x, const uint8_t y)
 	return x = (T)(x ^ ((T)1U << y));
 }
 
-#ifdef WITH_BITMATH_BUILTINS
-
-#define FIND_FIRST_BIT(x) FindFirstBit<uint>(x)
-
-#else
-
-/** Lookup table to check which bit is set in a 6 bit variable */
-extern const uint8_t _ffb_64[64];
-
 /**
- * Returns the first non-zero bit in a 6-bit value (from right).
+ * Search the first set bit in a value.
+ * When no bit is set, it returns 0.
  *
- * Returns the position of the first bit that is not zero, counted from the
- * LSB. Ie, 110100 returns 2, 000001 returns 0, etc. When x == 0 returns
- * 0.
- *
- * @param x The 6-bit value to check the first zero-bit
- * @return The first position of a bit started from the LSB or 0 if x is 0.
- */
-#define FIND_FIRST_BIT(x) _ffb_64[(x) & 0x3F]
-
-#endif
-
-/**
- * Search the first set bit in an integer variable.
- *
- * @param value The value to search
- * @return The position of the first bit set, or 0 when value is 0
+ * @param x The value to search.
+ * @return The position of the first bit set.
  */
 template <typename T>
-inline uint8_t FindFirstBit(T value)
+constexpr uint8_t FindFirstBit(T x)
 {
-	static_assert(sizeof(T) <= sizeof(unsigned long long));
-#ifdef WITH_BITMATH_BUILTINS
-	if (value == 0) return 0;
-	typename std::make_unsigned<T>::type unsigned_value = value;
-	if (sizeof(T) <= sizeof(unsigned int)) {
-		return __builtin_ctz(unsigned_value);
-	} else if (sizeof(T) == sizeof(unsigned long)) {
-		return __builtin_ctzl(unsigned_value);
+	if (x == 0) return 0;
+
+	if constexpr (std::is_enum_v<T>) {
+		return std::countr_zero<std::underlying_type_t<T>>(x);
 	} else {
-		return __builtin_ctzll(unsigned_value);
+		return std::countr_zero(x);
 	}
-#else
-	if (sizeof(T) <= sizeof(uint32_t)) {
-		extern uint8_t FindFirstBit32(uint32_t x);
-		return FindFirstBit32(value);
-	} else {
-		extern uint8_t FindFirstBit64(uint64_t x);
-		return FindFirstBit64(value);
-	}
-#endif
 }
 
 /**
- * Search the last set bit in an integer variable.
+ * Search the last set bit in a value.
+ * When no bit is set, it returns 0.
  *
- * @param value The value to search
- * @return The position of the last bit set, or 0 when value is 0
+ * @param x The value to search.
+ * @return The position of the last bit set.
  */
 template <typename T>
-inline uint8_t FindLastBit(T value)
+constexpr uint8_t FindLastBit(T x)
 {
-	static_assert(sizeof(T) <= sizeof(unsigned long long));
-#ifdef WITH_BITMATH_BUILTINS
-	if (value == 0) return 0;
-	typename std::make_unsigned<T>::type unsigned_value = value;
-	if (sizeof(T) <= sizeof(unsigned int)) {
-		return __builtin_clz(1) - __builtin_clz(unsigned_value);
-	} else if (sizeof(T) == sizeof(unsigned long)) {
-		return __builtin_clzl(1) - __builtin_clzl(unsigned_value);
-	} else {
-		return __builtin_clzll(1) - __builtin_clzll(unsigned_value);
-	}
-#else
-	extern uint8_t FindLastBit64(uint64_t x);
-	return FindLastBit64(value);
-#endif
-}
+	if (x == 0) return 0;
 
-
-/**
- * Finds the position of the first non-zero bit in an integer.
- *
- * This function returns the position of the first bit set in the
- * integer. It does only check the bits of the bitmask
- * 0x3F3F (0011111100111111).
- *
- * @param value The value to check the first bits
- * @return The position of the first bit which is set
- * @see FIND_FIRST_BIT
- */
-inline uint8_t FindFirstBit2x64(const int value)
-{
-#ifdef WITH_BITMATH_BUILTINS
-	return FindFirstBit(value & 0x3F3F);
-#else
-	if (value == 0) return 0;
-	if ((value & 0x3F) == 0) {
-		return FIND_FIRST_BIT((value >> 8) & 0x3F) + 8;
-	} else {
-		return FIND_FIRST_BIT(value & 0x3F);
-	}
-#endif
+	return std::countl_zero<T>(1) - std::countl_zero<T>(x);
 }
 
 /**
@@ -315,32 +244,13 @@ inline T KillFirstBit(T value)
  * @return the number of bits.
  */
 template <typename T>
-inline uint CountBits(T value)
+constexpr uint CountBits(T value)
 {
-	static_assert(sizeof(T) <= sizeof(unsigned long long));
-#ifdef WITH_BITMATH_BUILTINS
-	typename std::make_unsigned<T>::type unsigned_value = value;
-	if (sizeof(T) <= sizeof(unsigned int)) {
-		return __builtin_popcount(unsigned_value);
-	} else if (sizeof(T) == sizeof(unsigned long)) {
-		return __builtin_popcountl(unsigned_value);
+	if constexpr (std::is_enum_v<T>) {
+		return std::popcount<std::underlying_type_t<T>>(value);
 	} else {
-		return __builtin_popcountll(unsigned_value);
+		return std::popcount(value);
 	}
-#else
-	uint num;
-
-	/* This loop is only called once for every bit set by clearing the lowest
-	 * bit in each loop. The number of bits is therefore equal to the number of
-	 * times the loop was called. It was found at the following website:
-	 * http://graphics.stanford.edu/~seander/bithacks.html */
-
-	for (num = 0; value != 0; num++) {
-		value &= (T)(value - 1);
-	}
-
-	return num;
-#endif
 }
 
 /**
@@ -353,8 +263,8 @@ template <typename T>
 inline bool IsOddParity(T value)
 {
 	static_assert(sizeof(T) <= sizeof(unsigned long long));
-#ifdef WITH_BITMATH_BUILTINS
 	typename std::make_unsigned<T>::type unsigned_value = value;
+#ifdef WITH_BITMATH_BUILTINS
 	if (sizeof(T) <= sizeof(unsigned int)) {
 		return __builtin_parity(unsigned_value);
 	} else if (sizeof(T) == sizeof(unsigned long)) {
@@ -363,7 +273,7 @@ inline bool IsOddParity(T value)
 		return __builtin_parityll(unsigned_value);
 	}
 #else
-	return CountBits<T>(value) & 1;
+	return CountBits(unsigned_value) & 1;
 #endif
 }
 

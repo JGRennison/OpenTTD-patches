@@ -68,7 +68,7 @@ static_assert(HZB_END == 5);
 
 DECLARE_POSTFIX_INCREMENT(HouseZonesBits)
 
-enum HouseZones {                  ///< Bit  Value       Meaning
+enum HouseZones : uint16_t {        ///< Bit  Value       Meaning
 	HZ_NOZNS             = 0x0000,  ///<       0          This is just to get rid of zeros, meaning none
 	HZ_ZON1              = 1U << HZB_TOWN_EDGE,    ///< 0..4 1,2,4,8,10  which town zones the building can be built in, Zone1 been the further suburb
 	HZ_ZON2              = 1U << HZB_TOWN_OUTSKIRT,

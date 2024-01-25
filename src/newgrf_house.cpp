@@ -461,7 +461,7 @@ static uint32_t GetDistanceFromNearbyHouse(uint8_t parameter, TileIndex tile, Ho
 		case 0x41: return 0;
 
 		/* Town zone */
-		case 0x42: return FIND_FIRST_BIT(HouseSpec::Get(this->house_id)->building_availability & HZ_ZONALL); // first available
+		case 0x42: return FindFirstBit<HouseZones>(HouseSpec::Get(this->house_id)->building_availability & HZ_ZONALL); // first available
 
 		/* Terrain type */
 		case 0x43: return _settings_game.game_creation.landscape == LT_ARCTIC && (HouseSpec::Get(house_id)->building_availability & (HZ_SUBARTC_ABOVE | HZ_SUBARTC_BELOW)) == HZ_SUBARTC_ABOVE ? 4 : 0;

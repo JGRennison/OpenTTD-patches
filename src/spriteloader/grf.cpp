@@ -295,7 +295,7 @@ uint8_t LoadSpriteV2(SpriteLoader::SpriteCollection &sprite, SpriteFile &file, s
 				if (below != 0) {
 					SetBit(keep_levels, FindLastBit(below));
 				} else {
-					SetBit(keep_levels, FindFirstBit((~below) & available_levels));
+					SetBit(keep_levels, FindFirstBit<uint8_t>((~below) & available_levels));
 				}
 			}
 			skip_levels = available_levels & (~keep_levels);

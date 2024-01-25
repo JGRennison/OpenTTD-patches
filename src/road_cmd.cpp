@@ -224,7 +224,7 @@ static DiagDirection OneWaySideJunctionRoadRoadBitsToDiagDir(RoadBits bits)
 	 * ROAD_NW (bit 0) -> DIAGDIR_SW (2)
 	 * ROAD_NE (bit 3) -> DIAGDIR_NW (3)
 	 */
-	uint8_t bit = FIND_FIRST_BIT(bits ^ ROAD_ALL);
+	uint8_t bit = FindFirstBit(bits ^ ROAD_ALL);
 	bit ^= 3;
 	return (DiagDirection)((bit + 3 + (_settings_game.vehicle.road_side * 2)) % 4);
 }
@@ -332,7 +332,7 @@ static InterpolateRoadResult InterpolateRoadFollowRoadBit(TileIndex tile, uint8_
 		RoadBits remaining = rb & ~incoming;
 		if (!HasExactlyOneBit(remaining)) return IRR_NONE;
 		tile = next;
-		bit = FIND_FIRST_BIT(remaining);
+		bit = FindFirstBit(remaining);
 	} while (tile != start);
 	return IRR_NONE;
 }
@@ -344,7 +344,7 @@ static void InterpolateRoadFollowRoadBitSetState(TileIndex tile, uint8_t bit, In
 		if (irr == IRR_NONE) {
 			SetRoadCachedOneWayState(tile, RCOWS_NORMAL);
 		} else {
-			uint8_t inbit = FIND_FIRST_BIT(GetAnyRoadBits(tile, RTT_ROAD, true) & ~(1 << bit));
+			uint8_t inbit = FindFirstBit(GetAnyRoadBits(tile, RTT_ROAD, true) & ~static_cast<RoadBits>(1 << bit));
 			/*   inbit    bit      piece    Outgoing Trackdir       IRR_IN case
 			 *
 			 *    0        1       ROAD_W   TRACKDIR_LEFT_S         RCOWS_NON_JUNCTION_A
@@ -382,7 +382,7 @@ static void InterpolateRoadFollowRoadBitSetState(TileIndex tile, uint8_t bit, In
 		RoadBits remaining = rb & ~incoming;
 		if (!HasExactlyOneBit(remaining)) return;
 		tile = next;
-		bit = FIND_FIRST_BIT(remaining);
+		bit = FindFirstBit(remaining);
 	} while (tile != start);
 }
 
@@ -396,8 +396,8 @@ static void InterpolateRoadCachedOneWayStates()
 		const RoadBits bits = GetAnyRoadBits(tile, RTT_ROAD, true);
 		if (CountBits(bits) != 2) continue;
 
-		uint8_t first_bit = FIND_FIRST_BIT(bits);
-		uint8_t second_bit = FIND_FIRST_BIT(KillFirstBit(bits));
+		uint8_t first_bit = FindFirstBit(bits);
+		uint8_t second_bit = FindFirstBit(KillFirstBit(bits));
 		InterpolateRoadResult first_irr = InterpolateRoadFollowRoadBit(tile, first_bit);
 		InterpolateRoadResult second_irr = first_irr;
 		if (first_irr != IRR_NONE) {
@@ -2734,7 +2734,7 @@ static TrackStatus GetTileTrackStatus_Road(TileIndex tile, TransportType mode, u
 							case RCOWS_SIDE_JUNCTION:
 							case RCOWS_SIDE_JUNCTION_NO_EXIT:
 								trackdirbits = (TrackdirBits)((_road_trackbits[bits] * 0x101) & ~(_settings_game.vehicle.road_side ? left_turns : right_turns));
-								if (rcows == RCOWS_SIDE_JUNCTION_NO_EXIT) trackdirbits &= ~no_exit_turns[FIND_FIRST_BIT(bits ^ ROAD_ALL) & 3];
+								if (rcows == RCOWS_SIDE_JUNCTION_NO_EXIT) trackdirbits &= ~no_exit_turns[FindFirstBit(bits ^ ROAD_ALL) & 3];
 								break;
 
 							default:

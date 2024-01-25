@@ -583,7 +583,7 @@ inline void SetTunnelBridgeRestrictedSignal(TileIndex tile, bool is_restricted)
 
 inline Trackdir GetTunnelBridgeExitTrackdir(TileIndex t, DiagDirection tunnel_bridge_dir)
 {
-	return TrackEnterdirToTrackdir((Track)FIND_FIRST_BIT(GetAcrossTunnelBridgeTrackBits(t)), ReverseDiagDir(tunnel_bridge_dir));
+	return TrackEnterdirToTrackdir((Track)FindFirstBit(GetAcrossTunnelBridgeTrackBits(t)), ReverseDiagDir(tunnel_bridge_dir));
 }
 
 inline Trackdir GetTunnelBridgeExitTrackdir(TileIndex t)
@@ -593,7 +593,7 @@ inline Trackdir GetTunnelBridgeExitTrackdir(TileIndex t)
 
 inline Trackdir GetTunnelBridgeEntranceTrackdir(TileIndex t, DiagDirection tunnel_bridge_dir)
 {
-	return TrackExitdirToTrackdir((Track)FIND_FIRST_BIT(GetAcrossTunnelBridgeTrackBits(t)), tunnel_bridge_dir);
+	return TrackExitdirToTrackdir((Track)FindFirstBit(GetAcrossTunnelBridgeTrackBits(t)), tunnel_bridge_dir);
 }
 
 inline Trackdir GetTunnelBridgeEntranceTrackdir(TileIndex t)

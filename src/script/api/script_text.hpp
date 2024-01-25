@@ -130,13 +130,32 @@ public:
 private:
 	using ScriptTextRef = ScriptObjectRef<ScriptText>;
 	using StringIDList = std::vector<StringID>;
+	using Param = std::variant<SQInteger, std::string, ScriptTextRef>;
+
+	struct ParamCheck {
+		StringID owner;
+		int idx;
+		Param *param;
+
+		ParamCheck(StringID owner, int idx, Param *param) : owner(owner), idx(idx), param(param) {}
+	};
+
+	using ParamList = std::vector<ParamCheck>;
+	using ParamSpan = std::span<ParamCheck>;
 
 	StringID string;
-	std::variant<SQInteger, std::string, ScriptTextRef> param[SCRIPT_TEXT_MAX_PARAMETERS];
+	Param param[SCRIPT_TEXT_MAX_PARAMETERS];
 	int paramc;
 
 	void _TextParamError(std::string msg);
-	void _GetEncodedTextParamsTraditional(std::back_insert_iterator<std::string> &output, int &param_count, StringIDList &seen_ids, const std::string &name);
+
+	/**
+	 * Internal function to recursively fill a list of parameters.
+	 * The parameters are added as _GetEncodedText used to encode them
+	 *  before the addition of parameter validation.
+	 * @param params The list of parameters to fill.
+	 */
+	void _FillParamList(ParamList &params);
 
 	/**
 	 * Internal function for recursive calling this function over multiple
@@ -145,7 +164,9 @@ private:
 	 * @param param_count The number of parameters that are in the string.
 	 * @param seen_ids The list of seen StringID.
 	 */
-	void _GetEncodedText(std::back_insert_iterator<std::string> &output, int &param_count, StringIDList &seen_ids);
+	void _GetEncodedText(std::back_insert_iterator<std::string> &output, int &param_count, StringIDList &seen_ids, ParamSpan args);
+
+	void _GetEncodedTextTraditional(std::back_insert_iterator<std::string> &output, int &param_count, StringIDList &seen_ids);
 
 	/**
 	 * Set a parameter, where the value is the first item on the stack.
