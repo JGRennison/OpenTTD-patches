@@ -136,6 +136,7 @@ private:
 	int paramc;
 
 	void _TextParamError(std::string msg);
+	void _GetEncodedTextParamsTraditional(std::back_insert_iterator<std::string> &output, int &param_count, StringIDList &seen_ids, const std::string &name);
 
 	/**
 	 * Internal function for recursive calling this function over multiple
