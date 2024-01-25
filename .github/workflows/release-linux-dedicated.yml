@@ -116,9 +116,6 @@ jobs:
       run: |
         sed -i 's/generic/dedicated/g' cmake/InstallAndPackage.cmake
 
-    - name: Install GCC problem matcher
-      uses: ammaraskar/gcc-problem-matcher@master
-
     - name: Build
       run: |
         mkdir -p build
