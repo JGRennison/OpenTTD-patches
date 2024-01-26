@@ -2697,6 +2697,32 @@ uint ScaleQuantity(uint amount, int cf, int fine, bool allow_trunc)
 	return amount;
 }
 
+int PercentageToScaleQuantityFactor(uint percentage)
+{
+	const uint32_t adj[11] = {65536, 70239, 75281, 80684, 86475, 92681, 99334, 106463, 114104, 122294, 65536 * 2};
+
+	const uint64_t base = (((uint64_t)1) << 32);
+	uint64_t scale = CeilDivT<uint64_t>(base, 100) * percentage;
+	const uint8_t first_bit = FindLastBit(scale);
+	if (first_bit >= 16) {
+		scale >>= (first_bit - 16);
+	} else {
+		scale <<= (16 - first_bit);
+	}
+
+	uint32_t best_distance = INT32_MAX;
+	int best = 0;
+	for (int i = 0; i < 11; i++) {
+		uint32_t distance = Delta((uint32_t)scale, adj[i]);
+		if (distance < best_distance) {
+			best = i;
+			best_distance = distance;
+		}
+	}
+
+	return ((((int)first_bit) - 32) * 10) + best;
+}
+
 uint CargoScaler::ScaleAllowTrunc(uint num)
 {
 	return this->ScaleWithBias(num, Random() & 0xFFFF);

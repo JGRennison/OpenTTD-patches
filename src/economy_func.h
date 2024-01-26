@@ -56,6 +56,8 @@ inline bool EconomyIsInRecession()
 uint ScaleQuantity(uint amount, int scale_factor, bool allow_trunc = false);
 uint ScaleQuantity(uint amount, int cf, int fine, bool allow_trunc = false);
 
+int PercentageToScaleQuantityFactor(uint percentage);
+
 void UpdateCargoScalers();
 
 #endif /* ECONOMY_FUNC_H */
