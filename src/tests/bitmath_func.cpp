@@ -13,8 +13,6 @@
 
 #include "../core/bitmath_func.hpp"
 
-extern uint8_t FindLastBit64(uint64_t x);
-
 TEST_CASE("FindLastBit tests")
 {
 	CHECK(FindLastBit<uint8_t>(0) == 0);
