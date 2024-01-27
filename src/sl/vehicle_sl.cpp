@@ -1480,7 +1480,7 @@ void SlProcessVENC()
 		if (a == nullptr) continue;
 		if (a->acache.cached_max_range != venc.cached_max_range) {
 			a->acache.cached_max_range = venc.cached_max_range;
-			a->acache.cached_max_range_sqr = venc.cached_max_range * venc.cached_max_range;
+			a->acache.cached_max_range_sqr = (uint32_t)venc.cached_max_range * (uint32_t)venc.cached_max_range;
 			LogVehicleVENCMessage(a, "cached_max_range");
 		}
 	}

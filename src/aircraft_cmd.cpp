@@ -653,7 +653,7 @@ void UpdateAircraftCache(Aircraft *v, bool update_range)
 	if (update_range) {
 		v->acache.cached_max_range = GetVehicleProperty(v, PROP_AIRCRAFT_RANGE, AircraftVehInfo(v->engine_type)->max_range);
 		/* Squared it now so we don't have to do it later all the time. */
-		v->acache.cached_max_range_sqr = v->acache.cached_max_range * v->acache.cached_max_range;
+		v->acache.cached_max_range_sqr = (uint32_t)v->acache.cached_max_range * (uint32_t)v->acache.cached_max_range;
 	}
 }
 
