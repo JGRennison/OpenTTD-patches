@@ -40,6 +40,7 @@
 #include "newgrf_engine.h"
 #include "tbtr_template_vehicle_func.h"
 #include "core/backup_type.hpp"
+#include "gfx_layout.h"
 #include "core/y_combinator.hpp"
 #include <stack>
 #include <charconv>
@@ -2293,6 +2294,8 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 		_current_collator.reset();
 	}
 #endif /* WITH_ICU_I18N */
+
+	Layouter::Initialize();
 
 	/* Some lists need to be sorted again after a language change. */
 	ReconsiderGameScriptLanguage();
