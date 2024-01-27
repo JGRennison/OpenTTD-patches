@@ -27,6 +27,8 @@
  * Version: Bytes:  Description:
  *   all      1       the version of this packet's structure
  *
+ *   7+       8       amount of ticks this game has been running unpaused.
+ *
  *   6+       1       type of storage for the NewGRFs below:
  *                      0 = NewGRF ID and MD5 checksum.
  *                          Used as default for version 5 and below, and for
@@ -94,6 +96,7 @@ struct NetworkServerGameInfo {
 	GRFConfig *grfconfig;        ///< List of NewGRF files used
 	Date start_date;             ///< When the game started
 	Date game_date;              ///< Current date
+	uint64_t ticks_playing;      ///< Amount of ticks the game has been running unpaused.
 	uint32_t map_width;          ///< Map width
 	uint32_t map_height;         ///< Map height
 	std::string server_name;     ///< Server name

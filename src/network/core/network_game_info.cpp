@@ -158,6 +158,7 @@ const NetworkServerGameInfo *GetCurrentNetworkServerGameInfo()
 	_network_game_info.companies_on  = (byte)Company::GetNumItems();
 	_network_game_info.spectators_on = NetworkSpectatorCount();
 	_network_game_info.game_date     = _date;
+	_network_game_info.ticks_playing = _scaled_tick_counter;
 	return &_network_game_info;
 }
 
@@ -201,6 +202,9 @@ void SerializeNetworkGameInfo(Packet *p, const NetworkServerGameInfo *info, bool
 
 	/* Update the documentation in game_info.h on changes
 	 * to the NetworkGameInfo wire-protocol! */
+
+	/* NETWORK_GAME_INFO_VERSION = 7 */
+	p->Send_uint64(info->ticks_playing);
 
 	/* NETWORK_GAME_INFO_VERSION = 6 */
 	p->Send_uint8(send_newgrf_names ? NST_GRFID_MD5_NAME : NST_GRFID_MD5);
