@@ -2571,6 +2571,8 @@ struct SurveyResultTextfileWindow : public TextfileWindow {
 
 	SurveyResultTextfileWindow(TextfileType file_type) : TextfileWindow(file_type)
 	{
+		this->ConstructWindow();
+
 		auto result = _survey.CreatePayload(NetworkSurveyHandler::Reason::PREVIEW, true);
 		this->LoadText(result);
 		this->InvalidateData();

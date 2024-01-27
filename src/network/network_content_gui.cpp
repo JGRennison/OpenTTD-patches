@@ -44,6 +44,8 @@ struct ContentTextfileWindow : public TextfileWindow {
 
 	ContentTextfileWindow(TextfileType file_type, const ContentInfo *ci) : TextfileWindow(file_type), ci(ci)
 	{
+		this->ConstructWindow();
+
 		const char *textfile = this->ci->GetTextfile(file_type);
 		this->LoadTextfile(textfile, GetContentInfoSubDir(this->ci->type));
 	}
