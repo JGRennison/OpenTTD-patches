@@ -577,7 +577,6 @@ CommandCost CmdScheduledDispatchAdjust(TileIndex tile, DoCommandFlag flags, uint
 	if (ret.Failed()) return ret;
 
 	if (v->orders == nullptr) return CMD_ERROR;
-	if (v->orders->GetScheduledDispatchScheduleCount() >= 4096) return CMD_ERROR;
 
 	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
 
