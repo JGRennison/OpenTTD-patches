@@ -222,7 +222,7 @@ enum {
 	GHK_MONEY,
 	GHK_UPDATE_COORDS,
 	GHK_TOGGLE_TRANSPARENCY,
-	GHK_TOGGLE_INVISIBILITY = GHK_TOGGLE_TRANSPARENCY + 9,
+	GHK_TOGGLE_INVISIBILITY = GHK_TOGGLE_TRANSPARENCY + 10,
 	GHK_TRANSPARENCY_TOOLBAR = GHK_TOGGLE_INVISIBILITY + 8,
 	GHK_TRANSPARANCY,
 	GHK_CHAT,
@@ -386,6 +386,7 @@ struct MainWindow : Window
 			case GHK_TOGGLE_TRANSPARENCY + 6:
 			case GHK_TOGGLE_TRANSPARENCY + 7:
 			case GHK_TOGGLE_TRANSPARENCY + 8:
+			case GHK_TOGGLE_TRANSPARENCY + 9:
 				/* Transparency toggle hot keys */
 				ToggleTransparency((TransparencyOption)(hotkey - GHK_TOGGLE_TRANSPARENCY));
 				MarkWholeScreenDirty();
@@ -586,6 +587,7 @@ static Hotkey global_hotkeys[] = {
 	Hotkey('7' | WKC_CTRL, "transparency_structures", GHK_TOGGLE_TRANSPARENCY + 6),
 	Hotkey('8' | WKC_CTRL, "transparency_catenary", GHK_TOGGLE_TRANSPARENCY + 7),
 	Hotkey('9' | WKC_CTRL, "transparency_loading", GHK_TOGGLE_TRANSPARENCY + 8),
+	Hotkey('0' | WKC_CTRL, "transparency_tunnels", GHK_TOGGLE_TRANSPARENCY + 9),
 	Hotkey('1' | WKC_CTRL | WKC_SHIFT, "invisibility_signs", GHK_TOGGLE_INVISIBILITY),
 	Hotkey('2' | WKC_CTRL | WKC_SHIFT, "invisibility_trees", GHK_TOGGLE_INVISIBILITY + 1),
 	Hotkey('3' | WKC_CTRL | WKC_SHIFT, "invisibility_houses", GHK_TOGGLE_INVISIBILITY + 2),
