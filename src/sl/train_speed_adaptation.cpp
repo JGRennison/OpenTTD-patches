@@ -21,7 +21,7 @@ static const SaveLoad _train_speed_adaptation_map_desc[] = {
 	SLE_VAR(SignalSpeedType, second.time_stamp,            SLE_UINT64),
 };
 
-static std::vector<SaveLoad> _filtered_train_speed_adaptation_map_desc = SlFilterObject(_train_speed_adaptation_map_desc);
+static std::vector<SaveLoad> _filtered_train_speed_adaptation_map_desc;
 
 static void Load_TSAS()
 {
