@@ -3907,11 +3907,15 @@ bool AfterLoadGame()
 	/* Use current order time to approximate last loading time */
 	if (IsSavegameVersionBefore(SLV_LAST_LOADING_TICK) && SlXvIsFeatureMissing(XSLFI_LAST_LOADING_TICK)) {
 		for (Vehicle *v : Vehicle::Iterate()) {
-			v->last_loading_tick = std::max(_scaled_tick_counter, static_cast<uint64_t>(v->current_order_time)) - v->current_order_time;
+			v->last_loading_tick = _scaled_date_ticks - v->current_order_time;
 		}
-	} else if (SlXvIsFeaturePresent(XSLFI_LAST_LOADING_TICK, 1, 1)) {
+	} else if (SlXvIsFeatureMissing(XSLFI_LAST_LOADING_TICK, 3)) {
+		const DateTicksScaledDelta delta = _scaled_date_ticks.base() - (int64_t)_scaled_tick_counter;
 		for (Vehicle *v : Vehicle::Iterate()) {
-			v->last_loading_tick *= _settings_game.economy.day_length_factor;
+			if (v->last_loading_tick != 0) {
+				if (SlXvIsFeaturePresent(XSLFI_LAST_LOADING_TICK, 1, 1)) v->last_loading_tick = v->last_loading_tick.base() * _settings_game.economy.day_length_factor;
+				v->last_loading_tick += delta;
+			}
 		}
 	}
 

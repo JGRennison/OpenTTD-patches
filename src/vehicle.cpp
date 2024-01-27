@@ -3239,7 +3239,7 @@ static void VehicleIncreaseStats(const Vehicle *front)
 {
 	for (const Vehicle *v = front; v != nullptr; v = v->Next()) {
 		StationID last_loading_station = HasBit(front->vehicle_flags, VF_LAST_LOAD_ST_SEP) ? v->last_loading_station : front->last_loading_station;
-		uint64_t loading_tick = HasBit(front->vehicle_flags, VF_LAST_LOAD_ST_SEP) ? v->last_loading_tick : front->last_loading_tick;
+		DateTicksScaled loading_tick = HasBit(front->vehicle_flags, VF_LAST_LOAD_ST_SEP) ? v->last_loading_tick : front->last_loading_tick;
 		if (v->refit_cap > 0 &&
 				last_loading_station != INVALID_STATION &&
 				last_loading_station != front->last_station_visited &&
@@ -3254,7 +3254,7 @@ static void VehicleIncreaseStats(const Vehicle *front)
 			EdgeUpdateMode restricted_mode = EUM_INCREASE;
 			if (v->type == VEH_AIRCRAFT) restricted_mode |= EUM_AIRCRAFT;
 			IncreaseStats(Station::Get(last_loading_station), v->cargo_type, front->last_station_visited, v->refit_cap,
-				std::min<uint>(v->refit_cap, v->cargo.StoredCount()), _scaled_tick_counter - loading_tick, restricted_mode);
+				std::min<uint>(v->refit_cap, v->cargo.StoredCount()), (_scaled_date_ticks - loading_tick).AsTicksT<uint32_t>(), restricted_mode);
 		}
 	}
 }
@@ -3474,7 +3474,7 @@ void Vehicle::LeaveStation()
 
 			/* if the vehicle could load here or could stop with cargo loaded set the last loading station */
 			this->last_loading_station = this->last_station_visited;
-			this->last_loading_tick = _scaled_tick_counter;
+			this->last_loading_tick = _scaled_date_ticks;
 			ClrBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP);
 		} else if (cargoes_can_leave_with_cargo == 0) {
 			/* can leave with no cargoes */
@@ -3488,14 +3488,14 @@ void Vehicle::LeaveStation()
 
 			/* NB: this is saved here as we overwrite it on the first iteration of the loop below */
 			StationID head_last_loading_station = this->last_loading_station;
-			uint64_t head_last_loading_tick = this->last_loading_tick;
+			DateTicksScaled head_last_loading_tick = this->last_loading_tick;
 			for (Vehicle *u = this; u != nullptr; u = u->Next()) {
 				StationID last_loading_station = HasBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP) ? u->last_loading_station : head_last_loading_station;
-				uint64_t last_loading_tick = HasBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP) ? u->last_loading_tick : head_last_loading_tick;
+				DateTicksScaled last_loading_tick = HasBit(this->vehicle_flags, VF_LAST_LOAD_ST_SEP) ? u->last_loading_tick : head_last_loading_tick;
 				if (u->cargo_type < NUM_CARGO && HasBit(cargoes_can_load_unload, u->cargo_type)) {
 					if (HasBit(cargoes_can_leave_with_cargo, u->cargo_type)) {
 						u->last_loading_station = this->last_station_visited;
-						u->last_loading_tick = _scaled_tick_counter;
+						u->last_loading_tick = _scaled_date_ticks;
 					} else {
 						u->last_loading_station = INVALID_STATION;
 					}
@@ -4692,6 +4692,7 @@ void AdjustVehicleScaledTickBase(DateTicksScaledDelta delta)
 {
 	for (Vehicle *v : Vehicle::Iterate()) {
 		if (v->timetable_start != 0) v->timetable_start += delta;
+		if (v->last_loading_tick != 0) v->last_loading_tick += delta;
 	}
 
 	for (OrderList *order_list : OrderList::Iterate()) {

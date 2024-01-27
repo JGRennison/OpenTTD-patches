@@ -380,7 +380,7 @@ public:
 
 	StationID last_station_visited;     ///< The last station we stopped at.
 	StationID last_loading_station;     ///< Last station the vehicle has stopped at and could possibly leave from with any cargo loaded. (See VF_LAST_LOAD_ST_SEP).
-	uint64_t last_loading_tick;         ///< Last time (relative to _scaled_tick_counter) the vehicle has stopped at a station and could possibly leave with any cargo loaded. (See VF_LAST_LOAD_ST_SEP).
+	DateTicksScaled last_loading_tick;  ///< Last tick (_scaled_date_ticks) the vehicle has stopped at a station and could possibly leave with any cargo loaded. (See VF_LAST_LOAD_ST_SEP).
 
 	VehicleCargoList cargo;             ///< The cargo this vehicle is carrying
 	uint16_t cargo_cap;                 ///< total capacity
