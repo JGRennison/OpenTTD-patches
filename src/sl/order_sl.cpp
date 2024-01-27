@@ -263,7 +263,7 @@ static void Ptrs_ORDR()
 
 SaveLoadTable GetDispatchScheduleDescription()
 {
-	static const SaveLoad _order_extra_info_desc[] = {
+	static const SaveLoad _dispatch_scheduled_info_desc[] = {
 		SLE_VARVEC(DispatchSchedule, scheduled_dispatch,                    SLE_UINT32),
 		SLE_VAR(DispatchSchedule, scheduled_dispatch_duration,              SLE_UINT32),
 		SLE_CONDVAR_X(DispatchSchedule, scheduled_dispatch_start_tick,      SLE_FILE_I32 | SLE_VAR_I64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 1, 4)),
@@ -275,7 +275,7 @@ SaveLoadTable GetDispatchScheduleDescription()
 		SLE_CONDVAR_X(DispatchSchedule, scheduled_dispatch_flags,           SLE_FILE_U32 | SLE_VAR_U8,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 6)),
 	};
 
-	return _order_extra_info_desc;
+	return _dispatch_scheduled_info_desc;
 }
 
 SaveLoadTable GetOrderListDescription()
@@ -289,16 +289,26 @@ SaveLoadTable GetOrderListDescription()
 	return _orderlist_desc;
 }
 
+static std::vector<SaveLoad> _filtered_ordl_desc;
+static std::vector<SaveLoad> _filtered_ordl_sd_desc;
+
+static void SetupDescs_ORDL()
+{
+	_filtered_ordl_desc = SlFilterObject(GetOrderListDescription());
+	_filtered_ordl_sd_desc = SlFilterObject(GetDispatchScheduleDescription());
+}
+
 static void Save_ORDL()
 {
+	SetupDescs_ORDL();
 	for (OrderList *list : OrderList::Iterate()) {
 		SlSetArrayIndex(list->index);
 		SlAutolength([](void *data) {
 			OrderList *list = static_cast<OrderList *>(data);
-			SlObject(list, GetOrderListDescription());
+			SlObjectSaveFiltered(list, _filtered_ordl_desc);
 			SlWriteUint32(list->GetScheduledDispatchScheduleCount());
 			for (DispatchSchedule &ds : list->GetScheduledDispatchScheduleSet()) {
-				SlObject(&ds, GetDispatchScheduleDescription());
+				SlObjectSaveFiltered(&ds, _filtered_ordl_sd_desc);
 			}
 		}, list);
 	}
@@ -306,6 +316,8 @@ static void Save_ORDL()
 
 static void Load_ORDL()
 {
+	SetupDescs_ORDL();
+
 	_jokerpp_auto_separation.clear();
 	_jokerpp_non_auto_separation.clear();
 
@@ -316,7 +328,7 @@ static void Load_ORDL()
 	while ((index = SlIterateArray()) != -1) {
 		/* set num_orders to 0 so it's a valid OrderList */
 		OrderList *list = new (index) OrderList(0);
-		SlObject(list, GetOrderListDescription());
+		SlObjectLoadFiltered(list, _filtered_ordl_desc);
 		if (SlXvIsFeaturePresent(XSLFI_JOKERPP)) {
 			if (_jokerpp_separation_mode == 0) {
 				_jokerpp_auto_separation.push_back(list);
@@ -328,7 +340,7 @@ static void Load_ORDL()
 			uint count = SlXvIsFeaturePresent(XSLFI_SCHEDULED_DISPATCH, 3) ? SlReadUint32() : 1;
 			list->GetScheduledDispatchScheduleSet().resize(count);
 			for (DispatchSchedule &ds : list->GetScheduledDispatchScheduleSet()) {
-				SlObject(&ds, GetDispatchScheduleDescription());
+				SlObjectLoadFiltered(&ds, _filtered_ordl_sd_desc);
 				if (SlXvIsFeaturePresent(XSLFI_SCHEDULED_DISPATCH, 1, 4) && _old_scheduled_dispatch_start_full_date_fract != 0) {
 					_old_scheduled_dispatch_start_full_date_fract_map[&ds] = _old_scheduled_dispatch_start_full_date_fract;
 				}
@@ -339,8 +351,9 @@ static void Load_ORDL()
 
 void Ptrs_ORDL()
 {
+	std::vector<SaveLoad> filtered_desc = SlFilterObject(GetOrderListDescription());
 	for (OrderList *list : OrderList::Iterate()) {
-		SlObject(list, GetOrderListDescription());
+		SlObjectPtrOrNullFiltered(list, filtered_desc);
 		list->ReindexOrderList();
 	}
 }
