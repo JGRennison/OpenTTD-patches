@@ -2076,6 +2076,8 @@ STR_SCHDISPATCH_DELAY_CAPTION_DAY                               :{BLACK}Delay (d
 STR_SCHDISPATCH_DELAY_CAPTION_TICKS                             :{BLACK}Delay (ticks)
 STR_SCHDISPATCH_ADJUST                                          :{BLACK}Adjust Departure Slots
 STR_SCHDISPATCH_ADJUST_TOOLTIP                                  :{BLACK}Adjust all departure slots in this schedule.
+STR_SCHDISPATCH_REMOVE                                          :{BLACK}Remove Departure Slots
+STR_SCHDISPATCH_REMOVE_TOOLTIP                                  :{BLACK}Enable removing departure slots from this schedule.
 STR_SCHDISPATCH_ADJUST_CAPTION_MINUTE                           :{BLACK}Adjustment to add (minutes)
 STR_SCHDISPATCH_ADJUST_CAPTION_DAY                              :{BLACK}Adjustment to add (days)
 STR_SCHDISPATCH_ADJUST_CAPTION_TICKS                            :{BLACK}Adjustment to add (ticks)

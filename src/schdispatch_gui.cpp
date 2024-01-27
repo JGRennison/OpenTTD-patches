@@ -59,6 +59,7 @@ enum SchdispatchWidgets {
 	WID_SCHDISPATCH_SET_DELAY,       ///< Delay button
 	WID_SCHDISPATCH_MANAGEMENT,      ///< Management button
 	WID_SCHDISPATCH_ADJUST,          ///< Adjust departure times
+	WID_SCHDISPATCH_REMOVE,          ///< Remove departure times
 };
 
 /**
@@ -195,6 +196,25 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	uint warning_count = 0;
 	uint extra_line_count = 0;
 
+	int base_width = 0;
+	int header_width = 0;
+	int delete_flag_width = 0;
+	int delete_flag_height = 0;
+	int arrow_flag_width = 0;
+	int arrow_flag_height = 0;
+
+	bool remove_slot_mode = false;
+
+	enum ManagementDropdown {
+		SCH_MD_RESET_LAST_DISPATCHED,
+		SCH_MD_CLEAR_SCHEDULE,
+		SCH_MD_REMOVE_SCHEDULE,
+		SCH_MD_DUPLICATE_SCHEDULE,
+		SCH_MD_APPEND_VEHICLE_SCHEDULES,
+		SCH_MD_REUSE_DEPARTURE_SLOTS,
+	};
+
+
 	SchdispatchWindow(WindowDesc *desc, WindowNumber window_number) :
 			GeneralVehicleWindow(desc, Vehicle::Get(window_number))
 	{
@@ -214,20 +234,6 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		}
 		this->GeneralVehicleWindow::Close();
 	}
-
-	uint base_width;
-	uint header_width;
-	uint flag_width;
-	uint flag_height;
-
-	enum ManagementDropdown {
-		SCH_MD_RESET_LAST_DISPATCHED,
-		SCH_MD_CLEAR_SCHEDULE,
-		SCH_MD_REMOVE_SCHEDULE,
-		SCH_MD_DUPLICATE_SCHEDULE,
-		SCH_MD_APPEND_VEHICLE_SCHEDULES,
-		SCH_MD_REUSE_DEPARTURE_SLOTS,
-	};
 
 	bool IsScheduleSelected() const
 	{
@@ -258,16 +264,22 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 				SetDParamMaxValue(0, _settings_time.time_in_minutes ? 0 : MAX_YEAR * DAYS_IN_YEAR);
 				Dimension unumber = GetStringBoundingBox(STR_JUST_DATE_WALLCLOCK_TINY);
+
 				const Sprite *spr = GetSprite(SPR_FLAG_VEH_STOPPED, SpriteType::Normal, ZoomMask(ZOOM_LVL_GUI));
-				this->flag_width  = UnScaleGUI(spr->width) + WidgetDimensions::scaled.framerect.right;
-				this->flag_height = UnScaleGUI(spr->height);
+				this->delete_flag_width = UnScaleGUI(spr->width);
+				this->delete_flag_height = UnScaleGUI(spr->height);
+
+				const Sprite *spr_left_arrow = GetSprite(SPR_ARROW_LEFT, SpriteType::Normal, ZoomMask(ZOOM_LVL_GUI));
+				const Sprite *spr_right_arrow = GetSprite(SPR_ARROW_RIGHT, SpriteType::Normal, ZoomMask(ZOOM_LVL_GUI));
+				this->arrow_flag_width = UnScaleGUI(std::max(spr_left_arrow->width, spr_right_arrow->width));
+				this->arrow_flag_height = UnScaleGUI(std::max(spr_left_arrow->height, spr_right_arrow->height));
 
 				min_height = std::max<uint>(unumber.height + WidgetDimensions::scaled.matrix.top, UnScaleGUI(spr->height));
-				this->header_width = this->flag_width + WidgetDimensions::scaled.framerect.left;
+				this->header_width = std::max(this->delete_flag_width, this->arrow_flag_width);
 				this->base_width = unumber.width + this->header_width + 4;
 
 				resize->height = min_height;
-				resize->width = base_width;
+				resize->width = base_width + WidgetDimensions::scaled.framerect.left + WidgetDimensions::scaled.framerect.right;
 				size->width = resize->width * 3;
 				size->height = resize->height * 3;
 
@@ -330,13 +342,21 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_MOVE_RIGHT, v->orders == nullptr || this->schedule_index >= (int)(v->orders->GetScheduledDispatchScheduleCount() - 1));
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_ADD_SCHEDULE, unusable || v->orders->GetScheduledDispatchScheduleCount() >= 4096);
 
-		bool disabled = unusable || !HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)  || !this->IsScheduleSelected();
+		const bool disabled = unusable || !HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)  || !this->IsScheduleSelected();
+		const bool no_editable_slots = disabled || this->GetSelectedSchedule().GetScheduledDispatch().empty();
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_ADD, disabled);
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_SET_DURATION, disabled);
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_SET_START_DATE, disabled);
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_SET_DELAY, disabled);
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_MANAGEMENT, disabled);
-		this->SetWidgetDisabledState(WID_SCHDISPATCH_ADJUST, disabled || this->GetSelectedSchedule().GetScheduledDispatch().empty());
+		this->SetWidgetDisabledState(WID_SCHDISPATCH_ADJUST, no_editable_slots);
+
+		NWidgetCore *remove_slot_widget = this->GetWidget<NWidgetCore>(WID_SCHDISPATCH_REMOVE);
+		remove_slot_widget->SetDisabled(no_editable_slots);
+		if (no_editable_slots) {
+			remove_slot_widget->SetLowered(false);
+			this->remove_slot_mode = false;
+		}
 
 		NWidgetCore *start_date_widget = this->GetWidget<NWidgetCore>(WID_SCHDISPATCH_SET_START_DATE);
 		start_date_widget->widget_data = _settings_time.time_in_minutes ? STR_SCHDISPATCH_START_TIME : STR_SCHDISPATCH_START;
@@ -416,17 +436,30 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	 * @param right Right side of the box to draw in.
 	 * @param y     Top of the box to draw in.
 	 */
-	void DrawScheduledTime(const DateTicksScaled time, int left, int right, int y, TextColour colour) const
+	void DrawScheduledTime(const DateTicksScaled time, int left, int right, int y, TextColour colour, bool last, bool next) const
 	{
 		bool rtl = _current_text_dir == TD_RTL;
-		uint diff_x, diff_y;
-		diff_x = this->flag_width + WidgetDimensions::scaled.framerect.left;
-		diff_y = (this->resize.step_height - this->flag_height) / 2 - 2;
 
-		int text_left  = rtl ? right - this->base_width - 1 : left + diff_x;
-		int text_right = rtl ? right - diff_x : left + this->base_width - 1;
+		int text_left  = rtl ? right - this->base_width - 1 : left + this->header_width;
+		int text_right = rtl ? right - this->header_width : left + this->base_width - 1;
 
-		DrawSprite(SPR_FLAG_VEH_STOPPED, PAL_NONE, rtl ? right - this->flag_width : left + WidgetDimensions::scaled.framerect.left, y + diff_y);
+		if (this->remove_slot_mode) {
+			int diff_y = (this->resize.step_height - this->delete_flag_height) / 2 - 2;
+			int offset_x = (this->header_width - this->delete_flag_width) / 2;
+			DrawSprite(SPR_FLAG_VEH_STOPPED, PAL_NONE, offset_x + (rtl ? right - this->delete_flag_width : left), y + diff_y);
+		} else {
+			auto draw_arrow = [&](bool right_arrow) {
+				SpriteID sprite = right_arrow ? SPR_ARROW_RIGHT : SPR_ARROW_LEFT;
+				int diff_y = (this->resize.step_height - this->arrow_flag_height) / 2;
+				int offset_x = (this->header_width - this->arrow_flag_width) / 2;
+				DrawSprite(sprite, PAL_NONE, offset_x + (rtl ? right - this->delete_flag_width : left), y + diff_y);
+			};
+			if (next) {
+				draw_arrow(!rtl);
+			} else if (last) {
+				draw_arrow(rtl);
+			}
+		}
 
 		SetDParam(0, time);
 		DrawString(text_left, text_right, y + 2, STR_JUST_DATE_WALLCLOCK_TINY, colour);
@@ -466,13 +499,19 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				const DateTicksScaled start_tick = ds.GetScheduledDispatchStartTick();
 				const DateTicksScaled end_tick = ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchDuration();
 
+				DateTicksScaled slot = GetScheduledDispatchTime(ds, _scaled_date_ticks);
+				int32_t next_offset = (slot - ds.GetScheduledDispatchStartTick()).AsTicks() % ds.GetScheduledDispatchDuration();
+
 				for (int y = r.top + 1; num < maxval; y += this->resize.step_height) { /* Draw the rows */
 					for (uint i = 0; i < this->num_columns && num < maxval; i++, num++) {
 						/* Draw all departure time in the current row */
 						if (current_schedule != ds.GetScheduledDispatch().end()) {
 							int x = r.left + (rtl ? (this->num_columns - i - 1) : i) * this->resize.step_width;
 							DateTicksScaled draw_time = start_tick + *current_schedule;
-							this->DrawScheduledTime(draw_time, x, x + this->resize.step_width - 1, y, draw_time >= end_tick ? TC_RED : TC_BLACK);
+							bool last = ds.GetScheduledDispatchLastDispatch() == (int32_t)*current_schedule;
+							bool next = next_offset == (int32_t)*current_schedule;
+							this->DrawScheduledTime(draw_time, x + WidgetDimensions::scaled.framerect.left, x + this->resize.step_width - 1 - (2 * WidgetDimensions::scaled.framerect.left),
+									y, draw_time >= end_tick ? TC_RED : TC_BLACK, last, next);
 							current_schedule++;
 						} else {
 							break;
@@ -693,9 +732,8 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		/* In case of RTL the widgets are swapped as a whole */
 		if (_current_text_dir == TD_RTL) x = matrix_widget->current_x - x;
 
-		uint xt = 0, xm = 0;
-		xt = x / this->resize.step_width;
-		xm = x % this->resize.step_width;
+		uint xt = x / this->resize.step_width;
+		int xm = x % this->resize.step_width;
 		if (xt >= this->num_columns) return;
 
 		uint row = y / this->resize.step_height;
@@ -707,7 +745,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 		if (pos >= this->item_count || pos >= ds.GetScheduledDispatch().size()) return;
 
-		if (xm <= this->header_width) {
+		if (xm <= this->header_width && this->remove_slot_mode) {
 			DoCommandP(0, this->vehicle->index | (this->schedule_index << 20), ds.GetScheduledDispatch()[pos], CMD_SCHEDULED_DISPATCH_REMOVE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 		}
 	}
@@ -837,6 +875,13 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				CharSetFilter charset_filter = _settings_client.gui.timetable_in_ticks ? CS_NUMERAL_SIGNED : CS_NUMERAL_DECIMAL_SIGNED;
 				SetDParam(0, 0);
 				ShowQueryString(STR_JUST_INT, STR_SCHDISPATCH_ADJUST_CAPTION_MINUTE + this->GetQueryStringCaptionOffset(), 31, this, charset_filter, QSF_NONE);
+				break;
+			}
+
+			case WID_SCHDISPATCH_REMOVE: {
+				if (!this->IsScheduleSelected()) break;
+				this->remove_slot_mode = !this->remove_slot_mode;
+				this->SetWidgetLoweredState(WID_SCHDISPATCH_REMOVE, this->remove_slot_mode);
 				break;
 			}
 
@@ -1099,6 +1144,7 @@ static constexpr NWidgetPart _nested_schdispatch_widgets[] = {
 		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_ADD), SetDataTip(STR_SCHDISPATCH_ADD, STR_SCHDISPATCH_ADD_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
 			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_ADJUST), SetDataTip(STR_SCHDISPATCH_ADJUST, STR_SCHDISPATCH_ADJUST_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
+			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SCHDISPATCH_REMOVE), SetDataTip(STR_SCHDISPATCH_REMOVE, STR_SCHDISPATCH_REMOVE_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
 		EndContainer(),
 		NWidget(WWT_PANEL, COLOUR_GREY, WID_SCHDISPATCH_SUMMARY_PANEL), SetMinimalSize(400, 22), SetResize(1, 0), EndContainer(),
 		NWidget(NWID_HORIZONTAL),
