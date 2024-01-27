@@ -2113,6 +2113,15 @@ void StateGameLoop()
 
 	if (_game_mode == GM_EDITOR) {
 		BasePersistentStorageArray::SwitchMode(PSM_ENTER_GAMELOOP);
+
+		/* _scaled_date_ticks and _scaled_date_ticks_offset must update in lockstep here,
+		 * as _date, _tick_skip_counter, etc are not updated in the scenario editor,
+		 * but _scaled_date_ticks should still update in case there are vehicles running,
+		 * to avoid problems with timetables and train speed adaptation
+		 */
+		_scaled_date_ticks++;
+		_scaled_date_ticks_offset++;
+
 		RunTileLoop();
 		CallVehicleTicks();
 		CallLandscapeTick();
