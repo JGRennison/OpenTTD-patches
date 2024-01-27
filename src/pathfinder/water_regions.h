@@ -58,6 +58,8 @@ struct WaterRegionDesc
 
 TWaterRegionIndex GetWaterRegionIndex(const WaterRegionDesc &water_region);
 
+uint32_t CalculateWaterRegionPatchHash(const WaterRegionPatchDesc &water_region_patch);
+
 TileIndex GetWaterRegionCenterTile(const WaterRegionDesc &water_region);
 
 WaterRegionDesc GetWaterRegionInfo(TileIndex tile);
