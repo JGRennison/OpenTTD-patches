@@ -62,7 +62,10 @@ struct DateTicksScaledDeltaOperations {
 		TBaseType GetBase() const { return static_cast<const TType &>(*this).base(); }
 
 	public:
-		Ticks AsTicks() const { return (Ticks)this->GetBase(); }
+		template<typename T>
+		T AsTicksT() const { return ClampTo<T>(this->GetBase()); }
+
+		Ticks AsTicks() const { return this->AsTicksT<Ticks>(); }
 	};
 };
 
