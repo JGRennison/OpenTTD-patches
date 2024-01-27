@@ -163,7 +163,6 @@ STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :船舶避免碰
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :当被启用时，船舶将尝试避免互相穿过{}在禁止船舶90度转向时效果最好
 
 STR_CONFIG_SETTING_CHUNNEL                                      :允许水下隧道的建设: {STRING}
-STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :当被启用时，可以建设水下隧道{}隧道末端须距离岸边三格以上
 
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :不同公司列车不会互相碰撞: {STRING}
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :这是为了防止熊孩子故意在多人游戏中撞毁他人的列车

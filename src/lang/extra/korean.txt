@@ -163,7 +163,6 @@ STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :선박 충돌 �
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :활성화되면 선박들이 서로를 피하려고 시도합니다. 90° 회전이 비활성화된 상태에서 최상의 결과를 보여줍니다.
 
 STR_CONFIG_SETTING_CHUNNEL                                      :해저 터널 건설 허용: {STRING}
-STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :이 설정을 켜면, 해수면 아래를 통과하는 터널을 건설할 수 있습니다. 터널의 끝이 해안가로부터 최소한 3칸 이상 떨어져있어야 합니다.
 
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :다른 회사의 열차가 서로 충돌할 수 없게 함: {STRING}
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :이 옵션은 주로 시설 공유가 활성화된 멀티 플레이 게임에서 신뢰할 수 없는 플레이어에 의해 의도적으로 충돌이 생기는 것을 막기 위해 사용합니다.

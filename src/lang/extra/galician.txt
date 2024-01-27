@@ -163,7 +163,6 @@ STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :Evitar a colisi
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :Cando se habilita, os barcos intentaran evitar pasar xunto a outro. Os mellores resultados obtéñense cando os xiros de 90º están prohibidos.
 
 STR_CONFIG_SETTING_CHUNNEL                                      :Permitir a construción de túneis baixo a auga: {STRING}
-STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :Cando se habilita, pódense construír tunéis baixo masas de auga ao nivel do mar. Isto require que o final do tunel remate polo menos a 3 cadros de distancia da costa.
 
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :Os trens das distintas compañías non poden chocar entre si: {STRING}
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :Esta opción é básicamente para previr que xogadores que non son de confianza deliberadamente causen accidentes con trens de outras comopañías en multixogador con infraestrutura ferroviaria compartida.

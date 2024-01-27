@@ -155,7 +155,6 @@ STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :Lodě se snaž�
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :Pokud je zapnuto, lodě se pokouší vyhýbat se jedna druhé. Nejlepší výsledky v kombinaci s vypntými zatáčkami o 90 stupňů.
 
 STR_CONFIG_SETTING_CHUNNEL                                      :Povolit stavbu tunelů pod vodou: {STRING}
-STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :Pokud je zapnuto, tunely mohou být postaveny pod úrovní moře. Vyžaduje, aby konce tunelu byly nejméně 3 políčka od pobřeží.
 
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :Vlaky různých společností se nemůžou srazit: {STRING}
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :Toto nastavení v síťové hře se sdílenou železniční infrastrukturou zabrání nedůvěryhodným hráčům záměrně způsobovat srážky svých vlaků s ostatními.

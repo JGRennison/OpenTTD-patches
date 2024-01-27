@@ -139,7 +139,6 @@ STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :Schiffe vermeid
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :Falls aktiviert, versuchen Schiffe, das durcheinander hindurch fahren zu vermeiden. Schiffen müssen dazu 90°-Kurven verboten sein.
 
 STR_CONFIG_SETTING_CHUNNEL                                      :Erlaube den Bau von Unterwassertunneln: {STRING}
-STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :Wenn aktiviert, können Tunnel unter Wasserflächen auf Meeresniveau gebaut werden. Hierzu müssen beide Enden des Tunnels mindestens 3 Kacheln von der Küste entfernt liegen.
 
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :Züge verschiedener Firmen stoßen nicht mehr zusammen: {STRING}
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :Diese Einstellung ist in erster Linie dafür da um zu verhindern, dass Spielern denen man nicht vertraut bewusst Zusammenstöße mit Zügen anderer Firmen in Multiplayer-Spielen mit Infrastructure Sharing provozieren.
