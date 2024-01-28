@@ -648,10 +648,60 @@ CommandCost CmdScheduledDispatchSwapSchedules(TileIndex tile, DoCommandFlag flag
 }
 
 /**
+ * Add scheduled dispatch time offset
+ * @param tile Not used.
+ * @param flags Operation to perform.
+ * @param p1 Vehicle index.
+ * @param p2 Slot offset.
+ * @param p3 various bitstuffed elements
+ *  - p3 = (bit 0 - 15)  - flag values
+ *  - p3 = (bit 16 - 31) - flag mask
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdScheduledDispatchSetSlotFlags(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+{
+	VehicleID veh = GB(p1, 0, 20);
+	uint schedule_index = GB(p1, 20, 12);
+	uint32_t offset = p2;
+	uint16_t values = (uint16_t)GB(p3, 0, 16);
+	uint16_t mask = (uint16_t)GB(p3, 16, 16);
+
+	const uint16_t permitted_mask = (1 << DispatchSlot::SDSF_REUSE_SLOT);
+	if ((mask & permitted_mask) != mask) return CMD_ERROR;
+	if ((values & (~mask)) != 0) return CMD_ERROR;
+
+	Vehicle *v = Vehicle::GetIfValid(veh);
+	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
+
+	CommandCost ret = CheckOwnership(v->owner);
+	if (ret.Failed()) return ret;
+
+	if (v->orders == nullptr) return CMD_ERROR;
+
+	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
+
+	DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_index);
+	for (DispatchSlot &slot : ds.GetScheduledDispatchMutable()) {
+		if (slot.offset == offset) {
+			if (flags & DC_EXEC) {
+				slot.flags &= ~mask;
+				slot.flags |= values;
+				SchdispatchInvalidateWindows(v);
+				SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
+			}
+			return CommandCost();
+		}
+	}
+
+	return CMD_ERROR;
+}
+
+/**
  * Set scheduled dispatch slot list.
  * @param dispatch_list The offset time list, must be correctly sorted.
  */
-void DispatchSchedule::SetScheduledDispatch(std::vector<uint32_t> dispatch_list)
+void DispatchSchedule::SetScheduledDispatch(std::vector<DispatchSlot> dispatch_list)
 {
 	this->scheduled_dispatch = std::move(dispatch_list);
 	assert(std::is_sorted(this->scheduled_dispatch.begin(), this->scheduled_dispatch.end()));
@@ -665,11 +715,11 @@ void DispatchSchedule::SetScheduledDispatch(std::vector<uint32_t> dispatch_list)
 void DispatchSchedule::AddScheduledDispatch(uint32_t offset)
 {
 	/* Maintain sorted list status */
-	auto insert_position = std::lower_bound(this->scheduled_dispatch.begin(), this->scheduled_dispatch.end(), offset);
-	if (insert_position != this->scheduled_dispatch.end() && *insert_position == offset) {
+	auto insert_position = std::lower_bound(this->scheduled_dispatch.begin(), this->scheduled_dispatch.end(), DispatchSlot{ offset, 0 });
+	if (insert_position != this->scheduled_dispatch.end() && insert_position->offset == offset) {
 		return;
 	}
-	this->scheduled_dispatch.insert(insert_position, offset);
+	this->scheduled_dispatch.insert(insert_position, { offset, 0 });
 	this->UpdateScheduledDispatch(nullptr);
 }
 
@@ -680,8 +730,8 @@ void DispatchSchedule::AddScheduledDispatch(uint32_t offset)
 void DispatchSchedule::RemoveScheduledDispatch(uint32_t offset)
 {
 	/* Maintain sorted list status */
-	auto erase_position = std::lower_bound(this->scheduled_dispatch.begin(), this->scheduled_dispatch.end(), offset);
-	if (erase_position == this->scheduled_dispatch.end() || *erase_position != offset) {
+	auto erase_position = std::lower_bound(this->scheduled_dispatch.begin(), this->scheduled_dispatch.end(), DispatchSlot{ offset, 0 });
+	if (erase_position == this->scheduled_dispatch.end() || erase_position->offset != offset) {
 		return;
 	}
 	this->scheduled_dispatch.erase(erase_position);
@@ -693,11 +743,11 @@ void DispatchSchedule::RemoveScheduledDispatch(uint32_t offset)
  */
 void DispatchSchedule::AdjustScheduledDispatch(int32_t adjust)
 {
-	for (uint32_t &time : this->scheduled_dispatch) {
-		int32_t t = (int32_t)time + adjust;
+	for (DispatchSlot &slot : this->scheduled_dispatch) {
+		int32_t t = (int32_t)slot.offset + adjust;
 		if (t < 0) t += GetScheduledDispatchDuration();
 		if (t >= (int32_t)GetScheduledDispatchDuration()) t -= (int32_t)GetScheduledDispatchDuration();
-		time = (uint32_t)t;
+		slot.offset = (uint32_t)t;
 	}
 	std::sort(this->scheduled_dispatch.begin(), this->scheduled_dispatch.end());
 }

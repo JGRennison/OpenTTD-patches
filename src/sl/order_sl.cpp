@@ -22,6 +22,7 @@ std::vector<OrderList *> _jokerpp_non_auto_separation;
 
 static uint16_t _old_scheduled_dispatch_start_full_date_fract;
 btree::btree_map<DispatchSchedule *, uint16_t> _old_scheduled_dispatch_start_full_date_fract_map;
+static std::vector<uint32_t> _old_scheduled_dispatch_slots;
 
 /**
  * Converts this order from an old savegame's version;
@@ -264,7 +265,7 @@ static void Ptrs_ORDR()
 SaveLoadTable GetDispatchScheduleDescription()
 {
 	static const SaveLoad _dispatch_scheduled_info_desc[] = {
-		SLE_VARVEC(DispatchSchedule, scheduled_dispatch,                    SLE_UINT32),
+		SLEG_CONDVARVEC_X(_old_scheduled_dispatch_slots,                    SLE_UINT32,                 SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 1, 6)),
 		SLE_VAR(DispatchSchedule, scheduled_dispatch_duration,              SLE_UINT32),
 		SLE_CONDVAR_X(DispatchSchedule, scheduled_dispatch_start_tick,      SLE_FILE_I32 | SLE_VAR_I64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 1, 4)),
 		SLEG_CONDVAR_X(_old_scheduled_dispatch_start_full_date_fract,       SLE_UINT16,                 SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 1, 4)),
@@ -276,6 +277,16 @@ SaveLoadTable GetDispatchScheduleDescription()
 	};
 
 	return _dispatch_scheduled_info_desc;
+}
+
+SaveLoadTable GetDispatchSlotDescription()
+{
+	static const SaveLoad _dispatch_slot_info_desc[] = {
+		SLE_VAR(DispatchSlot, offset,                                       SLE_UINT32),
+		SLE_VAR(DispatchSlot, flags,                                        SLE_UINT16),
+	};
+
+	return _dispatch_slot_info_desc;
 }
 
 SaveLoadTable GetOrderListDescription()
@@ -291,11 +302,13 @@ SaveLoadTable GetOrderListDescription()
 
 static std::vector<SaveLoad> _filtered_ordl_desc;
 static std::vector<SaveLoad> _filtered_ordl_sd_desc;
+static std::vector<SaveLoad> _filtered_ordl_slot_desc;
 
 static void SetupDescs_ORDL()
 {
 	_filtered_ordl_desc = SlFilterObject(GetOrderListDescription());
 	_filtered_ordl_sd_desc = SlFilterObject(GetDispatchScheduleDescription());
+	_filtered_ordl_slot_desc = SlFilterObject(GetDispatchSlotDescription());
 }
 
 static void Save_ORDL()
@@ -309,6 +322,11 @@ static void Save_ORDL()
 			SlWriteUint32(list->GetScheduledDispatchScheduleCount());
 			for (DispatchSchedule &ds : list->GetScheduledDispatchScheduleSet()) {
 				SlObjectSaveFiltered(&ds, _filtered_ordl_sd_desc);
+
+				SlWriteUint32((uint32_t)ds.GetScheduledDispatchMutable().size());
+				for (DispatchSlot &slot : ds.GetScheduledDispatchMutable()) {
+					SlObjectSaveFiltered(&slot, _filtered_ordl_slot_desc);
+				}
 			}
 		}, list);
 	}
@@ -344,9 +362,23 @@ static void Load_ORDL()
 				if (SlXvIsFeaturePresent(XSLFI_SCHEDULED_DISPATCH, 1, 4) && _old_scheduled_dispatch_start_full_date_fract != 0) {
 					_old_scheduled_dispatch_start_full_date_fract_map[&ds] = _old_scheduled_dispatch_start_full_date_fract;
 				}
+
+				if (SlXvIsFeaturePresent(XSLFI_SCHEDULED_DISPATCH, 1, 6)) {
+					ds.GetScheduledDispatchMutable().reserve(_old_scheduled_dispatch_slots.size());
+					for (uint32_t slot : _old_scheduled_dispatch_slots) {
+						ds.GetScheduledDispatchMutable().push_back({ slot, 0 });
+					}
+				} else {
+					ds.GetScheduledDispatchMutable().resize(SlReadUint32());
+					for (DispatchSlot &slot : ds.GetScheduledDispatchMutable()) {
+						SlObjectLoadFiltered(&slot, _filtered_ordl_slot_desc);
+					}
+				}
 			}
 		}
 	}
+
+	_old_scheduled_dispatch_slots.clear();
 }
 
 void Ptrs_ORDL()

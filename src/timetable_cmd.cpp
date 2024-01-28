@@ -807,10 +807,14 @@ DateTicksScaled GetScheduledDispatchTime(const DispatchSchedule &ds, DateTicksSc
 	DateTicksScaled first_slot = -1;
 
 	/* Find next available slots */
-	for (auto current_offset : ds.GetScheduledDispatch()) {
+	for (const DispatchSlot &slot : ds.GetScheduledDispatch()) {
+		auto current_offset = slot.offset;
 		if (current_offset >= dispatch_duration) continue;
-		if ((int32_t)current_offset <= last_dispatched_offset) {
-			current_offset += dispatch_duration * ((last_dispatched_offset + dispatch_duration - current_offset) / dispatch_duration);
+
+		int32_t threshold = last_dispatched_offset;
+		if (HasBit(slot.flags, DispatchSlot::SDSF_REUSE_SLOT)) threshold--;
+		if ((int32_t)current_offset <= threshold) {
+			current_offset += dispatch_duration * ((threshold + dispatch_duration - current_offset) / dispatch_duration);
 		}
 
 		DateTicksScaled current_departure = begin_time + current_offset;

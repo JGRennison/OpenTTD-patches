@@ -716,11 +716,28 @@ template <typename T, typename F> T CargoMaskValueFilter(CargoTypes &cargo_mask,
 	return value;
 }
 
+struct DispatchSlot {
+	uint32_t offset;
+	uint16_t flags;
+
+	bool operator<(const DispatchSlot &other) const
+	{
+		return this->offset < other.offset;
+	}
+
+	/**
+	 * Flag bit numbers for scheduled_dispatch_flags
+	 */
+	enum ScheduledDispatchSlotFlags {
+		SDSF_REUSE_SLOT                           = 0,  ///< Allow this slot to be used more than once
+	};
+};
+
 struct DispatchSchedule {
 private:
 	friend SaveLoadTable GetDispatchScheduleDescription();              ///< Saving and loading of dispatch schedules
 
-	std::vector<uint32_t> scheduled_dispatch;                           ///< Scheduled dispatch time
+	std::vector<DispatchSlot> scheduled_dispatch;                       ///< Scheduled dispatch slots
 	DateTicksScaled scheduled_dispatch_start_tick = -1;                 ///< Scheduled dispatch start tick
 	uint32_t scheduled_dispatch_duration = 0;                           ///< Scheduled dispatch duration
 	int32_t scheduled_dispatch_last_dispatch = INVALID_SCHEDULED_DISPATCH_OFFSET; ///< Last vehicle dispatched offset
@@ -750,9 +767,10 @@ public:
 	 * Get the vector of all scheduled dispatch slot
 	 * @return  first scheduled dispatch
 	 */
-	inline const std::vector<uint32_t> &GetScheduledDispatch() const { return this->scheduled_dispatch; }
+	inline const std::vector<DispatchSlot> &GetScheduledDispatch() const { return this->scheduled_dispatch; }
+	inline std::vector<DispatchSlot> &GetScheduledDispatchMutable() { return this->scheduled_dispatch; }
 
-	void SetScheduledDispatch(std::vector<uint32_t> dispatch_list);
+	void SetScheduledDispatch(std::vector<DispatchSlot> dispatch_list);
 	void AddScheduledDispatch(uint32_t offset);
 	void RemoveScheduledDispatch(uint32_t offset);
 	void AdjustScheduledDispatch(int32_t adjust);

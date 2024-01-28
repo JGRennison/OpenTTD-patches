@@ -521,6 +521,7 @@ enum Commands {
 	CMD_SCHEDULED_DISPATCH_APPEND_VEHICLE_SCHEDULE, ///< scheduled dispatch append schedules from another vehicle
 	CMD_SCHEDULED_DISPATCH_ADJUST,              ///< scheduled dispatch adjust time offsets in schedule
 	CMD_SCHEDULED_DISPATCH_SWAP_SCHEDULES,      ///< scheduled dispatch swap schedules in order
+	CMD_SCHEDULED_DISPATCH_SET_SLOT_FLAGS,      ///< scheduled dispatch set flags of dispatch slot
 
 	CMD_ADD_PLAN,
 	CMD_ADD_PLAN_LINE,

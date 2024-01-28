@@ -132,15 +132,19 @@ static bool VehicleSetNextDepartureTime(Ticks *previous_departure, Ticks *waitin
 			btree::btree_set<DateTicksScaled> &slot_cache = dept_schedule_last[&ds];
 
 			/* Find next available slots */
-			for (auto current_offset : ds.GetScheduledDispatch()) {
-				if (current_offset >= dispatch_duration) continue;
-				DateTicksScaled current_departure = begin_time + current_offset;
+			for (const DispatchSlot &slot : ds.GetScheduledDispatch()) {
+				if (slot.offset >= dispatch_duration) continue;
+				DateTicksScaled current_departure = begin_time + slot.offset;
 				while (current_departure <= earliest_departure) {
 					current_departure += dispatch_duration;
 				}
 
 				/* Make sure the slots has not already been used previously in this departure board calculation */
 				while (slot_cache.count(current_departure) > 0) {
+					if (HasBit(slot.flags, DispatchSlot::SDSF_REUSE_SLOT)) {
+						/* Allow re-use of this slot if it's the last seen */
+						if (*slot_cache.rbegin() == current_departure) break;
+					}
 					current_departure += dispatch_duration;
 				}
 
@@ -151,7 +155,9 @@ static bool VehicleSetNextDepartureTime(Ticks *previous_departure, Ticks *waitin
 
 			*waiting_time = (actual_departure - date_ticks_base).AsTicks() - *previous_departure - order->GetTravelTime();
 			*previous_departure = (actual_departure - date_ticks_base).AsTicks();
-			slot_cache.insert(actual_departure);
+			if (!ds.GetScheduledDispatchReuseSlots()) {
+				slot_cache.insert(actual_departure);
+			}
 
 			/* Return true means that vehicle lateness should be clear from this point onward */
 			return true;

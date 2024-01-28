@@ -3068,9 +3068,9 @@ bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, 
 
 	bool value;
 	if (order->GetConditionValue() & 1) {
-		value = (offset == (int)sched.GetScheduledDispatch().back());
+		value = (offset == (int32_t)sched.GetScheduledDispatch().back().offset);
 	} else {
-		value = (offset == (int)sched.GetScheduledDispatch().front());
+		value = (offset == (int32_t)sched.GetScheduledDispatch().front().offset);
 	}
 
 	return OrderConditionCompare(order->GetConditionComparator(), value ? 1 : 0, 0);
