@@ -268,12 +268,24 @@ enum OrderTimetableConditionMode {
 	OTCM_END
 };
 
-enum OrderScheduledDispatchSlotConditionMode {
-	OSDSCM_NEXT_FIRST        = 0, ///< Test if next departure is first slot
-	OSDSCM_NEXT_LAST         = 1, ///< Test if next departure is last slot
-	OSDSCM_LAST_FIRST        = 2, ///< Test if last departure was first slot
-	OSDSCM_LAST_LAST         = 3, ///< Test if last departure was last slot
-	OSDSCM_END
+enum OrderDispatchConditionBits {
+	ODCB_LAST_DISPATCHED     = 1,
+	ODCB_MODE_START          = 8,
+	ODCB_MODE_COUNT          = 3,
+};
+
+enum OrderDispatchConditionModes : uint8_t {
+	ODCM_FIRST_LAST          = 0,
+	OCDM_TAG                 = 1,
+};
+
+enum OrderDispatchFirstLastConditionBits {
+	ODFLCB_LAST_SLOT         = 0,
+};
+
+enum OrderDispatchTagConditionBits {
+	ODFLCB_TAG_START         = 4,
+	ODFLCB_TAG_COUNT         = 2,
 };
 
 /**

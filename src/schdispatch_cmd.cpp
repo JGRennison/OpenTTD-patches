@@ -667,7 +667,7 @@ CommandCost CmdScheduledDispatchSetSlotFlags(TileIndex tile, DoCommandFlag flags
 	uint16_t values = (uint16_t)GB(p3, 0, 16);
 	uint16_t mask = (uint16_t)GB(p3, 16, 16);
 
-	const uint16_t permitted_mask = (1 << DispatchSlot::SDSF_REUSE_SLOT);
+	const uint16_t permitted_mask = GetBitMaskSC<uint16_t>(DispatchSlot::SDSF_REUSE_SLOT, 1) | GetBitMaskFL<uint16_t>(DispatchSlot::SDSF_FIRST_TAG, DispatchSlot::SDSF_LAST_TAG);
 	if ((mask & permitted_mask) != mask) return CMD_ERROR;
 	if ((values & (~mask)) != 0) return CMD_ERROR;
 

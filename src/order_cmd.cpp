@@ -1992,7 +1992,6 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 				case OCV_COUNTER_VALUE:
 				case OCV_TIME_DATE:
 				case OCV_TIMETABLE:
-				case OCV_DISPATCH_SLOT:
 					break;
 
 				default:
@@ -2021,7 +2020,9 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 					break;
 
 				case OCV_DISPATCH_SLOT:
-					if (data >= OSDSCM_END) return CMD_ERROR;
+					if (data != UINT16_MAX && data >= v->orders->GetScheduledDispatchScheduleCount()) {
+						return CMD_ERROR;
+					}
 					break;
 
 				default:
@@ -2293,7 +2294,6 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 
 					case OCV_CARGO_WAITING_AMOUNT:
 					case OCV_COUNTER_VALUE:
-					case OCV_DISPATCH_SLOT:
 						SB(order->GetXDataRef(), 0, 16, data);
 						break;
 
@@ -2307,6 +2307,10 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 				switch (order->GetConditionVariable()) {
 					case OCV_COUNTER_VALUE:
 						SB(order->GetXDataRef(), 16, 16, data);
+						break;
+
+					case OCV_DISPATCH_SLOT:
+						SB(order->GetXDataRef(), 0, 16, data);
 						break;
 
 					default:
@@ -3051,7 +3055,7 @@ bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, 
 	if (predicted != nullptr) *predicted = true;
 
 	int32_t offset;
-	if (order->GetConditionValue() & 2) {
+	if (HasBit(order->GetConditionValue(), ODCB_LAST_DISPATCHED)) {
 		int32_t last = sched.GetScheduledDispatchLastDispatch();
 		if (last == INVALID_SCHEDULED_DISPATCH_OFFSET) {
 			/* No last dispatched */
@@ -3066,11 +3070,26 @@ bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, 
 		offset = (slot - sched.GetScheduledDispatchStartTick()).base() % sched.GetScheduledDispatchDuration();
 	}
 
-	bool value;
-	if (order->GetConditionValue() & 1) {
-		value = (offset == (int32_t)sched.GetScheduledDispatch().back().offset);
-	} else {
-		value = (offset == (int32_t)sched.GetScheduledDispatch().front().offset);
+	bool value = false;
+	switch ((OrderDispatchConditionModes)GB(order->GetConditionValue(), ODCB_MODE_START, ODCB_MODE_COUNT)) {
+		case ODCM_FIRST_LAST:
+			if (HasBit(order->GetConditionValue(), ODFLCB_LAST_SLOT)) {
+				value = (offset == (int32_t)sched.GetScheduledDispatch().back().offset);
+			} else {
+				value = (offset == (int32_t)sched.GetScheduledDispatch().front().offset);
+			}
+			break;
+
+		case OCDM_TAG: {
+			uint8_t tag = (uint8_t)GB(order->GetConditionValue(), ODFLCB_TAG_START, ODFLCB_TAG_COUNT);
+			for (const DispatchSlot &slot : sched.GetScheduledDispatch()) {
+				if (offset == (int32_t)slot.offset) {
+					value = HasBit(slot.flags, DispatchSlot::SDSF_FIRST_TAG + tag);
+					break;
+				}
+			}
+			break;
+		}
 	}
 
 	return OrderConditionCompare(order->GetConditionComparator(), value ? 1 : 0, 0);

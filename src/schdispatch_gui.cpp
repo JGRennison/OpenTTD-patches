@@ -216,10 +216,6 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		SCH_MD_REUSE_DEPARTURE_SLOTS,
 	};
 
-	enum SlotManagementDropdown {
-		SCH_SMD_REUSE_DEPARTURE_SLOT,
-	};
-
 
 	SchdispatchWindow(WindowDesc *desc, WindowNumber window_number) :
 			GeneralVehicleWindow(desc, Vehicle::Get(window_number))
@@ -451,6 +447,11 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 			case WID_SCHDISPATCH_MANAGE_SLOT: {
 				_temp_special_strings[0] = GetString(STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT_TOOLTIP);
+				auto add_suffix = [&](StringID str) {
+					SetDParam(0, str);
+					_temp_special_strings[0] += GetString(STR_SCHDISPATCH_MANAGE_TOOLTIP_SUFFIX);
+				};
+				add_suffix(STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_TAG_TOOLTIP);
 				GuiShowTooltips(this, SPECSTR_TEMP_START, close_cond);
 				return true;
 			}
@@ -511,6 +512,13 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						_temp_special_strings[0] += '\n';
 						if (HasBit(flags, DispatchSlot::SDSF_REUSE_SLOT)) {
 							_temp_special_strings[0] += GetString(STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE);
+						}
+
+						for (uint8_t flag_bit = DispatchSlot::SDSF_FIRST_TAG; flag_bit <= DispatchSlot::SDSF_LAST_TAG; flag_bit++) {
+							if (HasBit(flags, flag_bit)) {
+								SetDParam(0, 1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG);
+								_temp_special_strings[0] += GetString(STR_SCHDISPATCH_SLOT_TOOLTIP_TAG);
+							}
 						}
 					}
 					GuiShowTooltips(this, SPECSTR_TEMP_START, close_cond);
@@ -1033,8 +1041,15 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				const DispatchSchedule &schedule = this->GetSelectedSchedule();
 
 				DropDownList list;
-				list.push_back(std::make_unique<DropDownListCheckedItem>(HasBit(selected_slot->flags, DispatchSlot::SDSF_REUSE_SLOT),
-						STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT, SCH_SMD_REUSE_DEPARTURE_SLOT, schedule.GetScheduledDispatchReuseSlots()));
+				auto add_item = [&](StringID str, uint bit, bool disabled) {
+					list.push_back(std::make_unique<DropDownListCheckedItem>(HasBit(selected_slot->flags, bit), str, bit, disabled));
+				};
+				add_item(STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT, DispatchSlot::SDSF_REUSE_SLOT, schedule.GetScheduledDispatchReuseSlots());
+				for (uint8_t flag_bit = DispatchSlot::SDSF_FIRST_TAG; flag_bit <= DispatchSlot::SDSF_LAST_TAG; flag_bit++) {
+					SetDParam(0, 1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG);
+					add_item(STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_TAG, flag_bit, false);
+				}
+
 				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGE_SLOT);
 				break;
 			}
@@ -1124,15 +1139,10 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				const DispatchSlot *selected_slot = this->GetSelectedDispatchSlot();
 				if (selected_slot == nullptr) break;
 
-				switch((SlotManagementDropdown)index) {
-					case SCH_SMD_REUSE_DEPARTURE_SLOT: {
-						uint64_t p3 = 0;
-						SetBit(p3, SCH_SMD_REUSE_DEPARTURE_SLOT + 16);
-						if (!HasBit(selected_slot->flags, SCH_SMD_REUSE_DEPARTURE_SLOT)) SetBit(p3, SCH_SMD_REUSE_DEPARTURE_SLOT);
-						DoCommandPEx(0, this->vehicle->index | (this->schedule_index << 20), this->selected_slot, p3, CMD_SCHEDULED_DISPATCH_SET_SLOT_FLAGS | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
-						break;
-					}
-				}
+				uint64_t p3 = 0;
+				SetBit(p3, index + 16);
+				if (!HasBit(selected_slot->flags, index)) SetBit(p3, index);
+				DoCommandPEx(0, this->vehicle->index | (this->schedule_index << 20), this->selected_slot, p3, CMD_SCHEDULED_DISPATCH_SET_SLOT_FLAGS | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
 				break;
 			}
 

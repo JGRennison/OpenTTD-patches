@@ -730,6 +730,8 @@ struct DispatchSlot {
 	 */
 	enum ScheduledDispatchSlotFlags {
 		SDSF_REUSE_SLOT                           = 0,  ///< Allow this slot to be used more than once
+		SDSF_FIRST_TAG                            = 8,  ///< First tag flag
+		SDSF_LAST_TAG                             = 11, ///< Last tag flag
 	};
 };
 
