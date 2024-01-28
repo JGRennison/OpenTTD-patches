@@ -282,7 +282,7 @@ endif()
 set_target_properties(openttd PROPERTIES OUTPUT_NAME "${BINARY_NAME}")
 # All other files are added via target_sources()
 
-if (MINGW)
+if (MINGW AND OPTION_MINGW_STDTHREADS)
     target_link_libraries(${OPENTTD_LIB} mingw_stdthreads)
 endif()
 
