@@ -68,3 +68,22 @@ TEST_CASE("SetBitIterator tests")
 	CHECK(test_case(INT32_MIN, { 31 }));
 	CHECK(test_case(INT64_MIN, { 63 }));
 }
+
+TEST_CASE("GetBitMaskSC tests")
+{
+	CHECK(GetBitMaskSC<uint>(4, 4) == 0xF0);
+	CHECK(GetBitMaskSC<uint>(28, 4) == 0xF0000000);
+	CHECK(GetBitMaskSC<uint8_t>(7, 1) == 0x80);
+	CHECK(GetBitMaskSC<uint8_t>(0, 1) == 1);
+	CHECK(GetBitMaskSC<uint8_t>(0, 0) == 0);
+	CHECK(GetBitMaskSC<uint8_t>(7, 0) == 0);
+}
+
+TEST_CASE("GetBitMaskFL tests")
+{
+	CHECK(GetBitMaskFL<uint>(4, 7) == 0xF0);
+	CHECK(GetBitMaskFL<uint>(28, 31) == 0xF0000000);
+	CHECK(GetBitMaskFL<uint8_t>(7, 7) == 0x80);
+	CHECK(GetBitMaskFL<uint8_t>(0, 0) == 1);
+	CHECK(GetBitMaskFL<uint8_t>(3, 4) == 0x18);
+}

@@ -188,6 +188,35 @@ inline T ToggleBit(T &x, const uint8_t y)
 }
 
 /**
+ * Return a bit mask of count bits starting at start.
+ *
+ * @param start The start bit
+ * @param count The number of bits
+ * @pre start + count < sizeof(T) * 8
+ * @return The bit mask
+ */
+template <typename T>
+constexpr T GetBitMaskSC(const uint8_t start, const uint8_t count)
+{
+	typename std::make_unsigned<T>::type mask = 1;
+	return (T)(((mask << count) - 1) << start);
+}
+
+/**
+ * Return a bit mask of bits from first to last (inclusive).
+ *
+ * @param first The first bit
+ * @param last The last bits (inclusive)
+ * @pre first <= last && last < sizeof(T) * 8
+ * @return The bit mask
+ */
+template <typename T>
+constexpr T GetBitMaskFL(const uint8_t first, const uint8_t last)
+{
+	return GetBitMaskSC<T>(first, 1 + last - first);
+}
+
+/**
  * Search the first set bit in a value.
  * When no bit is set, it returns 0.
  *
