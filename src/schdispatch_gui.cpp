@@ -455,6 +455,69 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				return true;
 			}
 
+			case WID_SCHDISPATCH_MATRIX: {
+				NWidgetBase *nwi = this->GetWidget<NWidgetBase>(WID_SCHDISPATCH_MATRIX);
+				const DispatchSlot *slot;
+				bool is_header;
+				std::tie(slot, is_header) = this->GetSlotFromMatrixPoint(pt.x - nwi->pos_x, pt.y - nwi->pos_y);
+				if (slot == nullptr) return false;
+
+				if (is_header && this->remove_slot_mode) {
+					GuiShowTooltips(this, STR_SCHDISPATCH_REMOVE_SLOT, close_cond);
+				} else {
+					const DispatchSchedule &ds = this->GetSelectedSchedule();
+					const DateTicksScaled start_tick = ds.GetScheduledDispatchStartTick();
+
+					SetDParam(0, start_tick + slot->offset);
+					_temp_special_strings[0] = GetString(STR_SCHDISPATCH_SLOT_TOOLTIP);
+					if (_settings_time.time_in_minutes) {
+						ClockFaceMinutes start_minutes = _settings_time.ToTickMinutes(start_tick).ToClockFaceMinutes();
+						if (start_minutes != 0) {
+							TickMinutes offset_minutes = slot->offset / _settings_time.ticks_per_minute;
+							SetDParam(0, offset_minutes.ClockHHMM());
+							_temp_special_strings[0] += GetString(STR_SCHDISPATCH_SLOT_TOOLTIP_RELATIVE);
+						}
+					}
+
+					bool have_last = false;
+					if (ds.GetScheduledDispatchLastDispatch() % ds.GetScheduledDispatchDuration() == slot->offset) {
+						_temp_special_strings[0] += '\n';
+						_temp_special_strings[0] += GetString(STR_SCHDISPATCH_SLOT_TOOLTIP_LAST);
+						if (_settings_time.time_in_minutes) {
+							ClockFaceMinutes mins = _settings_time.ToTickMinutes(start_tick + ds.GetScheduledDispatchLastDispatch()).ToClockFaceMinutes();
+							if (mins != _settings_time.ToTickMinutes(start_tick + slot->offset).ToClockFaceMinutes()) {
+								SetDParam(0, start_tick + ds.GetScheduledDispatchLastDispatch());
+								_temp_special_strings[0] += GetString(STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX);
+							}
+						}
+						have_last = true;
+					}
+					DateTicksScaled next_slot = GetScheduledDispatchTime(ds, _scaled_date_ticks);
+					if ((next_slot - ds.GetScheduledDispatchStartTick()).AsTicks() % ds.GetScheduledDispatchDuration() == slot->offset) {
+						if (!have_last) _temp_special_strings[0] += '\n';
+						_temp_special_strings[0] += GetString(STR_SCHDISPATCH_SLOT_TOOLTIP_NEXT);
+						if (_settings_time.time_in_minutes) {
+							ClockFaceMinutes mins = _settings_time.ToTickMinutes(next_slot).ToClockFaceMinutes();
+							if (mins != _settings_time.ToTickMinutes(start_tick + slot->offset).ToClockFaceMinutes()) {
+								SetDParam(0, next_slot);
+								_temp_special_strings[0] += GetString(STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX);
+							}
+						}
+					}
+
+					auto flags = slot->flags;
+					if (ds.GetScheduledDispatchReuseSlots()) ClrBit(flags, DispatchSlot::SDSF_REUSE_SLOT);
+					if (flags != 0) {
+						_temp_special_strings[0] += '\n';
+						if (HasBit(flags, DispatchSlot::SDSF_REUSE_SLOT)) {
+							_temp_special_strings[0] += GetString(STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE);
+						}
+					}
+					GuiShowTooltips(this, SPECSTR_TEMP_START, close_cond);
+				}
+				return true;
+			}
+
 			default:
 				break;
 		}
@@ -763,13 +826,14 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	}
 
 	/**
-	 * Handle click in the departure time matrix.
+	 * Get slot and whether it's in the header section in the departure time matrix.
 	 * @param x Horizontal position in the matrix widget in pixels.
 	 * @param y Vertical position in the matrix widget in pixels.
+	 * @return slot, and whether the position was in the header section
 	 */
-	void TimeClick(int x, int y)
+	std::pair<const DispatchSlot *, bool> GetSlotFromMatrixPoint(int x, int y) const
 	{
-		if (!this->IsScheduleSelected()) return;
+		if (!this->IsScheduleSelected()) return { nullptr, false };
 
 		const NWidgetCore *matrix_widget = this->GetWidget<NWidgetCore>(WID_SCHDISPATCH_MATRIX);
 		/* In case of RTL the widgets are swapped as a whole */
@@ -777,16 +841,31 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 		uint xt = x / this->resize.step_width;
 		int xm = x % this->resize.step_width;
-		if (xt >= this->num_columns) return;
+		if (xt >= this->num_columns) return { nullptr, false };
 
 		uint row = y / this->resize.step_height;
-		if (row >= this->vscroll->GetCapacity()) return;
+		if (row >= this->vscroll->GetCapacity()) return { nullptr, false };
 
 		uint pos = ((row + this->vscroll->GetPosition()) * this->num_columns) + xt;
 
 		const DispatchSchedule &ds = this->GetSelectedSchedule();
+		if (pos >= this->item_count || pos >= ds.GetScheduledDispatch().size()) return { nullptr, false };
 
-		if (pos >= this->item_count || pos >= ds.GetScheduledDispatch().size()) {
+		return { &ds.GetScheduledDispatch()[pos], xm <= this->header_width };
+	}
+
+	/**
+	 * Handle click in the departure time matrix.
+	 * @param x Horizontal position in the matrix widget in pixels.
+	 * @param y Vertical position in the matrix widget in pixels.
+	 */
+	void TimeClick(int x, int y)
+	{
+		const DispatchSlot *slot;
+		bool is_header;
+		std::tie(slot, is_header) = this->GetSlotFromMatrixPoint(x, y);
+
+		if (slot == nullptr) {
 			if (this->selected_slot != UINT32_MAX) {
 				this->selected_slot = UINT32_MAX;
 				this->SetWidgetDirty(WID_SCHDISPATCH_MATRIX);
@@ -794,16 +873,15 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			return;
 		}
 
-		uint32_t offset = ds.GetScheduledDispatch()[pos].offset;
-
-		if (xm <= this->header_width && this->remove_slot_mode) {
-			DoCommandP(0, this->vehicle->index | (this->schedule_index << 20), offset, CMD_SCHEDULED_DISPATCH_REMOVE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+		if (is_header && this->remove_slot_mode) {
+			DoCommandP(0, this->vehicle->index | (this->schedule_index << 20), slot->offset, CMD_SCHEDULED_DISPATCH_REMOVE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+			return;
 		}
 
-		if (this->selected_slot == offset) {
+		if (this->selected_slot == slot->offset) {
 			this->selected_slot = UINT32_MAX;
 		} else {
-			this->selected_slot = offset;
+			this->selected_slot = slot->offset;
 		}
 		this->SetWidgetDirty(WID_SCHDISPATCH_MATRIX);
 	}
