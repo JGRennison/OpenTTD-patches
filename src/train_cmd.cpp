@@ -4444,6 +4444,8 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 				if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) FillTrainReservationLookAhead(v);
 				return best_track;
 			}
+		} else if (res_dest.tile == tile) {
+			if (changed_signal != INVALID_TRACKDIR) SetSignalStateByTrackdir(tile, changed_signal, SIGNAL_STATE_RED);
 		}
 
 		/* Check if the train needs service here, so it has a chance to always find a depot.
