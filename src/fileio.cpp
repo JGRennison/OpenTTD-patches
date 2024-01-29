@@ -525,8 +525,7 @@ bool TarScanner::AddFile(const std::string &filename, size_t basepath_length, co
 
 	_tar_list[this->subdir][filename] = std::string{};
 
-	auto last_sep = filename.find_last_of(PATHSEP);
-	std::string filename_base = last_sep == std::string::npos ? filename : filename.substr(last_sep + 1);
+	std::string filename_base = StrLastPathSegment(filename);
 	SimplifyFileName(filename_base.data());
 
 	TarLinkList links; ///< Temporary list to collect links
