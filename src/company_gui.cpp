@@ -45,9 +45,6 @@
 #include "safeguards.h"
 
 
-/** Company GUI constants. */
-#define EXP_SPACING (WidgetDimensions::scaled.vsep_normal * 2)
-
 static void DoSelectCompanyManagerFace(Window *parent);
 static void ShowCompanyInfrastructure(CompanyID company);
 
@@ -1951,10 +1948,10 @@ struct CompanyInfrastructureWindow : Window
 
 				size->width += padding.width;
 
-				uint total_height = ((rail_lines + road_lines + tram_lines + 2 + 3) * GetCharacterHeight(FS_NORMAL)) + (4 * EXP_SPACING);
+				uint total_height = ((rail_lines + road_lines + tram_lines + 2 + 3) * GetCharacterHeight(FS_NORMAL)) + (4 * WidgetDimensions::scaled.vsep_sparse);
 
 				/* Set height of the total line. */
-				if (_settings_game.economy.infrastructure_maintenance) total_height += EXP_SPACING + WidgetDimensions::scaled.vsep_normal + GetCharacterHeight(FS_NORMAL);
+				if (_settings_game.economy.infrastructure_maintenance) total_height += WidgetDimensions::scaled.vsep_sparse + WidgetDimensions::scaled.vsep_normal + GetCharacterHeight(FS_NORMAL);
 
 				this->vscroll->SetCount(total_height);
 
@@ -2062,7 +2059,7 @@ struct CompanyInfrastructureWindow : Window
 					DrawString(offs_left, width - offs_right, y += GetCharacterHeight(FS_NORMAL), STR_COMPANY_VIEW_INFRASTRUCTURE_NONE);
 				}
 
-				y += GetCharacterHeight(FS_NORMAL) + EXP_SPACING;
+				y += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_sparse;
 
 				DrawString(0, width, y, STR_COMPANY_INFRASTRUCTURE_VIEW_ROAD_SECT);
 
@@ -2074,7 +2071,7 @@ struct CompanyInfrastructureWindow : Window
 					}
 				}
 
-				y += GetCharacterHeight(FS_NORMAL) + EXP_SPACING;
+				y += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_sparse;
 
 				DrawString(0, width, y, STR_COMPANY_INFRASTRUCTURE_VIEW_TRAM_SECT);
 
@@ -2086,12 +2083,12 @@ struct CompanyInfrastructureWindow : Window
 					}
 				}
 
-				y += GetCharacterHeight(FS_NORMAL) + EXP_SPACING;
+				y += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_sparse;
 
 				DrawString(0, width, y, STR_COMPANY_INFRASTRUCTURE_VIEW_WATER_SECT);
 				DrawString(offs_left, width - offs_right, y += GetCharacterHeight(FS_NORMAL), STR_COMPANY_INFRASTRUCTURE_VIEW_CANALS);
 
-				y += GetCharacterHeight(FS_NORMAL) + EXP_SPACING;
+				y += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_sparse;
 
 				DrawString(0, width, y, STR_COMPANY_INFRASTRUCTURE_VIEW_STATION_SECT);
 				DrawString(offs_left, width - offs_right, y += GetCharacterHeight(FS_NORMAL), STR_COMPANY_INFRASTRUCTURE_VIEW_STATIONS);
@@ -2112,7 +2109,7 @@ struct CompanyInfrastructureWindow : Window
 					this->DrawCountLine(width, y, c->infrastructure.signal, SignalMaintenanceCost(c->infrastructure.signal));
 				}
 
-				y += GetCharacterHeight(FS_NORMAL) + EXP_SPACING;
+				y += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_sparse;
 
 				uint32_t road_total = c->infrastructure.GetRoadTotal();
 				for (const auto &rt : _sorted_roadtypes) {
@@ -2121,7 +2118,7 @@ struct CompanyInfrastructureWindow : Window
 					}
 				}
 
-				y += GetCharacterHeight(FS_NORMAL) + EXP_SPACING;
+				y += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_sparse;
 
 				uint32_t tram_total = c->infrastructure.GetTramTotal();
 				for (const auto &rt : _sorted_roadtypes) {
@@ -2130,17 +2127,17 @@ struct CompanyInfrastructureWindow : Window
 					}
 				}
 
-				y += GetCharacterHeight(FS_NORMAL) + EXP_SPACING;
+				y += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_sparse;
 
 				this->DrawCountLine(width, y, c->infrastructure.water, CanalMaintenanceCost(c->infrastructure.water));
 
-				y += GetCharacterHeight(FS_NORMAL) + EXP_SPACING;
+				y += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_sparse;
 
 				this->DrawCountLine(width, y, c->infrastructure.station, StationMaintenanceCost(c->infrastructure.station));
 				this->DrawCountLine(width, y, c->infrastructure.airport, AirportMaintenanceCost(c->index));
 
 				if (_settings_game.economy.infrastructure_maintenance) {
-					y += GetCharacterHeight(FS_NORMAL) + EXP_SPACING;
+					y += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_sparse;
 					int left = _current_text_dir == TD_RTL ? width - this->total_width : 0;
 					GfxFillRect(left, y, left + this->total_width, y + WidgetDimensions::scaled.bevel.top - 1, PC_WHITE);
 					y += WidgetDimensions::scaled.vsep_normal;
