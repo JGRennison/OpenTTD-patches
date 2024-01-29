@@ -3822,9 +3822,10 @@ static Track DoTrainPathfind(const Train *v, TileIndex tile, DiagDirection enter
  * @param origin The tile from which the reservation have to be extended
  * @param new_tracks [out] Tracks to choose from when encountering a choice
  * @param enterdir [out] The direction from which the choice tile is to be entered
+ * @param temporary_slot_state The temporary slot to use (will be activated/deactivated as necessary if it isn't already)
  * @return INVALID_TILE indicates that the reservation failed.
  */
-static PBSTileInfo ExtendTrainReservation(const Train *v, const PBSTileInfo &origin, TrackBits *new_tracks, DiagDirection *enterdir)
+static PBSTileInfo ExtendTrainReservation(const Train *v, const PBSTileInfo &origin, TrackBits *new_tracks, DiagDirection *enterdir, TraceRestrictSlotTemporaryState &temporary_slot_state)
 {
 	CFollowTrackRail ft(v);
 
@@ -3844,7 +3845,6 @@ static PBSTileInfo ExtendTrainReservation(const Train *v, const PBSTileInfo &ori
 		/* Station, depot or waypoint are a possible target. */
 		bool target_seen = ft.m_is_station || (IsTileType(ft.m_new_tile, MP_RAILWAY) && !IsPlainRail(ft.m_new_tile));
 		if (target_seen || KillFirstBit(ft.m_new_td_bits) != TRACKDIR_BIT_NONE) {
-			target_seen_path:
 			/* Choice found or possible target encountered.
 			 * On finding a possible target, we need to stop and let the pathfinder handle the
 			 * remaining path. This is because we don't know if this target is in one of our
@@ -3878,10 +3878,20 @@ static PBSTileInfo ExtendTrainReservation(const Train *v, const PBSTileInfo &ori
 		if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile) && IsRestrictedSignal(tile) && HasSignalOnTrack(tile, TrackdirToTrack(cur_td))) {
 			const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(cur_td));
 			if (prog != nullptr && prog->actions_used_flags & (TRPAUF_WAIT_AT_PBS | TRPAUF_SLOT_ACQUIRE)) {
-				/* The pathfinder must deal with this, because temporary slot states can't be nested.
-				 * See target_seen path above.
-				 */
-				goto target_seen_path;
+
+				if (!temporary_slot_state.IsActive()) {
+					/* The temporary slot state needs to be be pushed because permission to use it is granted by TRPISP_ACQUIRE_TEMP_STATE */
+					temporary_slot_state.PushToChangeStack();
+				}
+
+				TraceRestrictProgramInput input(tile, cur_td, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr);
+				input.permitted_slot_operations = TRPISP_ACQUIRE_TEMP_STATE;
+				TraceRestrictProgramResult out;
+				prog->Execute(v, input, out);
+				if (out.flags & TRPRF_WAIT_AT_PBS) {
+					/* Wait at PBS is set, take this as waiting at the start signal, handle as a reservation failure */
+					break;
+				}
 			}
 		}
 
@@ -3912,6 +3922,8 @@ static PBSTileInfo ExtendTrainReservation(const Train *v, const PBSTileInfo &ori
 
 		UnreserveRailTrackdir(tile, cur_td);
 	}
+
+	if (temporary_slot_state.IsActive()) temporary_slot_state.PopFromChangeStackRevertTemporaryChanges(v->index);
 
 	/* Path invalid. */
 	return PBSTileInfo();
@@ -4415,11 +4427,19 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 		ClearLookAheadIfInvalid(v);
 	}
 
+	/* The temporary slot state only needs to be pushed to the stack (i.e. activated) on first use */
+	TraceRestrictSlotTemporaryState temporary_slot_state;
+
+	/* All exit paths except success should revert the temporary slot state if required */
+	auto slot_state_guard = scope_guard([&]() {
+		if (temporary_slot_state.IsActive()) temporary_slot_state.PopFromChangeStackRevertTemporaryChanges(v->index);
+	});
+
 	PBSTileInfo   origin = FollowTrainReservation(v, nullptr, FTRF_OKAY_UNUSED);
 	PBSTileInfo   res_dest(tile, INVALID_TRACKDIR, false);
 	DiagDirection dest_enterdir = enterdir;
 	if (do_track_reservation) {
-		res_dest = ExtendTrainReservation(v, origin, &tracks, &dest_enterdir);
+		res_dest = ExtendTrainReservation(v, origin, &tracks, &dest_enterdir, temporary_slot_state);
 		if (res_dest.tile == INVALID_TILE) {
 			/* Reservation failed? */
 			if (mark_stuck) MarkTrainAsStuck(v);
@@ -4427,6 +4447,7 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 			return FindFirstTrack(tracks);
 		}
 		if (res_dest.okay) {
+			if (temporary_slot_state.IsActive()) temporary_slot_state.PopFromChangeStackApplyTemporaryChanges(v);
 			bool long_reserve = (CheckLongReservePbsTunnelBridgeOnTrackdir(v, res_dest.tile, res_dest.trackdir) != INVALID_TILE);
 			if (!long_reserve) {
 				CFollowTrackRail ft(v);
@@ -4444,8 +4465,6 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 				if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) FillTrainReservationLookAhead(v);
 				return best_track;
 			}
-		} else if (res_dest.tile == tile) {
-			if (changed_signal != INVALID_TRACKDIR) SetSignalStateByTrackdir(tile, changed_signal, SIGNAL_STATE_RED);
 		}
 
 		/* Check if the train needs service here, so it has a chance to always find a depot.
@@ -4493,6 +4512,7 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 		/* Try to find any safe destination. */
 		PBSTileInfo path_end = FollowTrainReservation(v, nullptr, FTRF_OKAY_UNUSED);
 		if (TryReserveSafeTrack(v, path_end.tile, path_end.trackdir, false)) {
+			if (temporary_slot_state.IsActive()) temporary_slot_state.PopFromChangeStackApplyTemporaryChanges(v);
 			TrackBits res = GetReservedTrackbits(tile) & DiagdirReachesTracks(enterdir);
 			best_track = FindFirstTrack(res);
 			if (!HasBit(lookahead_state.flags, CTTLASF_NO_RES_VEH_TILE)) TryReserveRailTrack(v->tile, TrackdirToTrack(v->GetVehicleTrackdir()));
@@ -4550,6 +4570,7 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 				if (mark_stuck) MarkTrainAsStuck(v);
 				got_reservation = false;
 				changed_signal = INVALID_TRACKDIR;
+				if (temporary_slot_state.IsActive()) temporary_slot_state.PopFromChangeStackRevertTemporaryChanges(v->index);
 				break;
 			}
 		}
@@ -4559,11 +4580,13 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 			if (mark_stuck) MarkTrainAsStuck(v);
 			got_reservation = false;
 			changed_signal = INVALID_TRACKDIR;
+			if (temporary_slot_state.IsActive()) temporary_slot_state.PopFromChangeStackRevertTemporaryChanges(v->index);
 		}
 		break;
 	}
 
 	if (got_reservation) {
+		if (temporary_slot_state.IsActive()) temporary_slot_state.PopFromChangeStackApplyTemporaryChanges(v);
 		if (v->current_order.IsBaseStationOrder() && HasStationTileRail(res_dest.tile) && v->current_order.GetDestination() == GetStationIndex(res_dest.tile)) {
 			if (v->current_order.ShouldStopAtStation(v, v->current_order.GetDestination(), v->current_order.IsType(OT_GOTO_WAYPOINT))) {
 				v->last_station_visited = v->current_order.GetDestination();

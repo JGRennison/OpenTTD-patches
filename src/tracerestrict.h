@@ -489,7 +489,7 @@ enum TraceRestrictProgramInputSlotPermissions : uint8_t {
 	TRPISP_RELEASE_FRONT          = 1 << 2,  ///< Slot release (front) is permitted
 	TRPISP_PBS_RES_END_ACQUIRE    = 1 << 3,  ///< Slot acquire/release (PBS reservations ending at this signal) is permitted
 	TRPISP_PBS_RES_END_ACQ_DRY    = 1 << 4,  ///< Dry-run slot acquire/release (PBS reservations ending at this signal) is permitted
-	TRPISP_ACQUIRE_TEMP_STATE     = 1 << 5,  ///< Slot acquire/release is permitted, using temporary state, TraceRestrictProgramInput::slot_temporary_state must be set
+	TRPISP_ACQUIRE_TEMP_STATE     = 1 << 5,  ///< Slot acquire/release is permitted, using temporary state, TraceRestrictSlotTemporaryState::change_stack must be non-empty
 	TRPISP_CHANGE_COUNTER         = 1 << 6,  ///< Change counter value is permitted
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramInputSlotPermissions)
@@ -507,8 +507,44 @@ struct TraceRestrictSlotTemporaryState {
 	std::vector<TraceRestrictSlotID> veh_temporarily_added;
 	std::vector<TraceRestrictSlotID> veh_temporarily_removed;
 
-	void RevertTemporaryChanges(VehicleID veh);
+private:
+	bool is_active = false;
+
+	static std::vector<TraceRestrictSlotTemporaryState *> change_stack;
+
 	void ApplyTemporaryChanges(const Vehicle *v);
+	void ApplyTemporaryChangesToParent(VehicleID veh, TraceRestrictSlotTemporaryState *parent);
+
+public:
+	static TraceRestrictSlotTemporaryState *GetCurrent() { return change_stack.back(); }
+
+	static void ClearChangeStackApplyAllTemporaryChanges(const Vehicle *v)
+	{
+		while (!change_stack.empty()) {
+			change_stack.back()->PopFromChangeStackApplyTemporaryChanges(v);
+		}
+	}
+
+	bool IsActive() const { return this->is_active; }
+
+	void RevertTemporaryChanges(VehicleID veh);
+
+	void PushToChangeStack()
+	{
+		assert(!this->is_active);
+		this->is_active = true;
+		this->change_stack.push_back(this);
+	}
+
+	void PopFromChangeStackRevertTemporaryChanges(VehicleID veh)
+	{
+		assert(this->change_stack.back() == this);
+		this->change_stack.pop_back();
+		this->RevertTemporaryChanges(veh);
+		this->is_active = false;
+	}
+
+	void PopFromChangeStackApplyTemporaryChanges(const Vehicle *v);
 
 	bool IsEmpty() const
 	{
@@ -528,7 +564,6 @@ struct TraceRestrictProgramInput {
 	TraceRestrictProgramInputSlotPermissions permitted_slot_operations; ///< Permitted slot operations
 	PreviousSignalProc *previous_signal_callback; ///< Callback to retrieve tile and direction of previous signal, may be nullptr
 	const void *previous_signal_ptr;              ///< Opaque pointer suitable to be passed to previous_signal_callback
-	TraceRestrictSlotTemporaryState *slot_temporary_state = nullptr; ///< Slot temporary state, must be set when permitted_slot_operations includes TRPISP_ACQUIRE_TEMP_STATE
 
 	TraceRestrictProgramInput(TileIndex tile_, Trackdir trackdir_, PreviousSignalProc *previous_signal_callback_, const void *previous_signal_ptr_)
 			: tile(tile_), trackdir(trackdir_), input_flags(TRPIF_NONE), permitted_slot_operations(TRPISP_NONE),

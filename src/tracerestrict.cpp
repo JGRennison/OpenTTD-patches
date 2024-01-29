@@ -732,7 +732,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 								if (input.permitted_slot_operations & TRPISP_ACQUIRE) {
 									if (!slot->Occupy(v)) out.flags |= TRPRF_WAIT_AT_PBS;
 								} else if (input.permitted_slot_operations & TRPISP_ACQUIRE_TEMP_STATE) {
-									if (!slot->OccupyUsingTemporaryState(v->index, input.slot_temporary_state)) out.flags |= TRPRF_WAIT_AT_PBS;
+									if (!slot->OccupyUsingTemporaryState(v->index, TraceRestrictSlotTemporaryState::GetCurrent())) out.flags |= TRPRF_WAIT_AT_PBS;
 								}
 								break;
 
@@ -740,7 +740,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 								if (input.permitted_slot_operations & TRPISP_ACQUIRE) {
 									slot->Occupy(v);
 								} else if (input.permitted_slot_operations & TRPISP_ACQUIRE_TEMP_STATE) {
-									slot->OccupyUsingTemporaryState(v->index, input.slot_temporary_state);
+									slot->OccupyUsingTemporaryState(v->index, TraceRestrictSlotTemporaryState::GetCurrent());
 								}
 								break;
 
@@ -748,7 +748,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 								if (input.permitted_slot_operations & TRPISP_ACQUIRE) {
 									slot->Vacate(v);
 								} else if (input.permitted_slot_operations & TRPISP_ACQUIRE_TEMP_STATE) {
-									slot->VacateUsingTemporaryState(v->index, input.slot_temporary_state);
+									slot->VacateUsingTemporaryState(v->index, TraceRestrictSlotTemporaryState::GetCurrent());
 								}
 								break;
 
@@ -2716,6 +2716,8 @@ void TraceRestrictSlot::PreCleanPool()
 	slot_vehicle_index.clear();
 }
 
+std::vector<TraceRestrictSlotTemporaryState *> TraceRestrictSlotTemporaryState::change_stack;
+
 /** Revert any temporary changes */
 void TraceRestrictSlotTemporaryState::RevertTemporaryChanges(VehicleID veh)
 {
@@ -2752,6 +2754,38 @@ void TraceRestrictSlotTemporaryState::ApplyTemporaryChanges(const Vehicle *v)
 
 	this->veh_temporarily_added.clear();
 	this->veh_temporarily_removed.clear();
+}
+
+/** Apply any temporary changes to a parent temporary state */
+void TraceRestrictSlotTemporaryState::ApplyTemporaryChangesToParent(VehicleID veh, TraceRestrictSlotTemporaryState *parent)
+{
+	for (TraceRestrictSlotID id : this->veh_temporarily_added) {
+		if (find_index(parent->veh_temporarily_removed, id) < 0) {
+			include(parent->veh_temporarily_added, id);
+		}
+	}
+	for (TraceRestrictSlotID id : this->veh_temporarily_removed) {
+		if (find_index(parent->veh_temporarily_added, id) < 0) {
+			include(parent->veh_temporarily_removed, id);
+		}
+	}
+
+	this->veh_temporarily_added.clear();
+	this->veh_temporarily_removed.clear();
+}
+
+/** Pop from change stack and apply any temporary changes (to the parent temporary state if present) */
+void TraceRestrictSlotTemporaryState::PopFromChangeStackApplyTemporaryChanges(const Vehicle *v)
+{
+	assert(this->change_stack.back() == this);
+	this->change_stack.pop_back();
+	this->is_active = false;
+
+	if (this->change_stack.empty()) {
+		this->ApplyTemporaryChanges(v);
+	} else {
+		this->ApplyTemporaryChangesToParent(v->index, this->change_stack.back());
+	}
 }
 
 /** Remove vehicle ID from all slot occupants */

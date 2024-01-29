@@ -190,8 +190,9 @@ public:
 		restricted_signal_state.defer_test_if_slot_conditional = true;
 		if (!IsWaitingPositionFree(Yapf().GetVehicle(), m_res_dest, m_res_dest_td, false, &restricted_signal_state)) return false;
 
+		/* The temporary slot state only needs to be pushed to the stack (i.e. activated) on first use */
 		static TraceRestrictSlotTemporaryState temporary_slot_state;
-		assert(temporary_slot_state.IsEmpty());
+		assert(temporary_slot_state.IsEmpty() && !temporary_slot_state.IsActive());
 
 		struct IntermediaryTraceRestrictSignalInfo {
 			const TraceRestrictProgram *prog;
@@ -228,7 +229,7 @@ public:
 					fail_node->IterateTiles(Yapf().GetVehicle(), Yapf(), *this, &CYapfReserveTrack<Types>::UnreserveSingleTrack);
 				} while (fail_node != node && (fail_node = fail_node->m_parent) != nullptr);
 
-				temporary_slot_state.RevertTemporaryChanges(Yapf().GetVehicle()->index);
+				if (temporary_slot_state.IsActive()) temporary_slot_state.PopFromChangeStackRevertTemporaryChanges(Yapf().GetVehicle()->index);
 				return false;
 			}
 		}
@@ -237,16 +238,20 @@ public:
 			for (Node *node = m_res_node; node->m_parent != nullptr; node = node->m_parent) {
 				node->IterateTiles(Yapf().GetVehicle(), Yapf(), *this, &CYapfReserveTrack<Types>::UnreserveSingleTrack);
 			}
-			temporary_slot_state.RevertTemporaryChanges(Yapf().GetVehicle()->index);
+			if (temporary_slot_state.IsActive()) temporary_slot_state.PopFromChangeStackRevertTemporaryChanges(Yapf().GetVehicle()->index);
 		};
 
 		/* Iterate in reverse order */
 		for (auto iter = intermediary_restricted_signals.rbegin(); iter != intermediary_restricted_signals.rend(); ++iter) {
 			extern TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const void *, TraceRestrictPBSEntrySignalAuxField mode);
 
+			if (!temporary_slot_state.IsActive()) {
+				/* The temporary slot state needs to be be pushed because permission to use it is granted by TRPISP_ACQUIRE_TEMP_STATE */
+				temporary_slot_state.PushToChangeStack();
+			}
+
 			TraceRestrictProgramInput input(iter->tile, iter->trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr);
 			input.permitted_slot_operations = TRPISP_ACQUIRE_TEMP_STATE;
-			input.slot_temporary_state = &temporary_slot_state;
 			TraceRestrictProgramResult out;
 			iter->prog->Execute(Yapf().GetVehicle(), input, out);
 			if (out.flags & TRPRF_WAIT_AT_PBS) {
@@ -266,7 +271,7 @@ public:
 		}
 
 		/* This must be done before calling TraceRestrictExecuteResEndSlot */
-		temporary_slot_state.ApplyTemporaryChanges(Yapf().GetVehicle());
+		TraceRestrictSlotTemporaryState::ClearChangeStackApplyAllTemporaryChanges(Yapf().GetVehicle());
 
 		restricted_signal_state.TraceRestrictExecuteResEndSlot(Yapf().GetVehicle());
 
