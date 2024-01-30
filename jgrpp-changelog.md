@@ -2,7 +2,7 @@
 
 * * *
 
-### v0.57.0 (2023-01-30)
+### v0.57.0 (2024-01-30)
 * Fix crashes which could occur with some NewGRFs.
 * Fix crash which could occur when trying to extend an invalidated reservation when using realistic braking.
 * Fix crash when updating the timetable of a late train when the total timetable duration is 0.
