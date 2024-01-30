@@ -145,6 +145,7 @@ NetworkRecvStatus QueryNetworkGameSocketHandler::Receive_SERVER_GAME_INFO_EXTEND
 	CheckGameCompatibility(item->info, true);
 	/* Ensure we consider the server online. */
 	item->status = NGLS_ONLINE;
+	item->refreshing = false;
 
 	UpdateNetworkGameWindow();
 
