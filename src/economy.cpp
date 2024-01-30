@@ -2538,8 +2538,7 @@ CommandCost CmdBuyShareInCompany(TileIndex tile, DoCommandFlag flags, uint32_t p
 
 		auto current_company_owns_share = [](auto share_owner) { return share_owner == _current_company; };
 		if (std::all_of(c->share_owners.begin(), c->share_owners.end(), current_company_owns_share)) {
-			c->bankrupt_value = 0;
-			DoAcquireCompany(c, false);
+			DoAcquireCompany(c, true);
 		}
 		InvalidateWindowData(WC_COMPANY, target_company);
 		CompanyAdminUpdate(c);
