@@ -350,6 +350,10 @@ void DeserializeNetworkGameInfo(Packet *p, NetworkGameInfo *info, const GameInfo
 	 * to the NetworkGameInfo wire-protocol! */
 
 	switch (game_info_version) {
+		case 7:
+			info->ticks_playing = p->Recv_uint64();
+			FALLTHROUGH;
+
 		case 6:
 			newgrf_serialisation = (NewGRFSerializationType)p->Recv_uint8();
 			if (newgrf_serialisation >= NST_END) return;
