@@ -282,11 +282,11 @@ struct SetMinutesWindow : SetDateWindow
 		TickMinutes current = 0;
 		switch (widget) {
 			case WID_SD_DAY:
-				current = now.ToSameDayClockTime(now.ClockHour(), index);
+				current = now.ToSameDayClockTime(this->minutes.ClockHour(), index);
 				break;
 
 			case WID_SD_MONTH:
-				current = now.ToSameDayClockTime(index, now.ClockMinute());
+				current = now.ToSameDayClockTime(index, this->minutes.ClockMinute());
 				break;
 
 			default:
@@ -374,8 +374,6 @@ void ShowSetDateWindow(Window *parent, int window_number, DateTicksScaled initia
 	if (!_settings_time.time_in_minutes) {
 		new SetDateWindow(&_set_date_desc, window_number, parent, ScaledDateTicksToDate(initial_date), min_year, max_year, callback, button_text, button_tooltip);
 	} else {
-		new SetMinutesWindow(&_set_minutes_desc, window_number, parent,
-				initial_date + (_settings_game.economy.day_length_factor * (_settings_time.clock_offset * _settings_time.ticks_per_minute)),
-				min_year, max_year, callback, button_text, button_tooltip);
+		new SetMinutesWindow(&_set_minutes_desc, window_number, parent, initial_date, min_year, max_year, callback, button_text, button_tooltip);
 	}
 }
