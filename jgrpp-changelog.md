@@ -2,6 +2,49 @@
 
 * * *
 
+### v0.57.0 (2023-01-30)
+* Fix crashes which could occur with some NewGRFs.
+* Fix crash which could occur when trying to extend an invalidated reservation when using realistic braking.
+* Fix crash when updating the timetable of a late train when the total timetable duration is 0.
+* Fix road stops/waypoints not using road type custom one-way sprites.
+* Fix incorrect time since pickup values in the station rating tooltip when using a day length other than 1.
+* Fix incorrect date/time display after the year 79455.
+* Fix pre-selected AIs not being loaded from the config file.
+* Fix incorrect sorting of towns by distance in the scenario editor house picker town selector.
+* Fix enabling the map edge water mode setting when edge tiles were not previously flat.
+* Fix cargo icons not being shown in the dual-pane train purchase window.
+* Fix ctrl-dragging onto the new group button in group list window not including all vehicles.
+* Fix texts for the amount of rivers setting in the settings window.
+* Fix various issues loading some very old savegames.
+* Fix upgrading bridges partially clearing custom signal styles and routing restrictions.
+* Fix cloning a train directly from the template replacement window not setting the default service interval and timetable modes.
+* Fix vehicle timetables and train speed adaptation not being correctly updated in the scenario editor.
+* Change town and industry cargo production scaling settings to be linear instead of exponential.
+* Routing restrictions:
+  * No longer try to acquire slots a second time when the front of the train passes the signal, if this had already been done when reserving.
+  * Remove the try to acquire (on reserve) slot mode, it's now the same as try to acquire.
+  * Add a release on reserve slot mode.
+  * Reservations now support slot acquire and wait at PBS for reserve-through and backwards PBS signals in the middle of reservations (waiting happens at the reservation start signal).
+  * Fix prematurely acquiring slots on tunnel/bridge exit signals.
+* Scheduled dispatch:
+  * Show when last/next departure time are more than 23 hours in the past/future.
+  * Add schedule and per-departure flags to allow departure slots to be used more than once.
+  * Allow tagging individual departure slots for testing with the last/next departure slot conditional order.
+  * Resetting the last dispatched time now clears it entirely instead of setting it to the start of the current schedule period.
+* Orders:
+  * Fix duplicating orders not always preserving the order colour.
+  * Add order stop location to the manage order dropdown.
+  * Add a try to acquire slot non-conditional order.
+  * Improve handling of conditional orders with vehicle route lines
+* Increase maximum distance from the shore for tunnels under water.
+* Add setting for whether to show the rail polyline tool in the rail toolbar.
+* Used a curved instead of a square area for water desert removal during map generation in tropical.
+* Improve performance of drawing and scrolling when link graph lines are drawn over viewports in map mode.
+* Add hotkey to toggle vehicle in tunnel transparency (ctrl-0).
+* Linux: Provide a pre-built dedicated server binary. The generic linux build now uses a newer glibc, a legacy build is provided for older systems.
+* Vanilla OpenTTD (and this patchpack) now requires C++20 to compile. (Minimum compiler versions: gcc 10, clang 15).
+* Bump trunk base from commit feb94d233d8fdceff193a4c59298960d8148d470 to commit 6b21368bc2fdef6877ef5930f94e85719b670a76.
+
 ### v0.56.2 (2023-12-30)
 * Fix signals incorrectly being considered always reserve through even after the program was modified to remove this, in some cases.
 * Fix high-speed trains reversing at waypoints/behind signals failing to stop and reverse in some cases.
