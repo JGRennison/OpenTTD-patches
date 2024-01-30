@@ -3876,19 +3876,29 @@ static PBSTileInfo ExtendTrainReservation(const Train *v, const PBSTileInfo &ori
 		}
 
 		if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile) && IsRestrictedSignal(tile) && HasSignalOnTrack(tile, TrackdirToTrack(cur_td))) {
-			const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(cur_td));
-			if (prog != nullptr && prog->actions_used_flags & (TRPAUF_WAIT_AT_PBS | TRPAUF_SLOT_ACQUIRE)) {
+			const bool front_side = HasSignalOnTrackdir(tile, cur_td);
 
-				if (!temporary_slot_state.IsActive()) {
-					/* The temporary slot state needs to be be pushed because permission to use it is granted by TRPISP_ACQUIRE_TEMP_STATE */
-					temporary_slot_state.PushToChangeStack();
+			TraceRestrictProgramActionsUsedFlags au_flags = TRPAUF_SLOT_ACQUIRE;
+			if (front_side) {
+				/* Passing through a signal from the front side */
+				au_flags |= TRPAUF_WAIT_AT_PBS;
+			}
+
+			const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(cur_td));
+			if (prog != nullptr && prog->actions_used_flags & au_flags) {
+				TraceRestrictProgramInput input(tile, cur_td, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr);
+				if (prog->actions_used_flags & TRPAUF_SLOT_ACQUIRE) {
+					input.permitted_slot_operations = TRPISP_ACQUIRE_TEMP_STATE;
+
+					if (!temporary_slot_state.IsActive()) {
+						/* The temporary slot state needs to be be pushed because permission to use it is granted by TRPISP_ACQUIRE_TEMP_STATE */
+						temporary_slot_state.PushToChangeStack();
+					}
 				}
 
-				TraceRestrictProgramInput input(tile, cur_td, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr);
-				input.permitted_slot_operations = TRPISP_ACQUIRE_TEMP_STATE;
 				TraceRestrictProgramResult out;
 				prog->Execute(v, input, out);
-				if (out.flags & TRPRF_WAIT_AT_PBS) {
+				if (front_side && (out.flags & TRPRF_WAIT_AT_PBS)) {
 					/* Wait at PBS is set, take this as waiting at the start signal, handle as a reservation failure */
 					break;
 				}
