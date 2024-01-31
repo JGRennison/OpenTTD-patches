@@ -980,6 +980,11 @@ static int DrawShipPurchaseInfo(int left, int right, int y, EngineID engine_numb
 		y += GetCharacterHeight(FS_NORMAL);
 	}
 
+	/* Running cost */
+	SetDParam(0, e->GetDisplayRunningCost());
+	DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
+	y += GetCharacterHeight(FS_NORMAL);
+
 	if (!IsArticulatedEngine(engine_number)) {
 		/* Cargo type + capacity */
 		SetDParam(0, te.cargo);
@@ -988,11 +993,6 @@ static int DrawShipPurchaseInfo(int left, int right, int y, EngineID engine_numb
 		DrawString(left, right, y, STR_PURCHASE_INFO_CAPACITY);
 		y += GetCharacterHeight(FS_NORMAL);
 	}
-
-	/* Running cost */
-	SetDParam(0, e->GetDisplayRunningCost());
-	DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
-	y += GetCharacterHeight(FS_NORMAL);
 
 	return y;
 }
