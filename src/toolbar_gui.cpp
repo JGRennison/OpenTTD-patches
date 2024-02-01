@@ -61,6 +61,7 @@
 #include "newgrf_station.h"
 #include "zoom_func.h"
 #include "help_gui.h"
+#include "industry_map.h"
 
 #include "widgets/toolbar_widget.h"
 
@@ -1133,6 +1134,11 @@ static void UsePickerTool(TileIndex tile)
 
 		case MP_OBJECT: {
 			ShowBuildObjectPickerAndSelect(ObjectSpec::GetByTile(tile));
+			break;
+		}
+
+		case MP_INDUSTRY: {
+			ShowBuildIndustryWindowForIndustryType(GetIndustryType(tile));
 			break;
 		}
 

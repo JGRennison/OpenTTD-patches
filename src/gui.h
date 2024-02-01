@@ -12,6 +12,7 @@
 
 #include "vehicle_type.h"
 #include "economy_type.h"
+#include "industry_type.h"
 #include "tile_type.h"
 #include "transport_type.h"
 #include "story_type.h"
@@ -56,6 +57,7 @@ void ShowFoundTownWindow();
 void ShowIndustryDirectory();
 void ShowIndustryCargoesWindow();
 void ShowBuildIndustryWindow();
+void ShowBuildIndustryWindowForIndustryType(IndustryType industry_type);
 
 /* subsidy_gui.cpp */
 void ShowSubsidiesList();

@@ -623,7 +623,7 @@ public:
 		MarkWholeScreenDirty();
 	}
 
-	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
+	void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
 		switch (widget) {
 			case WID_DPI_CREATE_RANDOM_INDUSTRIES_WIDGET: {
@@ -643,21 +643,7 @@ public:
 			case WID_DPI_MATRIX_WIDGET: {
 				auto it = this->vscroll->GetScrolledItemFromWidget(this->list, pt.y, this, WID_DPI_MATRIX_WIDGET);
 				if (it != this->list.end()) { // Is it within the boundaries of available data?
-					this->selected_type = *it;
-					this->UpdateAvailability();
-
-					const IndustrySpec *indsp = GetIndustrySpec(this->selected_type);
-
-					this->SetDirty();
-
-					if (_thd.GetCallbackWnd() == this &&
-							((_game_mode != GM_EDITOR && _settings_game.construction.raw_industry_construction == 2 && indsp != nullptr && indsp->IsRawIndustry()) || !this->enabled)) {
-						/* Reset the button state if going to prospecting or "build many industries" */
-						this->RaiseButtons();
-						ResetObjectToPlace();
-					}
-
-					this->SetButtons();
+					this->SelectIndustryType(*it);
 					if (this->enabled && click_count > 1) this->OnClick(pt, WID_DPI_FUND_WIDGET, 1);
 				}
 				break;
@@ -679,6 +665,33 @@ public:
 				break;
 			}
 		}
+	}
+
+	void ScrollToSelected()
+	{
+		auto iter = std::find(this->list.begin(), this->list.end(), this->selected_type);
+		if (iter != this->list.end()) {
+			this->vscroll->ScrollTowards(iter - this->list.begin());
+		}
+	}
+
+	void SelectIndustryType(IndustryType type)
+	{
+		this->selected_type = type;
+		this->UpdateAvailability();
+
+		const IndustrySpec *indsp = GetIndustrySpec(this->selected_type);
+
+		this->SetDirty();
+
+		if (_thd.GetCallbackWnd() == this &&
+				((_game_mode != GM_EDITOR && _settings_game.construction.raw_industry_construction == 2 && indsp != nullptr && indsp->IsRawIndustry()) || !this->enabled)) {
+			/* Reset the button state if going to prospecting or "build many industries" */
+			this->RaiseButtons();
+			ResetObjectToPlace();
+		}
+
+		this->SetButtons();
 	}
 
 	void OnResize() override
@@ -758,11 +771,30 @@ public:
 	}
 };
 
+static BuildIndustryWindow *CreateBuildIndustryWindow()
+{
+	if (_game_mode != GM_EDITOR && !Company::IsValidID(_local_company)) return nullptr;
+	Window *existing = BringWindowToFrontById(WC_BUILD_INDUSTRY, 0);
+	if (existing != nullptr) return static_cast<BuildIndustryWindow *>(existing);
+	return new BuildIndustryWindow();
+}
+
 void ShowBuildIndustryWindow()
 {
-	if (_game_mode != GM_EDITOR && !Company::IsValidID(_local_company)) return;
-	if (BringWindowToFrontById(WC_BUILD_INDUSTRY, 0)) return;
-	new BuildIndustryWindow();
+	CreateBuildIndustryWindow();
+}
+
+void ShowBuildIndustryWindowForIndustryType(IndustryType industry_type)
+{
+	const IndustrySpec *indsp = GetIndustrySpec(industry_type);
+	if (!indsp->enabled) return;
+	if (_game_mode != GM_EDITOR && indsp->IsRawIndustry() && _settings_game.construction.raw_industry_construction == 0) return;
+
+	BuildIndustryWindow *w = CreateBuildIndustryWindow();
+	if (w == nullptr) return;
+
+	w->SelectIndustryType(industry_type);
+	w->ScrollToSelected();
 }
 
 static void UpdateIndustryProduction(Industry *i);
