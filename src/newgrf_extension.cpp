@@ -72,7 +72,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("town_zone_callback", 1, GFTOF_TOWN_ZONE_CALLBACK),
 	GRFFeatureInfo("varaction2_towns_town_xy", 1),
 	GRFFeatureInfo("more_varaction2_types", 1, GFTOF_MORE_VARACTION2_TYPES),
-	GRFFeatureInfo("multi_part_ships", 2, GFTOF_MULTI_PART_SHIPS),
+	GRFFeatureInfo("multi_part_ships", 3, GFTOF_MULTI_PART_SHIPS),
 	GRFFeatureInfo("more_stations_per_grf", 1),
 	GRFFeatureInfo(),
 };

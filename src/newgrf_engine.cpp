@@ -1151,8 +1151,18 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 	uint totalsets = in_motion ? (uint)group->loaded.size() : (uint)group->loading.size();
 
 	if (totalsets == 0) return nullptr;
+	if (totalsets == 1) return in_motion ? group->loaded[0] : group->loading[0];
 
-	uint set = (v->cargo.StoredCount() * totalsets) / std::max<uint16_t>(1u, v->cargo_cap);
+	uint stored = v->cargo.StoredCount();
+	uint capacity = v->cargo_cap;
+	if (v->type == VEH_SHIP) {
+		for (const Vehicle *u = v->Next(); u != nullptr; u = u->Next()) {
+			stored += u->cargo.StoredCount();
+			capacity += u->cargo_cap;
+		}
+	}
+
+	uint set = (stored * totalsets) / std::max<uint16_t>(1u, capacity);
 	set = std::min(set, totalsets - 1);
 
 	return in_motion ? group->loaded[set] : group->loading[set];
