@@ -3072,6 +3072,17 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 			if (may_remove && (anno->stores & all_bits).any()) may_remove = false;
 
 			if (may_remove) {
+				for (size_t j = 0; j < substitution_candidates.size(); j++) {
+					if (anno->stores[substitution_candidates[j] & 0xFF]) {
+						/* The procedure makes a store which may be used by a later substitution candidate.
+						 * The procedure can't be removed, the substitution candidate will be removed below. */
+						may_remove = false;
+						break;
+					}
+				}
+			}
+
+			if (may_remove) {
 				if ((i + 1 < (int)group->adjusts.size() && group->adjusts[i + 1].operation == DSGA_OP_RST && group->adjusts[i + 1].variable != 0x7B) ||
 						(i + 1 == (int)group->adjusts.size() && group->ranges.empty() && !group->calculated_result)) {
 					/* Procedure is skippable, makes no stores we need, and the return value is also not needed */
