@@ -1856,7 +1856,7 @@ static bool CheckDeterministicSpriteGroupOutputVarBits(const DeterministicSprite
 			/* Unpredictable load */
 			bits.set();
 		}
-		if (adjust.variable == 0x7D && adjust.parameter) {
+		if (adjust.variable == 0x7D) {
 			bits.set(adjust.parameter & 0xFF, true);
 		}
 		if (adjust.variable == 0x7E) {
