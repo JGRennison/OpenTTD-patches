@@ -1506,6 +1506,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 		this->eng_list.ForceRebuild();
 		this->GenerateBuildList(); // generate the list, since we need it in the next line
+		this->vscroll->SetCount(this->eng_list.size());
 
 		/* Select the first unshaded engine in the list as default when opening the window */
 		EngineID engine = INVALID_ENGINE;
@@ -1614,6 +1615,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 	void OnInit() override
 	{
 		this->SetCargoFilterArray();
+		this->vscroll->SetCount(this->eng_list.size());
 	}
 
 	/** Filter the engine list against the currently selected cargo filter */
@@ -2543,6 +2545,9 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 	{
 		this->SetCargoFilterArray(this->loco, _last_filter_criteria_loco);
 		this->SetCargoFilterArray(this->wagon, _last_filter_criteria_wagon);
+
+		this->loco.vscroll->SetCount(this->loco.eng_list.size());
+		this->wagon.vscroll->SetCount(this->wagon.eng_list.size());
 	}
 
 	/* Filter a single engine */
@@ -3076,8 +3081,8 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		this->SetBuyLocomotiveText();
 		this->SetBuyWagonText();
 
-		this->loco.vscroll->SetCount(static_cast<int>(this->loco.eng_list.size()));
-		this->wagon.vscroll->SetCount(static_cast<int>(this->wagon.eng_list.size()));
+		this->loco.vscroll->SetCount(this->loco.eng_list.size());
+		this->wagon.vscroll->SetCount(this->wagon.eng_list.size());
 
 		this->SetWidgetDisabledState(WID_BV_SHOW_HIDE_LOCO, this->loco.sel_engine == INVALID_ENGINE);
 		this->SetWidgetDisabledState(WID_BV_SHOW_HIDE_WAGON, this->wagon.sel_engine == INVALID_ENGINE);
