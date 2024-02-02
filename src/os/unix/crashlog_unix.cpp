@@ -521,6 +521,7 @@ class CrashLogUnix : public CrashLog {
 		char **messages = backtrace_symbols(trace, trace_size);
 
 #if defined(WITH_BFD)
+		sym_bfd_obj_cache bfd_cache;
 		bfd_init();
 #endif /* WITH_BFD */
 
@@ -574,7 +575,7 @@ class CrashLogUnix : public CrashLog {
 			/* subtract one to get the line before the return address, i.e. the function call line */
 			sym_info_bfd bfd_info(reinterpret_cast<bfd_vma>(trace[i]) - reinterpret_cast<bfd_vma>(info.dli_fbase) - 1);
 			if (dladdr_result && info.dli_fname) {
-				lookup_addr_bfd(info.dli_fname, bfd_info);
+				lookup_addr_bfd(info.dli_fname, bfd_cache, bfd_info);
 				if (bfd_info.file_name != nullptr) file_name = bfd_info.file_name;
 				if (bfd_info.function_name != nullptr) func_name = bfd_info.function_name;
 				if (bfd_info.function_addr != 0) func_addr = reinterpret_cast<void *>(bfd_info.function_addr + reinterpret_cast<bfd_vma>(info.dli_fbase));

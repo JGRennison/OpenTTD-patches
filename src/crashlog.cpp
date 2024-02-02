@@ -1236,10 +1236,10 @@ void CrashLog::MakeCrashSavegameAndScreenshot()
 sym_info_bfd::sym_info_bfd(bfd_vma addr_) : addr(addr_), abfd(nullptr), syms(nullptr), sym_count(0),
 		file_name(nullptr), function_name(nullptr), function_addr(0), line(0), found(false) {}
 
-sym_info_bfd::~sym_info_bfd()
+sym_bfd_obj::~sym_bfd_obj()
 {
-	free(syms);
-	if (abfd != nullptr) bfd_close(abfd);
+	free(this->syms);
+	if (this->abfd != nullptr) bfd_close(this->abfd);
 }
 
 static void find_address_in_section(bfd *abfd, asection *section, void *data)
@@ -1282,20 +1282,33 @@ static void find_address_in_section(bfd *abfd, asection *section, void *data)
 	}
 }
 
-void lookup_addr_bfd(const char *obj_file_name, sym_info_bfd &info)
+void lookup_addr_bfd(const char *obj_file_name, sym_bfd_obj_cache &bfdc, sym_info_bfd &info)
 {
-	info.abfd = bfd_openr(obj_file_name, nullptr);
+	auto res = bfdc.cache.try_emplace(obj_file_name);
+	sym_bfd_obj &obj = res.first->second;
+	if (res.second) {
+		/* New sym_bfd_obj */
+		obj.abfd = bfd_openr(obj_file_name, nullptr);
 
-	if (info.abfd == nullptr) return;
+		if (obj.abfd == nullptr) return;
 
-	if (!bfd_check_format(info.abfd, bfd_object) || (bfd_get_file_flags(info.abfd) & HAS_SYMS) == 0) return;
+		if (!bfd_check_format(obj.abfd, bfd_object) || (bfd_get_file_flags(obj.abfd) & HAS_SYMS) == 0) return;
 
-	unsigned int size;
-	info.sym_count = bfd_read_minisymbols(info.abfd, false, (void**) &(info.syms), &size);
-	if (info.sym_count <= 0) {
-		info.sym_count = bfd_read_minisymbols(info.abfd, true, (void**) &(info.syms), &size);
+		unsigned int size;
+		obj.sym_count = bfd_read_minisymbols(obj.abfd, false, (void**) &(obj.syms), &size);
+		if (obj.sym_count <= 0) {
+			obj.sym_count = bfd_read_minisymbols(obj.abfd, true, (void**) &(obj.syms), &size);
+		}
+		if (obj.sym_count <= 0) return;
+
+		obj.usable = true;
 	}
-	if (info.sym_count <= 0) return;
+
+	if (!obj.usable) return;
+
+	info.abfd = obj.abfd;
+	info.syms = obj.syms;
+	info.sym_count = obj.sym_count;
 
 	bfd_map_over_sections(info.abfd, find_address_in_section, &info);
 }

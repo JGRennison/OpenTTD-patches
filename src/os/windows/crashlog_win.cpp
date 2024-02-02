@@ -399,6 +399,11 @@ static const uint MAX_FRAMES     = 64;
 
 		std::array<DWORD64, 8> last_offsets = {};
 
+#if defined(WITH_BFD)
+		sym_bfd_obj_cache bfd_cache;
+		bfd_init();
+#endif /* WITH_BFD */
+
 		/* Walk stack at most MAX_FRAMES deep in case the stack is corrupt. */
 		for (uint num = 0; num < MAX_FRAMES; num++) {
 			auto guard = scope_guard([&]() {
@@ -448,7 +453,7 @@ static const uint MAX_FRAMES     = 64;
 #if defined (WITH_BFD)
 				/* subtract one to get the line before the return address, i.e. the function call line */
 				sym_info_bfd bfd_info(static_cast<bfd_vma>(frame.AddrPC.Offset) - 1);
-				lookup_addr_bfd(image_name, bfd_info);
+				lookup_addr_bfd(image_name, bfd_cache, bfd_info);
 				if (bfd_info.function_name != nullptr) {
 					const char *func_name = bfd_info.function_name;
 #if defined(WITH_DEMANGLE)
