@@ -532,11 +532,8 @@ static bool RoadVehEngineCapacityVsRunningCostSorter(const GUIEngineListItem &a,
  */
 static bool ShipEngineCapacitySorter(const GUIEngineListItem &a, const GUIEngineListItem &b)
 {
-	const Engine *e_a = Engine::Get(a.engine_id);
-	const Engine *e_b = Engine::Get(b.engine_id);
-
-	int va = e_a->GetDisplayDefaultCapacity();
-	int vb = e_b->GetDisplayDefaultCapacity();
+	int va = GetTotalCapacityOfArticulatedParts(a.engine_id);
+	int vb = GetTotalCapacityOfArticulatedParts(b.engine_id);
 	int r = va - vb;
 
 	/* Use EngineID to sort instead since we want consistent sorting */
@@ -552,7 +549,7 @@ static bool ShipEngineCapacitySorter(const GUIEngineListItem &a, const GUIEngine
  */
 static bool ShipEngineCapacityVsRunningCostSorter(const GUIEngineListItem &a, const GUIEngineListItem &b)
 {
-	return GenericEngineValueVsRunningCostSorter(a, Engine::Get(a.engine_id)->GetDisplayDefaultCapacity(), b, Engine::Get(b.engine_id)->GetDisplayDefaultCapacity());
+	return GenericEngineValueVsRunningCostSorter(a, GetTotalCapacityOfArticulatedParts(a.engine_id), b, GetTotalCapacityOfArticulatedParts(b.engine_id));
 }
 
 /* Aircraft sorting functions */
