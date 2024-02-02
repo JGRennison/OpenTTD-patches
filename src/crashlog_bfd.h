@@ -35,6 +35,7 @@
 
 struct sym_bfd_obj {
 	bfd *abfd = nullptr;
+	bfd_vma image_base = 0;
 	asymbol **syms = nullptr;
 	const char *file_name = nullptr;
 	long sym_count = 0;
@@ -50,6 +51,7 @@ struct sym_bfd_obj_cache {
 struct sym_info_bfd {
 	bfd_vma addr;
 	bfd *abfd;
+	bfd_vma image_base = 0;
 	asymbol **syms;
 	long sym_count;
 	const char *file_name;

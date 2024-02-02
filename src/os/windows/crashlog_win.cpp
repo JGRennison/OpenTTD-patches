@@ -427,12 +427,14 @@ static const uint MAX_FRAMES     = 64;
 			/* Get module name. */
 			const char *mod_name = "???";
 			const char *image_name = nullptr;
+			DWORD64 image_base = 0;
 
 			IMAGEHLP_MODULE64 module;
 			module.SizeOfStruct = sizeof(module);
 			if (proc.pSymGetModuleInfo64(hCur, frame.AddrPC.Offset, &module)) {
 				mod_name = module.ModuleName;
 				image_name = module.ImageName;
+				image_base = module.BaseOfImage;
 			}
 
 			/* Print module and instruction pointer. */
@@ -452,7 +454,7 @@ static const uint MAX_FRAMES     = 64;
 			} else if (image_name != nullptr) {
 #if defined (WITH_BFD)
 				/* subtract one to get the line before the return address, i.e. the function call line */
-				sym_info_bfd bfd_info(static_cast<bfd_vma>(frame.AddrPC.Offset) - 1);
+				sym_info_bfd bfd_info(static_cast<bfd_vma>(frame.AddrPC.Offset) - static_cast<bfd_vma>(image_base) - 1);
 				lookup_addr_bfd(image_name, bfd_cache, bfd_info);
 				if (bfd_info.function_name != nullptr) {
 					const char *func_name = bfd_info.function_name;

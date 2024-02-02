@@ -1249,13 +1249,13 @@ static void find_address_in_section(bfd *abfd, asection *section, void *data)
 
 	if ((bfd_get_section_flags(abfd, section) & SEC_ALLOC) == 0) return;
 
+	bfd_vma addr = info->addr + info->image_base;
 	bfd_vma vma = bfd_get_section_vma(abfd, section);
-	if (info->addr < vma) return;
-
 	bfd_size_type size = get_bfd_section_size(abfd, section);
-	if (info->addr >= vma + size) return;
 
-	info->found = bfd_find_nearest_line(abfd, section, info->syms, info->addr - vma,
+	if (addr < vma || addr >= vma + size) return;
+
+	info->found = bfd_find_nearest_line(abfd, section, info->syms, addr - vma,
 			&(info->file_name), &(info->function_name), &(info->line));
 
 	if (info->found && info->function_name) {
@@ -1266,7 +1266,7 @@ static void find_address_in_section(bfd *abfd, asection *section, void *data)
 			}
 		}
 	} else if (info->found) {
-		bfd_vma target = info->addr - vma;
+		bfd_vma target = addr - vma;
 		bfd_vma best_diff = size;
 		for (long i = 0; i < info->sym_count; i++) {
 			asymbol *sym = info->syms[i];
@@ -1302,11 +1302,34 @@ void lookup_addr_bfd(const char *obj_file_name, sym_bfd_obj_cache &bfdc, sym_inf
 		if (obj.sym_count <= 0) return;
 
 		obj.usable = true;
+
+#if defined(__MINGW32__)
+		/* Handle Windows PE relocation.
+		 * libbfd sections (and thus symbol addresses) are relative to the image base address (i.e. absolute).
+		 * Due to relocation/ASLR/etc the module base address in memory may not match the image base address.
+		 * Instead of using the absolute addresses, expect the inputs here to be relative to the module base address
+		 * in memory, which is easy to get.
+		 * The original image base address is very awkward to get, but as it's always the same, just hard-code it
+		 * via the expected .text section address here. */
+#ifdef _M_AMD64
+		asection *section = bfd_get_section_by_name(obj.abfd, ".text");
+		if (section != nullptr && section->vma == 0x140001000) {
+			obj.image_base = 0x140000000;
+		}
+#elif defined(_M_IX86)
+		asection *section = bfd_get_section_by_name(obj.abfd, ".text");
+		if (section != nullptr && section->vma == 0x401000) {
+			obj.image_base = 0x400000;
+		}
+#endif
+		if (obj.image_base == 0) obj.usable = false;
+#endif
 	}
 
 	if (!obj.usable) return;
 
 	info.abfd = obj.abfd;
+	info.image_base = obj.image_base;
 	info.syms = obj.syms;
 	info.sym_count = obj.sym_count;
 
