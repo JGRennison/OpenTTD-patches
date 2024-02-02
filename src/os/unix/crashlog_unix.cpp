@@ -590,18 +590,19 @@ class CrashLogUnix : public CrashLog {
 				demangled = abi::__cxa_demangle(func_name, nullptr, 0, &status);
 #endif /* WITH_DEMANGLE */
 				const char *name = (demangled != nullptr && status == 0) ? demangled : func_name;
-				buffer += seprintf(buffer, last, " [%02i] %*p %-40s %s + 0x%zx\n", i, ptr_str_size,
+				buffer += seprintf(buffer, last, " [%02i] %*p %-40s %s + 0x%zx", i, ptr_str_size,
 						trace[i], info.dli_fname, name, (char *)trace[i] - (char *)func_addr);
 				free(demangled);
 			} else if (dladdr_result && info.dli_fname) {
-				buffer += seprintf(buffer, last, " [%02i] %*p %-40s + 0x%zx\n", i, ptr_str_size,
+				buffer += seprintf(buffer, last, " [%02i] %*p %-40s + 0x%zx", i, ptr_str_size,
 						trace[i], info.dli_fname, (char *)trace[i] - (char *)info.dli_fbase);
 			} else {
 				ok = false;
 			}
-			if (file_name != nullptr) {
-				buffer += seprintf(buffer, last, "%*s%s:%u\n", 7 + ptr_str_size, "", file_name, line_num);
+			if (ok && file_name != nullptr) {
+				buffer += seprintf(buffer, last, " at %s:%u", file_name, line_num);
 			}
+			if (ok) buffer += seprintf(buffer, last, "\n");
 #if defined(WITH_BFD)
 			if (ok && bfd_info.found && bfd_info.abfd) {
 				uint iteration_limit = 32;
@@ -613,15 +614,16 @@ class CrashLogUnix : public CrashLog {
 						demangled = abi::__cxa_demangle(func_name, nullptr, 0, &status);
 #endif /* WITH_DEMANGLE */
 						const char *name = (demangled != nullptr && status == 0) ? demangled : func_name;
-						buffer += seprintf(buffer, last, " [inlined] %*s %s\n", ptr_str_size + 36, "",
+						buffer += seprintf(buffer, last, " [inlined] %*s %s", ptr_str_size + 36, "",
 								name);
 						free(demangled);
 					} else if (file_name) {
-						buffer += seprintf(buffer, last, " [inlined]\n");
+						buffer += seprintf(buffer, last, " [inlined]");
 					}
 					if (file_name != nullptr) {
-						buffer += seprintf(buffer, last, "%*s%s:%u\n", 7 + ptr_str_size, "", file_name, line_num);
+						buffer += seprintf(buffer, last, " at %s:%u", file_name, line_num);
 					}
+					buffer += seprintf(buffer, last, "\n");
 				}
 			}
 #endif /* WITH_BFD */
