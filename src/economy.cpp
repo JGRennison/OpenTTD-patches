@@ -2314,7 +2314,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 		/* We loaded less cargo than possible for all cargo types and it's not full
 		 * load and we're not supposed to wait any longer: stop loading. */
 		if (!anything_unloaded && full_load_amount == 0 && reservation_left == 0 && full_load_cargo_mask == 0 &&
-				(front->current_order_time >= (uint)std::max<int>(front->current_order.GetTimetabledWait() - front->lateness_counter, 0) ||
+				(front->current_order_time >= (uint)std::max<int>((int)front->current_order.GetTimetabledWait() - (int)front->lateness_counter, 0) ||
 				may_leave_early())) {
 			SetBit(front->vehicle_flags, VF_STOP_LOADING);
 			if (may_leave_early()) {
