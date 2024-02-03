@@ -1122,7 +1122,7 @@ CommandCost CmdSetCompanyColour(TileIndex tile, DoCommandFlag flags, uint32_t p1
 			c->livery[scheme].colour2 = colour;
 
 			if (scheme == LS_DEFAULT) {
-				UpdateCompanyGroupLiveries(c);
+				UpdateCompanyLiveries(c);
 			}
 		}
 
