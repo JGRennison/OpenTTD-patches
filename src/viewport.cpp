@@ -494,10 +494,9 @@ static bool ScrollViewportPixelCacheGeneric(Viewport *vp, std::vector<byte> &cac
 
 	int height = vp->height;
 
-	TemporaryScreenPitchOverride screen_pitch(width);
-
 	/* Blitter_8bppDrawing::ScrollBuffer can be used on 32 bit buffers if widths and offsets are suitably adjusted */
-	Blitter_8bppDrawing blitter;
+	const int pitch = width;
+	Blitter_8bppDrawing blitter(&pitch);
 	blitter.ScrollBuffer(cache.data(), 0, 0, width, height, offset_x, offset_y);
 
 	auto fill_rect = [&](int x, int y, int w, int h) {
@@ -3904,9 +3903,9 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint
 			overlay_dpi.left = UnScaleByZoomLower(vp->virtual_left, vp->zoom);
 			overlay_dpi.top = UnScaleByZoomLower(vp->virtual_top, vp->zoom);
 
-			Blitter_8bppDrawing blitter;
+			const int pitch = vp->width;
+			Blitter_8bppDrawing blitter(&pitch);
 			BlitterFactory::TemporaryCurrentBlitterOverride current_blitter(&blitter);
-			TemporaryScreenPitchOverride screen_pitch(vp->width);
 			vp->overlay->Draw(&overlay_dpi);
 		}
 	}
@@ -3941,9 +3940,9 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint
 				plan_dpi.left = UnScaleByZoomLower(vp->virtual_left, vp->zoom);
 				plan_dpi.top = UnScaleByZoomLower(vp->virtual_top, vp->zoom);
 
-				Blitter_8bppDrawing blitter;
+				const int pitch = vp->width;
+				Blitter_8bppDrawing blitter(&pitch);
 				BlitterFactory::TemporaryCurrentBlitterOverride current_blitter(&blitter);
-				TemporaryScreenPitchOverride screen_pitch(vp->width);
 				ViewportDrawPlans(vp, &plan_dpi);
 			}
 		} else {

@@ -16,6 +16,7 @@
 /** Most trivial 8bpp blitter. */
 class Blitter_8bppSimple FINAL : public Blitter_8bppBase {
 public:
+	using Blitter_8bppBase::Blitter_8bppBase;
 	void Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom) override;
 	Sprite *Encode(const SpriteLoader::SpriteCollection &sprite, AllocatorProc *allocator) override;
 

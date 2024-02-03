@@ -11,13 +11,35 @@
 #define BLITTER_8BPP_BASE_HPP
 
 #include "base.hpp"
+#include "../gfx_type.h"
 
 /** Base for all 8bpp blitters. */
 class Blitter_8bppBase : public Blitter {
+	const int *screen_pitch;
+
 public:
 	Blitter_8bppBase()
 	{
 		this->SetScreenDepth(8);
+
+		extern DrawPixelInfo _screen;
+		this->screen_pitch = &_screen.pitch;
+	}
+
+	Blitter_8bppBase(const int *screen_pitch)
+	{
+		this->SetScreenDepth(8);
+
+		this->screen_pitch = screen_pitch;
+	}
+
+	/**
+	 * Get the screen pitch used for drawing.
+	 * By default this is _screen.pitch.
+	 */
+	int GetScreenPitch() const
+	{
+		return *this->screen_pitch;
 	}
 
 	void DrawColourMappingRect(void *dst, int width, int height, PaletteID pal) override;

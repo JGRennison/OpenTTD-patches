@@ -15,7 +15,7 @@
 /** Blitter that does nothing. */
 class Blitter_Null : public Blitter {
 public:
-	Blitter_Null()
+	Blitter_Null(const int *screen_pitch = nullptr)
 	{
 		this->SetScreenDepth(0);
 		this->SetNoSpriteDataRequired(true);
