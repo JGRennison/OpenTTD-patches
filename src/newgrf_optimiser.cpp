@@ -97,6 +97,7 @@ static bool IsExpensiveRoadStopsVariable(uint16_t variable)
 		case 0x6B:
 		case A2VRI_ROADSTOP_INFO_NEARBY_TILES_EXT:
 		case A2VRI_ROADSTOP_INFO_NEARBY_TILES_V2:
+		case A2VRI_ROADSTOP_ROAD_INFO_NEARBY_TILES:
 			return true;
 
 		default:

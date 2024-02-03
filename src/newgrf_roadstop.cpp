@@ -220,7 +220,7 @@ uint32_t RoadStopScopeResolver::GetVariable(uint16_t variable, uint32_t paramete
 		}
 
 		/* Road info of nearby tiles */
-		case 0x6B: {
+		case A2VRI_ROADSTOP_ROAD_INFO_NEARBY_TILES: {
 			if (this->tile == INVALID_TILE) return 0xFFFFFFFF;
 			TileIndex nearby_tile = GetNearbyTile(parameter, this->tile);
 
