@@ -427,7 +427,7 @@ static const uint MAX_FRAMES     = 64;
 			/* Get module name. */
 			const char *mod_name = "???";
 			const char *image_name = nullptr;
-			DWORD64 image_base = 0;
+			[[maybe_unused]] DWORD64 image_base = 0;
 
 			IMAGEHLP_MODULE64 module;
 			module.SizeOfStruct = sizeof(module);
