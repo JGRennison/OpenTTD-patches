@@ -137,17 +137,19 @@ void GfxFillRect(const DrawPixelInfo *dpi, int left, int top, int right, int bot
 	if (right < dpi->left || left >= dpi->left + dpi->width) return;
 	if (bottom < dpi->top || top >= dpi->top + dpi->height) return;
 
-	if ( (left -= dpi->left) < 0) left = 0;
+	left -= dpi->left;
+	if (left < 0) left = 0;
 	right = right - dpi->left + 1;
 	if (right > dpi->width) right = dpi->width;
 	right -= left;
-	assert(right > 0);
+	if (right <= 0) return;
 
-	if ( (top -= dpi->top) < 0) top = 0;
+	top -= dpi->top;
+	if (top < 0) top = 0;
 	bottom = bottom - dpi->top + 1;
 	if (bottom > dpi->height) bottom = dpi->height;
 	bottom -= top;
-	assert(bottom > 0);
+	if (bottom <= 0) return;
 
 	dst = blitter->MoveTo(dpi->dst_ptr, left, top);
 
