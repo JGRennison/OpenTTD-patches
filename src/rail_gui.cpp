@@ -1730,7 +1730,8 @@ public:
 	{
 		this->SelectClass(class_id);
 		this->EnsureSelectedStationClassIsVisible();
-		this->OnClick({}, WID_BRAS_IMAGE | (spec_id << 16), 1);
+		this->GetWidget<NWidgetBase>(WID_BRAS_IMAGE)->GetParentWidget<NWidgetMatrix>()->SetCurrentElement(spec_id);
+		this->OnClick({}, WID_BRAS_IMAGE, 1);
 	}
 
 	static HotkeyList hotkeys;
@@ -2620,7 +2621,8 @@ struct BuildRailWaypointWindow : PickerWindowBase {
 	{
 		for (uint i = 0; i < (uint)this->list.size(); i++) {
 			if (this->list[i] == spec_id) {
-				this->OnClick({}, WID_BRW_WAYPOINT | (i << 16), 1);
+				this->GetWidget<NWidgetBase>(WID_BRW_WAYPOINT)->GetParentWidget<NWidgetMatrix>()->SetCurrentElement(i);
+				this->OnClick({}, WID_BRW_WAYPOINT, 1);
 				break;
 			}
 		}

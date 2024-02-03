@@ -1747,7 +1747,8 @@ public:
 			/* could not select class*/
 			return;
 		}
-		this->OnClick({}, WID_BROS_IMAGE | (spec_id << 16), 1);
+		this->GetWidget<NWidgetBase>(WID_BROS_IMAGE)->GetParentWidget<NWidgetMatrix>()->SetCurrentElement(spec_id);
+		this->OnClick({}, WID_BROS_IMAGE, 1);
 	}
 
 	static HotkeyList hotkeys;
@@ -2118,7 +2119,8 @@ struct BuildRoadWaypointWindow : PickerWindowBase {
 	{
 		for (uint i = 0; i < (uint)this->list.size(); i++) {
 			if (this->list[i] == spec_id) {
-				this->OnClick({}, WID_BROW_WAYPOINT | (i << 16), 1);
+				this->GetWidget<NWidgetBase>(WID_BROW_WAYPOINT)->GetParentWidget<NWidgetMatrix>()->SetCurrentElement(i);
+				this->OnClick({}, WID_BROW_WAYPOINT, 1);
 				break;
 			}
 		}

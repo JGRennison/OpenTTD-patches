@@ -610,6 +610,8 @@ public:
 	void SetScrollbar(Scrollbar *sb);
 	int GetCurrentElement() const;
 
+	void SetCurrentElement(int current_element) { this->current_element = current_element; }
+
 	void SetupSmallestSize(Window *w) override;
 	void AssignSizePosition(SizingType sizing, int x, int y, uint given_width, uint given_height, bool rtl) override;
 	void FillWidgetLookup(WidgetLookup &widget_lookup) override;
