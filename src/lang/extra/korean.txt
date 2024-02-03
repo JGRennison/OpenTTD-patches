@@ -163,6 +163,7 @@ STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :선박 충돌 �
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :활성화되면 선박들이 서로를 피하려고 시도합니다. 90° 회전이 비활성화된 상태에서 최상의 결과를 보여줍니다.
 
 STR_CONFIG_SETTING_CHUNNEL                                      :해저 터널 건설 허용: {STRING}
+STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :이 설정을 켜면, 해수면 아래를 통과하는 해저 터널을 건설할 수 있습니다. 터널의 각 끝에서 터널과 해안가 사이의 간격은 반드시 {NUM} ~ {NUM}칸 사이여야 합니다.
 
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :다른 회사의 열차가 서로 충돌할 수 없게 함: {STRING}
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :이 옵션은 주로 시설 공유가 활성화된 멀티 플레이 게임에서 신뢰할 수 없는 플레이어에 의해 의도적으로 충돌이 생기는 것을 막기 위해 사용합니다.
@@ -512,6 +513,26 @@ STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO                     :제한 없음
 STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES                           :도시가 다리를 만드는 것을 허용: {STRING}
 STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT                  :도시가 다리를 만드는 허용하려면 이 설정을 켜세요
 
+STR_CONFIG_SETTING_TOWN_CARGO_SCALE                             :도시 화물 생성 조정: {STRING}
+STR_CONFIG_SETTING_TOWN_CARGO_SCALE_HELPTEXT                    :도시의 화물 생산량을 이 백분율 값만큼 조정합니다.
+
+STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE                         :산업시설 화물 생성 조정: {STRING}
+STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT                :산업시설의 생산량을 이 백분율 값만큼 조정합니다.
+STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA          :{STRING}{}이 설정은 나무를 자르는 산업시설에는 영향을 미치지 않습니다.{}이 설정은 모든 산업시설 관련 NewGRF에 적용되지 않을 수도 있습니다.
+
+STR_CONFIG_SETTING_TOWN_CARGO_SCALE_MODE                        :도시 화물 생성 조정에 적용할 시간 간격: {STRING}
+STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE                    :산업시설 화물 생성 조정에 적용할 시간 간격: {STRING}
+
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :월별: 1개월당 화물 생산량이 조정됩니다.{}{}게임 시간: 게임 시간의 단위 당 화물 생산량이 조정됩니다. (또한 1개월당 화물 생산량은 1일의 길이 조절 설정에 의해 조정되기도 합니다.) 매우 높은 값은 적용되지 않을 수도 있습니다.
+STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE_HELPTEXT_EXTRA     :{STRING}{}게임 시간 모드는 모든 산업시설 관련 NewGRF에 적용되지 않을 수도 있습니다.
+
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_MONTHLY                     :월별
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_GAME_TIME                   :게임 시간
+
+STR_CONFIG_SETTING_CARGO_SCALE_VALUE                            :{NUM}%
+STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY                    :{NUM}% (월별)
+STR_CONFIG_SETTING_CARGO_SCALE_VALUE_REAL_TIME                  :{NUM}% (게임 시간)
+
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :이 고도 위에는 도시를 생성하지 않음: {STRING}
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :지도를 생성할 때 특정 고도 위에는 도시를 만들지 않도록 만듭니다.
 
@@ -722,6 +743,8 @@ STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED_NEWGRF            :{WHITE}...NewGR
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :열차 시간표의 1일을 74틱으로 바꿔 표시: {STRING}
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :열차 시간표에서 열차의 운행 시간을 '일'보다 자세한 '틱'으로 표시합니다. 1일은 74틱과 같습니다.
 
+STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT_EXTRA         :{STRING}{}경로 탐색 제한(모든 경로 탐색 및 경로 예약 관련 작업), 경유지/신호기에서의 회차, 드라이브스루 차량기지 등과 같은 다양한 기능을 사용하려면 YAPF 경로 탐색을 사용해야만 합니다.
+
 STR_CHEAT_EDIT_MONEY_QUERY_CAPT                                 :{WHITE}돈을 늘리거나 줄입니다.
 STR_CHEAT_INFLATION_COST                                        :{LTBLUE}인플레이션 지출 배수 변경: {ORANGE}{DECIMAL}
 STR_CHEAT_INFLATION_COST_QUERY_CAPT                             :{WHITE}인플레이션 지출 배수를 변경합니다.
@@ -882,6 +905,7 @@ STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :획득 또는 �
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :획득 시도
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :해제 (앞)
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK                            :해제 (뒤)
+STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE                      :<TODO>Release (on reserve)
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :경로 예약 종료: 획득 또는 대기
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :경로 예약 종료: 획득 시도
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :경로 예약 종료: 해제
@@ -889,6 +913,7 @@ STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :슬롯 획득: 
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :슬롯 획득 시도: {STRING}{BLACK}{STRING}, 또는 계속하기
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :슬롯 해제: {STRING}{BLACK}{STRING} (열차의 앞)
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :슬롯 해제: {STRING}{BLACK}{STRING} (열차의 뒤)
+STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :<TODO>Release slot: {STRING1}{BLACK}{STRING} (on PBS reserve)
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :경로 예약 종료: 슬롯 획득: {STRING}{BLACK}{STRING}, 또는 입구에서 대기
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :경로 예약 종료: 슬롯 획득: {STRING}{BLACK}{STRING}, 또는 계속하기
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :경로 예약 종료: 슬롯 해제: {STRING}{BLACK}{STRING}
@@ -1567,6 +1592,8 @@ STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_FIRST         :첫 번째 슬�
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_FIRST     :첫 번째 슬롯이 아닐 때
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_LAST          :마지막 슬롯일 때
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_LAST      :마지막 슬롯이 아닐 때
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG          :태그 {0:NUM}{P 0 "이" "가"} 있을 때
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG  :태그 {0:NUM}{P 0 "이" "가"} 없을 때
 
 STR_ORDERS_MANAGE_LIST                                          :{BLACK}목록 관리
 STR_ORDERS_MANAGE_LIST_TOOLTIP                                  :{BLACK}이 경로 목록 관리
@@ -1579,9 +1606,11 @@ STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :반전된 경�
 STR_ORDER_DUPLICATE_ORDER                                       :경로 복제
 STR_ORDER_CHANGE_JUMP_TARGET                                    :건너뛰기 번호 변경
 
+STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON                               :슬롯 획득 시도
 STR_ORDER_RELEASE_SLOT_BUTTON                                   :슬롯 해제
 STR_ORDER_CHANGE_COUNTER_BUTTON                                 :카운터 값 변경
 STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}해제할 슬롯을 선택하세요
+STR_ORDER_TRY_ACQUIRE_SLOT_TOOLTIP                              :{BLACK}획득을 시도할 열차 슬롯을 선택하세요
 
 STR_ORDER_CHANGE_COUNTER_TOOLTIP                                :{BLACK}변경할 카운터 값을 입력하세요
 
@@ -1988,6 +2017,8 @@ STR_SCHDISPATCH_DURATION_CAPTION_DAY                            :{BLACK}반복 �
 STR_SCHDISPATCH_DURATION_CAPTION_TICKS                          :{BLACK}반복 주기 (틱)
 STR_SCHDISPATCH_START                                           :{BLACK}시작 일시
 STR_SCHDISPATCH_SET_START                                       :{BLACK}시작 일시 설정
+STR_SCHDISPATCH_START_TIME                                      :{BLACK}시작 시간
+STR_SCHDISPATCH_SET_START_TIME                                  :{BLACK}시작 시간 설정
 STR_SCHDISPATCH_START_TOOLTIP                                   :{BLACK}이 일정의 시작 일시를 설정합니다.
 STR_SCHDISPATCH_START_CAPTION_MINUTE                            :{BLACK}시작 시각 (hhmm)
 STR_SCHDISPATCH_DELAY                                           :{BLACK}지연
@@ -1997,6 +2028,9 @@ STR_SCHDISPATCH_DELAY_CAPTION_DAY                               :{BLACK}지연 (
 STR_SCHDISPATCH_DELAY_CAPTION_TICKS                             :{BLACK}지연 (틱)
 STR_SCHDISPATCH_ADJUST                                          :{BLACK}출발 슬롯 조정
 STR_SCHDISPATCH_ADJUST_TOOLTIP                                  :{BLACK}이 일정에 있는 모든 출발 슬롯을 조정합니다
+STR_SCHDISPATCH_REMOVE                                          :{BLACK}슬롯 제거
+STR_SCHDISPATCH_REMOVE_TOOLTIP                                  :{BLACK}이 일정에서 출발 슬롯을 제거하는 것을 허용합니다.
+STR_SCHDISPATCH_REMOVE_SLOT                                     :{BLACK}출발 슬롯 제거
 STR_SCHDISPATCH_ADJUST_CAPTION_MINUTE                           :{BLACK}일괄 추가 (분)
 STR_SCHDISPATCH_ADJUST_CAPTION_DAY                              :{BLACK}일괄 추가 (일)
 STR_SCHDISPATCH_ADJUST_CAPTION_TICKS                            :{BLACK}일괄 추가 (틱)
@@ -2018,6 +2052,13 @@ STR_SCHDISPATCH_DUPLICATE_SCHEDULE                              :{BLACK}현재 �
 STR_SCHDISPATCH_DUPLICATE_SCHEDULE_TOOLTIP                      :{BLACK}이 배차 일정을 복제합니다.
 STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES                        :{BLACK}다른 차량 일정 덧붙이기
 STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES_TOOLTIP                :{BLACK}다른 차량의 배차 일정을 덧붙입니다.
+STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS                           :출발 슬롯 재사용
+STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS_TOOLTIP                   :{BLACK}출발 슬롯을 1번 이상 재사용해도 되는지 여부를 설정합니다.
+STR_SCHDISPATCH_MANAGE_SLOT                                     :{BLACK}슬롯 관리
+STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT                       :출발 슬롯 재사용
+STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT_TOOLTIP               :{BLACK}선택한 출발 슬롯을 1번 이상 재사용해도 되는지 여부를 설정합니다.
+STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_TAG                        :태그 {NUM}
+STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_TAG_TOOLTIP                :{BLACK}(조건부 경로에 사용하기 위해) 선택한 출발 슬롯에 태그를 붙입니다.
 STR_SCHDISPATCH_NO_SCHEDULES                                    :{BLACK}일정 없음
 STR_SCHDISPATCH_SCHEDULE_ID                                     :{BLACK}일정 {NUM}/{NUM}
 STR_SCHDISPATCH_NAMED_SCHEDULE_ID                               :{BLACK}{STRING} ({NUM}/{NUM})
@@ -2025,7 +2066,16 @@ STR_SCHDISPATCH_RENAME_SCHEDULE_TOOLTIP                         :{BLACK}일정 �
 STR_SCHDISPATCH_RENAME_SCHEDULE_CAPTION                         :{WHITE}일정 이름 변경
 STR_ERROR_CAN_T_RENAME_SCHEDULE                                 :{WHITE}일정 이름을 변경할 수 없습니다...
 STR_SCHDISPATCH_MOVE_SCHEDULE                                   :{BLACK}일정 목록에서 현재 일정의 위치를 변경합니다
+STR_SCHDISPATCH_DATE_WALLCLOCK_TINY_FLAGGED                     :{DATE_WALLCLOCK_TINY}*
+STR_SCHDISPATCH_SLOT_TOOLTIP                                    :{BLACK}{DATE_WALLCLOCK_TINY}
+STR_SCHDISPATCH_SLOT_TOOLTIP_RELATIVE                           : (시작 시간으로부터 {TIME_HHMM})
+STR_SCHDISPATCH_SLOT_TOOLTIP_LAST                               :{}마지막 출발 슬롯
+STR_SCHDISPATCH_SLOT_TOOLTIP_NEXT                               :{}다음 이용 가능한 출발 슬롯
+STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE                              :{}출발 슬롯을 1번 이상 재사용 가능함
+STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX                        : ({DATE_WALLCLOCK_TINY})
+STR_SCHDISPATCH_SLOT_TOOLTIP_TAG                                :{}태그 {NUM}
 
+STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}이전 출발이 없습니다.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}최근 출발: {DATE_WALLCLOCK_TINY}
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}최근 배차된 열차가 아직 출발하지 않았습니다. {DATE_WALLCLOCK_TINY}에 출발할 예정입니다.
 STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}이 일정에는 {COMMA}대의 열차가 필요합니다.
@@ -2033,11 +2083,16 @@ STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}이 일�
 STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}이 일정은 {DATE_WALLCLOCK_TINY}에 시작되어서 {DATE_WALLCLOCK_TINY}에 끝납니다.
 STR_SCHDISPATCH_SUMMARY_L4                                      :{BLACK}{STRING} 이상 지연되면 다음 슬롯으로 넘어갑니다.
 STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}이 일정은 비활성화되어 있습니다.
+STR_SCHDISPATCH_SUMMARY_REUSE_SLOTS_ENABLED                     :{BLACK}모든 출발 슬롯을 1번 이상 재사용 가능합니다.
+STR_SCHDISPATCH_SUMMARY_NEXT_AVAILABLE_DEPARTURE                :{BLACK}다음으로 가능한 출발 시각은 {DATE_WALLCLOCK_TINY} 입니다.
 
 STR_SCHDISPATCH_SLOT_OUTSIDE_SCHEDULE                           :{BLACK}하나 이상의 출발 슬롯이 배차 간격 범위 바깥에 있습니다.
 
 STR_SCHDISPATCH_NOT_ASSIGNED_TO_ORDER                           :{BLACK}이 배차 일정은 경로에 할당되지 않았습니다.
 STR_SCHDISPATCH_ASSIGNED_TO_ORDER                               :{BLACK}이 배차 일정은 경로 {NUM}: {STRING}에 할당되어 있습니다.
+STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_PAST                       :{BLACK}{NUM}시간 이상 지났습니다.
+STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_FUTURE                     :{BLACK}{NUM}시간 이상 남았습니다.
+
 
 STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_START                       :{BLACK}시작:
 STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_STEP                        :{BLACK}간격:
