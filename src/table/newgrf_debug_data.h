@@ -732,6 +732,7 @@ static const NIVariable _niv_stations[] = {
 	NIV(0x68, "station info of nearby tiles"),
 	NIV(0x69, "information about cargo accepted in the past"),
 	NIV(0x6A, "GRFID of nearby station tiles"),
+	NIV(0x6B, "station ID of nearby tiles"),
 	NIVF(A2VRI_STATION_INFO_NEARBY_TILES_V2, "station info of nearby tiles v2", NIVF_SHOW_PARAMS),
 	NIV_END()
 };
@@ -2389,6 +2390,7 @@ static const NIVariable _nif_roadstops[] = {
 	NIV(0x68, "road stop info of nearby tiles"),
 	NIV(0x69, "information about cargo accepted in the past"),
 	NIV(0x6A, "GRFID of nearby road stop tiles"),
+	NIV(0x6B, "road stop ID of nearby tiles"),
 	NIVF(A2VRI_ROADSTOP_INFO_NEARBY_TILES_EXT, "road stop info of nearby tiles ext", NIVF_SHOW_PARAMS),
 	NIVF(A2VRI_ROADSTOP_INFO_NEARBY_TILES_V2, "road stop info of nearby tiles v2", NIVF_SHOW_PARAMS),
 	NIVF(A2VRI_ROADSTOP_ROAD_INFO_NEARBY_TILES, "Road info of nearby plain road tiles", NIVF_SHOW_PARAMS),

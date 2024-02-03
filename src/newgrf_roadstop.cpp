@@ -219,6 +219,23 @@ uint32_t RoadStopScopeResolver::GetVariable(uint16_t variable, uint32_t paramete
 			return ssl.grfid;
 		}
 
+		/* 16 bit road stop ID of nearby tiles */
+		case 0x6B: {
+			TileIndex nearby_tile = GetNearbyTile(parameter, this->tile);
+
+			if (!IsAnyRoadStopTile(nearby_tile)) return 0xFFFFFFFF;
+			if (!IsCustomRoadStopSpecIndex(nearby_tile)) return 0xFFFE;
+
+			uint32_t grfid = this->st->roadstop_speclist[GetCustomRoadStopSpecIndex(this->tile)].grfid;
+
+			const RoadStopSpecList ssl = BaseStation::GetByTile(nearby_tile)->roadstop_speclist[GetCustomRoadStopSpecIndex(nearby_tile)];
+			if (ssl.grfid == grfid) {
+				return ssl.localidx;
+			}
+
+			return 0xFFFE;
+		}
+
 		/* Road info of nearby tiles */
 		case A2VRI_ROADSTOP_ROAD_INFO_NEARBY_TILES: {
 			if (this->tile == INVALID_TILE) return 0xFFFFFFFF;
