@@ -114,6 +114,7 @@ uint32_t _gfx_debug_flags;
  * Applies a certain FillRectMode-operation to a rectangle [left, right] x [top, bottom] on the screen.
  *
  * @pre dpi->zoom == ZOOM_LVL_NORMAL, right >= left, bottom >= top
+ * @param blitter Blitter to use
  * @param dpi Draw pixel info
  * @param left Minimum X (inclusive)
  * @param top Minimum Y (inclusive)
@@ -125,9 +126,8 @@ uint32_t _gfx_debug_flags;
  *         FILLRECT_CHECKER:  Like FILLRECT_OPAQUE, but only draw every second pixel (used to grey out things)
  *         FILLRECT_RECOLOUR:  Apply a recolour sprite to every pixel in the rectangle currently on screen
  */
-void GfxFillRect(const DrawPixelInfo *dpi, int left, int top, int right, int bottom, int colour, FillRectMode mode)
+void GfxFillRect(Blitter *blitter, const DrawPixelInfo *dpi, int left, int top, int right, int bottom, int colour, FillRectMode mode)
 {
-	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 	void *dst;
 	const int otop = top;
 	const int oleft = left;
@@ -171,6 +171,11 @@ void GfxFillRect(const DrawPixelInfo *dpi, int left, int top, int right, int bot
 			break;
 		}
 	}
+}
+
+void GfxFillRect(int left, int top, int right, int bottom, int colour, FillRectMode mode)
+{
+	GfxFillRect(BlitterFactory::GetCurrentBlitter(), _cur_dpi, left, top, right, bottom, colour, mode);
 }
 
 typedef std::pair<Point, Point> LineSegment;
@@ -319,6 +324,7 @@ void GfxFillPolygon(const std::vector<Point> &shape, int colour, FillRectMode mo
 /**
  * Check line clipping by using a linear equation and draw the visible part of
  * the line given by x/y and x2/y2.
+ * @param blitter Blitter to use.
  * @param video Destination pointer to draw into.
  * @param x X coordinate of first point.
  * @param y Y coordinate of first point.
@@ -330,10 +336,8 @@ void GfxFillPolygon(const std::vector<Point> &shape, int colour, FillRectMode mo
  * @param width Width of the line.
  * @param dash Length of dashes for dashed lines. 0 means solid line.
  */
-static inline void GfxDoDrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8_t colour, int width, int dash = 0)
+static inline void GfxDoDrawLine(Blitter *blitter, void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8_t colour, int width, int dash = 0)
 {
-	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
-
 	assert(width > 0);
 
 	if (y2 == y || x2 == x) {
@@ -403,17 +407,24 @@ static inline bool GfxPreprocessLine(const DrawPixelInfo *dpi, int &x, int &y, i
 	return true;
 }
 
-void GfxDrawLine(const DrawPixelInfo *dpi, int x, int y, int x2, int y2, int colour, int width, int dash)
+void GfxDrawLine(Blitter *blitter, const DrawPixelInfo *dpi, int x, int y, int x2, int y2, int colour, int width, int dash)
 {
 	if (GfxPreprocessLine(dpi, x, y, x2, y2, width)) {
-		GfxDoDrawLine(dpi->dst_ptr, x, y, x2, y2, dpi->width, dpi->height, colour, width, dash);
+		GfxDoDrawLine(blitter, dpi->dst_ptr, x, y, x2, y2, dpi->width, dpi->height, colour, width, dash);
 	}
 }
 
-void GfxDrawLineUnscaled(const DrawPixelInfo *dpi, int x, int y, int x2, int y2, int colour)
+void GfxDrawLine(int x, int y, int x2, int y2, int colour, int width, int dash)
+{
+	if (GfxPreprocessLine(_cur_dpi, x, y, x2, y2, width)) {
+		GfxDoDrawLine(BlitterFactory::GetCurrentBlitter(), _cur_dpi->dst_ptr, x, y, x2, y2, _cur_dpi->width, _cur_dpi->height, colour, width, dash);
+	}
+}
+
+static void GfxDrawLineUnscaled(const DrawPixelInfo *dpi, int x, int y, int x2, int y2, int colour)
 {
 	if (GfxPreprocessLine(dpi, x, y, x2, y2, 1)) {
-		GfxDoDrawLine(dpi->dst_ptr,
+		GfxDoDrawLine(BlitterFactory::GetCurrentBlitter(), dpi->dst_ptr,
 				UnScaleByZoom(x, dpi->zoom), UnScaleByZoom(y, dpi->zoom),
 				UnScaleByZoom(x2, dpi->zoom), UnScaleByZoom(y2, dpi->zoom),
 				UnScaleByZoom(dpi->width, dpi->zoom), UnScaleByZoom(dpi->height, dpi->zoom), colour, 1);

@@ -27,6 +27,7 @@
 #include "zoom_func.h"
 #include "object_map.h"
 #include "newgrf_object.h"
+#include "blitter/factory.hpp"
 
 #include "smallmap_colours.h"
 #include "smallmap_gui.h"
@@ -1007,7 +1008,7 @@ void SmallMapWindow::DrawSmallMap(DrawPixelInfo *dpi, bool draw_indicators) cons
 	/* Draw link stat overlay */
 	if (this->map_type == SMT_LINKSTATS) {
 		this->overlay->PrepareDraw();
-		this->overlay->Draw(dpi);
+		this->overlay->Draw(BlitterFactory::GetCurrentBlitter(), dpi);
 	}
 
 	/* Draw town names */

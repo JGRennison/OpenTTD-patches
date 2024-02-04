@@ -327,7 +327,7 @@ struct ViewportDrawerDynamic {
 static void MarkRouteStepDirty(RouteStepsMap::const_iterator cit);
 static void MarkRouteStepDirty(const TileIndex tile, uint order_nr);
 static void HideMeasurementTooltips();
-static void ViewportDrawPlans(const Viewport *vp, DrawPixelInfo *plan_dpi);
+static void ViewportDrawPlans(const Viewport *vp, Blitter *blitter, DrawPixelInfo *plan_dpi);
 
 static std::unique_ptr<ViewportDrawerDynamic> _vdd;
 std::vector<std::unique_ptr<ViewportDrawerDynamic>> _spare_viewport_drawers;
@@ -561,8 +561,7 @@ static void ScrollPlanPixelCache(Viewport *vp, int offset_x, int offset_y)
 
 		const int pitch = vp->width;
 		Blitter_8bppDrawing blitter(&pitch);
-		BlitterFactory::TemporaryCurrentBlitterOverride current_blitter(&blitter);
-		ViewportDrawPlans(vp, &plan_dpi);
+		ViewportDrawPlans(vp, &blitter, &plan_dpi);
 	});
 	if (clear) ClearViewportPlanPixelCache(vp);
 }
@@ -588,8 +587,7 @@ static void ScrollOrInvalidateOverlayPixelCache(Viewport *vp, int offset_x, int 
 
 		const int pitch = vp->width;
 		Blitter_8bppDrawing blitter(&pitch);
-		BlitterFactory::TemporaryCurrentBlitterOverride current_blitter(&blitter);
-		vp->overlay->Draw(&overlay_dpi);
+		vp->overlay->Draw(&blitter, &overlay_dpi);
 	});
 	if (clear) vp->overlay_pixel_cache.clear();
 }
@@ -2603,10 +2601,10 @@ void ViewportRouteOverlay::DrawVehicleRoutePath(const Viewport *vp, ViewportDraw
 
 		int line_width = 3;
 		if (_settings_client.gui.dash_level_of_route_lines == 0) {
-			GfxDrawLine(&dpi_for_text, from_x, from_y, to_x, to_y, PC_BLACK, 3, _settings_client.gui.dash_level_of_route_lines);
+			GfxDrawLine(BlitterFactory::GetCurrentBlitter(), &dpi_for_text, from_x, from_y, to_x, to_y, PC_BLACK, 3, _settings_client.gui.dash_level_of_route_lines);
 			line_width = 1;
 		}
-		GfxDrawLine(&dpi_for_text, from_x, from_y, to_x, to_y, iter.order_conditional ? PC_YELLOW : PC_WHITE, line_width, _settings_client.gui.dash_level_of_route_lines);
+		GfxDrawLine(BlitterFactory::GetCurrentBlitter(), &dpi_for_text, from_x, from_y, to_x, to_y, iter.order_conditional ? PC_YELLOW : PC_WHITE, line_width, _settings_client.gui.dash_level_of_route_lines);
 	}
 }
 
@@ -2797,7 +2795,7 @@ static void ViewportDrawVehicleRouteSteps(const Viewport * const vp)
 	}
 }
 
-static void ViewportDrawPlans(const Viewport *vp, DrawPixelInfo *plan_dpi)
+static void ViewportDrawPlans(const Viewport *vp, Blitter *blitter, DrawPixelInfo *plan_dpi)
 {
 	const Rect bounds = {
 		ScaleByZoom(plan_dpi->left - 2, vp->zoom),
@@ -2843,11 +2841,11 @@ static void ViewportDrawPlans(const Viewport *vp, DrawPixelInfo *plan_dpi)
 				const int to_x = UnScaleByZoom(to_pt.x, vp->zoom);
 				const int to_y = UnScaleByZoom(to_pt.y, vp->zoom);
 
-				GfxDrawLine(plan_dpi, from_x, from_y, to_x, to_y, PC_BLACK, 3);
+				GfxDrawLine(blitter, plan_dpi, from_x, from_y, to_x, to_y, PC_BLACK, 3);
 				if (pl->focused) {
-					GfxDrawLine(plan_dpi, from_x, from_y, to_x, to_y, PC_RED, 1);
+					GfxDrawLine(blitter, plan_dpi, from_x, from_y, to_x, to_y, PC_RED, 1);
 				} else {
-					GfxDrawLine(plan_dpi, from_x, from_y, to_x, to_y, _colour_value[p->colour], 1);
+					GfxDrawLine(blitter, plan_dpi, from_x, from_y, to_x, to_y, _colour_value[p->colour], 1);
 				}
 			}
 		}
@@ -2874,7 +2872,7 @@ static void ViewportDrawPlans(const Viewport *vp, DrawPixelInfo *plan_dpi)
 			const int to_x = UnScaleByZoom(to_pt.x, vp->zoom);
 			const int to_y = UnScaleByZoom(to_pt.y, vp->zoom);
 
-			GfxDrawLine(plan_dpi, from_x, from_y, to_x, to_y, _colour_value[_current_plan->colour], 3, 1);
+			GfxDrawLine(blitter, plan_dpi, from_x, from_y, to_x, to_y, _colour_value[_current_plan->colour], 3, 1);
 		}
 	}
 }
@@ -3907,8 +3905,7 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint
 
 			const int pitch = vp->width;
 			Blitter_8bppDrawing blitter(&pitch);
-			BlitterFactory::TemporaryCurrentBlitterOverride current_blitter(&blitter);
-			vp->overlay->Draw(&overlay_dpi);
+			vp->overlay->Draw(&blitter, &overlay_dpi);
 		}
 	}
 
@@ -3944,8 +3941,7 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint
 
 				const int pitch = vp->width;
 				Blitter_8bppDrawing blitter(&pitch);
-				BlitterFactory::TemporaryCurrentBlitterOverride current_blitter(&blitter);
-				ViewportDrawPlans(vp, &plan_dpi);
+				ViewportDrawPlans(vp, &blitter, &plan_dpi);
 			}
 		} else {
 			vp->plan_pixel_cache.clear();
@@ -4082,7 +4078,7 @@ static void ViewportDoDrawPhase2(Viewport *vp, ViewportDrawerDynamic *vdd)
 			dp.height = UnScaleByZoom(dp.height, zoom);
 			dp.left = vdd->offset_x + vp->left;
 			dp.top = vdd->offset_y + vp->top;
-			vp->overlay->Draw(&dp);
+			vp->overlay->Draw(BlitterFactory::GetCurrentBlitter(), &dp);
 		} else {
 			const int pixel_cache_start = vdd->offset_x + (vdd->offset_y * vp->width);
 			BlitterFactory::GetCurrentBlitter()->SetRectNoD7(vdd->dpi.dst_ptr, 0, 0, vp->overlay_pixel_cache.data() + pixel_cache_start,
@@ -4117,7 +4113,7 @@ static void ViewportDoDrawPhase3(Viewport *vp)
 
 	if (vp->zoom < ZOOM_LVL_DRAW_MAP && AreAnyPlansVisible()) {
 		DrawPixelInfo plan_dpi = _vdd->MakeDPIForText();
-		ViewportDrawPlans(vp, &plan_dpi);
+		ViewportDrawPlans(vp, BlitterFactory::GetCurrentBlitter(), &plan_dpi);
 	} else if (vp->zoom >= ZOOM_LVL_DRAW_MAP && !vp->plan_pixel_cache.empty()) {
 		const int pixel_cache_start = _vdd->offset_x + (_vdd->offset_y * vp->width);
 		BlitterFactory::GetCurrentBlitter()->SetRectNoD7(_vdd->dpi.dst_ptr, 0, 0, vp->plan_pixel_cache.data() + pixel_cache_start,
@@ -4126,7 +4122,7 @@ static void ViewportDoDrawPhase3(Viewport *vp)
 
 	if (_vdd->display_flags & (ND_SHADE_GREY | ND_SHADE_DIMMED)) {
 		DrawPixelInfo dp = _vdd->MakeDPIForText();
-		GfxFillRect(&dp, dp.left, dp.top, dp.left + dp.width, dp.top + dp.height,
+		GfxFillRect(BlitterFactory::GetCurrentBlitter(), &dp, dp.left, dp.top, dp.left + dp.width, dp.top + dp.height,
 				(_vdd->display_flags & ND_SHADE_DIMMED) ? PALETTE_TO_TRANSPARENT : PALETTE_NEWSPAPER, FILLRECT_RECOLOUR);
 	}
 

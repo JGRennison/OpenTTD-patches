@@ -117,11 +117,11 @@ int DrawStringMultiLine(int left, int right, int top, int bottom, StringID str, 
 
 void DrawCharCentered(char32_t c, const Rect &r, TextColour colour);
 
-void GfxFillRect(const DrawPixelInfo *dpi, int left, int top, int right, int bottom, int colour, FillRectMode mode = FILLRECT_OPAQUE);
-inline void GfxFillRect(int left, int top, int right, int bottom, int colour, FillRectMode mode = FILLRECT_OPAQUE) { GfxFillRect(_cur_dpi, left, top, right, bottom, colour, mode); }
+void GfxFillRect(struct Blitter *blitter, const DrawPixelInfo *dpi, int left, int top, int right, int bottom, int colour, FillRectMode mode = FILLRECT_OPAQUE);
+void GfxFillRect(int left, int top, int right, int bottom, int colour, FillRectMode mode = FILLRECT_OPAQUE);
 void GfxFillPolygon(const std::vector<Point> &shape, int colour, FillRectMode mode = FILLRECT_OPAQUE, GfxFillRectModeFunctor *fill_functor = nullptr);
-void GfxDrawLine(const DrawPixelInfo *dpi, int left, int top, int right, int bottom, int colour, int width = 1, int dash = 0);
-inline void GfxDrawLine(int left, int top, int right, int bottom, int colour, int width = 1, int dash = 0) { GfxDrawLine(_cur_dpi, left, top, right, bottom, colour, width, dash); }
+void GfxDrawLine(struct Blitter * blitter, const DrawPixelInfo *dpi, int left, int top, int right, int bottom, int colour, int width = 1, int dash = 0);
+void GfxDrawLine(int left, int top, int right, int bottom, int colour, int width = 1, int dash = 0);
 void DrawBox(const DrawPixelInfo *dpi, int x, int y, int dx1, int dy1, int dx2, int dy2, int dx3, int dy3);
 void DrawRectOutline(const Rect &r, int colour, int width = 1, int dash = 0);
 

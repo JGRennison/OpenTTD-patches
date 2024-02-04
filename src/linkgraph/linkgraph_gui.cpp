@@ -467,22 +467,22 @@ void LinkGraphOverlay::PrepareDraw()
  * Draw the linkgraph overlay or some part of it, in the area given.
  * @param dpi Area to be drawn to.
  */
-void LinkGraphOverlay::Draw(const DrawPixelInfo *dpi) const
+void LinkGraphOverlay::Draw(Blitter *blitter, const DrawPixelInfo *dpi) const
 {
-	this->DrawLinks(dpi);
-	this->DrawStationDots(dpi);
+	this->DrawLinks(blitter, dpi);
+	this->DrawStationDots(blitter, dpi);
 }
 
 /**
  * Draw the cached links or part of them into the given area.
  * @param dpi Area to be drawn to.
  */
-void LinkGraphOverlay::DrawLinks(const DrawPixelInfo *dpi) const
+void LinkGraphOverlay::DrawLinks(Blitter *blitter, const DrawPixelInfo *dpi) const
 {
 	int width = ScaleGUITrad(this->scale);
 	for (const auto &i : this->cached_links) {
 		if (!this->IsLinkVisible(i.from_pt, i.to_pt, dpi, width + 2)) continue;
-		this->DrawContent(dpi, i.from_pt, i.to_pt, i.prop);
+		this->DrawContent(blitter, dpi, i.from_pt, i.to_pt, i.prop);
 	}
 }
 
@@ -492,7 +492,7 @@ void LinkGraphOverlay::DrawLinks(const DrawPixelInfo *dpi) const
  * @param ptb Destination of the link.
  * @param cargo Properties of the link.
  */
-void LinkGraphOverlay::DrawContent(const DrawPixelInfo *dpi, Point pta, Point ptb, const LinkProperties &cargo) const
+void LinkGraphOverlay::DrawContent(Blitter *blitter, const DrawPixelInfo *dpi, Point pta, Point ptb, const LinkProperties &cargo) const
 {
 	uint usage_or_plan = std::min(cargo.capacity * 2 + 1, cargo.Usage());
 	int colour = LinkGraphOverlay::LINK_COLOURS[_settings_client.gui.linkgraph_colours][usage_or_plan * lengthof(LinkGraphOverlay::LINK_COLOURS[0]) / (cargo.capacity * 2 + 2)];
@@ -504,20 +504,20 @@ void LinkGraphOverlay::DrawContent(const DrawPixelInfo *dpi, Point pta, Point pt
 	int side = _settings_game.vehicle.road_side ? 1 : -1;
 	if (abs(pta.x - ptb.x) < abs(pta.y - ptb.y)) {
 		int offset_x = (pta.y > ptb.y ? 1 : -1) * side * width;
-		GfxDrawLine(dpi, pta.x + offset_x, pta.y, ptb.x + offset_x, ptb.y, colour, width, dash);
+		GfxDrawLine(blitter, dpi, pta.x + offset_x, pta.y, ptb.x + offset_x, ptb.y, colour, width, dash);
 	} else {
 		int offset_y = (pta.x < ptb.x ? 1 : -1) * side * width;
-		GfxDrawLine(dpi, pta.x, pta.y + offset_y, ptb.x, ptb.y + offset_y, colour, width, dash);
+		GfxDrawLine(blitter, dpi, pta.x, pta.y + offset_y, ptb.x, ptb.y + offset_y, colour, width, dash);
 	}
 
-	GfxDrawLine(dpi, pta.x, pta.y, ptb.x, ptb.y, _colour_gradient[COLOUR_GREY][1], width);
+	GfxDrawLine(blitter, dpi, pta.x, pta.y, ptb.x, ptb.y, _colour_gradient[COLOUR_GREY][1], width);
 }
 
 /**
  * Draw dots for stations into the smallmap. The dots' sizes are determined by the amount of
  * cargo produced there, their colours by the type of cargo produced.
  */
-void LinkGraphOverlay::DrawStationDots(const DrawPixelInfo *dpi) const
+void LinkGraphOverlay::DrawStationDots(Blitter *blitter, const DrawPixelInfo *dpi) const
 {
 	int width = ScaleGUITrad(this->scale);
 	for (const auto &i : this->cached_stations) {
@@ -529,7 +529,7 @@ void LinkGraphOverlay::DrawStationDots(const DrawPixelInfo *dpi) const
 
 		uint r = width * 2 + width * 2 * std::min<uint>(200, i.quantity) / 200;
 
-		LinkGraphOverlay::DrawVertex(dpi, pt.x, pt.y, r,
+		LinkGraphOverlay::DrawVertex(blitter, dpi, pt.x, pt.y, r,
 				_colour_gradient[st->owner != OWNER_NONE ?
 						(Colours)Company::Get(st->owner)->colour : COLOUR_GREY][5],
 				_colour_gradient[COLOUR_GREY][1]);
@@ -544,20 +544,20 @@ void LinkGraphOverlay::DrawStationDots(const DrawPixelInfo *dpi) const
  * @param colour Colour with which the vertex will be filled.
  * @param border_colour Colour for the border of the vertex.
  */
-/* static */ void LinkGraphOverlay::DrawVertex(const DrawPixelInfo *dpi, int x, int y, int size, int colour, int border_colour)
+/* static */ void LinkGraphOverlay::DrawVertex(Blitter *blitter, const DrawPixelInfo *dpi, int x, int y, int size, int colour, int border_colour)
 {
 	size--;
 	int w1 = size / 2;
 	int w2 = size / 2 + size % 2;
 
-	GfxFillRect(dpi, x - w1, y - w1, x + w2, y + w2, colour);
+	GfxFillRect(blitter, dpi, x - w1, y - w1, x + w2, y + w2, colour);
 
 	w1++;
 	w2++;
-	GfxDrawLine(dpi, x - w1, y - w1, x + w2, y - w1, border_colour);
-	GfxDrawLine(dpi, x - w1, y + w2, x + w2, y + w2, border_colour);
-	GfxDrawLine(dpi, x - w1, y - w1, x - w1, y + w2, border_colour);
-	GfxDrawLine(dpi, x + w2, y - w1, x + w2, y + w2, border_colour);
+	GfxDrawLine(blitter, dpi, x - w1, y - w1, x + w2, y - w1, border_colour);
+	GfxDrawLine(blitter, dpi, x - w1, y + w2, x + w2, y + w2, border_colour);
+	GfxDrawLine(blitter, dpi, x - w1, y - w1, x - w1, y + w2, border_colour);
+	GfxDrawLine(blitter, dpi, x + w2, y - w1, x + w2, y + w2, border_colour);
 }
 
 bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
