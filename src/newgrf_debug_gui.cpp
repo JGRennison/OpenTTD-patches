@@ -11,6 +11,7 @@
 #include <stdarg.h>
 #include <functional>
 #include "core/backup_type.hpp"
+#include "core/container_func.hpp"
 #include "window_gui.h"
 #include "window_func.h"
 #include "random_access_file_type.h"
@@ -51,11 +52,27 @@
 #include "table/strings.h"
 
 #include <array>
+#include <mutex>
 
 #include "safeguards.h"
 
 /** The sprite picker. */
-NewGrfDebugSpritePicker _newgrf_debug_sprite_picker = { SPM_NONE, nullptr, std::vector<SpriteID>() };
+NewGrfDebugSpritePicker _newgrf_debug_sprite_picker;
+
+static std::mutex _newgrf_debug_sprite_picker_draw_mutex;
+
+void NewGrfDebugSpritePicker::DrawingComplete()
+{
+	std::lock_guard<std::mutex> lock(_newgrf_debug_sprite_picker_draw_mutex);
+	this->sprites.swap(this->draw_found_sprites);
+	this->draw_found_sprites.clear();
+}
+
+void NewGrfDebugSpritePicker::FoundSpriteDuringDrawing(SpriteID sprite)
+{
+	std::lock_guard<std::mutex> lock(_newgrf_debug_sprite_picker_draw_mutex);
+	include(this->draw_found_sprites, sprite);
+}
 
 /**
  * Get the feature index related to the window number.

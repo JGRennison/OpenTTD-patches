@@ -3082,6 +3082,7 @@ void HandleMouseEvents()
 		/* We are done with the last draw-frame, so we know what sprites we
 		 * clicked on. Reset the picker mode and invalidate the window. */
 		_newgrf_debug_sprite_picker.mode = SPM_NONE;
+		_newgrf_debug_sprite_picker.DrawingComplete();
 		InvalidateWindowData(WC_SPRITE_ALIGNER, 0, 1);
 	}
 
