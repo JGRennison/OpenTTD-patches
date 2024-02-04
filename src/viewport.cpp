@@ -3965,7 +3965,8 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint
 		}
 
 		_viewport_drawer_jobs++;
-		if (unlikely(HasBit(_viewport_debug_flags, VDF_DISABLE_THREAD))) {
+		extern bool _draw_widget_outlines;
+		if (unlikely(_draw_widget_outlines || HasBit(_viewport_debug_flags, VDF_DISABLE_THREAD))) {
 			ViewportDoDrawRenderJob(vp, _vdd.release());
 		} else {
 			_general_worker_pool.EnqueueJob([](void *data1, void *data2, void *data3) {
@@ -4021,7 +4022,8 @@ static void ViewportDoDrawRenderJob(Viewport *vp, ViewportDrawerDynamic *vdd)
 	vdd->draw_jobs_active.store((uint)vdd->parent_sprite_sets.size(), std::memory_order_relaxed);
 
 	for (uint i = 1; i < (uint)vdd->parent_sprite_sets.size(); i++) {
-		if (unlikely(HasBit(_viewport_debug_flags, VDF_DISABLE_THREAD))) {
+		extern bool _draw_widget_outlines;
+		if (unlikely(_draw_widget_outlines || HasBit(_viewport_debug_flags, VDF_DISABLE_THREAD))) {
 			ViewportDoDrawRenderSubJob(vp, vdd, i);
 		} else {
 			_general_worker_pool.EnqueueJob([](void *data1, void *data2, void *data3) {
