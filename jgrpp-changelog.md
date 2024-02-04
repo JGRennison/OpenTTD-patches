@@ -2,6 +2,20 @@
 
 * * *
 
+### v0.57.1 (2024-02-04)
+* Fix crashes or rendering problems which could occur in some cases when multiple viewports were active.
+* Fix not being able to change both the hour and minute in the non-text timetable time dialog.
+* Fix the picker tool not selecting the specific station/waypoint in a class, in the rail station, road stop and waypoint windows.
+* Fix secondary colour vehicle-type default liveries not being updated when changing the company default.
+* Fix vehicles leaving pixels behind on the viewport when zoomed out and moving left in some cases.
+* Prevent dragging plan lines across viewports, as this causes erratic plans.
+* Routing restrictions:
+  * Fix slot acquire on PBS reservation end on tunnel/bridge entrance signals.
+  * Wait at PBS signal on signals in the middle of a reservation is now only applied when reserving through the signal in the forward direction (not backwards PBS).
+* Multi-cargo ships:
+  * Fix build and refit with multi-cargo ships only refitting the first part.
+  * Fix sort by total cargo in build ship window only considering the first part.
+
 ### v0.57.0 (2024-01-30)
 * Fix crashes which could occur with some NewGRFs.
 * Fix crash which could occur when trying to extend an invalidated reservation when using realistic braking.
