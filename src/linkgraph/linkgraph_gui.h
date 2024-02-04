@@ -84,7 +84,7 @@ public:
 	bool CacheStillValid() const;
 	void MarkStationViewportLinksDirty(const Station *st);
 	void PrepareDraw();
-	void Draw(struct Blitter *blitter, const DrawPixelInfo *dpi) const;
+	void Draw(class Blitter *blitter, const DrawPixelInfo *dpi) const;
 	void SetCargoMask(CargoTypes cargo_mask);
 	void SetCompanyMask(CompanyMask company_mask);
 
@@ -117,15 +117,15 @@ protected:
 	Point GetStationMiddle(const Station *st) const;
 
 	void RefreshDrawCache();
-	void DrawLinks(struct Blitter *blitter, const DrawPixelInfo *dpi) const;
-	void DrawStationDots(struct Blitter *blitter, const DrawPixelInfo *dpi) const;
-	void DrawContent(struct Blitter *blitter, const DrawPixelInfo *dpi, Point pta, Point ptb, const LinkProperties &cargo) const;
+	void DrawLinks(class Blitter *blitter, const DrawPixelInfo *dpi) const;
+	void DrawStationDots(class Blitter *blitter, const DrawPixelInfo *dpi) const;
+	void DrawContent(class Blitter *blitter, const DrawPixelInfo *dpi, Point pta, Point ptb, const LinkProperties &cargo) const;
 	bool IsLinkVisible(Point pta, Point ptb, const DrawPixelInfo *dpi, int padding = 0) const;
 	bool IsPointVisible(Point pt, const DrawPixelInfo *dpi, int padding = 0) const;
 	void GetWidgetDpi(DrawPixelInfo *dpi, uint margin = 0) const;
 
 	static void AddStats(CargoID new_cargo, uint new_cap, uint new_usg, uint new_plan, uint32_t time, bool new_shared, LinkProperties &cargo);
-	static void DrawVertex(struct Blitter *blitter, const DrawPixelInfo *dpi, int x, int y, int size, int colour, int border_colour);
+	static void DrawVertex(class Blitter *blitter, const DrawPixelInfo *dpi, int x, int y, int size, int colour, int border_colour);
 };
 
 void ShowLinkGraphLegend();
