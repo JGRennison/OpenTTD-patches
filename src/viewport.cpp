@@ -559,7 +559,8 @@ static void ScrollPlanPixelCache(Viewport *vp, int offset_x, int offset_y)
 		plan_dpi.left = UnScaleByZoomLower(vp->virtual_left, vp->zoom) + x;
 		plan_dpi.top = UnScaleByZoomLower(vp->virtual_top, vp->zoom) + y;
 
-		Blitter_8bppDrawing blitter;
+		const int pitch = vp->width;
+		Blitter_8bppDrawing blitter(&pitch);
 		BlitterFactory::TemporaryCurrentBlitterOverride current_blitter(&blitter);
 		ViewportDrawPlans(vp, &plan_dpi);
 	});
@@ -585,7 +586,8 @@ static void ScrollOrInvalidateOverlayPixelCache(Viewport *vp, int offset_x, int 
 		overlay_dpi.left = UnScaleByZoomLower(vp->virtual_left, vp->zoom) + x;
 		overlay_dpi.top = UnScaleByZoomLower(vp->virtual_top, vp->zoom) + y;
 
-		Blitter_8bppDrawing blitter;
+		const int pitch = vp->width;
+		Blitter_8bppDrawing blitter(&pitch);
 		BlitterFactory::TemporaryCurrentBlitterOverride current_blitter(&blitter);
 		vp->overlay->Draw(&overlay_dpi);
 	});
