@@ -85,6 +85,7 @@ struct PlansWindow : Window {
 	int selected; ///< What item is currently selected in the panel.
 	uint vis_btn_left; ///< left offset of visibility button
 	Dimension company_icon_spr_dim; ///< dimensions of company icon
+	WindowToken current_dragging_viewport_window = 0;
 
 	PlansWindow(WindowDesc *desc) : Window(desc)
 	{
@@ -380,8 +381,17 @@ struct PlansWindow : Window {
 	/** The drawing of a line is in progress. */
 	virtual void OnPlaceDrag(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt) override
 	{
-		const Point p = GetTileBelowCursor();
-		const TileIndex tile = TileVirtXY(p.x, p.y);
+		const Window *cursor_window = FindWindowFromPt(_cursor.pos.x, _cursor.pos.y);
+		if (cursor_window == nullptr) return;
+
+		if (this->current_dragging_viewport_window == 0) {
+			this->current_dragging_viewport_window = cursor_window->GetWindowToken();
+		} else if (this->current_dragging_viewport_window != cursor_window->GetWindowToken()) {
+			/* Don't allow dragging across viewports as this leads to erratic plans */
+			return;
+		}
+
+		const TileIndex tile = TileVirtXY(pt.x, pt.y);
 		if (_current_plan && tile < MapSize()) {
 			if (_ctrl_pressed && _current_plan->temp_line->tiles.empty() && _current_plan->last_tile != INVALID_TILE) {
 				_current_plan->StoreTempTile(_current_plan->last_tile);
@@ -396,6 +406,7 @@ struct PlansWindow : Window {
 	virtual void OnPlaceMouseUp(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt, TileIndex start_tile, TileIndex end_tile) override
 	{
 		if (_current_plan) _current_plan->ValidateNewLine();
+		this->current_dragging_viewport_window = 0;
 	}
 
 	/** The drawing of a line is aborted. */
