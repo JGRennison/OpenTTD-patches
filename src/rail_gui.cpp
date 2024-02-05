@@ -509,13 +509,14 @@ struct BuildRailToolbarWindow : Window {
 
 	BuildRailToolbarWindow(WindowDesc *desc, RailType railtype) : Window(desc)
 	{
-		this->InitNested(TRANSPORT_RAIL);
-		this->SetupRailToolbar(railtype);
-		this->DisableWidget(WID_RAT_REMOVE);
-		this->last_user_action = INVALID_WID_RAT;
+		this->CreateNestedTree();
 		if (!_settings_client.gui.show_rail_polyline_tool) {
 			this->GetWidget<NWidgetStacked>(WID_RAT_POLYRAIL_SEL)->SetDisplayedPlane(SZSP_NONE);
 		}
+		this->FinishInitNested(TRANSPORT_RAIL);
+		this->SetupRailToolbar(railtype);
+		this->DisableWidget(WID_RAT_REMOVE);
+		this->last_user_action = INVALID_WID_RAT;
 
 		if (_settings_client.gui.link_terraform_toolbar) ShowTerraformToolbar(this);
 	}
