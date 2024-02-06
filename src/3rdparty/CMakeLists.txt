@@ -7,7 +7,6 @@ add_subdirectory(squirrel)
 add_subdirectory(nlohmann)
 add_subdirectory(opengl)
 add_subdirectory(cpp-btree)
-add_subdirectory(randombytes)
 add_subdirectory(robin_hood)
 
 if (MINGW AND OPTION_MINGW_STDTHREADS)
