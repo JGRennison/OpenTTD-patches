@@ -1912,16 +1912,16 @@ static bool IsValidHex256BitKeyString(std::string &newval)
 
 static void ParseCompanyPasswordStorageToken(const std::string &value)
 {
-	extern uint8_t _network_company_password_storage_token[16];
+	extern std::array<uint8_t, 16> _network_company_password_storage_token;
 	if (value.size() != 32) return;
-	DecodeHexText(value.c_str(), _network_company_password_storage_token, 16);
+	DecodeHexText(value.c_str(), _network_company_password_storage_token.data(), _network_company_password_storage_token.size());
 }
 
 static void ParseCompanyPasswordStorageSecret(const std::string &value)
 {
-	extern uint8_t _network_company_password_storage_key[32];
+	extern std::array<uint8_t, 32> _network_company_password_storage_key;
 	if (value.size() != 64) return;
-	DecodeHexText(value.c_str(), _network_company_password_storage_key, 32);
+	DecodeHexText(value.c_str(), _network_company_password_storage_key.data(), _network_company_password_storage_key.size());
 }
 
 /** Update the game info, and send it to the clients when we are running as a server. */

@@ -71,8 +71,8 @@ bool _is_network_server;                                ///< Does this client wa
 bool _network_settings_access;                          ///< Can this client change server settings?
 NetworkCompanyState *_network_company_states = nullptr; ///< Statistics about some companies.
 std::string _network_company_server_id;                 ///< Server ID string used for company passwords
-uint8_t _network_company_password_storage_token[16];    ///< Non-secret token for storage of company passwords in savegames
-uint8_t _network_company_password_storage_key[32];      ///< Key for storage of company passwords in savegames
+std::array<uint8_t, 16> _network_company_password_storage_token; ///< Non-secret token for storage of company passwords in savegames
+std::array<uint8_t, 32> _network_company_password_storage_key;   ///< Key for storage of company passwords in savegames
 ClientID _network_own_client_id;                        ///< Our client identifier.
 ClientID _redirect_console_to_client;                   ///< If not invalid, redirect the console output to a client.
 uint8_t _network_reconnect;                             ///< Reconnect timeout
