@@ -18,6 +18,7 @@
 #include "../command_type.h"
 #include "../date_type.h"
 
+#include <array>
 #include <vector>
 
 static const uint32_t FIND_SERVER_EXTENDED_TOKEN = 0x2A49582A;
@@ -103,15 +104,15 @@ void NetworkRebuildHostList();
 void UpdateNetworkGameWindow();
 
 struct NetworkGameKeys {
-	byte x25519_priv_key[32];    ///< x25519 key: private part
-	byte x25519_pub_key[32];     ///< x25519 key: public part
+	std::array<uint8_t, 32> x25519_priv_key;    ///< x25519 key: private part
+	std::array<uint8_t, 32> x25519_pub_key;     ///< x25519 key: public part
 	bool inited = false;
 
 	void Initialise();
 };
 
 struct NetworkSharedSecrets {
-	byte shared_data[64];
+	std::array<uint8_t, 64> shared_data;
 
 	~NetworkSharedSecrets();
 };
@@ -149,7 +150,5 @@ NetworkAddress ParseConnectionString(const std::string &connection_string, uint1
 std::string NormalizeConnectionString(const std::string &connection_string, uint16_t default_port);
 
 void ClientNetworkEmergencySave();
-
-void NetworkRandomBytesWithFallback(void *buf, size_t n);
 
 #endif /* NETWORK_INTERNAL_H */

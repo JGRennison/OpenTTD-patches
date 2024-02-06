@@ -30,10 +30,10 @@
 #include "../core/random_func.hpp"
 #include "../rev.h"
 #include "../crashlog.h"
-#include "../3rdparty/randombytes/randombytes.h"
 #include "../3rdparty/monocypher/monocypher.h"
 #include <mutex>
 #include <condition_variable>
+#include <tuple>
 
 #include "../safeguards.h"
 
@@ -227,33 +227,33 @@ ServerNetworkGameSocketHandler::~ServerNetworkGameSocketHandler()
 
 bool ServerNetworkGameSocketHandler::ParseKeyPasswordPacket(Packet *p, NetworkSharedSecrets &ss, const std::string &password, std::string *payload, size_t length)
 {
-	byte client_pub_key[32];
-	byte nonce[24];
-	byte mac[16];
-	p->Recv_binary(client_pub_key, 32);
-	p->Recv_binary(nonce, 24);
-	p->Recv_binary(mac, 16);
+	std::array<uint8_t, 32> client_pub_key;
+	std::array<uint8_t, 24> nonce;
+	std::array<uint8_t, 16> mac;
+	p->Recv_binary(client_pub_key);
+	p->Recv_binary(nonce);
+	p->Recv_binary(mac);
 
 	const NetworkGameKeys &keys = this->GetKeys();
 
-	byte shared_secret[32]; // Shared secret
-	crypto_x25519(shared_secret, keys.x25519_priv_key, client_pub_key);
-	if (std::all_of(shared_secret, shared_secret + 32, [](auto v) { return v == 0; })) {
+	std::array<uint8_t, 32> shared_secret; // Shared secret
+	crypto_x25519(shared_secret.data(), keys.x25519_priv_key.data(), client_pub_key.data());
+	if (std::all_of(shared_secret.begin(), shared_secret.end(), [](auto v) { return v == 0; })) {
 		/* Secret is all 0 because public key is all 0, just reject it */
 		return false;
 	}
 
 	crypto_blake2b_ctx ctx;
-	crypto_blake2b_init  (&ctx, 64);
-	crypto_blake2b_update(&ctx, shared_secret, 32);       // Shared secret
-	crypto_blake2b_update(&ctx, client_pub_key, 32);      // Client pub key
-	crypto_blake2b_update(&ctx, keys.x25519_pub_key, 32); // Server pub key
-	crypto_blake2b_update(&ctx, (const byte *)password.data(), password.size()); // Password
-	crypto_blake2b_final (&ctx, ss.shared_data);
+	crypto_blake2b_init  (&ctx, ss.shared_data.size());
+	crypto_blake2b_update(&ctx, shared_secret.data(),          shared_secret.size());       // Shared secret
+	crypto_blake2b_update(&ctx, client_pub_key.data(),         client_pub_key.size());      // Client pub key
+	crypto_blake2b_update(&ctx, keys.x25519_pub_key.data(),    keys.x25519_pub_key.size()); // Server pub key
+	crypto_blake2b_update(&ctx, (const byte *)password.data(), password.size());            // Password
+	crypto_blake2b_final (&ctx, ss.shared_data.data());
 
 	/* NetworkSharedSecrets::shared_data now contains 2 keys worth of hash, first key is used for up direction, second key for down direction (if any) */
 
-	crypto_wipe(shared_secret, 32);
+	crypto_wipe(shared_secret.data(), shared_secret.size());
 
 	std::vector<byte> message = p->Recv_binary(p->RemainingBytesToTransfer());
 	if (message.size() < 8) return false;
@@ -263,7 +263,8 @@ bool ServerNetworkGameSocketHandler::ParseKeyPasswordPacket(Packet *p, NetworkSh
 	}
 
 	/* Decrypt in place, use first half of hash as key */
-	if (crypto_aead_unlock(message.data(), mac, ss.shared_data, nonce, client_pub_key, 32, message.data(), message.size()) == 0) {
+	static_assert(std::tuple_size<decltype(ss.shared_data)>::value == 64);
+	if (crypto_aead_unlock(message.data(), mac.data(), ss.shared_data.data(), nonce.data(), client_pub_key.data(), client_pub_key.size(), message.data(), message.size()) == 0) {
 		SubPacketDeserialiser spd(p, message);
 		uint64_t message_id = spd.Recv_uint64();
 		if (message_id < this->min_key_message_id) {
@@ -525,8 +526,8 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendNeedGamePassword()
 	const NetworkGameKeys &keys = this->GetKeys();
 
 	Packet *p = new Packet(PACKET_SERVER_NEED_GAME_PASSWORD, SHRT_MAX);
-	static_assert(sizeof(keys.x25519_pub_key) == 32);
-	p->Send_binary(keys.x25519_pub_key, sizeof(keys.x25519_pub_key));
+	static_assert(std::tuple_size<decltype(keys.x25519_pub_key)>::value == 32);
+	p->Send_binary(keys.x25519_pub_key);
 	p->Send_string(_settings_client.network.network_id);
 	this->SendPacket(p);
 	return NETWORK_RECV_STATUS_OKAY;
@@ -568,8 +569,8 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendWelcome()
 	p = new Packet(PACKET_SERVER_WELCOME, SHRT_MAX);
 	p->Send_uint32(this->client_id);
 	p->Send_uint32(_settings_game.game_creation.generation_seed);
-	static_assert(sizeof(keys.x25519_pub_key) == 32);
-	p->Send_binary(keys.x25519_pub_key, sizeof(keys.x25519_pub_key));
+	static_assert(std::tuple_size<decltype(keys.x25519_pub_key)>::value == 32);
+	p->Send_binary(keys.x25519_pub_key);
 	p->Send_string(_settings_client.network.network_id);
 	p->Send_string(_network_company_server_id);
 	this->SendPacket(p);
@@ -845,19 +846,21 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendRConResult(uint16_t colour
 	buffer.Send_string(command);
 
 	/* Message authentication code */
-	uint8_t mac[16];
+	std::array<uint8_t, 16> mac;
 
 	/* Use only once per key: random */
-	uint8_t nonce[24];
-	NetworkRandomBytesWithFallback(nonce, 24);
+	std::array<uint8_t, 24> nonce;
+	RandomBytesWithFallback(nonce);
 
 	/* Encrypt in place, use first half of hash as key */
-	crypto_aead_lock(message.data(), mac, this->rcon_reply_key, nonce, nullptr, 0, message.data(), message.size());
+	crypto_aead_lock(message.data(), mac.data(), this->rcon_reply_key, nonce.data(), nullptr, 0, message.data(), message.size());
 
 	Packet *p = new Packet(PACKET_SERVER_RCON, SHRT_MAX);
-	p->Send_binary(nonce, 24);
-	p->Send_binary(mac, 16);
-	p->Send_binary(message.data(), message.size());
+	static_assert(nonce.size() == 24);
+	static_assert(mac.size() == 16);
+	p->Send_binary(nonce);
+	p->Send_binary(mac);
+	p->Send_binary(message);
 
 	this->SendPacket(p);
 	return NETWORK_RECV_STATUS_OKAY;
@@ -1697,7 +1700,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_RCON(Packet *p)
 	DEBUG(net, 3, "[rcon] Client-id %d executed: %s", this->client_id, command.c_str());
 
 	_redirect_console_to_client = this->client_id;
-	this->rcon_reply_key = ss.shared_data + 32; /* second key */
+	this->rcon_reply_key = ss.shared_data.data() + 32; /* second key */
 	IConsoleCmdExec(command);
 	_redirect_console_to_client = INVALID_CLIENT_ID;
 	this->rcon_auth_failures = 0;

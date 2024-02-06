@@ -39,11 +39,11 @@
 #include "../string_func.h"
 #include "../string_func_extra.h"
 #include "../core/serialisation.hpp"
-#include "../3rdparty/randombytes/randombytes.h"
 #include "../3rdparty/monocypher/monocypher.h"
 #include "../settings_internal.h"
 #include <sstream>
 #include <iomanip>
+#include <tuple>
 
 #ifdef DEBUG_DUMP_COMMANDS
 #include "../fileio_func.h"
@@ -1371,7 +1371,7 @@ static void NetworkGenerateServerId()
 std::string NetworkGenerateRandomKeyString(uint bytes)
 {
 	uint8_t *key = AllocaM(uint8_t, bytes);
-	NetworkRandomBytesWithFallback(key, bytes);
+	RandomBytesWithFallback({ key, bytes });
 
 	return FormatArrayAsHex({key, bytes});
 }
@@ -1416,26 +1416,16 @@ void NetworkShutDown()
 	NetworkCoreShutdown();
 }
 
-void NetworkRandomBytesWithFallback(void *buf, size_t bytes)
-{
-	if (randombytes(buf, bytes) < 0) {
-		/* Fallback poor-quality random */
-		DEBUG(net, 0, "High quality random source unavailable");
-		for (uint i = 0; i < bytes; i++) {
-			reinterpret_cast<byte *>(buf)[i] = (byte)InteractiveRandom();
-		}
-	}
-}
-
 void NetworkGameKeys::Initialise()
 {
 	assert(!this->inited);
 
 	this->inited = true;
 
-	static_assert(sizeof(this->x25519_priv_key) == 32);
-	NetworkRandomBytesWithFallback(this->x25519_priv_key, sizeof(this->x25519_priv_key));
-	crypto_x25519_public_key(this->x25519_pub_key, this->x25519_priv_key);
+	static_assert(std::tuple_size<decltype(NetworkGameKeys::x25519_priv_key)>::value == 32);
+	static_assert(std::tuple_size<decltype(NetworkGameKeys::x25519_pub_key)>::value == 32);
+	RandomBytesWithFallback(this->x25519_priv_key);
+	crypto_x25519_public_key(this->x25519_pub_key.data(), this->x25519_priv_key.data());
 }
 
 NetworkSharedSecrets::~NetworkSharedSecrets()

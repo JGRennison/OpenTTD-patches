@@ -36,6 +36,8 @@
 #include "../debug_settings.h"
 #include "../3rdparty/monocypher/monocypher.h"
 
+#include <tuple>
+
 #include "table/strings.h"
 
 #include "../safeguards.h"
@@ -394,7 +396,7 @@ static uint32_t last_ack_frame;
 /** One bit of 'entropy' used to generate a salt for the company passwords. */
 static uint32_t _company_password_game_seed;
 /** Network server's x25519 public key, used for key derivation */
-static byte _server_x25519_pub_key[32];
+static std::array<byte, 32> _server_x25519_pub_key;
 /** Key message ID counter */
 static uint64_t _next_key_message_id;
 /** The other bit of 'entropy' used to generate a salt for the server, rcon, and settings passwords. */
@@ -417,24 +419,24 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendKeyPasswordPacket(PacketTy
 {
 	const NetworkGameKeys &keys = this->GetKeys();
 
-	byte shared_secret[32]; // Shared secret
-	crypto_x25519(shared_secret, keys.x25519_priv_key, _server_x25519_pub_key);
-	if (std::all_of(shared_secret, shared_secret + 32, [](auto v) { return v == 0; })) {
+	std::array<uint8_t, 32> shared_secret; // Shared secret
+	crypto_x25519(shared_secret.data(), keys.x25519_priv_key.data(), _server_x25519_pub_key.data());
+	if (std::all_of(shared_secret.begin(), shared_secret.end(), [](auto v) { return v == 0; })) {
 		/* Secret is all 0 because public key is all 0, just give up at this point */
 		return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 	}
 
 	crypto_blake2b_ctx ctx;
-	crypto_blake2b_init  (&ctx, 64);
-	crypto_blake2b_update(&ctx, shared_secret, 32);          // Shared secret
-	crypto_blake2b_update(&ctx, keys.x25519_pub_key, 32);    // Client pub key
-	crypto_blake2b_update(&ctx, _server_x25519_pub_key, 32); // Server pub key
-	crypto_blake2b_update(&ctx, (const byte *)password.data(), password.size()); // Password
-	crypto_blake2b_final (&ctx, ss.shared_data);
+	crypto_blake2b_init  (&ctx, ss.shared_data.size());
+	crypto_blake2b_update(&ctx, shared_secret.data(),          shared_secret.size());          // Shared secret
+	crypto_blake2b_update(&ctx, keys.x25519_pub_key.data(),    keys.x25519_pub_key.size());    // Client pub key
+	crypto_blake2b_update(&ctx, _server_x25519_pub_key.data(), _server_x25519_pub_key.size()); // Server pub key
+	crypto_blake2b_update(&ctx, (const byte *)password.data(), password.size());               // Password
+	crypto_blake2b_final (&ctx, ss.shared_data.data());
 
 	/* NetworkSharedSecrets::shared_data now contains 2 keys worth of hash, first key is used for up direction, second key for down direction (if any) */
 
-	crypto_wipe(shared_secret, 32);
+	crypto_wipe(shared_secret.data(), shared_secret.size());
 
 	std::vector<byte> message;
 	BufferSerialiser buffer(message);
@@ -446,20 +448,22 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendKeyPasswordPacket(PacketTy
 	if (payload != nullptr) buffer.Send_string(*payload);
 
 	/* Message authentication code */
-	uint8_t mac[16];
+	std::array<uint8_t, 16> mac;
 
 	/* Use only once per key: random */
-	uint8_t nonce[24];
-	NetworkRandomBytesWithFallback(nonce, 24);
+	std::array<uint8_t, 24> nonce;
+	RandomBytesWithFallback(nonce);
 
 	/* Encrypt in place, use first half of hash as key */
-	crypto_aead_lock(message.data(), mac, ss.shared_data, nonce, keys.x25519_pub_key, 32, message.data(), message.size());
+	static_assert(std::tuple_size<decltype(ss.shared_data)>::value == 64);
+	crypto_aead_lock(message.data(), mac.data(), ss.shared_data.data(), nonce.data(), keys.x25519_pub_key.data(), keys.x25519_pub_key.size(), message.data(), message.size());
 
 	Packet *p = new Packet(packet_type, SHRT_MAX);
-	p->Send_binary(keys.x25519_pub_key, 32);
-	p->Send_binary(nonce, 24);
-	p->Send_binary(mac, 16);
-	p->Send_binary(message.data(), message.size());
+	static_assert(std::tuple_size<decltype(keys.x25519_pub_key)>::value == 32);
+	p->Send_binary(keys.x25519_pub_key);
+	p->Send_binary(nonce);
+	p->Send_binary(mac);
+	p->Send_binary(message);
 
 	_next_key_message_id++;
 
@@ -910,8 +914,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_NEED_GAME_PASSW
 	if (this->status < STATUS_JOIN || this->status >= STATUS_AUTH_GAME) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 	this->status = STATUS_AUTH_GAME;
 
-	static_assert(sizeof(_server_x25519_pub_key) == 32);
-	p->Recv_binary(_server_x25519_pub_key, sizeof(_server_x25519_pub_key));
+	static_assert(_server_x25519_pub_key.size() == 32);
+	p->Recv_binary(_server_x25519_pub_key);
 	_password_server_id = p->Recv_string(NETWORK_SERVER_ID_LENGTH);
 	if (this->HasClientQuit()) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 
@@ -951,8 +955,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_WELCOME(Packet 
 
 	/* Initialize the password hash salting variables, even if they were previously. */
 	_company_password_game_seed = p->Recv_uint32();
-	static_assert(sizeof(_server_x25519_pub_key) == 32);
-	p->Recv_binary(_server_x25519_pub_key, sizeof(_server_x25519_pub_key));
+	static_assert(_server_x25519_pub_key.size() == 32);
+	p->Recv_binary(_server_x25519_pub_key);
 	_password_server_id = p->Recv_string(NETWORK_SERVER_ID_LENGTH);
 	_company_password_server_id = p->Recv_string(NETWORK_SERVER_ID_LENGTH);
 
@@ -1319,14 +1323,15 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_RCON(Packet *p)
 		return NETWORK_RECV_STATUS_OKAY;
 	}
 
-	byte nonce[24];
-	byte mac[16];
-	p->Recv_binary(nonce, 24);
-	p->Recv_binary(mac, 16);
+	std::array<uint8_t, 24> nonce;
+	std::array<uint8_t, 16> mac;
+	p->Recv_binary(nonce);
+	p->Recv_binary(mac);
 
 	std::vector<byte> message = p->Recv_binary(p->RemainingBytesToTransfer());
 
-	if (crypto_aead_unlock(message.data(), mac, this->last_rcon_shared_secrets.shared_data + 32, nonce, nullptr, 0, message.data(), message.size()) == 0) {
+	static_assert(std::tuple_size<decltype(NetworkSharedSecrets::shared_data)>::value == 64);
+	if (crypto_aead_unlock(message.data(), mac.data(), this->last_rcon_shared_secrets.shared_data.data() + 32, nonce.data(), nullptr, 0, message.data(), message.size()) == 0) {
 		SubPacketDeserialiser spd(p, message);
 		TextColour colour_code = (TextColour)spd.Recv_uint16();
 		if (!IsValidConsoleColour(colour_code)) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
@@ -1454,7 +1459,7 @@ std::string ClientNetworkGameSocketHandler::GetDebugInfo() const
 static void ResetClientConnectionKeyStates()
 {
 	_next_key_message_id = 0;
-	crypto_wipe(_server_x25519_pub_key, sizeof(_server_x25519_pub_key));
+	crypto_wipe(_server_x25519_pub_key.data(), _server_x25519_pub_key.size());
 }
 
 
