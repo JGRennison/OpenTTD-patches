@@ -524,6 +524,7 @@ if(WIN32)
         usp10
         psapi
         winhttp
+        bcrypt
     )
 endif()
 

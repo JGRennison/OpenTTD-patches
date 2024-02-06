@@ -10,6 +10,8 @@
 #include "../stdafx.h"
 #include "random_func.hpp"
 #include "bitmath_func.hpp"
+#include "../debug.h"
+#include <atomic>
 #include <bit>
 
 #ifdef RANDOM_DEBUG
@@ -20,6 +22,17 @@
 #include "../fileio_func.h"
 #include "../date_func.h"
 #endif /* RANDOM_DEBUG */
+
+#if defined(_WIN32)
+#	include <windows.h>
+#	include <bcrypt.h>
+#elif defined(__APPLE__) || defined(__NetBSD__) || defined(__FreeBSD__)
+// No includes required.
+#elif defined(__GLIBC__) && ((__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 25)))
+#	include <sys/random.h>
+#elif defined(__EMSCRIPTEN__)
+#	include <emscripten.h>
+#endif
 
 #include "../safeguards.h"
 
@@ -84,3 +97,53 @@ uint32_t DoRandomRange(uint32_t limit, int line, const char *file)
 	return ((uint64_t)DoRandom(line, file) * (uint64_t)limit) >> 32;
 }
 #endif /* RANDOM_DEBUG */
+
+/**
+ * Fill the given buffer with random bytes.
+ *
+ * This function will attempt to use a cryptographically-strong random
+ * generator, but will fall back to a weaker random generator if none is
+ * available.
+ *
+ * In the end, the buffer will always be filled with some form of random
+ * bytes when this function returns.
+ *
+ * @param buf The buffer to fill with random bytes.
+ */
+void RandomBytesWithFallback(std::span<uint8_t> buf)
+{
+#if defined(_WIN32)
+	auto res = BCryptGenRandom(nullptr, static_cast<PUCHAR>(buf.data()), static_cast<ULONG>(buf.size()), BCRYPT_USE_SYSTEM_PREFERRED_RNG);
+	if (res >= 0) return;
+#elif defined(__APPLE__) || defined(__NetBSD__) || defined(__FreeBSD__)
+	arc4random_buf(buf.data(), buf.size());
+	return;
+#elif defined(__GLIBC__) && ((__GLIBC__ > 2) || ((__GLIBC__ == 2) && (__GLIBC_MINOR__ >= 25)))
+	auto res = getrandom(buf.data(), buf.size(), 0);
+	if (res > 0 && static_cast<size_t>(res) == buf.size()) return;
+#elif defined(__EMSCRIPTEN__)
+	auto res = EM_ASM_INT({
+		var buf = $0;
+		var bytes = $1;
+
+		var crypto = window.crypto;
+		if (crypto === undefined || crypto.getRandomValues === undefined) {
+			return -1;
+		}
+
+		crypto.getRandomValues(Module.HEAPU8.subarray(buf, buf + bytes));
+		return 1;
+	}, buf.data(), buf.size());
+	if (res > 0) return;
+#else
+#	warning "No cryptographically-strong random generator available; using a fallback instead"
+#endif
+
+	static std::atomic<bool> warned_once = false;
+	bool have_warned = warned_once.exchange(true);
+	DEBUG(misc, have_warned ? 1 : 0, "Cryptographically-strong random generator unavailable; using fallback");
+
+	for (uint i = 0; i < buf.size(); i++) {
+		buf[i] = static_cast<uint8_t>(InteractiveRandom());
+	}
+}

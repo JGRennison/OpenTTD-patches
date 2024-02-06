@@ -1,4 +1,4 @@
-// Monocypher version 4.0.1
+// Monocypher version 4.0.2
 //
 // This file is dual-licensed.  Choose whichever licence you want from
 // the two licences listed below.

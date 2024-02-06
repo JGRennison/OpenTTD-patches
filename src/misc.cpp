@@ -42,6 +42,7 @@
 #include "event_logs.h"
 #include "string_func.h"
 #include "plans_func.h"
+#include "core/format.hpp"
 #include "3rdparty/monocypher/monocypher.h"
 
 #include "safeguards.h"
@@ -75,23 +76,27 @@ void InitializeOldNames();
 
 /**
  * Generate a unique ID.
+ *
+ * It isn't as much of an unique ID but more a hashed digest of a random
+ * string and a time. It is very likely to be unique, but it does not follow
+ * any UUID standard.
  */
 std::string GenerateUid(std::string_view subject)
 {
-	extern void NetworkRandomBytesWithFallback(void *buf, size_t n);
+	std::array<uint8_t, 32> random_bytes;
+	RandomBytesWithFallback(random_bytes);
 
-	uint8_t random_bytes[32];
-	NetworkRandomBytesWithFallback(random_bytes, lengthof(random_bytes));
+	auto current_time = std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count();
+	std::string coding_string = fmt::format("{}{}", current_time, subject);
 
-	uint8_t digest[16];
-
+	std::array<uint8_t, 16> digest;
 	crypto_blake2b_ctx ctx;
-	crypto_blake2b_init  (&ctx, lengthof(digest));
-	crypto_blake2b_update(&ctx, random_bytes, lengthof(random_bytes));
-	crypto_blake2b_update(&ctx, (const byte *)subject.data(), subject.size());
-	crypto_blake2b_final (&ctx, digest);
+	crypto_blake2b_init(&ctx, digest.size());
+	crypto_blake2b_update(&ctx, random_bytes.data(), random_bytes.size());
+	crypto_blake2b_update(&ctx, reinterpret_cast<const uint8_t *>(coding_string.data()), coding_string.size());
+	crypto_blake2b_final(&ctx, digest.data());
 
-	return FormatArrayAsHex({digest, lengthof(digest)});
+	return FormatArrayAsHex(digest);
 }
 
 /**

@@ -5,7 +5,7 @@ Monocypher is an easy to use, easy to deploy, auditable crypto library
 written in portable C.  It approaches the size of [TweetNaCl][] and the
 speed of [libsodium][].
 
-[Official site.](https://monocypher.org/)  
+[Official site.](https://monocypher.org/)
 [Official releases.](https://monocypher.org/download/)
 
 [libsodium]: https://libsodium.org
