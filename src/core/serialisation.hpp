@@ -78,9 +78,9 @@ struct BufferSerialisationHelper {
 		BufferSend_binary(self->GetSerialisationBuffer(), self->GetSerialisationLimit(), data, size);
 	}
 
-	void Send_binary(const byte *data, const byte *end)
+	void Send_binary(std::span<const byte> data)
 	{
-		this->Send_binary(data, end - data);
+		this->Send_binary(data.data(), data.size());
 	}
 
 	void Send_buffer(const byte *data, const size_t size)
@@ -261,6 +261,15 @@ public:
 
 		memcpy(buffer, &this->GetBuffer()[pos], size);
 		pos += (decltype(pos)) size;
+	}
+
+	/**
+	 * Reads binary data.
+	 * @param buffer The buffer to put the data into.
+	 */
+	void Recv_binary(std::span<byte> buffer)
+	{
+		this->Recv_binary(buffer.data(), buffer.size());
 	}
 
 	/**
