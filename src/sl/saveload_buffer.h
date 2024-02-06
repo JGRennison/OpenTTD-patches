@@ -125,6 +125,11 @@ struct ReadBuffer {
 		}
 	}
 
+	inline void CopyBytes(std::span<byte> buffer)
+	{
+		this->CopyBytes(buffer.data(), buffer.size());
+	}
+
 	/**
 	 * Get the size of the memory dump made so far.
 	 * @return The size.
@@ -207,6 +212,11 @@ struct MemoryDumper {
 			ptr += to_copy;
 			length -= to_copy;
 		}
+	}
+
+	inline void CopyBytes(std::span<const byte> buffer)
+	{
+		this->CopyBytes(buffer.data(), buffer.size());
 	}
 
 	inline void RawWriteByte(byte b)
