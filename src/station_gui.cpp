@@ -2827,6 +2827,20 @@ public:
 
 		const bool detailed = _settings_client.gui.station_rating_tooltip_mode == SRTM_DETAILED;
 
+		auto to_display_speed = [&](uint speed) -> uint {
+			switch (ge->last_vehicle_type) {
+				case VEH_SHIP:
+					return speed / 2;
+
+				case VEH_AIRCRAFT:
+					/* Undo conversion in GetSpeedOldUnits */
+					return (speed * 128) / 10;
+
+				default:
+					return speed;
+			}
+		};
+
 		if (_cheats.station_rating.value) {
 			total_rating = 255;
 			skip = true;
@@ -2848,8 +2862,7 @@ public:
 				line_nr++;
 
 				const uint last_speed = ge->HasVehicleEverTriedLoading() && ge->IsSupplyAllowed() ? ge->last_speed : 0xFF;
-				SetDParam(0, std::min<uint>(last_speed, 0xFFu));
-
+				SetDParam(0, to_display_speed(last_speed));
 				switch (ge->last_vehicle_type) {
 					case VEH_TRAIN:
 						SetDParam(1, STR_STATION_RATING_TOOLTIP_TRAIN);
@@ -2897,7 +2910,7 @@ public:
 					SetDParam(2, _rate_colours[std::min(3, speed_rating / 42)]);
 				}
 
-				SetDParam(3, ge->last_speed);
+				SetDParam(3, to_display_speed(ge->last_speed));
 				SetDParam(4, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
 				SetDParam(5, rounded_speed_rating);
 
