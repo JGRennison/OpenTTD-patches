@@ -4420,6 +4420,7 @@ bool AfterLoadGame()
 	_game_load_cur_date_ymd = _cur_date_ymd;
 	_game_load_date_fract = _date_fract;
 	_game_load_tick_skip_counter = _tick_skip_counter;
+	_game_load_state_ticks = _state_ticks;
 	_game_load_time = time(nullptr);
 
 	/* Start the scripts. This MUST happen after everything else except

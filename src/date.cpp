@@ -23,6 +23,7 @@
 #include "debug.h"
 #include "landscape.h"
 #include "widgets/statusbar_widget.h"
+#include "event_logs.h"
 
 #include "safeguards.h"
 
@@ -35,10 +36,6 @@ uint64_t _scaled_tick_counter;             ///< Tick counter in daylength-scaled
 StateTicks _state_ticks;                   ///< Current state tick
 StateTicksDelta _state_ticks_offset;       ///< Offset to add when calculating a StateTicks value from a date/date fract/tick skip counter
 uint32_t    _quit_after_days;              ///< Quit after this many days of run time
-
-YearMonthDay _game_load_cur_date_ymd;
-DateFract _game_load_date_fract;
-uint8_t _game_load_tick_skip_counter;
 
 extern void ClearOutOfDateSignalSpeedRestrictions();
 
@@ -59,6 +56,7 @@ void CheckStateTicksWrap()
 
 	_state_ticks_offset -= tick_adjust;
 	_state_ticks -= tick_adjust;
+	_game_load_state_ticks -= tick_adjust;
 
 	extern void AdjustAllSignalSpeedRestrictionTickValues(StateTicksDelta delta);
 	AdjustAllSignalSpeedRestrictionTickValues(-tick_adjust);

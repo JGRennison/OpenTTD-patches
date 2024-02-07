@@ -11,6 +11,7 @@
 #define EVENT_LOGS_H
 
 #include "core/enum_type.hpp"
+#include "date_type.h"
 #include <time.h>
 
 enum GameEventFlags : uint32_t {
@@ -29,6 +30,12 @@ DECLARE_ENUM_AS_BIT_SET(GameEventFlags)
 extern GameEventFlags _game_events_since_load;
 extern GameEventFlags _game_events_overall;
 
+extern time_t _game_load_time;
+extern YearMonthDay _game_load_cur_date_ymd;
+extern DateFract _game_load_date_fract;
+extern uint8_t _game_load_tick_skip_counter;
+extern StateTicks _game_load_state_ticks;
+
 inline void RegisterGameEvents(GameEventFlags events)
 {
 	_game_events_since_load |= events;
@@ -37,10 +44,10 @@ inline void RegisterGameEvents(GameEventFlags events)
 
 char *DumpGameEventFlags(GameEventFlags events, char *b, const char *last);
 
-extern time_t _game_load_time;
-
 void AppendSpecialEventsLogEntry(std::string message);
 char *DumpSpecialEventsLog(char *buffer, const char *last);
 void ClearSpecialEventsLog();
+
+void LogGameLoadDateTimes(char *buffer, const char *last);
 
 #endif /* EVENT_LOGS_H */

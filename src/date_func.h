@@ -24,10 +24,6 @@ extern StateTicks _state_ticks;
 extern StateTicksDelta _state_ticks_offset;
 extern uint32_t  _quit_after_days;
 
-extern YearMonthDay _game_load_cur_date_ymd;
-extern DateFract _game_load_date_fract;
-extern uint8_t _game_load_tick_skip_counter;
-
 void SetDate(Date date, DateFract fract);
 YearMonthDay ConvertDateToYMD(Date date);
 Date ConvertYMDToDate(Year year, Month month, Day day);

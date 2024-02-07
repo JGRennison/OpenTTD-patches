@@ -534,6 +534,7 @@ static void ShutdownGame()
 	_game_load_cur_date_ymd = { 0, 0, 0 };
 	_game_load_date_fract = 0;
 	_game_load_tick_skip_counter = 0;
+	_game_load_state_ticks = 0;
 	_game_load_time = 0;
 	_extra_aspects = 0;
 	_aspect_cfg_hash = 0;

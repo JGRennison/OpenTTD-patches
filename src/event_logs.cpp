@@ -12,6 +12,7 @@
 #include "string_func.h"
 #include "date_func.h"
 #include "company_func.h"
+#include "walltime_func.h"
 #include <array>
 #include <string>
 
@@ -21,6 +22,10 @@ GameEventFlags _game_events_since_load;
 GameEventFlags _game_events_overall;
 
 time_t _game_load_time;
+YearMonthDay _game_load_cur_date_ymd;
+DateFract _game_load_date_fract;
+uint8_t _game_load_tick_skip_counter;
+StateTicks _game_load_state_ticks;
 
 char *DumpGameEventFlags(GameEventFlags events, char *b, const char *last)
 {
@@ -100,4 +105,15 @@ char *DumpSpecialEventsLog(char *buffer, const char *last)
 void ClearSpecialEventsLog()
 {
 	_special_event_log.Reset();
+}
+
+void LogGameLoadDateTimes(char *buffer, const char *last)
+{
+	if (_game_load_time != 0) {
+		buffer += seprintf(buffer, last, "Game loaded at: %i-%02i-%02i (%i, %i), (" OTTD_PRINTF64 " state ticks ago), ",
+				_game_load_cur_date_ymd.year, _game_load_cur_date_ymd.month + 1, _game_load_cur_date_ymd.day,
+				_game_load_date_fract, _game_load_tick_skip_counter, (_state_ticks - _game_load_state_ticks).base());
+		buffer += UTCTime::Format(buffer, last, _game_load_time, "%Y-%m-%d %H:%M:%S");
+		buffer += seprintf(buffer, last, "\n");
+	}
 }

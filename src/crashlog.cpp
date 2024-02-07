@@ -560,11 +560,7 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last)
 		buffer += UTCTime::Format(buffer, last, "Crash at: %Y-%m-%d %H:%M:%S (UTC)\n");
 
 		buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u)\n", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, _settings_game.economy.day_length_factor);
-		if (_game_load_time != 0) {
-			buffer += seprintf(buffer, last, "Game loaded at: %i-%02i-%02i (%i, %i), ",
-					_game_load_cur_date_ymd.year, _game_load_cur_date_ymd.month + 1, _game_load_cur_date_ymd.day, _game_load_date_fract, _game_load_tick_skip_counter);
-			buffer += UTCTime::Format(buffer, last, _game_load_time, "%Y-%m-%d %H:%M:%S");
-		}
+		LogGameLoadDateTimes(buffer, last);
 		return buffer;
 	});
 
@@ -682,12 +678,7 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 
 	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u), %08X\n",
 			_cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, _settings_game.economy.day_length_factor, _frame_counter);
-	if (_game_load_time != 0) {
-		buffer += seprintf(buffer, last, "Game loaded at: %i-%02i-%02i (%i, %i), ",
-				_game_load_cur_date_ymd.year, _game_load_cur_date_ymd.month + 1, _game_load_cur_date_ymd.day, _game_load_date_fract, _game_load_tick_skip_counter);
-		buffer += UTCTime::Format(buffer, last, _game_load_time, "%Y-%m-%d %H:%M:%S");
-		buffer += seprintf(buffer, last, "\n");
-	}
+	LogGameLoadDateTimes(buffer, last);
 	if (!_network_server) {
 		extern Date   _last_sync_date;
 		extern DateFract _last_sync_date_fract;
@@ -748,12 +739,7 @@ char *CrashLog::FillInconsistencyLog(char *buffer, const char *last, const Incon
 
 	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u), %08X\n",
 			_cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, _settings_game.economy.day_length_factor, _frame_counter);
-	if (_game_load_time != 0) {
-		buffer += seprintf(buffer, last, "Game loaded at: %i-%02i-%02i (%i, %i), ",
-				_game_load_cur_date_ymd.year, _game_load_cur_date_ymd.month + 1, _game_load_cur_date_ymd.day, _game_load_date_fract, _game_load_tick_skip_counter);
-		buffer += UTCTime::Format(buffer, last, _game_load_time, "%Y-%m-%d %H:%M:%S");
-		buffer += seprintf(buffer, last, "\n");
-	}
+	LogGameLoadDateTimes(buffer, last);
 	if (_networking && !_network_server) {
 		extern Date   _last_sync_date;
 		extern DateFract _last_sync_date_fract;
