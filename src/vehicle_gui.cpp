@@ -1957,7 +1957,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 				}
 
 				case VST_TIMETABLE_DELAY: {
-					if (v->lateness_counter == 0 || (!_settings_client.gui.timetable_in_ticks && v->lateness_counter / DATE_UNIT_SIZE == 0)) {
+					if (v->lateness_counter == 0 || (!_settings_client.gui.timetable_in_ticks && v->lateness_counter / TimetableDisplayUnitSize() == 0)) {
 						str = STR_VEHICLE_LIST_TIMETABLE_DELAY_ON_TIME;
 					} else {
 						str = v->lateness_counter > 0 ? STR_VEHICLE_LIST_TIMETABLE_DELAY_LATE : STR_VEHICLE_LIST_TIMETABLE_DELAY_EARLY;

@@ -2591,7 +2591,7 @@ public:
 
 						case OCV_TIMETABLE:
 							value = order->GetXData();
-							if (!_settings_client.gui.timetable_in_ticks) value /= DATE_UNIT_SIZE;
+							if (!_settings_client.gui.timetable_in_ticks) value /= TimetableDisplayUnitSize();
 							break;
 
 						case OCV_CARGO_WAITING_AMOUNT:
@@ -3191,7 +3191,7 @@ public:
 					case OCV_TIMETABLE:
 						value = order->GetXData();
 						if (!_settings_client.gui.timetable_in_ticks) {
-							value /= DATE_UNIT_SIZE;
+							value /= TimetableDisplayUnitSize();
 							charset_filter = CS_NUMERAL_DECIMAL;
 						}
 						break;

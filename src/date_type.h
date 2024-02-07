@@ -137,8 +137,6 @@ struct TickMinuteOperations {
 /* The type to store StateTicks-based minutes in */
 using TickMinutes = StrongType::Typedef<int64_t, struct TickMinutesTag, StrongType::Compare, StrongType::Integer, MinuteOperations<true>, TickMinuteOperations>;
 
-#define DATE_UNIT_SIZE (_settings_time.time_in_minutes ? _settings_time.ticks_per_minute : (DAY_TICKS * _settings_game.economy.day_length_factor))
-
 static const int STATION_RATING_TICKS     = 185; ///< cycle duration for updating station rating
 static const int STATION_ACCEPTANCE_TICKS = 250; ///< cycle duration for updating station acceptance
 static const int STATION_LINKGRAPH_TICKS  = 504; ///< cycle duration for cleaning dead links

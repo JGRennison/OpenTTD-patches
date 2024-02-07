@@ -896,7 +896,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 	int32_t ProcessDurationForQueryString(int32_t duration) const
 	{
-		if (!_settings_client.gui.timetable_in_ticks) duration = RoundDivSU(duration, DATE_UNIT_SIZE);
+		if (!_settings_client.gui.timetable_in_ticks) duration = RoundDivSU(duration, TimetableDisplayUnitSize());
 		return duration;
 	}
 

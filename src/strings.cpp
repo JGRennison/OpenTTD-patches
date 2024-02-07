@@ -1587,10 +1587,10 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 						FormatString(builder, GetStringPtr(STR_UNITS_TICKS), tmp_params);
 					} else {
 						StringID str = _settings_time.time_in_minutes ? STR_TIMETABLE_MINUTES : STR_UNITS_DAYS;
-						int64_t ticks = args.GetNextParameter<int64_t>();
-						int64_t ratio = DATE_UNIT_SIZE;
-						int64_t units = ticks / ratio;
-						int64_t leftover = _settings_client.gui.timetable_leftover_ticks ? ticks % ratio : 0;
+						const int64_t ticks = args.GetNextParameter<int64_t>();
+						const int64_t ratio = TimetableDisplayUnitSize();
+						const int64_t units = ticks / ratio;
+						const int64_t leftover = _settings_client.gui.timetable_leftover_ticks ? ticks % ratio : 0;
 						auto tmp_params = MakeParameters(units);
 						FormatString(builder, GetStringPtr(str), tmp_params);
 						if (b == SCC_TT_TICKS_LONG && _settings_time.time_in_minutes && units > 59) {

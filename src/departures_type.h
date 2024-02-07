@@ -92,8 +92,10 @@ struct Departure {
 			if (this->calling_at[i] != d.calling_at[i]) return false;
 		}
 
+		const Ticks timetable_unit_size = TimetableDisplayUnitSize();
+
 		return
-			(this->scheduled_tick.base() / DATE_UNIT_SIZE) == (d.scheduled_tick.base() / DATE_UNIT_SIZE) &&
+			(this->scheduled_tick.base() / timetable_unit_size) == (d.scheduled_tick.base() / timetable_unit_size) &&
 			this->vehicle->type == d.vehicle->type &&
 			this->via == d.via &&
 			this->via2 == d.via2 &&

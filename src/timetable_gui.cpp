@@ -73,7 +73,7 @@ Ticks ParseTimetableDuration(const char *str)
 	char tmp_buffer[64];
 	strecpy(tmp_buffer, str, lastof(tmp_buffer));
 	str_replace_wchar(tmp_buffer, lastof(tmp_buffer), GetDecimalSeparatorChar(), '.');
-	return atof(tmp_buffer) * DATE_UNIT_SIZE;
+	return atof(tmp_buffer) * TimetableDisplayUnitSize();
 }
 
 /**
@@ -747,7 +747,8 @@ struct TimetableWindow : GeneralVehicleWindow {
 				Dimension lock_d = GetSpriteSize(SPR_LOCK);
 				int line_height = std::max<int>(GetCharacterHeight(FS_NORMAL), lock_d.height);
 
-				bool show_late = this->show_expected && v->lateness_counter > DATE_UNIT_SIZE;
+				const Ticks timetable_unit_size = TimetableDisplayUnitSize();
+				bool show_late = this->show_expected && v->lateness_counter >= timetable_unit_size;
 				Ticks offset = show_late ? 0 : -v->lateness_counter;
 
 				bool rtl = _current_text_dir == TD_RTL;
@@ -803,7 +804,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 					/* We aren't running on a timetable yet, so how can we be "on time"
 					 * when we aren't even "on service"/"on duty"? */
 					DrawString(tr, STR_TIMETABLE_STATUS_NOT_STARTED);
-				} else if (v->lateness_counter == 0 || (!_settings_client.gui.timetable_in_ticks && v->lateness_counter / DATE_UNIT_SIZE == 0)) {
+				} else if (v->lateness_counter == 0 || (!_settings_client.gui.timetable_in_ticks && v->lateness_counter / TimetableDisplayUnitSize() == 0)) {
 					DrawString(tr, STR_TIMETABLE_STATUS_ON_TIME);
 				} else {
 					SetTimetableParams(0, abs(v->lateness_counter));
@@ -924,7 +925,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 				if (order != nullptr) {
 					uint time = (selected % 2 != 0) ? order->GetTravelTime() : order->GetWaitTime();
-					if (!_settings_client.gui.timetable_in_ticks) time /= DATE_UNIT_SIZE;
+					if (!_settings_client.gui.timetable_in_ticks) time /= TimetableDisplayUnitSize();
 
 					if (time != 0) {
 						SetDParam(0, time);

@@ -928,7 +928,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 				/* The vehicle has been cancelled. */
 				DrawString(status_left, status_right, y + 1, STR_DEPARTURES_CANCELLED);
 			} else{
-				if (d->lateness <= DATE_UNIT_SIZE && d->scheduled_tick > now_date) {
+				if (d->lateness <= TimetableDisplayUnitSize() && d->scheduled_tick > now_date) {
 					/* We have no evidence that the vehicle is late, so assume it is on time. */
 					DrawString(status_left, status_right, y + 1, STR_DEPARTURES_ON_TIME);
 				} else {
