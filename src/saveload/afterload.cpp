@@ -862,10 +862,13 @@ bool AfterLoadGame()
 	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH, 3)) {
 		_scaled_tick_counter = (uint64_t)((_tick_counter * _settings_game.economy.day_length_factor) + _tick_skip_counter);
 	}
+	if (SlXvIsFeaturePresent(XSLFI_VARIABLE_DAY_LENGTH, 1, 3)) {
+		_state_ticks = GetStateTicksFromCurrentDateWithoutOffset() + _state_ticks_offset;
+	}
 
 	/* Update current year
 	 * must be done before loading sprites as some newgrfs check it */
-	SetDate(_date, _date_fract, false);
+	SetDate(_date, _date_fract);
 	SetupTileLoopCounts();
 
 	/*
@@ -1796,7 +1799,7 @@ bool AfterLoadGame()
 	 * Account for this in older games by adding an offset */
 	if (IsSavegameVersionBefore(SLV_31)) {
 		_date += DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
-		SetScaledTickVariables();
+		RecalculateStateTicksOffset();
 		_cur_date_ymd = ConvertDateToYMD(_date);
 		UpdateCachedSnowLine();
 

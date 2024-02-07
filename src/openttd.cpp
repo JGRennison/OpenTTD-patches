@@ -2149,7 +2149,7 @@ void StateGameLoop()
 		_tick_skip_counter++;
 		_scaled_tick_counter++;
 		if (_game_mode != GM_MENU && _game_mode != GM_BOOTSTRAP) {
-			_state_ticks++;   // This must update in lock-step with _tick_skip_counter, such that it always matches what SetScaledTickVariables would return.
+			_state_ticks++;   // This must update in lock-step with _tick_skip_counter, such that _state_ticks_offset doesn't need to be changed.
 		}
 
 		if (!(_game_mode == GM_MENU || _game_mode == GM_BOOTSTRAP) && !_settings_client.gui.autosave_realtime &&

@@ -131,6 +131,7 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	_tick_counter = 0;
 	_tick_skip_counter = 0;
 	_scaled_tick_counter = 0;
+	_state_ticks = INITIAL_STATE_TICKS_VALUE;
 	_state_ticks_offset = 0;
 	_cur_tileloop_tile = 1;
 	_aux_tileloop_tile = 1;
@@ -153,10 +154,10 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	_newgrf_profilers.clear();
 
 	if (reset_date) {
-		SetDate(ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1), 0, false);
+		SetDate(ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1), 0);
 		InitializeOldNames();
 	} else {
-		SetScaledTickVariables();
+		RecalculateStateTicksOffset();
 	}
 	SetupTileLoopCounts();
 	UpdateCargoScalers();

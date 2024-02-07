@@ -33,7 +33,7 @@ uint64_t _tick_counter;                    ///< Ever incrementing tick counter f
 uint8_t _tick_skip_counter;                ///< Counter for ticks, when only vehicles are moving and nothing else happens
 uint64_t _scaled_tick_counter;             ///< Tick counter in daylength-scaled ticks
 StateTicks _state_ticks;                   ///< Current state tick
-StateTicks _state_ticks_offset;            ///< Offset to add when calculating a StateTicks value from a date/date fract/tick skip counter
+StateTicksDelta _state_ticks_offset;       ///< Offset to add when calculating a StateTicks value from a date/date fract/tick skip counter
 uint32_t    _quit_after_days;              ///< Quit after this many days of run time
 
 YearMonthDay _game_load_cur_date_ymd;
@@ -45,14 +45,14 @@ extern void ClearOutOfDateSignalSpeedRestrictions();
 void CheckStateTicksWrap()
 {
 	StateTicksDelta tick_adjust = 0;
-	auto get_tick_adjust = [&](StateTicks target) {
+	auto get_tick_adjust = [&](StateTicksDelta target) {
 		int32_t rounding = _settings_time.time_in_minutes * 1440;
-		return target.AsDelta() - (target.base() % rounding);
+		return target - (target.base() % rounding);
 	};
 	if (_state_ticks >= ((int64_t)1 << 60)) {
-		tick_adjust = get_tick_adjust(_state_ticks);
+		tick_adjust = get_tick_adjust(_state_ticks - INITIAL_STATE_TICKS_VALUE);
 	} else if (_state_ticks <= -((int64_t)1 << 60)) {
-		tick_adjust = -get_tick_adjust(-(_state_ticks.base()));
+		tick_adjust = -get_tick_adjust(INITIAL_STATE_TICKS_VALUE - _state_ticks);
 	} else {
 		return;
 	}
@@ -70,23 +70,12 @@ void CheckStateTicksWrap()
 	AdjustLinkGraphStateTicksBase(-tick_adjust);
 }
 
-void RebaseStateTicksBase()
-{
-	StateTicks old_state_ticks = _state_ticks;
-	SetScaledTickVariables();
-	_state_ticks_offset += (old_state_ticks - _state_ticks);
-	SetScaledTickVariables();
-	assert(old_state_ticks == _state_ticks);
-
-	CheckStateTicksWrap();
-}
-
 /**
  * Set the date.
  * @param date  New date
  * @param fract The number of ticks that have passed on this date.
  */
-void SetDate(Date date, DateFract fract, bool preserve_state_tick)
+void SetDate(Date date, DateFract fract)
 {
 	assert(fract < DAY_TICKS);
 
@@ -94,17 +83,18 @@ void SetDate(Date date, DateFract fract, bool preserve_state_tick)
 	_date_fract = fract;
 	YearMonthDay ymd = ConvertDateToYMD(date);
 	_cur_date_ymd = ymd;
-	if (preserve_state_tick) {
-		RebaseStateTicksBase();
-	} else {
-		SetScaledTickVariables();
-	}
+	RecalculateStateTicksOffset();
 	UpdateCachedSnowLine();
 }
 
-void SetScaledTickVariables()
+StateTicks GetStateTicksFromCurrentDateWithoutOffset()
 {
-	_state_ticks = ((int64_t)(DateToDateTicks(_date, _date_fract).base()) * _settings_game.economy.day_length_factor) + _tick_skip_counter + _state_ticks_offset;
+	return ((int64_t)(DateToDateTicks(_date, _date_fract).base()) * _settings_game.economy.day_length_factor) + _tick_skip_counter;
+}
+
+void RecalculateStateTicksOffset()
+{
+	_state_ticks_offset = _state_ticks - GetStateTicksFromCurrentDateWithoutOffset();
 }
 
 #define M(a, b) ((a << 5) | b)
@@ -270,7 +260,7 @@ static void OnNewYear()
 		LinkGraphSchedule::instance.ShiftDates(-days_this_year);
 		ShiftOrderDates(-days_this_year);
 		ShiftVehicleDates(-days_this_year);
-		_state_ticks_offset += ((int64_t)days_this_year) * (DAY_TICKS * _settings_game.economy.day_length_factor);
+		RecalculateStateTicksOffset();
 
 		/* Because the _date wraps here, and text-messages expire by game-days, we have to clean out
 		 *  all of them if the date is set back, else those messages will hang for ever */

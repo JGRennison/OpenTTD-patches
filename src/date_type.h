@@ -200,6 +200,9 @@ static const Year MAX_YEAR  = 5000000;
 /** The number of days till the last day */
 static constexpr Date MAX_DATE = DateAtStartOfYear(MAX_YEAR + 1) - 1;
 
+/** An initial value for StateTicks when starting a new game */
+static constexpr StateTicks INITIAL_STATE_TICKS_VALUE = 1 << 24;
+
 /**
  * Data structure to convert between Date and triplet (year, month, and day).
  * @see ConvertDateToYMD(), ConvertYMDToDate()

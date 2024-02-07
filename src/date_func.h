@@ -21,17 +21,18 @@ extern uint64_t  _tick_counter;
 extern uint8_t   _tick_skip_counter;
 extern uint64_t  _scaled_tick_counter;
 extern StateTicks _state_ticks;
-extern StateTicks _state_ticks_offset;
+extern StateTicksDelta _state_ticks_offset;
 extern uint32_t  _quit_after_days;
 
 extern YearMonthDay _game_load_cur_date_ymd;
 extern DateFract _game_load_date_fract;
 extern uint8_t _game_load_tick_skip_counter;
 
-void SetDate(Date date, DateFract fract, bool preserve_scaled_ticks = true);
+void SetDate(Date date, DateFract fract);
 YearMonthDay ConvertDateToYMD(Date date);
 Date ConvertYMDToDate(Year year, Month month, Day day);
-void SetScaledTickVariables();
+StateTicks GetStateTicksFromCurrentDateWithoutOffset();
+void RecalculateStateTicksOffset();
 
 inline Date ConvertYMDToDate(const YearMonthDay &ymd)
 {
