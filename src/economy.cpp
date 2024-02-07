@@ -2200,6 +2200,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 		if (cap_left > 0) {
 			/* If vehicle can load cargo, reset time_since_pickup. */
 			ge->time_since_pickup = 0;
+			ge->last_vehicle_type = v->type;
 
 			/* If there's goods waiting at the station, and the vehicle
 			 * has capacity for it, load it on the vehicle. */
@@ -2233,7 +2234,6 @@ static void LoadUnloadVehicle(Vehicle *front)
 					anything_loaded = true;
 
 					st->time_since_load = 0;
-					ge->last_vehicle_type = v->type;
 
 					if (ged->cargo.TotalCount() == 0) {
 						TriggerStationRandomisation(st, st->xy, SRT_CARGO_TAKEN, v->cargo_type);
