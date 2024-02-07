@@ -93,7 +93,7 @@ struct StatusBarWindow : Window {
 		Dimension d;
 		switch (widget) {
 			case WID_S_LEFT:
-				SetDParam(0, DateToScaledDateTicks(MAX_YEAR * DAYS_IN_YEAR));
+				SetDParam(0, DateToStateTicks(MAX_YEAR * DAYS_IN_YEAR));
 				d = GetStringBoundingBox(STR_JUST_DATE_WALLCLOCK_LONG);
 				break;
 
@@ -121,7 +121,7 @@ struct StatusBarWindow : Window {
 		switch (widget) {
 			case WID_S_LEFT:
 				/* Draw the date */
-				SetDParam(0, _scaled_date_ticks);
+				SetDParam(0, _state_ticks);
 				DrawString(tr, STR_JUST_DATE_WALLCLOCK_LONG, TC_WHITE, SA_HOR_CENTER);
 				break;
 

@@ -1567,7 +1567,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 			desync_level = 1;
 			if (HasChickenBit(DCBF_DESYNC_CHECK_NO_GENERAL)) flags &= ~CHECK_CACHE_GENERAL;
 		}
-		if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_PERIODIC_SIGNALS)) && desync_level < 2 && _scaled_date_ticks.base() % 256 == 0) {
+		if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_PERIODIC_SIGNALS)) && desync_level < 2 && _state_ticks.base() % 256 == 0) {
 			if (!SignalInfraTotalMatches()) desync_level = 2;
 		}
 
@@ -1575,7 +1575,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 		 * always to aid testing of caches. */
 		if (desync_level < 1) return;
 
-		if (desync_level == 1 && _scaled_date_ticks.base() % 500 != 0) return;
+		if (desync_level == 1 && _state_ticks.base() % 500 != 0) return;
 	}
 
 	SCOPE_INFO_FMT([flags], "CheckCaches: %X", flags);
@@ -2114,13 +2114,13 @@ void StateGameLoop()
 	if (_game_mode == GM_EDITOR) {
 		BasePersistentStorageArray::SwitchMode(PSM_ENTER_GAMELOOP);
 
-		/* _scaled_date_ticks and _scaled_date_ticks_offset must update in lockstep here,
+		/* _state_ticks and _state_ticks_offset must update in lockstep here,
 		 * as _date, _tick_skip_counter, etc are not updated in the scenario editor,
-		 * but _scaled_date_ticks should still update in case there are vehicles running,
+		 * but _state_ticks should still update in case there are vehicles running,
 		 * to avoid problems with timetables and train speed adaptation
 		 */
-		_scaled_date_ticks++;
-		_scaled_date_ticks_offset++;
+		_state_ticks++;
+		_state_ticks_offset++;
 
 		RunTileLoop();
 		CallVehicleTicks();
@@ -2149,11 +2149,11 @@ void StateGameLoop()
 		_tick_skip_counter++;
 		_scaled_tick_counter++;
 		if (_game_mode != GM_MENU && _game_mode != GM_BOOTSTRAP) {
-			_scaled_date_ticks++;   // This must update in lock-step with _tick_skip_counter, such that it always matches what SetScaledTickVariables would return.
+			_state_ticks++;   // This must update in lock-step with _tick_skip_counter, such that it always matches what SetScaledTickVariables would return.
 		}
 
 		if (!(_game_mode == GM_MENU || _game_mode == GM_BOOTSTRAP) && !_settings_client.gui.autosave_realtime &&
-				(_scaled_date_ticks.base() % (_settings_client.gui.autosave_interval * (_settings_game.economy.tick_rate == TRM_MODERN ? (60000 / 27) : (60000 / 30)))) == 0) {
+				(_state_ticks.base() % (_settings_client.gui.autosave_interval * (_settings_game.economy.tick_rate == TRM_MODERN ? (60000 / 27) : (60000 / 30)))) == 0) {
 			_do_autosave = true;
 			_check_special_modes = true;
 			SetWindowDirty(WC_STATUS_BAR, 0);

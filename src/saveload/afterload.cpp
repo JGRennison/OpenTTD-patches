@@ -3608,7 +3608,7 @@ bool AfterLoadGame()
 			/* If the start date is 0, the vehicle is not waiting to start and can be ignored. */
 			if (v->timetable_start == 0) continue;
 
-			v->timetable_start += _scaled_date_ticks.base() - _tick_counter;
+			v->timetable_start += _state_ticks.base() - _tick_counter;
 		}
 	} else if (!SlXvIsFeaturePresent(XSLFI_TIMETABLES_START_TICKS, 3)) {
 		extern btree::btree_map<VehicleID, uint16_t> _old_timetable_start_subticks_map;
@@ -3620,7 +3620,7 @@ bool AfterLoadGame()
 				v->timetable_start.edit_base() *= DAY_TICKS;
 			}
 
-			v->timetable_start = DateTicksToScaledDateTicks(v->timetable_start.base());
+			v->timetable_start = DateTicksToStateTicks(v->timetable_start.base());
 
 			if (SlXvIsFeaturePresent(XSLFI_TIMETABLES_START_TICKS, 2, 2)) {
 				v->timetable_start += _old_timetable_start_subticks_map[v->index];
@@ -3907,10 +3907,10 @@ bool AfterLoadGame()
 	/* Use current order time to approximate last loading time */
 	if (IsSavegameVersionBefore(SLV_LAST_LOADING_TICK) && SlXvIsFeatureMissing(XSLFI_LAST_LOADING_TICK)) {
 		for (Vehicle *v : Vehicle::Iterate()) {
-			v->last_loading_tick = _scaled_date_ticks - v->current_order_time;
+			v->last_loading_tick = _state_ticks - v->current_order_time;
 		}
 	} else if (SlXvIsFeatureMissing(XSLFI_LAST_LOADING_TICK, 3)) {
-		const DateTicksScaledDelta delta = _scaled_date_ticks.base() - (int64_t)_scaled_tick_counter;
+		const StateTicksDelta delta = _state_ticks.base() - (int64_t)_scaled_tick_counter;
 		for (Vehicle *v : Vehicle::Iterate()) {
 			if (v->last_loading_tick != 0) {
 				if (SlXvIsFeaturePresent(XSLFI_LAST_LOADING_TICK, 1, 1)) v->last_loading_tick = v->last_loading_tick.base() * _settings_game.economy.day_length_factor;
@@ -4228,7 +4228,7 @@ bool AfterLoadGame()
 
 		for (OrderList *order_list : OrderList::Iterate()) {
 			for (DispatchSchedule &ds : order_list->GetScheduledDispatchScheduleSet()) {
-				DateTicksScaled start_tick = DateToScaledDateTicks(ds.GetScheduledDispatchStartTick().base()) + _old_scheduled_dispatch_start_full_date_fract_map[&ds];
+				StateTicks start_tick = DateToStateTicks(ds.GetScheduledDispatchStartTick().base()) + _old_scheduled_dispatch_start_full_date_fract_map[&ds];
 				ds.SetScheduledDispatchStartTick(start_tick);
 			}
 		}

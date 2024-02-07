@@ -24,7 +24,7 @@
 
 /** Window to select a date graphically by using dropdowns */
 struct SetDateWindow : Window {
-	SetDateCallback *callback; ///< Callback to call when a date has been selected
+	SetTickCallback *callback; ///< Callback to call when a date has been selected
 	YearMonthDay date; ///< The currently selected date
 	Year min_year;     ///< The minimum year in the year dropdown
 	Year max_year;     ///< The maximum year (inclusive) in the year dropdown
@@ -40,7 +40,7 @@ struct SetDateWindow : Window {
 	 * @param callback the callback to call once a date has been selected
 	 */
 	SetDateWindow(WindowDesc *desc, WindowNumber window_number, Window *parent, Date initial_date, Year min_year, Year max_year,
-				SetDateCallback *callback, StringID button_text, StringID button_tooltip) :
+				SetTickCallback *callback, StringID button_text, StringID button_tooltip) :
 			Window(desc),
 			callback(callback),
 			min_year(std::max(MIN_YEAR, min_year)),
@@ -153,7 +153,7 @@ struct SetDateWindow : Window {
 				break;
 			case WID_SD_SET_DATE:
 				if (this->callback != nullptr) {
-					this->callback(this, DateToScaledDateTicks(ConvertYMDToDate(this->date.year, this->date.month, this->date.day)));
+					this->callback(this, DateToStateTicks(ConvertYMDToDate(this->date.year, this->date.month, this->date.day)));
 				}
 				this->Close();
 				break;
@@ -184,10 +184,10 @@ struct SetMinutesWindow : SetDateWindow
 	TickMinutes minutes;
 
 	/** Constructor. */
-	SetMinutesWindow(WindowDesc *desc, WindowNumber window_number, Window *parent, DateTicksScaled initial_date, Year min_year, Year max_year,
-				SetDateCallback *callback, StringID button_text, StringID button_tooltip) :
+	SetMinutesWindow(WindowDesc *desc, WindowNumber window_number, Window *parent, StateTicks initial_tick, Year min_year, Year max_year,
+				SetTickCallback *callback, StringID button_text, StringID button_tooltip) :
 			SetDateWindow(desc, window_number, parent, 0, min_year, max_year, callback, button_text, button_tooltip),
-			minutes(_settings_time.ToTickMinutes(initial_date))
+			minutes(_settings_time.ToTickMinutes(initial_tick))
 	{
 	}
 
@@ -361,19 +361,19 @@ static WindowDesc _set_minutes_desc(__FILE__, __LINE__,
  * Create the new 'set date' window
  * @param window_number number for the window
  * @param parent the parent window, i.e. if this closes we should close too
- * @param initial_date the initial date to show
+ * @param initial_tick the initial tick to show
  * @param min_year the minimum year to show in the year dropdown
  * @param max_year the maximum year (inclusive) to show in the year dropdown
  * @param callback the callback to call once a date has been selected
  */
-void ShowSetDateWindow(Window *parent, int window_number, DateTicksScaled initial_date, Year min_year, Year max_year,
-		SetDateCallback *callback, StringID button_text, StringID button_tooltip)
+void ShowSetDateWindow(Window *parent, int window_number, StateTicks initial_tick, Year min_year, Year max_year,
+		SetTickCallback *callback, StringID button_text, StringID button_tooltip)
 {
 	CloseWindowByClass(WC_SET_DATE);
 
 	if (!_settings_time.time_in_minutes) {
-		new SetDateWindow(&_set_date_desc, window_number, parent, ScaledDateTicksToDate(initial_date), min_year, max_year, callback, button_text, button_tooltip);
+		new SetDateWindow(&_set_date_desc, window_number, parent, StateTicksToDate(initial_tick), min_year, max_year, callback, button_text, button_tooltip);
 	} else {
-		new SetMinutesWindow(&_set_minutes_desc, window_number, parent, initial_date, min_year, max_year, callback, button_text, button_tooltip);
+		new SetMinutesWindow(&_set_minutes_desc, window_number, parent, initial_tick, min_year, max_year, callback, button_text, button_tooltip);
 	}
 }

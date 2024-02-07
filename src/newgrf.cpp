@@ -11605,7 +11605,7 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 	uint64_t tick_counter  = _tick_counter;
 	uint8_t tick_skip_counter = _tick_skip_counter;
 	uint64_t scaled_tick_counter = _scaled_tick_counter;
-	DateTicksScaled scaled_date_ticks_offset = _scaled_date_ticks_offset;
+	StateTicks state_ticks_offset = _state_ticks_offset;
 	byte display_opt     = _display_opt;
 
 	if (_networking) {
@@ -11615,7 +11615,7 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 		_tick_counter = 0;
 		_tick_skip_counter = 0;
 		_scaled_tick_counter = 0;
-		_scaled_date_ticks_offset = 0;
+		_state_ticks_offset = 0;
 		_display_opt  = 0;
 		UpdateCachedSnowLine();
 		SetScaledTickVariables();
@@ -11722,7 +11722,7 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 	_tick_counter = tick_counter;
 	_tick_skip_counter = tick_skip_counter;
 	_scaled_tick_counter = scaled_tick_counter;
-	_scaled_date_ticks_offset = scaled_date_ticks_offset;
+	_state_ticks_offset = state_ticks_offset;
 	_display_opt  = display_opt;
 	UpdateCachedSnowLine();
 	SetScaledTickVariables();

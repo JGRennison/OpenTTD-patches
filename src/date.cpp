@@ -32,8 +32,8 @@ DateFract _date_fract;                     ///< Fractional part of the day.
 uint64_t _tick_counter;                    ///< Ever incrementing tick counter for setting off various events
 uint8_t _tick_skip_counter;                ///< Counter for ticks, when only vehicles are moving and nothing else happens
 uint64_t _scaled_tick_counter;             ///< Tick counter in daylength-scaled ticks
-DateTicksScaled _scaled_date_ticks;        ///< Date as ticks in daylength-scaled ticks
-DateTicksScaled _scaled_date_ticks_offset; ///< Offset to add when generating _scaled_date_ticks
+StateTicks _state_ticks;                   ///< Current state tick
+StateTicks _state_ticks_offset;            ///< Offset to add when calculating a StateTicks value from a date/date fract/tick skip counter
 uint32_t    _quit_after_days;              ///< Quit after this many days of run time
 
 YearMonthDay _game_load_cur_date_ymd;
@@ -42,43 +42,43 @@ uint8_t _game_load_tick_skip_counter;
 
 extern void ClearOutOfDateSignalSpeedRestrictions();
 
-void CheckScaledDateTicksWrap()
+void CheckStateTicksWrap()
 {
-	DateTicksScaledDelta tick_adjust = 0;
-	auto get_tick_adjust = [&](DateTicksScaled target) {
+	StateTicksDelta tick_adjust = 0;
+	auto get_tick_adjust = [&](StateTicks target) {
 		int32_t rounding = _settings_time.time_in_minutes * 1440;
 		return target.AsDelta() - (target.base() % rounding);
 	};
-	if (_scaled_date_ticks >= ((int64_t)1 << 60)) {
-		tick_adjust = get_tick_adjust(_scaled_date_ticks);
-	} else if (_scaled_date_ticks <= -((int64_t)1 << 60)) {
-		tick_adjust = -get_tick_adjust(-(_scaled_date_ticks.base()));
+	if (_state_ticks >= ((int64_t)1 << 60)) {
+		tick_adjust = get_tick_adjust(_state_ticks);
+	} else if (_state_ticks <= -((int64_t)1 << 60)) {
+		tick_adjust = -get_tick_adjust(-(_state_ticks.base()));
 	} else {
 		return;
 	}
 
-	_scaled_date_ticks_offset -= tick_adjust;
-	_scaled_date_ticks -= tick_adjust;
+	_state_ticks_offset -= tick_adjust;
+	_state_ticks -= tick_adjust;
 
-	extern void AdjustAllSignalSpeedRestrictionTickValues(DateTicksScaledDelta delta);
+	extern void AdjustAllSignalSpeedRestrictionTickValues(StateTicksDelta delta);
 	AdjustAllSignalSpeedRestrictionTickValues(-tick_adjust);
 
-	extern void AdjustVehicleScaledTickBase(DateTicksScaledDelta delta);
-	AdjustVehicleScaledTickBase(-tick_adjust);
+	extern void AdjustVehicleStateTicksBase(StateTicksDelta delta);
+	AdjustVehicleStateTicksBase(-tick_adjust);
 
-	extern void AdjustLinkGraphScaledTickBase(DateTicksScaledDelta delta);
-	AdjustLinkGraphScaledTickBase(-tick_adjust);
+	extern void AdjustLinkGraphStateTicksBase(StateTicksDelta delta);
+	AdjustLinkGraphStateTicksBase(-tick_adjust);
 }
 
-void RebaseScaledDateTicksBase()
+void RebaseStateTicksBase()
 {
-	DateTicksScaled old_scaled_date_ticks = _scaled_date_ticks;
+	StateTicks old_state_ticks = _state_ticks;
 	SetScaledTickVariables();
-	_scaled_date_ticks_offset += (old_scaled_date_ticks - _scaled_date_ticks);
+	_state_ticks_offset += (old_state_ticks - _state_ticks);
 	SetScaledTickVariables();
-	assert(old_scaled_date_ticks == _scaled_date_ticks);
+	assert(old_state_ticks == _state_ticks);
 
-	CheckScaledDateTicksWrap();
+	CheckStateTicksWrap();
 }
 
 /**
@@ -86,7 +86,7 @@ void RebaseScaledDateTicksBase()
  * @param date  New date
  * @param fract The number of ticks that have passed on this date.
  */
-void SetDate(Date date, DateFract fract, bool preserve_scaled_ticks)
+void SetDate(Date date, DateFract fract, bool preserve_state_tick)
 {
 	assert(fract < DAY_TICKS);
 
@@ -94,8 +94,8 @@ void SetDate(Date date, DateFract fract, bool preserve_scaled_ticks)
 	_date_fract = fract;
 	YearMonthDay ymd = ConvertDateToYMD(date);
 	_cur_date_ymd = ymd;
-	if (preserve_scaled_ticks) {
-		RebaseScaledDateTicksBase();
+	if (preserve_state_tick) {
+		RebaseStateTicksBase();
 	} else {
 		SetScaledTickVariables();
 	}
@@ -104,7 +104,7 @@ void SetDate(Date date, DateFract fract, bool preserve_scaled_ticks)
 
 void SetScaledTickVariables()
 {
-	_scaled_date_ticks = ((int64_t)(DateToDateTicks(_date, _date_fract).base()) * _settings_game.economy.day_length_factor) + _tick_skip_counter + _scaled_date_ticks_offset;
+	_state_ticks = ((int64_t)(DateToDateTicks(_date, _date_fract).base()) * _settings_game.economy.day_length_factor) + _tick_skip_counter + _state_ticks_offset;
 }
 
 #define M(a, b) ((a << 5) | b)
@@ -270,14 +270,14 @@ static void OnNewYear()
 		LinkGraphSchedule::instance.ShiftDates(-days_this_year);
 		ShiftOrderDates(-days_this_year);
 		ShiftVehicleDates(-days_this_year);
-		_scaled_date_ticks_offset += ((int64_t)days_this_year) * (DAY_TICKS * _settings_game.economy.day_length_factor);
+		_state_ticks_offset += ((int64_t)days_this_year) * (DAY_TICKS * _settings_game.economy.day_length_factor);
 
 		/* Because the _date wraps here, and text-messages expire by game-days, we have to clean out
 		 *  all of them if the date is set back, else those messages will hang for ever */
 		NetworkInitChatMessage();
 	}
 
-	CheckScaledDateTicksWrap();
+	CheckStateTicksWrap();
 
 	if (_settings_client.gui.auto_euro) CheckSwitchToEuro();
 	IConsoleCmdExec("exec scripts/on_newyear.scr 0");

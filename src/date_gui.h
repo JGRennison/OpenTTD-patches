@@ -14,13 +14,13 @@
 #include "window_type.h"
 
 /**
- * Callback for when a date has been chosen
+ * Callback for when a tick has been chosen
  * @param w the window that sends the callback
- * @param date the date that has been chosen
+ * @param tick the tick that has been chosen
  */
-typedef void SetDateCallback(const Window *w, DateTicksScaled date);
+typedef void SetTickCallback(const Window *w, StateTicks tick);
 
-void ShowSetDateWindow(Window *parent, int window_number, DateTicksScaled initial_date, Year min_year, Year max_year, SetDateCallback *callback,
+void ShowSetDateWindow(Window *parent, int window_number, StateTicks initial_tick, Year min_year, Year max_year, SetTickCallback *callback,
 		StringID button_text = STR_NULL, StringID button_tooltip = STR_NULL);
 
 #endif /* DATE_GUI_H */

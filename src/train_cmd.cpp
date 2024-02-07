@@ -101,7 +101,7 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile);
 
 /** Return the scaled date ticks by which the speed restriction
  *  at the current position of the train is going to be invalid */
-static DateTicksScaled GetSpeedRestrictionTimeout(const Train *t)
+static StateTicks GetSpeedRestrictionTimeout(const Train *t)
 {
 	const int64_t velocity = std::max<int64_t>(25, t->cur_speed);
 	const int64_t look_ahead_distance = Clamp(t->cur_speed / 8, 4, 16); // In tiles, varying between 4 and 16 depending on current speed
@@ -111,7 +111,7 @@ static DateTicksScaled GetSpeedRestrictionTimeout(const Train *t)
 
 	const int64_t ticks = ticks_per_tile * look_ahead_distance;
 
-	return _scaled_date_ticks + ticks;
+	return _state_ticks + ticks;
 }
 
 /** Removes all speed restrictions from all signals */
@@ -120,7 +120,7 @@ void ClearAllSignalSpeedRestrictions()
 	_signal_speeds.clear();
 }
 
-void AdjustAllSignalSpeedRestrictionTickValues(DateTicksScaledDelta delta)
+void AdjustAllSignalSpeedRestrictionTickValues(StateTicksDelta delta)
 {
 	for (auto &it : _signal_speeds) {
 		it.second.time_stamp += delta;

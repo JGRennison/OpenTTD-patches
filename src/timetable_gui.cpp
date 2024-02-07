@@ -144,17 +144,17 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 
 				case OCV_TIME_DATE: {
 					predicted = true;
-					DateTicksScaled time = _scaled_date_ticks + sum;
+					StateTicks time = _state_ticks + sum;
 					if (!no_offset) time -= v->lateness_counter;
-					int value = GetTraceRestrictTimeDateValueFromDate(static_cast<TraceRestrictTimeDateValueField>(order->GetConditionValue()), time);
+					int value = GetTraceRestrictTimeDateValueFromStateTicks(static_cast<TraceRestrictTimeDateValueField>(order->GetConditionValue()), time);
 					jump = OrderConditionCompare(order->GetConditionComparator(), value, order->GetXData());
 					break;
 				}
 
 				case OCV_DISPATCH_SLOT: {
-					DateTicksScaled time = _scaled_date_ticks + sum;
+					StateTicks time = _state_ticks + sum;
 					if (!no_offset) time -= v->lateness_counter;
-					extern bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, DateTicksScaled date_time, bool *predicted);
+					extern bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, StateTicks state_ticks, bool *predicted);
 					jump = EvaluateDispatchSlotConditionalOrder(order, v, time, &predicted);
 					break;
 				}
@@ -193,11 +193,11 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 				DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(order->GetDispatchScheduleIndex());
 				DispatchSchedule predicted_ds;
 				predicted_ds.BorrowSchedule(ds);
-				predicted_ds.UpdateScheduledDispatchToDate(_scaled_date_ticks + sum);
-				DateTicksScaled slot = GetScheduledDispatchTime(predicted_ds, _scaled_date_ticks + sum + order->GetTimetabledWait());
+				predicted_ds.UpdateScheduledDispatchToDate(_state_ticks + sum);
+				StateTicks slot = GetScheduledDispatchTime(predicted_ds, _state_ticks + sum + order->GetTimetabledWait());
 				predicted_ds.ReturnSchedule(ds);
 				if (slot <= -1) return;
-				sum = (slot - _scaled_date_ticks).AsTicks();
+				sum = (slot - _state_ticks).AsTicks();
 				predicted = true;
 				no_offset = true;
 			} else {
@@ -234,21 +234,21 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 /**
  * Callback for when a time has been chosen to start the time table
  * @param p1 The p1 parameter to send to CmdSetTimetableStart
- * @param date the actually chosen date
+ * @param tick the actually chosen state tick
  */
-static void ChangeTimetableStartIntl(uint32_t p1, DateTicksScaled date)
+static void ChangeTimetableStartIntl(uint32_t p1, StateTicks tick)
 {
-	DoCommandPEx(0, p1, 0, (uint64_t)date.base(), CMD_SET_TIMETABLE_START | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
+	DoCommandPEx(0, p1, 0, (uint64_t)tick.base(), CMD_SET_TIMETABLE_START | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
 }
 
 /**
  * Callback for when a time has been chosen to start the time table
  * @param w the window related to the setting of the date
- * @param date the actually chosen date
+ * @param tick the actually chosen tick
  */
-static void ChangeTimetableStartCallback(const Window *w, DateTicksScaled date)
+static void ChangeTimetableStartCallback(const Window *w, StateTicks tick)
 {
-	ChangeTimetableStartIntl(w->window_number, date);
+	ChangeTimetableStartIntl(w->window_number, tick);
 }
 
 void ProcessTimetableWarnings(const Vehicle *v, std::function<void(StringID, bool)> handler)
@@ -762,10 +762,10 @@ struct TimetableWindow : GeneralVehicleWindow {
 						if (arr_dep[i / 2].arrival != INVALID_TICKS) {
 							DrawString(abbr.left, abbr.right, tr.top, STR_TIMETABLE_ARRIVAL_ABBREVIATION, i == selected ? TC_WHITE : TC_BLACK);
 							if (this->show_expected && i / 2 == earlyID) {
-								SetDParam(0, _scaled_date_ticks + arr_dep[i / 2].arrival);
+								SetDParam(0, _state_ticks + arr_dep[i / 2].arrival);
 								DrawString(time.left, time.right, tr.top, STR_JUST_DATE_WALLCLOCK_TINY, TC_GREEN);
 							} else {
-								SetDParam(0, _scaled_date_ticks + arr_dep[i / 2].arrival + (HasBit(arr_dep[i / 2].flags, TADF_ARRIVAL_NO_OFFSET) ? 0 : offset));
+								SetDParam(0, _state_ticks + arr_dep[i / 2].arrival + (HasBit(arr_dep[i / 2].flags, TADF_ARRIVAL_NO_OFFSET) ? 0 : offset));
 								DrawString(time.left, time.right, tr.top, STR_JUST_DATE_WALLCLOCK_TINY,
 										HasBit(arr_dep[i / 2].flags, TADF_ARRIVAL_PREDICTED) ? (TextColour)(TC_IS_PALETTE_COLOUR | TC_NO_SHADE | 4) : (show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK));
 							}
@@ -773,7 +773,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 					} else {
 						if (arr_dep[i / 2].departure != INVALID_TICKS) {
 							DrawString(abbr.left, abbr.right, tr.top, STR_TIMETABLE_DEPARTURE_ABBREVIATION, i == selected ? TC_WHITE : TC_BLACK);
-							SetDParam(0, _scaled_date_ticks + arr_dep[i/2].departure + (HasBit(arr_dep[i / 2].flags, TADF_DEPARTURE_NO_OFFSET) ? 0 : offset));
+							SetDParam(0, _state_ticks + arr_dep[i/2].departure + (HasBit(arr_dep[i / 2].flags, TADF_DEPARTURE_NO_OFFSET) ? 0 : offset));
 							DrawString(time.left, time.right, tr.top, STR_JUST_DATE_WALLCLOCK_TINY,
 									HasBit(arr_dep[i / 2].flags, TADF_DEPARTURE_PREDICTED) ? (TextColour)(TC_IS_PALETTE_COLOUR | TC_NO_SHADE | 4) : (show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK));
 						}
@@ -909,7 +909,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 					ShowQueryString(str, STR_TIMETABLE_START, 31, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else {
 					ShowSetDateWindow(this, v->index | (_ctrl_pressed ? 1U << 20 : 0),
-							_scaled_date_ticks, _cur_year, _cur_year + 15, ChangeTimetableStartCallback);
+							_state_ticks, _cur_year, _cur_year + 15, ChangeTimetableStartCallback);
 				}
 				break;
 

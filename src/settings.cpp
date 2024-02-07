@@ -1850,8 +1850,8 @@ static bool DayLengthPreChange(int32_t &new_value)
 
 static void DayLengthChanged(int32_t new_value)
 {
-	extern void RebaseScaledDateTicksBase();
-	RebaseScaledDateTicksBase();
+	extern void RebaseStateTicksBase();
+	RebaseStateTicksBase();
 
 	SetupTileLoopCounts();
 	UpdateCargoScalers();

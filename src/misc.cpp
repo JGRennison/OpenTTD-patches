@@ -131,7 +131,7 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	_tick_counter = 0;
 	_tick_skip_counter = 0;
 	_scaled_tick_counter = 0;
-	_scaled_date_ticks_offset = 0;
+	_state_ticks_offset = 0;
 	_cur_tileloop_tile = 1;
 	_aux_tileloop_tile = 1;
 	_thd.redsq = INVALID_TILE;

@@ -136,18 +136,18 @@ struct TimeSettings {
 	uint16_t ticks_per_minute;               ///< how many ticks per minute
 	uint16_t clock_offset;                   ///< clock offset in minutes
 
-	TickMinutes ToTickMinutes(DateTicksScaled ticks) const
+	TickMinutes ToTickMinutes(StateTicks ticks) const
 	{
 		return (ticks.base() / this->ticks_per_minute) + this->clock_offset;
 	}
 
 	TickMinutes NowInTickMinutes() const
 	{
-		extern DateTicksScaled _scaled_date_ticks;
-		return this->ToTickMinutes(_scaled_date_ticks);
+		extern StateTicks _state_ticks;
+		return this->ToTickMinutes(_state_ticks);
 	}
 
-	DateTicksScaled FromTickMinutes(TickMinutes minutes) const
+	StateTicks FromTickMinutes(TickMinutes minutes) const
 	{
 		return (minutes.base() - this->clock_offset) * this->ticks_per_minute;
 	}

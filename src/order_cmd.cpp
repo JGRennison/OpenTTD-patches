@@ -3045,7 +3045,7 @@ static uint16_t GetFreeStationPlatforms(StationID st_id)
 	return counter;
 }
 
-bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, DateTicksScaled date_time, bool *predicted)
+bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, StateTicks state_ticks, bool *predicted)
 {
 	uint schedule_index = GB(order->GetXData(), 0, 16);
 	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return false;
@@ -3066,7 +3066,7 @@ bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, 
 		}
 		offset = last % sched.GetScheduledDispatchDuration();
 	} else {
-		DateTicksScaled slot = GetScheduledDispatchTime(sched, _scaled_date_ticks);
+		StateTicks slot = GetScheduledDispatchTime(sched, state_ticks);
 		offset = (slot - sched.GetScheduledDispatchStartTick()).base() % sched.GetScheduledDispatchDuration();
 	}
 
@@ -3256,7 +3256,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 			break;
 		}
 		case OCV_DISPATCH_SLOT: {
-			skip_order = EvaluateDispatchSlotConditionalOrder(order, v, _scaled_date_ticks, nullptr);
+			skip_order = EvaluateDispatchSlotConditionalOrder(order, v, _state_ticks, nullptr);
 			break;
 		}
 		default: NOT_REACHED();
@@ -3394,7 +3394,7 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 			if (v->current_order.GetDepotActionType() & ODATFB_NEAREST_DEPOT) {
 				/* If the vehicle can't find its destination, delay its next search.
 				 * In case many vehicles are in this state, use the vehicle index to spread out pathfinder calls. */
-				if (v->dest_tile == 0 && (_scaled_date_ticks.base() & 0x3F) != (v->index & 0x3F)) break;
+				if (v->dest_tile == 0 && (_state_ticks.base() & 0x3F) != (v->index & 0x3F)) break;
 
 				/* We need to search for the nearest depot (hangar). */
 				ClosestDepot closestDepot = v->FindClosestDepot();

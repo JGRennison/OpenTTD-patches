@@ -36,12 +36,12 @@ struct SignalSpeedKey {
 
 struct SignalSpeedValue {
 	uint16_t train_speed;
-	DateTicksScaled time_stamp;
+	StateTicks time_stamp;
 
 	/** Checks if the timeout has passed */
 	bool IsOutOfDate() const
 	{
-		return _scaled_date_ticks > this->time_stamp;
+		return _state_ticks > this->time_stamp;
 	}
 };
 

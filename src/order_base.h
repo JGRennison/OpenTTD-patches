@@ -740,7 +740,7 @@ private:
 	friend SaveLoadTable GetDispatchScheduleDescription();              ///< Saving and loading of dispatch schedules
 
 	std::vector<DispatchSlot> scheduled_dispatch;                       ///< Scheduled dispatch slots
-	DateTicksScaled scheduled_dispatch_start_tick = -1;                 ///< Scheduled dispatch start tick
+	StateTicks scheduled_dispatch_start_tick = -1;                      ///< Scheduled dispatch start tick
 	uint32_t scheduled_dispatch_duration = 0;                           ///< Scheduled dispatch duration
 	int32_t scheduled_dispatch_last_dispatch = INVALID_SCHEDULED_DISPATCH_OFFSET; ///< Last vehicle dispatched offset
 	int32_t scheduled_dispatch_max_delay = 0;                           ///< Maximum allowed delay
@@ -777,7 +777,7 @@ public:
 	void RemoveScheduledDispatch(uint32_t offset);
 	void AdjustScheduledDispatch(int32_t adjust);
 	void ClearScheduledDispatch() { this->scheduled_dispatch.clear(); }
-	bool UpdateScheduledDispatchToDate(DateTicksScaled now);
+	bool UpdateScheduledDispatchToDate(StateTicks now);
 	void UpdateScheduledDispatch(const Vehicle *v);
 
 	/**
@@ -796,7 +796,7 @@ public:
 	 * Set the scheduled dispatch start
 	 * @param  start_ticks New start ticks
 	 */
-	inline void SetScheduledDispatchStartTick(DateTicksScaled start_tick)
+	inline void SetScheduledDispatchStartTick(StateTicks start_tick)
 	{
 		this->scheduled_dispatch_start_tick = start_tick;
 	}
@@ -805,7 +805,7 @@ public:
 	 * Get the scheduled dispatch start date, in absolute scaled tick
 	 * @return  scheduled dispatch start date
 	 */
-	inline DateTicksScaled GetScheduledDispatchStartTick() const { return this->scheduled_dispatch_start_tick; }
+	inline StateTicks GetScheduledDispatchStartTick() const { return this->scheduled_dispatch_start_tick; }
 
 	/**
 	 * Whether the scheduled dispatch setting is valid

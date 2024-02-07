@@ -68,7 +68,7 @@ enum SchdispatchWidgets {
  * @param p1 The p1 parameter to send to CmdScheduledDispatchSetStartDate
  * @param date the actually chosen date
  */
-static void SetScheduleStartDateIntl(uint32_t p1, DateTicksScaled date)
+static void SetScheduleStartDateIntl(uint32_t p1, StateTicks date)
 {
 	DoCommandPEx(0, p1, 0, (uint64_t)date.base(), CMD_SCHEDULED_DISPATCH_SET_START_DATE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, nullptr, 0);
 }
@@ -78,7 +78,7 @@ static void SetScheduleStartDateIntl(uint32_t p1, DateTicksScaled date)
  * @param window the window related to the setting of the date
  * @param date the actually chosen date
  */
-static void SetScheduleStartDateCallback(const Window *w, DateTicksScaled date)
+static void SetScheduleStartDateCallback(const Window *w, StateTicks date)
 {
 	SetScheduleStartDateIntl(w->window_number, date);
 }
@@ -88,7 +88,7 @@ static void SetScheduleStartDateCallback(const Window *w, DateTicksScaled date)
  * @param p1 The p1 parameter to send to CmdScheduledDispatchAdd
  * @param date the actually chosen date
  */
-static void ScheduleAddIntl(uint32_t p1, DateTicksScaled date, uint extra_slots, uint offset, bool wrap_mode = false)
+static void ScheduleAddIntl(uint32_t p1, StateTicks date, uint extra_slots, uint offset, bool wrap_mode = false)
 {
 	VehicleID veh = GB(p1, 0, 20);
 	uint schedule_index = GB(p1, 20, 12);
@@ -98,13 +98,13 @@ static void ScheduleAddIntl(uint32_t p1, DateTicksScaled date, uint extra_slots,
 	const DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_index);
 
 	/* Make sure the time is the closest future to the timetable start */
-	DateTicksScaled start_tick = ds.GetScheduledDispatchStartTick();
+	StateTicks start_tick = ds.GetScheduledDispatchStartTick();
 	uint32_t duration = ds.GetScheduledDispatchDuration();
 	while (date > start_tick) date -= duration;
 	while (date < start_tick) date += duration;
 
 	if (extra_slots > 0 && offset > 0 && !wrap_mode) {
-		DateTicksScaled end_tick = start_tick + duration;
+		StateTicks end_tick = start_tick + duration;
 		int64_t max_extra_slots = (end_tick - 1 - date).base() / offset;
 		if (max_extra_slots < extra_slots) extra_slots = static_cast<uint>(std::max<int64_t>(0, max_extra_slots));
 		extra_slots = std::min<uint>(extra_slots, UINT16_MAX);
@@ -118,7 +118,7 @@ static void ScheduleAddIntl(uint32_t p1, DateTicksScaled date, uint extra_slots,
  * @param window the window related to the setting of the date
  * @param date the actually chosen date
  */
-static void ScheduleAddCallback(const Window *w, DateTicksScaled date)
+static void ScheduleAddCallback(const Window *w, StateTicks date)
 {
 	ScheduleAddIntl(w->window_number, date, 0, 0);
 }
@@ -160,7 +160,7 @@ static int CalculateMaxRequiredVehicle(Ticks timetable_duration, uint32_t schedu
 
 static void AddNewScheduledDispatchSchedule(VehicleID vindex)
 {
-	DateTicksScaled start_tick;
+	StateTicks start_tick;
 	uint32_t duration;
 
 	const Company *c = Company::GetIfValid(_local_company);
@@ -179,7 +179,7 @@ static void AddNewScheduledDispatchSchedule(VehicleID vindex)
 		duration = 24 * 60 * _settings_time.ticks_per_minute;
 	} else {
 		/* Set Jan 1st and 365 day */
-		start_tick = DateToScaledDateTicks(DateAtStartOfYear(_cur_year));
+		start_tick = DateToStateTicks(DateAtStartOfYear(_cur_year));
 		duration = 365 * DAY_TICKS;
 	}
 
@@ -193,7 +193,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	uint num_columns;       ///< Number of columns.
 
 	uint item_count = 0;     ///< Number of scheduled item
-	DateTicksScaled next_departure_update = INT64_MAX; ///< Time after which the last departure value should be re-drawn
+	StateTicks next_departure_update = INT64_MAX; ///< Time after which the last departure value should be re-drawn
 	uint warning_count = 0;
 	uint extra_line_count = 0;
 
@@ -467,7 +467,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					GuiShowTooltips(this, STR_SCHDISPATCH_REMOVE_SLOT, close_cond);
 				} else {
 					const DispatchSchedule &ds = this->GetSelectedSchedule();
-					const DateTicksScaled start_tick = ds.GetScheduledDispatchStartTick();
+					const StateTicks start_tick = ds.GetScheduledDispatchStartTick();
 
 					SetDParam(0, start_tick + slot->offset);
 					_temp_special_strings[0] = GetString(STR_SCHDISPATCH_SLOT_TOOLTIP);
@@ -493,7 +493,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						}
 						have_last = true;
 					}
-					DateTicksScaled next_slot = GetScheduledDispatchTime(ds, _scaled_date_ticks);
+					StateTicks next_slot = GetScheduledDispatchTime(ds, _state_ticks);
 					if ((next_slot - ds.GetScheduledDispatchStartTick()).AsTicks() % ds.GetScheduledDispatchDuration() == slot->offset) {
 						if (!have_last) _temp_special_strings[0] += '\n';
 						_temp_special_strings[0] += GetString(STR_SCHDISPATCH_SLOT_TOOLTIP_NEXT);
@@ -540,7 +540,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	 * @param right Right side of the box to draw in.
 	 * @param y     Top of the box to draw in.
 	 */
-	void DrawScheduledTime(const DateTicksScaled time, int left, int right, int y, TextColour colour, bool last, bool next, bool flagged) const
+	void DrawScheduledTime(const StateTicks time, int left, int right, int y, TextColour colour, bool last, bool next, bool flagged) const
 	{
 		bool rtl = _current_text_dir == TD_RTL;
 
@@ -571,7 +571,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 	virtual void OnGameTick() override
 	{
-		if (_scaled_date_ticks >= this->next_departure_update) {
+		if (_state_ticks >= this->next_departure_update) {
 			this->next_departure_update = INT64_MAX;
 			SetWidgetDirty(WID_SCHDISPATCH_SUMMARY_PANEL);
 		}
@@ -600,10 +600,10 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				const uint maxval = std::min<uint>(this->item_count, num + (rows_in_display * this->num_columns));
 
 				auto current_schedule = ds.GetScheduledDispatch().begin() + num;
-				const DateTicksScaled start_tick = ds.GetScheduledDispatchStartTick();
-				const DateTicksScaled end_tick = ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchDuration();
+				const StateTicks start_tick = ds.GetScheduledDispatchStartTick();
+				const StateTicks end_tick = ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchDuration();
 
-				DateTicksScaled slot = GetScheduledDispatchTime(ds, _scaled_date_ticks);
+				StateTicks slot = GetScheduledDispatchTime(ds, _state_ticks);
 				int32_t next_offset = (slot - ds.GetScheduledDispatchStartTick()).AsTicks() % ds.GetScheduledDispatchDuration();
 
 				int32_t last_dispatch = ds.GetScheduledDispatchLastDispatch() % ds.GetScheduledDispatchDuration();
@@ -613,7 +613,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						/* Draw all departure time in the current row */
 						if (current_schedule != ds.GetScheduledDispatch().end()) {
 							int x = r.left + (rtl ? (this->num_columns - i - 1) : i) * this->resize.step_width;
-							DateTicksScaled draw_time = start_tick + current_schedule->offset;
+							StateTicks draw_time = start_tick + current_schedule->offset;
 							bool last = last_dispatch == (int32_t)current_schedule->offset;
 							bool next = next_offset == (int32_t)current_schedule->offset;
 							TextColour colour;
@@ -640,7 +640,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
 				int y = ir.top;
 
-				auto set_next_departure_update = [&](DateTicksScaled time) {
+				auto set_next_departure_update = [&](StateTicks time) {
 					if (time < this->next_departure_update) const_cast<SchdispatchWindow*>(this)->next_departure_update = time;
 				};
 
@@ -670,8 +670,8 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						warnings++;
 					};
 
-					auto departure_time_warnings = [&](DateTicksScaled time) {
-						if (_settings_time.time_in_minutes && time > (_scaled_date_ticks + (1350 * (uint)_settings_time.ticks_per_minute))) {
+					auto departure_time_warnings = [&](StateTicks time) {
+						if (_settings_time.time_in_minutes && time > (_state_ticks + (1350 * (uint)_settings_time.ticks_per_minute))) {
 							/* If the departure slot is more than 23 hours ahead of now, show a warning */
 							const TickMinutes now = _settings_time.NowInTickMinutes();
 							const TickMinutes target = _settings_time.ToTickMinutes(time);
@@ -741,9 +741,9 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					y += WidgetDimensions::scaled.vsep_wide;
 
 					if (ds.GetScheduledDispatchLastDispatch() != INVALID_SCHEDULED_DISPATCH_OFFSET) {
-						const DateTicksScaled last_departure = ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchLastDispatch();
+						const StateTicks last_departure = ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchLastDispatch();
 						StringID str;
-						if (_scaled_date_ticks < last_departure) {
+						if (_state_ticks < last_departure) {
 							str = STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE;
 							set_next_departure_update(last_departure);
 						} else {
@@ -755,7 +755,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 						departure_time_warnings(last_departure);
 
-						if (_settings_time.time_in_minutes && last_departure < (_scaled_date_ticks + (1350 * (uint)_settings_time.ticks_per_minute))) {
+						if (_settings_time.time_in_minutes && last_departure < (_state_ticks + (1350 * (uint)_settings_time.ticks_per_minute))) {
 							/* If the departure slot is more than 23 hours behind now, show a warning */
 							const TickMinutes now = _settings_time.NowInTickMinutes();
 							const TickMinutes target = _settings_time.ToTickMinutes(last_departure);
@@ -775,7 +775,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						y += GetCharacterHeight(FS_NORMAL);
 					}
 
-					const DateTicksScaled next_departure = GetScheduledDispatchTime(ds, _scaled_date_ticks);
+					const StateTicks next_departure = GetScheduledDispatchTime(ds, _state_ticks);
 					set_next_departure_update(next_departure + ds.GetScheduledDispatchDelay());
 					SetDParam(0, next_departure);
 					DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_NEXT_AVAILABLE_DEPARTURE);
@@ -940,7 +940,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				} else if (_settings_time.time_in_minutes && _settings_client.gui.timetable_start_text_entry) {
 					ShowQueryString(STR_EMPTY, STR_SCHDISPATCH_ADD_CAPTION, 31, this, CS_NUMERAL, QSF_NONE);
 				} else {
-					ShowSetDateWindow(this, v->index | (this->schedule_index << 20), _scaled_date_ticks, _cur_year, _cur_year + 15, ScheduleAddCallback, STR_SCHDISPATCH_ADD, STR_SCHDISPATCH_ADD_TOOLTIP);
+					ShowSetDateWindow(this, v->index | (this->schedule_index << 20), _state_ticks, _cur_year, _cur_year + 15, ScheduleAddCallback, STR_SCHDISPATCH_ADD, STR_SCHDISPATCH_ADD_TOOLTIP);
 				}
 				break;
 			}
@@ -959,7 +959,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					SetDParam(0, _settings_time.NowInTickMinutes().ClockHHMM());
 					ShowQueryString(STR_JUST_INT, STR_SCHDISPATCH_START_CAPTION_MINUTE, 31, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else {
-					ShowSetDateWindow(this, v->index | (this->schedule_index << 20), _scaled_date_ticks, _cur_year, _cur_year + 15, SetScheduleStartDateCallback, STR_SCHDISPATCH_SET_START, STR_SCHDISPATCH_START_TOOLTIP);
+					ShowSetDateWindow(this, v->index | (this->schedule_index << 20), _state_ticks, _cur_year, _cur_year + 15, SetScheduleStartDateCallback, STR_SCHDISPATCH_SET_START, STR_SCHDISPATCH_START_TOOLTIP);
 				}
 				break;
 			}
@@ -1169,7 +1169,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				if (val >= 0 && end != nullptr && *end == 0) {
 					uint minutes = (val % 100) % 60;
 					uint hours = (val / 100) % 24;
-					DateTicksScaled slot = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(hours, minutes));
+					StateTicks slot = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(hours, minutes));
 					ScheduleAddIntl(v->index | (this->schedule_index << 20), slot, 0, 0);
 				}
 				break;
@@ -1185,7 +1185,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				if (val >= 0 && end != nullptr && *end == 0) {
 					uint minutes = (val % 100) % 60;
 					uint hours = (val / 100) % 24;
-					DateTicksScaled start = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(hours, minutes));
+					StateTicks start = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(hours, minutes));
 					SetScheduleStartDateIntl(v->index | (this->schedule_index << 20), start);
 				}
 				break;
@@ -1272,7 +1272,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		}
 		if (end < start || step == 0 || !this->IsScheduleSelected()) return;
 
-		DateTicksScaled slot = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(0, start));
+		StateTicks slot = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(0, start));
 		ScheduleAddIntl(this->vehicle->index | (this->schedule_index << 20), slot, (end - start) / step, step * _settings_time.ticks_per_minute, wrap_mode);
 	}
 };

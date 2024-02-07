@@ -473,14 +473,14 @@ static void FormatBytes(StringBuilder builder, int64_t number)
 	fmt::format_to(builder, NBSP "{}B", iec_prefixes[id]);
 }
 
-static void FormatWallClockString(StringBuilder builder, DateTicksScaled ticks, bool show_date, uint case_index)
+static void FormatWallClockString(StringBuilder builder, StateTicks ticks, bool show_date, uint case_index)
 {
 	TickMinutes minutes = _settings_time.ToTickMinutes(ticks);
 	char hour[3], minute[3];
 	seprintf(hour,   lastof(hour),   "%02i", minutes.ClockHour());
 	seprintf(minute, lastof(minute), "%02i", minutes.ClockMinute());
 	if (show_date) {
-		Date date = ScaledDateTicksToDate(ticks);
+		Date date = StateTicksToDate(ticks);
 		int64_t final_arg;
 		if (_settings_client.gui.date_with_time == 1) {
 			YearMonthDay ymd = ConvertDateToYMD(date);
@@ -1538,36 +1538,36 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 
 				case SCC_DATE_WALLCLOCK_LONG: { // {DATE_WALLCLOCK_LONG}
 					if (_settings_time.time_in_minutes) {
-						FormatWallClockString(builder, args.GetNextParameter<DateTicksScaled>(), _settings_client.gui.date_with_time, next_substr_case_index);
+						FormatWallClockString(builder, args.GetNextParameter<StateTicks>(), _settings_client.gui.date_with_time, next_substr_case_index);
 					} else {
-						FormatYmdString(builder, ScaledDateTicksToDate(args.GetNextParameter<DateTicksScaled>()), next_substr_case_index);
+						FormatYmdString(builder, StateTicksToDate(args.GetNextParameter<StateTicks>()), next_substr_case_index);
 					}
 					break;
 				}
 
 				case SCC_DATE_WALLCLOCK_SHORT: { // {DATE_WALLCLOCK_SHORT}
 					if (_settings_time.time_in_minutes) {
-						FormatWallClockString(builder, args.GetNextParameter<DateTicksScaled>(), _settings_client.gui.date_with_time, next_substr_case_index);
+						FormatWallClockString(builder, args.GetNextParameter<StateTicks>(), _settings_client.gui.date_with_time, next_substr_case_index);
 					} else {
-						FormatYmdString(builder, ScaledDateTicksToDate(args.GetNextParameter<DateTicksScaled>()), next_substr_case_index);
+						FormatYmdString(builder, StateTicksToDate(args.GetNextParameter<StateTicks>()), next_substr_case_index);
 					}
 					break;
 				}
 
 				case SCC_DATE_WALLCLOCK_TINY: { // {DATE_WALLCLOCK_TINY}
 					if (_settings_time.time_in_minutes) {
-						FormatWallClockString(builder, args.GetNextParameter<DateTicksScaled>(), false, next_substr_case_index);
+						FormatWallClockString(builder, args.GetNextParameter<StateTicks>(), false, next_substr_case_index);
 					} else {
-						FormatTinyOrISODate(builder, ScaledDateTicksToDate(args.GetNextParameter<DateTicksScaled>()), STR_FORMAT_DATE_TINY);
+						FormatTinyOrISODate(builder, StateTicksToDate(args.GetNextParameter<StateTicks>()), STR_FORMAT_DATE_TINY);
 					}
 					break;
 				}
 
 				case SCC_DATE_WALLCLOCK_ISO: { // {DATE_WALLCLOCK_ISO}
 					if (_settings_time.time_in_minutes) {
-						FormatWallClockString(builder, args.GetNextParameter<DateTicksScaled>(), false, next_substr_case_index);
+						FormatWallClockString(builder, args.GetNextParameter<StateTicks>(), false, next_substr_case_index);
 					} else {
-						FormatTinyOrISODate(builder, ScaledDateTicksToDate(args.GetNextParameter<DateTicksScaled>()), STR_FORMAT_DATE_ISO);
+						FormatTinyOrISODate(builder, StateTicksToDate(args.GetNextParameter<StateTicks>()), STR_FORMAT_DATE_ISO);
 					}
 					break;
 				}

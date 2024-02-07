@@ -85,17 +85,17 @@
 
 /* static */ SQInteger ScriptDate::GetCurrentScaledDateTicks()
 {
-	return _scaled_date_ticks.base();
+	return _state_ticks.base();
 }
 
 /* static */ SQInteger ScriptDate::GetHour(SQInteger ticks)
 {
-	TickMinutes minutes = _settings_game.game_time.ToTickMinutes(DateTicksScaled(ticks));
+	TickMinutes minutes = _settings_game.game_time.ToTickMinutes(StateTicks(ticks));
 	return minutes.ClockHour();
 }
 
 /* static */ SQInteger ScriptDate::GetMinute(SQInteger ticks)
 {
-	TickMinutes minutes = _settings_game.game_time.ToTickMinutes(DateTicksScaled(ticks));
+	TickMinutes minutes = _settings_game.game_time.ToTickMinutes(StateTicks(ticks));
 	return minutes.ClockMinute();
 }

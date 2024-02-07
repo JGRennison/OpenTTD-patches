@@ -1169,7 +1169,7 @@ bool TraceRestrictProgramDuplicateItemAtDryRun(const std::vector<TraceRestrictIt
 void ShowTraceRestrictProgramWindow(TileIndex tile, Track track);
 
 int GetTraceRestrictTimeDateValue(TraceRestrictTimeDateValueField type);
-int GetTraceRestrictTimeDateValueFromDate(TraceRestrictTimeDateValueField type, DateTicksScaled scaled_date_ticks);
+int GetTraceRestrictTimeDateValueFromStateTicks(TraceRestrictTimeDateValueField type, StateTicks state_ticks);
 
 void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, uint16_t index);
 void TraceRestrictRemoveGroupID(GroupID index);

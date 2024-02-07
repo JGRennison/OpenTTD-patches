@@ -263,7 +263,7 @@ class NIHVehicle : public NIHelper {
 			seprintf(buffer, lastof(buffer), "  V Last loading station: %u, %s", v->last_loading_station, BaseStation::Get(v->last_loading_station)->GetCachedName());
 			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "  V Last loading tick: " OTTD_PRINTF64 " (" OTTD_PRINTF64 ", " OTTD_PRINTF64 " mins ago)",
-					v->last_loading_tick.base(), (_scaled_date_ticks - v->last_loading_tick).base(), (_scaled_date_ticks - v->last_loading_tick).base() / _settings_time.ticks_per_minute);
+					v->last_loading_tick.base(), (_state_ticks - v->last_loading_tick).base(), (_state_ticks - v->last_loading_tick).base() / _settings_time.ticks_per_minute);
 			output.print(buffer);
 		}
 		if (v->IsGroundVehicle()) {
@@ -1449,7 +1449,7 @@ class NIHSignals : public NIHelper {
 				if (it.second.IsOutOfDate()) {
 					b += seprintf(b, lastof(buffer), ", expired");
 				} else {
-					b += seprintf(b, lastof(buffer), ", expires in %u ticks", (uint)(it.second.time_stamp - _scaled_date_ticks).base());
+					b += seprintf(b, lastof(buffer), ", expires in %u ticks", (uint)(it.second.time_stamp - _state_ticks).base());
 				}
 				output.print(buffer);
 			}

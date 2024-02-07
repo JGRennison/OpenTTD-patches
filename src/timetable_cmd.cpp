@@ -486,12 +486,12 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32_t p
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	DateTicksScaled start_date_scaled = (DateTicksScaled)p3;
+	StateTicks start_date_scaled = (StateTicks)p3;
 
 	/* Don't let a timetable start more than 15 unscaled years into the future... */
-	if (start_date_scaled - _scaled_date_ticks > 15 * DAY_TICKS * DAYS_IN_LEAP_YEAR) return CMD_ERROR;
+	if (start_date_scaled - _state_ticks > 15 * DAY_TICKS * DAYS_IN_LEAP_YEAR) return CMD_ERROR;
 	/* ...or 1 unscaled year in the past. */
-	if (_scaled_date_ticks - start_date_scaled > DAY_TICKS * DAYS_IN_LEAP_YEAR) return CMD_ERROR;
+	if (_state_ticks - start_date_scaled > DAY_TICKS * DAYS_IN_LEAP_YEAR) return CMD_ERROR;
 
 	if (timetable_all && !v->orders->IsCompleteTimetable()) return CommandCost(STR_ERROR_TIMETABLE_INCOMPLETE);
 
@@ -787,12 +787,12 @@ void UpdateSeparationOrder(Vehicle *v_start)
 	}
 }
 
-DateTicksScaled GetScheduledDispatchTime(const DispatchSchedule &ds, DateTicksScaled leave_time)
+StateTicks GetScheduledDispatchTime(const DispatchSchedule &ds, StateTicks leave_time)
 {
 	const uint32_t dispatch_duration = ds.GetScheduledDispatchDuration();
 	const int32_t max_delay          = ds.GetScheduledDispatchDelay();
-	const DateTicksScaled minimum    = leave_time - max_delay;
-	DateTicksScaled begin_time       = ds.GetScheduledDispatchStartTick();
+	const StateTicks minimum         = leave_time - max_delay;
+	StateTicks begin_time            = ds.GetScheduledDispatchStartTick();
 	if (ds.GetScheduledDispatchReuseSlots()) {
 		begin_time -= dispatch_duration;
 	}
@@ -804,7 +804,7 @@ DateTicksScaled GetScheduledDispatchTime(const DispatchSchedule &ds, DateTicksSc
 		last_dispatched_offset = ds.GetScheduledDispatchLastDispatch();
 	}
 
-	DateTicksScaled first_slot = -1;
+	StateTicks first_slot = -1;
 
 	/* Find next available slots */
 	for (const DispatchSlot &slot : ds.GetScheduledDispatch()) {
@@ -817,7 +817,7 @@ DateTicksScaled GetScheduledDispatchTime(const DispatchSchedule &ds, DateTicksSc
 			current_offset += dispatch_duration * ((threshold + dispatch_duration - current_offset) / dispatch_duration);
 		}
 
-		DateTicksScaled current_departure = begin_time + current_offset;
+		StateTicks current_departure = begin_time + current_offset;
 		if (current_departure < minimum) {
 			current_departure += dispatch_duration * ((minimum + dispatch_duration - current_departure - 1) / dispatch_duration);
 		}
@@ -873,11 +873,11 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 			ds.UpdateScheduledDispatch(v);
 
 			const int wait_offset = real_current_order->GetTimetabledWait();
-			DateTicksScaled slot = GetScheduledDispatchTime(ds, _scaled_date_ticks + wait_offset);
+			StateTicks slot = GetScheduledDispatchTime(ds, _state_ticks + wait_offset);
 			if (slot > -1) {
 				just_started = !HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 				SetBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
-				v->lateness_counter = (_scaled_date_ticks - slot + wait_offset).AsTicks();
+				v->lateness_counter = (_state_ticks - slot + wait_offset).AsTicks();
 				ds.SetScheduledDispatchLastDispatch((slot - ds.GetScheduledDispatchStartTick()).AsTicks());
 				SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 				set_scheduled_dispatch = true;
@@ -905,7 +905,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		if (!set_scheduled_dispatch) just_started = !HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 
 		if (v->timetable_start != 0) {
-			v->lateness_counter = (_scaled_date_ticks - v->timetable_start).AsTicks();
+			v->lateness_counter = (_state_ticks - v->timetable_start).AsTicks();
 			v->timetable_start = 0;
 		}
 

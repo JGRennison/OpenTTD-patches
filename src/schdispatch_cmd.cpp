@@ -202,7 +202,7 @@ CommandCost CmdScheduledDispatchSetStartDate(TileIndex tile, DoCommandFlag flags
 
 	if (flags & DC_EXEC) {
 		DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_index);
-		ds.SetScheduledDispatchStartTick((DateTicksScaled)p3);
+		ds.SetScheduledDispatchStartTick((StateTicks)p3);
 		ds.UpdateScheduledDispatch(nullptr);
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 	}
@@ -375,7 +375,7 @@ CommandCost CmdScheduledDispatchAddNewSchedule(TileIndex tile, DoCommandFlag fla
 		v->orders->GetScheduledDispatchScheduleSet().emplace_back();
 		DispatchSchedule &ds = v->orders->GetScheduledDispatchScheduleSet().back();
 		ds.SetScheduledDispatchDuration(p2);
-		ds.SetScheduledDispatchStartTick((DateTicksScaled)p3);
+		ds.SetScheduledDispatchStartTick((StateTicks)p3);
 		ds.UpdateScheduledDispatch(nullptr);
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 	}
@@ -752,11 +752,11 @@ void DispatchSchedule::AdjustScheduledDispatch(int32_t adjust)
 	std::sort(this->scheduled_dispatch.begin(), this->scheduled_dispatch.end());
 }
 
-bool DispatchSchedule::UpdateScheduledDispatchToDate(DateTicksScaled now)
+bool DispatchSchedule::UpdateScheduledDispatchToDate(StateTicks now)
 {
 	bool update_windows = false;
 	if (this->GetScheduledDispatchStartTick() == 0) {
-		DateTicksScaled start = now - (now.base() % this->GetScheduledDispatchDuration());
+		StateTicks start = now - (now.base() % this->GetScheduledDispatchDuration());
 		this->SetScheduledDispatchStartTick(start);
 		int64_t last_dispatch = -(start.base());
 		if (last_dispatch < INT_MIN && _settings_game.game_time.time_in_minutes) {
@@ -795,7 +795,7 @@ bool DispatchSchedule::UpdateScheduledDispatchToDate(DateTicksScaled now)
  */
 void DispatchSchedule::UpdateScheduledDispatch(const Vehicle *v)
 {
-	if (this->UpdateScheduledDispatchToDate(_scaled_date_ticks) && v != nullptr) {
+	if (this->UpdateScheduledDispatchToDate(_state_ticks) && v != nullptr) {
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 	}
 }

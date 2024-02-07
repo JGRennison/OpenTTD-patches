@@ -54,8 +54,8 @@ struct DateTicksOperations {
 using DateTicksDelta = StrongType::Typedef<int64_t, struct DateTicksDeltaTag, StrongType::Compare, StrongType::IntegerScalable>;
 using DateTicks = StrongType::Typedef<int64_t, struct DateTicksTag, StrongType::Compare, StrongType::IntegerDelta<DateTicksDelta>, DateTicksOperations>;
 
-/* Mixin for DateTicksScaledDelta */
-struct DateTicksScaledDeltaOperations {
+/* Mixin for StateTicksDelta */
+struct StateTicksDeltaOperations {
 	template <typename TType, typename TBaseType>
 	struct mixin {
 	private:
@@ -69,9 +69,9 @@ struct DateTicksScaledDeltaOperations {
 	};
 };
 
-/* The type to store dates scaled by the day length factor in when tick-precision is required */
-using DateTicksScaledDelta = StrongType::Typedef<int64_t, struct DateTicksScaledDeltaTag, StrongType::Compare, StrongType::IntegerScalable, DateTicksScaledDeltaOperations>;
-using DateTicksScaled = StrongType::Typedef<int64_t, struct DateTicksScaledTag, StrongType::Compare, StrongType::IntegerDelta<DateTicksScaledDelta>>;
+/* The type to store state ticks (this always ticks at the same rate regardless of day length, even in the scenario editor */
+using StateTicksDelta = StrongType::Typedef<int64_t, struct StateTicksDeltaTag, StrongType::Compare, StrongType::IntegerScalable, StateTicksDeltaOperations>;
+using StateTicks = StrongType::Typedef<int64_t, struct StateTicksTag, StrongType::Compare, StrongType::IntegerDelta<StateTicksDelta>>;
 
 /* Mixin for TickMinutes, ClockFaceMinutes */
 template <bool TNegativeCheck>
@@ -134,7 +134,7 @@ struct TickMinuteOperations {
 	};
 };
 
-/* The type to store DateTicksScaled-based minutes in */
+/* The type to store StateTicks-based minutes in */
 using TickMinutes = StrongType::Typedef<int64_t, struct TickMinutesTag, StrongType::Compare, StrongType::Integer, MinuteOperations<true>, TickMinuteOperations>;
 
 #define DATE_UNIT_SIZE (_settings_time.time_in_minutes ? _settings_time.ticks_per_minute : (DAY_TICKS * _settings_game.economy.day_length_factor))

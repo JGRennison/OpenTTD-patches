@@ -348,10 +348,10 @@ public:
 	inline CargoID Cargo() const { return this->link_graph.Cargo(); }
 
 	/**
-	 * Get the date when the underlying link graph was last compressed.
+	 * Get the state tick when the underlying link graph was last compressed.
 	 * @return Compression date.
 	 */
-	inline DateTicksScaled LastCompression() const { return this->link_graph.LastCompression(); }
+	inline StateTicks LastCompression() const { return this->link_graph.LastCompression(); }
 
 	/**
 	 * Get the ID of the underlying link graph.
