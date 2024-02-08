@@ -3912,12 +3912,18 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint
 	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
 		/* Here the rendering is like smallmap. */
 		if (BlitterFactory::GetCurrentBlitter()->GetScreenDepth() == 32) {
-			if (_settings_client.gui.show_slopes_on_viewport_map) ViewportMapDraw<true, true>(vp);
-			else ViewportMapDraw<true, false>(vp);
+			if (_settings_client.gui.show_slopes_on_viewport_map) {
+				ViewportMapDraw<true, true>(vp);
+			} else {
+				ViewportMapDraw<true, false>(vp);
+			}
 		} else {
 			_pal2trsp_remap_ptr = IsTransparencySet(TO_TREES) ? GetNonSprite(GB(PALETTE_TO_TRANSPARENT, 0, PALETTE_WIDTH), SpriteType::Recolour) + 1 : nullptr;
-			if (_settings_client.gui.show_slopes_on_viewport_map) ViewportMapDraw<false, true>(vp);
-			else ViewportMapDraw<false, false>(vp);
+			if (_settings_client.gui.show_slopes_on_viewport_map) {
+				ViewportMapDraw<false, true>(vp);
+			} else {
+				ViewportMapDraw<false, false>(vp);
+			}
 		}
 		ViewportMapDrawVehicles(&_vdd->dpi, vp);
 		if (_scrolling_viewport && _settings_client.gui.show_scrolling_viewport_on_map) ViewportMapDrawScrollingViewportBox(vp);
