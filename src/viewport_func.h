@@ -72,9 +72,18 @@ inline void MaxZoomInOut(ZoomStateChange how, Window *w)
 
 void OffsetGroundSprite(int x, int y);
 
+enum ViewportSortableSpriteSpecialFlags : uint8_t {
+	VSSF_NONE                      =    0,
+	VSSSF_SORT_SPECIAL             = 0x80, ///< When sorting sprites, if both sprites have this set, special sorting rules apply
+	VSSSF_SORT_SPECIAL_TYPE_MASK   =    1, ///< Mask to use for getting the special type
+	VSSSF_SORT_DIAG_VEH            =    0, ///< This is a vehicle moving diagonally with respect to the tile axes
+	VSSSF_SORT_SORT_BRIDGE_BB      =    1, ///< This is a bridge BB helper sprite
+};
+DECLARE_ENUM_AS_BIT_SET(ViewportSortableSpriteSpecialFlags);
+
 void DrawGroundSprite(SpriteID image, PaletteID pal, const SubSprite *sub = nullptr, int extra_offs_x = 0, int extra_offs_y = 0);
 void DrawGroundSpriteAt(SpriteID image, PaletteID pal, int32_t x, int32_t y, int z, const SubSprite *sub = nullptr, int extra_offs_x = 0, int extra_offs_y = 0);
-void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w, int h, int dz, int z, bool transparent = false, int bb_offset_x = 0, int bb_offset_y = 0, int bb_offset_z = 0, const SubSprite *sub = nullptr);
+void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w, int h, int dz, int z, bool transparent = false, int bb_offset_x = 0, int bb_offset_y = 0, int bb_offset_z = 0, const SubSprite *sub = nullptr, ViewportSortableSpriteSpecialFlags special_flags = VSSF_NONE);
 void AddChildSpriteScreen(SpriteID image, PaletteID pal, int x, int y, bool transparent = false, const SubSprite *sub = nullptr, bool scale = true, ChildScreenSpritePositionMode position_mode = ChildScreenSpritePositionMode::Relative);
 void ViewportAddString(ViewportDrawerDynamic *vdd, const DrawPixelInfo *dpi, ZoomLevel small_from, const ViewportSign *sign, StringID string_normal, StringID string_small, StringID string_small_shadow, uint64_t params_1, uint64_t params_2 = 0, Colours colour = INVALID_COLOUR);
 

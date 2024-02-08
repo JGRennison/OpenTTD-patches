@@ -34,7 +34,14 @@ struct __attribute__ ((aligned (16))) ParentSpriteToDraw {
 
 	SpriteID image;                 ///< sprite to draw
 	PaletteID pal;                  ///< palette to use
-	const SubSprite *sub;           ///< only draw a rectangular part of the sprite
+#ifdef POINTER_IS_64BIT
+	int32_t sub_idx;                ///< only draw a rectangular part of the sprite (store the actual pointer elsewhere to save space in this struct)
+#else
+	const SubSprite *sub_ptr;       ///< only draw a rectangular part of the sprite
+#endif
+	uint8_t special_flags;          ///< special flags
+
+	/* 3 bytes spare! */
 
 	int32_t left;                   ///< minimal screen X coordinate of sprite (= x + sprite->x_offs), reference point for child sprites
 	int32_t top;                    ///< minimal screen Y coordinate of sprite (= y + sprite->y_offs), reference point for child sprites
@@ -51,10 +58,44 @@ static_assert(sizeof(ParentSpriteToDraw) <= 64);
 
 typedef std::vector<ParentSpriteToDraw*> ParentSpriteToSortVector;
 
+#ifdef POINTER_IS_64BIT
+struct ParentSpriteToDrawSubSpriteHolder {
+	std::vector<const SubSprite *> subsprites;
+
+	const SubSprite *Get(const ParentSpriteToDraw *ps) const
+	{
+		return ps->sub_idx >= 0 ? this->subsprites[ps->sub_idx] : nullptr;
+	}
+
+	void Set(ParentSpriteToDraw *ps, const SubSprite *sub)
+	{
+		if (sub == nullptr) {
+			ps->sub_idx = -1;
+		} else {
+			ps->sub_idx = (int32_t)this->subsprites.size();
+			this->subsprites.push_back(sub);
+		}
+	}
+
+	void Clear()
+	{
+		this->subsprites.clear();
+	}
+};
+#else
+struct ParentSpriteToDrawSubSpriteHolder {
+	const SubSprite *Get(const ParentSpriteToDraw *ps) const { return ps->sub_ptr; }
+	void Set(ParentSpriteToDraw *ps, const SubSprite *sub) { ps->sub_ptr = sub; }
+	void Clear() {}
+};
+#endif
+
 /** Type for method for checking whether a viewport sprite sorter exists. */
 typedef bool (*VpSorterChecker)();
 /** Type for the actual viewport sprite sorter. */
 typedef void (*VpSpriteSorter)(ParentSpriteToSortVector *psd);
+
+bool ViewportSortParentSpritesSpecial(ParentSpriteToDraw *ps, ParentSpriteToDraw *ps2, ParentSpriteToDraw **psd, ParentSpriteToDraw **psd2);
 
 #ifdef WITH_SSE
 bool ViewportSortParentSpritesSSE41Checker();

@@ -287,6 +287,7 @@ struct ViewportDrawerDynamic {
 	TileSpriteToDrawVector tile_sprites_to_draw;
 	ParentSpriteToDrawVector parent_sprites_to_draw;
 	std::vector<ViewportProcessParentSpritesData> parent_sprite_sets;
+	ParentSpriteToDrawSubSpriteHolder parent_sprite_subsprites;
 	ChildScreenSpriteToDrawVector child_screen_sprites_to_draw;
 	btree::btree_map<TileIndex, TileIndex, BridgeSetXComparator> bridge_to_map_x;
 	btree::btree_map<TileIndex, TileIndex, BridgeSetYComparator> bridge_to_map_y;
@@ -1231,8 +1232,9 @@ static void AddCombinedSprite(SpriteID image, PaletteID pal, int x, int y, int z
  * @param bb_offset_y bounding box extent towards negative Y (world),
  * @param bb_offset_z bounding box extent towards negative Z (world)
  * @param sub Only draw a part of the sprite.
+ * @param special_flags Special flags (special sorting, etc).
  */
-void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w, int h, int dz, int z, bool transparent, int bb_offset_x, int bb_offset_y, int bb_offset_z, const SubSprite *sub)
+void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w, int h, int dz, int z, bool transparent, int bb_offset_x, int bb_offset_y, int bb_offset_z, const SubSprite *sub, ViewportSortableSpriteSpecialFlags special_flags)
 {
 	int32_t left, right, top, bottom;
 
@@ -1298,7 +1300,9 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 
 	ps.image = image;
 	ps.pal = pal;
-	ps.sub = sub;
+	_vdd->parent_sprite_subsprites.Set(&ps, sub);
+	ps.special_flags = special_flags;
+
 	ps.xmin = x + bb_offset_x;
 	ps.xmax = x + std::max(bb_offset_x, w) - 1;
 
@@ -1325,6 +1329,11 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 		_vd.combine_top = tmp_top;
 		_vd.combine_bottom = bottom;
 	}
+}
+
+void SetLastSortableSpriteToDrawSpecialFlags(ViewportSortableSpriteSpecialFlags flags)
+{
+	_vdd->parent_sprites_to_draw.back().special_flags = flags;
 }
 
 /**
@@ -2143,11 +2152,75 @@ static bool ViewportSortParentSpritesChecker()
 	return true;
 }
 
+static void ViewportSortParentSpritesSingleComparison(ParentSpriteToDraw *ps, ParentSpriteToDraw *ps2, ParentSpriteToDraw *ps_to_move, ParentSpriteToDraw **psd, ParentSpriteToDraw **psd2)
+{
+	/* Decide which comparator to use, based on whether the bounding
+	 * boxes overlap
+	 */
+	if (ps->xmax >= ps2->xmin && ps->xmin <= ps2->xmax && // overlap in X?
+			ps->ymax >= ps2->ymin && ps->ymin <= ps2->ymax && // overlap in Y?
+			ps->zmax >= ps2->zmin && ps->zmin <= ps2->zmax) { // overlap in Z?
+		/* Use X+Y+Z as the sorting order, so sprites closer to the bottom of
+		 * the screen and with higher Z elevation, are drawn in front.
+		 * Here X,Y,Z are the coordinates of the "center of mass" of the sprite,
+		 * i.e. X=(left+right)/2, etc.
+		 * However, since we only care about order, don't actually divide / 2
+		 */
+		if (ps->xmin + ps->xmax + ps->ymin + ps->ymax + ps->zmin + ps->zmax <=
+				ps2->xmin + ps2->xmax + ps2->ymin + ps2->ymax + ps2->zmin + ps2->zmax) {
+			return;
+		}
+	} else {
+		/* We only change the order, if it is definite.
+		 * I.e. every single order of X, Y, Z says ps2 is behind ps or they overlap.
+		 * That is: If one partial order says ps behind ps2, do not change the order.
+		 */
+		if (ps->xmax < ps2->xmin ||
+				ps->ymax < ps2->ymin ||
+				ps->zmax < ps2->zmin) {
+			return;
+		}
+	}
+
+	/* Move ps_to_move (ps2) in front of ps */
+	ParentSpriteToDraw *temp = ps_to_move;
+	for (auto psd3 = psd2; psd3 > psd; psd3--) {
+		*psd3 = *(psd3 - 1);
+	}
+	*psd = temp;
+}
+
+bool ViewportSortParentSpritesSpecial(ParentSpriteToDraw *ps, ParentSpriteToDraw *ps2, ParentSpriteToDraw **psd, ParentSpriteToDraw **psd2)
+{
+	ParentSpriteToDraw temp;
+
+	auto is_bridge_diag_veh_comparison = [&](ParentSpriteToDraw *a, ParentSpriteToDraw *b) -> bool {
+		if ((a->special_flags & VSSSF_SORT_SPECIAL_TYPE_MASK) == VSSSF_SORT_SORT_BRIDGE_BB && (b->special_flags & VSSSF_SORT_SPECIAL_TYPE_MASK) == VSSSF_SORT_DIAG_VEH && a->zmin > b->zmax) {
+			temp = *a;
+			temp.xmax += 4;
+			temp.ymax += 4;
+			return true;
+		}
+		return false;
+	};
+
+	if (is_bridge_diag_veh_comparison(ps, ps2)) {
+		ViewportSortParentSpritesSingleComparison(&temp, ps2, ps2, psd, psd2);
+		return true;
+	}
+	if (is_bridge_diag_veh_comparison(ps2, ps)) {
+		ViewportSortParentSpritesSingleComparison(ps, &temp, ps2, psd, psd2);
+		return true;
+	}
+
+	return false;
+}
+
 /** Sort parent sprites pointer array */
 static void ViewportSortParentSprites(ParentSpriteToSortVector *psdv)
 {
-	auto psdvend = psdv->end();
-	auto psd = psdv->begin();
+	ParentSpriteToDraw ** const psdvend = psdv->data() + psdv->size();
+	ParentSpriteToDraw **psd = psdv->data();
 	while (psd != psdvend) {
 		ParentSpriteToDraw *ps = *psd;
 
@@ -2157,46 +2230,18 @@ static void ViewportSortParentSprites(ParentSpriteToSortVector *psdv)
 		}
 
 		ps->SetComparisonDone(true);
+		const bool is_special = (ps->special_flags & VSSSF_SORT_SPECIAL) != 0;
 
 		for (auto psd2 = psd + 1; psd2 != psdvend; psd2++) {
 			ParentSpriteToDraw *ps2 = *psd2;
 
 			if (ps2->IsComparisonDone()) continue;
 
-			/* Decide which comparator to use, based on whether the bounding
-			 * boxes overlap
-			 */
-			if (ps->xmax >= ps2->xmin && ps->xmin <= ps2->xmax && // overlap in X?
-					ps->ymax >= ps2->ymin && ps->ymin <= ps2->ymax && // overlap in Y?
-					ps->zmax >= ps2->zmin && ps->zmin <= ps2->zmax) { // overlap in Z?
-				/* Use X+Y+Z as the sorting order, so sprites closer to the bottom of
-				 * the screen and with higher Z elevation, are drawn in front.
-				 * Here X,Y,Z are the coordinates of the "center of mass" of the sprite,
-				 * i.e. X=(left+right)/2, etc.
-				 * However, since we only care about order, don't actually divide / 2
-				 */
-				if (ps->xmin + ps->xmax + ps->ymin + ps->ymax + ps->zmin + ps->zmax <=
-						ps2->xmin + ps2->xmax + ps2->ymin + ps2->ymax + ps2->zmin + ps2->zmax) {
-					continue;
-				}
-			} else {
-				/* We only change the order, if it is definite.
-				 * I.e. every single order of X, Y, Z says ps2 is behind ps or they overlap.
-				 * That is: If one partial order says ps behind ps2, do not change the order.
-				 */
-				if (ps->xmax < ps2->xmin ||
-						ps->ymax < ps2->ymin ||
-						ps->zmax < ps2->zmin) {
-					continue;
-				}
+			if (is_special && (ps2->special_flags & VSSSF_SORT_SPECIAL) != 0) {
+				if (ViewportSortParentSpritesSpecial(ps, ps2, psd, psd2)) continue;
 			}
 
-			/* Move ps2 in front of ps */
-			ParentSpriteToDraw *temp = ps2;
-			for (auto psd3 = psd2; psd3 > psd; psd3--) {
-				*psd3 = *(psd3 - 1);
-			}
-			*psd = temp;
+			ViewportSortParentSpritesSingleComparison(ps, ps2, ps2, psd, psd2);
 		}
 	}
 }
@@ -2204,7 +2249,7 @@ static void ViewportSortParentSprites(ParentSpriteToSortVector *psdv)
 static void ViewportDrawParentSprites(const ViewportDrawerDynamic *vdd, const DrawPixelInfo *dpi, const ParentSpriteToSortVector *psd, const ChildScreenSpriteToDrawVector *csstdv)
 {
 	for (const ParentSpriteToDraw *ps : *psd) {
-		if (ps->image != SPR_EMPTY_BOUNDING_BOX) DrawSpriteViewport(vdd->sprite_data, dpi, ps->image, ps->pal, ps->x, ps->y, ps->sub);
+		if (ps->image != SPR_EMPTY_BOUNDING_BOX) DrawSpriteViewport(vdd->sprite_data, dpi, ps->image, ps->pal, ps->x, ps->y, vdd->parent_sprite_subsprites.Get(ps));
 
 		int child_idx = ps->first_child;
 		while (child_idx >= 0) {
@@ -4140,6 +4185,7 @@ static void ViewportDoDrawPhase3(Viewport *vp)
 	_vdd->tile_sprites_to_draw.clear();
 	_vdd->parent_sprites_to_draw.clear();
 	_vdd->parent_sprite_sets.clear();
+	_vdd->parent_sprite_subsprites.Clear();
 	_vdd->child_screen_sprites_to_draw.clear();
 	_vdd->sprite_data.Clear();
 

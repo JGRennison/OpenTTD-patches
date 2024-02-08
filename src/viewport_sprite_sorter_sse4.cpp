@@ -13,6 +13,7 @@
 #include "cpu.h"
 #include "smmintrin.h"
 #include "viewport_sprite_sorter.h"
+#include "viewport_func.h"
 
 #include "safeguards.h"
 
@@ -28,8 +29,8 @@ GNU_TARGET("sse4.1")
 void ViewportSortParentSpritesSSE41(ParentSpriteToSortVector *psdv)
 {
 	const __m128i mask_ptest = _mm_setr_epi8(-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,  0,  0,  0,  0);
-	auto const psdvend = psdv->end();
-	auto psd = psdv->begin();
+	ParentSpriteToDraw ** const psdvend = psdv->data() + psdv->size();
+	ParentSpriteToDraw **psd = psdv->data();
 	while (psd != psdvend) {
 		ParentSpriteToDraw * const ps = *psd;
 
@@ -39,11 +40,16 @@ void ViewportSortParentSpritesSSE41(ParentSpriteToSortVector *psdv)
 		}
 
 		ps->SetComparisonDone(true);
+		const bool is_special = (ps->special_flags & VSSSF_SORT_SPECIAL) != 0;
 
 		for (auto psd2 = psd + 1; psd2 != psdvend; psd2++) {
 			ParentSpriteToDraw * const ps2 = *psd2;
 
 			if (ps2->IsComparisonDone()) continue;
+
+			if (is_special && (ps2->special_flags & VSSSF_SORT_SPECIAL) != 0) {
+				if (ViewportSortParentSpritesSpecial(ps, ps2, psd, psd2)) continue;
+			}
 
 			/*
 			 * Decide which comparator to use, based on whether the bounding boxes overlap
