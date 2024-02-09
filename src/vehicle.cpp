@@ -62,6 +62,7 @@
 #include "debug_settings.h"
 #include "network/network_sync.h"
 #include "pathfinder/water_regions.h"
+#include "event_logs.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 #include "3rdparty/cpp-btree/btree_map.h"
 #include "3rdparty/robin_hood/robin_hood.h"
@@ -426,11 +427,23 @@ void ShowNewGrfVehicleError(EngineID engine, StringID part1, StringID part2, GRF
 		if (!_networking) DoCommand(0, critical ? PM_PAUSED_ERROR : PM_PAUSED_NORMAL, 1, DC_EXEC, CMD_PAUSE);
 	}
 
+	std::string log_msg;
+	auto log = [&](StringID str) {
+		std::string msg = GetString(str);
+		const char *start = strip_leading_colours(msg);
+		DEBUG(grf, 0, "%s", start);
+		log_msg += start;
+	};
+
 	SetDParamStr(0, grfconfig->GetName());
-	DEBUG(grf, 0, "%s", strip_leading_colours(GetString(part1)));
+	log(part1);
+
+	log_msg += ", ";
 
 	SetDParam(1, engine);
-	DEBUG(grf, 0, "%s", strip_leading_colours(GetString(part2)));
+	log(part2);
+
+	AppendSpecialEventsLogEntry(std::move(log_msg));
 }
 
 /**
