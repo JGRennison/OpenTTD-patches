@@ -11,6 +11,7 @@
 #include <stdarg.h>
 #include "console_func.h"
 #include "debug.h"
+#include "debug_fmt.h"
 #include "string_func.h"
 #include "fileio_func.h"
 #include "settings_type.h"
@@ -457,4 +458,11 @@ void DebugReconsiderSendRemoteMessages()
 	}
 
 	_debug_remote_console.store(enable);
+}
+
+void TicToc::PrintAndReset()
+{
+	Debug(misc, 0, "[{}] {} us [avg: {:.1f} us]", this->state.name, this->state.chrono_sum, this->state.chrono_sum / static_cast<double>(this->state.count));
+	this->state.count = 0;
+	this->state.chrono_sum = 0;
 }

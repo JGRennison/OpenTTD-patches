@@ -23,7 +23,7 @@
  * @return The unsigned value
  */
 template <typename T>
-inline T abs(const T a)
+constexpr T abs(const T a)
 {
 	return (a < (T)0) ? -a : a;
 }
@@ -37,7 +37,7 @@ inline T abs(const T a)
  * @return The smallest multiple of n equal or greater than x
  */
 template <typename T>
-inline T Align(const T x, uint n)
+constexpr T Align(const T x, uint n)
 {
 	assert((n & (n - 1)) == 0 && n != 0);
 	n--;
@@ -55,7 +55,7 @@ inline T Align(const T x, uint n)
  * @see Align()
  */
 template <typename T>
-inline T *AlignPtr(T *x, uint n)
+constexpr T *AlignPtr(T *x, uint n)
 {
 	static_assert(sizeof(size_t) == sizeof(void *));
 	return reinterpret_cast<T *>(Align((size_t)x, n));
@@ -79,7 +79,7 @@ inline T *AlignPtr(T *x, uint n)
  * @see Clamp(int, int, int)
  */
 template <typename T>
-inline T Clamp(const T a, const T min, const T max)
+constexpr T Clamp(const T a, const T min, const T max)
 {
 	assert(min <= max);
 	if (a <= min) return min;
@@ -102,7 +102,7 @@ inline T Clamp(const T a, const T min, const T max)
  * @returns A value between min and max which is closest to a.
  */
 template <typename T>
-inline T SoftClamp(const T a, const T min, const T max)
+constexpr T SoftClamp(const T a, const T min, const T max)
 {
 	if (min > max) {
 		using U = std::make_unsigned_t<T>;
@@ -129,7 +129,7 @@ inline T SoftClamp(const T a, const T min, const T max)
  * @returns A value between min and max which is closest to a.
  * @see ClampU(uint, uint, uint)
  */
-inline int Clamp(const int a, const int min, const int max)
+constexpr int Clamp(const int a, const int min, const int max)
 {
 	return Clamp<int>(a, min, max);
 }
@@ -150,7 +150,7 @@ inline int Clamp(const int a, const int min, const int max)
  * @returns A value between min and max which is closest to a.
  * @see Clamp(int, int, int)
  */
-inline uint ClampU(const uint a, const uint min, const uint max)
+constexpr uint ClampU(const uint a, const uint min, const uint max)
 {
 	return Clamp<uint>(a, min, max);
 }
@@ -234,7 +234,7 @@ constexpr To ClampTo(From value)
  * @return The absolute difference between the given scalars
  */
 template <typename T>
-inline T Delta(const T a, const T b)
+constexpr T Delta(const T a, const T b)
 {
 	return (a < b) ? b - a : a - b;
 }
@@ -252,7 +252,7 @@ inline T Delta(const T a, const T b)
  * @return True if the value is in the interval, false else.
  */
 template <typename T>
-inline bool IsInsideBS(const T x, const size_t base, const size_t size)
+constexpr bool IsInsideBS(const T x, const size_t base, const size_t size)
 {
 	return (size_t)(x - base) < size;
 }
@@ -268,7 +268,7 @@ inline bool IsInsideBS(const T x, const size_t base, const size_t size)
  * @see IsInsideBS()
  */
 template <typename T, std::enable_if_t<std::disjunction_v<std::is_convertible<T, size_t>, std::is_base_of<StrongTypedefBase, T>>, int> = 0>
-static constexpr inline bool IsInsideMM(const T x, const size_t min, const size_t max) noexcept
+constexpr bool IsInsideMM(const T x, const size_t min, const size_t max) noexcept
 {
 	if constexpr (std::is_base_of_v<StrongTypedefBase, T>) {
 		return (size_t)(x.base() - min) < (max - min);
@@ -283,7 +283,7 @@ static constexpr inline bool IsInsideMM(const T x, const size_t min, const size_
  * @param b variable to swap with a
  */
 template <typename T>
-inline void Swap(T &a, T &b)
+constexpr void Swap(T &a, T &b)
 {
 	T t = a;
 	a = b;
@@ -295,7 +295,7 @@ inline void Swap(T &a, T &b)
  * @param i value to convert, range 0..255
  * @return value in range 0..100
  */
-inline uint ToPercent8(uint i)
+constexpr uint ToPercent8(uint i)
 {
 	assert(i < 256);
 	return i * 101 >> 8;
@@ -306,14 +306,12 @@ inline uint ToPercent8(uint i)
  * @param i value to convert, range 0..65535
  * @return value in range 0..100
  */
-inline uint ToPercent16(uint i)
+constexpr uint ToPercent16(uint i)
 {
 	assert(i < 65536);
 	return i * 101 >> 16;
 }
 
-int LeastCommonMultiple(int a, int b);
-int GreatestCommonDivisor(int a, int b);
 int DivideApprox(int a, int b);
 
 /**
@@ -322,7 +320,7 @@ int DivideApprox(int a, int b);
  * @param b Denominator
  * @return Quotient, rounded up
  */
-inline uint CeilDiv(uint a, uint b)
+constexpr uint CeilDiv(uint a, uint b)
 {
 	return (a + b - 1) / b;
 }
@@ -334,7 +332,7 @@ inline uint CeilDiv(uint a, uint b)
  * @return Quotient, rounded up
  */
 template <typename T>
-inline T CeilDivT(T a, T b)
+constexpr inline T CeilDivT(T a, T b)
 {
 	return (a + b - 1) / b;
 }
@@ -345,7 +343,7 @@ inline T CeilDivT(T a, T b)
  * @param b Denominator
  * @return a rounded up to the nearest multiple of b.
  */
-inline uint Ceil(uint a, uint b)
+constexpr uint Ceil(uint a, uint b)
 {
 	return CeilDiv(a, b) * b;
 }
@@ -357,7 +355,7 @@ inline uint Ceil(uint a, uint b)
  * @return a rounded up to the nearest multiple of b.
  */
 template <typename T>
-inline T CeilT(T a, T b)
+constexpr inline T CeilT(T a, T b)
 {
 	return CeilDivT<T>(a, b) * b;
 }
@@ -368,7 +366,7 @@ inline T CeilT(T a, T b)
  * @param b Denominator
  * @return Quotient, rounded to nearest
  */
-inline int RoundDivSU(int a, uint b)
+constexpr int RoundDivSU(int a, uint b)
 {
 	if (a > 0) {
 		/* 0.5 is rounded to 1 */
@@ -385,7 +383,7 @@ inline int RoundDivSU(int a, uint b)
  * @param b Denominator
  * @return Quotient, rounded away from zero
  */
-inline int DivAwayFromZero(int a, uint b)
+constexpr int DivAwayFromZero(int a, uint b)
 {
 	const int _b = static_cast<int>(b);
 	if (a > 0) {
@@ -403,7 +401,7 @@ inline int DivAwayFromZero(int a, uint b)
  * @return Quotient, rounded towards negative infinity
  */
 template <typename T>
-inline T DivTowardsNegativeInf(T a, T b)
+constexpr inline T DivTowardsNegativeInf(T a, T b)
 {
 	return (a / b) - (a % b < 0 ? 1 : 0);
 }
@@ -415,7 +413,7 @@ inline T DivTowardsNegativeInf(T a, T b)
  * @return Quotient, rounded towards positive infinity
  */
 template <typename T>
-inline T DivTowardsPositiveInf(T a, T b)
+constexpr inline T DivTowardsPositiveInf(T a, T b)
 {
 	return (a / b) + (a % b > 0 ? 1 : 0);
 }

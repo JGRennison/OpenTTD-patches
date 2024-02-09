@@ -898,11 +898,11 @@ CommandCost CmdSetGroupLivery(TileIndex tile, DoCommandFlag flags, uint32_t p1, 
 	if (flags & DC_EXEC) {
 		if (primary) {
 			SB(g->livery.in_use, 0, 1, colour != INVALID_COLOUR);
-			if (colour == INVALID_COLOUR) colour = (Colours)GetParentLivery(g)->colour1;
+			if (colour == INVALID_COLOUR) colour = GetParentLivery(g)->colour1;
 			g->livery.colour1 = colour;
 		} else {
 			SB(g->livery.in_use, 1, 1, colour != INVALID_COLOUR);
-			if (colour == INVALID_COLOUR) colour = (Colours)GetParentLivery(g)->colour2;
+			if (colour == INVALID_COLOUR) colour = GetParentLivery(g)->colour2;
 			g->livery.colour2 = colour;
 		}
 

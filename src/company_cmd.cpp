@@ -483,7 +483,7 @@ static Colours GenerateCompanyColour()
 
 	/* Move the colours that look similar to each company's colour to the side */
 	for (const Company *c : Company::Iterate()) {
-		Colours pcolour = (Colours)c->colour;
+		Colours pcolour = c->colour;
 
 		for (uint i = 0; i < COLOUR_END; i++) {
 			if (colours[i] == pcolour) {
@@ -587,7 +587,7 @@ Company *DoStartupNewCompany(DoStartupNewCompanyFlag flags, CompanyID company)
 	c->colour = colour;
 
 	ResetCompanyLivery(c);
-	_company_colours[c->index] = (Colours)c->colour;
+	_company_colours[c->index] = c->colour;
 
 	/* Scale the initial loan based on the inflation rounded down to the loan interval. The maximum loan has already been inflation adjusted. */
 	c->money = c->current_loan = std::min<int64_t>((INITIAL_LOAN * _economy.inflation_prices >> 16) / LOAN_INTERVAL * LOAN_INTERVAL, _economy.max_loan);
@@ -1105,7 +1105,7 @@ CommandCost CmdSetCompanyColour(TileIndex tile, DoCommandFlag flags, uint32_t p1
 	if (flags & DC_EXEC) {
 		if (!second) {
 			if (scheme != LS_DEFAULT) SB(c->livery[scheme].in_use, 0, 1, colour != INVALID_COLOUR);
-			if (colour == INVALID_COLOUR) colour = (Colours)c->livery[LS_DEFAULT].colour1;
+			if (colour == INVALID_COLOUR) colour = c->livery[LS_DEFAULT].colour1;
 			c->livery[scheme].colour1 = colour;
 
 			/* If setting the first colour of the default scheme, adjust the
@@ -1118,7 +1118,7 @@ CommandCost CmdSetCompanyColour(TileIndex tile, DoCommandFlag flags, uint32_t p1
 			}
 		} else {
 			if (scheme != LS_DEFAULT) SB(c->livery[scheme].in_use, 1, 1, colour != INVALID_COLOUR);
-			if (colour == INVALID_COLOUR) colour = (Colours)c->livery[LS_DEFAULT].colour2;
+			if (colour == INVALID_COLOUR) colour = c->livery[LS_DEFAULT].colour2;
 			c->livery[scheme].colour2 = colour;
 
 			if (scheme == LS_DEFAULT) {

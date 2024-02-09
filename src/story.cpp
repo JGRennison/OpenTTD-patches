@@ -22,6 +22,7 @@
 #include "window_func.h"
 #include "gui.h"
 #include "vehicle_base.h"
+#include "palette_func.h"
 #include "game/game.hpp"
 #include "script/api/script_story_page.hpp"
 #include "script/api/script_event_types.hpp"
@@ -145,7 +146,9 @@ void StoryPageButtonData::SetVehicleType(VehicleType vehtype)
 /** Get the button background colour. */
 Colours StoryPageButtonData::GetColour() const
 {
-	return Extract<Colours, 0, 8>(this->referenced_id);
+	Colours colour = Extract<Colours, 0, 8>(this->referenced_id);
+	if (!IsValidColours(colour)) return INVALID_COLOUR;
+	return colour;
 }
 
 StoryPageButtonFlags StoryPageButtonData::GetFlags() const

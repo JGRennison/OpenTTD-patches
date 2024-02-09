@@ -275,8 +275,8 @@ struct GUISettings : public TimeSettings {
 	bool   show_progsig_ui;                                 ///< Show programmable pre-signals feature in UI
 	bool   show_noentrysig_ui;                              ///< Show no-entry signals feature in UI
 	uint8_t  osk_activation;                                ///< Mouse gesture to trigger the OSK.
-	byte   starting_colour;                                 ///< default color scheme for the company to start a new game with
-	byte   starting_colour_secondary;                       ///< default secondary color scheme for the company to start a new game with
+	Colours starting_colour;                                ///< default color scheme for the company to start a new game with
+	Colours starting_colour_secondary;                      ///< default secondary color scheme for the company to start a new game with
 	bool   show_newgrf_name;                                ///< Show the name of the NewGRF in the build vehicle window
 	bool   show_cargo_in_vehicle_lists;                     ///< Show the cargoes the vehicles can carry in the list windows
 	bool   show_wagon_intro_year;                           ///< Show the introduction year for wagons in the build vehicle window

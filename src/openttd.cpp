@@ -1177,7 +1177,7 @@ static void MakeNewGameDone()
 	if (_settings_client.gui.starting_colour != COLOUR_END) {
 		c->colour = _settings_client.gui.starting_colour;
 		ResetCompanyLivery(c);
-		_company_colours[c->index] = (Colours)c->colour;
+		_company_colours[c->index] = c->colour;
 		BuildOwnerLegend();
 	}
 
