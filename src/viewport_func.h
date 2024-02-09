@@ -76,7 +76,7 @@ enum ViewportSortableSpriteSpecialFlags : uint8_t {
 	VSSF_NONE                      =    0,
 	VSSSF_SORT_SPECIAL             = 0x80, ///< When sorting sprites, if both sprites have this set, special sorting rules apply
 	VSSSF_SORT_SPECIAL_TYPE_MASK   =    1, ///< Mask to use for getting the special type
-	VSSSF_SORT_DIAG_VEH            =    0, ///< This is a vehicle moving diagonally with respect to the tile axes
+	VSSSF_SORT_DIAG_VEH            =    0, ///< This is a vehicle moving diagonally with respect to the tile axes (also used for catenary pylons on diagonal track under bridges for similar reasons)
 	VSSSF_SORT_SORT_BRIDGE_BB      =    1, ///< This is a bridge BB helper sprite
 };
 DECLARE_ENUM_AS_BIT_SET(ViewportSortableSpriteSpecialFlags);

@@ -481,14 +481,19 @@ static void DrawRailCatenaryRailway(const TileInfo *ti)
 		 * Remove those (simply by ANDing with allowed, since these markers are never allowed) */
 		if ((PPPallowed[i] & PPPpreferred[i]) != 0) PPPallowed[i] &= PPPpreferred[i];
 
+		ViewportSortableSpriteSpecialFlags special_flags = VSSF_NONE;
+
 		if (IsBridgeAbove(ti->tile)) {
 			Track bridgetrack = GetBridgeAxis(ti->tile) == AXIS_X ? TRACK_X : TRACK_Y;
 			int height = GetBridgeHeight(GetNorthernBridgeEnd(ti->tile));
 
-			if ((height <= GetTileMaxZ(ti->tile) + 1) &&
+			int max_z = GetTileMaxZ(ti->tile);
+			if ((height <= max_z + 1) &&
 					(i == PCPpositions[bridgetrack][0] || i == PCPpositions[bridgetrack][1])) {
 				SetBit(OverridePCP, i);
 			}
+
+			if (height <= max_z + 1) special_flags = VSSSF_SORT_SPECIAL | VSSSF_SORT_DIAG_VEH;
 		}
 
 		if (PPPallowed[i] != 0 && HasBit(PCPstatus, i) && !HasBit(OverridePCP, i) &&
@@ -508,7 +513,7 @@ static void DrawRailCatenaryRailway(const TileInfo *ti)
 					}
 
 					AddSortableSpriteToDraw(pylon_base + pylon_sprites[temp], PAL_NONE, x, y, 1, 1, BB_HEIGHT_UNDER_BRIDGE,
-						elevation, IsTransparencySet(TO_CATENARY), -1, -1);
+						elevation, IsTransparencySet(TO_CATENARY), -1, -1, 0, nullptr, special_flags);
 
 					break; // We already have drawn a pylon, bail out
 				}
