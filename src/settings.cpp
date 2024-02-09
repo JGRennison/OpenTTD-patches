@@ -1839,15 +1839,6 @@ static void ImprovedBreakdownsSettingChanged(int32_t new_value)
 	}
 }
 
-static uint8_t _pre_change_day_length_factor;
-
-static bool DayLengthPreChange(int32_t &new_value)
-{
-	_pre_change_day_length_factor = _settings_game.economy.day_length_factor;
-
-	return true;
-}
-
 static void DayLengthChanged(int32_t new_value)
 {
 	RecalculateStateTicksOffset();
