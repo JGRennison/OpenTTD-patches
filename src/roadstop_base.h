@@ -60,6 +60,14 @@ struct RoadStop : RoadStopPool::PoolItem<&_roadstop_pool> {
 			return this->occupied;
 		}
 
+		/**
+		 * Adjust the occupation of this road stop, only to handle vehicles unexpectedly changing length
+		 */
+		inline void AdjustOccupation(int adjustment)
+		{
+			this->occupied += adjustment;
+		}
+
 		void Leave(const RoadVehicle *rv);
 		void Enter(const RoadVehicle *rv);
 		void CheckIntegrity(const RoadStop *rs) const;

@@ -222,6 +222,7 @@ void RoadVehUpdateCache(RoadVehicle *v, bool same_length)
 
 	v->InvalidateNewGRFCacheOfChain();
 
+	const uint16_t old_total_length = v->gcache.cached_total_length;
 	v->gcache.cached_total_length = 0;
 
 	Vehicle *last_vis_effect = v;
@@ -257,6 +258,13 @@ void RoadVehUpdateCache(RoadVehicle *v, bool same_length)
 
 	uint max_speed = GetVehicleProperty(v, PROP_ROADVEH_SPEED, 0);
 	v->vcache.cached_max_speed = (max_speed != 0) ? max_speed * 4 : RoadVehInfo(v->engine_type)->max_speed;
+
+	if (same_length && old_total_length != v->gcache.cached_total_length) {
+		if (IsInsideMM(v->state, RVSB_IN_DT_ROAD_STOP, RVSB_IN_DT_ROAD_STOP_END)) {
+			RoadStop *rs = RoadStop::GetByTile(v->tile, GetRoadStopType(v->tile));
+			rs->GetEntry(v)->AdjustOccupation((int)v->gcache.cached_total_length - (int)old_total_length);
+		}
+	}
 }
 
 /**
