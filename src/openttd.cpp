@@ -609,6 +609,7 @@ void MakeNewgameSettingsLive()
 		_settings_game.game_config = new GameConfig(_settings_newgame.game_config);
 	}
 
+	UpdateEffectiveDayLengthFactor();
 	SetupTickRate();
 }
 
@@ -2161,7 +2162,7 @@ void StateGameLoop()
 		}
 
 		RunAuxiliaryTileLoop();
-		if (_tick_skip_counter < _settings_game.economy.day_length_factor) {
+		if (_tick_skip_counter < DayLengthFactor()) {
 			AnimateAnimatedTiles();
 			RunTileLoop(true);
 			CallVehicleTicks();

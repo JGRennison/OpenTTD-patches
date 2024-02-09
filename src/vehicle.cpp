@@ -1313,7 +1313,7 @@ void CallVehicleOnNewDay(Vehicle *v)
 	T::From(v)->T::OnNewDay();
 
 	/* Vehicle::OnPeriodic is decoupled from Vehicle::OnNewDay at day lengths >= 8 */
-	if (_settings_game.economy.day_length_factor < 8) T::From(v)->T::OnPeriodic();
+	if (DayLengthFactor() < 8) T::From(v)->T::OnPeriodic();
 }
 
 /**
@@ -1529,7 +1529,7 @@ void CallVehicleTicks()
 
 	if (_tick_skip_counter == 0) RunVehicleDayProc();
 
-	if (_settings_game.economy.day_length_factor >= 8 && _game_mode == GM_NORMAL) {
+	if (DayLengthFactor() >= 8 && _game_mode == GM_NORMAL) {
 		/*
 		 * Vehicle::OnPeriodic is decoupled from Vehicle::OnNewDay at day lengths >= 8
 		 * Use a fixed interval of 512 ticks (unscaled) instead

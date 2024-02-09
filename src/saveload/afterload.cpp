@@ -669,6 +669,8 @@ bool AfterLoadGame()
 
 	TileIndex map_size = MapSize();
 
+	UpdateEffectiveDayLengthFactor();
+
 	extern TileIndex _cur_tileloop_tile; // From landscape.cpp.
 	/* The LFSR used in RunTileLoop iteration cannot have a zeroed state, make it non-zeroed. */
 	if (_cur_tileloop_tile == 0) _cur_tileloop_tile = 1;
@@ -843,16 +845,17 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_11, 1) || (IsSavegameVersionBefore(SLV_147) && _date_fract > DAY_TICKS)) _date_fract /= 885;
 
 	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP) || SlXvIsFeaturePresent(XSLFI_JOKERPP) || SlXvIsFeaturePresent(XSLFI_CHILLPP)) {
-		assert(_settings_game.economy.day_length_factor >= 1);
-		_tick_skip_counter = _date_fract % _settings_game.economy.day_length_factor;
-		_date_fract /= _settings_game.economy.day_length_factor;
+		assert(DayLengthFactor() >= 1);
+		_tick_skip_counter = _date_fract % DayLengthFactor();
+		_date_fract /= DayLengthFactor();
 		assert(_date_fract < DAY_TICKS);
-		assert(_tick_skip_counter < _settings_game.economy.day_length_factor);
+		assert(_tick_skip_counter < DayLengthFactor());
 	}
 
 	/* Set day length factor to 1 if loading a pre day length savegame */
 	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH) && SlXvIsFeatureMissing(XSLFI_SPRINGPP) && SlXvIsFeatureMissing(XSLFI_JOKERPP) && SlXvIsFeatureMissing(XSLFI_CHILLPP)) {
 		_settings_game.economy.day_length_factor = 1;
+		UpdateEffectiveDayLengthFactor();
 		if (_file_to_saveload.abstract_ftype != FT_SCENARIO) {
 			/* If this is obviously a vanilla/non-patchpack savegame (and not a scenario),
 			 * set the savegame time units to be in days, as they would have been previously. */
@@ -860,7 +863,7 @@ bool AfterLoadGame()
 		}
 	}
 	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH, 3)) {
-		_scaled_tick_counter = (uint64_t)((_tick_counter * _settings_game.economy.day_length_factor) + _tick_skip_counter);
+		_scaled_tick_counter = (uint64_t)((_tick_counter * DayLengthFactor()) + _tick_skip_counter);
 	}
 	if (SlXvIsFeaturePresent(XSLFI_VARIABLE_DAY_LENGTH, 1, 3)) {
 		_state_ticks = GetStateTicksFromCurrentDateWithoutOffset() + _state_ticks_offset;
@@ -3916,7 +3919,7 @@ bool AfterLoadGame()
 		const StateTicksDelta delta = _state_ticks.base() - (int64_t)_scaled_tick_counter;
 		for (Vehicle *v : Vehicle::Iterate()) {
 			if (v->last_loading_tick != 0) {
-				if (SlXvIsFeaturePresent(XSLFI_LAST_LOADING_TICK, 1, 1)) v->last_loading_tick = v->last_loading_tick.base() * _settings_game.economy.day_length_factor;
+				if (SlXvIsFeaturePresent(XSLFI_LAST_LOADING_TICK, 1, 1)) v->last_loading_tick = v->last_loading_tick.base() * DayLengthFactor();
 				v->last_loading_tick += delta;
 			}
 		}

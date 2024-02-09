@@ -4472,7 +4472,7 @@ void DeleteStaleLinks(Station *from)
 			Station *to = Station::Get((*lg)[to_id].Station());
 			assert(to->goods[c].node == to_id);
 			assert(_date >= edge.LastUpdate());
-			DateDelta timeout = std::max<uint>((LinkGraph::MIN_TIMEOUT_DISTANCE + (DistanceManhattan(from->xy, to->xy) >> 3)) / _settings_game.economy.day_length_factor, 1);
+			DateDelta timeout = std::max<uint>((LinkGraph::MIN_TIMEOUT_DISTANCE + (DistanceManhattan(from->xy, to->xy) >> 3)) / DayLengthFactor(), 1);
 			if (edge.LastAircraftUpdate() != INVALID_DATE && (_date - edge.LastAircraftUpdate()) > timeout) {
 				edge.ClearAircraft();
 			}
@@ -5524,7 +5524,7 @@ void FlowStat::ScaleToMonthly(uint runtime)
 	assert(runtime > 0);
 	uint share = 0;
 	for (iterator i = this->begin(); i != this->end(); ++i) {
-		share = std::max(share + 1, ClampTo<uint>((static_cast<uint64_t>(i->first) * 30 * DAY_TICKS * _settings_game.economy.day_length_factor) / runtime));
+		share = std::max(share + 1, ClampTo<uint>((static_cast<uint64_t>(i->first) * 30 * DAY_TICKS * DayLengthFactor()) / runtime));
 		if (this->unrestricted == i->first) this->unrestricted = share;
 		i->first = share;
 	}

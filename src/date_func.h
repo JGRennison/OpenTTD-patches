@@ -37,6 +37,14 @@ inline Date ConvertYMDToDate(const YearMonthDay &ymd)
 
 #define _cur_year (_cur_date_ymd.year)
 
+inline uint8_t DayLengthFactor()
+{
+	extern uint8_t _effective_day_length;
+	return _effective_day_length;
+}
+
+void UpdateEffectiveDayLengthFactor();
+
 /**
  * Checks whether the given year is a leap year or not.
  * @param yr The year to check.
@@ -49,22 +57,22 @@ inline bool IsLeapYear(Year yr)
 
 inline Date StateTicksToDate(StateTicks ticks)
 {
-	return (ticks.base() - _state_ticks_offset.base()) / (DAY_TICKS * _settings_game.economy.day_length_factor);
+	return (ticks.base() - _state_ticks_offset.base()) / (DAY_TICKS * DayLengthFactor());
 }
 
 inline StateTicks DateToStateTicks(Date date)
 {
-	return ((int64_t)date.base() * DAY_TICKS * _settings_game.economy.day_length_factor) + _state_ticks_offset.base();
+	return ((int64_t)date.base() * DAY_TICKS * DayLengthFactor()) + _state_ticks_offset.base();
 }
 
 inline DateTicks StateTicksToDateTicks(StateTicks ticks)
 {
-	return (ticks.base() - _state_ticks_offset.base()) / _settings_game.economy.day_length_factor;
+	return (ticks.base() - _state_ticks_offset.base()) / DayLengthFactor();
 }
 
 inline StateTicks DateTicksToStateTicks(DateTicks date_ticks)
 {
-	return ((int64_t)date_ticks.base() * _settings_game.economy.day_length_factor) + _state_ticks_offset.base();
+	return ((int64_t)date_ticks.base() * DayLengthFactor()) + _state_ticks_offset.base();
 }
 
 /**
@@ -102,7 +110,7 @@ inline Ticks TimetableDisplayUnitSize()
 	if (_settings_time.time_in_minutes) {
 		return _settings_time.ticks_per_minute;
 	} else {
-		return DAY_TICKS * _settings_game.economy.day_length_factor;
+		return DAY_TICKS * DayLengthFactor();
 	}
 }
 

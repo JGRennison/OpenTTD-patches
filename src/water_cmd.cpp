@@ -1341,7 +1341,7 @@ void TileLoop_Water(TileIndex tile)
 	if (IsTileType(tile, MP_WATER)) AmbientSoundEffect(tile);
 
 	/* At day lengths > 4, handle flooding in auxiliary tile loop */
-	if (_settings_game.economy.day_length_factor > 4 && _game_mode != GM_EDITOR) return;
+	if (DayLengthFactor() > 4 && _game_mode != GM_EDITOR) return;
 
 	if (IsNonFloodingWaterTile(tile)) return;
 

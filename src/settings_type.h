@@ -887,6 +887,11 @@ struct GameSettings {
 	TimeSettings         game_time;          ///< time display settings.
 
 	OldEconomySettings   old_economy;
+
+	uint8_t EffectiveDayLengthFactor() const
+	{
+		return this->economy.day_length_factor;
+	}
 };
 
 /** All settings that are only important for the local client. */

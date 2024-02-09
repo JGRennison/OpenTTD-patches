@@ -14,6 +14,7 @@
 #include "../../command_type.h"
 #include "../../command_func.h"
 #include "../../economy_func.h"
+#include "../../date_func.h"
 
 #include <optional>
 
@@ -29,7 +30,7 @@ struct CargoScalingProxy {
 		uint64_t scale = this->is_industry ? _settings_game.economy.industry_cargo_scale : _settings_game.economy.town_cargo_scale;
 		CargoScalingMode mode = this->is_industry ? _settings_game.economy.industry_cargo_scale_mode : _settings_game.economy.town_cargo_scale_mode;
 		if (mode == CSM_DAYLENGTH) {
-			scale *= _settings_game.economy.day_length_factor;
+			scale *= DayLengthFactor();
 		}
 		return PercentageToScaleQuantityFactor(scale);
 	}

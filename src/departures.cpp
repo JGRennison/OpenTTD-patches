@@ -887,6 +887,6 @@ Ticks GetDeparturesMaxTicksAhead()
 	if (_settings_time.time_in_minutes) {
 		return _settings_client.gui.max_departure_time_minutes * _settings_time.ticks_per_minute;
 	} else {
-		return _settings_client.gui.max_departure_time * DAY_TICKS * _settings_game.economy.day_length_factor;
+		return _settings_client.gui.max_departure_time * DAY_TICKS * DayLengthFactor();
 	}
 }

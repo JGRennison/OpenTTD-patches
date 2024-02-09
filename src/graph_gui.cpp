@@ -1214,16 +1214,16 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 			val *= 74;
 			val /= _settings_time.ticks_per_minute;
 		} else {
-			if ((10 % _settings_game.economy.day_length_factor) == 0) {
+			if ((10 % DayLengthFactor()) == 0) {
 				decimals = 0;
-			} else if (_settings_game.economy.day_length_factor > 50) {
+			} else if (DayLengthFactor() > 50) {
 				decimals = 2;
 				val *= 100;
 			} else {
 				decimals = 1;
 				val *= 10;
 			}
-			val /= _settings_game.economy.day_length_factor;
+			val /= DayLengthFactor();
 		}
 		return { val, decimals };
 	}

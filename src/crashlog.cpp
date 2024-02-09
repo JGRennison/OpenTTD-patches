@@ -559,7 +559,7 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last)
 	buffer = this->TryCrashLogFaultSection(buffer, last, "times", [](CrashLog *self, char *buffer, const char *last) -> char * {
 		buffer += UTCTime::Format(buffer, last, "Crash at: %Y-%m-%d %H:%M:%S (UTC)\n");
 
-		buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u)\n", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, _settings_game.economy.day_length_factor);
+		buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u)\n", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, DayLengthFactor());
 		LogGameLoadDateTimes(buffer, last);
 		return buffer;
 	});
@@ -677,7 +677,7 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 	extern uint32_t _frame_counter;
 
 	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u), %08X\n",
-			_cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, _settings_game.economy.day_length_factor, _frame_counter);
+			_cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, DayLengthFactor(), _frame_counter);
 	LogGameLoadDateTimes(buffer, last);
 	if (!_network_server) {
 		extern Date   _last_sync_date;
@@ -738,7 +738,7 @@ char *CrashLog::FillInconsistencyLog(char *buffer, const char *last, const Incon
 	extern uint32_t _frame_counter;
 
 	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u), %08X\n",
-			_cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, _settings_game.economy.day_length_factor, _frame_counter);
+			_cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, DayLengthFactor(), _frame_counter);
 	LogGameLoadDateTimes(buffer, last);
 	if (_networking && !_network_server) {
 		extern Date   _last_sync_date;

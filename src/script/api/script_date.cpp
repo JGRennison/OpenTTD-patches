@@ -30,7 +30,7 @@
 
 /* static */ SQInteger ScriptDate::GetDayLengthFactor()
 {
-	return _settings_game.economy.day_length_factor;
+	return DayLengthFactor();
 }
 
 /* static */ SQInteger ScriptDate::GetYear(ScriptDate::Date date)

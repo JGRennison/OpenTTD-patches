@@ -315,7 +315,7 @@ uint Engine::DetermineCapacity(const Vehicle *v, uint16_t *mail_capacity) const
  */
 Money Engine::GetDisplayRunningCost() const
 {
-	return this->GetRunningCost() * _settings_game.economy.day_length_factor;
+	return this->GetRunningCost() * DayLengthFactor();
 }
 
 /**

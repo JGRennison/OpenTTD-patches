@@ -35,6 +35,7 @@ uint8_t _tick_skip_counter;                ///< Counter for ticks, when only veh
 uint64_t _scaled_tick_counter;             ///< Tick counter in daylength-scaled ticks
 StateTicks _state_ticks;                   ///< Current state tick
 StateTicksDelta _state_ticks_offset;       ///< Offset to add when calculating a StateTicks value from a date/date fract/tick skip counter
+uint8_t _effective_day_length;             ///< Current effective day length
 uint32_t    _quit_after_days;              ///< Quit after this many days of run time
 
 extern void ClearOutOfDateSignalSpeedRestrictions();
@@ -87,12 +88,17 @@ void SetDate(Date date, DateFract fract)
 
 StateTicks GetStateTicksFromCurrentDateWithoutOffset()
 {
-	return ((int64_t)(DateToDateTicks(_date, _date_fract).base()) * _settings_game.economy.day_length_factor) + _tick_skip_counter;
+	return ((int64_t)(DateToDateTicks(_date, _date_fract).base()) * DayLengthFactor()) + _tick_skip_counter;
 }
 
 void RecalculateStateTicksOffset()
 {
 	_state_ticks_offset = _state_ticks - GetStateTicksFromCurrentDateWithoutOffset();
+}
+
+void UpdateEffectiveDayLengthFactor()
+{
+	_effective_day_length = _settings_game.EffectiveDayLengthFactor();
 }
 
 #define M(a, b) ((a << 5) | b)

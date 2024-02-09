@@ -595,7 +595,7 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 						SetDParam(1, time / _settings_time.ticks_per_minute);
 						GetString(builder, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL);
 					} else {
-						SetDParam(0, time / (DAY_TICKS * _settings_game.economy.day_length_factor));
+						SetDParam(0, time / (DAY_TICKS * DayLengthFactor()));
 						GetString(builder, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION);
 					}
 				}

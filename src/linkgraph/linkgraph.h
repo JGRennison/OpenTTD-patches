@@ -365,7 +365,7 @@ public:
 	 */
 	inline uint Monthly(uint base) const
 	{
-		return (uint)((static_cast<uint64_t>(base) * 30 * DAY_TICKS * _settings_game.economy.day_length_factor) / std::max<uint64_t>((_state_ticks - this->last_compression).base(), DAY_TICKS));
+		return (uint)((static_cast<uint64_t>(base) * 30 * DAY_TICKS * DayLengthFactor()) / std::max<uint64_t>((_state_ticks - this->last_compression).base(), DAY_TICKS));
 	}
 
 	NodeID AddNode(const Station *st);

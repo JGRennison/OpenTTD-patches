@@ -733,10 +733,10 @@ static std::vector<uint> _tile_loop_counts;
 
 void SetupTileLoopCounts()
 {
-	_tile_loop_counts.resize(_settings_game.economy.day_length_factor);
-	if (_settings_game.economy.day_length_factor == 0) return;
+	_tile_loop_counts.resize(DayLengthFactor());
+	if (DayLengthFactor() == 0) return;
 
-	uint64_t count_per_tick_fp16 = (static_cast<uint64_t>(1) << (MapLogX() + MapLogY() + 8)) / _settings_game.economy.day_length_factor;
+	uint64_t count_per_tick_fp16 = (static_cast<uint64_t>(1) << (MapLogX() + MapLogY() + 8)) / DayLengthFactor();
 	uint64_t accumulator = 0;
 	for (uint &count : _tile_loop_counts) {
 		accumulator += count_per_tick_fp16;
@@ -753,7 +753,7 @@ void RunTileLoop(bool apply_day_length)
 {
 	/* We update every tile every 256 ticks, so divide the map size by 2^8 = 256 */
 	uint count;
-	if (apply_day_length && _settings_game.economy.day_length_factor > 1) {
+	if (apply_day_length && DayLengthFactor() > 1) {
 		count = _tile_loop_counts[_tick_skip_counter];
 		if (count == 0) return;
 	} else {
@@ -795,7 +795,7 @@ void RunTileLoop(bool apply_day_length)
 void RunAuxiliaryTileLoop()
 {
 	/* At day lengths <= 4, flooding is handled by main tile loop */
-	if (_settings_game.economy.day_length_factor <= 4 || (_scaled_tick_counter % 4) != 0) return;
+	if (DayLengthFactor() <= 4 || (_scaled_tick_counter % 4) != 0) return;
 
 	PerformanceAccumulator framerate(PFE_GL_LANDSCAPE);
 
