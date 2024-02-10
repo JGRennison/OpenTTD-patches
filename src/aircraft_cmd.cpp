@@ -1005,12 +1005,12 @@ static bool AircraftController(Aircraft *v)
 		int z = GetSlopePixelZ(x, y) + 1 + afc->delta_z;
 
 		if (z == v->z_pos) {
+			v->UpdatePosition();
 			Vehicle *u = v->Next()->Next();
 
 			/*  Increase speed of rotors. When speed is 80, we've landed. */
 			if (u->cur_speed >= 80) {
 				ClrBit(v->flags, VAF_HELI_DIRECT_DESCENT);
-				v->UpdatePosition();
 				return true;
 			}
 			u->cur_speed += 4;

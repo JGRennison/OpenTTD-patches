@@ -1218,6 +1218,9 @@ bool AfterLoadGame()
 	/* Force the freeform edges to false for old savegames. */
 	if (IsSavegameVersionBefore(SLV_111)) {
 		_settings_game.construction.freeform_edges = false;
+		for (Vehicle *v : Vehicle::Iterate()) {
+			if (v->tile == 0) v->UpdatePosition();
+		}
 	}
 
 	/* From version 9.0, we update the max passengers of a town (was sometimes negative
@@ -2960,10 +2963,12 @@ bool AfterLoadGame()
 			if (dir == vdir) { // Entering tunnel
 				hidden = frame >= _tunnel_visibility_frame[dir];
 				v->tile = vtile;
+				v->UpdatePosition();
 			} else if (dir == ReverseDiagDir(vdir)) { // Leaving tunnel
 				hidden = frame < TILE_SIZE - _tunnel_visibility_frame[dir];
 				/* v->tile changes at the moment when the vehicle leaves the tunnel. */
 				v->tile = hidden ? GetOtherTunnelBridgeEndOld(vtile) : vtile;
+				v->UpdatePosition();
 			} else {
 				/* We could get here in two cases:
 				 * - for road vehicles, it is reversing at the end of the tunnel

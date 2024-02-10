@@ -1678,6 +1678,9 @@ static void UpdateFreeformEdges(int32_t new_value)
 			MakeSea(TileXY(0, i));
 		}
 	}
+	for (Vehicle *v : Vehicle::Iterate()) {
+		if (v->tile == 0) v->UpdatePosition();
+	}
 	MarkWholeScreenDirty();
 }
 
