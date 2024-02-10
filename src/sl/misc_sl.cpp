@@ -83,90 +83,98 @@ void ResetViewportAfterLoadGame()
 byte _age_cargo_skip_counter; ///< Skip aging of cargo? Used before savegame version 162.
 extern TimeoutTimer<TimerGameTick> _new_competitor_timeout;
 
-static const SaveLoad _date_desc[] = {
-	SLEG_CONDVAR(_date,                   SLE_FILE_U16 | SLE_VAR_I32,  SL_MIN_VERSION,  SLV_31),
-	SLEG_CONDVAR(_date,                   SLE_INT32,                  SLV_31, SL_MAX_VERSION),
-	    SLEG_VAR(_date_fract,             SLE_UINT16),
-	SLEG_CONDVAR_X(_tick_counter,         SLE_FILE_U16 | SLE_VAR_U64,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_U64_TICK_COUNTER, 0, 0)),
-	SLEG_CONDVAR_X(_tick_counter,         SLE_UINT64,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_U64_TICK_COUNTER)),
-	SLEG_CONDVAR_X(_tick_skip_counter,    SLE_UINT8,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH)),
-	SLEG_CONDVAR_X(_scaled_tick_counter,  SLE_UINT64,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 3)),
-	SLEG_CONDVAR_X(_state_ticks_offset,   SLE_INT64,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 3, 3)),
-	SLEG_CONDVAR_X(_state_ticks,          SLE_INT64,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 4)),
-	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_157), // _vehicle_id_ctr_day
-	SLEG_CONDVAR(_age_cargo_skip_counter, SLE_UINT8,                   SL_MIN_VERSION, SLV_162),
-	SLE_CONDNULL(1, SL_MIN_VERSION, SLV_46),
-	SLEG_CONDVAR(_cur_tileloop_tile,      SLE_FILE_U16 | SLE_VAR_U32,  SL_MIN_VERSION, SLV_6),
-	SLEG_CONDVAR(_cur_tileloop_tile,      SLE_UINT32,                  SLV_6, SL_MAX_VERSION),
-	    SLEG_VAR(_disaster_delay,         SLE_UINT16),
-	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_120),
-	    SLEG_VAR(_random.state[0],        SLE_UINT32),
-	    SLEG_VAR(_random.state[1],        SLE_UINT32),
-	SLEG_CONDVAR_X(_state_checksum.state, SLE_UINT64,         SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_STATE_CHECKSUM)),
-	SLE_CONDNULL(1,  SL_MIN_VERSION,  SLV_10),
-	SLE_CONDNULL(4, SLV_10, SLV_120),
-	    SLEG_VAR(_cur_company_tick_index, SLE_FILE_U8  | SLE_VAR_U32),
-	SLEG_CONDVAR(_new_competitor_timeout.period,  SLE_FILE_U16 | SLE_VAR_U32,  SL_MIN_VERSION, SLV_109),
-	SLEG_CONDVAR_X(_new_competitor_timeout.period,  SLE_UINT32,                SLV_109, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AI_START_DATE, 0, 0)),
-	    SLEG_VAR(_trees_tick_ctr,         SLE_UINT8),
-	SLEG_CONDVAR(_pause_mode,             SLE_UINT8,                   SLV_4, SL_MAX_VERSION),
-	SLEG_CONDVAR_X(_game_events_overall,  SLE_UINT32,         SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_GAME_EVENTS)),
-	SLEG_CONDVAR_X(_road_layout_change_counter, SLE_UINT32,   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ROAD_LAYOUT_CHANGE_CTR)),
-	SLE_CONDNULL_X(1, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 4, 6)), // _extra_aspects
-	SLEG_CONDVAR_X(_aspect_cfg_hash,      SLE_UINT64,         SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 7)),
-	SLEG_CONDVAR_X(_aux_tileloop_tile,    SLE_UINT32,         SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AUX_TILE_LOOP)),
-	SLE_CONDNULL(4, SLV_11, SLV_120),
-	SLEG_CONDVAR_X(_new_competitor_timeout.period,          SLE_UINT32,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AI_START_DATE)),
-	SLEG_CONDVAR_X(_new_competitor_timeout.storage.elapsed, SLE_UINT32,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AI_START_DATE)),
-	SLEG_CONDVAR_X(_new_competitor_timeout.fired,           SLE_BOOL,                    SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AI_START_DATE)),
+static const NamedSaveLoad _date_desc[] = {
+	NSL("",                             SLEG_CONDVAR(_date,                     SLE_FILE_U16 | SLE_VAR_I32, SL_MIN_VERSION,         SLV_31)),
+	NSL("date",                         SLEG_CONDVAR(_date,                                      SLE_INT32,         SLV_31, SL_MAX_VERSION)),
+	NSL("date_fract",                   SLEG_VAR(_date_fract,                                   SLE_UINT16)),
+	NSL("",                             SLEG_CONDVAR_X(_tick_counter,           SLE_FILE_U16 | SLE_VAR_U64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_U64_TICK_COUNTER, 0, 0))),
+	NSL("tick_counter",                 SLEG_CONDVAR_X(_tick_counter,                           SLE_UINT64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_U64_TICK_COUNTER))),
+	NSL("tick_skip_counter",            SLEG_CONDVAR_X(_tick_skip_counter,                       SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH))),
+	NSL("scaled_tick_counter",          SLEG_CONDVAR_X(_scaled_tick_counter,                    SLE_UINT64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 3))),
+	NSL("",                             SLEG_CONDVAR_X(_state_ticks_offset,                      SLE_INT64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 3, 3))),
+	NSL("state_ticks",                  SLEG_CONDVAR_X(_state_ticks,                             SLE_INT64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 4))),
+	NSL("",                             SLE_CONDNULL(2,                                                     SL_MIN_VERSION,        SLV_157)), // _vehicle_id_ctr_day
+	NSL("",                             SLEG_CONDVAR(_age_cargo_skip_counter,                    SLE_UINT8, SL_MIN_VERSION,        SLV_162)),
+	NSL("",                             SLE_CONDNULL(1,                                                     SL_MIN_VERSION,         SLV_46)),
+	NSL("",                             SLEG_CONDVAR(_cur_tileloop_tile,        SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION,          SLV_6)),
+	NSL("cur_tileloop_tile",            SLEG_CONDVAR(_cur_tileloop_tile,                        SLE_UINT32,          SLV_6, SL_MAX_VERSION)),
+	NSL("next_disaster_start",          SLEG_VAR(_disaster_delay,                               SLE_UINT16)),
+	NSL("",                             SLE_CONDNULL(2,                                                     SL_MIN_VERSION,        SLV_120)),
+	NSL("random_state[0]",              SLEG_VAR(_random.state[0],                              SLE_UINT32)),
+	NSL("random_state[1]",              SLEG_VAR(_random.state[1],                              SLE_UINT32)),
+	NSL("state_checksum",               SLEG_CONDVAR_X(_state_checksum.state,                   SLE_UINT64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_STATE_CHECKSUM))),
+	NSL("",                             SLE_CONDNULL(1,                                                     SL_MIN_VERSION,         SLV_10)),
+	NSL("",                             SLE_CONDNULL(4,                                                             SLV_10,        SLV_120)),
+	NSL("company_tick_counter",         SLEG_VAR(_cur_company_tick_index,       SLE_FILE_U8  | SLE_VAR_U32)),
+	NSL("",                             SLEG_CONDVAR(_new_competitor_timeout.period, SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION,   SLV_109)),
+	NSL("",                             SLEG_CONDVAR_X(_new_competitor_timeout.period,          SLE_UINT32,        SLV_109, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AI_START_DATE, 0, 0))),
+	NSL("trees_tick_counter",           SLEG_VAR(_trees_tick_ctr,                                SLE_UINT8)),
+	NSL("pause_mode",                   SLEG_CONDVAR(_pause_mode,                                SLE_UINT8,          SLV_4, SL_MAX_VERSION)),
+	NSL("game_events_overall",          SLEG_CONDVAR_X(_game_events_overall,                    SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_GAME_EVENTS))),
+	NSL("road_layout_change_counter",   SLEG_CONDVAR_X(_road_layout_change_counter,             SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ROAD_LAYOUT_CHANGE_CTR))),
+	NSL("",                             SLE_CONDNULL_X(1,                                                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 4, 6))), // _extra_aspects
+	NSL("aspect_cfg_hash",              SLEG_CONDVAR_X(_aspect_cfg_hash,                        SLE_UINT64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 7))),
+	NSL("aux_tileloop_tile",            SLEG_CONDVAR_X(_aux_tileloop_tile,                      SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AUX_TILE_LOOP))),
+	NSL("",                             SLE_CONDNULL(4,                                                             SLV_11,        SLV_120)),
+	NSL("competitors_interval",         SLEG_CONDVAR_X(_new_competitor_timeout.period,          SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AI_START_DATE))),
+	NSL("competitors_interval_elapsed", SLEG_CONDVAR_X(_new_competitor_timeout.storage.elapsed, SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AI_START_DATE))),
+	NSL("competitors_interval_fired",   SLEG_CONDVAR_X(_new_competitor_timeout.fired,             SLE_BOOL, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AI_START_DATE))),
+
+	/* New (table only) fields below */
+	NSLT("id",                          SLEG_CONDSSTR_X(_savegame_id,                              SLE_STR, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SAVEGAME_ID))),
 };
 
-static const SaveLoad _date_check_desc[] = {
-	SLEG_CONDVAR(_load_check_data.current_date,  SLE_FILE_U16 | SLE_VAR_I32,  SL_MIN_VERSION,  SLV_31),
-	SLEG_CONDVAR(_load_check_data.current_date,  SLE_INT32,                  SLV_31, SL_MAX_VERSION),
-	    SLE_NULL(2),                       // _date_fract
-	SLE_CONDNULL_X(2, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_U64_TICK_COUNTER, 0, 0)), // _tick_counter
-	SLE_CONDNULL_X(8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_U64_TICK_COUNTER)),       // _tick_counter
-	SLE_CONDNULL_X(1, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH)), // _tick_skip_counter
-	SLE_CONDNULL_X(8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 3)), // _scaled_tick_counter
-	SLE_CONDNULL_X(8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 3, 3)), // _state_ticks_offset
-	SLE_CONDNULL_X(8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 4)), // _state_ticks
-	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_157),               // _vehicle_id_ctr_day
-	SLE_CONDNULL(1, SL_MIN_VERSION, SLV_162),               // _age_cargo_skip_counter
-	SLE_CONDNULL(1, SL_MIN_VERSION, SLV_46),
-	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_6),                 // _cur_tileloop_tile
-	SLE_CONDNULL(4, SLV_6, SL_MAX_VERSION),    // _cur_tileloop_tile
-	    SLE_NULL(2),                       // _disaster_delay
-	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_120),
-	    SLE_NULL(4),                       // _random.state[0]
-	    SLE_NULL(4),                       // _random.state[1]
-	SLE_CONDNULL_X(8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_STATE_CHECKSUM)), // _state_checksum.state
-	SLE_CONDNULL(1,  SL_MIN_VERSION,  SLV_10),
-	SLE_CONDNULL(4, SLV_10, SLV_120),
-	    SLE_NULL(1),                       // _cur_company_tick_index
-	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_109),                                                           // _new_competitor_timeout.period
-	SLE_CONDNULL_X(4, SLV_109, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AI_START_DATE, 0, 0)), // _new_competitor_timeout.period
-	    SLE_NULL(1),                       // _trees_tick_ctr
-	SLE_CONDNULL(1, SLV_4, SL_MAX_VERSION),    // _pause_mode
-	SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_GAME_EVENTS)), // _game_events_overall
-	SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ROAD_LAYOUT_CHANGE_CTR)), // _road_layout_change_counter
-	SLE_CONDNULL_X(1, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 4, 6)), // _extra_aspects
-	SLE_CONDNULL_X(8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 7)), // _aspect_cfg_hash
-	SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AUX_TILE_LOOP)), // _aux_tileloop_tile
-	SLE_CONDNULL(4, SLV_11, SLV_120),
-	SLE_CONDNULL_X(9, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AI_START_DATE)), // _new_competitor_timeout
+static const NamedSaveLoad _date_check_desc[] = {
+	NSL("date", SLEG_CONDVAR(_load_check_data.current_date,  SLE_FILE_U16 | SLE_VAR_I32,  SL_MIN_VERSION,  SLV_31)),
+	NSL("date", SLEG_CONDVAR(_load_check_data.current_date,  SLE_INT32,                  SLV_31, SL_MAX_VERSION)),
+	NSL("",         SLE_NULL(2)),                       // _date_fract
+	NSL("",     SLE_CONDNULL_X(2, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_U64_TICK_COUNTER, 0, 0))), // _tick_counter
+	NSL("",     SLE_CONDNULL_X(8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_U64_TICK_COUNTER))),       // _tick_counter
+	NSL("",     SLE_CONDNULL_X(1, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH))), // _tick_skip_counter
+	NSL("",     SLE_CONDNULL_X(8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 3))), // _scaled_tick_counter
+	NSL("",     SLE_CONDNULL_X(8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 3, 3))), // _state_ticks_offset
+	NSL("",     SLE_CONDNULL_X(8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 4))), // _state_ticks
+	NSL("",     SLE_CONDNULL(2, SL_MIN_VERSION, SLV_157)),               // _vehicle_id_ctr_day
+	NSL("",     SLE_CONDNULL(1, SL_MIN_VERSION, SLV_162)),               // _age_cargo_skip_counter
+	NSL("",     SLE_CONDNULL(1, SL_MIN_VERSION, SLV_46)),
+	NSL("",     SLE_CONDNULL(2, SL_MIN_VERSION, SLV_6)),                 // _cur_tileloop_tile
+	NSL("",     SLE_CONDNULL(4, SLV_6, SL_MAX_VERSION)),    // _cur_tileloop_tile
+	NSL("",         SLE_NULL(2)),                       // _disaster_delay
+	NSL("",     SLE_CONDNULL(2, SL_MIN_VERSION, SLV_120)),
+	NSL("",         SLE_NULL(4)),                       // _random.state[0]
+	NSL("",         SLE_NULL(4)),                       // _random.state[1]
+	NSL("",   SLE_CONDNULL_X(8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_STATE_CHECKSUM))), // _state_checksum.state
+	NSL("",     SLE_CONDNULL(1,  SL_MIN_VERSION,  SLV_10)),
+	NSL("",     SLE_CONDNULL(4, SLV_10, SLV_120)),
+	NSL("",         SLE_NULL(1)),                       // _cur_company_tick_index
+	NSL("",     SLE_CONDNULL(2, SL_MIN_VERSION, SLV_109)),                                                           // _new_competitor_timeout.period
+	NSL("",     SLE_CONDNULL_X(4, SLV_109, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AI_START_DATE, 0, 0))), // _new_competitor_timeout.period
+	NSL("",         SLE_NULL(1)),                       // _trees_tick_ctr
+	NSL("",     SLE_CONDNULL(1, SLV_4, SL_MAX_VERSION)),    // _pause_mode
+	NSL("",     SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_GAME_EVENTS))), // _game_events_overall
+	NSL("",     SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ROAD_LAYOUT_CHANGE_CTR))), // _road_layout_change_counter
+	NSL("",     SLE_CONDNULL_X(1, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 4, 6))), // _extra_aspects
+	NSL("",     SLE_CONDNULL_X(8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 7))), // _aspect_cfg_hash
+	NSL("",     SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AUX_TILE_LOOP))), // _aux_tileloop_tile
+	NSL("",     SLE_CONDNULL(4, SLV_11, SLV_120)),
+	NSL("",     SLE_CONDNULL_X(9, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AI_START_DATE))), // _new_competitor_timeout
 };
 
 /* Save load date related variables as well as persistent tick counters
  * XXX: currently some unrelated stuff is just put here */
-static void SaveLoad_DATE()
+static void Save_DATE()
 {
-	SlGlobList(_date_desc);
+	SlSaveTableObjectChunk(_date_desc);
+}
+
+static void Load_DATE()
+{
+	SlLoadTableOrRiffFiltered(_date_desc);
 }
 
 static void Check_DATE()
 {
-	SlGlobList(_date_check_desc);
+	SlLoadTableOrRiffFiltered(_date_check_desc);
 	if (IsSavegameVersionBefore(SLV_31)) {
 		_load_check_data.current_date += DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
 	}
@@ -181,7 +189,7 @@ static const SaveLoad _view_desc[] = {
 	    SLEG_VAR(_saved_scrollpos_zoom, SLE_UINT8),
 };
 
-static void SaveLoad_VIEW()
+static void Load_VIEW()
 {
 	SlGlobList(_view_desc);
 }
@@ -190,15 +198,15 @@ static const SaveLoad _misc_desc[] = {
 	SLEG_CONDSSTR_X(_savegame_id, SLE_STR, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SAVEGAME_ID)),
 };
 
-static void SaveLoad_MISC()
+static void Load_MISC()
 {
 	SlGlobList(_misc_desc);
 }
 
 static const ChunkHandler misc_chunk_handlers[] = {
-	{ 'DATE', SaveLoad_DATE, SaveLoad_DATE, nullptr, Check_DATE, CH_RIFF },
-	{ 'VIEW', SaveLoad_VIEW, SaveLoad_VIEW, nullptr, nullptr,    CH_RIFF },
-	{ 'MISC', SaveLoad_MISC, SaveLoad_MISC, nullptr, nullptr,    CH_RIFF },
+	{ 'DATE', Save_DATE, Load_DATE, nullptr, Check_DATE, CH_TABLE },
+	MakeSaveUpstreamFeatureConditionalLoadUpstreamChunkHandler<'VIEW', XSLFI_TABLE_MISC_SL>(Load_VIEW, nullptr, nullptr),
+	{ 'MISC', nullptr, Load_MISC, nullptr, nullptr, CH_UNUSED },
 };
 
 extern const ChunkHandlerTable _misc_chunk_handlers(misc_chunk_handlers);

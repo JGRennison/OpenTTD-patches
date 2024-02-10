@@ -210,6 +210,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_CARGO_TRAVELLED,                  XSCF_NULL,                1,   1, "slv_cargo_travelled",              nullptr, nullptr, nullptr          },
 
 	{ XSLFI_TABLE_PATS,                       XSCF_NULL,                1,   1, "table_pats",                       nullptr, nullptr, nullptr          },
+	{ XSLFI_TABLE_MISC_SL,                    XSCF_NULL,                1,   1, "table_misc_sl",                    nullptr, nullptr, nullptr          },
 
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr }, // This is the end marker
 };

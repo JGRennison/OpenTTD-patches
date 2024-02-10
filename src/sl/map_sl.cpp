@@ -26,21 +26,21 @@ static uint32_t _map_dim_y;
 
 extern bool _sl_maybe_chillpp;
 
-static const SaveLoad _map_dimensions[] = {
-	SLEG_CONDVAR(_map_dim_x, SLE_UINT32, SLV_6, SL_MAX_VERSION),
-	SLEG_CONDVAR(_map_dim_y, SLE_UINT32, SLV_6, SL_MAX_VERSION),
+static const NamedSaveLoad _map_dimensions[] = {
+	NSL("dim_x", SLEG_CONDVAR(_map_dim_x, SLE_UINT32, SLV_6, SL_MAX_VERSION)),
+	NSL("dim_y", SLEG_CONDVAR(_map_dim_y, SLE_UINT32, SLV_6, SL_MAX_VERSION)),
 };
 
 static void Save_MAPS()
 {
 	_map_dim_x = MapSizeX();
 	_map_dim_y = MapSizeY();
-	SlGlobList(_map_dimensions);
+	SlSaveTableObjectChunk(_map_dimensions);
 }
 
 static void Load_MAPS()
 {
-	SlGlobList(_map_dimensions);
+	SlLoadTableOrRiffFiltered(_map_dimensions);
 	if (!ValidateMapSize(_map_dim_x, _map_dim_y)) {
 		SlErrorCorruptFmt("Invalid map size: %u x %u", _map_dim_x, _map_dim_y);
 	}
@@ -49,7 +49,7 @@ static void Load_MAPS()
 
 static void Check_MAPS()
 {
-	SlGlobList(_map_dimensions);
+	SlLoadTableOrRiffFiltered(_map_dimensions);
 	_load_check_data.map_size_x = _map_dim_x;
 	_load_check_data.map_size_y = _map_dim_y;
 }
@@ -404,7 +404,7 @@ static ChunkSaveLoadSpecialOpResult Special_MAP_Chunks(uint32_t chunk_id, ChunkS
 }
 
 static const ChunkHandler map_chunk_handlers[] = {
-	{ 'MAPS', Save_MAPS,      Load_MAPS, nullptr, Check_MAPS, CH_RIFF },
+	{ 'MAPS', Save_MAPS,      Load_MAPS, nullptr, Check_MAPS, CH_TABLE },
 	{ 'MAPT', Save_MAP<MAPT>, Load_MAPT, nullptr, nullptr,    CH_RIFF, Special_MAP_Chunks },
 	{ 'MAPH', Save_MAP<MAPH>, Load_MAPH, nullptr, Check_MAPH, CH_RIFF, Special_MAP_Chunks },
 	{ 'MAPO', Save_MAP<MAP1>, Load_MAP1, nullptr, nullptr,    CH_RIFF, Special_MAP_Chunks },
