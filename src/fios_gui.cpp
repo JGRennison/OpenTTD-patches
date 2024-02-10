@@ -801,8 +801,12 @@ public:
 						std::string caption = GetString(STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_VERSION_SUFFIX);
 
 						SetDParam(0, STR_SAVELOAD_OVERWRITE_WARNING);
-						SetDParam(1, (version != nullptr) ? STR_SAVELOAD_OVERWRITE_WARNING_VERSION_NAME : STR_EMPTY);
-						SetDParamStr(2, version);
+						if (version != nullptr) {
+							SetDParam(1, STR_SAVELOAD_OVERWRITE_WARNING_VERSION_NAME);
+							SetDParamStr(2, version);
+						 } else {
+							SetDParam(1, STR_EMPTY);
+						 }
 						std::string message = GetString(STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_VERSION_SUFFIX);
 
 						ShowQuery(std::move(caption), std::move(message), this, SaveLoadWindow::SaveGameConfirmationCallback);
