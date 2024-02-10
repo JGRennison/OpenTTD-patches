@@ -187,7 +187,7 @@ static void SaveLoad_VIEW()
 }
 
 static const SaveLoad _misc_desc[] = {
-	SLEG_CONDSSTR_X(_savegame_id, 0,                     SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SAVEGAME_ID)),
+	SLEG_CONDSSTR_X(_savegame_id, SLE_STR, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SAVEGAME_ID)),
 };
 
 static void SaveLoad_MISC()

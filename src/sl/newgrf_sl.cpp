@@ -75,7 +75,7 @@ static const SaveLoad _grfconfig_desc[] = {
 	    SLE_ARR(GRFConfig, param,            SLE_UINT32, 0x80),
 	    SLE_VAR(GRFConfig, num_params,       SLE_UINT8),
 	SLE_CONDVAR(GRFConfig, palette,          SLE_UINT8,  SLV_101, SL_MAX_VERSION),
-	SLEG_CONDSSTR_X(_grf_name, 0,                        SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_NEWGRF_INFO_EXTRA)),
+	SLEG_CONDSSTR_X(_grf_name,                 SLE_STR, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_NEWGRF_INFO_EXTRA)),
 };
 
 
