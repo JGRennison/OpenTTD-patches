@@ -133,6 +133,26 @@ void SlExecWithSlVersion(SaveLoadVersion use_version, F proc)
 	proc();
 }
 
+template <SlXvFeatureIndex feature, uint16_t min_version, uint16_t max_version>
+struct SaveUpstreamFeatureConditionalLoadUpstreamChunkInfo
+{
+	static SaveLoadVersion GetLoadVersion()
+	{
+		extern SaveLoadVersion _sl_xv_upstream_version;
+		return _sl_xv_upstream_version;
+	}
+
+	static bool SaveUpstream()
+	{
+		return true;
+	}
+
+	static bool LoadUpstream()
+	{
+		return SlXvIsFeaturePresent(feature, min_version, max_version);
+	}
+};
+
 namespace upstream_sl {
 	template <uint32_t id, typename F>
 	ChunkHandler MakeUpstreamChunkHandler()
@@ -220,10 +240,17 @@ namespace upstream_sl {
 		};
 		return ch;
 	}
+
+	template <uint32_t id, SlXvFeatureIndex feature, uint16_t min_version = 1, uint16_t max_version = 0xFFFF>
+	ChunkHandler MakeSaveUpstreamFeatureConditionalLoadUpstreamChunkHandler(ChunkSaveLoadProc *load_proc, ChunkSaveLoadProc *ptrs_proc, ChunkSaveLoadProc *load_check_proc)
+	{
+		return MakeConditionallyUpstreamChunkHandler<id, SaveUpstreamFeatureConditionalLoadUpstreamChunkInfo<feature, min_version, max_version>>(nullptr, load_proc, ptrs_proc, load_check_proc, CH_UNUSED);
+	}
 }
 
 using upstream_sl::MakeUpstreamChunkHandler;
 using upstream_sl::MakeConditionallyUpstreamChunkHandler;
+using upstream_sl::MakeSaveUpstreamFeatureConditionalLoadUpstreamChunkHandler;
 
 struct NullStruct {
 	byte null;

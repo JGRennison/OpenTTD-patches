@@ -3693,28 +3693,9 @@ static void Check_PATX()
 	LoadSettingsPatx(&_load_check_data.settings);
 }
 
-struct PATSChunkInfo
-{
-	static SaveLoadVersion GetLoadVersion()
-	{
-		extern SaveLoadVersion _sl_xv_upstream_version;
-		return _sl_xv_upstream_version;
-	}
-
-	static bool SaveUpstream()
-	{
-		return true;
-	}
-
-	static bool LoadUpstream()
-	{
-		return SlXvIsFeaturePresent(XSLFI_TABLE_PATS);
-	}
-};
-
 static const ChunkHandler setting_chunk_handlers[] = {
 	{ 'OPTS', nullptr,   Load_OPTS, nullptr, nullptr,    CH_RIFF },
-	MakeConditionallyUpstreamChunkHandler<'PATS', PATSChunkInfo>(nullptr, Load_PATS, nullptr, Check_PATS, CH_RIFF),
+	MakeSaveUpstreamFeatureConditionalLoadUpstreamChunkHandler<'PATS', XSLFI_TABLE_PATS>(Load_PATS, nullptr, Check_PATS),
 	{ 'PATX', nullptr,   Load_PATX, nullptr, Check_PATX, CH_RIFF },
 };
 
