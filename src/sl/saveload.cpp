@@ -229,6 +229,9 @@ struct SaveLoadParams {
 
 	size_t obj_len;                      ///< the length of the current object we are busy with
 	int array_index, last_array_index;   ///< in the case of an array, the current and last positions
+	bool expect_table_header;            ///< In the case of a table, if the header is saved/loaded.
+
+	uint32_t current_chunk_id;           ///< Current chunk ID
 
 	MemoryDumper *dumper;                ///< Memory dumper to write the savegame to.
 	SaveFilter *sf;                      ///< Filter to write the savegame to.
@@ -729,7 +732,7 @@ static inline byte SlCalcConvFileLen(VarType conv)
 {
 	uint8_t type = GetVarFileType(conv);
 	if (type == SLE_FILE_VEHORDERID) return SlXvIsFeaturePresent(XSLFI_MORE_VEHICLE_ORDERS) ? 2 : 1;
-	static const byte conv_file_size[] = {1, 1, 2, 2, 4, 4, 8, 8, 2};
+	static const byte conv_file_size[] = {0, 1, 1, 2, 2, 4, 4, 8, 8, 2};
 	assert(type < lengthof(conv_file_size));
 	return conv_file_size[type];
 }
@@ -766,6 +769,7 @@ int SlIterateArray()
 	for (;;) {
 		uint length = SlReadArrayLength();
 		if (length == 0) {
+			assert(!_sl.expect_table_header);
 			_next_offs = 0;
 			return -1;
 		}
@@ -773,9 +777,20 @@ int SlIterateArray()
 		_sl.obj_len = --length;
 		_next_offs = _sl.reader->GetSize() + length;
 
+		if (_sl.expect_table_header) {
+			_sl.expect_table_header = false;
+			return INT32_MAX;
+		}
+
 		switch (_sl.block_mode) {
-			case CH_SPARSE_ARRAY: index = (int)SlReadSparseIndex(); break;
-			case CH_ARRAY:        index = _sl.array_index++; break;
+			case CH_SPARSE_ARRAY:
+			case CH_SPARSE_TABLE:
+				index = (int)SlReadSparseIndex();
+				break;
+			case CH_ARRAY:
+			case CH_TABLE:
+				index = _sl.array_index++;
+				break;
 			default:
 				DEBUG(sl, 0, "SlIterateArray error");
 				return -1; // error
@@ -807,6 +822,12 @@ void SlSetLength(size_t length)
 	switch (_sl.need_length) {
 		case NL_WANTLENGTH:
 			_sl.need_length = NL_NONE;
+			if ((_sl.block_mode == CH_TABLE || _sl.block_mode == CH_SPARSE_TABLE) && _sl.expect_table_header) {
+				_sl.expect_table_header = false;
+				SlWriteArrayLength(length + 1);
+				break;
+			}
+
 			switch (_sl.block_mode) {
 				case CH_RIFF:
 					/* Ugly encoding of >16M RIFF chunks
@@ -829,6 +850,7 @@ void SlSetLength(size_t length)
 					}
 					break;
 				case CH_ARRAY:
+				case CH_TABLE:
 					assert(_sl.last_array_index <= _sl.array_index);
 					while (++_sl.last_array_index <= _sl.array_index) {
 						SlWriteArrayLength(1);
@@ -836,6 +858,7 @@ void SlSetLength(size_t length)
 					SlWriteArrayLength(length + 1);
 					break;
 				case CH_SPARSE_ARRAY:
+				case CH_SPARSE_TABLE:
 					SlWriteArrayLength(length + 1 + SlGetArrayLength(_sl.array_index)); // Also include length of sparse index.
 					SlWriteSparseIndex(_sl.array_index);
 					break;
@@ -1966,6 +1989,228 @@ void SlObjectPtrOrNullFiltered(void *object, const SaveLoadTable &slt)
 	}
 }
 
+bool SlIsTableChunk()
+{
+	return (_sl.block_mode == CH_TABLE || _sl.block_mode == CH_SPARSE_TABLE);
+}
+
+void SlSkipTableHeader()
+{
+	while (true) {
+		uint8_t type = SlReadByte();
+		if (type == SLE_FILE_END) break;
+
+		SlString(nullptr, 0, SLE_FILE_STRING | SLE_VAR_NULL);
+	}
+}
+
+/**
+ * Calculate the size of the table header.
+ * @param slt The SaveLoad table with objects to save/load.
+ * @return size of given object.
+ */
+static size_t SlCalcTableHeader(const NamedSaveLoadTable &slt)
+{
+	size_t length = 0;
+
+	for (auto &nsld : slt) {
+		if (StrEmpty(nsld.name) || !SlIsObjectValidInSavegame(nsld.save_load)) continue;
+
+		length += 1 + SlCalcStringLen(&nsld.name, 0, SLE_STR);
+	}
+
+	length++; // End-of-list entry.
+
+	/* SL_STRUCTLIST, SL_STRUCT not currently implemented */
+
+	return length;
+}
+
+/**
+ * Return the type as saved/loaded inside savegame tables.
+ */
+static uint8_t GetSavegameTableFileType(const SaveLoad &sld)
+{
+	switch (sld.cmd) {
+		case SL_VAR:
+			return GetVarFileType(sld.conv); break;
+
+		case SL_STR:
+		case SL_STDSTR:
+		case SL_ARR:
+		case SL_VARVEC:
+		case SL_RING:
+			return GetVarFileType(sld.conv) | SLE_FILE_HAS_LENGTH_FIELD; break;
+
+		case SL_REF:
+			return SLE_FILE_U32;
+
+		case SL_REFLIST:
+		case SL_PTRRING:
+		case SL_VEC:
+			return SLE_FILE_U32 | SLE_FILE_HAS_LENGTH_FIELD;
+
+		case SL_WRITEBYTE:
+			return SLE_FILE_U8;
+
+		default: NOT_REACHED();
+	}
+}
+
+/**
+ * Save or Load a table header.
+ * @note a table-header can never contain more than 65535 fields.
+ * @param slt The NamedSaveLoad table with objects to save/load.
+ * @return The ordered SaveLoad array to use.
+ */
+std::vector<SaveLoad> SlTableHeader(const NamedSaveLoadTable &slt)
+{
+	/* You can only use SlTableHeader if you are a CH_TABLE. */
+	assert(_sl.block_mode == CH_TABLE || _sl.block_mode == CH_SPARSE_TABLE);
+
+	std::vector<SaveLoad> saveloads;
+
+	switch (_sl.action) {
+		case SLA_LOAD_CHECK:
+		case SLA_LOAD: {
+			/* Build a key lookup mapping based on the available fields. */
+			struct key_item {
+				std::string_view name;
+				const SaveLoad *save_load;
+
+				bool operator==(const key_item &other) const { return this->name == other.name; }
+				bool operator<(const key_item &other) const { return this->name < other.name; }
+				bool operator==(const std::string_view &other) const { return this->name == other; }
+				bool operator<(const std::string_view &other) const { return this->name < other; }
+			};
+			std::vector<key_item> key_lookup;
+			key_lookup.reserve(slt.size());
+			for (auto &nsld : slt) {
+				if (StrEmpty(nsld.name) || !SlIsObjectValidInSavegame(nsld.save_load)) continue;
+
+				key_lookup.push_back({ nsld.name, &nsld.save_load });
+			}
+
+			std::sort(key_lookup.begin(), key_lookup.end());
+
+			/* Check that there is only one active SaveLoad for a given name. */
+			auto duplicate = std::adjacent_find(key_lookup.begin(), key_lookup.end());
+			assert_msg(duplicate == key_lookup.end(), "%s", duplicate->name.data());
+
+			while (true) {
+				uint8_t type = SlReadByte();
+				if (type == SLE_FILE_END) break;
+
+				if ((type & SLE_FILE_TYPE_MASK) >= SLE_FILE_TABLE_END || (type & SLE_FILE_TYPE_MASK) == SLE_FILE_END) {
+					SlErrorCorruptFmt("Invalid table field type: 0x%X", type);
+				}
+
+				std::string key;
+				SlStdString(key, SLE_STR);
+
+				auto sld_it = std::lower_bound(key_lookup.begin(), key_lookup.end(), key);
+				if (sld_it == key_lookup.end() || sld_it->name != key) {
+					/* SLA_LOADCHECK triggers this debug statement a lot and is perfectly normal. */
+					DEBUG(sl, _sl.action == SLA_LOAD ? 2 : 6, "Field '%s' of type 0x%02X not found, skipping", key.c_str(), type);
+
+					SaveLoadType saveload_type;
+					switch (type & SLE_FILE_TYPE_MASK) {
+						case SLE_FILE_STRING:
+							/* Strings are always marked with SLE_FILE_HAS_LENGTH_FIELD, as they are a list of chars. */
+							saveload_type = SL_STDSTR;
+							break;
+
+						case SLE_FILE_STRUCT:
+							SlErrorCorrupt("SLE_FILE_STRUCT not supported yet");
+							break;
+
+						default:
+							saveload_type = (type & SLE_FILE_HAS_LENGTH_FIELD) ? SL_ARR : SL_VAR;
+							break;
+					}
+
+					/* We don't know this field, so read to nothing. */
+					saveloads.push_back({ true, saveload_type, ((VarType)type & SLE_FILE_TYPE_MASK) | SLE_VAR_NULL, 1, SL_MIN_VERSION, SL_MAX_VERSION, nullptr, 0, SlXvFeatureTest() });
+					continue;
+				}
+
+				/* Validate the type of the field. If it is changed, the
+				 * savegame should have been bumped so we know how to do the
+				 * conversion. If this error triggers, that clearly didn't
+				 * happen and this is a friendly poke to the developer to bump
+				 * the savegame version and add conversion code. */
+				uint8_t correct_type = GetSavegameTableFileType(*sld_it->save_load);
+				if (correct_type != type) {
+					DEBUG(sl, 1, "Field type for '%s' was expected to be 0x%02X but 0x%02X was found", key.c_str(), correct_type, type);
+					SlErrorCorrupt("Field type is different than expected");
+				}
+				saveloads.push_back(*sld_it->save_load);
+			}
+
+			/* SL_STRUCTLIST, SL_STRUCT not currently implemented */
+
+			break;
+		}
+
+		case SLA_SAVE: {
+			/* Automatically calculate the length? */
+			if (_sl.need_length != NL_NONE) {
+				SlSetLength(SlCalcTableHeader(slt));
+			}
+
+			for (auto &nsld : slt) {
+				if (StrEmpty(nsld.name) || !SlIsObjectValidInSavegame(nsld.save_load)) continue;
+
+				uint8_t type = GetSavegameTableFileType(nsld.save_load);
+				assert(type != SLE_FILE_END);
+				SlWriteByte(type);
+				SlString(const_cast<char **>(&nsld.name), 0, SLE_STR);
+
+				saveloads.push_back(nsld.save_load);
+			}
+
+			/* Add an end-of-header marker. */
+			SlWriteByte(SLE_FILE_END);
+
+			/* SL_STRUCTLIST, SL_STRUCT not currently implemented */
+
+			break;
+		}
+
+		default: NOT_REACHED();
+	}
+
+	return saveloads;
+}
+
+std::vector<SaveLoad> SlTableHeaderOrRiff(const NamedSaveLoadTable &slt)
+{
+	if (SlIsTableChunk()) return SlTableHeader(slt);
+
+	std::vector<SaveLoad> saveloads;
+	for (auto &nsld : slt) {
+		if ((nsld.nsl_flags & NSLF_TABLE_ONLY) != 0) continue;
+		SlFilterObjectMember(nsld.save_load, saveloads);
+	}
+	return saveloads;
+}
+
+void SlSaveTableObjectChunk(const SaveLoadTable &slt)
+{
+	SlSetArrayIndex(0);
+	SlObjectSaveFiltered(nullptr, slt);
+}
+
+void SlLoadTableOrRiffFiltered(const SaveLoadTable &slt)
+{
+	if (SlIsTableChunk() && SlIterateArray() == -1) return;
+	SlObjectLoadFiltered(nullptr, slt);
+	if (SlIsTableChunk() && SlIterateArray() != -1) {
+		uint32_t id = _sl.current_chunk_id;
+		SlErrorCorruptFmt("Too many %c%c%c%c entries", id >> 24, id >> 16, id >> 8, id);
+	}
+}
+
 /**
  * Save or Load (a list of) global variables.
  * @param slt The SaveLoad table with objects to save/load.
@@ -2117,13 +2362,23 @@ static void SlLoadChunk(const ChunkHandler &ch)
 		_sl.block_mode = m;
 	}
 
+	_sl.expect_table_header = (_sl.block_mode == CH_TABLE || _sl.block_mode == CH_SPARSE_TABLE);
+
+	/* The header should always be at the start. Read the length; the
+	 * LoadCheck() should as first action process the header. */
+	if (_sl.expect_table_header) {
+		SlIterateArray();
+	}
+
 	switch (m) {
 		case CH_ARRAY:
+		case CH_TABLE:
 			_sl.array_index = 0;
 			ch.load_proc();
 			if (_next_offs != 0) SlErrorCorrupt("Invalid array length");
 			break;
 		case CH_SPARSE_ARRAY:
+		case CH_SPARSE_TABLE:
 			ch.load_proc();
 			if (_next_offs != 0) SlErrorCorrupt("Invalid array length");
 			break;
@@ -2156,6 +2411,8 @@ static void SlLoadChunk(const ChunkHandler &ch)
 			}
 			break;
 	}
+
+	if (_sl.expect_table_header) SlErrorCorruptFmt("Table chunk without header: %c%c%c%c", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
 }
 
 /**
@@ -2185,8 +2442,17 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
 		_sl.block_mode = m;
 	}
 
+	_sl.expect_table_header = (_sl.block_mode == CH_TABLE || _sl.block_mode == CH_SPARSE_TABLE);
+
+	/* The header should always be at the start. Read the length; the
+	 * LoadCheck() should as first action process the header. */
+	if (_sl.expect_table_header) {
+		SlIterateArray();
+	}
+
 	switch (m) {
 		case CH_ARRAY:
+		case CH_TABLE:
 			_sl.array_index = 0;
 			if (ext_flags) {
 				SlErrorCorruptFmt("CH_ARRAY does not take chunk header extension flags: 0x%X", ext_flags);
@@ -2194,16 +2460,19 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
 			if (ch && ch->load_check_proc) {
 				ch->load_check_proc();
 			} else {
+				if (m == CH_TABLE) SlSkipTableHeader();
 				SlSkipArray();
 			}
 			break;
 		case CH_SPARSE_ARRAY:
+		case CH_SPARSE_TABLE:
 			if (ext_flags) {
 				SlErrorCorruptFmt("CH_SPARSE_ARRAY does not take chunk header extension flags: 0x%X", ext_flags);
 			}
 			if (ch && ch->load_check_proc) {
 				ch->load_check_proc();
 			} else {
+				if (m == CH_SPARSE_TABLE) SlSkipTableHeader();
 				SlSkipArray();
 			}
 			break;
@@ -2247,6 +2516,8 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
 			}
 			break;
 	}
+
+	if (_sl.expect_table_header) SlErrorCorrupt("Table chunk without header");
 }
 
 /**
@@ -2275,6 +2546,7 @@ static void SlSaveChunk(const ChunkHandler &ch)
 	/* Don't save any chunk information if there is no save handler. */
 	if (proc == nullptr) return;
 
+	_sl.current_chunk_id = ch.id;
 	SlWriteUint32(ch.id);
 	DEBUG(sl, 2, "Saving chunk %c%c%c%c", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
 
@@ -2282,24 +2554,30 @@ static void SlSaveChunk(const ChunkHandler &ch)
 	if (_debug_sl_level >= 3) written = SlGetBytesWritten();
 
 	_sl.block_mode = ch.type;
+	_sl.expect_table_header = (_sl.block_mode == CH_TABLE || _sl.block_mode == CH_SPARSE_TABLE);
+	_sl.need_length = (_sl.expect_table_header || _sl.block_mode == CH_RIFF) ? NL_WANTLENGTH : NL_NONE;
+
 	switch (ch.type) {
 		case CH_RIFF:
-			_sl.need_length = NL_WANTLENGTH;
 			proc();
 			break;
 		case CH_ARRAY:
+		case CH_TABLE:
 			_sl.last_array_index = 0;
-			SlWriteByte(CH_ARRAY);
+			SlWriteByte(ch.type);
 			proc();
 			SlWriteArrayLength(0); // Terminate arrays
 			break;
 		case CH_SPARSE_ARRAY:
-			SlWriteByte(CH_SPARSE_ARRAY);
+		case CH_SPARSE_TABLE:
+			SlWriteByte(ch.type);
 			proc();
 			SlWriteArrayLength(0); // Terminate arrays
 			break;
 		default: NOT_REACHED();
 	}
+
+	if (_sl.expect_table_header) SlErrorCorruptFmt("Table chunk without header: %c%c%c%c", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
 
 	DEBUG(sl, 3, "Saved chunk %c%c%c%c (" PRINTF_SIZE " bytes)", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id, SlGetBytesWritten() - written);
 }
@@ -2336,6 +2614,7 @@ static void SlLoadChunks()
 	}
 
 	for (uint32_t id = SlReadUint32(); id != 0; id = SlReadUint32()) {
+		_sl.current_chunk_id = id;
 		DEBUG(sl, 2, "Loading chunk %c%c%c%c", id >> 24, id >> 16, id >> 8, id);
 		size_t read = 0;
 		if (_debug_sl_level >= 3) read = SlGetBytesRead();
@@ -2367,6 +2646,7 @@ static void SlLoadCheckChunks()
 	const ChunkHandler *ch;
 
 	for (id = SlReadUint32(); id != 0; id = SlReadUint32()) {
+		_sl.current_chunk_id = id;
 		DEBUG(sl, 2, "Loading chunk %c%c%c%c", id >> 24, id >> 16, id >> 8, id);
 		size_t read = 0;
 		if (_debug_sl_level >= 3) read = SlGetBytesRead();
@@ -3114,6 +3394,8 @@ static inline void ClearSaveLoadState()
 	_sl.lf = nullptr;
 
 	_sl.save_flags = SMF_NONE;
+
+	_sl.current_chunk_id = 0;
 
 	GamelogStopAnyAction();
 }

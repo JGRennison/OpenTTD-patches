@@ -198,13 +198,13 @@ private:
 	TestFunctorPtr functor = nullptr;
 
 public:
-	SlXvFeatureTest()
+	constexpr SlXvFeatureTest()
 			: min_version(0), max_version(0), feature(XSLFI_NULL), op(XSLFTO_OR) { }
 
-	SlXvFeatureTest(SlXvFeatureTestOperator op_, SlXvFeatureIndex feature_, uint16_t min_version_ = 1, uint16_t max_version_ = 0xFFFF)
+	constexpr SlXvFeatureTest(SlXvFeatureTestOperator op_, SlXvFeatureIndex feature_, uint16_t min_version_ = 1, uint16_t max_version_ = 0xFFFF)
 			: min_version(min_version_), max_version(max_version_), feature(feature_), op(op_) { }
 
-	SlXvFeatureTest(TestFunctorPtr functor_)
+	constexpr SlXvFeatureTest(TestFunctorPtr functor_)
 			: min_version(0), max_version(0), feature(XSLFI_NULL), op(XSLFTO_OR), functor(functor_) { }
 
 	bool IsFeaturePresent(const std::array<uint16_t, XSLFI_SIZE> &feature_versions, SaveLoadVersion savegame_version, SaveLoadVersion savegame_version_from, SaveLoadVersion savegame_version_to) const;

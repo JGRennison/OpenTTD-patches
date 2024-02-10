@@ -102,9 +102,11 @@ typedef ChunkSaveLoadSpecialOpResult ChunkSaveLoadSpecialProc(uint32_t, ChunkSav
 
 /** Type of a chunk. */
 enum ChunkType {
-	CH_RIFF = 0,
-	CH_ARRAY = 1,
+	CH_RIFF         = 0,
+	CH_ARRAY        = 1,
 	CH_SPARSE_ARRAY = 2,
+	CH_TABLE        = 3,
+	CH_SPARSE_TABLE = 4,
 	CH_EXT_HDR      = 15, ///< Extended chunk header
 
 	CH_UNUSED = 0x80,
@@ -1047,6 +1049,23 @@ std::vector<SaveLoad> SlFilterObject(const SaveLoadTable &slt);
 void SlObjectSaveFiltered(void *object, const SaveLoadTable &slt);
 void SlObjectLoadFiltered(void *object, const SaveLoadTable &slt);
 void SlObjectPtrOrNullFiltered(void *object, const SaveLoadTable &slt);
+
+bool SlIsTableChunk();
+void SlSkipTableHeader();
+std::vector<SaveLoad> SlTableHeader(const NamedSaveLoadTable &slt);
+std::vector<SaveLoad> SlTableHeaderOrRiff(const NamedSaveLoadTable &slt);
+void SlSaveTableObjectChunk(const SaveLoadTable &slt);
+void SlLoadTableOrRiffFiltered(const SaveLoadTable &slt);
+
+inline void SlSaveTableObjectChunk(const NamedSaveLoadTable &slt)
+{
+	SlSaveTableObjectChunk(SlTableHeader(slt));
+}
+
+inline void SlLoadTableOrRiffFiltered(const NamedSaveLoadTable &slt)
+{
+	SlLoadTableOrRiffFiltered(SlTableHeaderOrRiff(slt));
+}
 
 void NORETURN CDECL SlErrorFmt(StringID string, const char *msg, ...) WARN_FORMAT(2, 3);
 
