@@ -905,6 +905,7 @@ STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :획득 또는 �
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :획득 시도
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :해제 (앞)
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK                            :해제 (뒤)
+STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE                      :해제 (예약될 때)
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :경로 예약 종료: 획득 또는 대기
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :경로 예약 종료: 획득 시도
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :경로 예약 종료: 해제
@@ -912,6 +913,7 @@ STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :슬롯 획득: 
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :슬롯 획득 시도: {STRING}{BLACK}{STRING}, 또는 계속하기
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :슬롯 해제: {STRING}{BLACK}{STRING} (열차의 앞)
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :슬롯 해제: {STRING}{BLACK}{STRING} (열차의 뒤)
+STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :슬롯 해제: {STRING1}{BLACK}{STRING} (경로가 예약될 때)
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :경로 예약 종료: 슬롯 획득: {STRING}{BLACK}{STRING}, 또는 입구에서 대기
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :경로 예약 종료: 슬롯 획득: {STRING}{BLACK}{STRING}, 또는 계속하기
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :경로 예약 종료: 슬롯 해제: {STRING}{BLACK}{STRING}
