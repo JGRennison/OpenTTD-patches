@@ -2876,6 +2876,18 @@ public:
 					}
 				}
 
+				if (this->vehicle->type == VEH_ROAD && (order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT)) && _settings_game.pf.pathfinder_for_roadvehs == VPF_YAPF) {
+					const DiagDirection dir = order->GetRoadVehTravelDirection();
+					if (_settings_client.gui.show_adv_load_mode_features || dir != INVALID_DIAGDIR) {
+						list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
+						list.push_back(std::make_unique<DropDownListCheckedItem>(dir == INVALID_DIAGDIR, STR_ORDER_RV_DIR_ANY, 0x300 + INVALID_DIAGDIR, false));
+						list.push_back(std::make_unique<DropDownListCheckedItem>(dir == DIAGDIR_NE, STR_ORDER_RV_DIR_NE, 0x300 + DIAGDIR_NE, false));
+						list.push_back(std::make_unique<DropDownListCheckedItem>(dir == DIAGDIR_SE, STR_ORDER_RV_DIR_SE, 0x300 + DIAGDIR_SE, false));
+						list.push_back(std::make_unique<DropDownListCheckedItem>(dir == DIAGDIR_SW, STR_ORDER_RV_DIR_SW, 0x300 + DIAGDIR_SW, false));
+						list.push_back(std::make_unique<DropDownListCheckedItem>(dir == DIAGDIR_NW, STR_ORDER_RV_DIR_NW, 0x300 + DIAGDIR_NW, false));
+					}
+				}
+
 				if (!order->IsType(OT_IMPLICIT)) {
 					list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
 					const Colours current_colour = order->GetColour();
@@ -3462,6 +3474,10 @@ public:
 				}
 				if (index >= 0x200 && index < 0x200 + OSL_END) {
 					this->ModifyOrder(this->OrderGetSel(), MOF_STOP_LOCATION | (index & 0xFF) << 8);
+					break;
+				}
+				if (index >= 0x300 && index <= 0x300 + INVALID_DIAGDIR) {
+					this->ModifyOrder(this->OrderGetSel(), MOF_RV_TRAVEL_DIR | (index & 0xFF) << 8);
 					break;
 				}
 				switch (index) {

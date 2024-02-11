@@ -1702,6 +1702,7 @@ STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_REFIT                     :(Unload by carg
 STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY_REFIT                 :(Unload by cargo type and wait for any full load with refit to {STRING})
 STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD_REFIT               :(Unload by cargo type and load by cargo type with refit to {STRING})
 
+STR_ORDER_RV_DIR_ANY                                            :[any direction]
 STR_ORDER_RV_DIR_NE                                             :[north-east direction]
 STR_ORDER_RV_DIR_SE                                             :[south-east direction]
 STR_ORDER_RV_DIR_SW                                             :[south-west direction]
