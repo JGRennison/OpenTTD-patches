@@ -113,7 +113,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_TEMPLATE_REPLACEMENT,             XSCF_NULL,                9,   9, "template_replacement",             nullptr, nullptr, "TRPL,TMPL"      },
 	{ XSLFI_MORE_RAIL_TYPES,                  XSCF_NULL,                0,   1, "more_rail_types",                  nullptr, nullptr, nullptr          },
 	{ XSLFI_CARGO_TYPE_ORDERS,                XSCF_NULL,                3,   3, "cargo_type_orders",                nullptr, nullptr, "ORDX,VEOX"      },
-	{ XSLFI_EXTENDED_GAMELOG,                 XSCF_NULL,                1,   1, "extended_gamelog",                 nullptr, nullptr, nullptr          },
+	{ XSLFI_EXTENDED_GAMELOG,                 XSCF_NULL,                2,   2, "extended_gamelog",                 nullptr, nullptr, nullptr          },
 	{ XSLFI_STATION_CATCHMENT_INC,            XSCF_NULL,                1,   1, "station_catchment_inc",            nullptr, nullptr, nullptr          },
 	{ XSLFI_CUSTOM_BRIDGE_HEADS,              XSCF_NULL,                4,   4, "custom_bridge_heads",              nullptr, nullptr, nullptr          },
 	{ XSLFI_CHUNNEL,                          XSCF_NULL,                2,   2, "chunnel",                          nullptr, nullptr, "TUNN"           },
