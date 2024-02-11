@@ -10,6 +10,10 @@
 #include "stdafx.h"
 #include "core/bitmath_func.hpp"
 
+#if defined(_MSC_VER)
+#include <intrin.h>
+#endif
+
 #include "safeguards.h"
 
 /**
