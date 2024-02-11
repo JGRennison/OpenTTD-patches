@@ -121,7 +121,7 @@ struct PlaybackSegment {
 	bool loop;
 };
 
-static struct {
+struct DMusicPlayback {
 	bool shutdown;    ///< flag to indicate playback thread shutdown
 	bool playing;     ///< flag indicating that playback is active
 	bool do_start;    ///< flag for starting playback of next_file at next opportunity
@@ -132,14 +132,29 @@ static struct {
 
 	MidiFile next_file;           ///< upcoming file to play
 	PlaybackSegment next_segment; ///< segment info for upcoming file
-} _playback;
 
-/** Handle to our worker thread. */
-static std::thread _dmusic_thread;
-/** Event to signal the thread that it should look at a state change. */
-static HANDLE _thread_event = nullptr;
-/** Lock access to playback data that is not thread-safe. */
-static std::mutex _thread_mutex;
+	/** Handle to our worker thread. */
+	std::thread dmusic_thread;
+	/** Event to signal the thread that it should look at a state change. */
+	HANDLE thread_event = nullptr;
+	/** Lock access to playback data that is not thread-safe. */
+	std::mutex thread_mutex;
+
+	void StopThread()
+	{
+		if (this->dmusic_thread.joinable()) {
+			this->shutdown = true;
+			SetEvent(this->thread_event);
+			this->dmusic_thread.join();
+		}
+	}
+
+	~DMusicPlayback()
+	{
+		this->StopThread();
+	}
+};
+static DMusicPlayback _playback;
 
 /** The direct music object manages buffers and ports. */
 static IDirectMusic *_music = nullptr;
@@ -610,7 +625,7 @@ static void MidiThreadProc()
 	DWORD next_timeout = 1000;
 	while (true) {
 		/* Wait for a signal from the GUI thread or until the time for the next event has come. */
-		DWORD wfso = WaitForSingleObject(_thread_event, next_timeout);
+		DWORD wfso = WaitForSingleObject(_playback.thread_event, next_timeout);
 
 		if (_playback.shutdown) {
 			_playback.playing = false;
@@ -636,7 +651,7 @@ static void MidiThreadProc()
 				DEBUG(driver, 2, "DMusic thread: Starting playback");
 				{
 					/* New scope to limit the time the mutex is locked. */
-					std::lock_guard<std::mutex> lock(_thread_mutex);
+					std::lock_guard<std::mutex> lock(_playback.thread_mutex);
 
 					current_file.MoveFrom(_playback.next_file);
 					std::swap(_playback.next_segment, current_segment);
@@ -1148,10 +1163,10 @@ const char *MusicDriver_DMusic::Start(const StringList &parm)
 	if (dls != nullptr) return dls;
 
 	/* Create playback thread and synchronization primitives. */
-	_thread_event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-	if (_thread_event == nullptr) return "Can't create thread shutdown event";
+	_playback.thread_event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+	if (_playback.thread_event == nullptr) return "Can't create thread shutdown event";
 
-	if (!StartNewThread(&_dmusic_thread, "ottd:dmusic", &MidiThreadProc)) return "Can't create MIDI output thread";
+	if (!StartNewThread(&_playback.dmusic_thread, "ottd:dmusic", &MidiThreadProc)) return "Can't create MIDI output thread";
 
 	return nullptr;
 }
@@ -1165,11 +1180,7 @@ MusicDriver_DMusic::~MusicDriver_DMusic()
 
 void MusicDriver_DMusic::Stop()
 {
-	if (_dmusic_thread.joinable()) {
-		_playback.shutdown = true;
-		SetEvent(_thread_event);
-		_dmusic_thread.join();
-	}
+	_playback.StopThread();
 
 	/* Unloaded any instruments we loaded. */
 	if (!_dls_downloads.empty()) {
@@ -1203,7 +1214,7 @@ void MusicDriver_DMusic::Stop()
 		_music = nullptr;
 	}
 
-	CloseHandle(_thread_event);
+	CloseHandle(_playback.thread_event);
 
 	CoUninitialize();
 }
@@ -1211,7 +1222,7 @@ void MusicDriver_DMusic::Stop()
 
 void MusicDriver_DMusic::PlaySong(const MusicSongInfo &song)
 {
-	std::lock_guard<std::mutex> lock(_thread_mutex);
+	std::lock_guard<std::mutex> lock(_playback.thread_mutex);
 
 	if (!_playback.next_file.LoadSong(song)) return;
 
@@ -1220,14 +1231,14 @@ void MusicDriver_DMusic::PlaySong(const MusicSongInfo &song)
 	_playback.next_segment.loop = song.loop;
 
 	_playback.do_start = true;
-	SetEvent(_thread_event);
+	SetEvent(_playback.thread_event);
 }
 
 
 void MusicDriver_DMusic::StopSong()
 {
 	_playback.do_stop = true;
-	SetEvent(_thread_event);
+	SetEvent(_playback.thread_event);
 }
 
 

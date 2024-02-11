@@ -479,8 +479,56 @@ void NORETURN CDECL SlErrorCorruptFmt(const char *format, ...)
 }
 
 typedef void (*AsyncSaveFinishProc)();                      ///< Callback for when the savegame loading is finished.
-static std::atomic<AsyncSaveFinishProc> _async_save_finish; ///< Callback to call when the savegame loading is finished.
-static std::thread _save_thread;                            ///< The thread we're using to compress and write a savegame
+
+struct AsyncSaveThread {
+	std::atomic<bool> exit_thread;                ///< Signal that the thread should exit early
+	std::atomic<AsyncSaveFinishProc> finish_proc; ///< Callback to call when the savegame saving is finished.
+	std::thread save_thread;                      ///< The thread we're using to compress and write a savegame
+
+	void SetAsyncSaveFinish(AsyncSaveFinishProc proc)
+	{
+		if (_exit_game || this->exit_thread.load(std::memory_order_relaxed)) return;
+
+		while (this->finish_proc.load(std::memory_order_acquire) != nullptr) {
+			CSleep(10);
+			if (_exit_game || this->exit_thread.load(std::memory_order_relaxed)) return;
+		}
+
+		this->finish_proc.store(proc, std::memory_order_release);
+	}
+
+	void ProcessAsyncSaveFinish()
+	{
+		AsyncSaveFinishProc proc = this->finish_proc.exchange(nullptr, std::memory_order_acq_rel);
+		if (proc == nullptr) return;
+
+		proc();
+
+		if (this->save_thread.joinable()) {
+			this->save_thread.join();
+		}
+	}
+
+	void WaitTillSaved()
+	{
+		if (!this->save_thread.joinable()) return;
+
+		this->save_thread.join();
+
+		/* Make sure every other state is handled properly as well. */
+		this->ProcessAsyncSaveFinish();
+	}
+
+	~AsyncSaveThread()
+	{
+		this->exit_thread.store(true, std::memory_order_relaxed);
+
+		if (this->save_thread.joinable()) {
+			this->save_thread.join();
+		}
+	}
+};
+static AsyncSaveThread _async_save_thread;
 
 /**
  * Called by save thread to tell we finished saving.
@@ -488,10 +536,7 @@ static std::thread _save_thread;                            ///< The thread we'r
  */
 static void SetAsyncSaveFinish(AsyncSaveFinishProc proc)
 {
-	if (_exit_game) return;
-	while (_async_save_finish.load(std::memory_order_acquire) != nullptr) CSleep(10);
-
-	_async_save_finish.store(proc, std::memory_order_release);
+	_async_save_thread.SetAsyncSaveFinish(proc);
 }
 
 /**
@@ -499,14 +544,7 @@ static void SetAsyncSaveFinish(AsyncSaveFinishProc proc)
  */
 void ProcessAsyncSaveFinish()
 {
-	AsyncSaveFinishProc proc = _async_save_finish.exchange(nullptr, std::memory_order_acq_rel);
-	if (proc == nullptr) return;
-
-	proc();
-
-	if (_save_thread.joinable()) {
-		_save_thread.join();
-	}
+	_async_save_thread.ProcessAsyncSaveFinish();
 }
 
 /**
@@ -3492,12 +3530,7 @@ static SaveOrLoadResult SaveFileToDisk(bool threaded)
 
 void WaitTillSaved()
 {
-	if (!_save_thread.joinable()) return;
-
-	_save_thread.join();
-
-	/* Make sure every other state is handled properly as well. */
-	ProcessAsyncSaveFinish();
+	_async_save_thread.WaitTillSaved();
 }
 
 /**
@@ -3523,7 +3556,7 @@ static SaveOrLoadResult DoSave(SaveFilter *writer, bool threaded)
 
 	SaveFileStart();
 
-	if (!threaded || !StartNewThread(&_save_thread, "ottd:savegame", &SaveFileToDisk, true)) {
+	if (!threaded || !StartNewThread(&_async_save_thread.save_thread, "ottd:savegame", &SaveFileToDisk, true)) {
 		if (threaded) DEBUG(sl, 1, "Cannot create savegame thread, reverting to single-threaded mode...");
 
 		SaveOrLoadResult result = SaveFileToDisk(false);
