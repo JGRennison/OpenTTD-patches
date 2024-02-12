@@ -2154,7 +2154,7 @@ void StateGameLoop()
 		BasePersistentStorageArray::SwitchMode(PSM_ENTER_GAMELOOP);
 		_tick_skip_counter++;
 		_scaled_tick_counter++;
-		if (_game_mode != GM_MENU && _game_mode != GM_BOOTSTRAP) {
+		if (_game_mode != GM_BOOTSTRAP) {
 			_state_ticks++;   // This must update in lock-step with _tick_skip_counter, such that _state_ticks_offset doesn't need to be changed.
 		}
 
