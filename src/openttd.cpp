@@ -520,6 +520,7 @@ static void ShutdownGame()
 	InvalidateVehicleTickCaches();
 	ClearVehicleTickCaches();
 	InvalidateTemplateReplacementImages();
+	ResetDisasterVehicleTargeting();
 	ClearCommandLog();
 	ClearCommandQueue();
 	ClearSpecialEventsLog();

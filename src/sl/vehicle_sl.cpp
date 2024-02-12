@@ -507,6 +507,8 @@ void AfterLoadVehicles(bool part_of_load)
 		}
 	}
 
+	ResetDisasterVehicleTargeting();
+
 	for (Vehicle *v : Vehicle::Iterate()) {
 		si_v = v;
 		switch (v->type) {
@@ -539,6 +541,22 @@ void AfterLoadVehicles(bool part_of_load)
 					UpdateAircraftCache(Aircraft::From(v), true);
 				}
 				break;
+
+			case VEH_DISASTER: {
+				auto *dv = DisasterVehicle::From(v);
+				if (dv->subtype == ST_SMALL_UFO && dv->state != 0) {
+					RoadVehicle *u = RoadVehicle::GetIfValid(v->dest_tile);
+					if (u != nullptr && u->IsFrontEngine()) {
+						/* Delete UFO targeting a vehicle which is already a target. */
+						if (!SetDisasterVehicleTargetingVehicle(u->index, dv->index)) {
+							delete v;
+							continue;
+						}
+					}
+				}
+				break;
+			}
+
 			default: break;
 		}
 

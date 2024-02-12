@@ -48,6 +48,7 @@
 #include "core/backup_type.hpp"
 #include "core/checksum_func.hpp"
 #include "event_logs.h"
+#include "3rdparty/cpp-btree/btree_map.h"
 
 #include "table/strings.h"
 
@@ -57,6 +58,7 @@
 uint16_t _disaster_delay;
 
 static uint32_t _disaster_vehicle_count = 0;
+static btree::btree_map<VehicleID, VehicleID> _disaster_ufo_target_map;
 
 static void DisasterClearSquare(TileIndex tile)
 {
@@ -369,6 +371,11 @@ static bool DisasterTick_Ufo(DisasterVehicle *v)
 		for (const RoadVehicle *u : RoadVehicle::Iterate()) {
 			/* Find (n+1)-th road vehicle. */
 			if (u->IsFrontEngine() && (n-- == 0)) {
+				if (u->crashed_ctr != 0 || !SetDisasterVehicleTargetingVehicle(u->index, v->index)) {
+					/* Targetted vehicle is crashed or already a target, destroy the UFO. */
+					delete v;
+					return false;
+				}
 				/* Target it. */
 				v->dest_tile = u->index;
 				v->age = 0;
@@ -1010,22 +1017,43 @@ void ReleaseDisastersTargetingIndustry(IndustryID i)
  * Notify disasters that we are about to delete a vehicle. So make them head elsewhere.
  * @param vehicle deleted vehicle
  */
-void ReleaseDisastersTargetingVehicle(VehicleID vehicle)
+void ReleaseDisasterVehicleTargetingVehicle(VehicleID vehicle)
 {
 	if (!_disaster_vehicle_count) return;
 
-	for (DisasterVehicle *v : DisasterVehicle::Iterate()) {
-		/* primary disaster vehicles that have chosen target */
-		if (v->subtype == ST_SMALL_UFO) {
-			if (v->state != 0 && v->dest_tile == vehicle) {
-				/* Revert to target-searching */
-				v->state = 0;
-				v->dest_tile = RandomTile();
-				GetAircraftFlightLevelBounds(v, &v->z_pos, nullptr);
-				v->age = 0;
-			}
-		}
+	auto iter = _disaster_ufo_target_map.find(vehicle);
+	if (iter == _disaster_ufo_target_map.end()) return;
+
+	DisasterVehicle *v = DisasterVehicle::GetIfValid(iter->second);
+	_disaster_ufo_target_map.erase(iter);
+
+	if (v == nullptr) return;
+
+	/* primary disaster vehicles that have chosen target */
+	assert(v->subtype == ST_SMALL_UFO);
+	assert(v->state != 0);
+
+	/* Revert to target-searching */
+	v->state = 0;
+	v->dest_tile = RandomTile();
+	GetAircraftFlightLevelBounds(v, &v->z_pos, nullptr);
+	v->age = 0;
+}
+
+void ResetDisasterVehicleTargeting()
+{
+	_disaster_ufo_target_map.clear();
+}
+
+bool SetDisasterVehicleTargetingVehicle(VehicleID vehicle, VehicleID disaster_vehicle)
+{
+	auto insert_result = _disaster_ufo_target_map.insert(std::make_pair(vehicle, disaster_vehicle));
+	if (!insert_result.second) {
+		/* Vehicle already has an associated disaster vehicle, return failure if that isn't this disaster vehicle */
+		if (insert_result.first->second != disaster_vehicle) return false;
 	}
+
+	return true;
 }
 
 void DisasterVehicle::UpdateDeltaXY()

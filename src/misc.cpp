@@ -120,6 +120,7 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	AllocateMap(size_x, size_y);
 
 	ViewportMapClearTunnelCache();
+	ResetDisasterVehicleTargeting();
 	ClearCommandLog();
 	ClearCommandQueue();
 	ClearSpecialEventsLog();

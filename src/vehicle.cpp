@@ -1030,6 +1030,7 @@ void InitializeVehicles()
 {
 	_vehicles_to_autoreplace.clear();
 	ResetVehicleHash();
+	ResetDisasterVehicleTargeting();
 }
 
 uint CountVehiclesInChain(const Vehicle *v)
@@ -1202,6 +1203,8 @@ void Vehicle::PreDestructor()
 			/* Leave the drive through roadstop, when you have not already left it. */
 			RoadStop::GetByTile(v->tile, GetRoadStopType(v->tile))->Leave(v);
 		}
+
+		ReleaseDisasterVehicleTargetingVehicle(this->index);
 	}
 
 	if (HasBit(this->vehicle_flags, VF_HAVE_SLOT)) {
@@ -1237,8 +1240,6 @@ void Vehicle::PreDestructor()
 	DeleteDepotHighlightOfVehicle(this);
 
 	StopGlobalFollowVehicle(this);
-
-	ReleaseDisastersTargetingVehicle(this->index);
 
 	/* sometimes, eg. for disaster vehicles, when company bankrupts, when removing crashed/flooded vehicles,
 	 * it may happen that vehicle chain is deleted when visible */
