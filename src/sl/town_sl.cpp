@@ -391,7 +391,7 @@ void Save_TNNC()
 
 	if (IsGetTownZonesCallbackHandlerPresent()) {
 		flags |= 1;
-		length += lengthof(TownCache::squared_town_zone_radius) * 4;
+		length += Town::GetNumItems() * lengthof(TownCache::squared_town_zone_radius) * 4;
 	}
 
 	SlSetLength(length);
@@ -402,7 +402,7 @@ void Save_TNNC()
 	for (const Town *t : Town::Iterate()) {
 		SlWriteUint32(t->index);
 		SlWriteUint16(t->noise_reached);
-		if (flags & 2) {
+		if (flags & 1) {
 			for (uint i = 0; i < lengthof(TownCache::squared_town_zone_radius); i++) {
 				SlWriteUint32(t->cache.squared_town_zone_radius[i]);
 			}
@@ -426,7 +426,8 @@ void Load_TNNC()
 	_town_zone_radii_no_update = (flags & 1);
 
 	for (uint32_t idx = 0; idx < count; idx++) {
-		Town *t = Town::Get(SlReadUint32());
+		Town *t = Town::GetIfValid(SlReadUint32());
+		if (t == nullptr) SlErrorCorrupt("TNNC: invalid town ID");
 		t->noise_reached = SlReadUint16();
 		if (flags & 1) {
 			for (uint i = 0; i < lengthof(TownCache::squared_town_zone_radius); i++) {
