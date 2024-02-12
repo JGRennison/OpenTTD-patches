@@ -290,7 +290,11 @@ void SurveyCompanies(nlohmann::json &survey)
 void SurveyTimers(nlohmann::json &survey)
 {
 	survey["ticks"] = _scaled_tick_counter;
-	survey["seconds"] = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - _switch_mode_time).count();
+	if (_switch_mode_time_valid) {
+		survey["seconds"] = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - _switch_mode_time).count();
+	} else {
+		survey["seconds"] = 0;
+	}
 
 	survey["calendar"] = fmt::format("{:04}-{:02}-{:02} ({})", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract);
 }

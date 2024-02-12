@@ -1371,7 +1371,10 @@ void SwitchToMode(SwitchMode new_mode)
 	if (_game_mode == GM_NORMAL && new_mode != SM_SAVE_GAME) _survey.Transmit(NetworkSurveyHandler::Reason::LEAVE);
 
 	/* Keep track when we last switch mode. Used for survey, to know how long someone was in a game. */
-	if (new_mode != SM_SAVE_GAME) _switch_mode_time = std::chrono::steady_clock::now();
+	if (new_mode != SM_SAVE_GAME) {
+		_switch_mode_time = std::chrono::steady_clock::now();
+		_switch_mode_time_valid = true;
+	}
 
 	switch (new_mode) {
 		case SM_EDITOR: // Switch to scenario editor

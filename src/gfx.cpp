@@ -58,6 +58,7 @@ bool _check_special_modes;
 std::atomic<bool> _exit_game;
 GameMode _game_mode;
 SwitchMode _switch_mode;  ///< The next mainloop command.
+bool _switch_mode_time_valid = false;
 std::chrono::steady_clock::time_point _switch_mode_time; ///< The time when the switch mode was requested.
 PauseMode _pause_mode;
 uint32_t _pause_countdown;

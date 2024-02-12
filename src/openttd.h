@@ -61,6 +61,7 @@ enum ExtraDisplayOptions {
 extern GameMode _game_mode;
 extern SwitchMode _switch_mode;
 extern bool _check_special_modes;
+extern bool _switch_mode_time_valid;
 extern std::chrono::steady_clock::time_point _switch_mode_time;
 extern std::atomic<bool> _exit_game;
 extern bool _save_config;
