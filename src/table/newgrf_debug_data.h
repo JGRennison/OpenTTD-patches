@@ -591,6 +591,9 @@ class NIHVehicle : public NIHelper {
 				seprintf(buffer, lastof(buffer), "    Cargo type: %u, refit mask: 0x" OTTD_PRINTFHEX64 ", refit cost: %u",
 						e->info.cargo_type, e->info.refit_mask, e->info.refit_cost);
 				output.print(buffer);
+				seprintf(buffer, lastof(buffer), "    Cargo ageing: %u, cargo load speed: %u",
+						e->info.decay_speed, e->info.load_amount);
+				output.print(buffer);
 
 				output.register_next_line_click_flag_toggle(2 << flag_shift);
 				if (output.flags & (2 << flag_shift)) {
