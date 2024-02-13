@@ -60,12 +60,24 @@ static bool CheckTTDPatchSettingFlag(uint flag);
  * on the appropriate macro.
  */
 
+template <typename T, std::enable_if_t<!std::is_base_of<StrongTypedefBase, T>::value, int> = 0>
+constexpr T STUnwrap(T value)
+{
+	return value;
+}
+
+template <typename T, std::enable_if_t<std::is_base_of<StrongTypedefBase, T>::value, int> = 0>
+constexpr T::BaseType STUnwrap(T value)
+{
+	return value.base();
+}
+
 #define NSD(type, ...) std::unique_ptr<const SettingDesc>(new type##SettingDesc(__VA_ARGS__))
 
 /* Macros for various objects to go in the configuration file.
  * This section is for global variables */
 #define SDTG_VAR(name, type, flags, var, def, min, max, interval, str, strhelp, strval, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname)\
-	NSD(Int, SLEG_GENERAL_X(SL_VAR, var, type, 1, from, to, extver), name, flags, guiproc, startup, patxname, def, min, max, interval, str, strhelp, strval, cat, pre_check, post_callback, nullptr)
+	NSD(Int, SLEG_GENERAL_X(SL_VAR, var, type, 1, from, to, extver), name, flags, guiproc, startup, patxname, STUnwrap(def), STUnwrap(min), STUnwrap(max), interval, str, strhelp, strval, cat, pre_check, post_callback, nullptr)
 
 #define SDTG_ENUM(name, type, flags, var, def, str, strhelp, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname, enumlist)\
 	NSD(Int, SLEG_GENERAL_X(SL_VAR, var, type, 1, from, to, extver), name, flags | SF_ENUM, guiproc, startup, patxname, def, 0, 0, 0, str, strhelp, STR_NULL, cat, pre_check, post_callback, enumlist)
@@ -91,10 +103,10 @@ static bool CheckTTDPatchSettingFlag(uint flag);
 /* Macros for various objects to go in the configuration file.
  * This section is for structures where their various members are saved */
 #define SDT_VAR(base, var, type, flags, def, min, max, interval, str, strhelp, strval, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname)\
-	NSD(Int, SLE_GENERAL_X(SL_VAR, base, var, type, 1, from, to, extver), #var, flags, guiproc, startup, patxname, def, min, max, interval, str, strhelp, strval, cat, pre_check, post_callback, nullptr)
+	NSD(Int, SLE_GENERAL_X(SL_VAR, base, var, type, 1, from, to, extver), #var, flags, guiproc, startup, patxname, STUnwrap(def), STUnwrap(min), STUnwrap(max), interval, str, strhelp, strval, cat, pre_check, post_callback, nullptr)
 
 #define SDT_VAR2(base, name, var, type, flags, def, min, max, interval, str, strhelp, strval, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname)\
-	NSD(Int, SLE_GENERAL_X(SL_VAR, base, var, type, 1, from, to, extver), name, flags, guiproc, startup, patxname, def, min, max, interval, str, strhelp, strval, cat, pre_check, post_callback, nullptr)
+	NSD(Int, SLE_GENERAL_X(SL_VAR, base, var, type, 1, from, to, extver), name, flags, guiproc, startup, patxname, STUnwrap(def), STUnwrap(min), STUnwrap(max), interval, str, strhelp, strval, cat, pre_check, post_callback, nullptr)
 
 #define SDT_ENUM(base, var, type, flags, def, str, strhelp, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname, enumlist)\
 	NSD(Int, SLE_GENERAL_X(SL_VAR, base, var, type, 1, from, to, extver), #var, flags | SF_ENUM, guiproc, startup, patxname, def, 0, 0, 0, str, strhelp, STR_NULL, cat, pre_check, post_callback, enumlist)
@@ -121,7 +133,7 @@ static bool CheckTTDPatchSettingFlag(uint flag);
 	NSD(Null, SLE_CONDNULL_X(length, from, to, extver), name, patxname)
 
 #define SDTC_VAR(var, type, flags, def, min, max, interval, str, strhelp, strval, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname)\
-	SDTG_VAR(#var, type, flags, _settings_client.var, def, min, max, interval, str, strhelp, strval, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname)
+	SDTG_VAR(#var, type, flags, _settings_client.var, STUnwrap(def), STUnwrap(min), STUnwrap(max), interval, str, strhelp, strval, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname)
 
 #define SDTC_ENUM(var, type, flags, def, str, strhelp, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname, enumlist)\
 	SDTG_ENUM(#var, type, flags, _settings_client.var, def, str, strhelp, pre_check, post_callback, from, to, extver, cat, guiproc, startup, patxname, enumlist)
