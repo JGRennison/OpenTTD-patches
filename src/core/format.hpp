@@ -43,8 +43,8 @@ struct fmt::formatter<E, Char, std::enable_if_t<std::is_enum<E>::value>> : fmt::
 };
 
 template <typename T, typename Char>
-struct fmt::formatter<T, Char, std::enable_if_t<std::is_base_of<StrongTypedefBase, T>::value>> : fmt::formatter<typename T::Type> {
-	using underlying_type = typename T::Type;
+struct fmt::formatter<T, Char, std::enable_if_t<std::is_base_of<StrongTypedefBase, T>::value>> : fmt::formatter<typename T::BaseType> {
+	using underlying_type = typename T::BaseType;
 	using parent = typename fmt::formatter<underlying_type>;
 
 	constexpr fmt::format_parse_context::iterator parse(fmt::format_parse_context &ctx)
@@ -54,7 +54,7 @@ struct fmt::formatter<T, Char, std::enable_if_t<std::is_base_of<StrongTypedefBas
 
 	fmt::format_context::iterator format(const T &t, format_context &ctx) const
 	{
-		return parent::format(underlying_type(t), ctx);
+		return parent::format(t.base(), ctx);
 	}
 };
 
