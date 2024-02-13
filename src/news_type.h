@@ -129,7 +129,8 @@ struct NewsItem {
 	NewsItem *prev;              ///< Previous news item
 	NewsItem *next;              ///< Next news item
 	StringID string_id;          ///< Message text
-	Date date;                   ///< Date of the news
+	CalTime::Date date;          ///< Date of the news
+	uint64_t creation_tick;      ///< Tick when news was created
 	NewsType type;               ///< Type of the news
 	NewsFlag flags;              ///< NewsFlags bits @see NewsFlag
 

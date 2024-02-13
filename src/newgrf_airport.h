@@ -108,8 +108,8 @@ struct AirportSpec {
 	byte size_y;                           ///< size of airport in y direction
 	byte noise_level;                      ///< noise that this airport generates
 	byte catchment;                        ///< catchment area of this airport
-	Year min_year;                         ///< first year the airport is available
-	Year max_year;                         ///< last year the airport is available
+	CalTime::Year min_year;                ///< first year the airport is available
+	CalTime::Year max_year;                ///< last year the airport is available
 	StringID name;                         ///< name of this airport
 	TTDPAirportType ttd_airport_type;      ///< ttdpatch airport type (Small/Large/Helipad/Oilrig)
 	AirportClassID cls_id;                 ///< the class to which this airport type belongs

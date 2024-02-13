@@ -323,7 +323,7 @@ uint32_t StationScopeResolver::GetNearbyStationInfo(uint32_t parameter, StationS
 				}
 				break;
 
-			case 0xFA: return ClampTo<uint16_t>(_date - DAYS_TILL_ORIGINAL_BASE_YEAR); // Build date, clamped to a 16 bit value
+			case 0xFA: return ClampTo<uint16_t>(CalTime::CurDate() - CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR); // Build date, clamped to a 16 bit value
 		}
 
 		extra->available = false;
@@ -424,7 +424,7 @@ uint32_t StationScopeResolver::GetNearbyStationInfo(uint32_t parameter, StationS
 		case 0x84: return this->st->string_id;
 		case 0x86: return 0;
 		case 0xF0: return this->st->facilities;
-		case 0xFA: return ClampTo<uint16_t>(this->st->build_date - DAYS_TILL_ORIGINAL_BASE_YEAR);
+		case 0xFA: return ClampTo<uint16_t>(this->st->build_date - CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR);
 	}
 
 	return this->st->GetNewGRFVariable(this->ro, variable, parameter, &(extra->available));

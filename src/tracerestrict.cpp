@@ -2407,10 +2407,10 @@ int GetTraceRestrictTimeDateValue(TraceRestrictTimeDateValueField type)
 			return now.ClockHHMM();
 
 		case TRTDVF_DAY:
-			return _cur_date_ymd.day;
+			return CalTime::CurDay();
 
 		case TRTDVF_MONTH:
-			return _cur_date_ymd.month + 1;
+			return CalTime::CurMonth() + 1;
 
 		default:
 			return 0;
@@ -2432,12 +2432,12 @@ int GetTraceRestrictTimeDateValueFromStateTicks(TraceRestrictTimeDateValueField 
 			return minutes.ClockHHMM();
 
 		case TRTDVF_DAY: {
-			YearMonthDay ymd = ConvertDateToYMD(StateTicksToDate(state_ticks));
+			CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(StateTicksToCalendarDate(state_ticks));
 			return ymd.day;
 		}
 
 		case TRTDVF_MONTH: {
-			YearMonthDay ymd = ConvertDateToYMD(StateTicksToDate(state_ticks));
+			CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(StateTicksToCalendarDate(state_ticks));
 			return ymd.month + 1;
 		}
 

@@ -1896,8 +1896,8 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 			switch (this->vehgroups.SortType()) {
 				case VST_AGE: {
 					str = (v->age + DAYS_IN_YEAR < v->max_age) ? STR_VEHICLE_LIST_AGE : STR_VEHICLE_LIST_AGE_RED;
-					SetDParam(3, DateDeltaToYears(v->age));
-					SetDParam(4, DateDeltaToYears(v->max_age));
+					SetDParam(3, DateDeltaToYearDelta(v->age));
+					SetDParam(4, DateDeltaToYearDelta(v->max_age));
 					break;
 				}
 
@@ -3036,7 +3036,7 @@ struct VehicleDetailsWindow : Window {
 
 			case WID_VD_SERVICING_INTERVAL:
 				SetDParamMaxValue(0, MAX_SERVINT_DAYS); // Roughly the maximum interval
-				SetDParamMaxValue(1, MAX_YEAR * DAYS_IN_YEAR); // Roughly the maximum year
+				SetDParamMaxValue(1, CalTime::MAX_YEAR.base() * DAYS_IN_YEAR); // Roughly the maximum year
 				size->width = std::max(
 					GetStringBoundingBox(STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT).width,
 					GetStringBoundingBox(STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS).width
@@ -3093,9 +3093,9 @@ struct VehicleDetailsWindow : Window {
 				Rect tr = r.Shrink(WidgetDimensions::scaled.framerect);
 
 				/* Draw running cost */
-				SetDParam(1, DateDeltaToYears(v->age));
+				SetDParam(1, DateDeltaToYearDelta(v->age));
 				SetDParam(0, (v->age + DAYS_IN_YEAR < v->max_age) ? STR_VEHICLE_INFO_AGE : STR_VEHICLE_INFO_AGE_RED);
-				SetDParam(2, DateDeltaToYears(v->max_age));
+				SetDParam(2, DateDeltaToYearDelta(v->max_age));
 				SetDParam(3, v->GetDisplayRunningCost());
 				DrawString(tr, STR_VEHICLE_INFO_AGE_RUNNING_COST_YR);
 				tr.top += GetCharacterHeight(FS_NORMAL);

@@ -692,7 +692,7 @@ static void MoveToNextTickerItem()
 		const NewsType type = ni->type;
 
 		/* check the date, don't show too old items */
-		if (_date - _news_type_data[type].age > ni->date) continue;
+		if (_scaled_tick_counter - ni->creation_tick > _news_type_data[type].age * DAY_TICKS) continue;
 
 		switch (_news_type_data[type].GetDisplay()) {
 			default: NOT_REACHED();
@@ -729,7 +729,7 @@ static void MoveToNextNewsItem()
 		const NewsType type = ni->type;
 
 		/* check the date, don't show too old items */
-		if (_date - _news_type_data[type].age > ni->date) continue;
+		if (_scaled_tick_counter - ni->creation_tick > _news_type_data[type].age * DAY_TICKS) continue;
 
 		switch (_news_type_data[type].GetDisplay()) {
 			default: NOT_REACHED();
@@ -806,10 +806,10 @@ static void DeleteNewsItem(NewsItem *ni)
  * @see NewsSubtype
  */
 NewsItem::NewsItem(StringID string_id, NewsType type, NewsFlag flags, NewsReferenceType reftype1, uint32_t ref1, NewsReferenceType reftype2, uint32_t ref2, const NewsAllocatedData *data) :
-	string_id(string_id), date(_date), type(type), flags(flags), reftype1(reftype1), reftype2(reftype2), ref1(ref1), ref2(ref2), data(data)
+	string_id(string_id), date(CalTime::CurDate()), creation_tick(_scaled_tick_counter), type(type), flags(flags), reftype1(reftype1), reftype2(reftype2), ref1(ref1), ref2(ref2), data(data)
 {
 	/* show this news message in colour? */
-	if (_cur_year >= _settings_client.gui.coloured_news_year) this->flags |= NF_INCOLOUR;
+	if (CalTime::CurYear() >= _settings_client.gui.coloured_news_year) this->flags |= NF_INCOLOUR;
 	CopyOutDParam(this->params, 10);
 }
 
@@ -995,7 +995,7 @@ static void RemoveOldNewsItems()
 	NewsItem *next;
 	for (NewsItem *cur = _oldest_news; _total_news > MIN_NEWS_AMOUNT && cur != nullptr; cur = next) {
 		next = cur->next;
-		if (_date - _news_type_data[cur->type].age * _settings_client.gui.news_message_timeout > cur->date) DeleteNewsItem(cur);
+		if (_scaled_tick_counter - cur->creation_tick > (uint)(_news_type_data[cur->type].age * _settings_client.gui.news_message_timeout * DAY_TICKS)) DeleteNewsItem(cur);
 	}
 }
 
@@ -1021,9 +1021,9 @@ void NewsLoop()
 
 	static byte _last_clean_month = 0;
 
-	if (_last_clean_month != _cur_date_ymd.month) {
+	if (_last_clean_month != EconTime::CurMonth()) {
 		RemoveOldNewsItems();
-		_last_clean_month = _cur_date_ymd.month;
+		_last_clean_month = EconTime::CurMonth();
 	}
 
 	if (ReadyForNextTickerItem()) MoveToNextTickerItem();
@@ -1143,7 +1143,7 @@ struct MessageHistoryWindow : Window {
 
 			/* Months are off-by-one, so it's actually 8. Not using
 			 * month 12 because the 1 is usually less wide. */
-			SetDParam(0, ConvertYMDToDate(ORIGINAL_MAX_YEAR, 7, 30));
+			SetDParam(0, CalTime::ConvertYMDToDate(CalTime::ORIGINAL_MAX_YEAR, 7, 30));
 			this->date_width = GetStringBoundingBox(STR_JUST_DATE_TINY).width + WidgetDimensions::scaled.hsep_wide;
 
 			size->height = 4 * resize->height + WidgetDimensions::scaled.framerect.Vertical(); // At least 4 lines are visible.

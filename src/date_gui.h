@@ -20,7 +20,7 @@
  */
 typedef void SetTickCallback(const Window *w, StateTicks tick);
 
-void ShowSetDateWindow(Window *parent, int window_number, StateTicks initial_tick, Year min_year, Year max_year, SetTickCallback *callback,
+void ShowSetDateWindow(Window *parent, int window_number, StateTicks initial_tick, EconTime::Year min_year, EconTime::Year max_year, SetTickCallback *callback,
 		StringID button_text = STR_NULL, StringID button_tooltip = STR_NULL);
 
 #endif /* DATE_GUI_H */

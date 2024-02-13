@@ -279,8 +279,8 @@ static void InitializeWindowsAndCaches()
 		/* For each company, verify (while loading a scenario) that the inauguration date is the current year and set it
 		 * accordingly if it is not the case.  No need to set it on companies that are not been used already,
 		 * thus the MIN_YEAR (which is really nothing more than Zero, initialized value) test */
-		if (_file_to_saveload.abstract_ftype == FT_SCENARIO && c->inaugurated_year != MIN_YEAR) {
-			c->inaugurated_year = _cur_year;
+		if (_file_to_saveload.abstract_ftype == FT_SCENARIO && c->inaugurated_year != CalTime::MIN_YEAR) {
+			c->inaugurated_year = CalTime::CurYear();
 		}
 	}
 
@@ -842,14 +842,14 @@ bool AfterLoadGame()
 	}
 
 	/* The value of _date_fract got divided, so make sure that old games are converted correctly. */
-	if (IsSavegameVersionBefore(SLV_11, 1) || (IsSavegameVersionBefore(SLV_147) && _date_fract > DAY_TICKS)) _date_fract /= 885;
+	if (IsSavegameVersionBefore(SLV_11, 1) || (IsSavegameVersionBefore(SLV_147) && CalTime::CurDateFract() > DAY_TICKS)) CalTime::Detail::now.cal_date_fract /= 885;
 
 	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP) || SlXvIsFeaturePresent(XSLFI_JOKERPP) || SlXvIsFeaturePresent(XSLFI_CHILLPP)) {
 		assert(DayLengthFactor() >= 1);
-		_tick_skip_counter = _date_fract % DayLengthFactor();
-		_date_fract /= DayLengthFactor();
-		assert(_date_fract < DAY_TICKS);
-		assert(_tick_skip_counter < DayLengthFactor());
+		DateDetail::_tick_skip_counter = CalTime::CurDateFract() % DayLengthFactor();
+		CalTime::Detail::now.cal_date_fract /= DayLengthFactor();
+		assert(CalTime::CurDateFract() < DAY_TICKS);
+		assert(TickSkipCounter() < DayLengthFactor());
 	}
 
 	/* Set day length factor to 1 if loading a pre day length savegame */
@@ -863,15 +863,23 @@ bool AfterLoadGame()
 		}
 	}
 	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH, 3)) {
-		_scaled_tick_counter = (uint64_t)((_tick_counter * DayLengthFactor()) + _tick_skip_counter);
+		_scaled_tick_counter = (uint64_t)((_tick_counter * DayLengthFactor()) + TickSkipCounter());
 	}
 	if (SlXvIsFeaturePresent(XSLFI_VARIABLE_DAY_LENGTH, 1, 3)) {
-		_state_ticks = GetStateTicksFromCurrentDateWithoutOffset() + _state_ticks_offset;
+		_state_ticks = GetStateTicksFromCurrentDateWithoutOffset() + DateDetail::_state_ticks_offset;
 	}
 
 	/* Update current year
 	 * must be done before loading sprites as some newgrfs check it */
-	SetDate(_date, _date_fract);
+	CalTime::Detail::SetDate(CalTime::CurDate(), CalTime::CurDateFract());
+
+	if (SlXvIsFeaturePresent(XSLFI_VARIABLE_DAY_LENGTH, 5) || !IsSavegameVersionBefore(SLV_ECONOMY_DATE)) {
+		EconTime::Detail::SetDate(EconTime::CurDate(), EconTime::CurDateFract());
+	} else {
+		/* Set economy date from calendar date */
+		EconTime::Detail::SetDate(CalTime::CurDate().base(), CalTime::CurDateFract());
+	}
+
 	SetupTileLoopCounts();
 
 	/*
@@ -917,7 +925,7 @@ bool AfterLoadGame()
 	}
 
 	if (IsSavegameVersionBefore(SLV_ENDING_YEAR)) {
-		_settings_game.game_creation.ending_year = DEF_END_YEAR;
+		_settings_game.game_creation.ending_year = CalTime::DEF_END_YEAR;
 	}
 
 	/* Convert linkgraph update settings from days to seconds. */
@@ -1804,20 +1812,22 @@ bool AfterLoadGame()
 	/* Time starts at 0 instead of 1920.
 	 * Account for this in older games by adding an offset */
 	if (IsSavegameVersionBefore(SLV_31)) {
-		_date += DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
+		CalTime::Detail::now.cal_date += CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
+		EconTime::Detail::now.econ_date += EconTime::DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
+		CalTime::Detail::now.cal_ymd = CalTime::ConvertDateToYMD(CalTime::CurDate());
+		EconTime::Detail::now.econ_ymd = EconTime::ConvertDateToYMD(EconTime::CurDate());
 		RecalculateStateTicksOffset();
-		_cur_date_ymd = ConvertDateToYMD(_date);
 		UpdateCachedSnowLine();
 
-		for (Station *st : Station::Iterate())   st->build_date      += DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
-		for (Waypoint *wp : Waypoint::Iterate()) wp->build_date      += DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
-		for (Engine *e : Engine::Iterate())      e->intro_date       += DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
-		for (Company *c : Company::Iterate()) c->inaugurated_year += ORIGINAL_BASE_YEAR;
-		for (Industry *i : Industry::Iterate())  i->last_prod_year   += ORIGINAL_BASE_YEAR;
+		for (Station *st : Station::Iterate())   st->build_date      += CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
+		for (Waypoint *wp : Waypoint::Iterate()) wp->build_date      += CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
+		for (Engine *e : Engine::Iterate())      e->intro_date       += CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
+		for (Company *c : Company::Iterate())    c->inaugurated_year += CalTime::ORIGINAL_BASE_YEAR.AsDelta();
+		for (Industry *i : Industry::Iterate())  i->last_prod_year   += CalTime::ORIGINAL_BASE_YEAR.AsDelta();
 
 		for (Vehicle *v : Vehicle::Iterate()) {
-			v->date_of_last_service += DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
-			v->build_year += ORIGINAL_BASE_YEAR;
+			v->date_of_last_service += EconTime::DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
+			v->build_year += CalTime::ORIGINAL_BASE_YEAR.AsDelta();
 		}
 	}
 
@@ -2327,7 +2337,7 @@ bool AfterLoadGame()
 
 			/* Replace "house construction year" with "house age" */
 			if (IsTileType(t, MP_HOUSE) && IsHouseCompleted(t)) {
-				_m[t].m5 = ClampTo<uint8_t>(_cur_year - (_m[t].m5 + ORIGINAL_BASE_YEAR));
+				_m[t].m5 = ClampTo<uint8_t>(CalTime::CurYear() - (_m[t].m5 + CalTime::ORIGINAL_BASE_YEAR.base()));
 			}
 		}
 	}
@@ -2507,7 +2517,7 @@ bool AfterLoadGame()
 					o->location.tile = t;
 					o->location.w    = size;
 					o->location.h    = size;
-					o->build_date    = _date;
+					o->build_date    = CalTime::CurDate();
 					o->town          = type == OBJECT_STATUE ? Town::Get(_m[t].m2) : CalcClosestTownFromTile(t, UINT_MAX);
 					_m[t].m2 = o->index;
 					Object::IncTypeCount(type);
@@ -2826,7 +2836,7 @@ bool AfterLoadGame()
 	}
 
 	if (IsSavegameVersionBefore(SLV_142)) {
-		for (Depot *d : Depot::Iterate()) d->build_date = _date;
+		for (Depot *d : Depot::Iterate()) d->build_date = CalTime::CurDate();
 	}
 
 	if (SlXvIsFeatureMissing(XSLFI_INFRA_SHARING)) {
@@ -3714,7 +3724,7 @@ bool AfterLoadGame()
 		/* clear the PBS bit, update the end signal state */
 		for (TileIndex t = 0; t < map_size; t++) {
 			if (IsTileType(t, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL && IsTunnelBridgeWithSignalSimulation(t)) {
-				SetTunnelBridgeSemaphore(t, _cur_year < _settings_client.gui.semaphore_build_before);
+				SetTunnelBridgeSemaphore(t, CalTime::CurYear() < _settings_client.gui.semaphore_build_before);
 				SetTunnelBridgePBS(t, false);
 				UpdateSignalsOnSegment(t, INVALID_DIAGDIR, GetTileOwner(t));
 			}
@@ -4340,7 +4350,7 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_NEWGRF_LAST_SERVICE) && SlXvIsFeatureMissing(XSLFI_NEWGRF_LAST_SERVICE)) {
 		/* Set service date provided to NewGRF. */
 		for (Vehicle *v : Vehicle::Iterate()) {
-			v->date_of_last_service_newgrf = v->date_of_last_service;
+			v->date_of_last_service_newgrf = v->date_of_last_service.base();
 		}
 	}
 
@@ -4425,9 +4435,9 @@ bool AfterLoadGame()
 #endif
 	}
 
-	_game_load_cur_date_ymd = _cur_date_ymd;
-	_game_load_date_fract = _date_fract;
-	_game_load_tick_skip_counter = _tick_skip_counter;
+	_game_load_cur_date_ymd = EconTime::CurYMD();
+	_game_load_date_fract = EconTime::CurDateFract();
+	_game_load_tick_skip_counter = TickSkipCounter();
 	_game_load_state_ticks = _state_ticks;
 	_game_load_time = time(nullptr);
 

@@ -21,7 +21,7 @@
 typedef Pool<Industry, IndustryID, 64, 64000> IndustryPool;
 extern IndustryPool _industry_pool;
 
-static const Year PROCESSING_INDUSTRY_ABANDONMENT_YEARS = 5; ///< If a processing industry doesn't produce for this many consecutive years, it may close.
+static const YearDelta PROCESSING_INDUSTRY_ABANDONMENT_YEARS = 5; ///< If a processing industry doesn't produce for this many consecutive years, it may close.
 
 /**
  * Production level maximum, minimum and default values.
@@ -63,7 +63,7 @@ DECLARE_ENUM_AS_BIT_SET(IndustryControlFlags);
 struct Industry : IndustryPool::PoolItem<&_industry_pool> {
 	IndustryType type;                                          ///< Type of industry.
 	Owner owner;                                                ///< Owner of the industry.  Which SHOULD always be (imho) OWNER_NONE
-	Date construction_date;                                     ///< Date of the construction of the industry
+	CalTime::Date construction_date;                            ///< Date of the construction of the industry
 	TileArea location;                                          ///< Location of the industry
 	Town *town;                                                 ///< Nearest town
 	Station *neutral_station;                                   ///< Associated neutral station
@@ -84,7 +84,7 @@ struct Industry : IndustryPool::PoolItem<&_industry_pool> {
 	uint16_t counter;                   ///< used for animation and/or production (if available cargo)
 	byte prod_level;                    ///< general production level
 	Colours random_colour;              ///< randomized colour of the industry, for display purpose
-	Year last_prod_year;                ///< last year of production
+	EconTime::Year last_prod_year;      ///< last year of production
 	byte was_cargo_delivered;           ///< flag that indicate this has been the closest industry chosen for cargo delivery by a station. see DeliverGoodsToIndustry
 	IndustryControlFlags ctlflags;      ///< flags overriding standard behaviours
 
@@ -95,7 +95,7 @@ struct Industry : IndustryPool::PoolItem<&_industry_pool> {
 	byte selected_layout;               ///< Which tile layout was used when creating the industry
 	Owner exclusive_supplier;           ///< Which company has exclusive rights to deliver cargo (INVALID_OWNER = anyone)
 	Owner exclusive_consumer;           ///< Which company has exclusive rights to take cargo (INVALID_OWNER = anyone)
-	Date last_cargo_accepted_at[INDUSTRY_NUM_INPUTS]; ///< Last day each cargo type was accepted by this industry
+	EconTime::Date last_cargo_accepted_at[INDUSTRY_NUM_INPUTS]; ///< Last day each cargo type was accepted by this industry
 	std::string text;                   ///< General text with additional information.
 
 	uint16_t random;                    ///< Random value used for randomisation of all kinds of things

@@ -86,7 +86,7 @@ struct CompanyProperties {
 
 	std::array<Owner, MAX_COMPANY_SHARE_OWNERS> share_owners; ///< Owners of the shares of the company. #INVALID_OWNER if nobody has bought them yet.
 
-	Year inaugurated_year;           ///< Year of starting the company.
+	CalTime::Year inaugurated_year;  ///< Year of starting the company.
 
 	byte months_of_bankruptcy;       ///< Number of months that the company is unable to pay its debts
 	CompanyID bankrupt_last_asked;   ///< Which company was most recently asked about buying it?

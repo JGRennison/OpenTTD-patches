@@ -100,8 +100,8 @@ struct ObjectSpec {
 	uint8_t size;                   ///< The size of this objects; low nibble for X, high nibble for Y.
 	uint8_t build_cost_multiplier;  ///< Build cost multiplier per tile.
 	uint8_t clear_cost_multiplier;  ///< Clear cost multiplier per tile.
-	Date introduction_date;         ///< From when can this object be built.
-	Date end_of_life_date;          ///< When can't this object be built anymore.
+	CalTime::Date introduction_date;///< From when can this object be built.
+	CalTime::Date end_of_life_date; ///< When can't this object be built anymore.
 	ObjectFlags flags;              ///< Flags/settings related to the object.
 	ObjectCtrlFlags ctrl_flags;     ///< Extra control flags.
 	uint8_t edge_foundation[4];     ///< Edge foundation flags

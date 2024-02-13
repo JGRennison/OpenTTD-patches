@@ -105,19 +105,25 @@ extern void EnginesMonthlyLoop();
 static int32_t ClickChangeDateCheat(int32_t p1, int32_t p2)
 {
 	/* Don't allow changing to an invalid year, or the current year. */
-	p1 = Clamp(p1, MIN_YEAR, MAX_YEAR);
-	if (p1 == _cur_year) return _cur_year;
+	p1 = Clamp(p1, CalTime::MIN_YEAR.base(), CalTime::MAX_YEAR.base());
+	if (p1 == CalTime::CurYear()) return CalTime::CurYear().base();
 
-	YearMonthDay ymd = ConvertDateToYMD(_date);
-	Date new_date = ConvertYMDToDate(p1, ymd.month, ymd.day);
-
-	/* Shift cached dates. */
-	LinkGraphSchedule::instance.ShiftDates(new_date - _date);
-	ShiftOrderDates(new_date - _date);
-	ShiftVehicleDates(new_date - _date);
+	CalTime::Date new_date = CalTime::ConvertYMDToDate(p1, CalTime::CurMonth(), CalTime::CurDay());
 
 	/* Change the date. */
-	SetDate(new_date, _date_fract);
+	CalTime::Detail::SetDate(new_date, CalTime::CurDateFract());
+
+	{
+		EconTime::Date new_econ_date = new_date.base();
+		EconTime::DateFract new_econ_date_fract = CalTime::CurDateFract();
+
+		/* Shift cached dates. */
+		LinkGraphSchedule::instance.ShiftDates(new_econ_date - EconTime::CurDate());
+		ShiftVehicleDates(new_econ_date - EconTime::CurDate());
+
+		EconTime::Detail::SetDate(new_econ_date, new_econ_date_fract);
+		UpdateOrderUIOnDateChange();
+	}
 
 	EnginesMonthlyLoop();
 	InvalidateWindowClassesData(WC_BUILD_STATION, 0);
@@ -125,7 +131,7 @@ static int32_t ClickChangeDateCheat(int32_t p1, int32_t p2)
 	InvalidateWindowClassesData(WC_BUILD_OBJECT, 0);
 	ResetSignalVariant();
 	MarkWholeScreenDirty();
-	return _cur_year;
+	return CalTime::CurYear().base();
 }
 
 /**
@@ -194,7 +200,7 @@ static const CheatEntry _cheats_ui[] = {
 	{CNM_ALL,        SLE_BOOL,        STR_CHEAT_NO_JETCRASH,      &_cheats.no_jetcrash.value,                    &_cheats.no_jetcrash.been_used,            nullptr                    },
 	{CNM_LOCAL_ONLY, SLE_BOOL,        STR_CHEAT_SETUP_PROD,       &_cheats.setup_prod.value,                     &_cheats.setup_prod.been_used,             &ClickSetProdCheat         },
 	{CNM_LOCAL_ONLY, SLE_UINT8,       STR_CHEAT_EDIT_MAX_HL,      &_settings_game.construction.map_height_limit, &_cheats.edit_max_hl.been_used,            &ClickChangeMaxHlCheat     },
-	{CNM_LOCAL_ONLY, SLE_INT32,       STR_CHEAT_CHANGE_DATE,      &_cur_date_ymd.year,                           &_cheats.change_date.been_used,            &ClickChangeDateCheat      },
+	{CNM_LOCAL_ONLY, SLE_INT32,       STR_CHEAT_CHANGE_DATE,      &CalTime::Detail::now.cal_ymd.year,            &_cheats.change_date.been_used,            &ClickChangeDateCheat      },
 	{CNM_ALL,        SLF_ALLOW_CONTROL, STR_CHEAT_INFLATION_COST,   &_economy.inflation_prices,                  &_cheats.inflation_cost.been_used,         nullptr                    },
 	{CNM_ALL,        SLF_ALLOW_CONTROL, STR_CHEAT_INFLATION_INCOME, &_economy.inflation_payment,                 &_cheats.inflation_income.been_used,       nullptr                    },
 	{CNM_ALL,        SLE_BOOL,        STR_CHEAT_STATION_RATING,   &_cheats.station_rating.value,                 &_cheats.station_rating.been_used,         nullptr                    },
@@ -304,7 +310,7 @@ struct CheatWindow : Window {
 
 					switch (ce->str) {
 						/* Display date for change date cheat */
-						case STR_CHEAT_CHANGE_DATE: SetDParam(0, _date); break;
+						case STR_CHEAT_CHANGE_DATE: SetDParam(0, CalTime::CurDate()); break;
 
 						/* Draw coloured flag for change company cheat */
 						case STR_CHEAT_CHANGE_COMPANY: {
@@ -352,7 +358,7 @@ struct CheatWindow : Window {
 					switch (ce->str) {
 						/* Display date for change date cheat */
 						case STR_CHEAT_CHANGE_DATE:
-							SetDParam(0, ConvertYMDToDate(MAX_YEAR, 11, 31));
+							SetDParam(0, CalTime::ConvertYMDToDate(CalTime::MAX_YEAR, 11, 31));
 							width = std::max(width, GetStringBoundingBox(ce->str).width);
 							break;
 

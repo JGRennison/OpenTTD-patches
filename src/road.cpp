@@ -147,7 +147,7 @@ bool HasRoadTypeAvail(const CompanyID company, RoadType roadtype)
 		if (rti->label == 0) return false;
 
 		/* Not yet introduced at this date. */
-		if (IsInsideMM(rti->introduction_date, 0, MAX_DATE.base()) && rti->introduction_date > _date) return false;
+		if (IsInsideMM(rti->introduction_date, 0, CalTime::MAX_DATE.base()) && rti->introduction_date > CalTime::CurDate()) return false;
 
 		/*
 		 * Do not allow building hidden road types, except when a town may build it.
@@ -199,7 +199,7 @@ bool ValParamRoadType(RoadType roadtype)
  * @return The road types that should be available when date
  *         introduced road types are taken into account as well.
  */
-RoadTypes AddDateIntroducedRoadTypes(RoadTypes current, Date date)
+RoadTypes AddDateIntroducedRoadTypes(RoadTypes current, CalTime::Date date)
 {
 	RoadTypes rts = current;
 
@@ -209,7 +209,7 @@ RoadTypes AddDateIntroducedRoadTypes(RoadTypes current, Date date)
 		if (rti->label == 0) continue;
 
 		/* Not date introduced. */
-		if (!IsInsideMM(rti->introduction_date, 0, MAX_DATE.base())) continue;
+		if (!IsInsideMM(rti->introduction_date, 0, CalTime::MAX_DATE.base())) continue;
 
 		/* Not yet introduced at this date. */
 		if (rti->introduction_date > date) continue;
@@ -240,7 +240,7 @@ RoadTypes GetCompanyRoadTypes(CompanyID company, bool introduces)
 		const EngineInfo *ei = &e->info;
 
 		if (HasBit(ei->climates, _settings_game.game_creation.landscape) &&
-				(HasBit(e->company_avail, company) || _date >= e->intro_date + DAYS_IN_YEAR)) {
+				(HasBit(e->company_avail, company) || CalTime::CurDate() >= e->intro_date + DAYS_IN_YEAR)) {
 			const RoadVehicleInfo *rvi = &e->u.road;
 			assert(rvi->roadtype < ROADTYPE_END);
 			if (introduces) {
@@ -251,7 +251,7 @@ RoadTypes GetCompanyRoadTypes(CompanyID company, bool introduces)
 		}
 	}
 
-	if (introduces) return AddDateIntroducedRoadTypes(rts, _date);
+	if (introduces) return AddDateIntroducedRoadTypes(rts, CalTime::CurDate());
 	return rts;
 }
 
@@ -277,7 +277,7 @@ RoadTypes GetRoadTypes(bool introduces)
 		}
 	}
 
-	if (introduces) return AddDateIntroducedRoadTypes(rts, MAX_DATE);
+	if (introduces) return AddDateIntroducedRoadTypes(rts, CalTime::MAX_DATE);
 	return rts;
 }
 

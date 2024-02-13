@@ -4472,12 +4472,12 @@ void DeleteStaleLinks(Station *from)
 
 			Station *to = Station::Get((*lg)[to_id].Station());
 			assert(to->goods[c].node == to_id);
-			assert(_date >= edge.LastUpdate());
+			assert(EconTime::CurDate() >= edge.LastUpdate());
 			DateDelta timeout = std::max<uint>((LinkGraph::MIN_TIMEOUT_DISTANCE + (DistanceManhattan(from->xy, to->xy) >> 3)) / DayLengthFactor(), 1);
-			if (edge.LastAircraftUpdate() != INVALID_DATE && (_date - edge.LastAircraftUpdate()) > timeout) {
+			if (edge.LastAircraftUpdate() != EconTime::INVALID_DATE && (EconTime::CurDate() - edge.LastAircraftUpdate()) > timeout) {
 				edge.ClearAircraft();
 			}
-			if ((_date - edge.LastUpdate()) > timeout) {
+			if ((EconTime::CurDate() - edge.LastUpdate()) > timeout) {
 				bool updated = false;
 
 				if (auto_distributed) {
@@ -4509,7 +4509,7 @@ void DeleteStaleLinks(Station *from)
 						// Only run LinkRefresher if vehicle was not already in the cache
 						if (res.second) {
 							/* Do not refresh links of vehicles that have been stopped in depot for a long time. */
-							if (!v->IsStoppedInDepot() || (_date - v->date_of_last_service) <=
+							if (!v->IsStoppedInDepot() || (EconTime::CurDate() - v->date_of_last_service) <=
 									LinkGraph::STALE_LINK_DEPOT_TIMEOUT) {
 								edge_helper.RecordSize();
 								LinkRefresher::Run(v, false); // Don't allow merging. Otherwise lg might get deleted.
@@ -4518,7 +4518,7 @@ void DeleteStaleLinks(Station *from)
 								}
 							}
 						}
-						if (edge.LastUpdate() == _date) {
+						if (edge.LastUpdate() == EconTime::CurDate()) {
 							updated = true;
 							break;
 						}
@@ -4541,11 +4541,11 @@ void DeleteStaleLinks(Station *from)
 					if (ge.data != nullptr) ge.data->flows.DeleteFlows(to->index);
 					RerouteCargo(from, c, to->index, from->index);
 				}
-			} else if (edge.LastUnrestrictedUpdate() != INVALID_DATE && (_date - edge.LastUnrestrictedUpdate()) > timeout) {
+			} else if (edge.LastUnrestrictedUpdate() != EconTime::INVALID_DATE && (EconTime::CurDate() - edge.LastUnrestrictedUpdate()) > timeout) {
 				edge.Restrict();
 				if (ge.data != nullptr) ge.data->flows.RestrictFlows(to->index);
 				RerouteCargo(from, c, to->index, from->index);
-			} else if (edge.LastRestrictedUpdate() != INVALID_DATE && (_date - edge.LastRestrictedUpdate()) > timeout) {
+			} else if (edge.LastRestrictedUpdate() != EconTime::INVALID_DATE && (EconTime::CurDate() - edge.LastRestrictedUpdate()) > timeout) {
 				edge.Release();
 			}
 
@@ -4664,7 +4664,7 @@ void OnTick_Station()
 void StationDailyLoop()
 {
 	// Only record cargo history every second day.
-	if (_date.base() % 2 != 0) {
+	if (EconTime::CurDate().base() % 2 != 0) {
 		for (Station *st : Station::Iterate()) {
 			st->UpdateCargoHistory();
 		}
@@ -5076,7 +5076,7 @@ void BuildOilRig(TileIndex tile)
 	st->airport.Add(tile);
 	st->ship_station.Add(tile);
 	st->facilities = FACIL_AIRPORT | FACIL_DOCK;
-	st->build_date = _date;
+	st->build_date = CalTime::CurDate();
 	UpdateStationDockingTiles(st);
 
 	st->rect.BeforeAddTile(tile, StationRect::ADD_FORCE);

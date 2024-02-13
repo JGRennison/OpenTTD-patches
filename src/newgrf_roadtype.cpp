@@ -30,7 +30,7 @@
 			case 0x40: return 0;
 			case 0x41: return 0;
 			case 0x42: return 0;
-			case 0x43: return _date.base();
+			case 0x43: return CalTime::CurDate().base();
 			case 0x44: return HZB_TOWN_EDGE;
 		}
 	}
@@ -41,7 +41,7 @@
 		case 0x42: return IsLevelCrossingTile(this->tile) && IsCrossingBarred(this->tile);
 		case 0x43:
 			if (IsRoadDepotTile(this->tile)) return Depot::GetByTile(this->tile)->build_date.base();
-			return _date.base();
+			return CalTime::CurDate().base();
 		case 0x44: {
 			const Town *t = nullptr;
 			if (IsRoadDepotTile(this->tile)) {

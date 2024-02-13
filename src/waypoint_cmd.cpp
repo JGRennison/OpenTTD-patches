@@ -298,7 +298,7 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 
 		wp->delete_ctr = 0;
 		wp->facilities |= FACIL_TRAIN;
-		wp->build_date = _date;
+		wp->build_date = CalTime::CurDate();
 		wp->string_id = STR_SV_STNAME_WAYPOINT;
 		wp->train_station = new_location;
 
@@ -448,7 +448,7 @@ CommandCost CmdBuildRoadWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 
 		wp->delete_ctr = 0;
 		wp->facilities |= FACIL_BUS_STOP | FACIL_TRUCK_STOP;
-		wp->build_date = _date;
+		wp->build_date = CalTime::CurDate();
 		wp->string_id = STR_SV_STNAME_WAYPOINT;
 
 		if (wp->town == nullptr) MakeDefaultName(wp);
@@ -550,7 +550,7 @@ CommandCost CmdBuildBuoy(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 		wp->facilities |= FACIL_DOCK;
 		wp->owner = OWNER_NONE;
 
-		wp->build_date = _date;
+		wp->build_date = CalTime::CurDate();
 
 		if (wp->town == nullptr) MakeDefaultName(wp);
 

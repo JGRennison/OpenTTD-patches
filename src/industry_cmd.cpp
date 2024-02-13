@@ -1853,11 +1853,11 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 	i->counter = GB(r, 4, 12);
 	i->random = initial_random_bits;
 	i->was_cargo_delivered = false;
-	i->last_prod_year = _cur_year;
+	i->last_prod_year = EconTime::CurYear();
 	i->founder = founder;
 	i->ctlflags = INDCTL_NONE;
 
-	i->construction_date = _date;
+	i->construction_date = CalTime::CurDate();
 	i->construction_type = (_game_mode == GM_EDITOR) ? ICT_SCENARIO_EDITOR :
 			(_generating_world ? ICT_MAP_GENERATION : ICT_NORMAL_GAMEPLAY);
 
@@ -2393,8 +2393,8 @@ static uint16_t GetIndustryGamePlayProbability(IndustryType it, byte *min_number
 	const IndustrySpec *ind_spc = GetIndustrySpec(it);
 	byte chance = ind_spc->appear_ingame[_settings_game.game_creation.landscape];
 	if (!ind_spc->enabled || ind_spc->layouts.empty() ||
-			((ind_spc->behaviour & INDUSTRYBEH_BEFORE_1950) && _cur_year > 1950) ||
-			((ind_spc->behaviour & INDUSTRYBEH_AFTER_1960) && _cur_year < 1960) ||
+			((ind_spc->behaviour & INDUSTRYBEH_BEFORE_1950) && CalTime::CurYear() > 1950) ||
+			((ind_spc->behaviour & INDUSTRYBEH_AFTER_1960) && CalTime::CurYear() < 1960) ||
 			(chance = GetIndustryProbabilityCallback(it, IACT_RANDOMCREATION, chance)) == 0) {
 		*min_number = 0;
 		return 0;
@@ -2566,7 +2566,7 @@ static void UpdateIndustryStatistics(Industry *i)
 		if (i->produced_cargo[j] != INVALID_CARGO) {
 			byte pct = 0;
 			if (i->this_month_production[j] != 0) {
-				i->last_prod_year = _cur_year;
+				i->last_prod_year = EconTime::CurYear();
 				pct = ClampTo<byte>(i->this_month_transported[j] * 256 / i->this_month_production[j]);
 			}
 			i->last_month_pct_transported[j] = pct;
@@ -2993,7 +2993,7 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 	}
 
 	if (!callback_enabled && (indspec->life_type & INDUSTRYLIFE_PROCESSING)) {
-		if ((_cur_year - i->last_prod_year) >= PROCESSING_INDUSTRY_ABANDONMENT_YEARS && Chance16(1, original_economy ? 2 : 180)) {
+		if ((EconTime::CurYear() - i->last_prod_year) >= PROCESSING_INDUSTRY_ABANDONMENT_YEARS && Chance16(1, original_economy ? 2 : 180)) {
 			closeit = true;
 		}
 	}

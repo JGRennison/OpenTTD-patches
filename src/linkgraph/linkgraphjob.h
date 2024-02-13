@@ -139,8 +139,8 @@ protected:
 
 	std::shared_ptr<LinkGraphJobGroup> group; ///< Job group thread the job is running in or nullptr if it's running in the main thread.
 	const LinkGraphSettings settings; ///< Copy of _settings_game.linkgraph at spawn time.
-	DateTicks join_date_ticks;        ///< Date when the job is to be joined.
-	DateTicks start_date_ticks;       ///< Date when the job was started.
+	EconTime::DateTicks join_date_ticks;  ///< Date when the job is to be joined.
+	EconTime::DateTicks start_date_ticks; ///< Date when the job was started.
 	NodeAnnotationVector nodes;       ///< Extra node data necessary for link graph calculation.
 	EdgeAnnotationVector edges;       ///< Edge data necessary for link graph calculation.
 	std::atomic<bool> job_completed;  ///< Is the job still running. This is accessed by multiple threads and reads may be stale.
@@ -263,7 +263,7 @@ public:
 	 * settings have to be brutally const-casted in order to populate them.
 	 */
 	LinkGraphJob() : settings(_settings_game.linkgraph),
-			join_date_ticks(INVALID_DATE_TICKS), start_date_ticks(INVALID_DATE_TICKS), job_completed(false), job_aborted(false) {}
+			join_date_ticks(EconTime::INVALID_DATE_TICKS), start_date_ticks(EconTime::INVALID_DATE_TICKS), job_completed(false), job_aborted(false) {}
 
 	LinkGraphJob(const LinkGraph &orig, uint duration_multiplier);
 	~LinkGraphJob();
@@ -298,19 +298,19 @@ public:
 	 * @param tick_offset Optional number of ticks to add to the current date
 	 * @return True if job should be finished by now, false if not.
 	 */
-	inline bool IsScheduledToBeJoined(int tick_offset = 0) const { return this->join_date_ticks <= NowDateTicks() + tick_offset; }
+	inline bool IsScheduledToBeJoined(int tick_offset = 0) const { return this->join_date_ticks <= EconTime::CurDateTicks() + tick_offset; }
 
 	/**
 	 * Get the date when the job should be finished.
 	 * @return Join date.
 	 */
-	inline DateTicks JoinDateTicks() const { return join_date_ticks; }
+	inline EconTime::DateTicks JoinDateTicks() const { return join_date_ticks; }
 
 	/**
 	 * Get the date when the job was started.
 	 * @return Start date.
 	 */
-	inline DateTicks StartDateTicks() const { return start_date_ticks; }
+	inline EconTime::DateTicks StartDateTicks() const { return start_date_ticks; }
 
 	/**
 	 * Change the start and join dates on date cheating.

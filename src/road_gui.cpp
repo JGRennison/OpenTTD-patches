@@ -2333,7 +2333,7 @@ DropDownList GetRoadTypeDropDownList(RoadTramTypes rtts, bool for_replacement, b
 DropDownList GetScenRoadTypeDropDownList(RoadTramTypes rtts)
 {
 	RoadTypes avail_roadtypes = GetRoadTypes(false);
-	avail_roadtypes = AddDateIntroducedRoadTypes(avail_roadtypes, _date);
+	avail_roadtypes = AddDateIntroducedRoadTypes(avail_roadtypes, CalTime::CurDate());
 	RoadTypes used_roadtypes = GetRoadTypes(true);
 
 	/* Filter listed road types */

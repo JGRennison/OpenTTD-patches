@@ -31,8 +31,8 @@ extern GameEventFlags _game_events_since_load;
 extern GameEventFlags _game_events_overall;
 
 extern time_t _game_load_time;
-extern YearMonthDay _game_load_cur_date_ymd;
-extern DateFract _game_load_date_fract;
+extern EconTime::YearMonthDay _game_load_cur_date_ymd;
+extern EconTime::DateFract _game_load_date_fract;
 extern uint8_t _game_load_tick_skip_counter;
 extern StateTicks _game_load_state_ticks;
 

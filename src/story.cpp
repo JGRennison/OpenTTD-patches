@@ -224,7 +224,7 @@ CommandCost CmdCreateStoryPage(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 
 		StoryPage *s = new StoryPage();
 		s->sort_value = _story_page_next_sort_value;
-		s->date = _date;
+		s->date = CalTime::CurDate();
 		s->company = company;
 		if (StrEmpty(text)) {
 			s->title.clear();
@@ -367,7 +367,7 @@ CommandCost CmdSetStoryPageDate(TileIndex tile, DoCommandFlag flags, uint32_t p1
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 	StoryPageID page_id = (StoryPageID)GB(p1, 0, 16);
 	if (!StoryPage::IsValidID(page_id)) return CMD_ERROR;
-	Date date = (Date)p2;
+	CalTime::Date date = (CalTime::Date)p2;
 
 	if (flags & DC_EXEC) {
 		StoryPage *p = StoryPage::Get(page_id);

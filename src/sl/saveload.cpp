@@ -4122,7 +4122,7 @@ std::string GenerateDefaultSaveName()
 		case 2: SetDParam(1, STR_JUST_DATE_ISO); break;
 		default: NOT_REACHED();
 	}
-	SetDParam(2, _date);
+	SetDParam(2, CalTime::CurDate());
 
 	/* Get the correct string (special string for when there's not company) */
 	std::string filename = GetString(!Company::IsValidID(cid) ? STR_SAVEGAME_NAME_SPECTATOR : STR_SAVEGAME_NAME_DEFAULT);

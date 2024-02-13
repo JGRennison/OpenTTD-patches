@@ -1120,7 +1120,7 @@ void TestedEngineDetails::FillDefaultCapacities(const Engine *e)
 int DrawVehiclePurchaseInfo(int left, int right, int y, EngineID engine_number, TestedEngineDetails &te)
 {
 	const Engine *e = Engine::Get(engine_number);
-	YearMonthDay ymd = ConvertDateToYMD(e->intro_date);
+	CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(e->intro_date);
 	bool refittable = IsArticulatedVehicleRefittable(engine_number);
 	bool articulated_cargo = false;
 
@@ -1168,7 +1168,7 @@ int DrawVehiclePurchaseInfo(int left, int right, int y, EngineID engine_number, 
 	if (e->type != VEH_TRAIN || e->u.rail.railveh_type != RAILVEH_WAGON) {
 		/* Design date - Life length */
 		SetDParam(0, ymd.year);
-		SetDParam(1, DateDeltaToYears(e->GetLifeLengthInDays()));
+		SetDParam(1, DateDeltaToYearDelta(e->GetLifeLengthInDays()));
 		DrawString(left, right, y, STR_PURCHASE_INFO_DESIGNED_LIFE);
 		y += GetCharacterHeight(FS_NORMAL);
 

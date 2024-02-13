@@ -178,8 +178,8 @@ static void AddNewScheduledDispatchSchedule(VehicleID vindex)
 
 		duration = 24 * 60 * _settings_time.ticks_per_minute;
 	} else {
-		/* Set Jan 1st and 365 day */
-		start_tick = DateToStateTicks(DateAtStartOfYear(_cur_year));
+		/* Set Jan 1st and 365 day, calendar and economy time must be locked together for this to result in a useful schedule */
+		start_tick = DateToStateTicks(CalTime::DateAtStartOfYear(CalTime::CurYear()).base());
 		duration = 365 * DAY_TICKS;
 	}
 
@@ -280,7 +280,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			case WID_SCHDISPATCH_MATRIX: {
 				uint min_height = 0;
 
-				SetDParamMaxValue(0, _settings_time.time_in_minutes ? 0 : MAX_YEAR * DAYS_IN_YEAR);
+				SetDParamMaxValue(0, _settings_time.time_in_minutes ? 0 : EconTime::MAX_YEAR.base() * DAYS_IN_YEAR);
 				Dimension unumber = GetStringBoundingBox(STR_SCHDISPATCH_DATE_WALLCLOCK_TINY_FLAGGED);
 
 				const Sprite *spr = GetSprite(SPR_FLAG_VEH_STOPPED, SpriteType::Normal, ZoomMask(ZOOM_LVL_GUI));
@@ -940,7 +940,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				} else if (_settings_time.time_in_minutes && _settings_client.gui.timetable_start_text_entry) {
 					ShowQueryString(STR_EMPTY, STR_SCHDISPATCH_ADD_CAPTION, 31, this, CS_NUMERAL, QSF_NONE);
 				} else {
-					ShowSetDateWindow(this, v->index | (this->schedule_index << 20), _state_ticks, _cur_year, _cur_year + 15, ScheduleAddCallback, STR_SCHDISPATCH_ADD, STR_SCHDISPATCH_ADD_TOOLTIP);
+					ShowSetDateWindow(this, v->index | (this->schedule_index << 20), _state_ticks, EconTime::CurYear(), EconTime::CurYear() + 15, ScheduleAddCallback, STR_SCHDISPATCH_ADD, STR_SCHDISPATCH_ADD_TOOLTIP);
 				}
 				break;
 			}
@@ -959,7 +959,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					SetDParam(0, _settings_time.NowInTickMinutes().ClockHHMM());
 					ShowQueryString(STR_JUST_INT, STR_SCHDISPATCH_START_CAPTION_MINUTE, 31, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else {
-					ShowSetDateWindow(this, v->index | (this->schedule_index << 20), _state_ticks, _cur_year, _cur_year + 15, SetScheduleStartDateCallback, STR_SCHDISPATCH_SET_START, STR_SCHDISPATCH_START_TOOLTIP);
+					ShowSetDateWindow(this, v->index | (this->schedule_index << 20), _state_ticks, EconTime::CurYear(), EconTime::CurYear() + 15, SetScheduleStartDateCallback, STR_SCHDISPATCH_SET_START, STR_SCHDISPATCH_START_TOOLTIP);
 				}
 				break;
 			}

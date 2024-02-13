@@ -45,7 +45,7 @@ EngineOverrideManager _engine_mngr;
  * Year that engine aging stops. Engines will not reduce in reliability
  * and no more engines will be introduced
  */
-static Year _year_engine_aging_stops;
+static CalTime::Year _year_engine_aging_stops;
 
 /** Number of engines of each vehicle type in original engine data */
 const uint8_t _engine_counts[4] = {
@@ -487,7 +487,7 @@ uint Engine::GetDisplayMaxTractiveEffort() const
 DateDelta Engine::GetLifeLengthInDays() const
 {
 	/* Assume leap years; this gives the player a bit more than the given amount of years, but never less. */
-	return static_cast<int32_t>(this->info.lifelength + _settings_game.vehicle.extend_vehicle_life) * DAYS_IN_LEAP_YEAR;
+	return (this->info.lifelength + _settings_game.vehicle.extend_vehicle_life).base() * DAYS_IN_LEAP_YEAR;
 }
 
 /**
@@ -651,8 +651,8 @@ static void ClearLastVariant(EngineID engine_id, VehicleType type)
 static void RetireEngineIfPossible(Engine *e, int age_threshold)
 {
 	if (_settings_game.vehicle.no_expire_vehicles_after > 0) {
-		YearMonthDay ymd = ConvertDateToYMD(e->intro_date);
-		if ((ymd.year * 12) + ymd.month + age_threshold >= _settings_game.vehicle.no_expire_vehicles_after * 12) return;
+		CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(e->intro_date);
+		if ((ymd.year.base() * 12) + ymd.month + age_threshold >= _settings_game.vehicle.no_expire_vehicles_after.base() * 12) return;
 	}
 
 	e->company_avail = 0;
@@ -724,7 +724,7 @@ void SetYearEngineAgingStops()
 		if (e->type == VEH_TRAIN && e->u.rail.railveh_type == RAILVEH_WAGON) continue;
 
 		/* Base year ending date on half the model life */
-		YearMonthDay ymd = ConvertDateToYMD(ei->base_intro + (static_cast<int32_t>(ei->lifelength) * DAYS_IN_LEAP_YEAR) / 2);
+		CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(ei->base_intro + (ei->lifelength.base() * DAYS_IN_LEAP_YEAR) / 2);
 
 		_year_engine_aging_stops = std::max(_year_engine_aging_stops, ymd.year);
 	}
@@ -736,7 +736,7 @@ void SetYearEngineAgingStops()
  * @param aging_date The date used for age calculations.
  * @param seed Random seed.
  */
-void StartupOneEngine(Engine *e, Date aging_date, const YearMonthDay &aging_ymd, uint32_t seed, Date no_introduce_after_date)
+void StartupOneEngine(Engine *e, CalTime::Date aging_date, const CalTime::YearMonthDay &aging_ymd, uint32_t seed, CalTime::Date no_introduce_after_date)
 {
 	const EngineInfo *ei = &e->info;
 
@@ -758,11 +758,11 @@ void StartupOneEngine(Engine *e, Date aging_date, const YearMonthDay &aging_ymd,
 	/* Don't randomise the start-date in the first two years after gamestart to ensure availability
 	 * of engines in early starting games.
 	 * Note: TTDP uses fixed 1922 */
-	e->intro_date = ei->base_intro <= ConvertYMDToDate(_settings_game.game_creation.starting_year + 2, 0, 1) ? ei->base_intro : (DateDelta)GB(r, 0, 9) + ei->base_intro;
-	if (e->intro_date <= _date && e->intro_date <= no_introduce_after_date) {
-		YearMonthDay intro_ymd = ConvertDateToYMD(e->intro_date);
-		int aging_months = aging_ymd.year * 12 + aging_ymd.month;
-		int intro_months = intro_ymd.year * 12 + intro_ymd.month;
+	e->intro_date = ei->base_intro <= CalTime::ConvertYMDToDate(_settings_game.game_creation.starting_year + 2, 0, 1) ? ei->base_intro : (DateDelta)GB(r, 0, 9) + ei->base_intro;
+	if (e->intro_date <= CalTime::CurDate() && e->intro_date <= no_introduce_after_date) {
+		CalTime::YearMonthDay intro_ymd = CalTime::ConvertDateToYMD(e->intro_date);
+		int aging_months = aging_ymd.year.base() * 12 + aging_ymd.month;
+		int intro_months = intro_ymd.year.base() * 12 + intro_ymd.month;
 		if (intro_ymd.day > 1) intro_months++; // Engines are introduced at the first month start at/after intro date.
 		e->age = aging_months - intro_months;
 		e->company_avail = MAX_UVALUE(CompanyMask);
@@ -777,7 +777,7 @@ void StartupOneEngine(Engine *e, Date aging_date, const YearMonthDay &aging_ymd,
 
 	SetRandomSeed(_settings_game.game_creation.generation_seed ^ seed ^
 	              (re->index << 16) ^ (re->info.base_intro.base() << 12) ^ (re->info.decay_speed << 8) ^
-	              (re->info.lifelength << 4) ^ re->info.retire_early ^
+	              (re->info.lifelength.base() << 4) ^ re->info.retire_early ^
 	              e->type ^
 	              e->GetGRFID());
 
@@ -799,7 +799,7 @@ void StartupOneEngine(Engine *e, Date aging_date, const YearMonthDay &aging_ymd,
 	e->reliability_final = GB(r, 16, 14) + RELIABILITY_FINAL;
 
 	e->duration_phase_1 = GB(r, 0, 5) + 7;
-	e->duration_phase_2 = std::max(0, int(GB(r, 5, 4)) + ei->base_life * 12 - 96);
+	e->duration_phase_2 = std::max(0, int(GB(r, 5, 4)) + ei->base_life.base() * 12 - 96);
 	e->duration_phase_3 = GB(r, 9, 7) + 120;
 
 	RestoreRandomSeeds(saved_seeds);
@@ -820,16 +820,16 @@ void StartupOneEngine(Engine *e, Date aging_date, const YearMonthDay &aging_ymd,
 void StartupEngines()
 {
 	/* Aging of vehicles stops, so account for that when starting late */
-	Year aging_stop_year = _year_engine_aging_stops;
+	CalTime::Year aging_stop_year = _year_engine_aging_stops;
 	if (_settings_game.vehicle.no_introduce_vehicles_after > 0 && _settings_game.vehicle.no_expire_vehicles_after > 0) {
-		aging_stop_year = std::min<Year>(aging_stop_year, std::max<Year>(_settings_game.vehicle.no_introduce_vehicles_after, _settings_game.vehicle.no_expire_vehicles_after));
+		aging_stop_year = std::min<CalTime::Year>(aging_stop_year, std::max<CalTime::Year>(_settings_game.vehicle.no_introduce_vehicles_after, _settings_game.vehicle.no_expire_vehicles_after));
 	}
-	const Date aging_date = std::min(_date, ConvertYMDToDate(aging_stop_year, 0, 1));
-	const YearMonthDay aging_ymd = ConvertDateToYMD(aging_date);
+	const CalTime::Date aging_date = std::min(CalTime::CurDate(), CalTime::ConvertYMDToDate(aging_stop_year, 0, 1));
+	const CalTime::YearMonthDay aging_ymd = CalTime::ConvertDateToYMD(aging_date);
 
-	Date no_introduce_after_date = INT_MAX;
+	CalTime::Date no_introduce_after_date = INT_MAX;
 	if (_settings_game.vehicle.no_introduce_vehicles_after > 0) {
-		no_introduce_after_date = ConvertYMDToDate(_settings_game.vehicle.no_introduce_vehicles_after, 0, 1) - 1;
+		no_introduce_after_date = CalTime::ConvertYMDToDate(_settings_game.vehicle.no_introduce_vehicles_after, 0, 1) - 1;
 	}
 
 	uint32_t seed = Random();
@@ -994,11 +994,11 @@ static bool IsVehicleTypeDisabled(VehicleType type, bool ai)
 void EnginesDailyLoop()
 {
 	for (Company *c : Company::Iterate()) {
-		c->avail_railtypes = AddDateIntroducedRailTypes(c->avail_railtypes, _date);
-		c->avail_roadtypes = AddDateIntroducedRoadTypes(c->avail_roadtypes, _date);
+		c->avail_railtypes = AddDateIntroducedRailTypes(c->avail_railtypes, CalTime::CurDate());
+		c->avail_roadtypes = AddDateIntroducedRoadTypes(c->avail_roadtypes, CalTime::CurDate());
 	}
 
-	if (_cur_year >= _year_engine_aging_stops) return;
+	if (CalTime::CurYear() >= _year_engine_aging_stops) return;
 
 	for (Engine *e : Engine::Iterate()) {
 		EngineID i = e->index;
@@ -1160,11 +1160,11 @@ static void NewVehicleAvailable(Engine *e)
 	if (e->type == VEH_TRAIN) {
 		/* maybe make another rail type available */
 		assert(e->u.rail.railtype < RAILTYPE_END);
-		for (Company *c : Company::Iterate()) c->avail_railtypes = AddDateIntroducedRailTypes(c->avail_railtypes | GetRailTypeInfo(e->u.rail.railtype)->introduces_railtypes, _date);
+		for (Company *c : Company::Iterate()) c->avail_railtypes = AddDateIntroducedRailTypes(c->avail_railtypes | GetRailTypeInfo(e->u.rail.railtype)->introduces_railtypes, CalTime::CurDate());
 	} else if (e->type == VEH_ROAD) {
 		/* maybe make another road type available */
 		assert(e->u.road.roadtype < ROADTYPE_END);
-		for (Company *c : Company::Iterate()) c->avail_roadtypes = AddDateIntroducedRoadTypes(c->avail_roadtypes | GetRoadTypeInfo(e->u.road.roadtype)->introduces_roadtypes, _date);
+		for (Company *c : Company::Iterate()) c->avail_roadtypes = AddDateIntroducedRoadTypes(c->avail_roadtypes | GetRoadTypeInfo(e->u.road.roadtype)->introduces_roadtypes, CalTime::CurDate());
 	}
 
 	/* Only broadcast event if AIs are able to build this vehicle type. */
@@ -1189,13 +1189,13 @@ static void NewVehicleAvailable(Engine *e)
 /** Monthly update of the availability, reliability, and preview offers of the engines. */
 void EnginesMonthlyLoop()
 {
-	if (_cur_year < _year_engine_aging_stops) {
-		Date no_introduce_after = INT_MAX;
+	if (CalTime::CurYear() < _year_engine_aging_stops) {
+		CalTime::Date no_introduce_after = INT_MAX;
 		if (_settings_game.vehicle.no_introduce_vehicles_after > 0) {
-			if (_settings_game.vehicle.no_expire_vehicles_after > 0 && _cur_year >= std::max<Year>(_settings_game.vehicle.no_introduce_vehicles_after, _settings_game.vehicle.no_expire_vehicles_after)) {
+			if (_settings_game.vehicle.no_expire_vehicles_after > 0 && CalTime::CurYear() >= std::max<CalTime::Year>(_settings_game.vehicle.no_introduce_vehicles_after, _settings_game.vehicle.no_expire_vehicles_after)) {
 				return;
 			}
-			no_introduce_after = ConvertYMDToDate(_settings_game.vehicle.no_introduce_vehicles_after, 0, 1) - 1;
+			no_introduce_after = CalTime::ConvertYMDToDate(_settings_game.vehicle.no_introduce_vehicles_after, 0, 1) - 1;
 		}
 
 		bool refresh = false;
@@ -1212,10 +1212,10 @@ void EnginesMonthlyLoop()
 
 			if (e->intro_date > no_introduce_after) continue;
 
-			if (!(e->flags & ENGINE_AVAILABLE) && _date >= (e->intro_date + DAYS_IN_YEAR)) {
+			if (!(e->flags & ENGINE_AVAILABLE) && CalTime::CurDate() >= (e->intro_date + DAYS_IN_YEAR)) {
 				/* Introduce it to all companies */
 				NewVehicleAvailable(e);
-			} else if (!(e->flags & (ENGINE_AVAILABLE | ENGINE_EXCLUSIVE_PREVIEW)) && _date >= e->intro_date) {
+			} else if (!(e->flags & (ENGINE_AVAILABLE | ENGINE_EXCLUSIVE_PREVIEW)) && CalTime::CurDate() >= e->intro_date) {
 				/* Introduction date has passed...
 				 * Check if it is allowed to build this vehicle type at all
 				 * based on the current game settings. If not, it does not
@@ -1372,7 +1372,7 @@ bool IsEngineRefittable(EngineID engine)
  */
 void CheckEngines()
 {
-	Date min_date = INT32_MAX;
+	CalTime::Date min_date = INT32_MAX;
 
 	for (const Engine *e : Engine::Iterate()) {
 		if (!e->IsEnabled()) continue;

@@ -950,7 +950,7 @@ static ChangeInfoResult CommonVehicleChangeInfo(EngineInfo *ei, int prop, const 
 {
 	switch (prop) {
 		case 0x00: // Introduction date
-			ei->base_intro = buf->ReadWord() + DAYS_TILL_ORIGINAL_BASE_YEAR;
+			ei->base_intro = buf->ReadWord() + CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR;
 			break;
 
 		case 0x02: // Decay speed
@@ -2166,7 +2166,7 @@ static ChangeInfoResult BridgeChangeInfo(uint brid, int numinfo, int prop, const
 			case 0x08: { // Year of availability
 				/* We treat '0' as always available */
 				byte year = buf->ReadByte();
-				bridge->avail_year = (year > 0 ? ORIGINAL_BASE_YEAR + year : 0);
+				bridge->avail_year = (year > 0 ? CalTime::ORIGINAL_BASE_YEAR + year : 0);
 				break;
 			}
 
@@ -2227,7 +2227,7 @@ static ChangeInfoResult BridgeChangeInfo(uint brid, int numinfo, int prop, const
 				break;
 
 			case 0x0F: // Long format year of availability (year since year 0)
-				bridge->avail_year = Clamp(buf->ReadDWord(), MIN_YEAR, MAX_YEAR);
+				bridge->avail_year = Clamp<CalTime::Year>(buf->ReadDWord(), CalTime::MIN_YEAR, CalTime::MAX_YEAR);
 				break;
 
 			case 0x10: { // purchase string
@@ -2426,8 +2426,8 @@ static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, con
 
 			case 0x0A: { // Availability years
 				uint16_t years = buf->ReadWord();
-				housespec->min_year = GB(years, 0, 8) > 150 ? MAX_YEAR : ORIGINAL_BASE_YEAR + GB(years, 0, 8);
-				housespec->max_year = GB(years, 8, 8) > 150 ? MAX_YEAR : ORIGINAL_BASE_YEAR + GB(years, 8, 8);
+				housespec->min_year = GB(years, 0, 8) > 150 ? CalTime::MAX_YEAR : CalTime::ORIGINAL_BASE_YEAR + GB(years, 0, 8);
+				housespec->max_year = GB(years, 8, 8) > 150 ? CalTime::MAX_YEAR : CalTime::ORIGINAL_BASE_YEAR + GB(years, 8, 8);
 				break;
 			}
 
@@ -2764,7 +2764,7 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 
 			case 0x0F: { //  Euro introduction dates
 				uint curidx = GetNewgrfCurrencyIdConverted(gvid + i);
-				Year year_euro = buf->ReadWord();
+				CalTime::Year year_euro = buf->ReadWord();
 
 				if (curidx < CURRENCY_END) {
 					_currency_specs[curidx].to_euro = year_euro;
@@ -4033,7 +4033,7 @@ static ChangeInfoResult AirportChangeInfo(uint airport, int numinfo, int prop, c
 			case 0x0C:
 				as->min_year = buf->ReadWord();
 				as->max_year = buf->ReadWord();
-				if (as->max_year == 0xFFFF) as->max_year = MAX_YEAR;
+				if (as->max_year == 0xFFFF) as->max_year = CalTime::MAX_YEAR;
 				break;
 
 			case 0x0D:
@@ -7404,16 +7404,16 @@ bool GetGlobalVariable(byte param, uint32_t *value, const GRFFile *grffile)
 
 	switch (param) {
 		case 0x00: // current date
-			*value = std::max<DateDelta>(_date - DAYS_TILL_ORIGINAL_BASE_YEAR, 0).base();
+			*value = std::max<DateDelta>(CalTime::CurDate() - CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR, 0).base();
 			return true;
 
 		case 0x01: // current year
-			*value = Clamp(_cur_year, ORIGINAL_BASE_YEAR, ORIGINAL_MAX_YEAR) - ORIGINAL_BASE_YEAR;
+			*value = (Clamp(CalTime::CurYear(), CalTime::ORIGINAL_BASE_YEAR, CalTime::ORIGINAL_MAX_YEAR) - CalTime::ORIGINAL_BASE_YEAR).base();
 			return true;
 
 		case 0x02: { // detailed date information: month of year (bit 0-7), day of month (bit 8-12), leap year (bit 15), day of year (bit 16-24)
-			Date start_of_year = ConvertYMDToDate(_cur_date_ymd.year, 0, 1);
-			*value = _cur_date_ymd.month | (_cur_date_ymd.day - 1) << 8 | (IsLeapYear(_cur_date_ymd.year) ? 1 << 15 : 0) | (_date - start_of_year).base() << 16;
+			CalTime::Date start_of_year = CalTime::ConvertYMDToDate(CalTime::CurYear(), 0, 1);
+			*value = CalTime::CurMonth() | (CalTime::CurDay() - 1) << 8 | (CalTime::IsLeapYear(CalTime::CurYear()) ? 1 << 15 : 0) | (CalTime::CurDate() - start_of_year).base() << 16;
 			return true;
 		}
 
@@ -7426,7 +7426,7 @@ bool GetGlobalVariable(byte param, uint32_t *value, const GRFFile *grffile)
 			return true;
 
 		case 0x09: // date fraction
-			*value = _date_fract * 885;
+			*value = CalTime::CurDateFract() * 885;
 			return true;
 
 		case 0x0A: // animation counter
@@ -7519,11 +7519,11 @@ bool GetGlobalVariable(byte param, uint32_t *value, const GRFFile *grffile)
 			return true;
 
 		case 0x23: // long format date
-			*value = _date.base();
+			*value = CalTime::CurDate().base();
 			return true;
 
 		case 0x24: // long format year
-			*value = _cur_year;
+			*value = CalTime::CurYear().base();
 			return true;
 
 		default: return false;
@@ -8137,7 +8137,7 @@ static uint32_t GetPatchVariable(uint8_t param)
 {
 	switch (param) {
 		/* start year - 1920 */
-		case 0x0B: return std::max(_settings_game.game_creation.starting_year, ORIGINAL_BASE_YEAR) - ORIGINAL_BASE_YEAR;
+		case 0x0B: return (std::max(_settings_game.game_creation.starting_year, CalTime::ORIGINAL_BASE_YEAR) - CalTime::ORIGINAL_BASE_YEAR).base();
 
 		/* freight trains weight factor */
 		case 0x0E: return _settings_game.vehicle.freight_trains;
@@ -10896,7 +10896,7 @@ static bool IsHouseSpecValid(HouseSpec *hs, const HouseSpec *next1, const HouseS
  */
 static void EnsureEarlyHouse(HouseZones bitmask)
 {
-	Year min_year = MAX_YEAR;
+	CalTime::Year min_year = CalTime::MAX_YEAR;
 
 	for (int i = 0; i < NUM_HOUSES; i++) {
 		HouseSpec *hs = HouseSpec::Get(i);
@@ -11600,22 +11600,19 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 	 * so all NewGRFs are loaded equally. For this we use the
 	 * start date of the game and we set the counters, etc. to
 	 * 0 so they're the same too. */
-	YearMonthDay date_ymd = _cur_date_ymd;
-	Date date            = _date;
-	DateFract date_fract = _date_fract;
-	uint64_t tick_counter  = _tick_counter;
-	uint8_t tick_skip_counter = _tick_skip_counter;
+	CalTime::State cal_state = CalTime::Detail::now;
+	EconTime::State econ_state = EconTime::Detail::now;
+	uint8_t tick_skip_counter = DateDetail::_tick_skip_counter;
+	uint64_t tick_counter = _tick_counter;
 	uint64_t scaled_tick_counter = _scaled_tick_counter;
 	StateTicks state_ticks = _state_ticks;
-	StateTicksDelta state_ticks_offset = _state_ticks_offset;
-	byte display_opt     = _display_opt;
+	StateTicksDelta state_ticks_offset = DateDetail::_state_ticks_offset;
+	byte display_opt = _display_opt;
 
 	if (_networking) {
-		_cur_date_ymd = { _settings_game.game_creation.starting_year, 0, 1};
-		_date         = ConvertYMDToDate(_cur_date_ymd);
-		_date_fract   = 0;
+		CalTime::Detail::now = CalTime::Detail::NewState(_settings_game.game_creation.starting_year);
+		EconTime::Detail::now = EconTime::Detail::NewState(_settings_game.game_creation.starting_year.base());
 		_tick_counter = 0;
-		_tick_skip_counter = 0;
 		_scaled_tick_counter = 0;
 		_state_ticks = 0;
 		_display_opt  = 0;
@@ -11718,14 +11715,13 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 	AfterLoadGRFs();
 
 	/* Now revert back to the original situation */
-	_cur_date_ymd = date_ymd;
-	_date         = date;
-	_date_fract   = date_fract;
+	CalTime::Detail::now = cal_state;
+	EconTime::Detail::now = econ_state;
+	DateDetail::_tick_skip_counter = tick_skip_counter;
 	_tick_counter = tick_counter;
-	_tick_skip_counter = tick_skip_counter;
 	_scaled_tick_counter = scaled_tick_counter;
 	_state_ticks = state_ticks;
-	_state_ticks_offset = state_ticks_offset;
+	DateDetail::_state_ticks_offset = state_ticks_offset;
 	_display_opt  = display_opt;
 	UpdateCachedSnowLine();
 }

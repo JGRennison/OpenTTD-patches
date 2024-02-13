@@ -22,8 +22,8 @@ GameEventFlags _game_events_since_load;
 GameEventFlags _game_events_overall;
 
 time_t _game_load_time;
-YearMonthDay _game_load_cur_date_ymd;
-DateFract _game_load_date_fract;
+EconTime::YearMonthDay _game_load_cur_date_ymd;
+EconTime::DateFract _game_load_date_fract;
 uint8_t _game_load_tick_skip_counter;
 StateTicks _game_load_state_ticks;
 
@@ -47,8 +47,8 @@ char *DumpGameEventFlags(GameEventFlags events, char *b, const char *last)
 
 struct SpecialEventLogEntry {
 	std::string msg;
-	Date date;
-	DateFract date_fract;
+	EconTime::Date date;
+	EconTime::DateFract date_fract;
 	uint8_t tick_skip_counter;
 	CompanyID current_company;
 	CompanyID local_company;
@@ -56,7 +56,7 @@ struct SpecialEventLogEntry {
 	SpecialEventLogEntry() { }
 
 	SpecialEventLogEntry(std::string msg)
-			: msg(std::move(msg)), date(_date), date_fract(_date_fract), tick_skip_counter(_tick_skip_counter),
+			: msg(std::move(msg)), date(EconTime::CurDate()), date_fract(EconTime::CurDateFract()), tick_skip_counter(TickSkipCounter()),
 			current_company(_current_company), local_company(_local_company) { }
 };
 
@@ -95,9 +95,9 @@ char *DumpSpecialEventsLog(char *buffer, const char *last)
 		}
 		const SpecialEventLogEntry &entry = _special_event_log.log[log_index];
 
-		YearMonthDay ymd = ConvertDateToYMD(entry.date);
+		EconTime::YearMonthDay ymd = EconTime::ConvertDateToYMD(entry.date);
 		buffer += seprintf(buffer, last, " %3u | %4i-%02i-%02i, %2i, %3i | cc: %3u, lc: %3u | %s\n",
-				i, ymd.year, ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter, (uint) entry.current_company, (uint) entry.local_company, entry.msg.c_str());
+				i, ymd.year.base(), ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter, (uint) entry.current_company, (uint) entry.local_company, entry.msg.c_str());
 	}
 	return buffer;
 }
@@ -111,7 +111,7 @@ void LogGameLoadDateTimes(char *buffer, const char *last)
 {
 	if (_game_load_time != 0) {
 		buffer += seprintf(buffer, last, "Game loaded at: %i-%02i-%02i (%i, %i), (" OTTD_PRINTF64 " state ticks ago), ",
-				_game_load_cur_date_ymd.year, _game_load_cur_date_ymd.month + 1, _game_load_cur_date_ymd.day,
+				_game_load_cur_date_ymd.year.base(), _game_load_cur_date_ymd.month + 1, _game_load_cur_date_ymd.day,
 				_game_load_date_fract, _game_load_tick_skip_counter, (_state_ticks - _game_load_state_ticks).base());
 		buffer += UTCTime::Format(buffer, last, _game_load_time, "%Y-%m-%d %H:%M:%S");
 		buffer += seprintf(buffer, last, "\n");

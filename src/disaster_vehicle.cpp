@@ -946,8 +946,8 @@ static void Disaster_CoalMine_Init()
 
 struct Disaster {
 	DisasterInitProc *init_proc; ///< The init function for this disaster.
-	Year min_year;               ///< The first year this disaster will occur.
-	Year max_year;               ///< The last year this disaster will occur.
+	CalTime::Year min_year;      ///< The first year this disaster will occur.
+	CalTime::Year max_year;      ///< The last year this disaster will occur.
 };
 
 static const Disaster _disasters[] = {
@@ -967,7 +967,7 @@ void DoDisaster()
 
 	byte j = 0;
 	for (size_t i = 0; i != lengthof(_disasters); i++) {
-		if (_cur_year >= _disasters[i].min_year && _cur_year < _disasters[i].max_year) buf[j++] = (byte)i;
+		if (CalTime::CurYear() >= _disasters[i].min_year && CalTime::CurYear() < _disasters[i].max_year) buf[j++] = (byte)i;
 	}
 
 	if (j == 0) return;

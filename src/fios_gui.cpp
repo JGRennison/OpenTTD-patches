@@ -535,7 +535,7 @@ public:
 
 			/* Start date (if available) */
 			if (_load_check_data.settings.game_creation.starting_year != 0) {
-				SetDParam(0, ConvertYMDToDate(_load_check_data.settings.game_creation.starting_year, 0, 1));
+				SetDParam(0, CalTime::ConvertYMDToDate(_load_check_data.settings.game_creation.starting_year, 0, 1));
 				DrawString(tr, STR_NETWORK_SERVER_LIST_START_DATE);
 				tr.top += GetCharacterHeight(FS_NORMAL);
 			}

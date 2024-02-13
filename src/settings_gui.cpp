@@ -3368,7 +3368,7 @@ struct CustomCurrencyWindow : Window {
 		this->SetWidgetDisabledState(WID_CC_RATE_DOWN, _custom_currency.rate == 1);
 		this->SetWidgetDisabledState(WID_CC_RATE_UP, _custom_currency.rate == UINT16_MAX);
 		this->SetWidgetDisabledState(WID_CC_YEAR_DOWN, _custom_currency.to_euro == CF_NOEURO);
-		this->SetWidgetDisabledState(WID_CC_YEAR_UP, _custom_currency.to_euro == MAX_YEAR);
+		this->SetWidgetDisabledState(WID_CC_YEAR_UP, _custom_currency.to_euro == CalTime::MAX_YEAR);
 	}
 
 	void SetStringParameters(WidgetID widget) const override
@@ -3475,8 +3475,8 @@ struct CustomCurrencyWindow : Window {
 				break;
 
 			case WID_CC_YEAR_UP:
-				_custom_currency.to_euro = Clamp(_custom_currency.to_euro + 1, 2000, MAX_YEAR);
-				if (_custom_currency.to_euro == MAX_YEAR) this->DisableWidget(WID_CC_YEAR_UP);
+				_custom_currency.to_euro = Clamp<CalTime::Year>(_custom_currency.to_euro + 1, 2000, CalTime::MAX_YEAR);
+				if (_custom_currency.to_euro == CalTime::MAX_YEAR) this->DisableWidget(WID_CC_YEAR_UP);
 				this->EnableWidget(WID_CC_YEAR_DOWN);
 				break;
 
@@ -3522,7 +3522,7 @@ struct CustomCurrencyWindow : Window {
 			case WID_CC_YEAR: { // Year to switch to euro
 				int val = atoi(str);
 
-				_custom_currency.to_euro = (val < 2000 ? CF_NOEURO : std::min(val, MAX_YEAR));
+				_custom_currency.to_euro = (val < 2000 ? CF_NOEURO : std::min<CalTime::Year>(val, CalTime::MAX_YEAR));
 				break;
 			}
 		}

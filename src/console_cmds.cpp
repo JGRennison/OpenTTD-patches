@@ -1596,7 +1596,7 @@ DEF_CONSOLE_CMD(ConGetDate)
 		return true;
 	}
 
-	IConsolePrintF(CC_DEFAULT, "Date: %04d-%02d-%02d", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day);
+	IConsolePrintF(CC_DEFAULT, "Date: %04d-%02d-%02d", CalTime::CurYear().base(), CalTime::CurMonth() + 1, CalTime::CurDay());
 	return true;
 }
 
@@ -1912,7 +1912,7 @@ DEF_CONSOLE_CMD(ConCompanies)
 
 		IConsolePrintF(CC_INFO, "#:%d(%s) Company Name: '%s'  Year Founded: %d  Money: " OTTD_PRINTF64 "  Loan: " OTTD_PRINTF64 "  Value: " OTTD_PRINTF64 "  (T:%d, R:%d, P:%d, S:%d) %s",
 			c->index + 1, GetStringPtr(STR_COLOUR_DARK_BLUE + _company_colours[c->index]), company_name.c_str(),
-			c->inaugurated_year, (int64_t)c->money, (int64_t)c->current_loan, (int64_t)CalculateCompanyValue(c),
+			c->inaugurated_year.base(), (int64_t)c->money, (int64_t)c->current_loan, (int64_t)CalculateCompanyValue(c),
 			c->group_all[VEH_TRAIN].num_vehicle,
 			c->group_all[VEH_ROAD].num_vehicle,
 			c->group_all[VEH_AIRCRAFT].num_vehicle,
@@ -2489,7 +2489,7 @@ DEF_CONSOLE_CMD(ConMergeLinkgraphJobsAsap)
 		return true;
 	}
 
-	for (LinkGraphJob *lgj : LinkGraphJob::Iterate()) lgj->ShiftJoinDate((NowDateTicks() - lgj->JoinDateTicks()).base() / DAY_TICKS);
+	for (LinkGraphJob *lgj : LinkGraphJob::Iterate()) lgj->ShiftJoinDate((EconTime::CurDateTicks() - lgj->JoinDateTicks()).base() / DAY_TICKS);
 	return true;
 }
 
@@ -2562,11 +2562,12 @@ DEF_CONSOLE_CMD(ConRunTileLoopTile)
 DEF_CONSOLE_CMD(ConGetFullDate)
 {
 	if (argc == 0) {
-		IConsoleHelp("Returns the current full date (year-month-day, date fract, tick skip, counter) of the game. Usage: 'getfulldate'");
+		IConsoleHelp("Returns the current full date (year-month-day, date fract, tick skip counter/subtick) of the game. Usage: 'getfulldate'");
 		return true;
 	}
 
-	IConsolePrintF(CC_DEFAULT, "Date: %04d-%02d-%02d, %i, %i", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter);
+	IConsolePrintF(CC_DEFAULT, "Calendar Date: %04d-%02d-%02d, %i, %i", CalTime::CurYear().base(), CalTime::CurMonth() + 1, CalTime::CurDay(), CalTime::CurDateFract(), CalTime::Detail::now.sub_date_fract);
+	IConsolePrintF(CC_DEFAULT, "Economy Date: %04d-%02d-%02d, %i, %i", EconTime::CurYear().base(), EconTime::CurMonth() + 1, EconTime::CurDay(), EconTime::CurDateFract(), TickSkipCounter());
 	return true;
 }
 
@@ -2735,12 +2736,12 @@ DEF_CONSOLE_CMD(ConDumpLinkgraphJobs)
 
 	IConsolePrintF(CC_DEFAULT, PRINTF_SIZE " link graph jobs", LinkGraphJob::GetNumItems());
 	for (const LinkGraphJob *lgj : LinkGraphJob::Iterate()) {
-		YearMonthDay start_ymd = ConvertDateToYMD(lgj->StartDateTicks().ToDate());
-		YearMonthDay join_ymd = ConvertDateToYMD(lgj->JoinDateTicks().ToDate());
+		EconTime::YearMonthDay start_ymd = EconTime::ConvertDateToYMD(lgj->StartDateTicks().ToDate());
+		EconTime::YearMonthDay join_ymd = EconTime::ConvertDateToYMD(lgj->JoinDateTicks().ToDate());
 		IConsolePrintF(CC_DEFAULT, "  Job: %5u, nodes: %u, cost: " OTTD_PRINTF64U ", start: (" OTTD_PRINTF64 ", %4i-%02i-%02i, %i), end: (" OTTD_PRINTF64 ", %4i-%02i-%02i, %i), duration: " OTTD_PRINTF64,
 				lgj->index, lgj->Graph().Size(), lgj->Graph().CalculateCostEstimate(),
-				lgj->StartDateTicks().base(), start_ymd.year, start_ymd.month + 1, start_ymd.day, lgj->StartDateTicks().ToDateFractRemainder(),
-				lgj->JoinDateTicks().base(), join_ymd.year, join_ymd.month + 1, join_ymd.day, lgj->JoinDateTicks().ToDateFractRemainder(),
+				lgj->StartDateTicks().base(), start_ymd.year.base(), start_ymd.month + 1, start_ymd.day, lgj->StartDateTicks().ToDateFractRemainder(),
+				lgj->JoinDateTicks().base(), join_ymd.year.base(), join_ymd.month + 1, join_ymd.day, lgj->JoinDateTicks().ToDateFractRemainder(),
 				(lgj->JoinDateTicks() - lgj->StartDateTicks()).base());
 	 }
 	return true;
@@ -2883,7 +2884,7 @@ DEF_CONSOLE_CMD(ConDumpBridgeTypes)
 		if (grfid != 0) grfids.insert(grfid);
 		IConsolePrintF(CC_DEFAULT, "  %02u Year: %7u, Min: %3u, Max: %5u, Flags: %02X, Ctrl Flags: %c%c%c%c, Pillars: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X, GRF: %08X, %s",
 				(uint) bt,
-				spec->avail_year,
+				spec->avail_year.base(),
 				spec->min_length,
 				spec->max_length,
 				spec->flags,
@@ -3663,17 +3664,17 @@ static bool ConConditionalCommon(byte argc, char *argv[], int value, const char 
 
 DEF_CONSOLE_CMD(ConIfYear)
 {
-	return ConConditionalCommon(argc, argv, _cur_date_ymd.year, "the current year (in game)", "if_year");
+	return ConConditionalCommon(argc, argv, CalTime::CurYear().base(), "the current year (in game)", "if_year");
 }
 
 DEF_CONSOLE_CMD(ConIfMonth)
 {
-	return ConConditionalCommon(argc, argv, _cur_date_ymd.month + 1, "the current month (in game)", "if_month");
+	return ConConditionalCommon(argc, argv, CalTime::CurMonth() + 1, "the current month (in game)", "if_month");
 }
 
 DEF_CONSOLE_CMD(ConIfDay)
 {
-	return ConConditionalCommon(argc, argv, _cur_date_ymd.day, "the current day of the month (in game)", "if_day");
+	return ConConditionalCommon(argc, argv, CalTime::CurDay(), "the current day of the month (in game)", "if_day");
 }
 
 DEF_CONSOLE_CMD(ConIfHour)

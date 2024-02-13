@@ -23,7 +23,7 @@ struct Depot : DepotPool::PoolItem<&_depot_pool> {
 	TileIndex xy;
 	Town *town;
 	TinyString name;
-	Date build_date; ///< Date of construction
+	CalTime::Date build_date; ///< Date of construction
 
 	Depot(TileIndex xy = INVALID_TILE) : xy(xy) {}
 	~Depot();

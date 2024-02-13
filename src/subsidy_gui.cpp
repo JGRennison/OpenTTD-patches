@@ -157,7 +157,7 @@ struct SubsidyListWindow : Window {
 				if (IsInsideMM(pos, 0, cap)) {
 					/* Displays the two offered towns */
 					SetupSubsidyDecodeParam(s, SubsidyDecodeParamType::Gui);
-					SetDParam(7, _date - _cur_date_ymd.day + s->remaining * 32);
+					SetDParam(7, EconTime::CurDate() - EconTime::CurDay() + s->remaining * 32);
 					DrawString(tr.left, tr.right, tr.top + pos * GetCharacterHeight(FS_NORMAL), STR_SUBSIDIES_OFFERED_FROM_TO);
 				}
 				pos++;
@@ -181,7 +181,7 @@ struct SubsidyListWindow : Window {
 				if (IsInsideMM(pos, 0, cap)) {
 					SetupSubsidyDecodeParam(s, SubsidyDecodeParamType::Gui);
 					SetDParam(7, s->awarded);
-					SetDParam(8, _date - _cur_date_ymd.day + s->remaining * 32);
+					SetDParam(8, EconTime::CurDate() - EconTime::CurDay() + s->remaining * 32);
 
 					/* Displays the two connected stations */
 					DrawString(tr.left, tr.right, tr.top + pos * GetCharacterHeight(FS_NORMAL), STR_SUBSIDIES_SUBSIDISED_FROM_TO);

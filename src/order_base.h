@@ -1028,6 +1028,6 @@ public:
 	inline const DispatchSchedule &GetDispatchScheduleByIndex(uint index) const { return this->dispatch_schedules[index]; }
 };
 
-void ShiftOrderDates(DateDelta interval);
+void UpdateOrderUIOnDateChange();
 
 #endif /* ORDER_BASE_H */

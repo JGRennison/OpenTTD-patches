@@ -117,7 +117,7 @@ Station::~Station()
 			Station *st = Station::Get((*lg)[node].Station());
 			GoodsEntryData *ged = st->goods[c].data.get();
 			if (ged != nullptr) ged->flows.erase(this->index);
-			if (lg->GetConstEdge(node, this->goods[c].node).LastUpdate() != INVALID_DATE) {
+			if (lg->GetConstEdge(node, this->goods[c].node).LastUpdate() != EconTime::INVALID_DATE) {
 				if (ged != nullptr) ged->flows.DeleteFlows(this->index);
 				RerouteCargo(st, c, this->index, st->index);
 			}
@@ -248,7 +248,7 @@ void Station::AddFacility(StationFacility new_facility_bit, TileIndex facil_xy)
 	}
 	this->facilities |= new_facility_bit;
 	this->owner = _current_company;
-	this->build_date = _date;
+	this->build_date = CalTime::CurDate();
 }
 
 /**

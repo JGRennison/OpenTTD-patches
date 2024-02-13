@@ -480,11 +480,11 @@ static void FormatWallClockString(StringBuilder builder, StateTicks ticks, bool 
 	seprintf(hour,   lastof(hour),   "%02i", minutes.ClockHour());
 	seprintf(minute, lastof(minute), "%02i", minutes.ClockMinute());
 	if (show_date) {
-		Date date = StateTicksToDate(ticks);
+		CalTime::Date date = StateTicksToCalendarDate(ticks);
 		int64_t final_arg;
 		if (_settings_client.gui.date_with_time == 1) {
-			YearMonthDay ymd = ConvertDateToYMD(date);
-			final_arg = ymd.year;
+			CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(date);
+			final_arg = ymd.year.base();
 		} else {
 			final_arg = date.base();
 		}
@@ -505,25 +505,25 @@ static void FormatTimeHHMMString(StringBuilder builder, uint time, uint case_ind
 	return FormatString(builder, GetStringPtr(STR_FORMAT_DATE_MINUTES), tmp_params, case_index);
 }
 
-static void FormatYmdString(StringBuilder builder, Date date, uint case_index)
+static void FormatYmdString(StringBuilder builder, CalTime::Date date, uint case_index)
 {
-	YearMonthDay ymd = ConvertDateToYMD(date);
+	CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(date);
 
 	auto tmp_params = MakeParameters(ymd.day + STR_DAY_NUMBER_1ST - 1, STR_MONTH_ABBREV_JAN + ymd.month, ymd.year);
 	FormatString(builder, GetStringPtr(STR_FORMAT_DATE_LONG), tmp_params, case_index);
 }
 
-static void FormatMonthAndYear(StringBuilder builder, Date date, uint case_index)
+static void FormatMonthAndYear(StringBuilder builder, CalTime::Date date, uint case_index)
 {
-	YearMonthDay ymd = ConvertDateToYMD(date);
+	CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(date);
 
 	auto tmp_params = MakeParameters(STR_MONTH_JAN + ymd.month, ymd.year);
 	FormatString(builder, GetStringPtr(STR_FORMAT_DATE_SHORT), tmp_params, case_index);
 }
 
-static void FormatTinyOrISODate(StringBuilder builder, Date date, StringID str)
+static void FormatTinyOrISODate(StringBuilder builder, CalTime::Date date, StringID str)
 {
-	YearMonthDay ymd = ConvertDateToYMD(date);
+	CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(date);
 
 	/* Day and month are zero-padded with ZEROFILL_NUM, hence the two 2s. */
 	auto tmp_params = MakeParameters(ymd.day, 2, ymd.month + 1, 2, ymd.year);
@@ -1523,16 +1523,16 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 					break;
 
 				case SCC_DATE_TINY: // {DATE_TINY}
-					FormatTinyOrISODate(builder, args.GetNextParameter<Date>(), STR_FORMAT_DATE_TINY);
+					FormatTinyOrISODate(builder, args.GetNextParameter<CalTime::Date>(), STR_FORMAT_DATE_TINY);
 					break;
 
 				case SCC_DATE_SHORT: // {DATE_SHORT}
-					FormatMonthAndYear(builder, args.GetNextParameter<Date>(), next_substr_case_index);
+					FormatMonthAndYear(builder, args.GetNextParameter<CalTime::Date>(), next_substr_case_index);
 					next_substr_case_index = 0;
 					break;
 
 				case SCC_DATE_LONG: // {DATE_LONG}
-					FormatYmdString(builder, args.GetNextParameter<Date>(), next_substr_case_index);
+					FormatYmdString(builder, args.GetNextParameter<CalTime::Date>(), next_substr_case_index);
 					next_substr_case_index = 0;
 					break;
 
@@ -1540,7 +1540,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 					if (_settings_time.time_in_minutes) {
 						FormatWallClockString(builder, args.GetNextParameter<StateTicks>(), _settings_client.gui.date_with_time, next_substr_case_index);
 					} else {
-						FormatYmdString(builder, StateTicksToDate(args.GetNextParameter<StateTicks>()), next_substr_case_index);
+						FormatYmdString(builder, StateTicksToCalendarDate(args.GetNextParameter<StateTicks>()), next_substr_case_index);
 					}
 					break;
 				}
@@ -1549,7 +1549,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 					if (_settings_time.time_in_minutes) {
 						FormatWallClockString(builder, args.GetNextParameter<StateTicks>(), _settings_client.gui.date_with_time, next_substr_case_index);
 					} else {
-						FormatYmdString(builder, StateTicksToDate(args.GetNextParameter<StateTicks>()), next_substr_case_index);
+						FormatYmdString(builder, StateTicksToCalendarDate(args.GetNextParameter<StateTicks>()), next_substr_case_index);
 					}
 					break;
 				}
@@ -1558,7 +1558,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 					if (_settings_time.time_in_minutes) {
 						FormatWallClockString(builder, args.GetNextParameter<StateTicks>(), false, next_substr_case_index);
 					} else {
-						FormatTinyOrISODate(builder, StateTicksToDate(args.GetNextParameter<StateTicks>()), STR_FORMAT_DATE_TINY);
+						FormatTinyOrISODate(builder, StateTicksToCalendarDate(args.GetNextParameter<StateTicks>()), STR_FORMAT_DATE_TINY);
 					}
 					break;
 				}
@@ -1567,13 +1567,13 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 					if (_settings_time.time_in_minutes) {
 						FormatWallClockString(builder, args.GetNextParameter<StateTicks>(), false, next_substr_case_index);
 					} else {
-						FormatTinyOrISODate(builder, StateTicksToDate(args.GetNextParameter<StateTicks>()), STR_FORMAT_DATE_ISO);
+						FormatTinyOrISODate(builder, StateTicksToCalendarDate(args.GetNextParameter<StateTicks>()), STR_FORMAT_DATE_ISO);
 					}
 					break;
 				}
 
 				case SCC_DATE_ISO: // {DATE_ISO}
-					FormatTinyOrISODate(builder, args.GetNextParameter<Date>(), STR_FORMAT_DATE_ISO);
+					FormatTinyOrISODate(builder, args.GetNextParameter<CalTime::Date>(), STR_FORMAT_DATE_ISO);
 					break;
 
 				case SCC_TIME_HHMM: // {TIME_HHMM}

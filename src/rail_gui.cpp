@@ -302,7 +302,7 @@ static void GenericPlaceSignals(TileIndex tile)
 		if (_cur_signal_type == SIGTYPE_NO_ENTRY) SB(p1, 15, 2, 1); // reverse default signal direction
 	} else {
 		SB(p1, 3, 1, _ctrl_pressed);
-		SB(p1, 4, 1, (_cur_year < _settings_client.gui.semaphore_build_before ? SIG_SEMAPHORE : SIG_ELECTRIC));
+		SB(p1, 4, 1, (CalTime::CurYear() < _settings_client.gui.semaphore_build_before ? SIG_SEMAPHORE : SIG_ELECTRIC));
 		SB(p1, 5, 3, GetDefaultSignalType());
 		SB(p1, 8, 1, 0);
 		SB(p1, 9, 6, cycle_types);
@@ -484,7 +484,7 @@ static void HandleAutoSignalPlacement()
 		SB(p2, 11, 4, _cur_signal_style);
 	} else {
 		SB(p2,  3, 1, 0);
-		SB(p2,  4, 1, (_cur_year < _settings_client.gui.semaphore_build_before ? SIG_SEMAPHORE : SIG_ELECTRIC));
+		SB(p2,  4, 1, (CalTime::CurYear() < _settings_client.gui.semaphore_build_before ? SIG_SEMAPHORE : SIG_ELECTRIC));
 		SB(p2,  6, 1, _ctrl_pressed);
 		SB(p2,  7, 3, GetDefaultSignalType());
 		SB(p2, 24, 8, _settings_client.gui.drag_signals_density);
@@ -2788,7 +2788,7 @@ static void SetDefaultRailGui()
  */
 void ResetSignalVariant(int32_t new_value)
 {
-	SignalVariant new_variant = (_cur_year < _settings_client.gui.semaphore_build_before ? SIG_SEMAPHORE : SIG_ELECTRIC);
+	SignalVariant new_variant = (CalTime::CurYear() < _settings_client.gui.semaphore_build_before ? SIG_SEMAPHORE : SIG_ELECTRIC);
 
 	if (new_variant != _cur_signal_variant) {
 		Window *w = FindWindowById(WC_BUILD_SIGNAL, 0);

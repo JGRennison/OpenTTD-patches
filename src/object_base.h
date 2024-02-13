@@ -25,7 +25,7 @@ struct Object : ObjectPool::PoolItem<&_object_pool> {
 	ObjectType type;    ///< Type of the object
 	Town *town;         ///< Town the object is built in
 	TileArea location;  ///< Location of the object
-	Date build_date;    ///< Date of construction
+	CalTime::Date build_date; ///< Date of construction
 	byte colour;        ///< Colour of the object, for display purpose
 	byte view;          ///< The view setting for this object
 

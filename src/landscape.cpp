@@ -562,7 +562,7 @@ byte GetSnowLineUncached()
 {
 	if (_snow_line == nullptr) return _settings_game.game_creation.snow_line_height;
 
-	return _snow_line->table[_cur_date_ymd.month][_cur_date_ymd.day];
+	return _snow_line->table[CalTime::CurMonth()][CalTime::CurDay()];
 }
 
 void UpdateCachedSnowLine()
@@ -754,7 +754,7 @@ void RunTileLoop(bool apply_day_length)
 	/* We update every tile every 256 ticks, so divide the map size by 2^8 = 256 */
 	uint count;
 	if (apply_day_length && DayLengthFactor() > 1) {
-		count = _tile_loop_counts[_tick_skip_counter];
+		count = _tile_loop_counts[TickSkipCounter()];
 		if (count == 0) return;
 	} else {
 		count = 1 << (MapLogX() + MapLogY() - 8);

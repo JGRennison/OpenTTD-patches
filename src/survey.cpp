@@ -296,7 +296,8 @@ void SurveyTimers(nlohmann::json &survey)
 		survey["seconds"] = 0;
 	}
 
-	survey["calendar"] = fmt::format("{:04}-{:02}-{:02} ({})", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract);
+	survey["calendar"] = fmt::format("{:04}-{:02}-{:02} ({})", CalTime::CurYear(), CalTime::CurMonth() + 1, CalTime::CurDay(), CalTime::CurDateFract());
+	survey["economy"] = fmt::format("{:04}-{:02}-{:02} ({})", EconTime::CurYear(), EconTime::CurMonth() + 1, EconTime::CurDay(), EconTime::CurDateFract());
 }
 
 /**

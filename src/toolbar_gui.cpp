@@ -1249,15 +1249,20 @@ void ToggleWidgetOutlines()
  * Set the starting year for a scenario.
  * @param year New starting year.
  */
-void SetStartingYear(Year year)
+void SetStartingYear(CalTime::Year year)
 {
-	_settings_game.game_creation.starting_year = Clamp(year, MIN_YEAR, MAX_YEAR);
-	Date new_date = ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1);
+	_settings_game.game_creation.starting_year = Clamp(year, CalTime::MIN_YEAR, CalTime::MAX_YEAR);
+	CalTime::Date new_date = CalTime::ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1);
+	EconTime::Date new_economy_date = new_date.base();
+
 	/* If you open a savegame as scenario there may already be link graphs.*/
-	LinkGraphSchedule::instance.ShiftDates(new_date - _date);
-	ShiftOrderDates(new_date - _date);
-	ShiftVehicleDates(new_date - _date);
-	SetDate(new_date, 0);
+	LinkGraphSchedule::instance.ShiftDates(new_economy_date - EconTime::CurDate());
+	ShiftVehicleDates(new_economy_date - EconTime::CurDate());
+
+	CalTime::Detail::SetDate(new_date, 0);
+	EconTime::Detail::SetDate(new_economy_date, 0);
+
+	UpdateOrderUIOnDateChange();
 }
 
 
@@ -2503,8 +2508,8 @@ struct ScenarioEditorToolbarWindow : Window {
 	{
 		MainToolbarScaleAdjuster scale_adjust;
 
-		this->SetWidgetDisabledState(WID_TE_DATE_BACKWARD, _settings_game.game_creation.starting_year <= MIN_YEAR);
-		this->SetWidgetDisabledState(WID_TE_DATE_FORWARD, _settings_game.game_creation.starting_year >= MAX_YEAR);
+		this->SetWidgetDisabledState(WID_TE_DATE_BACKWARD, _settings_game.game_creation.starting_year <= CalTime::MIN_YEAR);
+		this->SetWidgetDisabledState(WID_TE_DATE_FORWARD, _settings_game.game_creation.starting_year >= CalTime::MAX_YEAR);
 		this->SetWidgetDisabledState(WID_TE_ROADS, (GetRoadTypes(true) & ~_roadtypes_type) == ROADTYPES_NONE);
 		this->SetWidgetDisabledState(WID_TE_TRAMS, (GetRoadTypes(true) & _roadtypes_type) == ROADTYPES_NONE);
 
@@ -2515,7 +2520,7 @@ struct ScenarioEditorToolbarWindow : Window {
 	{
 		switch (widget) {
 			case WID_TE_DATE:
-				SetDParam(0, ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1));
+				SetDParam(0, CalTime::ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1));
 				break;
 		}
 	}
@@ -2544,7 +2549,7 @@ struct ScenarioEditorToolbarWindow : Window {
 				break;
 
 			case WID_TE_DATE:
-				SetDParam(0, ConvertYMDToDate(MAX_YEAR, 0, 1));
+				SetDParam(0, CalTime::ConvertYMDToDate(CalTime::MAX_YEAR, 0, 1));
 				*size = GetStringBoundingBox(STR_JUST_DATE_LONG);
 				break;
 		}
@@ -2662,12 +2667,12 @@ struct ScenarioEditorToolbarWindow : Window {
 		/* Was 'cancel' pressed? */
 		if (str == nullptr) return;
 
-		int32_t value;
+		CalTime::Year value;
 		if (!StrEmpty(str)) {
 			value = atoi(str);
 		} else {
 			/* An empty string means revert to the default */
-			value = DEF_START_YEAR;
+			value = CalTime::DEF_START_YEAR;
 		}
 		SetStartingYear(value);
 

@@ -347,9 +347,9 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 				CrashLog::WriteDesyncSavegame(desync_log.c_str(), deferred_save.name_buffer.c_str());
 				return false;
 			}
-			_last_sync_date = _date;
-			_last_sync_date_fract = _date_fract;
-			_last_sync_tick_skip_counter = _tick_skip_counter;
+			_last_sync_date = EconTime::CurDate();
+			_last_sync_date_fract = EconTime::CurDateFract();
+			_last_sync_tick_skip_counter = TickSkipCounter();
 			_last_sync_frame_counter = _sync_frame;
 			_network_sync_records.clear();
 			_network_sync_record_counts.clear();
@@ -636,9 +636,9 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncLog(const std::strin
 NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncMessage(const char *msg)
 {
 	Packet *p = new Packet(PACKET_CLIENT_DESYNC_MSG, SHRT_MAX);
-	p->Send_uint32(_date.base());
-	p->Send_uint16(_date_fract);
-	p->Send_uint8(_tick_skip_counter);
+	p->Send_uint32(EconTime::CurDate().base());
+	p->Send_uint16(EconTime::CurDateFract());
+	p->Send_uint8(TickSkipCounter());
 	p->Send_string(msg);
 	my_client->SendPacket(p);
 	return NETWORK_RECV_STATUS_OKAY;

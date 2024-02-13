@@ -34,7 +34,7 @@
 			case 0x40: return 0;
 			case 0x41: return 0;
 			case 0x42: return 0;
-			case 0x43: return _date.base();
+			case 0x43: return CalTime::CurDate().base();
 			case 0x44: return HZB_TOWN_EDGE;
 			case A2VRI_RAILTYPE_SIGNAL_RESTRICTION_INFO: return 0;
 			case A2VRI_RAILTYPE_SIGNAL_CONTEXT: return this->signal_context;
@@ -50,7 +50,7 @@
 		case 0x42: return IsLevelCrossingTile(this->tile) && IsCrossingBarred(this->tile);
 		case 0x43:
 			if (IsRailDepotTile(this->tile)) return Depot::GetByTile(this->tile)->build_date.base();
-			return _date.base();
+			return CalTime::CurDate().base();
 		case 0x44: {
 			const Town *t = nullptr;
 			if (IsRailDepotTile(this->tile)) {

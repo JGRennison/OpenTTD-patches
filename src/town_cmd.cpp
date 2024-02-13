@@ -1033,7 +1033,7 @@ RoadType GetTownRoadType()
 		if (HasBit(rti->extra_flags, RXTF_NO_TOWN_MODIFICATION)) continue;
 
 		/* Not yet introduced at this date. */
-		if (IsInsideMM(rti->introduction_date, 0, MAX_DATE.base()) && rti->introduction_date > _date) continue;
+		if (IsInsideMM(rti->introduction_date, 0, CalTime::MAX_DATE.base()) && rti->introduction_date > CalTime::CurDate()) continue;
 
 		if (best != nullptr) {
 			if ((rti->max_speed == 0 ? assume_max_speed : rti->max_speed) < (best->max_speed == 0 ? assume_max_speed : best->max_speed)) continue;
@@ -2947,8 +2947,8 @@ static CommandCost CheckCanBuildHouse(HouseID house, const Town *t, bool manual)
 	}
 
 	if (!manual || !_settings_client.scenario.house_ignore_dates) {
-		if (_cur_year > hs->max_year) return_cmd_error(STR_ERROR_BUILDING_IS_TOO_OLD);
-		if (_cur_year < hs->min_year) return_cmd_error(STR_ERROR_BUILDING_IS_TOO_MODERN);
+		if (CalTime::CurYear() > hs->max_year) return_cmd_error(STR_ERROR_BUILDING_IS_TOO_OLD);
+		if (CalTime::CurYear() < hs->min_year) return_cmd_error(STR_ERROR_BUILDING_IS_TOO_MODERN);
 	}
 
 	/* Special houses that there can be only one of. */

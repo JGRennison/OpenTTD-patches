@@ -22,7 +22,7 @@
 {
 	if (bridge_id >= MAX_BRIDGES) return false;
 	const BridgeSpec *b = ::GetBridgeSpec(bridge_id);
-	return b->avail_year <= _cur_year && !HasBit(b->ctrl_flags, BSCF_NOT_AVAILABLE_AI_GS);
+	return b->avail_year <= CalTime::CurYear() && !HasBit(b->ctrl_flags, BSCF_NOT_AVAILABLE_AI_GS);
 }
 
 /* static */ bool ScriptBridge::IsBridgeTile(TileIndex tile)

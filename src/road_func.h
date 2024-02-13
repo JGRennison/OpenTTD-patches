@@ -152,7 +152,7 @@ bool HasRoadTypeAvail(CompanyID company, RoadType roadtype);
 bool ValParamRoadType(RoadType roadtype);
 RoadTypes GetCompanyRoadTypes(CompanyID company, bool introduces = true);
 RoadTypes GetRoadTypes(bool introduces);
-RoadTypes AddDateIntroducedRoadTypes(RoadTypes current, Date date);
+RoadTypes AddDateIntroducedRoadTypes(RoadTypes current, CalTime::Date date);
 
 void UpdateLevelCrossing(TileIndex tile, bool sound = true, bool force_close = false);
 void MarkDirtyAdjacentLevelCrossingTilesOnAdd(TileIndex tile, Axis road_axis);

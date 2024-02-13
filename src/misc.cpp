@@ -129,11 +129,12 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	_pause_mode = PM_UNPAUSED;
 	_pause_countdown = 0;
 	_game_speed = 100;
+	CalTime::Detail::now.sub_date_fract = 0;
 	_tick_counter = 0;
-	_tick_skip_counter = 0;
+	DateDetail::_tick_skip_counter = 0;
 	_scaled_tick_counter = 0;
 	_state_ticks = INITIAL_STATE_TICKS_VALUE;
-	_state_ticks_offset = 0;
+	DateDetail::_state_ticks_offset = 0;
 	_cur_tileloop_tile = 1;
 	_aux_tileloop_tile = 1;
 	_thd.redsq = INVALID_TILE;
@@ -156,7 +157,10 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	_newgrf_profilers.clear();
 
 	if (reset_date) {
-		SetDate(ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1), 0);
+		CalTime::Detail::SetDate(CalTime::ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1), 0);
+		{
+			EconTime::Detail::SetDate(CalTime::CurDate().base(), 0);
+		}
 		InitializeOldNames();
 	} else {
 		RecalculateStateTicksOffset();

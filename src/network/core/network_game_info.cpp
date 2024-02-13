@@ -131,7 +131,7 @@ void CheckGameCompatibility(NetworkGameInfo &ngi, bool extended)
 void FillStaticNetworkServerGameInfo()
 {
 	_network_game_info.use_password   = !_settings_client.network.server_password.empty();
-	_network_game_info.start_date     = ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1);
+	_network_game_info.start_date     = CalTime::ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1);
 	_network_game_info.clients_max    = _settings_client.network.max_clients;
 	_network_game_info.companies_max  = _settings_client.network.max_companies;
 	_network_game_info.map_width      = MapSizeX();
@@ -157,7 +157,7 @@ const NetworkServerGameInfo *GetCurrentNetworkServerGameInfo()
 	 */
 	_network_game_info.companies_on  = (byte)Company::GetNumItems();
 	_network_game_info.spectators_on = NetworkSpectatorCount();
-	_network_game_info.game_date     = _date;
+	_network_game_info.game_date     = CalTime::CurDate();
 	_network_game_info.ticks_playing = _scaled_tick_counter;
 	return &_network_game_info;
 }
@@ -336,7 +336,7 @@ void SerializeNetworkGameInfoExtended(Packet *p, const NetworkServerGameInfo *in
  */
 void DeserializeNetworkGameInfo(Packet *p, NetworkGameInfo *info, const GameInfoNewGRFLookupTable *newgrf_lookup_table)
 {
-	static const Date MAX_DATE = ConvertYMDToDate(MAX_YEAR, 11, 31); // December is month 11
+	static const CalTime::Date MAX_DATE = CalTime::ConvertYMDToDate(CalTime::MAX_YEAR, 11, 31); // December is month 11
 
 	byte game_info_version = p->Recv_uint8();
 	NewGRFSerializationType newgrf_serialisation = NST_GRFID_MD5;
@@ -427,8 +427,8 @@ void DeserializeNetworkGameInfo(Packet *p, NetworkGameInfo *info, const GameInfo
 			info->clients_on     = p->Recv_uint8 ();
 			info->spectators_on  = p->Recv_uint8 ();
 			if (game_info_version < 3) { // 16 bits dates got scrapped and are read earlier
-				info->game_date    = p->Recv_uint16() + DAYS_TILL_ORIGINAL_BASE_YEAR;
-				info->start_date   = p->Recv_uint16() + DAYS_TILL_ORIGINAL_BASE_YEAR;
+				info->game_date    = p->Recv_uint16() + CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR;
+				info->start_date   = p->Recv_uint16() + CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR;
 			}
 			if (game_info_version < 6) while (p->Recv_uint8() != 0) {} // Used to contain the map-name.
 
@@ -456,7 +456,7 @@ void DeserializeNetworkGameInfo(Packet *p, NetworkGameInfo *info, const GameInfo
  */
 void DeserializeNetworkGameInfoExtended(Packet *p, NetworkGameInfo *info)
 {
-	static const Date MAX_DATE = ConvertYMDToDate(MAX_YEAR, 11, 31); // December is month 11
+	static const CalTime::Date MAX_DATE = CalTime::ConvertYMDToDate(CalTime::MAX_YEAR, 11, 31); // December is month 11
 
 	const uint8_t version = p->Recv_uint8();
 	if (version > SERVER_GAME_INFO_EXTENDED_MAX_VERSION) return; // Unknown version

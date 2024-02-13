@@ -84,14 +84,14 @@ byte _age_cargo_skip_counter; ///< Skip aging of cargo? Used before savegame ver
 extern TimeoutTimer<TimerGameTick> _new_competitor_timeout;
 
 static const NamedSaveLoad _date_desc[] = {
-	NSL("",                             SLEG_CONDVAR(_date,                     SLE_FILE_U16 | SLE_VAR_I32, SL_MIN_VERSION,         SLV_31)),
-	NSL("date",                         SLEG_CONDVAR(_date,                                      SLE_INT32,         SLV_31, SL_MAX_VERSION)),
-	NSL("date_fract",                   SLEG_VAR(_date_fract,                                   SLE_UINT16)),
+	NSL("",                             SLEG_CONDVAR(CalTime::Detail::now.cal_date, SLE_FILE_U16 | SLE_VAR_I32, SL_MIN_VERSION,         SLV_31)),
+	NSL("date",                         SLEG_CONDVAR(CalTime::Detail::now.cal_date,              SLE_INT32,         SLV_31, SL_MAX_VERSION)),
+	NSL("date_fract",                   SLEG_VAR(CalTime::Detail::now.cal_date_fract,           SLE_UINT16)),
 	NSL("",                             SLEG_CONDVAR_X(_tick_counter,           SLE_FILE_U16 | SLE_VAR_U64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_U64_TICK_COUNTER, 0, 0))),
 	NSL("tick_counter",                 SLEG_CONDVAR_X(_tick_counter,                           SLE_UINT64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_U64_TICK_COUNTER))),
-	NSL("tick_skip_counter",            SLEG_CONDVAR_X(_tick_skip_counter,                       SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH))),
+	NSL("tick_skip_counter",            SLEG_CONDVAR_X(DateDetail::_tick_skip_counter,           SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH))),
 	NSL("scaled_tick_counter",          SLEG_CONDVAR_X(_scaled_tick_counter,                    SLE_UINT64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 3))),
-	NSL("",                             SLEG_CONDVAR_X(_state_ticks_offset,                      SLE_INT64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 3, 3))),
+	NSL("",                             SLEG_CONDVAR_X(DateDetail::_state_ticks_offset,          SLE_INT64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 3, 3))),
 	NSL("state_ticks",                  SLEG_CONDVAR_X(_state_ticks,                             SLE_INT64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 4))),
 	NSL("",                             SLE_CONDNULL(2,                                                     SL_MIN_VERSION,        SLV_157)), // _vehicle_id_ctr_day
 	NSL("",                             SLEG_CONDVAR(_age_cargo_skip_counter,                    SLE_UINT8, SL_MIN_VERSION,        SLV_162)),
@@ -122,6 +122,9 @@ static const NamedSaveLoad _date_desc[] = {
 
 	/* New (table only) fields below */
 	NSLT("id",                          SLEG_CONDSSTR_X(_savegame_id,                              SLE_STR, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SAVEGAME_ID))),
+	NSLT("economy_date",                SLEG_CONDVAR_X(EconTime::Detail::now.econ_date,          SLE_INT32,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 5))),
+	NSLT("economy_date_fract",          SLEG_CONDVAR_X(EconTime::Detail::now.econ_date_fract,   SLE_UINT16,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 5))),
+	NSLT("calendar_sub_date_fract",     SLEG_CONDVAR_X(CalTime::Detail::now.sub_date_fract,     SLE_UINT16,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 5))),
 };
 
 static const NamedSaveLoad _date_check_desc[] = {
@@ -176,7 +179,7 @@ static void Check_DATE()
 {
 	SlLoadTableOrRiffFiltered(_date_check_desc);
 	if (IsSavegameVersionBefore(SLV_31)) {
-		_load_check_data.current_date += DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
+		_load_check_data.current_date += CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
 	}
 }
 

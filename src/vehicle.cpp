@@ -210,8 +210,8 @@ void VehicleServiceInDepot(Vehicle *v)
 	SetWindowDirty(WC_VEHICLE_DETAILS, v->index); // ensure that last service date and reliability are updated
 
 	do {
-		v->date_of_last_service = _date;
-		v->date_of_last_service_newgrf = _date;
+		v->date_of_last_service = EconTime::CurDate();
+		v->date_of_last_service_newgrf = CalTime::CurDate();
 		if (_settings_game.vehicle.pay_for_repair && v->breakdowns_since_last_service) {
 			_vehicles_to_pay_repair.insert(v->index);
 		} else {
@@ -242,7 +242,7 @@ bool Vehicle::NeedsServicing() const
 	const Company *c = Company::Get(this->owner);
 	if ((this->ServiceIntervalIsPercent() ?
 			(this->reliability >= this->GetEngine()->reliability * (100 - this->service_interval) / 100) :
-			(this->date_of_last_service + this->service_interval >= _date))
+			(this->date_of_last_service + this->service_interval >= EconTime::CurDate()))
 			&& !(this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_CONSIST_BREAKDOWN) && Train::From(this)->ConsistNeedsRepair())
 			&& !(this->type == VEH_ROAD && RoadVehicle::From(this)->critical_breakdown_count > 0)
 			&& !(this->type == VEH_SHIP && Ship::From(this)->critical_breakdown_count > 0)) {
@@ -1329,7 +1329,7 @@ static void RunVehicleDayProc()
 	/* Run the day_proc for every DAY_TICKS vehicle starting at _date_fract. */
 	Vehicle *v = nullptr;
 	SCOPE_INFO_FMT([&v], "RunVehicleDayProc: %s", scope_dumper().VehicleInfo(v));
-	for (size_t i = _date_fract; i < Vehicle::GetPoolSize(); i += DAY_TICKS) {
+	for (size_t i = EconTime::CurDateFract(); i < Vehicle::GetPoolSize(); i += DAY_TICKS) {
 		v = Vehicle::Get(i);
 		if (v == nullptr) continue;
 
@@ -1528,7 +1528,7 @@ void CallVehicleTicks()
 	_vehicles_to_pay_repair.clear();
 	_vehicles_to_sell.clear();
 
-	if (_tick_skip_counter == 0) RunVehicleDayProc();
+	if (TickSkipCounter() == 0) RunVehicleDayProc();
 
 	if (DayLengthFactor() >= 8 && _game_mode == GM_NORMAL) {
 		/*
@@ -2451,7 +2451,7 @@ void AgeVehicle(Vehicle *v)
 	/* Stop if a virtual vehicle */
 	if (HasBit(v->subtype, GVSF_VIRTUAL)) return;
 
-	if (v->age < MAX_DATE.AsDelta()) {
+	if (v->age < CalTime::MAX_DATE.AsDelta()) {
 		v->age++;
 		if (v->IsPrimaryVehicle() && v->age == VEHICLE_PROFIT_MIN_AGE + 1) GroupStatistics::VehicleReachedMinAge(v);
 	}
@@ -2460,7 +2460,7 @@ void AgeVehicle(Vehicle *v)
 
 	DateDelta age = v->age - v->max_age;
 	for (int i = 0; i <= 4; i++) {
-		if (age == DateAtStartOfYear(i).AsDelta()) {
+		if (age == CalTime::DateAtStartOfYear(i).AsDelta()) {
 			v->reliability_spd_dec <<= 1;
 			break;
 		}
@@ -4721,7 +4721,7 @@ void AdjustVehicleStateTicksBase(StateTicksDelta delta)
 void ShiftVehicleDates(DateDelta interval)
 {
 	for (Vehicle *v : Vehicle::Iterate()) {
-		v->date_of_last_service = std::max<Date>(v->date_of_last_service + interval, 0);
+		v->date_of_last_service = std::max<EconTime::Date>(v->date_of_last_service + interval, 0);
 	}
 	/* date_of_last_service_newgrf is not updated here as it must stay stable
 	 * for vehicles outside of a depot. */

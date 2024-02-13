@@ -53,7 +53,7 @@ struct TileDesc {
 	StringID str;               ///< Description of the tile
 	Owner owner[4];             ///< Name of the owner(s)
 	StringID owner_type[4];     ///< Type of each owner
-	Date build_date;            ///< Date of construction of tile contents
+	CalTime::Date build_date;   ///< Date of construction of tile contents
 	StringID station_class;     ///< Class of station
 	StringID station_name;      ///< Type of station within the class
 	StringID airport_class;     ///< Name of the airport class

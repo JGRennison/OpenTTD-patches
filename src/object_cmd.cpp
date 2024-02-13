@@ -143,7 +143,7 @@ void BuildObject(ObjectType type, TileIndex tile, CompanyID owner, Town *town, u
 	o->type          = type;
 	o->location      = ta;
 	o->town          = town == nullptr ? CalcClosestTownFromTile(tile) : town;
-	o->build_date    = _date;
+	o->build_date    = CalTime::CurDate();
 	o->view          = view;
 
 	/* If nothing owns the object, the colour will be random. Otherwise

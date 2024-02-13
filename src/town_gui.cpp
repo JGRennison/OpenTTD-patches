@@ -1800,9 +1800,9 @@ public:
 
 				case WID_HP_HOUSE_YEARS: {
 					const HouseSpec *hs = HouseSpec::Get(this->display_house);
-					SetDParam(0, hs->min_year <= _cur_year ? STR_HOUSE_BUILD_YEARS_GOOD_YEAR : STR_HOUSE_BUILD_YEARS_BAD_YEAR);
+					SetDParam(0, hs->min_year <= CalTime::CurYear() ? STR_HOUSE_BUILD_YEARS_GOOD_YEAR : STR_HOUSE_BUILD_YEARS_BAD_YEAR);
 					SetDParam(1, hs->min_year);
-					SetDParam(2, hs->max_year >= _cur_year ? STR_HOUSE_BUILD_YEARS_GOOD_YEAR : STR_HOUSE_BUILD_YEARS_BAD_YEAR);
+					SetDParam(2, hs->max_year >= CalTime::CurYear() ? STR_HOUSE_BUILD_YEARS_GOOD_YEAR : STR_HOUSE_BUILD_YEARS_BAD_YEAR);
 					SetDParam(3, hs->max_year);
 					break;
 				}
@@ -1942,7 +1942,7 @@ public:
 						r.right - WidgetDimensions::scaled.matrix.right + lowered, r.bottom - WidgetDimensions::scaled.matrix.bottom + lowered);
 				const HouseSpec *hs = HouseSpec::Get(house);
 				/* disabled? */
-				if (_cur_year < hs->min_year || _cur_year > hs->max_year) {
+				if (CalTime::CurYear() < hs->min_year || CalTime::CurYear() > hs->max_year) {
 					GfxFillRect(r.left + 1, r.top + 1, r.right - 1, r.bottom - 1, PC_BLACK, FILLRECT_CHECKER);
 				}
 				break;

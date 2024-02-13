@@ -44,7 +44,7 @@ struct EngineRefitCapacityValue {
 
 struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	TinyString name;              ///< Custom name of engine.
-	Date intro_date;              ///< Date of introduction of the engine.
+	CalTime::Date intro_date;     ///< Date of introduction of the engine.
 	int32_t age;                  ///< Age of the engine in months.
 	uint16_t reliability;         ///< Current reliability of the engine.
 	uint16_t reliability_spd_dec; ///< Speed of reliability decay between services (per day).

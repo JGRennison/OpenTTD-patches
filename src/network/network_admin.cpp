@@ -179,7 +179,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendWelcome()
 	p->Send_string(""); // Used to be map-name.
 	p->Send_uint32(_settings_game.game_creation.generation_seed);
 	p->Send_uint8 (_settings_game.game_creation.landscape);
-	p->Send_uint32(ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1).base());
+	p->Send_uint32(CalTime::ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1).base());
 	p->Send_uint16(MapSizeX());
 	p->Send_uint16(MapSizeY());
 
@@ -209,7 +209,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendDate()
 {
 	Packet *p = new Packet(ADMIN_PACKET_SERVER_DATE);
 
-	p->Send_uint32(_date.base());
+	p->Send_uint32(CalTime::CurDate().base());
 	this->SendPacket(p);
 
 	return NETWORK_RECV_STATUS_OKAY;
@@ -330,7 +330,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendCompanyInfo(const Company
 	p->Send_string(GetString(STR_PRESIDENT_NAME));
 	p->Send_uint8 (c->colour);
 	p->Send_bool  (NetworkCompanyIsPassworded(c->index));
-	p->Send_uint32(c->inaugurated_year);
+	p->Send_uint32(c->inaugurated_year.base());
 	p->Send_bool  (c->is_ai);
 	p->Send_uint8 (CeilDiv(c->months_of_bankruptcy, 3)); // send as quarters_of_bankruptcy
 

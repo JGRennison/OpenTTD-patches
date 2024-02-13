@@ -329,11 +329,11 @@ public:
 	SpriteID colourmap;                 ///< NOSAVE: cached colour mapping
 
 	/* Related to age and service time */
-	Year build_year;                    ///< Year the vehicle has been built.
+	CalTime::Year build_year;           ///< Year the vehicle has been built.
 	DateDelta age;                      ///< Age in days
 	DateDelta max_age;                  ///< Maximum age
-	Date date_of_last_service;          ///< Last date the vehicle had a service at a depot.
-	Date date_of_last_service_newgrf;   ///< Last date the vehicle had a service at a depot, unchanged by the date cheat to protect against unsafe NewGRF behavior.
+	EconTime::Date date_of_last_service;       ///< Last date the vehicle had a service at a depot.
+	CalTime::Date date_of_last_service_newgrf; ///< Last date the vehicle had a service at a depot, unchanged by the date cheat to protect against unsafe NewGRF behavior.
 	uint16_t reliability;               ///< Reliability.
 	uint16_t reliability_spd_dec;       ///< Reliability decrease speed.
 	byte breakdown_ctr;                 ///< Counter for managing breakdown events. @see Vehicle::HandleBreakdown

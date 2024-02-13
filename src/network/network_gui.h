@@ -31,7 +31,7 @@ void ShowSurveyResultTextfileWindow();
 /** Company information stored at the client side */
 struct NetworkCompanyInfo : NetworkCompanyStats {
 	std::string company_name; ///< Company name
-	Year inaugurated_year;    ///< What year the company started in
+	CalTime::Year inaugurated_year; ///< What year the company started in
 	Money company_value;      ///< The company value
 	Money money;              ///< The amount of money the company has
 	Money income;             ///< How much did the company earn last year

@@ -1017,9 +1017,9 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_JOIN(Packet *p)
 	assert(NetworkClientInfo::CanAllocateItem());
 	NetworkClientInfo *ci = new NetworkClientInfo(this->client_id);
 	this->SetInfo(ci);
-	ci->join_date = _date;
-	ci->join_date_fract = _date_fract;
-	ci->join_tick_skip_counter = _tick_skip_counter;
+	ci->join_date = EconTime::CurDate();
+	ci->join_date_fract = EconTime::CurDateFract();
+	ci->join_tick_skip_counter = TickSkipCounter();
 	ci->join_frame = _frame_counter;
 	ci->client_name = client_name;
 	ci->client_playas = playas;
@@ -1322,13 +1322,13 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_DESYNC_LOG(Pack
 
 NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_DESYNC_MSG(Packet *p)
 {
-	Date date = p->Recv_uint32();
-	DateFract date_fract = p->Recv_uint16();
+	EconTime::Date date = p->Recv_uint32();
+	EconTime::DateFract date_fract = p->Recv_uint16();
 	uint8_t tick_skip_counter = p->Recv_uint8();
 	std::string msg;
 	p->Recv_string(msg);
 	DEBUG(desync, 0, "Client-id %d desync msg: %s", this->client_id, msg.c_str());
-	extern void LogRemoteDesyncMsg(Date date, DateFract date_fract, uint8_t tick_skip_counter, uint32_t src_id, std::string msg);
+	extern void LogRemoteDesyncMsg(EconTime::Date date, EconTime::DateFract date_fract, uint8_t tick_skip_counter, uint32_t src_id, std::string msg);
 	LogRemoteDesyncMsg(date, date_fract, tick_skip_counter, this->client_id, std::move(msg));
 	return NETWORK_RECV_STATUS_OKAY;
 }
@@ -1829,8 +1829,8 @@ void NetworkUpdateClientInfo(ClientID client_id)
 /** Check if we want to restart the map */
 static void NetworkCheckRestartMap()
 {
-	if (_settings_client.network.restart_game_year != 0 && _cur_year >= _settings_client.network.restart_game_year) {
-		DEBUG(net, 3, "Auto-restarting map: year %d reached", _cur_year);
+	if (_settings_client.network.restart_game_year != 0 && CalTime::CurYear() >= _settings_client.network.restart_game_year) {
+		DEBUG(net, 3, "Auto-restarting map: year %d reached", CalTime::CurYear().base());
 
 		_settings_newgame.game_creation.generation_seed = GENERATE_NEW_SEED;
 		switch(_file_to_saveload.abstract_ftype) {
@@ -2149,25 +2149,30 @@ void NetworkServer_Tick(bool send_frame)
 }
 
 /** Yearly "callback". Called whenever the year changes. */
-void NetworkServerYearlyLoop()
+void NetworkServerCalendarYearlyLoop()
 {
 	NetworkCheckRestartMap();
+}
+
+/** Yearly "callback". Called whenever the year changes. */
+void NetworkServerEconomyYearlyLoop()
+{
 	NetworkAdminUpdate(ADMIN_FREQUENCY_ANUALLY);
 }
 
 /** Monthly "callback". Called whenever the month changes. */
-void NetworkServerMonthlyLoop()
+void NetworkServerEconomyMonthlyLoop()
 {
 	NetworkAutoCleanCompanies();
 	NetworkAdminUpdate(ADMIN_FREQUENCY_MONTHLY);
-	if ((_cur_date_ymd.month % 3) == 0) NetworkAdminUpdate(ADMIN_FREQUENCY_QUARTERLY);
+	if ((CalTime::CurMonth() % 3) == 0) NetworkAdminUpdate(ADMIN_FREQUENCY_QUARTERLY);
 }
 
 /** Daily "callback". Called whenever the date changes. */
-void NetworkServerDailyLoop()
+void NetworkServerEconomyDailyLoop()
 {
 	NetworkAdminUpdate(ADMIN_FREQUENCY_DAILY);
-	if ((_date.base() % 7) == 3) NetworkAdminUpdate(ADMIN_FREQUENCY_WEEKLY);
+	if ((CalTime::CurDate().base() % 7) == 3) NetworkAdminUpdate(ADMIN_FREQUENCY_WEEKLY);
 }
 
 /**
@@ -2458,9 +2463,9 @@ char *NetworkServerDumpClients(char *buffer, const char *last)
 				ci->client_name.c_str(),
 				ci->client_playas);
 		if (ci->join_date != 0) {
-			YearMonthDay ymd = ConvertDateToYMD(ci->join_date);
+			EconTime::YearMonthDay ymd = EconTime::ConvertDateToYMD(ci->join_date);
 			buffer += seprintf(buffer, last, ", joined: %4i-%02i-%02i, %i, %i, frame: %08X",
-					ymd.year, ymd.month + 1, ymd.day, ci->join_date_fract, ci->join_tick_skip_counter, ci->join_frame);
+					ymd.year.base(), ymd.month + 1, ymd.day, ci->join_date_fract, ci->join_tick_skip_counter, ci->join_frame);
 		}
 		buffer += seprintf(buffer, last, "\n");
 	}

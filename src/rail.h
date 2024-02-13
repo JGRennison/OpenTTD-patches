@@ -276,7 +276,7 @@ public:
 	 * The introduction at this date is furthermore limited by the
 	 * #introduction_required_railtypes.
 	 */
-	Date introduction_date;
+	CalTime::Date introduction_date;
 
 	/**
 	 * Bitmask of railtypes that are required for this railtype to be introduced
@@ -496,7 +496,7 @@ bool HasRailTypeAvail(const CompanyID company, const RailType railtype);
 bool HasAnyRailTypesAvail(const CompanyID company);
 bool ValParamRailType(const RailType rail);
 
-RailTypes AddDateIntroducedRailTypes(RailTypes current, Date date);
+RailTypes AddDateIntroducedRailTypes(RailTypes current, CalTime::Date date);
 
 RailTypes GetCompanyRailTypes(CompanyID company, bool introduces = true);
 RailTypes GetRailTypes(bool introduces);

@@ -31,7 +31,7 @@ struct OldWaypoint {
 	StringID string_id;
 	TinyString name;
 	uint8_t delete_ctr;
-	Date build_date;
+	CalTime::Date build_date;
 	uint8_t localidx;
 	uint32_t grfid;
 	const StationSpec *spec;

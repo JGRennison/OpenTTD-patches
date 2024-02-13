@@ -624,7 +624,7 @@ void OpenBrowser(const std::string &url)
 
 /** Callback structure of statements to be executed after the NewGRF scan. */
 struct AfterNewGRFScan : NewGRFScanCallback {
-	Year startyear = INVALID_YEAR;                ///< The start year.
+	CalTime::Year startyear = CalTime::INVALID_YEAR; ///< The start year.
 	uint32_t generation_seed = GENERATE_NEW_SEED; ///< Seed for the new game.
 	std::string dedicated_host;                   ///< Hostname for the dedicated server.
 	uint16_t dedicated_port = 0;                  ///< Port for the dedicated server.
@@ -673,7 +673,7 @@ struct AfterNewGRFScan : NewGRFScanCallback {
 		MusicDriver::GetInstance()->SetVolume(_settings_client.music.music_vol);
 		SetEffectVolume(_settings_client.music.effect_vol);
 
-		if (startyear != INVALID_YEAR) IConsoleSetSetting("game_creation.starting_year", startyear);
+		if (startyear != CalTime::INVALID_YEAR) IConsoleSetSetting("game_creation.starting_year", startyear.base());
 		if (generation_seed != GENERATE_NEW_SEED) _settings_newgame.game_creation.generation_seed = generation_seed;
 
 		if (!dedicated_host.empty()) {
@@ -1127,7 +1127,7 @@ static void OnStartScenario()
 
 	/* Make sure all industries were built "this year", to avoid too early closures. (#9918) */
 	for (Industry *i : Industry::Iterate()) {
-		i->last_prod_year = _cur_year;
+		i->last_prod_year = EconTime::CurYear();
 	}
 }
 
@@ -1442,7 +1442,7 @@ void SwitchToMode(SwitchMode new_mode)
 			if (SafeLoad(_file_to_saveload.name, _file_to_saveload.file_op, _file_to_saveload.detail_ftype, GM_EDITOR, NO_DIRECTORY)) {
 				SetLocalCompany(OWNER_NONE);
 				GenerateSavegameId();
-				_settings_newgame.game_creation.starting_year = _cur_year;
+				_settings_newgame.game_creation.starting_year = CalTime::CurYear();
 				/* Cancel the saveload pausing */
 				DoCommandP(0, PM_PAUSED_SAVELOAD, 0, CMD_PAUSE);
 			} else {
@@ -2126,7 +2126,7 @@ void StateGameLoop()
 		 * to avoid problems with timetables and train speed adaptation
 		 */
 		_state_ticks++;
-		_state_ticks_offset++;
+		DateDetail::_state_ticks_offset++;
 
 		RunTileLoop();
 		CallVehicleTicks();
@@ -2138,10 +2138,10 @@ void StateGameLoop()
 		CallWindowGameTickEvent();
 		NewsLoop();
 	} else {
-		if (_debug_desync_level > 2 && _tick_skip_counter == 0 && _date_fract == 0 && (_date.base() & 0x1F) == 0) {
+		if (_debug_desync_level > 2 && DateDetail::_tick_skip_counter == 0 && EconTime::CurDateFract() == 0 && (EconTime::CurDate().base() & 0x1F) == 0) {
 			/* Save the desync savegame if needed. */
 			char name[MAX_PATH];
-			seprintf(name, lastof(name), "dmp_cmds_%08x_%08x.sav", _settings_game.game_creation.generation_seed, _date.base());
+			seprintf(name, lastof(name), "dmp_cmds_%08x_%08x.sav", _settings_game.game_creation.generation_seed, EconTime::CurDate().base());
 			SaveOrLoad(name, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, false);
 		}
 
@@ -2152,7 +2152,7 @@ void StateGameLoop()
 		Backup<CompanyID> cur_company(_current_company, OWNER_NONE, FILE_LINE);
 
 		BasePersistentStorageArray::SwitchMode(PSM_ENTER_GAMELOOP);
-		_tick_skip_counter++;
+		DateDetail::_tick_skip_counter++;
 		_scaled_tick_counter++;
 		if (_game_mode != GM_BOOTSTRAP) {
 			_state_ticks++;   // This must update in lock-step with _tick_skip_counter, such that _state_ticks_offset doesn't need to be changed.
@@ -2166,13 +2166,13 @@ void StateGameLoop()
 		}
 
 		RunAuxiliaryTileLoop();
-		if (_tick_skip_counter < DayLengthFactor()) {
+		if (DateDetail::_tick_skip_counter < DayLengthFactor()) {
 			AnimateAnimatedTiles();
 			RunTileLoop(true);
 			CallVehicleTicks();
 			OnTick_Companies(false);
 		} else {
-			_tick_skip_counter = 0;
+			DateDetail::_tick_skip_counter = 0;
 			IncreaseDate();
 			AnimateAnimatedTiles();
 			RunTileLoop(true);

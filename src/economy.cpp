@@ -806,7 +806,7 @@ static void CompaniesGenStatistics()
 	cur_company.Restore();
 
 	/* Only run the economic statics and update company stats every 3rd month (1st of quarter). */
-	if (!HasBit(1 << 0 | 1 << 3 | 1 << 6 | 1 << 9, _cur_date_ymd.month)) return;
+	if ((EconTime::CurMonth() % 3) == 0) return;
 
 	for (Company *c : Company::Iterate()) {
 		/* Drop the oldest history off the end */
@@ -851,9 +851,9 @@ bool AddInflation(bool check_year)
 	 * it impossible due to the diverging cost and income rates.
 	 */
 	if (_settings_game.economy.inflation_fixed_dates) {
-		if (check_year && (_cur_year < ORIGINAL_BASE_YEAR || _cur_year >= ORIGINAL_MAX_YEAR)) return true;
+		if (check_year && (CalTime::CurYear() < CalTime::ORIGINAL_BASE_YEAR || CalTime::CurYear() >= CalTime::ORIGINAL_MAX_YEAR)) return true;
 	} else {
-		if (check_year && (_cur_year - _settings_game.game_creation.starting_year) >= (ORIGINAL_MAX_YEAR - ORIGINAL_BASE_YEAR)) return true;
+		if (check_year && (CalTime::CurYear() - _settings_game.game_creation.starting_year) >= (CalTime::ORIGINAL_MAX_YEAR - CalTime::ORIGINAL_BASE_YEAR)) return true;
 	}
 
 	if (_economy.inflation_prices == MAX_INFLATION || _economy.inflation_payment == MAX_INFLATION) return true;
@@ -964,8 +964,8 @@ static void CompaniesPayInterest()
 		if (c->money < 0) {
 			yearly_fee += -c->money *_economy.interest_rate / 100;
 		}
-		Money up_to_previous_month = yearly_fee * _cur_date_ymd.month / 12;
-		Money up_to_this_month = yearly_fee * (_cur_date_ymd.month + 1) / 12;
+		Money up_to_previous_month = yearly_fee * EconTime::CurMonth() / 12;
+		Money up_to_this_month = yearly_fee * (EconTime::CurMonth() + 1) / 12;
 
 		SubtractMoneyFromCompany(CommandCost(EXPENSES_LOAN_INTEREST, up_to_this_month - up_to_previous_month));
 
@@ -1048,7 +1048,7 @@ void StartupEconomy()
 
 	if (_settings_game.economy.inflation && _settings_game.economy.inflation_fixed_dates) {
 		/* Apply inflation that happened before our game start year. */
-		int months = (std::min(_cur_year, ORIGINAL_MAX_YEAR) - ORIGINAL_BASE_YEAR) * 12;
+		int months = (std::min(CalTime::CurYear(), CalTime::ORIGINAL_MAX_YEAR) - CalTime::ORIGINAL_BASE_YEAR).base() * 12;
 		for (int i = 0; i < months; i++) {
 			AddInflation(false);
 		}
@@ -1197,7 +1197,7 @@ uint DeliverGoodsToIndustryNearestFirst(const Station *st, CargoID cargo_type, u
 
 		uint amount = std::min(num_pieces, 0xFFFFu - ind->incoming_cargo_waiting[cargo_index]);
 		ind->incoming_cargo_waiting[cargo_index] += amount;
-		ind->last_cargo_accepted_at[cargo_index] = _date;
+		ind->last_cargo_accepted_at[cargo_index] = EconTime::CurDate();
 		num_pieces -= amount;
 		accepted += amount;
 
@@ -1242,7 +1242,7 @@ uint DeliverGoodsToIndustryEqually(const Station *st, CargoID cargo_type, uint n
 		if (e.delivered == 0) return;
 		include(_cargo_delivery_destinations, e.ind);
 		e.ind->incoming_cargo_waiting[e.cargo_index] += e.delivered;
-		e.ind->last_cargo_accepted_at[e.cargo_index] = _date;
+		e.ind->last_cargo_accepted_at[e.cargo_index] = EconTime::CurDate();
 		AddCargoDelivery(cargo_type, company, e.delivered, SourceType::Industry, source, st, e.ind->index);
 	};
 
@@ -2191,7 +2191,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 
 		/* if last speed is 0, we treat that as if no vehicle has ever visited the station. */
 		ge->last_speed = ClampTo<uint8_t>(t);
-		ge->last_age = ClampTo<uint8_t>(_cur_year - front->build_year);
+		ge->last_age = ClampTo<uint8_t>(DateDeltaToYearDelta(front->age));
 
 		assert(v->cargo_cap >= v->cargo.StoredCount());
 		/* Capacity available for loading more cargo. */
@@ -2451,14 +2451,21 @@ void LoadUnloadStation(Station *st)
 /**
  * Monthly update of the economic data (of the companies as well as economic fluctuations).
  */
-void CompaniesMonthlyLoop()
+void CompaniesCalendarMonthlyLoop()
 {
-	CompaniesPayInterest();
-	CompaniesGenStatistics();
 	if (_settings_game.economy.inflation) {
 		AddInflation();
 		RecomputePrices();
 	}
+}
+
+/**
+ * Monthly update of the economic data (of the companies as well as economic fluctuations).
+ */
+void CompaniesEconomyMonthlyLoop()
+{
+	CompaniesPayInterest();
+	CompaniesGenStatistics();
 	HandleEconomyFluctuations();
 }
 
@@ -2518,7 +2525,7 @@ CommandCost CmdBuyShareInCompany(TileIndex tile, DoCommandFlag flags, uint32_t p
 	if (c == nullptr || !_settings_game.economy.allow_shares || _current_company == target_company) return CMD_ERROR;
 
 	/* Protect new companies from hostile takeovers */
-	if (_cur_year - c->inaugurated_year < _settings_game.economy.min_years_for_shares) return_cmd_error(STR_ERROR_PROTECTED);
+	if (CalTime::CurYear() - c->inaugurated_year < _settings_game.economy.min_years_for_shares) return_cmd_error(STR_ERROR_PROTECTED);
 
 	/* Those lines are here for network-protection (clients can be slow) */
 	if (GetAmountOwnedBy(c, COMPANY_SPECTATOR) == 0) return cost;

@@ -3147,7 +3147,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 		case OCV_RELIABILITY:        skip_order = OrderConditionCompare(occ, ToPercent16(v->reliability),       value); break;
 		case OCV_MAX_RELIABILITY:    skip_order = OrderConditionCompare(occ, ToPercent16(v->GetEngine()->reliability),   value); break;
 		case OCV_MAX_SPEED:          skip_order = OrderConditionCompare(occ, v->GetDisplayMaxSpeed() * 10 / 16, value); break;
-		case OCV_AGE:                skip_order = OrderConditionCompare(occ, DateDeltaToYears(v->age),          value); break;
+		case OCV_AGE:                skip_order = OrderConditionCompare(occ, DateDeltaToYearDelta(v->age).base(), value); break;
 		case OCV_REQUIRES_SERVICE:   skip_order = OrderConditionCompare(occ, v->NeedsServicing(),               value); break;
 		case OCV_UNCONDITIONALLY:    skip_order = true; break;
 		case OCV_CARGO_WAITING: {
@@ -3221,7 +3221,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 			skip_order = ord->UpdateJumpCounter((byte)value, mode == PCO_DRY_RUN);
 			break;
 		}
-		case OCV_REMAINING_LIFETIME: skip_order = OrderConditionCompare(occ, std::max(DateDeltaToYears(v->max_age - v->age + DAYS_IN_LEAP_YEAR - 1), 0), value); break;
+		case OCV_REMAINING_LIFETIME: skip_order = OrderConditionCompare(occ, std::max(DateDeltaToYearDelta(v->max_age - v->age + DAYS_IN_LEAP_YEAR - 1).base(), 0), value); break;
 		case OCV_COUNTER_VALUE: {
 			const TraceRestrictCounter* ctr = TraceRestrictCounter::GetIfValid(GB(order->GetXData(), 16, 16));
 			if (ctr != nullptr) {
@@ -3759,7 +3759,7 @@ CommandCost CmdMassChangeOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 	return CommandCost();
 }
 
-void ShiftOrderDates(DateDelta interval)
+void UpdateOrderUIOnDateChange()
 {
 	SetWindowClassesDirty(WC_VEHICLE_ORDERS);
 	SetWindowClassesDirty(WC_VEHICLE_TIMETABLE);

@@ -25,8 +25,8 @@ struct NetworkClientInfo : NetworkClientInfoPool::PoolItem<&_networkclientinfo_p
 	ClientID client_id;      ///< Client identifier (same as ClientState->client_id)
 	std::string client_name; ///< Name of the client
 	CompanyID client_playas; ///< As which company is this client playing (CompanyID)
-	Date join_date;          ///< Gamedate the client has joined
-	DateFract join_date_fract;
+	EconTime::Date join_date; ///< Gamedate the client has joined
+	EconTime::DateFract join_date_fract;
 	uint8_t join_tick_skip_counter;
 	uint32_t join_frame;
 

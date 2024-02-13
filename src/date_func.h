@@ -12,97 +12,63 @@
 
 #include "date_type.h"
 #include "settings_type.h"
-#include <utility>
 
-extern YearMonthDay _cur_date_ymd;
-extern Date      _date;
-extern DateFract _date_fract;
 extern uint64_t  _tick_counter;
-extern uint8_t   _tick_skip_counter;
 extern uint64_t  _scaled_tick_counter;
 extern StateTicks _state_ticks;
-extern StateTicksDelta _state_ticks_offset;
 extern uint32_t  _quit_after_days;
 
-void SetDate(Date date, DateFract fract);
-YearMonthDay ConvertDateToYMD(Date date);
-Date ConvertYMDToDate(Year year, Month month, Day day);
+namespace DateDetail {
+	extern StateTicksDelta _state_ticks_offset;
+	extern uint8_t _tick_skip_counter;
+	extern uint8_t _effective_day_length;
+};
+
 StateTicks GetStateTicksFromCurrentDateWithoutOffset();
 void RecalculateStateTicksOffset();
 
-inline Date ConvertYMDToDate(const YearMonthDay &ymd)
+inline uint8_t TickSkipCounter()
 {
-	return ConvertYMDToDate(ymd.year, ymd.month, ymd.day);
+	return DateDetail::_tick_skip_counter;
 }
-
-#define _cur_year (_cur_date_ymd.year)
 
 inline uint8_t DayLengthFactor()
 {
-	extern uint8_t _effective_day_length;
-	return _effective_day_length;
+	return DateDetail::_effective_day_length;
 }
 
 void UpdateEffectiveDayLengthFactor();
 
-/**
- * Checks whether the given year is a leap year or not.
- * @param yr The year to check.
- * @return True if \c yr is a leap year, otherwise false.
- */
-inline bool IsLeapYear(Year yr)
-{
-	return yr % 4 == 0 && (yr % 100 != 0 || yr % 400 == 0);
-}
-
-inline Date StateTicksToDate(StateTicks ticks)
-{
-	return (ticks.base() - _state_ticks_offset.base()) / (DAY_TICKS * DayLengthFactor());
-}
-
-inline StateTicks DateToStateTicks(Date date)
-{
-	return ((int64_t)date.base() * DAY_TICKS * DayLengthFactor()) + _state_ticks_offset.base();
-}
-
-inline DateTicks StateTicksToDateTicks(StateTicks ticks)
-{
-	return (ticks.base() - _state_ticks_offset.base()) / DayLengthFactor();
-}
-
-inline StateTicks DateTicksToStateTicks(DateTicks date_ticks)
-{
-	return ((int64_t)date_ticks.base() * DayLengthFactor()) + _state_ticks_offset.base();
-}
-
-/**
- * Calculate the year of a given date.
- * @param date The date to consider.
- * @return the year.
- */
-inline constexpr Year DateToYear(Date date)
+inline constexpr YearDelta DateDeltaToYearDelta(DateDelta date)
 {
 	return date.base() / DAYS_IN_LEAP_YEAR;
 }
 
-inline constexpr Year DateDeltaToYears(DateDelta date)
-{
-	return date.base() / DAYS_IN_LEAP_YEAR;
-}
-
-inline constexpr DateTicks DateToDateTicks(Date date, DateFract fract = 0)
+inline constexpr DateTicksDelta DateDeltaToDateTicksDelta(DateDelta date, uint16_t fract = 0)
 {
 	return ((int64_t)date.base() * DAY_TICKS) + fract;
 }
 
-inline constexpr DateTicksDelta DateDeltaToDateTicksDelta(DateDelta date, DateFract fract = 0)
+inline EconTime::Date StateTicksToDate(StateTicks ticks)
 {
-	return ((int64_t)date.base() * DAY_TICKS) + fract;
+	return (ticks.base() - DateDetail::_state_ticks_offset.base()) / (DAY_TICKS * DayLengthFactor());
 }
 
-inline DateTicks NowDateTicks()
+CalTime::Date StateTicksToCalendarDate(StateTicks ticks);
+
+inline StateTicks DateToStateTicks(EconTime::Date date)
 {
-	return DateToDateTicks(_date, _date_fract);
+	return ((int64_t)date.base() * DAY_TICKS * DayLengthFactor()) + DateDetail::_state_ticks_offset.base();
+}
+
+inline EconTime::DateTicks StateTicksToDateTicks(StateTicks ticks)
+{
+	return (ticks.base() - DateDetail::_state_ticks_offset.base()) / DayLengthFactor();
+}
+
+inline StateTicks DateTicksToStateTicks(EconTime::DateTicks date_ticks)
+{
+	return ((int64_t)date_ticks.base() * DayLengthFactor()) + DateDetail::_state_ticks_offset.base();
 }
 
 inline Ticks TimetableDisplayUnitSize()
@@ -115,9 +81,9 @@ inline Ticks TimetableDisplayUnitSize()
 }
 
 struct debug_date_dumper {
-	const char *HexDate(Date date, DateFract date_fract, uint8_t tick_skip_counter);
+	const char *HexDate(EconTime::Date date, EconTime::DateFract date_fract, uint8_t tick_skip_counter);
 
-	inline const char *HexDate() { return this->HexDate(_date, _date_fract, _tick_skip_counter); }
+	inline const char *HexDate() { return this->HexDate(EconTime::CurDate(), EconTime::CurDateFract(), TickSkipCounter()); }
 
 private:
 	char buffer[24];

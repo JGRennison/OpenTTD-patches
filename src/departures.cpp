@@ -856,8 +856,8 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 		for (uint i = 0; i < next_orders.size(); ++i) {
 			OrderDate *od = next_orders[i];
 
-			DateTicks lod = least_order->expected_tick - least_order->lateness;
-			DateTicks odd = od->expected_tick - od->lateness;
+			Ticks lod = least_order->expected_tick - least_order->lateness;
+			Ticks odd = od->expected_tick - od->lateness;
 
 			if (type == D_ARRIVAL) {
 				lod -= least_order->scheduled_waiting_time > 0 ? least_order->scheduled_waiting_time : least_order->order->GetWaitTime();

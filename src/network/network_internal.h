@@ -76,10 +76,10 @@ extern NetworkAddressList _broadcast_list;
 extern uint32_t _sync_seed_1;
 extern uint64_t _sync_state_checksum;
 extern uint32_t _sync_frame;
-extern Date   _last_sync_date;
-extern DateFract _last_sync_date_fract;
-extern uint8_t  _last_sync_tick_skip_counter;
-extern uint32_t  _last_sync_frame_counter;
+extern EconTime::Date _last_sync_date;
+extern EconTime::DateFract _last_sync_date_fract;
+extern uint8_t _last_sync_tick_skip_counter;
+extern uint32_t _last_sync_frame_counter;
 extern bool _network_first_time;
 /* Vars needed for the join-GUI */
 extern NetworkJoinStatus _network_join_status;

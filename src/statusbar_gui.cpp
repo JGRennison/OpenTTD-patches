@@ -93,7 +93,7 @@ struct StatusBarWindow : Window {
 		Dimension d;
 		switch (widget) {
 			case WID_S_LEFT:
-				SetDParam(0, DateToStateTicks(MAX_YEAR * DAYS_IN_YEAR));
+				SetDParam(0, DateToStateTicks(EconTime::MAX_YEAR.base() * DAYS_IN_YEAR));
 				d = GetStringBoundingBox(STR_JUST_DATE_WALLCLOCK_LONG);
 				break;
 

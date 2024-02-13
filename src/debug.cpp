@@ -321,8 +321,8 @@ const char *log_prefix::GetLogPrefix()
 }
 
 struct DesyncMsgLogEntry {
-	Date date;
-	DateFract date_fract;
+	EconTime::Date date;
+	EconTime::DateFract date_fract;
 	uint8_t tick_skip_counter;
 	uint32_t src_id;
 	std::string msg;
@@ -330,7 +330,7 @@ struct DesyncMsgLogEntry {
 	DesyncMsgLogEntry() { }
 
 	DesyncMsgLogEntry(std::string msg)
-			: date(_date), date_fract(_date_fract), tick_skip_counter(_tick_skip_counter), src_id(0), msg(msg) { }
+			: date(EconTime::CurDate()), date_fract(EconTime::CurDateFract()), tick_skip_counter(TickSkipCounter()), src_id(0), msg(msg) { }
 };
 
 struct DesyncMsgLog {
@@ -385,12 +385,12 @@ void ClearDesyncMsgLog()
 char *DumpDesyncMsgLog(char *buffer, const char *last)
 {
 	buffer = _desync_msg_log.Dump(buffer, last, "Desync Msg Log", [](int display_num, char *buffer, const char *last, const DesyncMsgLogEntry &entry) -> int {
-		YearMonthDay ymd = ConvertDateToYMD(entry.date);
-		return seprintf(buffer, last, "%5u | %4i-%02i-%02i, %2i, %3i | %s\n", display_num, ymd.year, ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter, entry.msg.c_str());
+		EconTime::YearMonthDay ymd = EconTime::ConvertDateToYMD(entry.date);
+		return seprintf(buffer, last, "%5u | %4i-%02i-%02i, %2i, %3i | %s\n", display_num, ymd.year.base(), ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter, entry.msg.c_str());
 	});
 	buffer = _remote_desync_msg_log.Dump(buffer, last, "Remote Client Desync Msg Log", [](int display_num, char *buffer, const char *last, const DesyncMsgLogEntry &entry) -> int {
-		YearMonthDay ymd = ConvertDateToYMD(entry.date);
-		return seprintf(buffer, last, "%5u | Client %5u | %4i-%02i-%02i, %2i, %3i | %s\n", display_num, entry.src_id, ymd.year, ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter, entry.msg.c_str());
+		EconTime::YearMonthDay ymd = EconTime::ConvertDateToYMD(entry.date);
+		return seprintf(buffer, last, "%5u | Client %5u | %4i-%02i-%02i, %2i, %3i | %s\n", display_num, entry.src_id, ymd.year.base(), ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter, entry.msg.c_str());
 	});
 	return buffer;
 }
@@ -403,7 +403,7 @@ void LogDesyncMsg(std::string msg)
 	_desync_msg_log.LogMsg(DesyncMsgLogEntry(std::move(msg)));
 }
 
-void LogRemoteDesyncMsg(Date date, DateFract date_fract, uint8_t tick_skip_counter, uint32_t src_id, std::string msg)
+void LogRemoteDesyncMsg(EconTime::Date date, EconTime::DateFract date_fract, uint8_t tick_skip_counter, uint32_t src_id, std::string msg)
 {
 	DesyncMsgLogEntry entry(std::move(msg));
 	entry.date = date;

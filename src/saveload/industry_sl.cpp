@@ -43,7 +43,7 @@ struct ProducedCargo {
 struct AcceptedCargo {
 	CargoID cargo; ///< Cargo type
 	uint16_t waiting; ///< Amount of cargo waiting to processed
-	Date last_accepted; ///< Last day cargo was accepted by this industry
+	EconTime::Date last_accepted; ///< Last day cargo was accepted by this industry
 };
 
 class SlIndustryAccepted : public DefaultSaveLoadHandler<SlIndustryAccepted, Industry> {

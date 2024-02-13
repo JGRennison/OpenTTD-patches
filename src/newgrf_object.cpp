@@ -84,7 +84,7 @@ bool ObjectSpec::IsEverAvailable() const
  */
 bool ObjectSpec::WasEverAvailable() const
 {
-	return this->IsEverAvailable() && (_date > this->introduction_date || (_settings_game.construction.ignore_object_intro_dates && !_generating_world));
+	return this->IsEverAvailable() && ((CalTime::CurDate() > this->introduction_date) || (_settings_game.construction.ignore_object_intro_dates && !_generating_world));
 }
 
 /**
@@ -94,8 +94,8 @@ bool ObjectSpec::WasEverAvailable() const
 bool ObjectSpec::IsAvailable() const
 {
 	return this->WasEverAvailable() &&
-			(_date < this->end_of_life_date || this->end_of_life_date < this->introduction_date + 365 ||
-			(_settings_game.construction.no_expire_objects_after != 0 && _cur_year >= _settings_game.construction.no_expire_objects_after));
+			((CalTime::CurDate() < this->end_of_life_date) || (this->end_of_life_date < this->introduction_date + 365) ||
+			(_settings_game.construction.no_expire_objects_after != 0 && CalTime::CurYear() >= _settings_game.construction.no_expire_objects_after));
 }
 
 /**
@@ -281,7 +281,7 @@ static uint32_t GetCountAndDistanceOfClosestInstance(uint32_t local_id, uint32_t
 				break;
 
 			/* Construction date */
-			case 0x42: return _date.base();
+			case 0x42: return CalTime::CurDate().base();
 
 			/* Object founder information */
 			case 0x44: return _current_company;

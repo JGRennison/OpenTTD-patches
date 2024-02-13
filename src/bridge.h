@@ -62,7 +62,7 @@ enum BridgeSpecCtrlFlags {
  * Struct containing information about a single bridge type
  */
 struct BridgeSpec {
-	Year avail_year;             ///< the year where it becomes available
+	CalTime::Year avail_year;    ///< the year where it becomes available
 	byte min_length;             ///< the minimum length (not counting start and end tile)
 	uint16_t max_length;         ///< the maximum length (not counting start and end tile)
 	uint16_t price;              ///< the price multiplier

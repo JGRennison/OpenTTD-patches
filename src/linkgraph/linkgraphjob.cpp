@@ -26,10 +26,10 @@ INSTANTIATE_POOL_METHODS(LinkGraphJob)
  */
 /* static */ Path *Path::invalid_path = new Path(INVALID_NODE, true);
 
-static DateTicks GetLinkGraphJobJoinDateTicks(uint duration_multiplier)
+static EconTime::DateTicks GetLinkGraphJobJoinDateTicks(uint duration_multiplier)
 {
 	DateTicksDelta ticks = (_settings_game.linkgraph.recalc_time * DAY_TICKS * duration_multiplier) / (SECONDS_PER_DAY * _settings_game.economy.day_length_factor);
-	return ticks + NowDateTicks();
+	return ticks + EconTime::CurDateTicks();
 }
 
 /**
@@ -44,7 +44,7 @@ LinkGraphJob::LinkGraphJob(const LinkGraph &orig, uint duration_multiplier) :
 		link_graph(orig),
 		settings(_settings_game.linkgraph),
 		join_date_ticks(GetLinkGraphJobJoinDateTicks(duration_multiplier)),
-		start_date_ticks(NowDateTicks()),
+		start_date_ticks(EconTime::CurDateTicks()),
 		job_completed(false),
 		job_aborted(false)
 {
@@ -130,14 +130,14 @@ void LinkGraphJob::FinaliseJob()
 			LinkGraph::ConstEdge lg_edge = lg->GetConstEdge(edge.From(), edge.To());
 			if (st2 == nullptr || st2->goods[this->Cargo()].link_graph != this->link_graph.index ||
 					st2->goods[this->Cargo()].node != edge.To() ||
-					lg_edge.LastUpdate() == INVALID_DATE) {
+					lg_edge.LastUpdate() == EconTime::INVALID_DATE) {
 				/* Edge has been removed. Delete flows. */
 				StationIDStack erased = flows.DeleteFlows(to);
 				/* Delete old flows for source stations which have been deleted
 				 * from the new flows. This avoids flow cycles between old and
 				 * new flows. */
 				while (!erased.IsEmpty()) geflows.erase(erased.Pop());
-			} else if (lg_edge.LastUnrestrictedUpdate() == INVALID_DATE) {
+			} else if (lg_edge.LastUnrestrictedUpdate() == EconTime::INVALID_DATE) {
 				/* Edge is fully restricted. */
 				flows.RestrictFlows(to);
 			}
@@ -242,7 +242,7 @@ void LinkGraphJob::Init()
 			distance_anno = calculate_distance();
 		}
 
-		if (edge.LastAircraftUpdate() != INVALID_DATE && aircraft_link_scale > 100) {
+		if (edge.LastAircraftUpdate() != EconTime::INVALID_DATE && aircraft_link_scale > 100) {
 			distance_anno *= aircraft_link_scale;
 			distance_anno /= 100;
 		}

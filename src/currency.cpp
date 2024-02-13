@@ -126,10 +126,10 @@ uint64_t GetMaskOfAllowedCurrencies()
 	uint i;
 
 	for (i = 0; i < CURRENCY_END; i++) {
-		Year to_euro = _currency_specs[i].to_euro;
+		CalTime::Year to_euro = _currency_specs[i].to_euro;
 
-		if (to_euro != CF_NOEURO && to_euro != CF_ISEURO && _cur_year >= to_euro) continue;
-		if (to_euro == CF_ISEURO && _cur_year < 2000) continue;
+		if (to_euro != CF_NOEURO && to_euro != CF_ISEURO && CalTime::CurYear() >= to_euro) continue;
+		if (to_euro == CF_ISEURO && CalTime::CurYear() < 2000) continue;
 		SetBit(mask, i);
 	}
 	SetBit(mask, CURRENCY_CUSTOM); // always allow custom currency
@@ -143,7 +143,7 @@ void CheckSwitchToEuro()
 {
 	if (_currency_specs[_settings_game.locale.currency].to_euro != CF_NOEURO &&
 			_currency_specs[_settings_game.locale.currency].to_euro != CF_ISEURO &&
-			_cur_year >= _currency_specs[_settings_game.locale.currency].to_euro) {
+			CalTime::CurYear() >= _currency_specs[_settings_game.locale.currency].to_euro) {
 		_settings_game.locale.currency = 2; // this is the index of euro above.
 		AddNewsItem(STR_NEWS_EURO_INTRODUCTION, NT_ECONOMY, NF_NORMAL);
 	}

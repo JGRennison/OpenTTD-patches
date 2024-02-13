@@ -81,9 +81,9 @@ AirportSpec AirportSpec::specs[NUM_AIRPORTS]; ///< Airport specifications.
 bool AirportSpec::IsAvailable() const
 {
 	if (!this->enabled) return false;
-	if (_cur_year < this->min_year) return false;
+	if (CalTime::CurYear() < this->min_year) return false;
 	if (_settings_game.station.never_expire_airports) return true;
-	return _cur_year <= this->max_year;
+	return CalTime::CurYear() <= this->max_year;
 }
 
 /**
@@ -169,7 +169,7 @@ void AirportOverrideManager::SetEntitySpec(AirportSpec *as)
 		case 0x7C: return (this->st->airport.psa != nullptr) ? this->st->airport.psa->GetValue(parameter) : 0;
 
 		case 0xF0: return this->st->facilities;
-		case 0xFA: return ClampTo<uint16_t>((this->st->build_date - DAYS_TILL_ORIGINAL_BASE_YEAR).base());
+		case 0xFA: return ClampTo<uint16_t>((this->st->build_date - CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR).base());
 	}
 
 	return this->st->GetNewGRFVariable(this->ro, variable, parameter, &(extra->available));

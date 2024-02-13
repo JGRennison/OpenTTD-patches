@@ -403,7 +403,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 	{
 		switch (widget) {
 			case WID_VT_ARRIVAL_DEPARTURE_PANEL:
-				SetDParamMaxValue(0, _settings_time.time_in_minutes ? 0 : MAX_YEAR * DAYS_IN_YEAR);
+				SetDParamMaxValue(0, _settings_time.time_in_minutes ? 0 : EconTime::MAX_YEAR.base() * DAYS_IN_YEAR);
 				this->deparr_time_width = GetStringBoundingBox(STR_JUST_DATE_WALLCLOCK_TINY).width + 4;
 				this->deparr_abbr_width = std::max(GetStringBoundingBox(STR_TIMETABLE_ARRIVAL_ABBREVIATION).width, GetStringBoundingBox(STR_TIMETABLE_DEPARTURE_ABBREVIATION).width);
 				size->width = this->deparr_abbr_width + WidgetDimensions::scaled.hsep_wide + this->deparr_time_width + padding.width;
@@ -910,7 +910,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 					ShowQueryString(str, STR_TIMETABLE_START, 31, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else {
 					ShowSetDateWindow(this, v->index | (_ctrl_pressed ? 1U << 20 : 0),
-							_state_ticks, _cur_year, _cur_year + 15, ChangeTimetableStartCallback);
+							_state_ticks, EconTime::CurYear(), EconTime::CurYear() + 15, ChangeTimetableStartCallback);
 				}
 				break;
 

@@ -74,7 +74,7 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 	TinyString name;                ///< Custom name
 	StringID string_id;             ///< Default name (town area) of station
 
-	Date build_date;                ///< Date of construction
+	CalTime::Date build_date;       ///< Date of construction
 
 	Town *town;                     ///< The town this station is associated with
 

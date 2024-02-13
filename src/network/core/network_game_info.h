@@ -94,8 +94,8 @@ enum NewGRFSerializationType {
  */
 struct NetworkServerGameInfo {
 	GRFConfig *grfconfig;        ///< List of NewGRF files used
-	Date start_date;             ///< When the game started
-	Date game_date;              ///< Current date
+	CalTime::Date start_date;    ///< When the game started
+	CalTime::Date game_date;     ///< Current date
 	uint64_t ticks_playing;      ///< Amount of ticks the game has been running unpaused.
 	uint32_t map_width;          ///< Map width
 	uint32_t map_height;         ///< Map height

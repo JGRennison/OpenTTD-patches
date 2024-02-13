@@ -1482,9 +1482,9 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 
 		v->railtype = rvi->railtype;
 
-		v->date_of_last_service = _date;
-		v->date_of_last_service_newgrf = _date;
-		v->build_year = _cur_year;
+		v->date_of_last_service = EconTime::CurDate();
+		v->date_of_last_service_newgrf = CalTime::CurDate();
+		v->build_year = CalTime::CurYear();
 		v->sprite_seq.Set(SPR_IMG_QUERY);
 		v->random_bits = Random();
 
@@ -1631,9 +1631,9 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 		_new_vehicle_id = v->index;
 
 		v->SetServiceInterval(Company::Get(_current_company)->settings.vehicle.servint_trains);
-		v->date_of_last_service = _date;
-		v->date_of_last_service_newgrf = _date;
-		v->build_year = _cur_year;
+		v->date_of_last_service = EconTime::CurDate();
+		v->date_of_last_service_newgrf = CalTime::CurDate();
+		v->build_year = CalTime::CurYear();
 		v->sprite_seq.Set(SPR_IMG_QUERY);
 		v->random_bits = Random();
 
@@ -7046,7 +7046,7 @@ Train* CmdBuildVirtualRailWagon(const Engine *e, uint32_t user, bool no_consist_
 
 	v->railtype = rvi->railtype;
 
-	v->build_year = _cur_year;
+	v->build_year = CalTime::CurYear();
 	v->sprite_seq.Set(SPR_IMG_QUERY);
 	v->random_bits = Random();
 
@@ -7126,7 +7126,7 @@ Train* BuildVirtualRailVehicle(EngineID eid, StringID &error, uint32_t user, boo
 	v->railtype = rvi->railtype;
 	_new_vehicle_id = v->index;
 
-	v->build_year = _cur_year;
+	v->build_year = CalTime::CurYear();
 	v->sprite_seq.Set(SPR_IMG_QUERY);
 	v->random_bits = Random();
 

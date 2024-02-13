@@ -311,12 +311,12 @@ bool ValParamRailType(const RailType rail)
  * @return The rail types that should be available when date
  *         introduced rail types are taken into account as well.
  */
-RailTypes AddDateIntroducedRailTypes(RailTypes current, Date date)
+RailTypes AddDateIntroducedRailTypes(RailTypes current, CalTime::Date date)
 {
 	RailTypes rts = current;
 
 	if (_settings_game.vehicle.no_introduce_vehicles_after > 0) {
-		date = std::min<Date>(date, ConvertYMDToDate(_settings_game.vehicle.no_introduce_vehicles_after, 0, 1) - 1);
+		date = std::min<CalTime::Date>(date, CalTime::ConvertYMDToDate(_settings_game.vehicle.no_introduce_vehicles_after, 0, 1) - 1);
 	}
 
 	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
@@ -325,7 +325,7 @@ RailTypes AddDateIntroducedRailTypes(RailTypes current, Date date)
 		if (rti->label == 0) continue;
 
 		/* Not date introduced. */
-		if (!IsInsideMM(rti->introduction_date, 0, MAX_DATE.base())) continue;
+		if (!IsInsideMM(rti->introduction_date, 0, CalTime::MAX_DATE.base())) continue;
 
 		/* Not yet introduced at this date. */
 		if (rti->introduction_date > date) continue;
@@ -352,9 +352,9 @@ RailTypes GetCompanyRailTypes(CompanyID company, bool introduces)
 {
 	RailTypes rts = RAILTYPES_NONE;
 
-	Date date = _date;
+	CalTime::Date date = CalTime::CurDate();
 	if (_settings_game.vehicle.no_introduce_vehicles_after > 0) {
-		date = std::min<Date>(date, ConvertYMDToDate(_settings_game.vehicle.no_introduce_vehicles_after, 0, 1) - 1);
+		date = std::min<CalTime::Date>(date, CalTime::ConvertYMDToDate(_settings_game.vehicle.no_introduce_vehicles_after, 0, 1) - 1);
 	}
 
 	for (const Engine *e : Engine::IterateType(VEH_TRAIN)) {
@@ -375,7 +375,7 @@ RailTypes GetCompanyRailTypes(CompanyID company, bool introduces)
 		}
 	}
 
-	if (introduces) return AddDateIntroducedRailTypes(rts, _date);
+	if (introduces) return AddDateIntroducedRailTypes(rts, CalTime::CurDate());
 	return rts;
 }
 
@@ -403,7 +403,7 @@ RailTypes GetRailTypes(bool introduces)
 		}
 	}
 
-	if (introduces) return AddDateIntroducedRailTypes(rts, MAX_DATE);
+	if (introduces) return AddDateIntroducedRailTypes(rts, CalTime::MAX_DATE);
 	return rts;
 }
 

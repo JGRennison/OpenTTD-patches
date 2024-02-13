@@ -244,7 +244,7 @@ struct GUISettings : public TimeSettings {
 	SignalGUISettings signal_gui_mode;                      ///< select which signal types are shown in the signal GUI
 	SignalCycleSettings cycle_signal_types;                 ///< Which signal types to cycle with the build signal tool.
 	SignalType default_signal_type;                         ///< The default signal type, which is set automatically by the last signal used. Not available in Settings.
-	Year   coloured_news_year;                              ///< when does newspaper become coloured?
+	CalTime::Year coloured_news_year;                       ///< when does newspaper become coloured?
 	bool   override_time_settings;                          ///< Whether to override time display settings stored in savegame.
 	bool   timetable_in_ticks;                              ///< whether to show the timetable in ticks rather than days
 	bool   timetable_leftover_ticks;                        ///< whether to show leftover ticks after converting to minutes/days, in the timetable
@@ -255,7 +255,7 @@ struct GUISettings : public TimeSettings {
 	byte   drag_signals_density;                            ///< many signals density
 	bool   drag_signals_fixed_distance;                     ///< keep fixed distance between signals when dragging
 	bool   drag_signals_skip_stations;                      ///< continue past station/waypoint tiles when auto-fill dragging signals
-	Year   semaphore_build_before;                          ///< build semaphore signals automatically before this year
+	CalTime::Year semaphore_build_before;                   ///< build semaphore signals automatically before this year
 	byte   news_message_timeout;                            ///< how much longer than the news message "age" should we keep the message in the history
 	bool   show_track_reservation;                          ///< highlight reserved tracks.
 	byte   station_numtracks;                               ///< the number of platforms to default on for rail stations
@@ -441,7 +441,7 @@ struct NetworkSettings {
 	uint8_t       autoclean_novehicles;                   ///< remove companies with no vehicles after this many months
 	uint8_t       max_companies;                          ///< maximum amount of companies
 	uint8_t       max_clients;                            ///< maximum amount of clients
-	Year        restart_game_year;                        ///< year the server restarts
+	CalTime::Year restart_game_year;                      ///< year the server restarts
 	uint8_t       min_active_clients;                     ///< minimum amount of active clients to unpause the game
 	bool        reload_cfg;                               ///< reload the config file before restarting
 	std::string last_joined;                              ///< Last joined server
@@ -454,8 +454,8 @@ struct NetworkSettings {
 struct GameCreationSettings {
 	uint32_t generation_seed;                ///< noise seed for world generation
 	uint32_t generation_unique_id;           ///< random id to differentiate savegames
-	Year   starting_year;                    ///< starting date
-	Year   ending_year;                      ///< scoring end date
+	CalTime::Year starting_year;             ///< starting date
+	CalTime::Year ending_year;               ///< scoring end date
 	uint8_t  map_x;                          ///< X size of map
 	uint8_t  map_y;                          ///< Y size of map
 	byte   land_generator;                   ///< the landscape generator
@@ -527,7 +527,7 @@ struct ConstructionSettings {
 	bool   allow_docks_under_bridges;        ///< allow docks under bridges
 	byte   purchase_land_permitted;          ///< whether and how purchasing land is permitted
 	bool   build_object_area_permitted;      ///< whether building objects by area is permitted
-	Year   no_expire_objects_after;          ///< do not expire objects after this year
+	CalTime::Year no_expire_objects_after;   ///< do not expire objects after this year
 	bool   ignore_object_intro_dates;        ///< allow players to build objects before their introduction dates (does not include during map generation)
 	bool   convert_town_road_no_houses;      ///< allow converting town roads to a type which does not allow houses
 
@@ -694,8 +694,8 @@ struct VehicleSettings {
 	uint8_t  freight_trains;                   ///< value to multiply the weight of cargo by
 	bool   dynamic_engines;                    ///< enable dynamic allocation of engine data
 	bool   never_expire_vehicles;              ///< never expire vehicles
-	Year   no_expire_vehicles_after;           ///< do not expire vehicles after this year
-	Year   no_introduce_vehicles_after;        ///< do not introduce vehicles after this year
+	CalTime::Year no_expire_vehicles_after;    ///< do not expire vehicles after this year
+	CalTime::Year no_introduce_vehicles_after; ///< do not introduce vehicles after this year
 	byte   extend_vehicle_life;                ///< extend vehicle life by this many years
 	byte   road_side;                          ///< the side of the road vehicles drive on
 	uint8_t  plane_crashes;                    ///< number of plane crashes, 0 = none, 1 = reduced, 2 = normal

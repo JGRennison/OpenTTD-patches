@@ -1196,9 +1196,9 @@ CommandCost CmdBuildShip(TileIndex tile, DoCommandFlag flags, const Engine *e, V
 		v->state = TRACK_BIT_DEPOT;
 
 		v->SetServiceInterval(Company::Get(_current_company)->settings.vehicle.servint_ships);
-		v->date_of_last_service = _date;
-		v->date_of_last_service_newgrf = _date;
-		v->build_year = _cur_year;
+		v->date_of_last_service = EconTime::CurDate();
+		v->date_of_last_service_newgrf = CalTime::CurDate();
+		v->build_year = CalTime::CurYear();
 		v->sprite_seq.Set(SPR_IMG_QUERY);
 		v->random_bits = Random();
 

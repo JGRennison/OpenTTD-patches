@@ -157,7 +157,7 @@ RoadType AllocateRoadType(RoadTypeLabel label, RoadTramType rtt)
 			rti->flags = ROTFB_NONE;
 			rti->extra_flags = RXTFB_NONE;
 			rti->collision_mode = RTCM_NORMAL;
-			rti->introduction_date = INVALID_DATE;
+			rti->introduction_date = CalTime::INVALID_DATE;
 
 			/* Make us compatible with ourself. */
 			rti->powered_roadtypes = (RoadTypes)(1ULL << rt);
@@ -1768,7 +1768,7 @@ CommandCost CmdBuildRoadDepot(TileIndex tile, DoCommandFlag flags, uint32_t p1, 
 
 	if (flags & DC_EXEC) {
 		Depot *dep = new Depot(tile);
-		dep->build_date = _date;
+		dep->build_date = CalTime::CurDate();
 
 		/* A road depot has two road bits. */
 		UpdateCompanyRoadInfrastructure(rt, _current_company, ROAD_DEPOT_TRACKBIT_FACTOR);

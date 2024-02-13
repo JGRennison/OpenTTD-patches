@@ -615,8 +615,8 @@ struct CommandLogEntry {
 	uint32_t p2;
 	uint32_t cmd;
 	uint64_t p3;
-	Date date;
-	DateFract date_fract;
+	EconTime::Date date;
+	EconTime::DateFract date_fract;
 	uint8_t tick_skip_counter;
 	CompanyID current_company;
 	CompanyID local_company;
@@ -627,7 +627,7 @@ struct CommandLogEntry {
 	CommandLogEntry() { }
 
 	CommandLogEntry(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd, CommandLogEntryFlag log_flags, std::string text)
-			: text(text), tile(tile), p1(p1), p2(p2), cmd(cmd), p3(p3), date(_date), date_fract(_date_fract), tick_skip_counter(_tick_skip_counter),
+			: text(text), tile(tile), p1(p1), p2(p2), cmd(cmd), p3(p3), date(EconTime::CurDate()), date_fract(EconTime::CurDateFract()), tick_skip_counter(TickSkipCounter()),
 			current_company(_current_company), local_company(_local_company), log_flags(log_flags), client_id(_cmd_client_id), frame_counter(_frame_counter) { }
 };
 
@@ -669,8 +669,8 @@ static void DumpSubCommandLogEntry(char *&buffer, const char *last, const Comman
 			return (entry.log_flags & CLEF_SCRIPT_ASYNC) ? 'A' : 'a';
 		};
 
-		YearMonthDay ymd = ConvertDateToYMD(entry.date);
-		buffer += seprintf(buffer, last, "%4i-%02i-%02i, %2i, %3i", ymd.year, ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter);
+		EconTime::YearMonthDay ymd = EconTime::ConvertDateToYMD(entry.date);
+		buffer += seprintf(buffer, last, "%4i-%02i-%02i, %2i, %3i", ymd.year.base(), ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter);
 		if (_networking) {
 			buffer += seprintf(buffer, last, ", %08X", entry.frame_counter);
 		}
@@ -923,8 +923,9 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32
 	if (_networking && cmd_log.count > 0) {
 		CommandLogEntry &current = cmd_log.log[(cmd_log.next - 1) % cmd_log.log.size()];
 		if (current.log_flags & CLEF_ONLY_SENDING && ((current.log_flags ^ log_flags) & ~(CLEF_SCRIPT | CLEF_MY_CMD)) == CLEF_ONLY_SENDING &&
-				current.tile == tile && current.p1 == p1 && current.p2 == p2 && current.p3 == p3 && ((current.cmd ^ cmd) & ~CMD_NETWORK_COMMAND) == 0 && current.date == _date &&
-				current.date_fract == _date_fract && current.tick_skip_counter == _tick_skip_counter &&
+				current.tile == tile && current.p1 == p1 && current.p2 == p2 && current.p3 == p3 && ((current.cmd ^ cmd) & ~CMD_NETWORK_COMMAND) == 0 &&
+				current.date == EconTime::CurDate() && current.date_fract == EconTime::CurDateFract() &&
+				current.tick_skip_counter == TickSkipCounter() &&
 				current.frame_counter == _frame_counter &&
 				current.current_company == _current_company && current.local_company == _local_company) {
 			current.log_flags |= log_flags | CLEF_TWICE;

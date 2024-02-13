@@ -201,7 +201,7 @@ public:
 	 * The introduction at this date is furthermore limited by the
 	 * #introduction_required_types.
 	 */
-	Date introduction_date;
+	CalTime::Date introduction_date;
 
 	/**
 	 * Bitmask of roadtypes that are required for this roadtype to be introduced

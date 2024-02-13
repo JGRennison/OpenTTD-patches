@@ -184,8 +184,8 @@ protected:
 	byte num_vert_lines;
 
 	/* The starting month and year that values are plotted against. */
-	byte month;
-	Year year;
+	EconTime::Month month;
+	EconTime::Year year;
 
 	bool draw_dates = true; ///< Should we draw months and years on the time axis?
 
@@ -395,8 +395,8 @@ protected:
 		if (this->draw_dates) {
 			x = r.left;
 			y = r.bottom + ScaleGUITrad(2);
-			byte month = this->month;
-			Year year  = this->year;
+			EconTime::Month month = this->month;
+			EconTime::Year year  = this->year;
 			for (int i = 0; i < this->num_on_x_axis; i++) {
 				SetDParam(0, month + STR_MONTH_ABBREV_JAN);
 				SetDParam(1, year);
@@ -518,8 +518,8 @@ public:
 
 		/* Draw x-axis labels and markings for graphs based on financial quarters and years.  */
 		if (this->draw_dates) {
-			byte month = this->month;
-			Year year  = this->year;
+			EconTime::Month month = this->month;
+			EconTime::Year year = this->year;
 			for (int i = 0; i < this->num_on_x_axis; i++) {
 				SetDParam(0, month + STR_MONTH_ABBREV_JAN);
 				SetDParam(1, year);
@@ -598,8 +598,8 @@ public:
 			nums = std::min(this->num_vert_lines, std::max(nums, c->num_valid_stat_ent));
 		}
 
-		int mo = (_cur_date_ymd.month / 3 - nums) * 3;
-		int yr = _cur_year;
+		int mo = (EconTime::CurMonth() / 3 - nums) * 3;
+		EconTime::Year yr = EconTime::CurYear();
 		while (mo < 0) {
 			yr--;
 			mo += 12;
@@ -950,8 +950,8 @@ struct DeliveredCargoGraphWindow : ExcludingCargoBaseGraphWindow {
 			nums = std::min(this->num_vert_lines, std::max(nums, c->num_valid_stat_ent));
 		}
 
-		int mo = (_cur_date_ymd.month / 3 - nums) * 3;
-		int yr = _cur_year;
+		int mo = (EconTime::CurMonth() / 3 - nums) * 3;
+		EconTime::Year yr = EconTime::CurYear();
 		while (mo < 0) {
 			yr--;
 			mo += 12;

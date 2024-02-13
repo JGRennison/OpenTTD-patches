@@ -482,7 +482,7 @@ struct GenerateLandscapeWindow : public Window {
 	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
-			case WID_GL_START_DATE_TEXT:      SetDParam(0, ConvertYMDToDate(_settings_newgame.game_creation.starting_year, 0, 1)); break;
+			case WID_GL_START_DATE_TEXT:      SetDParam(0, CalTime::ConvertYMDToDate(_settings_newgame.game_creation.starting_year, 0, 1)); break;
 			case WID_GL_MAPSIZE_X_PULLDOWN:   SetDParam(0, 1LL << _settings_newgame.game_creation.map_x); break;
 			case WID_GL_MAPSIZE_Y_PULLDOWN:   SetDParam(0, 1LL << _settings_newgame.game_creation.map_y); break;
 			case WID_GL_HEIGHTMAP_HEIGHT_TEXT: SetDParam(0, _settings_newgame.game_creation.heightmap_height); break;
@@ -619,8 +619,8 @@ struct GenerateLandscapeWindow : public Window {
 			this->SetWidgetDisabledState(WID_GL_HEIGHTMAP_HEIGHT_DOWN, _settings_newgame.game_creation.heightmap_height <= MIN_HEIGHTMAP_HEIGHT);
 			this->SetWidgetDisabledState(WID_GL_HEIGHTMAP_HEIGHT_UP, _settings_newgame.game_creation.heightmap_height >= GetMapHeightLimit());
 		}
-		this->SetWidgetDisabledState(WID_GL_START_DATE_DOWN, _settings_newgame.game_creation.starting_year <= MIN_YEAR);
-		this->SetWidgetDisabledState(WID_GL_START_DATE_UP,   _settings_newgame.game_creation.starting_year >= MAX_YEAR);
+		this->SetWidgetDisabledState(WID_GL_START_DATE_DOWN, _settings_newgame.game_creation.starting_year <= CalTime::MIN_YEAR);
+		this->SetWidgetDisabledState(WID_GL_START_DATE_UP,   _settings_newgame.game_creation.starting_year >= CalTime::MAX_YEAR);
 		this->SetWidgetDisabledState(WID_GL_SNOW_COVERAGE_DOWN, _settings_newgame.game_creation.snow_coverage <= 0 || _settings_newgame.game_creation.landscape != LT_ARCTIC);
 		this->SetWidgetDisabledState(WID_GL_SNOW_COVERAGE_UP,   _settings_newgame.game_creation.snow_coverage >= 100 || _settings_newgame.game_creation.landscape != LT_ARCTIC);
 		this->SetWidgetDisabledState(WID_GL_DESERT_COVERAGE_DOWN, _settings_newgame.game_creation.desert_coverage <= 0 || _settings_newgame.game_creation.landscape != LT_TROPIC);
@@ -660,7 +660,7 @@ struct GenerateLandscapeWindow : public Window {
 				break;
 
 			case WID_GL_START_DATE_TEXT:
-				SetDParam(0, ConvertYMDToDate(MAX_YEAR, 0, 1));
+				SetDParam(0, CalTime::ConvertYMDToDate(CalTime::MAX_YEAR, 0, 1));
 				d = GetStringBoundingBox(STR_JUST_DATE_LONG);
 				break;
 
@@ -835,7 +835,7 @@ struct GenerateLandscapeWindow : public Window {
 				if (!(this->flags & WF_TIMEOUT) || this->timeout_timer <= 1) {
 					this->HandleButtonClick(widget);
 
-					_settings_newgame.game_creation.starting_year = Clamp(_settings_newgame.game_creation.starting_year + widget - WID_GL_START_DATE_TEXT, MIN_YEAR, MAX_YEAR);
+					_settings_newgame.game_creation.starting_year = Clamp(_settings_newgame.game_creation.starting_year + widget - WID_GL_START_DATE_TEXT, CalTime::MIN_YEAR, CalTime::MAX_YEAR);
 					this->InvalidateData();
 				}
 				_left_button_clicked = false;
@@ -1079,7 +1079,7 @@ struct GenerateLandscapeWindow : public Window {
 			/* An empty string means revert to the default */
 			switch (this->widget_id) {
 				case WID_GL_HEIGHTMAP_HEIGHT_TEXT: value = MAP_HEIGHT_LIMIT_AUTO_MINIMUM; break;
-				case WID_GL_START_DATE_TEXT: value = DEF_START_YEAR; break;
+				case WID_GL_START_DATE_TEXT: value = CalTime::DEF_START_YEAR.base(); break;
 				case WID_GL_SNOW_COVERAGE_TEXT: value = DEF_SNOW_COVERAGE; break;
 				case WID_GL_DESERT_COVERAGE_TEXT: value = DEF_DESERT_COVERAGE; break;
 				case WID_GL_TOWN_PULLDOWN: value = 1; break;
@@ -1100,7 +1100,7 @@ struct GenerateLandscapeWindow : public Window {
 
 			case WID_GL_START_DATE_TEXT:
 				this->SetWidgetDirty(WID_GL_START_DATE_TEXT);
-				_settings_newgame.game_creation.starting_year = Clamp(value, MIN_YEAR, MAX_YEAR);
+				_settings_newgame.game_creation.starting_year = Clamp<CalTime::Year>(value, CalTime::MIN_YEAR, CalTime::MAX_YEAR);
 				break;
 
 			case WID_GL_SNOW_COVERAGE_TEXT:
@@ -1238,7 +1238,7 @@ struct CreateScenarioWindow : public Window
 	{
 		switch (widget) {
 			case WID_CS_START_DATE_TEXT:
-				SetDParam(0, ConvertYMDToDate(_settings_newgame.game_creation.starting_year, 0, 1));
+				SetDParam(0, CalTime::ConvertYMDToDate(_settings_newgame.game_creation.starting_year, 0, 1));
 				break;
 
 			case WID_CS_MAPSIZE_X_PULLDOWN:
@@ -1257,8 +1257,8 @@ struct CreateScenarioWindow : public Window
 
 	void OnPaint() override
 	{
-		this->SetWidgetDisabledState(WID_CS_START_DATE_DOWN,       _settings_newgame.game_creation.starting_year <= MIN_YEAR);
-		this->SetWidgetDisabledState(WID_CS_START_DATE_UP,         _settings_newgame.game_creation.starting_year >= MAX_YEAR);
+		this->SetWidgetDisabledState(WID_CS_START_DATE_DOWN,       _settings_newgame.game_creation.starting_year <= CalTime::MIN_YEAR);
+		this->SetWidgetDisabledState(WID_CS_START_DATE_UP,         _settings_newgame.game_creation.starting_year >= CalTime::MAX_YEAR);
 		this->SetWidgetDisabledState(WID_CS_FLAT_LAND_HEIGHT_DOWN, _settings_newgame.game_creation.se_flat_world_height <= 0);
 		this->SetWidgetDisabledState(WID_CS_FLAT_LAND_HEIGHT_UP,   _settings_newgame.game_creation.se_flat_world_height >= GetMapHeightLimit());
 
@@ -1281,7 +1281,7 @@ struct CreateScenarioWindow : public Window
 				break;
 
 			case WID_CS_START_DATE_TEXT:
-				SetDParam(0, ConvertYMDToDate(MAX_YEAR, 0, 1));
+				SetDParam(0, CalTime::ConvertYMDToDate(CalTime::MAX_YEAR, 0, 1));
 				str = STR_JUST_DATE_LONG;
 				break;
 
@@ -1339,7 +1339,7 @@ struct CreateScenarioWindow : public Window
 					this->HandleButtonClick(widget);
 					this->SetDirty();
 
-					_settings_newgame.game_creation.starting_year = Clamp(_settings_newgame.game_creation.starting_year + widget - WID_CS_START_DATE_TEXT, MIN_YEAR, MAX_YEAR);
+					_settings_newgame.game_creation.starting_year = Clamp(_settings_newgame.game_creation.starting_year + widget - WID_CS_START_DATE_TEXT, CalTime::MIN_YEAR, CalTime::MAX_YEAR);
 				}
 				_left_button_clicked = false;
 				break;
@@ -1394,7 +1394,7 @@ struct CreateScenarioWindow : public Window
 			switch (this->widget_id) {
 				case WID_CS_START_DATE_TEXT:
 					this->SetWidgetDirty(WID_CS_START_DATE_TEXT);
-					_settings_newgame.game_creation.starting_year = Clamp(value, MIN_YEAR, MAX_YEAR);
+					_settings_newgame.game_creation.starting_year = Clamp<CalTime::Year>(value, CalTime::MIN_YEAR, CalTime::MAX_YEAR);
 					break;
 
 				case WID_CS_FLAT_LAND_HEIGHT_TEXT:

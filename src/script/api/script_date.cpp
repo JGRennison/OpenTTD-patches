@@ -25,7 +25,7 @@
 
 /* static */ ScriptDate::Date ScriptDate::GetCurrentDate()
 {
-	return (ScriptDate::Date)_date.base();
+	return (ScriptDate::Date)::CalTime::CurDate().base();
 }
 
 /* static */ SQInteger ScriptDate::GetDayLengthFactor()
@@ -37,15 +37,15 @@
 {
 	if (date < 0) return DATE_INVALID;
 
-	::YearMonthDay ymd = ::ConvertDateToYMD(date);
-	return ymd.year;
+	::CalTime::YearMonthDay ymd = ::CalTime::ConvertDateToYMD(date);
+	return ymd.year.base();
 }
 
 /* static */ SQInteger ScriptDate::GetMonth(ScriptDate::Date date)
 {
 	if (date < 0) return DATE_INVALID;
 
-	::YearMonthDay ymd = ::ConvertDateToYMD(date);
+	::CalTime::YearMonthDay ymd = ::CalTime::ConvertDateToYMD(date);
 	return ymd.month + 1;
 }
 
@@ -53,7 +53,7 @@
 {
 	if (date < 0) return DATE_INVALID;
 
-	::YearMonthDay ymd = ::ConvertDateToYMD(date);
+	::CalTime::YearMonthDay ymd = ::CalTime::ConvertDateToYMD(date);
 	return ymd.day;
 }
 
@@ -61,9 +61,9 @@
 {
 	if (month < 1 || month > 12) return DATE_INVALID;
 	if (day_of_month < 1 || day_of_month > 31) return DATE_INVALID;
-	if (year < 0 || year > MAX_YEAR) return DATE_INVALID;
+	if (year < 0 || year > CalTime::MAX_YEAR) return DATE_INVALID;
 
-	return (ScriptDate::Date)::ConvertYMDToDate(year, month - 1, day_of_month).base();
+	return (ScriptDate::Date)::CalTime::ConvertYMDToDate(year, month - 1, day_of_month).base();
 }
 
 /* static */ SQInteger ScriptDate::GetSystemTime()

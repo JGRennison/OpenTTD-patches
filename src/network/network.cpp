@@ -87,8 +87,8 @@ NetworkAddressList _broadcast_list;                     ///< List of broadcast a
 uint32_t _sync_seed_1;                                  ///< Seed to compare during sync checks.
 uint64_t _sync_state_checksum;                          ///< State checksum to compare during sync checks.
 uint32_t _sync_frame;                                   ///< The frame to perform the sync check.
-Date   _last_sync_date;                                 ///< The game date of the last successfully received sync frame
-DateFract _last_sync_date_fract;                        ///< "
+EconTime::Date   _last_sync_date;                       ///< The game date of the last successfully received sync frame
+EconTime::DateFract _last_sync_date_fract;              ///< "
 uint8_t  _last_sync_tick_skip_counter;                  ///< "
 uint32_t _last_sync_frame_counter;                      ///< "
 bool _network_first_time;                               ///< Whether we have finished joining or not.
@@ -1160,19 +1160,19 @@ void NetworkGameLoop()
 
 	if (_network_server) {
 		/* Log the sync state to check for in-syncedness of replays. */
-		if (_date_fract == 0 && _tick_skip_counter == 0) {
+		if (EconTime::CurDateFract() == 0 && TickSkipCounter() == 0) {
 			/* We don't want to log multiple times if paused. */
-			static Date last_log;
-			if (last_log != _date) {
+			static EconTime::Date last_log;
+			if (last_log != EconTime::CurDate()) {
 				DEBUG(desync, 2, "sync: %s; %08x; %08x", debug_date_dumper().HexDate(), _random.state[0], _random.state[1]);
-				last_log = _date;
+				last_log = EconTime::CurDate();
 			}
 		}
 
 #ifdef DEBUG_DUMP_COMMANDS
 		/* Loading of the debug commands from -ddesync>=1 */
 		static FILE *f = FioFOpenFile("commands.log", "rb", SAVE_DIR);
-		static Date next_date = 0;
+		static EconTime::Date next_date = 0;
 		static uint next_date_fract;
 		static uint next_tick_skip_counter;
 		static std::unique_ptr<CommandPacket> cp;
@@ -1184,7 +1184,7 @@ void NetworkGameLoop()
 		}
 
 		while (f != nullptr && !feof(f)) {
-			if (_date == next_date && _date_fract == next_date_fract) {
+			if (EconTime::CurDate() == next_date && EconTime::CurDateFract() == next_date_fract) {
 				if (cp != nullptr) {
 					NetworkSendCommand(cp->tile, cp->p1, cp->p2, cp->p3, cp->cmd & ~CMD_FLAGS_MASK, nullptr, cp->text.c_str(), cp->company, cp->aux_data.get());
 					DEBUG(net, 0, "injecting: %s; %02x; %06x; %08x; %08x; " OTTD_PRINTFHEX64PAD " %08x; \"%s\"%s (%s)",

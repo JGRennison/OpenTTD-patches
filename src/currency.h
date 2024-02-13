@@ -73,7 +73,7 @@ enum Currencies {
 struct CurrencySpec {
 	uint16_t rate;         ///< The conversion rate compared to the base currency.
 	std::string separator; ///< The thousands separator for this currency.
-	Year to_euro;          ///< %Year of switching to the Euro. May also be #CF_NOEURO or #CF_ISEURO.
+	CalTime::Year to_euro; ///< %Year of switching to the Euro. May also be #CF_NOEURO or #CF_ISEURO.
 	std::string prefix;    ///< Prefix to apply when formatting money in this currency.
 	std::string suffix;    ///< Suffix to apply when formatting money in this currency.
 	std::string code;      ///< 3 letter untranslated code to identify the currency.
@@ -91,7 +91,7 @@ struct CurrencySpec {
 
 	CurrencySpec() = default;
 
-	CurrencySpec(uint16_t rate, const char *separator, Year to_euro, const char *prefix, const char *suffix, const char *code, byte symbol_pos, StringID name) :
+	CurrencySpec(uint16_t rate, const char *separator, CalTime::Year to_euro, const char *prefix, const char *suffix, const char *code, byte symbol_pos, StringID name) :
 		rate(rate), separator(separator), to_euro(to_euro), prefix(prefix), suffix(suffix), code(code), symbol_pos(symbol_pos), name(name)
 	{
 	}

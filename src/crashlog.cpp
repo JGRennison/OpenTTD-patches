@@ -486,9 +486,9 @@ char *CrashLog::LogRecentNews(char *buffer, const char *last) const
 
 	int i = 0;
 	for (NewsItem *news = _latest_news; i < 32 && news != nullptr; news = news->prev, i++) {
-		YearMonthDay ymd = ConvertDateToYMD(news->date);
+		CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(news->date);
 		buffer += seprintf(buffer, last, "(%i-%02i-%02i) StringID: %u, Type: %u, Ref1: %u, %u, Ref2: %u, %u\n",
-		                   ymd.year, ymd.month + 1, ymd.day, news->string_id, news->type,
+		                   ymd.year.base(), ymd.month + 1, ymd.day, news->string_id, news->type,
 		                   news->reftype1, news->ref1, news->reftype2, news->ref2);
 	}
 	buffer += seprintf(buffer, last, "\n");
@@ -559,7 +559,8 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last)
 	buffer = this->TryCrashLogFaultSection(buffer, last, "times", [](CrashLog *self, char *buffer, const char *last) -> char * {
 		buffer += UTCTime::Format(buffer, last, "Crash at: %Y-%m-%d %H:%M:%S (UTC)\n");
 
-		buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u)\n", _cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, DayLengthFactor());
+		buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u)\n", EconTime::CurYear().base(), EconTime::CurMonth() + 1, EconTime::CurDay(), EconTime::CurDateFract(), TickSkipCounter(), DayLengthFactor());
+		buffer += seprintf(buffer, last, "Calendar date: %i-%02i-%02i (%i, %i)\n", CalTime::CurYear().base(), CalTime::CurMonth() + 1, CalTime::CurDay(), CalTime::CurDateFract(), CalTime::Detail::now.sub_date_fract);
 		LogGameLoadDateTimes(buffer, last);
 		return buffer;
 	});
@@ -650,6 +651,27 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last)
 	return buffer;
 }
 
+static char *LogDesyncDateHeader(char *buffer, const char *last)
+{
+	extern uint32_t _frame_counter;
+
+	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u), %08X\n",
+			EconTime::CurYear().base(), EconTime::CurMonth() + 1, EconTime::CurDay(), EconTime::CurDateFract(), TickSkipCounter(), DayLengthFactor(), _frame_counter);
+	buffer += seprintf(buffer, last, "Calendar date: %i-%02i-%02i (%i, %i)\n", CalTime::CurYear().base(), CalTime::CurMonth() + 1, CalTime::CurDay(), CalTime::CurDateFract(), CalTime::Detail::now.sub_date_fract);
+	LogGameLoadDateTimes(buffer, last);
+	if (_networking && !_network_server) {
+		extern EconTime::Date _last_sync_date;
+		extern EconTime::DateFract _last_sync_date_fract;
+		extern uint8_t _last_sync_tick_skip_counter;
+		extern uint32_t _last_sync_frame_counter;
+
+		EconTime::YearMonthDay ymd = EconTime::ConvertDateToYMD(_last_sync_date);
+		buffer += seprintf(buffer, last, "Last sync at: %i-%02i-%02i (%i, %i), %08X\n",
+				ymd.year.base(), ymd.month + 1, ymd.day, _last_sync_date_fract, _last_sync_tick_skip_counter, _last_sync_frame_counter);
+	}
+	return buffer;
+}
+
 /**
  * Fill the crash log buffer with all data of a desync event.
  * @param buffer The begin where to write at.
@@ -673,22 +695,8 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 	if (_network_server && !info.desync_frame_info.empty()) {
 		buffer += seprintf(buffer, last, "%s\n", info.desync_frame_info.c_str());
 	}
+	buffer = LogDesyncDateHeader(buffer, last);
 
-	extern uint32_t _frame_counter;
-
-	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u), %08X\n",
-			_cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, DayLengthFactor(), _frame_counter);
-	LogGameLoadDateTimes(buffer, last);
-	if (!_network_server) {
-		extern Date   _last_sync_date;
-		extern DateFract _last_sync_date_fract;
-		extern uint8_t  _last_sync_tick_skip_counter;
-		extern uint32_t _last_sync_frame_counter;
-
-		YearMonthDay ymd = ConvertDateToYMD(_last_sync_date);
-		buffer += seprintf(buffer, last, "Last sync at: %i-%02i-%02i (%i, %i), %08X\n",
-				ymd.year, ymd.month + 1, ymd.day, _last_sync_date_fract, _last_sync_tick_skip_counter, _last_sync_frame_counter);
-	}
 	if (info.client_id >= 0) {
 		buffer += seprintf(buffer, last, "Client #%d, \"%s\"\n", info.client_id, info.client_name != nullptr ? info.client_name : "");
 	}
@@ -735,21 +743,7 @@ char *CrashLog::FillInconsistencyLog(char *buffer, const char *last, const Incon
 	buffer += WriteScopeLog(buffer, last);
 #endif
 
-	extern uint32_t _frame_counter;
-
-	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u), %08X\n",
-			_cur_date_ymd.year, _cur_date_ymd.month + 1, _cur_date_ymd.day, _date_fract, _tick_skip_counter, DayLengthFactor(), _frame_counter);
-	LogGameLoadDateTimes(buffer, last);
-	if (_networking && !_network_server) {
-		extern Date   _last_sync_date;
-		extern DateFract _last_sync_date_fract;
-		extern uint8_t  _last_sync_tick_skip_counter;
-		extern uint32_t _last_sync_frame_counter;
-
-		YearMonthDay ymd = ConvertDateToYMD(_last_sync_date);
-		buffer += seprintf(buffer, last, "Last sync at: %i-%02i-%02i (%i, %i), %08X\n",
-				ymd.year, ymd.month + 1, ymd.day, _last_sync_date_fract, _last_sync_tick_skip_counter, _last_sync_frame_counter);
-	}
+	buffer = LogDesyncDateHeader(buffer, last);
 	buffer += seprintf(buffer, last, "\n");
 
 	buffer = this->LogOpenTTDVersion(buffer, last);
