@@ -56,8 +56,8 @@
  *                     - 4 byte lookup table index.
  *                       For v6+ in case of type 2.
  *
- *   3+       4       current game date in days since 1-1-0 (DMY)
- *   3+       4       game introduction date in days since 1-1-0 (DMY)
+ *   3+       4       current calendar date in days since 1-1-0 (DMY)
+ *   3+       4       calendar start date in days since 1-1-0 (DMY)
  *
  *   2+       1       maximum number of companies allowed on the server
  *   2+       1       number of companies on the server
@@ -94,8 +94,8 @@ enum NewGRFSerializationType {
  */
 struct NetworkServerGameInfo {
 	GRFConfig *grfconfig;        ///< List of NewGRF files used
-	CalTime::Date start_date;    ///< When the game started
-	CalTime::Date game_date;     ///< Current date
+	CalTime::Date calendar_start;///< When the game started.
+	CalTime::Date calendar_date; ///< Current calendar date.
 	uint64_t ticks_playing;      ///< Amount of ticks the game has been running unpaused.
 	uint32_t map_width;          ///< Map width
 	uint32_t map_height;         ///< Map height

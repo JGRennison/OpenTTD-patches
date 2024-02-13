@@ -159,7 +159,6 @@ STR_ABBREV_TOFFEE                                               :KN
 STR_ABBREV_BATTERIES                                            :BA
 STR_ABBREV_PLASTIC                                              :PL
 STR_ABBREV_FIZZY_DRINKS                                         :LÄ
-STR_ABBREV_NONE                                                 :NEJ
 STR_ABBREV_ALL                                                  :ALLA
 
 # 'Mode' of transport for cargoes
@@ -214,7 +213,8 @@ STR_COLOUR_SECONDARY_SAME_AS_PRIMARY                            :Samma som huvud
 STR_UNITS_VELOCITY_IMPERIAL                                     :{DECIMAL}{NBSP}mph
 STR_UNITS_VELOCITY_METRIC                                       :{DECIMAL}{NBSP}km/h
 STR_UNITS_VELOCITY_SI                                           :{DECIMAL}{NBSP}m/s
-STR_UNITS_VELOCITY_GAMEUNITS                                    :{DECIMAL}{NBSP}rutor/dag
+STR_UNITS_VELOCITY_GAMEUNITS_DAY                                :{DECIMAL}{NBSP}rutor/dag
+STR_UNITS_VELOCITY_GAMEUNITS_SEC                                :{DECIMAL}{NBSP}rutor/sek
 STR_UNITS_VELOCITY_KNOTS                                        :{DECIMAL}{NBSP}knop
 
 STR_UNITS_POWER_IMPERIAL                                        :{DECIMAL}{NBSP}hk
@@ -255,6 +255,16 @@ STR_UNITS_HEIGHT_IMPERIAL                                       :{DECIMAL}{NBSP}
 STR_UNITS_HEIGHT_METRIC                                         :{DECIMAL}{NBSP}m
 STR_UNITS_HEIGHT_SI                                             :{DECIMAL}{NBSP}m
 
+# Time units used in string control characters
+STR_UNITS_DAYS                                                  :{COMMA}{NBSP}dag{P "" ar}
+STR_UNITS_SECONDS                                               :{COMMA}{NBSP}sekund{P "" er}
+STR_UNITS_TICKS                                                 :{COMMA}{NBSP}tick{P "" ""}
+
+STR_UNITS_MONTHS                                                :{NUM}{NBSP}månad{P "" er}
+STR_UNITS_MINUTES                                               :{NUM}{NBSP}minut{P "" er}
+
+STR_UNITS_YEARS                                                 :{NUM}{NBSP}år{P "" ""}
+STR_UNITS_PERIODS                                               :{NUM}{NBSP}period{P "" er}
 
 # Common window strings
 STR_LIST_FILTER_TITLE                                           :{BLACK}Sökfilter:
@@ -273,13 +283,13 @@ STR_TOOLTIP_CLOSE_WINDOW                                        :{BLACK}Stäng f
 STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Fönstertitel - dra för att flytta fönstret
 STR_TOOLTIP_SHADE                                               :{BLACK}Dölj fönster - Visa bara namnlisten
 STR_TOOLTIP_DEBUG                                               :{BLACK}Visa NewGRF felsökningsinformation
-STR_TOOLTIP_DEFSIZE                                             :{BLACK}Återställ fönstret till standardstorlek. Ctrl-klicka för att sätta nuvarande storlek som ny standard
+STR_TOOLTIP_DEFSIZE                                             :{BLACK}Återställ fönstret till standardstorlek. Ctrl+Klick för att sätta nuvarande storlek som ny standard
 STR_TOOLTIP_STICKY                                              :{BLACK}Markera att fönstret ska lämnas öppet när 'Stäng alla fönster'-knappen används. Ctrl+klick för att spara som standardinställning
 STR_TOOLTIP_RESIZE                                              :{BLACK}Klicka och dra för att förstora fönstret
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Växla stor/liten fönsterstorlek
 STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Rullningslist - rullar listan upp/ned
 STR_TOOLTIP_HSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Rullningslist - rullar listan höger/vänster
-STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC                              :{BLACK}Riv byggnader etc. på en markruta. Ctrl väljer ytan diagonalt. Shift växlar mellan att riva/visa beräknad kostnad
+STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC                              :{BLACK}Riv byggnader etc. på en markruta. Ctrl+Klick+Drag för att välja ytan diagonalt. Håll även in Shift för att endast visa uppskattad kostnad
 
 # Show engines button
 ###length VEHICLE_TYPES
@@ -321,7 +331,9 @@ STR_SORT_BY_TYPE                                                :Typ
 STR_SORT_BY_TRANSPORTED                                         :Transporterat
 STR_SORT_BY_NUMBER                                              :Nummer
 STR_SORT_BY_PROFIT_LAST_YEAR                                    :Vinst förra året
+STR_SORT_BY_PROFIT_LAST_PERIOD                                  :Vinst förra perioden
 STR_SORT_BY_PROFIT_THIS_YEAR                                    :Vinst i år
+STR_SORT_BY_PROFIT_THIS_PERIOD                                  :Vinst denna period
 STR_SORT_BY_AGE                                                 :Ålder
 STR_SORT_BY_RELIABILITY                                         :Tillförlitlighet
 STR_SORT_BY_TOTAL_CAPACITY_PER_CARGOTYPE                        :Total kapacitet per godstyp
@@ -334,8 +346,8 @@ STR_SORT_BY_TIMETABLE_DELAY                                     :Tidtabellsförs
 STR_SORT_BY_FACILITY                                            :Stationstyp
 STR_SORT_BY_WAITING_TOTAL                                       :Väntande gods totalt
 STR_SORT_BY_WAITING_AVAILABLE                                   :Väntande gods tillgängligt
-STR_SORT_BY_RATING_MAX                                          :Högsta värdering av last
-STR_SORT_BY_RATING_MIN                                          :Lägsta värdering av last
+STR_SORT_BY_RATING_MAX                                          :Högsta godsvärdering
+STR_SORT_BY_RATING_MIN                                          :Lägsta godsvärdering
 STR_SORT_BY_ENGINE_ID                                           :MotorID (klassisk sortering)
 STR_SORT_BY_COST                                                :Kostnad
 STR_SORT_BY_POWER                                               :Kraft
@@ -349,9 +361,13 @@ STR_SORT_BY_POPULATION                                          :Folkmängd
 STR_SORT_BY_RATING                                              :Värdering
 STR_SORT_BY_NUM_VEHICLES                                        :Antal fordon
 STR_SORT_BY_TOTAL_PROFIT_LAST_YEAR                              :Total vinst förra året
+STR_SORT_BY_TOTAL_PROFIT_LAST_PERIOD                            :Total vinst förra perioden
 STR_SORT_BY_TOTAL_PROFIT_THIS_YEAR                              :Total vinst detta år
+STR_SORT_BY_TOTAL_PROFIT_THIS_PERIOD                            :Total vinst denna period
 STR_SORT_BY_AVERAGE_PROFIT_LAST_YEAR                            :Genomsnittlig vinst förra året
+STR_SORT_BY_AVERAGE_PROFIT_LAST_PERIOD                          :Genomsnittlig vinst förra perioden
 STR_SORT_BY_AVERAGE_PROFIT_THIS_YEAR                            :Genomsnittlig vinst detta året
+STR_SORT_BY_AVERAGE_PROFIT_THIS_PERIOD                          :Genomsnittlig vinst denna period
 
 # Group by options for vehicle list
 STR_GROUP_BY_NONE                                               :Ingen
@@ -367,32 +383,32 @@ STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Pausa sp
 STR_TOOLBAR_TOOLTIP_FORWARD                                     :{BLACK}Snabbspola spelet
 STR_TOOLBAR_TOOLTIP_OPTIONS                                     :{BLACK}Inställningar
 STR_TOOLBAR_TOOLTIP_SAVE_GAME_ABANDON_GAME                      :{BLACK}Spara spelet, öppna spel, avsluta spelet eller avsluta programmet
-STR_TOOLBAR_TOOLTIP_DISPLAY_MAP                                 :{BLACK}Visa karta, extra vyfönster, godsflöden eller skyltlista
-STR_TOOLBAR_TOOLTIP_DISPLAY_TOWN_DIRECTORY                      :{BLACK}Visa lista över städer
-STR_TOOLBAR_TOOLTIP_DISPLAY_SUBSIDIES                           :{BLACK}Visa subventioner
-STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_STATIONS            :{BLACK}Visa lista över företagets stationer
-STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_FINANCES                    :{BLACK}Visa finansinformation för företaget
-STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_GENERAL                     :{BLACK}Visa allmän företagsinformation
-STR_TOOLBAR_TOOLTIP_DISPLAY_STORY_BOOK                          :{BLACK}Visa berättelsebok
-STR_TOOLBAR_TOOLTIP_DISPLAY_GOALS_LIST                          :{BLACK}Visa lista över mål
-STR_TOOLBAR_TOOLTIP_DISPLAY_GRAPHS                              :{BLACK}Visa företagsgrafer och fraktförtjänster
-STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_LEAGUE                      :{BLACK}Visa topplista över företag
-STR_TOOLBAR_TOOLTIP_FUND_CONSTRUCTION_OF_NEW                    :{BLACK}Inspektera industrier eller finansiera anläggning av en ny industri
-STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_TRAINS              :{BLACK}Visa lista över företagets tåg. Ctrl+klick döljer listan över grupper
-STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_ROAD_VEHICLES       :{BLACK}Visa lista över företagets vägfordon. Ctrl+klick döljer listan över grupper
-STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_SHIPS               :{BLACK}Visa lista över företagets skepp. Ctrl+klick döljer listan över grupper
-STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_AIRCRAFT            :{BLACK}Visa lista över företagets flygplan. Ctrl+klick döljer listan över grupper
-STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_IN                            :{BLACK}Zooma in vyn
-STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_OUT                           :{BLACK}Zooma ut vyn
-STR_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TRACK                        :{BLACK}Bygg järnväg
-STR_TOOLBAR_TOOLTIP_BUILD_ROADS                                 :{BLACK}Bygg vägar
-STR_TOOLBAR_TOOLTIP_BUILD_TRAMWAYS                              :{BLACK}Bygg spårvagnar
-STR_TOOLBAR_TOOLTIP_BUILD_SHIP_DOCKS                            :{BLACK}Bygg hamnar
+STR_TOOLBAR_TOOLTIP_DISPLAY_MAP                                 :{BLACK}Öppna karta, extra vyfönster, godsflöden eller skyltlista
+STR_TOOLBAR_TOOLTIP_DISPLAY_TOWN_DIRECTORY                      :{BLACK}Öppna lista över städer eller grunda stad
+STR_TOOLBAR_TOOLTIP_DISPLAY_SUBSIDIES                           :{BLACK}Öppna subventionslista
+STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_STATIONS            :{BLACK}Öppna lista över företagets stationer
+STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_FINANCES                    :{BLACK}Öppna finansiell företagsinformation
+STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_GENERAL                     :{BLACK}Öppna allmän företagsinformation
+STR_TOOLBAR_TOOLTIP_DISPLAY_STORY_BOOK                          :{BLACK}Öppna berättelsebok
+STR_TOOLBAR_TOOLTIP_DISPLAY_GOALS_LIST                          :{BLACK}Öppna lista över mål
+STR_TOOLBAR_TOOLTIP_DISPLAY_GRAPHS                              :{BLACK}Öppna företagsgrafer och fraktförtjänster
+STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_LEAGUE                      :{BLACK}Öppna topplistan över företag
+STR_TOOLBAR_TOOLTIP_FUND_CONSTRUCTION_OF_NEW                    :{BLACK}Öppna lista över industrier, industrikedja, eller finansiera anläggning av en ny industri
+STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_TRAINS              :{BLACK}Öppna lista över företagets tåg. Ctrl+Klick för att visa eller dölja fordonsgrupper i motsats till vald inställning
+STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_ROAD_VEHICLES       :{BLACK}Öppna lista över företagets vägfordon. Ctrl+Klick för att visa eller dölja fordonsgrupper i motsats till vald inställning
+STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_SHIPS               :{BLACK}Öppna lista över företagets skepp. Ctrl+Klick för att visa eller dölja fordonsgrupper i motsats till vald inställning
+STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_AIRCRAFT            :{BLACK}Öppna lista över företagets flygfarkoster. Ctrl+Klick för att visa eller dölja fordonsgrupper i motsats till vald inställning
+STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_IN                            :{BLACK}Zooma in
+STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_OUT                           :{BLACK}Zooma ut
+STR_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TRACK                        :{BLACK}Bygg infrastruktur för järnväg
+STR_TOOLBAR_TOOLTIP_BUILD_ROADS                                 :{BLACK}Bygg infrastruktur för vägar
+STR_TOOLBAR_TOOLTIP_BUILD_TRAMWAYS                              :{BLACK}Bygg infrastruktur för spårvägar
+STR_TOOLBAR_TOOLTIP_BUILD_SHIP_DOCKS                            :{BLACK}Bygg infrastruktur för vattenleder
 STR_TOOLBAR_TOOLTIP_BUILD_AIRPORTS                              :{BLACK}Bygg flygplatser
-STR_TOOLBAR_TOOLTIP_LANDSCAPING                                 :{BLACK}Öppna landskapsarkitektursverktygen för att höja/sänka land, plantera träd, etc.
-STR_TOOLBAR_TOOLTIP_SHOW_SOUND_MUSIC_WINDOW                     :{BLACK}Visa ljud-/musikfönster
-STR_TOOLBAR_TOOLTIP_SHOW_LAST_MESSAGE_NEWS                      :{BLACK}Visa senaste meddelandet/nyheten, meddelandehistorik eller ta bort alla meddelanden
-STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}Markinformation, skärmdump, om OpenTTD och utvecklingsverktyg
+STR_TOOLBAR_TOOLTIP_LANDSCAPING                                 :{BLACK}Öppna menyn för landskapsarkitektur, trädmenyn, eller placera en skylt
+STR_TOOLBAR_TOOLTIP_SHOW_SOUND_MUSIC_WINDOW                     :{BLACK}Öppna ljud-/musikfönster
+STR_TOOLBAR_TOOLTIP_SHOW_LAST_MESSAGE_NEWS                      :{BLACK}Öppna senaste meddelandet/nyheten, meddelandehistoriken eller ta bort alla meddelanden
+STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}Öppna markinformation, skärmdump, om OpenTTD, eller utvecklingsverktyg
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Byt verktygsrad
 
 # Extra tooltips for the scenario editor toolbar
@@ -402,15 +418,15 @@ STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}Scenari
 STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}Flytta startdatumet 1 år bakåt
 STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}Flytta startdatumet 1 år framåt
 STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}Klicka för att mata in startår
-STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}Visa karta, lista över städer
-STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}Generera landskap
-STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}Generera städer
-STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}Generera industrier
-STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Bygg vägar
-STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}Spårvägskonstruktion
-STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Plantera träd. Ctrl väljer ytan diagonalt. Shift växlar mellan att bygga/visa beräknad kostnad
+STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}Öppna karta, extra vyfönster, skyltlista, eller lista över städer eller industrier
+STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}Öppna menyn för landskapsarkitektur eller generera en ny värld
+STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}Bygg eller generera städer
+STR_SCENEDIT_TOOLBAR_INDUSTRY_GENERATION                        :{BLACK}Bygg eller generera industrier
+STR_SCENEDIT_TOOLBAR_ROAD_CONSTRUCTION                          :{BLACK}Bygg infrastruktur för vägar
+STR_SCENEDIT_TOOLBAR_TRAM_CONSTRUCTION                          :{BLACK}Bygg infrastruktur för spårvägar
+STR_SCENEDIT_TOOLBAR_PLANT_TREES                                :{BLACK}Plantera träd. Ctrl+Klick+Drag för att välja ytan diagonalt. Håll även in Shift för att endast visa uppskattad kostnad
 STR_SCENEDIT_TOOLBAR_PLACE_SIGN                                 :{BLACK}Placera skylt
-STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Placera objekt. Ctrl väljer ytan diagonalt. Shift växlar mellan att bygga/visa beräknad kostnad
+STR_SCENEDIT_TOOLBAR_PLACE_OBJECT                               :{BLACK}Placera objekt. Ctrl+Klick+Drag för att välja ytan diagonalt. Håll även in Shift för att endast visa uppskattad kostnad
 
 # Scenario editor file menu
 ###length 7
@@ -423,12 +439,13 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Avsluta
 
 # Settings menu
-###length 15
+###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Spelinställningar
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :Inställningar
 STR_SETTINGS_MENU_AI_SETTINGS                                   :Inställningar för AI
 STR_SETTINGS_MENU_GAMESCRIPT_SETTINGS                           :Spelskriptinställningar
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :Inställningar för NewGRF
+STR_SETTINGS_MENU_SANDBOX_OPTIONS                               :Sandbox-inställningar
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :Inställningar för genomskinlighet
 STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED                          :Stadsnamn visas
 STR_SETTINGS_MENU_STATION_NAMES_DISPLAYED                       :Stationsnamn visas
@@ -469,7 +486,7 @@ STR_GRAPH_MENU_CARGO_PAYMENT_RATES                              :Fraktförtjäns
 
 # Company league menu
 STR_GRAPH_MENU_COMPANY_LEAGUE_TABLE                             :Tabell över ledande företag
-STR_GRAPH_MENU_DETAILED_PERFORMANCE_RATING                      :Detaljerad prestationsvärdering
+STR_GRAPH_MENU_DETAILED_PERFORMANCE_RATING                      :Detaljerad prestationsgradering
 STR_GRAPH_MENU_HIGHSCORE                                        :Bästa spelresultat
 
 # Industry menu
@@ -508,6 +525,7 @@ STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :Ta bort alla me
 
 # About menu
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Information om mark
+STR_ABOUT_MENU_HELP                                             :Hjälp & manualer
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Visa/dölj konsolen
 STR_ABOUT_MENU_AI_DEBUG                                         :Felsökning av datorspelare/spelskript
 STR_ABOUT_MENU_SCREENSHOT                                       :Skärmdump
@@ -516,24 +534,7 @@ STR_ABOUT_MENU_ABOUT_OPENTTD                                    :Om 'OpenTTD'
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :Justering av spriteobjekt
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Slå av/på yttre gränser för grafiska element
 STR_ABOUT_MENU_TOGGLE_DIRTY_BLOCKS                              :Slå av/på färgläggning av smutsiga block
-
-# Place in highscore window
-###length 15
-STR_ORDINAL_NUMBER_1ST                                          :1
-STR_ORDINAL_NUMBER_2ND                                          :2
-STR_ORDINAL_NUMBER_3RD                                          :3
-STR_ORDINAL_NUMBER_4TH                                          :4
-STR_ORDINAL_NUMBER_5TH                                          :5
-STR_ORDINAL_NUMBER_6TH                                          :6
-STR_ORDINAL_NUMBER_7TH                                          :7
-STR_ORDINAL_NUMBER_8TH                                          :8
-STR_ORDINAL_NUMBER_9TH                                          :9
-STR_ORDINAL_NUMBER_10TH                                         :10
-STR_ORDINAL_NUMBER_11TH                                         :11
-STR_ORDINAL_NUMBER_12TH                                         :12
-STR_ORDINAL_NUMBER_13TH                                         :13
-STR_ORDINAL_NUMBER_14TH                                         :14
-STR_ORDINAL_NUMBER_15TH                                         :15
+STR_ABOUT_MENU_TOGGLE_WIDGET_OUTLINES                           :Visa/dölj ramar på grafiska element
 
 ###length 31
 STR_DAY_NUMBER_1ST                                              :1
@@ -607,11 +608,14 @@ STR_GRAPH_Y_LABEL_NUMBER                                        :{TINY_FONT}{COM
 STR_GRAPH_OPERATING_PROFIT_CAPTION                              :{WHITE}Graf över vinst
 STR_GRAPH_INCOME_CAPTION                                        :{WHITE}Graf över inkomster
 STR_GRAPH_CARGO_DELIVERED_CAPTION                               :{WHITE}Enheter levererat gods
-STR_GRAPH_COMPANY_PERFORMANCE_RATINGS_CAPTION                   :{WHITE}Företagets prestationsvärderingar (maxvärdering=1000)
+STR_GRAPH_COMPANY_PERFORMANCE_RATINGS_CAPTION                   :{WHITE}Företagets prestationsgraderingar (maxgradering=1000)
 STR_GRAPH_COMPANY_VALUES_CAPTION                                :{WHITE}Företagsvärdesgraf
 
+STR_GRAPH_LAST_72_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}Senaste 72 minuterna
+
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Fraktförtjänster
-STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL                           :{TINY_FONT}{BLACK}Dagar under transport
+STR_GRAPH_CARGO_PAYMENT_RATES_DAYS                              :{TINY_FONT}{BLACK}Dagar av resa
+STR_GRAPH_CARGO_PAYMENT_RATES_SECONDS                           :{TINY_FONT}{BLACK}Sekunder av resa
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}Betalning för leverans av 10 enheter (eller 10,000 liter) gods på ett avstånd av 20 rutor
 STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}Aktivera alla
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}Inaktivera alla
@@ -620,7 +624,7 @@ STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Visa ing
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Växla graf för godstyp av/på
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
-STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}Visa detaljerad prestationsvärdering
+STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}Visa detaljerad prestationsgradering
 
 # Graph key window
 STR_GRAPH_KEY_CAPTION                                           :{WHITE}Nyckel till företagsgrafer
@@ -629,6 +633,7 @@ STR_GRAPH_KEY_COMPANY_SELECTION_TOOLTIP                         :{BLACK}Klicka h
 # Company league window
 STR_COMPANY_LEAGUE_TABLE_CAPTION                                :{WHITE}Företagstabell
 STR_COMPANY_LEAGUE_COMPANY_NAME                                 :{ORANGE}{COMPANY} {BLACK}{COMPANY_NUM} '{STRING}'
+STR_COMPANY_LEAGUE_COMPANY_RANK                                 :{YELLOW}#{NUM}
 STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_ENGINEER                   :Lokförare
 STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_TRAFFIC_MANAGER            :Trafikledare
 STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_TRANSPORT_COORDINATOR      :Transportsamordnare
@@ -640,7 +645,7 @@ STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_PRESIDENT                  :Verkställande 
 STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_TYCOON                     :Pamp
 
 # Performance detail window
-STR_PERFORMANCE_DETAIL                                          :{WHITE}Detaljerad prestationsvärdering
+STR_PERFORMANCE_DETAIL                                          :{WHITE}Detaljerad prestationsgradering
 STR_PERFORMANCE_DETAIL_KEY                                      :{BLACK}Detaljer
 STR_PERFORMANCE_DETAIL_AMOUNT_CURRENCY                          :{BLACK}({CURRENCY_SHORT}/{CURRENCY_SHORT})
 STR_PERFORMANCE_DETAIL_AMOUNT_INT                               :{BLACK}({COMMA}/{COMMA})
@@ -658,11 +663,13 @@ STR_PERFORMANCE_DETAIL_CARGO                                    :{BLACK}Gods:
 STR_PERFORMANCE_DETAIL_MONEY                                    :{BLACK}Pengar:
 STR_PERFORMANCE_DETAIL_LOAN                                     :{BLACK}Lån:
 STR_PERFORMANCE_DETAIL_TOTAL                                    :{BLACK}Totalt:
+###next-name-looks-similar
 
-###length 10
-STR_PERFORMANCE_DETAIL_VEHICLES_TOOLTIP                         :{BLACK}Antal fordon som gick med vinst förra året. Inkluderar vägfordon, tåg, skepp och flygplan
+STR_PERFORMANCE_DETAIL_VEHICLES_TOOLTIP_YEARS                   :{BLACK}Antalet fordon som genererade en vinst förra året. Detta inkluderar vägfordon, tåg, fartyg och flygfarkoster
+STR_PERFORMANCE_DETAIL_VEHICLES_TOOLTIP_PERIODS                 :{BLACK}Antalet fordon som genererade en vinst förra perioden. Detta inkluderar vägfordon, tåg, fartyg och flygfarkoster
 STR_PERFORMANCE_DETAIL_STATIONS_TOOLTIP                         :{BLACK}Antalet nyligen betjänade stationer. Tågstationer, busshållplatser, flygplatser osv räknas var för sig även om de tillhör samma station
-STR_PERFORMANCE_DETAIL_MIN_PROFIT_TOOLTIP                       :{BLACK}Vinsten för fordonet med lägst inkomst (endast fordon äldre än två år)
+STR_PERFORMANCE_DETAIL_MIN_PROFIT_TOOLTIP_YEARS                 :{BLACK}Vinsten för fordonet med lägst inkomst (bara fordon äldre än två år beaktas)
+STR_PERFORMANCE_DETAIL_MIN_PROFIT_TOOLTIP_PERIODS               :{BLACK}Vinsten för fordonet med lägst inkomst (bara fordon äldre än två perioder beaktas)
 STR_PERFORMANCE_DETAIL_MIN_INCOME_TOOLTIP                       :{BLACK}Intjänade pengar det kvartal med lägst vinst av de senaste 12 kvartalen
 STR_PERFORMANCE_DETAIL_MAX_INCOME_TOOLTIP                       :{BLACK}Intjänade pengar det kvartal med högst vinst de senaste 12 kvartalen
 STR_PERFORMANCE_DETAIL_DELIVERED_TOOLTIP                        :{BLACK}Antalet enheter gods levererat de senaste fyra kvartalen.
@@ -717,6 +724,7 @@ STR_PLAYLIST_TOOLTIP_CLICK_TO_ADD_TRACK                         :{BLACK}Klicka p
 STR_PLAYLIST_TOOLTIP_CLICK_TO_REMOVE_TRACK                      :{BLACK}Klicka på ett musikstycke för att ta bort det från spellistan (endast Personlig1 och Personlig2)
 
 # Highscore window
+STR_HIGHSCORE_TOP_COMPANIES                                     :{BIG_FONT}{BLACK}Ledande företag
 STR_HIGHSCORE_POSITION                                          :{BIG_FONT}{BLACK}{COMMA}.
 STR_HIGHSCORE_PERFORMANCE_TITLE_BUSINESSMAN                     :Affärsman
 STR_HIGHSCORE_PERFORMANCE_TITLE_ENTREPRENEUR                    :Entreprenör
@@ -765,7 +773,7 @@ STR_SMALLMAP_LEGENDA_AIRCRAFT                                   :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_TRANSPORT_ROUTES                           :{TINY_FONT}{BLACK}Transportrutter
 STR_SMALLMAP_LEGENDA_FOREST                                     :{TINY_FONT}{BLACK}Skog
 STR_SMALLMAP_LEGENDA_RAILROAD_STATION                           :{TINY_FONT}{BLACK}Järnvägsstation
-STR_SMALLMAP_LEGENDA_TRUCK_LOADING_BAY                          :{TINY_FONT}{BLACK}Lastbrygga
+STR_SMALLMAP_LEGENDA_TRUCK_LOADING_BAY                          :{TINY_FONT}{BLACK}Laststation
 STR_SMALLMAP_LEGENDA_BUS_STATION                                :{TINY_FONT}{BLACK}Busshållplats
 STR_SMALLMAP_LEGENDA_AIRPORT_HELIPORT                           :{TINY_FONT}{BLACK}Flygplats/Helikopterflygplats
 STR_SMALLMAP_LEGENDA_DOCK                                       :{TINY_FONT}{BLACK}Hamn
@@ -809,6 +817,7 @@ STR_STATUSBAR_AUTOSAVE                                          :{RED}AUTOSPARA
 STR_STATUSBAR_SAVING_GAME                                       :{RED}*  *  SPARAR SPEL  *  *
 
 STR_STATUSBAR_SPECTATOR                                         :{WHITE}(åskådare)
+STR_STATUSBAR_INFINITE_MONEY                                    :{WHITE}(obegränsat kapital)
 
 # News message history
 STR_MESSAGE_HISTORY                                             :{WHITE}Meddelandehistorik
@@ -893,11 +902,12 @@ STR_NEWS_VEHICLE_IS_GETTING_VERY_OLD                            :{WHITE}{VEHICLE
 STR_NEWS_VEHICLE_IS_GETTING_VERY_OLD_AND                        :{WHITE}{VEHICLE} börjar bli mycket gammal och bör bytas ut omgående
 STR_NEWS_TRAIN_IS_STUCK                                         :{WHITE}{VEHICLE} kan inte hitta en rutt för att fortsätta
 STR_NEWS_VEHICLE_IS_LOST                                        :{WHITE}{VEHICLE} är vilse
-STR_NEWS_VEHICLE_IS_UNPROFITABLE                                :{WHITE}{VEHICLE}s vinst förra året var {CURRENCY_LONG}
+STR_NEWS_VEHICLE_UNPROFITABLE_YEAR                              :{WHITE}{VEHICLE}s vinst för förra året var {CURRENCY_LONG}
+STR_NEWS_VEHICLE_UNPROFITABLE_PERIOD                            :{WHITE}{VEHICLE}s vinst för förra perioden var {CURRENCY_LONG}
 STR_NEWS_AIRCRAFT_DEST_TOO_FAR                                  :{WHITE}{VEHICLE} kan inte ta sig till nästa destination då räckvidden inte är tillräcklig
 
 STR_NEWS_ORDER_REFIT_FAILED                                     :{WHITE}{VEHICLE} stoppades för att en beställd anpassning av godstyp misslyckades
-STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Förnya automatiskt misslyckades på {VEHICLE}{}{STRING}
+STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Automatisk förnyelse misslyckades för {VEHICLE}{}{STRING}
 
 STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE                              :{BIG_FONT}{BLACK}Ny {STRING} tillgänglig!
 STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLACK}{ENGINE}
@@ -905,19 +915,23 @@ STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Ny {STRI
 
 STR_NEWS_SHOW_VEHICLE_GROUP_TOOLTIP                             :{BLACK}Öppna gruppfönstret fokuserat på fordonets grupp
 
+STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_LIST                   :{WHITE}{STATION} accepterar inte längre: {CARGO_LIST}
+STR_NEWS_STATION_NOW_ACCEPTS_CARGO_LIST                         :{WHITE}{STATION} accepterar nu: {CARGO_LIST}
 
 STR_NEWS_OFFER_OF_SUBSIDY_EXPIRED                               :{BIG_FONT}{BLACK}Subventionen har gått ut:{}{}{STRING} från {STRING} till {STRING} är inte längre subventionerad
 STR_NEWS_SUBSIDY_WITHDRAWN_SERVICE                              :{BIG_FONT}{BLACK}Subventionen gäller inte längre:{}{}{STRING} från {STRING} till {STRING} är inte längre subventionerad
-STR_NEWS_SERVICE_SUBSIDY_OFFERED                                :{BIG_FONT}{BLACK}Ny subvention:{}{}Första transporten av {STRING} från {STRING} till {STRING} får {NUM} års subvention från kommunen!
+STR_NEWS_SERVICE_SUBSIDY_OFFERED                                :{BIG_FONT}{BLACK}Subvention erbjuden:{}{}Första {STRING} från {STRING} till {STRING} kommer tilldelas en {UNITS_YEARS_OR_MINUTES}s subvention från de lokala myndigheterna!
 ###length 4
-STR_NEWS_SERVICE_SUBSIDY_AWARDED_HALF                           :{BIG_FONT}{BLACK}Subvention tilldelad {STRING}!{}{}{STRING} från {STRING} till {STRING} ger 50% extra i {NUM} år framåt!
-STR_NEWS_SERVICE_SUBSIDY_AWARDED_DOUBLE                         :{BIG_FONT}{BLACK}Subvention tilldelad {STRING}!{}{}{STRING} från {STRING} till {STRING} ger dubbelt så mycket i {NUM} år framåt!
-STR_NEWS_SERVICE_SUBSIDY_AWARDED_TRIPLE                         :{BIG_FONT}{BLACK}Subvention tilldelad {STRING}!{}{}{STRING} från {STRING} till {STRING} ger tre gånger så mycket i {NUM} år framåt!
-STR_NEWS_SERVICE_SUBSIDY_AWARDED_QUADRUPLE                      :{BIG_FONT}{BLACK}Subvention tilldelad {STRING}!{}{}{STRING} från {STRING} till {STRING} ger fyra gånger så mycket i {NUM} år framåt!
+STR_NEWS_SERVICE_SUBSIDY_AWARDED_HALF                           :{BIG_FONT}{BLACK}Subvention tilldelad {STRING}!{}{}{STRING} från {STRING} till {STRING} kommer ge 50% extra utdelning nästkommande {UNITS_YEARS_OR_MINUTES}!
+STR_NEWS_SERVICE_SUBSIDY_AWARDED_DOUBLE                         :{BIG_FONT}{BLACK}Subvention tilldelad {STRING}!{}{}{STRING} från {STRING} till {STRING} kommer ge dubbel utdelning nästkommande {UNITS_YEARS_OR_MINUTES}!
+STR_NEWS_SERVICE_SUBSIDY_AWARDED_TRIPLE                         :{BIG_FONT}{BLACK}Subvention tilldelad {STRING}!{}{}{STRING} från {STRING} till {STRING} kommer ge tredubbel utdelning nästkommande {UNITS_YEARS_OR_MINUTES}!
+STR_NEWS_SERVICE_SUBSIDY_AWARDED_QUADRUPLE                      :{BIG_FONT}{BLACK}Subvention tilldelad {STRING}!{}{}{STRING} från {STRING} till {STRING} kommer ge fyrdubbel utdelning nästkommande {UNITS_YEARS_OR_MINUTES}!
 
-STR_NEWS_ROAD_REBUILDING                                        :{BIG_FONT}{BLACK}Trafikkaos i {TOWN}!{}{}Vägombyggnadsprogram bekostat av {STRING} medför 6 månader av elände för bilister!
+STR_NEWS_ROAD_REBUILDING_MONTHS                                 :{BIG_FONT}{BLACK}Trafikkaos i {TOWN}!{}{}Projektet för återuppbyggnad av vägar finasierat av {STRING} orsakar 6 månaders lidande för motorister!
+STR_NEWS_ROAD_REBUILDING_MINUTES                                :{BIG_FONT}{BLACK}Trafikkaos i {TOWN}!{}{}Projektet för återuppbyggnad av vägar finasierat av {STRING} orsakar 6 minuters lidande för motorister!
 STR_NEWS_EXCLUSIVE_RIGHTS_TITLE                                 :{BIG_FONT}{BLACK}Transportmonopol!
-STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION                           :{BIG_FONT}{BLACK}De lokala myndigheterna i {TOWN} skriver kontrakt med {STRING} för ett års exklusiva transporträttigheter!
+STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MONTHS                    :{BIG_FONT}{BLACK}Lokala myndigheter i {TOWN} skriver kontrakt med {STRING} för 12 månaders ensamrätt på transporter!
+STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES                   :{BIG_FONT}{BLACK}Lokala myndigheter i {TOWN} skriver kontrakt med {STRING} för 12 minuters ensamrätt på transporter!
 
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}Vyfönster {COMMA}
@@ -932,9 +946,11 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Spelinst
 STR_GAME_OPTIONS_TAB_GENERAL                                    :Allmänt
 STR_GAME_OPTIONS_TAB_GENERAL_TT                                 :{BLACK}Välj generella inställningar
 STR_GAME_OPTIONS_TAB_GRAPHICS                                   :Grafik
-STR_GAME_OPTIONS_TAB_GRAPHICS_TT                                :{BLACK}Välj grafik inställningar
+STR_GAME_OPTIONS_TAB_GRAPHICS_TT                                :{BLACK}Välj grafikinställningar
 STR_GAME_OPTIONS_TAB_SOUND                                      :Ljud
-STR_GAME_OPTIONS_TAB_SOUND_TT                                   :{BLACK}Väljd ljud- och musikinställningar
+STR_GAME_OPTIONS_TAB_SOUND_TT                                   :{BLACK}Välj ljud- och musikinställningar
+STR_GAME_OPTIONS_TAB_SOCIAL                                     :Socialt
+STR_GAME_OPTIONS_TAB_SOCIAL_TT                                  :{BLACK}Välj inställningar för social integration
 
 STR_GAME_OPTIONS_VOLUME                                         :Volym
 STR_GAME_OPTIONS_SFX_VOLUME                                     :Ljudeffekter
@@ -994,6 +1010,7 @@ STR_GAME_OPTIONS_CURRENCY_HKD                                   :Hongkongdollar
 STR_GAME_OPTIONS_CURRENCY_INR                                   :Indisk rupie
 STR_GAME_OPTIONS_CURRENCY_IDR                                   :Indonesisk rupie
 STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malaysisk ringgit
+STR_GAME_OPTIONS_CURRENCY_LVL                                   :Lettiska Lats
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :{BLACK}Spara automatiskt
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :{BLACK}Välj intervall mellan automatiskt sparande
@@ -1028,13 +1045,17 @@ STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :{BLACK}Markera 
 STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :{BLACK}Nuvarande drivrutin: {STRING}
 
 STR_GAME_OPTIONS_GUI_SCALE_FRAME                                :{BLACK}Gränssnittets storlek
-STR_GAME_OPTIONS_GUI_SCALE_TOOLTIP                              :{BLACK}Dra i reglaget för att ställa in gränssnittets storlek. Håll in Ctrl för steglös inställning
+STR_GAME_OPTIONS_GUI_SCALE_TOOLTIP                              :{BLACK}Dra i reglaget för att ställa in gränssnittets storlek. Ctrl+Drag för steglös justering
 STR_GAME_OPTIONS_GUI_SCALE_AUTO                                 :{BLACK}Känn av storleken automatiskt
 STR_GAME_OPTIONS_GUI_SCALE_AUTO_TOOLTIP                         :{BLACK}Kryssa i den här rutan för automatisk inställning av gränssnittets storlek
 
 STR_GAME_OPTIONS_GUI_SCALE_BEVELS                               :{BLACK}Skala bården
 STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP                       :{BLACK}Kryssa i den här rutan för att skala bården efter gränssnittets storlek
 
+STR_GAME_OPTIONS_GUI_FONT_SPRITE                                :{BLACK}Använd traditionellt sprite-typsnitt
+STR_GAME_OPTIONS_GUI_FONT_SPRITE_TOOLTIP                        :{BLACK}Kryssa i den här rutan om du föredrar att använda det traditionella sprite-typsnittet med fast storlek.
+STR_GAME_OPTIONS_GUI_FONT_AA                                    :{BLACK}Anti-alias-typsnitt
+STR_GAME_OPTIONS_GUI_FONT_AA_TOOLTIP                            :{BLACK}Kryssa i den här rutan för anti-aliasing av typsnitt med justerbar storlek.
 
 STR_GAME_OPTIONS_GUI_SCALE_1X                                   :1x
 STR_GAME_OPTIONS_GUI_SCALE_2X                                   :2x
@@ -1069,6 +1090,21 @@ STR_GAME_OPTIONS_BASE_MUSIC                                     :{BLACK}Musikpak
 STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :{BLACK}Välj vilket musikpaket som ska användas
 STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :{BLACK}Yttligare information om musikpaketet
 
+STR_GAME_OPTIONS_SOCIAL_PLUGINS_NONE                            :{LTBLUE}(inga tillägg för att integrera med sociala plattformar installerade)
+
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_TITLE                            :{BLACK}{STRING} ({STRING})
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_PLATFORM                         :Plattform:
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE                            :Tilläggsstatus:
+
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_RUNNING                    :{GREEN}Startad
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_FAILED                     :{RED}Misslyckades att initialisera
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_PLATFORM_NOT_RUNNING       :{ORANGE}{STRING} ej startad
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_UNLOADED                   :{RED}Avställd
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_DUPLICATE                  :Duplicerat tillägg
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_UNSUPPORTED_API            :{RED}Versionen stöds ej
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_INVALID_SIGNATURE          :{RED}Ogiltig signatur
+
+STR_BASESET_STATUS                                              :{STRING} {RED}({NUM} fil{P "" er} saknas/kunde ej processas)
 
 STR_ERROR_RESOLUTION_LIST_FAILED                                :{WHITE}Det gick inte att hämta en lista över upplösningar som stöds
 STR_ERROR_FULLSCREEN_FAILED                                     :{WHITE}Fullskärmsläge misslyckades
@@ -1234,6 +1270,9 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Höger
 
 STR_CONFIG_SETTING_SECONDS_VALUE                                :{COMMA}{NBSP}sekund{P 0 "" er}
 
+STR_CONFIG_SETTING_INFINITE_MONEY                               :Obegränsat kapital: {STRING}
+STR_CONFIG_SETTING_INFINITE_MONEY_HELPTEXT                      :Tillåt obegränsat spenderande och inaktivera konkurser av företag
+
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Maximalt startlån: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Maximalt belopp ett företag kan låna (där inflationen inte tas med i beräkningen)
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_VALUE                   :{CURRENCY_LONG}
@@ -1256,9 +1295,11 @@ STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER                           :Subvention (mul
 STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER_HELPTEXT                  :Ange hur mycket betalt som subventionerade anslutningar ger
 
 STR_CONFIG_SETTING_SUBSIDY_DURATION                             :Subventioners varaktighet: {STRING}
-STR_CONFIG_SETTING_SUBSIDY_DURATION_HELPTEXT                    :Ställ in hur många år en subvention ska gälla
+###length 2
+STR_CONFIG_SETTING_SUBSIDY_DURATION_HELPTEXT                    :Ställ in antalet år som en subvention ska tilldelas
+STR_CONFIG_SETTING_SUBSIDY_DURATION_HELPTEXT_PERIODS            :Ställ in antalet perioder som en subvention ska tilldelas
 
-STR_CONFIG_SETTING_SUBSIDY_DURATION_VALUE                       :{NUM} år
+STR_CONFIG_SETTING_SUBSIDY_DURATION_VALUE                       :{UNITS_YEARS_OR_PERIODS}
 ###setting-zero-is-special
 STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Inga subventioner
 
@@ -1266,7 +1307,7 @@ STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Konstruktionsko
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Sätt nivån för konstruktions- och inköpskostnader
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Lågkonjunkturer: {STRING}
-STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Om det är aktiverat så kan lågkonjunkturer uppstå med ett antal års mellanrum. Under en lågkonjunktur är all produktion avsevärt lägre (men återgår till det normala när lågkonjunkturen är över)
+STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Om det är aktiverat kan lågkonjunkturer uppstå regelbundet. Under en lågkonjunktur är all produktion avsevärt lägre (men återgår till det normala när lågkonjunkturen är över)
 
 STR_CONFIG_SETTING_TRAIN_REVERSING                              :Förbjud tåg att vända vid stationer: {STRING}
 STR_CONFIG_SETTING_TRAIN_REVERSING_HELPTEXT                     :Om det är aktiverat så kommer tågen inte vända på genomfartsstationer, ens om vägen till deras destination skulle ha blivit kortare ifall de vände
@@ -1320,7 +1361,7 @@ STR_CONFIG_SETTING_FORBID_90_DEG                                :Förbjud tåg a
 STR_CONFIG_SETTING_FORBID_90_DEG_HELPTEXT                       :90-graderssvängar inträffar då ett horisontellt spår följs direkt av ett vertikalt spår på angränsande ruta, vilket tvingar tåget att svänga 90 grader om det kör utefter spåret. Detta i motsats till andra kombinationer av spårbitar där tåget svänger 45 grader i taget.
 
 STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS                        :Tillåt att stationer som inte är byggda direkt brevid varandra slås ihop: {STRING}
-STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS_HELPTEXT               :Tillåt att lägga till delar till en station utan att de är i direktkontakt med existerande delar. Kräver Ctrl+klick vid placering av nya stationsdelar.
+STR_CONFIG_SETTING_DISTANT_JOIN_STATIONS_HELPTEXT               :Tillåt tillägg av stationsdelar till en station utan direktkontakt med existerande delar genom Ctrl+Klick vid utplacering av nya delar.
 
 STR_CONFIG_SETTING_INFLATION                                    :Inflation: {STRING}
 STR_CONFIG_SETTING_INFLATION_HELPTEXT                           :Aktivera inflation i ekonomin. Kostnaderna stiger något fortare än inkomsterna.
@@ -1354,13 +1395,18 @@ STR_CONFIG_SETTING_SIGNALSIDE_LEFT                              :På vänster si
 STR_CONFIG_SETTING_SIGNALSIDE_DRIVING_SIDE                      :På förarsidan
 STR_CONFIG_SETTING_SIGNALSIDE_RIGHT                             :På höger sida
 
+###length 2
 STR_CONFIG_SETTING_SHOWFINANCES                                 :Visa finansfönstret vid slutet av året: {STRING}
-STR_CONFIG_SETTING_SHOWFINANCES_HELPTEXT                        :Om aktiverad kommer finans-fönstret att visas vid slutet av varje år för att möjliggöra enkel granskning av den finansiella statusen för företaget.
+STR_CONFIG_SETTING_SHOWFINANCES_PERIOD                          :Visa finansfönstret vid slutet av perioden: {STRING}
+
+###length 2
+STR_CONFIG_SETTING_SHOWFINANCES_HELPTEXT                        :Om aktiverad kommer finansfönstret att visas vid slutet av varje år för att möjliggöra enkel granskning av den finansiella statusen för företaget
+STR_CONFIG_SETTING_SHOWFINANCES_HELPTEXT_PERIOD                 :Om aktiverad kommer finansfönstret att visas vid slutet av varje period för att möjliggöra enkel granskning av den finansiella statusen för företaget
 
 STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT                           :Nya order är 'non-stop' om inte annat anges.{STRING}
 STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT_HELPTEXT                  :I normala fall stannar ett fordon vid varje station det passerar. Aktiveras den här inställningen kommer det istället att köra igenom alla stationer på väg till dess slutdestination utan att stanna. Tänk på att den här inställningen bara definierar ett förinställt värde för nya order. Individuella order kan uttryckligen definiera båda typerna av beteende oavsett inställning
 
-STR_CONFIG_SETTING_STOP_LOCATION                                :Nya tåg-order stannar som standard vid {STRING} av platformen
+STR_CONFIG_SETTING_STOP_LOCATION                                :Nya tågordrar stannar som standard vid {STRING} av plattformen
 STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :Grundinställning för var tåg stannar utmed plattformar. 'början' betyder i början av plattformen sett från var tåget kommer ifrån. 'mitten' betyder i mitten av plattformen och 'slutet' betyder så långt bort som möjligt. Notera att denna inställning endast anger grundvärdet för nya order. Stoppläge kan ställas in för individuella order genom att klicka på deras orderrad
 ###length 3
 STR_CONFIG_SETTING_STOP_LOCATION_NEAR_END                       :början
@@ -1376,10 +1422,14 @@ STR_CONFIG_SETTING_AUTOSCROLL_MAIN_VIEWPORT                     :Huvudvy
 STR_CONFIG_SETTING_AUTOSCROLL_EVERY_VIEWPORT                    :Alla vyfönster
 
 STR_CONFIG_SETTING_BRIBE                                        :Tillåt mutning av de lokala myndigheterna: {STRING}
+###length 2
 STR_CONFIG_SETTING_BRIBE_HELPTEXT                               :Tillåt företag att försöka muta de lokala myndigheterna. Om mutan upptäcks av en inspektör kommer företaget inte ha möjlighet att verka i staden i sex månader
+STR_CONFIG_SETTING_BRIBE_HELPTEXT_MINUTES                       :Tillåt företag att försöka muta de lokala myndigheterna. Om mutan upptäcks av en inspektör kommer företaget inte ha möjlighet att verka i staden i sex minuter
 
 STR_CONFIG_SETTING_ALLOW_EXCLUSIVE                              :Tillåt köp av exklusiva transporträttigheter: {STRING}
-STR_CONFIG_SETTING_ALLOW_EXCLUSIVE_HELPTEXT                     :Om ett företag köper exklusiva transporträttigheter i en stad kommer konkurrenternas stationer (för passagerare och last) inte ta emot någon last under ett helt år
+###length 2
+STR_CONFIG_SETTING_ALLOW_EXCLUSIVE_HELPTEXT                     :Om ett företag köper exklusiva transporträttigheter i en stad kommer konkurrenternas stationer (för passagerare och last) inte ta emot någon last i 12 månader
+STR_CONFIG_SETTING_ALLOW_EXCLUSIVE_HELPTEXT_MINUTES             :Om ett företag köper exklusiva transporträttigheter i en stad kommer konkurrenternas stationer (för passagerare och last) inte ta emot någon last i 12 minuter
 
 STR_CONFIG_SETTING_ALLOW_FUND_BUILDINGS                         :Tillåt att byggnader bekostas: {STRING}
 STR_CONFIG_SETTING_ALLOW_FUND_BUILDINGS_HELPTEXT                :Tillåt företag att ge pengar till städer för att bekosta nybyggnation av hus
@@ -1436,10 +1486,31 @@ STR_CONFIG_SETTING_ORDER_REVIEW_EXDEPOT                         :Ja, förutom f�
 STR_CONFIG_SETTING_ORDER_REVIEW_ON                              :Ja, för alla fordon
 
 STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Varna om ett fordons inkomst är negativ: {STRING}
-STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Om det är aktiverat skickas ett nyhetsmeddelande när ett fordon inte har gett vinst under ett kalenderår
+###length 2
+STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Om det är aktiverat skickas ett nyhetsmeddelande ut när ett fordon inte har gått med vinst under ett år
+STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Om det är aktiverat skickas ett nyhetsmeddelande ut när ett fordon inte har gått med vinst under en period
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Fordon blir aldrig gamla: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Om det är aktiverat förblir alla fordonstyper tillgängliga i obegränsad tid efter att de introducerats
+
+STR_CONFIG_SETTING_TIMEKEEPING_UNITS                            :Tidhållning: {STRING}
+STR_CONFIG_SETTING_TIMEKEEPING_UNITS_HELPTEXT                   :Välj enheter för spelets tidhållning. Detta kan inte ändras senare.{}{}Kalenderbaserat spelläge är den klassiska OpenTTD-upplevelsen, där ett år består av 12 månader och varje månad har 28-31 dagar.{}{}I Väggklockbaserat spelläge är fordonsrörelse, godsproduktion, och finanser istället baserade på enminutssteg, vilket är ungefär så länge som en 30-dagarsmånad tar i Kalenderbaserat spelläge. Dessa är grupperade i 12-minutersperioder motsvarande ett år i Kalenderbaserat spelläge.{}{}Oavsett spelläge finns det alltid en klassisk kalender som används för introduktionsdatum av fordon, byggnader, och annan infrastruktur.
+###length 2
+STR_CONFIG_SETTING_TIMEKEEPING_UNITS_CALENDAR                   :Kalender
+STR_CONFIG_SETTING_TIMEKEEPING_UNITS_WALLCLOCK                  :Väggklocka
+
+STR_CONFIG_SETTING_MINUTES_PER_YEAR                             :Minuter per år: {STRING}
+STR_CONFIG_SETTING_MINUTES_PER_YEAR_HELPTEXT                    :Välj antalet minuter som går i ett kalenderår. Standard är 12 minuter. Sätt till 0 för att stoppa kalendertiden från att ändras. Denna inställning påverkar inte spelets ekonomiska simulering, och är endast tillgänglig för tidhållning medelst väggklocka.
+
+STR_CONFIG_SETTING_MINUTES_PER_YEAR_VALUE                       :{NUM}
+###setting-zero-is-special
+STR_CONFIG_SETTING_MINUTES_PER_YEAR_FROZEN                      :0 (kalendertid frusen)
+
+STR_CONFIG_SETTING_TOWN_CARGO_SCALE                             :Skala godsproduktionen för städer: {STRING}
+STR_CONFIG_SETTING_TOWN_CARGO_SCALE_HELPTEXT                    :Skala godsproduktionen för städer med detta procentantal.
+STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE                         :Skala godsproduktionen för industrier: {STRING}
+STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT                :Skala godsproduktionen för industrier med detta procentantal.
+STR_CONFIG_SETTING_CARGO_SCALE_VALUE                            :{NUM}%
 
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE                            :Förnya fordon automatiskt när de blir gamla: {STRING}
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE_HELPTEXT                   :Om det är aktiverat kommer ett fordon som närmar sig slutet av sin livslängd automatiskt att bytas ut när villkoren för förnyelse är uppfyllda
@@ -1483,7 +1554,7 @@ STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :Original
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
 
 STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Terrängtyp: {STRING}
-STR_CONFIG_SETTING_TERRAIN_TYPE_HELPTEXT                        :(TerraGenesis endast) Hilliness av landskapet
+STR_CONFIG_SETTING_TERRAIN_TYPE_HELPTEXT                        :Välj höjden på kullar och berg i landskapet
 
 STR_CONFIG_SETTING_INDUSTRY_DENSITY                             :Industritäthet: {STRING}
 STR_CONFIG_SETTING_INDUSTRY_DENSITY_HELPTEXT                    :Ange hur många industrier som ska genereras och vilken nivå som ska bibehållas under spelet
@@ -1492,18 +1563,18 @@ STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE                        :Maximalt avstå
 STR_CONFIG_SETTING_OIL_REF_EDGE_DISTANCE_HELPTEXT               :Begränsar hur långt från kartans kant oljeraffinaderier och oljeplattformar kan byggas. På ö-kartor säkerställer detta att de är nära kusten. På kartor större än 256 rutor skalas detta värde upp.
 
 STR_CONFIG_SETTING_SNOWLINE_HEIGHT                              :Snögränsens höjd: {STRING}
-STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :Kontrollerar på vilken höjd snön börjar i det subarktiska landskapet. Snö påverkar även industrigeneration och städers tillväxtkrav. Kan endast modifieras via Scenarioredigeraren eller beräknas via "snötäckning"
+STR_CONFIG_SETTING_SNOWLINE_HEIGHT_HELPTEXT                     :Välj på vilken höjd snötäcket börjar i det subarktiska landskapet. Snö påverkar även industrigeneration och städers tillväxtkrav. Kan endast modifieras via Scenarioredigeraren eller beräknas via "snötäckning"
 
 STR_CONFIG_SETTING_SNOW_COVERAGE                                :Snötäckning: {STRING}
-STR_CONFIG_SETTING_SNOW_COVERAGE_HELPTEXT                       :Kontrollerar ungefärlig mängd snö i det subarktiska landskapet. Snö påverkar även industrigeneration och städernas tillväxtkrav. Används endast under kartgeneration. Land precis över havsnivån är alltid utan snö
+STR_CONFIG_SETTING_SNOW_COVERAGE_HELPTEXT                       :Välj ungefärlig mängd snö i det subarktiska landskapet. Snö påverkar även industrigeneration och städernas tillväxtkrav. Används endast under kartgeneration. Havsytan och kustrutorna är alltid snöfria
 STR_CONFIG_SETTING_SNOW_COVERAGE_VALUE                          :{NUM}%
 
 STR_CONFIG_SETTING_DESERT_COVERAGE                              :Ökentäckning: {STRING}
-STR_CONFIG_SETTING_DESERT_COVERAGE_HELPTEXT                     :Kontrollera ungefärlig mängd öken i tropiskt landskap. Öken påverkar även industrigeneration. Används bara under kartgeneration
+STR_CONFIG_SETTING_DESERT_COVERAGE_HELPTEXT                     :Välj den ungefärliga mängden öken för det tropiska landskapet. Öken påverkar även industrigeneration och städers tillväxtkrav. Används endast under kartgeneration
 STR_CONFIG_SETTING_DESERT_COVERAGE_VALUE                        :{NUM}%
 
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN                         :Terrängens svårhetsgrad: {STRING}
-STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_HELPTEXT                :(TerraGenesis endast) Välj frekvensen av kullar: Smooth landskap har färre, mer utbredda kullar. Rough landskap har många kullar, som kan se repetitiva
+STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_HELPTEXT                :Välj form och frekvens av kullar. Böljande landskap har färre, mer utbredda kullar, medan landskap med tuff terräng har fler, mer låga kullar.
 ###length 4
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :Väldigt lätt
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :Lätt
@@ -1511,7 +1582,7 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Svår
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Väldigt svår
 
 STR_CONFIG_SETTING_VARIETY                                      :Varierad distribution: {STRING}
-STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :(TerraGenesis endast) Styr om kartan innehåller både bergs och flacka områden. Eftersom detta gör bara kartan flackare bör andra inställningar ställas in på bergiga
+STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :Välj om kartan ska innehålla både berg och flacka områden. Ju större variation desto större höjdskillnad mellan bergiga och flacka områden.
 
 STR_CONFIG_SETTING_RIVER_AMOUNT                                 :Antal floder: {STRING}
 STR_CONFIG_SETTING_RIVER_AMOUNT_HELPTEXT                        :Välj hur många floder att generera
@@ -1531,6 +1602,7 @@ STR_CONFIG_SETTING_ROAD_SIDE_LEFT                               :Kör på vänst
 STR_CONFIG_SETTING_ROAD_SIDE_RIGHT                              :Kör på höger sida
 
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION                           :Höjdkartans rotation: {STRING}
+STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_TOOLTIP                   :Välj på vilket sätt höjdkartan ska roteras för att få plats inuti spelvärlden
 ###length 2
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_COUNTER_CLOCKWISE         :Motsols
 STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_CLOCKWISE                 :Medsols
@@ -1565,7 +1637,7 @@ STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREY_TO_RED                :Grå till röd
 STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREYSCALE                  :Gråskala
 
 STR_CONFIG_SETTING_SCROLLMODE                                   :Vyfönsters skrollningsbeteende: {STRING}
-STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :Beteende vid scrollning av kartan. Muspositionen låst valet funkar inte på alla system, som tillexempel webbaserade versioner, pekskärmar, Linux med Wayland, med mera
+STR_CONFIG_SETTING_SCROLLMODE_HELPTEXT                          :Beteende vid scrollning av kartan. Valet "muspositionen låst" funkar inte på alla system, såsom webbaserade versioner, pekskärmar, Linux med Wayland, med mera
 ###length 4
 STR_CONFIG_SETTING_SCROLLMODE_DEFAULT                           :Rör vyn med höger musknapp, musens position låst
 STR_CONFIG_SETTING_SCROLLMODE_RMB_LOCKED                        :Rör kartan med höger musknapp, musens position låst
@@ -1651,7 +1723,12 @@ STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS_HELPTEXT              :Möjliggör anv
 STR_CONFIG_SETTING_LOADING_INDICATORS                           :Använd lastningsindikatorer: {STRING}
 STR_CONFIG_SETTING_LOADING_INDICATORS_HELPTEXT                  :Välj om lastningsindikatorer visas ovanför lastande och avlastande fordon, eller ej
 
+STR_CONFIG_SETTING_TIMETABLE_MODE                               :Tidsenheter för tidtabeller: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_MODE_HELPTEXT                      :Välj tidsenheter att använda för fordonstidtabeller
 ###length 3
+STR_CONFIG_SETTING_TIMETABLE_MODE_DAYS                          :Dagar
+STR_CONFIG_SETTING_TIMETABLE_MODE_SECONDS                       :Sekunder
+STR_CONFIG_SETTING_TIMETABLE_MODE_TICKS                         :Tick
 
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE             :Visa ankomster och avgångar i tidtabeller: {STRING}
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :Visa förväntade ankomst- och avgångstider i tidtabeller
@@ -1687,8 +1764,13 @@ STR_CONFIG_SETTING_SOUND_TICKER_HELPTEXT                        :Spela ljudeffek
 STR_CONFIG_SETTING_SOUND_NEWS                                   :Tidningsnyheter: {STRING}
 STR_CONFIG_SETTING_SOUND_NEWS_HELPTEXT                          :Spela upp ljud när tidningsnyheter visas
 
+###length 2
 STR_CONFIG_SETTING_SOUND_NEW_YEAR                               :Slut på året: {STRING}
+STR_CONFIG_SETTING_SOUND_NEW_PERIOD                             :Slutet av perioden: {STRING}
+
+###length 2
 STR_CONFIG_SETTING_SOUND_NEW_YEAR_HELPTEXT                      :Spela en ljudeffekt vid årets slut som beskriver företagets resultat från det gångna året jämfört med året innan
+STR_CONFIG_SETTING_SOUND_NEW_PERIOD_HELPTEXT                    :Spela en ljudeffekt vid periodens slut som beskriver företagets resultat från den gångna perioden jämfört med perioden innan
 
 STR_CONFIG_SETTING_SOUND_CONFIRM                                :Konstruktion: {STRING}
 STR_CONFIG_SETTING_SOUND_CONFIRM_HELPTEXT                       :Spela ljudeffekter när konstruktioner lyckas och vid andra händelser
@@ -1729,13 +1811,6 @@ STR_CONFIG_SETTING_AI_BUILDS_AIRCRAFT_HELPTEXT                  :När denna inst
 STR_CONFIG_SETTING_AI_BUILDS_SHIPS                              :Förbjud skepp för datorn: {STRING}
 STR_CONFIG_SETTING_AI_BUILDS_SHIPS_HELPTEXT                     :När denna inställning aktiveras blir det omöjligt för datorspelare att bygga skepp
 
-STR_CONFIG_SETTING_AI_PROFILE                                   :Inställningsprofil som standard: {STRING}
-STR_CONFIG_SETTING_AI_PROFILE_HELPTEXT                          :Välj vilken inställningsprofil som ska användas för slumpvis valda datorspelare, eller för startvärden när en ny datorspelare (AI) eller ett spelskript läggs till
-###length 3
-STR_CONFIG_SETTING_AI_PROFILE_EASY                              :Lätt
-STR_CONFIG_SETTING_AI_PROFILE_MEDIUM                            :Mellan
-STR_CONFIG_SETTING_AI_PROFILE_HARD                              :Svår
-
 STR_CONFIG_SETTING_AI_IN_MULTIPLAYER                            :Tillåt datorspelare i flerspelarläge: {STRING}
 STR_CONFIG_SETTING_AI_IN_MULTIPLAYER_HELPTEXT                   :Tillåt datorstyrda spelare att delta i spel för flera spelare
 
@@ -1756,13 +1831,15 @@ STR_CONFIG_SETTING_SERVINT_AIRCRAFT                             :Normalt service
 STR_CONFIG_SETTING_SERVINT_AIRCRAFT_HELPTEXT                    :Välj vilket serviceintervall som normalt sett ska användas för nya flygplan, om inget annat serviceintervall uttryckligen anges
 STR_CONFIG_SETTING_SERVINT_SHIPS                                :Normalt serviceintervall för skepp: {STRING}
 STR_CONFIG_SETTING_SERVINT_SHIPS_HELPTEXT                       :Välj vilket serviceintervall som normalt sett ska användas för nya skepp, om inget annat serviceintervall uttryckligen anges
-STR_CONFIG_SETTING_SERVINT_VALUE                                :{COMMA}{NBSP}dag{P 0 "" ar}/%
+STR_CONFIG_SETTING_SERVINT_VALUE                                :{COMMA}{NBSP}Dag{P 0 "" ar}/Minut{P 0 "" er}/%
 ###setting-zero-is-special
 STR_CONFIG_SETTING_SERVINT_DISABLED                             :Inaktiverat
 
 STR_CONFIG_SETTING_NOSERVICE                                    :Inaktivera service när motorstopp är av: {STRING}
 STR_CONFIG_SETTING_NOSERVICE_HELPTEXT                           :När det är aktiverat servas inte fordon om de inte kan få motorstopp
 
+STR_CONFIG_SETTING_STATION_LENGTH_LOADING_PENALTY               :Straff i lastningshastighet för tåg som är längre än stationen: {STRING}
+STR_CONFIG_SETTING_STATION_LENGTH_LOADING_PENALTY_HELPTEXT      :Om aktiverad, kommer tåg som är för långa för en station att lastas långsammare än tåg som får plats på stationen. Denna inställning påverkar inte vägfinnare.
 
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :Använd hastighetsbegränsningar för tågvagnar: {STRING}
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :När det är aktiverat tas även hänsyn till vagnarnas hastighetsbegränsningar när ett tågs maxhastighet beräknas
@@ -1852,9 +1929,9 @@ STR_CONFIG_SETTING_SEMAPHORE_BUILD_BEFORE_DATE                  :Bygg automatisk
 STR_CONFIG_SETTING_SEMAPHORE_BUILD_BEFORE_DATE_HELPTEXT         :Välj vilket år elektriska signaler ska börja användas för spår. Innan detta årtal används icke-elektriska signaler (vilka har exakt samma funktion, men annorlunda utseende)
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_TYPES                           :Gå igenom signaltyper: {STRING}
-STR_CONFIG_SETTING_CYCLE_SIGNAL_TYPES_HELPTEXT                  :Välj vilka signaltyper som ska gås igenom vid Ctrl+klick med signalverktyget på en redan byggd signal
+STR_CONFIG_SETTING_CYCLE_SIGNAL_TYPES_HELPTEXT                  :Välj vilka signaltyper att gå igenom vid Ctrl+Klick med signalverktyget på en redan byggd signal
 ###length 2
-STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :Endast avancerade
+STR_CONFIG_SETTING_CYCLE_SIGNAL_GROUP                           :Aktuell grupp endast
 STR_CONFIG_SETTING_CYCLE_SIGNAL_ALL                             :Alla synliga
 
 STR_CONFIG_SETTING_SIGNAL_GUI_MODE                              :Visa signaltyper: {STRING}
@@ -1984,11 +2061,11 @@ STR_CONFIG_SETTING_SHORT_PATH_SATURATION_HELPTEXT               :Ofta finns det 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY                  :Hastighetsenhet (land)t: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_NAUTICAL         :Hastighetsenheter (nautical): {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_HELPTEXT         :Närhelst en hastighet visas i användargränssnittet, visa den i den valda enheten
-###length 5
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_IMPERIAL         :Brittisk (mph)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_METRIC           :Metrisk (km/h)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_SI               :SI (m/s)
-STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_GAMEUNITS        :Spel enheter (rutor/dag)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_GAMEUNITS_DAYS   :Spelenheter (rutor/dag)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_GAMEUNITS_SECS   :Spelenheter (rutor/sek)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_KNOTS            :Knop
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER                     :Enhet för fordons motoreffekt: {STRING}
@@ -2039,14 +2116,17 @@ STR_CONFIG_SETTING_ACCOUNTING                                   : Redovisning
 STR_CONFIG_SETTING_VEHICLES                                     :Fordon
 STR_CONFIG_SETTING_VEHICLES_PHYSICS                             : Fysik
 STR_CONFIG_SETTING_VEHICLES_ROUTING                             :Planering av resrutt
+STR_CONFIG_SETTING_VEHICLES_ORDERS                              :Ordrar
 STR_CONFIG_SETTING_LIMITATIONS                                  : Begränsningar
 STR_CONFIG_SETTING_ACCIDENTS                                    : Katastrofer / Olyckor
 STR_CONFIG_SETTING_GENWORLD                                     :Världsgenerering
 STR_CONFIG_SETTING_ENVIRONMENT                                  :Miljö
+STR_CONFIG_SETTING_ENVIRONMENT_TIME                             :Tid
 STR_CONFIG_SETTING_ENVIRONMENT_AUTHORITIES                      :Mydigheter
 STR_CONFIG_SETTING_ENVIRONMENT_TOWNS                            :Städer
 STR_CONFIG_SETTING_ENVIRONMENT_INDUSTRIES                       :Industrier
 STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST                        :Godsdistribution
+STR_CONFIG_SETTING_ENVIRONMENT_TREES                            :Träd
 STR_CONFIG_SETTING_AI                                           :Motståndare
 STR_CONFIG_SETTING_AI_NPC                                       :Datorspelare
 STR_CONFIG_SETTING_NETWORK                                      :Nätverk
@@ -2102,6 +2182,7 @@ STR_INTRO_MULTIPLAYER                                           :{BLACK}Flera sp
 
 STR_INTRO_GAME_OPTIONS                                          :{BLACK}Spelinställningar
 STR_INTRO_HIGHSCORE                                             :{BLACK}Bästa spelresultat
+STR_INTRO_HELP                                                  :Hjälp & Manualer
 STR_INTRO_CONFIG_SETTINGS_TREE                                  :{BLACK}Inställningar
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF-inställningar
 STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Kontrollera online-innehåll
@@ -2121,13 +2202,14 @@ STR_INTRO_TOOLTIP_SUB_ARCTIC_LANDSCAPE                          :{BLACK}Välj 's
 STR_INTRO_TOOLTIP_SUB_TROPICAL_LANDSCAPE                        :{BLACK}Välj 'sub-tropiskt' som typ av landskap
 STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Välj 'leksaksland' som typ av landskap
 
-STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Visa spelinställningar
-STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Visar en topplista över de bästa spelresultaten
-STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Skärminställningar
-STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Visa inställningar för NewGRF
+STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Öppna spelinställningar
+STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Öppna topplistan över de bästa spelresultaten
+STR_INTRO_TOOLTIP_HELP                                          :{BLACK}Inhämta dokumentation och onlineresurser
+STR_INTRO_TOOLTIP_CONFIG_SETTINGS_TREE                          :{BLACK}Öppna inställningar
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Öppna inställningar för NewGRF
 STR_INTRO_TOOLTIP_ONLINE_CONTENT                                :{BLACK}Kolla efter nytt och nyuppdaterat innehåll för nedladdning
-STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Visa inställningar för AI
-STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Visa inställningar för spelskript
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Öppna inställningar för AI
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Öppna inställningar för spelskript
 STR_INTRO_TOOLTIP_QUIT                                          :{BLACK}Avsluta 'OpenTTD'
 
 STR_INTRO_BASESET                                               :{BLACK}Det grafikpaket som för närvarande är valt som standard saknar {NUM} sprite{P "" s}. Vänligen kontrollera om det finns en uppdatering till paketet.
@@ -2145,11 +2227,20 @@ STR_ABANDON_GAME_QUERY                                          :{YELLOW}Är du 
 STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}Är du säker på att du vill avsluta detta scenario?
 
 # Help window
+STR_HELP_WINDOW_CAPTION                                         :{WHITE}Hjälp & Manualer
+STR_HELP_WINDOW_WEBSITES                                        :{BLACK}Webbplatser
+STR_HELP_WINDOW_DOCUMENTS                                       :{BLACK}Dokument
+STR_HELP_WINDOW_README                                          :{BLACK}Manual
+STR_HELP_WINDOW_CHANGELOG                                       :{BLACK}Ändringshistorik
+STR_HELP_WINDOW_KNOWN_BUGS                                      :{BLACK}Kända buggar
+STR_HELP_WINDOW_LICENSE                                         :{BLACK}Licens
+STR_HELP_WINDOW_MAIN_WEBSITE                                    :{BLACK}OpenTTD
+STR_HELP_WINDOW_MANUAL_WIKI                                     :{BLACK}Manual / Wiki
+STR_HELP_WINDOW_BUGTRACKER                                      :{BLACK}Rapportera en bugg
+STR_HELP_WINDOW_COMMUNITY                                       :{BLACK}Gemenskap
 
 # Cheat window
-STR_CHEATS                                                      :{WHITE}Fusk
-STR_CHEATS_TOOLTIP                                              :{BLACK}Checkboxar indikerar om du använt det här fusket förut
-STR_CHEATS_NOTE                                                 :{BLACK}Notera: användandet av dessa inställningar kommer att sparas av sparfilen
+STR_CHEATS                                                      :{WHITE}Sandbox-inställningar
 STR_CHEAT_MONEY                                                 :{LTBLUE}Öka pengar med {CURRENCY_LONG}
 STR_CHEAT_CHANGE_COMPANY                                        :{LTBLUE}Spelar som företag:: {ORANGE}{COMMA}
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}Magisk bulldozer (ta bort industrier, oflyttbara objekt etc.): {ORANGE}{STRING}
@@ -2160,6 +2251,7 @@ STR_CHEAT_EDIT_MAX_HL_QUERY_CAPT                                :{WHITE}Ändra m
 STR_CHEAT_CHANGE_DATE                                           :{LTBLUE}Byt datum: {ORANGE} {DATE_SHORT}
 STR_CHEAT_CHANGE_DATE_QUERY_CAPT                                :{WHITE}Ändra nuvarande år
 STR_CHEAT_SETUP_PROD                                            :{LTBLUE}Aktivera modifiering av produktionsvärden: {ORANGE}{STRING}
+STR_CHEAT_STATION_RATING                                        :{LTBLUE}Fixera stationens gradering vid 100%: {ORANGE}{STRING}
 
 # Livery window
 STR_LIVERY_CAPTION                                              :{WHITE}{COMPANY} - Färgschema
@@ -2169,12 +2261,20 @@ STR_LIVERY_TRAIN_TOOLTIP                                        :{BLACK}Visa fä
 STR_LIVERY_ROAD_VEHICLE_TOOLTIP                                 :{BLACK}Visa färgscheman för vägfordon
 STR_LIVERY_SHIP_TOOLTIP                                         :{BLACK}Visa färgscheman för skepp
 STR_LIVERY_AIRCRAFT_TOOLTIP                                     :{BLACK}Visa färgschema för flygplan
-STR_LIVERY_PRIMARY_TOOLTIP                                      :{BLACK}Välj huvudfärg för det aktuella schemat. Ctrl+klick kommer att välja färgen för alla scheman
-STR_LIVERY_SECONDARY_TOOLTIP                                    :{BLACK}Välj andravalsfärgen för det aktuella schemat. Ctrl+klick kommer att välja färgen för alla scheman
+STR_LIVERY_TRAIN_GROUP_TOOLTIP                                  :{BLACK}Visa färger för tåggrupper
+STR_LIVERY_ROAD_VEHICLE_GROUP_TOOLTIP                           :{BLACK}Visa färger för vägfordonsgrupper
+STR_LIVERY_SHIP_GROUP_TOOLTIP                                   :{BLACK}Visa färger för fartygsgrupper
+STR_LIVERY_AIRCRAFT_GROUP_TOOLTIP                               :{BLACK}Visa färger för flygfarkostgrupper
+STR_LIVERY_PRIMARY_TOOLTIP                                      :{BLACK}Välj huvudfärg för det aktuella schemat. Ctrl+Klick för att välja denna färg för alla scheman
+STR_LIVERY_SECONDARY_TOOLTIP                                    :{BLACK}Välj andravalsfärgen för det aktuella schemat. Ctrl+Klick för att välja denna färg för alla scheman
 STR_LIVERY_PANEL_TOOLTIP                                        :{BLACK}Välj ett färgschema att ändra eller välj flera genom Ctrl+klick. Bocka för rutan för att använda scheman
+STR_LIVERY_TRAIN_GROUP_EMPTY                                    :Inga tåggrupper har konfigurerats
+STR_LIVERY_ROAD_VEHICLE_GROUP_EMPTY                             :Inga vägfordonsgrupper har konfigurerats
+STR_LIVERY_SHIP_GROUP_EMPTY                                     :Inga fartygsgrupper har konfigurerats
+STR_LIVERY_AIRCRAFT_GROUP_EMPTY                                 :Inga flygfarkostgrupper har konfigurerats
 
 ###length 23
-STR_LIVERY_DEFAULT                                              :Normalt färgschema
+STR_LIVERY_DEFAULT                                              :Standard färgschema
 STR_LIVERY_STEAM                                                :Ånglok
 STR_LIVERY_DIESEL                                               :Dieseltåg
 STR_LIVERY_ELECTRIC                                             :Elektriskt tåg
@@ -2277,8 +2377,9 @@ STR_NETWORK_SERVER_LIST_MAP_SIZE_CAPTION                        :{BLACK}Kartstor
 STR_NETWORK_SERVER_LIST_MAP_SIZE_CAPTION_TOOLTIP                :{BLACK}Kartstorlek av spelet{}Klicka för att sortera efter område
 STR_NETWORK_SERVER_LIST_DATE_CAPTION                            :{BLACK}Datum
 STR_NETWORK_SERVER_LIST_DATE_CAPTION_TOOLTIP                    :{BLACK}Nuvarande datum
-STR_NETWORK_SERVER_LIST_YEARS_CAPTION                           :{BLACK}År
-STR_NETWORK_SERVER_LIST_YEARS_CAPTION_TOOLTIP                   :{BLACK}Antal år{}som spelet pågår
+STR_NETWORK_SERVER_LIST_PLAY_TIME_SHORT                         :{BLACK}{NUM}h {NUM}m
+STR_NETWORK_SERVER_LIST_PLAY_TIME_CAPTION                       :{BLACK}Speltid
+STR_NETWORK_SERVER_LIST_PLAY_TIME_CAPTION_TOOLTIP               :{BLACK}Tid spelad när{}spelet inte var pausat
 STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Språk, serverversion, mm
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}Klicka på ett spel från listan för att välja det
@@ -2294,6 +2395,7 @@ STR_NETWORK_SERVER_LIST_SERVER_ADDRESS                          :{SILVER}Servera
 STR_NETWORK_SERVER_LIST_INVITE_CODE                             :{SILVER}Inbjudningskod: {WHITE}{STRING}
 STR_NETWORK_SERVER_LIST_START_DATE                              :{SILVER}Startdatum: {WHITE}{DATE_SHORT}
 STR_NETWORK_SERVER_LIST_CURRENT_DATE                            :{SILVER}Nuvarande datum: {WHITE}{DATE_SHORT}
+STR_NETWORK_SERVER_LIST_PLAY_TIME                               :{SILVER}Speltid: {WHITE}{NUM}h {NUM}m
 STR_NETWORK_SERVER_LIST_GAMESCRIPT                              :{SILVER}Spelskript: {WHITE}{STRING} (v{NUM})
 STR_NETWORK_SERVER_LIST_PASSWORD                                :{SILVER}Lösenordsskyddat!
 STR_NETWORK_SERVER_LIST_SERVER_OFFLINE                          :{SILVER}SERVER AVSTÄNGD
@@ -2327,7 +2429,7 @@ STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP                  :{BLACK}Namnet p
 STR_NETWORK_START_SERVER_SET_PASSWORD                           :{BLACK}Bestäm lösenord
 STR_NETWORK_START_SERVER_PASSWORD_TOOLTIP                       :{BLACK}Skydda spelet med ett lösenord så att inte andra än dem som har lösenordet kan gå med i spelet
 
-STR_NETWORK_START_SERVER_VISIBILITY_LABEL                       :{BLACK}Synlighet
+STR_NETWORK_START_SERVER_VISIBILITY_LABEL                       :{BLACK}Synlighet:
 STR_NETWORK_START_SERVER_VISIBILITY_TOOLTIP                     :{BLACK}Huruvida andra människor kan se din server i den offentliga listan
 STR_NETWORK_START_SERVER_CLIENTS_SELECT                         :{BLACK}{NUM} klient{P "" er}
 STR_NETWORK_START_SERVER_NUMBER_OF_CLIENTS                      :{BLACK}Max antal tillåtna klienter:
@@ -2562,7 +2664,7 @@ STR_CONTENT_SEARCH_EXTERNAL_TOOLTIP                             :{BLACK}Sök på
 STR_CONTENT_SEARCH_EXTERNAL_DISCLAIMER_CAPTION                  :{WHITE}Du lämnar nu OpenTTD!
 STR_CONTENT_SEARCH_EXTERNAL_DISCLAIMER                          :{WHITE}Villkoren för nedladdning av material från externa webbplatser varierar.{}Du hänvisas till de externa sidorna när det gäller instruktioner för hur materialet ska installeras i OpenTTD.{}Vill du fortsätta?
 STR_CONTENT_FILTER_TITLE                                        :{BLACK}Filter för tagg/namn:
-STR_CONTENT_OPEN_URL                                            :{BLACK}Besök hemsida
+STR_CONTENT_OPEN_URL                                            :{BLACK}Hemsida
 STR_CONTENT_OPEN_URL_TOOLTIP                                    :{BLACK}Besök hemsidan för det här innehållet
 STR_CONTENT_DOWNLOAD_CAPTION                                    :{BLACK}Ladda ned
 STR_CONTENT_DOWNLOAD_CAPTION_TOOLTIP                            :{BLACK}Börja ladda hem valt innehåll
@@ -2649,9 +2751,10 @@ STR_LINKGRAPH_LEGEND_SATURATED                                  :{TINY_FONT}{BLA
 STR_LINKGRAPH_LEGEND_OVERLOADED                                 :{TINY_FONT}{BLACK}överbelastad
 
 # Linkgraph tooltip
-STR_LINKGRAPH_STATS_TOOLTIP                                     :{BLACK}{CARGO_LONG} att transporteras per månad från {STATION} till {STATION} ({COMMA}% av kapacitet){STRING}
+STR_LINKGRAPH_STATS_TOOLTIP_MONTH                               :{BLACK}{CARGO_LONG} kommer att transporteras per månad från {STATION} till {STATION} ({COMMA}% av kapaciteten){STRING}
+STR_LINKGRAPH_STATS_TOOLTIP_MINUTE                              :{BLACK}{CARGO_LONG} kommer att transporteras per minut från {STATION} till {STATION} ({COMMA}% av kapaciteten){STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION                    :{}{CARGO_LONG} att transporteras tillbaka ({COMMA}% av kapacitet)
-STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Genomsnittlig restid: {NUM}{NBSP}dag{P "" ar}
+STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION                      :{}Genomsnittlig restid: {UNITS_DAYS_OR_SECONDS}
 
 # Base for station construction window(s)
 STR_STATION_BUILD_COVERAGE_AREA_TITLE                           :{BLACK}Markera upptagningsområde
@@ -2661,7 +2764,8 @@ STR_STATION_BUILD_COVERAGE_AREA_OFF_TOOLTIP                     :{BLACK}Markera 
 STR_STATION_BUILD_COVERAGE_AREA_ON_TOOLTIP                      :{BLACK}Markera stationens upptagningsområde
 STR_STATION_BUILD_ACCEPTS_CARGO                                 :{BLACK}Accepterar: {GOLD}{CARGO_LIST}
 STR_STATION_BUILD_SUPPLIES_CARGO                                :{BLACK}Tillhandahåller: {GOLD}{CARGO_LIST}
-STR_STATION_BUILD_INFRASTRUCTURE_COST                           :{BLACK}Underhållskostnad: {GOLD}{CURRENCY_SHORT}/år
+STR_STATION_BUILD_INFRASTRUCTURE_COST_YEAR                      :{BLACK}Underhållskostnad: {GOLD}{CURRENCY_SHORT}/år
+STR_STATION_BUILD_INFRASTRUCTURE_COST_PERIOD                    :{BLACK}Underhållskostnad: {GOLD}{CURRENCY_SHORT}/period
 
 # Join station window
 STR_JOIN_STATION_CAPTION                                        :{WHITE}Slå ihop stationer
@@ -2679,16 +2783,16 @@ STR_RAIL_TOOLBAR_ELRAIL_CONSTRUCTION_CAPTION                    :Bygg elektrifie
 STR_RAIL_TOOLBAR_MONORAIL_CONSTRUCTION_CAPTION                  :Bygg monorail
 STR_RAIL_TOOLBAR_MAGLEV_CONSTRUCTION_CAPTION                    :Bygg maglev
 
-STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TRACK                   :{BLACK}Bygg järnväg. Ctrl växlar mellan att bygga/ta bort järnväg. Shift växlar mellan att bygga/visa beräknad kostnad
-STR_RAIL_TOOLBAR_TOOLTIP_BUILD_AUTORAIL                         :{BLACK}Bygg järnvägspår genom att använda Automatspår-funktionen. Ctrl växlar mellan att bygga/ta bort järnvägsspår. Shift växlar mellan att bygga/visa beräknad kostnad
-STR_RAIL_TOOLBAR_TOOLTIP_BUILD_TRAIN_DEPOT_FOR_BUILDING         :{BLACK}Bygg depå (för konstruktion eller service av tåg). Shift växlar mellan att bygga/visa beräknad kostnad
-STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_TO_WAYPOINT               :{BLACK}Ändra räls till riktmärke. Ctrl aktiverar sammanfogning av riktmärken. Shift växlar mellan att bygga/visa beräknad kostnad
-STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_STATION                 :{BLACK}Bygg järnvägsstation. Ctrl aktiverar sammansättning av stationer. Shift växlar mellan att bygga/visa beräknad kostnad
-STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_SIGNALS                 :{BLACK}Bygg järnvägssignaler. Ctrl växlar mellan semaforer/ljussignaler{}Dra för att bygga signaler utmed en rak sträcka räls. Ctrl bygger signal till nästa korsning{}Ctrl+klick aktiverar öppning av signalväljningsfönstret. Shift växlar mellan att bygga/visa beräknad kostnad
-STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_BRIDGE                  :{BLACK}Bygg järnvägsbro. Shift växlar mellan att bygga/visa beräknad kostnad
-STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TUNNEL                  :{BLACK}Bygg järnvägstunnel. Shift växlar mellan att bygga/visa beräknad kostnad
-STR_RAIL_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR                :{BLACK}Växla mellan att bygga/ta bort järnväg, signaler, riktmärken och stationer. Håll nere Ctrl för att även ta bort räls från riktmärken och stationer
-STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL                           :{BLACK}Konvertera/Uppgradera spårtyp. Shift växlar mellan att bygga/visa beräknad kostnad
+STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TRACK                   :{BLACK}Bygg järnvägspår. Ctrl+Klick för att ta bort järnvägspår. Håll även in Shift för att endast visa uppskattad kostnad
+STR_RAIL_TOOLBAR_TOOLTIP_BUILD_AUTORAIL                         :{BLACK}Bygg järnvägspår med Autospårläget. Ctrl+Klick för att ta bort järnvägspår. Håll även in Shift för att endast visa uppskattad kostnad
+STR_RAIL_TOOLBAR_TOOLTIP_BUILD_TRAIN_DEPOT_FOR_BUILDING         :{BLACK}Bygg tågdepå (för köp och service av tåg). Håll även in Shift för att endast visa uppskattad kostnad
+STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_TO_WAYPOINT               :{BLACK}Bygg riktmärke på räls. Ctrl+Klick för att välja ett annat riktmärke att sammanlänka. Håll även in Shift för att endast visa uppskattad kostnad
+STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_STATION                 :{BLACK}Bygg järnvägsstation. Ctrl+Klick för att välja en annan station att sammanlänka. Håll även in Shift för att endast visa uppskattad kostnad
+STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_SIGNALS                 :{BLACK}Bygg signal på järnväg. Ctrl+Klick för att bygga den alternativa signalstilen{}Klick+Drag för att fylla den valda rälssträckan med signaler med angivet mellanrum. Ctrl+Klick+Drag för att fylla ut med signaler fram till nästa korsning, station, eller signal. Håll även in Shift för att endast visa uppskattad kostnad
+STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_BRIDGE                  :{BLACK}Bygg järnvägsbro. Håll även in Shift för att endast visa uppskattad kostnad
+STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TUNNEL                  :{BLACK}Bygg järnvägstunnel. Håll även in Shift för att endast visa uppskattad kostnad
+STR_RAIL_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR                :{BLACK}Växla mellan att bygga/ta bort järnväg, signaler, riktmärken och stationer. Ctrl+Klick för att även ta bort räls från riktmärken och stationer
+STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL                           :{BLACK}Konvertera/Uppgradera spårtyp. Håll även in Shift för att endast visa uppskattad kostnad
 
 STR_RAIL_NAME_RAILROAD                                          :Järnväg
 STR_RAIL_NAME_ELRAIL                                            :Elektrifierad järnväg
@@ -2738,7 +2842,7 @@ STR_BUILD_SIGNAL_ELECTRIC_EXIT_TOOLTIP                          :{BLACK}Utfartss
 STR_BUILD_SIGNAL_ELECTRIC_COMBO_TOOLTIP                         :{BLACK}Kombinationssignal (elektrisk){}Kombinationssignalen fungerar som både en infarts- och utfartssignal. Detta gör det möjligt att bygga stora "träd" av för-signaler
 STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP                           :{BLACK}Avancerad signal (elektrisk){}En avancerad signal tillåter flera fordon att befinna sig i ett signalblock samtidigt, om fordonet kan reservera en väg till en säker stopp-plats. Avancerade signaler kan passeras bakifrån
 STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP                      :{BLACK}Avancerad envägssignal (elektrisk){}En avancerad signal tillåter flera fordon att befinna sig i ett signalblock samtidigt, om fordonet kan reservera en väg till en säker stopp-plats. Avancerade envägssignaler kan inte passeras bakifrån
-STR_BUILD_SIGNAL_CONVERT_TOOLTIP                                :{BLACK}Konvertera signal{}När den är markerad, klicka på en existerande signal för att konvertera den till vald signaltyp och -variant. Ctrl-klick ändrar den existerande varianten. Shift-klick visar beräknad konverteringskostnad
+STR_BUILD_SIGNAL_CONVERT_TOOLTIP                                :{BLACK}Konvertera signal{}Klicka på en existerande signal för att konvertera den till vald signaltyp och -variant. Ctrl-Klick för att ändra den existerande varianten. Shift-Klick visar beräknad konverteringskostnad
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}Avstånd mellan signaler
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}Minska avstånd mellan signaler
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_INCREASE_TOOLTIP          :{BLACK}Öka avstånd mellan signaler
@@ -2764,25 +2868,25 @@ STR_BRIDGE_TUBULAR_SILICON                                      :Rörbro, Kisel
 # Road construction toolbar
 STR_ROAD_TOOLBAR_ROAD_CONSTRUCTION_CAPTION                      :{WHITE}Bygg väg
 STR_ROAD_TOOLBAR_TRAM_CONSTRUCTION_CAPTION                      :{WHITE}Bygg spårväg
-STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_SECTION                     :{BLACK}Bygg väg. Ctrl växlar mellan att bygga/ta bort vägkonstruktion. Shift växlar mellan att bygga/visa beräknad kostnad
-STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAMWAY_SECTION                  :{BLACK}Bygg spårvägssektion. Ctrl växlar mellan att bygga/ta bort spårvagnssektion. Shift växlar mellan att bygga/visa beräknad kostnad
-STR_ROAD_TOOLBAR_TOOLTIP_BUILD_AUTOROAD                         :{BLACK}Använd Automatvägläge för att bygga vägsektion. Ctrl växlar mellan att bygga/ta bort vägkonstruktion. Shift växlar mellan att bygga/visa beräknad kostnad
-STR_ROAD_TOOLBAR_TOOLTIP_BUILD_AUTOTRAM                         :{BLACK}Använd Automatspårläge för att bygga spårväg. Ctrl växlar mellan bygg/ta bort spårväg. Shift växlar mellan att bygga/visa beräknad kostnad
-STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_VEHICLE_DEPOT               :{BLACK}Bygg vägfordonsdepå (för konstruktion och service av vägfordon). Shift växlar mellan att bygga/visa beräknad kostnad
-STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAM_VEHICLE_DEPOT               :{BLACK}Bygg spårvagnsdepå (för konstruktion och service av fordon). Shift växlar mellan att bygga/visa beräknad kostnad
-STR_ROAD_TOOLBAR_TOOLTIP_BUILD_BUS_STATION                      :{BLACK}Bygg busshållplats. Ctrl aktiverar sammansättning av stationer. Shift växlar mellan att bygga/visa beräknad kostnad
-STR_ROAD_TOOLBAR_TOOLTIP_BUILD_PASSENGER_TRAM_STATION           :{BLACK}Bygg passagerarspårvagnsstation. Ctrl aktiverar sammansättning av stationer. Shift växlar mellan att bygga/visa beräknad kostnad
-STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRUCK_LOADING_BAY                :{BLACK}Bygg lastbrygga. Ctrl aktiverar sammansättning av stationer. Shift växlar mellan att bygga/visa beräknad kostnad
-STR_ROAD_TOOLBAR_TOOLTIP_BUILD_CARGO_TRAM_STATION               :{BLACK}Bygg godsspårvagnsstation. Ctrl aktiverar sammansättning av stationer. Shift växlar mellan att bygga/visa beräknad kostnad
+STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_SECTION                     :{BLACK}Bygg vägsektion. Ctrl+Klick för att ta bort vägsektion. Håll även in Shift för att endast visa uppskattad kostnad
+STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAMWAY_SECTION                  :{BLACK}Bygg spårvägssektion. Ctrl+Klick för att ta bort spårvägssektion. Håll även in Shift för att endast visa uppskattad kostnad
+STR_ROAD_TOOLBAR_TOOLTIP_BUILD_AUTOROAD                         :{BLACK}Bygg vägsektion med Autovägläget. Ctrl+Klick för att ta bort vägsektion. Håll även in Shift för att endast visa uppskattad kostnad
+STR_ROAD_TOOLBAR_TOOLTIP_BUILD_AUTOTRAM                         :{BLACK}Bygg spårvägssektion med Autospårvägläget. Ctrl+Klick för att ta bort spårvägssektion. Håll även in Shift för att endast visa uppskattad kostnad
+STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_VEHICLE_DEPOT               :{BLACK}Bygg vägfordonsdepå (för köp och service av fordon). Håll även in Shift för att endast visa uppskattad kostnad
+STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAM_VEHICLE_DEPOT               :{BLACK}Bygg spårvagnsdepå (för köp och service av fordon). Håll även in Shift för att endast visa uppskattad kostnad
+STR_ROAD_TOOLBAR_TOOLTIP_BUILD_BUS_STATION                      :{BLACK}Bygg busshållplats. Ctrl+Klick för att välja en annan station att sammanlänka. Håll även in Shift för att endast visa uppskattad kostnad
+STR_ROAD_TOOLBAR_TOOLTIP_BUILD_PASSENGER_TRAM_STATION           :{BLACK}Bygg passagerarspårvagnsstation. Ctrl+Klick för att välja en annan station att sammanlänka. Håll även in Shift för att endast visa uppskattad kostnad
+STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRUCK_LOADING_BAY                :{BLACK}Bygg laststation. Ctrl+Klick för att välja en annan station att sammanlänka. Håll även in Shift för att endast visa uppskattad kostnad
+STR_ROAD_TOOLBAR_TOOLTIP_BUILD_CARGO_TRAM_STATION               :{BLACK}Bygg godsspårvagnsstation. Ctrl+Klick för att välja en annan station att sammanlänka. Håll även in Shift för att endast visa uppskattad kostnad
 STR_ROAD_TOOLBAR_TOOLTIP_TOGGLE_ONE_WAY_ROAD                    :{BLACK}Aktivera/Inaktivera enkelriktade vägar
-STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_BRIDGE                      :{BLACK}Bygg vägbro. Shift växlar mellan att bygga/visa beräknad kostnad
-STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAMWAY_BRIDGE                   :{BLACK}Bygg spårvägsbro. Shift växlar mellan att bygga/visa beräknad kostnad
-STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_TUNNEL                      :{BLACK}Bygg vägtunnel. Shift växlar mellan att bygga/visa beräknad kostnad
-STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAMWAY_TUNNEL                   :{BLACK}Bygg spårvägstunnel. Shift växlar mellan att bygga/visa beräknad kostnad
+STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_BRIDGE                      :{BLACK}Bygg vägbro. Håll även in Shift för att endast visa uppskattad kostnad
+STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAMWAY_BRIDGE                   :{BLACK}Bygg spårvägsbro. Håll även in Shift för att endast visa uppskattad kostnad
+STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_TUNNEL                      :{BLACK}Bygg vägtunnel. Håll även in Shift för att endast visa uppskattad kostnad
+STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAMWAY_TUNNEL                   :{BLACK}Bygg spårvägstunnel. Håll även in Shift för att endast visa uppskattad kostnad
 STR_ROAD_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR_ROAD           :{BLACK}Växla mellan att bygga/riva väg
 STR_ROAD_TOOLBAR_TOOLTIP_TOGGLE_BUILD_REMOVE_FOR_TRAMWAYS       :{BLACK}Växla mellan att bygga/riva spårväg
-STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_ROAD                           :{BLACK}Konvertera/Uppgradera vägtyp. Shift växlar mellan att bygga/visa beräknad kostnad
-STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_TRAM                           :{BLACK}Konvertera/Uppgradera spårvagnstyp. Shift växlar mellan att bygga/visa beräknad kostnad
+STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_ROAD                           :{BLACK}Konvertera/Uppgradera vägtyp. Håll även in Shift för att endast visa uppskattad kostnad
+STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_TRAM                           :{BLACK}Konvertera/Uppgradera spårvagnstyp. Håll även in Shift för att endast visa uppskattad kostnad
 
 STR_ROAD_NAME_ROAD                                              :Väg
 STR_ROAD_NAME_TRAM                                              :Spårväg
@@ -2797,7 +2901,7 @@ STR_BUILD_DEPOT_TRAM_ORIENTATION_SELECT_TOOLTIP                 :{BLACK}Välj ri
 STR_STATION_BUILD_BUS_ORIENTATION                               :{WHITE}Riktining för busshållplats
 STR_STATION_BUILD_BUS_ORIENTATION_TOOLTIP                       :{BLACK}Välj riktning för busshållplats
 STR_STATION_BUILD_TRUCK_ORIENTATION                             :{WHITE}Riktning för lastbrygga
-STR_STATION_BUILD_TRUCK_ORIENTATION_TOOLTIP                     :{BLACK}Välj riktning för lastbrygga
+STR_STATION_BUILD_TRUCK_ORIENTATION_TOOLTIP                     :{BLACK}Välj riktning för laststation
 STR_STATION_BUILD_PASSENGER_TRAM_ORIENTATION                    :{WHITE}Riktning för passagerarspårvagnsstation
 STR_STATION_BUILD_PASSENGER_TRAM_ORIENTATION_TOOLTIP            :{BLACK}Välj riktning för passagerarspårvagnsstation
 STR_STATION_BUILD_CARGO_TRAM_ORIENTATION                        :{WHITE}Riktning för godspårvagnsstation
@@ -2806,14 +2910,14 @@ STR_STATION_BUILD_CARGO_TRAM_ORIENTATION_TOOLTIP                :{BLACK}Välj ri
 # Waterways toolbar (last two for SE only)
 STR_WATERWAYS_TOOLBAR_CAPTION                                   :{WHITE}Farledskonstruktion
 STR_WATERWAYS_TOOLBAR_CAPTION_SE                                :{WHITE}Farled
-STR_WATERWAYS_TOOLBAR_BUILD_CANALS_TOOLTIP                      :{BLACK}Bygg kanaler. Shift växlar mellan att bygga/beräkna kostnad
-STR_WATERWAYS_TOOLBAR_BUILD_LOCKS_TOOLTIP                       :{BLACK}Bygg slussar. Shift växlar mellan att bygga/visa beräknad kostnad
-STR_WATERWAYS_TOOLBAR_BUILD_DEPOT_TOOLTIP                       :{BLACK}Bygg skeppsvarv (för byggnad och service av skepp). Shift växlar mellan att bygga/visa beräknad kostnad
-STR_WATERWAYS_TOOLBAR_BUILD_DOCK_TOOLTIP                        :{BLACK}Bygg hamn. Ctrl aktiverar sammansättning av stationer. Shift växlar mellan att bygga/visa beräknad kostnad
-STR_WATERWAYS_TOOLBAR_BUOY_TOOLTIP                              :{BLACK}Placera en boj som kan som kan användas som riktmärke. Shift växlar mellan att bygga/visa beräknad kostnad
-STR_WATERWAYS_TOOLBAR_BUILD_AQUEDUCT_TOOLTIP                    :{BLACK}Bygg akvedukt. Shift växlar mellan att bygga/visa beräknad kostnad
-STR_WATERWAYS_TOOLBAR_CREATE_LAKE_TOOLTIP                       :{BLACK}Definiera vattenyta.{}Skapa en kanal, såvida inte Ctrl är nedtryckt vid havsnivå, då den istället kommer att översvämma närliggande områden
-STR_WATERWAYS_TOOLBAR_CREATE_RIVER_TOOLTIP                      :{BLACK}Placera flod. Ctrl markerar ytan diagonalt
+STR_WATERWAYS_TOOLBAR_BUILD_CANALS_TOOLTIP                      :{BLACK}Bygg kanaler. Håll även in Shift för att endast visa uppskattad kostnad
+STR_WATERWAYS_TOOLBAR_BUILD_LOCKS_TOOLTIP                       :{BLACK}Bygg slussar. Håll även in Shift för att endast visa uppskattad kostnad
+STR_WATERWAYS_TOOLBAR_BUILD_DEPOT_TOOLTIP                       :{BLACK}Bygg skeppsvarv (för köp och service av skepp). Håll även in Shift för att endast visa uppskattad kostnad
+STR_WATERWAYS_TOOLBAR_BUILD_DOCK_TOOLTIP                        :{BLACK}Bygg hamn. Ctrl+Klick för att välja en annan station att sammanlänka. Håll även in Shift för att endast visa uppskattad kostnad
+STR_WATERWAYS_TOOLBAR_BUOY_TOOLTIP                              :{BLACK}Placera en boj som kan som kan användas som riktmärke. Håll även in Shift för att endast visa uppskattad kostnad
+STR_WATERWAYS_TOOLBAR_BUILD_AQUEDUCT_TOOLTIP                    :{BLACK}Bygg akvedukt. Håll även in Shift för att endast visa uppskattad kostnad
+STR_WATERWAYS_TOOLBAR_CREATE_LAKE_TOOLTIP                       :{BLACK}Bygg en kanal. Ctrl+Klick vid havsnivå för att istället översvämma med havsvatten
+STR_WATERWAYS_TOOLBAR_CREATE_RIVER_TOOLTIP                      :{BLACK}Placera flod. Ctrl+Klick för att markera diagonalt
 
 # Ship depot construction window
 STR_DEPOT_BUILD_SHIP_CAPTION                                    :{WHITE}Riktning för skeppsvarv
@@ -2824,7 +2928,7 @@ STR_STATION_BUILD_DOCK_CAPTION                                  :{WHITE}Hamn
 
 # Airport toolbar
 STR_TOOLBAR_AIRCRAFT_CAPTION                                    :{WHITE}Flygplatser
-STR_TOOLBAR_AIRCRAFT_BUILD_AIRPORT_TOOLTIP                      :{BLACK}Bygg flygplats. Ctrl aktiverar sammansättning av stationer. Shift växlar mellan att bygga/visa beräknad kostnad
+STR_TOOLBAR_AIRCRAFT_BUILD_AIRPORT_TOOLTIP                      :{BLACK}Bygg flygplats. Ctrl+Klick för att välja en annan station att sammanlänka. Håll även in Shift för att endast visa uppskattad kostnad
 
 # Airport construction window
 STR_STATION_BUILD_AIRPORT_CAPTION                               :{WHITE}Val av flygplats
@@ -2851,14 +2955,14 @@ STR_STATION_BUILD_NOISE                                         :{BLACK}Generera
 
 # Landscaping toolbar
 STR_LANDSCAPING_TOOLBAR                                         :{WHITE}Landskapsplanering
-STR_LANDSCAPING_TOOLTIP_LOWER_A_CORNER_OF_LAND                  :{BLACK}Sänk ett hörn av marken. Vid dragning kommer hörnet och vald yta att sänkas ner till hörnets nya höjd. Ctrl väljer ytan diagonalt. Shift växlar mellan att sänka/visa beräknad kostnad
-STR_LANDSCAPING_TOOLTIP_RAISE_A_CORNER_OF_LAND                  :{BLACK}Höj ett hörn av marken. Vid dragning kommer hörnet och vald yta att höjas upp till hörnets nya höjd. Ctrl väljer ytan diagonalt. Shift växlar mellan att höja/visa beräknad kostnad
-STR_LANDSCAPING_LEVEL_LAND_TOOLTIP                              :{BLACK}Utjämna land till höjden av det först valda hörnet. Ctrl väljer ytan diagonalt. Shift växlar mellan att utjämna/visa beräknad kostnad
-STR_LANDSCAPING_TOOLTIP_PURCHASE_LAND                           :{BLACK}Köp mark för framtida användning. Ctrl väljer ytan diagonalt. Shift växlar mellan att köpa mark/visa beräknad kostnad
+STR_LANDSCAPING_TOOLTIP_LOWER_A_CORNER_OF_LAND                  :{BLACK}Sänk ett hörn av marken. Klick+Drag för att sänka det förstvalda hörnet och utjämna vald yta till det nya hörnets höjd. Ctrl+Klick+Drag för att välja ytan diagonalt. Håll även in Shift för att endast visa uppskattad kostnad
+STR_LANDSCAPING_TOOLTIP_RAISE_A_CORNER_OF_LAND                  :{BLACK}Höj ett hörn av marken. Klick+Drag för att höja det förstvalda hörnet och utjämna vald yta till det nya hörnets höjd. Ctrl+Klick+Drag för att välja ytan diagonalt. Håll även in Shift för att endast visa uppskattad kostnad
+STR_LANDSCAPING_LEVEL_LAND_TOOLTIP                              :{BLACK}Utjämna ett markområde till höjden av det förstvalda hörnet. Ctrl+Klick+Drag för att välja ytan diagonalt. Håll även in Shift för att endast visa uppskattad kostnad
+STR_LANDSCAPING_TOOLTIP_PURCHASE_LAND                           :{BLACK}Köp mark för framtida användning. Ctrl+Klick+Drag för att välja ytan diagonalt. Håll även in Shift för att endast visa uppskattad kostnad
 
 # Object construction window
 STR_OBJECT_BUILD_CAPTION                                        :{WHITE}Val av objekt
-STR_OBJECT_BUILD_TOOLTIP                                        :{BLACK}Välj objekt att bygga. Ctrl väljer ytan diagonalt. Shift växlar mellan att bygga/visa beräknad kostnad
+STR_OBJECT_BUILD_TOOLTIP                                        :{BLACK}Välj objekt att bygga. Ctrl+Klick+Drag för att välja ytan diagonalt. Håll även in Shift för att endast visa uppskattad kostnad
 STR_OBJECT_BUILD_CLASS_TOOLTIP                                  :{BLACK}Välj typ av objekt att bygga
 STR_OBJECT_BUILD_PREVIEW_TOOLTIP                                :{BLACK}Förhandsvisning av objektet
 STR_OBJECT_BUILD_SIZE                                           :{BLACK}Storlek: {GOLD}{NUM} x {NUM} rutor
@@ -2870,7 +2974,7 @@ STR_OBJECT_CLASS_TRNS                                           :Sändare
 STR_PLANT_TREE_CAPTION                                          :{WHITE}Träd
 STR_PLANT_TREE_TOOLTIP                                          :{BLACK}Välj trädtyp att plantera. Om rutan redan har ett träd, kommer ytterliggare träd att vara av slumpmässig typ oberoende av vilken trädtyp som valts
 STR_TREES_RANDOM_TYPE                                           :{BLACK}Träd av slumpvald typ
-STR_TREES_RANDOM_TYPE_TOOLTIP                                   :{BLACK}Placera träd av slumpvald typ. Ctrl väljer ytan diagonalt. Shift växlar mellan att placera träd/visa beräknad kostnad
+STR_TREES_RANDOM_TYPE_TOOLTIP                                   :{BLACK}Placera träd av slumpvald typ. Ctrl+Klick+Drag för att välja ytan diagonalt. Håll även in Shift för att endast visa uppskattad kostnad
 STR_TREES_RANDOM_TREES_BUTTON                                   :{BLACK}Slumpmässigt träd
 STR_TREES_RANDOM_TREES_TOOLTIP                                  :{BLACK}Plantera träd slumpmässigt över landskapet
 STR_TREES_MODE_NORMAL_BUTTON                                    :{BLACK}Normal
@@ -2883,7 +2987,7 @@ STR_TREES_MODE_FOREST_LG_TOOLTIP                                :{BLACK}Plantera
 # Land generation window (SE)
 STR_TERRAFORM_TOOLBAR_LAND_GENERATION_CAPTION                   :{WHITE}Skapa mark
 STR_TERRAFORM_TOOLTIP_PLACE_ROCKY_AREAS_ON_LANDSCAPE            :{BLACK}Placera stenar i landskapet
-STR_TERRAFORM_TOOLTIP_DEFINE_DESERT_AREA                        :{BLACK}Definiera ökenområde.{}Tryck och håll Ctrl för att ta bort
+STR_TERRAFORM_TOOLTIP_DEFINE_DESERT_AREA                        :{BLACK}Definiera ökenområde.{}Ctrl+Klick för att ta bort ökenområde
 STR_TERRAFORM_TOOLTIP_INCREASE_SIZE_OF_LAND_AREA                :{BLACK}Öka storlek på ytan som ska höjas/sänkas
 STR_TERRAFORM_TOOLTIP_DECREASE_SIZE_OF_LAND_AREA                :{BLACK}Minska storlek på ytan som ska höjas/sänkas
 STR_TERRAFORM_TOOLTIP_GENERATE_RANDOM_LAND                      :{BLACK}Generera slumpmässig mark
@@ -2897,7 +3001,7 @@ STR_RESET_LANDSCAPE_CONFIRMATION_TEXT                           :{WHITE}Är du s
 # Town generation window (SE)
 STR_FOUND_TOWN_CAPTION                                          :{WHITE}Generera städer
 STR_FOUND_TOWN_NEW_TOWN_BUTTON                                  :{BLACK}Ny stad
-STR_FOUND_TOWN_NEW_TOWN_TOOLTIP                                 :{BLACK}Grunda ny stad. Shift+klick visar endast beräknad kostnad
+STR_FOUND_TOWN_NEW_TOWN_TOOLTIP                                 :{BLACK}Grunda ny stad. Håll även in Shift för att endast visa uppskattad kostnad
 STR_FOUND_TOWN_RANDOM_TOWN_BUTTON                               :{BLACK}Slumpmässig stad
 STR_FOUND_TOWN_RANDOM_TOWN_TOOLTIP                              :{BLACK}Grunda stad på slumpmässig plats
 STR_FOUND_TOWN_MANY_RANDOM_TOWNS                                :{BLACK}Många slumpmässiga städer
@@ -2963,7 +3067,7 @@ STR_INDUSTRY_CARGOES_SELECT_INDUSTRY_TOOLTIP                    :{BLACK}Välj de
 
 # Land area window
 STR_LAND_AREA_INFORMATION_CAPTION                               :{WHITE}Markområdesinformation
-STR_LAND_AREA_INFORMATION_LOCATION_TOOLTIP                      :{BLACK}Centrera huvudvyn på rutans läge. Ctrl+klick öppnar en ny vy över rutans läge
+STR_LAND_AREA_INFORMATION_LOCATION_TOOLTIP                      :{BLACK}Centrera huvudvyn på rutans läge. Ctrl+Klick för att öppna en ny fönstervy över rutans läge
 STR_LAND_AREA_INFORMATION_COST_TO_CLEAR_N_A                     :{BLACK}Kostnad att röja: {LTBLUE}N/A
 STR_LAND_AREA_INFORMATION_COST_TO_CLEAR                         :{BLACK}Kostnad att röja: {RED}{CURRENCY_LONG}
 STR_LAND_AREA_INFORMATION_REVENUE_WHEN_CLEARED                  :{BLACK}Inkomst vid rensning: {LTBLUE}{CURRENCY_LONG}
@@ -2975,7 +3079,7 @@ STR_LAND_AREA_INFORMATION_RAIL_OWNER                            :{BLACK}Järnvä
 STR_LAND_AREA_INFORMATION_LOCAL_AUTHORITY                       :{BLACK}Lokala myndigheter: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_LOCAL_AUTHORITY_NONE                  :Ingen
 STR_LAND_AREA_INFORMATION_LANDINFO_COORDS                       :{BLACK}Koordinater: {LTBLUE}{NUM} x {NUM} x {NUM} ({STRING})
-STR_LAND_AREA_INFORMATION_BUILD_DATE                            :{BLACK}Byggt: {LTBLUE}{DATE_LONG}
+STR_LAND_AREA_INFORMATION_BUILD_DATE                            :{BLACK}Byggd/renoverad: {LTBLUE}{DATE_LONG}
 STR_LAND_AREA_INFORMATION_STATION_CLASS                         :{BLACK}Stationsklass: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_STATION_TYPE                          :{BLACK}Stationstyp: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_AIRPORT_CLASS                         :{BLACK}Flygplatsklass: {LTBLUE}{STRING}
@@ -3041,7 +3145,7 @@ STR_LAI_TREE_NAME_CACTUS_PLANTS                                 :Kaktusplantor
 STR_LAI_STATION_DESCRIPTION_RAILROAD_STATION                    :Järnvägsstation
 STR_LAI_STATION_DESCRIPTION_AIRCRAFT_HANGAR                     :Flygplanshangar
 STR_LAI_STATION_DESCRIPTION_AIRPORT                             :Flygplats
-STR_LAI_STATION_DESCRIPTION_TRUCK_LOADING_AREA                  :Lastbrygga
+STR_LAI_STATION_DESCRIPTION_TRUCK_LOADING_AREA                  :Laststation
 STR_LAI_STATION_DESCRIPTION_BUS_STATION                         :Busshållplats
 STR_LAI_STATION_DESCRIPTION_SHIP_DOCK                           :Hamn
 STR_LAI_STATION_DESCRIPTION_BUOY                                :Boj
@@ -3182,11 +3286,15 @@ STR_MAPGEN_MAPSIZE                                              :{BLACK}Kartstor
 STR_MAPGEN_MAPSIZE_TOOLTIP                                      :{BLACK}Ange kartans storlek i rutor. Antalet tillgängliga rutor kommer att bli något lägre
 STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Antal städer:
+STR_MAPGEN_NUMBER_OF_TOWNS_TOOLTIP                              :{BLACK}Välj densiteten av städer, eller ett valfritt antal
 STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Stadsnamn:
 STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Välj typ av stadsnamn
 STR_MAPGEN_DATE                                                 :{BLACK}Datum:
+STR_MAPGEN_DATE_TOOLTIP                                         :{BLACK}Välj startdatum
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Antal industrier:
+STR_MAPGEN_NUMBER_OF_INDUSTRIES_TOOLTIP                         :{BLACK}Välj densiteten av industrier, eller ett valfritt antal
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Högsta höjdpunkt:
+STR_MAPGEN_HEIGHTMAP_HEIGHT_TOOLTIP                             :{BLACK}Välj den högsta toppen som spelet kommer försöka skapa, mätt som höjd över havsnivån
 STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}Öka högsta höjd punkten på kartan med en
 STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}Minska maximal höjd på högsta topp med en
 STR_MAPGEN_SNOW_COVERAGE                                        :{BLACK}Snötäckning:
@@ -3199,16 +3307,18 @@ STR_MAPGEN_DESERT_COVERAGE_DOWN                                 :{BLACK}Minska �
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
 STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Terrängtyp:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Havsnivå
+STR_MAPGEN_SEA_LEVEL_TOOLTIP                                    :{BLACK}Välj havsnivån
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Flod:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Jämnhet:
 STR_MAPGEN_VARIETY                                              :{BLACK}Varierad distribution:
 STR_MAPGEN_GENERATE                                             :{WHITE}Generera
+STR_MAPGEN_GENERATE_TOOLTIP                                     :{BLACK}Skapa världen och spela OpenTTD!
 STR_MAPGEN_NEWGRF_SETTINGS                                      :{BLACK}NewGRF-inställningar
-STR_MAPGEN_NEWGRF_SETTINGS_TOOLTIP                              :{BLACK}Visa inställningar för NewGRF
+STR_MAPGEN_NEWGRF_SETTINGS_TOOLTIP                              :{BLACK}Öppna inställningar för NewGRF
 STR_MAPGEN_AI_SETTINGS                                          :{BLACK}Inställningar för AI
-STR_MAPGEN_AI_SETTINGS_TOOLTIP                                  :{BLACK}Visa inställningar för AI
+STR_MAPGEN_AI_SETTINGS_TOOLTIP                                  :{BLACK}Öppna inställningar för AI
 STR_MAPGEN_GS_SETTINGS                                          :{BLACK}Inställningar för spelskript
-STR_MAPGEN_GS_SETTINGS_TOOLTIP                                  :{BLACK}Visa inställningar för spelskript
+STR_MAPGEN_GS_SETTINGS_TOOLTIP                                  :{BLACK}Öppna inställningar för spelskript
 
 ###length 21
 STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH                           :Engelska (Original)
@@ -3235,6 +3345,7 @@ STR_MAPGEN_TOWN_NAME_CATALAN                                    :Katalanska
 
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_TYPE                                          :{BLACK}Kartgränser:
+STR_MAPGEN_BORDER_TYPE_TOOLTIP                                  :{BLACK}Välj ramar för spelvärlden
 STR_MAPGEN_NORTHWEST                                            :{BLACK}Nordväst
 STR_MAPGEN_NORTHEAST                                            :{BLACK}Nordost
 STR_MAPGEN_SOUTHEAST                                            :{BLACK}Sydost
@@ -3247,7 +3358,9 @@ STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Manuella
 
 STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Höjdkartans rotation:
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Namn på höjdkarta:
+STR_MAPGEN_HEIGHTMAP_NAME_TOOLTIP                               :{BLACK}Namnet på höjdkartans bildfil
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Storlek:
+STR_MAPGEN_HEIGHTMAP_SIZE_LABEL_TOOLTIP                         :{BLACK}Storleken på höjdkartans ursprungsbild. För bästa resultat, bör varje kant stämma överens med en av de tillgängliga kantlängderna för kartor i OpenTTD, såsom 256, 512, 1024, etc.
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
 STR_MAPGEN_TERRAIN_TYPE_QUERY_CAPT                              :{WHITE}Måltopp höjd
@@ -3262,6 +3375,7 @@ STR_SE_MAPGEN_FLAT_WORLD                                        :{WHITE}Plant la
 STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}Generera ett plant land
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}Slumpat land
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}Höjd av platt land:
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_TOOLTIP                         :{BLACK}Välj landshöjden över havsnivå
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}Sänk höjden av platt land ett ner
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}Öka höjden av platt land ett steg
 
@@ -3348,6 +3462,7 @@ STR_SAVE_PRESET_SAVE                                            :{BLACK}Spara
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Spara den inställda till den nuvarande valda namnet
 
 # NewGRF parameters window
+STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Ändra parametrar för standardgrafiken
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Ändra NewGRF-parametrar
 STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Stäng
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Återställ
@@ -3364,6 +3479,7 @@ STR_NEWGRF_INSPECT_PARENT_TOOLTIP                               :{BLACK}Inspekte
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT                            :{STRING} vid {HEX}
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_OBJECT                     :Objekt
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :Spårtyp
+STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Vägtyp
 
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}NewGRF variabel 60+x parameter (hexadecimal)
 
@@ -3478,7 +3594,7 @@ STR_SIGN_LIST_MATCH_CASE_TOOLTIP                                :{BLACK}Slå på
 
 # Sign window
 STR_EDIT_SIGN_CAPTION                                           :{WHITE}Ändra skylttext
-STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Centrera huvudvyn på skyltens läge Ctrl+klick öppnar en ny vy över skyltens läge
+STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Centrera huvudvyn på skyltens läge Ctrl+Klick för att öppna en ny fönstervy över skyltens läge
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Åk till nästa skylt
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Åk till föregående skylt
 
@@ -3489,7 +3605,7 @@ STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Städer
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- Inga -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
 STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (Stad){BLACK} ({COMMA})
-STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Stadsnamn - klicka på ett namn för att centrera huvudvyn på staden. Ctrl+klick öppnar en ny vy över stadens läge
+STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Stadsnamn - klicka på ett namn för att centrera huvudvyn på staden. Ctrl+Klick för att öppna en ny fönstervy över stadens läge
 STR_TOWN_POPULATION                                             :{BLACK}Global folkmängd: {COMMA}
 
 # Town view window
@@ -3497,17 +3613,18 @@ STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_TOWN_VIEW_CITY_CAPTION                                      :{WHITE}{TOWN} (Stad)
 STR_TOWN_VIEW_POPULATION_HOUSES                                 :{BLACK}Invånare: {ORANGE}{COMMA}{BLACK}  Hus: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX                              :{BLACK}{CARGO_LIST} förra månaden: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
+STR_TOWN_VIEW_CARGO_LAST_MINUTE_MAX                             :{BLACK}{CARGO_LIST} förra minuten: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH                              :{BLACK}Fraktgods behövs för ortens tillväxt:
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING}{RED} krävs
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING}{BLACK} krävs under vintern
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED_GENERAL            :{ORANGE}{STRING}{GREEN} levererat
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED                     :{ORANGE}{CARGO_TINY} / {CARGO_LONG}{RED} (återstår)
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED                    :{ORANGE}{CARGO_TINY} / {CARGO_LONG}{GREEN} (levererat)
-STR_TOWN_VIEW_TOWN_GROWS_EVERY                                  :{BLACK}Orten växer var {ORANGE}{COMMA}{BLACK}{NBSP}dag
-STR_TOWN_VIEW_TOWN_GROWS_EVERY_FUNDED                           :{BLACK}Orten växer var {ORANGE}{COMMA}{BLACK}{NBSP}dag (bekostad tillväxt)
+STR_TOWN_VIEW_TOWN_GROWS_EVERY                                  :{BLACK}Staden växer var {ORANGE}{UNITS_DAYS_OR_SECONDS}
+STR_TOWN_VIEW_TOWN_GROWS_EVERY_FUNDED                           :{BLACK}Staden växer var {ORANGE}{UNITS_DAYS_OR_SECONDS} (funded)
 STR_TOWN_VIEW_TOWN_GROW_STOPPED                                 :{BLACK}Orten växer {RED}inte{BLACK}
 STR_TOWN_VIEW_NOISE_IN_TOWN                                     :{BLACK}Bullernivågräns i stad: {ORANGE}{COMMA}{BLACK}  max: {ORANGE}{COMMA}
-STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centrera huvudvyn på staden. Ctrl+klick öppnar en ny vy över stadens läge
+STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centrera huvudvyn på staden. Ctrl+Klick för att öppna en ny fönstervy över stadens läge
 STR_TOWN_VIEW_LOCAL_AUTHORITY_BUTTON                            :{BLACK}Lokala myndigheter
 STR_TOWN_VIEW_LOCAL_AUTHORITY_TOOLTIP                           :{BLACK}Visa information om de lokala myndigheterna
 STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}Byt namn på staden
@@ -3523,7 +3640,7 @@ STR_TOWN_VIEW_RENAME_TOWN_BUTTON                                :Byt namn på st
 STR_LOCAL_AUTHORITY_CAPTION                                     :{WHITE}{TOWN} lokala myndigheter
 STR_LOCAL_AUTHORITY_ZONE                                        :{BLACK}Zon
 STR_LOCAL_AUTHORITY_ZONE_TOOLTIP                                :{BLACK}Visa zonen som ryms inom de lokala myndigheternas gränser
-STR_LOCAL_AUTHORITY_COMPANY_RATINGS                             :{BLACK}Transportföretags värderingar:
+STR_LOCAL_AUTHORITY_COMPANY_RATINGS                             :{BLACK}Transportföretagsgraderingar:
 STR_LOCAL_AUTHORITY_COMPANY_RATING                              :{YELLOW}{COMPANY} {COMPANY_NUM}: {ORANGE}{STRING}
 STR_LOCAL_AUTHORITY_ACTIONS_TITLE                               :{BLACK}Tillgängliga åtgärder:
 STR_LOCAL_AUTHORITY_ACTIONS_TOOLTIP                             :{BLACK}Lista av åtgärder att utföra i staden - klicka på en rad för ytterligare detaljer
@@ -3539,15 +3656,17 @@ STR_LOCAL_AUTHORITY_ACTION_STATUE_OF_COMPANY                    :Bygg staty öve
 STR_LOCAL_AUTHORITY_ACTION_NEW_BUILDINGS                        :Bekosta nya byggnader
 STR_LOCAL_AUTHORITY_ACTION_EXCLUSIVE_TRANSPORT                  :Köp exklusiva transporträttigheter
 STR_LOCAL_AUTHORITY_ACTION_BRIBE                                :Muta de lokala myndigheterna
+###next-name-looks-similar
 
-###length 8
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING            :{PUSH_COLOUR}{YELLOW}Starta en liten lokal reklamkampanj för att attrahera fler passagerare och mer gods till dina tranporttjänster.{}Ger en temporär boost till stationers betyg i en liten radie runt stadens centrum.{}{POP_COLOUR}Kostnad: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING           :{PUSH_COLOUR}{YELLOW}Starta en medelstor lokal reklamkampanj, för att attrahera fler passagerare och mer gods till dina tranporttjänster.{}Ger en temporär boost till stationers betyg i en medelstor radie runt stadens centrum.{}{POP_COLOUR}Kostnad: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{PUSH_COLOUR}{YELLOW}Starta en stor lokal reklamkampanj, för att attrahera fler passagerare och mer gods till dina transporttjänster.{}Ger en temporär boost till stationers betyg i en stor radie runt stadens centrum.{}{POP_COLOUR}Kostnad: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION          :{PUSH_COLOUR}{YELLOW}Bekosta ombyggnad av stadens vägnätverk.{}Orsakar ansenliga störningar för vägtrafik i upp till 6 månader.{}{POP_COLOUR}Kostnad: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION_MONTHS   :{PUSH_COLOUR}{YELLOW}Finansiera rekonstruktionen av stadsvägnätet.{}Orsakar omfattande störningar i vägtrafiken i upp till 6 månader.{}{POP_COLOUR}Kostnad: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION_MINUTES  :{PUSH_COLOUR}{YELLOW}Finansiera rekonstruktionen av stadsvägnätet.{}Orsakar omfattande störningar i vägtrafiken i upp till 6 minuter.{}{POP_COLOUR}Kostnad: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{PUSH_COLOUR}{YELLOW}Bygg en staty till ditt företags ära.{}Ger en permanent boost till stationers betyg i staden.{}{POP_COLOUR}Cost: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{PUSH_COLOUR}{YELLOW}Bekosta konstruktion av nya byggnader i staden.{}Ger en temporär boost till stadens tillväxt.{}{POP_COLOUR}Kostnad: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{PUSH_COLOUR}{YELLOW}Köp 1 års exklusiva transporträttigheter i staden.{}De lokala myndigheterna kommer inte tillåta passagerare och gods att använda dina motståndares stationer. En framgångsrik muta från en motståndare gör att kontraktet bryts.{}{POP_COLOUR}Kostnad: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT_MONTHS   :{PUSH_COLOUR}{YELLOW}Köp ensamrätt på stadstransporter i 12 månader.{}Stadens myndigheter kommer inte tillåta att passengerare och gods använder dina motståndares stationer. En framgångsrik mutning från en motståndare avbryter detta kontrakt.{}{POP_COLOUR}Kostnad: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT_MINUTES  :{PUSH_COLOUR}{YELLOW}Köp ensamrätt på stadstransporter i 12 minuter.{}Stadens myndigheter kommer inte tillåta att passengerare och gods använder dina motståndares stationer. En framgångsrik mutning från en motståndare avbryter detta kontrakt.{}{POP_COLOUR}Kostnad: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{PUSH_COLOUR}{YELLOW} Muta de lokala myndigheterna för att öka din värdering och återkalla en motståndares exklusiva transporträttigheter, med risk för att få höga böter om du blir upptäckt.{}{POP_COLOUR}Kostnad: {CURRENCY_LONG}
 
 # Goal window
@@ -3562,7 +3681,7 @@ STR_GOALS_TEXT                                                  :{ORANGE}{STRING
 STR_GOALS_NONE                                                  :{ORANGE}- Inga -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
 STR_GOALS_PROGRESS_COMPLETE                                     :{GREEN}{STRING}
-STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Klicka på målet för att centrera huvudvyn på industrin/byn/rutan. Ctrl+klick gör så att ett nytt vyfönster öppnas över platsen för industrin/byn/rutan
+STR_GOALS_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                    :{BLACK}Klicka på målet för att centrera huvudvyn på industrin/byn/rutan. Ctrl+Klick för att öppna en ny fönstervy över industrin/byn/rutan
 
 # Goal question window
 STR_GOAL_QUESTION_CAPTION_QUESTION                              :{BLACK}Fråga
@@ -3594,11 +3713,15 @@ STR_GOAL_QUESTION_BUTTON_CLOSE                                  :Stäng
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}Subventioner
 STR_SUBSIDIES_OFFERED_TITLE                                     :{BLACK}Aktuella subventioner:
-STR_SUBSIDIES_OFFERED_FROM_TO                                   :{ORANGE}{STRING} från {STRING} till {STRING}{YELLOW} (tills {DATE_SHORT})
+STR_SUBSIDIES_OFFERED_FROM_TO                                   :{ORANGE}{STRING} från {STRING} till {STRING}{YELLOW} ({STRING})
 STR_SUBSIDIES_NONE                                              :{ORANGE}- Inga -
 STR_SUBSIDIES_SUBSIDISED_TITLE                                  :{BLACK}Redan subventionerade rutter:
-STR_SUBSIDIES_SUBSIDISED_FROM_TO                                :{ORANGE}{STRING} från {STRING} till {STRING}{YELLOW} ({COMPANY}{YELLOW}, tills {DATE_SHORT})
-STR_SUBSIDIES_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                :{BLACK}Klicka för att centrera huvudvyn ovanför industrin/staden. Ctrl+klick öppnar en ny vy över industrin/stadens läge
+STR_SUBSIDIES_SUBSIDISED_FROM_TO                                :{ORANGE}{STRING} från {STRING} till {STRING}{YELLOW} ({COMPANY}{YELLOW}, {STRING})
+STR_SUBSIDIES_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                :{BLACK}Klicka på service för att centrera huvudvyn på industrin/staden. Ctrl+Klick för att öppna en ny fönstervy över industrins/stadens läge
+STR_SUBSIDIES_OFFERED_EXPIRY_DATE                               :per den {DATE_SHORT}
+STR_SUBSIDIES_OFFERED_EXPIRY_TIME                               :inom {UNITS_MONTHS_OR_MINUTES}
+STR_SUBSIDIES_SUBSIDISED_EXPIRY_DATE                            :tills {DATE_SHORT}
+STR_SUBSIDIES_SUBSIDISED_EXPIRY_TIME                            :{UNITS_MONTHS_OR_MINUTES} återstår
 
 # Story book window
 STR_STORY_BOOK_CAPTION                                          :{WHITE}{COMPANY} berättelsebok
@@ -3614,15 +3737,20 @@ STR_STORY_BOOK_NEXT_PAGE_TOOLTIP                                :{BLACK}Gå till
 STR_STORY_BOOK_INVALID_GOAL_REF                                 :{RED}Ogiltig målreferens
 
 # Station list window
-STR_STATION_LIST_TOOLTIP                                        :{BLACK}Stationsnamn - klicka på ett namn för att centrera huvudvyn på stationen. Ctrl+klick öppnar en ny vy över stationens läge
-STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}Håll nere Ctrl för att markera mer än en sak
+STR_STATION_LIST_TOOLTIP                                        :{BLACK}Stationsnamn - klicka på ett namn för att centrera huvudvyn på stationen. Ctrl+Klick för att öppna en ny fönstervy över stationens läge
+STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE                        :{BLACK}Ctrl+Klick för att markera flera objekt
 STR_STATION_LIST_CAPTION                                        :{WHITE}{COMPANY} - {COMMA} Station{P "" er}
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- Inga -
 STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}Markera alla inrättningar
-STR_STATION_LIST_SELECT_ALL_TYPES                               :{BLACK}Välj alla typer av last (inklusive icke väntande last)
-STR_STATION_LIST_NO_WAITING_CARGO                               :{BLACK}Ingen sorts last väntar
+STR_STATION_LIST_CARGO_FILTER_ALL_AND_NO_RATING                 :Alla godstyper och ingen värdering
+STR_STATION_LIST_CARGO_FILTER_MULTIPLE                          :Flera godstyper
+STR_STATION_LIST_CARGO_FILTER_NO_CARGO_TYPES                    :Inga godstyper
+STR_STATION_LIST_CARGO_FILTER_ONLY_NO_RATING                    :Endast utan godsvärdering
+STR_STATION_LIST_CARGO_FILTER_SELECT_ALL                        :Välj alla och ingen värdering
+STR_STATION_LIST_CARGO_FILTER_NO_RATING                         :Ingen godsvärdering
+STR_STATION_LIST_CARGO_FILTER_EXPAND                            :Visa mer...
 
 # Station view window
 STR_STATION_VIEW_CAPTION                                        :{WHITE}{STATION} {STATION_FEATURES}
@@ -3637,8 +3765,9 @@ STR_STATION_VIEW_EXCLUSIVE_RIGHTS_SELF                          :{BLACK}Den här
 STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPANY}{BLACK} har köpt exklusiva transporträttigheter i den här staden.
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Värderingar
-STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Visa stationens klassificering
-STR_STATION_VIEW_SUPPLY_RATINGS_TITLE                           :{BLACK}Månadsvis tillförsel av gods och lokal värdering:
+STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Visa stationens gradering
+STR_STATION_VIEW_SUPPLY_RATINGS_TITLE_MONTH                     :{BLACK}Resurser per månad och lokal gradering:
+STR_STATION_VIEW_SUPPLY_RATINGS_TITLE_MINUTE                    :{BLACK}Resurser per minut och lokal gradering:
 STR_STATION_VIEW_CARGO_SUPPLY_RATING                            :{WHITE}{STRING}: {YELLOW}{COMMA} / {STRING} ({COMMA}%)
 
 STR_STATION_VIEW_GROUP                                          :{BLACK}Gruppera med hänsyn till
@@ -3674,7 +3803,7 @@ STR_CARGO_RATING_VERY_GOOD                                      :Väldigt bra
 STR_CARGO_RATING_EXCELLENT                                      :Utmärkt
 STR_CARGO_RATING_OUTSTANDING                                    :Enastående
 
-STR_STATION_VIEW_CENTER_TOOLTIP                                 :{BLACK}Centrera huvudvyn på stationen. Ctrl+klick öppnar en ny vy över stationens läge
+STR_STATION_VIEW_CENTER_TOOLTIP                                 :{BLACK}Centrera huvudvyn på stationen. Ctrl+Klick öppnar en ny fönstervy över stationens läge
 STR_STATION_VIEW_RENAME_TOOLTIP                                 :{BLACK}Byt namn på stationen
 
 STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}Visa alla tåg där denna station finns med i rutten
@@ -3689,9 +3818,9 @@ STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Hindra f
 
 # Waypoint/buoy view window
 STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOINT}
-STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Centrera huvudvyn på riktmärket. Ctrl+klick öppnar en ny vy över riktmärkets läge
+STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Centrera huvudvyn på riktmärket. Ctrl+Klick för att öppna en ny fönstervy över riktmärkets läge
 STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Byt namn på riktmärke
-STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centrera huvudvyn på bojen. Ctrl+klick öppnar en ny vy över bojens läge
+STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centrera huvudvyn på bojen. Ctrl+Klick för att öppna en ny skärmvy över bojens läge
 STR_BUOY_VIEW_CHANGE_BUOY_NAME                                  :{BLACK}Ändra namn på boj
 
 STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Ändra namn på riktmärke
@@ -3699,10 +3828,12 @@ STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Ändra n
 # Finances window
 STR_FINANCES_CAPTION                                            :{WHITE}{COMPANY} Budget {BLACK}{COMPANY_NUM}
 STR_FINANCES_YEAR                                               :{WHITE}{NUM}
+STR_FINANCES_YEAR_CAPTION                                       :{WHITE}År
+STR_FINANCES_PERIOD_CAPTION                                     :{WHITE}Period
 
 ###length 3
 STR_FINANCES_REVENUE_TITLE                                      :{WHITE}Inkomst
-STR_FINANCES_OPERATING_EXPENSES_TITLE                           :{WHITE}Löpande kostnader
+STR_FINANCES_OPERATING_EXPENSES_TITLE                           :{WHITE}Driftkostnader
 STR_FINANCES_CAPITAL_EXPENSES_TITLE                             :{WHITE}Kapitalkostnader
 
 
@@ -3734,9 +3865,9 @@ STR_FINANCES_MAX_LOAN                                           :{WHITE}Maxlån:
 STR_FINANCES_TOTAL_CURRENCY                                     :{BLACK}{CURRENCY_LONG}
 STR_FINANCES_BANK_BALANCE                                       :{WHITE}{CURRENCY_LONG}
 STR_FINANCES_BORROW_BUTTON                                      :{BLACK}Låna {CURRENCY_LONG}
-STR_FINANCES_BORROW_TOOLTIP                                     :{BLACK}Öka lånets storlek. Ctrl+klick lånar så mycket som möjligt
+STR_FINANCES_BORROW_TOOLTIP                                     :{BLACK}Öka lånets storlek. Ctrl+Klick för att låna så mycket som möjligt
 STR_FINANCES_REPAY_BUTTON                                       :{BLACK}Återbetala {CURRENCY_LONG}
-STR_FINANCES_REPAY_TOOLTIP                                      :{BLACK}Återbetala en del av lånet. Ctrl+klick återbetalar så mycket som är möjligt
+STR_FINANCES_REPAY_TOOLTIP                                      :{BLACK}Återbetala en del av lånet. Ctrl+Klick för att återbetala så mycket som är möjligt
 STR_FINANCES_INFRASTRUCTURE_BUTTON                              :{BLACK}Infrastruktur
 
 # Company view
@@ -3765,7 +3896,7 @@ STR_COMPANY_VIEW_BUILD_HQ_TOOLTIP                               :{BLACK}Bygg fö
 STR_COMPANY_VIEW_VIEW_HQ_BUTTON                                 :{BLACK}Visa högkvarter
 STR_COMPANY_VIEW_VIEW_HQ_TOOLTIP                                :{BLACK}Vy av företagets huvudkontor
 STR_COMPANY_VIEW_RELOCATE_HQ                                    :{BLACK}Flytta högkvarter
-STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Flytta högkvarter till annan plats (kostar 1% av företagets värde). Shift+klick visar kostnad utan att flytta högkvarteret
+STR_COMPANY_VIEW_RELOCATE_COMPANY_HEADQUARTERS                  :{BLACK}Flytta högkvarter till annan plats för 1% av företagets värde. Håll även in Shift för att endast visa uppskattad kostnad
 STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Detaljer
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Visa detaljerat antal infrastruktur-element
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Ge pengar
@@ -3800,7 +3931,8 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_CANALS                          :{WHITE}Kanaler
 STR_COMPANY_INFRASTRUCTURE_VIEW_STATION_SECT                    :{GOLD}Stationer:
 STR_COMPANY_INFRASTRUCTURE_VIEW_STATIONS                        :{WHITE}Stationsrutor
 STR_COMPANY_INFRASTRUCTURE_VIEW_AIRPORTS                        :{WHITE}Flygplatser
-STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL                           :{WHITE}{CURRENCY_LONG}/år
+STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_YEAR                      :{WHITE}{CURRENCY_LONG}/år
+STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_PERIOD                    :{WHITE}{CURRENCY_LONG}/period
 
 # Industry directory
 STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}Industrier
@@ -3811,17 +3943,18 @@ STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUST
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} och {NUM} till...
-STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Industrinamn - klicka på namnet för att centrera huvudvyn över industrin. Ctrl+klick öppnar en ny vy över industrins läge
+STR_INDUSTRY_DIRECTORY_LIST_CAPTION                             :{BLACK}Industrinamn - klicka på namnet för att centrera huvudvyn över industrin. Ctrl+Klick för att öppna en ny fönstervy över industrins läge
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Accepterat gods: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Producerat fraktgods: {SILVER}{STRING}
-STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :Alla typer av last
+STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :Alla godstyper
 STR_INDUSTRY_DIRECTORY_FILTER_NONE                              :Inga
 
 # Industry view
 STR_INDUSTRY_VIEW_CAPTION                                       :{WHITE}{INDUSTRY}
 STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}Produktion förra månaden:
+STR_INDUSTRY_VIEW_PRODUCTION_LAST_MINUTE_TITLE                  :{BLACK}Produktion förra minuten:
 STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_LONG}{STRING}{BLACK} ({COMMA}% transporterat)
-STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Centrera huvudvyn ovanför industrin. Ctrl+klick öppnar en ny vy över industrins läge
+STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Centrera huvudvyn ovanför industrin. Ctrl+Klick för att öppna en ny fönstervy industrins läge
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Produktionsnivå: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Industrin har annonserat att den snart kommer att stänga!
 
@@ -3861,6 +3994,7 @@ STR_VEHICLE_LIST_REPLACE_VEHICLES                               :Byt ut fordon
 STR_VEHICLE_LIST_SEND_FOR_SERVICING                             :Skicka på service
 STR_VEHICLE_LIST_CREATE_GROUP                                   :Skapa grupp
 STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR                     :{TINY_FONT}{BLACK}Vinst detta år: {CURRENCY_LONG} (förra året: {CURRENCY_LONG})
+STR_VEHICLE_LIST_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{TINY_FONT}{BLACK}Vinst denna period: {CURRENCY_LONG} (föregående period: {CURRENCY_LONG})
 STR_VEHICLE_LIST_CARGO                                          :[{CARGO_LIST}]
 STR_VEHICLE_LIST_NAME_AND_CARGO                                 :{STRING} {STRING}
 
@@ -3906,7 +4040,9 @@ STR_GROUP_REMOVE_ALL_VEHICLES                                   :Ta bort alla fo
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}Döp om en grupp
 
 STR_GROUP_PROFIT_THIS_YEAR                                      :Vinst i år:
+STR_GROUP_PROFIT_THIS_PERIOD                                    :Vinst denna period
 STR_GROUP_PROFIT_LAST_YEAR                                      :Vinst förra året:
+STR_GROUP_PROFIT_LAST_PERIOD                                    :Vinst förra perioden
 STR_GROUP_OCCUPANCY                                             :Nuvarande användning:
 STR_GROUP_OCCUPANCY_VALUE                                       :{NUM}%
 
@@ -3929,11 +4065,12 @@ STR_BUY_VEHICLE_AIRCRAFT_CAPTION                                :Nytt flygplan
 
 STR_PURCHASE_INFO_COST_WEIGHT                                   :{BLACK}Kostnad: {GOLD}{CURRENCY_LONG}{BLACK} Vikt: {GOLD}{WEIGHT_SHORT}
 STR_PURCHASE_INFO_COST_REFIT_WEIGHT                             :{BLACK}Kostnad: {GOLD}{CURRENCY_LONG}{BLACK} (Kostnad för anpassning: {GOLD}{CURRENCY_LONG}{BLACK}) Vikt: {GOLD}{WEIGHT_SHORT}
-STR_PURCHASE_INFO_SPEED_POWER                                   :{BLACK}Hastighet: {GOLD}{VELOCITY}{BLACK} Kraft: {GOLD}{POWER}
+STR_PURCHASE_INFO_SPEED_POWER                                   :{BLACK}Hastighet: {GOLD}{VELOCITY}{BLACK} Effekt: {GOLD}{POWER}
 STR_PURCHASE_INFO_SPEED                                         :{BLACK}Hastighet: {GOLD}{VELOCITY}
 STR_PURCHASE_INFO_SPEED_OCEAN                                   :{BLACK}Hastighet i hav: {GOLD}{VELOCITY}
 STR_PURCHASE_INFO_SPEED_CANAL                                   :{BLACK}Hastighet i kanal/flod: {GOLD}{VELOCITY}
-STR_PURCHASE_INFO_RUNNINGCOST                                   :{BLACK}Driftkostnad: {GOLD}{CURRENCY_LONG}/år
+STR_PURCHASE_INFO_RUNNINGCOST_YEAR                              :{BLACK}Driftkostnad: {GOLD}{CURRENCY_LONG}/år
+STR_PURCHASE_INFO_RUNNINGCOST_PERIOD                            :{BLACK}Driftkostnad: {GOLD}{CURRENCY_LONG}/period
 STR_PURCHASE_INFO_CAPACITY                                      :{BLACK}Kapacitet: {GOLD}{CARGO_LONG} {STRING}
 STR_PURCHASE_INFO_REFITTABLE                                    :(anpassningsbart)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}Designår: {GOLD}{NUM}{BLACK} Livslängd: {GOLD}{COMMA} år
@@ -3955,15 +4092,15 @@ STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Räckvid
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Flygplanstyp: {GOLD}{STRING}
 
 ###length 3
-STR_CARGO_TYPE_FILTER_ALL                                       :Alla typer av last
+STR_CARGO_TYPE_FILTER_ALL                                       :Alla godstyper
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :Gods
 STR_CARGO_TYPE_FILTER_NONE                                      :Ingen
 
 ###length VEHICLE_TYPES
-STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Lista av tågvagnar. Klicka på tågvagn för information. Ctrl+klick visar eller döljer vagnstypen
-STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}Vägfordonslista. Klicka på fordon för information. Ctrl+klick visar eller döljer fordonstypen
-STR_BUY_VEHICLE_SHIP_LIST_TOOLTIP                               :{BLACK}Skeppslista. Klicka på skepp för information. Ctrl+klick visar eller döljer skeppstypen
-STR_BUY_VEHICLE_AIRCRAFT_LIST_TOOLTIP                           :{BLACK}Flygplanslista. Klicka på flygplan för information. Ctrl+klick visar eller döljer flygplanstypen
+STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Tågfordonslista. Klicka på fordon för information. Ctrl+Klick för att visa/dölja denna fordonstyp
+STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}Vägfordonslista. Klicka på vägfordon för information. Ctrl+Klick för att visa/dölja denna vägfordonstyp
+STR_BUY_VEHICLE_SHIP_LIST_TOOLTIP                               :{BLACK}Skeppslista. Klicka på skepp för information. Ctrl+Klick för att visa/dölja denna skeppstyp
+STR_BUY_VEHICLE_AIRCRAFT_LIST_TOOLTIP                           :{BLACK}Flygfarkostslista. Klicka på flygfarkost för information. Ctrl+Klick för att visa/dölja denna flygfarkosttyp
 
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_BUTTON                        :{BLACK}Köp fordon
@@ -3978,16 +4115,16 @@ STR_BUY_VEHICLE_SHIP_BUY_REFIT_VEHICLE_BUTTON                   :{BLACK}Köp och
 STR_BUY_VEHICLE_AIRCRAFT_BUY_REFIT_VEHICLE_BUTTON               :{BLACK}Köp och anpassa flygplan
 
 ###length VEHICLE_TYPES
-STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Köp markerad tågvagn. Shift+klick visar kostnad utan att köpa
-STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Köp markerat vägfordon. Shift+klick visar kostnad utan att köpa
-STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Köp markerat skepp. Shift+klick visar kostnad utan att köpa
-STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Köp markerat flygplan. Shift+klick visar kostnad utan att köpa
+STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP                       :{BLACK}Köp markerat tågfordon. Håll även in Shift för att endast visa uppskattad kostnad
+STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_VEHICLE_TOOLTIP                :{BLACK}Köp markerat vägfordon. Håll även in Shift för att endast visa uppskattad kostnad
+STR_BUY_VEHICLE_SHIP_BUY_VEHICLE_TOOLTIP                        :{BLACK}Köp markerat skepp. Håll även in Shift för att endast visa uppskattad kostnad
+STR_BUY_VEHICLE_AIRCRAFT_BUY_VEHICLE_TOOLTIP                    :{BLACK}Köp markerad flygfarkost. Håll även in Shift för att endast visa uppskattad kostnad
 
 ###length VEHICLE_TYPES
-STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_TOOLTIP                 :{BLACK}Köp och anpassa markerat tåg. Shift+klick visar kostnad utan att köpa
-STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_REFIT_VEHICLE_TOOLTIP          :{BLACK}Köp och anpassa markerat vägfordon. Shift+klick visar kostnad utan att köpa
-STR_BUY_VEHICLE_SHIP_BUY_REFIT_VEHICLE_TOOLTIP                  :{BLACK}Köp och anpassa markerat skepp. Shift+klick visar kostnad utan att köpa
-STR_BUY_VEHICLE_AIRCRAFT_BUY_REFIT_VEHICLE_TOOLTIP              :{BLACK}Köp och anpassa markerat flygplan. Shift+klick visar kostnad utan att köpa
+STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_TOOLTIP                 :{BLACK}Köp och bygg om markerat tågfordon. Håll även in Shift för att endast visa uppskattad kostnad
+STR_BUY_VEHICLE_ROAD_VEHICLE_BUY_REFIT_VEHICLE_TOOLTIP          :{BLACK}Köp och bygg om markerat vägfordon. Håll även in Shift för att endast visa uppskattad kostnad
+STR_BUY_VEHICLE_SHIP_BUY_REFIT_VEHICLE_TOOLTIP                  :{BLACK}Köp och bygg om markerat skepp. Håll även in Shift för att endast visa uppskattad kostnad
+STR_BUY_VEHICLE_AIRCRAFT_BUY_REFIT_VEHICLE_TOOLTIP              :{BLACK}Köp och bygg om markerad flygfarkost. Håll även in Shift för att endast visa uppskattad kostnad
 
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}Byt namn på
@@ -4037,7 +4174,7 @@ STR_DEPOT_VEHICLE_TOOLTIP_CHAIN                                 :{BLACK}{NUM} fo
 STR_DEPOT_VEHICLE_TOOLTIP_CARGO                                 :{}{CARGO_LONG} ({CARGO_SHORT})
 
 ###length VEHICLE_TYPES
-STR_DEPOT_TRAIN_LIST_TOOLTIP                                    :{BLACK}Tåg - drag vagn/lok för att lägga till/ta bort från tåg. Högerklicka på tåg för information. Håll Ctrl nedtryckt för att respektive funktion även ska gälla resten av tåget
+STR_DEPOT_TRAIN_LIST_TOOLTIP                                    :{BLACK}Tåg - drag vagn/lok med vänsterklick för att lägga till/ta bort från tåg, eller högerklick för information. Ctrl+Klick för att utföra respektive funktion på efterföljande kedja
 STR_DEPOT_ROAD_VEHICLE_LIST_TOOLTIP                             :{BLACK}Fordon - högerklicka på fordon för information
 STR_DEPOT_SHIP_LIST_TOOLTIP                                     :{BLACK}Skepp - högerklicka på skepp för information
 STR_DEPOT_AIRCRAFT_LIST_TOOLTIP                                 :{BLACK}Flygplan - högerklicka på flygplan för information
@@ -4079,16 +4216,16 @@ STR_DEPOT_CLONE_SHIP                                            :{BLACK}Klona sk
 STR_DEPOT_CLONE_AIRCRAFT                                        :{BLACK}Klona flygplan
 
 ###length VEHICLE_TYPES
-STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Köper en kopia av ett tåg inklusive alla vagnar. Tryck på den här knappen och sen på ett tåg i eller utanför depån. Ctrl+klick gör så att de delar order. Shift+klick visar kostnad utan att köpa
-STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Köper en kopia av ett fordon. Tryck på den här knappen och sen på ett vägfordon i eller utanför depån. Ctrl+klick gör så att de delar order. Shift+klick visar kostnad utan att köpa
-STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Köper en kopia av ett skepp. Tryck på den här knappen och sedan på ett skepp i eller utanför depån. Ctrl+klick gör så att de delar order. Shift+klick visar kostnad utan att köpa
-STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Köper en kopia av ett flygplan. Tryck på den här knappen och sedan på ett flygplan i eller utanför hangaren. Ctrl+klick gör så att de delar order. Shift+klick visar kostnad utan att köpa
+STR_DEPOT_CLONE_TRAIN_DEPOT_INFO                                :{BLACK}Köp en kopia av ett tåg inklusive alla vagnar. Klicka på denna knapp och sen på ett tåg i eller utanför depån. Ctrl+Klick för att dela ordrar. Håll även in Shift för att endast visa uppskattad kostnad
+STR_DEPOT_CLONE_ROAD_VEHICLE_DEPOT_INFO                         :{BLACK}Köp en kopia av ett vägfordon. Klicka på denna knapp och sen på ett vägfordon i eller utanför depån. Ctrl+Klick för att dela ordrar. Håll även in Shift för att endast visa uppskattad kostnad
+STR_DEPOT_CLONE_SHIP_DEPOT_INFO                                 :{BLACK}Köp en kopia av ett skepp. Klicka på denna knapp och sen på ett skepp i eller utanför depån. Ctrl+Klick för att dela ordrar. Håll även in Shift för att endast visa uppskattad kostnad
+STR_DEPOT_CLONE_AIRCRAFT_INFO_HANGAR_WINDOW                     :{BLACK}Köp en kopia av en flygfarkost. Klicka på denna knapp och sen på en flygfarkost i eller utanför hangaren. Ctrl+Klick för att dela ordrar. Håll även in Shift för att endast visa uppskattad kostnad
 
 ###length VEHICLE_TYPES
-STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Centrera huvudvyn ovanför depån. Ctrl+klick öppnar en ny vy över depåns läge
-STR_DEPOT_ROAD_VEHICLE_LOCATION_TOOLTIP                         :{BLACK}Centrera huvudvyn ovanför vägfordonsdepån. Ctrl+klick öppnar en ny vy över vägfordonsdepåns läge
-STR_DEPOT_SHIP_LOCATION_TOOLTIP                                 :{BLACK}Centrera huvudvyn ovanför skeppdepån. Ctrl+klick öppnar en ny vy över skeppdepåns läge
-STR_DEPOT_AIRCRAFT_LOCATION_TOOLTIP                             :{BLACK}Centrera huvudvyn ovanför hangaren. Ctrl+klick öppnar en ny vy över hangarens läge
+STR_DEPOT_TRAIN_LOCATION_TOOLTIP                                :{BLACK}Centrera huvudvyn ovanför depån. Ctrl+Klick för att öppna en ny fönstervy över tågdepåns läge
+STR_DEPOT_ROAD_VEHICLE_LOCATION_TOOLTIP                         :{BLACK}Centrera huvudvyn ovanför vägfordonsdepån. Ctrl+Klick för att öppna en ny fönstervy över vägfordonsdepåns läge
+STR_DEPOT_SHIP_LOCATION_TOOLTIP                                 :{BLACK}Centrera huvudvyn ovanför skeppsdepån. Ctrl+Klick för att öppna en ny fönstervy över skeppsdepåns läge
+STR_DEPOT_AIRCRAFT_LOCATION_TOOLTIP                             :{BLACK}Centrera huvudvyn ovanför hangaren. Ctrl+Klick för att öppna en ny skärmvy över hangarens läge
 
 ###length VEHICLE_TYPES
 STR_DEPOT_VEHICLE_ORDER_LIST_TRAIN_TOOLTIP                      :{BLACK}Visa en lista med alla tåg som har denna depå i sitt körschema
@@ -4126,13 +4263,18 @@ STR_ENGINE_PREVIEW_TRAM_VEHICLE                                 :spårvägsfordo
 STR_ENGINE_PREVIEW_AIRCRAFT                                     :flygplan
 STR_ENGINE_PREVIEW_SHIP                                         :skepp
 
-STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}Kostnad: {CURRENCY_LONG} Vikt: {WEIGHT_SHORT}{}Hastighet: {VELOCITY} Kraft {POWER}{}Driftkostnad: {CURRENCY_LONG}/år{}Kapacitet: {CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}Kostnad: {0:CURRENCY_LONG} Vikt: {1:WEIGHT_SHORT}{}Hastighet: {2:VELOCITY}  Effekt: {3:POWER} Max. T.E.: {6:FORCE}{}Driftkostnad: {4:CURRENCY_LONG}/år{}Kapacitet: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}Kostnad: {CURRENCY_LONG} Maxhastiget: {VELOCITY}{}Kapacitet: {CARGO_LONG}{}Driftkostnad: {CURRENCY_LONG}/år
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_CAP_RUNCOST          :{BLACK}Kostnad: {CURRENCY_LONG} Maxhastighet: {VELOCITY}{}Flygplanstyp: {STRING}{}Kapacitet: {CARGO_LONG}, {CARGO_LONG}{}Driftkostnad: {CURRENCY_LONG}/år
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_RUNCOST              :{BLACK}Kostnad: {CURRENCY_LONG} Maxhastighet: {VELOCITY}{}Flygplanstyp: {STRING}{}Kapacitet: {CARGO_LONG}{}Driftkostnad: {CURRENCY_LONG}/år
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_CAP_RUNCOST    :{BLACK}Kostnad: {CURRENCY_LONG} Maxhastighet: {VELOCITY}{}Flygplanstyp: {STRING} Räckvidd: {COMMA} rutor{}Kapacitet: {CARGO_LONG}, {CARGO_LONG}{}Driftkostnad: {CURRENCY_LONG}/år
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_RUNCOST        :{BLACK}Kostnad: {CURRENCY_LONG} Maxhastighet: {VELOCITY}{}Flygplanstyp: {STRING} Räckvidd: {COMMA} rutor{}Kapacitet: {CARGO_LONG}{}Driftkostnad: {CURRENCY_LONG}/år
+STR_ENGINE_PREVIEW_TEXT3                                        :{BLACK}{STRING}{}{5:STRING}{}{STRING}
+STR_ENGINE_PREVIEW_TEXT4                                        :{BLACK}{STRING}{}{STRING}{}{STRING}{}{STRING}
+STR_ENGINE_PREVIEW_COST_WEIGHT                                  :Kostnad: {CURRENCY_LONG}  Vikt: {WEIGHT_SHORT}
+STR_ENGINE_PREVIEW_COST_MAX_SPEED                               :Kostnad: {CURRENCY_LONG}  Max. hastighet: {VELOCITY}
+STR_ENGINE_PREVIEW_SPEED_POWER                                  :Hastighet: {VELOCITY}  Effekt: {POWER}
+STR_ENGINE_PREVIEW_SPEED_POWER_MAX_TE                           :Hastighet: {VELOCITY}  Effekt: {POWER}  Max. T.E.: {FORCE}
+STR_ENGINE_PREVIEW_TYPE                                         :Flygfarkosttyp: {STRING}
+STR_ENGINE_PREVIEW_TYPE_RANGE                                   :Flygfarkosttyp: {STRING}   Räckvidd: {COMMA} rutor
+STR_ENGINE_PREVIEW_RUNCOST_YEAR                                 :Driftkostnad: {CURRENCY_LONG}/år
+STR_ENGINE_PREVIEW_RUNCOST_PERIOD                               :Driftkostnad: {CURRENCY_LONG}/period
+STR_ENGINE_PREVIEW_CAPACITY                                     :Kapacitet: {CARGO_LONG}
+STR_ENGINE_PREVIEW_CAPACITY_2                                   :Kapacitet: {CARGO_LONG}, {CARGO_LONG}
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Byt ut {STRING} - {STRING}
@@ -4189,27 +4331,27 @@ STR_REPLACE_REMOVE_WAGON_GROUP_HELP                             :{STRING}. Ctrl+
 STR_VEHICLE_VIEW_CAPTION                                        :{WHITE}{VEHICLE}
 
 ###length VEHICLE_TYPES
-STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP                           :{BLACK}Centrera huvudvyn på tågets position. Dubbelklicka för att följa tåget i huvudvyn. Ctrl+klicka öppnar ett nytt fönster över tågets position
-STR_VEHICLE_VIEW_ROAD_VEHICLE_CENTER_TOOLTIP                    :{BLACK}Centrera huvudvyn på fordonets position. Dubbelklicka för att följa fordonet i huvudvyn. Ctrl+klicka öppnar ett nytt fönster över fordonets position
-STR_VEHICLE_VIEW_SHIP_CENTER_TOOLTIP                            :{BLACK}Centrera huvudvyn på fartygets position. Dubbelklicka för att följa fartyget i huvudvyn. Ctrl+klicka öppnar ett nytt fönster över fartygets position
-STR_VEHICLE_VIEW_AIRCRAFT_CENTER_TOOLTIP                        :{BLACK}Centrera huvudvyn på flygplanets position. Dubbelklicka för att följa flygplanet i huvudvyn. Ctrl+klicka öppnar ett nytt fönster över flygplanets position
+STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP                           :{BLACK}Centrera huvudvyn på tågets position. Dubbelklicka för att följa tåget i huvudvyn. Ctrl+Klick för att öppna en ny fönstervy över tågets position
+STR_VEHICLE_VIEW_ROAD_VEHICLE_CENTER_TOOLTIP                    :{BLACK}Centrera huvudvyn på fordonets position. Dubbelklicka för att följa fordonet i huvudvyn. Ctrl+Klick för att öppna en ny fönstervy över fordonets position
+STR_VEHICLE_VIEW_SHIP_CENTER_TOOLTIP                            :{BLACK}Centrera huvudvyn på fartygets position. Dubbelklicka för att följa fartyget i huvudvyn. Ctrl+Klick för att öppna en ny fönstervy över fartygets position
+STR_VEHICLE_VIEW_AIRCRAFT_CENTER_TOOLTIP                        :{BLACK}Centrera huvudvyn på flygfarkostens position. Dubbelklicka för att följa flygfarkosten i huvudvyn. Ctrl+Klick för att öppna en ny fönstervy över flygfarkostens position
 
 ###length VEHICLE_TYPES
-STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP                    :{BLACK}Skicka tåg till depå. Ctrl+klick skickar tåget enbart på service
-STR_VEHICLE_VIEW_ROAD_VEHICLE_SEND_TO_DEPOT_TOOLTIP             :{BLACK}Skicka fordon till depå. Ctrl+klick servar endast
-STR_VEHICLE_VIEW_SHIP_SEND_TO_DEPOT_TOOLTIP                     :{BLACK}Skicka skepp till depå. Ctrl+klick servar endast
-STR_VEHICLE_VIEW_AIRCRAFT_SEND_TO_DEPOT_TOOLTIP                 :{BLACK}Skicka flygplan till hangar. Ctrl+klick servar endast
+STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP                    :{BLACK}Skicka tåg till depå. Ctrl+Klick för service endast
+STR_VEHICLE_VIEW_ROAD_VEHICLE_SEND_TO_DEPOT_TOOLTIP             :{BLACK}Skicka fordon till depå. Ctrl+Klick för service endast
+STR_VEHICLE_VIEW_SHIP_SEND_TO_DEPOT_TOOLTIP                     :{BLACK}Skicka skepp till depå. Ctrl+Klick för service endast
+STR_VEHICLE_VIEW_AIRCRAFT_SEND_TO_DEPOT_TOOLTIP                 :{BLACK}Skicka flygfarkost till hangar. Ctrl+Klick för service endast
 
 ###length VEHICLE_TYPES
-STR_VEHICLE_VIEW_CLONE_TRAIN_INFO                               :{BLACK}Köper en kopia av tåget inklusive alla vagnar. Ctrl+klick gör så att de delar order. Shift+klick visar kostnad utan att köpa
-STR_VEHICLE_VIEW_CLONE_ROAD_VEHICLE_INFO                        :{BLACK}Köper en kopia av fordonet. Ctrl+klick gör så att de delar order. Shift+klick visar kostnad utan att köpa
-STR_VEHICLE_VIEW_CLONE_SHIP_INFO                                :{BLACK}Köper en kopia av skeppet. Ctrl+klick gör så att de delar order. Shift+klick visar kostnad utan att köpa
-STR_VEHICLE_VIEW_CLONE_AIRCRAFT_INFO                            :{BLACK}Köper en kopia av flygplanet. Ctrl+klick gör så att de delar order. Shift+klick visar beräknad kostnad utan att köpa
+STR_VEHICLE_VIEW_CLONE_TRAIN_INFO                               :{BLACK}Köp en kopia av tåget inklusive alla vagnar. Ctrl+Klick för att dela ordrar. Håll även in Shift för att endast visa uppskattad kostnad
+STR_VEHICLE_VIEW_CLONE_ROAD_VEHICLE_INFO                        :{BLACK}Köp en kopia av vägfordonet. Ctrl+Klick för att dela ordrar. Håll även in Shift för att endast visa uppskattad kostnad
+STR_VEHICLE_VIEW_CLONE_SHIP_INFO                                :{BLACK}Köp en kopia av skeppet. Ctrl+Klick för att dela ordrar. Håll även in Shift för att endast visa uppskattad kostnad
+STR_VEHICLE_VIEW_CLONE_AIRCRAFT_INFO                            :{BLACK}Köp en kopia av en flygfarkost. Ctrl+Klick för att dela ordrar. Håll även in Shift för att endast visa uppskattad kostnad
 
 STR_VEHICLE_VIEW_TRAIN_IGNORE_SIGNAL_TOOLTIP                    :{BLACK}Tvinga tåg att fortsätta utan att vänta på signal
 STR_VEHICLE_VIEW_TRAIN_REVERSE_TOOLTIP                          :{BLACK}Byt tågets riktning
 STR_VEHICLE_VIEW_ROAD_VEHICLE_REVERSE_TOOLTIP                   :{BLACK}Tvinga fordonet att vända om
-STR_VEHICLE_VIEW_ORDER_LOCATION_TOOLTIP                         :{BLACK}Centrera huvudvyn på orderns destination. Ctrl+klick öppnar en ny vy över orderns destination
+STR_VEHICLE_VIEW_ORDER_LOCATION_TOOLTIP                         :{BLACK}Centrera huvudvyn på orderdestination. Ctrl+Klick för att öppna en ny fönstervy över orderdestinationens läge
 
 ###length VEHICLE_TYPES
 STR_VEHICLE_VIEW_TRAIN_REFIT_TOOLTIP                            :{BLACK}Anpassa tåg till att frakta en annan sorts last
@@ -4238,6 +4380,7 @@ STR_VEHICLE_VIEW_AIRCRAFT_STATUS_START_STOP_TOOLTIP             :{BLACK}Aktuell 
 # Messages in the start stop button in the vehicle view
 STR_VEHICLE_STATUS_LOADING_UNLOADING                            :{LTBLUE}Lastar / lastar av
 STR_VEHICLE_STATUS_LEAVING                                      :{LTBLUE}Lämnar
+STR_VEHICLE_STATUS_WAITING_UNBUNCHING                           :{LTBLUE}Väntar på att glesa ut
 STR_VEHICLE_STATUS_CRASHED                                      :{RED}Kraschad!
 STR_VEHICLE_STATUS_BROKEN_DOWN                                  :{RED}Motorstopp
 STR_VEHICLE_STATUS_STOPPED                                      :{RED}Stoppat
@@ -4251,6 +4394,7 @@ STR_VEHICLE_STATUS_NO_ORDERS_VEL                                :{LTBLUE}Inga or
 STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL                     :{LTBLUE}På väg mot {WAYPOINT} i {VELOCITY}
 STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL                        :{ORANGE}På väg mot {DEPOT}, {VELOCITY}
 STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL                :{LTBLUE}Service vid {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_UNBUNCH_VEL                :{LTBLUE}Glesa ut och serva vid {DEPOT}, {VELOCITY}
 
 STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL                     :{LTBLUE} Kan inte nå {STATION}, {VELOCITY}
 STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL                    :{LTBLUE}Kan inte nå {WAYPOINT}, {VELOCITY}
@@ -4275,18 +4419,21 @@ STR_VEHICLE_DETAILS_ROAD_VEHICLE_RENAME                         :{BLACK}Byt namn
 STR_VEHICLE_DETAILS_SHIP_RENAME                                 :{BLACK}Byt namn på skepp
 STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}Byt namn på flygplan
 
-STR_VEHICLE_INFO_AGE_RUNNING_COST_YR                            :{BLACK}Ålder: {LTBLUE}{STRING}{BLACK} Driftkostnad: {LTBLUE}{CURRENCY_LONG}/år
 STR_VEHICLE_INFO_AGE                                            :{COMMA} år ({COMMA})
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} år ({COMMA})
+STR_VEHICLE_INFO_AGE_RUNNING_COST_YR                            :{BLACK}Ålder: {LTBLUE}{STRING}{BLACK} Driftkostnad: {LTBLUE}{CURRENCY_LONG}/år
+STR_VEHICLE_INFO_AGE_RUNNING_COST_PERIOD                        :{BLACK}Ålder: {LTBLUE}{STRING}{BLACK}   Driftkostnad: {LTBLUE}{CURRENCY_LONG}/period
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Maxhastiget: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_MAX_SPEED_TYPE                                 :{BLACK}Maxhastighet: {LTBLUE}{VELOCITY} {BLACK}Flygplanstyp: {LTBLUE}{STRING}
 STR_VEHICLE_INFO_MAX_SPEED_TYPE_RANGE                           :{BLACK}Maxhastighet: {LTBLUE}{VELOCITY} {BLACK}Flygplanstyp: {LTBLUE}{STRING} {BLACK}Räckvidd: {LTBLUE}{COMMA} rutor
-STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Vikt: {LTBLUE}{WEIGHT_SHORT} {BLACK}Kraft: {LTBLUE}{POWER}{BLACK} Maxhastiget: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Vikt: {LTBLUE}{WEIGHT_SHORT} {BLACK}Kraft: {LTBLUE}{POWER}{BLACK} Maxhastiget: {LTBLUE}{VELOCITY} {BLACK}Max. T.E.: {LTBLUE}{FORCE}
+STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Vikt: {LTBLUE}{WEIGHT_SHORT} {BLACK}Effekt: {LTBLUE}{POWER}{BLACK} Maxhastiget: {LTBLUE}{VELOCITY}
+STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Vikt: {LTBLUE}{WEIGHT_SHORT} {BLACK}Effekt: {LTBLUE}{POWER}{BLACK} Maxhastiget: {LTBLUE}{VELOCITY} {BLACK}Max. T.E.: {LTBLUE}{FORCE}
 
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Vinst detta år: {LTBLUE}{CURRENCY_LONG} (förra året: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}Vinst detta år: {LTBLUE}{CURRENCY_LONG} (förra året: {CURRENCY_LONG}) {BLACK}Min. prestationsvärdering: {LTBLUE}{POWER_TO_WEIGHT}
+STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{BLACK}Vinst denna period: {LTBLUE}{CURRENCY_LONG} (föregående period: {CURRENCY_LONG})
+STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD_MIN_PERFORMANCE :{BLACK}Vinst denna period: {LTBLUE}{CURRENCY_LONG} (föregående period: {CURRENCY_LONG}) {BLACK}Min. specifika effekt: {LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Tillförlitlighet: {LTBLUE}{COMMA}%  {BLACK}Motorstopp sedan senaste servicen: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Byggt: {LTBLUE}{NUM}{BLACK} Värde: {LTBLUE}{CURRENCY_LONG}
@@ -4297,14 +4444,22 @@ STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}Kapacite
 
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK} Överför kredit: {LTBLUE}{CURRENCY_LONG}
 
-STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS                     :{BLACK}Serviceintervall: {LTBLUE}{COMMA}{NBSP}dagar{BLACK}   Senaste service: {LTBLUE}{DATE_LONG}
-STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT                  :{BLACK}Serviceintervall: {LTBLUE}{COMMA}%{BLACK}   Senaste service: {LTBLUE}{DATE_LONG}
-STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP         :{BLACK}Öka serviceintervall med 10. Ctrl+klick ökar serviceintervall med 5
-STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP         :{BLACK}Minska serviceintervall med 10. Ctrl+klick minskar servinceintervall med 5
+STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS                     :{BLACK}Serviceintervall: {LTBLUE}{COMMA}{NBSP}dagar{BLACK}   {STRING}
+STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES                  :{BLACK}Serviceintervall: {LTBLUE}{COMMA}{NBSP}minuter{BLACK}   {STRING}
+STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT                  :{BLACK}Serviceintervall: {LTBLUE}{COMMA}%{BLACK}   {STRING}
+STR_VEHICLE_DETAILS_LAST_SERVICE_DATE                           :Senast servad: {LTBLUE}{DATE_LONG}
+STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO                    :Senast servad: {LTBLUE}{NUM} minuter sedan
+STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_DAYS    :{BLACK}Öka serviceintervall med 10 dagar. Ctrl+Klick för att öka serviceintervall med 5 dagar
+STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_MINUTES :{BLACK}Öka serviceintervall med 5 minuter. Ctrl+Klick för att öka serviceintervall med 1 minut
+STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_PERCENT :{BLACK}Öka serviceintervall med 10 procent. Ctrl+Klick för att öka serviceintervall med 5 procent
+STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_DAYS    :{BLACK}Sänk serviceintervall med 10 dagar. Ctrl+Klick för att sänka serviceintervall med 5 dagar
+STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_MINUTES :{BLACK}Sänk serviceintervall med 5 minuter. Ctrl+Klick för att sänka serviceintervall med 1 minut
+STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_PERCENT :{BLACK}Sänk serviceintervall med 10 procent. Ctrl+Klick för att sänka serviceintervall med 5 procent
 
 STR_SERVICE_INTERVAL_DROPDOWN_TOOLTIP                           :{BLACK}Ändra typ av service-intervall
 STR_VEHICLE_DETAILS_DEFAULT                                     :Standard
 STR_VEHICLE_DETAILS_DAYS                                        :Dagar
+STR_VEHICLE_DETAILS_MINUTES                                     :Minuter
 STR_VEHICLE_DETAILS_PERCENT                                     :Procent
 
 ###length VEHICLE_TYPES
@@ -4343,7 +4498,7 @@ STR_REFIT_NEW_CAPACITY_COST_OF_REFIT                            :{BLACK}Ny kapac
 STR_REFIT_NEW_CAPACITY_INCOME_FROM_REFIT                        :{BLACK}Ny kapacitet: {GOLD}{CARGO_LONG}{}{BLACK}Inkomstens vinst: {GREEN}{CURRENCY_LONG}
 STR_REFIT_NEW_CAPACITY_COST_OF_AIRCRAFT_REFIT                   :{BLACK}Ny kapacitet: {GOLD}{CARGO_LONG}, {GOLD}{CARGO_LONG}{}{BLACK}Kostnad för anpassning: {RED}{CURRENCY_LONG}
 STR_REFIT_NEW_CAPACITY_INCOME_FROM_AIRCRAFT_REFIT               :{BLACK}Ny kapacitet: {GOLD}{CARGO_LONG}. {GOLD}{CARGO_LONG}{}{BLACK}Inkomstens vinst: {GREEN}{CURRENCY_LONG}
-STR_REFIT_SELECT_VEHICLES_TOOLTIP                               :{BLACK}Välj vilka fordon som ska anpassas. Genom att dra med musen kan flera fordon väljas. Klicka på en tom yta för att välja hela fordonet. Ctrl+klick på ett fordon kommer att välja det och hela den resterande kedjan
+STR_REFIT_SELECT_VEHICLES_TOOLTIP                               :{BLACK}Välj vilka fordon som ska byggas om. Klick+Drag för att välja flera fordon. Klicka på en tom yta för att välja hela fordonet. Ctrl+Klick för att välja ett fordon och den efterföljande kedjan
 
 ###length VEHICLE_TYPES
 STR_REFIT_TRAIN_LIST_TOOLTIP                                    :{BLACK}Välj godstyp för tåget att bära
@@ -4368,9 +4523,9 @@ STR_ORDERS_CAPTION                                              :{WHITE}{VEHICLE
 STR_ORDERS_TIMETABLE_VIEW                                       :{BLACK}Tidtabell
 STR_ORDERS_TIMETABLE_VIEW_TOOLTIP                               :{BLACK}Ändra till tidtabellsvy
 
-STR_ORDERS_LIST_TOOLTIP                                         :{BLACK}Orderlista - klicka på order för att markera det. Ctrl+klick visar order-destinationen i huvudförstret
+STR_ORDERS_LIST_TOOLTIP                                         :{BLACK}Orderlista - klicka på en order för att markera den. Ctrl+Klick för att skrolla till orderdestinationen
 STR_ORDER_INDEX                                                 :{COMMA}:{NBSP}
-STR_ORDER_TEXT                                                  :{STRING} {STRING} {STRING}
+STR_ORDER_TEXT                                                  :{STRING} {STRING} {STRING} {STRING}
 
 STR_ORDERS_END_OF_ORDERS                                        :- - Slut på order - -
 STR_ORDERS_END_OF_SHARED_ORDERS                                 :- - Slut på delade order - -
@@ -4404,11 +4559,18 @@ STR_ORDER_REFIT_AUTO_TOOLTIP                                    :{BLACK}Välj vi
 STR_ORDER_DROP_REFIT_AUTO                                       :Fast lasttyp
 STR_ORDER_DROP_REFIT_AUTO_ANY                                   :Tillgängliga lasttyper
 
-STR_ORDER_SERVICE                                               :{BLACK}Service
 STR_ORDER_DROP_GO_ALWAYS_DEPOT                                  :Åk alltid
 STR_ORDER_DROP_SERVICE_DEPOT                                    :Service vid behov
 STR_ORDER_DROP_HALT_DEPOT                                       :Stanna
-STR_ORDER_SERVICE_TOOLTIP                                       :{BLACK}Skippa den här ordern om service ej behövs
+STR_ORDER_DROP_UNBUNCH                                          :Glesa ut
+
+# Depot action tooltips, one per vehicle type
+###length VEHICLE_TYPES
+STR_ORDER_TRAIN_DEPOT_ACTION_TOOLTIP                            :{BLACK}Välj åtgärd att utföra vid denna depå
+STR_ORDER_ROAD_DEPOT_ACTION_TOOLTIP                             :{BLACK}Välj åtgärd att utföra vid denna depå
+STR_ORDER_SHIP_DEPOT_ACTION_TOOLTIP                             :{BLACK}Välj åtgärd att utföra vid denna depå
+STR_ORDER_HANGAR_ACTION_TOOLTIP                                 :{BLACK}Välj åtgärd att utföra vid denna hangar
+###next-name-looks-similar
 
 STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP                          :{BLACK}Fordonsdata att basera hopp på
 
@@ -4428,9 +4590,9 @@ STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP                        :{BLACK}Hur man 
 STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS                         :samma som
 STR_ORDER_CONDITIONAL_COMPARATOR_NOT_EQUALS                     :ej samma som
 STR_ORDER_CONDITIONAL_COMPARATOR_LESS_THAN                      :mindre än
-STR_ORDER_CONDITIONAL_COMPARATOR_LESS_EQUALS                    :mindre eller lika mycket som
+STR_ORDER_CONDITIONAL_COMPARATOR_LESS_EQUALS                    :är mindre än eller lika med
 STR_ORDER_CONDITIONAL_COMPARATOR_MORE_THAN                      :mer än
-STR_ORDER_CONDITIONAL_COMPARATOR_MORE_EQUALS                    :mer eller lika mycket som
+STR_ORDER_CONDITIONAL_COMPARATOR_MORE_EQUALS                    :är mer än eller lika med
 STR_ORDER_CONDITIONAL_COMPARATOR_IS_TRUE                        :sant
 STR_ORDER_CONDITIONAL_COMPARATOR_IS_FALSE                       :falskt
 
@@ -4438,20 +4600,20 @@ STR_ORDER_CONDITIONAL_VALUE_TOOLTIP                             :{BLACK}Värde a
 STR_ORDER_CONDITIONAL_VALUE_CAPT                                :{WHITE}Skriv in värde att jämföra mot
 
 STR_ORDERS_SKIP_BUTTON                                          :{BLACK}Hoppa över
-STR_ORDERS_SKIP_TOOLTIP                                         :{BLACK}Hoppa över nuvarande order och starta nästa. Ctrl+klick hoppar över till vald order
+STR_ORDERS_SKIP_TOOLTIP                                         :{BLACK}Hoppa över nuvarande order och starta nästa. Ctrl+Klick för att hoppa över till vald order
 
 STR_ORDERS_DELETE_BUTTON                                        :{BLACK}Ta bort
 STR_ORDERS_DELETE_TOOLTIP                                       :{BLACK}Ta bort markerad order
 STR_ORDERS_DELETE_ALL_TOOLTIP                                   :{BLACK}Ta bort alla order
 STR_ORDERS_STOP_SHARING_BUTTON                                  :{BLACK}Sluta dela
-STR_ORDERS_STOP_SHARING_TOOLTIP                                 :{BLACK}Sluta dela orderlistan. Ctrl+Klick tar även bort alla order för det här fordonet
+STR_ORDERS_STOP_SHARING_TOOLTIP                                 :{BLACK}Sluta dela orderlistan. Ctrl+Klick för att även ta bort alla ordrar för detta fordon
 
 STR_ORDERS_GO_TO_BUTTON                                         :{BLACK}Åk till
 STR_ORDER_GO_TO_NEAREST_DEPOT                                   :Åk till närmsta depå
 STR_ORDER_GO_TO_NEAREST_HANGAR                                  :Åk till närmsta hangar
 STR_ORDER_CONDITIONAL                                           :Villkorat order-hopp
 STR_ORDER_SHARE                                                 :Dela order
-STR_ORDERS_GO_TO_TOOLTIP                                        :{BLACK}Infoga ny order före markerad order, eller lägg till i slutet av listan. Håll in Ctrl för att välja 'full last någon frakttyp' vid stationer, 'åk non-stop via' vid riktmärken, och 'service' vid tågdepåer. Använd knappen 'Dela order' eller Ctrl+klicka på fordon för att dela order från annat fordon. En depåorder stänger av automatisk service av fordonet
+STR_ORDERS_GO_TO_TOOLTIP                                        :{BLACK}Infoga ny order före markerad order, eller lägg till i slutet av listan. Ctrl+Klick på en station för 'full last någon godstyp', på ett riktmärke för 'non-stop', och på en depå för 'service'.  Klicka på ett annat fordon för att kopiera dess ordrar eller Ctrl+Klick för att dela ordrar. En depåorder stänger av automatisk service av fordonet
 
 STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP                  :{BLACK}Visa alla fordon som har samma schema
 
@@ -4476,6 +4638,8 @@ STR_ORDER_GO_TO_DEPOT_FORMAT                                    :{STRING} {DEPOT
 STR_ORDER_REFIT_ORDER                                           :(Anpassa för {STRING})
 STR_ORDER_REFIT_STOP_ORDER                                      :(Anpassa för {STRING} och stanna)
 STR_ORDER_STOP_ORDER                                            :(Stanna)
+
+STR_ORDER_WAIT_TO_UNBUNCH                                       :(invänta utglesning)
 
 STR_ORDER_GO_TO_STATION                                         :{STRING} {STATION} {STRING}
 STR_ORDER_GO_TO_STATION_CAN_T_USE_STATION                       :{PUSH_COLOUR}{RED}(Kan ej använda stationen){POP_COLOUR} {STRING} {STATION} {STRING}
@@ -4553,23 +4717,28 @@ STR_TIMETABLE_STATUS_ON_TIME                                    :{BLACK}Detta fo
 STR_TIMETABLE_STATUS_LATE                                       :{BLACK}Detta fordon är för tillfället {STRING} sen
 STR_TIMETABLE_STATUS_EARLY                                      :{BLACK}Detta fordon är för tillfället {STRING} tidig
 STR_TIMETABLE_STATUS_NOT_STARTED                                :{BLACK}Den här tidtabellen har inte startat ännu
+STR_TIMETABLE_STATUS_START_AT_DATE                              :{BLACK}Denna tidtabell kommer starta den {STRING}
+STR_TIMETABLE_STATUS_START_IN_SECONDS                           :{BLACK}Denna tidtabell kommer starta om {COMMA} sekunder
 
+STR_TIMETABLE_START                                             :{BLACK}Starta tidtabell
+STR_TIMETABLE_START_TOOLTIP                                     :{BLACK}Välj när denna tidtabell startar. Ctrl+Klick för jämn distribution av starterna för alla fordon som delar denna order, baserat på deras relativa ordning, om ordern är helt schemalagd
 
+STR_TIMETABLE_START_SECONDS_QUERY                               :Sekunder tills tidtabellen startar
 
 STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}Ändra tid
-STR_TIMETABLE_WAIT_TIME_TOOLTIP                                 :{BLACK}Ändra hur lång tid den markerade ordern bör ta. Ctrl+klick ställer in tiden för alla ordrar
+STR_TIMETABLE_WAIT_TIME_TOOLTIP                                 :{BLACK}Ändra hur lång tid den markerade ordern bör ta. Ctrl+Klick för att ställa in tiden för alla ordrar
 
 STR_TIMETABLE_CLEAR_TIME                                        :{BLACK}Rensa tid
-STR_TIMETABLE_CLEAR_TIME_TOOLTIP                                :{BLACK}Ta bort tiden för markerad order. Ctrl+klick tar bort tiden för alla ordrar
+STR_TIMETABLE_CLEAR_TIME_TOOLTIP                                :{BLACK}Ta bort tidsbegränsningen för den markerade ordern. Ctrl+Klick för att ta bort tidsbegränsningen för alla ordrar
 
 STR_TIMETABLE_CHANGE_SPEED                                      :{BLACK}Ändra hastighetsgräns
-STR_TIMETABLE_CHANGE_SPEED_TOOLTIP                              :{BLACK}Ändra hastighetsgräns för markerad order. Ctrl+klick ställer in hastighetsgränsen för alla ordrar
+STR_TIMETABLE_CHANGE_SPEED_TOOLTIP                              :{BLACK}Ändra den maximala hastigheten för den markerade ordern. Ctrl+Klick ställer in hastigheten för alla ordrar
 
 STR_TIMETABLE_CLEAR_SPEED                                       :{BLACK}Rensa hastighetsgräns
-STR_TIMETABLE_CLEAR_SPEED_TOOLTIP                               :{BLACK}Ta bort hastighetsgräns för markerad order. Ctrl+klick tar bort hastighetsgränsen för alla ordrar
+STR_TIMETABLE_CLEAR_SPEED_TOOLTIP                               :{BLACK}Ta bort hastighetsbegränsningen för den markerade ordern. Ctrl+Klick för att ta bort hastighetsbegränsningen för alla ordrar
 
 STR_TIMETABLE_RESET_LATENESS                                    :{BLACK}Rensa räknaren för sen ankomst
-STR_TIMETABLE_RESET_LATENESS_TOOLTIP                            :{BLACK}Nollställ räknaren för sen ankomst så att fordonet kommer i tid. Ctrl+klick nollställer för hela gruppen så att det senaste fordonet kommer att vara i tid och alla andra tidiga
+STR_TIMETABLE_RESET_LATENESS_TOOLTIP                            :{BLACK}Nollställ räknaren för sen ankomst så att fordonet kommer vara i tid. Ctrl+Klick för att nollställa hela gruppen så att det senaste fordonet kommer att vara i tid och alla andra blir tidiga
 
 STR_TIMETABLE_AUTOFILL                                          :{BLACK}Fyll i automatiskt
 STR_TIMETABLE_AUTOFILL_TOOLTIP                                  :{BLACK}Fyll i tidtabellen automatiskt med värden från nästa resa. Ctrl+klicka för att försöka behålla väntetiderna
@@ -4578,6 +4747,10 @@ STR_TIMETABLE_EXPECTED                                          :{BLACK}Förvän
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Schemalagt
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Ändra mellan förväntat och schemalagt
 
+STR_TIMETABLE_ARRIVAL_DATE                                      :A: {COLOUR}{DATE_TINY}
+STR_TIMETABLE_DEPARTURE_DATE                                    :D: {COLOUR}{DATE_TINY}
+STR_TIMETABLE_ARRIVAL_SECONDS_IN_FUTURE                         :A: {COLOUR}{COMMA} sek
+STR_TIMETABLE_DEPARTURE_SECONDS_IN_FUTURE                       :D: {COLOUR}{COMMA} sek
 
 
 # Date window (for timetable)
@@ -4605,9 +4778,9 @@ STR_AI_DEBUG_MATCH_CASE                                         :{BLACK}Matcha V
 STR_AI_DEBUG_MATCH_CASE_TOOLTIP                                 :{BLACK}Slå på/av matchning av VERSALER/gemener när datorspelares loggmeddelanden jämförs mot brytsträngen
 STR_AI_DEBUG_CONTINUE                                           :{BLACK}Fortsätt
 STR_AI_DEBUG_CONTINUE_TOOLTIP                                   :{BLACK}Opausa och låt datorspelaren fortsätta
-STR_AI_DEBUG_SELECT_AI_TOOLTIP                                  :{BLACK}Visa debug-utskrifter för denna datorspelare
+STR_AI_DEBUG_SELECT_AI_TOOLTIP                                  :{BLACK}Visa felsökningsutskrifter för denna datorspelare. Ctrl+Klick för att öppna i ett nytt fönster
 STR_AI_GAME_SCRIPT                                              :{BLACK}Spelskript
-STR_AI_GAME_SCRIPT_TOOLTIP                                      :{BLACK}Visa felsökningsutskrifter för spelskript
+STR_AI_GAME_SCRIPT_TOOLTIP                                      :{BLACK}Visa felsökningsutskrifter för spelskript. Ctrl+Klick för att öppna i ett nytt fönster
 
 STR_ERROR_AI_NO_AI_FOUND                                        :Ingen passande datorspelare hittades.{}Denna datorspelare är en test-datorspelare och kommer inte göra någonting.{}Du kan ladda ner nya datorspelare genom spelets 'Online-innehåll'-system
 STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}Ett av skripten som körs har kraschat. Vänligen rapportera detta till datorspelarens skapare med en skärmdump av förstret 'Felsökning av datorspelare / spelskript'
@@ -4670,19 +4843,30 @@ STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Spelskript
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Stäng
 STR_AI_SETTINGS_RESET                                           :{BLACK}Återställ
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
+STR_AI_SETTINGS_SETTING_DEVIATION                               :{STRING}: {ORANGE}[{STRING}, {STRING}]
+STR_AI_SETTINGS_JUST_DEVIATION                                  :[{STRING}, {STRING}]
 
 
 # Textfile window
+STR_TEXTFILE_JUMPLIST                                           :{WHITE}Innehållsförteckning
+STR_TEXTFILE_JUMPLIST_TOOLTIP                                   :{BLACK}Hoppa snabbt till en sektion i den uppvisade filen via denna lista
+STR_TEXTFILE_JUMPLIST_ITEM                                      :{WHITE}{STRING}
+STR_TEXTFILE_NAVBACK_TOOLTIP                                    :{BLACK}Gå bakåt i navigationshistoriken
+STR_TEXTFILE_NAVFORWARD_TOOLTIP                                 :{BLACK}Gå framåt igen i navigationshistoriken
 STR_TEXTFILE_WRAP_TEXT                                          :{WHITE}Använd radbrytning
 STR_TEXTFILE_WRAP_TEXT_TOOLTIP                                  :{BLACK}Bryt rader så att all text får plats i fönstret utan att man behöver skrolla
-STR_TEXTFILE_VIEW_README                                        :{BLACK}Visa manual
+STR_TEXTFILE_VIEW_README                                        :{BLACK}Manual
+STR_TEXTFILE_VIEW_README_TOOLTIP                                :Visa manual för detta innehåll
 STR_TEXTFILE_VIEW_CHANGELOG                                     :{BLACK}Ändringshistorik
+STR_TEXTFILE_VIEW_CHANGELOG_TOOLTIP                             :Visa ändringshistorik för detta innehåll
 STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}Licens
+STR_TEXTFILE_VIEW_LICENCE_TOOLTIP                               :Visa licens för detta innehåll
 ###length 5
 STR_TEXTFILE_README_CAPTION                                     :{WHITE} {STRING}-manual för {STRING}
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}Ändringshistorik för {STRING} {STRING}
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}Licens för {STRING}{STRING}
 STR_TEXTFILE_SURVEY_RESULT_CAPTION                              :{WHITE}Förhandsgranskning av enkätresultat.
+STR_TEXTFILE_GAME_MANUAL_CAPTION                                :{WHITE}OpenTTD-dokument '{STRING}'
 
 
 # Vehicle loading indicators
@@ -4926,6 +5110,13 @@ STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT                            :{WHITE}Kan inte
 
 STR_ERROR_DEPOT_WRONG_DEPOT_TYPE                                :Felaktig depå-typ
 
+# Depot unbunching related errors
+STR_ERROR_UNBUNCHING_ONLY_ONE_ALLOWED                           :{WHITE}... kan endast inneha en utglesningsorder
+STR_ERROR_UNBUNCHING_NO_FULL_LOAD                               :{WHITE}... kan inte använda fulla lastordrar när fordonet har en utglesningsorder
+STR_ERROR_UNBUNCHING_NO_UNBUNCHING_FULL_LOAD                    :{WHITE}... kan inte glesa ut ett fordon med en full lastorder
+STR_ERROR_UNBUNCHING_NO_CONDITIONAL                             :{WHITE}... kan inte använda villkorade ordrar när fordonet har en utglesningsorder
+STR_ERROR_UNBUNCHING_NO_UNBUNCHING_CONDITIONAL                  :{WHITE}... kan inte glesa ut ett fordon med en villkorad order
+
 # Autoreplace related errors
 STR_ERROR_TRAIN_TOO_LONG_AFTER_REPLACEMENT                      :{WHITE}{VEHICLE} är för långt efter utbyte
 STR_ERROR_AUTOREPLACE_NOTHING_TO_DO                             :{WHITE}Inga regler för automatisk förnyelse/utbyte av fordon är aktiverade
@@ -5139,6 +5330,7 @@ STR_ERROR_CAN_T_TIMETABLE_VEHICLE                               :{WHITE}Kan inte
 STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS                       :{WHITE}Fordon kan enbart vänta vid stationer
 STR_ERROR_TIMETABLE_NOT_STOPPING_HERE                           :{WHITE}Detta fordon stannar inte vid denna station
 STR_ERROR_TIMETABLE_INCOMPLETE                                  :{WHITE}... tidtabellen är ofullständig
+STR_ERROR_TIMETABLE_NOT_STARTED                                 :{WHITE}... tidtabellen har inte startat än
 
 # Sign related errors
 STR_ERROR_TOO_MANY_SIGNS                                        :{WHITE}... för många skyltar
@@ -5584,6 +5776,7 @@ STR_UNKNOWN_STATION                                             :okänd station
 STR_DEFAULT_SIGN_NAME                                           :Skylt
 STR_COMPANY_SOMEONE                                             :någon
 
+STR_SAVEGAME_DURATION_REALTIME                                  :{NUM}h {NUM}m
 STR_SAVEGAME_NAME_DEFAULT                                       :{COMPANY}, {STRING}
 STR_SAVEGAME_NAME_SPECTATOR                                     :Åskådare, {1:STRING}
 
@@ -5616,6 +5809,11 @@ STR_STATION_NAME                                                :{STATION}
 STR_TOWN_NAME                                                   :{TOWN}
 STR_VEHICLE_NAME                                                :{VEHICLE}
 STR_WAYPOINT_NAME                                               :{WAYPOINT}
+
+STR_CURRENCY_SHORT_KILO                                         :{NBSP}t
+STR_CURRENCY_SHORT_MEGA                                         :{NBSP}mn
+STR_CURRENCY_SHORT_GIGA                                         :{NBSP}md
+STR_CURRENCY_SHORT_TERA                                         :{NBSP}bn
 
 STR_JUST_CARGO                                                  :{CARGO_LONG}
 STR_JUST_RIGHT_ARROW                                            :{RIGHT_ARROW}

@@ -14,6 +14,7 @@
 
 extern Cheats _cheats;
 
+bool CheatWindowMayBeShown();
 void ShowCheatWindow();
 
 bool CheatHasBeenUsed();

@@ -72,12 +72,11 @@ STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED                     :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED                   :{TINY_FONT}{BLACK}Platba za doručení 1 jednotky (nebo 1,000 litrů) nákladu do vzdálenosti 200 políček
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_MINUTES                   :{TINY_FONT}{BLACK}Minuty v přepravě
 STR_GRAPH_STATION_CARGO_CAPTION                                 :{WHITE}{STATION} - Historie čekajícího nákladu
-STR_GRAPH_STATION_CARGO_X_LABEL                                 :{TINY_FONT}{BLACK}Vývoj za posledních {NUM} dnů
+STR_GRAPH_STATION_CARGO_X_LABEL_DAYS                            :{TINY_FONT}{BLACK}Vývoj za posledních {NUM} dnů
 STR_GRAPH_STATION_CARGO_TITLE                                   :{TINY_FONT}{BLACK}Jednotky nákladu čekající ve stanici
 
-STR_GRAPH_CARGO_DAYS_MODE                                       :{TINY_FONT}{BLACK}Dny v přepravě
 STR_GRAPH_CARGO_SPEED_MODE                                      :{TINY_FONT}{BLACK}Průměrná rychlost
-STR_GRAPH_CARGO_TOOLTIP_DAYS_MODE                               :{BLACK}Zobrazit na ose x dny v přepravě
+STR_GRAPH_CARGO_TOOLTIP_TIME_MODE                               :{BLACK}Zobrazit na ose x dny v přepravě
 STR_GRAPH_CARGO_TOOLTIP_SPEED_MODE                              :{BLACK}Zobrazit na ose x průměrnou rychlost
 
 STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE                       :{TINY_FONT}{BLACK}Společnosti

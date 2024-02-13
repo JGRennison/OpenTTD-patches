@@ -786,6 +786,15 @@ static int DrawCargoCapacityInfo(int left, int right, int y, TestedEngineDetails
 	return y;
 }
 
+static StringID GetRunningCostString()
+{
+	if (EconTime::UsingWallclockUnits()) {
+		return STR_PURCHASE_INFO_RUNNINGCOST_PERIOD;
+	} else {
+		return STR_PURCHASE_INFO_RUNNINGCOST_YEAR;
+	}
+}
+
 /* Draw rail wagon specific details */
 static int DrawRailWagonPurchaseInfo(int left, int right, int y, EngineID engine_number, const RailVehicleInfo *rvi, TestedEngineDetails &te)
 {
@@ -822,7 +831,7 @@ static int DrawRailWagonPurchaseInfo(int left, int right, int y, EngineID engine
 	/* Running cost */
 	if (rvi->running_cost_class != INVALID_PRICE) {
 		SetDParam(0, e->GetDisplayRunningCost());
-		DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
+		DrawString(left, right, y, GetRunningCostString());
 		y += GetCharacterHeight(FS_NORMAL);
 	}
 
@@ -863,7 +872,7 @@ static int DrawRailEnginePurchaseInfo(int left, int right, int y, EngineID engin
 	/* Running cost */
 	if (rvi->running_cost_class != INVALID_PRICE) {
 		SetDParam(0, e->GetDisplayRunningCost());
-		DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
+		DrawString(left, right, y, GetRunningCostString());
 		y += GetCharacterHeight(FS_NORMAL);
 	}
 
@@ -929,7 +938,7 @@ static int DrawRoadVehPurchaseInfo(int left, int right, int y, EngineID engine_n
 
 	/* Running cost */
 	SetDParam(0, e->GetDisplayRunningCost());
-	DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
+	DrawString(left, right, y, GetRunningCostString());
 	y += GetCharacterHeight(FS_NORMAL);
 
 	return y;
@@ -979,7 +988,7 @@ static int DrawShipPurchaseInfo(int left, int right, int y, EngineID engine_numb
 
 	/* Running cost */
 	SetDParam(0, e->GetDisplayRunningCost());
-	DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
+	DrawString(left, right, y, GetRunningCostString());
 	y += GetCharacterHeight(FS_NORMAL);
 
 	if (!IsArticulatedEngine(engine_number)) {
@@ -1039,7 +1048,7 @@ static int DrawAircraftPurchaseInfo(int left, int right, int y, EngineID engine_
 
 	/* Running cost */
 	SetDParam(0, e->GetDisplayRunningCost());
-	DrawString(left, right, y, STR_PURCHASE_INFO_RUNNINGCOST);
+	DrawString(left, right, y, GetRunningCostString());
 	y += GetCharacterHeight(FS_NORMAL);
 
 	/* Aircraft type */

@@ -240,6 +240,8 @@ struct EconTime : public DateDetail::BaseTime<struct EconTimeTag> {
 	{
 		return ConvertYMDToDate(ymd.year, ymd.month, ymd.day);
 	}
+
+	static bool UsingWallclockUnits(bool newgame = false);
 };
 
 namespace DateDetail {

@@ -159,7 +159,6 @@ STR_ABBREV_TOFFEE                                               :टॉ
 STR_ABBREV_BATTERIES                                            :बॅ
 STR_ABBREV_PLASTIC                                              :प्लॅ
 STR_ABBREV_FIZZY_DRINKS                                         :फस
-STR_ABBREV_NONE                                                 :NO
 STR_ABBREV_ALL                                                  :सर्व
 
 # 'Mode' of transport for cargoes
@@ -214,6 +213,9 @@ STR_UNITS_VOLUME_SHORT_SI                                       :{DECIMAL}m³
 STR_UNITS_VOLUME_LONG_METRIC                                    :{DECIMAL} लिटर
 STR_UNITS_VOLUME_LONG_SI                                        :{DECIMAL} m³
 
+
+
+# Time units used in string control characters
 
 
 
@@ -351,7 +353,7 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :बंद करा
 
 # Settings menu
-###length 15
+###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :खेळाचे पर्याय
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF पर्याय
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :पारदर्शकता पर्याय
@@ -432,24 +434,6 @@ STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :जागाच
 STR_ABOUT_MENU_SCREENSHOT                                       :द्श्य
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :ओपेन टीटीडी बद्दल
 
-# Place in highscore window
-###length 15
-STR_ORDINAL_NUMBER_1ST                                          :१
-STR_ORDINAL_NUMBER_2ND                                          :२
-STR_ORDINAL_NUMBER_3RD                                          :३
-STR_ORDINAL_NUMBER_4TH                                          :४
-STR_ORDINAL_NUMBER_5TH                                          :५
-STR_ORDINAL_NUMBER_6TH                                          :६
-STR_ORDINAL_NUMBER_7TH                                          :७
-STR_ORDINAL_NUMBER_8TH                                          :८
-STR_ORDINAL_NUMBER_9TH                                          :९
-STR_ORDINAL_NUMBER_10TH                                         :१०
-STR_ORDINAL_NUMBER_11TH                                         :११
-STR_ORDINAL_NUMBER_12TH                                         :१२
-STR_ORDINAL_NUMBER_13TH                                         :१३
-STR_ORDINAL_NUMBER_14TH                                         :१४
-STR_ORDINAL_NUMBER_15TH                                         :१५
-
 ###length 31
 STR_DAY_NUMBER_1ST                                              :१
 STR_DAY_NUMBER_2ND                                              :२
@@ -525,8 +509,8 @@ STR_GRAPH_CARGO_DELIVERED_CAPTION                               :{WHITE}वि�
 STR_GRAPH_COMPANY_PERFORMANCE_RATINGS_CAPTION                   :{WHITE}कंपनी कामगिरी रेटिंग (कमाल रेटिंग = 1000)
 STR_GRAPH_COMPANY_VALUES_CAPTION                                :{WHITE}कंपनी मूल्ये
 
+
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}मालवाहू भरणा दर
-STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL                           :{TINY_FONT}{BLACK}संक्रमणादरम्यान दिवस
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}मालवाहू 10 युनिट (किंवा 10,000 लिटर) 20 चौरस अंतरावर वितरण भरणा
 STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}सर्व सक्षम
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}सर्व अक्षम
@@ -571,10 +555,8 @@ STR_PERFORMANCE_DETAIL_CARGO                                    :{BLACK}मा�
 STR_PERFORMANCE_DETAIL_MONEY                                    :{BLACK}पैसा:
 STR_PERFORMANCE_DETAIL_LOAN                                     :{BLACK}कर्ज:
 STR_PERFORMANCE_DETAIL_TOTAL                                    :{BLACK}एकूण:
+###next-name-looks-similar
 
-###length 10
-STR_PERFORMANCE_DETAIL_VEHICLES_TOOLTIP                         :{BLACK}गेल्या वर्षी नफा दिल्या वाहनांची संख्या. या वाहने, गाड्या, जहाजे, विमानाची समावेश आहे.
-STR_PERFORMANCE_DETAIL_MIN_PROFIT_TOOLTIP                       :{BLACK}सर्वात कमी उत्पन्न वाहनाच्या नफा (दोन वर्षे पेक्षा फक्त वाहने जुन्या मानले जातात)
 STR_PERFORMANCE_DETAIL_MIN_INCOME_TOOLTIP                       :{BLACK}गेल्या 12 मात्रेत सर्वात कमी नफा तिमाहीत केली रोख
 STR_PERFORMANCE_DETAIL_MAX_INCOME_TOOLTIP                       :{BLACK}गेल्या 12 मात्रेत सर्वाधिक नफा तिमाहीत केली रोख
 STR_PERFORMANCE_DETAIL_DELIVERED_TOOLTIP                        :{BLACK}गेल्या चार मात्रेत वितरित कार्गो एकके
@@ -739,6 +721,9 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :अन्य
 
 
 
+
+
+
 # Custom currency window
 
 
@@ -787,6 +772,7 @@ STR_CONFIG_SETTING_REALISTIC                                    :खरेखु
 ###length 3
 
 
+
 ###setting-zero-is-special
 
 
@@ -794,6 +780,7 @@ STR_CONFIG_SETTING_REALISTIC                                    :खरेखु
 
 
 
+###length 2
 
 ###setting-zero-is-special
 
@@ -827,13 +814,18 @@ STR_CONFIG_SETTING_SMOKE_AMOUNT                                 :वाहना
 
 ###length 3
 
+###length 2
+
+###length 2
 
 
 ###length 3
 
 ###length 4
 
+###length 2
 
+###length 2
 
 
 
@@ -852,6 +844,13 @@ STR_CONFIG_SETTING_WARN_LOST_VEHICLE                            : वाहन �
 
 ###length 3
 
+###length 2
+
+
+###length 2
+
+
+###setting-zero-is-special
 
 
 
@@ -933,6 +932,9 @@ STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_ACTIONS              :सर्व �
 
 
 
+###length 2
+
+###length 2
 
 
 
@@ -946,8 +948,6 @@ STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_ACTIONS              :सर्व �
 
 
 
-
-###length 3
 
 
 
@@ -1015,7 +1015,6 @@ STR_CONFIG_SETTING_STATUSBAR_POS                                :स्टेट
 
 
 
-###length 5
 
 ###length 3
 
@@ -1104,7 +1103,6 @@ STR_NETWORK_SERVER_LIST_GAME_NAME                               :{BLACK}ना�
 STR_NETWORK_SERVER_LIST_GENERAL_ONLINE                          :{BLACK}{COMMA}/{COMMA} - {COMMA}/{COMMA}
 STR_NETWORK_SERVER_LIST_MAP_SIZE_SHORT                          :{BLACK}{COMMA}x{COMMA}
 STR_NETWORK_SERVER_LIST_DATE_CAPTION                            :{BLACK}तिथी
-STR_NETWORK_SERVER_LIST_YEARS_CAPTION                           :{BLACK}वर्ष
 
 
 
@@ -1396,8 +1394,8 @@ STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_GENERAL             :{ORANGE}{STRING
 STR_LOCAL_AUTHORITY_COMPANY_RATING                              :{YELLOW}{COMPANY} {COMPANY_NUM}: {ORANGE}{STRING}
 
 ###length 8
+###next-name-looks-similar
 
-###length 8
 
 # Goal window
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
@@ -1670,7 +1668,6 @@ STR_VEHICLE_VIEW_CAPTION                                        :{WHITE}{VEHICLE
 # Order view
 
 STR_ORDER_INDEX                                                 :{COMMA}:{NBSP}
-STR_ORDER_TEXT                                                  :{STRING} {STRING} {STRING}
 
 
 # Order bottom buttons
@@ -1678,6 +1675,10 @@ STR_ORDER_TEXT                                                  :{STRING} {STRIN
 
 
 
+
+# Depot action tooltips, one per vehicle type
+###length VEHICLE_TYPES
+###next-name-looks-similar
 
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
@@ -1699,6 +1700,7 @@ STR_ORDERS_DELETE_ALL_TOOLTIP                                   :{BLACK}सर�
 
 STR_ORDER_GO_TO_NEAREST_DEPOT_FORMAT                            :{STRING} {STRING} {STRING}
 STR_ORDER_GO_TO_DEPOT_FORMAT                                    :{STRING} {DEPOT}
+
 
 
 STR_ORDER_GO_TO_STATION                                         :{STRING} {STATION} {STRING}
@@ -1817,6 +1819,8 @@ STR_ERROR_NOT_ALLOWED_WHILE_PAUSED                              :{WHITE} स्�
 
 
 
+
+# Depot unbunching related errors
 
 # Autoreplace related errors
 
@@ -2090,6 +2094,7 @@ STR_STATION_NAME                                                :{STATION}
 STR_TOWN_NAME                                                   :{TOWN}
 STR_VEHICLE_NAME                                                :{VEHICLE}
 STR_WAYPOINT_NAME                                               :{WAYPOINT}
+
 
 STR_JUST_CARGO                                                  :{CARGO_LONG}
 STR_JUST_CHECKMARK                                              :{CHECKMARK}

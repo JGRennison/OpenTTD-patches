@@ -67,12 +67,11 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Flugzeuge
 
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED                     :{TINY_FONT}{BLACK}Durchschnittliche Reisegeschwindigkeit ({STRING})
 STR_GRAPH_STATION_CARGO_CAPTION                                 :{WHITE}{STATION} - Historie der wartenden Fracht
-STR_GRAPH_STATION_CARGO_X_LABEL                                 :{TINY_FONT}{BLACK}Verlauf über die letzten {NUM} Tage
+STR_GRAPH_STATION_CARGO_X_LABEL_DAYS                            :{TINY_FONT}{BLACK}Verlauf über die letzten {NUM} Tage
 STR_GRAPH_STATION_CARGO_TITLE                                   :{TINY_FONT}{BLACK}Frachteinheiten an der Station wartend
 
-STR_GRAPH_CARGO_DAYS_MODE                                       :{TINY_FONT}{BLACK}Tage unterwegs
 STR_GRAPH_CARGO_SPEED_MODE                                      :{TINY_FONT}{BLACK}Durchschnittsgeschwindigkeit
-STR_GRAPH_CARGO_TOOLTIP_DAYS_MODE                               :{BLACK}Lieferzeit auf X-Achse des Diagramms anzeigen
+STR_GRAPH_CARGO_TOOLTIP_TIME_MODE                               :{BLACK}Lieferzeit auf X-Achse des Diagramms anzeigen
 STR_GRAPH_CARGO_TOOLTIP_SPEED_MODE                              :{BLACK}Durchschnittsgeschwindigkeit auf X-Achse des Diagramms anzeigen
 
 STR_SMALLMAP_SCREENSHOT                                         :{BLACK}Screenshot

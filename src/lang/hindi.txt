@@ -80,6 +80,9 @@ STR_UNITS_POWER_METRIC                                          :{DECIMAL}{NBSP}
 
 
 
+# Time units used in string control characters
+
+
 
 # Common window strings
 
@@ -128,7 +131,7 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :निकास
 
 # Settings menu
-###length 15
+###length 16
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :समायोजन
 STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED                           :पथ-संकेतों के नाम दिखायें
 STR_SETTINGS_MENU_TRANSPARENT_SIGNS                             :पारदर्शी संकेत
@@ -165,10 +168,6 @@ STR_RAIL_MENU_ELRAIL_CONSTRUCTION                               :विद्य
 
 # About menu
 
-# Place in highscore window
-###length 15
-STR_ORDINAL_NUMBER_2ND                                          :द्वितीय
-
 ###length 31
 STR_DAY_NUMBER_14TH                                             :१४
 STR_DAY_NUMBER_15TH                                             :१५
@@ -187,6 +186,7 @@ STR_GRAPH_Y_LABEL                                               :{TINY_FONT}{STR
 STR_GRAPH_Y_LABEL_NUMBER                                        :{TINY_FONT}{COMMA}
 
 
+
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
 
@@ -201,9 +201,8 @@ STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_PRESIDENT                  :राष्ट
 ###length 10
 STR_PERFORMANCE_DETAIL_VEHICLES                                 :{BLACK}वाहन:
 STR_PERFORMANCE_DETAIL_CARGO                                    :{BLACK}माल :
+###next-name-looks-similar
 
-###length 10
-STR_PERFORMANCE_DETAIL_MIN_PROFIT_TOOLTIP                       :{BLACK}सबसे कम आय में वाहन का लाभ (केवल दो वर्ष से अधिक पुराने वाहनों पर विचार किया जाता है)
 
 # Music window
 STR_MUSIC_TRACK_DIGIT                                           :{TINY_FONT}{DKGREEN}{ZEROFILL_NUM}
@@ -308,6 +307,9 @@ STR_GAME_OPTIONS_GUI_SCALE_FRAME                                :{BLACK}इं�
 
 
 
+
+
+
 # Custom currency window
 
 STR_CURRENCY_DECREASE_EXCHANGE_RATE_TOOLTIP                     :{BLACK}एक पाउंड (£) की तुलना में अपनी मुद्रा का अवमूल्यन करें
@@ -359,6 +361,7 @@ STR_CONFIG_SETTING_COMPANIES_OFF                                :बन्द
 ###length 3
 
 
+
 ###setting-zero-is-special
 
 
@@ -366,6 +369,7 @@ STR_CONFIG_SETTING_COMPANIES_OFF                                :बन्द
 
 
 
+###length 2
 
 ###setting-zero-is-special
 
@@ -403,6 +407,9 @@ STR_CONFIG_SETTING_MULTIPINDTOWN                                :प्रति
 
 ###length 3
 
+###length 2
+
+###length 2
 
 
 STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :निर्दिष्ट करें कि ट्रेनों को स्टेशन पर कहाँ रुकना चाहिये। स्टेशन में प्रवेश के पास 'समीप का छोर', स्टेशन के बीच में 'मध्य', और प्रवेश की उलटी ओर 'दूर का छोर' है। ध्यान दें कि यह विन्यास केवल नये निर्देशों के लिये मानक स्थापित करता है। प्रत्येक निर्देश को अलग से किसी अन्य व्यवहार के लिये स्थापित किया जा सकता है।
@@ -413,8 +420,10 @@ STR_CONFIG_SETTING_STOP_LOCATION_FAR_END                        :दूर क�
 
 ###length 4
 
+###length 2
 STR_CONFIG_SETTING_BRIBE_HELPTEXT                               :कंपनियों को स्थानीय नगर प्रशासन को रिश्वत देने की अनुमति दें। यदि रिश्वत पर किसी निरीक्षक की दृष्टि पड़ती है तो कंपनी छः महीने के लिये नगर में काम नहीं कर पायेगी।
 
+###length 2
 
 
 
@@ -435,6 +444,13 @@ STR_CONFIG_SETTING_ORDER_REVIEW_HELPTEXT                        :सक्षम
 ###length 3
 STR_CONFIG_SETTING_ORDER_REVIEW_OFF                             :नहीं
 
+###length 2
+
+
+###length 2
+
+
+###setting-zero-is-special
 
 
 
@@ -522,6 +538,9 @@ STR_CONFIG_SETTING_FAST_FORWARD_SPEED_LIMIT_ZERO                :सीमाह
 
 STR_CONFIG_SETTING_SOUND_NEWS                                   :समाचार पत्र: {STRING}
 
+###length 2
+
+###length 2
 
 
 
@@ -539,8 +558,6 @@ STR_CONFIG_SETTING_AI_BUILDS_TRAINS                             :कंप्य
 
 STR_CONFIG_SETTING_AI_BUILDS_AIRCRAFT                           :कंप्यूटर के लिए विमान अक्षम करें: {STRING}
 
-
-###length 3
 
 
 
@@ -580,7 +597,6 @@ STR_CONFIG_SETTING_ENDING_YEAR_VALUE                            :{NUM}
 
 
 ###length 2
-STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :केवल पथ संकेत
 
 ###length 2
 
@@ -620,7 +636,6 @@ STR_CONFIG_SETTING_DISTRIBUTION_MAIL                            :मेल क�
 
 
 
-###length 5
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_SI               :अंतर्राष्ट्रीय मानक (m/s)
 
 ###length 3
@@ -992,9 +1007,8 @@ STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}फै�
 
 ###length 8
 STR_LOCAL_AUTHORITY_ACTION_SMALL_ADVERTISING_CAMPAIGN           :लघु विज्ञापन अभियान
+###next-name-looks-similar
 
-###length 8
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION          :{YELLOW}नगरों के सड़क तंत्र के पुनर्निर्माण में निवेश करें।{}इससे अधिकतम ६ महीने तक यातायात में बहुत विघ्न पड़ता है।{}मूल्य : {CURRENCY_LONG}
 
 # Goal window
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
@@ -1259,7 +1273,6 @@ STR_VEHICLE_DETAIL_TAB_CAPACITIES                               :{BLACK}क्�
 # Order view
 
 STR_ORDER_INDEX                                                 :{COMMA}:{NBSP}
-STR_ORDER_TEXT                                                  :{STRING} {STRING} {STRING}
 
 
 # Order bottom buttons
@@ -1268,6 +1281,10 @@ STR_ORDER_TEXT                                                  :{STRING} {STRIN
 
 STR_ORDER_REFIT_TOOLTIP                                         :{BLACK}इस मार्ग पर ढोये जा रहे नौभार को बदलने के लिये नये प्रकार का नौभार चुनें। Ctrl+क्लिक करने पर परिवर्तन का आदेश निरस्त हो जायेगा।
 
+
+# Depot action tooltips, one per vehicle type
+###length VEHICLE_TYPES
+###next-name-looks-similar
 
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
@@ -1294,6 +1311,7 @@ STR_ORDER_TRAIN_DEPOT                                           :ट्रेन
 
 STR_ORDER_GO_TO_NEAREST_DEPOT_FORMAT                            :{STRING} {STRING} {STRING}
 STR_ORDER_GO_TO_DEPOT_FORMAT                                    :{STRING} {DEPOT}
+
 
 
 STR_ORDER_GO_TO_STATION                                         :{STRING} {STATION} {STRING}
@@ -1422,6 +1440,8 @@ STR_ERROR_CAN_T_BUILD_TRAM_DEPOT                                :{WHITE}यह�
 
 STR_ERROR_UNABLE_TO_FIND_ROUTE_TO                               :{WHITE} स्थानीय डिपो के लिए मार्ग खोजने में असमर्थ
 
+
+# Depot unbunching related errors
 
 # Autoreplace related errors
 STR_ERROR_AUTOREPLACE_NOTHING_TO_DO                             :{WHITE}स्वतः नवीनीकरण/बदलाव का कोई भी नियम लागू नहीं किया गया
@@ -1607,6 +1627,7 @@ STR_STATION_NAME                                                :{STATION}
 STR_TOWN_NAME                                                   :{TOWN}
 STR_VEHICLE_NAME                                                :{VEHICLE}
 STR_WAYPOINT_NAME                                               :{WAYPOINT}
+
 
 STR_JUST_CARGO                                                  :{CARGO_LONG}
 STR_JUST_CHECKMARK                                              :{CHECKMARK}

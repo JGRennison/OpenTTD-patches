@@ -131,7 +131,7 @@ void CheckGameCompatibility(NetworkGameInfo &ngi, bool extended)
 void FillStaticNetworkServerGameInfo()
 {
 	_network_game_info.use_password   = !_settings_client.network.server_password.empty();
-	_network_game_info.start_date     = CalTime::ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1);
+	_network_game_info.calendar_start = CalTime::ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1);
 	_network_game_info.clients_max    = _settings_client.network.max_clients;
 	_network_game_info.companies_max  = _settings_client.network.max_companies;
 	_network_game_info.map_width      = MapSizeX();
@@ -157,7 +157,7 @@ const NetworkServerGameInfo *GetCurrentNetworkServerGameInfo()
 	 */
 	_network_game_info.companies_on  = (byte)Company::GetNumItems();
 	_network_game_info.spectators_on = NetworkSpectatorCount();
-	_network_game_info.game_date     = CalTime::CurDate();
+	_network_game_info.calendar_date = CalTime::CurDate();
 	_network_game_info.ticks_playing = _scaled_tick_counter;
 	return &_network_game_info;
 }
@@ -239,8 +239,8 @@ void SerializeNetworkGameInfo(Packet *p, const NetworkServerGameInfo *info, bool
 	}
 
 	/* NETWORK_GAME_INFO_VERSION = 3 */
-	p->Send_uint32(info->game_date.base());
-	p->Send_uint32(info->start_date.base());
+	p->Send_uint32(info->calendar_date.base());
+	p->Send_uint32(info->calendar_start.base());
 
 	/* NETWORK_GAME_INFO_VERSION = 2 */
 	p->Send_uint8 (info->companies_max);
@@ -279,8 +279,8 @@ void SerializeNetworkGameInfoExtended(Packet *p, const NetworkServerGameInfo *in
 
 	p->Send_uint8(version); // version num
 
-	p->Send_uint32(info->game_date.base());
-	p->Send_uint32(info->start_date.base());
+	p->Send_uint32(info->calendar_date.base());
+	p->Send_uint32(info->calendar_start.base());
 	p->Send_uint8 (info->companies_max);
 	p->Send_uint8 (info->companies_on);
 	p->Send_uint8 (info->clients_max); // Used to be max-spectators
@@ -408,8 +408,8 @@ void DeserializeNetworkGameInfo(Packet *p, NetworkGameInfo *info, const GameInfo
 		}
 
 		case 3:
-			info->game_date      = Clamp(p->Recv_uint32(), 0, MAX_DATE.base());
-			info->start_date     = Clamp(p->Recv_uint32(), 0, MAX_DATE.base());
+			info->calendar_date  = Clamp(p->Recv_uint32(), 0, MAX_DATE.base());
+			info->calendar_start = Clamp(p->Recv_uint32(), 0, MAX_DATE.base());
 			FALLTHROUGH;
 
 		case 2:
@@ -427,8 +427,8 @@ void DeserializeNetworkGameInfo(Packet *p, NetworkGameInfo *info, const GameInfo
 			info->clients_on     = p->Recv_uint8 ();
 			info->spectators_on  = p->Recv_uint8 ();
 			if (game_info_version < 3) { // 16 bits dates got scrapped and are read earlier
-				info->game_date    = p->Recv_uint16() + CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR;
-				info->start_date   = p->Recv_uint16() + CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR;
+				info->calendar_date  = p->Recv_uint16() + CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR;
+				info->calendar_start = p->Recv_uint16() + CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR;
 			}
 			if (game_info_version < 6) while (p->Recv_uint8() != 0) {} // Used to contain the map-name.
 
@@ -463,8 +463,8 @@ void DeserializeNetworkGameInfoExtended(Packet *p, NetworkGameInfo *info)
 
 	NewGRFSerializationType newgrf_serialisation = NST_GRFID_MD5;
 
-	info->game_date      = Clamp(p->Recv_uint32(), 0, MAX_DATE.base());
-	info->start_date     = Clamp(p->Recv_uint32(), 0, MAX_DATE.base());
+	info->calendar_date  = Clamp(p->Recv_uint32(), 0, MAX_DATE.base());
+	info->calendar_start = Clamp(p->Recv_uint32(), 0, MAX_DATE.base());
 	info->companies_max  = p->Recv_uint8 ();
 	info->companies_on   = p->Recv_uint8 ();
 	p->Recv_uint8(); // Used to contain max-spectators.

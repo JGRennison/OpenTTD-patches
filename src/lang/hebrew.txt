@@ -173,7 +173,6 @@ STR_ABBREV_TOFFEE                                               :טפ
 STR_ABBREV_BATTERIES                                            :בטריות
 STR_ABBREV_PLASTIC                                              :פל
 STR_ABBREV_FIZZY_DRINKS                                         :ממ
-STR_ABBREV_NONE                                                 :כל
 STR_ABBREV_ALL                                                  :הכל
 
 # 'Mode' of transport for cargoes
@@ -239,6 +238,9 @@ STR_UNITS_FORCE_SI                                              :{DECIMAL} קי�
 STR_UNITS_HEIGHT_IMPERIAL                                       :{DECIMAL} רגל
 STR_UNITS_HEIGHT_METRIC                                         :{DECIMAL} מ'
 STR_UNITS_HEIGHT_SI                                             :{DECIMAL} מ'
+
+# Time units used in string control characters
+
 
 
 # Common window strings
@@ -395,7 +397,7 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :יציאה
 
 # Settings menu
-###length 15
+###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :אפשרויות המשחק
 STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE                          :הגדרות
 STR_SETTINGS_MENU_AI_SETTINGS                                   :הגדרות בינה מלאכותית
@@ -487,24 +489,6 @@ STR_ABOUT_MENU_SPRITE_ALIGNER                                   :מיישר ספ
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :הדלק/כבה הצגת תיבות גבול של ספרייטים
 STR_ABOUT_MENU_TOGGLE_DIRTY_BLOCKS                              :הפעל/כבה צביעת בלוקים לא מעודכנים
 
-# Place in highscore window
-###length 15
-STR_ORDINAL_NUMBER_1ST                                          :1
-STR_ORDINAL_NUMBER_2ND                                          :2
-STR_ORDINAL_NUMBER_3RD                                          :3
-STR_ORDINAL_NUMBER_4TH                                          :4
-STR_ORDINAL_NUMBER_5TH                                          :5
-STR_ORDINAL_NUMBER_6TH                                          :6
-STR_ORDINAL_NUMBER_7TH                                          :7
-STR_ORDINAL_NUMBER_8TH                                          :8
-STR_ORDINAL_NUMBER_9TH                                          :9
-STR_ORDINAL_NUMBER_10TH                                         :10
-STR_ORDINAL_NUMBER_11TH                                         :11
-STR_ORDINAL_NUMBER_12TH                                         :12
-STR_ORDINAL_NUMBER_13TH                                         :13
-STR_ORDINAL_NUMBER_14TH                                         :14
-STR_ORDINAL_NUMBER_15TH                                         :15
-
 ###length 31
 STR_DAY_NUMBER_1ST                                              :1
 STR_DAY_NUMBER_2ND                                              :2
@@ -580,8 +564,8 @@ STR_GRAPH_CARGO_DELIVERED_CAPTION                               :{WHITE}יחיד
 STR_GRAPH_COMPANY_PERFORMANCE_RATINGS_CAPTION                   :{WHITE}(מדד הביצועים (הציון המירבי = 1000
 STR_GRAPH_COMPANY_VALUES_CAPTION                                :{WHITE}שווי החברות
 
+
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}שיעורי התשלום עבור הובלת מטענים
-STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL                           :{TINY_FONT}{BLACK}משך ההובלה בימים
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}תשלום עבור הובלת 10 יחידות (או 10,000 ליטר) למרחק 20 משבצות
 STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}אפשר הכל
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}בטל הכל
@@ -628,11 +612,9 @@ STR_PERFORMANCE_DETAIL_CARGO                                    :{BLACK} : סו�
 STR_PERFORMANCE_DETAIL_MONEY                                    :{BLACK}: מאזן
 STR_PERFORMANCE_DETAIL_LOAN                                     :{BLACK} : הלוואה
 STR_PERFORMANCE_DETAIL_TOTAL                                    :{BLACK}: סה"כ
+###next-name-looks-similar
 
-###length 10
-STR_PERFORMANCE_DETAIL_VEHICLES_TOOLTIP                         :{BLACK}מספר כלי תחבורה שהציגו רווחים בשנה החולפת. נכללים רכבים, רכבות, כלי שייט וכלי טייס
 STR_PERFORMANCE_DETAIL_STATIONS_TOOLTIP                         :{BLACK}מספר התחנות שקיבלו שירות לאחרונה. כל חלק של תחנה (למשל, תחנות רכבת, תחנות אוטובוס, נמלי תעופה) נספרים בנפרד, אפילו אם הם חלקים של תחנה אחת
-STR_PERFORMANCE_DETAIL_MIN_PROFIT_TOOLTIP                       :{BLACK}(הרווח של כלי התחבורה בעלי ההכנסה הנמוכה ביותר (רק כלים בני שנתיים ויותר נלקחים בחשבון
 STR_PERFORMANCE_DETAIL_MIN_INCOME_TOOLTIP                       :{BLACK}כמות הכסף שהרוויחה החברה בחודש הגרוע ביותר ב-12 הריבעונים האחרונים
 STR_PERFORMANCE_DETAIL_MAX_INCOME_TOOLTIP                       :{BLACK}כמות הכסף שהרוויחה החברה בחודש המוצלח ביותר ב-12 הריבעונים האחרונים
 STR_PERFORMANCE_DETAIL_DELIVERED_TOOLTIP                        :{BLACK}מספר יחידות המטען ששונעו בארבעת הריבעונים הארונים
@@ -858,7 +840,6 @@ STR_NEWS_VEHICLE_IS_GETTING_VERY_OLD                            :{WHITE}מתיי
 STR_NEWS_VEHICLE_IS_GETTING_VERY_OLD_AND                        :{WHITE}מתיישן מאוד, וזקוק להחלפה בדחיפות {VEHICLE}
 STR_NEWS_TRAIN_IS_STUCK                                         :אינה יכולה למצוא נתיב המשך {WHITE}{VEHICLE}
 STR_NEWS_VEHICLE_IS_LOST                                        :{WHITE}{VEHICLE} הל לאיבוד
-STR_NEWS_VEHICLE_IS_UNPROFITABLE                                :ריווחי {WHITE}{VEHICLE} שנה שעברה הם {CURRENCY_LONG}
 STR_NEWS_AIRCRAFT_DEST_TOO_FAR                                  :{WHITE}{VEHICLE}אינ{G 0 "ו" "ה"} יכול{G 0 "" "ה"} להגיע אל היעד הבא כי הוא מחוץ לטווח
 
 STR_NEWS_ORDER_REFIT_FAILED                                     :כשלון בהתאמה מחדש הביא לעצירה של {WHITE}{VEHICLE}
@@ -874,9 +855,7 @@ STR_NEWS_OFFER_OF_SUBSIDY_EXPIRED                               :{BIG_FONT}{BLAC
 STR_NEWS_SUBSIDY_WITHDRAWN_SERVICE                              :{BIG_FONT}{BLACK}סובסידיה הוסרה:{}{}שירות הובלת {STRING.plural} מ{STRING} אל {STRING} אינו מסובסד יותר.
 ###length 4
 
-STR_NEWS_ROAD_REBUILDING                                        :{BIG_FONT}{BLACK}פקקי תנועה ענקיים ב{TOWN}!{}{} תכנית לשיפוץ מקיף של הכבישים במימון {STRING} מביאה לקטסטרופת תנועה לשישה חודשים
 STR_NEWS_EXCLUSIVE_RIGHTS_TITLE                                 :{BIG_FONT}{BLACK}מונופול תחבורה!
-STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION                           :{BIG_FONT}{BLACK}הרשות המקומית של {TOWN} חותמת חוזה עם {STRING} המעניק זכויות תעבורה בלעדיות למשך שנה!
 
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}השקפה {COMMA}
@@ -979,6 +958,9 @@ STR_GAME_OPTIONS_BASE_SFX_DESCRIPTION_TOOLTIP                   :{BLACK}מידע
 STR_GAME_OPTIONS_BASE_MUSIC                                     :{BLACK}ערכת מוזיקת בסיס
 STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :{BLACK}בחר בערכת מוזיקת הבסיס לשימוש
 STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :{BLACK}מידע נוסף אודות ערכת המוזיקה הבסיסית
+
+
+
 
 
 STR_ERROR_RESOLUTION_LIST_FAILED                                :{WHITE}שגיאה ביצירת רשימה של רזולוציות אפשריות
@@ -1140,6 +1122,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_CENTER                        :מרכז
 STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :ימין
 
 
+
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :סכום הלוואה ראשוני: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :סכום מירבי שחברה יכולה ללוות (מבלי לקחת בחשבון אינפלציה)
 ###setting-zero-is-special
@@ -1160,6 +1143,7 @@ STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER                           :מכפיל עב
 STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER_HELPTEXT                  :קבע כמה משולם עבור חיבורים מסובסדים
 
 STR_CONFIG_SETTING_SUBSIDY_DURATION                             :זמן סובסידיה: {STRING}
+###length 2
 
 ###setting-zero-is-special
 STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :אין סובידיות
@@ -1252,7 +1236,10 @@ STR_CONFIG_SETTING_SIGNALSIDE_LEFT                              :משמאל
 STR_CONFIG_SETTING_SIGNALSIDE_DRIVING_SIDE                      :בצד הנסיעה
 STR_CONFIG_SETTING_SIGNALSIDE_RIGHT                             :מימין
 
+###length 2
 STR_CONFIG_SETTING_SHOWFINANCES                                 :הראה את חלון מערך הכספים בכל סוף שנה : {STRING}
+
+###length 2
 STR_CONFIG_SETTING_SHOWFINANCES_HELPTEXT                        :אם מאופשר, חלון הכספים מופיע בסוף כל שנה כדי לאפשר בחינה קלה של המצב הכספי של החברה
 
 STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT                           :הוראות חדשות הם תמיד 'לא לעצור' כבחירת מחדל: {STRING}
@@ -1274,9 +1261,11 @@ STR_CONFIG_SETTING_AUTOSCROLL_MAIN_VIEWPORT                     :חלון תצו
 STR_CONFIG_SETTING_AUTOSCROLL_EVERY_VIEWPORT                    :כל חלון תצוגה
 
 STR_CONFIG_SETTING_BRIBE                                        :אפשר נתינת שוחד לערים מקומיים {STRING}
+###length 2
 STR_CONFIG_SETTING_BRIBE_HELPTEXT                               :השואפשר לחברות לנסות לשחד את הרשות העירונית המקומית. אם חד מתגלה ע"י פקח, החברה לא תוכל לפעול בעיירה במשך שישה חודשים
 
 STR_CONFIG_SETTING_ALLOW_EXCLUSIVE                              :אפשר קנייה של אפשריות הובלה בלעדיים : {STRING}
+###length 2
 STR_CONFIG_SETTING_ALLOW_EXCLUSIVE_HELPTEXT                     :אם חברה קונה זכויות תעבורה בלעדיות בעיירה, תחנות (נוסעים ומטענים) של יריבים לא יקבלו מטען למשך שנה שלמה
 
 STR_CONFIG_SETTING_ALLOW_FUND_BUILDINGS                         :אפשר מימון מבנים: {STRING}
@@ -1329,10 +1318,17 @@ STR_CONFIG_SETTING_ORDER_REVIEW_EXDEPOT                         :כן,למעט �
 STR_CONFIG_SETTING_ORDER_REVIEW_ON                              :עבור כל כלי רכב
 
 STR_CONFIG_SETTING_WARN_INCOME_LESS                             :{STRING} :התרע על רכבים בעלי הכנסה שלילית
+###length 2
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :כאשר מאופשר, נשלח מבזק חדשות כאשר רכב לא הכניס שום רווח במשך שנה קלנדרית
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :{STRING} :בטל התיישנות כלי רכב
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :כאשר מאופשר, כל סוגי כלי הרכב נשארים זמינים לעד אחרי השקתם
+
+###length 2
+
+
+###setting-zero-is-special
+
 
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE                            :חידוש עצמי של רכב כשהוא נהיה ישן: {STRING}
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE_HELPTEXT                   :כאשר מאופשר, רכב המתקרב לסוף חייו מוחלף אוטומטית כאשר תנאי החידוש מתקיימים
@@ -1552,7 +1548,10 @@ STR_CONFIG_SETTING_SOUND_TICKER_HELPTEXT                        :השמע צלי
 STR_CONFIG_SETTING_SOUND_NEWS                                   :עיתון: {STRING}
 STR_CONFIG_SETTING_SOUND_NEWS_HELPTEXT                          :השמע צליל בעת הצגת עיתונים
 
+###length 2
 STR_CONFIG_SETTING_SOUND_NEW_YEAR                               :סוף שנה: {STRING}
+
+###length 2
 STR_CONFIG_SETTING_SOUND_NEW_YEAR_HELPTEXT                      :השמע צליל בסוף שנה המסכם את תפקוד החברה בהשוואה לשנה הקודמת
 
 STR_CONFIG_SETTING_SOUND_CONFIRM                                :בנייה: {STRING}
@@ -1593,13 +1592,6 @@ STR_CONFIG_SETTING_AI_BUILDS_AIRCRAFT_HELPTEXT                  :אפשור הג
 
 STR_CONFIG_SETTING_AI_BUILDS_SHIPS                              :{STRING} :מנע הפעלת כלי שייט ע”י שחקני המחשב
 STR_CONFIG_SETTING_AI_BUILDS_SHIPS_HELPTEXT                     :אפשור הגדרה זו הופך בניית אוניות לבלתי אפשרית עבור שחקן מחשב
-
-STR_CONFIG_SETTING_AI_PROFILE                                   :פרופיל הגדרות ברירת מחדל: {STRING}
-STR_CONFIG_SETTING_AI_PROFILE_HELPTEXT                          :בחר באיזה פרופיל הגדרות להשתמש עבור שחקני מחשב אקראיים או עבור ערכים ראשוניים בעת הוספת שחקן מחשב חדש או סקריפט משחק
-###length 3
-STR_CONFIG_SETTING_AI_PROFILE_EASY                              :קל
-STR_CONFIG_SETTING_AI_PROFILE_MEDIUM                            :בינוני
-STR_CONFIG_SETTING_AI_PROFILE_HARD                              :קשה
 
 STR_CONFIG_SETTING_AI_IN_MULTIPLAYER                            :{STRING} :אפשר שחקני מחשב במשחק רשת
 STR_CONFIG_SETTING_AI_IN_MULTIPLAYER_HELPTEXT                   :אפשר לשחקני מחשב להשתתף במשחקים מרובי משתתפים
@@ -1709,7 +1701,6 @@ STR_CONFIG_SETTING_SEMAPHORE_BUILD_BEFORE_DATE_HELPTEXT         :קבע את ה�
 STR_CONFIG_SETTING_CYCLE_SIGNAL_TYPES                           :{STRING} :הצג חלופות עבור רמזורים
 STR_CONFIG_SETTING_CYCLE_SIGNAL_TYPES_HELPTEXT                  :בחר בין אילו סוגי רמזורים לעבור כאשר מקליקים על "בנה רמזור" תוך לחיצה על מקש Ctrl
 ###length 2
-STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :רמזורי נתיב בלבד
 STR_CONFIG_SETTING_CYCLE_SIGNAL_ALL                             :הכל
 
 ###length 2
@@ -1822,7 +1813,6 @@ STR_CONFIG_SETTING_SHORT_PATH_SATURATION_HELPTEXT               :לעיתים ק
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY                  :יחידות מהירות: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_HELPTEXT         :כאשר מוצגת מהירות השתמש ביחידות הנבחרות
-###length 5
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_IMPERIAL         :בריטית (מייל לשעה)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_METRIC           :מטרי (קמ"ש)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_SI               :בינלאומית (מטר לשניה)
@@ -1978,7 +1968,6 @@ STR_ABANDON_SCENARIO_QUERY                                      :{YELLOW}האם 
 
 # Cheat window
 STR_CHEATS                                                      :{WHITE}(cheats) טריקים
-STR_CHEATS_TOOLTIP                                              :{BLACK}תיבות הסימון מציינות האם השתמשת בטריק הנתון בעבר
 STR_CHEAT_MONEY                                                 :{LTBLUE}{CURRENCY_LONG}- הגדל את כמות הכסף במאזנך ל
 STR_CHEAT_CHANGE_COMPANY                                        :{ORANGE}{COMMA}{LTBLUE} :שחק כבעלי החברה
 STR_CHEAT_EXTRA_DYNAMITE                                        :{LTBLUE}טרקטור אימתני (הסרת מפעלים, רכיבים שאי אפשר להזיז): {ORANGE}{STRING}
@@ -2104,8 +2093,6 @@ STR_NETWORK_SERVER_LIST_MAP_SIZE_CAPTION                        :{BLACK}גודל
 STR_NETWORK_SERVER_LIST_MAP_SIZE_CAPTION_TOOLTIP                :{BLACK}גודל המפה במשחק{}לחץ למיון לפי שטח
 STR_NETWORK_SERVER_LIST_DATE_CAPTION                            :{BLACK}תאריך
 STR_NETWORK_SERVER_LIST_DATE_CAPTION_TOOLTIP                    :{BLACK}תאריך נוכחי
-STR_NETWORK_SERVER_LIST_YEARS_CAPTION                           :{BLACK}שנים
-STR_NETWORK_SERVER_LIST_YEARS_CAPTION_TOOLTIP                   :{BLACK}מספר שנים{}המשחק נמשך
 STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}'שפה, גירסת שרת וכו
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}בחר משחק מהרשימה
@@ -3196,8 +3183,6 @@ STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED_GENERAL            :{ORANGE}{STRING}{GREEN} נמסר
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED                     :{ORANGE}{CARGO_TINY} / {CARGO_LONG}{RED} (עדיין דרוש)
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED                    :{ORANGE}{CARGO_TINY} / {CARGO_LONG}{GREEN} (נמסר)
-STR_TOWN_VIEW_TOWN_GROWS_EVERY                                  :{BLACK}עיירה גדלה כל {P 0 " יום" ""}{ORANGE}{COMMA}{BLACK}{P "" " ימים"}
-STR_TOWN_VIEW_TOWN_GROWS_EVERY_FUNDED                           :{BLACK}עיירה גדלה כל {P 0 " יום" ""}{ORANGE}{COMMA}{BLACK}{P "" " ימים"} (ממומנת)
 STR_TOWN_VIEW_TOWN_GROW_STOPPED                                 :{BLACK}העיירה {RED}איננה{BLACK} גדלה
 STR_TOWN_VIEW_NOISE_IN_TOWN                                     :{ORANGE}{1:COMMA}{BLACK} :מירבית {ORANGE}{0:COMMA}{BLACK} :רמת הרעש המותרת בעיר זו
 STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}מקד את התצוגה על מיקום העיר. Ctrl+לחיצה פותח חלונית תצוגה חדשה במיקום העיר
@@ -3230,15 +3215,13 @@ STR_LOCAL_AUTHORITY_ACTION_STATUE_OF_COMPANY                    :בניית פס
 STR_LOCAL_AUTHORITY_ACTION_NEW_BUILDINGS                        :ממן מבנים חדשים
 STR_LOCAL_AUTHORITY_ACTION_EXCLUSIVE_TRANSPORT                  :קניית זכויות הובלה בלעדיות
 STR_LOCAL_AUTHORITY_ACTION_BRIBE                                :שחד את העיריה המקומית
+###next-name-looks-similar
 
-###length 8
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING            :{YELLOW}.התחל מסע פירסום מקומי קטן, כדי למשוך יותר נוסעים וסחורה לשירותי התחבורה שלך.{}עלות: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING           :{YELLOW}.התחל מסע פירסום מקומי בינוני, כדי למשוך יותר נוסעים וסחורה לשירותי התחבורה שלך.{}עלות: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{YELLOW}התחל מסע פרסום מקומי גדול, כדי למשוך יותר נוסעים וסחורות לשירותי התחבורה שלך..{}עלות: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION          :{YELLOW} ממן שיפוץ של מערכת הכבישים העירונית. הדבר גורם להפרעות תנועה ניכרות במשך כ-6 חודשים.{}עלות: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{YELLOW}.ּבנה פסל של לכבודו של בעל החברה.{}עלות: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{YELLOW}.ממן בניית מבנים מסחריים חדשים בעיר.{}עלות: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT          :{YELLOW}רכוש זכויות תחבורה בלעדיות למשך שנה אחת בעיר. רשות העירייה תאפשר לנוסעים ומטען להשתמש בתחנות החברה שלך בלבד.{}עלות: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{YELLOW}שחד את הרשות המקומית כדי להגדיל את הדרוג שלך בעיר תוך כדי סיכון להתפס ולשלם קנס חמור.{}עלות: {CURRENCY_LONG}
 
 # Goal window
@@ -3281,10 +3264,8 @@ STR_GOAL_QUESTION_BUTTON_CLOSE                                  :סגור
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}סובסידיות
 STR_SUBSIDIES_OFFERED_TITLE                                     :{BLACK} :סובסידיות למימון שירותי הובלה
-STR_SUBSIDIES_OFFERED_FROM_TO                                   :{ORANGE}{STRING} מ-{STRING} אל {STRING}{YELLOW} (ב-{DATE_SHORT})
 STR_SUBSIDIES_NONE                                              :{ORANGE}- כלום -
 STR_SUBSIDIES_SUBSIDISED_TITLE                                  :{BLACK} :שירותים מסובסדים
-STR_SUBSIDIES_SUBSIDISED_FROM_TO                                :{ORANGE}{STRING} מ-{STRING} אל {STRING}{YELLOW} ({COMPANY}{YELLOW}, עד {DATE_SHORT})
 STR_SUBSIDIES_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                :{BLACK}לחץ על שירות כדי להתמקד על עיר/תעשייה. Ctrl+לחיצה פותח חלונית תצוגה חדשה על מיקום העיר/תעשייה
 
 # Story book window
@@ -3307,8 +3288,6 @@ STR_STATION_LIST_STATION                                        :{YELLOW} {1:STA
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- כלום -
 STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}בחר את כל המתקנים
-STR_STATION_LIST_SELECT_ALL_TYPES                               :{BLACK}(ברח את כל סוגי הסחורה (כולל סחורה שלא מחכה
-STR_STATION_LIST_NO_WAITING_CARGO                               :{BLACK}שום סחורה לא מחכה
 
 # Station view window
 STR_STATION_VIEW_CAPTION                                        :{WHITE}{STATION} {STATION_FEATURES}
@@ -3324,7 +3303,6 @@ STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW}{COMPAN
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}דירוג
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}הצג את דירוג השירות
-STR_STATION_VIEW_SUPPLY_RATINGS_TITLE                           :{BLACK}אספקה חודשית ודירוג מקומי:
 STR_STATION_VIEW_CARGO_SUPPLY_RATING                            :{WHITE}{STRING}: {YELLOW}{COMMA} / {STRING} ({COMMA}%)
 
 STR_STATION_VIEW_GROUP                                          :{BLACK}קבץ לפי
@@ -3471,7 +3449,6 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_CANALS                          :{WHITE}תעלו
 STR_COMPANY_INFRASTRUCTURE_VIEW_STATION_SECT                    :{GOLD}תחנות:
 STR_COMPANY_INFRASTRUCTURE_VIEW_STATIONS                        :{WHITE}משבצות תחנה
 STR_COMPANY_INFRASTRUCTURE_VIEW_AIRPORTS                        :{WHITE}נמלי תעופה
-STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL                           :{WHITE}{CURRENCY_LONG}/שנה
 
 # Industry directory
 STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}תעשיות
@@ -3595,7 +3572,6 @@ STR_PURCHASE_INFO_SPEED_POWER                                   :{BLACK}מהיר
 STR_PURCHASE_INFO_SPEED                                         :{GOLD}{VELOCITY}{BLACK} :מהירות
 STR_PURCHASE_INFO_SPEED_OCEAN                                   :{BLACK}מהירות על גבי אוקיינוס: {GOLD}{VELOCITY}
 STR_PURCHASE_INFO_SPEED_CANAL                                   :{BLACK}מהחרות על גבי תעלה/נהר: {GOLD}{VELOCITY}
-STR_PURCHASE_INFO_RUNNINGCOST                                   ::לשנה {GOLD}{CURRENCY_LONG}{BLACK} :עלות תפעולית
 STR_PURCHASE_INFO_CAPACITY                                      :{GOLD}{1:STRING} {0:CARGO_LONG}{BLACK} :קיבולת
 STR_PURCHASE_INFO_REFITTABLE                                    :(ניתן להתאמה)
 STR_PURCHASE_INFO_DESIGNED_LIFE                                 :{BLACK}מודל: {GOLD}{NUM}{BLACK} משך חיים: {GOLD}{COMMA} שנ{P ה ים}
@@ -3775,13 +3751,6 @@ STR_ENGINE_PREVIEW_ROAD_VEHICLE                                 :כלי רכב
 STR_ENGINE_PREVIEW_AIRCRAFT                                     :כלי טיס
 STR_ENGINE_PREVIEW_SHIP                                         :כלי שייט
 
-STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER                      :{BLACK}{1:WEIGHT_SHORT} :משקל  {NBSP}{0:CURRENCY_LONG}  :מחיר{}  {NBSP}{3:POWER} :עצמת מנוע   {NBSP}{2:VELOCITY} :מהירות {NBSP}{}{5:CARGO_LONG} : קיבולת {NBSP} לשנה  {NBSP}{4:CURRENCY_LONG} :עלות תפעולית
-STR_ENGINE_PREVIEW_COST_WEIGHT_SPEED_POWER_MAX_TE               :{BLACK}עלות: {CURRENCY_LONG} משקל: {WEIGHT_SHORT}{}מהירות: {VELOCITY}  הספק: {POWER}  מקסימלי T.E.: {6:FORCE}{}עלות תפעולית: {4:CURRENCY_LONG}/לשנה{}קיבולת: {5:CARGO_LONG}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_CAP_RUNCOST                   :{BLACK}עלות: {CURRENCY_LONG} מהירות מקסימלית: {VELOCITY}{}קיבולת: {CARGO_LONG}{}הוצאה שוטפת: {CURRENCY_LONG}/לשנה
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_CAP_RUNCOST          :{BLACK}עלות: {CURRENCY_LONG} מהירות מקסימלית: {VELOCITY}{}סוג כלי טיס: {STRING}{}קיבולת: {CARGO_LONG}, {CARGO_LONG}{}עלות תפעולית: {CURRENCY_LONG}/שנה
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_CAP_RUNCOST              :{BLACK}עלות: {CURRENCY_LONG} מהירות מקסימלית: {VELOCITY}{}סוג כלי טיס: {STRING}{}קיבולת: {CARGO_LONG}{}עלות תפעולית: {CURRENCY_LONG}/שנה
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_CAP_RUNCOST    :{BLACK}עלות: {CURRENCY_LONG} מהירות מקסימלית: {VELOCITY}{}סוג כלי טיס: {STRING} טווח: {COMMA} משבצות{}קיבולת: {CARGO_LONG}, {CARGO_LONG}{}עלות תפעולית: {CURRENCY_LONG}/שנה
-STR_ENGINE_PREVIEW_COST_MAX_SPEED_TYPE_RANGE_CAP_RUNCOST        :{BLACK}עלות: {CURRENCY_LONG} מהירות מקסימלית: {VELOCITY}{}סוג כלי טיס: {STRING} טווח: {COMMA} משבצות{}קיבולת: {CARGO_LONG}{}עלות תפעולית: {CURRENCY_LONG}/שנה
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}החלף {STRING} - {STRING}
@@ -3913,9 +3882,9 @@ STR_VEHICLE_DETAILS_ROAD_VEHICLE_RENAME                         :{BLACK}תן ש�
 STR_VEHICLE_DETAILS_SHIP_RENAME                                 :{BLACK}תן שם לכלי השייט
 STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}תן שם לכלי הטייס
 
-STR_VEHICLE_INFO_AGE_RUNNING_COST_YR                            :{BLACK}גיל: {LTBLUE}{STRING}{BLACK}   עלות שוטפת: {LTBLUE}{CURRENCY_LONG}/לשנה
 STR_VEHICLE_INFO_AGE                                            :({1:COMMA}) שנים {NBSP}{0:COMMA}
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}({1:COMMA}) שנים {NBSP}{0:COMMA}
+STR_VEHICLE_INFO_AGE_RUNNING_COST_YR                            :{BLACK}גיל: {LTBLUE}{STRING}{BLACK}   עלות שוטפת: {LTBLUE}{CURRENCY_LONG}/לשנה
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}מהירות מקסימלית: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_MAX_SPEED_TYPE                                 :{BLACK}מהירות מקס.: {LTBLUE}{VELOCITY} {BLACK}סוג כלי טיס: {LTBLUE}{STRING}
@@ -3934,14 +3903,9 @@ STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}קיבו
 
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK}העברת סכום: {LTBLUE}{CURRENCY_LONG}
 
-STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS                     :{LTBLUE}{1:DATE_LONG} :טיפול אחרוןֿ {BLACK}{LTBLUE}{0:COMMA}% {BLACK} :מרווח בין טיפולים
-STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT                  :{LTBLUE}{1:DATE_LONG} :טיפול אחרוןֿ {BLACK}{LTBLUE}{0:COMMA}% {BLACK} :מרווח בין טיפולים
-STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP         :{BLACK}הגדל את מרווח הזמן עד קבלת שירות ב-10. Ctrl+לחיצה מגדיל את המרווח ב-5
-STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP         :{BLACK}הקטן את מרווח הזמן עד קבלת שירות ב-10. Ctrl+לחיצה מקטינה את המרווח ב-5
 
 STR_SERVICE_INTERVAL_DROPDOWN_TOOLTIP                           :{BLACK}שנה סוג מרווח שירות
 STR_VEHICLE_DETAILS_DEFAULT                                     :ברירת מחדל
-STR_VEHICLE_DETAILS_DAYS                                        :ימים
 STR_VEHICLE_DETAILS_PERCENT                                     :אחוז
 
 ###length VEHICLE_TYPES
@@ -4007,7 +3971,6 @@ STR_ORDERS_TIMETABLE_VIEW_TOOLTIP                               :{BLACK}עבור
 
 STR_ORDERS_LIST_TOOLTIP                                         :{BLACK}רשימת יעדים - לחץ על יעד על מנת להדגישו. Ctrl+לחיצה מתמקד ביעד
 STR_ORDER_INDEX                                                 :{COMMA}:{NBSP}
-STR_ORDER_TEXT                                                  :{STRING} {STRING} {STRING}
 
 STR_ORDERS_END_OF_ORDERS                                        :- - סוף רשימת היעדים - -
 STR_ORDERS_END_OF_SHARED_ORDERS                                 :- - סוף של הוראות משותפות - -
@@ -4041,11 +4004,13 @@ STR_ORDER_REFIT_AUTO_TOOLTIP                                    :{BLACK}בחרל
 STR_ORDER_DROP_REFIT_AUTO                                       :מטען קבוע
 STR_ORDER_DROP_REFIT_AUTO_ANY                                   :מטען זמין
 
-STR_ORDER_SERVICE                                               :{BLACK}טיפול
 STR_ORDER_DROP_GO_ALWAYS_DEPOT                                  :עבור תמיד דרך
 STR_ORDER_DROP_SERVICE_DEPOT                                    :טפל במידת הצורך
 STR_ORDER_DROP_HALT_DEPOT                                       :עצור
-STR_ORDER_SERVICE_TOOLTIP                                       :{BLACK}דלג על היעד שנבחר אלא אם הכלי זקוק לטיפול
+
+# Depot action tooltips, one per vehicle type
+###length VEHICLE_TYPES
+###next-name-looks-similar
 
 STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP                          :{BLACK}נתוני כלי הרכב עליהם יתבסס הדילוג
 
@@ -4113,6 +4078,7 @@ STR_ORDER_GO_TO_DEPOT_FORMAT                                    :{STRING} {DEPOT
 STR_ORDER_REFIT_ORDER                                           :({STRING} התאם לנשיאת)
 STR_ORDER_REFIT_STOP_ORDER                                      :(ועצור {STRING} התאם לנשיאת)
 STR_ORDER_STOP_ORDER                                            :(עצור)
+
 
 STR_ORDER_GO_TO_STATION                                         :{2:STRING} {1:STATION} {0:STRING}
 
@@ -4549,6 +4515,8 @@ STR_ERROR_UNABLE_TO_FIND_ROUTE_TO                               :{WHITE}לא מ�
 STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT                            :{WHITE}לא ניתן לאתר מוסך כלי רכב מקומי
 
 STR_ERROR_DEPOT_WRONG_DEPOT_TYPE                                :סוג מוסך שגוי
+
+# Depot unbunching related errors
 
 # Autoreplace related errors
 STR_ERROR_TRAIN_TOO_LONG_AFTER_REPLACEMENT                      :{WHITE}ארוכה מידי לאחר ביצוע ההחלפה {VEHICLE}
@@ -5221,6 +5189,7 @@ STR_STATION_NAME                                                :{STATION}
 STR_TOWN_NAME                                                   :{TOWN}
 STR_VEHICLE_NAME                                                :{VEHICLE}
 STR_WAYPOINT_NAME                                               :{WAYPOINT}
+
 
 STR_JUST_CARGO                                                  :{CARGO_LONG}
 STR_JUST_CHECKMARK                                              :{CHECKMARK}

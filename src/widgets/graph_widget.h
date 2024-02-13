@@ -21,54 +21,29 @@ enum GraphLegendWidgets : WidgetID {
 	WID_GL_LAST_COMPANY = WID_GL_FIRST_COMPANY + MAX_COMPANIES - 1, ///< Last company in the legend.
 };
 
-/** Widgets of the #OperatingProfitGraphWindow class, #IncomeGraphWindow class, #DeliveredCargoGraphWindow class, and #CompanyValueGraphWindow class. */
-enum CompanyValueWidgets : WidgetID {
-	WID_CV_KEY_BUTTON, ///< Key button.
-	WID_CV_BACKGROUND, ///< Background of the window.
-	WID_CV_GRAPH,      ///< Graph itself.
-	WID_CV_RESIZE,     ///< Resize button.
-};
+/** Widgets of the #BaseGraphWindow class and derived classes. */
+enum GraphWidgets : WidgetID {
+	WID_GRAPH_KEY_BUTTON, ///< Key button.
+	WID_GRAPH_BACKGROUND, ///< Background of the window.
+	WID_GRAPH_GRAPH,      ///< Graph itself.
+	WID_GRAPH_RESIZE,     ///< Resize button.
+	WID_GRAPH_HEADER,     ///< Header.
+	WID_GRAPH_FOOTER,     ///< Footer.
+	WID_GRAPH_FOOTER_CUSTOM, ///< Footer (custom).
 
-/** Extra widgets of the #DeliveredCargoGraphWindow class. */
-enum DeliveredCargoGraphWindowWidgets {
-	WID_DCG_BY_COMPANY = 0x40, ///< By company button.
-	WID_DCG_BY_CARGO,          ///< By cargo button.
-};
-
-/** Widget of the #PerformanceHistoryGraphWindow class. */
-enum PerformanceHistoryGraphWidgets : WidgetID {
-	WID_PHG_KEY,                  ///< Key button.
 	WID_PHG_DETAILED_PERFORMANCE, ///< Detailed performance.
-	WID_PHG_BACKGROUND,           ///< Background of the window.
-	WID_PHG_GRAPH,                ///< Graph itself.
-	WID_PHG_RESIZE,               ///< Resize button.
-};
 
-/** Widget of the #PaymentRatesGraphWindow class. */
-enum CargoPaymentRatesWidgets : WidgetID {
-	WID_CPR_BACKGROUND,      ///< Background of the window.
-	WID_CPR_HEADER,          ///< Header.
-	WID_CPR_GRAPH,           ///< Graph itself.
-	WID_CPR_RESIZE,          ///< Resize button.
-	WID_CPR_FOOTER,          ///< Footer.
 	WID_CPR_ENABLE_CARGOES,  ///< Enable cargoes button.
 	WID_CPR_DISABLE_CARGOES, ///< Disable cargoes button.
 	WID_CPR_MATRIX,          ///< Cargo list.
 	WID_CPR_MATRIX_SCROLLBAR,///< Cargo list scrollbar.
 	WID_CPR_DAYS,            ///< Days in transit mode.
 	WID_CPR_SPEED,           ///< Speed mode.
-};
 
-/** Widget of the #StationCargoGraphWindow class. */
-enum StationCargoWidgets {
+	WID_DCG_BY_COMPANY,      ///< By company button.
+	WID_DCG_BY_CARGO,        ///< By cargo button.
+
 	WID_SCG_CAPTION,          ///< Window title
-	WID_SCG_BACKGROUND,       ///< Background of the window.
-	WID_SCG_HEADER,           ///< Header.
-	WID_SCG_GRAPH,            ///< Graph itself.
-	WID_SCG_RESIZE,           ///< Resize button.
-	WID_SCG_FOOTER,           ///< Footer.
-	WID_SCG_ENABLE_CARGOES,   ///< Enable cargoes button.
-	WID_SCG_DISABLE_CARGOES,  ///< Disable cargoes button.
 	WID_SCG_MATRIX,           ///< Cargo list.
 	WID_SCG_MATRIX_SCROLLBAR, ///< Cargo list scrollbar.
 };

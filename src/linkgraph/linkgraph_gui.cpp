@@ -662,7 +662,7 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 			SetDParam(3, i->to_id);
 			SetDParam(4, link.Usage() * 100 / (link.capacity + 1));
 			SetDParamStr(5, std::move(buf));
-			GuiShowTooltips(this->window, STR_LINKGRAPH_STATS_TOOLTIP, close_cond);
+			GuiShowTooltips(this->window, EconTime::UsingWallclockUnits() ? STR_LINKGRAPH_STATS_TOOLTIP_MINUTE : STR_LINKGRAPH_STATS_TOOLTIP_MONTH, close_cond);
 			return true;
 		}
 	}

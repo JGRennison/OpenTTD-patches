@@ -74,12 +74,11 @@ STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED                     :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED                   :{TINY_FONT}{BLACK}1 단위(1,000 리터)의 화물을 200칸 거리만큼 운송할 때의 운송비 지급량
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_MINUTES                   :{TINY_FONT}{BLACK}운송 시간(분)
 STR_GRAPH_STATION_CARGO_CAPTION                                 :{WHITE}{STATION} - 대기 화물량 이력
-STR_GRAPH_STATION_CARGO_X_LABEL                                 :{TINY_FONT}{BLACK}{NUM}일 동안의 변동 사항
+STR_GRAPH_STATION_CARGO_X_LABEL_DAYS                            :{TINY_FONT}{BLACK}{NUM}일 동안의 변동 사항
 STR_GRAPH_STATION_CARGO_TITLE                                   :{TINY_FONT}{BLACK}역에서 있던 화물량
 
-STR_GRAPH_CARGO_DAYS_MODE                                       :{TINY_FONT}{BLACK}통과 시간
 STR_GRAPH_CARGO_SPEED_MODE                                      :{TINY_FONT}{BLACK}평균 속력
-STR_GRAPH_CARGO_TOOLTIP_DAYS_MODE                               :{BLACK}그래프의 X축에 통과 시간을 표시합니다
+STR_GRAPH_CARGO_TOOLTIP_TIME_MODE                               :{BLACK}그래프의 X축에 통과 시간을 표시합니다
 STR_GRAPH_CARGO_TOOLTIP_SPEED_MODE                              :{BLACK}그래프의 X축에 평균 수송 시간을 표시합니다
 
 STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE                       :{TINY_FONT}{BLACK}회사
@@ -513,11 +512,6 @@ STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO                     :제한 없음
 STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES                           :도시가 다리를 만드는 것을 허용: {STRING}
 STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT                  :도시가 다리를 만드는 허용하려면 이 설정을 켜세요
 
-STR_CONFIG_SETTING_TOWN_CARGO_SCALE                             :도시 화물 생성 조정: {STRING}
-STR_CONFIG_SETTING_TOWN_CARGO_SCALE_HELPTEXT                    :도시의 화물 생산량을 이 백분율 값만큼 조정합니다.
-
-STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE                         :산업시설 화물 생성 조정: {STRING}
-STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT                :산업시설의 생산량을 이 백분율 값만큼 조정합니다.
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA          :{STRING}{}이 설정은 나무를 자르는 산업시설에는 영향을 미치지 않습니다.{}이 설정은 모든 산업시설 관련 NewGRF에 적용되지 않을 수도 있습니다.
 
 STR_CONFIG_SETTING_TOWN_CARGO_SCALE_MODE                        :도시 화물 생성 조정에 적용할 시간 간격: {STRING}
@@ -529,7 +523,6 @@ STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE_HELPTEXT_EXTRA     :{STRING}{}게�
 STR_CONFIG_SETTING_CARGO_SCALE_MODE_MONTHLY                     :월별
 STR_CONFIG_SETTING_CARGO_SCALE_MODE_GAME_TIME                   :게임 시간
 
-STR_CONFIG_SETTING_CARGO_SCALE_VALUE                            :{NUM}%
 STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY                    :{NUM}% (월별)
 STR_CONFIG_SETTING_CARGO_SCALE_VALUE_REAL_TIME                  :{NUM}% (게임 시간)
 

@@ -159,7 +159,6 @@ STR_ABBREV_TOFFEE                                               :КА
 STR_ABBREV_BATTERIES                                            :БА
 STR_ABBREV_PLASTIC                                              :ПЛ
 STR_ABBREV_FIZZY_DRINKS                                         :ПП
-STR_ABBREV_NONE                                                 :НТ
 STR_ABBREV_ALL                                                  :Се`
 
 # 'Mode' of transport for cargoes
@@ -217,6 +216,9 @@ STR_UNITS_FORCE_SI                                              :{DECIMAL} kN
 
 STR_UNITS_HEIGHT_IMPERIAL                                       :{DECIMAL} ft
 STR_UNITS_HEIGHT_SI                                             :{DECIMAL} m
+
+# Time units used in string control characters
+
 
 
 # Common window strings
@@ -357,7 +359,7 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Напушти
 
 # Settings menu
-###length 15
+###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :игра опции
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF подесувања
 STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS                          :транспарентност опции
@@ -442,24 +444,6 @@ STR_ABOUT_MENU_ABOUT_OPENTTD                                    :За 'Отво�
 STR_ABOUT_MENU_SPRITE_ALIGNER                                   :самовила усогласат
 STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES                            :Вклучи одблеснува кутии
 
-# Place in highscore window
-###length 15
-STR_ORDINAL_NUMBER_1ST                                          :1-в
-STR_ORDINAL_NUMBER_2ND                                          :2-ор
-STR_ORDINAL_NUMBER_3RD                                          :3-ет
-STR_ORDINAL_NUMBER_4TH                                          :4-рт
-STR_ORDINAL_NUMBER_5TH                                          :5-ти
-STR_ORDINAL_NUMBER_6TH                                          :6-ти
-STR_ORDINAL_NUMBER_7TH                                          :7-ми
-STR_ORDINAL_NUMBER_8TH                                          :8-ми
-STR_ORDINAL_NUMBER_9TH                                          :9-ти
-STR_ORDINAL_NUMBER_10TH                                         :10-ти
-STR_ORDINAL_NUMBER_11TH                                         :11-ти
-STR_ORDINAL_NUMBER_12TH                                         :12-ти
-STR_ORDINAL_NUMBER_13TH                                         :13-ти
-STR_ORDINAL_NUMBER_14TH                                         :14-ти
-STR_ORDINAL_NUMBER_15TH                                         :15-ти
-
 ###length 31
 STR_DAY_NUMBER_1ST                                              :1-в
 STR_DAY_NUMBER_2ND                                              :2-ор
@@ -535,8 +519,8 @@ STR_GRAPH_CARGO_DELIVERED_CAPTION                               :{WHITE}Един
 STR_GRAPH_COMPANY_PERFORMANCE_RATINGS_CAPTION                   :{WHITE}Перформанси на компанијата рејтингот (максимум рејтинг = 1000)
 STR_GRAPH_COMPANY_VALUES_CAPTION                                :{WHITE}компанијата вредности
 
+
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Карго плаќање цени
-STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL                           :{TINY_FONT}{BLACK}Денови во транзит
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}Плаќање за доставување 10 единици (или 10.000 литри) на товар на растојание од 20 квадрати
 STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}им овозможи на сите
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}Оневозможи ги сите
@@ -583,11 +567,9 @@ STR_PERFORMANCE_DETAIL_CARGO                                    :{BLACK}карг
 STR_PERFORMANCE_DETAIL_MONEY                                    :{BLACK}пари:
 STR_PERFORMANCE_DETAIL_LOAN                                     :{BLACK}кредит:
 STR_PERFORMANCE_DETAIL_TOTAL                                    :{BLACK}Вкупно:
+###next-name-looks-similar
 
-###length 10
-STR_PERFORMANCE_DETAIL_VEHICLES_TOOLTIP                         :{BLACK}Број на возила кои се претвори профит минатата година. Ова вклучува возила, возови, бродови и авиони
 STR_PERFORMANCE_DETAIL_STATIONS_TOOLTIP                         :{BLACK}Број на неодамна сервисираат станица делови. Секој дел на станицата (на пример, железничка станица, автобуска станица, аеродром) се смета, дури и ако тие се поврзани како една станица
-STR_PERFORMANCE_DETAIL_MIN_PROFIT_TOOLTIP                       :{BLACK}Профитот на возилото со најниски примања (само возила постари од две години се смета)
 STR_PERFORMANCE_DETAIL_MIN_INCOME_TOOLTIP                       :{BLACK}Износ на готовина направени во четврт со најниска добивка на последните 12 четвртини
 STR_PERFORMANCE_DETAIL_MAX_INCOME_TOOLTIP                       :{BLACK}Износ на готовина направени во четврт со најголем профит на последните 12 четвртини
 STR_PERFORMANCE_DETAIL_DELIVERED_TOOLTIP                        :{BLACK}Единиците на товар испорачани во последните четири квартали
@@ -804,6 +786,9 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Опци
 
 
 
+
+
+
 # Custom currency window
 
 
@@ -852,6 +837,7 @@ STR_CONFIG_SETTING_REALISTIC                                    :Реален
 ###length 3
 
 
+
 ###setting-zero-is-special
 
 
@@ -859,6 +845,7 @@ STR_CONFIG_SETTING_REALISTIC                                    :Реален
 
 
 
+###length 2
 
 ###setting-zero-is-special
 
@@ -892,13 +879,18 @@ STR_CONFIG_SETTING_SMOKE_AMOUNT                                 :Износ на
 
 ###length 3
 
+###length 2
+
+###length 2
 
 
 ###length 3
 
 ###length 4
 
+###length 2
 
+###length 2
 
 
 
@@ -917,6 +909,13 @@ STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :Инфраст�
 
 ###length 3
 
+###length 2
+
+
+###length 2
+
+
+###setting-zero-is-special
 
 
 
@@ -997,7 +996,10 @@ STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS                         :Дебелин�
 
 
 
+###length 2
 STR_CONFIG_SETTING_SOUND_NEW_YEAR                               :Крај на година: {STRING}
+
+###length 2
 
 STR_CONFIG_SETTING_SOUND_CONFIRM                                :Изградба: {STRING}
 
@@ -1013,8 +1015,6 @@ STR_CONFIG_SETTING_SOUND_VEHICLE                                :Возила: {
 
 
 
-
-###length 3
 
 
 STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES                           :#ОПкодови пред скрипти се суспендирани: {STRING}
@@ -1110,7 +1110,6 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_8X                              :8x
 
 
 
-###length 5
 
 ###length 3
 
@@ -1549,8 +1548,8 @@ STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Згол
 STR_LOCAL_AUTHORITY_COMPANY_RATING                              :{YELLOW}{COMPANY} {COMPANY_NUM}: {ORANGE}{STRING}
 
 ###length 8
+###next-name-looks-similar
 
-###length 8
 
 # Goal window
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
@@ -1571,8 +1570,6 @@ STR_SUBSIDIES_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                :{BLACK}Клик
 STR_STATION_LIST_STATION                                        :{YELLOW}{STATION} {STATION_FEATURES}
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}Избери ги сите објекти
-STR_STATION_LIST_SELECT_ALL_TYPES                               :{BLACK}Избери ги сите видови товар (including no waiting cargo)
-STR_STATION_LIST_NO_WAITING_CARGO                               :{BLACK}Не чека никаков товар
 
 # Station view window
 STR_STATION_VIEW_CAPTION                                        :{WHITE}{STATION} {STATION_FEATURES}
@@ -1633,7 +1630,6 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_CANALS                          :{WHITE}кана
 STR_COMPANY_INFRASTRUCTURE_VIEW_STATION_SECT                    :{GOLD}станици:
 STR_COMPANY_INFRASTRUCTURE_VIEW_STATIONS                        :{WHITE}станица плочки
 STR_COMPANY_INFRASTRUCTURE_VIEW_AIRPORTS                        :{WHITE}аеродроми
-STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL                           :{WHITE}{CURRENCY_LONG}/годишно
 
 # Industry directory
 
@@ -1831,7 +1827,6 @@ STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} г
 
 
 STR_SERVICE_INTERVAL_DROPDOWN_TOOLTIP                           :{BLACK}Смени тип на интервалот за сервисирање
-STR_VEHICLE_DETAILS_DAYS                                        :Дена
 STR_VEHICLE_DETAILS_PERCENT                                     :Процент
 
 ###length VEHICLE_TYPES
@@ -1871,7 +1866,6 @@ STR_REFIT_AIRCRAFT_REFIT_TOOLTIP                                :{BLACK}Прен
 # Order view
 
 STR_ORDER_INDEX                                                 :{COMMA}:{NBSP}
-STR_ORDER_TEXT                                                  :{STRING} {STRING} {STRING}
 
 
 # Order bottom buttons
@@ -1879,6 +1873,10 @@ STR_ORDER_TEXT                                                  :{STRING} {STRIN
 
 
 
+
+# Depot action tooltips, one per vehicle type
+###length VEHICLE_TYPES
+###next-name-looks-similar
 
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
@@ -1899,6 +1897,7 @@ STR_ORDER_TEXT                                                  :{STRING} {STRIN
 
 STR_ORDER_GO_TO_NEAREST_DEPOT_FORMAT                            :{STRING} {STRING} {STRING}
 STR_ORDER_GO_TO_DEPOT_FORMAT                                    :{STRING} {DEPOT}
+
 
 
 STR_ORDER_GO_TO_STATION                                         :{STRING} {STATION} {STRING}
@@ -2047,6 +2046,8 @@ STR_ERROR_AIRCRAFT_MUST_BE_STOPPED_INSIDE_HANGAR                :{WHITE}... мо
 
 
 
+
+# Depot unbunching related errors
 
 # Autoreplace related errors
 STR_ERROR_AUTOREPLACE_NOTHING_TO_DO                             :{WHITE}Не авто замени / обнови правила се применуваат
@@ -2219,6 +2220,7 @@ STR_STATION_NAME                                                :{STATION}
 STR_TOWN_NAME                                                   :{TOWN}
 STR_VEHICLE_NAME                                                :{VEHICLE}
 STR_WAYPOINT_NAME                                               :{WAYPOINT}
+
 
 STR_JUST_CARGO                                                  :{CARGO_LONG}
 STR_JUST_CHECKMARK                                              :{CHECKMARK}

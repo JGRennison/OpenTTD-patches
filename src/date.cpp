@@ -260,6 +260,12 @@ EconTime::Date EconTime::ConvertYMDToDate(EconTime::Year year, EconTime::Month m
 	return CalTime::ConvertYMDToDate(year.base(), month, day).base();
 }
 
+bool EconTime::UsingWallclockUnits(bool newgame)
+{
+	/* Always return false (for now) */
+	return false;
+}
+
 /** Functions used by the IncreaseDate function */
 
 extern void EnginesDailyLoop();

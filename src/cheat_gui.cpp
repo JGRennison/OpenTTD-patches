@@ -232,10 +232,7 @@ static constexpr NWidgetPart _nested_cheat_widgets[] = {
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_GREY, WID_C_PANEL), SetDataTip(0x0, STR_CHEATS_TOOLTIP), EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_GREY),
-		NWidget(WWT_LABEL, COLOUR_GREY, WID_C_NOTE), SetFill(1, 1), SetDataTip(STR_CHEATS_NOTE, STR_NULL), SetPadding(WidgetDimensions::unscaled.frametext),
-	EndContainer(),
+	NWidget(WWT_PANEL, COLOUR_GREY, WID_C_PANEL), EndContainer(),
 };
 
 /** GUI for the cheats. */
@@ -532,11 +529,16 @@ static WindowDesc _cheats_desc(__FILE__, __LINE__,
 	std::begin(_nested_cheat_widgets), std::end(_nested_cheat_widgets)
 );
 
+bool CheatWindowMayBeShown()
+{
+	return _game_mode != GM_EDITOR && (!_networking || _network_server || _network_settings_access || _settings_game.difficulty.money_cheat_in_multiplayer);
+}
+
 /** Open cheat window. */
 void ShowCheatWindow()
 {
 	CloseWindowById(WC_CHEATS, 0);
-	if (!_networking || _network_server || _network_settings_access || _settings_game.difficulty.money_cheat_in_multiplayer) {
+	if (CheatWindowMayBeShown()) {
 		new CheatWindow(&_cheats_desc);
 	}
 }

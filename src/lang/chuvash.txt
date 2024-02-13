@@ -128,7 +128,6 @@ STR_ABBREV_TOFFEE                                               :КР
 STR_ABBREV_BATTERIES                                            :БТ
 STR_ABBREV_PLASTIC                                              :ПЛ
 STR_ABBREV_FIZZY_DRINKS                                         :ГШ
-STR_ABBREV_NONE                                                 :ҪУК
 STR_ABBREV_ALL                                                  :ПӖРМАЙ
 
 # 'Mode' of transport for cargoes
@@ -165,6 +164,9 @@ STR_UNITS_POWER_SI                                              :{DECIMAL}кВт
 
 
 
+
+
+# Time units used in string control characters
 
 
 
@@ -230,7 +232,7 @@ STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Вӗҫле
 
 # Settings menu
-###length 15
+###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Вӑййи майлаштару
 STR_SETTINGS_MENU_NEWGRF_SETTINGS                               :NewGRF майлаштару
 
@@ -269,24 +271,6 @@ STR_TOOLBAR_SOUND_MUSIC                                         :Сасӑ/Юрӑ
 # About menu
 STR_ABOUT_MENU_SCREENSHOT                                       :Экран сӑнӗ
 STR_ABOUT_MENU_ABOUT_OPENTTD                                    :'OpenTTD' çинчен
-
-# Place in highscore window
-###length 15
-STR_ORDINAL_NUMBER_1ST                                          :1мӗш
-STR_ORDINAL_NUMBER_2ND                                          :2мӗш
-STR_ORDINAL_NUMBER_3RD                                          :3-мӗш
-STR_ORDINAL_NUMBER_4TH                                          :4-мӗш
-STR_ORDINAL_NUMBER_5TH                                          :5-мӗш
-STR_ORDINAL_NUMBER_6TH                                          :6-мӗш
-STR_ORDINAL_NUMBER_7TH                                          :7-мӗш
-STR_ORDINAL_NUMBER_8TH                                          :8-мӗш
-STR_ORDINAL_NUMBER_9TH                                          :9-мӗш
-STR_ORDINAL_NUMBER_10TH                                         :10-мӗш
-STR_ORDINAL_NUMBER_11TH                                         :11-мӗш
-STR_ORDINAL_NUMBER_12TH                                         :12-мӗш
-STR_ORDINAL_NUMBER_13TH                                         :13-мӗш
-STR_ORDINAL_NUMBER_14TH                                         :14-мӗш
-STR_ORDINAL_NUMBER_15TH                                         :15-мӗш
 
 ###length 31
 STR_DAY_NUMBER_1ST                                              :1мӗш
@@ -357,6 +341,7 @@ STR_GRAPH_Y_LABEL                                               :{TINY_FONT}{STR
 STR_GRAPH_Y_LABEL_NUMBER                                        :{TINY_FONT}{COMMA}
 
 
+
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
 
@@ -382,8 +367,8 @@ STR_PERFORMANCE_DETAIL_CARGO                                    :{BLACK}Тиев
 STR_PERFORMANCE_DETAIL_MONEY                                    :{BLACK}Укҫӑ:
 STR_PERFORMANCE_DETAIL_LOAN                                     :{BLACK}Кивҫен:
 STR_PERFORMANCE_DETAIL_TOTAL                                    :{BLACK}Пурӗ:
+###next-name-looks-similar
 
-###length 10
 
 # Music window
 STR_MUSIC_TRACK_NONE                                            :{TINY_FONT}{DKGREEN}--
@@ -505,6 +490,9 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :расна
 
 
 
+
+
+
 # Custom currency window
 
 
@@ -574,6 +562,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_CENTER                        :Варринч�
 STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Сылтӑмра
 
 
+
 ###setting-zero-is-special
 
 
@@ -581,6 +570,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Сылтӑмр�
 
 
 
+###length 2
 
 ###setting-zero-is-special
 
@@ -614,13 +604,18 @@ STR_CONFIG_SETTING_RAW_INDUSTRY_CONSTRUCTION_METHOD_NONE        :ҫук
 
 ###length 3
 
+###length 2
+
+###length 2
 
 
 ###length 3
 
 ###length 4
 
+###length 2
 
+###length 2
 
 
 
@@ -640,6 +635,13 @@ STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Аэропор�
 
 ###length 3
 
+###length 2
+
+
+###length 2
+
+
+###setting-zero-is-special
 
 
 
@@ -730,6 +732,9 @@ STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_ISO                :ISO (2008-12-31
 
 
 
+###length 2
+
+###length 2
 
 
 
@@ -743,8 +748,6 @@ STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_ISO                :ISO (2008-12-31
 
 
 
-
-###length 3
 
 
 
@@ -823,7 +826,6 @@ STR_CONFIG_SETTING_TOWN_GROWTH_VERY_FAST                        :Питӗ хӑв
 
 
 
-###length 5
 
 ###length 3
 
@@ -946,7 +948,6 @@ STR_NETWORK_SERVER_LIST_MAP_SIZE_SHORT                          :{BLACK}{COMMA}x
 STR_NETWORK_SERVER_LIST_MAP_SIZE_CAPTION                        :{BLACK}Виҫе картти
 STR_NETWORK_SERVER_LIST_DATE_CAPTION                            :{BLACK}Кун
 STR_NETWORK_SERVER_LIST_DATE_CAPTION_TOOLTIP                    :{BLACK}Хальхи кун
-STR_NETWORK_SERVER_LIST_YEARS_CAPTION                           :{BLACK}Ҫул
 STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Чӗлхе, сервер версиӗ, т. ыт. те.
 
 
@@ -1284,8 +1285,8 @@ STR_TOWN_VIEW_TOWN_CAPTION                                      :{WHITE}{TOWN}
 STR_LOCAL_AUTHORITY_COMPANY_RATING                              :{YELLOW}{COMPANY} {COMPANY_NUM}: {ORANGE}{STRING}
 
 ###length 8
+###next-name-looks-similar
 
-###length 8
 
 # Goal window
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
@@ -1518,7 +1519,6 @@ STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}Савӑ
 # Order view
 
 STR_ORDER_INDEX                                                 :{COMMA}:{NBSP}
-STR_ORDER_TEXT                                                  :{STRING} {STRING} {STRING}
 
 
 # Order bottom buttons
@@ -1526,6 +1526,10 @@ STR_ORDER_TEXT                                                  :{STRING} {STRIN
 
 
 
+
+# Depot action tooltips, one per vehicle type
+###length VEHICLE_TYPES
+###next-name-looks-similar
 
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
@@ -1546,6 +1550,7 @@ STR_ORDER_TEXT                                                  :{STRING} {STRIN
 
 STR_ORDER_GO_TO_NEAREST_DEPOT_FORMAT                            :{STRING} {STRING} {STRING}
 STR_ORDER_GO_TO_DEPOT_FORMAT                                    :{STRING} {DEPOT}
+
 
 
 STR_ORDER_GO_TO_STATION                                         :{STRING} {STATION} {STRING}
@@ -1654,6 +1659,8 @@ STR_ERROR_MESSAGE_CAPTION                                       :{YELLOW}Пӗл�
 
 
 
+
+# Depot unbunching related errors
 
 # Autoreplace related errors
 STR_ERROR_AUTOREPLACE_MONEY_LIMIT                               :(укҫа ҫитмест)
@@ -1803,6 +1810,7 @@ STR_STATION_NAME                                                :{STATION}
 STR_TOWN_NAME                                                   :{TOWN}
 STR_VEHICLE_NAME                                                :{VEHICLE}
 STR_WAYPOINT_NAME                                               :{WAYPOINT}
+
 
 STR_JUST_CARGO                                                  :{CARGO_LONG}
 STR_JUST_CHECKMARK                                              :{CHECKMARK}

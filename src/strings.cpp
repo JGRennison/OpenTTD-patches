@@ -763,7 +763,7 @@ static const Units _units_velocity[] = {
 	{ { 1.0      }, STR_UNITS_VELOCITY_IMPERIAL,  0 },
 	{ { 1.609344 }, STR_UNITS_VELOCITY_METRIC,    0 },
 	{ { 0.44704  }, STR_UNITS_VELOCITY_SI,        0 },
-	{ { 0.578125 }, STR_UNITS_VELOCITY_GAMEUNITS, 1 },
+	{ { 0.578125 }, STR_UNITS_VELOCITY_GAMEUNITS_DAY, 1 },
 	{ { 0.868976 }, STR_UNITS_VELOCITY_KNOTS,     0 },
 };
 
@@ -813,6 +813,30 @@ static const Units _units_height[] = {
 	{ { 3.0 }, STR_UNITS_HEIGHT_IMPERIAL, 0 }, // "Wrong" conversion factor for more nicer GUI values
 	{ { 1.0 }, STR_UNITS_HEIGHT_METRIC,   0 },
 	{ { 1.0 }, STR_UNITS_HEIGHT_SI,       0 },
+};
+
+/** Unit conversions for time in calendar days or wallclock seconds */
+static const Units _units_time_days_or_seconds[] = {
+	{ { 1 }, STR_UNITS_DAYS,    0 },
+	{ { 2 }, STR_UNITS_SECONDS, 0 },
+};
+
+/** Unit conversions for time in calendar months or wallclock minutes */
+static const Units _units_time_months_or_minutes[] = {
+	{ { 1 }, STR_UNITS_MONTHS,  0 },
+	{ { 1 }, STR_UNITS_MINUTES, 0 },
+};
+
+/** Unit conversions for time in calendar years or economic periods */
+static const Units _units_time_years_or_periods[] = {
+	{ { 1 }, STR_UNITS_YEARS,  0 },
+	{ { 1 }, STR_UNITS_PERIODS, 0 },
+};
+
+/** Unit conversions for time in calendar years or wallclock minutes */
+static const Units _units_time_years_or_minutes[] = {
+	{ { 1  }, STR_UNITS_YEARS,  0 },
+	{ { 12 }, STR_UNITS_MINUTES, 0 },
 };
 
 /**
@@ -1660,6 +1684,38 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 					assert(_settings_game.locale.units_weight < lengthof(_units_weight));
 
 					FormatUnitWeightRatio(builder, _units_force[_settings_game.locale.units_force], args.GetNextParameter<int64_t>());
+					break;
+				}
+
+				case SCC_UNITS_DAYS_OR_SECONDS: { // {UNITS_DAYS_OR_SECONDS}
+					uint8_t realtime = EconTime::UsingWallclockUnits(_game_mode == GM_MENU);
+					const auto &x = _units_time_days_or_seconds[realtime];
+					auto tmp_params = MakeParameters(x.c.ToDisplay(args.GetNextParameter<int64_t>()), x.decimal_places);
+					FormatString(builder, GetStringPtr(x.s), tmp_params);
+					break;
+				}
+
+				case SCC_UNITS_MONTHS_OR_MINUTES: { // {UNITS_MONTHS_OR_MINUTES}
+					uint8_t realtime = EconTime::UsingWallclockUnits(_game_mode == GM_MENU);
+					const auto &x = _units_time_months_or_minutes[realtime];
+					auto tmp_params = MakeParameters(x.c.ToDisplay(args.GetNextParameter<int64_t>()), x.decimal_places);
+					FormatString(builder, GetStringPtr(x.s), tmp_params);
+					break;
+				}
+
+				case SCC_UNITS_YEARS_OR_PERIODS: { // {UNITS_YEARS_OR_PERIODS}
+					uint8_t realtime = EconTime::UsingWallclockUnits(_game_mode == GM_MENU);
+					const auto &x = _units_time_years_or_periods[realtime];
+					auto tmp_params = MakeParameters(x.c.ToDisplay(args.GetNextParameter<int64_t>()), x.decimal_places);
+					FormatString(builder, GetStringPtr(x.s), tmp_params);
+					break;
+				}
+
+				case SCC_UNITS_YEARS_OR_MINUTES: { // {UNITS_YEARS_OR_MINUTES}
+					uint8_t realtime = EconTime::UsingWallclockUnits(_game_mode == GM_MENU);
+					const auto &x = _units_time_years_or_minutes[realtime];
+					auto tmp_params = MakeParameters(x.c.ToDisplay(args.GetNextParameter<int64_t>()), x.decimal_places);
+					FormatString(builder, GetStringPtr(x.s), tmp_params);
 					break;
 				}
 

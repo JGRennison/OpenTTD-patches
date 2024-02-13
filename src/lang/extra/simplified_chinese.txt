@@ -74,12 +74,11 @@ STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED                     :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED                   :{TINY_FONT}{BLACK}将1单位 (或1,000升) 货物运输200个方格
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_MINUTES                   :{TINY_FONT}{BLACK}运输分钟数
 STR_GRAPH_STATION_CARGO_CAPTION                                 :{WHITE}{STATION} - 滞留货物历史
-STR_GRAPH_STATION_CARGO_X_LABEL                                 :{TINY_FONT}{BLACK}{NUM}天内的发展
+STR_GRAPH_STATION_CARGO_X_LABEL_DAYS                            :{TINY_FONT}{BLACK}{NUM}天内的发展
 STR_GRAPH_STATION_CARGO_TITLE                                   :{TINY_FONT}{BLACK}站内滞留货物单位
 
-STR_GRAPH_CARGO_DAYS_MODE                                       :{TINY_FONT}{BLACK}运输所耗天数
 STR_GRAPH_CARGO_SPEED_MODE                                      :{TINY_FONT}{BLACK}平均速度
-STR_GRAPH_CARGO_TOOLTIP_DAYS_MODE                               :{BLACK}在图表x轴显示运输所耗天数
+STR_GRAPH_CARGO_TOOLTIP_TIME_MODE                               :{BLACK}在图表x轴显示运输所耗天数
 STR_GRAPH_CARGO_TOOLTIP_SPEED_MODE                              :{BLACK}在图表x轴显示平均运输速度
 
 STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE                       :{TINY_FONT}{BLACK}公司

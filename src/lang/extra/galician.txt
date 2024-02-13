@@ -74,12 +74,11 @@ STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED                     :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED                   :{TINY_FONT}{BLACK}Pago pola entrega de 1 unidade (ou 1.000 litros) de carga nunha distancia de 200 cadros
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_MINUTES                   :{TINY_FONT}{BLACK}Minutos en tránsito
 STR_GRAPH_STATION_CARGO_CAPTION                                 :{WHITE}{STATION} - Historial de espera de carga
-STR_GRAPH_STATION_CARGO_X_LABEL                                 :{TINY_FONT}{BLACK}Desenvolvemento nos últimos {NUM} días
+STR_GRAPH_STATION_CARGO_X_LABEL_DAYS                            :{TINY_FONT}{BLACK}Desenvolvemento nos últimos {NUM} días
 STR_GRAPH_STATION_CARGO_TITLE                                   :{TINY_FONT}{BLACK}Unidades de carga agardando na estación
 
-STR_GRAPH_CARGO_DAYS_MODE                                       :{TINY_FONT}{BLACK}Días en tránsito
 STR_GRAPH_CARGO_SPEED_MODE                                      :{TINY_FONT}{BLACK}Velocidade media
-STR_GRAPH_CARGO_TOOLTIP_DAYS_MODE                               :{BLACK}Amosar os días en tránsito no eixo-X da gráfica
+STR_GRAPH_CARGO_TOOLTIP_TIME_MODE                               :{BLACK}Amosar os días en tránsito no eixo-X da gráfica
 STR_GRAPH_CARGO_TOOLTIP_SPEED_MODE                              :{BLACK}Amosar a velocidade media de tránsito no eixo-X da gráfica
 
 STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE                       :{TINY_FONT}{BLACK}Empresas
