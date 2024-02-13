@@ -98,14 +98,11 @@ static const CmdStruct _cmd_structs[] = {
 	{"DATE_SHORT",        EmitSingleChar, SCC_DATE_SHORT,         1, -1, C_CASE},
 	{"DATE_LONG",         EmitSingleChar, SCC_DATE_LONG,          1, -1, C_CASE},
 	{"DATE_ISO",          EmitSingleChar, SCC_DATE_ISO,           1, -1, C_NONE},
-	{"DATE_WALLCLOCK_TINY",       EmitSingleChar, SCC_DATE_WALLCLOCK_TINY,          1, -1, C_NONE},
-	{"DATE_WALLCLOCK_SHORT",      EmitSingleChar, SCC_DATE_WALLCLOCK_SHORT,         1, -1, C_NONE},
-	{"DATE_WALLCLOCK_LONG",       EmitSingleChar, SCC_DATE_WALLCLOCK_LONG,          1, -1, C_NONE},
-	{"DATE_WALLCLOCK_ISO",        EmitSingleChar, SCC_DATE_WALLCLOCK_ISO,           1, -1, C_NONE},
 
 	{"TIME_HHMM",         EmitSingleChar, SCC_TIME_HHMM,          1, -1, C_NONE},
 	{"TT_TICKS",          EmitSingleChar, SCC_TT_TICKS,           1, -1, C_NONE},
 	{"TT_TICKS_LONG",     EmitSingleChar, SCC_TT_TICKS_LONG,      1, -1, C_NONE},
+	{"TT_TIME",           EmitSingleChar, SCC_TT_TIME,            1, -1, C_NONE},
 
 	{"STRING",            EmitSingleChar, SCC_STRING,             1, -1, C_CASE | C_GENDER},
 	{"RAW_STRING",        EmitSingleChar, SCC_RAW_STRING_POINTER, 1, -1, C_NONE | C_GENDER},

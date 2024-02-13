@@ -7,15 +7,12 @@ STR_ORDER_TEXT                                                  :{STRING6} {STRI
 
 ##no-translate on
 STR_JUST_DECIMAL1                                               :{DECIMAL1}
-STR_JUST_DATE_WALLCLOCK_TINY                                    :{DATE_WALLCLOCK_TINY}
-STR_JUST_DATE_WALLCLOCK_SHORT                                   :{DATE_WALLCLOCK_SHORT}
-STR_JUST_DATE_WALLCLOCK_LONG                                    :{DATE_WALLCLOCK_LONG}
-STR_JUST_DATE_WALLCLOCK_ISO                                     :{DATE_WALLCLOCK_ISO}
 STR_JUST_TIME_HHMM                                              :{TIME_HHMM}
 STR_JUST_STRING3                                                :{STRING3}
 STR_JUST_VELOCITY                                               :{VELOCITY}
 STR_JUST_TT_TICKS                                               :{TT_TICKS}
 STR_JUST_TT_TICKS_LONG                                          :{TT_TICKS_LONG}
+STR_JUST_TT_TIME                                                :{TT_TIME}
 STR_JUST_STATION                                                :{STATION}
 
 STR_RED_INT                                                     :{RED}{NUM}
@@ -1363,10 +1360,10 @@ STR_DEPARTURES_SHOW_AIRCRAFT_TOOLTIP                            :{BLACK}Show upc
 STR_DEPARTURES_SHOW_TYPE_TOOLTIP_CTRL_SUFFIX                    :{BLACK}{STRING}. Ctrl+Click to show exclusively.
 STR_DEPARTURES_EMPTY                                            :{ORANGE}No vehicles are currently timetabled for this station.
 STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}No timetable information has been requested.
-STR_DEPARTURES_TIME                                             :{ORANGE}{DATE_WALLCLOCK_TINY}
-STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{DATE_WALLCLOCK_TINY} {GREEN}{UP_ARROW}
-STR_DEPARTURES_TIME_ARR                                         :{ORANGE}{DATE_WALLCLOCK_TINY} {RED}{DOWN_ARROW}
-STR_DEPARTURES_TIME_BOTH                                        :{ORANGE}{1:DATE_WALLCLOCK_TINY} {RED}{DOWN_ARROW} {ORANGE}{0:DATE_WALLCLOCK_TINY} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TIME                                             :{ORANGE}{TT_TIME}
+STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{TT_TIME} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TIME_ARR                                         :{ORANGE}{TT_TIME} {RED}{DOWN_ARROW}
+STR_DEPARTURES_TIME_BOTH                                        :{ORANGE}{1:TT_TIME} {RED}{DOWN_ARROW} {ORANGE}{0:TT_TIME} {GREEN}{UP_ARROW}
 STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STATION}{STRING}
 STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STATION}{STRING} via {STRING}
 STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STATION}{STRING} via
@@ -1403,7 +1400,7 @@ STR_DEPARTURES_STATION_PORTAIRPORT                              :{ORANGE} {SHIP}
 STR_DEPARTURES_ON_TIME                                          :{GREEN}On time
 STR_DEPARTURES_ARRIVED                                          :{GREEN}Arrived
 STR_DEPARTURES_DELAYED                                          :{YELLOW}Delayed
-STR_DEPARTURES_EXPECTED                                         :{YELLOW}Expt {DATE_WALLCLOCK_TINY}
+STR_DEPARTURES_EXPECTED                                         :{YELLOW}Expt {TT_TIME}
 STR_DEPARTURES_CANCELLED                                        :{RED}Cancelled
 
 STR_CONFIG_SETTING_DEPARTUREBOARDS                              :{ORANGE}Departure boards
@@ -1895,9 +1892,10 @@ STR_TRADITIONAL_SHIP_NAME                                       :Ship {COMMA}
 STR_TRADITIONAL_AIRCRAFT_NAME                                   :Aircraft {COMMA}
 
 STR_FORMAT_DATE_MINUTES                                         :{0:RAW_STRING}:{1:RAW_STRING}
-STR_FORMAT_DATE_MINUTES_WITH_Y                                  :{0:RAW_STRING}:{1:RAW_STRING} / {2:NUM}
-STR_FORMAT_DATE_MINUTES_WITH_YM                                 :{0:RAW_STRING}:{1:RAW_STRING} / {2:DATE_SHORT}
-STR_FORMAT_DATE_MINUTES_WITH_YMD                                :{0:RAW_STRING}:{1:RAW_STRING} / {2:DATE_LONG}
+
+STR_HHMM_WITH_DATE_Y                                            :{TIME_HHMM} / {NUM}
+STR_HHMM_WITH_DATE_YM                                           :{TIME_HHMM} / {DATE_SHORT}
+STR_HHMM_WITH_DATE_YMD                                          :{TIME_HHMM} / {DATE_LONG}
 
 STR_FORMAT_GROUP_VEHICLE_NAME_LONG                              :{GROUP} - {STRING1}
 
@@ -2117,25 +2115,25 @@ STR_SCHDISPATCH_RENAME_SCHEDULE_TOOLTIP                         :{BLACK}Name sch
 STR_SCHDISPATCH_RENAME_SCHEDULE_CAPTION                         :{WHITE}Name schedule
 STR_ERROR_CAN_T_RENAME_SCHEDULE                                 :{WHITE}Can't name schedule...
 STR_SCHDISPATCH_MOVE_SCHEDULE                                   :{BLACK}Change position of current schedule in schedule list
-STR_SCHDISPATCH_DATE_WALLCLOCK_TINY_FLAGGED                     :{DATE_WALLCLOCK_TINY}*
-STR_SCHDISPATCH_SLOT_TOOLTIP                                    :{BLACK}{DATE_WALLCLOCK_TINY}
+STR_SCHDISPATCH_DATE_WALLCLOCK_TINY_FLAGGED                     :{TT_TIME}*
+STR_SCHDISPATCH_SLOT_TOOLTIP                                    :{BLACK}{TT_TIME}
 STR_SCHDISPATCH_SLOT_TOOLTIP_RELATIVE                           : ({TIME_HHMM} from start)
 STR_SCHDISPATCH_SLOT_TOOLTIP_LAST                               :{}Last departure slot
 STR_SCHDISPATCH_SLOT_TOOLTIP_NEXT                               :{}Next available departure slot
 STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE                              :{}Departure slot may be used more than once
-STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX                        : ({DATE_WALLCLOCK_TINY})
+STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX                        : ({TT_TIME})
 STR_SCHDISPATCH_SLOT_TOOLTIP_TAG                                :{}Tag {NUM}
 
 STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}No previous departures.
-STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Last departure at {DATE_WALLCLOCK_TINY}.
-STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}Last departure has not left yet, it will depart at {DATE_WALLCLOCK_TINY}.
+STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Last departure at {TT_TIME}.
+STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}Last departure has not left yet, it will depart at {TT_TIME}.
 STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}This schedule requires {COMMA} vehicle{P "" s}.
 STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}This schedule repeats every {STRING1}.
-STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}This schedule began at {DATE_WALLCLOCK_TINY}, and ends at {DATE_WALLCLOCK_TINY}.
+STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}This schedule began at {TT_TIME}, and ends at {TT_TIME}.
 STR_SCHDISPATCH_SUMMARY_L4                                      :{BLACK}Maximum delay of {STRING1} is allowed before the slot is skipped.
 STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}This schedule is not active.
 STR_SCHDISPATCH_SUMMARY_REUSE_SLOTS_ENABLED                     :{BLACK}All departure slots may be used more than once.
-STR_SCHDISPATCH_SUMMARY_NEXT_AVAILABLE_DEPARTURE                :{BLACK}Next available departure at {DATE_WALLCLOCK_TINY}.
+STR_SCHDISPATCH_SUMMARY_NEXT_AVAILABLE_DEPARTURE                :{BLACK}Next available departure at {TT_TIME}.
 
 STR_SCHDISPATCH_SLOT_OUTSIDE_SCHEDULE                           :{BLACK}One or more departure slots are outside the schedule duration.
 

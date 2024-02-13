@@ -473,27 +473,14 @@ static void FormatBytes(StringBuilder builder, int64_t number)
 	fmt::format_to(builder, NBSP "{}B", iec_prefixes[id]);
 }
 
-static void FormatWallClockString(StringBuilder builder, StateTicks ticks, bool show_date, uint case_index)
+static void FormatStateTicksHHMMString(StringBuilder builder, StateTicks ticks, uint case_index)
 {
 	TickMinutes minutes = _settings_time.ToTickMinutes(ticks);
 	char hour[3], minute[3];
 	seprintf(hour,   lastof(hour),   "%02i", minutes.ClockHour());
 	seprintf(minute, lastof(minute), "%02i", minutes.ClockMinute());
-	if (show_date) {
-		CalTime::Date date = StateTicksToCalendarDate(ticks);
-		int64_t final_arg;
-		if (_settings_client.gui.date_with_time == 1) {
-			CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(date);
-			final_arg = ymd.year.base();
-		} else {
-			final_arg = date.base();
-		}
-		auto tmp_params = MakeParameters(hour, minute, final_arg);
-		FormatString(builder, GetStringPtr(STR_FORMAT_DATE_MINUTES + _settings_client.gui.date_with_time), tmp_params, case_index);
-	} else {
-		auto tmp_params = MakeParameters(hour, minute);
-		FormatString(builder, GetStringPtr(STR_FORMAT_DATE_MINUTES), tmp_params, case_index);
-	}
+	auto tmp_params = MakeParameters(hour, minute);
+	FormatString(builder, GetStringPtr(STR_FORMAT_DATE_MINUTES), tmp_params, case_index);
 }
 
 static void FormatTimeHHMMString(StringBuilder builder, uint time, uint case_index)
@@ -1536,42 +1523,6 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 					next_substr_case_index = 0;
 					break;
 
-				case SCC_DATE_WALLCLOCK_LONG: { // {DATE_WALLCLOCK_LONG}
-					if (_settings_time.time_in_minutes) {
-						FormatWallClockString(builder, args.GetNextParameter<StateTicks>(), _settings_client.gui.date_with_time, next_substr_case_index);
-					} else {
-						FormatYmdString(builder, StateTicksToCalendarDate(args.GetNextParameter<StateTicks>()), next_substr_case_index);
-					}
-					break;
-				}
-
-				case SCC_DATE_WALLCLOCK_SHORT: { // {DATE_WALLCLOCK_SHORT}
-					if (_settings_time.time_in_minutes) {
-						FormatWallClockString(builder, args.GetNextParameter<StateTicks>(), _settings_client.gui.date_with_time, next_substr_case_index);
-					} else {
-						FormatYmdString(builder, StateTicksToCalendarDate(args.GetNextParameter<StateTicks>()), next_substr_case_index);
-					}
-					break;
-				}
-
-				case SCC_DATE_WALLCLOCK_TINY: { // {DATE_WALLCLOCK_TINY}
-					if (_settings_time.time_in_minutes) {
-						FormatWallClockString(builder, args.GetNextParameter<StateTicks>(), false, next_substr_case_index);
-					} else {
-						FormatTinyOrISODate(builder, StateTicksToCalendarDate(args.GetNextParameter<StateTicks>()), STR_FORMAT_DATE_TINY);
-					}
-					break;
-				}
-
-				case SCC_DATE_WALLCLOCK_ISO: { // {DATE_WALLCLOCK_ISO}
-					if (_settings_time.time_in_minutes) {
-						FormatWallClockString(builder, args.GetNextParameter<StateTicks>(), false, next_substr_case_index);
-					} else {
-						FormatTinyOrISODate(builder, StateTicksToCalendarDate(args.GetNextParameter<StateTicks>()), STR_FORMAT_DATE_ISO);
-					}
-					break;
-				}
-
 				case SCC_DATE_ISO: // {DATE_ISO}
 					FormatTinyOrISODate(builder, args.GetNextParameter<CalTime::Date>(), STR_FORMAT_DATE_ISO);
 					break;
@@ -1609,6 +1560,15 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 						}
 					}
 					break;
+
+				case SCC_TT_TIME: { // {TT_TIME}
+					if (_settings_time.time_in_minutes) {
+						FormatStateTicksHHMMString(builder, args.GetNextParameter<StateTicks>(), next_substr_case_index);
+					} else {
+						FormatTinyOrISODate(builder, StateTicksToCalendarDate(args.GetNextParameter<StateTicks>()), STR_FORMAT_DATE_TINY);
+					}
+					break;
+				}
 
 				case SCC_FORCE: { // {FORCE}
 					assert(_settings_game.locale.units_force < lengthof(_units_force));

@@ -88,13 +88,42 @@ struct StatusBarWindow : Window {
 		Window::FindWindowPlacementAndResize(_toolbar_width, def_height);
 	}
 
+	StringID PrepareHHMMDateString(int hhmm, CalTime::Date date, CalTime::Year year) const
+	{
+		SetDParam(0, hhmm);
+		switch (_settings_client.gui.date_with_time) {
+			case 0:
+				return STR_JUST_TIME_HHMM;
+
+			case 1:
+				SetDParam(1, year);
+				return STR_HHMM_WITH_DATE_Y;
+
+			case 2:
+				SetDParam(1, date);
+				return STR_HHMM_WITH_DATE_YM;
+
+			case 3:
+				SetDParam(1, date);
+				return STR_HHMM_WITH_DATE_YMD;
+
+			default:
+				NOT_REACHED();
+		}
+	}
+
 	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
 	{
 		Dimension d;
 		switch (widget) {
 			case WID_S_LEFT:
-				SetDParam(0, DateToStateTicks(EconTime::MAX_YEAR.base() * DAYS_IN_YEAR));
-				d = GetStringBoundingBox(STR_JUST_DATE_WALLCLOCK_LONG);
+				if (_settings_time.time_in_minutes) {
+					StringID str = PrepareHHMMDateString(GetBroadestDigitsValue(4), CalTime::MAX_DATE, CalTime::MAX_YEAR);
+					d = GetStringBoundingBox(str);
+				} else {
+					SetDParam(0, CalTime::MAX_DATE);
+					d = GetStringBoundingBox(STR_JUST_DATE_LONG);
+				}
 				break;
 
 			case WID_S_RIGHT: {
@@ -121,8 +150,13 @@ struct StatusBarWindow : Window {
 		switch (widget) {
 			case WID_S_LEFT:
 				/* Draw the date */
-				SetDParam(0, _state_ticks);
-				DrawString(tr, STR_JUST_DATE_WALLCLOCK_LONG, TC_WHITE, SA_HOR_CENTER);
+				if (_settings_time.time_in_minutes) {
+					StringID str = PrepareHHMMDateString(_settings_time.ToTickMinutes(_state_ticks).ClockHHMM(), CalTime::CurDate(), CalTime::CurYear());
+					DrawString(tr, str, TC_WHITE, SA_HOR_CENTER);
+				} else {
+					SetDParam(0, CalTime::CurDate());
+					DrawString(tr, STR_JUST_DATE_LONG, TC_WHITE, SA_HOR_CENTER);
+				}
 				break;
 
 			case WID_S_RIGHT: {

@@ -1231,10 +1231,10 @@ STR_DEPARTURES_SHOW_AIRCRAFT_TOOLTIP                            :{BLACK}Zobrazit
 STR_DEPARTURES_SHOW_TYPE_TOOLTIP_CTRL_SUFFIX                    :{BLACK}{STRING}. Ctrl+kliknutí je zobrazí samostatně.
 STR_DEPARTURES_EMPTY                                            :{ORANGE}Tuto stanici aktuálně nemá v jízdním řádu žádné vozidlo.
 STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}Nejsou požadovány žádné informace z jízdního řádu.
-STR_DEPARTURES_TIME                                             :{ORANGE}{DATE_WALLCLOCK_TINY}
-STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{DATE_WALLCLOCK_TINY} {GREEN}{UP_ARROW}
-STR_DEPARTURES_TIME_ARR                                         :{ORANGE}{DATE_WALLCLOCK_TINY} {RED}{DOWN_ARROW}
-STR_DEPARTURES_TIME_BOTH                                        :{ORANGE}{1:DATE_WALLCLOCK_TINY} {RED}{DOWN_ARROW} {ORANGE}{0:DATE_WALLCLOCK_TINY} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TIME                                             :{ORANGE}{TT_TIME}
+STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{TT_TIME} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TIME_ARR                                         :{ORANGE}{TT_TIME} {RED}{DOWN_ARROW}
+STR_DEPARTURES_TIME_BOTH                                        :{ORANGE}{1:TT_TIME} {RED}{DOWN_ARROW} {ORANGE}{0:TT_TIME} {GREEN}{UP_ARROW}
 STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STATION}{STRING}
 STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STATION}{STRING} přes {STRING}
 STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STATION}{STRING} přes
@@ -1271,7 +1271,7 @@ STR_DEPARTURES_STATION_PORTAIRPORT                              :{ORANGE} {SHIP}
 STR_DEPARTURES_ON_TIME                                          :{GREEN}Včas
 STR_DEPARTURES_ARRIVED                                          :{GREEN}Přijel
 STR_DEPARTURES_DELAYED                                          :{YELLOW}Opožděn
-STR_DEPARTURES_EXPECTED                                         :{YELLOW}Očekávání {DATE_WALLCLOCK_TINY}
+STR_DEPARTURES_EXPECTED                                         :{YELLOW}Očekávání {TT_TIME}
 STR_DEPARTURES_CANCELLED                                        :{RED}SPOJ ZRUŠEN
 
 STR_CONFIG_SETTING_DEPARTUREBOARDS                              :{ORANGE}Odjezdové tabule
@@ -1749,9 +1749,10 @@ STR_TRADITIONAL_SHIP_NAME                                       :{G=f}Loď {COMM
 STR_TRADITIONAL_AIRCRAFT_NAME                                   :{G=n}Letadlo {COMMA}
 
 STR_FORMAT_DATE_MINUTES                                         :{0:STRING}:{1:STRING}
-STR_FORMAT_DATE_MINUTES_WITH_Y                                  :{0:STRING}:{1:STRING} / {2:NUM}
-STR_FORMAT_DATE_MINUTES_WITH_YM                                 :{0:STRING}:{1:STRING} / {2:DATE_SHORT}
-STR_FORMAT_DATE_MINUTES_WITH_YMD                                :{0:STRING}:{1:STRING} / {2:DATE_LONG}
+
+STR_HHMM_WITH_DATE_Y                                            :{TIME_HHMM} / {NUM}
+STR_HHMM_WITH_DATE_YM                                           :{TIME_HHMM} / {DATE_SHORT}
+STR_HHMM_WITH_DATE_YMD                                          :{TIME_HHMM} / {DATE_LONG}
 
 STR_FORMAT_GROUP_VEHICLE_NAME_LONG                              :{GROUP} - {STRING}
 
@@ -1949,11 +1950,11 @@ STR_SCHDISPATCH_RENAME_SCHEDULE_TOOLTIP                         :{BLACK}Pojmenov
 STR_SCHDISPATCH_RENAME_SCHEDULE_CAPTION                         :{WHITE}Název rozvrhu
 STR_ERROR_CAN_T_RENAME_SCHEDULE                                 :{WHITE}Nelze pojmenovat rozvrh...
 
-STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Poslední odjezd v {DATE_WALLCLOCK_TINY}.
-STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}Poslední pořadí ještě neodjelo, odjede v {DATE_WALLCLOCK_TINY}.
+STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Poslední odjezd v {TT_TIME}.
+STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}Poslední pořadí ještě neodjelo, odjede v {TT_TIME}.
 STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}Tento rozvrh vyžaduje {COMMA} vozid{P lo la el}.
 STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}Tento rozvrh se opakuje každých {STRING}.
-STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}Tento rozvrh začal v {DATE_WALLCLOCK_TINY} a skončí v {DATE_WALLCLOCK_TINY}.
+STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}Tento rozvrh začal v {TT_TIME} a skončí v {TT_TIME}.
 STR_SCHDISPATCH_SUMMARY_L4                                      :{BLACK}Před vynecháním pořadí je tolerováno zpoždění nejvýše {STRING}.
 STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}Tento rozvrh není aktivní.
 

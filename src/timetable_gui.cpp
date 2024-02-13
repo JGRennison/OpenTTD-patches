@@ -404,7 +404,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 		switch (widget) {
 			case WID_VT_ARRIVAL_DEPARTURE_PANEL:
 				SetDParamMaxValue(0, _settings_time.time_in_minutes ? 0 : EconTime::MAX_YEAR.base() * DAYS_IN_YEAR);
-				this->deparr_time_width = GetStringBoundingBox(STR_JUST_DATE_WALLCLOCK_TINY).width + 4;
+				this->deparr_time_width = GetStringBoundingBox(STR_JUST_TT_TIME).width + 4;
 				this->deparr_abbr_width = std::max(GetStringBoundingBox(STR_TIMETABLE_ARRIVAL_ABBREVIATION).width, GetStringBoundingBox(STR_TIMETABLE_DEPARTURE_ABBREVIATION).width);
 				size->width = this->deparr_abbr_width + WidgetDimensions::scaled.hsep_wide + this->deparr_time_width + padding.width;
 				FALLTHROUGH;
@@ -764,10 +764,10 @@ struct TimetableWindow : GeneralVehicleWindow {
 							DrawString(abbr.left, abbr.right, tr.top, STR_TIMETABLE_ARRIVAL_ABBREVIATION, i == selected ? TC_WHITE : TC_BLACK);
 							if (this->show_expected && i / 2 == earlyID) {
 								SetDParam(0, _state_ticks + arr_dep[i / 2].arrival);
-								DrawString(time.left, time.right, tr.top, STR_JUST_DATE_WALLCLOCK_TINY, TC_GREEN);
+								DrawString(time.left, time.right, tr.top, STR_JUST_TT_TIME, TC_GREEN);
 							} else {
 								SetDParam(0, _state_ticks + arr_dep[i / 2].arrival + (HasBit(arr_dep[i / 2].flags, TADF_ARRIVAL_NO_OFFSET) ? 0 : offset));
-								DrawString(time.left, time.right, tr.top, STR_JUST_DATE_WALLCLOCK_TINY,
+								DrawString(time.left, time.right, tr.top, STR_JUST_TT_TIME,
 										HasBit(arr_dep[i / 2].flags, TADF_ARRIVAL_PREDICTED) ? (TextColour)(TC_IS_PALETTE_COLOUR | TC_NO_SHADE | 4) : (show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK));
 							}
 						}
@@ -775,7 +775,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 						if (arr_dep[i / 2].departure != INVALID_TICKS) {
 							DrawString(abbr.left, abbr.right, tr.top, STR_TIMETABLE_DEPARTURE_ABBREVIATION, i == selected ? TC_WHITE : TC_BLACK);
 							SetDParam(0, _state_ticks + arr_dep[i/2].departure + (HasBit(arr_dep[i / 2].flags, TADF_DEPARTURE_NO_OFFSET) ? 0 : offset));
-							DrawString(time.left, time.right, tr.top, STR_JUST_DATE_WALLCLOCK_TINY,
+							DrawString(time.left, time.right, tr.top, STR_JUST_TT_TIME,
 									HasBit(arr_dep[i / 2].flags, TADF_DEPARTURE_PREDICTED) ? (TextColour)(TC_IS_PALETTE_COLOUR | TC_NO_SHADE | 4) : (show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK));
 						}
 					}
@@ -797,7 +797,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 				if (v->timetable_start != 0) {
 					/* We are running towards the first station so we can start the
 					 * timetable at the given time. */
-					SetDParam(0, STR_JUST_DATE_WALLCLOCK_TINY);
+					SetDParam(0, STR_JUST_TT_TIME);
 					SetDParam(1, v->timetable_start);
 					DrawString(tr, STR_TIMETABLE_STATUS_START_AT_DATE);
 				} else if (!HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) {

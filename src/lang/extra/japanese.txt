@@ -54,10 +54,10 @@ STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}到着�
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}通過車両を表示
 STR_DEPARTURES_EMPTY                                            :{ORANGE}現在、ダイヤを設定している車両はありません。
 STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}発車標が設定されていません。
-STR_DEPARTURES_TIME                                             :{ORANGE}{DATE_WALLCLOCK_TINY}
-STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{DATE_WALLCLOCK_TINY} {GREEN}{UP_ARROW}
-STR_DEPARTURES_TIME_ARR                                         :{ORANGE}{DATE_WALLCLOCK_TINY} {RED}{DOWN_ARROW}
-STR_DEPARTURES_TIME_BOTH                                        :{ORANGE}{1:DATE_WALLCLOCK_TINY} {RED}{DOWN_ARROW} {ORANGE}{0:DATE_WALLCLOCK_TINY} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TIME                                             :{ORANGE}{TT_TIME}
+STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{TT_TIME} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TIME_ARR                                         :{ORANGE}{TT_TIME} {RED}{DOWN_ARROW}
+STR_DEPARTURES_TIME_BOTH                                        :{ORANGE}{1:TT_TIME} {RED}{DOWN_ARROW} {ORANGE}{0:TT_TIME} {GREEN}{UP_ARROW}
 STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STATION}{STRING}
 STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STATION}{STRING} 経由 {STRING}経由
 STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STATION}{STRING} 経由
@@ -90,7 +90,7 @@ STR_DEPARTURES_STATION_PORTAIRPORT                              :{ORANGE} {SHIP}
 STR_DEPARTURES_ON_TIME                                          :{GREEN}定時
 STR_DEPARTURES_ARRIVED                                          :{GREEN}到着しました
 STR_DEPARTURES_DELAYED                                          :{YELLOW}遅れています
-STR_DEPARTURES_EXPECTED                                         :{YELLOW} {DATE_WALLCLOCK_TINY}見込み
+STR_DEPARTURES_EXPECTED                                         :{YELLOW} {TT_TIME}見込み
 STR_DEPARTURES_CANCELLED                                        :{RED}運休
 
 STR_CONFIG_SETTING_DEPARTUREBOARDS                              :{ORANGE}発車標

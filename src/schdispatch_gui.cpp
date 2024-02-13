@@ -566,7 +566,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		}
 
 		SetDParam(0, time);
-		DrawString(text_left, text_right, y + 2, flagged ? STR_SCHDISPATCH_DATE_WALLCLOCK_TINY_FLAGGED : STR_JUST_DATE_WALLCLOCK_TINY, colour, SA_HOR_CENTER);
+		DrawString(text_left, text_right, y + 2, flagged ? STR_SCHDISPATCH_DATE_WALLCLOCK_TINY_FLAGGED : STR_JUST_TT_TIME, colour, SA_HOR_CENTER);
 	}
 
 	virtual void OnGameTick() override

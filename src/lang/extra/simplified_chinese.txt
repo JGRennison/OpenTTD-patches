@@ -1250,10 +1250,10 @@ STR_DEPARTURES_SHOW_AIRCRAFT_TOOLTIP                            :{BLACK}显示�
 STR_DEPARTURES_SHOW_TYPE_TOOLTIP_CTRL_SUFFIX                    :{BLACK}{STRING}. Ctrl+点击设置仅显示此类型载具
 STR_DEPARTURES_EMPTY                                            :{ORANGE}当前车站当前没有被列入时刻表的载具
 STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}没有被请求的时刻表信息
-STR_DEPARTURES_TIME                                             :{ORANGE}{DATE_WALLCLOCK_TINY}
-STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{DATE_WALLCLOCK_TINY} {GREEN}{UP_ARROW}
-STR_DEPARTURES_TIME_ARR                                         :{ORANGE}{DATE_WALLCLOCK_TINY} {RED}{DOWN_ARROW}
-STR_DEPARTURES_TIME_BOTH                                        :{ORANGE}{1:DATE_WALLCLOCK_TINY} {RED}{DOWN_ARROW} {ORANGE}{0:DATE_WALLCLOCK_TINY} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TIME                                             :{ORANGE}{TT_TIME}
+STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{TT_TIME} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TIME_ARR                                         :{ORANGE}{TT_TIME} {RED}{DOWN_ARROW}
+STR_DEPARTURES_TIME_BOTH                                        :{ORANGE}{1:TT_TIME} {RED}{DOWN_ARROW} {ORANGE}{0:TT_TIME} {GREEN}{UP_ARROW}
 STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STATION}{STRING}
 STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STATION}{STRING}经由{STRING}
 STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STATION}{STRING}经由
@@ -1290,7 +1290,7 @@ STR_DEPARTURES_STATION_PORTAIRPORT                              :{ORANGE} {SHIP}
 STR_DEPARTURES_ON_TIME                                          :{GREEN}准时
 STR_DEPARTURES_ARRIVED                                          :{GREEN}到达
 STR_DEPARTURES_DELAYED                                          :{YELLOW}延误
-STR_DEPARTURES_EXPECTED                                         :{YELLOW}约 {DATE_WALLCLOCK_TINY}
+STR_DEPARTURES_EXPECTED                                         :{YELLOW}约 {TT_TIME}
 STR_DEPARTURES_CANCELLED                                        :{RED}取消
 
 STR_CONFIG_SETTING_DEPARTUREBOARDS                              :{ORANGE}出发看板
@@ -1775,9 +1775,10 @@ STR_TRADITIONAL_SHIP_NAME                                       :船只 {COMMA}
 STR_TRADITIONAL_AIRCRAFT_NAME                                   :飞机 {COMMA}
 
 STR_FORMAT_DATE_MINUTES                                         :{0:STRING}:{1:STRING}
-STR_FORMAT_DATE_MINUTES_WITH_Y                                  :{0:STRING}:{1:STRING} / {2:NUM}
-STR_FORMAT_DATE_MINUTES_WITH_YM                                 :{0:STRING}:{1:STRING} / {2:DATE_SHORT}
-STR_FORMAT_DATE_MINUTES_WITH_YMD                                :{0:STRING}:{1:STRING} / {2:DATE_LONG}
+
+STR_HHMM_WITH_DATE_Y                                            :{TIME_HHMM} / {NUM}
+STR_HHMM_WITH_DATE_YM                                           :{TIME_HHMM} / {DATE_SHORT}
+STR_HHMM_WITH_DATE_YMD                                          :{TIME_HHMM} / {DATE_LONG}
 
 STR_FORMAT_GROUP_VEHICLE_NAME_LONG                              :{GROUP} - {STRING}
 
@@ -1986,11 +1987,11 @@ STR_SCHDISPATCH_RENAME_SCHEDULE_CAPTION                         :{WHITE}命名�
 STR_ERROR_CAN_T_RENAME_SCHEDULE                                 :{WHITE}无法命名计划...
 STR_SCHDISPATCH_MOVE_SCHEDULE                                   :{BLACK}更改计划在计划列表中的位置
 
-STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}最新的出发条目在 {DATE_WALLCLOCK_TINY}.
-STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}最新的出发条目还没有离开，它将在{DATE_WALLCLOCK_TINY}离开
+STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}最新的出发条目在 {TT_TIME}.
+STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}最新的出发条目还没有离开，它将在{TT_TIME}离开
 STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}这个计划调度需要{COMMA}辆车
 STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}这个计划调度每{STRING}重复一次
-STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}这个计划调度开始在{DATE_WALLCLOCK_TINY}，结束在{DATE_WALLCLOCK_TINY}
+STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}这个计划调度开始在{TT_TIME}，结束在{TT_TIME}
 STR_SCHDISPATCH_SUMMARY_L4                                      :{BLACK}{STRING}的最大延迟被允许这个条目在之前被跳过
 STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}这个计划调度并未被激活
 

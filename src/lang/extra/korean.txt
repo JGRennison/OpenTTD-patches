@@ -1315,10 +1315,10 @@ STR_DEPARTURES_SHOW_AIRCRAFT_TOOLTIP                            :{BLACK}이 역�
 STR_DEPARTURES_SHOW_TYPE_TOOLTIP_CTRL_SUFFIX                    :{BLACK}{STRING}. CTRL + 클릭하면 이 차량 종류만 보여줍니다
 STR_DEPARTURES_EMPTY                                            :{ORANGE}시간표가 지정된 차량이 없습니다.
 STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}표시할 정보를 선택하십시오.
-STR_DEPARTURES_TIME                                             :{ORANGE}{DATE_WALLCLOCK_TINY}
-STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{DATE_WALLCLOCK_TINY} {GREEN}{UP_ARROW}
-STR_DEPARTURES_TIME_ARR                                         :{ORANGE}{DATE_WALLCLOCK_TINY} {RED}{DOWN_ARROW}
-STR_DEPARTURES_TIME_BOTH                                        :{ORANGE}{1:DATE_WALLCLOCK_TINY} {RED}{DOWN_ARROW} {ORANGE}{0:DATE_WALLCLOCK_TINY} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TIME                                             :{ORANGE}{TT_TIME}
+STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{TT_TIME} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TIME_ARR                                         :{ORANGE}{TT_TIME} {RED}{DOWN_ARROW}
+STR_DEPARTURES_TIME_BOTH                                        :{ORANGE}{1:TT_TIME} {RED}{DOWN_ARROW} {ORANGE}{0:TT_TIME} {GREEN}{UP_ARROW}
 STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STATION}{STRING}
 STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STATION}{STRING} 경유 {STRING}
 STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STATION}{STRING} 경유
@@ -1355,7 +1355,7 @@ STR_DEPARTURES_STATION_PORTAIRPORT                              :{ORANGE} {SHIP}
 STR_DEPARTURES_ON_TIME                                          :{GREEN}정시운행
 STR_DEPARTURES_ARRIVED                                          :{GREEN}도착
 STR_DEPARTURES_DELAYED                                          :{YELLOW}지연
-STR_DEPARTURES_EXPECTED                                         :{YELLOW}{DATE_WALLCLOCK_TINY}
+STR_DEPARTURES_EXPECTED                                         :{YELLOW}{TT_TIME}
 STR_DEPARTURES_CANCELLED                                        :{RED}취소됨
 
 STR_CONFIG_SETTING_DEPARTUREBOARDS                              :{ORANGE}출발/도착 정보
@@ -1844,9 +1844,10 @@ STR_TRADITIONAL_SHIP_NAME                                       :선박 {COMMA}
 STR_TRADITIONAL_AIRCRAFT_NAME                                   :항공기 {COMMA}
 
 STR_FORMAT_DATE_MINUTES                                         :{0:STRING}:{1:STRING}
-STR_FORMAT_DATE_MINUTES_WITH_Y                                  :{0:STRING}:{1:STRING} / {2:NUM}
-STR_FORMAT_DATE_MINUTES_WITH_YM                                 :{0:STRING}:{1:STRING} / {2:DATE_SHORT}
-STR_FORMAT_DATE_MINUTES_WITH_YMD                                :{0:STRING}:{1:STRING} / {2:DATE_LONG}
+
+STR_HHMM_WITH_DATE_Y                                            :{TIME_HHMM} / {NUM}
+STR_HHMM_WITH_DATE_YM                                           :{TIME_HHMM} / {DATE_SHORT}
+STR_HHMM_WITH_DATE_YMD                                          :{TIME_HHMM} / {DATE_LONG}
 
 STR_FORMAT_GROUP_VEHICLE_NAME_LONG                              :{GROUP} - {STRING}
 
@@ -2066,25 +2067,25 @@ STR_SCHDISPATCH_RENAME_SCHEDULE_TOOLTIP                         :{BLACK}일정 �
 STR_SCHDISPATCH_RENAME_SCHEDULE_CAPTION                         :{WHITE}일정 이름 변경
 STR_ERROR_CAN_T_RENAME_SCHEDULE                                 :{WHITE}일정 이름을 변경할 수 없습니다...
 STR_SCHDISPATCH_MOVE_SCHEDULE                                   :{BLACK}일정 목록에서 현재 일정의 위치를 변경합니다
-STR_SCHDISPATCH_DATE_WALLCLOCK_TINY_FLAGGED                     :{DATE_WALLCLOCK_TINY}*
-STR_SCHDISPATCH_SLOT_TOOLTIP                                    :{BLACK}{DATE_WALLCLOCK_TINY}
+STR_SCHDISPATCH_DATE_WALLCLOCK_TINY_FLAGGED                     :{TT_TIME}*
+STR_SCHDISPATCH_SLOT_TOOLTIP                                    :{BLACK}{TT_TIME}
 STR_SCHDISPATCH_SLOT_TOOLTIP_RELATIVE                           : (시작 시간으로부터 {TIME_HHMM})
 STR_SCHDISPATCH_SLOT_TOOLTIP_LAST                               :{}마지막 출발 슬롯
 STR_SCHDISPATCH_SLOT_TOOLTIP_NEXT                               :{}다음 이용 가능한 출발 슬롯
 STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE                              :{}출발 슬롯을 1번 이상 재사용 가능함
-STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX                        : ({DATE_WALLCLOCK_TINY})
+STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX                        : ({TT_TIME})
 STR_SCHDISPATCH_SLOT_TOOLTIP_TAG                                :{}태그 {NUM}
 
 STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}이전 출발이 없습니다.
-STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}최근 출발: {DATE_WALLCLOCK_TINY}
-STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}최근 배차된 열차가 아직 출발하지 않았습니다. {DATE_WALLCLOCK_TINY}에 출발할 예정입니다.
+STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}최근 출발: {TT_TIME}
+STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}최근 배차된 열차가 아직 출발하지 않았습니다. {TT_TIME}에 출발할 예정입니다.
 STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}이 일정에는 {COMMA}대의 열차가 필요합니다.
 STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}이 일정은 {STRING}마다 반복됩니다.
-STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}이 일정은 {DATE_WALLCLOCK_TINY}에 시작되어서 {DATE_WALLCLOCK_TINY}에 끝납니다.
+STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}이 일정은 {TT_TIME}에 시작되어서 {TT_TIME}에 끝납니다.
 STR_SCHDISPATCH_SUMMARY_L4                                      :{BLACK}{STRING} 이상 지연되면 다음 슬롯으로 넘어갑니다.
 STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}이 일정은 비활성화되어 있습니다.
 STR_SCHDISPATCH_SUMMARY_REUSE_SLOTS_ENABLED                     :{BLACK}모든 출발 슬롯을 1번 이상 재사용 가능합니다.
-STR_SCHDISPATCH_SUMMARY_NEXT_AVAILABLE_DEPARTURE                :{BLACK}다음으로 가능한 출발 시각은 {DATE_WALLCLOCK_TINY} 입니다.
+STR_SCHDISPATCH_SUMMARY_NEXT_AVAILABLE_DEPARTURE                :{BLACK}다음으로 가능한 출발 시각은 {TT_TIME} 입니다.
 
 STR_SCHDISPATCH_SLOT_OUTSIDE_SCHEDULE                           :{BLACK}하나 이상의 출발 슬롯이 배차 간격 범위 바깥에 있습니다.
 
