@@ -1844,6 +1844,7 @@ static void ImprovedBreakdownsSettingChanged(int32_t new_value)
 
 static void DayLengthChanged(int32_t new_value)
 {
+	UpdateEffectiveDayLengthFactor();
 	RecalculateStateTicksOffset();
 
 	SetupTileLoopCounts();
