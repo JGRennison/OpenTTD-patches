@@ -523,8 +523,7 @@ public:
 				if (this->sel_engine[side] != INVALID_ENGINE) {
 					/* Use default engine details without refitting */
 					const Engine *e = Engine::Get(this->sel_engine[side]);
-					TestedEngineDetails ted;
-					ted.cost = 0;
+					TestedEngineDetails ted{};
 					ted.FillDefaultCapacities(e);
 
 					const Rect r = this->GetWidget<NWidgetBase>(side == 0 ? WID_RV_LEFT_DETAILS : WID_RV_RIGHT_DETAILS)->GetCurrentRect()

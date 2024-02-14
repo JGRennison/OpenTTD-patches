@@ -1108,7 +1108,7 @@ static uint ShowAdditionalText(int left, int right, int y, EngineID engine)
 void TestedEngineDetails::FillDefaultCapacities(const Engine *e)
 {
 	this->cargo = e->GetDefaultCargoType();
-	if (e->type == VEH_TRAIN || e->type == VEH_ROAD) {
+	if (e->type == VEH_TRAIN || e->type == VEH_ROAD || e->type == VEH_SHIP) {
 		this->all_capacities = GetCapacityOfArticulatedParts(e->index);
 		this->capacity = this->all_capacities[this->cargo];
 		this->mail_capacity = 0;
@@ -1617,7 +1617,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		}
 
 		/* Purchase test was not possible or failed, fill in the defaults instead. */
-		this->te.cost     = 0;
+		this->te = {};
 		this->te.FillDefaultCapacities(e);
 	}
 
@@ -2524,7 +2524,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		}
 
 		/* Purchase test was not possible or failed, fill in the defaults instead. */
-		state.te.cost = 0;
+		state.te = {};
 		state.te.FillDefaultCapacities(e);
 	}
 
