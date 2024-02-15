@@ -99,6 +99,12 @@ inline void SetDParam(size_t n, T &&v) {
 void SetDParamMaxValue(size_t n, uint64_t max_value, uint min_count = 0, FontSize size = FS_NORMAL);
 void SetDParamMaxDigits(size_t n, uint count, FontSize size = FS_NORMAL);
 
+template <typename T, std::enable_if_t<std::is_base_of<StrongTypedefBase, T>::value, int> = 0>
+void SetDParamMaxValue(size_t n, T max_value, uint min_count = 0, FontSize size = FS_NORMAL)
+{
+	SetDParamMaxValue(n, max_value.base(), min_count, size);
+}
+
 void SetDParamStr(size_t n, const char *str);
 void SetDParamStr(size_t n, std::string str);
 
