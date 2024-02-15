@@ -29,6 +29,8 @@ static const int SECONDS_PER_DAY   = 2;   ///< approximate seconds per day, not 
 using Ticks = int32_t;                    ///< The type to store ticks in
 static constexpr Ticks INVALID_TICKS = -1; ///< Representation of an invalid number of ticks
 
+using ScaledTickCounter = uint64_t;       ///< The type for the scaled tick counter
+
 using YearDelta = StrongType::Typedef<int32_t, struct YearDeltaTag, StrongType::Compare, StrongType::IntegerScalable>;
 using DateDelta = StrongType::Typedef<int32_t, struct DateDeltaTag, StrongType::Compare, StrongType::IntegerScalable>;
 using DateTicksDelta = StrongType::Typedef<int64_t, struct DateTicksDeltaTag, StrongType::Compare, StrongType::IntegerScalable>;

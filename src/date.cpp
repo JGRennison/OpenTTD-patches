@@ -28,7 +28,7 @@
 #include "safeguards.h"
 
 uint64_t _tick_counter;                    ///< Ever incrementing tick counter for setting off various events
-uint64_t _scaled_tick_counter;             ///< Tick counter in daylength-scaled ticks
+ScaledTickCounter _scaled_tick_counter;    ///< Tick counter in daylength-scaled ticks
 StateTicks _state_ticks;                   ///< Current state tick
 uint32_t _quit_after_days;                 ///< Quit after this many days of run time
 

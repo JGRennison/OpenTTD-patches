@@ -14,7 +14,7 @@
 #include "settings_type.h"
 
 extern uint64_t  _tick_counter;
-extern uint64_t  _scaled_tick_counter;
+extern ScaledTickCounter _scaled_tick_counter;
 extern StateTicks _state_ticks;
 extern uint32_t  _quit_after_days;
 
