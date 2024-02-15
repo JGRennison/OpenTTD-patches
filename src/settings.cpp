@@ -1079,6 +1079,12 @@ static void UpdateAllServiceInterval(int32_t new_value)
 		vds->servint_roadveh  = DEF_SERVINT_PERCENT;
 		vds->servint_aircraft = DEF_SERVINT_PERCENT;
 		vds->servint_ships    = DEF_SERVINT_PERCENT;
+	} else if (EconTime::UsingWallclockUnits(_game_mode == GM_MENU)) {
+		/* Service intervals are in minutes. */
+		vds->servint_trains   = DEF_SERVINT_MINUTES_TRAINS;
+		vds->servint_roadveh  = DEF_SERVINT_MINUTES_ROADVEH;
+		vds->servint_aircraft = DEF_SERVINT_MINUTES_AIRCRAFT;
+		vds->servint_ships    = DEF_SERVINT_MINUTES_SHIPS;
 	} else {
 		/* Service intervals are in days. */
 		vds->servint_trains   = DEF_SERVINT_DAYS_TRAINS;
@@ -1125,6 +1131,85 @@ static void UpdateServiceInterval(VehicleType type, int32_t new_value)
 	}
 
 	SetWindowClassesDirty(WC_VEHICLE_DETAILS);
+}
+
+/**
+ * Callback for when the player changes the timekeeping units.
+ * @param Unused.
+ */
+static void ChangeTimekeepingUnits(int32_t)
+{
+	/* If service intervals are in time units (calendar days or real-world minutes), reset them to the correct defaults. */
+	if (!_settings_client.company.vehicle.servint_ispercent) {
+		UpdateAllServiceInterval(0);
+	}
+
+	/* If we are using calendar timekeeping, "minutes per year" must be default. */
+	if (_game_mode == GM_MENU && !EconTime::UsingWallclockUnits(true)) {
+		_settings_newgame.economy.minutes_per_calendar_year = CalTime::DEF_MINUTES_PER_YEAR;
+	}
+
+	InvalidateWindowClassesData(WC_GAME_OPTIONS, 0);
+
+	/* It is possible to change these units in Scenario Editor. We must set the economy date appropriately. */
+	if (_game_mode == GM_EDITOR) {
+		EconTime::Date new_economy_date;
+		EconTime::DateFract new_economy_date_fract;
+
+		if (EconTime::UsingWallclockUnits()) {
+			/* If the new mode is wallclock units, set the economy year back to 1. */
+			new_economy_date = EconTime::DAYS_TILL_ORIGINAL_BASE_YEAR_WALLCLOCK_MODE;
+			new_economy_date_fract = 0;
+		} else {
+			/* If the new mode is calendar units, sync the economy year with the calendar year. */
+			new_economy_date = CalTime::CurDate().base();
+			new_economy_date_fract = CalTime::CurDateFract();
+		}
+
+		/* If you open a savegame as a scenario, there may already be link graphs and/or vehicles. These use economy date. */
+		LinkGraphSchedule::instance.ShiftDates(new_economy_date - EconTime::CurDate());
+		ShiftVehicleDates(new_economy_date - EconTime::CurDate());
+
+		/* Only change the date after changing cached values above. */
+		EconTime::Detail::SetDate(new_economy_date, new_economy_date_fract);
+		UpdateOrderUIOnDateChange();
+	}
+
+	UpdateEffectiveDayLengthFactor();
+}
+
+/**
+ * Callback after the player changes the minutes per year.
+ * @param new_value The intended new value of the setting, used for clamping.
+ */
+static void ChangeMinutesPerYear(int32_t new_value)
+{
+	/* We don't allow setting Minutes Per Year below default, unless it's to 0 for frozen calendar time. */
+	if (new_value < CalTime::DEF_MINUTES_PER_YEAR) {
+		int clamped;
+
+		/* If the new value is 1, we're probably at 0 and trying to increase the value, so we should jump up to default. */
+		if (new_value == 1) {
+			clamped = CalTime::DEF_MINUTES_PER_YEAR;
+		} else {
+			clamped = CalTime::FROZEN_MINUTES_PER_YEAR;
+		}
+
+		/* Override the setting with the clamped value. */
+		if (_game_mode == GM_MENU) {
+			_settings_newgame.economy.minutes_per_calendar_year = clamped;
+		} else {
+			_settings_game.economy.minutes_per_calendar_year = clamped;
+		}
+	}
+
+	/* If the setting value is not the default, force the game to use wallclock timekeeping units.
+	 * This can only happen in the menu, since the pre_cb ensures this setting can only be changed there, or if we're already using wallclock units.
+	 */
+	if (_game_mode == GM_MENU && (_settings_newgame.economy.minutes_per_calendar_year != CalTime::DEF_MINUTES_PER_YEAR)) {
+		_settings_newgame.economy.timekeeping_units = TKU_WALLCLOCK;
+		InvalidateWindowClassesData(WC_GAME_OPTIONS, 0);
+	}
 }
 
 static void TrainAccelerationModelChanged(int32_t new_value)

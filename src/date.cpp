@@ -246,21 +246,37 @@ CalTime::Date CalTime::ConvertYMDToDate(CalTime::Year year, CalTime::Month month
 
 EconTime::YearMonthDay EconTime::ConvertDateToYMD(EconTime::Date date)
 {
-	/* Process the same as calendar time (for now) */
+	if (EconTime::UsingWallclockUnits()) {
+		/* If we're using wallclock units, economy months have 30 days and an economy year has 360 days. */
+		EconTime::YearMonthDay ymd;
+		ymd.year =date.base() / EconTime::DAYS_IN_ECONOMY_WALLCLOCK_YEAR;
+		ymd.month = (date.base() % EconTime::DAYS_IN_ECONOMY_WALLCLOCK_YEAR) / EconTime::DAYS_IN_ECONOMY_WALLCLOCK_MONTH;
+		ymd.day = date.base() % EconTime::DAYS_IN_ECONOMY_WALLCLOCK_MONTH;
+		return ymd;
+	}
+
+	/* Process the same as calendar time */
 	CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(date.base());
 	return { ymd.year.base(), ymd.month, ymd.day };
 }
 
 EconTime::Date EconTime::ConvertYMDToDate(EconTime::Year year, EconTime::Month month, EconTime::Day day)
 {
-	/* Process the same as calendar time (for now) */
+	if (EconTime::UsingWallclockUnits()) {
+		/* If we're using wallclock units, economy months have 30 days and an economy year has 360 days. */
+		const int total_months = (year.base() * MONTHS_IN_YEAR) + month;
+		return (total_months * EconTime::DAYS_IN_ECONOMY_WALLCLOCK_MONTH) + day - 1; // Day is 1-indexed but Date is 0-indexed, hence the - 1.
+	}
+
+	/* Process the same as calendar time */
 	return CalTime::ConvertYMDToDate(year.base(), month, day).base();
 }
 
 bool EconTime::UsingWallclockUnits(bool newgame)
 {
-	/* Always return false (for now) */
-	return false;
+	if (newgame) return (_settings_newgame.economy.timekeeping_units == TKU_WALLCLOCK);
+
+	return (_settings_game.economy.timekeeping_units == TKU_WALLCLOCK);
 }
 
 /** Functions used by the IncreaseDate function */
@@ -397,6 +413,18 @@ static void OnNewEconomyDay()
 
 static void IncreaseCalendarDate()
 {
+	/* If calendar day progress is frozen, don't try to advance time. */
+	if (_settings_game.economy.minutes_per_calendar_year == CalTime::FROZEN_MINUTES_PER_YEAR) return;
+
+	/* If we are using a non-default calendar progression speed, we need to check the sub_date_fract before updating date_fract. */
+	if (_settings_game.economy.minutes_per_calendar_year != CalTime::DEF_MINUTES_PER_YEAR) {
+		CalTime::Detail::now.sub_date_fract++;
+
+		/* Check if we are ready to increment date_fract */
+		if (CalTime::Detail::now.sub_date_fract < (DAY_TICKS * _settings_game.economy.minutes_per_calendar_year) / CalTime::DEF_MINUTES_PER_YEAR) return;
+	}
+	CalTime::Detail::now.sub_date_fract = 0;
+
 	CalTime::Detail::now.cal_date_fract++;
 	if (CalTime::Detail::now.cal_date_fract < DAY_TICKS) return;
 	CalTime::Detail::now.cal_date_fract = 0;

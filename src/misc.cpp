@@ -158,7 +158,9 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 
 	if (reset_date) {
 		CalTime::Detail::SetDate(CalTime::ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1), 0);
-		{
+		if (EconTime::UsingWallclockUnits()) {
+			EconTime::Detail::SetDate(EconTime::DAYS_TILL_ORIGINAL_BASE_YEAR_WALLCLOCK_MODE, 0);
+		} else {
 			EconTime::Detail::SetDate(CalTime::CurDate().base(), 0);
 		}
 		InitializeOldNames();

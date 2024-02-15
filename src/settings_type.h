@@ -64,6 +64,12 @@ enum IndustryDensity {
 	ID_END,       ///< Number of industry density settings.
 };
 
+/** Possible values for the "timekeeping_units" setting. */
+enum TimekeepingUnits : uint8_t {
+	TKU_CALENDAR = 0,
+	TKU_WALLCLOCK,
+};
+
 /** Possible values for "use_relay_service" setting. */
 enum UseRelayService : uint8_t {
 	URS_NEVER = 0,
@@ -763,6 +769,8 @@ struct EconomySettings {
 	uint8_t  town_max_road_slope;            ///< maximum number of consecutive sloped road tiles which towns are allowed to build
 	bool   allow_town_bridges;               ///< towns are allowed to build bridges
 	bool   infrastructure_maintenance;       ///< enable monthly maintenance fee for owner infrastructure
+	TimekeepingUnits timekeeping_units;      ///< time units to use for the game economy, either calendar or wallclock
+	uint16_t minutes_per_calendar_year;      ///< minutes per calendar year. Special value 0 means that calendar time is frozen.
 	uint16_t town_cargo_scale;               ///< scale cargo production of towns by this percentage.
 	uint16_t industry_cargo_scale;           ///< scale cargo production of industries by this percentage.
 	CargoScalingMode town_cargo_scale_mode;  ///< scaling mode for town cargo.
@@ -890,7 +898,7 @@ struct GameSettings {
 
 	uint8_t EffectiveDayLengthFactor() const
 	{
-		return this->economy.day_length_factor;
+		return this->economy.timekeeping_units == TKU_CALENDAR ? this->economy.day_length_factor : 1;
 	}
 };
 

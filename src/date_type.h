@@ -176,6 +176,10 @@ struct CalTime : public DateDetail::BaseTime<struct CalendarTimeTag> {
 		static State NewState(Year year);
 	};
 
+	static constexpr int DEF_MINUTES_PER_YEAR = 12;
+	static constexpr int FROZEN_MINUTES_PER_YEAR = 0;
+	static constexpr int MAX_MINUTES_PER_YEAR = 10080; // One week of real time. The actual max that doesn't overflow TimerGameCalendar::sub_date_fract is 10627, but this is neater.
+
 	static inline const YearMonthDay &CurYMD()             { return Detail::now.cal_ymd; }
 	static inline Year                CurYear()            { return Detail::now.cal_ymd.year; }
 	static inline Month               CurMonth()           { return Detail::now.cal_ymd.month; }
@@ -213,19 +217,41 @@ struct CalTime : public DateDetail::BaseTime<struct CalendarTimeTag> {
 };
 
 struct EconTime : public DateDetail::BaseTime<struct EconTimeTag> {
+	using ParentBaseTime = DateDetail::BaseTime<struct EconTimeTag>;
+
 	/* Use a state struct to make backup/restore/init simpler */
 	struct State {
 		YearMonthDay econ_ymd;
 		Date         econ_date;
 		DateFract    econ_date_fract;
 	};
+
+	static constexpr int DAYS_IN_ECONOMY_WALLCLOCK_YEAR = 360; ///< Days in an economy year, when in wallclock timekeeping mode.
+	static constexpr int DAYS_IN_ECONOMY_WALLCLOCK_MONTH = 30; ///< Days in an economy month, when in wallclock timekeeping mode.
+
 	/* Use a detail struct/namespace to more easily control writes */
 	struct Detail {
 		static State now;
 
 		static void SetDate(Date date, DateFract fract);
 		static State NewState(Year year);
+
+		/**
+		 * Calculate the date of the first day of a given year.
+		 * @param year the year to get the first day of.
+		 * @return the date (when using wallclock 30-day months).
+		 */
+		static constexpr Date DateAtStartOfWallclockModeYear(Year year)
+		{
+			return DAYS_IN_ECONOMY_WALLCLOCK_YEAR * year.base();
+		}
 	};
+
+	/**
+	 * The offset in days from the '_date == 0' till
+	 * 'ConvertYMDToDate(ORIGINAL_BASE_YEAR, 0, 1)', when using wallclock 30-day months
+	 */
+	static constexpr Date DAYS_TILL_ORIGINAL_BASE_YEAR_WALLCLOCK_MODE = DAYS_IN_ECONOMY_WALLCLOCK_YEAR * ORIGINAL_BASE_YEAR.base();
 
 	static inline const YearMonthDay &CurYMD()             { return Detail::now.econ_ymd; }
 	static inline Year                CurYear()            { return Detail::now.econ_ymd.year; }
@@ -244,6 +270,17 @@ struct EconTime : public DateDetail::BaseTime<struct EconTimeTag> {
 	}
 
 	static bool UsingWallclockUnits(bool newgame = false);
+
+	/**
+	 * Calculate the date of the first day of a given year.
+	 * @param year the year to get the first day of.
+	 * @return the date.
+	 */
+	static inline Date DateAtStartOfYear(Year year)
+	{
+		if (UsingWallclockUnits()) return Detail::DateAtStartOfWallclockModeYear(year);
+		return ParentBaseTime::Detail::DateAtStartOfCalendarYear(year);
+	}
 };
 
 namespace DateDetail {

@@ -431,6 +431,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(byte para
 		case 0xB3: return this->industry->construction_type; // Construction type
 		case 0xB4: {
 			EconTime::Date *latest = std::max_element(this->industry->last_cargo_accepted_at, endof(this->industry->last_cargo_accepted_at));
+			if (EconTime::UsingWallclockUnits()) return ClampTo<uint16_t>((*latest) - EconTime::DAYS_TILL_ORIGINAL_BASE_YEAR_WALLCLOCK_MODE);
 			return ClampTo<uint16_t>((*latest) - EconTime::DAYS_TILL_ORIGINAL_BASE_YEAR); // Date last cargo accepted since 1920 (in days)
 		}
 	}

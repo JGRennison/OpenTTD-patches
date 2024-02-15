@@ -873,6 +873,11 @@ bool AfterLoadGame()
 	 * must be done before loading sprites as some newgrfs check it */
 	CalTime::Detail::SetDate(CalTime::CurDate(), CalTime::CurDateFract());
 
+	/* Only new games can use wallclock units. */
+	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH, 5) && IsSavegameVersionBefore(SLV_ECONOMY_MODE_TIMEKEEPING_UNITS)) {
+		_settings_game.economy.timekeeping_units = TKU_CALENDAR;
+	}
+
 	if (SlXvIsFeaturePresent(XSLFI_VARIABLE_DAY_LENGTH, 5) || !IsSavegameVersionBefore(SLV_ECONOMY_DATE)) {
 		EconTime::Detail::SetDate(EconTime::CurDate(), EconTime::CurDateFract());
 	} else {

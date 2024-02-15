@@ -113,7 +113,7 @@ static int32_t ClickChangeDateCheat(int32_t p1, int32_t p2)
 	/* Change the date. */
 	CalTime::Detail::SetDate(new_date, CalTime::CurDateFract());
 
-	{
+	if (!EconTime::UsingWallclockUnits()) {
 		EconTime::Date new_econ_date = new_date.base();
 		EconTime::DateFract new_econ_date_fract = CalTime::CurDateFract();
 
