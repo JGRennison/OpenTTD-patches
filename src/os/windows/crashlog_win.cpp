@@ -801,10 +801,10 @@ static void CDECL CustomAbort(int)
 	log.MakeInconsistencyLog(info);
 }
 
-/* static */ void CrashLog::VersionInfoLog()
+/* static */ void CrashLog::VersionInfoLog(char *buffer, const char *last)
 {
 	CrashLogWindows log(nullptr);
-	log.MakeVersionInfoLog();
+	log.FillVersionInfoLog(buffer, last);
 }
 
 /* The crash log GUI */

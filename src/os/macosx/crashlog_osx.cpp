@@ -490,8 +490,8 @@ void CDECL HandleCrash(int signum, siginfo_t *si, void *context)
 }
 
 
-/* static */ void CrashLog::VersionInfoLog()
+/* static */ void CrashLog::VersionInfoLog(char *buffer, const char *last)
 {
 	CrashLogOSX log(CrashLogOSX::DesyncTag{});
-	log.MakeVersionInfoLog();
+	log.FillVersionInfoLog(buffer, last);
 }

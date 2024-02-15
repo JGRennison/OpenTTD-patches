@@ -850,8 +850,8 @@ static void CDECL HandleCrash(int signum)
 	log.MakeInconsistencyLog(info);
 }
 
-/* static */ void CrashLog::VersionInfoLog()
+/* static */ void CrashLog::VersionInfoLog(char *buffer, const char *last)
 {
 	CrashLogUnix log(CrashLogUnix::DesyncTag{});
-	log.MakeVersionInfoLog();
+	log.FillVersionInfoLog(buffer, last);
 }

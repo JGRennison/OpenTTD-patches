@@ -1137,18 +1137,6 @@ void CrashLog::MakeInconsistencyLog(const InconsistencyExtraInfo &info) const
 }
 
 /**
- * Makes a version info log, writes it to a file. It uses DEBUG to write
- * information like paths to the console.
- * @return true when everything is made successfully.
- */
-void CrashLog::MakeVersionInfoLog() const
-{
-	char buffer[65536];
-	this->FillVersionInfoLog(buffer, lastof(buffer));
-	printf("%s\n", buffer);
-}
-
-/**
  * Makes a crash dump and crash savegame. It uses DEBUG to write
  * information like paths to the console.
  * @return true when everything is made successfully.

@@ -899,7 +899,9 @@ int openttd_main(int argc, char *argv[])
 		case 'x': scanner->save_config = false; break;
 		case 'J': _quit_after_days = Clamp(atoi(mgo.opt), 0, INT_MAX); break;
 		case 'Z': {
-			CrashLog::VersionInfoLog();
+			char buffer[65536];
+			CrashLog::VersionInfoLog(buffer, lastof(buffer));
+			fputs(buffer, stdout);
 			return ret;
 		}
 		case 'X': only_local_path = true; break;

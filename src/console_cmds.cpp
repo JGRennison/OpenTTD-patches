@@ -3141,6 +3141,18 @@ DEF_CONSOLE_CMD(ConSpriteCacheStats)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConDumpVersion)
+{
+	if (argc == 0) {
+		IConsoleHelp("Dump version info");
+	}
+
+	char buffer[65536];
+	CrashLog::VersionInfoLog(buffer, lastof(buffer));
+	PrintLineByLine(buffer);
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConCheckCaches)
 {
 	if (argc == 0) {
@@ -3969,6 +3981,7 @@ void IConsoleStdLibRegister()
 	IConsole::CmdRegister("dump_grf_cargo_tables",   ConDumpGrfCargoTables, nullptr, true);
 	IConsole::CmdRegister("dump_signal_styles",      ConDumpSignalStyles, nullptr, true);
 	IConsole::CmdRegister("dump_sprite_cache_stats", ConSpriteCacheStats, nullptr, true);
+	IConsole::CmdRegister("dump_version",            ConDumpVersion,      nullptr, true);
 	IConsole::CmdRegister("check_caches",            ConCheckCaches,      nullptr, true);
 	IConsole::CmdRegister("show_town_window",        ConShowTownWindow,   nullptr, true);
 	IConsole::CmdRegister("show_station_window",     ConShowStationWindow, nullptr, true);
