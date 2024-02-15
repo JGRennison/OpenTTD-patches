@@ -633,17 +633,17 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last)
 	buffer = this->TryCrashLogFaultSection(buffer, last, "libraries", [](CrashLog *self, char *buffer, const char *last) -> char * {
 		return self->LogLibraries(buffer, last);
 	});
+	buffer = this->TryCrashLogFaultSection(buffer, last, "settings", [](CrashLog *self, char *buffer, const char *last) -> char * {
+		return self->LogSettings(buffer, last);
+	});
+	buffer = this->TryCrashLogFaultSection(buffer, last, "command log", [](CrashLog *self, char *buffer, const char *last) -> char * {
+		return self->LogCommandLog(buffer, last);
+	});
 	buffer = this->TryCrashLogFaultSection(buffer, last, "gamelog", [](CrashLog *self, char *buffer, const char *last) -> char * {
 		return self->LogGamelog(buffer, last);
 	});
 	buffer = this->TryCrashLogFaultSection(buffer, last, "news", [](CrashLog *self, char *buffer, const char *last) -> char * {
 		return self->LogRecentNews(buffer, last);
-	});
-	buffer = this->TryCrashLogFaultSection(buffer, last, "command log", [](CrashLog *self, char *buffer, const char *last) -> char * {
-		return self->LogCommandLog(buffer, last);
-	});
-	buffer = this->TryCrashLogFaultSection(buffer, last, "settings", [](CrashLog *self, char *buffer, const char *last) -> char * {
-		return self->LogSettings(buffer, last);
 	});
 
 	buffer += seprintf(buffer, last, "*** End of OpenTTD Crash Report ***\n");
@@ -708,10 +708,10 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 	buffer = this->LogOSVersionDetail(buffer, last);
 	buffer = this->LogConfiguration(buffer, last);
 	buffer = this->LogLibraries(buffer, last);
+	buffer = this->LogSettings(buffer, last);
+	buffer = this->LogCommandLog(buffer, last);
 	buffer = this->LogGamelog(buffer, last);
 	buffer = this->LogRecentNews(buffer, last);
-	buffer = this->LogCommandLog(buffer, last);
-	buffer = this->LogSettings(buffer, last);
 	buffer = DumpDesyncMsgLog(buffer, last);
 
 	bool have_cache_log = false;
@@ -752,10 +752,10 @@ char *CrashLog::FillInconsistencyLog(char *buffer, const char *last, const Incon
 	buffer = this->LogOSVersionDetail(buffer, last);
 	buffer = this->LogConfiguration(buffer, last);
 	buffer = this->LogLibraries(buffer, last);
+	buffer = this->LogSettings(buffer, last);
+	buffer = this->LogCommandLog(buffer, last);
 	buffer = this->LogGamelog(buffer, last);
 	buffer = this->LogRecentNews(buffer, last);
-	buffer = this->LogCommandLog(buffer, last);
-	buffer = this->LogSettings(buffer, last);
 	buffer = DumpDesyncMsgLog(buffer, last);
 
 	if (!info.check_caches_result.empty()) {
