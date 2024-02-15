@@ -53,6 +53,7 @@ static const char * const _subdirs[] = {
 	"game" PATHSEP,
 	"game" PATHSEP "library" PATHSEP,
 	"screenshot" PATHSEP,
+	"social_integration" PATHSEP,
 };
 static_assert(lengthof(_subdirs) == NUM_SUBDIRS);
 
@@ -1090,7 +1091,7 @@ void DeterminePaths(const char *exe, bool only_local_path)
 	DEBUG(misc, 1, "%s found as personal directory", _personal_dir.c_str());
 
 	static const Subdirectory default_subdirs[] = {
-		SAVE_DIR, AUTOSAVE_DIR, SCENARIO_DIR, HEIGHTMAP_DIR, BASESET_DIR, NEWGRF_DIR, AI_DIR, AI_LIBRARY_DIR, GAME_DIR, GAME_LIBRARY_DIR, SCREENSHOT_DIR
+		SAVE_DIR, AUTOSAVE_DIR, SCENARIO_DIR, HEIGHTMAP_DIR, BASESET_DIR, NEWGRF_DIR, AI_DIR, AI_LIBRARY_DIR, GAME_DIR, GAME_LIBRARY_DIR, SCREENSHOT_DIR, SOCIAL_INTEGRATION_DIR
 	};
 
 	for (uint i = 0; i < lengthof(default_subdirs); i++) {
@@ -1104,7 +1105,7 @@ void DeterminePaths(const char *exe, bool only_local_path)
 	FillValidSearchPaths(only_local_path);
 
 	/* Create the directory for each of the types of content */
-	const Subdirectory dirs[] = { SCENARIO_DIR, HEIGHTMAP_DIR, BASESET_DIR, NEWGRF_DIR, AI_DIR, AI_LIBRARY_DIR, GAME_DIR, GAME_LIBRARY_DIR };
+	const Subdirectory dirs[] = { SCENARIO_DIR, HEIGHTMAP_DIR, BASESET_DIR, NEWGRF_DIR, AI_DIR, AI_LIBRARY_DIR, GAME_DIR, GAME_LIBRARY_DIR, SOCIAL_INTEGRATION_DIR };
 	for (uint i = 0; i < lengthof(dirs); i++) {
 		FioCreateDirectory(FioGetDirectory(SP_AUTODOWNLOAD_DIR, dirs[i]));
 	}

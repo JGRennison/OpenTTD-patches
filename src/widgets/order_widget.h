@@ -29,7 +29,6 @@ enum OrderWidgets : WidgetID {
 	WID_O_UNLOAD,                    ///< Select unload.
 	WID_O_REFIT,                     ///< Select refit.
 	WID_O_SERVICE,                   ///< Select service (at depot).
-	WID_O_EMPTY,                     ///< Placeholder for refit dropdown when not owner.
 	WID_O_REFIT_DROPDOWN,            ///< Open refit options.
 	WID_O_REVERSE,                   ///< Select waypoint reverse type
 	WID_O_COND_VARIABLE,             ///< Choose condition variable.

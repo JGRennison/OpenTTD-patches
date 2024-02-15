@@ -36,7 +36,7 @@ struct FiosItem {
 /** List of file information. */
 class FileList : public std::vector<FiosItem> {
 public:
-	void BuildFileList(AbstractFileType abstract_filetype, SaveLoadOperation fop);
+	void BuildFileList(AbstractFileType abstract_filetype, SaveLoadOperation fop, bool show_dirs);
 	const FiosItem *FindItem(const std::string_view file);
 };
 
@@ -53,9 +53,9 @@ extern SortingBits _savegame_sort_order;
 
 void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop);
 
-void FiosGetSavegameList(SaveLoadOperation fop, FileList &file_list);
-void FiosGetScenarioList(SaveLoadOperation fop, FileList &file_list);
-void FiosGetHeightmapList(SaveLoadOperation fop, FileList &file_list);
+void FiosGetSavegameList(SaveLoadOperation fop, bool show_dirs, FileList &file_list);
+void FiosGetScenarioList(SaveLoadOperation fop, bool show_dirs, FileList &file_list);
+void FiosGetHeightmapList(SaveLoadOperation fop, bool show_dirs, FileList &file_list);
 
 bool FiosBrowseTo(const FiosItem *item);
 
@@ -66,6 +66,8 @@ std::string FiosMakeHeightmapName(const char *name);
 std::string FiosMakeSavegameName(const char *name);
 
 FiosType FiosGetSavegameListCallback(SaveLoadOperation fop, const std::string &file, const char *ext, char *title, const char *last);
+FiosType FiosGetScenarioListCallback(SaveLoadOperation fop, const std::string &file, const char *ext, char *title, const char *last);
+FiosType FiosGetHeightmapListCallback(SaveLoadOperation fop, const std::string &file, const char *ext, char *title, const char *last);
 
 void ScanScenarios();
 const char *FindScenario(const ContentInfo *ci, bool md5sum);

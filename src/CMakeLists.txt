@@ -412,6 +412,8 @@ add_files(
     signal.cpp
     signal_func.h
     signal_type.h
+    signature.cpp
+    signature.h
     signs.cpp
     signs_base.h
     signs_cmd.cpp
@@ -423,6 +425,8 @@ add_files(
     smallmap_colours.h
     smallmap_gui.cpp
     smallmap_gui.h
+    social_integration.cpp
+    social_integration.h
     sortlist_type.h
     sound.cpp
     sound_func.h

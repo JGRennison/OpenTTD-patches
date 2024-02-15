@@ -1516,7 +1516,7 @@ static uint8_t CalculateDesertLine()
 	return CalculateCoverageLine(100 - _settings_game.game_creation.desert_coverage, 4);
 }
 
-void GenerateLandscape(byte mode)
+bool GenerateLandscape(byte mode)
 {
 	/** Number of steps of landscape generation */
 	enum GenLandscapeSteps {
@@ -1530,7 +1530,9 @@ void GenerateLandscape(byte mode)
 
 	if (mode == GWM_HEIGHTMAP) {
 		SetGeneratingWorldProgress(GWP_LANDSCAPE, steps + GLS_HEIGHTMAP);
-		LoadHeightmap(_file_to_saveload.detail_ftype, _file_to_saveload.name.c_str());
+		if (!LoadHeightmap(_file_to_saveload.detail_ftype, _file_to_saveload.name.c_str())) {
+			return false;
+		}
 		IncreaseGeneratingWorldProgress(GWP_LANDSCAPE);
 	} else if (_settings_game.game_creation.land_generator == LG_TERRAGENESIS) {
 		SetGeneratingWorldProgress(GWP_LANDSCAPE, steps + GLS_TERRAGENESIS);
@@ -1616,6 +1618,7 @@ void GenerateLandscape(byte mode)
 	}
 
 	CreateRivers();
+	return true;
 }
 
 void OnTick_Town();

@@ -68,8 +68,9 @@ bool FiosItem::operator< (const FiosItem &other) const
  * Construct a file list with the given kind of files, for the stated purpose.
  * @param abstract_filetype Kind of files to collect.
  * @param fop Purpose of the collection, either #SLO_LOAD or #SLO_SAVE.
+ * @param show_dirs Whether to show directories.
  */
-void FileList::BuildFileList(AbstractFileType abstract_filetype, SaveLoadOperation fop)
+void FileList::BuildFileList(AbstractFileType abstract_filetype, SaveLoadOperation fop, bool show_dirs)
 {
 	this->clear();
 
@@ -79,15 +80,15 @@ void FileList::BuildFileList(AbstractFileType abstract_filetype, SaveLoadOperati
 			break;
 
 		case FT_SAVEGAME:
-			FiosGetSavegameList(fop, *this);
+			FiosGetSavegameList(fop, show_dirs, *this);
 			break;
 
 		case FT_SCENARIO:
-			FiosGetScenarioList(fop, *this);
+			FiosGetScenarioList(fop, show_dirs, *this);
 			break;
 
 		case FT_HEIGHTMAP:
-			FiosGetHeightmapList(fop, *this);
+			FiosGetHeightmapList(fop, show_dirs, *this);
 			break;
 
 		default:
@@ -345,11 +346,12 @@ bool FiosFileScanner::AddFile(const std::string &filename, size_t, const std::st
 /**
  * Fill the list of the files in a directory, according to some arbitrary rule.
  * @param fop Purpose of collecting the list.
+ * @param show_dirs Whether to list directories.
  * @param callback_proc The function that is called where you need to do the filtering.
  * @param subdir The directory from where to start (global) searching.
  * @param file_list Destination of the found files.
  */
-static void FiosGetFileList(SaveLoadOperation fop, fios_getlist_callback_proc *callback_proc, Subdirectory subdir, FileList &file_list)
+static void FiosGetFileList(SaveLoadOperation fop, bool show_dirs, fios_getlist_callback_proc *callback_proc, Subdirectory subdir, FileList &file_list)
 {
 	struct stat sb;
 	struct dirent *dirent;
@@ -362,7 +364,7 @@ static void FiosGetFileList(SaveLoadOperation fop, fios_getlist_callback_proc *c
 	assert(_fios_path != nullptr);
 
 	/* A parent directory link exists if we are not in the root directory */
-	if (!FiosIsRoot(_fios_path->c_str())) {
+	if (show_dirs && !FiosIsRoot(_fios_path->c_str())) {
 		fios = &file_list.emplace_back();
 		fios->type = FIOS_TYPE_PARENT;
 		fios->mtime = 0;
@@ -372,7 +374,7 @@ static void FiosGetFileList(SaveLoadOperation fop, fios_getlist_callback_proc *c
 	}
 
 	/* Show subdirectories */
-	if ((dir = ttd_opendir(_fios_path->c_str())) != nullptr) {
+	if (show_dirs && (dir = ttd_opendir(_fios_path->c_str())) != nullptr) {
 		while ((dirent = readdir(dir)) != nullptr) {
 			std::string d_name = FS2OTTD(dirent->d_name);
 
@@ -392,7 +394,7 @@ static void FiosGetFileList(SaveLoadOperation fop, fios_getlist_callback_proc *c
 	}
 
 	/* Sort the subdirs always by name, ascending, remember user-sorting order */
-	{
+	if (show_dirs) {
 		SortingBits order = _savegame_sort_order;
 		_savegame_sort_order = SORT_BY_NAME | SORT_ASCENDING;
 		std::sort(file_list.begin(), file_list.end());
@@ -461,7 +463,7 @@ FiosType FiosGetSavegameListCallback(SaveLoadOperation fop, const std::string &f
 	 * .SV2 Transport Tycoon Deluxe (Patch) saved 2-player game */
 
 	/* Don't crash if we supply no extension */
-	if (ext == nullptr) return FIOS_TYPE_INVALID;
+	if (ext == nullptr) ext = "";
 
 	if (StrEqualsIgnoreCase(ext, ".sav")) {
 		GetFileTitle(file, title, last, SAVE_DIR);
@@ -482,10 +484,11 @@ FiosType FiosGetSavegameListCallback(SaveLoadOperation fop, const std::string &f
 /**
  * Get a list of savegames.
  * @param fop Purpose of collecting the list.
+ * @param show_dirs Whether to show directories.
  * @param file_list Destination of the found files.
  * @see FiosGetFileList
  */
-void FiosGetSavegameList(SaveLoadOperation fop, FileList &file_list)
+void FiosGetSavegameList(SaveLoadOperation fop, bool show_dirs, FileList &file_list)
 {
 	static std::optional<std::string> fios_save_path;
 
@@ -493,7 +496,7 @@ void FiosGetSavegameList(SaveLoadOperation fop, FileList &file_list)
 
 	_fios_path = &(*fios_save_path);
 
-	FiosGetFileList(fop, &FiosGetSavegameListCallback, NO_DIRECTORY, file_list);
+	FiosGetFileList(fop, show_dirs, &FiosGetSavegameListCallback, NO_DIRECTORY, file_list);
 }
 
 /**
@@ -507,7 +510,7 @@ void FiosGetSavegameList(SaveLoadOperation fop, FileList &file_list)
  * @see FiosGetFileList
  * @see FiosGetScenarioList
  */
-static FiosType FiosGetScenarioListCallback(SaveLoadOperation fop, const std::string &file, const char *ext, char *title, const char *last)
+FiosType FiosGetScenarioListCallback(SaveLoadOperation fop, const std::string &file, const char *ext, char *title, const char *last)
 {
 	/* Show scenario files
 	 * .SCN OpenTTD style scenario file
@@ -531,10 +534,11 @@ static FiosType FiosGetScenarioListCallback(SaveLoadOperation fop, const std::st
 /**
  * Get a list of scenarios.
  * @param fop Purpose of collecting the list.
+ * @param show_dirs Whether to show directories.
  * @param file_list Destination of the found files.
  * @see FiosGetFileList
  */
-void FiosGetScenarioList(SaveLoadOperation fop, FileList &file_list)
+void FiosGetScenarioList(SaveLoadOperation fop, bool show_dirs, FileList &file_list)
 {
 	static std::optional<std::string> fios_scn_path;
 
@@ -545,10 +549,10 @@ void FiosGetScenarioList(SaveLoadOperation fop, FileList &file_list)
 
 	std::string base_path = FioFindDirectory(SCENARIO_DIR);
 	Subdirectory subdir = (fop == SLO_LOAD && base_path == *_fios_path) ? SCENARIO_DIR : NO_DIRECTORY;
-	FiosGetFileList(fop, &FiosGetScenarioListCallback, subdir, file_list);
+	FiosGetFileList(fop, show_dirs, &FiosGetScenarioListCallback, subdir, file_list);
 }
 
-static FiosType FiosGetHeightmapListCallback(SaveLoadOperation fop, const std::string &file, const char *ext, char *title, const char *last)
+FiosType FiosGetHeightmapListCallback(SaveLoadOperation fop, const std::string &file, const char *ext, char *title, const char *last)
 {
 	/* Show heightmap files
 	 * .PNG PNG Based heightmap files
@@ -593,9 +597,10 @@ static FiosType FiosGetHeightmapListCallback(SaveLoadOperation fop, const std::s
 /**
  * Get a list of heightmaps.
  * @param fop Purpose of collecting the list.
+ * @param show_dirs Whether to show directories.
  * @param file_list Destination of the found files.
  */
-void FiosGetHeightmapList(SaveLoadOperation fop, FileList &file_list)
+void FiosGetHeightmapList(SaveLoadOperation fop, bool show_dirs, FileList &file_list)
 {
 	static std::optional<std::string> fios_hmap_path;
 
@@ -605,7 +610,7 @@ void FiosGetHeightmapList(SaveLoadOperation fop, FileList &file_list)
 
 	std::string base_path = FioFindDirectory(HEIGHTMAP_DIR);
 	Subdirectory subdir = base_path == *_fios_path ? HEIGHTMAP_DIR : NO_DIRECTORY;
-	FiosGetFileList(fop, &FiosGetHeightmapListCallback, subdir, file_list);
+	FiosGetFileList(fop, show_dirs, &FiosGetHeightmapListCallback, subdir, file_list);
 }
 
 /**

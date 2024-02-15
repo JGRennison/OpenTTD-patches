@@ -146,7 +146,7 @@ public:
 	 * Colour codes usable for story page button elements.
 	 * Place a colour value in the lowest 8 bits of the \c reference parameter to the button.
 	 */
-	enum StoryPageButtonColour {
+	enum StoryPageButtonColour : byte {
 		SPBC_DARK_BLUE  = ::COLOUR_DARK_BLUE,
 		SPBC_PALE_GREEN = ::COLOUR_PALE_GREEN,
 		SPBC_PINK       = ::COLOUR_PINK,
@@ -180,6 +180,13 @@ public:
 	static bool IsValidStoryPageElement(StoryPageElementID story_page_element_id);
 
 	/**
+	 * Check whether this is a valid story page element type.
+	 * @param type The StoryPageElementType to check.
+	 * @return True if and only if this story page element type is valid.
+	 */
+	static bool IsValidStoryPageElementType(StoryPageElementType type);
+
+	/**
 	 * Create a new story page.
 	 * @param company The company to create the story page for, or ScriptCompany::COMPANY_INVALID for all.
 	 * @param title Page title (can be either a raw string, a ScriptText object, or null).
@@ -202,6 +209,7 @@ public:
 	 * @return The new StoryPageElementID, or STORY_PAGE_ELEMENT_INVALID if it failed.
 	 * @pre ScriptCompanyMode::IsDeity().
 	 * @pre IsValidStoryPage(story_page).
+	 * @pre IsValidStoryPageElementType(type).
 	 * @pre (type != SPET_TEXT && type != SPET_LOCATION) || (text != null && len(text) != 0).
 	 * @pre type != SPET_LOCATION || ScriptMap::IsValidTile(reference).
 	 * @pre type != SPET_GOAL || ScriptGoal::IsValidGoal(reference).
@@ -313,10 +321,33 @@ public:
 	static bool RemoveElement(StoryPageElementID story_page_element_id);
 
 	/**
+	 * Check whether this is a valid story page button colour.
+	 * @param colour The StoryPageButtonColour to check.
+	 * @return True if and only if this story page button colour is valid.
+	 */
+	static bool IsValidStoryPageButtonColour(StoryPageButtonColour colour);
+
+	/**
+	* Check whether this is a valid story page button flag.
+	* @param colour The StoryPageButtonFlags to check.
+	* @return True if and only if this story page button flag is valid.
+	*/
+	static bool IsValidStoryPageButtonFlags(StoryPageButtonFlags flags);
+
+	/**
+	 * Check whether this is a valid story page button cursor.
+	 * @param colour The StoryPageButtonCursor to check.
+	 * @return True if and only if this story page button cursor is valid.
+	 */
+	static bool IsValidStoryPageButtonCursor(StoryPageButtonCursor cursor);
+
+	/**
 	 * Create a reference value for SPET_BUTTON_PUSH element parameters.
 	 * @param colour The colour for the face of the button.
 	 * @param flags The formatting and layout flags for the button.
 	 * @return A reference value usable with the #NewElement and #UpdateElement functions.
+	 * @pre IsValidStoryPageButtonColour(colour).
+	 * @pre IsValidStoryPageButtonFlags(flags).
 	 */
 	static StoryPageButtonFormatting MakePushButtonReference(StoryPageButtonColour colour, StoryPageButtonFlags flags);
 
@@ -326,6 +357,9 @@ public:
 	 * @param flags The formatting and layout flags for the button.
 	 * @param cursor The mouse cursor to use when the player clicks the button and the game is ready for the player to select a tile.
 	 * @return A reference value usable with the #NewElement and #UpdateElement functions.
+	 * @pre IsValidStoryPageButtonColour(colour).
+	 * @pre IsValidStoryPageButtonFlags(flags).
+	 * @pre IsValidStoryPageButtonCursor(cursor).
 	 */
 	static StoryPageButtonFormatting MakeTileButtonReference(StoryPageButtonColour colour, StoryPageButtonFlags flags, StoryPageButtonCursor cursor);
 
@@ -336,6 +370,10 @@ public:
 	 * @param cursor  The mouse cursor to use when the player clicks the button and the game is ready for the player to select a vehicle.
 	 * @param vehtype The type of vehicle that will be selectable, or \c VT_INVALID to allow all types.
 	 * @return A reference value usable with the #NewElement and #UpdateElement functions.
+	 * @pre IsValidStoryPageButtonColour(colour).
+	 * @pre IsValidStoryPageButtonFlags(flags).
+	 * @pre IsValidStoryPageButtonCursor(cursor).
+	 * @pre vehtype == ScriptVehicle::VT_INVALID || vehtype == ScriptVehicle::VT_RAIL || vehtype == ScriptVehicle::VT_ROAD || vehtype == ScriptVehicle::VT_WATER || vehtype == ScriptVehicle::VT_AIR.
 	 */
 	static StoryPageButtonFormatting MakeVehicleButtonReference(StoryPageButtonColour colour, StoryPageButtonFlags flags, StoryPageButtonCursor cursor, ScriptVehicle::VehicleType vehtype);
 };

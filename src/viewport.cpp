@@ -4286,11 +4286,47 @@ static inline void ClampViewportToMap(const Viewport *vp, int *scroll_x, int *sc
 	}
 }
 
+
+/**
+ * Clamp the smooth scroll to a maxmimum speed and distance based on time elapsed.
+ *
+ * Every 30ms, we move 1/4th of the distance, to give a smooth movement experience.
+ * But we never go over the max_scroll speed.
+ *
+ * @param delta_ms Time elapsed since last update.
+ * @param delta_hi The distance to move in highest dimension (can't be zero).
+ * @param delta_lo The distance to move in lowest dimension.
+ * @param[out] delta_hi_clamped The clamped distance to move in highest dimension.
+ * @param[out] delta_lo_clamped The clamped distance to move in lowest dimension.
+ */
+static void ClampSmoothScroll(uint32_t delta_ms, int64_t delta_hi, int64_t delta_lo, int &delta_hi_clamped, int &delta_lo_clamped)
+{
+	/** A tile is 64 pixels in width at 1x zoom; viewport coordinates are in 4x zoom. */
+	constexpr int PIXELS_PER_TILE = TILE_PIXELS * 2 * ZOOM_LVL_BASE;
+
+	assert(delta_hi != 0);
+
+	/* Move at most 75% of the distance every 30ms, for a smooth experience */
+	int64_t delta_left = delta_hi * std::pow(0.75, delta_ms / 30.0);
+	/* Move never more than 16 tiles per 30ms. */
+	int max_scroll = ScaleByMapSize1D(16 * PIXELS_PER_TILE * delta_ms / 30);
+
+	/* We never go over the max_scroll speed. */
+	delta_hi_clamped = Clamp(delta_hi - delta_left, -max_scroll, max_scroll);
+	/* The lower delta is in ratio of the higher delta, so we keep going straight at the destination. */
+	delta_lo_clamped = delta_lo * delta_hi_clamped / delta_hi;
+
+	/* Ensure we always move (delta_hi can't be zero). */
+	if (delta_hi_clamped == 0) {
+		delta_hi_clamped = delta_hi > 0 ? 1 : -1;
+	}
+}
+
 /**
  * Update the next viewport position being displayed.
  * @param w %Window owning the viewport.
  */
-void UpdateNextViewportPosition(Window *w)
+void UpdateNextViewportPosition(Window *w, uint32_t delta_ms)
 {
 	const Viewport *vp = w->viewport;
 
@@ -4308,23 +4344,22 @@ void UpdateNextViewportPosition(Window *w)
 		int delta_x = w->viewport->dest_scrollpos_x - w->viewport->scrollpos_x;
 		int delta_y = w->viewport->dest_scrollpos_y - w->viewport->scrollpos_y;
 
+		int current_x = w->viewport->scrollpos_x;
+		int current_y = w->viewport->scrollpos_y;
+
 		w->viewport->next_scrollpos_x = w->viewport->scrollpos_x;
 		w->viewport->next_scrollpos_y = w->viewport->scrollpos_y;
 
 		bool update_overlay = false;
 		if (delta_x != 0 || delta_y != 0) {
 			if (_settings_client.gui.smooth_scroll) {
-				int max_scroll = ScaleByMapSize1D(512 * ZOOM_LVL_BASE);
-
 				int delta_x_clamped;
 				int delta_y_clamped;
 
 				if (abs(delta_x) > abs(delta_y)) {
-					delta_x_clamped = Clamp(DivAwayFromZero(delta_x, 4), -max_scroll, max_scroll);
-					delta_y_clamped = delta_y * delta_x_clamped / delta_x;
+					ClampSmoothScroll(delta_ms, delta_x, delta_y, delta_x_clamped, delta_y_clamped);
 				} else {
-					delta_y_clamped = Clamp(DivAwayFromZero(delta_y, 4), -max_scroll, max_scroll);
-					delta_x_clamped = delta_x * delta_y_clamped / delta_y;
+					ClampSmoothScroll(delta_ms, delta_y, delta_x, delta_y_clamped, delta_x_clamped);
 				}
 
 				w->viewport->next_scrollpos_x += delta_x_clamped;
@@ -4339,6 +4374,13 @@ void UpdateNextViewportPosition(Window *w)
 		w->viewport->force_update_overlay_pending = update_overlay;
 
 		ClampViewportToMap(vp, &w->viewport->next_scrollpos_x, &w->viewport->next_scrollpos_y);
+
+		/* When moving small amounts around the border we can get stuck, and
+		 * not actually move. In those cases, teleport to the destination. */
+		if ((delta_x != 0 || delta_y != 0) && current_x == w->viewport->next_scrollpos_x && current_y == w->viewport->next_scrollpos_y) {
+			w->viewport->next_scrollpos_x = w->viewport->dest_scrollpos_x;
+			w->viewport->next_scrollpos_y = w->viewport->dest_scrollpos_y;
+		}
 
 		if (_scrolling_viewport == w) UpdateActiveScrollingViewport(w);
 	}

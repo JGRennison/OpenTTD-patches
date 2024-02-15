@@ -29,6 +29,7 @@
 #include "network_gamelist.h"
 #include "../core/backup_type.hpp"
 #include "../thread.h"
+#include "../social_integration.h"
 #include "../crashlog.h"
 #include "../core/checksum_func.hpp"
 #include "../core/alloc_func.hpp"
@@ -1082,6 +1083,8 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_MAP_DONE(Packet
 		/* take control over an existing company */
 		SetLocalCompany(_network_join.company);
 	}
+
+	SocialIntegration::EventEnterMultiplayer(MapSizeX(), MapSizeY());
 
 	return NETWORK_RECV_STATUS_OKAY;
 }

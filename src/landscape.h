@@ -172,6 +172,6 @@ void RunTileLoop(bool apply_day_length = false);
 void RunAuxiliaryTileLoop();
 
 void InitializeLandscape();
-void GenerateLandscape(byte mode);
+bool GenerateLandscape(byte mode);
 
 #endif /* LANDSCAPE_H */

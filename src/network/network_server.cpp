@@ -29,6 +29,8 @@
 #include "../core/pool_func.hpp"
 #include "../core/random_func.hpp"
 #include "../rev.h"
+#include "../timer/timer.h"
+#include "../timer/timer_game_realtime.h"
 #include "../crashlog.h"
 #include "../3rdparty/monocypher/monocypher.h"
 #include <mutex>
@@ -1826,29 +1828,6 @@ void NetworkUpdateClientInfo(ClientID client_id)
 	NetworkAdminClientUpdate(ci);
 }
 
-/** Check if we want to restart the map */
-static void NetworkCheckRestartMap()
-{
-	if (_settings_client.network.restart_game_year != 0 && CalTime::CurYear() >= _settings_client.network.restart_game_year) {
-		DEBUG(net, 3, "Auto-restarting map: year %d reached", CalTime::CurYear().base());
-
-		_settings_newgame.game_creation.generation_seed = GENERATE_NEW_SEED;
-		switch(_file_to_saveload.abstract_ftype) {
-			case FT_SAVEGAME:
-			case FT_SCENARIO:
-				_switch_mode = SM_LOAD_GAME;
-				break;
-
-			case FT_HEIGHTMAP:
-				_switch_mode = SM_START_HEIGHTMAP;
-				break;
-
-			default:
-				_switch_mode = SM_NEWGAME;
-		}
-	}
-}
-
 /** Check if the server has autoclean_companies activated
  * Two things happen:
  *     1) If a company is not protected, it is closed after 1 year (for example)
@@ -2148,10 +2127,64 @@ void NetworkServer_Tick(bool send_frame)
 	}
 }
 
+/** Helper function to restart the map. */
+static void NetworkRestartMap()
+{
+	_settings_newgame.game_creation.generation_seed = GENERATE_NEW_SEED;
+	switch (_file_to_saveload.abstract_ftype) {
+		case FT_SAVEGAME:
+		case FT_SCENARIO:
+			_switch_mode = SM_LOAD_GAME;
+			break;
+
+		case FT_HEIGHTMAP:
+			_switch_mode = SM_START_HEIGHTMAP;
+			break;
+
+		default:
+			_switch_mode = SM_NEWGAME;
+	}
+}
+
+/** Timer to restart a network server automatically based on real-time hours played. Initialized at zero to disable until settings are loaded. */
+static IntervalTimer<TimerGameRealtime> _network_restart_map_timer({std::chrono::hours::zero(), TimerGameRealtime::UNPAUSED}, [](auto)
+{
+	if (!_network_server) return;
+
+	/* If setting is 0, this feature is disabled. */
+	if (_settings_client.network.restart_hours == 0) return;
+
+	DEBUG(net, 3, "Auto-restarting map: %d hours played", _settings_client.network.restart_hours);
+	NetworkRestartMap();
+});
+
+/**
+ * Reset the automatic network restart time interval.
+ * @param reset Whether to reset the timer to zero.
+ */
+void ChangeNetworkRestartTime(bool reset)
+{
+	if (!_network_server) return;
+
+	_network_restart_map_timer.SetInterval({ std::chrono::hours(_settings_client.network.restart_hours), TimerGameRealtime::UNPAUSED }, reset);
+}
+
+/** Check if we want to restart the map based on the year. */
+static void NetworkCheckRestartMapYear()
+{
+	/* If setting is 0, this feature is disabled. */
+	if (_settings_client.network.restart_game_year == 0) return;
+
+	if (CalTime::CurYear() >= _settings_client.network.restart_game_year) {
+		DEBUG(net, 3, "Auto-restarting map: year %d reached", CalTime::CurYear().base());
+		NetworkRestartMap();
+	}
+}
+
 /** Yearly "callback". Called whenever the year changes. */
 void NetworkServerCalendarYearlyLoop()
 {
-	NetworkCheckRestartMap();
+	NetworkCheckRestartMapYear();
 }
 
 /** Yearly "callback". Called whenever the year changes. */

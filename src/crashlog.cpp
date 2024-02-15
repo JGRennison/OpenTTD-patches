@@ -39,6 +39,7 @@
 #include "progress.h"
 #include "settings_type.h"
 #include "settings_internal.h"
+#include "social_integration.h"
 
 #include "ai/ai_info.hpp"
 #include "game/game.hpp"
@@ -439,6 +440,20 @@ char *CrashLog::LogLibraries(char *buffer, const char *last) const
 }
 
 /**
+ * Writes information (versions) of the used plugins.
+ * @param buffer The begin where to write at.
+ * @param last   The last position in the buffer to write to.
+ * @return the position of the \c '\0' character after the buffer.
+ */
+char *CrashLog::LogPlugins(char *buffer, const char *last) const
+{
+	if (SocialIntegration::GetPluginCount() == 0) return buffer;
+
+	buffer += seprintf(buffer, last, "Plugins:\n");
+	return SocialIntegration::LogPluginSummary(buffer, last);
+}
+
+/**
  * Helper function for printing the gamelog.
  * @param s the string to print.
  */
@@ -633,6 +648,9 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last)
 	buffer = this->TryCrashLogFaultSection(buffer, last, "libraries", [](CrashLog *self, char *buffer, const char *last) -> char * {
 		return self->LogLibraries(buffer, last);
 	});
+	buffer = this->TryCrashLogFaultSection(buffer, last, "plugins", [](CrashLog *self, char *buffer, const char *last) -> char * {
+		return self->LogPlugins(buffer, last);
+	});
 	buffer = this->TryCrashLogFaultSection(buffer, last, "settings", [](CrashLog *self, char *buffer, const char *last) -> char * {
 		return self->LogSettings(buffer, last);
 	});
@@ -784,6 +802,7 @@ char *CrashLog::FillVersionInfoLog(char *buffer, const char *last) const
 	buffer = this->LogCompiler(buffer, last);
 	buffer = this->LogOSVersionDetail(buffer, last);
 	buffer = this->LogLibraries(buffer, last);
+	buffer = this->LogPlugins(buffer, last);
 
 	buffer += seprintf(buffer, last, "*** End of OpenTTD Version Info Report ***\n");
 	return buffer;

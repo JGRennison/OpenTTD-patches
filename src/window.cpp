@@ -1578,8 +1578,8 @@ void Window::FindWindowPlacementAndResize(int def_width, int def_height)
 		ResizeWindow(this, enlarge_x, enlarge_y);
 		/* ResizeWindow() calls this->OnResize(). */
 	} else {
-		/* Always call OnResize; that way the scrollbars and matrices get initialized. */
-		this->OnResize();
+		/* Schedule OnResize; that way the scrollbars and matrices get initialized. */
+		this->ScheduleResize();
 	}
 
 	int nx = this->left;
@@ -2197,8 +2197,8 @@ void ResizeWindow(Window *w, int delta_x, int delta_y, bool clamp_to_screen)
 
 	EnsureVisibleCaption(w, w->left, w->top);
 
-	/* Always call OnResize to make sure everything is initialised correctly if it needs to be. */
-	w->OnResize();
+	/* Schedule OnResize to make sure everything is initialised correctly if it needs to be. */
+	w->ScheduleResize();
 	extern bool _gfx_draw_active;
 	if (_gfx_draw_active) {
 		SetWindowDirtyPending(w);
@@ -3272,6 +3272,7 @@ void UpdateWindows()
 
 	/* Process invalidations before anything else. */
 	for (Window *w : Window::Iterate()) {
+		w->ProcessScheduledResize();
 		w->ProcessScheduledInvalidations();
 		w->ProcessHighlightedInvalidations();
 	}
@@ -3314,7 +3315,7 @@ void UpdateWindows()
 
 	for (Window *w : Window::Iterate()) {
 		/* Update viewport only if window is not shaded. */
-		if (w->viewport != nullptr && !w->IsShaded()) UpdateNextViewportPosition(w);
+		if (w->viewport != nullptr && !w->IsShaded()) UpdateNextViewportPosition(w, delta_ms);
 	}
 
 	DrawDirtyBlocks();
@@ -3372,6 +3373,26 @@ void SetWindowClassesDirty(WindowClass cls)
 
 	for (Window *w : Window::Iterate()) {
 		if (w->window_class == cls) w->SetDirty();
+	}
+}
+
+/**
+ * Mark this window as resized and in need of OnResize() event.
+ */
+void Window::ScheduleResize()
+{
+	this->scheduled_resize = true;
+}
+
+/**
+ * Process scheduled OnResize() event.
+ */
+void Window::ProcessScheduledResize()
+{
+	/* Sometimes OnResize() resizes the window again, in which case we can reprocess immediately. */
+	while (this->scheduled_resize) {
+		this->scheduled_resize = false;
+		this->OnResize();
 	}
 }
 

@@ -185,7 +185,6 @@ typedef void SettingDescProc(IniFile &ini, const SettingTable &desc, const char 
 typedef void SettingDescProcList(IniFile &ini, const char *grpname, StringList &list);
 
 static bool IsSignedVarMemType(VarType vt);
-static bool DecodeHexText(const char *pos, uint8_t *dest, size_t dest_size);
 
 
 /**
@@ -524,6 +523,72 @@ static bool ValidateEnumSetting(const IntSettingDesc *sdb, int32_t &val)
 		}
 	}
 	return false;
+}
+
+/**
+ * Get the title of the setting.
+ * The string should include a {STRING2} to show the current value.
+ * @return The title string.
+ */
+StringID IntSettingDesc::GetTitle() const
+{
+	return this->get_title_cb != nullptr ? this->get_title_cb(*this) : this->str;
+}
+
+/**
+ * Get the help text of the setting.
+ * @return The requested help text.
+ */
+StringID IntSettingDesc::GetHelp() const
+{
+	StringID str = this->get_help_cb != nullptr ? this->get_help_cb(*this) : this->str_help;
+	if (this->guiproc != nullptr) {
+		SettingOnGuiCtrlData data;
+		data.type = SOGCT_DESCRIPTION_TEXT;
+		data.text = str;
+		if (this->guiproc(data)) {
+			str = data.text;
+		}
+	}
+	return str;
+}
+
+/**
+ * Set the DParams for drawing the value of the setting.
+ * @param first_param First DParam to use
+ * @param value Setting value to set params for.
+ */
+void IntSettingDesc::SetValueDParams(uint first_param, int32_t value) const
+{
+	const uint initial_first_param = first_param;
+	if (this->set_value_dparams_cb != nullptr) {
+		this->set_value_dparams_cb(*this, first_param, value);
+	} else if (this->IsBoolSetting()) {
+		SetDParam(first_param++, value != 0 ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_OFF);
+	} else {
+		if ((this->flags & SF_ENUM) != 0) {
+			StringID str = STR_UNDEFINED;
+			for (const SettingDescEnumEntry *enumlist = this->enumlist; enumlist != nullptr && enumlist->str != STR_NULL; enumlist++) {
+				if (enumlist->val == value) {
+					str = enumlist->str;
+					break;
+				}
+			}
+			SetDParam(first_param++, str);
+		} else if ((this->flags & SF_GUI_DROPDOWN) != 0) {
+			SetDParam(first_param++, this->str_val - this->min + value);
+		} else {
+			SetDParam(first_param++, this->str_val + ((value == 0 && (this->flags & SF_GUI_0_IS_SPECIAL) != 0) ? 1 : 0));
+		}
+		SetDParam(first_param++, value);
+	}
+	if (this->guiproc != nullptr) {
+		SettingOnGuiCtrlData data;
+		data.type = SOGCT_VALUE_DPARAMS;
+		data.offset = initial_first_param;
+		data.val = value;
+		this->guiproc(data);
+	}
 }
 
 /**
@@ -999,6 +1064,40 @@ const StringSettingDesc *SettingDesc::AsStringSetting() const
 }
 
 /* Begin - Callback Functions for the various settings. */
+
+/** Switch setting title depending on wallclock setting */
+static StringID SettingTitleWallclock(const IntSettingDesc &sd)
+{
+	return EconTime::UsingWallclockUnits(_game_mode == GM_MENU) ? sd.str + 1 : sd.str;
+}
+
+/** Switch setting help depending on wallclock setting */
+static StringID SettingHelpWallclock(const IntSettingDesc &sd)
+{
+	return EconTime::UsingWallclockUnits(_game_mode == GM_MENU) ? sd.str_help + 1 : sd.str_help;
+}
+
+/** Setting values for velocity unit localisation */
+static void SettingsValueVelocityUnit(const IntSettingDesc &, uint first_param, int32_t value)
+{
+	StringID val;
+	switch (value) {
+		case 0: val = STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_IMPERIAL; break;
+		case 1: val = STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_METRIC; break;
+		case 2: val = STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_SI; break;
+		case 3: val = EconTime::UsingWallclockUnits(_game_mode == GM_MENU) ? STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_GAMEUNITS_SECS : STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_GAMEUNITS_DAYS; break;
+		case 4: val = STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_KNOTS; break;
+		default: NOT_REACHED();
+	}
+	SetDParam(first_param, val);
+}
+
+/** A negative value has another string (the one after "strval"). */
+static void SettingsValueAbsolute(const IntSettingDesc &sd, uint first_param, int32_t value)
+{
+	SetDParam(first_param, sd.str_val + ((value >= 0) ? 1 : 0));
+	SetDParam(first_param + 1, abs(value));
+}
 
 /** Reposition the main toolbar as the setting changed. */
 static void v_PositionMainToolbar(int32_t new_value)
@@ -1993,14 +2092,14 @@ static void ParseCompanyPasswordStorageToken(const std::string &value)
 {
 	extern std::array<uint8_t, 16> _network_company_password_storage_token;
 	if (value.size() != 32) return;
-	DecodeHexText(value.c_str(), _network_company_password_storage_token.data(), _network_company_password_storage_token.size());
+	ConvertHexToBytes(value, _network_company_password_storage_token);
 }
 
 static void ParseCompanyPasswordStorageSecret(const std::string &value)
 {
 	extern std::array<uint8_t, 32> _network_company_password_storage_key;
 	if (value.size() != 64) return;
-	DecodeHexText(value.c_str(), _network_company_password_storage_key.data(), _network_company_password_storage_key.size());
+	ConvertHexToBytes(value, _network_company_password_storage_key);
 }
 
 /** Update the game info, and send it to the clients when we are running as a server. */
@@ -2305,40 +2404,6 @@ static void GameLoadConfig(const IniFile &ini, const char *grpname)
 }
 
 /**
- * Convert a character to a hex nibble value, or \c -1 otherwise.
- * @param c Character to convert.
- * @return Hex value of the character, or \c -1 if not a hex digit.
- */
-static int DecodeHexNibble(char c)
-{
-	if (c >= '0' && c <= '9') return c - '0';
-	if (c >= 'A' && c <= 'F') return c + 10 - 'A';
-	if (c >= 'a' && c <= 'f') return c + 10 - 'a';
-	return -1;
-}
-
-/**
- * Parse a sequence of characters (supposedly hex digits) into a sequence of bytes.
- * After the hex number should be a \c '|' character.
- * @param pos First character to convert.
- * @param[out] dest Output byte array to write the bytes.
- * @param dest_size Number of bytes in \a dest.
- * @return Whether reading was successful.
- */
-static bool DecodeHexText(const char *pos, uint8_t *dest, size_t dest_size)
-{
-	while (dest_size > 0) {
-		int hi = DecodeHexNibble(pos[0]);
-		int lo = (hi >= 0) ? DecodeHexNibble(pos[1]) : -1;
-		if (lo < 0) return false;
-		*dest++ = (hi << 4) | lo;
-		pos += 2;
-		dest_size--;
-	}
-	return *pos == '|';
-}
-
-/**
  * Load BaseGraphics set selection and configuration.
  */
 static void GraphicsSetLoadConfig(IniFile &ini)
@@ -2390,29 +2455,40 @@ static GRFConfig *GRFLoadConfig(const IniFile &ini, const char *grpname, bool is
 	for (const IniItem &item : group->items) {
 		GRFConfig *c = nullptr;
 
-		uint8_t grfid_buf[4];
+		std::array<uint8_t, 4> grfid_buf;
 		MD5Hash md5sum;
-		const char *filename = item.name.c_str();
-		bool has_grfid = false;
+		std::string_view item_name = item.name;
 		bool has_md5sum = false;
 
 		/* Try reading "<grfid>|" and on success, "<md5sum>|". */
-		has_grfid = DecodeHexText(filename, grfid_buf, lengthof(grfid_buf));
-		if (has_grfid) {
-			filename += 1 + 2 * lengthof(grfid_buf);
-			has_md5sum = DecodeHexText(filename, md5sum.data(), md5sum.size());
-			if (has_md5sum) filename += 1 + 2 * md5sum.size();
+		auto grfid_pos = item_name.find("|");
+		if (grfid_pos != std::string_view::npos) {
+			std::string_view grfid_str = item_name.substr(0, grfid_pos);
 
-			uint32_t grfid = grfid_buf[0] | (grfid_buf[1] << 8) | (grfid_buf[2] << 16) | (grfid_buf[3] << 24);
-			if (has_md5sum) {
-				const GRFConfig *s = FindGRFConfig(grfid, FGCM_EXACT, &md5sum);
-				if (s != nullptr) c = new GRFConfig(*s);
-			}
-			if (c == nullptr && !FioCheckFileExists(filename, NEWGRF_DIR)) {
-				const GRFConfig *s = FindGRFConfig(grfid, FGCM_NEWEST_VALID);
-				if (s != nullptr) c = new GRFConfig(*s);
+			if (ConvertHexToBytes(grfid_str, grfid_buf)) {
+				item_name = item_name.substr(grfid_pos + 1);
+
+				auto md5sum_pos = item_name.find("|");
+				if (md5sum_pos != std::string_view::npos) {
+					std::string_view md5sum_str = item_name.substr(0, md5sum_pos);
+
+					has_md5sum = ConvertHexToBytes(md5sum_str, md5sum);
+					if (has_md5sum) item_name = item_name.substr(md5sum_pos + 1);
+				}
+
+				uint32_t grfid = grfid_buf[0] | (grfid_buf[1] << 8) | (grfid_buf[2] << 16) | (grfid_buf[3] << 24);
+				if (has_md5sum) {
+					const GRFConfig *s = FindGRFConfig(grfid, FGCM_EXACT, &md5sum);
+					if (s != nullptr) c = new GRFConfig(*s);
+				}
+				if (c == nullptr && !FioCheckFileExists(std::string(item_name), NEWGRF_DIR)) {
+					const GRFConfig *s = FindGRFConfig(grfid, FGCM_NEWEST_VALID);
+					if (s != nullptr) c = new GRFConfig(*s);
+				}
 			}
 		}
+		std::string filename = std::string(item_name);
+
 		if (c == nullptr) c = new GRFConfig(filename);
 
 		/* Parse parameters */
@@ -2440,7 +2516,7 @@ static GRFConfig *GRFLoadConfig(const IniFile &ini, const char *grpname, bool is
 				SetDParam(1, STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN);
 			}
 
-			SetDParamStr(0, StrEmpty(filename) ? item.name.c_str() : filename);
+			SetDParamStr(0, filename.empty() ? item.name.c_str() : filename);
 			ShowErrorMessage(STR_CONFIG_ERROR, STR_CONFIG_ERROR_INVALID_GRF, WL_CRITICAL);
 			delete c;
 			continue;

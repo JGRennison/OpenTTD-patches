@@ -6,6 +6,7 @@ add_subdirectory(monocypher)
 add_subdirectory(squirrel)
 add_subdirectory(nlohmann)
 add_subdirectory(opengl)
+add_subdirectory(openttd_social_integration_api)
 add_subdirectory(cpp-btree)
 add_subdirectory(robin_hood)
 
