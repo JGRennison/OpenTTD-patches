@@ -54,7 +54,7 @@ void LinkGraph::ShiftDates(DateDelta interval)
 
 void LinkGraph::Compress()
 {
-	this->last_compression = (_state_ticks.base() + this->last_compression.base()) / 2;
+	this->last_compression = (_scaled_tick_counter + this->last_compression) / 2;
 	for (NodeID node1 = 0; node1 < this->Size(); ++node1) {
 		this->nodes[node1].supply /= 2;
 	}
@@ -79,8 +79,8 @@ void LinkGraph::Compress()
  */
 void LinkGraph::Merge(LinkGraph *other)
 {
-	uint32_t age = ClampTo<uint32_t>(CeilDivT<int64_t>(_state_ticks.base() - this->last_compression.base() + 1, DAY_TICKS));
-	uint32_t other_age = ClampTo<uint32_t>(CeilDivT<int64_t>(_state_ticks.base() - other->last_compression.base() + 1, DAY_TICKS));
+	uint32_t age = ClampTo<uint32_t>(CeilDivT<int64_t>(_scaled_tick_counter - this->last_compression + 1, DAY_TICKS));
+	uint32_t other_age = ClampTo<uint32_t>(CeilDivT<int64_t>(_scaled_tick_counter - other->last_compression + 1, DAY_TICKS));
 	NodeID first = this->Size();
 	this->nodes.reserve(first + other->Size());
 	for (NodeID node1 = 0; node1 < other->Size(); ++node1) {
@@ -266,23 +266,26 @@ void LinkGraph::Init(uint size)
 	this->nodes.resize(size);
 }
 
-void AdjustLinkGraphStateTicksBase(StateTicksDelta delta)
-{
-	for (LinkGraph *lg : LinkGraph::Iterate()) lg->last_compression += delta;
-
-	for (LinkGraphJob *lgj : LinkGraphJob::Iterate()) {
-		LinkGraph *lg = &(const_cast<LinkGraph &>(lgj->Graph()));
-		lg->last_compression += delta;
-	}
-}
-
-void LinkGraphFixupLastCompressionAfterLoad()
+void LinkGraphFixupAfterLoad(bool compression_was_date)
 {
 	/* last_compression was previously a Date, change it to a StateTicks */
-	for (LinkGraph *lg : LinkGraph::Iterate()) lg->last_compression = DateToStateTicks((EconTime::Date)lg->last_compression.base());
+	for (LinkGraph *lg : LinkGraph::Iterate()) {
+		if (compression_was_date) lg->last_compression = DateToStateTicks((EconTime::Date)lg->last_compression).base();
+		lg->last_compression -= _state_ticks.base();
+		lg->last_compression += _scaled_tick_counter;
+	}
 
 	for (LinkGraphJob *lgj : LinkGraphJob::Iterate()) {
 		LinkGraph *lg = &(const_cast<LinkGraph &>(lgj->Graph()));
-		lg->last_compression = DateToStateTicks((EconTime::Date)lg->last_compression.base());
+		if (compression_was_date) lg->last_compression = DateToStateTicks((EconTime::Date)lg->last_compression).base();
+		lg->last_compression -= _state_ticks.base();
+		lg->last_compression += _scaled_tick_counter;
+
+		/* Change start and join ticks from DateTicks to ScaledTickCounter */
+		auto convert = [&](ScaledTickCounter &tick) {
+			tick = (uint64_t)(std::max<int64_t>(0, _scaled_tick_counter + (DateTicksToStateTicks((EconTime::DateTicks)tick) - _state_ticks).base()));
+		};
+		convert(lgj->join_tick);
+		convert(lgj->start_tick);
 	}
 }

@@ -120,6 +120,7 @@ void MusicLoop();
 void CallWindowGameTickEvent();
 bool HandleBootstrap();
 void OnTick_Companies(bool main_tick);
+void OnTick_LinkGraph();
 
 extern void AfterLoadCompanyStats();
 extern Company *DoStartupNewCompany(bool is_ai, CompanyID company = INVALID_COMPANY);
@@ -2180,6 +2181,7 @@ void StateGameLoop()
 			CallLandscapeTick();
 			OnTick_Companies(true);
 		}
+		OnTick_LinkGraph();
 		TimerManager<TimerGameTick>::Elapsed(1);
 		BasePersistentStorageArray::SwitchMode(PSM_LEAVE_GAMELOOP);
 

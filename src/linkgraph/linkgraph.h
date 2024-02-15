@@ -290,7 +290,7 @@ public:
 	static constexpr DateDelta STALE_LINK_DEPOT_TIMEOUT = 1024;
 
 	/** Minimum number of ticks between subsequent compressions of a LG. */
-	static constexpr StateTicksDelta COMPRESSION_INTERVAL = 256 * DAY_TICKS;
+	static constexpr ScaledTickCounter COMPRESSION_INTERVAL = 256 * DAY_TICKS;
 
 	/**
 	 * Scale a value from a link graph of age orig_age for usage in one of age
@@ -311,7 +311,7 @@ public:
 	 * Real constructor.
 	 * @param cargo Cargo the link graph is about.
 	 */
-	LinkGraph(CargoID cargo) : cargo(cargo), last_compression(_state_ticks) {}
+	LinkGraph(CargoID cargo) : cargo(cargo), last_compression(_scaled_tick_counter) {}
 
 	void Init(uint size);
 	void ShiftDates(DateDelta interval);
@@ -350,7 +350,7 @@ public:
 	 * Get date of last compression.
 	 * @return Date of last compression.
 	 */
-	inline StateTicks LastCompression() const { return this->last_compression; }
+	inline ScaledTickCounter LastCompression() const { return this->last_compression; }
 
 	/**
 	 * Get the cargo ID this component's link graph refers to.
@@ -365,7 +365,7 @@ public:
 	 */
 	inline uint Monthly(uint base) const
 	{
-		return (uint)((static_cast<uint64_t>(base) * 30 * DAY_TICKS * DayLengthFactor()) / std::max<uint64_t>((_state_ticks - this->last_compression).base(), DAY_TICKS));
+		return (uint)((static_cast<uint64_t>(base) * 30 * DAY_TICKS * DayLengthFactor()) / std::max<uint64_t>(_scaled_tick_counter - this->last_compression, DAY_TICKS));
 	}
 
 	NodeID AddNode(const Station *st);
@@ -392,11 +392,10 @@ protected:
 	friend upstream_sl::SlLinkgraphNode;
 	friend upstream_sl::SlLinkgraphEdge;
 
-	friend void AdjustLinkGraphStateTicksBase(StateTicksDelta delta);
-	friend void LinkGraphFixupLastCompressionAfterLoad();
+	friend void LinkGraphFixupAfterLoad(bool compression_was_date);
 
 	CargoID cargo;         ///< Cargo of this component's link graph.
-	StateTicks last_compression; ///< Last time the capacities and supplies were compressed.
+	ScaledTickCounter last_compression; ///< Last time the capacities and supplies were compressed.
 	NodeVector nodes;      ///< Nodes in the component.
 	EdgeMatrix edges;      ///< Edges in the component.
 

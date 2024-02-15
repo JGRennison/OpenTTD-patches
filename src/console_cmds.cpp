@@ -2489,7 +2489,9 @@ DEF_CONSOLE_CMD(ConMergeLinkgraphJobsAsap)
 		return true;
 	}
 
-	for (LinkGraphJob *lgj : LinkGraphJob::Iterate()) lgj->ShiftJoinDate((EconTime::CurDateTicks() - lgj->JoinDateTicks()).base() / DAY_TICKS);
+	for (LinkGraphJob *lgj : LinkGraphJob::Iterate()) {
+		lgj->SetJoinTick(_scaled_tick_counter);
+	}
 	return true;
 }
 
@@ -2736,13 +2738,9 @@ DEF_CONSOLE_CMD(ConDumpLinkgraphJobs)
 
 	IConsolePrintF(CC_DEFAULT, PRINTF_SIZE " link graph jobs", LinkGraphJob::GetNumItems());
 	for (const LinkGraphJob *lgj : LinkGraphJob::Iterate()) {
-		EconTime::YearMonthDay start_ymd = EconTime::ConvertDateToYMD(lgj->StartDateTicks().ToDate());
-		EconTime::YearMonthDay join_ymd = EconTime::ConvertDateToYMD(lgj->JoinDateTicks().ToDate());
-		IConsolePrintF(CC_DEFAULT, "  Job: %5u, nodes: %u, cost: " OTTD_PRINTF64U ", start: (" OTTD_PRINTF64 ", %4i-%02i-%02i, %i), end: (" OTTD_PRINTF64 ", %4i-%02i-%02i, %i), duration: " OTTD_PRINTF64,
+		IConsolePrintF(CC_DEFAULT, "  Job: %5u, nodes: %u, cost: " OTTD_PRINTF64U ", started: %d, ends in: %d, duration: %d",
 				lgj->index, lgj->Graph().Size(), lgj->Graph().CalculateCostEstimate(),
-				lgj->StartDateTicks().base(), start_ymd.year.base(), start_ymd.month + 1, start_ymd.day, lgj->StartDateTicks().ToDateFractRemainder(),
-				lgj->JoinDateTicks().base(), join_ymd.year.base(), join_ymd.month + 1, join_ymd.day, lgj->JoinDateTicks().ToDateFractRemainder(),
-				(lgj->JoinDateTicks() - lgj->StartDateTicks()).base());
+				(int)(lgj->StartTick() - _scaled_tick_counter), (int)(lgj->JoinTick() - _scaled_tick_counter), (int)(lgj->JoinTick() - lgj->StartTick()));
 	 }
 	return true;
 }

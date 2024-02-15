@@ -67,9 +67,6 @@ void CheckStateTicksWrap()
 
 	extern void AdjustVehicleStateTicksBase(StateTicksDelta delta);
 	AdjustVehicleStateTicksBase(-tick_adjust);
-
-	extern void AdjustLinkGraphStateTicksBase(StateTicksDelta delta);
-	AdjustLinkGraphStateTicksBase(-tick_adjust);
 }
 
 /**

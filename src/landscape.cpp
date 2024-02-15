@@ -1623,8 +1623,6 @@ void OnTick_Trees();
 void OnTick_Station();
 void OnTick_Industry();
 
-void OnTick_LinkGraph();
-
 void CallLandscapeTick()
 {
 	{
@@ -1639,6 +1637,4 @@ void CallLandscapeTick()
 		OnTick_Industry();
 		RecordSyncEvent(NSRE_INDUSTRY);
 	}
-
-	OnTick_LinkGraph();
 }

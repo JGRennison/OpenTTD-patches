@@ -30,7 +30,8 @@ SaveLoadTable GetLinkGraphDesc()
 {
 	static const SaveLoad link_graph_desc[] = {
 	SLE_CONDVAR_X(LinkGraph, last_compression, SLE_VAR_I64 | SLE_FILE_I32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 0, 3)),
-	SLE_CONDVAR_X(LinkGraph, last_compression,                  SLE_INT64,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 4)),
+	SLE_CONDVAR_X(LinkGraph, last_compression,                  SLE_INT64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 4, 5)),
+	SLE_CONDVAR_X(LinkGraph, last_compression,                 SLE_UINT64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 6)),
 		SLEG_VAR(_num_nodes,                  SLE_UINT16),
 		 SLE_VAR(LinkGraph, cargo,            SLE_UINT8),
 	};
@@ -39,8 +40,8 @@ SaveLoadTable GetLinkGraphDesc()
 
 void GetLinkGraphJobDayLengthScaleAfterLoad(LinkGraphJob *lgj)
 {
-	lgj->join_date_ticks.edit_base() *= DAY_TICKS;
-	lgj->join_date_ticks += LinkGraphSchedule::SPAWN_JOIN_TICK;
+	lgj->join_tick *= DAY_TICKS;
+	lgj->join_tick += LinkGraphSchedule::SPAWN_JOIN_TICK;
 
 	uint recalc_scale;
 	if (IsSavegameVersionBefore(SLV_LINKGRAPH_SECONDS) && SlXvIsFeatureMissing(XSLFI_LINKGRAPH_DAY_SCALE, 3)) {
@@ -50,7 +51,7 @@ void GetLinkGraphJobDayLengthScaleAfterLoad(LinkGraphJob *lgj)
 		/* recalc time is in seconds */
 		recalc_scale = DAY_TICKS / SECONDS_PER_DAY;
 	}
-	lgj->start_date_ticks = lgj->join_date_ticks - (lgj->Settings().recalc_time * recalc_scale);
+	lgj->start_tick = lgj->join_tick - (lgj->Settings().recalc_time * recalc_scale);
 }
 
 /**
@@ -83,10 +84,12 @@ SaveLoadTable GetLinkGraphJobDesc()
 		}
 
 		const SaveLoad job_desc[] = {
-			SLE_CONDVAR_X(LinkGraphJob, join_date_ticks,  SLE_FILE_I32 | SLE_VAR_I64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 0, 4)),
-			SLE_CONDVAR_X(LinkGraphJob, join_date_ticks,  SLE_INT64,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 5)),
-			SLE_CONDVAR_X(LinkGraphJob, start_date_ticks, SLE_FILE_I32 | SLE_VAR_I64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 1, 4)),
-			SLE_CONDVAR_X(LinkGraphJob, start_date_ticks, SLE_INT64,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 5)),
+			SLE_CONDVAR_X(LinkGraphJob, join_tick,  SLE_FILE_I32 | SLE_VAR_I64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 0, 4)),
+			SLE_CONDVAR_X(LinkGraphJob, join_tick,  SLE_FILE_I64 | SLE_VAR_U64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 5, 5)),
+			SLE_CONDVAR_X(LinkGraphJob, join_tick,  SLE_UINT64,                 SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 6)),
+			SLE_CONDVAR_X(LinkGraphJob, start_tick, SLE_FILE_I32 | SLE_VAR_U64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 1, 4)),
+			SLE_CONDVAR_X(LinkGraphJob, start_tick, SLE_FILE_I64 | SLE_VAR_U64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 5, 5)),
+			SLE_CONDVAR_X(LinkGraphJob, start_tick, SLE_UINT64,                 SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 6)),
 			SLE_VAR(LinkGraphJob, link_graph.index, SLE_UINT16),
 		};
 

@@ -4552,7 +4552,7 @@ void DeleteStaleLinks(Station *from)
 			return result;
 		});
 		assert(_state_ticks >= lg->LastCompression());
-		if ((_state_ticks - lg->LastCompression()) > LinkGraph::COMPRESSION_INTERVAL) {
+		if ((_scaled_tick_counter - lg->LastCompression()) > LinkGraph::COMPRESSION_INTERVAL) {
 			lg->Compress();
 		}
 	}

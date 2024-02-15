@@ -131,6 +131,7 @@ private:
 	friend SaveLoadTable GetLinkGraphJobDesc();
 	friend upstream_sl::SaveLoadTable upstream_sl::GetLinkGraphJobDesc();
 	friend void GetLinkGraphJobDayLengthScaleAfterLoad(LinkGraphJob *lgj);
+	friend void LinkGraphFixupAfterLoad(bool compression_was_date);
 	friend class LinkGraphSchedule;
 	friend class LinkGraphJobGroup;
 
@@ -139,8 +140,8 @@ protected:
 
 	std::shared_ptr<LinkGraphJobGroup> group; ///< Job group thread the job is running in or nullptr if it's running in the main thread.
 	const LinkGraphSettings settings; ///< Copy of _settings_game.linkgraph at spawn time.
-	EconTime::DateTicks join_date_ticks;  ///< Date when the job is to be joined.
-	EconTime::DateTicks start_date_ticks; ///< Date when the job was started.
+	ScaledTickCounter join_tick;      ///< Tick when the job is to be joined.
+	ScaledTickCounter start_tick;     ///< Tick when the job was started.
 	NodeAnnotationVector nodes;       ///< Extra node data necessary for link graph calculation.
 	EdgeAnnotationVector edges;       ///< Edge data necessary for link graph calculation.
 	std::atomic<bool> job_completed;  ///< Is the job still running. This is accessed by multiple threads and reads may be stale.
@@ -263,7 +264,7 @@ public:
 	 * settings have to be brutally const-casted in order to populate them.
 	 */
 	LinkGraphJob() : settings(_settings_game.linkgraph),
-			join_date_ticks(EconTime::INVALID_DATE_TICKS), start_date_ticks(EconTime::INVALID_DATE_TICKS), job_completed(false), job_aborted(false) {}
+			join_tick(0), start_tick(0), job_completed(false), job_aborted(false) {}
 
 	LinkGraphJob(const LinkGraph &orig, uint duration_multiplier);
 	~LinkGraphJob();
@@ -298,29 +299,25 @@ public:
 	 * @param tick_offset Optional number of ticks to add to the current date
 	 * @return True if job should be finished by now, false if not.
 	 */
-	inline bool IsScheduledToBeJoined(int tick_offset = 0) const { return this->join_date_ticks <= EconTime::CurDateTicks() + tick_offset; }
+	inline bool IsScheduledToBeJoined(int tick_offset = 0) const { return this->join_tick <= _scaled_tick_counter + tick_offset; }
 
 	/**
-	 * Get the date when the job should be finished.
+	 * Get the tick when the job should be finished.
 	 * @return Join date.
 	 */
-	inline EconTime::DateTicks JoinDateTicks() const { return join_date_ticks; }
+	inline ScaledTickCounter JoinTick() const { return this->join_tick; }
 
 	/**
-	 * Get the date when the job was started.
+	 * Get the tick when the job was started.
 	 * @return Start date.
 	 */
-	inline EconTime::DateTicks StartDateTicks() const { return start_date_ticks; }
+	inline ScaledTickCounter StartTick() const { return this->start_tick; }
 
 	/**
-	 * Change the start and join dates on date cheating.
-	 * @param interval Number of days to add.
+	 * Set the tick when the job should be joined.
+	 * @return Start date.
 	 */
-	inline void ShiftJoinDate(DateDelta interval)
-	{
-		this->join_date_ticks += DateDeltaToDateTicksDelta(interval);
-		this->start_date_ticks += DateDeltaToDateTicksDelta(interval);
-	}
+	inline void SetJoinTick(ScaledTickCounter tick) { this->join_tick = tick; }
 
 	/**
 	 * Get the link graph settings for this component.
@@ -351,7 +348,7 @@ public:
 	 * Get the state tick when the underlying link graph was last compressed.
 	 * @return Compression date.
 	 */
-	inline StateTicks LastCompression() const { return this->link_graph.LastCompression(); }
+	inline ScaledTickCounter LastCompression() const { return this->link_graph.LastCompression(); }
 
 	/**
 	 * Get the ID of the underlying link graph.
