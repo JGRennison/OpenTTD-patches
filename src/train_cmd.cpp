@@ -6889,7 +6889,7 @@ static void CheckIfTrainNeedsService(Train *v)
 /** Update day counters of the train vehicle. */
 void Train::OnNewDay()
 {
-	AgeVehicle(this);
+	if (!EconTime::UsingWallclockUnits()) AgeVehicle(this);
 
 	if ((++this->day_counter & 7) == 0) DecreaseVehicleValue(this);
 }

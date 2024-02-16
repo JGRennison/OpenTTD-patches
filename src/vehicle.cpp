@@ -1369,6 +1369,41 @@ static void RunVehicleDayProc()
 	}
 }
 
+/**
+ * Increases the day counter for all vehicles and calls 1-day and 32-day handlers.
+ * Each tick, it processes vehicles with "index % DAY_TICKS == _date_fract",
+ * so each day, all vehicles are processes in DAY_TICKS steps.
+ */
+static void RunVehicleCalendarDayProc()
+{
+	if (_game_mode != GM_NORMAL) return;
+
+	Vehicle *v = nullptr;
+	SCOPE_INFO_FMT([&v], "RunVehicleCalendarDayProc: %s", scope_dumper().VehicleInfo(v));
+	for (size_t i = CalTime::CurDateFract(); i < Vehicle::GetPoolSize(); i += DAY_TICKS) {
+		v = Vehicle::Get(i);
+		if (v == nullptr) continue;
+
+		/* This is called once per day for each vehicle, but not in the first tick of the day */
+		switch (v->type) {
+			case VEH_TRAIN:
+				AgeVehicle(v);
+				break;
+			case VEH_ROAD:
+				if (v->IsFrontEngine()) AgeVehicle(v);
+				break;
+			case VEH_SHIP:
+				if (static_cast<Ship *>(v)->IsPrimaryVehicle()) AgeVehicle(v);
+				break;
+			case VEH_AIRCRAFT:
+				if (static_cast<Aircraft *>(v)->IsNormalAircraft()) AgeVehicle(v);
+				break;
+			default:
+				break;
+		}
+	}
+}
+
 static void ShowAutoReplaceAdviceMessage(const CommandCost &res, const Vehicle *v)
 {
 	StringID error_message = res.GetErrorMessage();
@@ -1529,6 +1564,10 @@ void CallVehicleTicks()
 	_vehicles_to_sell.clear();
 
 	if (TickSkipCounter() == 0) RunVehicleDayProc();
+
+	if (EconTime::UsingWallclockUnits() && _settings_game.economy.minutes_per_calendar_year != CalTime::FROZEN_MINUTES_PER_YEAR && CalTime::Detail::now.sub_date_fract == 0) {
+		RunVehicleCalendarDayProc();
+	}
 
 	if (DayLengthFactor() >= 8 && _game_mode == GM_NORMAL) {
 		/*
