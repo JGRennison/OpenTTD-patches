@@ -2260,6 +2260,6 @@ void ChangeGameSpeed(bool enable_fast_forward)
 
 void SetupTickRate()
 {
-	_milliseconds_per_tick = (_settings_game.economy.tick_rate == TRM_MODERN) ? 27 : 30;
+	_milliseconds_per_tick = (_settings_game.economy.tick_rate == TRM_MODERN || _settings_game.economy.timekeeping_units == TKU_WALLCLOCK) ? 27 : 30;
 	_ticks_per_second = 1000.0f / _milliseconds_per_tick;
 }
