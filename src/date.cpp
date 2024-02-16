@@ -123,6 +123,9 @@ void RecalculateStateTicksOffset()
 void UpdateEffectiveDayLengthFactor()
 {
 	DateDetail::_effective_day_length = _settings_game.EffectiveDayLengthFactor();
+
+	SetupTileLoopCounts();
+	UpdateCargoScalers();
 }
 
 CalTime::Date StateTicksToCalendarDate(StateTicks ticks)
