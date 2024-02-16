@@ -782,6 +782,9 @@ STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Show travel tim
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT_EXTRA         :{STRING}{}Various features require use of the YAPF pathfinder, including: routing restrictions (all pathfinder and reservation related actions), reverse at waypoint/signal and drive through train depots.
 
+STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_CALENDAR           :{RED}[Setting disabled in calendar timekeeping mode]
+STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_WALLCLOCK          :{RED}[Setting disabled in wallclock timekeeping mode]
+
 STR_CHEAT_EDIT_MONEY_QUERY_CAPT                                 :{WHITE}Increase or decrease money
 STR_CHEAT_INFLATION_COST                                        :{LTBLUE}Change inflation cost factor: {ORANGE}{DECIMAL}
 STR_CHEAT_INFLATION_COST_QUERY_CAPT                             :{WHITE}Change inflation cost factor

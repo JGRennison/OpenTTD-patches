@@ -2259,7 +2259,7 @@ static bool TownCargoScaleGUI(SettingOnGuiCtrlData &data)
 {
 	switch (data.type) {
 		case SOGCT_VALUE_DPARAMS:
-			SetDParam(data.offset, STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY + GetGameSettings().economy.town_cargo_scale_mode);
+			if (!EconTime::UsingWallclockUnits(_game_mode == GM_MENU)) SetDParam(data.offset, STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY + GetGameSettings().economy.town_cargo_scale_mode);
 			return true;
 
 		default:
@@ -2276,7 +2276,7 @@ static bool IndustryCargoScaleGUI(SettingOnGuiCtrlData &data)
 			return true;
 
 		case SOGCT_VALUE_DPARAMS:
-			SetDParam(data.offset, STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY + GetGameSettings().economy.industry_cargo_scale_mode);
+			if (!EconTime::UsingWallclockUnits(_game_mode == GM_MENU)) SetDParam(data.offset, STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY + GetGameSettings().economy.industry_cargo_scale_mode);
 			return true;
 
 		default:
@@ -2290,6 +2290,38 @@ static bool IndustryCargoScaleModeGUI(SettingOnGuiCtrlData &data)
 		case SOGCT_DESCRIPTION_TEXT:
 			SetDParam(0, data.text);
 			data.text = STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE_HELPTEXT_EXTRA;
+			return true;
+
+		default:
+			return WallclockModeDisabledGUI(data);
+	}
+}
+
+static bool CalendarModeDisabledGUI(SettingOnGuiCtrlData &data)
+{
+	switch (data.type) {
+		case SOGCT_VALUE_DPARAMS:
+			if (!EconTime::UsingWallclockUnits(_game_mode == GM_MENU)) SetDParam(data.offset, STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_CALENDAR);
+			return true;
+
+		case SOGCT_GUI_DISABLE:
+			if (!EconTime::UsingWallclockUnits(_game_mode == GM_MENU)) data.val = 1;
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+static bool WallclockModeDisabledGUI(SettingOnGuiCtrlData &data)
+{
+	switch (data.type) {
+		case SOGCT_VALUE_DPARAMS:
+			if (EconTime::UsingWallclockUnits(_game_mode == GM_MENU)) SetDParam(data.offset, STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_WALLCLOCK);
+			return true;
+
+		case SOGCT_GUI_DISABLE:
+			if (EconTime::UsingWallclockUnits(_game_mode == GM_MENU)) data.val = 1;
 			return true;
 
 		default:
