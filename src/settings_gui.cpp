@@ -1342,6 +1342,7 @@ struct SettingEntry : BaseSettingEntry {
 	bool UpdateFilterState(SettingFilter &filter, bool force_visible) override;
 
 	void SetButtons(byte new_val);
+	bool IsGUIEditable() const;
 
 protected:
 	SettingEntry(const IntSettingDesc *setting);
@@ -1592,6 +1593,20 @@ uint SettingEntry::GetMaxHelpHeight(int maxw)
 	return GetStringHeight(this->setting->GetHelp(), maxw);
 }
 
+bool SettingEntry::IsGUIEditable() const
+{
+	bool editable = this->setting->IsEditable();
+	if (editable && this->setting->guiproc != nullptr) {
+		SettingOnGuiCtrlData data;
+		data.type = SOGCT_GUI_DISABLE;
+		data.val = 0;
+		if (this->setting->guiproc(data)) {
+			editable = (data.val == 0);
+		}
+	}
+	return editable;
+}
+
 /**
  * Checks whether an entry shall be made visible based on the restriction mode.
  * @param mode The current status of the restriction drop down box.
@@ -1708,7 +1723,7 @@ void SettingEntry::DrawSetting(GameSettings *settings_ptr, int left, int right, 
 	uint button_y = y + (SETTING_HEIGHT - SETTING_BUTTON_HEIGHT) / 2;
 
 	/* We do not allow changes of some items when we are a client in a networkgame */
-	bool editable = sd->IsEditable();
+	bool editable = this->IsGUIEditable();
 
 	SetDParam(0, STR_CONFIG_SETTING_VALUE);
 	int32_t value = sd->Read(ResolveObject(settings_ptr, sd));
@@ -3074,7 +3089,7 @@ struct GameSettingsWindow : Window {
 		const IntSettingDesc *sd = pe->setting;
 
 		/* return if action is only active in network, or only settable by server */
-		if (!sd->IsEditable()) {
+		if (!pe->IsGUIEditable()) {
 			this->SetDisplayedHelpText(pe);
 			return;
 		}

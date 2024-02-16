@@ -88,6 +88,7 @@ enum SettingOnGuiCtrlType {
 	SOGCT_CFG_FALLBACK_NAME,  ///< Config file name within group fallback
 	SOGCT_GUI_SPRITE,         ///< Show sprite after setting value (i.e. warning)
 	SOGCT_GUI_WARNING_TEXT,   ///< Show warning text
+	SOGCT_GUI_DISABLE,        ///< Disable setting in GUI
 };
 
 struct SettingOnGuiCtrlData {
