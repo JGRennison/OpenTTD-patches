@@ -3381,6 +3381,12 @@ void IConsoleSetSetting(const char *name, const char *value, bool force_newgame)
 		return;
 	}
 
+	const auto old_game_mode = _game_mode;
+	if (force_newgame) _game_mode = GM_MENU;
+	auto guard = scope_guard([force_newgame, old_game_mode]() {
+		if (force_newgame) _game_mode = old_game_mode;
+	});
+
 	bool success = true;
 	if (sd->IsStringSetting()) {
 		success = SetSettingValue(sd->AsStringSetting(), value, force_newgame);
