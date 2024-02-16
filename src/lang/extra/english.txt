@@ -1507,6 +1507,7 @@ STR_BUY_VEHICLE_TRAIN_LOCOMOTIVES                               :Locomotives and
 STR_BUY_VEHICLE_TRAIN_WAGONS                                    :Wagons
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Designed: {GOLD}{NUM}
+STR_PURCHASE_INFO_RUNNINGCOST_ORIG_YEAR                         :{BLACK}Running Cost: {GOLD}{CURRENCY_LONG}/original year
 
 STR_BUY_REFIT_VEHICLE_BUY_VEHICLE_BUTTON                        :{BLACK}Refit after buy
 STR_BUY_REFIT_VEHICLE_BUY_VEHICLE_TOOLTIP                       :{BLACK}Automatically refit the highlighted vehicle after buying to selected cargo type
@@ -1564,12 +1565,16 @@ STR_NEED_REPAIR                                                 :{ORANGE}Vehicle
 
 STR_CURRENT_STATUS                                              :{BLACK}Current status: {STRING3}
 
+STR_ENGINE_PREVIEW_RUNCOST_ORIG_YEAR                            :Running Cost: {CURRENCY_LONG}/original year
+
 STR_VEHICLE_INFO_TRAIN_LENGTH                                   :{BLACK}Train length {LTBLUE}{DECIMAL} tile{P "" s} {STRING4}
 STR_VEHICLE_INFO_WEIGHT_RATIOS                                  :{STRING1} {STRING1}
 STR_VEHICLE_INFO_POWER_WEIGHT_RATIO                             :{BLACK}Power / weight: {LTBLUE}{POWER_WEIGHT_RATIO}
 STR_VEHICLE_INFO_TE_WEIGHT_RATIO                                :{BLACK}Max. T.E / weight: {LTBLUE}{FORCE_WEIGHT_RATIO}
 STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS                        :{BLACK}Full weight: {LTBLUE}{WEIGHT_SHORT} {STRING4}
 STR_VEHICLE_INFO_MAX_SPEED_LOADED                               :{BLACK}Max. speed (full): {LTBLUE}{VELOCITY}
+
+STR_VEHICLE_INFO_AGE_RUNNING_COST_ORIG_YR                       :{BLACK}Age: {LTBLUE}{STRING2}{BLACK}   Running Cost: {LTBLUE}{CURRENCY_LONG}/original year
 
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING2} (lifetime: {CURRENCY_LONG})
 

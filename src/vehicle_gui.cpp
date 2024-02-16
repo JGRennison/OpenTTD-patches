@@ -3001,7 +3001,7 @@ struct VehicleDetailsWindow : Window {
 					dim = maxdim(dim, GetStringBoundingBox(STR_VEHICLE_INFO_WEIGHT_RATIOS));
 				}
 				SetDParam(0, STR_VEHICLE_INFO_AGE);
-				dim = maxdim(dim, GetStringBoundingBox(STR_VEHICLE_INFO_AGE_RUNNING_COST_YR));
+				dim = maxdim(dim, GetStringBoundingBox(this->GetRunningCostString()));
 				size->width = dim.width + padding.width;
 				break;
 			}
@@ -3102,6 +3102,17 @@ struct VehicleDetailsWindow : Window {
 		if (widget == WID_VD_CAPTION) SetDParam(0, Vehicle::Get(this->window_number)->index);
 	}
 
+	StringID GetRunningCostString() const
+	{
+		if (EconTime::UsingWallclockUnits()) {
+			return STR_VEHICLE_INFO_AGE_RUNNING_COST_PERIOD;
+		} else if (DayLengthFactor() > 1) {
+			return STR_VEHICLE_INFO_AGE_RUNNING_COST_ORIG_YR;
+		} else {
+			return STR_VEHICLE_INFO_AGE_RUNNING_COST_YR;
+		}
+	}
+
 	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		const Vehicle *v = Vehicle::Get(this->window_number);
@@ -3115,7 +3126,7 @@ struct VehicleDetailsWindow : Window {
 				SetDParam(0, (v->age + DAYS_IN_YEAR < v->max_age) ? STR_VEHICLE_INFO_AGE : STR_VEHICLE_INFO_AGE_RED);
 				SetDParam(2, DateDeltaToYearDelta(v->max_age));
 				SetDParam(3, v->GetDisplayRunningCost());
-				DrawString(tr, STR_VEHICLE_INFO_AGE_RUNNING_COST_YR);
+				DrawString(tr, this->GetRunningCostString());
 				tr.top += GetCharacterHeight(FS_NORMAL);
 
 				/* Draw max speed */
