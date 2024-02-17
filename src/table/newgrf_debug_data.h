@@ -239,6 +239,9 @@ class NIHVehicle : public NIHelper {
 					v->current_loading_time, v->current_loading_time / _settings_time.ticks_per_minute);
 			output.print(buffer);
 		}
+		seprintf(buffer, lastof(buffer), "  Speed: %u, sub-speed: %u, acceleration: %u",
+				v->cur_speed, v->subspeed, v->acceleration);
+		output.print(buffer);
 		seprintf(buffer, lastof(buffer), "  Reliability: %u, spd_dec: %u, needs service: %s",
 				v->reliability, v->reliability_spd_dec, v->NeedsServicing() ? "yes" : "no");
 		output.print(buffer);
@@ -650,6 +653,11 @@ class NIHVehicle : public NIHelper {
 					}
 					seprintf(buffer, lastof(buffer), "    Capacity: %u, Weight: %u, Power: %u, TE: %u, Air drag: %u, Shorten: %u",
 							e->u.road.capacity, e->u.road.weight, e->u.road.power, e->u.road.tractive_effort, e->u.road.air_drag, e->u.road.shorten_factor);
+					output.print(buffer);
+				}
+				if (e->type == VEH_SHIP) {
+					seprintf(buffer, lastof(buffer), "    Capacity: %u, Max speed: %u, Accel: %u, Ocean speed: %u, Canal speed: %u",
+							e->u.ship.capacity, e->u.ship.max_speed, e->u.ship.acceleration, e->u.ship.ocean_speed_frac, e->u.ship.canal_speed_frac);
 					output.print(buffer);
 				}
 
