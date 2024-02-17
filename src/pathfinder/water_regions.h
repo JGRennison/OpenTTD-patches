@@ -27,6 +27,8 @@ static_assert((WATER_REGION_EDGE_LENGTH & WATER_REGION_EDGE_MASK) == 0);
 
 constexpr uint32_t WATER_REGION_NUMBER_OF_TILES = WATER_REGION_EDGE_LENGTH * WATER_REGION_EDGE_LENGTH;
 
+constexpr TWaterRegionPatchLabel INVALID_WATER_REGION_PATCH = 0;
+
 /**
  * Describes a single interconnected patch of water within a particular water region.
  */
