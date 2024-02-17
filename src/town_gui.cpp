@@ -272,7 +272,32 @@ public:
 						SetDParam(0, STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS + this->sel_index - 0x100);
 					} else {
 						colour = TC_YELLOW;
-						text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING + this->sel_index;
+						switch (this->sel_index) {
+							case 0:
+								text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING;
+								break;
+							case 1:
+								text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING;
+								break;
+							case 2:
+								text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING;
+								break;
+							case 3:
+								text = EconTime::UsingWallclockUnits() ? STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION_MINUTES : STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION_MONTHS;
+								break;
+							case 4:
+								text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY;
+								break;
+							case 5:
+								text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS;
+								break;
+							case 6:
+								text = EconTime::UsingWallclockUnits() ? STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT_MINUTES : STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT_MONTHS;
+								break;
+							case 7:
+								text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE;
+								break;
+						}
 						SetDParam(0, _price[PR_TOWN_ACTION] * _town_action_costs[this->sel_index] >> 8);
 					}
 					DrawStringMultiLine(r.Shrink(WidgetDimensions::scaled.framerect), text, colour);
