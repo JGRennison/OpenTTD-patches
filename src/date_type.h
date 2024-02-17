@@ -195,6 +195,8 @@ struct CalTime : public DateDetail::BaseTime<struct CalendarTimeTag> {
 		return ConvertYMDToDate(ymd.year, ymd.month, ymd.day);
 	}
 
+	static bool IsCalendarFrozen(bool newgame = false);
+
 	/**
 	 * Calculate the year of a given date.
 	 * @param date The date to consider.

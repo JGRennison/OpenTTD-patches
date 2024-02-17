@@ -275,6 +275,12 @@ EconTime::Date EconTime::ConvertYMDToDate(EconTime::Year year, EconTime::Month m
 	return CalTime::ConvertYMDToDate(year.base(), month, day).base();
 }
 
+bool CalTime::IsCalendarFrozen(bool newgame)
+{
+	GameSettings &settings = (newgame) ? _settings_newgame : _settings_game;
+	return settings.economy.timekeeping_units == TKU_WALLCLOCK && settings.economy.minutes_per_calendar_year == CalTime::FROZEN_MINUTES_PER_YEAR;
+}
+
 bool EconTime::UsingWallclockUnits(bool newgame)
 {
 	if (newgame) return (_settings_newgame.economy.timekeeping_units == TKU_WALLCLOCK);
@@ -417,10 +423,10 @@ static void OnNewEconomyDay()
 static void IncreaseCalendarDate()
 {
 	/* If calendar day progress is frozen, don't try to advance time. */
-	if (_settings_game.economy.minutes_per_calendar_year == CalTime::FROZEN_MINUTES_PER_YEAR) return;
+	if (CalTime::IsCalendarFrozen()) return;
 
 	/* If we are using a non-default calendar progression speed, we need to check the sub_date_fract before updating date_fract. */
-	if (_settings_game.economy.minutes_per_calendar_year != CalTime::DEF_MINUTES_PER_YEAR) {
+	if (_settings_game.economy.timekeeping_units == TKU_WALLCLOCK && _settings_game.economy.minutes_per_calendar_year != CalTime::DEF_MINUTES_PER_YEAR) {
 		CalTime::Detail::now.sub_date_fract++;
 
 		/* Check if we are ready to increment date_fract */

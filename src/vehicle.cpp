@@ -1565,7 +1565,7 @@ void CallVehicleTicks()
 
 	if (TickSkipCounter() == 0) RunVehicleDayProc();
 
-	if (EconTime::UsingWallclockUnits() && _settings_game.economy.minutes_per_calendar_year != CalTime::FROZEN_MINUTES_PER_YEAR && CalTime::Detail::now.sub_date_fract == 0) {
+	if (EconTime::UsingWallclockUnits() && !CalTime::IsCalendarFrozen() && CalTime::Detail::now.sub_date_fract == 0) {
 		RunVehicleCalendarDayProc();
 	}
 
