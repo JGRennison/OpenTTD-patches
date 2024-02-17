@@ -529,7 +529,7 @@ static uint ShipAccelerate(Vehicle *v)
 {
 	uint speed;
 
-	speed = std::min<uint>(v->cur_speed + 1, Ship::From(v)->GetEffectiveMaxSpeed());
+	speed = std::min<uint>(v->cur_speed + v->acceleration, Ship::From(v)->GetEffectiveMaxSpeed());
 	speed = std::min<uint>(speed, v->current_order.GetMaxSpeed() * 2);
 
 	if (v->breakdown_ctr == 1 && v->breakdown_type == BREAKDOWN_LOW_POWER && v->cur_speed > (v->breakdown_severity * ShipVehInfo(v->engine_type)->max_speed) >> 8) {
@@ -972,6 +972,8 @@ static void ShipController(Ship *v)
 	uint number_of_steps = ShipAccelerate(v);
 	if (number_of_steps == 0 && v->current_order.IsType(OT_LEAVESTATION)) number_of_steps = 1;
 	for (uint i = 0; i < number_of_steps; ++i) {
+		if (ShipMoveUpDownOnLock(v)) return;
+
 		GetNewVehiclePosResult gp = GetNewVehiclePos(v);
 		if (v->state != TRACK_BIT_WORMHOLE) {
 			/* Not on a bridge */
@@ -1202,6 +1204,7 @@ CommandCost CmdBuildShip(TileIndex tile, DoCommandFlag flags, const Engine *e, V
 		v->sprite_seq.Set(SPR_IMG_QUERY);
 		v->random_bits = Random();
 
+		v->acceleration = svi->acceleration;
 		v->UpdateCache();
 
 		if (e->flags & ENGINE_EXCLUSIVE_PREVIEW) SetBit(v->vehicle_flags, VF_BUILT_AS_PROTOTYPE);

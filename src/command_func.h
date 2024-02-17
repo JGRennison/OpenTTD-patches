@@ -65,7 +65,6 @@ extern Money _additional_cash_required;
 bool IsValidCommand(uint32_t cmd);
 CommandFlags GetCommandFlags(uint32_t cmd);
 const char *GetCommandName(uint32_t cmd);
-Money GetAvailableMoneyForCommand();
 bool IsCommandAllowedWhilePaused(uint32_t cmd);
 
 /**

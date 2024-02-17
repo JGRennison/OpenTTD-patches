@@ -116,6 +116,7 @@ struct DifficultySettings {
 	bool   line_reverse_mode;                ///< reversing at stations or not
 	bool   disasters;                        ///< are disasters enabled
 	byte   town_council_tolerance;           ///< minimum required town ratings to be allowed to demolish stuff
+	bool   infinite_money;                   ///< whether spending money despite negative balance is allowed
 	bool   money_cheat_in_multiplayer;       ///< is the money cheat permitted for non-admin multiplayer clients
 	bool   rename_towns_in_multiplayer;      ///< is renaming towns permitted for non-admin multiplayer clients
 	bool   override_town_settings_in_multiplayer; ///< is overriding town settings permitted for non-admin multiplayer clients

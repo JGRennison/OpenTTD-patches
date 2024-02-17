@@ -653,7 +653,7 @@ static void StartScripts()
 	}
 
 	/* Start the GameScript. */
-	Game::StartNew();
+	Game::StartNew(false);
 
 	ShowScriptDebugWindowIfScriptError();
 }
@@ -4357,6 +4357,19 @@ bool AfterLoadGame()
 		/* Set service date provided to NewGRF. */
 		for (Vehicle *v : Vehicle::Iterate()) {
 			v->date_of_last_service_newgrf = v->date_of_last_service.base();
+		}
+	}
+
+	if (IsSavegameVersionBefore(SLV_SHIP_ACCELERATION) && SlXvIsFeatureMissing(XSLFI_SHIP_ACCELERATION)) {
+		/* NewGRF acceleration information was added to ships. */
+		for (Ship *s : Ship::Iterate()) {
+			if (s->acceleration == 0) s->acceleration = ShipVehInfo(s->engine_type)->acceleration;
+		}
+	}
+
+	if (IsSavegameVersionBefore(SLV_MAX_LOAN_FOR_COMPANY)) {
+		for (Company *c : Company::Iterate()) {
+			c->max_loan = COMPANY_MAX_LOAN_DEFAULT;
 		}
 	}
 

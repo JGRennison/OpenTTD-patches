@@ -19,6 +19,7 @@
 #include "viewport_kdtree.h"
 #include "cmd_helper.h"
 #include "command_func.h"
+#include "company_func.h"
 #include "industry.h"
 #include "station_base.h"
 #include "waypoint_base.h"
@@ -1546,7 +1547,7 @@ static inline bool RoadTypesAllowHouseHere(TileIndex t)
 		TileIndex cur_tile = t + ToTileIndexDiff(*ptr);
 		if (!IsValidTile(cur_tile)) continue;
 
-		if (!(IsTileType(cur_tile, MP_ROAD) || IsTileType(cur_tile, MP_STATION))) continue;
+		if (!(IsTileType(cur_tile, MP_ROAD) || IsAnyRoadStopTile(cur_tile))) continue;
 		allow = true;
 
 		RoadType road_rt = GetRoadTypeRoad(cur_tile);
@@ -3863,7 +3864,7 @@ uint GetMaskOfTownActions(int *nump, CompanyID cid, const Town *t)
 	if (cid != COMPANY_SPECTATOR && !(_settings_game.economy.bribe && t->unwanted[cid])) {
 
 		/* Things worth more than this are not shown */
-		Money avail = Company::Get(cid)->money + _price[PR_STATION_VALUE] * 200;
+		Money avail = GetAvailableMoney(cid) + _price[PR_STATION_VALUE] * 200;
 
 		/* Check the action bits for validity and
 		 * if they are valid add them */

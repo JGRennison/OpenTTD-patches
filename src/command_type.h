@@ -348,6 +348,7 @@ enum Commands {
 
 	CMD_INCREASE_LOAN,                ///< increase the loan from the bank
 	CMD_DECREASE_LOAN,                ///< decrease the loan from the bank
+	CMD_SET_COMPANY_MAX_LOAN,         ///< sets the max loan for the company
 
 	CMD_WANT_ENGINE_PREVIEW,          ///< confirm the preview of an engine
 	CMD_ENGINE_CTRL,                  ///< control availability of the engine for companies

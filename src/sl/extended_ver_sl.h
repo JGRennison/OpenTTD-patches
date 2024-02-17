@@ -157,6 +157,7 @@ enum SlXvFeatureIndex {
 	XSLFI_SAVEGAME_ID,                            ///< See: SLV_SAVEGAME_ID (PR #10719)
 	XSLFI_NEWGRF_LAST_SERVICE,                    ///< See: SLV_NEWGRF_LAST_SERVICE (PR #11124)
 	XSLFI_CARGO_TRAVELLED,                        ///< See: SLV_CARGO_TRAVELLED (PR #11283)
+	XSLFI_SHIP_ACCELERATION,                      ///< See: SLV_SHIP_ACCELERATION (PR #10734)
 
 	XSLFI_TABLE_PATS,                             ///< Use upstream table format for PATS
 	XSLFI_TABLE_MISC_SL,                          ///< Use upstream table format for miscellaneous chunks, so far: DATE, VIEW, MAPS

@@ -36,8 +36,9 @@
 
 /** Element in the queue of debug messages that have to be passed to either NetworkAdminConsole or IConsolePrint.*/
 struct QueuedDebugItem {
-	std::string level;   ///< The used debug level.
-	std::string message; ///< The actual formatted message.
+	std::string category; ///< The used debug category.
+	int level;            ///< The used debug level.
+	std::string message;  ///< The actual formatted message.
 };
 std::atomic<bool> _debug_remote_console; ///< Whether we need to send data to either NetworkAdminConsole or IConsolePrint.
 std::mutex _debug_remote_console_mutex; ///< Mutex to guard the queue of debug messages for either NetworkAdminConsole or IConsolePrint.
@@ -136,15 +137,16 @@ char *DumpDebugFacilityNames(char *buf, char *last)
 /**
  * Internal function for outputting the debug line.
  * @param dbg Debug category.
+ * @param level Debug level.
  * @param buf Text line to output.
  */
-void debug_print(const char *dbg, const char *buf)
+void debug_print(const char *dbg, int level, const char *buf)
 {
 
 	if (strcmp(dbg, "desync") == 0) {
 		static FILE *f = FioFOpenFile("commands-out.log", "wb", AUTOSAVE_DIR);
 		if (f != nullptr) {
-			fprintf(f, "%s%s\n", log_prefix().GetLogPrefix(), buf);
+			fprintf(f, "%s%s\n", log_prefix().GetLogPrefix(true), buf);
 			fflush(f);
 		}
 #ifdef RANDOM_DEBUG
@@ -178,7 +180,7 @@ void debug_print(const char *dbg, const char *buf)
 	}
 
 	char buffer[512];
-	seprintf(buffer, lastof(buffer), "%sdbg: [%s] %s\n", log_prefix().GetLogPrefix(), dbg, buf);
+	seprintf(buffer, lastof(buffer), "%sdbg: [%s:%d] %s\n", log_prefix().GetLogPrefix(), dbg, level, buf);
 
 	str_strip_colours(buffer);
 
@@ -197,10 +199,10 @@ void debug_print(const char *dbg, const char *buf)
 		/* Only add to the queue when there is at least one consumer of the data. */
 		if (IsNonGameThread()) {
 			std::lock_guard<std::mutex> lock(_debug_remote_console_mutex);
-			_debug_remote_console_queue.push_back({ dbg, buf });
+			_debug_remote_console_queue.push_back({ dbg, level, buf });
 		} else {
 			NetworkAdminConsole(dbg, buf);
-			if (_settings_client.gui.developer >= 2) IConsolePrintF(CC_DEBUG, "dbg: [%s] %s", dbg, buf);
+			if (_settings_client.gui.developer >= 2) IConsolePrintF(CC_DEBUG, "dbg: [%s:%d] %s", dbg, level, buf);
 		}
 	}
 }
@@ -211,7 +213,7 @@ void debug_print(const char *dbg, const char *buf)
  * @param dbg Debug category.
  * @param format Text string a la printf, with optional arguments.
  */
-void CDECL debug(const char *dbg, const char *format, ...)
+void CDECL debug(const char *dbg, int level, const char *format, ...)
 {
 	char buf[1024];
 
@@ -220,7 +222,7 @@ void CDECL debug(const char *dbg, const char *format, ...)
 	vseprintf(buf, lastof(buf), format, va);
 	va_end(va);
 
-	debug_print(dbg, buf);
+	debug_print(dbg, level, buf);
 }
 
 /**
@@ -306,13 +308,16 @@ std::string GetDebugString()
 }
 
 /**
- * Get the prefix for logs; if show_date_in_logs is enabled it returns
- * the date, otherwise it returns nothing.
- * @return the prefix for logs (do not free), never nullptr
+ * Get the prefix for logs.
+ *
+ * If show_date_in_logs or \p force is enabled it returns
+ * the date, otherwise it returns an empty string.
+ *
+ * @return the prefix for logs (do not free), never nullptr.
  */
-const char *log_prefix::GetLogPrefix()
+const char *log_prefix::GetLogPrefix(bool force)
 {
-	if (_settings_client.gui.show_date_in_logs) {
+	if (force || _settings_client.gui.show_date_in_logs) {
 		LocalTime::Format(this->buffer, lastof(this->buffer), "[%Y-%m-%d %H:%M:%S] ");
 	} else {
 		this->buffer[0] = '\0';
@@ -430,8 +435,8 @@ void DebugSendRemoteMessages()
 	}
 
 	for (auto &item : _debug_remote_console_queue_spare) {
-		NetworkAdminConsole(item.level.c_str(), item.message.c_str());
-		if (_settings_client.gui.developer >= 2) IConsolePrintF(CC_DEBUG, "dbg: [%s] %s", item.level.c_str(), item.message.c_str());
+		NetworkAdminConsole(item.category.c_str(), item.message.c_str());
+		if (_settings_client.gui.developer >= 2) IConsolePrintF(CC_DEBUG, "dbg: [%s:%d] %s", item.category.c_str(), item.level, item.message.c_str());
 	}
 
 	_debug_remote_console_queue_spare.clear();

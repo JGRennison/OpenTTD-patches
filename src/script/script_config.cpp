@@ -33,18 +33,6 @@ void ScriptConfig::Change(std::optional<const std::string> name, int version, bo
 	this->to_load_data.reset();
 
 	this->ClearConfigList();
-
-	if (_game_mode == GM_NORMAL && this->info != nullptr) {
-		/* If we're in an existing game and the Script is changed, set all settings
-		 *  for the Script that have the random flag to a random value. */
-		for (const auto &item : *this->info->GetConfigList()) {
-			if (item.flags & SCRIPTCONFIG_RANDOM) {
-				this->SetSetting(item.name, ScriptObject::GetRandomizer(OWNER_NONE).Next(item.max_value + 1 - item.min_value) + item.min_value);
-			}
-		}
-
-		this->AddRandomDeviation();
-	}
 }
 
 ScriptConfig::ScriptConfig(const ScriptConfig *config)
@@ -58,9 +46,6 @@ ScriptConfig::ScriptConfig(const ScriptConfig *config)
 	for (const auto &item : config->settings) {
 		this->settings[item.first] = item.second;
 	}
-
-	/* Virtual functions get called statically in constructors, so make it explicit to remove any confusion. */
-	this->ScriptConfig::AddRandomDeviation();
 }
 
 ScriptConfig::~ScriptConfig()

@@ -129,6 +129,7 @@ CommandProc CmdSetCompanyColour;
 
 CommandProc CmdIncreaseLoan;
 CommandProc CmdDecreaseLoan;
+CommandProcEx CmdSetCompanyMaxLoan;
 
 CommandProc CmdWantEnginePreview;
 CommandProc CmdEngineCtrl;
@@ -397,6 +398,7 @@ static const Command _command_proc_table[] = {
 
 	DEF_CMD(CmdIncreaseLoan,                                   0, CMDT_MONEY_MANAGEMENT      ), // CMD_INCREASE_LOAN
 	DEF_CMD(CmdDecreaseLoan,                                   0, CMDT_MONEY_MANAGEMENT      ), // CMD_DECREASE_LOAN
+	DEF_CMD(CmdSetCompanyMaxLoan,                      CMD_DEITY, CMDT_MONEY_MANAGEMENT      ), // CMD_SET_COMPANY_MAX_LOAN
 
 	DEF_CMD(CmdWantEnginePreview,                              0, CMDT_VEHICLE_MANAGEMENT    ), // CMD_WANT_ENGINE_PREVIEW
 	DEF_CMD(CmdEngineCtrl,                             CMD_DEITY, CMDT_VEHICLE_MANAGEMENT    ), // CMD_ENGINE_CTRL
@@ -732,7 +734,7 @@ char *DumpCommandLog(char *buffer, const char *last, std::function<char *(char *
 	return buffer;
 }
 
-/*!
+/**
  * This function range-checks a cmd, and checks if the cmd is not nullptr
  *
  * @param cmd The integer value of a command
@@ -745,7 +747,7 @@ bool IsValidCommand(uint32_t cmd)
 	return cmd < lengthof(_command_proc_table) && _command_proc_table[cmd].proc != nullptr;
 }
 
-/*!
+/**
  * This function mask the parameter with CMD_ID_MASK and returns
  * the flags which belongs to the given command.
  *
@@ -759,7 +761,7 @@ CommandFlags GetCommandFlags(uint32_t cmd)
 	return _command_proc_table[cmd & CMD_ID_MASK].flags;
 }
 
-/*!
+/**
  * This function mask the parameter with CMD_ID_MASK and returns
  * the name which belongs to the given command.
  *
@@ -819,7 +821,7 @@ private:
 	char buffer[64];
 };
 
-/*!
+/**
  * This function executes a given command with the parameters from the #CommandProc parameter list.
  * Depending on the flags parameter it execute or test a command.
  *
@@ -889,20 +891,6 @@ error:
 	return res;
 }
 
-/*!
- * This functions returns the money which can be used to execute a command.
- * This is either the money of the current company or INT64_MAX if there
- * is no such a company "at the moment" like the server itself.
- *
- * @return The available money of a company or INT64_MAX
- */
-Money GetAvailableMoneyForCommand()
-{
-	CompanyID company = _current_company;
-	if (!Company::IsValidID(company)) return INT64_MAX;
-	return Company::Get(company)->money;
-}
-
 static void DebugLogCommandLogEntry(const CommandLogEntry &entry)
 {
 	if (_debug_command_level <= 0) return;
@@ -910,7 +898,7 @@ static void DebugLogCommandLogEntry(const CommandLogEntry &entry)
 	char buffer[256];
 	char *b = buffer;
 	DumpSubCommandLogEntry(b, lastof(buffer), entry);
-	debug_print("command", buffer);
+	debug_print("command", 0, buffer);
 }
 
 static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd, CommandLogEntryFlag log_flags, const char *text)
@@ -949,7 +937,7 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32
 	cmd_log.count++;
 }
 
-/*!
+/**
  * Toplevel network safe docommand function for the current company. Must not be called recursively.
  * The callback is called when the command succeeded or failed. The parameters
  * \a tile, \a p1, and \a p2 are from the #CommandProc function. The parameter \a cmd is the command to execute.
@@ -1107,7 +1095,7 @@ void EnqueueDoCommandP(CommandContainer cmd)
  */
 #define return_dcpi(cmd) { _docommand_recursive = 0; return cmd; }
 
-/*!
+/**
  * Helper function for the toplevel network safe docommand function for the current company.
  *
  * @param tile The tile to perform a command on (see #CommandProc)
@@ -1206,7 +1194,7 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32_t p1, uint32_t p2, uint64_
 			std::string dbg_info = stdstr_fmt("%s: %s; company: %02x; tile: %06x (%u x %u); p1: %08x; p2: %08x; p3: " OTTD_PRINTFHEX64PAD "; cmd: %08x; %s <%s> (%s)",
 					prefix, debug_date_dumper().HexDate(), (int)_current_company, tile, TileX(tile), TileY(tile), p1, p2, p3,
 					cmd & ~CMD_NETWORK_COMMAND, text_buf.c_str(), aux_str.c_str(), GetCommandName(cmd));
-			debug_print("desync", dbg_info.c_str());
+			debug_print("desync", 1, dbg_info.c_str());
 		}
 	};
 

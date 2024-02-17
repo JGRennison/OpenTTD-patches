@@ -46,6 +46,7 @@
 #include "../error.h"
 #include "../scope.h"
 #include "../core/ring_buffer.hpp"
+#include "../timer/timer_game_tick.h"
 #include <atomic>
 #include <string>
 #ifdef __EMSCRIPTEN__
@@ -4115,14 +4116,23 @@ std::string GenerateDefaultSaveName()
 
 	SetDParam(0, cid);
 
-	/* Insert current date */
-	switch (_settings_client.gui.date_format_in_default_names) {
-		case 0: SetDParam(1, STR_JUST_DATE_LONG); break;
-		case 1: SetDParam(1, STR_JUST_DATE_TINY); break;
-		case 2: SetDParam(1, STR_JUST_DATE_ISO); break;
-		default: NOT_REACHED();
+	/* We show the current game time differently depending on the timekeeping units used by this game. */
+	if (EconTime::UsingWallclockUnits() && CalTime::IsCalendarFrozen()) {
+		/* Insert time played. */
+		const auto play_time = _scaled_tick_counter / TICKS_PER_SECOND;
+		SetDParam(1, STR_SAVEGAME_DURATION_REALTIME);
+		SetDParam(2, play_time / 60 / 60);
+		SetDParam(3, (play_time / 60) % 60);
+	} else {
+		/* Insert current date */
+		switch (_settings_client.gui.date_format_in_default_names) {
+			case 0: SetDParam(1, STR_JUST_DATE_LONG); break;
+			case 1: SetDParam(1, STR_JUST_DATE_TINY); break;
+			case 2: SetDParam(1, STR_JUST_DATE_ISO); break;
+			default: NOT_REACHED();
+		}
+		SetDParam(2, CalTime::CurDate());
 	}
-	SetDParam(2, CalTime::CurDate());
 
 	/* Get the correct string (special string for when there's not company) */
 	std::string filename = GetString(!Company::IsValidID(cid) ? STR_SAVEGAME_NAME_SPECTATOR : STR_SAVEGAME_NAME_DEFAULT);

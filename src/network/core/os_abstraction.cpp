@@ -80,12 +80,15 @@ const char *NetworkError::AsString() const
 {
 	if (this->message.empty()) {
 #if defined(_WIN32)
-		char buffer[512];
-		if (FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, this->error,
-			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), buffer, sizeof(buffer), nullptr) == 0) {
-			seprintf(buffer, lastof(buffer), "Unknown error %d", this->error);
+		wchar_t buffer[512];
+		if (FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, this->error,
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), buffer, lengthof(buffer), nullptr) == 0) {
+			char errbuffer[32];
+			seprintf(errbuffer, lastof(errbuffer), "Unknown error %d", this->error);
+			this->message.assign(errbuffer);
+		} else {
+			this->message.assign(FS2OTTD(buffer));
 		}
-		this->message.assign(buffer);
 #else
 		/* Make strerror thread safe by locking access to it. There is a thread safe strerror_r, however
 		 * the non-POSIX variant is available due to defining _GNU_SOURCE meaning it is not portable.

@@ -46,9 +46,9 @@ static_assert((LOAN_INTERVAL & 3) == 0);
 CommandCost CmdIncreaseLoan(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	Company *c = Company::Get(_current_company);
-
-	if (c->current_loan >= _economy.max_loan) {
-		SetDParam(0, _economy.max_loan);
+	Money max_loan = c->GetMaxLoan();
+	if (c->current_loan >= max_loan) {
+		SetDParam(0, max_loan);
 		return_cmd_error(STR_ERROR_MAXIMUM_PERMITTED_LOAN);
 	}
 
@@ -59,11 +59,11 @@ CommandCost CmdIncreaseLoan(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 			loan = LOAN_INTERVAL;
 			break;
 		case 1: // Take a loan as big as possible
-			loan = _economy.max_loan - c->current_loan;
+			loan = max_loan - c->current_loan;
 			break;
 		case 2: // Take the given amount of loan
 			loan = ((uint64_t)p1 << 32) | (p2 & 0xFFFFFFFC);
-			if (loan < LOAN_INTERVAL || c->current_loan + loan > _economy.max_loan || loan % LOAN_INTERVAL != 0) return CMD_ERROR;
+			if (loan < LOAN_INTERVAL || c->current_loan + loan > max_loan || loan % LOAN_INTERVAL != 0) return CMD_ERROR;
 			break;
 	}
 
@@ -106,7 +106,7 @@ CommandCost CmdDecreaseLoan(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 			loan = std::min(c->current_loan, (Money)LOAN_INTERVAL);
 			break;
 		case 1: // Pay back as much as possible
-			loan = std::max(std::min(c->current_loan, c->money), (Money)LOAN_INTERVAL);
+			loan = std::max(std::min(c->current_loan, GetAvailableMoneyForCommand()), (Money)LOAN_INTERVAL);
 			loan -= loan % LOAN_INTERVAL;
 			break;
 		case 2: // Repay the given amount of loan
@@ -115,7 +115,7 @@ CommandCost CmdDecreaseLoan(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 			break;
 	}
 
-	if (c->money < loan) {
+	if (GetAvailableMoneyForCommand() < loan) {
 		SetDParam(0, loan);
 		return_cmd_error(STR_ERROR_CURRENCY_REQUIRED);
 	}
@@ -123,6 +123,38 @@ CommandCost CmdDecreaseLoan(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 	if (flags & DC_EXEC) {
 		c->money        -= loan;
 		c->current_loan -= loan;
+		InvalidateCompanyWindows(c);
+	}
+	return CommandCost();
+}
+
+/**
+ * Sets the max loan amount of your company. Does not respect the global loan setting.
+ * @param tile unused
+ * @param flags operation to perform
+ * @param p1 the company ID.
+ * @param p2 unused
+ * @param p3 the new max loan amount, will be rounded down to the multitude of LOAN_INTERVAL. If set to COMPANY_MAX_LOAN_DEFAULT reset the max loan to default(global) value.
+ * @param text unused
+ * @return zero cost or an error
+ */
+CommandCost CmdSetCompanyMaxLoan(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+{
+	if (_current_company != OWNER_DEITY) return CMD_ERROR;
+
+	Money amount = (Money)p3;
+	if (amount != COMPANY_MAX_LOAN_DEFAULT) {
+		if (amount < 0 || amount > (Money)MAX_LOAN_LIMIT) return CMD_ERROR;
+	}
+
+	Company *c = Company::GetIfValid((CompanyID)p1);
+	if (c == nullptr) return CMD_ERROR;
+
+	if (flags & DC_EXEC) {
+		/* Round the amount down to a multiple of LOAN_INTERVAL. */
+		if (amount != COMPANY_MAX_LOAN_DEFAULT) amount -= (int64_t)amount % LOAN_INTERVAL;
+
+		c->max_loan = amount;
 		InvalidateCompanyWindows(c);
 	}
 	return CommandCost();

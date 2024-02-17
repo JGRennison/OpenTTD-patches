@@ -33,7 +33,7 @@
  * @param name Category
  * @param level Debugging level, higher levels means more detailed information.
  */
-#define DEBUG(name, level, ...) if ((level) == 0 || _debug_ ## name ## _level >= (level)) debug(#name, __VA_ARGS__)
+#define DEBUG(name, level, ...) do { if ((level) == 0 || _debug_ ## name ## _level >= (level)) debug(#name, level, __VA_ARGS__); } while (false)
 
 extern int _debug_driver_level;
 extern int _debug_grf_level;
@@ -64,8 +64,8 @@ extern std::string _loadgame_DBGL_data;
 extern bool _save_DBGC_data;
 extern std::string _loadgame_DBGC_data;
 
-void CDECL debug(const char *dbg, const char *format, ...) WARN_FORMAT(2, 3);
-void debug_print(const char *dbg, const char *buf);
+void CDECL debug(const char *dbg, int level, const char *format, ...) WARN_FORMAT(3, 4);
+void debug_print(const char *dbg, int level, const char *buf);
 
 char *DumpDebugFacilityNames(char *buf, char *last);
 void SetDebugString(const char *s, void (*error_func)(const char *));
@@ -117,7 +117,7 @@ inline void ShowInfoI(const std::string &str)
 }
 
 struct log_prefix {
-	const char *GetLogPrefix();
+	const char *GetLogPrefix(bool force = false);
 
 private:
 	char buffer[24];
