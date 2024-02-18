@@ -526,6 +526,41 @@ class NIHVehicle : public NIHelper {
 			}
 		}
 
+		if (v->HasUnbunchingOrder()) {
+			output.print("  Unbunching state:");
+			for (const Vehicle *u = v->FirstShared(); u != nullptr; u = u->NextShared()) {
+				b = buffer + seprintf(buffer, lastof(buffer), "  %s %u (unit %u):", u == v ? "*" : " ", u->index, u->unitnumber);
+
+				if (u->unbunch_state == nullptr) {
+					b += seprintf(b, lastof(buffer), " [NO DATA]");
+				}
+				if (u->vehstatus & (VS_STOPPED | VS_CRASHED)) {
+					b += seprintf(b, lastof(buffer), " [STOPPED]");
+				}
+				output.print(buffer);
+
+				if (u->unbunch_state != nullptr) {
+					auto print_tick = [&](StateTicks tick, const char *label) {
+						b = buffer + seprintf(buffer, lastof(buffer), "      %s: ", label);
+						if (tick != INVALID_STATE_TICKS) {
+							if (tick > _state_ticks) {
+								b += seprintf(b, lastof(buffer), OTTD_PRINTF64 " (in " OTTD_PRINTF64 " mins)", tick.base(), (tick - _state_ticks).base() / _settings_time.ticks_per_minute);
+							} else {
+								b += seprintf(b, lastof(buffer), OTTD_PRINTF64 " (" OTTD_PRINTF64 " mins ago)", tick.base(), (_state_ticks - tick).base() / _settings_time.ticks_per_minute);
+							}
+						} else {
+							b += seprintf(b, lastof(buffer), "invalid");
+						}
+						output.print(buffer);
+					};
+					print_tick(u->unbunch_state->depot_unbunching_last_departure, "Last unbunch departure");
+					print_tick(u->unbunch_state->depot_unbunching_next_departure, "Next unbunch departure");
+					seprintf(buffer, lastof(buffer), "      RTT: %d (%d mins)", u->unbunch_state->round_trip_time, u->unbunch_state->round_trip_time / _settings_time.ticks_per_minute);
+					output.print(buffer);
+				}
+			}
+		}
+
 		if (show_engine) {
 			const Engine *e = Engine::GetIfValid(v->engine_type);
 			char *b = buffer + seprintf(buffer, lastof(buffer), "  Engine: %u", v->engine_type);
