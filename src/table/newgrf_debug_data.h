@@ -507,13 +507,17 @@ class NIHVehicle : public NIHelper {
 				v->sprite_seq_bounds.left, v->sprite_seq_bounds.top, v->sprite_seq_bounds.right, v->sprite_seq_bounds.bottom, v->x_offs, v->y_offs);
 		output.print(buffer);
 
+		seprintf(buffer, lastof(buffer), "  Current image cacheable: %s (%X), spritenum: %X",
+				v->cur_image_valid_dir != INVALID_DIR ? "yes" : "no", v->cur_image_valid_dir, v->spritenum);
+		output.print(buffer);
+
 		if (HasBit(v->vehicle_flags, VF_SEPARATION_ACTIVE)) {
 			std::vector<TimetableProgress> progress_array = PopulateSeparationState(v);
 			if (!progress_array.empty()) {
-				output.print("Separation state:");
+				output.print("  Separation state:");
 			}
 			for (const auto &info : progress_array) {
-				b = buffer + seprintf(buffer, lastof(buffer), "  %s [%d, %d, %d], %u, ",
+				b = buffer + seprintf(buffer, lastof(buffer), "    %s [%d, %d, %d], %u, ",
 						info.id == v->index ? "*" : " ", info.order_count, info.order_ticks, info.cumulative_ticks, info.id);
 				SetDParam(0, info.id);
 				b = strecpy(b, GetString(STR_VEHICLE_NAME).c_str(), lastof(buffer), true);
@@ -685,10 +689,6 @@ class NIHVehicle : public NIHelper {
 				}
 			}
 		}
-
-		seprintf(buffer, lastof(buffer), "  Current image cacheable: %s (%X), spritenum: %X",
-				v->cur_image_valid_dir != INVALID_DIR ? "yes" : "no", v->cur_image_valid_dir, v->spritenum);
-		output.print(buffer);
 	}
 
 	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
