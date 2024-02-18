@@ -47,6 +47,8 @@ CommandCost CmdScheduledDispatch(TileIndex tile, DoCommandFlag flags, uint32_t p
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
+	if (HasBit(p2, 0) && (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION) || v->HasUnbunchingOrder())) return CommandCost(STR_ERROR_SEPARATION_MUTUALLY_EXCLUSIVE);
+
 	if (flags & DC_EXEC) {
 		for (Vehicle *v2 = v->FirstShared(); v2 != nullptr; v2 = v2->NextShared()) {
 			if (HasBit(p2, 0)) {

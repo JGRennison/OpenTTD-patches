@@ -351,7 +351,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 		bool unusable = (v->owner != _local_company) || (v->orders == nullptr);
 
-		this->SetWidgetDisabledState(WID_SCHDISPATCH_ENABLED, unusable || HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION));
+		this->SetWidgetDisabledState(WID_SCHDISPATCH_ENABLED, unusable || HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION) || v->HasUnbunchingOrder());
 
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_RENAME, unusable || v->orders->GetScheduledDispatchScheduleCount() == 0);
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_PREV, v->orders == nullptr || this->schedule_index <= 0);
@@ -421,6 +421,21 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	virtual bool OnTooltip(Point pt, WidgetID widget, TooltipCloseCondition close_cond) override
 	{
 		switch (widget) {
+			case WID_SCHDISPATCH_ENABLED: {
+				if (HasBit(this->vehicle->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
+					SetDParam(0, STR_SCHDISPATCH_ENABLED_TOOLTIP);
+					SetDParam(1, STR_CANNOT_ENABLE_BECAUSE_AUTO_SEPARATION);
+					GuiShowTooltips(this, STR_TOOLTIP_SEPARATION_CANNOT_ENABLE, close_cond, 2);
+				} else if (this->vehicle->HasUnbunchingOrder()) {
+					SetDParam(0, STR_SCHDISPATCH_ENABLED_TOOLTIP);
+					SetDParam(1, STR_CANNOT_ENABLE_BECAUSE_UNBUNCHING);
+					GuiShowTooltips(this, STR_TOOLTIP_SEPARATION_CANNOT_ENABLE, close_cond, 2);
+				} else {
+					GuiShowTooltips(this, STR_SCHDISPATCH_ENABLED_TOOLTIP, close_cond);
+				}
+				return true;
+			}
+
 			case WID_SCHDISPATCH_ADD: {
 				if (_settings_time.time_in_minutes) {
 					SetDParam(0, STR_SCHDISPATCH_ADD_TOOLTIP);
@@ -644,9 +659,32 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					if (time < this->next_departure_update) const_cast<SchdispatchWindow*>(this)->next_departure_update = time;
 				};
 
+				auto draw_warning_generic = [&](StringID text, TextColour colour) {
+					const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
+					int step_height = std::max<int>(warning_dimensions.height, GetCharacterHeight(FS_NORMAL));
+					int left = ir.left;
+					int right = ir.right;
+					const bool rtl = (_current_text_dir == TD_RTL);
+					DrawSprite(SPR_WARNING_SIGN, 0, rtl ? right - warning_dimensions.width - 5 : left + 5, y + (step_height - warning_dimensions.height) / 2);
+					if (rtl) {
+						right -= (warning_dimensions.width + 10);
+					} else {
+						left += (warning_dimensions.width + 10);
+					}
+					DrawString(left, right, y + (step_height - GetCharacterHeight(FS_NORMAL)) / 2, text, colour);
+					y += step_height;
+				};
+
 				if (!HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) || !this->IsScheduleSelected()) {
 					y += GetCharacterHeight(FS_NORMAL);
 					DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_NOT_ENABLED);
+					y += GetCharacterHeight(FS_NORMAL) * 2;
+
+					if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
+						draw_warning_generic(STR_CANNOT_ENABLE_BECAUSE_AUTO_SEPARATION, TC_BLACK);
+					} else if (v->HasUnbunchingOrder()) {
+						draw_warning_generic(STR_CANNOT_ENABLE_BECAUSE_UNBUNCHING, TC_BLACK);
+					}
 				} else {
 					const DispatchSchedule &ds = this->GetSelectedSchedule();
 
@@ -654,19 +692,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					uint extra_lines = 0;
 
 					auto draw_warning = [&](StringID text) {
-						const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
-						int step_height = std::max<int>(warning_dimensions.height, GetCharacterHeight(FS_NORMAL));
-						int left = ir.left;
-						int right = ir.right;
-						const bool rtl = (_current_text_dir == TD_RTL);
-						DrawSprite(SPR_WARNING_SIGN, 0, rtl ? right - warning_dimensions.width - 5 : left + 5, y + (step_height - warning_dimensions.height) / 2);
-						if (rtl) {
-							right -= (warning_dimensions.width + 10);
-						} else {
-							left += (warning_dimensions.width + 10);
-						}
-						DrawString(left, right, y + (step_height - GetCharacterHeight(FS_NORMAL)) / 2, text);
-						y += step_height;
+						draw_warning_generic(text, TC_FROMSTRING);
 						warnings++;
 					};
 
@@ -1310,7 +1336,7 @@ static constexpr NWidgetPart _nested_schdispatch_widgets[] = {
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_GREY),
 		NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_ENABLED), SetDataTip(STR_SCHDISPATCH_ENABLED, STR_SCHDISPATCH_ENABLED_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_ENABLED), SetDataTip(STR_SCHDISPATCH_ENABLED, STR_NULL), SetFill(1, 1), SetResize(1, 0),
 			NWidget(WWT_TEXT, COLOUR_GREY, WID_SCHDISPATCH_HEADER), SetAlignment(SA_CENTER), SetDataTip(STR_JUST_STRING3, STR_NULL), SetFill(1, 1), SetResize(1, 0),
 			NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SCHDISPATCH_PREV), SetDataTip(STR_SCHDISPATCH_PREV_SCHEDULE, STR_SCHDISPATCH_PREV_SCHEDULE_TOOLTIP), SetFill(1, 1), SetResize(1, 0),

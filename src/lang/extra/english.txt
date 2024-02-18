@@ -2056,7 +2056,7 @@ STR_TMPL_CANT_RENAME                                            :{WHITE}Can't re
 # Scheduled Dispatch
 STR_SCHDISPATCH_CAPTION                                         :{WHITE}{VEHICLE} (Scheduled Dispatch)
 STR_SCHDISPATCH_ENABLED                                         :{BLACK}Enable
-STR_SCHDISPATCH_ENABLED_TOOLTIP                                 :{BLACK}Enable scheduled dispatching for this order. Requires automatic separation to be off.
+STR_SCHDISPATCH_ENABLED_TOOLTIP                                 :{BLACK}Enable scheduled dispatching for this order.
 STR_SCHDISPATCH_ADD                                             :{BLACK}Add Slot
 STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}Add new departure slot for this schedule.
 STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA                               :{BLACK}{STRING} Ctrl+Click to add multiple departure slots at once.
@@ -2156,6 +2156,13 @@ STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_TEXT                      :{WHITE}Are you 
 
 STR_ERROR_SCHDISPATCH_TRIED_TO_ADD_TOO_MANY_SLOTS               :{WHITE}Tried to add too many departure slots at once
 STR_ERROR_SCHDISPATCH_ADJUSTMENT_TOO_LARGE                      :{WHITE}Departure slot adjustment is too large
+
+STR_TOOLTIP_SEPARATION_CANNOT_ENABLE                            :{STRING}{}{}{STRING}
+STR_ERROR_SEPARATION_MUTUALLY_EXCLUSIVE                         :{WHITE}Only one of scheduled dispatch, automatic separation and depot unbunching can be enabled at a time
+
+STR_CANNOT_ENABLE_BECAUSE_UNBUNCHING                            :Cannot enable because a depot unbunching order is present
+STR_CANNOT_ENABLE_BECAUSE_SCHED_DISPATCH                        :Cannot enable because scheduled dispatch is enabled
+STR_CANNOT_ENABLE_BECAUSE_AUTO_SEPARATION                       :Cannot enable because automatic separation is enabled
 
 # Modifier key toggle window
 STR_MODIFIER_KEY_TOGGLE_CAPTION                                 :{WHITE}Modifier keys
