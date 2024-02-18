@@ -915,14 +915,14 @@ public:
 			switch (cargo_suffix[j].display) {
 				case CSD_CARGO_AMOUNT_TEXT:
 					SetDParamStr(3, cargo_suffix[j].text);
-					FALLTHROUGH;
+					[[fallthrough]];
 				case CSD_CARGO_AMOUNT:
 					str = stockpiling ? STR_INDUSTRY_VIEW_ACCEPT_CARGO_AMOUNT : STR_INDUSTRY_VIEW_ACCEPT_CARGO;
 					break;
 
 				case CSD_CARGO_TEXT:
 					SetDParamStr(3, cargo_suffix[j].text);
-					FALLTHROUGH;
+					[[fallthrough]];
 				case CSD_CARGO:
 					str = STR_INDUSTRY_VIEW_ACCEPT_CARGO;
 					break;
@@ -2469,10 +2469,11 @@ struct CargoesRow {
 				if (cargo_fld->u.cargo.supp_cargoes[i] == INVALID_CARGO) ind_fld->u.industry.other_produced[i] = others[--other_count];
 			}
 		} else {
-			/* Houses only display what is demanded. */
+			/* Houses only display cargo that towns produce. */
 			for (uint i = 0; i < cargo_fld->u.cargo.num_cargoes; i++) {
 				CargoID cid = cargo_fld->u.cargo.vertical_cargoes[i];
-				if (cid == CT_PASSENGERS || cid == CT_MAIL) cargo_fld->ConnectCargo(cid, true);
+				TownProductionEffect tpe = CargoSpec::Get(cid)->town_production_effect;
+				if (tpe == TPE_PASSENGERS || tpe == TPE_MAIL) cargo_fld->ConnectCargo(cid, true);
 			}
 		}
 	}
@@ -2724,8 +2725,10 @@ struct IndustryCargoesWindow : public Window {
 	static bool HousesCanSupply(const CargoID *cargoes, size_t length)
 	{
 		for (size_t i = 0; i < length; i++) {
-			if (cargoes[i] == INVALID_CARGO) continue;
-			if (cargoes[i] == CT_PASSENGERS || cargoes[i] == CT_MAIL) return true;
+			CargoID cid = cargoes[i];
+			if (!IsValidCargoID(cid)) continue;
+			TownProductionEffect tpe = CargoSpec::Get(cid)->town_production_effect;
+			if (tpe == TPE_PASSENGERS || tpe == TPE_MAIL) return true;
 		}
 		return false;
 	}

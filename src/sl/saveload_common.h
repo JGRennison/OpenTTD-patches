@@ -385,6 +385,7 @@ enum SaveLoadVersion : uint16_t {
 	SLV_CALENDAR_SUB_DATE_FRACT,            ///< 328  PR#11428 Add sub_date_fract to measure calendar days.
 	SLV_SHIP_ACCELERATION,                  ///< 329  PR#10734 Start using Vehicle's acceleration field for ships too.
 	SLV_MAX_LOAN_FOR_COMPANY,               ///< 330  PR#11224 Separate max loan for each company.
+	SLV_DEPOT_UNBUNCHING,                   ///< 331  PR#11945 Allow unbunching shared order vehicles at a depot.
 
 	SL_MAX_VERSION,                         ///< Highest possible saveload version
 
@@ -429,9 +430,9 @@ void SlSkipBytes(size_t length);
 size_t SlGetBytesRead();
 size_t SlGetBytesWritten();
 
-void NORETURN SlError(StringID string, std::string extra_msg = {});
-void NORETURN SlErrorCorrupt(std::string msg);
-void NORETURN CDECL SlErrorCorruptFmt(const char *format, ...) WARN_FORMAT(1, 2);
+[[noreturn]] void SlError(StringID string, std::string extra_msg = {});
+[[noreturn]] void SlErrorCorrupt(std::string msg);
+[[noreturn]] void CDECL SlErrorCorruptFmt(const char *format, ...) WARN_FORMAT(1, 2);
 
 bool SaveLoadFileTypeIsScenario();
 

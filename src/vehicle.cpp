@@ -1135,6 +1135,9 @@ void Vehicle::HandlePathfindingResult(bool path_found)
 		DirtyVehicleListWindowForVehicle(this);
 	}
 
+	/* Unbunching data is no longer valid. */
+	this->ResetDepotUnbunching();
+
 	if (this->type == VEH_SHIP) {
 		SetBit(this->vehicle_flags, VF_PATHFINDER_LOST);
 		if (Ship::From(this)->lost_count == 255) return;
@@ -2453,7 +2456,7 @@ bool Vehicle::HandleBreakdown()
 				return (this->breakdown_type == BREAKDOWN_CRITICAL || this->breakdown_type == BREAKDOWN_EM_STOP);
 			}
 
-			FALLTHROUGH;
+			[[fallthrough]];
 		case 1:
 			/* Aircraft breakdowns end only when arriving at the airport */
 			if (this->type == VEH_AIRCRAFT) return false;
@@ -2758,12 +2761,23 @@ void VehicleEnterDepot(Vehicle *v)
 			 * we shouldn't construct it when the vehicle visits the next stop. */
 			v->last_loading_station = INVALID_STATION;
 			ClrBit(v->vehicle_flags, VF_LAST_LOAD_ST_SEP);
+
+			/* Clear unbunching data. */
+			v->ResetDepotUnbunching();
+
+			/* Announce that the vehicle is waiting to players and AIs. */
 			if (v->owner == _local_company) {
 				SetDParam(0, v->index);
 				AddVehicleAdviceNewsItem(STR_NEWS_TRAIN_IS_WAITING + v->type, v->index);
 			}
 			AI::NewEvent(v->owner, new ScriptEventVehicleWaitingInDepot(v->index));
 		}
+
+		/* If we've entered our unbunching depot, record the round trip duration. */
+		if (v->current_order.GetDepotActionType() & ODATFB_UNBUNCH && v->unbunch_state != nullptr && v->unbunch_state->depot_unbunching_last_departure != INVALID_STATE_TICKS) {
+			v->unbunch_state->round_trip_time = (_state_ticks - v->unbunch_state->depot_unbunching_last_departure).AsTicks();
+		}
+
 		v->current_order.MakeDummy();
 	}
 }
@@ -3768,6 +3782,88 @@ void Vehicle::HandleWaiting(bool stop_waiting, bool process_orders)
 }
 
 /**
+ * Check if the current vehicle has an unbunching order.
+ * @return true Iff this vehicle has an unbunching order.
+ */
+bool Vehicle::HasUnbunchingOrder() const
+{
+	for (Order *o : this->Orders()) {
+		if (o->IsType(OT_GOTO_DEPOT) && o->GetDepotActionType() & ODATFB_UNBUNCH) return true;
+	}
+	return false;
+}
+
+/**
+ * Leave an unbunching depot and calculate the next departure time for shared order vehicles.
+ */
+void Vehicle::LeaveUnbunchingDepot()
+{
+	if (this->unbunch_state == nullptr) this->unbunch_state.reset(new VehicleUnbunchState());
+
+	/* Set the start point for this round trip time. */
+	this->unbunch_state->depot_unbunching_last_departure = _state_ticks;
+
+	/* Tell the timetable we are now "on time." */
+	this->lateness_counter = 0;
+	SetWindowDirty(WC_VEHICLE_TIMETABLE, this->index);
+
+	/* Find the average travel time of vehicles that we share orders with. */
+	uint num_vehicles = 0;
+	Ticks total_travel_time = 0;
+
+	Vehicle *u = this->FirstShared();
+	for (; u != nullptr; u = u->NextShared()) {
+		/* Ignore vehicles that are manually stopped or crashed. */
+		if (u->vehstatus & (VS_STOPPED | VS_CRASHED)) continue;
+
+		num_vehicles++;
+		if (u->unbunch_state != nullptr) total_travel_time += u->unbunch_state->round_trip_time;
+	}
+
+	/* Make sure we cannot divide by 0. */
+	num_vehicles = std::max(num_vehicles, 1u);
+
+	/* Calculate the separation by finding the average travel time, then calculating equal separation (minimum 1 tick) between vehicles. */
+	Ticks separation = std::max((total_travel_time / num_vehicles / num_vehicles), 1u);
+	StateTicks next_departure = _state_ticks + separation;
+
+	/* Set the departure time of all vehicles that we share orders with. */
+	u = this->FirstShared();
+	for (; u != nullptr; u = u->NextShared()) {
+		/* Ignore vehicles that are manually stopped or crashed. */
+		if (u->vehstatus & (VS_STOPPED | VS_CRASHED)) continue;
+
+		if (u->unbunch_state == nullptr) u->unbunch_state.reset(new VehicleUnbunchState());
+		u->unbunch_state->depot_unbunching_next_departure = next_departure;
+	}
+}
+
+/**
+ * Check whether a vehicle inside a depot is waiting for unbunching.
+ * @return True if the vehicle must continue waiting, or false if it may try to leave the depot.
+ */
+bool Vehicle::IsWaitingForUnbunching() const
+{
+	assert(this->IsInDepot());
+
+	/* Don't bother if there are no vehicles sharing orders. */
+	if (!this->IsOrderListShared()) return false;
+
+	/* Don't do anything if there aren't enough orders. */
+	if (this->GetNumOrders() <= 1) return false;
+
+	/*
+	 * Make sure this is the correct depot for unbunching.
+	 * If we are headed for the first order, we must wrap around back to the last order.
+	 */
+	bool is_first_order = (this->GetOrder(this->cur_real_order_index) == this->GetFirstOrder());
+	Order *previous_order = (is_first_order) ? this->GetLastOrder() : this->GetOrder(this->cur_real_order_index - 1);
+	if (previous_order == nullptr || !previous_order->IsType(OT_GOTO_DEPOT) || !(previous_order->GetDepotActionType() & ODATFB_UNBUNCH)) return false;
+
+	return (this->unbunch_state != nullptr) && (this->unbunch_state->depot_unbunching_next_departure > _state_ticks);
+};
+
+/**
  * Send this vehicle to the depot using the given command(s).
  * @param flags   the command flags (like execute and such).
  * @param command the command to execute.
@@ -3802,6 +3898,9 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 		}
 		return CMD_ERROR;
 	}
+
+	/* No matter why we're headed to the depot, unbunching data is no longer valid. */
+	if (flags & DC_EXEC) this->ResetDepotUnbunching();
 
 	auto cancel_order = [&]() {
 		if (flags & DC_EXEC) {
@@ -4748,6 +4847,10 @@ void AdjustVehicleStateTicksBase(StateTicksDelta delta)
 	for (Vehicle *v : Vehicle::Iterate()) {
 		if (v->timetable_start != 0) v->timetable_start += delta;
 		if (v->last_loading_tick != 0) v->last_loading_tick += delta;
+		if (v->unbunch_state != nullptr) {
+			if (v->unbunch_state->depot_unbunching_last_departure != INVALID_STATE_TICKS) v->unbunch_state->depot_unbunching_last_departure += delta;
+			if (v->unbunch_state->depot_unbunching_next_departure != INVALID_STATE_TICKS) v->unbunch_state->depot_unbunching_next_departure += delta;
+		}
 	}
 
 	for (OrderList *order_list : OrderList::Iterate()) {

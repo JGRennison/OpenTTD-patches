@@ -23,8 +23,8 @@
  */
 #define Debug(name, level, format_string, ...) do { if ((level) == 0 || _debug_ ## name ## _level >= (level)) debug_print(#name, level, fmt::format(FMT_STRING(format_string), ## __VA_ARGS__).c_str()); } while (false)
 
-void NORETURN usererror_str(const char *msg);
-void NORETURN fatalerror_str(const char *msg);
+[[noreturn]] void usererror_str(const char *msg);
+[[noreturn]] void fatalerror_str(const char *msg);
 
 #define UserError(format_string, ...) usererror_str(fmt::format(FMT_STRING(format_string), ## __VA_ARGS__).c_str())
 #define FatalError(format_string, ...) fatalerror_str(fmt::format(FMT_STRING(format_string), ## __VA_ARGS__).c_str())

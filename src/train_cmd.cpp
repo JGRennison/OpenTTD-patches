@@ -692,7 +692,7 @@ void AdvanceOrderIndex(const Vehicle *v, VehicleOrderID &index)
 			case OT_GOTO_DEPOT:
 				/* Skip service in depot orders when the train doesn't need service. */
 				if ((order->GetDepotOrderType() & ODTFB_SERVICE) && !v->NeedsServicing()) break;
-				FALLTHROUGH;
+				[[fallthrough]];
 			case OT_GOTO_STATION:
 			case OT_GOTO_WAYPOINT:
 				return;
@@ -3204,6 +3204,9 @@ CommandCost CmdReverseTrainDirection(TileIndex tile, DoCommandFlag flags, uint32
 				HideFillingPercent(&v->fill_percent_te_id);
 				ReverseTrainDirection(v);
 			}
+
+			/* Unbunching data is no longer valid. */
+			v->ResetDepotUnbunching();
 		}
 	}
 	return CommandCost();
@@ -3237,6 +3240,9 @@ CommandCost CmdForceTrainProceed(TileIndex tile, DoCommandFlag flags, uint32_t p
 		 * next signal we encounter. */
 		t->force_proceed = t->force_proceed == TFP_SIGNAL ? TFP_NONE : HasBit(t->flags, VRF_TRAIN_STUCK) || t->IsChainInDepot() ? TFP_STUCK : TFP_SIGNAL;
 		SetWindowDirty(WC_VEHICLE_VIEW, t->index);
+
+		/* Unbunching data is no longer valid. */
+		t->ResetDepotUnbunching();
 	}
 
 	return CommandCost();
@@ -3388,6 +3394,9 @@ static bool CheckTrainStayInDepot(Train *v)
 		return true;
 	}
 
+	/* Check if we should wait here for unbunching. */
+	if (v->IsWaitingForUnbunching()) return true;
+
 	if (v->reverse_distance > 0) {
 		v->reverse_distance--;
 		if (v->reverse_distance == 0) SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
@@ -3484,6 +3493,7 @@ static bool CheckTrainStayInDepot(Train *v)
 	if (_settings_client.gui.show_track_reservation) MarkTileDirtyByTile(v->tile, VMDF_NOT_MAP_MODE);
 
 	VehicleServiceInDepot(v);
+	v->LeaveUnbunchingDepot();
 	DirtyVehicleListWindowForVehicle(v);
 	v->PlayLeaveStationSound();
 
@@ -4043,7 +4053,7 @@ public:
 				case OT_GOTO_DEPOT:
 					/* Skip service in depot orders when the train doesn't need service. */
 					if ((order->GetDepotOrderType() & ODTFB_SERVICE) && !this->v->NeedsServicing()) break;
-					FALLTHROUGH;
+					[[fallthrough]];
 				case OT_GOTO_STATION:
 				case OT_GOTO_WAYPOINT:
 					this->v->current_order = *order;
@@ -6427,7 +6437,7 @@ static bool TrainApproachingLineEnd(Train *v, bool signal, bool reverse)
 	 * for other directions, it will be 1, 3, 5, ..., 15 */
 	switch (v->direction) {
 		case DIR_N : x = ~x + ~y + 25; break;
-		case DIR_NW: x = y;            FALLTHROUGH;
+		case DIR_NW: x = y;            [[fallthrough]];
 		case DIR_NE: x = ~x + 16;      break;
 		case DIR_E : x = ~x + y + 9;   break;
 		case DIR_SE: x = y;            break;

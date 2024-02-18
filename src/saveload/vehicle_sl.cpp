@@ -44,6 +44,7 @@ static uint32_t _cargo_source_xy;
 static uint16_t _cargo_count;
 static uint16_t _cargo_paid_for;
 static Money  _cargo_feeder_share;
+static VehicleUnbunchState _unbunch_state;
 
 class SlVehicleCommon : public DefaultSaveLoadHandler<SlVehicleCommon, Vehicle> {
 public:
@@ -180,6 +181,10 @@ public:
 		SLE_CONDVAR(Vehicle, current_order_time,    SLE_FILE_I32 | SLE_VAR_U32,  SLV_TIMETABLE_TICKS_TYPE, SL_MAX_VERSION),
 		SLE_CONDVAR(Vehicle, last_loading_tick,     SLE_FILE_U64 | SLE_VAR_I64,  SLV_LAST_LOADING_TICK, SL_MAX_VERSION),
 		SLE_CONDVAR(Vehicle, lateness_counter,      SLE_INT32,                   SLV_67, SL_MAX_VERSION),
+
+		SLEG_CONDVAR("depot_unbunching_last_departure", _unbunch_state.depot_unbunching_last_departure, SLE_UINT64, SLV_DEPOT_UNBUNCHING, SL_MAX_VERSION),
+		SLEG_CONDVAR("depot_unbunching_next_departure", _unbunch_state.depot_unbunching_next_departure, SLE_UINT64, SLV_DEPOT_UNBUNCHING, SL_MAX_VERSION),
+		SLEG_CONDVAR("round_trip_time",                 _unbunch_state.round_trip_time,                 SLE_INT32,  SLV_DEPOT_UNBUNCHING, SL_MAX_VERSION),
 	};
 #if defined(_MSC_VER) && (_MSC_VER == 1915 || _MSC_VER == 1916)
 		return description;
@@ -533,6 +538,11 @@ struct VEHSChunkHandler : ChunkHandler {
 				/* Don't construct the packet with station here, because that'll fail with old savegames */
 				CargoPacket *cp = new CargoPacket(_cargo_count, _cargo_periods, _cargo_source, _cargo_source_xy, _cargo_feeder_share);
 				v->cargo.Append(cp);
+			}
+
+			if (!IsSavegameVersionBefore(SLV_DEPOT_UNBUNCHING) && _unbunch_state.depot_unbunching_last_departure > 0) {
+				v->unbunch_state.reset(new VehicleUnbunchState(_unbunch_state));
+				_unbunch_state = {};
 			}
 
 #if 0

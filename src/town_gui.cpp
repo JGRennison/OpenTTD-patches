@@ -436,7 +436,7 @@ public:
 				}
 				/* When double-clicking, continue */
 				if (click_count == 1 || y < 0) break;
-				FALLTHROUGH;
+				[[fallthrough]];
 			}
 
 			case WID_TA_EXECUTE:
@@ -592,20 +592,21 @@ public:
 		DrawString(tr, STR_TOWN_VIEW_POPULATION_HOUSES);
 		tr.top += GetCharacterHeight(FS_NORMAL);
 
-		SetDParam(0, 1 << CT_PASSENGERS);
-		SetDParam(1, this->town->supplied[CT_PASSENGERS].old_act);
-		SetDParam(2, this->town->supplied[CT_PASSENGERS].old_max);
-		DrawString(tr, STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX);
-		tr.top += GetCharacterHeight(FS_NORMAL);
+		StringID str_last_period = EconTime::UsingWallclockUnits() ? STR_TOWN_VIEW_CARGO_LAST_MINUTE_MAX : STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX;
 
-		SetDParam(0, 1 << CT_MAIL);
-		SetDParam(1, this->town->supplied[CT_MAIL].old_act);
-		SetDParam(2, this->town->supplied[CT_MAIL].old_max);
-		DrawString(tr, STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX);
-		tr.top += GetCharacterHeight(FS_NORMAL);
+		for (auto tpe : {TPE_PASSENGERS, TPE_MAIL}) {
+			for (const CargoSpec *cs : CargoSpec::town_production_cargoes[tpe]) {
+				CargoID cid = cs->Index();
+				SetDParam(0, 1ULL << cid);
+				SetDParam(1, this->town->supplied[cid].old_act);
+				SetDParam(2, this->town->supplied[cid].old_max);
+				DrawString(tr, str_last_period);
+				tr.top += GetCharacterHeight(FS_NORMAL);
+			}
+		}
 
 		bool first = true;
-		for (int i = TE_BEGIN; i < TE_END; i++) {
+		for (int i = TAE_BEGIN; i < TAE_END; i++) {
 			if (this->town->goal[i] == 0) continue;
 			if (this->town->goal[i] == TOWN_GROWTH_WINTER && (TileHeight(this->town->xy) < LowestSnowLine() || this->town->cache.population <= 90)) continue;
 			if (this->town->goal[i] == TOWN_GROWTH_DESERT && (GetTropicZone(this->town->xy) != TROPICZONE_DESERT || this->town->cache.population <= 60)) continue;
@@ -618,7 +619,7 @@ public:
 
 			bool rtl = _current_text_dir == TD_RTL;
 
-			const CargoSpec *cargo = FindFirstCargoWithTownEffect((TownEffect)i);
+			const CargoSpec *cargo = FindFirstCargoWithTownAcceptanceEffect((TownAcceptanceEffect)i);
 			assert(cargo != nullptr);
 
 			StringID string;
@@ -724,10 +725,10 @@ public:
 	 */
 	uint GetDesiredInfoHeight(int width) const
 	{
-		uint aimed_height = 3 * GetCharacterHeight(FS_NORMAL);
+		uint aimed_height = static_cast<uint>(1 + CargoSpec::town_production_cargoes[TPE_PASSENGERS].size() + CargoSpec::town_production_cargoes[TPE_MAIL].size()) * GetCharacterHeight(FS_NORMAL);
 
 		bool first = true;
-		for (int i = TE_BEGIN; i < TE_END; i++) {
+		for (int i = TAE_BEGIN; i < TAE_END; i++) {
 			if (this->town->goal[i] == 0) continue;
 			if (this->town->goal[i] == TOWN_GROWTH_WINTER && (TileHeight(this->town->xy) < LowestSnowLine() || this->town->cache.population <= 90)) continue;
 			if (this->town->goal[i] == TOWN_GROWTH_DESERT && (GetTropicZone(this->town->xy) != TROPICZONE_DESERT || this->town->cache.population <= 60)) continue;

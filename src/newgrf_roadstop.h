@@ -124,7 +124,7 @@ struct RoadStopResolverObject : public ResolverObject {
 			case VSG_SCOPE_PARENT: {
 				TownScopeResolver *tsr = this->GetTown();
 				if (tsr != nullptr) return tsr;
-				FALLTHROUGH;
+				[[fallthrough]];
 			}
 			default: return ResolverObject::GetScope(scope, relative);
 		}

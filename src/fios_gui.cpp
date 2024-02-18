@@ -886,7 +886,7 @@ public:
 				/* We reset the files filtered */
 				this->OnInvalidateData(SLIWD_FILTER_CHANGES);
 
-				FALLTHROUGH;
+				[[fallthrough]];
 
 			case SLIWD_SELECTION_CHANGES:
 				/* Selection changes */

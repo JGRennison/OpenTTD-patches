@@ -2,7 +2,7 @@
 STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Autorenew failed on {VEHICLE}{}{STRING1}
 STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}The NewGRF "{RAW_STRING}" has returned a fatal error: {}{STRING7}
 STR_NEWGRF_ERROR_POPUP                                          :{WHITE}The NewGRF "{RAW_STRING}" has returned an error: {}{STRING7}
-STR_ORDER_TEXT                                                  :{STRING6} {STRING2} {STRING}
+STR_ORDER_TEXT                                                  :{STRING6} {STRING2} {STRING} {STRING}
 ##override off
 
 ##no-translate on

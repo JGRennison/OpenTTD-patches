@@ -175,7 +175,7 @@ static void ConvertTownOwner()
 				if (GB(_m[tile].m5, 4, 2) == ROAD_TILE_CROSSING && HasBit(_m[tile].m3, 7)) {
 					_m[tile].m3 = OWNER_TOWN;
 				}
-				FALLTHROUGH;
+				[[fallthrough]];
 
 			case MP_TUNNELBRIDGE:
 				if (_m[tile].m1 & 0x80) SetTileOwner(tile, OWNER_TOWN);
@@ -2150,7 +2150,21 @@ bool AfterLoadGame()
 				v->current_order.SetLoadType(OLFB_NO_LOAD);
 			}
 		}
-	} else if (SlXvIsFeaturePresent(XSLFI_JOKERPP, 1, SL_JOKER_1_23)) {
+	}
+
+	if (IsSavegameVersionBefore(SLV_DEPOT_UNBUNCHING) && SlXvIsFeatureMissing(XSLFI_DEPOT_UNBUNCHING)) {
+		/* OrderDepotActionFlags were moved, instead of starting at bit 4 they now start at bit 3. */
+		for (Order *order : Order::Iterate()) {
+			if (!order->IsType(OT_GOTO_DEPOT)) continue;
+			OrderDepotActionFlags flags = (OrderDepotActionFlags)(order->GetDepotActionType() >> 1);
+			if (((flags & (1 << 2)) != 0) && SlXvIsFeatureMissing(XSLFI_DEPOT_UNBUNCHING)) {
+				flags ^= (ODATFB_SELL | ODATFB_UNBUNCH); // Unbunch moved from bit 2 to bit 3
+			}
+			order->SetDepotActionType(flags);
+		}
+	}
+
+	if (SlXvIsFeaturePresent(XSLFI_JOKERPP, 1, SL_JOKER_1_23)) {
 		for (Order *order : Order::Iterate()) {
 			if (order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OCV_SLOT_OCCUPANCY) {
 				order->GetXDataRef() = order->GetConditionValue();
@@ -2656,15 +2670,15 @@ bool AfterLoadGame()
 				s->remaining = 12 - s->remaining; // convert "age" to "remaining"
 				s->awarded = INVALID_COMPANY; // not awarded to anyone
 				const CargoSpec *cs = CargoSpec::Get(s->cargo_type);
-				switch (cs->town_effect) {
-					case TE_PASSENGERS:
-					case TE_MAIL:
+				switch (cs->town_acceptance_effect) {
+					case TAE_PASSENGERS:
+					case TAE_MAIL:
 						/* Town -> Town */
 						s->src_type = s->dst_type = SourceType::Town;
 						if (Town::IsValidID(s->src) && Town::IsValidID(s->dst)) continue;
 						break;
-					case TE_GOODS:
-					case TE_FOOD:
+					case TAE_GOODS:
+					case TAE_FOOD:
 						/* Industry -> Town */
 						s->src_type = SourceType::Industry;
 						s->dst_type = SourceType::Town;
@@ -2682,9 +2696,9 @@ bool AfterLoadGame()
 				 * Town -> Town subsidies are converted using simple heuristic */
 				s->remaining = 24 - s->remaining; // convert "age of awarded subsidy" to "remaining"
 				const CargoSpec *cs = CargoSpec::Get(s->cargo_type);
-				switch (cs->town_effect) {
-					case TE_PASSENGERS:
-					case TE_MAIL: {
+				switch (cs->town_acceptance_effect) {
+					case TAE_PASSENGERS:
+					case TAE_MAIL: {
 						/* Town -> Town */
 						const Station *ss = Station::GetIfValid(s->src);
 						const Station *sd = Station::GetIfValid(s->dst);
@@ -3258,12 +3272,12 @@ bool AfterLoadGame()
 			/* Set the default cargo requirement for town growth */
 			switch (_settings_game.game_creation.landscape) {
 				case LT_ARCTIC:
-					if (FindFirstCargoWithTownEffect(TE_FOOD) != nullptr) t->goal[TE_FOOD] = TOWN_GROWTH_WINTER;
+					if (FindFirstCargoWithTownAcceptanceEffect(TAE_FOOD) != nullptr) t->goal[TAE_FOOD] = TOWN_GROWTH_WINTER;
 					break;
 
 				case LT_TROPIC:
-					if (FindFirstCargoWithTownEffect(TE_FOOD) != nullptr) t->goal[TE_FOOD] = TOWN_GROWTH_DESERT;
-					if (FindFirstCargoWithTownEffect(TE_WATER) != nullptr) t->goal[TE_WATER] = TOWN_GROWTH_DESERT;
+					if (FindFirstCargoWithTownAcceptanceEffect(TAE_FOOD) != nullptr) t->goal[TAE_FOOD] = TOWN_GROWTH_DESERT;
+					if (FindFirstCargoWithTownAcceptanceEffect(TAE_WATER) != nullptr) t->goal[TAE_WATER] = TOWN_GROWTH_DESERT;
 					break;
 			}
 		}
@@ -3364,12 +3378,6 @@ bool AfterLoadGame()
 		for (Company *c : Company::Iterate()) {
 			c->months_of_bankruptcy = 3 * c->months_of_bankruptcy;
 		}
-	}
-
-	if (IsSavegameVersionBefore(SLV_178)) {
-		extern uint8_t _old_diff_level;
-		/* Initialise script settings profile */
-		_settings_game.script.settings_profile = IsInsideMM(_old_diff_level, SP_BEGIN, SP_END) ? _old_diff_level : (uint)SP_MEDIUM;
 	}
 
 	/* Station blocked, wires and pylon flags need to be stored in the map.
@@ -3655,6 +3663,23 @@ bool AfterLoadGame()
 		}
 
 		_old_timetable_start_subticks_map.clear();
+	}
+
+	if (!IsSavegameVersionBefore(SLV_DEPOT_UNBUNCHING)) {
+		for (Vehicle *v : Vehicle::Iterate()) {
+			if (v->unbunch_state != nullptr) {
+				if (v->unbunch_state->depot_unbunching_last_departure > 0) {
+					v->unbunch_state->depot_unbunching_last_departure += _state_ticks.base() - _tick_counter;
+				} else {
+					v->unbunch_state->depot_unbunching_last_departure = INVALID_STATE_TICKS;
+				}
+				if (v->unbunch_state->depot_unbunching_next_departure > 0) {
+					v->unbunch_state->depot_unbunching_next_departure += _state_ticks.base() - _tick_counter;
+				} else {
+					v->unbunch_state->depot_unbunching_next_departure = INVALID_STATE_TICKS;
+				}
+			}
+		}
 	}
 
 	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP, 1, 1)) {

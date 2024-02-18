@@ -31,7 +31,7 @@ static_assert((SHIP_PATH_CACHE_LENGTH & SHIP_PATH_CACHE_MASK) == 0, ""); // Must
 /**
  * All ships have this type.
  */
-struct Ship FINAL : public SpecializedVehicle<Ship, VEH_SHIP> {
+struct Ship final : public SpecializedVehicle<Ship, VEH_SHIP> {
 	TrackBits state;               ///< The "track" the ship is following.
 	ShipPathCache cached_path;     ///< Cached path.
 	Direction rotation;            ///< Visible direction.

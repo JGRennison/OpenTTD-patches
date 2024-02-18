@@ -320,6 +320,12 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 			default:
 				break;
 		}
+
+		/* Unbunching data is no longer valid for any vehicle in this shared order group. */
+		Vehicle *u = v->FirstShared();
+		for (; u != nullptr; u = u->NextShared()) {
+			u->ResetDepotUnbunching();
+		}
 	}
 
 	return CommandCost();
@@ -406,6 +412,9 @@ CommandCost CmdSetVehicleOnTime(TileIndex tile, DoCommandFlag flags, uint32_t p1
 				if (u->lateness_counter > most_late) {
 					most_late = u->lateness_counter;
 				}
+
+				/* Unbunching data is no longer valid. */
+				u->ResetDepotUnbunching();
 			}
 			if (most_late > 0) {
 				for (Vehicle *u = v->FirstShared(); u != nullptr; u = u->NextShared()) {
@@ -418,6 +427,8 @@ CommandCost CmdSetVehicleOnTime(TileIndex tile, DoCommandFlag flags, uint32_t p1
 			}
 		} else {
 			v->lateness_counter = 0;
+			/* Unbunching data is no longer valid. */
+			v->ResetDepotUnbunching();
 			SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
 		}
 	}
@@ -486,12 +497,12 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32_t p
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	StateTicks start_date_scaled = (StateTicks)p3;
+	StateTicks start_state_tick = (StateTicks)p3;
 
 	/* Don't let a timetable start more than 15 unscaled years into the future... */
-	if (start_date_scaled - _state_ticks > 15 * DAY_TICKS * DAYS_IN_LEAP_YEAR) return CMD_ERROR;
+	if (start_state_tick - _state_ticks > 15 * DAY_TICKS * DAYS_IN_LEAP_YEAR) return CMD_ERROR;
 	/* ...or 1 unscaled year in the past. */
-	if (_state_ticks - start_date_scaled > DAY_TICKS * DAYS_IN_LEAP_YEAR) return CMD_ERROR;
+	if (_state_ticks - start_state_tick > DAY_TICKS * DAYS_IN_LEAP_YEAR) return CMD_ERROR;
 
 	if (timetable_all && !v->orders->IsCompleteTimetable()) return CommandCost(STR_ERROR_TIMETABLE_INCOMPLETE);
 
@@ -521,7 +532,11 @@ CommandCost CmdSetTimetableStart(TileIndex tile, DoCommandFlag flags, uint32_t p
 			w->lateness_counter = 0;
 			ClrBit(w->vehicle_flags, VF_TIMETABLE_STARTED);
 			/* Do multiplication, then division to reduce rounding errors. */
-			w->timetable_start = start_date_scaled + ((idx * total_duration) / num_vehs);
+			w->timetable_start = start_state_tick + ((idx * total_duration) / num_vehs);
+
+			/* Unbunching data is no longer valid. */
+			v->ResetDepotUnbunching();
+
 			++idx;
 		}
 

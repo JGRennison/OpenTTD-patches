@@ -2079,7 +2079,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 
 			case A0RPI_STATION_MIN_BRIDGE_HEIGHT:
 				if (MappedPropertyLengthMismatch(buf, 8, mapping_entry)) break;
-				FALLTHROUGH;
+				[[fallthrough]];
 			case 0x1B: // Minimum height for a bridge above
 				SetBit(statspec->internal_flags, SSIF_BRIDGE_HEIGHTS_SET);
 				for (uint i = 0; i < 8; i++) {
@@ -2257,7 +2257,7 @@ static ChangeInfoResult BridgeChangeInfo(uint brid, int numinfo, int prop, const
 
 			case A0RPI_BRIDGE_MENU_ICON:
 				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
-				FALLTHROUGH;
+				[[fallthrough]];
 			case 0x14: // purchase sprite
 				bridge->sprite = buf->ReadWord();
 				bridge->pal    = buf->ReadWord();
@@ -3104,15 +3104,15 @@ static ChangeInfoResult CargoChangeInfo(uint cid, int numinfo, int prop, const G
 				uint8_t substitute_type = buf->ReadByte();
 
 				switch (substitute_type) {
-					case 0x00: cs->town_effect = TE_PASSENGERS; break;
-					case 0x02: cs->town_effect = TE_MAIL; break;
-					case 0x05: cs->town_effect = TE_GOODS; break;
-					case 0x09: cs->town_effect = TE_WATER; break;
-					case 0x0B: cs->town_effect = TE_FOOD; break;
+					case 0x00: cs->town_acceptance_effect = TAE_PASSENGERS; break;
+					case 0x02: cs->town_acceptance_effect = TAE_MAIL; break;
+					case 0x05: cs->town_acceptance_effect = TAE_GOODS; break;
+					case 0x09: cs->town_acceptance_effect = TAE_WATER; break;
+					case 0x0B: cs->town_acceptance_effect = TAE_FOOD; break;
 					default:
 						grfmsg(1, "CargoChangeInfo: Unknown town growth substitute value %d, setting to none.", substitute_type);
-						FALLTHROUGH;
-					case 0xFF: cs->town_effect = TE_NONE; break;
+						[[fallthrough]];
+					case 0xFF: cs->town_acceptance_effect = TAE_NONE; break;
 				}
 				break;
 			}
@@ -3127,6 +3127,24 @@ static ChangeInfoResult CargoChangeInfo(uint cid, int numinfo, int prop, const G
 
 			case 0x1D: // Vehicle capacity muliplier
 				cs->multiplier = std::max<uint16_t>(1u, buf->ReadWord());
+				break;
+
+			case 0x1E: { // Town production substitute type
+				uint8_t substitute_type = buf->ReadByte();
+
+				switch (substitute_type) {
+					case 0x00: cs->town_production_effect = TPE_PASSENGERS; break;
+					case 0x02: cs->town_production_effect = TPE_MAIL; break;
+					default:
+						grfmsg(1, "CargoChangeInfo: Unknown town production substitute value %u, setting to none.", substitute_type);
+						[[fallthrough]];
+					case 0xFF: cs->town_production_effect = TPE_NONE; break;
+				}
+				break;
+			}
+
+			case 0x1F: // Town production multiplier
+				cs->town_production_multiplier = std::max<uint16_t>(1U, buf->ReadWord());
 				break;
 
 			default:
@@ -4513,7 +4531,7 @@ static ChangeInfoResult RailTypeChangeInfo(uint id, int numinfo, int prop, const
 					RailType resolved_rt = GetRailTypeByLabel(BSWAP32(label), false);
 					if (resolved_rt != INVALID_RAILTYPE) {
 						switch (prop) {
-							case 0x0F: SetBit(rti->powered_railtypes, resolved_rt);               FALLTHROUGH; // Powered implies compatible.
+							case 0x0F: SetBit(rti->powered_railtypes, resolved_rt);               [[fallthrough]]; // Powered implies compatible.
 							case 0x0E: SetBit(rti->compatible_railtypes, resolved_rt);            break;
 							case 0x18: SetBit(rti->introduction_required_railtypes, resolved_rt); break;
 							case 0x19: SetBit(rti->introduces_railtypes, resolved_rt);            break;
@@ -4660,7 +4678,7 @@ static ChangeInfoResult RailTypeReserveInfo(uint id, int numinfo, int prop, cons
 					break;
 				}
 				grfmsg(1, "RailTypeReserveInfo: Ignoring property 1D for rail type %u because no label was set", id + i);
-				FALLTHROUGH;
+				[[fallthrough]];
 
 			case 0x0E: // Compatible railtype list
 			case 0x0F: // Powered railtype list
@@ -5097,7 +5115,7 @@ static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const
 		switch (prop) {
 			case A0RPI_ROADSTOP_CLASS_ID:
 				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
-				FALLTHROUGH;
+				[[fallthrough]];
 			case 0x08: { // Road Stop Class ID
 				if (rs == nullptr) {
 					_cur.grffile->roadstops[id + i] = std::make_unique<RoadStopSpec>();
@@ -5112,42 +5130,42 @@ static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const
 
 			case A0RPI_ROADSTOP_STOP_TYPE:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				FALLTHROUGH;
+				[[fallthrough]];
 			case 0x09: // Road stop type
 				rs->stop_type = (RoadStopAvailabilityType)buf->ReadByte();
 				break;
 
 			case A0RPI_ROADSTOP_STOP_NAME:
 				if (MappedPropertyLengthMismatch(buf, 2, mapping_entry)) break;
-				FALLTHROUGH;
+				[[fallthrough]];
 			case 0x0A: // Road Stop Name
 				AddStringForMapping(buf->ReadWord(), &rs->name);
 				break;
 
 			case A0RPI_ROADSTOP_CLASS_NAME:
 				if (MappedPropertyLengthMismatch(buf, 2, mapping_entry)) break;
-				FALLTHROUGH;
+				[[fallthrough]];
 			case 0x0B: // Road Stop Class name
 				AddStringForMapping(buf->ReadWord(), &RoadStopClass::Get(rs->cls_id)->name);
 				break;
 
 			case A0RPI_ROADSTOP_DRAW_MODE:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				FALLTHROUGH;
+				[[fallthrough]];
 			case 0x0C: // The draw mode
 				rs->draw_mode = (RoadStopDrawMode)buf->ReadByte();
 				break;
 
 			case A0RPI_ROADSTOP_TRIGGER_CARGOES:
 				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
-				FALLTHROUGH;
+				[[fallthrough]];
 			case 0x0D: // Cargo types for random triggers
 				rs->cargo_triggers = TranslateRefitMask(buf->ReadDWord());
 				break;
 
 			case A0RPI_ROADSTOP_ANIMATION_INFO:
 				if (MappedPropertyLengthMismatch(buf, 2, mapping_entry)) break;
-				FALLTHROUGH;
+				[[fallthrough]];
 			case 0x0E: // Animation info
 				rs->animation.frames = buf->ReadByte();
 				rs->animation.status = buf->ReadByte();
@@ -5155,35 +5173,35 @@ static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const
 
 			case A0RPI_ROADSTOP_ANIMATION_SPEED:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				FALLTHROUGH;
+				[[fallthrough]];
 			case 0x0F: // Animation speed
 				rs->animation.speed = buf->ReadByte();
 				break;
 
 			case A0RPI_ROADSTOP_ANIMATION_TRIGGERS:
 				if (MappedPropertyLengthMismatch(buf, 2, mapping_entry)) break;
-				FALLTHROUGH;
+				[[fallthrough]];
 			case 0x10: // Animation triggers
 				rs->animation.triggers = buf->ReadWord();
 				break;
 
 			case A0RPI_ROADSTOP_CALLBACK_MASK:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				FALLTHROUGH;
+				[[fallthrough]];
 			case 0x11: // Callback mask
 				rs->callback_mask = buf->ReadByte();
 				break;
 
 			case A0RPI_ROADSTOP_GENERAL_FLAGS:
 				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
-				FALLTHROUGH;
+				[[fallthrough]];
 			case 0x12: // General flags
 				rs->flags = (uint16_t)buf->ReadDWord(); // Future-proofing, size this as 4 bytes, but we only need two bytes' worth of flags at present
 				break;
 
 			case A0RPI_ROADSTOP_MIN_BRIDGE_HEIGHT:
 				if (MappedPropertyLengthMismatch(buf, 6, mapping_entry)) break;
-				FALLTHROUGH;
+				[[fallthrough]];
 			case 0x13: // Minimum height for a bridge above
 				SetBit(rs->internal_flags, RSIF_BRIDGE_HEIGHTS_SET);
 				for (uint i = 0; i < 6; i++) {
@@ -5193,7 +5211,7 @@ static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const
 
 			case A0RPI_ROADSTOP_DISALLOWED_BRIDGE_PILLARS:
 				if (MappedPropertyLengthMismatch(buf, 6, mapping_entry)) break;
-				FALLTHROUGH;
+				[[fallthrough]];
 			case 0x14: // Disallowed bridge pillars
 				SetBit(rs->internal_flags, RSIF_BRIDGE_DISALLOWED_PILLARS_SET);
 				for (uint i = 0; i < 6; i++) {
@@ -5203,7 +5221,7 @@ static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const
 
 			case A0RPI_ROADSTOP_COST_MULTIPLIERS:
 				if (MappedPropertyLengthMismatch(buf, 2, mapping_entry)) break;
-				FALLTHROUGH;
+				[[fallthrough]];
 			case 0x15: // Cost multipliers
 				rs->build_cost_multiplier = buf->ReadByte();
 				rs->clear_cost_multiplier = buf->ReadByte();
@@ -5211,7 +5229,7 @@ static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const
 
 			case A0RPI_ROADSTOP_HEIGHT:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				FALLTHROUGH;
+				[[fallthrough]];
 			case 0x16: // Height
 				rs->height = buf->ReadByte();
 				break;
@@ -5284,7 +5302,7 @@ static bool HandleChangeInfoResult(const char *caller, ChangeInfoResult cir, Grf
 
 		case CIR_UNKNOWN:
 			grfmsg(0, "%s: Unknown property 0x%02X of feature %s, disabling", caller, property, GetFeatureString(feature));
-			FALLTHROUGH;
+			[[fallthrough]];
 
 		case CIR_INVALID_ID: {
 			/* No debug message for an invalid ID, as it has already been output */
@@ -10837,6 +10855,14 @@ static void FinaliseEngineArray()
 void FinaliseCargoArray()
 {
 	for (CargoSpec &cs : CargoSpec::array) {
+		if (cs.town_production_effect == INVALID_TPE) {
+			/* Set default town production effect by cargo label. */
+			switch (cs.label) {
+				case 'PASS': cs.town_production_effect = TPE_PASSENGERS; break;
+				case 'MAIL': cs.town_production_effect = TPE_MAIL; break;
+				default:     cs.town_production_effect = TPE_NONE; break;
+			}
+		}
 		if (!cs.IsValid()) {
 			cs.name = cs.name_single = cs.units_volume = STR_NEWGRF_INVALID_CARGO;
 			cs.quantifier = STR_NEWGRF_INVALID_CARGO_QUANTITY;

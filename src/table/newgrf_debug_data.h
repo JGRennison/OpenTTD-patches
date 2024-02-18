@@ -1334,7 +1334,8 @@ class NIHCargo : public NIHelper {
 		seprintf(buffer, lastof(buffer), "  Initial payment: %d, Current payment: " OTTD_PRINTF64 ", Transit periods: (%u, %u)",
 				spec->initial_payment, (int64_t)spec->current_payment, spec->transit_periods[0], spec->transit_periods[1]);
 		output.print(buffer);
-		seprintf(buffer, lastof(buffer), "  Freight: %s, Town effect: %u", spec->is_freight ? "yes" : "no", spec->town_effect);
+		seprintf(buffer, lastof(buffer), "  Freight: %s, Town acceptance effect: %u, Town production effect: %u",
+				spec->is_freight ? "yes" : "no", spec->town_acceptance_effect, spec->town_production_effect);
 		output.print(buffer);
 	}
 

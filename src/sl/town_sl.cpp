@@ -212,14 +212,14 @@ static const SaveLoad _town_desc[] = {
 	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_164),                 ///< pct_pass_transported / pct_mail_transported, now computed on the fly
 	SLE_CONDNULL_X(3, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232)),
 
-	SLE_CONDVAR(Town, received[TE_FOOD].old_act,       SLE_UINT16,                 SL_MIN_VERSION, SLV_165),
-	SLE_CONDVAR(Town, received[TE_WATER].old_act,      SLE_UINT16,                 SL_MIN_VERSION, SLV_165),
+	SLE_CONDVAR(Town, received[TAE_FOOD].old_act,      SLE_UINT16,                 SL_MIN_VERSION, SLV_165),
+	SLE_CONDVAR(Town, received[TAE_WATER].old_act,     SLE_UINT16,                 SL_MIN_VERSION, SLV_165),
 	SLE_CONDNULL_X(2, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232)),
-	SLE_CONDVAR(Town, received[TE_FOOD].new_act,       SLE_UINT16,                 SL_MIN_VERSION, SLV_165),
-	SLE_CONDVAR(Town, received[TE_WATER].new_act,      SLE_UINT16,                 SL_MIN_VERSION, SLV_165),
+	SLE_CONDVAR(Town, received[TAE_FOOD].new_act,      SLE_UINT16,                 SL_MIN_VERSION, SLV_165),
+	SLE_CONDVAR(Town, received[TAE_WATER].new_act,     SLE_UINT16,                 SL_MIN_VERSION, SLV_165),
 	SLE_CONDNULL_X(2, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232)),
 
-	SLE_CONDARR(Town, goal, SLE_UINT32, NUM_TE, SLV_165, SL_MAX_VERSION),
+	SLE_CONDARR(Town, goal, SLE_UINT32, NUM_TAE, SLV_165, SL_MAX_VERSION),
 
 	SLE_CONDSSTR(Town, text,                 SLE_STR | SLF_ALLOW_CONTROL, SLV_168, SL_MAX_VERSION),
 
@@ -307,7 +307,7 @@ static void RealSave_Town(Town *t)
 	for (CargoID i = 0; i < NUM_CARGO; i++) {
 		SlObjectSaveFiltered(&t->supplied[i], _filtered_town_supplied_desc);
 	}
-	for (int i = TE_BEGIN; i < NUM_TE; i++) {
+	for (int i = TAE_BEGIN; i < NUM_TAE; i++) {
 		SlObjectSaveFiltered(&t->received[i], _filtered_town_received_desc);
 	}
 }
@@ -335,11 +335,11 @@ static void Load_TOWN()
 			SlObjectLoadFiltered(&t->supplied[i], _filtered_town_supplied_desc);
 		}
 		if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
-			for (int i = TE_BEGIN; i < NUM_TE; i++) {
+			for (int i = TAE_BEGIN; i < NUM_TAE; i++) {
 				SlObject(&t->received[i], _town_received_desc_spp);
 			}
 		} else {
-			for (int i = TE_BEGIN; i < NUM_TE; i++) {
+			for (int i = TAE_BEGIN; i < NUM_TAE; i++) {
 				SlObjectLoadFiltered(&t->received[i], _filtered_town_received_desc);
 			}
 		}

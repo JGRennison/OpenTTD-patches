@@ -139,7 +139,7 @@ enum RoadVehicleFlags {
 /**
  * Buses, trucks and trams belong to this class.
  */
-struct RoadVehicle FINAL : public GroundVehicle<RoadVehicle, VEH_ROAD> {
+struct RoadVehicle final : public GroundVehicle<RoadVehicle, VEH_ROAD> {
 	byte state;             ///< @see RoadVehicleStates
 	byte frame;
 	uint16_t blocked_ctr;

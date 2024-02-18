@@ -68,6 +68,35 @@ static const TrackdirBits _enterdir_to_trackdirbits[DIAGDIR_END] = {
 	TRACKDIR_BIT_Y_SE | TRACKDIR_BIT_UPPER_E | TRACKDIR_BIT_LEFT_S
 };
 
+SignalType NextSignalType(SignalType cur, SignalCycleGroups which_signals)
+{
+	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+		switch (cur) {
+			case SIGTYPE_PBS:        return SIGTYPE_PBS_ONEWAY;
+			case SIGTYPE_PBS_ONEWAY: return SIGTYPE_BLOCK;
+			default:                 return SIGTYPE_PBS;
+		}
+	}
+
+	if (which_signals == SCG_CURRENT_GROUP) which_signals = IsPbsSignal(cur) ? SCG_PBS : SCG_BLOCK;
+	bool pbs   = which_signals & SCG_PBS;
+	bool block = which_signals & SCG_BLOCK;
+
+	switch(cur) {
+		case SIGTYPE_BLOCK:      return block ? SIGTYPE_ENTRY      : SIGTYPE_PBS;
+		case SIGTYPE_ENTRY:      return block ? SIGTYPE_EXIT       : SIGTYPE_PBS;
+		case SIGTYPE_EXIT:       return block ? SIGTYPE_COMBO      : SIGTYPE_PBS;
+		case SIGTYPE_COMBO:      return pbs   ? SIGTYPE_PBS        : SIGTYPE_BLOCK;
+		case SIGTYPE_PROG:       return pbs   ? SIGTYPE_PBS        : SIGTYPE_BLOCK;
+		case SIGTYPE_PBS:        return pbs   ? SIGTYPE_PBS_ONEWAY : SIGTYPE_BLOCK;
+		case SIGTYPE_PBS_ONEWAY: return block ? SIGTYPE_BLOCK      : SIGTYPE_PBS;
+		case SIGTYPE_NO_ENTRY:   return pbs   ? SIGTYPE_PBS        : SIGTYPE_BLOCK;
+		default:
+			DEBUG(map, 0, "Attempt to cycle from signal type %d", cur);
+			return SIGTYPE_BLOCK; // Fortunately mostly harmless
+	}
+}
+
 /**
  * Set containing 'items' items of 'tile and Tdir'
  * No tree structure is used because it would cause
@@ -956,7 +985,7 @@ static SigSegState UpdateSignalsInBuffer(Owner owner)
 					break;
 				}
 			}
-				FALLTHROUGH;
+				[[fallthrough]];
 
 			case MP_RAILWAY:
 				if (IsRailDepotTile(tile)) {
@@ -965,7 +994,7 @@ static SigSegState UpdateSignalsInBuffer(Owner owner)
 					_tbdset.Add(tile, INVALID_DIAGDIR); // start from depot inside
 					break;
 				}
-				FALLTHROUGH;
+				[[fallthrough]];
 
 			case MP_STATION:
 			case MP_ROAD:
@@ -975,7 +1004,7 @@ static SigSegState UpdateSignalsInBuffer(Owner owner)
 					_tbdset.Add(tile + TileOffsByDiagDir(dir), ReverseDiagDir(dir));
 					break;
 				}
-				FALLTHROUGH;
+				[[fallthrough]];
 
 			default:
 				/* jump to next tile */

@@ -129,7 +129,7 @@ extern Company *DoStartupNewCompany(bool is_ai, CompanyID company = INVALID_COMP
 extern void OSOpenBrowser(const std::string &url);
 extern void RebuildTownCaches(bool cargo_update_required, bool old_map_position);
 extern void ShowOSErrorBox(const char *buf, bool system);
-extern void NORETURN DoOSAbort();
+[[noreturn]] extern void DoOSAbort();
 extern std::string _config_file;
 extern uint64_t _station_tile_cache_hash;
 
@@ -143,7 +143,7 @@ std::mutex _music_driver_mutex;
 static std::string _music_driver_params;
 static std::atomic<bool> _music_inited;
 
-void NORETURN usererror_str(const char *msg)
+[[noreturn]] void usererror_str(const char *msg)
 {
 	ShowOSErrorBox(msg, false);
 	if (VideoDriver::GetInstance() != nullptr) VideoDriver::GetInstance()->Stop();
@@ -176,7 +176,7 @@ void CDECL usererror(const char *s, ...)
 	usererror_str(buf);
 }
 
-static void NORETURN fatalerror_common(const char *msg)
+[[noreturn]] static void fatalerror_common(const char *msg)
 {
 	if (VideoDriver::GetInstance() == nullptr || VideoDriver::GetInstance()->HasGUI()) {
 		ShowOSErrorBox(msg, true);

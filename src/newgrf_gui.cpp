@@ -1070,7 +1070,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 					break;
 				}
 				/* With double click, continue */
-				FALLTHROUGH;
+				[[fallthrough]];
 			}
 
 			case WID_NS_REMOVE: { // Remove GRF
@@ -1128,7 +1128,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 					break;
 				}
 				/* With double click, continue */
-				FALLTHROUGH;
+				[[fallthrough]];
 			}
 
 			case WID_NS_ADD:
@@ -1284,7 +1284,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 				}
 
 				this->avails.ForceRebuild();
-				FALLTHROUGH;
+				[[fallthrough]];
 
 			case GOID_NEWGRF_CURRENT_LOADED:
 				this->modified = false;
@@ -1293,7 +1293,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 
 			case GOID_NEWGRF_LIST_EDITED:
 				this->preset = -1;
-				FALLTHROUGH;
+				[[fallthrough]];
 
 			case GOID_NEWGRF_CHANGES_MADE:
 				UpdateScrollBars();

@@ -3362,7 +3362,7 @@ static inline uint32_t ViewportMapGetColourRoutes(const TileIndex tile, TileType
 				colour = rti->map_colour;
 				break;
 			}
-			FALLTHROUGH;
+			[[fallthrough]];
 		}
 
 		default: {
@@ -3658,7 +3658,7 @@ static void ViewportMapDrawBridgeTunnel(Viewport * const vp, const TunnelBridgeT
 					colour = rti->map_colour;
 					break;
 				}
-				FALLTHROUGH;
+				[[fallthrough]];
 			}
 
 			default:
@@ -5803,7 +5803,7 @@ static int CalcHeightdiff(HighLightStyle style, uint distance, TileIndex start_t
 			byte style_t = (byte)(TileX(end_tile) > TileX(start_tile));
 			start_tile = TILE_ADD(start_tile, ToTileIndexDiff(heightdiff_area_by_dir[style_t]));
 			end_tile   = TILE_ADD(end_tile, ToTileIndexDiff(heightdiff_area_by_dir[2 + style_t]));
-			FALLTHROUGH;
+			[[fallthrough]];
 		}
 
 		case HT_POINT:
@@ -6397,7 +6397,7 @@ void VpSelectTilesWithMethod(int x, int y, ViewportPlaceMethod method)
 
 		case VPM_X_LIMITED: // Drag in X direction (limited size).
 			limit = (_thd.sizelimit - 1) * TILE_SIZE;
-			FALLTHROUGH;
+			[[fallthrough]];
 
 		case VPM_FIX_X: // drag in Y direction
 			x = sx;
@@ -6406,7 +6406,7 @@ void VpSelectTilesWithMethod(int x, int y, ViewportPlaceMethod method)
 
 		case VPM_Y_LIMITED: // Drag in Y direction (limited size).
 			limit = (_thd.sizelimit - 1) * TILE_SIZE;
-			FALLTHROUGH;
+			[[fallthrough]];
 
 		case VPM_FIX_Y: // drag in X direction
 			y = sy;
@@ -6465,7 +6465,7 @@ calc_heightdiff_single_direction:;
 			limit = (_thd.sizelimit - 1) * TILE_SIZE;
 			x = sx + Clamp(x - sx, -limit, limit);
 			y = sy + Clamp(y - sy, -limit, limit);
-			FALLTHROUGH;
+			[[fallthrough]];
 
 		case VPM_X_AND_Y: // drag an X by Y area
 			if (_settings_client.gui.measure_tooltip) {

@@ -898,7 +898,7 @@ public:
 						return ES_HANDLED;
 					}
 					/* space is pressed and filter is focused. */
-					FALLTHROUGH;
+					[[fallthrough]];
 
 				default:
 					return ES_NOT_HANDLED;

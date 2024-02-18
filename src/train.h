@@ -130,7 +130,7 @@ struct TrainCache {
 /**
  * 'Train' is either a loco or a wagon.
  */
-struct Train FINAL : public GroundVehicle<Train, VEH_TRAIN> {
+struct Train final : public GroundVehicle<Train, VEH_TRAIN> {
 	TrackBits track;
 	RailType railtype;
 	uint32_t flags;

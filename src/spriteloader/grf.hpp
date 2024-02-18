@@ -13,7 +13,7 @@
 #include "spriteloader.hpp"
 
 /** Sprite loader for graphics coming from a (New)GRF. */
-class SpriteLoaderGrf FINAL : public SpriteLoader {
+class SpriteLoaderGrf final : public SpriteLoader {
 	byte container_ver;
 public:
 	SpriteLoaderGrf(byte container_ver) : container_ver(container_ver) {}

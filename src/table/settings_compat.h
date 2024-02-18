@@ -304,7 +304,7 @@ static std::initializer_list<SettingsCompat> _settings_compat{
 	SLCX_XREF("economy.sharing_payment_in_debt", SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232)),
 	SLCX_XREF("economy.day_length_factor", SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP)),
 	SLCX_NULL(1, SL_MIN_VERSION, SLV_107), // previously ai-new setting
-	SLCX_VAR("script.settings_profile"),
+	SLCX_NULL(1, SLV_178, SLV_TABLE_CHUNKS), // previously script.settings_profile
 	SLCX_VAR("ai.ai_in_multiplayer"),
 	SLCX_VAR("ai.ai_disable_veh_train"),
 	SLCX_VAR("ai.ai_disable_veh_roadveh"),

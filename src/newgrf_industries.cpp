@@ -129,7 +129,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(byte para
 
 		case 0xFFFFFFFF: // current grf
 			GrfID = GetIndustrySpec(this->industry->type)->grf_prop.grffile->grfid;
-			FALLTHROUGH;
+			[[fallthrough]];
 
 		default: // use the grfid specified in register 100h
 			SetBit(param_setID, 7); // bit 7 means it is not an old type

@@ -56,7 +56,7 @@
 #pragma GCC diagnostic ignored "-Wclobbered"
 #endif
 
-static void NORETURN ImmediateExitProcess(uint exit_code)
+static [[noreturn]] void ImmediateExitProcess(uint exit_code)
 {
 	/* TerminateProcess may fail in some special edge cases, fall back to ExitProcess in this case */
 	TerminateProcess(GetCurrentProcess(), exit_code);

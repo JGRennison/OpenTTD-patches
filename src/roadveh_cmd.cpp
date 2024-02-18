@@ -427,7 +427,12 @@ CommandCost CmdTurnRoadVeh(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 
 	if (IsTileType(v->tile, MP_TUNNELBRIDGE) && DirToDiagDir(v->direction) == GetTunnelBridgeDirection(v->tile)) return CMD_ERROR;
 
-	if (flags & DC_EXEC) v->reverse_ctr = 180;
+	if (flags & DC_EXEC) {
+		v->reverse_ctr = 180;
+
+		/* Unbunching data is no longer valid. */
+		v->ResetDepotUnbunching();
+	}
 
 	return CommandCost();
 }
@@ -1338,6 +1343,7 @@ static bool RoadVehLeaveDepot(RoadVehicle *v, bool first)
 		if (RoadVehFindCloseTo(v, x, y, v->direction, false) != nullptr) return true;
 
 		VehicleServiceInDepot(v);
+		v->LeaveUnbunchingDepot();
 
 		StartRoadVehSound(v);
 
@@ -2154,7 +2160,11 @@ static bool RoadVehController(RoadVehicle *v)
 	v->HandleWaiting(false, true);
 	if (v->current_order.IsType(OT_WAITING)) return true;
 
-	if (v->IsInDepot() && RoadVehLeaveDepot(v, true)) return true;
+	if (v->IsInDepot()) {
+		/* Check if we should wait here for unbunching. */
+		if (v->IsWaitingForUnbunching()) return true;
+		if (RoadVehLeaveDepot(v, true)) return true;
+	}
 
 	int j;
 	{

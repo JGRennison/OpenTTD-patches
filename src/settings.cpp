@@ -315,7 +315,7 @@ static int ParseIntList(const char *p, T *items, size_t maxitems)
 				/* Do not accept multiple commas between numbers */
 				if (!comma) return -1;
 				comma = false;
-				FALLTHROUGH;
+				[[fallthrough]];
 
 			case ' ':
 				p++;

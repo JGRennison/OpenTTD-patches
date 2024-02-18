@@ -268,6 +268,12 @@ struct ClosestDepot {
 		location(location), destination(destination), reverse(reverse), found(true) {}
 };
 
+struct VehicleUnbunchState {
+	StateTicks depot_unbunching_last_departure = INVALID_STATE_TICKS; ///< When the vehicle last left its unbunching depot.
+	StateTicks depot_unbunching_next_departure = INVALID_STATE_TICKS; ///< When the vehicle will next try to leave its unbunching depot.
+	Ticks round_trip_time = 0;                                        ///< How many ticks for a single circumnavigation of the orders.
+};
+
 /** %Vehicle data structure. */
 struct Vehicle : VehiclePool::PoolItem<&_vehicle_pool>, BaseVehicle, BaseConsist {
 	/* These are here for structure packing purposes */
@@ -408,6 +414,8 @@ public:
 	Direction cur_image_valid_dir;      ///< NOSAVE: direction for which cur_image does not need to be regenerated on the next tick
 
 	VehicleCache vcache;                ///< Cache of often used vehicle values.
+
+	std::unique_ptr<VehicleUnbunchState> unbunch_state;
 
 	/**
 	 * Calculates the weight value that this vehicle will have when fully loaded with its current cargo.
@@ -957,6 +965,12 @@ public:
 	inline void SetServiceIntervalIsCustom(bool on) { SB(this->vehicle_flags, VF_SERVINT_IS_CUSTOM, 1, on); }
 
 	inline void SetServiceIntervalIsPercent(bool on) { SB(this->vehicle_flags, VF_SERVINT_IS_PERCENT, 1, on); }
+
+	inline void ResetDepotUnbunching() { this->unbunch_state.reset(); }
+
+	bool HasUnbunchingOrder() const;
+	void LeaveUnbunchingDepot();
+	bool IsWaitingForUnbunching() const;
 
 	VehicleOrderID GetFirstWaitingLocation(bool require_wait_timetabled) const;
 

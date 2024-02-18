@@ -695,6 +695,10 @@ CommandCost CmdStartStopVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1
 			Train::From(v)->lookahead.reset();
 			FillTrainReservationLookAhead(Train::From(v));
 		}
+
+		/* Unbunching data is no longer valid. */
+		v->ResetDepotUnbunching();
+
 		v->MarkDirty();
 		SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
 		SetWindowDirty(WC_VEHICLE_DEPOT, v->tile);

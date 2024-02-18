@@ -451,6 +451,9 @@ static bool CheckShipLeaveDepot(Ship *v)
 		return true;
 	}
 
+	/* Check if we should wait here for unbunching. */
+	if (v->IsWaitingForUnbunching()) return true;
+
 	/* We are leaving a depot, but have to go to the exact same one; re-enter */
 	if (v->current_order.IsType(OT_GOTO_DEPOT) &&
 			IsShipDepotTile(v->tile) && GetDepotIndex(v->tile) == v->current_order.GetDestination()) {
@@ -498,8 +501,9 @@ static bool CheckShipLeaveDepot(Ship *v)
 	v->UpdateViewport(true, true);
 	SetWindowDirty(WC_VEHICLE_DEPOT, v->tile);
 
-	v->PlayLeaveStationSound();
 	VehicleServiceInDepot(v);
+	v->LeaveUnbunchingDepot();
+	v->PlayLeaveStationSound();
 	InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile);
 	DirtyVehicleListWindowForVehicle(v);
 

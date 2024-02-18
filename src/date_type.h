@@ -385,4 +385,7 @@ static const int INDUSTRY_CUT_TREE_TICKS  = INDUSTRY_PRODUCE_TICKS * 2; ///< cyc
 /** An initial value for StateTicks when starting a new game */
 static constexpr StateTicks INITIAL_STATE_TICKS_VALUE = 1 << 24;
 
+/** Invalid state ticks value */
+static constexpr StateTicks INVALID_STATE_TICKS = INT64_MIN;
+
 #endif /* DATE_TYPE_H */

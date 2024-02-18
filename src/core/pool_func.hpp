@@ -166,7 +166,7 @@ DEFINE_POOL_METHOD(void *)::GetNew(size_t size)
  */
 DEFINE_POOL_METHOD(void *)::GetNew(size_t size, size_t index)
 {
-	extern void NORETURN SlErrorCorruptFmt(const char *format, ...);
+	[[noreturn]] extern void SlErrorCorruptFmt(const char *format, ...);
 
 	if (index >= Tmax_size) {
 		SlErrorCorruptFmt("%s index " PRINTF_SIZE " out of range (" PRINTF_SIZE ")", this->name, index, Tmax_size);

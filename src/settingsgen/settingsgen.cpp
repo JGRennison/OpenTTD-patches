@@ -28,7 +28,7 @@
  * @param s Format string.
  * @note Function does not return.
  */
-void NORETURN CDECL error(const char *s, ...)
+[[noreturn]] void CDECL error(const char *s, ...)
 {
 	char buf[1024];
 	va_list va;

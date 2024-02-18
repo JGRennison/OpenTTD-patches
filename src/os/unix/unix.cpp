@@ -237,7 +237,7 @@ void ShowOSErrorBox(const char *buf, bool)
 	}
 }
 
-void NORETURN DoOSAbort()
+[[noreturn]] void DoOSAbort()
 {
 	abort();
 }

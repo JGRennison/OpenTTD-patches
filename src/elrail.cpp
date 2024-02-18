@@ -156,7 +156,7 @@ static DualTrackBits GetRailTrackBitsUniversal(TileIndex t, byte *override)
 static TrackBits MaskWireBits(TileIndex t, TrackBits tracks)
 {
 	/* Single track bits are never masked out. */
-	if (likely(HasAtMostOneBit(tracks))) return tracks;
+	if (HasAtMostOneBit(tracks)) [[likely]] return tracks;
 
 	if (!IsPlainRailTile(t)) return tracks;
 

@@ -412,7 +412,7 @@ struct ThreadSlErrorException {
  * @note This function does never return as it throws an exception to
  *       break out of all the saveload code.
  */
-void NORETURN SlError(StringID string, std::string extra_msg)
+[[noreturn]] void SlError(StringID string, std::string extra_msg)
 {
 	if (IsNonMainThread() && IsNonGameThread() && _sl.action != SLA_SAVE) {
 		throw ThreadSlErrorException{ string, std::move(extra_msg) };
@@ -442,7 +442,7 @@ void NORETURN SlError(StringID string, std::string extra_msg)
 /**
  * As SlError, except that it takes a format string and additional parameters
  */
-void NORETURN CDECL SlErrorFmt(StringID string, const char *msg, ...)
+[[noreturn]] void CDECL SlErrorFmt(StringID string, const char *msg, ...)
 {
 	va_list va;
 	va_start(va, msg);
@@ -458,7 +458,7 @@ void NORETURN CDECL SlErrorFmt(StringID string, const char *msg, ...)
  * @note This function does never return as it throws an exception to
  *       break out of all the saveload code.
  */
-void NORETURN SlErrorCorrupt(std::string msg)
+[[noreturn]] void SlErrorCorrupt(std::string msg)
 {
 	SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME, std::move(msg));
 }
@@ -470,7 +470,7 @@ void NORETURN SlErrorCorrupt(std::string msg)
  * @note This function does never return as it throws an exception to
  *       break out of all the saveload code.
  */
-void NORETURN CDECL SlErrorCorruptFmt(const char *format, ...)
+[[noreturn]] void CDECL SlErrorCorruptFmt(const char *format, ...)
 {
 	va_list va;
 	va_start(va, format);

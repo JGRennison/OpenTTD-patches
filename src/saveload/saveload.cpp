@@ -1830,7 +1830,7 @@ void ChunkHandler::LoadCheck(size_t len) const
 		case CH_TABLE:
 		case CH_SPARSE_TABLE:
 			SlTableHeader({});
-			FALLTHROUGH;
+			[[fallthrough]];
 		case CH_ARRAY:
 		case CH_SPARSE_ARRAY:
 			SlSkipArray();

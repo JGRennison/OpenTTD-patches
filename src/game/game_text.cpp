@@ -48,7 +48,7 @@ void CDECL strgen_error(const char *s, ...)
 	_errors++;
 }
 
-void NORETURN CDECL strgen_fatal(const char *s, ...)
+[[noreturn]] void CDECL strgen_fatal(const char *s, ...)
 {
 	char buf[1024];
 	va_list va;

@@ -2727,7 +2727,7 @@ void NWidgetLeaf::SetupSmallestSize(Window *w)
 			size.width = std::max(size.width, ScaleGUITrad(30) + sprite_size.width);
 			size.height = std::max(sprite_size.height, GetStringBoundingBox("_").height + WidgetDimensions::scaled.framerect.Vertical());
 		}
-		FALLTHROUGH;
+		[[fallthrough]];
 		case WWT_PUSHBTN: {
 			padding = {WidgetDimensions::scaled.frametext.Horizontal(), WidgetDimensions::scaled.framerect.Vertical()};
 			break;
@@ -3110,7 +3110,7 @@ static const NWidgetPart *MakeNWidget(const NWidgetPart *nwid_begin, const NWidg
 				NWidgetBackground *nwb = dynamic_cast<NWidgetBackground *>(dest.get());
 				if (nwb != nullptr) nwb->SetPIPRatio(nwid_begin->u.pip.pre, nwid_begin->u.pip.inter, nwid_begin->u.pip.post);
 
-				if (unlikely(nwc == nullptr && nwb == nullptr)) throw std::runtime_error("WPT_PIPRATIO requires NWidgetPIPContainer or NWidgetBackground");
+				if (nwc == nullptr && nwb == nullptr) [[unlikely]] throw std::runtime_error("WPT_PIPRATIO requires NWidgetPIPContainer or NWidgetBackground");
 				break;
 			}
 
@@ -3223,7 +3223,7 @@ std::unique_ptr<NWidgetBase> MakeNWidgets(const NWidgetPart *nwid_begin, const N
 	if (container == nullptr) container = std::make_unique<NWidgetVertical>();
 	[[maybe_unused]] const NWidgetPart *nwid_part = MakeWidgetTree(nwid_begin, nwid_end, container);
 #ifdef WITH_ASSERT
-	if (unlikely(nwid_part != nwid_end)) throw std::runtime_error("Did not consume all NWidgetParts");
+	if (nwid_part != nwid_end) [[unlikely]] throw std::runtime_error("Did not consume all NWidgetParts");
 #endif
 	return container;
 }

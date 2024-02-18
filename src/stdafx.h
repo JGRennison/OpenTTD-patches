@@ -70,7 +70,6 @@
 
 /* Stuff for GCC */
 #if defined(__GNUC__) || (defined(__clang__) && !defined(_MSC_VER))
-#	define NORETURN __attribute__ ((noreturn))
 #	define CDECL
 #	define __int64 long long
 	/* Warn about functions using 'printf' format syntax. First argument determines which parameter
@@ -81,31 +80,12 @@
 #		define WARN_FORMAT(string, args) __attribute__ ((format (printf, string, args)))
 #	endif
 	#define WARN_TIME_FORMAT(string) __attribute__ ((format (strftime, string, 0)))
-	#define FINAL final
-
-	/* Use fallthrough attribute where supported */
-#	if __GNUC__ >= 7
-#		if __cplusplus > 201402L // C++17
-#			define FALLTHROUGH [[fallthrough]]
-#		else
-#			define FALLTHROUGH __attribute__((fallthrough))
-#		endif
-#	else
-#		define FALLTHROUGH
-#	endif
 #endif /* __GNUC__ || __clang__ */
 
 #if __GNUC__ > 11 || (__GNUC__ == 11 && __GNUC_MINOR__ >= 1)
 #      define NOACCESS(args) __attribute__ ((access (none, args)))
 #else
 #      define NOACCESS(args)
-#endif
-
-/* [[nodiscard]] on constructors doesn't work in GCC older than 10.1. */
-#if __GNUC__ < 10 || (__GNUC__ == 10 && __GNUC_MINOR__ < 1)
-#      define NODISCARD
-#else
-#      define NODISCARD [[nodiscard]]
 #endif
 
 #if defined(__MINGW32__)
@@ -159,7 +139,6 @@
 #	endif
 
 #	include <malloc.h> // alloca()
-#	define NORETURN __declspec(noreturn)
 #	if (_MSC_VER < 1900)
 #		define inline __forceinline
 #	endif
@@ -167,14 +146,6 @@
 #	define CDECL _cdecl
 #	define WARN_FORMAT(string, args)
 #	define WARN_TIME_FORMAT(string)
-#	define FINAL final
-
-	/* fallthrough attribute, VS 2017 */
-#	if (_MSC_VER >= 1910) || defined(__clang__)
-#		define FALLTHROUGH [[fallthrough]]
-#	else
-#		define FALLTHROUGH
-#	endif
 
 #	if defined(_WIN32) && !defined(_WIN64)
 #		if !defined(_W64)
@@ -439,11 +410,11 @@ typedef uint64_t unaligned_uint64;
 /* For the FMT library we only want to use the headers, not link to some library. */
 #define FMT_HEADER_ONLY
 
-void NORETURN CDECL usererror(const char *str, ...) WARN_FORMAT(1, 2);
-void NORETURN CDECL error(const char *str, ...) WARN_FORMAT(1, 2);
-void NORETURN CDECL assert_msg_error(int line, const char *file, const char *expr, const char *extra, const char *str, ...) WARN_FORMAT(5, 6);
-void NORETURN assert_str_error(int line, const char *file, const char *expr, const char *str);
-void NORETURN assert_str_error(int line, const char *file, const char *expr, const std::string &str);
+[[noreturn]] void CDECL usererror(const char *str, ...) WARN_FORMAT(1, 2);
+[[noreturn]] void CDECL error(const char *str, ...) WARN_FORMAT(1, 2);
+[[noreturn]] void CDECL assert_msg_error(int line, const char *file, const char *expr, const char *extra, const char *str, ...) WARN_FORMAT(5, 6);
+[[noreturn]] void assert_str_error(int line, const char *file, const char *expr, const char *str);
+[[noreturn]] void assert_str_error(int line, const char *file, const char *expr, const std::string &str);
 const char *assert_tile_info(uint32_t tile);
 #define NOT_REACHED() error("NOT_REACHED triggered at line %i of %s", __LINE__, __FILE__)
 

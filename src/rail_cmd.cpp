@@ -876,7 +876,7 @@ CommandCost CmdBuildSingleRail(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 				_rail_track_endtile = tile;
 				return_cmd_error(STR_ERROR_ALREADY_BUILT);
 			}
-			FALLTHROUGH;
+			[[fallthrough]];
 		}
 
 		default: {
@@ -1478,7 +1478,7 @@ static void ReReserveTrainPath(Train *v)
  * - p1 = (bit 4)   - 0 = signals, 1 = semaphores
  * - p1 = (bit 5-7) - type of the signal, for valid values see enum SignalType in rail_map.h
  * - p1 = (bit 8)   - convert the present signal type and variant
- * - p1 = (bit 9-14)- cycle through which signal set?
+ * - p1 = (bit 9-10)- cycle through which signal sets?
  * - p1 = (bit 15-16)-cycle the signal direction this many times
  * - p1 = (bit 17)  - 1 = don't modify an existing signal but don't fail either, 0 = always set new signal type
  * - p1 = (bit 18)  - permit creation of/conversion to bidirectionally signalled bridges/tunnels
@@ -1498,7 +1498,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t p
 	bool convert_signal = HasBit(p1, 8); // convert button pressed
 	uint num_dir_cycle = GB(p1, 15, 2);
 
-	uint which_signals = GB(p1, 9, 6);
+	SignalCycleGroups which_signals = (SignalCycleGroups)GB(p1, 9, 2);
 
 	uint signal_style = GB(p1, 19, 4);
 	if (signal_style > _num_new_signal_styles || !HasBit(_enabled_new_signal_styles_mask, signal_style)) return CMD_ERROR;
@@ -1757,10 +1757,8 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t p
 
 		} else {
 			if (_ctrl_pressed && GetSignalStyle(tile, track) != 0) {
-				SignalType new_sigtype = GetSignalType(tile, track);
-				do {
-					new_sigtype = NextSignalType(new_sigtype, which_signals);
-				} while (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && IsSignalTypeUnsuitableForRealisticBraking(new_sigtype));
+				SignalType new_sigtype = NextSignalType(GetSignalType(tile, track), which_signals);
+				if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && IsSignalTypeUnsuitableForRealisticBraking(new_sigtype)) return CMD_ERROR;
 				if (!is_style_usable(GetSignalVariant(tile, track), GetSignalStyle(tile, track), 1 << new_sigtype)) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
 			}
 
@@ -1842,9 +1840,8 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t p
 
 					if (sigtype == SIGTYPE_NO_ENTRY) CycleSignalSide(tile, track);
 
-					do {
-						sigtype = NextSignalType(sigtype, which_signals);
-					} while (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && IsSignalTypeUnsuitableForRealisticBraking(sigtype));
+					sigtype = NextSignalType(sigtype, which_signals);
+					if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && IsSignalTypeUnsuitableForRealisticBraking(sigtype)) return CMD_ERROR;
 
 					SetSignalType(tile, track, sigtype);
 					if (IsPbsSignal(sigtype) && (GetPresentSignals(tile) & SignalOnTrack(track)) == SignalOnTrack(track)) {
@@ -4065,13 +4062,13 @@ static void DrawTile_Track(TileInfo *ti, DrawTileProcParams params)
 			switch (GetRailDepotDirection(ti->tile)) {
 				case DIAGDIR_NE:
 					if (!IsInvisibilitySet(TO_BUILDINGS)) break;
-					FALLTHROUGH;
+					[[fallthrough]];
 				case DIAGDIR_SW:
 					DrawGroundSprite(ground + RTO_X, PAL_NONE);
 					break;
 				case DIAGDIR_NW:
 					if (!IsInvisibilitySet(TO_BUILDINGS)) break;
-					FALLTHROUGH;
+					[[fallthrough]];
 				case DIAGDIR_SE:
 					DrawGroundSprite(ground + RTO_Y, PAL_NONE);
 					break;
@@ -4085,13 +4082,13 @@ static void DrawTile_Track(TileInfo *ti, DrawTileProcParams params)
 				switch (GetRailDepotDirection(ti->tile)) {
 					case DIAGDIR_NE:
 						if (!IsInvisibilitySet(TO_BUILDINGS)) break;
-						FALLTHROUGH;
+						[[fallthrough]];
 					case DIAGDIR_SW:
 						DrawGroundSprite(overlay + RTO_X, PALETTE_CRASH);
 						break;
 					case DIAGDIR_NW:
 						if (!IsInvisibilitySet(TO_BUILDINGS)) break;
-						FALLTHROUGH;
+						[[fallthrough]];
 					case DIAGDIR_SE:
 						DrawGroundSprite(overlay + RTO_Y, PALETTE_CRASH);
 						break;
@@ -4105,13 +4102,13 @@ static void DrawTile_Track(TileInfo *ti, DrawTileProcParams params)
 				switch (GetRailDepotDirection(ti->tile)) {
 					case DIAGDIR_NE:
 						if (!IsInvisibilitySet(TO_BUILDINGS)) break;
-						FALLTHROUGH;
+						[[fallthrough]];
 					case DIAGDIR_SW:
 						DrawGroundSprite(rti->base_sprites.single_x, PALETTE_CRASH);
 						break;
 					case DIAGDIR_NW:
 						if (!IsInvisibilitySet(TO_BUILDINGS)) break;
-						FALLTHROUGH;
+						[[fallthrough]];
 					case DIAGDIR_SE:
 						DrawGroundSprite(rti->base_sprites.single_y, PALETTE_CRASH);
 						break;

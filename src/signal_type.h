@@ -66,6 +66,14 @@ enum SignalState {
 	SIGNAL_STATE_MAX = SIGNAL_STATE_GREEN,
 };
 
+/** Signal groups to cycle through. */
+enum SignalCycleGroups : uint8_t {
+	SCG_CURRENT_GROUP = 0,
+	SCG_BLOCK         = 1 << 0,
+	SCG_PBS           = 1 << 1,
+};
+DECLARE_ENUM_AS_BIT_SET(SignalCycleGroups)
+
 static const int SIGNAL_DIRTY_LEFT   = 14 * ZOOM_LVL_BASE;
 static const int SIGNAL_DIRTY_RIGHT  = 14 * ZOOM_LVL_BASE;
 static const int SIGNAL_DIRTY_TOP    = 30 * ZOOM_LVL_BASE;

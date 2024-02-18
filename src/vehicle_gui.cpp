@@ -1165,7 +1165,7 @@ struct RefitWindow : public Window {
 				this->selected_vehicle = v->index;
 				this->num_vehicles = UINT8_MAX;
 				this->ship_part_names.clear();
-				FALLTHROUGH;
+				[[fallthrough]];
 			}
 
 			case 2: { // The vehicle selection has changed; rebuild the entire list.
@@ -1191,7 +1191,7 @@ struct RefitWindow : public Window {
 					this->information_width = max_width;
 					this->ReInit();
 				}
-				FALLTHROUGH;
+				[[fallthrough]];
 			}
 
 			case 1: // A new cargo has been selected.
@@ -1252,7 +1252,7 @@ struct RefitWindow : public Window {
 					if (_ctrl_pressed) this->num_vehicles = UINT8_MAX;
 					break;
 				}
-				FALLTHROUGH;
+				[[fallthrough]];
 			}
 
 			default:
@@ -1310,7 +1310,7 @@ struct RefitWindow : public Window {
 				this->InvalidateData(1);
 
 				if (click_count == 1) break;
-				FALLTHROUGH;
+				[[fallthrough]];
 			}
 
 			case WID_VR_REFIT: // refit button
@@ -3881,6 +3881,8 @@ public:
 			}
 		} else if (v->type == VEH_AIRCRAFT && HasBit(Aircraft::From(v)->flags, VAF_DEST_TOO_FAR) && !v->current_order.IsType(OT_LOADING)) {
 			str = STR_VEHICLE_STATUS_AIRCRAFT_TOO_FAR;
+		} else if (v->IsInDepot() && v->IsWaitingForUnbunching()) {
+			str = STR_VEHICLE_STATUS_WAITING_UNBUNCHING;
 		} else { // vehicle is in a "normal" state, show current order
 			switch (v->current_order.GetType()) {
 				case OT_GOTO_STATION: {
@@ -3910,6 +3912,8 @@ public:
 						str = STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SELL_VEL;
 					} else if (v->current_order.GetDepotActionType() & ODATFB_HALT) {
 						str = HasBit(v->vehicle_flags, VF_PATHFINDER_LOST) ? STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL : STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL;
+					} else if (v->current_order.GetDepotActionType() & ODATFB_UNBUNCH) {
+						str = HasBit(v->vehicle_flags, VF_PATHFINDER_LOST) ? STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL : STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_UNBUNCH_VEL;
 					} else {
 						str = HasBit(v->vehicle_flags, VF_PATHFINDER_LOST) ? STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL : STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL;
 					}
@@ -3946,7 +3950,7 @@ public:
 						str = STR_VEHICLE_STATUS_LEAVING;
 						break;
 					}
-					FALLTHROUGH;
+					[[fallthrough]];
 				default:
 					if (v->GetNumManualOrders() == 0) {
 						str = STR_VEHICLE_STATUS_NO_ORDERS_VEL;

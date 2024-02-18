@@ -180,7 +180,7 @@ bool IsPossibleDockingTile(TileIndex t)
 	switch (GetTileType(t)) {
 		case MP_WATER:
 			if (IsLock(t) && GetLockPart(t) == LOCK_PART_MIDDLE) return false;
-			FALLTHROUGH;
+			[[fallthrough]];
 		case MP_RAILWAY:
 		case MP_STATION:
 		case MP_TUNNELBRIDGE:
@@ -546,7 +546,7 @@ CommandCost CmdBuildCanal(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
 						MakeSea(current_tile);
 						break;
 					}
-					FALLTHROUGH;
+					[[fallthrough]];
 
 				default:
 					MakeCanal(current_tile, _current_company, Random());
@@ -1162,7 +1162,7 @@ FloodingBehaviour GetFloodingBehaviour(TileIndex tile)
 				Slope tileh = GetTileSlope(tile);
 				return (IsSlopeWithOneCornerRaised(tileh) ? FLOOD_ACTIVE : FLOOD_DRYUP);
 			}
-			FALLTHROUGH;
+			[[fallthrough]];
 		case MP_STATION:
 		case MP_INDUSTRY:
 			return (GetWaterClass(tile) == WATER_CLASS_SEA) ? FLOOD_ACTIVE : FLOOD_NONE;
@@ -1216,7 +1216,7 @@ void DoFloodTile(TileIndex target)
 					flooded = true;
 					break;
 				}
-				FALLTHROUGH;
+				[[fallthrough]];
 
 			case MP_CLEAR:
 				if (DoCommand(target, 0, 0, DC_EXEC, CMD_LANDSCAPE_CLEAR).Succeeded()) {

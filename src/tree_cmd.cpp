@@ -591,7 +591,7 @@ CommandCost CmdPlantTree(TileIndex end_tile, DoCommandFlag flags, uint32_t p1, u
 					msg = STR_ERROR_CAN_T_BUILD_ON_WATER;
 					continue;
 				}
-				FALLTHROUGH;
+				[[fallthrough]];
 
 			case MP_CLEAR: {
 				if (!CanPlantTreesOnTile(tile, false) || IsBridgeAbove(tile)) {
@@ -963,7 +963,7 @@ static void TileLoop_Trees(TileIndex tile)
 							break;
 						}
 					}
-					FALLTHROUGH;
+					[[fallthrough]];
 
 					case 2: { // add a neighbouring tree
 						if (!CanPlantExtraTrees(tile)) break;

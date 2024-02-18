@@ -283,12 +283,14 @@ static void GenericPlaceSignals(TileIndex tile)
 	uint32_t p1 = track;
 
 	/* Which signals should we cycle through? */
-	uint8_t cycle_types;
-
-	if (_settings_client.gui.cycle_signal_types == SIGNAL_CYCLE_ALL && (_settings_client.gui.signal_gui_mode == SIGNAL_GUI_ALL || _settings_game.vehicle.train_braking_model == TBM_REALISTIC)) {
-		cycle_types = SIGNAL_CYCLE_ALL;
+	SignalCycleGroups cycle_types;
+	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+		cycle_types = SCG_BLOCK | SCG_PBS;
+	} else if (_settings_client.gui.cycle_signal_types == SIGNAL_CYCLE_ALL) {
+		cycle_types = SCG_PBS;
+		if (_settings_client.gui.signal_gui_mode == SIGNAL_GUI_ALL) cycle_types |= SCG_BLOCK;
 	} else {
-		cycle_types = SIGNAL_CYCLE_PATH;
+		cycle_types = SCG_CURRENT_GROUP;
 	}
 
 	if (w != nullptr) {
@@ -297,7 +299,7 @@ static void GenericPlaceSignals(TileIndex tile)
 		SB(p1, 4, 1, _cur_signal_variant);
 		SB(p1, 5, 3, _cur_signal_type);
 		SB(p1, 8, 1, _convert_signal_button);
-		SB(p1, 9, 6, cycle_types);
+		SB(p1, 9, 2, cycle_types);
 		SB(p1, 19, 4, _cur_signal_style);
 		if (_cur_signal_type == SIGTYPE_NO_ENTRY) SB(p1, 15, 2, 1); // reverse default signal direction
 	} else {
@@ -305,7 +307,7 @@ static void GenericPlaceSignals(TileIndex tile)
 		SB(p1, 4, 1, (CalTime::CurYear() < _settings_client.gui.semaphore_build_before ? SIG_SEMAPHORE : SIG_ELECTRIC));
 		SB(p1, 5, 3, GetDefaultSignalType());
 		SB(p1, 8, 1, 0);
-		SB(p1, 9, 6, cycle_types);
+		SB(p1, 9, 2, cycle_types);
 	}
 	SB(p1, 18, 1, _settings_client.gui.adv_sig_bridge_tun_modes);
 	SB(p1, 23, 5, Clamp<int>(_settings_client.gui.drag_signals_density, 1, 16));
@@ -2757,7 +2759,7 @@ static void SetDefaultRailGui()
 			if (count[rt] > 0) break;
 
 			/* No rail, just get the first available one */
-			FALLTHROUGH;
+			[[fallthrough]];
 		}
 		case 0: {
 			/* Use first available type */

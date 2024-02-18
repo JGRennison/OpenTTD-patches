@@ -1358,33 +1358,39 @@ DEF_CONSOLE_CMD(ConNewGame)
 
 DEF_CONSOLE_CMD(ConRestart)
 {
-	if (argc == 0) {
-		IConsoleHelp("Restart game. Usage: 'restart'");
-		IConsoleHelp("Restarts a game. It tries to reproduce the exact same map as the game started with.");
-		IConsoleHelp("However:");
-		IConsoleHelp(" * restarting games started in another version might create another map due to difference in map generation");
-		IConsoleHelp(" * restarting games based on scenarios, loaded games or heightmaps will start a new game based on the settings stored in the scenario/savegame");
+	if (argc == 0 || argc > 2) {
+		IConsoleHelp("Restart game. Usage: 'restart [current|newgame]'.");
+		IConsoleHelp("Restarts a game, using either the current or newgame (default) settings.");
+		IConsoleHelp(" * if you started from a new game, and your current/newgame settings haven't changed, the game will be identical to when you started it.");
+		IConsoleHelp(" * if you started from a savegame / scenario / heightmap, the game might be different, because the current/newgame settings might differ.");
 		return true;
 	}
 
-	/* Don't copy the _newgame pointers to the real pointers, so call SwitchToMode directly */
-	_settings_game.game_creation.map_x = MapLogX();
-	_settings_game.game_creation.map_y = MapLogY();
-	_switch_mode = SM_RESTARTGAME;
+	if (argc == 1 || std::string_view(argv[1]) == "newgame") {
+		StartNewGameWithoutGUI(_settings_game.game_creation.generation_seed);
+	} else {
+		_settings_game.game_creation.map_x = MapLogX();
+		_settings_game.game_creation.map_y = MapLogY();
+		_switch_mode = SM_RESTARTGAME;
+	}
+
 	return true;
 }
 
 DEF_CONSOLE_CMD(ConReload)
 {
 	if (argc == 0) {
-		IConsoleHelp("Reload game. Usage: 'reload'");
-		IConsoleHelp("Reloads a game.");
-		IConsoleHelp(" * if you started from a savegame / scenario / heightmap, that exact same savegame / scenario / heightmap will be loaded.");
-		IConsoleHelp(" * if you started from a new game, this acts the same as 'restart'.");
+		IConsoleHelp("Reload game. Usage: 'reload'.");
+		IConsoleHelp("Reloads a game if loaded via savegame / scenario / heightmap.");
 		return true;
 	}
 
-	/* Don't copy the _newgame pointers to the real pointers, so call SwitchToMode directly */
+	if (_file_to_saveload.abstract_ftype == FT_NONE || _file_to_saveload.abstract_ftype == FT_INVALID) {
+		IConsolePrint(CC_ERROR, "No game loaded to reload.");
+		return true;
+	}
+
+	/* Use a switch-mode to prevent copying over newgame settings to active settings. */
 	_settings_game.game_creation.map_x = MapLogX();
 	_settings_game.game_creation.map_y = MapLogY();
 	_switch_mode = SM_RELOADGAME;

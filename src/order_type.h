@@ -140,6 +140,7 @@ enum OrderDepotActionFlags {
 	ODATFB_HALT          = 1 << 0, ///< Service the vehicle and then halt it.
 	ODATFB_NEAREST_DEPOT = 1 << 1, ///< Send the vehicle to the nearest depot.
 	ODATFB_SELL          = 1 << 2, ///< Sell the vehicle on arrival at the depot.
+	ODATFB_UNBUNCH       = 1 << 3, ///< Service the vehicle and then unbunch it.
 };
 DECLARE_ENUM_AS_BIT_SET(OrderDepotActionFlags)
 
@@ -247,6 +248,7 @@ enum OrderDepotAction {
 	DA_ALWAYS_GO, ///< Always go to the depot
 	DA_SERVICE,   ///< Service only if needed
 	DA_STOP,      ///< Go to the depot and stop there
+	DA_UNBUNCH,   ///< Go to the depot and unbunch
 	DA_SELL,      ///< Go to the depot and sell vehicle
 	DA_END
 };

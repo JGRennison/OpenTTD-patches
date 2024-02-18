@@ -1606,12 +1606,45 @@ void Load_VLKA()
 	}
 }
 
+const SaveLoadTable GetVehicleUnbunchStateDescription()
+{
+	static const SaveLoad _vehicle_unbunch_state_desc[] = {
+		SLE_VAR(VehicleUnbunchState, depot_unbunching_last_departure,                SLE_INT64),
+		SLE_VAR(VehicleUnbunchState, depot_unbunching_next_departure,                SLE_INT64),
+		SLE_VAR(VehicleUnbunchState, round_trip_time,                                SLE_INT32),
+	};
+
+	return _vehicle_unbunch_state_desc;
+}
+
+void Save_VUBS()
+{
+	for (Vehicle *v : Vehicle::Iterate()) {
+		if (v->unbunch_state != nullptr) {
+			SlSetArrayIndex(v->index);
+			SlObject(v->unbunch_state.get(), GetVehicleUnbunchStateDescription());
+		}
+	}
+}
+
+void Load_VUBS()
+{
+	int index;
+	while ((index = SlIterateArray()) != -1) {
+		Vehicle *v = Vehicle::GetIfValid(index);
+		assert(v != nullptr);
+		v->unbunch_state.reset(new VehicleUnbunchState());
+		SlObject(v->unbunch_state.get(), GetVehicleUnbunchStateDescription());
+	}
+}
+
 static const ChunkHandler veh_chunk_handlers[] = {
 	{ 'VEHS', Save_VEHS, Load_VEHS, Ptrs_VEHS, nullptr, CH_SPARSE_ARRAY },
 	{ 'VEOX', Save_VEOX, Load_VEOX, nullptr,   nullptr, CH_SPARSE_ARRAY },
 	{ 'VESR', Save_VESR, Load_VESR, nullptr,   nullptr, CH_SPARSE_ARRAY },
 	{ 'VENC', Save_VENC, Load_VENC, nullptr,   nullptr, CH_RIFF,         Special_VENC },
 	{ 'VLKA', Save_VLKA, Load_VLKA, nullptr,   nullptr, CH_SPARSE_ARRAY },
+	{ 'VUBS', Save_VUBS, Load_VUBS, nullptr,   nullptr, CH_SPARSE_ARRAY },
 };
 
 extern const ChunkHandlerTable _veh_chunk_handlers(veh_chunk_handlers);

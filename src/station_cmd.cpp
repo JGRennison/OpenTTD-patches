@@ -3880,7 +3880,7 @@ static void TileLoop_Station(TileIndex tile)
 
 		case STATION_DOCK:
 			if (!IsTileFlat(tile)) break; // only handle water part
-			FALLTHROUGH;
+			[[fallthrough]];
 
 		case STATION_OILRIG: //(station part)
 		case STATION_BUOY:
