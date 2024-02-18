@@ -163,6 +163,7 @@ STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :Evitar a colisi
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :Cando se habilita, os barcos intentaran evitar pasar xunto a outro. Os mellores resultados obtéñense cando os xiros de 90º están prohibidos.
 
 STR_CONFIG_SETTING_CHUNNEL                                      :Permitir a construción de túneis baixo a auga: {STRING}
+STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :Cando está habilitado, poden construírse túneles por baixo de corpos de auga ao nivel do mar. En cada extremo do túnel, o espazo entre o túnel e as baldosas da costa debe ser de entre {NUM} e {NUM} cadros.
 
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :Os trens das distintas compañías non poden chocar entre si: {STRING}
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :Esta opción é básicamente para previr que xogadores que non son de confianza deliberadamente causen accidentes con trens de outras comopañías en multixogador con infraestrutura ferroviaria compartida.
@@ -205,8 +206,13 @@ STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS_HELPTEXT       :Amosar o nome d
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS          :Amosar os ratios de pesos do tren nos detallees: {STRING}
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS_HELPTEXT :Amosar os ratios de pesos do tren na fiestra de detalles do vehículo
 
+STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_RECOLOUR                 :Amosar sinais restrinxidos predeterminados con postes de sinal azuis: {STRING}
+STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_RECOLOUR_HELPTEXT        :Amosar sinais eléctricos con programas de restrición de enrutamento con un poste de sinal azul, cando se usen os gráficos de sinal predeterminados. Isto non afecta aos gráficos de sinal NewGRF. É para facelo máis fácil distinguir visualmente os sinais restrinxidos.
+
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF                             :Amosar todos os sinais cos gráficos por defecto: {STRING}
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT                    :Amosar todos os sinais usando os sinais gráficos por defecto, en lugar de usar sinais de NewGRF. Isto é para que sexa máis sinxelo ver o estado e tipo de sinais cando os NewGRF non están claros ou non teñen gráficos.
+STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT_EXTRA              :{STRING}{}O modo "só para sinais restrinxidos" utiliza os gráficos de sinal predeterminados para sinais eléctricos con programas de restrición de enrutamento adxuntos, cando a recoloración dos postes de sinal está habilitada e o NewGRF non xestiona diferentes gráficos para sinais restrinxidos por si mesmo.
+STR_CONFIG_SETTING_SHOW_ALL_SIG_RESTRICTED_RECOLOUR             :Só para sinais restrinxidos
 
 STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES             :Amosar as características avanzadas de restricións de enrutamento: {STRING}
 STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :Amosar as características avanzadas de restricións de enrutamento. Cando se desactiva, algunhas características avanzandas non se amosan na UI, pero seguen dispoñibles para todos os xogadores.
@@ -273,6 +279,9 @@ STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW_HELPTEXT   :Cando está act
 
 STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION                   :Ocultar as ubicacións predeterminadas das ordes de paradas: {STRING}
 STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION_HELPTEXT          :Cando está activado, ocúltase a ubicación de parada da orde cando coincide co predeterminado.
+
+STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL                              :Amosar a ferramenta de polilínea de ferrocarril: {STRING}
+STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL_HELPTEXT                     :Cando habilitado, a barra de ferramentas de construción de ferrocarril inclúe un botón para construír usando o modo de polilínea.
 
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Habilitar modos de sinais avanzadas en pontes/túneis: {STRING}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Habilita o uso de modos avanzados de simulación de sinais en pontes e túneis. Cando se desactiva, os pontes/túneis que non están xa en modo avanzado non se poden cambiar a modo avanzado, sen embargo outros xogadores poden escoller habilitar esta opción e usar o modo avanzado.
@@ -443,6 +452,11 @@ STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_HELPTEXT   :Os tempos dos h
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_VALUE      :{COMMA}{NBSP}tick{P 0 "" s}
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_DEFAULT    :Por defecto
 
+STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION          :Duración predeterminada para novos horarios de saídas: {STRING}
+STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_HELPTEXT :Isto define a duración predeterminada para os novos horarios de despacho. O valor predeterminado é de 24 horas (1440 minutos). (Cando se planifica o tempo en días, o valor predeterminado é de 1 ano).
+STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_VALUE    :{COMMA}{NBSP}minuto{P 0 "" s}
+STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_DEFAULT  :Por defecto
+
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE                            :Estradas/Tranvías por defecto (despois de iniciar ou cargar un xogo): {STRING}
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_HELPTEXT                   :Estradas/Tranvías a seleccionar despois de comezar ou cargar un xogo. 'primeiro dispoñible' selecciona o tipo máis antigo de estrada/tranvía, 'último dispoñible' selecciona o tipo máis novo de estrada/tranvía, 'máis usado' seleccioan o tipo que actualmente ten máis uso, 'por defecto' selecciona o tipo por defecto.
 
@@ -498,6 +512,26 @@ STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO                     :Sen límite
 STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES                           :As vilas poden construír pontes: {STRING}
 STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT                  :Habilitar isto permite as vilas construír pontes
 
+STR_CONFIG_SETTING_TOWN_CARGO_SCALE                             :Escalar a produción de carga da vila: {STRING}
+STR_CONFIG_SETTING_TOWN_CARGO_SCALE_HELPTEXT                    :Escalar a produción de carga das vilas por este porcentaxe.
+
+STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE                         :Escalar a produción de carga da industria: {STRING}
+STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT                :Escalar a produción de carga das industrias por este porcentaxe.
+STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA          :{STRING}{}Isto exclúe as industrias de corte de árbores.{}Non se garante que sexa totalmente compatible con todos os NewGRFs de industria.
+
+STR_CONFIG_SETTING_TOWN_CARGO_SCALE_MODE                        :Intervalo de tempo para o escalado da produción de carga da vila: {STRING}
+STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE                    :Intervalo de tempo para o escalado da produción de carga da industria: {STRING}
+
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :Mensual: A produción de carga por mes é escalada.{}{}Tempo de xogo: A produción de carga por unidade de tempo de xogo é escalada (a produción de carga por mes tamén é escalada polo factor de lonxitude do día). Pode non ser posible alcanzar factores de escalado moi altos.
+STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE_HELPTEXT_EXTRA     :{STRING}{}O modo de tempo de xogo non se garante que sexa totalmente compatible con todos os NewGRFs de industria.
+
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_MONTHLY                     :Mensualmente
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_GAME_TIME                   :Tempo de xogo
+
+STR_CONFIG_SETTING_CARGO_SCALE_VALUE                            :{NUM}%
+STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY                    :{NUM}% (mensualmente)
+STR_CONFIG_SETTING_CARGO_SCALE_VALUE_REAL_TIME                  :{NUM}% (tempo de xogo)
+
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :Sen vilas por enriba da altitude: {STRING}
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :Non se constrúen vilas por enriba da altitude especificada durante a creación do mapa.
 
@@ -512,6 +546,12 @@ STR_CONFIG_SETTING_MIN_LAND_AREA_ZERO                           :Desactivado
 
 STR_CONFIG_SETTING_FLOOD_FROM_EDGES                             :A auga flúe dende os bordos do mapa: {STRING}
 STR_CONFIG_SETTING_FLOOD_FROM_EDGES_HELPTEXT                    :Controla se a auga inunda fúe dende os bordos do mapa ao nivel do mar.
+
+STR_CONFIG_SETTING_MAP_EDGE_MODE                                :Comportamento do bordo do mapa: {STRING}
+STR_CONFIG_SETTING_MAP_EDGE_MODE_HELPTEXT                       :Se se permite elevar os bordos do mapa por riba do nivel do mar e como se mostra a área vacía fóra do mapa.
+STR_CONFIG_SETTING_MAP_EDGE_MODE_DEFAULT                        :Por defecto
+STR_CONFIG_SETTING_MAP_EDGE_MODE_SEA_LEVEL                      :Os bordos do mapa están restrinxidos ao nivel do mar
+STR_CONFIG_SETTING_MAP_EDGE_MODE_SEA_LEVEL_OUTSIDE_WATER        :Os bordos do mapa están restrinxidos ao nivel do mar, e fóra do mapa móstrase como auga.
 
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE                        :Axustado do emprazamento das árbores no ártico: {STRING}
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_HELPTEXT               :Axustar emprazametno das árbores arredor da liña de neve no clima ártico. As árbores comenza a desaparecer por enriba da liña de neve. As árbores son unha misttura de árbores temperadas e ártica xusto debaixo da liña de neve. Por debaixo diso son temeperadas.
@@ -692,11 +732,16 @@ STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_OFF              :Desactivado
 STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_WITHIN_TOWN      :Dentro da vila
 STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_ANYWHERE         :En calquer lugar
 
+STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS                   :Cando arrastras de auto-recheo, continúa máis aló das estacións/puntos de referencia: {STRING}
+STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS_HELPTEXT          :Selecciona o comportamento da colocación de sinais cando se fai Ctrl+arrastrar coas sinais. Se estiver desactivado, a colocación de sinais detense ao alcanzar unha baldosa de estación/punto de referencia. Se estiver activado, a colocación de sinais continúa no lado afastado das estacións de ferrocarril/puntos de referencia.
+
 STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED                   :{WHITE}Non se pode modificar a opción...
 STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED_NEWGRF            :{WHITE}...o axuste está controlado por un NewGRF
 
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Mostra-lo horario en ticks en lugar de en días: {STRING}
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Mostra-los tempos de viaxe nos horarios en ticks en vez de en días
+
+STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT_EXTRA         :{STRING}{}Varias características requiren o uso do pathfinder YAPF, incluíndo: restricións de enrutamento (todas as accións relacionadas co pathfinder e a reserva), inversión en puntos de referencia/sinais e pasaxe a través de depósitos de trens.
 
 STR_CHEAT_EDIT_MONEY_QUERY_CAPT                                 :{WHITE}Aumentar ou disminuir os cartos
 STR_CHEAT_INFLATION_COST                                        :{LTBLUE}Modificar o factor da inflación de custos: {ORANGE}{DECIMAL}
@@ -714,6 +759,8 @@ STR_TRANSPARENT_TUNNELS_TOOLTIP                                 :{BLACK}Alterna 
 
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Tempo de viaxe promedio: {STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capacidade: {CARGO_LONG}
+STR_LINKGRAPH_STATS_TOOLTIP_USAGE                               :{}Uso: {CARGO_LONG}
+STR_LINKGRAPH_STATS_TOOLTIP_PLANNED                             :{}Planificado: {CARGO_LONG}
 STR_LINKGRAPH_STATS_TOOLTIP_DISTANCE                            :Distancia Manhattan: {COMMA} cadro{P 0 "" s}{}Distancia en liña recta: {COMMA} cadro{P 1 "" s}
 
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL                         :{BLACK}Construír vías utilizando o modo poliliña. Ctrl alterna construír/borrar para a construción de ferrocarrís. Shift alterna construír/amosar a estimación de custos
@@ -856,6 +903,7 @@ STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :Adquirir ou aga
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :Intentar adquirir
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :Liberar (diante)
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK                            :Liberar (detrás)
+STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE                      :Liberar (en reserva)
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :Fin PBS: Adquirir ou agardar
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :Fin PBS: Intentar adquirir
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :Fin PBS: Liberar
@@ -863,6 +911,7 @@ STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :Adquirir slot: 
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :Intentar adquirir slot: {STRING}{BLACK}{STRING}, ou continuar de calquera xeito
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :Liberar slot: {STRING}{BLACK}{STRING} (diante do tren)
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :Liberar slot: {STRING}{BLACK}{STRING} (detrás do tren)
+STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :Liberar slot: {STRING}{BLACK}{STRING} (en reserva PBS)
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :Reserva de ruta PBS remata aqui: Adquirir slot: {STRING}{BLACK}{STRING}, ou agardar no sinal de ruta PBS
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :Reserva de ruta PBS remata aqui: Adquirir slot: {STRING}{BLACK}{STRING}, ou continuar de calquera xeito
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :Reserva de ruta PBS remata aqui: Liberar slot: {STRING}{BLACK}{STRING}
@@ -1207,10 +1256,17 @@ STR_NEWGRF_INSPECT_SPRITE_DUMP_TOOLTIP                          :{BLACK}Amosa a 
 STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT                            :{BLACK}U
 STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP                    :{BLACK}Amosar grupos de sprites sen ter ningunha aplicación optimizada.{}{}Require recargar NewGRFs se non estaba previamente habilitado (misc_debug 10).
 STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO                             :Desprazarse o sprite número
+STR_NEWGRF_INSPECT_SPRITE_DUMP_CLEAR                            :Eliminar resaltado/marcado
+STR_NEWGRF_INSPECT_SPRITE_DUMP_MORE_DETAILS                     :Amosar máis detalles
+STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_HIGHLIGHT               :Click para resaltar
+STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_MARK                    :Click para marcar
+STR_NEWGRF_INSPECT_SPRITE_DUMP_OPTIONS                          :{BLACK}Opcións e comandos extra
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT          :{BLACK}Click para destacar o grupo de sprites
+STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_MARK               :{BLACK}Click para marcar o grupo de sprites
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_COLLAPSE           :{BLACK}Shift+Click para compactar o grupo de sprites
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT_TEMP     :{BLACK}Ctrl+Click para destacar o rexistro de almacenamento temporal
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS                    :Sinais
+STR_NEWGRF_INSPECT_CAPTION_TRACERESTRICT                        :Programa de restrición de enrutamento en {HEX}/{HEX}
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :Característica non implementada remapeada ID: nome: {2:STRING}, mapeada a: {5:HEX} (sprite {3:NUM})
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY                   :Remapeado non implementado dunha característica da propiedade 'Action 0': {4:HEX}, nome: {2:STRING}, mapeado a: {5:HEX} (sprite {3:NUM})
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_ACTION5_TYPE               :Remapeado non implementado dun tipo de 'Action 5': nome: {2:STRING}, mapeado a: {4:HEX} (sprite {3:NUM})
@@ -1534,6 +1590,8 @@ STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_FIRST         :é o primeiro s
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_FIRST     :non é o primeiro slot
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_LAST          :é o último slot
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_LAST      :non é o último slot
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG          :ten a etiqueta {NUM}
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG  :non ten a etiqueta {NUM}
 
 STR_ORDERS_MANAGE_LIST                                          :{BLACK}Xestionar lista
 STR_ORDERS_MANAGE_LIST_TOOLTIP                                  :{BLACK}Xestiona esta lista de ordes
@@ -1546,9 +1604,11 @@ STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :Engadir lista d
 STR_ORDER_DUPLICATE_ORDER                                       :Duplicar orde
 STR_ORDER_CHANGE_JUMP_TARGET                                    :Modificar obxectivo de salto
 
+STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON                               :Tentar adquirir slot
 STR_ORDER_RELEASE_SLOT_BUTTON                                   :Liberar slot
 STR_ORDER_CHANGE_COUNTER_BUTTON                                 :Modificar contador
 STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}O slot de tren a liberar
+STR_ORDER_TRY_ACQUIRE_SLOT_TOOLTIP                              :{BLACK}O slot de tren a tentar adquirir
 
 STR_ORDER_CHANGE_COUNTER_TOOLTIP                                :{BLACK}O contador a modificar
 
@@ -1591,6 +1651,7 @@ STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_REFIT                     :(Descargar por 
 STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY_REFIT                 :(Descargar por tipo de cargamento e agardar por calquera carga completa con reaxuste a {STRING})
 STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD_REFIT               :(Descargar por tipo de cargamento e cargar por tipo de cargamento con reaxuste a {STRING})
 
+STR_ORDER_RV_DIR_ANY                                            :[calquera dirección]
 STR_ORDER_RV_DIR_NE                                             :[dirección nordeste]
 STR_ORDER_RV_DIR_SE                                             :[dirección sueste]
 STR_ORDER_RV_DIR_SW                                             :[dirección suroeste]
@@ -1954,6 +2015,8 @@ STR_SCHDISPATCH_DURATION_CAPTION_DAY                            :{BLACK}Duració
 STR_SCHDISPATCH_DURATION_CAPTION_TICKS                          :{BLACK}Duración (ticks)
 STR_SCHDISPATCH_START                                           :{BLACK}Data de comezo
 STR_SCHDISPATCH_SET_START                                       :{BLACK}Fixar data de comezo
+STR_SCHDISPATCH_START_TIME                                      :{BLACK}Hora de comezo
+STR_SCHDISPATCH_SET_START_TIME                                  :{BLACK}Fixar hora de comezo
 STR_SCHDISPATCH_START_TOOLTIP                                   :{BLACK}Selecciona unha data para comezar este programa.
 STR_SCHDISPATCH_START_CAPTION_MINUTE                            :{BLACK}Hora de comezo (hhmm)
 STR_SCHDISPATCH_DELAY                                           :{BLACK}Atraso
@@ -1963,6 +2026,8 @@ STR_SCHDISPATCH_DELAY_CAPTION_DAY                               :{BLACK}Atraso (
 STR_SCHDISPATCH_DELAY_CAPTION_TICKS                             :{BLACK}Atraso (ticks)
 STR_SCHDISPATCH_ADJUST                                          :{BLACK}Axustar slots de saída
 STR_SCHDISPATCH_ADJUST_TOOLTIP                                  :{BLACK}Axustar todos os slots de saída deste programa
+STR_SCHDISPATCH_REMOVE_TOOLTIP                                  :{BLACK}Habilitar a eliminación de franxas de saída deste horario.
+STR_SCHDISPATCH_REMOVE_SLOT                                     :{BLACK}Eliminar slot de saída
 STR_SCHDISPATCH_ADJUST_CAPTION_MINUTE                           :{BLACK}Axuste a engadir (minutos)
 STR_SCHDISPATCH_ADJUST_CAPTION_DAY                              :{BLACK}Axuste a engadir (días)
 STR_SCHDISPATCH_ADJUST_CAPTION_TICKS                            :{BLACK}Axuste a engadir (ticks)
@@ -1984,6 +2049,13 @@ STR_SCHDISPATCH_DUPLICATE_SCHEDULE                              :{BLACK}Duplicar
 STR_SCHDISPATCH_DUPLICATE_SCHEDULE_TOOLTIP                      :{BLACK}Crear unha copia desta programación de saída.
 STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES                        :{BLACK}Engadir programacións dende vehículo
 STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES_TOOLTIP                :{BLACK}Engadir as programacións dende outro vehículo.
+STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS                           :Reutilizar franxas de saída
+STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS_TOOLTIP                   :{BLACK}Establecer se as franxas de saída poden ser usadas máis dunha vez.
+STR_SCHDISPATCH_MANAGE_SLOT                                     :{BLACK}Xestionar Slot
+STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT                       :Reutilizar este slot de saída
+STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT_TOOLTIP               :{BLACK}Establecer se a franxa de saída seleccionada pode ser utilizada máis dunha vez.
+STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_TAG                        :Etiqueta {NUM}
+STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_TAG_TOOLTIP                :{BLACK}Etiquetar a franxa de saída seleccionada (para usar con ordes condicionais).
 STR_SCHDISPATCH_NO_SCHEDULES                                    :{BLACK}Sen programas
 STR_SCHDISPATCH_SCHEDULE_ID                                     :{BLACK}Programa {NUM} de {NUM}
 STR_SCHDISPATCH_NAMED_SCHEDULE_ID                               :{BLACK}{STRING} ({NUM} de {NUM})
@@ -1991,7 +2063,16 @@ STR_SCHDISPATCH_RENAME_SCHEDULE_TOOLTIP                         :{BLACK}Nome do 
 STR_SCHDISPATCH_RENAME_SCHEDULE_CAPTION                         :{WHITE}Nome do programa
 STR_ERROR_CAN_T_RENAME_SCHEDULE                                 :{WHITE}Non se pode renomear programa...
 STR_SCHDISPATCH_MOVE_SCHEDULE                                   :{BLACK}Cambiar posición do programa actual na lista
+STR_SCHDISPATCH_DATE_WALLCLOCK_TINY_FLAGGED                     :{DATE_WALLCLOCK_TINY}*
+STR_SCHDISPATCH_SLOT_TOOLTIP                                    :{BLACK}{DATE_WALLCLOCK_TINY}
+STR_SCHDISPATCH_SLOT_TOOLTIP_RELATIVE                           : ({TIME_HHMM} dende o inicio)
+STR_SCHDISPATCH_SLOT_TOOLTIP_LAST                               :{}Último slot de saída
+STR_SCHDISPATCH_SLOT_TOOLTIP_NEXT                               :{}Seguinte slot de saída dispoñible
+STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE                              :{}O slot de saída pódese usar máis dunha vez
+STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX                        : ({DATE_WALLCLOCK_TINY})
+STR_SCHDISPATCH_SLOT_TOOLTIP_TAG                                :{}Etiqueta {NUM}
 
+STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}Sen saídas previas.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Última saída ás {DATE_WALLCLOCK_TINY}.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}A última saída aínda non saíu, sairá ás {DATE_WALLCLOCK_TINY}.
 STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}Este programa require {COMMA} vehículo{P "" s}.
@@ -1999,11 +2080,15 @@ STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}Este pro
 STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}Este programa comezou ás {DATE_WALLCLOCK_TINY}, e remata ás {DATE_WALLCLOCK_TINY}.
 STR_SCHDISPATCH_SUMMARY_L4                                      :{BLACK}Permítese un atraso máximo de {STRING} antes de que o slot se salte.
 STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}Este programa non está activo
+STR_SCHDISPATCH_SUMMARY_REUSE_SLOTS_ENABLED                     :{BLACK}Tódalas franxas de saída poden ser utilizadas máis dunha vez.
+STR_SCHDISPATCH_SUMMARY_NEXT_AVAILABLE_DEPARTURE                :{BLACK}Seguinte slot de saída dispoñible ás {DATE_WALLCLOCK_TINY}.
 
 STR_SCHDISPATCH_SLOT_OUTSIDE_SCHEDULE                           :{BLACK}Un ou máis slots de saída están fora da duración do programa
 
 STR_SCHDISPATCH_NOT_ASSIGNED_TO_ORDER                           :{BLACK}Esta saída programada non está asignada a unha orde.
 STR_SCHDISPATCH_ASSIGNED_TO_ORDER                               :{BLACK}Esta saída programada está asignada a orde {NUM}: {STRING}.
+STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_PAST                       :{BLACK}Isto é máis de {NUM} horas no pasado.
+STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_FUTURE                     :{BLACK}Isto é máis de {NUM} horas no futuro.
 
 STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_START                       :{BLACK}Inicio:
 STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_STEP                        :{BLACK}Período:
