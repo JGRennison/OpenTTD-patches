@@ -268,7 +268,7 @@ struct MemoryDumper {
 	void Flush(SaveFilter &writer);
 	size_t GetSize() const;
 	void StartAutoLength();
-	std::pair<byte *, size_t> StopAutoLength();
+	std::span<byte> StopAutoLength();
 	bool IsAutoLengthActive() const { return this->saved_buf != nullptr; }
 };
 

@@ -975,12 +975,11 @@ template <typename F>
 std::span<byte> SlSaveToTempBuffer(F proc)
 {
 	extern uint8_t SlSaveToTempBufferSetup();
-	extern std::pair<byte *, size_t> SlSaveToTempBufferRestore(uint8_t state);
+	extern std::span<byte> SlSaveToTempBufferRestore(uint8_t state);
 
 	uint8_t state = SlSaveToTempBufferSetup();
 	proc();
-	auto result = SlSaveToTempBufferRestore(state);
-	return std::span<byte>(result.first, result.second);
+	return SlSaveToTempBufferRestore(state);
 }
 
 /**

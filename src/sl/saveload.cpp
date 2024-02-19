@@ -200,10 +200,10 @@ void MemoryDumper::StartAutoLength()
 	this->bufe = this->autolen_buf_end;
 }
 
-std::pair<byte *, size_t> MemoryDumper::StopAutoLength()
+std::span<byte> MemoryDumper::StopAutoLength()
 {
 	assert(this->saved_buf != nullptr);
-	auto res = std::make_pair(this->autolen_buf, this->buf - this->autolen_buf);
+	auto res = std::span(this->autolen_buf, this->buf - this->autolen_buf);
 
 	this->buf = this->saved_buf;
 	this->bufe = this->saved_bufe;
@@ -2003,8 +2003,8 @@ void SlObjectSaveFiltered(void *object, const SaveLoadTable &slt)
 		SlObjectIterateBase<SLA_SAVE, false>(object, slt);
 		auto result = _sl.dumper->StopAutoLength();
 		_sl.need_length = NL_WANTLENGTH;
-		SlSetLength(result.second);
-		_sl.dumper->CopyBytes(result.first, result.second);
+		SlSetLength(result.size());
+		_sl.dumper->CopyBytes(result);
 	} else {
 		SlObjectIterateBase<SLA_SAVE, false>(object, slt);
 	}
@@ -2275,8 +2275,8 @@ void SlAutolength(AutolengthProc *proc, void *arg)
 	auto result = _sl.dumper->StopAutoLength();
 	/* Setup length */
 	_sl.need_length = NL_WANTLENGTH;
-	SlSetLength(result.second);
-	_sl.dumper->CopyBytes(result.first, result.second);
+	SlSetLength(result.size());
+	_sl.dumper->CopyBytes(result);
 }
 
 uint8_t SlSaveToTempBufferSetup()
@@ -2290,7 +2290,7 @@ uint8_t SlSaveToTempBufferSetup()
 	return (uint8_t) orig_need_length;
 }
 
-std::pair<byte *, size_t> SlSaveToTempBufferRestore(uint8_t state)
+std::span<byte> SlSaveToTempBufferRestore(uint8_t state)
 {
 	NeedLength orig_need_length = (NeedLength)state;
 
@@ -2316,7 +2316,7 @@ extern void SlConditionallySaveCompletion(const SlConditionallySaveState &state,
 		if (!save) _sl.dumper->buf = _sl.dumper->autolen_buf + state.current_len;
 	} else {
 		auto result = SlSaveToTempBufferRestore(state.need_length);
-		if (save) _sl.dumper->CopyBytes(result.first, result.second);
+		if (save) _sl.dumper->CopyBytes(result);
 	}
 }
 
