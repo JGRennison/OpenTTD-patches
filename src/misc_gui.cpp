@@ -30,6 +30,7 @@
 #include "viewport_func.h"
 #include "rev.h"
 #include "core/backup_type.hpp"
+#include "pathfinder/water_regions.h"
 
 #include "widgets/misc_widget.h"
 
@@ -145,6 +146,8 @@ public:
 			DEBUG(misc, LANDINFOD_LEVEL, "m6     = %#x", _me[tile].m6);
 			DEBUG(misc, LANDINFOD_LEVEL, "m7     = %#x", _me[tile].m7);
 			DEBUG(misc, LANDINFOD_LEVEL, "m8     = %#x", _me[tile].m8);
+
+			PrintWaterRegionDebugInfo(tile);
 		}
 #undef LANDINFOD_LEVEL
 	}

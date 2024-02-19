@@ -3047,7 +3047,7 @@ DEF_CONSOLE_CMD(ConDumpCargoTypes)
 		IConsolePrintF(CC_DEFAULT, "  %02u Bit: %2u, Label: %c%c%c%c, Callback mask: 0x%02X, Cargo class: %c%c%c%c%c%c%c%c%c%c%c, GRF: %08X, %s",
 				(uint) i,
 				spec->bitnum,
-				spec->label >> 24, spec->label >> 16, spec->label >> 8, spec->label,
+				spec->label.base() >> 24, spec->label.base() >> 16, spec->label.base() >> 8, spec->label.base(),
 				spec->callback_mask,
 				(spec->classes & CC_PASSENGERS)   != 0 ? 'p' : '-',
 				(spec->classes & CC_MAIL)         != 0 ? 'm' : '-',
@@ -3161,10 +3161,10 @@ DEF_CONSOLE_CMD(ConDumpGrfCargoTables)
 			char *b = buffer;
 			for (const CargoSpec *cs : CargoSpec::Iterate()) {
 				if (grf->cargo_map[cs->Index()] == i) {
-					b += seprintf(b, lastof(buffer), "%s%02u[%c%c%c%c]", (b == buffer) ? ": " : ", ", cs->Index(), GB(cs->label, 24, 8), GB(cs->label, 16, 8), GB(cs->label, 8, 8), GB(cs->label, 0, 8));
+					b += seprintf(b, lastof(buffer), "%s%02u[%c%c%c%c]", (b == buffer) ? ": " : ", ", cs->Index(), GB(cs->label.base(), 24, 8), GB(cs->label.base(), 16, 8), GB(cs->label.base(), 8, 8), GB(cs->label.base(), 0, 8));
 				}
 			}
-			IConsolePrintF(CC_DEFAULT, "  %c%c%c%c%s", GB(cl, 24, 8), GB(cl, 16, 8), GB(cl, 8, 8), GB(cl, 0, 8), buffer);
+			IConsolePrintF(CC_DEFAULT, "  %c%c%c%c%s", GB(cl.base(), 24, 8), GB(cl.base(), 16, 8), GB(cl.base(), 8, 8), GB(cl.base(), 0, 8), buffer);
 			i++;
 		}
 	}

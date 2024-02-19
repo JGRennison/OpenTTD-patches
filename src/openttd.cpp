@@ -1305,7 +1305,7 @@ static void MakeNewEditorWorld()
  * @param error_detail Optional string to fill with detaied error information.
  */
 bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileType dft, GameMode newgm, Subdirectory subdir,
-		struct LoadFilter *lf = nullptr, std::string *error_detail = nullptr)
+		std::shared_ptr<struct LoadFilter> lf = nullptr, std::string *error_detail = nullptr)
 {
 	assert(fop == SLO_LOAD);
 	assert(dft == DFT_GAME_FILE || (lf == nullptr && dft == DFT_OLD_GAME_FILE));
@@ -1313,7 +1313,7 @@ bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileTy
 
 	_game_mode = newgm;
 
-	SaveOrLoadResult result = (lf == nullptr) ? SaveOrLoad(filename, fop, dft, subdir) : LoadWithFilter(lf);
+	SaveOrLoadResult result = (lf == nullptr) ? SaveOrLoad(filename, fop, dft, subdir) : LoadWithFilter(std::move(lf));
 	if (result == SL_OK) return true;
 
 	if (error_detail != nullptr) *error_detail = GetSaveLoadErrorString();

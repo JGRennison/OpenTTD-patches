@@ -18,9 +18,6 @@
 #include "core/bitmath_func.hpp"
 #include <vector>
 
-/** Globally unique label of a cargo type. */
-typedef uint32_t CargoLabel;
-
 /** Town growth effect when delivering cargo. */
 enum TownAcceptanceEffect : byte {
 	TAE_BEGIN = 0,
@@ -206,6 +203,7 @@ private:
 	static CargoSpec array[NUM_CARGO]; ///< Array holding all CargoSpecs
 
 	friend void SetupCargoForClimate(LandscapeID l);
+	friend void BuildCargoLabelMap();
 	friend void FinaliseCargoArray();
 };
 
@@ -213,9 +211,21 @@ extern CargoTypes _cargo_mask;
 extern CargoTypes _standard_cargo_mask;
 
 void SetupCargoForClimate(LandscapeID l);
-CargoID GetCargoIDByLabel(CargoLabel cl);
+bool IsDefaultCargo(CargoID cid);
+void BuildCargoLabelMap();
 CargoID GetCargoIDByBitnum(uint8_t bitnum);
-CargoID GetDefaultCargoID(LandscapeID l, CargoType ct);
+
+CargoID GetCargoIDByLabelUsingMap(CargoLabel label);
+
+inline CargoID GetCargoIDByLabel(CargoLabel label)
+{
+	extern CargoID _cargo_id_passengers;
+	extern CargoID _cargo_id_mail;
+	if (label == CT_PASSENGERS) return _cargo_id_passengers;
+	if (label == CT_MAIL) return _cargo_id_mail;
+	return GetCargoIDByLabelUsingMap(label);
+}
+
 Dimension GetLargestCargoIconSize();
 
 void InitializeSortedCargoSpecs();

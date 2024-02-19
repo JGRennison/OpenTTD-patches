@@ -193,14 +193,23 @@ SpriteID TileZoneCheckUnservedBuildingsEvaluation(TileIndex tile, Owner owner)
 		return ZONING_INVALID_SPRITE_ID;
 	}
 
+	auto has_town_cargo = [&](const CargoArray &dat) {
+		for (auto tpe : {TPE_PASSENGERS, TPE_MAIL}) {
+			for (const CargoSpec *cs : CargoSpec::town_production_cargoes[tpe]) {
+				if (dat[cs->Index()] > 0) return true;
+			}
+		}
+		return false;
+	};
+
 	CargoArray dat{};
 	dat.Clear();
 	AddAcceptedCargo(tile, dat, nullptr);
-	if (dat[CT_MAIL] + dat[CT_PASSENGERS] == 0) {
-		// nothing is accepted, so now test if cargo is produced
+	if (!has_town_cargo(dat)) {
+		/* nothing is accepted, so now test if cargo is produced */
 		AddProducedCargo(tile, dat);
-		if (dat[CT_MAIL] + dat[CT_PASSENGERS] == 0) {
-			// total is still 0, so give up
+		if (!has_town_cargo(dat)) {
+			/* still don't have town cargo, so give up */
 			return ZONING_INVALID_SPRITE_ID;
 		}
 	}

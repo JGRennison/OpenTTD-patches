@@ -8,6 +8,7 @@
  /** @file water_regions.cpp Handles dividing the water in the map into square regions to assist pathfinding. */
 
 #include "stdafx.h"
+#include "debug_fmt.h"
 #include "map_func.h"
 #include "water_regions.h"
 #include "map_func.h"
@@ -86,6 +87,9 @@ class WaterRegion
 	bool has_cross_region_aqueducts = false;
 	TWaterRegionPatchLabel number_of_patches = 0; // 0 = no water, 1 = one single patch of water, etc...
 	std::unique_ptr<TWaterRegionPatchLabelArray> tile_patch_labels;
+
+public:
+	void Invalidate() { this->initialized = false; }
 };
 
 static std::unique_ptr<TWaterRegionPatchLabelArray> _spare_labels;
@@ -186,6 +190,7 @@ public:
 		}
 
 		this->wr.tile_patch_labels->fill(INVALID_WATER_REGION_PATCH);
+		this->wr.edge_traversability_bits.fill(0);
 
 		TWaterRegionPatchLabel current_label = 1;
 		TWaterRegionPatchLabel highest_assigned_label = 0;
@@ -222,7 +227,18 @@ public:
 				for (const Trackdir dir : SetTrackdirBitIterator(valid_dirs)) {
 					/* By using a TrackFollower we "play by the same rules" as the actual ship pathfinder */
 					CFollowTrackWater ft;
-					if (ft.Follow(tile, dir) && this->ContainsTile(ft.m_new_tile)) tiles_to_check.push_back(ft.m_new_tile);
+					if (ft.Follow(tile, dir)) {
+						if (this->ContainsTile(ft.m_new_tile)) {
+							tiles_to_check.push_back(ft.m_new_tile);
+						} else if (!ft.m_is_bridge) {
+							assert(DistanceManhattan(ft.m_new_tile, tile) == 1);
+							const auto side = DiagdirBetweenTiles(tile, ft.m_new_tile);
+							const int local_x_or_y = DiagDirToAxis(side) == AXIS_X ? TileY(tile) - this->tile_y : TileX(tile) - this->tile_x;
+							SetBit(this->wr.edge_traversability_bits[side], local_x_or_y);
+						} else {
+							this->wr.has_cross_region_aqueducts = true;
+						}
+					}
 				}
 			}
 
@@ -231,18 +247,6 @@ public:
 
 		this->wr.number_of_patches = highest_assigned_label;
 		this->wr.initialized = true;
-
-		/* Calculate the traversability (whether the tile can be entered / exited) for all edges. Note that
-		 * we always follow the same X and Y scanning direction, this is important for comparisons later on! */
-		this->wr.edge_traversability_bits.fill(0);
-		const uint32_t top_x = this->tile_x;
-		const uint32_t top_y = this->tile_y;
-		for (uint32_t i = 0; i < WATER_REGION_EDGE_LENGTH; ++i) {
-			if (GetWaterTracks(TileXY(top_x + i, top_y)) & TRACK_BIT_3WAY_NW) SetBit(this->wr.edge_traversability_bits[DIAGDIR_NW], i); // NW edge
-			if (GetWaterTracks(TileXY(top_x + i, top_y + WATER_REGION_EDGE_LENGTH - 1)) & TRACK_BIT_3WAY_SE) SetBit(this->wr.edge_traversability_bits[DIAGDIR_SE], i); // SE edge
-			if (GetWaterTracks(TileXY(top_x, top_y + i)) & TRACK_BIT_3WAY_NE) SetBit(this->wr.edge_traversability_bits[DIAGDIR_NE], i); // NE edge
-			if (GetWaterTracks(TileXY(top_x + WATER_REGION_EDGE_LENGTH - 1, top_y + i)) & TRACK_BIT_3WAY_SW) SetBit(this->wr.edge_traversability_bits[DIAGDIR_SW], i); // SW edge
-		}
 
 		if (this->wr.number_of_patches == 0 || (this->wr.number_of_patches == 1 && !this->HasNonMatchingPatchLabel(1))) {
 			/* No need for patch storage: trivial cases */
@@ -272,6 +276,33 @@ public:
 			out.fill(this->NumberOfPatches() == 0 ? INVALID_WATER_REGION_PATCH : 1);
 		}
 		return out;
+	}
+
+	void PrintDebugInfo()
+	{
+		Debug(map, 9, "Water region {},{} labels and edge traversability = ...", this->tile_x / WATER_REGION_EDGE_LENGTH, this->tile_y / WATER_REGION_EDGE_LENGTH);
+
+		const size_t max_element_width = std::to_string(this->wr.number_of_patches).size();
+
+		std::array<int, 16> traversability_NW{0};
+		for (auto bitIndex : SetBitIterator(GetEdgeTraversabilityBits(DIAGDIR_NW))) *(traversability_NW.rbegin() + bitIndex) = 1;
+		Debug(map, 9, "    {:{}}", fmt::join(traversability_NW, " "), max_element_width);
+		Debug(map, 9, "  +{:->{}}+", "", WATER_REGION_EDGE_LENGTH * (max_element_width + 1) + 1);
+
+		for (uint y = 0; y < WATER_REGION_EDGE_LENGTH; ++y) {
+			std::string line{};
+			for (uint x = 0; x < WATER_REGION_EDGE_LENGTH; ++x) {
+				const auto label = this->GetLabel(TileXY(this->tile_x + x, this->tile_y + y));
+				const std::string label_str = label == INVALID_WATER_REGION_PATCH ? "." : std::to_string(label);
+				line = fmt::format("{:{}}", label_str, max_element_width) + " " + line;
+			}
+			Debug(map, 9, "{} | {}| {}", GB(this->GetEdgeTraversabilityBits(DIAGDIR_SW), y, 1), line, GB(this->GetEdgeTraversabilityBits(DIAGDIR_NE), y, 1));
+		}
+
+		Debug(map, 9, "  +{:->{}}+", "", WATER_REGION_EDGE_LENGTH * (max_element_width + 1) + 1);
+		std::array<int, 16> traversability_SE{0};
+		for (auto bitIndex : SetBitIterator(this->GetEdgeTraversabilityBits(DIAGDIR_SE))) *(traversability_SE.rbegin() + bitIndex) = 1;
+		Debug(map, 9, "    {:{}}", fmt::join(traversability_SE, " "), max_element_width);
 	}
 };
 
@@ -371,9 +402,20 @@ WaterRegionPatchDesc GetWaterRegionPatchInfo(TileIndex tile)
  */
 void InvalidateWaterRegion(TileIndex tile)
 {
-	if (tile < MapSize()) {
-		GetWaterRegionRef(tile).Invalidate();
-	}
+	if (tile >= MapSize()) return;
+
+	const TWaterRegionIndex region = GetWaterRegionIndex(tile);
+	_water_regions[region].Invalidate();
+
+	/* When updating the water region we look into the first tile of adjacent water regions to determine edge
+	 * traversability. This means that if we invalidate any region edge tiles we might also change the traversability
+	 * of the adjacent region. This code ensures the adjacent regions also get invalidated in such a case. */
+	const uint x = TileX(tile);
+	const uint y = TileY(tile);
+	if ((x & WATER_REGION_EDGE_MASK) ==                      0 && x >         0) _water_regions[region - 1].Invalidate();
+	if ((x & WATER_REGION_EDGE_MASK) == WATER_REGION_EDGE_MASK && x < MapMaxX()) _water_regions[region + 1].Invalidate();
+	if ((y & WATER_REGION_EDGE_MASK) ==                      0 && y >         0) _water_regions[region - GetWaterRegionMapSizeX()].Invalidate();
+	if ((y & WATER_REGION_EDGE_MASK) == WATER_REGION_EDGE_MASK && y < MapMaxY()) _water_regions[region + GetWaterRegionMapSizeX()].Invalidate();
 }
 
 /**
@@ -552,4 +594,9 @@ void WaterRegionCheckCaches(std::function<void(const char *)> log)
 		}
 	}
 #undef CCLOG
+}
+
+void PrintWaterRegionDebugInfo(TileIndex tile)
+{
+	if (_debug_map_level >= 9) GetUpdatedWaterRegion(tile).PrintDebugInfo();
 }

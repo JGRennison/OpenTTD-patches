@@ -945,7 +945,7 @@ void AddAcceptedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &accepta
 			AddAcceptedCargoSetMask(accepts[1], GB(callback, 4, 4), acceptance, always_accepted);
 			if (_settings_game.game_creation.landscape != LT_TEMPERATE && HasBit(callback, 12)) {
 				/* The 'S' bit indicates food instead of goods */
-				AddAcceptedCargoSetMask(CT_FOOD, GB(callback, 8, 4), acceptance, always_accepted);
+				AddAcceptedCargoSetMask(GetCargoIDByLabel(CT_FOOD), GB(callback, 8, 4), acceptance, always_accepted);
 			} else {
 				AddAcceptedCargoSetMask(accepts[2], GB(callback, 8, 4), acceptance, always_accepted);
 			}
@@ -2184,8 +2184,12 @@ void UpdateTownRadii()
 
 void UpdateTownMaxPass(Town *t)
 {
-	t->supplied[CT_PASSENGERS].old_max = _town_cargo_scaler.Scale(t->cache.population >> 3);
-	t->supplied[CT_MAIL].old_max = _town_cargo_scaler.Scale(t->cache.population >> 4);
+	for (const CargoSpec *cs : CargoSpec::town_production_cargoes[TPE_PASSENGERS]) {
+		t->supplied[cs->Index()].old_max = _town_cargo_scaler.Scale(t->cache.population >> 3);
+	}
+	for (const CargoSpec *cs : CargoSpec::town_production_cargoes[TPE_MAIL]) {
+		t->supplied[cs->Index()].old_max = _town_cargo_scaler.Scale(t->cache.population >> 4);
+	}
 }
 
 static void UpdateTownGrowthRate(Town *t);
@@ -4171,10 +4175,19 @@ static uint GetNormalGrowthRate(Town *t)
 		 * The growth rate can only be decreased by this setting, not increased.
 		 */
 		uint32_t inverse_m = UINT32_MAX / m;
-		auto calculate_cargo_ratio_fix15 = [](const TransportedCargoStat<uint32_t> &stat) -> uint32_t {
-			return stat.old_max ? ((uint64_t) (stat.old_act << 15)) / stat.old_max : 1 << 15;
-		};
-		uint32_t cargo_ratio_fix16 = calculate_cargo_ratio_fix15(t->supplied[CT_PASSENGERS]) + calculate_cargo_ratio_fix15(t->supplied[CT_MAIL]);
+
+		uint32_t cargo_ratio_fix16 = 0;
+		for (auto tpe : {TPE_PASSENGERS, TPE_MAIL}) {
+			uint32_t old_max = 0;
+			uint32_t old_act = 0;
+			for (const CargoSpec *cs : CargoSpec::town_production_cargoes[tpe]) {
+				const TransportedCargoStat<uint32_t> &stat = t->supplied[cs->Index()];
+				old_max += stat.old_max;
+				old_act += stat.old_act;
+			}
+			cargo_ratio_fix16 += old_max ? ((uint64_t) (old_act << 15)) / old_max : 1 << 15;
+		}
+
 		uint64_t cargo_dependant_part = (((uint64_t) cargo_ratio_fix16) * ((uint64_t) inverse_m) * _settings_game.economy.town_growth_cargo_transported) >> 16;
 		uint64_t non_cargo_dependant_part = ((uint64_t) inverse_m) * (100 - _settings_game.economy.town_growth_cargo_transported);
 		uint64_t total = (cargo_dependant_part + non_cargo_dependant_part);

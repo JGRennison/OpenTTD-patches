@@ -1346,7 +1346,7 @@ class NIHCargo : public NIHelper {
 		const CargoSpec *spec = CargoSpec::Get(index);
 		seprintf(buffer, lastof(buffer), "  Bit: %2u, Label: %c%c%c%c, Callback mask: 0x%02X",
 				spec->bitnum,
-				spec->label >> 24, spec->label >> 16, spec->label >> 8, spec->label,
+				spec->label.base() >> 24, spec->label.base() >> 16, spec->label.base() >> 8, spec->label.base(),
 				spec->callback_mask);
 		output.print(buffer);
 		int written = seprintf(buffer, lastof(buffer), "  Cargo class: %s%s%s%s%s%s%s%s%s%s%s",

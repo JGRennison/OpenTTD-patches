@@ -79,4 +79,6 @@ struct WaterRegionSaveLoadInfo
 	bool initialized;
 };
 
+void PrintWaterRegionDebugInfo(TileIndex tile);
+
 #endif /* WATER_REGIONS_H */

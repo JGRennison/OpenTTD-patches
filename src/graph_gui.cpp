@@ -570,7 +570,7 @@ public:
 		SetDParam(1, INT64_MAX);
 		uint y_label_width = GetStringBoundingBox(STR_GRAPH_Y_LABEL).width;
 
-		size->width  = std::max<uint>(size->width,  ScaleGUITrad(5) + y_label_width + this->num_on_x_axis * (x_label_width + ScaleGUITrad(5)) + ScaleGUITrad(9));
+		size->width  = std::max<uint>(size->width,  ScaleGUITrad(5) + y_label_width + this->num_vert_lines * (x_label_width + ScaleGUITrad(5)) + ScaleGUITrad(9));
 		size->height = std::max<uint>(size->height, ScaleGUITrad(5) + (1 + MIN_GRAPH_NUM_LINES_Y * 2 + (this->draw_dates ? 3 : 1)) * GetCharacterHeight(FS_SMALL) + ScaleGUITrad(4));
 		size->height = std::max<uint>(size->height, size->width / 3);
 	}
@@ -1488,7 +1488,7 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			this->colours[i] = cs->legend_colour;
-			for (int j = 0; j != 20; j++) {
+			for (int j = 0; j != this->num_on_x_axis; j++) {
 				const byte ctt = _cargo_payment_x_mode ? static_cast<byte>(factor / static_cast<float>((j + 1) * this->x_values_increment)) : (j + 1) * 4;
 				this->cost[i][j] = GetTransportedGoodsIncome(_cargo_payment_x_mode ? 1 : 10, _cargo_payment_x_mode ? 200 : 20, ctt, cs->Index());
 			}

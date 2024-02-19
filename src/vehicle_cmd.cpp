@@ -178,7 +178,8 @@ CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 				_returned_refit_capacity = e->GetDisplayDefaultCapacity(&_returned_mail_refit_capacity);
 				_returned_vehicle_capacities.Clear();
 				_returned_vehicle_capacities[default_cargo] = _returned_refit_capacity;
-				_returned_vehicle_capacities[CT_MAIL] = _returned_mail_refit_capacity;
+				CargoID mail = GetCargoIDByLabel(CT_MAIL);
+				if (IsValidCargoID(mail)) _returned_vehicle_capacities[mail] = _returned_mail_refit_capacity;
 			}
 		}
 
@@ -438,7 +439,8 @@ static CommandCost RefitVehicle(Vehicle *v, bool only_this, uint8_t num_vehicles
 		total_mail_capacity += mail_capacity;
 
 		_returned_vehicle_capacities[new_cid] += amount;
-		_returned_vehicle_capacities[CT_MAIL] += mail_capacity;
+		CargoID mail = GetCargoIDByLabel(CT_MAIL);
+		if (IsValidCargoID(mail)) _returned_vehicle_capacities[mail] += mail_capacity;
 
 		if (!refittable) continue;
 

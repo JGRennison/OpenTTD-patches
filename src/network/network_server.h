@@ -85,7 +85,7 @@ public:
 	bool settings_authed = false;///< Authorised to control all game settings
 	bool supports_zstd = false;  ///< Client supports zstd compression
 
-	struct PacketWriter *savegame; ///< Writer used to write the savegame.
+	std::shared_ptr<struct PacketWriter> savegame; ///< Writer used to write the savegame.
 	NetworkAddress client_address; ///< IP-address of the client (so they can be banned)
 
 	std::string desync_log;

@@ -76,8 +76,8 @@ void DoExitSave();
 
 void DoAutoOrNetsave(FiosNumberedSaveName &counter, bool threaded, FiosNumberedSaveName *lt_counter = nullptr);
 
-SaveOrLoadResult SaveWithFilter(struct SaveFilter *writer, bool threaded, SaveModeFlags flags);
-SaveOrLoadResult LoadWithFilter(struct LoadFilter *reader);
+SaveOrLoadResult SaveWithFilter(std::shared_ptr<struct SaveFilter> writer, bool threaded, SaveModeFlags flags);
+SaveOrLoadResult LoadWithFilter(std::shared_ptr<struct LoadFilter> reader);
 bool IsNetworkServerSave();
 bool IsScenarioSave();
 

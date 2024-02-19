@@ -29,14 +29,14 @@ struct ReadBuffer {
 	byte buf[MEMORY_CHUNK_SIZE]; ///< Buffer we're going to read from.
 	byte *bufp;                  ///< Location we're at reading the buffer.
 	byte *bufe;                  ///< End of the buffer we can read from.
-	LoadFilter *reader;          ///< The filter used to actually read.
+	std::shared_ptr<LoadFilter> reader; ///< The filter used to actually read.
 	size_t read;                 ///< The amount of read bytes so far from the filter.
 
 	/**
 	 * Initialise our variables.
 	 * @param reader The filter to actually read data.
 	 */
-	ReadBuffer(LoadFilter *reader) : bufp(nullptr), bufe(nullptr), reader(reader), read(0)
+	ReadBuffer(std::shared_ptr<LoadFilter> reader) : bufp(nullptr), bufe(nullptr), reader(std::move(reader)), read(0)
 	{
 	}
 
@@ -265,7 +265,7 @@ struct MemoryDumper {
 		this->buf += 8;
 	}
 
-	void Flush(SaveFilter *writer);
+	void Flush(SaveFilter &writer);
 	size_t GetSize() const;
 	void StartAutoLength();
 	std::pair<byte *, size_t> StopAutoLength();
