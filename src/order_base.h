@@ -53,7 +53,7 @@ void ClearOrderDestinationRefcountMap();
 
 /*
  * xflags bits:
- * Bit 0:    OT_CONDITIONAL: IsWaitTimetabled(): For branch travel time
+ * Bit 0:    OT_CONDITIONAL and OT_GOTO_DEPOT: IsWaitTimetabled(): Depot: wait is timetabled, conditional: branch travel time
  * Bit 1:    IsWaitFixed(): Wait time fixed
  * Bits 2-3: GetLeaveType(): Order leave type
  * Bit 4:    IsTravelFixed(): Travel time fixed
@@ -168,6 +168,11 @@ public:
 	{
 		CheckExtraInfoAlloced();
 		return this->extra->xdata2;
+	}
+
+	inline uint16_t GetRawFlags() const
+	{
+		return this->flags;
 	}
 
 	Order *next;          ///< Pointer to next order. If nullptr, end of list
@@ -475,7 +480,7 @@ public:
 	inline bool IsWaitTimetabled() const
 	{
 		if (this->HasNoTimetableTimes()) return true;
-		return this->IsType(OT_CONDITIONAL) ? HasBit(this->GetXFlags(), 0) : HasBit(this->flags, 3);
+		return (this->IsType(OT_CONDITIONAL) || this->IsType(OT_GOTO_DEPOT)) ? HasBit(this->GetXFlags(), 0) : HasBit(this->flags, 3);
 	}
 	/** Does this order have an explicit travel time set? */
 	inline bool IsTravelTimetabled() const
@@ -504,7 +509,8 @@ public:
 	inline void SetWaitTimetabled(bool timetabled)
 	{
 		if (this->HasNoTimetableTimes()) return;
-		if (this->IsType(OT_CONDITIONAL)) {
+		if (this->IsType(OT_CONDITIONAL) || this->IsType(OT_GOTO_DEPOT)) {
+			if (this->extra == nullptr && !timetabled) return;
 			SB(this->GetXFlagsRef(), 0, 1, timetabled ? 1 : 0);
 		} else {
 			SB(this->flags, 3, 1, timetabled ? 1 : 0);

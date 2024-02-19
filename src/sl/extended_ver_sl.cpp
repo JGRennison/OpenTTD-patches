@@ -98,7 +98,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_SIG_TUNNEL_BRIDGE,                XSCF_NULL,               10,  10, "signal_tunnel_bridge",             nullptr, nullptr, "XBSS"           },
 	{ XSLFI_IMPROVED_BREAKDOWNS,              XSCF_NULL,                8,   8, "improved_breakdowns",              nullptr, nullptr, nullptr          },
 	{ XSLFI_CONSIST_BREAKDOWN_FLAG,           XSCF_NULL,                1,   1, "consist_breakdown_flag",           nullptr, nullptr, nullptr          },
-	{ XSLFI_TT_WAIT_IN_DEPOT,                 XSCF_NULL,                1,   1, "tt_wait_in_depot",                 nullptr, nullptr, nullptr          },
+	{ XSLFI_TT_WAIT_IN_DEPOT,                 XSCF_NULL,                2,   2, "tt_wait_in_depot",                 nullptr, nullptr, nullptr          },
 	{ XSLFI_AUTO_TIMETABLE,                   XSCF_NULL,                5,   5, "auto_timetables",                  nullptr, nullptr, nullptr          },
 	{ XSLFI_VEHICLE_REPAIR_COST,              XSCF_NULL,                2,   2, "vehicle_repair_cost",              nullptr, nullptr, nullptr          },
 	{ XSLFI_ENH_VIEWPORT_PLANS,               XSCF_IGNORABLE_ALL,       4,   4, "enh_viewport_plans",               nullptr, nullptr, "PLAN"           },
