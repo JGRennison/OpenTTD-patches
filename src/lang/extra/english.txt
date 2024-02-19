@@ -2164,6 +2164,9 @@ STR_CANNOT_ENABLE_BECAUSE_UNBUNCHING                            :Cannot enable b
 STR_CANNOT_ENABLE_BECAUSE_SCHED_DISPATCH                        :Cannot enable because scheduled dispatch is enabled
 STR_CANNOT_ENABLE_BECAUSE_AUTO_SEPARATION                       :Cannot enable because automatic separation is enabled
 
+STR_ERROR_UNBUNCHING_NO_UNBUNCHING_SCHED_DISPATCH               :{WHITE}... cannot unbunch a vehicle using scheduled dispatch
+STR_ERROR_UNBUNCHING_NO_UNBUNCHING_AUTO_SEPARATION              :{WHITE}... cannot unbunch a vehicle using automatic separation
+
 # Modifier key toggle window
 STR_MODIFIER_KEY_TOGGLE_CAPTION                                 :{WHITE}Modifier keys
 STR_SHIFT_KEY_NAME                                              :{BLACK}Shift

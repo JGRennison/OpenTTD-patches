@@ -1949,14 +1949,17 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 			if (data == DA_UNBUNCH) {
 				/* Only one unbunching order is allowed in a vehicle's orders. If this order already has an unbunching action, no error is needed. */
 				if (v->HasUnbunchingOrder() && !(order->GetDepotActionType() & ODATFB_UNBUNCH)) return_cmd_error(STR_ERROR_UNBUNCHING_ONLY_ONE_ALLOWED);
+				if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) return_cmd_error(STR_ERROR_UNBUNCHING_NO_UNBUNCHING_SCHED_DISPATCH);
+				if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) return_cmd_error(STR_ERROR_UNBUNCHING_NO_UNBUNCHING_AUTO_SEPARATION);
 				for (Order *o : v->Orders()) {
 					/* We don't allow unbunching if the vehicle has a conditional order. */
 					if (o->IsType(OT_CONDITIONAL)) return_cmd_error(STR_ERROR_UNBUNCHING_NO_UNBUNCHING_CONDITIONAL);
 					/* We don't allow unbunching if the vehicle has a full load order. */
 					if (o->IsType(OT_GOTO_STATION) && o->GetLoadType() & (OLFB_FULL_LOAD | OLF_FULL_LOAD_ANY)) return_cmd_error(STR_ERROR_UNBUNCHING_NO_UNBUNCHING_FULL_LOAD);
-
 					if (o->IsType(OT_GOTO_STATION) && o->GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
-
+						for (CargoID cid = 0; cid < NUM_CARGO; cid++) {
+							if (o->GetCargoLoadType(cid) & (OLFB_FULL_LOAD | OLF_FULL_LOAD_ANY)) return_cmd_error(STR_ERROR_UNBUNCHING_NO_UNBUNCHING_FULL_LOAD);
+						}
 					}
 				}
 			}
