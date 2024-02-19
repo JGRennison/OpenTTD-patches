@@ -595,8 +595,7 @@ public:
 		StringID str_last_period = EconTime::UsingWallclockUnits() ? STR_TOWN_VIEW_CARGO_LAST_MINUTE_MAX : STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX;
 
 		for (auto tpe : {TPE_PASSENGERS, TPE_MAIL}) {
-			for (const CargoSpec *cs : CargoSpec::town_production_cargoes[tpe]) {
-				CargoID cid = cs->Index();
+			for (CargoID cid : CargoSpec::town_production_cargoes[tpe]) {
 				SetDParam(0, 1ULL << cid);
 				SetDParam(1, this->town->supplied[cid].old_act);
 				SetDParam(2, this->town->supplied[cid].old_max);

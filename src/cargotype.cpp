@@ -24,7 +24,7 @@
 #include "safeguards.h"
 
 CargoSpec CargoSpec::array[NUM_CARGO];
-std::array<std::vector<const CargoSpec *>, NUM_TPE> CargoSpec::town_production_cargoes{};
+std::array<std::vector<CargoID>, NUM_TPE> CargoSpec::town_production_cargoes{};
 std::array<CargoTypes, NUM_TPE> CargoSpec::town_production_cargo_mask{};
 
 /**
@@ -237,7 +237,7 @@ void InitializeSortedCargoSpecs()
 	uint8_t nb_standard_cargo = 0;
 	for (const auto &cargo : _sorted_cargo_specs) {
 		assert(cargo->town_production_effect != INVALID_TPE);
-		CargoSpec::town_production_cargoes[cargo->town_production_effect].push_back(cargo);
+		CargoSpec::town_production_cargoes[cargo->town_production_effect].push_back(cargo->Index());
 		SetBit(CargoSpec::town_production_cargo_mask[cargo->town_production_effect], cargo->Index());
 		if (cargo->classes & CC_SPECIAL) break;
 		nb_standard_cargo++;
