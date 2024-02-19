@@ -161,22 +161,6 @@ static void Save_CHTX()
 	}, nullptr);
 }
 
-/**
- * Internal structure used in SaveSettingsPatx() and SaveSettingsPlyx()
- */
-struct SettingsExtSave {
-	uint32_t flags;
-	const char *name;
-	uint32_t setting_length;
-};
-
-static const SaveLoad _settings_ext_save_desc[] = {
-	SLE_VAR(SettingsExtSave, flags,          SLE_UINT32),
-	SLE_STR(SettingsExtSave, name,           SLE_STR, 0),
-	SLE_VAR(SettingsExtSave, setting_length, SLE_UINT32),
-};
-
-
 /** Chunk handlers related to cheats. */
 static const ChunkHandler cheat_chunk_handlers[] = {
 	{ 'CHTS', Save_CHTS, Load_CHTS, nullptr, nullptr, CH_RIFF },
