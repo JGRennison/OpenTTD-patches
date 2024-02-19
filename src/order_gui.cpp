@@ -2933,7 +2933,7 @@ public:
 					add_colour(COLOUR_ORANGE);
 					add_colour(COLOUR_PINK);
 				}
-				ShowDropDownList(this, std::move(list), -1, widget, 0, false, DDSF_LOST_FOCUS);
+				ShowDropDownList(this, std::move(list), -1, widget, 0, DDMF_NONE, DDSF_LOST_FOCUS);
 				break;
 			}
 
@@ -2996,7 +2996,7 @@ public:
 					list.push_back(std::make_unique<DropDownListStringItem>(STR_ORDER_LABEL_TEXT_BUTTON, ODDI_LABEL_TEXT, false));
 					list.push_back(std::make_unique<DropDownListStringItem>(STR_ORDER_LABEL_DEPARTURES_VIA_BUTTON, ODDI_LABEL_DEPARTURES_VIA, false));
 
-					ShowDropDownList(this, std::move(list), sel, WID_O_GOTO, 0, false, DDSF_LOST_FOCUS);
+					ShowDropDownList(this, std::move(list), sel, WID_O_GOTO, 0, DDMF_NONE, DDSF_LOST_FOCUS);
 				}
 				break;
 

@@ -317,6 +317,8 @@ STR_COLOUR_RANDOM                                               :Випадко�
 ###length 17
 STR_COLOUR_SECONDARY_DARK_BLUE                                  :Синій
 STR_COLOUR_SECONDARY_PALE_GREEN                                 :Світло-зелений
+STR_COLOUR_SECONDARY_SECONDARY_PINK                             :Рожевий
+STR_COLOUR_SECONDARY_YELLOW                                     :Жовтий
 STR_COLOUR_SECONDARY_RED                                        :Червоний
 STR_COLOUR_SECONDARY_LIGHT_BLUE                                 :Блакитний
 STR_COLOUR_SECONDARY_GREEN                                      :Зелений
@@ -328,6 +330,7 @@ STR_COLOUR_SECONDARY_PURPLE                                     :Фіолето�
 STR_COLOUR_SECONDARY_ORANGE                                     :Помаранчевий
 STR_COLOUR_SECONDARY_BROWN                                      :Коричневий
 STR_COLOUR_SECONDARY_GREY                                       :Сірий
+STR_COLOUR_SECONDARY_WHITE                                      :Білий
 
 
 # Units used in OpenTTD
@@ -477,7 +480,9 @@ STR_SORT_BY_TOTAL_PROFIT_LAST_PERIOD                            :Загальн�
 STR_SORT_BY_TOTAL_PROFIT_THIS_YEAR                              :Загальний прибуток цього року
 STR_SORT_BY_TOTAL_PROFIT_THIS_PERIOD                            :Загальний прибуток цього періоду
 STR_SORT_BY_AVERAGE_PROFIT_LAST_YEAR                            :Середній прибуток минулого року
+STR_SORT_BY_AVERAGE_PROFIT_LAST_PERIOD                          :Середній прибуток минулого періоду
 STR_SORT_BY_AVERAGE_PROFIT_THIS_YEAR                            :Середній прибуток цього року
+STR_SORT_BY_AVERAGE_PROFIT_THIS_PERIOD                          :Середній прибуток цього періоду
 
 # Group by options for vehicle list
 STR_GROUP_BY_NONE                                               :Нема
@@ -1029,6 +1034,8 @@ STR_NEWS_SERVICE_SUBSIDY_AWARDED_TRIPLE                         :{BIG_FONT}{BLAC
 STR_NEWS_SERVICE_SUBSIDY_AWARDED_QUADRUPLE                      :{BIG_FONT}{BLACK}Компанія {STRING} отримала субсидію!{}{}Перевезення {STRING.r} з {STRING} до {STRING} принесе вчетверо більше прибутків впродовж {UNITS_YEARS_OR_MINUTES}!
 
 STR_NEWS_EXCLUSIVE_RIGHTS_TITLE                                 :{BIG_FONT}{BLACK}Транспортна монополія!
+STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MONTHS                    :{BIG_FONT}{BLACK}Влада міста {TOWN} підписала з компанією {STRING} договір про ексклюзивні транспортні права на 1 рік!
+STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES                   :{BIG_FONT}{BLACK}Влада міста {TOWN} підписала з компанією {STRING} договір про ексклюзивні транспортні права на 12 хвилин!
 
 # Extra view window
 STR_EXTRA_VIEWPORT_TITLE                                        :{WHITE}Вікно {COMMA}
@@ -1471,10 +1478,11 @@ STR_CONFIG_SETTING_SIGNALSIDE_DRIVING_SIDE                      :зі сторо
 STR_CONFIG_SETTING_SIGNALSIDE_RIGHT                             :з правої сторони
 
 ###length 2
-STR_CONFIG_SETTING_SHOWFINANCES                                 :Показувати вікно фінансів в кінці року: {STRING}
+STR_CONFIG_SETTING_SHOWFINANCES                                 :Показувати вікно фінансів у кінці року: {STRING}
+STR_CONFIG_SETTING_SHOWFINANCES_PERIOD                          :Показувати вікно фінансів у кінці періоду: {STRING}
 
 ###length 2
-STR_CONFIG_SETTING_SHOWFINANCES_HELPTEXT                        :При включенні на прикінці кожного року відображається вікно фінансів.
+STR_CONFIG_SETTING_SHOWFINANCES_HELPTEXT                        :При включенні наприкінці кожного року виринає вікно фінансів для легшого огляду фінансового стану компанії.
 
 STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT                           :Створювати накази з поміткою «без зупинки»: {STRING}
 STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT_HELPTEXT                  :Якщо в завданні транспортного засобу не вказана помітка «без зупинки», то воно зупиняєтся на всіх станціях на своєму шляху. Включення цієї опції призводить до того, що нові завдання будуть автоматично створюватися з поміткою «без зупинки» і транспортний засіб буде зупинятися лише на заданних станціях. Звичайно, при необхідності помітку можна зняти або встановити власноруч.
@@ -1497,6 +1505,7 @@ STR_CONFIG_SETTING_AUTOSCROLL_EVERY_VIEWPORT                    :Кожне ві
 STR_CONFIG_SETTING_BRIBE                                        :Дозволити підкуп місцевої влади: {STRING}
 ###length 2
 STR_CONFIG_SETTING_BRIBE_HELPTEXT                               :Дозволяє компаніям давати хабарі місцевій владі. Якщо підкуп буде викрито, протягом 6 місяців компанія не матиме змоги взаємодіяти з владою міста.
+STR_CONFIG_SETTING_BRIBE_HELPTEXT_MINUTES                       :Дозволяє компаніям давати хабарі місцевій владі. Якщо підкуп буде викрито, протягом 6 місяців компанія не матиме змоги взаємодіяти з владою міста.
 
 STR_CONFIG_SETTING_ALLOW_EXCLUSIVE                              :Дозволити придбання ексклюзивних прав: {STRING}
 ###length 2
@@ -1776,7 +1785,12 @@ STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS_HELPTEXT              :Вмикає в
 STR_CONFIG_SETTING_LOADING_INDICATORS                           :Показувати індикатори завантаження: {STRING}
 STR_CONFIG_SETTING_LOADING_INDICATORS_HELPTEXT                  :Вмикає\вимикає відображення індикатора процесу завантаження над транспортними засобами.
 
+STR_CONFIG_SETTING_TIMETABLE_MODE                               :Одиниць часу у розкладі: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_MODE_HELPTEXT                      :Обрати одиниці часу для розкладів транспорту
 ###length 3
+STR_CONFIG_SETTING_TIMETABLE_MODE_DAYS                          :Днів
+STR_CONFIG_SETTING_TIMETABLE_MODE_SECONDS                       :Секунд
+STR_CONFIG_SETTING_TIMETABLE_MODE_TICKS                         :Цоків
 
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE             :Показувати час прибуття та відправлення у розкладах: {STRING}
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :Відображати очікуваний час прибуття та відправлення у розкладі
@@ -2400,6 +2414,7 @@ STR_NETWORK_SERVER_LIST_MAP_SIZE_CAPTION                        :{BLACK}Розм
 STR_NETWORK_SERVER_LIST_MAP_SIZE_CAPTION_TOOLTIP                :{BLACK}Розмір карти гри{}Клацніть мишею для сортування за районом
 STR_NETWORK_SERVER_LIST_DATE_CAPTION                            :{BLACK}Дата
 STR_NETWORK_SERVER_LIST_DATE_CAPTION_TOOLTIP                    :{BLACK}Поточна дата
+STR_NETWORK_SERVER_LIST_PLAY_TIME_SHORT                         :{BLACK}{NUM}год {NUM}хв
 STR_NETWORK_SERVER_LIST_PLAY_TIME_CAPTION                       :{BLACK}Тривалість гри
 STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Мова, версія сервера, та інше.
 
@@ -2752,6 +2767,7 @@ STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}Пере
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}Переключити прозорість для мостів. Утримуйте Ctrl, щоб заблокувати
 STR_TRANSPARENT_STRUCTURES_TOOLTIP                              :{BLACK}Переключити прозорість для споруд, таких як маяки та антени. Утримуйте Ctrl, щоб заблокувати
 STR_TRANSPARENT_CATENARY_TOOLTIP                                :{BLACK}Переключити прозорість для ЛЕП. Утримуйте Ctrl, щоб заблокувати
+STR_TRANSPARENT_TEXT_TOOLTIP                                    :{BLACK}Переключити прозорість для написів про завантаження і вартість та прибуток. Утримуйте Ctrl, щоб заблокувати
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}Зробити об'єкти невидимими, а не прозорими
 
 # Linkgraph legend window
@@ -3354,6 +3370,7 @@ STR_MAPGEN_TOWN_NAME_CATALAN                                    :Каталон�
 
 # Strings for map borders at game generation
 STR_MAPGEN_BORDER_TYPE                                          :{BLACK}Краї карти:
+STR_MAPGEN_BORDER_TYPE_TOOLTIP                                  :{BLACK}Оберіть межі світу
 STR_MAPGEN_NORTHWEST                                            :{BLACK}північно-західний
 STR_MAPGEN_NORTHEAST                                            :{BLACK}північно-східний
 STR_MAPGEN_SOUTHEAST                                            :{BLACK}південно-східний
@@ -3366,6 +3383,7 @@ STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}вруч
 
 STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Поворот рельєфу
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Назва рельєфу:
+STR_MAPGEN_HEIGHTMAP_NAME_TOOLTIP                               :{BLACK}Назва файлу мапи висот
 STR_MAPGEN_HEIGHTMAP_SIZE_LABEL                                 :{BLACK}Розмір:
 STR_MAPGEN_HEIGHTMAP_SIZE                                       :{ORANGE}{NUM} x {NUM}
 
@@ -3622,6 +3640,8 @@ STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED_WINTER              :{ORANGE}{STRING
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED_GENERAL            :{ORANGE}{STRING}{GREEN} доставлено
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_REQUIRED                     :{ORANGE}{CARGO_TINY} / {CARGO_LONG}{RED} (потрібно ще)
 STR_TOWN_VIEW_CARGO_FOR_TOWNGROWTH_DELIVERED                    :{ORANGE}{CARGO_TINY} / {CARGO_LONG}{GREEN} (доставлено)
+STR_TOWN_VIEW_TOWN_GROWS_EVERY                                  :{BLACK}Місто зростає раз на {ORANGE}{UNITS_DAYS_OR_SECONDS}
+STR_TOWN_VIEW_TOWN_GROWS_EVERY_FUNDED                           :{BLACK}Місто зростає раз на {ORANGE}{UNITS_DAYS_OR_SECONDS}} (профінансовано)
 STR_TOWN_VIEW_TOWN_GROW_STOPPED                                 :{BLACK}Місто {RED}не{BLACK} зростає
 STR_TOWN_VIEW_NOISE_IN_TOWN                                     :{BLACK}Ліміт шуму в місті: {ORANGE}{COMMA}{BLACK}  макс: {ORANGE}{COMMA}
 STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}Показати місто у центрі екрану. Ctrl+клац мишою відкриє нове вікно з видом на місто
@@ -3740,6 +3760,8 @@ STR_STATION_LIST_STATION                                        :{YELLOW}{STATIO
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- немає -
 STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}Вибрати весь транспорт
+STR_STATION_LIST_CARGO_FILTER_ALL_AND_NO_RATING                 :Всі типи вантажів без рейтингу
+STR_STATION_LIST_CARGO_FILTER_EXPAND                            :Показати ще...
 
 # Station view window
 STR_STATION_VIEW_CAPTION                                        :{WHITE}{STATION} {STATION_FEATURES}
@@ -3915,6 +3937,8 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_CANALS                          :{WHITE}Кана
 STR_COMPANY_INFRASTRUCTURE_VIEW_STATION_SECT                    :{GOLD}Станції:
 STR_COMPANY_INFRASTRUCTURE_VIEW_STATIONS                        :{WHITE}Ділянки зі станціями
 STR_COMPANY_INFRASTRUCTURE_VIEW_AIRPORTS                        :{WHITE}Аеропорти
+STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_YEAR                      :{WHITE}{CURRENCY_LONG}/рік
+STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_PERIOD                    :{WHITE}{CURRENCY_LONG}/період
 
 # Industry directory
 STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}Підприємства
@@ -3974,13 +3998,14 @@ STR_VEHICLE_LIST_MANAGE_LIST_TOOLTIP                            :{BLACK}Дати
 STR_VEHICLE_LIST_REPLACE_VEHICLES                               :Оновлення
 STR_VEHICLE_LIST_SEND_FOR_SERVICING                             :Відправити на техогляд
 STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR                     :{TINY_FONT}{BLACK}Прибуток цього року: {CURRENCY_LONG} (торік: {CURRENCY_LONG})
+STR_VEHICLE_LIST_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{TINY_FONT}{BLACK}Прибуток цього періо:ду: {CURRENCY_LONG} (минулого періоду: {CURRENCY_LONG})
 STR_VEHICLE_LIST_CARGO                                          :[{CARGO_LIST}]
 STR_VEHICLE_LIST_NAME_AND_CARGO                                 :{STRING} {STRING}
 
 STR_VEHICLE_LIST_SEND_TRAIN_TO_DEPOT                            :Відправити до депо
 STR_VEHICLE_LIST_SEND_ROAD_VEHICLE_TO_DEPOT                     :Відправити в гараж
 STR_VEHICLE_LIST_SEND_SHIP_TO_DEPOT                             :Відправити до депо
-STR_VEHICLE_LIST_SEND_AIRCRAFT_TO_HANGAR                        :Відправити в ангар
+STR_VEHICLE_LIST_SEND_AIRCRAFT_TO_HANGAR                        :Направити в ангар
 
 STR_VEHICLE_LIST_MASS_STOP_LIST_TOOLTIP                         :{BLACK}Натисніть для зупинки всіх авто, що у списку
 STR_VEHICLE_LIST_MASS_START_LIST_TOOLTIP                        :{BLACK}Натисніть для запуску всього транспорту, що у списку
@@ -4240,6 +4265,8 @@ STR_ENGINE_PREVIEW_SHIP                                         :корабел�
 
 STR_ENGINE_PREVIEW_COST_WEIGHT                                  :Ціна: {CURRENCY_LONG}  Маса: {WEIGHT_SHORT}
 STR_ENGINE_PREVIEW_COST_MAX_SPEED                               :Ціна: {CURRENCY_LONG}  Швидкість: {VELOCITY}
+STR_ENGINE_PREVIEW_SPEED_POWER                                  :Швидкість: {VELOCITY}  Потужність: {POWER}
+STR_ENGINE_PREVIEW_SPEED_POWER_MAX_TE                           :Швидкість: {VELOCITY} Потужність: {POWER} Макс. тяга: {FORCE}
 STR_ENGINE_PREVIEW_CAPACITY                                     :Місткість: {CARGO_LONG}
 STR_ENGINE_PREVIEW_CAPACITY_2                                   :Місткість: {CARGO_LONG}, {CARGO_LONG}
 
@@ -4406,6 +4433,11 @@ STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}Міст
 
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK}Плата за трансфер: {LTBLUE}{CURRENCY_LONG}
 
+STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS                     :{BLACK}Інтервал техогляду: {LTBLUE}{COMMA}{NBSP}днів{BLACK} {STRING}
+STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES                  :{BLACK}Інтервал техогляду: {LTBLUE}{COMMA}{NBSP}хвилин{BLACK} {STRING}
+STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT                  :{BLACK}Інтервал техогляду: {LTBLUE}{COMMA}%{BLACK} {STRING}
+STR_VEHICLE_DETAILS_LAST_SERVICE_DATE                           :Останній техогляд: {LTBLUE}{DATE_LONG}
+STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO                    :Від останнього техогляду минуло хвилин: {LTBLUE}{NUM}
 
 STR_SERVICE_INTERVAL_DROPDOWN_TOOLTIP                           :{BLACK}Відлік інтервалу між техоглядами
 STR_VEHICLE_DETAILS_DEFAULT                                     :Стандартно
@@ -4661,6 +4693,10 @@ STR_TIMETABLE_STATUS_ON_TIME                                    :{BLACK}Цей �
 STR_TIMETABLE_STATUS_LATE                                       :{BLACK}Цей транспорт запізнюється на {STRING}
 STR_TIMETABLE_STATUS_EARLY                                      :{BLACK}Цей транспорт випереджує розклад на {STRING}
 STR_TIMETABLE_STATUS_NOT_STARTED                                :{BLACK}Цей розклад ще не почався
+STR_TIMETABLE_STATUS_START_AT_DATE                              :{BLACK}Цей розклад почнеться {STRING}
+STR_TIMETABLE_STATUS_START_IN_SECONDS                           :{BLACK}Цей розклад почнеться після {COMMA} секунд
+STR_TIMETABLE_STATUS_START_IN_SECONDS.r                         :{BLACK}Цей розклад почнеться після {COMMA} секунди
+STR_TIMETABLE_STATUS_START_IN_SECONDS.d                         :{BLACK}Цей розклад почнеться після {COMMA} секунд
 
 
 
@@ -4686,6 +4722,7 @@ STR_TIMETABLE_EXPECTED                                          :{BLACK}Очік
 STR_TIMETABLE_SCHEDULED                                         :{BLACK}Призначено
 STR_TIMETABLE_EXPECTED_TOOLTIP                                  :{BLACK}Перемкнути очікуване на заплановане
 
+STR_TIMETABLE_DEPARTURE_SECONDS_IN_FUTURE                       :П: {COLOUR}{COMMA} сек
 
 
 # Date window (for timetable)
@@ -4781,6 +4818,7 @@ STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORAN
 
 
 # Textfile window
+STR_TEXTFILE_JUMPLIST                                           :{WHITE}Зміст
 STR_TEXTFILE_WRAP_TEXT                                          :{WHITE}Розмістити текст
 STR_TEXTFILE_WRAP_TEXT_TOOLTIP                                  :{BLACK}Розмістити текст у вікні без необхідності прокрутки
 STR_TEXTFILE_VIEW_README                                        :{BLACK}Інструкція
@@ -5761,6 +5799,10 @@ STR_TOWN_NAME                                                   :{TOWN}
 STR_VEHICLE_NAME                                                :{VEHICLE}
 STR_WAYPOINT_NAME                                               :{WAYPOINT}
 
+STR_CURRENCY_SHORT_KILO                                         :{NBSP}тис.
+STR_CURRENCY_SHORT_MEGA                                         :{NBSP}млн
+STR_CURRENCY_SHORT_GIGA                                         :{NBSP}млрд
+STR_CURRENCY_SHORT_TERA                                         :{NBSP}трлн
 
 STR_JUST_CARGO                                                  :{CARGO_LONG}
 STR_JUST_RIGHT_ARROW                                            :{RIGHT_ARROW}
@@ -5776,6 +5818,8 @@ STR_JUST_DATE_SHORT                                             :{DATE_SHORT}
 STR_JUST_DATE_LONG                                              :{DATE_LONG}
 STR_JUST_DATE_ISO                                               :{DATE_ISO}
 STR_JUST_STRING                                                 :{STRING}
+STR_JUST_STRING1                                                :{STRING}
+STR_JUST_STRING2                                                :{STRING}
 STR_JUST_STRING_STRING                                          :{STRING}{STRING}
 STR_JUST_RAW_STRING                                             :{STRING}
 STR_JUST_BIG_RAW_STRING                                         :{BIG_FONT}{STRING}

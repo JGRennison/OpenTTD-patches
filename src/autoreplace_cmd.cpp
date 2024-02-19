@@ -308,9 +308,9 @@ static CommandCost GetNewEngineType(const Vehicle *v, const Company *c, bool alw
 	return CommandCost(STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE + v->type);
 }
 
-static CommandCost BuildReplacementVehicleRefitFailure(EngineID e, const Vehicle *old_veh)
+static CommandCost BuildReplacementVehicleRefitFailure(EngineID e, const Vehicle *old_veh, DoCommandFlag flags)
 {
-	if (!IsLocalCompany()) return CommandCost();
+	if (!IsLocalCompany() || (flags & DC_EXEC) == 0) return CommandCost();
 
 	SetDParam(0, old_veh->index);
 
@@ -358,7 +358,7 @@ static CommandCost BuildReplacementMultiPartShipSimple(EngineID e, const Vehicle
  * @param all_cargoes Mask of all cargoes in old_veh
  * @return cost or error
  */
-static CommandCost BuildReplacementMultiPartShip(EngineID e, const Vehicle *old_veh, Vehicle **new_vehicle, CargoTypes all_cargoes)
+static CommandCost BuildReplacementMultiPartShip(EngineID e, const Vehicle *old_veh, Vehicle **new_vehicle, CargoTypes all_cargoes, DoCommandFlag flags)
 {
 	if (old_veh->engine_type == e) {
 		/* Easy mode, autoreplacing with same engine */
@@ -406,7 +406,7 @@ static CommandCost BuildReplacementMultiPartShip(EngineID e, const Vehicle *old_
 
 	if (!VerifyAutoreplaceRefitForOrders(old_veh, e)) {
 		if (new_vehicle == nullptr) return CMD_ERROR; // dry-run: failure
-		return BuildReplacementVehicleRefitFailure(e, old_veh);
+		return BuildReplacementVehicleRefitFailure(e, old_veh, flags);
 	}
 
 	std::vector <CargoID> output_cargoes;
@@ -462,7 +462,7 @@ static CommandCost BuildReplacementMultiPartShip(EngineID e, const Vehicle *old_
 
 bool AutoreplaceMultiPartShipWouldSucceed(EngineID e, const Vehicle *old_veh, CargoTypes all_cargoes)
 {
-	return BuildReplacementMultiPartShip(e, old_veh, nullptr, all_cargoes).Succeeded(); // dry-run mode
+	return BuildReplacementMultiPartShip(e, old_veh, nullptr, all_cargoes, DC_NONE).Succeeded(); // dry-run mode
 }
 
 /**
@@ -471,10 +471,11 @@ bool AutoreplaceMultiPartShipWouldSucceed(EngineID e, const Vehicle *old_veh, Ca
  * @param old_veh A single (articulated/multiheaded) vehicle that shall be replaced.
  * @param new_vehicle Returns the newly build and refitted vehicle
  * @param part_of_chain The vehicle is part of a train
+ * @param flags The calling command flags
  * @param same_type_only Only replace with same engine type.
  * @return cost or error
  */
-static CommandCost BuildReplacementVehicle(const Vehicle *old_veh, Vehicle **new_vehicle, bool part_of_chain, bool same_type_only)
+static CommandCost BuildReplacementVehicle(const Vehicle *old_veh, Vehicle **new_vehicle, bool part_of_chain, DoCommandFlag flags, bool same_type_only)
 {
 	*new_vehicle = nullptr;
 
@@ -494,14 +495,14 @@ static CommandCost BuildReplacementVehicle(const Vehicle *old_veh, Vehicle **new
 		}
 		if (!HasAtMostOneBit(cargoes)) {
 			/* Old ship has more than one cargo, special handling */
-			return BuildReplacementMultiPartShip(e, old_veh, new_vehicle, cargoes);
+			return BuildReplacementMultiPartShip(e, old_veh, new_vehicle, cargoes, flags);
 		}
 	}
 
 	/* Does it need to be refitted */
 	CargoID refit_cargo = GetNewCargoTypeForReplace(old_veh, e, part_of_chain);
-	if (refit_cargo == INVALID_CARGO) {
-		return BuildReplacementVehicleRefitFailure(e, old_veh);
+	if (!IsValidCargoID(refit_cargo)) {
+		return BuildReplacementVehicleRefitFailure(e, old_veh, flags);
 	}
 
 	/* Build the new vehicle */
@@ -622,7 +623,7 @@ static CommandCost ReplaceFreeUnit(Vehicle **single_unit, DoCommandFlag flags, b
 
 	/* Build and refit replacement vehicle */
 	Vehicle *new_v = nullptr;
-	cost.AddCost(BuildReplacementVehicle(old_v, &new_v, false, same_type_only));
+	cost.AddCost(BuildReplacementVehicle(old_v, &new_v, false, flags, same_type_only));
 
 	/* Was a new vehicle constructed? */
 	if (cost.Succeeded() && new_v != nullptr) {
@@ -699,7 +700,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlag flags, bool wagon
 		for (Train *w = Train::From(old_head); w != nullptr; w = w->GetNextUnit()) {
 			ReplaceChainItem &replacement = replacements.emplace_back(w, nullptr, 0);
 
-			CommandCost ret = BuildReplacementVehicle(replacement.old_veh, &replacement.new_veh, true, same_type_only);
+			CommandCost ret = BuildReplacementVehicle(replacement.old_veh, &replacement.new_veh, true, flags, same_type_only);
 			cost.AddCost(ret);
 			if (cost.Failed()) break;
 
@@ -856,7 +857,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlag flags, bool wagon
 	} else {
 		/* Build and refit replacement vehicle */
 		Vehicle *new_head = nullptr;
-		cost.AddCost(BuildReplacementVehicle(old_head, &new_head, true, same_type_only));
+		cost.AddCost(BuildReplacementVehicle(old_head, &new_head, true, flags, same_type_only));
 
 		/* Was a new vehicle constructed? */
 		if (cost.Succeeded() && new_head != nullptr) {

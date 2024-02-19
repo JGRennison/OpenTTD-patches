@@ -115,6 +115,7 @@ public:
 	void Connect();
 	void SendReceive();
 	NetworkRecvStatus CloseConnection(bool error = true) override;
+	void Cancel();
 
 	void RequestContentList(ContentType type);
 	void RequestContentList(uint count, const ContentID *content_ids);

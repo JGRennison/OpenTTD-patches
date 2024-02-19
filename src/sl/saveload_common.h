@@ -386,6 +386,8 @@ enum SaveLoadVersion : uint16_t {
 	SLV_SHIP_ACCELERATION,                  ///< 329  PR#10734 Start using Vehicle's acceleration field for ships too.
 	SLV_MAX_LOAN_FOR_COMPANY,               ///< 330  PR#11224 Separate max loan for each company.
 	SLV_DEPOT_UNBUNCHING,                   ///< 331  PR#11945 Allow unbunching shared order vehicles at a depot.
+	SLV_AI_LOCAL_CONFIG,                    ///< 332  PR#12003 Config of running AI is stored inside Company.
+	SLV_SCRIPT_RANDOMIZER,                  ///< 333  PR#12063 Save script randomizers.
 
 	SL_MAX_VERSION,                         ///< Highest possible saveload version
 

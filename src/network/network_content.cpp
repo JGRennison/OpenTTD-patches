@@ -331,7 +331,7 @@ void ClientNetworkContentSocketHandler::DownloadSelectedContent(uint &files, uin
 
 	this->isCancelled = false;
 
-	if (_settings_client.network.no_http_content_downloads || fallback) {
+	if (fallback) {
 		this->DownloadSelectedContentFallback(content);
 	} else {
 		this->DownloadSelectedContentHTTP(content);
@@ -617,10 +617,6 @@ void ClientNetworkContentSocketHandler::OnReceiveData(UniqueBuffer<char> data)
 		return;
 	}
 
-	this->lastActivity = std::chrono::steady_clock::now();
-
-	this->lastActivity = std::chrono::steady_clock::now();
-
 	if (this->http_response_index == -1) {
 		if (data != nullptr) {
 			/* Append the rest of the response. */
@@ -807,7 +803,6 @@ void ClientNetworkContentSocketHandler::Connect()
  */
 NetworkRecvStatus ClientNetworkContentSocketHandler::CloseConnection(bool)
 {
-	this->isCancelled = true;
 	NetworkContentSocketHandler::CloseConnection();
 
 	if (this->sock == INVALID_SOCKET) return NETWORK_RECV_STATUS_OKAY;
@@ -819,6 +814,15 @@ NetworkRecvStatus ClientNetworkContentSocketHandler::CloseConnection(bool)
 }
 
 /**
+ * Cancel the current download.
+ */
+void ClientNetworkContentSocketHandler::Cancel(void)
+{
+	this->isCancelled = true;
+	this->CloseConnection();
+}
+
+/**
  * Check whether we received/can send some data from/to the content server and
  * when that's the case handle it appropriately
  */
@@ -826,6 +830,7 @@ void ClientNetworkContentSocketHandler::SendReceive()
 {
 	if (this->sock == INVALID_SOCKET || this->isConnecting) return;
 
+	/* Close the connection to the content server after inactivity; there can still be downloads pending via HTTP. */
 	if (std::chrono::steady_clock::now() > this->lastActivity + IDLE_TIMEOUT) {
 		this->CloseConnection();
 		return;

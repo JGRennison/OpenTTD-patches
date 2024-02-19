@@ -29,30 +29,8 @@ static const SaveLoad _ai_company[] = {
 	   SLEG_SSTR(_ai_saveload_name,         SLE_STR),
 	   SLEG_SSTR(_ai_saveload_settings,     SLE_STR),
 	SLEG_CONDVAR(_ai_saveload_version,   SLE_UINT32, SLV_108, SL_MAX_VERSION),
-	SLEG_CONDVAR(_ai_saveload_is_random,   SLE_BOOL, SLV_136, SL_MAX_VERSION),
+	SLEG_CONDVAR(_ai_saveload_is_random,   SLE_BOOL, SLV_136, SLV_AI_LOCAL_CONFIG),
 };
-
-static void SaveReal_AIPL(int *index_ptr)
-{
-	CompanyID index = (CompanyID)*index_ptr;
-	AIConfig *config = AIConfig::GetConfig(index);
-
-	if (config->HasScript()) {
-		_ai_saveload_name = config->GetName();
-		_ai_saveload_version = config->GetVersion();
-	} else {
-		/* No AI is configured for this so store an empty string as name. */
-		_ai_saveload_name.clear();
-		_ai_saveload_version = -1;
-	}
-
-	_ai_saveload_is_random = config->IsRandom();
-	_ai_saveload_settings = config->SettingsToString();
-
-	SlObject(nullptr, _ai_company);
-	/* If the AI was active, store its data too */
-	if (Company::IsValidAiID(index)) AI::Save(index);
-}
 
 static void Load_AIPL()
 {
@@ -75,15 +53,15 @@ static void Load_AIPL()
 		}
 
 		AIConfig *config = AIConfig::GetConfig(index, AIConfig::SSS_FORCE_GAME);
-		if (_ai_saveload_name.empty()) {
+		if (_ai_saveload_name.empty() || _ai_saveload_is_random) {
 			/* A random AI. */
-			config->Change(std::nullopt, -1, false, true);
+			config->Change(std::nullopt, -1, false);
 		} else {
-			config->Change(_ai_saveload_name, _ai_saveload_version, false, _ai_saveload_is_random);
+			config->Change(_ai_saveload_name, _ai_saveload_version, false);
 			if (!config->HasScript()) {
 				/* No version of the AI available that can load the data. Try to load the
 				 * latest version of the AI instead. */
-				config->Change(_ai_saveload_name, -1, false, _ai_saveload_is_random);
+				config->Change(_ai_saveload_name, -1, false);
 				if (!config->HasScript()) {
 					if (_ai_saveload_name.compare("%_dummy") != 0) {
 						DEBUG(script, 0, "The savegame has an AI by the name '%s', version %d which is no longer available.", _ai_saveload_name.c_str(), _ai_saveload_version);
@@ -109,16 +87,8 @@ static void Load_AIPL()
 	}
 }
 
-static void Save_AIPL()
-{
-	for (int i = COMPANY_FIRST; i < MAX_COMPANIES; i++) {
-		SlSetArrayIndex(i);
-		SlAutolength((AutolengthProc *)SaveReal_AIPL, &i);
-	}
-}
-
 static const ChunkHandler ai_chunk_handlers[] = {
-	{ 'AIPL', Save_AIPL, Load_AIPL, nullptr, nullptr, CH_ARRAY },
+	MakeSaveUpstreamFeatureConditionalLoadUpstreamChunkHandler<'AIPL', XSLFI_TABLE_SCRIPT_SL>(Load_AIPL, nullptr, nullptr),
 };
 
 extern const ChunkHandlerTable _ai_chunk_handlers(ai_chunk_handlers);

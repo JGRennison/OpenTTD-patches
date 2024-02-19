@@ -219,10 +219,19 @@ using DropDownListCheckedItem = DropDownCheck<DropDownString<DropDownListItem>>;
  */
 typedef std::vector<std::unique_ptr<const DropDownListItem>> DropDownList;
 
-void ShowDropDownListAt(Window *w, DropDownList &&list, int selected, WidgetID button, Rect wi_rect, Colours wi_colour, bool instant_close = false, DropDownSyncFocus sync_parent_focus = DDSF_NONE);
+enum DropDownModeFlags : uint8_t {
+	DDMF_NONE              = 0,
+	DDMF_INSTANT_CLOSE     = 1 << 0, ///< Close the window when the mouse button is raised.
+	DDMF_PERSIST           = 1 << 1, ///< Dropdown menu will persist.
+};
+DECLARE_ENUM_AS_BIT_SET(DropDownModeFlags)
 
-void ShowDropDownList(Window *w, DropDownList &&list, int selected, WidgetID button, uint width = 0, bool instant_close = false, DropDownSyncFocus sync_parent_focus = DDSF_NONE);
+void ShowDropDownListAt(Window *w, DropDownList &&list, int selected, WidgetID button, Rect wi_rect, Colours wi_colour, DropDownModeFlags mode_flags = DDMF_NONE, DropDownSyncFocus sync_parent_focus = DDSF_NONE);
+
+void ShowDropDownList(Window *w, DropDownList &&list, int selected, WidgetID button, uint width = 0, DropDownModeFlags mode_flags = DDMF_NONE, DropDownSyncFocus sync_parent_focus = DDSF_NONE);
 
 Dimension GetDropDownListDimension(const DropDownList &list);
+
+void ReplaceDropDownList(Window *parent, DropDownList &&list);
 
 #endif /* WIDGETS_DROPDOWN_TYPE_H */

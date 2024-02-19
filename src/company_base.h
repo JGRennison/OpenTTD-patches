@@ -137,6 +137,7 @@ struct Company : CompanyPool::PoolItem<&_company_pool>, CompanyProperties {
 
 	class AIInstance *ai_instance;
 	class AIInfo *ai_info;
+	std::unique_ptr<class AIConfig> ai_config;
 
 	GroupStatistics group_all[VEH_COMPANY_END];      ///< NOSAVE: Statistics for the ALL_GROUP group.
 	GroupStatistics group_default[VEH_COMPANY_END];  ///< NOSAVE: Statistics for the DEFAULT_GROUP group.

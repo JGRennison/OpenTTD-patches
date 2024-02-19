@@ -36,6 +36,7 @@
 #include "zoning.h"
 #include "newgrf_debug.h"
 #include "roadveh.h"
+#include "core/format.hpp"
 
 #include "widgets/station_widget.h"
 
@@ -261,7 +262,7 @@ protected:
 	struct FilterState {
 		Listing last_sorting;
 		byte facilities; ///< types of stations of interest
-		bool include_empty; ///< whether we should include stations without waiting cargo
+		bool include_no_rating; ///< Whether we should include stations with no cargo rating.
 		CargoTypes cargoes; ///< bitmap of cargo types to include
 	};
 
@@ -282,6 +283,9 @@ protected:
 	GUIStationList stations{filter.cargoes};
 	Scrollbar *vscroll;
 	uint rating_width;
+	bool filter_expanded;
+	std::array<uint16_t, NUM_CARGO> stations_per_cargo_type; ///< Number of stations with a rating for each cargo type.
+	uint16_t stations_per_cargo_type_no_rating; ///< Number of stations without a rating.
 
 	/**
 	 * (Re)Build station list
@@ -295,23 +299,30 @@ protected:
 		DEBUG(misc, 3, "Building station list for company %d", owner);
 
 		this->stations.clear();
+		this->stations_per_cargo_type.fill(0);
+		this->stations_per_cargo_type_no_rating = 0;
 
 		for (const Station *st : Station::Iterate()) {
 			if (st->owner == owner || (st->owner == OWNER_NONE && HasStationInUse(st->index, true, owner))) {
 				if (this->filter.facilities & st->facilities) { // only stations with selected facilities
-					int num_waiting_cargo = 0;
+					bool has_rating = false;
+					/* Add to the station/cargo counts. */
+					for (CargoID j = 0; j < NUM_CARGO; j++) {
+						if (st->goods[j].HasRating()) this->stations_per_cargo_type[j]++;
+					}
 					for (CargoID j = 0; j < NUM_CARGO; j++) {
 						if (st->goods[j].HasRating()) {
-							num_waiting_cargo++; // count number of waiting cargo
+							has_rating = true;
 							if (HasBit(this->filter.cargoes, j)) {
 								this->stations.push_back(st);
 								break;
 							}
 						}
 					}
-					/* stations without waiting cargo */
-					if (num_waiting_cargo == 0 && this->filter.include_empty) {
-						this->stations.push_back(st);
+					/* Stations with no cargo rating. */
+					if (!has_rating) {
+						if (this->filter.include_no_rating) this->stations.push_back(st);
+						this->stations_per_cargo_type_no_rating++;
 					}
 				}
 			}
@@ -474,20 +485,11 @@ public:
 		this->FinishInitNested(window_number);
 		this->owner = (Owner)this->window_number;
 
-		uint8_t index = 0;
-		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-			if (HasBit(this->filter.cargoes, cs->Index())) {
-				this->LowerWidget(WID_STL_CARGOSTART + index);
-			}
-			index++;
-		}
-
 		if (this->filter.cargoes == ALL_CARGOTYPES) this->filter.cargoes = _cargo_mask;
 
 		for (uint i = 0; i < 5; i++) {
 			if (HasBit(this->filter.facilities, i)) this->LowerWidget(i + WID_STL_TRAIN);
 		}
-		this->SetWidgetLoweredState(WID_STL_NOCARGOWAITING, this->filter.include_empty);
 
 		this->GetWidget<NWidgetCore>(WID_STL_SORTDROPBTN)->widget_data = this->sorter_names[this->stations.SortType()];
 	}
@@ -533,15 +535,6 @@ public:
 				}
 				/* Approximately match original 16 pixel wide rating bars by multiplying string width by 1.6 */
 				this->rating_width = this->rating_width * 16 / 10;
-				break;
-
-			default:
-				if (widget >= WID_STL_CARGOSTART) {
-					Dimension d = GetStringBoundingBox(_sorted_cargo_specs[widget - WID_STL_CARGOSTART]->abbrev, FS_SMALL);
-					d.width  += padding.width + 2;
-					d.height += padding.height;
-					*size = maxdim(*size, d);
-				}
 				break;
 		}
 	}
@@ -613,16 +606,6 @@ public:
 				}
 				break;
 			}
-
-			default:
-				if (widget >= WID_STL_CARGOSTART) {
-					Rect br = r.Shrink(WidgetDimensions::scaled.bevel);
-					const CargoSpec *cs = _sorted_cargo_specs[widget - WID_STL_CARGOSTART];
-					GfxFillRect(br, cs->rating_colour);
-					TextColour tc = GetContrastColour(cs->rating_colour);
-					DrawString(br.left, br.right, CenterBounds(br.top, br.bottom, GetCharacterHeight(FS_SMALL)), cs->abbrev, tc, SA_HOR_CENTER, false, FS_SMALL);
-				}
-				break;
 		}
 	}
 
@@ -632,6 +615,54 @@ public:
 			SetDParam(0, this->window_number);
 			SetDParam(1, this->vscroll->GetCount());
 		}
+
+		if (widget == WID_STL_CARGODROPDOWN) {
+			if (this->filter.cargoes == 0) {
+				SetDParam(0, this->filter.include_no_rating ? STR_STATION_LIST_CARGO_FILTER_ONLY_NO_RATING : STR_STATION_LIST_CARGO_FILTER_NO_CARGO_TYPES);
+			} else if (this->filter.cargoes == _cargo_mask) {
+				SetDParam(0, this->filter.include_no_rating ? STR_STATION_LIST_CARGO_FILTER_ALL_AND_NO_RATING : STR_CARGO_TYPE_FILTER_ALL);
+			} else if (CountBits(this->filter.cargoes) == 1 && !this->filter.include_no_rating) {
+				SetDParam(0, CargoSpec::Get(FindFirstBit(this->filter.cargoes))->name);
+			} else {
+				SetDParam(0, STR_STATION_LIST_CARGO_FILTER_MULTIPLE);
+			}
+		}
+	}
+
+	DropDownList BuildCargoDropDownList(bool expanded) const
+	{
+		/* Define a custom item consisting of check mark, count string, icon and name string. */
+		using DropDownListCargoItem = DropDownCheck<DropDownString<DropDownListIconItem, FS_SMALL, true>>;
+
+		DropDownList list;
+		list.push_back(std::make_unique<DropDownListStringItem>(STR_STATION_LIST_CARGO_FILTER_SELECT_ALL, CargoFilterCriteria::CF_SELECT_ALL));
+		list.push_back(std::make_unique<DropDownListDividerItem>(-1));
+
+		bool any_hidden = false;
+
+		uint16_t count = this->stations_per_cargo_type_no_rating;
+		if (count == 0 && !expanded) {
+			any_hidden = true;
+		} else {
+			list.push_back(std::make_unique<DropDownString<DropDownListCheckedItem, FS_SMALL, true>>(fmt::format("{}", count), this->filter.include_no_rating, STR_STATION_LIST_CARGO_FILTER_NO_RATING, CargoFilterCriteria::CF_NO_RATING, false, count == 0));
+		}
+
+		Dimension d = GetLargestCargoIconSize();
+		for (const CargoSpec *cs : _sorted_cargo_specs) {
+			count = this->stations_per_cargo_type[cs->Index()];
+			if (count == 0 && !expanded) {
+				any_hidden = true;
+			} else {
+				list.push_back(std::make_unique<DropDownListCargoItem>(HasBit(this->filter.cargoes, cs->Index()), fmt::format("{}", count), d, cs->GetCargoIcon(), PAL_NONE, cs->name, cs->Index(), false, count == 0));
+			}
+		}
+
+		if (!expanded && any_hidden) {
+			if (list.size() > 2) list.push_back(std::make_unique<DropDownListDividerItem>(-1));
+			list.push_back(std::make_unique<DropDownListStringItem>(STR_STATION_LIST_CARGO_FILTER_EXPAND, CargoFilterCriteria::CF_EXPAND_LIST));
+		}
+
+		return list;
 	}
 
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
@@ -682,19 +713,6 @@ public:
 				this->SetDirty();
 				break;
 
-			case WID_STL_CARGOALL: {
-				for (uint i = 0; i < _sorted_standard_cargo_specs.size(); i++) {
-					this->LowerWidget(WID_STL_CARGOSTART + i);
-				}
-				this->LowerWidget(WID_STL_NOCARGOWAITING);
-
-				this->filter.cargoes = _cargo_mask;
-				this->filter.include_empty = true;
-				this->stations.ForceRebuild();
-				this->SetDirty();
-				break;
-			}
-
 			case WID_STL_SORTBY: // flip sorting method asc/desc
 				this->stations.ToggleSortOrder();
 				this->SetDirty();
@@ -704,62 +722,62 @@ public:
 				ShowDropDownMenu(this, this->sorter_names, this->stations.SortType(), WID_STL_SORTDROPBTN, 0, 0);
 				break;
 
-			case WID_STL_NOCARGOWAITING:
-				if (_ctrl_pressed) {
-					this->filter.include_empty = !this->filter.include_empty;
-					this->ToggleWidgetLoweredState(WID_STL_NOCARGOWAITING);
-				} else {
-					for (uint i = 0; i < _sorted_standard_cargo_specs.size(); i++) {
-						this->RaiseWidget(WID_STL_CARGOSTART + i);
-					}
-
-					this->filter.cargoes = 0;
-					this->filter.include_empty = true;
-
-					this->LowerWidget(WID_STL_NOCARGOWAITING);
-				}
-				this->stations.ForceRebuild();
-				this->SetDirty();
-				break;
-
-			default:
-				if (widget >= WID_STL_CARGOSTART) { // change cargo_filter
-					/* Determine the selected cargo type */
-					const CargoSpec *cs = _sorted_cargo_specs[widget - WID_STL_CARGOSTART];
-
-					if (_ctrl_pressed) {
-						ToggleBit(this->filter.cargoes, cs->Index());
-						this->ToggleWidgetLoweredState(widget);
-					} else {
-						for (uint i = 0; i < _sorted_standard_cargo_specs.size(); i++) {
-							this->RaiseWidget(WID_STL_CARGOSTART + i);
-						}
-						this->RaiseWidget(WID_STL_NOCARGOWAITING);
-
-						this->filter.cargoes = 0;
-						this->filter.include_empty = false;
-
-						SetBit(this->filter.cargoes, cs->Index());
-						this->LowerWidget(widget);
-					}
-					this->stations.ForceRebuild();
-					this->SetDirty();
-				}
+			case WID_STL_CARGODROPDOWN:
+				this->filter_expanded = false;
+				ShowDropDownList(this, this->BuildCargoDropDownList(this->filter_expanded), -1, widget, 0, DDMF_PERSIST);
 				break;
 		}
 	}
 
-	void OnDropdownSelect(WidgetID widget, int index) override
+	void OnDropdownSelect(int widget, int index) override
 	{
 		if (widget == WID_STL_SORTDROPBTN) {
 			if (this->stations.SortType() != index) {
 				this->stations.SetSortType(index);
 
 				/* Display the current sort variant */
-				this->GetWidget<NWidgetCore>(WID_STL_SORTDROPBTN)->widget_data = CompanyStationsWindow::sorter_names[this->stations.SortType()];
+				this->GetWidget<NWidgetCore>(WID_STL_SORTDROPBTN)->widget_data = this->sorter_names[this->stations.SortType()];
 
 				this->SetDirty();
 			}
+		}
+
+		if (widget == WID_STL_CARGODROPDOWN) {
+			FilterState oldstate = this->filter;
+
+			if (index >= 0 && index < NUM_CARGO) {
+				if (_ctrl_pressed) {
+					ToggleBit(this->filter.cargoes, index);
+				} else {
+					this->filter.cargoes = 1ULL << index;
+					this->filter.include_no_rating = false;
+				}
+			} else if (index == CargoFilterCriteria::CF_NO_RATING) {
+				if (_ctrl_pressed) {
+					this->filter.include_no_rating = !this->filter.include_no_rating;
+				} else {
+					this->filter.include_no_rating = true;
+					this->filter.cargoes = 0;
+				}
+			} else if (index == CargoFilterCriteria::CF_SELECT_ALL) {
+				this->filter.cargoes = _cargo_mask;
+				this->filter.include_no_rating = true;
+			} else if (index == CargoFilterCriteria::CF_EXPAND_LIST) {
+				this->filter_expanded = true;
+				ReplaceDropDownList(this, this->BuildCargoDropDownList(this->filter_expanded));
+				return;
+			}
+
+			if (oldstate.cargoes != this->filter.cargoes || oldstate.include_no_rating != this->filter.include_no_rating) {
+				this->stations.ForceRebuild();
+				this->SetDirty();
+
+				/* Only refresh the list if it's changed. */
+				if (_ctrl_pressed) ReplaceDropDownList(this, this->BuildCargoDropDownList(this->filter_expanded));
+			}
+
+			/* Always close the list if ctrl is not pressed. */
+			if (!_ctrl_pressed) HideDropDownMenu(this);
 		}
 	}
 
@@ -817,26 +835,6 @@ const StringID CompanyStationsWindow::sorter_names[] = {
 	INVALID_STRING_ID
 };
 
-/**
- * Make a horizontal row of cargo buttons, starting at widget #WID_STL_CARGOSTART.
- * @return Horizontal row.
- */
-static std::unique_ptr<NWidgetBase> CargoWidgets()
-{
-	auto container = std::make_unique<NWidgetHorizontal>();
-
-	for (uint i = 0; i < _sorted_standard_cargo_specs.size(); i++) {
-		auto panel = std::make_unique<NWidgetBackground>(WWT_PANEL, COLOUR_GREY, WID_STL_CARGOSTART + i);
-		panel->SetMinimalSize(14, 0);
-		panel->SetMinimalTextLines(1, 0, FS_NORMAL);
-		panel->SetResize(0, 0);
-		panel->SetFill(0, 1);
-		panel->SetDataTip(0, STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE);
-		container->Add(std::move(panel));
-	}
-	return container;
-}
-
 static constexpr NWidgetPart _nested_company_stations_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
@@ -853,9 +851,7 @@ static constexpr NWidgetPart _nested_company_stations_widgets[] = {
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_STL_AIRPLANE), SetMinimalSize(14, 0), SetDataTip(STR_PLANE, STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE), SetFill(0, 1),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_STL_FACILALL), SetMinimalSize(14, 0), SetDataTip(STR_ABBREV_ALL, STR_STATION_LIST_SELECT_ALL_FACILITIES), SetTextStyle(TC_BLACK, FS_SMALL), SetFill(0, 1),
 		NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(5, 0), SetFill(0, 1), EndContainer(),
-		NWidgetFunction(CargoWidgets),
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_STL_NOCARGOWAITING), SetMinimalSize(14, 0), SetDataTip(STR_NULL, STR_NULL), SetTextStyle(TC_BLACK, FS_SMALL), SetFill(0, 1),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_STL_CARGOALL), SetMinimalSize(14, 0), SetDataTip(STR_ABBREV_ALL, STR_NULL), SetTextStyle(TC_BLACK, FS_SMALL), SetFill(0, 1),
+		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_STL_CARGODROPDOWN), SetFill(1, 0), SetDataTip(STR_JUST_STRING, STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE),
 		NWidget(WWT_PANEL, COLOUR_GREY), SetResize(1, 0), SetFill(1, 1), EndContainer(),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),

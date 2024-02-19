@@ -162,6 +162,7 @@ enum SlXvFeatureIndex {
 
 	XSLFI_TABLE_PATS,                             ///< Use upstream table format for PATS
 	XSLFI_TABLE_MISC_SL,                          ///< Use upstream table format for miscellaneous chunks, so far: DATE, VIEW, MAPS
+	XSLFI_TABLE_SCRIPT_SL,                        ///< Use upstream table format for script chunks
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk

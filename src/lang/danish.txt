@@ -260,9 +260,11 @@ STR_UNITS_DAYS                                                  :{COMMA}{NBSP}da
 STR_UNITS_SECONDS                                               :{COMMA}{NBSP}sekund{P "" er}
 STR_UNITS_TICKS                                                 :{COMMA}{NBSP}tick{P "" s}
 
+STR_UNITS_MONTHS                                                :{NUM}{NBSP}måned{P 0 "" er}
 STR_UNITS_MINUTES                                               :{NUM}{NBSP}minut{P "" ter}
 
 STR_UNITS_YEARS                                                 :{NUM}{NBSP}år{P "" erne}
+STR_UNITS_PERIODS                                               :{NUM}{NBSP}period{P 0 "" er}
 
 # Common window strings
 STR_LIST_FILTER_TITLE                                           :{BLACK}Filtrer udtryk:
@@ -361,7 +363,9 @@ STR_SORT_BY_NUM_VEHICLES                                        :Antal fartøjer
 STR_SORT_BY_TOTAL_PROFIT_LAST_YEAR                              :Samlet afkast sidste år
 STR_SORT_BY_TOTAL_PROFIT_THIS_YEAR                              :Samlet afkast dette år
 STR_SORT_BY_AVERAGE_PROFIT_LAST_YEAR                            :Gennemsnit afkast sidste år
+STR_SORT_BY_AVERAGE_PROFIT_LAST_PERIOD                          :Gennemsnitligt overskud sidste periode
 STR_SORT_BY_AVERAGE_PROFIT_THIS_YEAR                            :Gennemsnit afkast dette år
+STR_SORT_BY_AVERAGE_PROFIT_THIS_PERIOD                          :Gennemsnitlig overskud i denne periode
 
 # Group by options for vehicle list
 STR_GROUP_BY_NONE                                               :Ingen
@@ -604,8 +608,11 @@ STR_GRAPH_CARGO_DELIVERED_CAPTION                               :{WHITE}Aflevere
 STR_GRAPH_COMPANY_PERFORMANCE_RATINGS_CAPTION                   :{WHITE}Selskabets præstationsrang (maksimal rang=1000)
 STR_GRAPH_COMPANY_VALUES_CAPTION                                :{WHITE}Selskabsværdier
 
+STR_GRAPH_LAST_72_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}sidste 72 minutter
 
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Lastudbetalingsrater
+STR_GRAPH_CARGO_PAYMENT_RATES_DAYS                              :{TINY_FONT}{BLACK}dage i transit
+STR_GRAPH_CARGO_PAYMENT_RATES_SECONDS                           :{TINY_FONT}{BLACK}Sekunder i transit
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}Betaling for at transportere 10 enheder (eller 10,000 liter) last en distance på 20 enheder.
 STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}Slå alt til
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}Slå alt fra
@@ -656,8 +663,10 @@ STR_PERFORMANCE_DETAIL_TOTAL                                    :{BLACK}I alt:
 ###next-name-looks-similar
 
 STR_PERFORMANCE_DETAIL_VEHICLES_TOOLTIP_YEARS                   :{BLACK}Antal køretøjer, der gav overskud sidste år. Dette omfatter vejkøretøjer, tog, skibe og fly
+STR_PERFORMANCE_DETAIL_VEHICLES_TOOLTIP_PERIODS                 :{BLACK}Antal køretøjer, der gav overskud i sidste periode. Dette omfatter vejkøretøjer, tog, skibe og fly
 STR_PERFORMANCE_DETAIL_STATIONS_TOOLTIP                         :{BLACK}Antal nyligt servicerede stationer. Togstationer, busstoppesteder, lufthavne og så videre tælles separat, selv om de tilhører den samme station
 STR_PERFORMANCE_DETAIL_MIN_PROFIT_TOOLTIP_YEARS                 :{BLACK}Fortjenesten af køretøjet med den laveste indkomst (kun køretøjer ældre end to år tages i betragtning)
+STR_PERFORMANCE_DETAIL_MIN_PROFIT_TOOLTIP_PERIODS               :{BLACK}Fortjenesten for køretøjet med den laveste indkomst (kun køretøjer, der er ældre end to perioder, tages i betragtning)
 STR_PERFORMANCE_DETAIL_MIN_INCOME_TOOLTIP                       :{BLACK}Indkomst i kvartallet med det laveste afkast i de sidste 12 kvartaler
 STR_PERFORMANCE_DETAIL_MAX_INCOME_TOOLTIP                       :{BLACK}Indkomst i kvartallet med det højeste afkast i de sidste 12 kvartaler
 STR_PERFORMANCE_DETAIL_DELIVERED_TOOLTIP                        :{BLACK}Antal enheder fragtet i de sidste 4 kvartaler
@@ -915,6 +924,8 @@ STR_NEWS_SERVICE_SUBSIDY_AWARDED_DOUBLE                         :{BIG_FONT}{BLAC
 STR_NEWS_SERVICE_SUBSIDY_AWARDED_TRIPLE                         :{BIG_FONT}{BLACK}Tilskudsordning tildelt {STRING}!{}{}{STRING} fra {STRING} til {STRING} betaler tredobbelte takster for de næste {UNITS_YEARS_OR_MINUTES}!
 STR_NEWS_SERVICE_SUBSIDY_AWARDED_QUADRUPLE                      :{BIG_FONT}{BLACK}Tilskudsordning tildelt {STRING}!{}{}{STRING} fra {STRING} til {STRING} betaler firedobbelt takster for de næste {UNITS_YEARS_OR_MINUTES}!
 
+STR_NEWS_ROAD_REBUILDING_MONTHS                                 :{BIG_FONT}{BLACK}Trafikkaos i {TOWN}!{}{}Genopbygningsprogram finansieret af {STRING} bringer 6 måneders elendighed til bilister!
+STR_NEWS_ROAD_REBUILDING_MINUTES                                :{BIG_FONT}{BLACK}Trafikkaos i {TOWN}!{}{}Vejgenopbygningsprogram finansieret af {STRING} bringer 6 minutters elendighed til bilister!
 STR_NEWS_EXCLUSIVE_RIGHTS_TITLE                                 :{BIG_FONT}{BLACK}Transportmonopol!
 STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MONTHS                    :{BIG_FONT}{BLACK}Den lokale myndighed i {TOWN} underskriver kontrakt med {STRING} for 12 måneders eksklusive transportrettigheder!
 STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES                   :{BIG_FONT}{BLACK}Den lokale myndighed i {TOWN} underskriver kontrakt med {STRING} for minutters eksklusive transportrettigheder!
@@ -1082,7 +1093,10 @@ STR_GAME_OPTIONS_SOCIAL_PLUGIN_TITLE                            :{BLACK}{STRING}
 STR_GAME_OPTIONS_SOCIAL_PLUGIN_PLATFORM                         :{BLACK}Platform:
 STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE                            :{BLACK}Plugin-tilstand:
 
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_RUNNING                    :{GREEN}Køre
 STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_FAILED                     :{RED}Initialisering mislykkedes
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_PLATFORM_NOT_RUNNING       :{ORANGE}{STRING} kører ikke
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_UNLOADED                   :{RED}Aflæsset
 STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_DUPLICATE                  :{RED}Duplikeret plugin
 STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_UNSUPPORTED_API            :{RED}Ikke-understøttet version
 STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_INVALID_SIGNATURE          :{RED}Ugyldig signatur
@@ -1470,7 +1484,8 @@ STR_CONFIG_SETTING_ORDER_REVIEW_ON                              :Af alle køret�
 
 STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Advar hvis et køretøjs indtjening er negativ: {STRING}
 ###length 2
-STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Når aktiveret, bliver en nyhedsmeddelelse sendt når et køretøj der ikke har haft overskud inden for et kalenderår
+STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Når aktiveret, bliver en nyhedsmeddelelse sendt når et køretøj der ikke har haft overskud inden for et år
+STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Når det er aktiveret, sendes en nyhedsmeddelelse, når et køretøj ikke har tjent noget inden for en periode
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Køretøjernes levealder udløber aldrig: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Når aktiveret, forbliver alle biltyper tilgængelige for evigt efter indførelse
@@ -1481,9 +1496,15 @@ STR_CONFIG_SETTING_TIMEKEEPING_UNITS_HELPTEXT                   :Vælg spillets 
 STR_CONFIG_SETTING_TIMEKEEPING_UNITS_CALENDAR                   :Kalender
 STR_CONFIG_SETTING_TIMEKEEPING_UNITS_WALLCLOCK                  :Vægur
 
+STR_CONFIG_SETTING_MINUTES_PER_YEAR                             :Minutter om året: {STRING}
+STR_CONFIG_SETTING_MINUTES_PER_YEAR_HELPTEXT                    :Vælg antallet af minutter i et kalenderår. Standard er 12 minutter. Indstil til 0 for at forhindre kalendertiden i at ændre sig. Denne indstilling påvirker ikke den økonomiske simulering af spillet og er kun tilgængelig, når du bruger vægurs tidtagning.
 
+STR_CONFIG_SETTING_MINUTES_PER_YEAR_VALUE                       :{NUM}
 ###setting-zero-is-special
+STR_CONFIG_SETTING_MINUTES_PER_YEAR_FROZEN                      :0 (kalendertid frosset)
 
+STR_CONFIG_SETTING_TOWN_CARGO_SCALE                             :Skala bygodsproduktion: {STRING}
+STR_CONFIG_SETTING_TOWN_CARGO_SCALE_HELPTEXT                    :Skaler byernes godsproduktion med denne procentdel.
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE                         :Skaler industri gods produktion: {STRING}
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT                :Skaler industriens gods produktion med denne procentdel.
 STR_CONFIG_SETTING_CARGO_SCALE_VALUE                            :{NUM}%
@@ -1742,9 +1763,11 @@ STR_CONFIG_SETTING_SOUND_NEWS_HELPTEXT                          :Afspil lyd ved 
 
 ###length 2
 STR_CONFIG_SETTING_SOUND_NEW_YEAR                               :Årets slutning: {STRING}
+STR_CONFIG_SETTING_SOUND_NEW_PERIOD                             :Afslutning af periode: {STRING}
 
 ###length 2
 STR_CONFIG_SETTING_SOUND_NEW_YEAR_HELPTEXT                      :Afspil lyd ved årsregnskabet, som viser firmaets resultater sammenlignet med det tidligere år
+STR_CONFIG_SETTING_SOUND_NEW_PERIOD_HELPTEXT                    :Afspil lyd i slutningen af en periode, der opsummerer virksomhedens præstation i perioden sammenlignet med den foregående periode
 
 STR_CONFIG_SETTING_SOUND_CONFIRM                                :Konstruktion: {STRING}
 STR_CONFIG_SETTING_SOUND_CONFIRM_HELPTEXT                       :Afspil lyd efter vellykkede konstruktioner eller andre handlinger
@@ -2038,6 +2061,8 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_HELPTEXT         :Når en hastigh
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_IMPERIAL         :Imperisk (mph)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_METRIC           :Metrisk (km/t)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_SI               :SI (m/s)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_GAMEUNITS_DAYS   :Spilleenheder (fliser/dag)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_GAMEUNITS_SECS   :Spilleenheder (fliser/sek.)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_KNOTS            :Knob
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER                     :Køretøjskraftenheder: {STRING}
@@ -2350,6 +2375,7 @@ STR_NETWORK_SERVER_LIST_MAP_SIZE_CAPTION_TOOLTIP                :{BLACK}Kortstø
 STR_NETWORK_SERVER_LIST_DATE_CAPTION                            :{BLACK}Dato
 STR_NETWORK_SERVER_LIST_DATE_CAPTION_TOOLTIP                    :{BLACK}Aktuel dato
 STR_NETWORK_SERVER_LIST_PLAY_TIME_SHORT                         :{BLACK}{NUM}h {NUM}m
+STR_NETWORK_SERVER_LIST_PLAY_TIME_CAPTION                       :{BLACK}Spille tid
 STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Sprog, server version, osv.
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}Klik på et spil fra listen for at vælge det
@@ -2365,6 +2391,7 @@ STR_NETWORK_SERVER_LIST_SERVER_ADDRESS                          :{SILVER}Servera
 STR_NETWORK_SERVER_LIST_INVITE_CODE                             :{SILVER}Invitationskode: {WHITE}{STRING}
 STR_NETWORK_SERVER_LIST_START_DATE                              :{SILVER}Start dato: {WHITE}{DATE_SHORT}
 STR_NETWORK_SERVER_LIST_CURRENT_DATE                            :{SILVER}Nuværende dato: {WHITE}{DATE_SHORT}
+STR_NETWORK_SERVER_LIST_PLAY_TIME                               :{SILVER}Spille tid: {WHITE}{NUM}h {NUM}m
 STR_NETWORK_SERVER_LIST_GAMESCRIPT                              :{SILVER}Spilscript: {WHITE}{STRING} (v{NUM})
 STR_NETWORK_SERVER_LIST_PASSWORD                                :{SILVER}Beskyttet af kodeord!
 STR_NETWORK_SERVER_LIST_SERVER_OFFLINE                          :{SILVER}SERVEREN ER OFFLINE
@@ -3685,6 +3712,10 @@ STR_SUBSIDIES_NONE                                              :{ORANGE}- Ingen
 STR_SUBSIDIES_SUBSIDISED_TITLE                                  :{BLACK}Tilskudsordninger der allerede er vundet:
 STR_SUBSIDIES_SUBSIDISED_FROM_TO                                :{ORANGE}{STRING} fra {STRING} til {STRING}{YELLOW} ({COMPANY}{YELLOW}, indtil {STRING})
 STR_SUBSIDIES_TOOLTIP_CLICK_ON_SERVICE_TO_CENTER                :{BLACK}Klik på servicen for at centrere skærmen over industrien/byen. Ctrl+Klik åbner et nyt vindue ved industriens/byens lokalitet.
+STR_SUBSIDIES_OFFERED_EXPIRY_DATE                               :ved {DATE_SHORT}
+STR_SUBSIDIES_OFFERED_EXPIRY_TIME                               :inden {UNITS_MONTHS_OR_MINUTES}
+STR_SUBSIDIES_SUBSIDISED_EXPIRY_DATE                            :indtil {DATE_SHORT}
+STR_SUBSIDIES_SUBSIDISED_EXPIRY_TIME                            :{UNITS_MONTHS_OR_MINUTES} tilbage
 
 # Story book window
 STR_STORY_BOOK_CAPTION                                          :{WHITE}{COMPANY} Historiebog
@@ -3707,8 +3738,13 @@ STR_STATION_LIST_STATION                                        :{YELLOW}{STATIO
 STR_STATION_LIST_WAYPOINT                                       :{YELLOW}{WAYPOINT}
 STR_STATION_LIST_NONE                                           :{YELLOW}- Ingen -
 STR_STATION_LIST_SELECT_ALL_FACILITIES                          :{BLACK}Vælg alle faciliteter
+STR_STATION_LIST_CARGO_FILTER_ALL_AND_NO_RATING                 :Alle lasttyper og ingen rating
+STR_STATION_LIST_CARGO_FILTER_MULTIPLE                          :Flere lasttyper
 STR_STATION_LIST_CARGO_FILTER_NO_CARGO_TYPES                    :Ingen gods typer
+STR_STATION_LIST_CARGO_FILTER_ONLY_NO_RATING                    :Ingen lastklassificering
+STR_STATION_LIST_CARGO_FILTER_SELECT_ALL                        :Vælg alle og ingen vurdering
 STR_STATION_LIST_CARGO_FILTER_NO_RATING                         :Ingen gods vurdering
+STR_STATION_LIST_CARGO_FILTER_EXPAND                            :Vis mere...
 
 # Station view window
 STR_STATION_VIEW_CAPTION                                        :{WHITE}{STATION} {STATION_FEATURES}
@@ -3724,6 +3760,8 @@ STR_STATION_VIEW_EXCLUSIVE_RIGHTS_COMPANY                       :{YELLOW} {COMPA
 
 STR_STATION_VIEW_RATINGS_BUTTON                                 :{BLACK}Bedømmelse
 STR_STATION_VIEW_RATINGS_TOOLTIP                                :{BLACK}Vis stationens bedømmelse
+STR_STATION_VIEW_SUPPLY_RATINGS_TITLE_MONTH                     :{BLACK}Forsyninger pr. måned og lokal vurdering:
+STR_STATION_VIEW_SUPPLY_RATINGS_TITLE_MINUTE                    :{BLACK}Forsyninger pr. minut og lokal vurdering:
 STR_STATION_VIEW_CARGO_SUPPLY_RATING                            :{WHITE}{STRING}: {YELLOW}{COMMA} / {STRING} ({COMMA}%)
 
 STR_STATION_VIEW_GROUP                                          :{BLACK}Gruppér på
@@ -3784,6 +3822,8 @@ STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Omdøb r
 # Finances window
 STR_FINANCES_CAPTION                                            :{WHITE}{COMPANY} Finanser {BLACK}{COMPANY_NUM}
 STR_FINANCES_YEAR                                               :{WHITE}{NUM}
+STR_FINANCES_YEAR_CAPTION                                       :{WHITE}År
+STR_FINANCES_PERIOD_CAPTION                                     :{WHITE}Periode
 
 ###length 3
 STR_FINANCES_REVENUE_TITLE                                      :{WHITE}Indtægt
@@ -3885,6 +3925,8 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_CANALS                          :{WHITE}Kanaler
 STR_COMPANY_INFRASTRUCTURE_VIEW_STATION_SECT                    :{GOLD}Stationer:
 STR_COMPANY_INFRASTRUCTURE_VIEW_STATIONS                        :{WHITE}Station felter
 STR_COMPANY_INFRASTRUCTURE_VIEW_AIRPORTS                        :{WHITE}Lufthavne
+STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_YEAR                      :{WHITE}{CURRENCY_LONG}/år
+STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_PERIOD                    :{WHITE}{CURRENCY_LONG}/periode
 
 # Industry directory
 STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}Industrier
@@ -3945,6 +3987,7 @@ STR_VEHICLE_LIST_REPLACE_VEHICLES                               :Udskift køret�
 STR_VEHICLE_LIST_SEND_FOR_SERVICING                             :Send til eftersyn
 STR_VEHICLE_LIST_CREATE_GROUP                                   :Opret gruppe
 STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR                     :{TINY_FONT}{BLACK}Afkast i år: {CURRENCY_LONG} (sidste år: {CURRENCY_LONG})
+STR_VEHICLE_LIST_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{TINY_FONT}{BLACK}Profit denne periode: {CURRENCY_LONG} (sidste periode: {CURRENCY_LONG})
 STR_VEHICLE_LIST_CARGO                                          :[{CARGO_LIST}]
 STR_VEHICLE_LIST_NAME_AND_CARGO                                 :{STRING} {STRING}
 
@@ -4050,7 +4093,7 @@ STR_CARGO_TYPE_FILTER_NONE                                      :Ingen
 STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP                              :{BLACK}Togvalgsliste - klik på et køretøj for mere information
 STR_BUY_VEHICLE_ROAD_VEHICLE_LIST_TOOLTIP                       :{BLACK}Liste over køretøjstyper - klik på køretøj for information
 STR_BUY_VEHICLE_SHIP_LIST_TOOLTIP                               :{BLACK}Skib valgliste. Klik på skib for information. Ctrl + Klik for at skifte skjule skibstypen
-STR_BUY_VEHICLE_AIRCRAFT_LIST_TOOLTIP                           :{BLACK}Luftfartøj valgliste. Klik på fly til orientering. Ctrl + Klik for at skifte skjule flytypen
+STR_BUY_VEHICLE_AIRCRAFT_LIST_TOOLTIP                           :{BLACK}Luftfartøj valgliste. Klik på fly til orientering. Ctrl + Klik for at vise/skjule flytypen
 
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_BUTTON                        :{BLACK}Køb køretøj
@@ -4214,10 +4257,13 @@ STR_ENGINE_PREVIEW_AIRCRAFT                                     :fly
 STR_ENGINE_PREVIEW_SHIP                                         :skib
 
 STR_ENGINE_PREVIEW_TEXT3                                        :{BLACK}{STRING}{}{5:STRING}{}{STRING}
+STR_ENGINE_PREVIEW_TEXT4                                        :{BLACK}{STRING}{}{STRING}{}{STRING}{}{STRING}
 STR_ENGINE_PREVIEW_COST_WEIGHT                                  :Pris: {CURRENCY_LONG}  Vægt: {WEIGHT_SHORT}
 STR_ENGINE_PREVIEW_COST_MAX_SPEED                               :Pris: {CURRENCY_LONG}  Max. Hastighed: {VELOCITY}
 STR_ENGINE_PREVIEW_SPEED_POWER                                  :Hastighed: {VELOCITY}  Styrke: {POWER}
 STR_ENGINE_PREVIEW_SPEED_POWER_MAX_TE                           :Hastighed: {VELOCITY}  Styrke: {POWER}  Max. T.E.: {FORCE}
+STR_ENGINE_PREVIEW_TYPE                                         :Flytype: {STRING}
+STR_ENGINE_PREVIEW_TYPE_RANGE                                   :Flytype: {STRING}   Rækkevidde: {COMMA} fliser
 STR_ENGINE_PREVIEW_RUNCOST_YEAR                                 :Driftsomkostninger: {CURRENCY_LONG}/år
 STR_ENGINE_PREVIEW_RUNCOST_PERIOD                               :Driftsomkostninger: {CURRENCY_LONG}/periode
 STR_ENGINE_PREVIEW_CAPACITY                                     :Kapacitet: {CARGO_LONG}
@@ -4340,6 +4386,7 @@ STR_VEHICLE_STATUS_NO_ORDERS_VEL                                :{LTBLUE}Ingen o
 STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL                     :{LTBLUE}Retning mod {WAYPOINT}, {VELOCITY}
 STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL                        :{ORANGE}Retning mod {DEPOT}, {VELOCITY}
 STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL                :{LTBLUE}Service ved {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_UNBUNCH_VEL                :{LTBLUE}Afsæt og service ved {DEPOT}, {VELOCITY}
 
 STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL                     :{LTBLUE}Kan ikke nå {STATION}, {VELOCITY}
 STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL                    :{LTBLUE}Kan ikke nå {WAYPOINT}, {VELOCITY}
@@ -4367,6 +4414,7 @@ STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}Navngiv 
 STR_VEHICLE_INFO_AGE                                            :{COMMA} år ({COMMA})
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} år ({COMMA})
 STR_VEHICLE_INFO_AGE_RUNNING_COST_YR                            :{BLACK}Alder: {LTBLUE}{STRING}{BLACK}   Driftsomkostninger: {LTBLUE}{CURRENCY_LONG}/år
+STR_VEHICLE_INFO_AGE_RUNNING_COST_PERIOD                        :{BLACK}Alder: {LTBLUE}{STRING}{BLACK}   Driftsomkostninger: {LTBLUE}{CURRENCY_LONG}/periode
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Maks. hast.: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_MAX_SPEED_TYPE                                 :{BLACK}Max. hastighed: {LTBLUE}{VELOCITY} {BLACK}Fly type: {LTBLUE}{STRING}
@@ -4376,6 +4424,8 @@ STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Vægt: {
 
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Overskud i år: {LTBLUE}{CURRENCY_LONG} (sidste år: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}Årets resultat: {LTBLUE}{CURRENCY_LONG} (sidste år: {CURRENCY_LONG}) {BLACK}Mindste ydeevne: {LTBLUE}{POWER_TO_WEIGHT}
+STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{BLACK}Profit denne periode: {LTBLUE}{CURRENCY_LONG} (sidste periode: {CURRENCY_LONG})
+STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD_MIN_PERFORMANCE :{BLACK}Profit denne periode: {LTBLUE}{CURRENCY_LONG} (sidste periode: {CURRENCY_LONG}) {BLACK}Min. ydeevne: {LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Pålidelighed: {LTBLUE}{COMMA}%  {BLACK}Nedbrud siden sidste service: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Bygget: {LTBLUE}{NUM}{BLACK} Værdi: {LTBLUE}{CURRENCY_LONG}
@@ -4391,6 +4441,12 @@ STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES                  :{BLACK}Servicei
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT                  :{BLACK}Serviceinterval: {LTBLUE}{COMMA}%{BLACK}   {STRING}
 STR_VEHICLE_DETAILS_LAST_SERVICE_DATE                           :Sidste service: {LTBLUE}{DATE_LONG}
 STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO                    :Last service: {LTBLUE}{NUM} minutter siden
+STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_DAYS    :{BLACK}Forøg serviceintervallet med 10 dage. Ctrl+klik for at øge serviceintervallet med 5 dage
+STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_MINUTES :{BLACK}Forøg serviceintervallet med 5 minutter. Ctrl+klik for at øge serviceintervallet med 1 minut
+STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_PERCENT :{BLACK}Forøg serviceintervallet med 10 procent. Ctrl+klik for at øge serviceintervallet med 5 procent
+STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_DAYS    :{BLACK}Reducer serviceintervallet med 10 dage. Ctrl+klik for at reducere serviceintervallet med 5 dage
+STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_MINUTES :{BLACK}Reducer serviceintervallet med 5 minutter. Ctrl+klik for at reducere serviceintervallet med 1 minut
+STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_PERCENT :{BLACK}Reducer serviceintervallet med 10 procent. Ctrl+klik for at reducere serviceintervallet med 5 procent
 
 STR_SERVICE_INTERVAL_DROPDOWN_TOOLTIP                           :{BLACK}Ændre serviceintervallets type
 STR_VEHICLE_DETAILS_DEFAULT                                     :Standard
@@ -4500,6 +4556,7 @@ STR_ORDER_DROP_HALT_DEPOT                                       :Stop
 
 # Depot action tooltips, one per vehicle type
 ###length VEHICLE_TYPES
+STR_ORDER_ROAD_DEPOT_ACTION_TOOLTIP                             :{BLACK}Vælg den handling, der skal udføres på dette depot
 STR_ORDER_SHIP_DEPOT_ACTION_TOOLTIP                             :{BLACK}Vælg den handling, der skal udføres på dette depot
 STR_ORDER_HANGAR_ACTION_TOOLTIP                                 :{BLACK}Vælg den handling, der skal udføres i denne hangar
 ###next-name-looks-similar
@@ -4571,6 +4628,7 @@ STR_ORDER_REFIT_ORDER                                           :(Tilpas til {ST
 STR_ORDER_REFIT_STOP_ORDER                                      :(Tilpas til {STRING} og stop)
 STR_ORDER_STOP_ORDER                                            :(Stop)
 
+STR_ORDER_WAIT_TO_UNBUNCH                                       :(vent med at pakke ud)
 
 STR_ORDER_GO_TO_STATION                                         :{STRING} {STATION} {STRING}
 STR_ORDER_GO_TO_STATION_CAN_T_USE_STATION                       :{PUSH_COLOUR}{RED}(Kan ikke bruge station){POP_COLOUR} {STRING} {STATION} {STRING}
@@ -4774,6 +4832,8 @@ STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Spil Script
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Luk
 STR_AI_SETTINGS_RESET                                           :{BLACK}Nulstil
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
+STR_AI_SETTINGS_SETTING_DEVIATION                               :{STRING}: {ORANGE}[{STRING}, {STRING}]
+STR_AI_SETTINGS_JUST_DEVIATION                                  :[{STRING}, {STRING}]
 
 
 # Textfile window
@@ -5041,6 +5101,7 @@ STR_ERROR_DEPOT_WRONG_DEPOT_TYPE                                :Forkert depotty
 
 # Depot unbunching related errors
 STR_ERROR_UNBUNCHING_ONLY_ONE_ALLOWED                           :{WHITE}... kan kun have én opsamlingsordre
+STR_ERROR_UNBUNCHING_NO_FULL_LOAD                               :{WHITE}... kan ikke bruge ordrer om fuld last, når køretøjet har en opsamlingsordre
 STR_ERROR_UNBUNCHING_NO_UNBUNCHING_FULL_LOAD                    :{WHITE}... kan ikke pakke et køretøj op med fuld last
 STR_ERROR_UNBUNCHING_NO_UNBUNCHING_CONDITIONAL                  :{WHITE}... kan ikke pakke et køretøj op med en betinget ordre
 
@@ -5703,6 +5764,7 @@ STR_UNKNOWN_STATION                                             :ukendt station
 STR_DEFAULT_SIGN_NAME                                           :Skilt
 STR_COMPANY_SOMEONE                                             :en eller anden
 
+STR_SAVEGAME_DURATION_REALTIME                                  :{NUM}t {NUM}m
 STR_SAVEGAME_NAME_DEFAULT                                       :{COMPANY}, {STRING}
 STR_SAVEGAME_NAME_SPECTATOR                                     :Tilskuer, {1:STRING}
 

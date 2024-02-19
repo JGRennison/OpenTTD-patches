@@ -29,13 +29,11 @@ namespace upstream_sl {
 static std::string _game_saveload_name;
 static int         _game_saveload_version;
 static std::string _game_saveload_settings;
-static bool        _game_saveload_is_random;
 
 static const SaveLoad _game_script_desc[] = {
 	   SLEG_SSTR("name",      _game_saveload_name,         SLE_STR),
 	   SLEG_SSTR("settings",  _game_saveload_settings,     SLE_STR),
 	    SLEG_VAR("version",   _game_saveload_version,   SLE_UINT32),
-	    SLEG_VAR("is_random", _game_saveload_is_random,   SLE_BOOL),
 };
 
 static void SaveReal_GSDT(int *)
@@ -51,7 +49,6 @@ static void SaveReal_GSDT(int *)
 		_game_saveload_version = -1;
 	}
 
-	_game_saveload_is_random = config->IsRandom();
 	_game_saveload_settings = config->SettingsToString();
 
 	SlObject(nullptr, _game_script_desc);
@@ -81,11 +78,11 @@ struct GSDTChunkHandler : ChunkHandler {
 
 		GameConfig *config = GameConfig::GetConfig(GameConfig::SSS_FORCE_GAME);
 		if (!_game_saveload_name.empty()) {
-			config->Change(_game_saveload_name, _game_saveload_version, false, _game_saveload_is_random);
+			config->Change(_game_saveload_name, _game_saveload_version, false);
 			if (!config->HasScript()) {
 				/* No version of the GameScript available that can load the data. Try to load the
 				 * latest version of the GameScript instead. */
-				config->Change(_game_saveload_name, -1, false, _game_saveload_is_random);
+				config->Change(_game_saveload_name, -1, false);
 				if (!config->HasScript()) {
 					if (_game_saveload_name.compare("%_dummy") != 0) {
 						DEBUG(script, 0, "The savegame has an GameScript by the name '%s', version %u which is no longer available.", _game_saveload_name.c_str(), _game_saveload_version);

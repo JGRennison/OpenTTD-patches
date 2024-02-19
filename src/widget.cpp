@@ -1292,8 +1292,13 @@ void NWidgetStacked::AssignSizePosition(SizingType sizing, int x, int y, uint gi
 
 void NWidgetStacked::FillWidgetLookup(WidgetLookup &widget_lookup)
 {
+	/* We need to update widget_lookup later. */
+	this->widget_lookup = &widget_lookup;
+
 	if (this->index >= 0) widget_lookup[this->index] = this;
 	NWidgetContainer::FillWidgetLookup(widget_lookup);
+	/* In case widget IDs are repeated, make sure Window::GetWidget works on displayed widgets. */
+	if (static_cast<size_t>(this->shown_plane) < this->children.size()) this->children[shown_plane]->FillWidgetLookup(widget_lookup);
 }
 
 void NWidgetStacked::Draw(const Window *w)
@@ -1342,6 +1347,8 @@ bool NWidgetStacked::SetDisplayedPlane(int plane)
 {
 	if (this->shown_plane == plane) return false;
 	this->shown_plane = plane;
+	/* In case widget IDs are repeated, make sure Window::GetWidget works on displayed widgets. */
+	if (static_cast<size_t>(this->shown_plane) < this->children.size()) this->children[shown_plane]->FillWidgetLookup(*this->widget_lookup);
 	return true;
 }
 

@@ -32,26 +32,6 @@ static const SaveLoad _game_script[] = {
 	    SLEG_VAR(_game_saveload_is_random,   SLE_BOOL),
 };
 
-static void SaveReal_GSDT(int *index_ptr)
-{
-	GameConfig *config = GameConfig::GetConfig();
-
-	if (config->HasScript()) {
-		_game_saveload_name = config->GetName();
-		_game_saveload_version = config->GetVersion();
-	} else {
-		/* No GameScript is configured for this so store an empty string as name. */
-		_game_saveload_name.clear();
-		_game_saveload_version = -1;
-	}
-
-	_game_saveload_is_random = config->IsRandom();
-	_game_saveload_settings = config->SettingsToString();
-
-	SlObject(nullptr, _game_script);
-	Game::Save();
-}
-
 static void Load_GSDT()
 {
 	/* Free all current data */
@@ -70,11 +50,11 @@ static void Load_GSDT()
 
 	GameConfig *config = GameConfig::GetConfig(GameConfig::SSS_FORCE_GAME);
 	if (!_game_saveload_name.empty()) {
-		config->Change(_game_saveload_name, _game_saveload_version, false, _game_saveload_is_random);
+		config->Change(_game_saveload_name, _game_saveload_version, false);
 		if (!config->HasScript()) {
 			/* No version of the GameScript available that can load the data. Try to load the
 			 * latest version of the GameScript instead. */
-			config->Change(_game_saveload_name, -1, false, _game_saveload_is_random);
+			config->Change(_game_saveload_name, -1, false);
 			if (!config->HasScript()) {
 				if (_game_saveload_name.compare("%_dummy") != 0) {
 					DEBUG(script, 0, "The savegame has an GameScript by the name '%s', version %d which is no longer available.", _game_saveload_name.c_str(), _game_saveload_version);
@@ -101,12 +81,6 @@ static void Load_GSDT()
 	if ((CompanyID)SlIterateArray() != (CompanyID)-1) SlErrorCorrupt("Too many GameScript configs");
 }
 
-static void Save_GSDT()
-{
-	SlSetArrayIndex(0);
-	SlAutolength((AutolengthProc *)SaveReal_GSDT, nullptr);
-}
-
 extern GameStrings *_current_data;
 
 static std::string _game_saveload_string;
@@ -120,18 +94,6 @@ static const SaveLoad _game_language_header[] = {
 static const SaveLoad _game_language_string[] = {
 	SLEG_SSTR(_game_saveload_string, SLE_STR | SLF_ALLOW_CONTROL),
 };
-
-static void SaveReal_GSTR(const LanguageStrings *ls)
-{
-	_game_saveload_string  = ls->language.c_str();
-	_game_saveload_strings = (uint)ls->lines.size();
-
-	SlObject(nullptr, _game_language_header);
-	for (const auto &i : ls->lines) {
-		_game_saveload_string = i.c_str();
-		SlObject(nullptr, _game_language_string);
-	}
-}
 
 static void Load_GSTR()
 {
@@ -162,19 +124,9 @@ static void Load_GSTR()
 	ReconsiderGameScriptLanguage();
 }
 
-static void Save_GSTR()
-{
-	if (_current_data == nullptr) return;
-
-	for (uint i = 0; i < _current_data->raw_strings.size(); i++) {
-		SlSetArrayIndex(i);
-		SlAutolength((AutolengthProc *)SaveReal_GSTR, &_current_data->raw_strings[i]);
-	}
-}
-
 static const ChunkHandler game_chunk_handlers[] = {
-	{ 'GSTR', Save_GSTR, Load_GSTR, nullptr, nullptr, CH_ARRAY },
-	{ 'GSDT', Save_GSDT, Load_GSDT, nullptr, nullptr, CH_ARRAY },
+	MakeSaveUpstreamFeatureConditionalLoadUpstreamChunkHandler<'GSTR', XSLFI_TABLE_SCRIPT_SL>(Load_GSTR, nullptr, nullptr),
+	MakeSaveUpstreamFeatureConditionalLoadUpstreamChunkHandler<'GSDT', XSLFI_TABLE_SCRIPT_SL>(Load_GSDT, nullptr, nullptr),
 };
 
 extern const ChunkHandlerTable _game_chunk_handlers(game_chunk_handlers);
