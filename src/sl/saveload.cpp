@@ -931,6 +931,16 @@ static void SlCopyBytes(void *ptr, size_t length)
 	}
 }
 
+void SlCopyBytesRead(void *p, size_t length)
+{
+	_sl.reader->CopyBytes((byte *)p, length);
+}
+
+void SlCopyBytesWrite(void *p, size_t length)
+{
+	_sl.dumper->CopyBytes((byte *)p, length);
+}
+
 /** Get the length of the current object */
 size_t SlGetFieldLength()
 {

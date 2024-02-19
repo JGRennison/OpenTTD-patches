@@ -48,6 +48,11 @@
 StringID RemapOldStringID(StringID s);
 std::string CopyFromOldName(StringID id);
 
+extern uint8_t SlSaveToTempBufferSetup();
+extern std::span<byte> SlSaveToTempBufferRestore(uint8_t state);
+extern void SlCopyBytesRead(void *ptr, size_t length);
+extern void SlCopyBytesWrite(void *ptr, size_t length);
+
 namespace upstream_sl {
 
 /** What are we currently doing? */
@@ -491,15 +496,13 @@ void SlSetLength(size_t length)
  */
 static void SlCopyBytes(void *ptr, size_t length)
 {
-	byte *p = (byte *)ptr;
-
 	switch (_sl.action) {
 		case SLA_LOAD_CHECK:
 		case SLA_LOAD:
-			for (; length != 0; length--) *p++ = SlReadByte();
+			SlCopyBytesRead(ptr, length);
 			break;
 		case SLA_SAVE:
-			for (; length != 0; length--) SlWriteByte(*p++);
+			SlCopyBytesWrite(ptr, length);
 			break;
 		default: NOT_REACHED();
 	}
@@ -1820,8 +1823,16 @@ void SlGlobList(const SaveLoadTable &slt)
  */
 void SlAutolength(AutolengthProc *proc, void *arg)
 {
-	// removed
-	NOT_REACHED();
+	assert(_sl.action == SLA_SAVE);
+	assert(_sl.need_length == NL_WANTLENGTH);
+
+	_sl.need_length = NL_NONE;
+	uint8_t state = SlSaveToTempBufferSetup();
+	proc(arg);
+	std::span<byte> result = SlSaveToTempBufferRestore(state);
+	_sl.need_length = NL_WANTLENGTH;
+	SlSetLength(result.size());
+	SlCopyBytesWrite(result.data(), result.size());
 }
 
 void ChunkHandler::LoadCheck(size_t len) const
