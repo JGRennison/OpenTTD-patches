@@ -25,6 +25,7 @@
 
 CargoSpec CargoSpec::array[NUM_CARGO];
 std::array<std::vector<const CargoSpec *>, NUM_TPE> CargoSpec::town_production_cargoes{};
+std::array<CargoTypes, NUM_TPE> CargoSpec::town_production_cargo_mask{};
 
 /**
  * Bitmask of cargo types available. This includes phony cargoes like regearing cargoes.
@@ -216,6 +217,7 @@ static bool CargoSpecClassSorter(const CargoSpec * const &a, const CargoSpec * c
 void InitializeSortedCargoSpecs()
 {
 	for (auto &tpc : CargoSpec::town_production_cargoes) tpc.clear();
+	for (auto &tpc : CargoSpec::town_production_cargo_mask) tpc = 0;
 	_sorted_cargo_specs.clear();
 	/* Add each cargo spec to the list, and determine the largest cargo icon size. */
 	for (const CargoSpec *cargo : CargoSpec::Iterate()) {
@@ -236,6 +238,7 @@ void InitializeSortedCargoSpecs()
 	for (const auto &cargo : _sorted_cargo_specs) {
 		assert(cargo->town_production_effect != INVALID_TPE);
 		CargoSpec::town_production_cargoes[cargo->town_production_effect].push_back(cargo);
+		SetBit(CargoSpec::town_production_cargo_mask[cargo->town_production_effect], cargo->Index());
 		if (cargo->classes & CC_SPECIAL) break;
 		nb_standard_cargo++;
 		SetBit(_standard_cargo_mask, cargo->Index());

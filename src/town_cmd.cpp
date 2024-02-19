@@ -688,7 +688,8 @@ static void TownGenerateCargo(Town *t, CargoID ct, uint amount, StationFinder &s
  */
 static void TownGenerateCargoOriginal(Town *t, TownProductionEffect tpe, uint8_t rate, StationFinder &stations)
 {
-	for (const CargoSpec *cs : CargoSpec::town_production_cargoes[tpe]) {
+	for (CargoID cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[tpe])) {
+		const CargoSpec *cs = CargoSpec::Get(cid);
 		uint32_t r = Random();
 		if (GB(r, 0, 8) < rate) {
 			CargoID cid = cs->Index();
@@ -708,8 +709,8 @@ static void TownGenerateCargoOriginal(Town *t, TownProductionEffect tpe, uint8_t
  */
 static void TownGenerateCargoBinominal(Town *t, TownProductionEffect tpe, uint8_t rate, StationFinder &stations)
 {
-	for (const CargoSpec *cs : CargoSpec::town_production_cargoes[tpe]) {
-		CargoID cid = cs->Index();
+	for (CargoID cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[tpe])) {
+		const CargoSpec *cs = CargoSpec::Get(cid);
 		uint32_t r = Random();
 
 		/* Make a bitmask with up to 32 bits set, one for each potential pax. */
@@ -891,13 +892,13 @@ void AddProducedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &produce
 		}
 	} else {
 		if (hs->population > 0) {
-			for (const CargoSpec *cs : CargoSpec::town_production_cargoes[TPE_PASSENGERS]) {
-				produced[cs->Index()]++;
+			for (CargoID cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TPE_PASSENGERS])) {
+				produced[cid]++;
 			}
 		}
 		if (hs->mail_generation > 0) {
-			for (const CargoSpec *cs : CargoSpec::town_production_cargoes[TPE_MAIL]) {
-				produced[cs->Index()]++;
+			for (CargoID cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TPE_MAIL])) {
+				produced[cid]++;
 			}
 		}
 	}
@@ -2184,11 +2185,11 @@ void UpdateTownRadii()
 
 void UpdateTownMaxPass(Town *t)
 {
-	for (const CargoSpec *cs : CargoSpec::town_production_cargoes[TPE_PASSENGERS]) {
-		t->supplied[cs->Index()].old_max = _town_cargo_scaler.Scale(t->cache.population >> 3);
+	for (CargoID cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TPE_PASSENGERS])) {
+		t->supplied[cid].old_max = _town_cargo_scaler.Scale(t->cache.population >> 3);
 	}
-	for (const CargoSpec *cs : CargoSpec::town_production_cargoes[TPE_MAIL]) {
-		t->supplied[cs->Index()].old_max = _town_cargo_scaler.Scale(t->cache.population >> 4);
+	for (CargoID cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TPE_MAIL])) {
+		t->supplied[cid].old_max = _town_cargo_scaler.Scale(t->cache.population >> 4);
 	}
 }
 
@@ -4180,8 +4181,8 @@ static uint GetNormalGrowthRate(Town *t)
 		for (auto tpe : {TPE_PASSENGERS, TPE_MAIL}) {
 			uint32_t old_max = 0;
 			uint32_t old_act = 0;
-			for (const CargoSpec *cs : CargoSpec::town_production_cargoes[tpe]) {
-				const TransportedCargoStat<uint32_t> &stat = t->supplied[cs->Index()];
+			for (CargoID cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[tpe])) {
+				const TransportedCargoStat<uint32_t> &stat = t->supplied[cid];
 				old_max += stat.old_max;
 				old_act += stat.old_act;
 			}

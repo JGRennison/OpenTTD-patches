@@ -725,7 +725,7 @@ public:
 	 */
 	uint GetDesiredInfoHeight(int width) const
 	{
-		uint aimed_height = static_cast<uint>(1 + CargoSpec::town_production_cargoes[TPE_PASSENGERS].size() + CargoSpec::town_production_cargoes[TPE_MAIL].size()) * GetCharacterHeight(FS_NORMAL);
+		uint aimed_height = static_cast<uint>(1 + CountBits(CargoSpec::town_production_cargo_mask[TPE_PASSENGERS] | CargoSpec::town_production_cargo_mask[TPE_MAIL])) * GetCharacterHeight(FS_NORMAL);
 
 		bool first = true;
 		for (int i = TAE_BEGIN; i < TAE_END; i++) {

@@ -199,6 +199,9 @@ struct CargoSpec {
 	/** List of cargo specs for each Town Product Effect. */
 	static std::array<std::vector<const CargoSpec *>, NUM_TPE> town_production_cargoes;
 
+	/** Mask of cargo IDs for each Town Product Effect. */
+	static std::array<CargoTypes, NUM_TPE> town_production_cargo_mask;
+
 private:
 	static CargoSpec array[NUM_CARGO]; ///< Array holding all CargoSpecs
 
