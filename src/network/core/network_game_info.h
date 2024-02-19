@@ -140,15 +140,15 @@ bool IsNetworkCompatibleVersion(const char *other, bool extended = false);
 void CheckGameCompatibility(NetworkGameInfo &ngi, bool extended = false);
 
 void FillStaticNetworkServerGameInfo();
-const NetworkServerGameInfo *GetCurrentNetworkServerGameInfo();
+const NetworkServerGameInfo &GetCurrentNetworkServerGameInfo();
 
-void DeserializeGRFIdentifier(Packet *p, GRFIdentifier *grf);
-void DeserializeGRFIdentifierWithName(Packet *p, NamedGRFIdentifier *grf);
-void SerializeGRFIdentifier(Packet *p, const GRFIdentifier *grf);
+void DeserializeGRFIdentifier(Packet &p, GRFIdentifier &grf);
+void DeserializeGRFIdentifierWithName(Packet &p, NamedGRFIdentifier &grf);
+void SerializeGRFIdentifier(Packet &p, const GRFIdentifier &grf);
 
-void DeserializeNetworkGameInfo(Packet *p, NetworkGameInfo *info, const GameInfoNewGRFLookupTable *newgrf_lookup_table = nullptr);
-void DeserializeNetworkGameInfoExtended(Packet *p, NetworkGameInfo *info);
-void SerializeNetworkGameInfo(Packet *p, const NetworkServerGameInfo *info, bool send_newgrf_names = true);
-void SerializeNetworkGameInfoExtended(Packet *p, const NetworkServerGameInfo *info, uint16_t flags, uint16_t version, bool send_newgrf_names = true);
+void DeserializeNetworkGameInfo(Packet &p, NetworkGameInfo &info, const GameInfoNewGRFLookupTable *newgrf_lookup_table = nullptr);
+void DeserializeNetworkGameInfoExtended(Packet &p, NetworkGameInfo &info);
+void SerializeNetworkGameInfo(Packet &p, const NetworkServerGameInfo &info, bool send_newgrf_names = true);
+void SerializeNetworkGameInfoExtended(Packet &p, const NetworkServerGameInfo &info, uint16_t flags, uint16_t version, bool send_newgrf_names = true);
 
 #endif /* NETWORK_CORE_GAME_INFO_H */

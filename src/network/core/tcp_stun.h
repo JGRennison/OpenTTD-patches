@@ -17,7 +17,7 @@
 #include "packet.h"
 
 /** Enum with all types of TCP STUN packets. The order MUST not be changed. **/
-enum PacketStunType {
+enum PacketStunType : uint8_t {
 	PACKET_STUN_SERCLI_STUN,  ///< Send a STUN request to the STUN server.
 	PACKET_STUN_END,          ///< Must ALWAYS be on the end of this list!! (period)
 };
@@ -39,7 +39,7 @@ protected:
 	 * @param p The packet that was just received.
 	 * @return True upon success, otherwise false.
 	 */
-	virtual bool Receive_SERCLI_STUN(Packet *p);
+	virtual bool Receive_SERCLI_STUN(Packet &p);
 
 public:
 	/**

@@ -24,15 +24,15 @@ extern NetworkAdminSocketPool _networkadminsocket_pool;
 /** Class for handling the server side of the game connection. */
 class ServerNetworkAdminSocketHandler : public NetworkAdminSocketPool::PoolItem<&_networkadminsocket_pool>, public NetworkAdminSocketHandler, public TCPListenHandler<ServerNetworkAdminSocketHandler, ADMIN_PACKET_SERVER_FULL, ADMIN_PACKET_SERVER_BANNED> {
 protected:
-	NetworkRecvStatus Receive_ADMIN_JOIN(Packet *p) override;
-	NetworkRecvStatus Receive_ADMIN_QUIT(Packet *p) override;
-	NetworkRecvStatus Receive_ADMIN_UPDATE_FREQUENCY(Packet *p) override;
-	NetworkRecvStatus Receive_ADMIN_POLL(Packet *p) override;
-	NetworkRecvStatus Receive_ADMIN_CHAT(Packet *p) override;
-	NetworkRecvStatus Receive_ADMIN_EXTERNAL_CHAT(Packet *p) override;
-	NetworkRecvStatus Receive_ADMIN_RCON(Packet *p) override;
-	NetworkRecvStatus Receive_ADMIN_GAMESCRIPT(Packet *p) override;
-	NetworkRecvStatus Receive_ADMIN_PING(Packet *p) override;
+	NetworkRecvStatus Receive_ADMIN_JOIN(Packet &p) override;
+	NetworkRecvStatus Receive_ADMIN_QUIT(Packet &p) override;
+	NetworkRecvStatus Receive_ADMIN_UPDATE_FREQUENCY(Packet &p) override;
+	NetworkRecvStatus Receive_ADMIN_POLL(Packet &p) override;
+	NetworkRecvStatus Receive_ADMIN_CHAT(Packet &p) override;
+	NetworkRecvStatus Receive_ADMIN_EXTERNAL_CHAT(Packet &p) override;
+	NetworkRecvStatus Receive_ADMIN_RCON(Packet &p) override;
+	NetworkRecvStatus Receive_ADMIN_GAMESCRIPT(Packet &p) override;
+	NetworkRecvStatus Receive_ADMIN_PING(Packet &p) override;
 
 	NetworkRecvStatus SendProtocol();
 	NetworkRecvStatus SendPong(uint32_t d1);
@@ -67,7 +67,7 @@ public:
 	NetworkRecvStatus SendConsole(const std::string_view origin, const std::string_view command);
 	NetworkRecvStatus SendGameScript(const std::string_view json);
 	NetworkRecvStatus SendCmdNames();
-	NetworkRecvStatus SendCmdLogging(ClientID client_id, const CommandPacket *cp);
+	NetworkRecvStatus SendCmdLogging(ClientID client_id, const CommandPacket &cp);
 	NetworkRecvStatus SendRconEnd(const std::string_view command);
 
 	static void Send();
@@ -112,6 +112,6 @@ void NetworkAdminUpdate(AdminUpdateFrequency freq);
 void NetworkServerSendAdminRcon(AdminIndex admin_index, TextColour colour_code, const std::string_view string);
 void NetworkAdminConsole(const std::string_view origin, const std::string_view string);
 void NetworkAdminGameScript(const std::string_view json);
-void NetworkAdminCmdLogging(const NetworkClientSocket *owner, const CommandPacket *cp);
+void NetworkAdminCmdLogging(const NetworkClientSocket *owner, const CommandPacket &cp);
 
 #endif /* NETWORK_ADMIN_H */

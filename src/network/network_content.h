@@ -83,8 +83,8 @@ protected:
 
 	friend class NetworkContentConnecter;
 
-	bool Receive_SERVER_INFO(Packet *p) override;
-	bool Receive_SERVER_CONTENT(Packet *p) override;
+	bool Receive_SERVER_INFO(Packet &p) override;
+	bool Receive_SERVER_CONTENT(Packet &p) override;
 
 	ContentInfo *GetContent(ContentID cid);
 	const ContentInfo *GetContent(ContentID cid) const { return const_cast<ClientNetworkContentSocketHandler *>(this)->GetContent(cid); }

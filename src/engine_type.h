@@ -17,6 +17,7 @@
 #include "date_type.h"
 #include "sound_type.h"
 #include "strings_type.h"
+#include <variant>
 
 typedef uint16_t EngineID; ///< Unique identification number of an engine.
 
@@ -149,7 +150,7 @@ struct EngineInfo {
 	byte load_amount;
 	byte climates;      ///< Climates supported by the engine.
 	CargoID cargo_type;
-	CargoLabel cargo_label;
+	std::variant<CargoLabel, MixedCargoType> cargo_label;
 	CargoTypes refit_mask;
 	byte refit_cost;
 	byte misc_flags;           ///< Miscellaneous flags. @see EngineMiscFlags

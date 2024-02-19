@@ -157,14 +157,14 @@ struct NetworkTextMessageData {
 	NetworkTextMessageData(int64_t data = 0, int64_t auxdata = 0)
 			: data(data), auxdata(auxdata) { }
 
-	template <typename T> void recv(T *p) {
-		this->data = p->Recv_uint64();
-		this->auxdata = p->Recv_uint64();
+	template <typename T> void recv(T &p) {
+		this->data = p.Recv_uint64();
+		this->auxdata = p.Recv_uint64();
 	}
 
-	template <typename T> void send(T *p) const {
-		p->Send_uint64(this->data);
-		p->Send_uint64(this->auxdata);
+	template <typename T> void send(T &p) const {
+		p.Send_uint64(this->data);
+		p.Send_uint64(this->auxdata);
 	}
 };
 

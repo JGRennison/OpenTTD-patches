@@ -124,10 +124,10 @@ public:
 	}
 };
 
-bool ClientNetworkCoordinatorSocketHandler::Receive_GC_ERROR(Packet *p)
+bool ClientNetworkCoordinatorSocketHandler::Receive_GC_ERROR(Packet &p)
 {
-	NetworkCoordinatorErrorType error = (NetworkCoordinatorErrorType)p->Recv_uint8();
-	std::string detail = p->Recv_string(NETWORK_ERROR_DETAIL_LENGTH);
+	NetworkCoordinatorErrorType error = (NetworkCoordinatorErrorType)p.Recv_uint8();
+	std::string detail = p.Recv_string(NETWORK_ERROR_DETAIL_LENGTH);
 
 	switch (error) {
 		case NETWORK_COORDINATOR_ERROR_UNKNOWN:
@@ -174,14 +174,14 @@ bool ClientNetworkCoordinatorSocketHandler::Receive_GC_ERROR(Packet *p)
 	}
 }
 
-bool ClientNetworkCoordinatorSocketHandler::Receive_GC_REGISTER_ACK(Packet *p)
+bool ClientNetworkCoordinatorSocketHandler::Receive_GC_REGISTER_ACK(Packet &p)
 {
 	/* Schedule sending an update. */
 	this->next_update = std::chrono::steady_clock::now();
 
-	_settings_client.network.server_invite_code = p->Recv_string(NETWORK_INVITE_CODE_LENGTH);
-	_settings_client.network.server_invite_code_secret = p->Recv_string(NETWORK_INVITE_CODE_SECRET_LENGTH);
-	_network_server_connection_type = (ConnectionType)p->Recv_uint8();
+	_settings_client.network.server_invite_code = p.Recv_string(NETWORK_INVITE_CODE_LENGTH);
+	_settings_client.network.server_invite_code_secret = p.Recv_string(NETWORK_INVITE_CODE_SECRET_LENGTH);
+	_network_server_connection_type = (ConnectionType)p.Recv_uint8();
 
 	if (_network_server_connection_type == CONNECTION_TYPE_ISOLATED) {
 		ShowErrorMessage(STR_NETWORK_ERROR_COORDINATOR_ISOLATED, STR_NETWORK_ERROR_COORDINATOR_ISOLATED_DETAIL, WL_ERROR);
@@ -230,9 +230,9 @@ bool ClientNetworkCoordinatorSocketHandler::Receive_GC_REGISTER_ACK(Packet *p)
 	return true;
 }
 
-bool ClientNetworkCoordinatorSocketHandler::Receive_GC_LISTING(Packet *p)
+bool ClientNetworkCoordinatorSocketHandler::Receive_GC_LISTING(Packet &p)
 {
-	uint8_t servers = p->Recv_uint16();
+	uint8_t servers = p.Recv_uint16();
 
 	/* End of list; we can now remove all expired items from the list. */
 	if (servers == 0) {
@@ -241,11 +241,11 @@ bool ClientNetworkCoordinatorSocketHandler::Receive_GC_LISTING(Packet *p)
 	}
 
 	for (; servers > 0; servers--) {
-		std::string connection_string = p->Recv_string(NETWORK_HOSTNAME_PORT_LENGTH);
+		std::string connection_string = p.Recv_string(NETWORK_HOSTNAME_PORT_LENGTH);
 
 		/* Read the NetworkGameInfo from the packet. */
 		NetworkGameInfo ngi = {};
-		DeserializeNetworkGameInfo(p, &ngi, &this->newgrf_lookup_table);
+		DeserializeNetworkGameInfo(p, ngi, &this->newgrf_lookup_table);
 
 		/* Now we know the connection string, we can add it to our list. */
 		NetworkGameList *item = NetworkGameListAddItem(connection_string);
@@ -266,10 +266,10 @@ bool ClientNetworkCoordinatorSocketHandler::Receive_GC_LISTING(Packet *p)
 	return true;
 }
 
-bool ClientNetworkCoordinatorSocketHandler::Receive_GC_CONNECTING(Packet *p)
+bool ClientNetworkCoordinatorSocketHandler::Receive_GC_CONNECTING(Packet &p)
 {
-	std::string token = p->Recv_string(NETWORK_TOKEN_LENGTH);
-	std::string invite_code = p->Recv_string(NETWORK_INVITE_CODE_LENGTH);
+	std::string token = p.Recv_string(NETWORK_TOKEN_LENGTH);
+	std::string invite_code = p.Recv_string(NETWORK_INVITE_CODE_LENGTH);
 
 	/* Find the connecter based on the invite code. */
 	auto connecter_pre_it = this->connecter_pre.find(invite_code);
@@ -285,20 +285,20 @@ bool ClientNetworkCoordinatorSocketHandler::Receive_GC_CONNECTING(Packet *p)
 	return true;
 }
 
-bool ClientNetworkCoordinatorSocketHandler::Receive_GC_CONNECT_FAILED(Packet *p)
+bool ClientNetworkCoordinatorSocketHandler::Receive_GC_CONNECT_FAILED(Packet &p)
 {
-	std::string token = p->Recv_string(NETWORK_TOKEN_LENGTH);
+	std::string token = p.Recv_string(NETWORK_TOKEN_LENGTH);
 	this->CloseToken(token);
 
 	return true;
 }
 
-bool ClientNetworkCoordinatorSocketHandler::Receive_GC_DIRECT_CONNECT(Packet *p)
+bool ClientNetworkCoordinatorSocketHandler::Receive_GC_DIRECT_CONNECT(Packet &p)
 {
-	std::string token = p->Recv_string(NETWORK_TOKEN_LENGTH);
-	uint8_t tracking_number = p->Recv_uint8();
-	std::string hostname = p->Recv_string(NETWORK_HOSTNAME_LENGTH);
-	uint16_t port = p->Recv_uint16();
+	std::string token = p.Recv_string(NETWORK_TOKEN_LENGTH);
+	uint8_t tracking_number = p.Recv_uint8();
+	std::string hostname = p.Recv_string(NETWORK_HOSTNAME_LENGTH);
+	uint16_t port = p.Recv_uint16();
 
 	/* Ensure all other pending connection attempts are killed. */
 	if (this->game_connecter != nullptr) {
@@ -310,22 +310,22 @@ bool ClientNetworkCoordinatorSocketHandler::Receive_GC_DIRECT_CONNECT(Packet *p)
 	return true;
 }
 
-bool ClientNetworkCoordinatorSocketHandler::Receive_GC_STUN_REQUEST(Packet *p)
+bool ClientNetworkCoordinatorSocketHandler::Receive_GC_STUN_REQUEST(Packet &p)
 {
-	std::string token = p->Recv_string(NETWORK_TOKEN_LENGTH);
+	std::string token = p.Recv_string(NETWORK_TOKEN_LENGTH);
 
 	this->stun_handlers[token][AF_INET6] = ClientNetworkStunSocketHandler::Stun(token, AF_INET6);
 	this->stun_handlers[token][AF_INET] = ClientNetworkStunSocketHandler::Stun(token, AF_INET);
 	return true;
 }
 
-bool ClientNetworkCoordinatorSocketHandler::Receive_GC_STUN_CONNECT(Packet *p)
+bool ClientNetworkCoordinatorSocketHandler::Receive_GC_STUN_CONNECT(Packet &p)
 {
-	std::string token = p->Recv_string(NETWORK_TOKEN_LENGTH);
-	uint8_t tracking_number = p->Recv_uint8();
-	uint8_t family = p->Recv_uint8();
-	std::string host = p->Recv_string(NETWORK_HOSTNAME_PORT_LENGTH);
-	uint16_t port = p->Recv_uint16();
+	std::string token = p.Recv_string(NETWORK_TOKEN_LENGTH);
+	uint8_t tracking_number = p.Recv_uint8();
+	uint8_t family = p.Recv_uint8();
+	std::string host = p.Recv_string(NETWORK_HOSTNAME_PORT_LENGTH);
+	uint16_t port = p.Recv_uint16();
 
 	/* Check if we know this token. */
 	auto stun_it = this->stun_handlers.find(token);
@@ -353,24 +353,24 @@ bool ClientNetworkCoordinatorSocketHandler::Receive_GC_STUN_CONNECT(Packet *p)
 	return true;
 }
 
-bool ClientNetworkCoordinatorSocketHandler::Receive_GC_NEWGRF_LOOKUP(Packet *p)
+bool ClientNetworkCoordinatorSocketHandler::Receive_GC_NEWGRF_LOOKUP(Packet &p)
 {
-	this->newgrf_lookup_table_cursor = p->Recv_uint32();
+	this->newgrf_lookup_table_cursor = p.Recv_uint32();
 
-	uint16_t newgrfs = p->Recv_uint16();
+	uint16_t newgrfs = p.Recv_uint16();
 	for (; newgrfs> 0; newgrfs--) {
-		uint32_t index = p->Recv_uint32();
-		DeserializeGRFIdentifierWithName(p, &this->newgrf_lookup_table[index]);
+		uint32_t index = p.Recv_uint32();
+		DeserializeGRFIdentifierWithName(p, this->newgrf_lookup_table[index]);
 	}
 	return true;
 }
 
-bool ClientNetworkCoordinatorSocketHandler::Receive_GC_TURN_CONNECT(Packet *p)
+bool ClientNetworkCoordinatorSocketHandler::Receive_GC_TURN_CONNECT(Packet &p)
 {
-	std::string token = p->Recv_string(NETWORK_TOKEN_LENGTH);
-	uint8_t tracking_number = p->Recv_uint8();
-	std::string ticket = p->Recv_string(NETWORK_TOKEN_LENGTH);
-	std::string connection_string = p->Recv_string(NETWORK_HOSTNAME_PORT_LENGTH);
+	std::string token = p.Recv_string(NETWORK_TOKEN_LENGTH);
+	uint8_t tracking_number = p.Recv_uint8();
+	std::string ticket = p.Recv_string(NETWORK_TOKEN_LENGTH);
+	std::string connection_string = p.Recv_string(NETWORK_HOSTNAME_PORT_LENGTH);
 
 	/* Ensure all other pending connection attempts are killed. */
 	if (this->game_connecter != nullptr) {
@@ -458,7 +458,7 @@ void ClientNetworkCoordinatorSocketHandler::Register()
 
 	this->Connect();
 
-	Packet *p = new Packet(PACKET_COORDINATOR_SERVER_REGISTER);
+	auto p = std::make_unique<Packet>(PACKET_COORDINATOR_SERVER_REGISTER);
 	p->Send_uint8(NETWORK_COORDINATOR_VERSION);
 	p->Send_uint8(_settings_client.network.server_game_type);
 	p->Send_uint16(_settings_client.network.server_port);
@@ -470,7 +470,7 @@ void ClientNetworkCoordinatorSocketHandler::Register()
 		p->Send_string(_settings_client.network.server_invite_code_secret);
 	}
 
-	this->SendPacket(p);
+	this->SendPacket(std::move(p));
 }
 
 /**
@@ -480,11 +480,11 @@ void ClientNetworkCoordinatorSocketHandler::SendServerUpdate()
 {
 	DEBUG(net, 6, "Sending server update to Game Coordinator");
 
-	Packet *p = new Packet(PACKET_COORDINATOR_SERVER_UPDATE, TCP_MTU);
+	auto p = std::make_unique<Packet>(PACKET_COORDINATOR_SERVER_UPDATE, TCP_MTU);
 	p->Send_uint8(NETWORK_COORDINATOR_VERSION);
-	SerializeNetworkGameInfo(p, GetCurrentNetworkServerGameInfo(), this->next_update.time_since_epoch() != std::chrono::nanoseconds::zero());
+	SerializeNetworkGameInfo(*p, GetCurrentNetworkServerGameInfo(), this->next_update.time_since_epoch() != std::chrono::nanoseconds::zero());
 
-	this->SendPacket(p);
+	this->SendPacket(std::move(p));
 
 	this->next_update = std::chrono::steady_clock::now() + NETWORK_COORDINATOR_DELAY_BETWEEN_UPDATES;
 }
@@ -498,13 +498,13 @@ void ClientNetworkCoordinatorSocketHandler::GetListing()
 
 	_network_game_list_version++;
 
-	Packet *p = new Packet(PACKET_COORDINATOR_CLIENT_LISTING);
+	auto p = std::make_unique<Packet>(PACKET_COORDINATOR_CLIENT_LISTING);
 	p->Send_uint8(NETWORK_COORDINATOR_VERSION);
 	p->Send_uint8(NETWORK_GAME_INFO_VERSION);
 	p->Send_string(_openttd_revision);
 	p->Send_uint32(this->newgrf_lookup_table_cursor);
 
-	this->SendPacket(p);
+	this->SendPacket(std::move(p));
 }
 
 /**
@@ -530,11 +530,11 @@ void ClientNetworkCoordinatorSocketHandler::ConnectToServer(const std::string &i
 
 	this->Connect();
 
-	Packet *p = new Packet(PACKET_COORDINATOR_CLIENT_CONNECT);
+	auto p = std::make_unique<Packet>(PACKET_COORDINATOR_CLIENT_CONNECT);
 	p->Send_uint8(NETWORK_COORDINATOR_VERSION);
 	p->Send_string(invite_code);
 
-	this->SendPacket(p);
+	this->SendPacket(std::move(p));
 }
 
 /**
@@ -547,12 +547,12 @@ void ClientNetworkCoordinatorSocketHandler::ConnectFailure(const std::string &to
 	/* Connecter will destroy itself. */
 	this->game_connecter = nullptr;
 
-	Packet *p = new Packet(PACKET_COORDINATOR_SERCLI_CONNECT_FAILED);
+	auto p = std::make_unique<Packet>(PACKET_COORDINATOR_SERCLI_CONNECT_FAILED);
 	p->Send_uint8(NETWORK_COORDINATOR_VERSION);
 	p->Send_string(token);
 	p->Send_uint8(tracking_number);
 
-	this->SendPacket(p);
+	this->SendPacket(std::move(p));
 
 	/* We do not close the associated connecter here yet, as the
 	 * Game Coordinator might have other methods of connecting available. */
@@ -578,10 +578,10 @@ void ClientNetworkCoordinatorSocketHandler::ConnectSuccess(const std::string &to
 	} else {
 		/* The client informs the Game Coordinator about the success. The server
 		 * doesn't have to, as it is implied by the client telling. */
-		Packet *p = new Packet(PACKET_COORDINATOR_CLIENT_CONNECTED);
+		auto p = std::make_unique<Packet>(PACKET_COORDINATOR_CLIENT_CONNECTED);
 		p->Send_uint8(NETWORK_COORDINATOR_VERSION);
 		p->Send_string(token);
-		this->SendPacket(p);
+		this->SendPacket(std::move(p));
 
 		/* Find the connecter; it can happen it no longer exist, in cases where
 		 * we aborted the connect but the Game Coordinator was already in the
@@ -606,12 +606,12 @@ void ClientNetworkCoordinatorSocketHandler::ConnectSuccess(const std::string &to
  */
 void ClientNetworkCoordinatorSocketHandler::StunResult(const std::string &token, uint8_t family, bool result)
 {
-	Packet *p = new Packet(PACKET_COORDINATOR_SERCLI_STUN_RESULT);
+	auto p = std::make_unique<Packet>(PACKET_COORDINATOR_SERCLI_STUN_RESULT);
 	p->Send_uint8(NETWORK_COORDINATOR_VERSION);
 	p->Send_string(token);
 	p->Send_uint8(family);
 	p->Send_bool(result);
-	this->SendPacket(p);
+	this->SendPacket(std::move(p));
 }
 
 /**

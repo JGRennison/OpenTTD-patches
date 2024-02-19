@@ -35,9 +35,8 @@ enum SendPacketsState {
 class NetworkTCPSocketHandler : public NetworkSocketHandler {
 private:
 	ring_buffer<std::unique_ptr<Packet>> packet_queue; ///< Packets that are awaiting delivery
-	std::unique_ptr<Packet> packet_recv;              ///< Partially received packet
+	std::unique_ptr<Packet> packet_recv;               ///< Partially received packet
 
-	void EmptyPacketQueue();
 public:
 	SOCKET sock;              ///< The socket currently connected to
 	bool writable;            ///< Can we write to this socket?
@@ -54,11 +53,6 @@ public:
 	void SendPacket(std::unique_ptr<Packet> packet);
 	void SendPrependPacket(std::unique_ptr<Packet> packet, int queue_after_packet_type);
 	void ShrinkToFitSendQueue();
-
-	void SendPacket(Packet *packet)
-	{
-		this->SendPacket(std::unique_ptr<Packet>(packet));
-	}
 
 	SendPacketsState SendPackets(bool closing_down = false);
 

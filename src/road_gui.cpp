@@ -1751,14 +1751,21 @@ public:
 		this->OnClick({}, WID_BROS_IMAGE, 1);
 	}
 
-	static HotkeyList hotkeys;
+	static HotkeyList road_hotkeys;
+	static HotkeyList tram_hotkeys;
 };
 
 static Hotkey buildroadstop_hotkeys[] = {
 	Hotkey('F', "focus_filter_box", BROSHK_FOCUS_FILTER_BOX),
 	HOTKEY_LIST_END
 };
-HotkeyList BuildRoadStationWindow::hotkeys("buildroadstop", buildroadstop_hotkeys);
+HotkeyList BuildRoadStationWindow::road_hotkeys("buildroadstop", buildroadstop_hotkeys);
+
+static Hotkey buildtramstop_hotkeys[] = {
+	Hotkey('F', "focus_filter_box", BROSHK_FOCUS_FILTER_BOX),
+	HOTKEY_LIST_END
+};
+HotkeyList BuildRoadStationWindow::tram_hotkeys("buildtramstop", buildtramstop_hotkeys);
 
 Listing BuildRoadStationWindow::last_sorting = { false, 0 };
 Filtering BuildRoadStationWindow::last_filtering = { false, 0 };
@@ -1857,7 +1864,8 @@ static WindowDesc _road_station_picker_desc(__FILE__, __LINE__,
 	WDP_AUTO, "build_station_road", 0, 0,
 	WC_BUS_STATION, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_road_station_picker_widgets), std::end(_nested_road_station_picker_widgets)
+	std::begin(_nested_road_station_picker_widgets), std::end(_nested_road_station_picker_widgets),
+	&BuildRoadStationWindow::road_hotkeys
 );
 
 /** Widget definition of the build tram station window */
@@ -1934,7 +1942,8 @@ static WindowDesc _tram_station_picker_desc(__FILE__, __LINE__,
 	WDP_AUTO, "build_station_tram", 0, 0,
 	WC_BUS_STATION, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_tram_station_picker_widgets), std::end(_nested_tram_station_picker_widgets)
+	std::begin(_nested_tram_station_picker_widgets), std::end(_nested_tram_station_picker_widgets),
+	&BuildRoadStationWindow::tram_hotkeys
 );
 
 static void ShowRVStationPicker(Window *parent, RoadStopType rs)

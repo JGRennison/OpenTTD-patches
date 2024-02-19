@@ -74,8 +74,8 @@ static Packet PrepareUdpClientFindServerPacket()
 /** Helper class for handling all server side communication. */
 class ServerNetworkUDPSocketHandler : public NetworkUDPSocketHandler {
 protected:
-	void Receive_CLIENT_FIND_SERVER(Packet *p, NetworkAddress *client_addr) override;
-	void Reply_CLIENT_FIND_SERVER_extended(Packet *p, NetworkAddress *client_addr);
+	void Receive_CLIENT_FIND_SERVER(Packet &p, NetworkAddress &client_addr) override;
+	void Reply_CLIENT_FIND_SERVER_extended(Packet &p, NetworkAddress &client_addr);
 public:
 	/**
 	 * Create the socket.
@@ -85,28 +85,28 @@ public:
 	virtual ~ServerNetworkUDPSocketHandler() = default;
 };
 
-void ServerNetworkUDPSocketHandler::Receive_CLIENT_FIND_SERVER(Packet *p, NetworkAddress *client_addr)
+void ServerNetworkUDPSocketHandler::Receive_CLIENT_FIND_SERVER(Packet &p, NetworkAddress &client_addr)
 {
-	if (p->CanReadFromPacket(8) && p->Recv_uint32() == FIND_SERVER_EXTENDED_TOKEN) {
+	if (p.CanReadFromPacket(8) && p.Recv_uint32() == FIND_SERVER_EXTENDED_TOKEN) {
 		this->Reply_CLIENT_FIND_SERVER_extended(p, client_addr);
 		return;
 	}
 
 	Packet packet(PACKET_UDP_SERVER_RESPONSE);
-	this->SendPacket(&packet, client_addr);
+	this->SendPacket(packet, client_addr);
 
-	DEBUG(net, 7, "Queried from %s", client_addr->GetHostname());
+	DEBUG(net, 7, "Queried from %s", client_addr.GetHostname());
 }
 
-void ServerNetworkUDPSocketHandler::Reply_CLIENT_FIND_SERVER_extended(Packet *p, NetworkAddress *client_addr)
+void ServerNetworkUDPSocketHandler::Reply_CLIENT_FIND_SERVER_extended(Packet &p, NetworkAddress &client_addr)
 {
-	[[maybe_unused]] uint16_t flags = p->Recv_uint16();
-	uint16_t version = p->Recv_uint16();
+	[[maybe_unused]] uint16_t flags = p.Recv_uint16();
+	uint16_t version = p.Recv_uint16();
 
 	Packet packet(PACKET_UDP_EX_SERVER_RESPONSE);
-	this->SendPacket(&packet, client_addr);
+	this->SendPacket(packet, client_addr);
 
-	DEBUG(net, 7, "Queried (extended: %u) from %s", version, client_addr->GetHostname());
+	DEBUG(net, 7, "Queried (extended: %u) from %s", version, client_addr.GetHostname());
 }
 
 ///*** Communication with servers (we are client) ***/
@@ -114,24 +114,24 @@ void ServerNetworkUDPSocketHandler::Reply_CLIENT_FIND_SERVER_extended(Packet *p,
 /** Helper class for handling all client side communication. */
 class ClientNetworkUDPSocketHandler : public NetworkUDPSocketHandler {
 protected:
-	void Receive_SERVER_RESPONSE(Packet *p, NetworkAddress *client_addr) override;
-	void Receive_EX_SERVER_RESPONSE(Packet *p, NetworkAddress *client_addr) override;
+	void Receive_SERVER_RESPONSE(Packet &p, NetworkAddress &client_addr) override;
+	void Receive_EX_SERVER_RESPONSE(Packet &p, NetworkAddress &client_addr) override;
 public:
 	virtual ~ClientNetworkUDPSocketHandler() = default;
 };
 
-void ClientNetworkUDPSocketHandler::Receive_SERVER_RESPONSE(Packet *, NetworkAddress *client_addr)
+void ClientNetworkUDPSocketHandler::Receive_SERVER_RESPONSE(Packet &, NetworkAddress &client_addr)
 {
 	DEBUG(net, 3, "Server response from %s", NetworkAddressDumper().GetAddressAsString(client_addr));
 
-	NetworkAddServer(client_addr->GetAddressAsString(false), false, true);
+	NetworkAddServer(client_addr.GetAddressAsString(false), false, true);
 }
 
-void ClientNetworkUDPSocketHandler::Receive_EX_SERVER_RESPONSE(Packet *p, NetworkAddress *client_addr)
+void ClientNetworkUDPSocketHandler::Receive_EX_SERVER_RESPONSE(Packet &, NetworkAddress &client_addr)
 {
 	DEBUG(net, 3, "Extended server response from %s", NetworkAddressDumper().GetAddressAsString(client_addr));
 
-	NetworkAddServer(client_addr->GetAddressAsString(false), false, true); // TODO, mark as extended
+	NetworkAddServer(client_addr.GetAddressAsString(false), false, true); // TODO, mark as extended
 }
 
 /** Broadcast to all ips */
@@ -141,7 +141,7 @@ static void NetworkUDPBroadCast(NetworkUDPSocketHandler *socket)
 		DEBUG(net, 5, "Broadcasting to %s", addr.GetHostname());
 
 		Packet p = PrepareUdpClientFindServerPacket();
-		socket->SendPacket(&p, &addr, true, true);
+		socket->SendPacket(p, addr, true, true);
 	}
 }
 

@@ -28,17 +28,7 @@ NetworkTCPSocketHandler::NetworkTCPSocketHandler(SOCKET s) :
 
 NetworkTCPSocketHandler::~NetworkTCPSocketHandler()
 {
-	this->EmptyPacketQueue();
 	this->CloseSocket();
-}
-
-/**
- * Free all pending and partially received packets.
- */
-void NetworkTCPSocketHandler::EmptyPacketQueue()
-{
-	this->packet_queue.clear();
-	this->packet_recv.reset();
 }
 
 /**
@@ -63,7 +53,8 @@ NetworkRecvStatus NetworkTCPSocketHandler::CloseConnection([[maybe_unused]] bool
 	this->MarkClosed();
 	this->writable = false;
 
-	this->EmptyPacketQueue();
+	this->packet_queue.clear();
+	this->packet_recv = nullptr;
 
 	return NETWORK_RECV_STATUS_OKAY;
 }
@@ -134,15 +125,13 @@ void NetworkTCPSocketHandler::ShrinkToFitSendQueue()
  */
 SendPacketsState NetworkTCPSocketHandler::SendPackets(bool closing_down)
 {
-	ssize_t res;
-
 	/* We can not write to this socket!! */
 	if (!this->writable) return SPS_NONE_SENT;
 	if (!this->IsConnected()) return SPS_CLOSED;
 
 	while (!this->packet_queue.empty()) {
-		Packet *p = this->packet_queue.front().get();
-		res = p->TransferOut<int>(send, this->sock, 0);
+		Packet &p = *this->packet_queue.front();
+		ssize_t res = p.TransferOut<int>(send, this->sock, 0);
 		if (res == -1) {
 			NetworkError err = NetworkError::GetLast();
 			if (!err.WouldBlock()) {
@@ -162,9 +151,9 @@ SendPacketsState NetworkTCPSocketHandler::SendPackets(bool closing_down)
 		}
 
 		/* Is this packet sent? */
-		if (p->RemainingBytesToTransfer() == 0) {
+		if (p.RemainingBytesToTransfer() == 0) {
 			/* Go to the next packet */
-			if (_debug_net_level >= 5) this->LogSentPacket(*p);
+			if (_debug_net_level >= 5) this->LogSentPacket(p);
 			this->packet_queue.pop_front();
 		} else {
 			return SPS_PARTLY_SENT;
@@ -185,15 +174,15 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 	if (!this->IsConnected()) return nullptr;
 
 	if (this->packet_recv == nullptr) {
-		this->packet_recv.reset(new Packet(this, SHRT_MAX));
+		this->packet_recv = std::make_unique<Packet>(this, TCP_MTU);
 	}
 
-	Packet *p = this->packet_recv.get();
+	Packet &p = *this->packet_recv.get();
 
 	/* Read packet size */
-	if (!p->HasPacketSizeData()) {
-		while (p->RemainingBytesToTransfer() != 0) {
-			res = p->TransferIn<int>(recv, this->sock, 0);
+	if (!p.HasPacketSizeData()) {
+		while (p.RemainingBytesToTransfer() != 0) {
+			res = p.TransferIn<int>(recv, this->sock, 0);
 			if (res == -1) {
 				NetworkError err = NetworkError::GetLast();
 				if (!err.WouldBlock()) {
@@ -213,7 +202,7 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 		}
 
 		/* Parse the size in the received packet and if not valid, close the connection. */
-		if (!p->ParsePacketSize()) {
+		if (!p.ParsePacketSize()) {
 			DEBUG(net, 0, "ParsePacketSize failed, possible packet stream corruption");
 			this->CloseConnection();
 			return nullptr;
@@ -221,8 +210,8 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 	}
 
 	/* Read rest of packet */
-	while (p->RemainingBytesToTransfer() != 0) {
-		res = p->TransferIn<int>(recv, this->sock, 0);
+	while (p.RemainingBytesToTransfer() != 0) {
+		res = p.TransferIn<int>(recv, this->sock, 0);
 		if (res == -1) {
 			NetworkError err = NetworkError::GetLast();
 			if (!err.WouldBlock()) {
@@ -242,7 +231,7 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 	}
 
 
-	p->PrepareToRead();
+	p.PrepareToRead();
 
 	/* Prepare for receiving a new packet */
 	return std::move(this->packet_recv);

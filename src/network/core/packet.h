@@ -198,8 +198,8 @@ struct SubPacketDeserialiser : public BufferDeserialisationHelper<SubPacketDeser
 	size_t size;
 	PacketSize pos;
 
-	SubPacketDeserialiser(Packet *p, const byte *data, size_t size, PacketSize pos = 0) : cs(p->GetParentSocket()), data(data), size(size), pos(pos) {}
-	SubPacketDeserialiser(Packet *p, const std::vector<byte> &buffer, PacketSize pos = 0) : cs(p->GetParentSocket()), data(buffer.data()), size(buffer.size()), pos(pos) {}
+	SubPacketDeserialiser(Packet &p, const byte *data, size_t size, PacketSize pos = 0) : cs(p.GetParentSocket()), data(data), size(size), pos(pos) {}
+	SubPacketDeserialiser(Packet &p, const std::vector<byte> &buffer, PacketSize pos = 0) : cs(p.GetParentSocket()), data(buffer.data()), size(buffer.size()), pos(pos) {}
 
 	const byte *GetDeserialisationBuffer() const { return this->data; }
 	size_t GetDeserialisationBufferSize() const { return this->size; }

@@ -58,78 +58,6 @@ static CommandCallback * const _callback_table[] = {
 	/* 0x23 */ CcSwapSchDispatchSchedules,
 };
 
-/**
- * Append a CommandPacket at the end of the queue.
- * @param p The packet to append to the queue.
- * @note A new instance of the CommandPacket will be made.
- */
-void CommandQueue::Append(CommandPacket *p, bool move)
-{
-	CommandPacket *add = new CommandPacket();
-	if (move) {
-		*add = std::move(*p);
-	} else {
-		*add = *p;
-	}
-	add->next = nullptr;
-	if (this->first == nullptr) {
-		this->first = add;
-	} else {
-		this->last->next = add;
-	}
-	this->last = add;
-	this->count++;
-}
-
-/**
- * Return the first item in the queue and remove it from the queue.
- * @param ignore_paused Whether to ignore commands that may not be executed while paused.
- * @return the first item in the queue.
- */
-std::unique_ptr<CommandPacket> CommandQueue::Pop(bool ignore_paused)
-{
-
-	CommandPacket **prev = &this->first;
-	CommandPacket *ret = this->first;
-	CommandPacket *prev_item = nullptr;
-	if (ignore_paused && _pause_mode != PM_UNPAUSED) {
-		while (ret != nullptr && !IsCommandAllowedWhilePaused(ret->cmd)) {
-			prev_item = ret;
-			prev = &ret->next;
-			ret = ret->next;
-		}
-	}
-	if (ret != nullptr) {
-		if (ret == this->last) this->last = prev_item;
-		*prev = ret->next;
-		this->count--;
-	}
-	return std::unique_ptr<CommandPacket>(ret);
-}
-
-/**
- * Return the first item in the queue, but don't remove it.
- * @param ignore_paused Whether to ignore commands that may not be executed while paused.
- * @return the first item in the queue.
- */
-CommandPacket *CommandQueue::Peek(bool ignore_paused)
-{
-	if (!ignore_paused || _pause_mode == PM_UNPAUSED) return this->first;
-
-	for (CommandPacket *p = this->first; p != nullptr; p = p->next) {
-		if (IsCommandAllowedWhilePaused(p->cmd)) return p;
-	}
-	return nullptr;
-}
-
-/** Free everything that is in the queue. */
-void CommandQueue::Free()
-{
-	std::unique_ptr<CommandPacket> cp;
-	while ((cp = this->Pop()) != nullptr) {}
-	assert(this->count == 0);
-}
-
 /** Local queue of packets waiting for handling. */
 static CommandQueue _local_wait_queue;
 /** Local queue of packets waiting for execution. */
@@ -177,14 +105,14 @@ void NetworkSendCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, u
 		c.frame = _frame_counter_max + 1;
 		c.my_cmd = true;
 
-		_local_wait_queue.Append(std::move(c));
+		_local_wait_queue.push_back(std::move(c));
 		return;
 	}
 
 	c.frame = 0; // The client can't tell which frame, so just make it 0
 
 	/* Clients send their command to the server and forget all about the packet */
-	MyClient::SendCommand(&c);
+	MyClient::SendCommand(c);
 }
 
 /**
@@ -198,10 +126,9 @@ void NetworkSendCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, u
  */
 void NetworkSyncCommandQueue(NetworkClientSocket *cs)
 {
-	for (CommandPacket *p = _local_execution_queue.Peek(); p != nullptr; p = p->next) {
-		CommandPacket c = *p;
+	for (CommandPacket &p : _local_execution_queue) {
+		CommandPacket &c = cs->outgoing_queue.emplace_back(p);
 		c.callback = nullptr;
-		cs->outgoing_queue.Append(std::move(c));
 	}
 }
 
@@ -216,8 +143,8 @@ void NetworkExecuteLocalCommandQueue()
 	CommandQueue &queue = (_network_server ? _local_execution_queue : ClientNetworkGameSocketHandler::my_client->incoming_queue);
 
 	bool record_sync_event = false;
-	CommandPacket *cp;
-	while ((cp = queue.Peek()) != nullptr) {
+	auto cp = queue.begin();
+	for (; cp != queue.end(); cp++) {
 		/* The queue is always in order, which means
 		 * that the first element will be executed first. */
 		if (_frame_counter < cp->frame) break;
@@ -232,12 +159,11 @@ void NetworkExecuteLocalCommandQueue()
 		_current_company = cp->company;
 		_cmd_client_id = cp->client_id;
 		cp->cmd |= CMD_NETWORK_COMMAND;
-		DoCommandP(cp, cp->my_cmd);
-
-		queue.Pop();
+		DoCommandP(&(*cp), cp->my_cmd);
 
 		record_sync_event = true;
 	}
+	queue.erase(queue.begin(), cp);
 
 	/* Local company may have changed, so we should not restore the old value */
 	_current_company = _local_company;
@@ -251,8 +177,8 @@ void NetworkExecuteLocalCommandQueue()
  */
 void NetworkFreeLocalCommandQueue()
 {
-	_local_wait_queue.Free();
-	_local_execution_queue.Free();
+	_local_wait_queue.clear();
+	_local_execution_queue.clear();
 }
 
 /**
@@ -271,13 +197,13 @@ static void DistributeCommandPacket(CommandPacket &cp, const NetworkClientSocket
 			 *  first place. This filters that out. */
 			cp.callback = (cs != owner) ? nullptr : callback;
 			cp.my_cmd = (cs == owner);
-			cs->outgoing_queue.Append(cp);
+			cs->outgoing_queue.push_back(cp);
 		}
 	}
 
 	cp.callback = (nullptr != owner) ? nullptr : callback;
 	cp.my_cmd = (nullptr == owner);
-	_local_execution_queue.Append(cp);
+	_local_execution_queue.push_back(cp);
 }
 
 /**
@@ -285,7 +211,7 @@ static void DistributeCommandPacket(CommandPacket &cp, const NetworkClientSocket
  * @param queue The queue of commands that has to be distributed.
  * @param owner The client that owns the commands,
  */
-static void DistributeQueue(CommandQueue *queue, const NetworkClientSocket *owner)
+static void DistributeQueue(CommandQueue &queue, const NetworkClientSocket *owner)
 {
 #ifdef DEBUG_DUMP_COMMANDS
 	/* When replaying we do not want this limitation. */
@@ -298,10 +224,20 @@ static void DistributeQueue(CommandQueue *queue, const NetworkClientSocket *owne
 	}
 #endif
 
-	std::unique_ptr<CommandPacket> cp;
-	while (--to_go >= 0 && (cp = queue->Pop(true)) != nullptr) {
+	/* Not technically the most performant way, but consider clients rarely click more than once per tick. */
+	for (auto cp = queue.begin(); cp != queue.end(); /* removing some items */) {
+		/* Do not distribute commands when paused and the command is not allowed while paused. */
+		if (_pause_mode != PM_UNPAUSED && !IsCommandAllowedWhilePaused(cp->cmd)) {
+			++cp;
+			continue;
+		}
+
+		/* Limit the number of commands per client per tick. */
+		if (--to_go < 0) break;
+
 		DistributeCommandPacket(*cp, owner);
-		NetworkAdminCmdLogging(owner, cp.get());
+		NetworkAdminCmdLogging(owner, *cp);
+		cp = queue.erase(cp);
 	}
 }
 
@@ -309,11 +245,11 @@ static void DistributeQueue(CommandQueue *queue, const NetworkClientSocket *owne
 void NetworkDistributeCommands()
 {
 	/* First send the server's commands. */
-	DistributeQueue(&_local_wait_queue, nullptr);
+	DistributeQueue(_local_wait_queue, nullptr);
 
 	/* Then send the queues of the others. */
 	for (NetworkClientSocket *cs : NetworkClientSocket::Iterate()) {
-		DistributeQueue(&cs->incoming_queue, cs);
+		DistributeQueue(cs->incoming_queue, cs);
 	}
 }
 
@@ -323,33 +259,33 @@ void NetworkDistributeCommands()
  * @param cp the struct to write the data to.
  * @return an error message. When nullptr there has been no error.
  */
-const char *NetworkGameSocketHandler::ReceiveCommand(Packet *p, CommandPacket *cp)
+const char *NetworkGameSocketHandler::ReceiveCommand(Packet &p, CommandPacket &cp)
 {
-	cp->company = (CompanyID)p->Recv_uint8();
-	cp->cmd     = p->Recv_uint32();
-	if (!IsValidCommand(cp->cmd))               return "invalid command";
-	if (GetCommandFlags(cp->cmd) & CMD_OFFLINE) return "single-player only command";
-	if ((cp->cmd & CMD_FLAGS_MASK) != 0)        return "invalid command flag";
+	cp.company = (CompanyID)p.Recv_uint8();
+	cp.cmd     = p.Recv_uint32();
+	if (!IsValidCommand(cp.cmd))               return "invalid command";
+	if (GetCommandFlags(cp.cmd) & CMD_OFFLINE) return "single-player only command";
+	if ((cp.cmd & CMD_FLAGS_MASK) != 0)        return "invalid command flag";
 
-	cp->p1      = p->Recv_uint32();
-	cp->p2      = p->Recv_uint32();
-	cp->p3      = p->Recv_uint64();
-	cp->tile    = p->Recv_uint32();
+	cp.p1      = p.Recv_uint32();
+	cp.p2      = p.Recv_uint32();
+	cp.p3      = p.Recv_uint64();
+	cp.tile    = p.Recv_uint32();
 
-	StringValidationSettings settings = (!_network_server && GetCommandFlags(cp->cmd) & CMD_STR_CTRL) != 0 ? SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK : SVS_REPLACE_WITH_QUESTION_MARK;
-	p->Recv_string(cp->text, settings);
+	StringValidationSettings settings = (!_network_server && GetCommandFlags(cp.cmd) & CMD_STR_CTRL) != 0 ? SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK : SVS_REPLACE_WITH_QUESTION_MARK;
+	p.Recv_string(cp.text, settings);
 
-	byte callback = p->Recv_uint8();
+	byte callback = p.Recv_uint8();
 	if (callback >= lengthof(_callback_table))  return "invalid callback";
 
-	cp->callback = _callback_table[callback];
+	cp.callback = _callback_table[callback];
 
-	uint16_t aux_data_size = p->Recv_uint16();
-	if (aux_data_size > 0 && p->CanReadFromPacket(aux_data_size, true)) {
+	uint16_t aux_data_size = p.Recv_uint16();
+	if (aux_data_size > 0 && p.CanReadFromPacket(aux_data_size, true)) {
 		CommandAuxiliarySerialised *aux_data = new CommandAuxiliarySerialised();
-		cp->aux_data.reset(aux_data);
+		cp.aux_data.reset(aux_data);
 		aux_data->serialised_data.resize(aux_data_size);
-		p->Recv_binary((aux_data->serialised_data.data()), aux_data_size);
+		p.Recv_binary((aux_data->serialised_data.data()), aux_data_size);
 	}
 
 	return nullptr;
@@ -360,32 +296,32 @@ const char *NetworkGameSocketHandler::ReceiveCommand(Packet *p, CommandPacket *c
  * @param p the packet to send it in.
  * @param cp the packet to actually send.
  */
-void NetworkGameSocketHandler::SendCommand(Packet *p, const CommandPacket *cp)
+void NetworkGameSocketHandler::SendCommand(Packet &p, const CommandPacket &cp)
 {
-	p->Send_uint8 (cp->company);
-	p->Send_uint32(cp->cmd);
-	p->Send_uint32(cp->p1);
-	p->Send_uint32(cp->p2);
-	p->Send_uint64(cp->p3);
-	p->Send_uint32(cp->tile);
-	p->Send_string(cp->text.c_str());
+	p.Send_uint8 (cp.company);
+	p.Send_uint32(cp.cmd);
+	p.Send_uint32(cp.p1);
+	p.Send_uint32(cp.p2);
+	p.Send_uint64(cp.p3);
+	p.Send_uint32(cp.tile);
+	p.Send_string(cp.text.c_str());
 
 	byte callback = 0;
-	while (callback < lengthof(_callback_table) && _callback_table[callback] != cp->callback) {
+	while (callback < lengthof(_callback_table) && _callback_table[callback] != cp.callback) {
 		callback++;
 	}
 
 	if (callback == lengthof(_callback_table)) {
-		DEBUG(net, 0, "Unknown callback for command; no callback sent (command: %d)", cp->cmd);
+		DEBUG(net, 0, "Unknown callback for command; no callback sent (command: %d)", cp.cmd);
 		callback = 0; // _callback_table[0] == nullptr
 	}
-	p->Send_uint8 (callback);
+	p.Send_uint8 (callback);
 
-	size_t aux_data_size_pos = p->Size();
-	p->Send_uint16(0);
-	if (cp->aux_data != nullptr) {
-		CommandSerialisationBuffer serialiser(p->GetSerialisationBuffer(), p->GetSerialisationLimit());
-		cp->aux_data->Serialise(serialiser);
-		p->WriteAtOffset_uint16(aux_data_size_pos, (uint16_t)(p->Size() - aux_data_size_pos - 2));
+	size_t aux_data_size_pos = p.Size();
+	p.Send_uint16(0);
+	if (cp.aux_data != nullptr) {
+		CommandSerialisationBuffer serialiser(p.GetSerialisationBuffer(), p.GetSerialisationLimit());
+		cp.aux_data->Serialise(serialiser);
+		p.WriteAtOffset_uint16(aux_data_size_pos, (uint16_t)(p.Size() - aux_data_size_pos - 2));
 	}
 }

@@ -190,6 +190,11 @@ public:
 struct NetworkAddressDumper {
 	const char *GetAddressAsString(NetworkAddress *addr, bool with_family = true);
 
+	inline const char *GetAddressAsString(NetworkAddress &addr, bool with_family = true)
+	{
+		return this->GetAddressAsString(&addr, with_family);
+	}
+
 private:
 	/* 7 extra are for with_family, which adds " (IPvX)". */
 	char buf[NETWORK_HOSTNAME_PORT_LENGTH + 7];

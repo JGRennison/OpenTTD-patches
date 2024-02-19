@@ -49,34 +49,34 @@ static bool HasGRFConfig(const ContentInfo *ci, bool md5sum)
  */
 typedef bool (*HasProc)(const ContentInfo *ci, bool md5sum);
 
-bool ClientNetworkContentSocketHandler::Receive_SERVER_INFO(Packet *p)
+bool ClientNetworkContentSocketHandler::Receive_SERVER_INFO(Packet &p)
 {
 	ContentInfo *ci = new ContentInfo();
-	ci->type     = (ContentType)p->Recv_uint8();
-	ci->id       = (ContentID)p->Recv_uint32();
-	ci->filesize = p->Recv_uint32();
+	ci->type     = (ContentType)p.Recv_uint8();
+	ci->id       = (ContentID)p.Recv_uint32();
+	ci->filesize = p.Recv_uint32();
 
-	ci->name        = p->Recv_string(NETWORK_CONTENT_NAME_LENGTH);
-	ci->version     = p->Recv_string(NETWORK_CONTENT_VERSION_LENGTH);
-	ci->url         = p->Recv_string(NETWORK_CONTENT_URL_LENGTH);
-	ci->description = p->Recv_string(NETWORK_CONTENT_DESC_LENGTH, SVS_REPLACE_WITH_QUESTION_MARK | SVS_ALLOW_NEWLINE);
+	ci->name        = p.Recv_string(NETWORK_CONTENT_NAME_LENGTH);
+	ci->version     = p.Recv_string(NETWORK_CONTENT_VERSION_LENGTH);
+	ci->url         = p.Recv_string(NETWORK_CONTENT_URL_LENGTH);
+	ci->description = p.Recv_string(NETWORK_CONTENT_DESC_LENGTH, SVS_REPLACE_WITH_QUESTION_MARK | SVS_ALLOW_NEWLINE);
 
-	ci->unique_id = p->Recv_uint32();
+	ci->unique_id = p.Recv_uint32();
 	for (size_t j = 0; j < ci->md5sum.size(); j++) {
-		ci->md5sum[j] = p->Recv_uint8();
+		ci->md5sum[j] = p.Recv_uint8();
 	}
 
-	uint dependency_count = p->Recv_uint8();
+	uint dependency_count = p.Recv_uint8();
 	ci->dependencies.reserve(dependency_count);
 	for (uint i = 0; i < dependency_count; i++) {
-		ContentID cid = (ContentID)p->Recv_uint32();
-		ci->dependencies.push_back(cid);
-		this->reverse_dependency_map.insert({ cid, ci->id });
+		ContentID dependency_cid = (ContentID)p.Recv_uint32();
+		ci->dependencies.push_back(dependency_cid);
+		this->reverse_dependency_map.insert({ dependency_cid, ci->id });
 	}
 
-	uint tag_count = p->Recv_uint8();
+	uint tag_count = p.Recv_uint8();
 	ci->tags.reserve(tag_count);
-	for (uint i = 0; i < tag_count; i++) ci->tags.push_back(p->Recv_string(NETWORK_CONTENT_TAG_LENGTH));
+	for (uint i = 0; i < tag_count; i++) ci->tags.push_back(p.Recv_string(NETWORK_CONTENT_TAG_LENGTH));
 
 	if (!ci->IsValid()) {
 		delete ci;
@@ -204,7 +204,7 @@ void ClientNetworkContentSocketHandler::RequestContentList(ContentType type)
 
 	this->Connect();
 
-	Packet *p = new Packet(PACKET_CONTENT_CLIENT_INFO_LIST);
+	auto p = std::make_unique<Packet>(PACKET_CONTENT_CLIENT_INFO_LIST);
 	p->Send_uint8 ((byte)type);
 	p->Send_uint32(0xffffffff);
 	p->Send_uint8 (2);
@@ -220,7 +220,7 @@ void ClientNetworkContentSocketHandler::RequestContentList(ContentType type)
 	p->Send_string("jgrpp");
 	p->Send_string(_openttd_release_version);
 
-	this->SendPacket(p);
+	this->SendPacket(std::move(p));
 }
 
 /**
@@ -239,14 +239,14 @@ void ClientNetworkContentSocketHandler::RequestContentList(uint count, const Con
 		 * The rest of the packet can be used for the IDs. */
 		uint p_count = std::min<uint>(count, (TCP_MTU - sizeof(PacketSize) - sizeof(byte) - sizeof(uint16_t)) / sizeof(uint32_t));
 
-		Packet *p = new Packet(PACKET_CONTENT_CLIENT_INFO_ID, TCP_MTU);
+		auto p = std::make_unique<Packet>(PACKET_CONTENT_CLIENT_INFO_ID, TCP_MTU);
 		p->Send_uint16(p_count);
 
 		for (uint i = 0; i < p_count; i++) {
 			p->Send_uint32(content_ids[i]);
 		}
 
-		this->SendPacket(p);
+		this->SendPacket(std::move(p));
 		count -= p_count;
 		content_ids += p_count;
 	}
@@ -269,7 +269,7 @@ void ClientNetworkContentSocketHandler::RequestContentList(ContentVector *cv, bo
 	uint offset = 0;
 
 	while (cv->size() > offset) {
-		Packet *p = new Packet(send_md5sum ? PACKET_CONTENT_CLIENT_INFO_EXTID_MD5 : PACKET_CONTENT_CLIENT_INFO_EXTID, TCP_MTU);
+		auto p = std::make_unique<Packet>(send_md5sum ? PACKET_CONTENT_CLIENT_INFO_EXTID_MD5 : PACKET_CONTENT_CLIENT_INFO_EXTID, TCP_MTU);
 		const uint to_send = std::min<uint>(static_cast<uint>(cv->size() - offset), max_per_packet);
 		p->Send_uint8(static_cast<uint8_t>(to_send));
 
@@ -284,7 +284,7 @@ void ClientNetworkContentSocketHandler::RequestContentList(ContentVector *cv, bo
 			}
 		}
 
-		this->SendPacket(p);
+		this->SendPacket(std::move(p));
 
 		offset += to_send;
 	}
@@ -371,14 +371,14 @@ void ClientNetworkContentSocketHandler::DownloadSelectedContentFallback(const Co
 		 * The rest of the packet can be used for the IDs. */
 		uint p_count = std::min<uint>(count, (TCP_MTU - sizeof(PacketSize) - sizeof(byte) - sizeof(uint16_t)) / sizeof(uint32_t));
 
-		Packet *p = new Packet(PACKET_CONTENT_CLIENT_CONTENT, TCP_MTU);
+		auto p = std::make_unique<Packet>(PACKET_CONTENT_CLIENT_CONTENT, TCP_MTU);
 		p->Send_uint16(p_count);
 
 		for (uint i = 0; i < p_count; i++) {
 			p->Send_uint32(content_ids[i]);
 		}
 
-		this->SendPacket(p);
+		this->SendPacket(std::move(p));
 		count -= p_count;
 		content_ids += p_count;
 	}
@@ -483,16 +483,16 @@ static inline ssize_t TransferOutFWrite(FILE *file, const char *buffer, size_t a
 	return fwrite(buffer, 1, amount, file);
 }
 
-bool ClientNetworkContentSocketHandler::Receive_SERVER_CONTENT(Packet *p)
+bool ClientNetworkContentSocketHandler::Receive_SERVER_CONTENT(Packet &p)
 {
 	if (this->curFile == nullptr) {
 		delete this->curInfo;
 		/* When we haven't opened a file this must be our first packet with metadata. */
 		this->curInfo = new ContentInfo;
-		this->curInfo->type     = (ContentType)p->Recv_uint8();
-		this->curInfo->id       = (ContentID)p->Recv_uint32();
-		this->curInfo->filesize = p->Recv_uint32();
-		this->curInfo->filename = p->Recv_string(NETWORK_CONTENT_FILENAME_LENGTH);
+		this->curInfo->type     = (ContentType)p.Recv_uint8();
+		this->curInfo->id       = (ContentID)p.Recv_uint32();
+		this->curInfo->filesize = p.Recv_uint32();
+		this->curInfo->filename = p.Recv_string(NETWORK_CONTENT_FILENAME_LENGTH);
 
 		if (!this->BeforeDownload()) {
 			this->CloseConnection();
@@ -500,8 +500,8 @@ bool ClientNetworkContentSocketHandler::Receive_SERVER_CONTENT(Packet *p)
 		}
 	} else {
 		/* We have a file opened, thus are downloading internal content */
-		size_t toRead = p->RemainingBytesToTransfer();
-		if (toRead != 0 && (size_t)p->TransferOut(TransferOutFWrite, this->curFile) != toRead) {
+		size_t toRead = p.RemainingBytesToTransfer();
+		if (toRead != 0 && (size_t)p.TransferOut(TransferOutFWrite, this->curFile) != toRead) {
 			CloseWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_CONTENT_DOWNLOAD);
 			ShowErrorMessage(STR_CONTENT_ERROR_COULD_NOT_DOWNLOAD, STR_CONTENT_ERROR_COULD_NOT_DOWNLOAD_FILE_NOT_WRITABLE, WL_ERROR);
 			this->CloseConnection();

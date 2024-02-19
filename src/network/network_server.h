@@ -27,26 +27,26 @@ class ServerNetworkGameSocketHandler : public NetworkClientSocketPool::PoolItem<
 	byte *rcon_reply_key = nullptr;
 
 protected:
-	NetworkRecvStatus Receive_CLIENT_JOIN(Packet *p) override;
-	NetworkRecvStatus Receive_CLIENT_GAME_INFO(Packet *p) override;
-	NetworkRecvStatus Receive_CLIENT_GAME_PASSWORD(Packet *p) override;
-	NetworkRecvStatus Receive_CLIENT_COMPANY_PASSWORD(Packet *p) override;
-	NetworkRecvStatus Receive_CLIENT_SETTINGS_PASSWORD(Packet *p) override;
-	NetworkRecvStatus Receive_CLIENT_GETMAP(Packet *p) override;
-	NetworkRecvStatus Receive_CLIENT_MAP_OK(Packet *p) override;
-	NetworkRecvStatus Receive_CLIENT_ACK(Packet *p) override;
-	NetworkRecvStatus Receive_CLIENT_COMMAND(Packet *p) override;
-	NetworkRecvStatus Receive_CLIENT_CHAT(Packet *p) override;
-	NetworkRecvStatus Receive_CLIENT_SET_PASSWORD(Packet *p) override;
-	NetworkRecvStatus Receive_CLIENT_SET_NAME(Packet *p) override;
-	NetworkRecvStatus Receive_CLIENT_QUIT(Packet *p) override;
-	NetworkRecvStatus Receive_CLIENT_ERROR(Packet *p) override;
-	NetworkRecvStatus Receive_CLIENT_DESYNC_LOG(Packet *p) override;
-	NetworkRecvStatus Receive_CLIENT_DESYNC_MSG(Packet *p) override;
-	NetworkRecvStatus Receive_CLIENT_DESYNC_SYNC_DATA(Packet *p) override;
-	NetworkRecvStatus Receive_CLIENT_RCON(Packet *p) override;
-	NetworkRecvStatus Receive_CLIENT_NEWGRFS_CHECKED(Packet *p) override;
-	NetworkRecvStatus Receive_CLIENT_MOVE(Packet *p) override;
+	NetworkRecvStatus Receive_CLIENT_JOIN(Packet &p) override;
+	NetworkRecvStatus Receive_CLIENT_GAME_INFO(Packet &p) override;
+	NetworkRecvStatus Receive_CLIENT_GAME_PASSWORD(Packet &p) override;
+	NetworkRecvStatus Receive_CLIENT_COMPANY_PASSWORD(Packet &p) override;
+	NetworkRecvStatus Receive_CLIENT_SETTINGS_PASSWORD(Packet &p) override;
+	NetworkRecvStatus Receive_CLIENT_GETMAP(Packet &p) override;
+	NetworkRecvStatus Receive_CLIENT_MAP_OK(Packet &p) override;
+	NetworkRecvStatus Receive_CLIENT_ACK(Packet &p) override;
+	NetworkRecvStatus Receive_CLIENT_COMMAND(Packet &p) override;
+	NetworkRecvStatus Receive_CLIENT_CHAT(Packet &p) override;
+	NetworkRecvStatus Receive_CLIENT_SET_PASSWORD(Packet &p) override;
+	NetworkRecvStatus Receive_CLIENT_SET_NAME(Packet &p) override;
+	NetworkRecvStatus Receive_CLIENT_QUIT(Packet &p) override;
+	NetworkRecvStatus Receive_CLIENT_ERROR(Packet &p) override;
+	NetworkRecvStatus Receive_CLIENT_DESYNC_LOG(Packet &p) override;
+	NetworkRecvStatus Receive_CLIENT_DESYNC_MSG(Packet &p) override;
+	NetworkRecvStatus Receive_CLIENT_DESYNC_SYNC_DATA(Packet &p) override;
+	NetworkRecvStatus Receive_CLIENT_RCON(Packet &p) override;
+	NetworkRecvStatus Receive_CLIENT_NEWGRFS_CHECKED(Packet &p) override;
+	NetworkRecvStatus Receive_CLIENT_MOVE(Packet &p) override;
 
 	NetworkRecvStatus SendGameInfo();
 	NetworkRecvStatus SendGameInfoExtended(PacketGameType reply_type, uint16_t flags, uint16_t version);
@@ -55,7 +55,7 @@ protected:
 	NetworkRecvStatus SendNeedGamePassword();
 	NetworkRecvStatus SendNeedCompanyPassword();
 
-	bool ParseKeyPasswordPacket(Packet *p, NetworkSharedSecrets &ss, const std::string &password, std::string *payload, size_t length);
+	bool ParseKeyPasswordPacket(Packet &p, NetworkSharedSecrets &ss, const std::string &password, std::string *payload, size_t length);
 
 public:
 	/** Status of a client */
@@ -80,7 +80,7 @@ public:
 	byte last_token;             ///< The last random token we did send to verify the client is listening
 	uint32_t last_token_frame;   ///< The last frame we received the right token
 	ClientStatus status;         ///< Status of this client
-	CommandQueue outgoing_queue; ///< The command-queue awaiting delivery
+	CommandQueue outgoing_queue; ///< The command-queue awaiting delivery; conceptually more a bucket to gather commands in, after which the whole bucket is sent to the client.
 	size_t receive_limit;        ///< Amount of bytes that we can receive at this moment
 	bool settings_authed = false;///< Authorised to control all game settings
 	bool supports_zstd = false;  ///< Client supports zstd compression
@@ -121,7 +121,7 @@ public:
 	NetworkRecvStatus SendJoin(ClientID client_id);
 	NetworkRecvStatus SendFrame();
 	NetworkRecvStatus SendSync();
-	NetworkRecvStatus SendCommand(const CommandPacket *cp);
+	NetworkRecvStatus SendCommand(const CommandPacket &cp);
 	NetworkRecvStatus SendCompanyUpdate();
 	NetworkRecvStatus SendConfigUpdate();
 	NetworkRecvStatus SendSettingsAccessUpdate(bool ok);

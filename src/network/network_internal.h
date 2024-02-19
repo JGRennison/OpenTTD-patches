@@ -123,8 +123,7 @@ struct NetworkSharedSecrets {
  */
 struct CommandPacket : CommandContainer {
 	/** Make sure the pointer is nullptr. */
-	CommandPacket() : next(nullptr), frame(0), client_id(INVALID_CLIENT_ID), company(INVALID_COMPANY), my_cmd(false) {}
-	CommandPacket *next; ///< the next command packet (if in queue)
+	CommandPacket() : frame(0), client_id(INVALID_CLIENT_ID), company(INVALID_COMPANY), my_cmd(false) {}
 	uint32_t frame;      ///< the frame in which this packet is executed
 	ClientID client_id;  ///< originating client ID (or INVALID_CLIENT_ID if not specified)
 	CompanyID company;   ///< company that is executing the command

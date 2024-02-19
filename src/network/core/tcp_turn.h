@@ -18,7 +18,7 @@
 #include "network_game_info.h"
 
 /** Enum with all types of TCP TURN packets. The order MUST not be changed. **/
-enum PacketTurnType {
+enum PacketTurnType : uint8_t {
 	PACKET_TURN_TURN_ERROR,     ///< TURN server is unable to relay.
 	PACKET_TURN_SERCLI_CONNECT, ///< Client or server is connecting to the TURN server.
 	PACKET_TURN_TURN_CONNECTED, ///< TURN server indicates the socket is now being relayed.
@@ -38,7 +38,7 @@ protected:
 	 * @param p The packet that was just received.
 	 * @return True upon success, otherwise false.
 	 */
-	virtual bool Receive_TURN_ERROR(Packet *p);
+	virtual bool Receive_TURN_ERROR(Packet &p);
 
 	/**
 	 * Client or servers wants to connect to the TURN server (on request by
@@ -50,7 +50,7 @@ protected:
 	 * @param p The packet that was just received.
 	 * @return True upon success, otherwise false.
 	 */
-	virtual bool Receive_SERCLI_CONNECT(Packet *p);
+	virtual bool Receive_SERCLI_CONNECT(Packet &p);
 
 	/**
 	 * TURN server has connected client and server together and will now relay
@@ -62,9 +62,9 @@ protected:
 	 * @param p The packet that was just received.
 	 * @return True upon success, otherwise false.
 	 */
-	virtual bool Receive_TURN_CONNECTED(Packet *p);
+	virtual bool Receive_TURN_CONNECTED(Packet &p);
 
-	bool HandlePacket(Packet *p);
+	bool HandlePacket(Packet &p);
 public:
 	/**
 	 * Create a new cs socket handler for a given cs.
