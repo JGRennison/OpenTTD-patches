@@ -2133,7 +2133,7 @@ std::vector<SaveLoad> SlTableHeader(const NamedSaveLoadTable &slt)
 			std::sort(key_lookup.begin(), key_lookup.end());
 
 			/* Check that there is only one active SaveLoad for a given name. */
-			auto duplicate = std::adjacent_find(key_lookup.begin(), key_lookup.end());
+			[[maybe_unused]] auto duplicate = std::adjacent_find(key_lookup.begin(), key_lookup.end());
 			assert_msg(duplicate == key_lookup.end(), "%s", duplicate->name.data());
 
 			while (true) {
