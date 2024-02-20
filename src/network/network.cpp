@@ -1130,6 +1130,7 @@ const char *GetSyncRecordEventName(NetworkSyncRecordEvents event)
 		"TREE",
 		"STATION",
 		"INDUSTRY",
+		"PRE_DATES",
 		"PRE_COMPANY_STATE",
 		"VEH_PERIODIC",
 		"VEH_LOAD_UNLOAD",

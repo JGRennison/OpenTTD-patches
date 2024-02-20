@@ -2271,6 +2271,17 @@ void StateGameLoop()
 		NewsLoop();
 
 		if (_networking) {
+			RecordSyncEvent(NSRE_PRE_DATES);
+			UpdateStateChecksum(_tick_counter);
+			UpdateStateChecksum(_scaled_tick_counter);
+			UpdateStateChecksum(_state_ticks.base());
+			UpdateStateChecksum(CalTime::CurDate().base());
+			UpdateStateChecksum(CalTime::CurDateFract());
+			UpdateStateChecksum(CalTime::CurSubDateFract());
+			UpdateStateChecksum(EconTime::CurDate().base());
+			UpdateStateChecksum(EconTime::CurDateFract());
+			UpdateStateChecksum(TickSkipCounter());
+
 			RecordSyncEvent(NSRE_PRE_COMPANY_STATE);
 			for (Company *c : Company::Iterate()) {
 				DEBUG_UPDATESTATECHECKSUM("Company: %u, Money: " OTTD_PRINTF64, c->index, (int64_t)c->money);

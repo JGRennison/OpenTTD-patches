@@ -1278,6 +1278,7 @@ static void ChangeTimekeepingUnits(int32_t)
 
 	UpdateEffectiveDayLengthFactor();
 	SetupTickRate();
+	UpdateTimeSettings(0);
 }
 
 /**
