@@ -2160,15 +2160,23 @@ bool AfterLoadGame()
 				order->SetWaitTimetabled(HasBit(order->GetRawFlags(), 3));
 			}
 			OrderDepotActionFlags flags = (OrderDepotActionFlags)(order->GetDepotActionType() >> 1);
-			if (((flags & (1 << 2)) != 0) && !SlXvIsFeatureMissing(XSLFI_DEPOT_UNBUNCHING)) {
-				flags ^= (ODATFB_SELL | ODATFB_UNBUNCH); // Unbunch moved from bit 2 to bit 3
-			}
 			order->SetDepotActionType(flags);
 		}
 	} else if (SlXvIsFeaturePresent(XSLFI_TT_WAIT_IN_DEPOT, 1, 1)) {
 		for (Order *order : Order::Iterate()) {
 			/* Bit 3 was previously the wait is timetabled flag, move that to xflags (version 2 of XSLFI_TT_WAIT_IN_DEPOT) */
 			if (order->IsType(OT_GOTO_DEPOT)) order->SetWaitTimetabled(HasBit(order->GetRawFlags(), 3));
+		}
+	}
+	if (!IsSavegameVersionBefore(SLV_DEPOT_UNBUNCHING)) {
+		/* Move unbunch depot action from bit 2 to bit 3 */
+		for (Order *order : Order::Iterate()) {
+			if (!order->IsType(OT_GOTO_DEPOT)) continue;
+			OrderDepotActionFlags flags = order->GetDepotActionType();
+			if ((flags & ODATFB_SELL) != 0) {
+				flags ^= (ODATFB_SELL | ODATFB_UNBUNCH); // Move unbunch from bit 2 to bit 3 (sell to unbunch)
+				order->SetDepotActionType(flags);
+			}
 		}
 	}
 
