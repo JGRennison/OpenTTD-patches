@@ -965,7 +965,7 @@ public:
 				first = false;
 			}
 
-			DrawCargoIcon(ir, i->accepts_cargo[j]);
+			DrawCargoIcon(ir, i->produced_cargo[j]);
 
 			SetDParam(0, i->produced_cargo[j]);
 			SetDParam(1, i->last_month_production[j]);
