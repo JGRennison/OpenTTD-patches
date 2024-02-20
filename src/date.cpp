@@ -254,7 +254,7 @@ EconTime::YearMonthDay EconTime::ConvertDateToYMD(EconTime::Date date)
 		EconTime::YearMonthDay ymd;
 		ymd.year =date.base() / EconTime::DAYS_IN_ECONOMY_WALLCLOCK_YEAR;
 		ymd.month = (date.base() % EconTime::DAYS_IN_ECONOMY_WALLCLOCK_YEAR) / EconTime::DAYS_IN_ECONOMY_WALLCLOCK_MONTH;
-		ymd.day = date.base() % EconTime::DAYS_IN_ECONOMY_WALLCLOCK_MONTH;
+		ymd.day = (date.base() % EconTime::DAYS_IN_ECONOMY_WALLCLOCK_MONTH) + 1;
 		return ymd;
 	}
 
