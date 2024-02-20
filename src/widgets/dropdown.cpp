@@ -94,9 +94,6 @@ struct DropdownWindow : Window {
 
 	void Close([[maybe_unused]] int data = 0) override
 	{
-		/* Make the dropdown "invisible", so it doesn't affect new window placement.
-		 * Also mark it dirty in case the callback deals with the screen. (e.g. screenshots). */
-		this->SetDirty();
 		this->Window::Close();
 
 		Window *w2 = FindWindowByToken(this->parent_wnd_token);
@@ -105,9 +102,6 @@ struct DropdownWindow : Window {
 			pt.x -= w2->left;
 			pt.y -= w2->top;
 			w2->OnDropdownClose(pt, this->parent_button, this->selected_result, (this->mode_flags & DDMF_INSTANT_CLOSE) != 0);
-			if (_focused_window == this) {
-				SetFocusedWindow(w2);
-			}
 		}
 	}
 
@@ -273,15 +267,16 @@ struct DropdownWindow : Window {
 		}
 
 		if (this->click_delay != 0 && --this->click_delay == 0) {
-			/* Make the dropdown "invisible", so it doesn't affect new window placement.
-			 * Also mark it dirty in case the callback deals with the screen. (e.g. screenshots). */
 			if ((this->mode_flags & DDMF_PERSIST) == 0) {
-				this->window_class = WC_INVALID;
-				this->SetDirty();
+				if (this->sync_parent_focus & DDSF_FOCUS_PARENT_ON_SELECT) {
+					SetFocusedWindow(w2);
+				}
+
+				/* Close the dropdown, so it doesn't affect new window placement. */
+				this->Close();
 			}
 
 			w2->OnDropdownSelect(this->parent_button, this->selected_result);
-			if ((this->mode_flags & DDMF_PERSIST) == 0) this->Close();
 			return;
 		}
 
@@ -318,17 +313,17 @@ struct DropdownWindow : Window {
 
 	virtual void OnFocus(Window *previously_focused_window) override
 	{
-		if (this->sync_parent_focus & DDSF_RECV_FOCUS) {
+		if (this->sync_parent_focus & DDSF_NOTIFY_RECV_FOCUS) {
 			Window *parent = FindWindowByToken(this->parent_wnd_token);
-			if (parent) parent->OnFocus(previously_focused_window);
+			if (parent != nullptr) parent->OnFocus(previously_focused_window);
 		}
 	}
 
 	virtual void OnFocusLost(bool closing, Window *newly_focused_window) override
 	{
-		if (this->sync_parent_focus & DDSF_LOST_FOCUS) {
+		if (this->sync_parent_focus & DDSF_NOTIFY_LOST_FOCUS) {
 			Window *parent = FindWindowByToken(this->parent_wnd_token);
-			if (parent) parent->OnFocusLost(false, newly_focused_window);
+			if (parent != nullptr) parent->OnFocusLost(false, newly_focused_window);
 		}
 	}
 

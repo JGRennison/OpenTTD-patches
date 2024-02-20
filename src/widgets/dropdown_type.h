@@ -20,11 +20,14 @@
 #include <vector>
 
 enum DropDownSyncFocus {
-	DDSF_NONE = 0,
-	DDSF_RECV_FOCUS = 1,
-	DDSF_LOST_FOCUS = 2,
-	DDSF_ALL = DDSF_RECV_FOCUS | DDSF_LOST_FOCUS,
+	DDSF_NONE                   = 0,
+	DDSF_NOTIFY_RECV_FOCUS      = 1 << 0,
+	DDSF_NOTIFY_LOST_FOCUS      = 1 << 1,
+	DDSF_FOCUS_PARENT_ON_SELECT = 1 << 2,
+
+	DDSF_SHARED                 = DDSF_NOTIFY_RECV_FOCUS | DDSF_FOCUS_PARENT_ON_SELECT,
 };
+DECLARE_ENUM_AS_BIT_SET(DropDownSyncFocus)
 
 /**
  * Base list item class from which others are derived.

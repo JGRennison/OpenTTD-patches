@@ -2419,7 +2419,7 @@ public:
 
 			case WID_VL_SORT_BY_PULLDOWN: // Select sorting criteria dropdown menu
 				ShowDropDownMenu(this, this->GetVehicleSorterNames(), this->vehgroups.SortType(), WID_VL_SORT_BY_PULLDOWN, 0,
-						this->GetSorterDisableMask(this->vli.vtype), 0, DDSF_LOST_FOCUS);
+						this->GetSorterDisableMask(this->vli.vtype));
 				return;
 
 			case WID_VL_FILTER_BY_CARGO: // Cargo filter dropdown
@@ -3365,7 +3365,7 @@ struct VehicleDetailsWindow : Window {
 				const Vehicle *v = Vehicle::Get(this->window_number);
 				ShowDropDownMenu(this,
 						EconTime::UsingWallclockUnits() ? _service_interval_dropdown_wallclock : _service_interval_dropdown_calendar,
-						v->ServiceIntervalIsCustom() ? (v->ServiceIntervalIsPercent() ? 2 : 1) : 0, widget, 0, 0, 0, DDSF_LOST_FOCUS);
+						v->ServiceIntervalIsCustom() ? (v->ServiceIntervalIsPercent() ? 2 : 1) : 0, widget, 0, 0, 0, DDSF_SHARED);
 				break;
 			}
 

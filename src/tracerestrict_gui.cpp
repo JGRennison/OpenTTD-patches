@@ -4053,7 +4053,7 @@ public:
 
 			case WID_TRSL_SORT_BY_DROPDOWN: // Select sorting criteria dropdown menu
 				ShowDropDownMenu(this, this->vehicle_group_none_sorter_names, this->vehgroups.SortType(), WID_TRSL_SORT_BY_DROPDOWN, 0,
-						this->GetSorterDisableMask(this->vli.vtype), 0, DDSF_LOST_FOCUS);
+						this->GetSorterDisableMask(this->vli.vtype));
 				return;
 
 			case WID_TRSL_FILTER_BY_CARGO: // Cargo filter dropdown
