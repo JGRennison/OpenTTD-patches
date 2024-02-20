@@ -3528,14 +3528,17 @@ bool AfterLoadGame()
 			order->SetTravelTimetabled(order->GetTravelTime() > 0);
 			order->SetWaitTimetabled(order->GetWaitTime() > 0);
 		}
-		for (OrderList *orderlist : OrderList::Iterate()) {
-			orderlist->RecalculateTimetableDuration();
-		}
 	} else if (SlXvIsFeatureMissing(XSLFI_TIMETABLE_EXTRA)) {
 		for (Order *order : Order::Iterate()) {
 			if (order->IsType(OT_CONDITIONAL)) {
 				order->SetWaitTimetabled(order->GetWaitTime() > 0);
 			}
+		}
+	}
+
+	if (SlXvIsFeaturePresent(XSLFI_TT_WAIT_IN_DEPOT, 1, 1) || IsSavegameVersionBefore(SLV_190) || SlXvIsFeatureMissing(XSLFI_TIMETABLE_EXTRA)) {
+		for (OrderList *orderlist : OrderList::Iterate()) {
+			orderlist->RecalculateTimetableDuration();
 		}
 	}
 
