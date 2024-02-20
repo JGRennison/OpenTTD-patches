@@ -281,6 +281,25 @@ bool CalTime::IsCalendarFrozen(bool newgame)
 	return settings.economy.timekeeping_units == TKU_WALLCLOCK && settings.economy.minutes_per_calendar_year == CalTime::FROZEN_MINUTES_PER_YEAR;
 }
 
+CalTime::Day CalTime::NumberOfDaysInMonth(Year year, Month month)
+{
+	switch (month) {
+		case  0: return 31;
+		case  1: return CalTime::IsLeapYear(year) ? 29 : 28;
+		case  2: return 31;
+		case  3: return 30;
+		case  4: return 31;
+		case  5: return 30;
+		case  6: return 31;
+		case  7: return 31;
+		case  8: return 30;
+		case  9: return 31;
+		case 10: return 30;
+		case 11: return 31;
+		default: NOT_REACHED();
+	}
+}
+
 bool EconTime::UsingWallclockUnits(bool newgame)
 {
 	if (newgame) return (_settings_newgame.economy.timekeeping_units == TKU_WALLCLOCK);

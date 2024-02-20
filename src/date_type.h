@@ -197,6 +197,8 @@ struct CalTime : public DateDetail::BaseTime<struct CalendarTimeTag> {
 
 	static bool IsCalendarFrozen(bool newgame = false);
 
+	static Day NumberOfDaysInMonth(Year year, Month month);
+
 	/**
 	 * Calculate the year of a given date.
 	 * @param date The date to consider.
