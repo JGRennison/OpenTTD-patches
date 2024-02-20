@@ -186,6 +186,7 @@ struct CalTime : public DateDetail::BaseTime<struct CalendarTimeTag> {
 	static inline Day                 CurDay()             { return Detail::now.cal_ymd.day; }
 	static inline Date                CurDate()            { return Detail::now.cal_date; }
 	static inline DateFract           CurDateFract()       { return Detail::now.cal_date_fract; }
+	static inline uint16_t            CurSubDateFract()    { return Detail::now.sub_date_fract; }
 
 	static YearMonthDay ConvertDateToYMD(Date date);
 	static Date ConvertYMDToDate(Year year, Month month, Day day);

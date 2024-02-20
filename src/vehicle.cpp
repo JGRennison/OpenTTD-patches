@@ -1568,7 +1568,7 @@ void CallVehicleTicks()
 
 	if (TickSkipCounter() == 0) RunVehicleDayProc();
 
-	if (EconTime::UsingWallclockUnits() && !CalTime::IsCalendarFrozen() && CalTime::Detail::now.sub_date_fract == 0) {
+	if (EconTime::UsingWallclockUnits() && !CalTime::IsCalendarFrozen() && CalTime::CurSubDateFract() == 0) {
 		RunVehicleCalendarDayProc();
 	}
 
