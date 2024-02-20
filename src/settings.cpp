@@ -1252,17 +1252,17 @@ static void ChangeTimekeepingUnits(int32_t)
 
 	InvalidateWindowClassesData(WC_GAME_OPTIONS, 0);
 
-	/* It is possible to change these units in Scenario Editor. We must set the economy date appropriately. */
-	if (_game_mode == GM_EDITOR) {
+	/* It is possible to change these units in-game. We must set the economy date appropriately. */
+	if (_game_mode != GM_MENU) {
 		EconTime::Date new_economy_date;
 		EconTime::DateFract new_economy_date_fract;
 
 		if (EconTime::UsingWallclockUnits()) {
-			/* If the new mode is wallclock units, set the economy year back to 1. */
-			new_economy_date = EconTime::DAYS_TILL_ORIGINAL_BASE_YEAR_WALLCLOCK_MODE;
-			new_economy_date_fract = 0;
+			/* If the new mode is wallclock units, adjust the economy date to account for different month/year lengths. */
+			new_economy_date = EconTime::ConvertYMDToDate(EconTime::CurYear(), EconTime::CurMonth(), Clamp<EconTime::Day>(EconTime::CurDay(), 1, EconTime::DAYS_IN_ECONOMY_WALLCLOCK_MONTH));
+			new_economy_date_fract = EconTime::CurDateFract();
 		} else {
-			/* If the new mode is calendar units, sync the economy year with the calendar year. */
+			/* If the new mode is calendar units, sync the economy date with the calendar date. */
 			new_economy_date = CalTime::CurDate().base();
 			new_economy_date_fract = CalTime::CurDateFract();
 		}
