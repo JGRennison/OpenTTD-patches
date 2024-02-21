@@ -221,8 +221,8 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 /**
  * Extended save/load feature test
  *
- * First performs a tradional check on the provided @p savegame_version against @p savegame_version_from and @p savegame_version_to.
- * Then, if the feature set in the constructor is not XSLFI_NULL, also check than the feature version is inclusively bounded by @p min_version and @p max_version,
+ * First performs a traditional check on the provided @p savegame_version against @p savegame_version_from and @p savegame_version_to.
+ * Then, if the feature set in the constructor is not XSLFI_NULL, also check that the feature version is inclusively bounded by @p min_version and @p max_version,
  * and return the combination of the two tests using the operator defined in the constructor.
  * Otherwise just returns the result of the savegame version test
  */
@@ -384,7 +384,7 @@ bool SlXvCheckSpecialSavegameVersions()
 		_sl_is_faked_ext = true;
 		return true;
 	}
-	if (_sl_version == SL_CHILLPP_201) { /* 232 - 233 */
+	if (_sl_version == SL_CHILLPP_201) { /* 201 */
 		_sl_maybe_chillpp = true;
 		return true;
 	}
