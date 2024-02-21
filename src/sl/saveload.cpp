@@ -54,6 +54,7 @@
 #endif
 
 #include "../tbtr_template_vehicle.h"
+#include "../3rdparty/cpp-btree/btree_map.h"
 
 #include "table/strings.h"
 
@@ -235,6 +236,8 @@ struct SaveLoadParams {
 
 	uint32_t current_chunk_id;           ///< Current chunk ID
 
+	btree::btree_map<uint32_t, byte> chunk_block_modes; ///< Chunk block modes
+
 	std::unique_ptr<MemoryDumper> dumper;///< Memory dumper to write the savegame to.
 	std::shared_ptr<SaveFilter> sf;      ///< Filter to write the savegame to.
 
@@ -384,6 +387,7 @@ static void SlNullPointers()
 	/* Do upstream chunk tests before clearing version data */
 	ring_buffer<uint32_t> upstream_null_chunks;
 	for (auto &ch : ChunkHandlers()) {
+		_sl.current_chunk_id = ch.id;
 		if (ch.special_proc != nullptr && ch.special_proc(ch.id, CSLSO_PRE_NULL_PTRS) == CSLSOR_UPSTREAM_NULL_PTRS) {
 			upstream_null_chunks.push_back(ch.id);
 		}
@@ -396,6 +400,7 @@ static void SlNullPointers()
 	SlXvSetCurrentState();
 
 	for (auto &ch : ChunkHandlers()) {
+		_sl.current_chunk_id = ch.id;
 		if (!upstream_null_chunks.empty() && upstream_null_chunks.front() == ch.id) {
 			upstream_null_chunks.pop_front();
 			SlExecWithSlVersion(MAX_LOAD_SAVEGAME_VERSION, [&]() {
@@ -2689,6 +2694,8 @@ static void SlLoadChunks()
 		size_t read = 0;
 		if (_debug_sl_level >= 3) read = SlGetBytesRead();
 
+		_sl.chunk_block_modes[id] = ReadBuffer::GetCurrent()->PeekByte();
+
 		if (SlXvIsChunkDiscardable(id)) {
 			SlLoadCheckChunk(nullptr, id);
 		} else {
@@ -2719,6 +2726,8 @@ static void SlLoadCheckChunks()
 		size_t read = 0;
 		if (_debug_sl_level >= 3) read = SlGetBytesRead();
 
+		_sl.chunk_block_modes[id] = ReadBuffer::GetCurrent()->PeekByte();
+
 		if (SlXvIsChunkDiscardable(id)) {
 			ch = nullptr;
 		} else {
@@ -2741,6 +2750,7 @@ static void SlFixPointers()
 	_sl.action = SLA_PTRS;
 
 	for (auto &ch : ChunkHandlers()) {
+		_sl.current_chunk_id = ch.id;
 		if (ch.special_proc != nullptr) {
 			if (ch.special_proc(ch.id, CSLSO_PRE_PTRS) == CSLSOR_LOAD_CHUNK_CONSUMED) continue;
 		}
@@ -3449,6 +3459,7 @@ static inline void ClearSaveLoadState()
 	_sl.lf = nullptr;
 	_sl.save_flags = SMF_NONE;
 	_sl.current_chunk_id = 0;
+	_sl.chunk_block_modes.clear();
 
 	GamelogStopAnyAction();
 }
