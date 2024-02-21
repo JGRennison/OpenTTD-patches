@@ -2,6 +2,8 @@
 #ifndef _SQCOMPILER_H_
 #define _SQCOMPILER_H_
 
+#include <stdexcept>
+
 struct SQVM;
 
 #define	TK_IDENTIFIER	258

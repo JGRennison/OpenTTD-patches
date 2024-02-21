@@ -23,6 +23,7 @@
 #include "table/strings.h"
 #include "table/string_colours.h"
 
+#include <stdexcept>
 #include <numeric>
 
 #include "safeguards.h"
