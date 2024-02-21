@@ -184,7 +184,7 @@ void SlNullPointers()
 	/* We don't want any savegame conversion code to run
 	 * during NULLing; especially those that try to get
 	 * pointers from other pools. */
-	_sl_version = SAVEGAME_VERSION;
+	_sl_version = MAX_LOAD_SAVEGAME_VERSION;
 
 	for (const ChunkHandler &ch : ChunkHandlers()) {
 		DEBUG(sl, 3, "Nulling pointers for %c%c%c%c", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
@@ -2038,9 +2038,21 @@ void SlFixPointers()
 
 void SlFixPointerChunkByID(uint32_t id)
 {
+	_sl.action = SLA_PTRS;
+
 	const ChunkHandler *ch = SlFindChunkHandler(id);
 	if (ch == nullptr) SlErrorCorrupt("Unknown chunk type");
 	DEBUG(sl, 3, "Fixing pointers for %c%c%c%c", ch->id >> 24, ch->id >> 16, ch->id >> 8, ch->id);
+	ch->FixPointers();
+}
+
+void SlNullPointerChunkByID(uint32_t id)
+{
+	_sl.action = SLA_NULL;
+
+	const ChunkHandler *ch = SlFindChunkHandler(id);
+	if (ch == nullptr) SlErrorCorrupt("Unknown chunk type");
+	DEBUG(sl, 3, "Nulling pointers for %c%c%c%c", ch->id >> 24, ch->id >> 16, ch->id >> 8, ch->id);
 	ch->FixPointers();
 }
 

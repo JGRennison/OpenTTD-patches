@@ -91,6 +91,7 @@ extern bool _sl_upstream_mode;
 
 namespace upstream_sl {
 	void SlNullPointers();
+	void SlNullPointerChunkByID(uint32_t);
 	void SlLoadChunks();
 	void SlLoadChunkByID(uint32_t id);
 	void SlLoadCheckChunks();
@@ -380,6 +381,14 @@ static void SlNullPointers()
 
 	_sl.action = SLA_NULL;
 
+	/* Do upstream chunk tests before clearing version data */
+	ring_buffer<uint32_t> upstream_null_chunks;
+	for (auto &ch : ChunkHandlers()) {
+		if (ch.special_proc != nullptr && ch.special_proc(ch.id, CSLSO_PRE_NULL_PTRS) == CSLSOR_UPSTREAM_NULL_PTRS) {
+			upstream_null_chunks.push_back(ch.id);
+		}
+	}
+
 	/* We don't want any savegame conversion code to run
 	 * during NULLing; especially those that try to get
 	 * pointers from other pools. */
@@ -387,9 +396,14 @@ static void SlNullPointers()
 	SlXvSetCurrentState();
 
 	for (auto &ch : ChunkHandlers()) {
-		if (ch.special_proc != nullptr) {
-			if (ch.special_proc(ch.id, CSLSO_PRE_PTRS) == CSLSOR_LOAD_CHUNK_CONSUMED) continue;
+		if (!upstream_null_chunks.empty() && upstream_null_chunks.front() == ch.id) {
+			upstream_null_chunks.pop_front();
+			SlExecWithSlVersion(MAX_LOAD_SAVEGAME_VERSION, [&]() {
+				upstream_sl::SlNullPointerChunkByID(ch.id);
+			});
+			continue;
 		}
+
 		if (ch.ptrs_proc != nullptr) {
 			DEBUG(sl, 3, "Nulling pointers for %c%c%c%c", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
 			ch.ptrs_proc();

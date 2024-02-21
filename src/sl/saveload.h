@@ -90,6 +90,7 @@ enum ChunkSaveLoadSpecialOp {
 	CSLSO_PRE_LOAD,
 	CSLSO_PRE_LOADCHECK,
 	CSLSO_PRE_PTRS,
+	CSLSO_PRE_NULL_PTRS,
 	CSLSO_SHOULD_SAVE_CHUNK,
 };
 enum ChunkSaveLoadSpecialOpResult {
@@ -97,6 +98,7 @@ enum ChunkSaveLoadSpecialOpResult {
 	CSLSOR_LOAD_CHUNK_CONSUMED,
 	CSLSOR_DONT_SAVE_CHUNK,
 	CSLSOR_UPSTREAM_SAVE_CHUNK,
+	CSLSOR_UPSTREAM_NULL_PTRS,
 };
 typedef ChunkSaveLoadSpecialOpResult ChunkSaveLoadSpecialProc(uint32_t, ChunkSaveLoadSpecialOp);
 
@@ -189,6 +191,8 @@ namespace upstream_sl {
 						SlFixPointerChunkByID(id);
 					});
 					return CSLSOR_LOAD_CHUNK_CONSUMED;
+				case CSLSO_PRE_NULL_PTRS:
+					return CSLSOR_UPSTREAM_NULL_PTRS;
 				case CSLSO_SHOULD_SAVE_CHUNK:
 					return CSLSOR_UPSTREAM_SAVE_CHUNK;
 				default:
@@ -234,6 +238,9 @@ namespace upstream_sl {
 						SlFixPointerChunkByID(id);
 					});
 					return CSLSOR_LOAD_CHUNK_CONSUMED;
+				case CSLSO_PRE_NULL_PTRS:
+					if (!F::LoadUpstream()) return CSLSOR_NONE;
+					return CSLSOR_UPSTREAM_NULL_PTRS;
 				case CSLSO_SHOULD_SAVE_CHUNK:
 					return F::SaveUpstream() ? CSLSOR_UPSTREAM_SAVE_CHUNK : CSLSOR_NONE;
 				default:
