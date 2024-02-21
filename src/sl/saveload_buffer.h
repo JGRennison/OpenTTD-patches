@@ -69,6 +69,15 @@ struct ReadBuffer {
 		return RawReadByte();
 	}
 
+	inline byte PeekByte()
+	{
+		if (unlikely(this->bufp == this->bufe)) {
+			this->AcquireBytes();
+		}
+
+		return *this->bufp;
+	}
+
 	inline void CheckBytes(size_t bytes)
 	{
 		while (unlikely(this->bufp + bytes > this->bufe)) this->AcquireBytes();
