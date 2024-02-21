@@ -10,6 +10,8 @@
 #ifndef SOCIAL_INTEGRATION_H
 #define SOCIAL_INTEGRATION_H
 
+#include <vector>
+
 class SocialIntegrationPlugin {
 public:
 	enum State {

@@ -20,6 +20,8 @@
 #include "3rdparty/monocypher/monocypher-ed25519.h"
 #include "3rdparty/nlohmann/json.hpp"
 
+#include <filesystem>
+
 #include "safeguards.h"
 
 /** The public keys used for signature validation. */

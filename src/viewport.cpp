@@ -126,6 +126,7 @@
 #include <algorithm>
 #include <tuple>
 #include <atomic>
+#include <cmath>
 
 #include <mutex>
 #include <condition_variable>
