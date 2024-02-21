@@ -667,7 +667,12 @@ bool AfterLoadGame()
 
 	TileIndex map_size = MapSize();
 
+	/* Only new games can use wallclock units. */
+	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH, 5) && IsSavegameVersionBefore(SLV_ECONOMY_MODE_TIMEKEEPING_UNITS)) {
+		_settings_game.economy.timekeeping_units = TKU_CALENDAR;
+	}
 	UpdateEffectiveDayLengthFactor();
+
 	SetupTickRate();
 
 	extern TileIndex _cur_tileloop_tile; // From landscape.cpp.
@@ -865,17 +870,14 @@ bool AfterLoadGame()
 		_scaled_tick_counter = (uint64_t)((_tick_counter * DayLengthFactor()) + TickSkipCounter());
 	}
 	if (SlXvIsFeaturePresent(XSLFI_VARIABLE_DAY_LENGTH, 1, 3)) {
-		_state_ticks = GetStateTicksFromCurrentDateWithoutOffset() + DateDetail::_state_ticks_offset;
+		/* CalTime is used here because EconTime hasn't been set yet, but this needs to be done before setting EconTime::Detail::SetDate,
+		 * because that calls RecalculateStateTicksOffset which overwrites DateDetail::_state_ticks_offset which is an input here */
+		_state_ticks = GetStateTicksFromDateWithoutOffset(CalTime::CurDate().base(), CalTime::CurDateFract()) + DateDetail::_state_ticks_offset;
 	}
 
 	/* Update current year
 	 * must be done before loading sprites as some newgrfs check it */
 	CalTime::Detail::SetDate(CalTime::CurDate(), CalTime::CurDateFract());
-
-	/* Only new games can use wallclock units. */
-	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH, 5) && IsSavegameVersionBefore(SLV_ECONOMY_MODE_TIMEKEEPING_UNITS)) {
-		_settings_game.economy.timekeeping_units = TKU_CALENDAR;
-	}
 
 	if (SlXvIsFeaturePresent(XSLFI_VARIABLE_DAY_LENGTH, 5) || !IsSavegameVersionBefore(SLV_ECONOMY_DATE)) {
 		EconTime::Detail::SetDate(EconTime::CurDate(), EconTime::CurDateFract());

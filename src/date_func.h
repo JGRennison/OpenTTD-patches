@@ -24,7 +24,7 @@ namespace DateDetail {
 	extern uint8_t _effective_day_length;
 };
 
-StateTicks GetStateTicksFromCurrentDateWithoutOffset();
+StateTicks GetStateTicksFromDateWithoutOffset(EconTime::Date date, EconTime::DateFract date_fract);
 void RecalculateStateTicksOffset();
 
 inline uint8_t TickSkipCounter()

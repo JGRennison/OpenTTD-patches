@@ -110,14 +110,14 @@ EconTime::State EconTime::Detail::NewState(EconTime::Year year)
 	return state;
 }
 
-StateTicks GetStateTicksFromCurrentDateWithoutOffset()
+StateTicks GetStateTicksFromDateWithoutOffset(EconTime::Date date, EconTime::DateFract date_fract)
 {
-	return ((int64_t)(EconTime::DateToDateTicks(EconTime::CurDate(), EconTime::CurDateFract()).base()) * DayLengthFactor()) + TickSkipCounter();
+	return ((int64_t)(EconTime::DateToDateTicks(date, date_fract).base()) * DayLengthFactor()) + TickSkipCounter();
 }
 
 void RecalculateStateTicksOffset()
 {
-	DateDetail::_state_ticks_offset = _state_ticks - GetStateTicksFromCurrentDateWithoutOffset();
+	DateDetail::_state_ticks_offset = _state_ticks - GetStateTicksFromDateWithoutOffset(EconTime::CurDate(), EconTime::CurDateFract());
 }
 
 void UpdateEffectiveDayLengthFactor()
