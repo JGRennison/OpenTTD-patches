@@ -4204,6 +4204,20 @@ void SlUnreachablePlaceholder()
 	NOT_REACHED();
 }
 
+SaveLoadVersion SlExecWithSlVersionStart(SaveLoadVersion use_version)
+{
+	DEBUG(sl, 4, "SlExecWithSlVersion start: %u", use_version);
+	SaveLoadVersion old_ver = _sl_version;
+	_sl_version = use_version;
+	return old_ver;
+}
+
+void SlExecWithSlVersionEnd(SaveLoadVersion old_version)
+{
+	DEBUG(sl, 4, "SlExecWithSlVersion end");
+	_sl_version = old_version;
+}
+
 const char *ChunkIDDumper::operator()(uint32_t id)
 {
 	seprintf(this->buffer, lastof(this->buffer), "%c%c%c%c", id >> 24, id >> 16, id >> 8, id);

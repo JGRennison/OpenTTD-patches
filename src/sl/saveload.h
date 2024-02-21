@@ -135,11 +135,12 @@ private:
 template <typename F>
 void SlExecWithSlVersion(SaveLoadVersion use_version, F proc)
 {
-	extern SaveLoadVersion _sl_version;
-	SaveLoadVersion old_ver = _sl_version;
-	_sl_version = use_version;
+	extern SaveLoadVersion SlExecWithSlVersionStart(SaveLoadVersion use_version);
+	extern void SlExecWithSlVersionEnd(SaveLoadVersion old_version);
+
+	SaveLoadVersion old_ver = SlExecWithSlVersionStart(use_version);
 	auto guard = scope_guard([&]() {
-		_sl_version = old_ver;
+		SlExecWithSlVersionEnd(old_ver);
 	});
 	proc();
 }
