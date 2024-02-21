@@ -42,6 +42,7 @@ char *DumpGameEventFlags(GameEventFlags events, char *b, const char *last)
 	dump('i', GEF_INDUSTRY_CREATE);
 	dump('j', GEF_INDUSTRY_DELETE);
 	dump('v', GEF_VIRT_TRAIN);
+	dump('r', GEF_RM_INVALID_RV);
 	return b;
 }
 

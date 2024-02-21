@@ -23,6 +23,7 @@
 #include "../error.h"
 #include "../strings_func.h"
 #include "../economy_base.h"
+#include "../event_logs.h"
 #include "../3rdparty/cpp-btree/btree_map.h"
 #include "../core/format.hpp"
 
@@ -575,6 +576,8 @@ void AfterLoadVehiclesRemoveAnyFoundInvalid()
 		SetDParam(0, (uint)_load_invalid_vehicles_to_delete.size());
 		ShowErrorMessage(STR_WARNING_LOADGAME_REMOVED_UNCORRECTABLE_VEHICLES, INVALID_STRING_ID, WL_CRITICAL);
 		GroupStatistics::UpdateAfterLoad();
+
+		RegisterGameEvents(GEF_RM_INVALID_RV);
 	}
 
 	for (Vehicle *v : _load_invalid_vehicles_to_delete) {
