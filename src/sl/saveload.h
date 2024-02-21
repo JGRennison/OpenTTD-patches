@@ -125,6 +125,13 @@ struct ChunkHandler {
 	ChunkSaveLoadSpecialProc *special_proc = nullptr;
 };
 
+struct ChunkIDDumper {
+	const char *operator()(uint32_t id);
+
+private:
+	char buffer[5];
+};
+
 template <typename F>
 void SlExecWithSlVersion(SaveLoadVersion use_version, F proc)
 {

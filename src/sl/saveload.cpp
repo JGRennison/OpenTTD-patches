@@ -405,7 +405,7 @@ static void SlNullPointers()
 		}
 
 		if (ch.ptrs_proc != nullptr) {
-			DEBUG(sl, 3, "Nulling pointers for %c%c%c%c", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
+			DEBUG(sl, 3, "Nulling pointers for %s", ChunkIDDumper()(ch.id));
 			ch.ptrs_proc();
 		}
 	}
@@ -2270,7 +2270,7 @@ void SlLoadTableOrRiffFiltered(const SaveLoadTable &slt)
 	SlObjectLoadFiltered(nullptr, slt);
 	if (SlIsTableChunk() && SlIterateArray() != -1) {
 		uint32_t id = _sl.current_chunk_id;
-		SlErrorCorruptFmt("Too many %c%c%c%c entries", id >> 24, id >> 16, id >> 8, id);
+		SlErrorCorruptFmt("Too many %s entries", ChunkIDDumper()(id));
 	}
 }
 
@@ -2409,6 +2409,8 @@ static void SlLoadChunk(const ChunkHandler &ch)
 		if (ch.special_proc(ch.id, CSLSO_PRE_LOAD) == CSLSOR_LOAD_CHUNK_CONSUMED) return;
 	}
 
+	DEBUG(sl, 2, "Loading chunk %s", ChunkIDDumper()(ch.id));
+
 	byte m = SlReadByte();
 	size_t len;
 	size_t endoffs;
@@ -2438,12 +2440,12 @@ static void SlLoadChunk(const ChunkHandler &ch)
 		case CH_TABLE:
 			_sl.array_index = 0;
 			ch.load_proc();
-			if (_next_offs != 0) SlErrorCorrupt("Invalid array length");
+			if (_next_offs != 0) SlErrorCorruptFmt("Invalid array length in %s", ChunkIDDumper()(ch.id));
 			break;
 		case CH_SPARSE_ARRAY:
 		case CH_SPARSE_TABLE:
 			ch.load_proc();
-			if (_next_offs != 0) SlErrorCorrupt("Invalid array length");
+			if (_next_offs != 0) SlErrorCorruptFmt("Invalid array length in %s", ChunkIDDumper()(ch.id));
 			break;
 		default:
 			if ((m & 0xF) == CH_RIFF) {
@@ -2453,7 +2455,7 @@ static void SlLoadChunk(const ChunkHandler &ch)
 				SlRIFFSpringPPCheck(len);
 				if (SlXvIsFeaturePresent(XSLFI_RIFF_HEADER_60_BIT)) {
 					if (len != 0) {
-						SlErrorCorrupt("RIFF chunk too large");
+						SlErrorCorruptFmt("RIFF chunk too large: %s", ChunkIDDumper()(ch.id));
 					}
 					len = SlReadUint32();
 				}
@@ -2465,17 +2467,17 @@ static void SlLoadChunk(const ChunkHandler &ch)
 				endoffs = _sl.reader->GetSize() + len;
 				ch.load_proc();
 				if (_sl.reader->GetSize() != endoffs) {
-					DEBUG(sl, 1, "Invalid chunk size: " PRINTF_SIZE " != " PRINTF_SIZE ", (" PRINTF_SIZE ")", _sl.reader->GetSize(), endoffs, len);
-					SlErrorCorruptFmt("Invalid chunk size - expected to be at position " PRINTF_SIZE ", actually at " PRINTF_SIZE ", length: " PRINTF_SIZE,
-							endoffs, _sl.reader->GetSize(), len);
+					DEBUG(sl, 1, "Invalid chunk size: " PRINTF_SIZE " != " PRINTF_SIZE ", (" PRINTF_SIZE ")  for %s", _sl.reader->GetSize(), endoffs, len, ChunkIDDumper()(ch.id));
+					SlErrorCorruptFmt("Invalid chunk size - expected to be at position " PRINTF_SIZE ", actually at " PRINTF_SIZE ", length: " PRINTF_SIZE " for %s",
+							endoffs, _sl.reader->GetSize(), len, ChunkIDDumper()(ch.id));
 				}
 			} else {
-				SlErrorCorrupt("Invalid chunk type");
+				SlErrorCorruptFmt("Invalid chunk type for %s", ChunkIDDumper()(ch.id));
 			}
 			break;
 	}
 
-	if (_sl.expect_table_header) SlErrorCorruptFmt("Table chunk without header: %c%c%c%c", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
+	if (_sl.expect_table_header) SlErrorCorruptFmt("Table chunk without header: %s", ChunkIDDumper()(ch.id));
 }
 
 /**
@@ -2483,10 +2485,16 @@ static void SlLoadChunk(const ChunkHandler &ch)
  * If the chunkhandler is nullptr, the chunk is skipped.
  * @param ch The chunkhandler that will be used for the operation, this may be nullptr
  */
-static void SlLoadCheckChunk(const ChunkHandler *ch)
+static void SlLoadCheckChunk(const ChunkHandler *ch, uint32_t chunk_id)
 {
-	if (ch && ch->special_proc != nullptr) {
+	if (ch != nullptr && ch->special_proc != nullptr) {
 		if (ch->special_proc(ch->id, CSLSO_PRE_LOADCHECK) == CSLSOR_LOAD_CHUNK_CONSUMED) return;
+	}
+
+	if (ch == nullptr) {
+		DEBUG(sl, 1, "Discarding chunk %s", ChunkIDDumper()(chunk_id));
+	} else {
+		DEBUG(sl, 2, "Loading chunk %s", ChunkIDDumper()(chunk_id));
 	}
 
 	byte m = SlReadByte();
@@ -2518,7 +2526,7 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
 		case CH_TABLE:
 			_sl.array_index = 0;
 			if (ext_flags) {
-				SlErrorCorruptFmt("CH_ARRAY does not take chunk header extension flags: 0x%X", ext_flags);
+				SlErrorCorruptFmt("CH_ARRAY does not take chunk header extension flags: 0x%X in %s", ext_flags, ChunkIDDumper()(chunk_id));
 			}
 			if (ch && ch->load_check_proc) {
 				ch->load_check_proc();
@@ -2530,7 +2538,7 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
 		case CH_SPARSE_ARRAY:
 		case CH_SPARSE_TABLE:
 			if (ext_flags) {
-				SlErrorCorruptFmt("CH_SPARSE_ARRAY does not take chunk header extension flags: 0x%X", ext_flags);
+				SlErrorCorruptFmt("CH_SPARSE_ARRAY does not take chunk header extension flags: 0x%X in %s", ext_flags, ChunkIDDumper()(chunk_id));
 			}
 			if (ch && ch->load_check_proc) {
 				ch->load_check_proc();
@@ -2542,7 +2550,7 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
 		default:
 			if ((m & 0xF) == CH_RIFF) {
 				if (ext_flags != (ext_flags & SLCEHF_BIG_RIFF)) {
-					SlErrorCorruptFmt("Unknown chunk header extension flags for CH_RIFF: 0x%X", ext_flags);
+					SlErrorCorruptFmt("Unknown chunk header extension flags for CH_RIFF: 0x%X in %s", ext_flags, ChunkIDDumper()(chunk_id));
 				}
 				/* Read length */
 				len = (SlReadByte() << 16) | ((m >> 4) << 24);
@@ -2553,12 +2561,12 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
 						SlErrorCorrupt("RIFF chunk too large");
 					}
 					len = SlReadUint32();
-					if (ext_flags & SLCEHF_BIG_RIFF) SlErrorCorrupt("XSLFI_RIFF_HEADER_60_BIT and SLCEHF_BIG_RIFF both present");
+					if (ext_flags & SLCEHF_BIG_RIFF) SlErrorCorruptFmt("XSLFI_RIFF_HEADER_60_BIT and SLCEHF_BIG_RIFF both present in %s", ChunkIDDumper()(chunk_id));
 				}
 				if (ext_flags & SLCEHF_BIG_RIFF) {
 					uint64_t full_len = len | (static_cast<uint64_t>(SlReadUint32()) << 28);
 					if (full_len >= (1LL << 32)) {
-						SlErrorCorruptFmt("Chunk size too large: " OTTD_PRINTFHEX64, full_len);
+						SlErrorCorruptFmt("Chunk size too large: " OTTD_PRINTFHEX64 " in %s", full_len, ChunkIDDumper()(chunk_id));
 					}
 					len = static_cast<size_t>(full_len);
 				}
@@ -2570,17 +2578,17 @@ static void SlLoadCheckChunk(const ChunkHandler *ch)
 					SlSkipBytes(len);
 				}
 				if (_sl.reader->GetSize() != endoffs) {
-					DEBUG(sl, 1, "Invalid chunk size: " PRINTF_SIZE " != " PRINTF_SIZE ", (" PRINTF_SIZE ")", _sl.reader->GetSize(), endoffs, len);
-					SlErrorCorruptFmt("Invalid chunk size - expected to be at position " PRINTF_SIZE ", actually at " PRINTF_SIZE ", length: " PRINTF_SIZE,
-							endoffs, _sl.reader->GetSize(), len);
+					DEBUG(sl, 1, "Invalid chunk size: " PRINTF_SIZE " != " PRINTF_SIZE ", (" PRINTF_SIZE ") for %s", _sl.reader->GetSize(), endoffs, len, ChunkIDDumper()(chunk_id));
+					SlErrorCorruptFmt("Invalid chunk size - expected to be at position " PRINTF_SIZE ", actually at " PRINTF_SIZE ", length: " PRINTF_SIZE " for %s",
+							endoffs, _sl.reader->GetSize(), len, ChunkIDDumper()(chunk_id));
 				}
 			} else {
-				SlErrorCorrupt("Invalid chunk type");
+				SlErrorCorruptFmt("Invalid chunk type for: %s", ChunkIDDumper()(chunk_id));
 			}
 			break;
 	}
 
-	if (_sl.expect_table_header) SlErrorCorrupt("Table chunk without header");
+	if (_sl.expect_table_header) SlErrorCorruptFmt("Table chunk without header: %s", ChunkIDDumper()(chunk_id));
 }
 
 /**
@@ -2611,7 +2619,7 @@ static void SlSaveChunk(const ChunkHandler &ch)
 
 	_sl.current_chunk_id = ch.id;
 	SlWriteUint32(ch.id);
-	DEBUG(sl, 2, "Saving chunk %c%c%c%c", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
+	DEBUG(sl, 2, "Saving chunk %s", ChunkIDDumper()(ch.id));
 
 	size_t written = 0;
 	if (_debug_sl_level >= 3) written = SlGetBytesWritten();
@@ -2640,9 +2648,9 @@ static void SlSaveChunk(const ChunkHandler &ch)
 		default: NOT_REACHED();
 	}
 
-	if (_sl.expect_table_header) SlErrorCorruptFmt("Table chunk without header: %c%c%c%c", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
+	if (_sl.expect_table_header) SlErrorCorruptFmt("Table chunk without header: %s", ChunkIDDumper()(ch.id));
 
-	DEBUG(sl, 3, "Saved chunk %c%c%c%c (" PRINTF_SIZE " bytes)", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id, SlGetBytesWritten() - written);
+	DEBUG(sl, 3, "Saved chunk %s (" PRINTF_SIZE " bytes)", ChunkIDDumper()(ch.id), SlGetBytesWritten() - written);
 }
 
 /** Save all chunks */
@@ -2678,22 +2686,20 @@ static void SlLoadChunks()
 
 	for (uint32_t id = SlReadUint32(); id != 0; id = SlReadUint32()) {
 		_sl.current_chunk_id = id;
-		DEBUG(sl, 2, "Loading chunk %c%c%c%c", id >> 24, id >> 16, id >> 8, id);
 		size_t read = 0;
 		if (_debug_sl_level >= 3) read = SlGetBytesRead();
 
 		if (SlXvIsChunkDiscardable(id)) {
-			DEBUG(sl, 1, "Discarding chunk %c%c%c%c", id >> 24, id >> 16, id >> 8, id);
-			SlLoadCheckChunk(nullptr);
+			SlLoadCheckChunk(nullptr, id);
 		} else {
 			const ChunkHandler *ch = SlFindChunkHandler(id);
 			if (ch == nullptr) {
-				SlErrorCorrupt("Unknown chunk type");
+				SlErrorCorruptFmt("Unknown chunk type: %s", ChunkIDDumper()(id));
 			} else {
 				SlLoadChunk(*ch);
 			}
 		}
-		DEBUG(sl, 3, "Loaded chunk %c%c%c%c (" PRINTF_SIZE " bytes)", id >> 24, id >> 16, id >> 8, id, SlGetBytesRead() - read);
+		DEBUG(sl, 3, "Loaded chunk %s (" PRINTF_SIZE " bytes)", ChunkIDDumper()(id), SlGetBytesRead() - read);
 	}
 }
 
@@ -2710,7 +2716,6 @@ static void SlLoadCheckChunks()
 
 	for (id = SlReadUint32(); id != 0; id = SlReadUint32()) {
 		_sl.current_chunk_id = id;
-		DEBUG(sl, 2, "Loading chunk %c%c%c%c", id >> 24, id >> 16, id >> 8, id);
 		size_t read = 0;
 		if (_debug_sl_level >= 3) read = SlGetBytesRead();
 
@@ -2718,10 +2723,10 @@ static void SlLoadCheckChunks()
 			ch = nullptr;
 		} else {
 			ch = SlFindChunkHandler(id);
-			if (ch == nullptr) SlErrorCorrupt("Unknown chunk type");
+			if (ch == nullptr) SlErrorCorruptFmt("Unknown chunk type: %s", ChunkIDDumper()(id));
 		}
-		SlLoadCheckChunk(ch);
-		DEBUG(sl, 3, "Loaded chunk %c%c%c%c (" PRINTF_SIZE " bytes)", id >> 24, id >> 16, id >> 8, id, SlGetBytesRead() - read);
+		SlLoadCheckChunk(ch, id);
+		DEBUG(sl, 3, "Loaded chunk %s (" PRINTF_SIZE " bytes)", ChunkIDDumper()(id), SlGetBytesRead() - read);
 	}
 }
 
@@ -2740,7 +2745,7 @@ static void SlFixPointers()
 			if (ch.special_proc(ch.id, CSLSO_PRE_PTRS) == CSLSOR_LOAD_CHUNK_CONSUMED) continue;
 		}
 		if (ch.ptrs_proc != nullptr) {
-			DEBUG(sl, 3, "Fixing pointers for %c%c%c%c", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
+			DEBUG(sl, 3, "Fixing pointers for %s", ChunkIDDumper()(ch.id));
 			ch.ptrs_proc();
 		}
 	}
@@ -4197,4 +4202,10 @@ bool SaveLoadFileTypeIsScenario()
 void SlUnreachablePlaceholder()
 {
 	NOT_REACHED();
+}
+
+const char *ChunkIDDumper::operator()(uint32_t id)
+{
+	seprintf(this->buffer, lastof(this->buffer), "%c%c%c%c", id >> 24, id >> 16, id >> 8, id);
+	return this->buffer;
 }
