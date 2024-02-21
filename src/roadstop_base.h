@@ -167,6 +167,9 @@ struct RoadStop : RoadStopPool::PoolItem<&_roadstop_pool> {
 
 	static bool IsDriveThroughRoadStopContinuation(TileIndex rs, TileIndex next);
 
+	void DebugClearOccupancy();
+	void DebugReEnter(const RoadVehicle *rv);
+
 private:
 	Entry *east; ///< The vehicles that entered from the east
 	Entry *west; ///< The vehicles that entered from the west

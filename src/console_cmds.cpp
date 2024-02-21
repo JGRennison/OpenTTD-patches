@@ -63,6 +63,7 @@
 #include "tile_cmd.h"
 #include "object_base.h"
 #include "newgrf_newsignals.h"
+#include "roadstop_base.h"
 #include <time.h>
 
 #include "3rdparty/cpp-btree/btree_set.h"
@@ -2593,6 +2594,30 @@ DEF_CONSOLE_CMD(ConMergeLinkgraphJobsAsap)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConUnblockBayRoadStops)
+{
+	if (argc == 0) {
+		IConsoleHelp("Unblock bay road stops blocked by a bug, for single-player use only.");
+		return true;
+	}
+
+	for (Station *st : Station::Iterate()) {
+		for (RoadStopType rs_type : { ROADSTOP_BUS, ROADSTOP_TRUCK }) {
+			for (RoadStop *rs = st->GetPrimaryRoadStop(rs_type); rs != nullptr; rs = rs->next) {
+				if (IsBayRoadStopTile(rs->xy)) {
+					rs->DebugClearOccupancy();
+				}
+			}
+		}
+	}
+	for (const RoadVehicle *rv : RoadVehicle::Iterate()) {
+		if (IsInsideMM(rv->state, RVSB_IN_ROAD_STOP, RVSB_IN_ROAD_STOP_END)) {
+			RoadStop::GetByTile(rv->tile, GetRoadStopType(rv->tile))->DebugReEnter(rv);
+		}
+	}
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConDbgSpecial)
 {
 	if (argc == 0) {
@@ -4113,6 +4138,7 @@ void IConsoleStdLibRegister()
 	/* Bug workarounds */
 	IConsole::CmdRegister("jgrpp_bug_workaround_unblock_heliports", ConResetBlockedHeliports, ConHookNoNetwork, true);
 	IConsole::CmdRegister("merge_linkgraph_jobs_asap", ConMergeLinkgraphJobsAsap, ConHookNoNetwork, true);
+	IConsole::CmdRegister("unblock_bay_road_stops",  ConUnblockBayRoadStops,  ConHookNoNetwork, true);
 
 	IConsole::CmdRegister("dbgspecial",              ConDbgSpecial,       ConHookSpecialCmd, true);
 

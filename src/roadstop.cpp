@@ -370,6 +370,21 @@ bool RoadStop::Enter(RoadVehicle *rv)
 	}
 }
 
+void RoadStop::DebugClearOccupancy()
+{
+	SetBit(this->status, RSSFB_BAY0_FREE);
+	SetBit(this->status, RSSFB_BAY1_FREE);
+	ClrBit(this->status, RSSFB_ENTRY_BUSY);
+}
+
+void RoadStop::DebugReEnter(const RoadVehicle *rv)
+{
+	if (!IsInsideMM(rv->state, RVSB_IN_ROAD_STOP, RVSB_IN_ROAD_STOP_END)) return;
+
+	ClrBit(this->status, HasBit(rv->state, RVS_USING_SECOND_BAY) ? RSSFB_BAY1_FREE : RSSFB_BAY0_FREE);
+	if (!HasBit(rv->state, RVS_ENTERED_STOP)) SetBit(this->status, RSSFB_ENTRY_BUSY);
+}
+
 /**
  * Leave the road stop
  * @param rv the vehicle that leaves the stop
