@@ -15,48 +15,8 @@
 
 #include "../safeguards.h"
 
-static const SaveLoad _group_desc[] = {
-	 SLE_CONDVAR(Group, name,               SLE_NAME,                       SL_MIN_VERSION,  SLV_84),
-	SLE_CONDSSTR(Group, name,               SLE_STR | SLF_ALLOW_CONTROL,    SLV_84, SL_MAX_VERSION),
-	SLE_CONDNULL(2,                                                         SL_MIN_VERSION,  SLV_164), // num_vehicle
-	     SLE_VAR(Group, owner,              SLE_UINT8),
-	     SLE_VAR(Group, vehicle_type,       SLE_UINT8),
-	     SLE_VAR(Group, flags,              SLE_UINT8),
-	 SLE_CONDVAR(Group, livery.in_use,      SLE_UINT8,                     SLV_GROUP_LIVERIES, SL_MAX_VERSION),
-	 SLE_CONDVAR(Group, livery.colour1,     SLE_UINT8,                     SLV_GROUP_LIVERIES, SL_MAX_VERSION),
-	 SLE_CONDVAR(Group, livery.colour2,     SLE_UINT8,                     SLV_GROUP_LIVERIES, SL_MAX_VERSION),
-	 SLE_CONDVAR(Group, parent,             SLE_UINT16,                    SLV_189, SL_MAX_VERSION),
-};
-
-static void Save_GRPS()
-{
-	for (Group *g : Group::Iterate()) {
-		SlSetArrayIndex(g->index);
-		SlObject(g, _group_desc);
-	}
-}
-
-
-static void Load_GRPS()
-{
-	int index;
-
-	while ((index = SlIterateArray()) != -1) {
-		Group *g = new (index) Group();
-		SlObject(g, _group_desc);
-
-		if (IsSavegameVersionBefore(SLV_189)) g->parent = INVALID_GROUP;
-
-		if (IsSavegameVersionBefore(SLV_GROUP_LIVERIES)) {
-	                const Company *c = Company::Get(g->owner);
-	                g->livery.colour1 = c->livery[LS_DEFAULT].colour1;
-	                g->livery.colour2 = c->livery[LS_DEFAULT].colour2;
-		}
-	}
-}
-
 static const ChunkHandler group_chunk_handlers[] = {
-	{ 'GRPS', Save_GRPS, Load_GRPS, nullptr, nullptr, CH_ARRAY },
+	MakeUpstreamChunkHandler<'GRPS', GeneralUpstreamChunkLoadInfo>(),
 };
 
 extern const ChunkHandlerTable _group_chunk_handlers(group_chunk_handlers);

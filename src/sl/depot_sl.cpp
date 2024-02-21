@@ -28,14 +28,6 @@ static const SaveLoad _depot_desc[] = {
 	 SLE_CONDNULL_X(4,                                 SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP, 5)),
 };
 
-static void Save_DEPT()
-{
-	for (Depot *depot : Depot::Iterate()) {
-		SlSetArrayIndex(depot->index);
-		SlObject(depot, _depot_desc);
-	}
-}
-
 static void Load_DEPT()
 {
 	int index;
@@ -58,7 +50,7 @@ static void Ptrs_DEPT()
 }
 
 static const ChunkHandler depot_chunk_handlers[] = {
-	{ 'DEPT', Save_DEPT, Load_DEPT, Ptrs_DEPT, nullptr, CH_ARRAY },
+	MakeSaveUpstreamFeatureConditionalLoadUpstreamChunkHandler<'DEPT', XSLFI_TABLE_MISC_SL, 2>(Load_DEPT, Ptrs_DEPT, nullptr),
 };
 
 extern const ChunkHandlerTable _depot_chunk_handlers(depot_chunk_handlers);

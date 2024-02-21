@@ -4229,6 +4229,14 @@ void SlExecWithSlVersionEnd(SaveLoadVersion old_version)
 	_sl_version = old_version;
 }
 
+SaveLoadVersion GeneralUpstreamChunkLoadInfo::GetLoadVersion()
+{
+	extern SaveLoadVersion _sl_xv_upstream_version;
+
+	byte block_mode = _sl.chunk_block_modes[_sl.current_chunk_id];
+	return (block_mode == CH_TABLE || block_mode == CH_SPARSE_TABLE) ? _sl_xv_upstream_version : _sl_version;
+}
+
 const char *ChunkIDDumper::operator()(uint32_t id)
 {
 	seprintf(this->buffer, lastof(this->buffer), "%c%c%c%c", id >> 24, id >> 16, id >> 8, id);

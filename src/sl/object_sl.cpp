@@ -16,46 +16,6 @@
 
 #include "../safeguards.h"
 
-static const SaveLoad _object_desc[] = {
-	    SLE_VAR(Object, location.tile,              SLE_UINT32),
-	    SLE_VAR(Object, location.w,                 SLE_FILE_U8 | SLE_VAR_U16),
-	    SLE_VAR(Object, location.h,                 SLE_FILE_U8 | SLE_VAR_U16),
-	    SLE_REF(Object, town,                       REF_TOWN),
-	    SLE_VAR(Object, build_date,                 SLE_UINT32),
-	SLE_CONDVAR(Object, colour,                     SLE_UINT8,                  SLV_148, SL_MAX_VERSION),
-	SLE_CONDVAR(Object, view,                       SLE_UINT8,                  SLV_155, SL_MAX_VERSION),
-	SLE_CONDVAR(Object, type,                       SLE_UINT16,                 SLV_186, SL_MAX_VERSION),
-};
-
-static void Save_OBJS()
-{
-	/* Write the objects */
-	for (Object *o : Object::Iterate()) {
-		SlSetArrayIndex(o->index);
-		SlObject(o, _object_desc);
-	}
-}
-
-static void Load_OBJS()
-{
-	int index;
-	while ((index = SlIterateArray()) != -1) {
-		Object *o = new (index) Object();
-		SlObject(o, _object_desc);
-	}
-}
-
-static void Ptrs_OBJS()
-{
-	for (Object *o : Object::Iterate()) {
-		SlObject(o, _object_desc);
-		if (IsSavegameVersionBefore(SLV_148) && !IsTileType(o->location.tile, MP_OBJECT)) {
-			/* Due to a small bug stale objects could remain. */
-			delete o;
-		}
-	}
-}
-
 static void Save_OBID()
 {
 	Save_NewGRFMapping(_object_mngr);
@@ -68,7 +28,7 @@ static void Load_OBID()
 
 static const ChunkHandler object_chunk_handlers[] = {
 	{ 'OBID', Save_OBID, Load_OBID, nullptr,   nullptr, CH_ARRAY },
-	{ 'OBJS', Save_OBJS, Load_OBJS, Ptrs_OBJS, nullptr, CH_ARRAY },
+	MakeUpstreamChunkHandler<'OBJS', GeneralUpstreamChunkLoadInfo>(),
 };
 
 extern const ChunkHandlerTable _object_chunk_handlers(object_chunk_handlers);

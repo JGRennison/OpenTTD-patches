@@ -16,6 +16,18 @@
 
 #include "../safeguards.h"
 
+/** Called after load to trash broken pages. */
+void AfterLoadStoryBook()
+{
+	if (upstream_sl::IsSavegameVersionBefore(SLV_185)) {
+		/* Trash all story pages and page elements because
+		 * they were saved with wrong data types.
+		 */
+		_story_page_element_pool.CleanPool();
+		_story_page_pool.CleanPool();
+	}
+}
+
 namespace upstream_sl {
 
 static const SaveLoad _story_page_elements_desc[] = {

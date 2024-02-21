@@ -83,34 +83,6 @@ Engine *GetTempDataEngine(EngineID index)
 	}
 }
 
-static void Save_ENGN()
-{
-	for (Engine *e : Engine::Iterate()) {
-		SlSetArrayIndex(e->index);
-		SlObject(e, _engine_desc);
-	}
-}
-
-static void Load_ENGN()
-{
-	/* As engine data is loaded before engines are initialized we need to load
-	 * this information into a temporary array. This is then copied into the
-	 * engine pool after processing NewGRFs by CopyTempEngineData(). */
-	int index;
-	while ((index = SlIterateArray()) != -1) {
-		Engine *e = GetTempDataEngine(index);
-		SlObject(e, _engine_desc);
-
-		if (IsSavegameVersionBefore(SLV_179)) {
-			/* preview_company_rank was replaced with preview_company and preview_asked.
-			 * Just cancel any previews. */
-			e->flags &= ~4; // ENGINE_OFFER_WINDOW_OPEN
-			e->preview_company = INVALID_COMPANY;
-			e->preview_asked = MAX_UVALUE(CompanyMask);
-		}
-	}
-}
-
 /**
  * Copy data from temporary engine array into the real engine pool.
  */
@@ -166,42 +138,14 @@ static void Load_ENGS()
 	}
 }
 
-/** Save and load the mapping between the engine id in the pool, and the grf file it came from. */
-static const SaveLoad _engine_id_mapping_desc[] = {
-	SLE_VAR(EngineIDMapping, grfid,         SLE_UINT32),
-	SLE_VAR(EngineIDMapping, internal_id,   SLE_UINT16),
-	SLE_VAR(EngineIDMapping, type,          SLE_UINT8),
-	SLE_VAR(EngineIDMapping, substitute_id, SLE_UINT8),
-};
-
-static void Save_EIDS()
-{
-	uint index = 0;
-	for (EngineIDMapping &eid : _engine_mngr) {
-		SlSetArrayIndex(index);
-		SlObject(&eid, _engine_id_mapping_desc);
-		index++;
-	}
-}
-
-static void Load_EIDS()
-{
-	_engine_mngr.clear();
-
-	while (SlIterateArray() != -1) {
-		EngineIDMapping *eid = &_engine_mngr.emplace_back();
-		SlObject(eid, _engine_id_mapping_desc);
-	}
-}
-
 void AfterLoadEngines()
 {
 	AnalyseEngineCallbacks();
 }
 
 static const ChunkHandler engine_chunk_handlers[] = {
-	{ 'EIDS', Save_EIDS, Load_EIDS, nullptr, nullptr, CH_ARRAY },
-	{ 'ENGN', Save_ENGN, Load_ENGN, nullptr, nullptr, CH_ARRAY },
+	MakeUpstreamChunkHandler<'EIDS', GeneralUpstreamChunkLoadInfo>(),
+	MakeUpstreamChunkHandler<'ENGN', GeneralUpstreamChunkLoadInfo>(),
 	{ 'ENGS', nullptr,   Load_ENGS, nullptr, nullptr, CH_RIFF  },
 };
 

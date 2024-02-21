@@ -265,6 +265,11 @@ namespace upstream_sl {
 	}
 }
 
+struct GeneralUpstreamChunkLoadInfo
+{
+	static SaveLoadVersion GetLoadVersion();
+};
+
 using upstream_sl::MakeUpstreamChunkHandler;
 using upstream_sl::MakeConditionallyUpstreamChunkHandler;
 using upstream_sl::MakeSaveUpstreamFeatureConditionalLoadUpstreamChunkHandler;

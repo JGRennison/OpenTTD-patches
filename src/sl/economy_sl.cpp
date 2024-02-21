@@ -50,12 +50,6 @@ static const SaveLoad _economy_desc[] = {
 };
 
 /** Economy variables */
-static void Save_ECMY()
-{
-	SlObject(&_economy, _economy_desc);
-}
-
-/** Economy variables */
 static void Load_ECMY()
 {
 	SlObject(&_economy, _economy_desc);
@@ -68,14 +62,6 @@ static const SaveLoad _cargopayment_desc[] = {
 	    SLE_VAR(CargoPayment, visual_profit,   SLE_INT64),
 	SLE_CONDVAR_X(CargoPayment, visual_transfer, SLE_INT64, SLV_181, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_OR, XSLFI_CHILLPP)),
 };
-
-static void Save_CAPY()
-{
-	for (CargoPayment *cp : CargoPayment::Iterate()) {
-		SlSetArrayIndex(cp->index);
-		SlObject(cp, _cargopayment_desc);
-	}
-}
 
 static void Load_CAPY()
 {
@@ -96,10 +82,10 @@ static void Ptrs_CAPY()
 
 
 static const ChunkHandler economy_chunk_handlers[] = {
-	{ 'CAPY', Save_CAPY, Load_CAPY, Ptrs_CAPY, nullptr, CH_ARRAY },
+	MakeSaveUpstreamFeatureConditionalLoadUpstreamChunkHandler<'CAPY', XSLFI_TABLE_MISC_SL, 2>(Load_CAPY, Ptrs_CAPY, nullptr),
 	{ 'PRIC', nullptr,   Load_PRIC, nullptr,   nullptr, CH_RIFF  },
 	{ 'CAPR', nullptr,   Load_CAPR, nullptr,   nullptr, CH_RIFF  },
-	{ 'ECMY', Save_ECMY, Load_ECMY, nullptr,   nullptr, CH_RIFF  },
+	MakeSaveUpstreamFeatureConditionalLoadUpstreamChunkHandler<'ECMY', XSLFI_TABLE_MISC_SL, 2>(Load_ECMY, nullptr, nullptr),
 };
 
 extern const ChunkHandlerTable _economy_chunk_handlers(economy_chunk_handlers);

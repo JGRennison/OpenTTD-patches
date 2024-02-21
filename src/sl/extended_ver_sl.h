@@ -161,7 +161,9 @@ enum SlXvFeatureIndex {
 	XSLFI_DEPOT_UNBUNCHING,                       ///< See: SLV_DEPOT_UNBUNCHING (PR #11945)
 
 	XSLFI_TABLE_PATS,                             ///< Use upstream table format for PATS
-	XSLFI_TABLE_MISC_SL,                          ///< Use upstream table format for miscellaneous chunks, so far: DATE, VIEW, MAPS
+	XSLFI_TABLE_MISC_SL,                          ///< Use upstream table format for miscellaneous chunks:
+	                                              ///<     v1: DATE, VIEW, MAPS
+	                                              ///<     v2: SUBS, CMDL, CMPU, ERNW, DEPT, CAPY, ECMY, EIDS, ENGN, GOAL, GRPS, RAIL, OBJS, SIGN, PSAC, STPE, STPA
 	XSLFI_TABLE_SCRIPT_SL,                        ///< Use upstream table format for script chunks
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
