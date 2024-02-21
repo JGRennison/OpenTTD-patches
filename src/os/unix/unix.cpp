@@ -24,7 +24,6 @@
 #include <time.h>
 #include <signal.h>
 #include <pthread.h>
-#include <atomic>
 
 #ifdef WITH_SDL2
 #include <SDL.h>
@@ -161,8 +160,6 @@ static std::string convert_tofrom_fs(iconv_t convd, const std::string &name)
 	return buf;
 }
 
-std::mutex _iconv_convd_mutex;
-
 /**
  * Convert from OpenTTD's encoding to that of the local environment
  * @param name pointer to a valid string that will be converted
@@ -170,25 +167,17 @@ std::mutex _iconv_convd_mutex;
  */
 std::string OTTD2FS(const std::string &name)
 {
-	static std::atomic<iconv_t> convd{(iconv_t)(-1)};
-	iconv_t local_convd = convd.load(std::memory_order_relaxed);
-	if (local_convd == (iconv_t)(-1)) {
-		{
-			std::unique_lock<std::mutex> lock(_iconv_convd_mutex);
-			local_convd = convd.load(); // Load a second time now that the lock is acquired
-			if (local_convd == (iconv_t)(-1)) {
-				const char *env = GetLocalCode();
-				local_convd = iconv_open(env, INTERNALCODE);
-				if (local_convd != (iconv_t)(-1)) convd.store(local_convd);
-			}
-		}
-		if (local_convd == (iconv_t)(-1)) {
+	static iconv_t convd = (iconv_t)(-1);
+	if (convd == (iconv_t)(-1)) {
+		const char *env = GetLocalCode();
+		convd = iconv_open(env, INTERNALCODE);
+		if (convd == (iconv_t)(-1)) {
 			DEBUG(misc, 0, "[iconv] conversion from codeset '%s' to '%s' unsupported", INTERNALCODE, env);
 			return name;
 		}
 	}
 
-	return convert_tofrom_fs(local_convd, name);
+	return convert_tofrom_fs(convd, name);
 }
 
 /**
@@ -198,25 +187,17 @@ std::string OTTD2FS(const std::string &name)
  */
 std::string FS2OTTD(const std::string &name)
 {
-	static std::atomic<iconv_t> convd{(iconv_t)(-1)};
-	iconv_t local_convd = convd.load(std::memory_order_relaxed);
-	if (local_convd == (iconv_t)(-1)) {
-		{
-			std::unique_lock<std::mutex> lock(_iconv_convd_mutex);
-			local_convd = convd.load(); // Load a second time now that the lock is acquired
-			if (local_convd == (iconv_t)(-1)) {
-				const char *env = GetLocalCode();
-				local_convd = iconv_open(INTERNALCODE, env);
-				if (local_convd != (iconv_t)(-1)) convd.store(local_convd);
-			}
-		}
-		if (local_convd == (iconv_t)(-1)) {
+	static iconv_t convd = (iconv_t)(-1);
+	if (convd == (iconv_t)(-1)) {
+		const char *env = GetLocalCode();
+		convd = iconv_open(INTERNALCODE, env);
+		if (convd == (iconv_t)(-1)) {
 			DEBUG(misc, 0, "[iconv] conversion from codeset '%s' to '%s' unsupported", env, INTERNALCODE);
 			return name;
 		}
 	}
 
-	return convert_tofrom_fs(local_convd, name);
+	return convert_tofrom_fs(convd, name);
 }
 
 #endif /* WITH_ICONV */
