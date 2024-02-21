@@ -4423,6 +4423,10 @@ bool AfterLoadGame()
 		ScriptObject::InitializeRandomizers();
 	}
 
+	if (IsSavegameVersionBeforeOrAt(SLV_MULTITRACK_LEVEL_CROSSINGS)) {
+		_settings_game.construction.flood_from_edges = false;
+	}
+
 	for (Company *c : Company::Iterate()) {
 		UpdateCompanyLiveries(c);
 	}
