@@ -69,7 +69,7 @@ constexpr T STUnwrap(T value)
 }
 
 template <typename T, std::enable_if_t<std::is_base_of<StrongTypedefBase, T>::value, int> = 0>
-constexpr T::BaseType STUnwrap(T value)
+constexpr typename T::BaseType STUnwrap(T value)
 {
 	return value.base();
 }
