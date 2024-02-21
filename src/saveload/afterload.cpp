@@ -3934,7 +3934,7 @@ bool AfterLoadGame()
 		}
 	}
 
-	if (IsSavegameVersionUntil(SLV_ENDING_YEAR) || !SlXvIsFeaturePresent(XSLFI_MULTIPLE_DOCKS, 2) || !SlXvIsFeaturePresent(XSLFI_DOCKING_CACHE_VER, 3)) {
+	if (IsSavegameVersionBeforeOrAt(SLV_ENDING_YEAR) || !SlXvIsFeaturePresent(XSLFI_MULTIPLE_DOCKS, 2) || !SlXvIsFeaturePresent(XSLFI_DOCKING_CACHE_VER, 3)) {
 		/* Update station docking tiles. Was only needed for pre-SLV_MULTITLE_DOCKS
 		 * savegames, but a bug in docking tiles touched all savegames between
 		 * SLV_MULTITILE_DOCKS and SLV_ENDING_YEAR. */
@@ -4374,7 +4374,7 @@ bool AfterLoadGame()
 	}
 
 	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_TICK_RATE)) {
-		_settings_game.economy.tick_rate = IsSavegameVersionUntil(SLV_MORE_CARGO_AGE) ? TRM_TRADITIONAL : TRM_MODERN;
+		_settings_game.economy.tick_rate = IsSavegameVersionBeforeOrAt(SLV_MORE_CARGO_AGE) ? TRM_TRADITIONAL : TRM_MODERN;
 	}
 
 	if (SlXvIsFeatureMissing(XSLFI_ROAD_VEH_FLAGS)) {

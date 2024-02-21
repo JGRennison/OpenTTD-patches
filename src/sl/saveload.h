@@ -919,7 +919,7 @@ inline bool IsSavegameVersionBefore(SaveLoadVersion major, byte minor = 0)
  * @param major Major number of the version to check against.
  * @return Savegame version is at most the specified version.
  */
-inline bool IsSavegameVersionUntil(SaveLoadVersion major)
+inline bool IsSavegameVersionBeforeOrAt(SaveLoadVersion major)
 {
 	extern SaveLoadVersion _sl_version;
 	return _sl_version <= major;
