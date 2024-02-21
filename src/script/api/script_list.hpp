@@ -70,7 +70,7 @@ protected:
 			list->AddItem(item->index);
 			opcode_charge += 3;
 		}
-		ScriptController::DecreaseOps(opcode_charge + (T::GetNumItems() / 2));
+		ScriptController::DecreaseOps(opcode_charge + (int)(T::GetNumItems() / 2));
 	}
 
 	template<typename T, class ItemValid>
