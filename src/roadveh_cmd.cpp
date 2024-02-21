@@ -536,9 +536,6 @@ static void DeleteLastRoadVeh(RoadVehicle *v)
 	u->SetNext(nullptr);
 	v->last_station_visited = first->last_station_visited; // for PreDestructor
 
-	/* Only leave the road stop when we're really gone. */
-	if (IsInsideMM(v->state, RVSB_IN_ROAD_STOP, RVSB_IN_ROAD_STOP_END)) RoadStop::GetByTile(v->tile, GetRoadStopType(v->tile))->Leave(v);
-
 	delete v;
 }
 
