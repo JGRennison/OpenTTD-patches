@@ -271,15 +271,17 @@ void LinkGraphFixupAfterLoad(bool compression_was_date)
 	/* last_compression was previously a Date, change it to a StateTicks */
 	for (LinkGraph *lg : LinkGraph::Iterate()) {
 		if (compression_was_date) lg->last_compression = DateToStateTicks((EconTime::Date)lg->last_compression).base();
-		lg->last_compression -= _state_ticks.base();
 		lg->last_compression += _scaled_tick_counter;
+		lg->last_compression -= _state_ticks.base();
+		if (lg->last_compression > _scaled_tick_counter) lg->last_compression = _scaled_tick_counter;
 	}
 
 	for (LinkGraphJob *lgj : LinkGraphJob::Iterate()) {
 		LinkGraph *lg = &(const_cast<LinkGraph &>(lgj->Graph()));
 		if (compression_was_date) lg->last_compression = DateToStateTicks((EconTime::Date)lg->last_compression).base();
-		lg->last_compression -= _state_ticks.base();
 		lg->last_compression += _scaled_tick_counter;
+		lg->last_compression -= _state_ticks.base();
+		if (lg->last_compression > _scaled_tick_counter) lg->last_compression = _scaled_tick_counter;
 
 		/* Change start and join ticks from DateTicks to ScaledTickCounter */
 		auto convert = [&](ScaledTickCounter &tick) {
