@@ -88,6 +88,15 @@ inline Ticks TimetableDisplayUnitSize()
 	}
 }
 
+inline Ticks TimetableAbsoluteDisplayUnitSize()
+{
+	if (_settings_time.time_in_minutes) {
+		return _settings_time.ticks_per_minute;
+	} else {
+		return TicksPerCalendarDay();
+	}
+}
+
 struct debug_date_dumper {
 	const char *HexDate(EconTime::Date date, EconTime::DateFract date_fract, uint8_t tick_skip_counter);
 
