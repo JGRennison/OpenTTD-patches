@@ -1571,7 +1571,14 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 						auto tmp_params = MakeParameters(args.GetNextParameter<int64_t>());
 						FormatString(builder, GetStringPtr(STR_UNITS_TICKS), tmp_params);
 					} else {
-						StringID str = _settings_time.time_in_minutes ? STR_TIMETABLE_MINUTES : STR_UNITS_DAYS;
+						StringID str;
+						if (_settings_time.time_in_minutes) {
+							str = STR_TIMETABLE_MINUTES;
+						} else if (EconTime::UsingWallclockUnits()) {
+							str = STR_UNITS_SECONDS;
+						} else {
+							str = STR_UNITS_DAYS;
+						}
 						const int64_t ticks = args.GetNextParameter<int64_t>();
 						const int64_t ratio = TimetableDisplayUnitSize();
 						const int64_t units = ticks / ratio;
@@ -1598,6 +1605,11 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 				case SCC_TT_TIME: { // {TT_TIME}
 					if (_settings_time.time_in_minutes) {
 						FormatStateTicksHHMMString(builder, args.GetNextParameter<StateTicks>(), next_substr_case_index);
+					} else if (EconTime::UsingWallclockUnits()) {
+						StateTicks tick = args.GetNextParameter<StateTicks>();
+						StateTicksDelta offset = tick - _state_ticks;
+						auto tmp_params = MakeParameters(offset / TICKS_PER_SECOND);
+						FormatString(builder, GetStringPtr(STR_UNITS_SECONDS_SHORT), tmp_params);
 					} else {
 						FormatTinyOrISODate(builder, StateTicksToCalendarDate(args.GetNextParameter<StateTicks>()), STR_FORMAT_DATE_TINY);
 					}

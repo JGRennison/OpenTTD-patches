@@ -403,7 +403,13 @@ struct TimetableWindow : GeneralVehicleWindow {
 	{
 		switch (widget) {
 			case WID_VT_ARRIVAL_DEPARTURE_PANEL:
-				SetDParamMaxValue(0, _settings_time.time_in_minutes ? 0 : EconTime::MAX_YEAR.base() * DAYS_IN_YEAR);
+				if (_settings_time.time_in_minutes) {
+					SetDParam(0, 0);
+				} else if (EconTime::UsingWallclockUnits()) {
+					SetDParam(0, _state_ticks + (TICKS_PER_SECOND * 9999));
+				} else {
+					SetDParam(0, EconTime::MAX_YEAR.base() * DAYS_IN_YEAR);
+				}
 				this->deparr_time_width = GetStringBoundingBox(STR_JUST_TT_TIME).width + 4;
 				this->deparr_abbr_width = std::max(GetStringBoundingBox(STR_TIMETABLE_ARRIVAL_ABBREVIATION).width, GetStringBoundingBox(STR_TIMETABLE_DEPARTURE_ABBREVIATION).width);
 				size->width = this->deparr_abbr_width + WidgetDimensions::scaled.hsep_wide + this->deparr_time_width + padding.width;
@@ -812,9 +818,14 @@ struct TimetableWindow : GeneralVehicleWindow {
 				if (v->timetable_start != 0) {
 					/* We are running towards the first station so we can start the
 					 * timetable at the given time. */
-					SetDParam(0, STR_JUST_TT_TIME);
-					SetDParam(1, v->timetable_start);
-					DrawString(tr, STR_TIMETABLE_STATUS_START_AT_DATE);
+					if (EconTime::UsingWallclockUnits() && !_settings_time.time_in_minutes) {
+						SetDParam(0, (v->timetable_start - _state_ticks) / TICKS_PER_SECOND);
+						DrawString(tr, STR_TIMETABLE_STATUS_START_IN_SECONDS);
+					} else {
+						SetDParam(0, STR_JUST_TT_TIME);
+						SetDParam(1, v->timetable_start);
+						DrawString(tr, STR_TIMETABLE_STATUS_START_AT_DATE);
+					}
 				} else if (!HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) {
 					/* We aren't running on a timetable yet, so how can we be "on time"
 					 * when we aren't even "on service"/"on duty"? */
@@ -917,17 +928,22 @@ struct TimetableWindow : GeneralVehicleWindow {
 				break;
 			}
 
-			case WID_VT_START_DATE: // Change the date that the timetable starts.
-				if (_settings_time.time_in_minutes && _settings_client.gui.timetable_start_text_entry) {
-					this->set_start_date_all = v->orders->IsCompleteTimetable() && _ctrl_pressed;
+			case WID_VT_START_DATE: { // Change the date that the timetable starts.
+				bool set_all = _ctrl_pressed && v->orders->IsCompleteTimetable();
+				if (EconTime::UsingWallclockUnits() && !_settings_time.time_in_minutes) {
+					this->set_start_date_all = set_all;
+					ShowQueryString(STR_EMPTY, STR_TIMETABLE_START_SECONDS_QUERY, 6, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
+				} else if (_settings_time.time_in_minutes && _settings_client.gui.timetable_start_text_entry) {
+					this->set_start_date_all = set_all;
 					StringID str = STR_JUST_INT;
 					SetDParam(0, _settings_time.NowInTickMinutes().ClockHHMM());
 					ShowQueryString(str, STR_TIMETABLE_START, 31, this, CS_NUMERAL, QSF_ACCEPT_UNCHANGED);
 				} else {
-					ShowSetDateWindow(this, v->index | (_ctrl_pressed ? 1U << 20 : 0),
+					ShowSetDateWindow(this, v->index | (set_all ? 1U << 20 : 0),
 							_state_ticks, EconTime::CurYear(), EconTime::CurYear() + 15, ChangeTimetableStartCallback);
 				}
 				break;
+			}
 
 			case WID_VT_CHANGE_TIME: { // "Wait For" button.
 				int selected = this->sel_index;
@@ -1131,7 +1147,12 @@ struct TimetableWindow : GeneralVehicleWindow {
 				if (StrEmpty(str)) break;
 				char *end;
 				int32_t val = std::strtol(str, &end, 10);
-				if (val >= 0 && end && *end == 0) {
+				if (!(end != nullptr && *end == 0)) break;
+				if (EconTime::UsingWallclockUnits() && !_settings_time.time_in_minutes) {
+					ChangeTimetableStartIntl(v->index | (this->set_start_date_all ? 1 << 20 : 0), _state_ticks + (val * TICKS_PER_SECOND));
+					break;
+				}
+				if (val >= 0) {
 					uint minutes = (val % 100) % 60;
 					uint hours = (val / 100) % 24;
 					const TickMinutes now = _settings_time.NowInTickMinutes();

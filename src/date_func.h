@@ -75,6 +75,8 @@ inline Ticks TimetableDisplayUnitSize()
 {
 	if (_settings_time.time_in_minutes) {
 		return _settings_time.ticks_per_minute;
+	} else if (EconTime::UsingWallclockUnits()) {
+		return TICKS_PER_SECOND;
 	} else {
 		return DAY_TICKS * DayLengthFactor();
 	}

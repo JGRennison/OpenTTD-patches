@@ -14,9 +14,6 @@
 
 #include <chrono>
 
-/** Estimation of how many ticks fit in a single second. */
-static const uint TICKS_PER_SECOND = 1000 / 27 /*MILLISECONDS_PER_TICK*/;
-
 /**
  * Timer that represents the game-ticks. It will pause when the game is paused.
  *

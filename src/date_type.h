@@ -26,6 +26,9 @@ static const int MONTHS_IN_YEAR    =  12; ///< months per year
 
 static const int SECONDS_PER_DAY   = 2;   ///< approximate seconds per day, not for precise calculations
 
+/** Estimation of how many ticks fit in a single second. */
+static const int TICKS_PER_SECOND = 1000 / 27 /*MILLISECONDS_PER_TICK*/;
+
 using Ticks = int32_t;                    ///< The type to store ticks in
 static constexpr Ticks INVALID_TICKS = -1; ///< Representation of an invalid number of ticks
 

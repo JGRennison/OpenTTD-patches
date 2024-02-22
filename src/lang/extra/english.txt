@@ -82,6 +82,8 @@ STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
 STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :tiles/day
 
+STR_UNITS_SECONDS_SHORT                                         :{COMMA}{NBSP}s
+
 STR_BUTTON_RENAME                                               :{BLACK}Rename
 
 STR_MEASURE_DIST_HEIGHTDIFF                                     :{BLACK}Manhattan Distance: {NUM}{}Bird Fly Distance: {NUM}{}Distance from the nearest edge: {NUM}{}Height from sea level: {HEIGHT}{}Height difference: {HEIGHT}
