@@ -39,6 +39,7 @@ namespace DateDetail {
 	StateTicksDelta _state_ticks_offset;   ///< Offset to add when calculating a StateTicks value from an economy date, date fract and tick skip counter
 	uint8_t _tick_skip_counter;            ///< Counter for ticks, when only vehicles are moving and nothing else happens
 	uint8_t _effective_day_length;         ///< Current effective day length
+	Ticks _ticks_per_calendar_day;         ///< Current ticks per calendar day
 };
 
 extern void ClearOutOfDateSignalSpeedRestrictions();
@@ -124,6 +125,16 @@ void UpdateEffectiveDayLengthFactor()
 {
 	DateDetail::_effective_day_length = _settings_game.EffectiveDayLengthFactor();
 
+	if (EconTime::UsingWallclockUnits()) {
+		if (CalTime::IsCalendarFrozen()) {
+			DateDetail::_ticks_per_calendar_day = INT32_MAX;
+		} else {
+			DateDetail::_ticks_per_calendar_day = (_settings_game.economy.minutes_per_calendar_year * DAY_TICKS) / CalTime::DEF_MINUTES_PER_YEAR;
+		}
+	} else {
+		DateDetail::_ticks_per_calendar_day = DAY_TICKS * DateDetail::_effective_day_length;
+	}
+
 	SetupTileLoopCounts();
 	UpdateCargoScalers();
 }
@@ -134,7 +145,7 @@ CalTime::Date StateTicksToCalendarDate(StateTicks ticks)
 
 	if (CalTime::IsCalendarFrozen()) return CalTime::CurDate();
 
-	Ticks ticks_per_cal_day = (_settings_game.economy.minutes_per_calendar_year * DAY_TICKS) / CalTime::DEF_MINUTES_PER_YEAR;
+	Ticks ticks_per_cal_day = TicksPerCalendarDay();
 	uint subticks_left_this_day = ((DAY_TICKS - CalTime::CurDateFract()) * ticks_per_cal_day) - CalTime::CurSubDateFract();
 	Ticks ticks_into_this_day = ticks_per_cal_day - CeilDiv(subticks_left_this_day, DAY_TICKS);
 
@@ -259,7 +270,7 @@ EconTime::YearMonthDay EconTime::ConvertDateToYMD(EconTime::Date date)
 	if (EconTime::UsingWallclockUnits()) {
 		/* If we're using wallclock units, economy months have 30 days and an economy year has 360 days. */
 		EconTime::YearMonthDay ymd;
-		ymd.year =date.base() / EconTime::DAYS_IN_ECONOMY_WALLCLOCK_YEAR;
+		ymd.year = date.base() / EconTime::DAYS_IN_ECONOMY_WALLCLOCK_YEAR;
 		ymd.month = (date.base() % EconTime::DAYS_IN_ECONOMY_WALLCLOCK_YEAR) / EconTime::DAYS_IN_ECONOMY_WALLCLOCK_MONTH;
 		ymd.day = (date.base() % EconTime::DAYS_IN_ECONOMY_WALLCLOCK_MONTH) + 1;
 		return ymd;
@@ -456,7 +467,7 @@ static void IncreaseCalendarDate()
 		CalTime::Detail::now.sub_date_fract += DAY_TICKS;
 
 		/* Check if we are ready to increment date_fract */
-		const uint16_t threshold = (_settings_game.economy.minutes_per_calendar_year * DAY_TICKS) / CalTime::DEF_MINUTES_PER_YEAR;
+		const uint16_t threshold = TicksPerCalendarDay();
 		if (CalTime::Detail::now.sub_date_fract < threshold) return;
 
 		CalTime::Detail::now.sub_date_fract = std::min<uint16_t>(CalTime::Detail::now.sub_date_fract - threshold, DAY_TICKS - 1);
