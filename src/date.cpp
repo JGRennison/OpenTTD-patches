@@ -130,8 +130,15 @@ void UpdateEffectiveDayLengthFactor()
 
 CalTime::Date StateTicksToCalendarDate(StateTicks ticks)
 {
-	/* Process the same as calendar time (for now) */
-	return StateTicksToDate(ticks).base();
+	if (!EconTime::UsingWallclockUnits()) return StateTicksToDate(ticks).base();
+
+	if (CalTime::IsCalendarFrozen()) return CalTime::CurDate();
+
+	Ticks ticks_per_cal_day = (_settings_game.economy.minutes_per_calendar_year * DAY_TICKS) / CalTime::DEF_MINUTES_PER_YEAR;
+	uint subticks_left_this_day = ((DAY_TICKS - CalTime::CurDateFract()) * ticks_per_cal_day) - CalTime::CurSubDateFract();
+	Ticks ticks_into_this_day = ticks_per_cal_day - CeilDiv(subticks_left_this_day, DAY_TICKS);
+
+	return CalTime::CurDate().base() + (int32_t)(((ticks - _state_ticks).base() + ticks_into_this_day) / ticks_per_cal_day);
 }
 
 #define M(a, b) ((a << 5) | b)
