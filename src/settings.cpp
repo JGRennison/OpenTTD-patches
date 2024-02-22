@@ -1282,6 +1282,13 @@ static void ChangeTimekeepingUnits(int32_t)
 	}
 
 	UpdateTimeSettings(0);
+	CloseWindowByClass(WC_PAYMENT_RATES);
+	CloseWindowByClass(WC_COMPANY_VALUE);
+	CloseWindowByClass(WC_PERFORMANCE_HISTORY);
+	CloseWindowByClass(WC_DELIVERED_CARGO);
+	CloseWindowByClass(WC_OPERATING_PROFIT);
+	CloseWindowByClass(WC_INCOME_GRAPH);
+	CloseWindowByClass(WC_STATION_CARGO);
 }
 
 /**
