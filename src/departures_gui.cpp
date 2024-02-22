@@ -599,8 +599,10 @@ void DeparturesWindow<Twaypoint>::RecomputeDateWidth()
 	uint count = cached_date_display_method ? 24*60 : 365;
 
 	for (uint i = 0; i < count; ++i) {
-		SetDParam(0, INT_MAX - (i*interval));
+		SetDParam(0, STR_JUST_TT_TIME_ABS);
 		SetDParam(1, INT_MAX - (i*interval));
+		SetDParam(2, STR_JUST_TT_TIME_ABS);
+		SetDParam(3, INT_MAX - (i*interval));
 		cached_date_width = std::max(GetStringBoundingBox(cached_arr_dep_display_method ? STR_DEPARTURES_TIME_BOTH : STR_DEPARTURES_TIME_DEP).width, cached_date_width);
 		cached_status_width = std::max((GetStringBoundingBox(STR_DEPARTURES_EXPECTED)).width, cached_status_width);
 	}
@@ -779,13 +781,18 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 
 		if (d->terminus == INVALID_STATION) continue;
 
-		StringID time_str = (departure_types[0] && departure_types[1]) ? (d->type == D_DEPARTURE ? STR_DEPARTURES_TIME_DEP : STR_DEPARTURES_TIME_ARR) : STR_DEPARTURES_TIME;
-
-		if (_settings_client.gui.departure_show_both) time_str = STR_DEPARTURES_TIME_BOTH;
-
-		/* Time */
-		SetDParam(0, d->scheduled_tick);
-		SetDParam(1, d->scheduled_tick - (d->scheduled_waiting_time > 0 ? d->scheduled_waiting_time : d->order->GetWaitTime()));
+		StringID time_str;
+		if (_settings_client.gui.departure_show_both) {
+			time_str = STR_DEPARTURES_TIME_BOTH;
+			SetDParam(0, STR_JUST_TT_TIME_ABS);
+			SetDParam(1, d->scheduled_tick - (d->scheduled_waiting_time > 0 ? d->scheduled_waiting_time : d->order->GetWaitTime()));
+			SetDParam(2, STR_JUST_TT_TIME_ABS);
+			SetDParam(3, d->scheduled_tick);
+		} else {
+			time_str = (departure_types[0] && departure_types[1]) ? (d->type == D_DEPARTURE ? STR_DEPARTURES_TIME_DEP : STR_DEPARTURES_TIME_ARR) : STR_DEPARTURES_TIME;
+			SetDParam(0, STR_JUST_TT_TIME_ABS);
+			SetDParam(1, d->scheduled_tick);
+		}
 		ltr ? DrawString(              text_left, text_left + time_width, y + 1, time_str)
 			: DrawString(text_right - time_width,             text_right, y + 1, time_str);
 
@@ -928,7 +935,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 				/* The vehicle has been cancelled. */
 				DrawString(status_left, status_right, y + 1, STR_DEPARTURES_CANCELLED);
 			} else{
-				if (d->lateness <= TimetableDisplayUnitSize() && d->scheduled_tick > now_date) {
+				if (d->lateness <= TimetableAbsoluteDisplayUnitSize() && d->scheduled_tick > now_date) {
 					/* We have no evidence that the vehicle is late, so assume it is on time. */
 					DrawString(status_left, status_right, y + 1, STR_DEPARTURES_ON_TIME);
 				} else {
@@ -938,7 +945,8 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 						DrawString(status_left, status_right, y + 1, STR_DEPARTURES_DELAYED);
 					} else {
 						/* The vehicle is expected to be late and is not yet due to arrive. */
-						SetDParam(0, d->scheduled_tick + d->lateness);
+						SetDParam(0, STR_JUST_TT_TIME_ABS);
+						SetDParam(1, d->scheduled_tick + d->lateness);
 						DrawString(status_left, status_right, y + 1, STR_DEPARTURES_EXPECTED);
 					}
 				}
