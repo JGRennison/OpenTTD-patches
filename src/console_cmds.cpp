@@ -2687,12 +2687,16 @@ DEF_CONSOLE_CMD(ConRunTileLoopTile)
 DEF_CONSOLE_CMD(ConGetFullDate)
 {
 	if (argc == 0) {
-		IConsoleHelp("Returns the current full date (year-month-day, date fract, tick skip counter/subtick) of the game. Usage: 'getfulldate'");
+		IConsoleHelp("Returns the current full date/tick information of the game. Usage: 'getfulldate'");
 		return true;
 	}
 
-	IConsolePrintF(CC_DEFAULT, "Calendar Date: %04d-%02d-%02d, %i, %i", CalTime::CurYear().base(), CalTime::CurMonth() + 1, CalTime::CurDay(), CalTime::CurDateFract(), CalTime::Detail::now.sub_date_fract);
-	IConsolePrintF(CC_DEFAULT, "Economy Date: %04d-%02d-%02d, %i, %i", EconTime::CurYear().base(), EconTime::CurMonth() + 1, EconTime::CurDay(), EconTime::CurDateFract(), TickSkipCounter());
+	IConsolePrintF(CC_DEFAULT, "Calendar Date: %04d-%02d-%02d (%d), fract: %i, sub_fract: %i", CalTime::CurYear().base(), CalTime::CurMonth() + 1, CalTime::CurDay(), CalTime::CurDate().base(), CalTime::CurDateFract(), CalTime::Detail::now.sub_date_fract);
+	IConsolePrintF(CC_DEFAULT, "Economy Date: %04d-%02d-%02d (%d), fract: %i, tick skip: %i", EconTime::CurYear().base(), EconTime::CurMonth() + 1, EconTime::CurDay(), EconTime::CurDate().base(), EconTime::CurDateFract(), TickSkipCounter());
+	IConsolePrintF(CC_DEFAULT, "Tick counter: " OTTD_PRINTF64, _tick_counter);
+	IConsolePrintF(CC_DEFAULT, "Tick counter (scaled): " OTTD_PRINTF64, _scaled_tick_counter);
+	IConsolePrintF(CC_DEFAULT, "State ticks: " OTTD_PRINTF64 " (offset: " OTTD_PRINTF64 ")", _state_ticks.base(), DateDetail::_state_ticks_offset.base());
+	IConsolePrintF(CC_DEFAULT, "Effective day length: %d", DayLengthFactor());
 	return true;
 }
 
