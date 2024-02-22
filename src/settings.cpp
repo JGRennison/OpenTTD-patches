@@ -1254,6 +1254,9 @@ static void ChangeTimekeepingUnits(int32_t)
 
 	/* It is possible to change these units in-game. We must set the economy date appropriately. */
 	if (_game_mode != GM_MENU) {
+		/* Update effective day length before setting dates, so that the state ticks offset is calculated correctly */
+		UpdateEffectiveDayLengthFactor();
+
 		EconTime::Date new_economy_date;
 		EconTime::DateFract new_economy_date_fract;
 
@@ -1267,17 +1270,17 @@ static void ChangeTimekeepingUnits(int32_t)
 			new_economy_date_fract = CalTime::CurDateFract();
 		}
 
-		/* If you open a savegame as a scenario, there may already be link graphs and/or vehicles. These use economy date. */
+		/* Update link graphs and vehicles, as these include stored economy dates. */
 		LinkGraphSchedule::instance.ShiftDates(new_economy_date - EconTime::CurDate());
 		ShiftVehicleDates(new_economy_date - EconTime::CurDate());
 
 		/* Only change the date after changing cached values above. */
 		EconTime::Detail::SetDate(new_economy_date, new_economy_date_fract);
+
 		UpdateOrderUIOnDateChange();
+		SetupTickRate();
 	}
 
-	UpdateEffectiveDayLengthFactor();
-	SetupTickRate();
 	UpdateTimeSettings(0);
 }
 
