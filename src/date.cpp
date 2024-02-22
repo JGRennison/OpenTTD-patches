@@ -446,16 +446,19 @@ static void IncreaseCalendarDate()
 
 	/* If we are using a non-default calendar progression speed, we need to check the sub_date_fract before updating date_fract. */
 	if (_settings_game.economy.timekeeping_units == TKU_WALLCLOCK && _settings_game.economy.minutes_per_calendar_year != CalTime::DEF_MINUTES_PER_YEAR) {
-		CalTime::Detail::now.sub_date_fract++;
+		CalTime::Detail::now.sub_date_fract += DAY_TICKS;
 
 		/* Check if we are ready to increment date_fract */
-		if (CalTime::Detail::now.sub_date_fract < (DAY_TICKS * _settings_game.economy.minutes_per_calendar_year) / CalTime::DEF_MINUTES_PER_YEAR) return;
+		const uint16_t threshold = (_settings_game.economy.minutes_per_calendar_year * DAY_TICKS) / CalTime::DEF_MINUTES_PER_YEAR;
+		if (CalTime::Detail::now.sub_date_fract < threshold) return;
+
+		CalTime::Detail::now.sub_date_fract = std::min<uint16_t>(CalTime::Detail::now.sub_date_fract - threshold, DAY_TICKS - 1);
 	}
-	CalTime::Detail::now.sub_date_fract = 0;
 
 	CalTime::Detail::now.cal_date_fract++;
 	if (CalTime::Detail::now.cal_date_fract < DAY_TICKS) return;
 	CalTime::Detail::now.cal_date_fract = 0;
+	CalTime::Detail::now.sub_date_fract = 0;
 
 	/* increase day counter */
 	CalTime::Detail::now.cal_date++;
