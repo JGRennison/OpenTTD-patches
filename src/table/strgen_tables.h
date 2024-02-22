@@ -108,6 +108,7 @@ static const CmdStruct _cmd_structs[] = {
 	{"TT_TICKS",          EmitSingleChar, SCC_TT_TICKS,           1, -1, C_NONE},
 	{"TT_TICKS_LONG",     EmitSingleChar, SCC_TT_TICKS_LONG,      1, -1, C_NONE},
 	{"TT_TIME",           EmitSingleChar, SCC_TT_TIME,            1, -1, C_NONE},
+	{"TT_TIME_ABS",       EmitSingleChar, SCC_TT_TIME_ABS,        1, -1, C_NONE},
 
 	{"STRING",            EmitSingleChar, SCC_STRING,             1, -1, C_CASE | C_GENDER},
 	{"RAW_STRING",        EmitSingleChar, SCC_RAW_STRING_POINTER, 1, -1, C_NONE | C_GENDER},

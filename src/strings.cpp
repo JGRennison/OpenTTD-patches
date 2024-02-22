@@ -1602,10 +1602,11 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 					}
 					break;
 
-				case SCC_TT_TIME: { // {TT_TIME}
+				case SCC_TT_TIME:       // {TT_TIME}
+				case SCC_TT_TIME_ABS: { // {TT_TIME_ABS}
 					if (_settings_time.time_in_minutes) {
 						FormatStateTicksHHMMString(builder, args.GetNextParameter<StateTicks>(), next_substr_case_index);
-					} else if (EconTime::UsingWallclockUnits()) {
+					} else if (EconTime::UsingWallclockUnits() && b == SCC_TT_TIME) {
 						StateTicks tick = args.GetNextParameter<StateTicks>();
 						StateTicksDelta offset = tick - _state_ticks;
 						auto tmp_params = MakeParameters(offset / TICKS_PER_SECOND);

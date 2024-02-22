@@ -13,6 +13,7 @@ STR_JUST_VELOCITY                                               :{VELOCITY}
 STR_JUST_TT_TICKS                                               :{TT_TICKS}
 STR_JUST_TT_TICKS_LONG                                          :{TT_TICKS_LONG}
 STR_JUST_TT_TIME                                                :{TT_TIME}
+STR_JUST_TT_TIME_ABS                                            :{TT_TIME_ABS}
 STR_JUST_STATION                                                :{STATION}
 
 STR_RED_INT                                                     :{RED}{NUM}

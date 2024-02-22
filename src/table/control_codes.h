@@ -87,6 +87,7 @@ enum StringControlCode {
 	SCC_TT_TICKS,
 	SCC_TT_TICKS_LONG,
 	SCC_TT_TIME,
+	SCC_TT_TIME_ABS,
 
 	/* Must be consecutive */
 	SCC_STRING1,
