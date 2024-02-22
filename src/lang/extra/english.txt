@@ -2166,6 +2166,7 @@ STR_ERROR_SEPARATION_MUTUALLY_EXCLUSIVE                         :{WHITE}Only one
 STR_CANNOT_ENABLE_BECAUSE_UNBUNCHING                            :Cannot enable because a depot unbunching order is present
 STR_CANNOT_ENABLE_BECAUSE_SCHED_DISPATCH                        :Cannot enable because scheduled dispatch is enabled
 STR_CANNOT_ENABLE_BECAUSE_AUTO_SEPARATION                       :Cannot enable because automatic separation is enabled
+STR_CANNOT_ENABLE_BECAUSE_TIME_UNITS_UNUSABLE                   :Cannot enable because the current time units are unusable.{}Enable showing time in minutes in the settings.
 
 STR_ERROR_UNBUNCHING_NO_UNBUNCHING_SCHED_DISPATCH               :{WHITE}... cannot unbunch a vehicle using scheduled dispatch
 STR_ERROR_UNBUNCHING_NO_UNBUNCHING_AUTO_SEPARATION              :{WHITE}... cannot unbunch a vehicle using automatic separation

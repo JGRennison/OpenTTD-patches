@@ -237,6 +237,11 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		this->GeneralVehicleWindow::Close();
 	}
 
+	bool TimeUnitsUsable() const
+	{
+		return _settings_time.time_in_minutes || !EconTime::UsingWallclockUnits();
+	}
+
 	bool IsScheduleSelected() const
 	{
 		return this->vehicle->orders != nullptr && this->schedule_index >= 0 && (uint)this->schedule_index < this->vehicle->orders->GetScheduledDispatchScheduleCount();
@@ -349,15 +354,17 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		const Vehicle *v = this->vehicle;
 		CountItem();
 
-		bool unusable = (v->owner != _local_company) || (v->orders == nullptr);
+		const bool unviewable = (v->orders == nullptr) || !this->TimeUnitsUsable();
+		const bool uneditable = (v->orders == nullptr) || (v->owner != _local_company);
+		const bool unusable = unviewable || uneditable;
 
-		this->SetWidgetDisabledState(WID_SCHDISPATCH_ENABLED, unusable || HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION) || v->HasUnbunchingOrder());
+		this->SetWidgetDisabledState(WID_SCHDISPATCH_ENABLED, uneditable || (!HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && (unviewable || HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION) || v->HasUnbunchingOrder())));
 
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_RENAME, unusable || v->orders->GetScheduledDispatchScheduleCount() == 0);
-		this->SetWidgetDisabledState(WID_SCHDISPATCH_PREV, v->orders == nullptr || this->schedule_index <= 0);
-		this->SetWidgetDisabledState(WID_SCHDISPATCH_NEXT, v->orders == nullptr || this->schedule_index >= (int)(v->orders->GetScheduledDispatchScheduleCount() - 1));
-		this->SetWidgetDisabledState(WID_SCHDISPATCH_MOVE_LEFT, v->orders == nullptr || this->schedule_index <= 0);
-		this->SetWidgetDisabledState(WID_SCHDISPATCH_MOVE_RIGHT, v->orders == nullptr || this->schedule_index >= (int)(v->orders->GetScheduledDispatchScheduleCount() - 1));
+		this->SetWidgetDisabledState(WID_SCHDISPATCH_PREV, unviewable || this->schedule_index <= 0);
+		this->SetWidgetDisabledState(WID_SCHDISPATCH_NEXT, unviewable || this->schedule_index >= (int)(v->orders->GetScheduledDispatchScheduleCount() - 1));
+		this->SetWidgetDisabledState(WID_SCHDISPATCH_MOVE_LEFT, unviewable || this->schedule_index <= 0);
+		this->SetWidgetDisabledState(WID_SCHDISPATCH_MOVE_RIGHT, unviewable || this->schedule_index >= (int)(v->orders->GetScheduledDispatchScheduleCount() - 1));
 		this->SetWidgetDisabledState(WID_SCHDISPATCH_ADD_SCHEDULE, unusable || v->orders->GetScheduledDispatchScheduleCount() >= 4096);
 
 		const bool disabled = unusable || !HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)  || !this->IsScheduleSelected();
@@ -422,7 +429,11 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	{
 		switch (widget) {
 			case WID_SCHDISPATCH_ENABLED: {
-				if (HasBit(this->vehicle->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
+				if (!this->TimeUnitsUsable()) {
+					SetDParam(0, STR_SCHDISPATCH_ENABLED_TOOLTIP);
+					SetDParam(1, STR_CANNOT_ENABLE_BECAUSE_TIME_UNITS_UNUSABLE);
+					GuiShowTooltips(this, STR_TOOLTIP_SEPARATION_CANNOT_ENABLE, close_cond, 2);
+				} else if (HasBit(this->vehicle->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
 					SetDParam(0, STR_SCHDISPATCH_ENABLED_TOOLTIP);
 					SetDParam(1, STR_CANNOT_ENABLE_BECAUSE_AUTO_SEPARATION);
 					GuiShowTooltips(this, STR_TOOLTIP_SEPARATION_CANNOT_ENABLE, close_cond, 2);
@@ -472,6 +483,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			}
 
 			case WID_SCHDISPATCH_MATRIX: {
+				if (!this->TimeUnitsUsable()) return false;
 				NWidgetBase *nwi = this->GetWidget<NWidgetBase>(WID_SCHDISPATCH_MATRIX);
 				const DispatchSlot *slot;
 				bool is_header;
@@ -599,7 +611,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		switch (widget) {
 			case WID_SCHDISPATCH_MATRIX: {
 				/* If order is not initialized, don't draw */
-				if (!this->IsScheduleSelected()) break;
+				if (!this->IsScheduleSelected() || !this->TimeUnitsUsable()) break;
 
 				bool rtl = _current_text_dir == TD_RTL;
 
@@ -654,6 +666,21 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				const_cast<SchdispatchWindow*>(this)->next_departure_update = INT64_MAX;
 				Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
 				int y = ir.top;
+
+				if (!this->TimeUnitsUsable()) {
+					const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
+					int left = ir.left;
+					int right = ir.right;
+					const bool rtl = (_current_text_dir == TD_RTL);
+					DrawSprite(SPR_WARNING_SIGN, 0, rtl ? right - warning_dimensions.width - 5 : left + 5, y);
+					if (rtl) {
+						right -= (warning_dimensions.width + 10);
+					} else {
+						left += (warning_dimensions.width + 10);
+					}
+					DrawStringMultiLine(left, right, y, ir.bottom, STR_CANNOT_ENABLE_BECAUSE_TIME_UNITS_UNUSABLE, TC_BLACK);
+					break;
+				}
 
 				auto set_next_departure_update = [&](StateTicks time) {
 					if (time < this->next_departure_update) const_cast<SchdispatchWindow*>(this)->next_departure_update = time;
@@ -1120,6 +1147,8 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 	void OnDropdownSelect(WidgetID widget, int index) override
 	{
+		if (!this->TimeUnitsUsable()) return;
+
 		switch (widget) {
 			case WID_SCHDISPATCH_MANAGEMENT: {
 				if (!this->IsScheduleSelected()) break;
@@ -1179,6 +1208,8 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 	virtual void OnQueryTextFinished(char *str) override
 	{
+		if (!this->TimeUnitsUsable()) return;
+
 		if (str == nullptr) return;
 		const Vehicle *v = this->vehicle;
 
