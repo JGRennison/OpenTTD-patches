@@ -152,7 +152,12 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	_station_tile_cache_hash = 0;
 	InitGRFGlobalVars();
 	_loadgame_DBGL_data.clear();
-	if (reset_settings) MakeNewgameSettingsLive();
+	if (reset_settings) {
+		MakeNewgameSettingsLive();
+	} else {
+		UpdateEffectiveDayLengthFactor();
+		SetupTickRate();
+	}
 
 	_newgrf_profilers.clear();
 
@@ -167,9 +172,6 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	} else {
 		RecalculateStateTicksOffset();
 	}
-
-	UpdateEffectiveDayLengthFactor();
-	SetupTickRate();
 
 	UpdateCachedSnowLine();
 	UpdateCachedSnowLineBounds();
