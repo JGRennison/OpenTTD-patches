@@ -2368,6 +2368,7 @@ static uint32_t GetScaledIndustryGenerationProbability(IndustryType it, bool *fo
 	uint32_t chance = ind_spc->appear_creation[_settings_game.game_creation.landscape];
 	if (!ind_spc->enabled || ind_spc->layouts.empty() ||
 			(_game_mode != GM_EDITOR && _settings_game.difficulty.industry_density == ID_FUND_ONLY) ||
+			(_settings_game.economy.spawn_primary_industry_only && !ind_spc->IsRawIndustry()) ||
 			(chance = GetIndustryProbabilityCallback(it, IACT_MAPGENERATION, chance)) == 0) {
 		*force_at_least_one = false;
 		return 0;
@@ -2396,6 +2397,11 @@ static uint16_t GetIndustryGamePlayProbability(IndustryType it, byte *min_number
 	}
 
 	const IndustrySpec *ind_spc = GetIndustrySpec(it);
+	if (_settings_game.economy.spawn_primary_industry_only && !ind_spc->IsRawIndustry()) {
+		*min_number = 0;
+		return 0;
+	}
+
 	byte chance = ind_spc->appear_ingame[_settings_game.game_creation.landscape];
 	if (!ind_spc->enabled || ind_spc->layouts.empty() ||
 			((ind_spc->behaviour & INDUSTRYBEH_BEFORE_1950) && CalTime::CurYear() > 1950) ||
