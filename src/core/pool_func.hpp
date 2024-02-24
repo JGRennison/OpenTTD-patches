@@ -55,7 +55,7 @@ DEFINE_POOL_METHOD(inline void)::ResizeFor(size_t index)
 	dbg_assert(index >= this->size);
 	dbg_assert(index < Tmax_size);
 
-	size_t new_size = std::min<size_t>(Tmax_size, Align(std::max<uint>(index + 1, (this->size * 3) / 2), std::max<uint>(64, Tgrowth_step)));
+	size_t new_size = std::min<size_t>(Tmax_size, Align(std::max<size_t>(index + 1, (this->size * 3) / 2), std::max<size_t>(64, Tgrowth_step)));
 
 	this->data = ReallocT(this->data, new_size);
 	MemSetT(this->data + this->size, 0, new_size - this->size);
