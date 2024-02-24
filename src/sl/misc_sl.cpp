@@ -125,6 +125,8 @@ static const NamedSaveLoad _date_desc[] = {
 	NSLT("economy_date",                SLEG_CONDVAR_X(EconTime::Detail::now.econ_date,          SLE_INT32,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 5))),
 	NSLT("economy_date_fract",          SLEG_CONDVAR_X(EconTime::Detail::now.econ_date_fract,   SLE_UINT16,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 5))),
 	NSLT("calendar_sub_date_fract",     SLEG_CONDVAR_X(CalTime::Detail::now.sub_date_fract,     SLE_UINT16,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 5))),
+	NSLT("economy_years_elapsed",       SLEG_CONDVAR_X(EconTime::Detail::years_elapsed,          SLE_INT32,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 6))),
+	NSLT("period_display_offset",       SLEG_CONDVAR_X(EconTime::Detail::period_display_offset,  SLE_INT32,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 6))),
 };
 
 static const NamedSaveLoad _date_check_desc[] = {

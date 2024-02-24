@@ -34,6 +34,8 @@ uint32_t _quit_after_days;                 ///< Quit after this many days of run
 
 CalTime::State CalTime::Detail::now;
 EconTime::State EconTime::Detail::now;
+YearDelta EconTime::Detail::years_elapsed;
+YearDelta EconTime::Detail::period_display_offset;
 
 namespace DateDetail {
 	StateTicksDelta _state_ticks_offset;   ///< Offset to add when calculating a StateTicks value from an economy date, date fract and tick skip counter
@@ -109,6 +111,11 @@ EconTime::State EconTime::Detail::NewState(EconTime::Year year)
 	state.econ_ymd = { year, 0, 1 };
 	state.econ_date = EconTime::ConvertYMDToDate(year, 0, 1);
 	return state;
+}
+
+int32_t EconTime::Detail::WallClockYearToDisplay(EconTime::Year year)
+{
+	return (year + EconTime::Detail::period_display_offset).base();
 }
 
 StateTicks GetStateTicksFromDateWithoutOffset(EconTime::Date date, EconTime::DateFract date_fract)
@@ -379,6 +386,7 @@ static void OnNewCalendarYear()
  */
 static void OnNewEconomyYear()
 {
+	EconTime::Detail::years_elapsed++;
 	CompaniesYearlyLoop();
 	VehiclesYearlyLoop();
 	TownsYearlyLoop();
@@ -386,6 +394,7 @@ static void OnNewEconomyYear()
 
 	/* check if we reached the maximum year, decrement dates by a year */
 	if (EconTime::CurYear() == EconTime::MAX_YEAR + 1) {
+		EconTime::Detail::period_display_offset++;
 		EconTime::Detail::now.econ_ymd.year--;
 		int days_this_year = EconTime::IsLeapYear(EconTime::Detail::now.econ_ymd.year) ? DAYS_IN_LEAP_YEAR : DAYS_IN_YEAR;
 		EconTime::Detail::now.econ_date -= days_this_year;

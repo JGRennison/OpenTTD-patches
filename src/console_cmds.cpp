@@ -2008,9 +2008,9 @@ DEF_CONSOLE_CMD(ConCompanies)
 			password_state = _network_company_states[c->index].password.empty() ? "unprotected" : "protected";
 		}
 
-		IConsolePrintF(CC_INFO, "#:%d(%s) Company Name: '%s'  Year Founded: %d  Money: " OTTD_PRINTF64 "  Loan: " OTTD_PRINTF64 "  Value: " OTTD_PRINTF64 "  (T:%d, R:%d, P:%d, S:%d) %s",
+		IConsolePrintF(CC_INFO, "#:%d(%s) Company Name: '%s'  Year Founded: %d  Age: %d  Money: " OTTD_PRINTF64 "  Loan: " OTTD_PRINTF64 "  Value: " OTTD_PRINTF64 "  (T:%d, R:%d, P:%d, S:%d) %s",
 			c->index + 1, GetStringPtr(STR_COLOUR_DARK_BLUE + _company_colours[c->index]), company_name.c_str(),
-			c->inaugurated_year.base(), (int64_t)c->money, (int64_t)c->current_loan, (int64_t)CalculateCompanyValue(c),
+			c->InauguratedDisplayYear(), c->age_years.base(), (int64_t)c->money, (int64_t)c->current_loan, (int64_t)CalculateCompanyValue(c),
 			c->group_all[VEH_TRAIN].num_vehicle,
 			c->group_all[VEH_ROAD].num_vehicle,
 			c->group_all[VEH_AIRCRAFT].num_vehicle,
@@ -2693,6 +2693,8 @@ DEF_CONSOLE_CMD(ConGetFullDate)
 
 	IConsolePrintF(CC_DEFAULT, "Calendar Date: %04d-%02d-%02d (%d), fract: %i, sub_fract: %i", CalTime::CurYear().base(), CalTime::CurMonth() + 1, CalTime::CurDay(), CalTime::CurDate().base(), CalTime::CurDateFract(), CalTime::Detail::now.sub_date_fract);
 	IConsolePrintF(CC_DEFAULT, "Economy Date: %04d-%02d-%02d (%d), fract: %i, tick skip: %i", EconTime::CurYear().base(), EconTime::CurMonth() + 1, EconTime::CurDay(), EconTime::CurDate().base(), EconTime::CurDateFract(), TickSkipCounter());
+	IConsolePrintF(CC_DEFAULT, "Period display offset: %d", EconTime::Detail::period_display_offset.base());
+	IConsolePrintF(CC_DEFAULT, "Elapsed years: %d", EconTime::Detail::years_elapsed.base());
 	IConsolePrintF(CC_DEFAULT, "Tick counter: " OTTD_PRINTF64, _tick_counter);
 	IConsolePrintF(CC_DEFAULT, "Tick counter (scaled): " OTTD_PRINTF64, _scaled_tick_counter);
 	IConsolePrintF(CC_DEFAULT, "State ticks: " OTTD_PRINTF64 " (offset: " OTTD_PRINTF64 ")", _state_ticks.base(), DateDetail::_state_ticks_offset.base());

@@ -279,6 +279,8 @@ static void InitializeWindowsAndCaches()
 		 * thus the MIN_YEAR (which is really nothing more than Zero, initialized value) test */
 		if (_file_to_saveload.abstract_ftype == FT_SCENARIO && c->inaugurated_year != CalTime::MIN_YEAR) {
 			c->inaugurated_year = CalTime::CurYear();
+			c->display_inaugurated_period = EconTime::Detail::WallClockYearToDisplay(EconTime::CurYear());
+			c->age_years = 0;
 		}
 	}
 
@@ -1830,11 +1832,27 @@ bool AfterLoadGame()
 		for (Waypoint *wp : Waypoint::Iterate()) wp->build_date      += CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
 		for (Engine *e : Engine::Iterate())      e->intro_date       += CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
 		for (Company *c : Company::Iterate())    c->inaugurated_year += CalTime::ORIGINAL_BASE_YEAR.AsDelta();
-		for (Industry *i : Industry::Iterate())  i->last_prod_year   += CalTime::ORIGINAL_BASE_YEAR.AsDelta();
+		for (Industry *i : Industry::Iterate())  i->last_prod_year   += EconTime::ORIGINAL_BASE_YEAR.AsDelta();
 
 		for (Vehicle *v : Vehicle::Iterate()) {
 			v->date_of_last_service += EconTime::DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
 			v->build_year += CalTime::ORIGINAL_BASE_YEAR.AsDelta();
+		}
+	}
+
+	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH, 6)) {
+		EconTime::Detail::years_elapsed = EconTime::CurYear().base() - 1;
+		EconTime::Detail::period_display_offset = 0;
+		for (Company *c : Company::Iterate()) {
+			if (SlXvIsFeaturePresent(XSLFI_VARIABLE_DAY_LENGTH, 5, 5)) {
+				/* inaugurated_year is calendar time in XSLFI_VARIABLE_DAY_LENGTH version 5 */
+				c->age_years = std::max<YearDelta>(0, CalTime::CurYear() - c->inaugurated_year);
+				c->display_inaugurated_period = EconTime::Detail::WallClockYearToDisplay(c->inaugurated_year.base() + EconTime::CurYear().base() - CalTime::CurYear().base());
+			} else {
+				c->age_years = std::max<YearDelta>(0, EconTime::CurYear().base() - c->inaugurated_year.base());
+				c->display_inaugurated_period = EconTime::Detail::WallClockYearToDisplay(c->inaugurated_year.base());
+				c->inaugurated_year += CalTime::CurYear().base() - EconTime::CurYear().base();
+			}
 		}
 	}
 

@@ -89,6 +89,8 @@ struct CompanyProperties {
 	std::array<Owner, MAX_COMPANY_SHARE_OWNERS> share_owners; ///< Owners of the shares of the company. #INVALID_OWNER if nobody has bought them yet.
 
 	CalTime::Year inaugurated_year;  ///< Year of starting the company.
+	int32_t display_inaugurated_period;///< Wallclock display period of starting the company.
+	YearDelta age_years;             ///< Number of economy years that the company has been operational.
 
 	byte months_of_bankruptcy;       ///< Number of months that the company is unable to pay its debts
 	CompanyID bankrupt_last_asked;   ///< Which company was most recently asked about buying it?
@@ -123,9 +125,14 @@ struct CompanyProperties {
 	CompanyProperties()
 		: name_2(0), name_1(0), president_name_1(0), president_name_2(0),
 		  face(0), money(0), money_fraction(0), current_loan(0), max_loan(COMPANY_MAX_LOAN_DEFAULT), colour(COLOUR_BEGIN),
-		  block_preview(0), location_of_HQ(0), last_build_coordinate(0), share_owners(), inaugurated_year(0),
+		  block_preview(0), location_of_HQ(0), last_build_coordinate(0), share_owners(), inaugurated_year(0), display_inaugurated_period(0), age_years(0),
 		  months_of_bankruptcy(0), bankrupt_last_asked(INVALID_COMPANY), bankrupt_flags(CBRF_NONE), bankrupt_asked(0), bankrupt_timeout(0), bankrupt_value(0),
 		  terraform_limit(0), clear_limit(0), tree_limit(0), purchase_land_limit(0), build_object_limit(0), is_ai(false), engine_renew_list(nullptr) {}
+
+	int32_t InauguratedDisplayYear() const
+	{
+		return EconTime::UsingWallclockUnits() ? this->display_inaugurated_period : this->inaugurated_year.base();
+	}
 };
 
 struct Company : CompanyPool::PoolItem<&_company_pool>, CompanyProperties {

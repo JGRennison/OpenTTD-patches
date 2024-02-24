@@ -130,6 +130,7 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	_pause_countdown = 0;
 	_game_speed = 100;
 	CalTime::Detail::now.sub_date_fract = 0;
+	EconTime::Detail::years_elapsed = 0;
 	_tick_counter = 0;
 	DateDetail::_tick_skip_counter = 0;
 	_scaled_tick_counter = 0;
@@ -168,6 +169,7 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 		} else {
 			EconTime::Detail::SetDate(CalTime::CurDate().base(), 0);
 		}
+		EconTime::Detail::period_display_offset = 1 - EconTime::CurYear();
 		InitializeOldNames();
 	} else {
 		RecalculateStateTicksOffset();

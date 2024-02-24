@@ -1258,14 +1258,19 @@ void SetStartingYear(CalTime::Year year)
 {
 	_settings_game.game_creation.starting_year = Clamp(year, CalTime::MIN_YEAR, CalTime::MAX_YEAR);
 	CalTime::Date new_date = CalTime::ConvertYMDToDate(_settings_game.game_creation.starting_year, 0, 1);
-	EconTime::Date new_economy_date = new_date.base();
 
-	/* If you open a savegame as scenario there may already be link graphs.*/
-	LinkGraphSchedule::instance.ShiftDates(new_economy_date - EconTime::CurDate());
-	ShiftVehicleDates(new_economy_date - EconTime::CurDate());
+	if (EconTime::UsingWallclockUnits()) {
+		EconTime::Date new_economy_date = new_date.base();
+
+		/* If you open a savegame as scenario there may already be link graphs.*/
+		LinkGraphSchedule::instance.ShiftDates(new_economy_date - EconTime::CurDate());
+		ShiftVehicleDates(new_economy_date - EconTime::CurDate());
+		EconTime::Detail::period_display_offset -= (year.base() - EconTime::CurYear().base());
+
+		EconTime::Detail::SetDate(new_economy_date, 0);
+	}
 
 	CalTime::Detail::SetDate(new_date, 0);
-	EconTime::Detail::SetDate(new_economy_date, 0);
 
 	UpdateOrderUIOnDateChange();
 }

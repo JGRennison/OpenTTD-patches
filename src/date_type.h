@@ -240,9 +240,12 @@ struct EconTime : public DateDetail::BaseTime<struct EconTimeTag> {
 	/* Use a detail struct/namespace to more easily control writes */
 	struct Detail {
 		static State now;
+		static YearDelta years_elapsed;
+		static YearDelta period_display_offset;
 
 		static void SetDate(Date date, DateFract fract);
 		static State NewState(Year year);
+		static int32_t WallClockYearToDisplay(Year year);
 
 		/**
 		 * Calculate the date of the first day of a given year.
@@ -288,6 +291,12 @@ struct EconTime : public DateDetail::BaseTime<struct EconTimeTag> {
 	{
 		if (UsingWallclockUnits()) return Detail::DateAtStartOfWallclockModeYear(year);
 		return ParentBaseTime::Detail::DateAtStartOfCalendarYear(year);
+	}
+
+	static inline int32_t YearToDisplay(Year year)
+	{
+		if (UsingWallclockUnits()) return Detail::WallClockYearToDisplay(year);
+		return year.base();
 	}
 };
 
