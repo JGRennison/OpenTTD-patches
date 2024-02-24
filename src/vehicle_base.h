@@ -25,6 +25,7 @@
 #include "landscape.h"
 #include "network/network.h"
 #include "core/mem_func.hpp"
+#include "core/endian_type.hpp"
 #include "sl/saveload_common.h"
 #include <list>
 #include <map>
@@ -234,7 +235,33 @@ struct PendingSpeedRestrictionChange {
 };
 
 /** A vehicle pool for a little over 1 million vehicles. */
+#if OTTD_UPPER_TAGGED_PTR
+struct VehiclePoolOps {
+	using Tptr = uintptr_t;
+	using Tparam_type = VehicleType;
+
+	static inline Vehicle *GetPtr(uintptr_t ptr) {
+		return reinterpret_cast<Vehicle *>(ptr & ((static_cast<uintptr_t>(1) << 60) - 1)); // GB can't be used here because its return type is limited to 32 bits
+	}
+
+	static inline uintptr_t PutPtr(Vehicle *v, VehicleType vtype)
+	{
+		uintptr_t ptr = reinterpret_cast<uintptr_t>(v);
+		SB(ptr, 60, 3, vtype & 7);
+		return ptr;
+	}
+
+	static constexpr uintptr_t NullValue() { return 0; }
+	static constexpr VehicleType DefaultItemParam() { return VEH_INVALID; }
+
+	static constexpr VehicleType GetVehicleType(uintptr_t ptr) { return static_cast<VehicleType>(GB(ptr, 60, 3)); }
+};
+
+typedef Pool<Vehicle, VehicleID, 512, 0xFF000, PT_NORMAL, false, true, VehiclePoolOps> VehiclePool;
+#else
 typedef Pool<Vehicle, VehicleID, 512, 0xFF000> VehiclePool;
+#endif
+
 extern VehiclePool _vehicle_pool;
 
 /* Some declarations of functions, so we can make them friendly */
@@ -1287,6 +1314,25 @@ struct SpecializedVehicle : public Vehicle {
 
 	typedef SpecializedVehicle<T, Type> SpecializedVehicleBase; ///< Our type
 
+#if OTTD_UPPER_TAGGED_PTR
+	inline void *operator new(size_t size)
+	{
+		return Vehicle::NewWithParam(size, Type);
+	}
+
+	inline void *operator new(size_t size, size_t index)
+	{
+		return Vehicle::NewWithParam(size, index, Type);
+	}
+
+	inline void operator delete(void *p)
+	{
+		Vehicle::operator delete(p);
+	}
+
+	void *operator new(size_t, void *ptr) = delete;
+#endif
+
 	/**
 	 * Set vehicle type correctly
 	 */
@@ -1376,7 +1422,11 @@ struct SpecializedVehicle : public Vehicle {
 	 */
 	static inline bool IsValidID(size_t index)
 	{
+#if OTTD_UPPER_TAGGED_PTR
+		return Vehicle::IsValidID(index) && VehiclePoolOps::GetVehicleType(_vehicle_pool.GetRaw(index)) == Type;
+#else
 		return Vehicle::IsValidID(index) && Vehicle::Get(index)->type == Type;
+#endif
 	}
 
 	/**

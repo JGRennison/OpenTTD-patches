@@ -21,8 +21,8 @@
  * @param type The return type of the method.
  */
 #define DEFINE_POOL_METHOD(type) \
-	template <class Titem, typename Tindex, size_t Tgrowth_step, size_t Tmax_size, PoolType Tpool_type, bool Tcache, bool Tzero> \
-	type Pool<Titem, Tindex, Tgrowth_step, Tmax_size, Tpool_type, Tcache, Tzero>
+	template <class Titem, typename Tindex, size_t Tgrowth_step, size_t Tmax_size, PoolType Tpool_type, bool Tcache, bool Tzero, typename Tops> \
+	type Pool<Titem, Tindex, Tgrowth_step, Tmax_size, Tpool_type, Tcache, Tzero, Tops>
 
 /**
  * Create a clean pool.
@@ -107,9 +107,9 @@ DEFINE_POOL_METHOD(inline size_t)::FindFirstFree()
  * @pre index < this->size
  * @pre this->Get(index) == nullptr
  */
-DEFINE_POOL_METHOD(inline void *)::AllocateItem(size_t size, size_t index)
+DEFINE_POOL_METHOD(inline void *)::AllocateItem(size_t size, size_t index, Pool::ParamType param)
 {
-	dbg_assert(this->data[index] == nullptr);
+	dbg_assert(this->data[index] == Tops::NullValue());
 
 	this->first_unused = std::max(this->first_unused, index + 1);
 	this->items++;
@@ -129,7 +129,7 @@ DEFINE_POOL_METHOD(inline void *)::AllocateItem(size_t size, size_t index)
 	} else {
 		item = (Titem *)MallocT<byte>(size);
 	}
-	this->data[index] = item;
+	this->data[index] = Tops::PutPtr(item, param);
 	SetBit(this->free_bitmap[index / 64], index % 64);
 	item->index = (Tindex)(uint)index;
 	return item;
@@ -141,7 +141,7 @@ DEFINE_POOL_METHOD(inline void *)::AllocateItem(size_t size, size_t index)
  * @return pointer to allocated item
  * @note error() on failure! (no free item)
  */
-DEFINE_POOL_METHOD(void *)::GetNew(size_t size)
+DEFINE_POOL_METHOD(void *)::GetNew(size_t size, Pool::ParamType param)
 {
 	size_t index = this->FindFirstFree();
 
@@ -154,7 +154,7 @@ DEFINE_POOL_METHOD(void *)::GetNew(size_t size)
 	}
 
 	this->first_free = index + 1;
-	return this->AllocateItem(size, index);
+	return this->AllocateItem(size, index, param);
 }
 
 /**
@@ -164,7 +164,7 @@ DEFINE_POOL_METHOD(void *)::GetNew(size_t size)
  * @return pointer to allocated item
  * @note SlErrorCorruptFmt() on failure! (index out of range or already used)
  */
-DEFINE_POOL_METHOD(void *)::GetNew(size_t size, size_t index)
+DEFINE_POOL_METHOD(void *)::GetNew(size_t size, size_t index, Pool::ParamType param)
 {
 	[[noreturn]] extern void SlErrorCorruptFmt(const char *format, ...);
 
@@ -174,11 +174,11 @@ DEFINE_POOL_METHOD(void *)::GetNew(size_t size, size_t index)
 
 	if (index >= this->size) this->ResizeFor(index);
 
-	if (this->data[index] != nullptr) {
+	if (this->data[index] != Tops::NullValue()) {
 		SlErrorCorruptFmt("%s index " PRINTF_SIZE " already in use", this->name, index);
 	}
 
-	return this->AllocateItem(size, index);
+	return this->AllocateItem(size, index, param);
 }
 
 /**
@@ -190,15 +190,15 @@ DEFINE_POOL_METHOD(void *)::GetNew(size_t size, size_t index)
 DEFINE_POOL_METHOD(void)::FreeItem(size_t index)
 {
 	dbg_assert(index < this->size);
-	dbg_assert(this->data[index] != nullptr);
+	dbg_assert(this->data[index] != Tops::NullValue());
 	if (Tcache) {
 		AllocCache *ac = (AllocCache *)this->data[index];
 		ac->next = this->alloc_cache;
 		this->alloc_cache = ac;
 	} else {
-		free(this->data[index]);
+		free(Tops::GetPtr(this->data[index]));
 	}
-	this->data[index] = nullptr;
+	this->data[index] = Tops::NullValue();
 	ClrBit(this->free_bitmap[index / 64], index % 64);
 	this->first_free = std::min(this->first_free, index);
 	this->items--;
@@ -238,8 +238,8 @@ DEFINE_POOL_METHOD(void)::CleanPool()
  * forcefully instantiated.
  */
 #define INSTANTIATE_POOL_METHODS(name) \
-	template void * name ## Pool::GetNew(size_t size); \
-	template void * name ## Pool::GetNew(size_t size, size_t index); \
+	template void * name ## Pool::GetNew(size_t size, name ## Pool::ParamType param); \
+	template void * name ## Pool::GetNew(size_t size, size_t index, name ## Pool::ParamType param); \
 	template void name ## Pool::FreeItem(size_t index); \
 	template void name ## Pool::CleanPool();
 

@@ -85,8 +85,6 @@ macro(compile_flags)
             #  break anything. So disable strict-aliasing to make the
             #  compiler all happy.
             -fno-strict-aliasing
-
-
         )
 
         if(OPTION_TRIM_PATH_PREFIX)
@@ -137,6 +135,13 @@ macro(compile_flags)
                 # and of course they both warn when the other compiler is happy
                 "$<$<COMPILE_LANGUAGE:CXX>:-Wno-redundant-move>"
             )
+
+            if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 11)
+                add_compile_options(
+                    # GCC >= 11 has false positives if operator new is inlined but operator delete isn't, or vice versa
+                    "-Wno-mismatched-new-delete"
+                )
+            endif()
         endif()
 
         if(CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
