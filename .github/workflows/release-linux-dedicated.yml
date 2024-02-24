@@ -14,14 +14,14 @@ jobs:
 
     runs-on: ubuntu-latest
     container:
-      # manylinux2014 is based on CentOS 7, and already has a lot of things
+      # manylinux_2_28 is based on AlmaLinux 8, and already has a lot of things
       # installed and preconfigured. It makes it easier to build OpenTTD.
-      # This distro is based on glibc 2.17, released in 2012.
-      image: quay.io/pypa/manylinux2014_x86_64
+      # This distro is based on glibc 2.28, released in 2018.
+      image: quay.io/pypa/manylinux_2_28_x86_64
 
     steps:
     - name: Download source
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: internal-source
 
@@ -29,34 +29,14 @@ jobs:
       run: |
         tar -xf source.tar.gz --strip-components=1
 
-    # curl is too old for most of the tools to work properly. For example,
-    # rust-toolchain doesn't work properly, neither vcpkg caching.
-    # The easier solution here is to upgrade curl.
-    - name: Update curl
-      run: |
-        yum install -y \
-          openssl-devel \
-          # EOF
-
-        mkdir /curl
-        cd /curl
-        curl -o curl-7.81.0.zip https://curl.se/download/curl-7.81.0.zip
-        unzip curl-7.81.0.zip
-        cd curl-7.81.0
-        ./configure --with-ssl --with-zlib --prefix=/usr --libdir=/usr/lib64
-        make -j $(nproc)
-        make install
-
     - name: Install Rust toolchain
       uses: dtolnay/rust-toolchain@stable
 
     - name: Enable Rust cache
-      uses: Swatinem/rust-cache@v2.7.0
-      with:
-        key: dedicated
+      uses: Swatinem/rust-cache@v2
 
     - name: Setup vcpkg caching
-      uses: actions/github-script@v6
+      uses: actions/github-script@v7
       with:
         script: |
           core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
@@ -82,15 +62,6 @@ jobs:
         cp /usr/share/aclocal/* /usr/local/share/aclocal/
         echo "::endgroup::"
 
-        # The container we use is old enough, that it doesn't know SHF_COMPRESSED.
-        # But, breakpad needs this symbol to exist. So we patch it in our system
-        # libraries.
-        (
-          cd /
-          patch -p1 < ${GITHUB_WORKSPACE}/os/linux/shf-compressed.patch
-        )
-        echo "::endgroup::"
-
         # We use vcpkg for our dependencies, to get more up-to-date version.
         echo "::group::Install vcpkg and dependencies"
 
@@ -100,17 +71,6 @@ jobs:
           cd /vcpkg
           ./bootstrap-vcpkg.sh -disableMetrics
         )
-
-        # Make Python3 available for other packages. This needs to be done
-        # first, as otherwise dependencies fail to build because Python3 is
-        # not available.
-        (
-          cd /
-
-          /vcpkg/vcpkg install python3
-          ln -sf /vcpkg/installed/x64-linux/tools/python3/python3.[0-9][0-9] /usr/bin/python3
-        )
-        echo "::endgroup::"
 
     - name: Patch bundle name
       run: |
@@ -153,7 +113,7 @@ jobs:
         echo "::endgroup::"
 
     - name: Store bundles
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: openttd-linux-dedicated
         path: build/bundles
