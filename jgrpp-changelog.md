@@ -2,6 +2,30 @@
 
 * * *
 
+### v0.58.0 (2024-02-24)
+* Fix crash when road vehicles change length in drive-through road stops (e.g. due to refits).
+* Fix crash when showing the savegame file overwrite warning for a save with no readable version.
+* Fix crash when joining a network server which used GRF custom town zones.
+* Fix road vehicles being deleted in a bay road stop leaving the stop marked as occupied.
+* Fix handling of airport noise/count limits in local authority permissive mode.
+* Fix rail toolbar layout when polyrail button is hidden.
+* Fix multi-cargo ship capacity display in the autoreplace and available ships windows.
+* Fix displayed speed units in station rating tooltip.
+* Fix warning messages when loading very old savegames.
+* Fix crash which could occur on Windows when closing the game by closing its attached debug console.
+* Fix clicking vehicle window drop-down menus hiding vehicle overlay lines/markers.
+* Time-keeping:
+  * Add support for vanilla wallclock mode.
+  * No longer scale displayed running costs by the day length factor, show per original year.
+  * Fix news message durations being scaled by the day length factor.
+* Add support for vanilla unbunching.
+* Add setting to only spawn primary industries.
+* Reduce flickering/sprite sorting problems for vehicles and catenary diagonally underneath bridges.
+* Add road vehicle stop direction to the order window manage order dropdown.
+* Disable company-only zoning overlay modes in spectator mode.
+* Increase pathfinding limit for river generation.
+* Bump trunk base from commit 6b21368bc2fdef6877ef5930f94e85719b670a76 to commit 8bccb5805a94eb2acb0e581185ca34090f2b1397.
+
 ### v0.57.1 (2024-02-04)
 * Fix crashes or rendering problems which could occur in some cases when multiple viewports were active.
 * Fix not being able to change both the hour and minute in the non-text timetable time dialog.
