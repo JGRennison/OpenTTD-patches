@@ -20,8 +20,6 @@
 #include "3rdparty/monocypher/monocypher-ed25519.h"
 #include "3rdparty/nlohmann/json.hpp"
 
-#include <filesystem>
-
 #include "safeguards.h"
 
 /** The public keys used for signature validation. */
@@ -247,7 +245,13 @@ static bool _ValidateSignatureFile(const std::string &filename)
 		return false;
 	}
 
-	std::string dirname = std::filesystem::path(filename).parent_path().string();
+	std::string dirname;
+	auto pos = filename.rfind(PATHSEPCHAR);
+	if (pos == std::string::npos || pos == 0) {
+		dirname = filename;
+	} else {
+		dirname = filename.substr(0, pos);
+	}
 
 	for (auto &signature : signatures["files"]) {
 		const std::string sig_filename = dirname + PATHSEPCHAR + signature["filename"].get<std::string>();
