@@ -3503,6 +3503,7 @@ void Vehicle::LeaveStation()
 	dbg_assert(this->cargo_payment == nullptr); // cleared by ~CargoPayment
 
 	ClrBit(this->vehicle_flags, VF_COND_ORDER_WAIT);
+	ClrBit(this->vehicle_flags, VF_STOP_LOADING);
 
 	TileIndex station_tile = INVALID_TILE;
 
