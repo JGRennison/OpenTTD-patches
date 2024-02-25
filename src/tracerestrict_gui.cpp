@@ -2862,9 +2862,9 @@ private:
 	int GetItemIndexFromPt(int y)
 	{
 		NWidgetBase *nwid = this->GetWidget<NWidgetBase>(TR_WIDGET_INSTRUCTION_LIST);
-		int sel = (y - nwid->pos_y - WidgetDimensions::scaled.framerect.top) / nwid->resize_y; // Selected line
+		int32_t sel = (y - nwid->pos_y - WidgetDimensions::scaled.framerect.top) / nwid->resize_y; // Selected line
 
-		if ((uint)sel >= this->vscroll->GetCapacity()) return -1;
+		if (sel >= this->vscroll->GetCapacity()) return -1;
 
 		sel += this->vscroll->GetPosition();
 

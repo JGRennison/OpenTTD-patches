@@ -912,7 +912,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		int xm = x % this->resize.step_width;
 		if (xt >= this->num_columns) return { nullptr, false };
 
-		uint row = y / this->resize.step_height;
+		int32_t row = y / this->resize.step_height;
 		if (row >= this->vscroll->GetCapacity()) return { nullptr, false };
 
 		uint pos = ((row + this->vscroll->GetPosition()) * this->num_columns) + xt;

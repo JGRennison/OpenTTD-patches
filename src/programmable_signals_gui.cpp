@@ -699,13 +699,13 @@ private:
 	int GetInstructionFromPt(int y)
 	{
 		NWidgetBase *nwid = this->GetWidget<NWidgetBase>(PROGRAM_WIDGET_INSTRUCTION_LIST);
-		int sel = (y - nwid->pos_y - WidgetDimensions::scaled.framerect.top) / nwid->resize_y; // Selected line
+		int32_t sel = (y - nwid->pos_y - WidgetDimensions::scaled.framerect.top) / nwid->resize_y; // Selected line
 
-		if ((uint)sel >= this->vscroll->GetCapacity()) return -1;
+		if (sel >= this->vscroll->GetCapacity()) return -1;
 
 		sel += this->vscroll->GetPosition();
 
-		return (sel <= int(this->instructions.size()) && sel >= 0) ? sel : -1;
+		return (sel <= (int32_t)(this->instructions.size()) && sel >= 0) ? sel : -1;
 	}
 
 	void RebuildInstructionList()

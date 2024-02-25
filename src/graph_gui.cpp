@@ -887,7 +887,7 @@ struct ExcludingCargoBaseGraphWindow : BaseGraphWindow {
 			}
 
 			case WID_ECBG_MATRIX: {
-				uint row = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_ECBG_MATRIX);
+				int32_t row = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_ECBG_MATRIX);
 				if (row >= this->vscroll->GetCount()) return;
 
 				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
@@ -2027,7 +2027,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 			}
 
 			case WID_SCG_MATRIX: {
-				uint row = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_SCG_MATRIX);
+				int32_t row = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_SCG_MATRIX);
 				if (row >= this->vscroll->GetCount()) return;
 
 				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {

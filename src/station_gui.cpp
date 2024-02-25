@@ -2587,7 +2587,7 @@ struct SelectStationWindow : Window {
 			tr.top += this->resize.step_height;
 		}
 
-		for (uint i = std::max<uint>(1, this->vscroll->GetPosition()); i <= _stations_nearby_list.size(); ++i, tr.top += this->resize.step_height) {
+		for (int32_t i = std::max<int32_t>(1, this->vscroll->GetPosition()); (size_t)i <= _stations_nearby_list.size(); ++i, tr.top += this->resize.step_height) {
 			/* Don't draw anything if it extends past the end of the window. */
 			if (i - this->vscroll->GetPosition() >= this->vscroll->GetCapacity()) break;
 

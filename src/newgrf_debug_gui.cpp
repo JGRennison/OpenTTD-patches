@@ -339,7 +339,7 @@ struct NewGRFInspectWindow : Window {
 
 	Scrollbar *vscroll;
 
-	int first_variable_line_index = 0;
+	int32_t first_variable_line_index = 0;
 	bool redraw_panel = false;
 	bool redraw_scrollbar = false;
 
@@ -569,7 +569,7 @@ struct NewGRFInspectWindow : Window {
 		const void *base      = nih->GetInstance(index);
 		const void *base_spec = nih->GetSpec(index);
 
-		uint i = 0;
+		int32_t i = 0;
 
 		auto guard = scope_guard([&]() {
 			if (this->log_console) {
@@ -577,12 +577,12 @@ struct NewGRFInspectWindow : Window {
 				DEBUG(misc, 0, "*** END ***");
 			}
 
-			uint count = std::min<uint>(UINT16_MAX, i);
+			const int32_t count = i;
 			if (vscroll->GetCount() != count) {
 				/* Not nice and certainly a hack, but it beats duplicating
 				 * this whole function just to count the actual number of
 				 * elements. Especially because they need to be redrawn. */
-				uint position = this->vscroll->GetPosition();
+				const int32_t position = this->vscroll->GetPosition();
 				const_cast<NewGRFInspectWindow*>(this)->vscroll->SetCount(count);
 				const_cast<NewGRFInspectWindow*>(this)->redraw_scrollbar = true;
 				if (position != this->vscroll->GetPosition()) {
@@ -921,8 +921,8 @@ struct NewGRFInspectWindow : Window {
 
 			case WID_NGRFI_MAINPANEL: {
 				/* Get the line, make sure it's within the boundaries. */
-				int line = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_NGRFI_MAINPANEL, WidgetDimensions::scaled.framerect.top);
-				if (line == INT_MAX) return;
+				int32_t line = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_NGRFI_MAINPANEL, WidgetDimensions::scaled.framerect.top);
+				if (line == INT32_MAX) return;
 
 				if (this->sprite_dump) {
 					if (_ctrl_pressed) {
