@@ -19,6 +19,36 @@
 
 #include "../../safeguards.h"
 
+struct FrontVehicleOnlyFillListHelper {
+	using IterType = Vehicle;
+
+	auto Iterate()
+	{
+		return Vehicle::IterateFrontOnly();
+	}
+
+	int OpcodeCharge(int item_count)
+	{
+		return item_count / 2;
+	}
+};
+
+struct VehicleTypeFrontVehicleOnlyFillListHelper {
+	using IterType = Vehicle;
+
+	::VehicleType vt;
+
+	auto Iterate()
+	{
+		return Vehicle::IterateTypeFrontOnly(this->vt);
+	}
+
+	int OpcodeCharge(int item_count)
+	{
+		return item_count / 2;
+	}
+};
+
 ScriptVehicleList::ScriptVehicleList(HSQUIRRELVM vm)
 {
 	EnforceDeityOrCompanyModeValid_Void();
@@ -26,7 +56,7 @@ ScriptVehicleList::ScriptVehicleList(HSQUIRRELVM vm)
 	bool is_deity = ScriptCompanyMode::IsDeity();
 	CompanyID owner = ScriptObject::GetCompany();
 
-	ScriptList::FillList<Vehicle>(vm, this,
+	ScriptList::FillListT<FrontVehicleOnlyFillListHelper>({}, vm, this,
 		[is_deity, owner](const Vehicle *v) {
 			return (is_deity || v->owner == owner) && (v->IsPrimaryVehicle() || (v->type == VEH_TRAIN && ::Train::From(v)->IsFreeWagon()));
 		}
@@ -111,7 +141,7 @@ ScriptVehicleList_Group::ScriptVehicleList_Group(GroupID group_id)
 
 	CompanyID owner = ScriptObject::GetCompany();
 
-	ScriptList::FillList<Vehicle>(this,
+	ScriptList::FillListT<FrontVehicleOnlyFillListHelper>({}, this,
 		[owner](const Vehicle *v) { return v->owner == owner && v->IsPrimaryVehicle(); },
 		[group_id](const Vehicle *v) { return v->group_id == group_id; }
 	);
@@ -124,8 +154,8 @@ ScriptVehicleList_DefaultGroup::ScriptVehicleList_DefaultGroup(ScriptVehicle::Ve
 
 	CompanyID owner = ScriptObject::GetCompany();
 
-	ScriptList::FillList<Vehicle>(this,
+	ScriptList::FillListT<VehicleTypeFrontVehicleOnlyFillListHelper>({ (::VehicleType)vehicle_type  }, this,
 		[owner](const Vehicle *v) { return v->owner == owner && v->IsPrimaryVehicle(); },
-		[vehicle_type](const Vehicle *v) { return v->type == (::VehicleType)vehicle_type && v->group_id == ScriptGroup::GROUP_DEFAULT; }
+		[](const Vehicle *v) { return v->group_id == ScriptGroup::GROUP_DEFAULT; }
 	);
 }
