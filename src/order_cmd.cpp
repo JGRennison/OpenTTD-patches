@@ -231,7 +231,9 @@ void Order::MakeImplicit(StationID destination)
 
 void Order::MakeWaiting()
 {
+	const bool wait_timetabled = this->IsWaitTimetabled();
 	this->type = OT_WAITING;
+	this->SetWaitTimetabled(wait_timetabled);
 }
 
 void Order::MakeLoadingAdvance(StationID destination)
