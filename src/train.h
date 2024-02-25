@@ -39,7 +39,6 @@ enum VehicleRailFlags {
 	VRF_BREAKDOWN_SPEED               = 12,///< used to mark a train that has a reduced maximum speed because of a breakdown
 	VRF_BREAKDOWN_STOPPED             = 13,///< used to mark a train that is stopped because of a breakdown
 	VRF_NEED_REPAIR                   = 14,///< used to mark a train that has a reduced maximum speed because of a critical breakdown
-	VRF_TOO_HEAVY                     = 15,
 	VRF_BEYOND_PLATFORM_END           = 16,
 	VRF_NOT_YET_IN_PLATFORM           = 17,
 	VRF_ADVANCE_IN_PLATFORM           = 18,

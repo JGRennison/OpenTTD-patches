@@ -272,4 +272,6 @@ bool VehiclesHaveSameOrderList(const Vehicle *v1, const Vehicle *v2);
 
 bool IsUniqueVehicleName(const char *name);
 
+void ShowTrainTooHeavyAdviceMessage(const Vehicle *v);
+
 #endif /* VEHICLE_FUNC_H */

@@ -13,6 +13,8 @@
 #include "depot_map.h"
 #include "tunnel_base.h"
 #include "slope_type.h"
+#include "company_func.h"
+#include "vehicle_func.h"
 
 #include "safeguards.h"
 
@@ -290,7 +292,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 		int accel = ClampTo<int32_t>((force - resistance) / (mass * 4));
 		accel = force < resistance ? std::min(-1, accel) : std::max(1, accel);
 		if (this->type == VEH_TRAIN) {
-			if(_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL &&
+			if (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL &&
 					HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER)) {
 				/* We need to apply the power reducation for non-realistic acceleration here */
 				uint32_t power;
@@ -299,13 +301,12 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 				accel -= this->acceleration >> 1;
 			}
 
-			if (this->IsFrontEngine() && !(this->current_order_time & 0x1FF) &&
+			if (this->cur_speed < 3 && accel < 5 &&
+					this->IsFrontEngine() && !(this->current_order_time & 0x3FF) &&
 					!(this->current_order.IsType(OT_LOADING)) &&
 					!(Train::From(this)->flags & (VRF_IS_BROKEN | (1 << VRF_TRAIN_STUCK))) &&
-					this->cur_speed < 3 && accel < 5) {
-				SetBit(Train::From(this)->flags, VRF_TOO_HEAVY);
-				extern std::vector<Train *> _tick_train_too_heavy_cache;
-				_tick_train_too_heavy_cache.push_back(Train::From(this));
+					this->owner == _local_company) {
+				ShowTrainTooHeavyAdviceMessage(this);
 			}
 
 			if (Train::From(this)->UsingRealisticBraking() && _settings_game.vehicle.limit_train_acceleration) {

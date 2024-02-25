@@ -1426,8 +1426,19 @@ static void ShowAutoReplaceAdviceMessage(const CommandCost &res, const Vehicle *
 	AddVehicleAdviceNewsItem(message, v->index);
 }
 
+static std::vector<VehicleID> _train_news_too_heavy_this_tick;
+
+void ShowTrainTooHeavyAdviceMessage(const Vehicle *v)
+{
+	if (find_index(_train_news_too_heavy_this_tick, v->index) < 0) {
+		_train_news_too_heavy_this_tick.push_back(v->index);
+		SetDParam(0, v->index);
+		AddNewsItem(STR_ERROR_TRAIN_TOO_HEAVY, NT_ADVICE, NF_INCOLOUR | NF_SMALL | NF_VEHICLE_PARAM0,
+				NR_VEHICLE, v->index);
+	}
+}
+
 bool _tick_caches_valid = false;
-std::vector<Train *> _tick_train_too_heavy_cache;
 std::vector<Train *> _tick_train_front_cache;
 std::vector<RoadVehicle *> _tick_road_veh_front_cache;
 std::vector<Aircraft *> _tick_aircraft_front_cache;
@@ -1439,7 +1450,6 @@ btree::btree_set<VehicleID> _tick_effect_veh_cache;
 
 void ClearVehicleTickCaches()
 {
-	_tick_train_too_heavy_cache.clear();
 	_tick_train_front_cache.clear();
 	_tick_road_veh_front_cache.clear();
 	_tick_aircraft_front_cache.clear();
@@ -1471,7 +1481,6 @@ void RebuildVehicleTickCaches()
 				break;
 
 			case VEH_TRAIN:
-				if (HasBit(Train::From(v)->flags, VRF_TOO_HEAVY)) _tick_train_too_heavy_cache.push_back(Train::From(v));
 				if (v->Previous() == nullptr) _tick_train_front_cache.push_back(Train::From(v));
 				break;
 
@@ -1499,11 +1508,6 @@ void ValidateVehicleTickCaches()
 {
 	if (!_tick_caches_valid) return;
 
-	std::vector<Train *> saved_tick_train_too_heavy_cache = std::move(_tick_train_too_heavy_cache);
-	std::sort(saved_tick_train_too_heavy_cache.begin(), saved_tick_train_too_heavy_cache.end(), [&](const Vehicle *a, const Vehicle *b) {
-		return a->index < b->index;
-	});
-    saved_tick_train_too_heavy_cache.erase(std::unique(saved_tick_train_too_heavy_cache.begin(), saved_tick_train_too_heavy_cache.end()), saved_tick_train_too_heavy_cache.end());
 	std::vector<Train *> saved_tick_train_front_cache = std::move(_tick_train_front_cache);
 	std::vector<RoadVehicle *> saved_tick_road_veh_front_cache = std::move(_tick_road_veh_front_cache);
 	std::vector<Aircraft *> saved_tick_aircraft_front_cache = std::move(_tick_aircraft_front_cache);
@@ -1517,7 +1521,6 @@ void ValidateVehicleTickCaches()
 
 	RebuildVehicleTickCaches();
 
-	assert(saved_tick_train_too_heavy_cache == _tick_train_too_heavy_cache);
 	assert(saved_tick_train_front_cache == saved_tick_train_front_cache);
 	assert(saved_tick_road_veh_front_cache == _tick_road_veh_front_cache);
 	assert(saved_tick_aircraft_front_cache == _tick_aircraft_front_cache);
@@ -1565,6 +1568,8 @@ void CallVehicleTicks()
 	_vehicles_to_templatereplace.clear();
 	_vehicles_to_pay_repair.clear();
 	_vehicles_to_sell.clear();
+
+	_train_news_too_heavy_this_tick.clear();
 
 	if (TickSkipCounter() == 0) RunVehicleDayProc();
 
@@ -1643,17 +1648,6 @@ void CallVehicleTicks()
 	if (!_tick_effect_veh_cache.empty()) RecordSyncEvent(NSRE_VEH_EFFECT);
 	{
 		PerformanceMeasurer framerate(PFE_GL_TRAINS);
-		for (Train *t : _tick_train_too_heavy_cache) {
-			if (HasBit(t->flags, VRF_TOO_HEAVY)) {
-				if (t->owner == _local_company) {
-					SetDParam(0, t->index);
-					AddNewsItem(STR_ERROR_TRAIN_TOO_HEAVY, NT_ADVICE, NF_INCOLOUR | NF_SMALL | NF_VEHICLE_PARAM0,
-							NR_VEHICLE, t->index);
-				}
-				ClrBit(t->flags, VRF_TOO_HEAVY);
-			}
-		}
-		_tick_train_too_heavy_cache.clear();
 		for (Train *front : _tick_train_front_cache) {
 			v = front;
 			if (!front->Train::Tick()) continue;
@@ -4475,7 +4469,6 @@ void DumpVehicleFlagsGeneric(const Vehicle *v, T dump, U dump_header)
 		dump('v', "VRF_BREAKDOWN_SPEED",               HasBit(t->flags, VRF_BREAKDOWN_SPEED));
 		dump('z', "VRF_BREAKDOWN_STOPPED",             HasBit(t->flags, VRF_BREAKDOWN_STOPPED));
 		dump('F', "VRF_NEED_REPAIR",                   HasBit(t->flags, VRF_NEED_REPAIR));
-		dump('H', "VRF_TOO_HEAVY",                     HasBit(t->flags, VRF_TOO_HEAVY));
 		dump('B', "VRF_BEYOND_PLATFORM_END",           HasBit(t->flags, VRF_BEYOND_PLATFORM_END));
 		dump('Y', "VRF_NOT_YET_IN_PLATFORM",           HasBit(t->flags, VRF_NOT_YET_IN_PLATFORM));
 		dump('A', "VRF_ADVANCE_IN_PLATFORM",           HasBit(t->flags, VRF_ADVANCE_IN_PLATFORM));
