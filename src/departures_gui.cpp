@@ -164,7 +164,7 @@ protected:
 		CompanyMask companies = 0;
 		int unitnumber_max[4] = { -1, -1, -1, -1 };
 
-		for (const Vehicle *v : Vehicle::Iterate()) {
+		for (const Vehicle *v : Vehicle::IterateFrontOnly()) {
 			if (v->type < 4 && this->show_types[v->type] && v->IsPrimaryVehicle()) {
 				for(const Order *order : v->Orders()) {
 					if ((order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT) || order->IsType(OT_IMPLICIT))

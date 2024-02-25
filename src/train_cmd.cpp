@@ -170,8 +170,8 @@ void CheckTrainsLengths()
 {
 	bool first = true;
 
-	for (const Train *v : Train::Iterate()) {
-		if (v->First() == v && !(v->vehstatus & VS_CRASHED) && !v->IsVirtual()) {
+	for (const Train *v : Train::IterateFrontOnly()) {
+		if (!(v->vehstatus & VS_CRASHED) && !v->IsVirtual()) {
 			for (const Train *u = v, *w = v->Next(); w != nullptr; u = w, w = w->Next()) {
 				if (u->track != TRACK_BIT_DEPOT) {
 					if ((w->track != TRACK_BIT_DEPOT &&
@@ -1503,7 +1503,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 		CheckConsistencyOfArticulatedVehicle(v);
 
 		/* Try to connect the vehicle to one of free chains of wagons. */
-		for (Train *w : Train::Iterate()) {
+		for (Train *w : Train::IterateFrontOnly()) {
 			if (w->tile == tile &&              ///< Same depot
 					w->IsFreeWagon() &&             ///< A free wagon chain
 					w->engine_type == e->index &&   ///< Same type
@@ -1527,7 +1527,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 void NormalizeTrainVehInDepot(const Train *u)
 {
 	assert(u->IsEngine());
-	for (const Train *v : Train::Iterate()) {
+	for (const Train *v : Train::IterateFrontOnly()) {
 		if (v->IsFreeWagon() && v->tile == u->tile &&
 				v->track == TRACK_BIT_DEPOT &&
 				v->owner == u->owner &&
@@ -1674,7 +1674,7 @@ static Train *FindGoodVehiclePos(const Train *src)
 	EngineID eng = src->engine_type;
 	TileIndex tile = src->tile;
 
-	for (Train *dst : Train::Iterate()) {
+	for (Train *dst : Train::IterateFrontOnly()) {
 		if (dst->IsFreeWagon() && dst->tile == tile && !(dst->vehstatus & VS_CRASHED) && dst->owner == src->owner && !dst->IsVirtual()) {
 			/* check so all vehicles in the line have the same engine. */
 			Train *t = dst;

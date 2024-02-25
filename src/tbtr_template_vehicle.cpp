@@ -204,7 +204,7 @@ static void MarkTrainsInGroupAsPendingTemplateReplacement(GroupID gid, const Tem
 
 	std::sort(groups.begin(), groups.end());
 
-	for (Train *t : Train::Iterate()) {
+	for (Train *t : Train::IterateFrontOnly()) {
 		if (!t->IsFrontEngine() || t->owner != owner || t->group_id >= NEW_GROUP) continue;
 
 		if (std::binary_search(groups.begin(), groups.end(), t->group_id)) {
@@ -217,7 +217,7 @@ void MarkTrainsUsingTemplateAsPendingTemplateReplacement(const TemplateVehicle *
 {
 	Owner owner = tv->owner;
 
-	for (Train *t : Train::Iterate()) {
+	for (Train *t : Train::IterateFrontOnly()) {
 		if (!t->IsFrontEngine() || t->owner != owner || t->group_id >= NEW_GROUP) continue;
 
 		if (GetTemplateIDByGroupIDRecursive(t->group_id) == tv->index) {

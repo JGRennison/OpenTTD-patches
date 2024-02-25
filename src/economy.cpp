@@ -236,7 +236,7 @@ int UpdateCompanyRatingAndValue(Company *c, bool update)
 		bool min_profit_first = true;
 		uint num = 0;
 
-		for (const Vehicle *v : Vehicle::Iterate()) {
+		for (const Vehicle *v : Vehicle::IterateFrontOnly()) {
 			if (v->owner != owner) continue;
 			if (IsCompanyBuildableVehicleType(v->type) && v->IsPrimaryVehicle() && !HasBit(v->subtype, GVSF_VIRTUAL)) {
 				if (v->profit_last_year > 0) num++; // For the vehicle score only count profitable vehicles

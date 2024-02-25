@@ -327,7 +327,7 @@ uint CountsTrainsNeedingTemplateReplacement(GroupID g_id, const TemplateVehicle 
 	uint count = 0;
 	if (!tv) return count;
 
-	for (Train *t : Train::Iterate()) {
+	for (Train *t : Train::IterateFrontOnly()) {
 		if (t->IsPrimaryVehicle() && t->group_id == g_id && TrainTemplateDifference(t, tv) != TBTRDF_NONE) {
 			count++;
 		}

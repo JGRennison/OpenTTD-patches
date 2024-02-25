@@ -220,7 +220,7 @@ uint16_t GroupStatistics::GetNumEngines(EngineID engine) const
 		g->statistics.ClearProfits();
 	}
 
-	for (const Vehicle *v : Vehicle::Iterate()) {
+	for (const Vehicle *v : Vehicle::IterateFrontOnly()) {
 		if (v->IsPrimaryVehicle() && !HasBit(v->subtype, GVSF_VIRTUAL)) {
 			GroupStatistics::AddProfitLastYear(v);
 			if (v->age > VEHICLE_PROFIT_MIN_AGE) GroupStatistics::VehicleReachedMinAge(v);
@@ -333,7 +333,7 @@ void IterateDescendantsOfGroup(GroupID id_top, F func)
 static void PropagateChildLiveryResetVehicleCache(const Group *g)
 {
 	/* Company colour data is indirectly cached. */
-	for (Vehicle *v : Vehicle::Iterate()) {
+	for (Vehicle *v : Vehicle::IterateFrontOnly()) {
 		if (v->IsPrimaryVehicle() && (v->group_id == g->index || IsGroupIDDescendantOfGroupID(v->group_id, g->index, g->owner))) {
 			for (Vehicle *u = v; u != nullptr; u = u->Next()) {
 				u->colourmap = PAL_NONE;
@@ -823,7 +823,7 @@ CommandCost CmdAddSharedVehicleGroup(TileIndex tile, DoCommandFlag flags, uint32
 	if (flags & DC_EXEC) {
 		/* Find the first front engine which belong to the group id_g
 		 * then add all shared vehicles of this front engine to the group id_g */
-		for (const Vehicle *v : Vehicle::IterateType(type)) {
+		for (const Vehicle *v : Vehicle::IterateTypeFrontOnly(type)) {
 			if (v->IsPrimaryVehicle()) {
 				if (v->group_id != id_g) continue;
 
@@ -860,7 +860,7 @@ CommandCost CmdRemoveAllVehiclesGroup(TileIndex tile, DoCommandFlag flags, uint3
 
 	if (flags & DC_EXEC) {
 		/* Find each Vehicle that belongs to the group old_g and add it to the default group */
-		for (const Vehicle *v : Vehicle::Iterate()) {
+		for (const Vehicle *v : Vehicle::IterateFrontOnly()) {
 			if (v->IsPrimaryVehicle()) {
 				if (v->group_id != old_g) continue;
 

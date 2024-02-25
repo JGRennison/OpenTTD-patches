@@ -1759,7 +1759,7 @@ void NetworkPopulateCompanyStats(NetworkCompanyStats *stats)
 	memset(stats, 0, sizeof(*stats) * MAX_COMPANIES);
 
 	/* Go through all vehicles and count the type of vehicles */
-	for (const Vehicle *v : Vehicle::Iterate()) {
+	for (const Vehicle *v : Vehicle::IterateFrontOnly()) {
 		if (!Company::IsValidID(v->owner) || !v->IsPrimaryVehicle() || HasBit(v->subtype, GVSF_VIRTUAL)) continue;
 		byte type = 0;
 		switch (v->type) {

@@ -66,9 +66,9 @@ CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID s
 void IntialiseOrderDestinationRefcountMap()
 {
 	ClearOrderDestinationRefcountMap();
-	for (const Vehicle *v : Vehicle::Iterate()) {
+	for (const Vehicle *v : Vehicle::IterateFrontOnly()) {
 		if (v != v->FirstShared()) continue;
-		for(const Order *order : v->Orders()) {
+		for (const Order *order : v->Orders()) {
 			if (order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT) || order->IsType(OT_IMPLICIT)) {
 				_order_destination_refcount_map[OrderDestinationRefcountMapKey(order->GetDestination(), v->owner, order->GetType(), v->type)]++;
 			}
@@ -2933,7 +2933,7 @@ void RemoveOrderFromAllVehicles(OrderType type, DestinationID destination, bool 
 	 */
 
 	/* Go through all vehicles */
-	for (Vehicle *v : Vehicle::Iterate()) {
+	for (Vehicle *v : Vehicle::IterateFrontOnly()) {
 		Order *order = &v->current_order;
 		if ((v->type == VEH_AIRCRAFT && order->IsType(OT_GOTO_DEPOT) && !hangar ? OT_GOTO_STATION : order->GetType()) == type &&
 				(!hangar || v->type == VEH_AIRCRAFT) && order->GetDestination() == destination) {
@@ -3786,7 +3786,7 @@ CommandCost CmdMassChangeOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 	DestinationID to_dest = GB(p2, 0, 16);
 
 	if (flags & DC_EXEC) {
-		for (Vehicle *v : Vehicle::IterateType(vehtype)) {
+		for (Vehicle *v : Vehicle::IterateTypeFrontOnly(vehtype)) {
 			if (v->IsPrimaryVehicle() && CheckOwnership(v->owner).Succeeded() && VehicleCargoFilter(v, cargo_filter)) {
 				int index = 0;
 				bool changed = false;

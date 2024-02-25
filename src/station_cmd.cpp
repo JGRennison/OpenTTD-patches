@@ -2456,9 +2456,8 @@ CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlag flags, int replacement_
 		delete cur_stop;
 
 		/* Make sure no vehicle is going to the old roadstop */
-		for (RoadVehicle *v : RoadVehicle::Iterate()) {
-			if (v->First() == v && v->current_order.IsType(OT_GOTO_STATION) &&
-					v->dest_tile == tile) {
+		for (RoadVehicle *v : RoadVehicle::IterateFrontOnly()) {
+			if (v->current_order.IsType(OT_GOTO_STATION) && v->dest_tile == tile) {
 				v->SetDestTile(v->GetOrderStationLocation(st->index));
 			}
 		}
@@ -3236,9 +3235,7 @@ static CommandCost RemoveDock(TileIndex tile, DoCommandFlag flags)
 		ClearDockingTilesCheckingNeighbours(tile1);
 		ClearDockingTilesCheckingNeighbours(tile2);
 
-		for (Ship *s : Ship::Iterate()) {
-			if (!s->IsPrimaryVehicle()) continue;
-
+		for (Ship *s : Ship::IterateFrontOnly()) {
 			/* Find all ships going to our dock. */
 			if (s->current_order.GetDestination() != st->index) {
 				continue;

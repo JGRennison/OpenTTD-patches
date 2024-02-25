@@ -203,7 +203,7 @@ bool RoadVehiclesAreBuilt()
  */
 bool RoadVehiclesExistOutsideDepots()
 {
-	for (const RoadVehicle *rv : RoadVehicle::Iterate()) {
+	for (const RoadVehicle *rv : RoadVehicle::IterateFrontOnly()) {
 		if (rv->IsFrontEngine() && !rv->IsChainInDepot()) return true;
 	}
 	return false;

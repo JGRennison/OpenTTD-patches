@@ -273,6 +273,9 @@ void AfterLoadVehicles(bool part_of_load)
 		/* Reinstate the previous pointer */
 		if (v->Next() != nullptr) {
 			v->Next()->previous = v;
+#if OTTD_UPPER_TAGGED_PTR
+			VehiclePoolOps::SetIsNonFrontVehiclePtr(_vehicle_pool.GetRawRef(v->Next()->index), true);
+#endif
 			if (v->type == VEH_TRAIN && (HasBit(v->subtype, GVSF_VIRTUAL) != HasBit(v->Next()->subtype, GVSF_VIRTUAL))) {
 				SlErrorCorrupt("Mixed virtual/non-virtual train consist");
 			}
@@ -387,7 +390,7 @@ void AfterLoadVehicles(bool part_of_load)
 
 		if (IsSavegameVersionBefore(SLV_180)) {
 			/* Set service interval flags */
-			for (Vehicle *v : Vehicle::Iterate()) {
+			for (Vehicle *v : Vehicle::IterateFrontOnly()) {
 				si_v = v;
 				if (!v->IsPrimaryVehicle()) continue;
 
@@ -429,7 +432,7 @@ void AfterLoadVehicles(bool part_of_load)
 
 	CheckValidVehicles();
 
-	for (Vehicle *v : Vehicle::Iterate()) {
+	for (Vehicle *v : Vehicle::IterateFrontOnly()) {
 		si_v = v;
 		assert(v->first != nullptr);
 
@@ -595,7 +598,7 @@ void FixupTrainLengths()
 {
 	/* Vehicle center was moved from 4 units behind the front to half the length
 	 * behind the front. Move vehicles so they end up on the same spot. */
-	for (Train *v : Train::Iterate()) {
+	for (Train *v : Train::IterateFrontOnly()) {
 		if (v->IsPrimaryVehicle()) {
 			/* The vehicle center is now more to the front depending on vehicle length,
 			 * so we need to move all vehicles forward to cover the difference to the
@@ -1622,7 +1625,7 @@ const SaveLoadTable GetVehicleUnbunchStateDescription()
 
 void Save_VUBS()
 {
-	for (Vehicle *v : Vehicle::Iterate()) {
+	for (Vehicle *v : Vehicle::IterateFrontOnly()) {
 		if (v->unbunch_state != nullptr) {
 			SlSetArrayIndex(v->index);
 			SlObject(v->unbunch_state.get(), GetVehicleUnbunchStateDescription());

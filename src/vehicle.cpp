@@ -4317,6 +4317,9 @@ void Vehicle::SetNext(Vehicle *next)
 			v->first = this->next;
 		}
 		this->next->previous = nullptr;
+#if OTTD_UPPER_TAGGED_PTR
+		VehiclePoolOps::SetIsNonFrontVehiclePtr(_vehicle_pool.GetRawRef(this->next->index), false);
+#endif
 	}
 
 	this->next = next;
@@ -4325,6 +4328,9 @@ void Vehicle::SetNext(Vehicle *next)
 		/* A new next vehicle. Update the first and previous pointers */
 		if (this->next->previous != nullptr) this->next->previous->next = nullptr;
 		this->next->previous = this;
+#if OTTD_UPPER_TAGGED_PTR
+		VehiclePoolOps::SetIsNonFrontVehiclePtr(_vehicle_pool.GetRawRef(this->next->index), true);
+#endif
 		for (Vehicle *v = this->next; v != nullptr; v = v->Next()) {
 			v->first = this->first;
 		}
@@ -4549,7 +4555,7 @@ char *Vehicle::DumpVehicleFlagsMultiline(char *b, const char *last, const char *
 
 void VehiclesYearlyLoop()
 {
-	for (Vehicle *v : Vehicle::Iterate()) {
+	for (Vehicle *v : Vehicle::IterateFrontOnly()) {
 		if (v->IsPrimaryVehicle()) {
 			/* show warning if vehicle is not generating enough income last 2 years (corresponds to a red icon in the vehicle list) */
 			Money profit = v->GetDisplayProfitThisYear();

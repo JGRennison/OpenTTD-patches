@@ -731,7 +731,7 @@ void SettingsDisableElrail(int32_t new_value)
 	}
 
 	/* Fix the total power and acceleration for trains */
-	for (Train *t : Train::Iterate()) {
+	for (Train *t : Train::IterateFrontOnly()) {
 		/* power and acceleration is cached only for front engines */
 		if (t->IsFrontEngine()) {
 			t->ConsistChanged(CCF_TRACK);

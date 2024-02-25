@@ -2861,7 +2861,7 @@ static bool ClickTile_TunnelBridge(TileIndex tile)
 	if (IsTunnelTile(tile)) {
 		int count = 0;
 		TileIndex tile_end = GetOtherTunnelBridgeEnd(tile);
-		for (const Train *t : Train::Iterate()) {
+		for (const Train *t : Train::IterateFrontOnly()) {
 			if (!t->IsFrontEngine()) continue;
 			if (tile == t->tile || tile_end == t->tile) {
 				ShowVehicleViewWindow(t);

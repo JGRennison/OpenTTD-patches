@@ -155,7 +155,7 @@ bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli
 	};
 
 	auto fill_all_vehicles = [&]() {
-		for (const Vehicle *v : Vehicle::IterateType(vli.vtype)) {
+		for (const Vehicle *v : Vehicle::IterateTypeFrontOnly(vli.vtype)) {
 			if (!HasBit(v->subtype, GVSF_VIRTUAL) && v->owner == vli.company && v->IsPrimaryVehicle()) {
 				add_veh(v);
 			}
@@ -184,7 +184,7 @@ bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli
 
 		case VL_GROUP_LIST:
 			if (vli.index != ALL_GROUP) {
-				for (const Vehicle *v : Vehicle::IterateType(vli.vtype)) {
+				for (const Vehicle *v : Vehicle::IterateTypeFrontOnly(vli.vtype)) {
 					if (!HasBit(v->subtype, GVSF_VIRTUAL) && v->IsPrimaryVehicle() &&
 							v->owner == vli.company && GroupIsInGroup(v->group_id, vli.index)) {
 						add_veh(v);

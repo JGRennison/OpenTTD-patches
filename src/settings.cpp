@@ -1141,7 +1141,7 @@ static void StationSpreadChanged(int32_t new_value)
 
 static void UpdateConsists(int32_t new_value)
 {
-	for (Train *t : Train::Iterate()) {
+	for (Train *t : Train::IterateFrontOnly()) {
 		/* Update the consist of all trains so the maximum speed is set correctly. */
 		if (t->IsFrontEngine() || t->IsFreeWagon()) {
 			t->ConsistChanged(CCF_TRACK);
@@ -1196,7 +1196,7 @@ static void UpdateAllServiceInterval(int32_t new_value)
 
 	if (update_vehicles) {
 		const Company *c = Company::Get(_current_company);
-		for (Vehicle *v : Vehicle::Iterate()) {
+		for (Vehicle *v : Vehicle::IterateFrontOnly()) {
 			if (v->owner == _current_company && v->IsPrimaryVehicle() && !v->ServiceIntervalIsCustom()) {
 				v->SetServiceInterval(CompanyServiceInterval(c, v->type));
 				v->SetServiceIntervalIsPercent(new_value != 0);
@@ -1224,7 +1224,7 @@ static bool CanUpdateServiceInterval(VehicleType type, int32_t &new_value)
 static void UpdateServiceInterval(VehicleType type, int32_t new_value)
 {
 	if (_game_mode != GM_MENU && Company::IsValidID(_current_company)) {
-		for (Vehicle *v : Vehicle::IterateType(type)) {
+		for (Vehicle *v : Vehicle::IterateTypeFrontOnly(type)) {
 			if (v->owner == _current_company && v->IsPrimaryVehicle() && !v->ServiceIntervalIsCustom()) {
 				v->SetServiceInterval(new_value);
 			}
@@ -1330,7 +1330,7 @@ static void ChangeMinutesPerYear(int32_t new_value)
 
 static void TrainAccelerationModelChanged(int32_t new_value)
 {
-	for (Train *t : Train::Iterate()) {
+	for (Train *t : Train::IterateFrontOnly()) {
 		if (t->IsFrontEngine()) {
 			t->tcache.cached_max_curve_speed = t->GetCurveSpeedLimit();
 			t->UpdateAcceleration();
@@ -1406,13 +1406,13 @@ static void TrainBrakingModelChanged(int32_t new_value)
 		SCOPE_INFO_FMT([&v_cur], "TrainBrakingModelChanged: %s", scope_dumper().VehicleInfo(v_cur));
 		extern bool _long_reserve_disabled;
 		_long_reserve_disabled = true;
-		for (Train *v : Train::Iterate()) {
+		for (Train *v : Train::IterateFrontOnly()) {
 			v_cur = v;
 			if (!v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0 || HasBit(v->subtype, GVSF_VIRTUAL) || v->track == TRACK_BIT_DEPOT) continue;
 			TryPathReserve(v, true, HasStationTileRail(v->tile));
 		}
 		_long_reserve_disabled = false;
-		for (Train *v : Train::Iterate()) {
+		for (Train *v : Train::IterateFrontOnly()) {
 			v_cur = v;
 			if (!v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0 || HasBit(v->subtype, GVSF_VIRTUAL) || v->track == TRACK_BIT_DEPOT) continue;
 			TryPathReserve(v, true, HasStationTileRail(v->tile));
@@ -1421,7 +1421,7 @@ static void TrainBrakingModelChanged(int32_t new_value)
 	} else if (new_value == TBM_ORIGINAL && (_game_mode == GM_NORMAL || _game_mode == GM_EDITOR)) {
 		Train *v_cur = nullptr;
 		SCOPE_INFO_FMT([&v_cur], "TrainBrakingModelChanged: %s", scope_dumper().VehicleInfo(v_cur));
-		for (Train *v : Train::Iterate()) {
+		for (Train *v : Train::IterateFrontOnly()) {
 			v_cur = v;
 			if (!v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0 || HasBit(v->subtype, GVSF_VIRTUAL) || v->track == TRACK_BIT_DEPOT) {
 				v->lookahead.reset();
@@ -1451,7 +1451,7 @@ static void TrainBrakingModelChanged(int32_t new_value)
  */
 static void TrainSlopeSteepnessChanged(int32_t new_value)
 {
-	for (Train *t : Train::Iterate()) {
+	for (Train *t : Train::IterateFrontOnly()) {
 		if (t->IsFrontEngine()) {
 			t->CargoChanged();
 			if (t->lookahead != nullptr) SetBit(t->lookahead->flags, TRLF_APPLY_ADVISORY);
@@ -1466,17 +1466,13 @@ static void TrainSlopeSteepnessChanged(int32_t new_value)
 static void RoadVehAccelerationModelChanged(int32_t new_value)
 {
 	if (_settings_game.vehicle.roadveh_acceleration_model != AM_ORIGINAL) {
-		for (RoadVehicle *rv : RoadVehicle::Iterate()) {
-			if (rv->IsFrontEngine()) {
-				rv->CargoChanged();
-			}
+		for (RoadVehicle *rv : RoadVehicle::IterateFrontOnly()) {
+			rv->CargoChanged();
 		}
 	}
 	if (_settings_game.vehicle.roadveh_acceleration_model == AM_ORIGINAL || !_settings_game.vehicle.improved_breakdowns) {
-		for (RoadVehicle *rv : RoadVehicle::Iterate()) {
-			if (rv->IsFrontEngine()) {
-				rv->breakdown_chance_factor = 128;
-			}
+		for (RoadVehicle *rv : RoadVehicle::IterateFrontOnly()) {
+			rv->breakdown_chance_factor = 128;
 		}
 	}
 
@@ -1493,8 +1489,8 @@ static void RoadVehAccelerationModelChanged(int32_t new_value)
  */
 static void RoadVehSlopeSteepnessChanged(int32_t new_value)
 {
-	for (RoadVehicle *rv : RoadVehicle::Iterate()) {
-		if (rv->IsFrontEngine()) rv->CargoChanged();
+	for (RoadVehicle *rv : RoadVehicle::IterateFrontOnly()) {
+		rv->CargoChanged();
 	}
 }
 
@@ -2022,8 +2018,8 @@ static void ImprovedBreakdownsSettingChanged(int32_t new_value)
 {
 	if (!_settings_game.vehicle.improved_breakdowns) return;
 
-	for (Vehicle *v : Vehicle::Iterate()) {
-		switch(v->type) {
+	for (Vehicle *v : Vehicle::IterateFrontOnly()) {
+		switch (v->type) {
 			case VEH_TRAIN:
 				if (v->IsFrontEngine()) {
 					v->breakdown_chance_factor = 128;

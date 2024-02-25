@@ -117,10 +117,15 @@ struct Pool : PoolBase {
 	Pool(const char *name);
 	void CleanPool() override;
 
-	inline PtrType GetRaw(size_t index)
+	inline PtrType &GetRawRef(size_t index)
 	{
 		dbg_assert_msg(index < this->first_unused, "index: " PRINTF_SIZE ", first_unused: " PRINTF_SIZE ", name: %s", index, this->first_unused, this->name);
 		return this->data[index];
+	}
+
+	inline PtrType GetRaw(size_t index)
+	{
+		return this->GetRawRef(index);
 	}
 
 	/**

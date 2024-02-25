@@ -368,7 +368,7 @@ static bool DisasterTick_Ufo(DisasterVehicle *v)
 		}
 
 		n = RandomRange(n); // Choose one of them.
-		for (const RoadVehicle *u : RoadVehicle::Iterate()) {
+		for (const RoadVehicle *u : RoadVehicle::IterateFrontOnly()) {
 			/* Find (n+1)-th road vehicle. */
 			if (u->IsFrontEngine() && (n-- == 0)) {
 				if (u->crashed_ctr != 0 || !SetDisasterVehicleTargetingVehicle(u->index, v->index)) {

@@ -206,7 +206,7 @@ static void FixAllReservations()
 {
 	/* if this function is called, we can safely assume that sharing of rails is being switched off */
 	assert(!_settings_game.economy.infrastructure_sharing[VEH_TRAIN]);
-	for (Train *v : Train::Iterate()) {
+	for (Train *v : Train::IterateFrontOnly()) {
 		if (!v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0 || HasBit(v->subtype, GVSF_VIRTUAL)) continue;
 		/* It might happen that the train reserved additional tracks,
 		 * but FollowTrainReservation can't detect those because they are no longer reachable.
@@ -254,9 +254,8 @@ bool CheckSharingChangePossible(VehicleType type, bool new_value)
 	});
 
 	StringID error_message = STR_NULL;
-	for (Vehicle *v : Vehicle::IterateType(type)) {
+	for (Vehicle *v : Vehicle::IterateTypeFrontOnly(type)) {
 		if (HasBit(v->subtype, GVSF_VIRTUAL)) continue;
-		if (v->Previous() != nullptr) continue;
 
 		/* Check vehicle positiion */
 		if (!VehiclePositionIsAllowed(v)) {
@@ -280,7 +279,7 @@ bool CheckSharingChangePossible(VehicleType type, bool new_value)
 	}
 
 	if (type == VEH_TRAIN && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
-		for (Train *v : Train::Iterate()) {
+		for (Train *v : Train::IterateFrontOnly()) {
 			if (!v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0 || HasBit(v->subtype, GVSF_VIRTUAL)) continue;
 			/* It might happen that the train reserved additional tracks,
 			 * but FollowTrainReservation can't detect those because they are no longer reachable.
@@ -329,9 +328,9 @@ void HandleSharingCompanyDeletion(Owner owner)
 
 	Vehicle *si_v = nullptr;
 	SCOPE_INFO_FMT([&si_v], "HandleSharingCompanyDeletion: veh: %s", scope_dumper().VehicleInfo(si_v));
-	for (Vehicle *v : Vehicle::Iterate()) {
+	for (Vehicle *v : Vehicle::IterateFrontOnly()) {
 		si_v = v;
-		if (!IsCompanyBuildableVehicleType(v) || v->Previous() != nullptr) continue;
+		if (!IsCompanyBuildableVehicleType(v)) continue;
 		/* vehicle position */
 		if (v->owner == owner || !VehiclePositionIsAllowed(v, owner)) {
 			RemoveAndSellVehicle(v, v->owner != owner);

@@ -255,6 +255,9 @@ struct VehiclePoolOps {
 	static constexpr VehicleType DefaultItemParam() { return VEH_INVALID; }
 
 	static constexpr VehicleType GetVehicleType(uintptr_t ptr) { return static_cast<VehicleType>(GB(ptr, 60, 3)); }
+	static constexpr bool IsNonFrontVehiclePtr(uintptr_t ptr) { return HasBit(ptr, 63); }
+
+	static constexpr void SetIsNonFrontVehiclePtr(uintptr_t &ptr, bool non_front) { SB(ptr, 63, 1, non_front ? 1 : 0); }
 };
 
 typedef Pool<Vehicle, VehicleID, 512, 0xFF000, PT_NORMAL, false, true, VehiclePoolOps> VehiclePool;
@@ -1303,6 +1306,32 @@ public:
 		}
 	};
 
+	struct VehicleFrontOnlyFilter {
+		bool operator() (size_t index)
+		{
+#if OTTD_UPPER_TAGGED_PTR
+			return !VehiclePoolOps::IsNonFrontVehiclePtr(_vehicle_pool.GetRaw(index));
+#else
+			return Vehicle::Get(index)->Previous() == nullptr;
+#endif
+		}
+	};
+
+	struct VehicleFrontOnlyTypeFilter {
+		VehicleType vt;
+
+		bool operator() (size_t index)
+		{
+#if OTTD_UPPER_TAGGED_PTR
+			uintptr_t vptr = _vehicle_pool.GetRaw(index);
+			return !VehiclePoolOps::IsNonFrontVehiclePtr(vptr) && VehiclePoolOps::GetVehicleType(vptr) == this->vt;
+#else
+			const Vehicle *v = Vehicle::Get(index);
+			return v->type == this->vt && v->Previous() == nullptr;
+#endif
+		}
+	};
+
 	/**
 	 * Returns an iterable ensemble of all valid vehicles of the given type
 	 * @param vt the VehicleType to filter
@@ -1312,6 +1341,27 @@ public:
 	static Pool::IterateWrapperFiltered<Vehicle, VehicleTypeFilter> IterateType(VehicleType vt, size_t from = 0)
 	{
 		return Pool::IterateWrapperFiltered<Vehicle, VehicleTypeFilter>(from, VehicleTypeFilter{ vt });
+	}
+
+	/**
+	 * Returns an iterable ensemble of all valid front vehicles (i.e. Previous() == nullptr)
+	 * @param from index of the first vehicle to consider
+	 * @return an iterable ensemble of all valid front vehicles
+	 */
+	static Pool::IterateWrapperFiltered<Vehicle, VehicleFrontOnlyFilter> IterateFrontOnly(size_t from = 0)
+	{
+		return Pool::IterateWrapperFiltered<Vehicle, VehicleFrontOnlyFilter>(from, VehicleFrontOnlyFilter{});
+	}
+
+	/**
+	 * Returns an iterable ensemble of all valid front vehicles of the given type
+	 * @param vt the VehicleType to filter
+	 * @param from index of the first vehicle to consider
+	 * @return an iterable ensemble of all valid front vehicles of the given type
+	 */
+	static Pool::IterateWrapperFiltered<Vehicle, VehicleFrontOnlyTypeFilter> IterateTypeFrontOnly(VehicleType vt, size_t from = 0)
+	{
+		return Pool::IterateWrapperFiltered<Vehicle, VehicleFrontOnlyTypeFilter>(from, VehicleFrontOnlyTypeFilter{ vt });
 	}
 };
 
@@ -1608,6 +1658,16 @@ public:
 	 * @return an iterable ensemble of all valid vehicles of type T
 	 */
 	static Pool::IterateWrapper<T> Iterate(size_t from = 0) { return Pool::IterateWrapper<T>(from); }
+
+	/**
+	 * Returns an iterable ensemble of all valid front vehicles (i.e. Previous() == nullptr) of type T
+	 * @param from index of the first vehicle to consider
+	 * @return an iterable ensemble of all valid front vehicles of type T
+	 */
+	static Pool::IterateWrapperFiltered<T, VehicleFrontOnlyFilter> IterateFrontOnly(size_t from = 0)
+	{
+		return Pool::IterateWrapperFiltered<T, VehicleFrontOnlyFilter>(from, VehicleFrontOnlyFilter{});
+	}
 };
 
 /** Generates sequence of free UnitID numbers */
