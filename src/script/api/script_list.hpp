@@ -59,35 +59,66 @@ private:
 	ScriptListMap::iterator RemoveIter(ScriptListMap::iterator item_iter);
 	ScriptListValueSet::iterator RemoveValueIter(ScriptListValueSet::iterator value_iter);
 
+	template<typename T>
+	struct FillListHelper {
+		using IterType = T;
+
+		auto Iterate()
+		{
+			return T::Iterate();
+		}
+
+		int OpcodeCharge([[maybe_unused]] int item_count)
+		{
+			return (int)(T::GetNumItems() / 2);
+		}
+	};
+
 protected:
-	template<typename T, class ItemValid, class ItemFilter>
-	static void FillList(ScriptList *list, ItemValid item_valid, ItemFilter item_filter)
+	template<typename T, typename... Targs>
+	static void FillList(Targs... args)
 	{
+		FillListT<FillListHelper<T>>(FillListHelper<T>{}, args...);
+	}
+
+	template<typename Thelper, class ItemValid, class ItemFilter>
+	static void FillListT(Thelper helper, ScriptList *list, ItemValid item_valid, ItemFilter item_filter)
+	{
+		using IterType = typename Thelper::IterType;
+
 		int opcode_charge = 0;
-		for (const T *item : T::Iterate()) {
+		int item_count = 0;
+		for (const IterType *item : helper.Iterate()) {
+			item_count++;
 			if (!item_valid(item)) continue;
 			if (!item_filter(item)) continue;
 			list->AddItem(item->index);
 			opcode_charge += 3;
 		}
-		ScriptController::DecreaseOps(opcode_charge + (int)(T::GetNumItems() / 2));
+		ScriptController::DecreaseOps(opcode_charge + helper.OpcodeCharge(item_count));
 	}
 
-	template<typename T, class ItemValid>
-	static void FillList(ScriptList *list, ItemValid item_valid)
+	template<typename Thelper, class ItemValid>
+	static void FillListT(Thelper helper, ScriptList *list, ItemValid item_valid)
 	{
-		ScriptList::FillList<T>(list, item_valid, [](const T *) { return true; });
+		using IterType = typename Thelper::IterType;
+
+		ScriptList::FillListT<Thelper>(helper, list, item_valid, [](const IterType *) { return true; });
 	}
 
-	template<typename T>
-	static void FillList(ScriptList *list)
+	template<typename Thelper>
+	static void FillListT(Thelper helper, ScriptList *list)
 	{
-		ScriptList::FillList<T>(list, [](const T *) { return true; });
+		using IterType = typename Thelper::IterType;
+
+		ScriptList::FillListT<Thelper>(list, [](const IterType *) { return true; });
 	}
 
-	template<typename T, class ItemValid>
-	static void FillList(HSQUIRRELVM vm, ScriptList *list, ItemValid item_valid)
+	template<typename Thelper, class ItemValid>
+	static void FillListT(Thelper helper, HSQUIRRELVM vm, ScriptList *list, ItemValid item_valid)
 	{
+		using IterType = typename Thelper::IterType;
+
 		int nparam = sq_gettop(vm) - 1;
 		if (nparam >= 1) {
 			/* Make sure the filter function is really a function, and not any
@@ -109,13 +140,13 @@ protected:
 
 
 		if (nparam < 1) {
-			ScriptList::FillList<T>(list, item_valid);
+			ScriptList::FillListT<Thelper>(helper, list, item_valid);
 		} else {
 			/* Limit the total number of ops that can be consumed by a filter operation, if a filter function is present */
 			SQOpsLimiter limiter(vm, MAX_VALUATE_OPS, "list filter function");
 
-			ScriptList::FillList<T>(list, item_valid,
-				[vm, nparam, backup_allow](const T *item) {
+			ScriptList::FillListT<Thelper>(helper, list, item_valid,
+				[vm, nparam, backup_allow](const IterType *item) {
 					/* Push the root table as instance object, this is what squirrel does for meta-functions. */
 					sq_pushroottable(vm);
 					/* Push all arguments for the valuator function. */
@@ -157,10 +188,12 @@ protected:
 		ScriptObject::SetAllowDoCommand(backup_allow);
 	}
 
-	template<typename T>
-	static void FillList(HSQUIRRELVM vm, ScriptList *list)
+	template<typename Thelper>
+	static void FillListT(Thelper helper, HSQUIRRELVM vm, ScriptList *list)
 	{
-		ScriptList::FillList<T>(vm, list, [](const T *) { return true; });
+		using IterType = typename Thelper::IterType;
+
+		ScriptList::FillListT<Thelper>(helper, vm, list, [](const IterType *) { return true; });
 	}
 
 public:
