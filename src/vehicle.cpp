@@ -1468,36 +1468,45 @@ void RemoveFromOtherVehicleTickCache(const Vehicle *v)
 
 void RebuildVehicleTickCaches()
 {
-	Vehicle *si_v = nullptr;
-	SCOPE_INFO_FMT([&si_v], "RebuildVehicleTickCaches: %s", scope_dumper().VehicleInfo(si_v));
-
 	ClearVehicleTickCaches();
 
-	for (Vehicle *v : Vehicle::Iterate()) {
-		si_v = v;
-		switch (v->type) {
+	for (VehicleID i = 0; i < Vehicle::GetPoolSize(); i++) {
+		Vehicle *v = Vehicle::Get(i);
+		if (v == nullptr) continue;
+
+#if OTTD_UPPER_TAGGED_PTR
+		/* Avoid needing to de-reference v */
+		uintptr_t ptr = _vehicle_pool.GetRaw(i);
+		const VehicleType vtype = VehiclePoolOps::GetVehicleType(ptr);
+		const bool is_front = !VehiclePoolOps::IsNonFrontVehiclePtr(ptr);
+#else
+		const VehicleType vtype = v->type;
+		const bool is_front = (v->Previous() == nullptr);
+#endif
+
+		switch (vtype) {
 			default:
 				_tick_other_veh_cache.push_back(v);
 				break;
 
 			case VEH_TRAIN:
-				if (v->Previous() == nullptr) _tick_train_front_cache.push_back(Train::From(v));
+				if (is_front) _tick_train_front_cache.push_back(Train::From(v));
 				break;
 
 			case VEH_ROAD:
-				if (v->Previous() == nullptr) _tick_road_veh_front_cache.push_back(RoadVehicle::From(v));
+				if (is_front) _tick_road_veh_front_cache.push_back(RoadVehicle::From(v));
 				break;
 
 			case VEH_AIRCRAFT:
-				if (v->Previous() == nullptr) _tick_aircraft_front_cache.push_back(Aircraft::From(v));
+				if (is_front) _tick_aircraft_front_cache.push_back(Aircraft::From(v));
 				break;
 
 			case VEH_SHIP:
-				if (v->Previous() == nullptr) _tick_ship_cache.push_back(Ship::From(v));
+				if (is_front) _tick_ship_cache.push_back(Ship::From(v));
 				break;
 
 			case VEH_EFFECT:
-				_tick_effect_veh_cache.insert(v->index);
+				_tick_effect_veh_cache.insert(i);
 				break;
 		}
 	}
