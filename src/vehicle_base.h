@@ -1289,6 +1289,30 @@ public:
 
 	uint32_t GetDisplayMaxWeight() const;
 	uint32_t GetDisplayMinPowerToWeight() const;
+
+	struct VehicleTypeFilter {
+		VehicleType vt;
+
+		bool operator() (size_t index)
+		{
+#if OTTD_UPPER_TAGGED_PTR
+			return VehiclePoolOps::GetVehicleType(_vehicle_pool.GetRaw(index)) == this->vt;
+#else
+			return Vehicle::Get(index)->type == this->vt;
+#endif
+		}
+	};
+
+	/**
+	 * Returns an iterable ensemble of all valid vehicles of the given type
+	 * @param vt the VehicleType to filter
+	 * @param from index of the first vehicle to consider
+	 * @return an iterable ensemble of all valid vehicles of the given type
+	 */
+	static Pool::IterateWrapperFiltered<Vehicle, VehicleTypeFilter> IterateType(VehicleType vt, size_t from = 0)
+	{
+		return Pool::IterateWrapperFiltered<Vehicle, VehicleTypeFilter>(from, VehicleTypeFilter{ vt });
+	}
 };
 
 inline bool IsPointInViewportVehicleRedrawArea(const std::vector<Rect> &viewport_redraw_rects, const Point &pt)

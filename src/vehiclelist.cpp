@@ -73,9 +73,8 @@ void BuildDepotVehicleList(VehicleType type, TileIndex tile, VehicleList *engine
 	engines->clear();
 	if (wagons != nullptr && wagons != engines) wagons->clear();
 
-	for (const Vehicle *v : Vehicle::Iterate()) {
+	for (const Vehicle *v : Vehicle::IterateType(type)) {
 		/* General tests for all vehicle types */
-		if (v->type != type) continue;
 		if (v->tile != tile) continue;
 		if (HasBit(v->subtype, GVSF_VIRTUAL)) continue;
 
@@ -156,8 +155,8 @@ bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli
 	};
 
 	auto fill_all_vehicles = [&]() {
-		for (const Vehicle *v : Vehicle::Iterate()) {
-			if (!HasBit(v->subtype, GVSF_VIRTUAL) && v->type == vli.vtype && v->owner == vli.company && v->IsPrimaryVehicle()) {
+		for (const Vehicle *v : Vehicle::IterateType(vli.vtype)) {
+			if (!HasBit(v->subtype, GVSF_VIRTUAL) && v->owner == vli.company && v->IsPrimaryVehicle()) {
 				add_veh(v);
 			}
 		}
@@ -185,8 +184,8 @@ bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli
 
 		case VL_GROUP_LIST:
 			if (vli.index != ALL_GROUP) {
-				for (const Vehicle *v : Vehicle::Iterate()) {
-					if (!HasBit(v->subtype, GVSF_VIRTUAL) && v->type == vli.vtype && v->IsPrimaryVehicle() &&
+				for (const Vehicle *v : Vehicle::IterateType(vli.vtype)) {
+					if (!HasBit(v->subtype, GVSF_VIRTUAL) && v->IsPrimaryVehicle() &&
 							v->owner == vli.company && GroupIsInGroup(v->group_id, vli.index)) {
 						add_veh(v);
 					}

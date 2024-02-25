@@ -149,9 +149,7 @@ void MoveWaypointsToBaseStations()
 		for (Order *o = ol->GetFirstOrder(); o != nullptr; o = o->next) UpdateWaypointOrder(o);
 	}
 
-	for (Vehicle *v : Vehicle::Iterate()) {
-		if (v->type != VEH_TRAIN) continue;
-
+	for (Vehicle *v : Vehicle::IterateType(VEH_TRAIN)) {
 		UpdateWaypointOrder(&v->current_order);
 	}
 

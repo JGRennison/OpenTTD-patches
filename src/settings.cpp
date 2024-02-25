@@ -1224,8 +1224,8 @@ static bool CanUpdateServiceInterval(VehicleType type, int32_t &new_value)
 static void UpdateServiceInterval(VehicleType type, int32_t new_value)
 {
 	if (_game_mode != GM_MENU && Company::IsValidID(_current_company)) {
-		for (Vehicle *v : Vehicle::Iterate()) {
-			if (v->owner == _current_company && v->type == type && v->IsPrimaryVehicle() && !v->ServiceIntervalIsCustom()) {
+		for (Vehicle *v : Vehicle::IterateType(type)) {
+			if (v->owner == _current_company && v->IsPrimaryVehicle() && !v->ServiceIntervalIsCustom()) {
 				v->SetServiceInterval(new_value);
 			}
 		}

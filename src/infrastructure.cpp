@@ -254,8 +254,8 @@ bool CheckSharingChangePossible(VehicleType type, bool new_value)
 	});
 
 	StringID error_message = STR_NULL;
-	for (Vehicle *v : Vehicle::Iterate()) {
-		if (type != v->type || HasBit(v->subtype, GVSF_VIRTUAL)) continue;
+	for (Vehicle *v : Vehicle::IterateType(type)) {
+		if (HasBit(v->subtype, GVSF_VIRTUAL)) continue;
 		if (v->Previous() != nullptr) continue;
 
 		/* Check vehicle positiion */

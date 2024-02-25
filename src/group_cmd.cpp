@@ -823,8 +823,8 @@ CommandCost CmdAddSharedVehicleGroup(TileIndex tile, DoCommandFlag flags, uint32
 	if (flags & DC_EXEC) {
 		/* Find the first front engine which belong to the group id_g
 		 * then add all shared vehicles of this front engine to the group id_g */
-		for (const Vehicle *v : Vehicle::Iterate()) {
-			if (v->type == type && v->IsPrimaryVehicle()) {
+		for (const Vehicle *v : Vehicle::IterateType(type)) {
+			if (v->IsPrimaryVehicle()) {
 				if (v->group_id != id_g) continue;
 
 				/* For each shared vehicles add it to the group */

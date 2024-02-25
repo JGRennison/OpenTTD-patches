@@ -3786,8 +3786,8 @@ CommandCost CmdMassChangeOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 	DestinationID to_dest = GB(p2, 0, 16);
 
 	if (flags & DC_EXEC) {
-		for (Vehicle *v : Vehicle::Iterate()) {
-			if (v->type == vehtype && v->IsPrimaryVehicle() && CheckOwnership(v->owner).Succeeded() && VehicleCargoFilter(v, cargo_filter)) {
+		for (Vehicle *v : Vehicle::IterateType(vehtype)) {
+			if (v->IsPrimaryVehicle() && CheckOwnership(v->owner).Succeeded() && VehicleCargoFilter(v, cargo_filter)) {
 				int index = 0;
 				bool changed = false;
 
