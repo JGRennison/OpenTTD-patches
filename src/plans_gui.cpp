@@ -12,6 +12,7 @@
 #include "plans_base.h"
 #include "command_func.h"
 #include "company_func.h"
+#include "company_base.h"
 #include "company_gui.h"
 #include "settings_gui.h"
 #include "window_gui.h"
@@ -287,7 +288,7 @@ struct PlansWindow : Window {
 					if (i == this->selected) GfxFillRect(r.left + 1, y, r.right, y + this->resize.step_height, PC_DARK_GREY);
 
 					if (list[i].is_plan) {
-						DrawCompanyIcon(p->owner, icon_left, y + (this->resize.step_height - this->company_icon_spr_dim.height) / 2);
+						if (Company::IsValidID(p->owner)) DrawCompanyIcon(p->owner, icon_left, y + (this->resize.step_height - this->company_icon_spr_dim.height) / 2);
 						DrawBoolButton(btn_left, y + (this->resize.step_height - SETTING_BUTTON_HEIGHT) / 2, p->visible, true);
 						uint dparam_offset = 0;
 						StringID str = p->HasName() ? STR_PLANS_LIST_ITEM_NAMED_PLAN : STR_PLANS_LIST_ITEM_PLAN;

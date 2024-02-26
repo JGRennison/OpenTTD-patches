@@ -444,6 +444,7 @@ static CallBackFunction ToolbarScenMapTownDir(Window *w)
 	list.push_back(std::make_unique<DropDownListStringItem>(STR_MAP_MENU_MAP_OF_WORLD,            MME_SHOW_SMALLMAP,          false));
 	list.push_back(std::make_unique<DropDownListStringItem>(STR_MAP_MENU_EXTRA_VIEWPORT,          MME_SHOW_EXTRAVIEWPORTS,    false));
 	list.push_back(std::make_unique<DropDownListStringItem>(STR_MAP_MENU_SIGN_LIST,               MME_SHOW_SIGNLISTS,         false));
+	list.push_back(std::make_unique<DropDownListStringItem>(STR_MAP_MENU_PLAN_LIST,               MME_SHOW_PLANS,             false));
 	list.push_back(std::make_unique<DropDownListStringItem>(STR_TOWN_MENU_TOWN_DIRECTORY,         MME_SHOW_TOWNDIRECTORY,     false));
 	list.push_back(std::make_unique<DropDownListStringItem>(STR_INDUSTRY_MENU_INDUSTRY_DIRECTORY, MME_SHOW_INDUSTRYDIRECTORY, false));
 	PopupMainToolbarMenu(w, WID_TE_SMALL_MAP, std::move(list), 0);
@@ -2479,6 +2480,7 @@ enum MainToolbarEditorHotkeys {
 	MTEHK_MUSIC,
 	MTEHK_LANDINFO,
 	MTEHK_PICKER,
+	MTEHK_PLAN_LIST,
 	MTEHK_SMALL_SCREENSHOT,
 	MTEHK_ZOOMEDIN_SCREENSHOT,
 	MTEHK_DEFAULTZOOM_SCREENSHOT,
@@ -2598,6 +2600,7 @@ struct ScenarioEditorToolbarWindow : Window {
 			case MTEHK_MUSIC:                  ShowMusicWindow(); break;
 			case MTEHK_LANDINFO:               cbf = PlaceLandBlockInfo(); break;
 			case MTEHK_PICKER:                 cbf = PlacePickerTool(); break;
+			case MTEHK_PLAN_LIST:              ShowPlansWindow(); break;
 			case MTEHK_SMALL_SCREENSHOT:       MakeScreenshotWithConfirm(SC_VIEWPORT); break;
 			case MTEHK_ZOOMEDIN_SCREENSHOT:    MakeScreenshotWithConfirm(SC_ZOOMEDIN); break;
 			case MTEHK_DEFAULTZOOM_SCREENSHOT: MakeScreenshotWithConfirm(SC_DEFAULTZOOM); break;
@@ -2708,6 +2711,7 @@ static Hotkey scenedit_maintoolbar_hotkeys[] = {
 	Hotkey(WKC_F11, "music", MTEHK_MUSIC),
 	Hotkey(WKC_F12, "land_info", MTEHK_LANDINFO),
 	Hotkey((uint16_t)0, "picker_tool", MTEHK_PICKER),
+	Hotkey('P', "plan_list", MTEHK_PLAN_LIST),
 	Hotkey(WKC_CTRL  | 'S', "small_screenshot", MTEHK_SMALL_SCREENSHOT),
 	Hotkey(WKC_CTRL  | 'P', "zoomedin_screenshot", MTEHK_ZOOMEDIN_SCREENSHOT),
 	Hotkey(WKC_CTRL  | 'D', "defaultzoom_screenshot", MTEHK_DEFAULTZOOM_SCREENSHOT),
