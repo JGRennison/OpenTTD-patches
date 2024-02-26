@@ -113,7 +113,7 @@ struct PlansWindow : Window {
 	{
 		switch (widget) {
 			case WID_PLN_NEW:
-				DoCommandP(0, _local_company, 0, CMD_ADD_PLAN, CcAddPlan);
+				DoCommandP(0, 0, 0, CMD_ADD_PLAN, CcAddPlan);
 				break;
 			case WID_PLN_ADD_LINES:
 				if (_current_plan) HandlePlacePushButton(this, widget, SPR_CURSOR_MOUSE, HT_POINT | HT_MAP);
@@ -510,7 +510,7 @@ void CcAddPlan(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t 
 	_current_plan->SetVisibility(true);
 
 	Window *w = FindWindowById(WC_PLANS, 0);
-	if (w) {
+	if (w != nullptr) {
 		w->InvalidateData(INVALID_PLAN, false);
 		((PlansWindow *) w)->SelectPlan(_current_plan->index);
 		if (!w->IsWidgetLowered(WID_PLN_ADD_LINES)) {

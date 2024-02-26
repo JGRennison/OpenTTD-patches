@@ -22,7 +22,7 @@
  * Create a new plan.
  * @param tile unused
  * @param flags type of operation
- * @param p1 owner of the plan
+ * @param p1 unused
  * @param p2 unused
  * @param text unused
  * @return the cost of this operation or an error
@@ -30,16 +30,8 @@
 CommandCost CmdAddPlan(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	if (!Plan::CanAllocateItem()) return_cmd_error(STR_ERROR_TOO_MANY_PLANS);
-	Owner o = (Owner) p1;
-	CommandCost ret = CheckOwnership(o);
-	if (ret.Failed()) return ret;
 	if (flags & DC_EXEC) {
-		_new_plan = new Plan(o);
-		if (o == _local_company) {
-			_new_plan->SetVisibility(true);
-			Window *w = FindWindowById(WC_PLANS, 0);
-			if (w) w->InvalidateData(INVALID_PLAN, false);
-		}
+		_new_plan = new Plan(_current_company);
 	}
 	return CommandCost();
 }
