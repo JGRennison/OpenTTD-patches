@@ -2918,6 +2918,51 @@ void CheckOrders(const Vehicle *v)
 	}
 }
 
+static bool _remove_order_from_all_vehicles_batch = false;
+std::vector<uint32_t> _remove_order_from_all_vehicles_depots;
+
+static bool IsBatchRemoveOrderDepotRemoved(DestinationID destination)
+{
+	if (destination / 32 >= _remove_order_from_all_vehicles_depots.size()) return false;
+
+	return HasBit(_remove_order_from_all_vehicles_depots[destination / 32], destination % 32);
+}
+
+void StartRemoveOrderFromAllVehiclesBatch()
+{
+	assert(_remove_order_from_all_vehicles_batch == false);
+	_remove_order_from_all_vehicles_batch = true;
+}
+
+void StopRemoveOrderFromAllVehiclesBatch()
+{
+	assert(_remove_order_from_all_vehicles_batch == true);
+	_remove_order_from_all_vehicles_batch = false;
+
+	/* Go through all vehicles */
+	for (Vehicle *v : Vehicle::IterateFrontOnly()) {
+		if (v->type == VEH_AIRCRAFT) continue;
+
+		Order *order = &v->current_order;
+		if (order->IsType(OT_GOTO_DEPOT) && IsBatchRemoveOrderDepotRemoved(order->GetDestination())) {
+			order->MakeDummy();
+			SetWindowDirty(WC_VEHICLE_VIEW, v->index);
+		}
+
+		/* order list */
+		if (v->FirstShared() != v) continue;
+
+		RemoveVehicleOrdersIf(v, [&](const Order *o) {
+			OrderType ot = o->GetType();
+			if (ot != OT_GOTO_DEPOT) return false;
+			if ((o->GetDepotActionType() & ODATFB_NEAREST_DEPOT) != 0) return false;
+			return IsBatchRemoveOrderDepotRemoved(o->GetDestination());
+		});
+	}
+
+	_remove_order_from_all_vehicles_depots.clear();
+}
+
 /**
  * Removes an order from all vehicles. Triggers when, say, a station is removed.
  * @param type The type of the order (OT_GOTO_[STATION|DEPOT|WAYPOINT]).
@@ -2928,6 +2973,18 @@ void CheckOrders(const Vehicle *v)
  */
 void RemoveOrderFromAllVehicles(OrderType type, DestinationID destination, bool hangar)
 {
+	if (destination == ((type == OT_GOTO_DEPOT) ? (DestinationID)INVALID_DEPOT : (DestinationID)INVALID_STATION)) return;
+
+	OrderBackup::RemoveOrder(type, destination, hangar);
+
+	if (_remove_order_from_all_vehicles_batch && type == OT_GOTO_DEPOT && !hangar) {
+		std::vector<uint32_t> &ids = _remove_order_from_all_vehicles_depots;
+		uint32_t word_idx = destination / 32;
+		if (word_idx >= ids.size()) ids.resize(word_idx + 1);
+		SetBit(ids[word_idx], destination % 32);
+		return;
+	}
+
 	/* Aircraft have StationIDs for depot orders and never use DepotIDs
 	 * This fact is handled specially below
 	 */
@@ -2962,8 +3019,6 @@ void RemoveOrderFromAllVehicles(OrderType type, DestinationID destination, bool 
 			return (ot == type && o->GetDestination() == destination);
 		});
 	}
-
-	OrderBackup::RemoveOrder(type, destination, hangar);
 }
 
 /**

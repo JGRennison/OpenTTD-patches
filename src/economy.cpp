@@ -578,6 +578,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 	}
 
 	/*  Change ownership of tiles */
+	StartRemoveOrderFromAllVehiclesBatch();
 	{
 		TileIndex tile = 0;
 		do {
@@ -599,6 +600,7 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 		/* Update any signals in the buffer */
 		UpdateSignalsInBuffer();
 	}
+	StopRemoveOrderFromAllVehiclesBatch();
 
 	/* Add airport infrastructure count of the old company to the new one. */
 	if (new_owner != INVALID_OWNER) Company::Get(new_owner)->infrastructure.airport += Company::Get(old_owner)->infrastructure.airport;
