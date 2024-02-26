@@ -401,6 +401,19 @@ constexpr inline T DivTowardsPositiveInf(T a, T b)
 	return (a / b) + (a % b > 0 ? 1 : 0);
 }
 
+/**
+ * Computes ten to the given power.
+ * @param power The power of ten to get.
+ * @return The power of ten.
+ */
+constexpr uint64_t PowerOfTen(int power)
+{
+	assert(power >= 0 && power <= 20 /* digits in uint64_t */);
+	uint64_t result = 1;
+	for (int i = 0; i < power; i++) result *= 10;
+	return result;
+}
+
 uint32_t IntSqrt(uint32_t num);
 uint32_t IntSqrt64(uint64_t num);
 uint32_t IntCbrt(uint64_t num);
