@@ -35,6 +35,8 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Promena 
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Projektovan: {GOLD}{NUM}
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Unosi novu naredbu pre obeležene, ili je dodaje na kraju spiska. Ctrl čini da stanica naredi "pun bilo koji teret", putna tačka naredi "non-stop" i depo naredi "servis". "Deli naredbe" ili Ctrl omogućava da vozilo deli naredbe sa drugim odabranim vozilom. Klikom na drugo vozilo kopiraju se njegove naredbe. Naredbom za depo se isključuje automatsko servisiranje
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :D:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :P:
 

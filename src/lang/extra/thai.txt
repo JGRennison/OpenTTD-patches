@@ -31,6 +31,8 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}ปร�
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}สร้างครั้งแรก: {GOLD}{NUM}
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}เพิ่มรายการที่ต้องทำก่อนหน้ารายการที่เลือก หรือเพิ่มในท้ายรายการที่มีอยู่แล้ว
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :ถึง:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :ออก:
 

@@ -33,6 +33,8 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Tukarkan
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Direka: {GOLD}{NUM}
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Masukkan arahan baru ke dalam susunan senarai yang terpilih, atau tambah pada penghujung senarai. "Ctrl" mengubah arahan stesen kepada 'muatan penuh untuk apa-apa kargo', arahan halutuju 'tanpa henti', dan arahan depoh 'penyenggelaraan'. 'Arahan berkongsi' atau "Ctrl" membenarkan kenderaan ini berkongsi arahan dengan kenderaan terpilih
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :T:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :B:
 

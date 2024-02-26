@@ -35,6 +35,8 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Endre h�
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Designet: {GOLD}{NUM}
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Sett inn en ny ordre før den merkede ordren, eller legg til i slutten av listen. Ctrl gir ordren 'full last, enhver varetype', kontrollpunktordre 'direkte' og verkstedsordre 'vedlikehold'. 'Del ordrer' eller Ctrl lar dette kjøretøyet dele ordrer med det valgte kjøretøyet. Klikk på et kjøretøy for å kopiere ordrene fra det. En verkstedsordre slår av automatisk vedlikehold av kjøretøyet
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Ank:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :Avg:
 

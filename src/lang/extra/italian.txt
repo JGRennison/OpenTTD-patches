@@ -38,6 +38,8 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Cambia l
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Progettato nel: {GOLD}{NUM}
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Inserisci un nuovo ordine prima dell'ordine evidenziato o aggiungi alla fine della lista. CTRL+Clic su una stazione per 'carico completo di qualsiasi carico', su un punto di passaggio per invertire l'impostazione 'non-stop di default', o su un deposito per 'servizio'. Clic su un altro veicolo per copiare i suoi ordini o CTRL+Clic per condividere gli ordini. Un ordine di deposito disabilita la manutenzione automatica del veicolo.
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :P:
 

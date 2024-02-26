@@ -38,6 +38,8 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Thay đ�
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Thiết kế: {GOLD}{NUM}
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Thêm một điểm lộ trình trước điểm đã chọn, hoặc thêm nó vào cuối danh sách. Ctrl nếu là ga thì 'bốc xếp đủ bất kỳ hàng nào', là điểm mốc thì 'đi suốt' và là xưởng thì 'bảo trì'. 'Lộ trình chia sẻ" hoặc giữ Ctrl để cho phép phương tiện này chia sẻ lộ trình với phương tiện đã chọn. Nháy vào một phương tiện để sao chép lộ trình từ phương tiện đó. Lệnh dẫn đến xưởng sẽ dừng việc bảo trì tự động cho phương tiện
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Đến:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :Đi:
 

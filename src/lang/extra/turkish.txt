@@ -37,6 +37,8 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Kar yük
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Yapım yılı: {GOLD}{NUM}
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Seçili talimatın önüne ya da listenin sonuna yeni talimat ekle. Ctrl + Sol tık yapmak; istasyon talimatlarını 'bir kargo türünü tam yükle', yol imi talimatlarını 'durmaksızın', garaj talimatlarını 'bakıma gir' olarak değiştirir. 'Talimatları paylaş' veya Ctrl + Sol tık yaparak bu aracın talimatlarını seçili araçla paylaşmasını sağlayın. Bir araca tıklamak o aracın talimatlarını kopyalar. Bir hangar talimatı araca otomatik olarak bakım yapılması özelliğini kapatır
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :V:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :Ç:
 

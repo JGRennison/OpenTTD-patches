@@ -38,6 +38,8 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Cambiar 
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Diseñado en: {GOLD}{NUM}
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Añade una nueva orden antes de la orden resaltada, o la añade al final de la lista. Ctrl+clic sobre estaciones ordena 'Carga completa de cualquier carga', sobre puntos de ruta ordena 'sin paradas' y sobre depósitos ordena 'mantenimiento'. Clica sobre un vehículo para copiar sus órdenes, o Ctrl+clic para también compartir sus órdenes. Una órden de depósito desactiva el mantenimiento automático del vehículo
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Ll:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :S:
 

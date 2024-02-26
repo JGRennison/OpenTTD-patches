@@ -35,6 +35,8 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Ändra s
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Designår: {GOLD}{NUM}
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Infoga ny order före markerad order, eller lägg till i slutet av listan. Ctrl+Klick på en station för 'full last någon godstyp', på ett riktmärke för att invertera inställningen 'non-stop som standard', och på en depå för 'service'.  Klicka på ett annat fordon för att kopiera dess ordrar eller Ctrl+Klick för att dela ordrar. En depåorder stänger av automatisk service av fordonet
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:
 

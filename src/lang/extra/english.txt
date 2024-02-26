@@ -1654,6 +1654,8 @@ STR_ORDERS_MANAGE_LIST_TOOLTIP                                  :{BLACK}Manage t
 STR_ORDERS_MANAGE_ORDER                                         :{BLACK}Manage Order
 STR_ORDERS_MANAGE_ORDER_TOOLTIP                                 :{BLACK}Manage this order
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Insert a new order before the highlighted order, or add to end of list. Ctrl+Click on a station for 'full load any cargo', on a waypoint to invert the 'non-stop by default' setting, or on a depot for 'service'. Click on another vehicle to copy its orders or Ctrl+Click to share orders. A depot order disables automatic servicing of the vehicle
+
 STR_ORDER_REVERSE_ORDER_LIST                                    :Reverse order list
 STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :Append reversed order list
 STR_ORDER_DUPLICATE_ORDER                                       :Duplicate order

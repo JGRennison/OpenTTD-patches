@@ -38,6 +38,8 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Cambiar 
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Diseñado: {GOLD}{NUM}
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Añadir un nuevo recorrido antes del resaltado o al final de la lista. Ctrl+Clic en una estación para 'Cargar máx. cualquier carga', en un punto de ruta para 'Sin paradas' y en un depósito para 'Mantenimiento' (desactiva el mantenimiento automático). Ctrl+Clic en otro vehículo para que ambos compartan los recorridos. Clic en un vehículo para copiar sus recorridos (sin compartirlos).
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Lleg:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :Sal:
 

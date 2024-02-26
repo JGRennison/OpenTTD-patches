@@ -38,6 +38,8 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Hóhatá
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Kifejlesztve: {GOLD}{NUM}
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Új utasítás beillesztése a kijelölt utasítás elé vagy a lista végére. Ctrl+kattintás állomásoknál 'bármiből teljes rakományra vár'-t, ellenőrző pontoknál 'Non-stop'-ot, járműtelepeknél 'Javításra menj' parancsot ad a célponthoz. 'Menetrend megosztása' esetén a jármű megosztja az utasításait a kiválasztott járművel. Ha járműtelep szerepel a menetrendben, kikapcsolja az automatikus javításokat
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :É:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :I:
 

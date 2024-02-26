@@ -34,6 +34,8 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Promijen
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Dizajnirano: {GOLD}{NUM}
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Umetni novu naredbu prije označene naredbe, ili dodaj na kraj liste. Ctrl određuje naredbe postaje 'napuni do kraja bilo koji teret', naredbe prolaznih točki 'non-stop', a naredbe spremišta 'servisiraj'. 'Dijeli naredbe' ili Ctrl dopušta da ovo vozilo dijeli naredbe s odabranim vozilom. Klik na vozilo kopira naredbe tog vozila. Naredba spremišta isključuje automatsko servisiranje vozila.
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :D:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :O:
 

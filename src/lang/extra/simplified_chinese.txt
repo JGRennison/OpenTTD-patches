@@ -1533,6 +1533,8 @@ STR_ORDERS_MANAGE_LIST_TOOLTIP                                  :{BLACK}管理�
 STR_ORDERS_MANAGE_ORDER                                         :{BLACK}管理调度计划
 STR_ORDERS_MANAGE_ORDER_TOOLTIP                                 :{BLACK}管理此调度计划
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}在调度列表的结尾或选定项目前{}增加一条新指令，按住Ctrl使命令为“装满任意货物”{}路点命令为“不停车”{}车库命令为“保养”
+
 STR_ORDER_REVERSE_ORDER_LIST                                    :反转调度列表
 STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :添加反转调度列表
 STR_ORDER_DUPLICATE_ORDER                                       :复制调度计划

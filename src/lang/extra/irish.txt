@@ -34,6 +34,8 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Athraigh
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Deartha: {GOLD}{NUM}
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Ionsáigh ordú nua roimh an ordú aibhsithe, nó cuir le deireadh an liosta é. Le Ctrl, beidh orduithe stáisiúin 'lasta iomlán de lastas ar bith', beidh orduithe do phointí bealaigh 'gan stad' agus beidh orduithe d'iostaí 'déan seirbhísiú'
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :I:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :F:
 

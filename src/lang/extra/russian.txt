@@ -66,6 +66,8 @@ STR_ORDER_CONDITIONAL_COMPARATOR_HAS_LESS_EQUALS                :имеет ме
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_THAN                  :имеет больше чем
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_EQUALS                :имеет больше или равно
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Вставить новое задание перед выделенным, либо в конец списка. Ctrl+щелчок по станции добавит задание «полная загрузка любым грузом», по маршрутной точке{NBSP}- инвертирует настройку «без остановки по умолчанию», по депо{NBSP}- «прохождение ТО». Щелчок по другому ТС скопирует его задания, Ctrl+щелчок{NBSP}- сделает маршрут общим. Если в списке заданий есть депо, автоматическое ТО для этого ТС отключается.
+
 STR_ORDER_CONDITIONAL_PERCENT_DISPLAY                           :Перейти к заданию {COMMA} {COMMA} процентов времени
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :П:

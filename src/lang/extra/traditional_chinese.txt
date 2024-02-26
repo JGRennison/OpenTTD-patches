@@ -34,6 +34,8 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}修改�
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}設計年份：{GOLD}{NUM}
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}在選定的指令前插入新指令，或在指令表的末尾新增指令。如按住 Ctrl 鍵再加入指令，點選車站會新增「滿載任一種類客貨」指令、點選號誌站會新增「直達」指令，而點選機廠則會新增「維護」指令。點選其他車輛以複製其指令清單，按住 Ctrl 鍵或在選取「共享指令清單」後點選其他車輛以共享指令清單。如指令清單上有任何指令涉及機廠，則該車輛不受自動維護功能影響。
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :到:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :開:
 

@@ -34,6 +34,8 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Verander
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Ontwerp: {GOLD}{NUM}
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Voeg 'n nuwe opdrag voor die verlig opdrag by, of voeg by na einde van lys
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:
 

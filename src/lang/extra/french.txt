@@ -38,6 +38,8 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Modifier
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Conçu en{NBSP}: {GOLD}{NUM}
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Insérer un nouvel ordre avant l'ordre sélectionné, ou l'ajouter à la fin. Ctrl-clic sur une station pour «{NBSP}Chargement complet par un seul type{NBSP}», sur un point de contrôle pour inverser le paramètre «{NBSP}sans arrêt par défaut{NBSP}» ou sur un dépôt pour «{NBSP}entretien{NBSP}». Cliquer sur un véhicule pour copier ses ordres ou Ctrl-clic pour les partager. Un ordre de dépôt désactive l'entretien automatique du véhicule
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:
 

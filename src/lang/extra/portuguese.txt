@@ -38,6 +38,8 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Mudar a 
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Concebido: {GOLD}{NUM}
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Inserir uma nova ordem antes da ordem selecionada, ou acrescentar ao fim da lista. Ctrl+Clique numa estação para 'encher completamente qualquer carga'; num ponto de controlo para inverter a definição 'sem paragem por omissão', ou num depósito para 'manutenção'. Clique noutro veículo para copiar as suas ordens ou Ctrl+Clique para partilhar ordens. Uma ordem para depósito desativa a manutenção programada automática do veículo.
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :C:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :P:
 

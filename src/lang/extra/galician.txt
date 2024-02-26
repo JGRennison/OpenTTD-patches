@@ -1592,6 +1592,8 @@ STR_ORDERS_MANAGE_LIST_TOOLTIP                                  :{BLACK}Xestiona
 STR_ORDERS_MANAGE_ORDER                                         :{BLACK}Xestionar orde
 STR_ORDERS_MANAGE_ORDER_TOOLTIP                                 :{BLACK}Xestionar esta orde
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Engadir unha nova orde antes da seleccionada ou engadi-la ao final da lista. Ctrl+Clic sobre estacións ordea “Cargar completamente calquera carga”, sobre puntos de ruta ordea sen paradas e sobre depósitos ordea mantemento. Clic noutro vehículo copia as ordes e Ctr+clic as comparte. Unha orde de depósito desactiva o mantemento automático do vehículo
+
 STR_ORDER_REVERSE_ORDER_LIST                                    :Invertir a lista de ordes
 STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :Engadir lista de ordes invertidas
 STR_ORDER_DUPLICATE_ORDER                                       :Duplicar orde

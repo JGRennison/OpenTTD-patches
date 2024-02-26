@@ -1510,6 +1510,8 @@ STR_ORDERS_MANAGE_LIST_TOOLTIP                                  :{BLACK}Spravova
 STR_ORDERS_MANAGE_ORDER                                         :{BLACK}Spravovat příkaz
 STR_ORDERS_MANAGE_ORDER_TOOLTIP                                 :{BLACK}Spravovat tento příkaz
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Vložte nový příkaz před zvýrazněným příkazem, nebo přidejte na konec seznamu. Při stisknutí Ctrl+Kliku na stanici pro 'naložit veškerý náklad', na mezipřistání pro invertování nastavení 'non-stop jako výchozí', nebo na depo pro 'servis'. Klikněte na jiné vozidlo pro zkopírování jeho příkazů nebo stiskněte Ctrl+Klik pro sdílení příkazů. Příkaz pro depo vypne automatický servis vozidla
+
 STR_ORDER_REVERSE_ORDER_LIST                                    :Obrátit seznam příkazů
 STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :Připojit obrácený seznam příkazů
 STR_ORDER_DUPLICATE_ORDER                                       :Duplikovat příkaz

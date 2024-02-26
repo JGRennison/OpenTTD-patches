@@ -114,6 +114,8 @@ STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS_HELPTEXT                    :発車標に表
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}設計年: {GOLD}{NUM}
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}選択した指令の前またはリストの終わりに新規指令を挿入します。Ctrlを押しながら停留施設をクリックした場合は指令に「いずれかの貨物の満載まで待機」、中継駅の場合は「直通運転」、車両庫では「保守回送」がそれぞれ付きます。「指令を共有」またはCtrlを押しながら他の輸送機器をクリックするとその輸送機器と指令を共有します。普通に他の輸送機器をクリックした場合は指令をコピーします。指令で車両庫を経由するよう設定すると自動点検は無効になります
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :着:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :発:
 

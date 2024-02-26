@@ -1356,6 +1356,8 @@ STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_LAST      :ist nicht letzt
 STR_ORDERS_MANAGE_LIST                                          :{BLACK}Liste verwalten
 STR_ORDERS_MANAGE_LIST_TOOLTIP                                  :{BLACK}Verwalte diese Auftragsliste
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Einen neuen Auftrag vor dem markierten Auftrag oder am Ende der Liste einfügen. Strg+Klick auf einer Station für den Auftrag „Vollladen einer Fracht“, auf Wegpunkten, um die Einstellung „standardmäßig ohne Zwischenhalt“ zu invertieren und auf Depots für den Auftrag „Wartung“. Mit einem Klick auf ein anderes Fahrzeug werden seine Aufträge kopiert, mit Strg+Klick werden gemeinsame Aufträge erzeugt. Ein Depotauftrag schaltet die automatische Wartung für das Fahrzeug aus.
+
 STR_ORDER_REVERSE_ORDER_LIST                                    :Kehre Auftragsliste um
 STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :Füge umgekehrte Auftragsliste an
 

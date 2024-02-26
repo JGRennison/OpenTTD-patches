@@ -35,6 +35,8 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Modific�
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}An apariţie: {GOLD}{NUM}
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Inserați o nouă comandă înaintea comenzii evidențiate sau adăugați la sfârșitul listei. Ctrl+Click pe o stație pentru „încărcare completă orice marfă”, pe o haltă pentru inversarea setării de „non-stop” sau pe un depou pentru „serviciu”. Faceți clic pe alt vehicul pentru a-i copia comenzile sau Ctrl+Click pentru a partaja comenzile. O comandă de depou dezactivează întreținerea automată a vehiculului
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:
 

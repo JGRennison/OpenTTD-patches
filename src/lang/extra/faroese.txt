@@ -31,6 +31,8 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Broyt h�
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Sniðgivi: {GOLD}{NUM}
 
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Set eini nýggj boð inn áðrenn undirstrikaðu boðini, ella legg til endan á listanum. Ctrl gerð boð á støðum 'fult less onkran farm', waypoint boð 'non-stop' og goymslu boð 'eftirlit'. 'Deil boð' ella Ctrl letur hetta flutningstóli deila boð við valda flutningstóli. Trýstur tú á eitt flutningstól avritar tú boðini hjá tí flutningstólinum. Boð um at fara til goymsluna ógildar sjálvvirkandi eftirliti av flutningstólinum
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :K:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :F:
 
