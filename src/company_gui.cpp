@@ -1845,12 +1845,12 @@ struct CompanyInfrastructureWindow : Window
 	{
 		this->UpdateRailRoadTypes();
 
-		this->owner = (Owner)this->window_number;
-
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_CI_SCROLLBAR);
 		this->vscroll->SetStepSize(GetCharacterHeight(FS_NORMAL));
 		this->FinishInitNested(window_number);
+
+		this->owner = (Owner)this->window_number;
 	}
 
 	void UpdateRailRoadTypes()
