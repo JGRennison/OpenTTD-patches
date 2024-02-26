@@ -37,6 +37,18 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Kar yük
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Yapım yılı: {GOLD}{NUM}
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Frenliyor, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}{STATION} istikametine gidiyor, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Talimat yok, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}Gidilen -> {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}{DEPOT} istikametine gidiyor, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}{DEPOT}'nda bakıma gir, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_UNBUNCH_VEL_END            :{LTBLUE} {DEPOT}'da gruptan ayır ve bakıma gir, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL_END                 :{LTBLUE}{STATION} istasyonuna ulaşılamıyor, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}{WAYPOINT} yerimine ulaşılamıyor, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}{DEPOT} garajına ulaşılamıyor, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}{DEPOT} garajına ulaşılamıyor, {VELOCITY}
+
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Seçili talimatın önüne ya da listenin sonuna yeni talimat ekle. Ctrl + Sol tık yapmak; istasyon talimatlarını 'bir kargo türünü tam yükle', yol imi talimatlarını 'durmaksızın', garaj talimatlarını 'bakıma gir' olarak değiştirir. 'Talimatları paylaş' veya Ctrl + Sol tık yaparak bu aracın talimatlarını seçili araçla paylaşmasını sağlayın. Bir araca tıklamak o aracın talimatlarını kopyalar. Bir hangar talimatı araca otomatik olarak bakım yapılması özelliğini kapatır
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :V:

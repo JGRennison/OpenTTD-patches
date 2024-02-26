@@ -35,6 +35,18 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Ändra s
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Designår: {GOLD}{NUM}
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Stannar, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}På väg mot {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Inga order, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}På väg mot {WAYPOINT} i {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}På väg mot {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Service vid {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_UNBUNCH_VEL_END            :{LTBLUE}Glesa ut och serva vid {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL_END                 :{LTBLUE} Kan inte nå {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}Kan inte nå {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}Kan inte nå {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Kan inte nå {DEPOT}, {VELOCITY}
+
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Infoga ny order före markerad order, eller lägg till i slutet av listan. Ctrl+Klick på en station för 'full last någon godstyp', på ett riktmärke för att invertera inställningen 'non-stop som standard', och på en depå för 'service'.  Klicka på ett annat fordon för att kopiera dess ordrar eller Ctrl+Klick för att dela ordrar. En depåorder stänger av automatisk service av fordonet
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:

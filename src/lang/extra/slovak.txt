@@ -38,6 +38,17 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Zmeniť 
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Vyrobené: {GOLD}{NUM}
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Zastavuje, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}Smeruje do {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Bez určenia, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}Smeruje do {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}Smeruje do {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Servis v {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL_END                 :{LTBLUE}Nedokáže sa dostať do {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}Nedokáže sa dostať do {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}Nedokáže sa dostať do {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Nedokáže sa dostať do {DEPOT}, {VELOCITY}
+
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Vložiť nový príkaz pred označený príkaz, alebo na koniec zoznamu. Ctrl zmení príkazy pre stanicu na 'plne nalož čokoľvek', príkazy pre smerový bod na 'nonstop' a príkazy pre depo na 'servis'. 'Zdieľať príkazy' alebo Ctrl umožní vozidlu zdieľať príkazy s vybraným vozidlom. Kliknutím na vozidlo sa skopírujú príkazy z vozidla. Príkaz na presun do depa vypne automatický servis vozidla
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :P:

@@ -34,6 +34,17 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Athraigh
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Deartha: {GOLD}{NUM}
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Ag stopadh, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}Ag déanamh ar {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Gan ordú, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}Ag déanamh ar {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}Ag dul chuig {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Seirbhís ag {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL_END                 :{LTBLUE}Ní féidir {STATION} a bhaint amach, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}Ní féidir {WAYPOINT} a bhaint amach, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}Ní féidir {DEPOT} a bhaint amach, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Ní féidir {DEPOT} a bhaint amach, {VELOCITY}
+
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Ionsáigh ordú nua roimh an ordú aibhsithe, nó cuir le deireadh an liosta é. Le Ctrl, beidh orduithe stáisiúin 'lasta iomlán de lastas ar bith', beidh orduithe do phointí bealaigh 'gan stad' agus beidh orduithe d'iostaí 'déan seirbhísiú'
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :I:

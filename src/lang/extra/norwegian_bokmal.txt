@@ -35,6 +35,17 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Endre h�
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Designet: {GOLD}{NUM}
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Stopper, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}På vei til {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Ingen ordre, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}Har kurs mot {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}På vei til {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Vedlikehold ved {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL_END                 :{LTBLUE}Kan ikke nå {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}Kan ikke nå {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}Kan ikke nå {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Kan ikke nå {DEPOT}, {VELOCITY}
+
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Sett inn en ny ordre før den merkede ordren, eller legg til i slutten av listen. Ctrl gir ordren 'full last, enhver varetype', kontrollpunktordre 'direkte' og verkstedsordre 'vedlikehold'. 'Del ordrer' eller Ctrl lar dette kjøretøyet dele ordrer med det valgte kjøretøyet. Klikk på et kjøretøy for å kopiere ordrene fra det. En verkstedsordre slår av automatisk vedlikehold av kjøretøyet
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Ank:

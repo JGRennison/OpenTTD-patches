@@ -35,6 +35,17 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Змін
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Рік випуску: {GOLD}{NUM}
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Зупиняється, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}Прямує до {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Без завдань, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}Прямує до {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}Прямує до {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Техогляд у {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL_END                 :{LTBLUE}Неможливо досягти {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}Неможливо досягти {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}Неможливо досягти {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Неможливо досягти {DEPOT}, {VELOCITY}
+
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Вставити новий наказ перед вибраним, або додати в кінець списку. Утримуйте Ctrl аби створити наказ як "повне завантаження будь-якого вантажу", для точок маршруту - "без зупинок", і для депо - "обслуговування". Пункт "Спільні накази" або утримування Ctrl дозволяє поділитися спільними наказами з виділеним транспортом. Клац мишою на транспорті копіює з нього накази
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :П:

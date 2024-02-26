@@ -1268,6 +1268,18 @@ STR_VEHICLE_STATUS_TRAIN_WAITING_TIMETABLE                      :{ORANGE}Warte a
 STR_VEHICLE_STATUS_TRAIN_REVERSING                              :{ORANGE}Wende, {VELOCITY}
 STR_VEHICLE_STATUS_TRAIN_MOVING_DEPOT                           :{ORANGE}Fahre ins Depot
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Halte an, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}Unterwegs nach {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Keine Aufträge, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}Fahre zu {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}Fährt zu {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Wartung in {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_UNBUNCH_VEL_END            :{LTBLUE}Entladen und Wartung am Depot {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL_END                 :{LTBLUE} Kann nicht {STATION}, ´{VELOCITY} erreichen
+STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}Kann nicht {WAYPOINT},{VELOCITY} erreichen
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}Kann nicht {DEPOT},{VELOCITY} erreichen
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Kann {DEPOT},{VELOCITY} nicht erreichen
+
 STR_BREAKDOWN_TYPE_CRITICAL                                     :Mechanische Störung
 STR_BREAKDOWN_TYPE_EM_STOP                                      :Nothalt
 STR_BREAKDOWN_TYPE_LOW_SPEED                                    :Auf {VELOCITY} beschränkte Geschwindigkeit

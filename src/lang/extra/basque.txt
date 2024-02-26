@@ -34,6 +34,13 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Elur gar
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Diseinatua: {GOLD}{NUM}
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Gelditzen, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE} {STATION}-ra bidean, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Agindurik ez, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE} {WAYPOINT}-ra bidean, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE} {DEPOT}-ra joaten, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Berrikuspena {DEPOT}-an, {VELOCITY}
+
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Agindu berria sartu piztutakoaren aurretik, edo zerrendaren amaieran. Ktrl hurrengo aginduak ezartzen ditu: Geltokietan "Edozein zama osorik kargatu", bidepuntuetan "Ez gelditu" eta gordailuetan "Mantenimendua". "Aginduak konpartitu" edo Ktrl ibilgailuaren aginduak konpartituko ditu. Ibilgailu batean klik eginez aginduak kopiatuko dira. Gordailu aginduek mantenimendu automatikoa desgaitzen dute
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:

@@ -35,6 +35,16 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Pakeisti
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Sukurtas: {GOLD}{NUM}
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Stabdomas, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}Vyksta į „{STATION}“, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Neturi užduočių, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}Vyksta į „{WAYPOINT}“, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}Vyksta į „{DEPOT}“, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Vyksta techninei apžiūrai į „{DEPOT}“, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL_END                 :{LTBLUE}Nepavyksta pasiekti {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}Negalima pasiekti {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}Nepavyksta pasiekti {DEPOT}, {VELOCITY}
+
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Įterpti naują užduotį prieš pažymėtąją (arba sąrašo pabaigoje, jei jokia užduotis nepažymėta). Spragtelėjus laikant nuspaustą Ctrl klavišą, sukurta užduotis bus „pilnai prikrauti kurio nors krovinio“ (stotims), „vykti per“ (kontrolės punktams) bei „vykti techninės apžiūros“ (depams, garažams ar angarams). Pasirinkus kitą transporto priemonę kaip užduoties tikslą, bus užduotys bus nukopijuotos. Padarius tą patį lainkant nuspaustą Ctrl klavišą, užduotys bus bendrinamos. Pasirinkus garažą, depą ar angarą kaip užduoties tikslą, bus išjungta periodinė transporto priemonės techninė apžiūra
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Atv.:

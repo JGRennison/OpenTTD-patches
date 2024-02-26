@@ -30,6 +30,17 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Висо
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Модел: {GOLD}{NUM}
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Спира, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}Отиващ към {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Без заповеди, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}Отиващ към {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}Отправя се към {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Сервиз в {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL_END                 :{LTBLUE}Не може да достигне {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}Не може да достигне {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}Не може да достигне {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Не може да достигне {DEPOT}, {VELOCITY}
+
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Добавяне на назначение преди избраната или в края на списъка. Ctrl добавя назначение за 'Напълно натовари какъвто и да е товар', назначение за пътна точка 'без спиране' и назначение за депо 'обслужване'. 'Споделяне на назначенията' или Ctrl позволява на това превозно средство да сподели назначенията с друго избрано такова, когато се кликне върху него. Назначението за депо спира автоматичното обслужване на превозното средство
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :П:

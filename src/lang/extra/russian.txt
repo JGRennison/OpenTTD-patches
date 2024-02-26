@@ -57,6 +57,18 @@ STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Разр
 STR_BUY_REFIT_VEHICLE_BUY_VEHICLE_BUTTON                        :{BLACK}Переоборудовать
 STR_BUY_REFIT_VEHICLE_BUY_VEHICLE_TOOLTIP                       :{BLACK}Переоборудовать купленное транспортное средство сразу после покупки для выделенного вида груза
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Останавливается; {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}Идёт к {STATION}; {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Нет заданий; {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}Идёт к {WAYPOINT}; {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}Идёт в {DEPOT}; {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Идёт в {DEPOT} для ТО; {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_UNBUNCH_VEL_END            :{LTBLUE}Идёт в {DEPOT} для ТО и распред., {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL_END                 :{LTBLUE}Нет пути до {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}Нет пути до {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}Нет пути до {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Нет пути до {DEPOT}, {VELOCITY}
+
 STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS                        :принимает
 STR_ORDER_CONDITIONAL_COMPARATOR_DOES_NOT_ACCEPT                :не принимает
 STR_ORDER_CONDITIONAL_COMPARATOR_HAS                            :имеет

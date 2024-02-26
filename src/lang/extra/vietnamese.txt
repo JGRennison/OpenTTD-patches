@@ -38,6 +38,18 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Thay đ�
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Thiết kế: {GOLD}{NUM}
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Đang dừng, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}Nhắm tới {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Không lộ trình, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}Nhắm tới {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}Nhắm tới {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Phục vụ tại {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_UNBUNCH_VEL_END            :{LTBLUE}Gỡ gộp và bảo trì ở {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL_END                 :{LTBLUE}Không thể đi tới {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}Không thể đi tới {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}Không thể đi tới {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Không thể đi tới {DEPOT}, {VELOCITY}
+
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Thêm một điểm lộ trình trước điểm đã chọn, hoặc thêm nó vào cuối danh sách. Ctrl nếu là ga thì 'bốc xếp đủ bất kỳ hàng nào', là điểm mốc thì 'đi suốt' và là xưởng thì 'bảo trì'. 'Lộ trình chia sẻ" hoặc giữ Ctrl để cho phép phương tiện này chia sẻ lộ trình với phương tiện đã chọn. Nháy vào một phương tiện để sao chép lộ trình từ phương tiện đó. Lệnh dẫn đến xưởng sẽ dừng việc bảo trì tự động cho phương tiện
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Đến:

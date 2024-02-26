@@ -38,6 +38,18 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Hoogte v
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Ontworpen: {GOLD}{NUM}
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Remmen, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}Op weg naar {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Geen orders, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}Op weg naar {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}Onderweg naar {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Onderhoud in {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_UNBUNCH_VEL_END            :{LTBLUE}Ontkreukelen en onderhouden bij {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL_END                 :{LTBLUE}Kan {STATION}, {VELOCITY} niet bereiken
+STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}Kan {WAYPOINT}, {VELOCITY} niet bereiken
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}Kan {DEPOT}, {VELOCITY} niet bereiken
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Kan {DEPOT}, {VELOCITY} niet bereiken
+
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Voegt een nieuwe order toe voor de geselecteerde order of aan het eind van de lijst. Ctrl+klik maakt stationsorders 'Eén soort vracht volledig laden', controlepost-orders 'Ga non-stop via' en depot-orders 'Onderhoud bij'. Klikken op een ander voertuig kopieert de orders van dat voertuig, Ctrl+klik om de orders te delen. Een depot-order schakelt automatisch onderhoud van een voertuig uit.
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:

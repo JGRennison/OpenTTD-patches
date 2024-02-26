@@ -33,6 +33,17 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Ŝanĝu 
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Pripensite: {GOLD}{NUM}
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Haltiĝas, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}Irante al {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Neniu ordono, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}Irante al {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}Irante al {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Prizorgo en {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL_END                 :{LTBLUE}Ne povas atingi {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}Ne povas atingi {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}Ne povas atingi {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Ne povas atingi {DEPOT}, {VELOCITY}
+
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Enigi novan ordonon antaŭ la elektita ordono, aŭ aldoni fine de la listo. Kun Ctrl, vagonarordonoj estos 'plenŝargi ia kargo', vojpunkt-ordonoj estos 'ne-halti' kaj depotordono estos 'servado'. Kun 'Komunordonoj'-butono aŭ Ctrl-klaku, ĉi tiu veturilo akiros komunajn ordonojn kun eklekta veturilo. Klaku veturilon por kopii ordonojn de tiu veturilo. Doni ia depotordono maleblas aŭtomatan servadon de ĉi tiu veturilo
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:

@@ -33,6 +33,13 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Byt høg
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Designa: {GOLD}{NUM}
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Stoppar, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}På veg til {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Ingen ordre, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}Har kurs mot {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}På veg mot {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Vedlikehald ved {DEPOT}, {VELOCITY}
+
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Set inn ein ny ordre før den valde ordren, eller legg til i slutten av lista. Ctrl gjer ordren 'full last, einkvar varetype', kontrollpunktordre 'direkte' og verkstadsordre 'vedlikehald'. 'Del ordre' eller Ctrl let dette køyretyget dele ordrer med det valde køyretyget. Ved å klikke på eit køyretyg, kopierast ordrene frå dette køyretyget. Ein verkstadsordre slår av automatisk vedlikehald av kjøyretyget
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Ank:

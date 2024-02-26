@@ -30,6 +30,17 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}பன�
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}வடிவமைக்கப்பட்டது: {GOLD}{NUM}
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}நிறுத்தப்படுகின்றது, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}{STATION} இற்கு செல்கிறது, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}எந்த கட்டளைகளும் இல்லை, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE} {WAYPOINT}-இற்கு செல்கிறது, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE} {DEPOT}-இற்கு செல்கிறது, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE} {DEPOT}-இல் சர்வீஸ் செய்ய செல்கிறது, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL_END                 :{LTBLUE}{STATION} நிலையத்தினை அடைய முடியவில்லை, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}{WAYPOINT}-இனை அடைய முடியவில்லை, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}{DEPOT}-இனை அடைய முடியாது , {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}{DEPOT} இனை அடைய முடியவில்லை, {VELOCITY}
+
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
 STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:
 

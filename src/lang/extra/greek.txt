@@ -34,6 +34,17 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Άλλα
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Έτος σχεδίασης: {GOLD}{NUM}
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Σταματάει, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}Πάει προς {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Δεν έχει εντολές, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}Πορεία προς {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}Κατεύθυνση για το {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Επισκευή στο {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL_END                 :{LTBLUE}Δεν υπάρχει πρόσβαση στο {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}Δεν υπάρχει πρόσβαση στο {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}Δεν υπάρχει πρόσβαση στο {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Δεν υπάρχει πρόσβαση στο {DEPOT}, {VELOCITY}
+
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Εισάγετε μια νέα εντολή πριν την επιλεγμένη ή προσθέστε στο τέλος της λίστας. Με Ctrl οι εντολές σταθμού γίνονται «πλήρης φόρτωση οποιουδήποτε εμπορεύματος», οι εντολές καθοδήγησης «χωρίς στάση» και οι εντολές αμαξοστασίου «επισκευή». Με «ίδιες εντολές» ή με Ctrl το όχημα θα έχει τις ίδιες εντολές με το επιλεγμένο. Πατώντας πάνω σε κάποιο όχημα αντιγράφονται οι εντολές από αυτό. Μια εντολή για αμαξοστάσιο απενεργοποιεί την αυτόματη επισκευή του οχήματος
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :ΑΦ:

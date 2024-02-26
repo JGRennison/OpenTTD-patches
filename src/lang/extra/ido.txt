@@ -19,6 +19,8 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Aeroplani
 
 # Town tooltip
 
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Servado ad {DEPOT}, {VELOCITY}
+
 # Cargo type orders Window
 
 # Plans window

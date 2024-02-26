@@ -34,6 +34,13 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Зьмя
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Распрацаваны ў {GOLD}{NUM} г.
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Спыняецца; {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}Iдзе да {STATION}; {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Няма заданьняў; {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}Iдзе да {WAYPOINT}; {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}Iдзе ў {DEPOT}; {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Абслуг. у {DEPOT}; {VELOCITY}
+
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Уставіць новае заданьне перад вылучаным, або ў канец сьпісу. Ctrl дадае на станцыях «поўная пагрузка любым грузам», на пунктах шляху - «без прыпынку», на дэпо - «абслугоўваньне». «Агульныя заданьні» або Ctrl дазваляюць гэтаму транспарту мець агульныя заданьні з вылучаным транспартам. Пстрычка па транспарце капіюе заданьнi гэтага транспарту. Заданьне «ў дэпо» адключае аўтаматычнае абслугоўваньне гэтага транспарту.
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :П:

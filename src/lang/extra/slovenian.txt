@@ -34,6 +34,13 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Spremeni
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Zasnova: {GOLD}{NUM}
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Se ustavlja, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}Pelje proti {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Brez ukazov, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}Pelje proti {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}Pelje proti {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Servis v {DEPOT}, {VELOCITY}
+
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Vstavi nov ukaz pred izbranega ali pa ga dodaj na konec seznama. Ctrl naredi ukaze postaj 'napolni kakršenkoli tovor', ukaze točk poti 'non-stop' in ukaze garaž 'servis'. 'Deli ukaze' ali Ctrl deli ukaze z drugim izbranim vozilom. Klik na vozilo kopira ukaze
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:

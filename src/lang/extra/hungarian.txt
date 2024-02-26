@@ -38,6 +38,18 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Hóhatá
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Kifejlesztve: {GOLD}{NUM}
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Lassít, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}{STATION} állomás felé, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Nincs utasítás, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}Útban {WAYPOINT} felé, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}Útban {DEPOT} felé, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Javítás {DEPOT}ban, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_UNBUNCH_VEL_END            :{LTBLUE}Csoport bontás és szervizelés itt: {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL_END                 :{LTBLUE}{STATION} nem elérhető, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}{WAYPOINT} nem elérhető, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}{DEPOT} nem elérhető, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}{DEPOT} nem elérhető, {VELOCITY}
+
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Új utasítás beillesztése a kijelölt utasítás elé vagy a lista végére. Ctrl+kattintás állomásoknál 'bármiből teljes rakományra vár'-t, ellenőrző pontoknál 'Non-stop'-ot, járműtelepeknél 'Javításra menj' parancsot ad a célponthoz. 'Menetrend megosztása' esetén a jármű megosztja az utasításait a kiválasztott járművel. Ha járműtelep szerepel a menetrendben, kikapcsolja az automatikus javításokat
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :É:

@@ -34,6 +34,14 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}שנה �
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}מודל: {GOLD}{NUM}
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}{VELOCITY} ,עוצרת
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}פונה אל {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}אין הוראות, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE} {1:VELOCITY},{0:WAYPOINT} :בדרך אל
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}בדרך אל {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}קבלת שירות ב{DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}לא יכול להגיע ל {DEPOT}, {VELOCITY}
+
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}הכנס הוראה חדשה לפני ההוראה המודגשת, או הוסף הוראה לסוף הרשימה. Ctrl גורם להוראות של תחנות להיות 'טען מטען כלשהו במלואו', נקודות ציון להיות 'ללא עצירה' והוראות מוסכים להיות 'בשירות'. 'שתף הוראות' או Ctrl מאפשר שיתוף הוראות עם כלי הרכב הנבחר. לחיצה על כלי רכב מעתיקה את ההוראות ממנו. הוראה למוסך מבטלת את הטיפולים האוטומטיים של כלי הרכב
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:

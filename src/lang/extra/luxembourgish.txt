@@ -35,6 +35,18 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Ännert 
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Designt: {GOLD}{NUM}
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Stoppt, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}Ennerwee op {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Keng Opträg, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}Ennerwee op {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}Ennerwee an den {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Revisioun am {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_UNBUNCH_VEL_END            :{LTBLUE}Verspreeën a Revisioun am Schapp {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL_END                 :{LTBLUE}Kann {STATION} net erreechen, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}Kann {WAYPOINT} net erreechen, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}Kann {DEPOT} net erreechen, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Kann den {DEPOT} net erreechen, {VELOCITY}
+
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Setzt en neien Optrag firun den ungewielten Optrag, oder un d'Enn vun der Lëscht. Ctrl+Klick op eng Statioun fir 'voll belueden mat all Wueren', op e Weepunkt fir den 'non-stop Standard' emzeschalten, oder op e Schapp fir eng 'Revisioun'. Klick op e Gefier fir seng Opträg ze kopéieren oder Ctrl+Klick fir seng Opträg ze deelen. En Depot Optrag schalt d'automatesch Revisioun vum Gefier aus
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:

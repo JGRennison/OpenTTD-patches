@@ -38,6 +38,18 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Modifier
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Conçu en{NBSP}: {GOLD}{NUM}
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Ralentit, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}En route pour {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Aucun ordre, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}En route pour {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}En route pour le {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Entretien au {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_UNBUNCH_VEL_END            :{LTBLUE}Répartition et entretien au {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL_END                 :{LTBLUE}Ne peut pas atteindre {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}Ne peut pas atteindre {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}Ne peut pas atteindre {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Ne peut pas atteindre {DEPOT}, {VELOCITY}
+
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Insérer un nouvel ordre avant l'ordre sélectionné, ou l'ajouter à la fin. Ctrl-clic sur une station pour «{NBSP}Chargement complet par un seul type{NBSP}», sur un point de contrôle pour inverser le paramètre «{NBSP}sans arrêt par défaut{NBSP}» ou sur un dépôt pour «{NBSP}entretien{NBSP}». Cliquer sur un véhicule pour copier ses ordres ou Ctrl-clic pour les partager. Un ordre de dépôt désactive l'entretien automatique du véhicule
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:

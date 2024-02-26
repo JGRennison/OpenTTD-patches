@@ -1491,6 +1491,18 @@ STR_VEHICLE_STATUS_TRAIN_WAITING_TIMETABLE                      :{ORANGE}Agardan
 STR_VEHICLE_STATUS_TRAIN_REVERSING                              :{ORANGE}indo cara atrás, {VELOCITY}
 STR_VEHICLE_STATUS_TRAIN_MOVING_DEPOT                           :{ORANGE}Indo ó depósito
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Parando, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}Dirixíndose a {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Sen ordes, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}Dirixíndose a {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}Dirixíndose a {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Servizo en {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_UNBUNCH_VEL_END            :{LTBLUE}Desamontoarse e ir o servizo en {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL_END                 :{LTBLUE}Non pode chegar a {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}Non pode chegar a {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}Non pode chegar a {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Non pode chegar a {DEPOT}, {VELOCITY}
+
 STR_BREAKDOWN_TYPE_CRITICAL                                     :Fallo mecánico
 STR_BREAKDOWN_TYPE_EM_STOP                                      :Parada de emerxencia
 STR_BREAKDOWN_TYPE_LOW_SPEED                                    :Limitado a {VELOCITY}

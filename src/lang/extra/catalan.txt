@@ -38,6 +38,18 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Canvia l
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Dissenyat: {GOLD}{NUM}
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Parant, a {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}Cap a {STATION}, a {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Sense ordres, a {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}Cap a {WAYPOINT}, a {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}Cap a {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Revisió a {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_UNBUNCH_VEL_END            :{LTBLUE}Espaia i revisa a {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL_END                 :{LTBLUE}No pot arribar a {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}No pot arribar a {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}No pot arribar a {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}No pot arribar a {DEPOT}, {VELOCITY}
+
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Afegeix una nova ordre abans de la seleccionada, o afegeix-la al final de la llista. Amb Ctrl+clic, es creen ordres d'estació "carrega qualsevol càrrega", en un punt de pas per invertir la ordre "sense parada per defecte" i ordres de cotxeres de "revisió". Si es fa clic en un altre vehicle, es copien les seves ordres; amb Ctrl+clic, a més a més es compartiran les ordres. Una ordre de cotxeres desactiva la revisió automàtica del vehicle.
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:

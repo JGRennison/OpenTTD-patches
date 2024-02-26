@@ -35,6 +35,17 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Muuda lu
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Kujundatud: {GOLD}{NUM}
 
+STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}Peatub, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}Siht: {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_NO_ORDERS_VEL_END                            :{LTBLUE}Sihitu, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_END                 :{LTBLUE}Suundub {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE}Suundub {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Järelevaatus: {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL_END                 :{LTBLUE}Ei leita teed jaama {STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}Ei leita teed sihtkohta {WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}Ei leita teed sihtkohta {DEPOT}, {VELOCITY}
+STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Ei leia teed sihtkohta {DEPOT}, {VELOCITY}
+
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Lisa uus korraldus valitud korralduse ette, või nimekirja lõppu. «Ctrl» annab jaamas korralduse «täislaadida üks veos», meldepunktis korralduse «peatuseta», ning depoos korralduse «hooldus». «Korralduste jagamine» või «Ctrl» laseb sellel sõidukil jagada korraldusi valitud sõidukiga. Sõidukil klõpsates dubleeritakse selle korraldused. Depookorralduste olemasolul sõiduk ise hoolduses ei käi
 
 STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :S:
