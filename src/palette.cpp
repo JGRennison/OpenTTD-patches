@@ -25,8 +25,6 @@
 Palette _cur_palette;
 std::mutex _cur_palette_mutex;
 
-byte _colour_gradient[COLOUR_END][8];
-
 byte _colour_value[COLOUR_END] = {
 	133, // COLOUR_DARK_BLUE
 	 99, // COLOUR_PALE_GREEN,
@@ -293,4 +291,39 @@ TextColour GetContrastColour(uint8_t background, uint8_t threshold)
 	uint sq1000_brightness = c.r * c.r * 299 + c.g * c.g * 587 + c.b * c.b * 114;
 	/* Compare with threshold brightness which defaults to 128 (50%) */
 	return sq1000_brightness < ((uint) threshold) * ((uint) threshold) * 1000 ? TC_WHITE : TC_BLACK;
+}
+
+/**
+ * Lookup table of colour shades for all 16 colour gradients.
+ * 8 colours per gradient from darkest (0) to lightest (7)
+ */
+struct ColourGradients
+{
+	using ColourGradient = std::array<byte, SHADE_END>;
+
+	static inline std::array<ColourGradient, COLOUR_END> gradient{};
+};
+
+/**
+ * Get colour gradient palette index.
+ * @param colour Colour.
+ * @param shade Shade level from 1 to 7.
+ * @returns palette index of colour.
+ */
+byte GetColourGradient(Colours colour, ColourShade shade)
+{
+	return ColourGradients::gradient[colour % COLOUR_END][shade % SHADE_END];
+}
+
+/**
+ * Set colour gradient palette index.
+ * @param colour Colour.
+ * @param shade Shade level from 1 to 7.
+ * @param palette_index Palette index to set.
+ */
+void SetColourGradient(Colours colour, ColourShade shade, byte palette_index)
+{
+	assert(colour < COLOUR_END);
+	assert(shade < SHADE_END);
+	ColourGradients::gradient[colour % COLOUR_END][shade % SHADE_END] = palette_index;
 }

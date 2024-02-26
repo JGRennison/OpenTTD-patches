@@ -206,6 +206,8 @@ CommandCost CmdBuildVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 				GroupStatistics::CountVehicle(v, 1);
 				if (!(subflags & DC_AUTOREPLACE)) OrderBackup::Restore(v, p2);
 			}
+
+			Company::Get(v->owner)->freeunits[v->type].UseID(v->unitnumber);
 		}
 
 

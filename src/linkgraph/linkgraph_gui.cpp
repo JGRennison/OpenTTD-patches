@@ -510,7 +510,7 @@ void LinkGraphOverlay::DrawContent(Blitter *blitter, const DrawPixelInfo *dpi, P
 		GfxDrawLine(blitter, dpi, pta.x, pta.y + offset_y, ptb.x, ptb.y + offset_y, colour, width, dash);
 	}
 
-	GfxDrawLine(blitter, dpi, pta.x, pta.y, ptb.x, ptb.y, _colour_gradient[COLOUR_GREY][1], width);
+	GfxDrawLine(blitter, dpi, pta.x, pta.y, ptb.x, ptb.y, GetColourGradient(COLOUR_GREY, SHADE_DARKEST), width);
 }
 
 /**
@@ -530,9 +530,8 @@ void LinkGraphOverlay::DrawStationDots(Blitter *blitter, const DrawPixelInfo *dp
 		uint r = width * 2 + width * 2 * std::min<uint>(200, i.quantity) / 200;
 
 		LinkGraphOverlay::DrawVertex(blitter, dpi, pt.x, pt.y, r,
-				_colour_gradient[st->owner != OWNER_NONE ?
-						Company::Get(st->owner)->colour : COLOUR_GREY][5],
-				_colour_gradient[COLOUR_GREY][1]);
+				GetColourGradient(st->owner != OWNER_NONE ? Company::Get(st->owner)->colour : COLOUR_GREY, SHADE_LIGHT),
+				GetColourGradient(COLOUR_GREY, SHADE_DARKEST));
 	}
 }
 
@@ -540,7 +539,7 @@ void LinkGraphOverlay::DrawStationDots(Blitter *blitter, const DrawPixelInfo *dp
  * Draw a square symbolizing a producer of cargo.
  * @param x X coordinate of the middle of the vertex.
  * @param y Y coordinate of the middle of the vertex.
- * @param size Y and y extend of the vertex.
+ * @param size x and y extent of the vertex.
  * @param colour Colour with which the vertex will be filled.
  * @param border_colour Colour for the border of the vertex.
  */
@@ -549,15 +548,10 @@ void LinkGraphOverlay::DrawStationDots(Blitter *blitter, const DrawPixelInfo *dp
 	size--;
 	int w1 = size / 2;
 	int w2 = size / 2 + size % 2;
+	int borderwidth = ScaleGUITrad(1);
 
+	GfxFillRect(blitter, dpi, x - w1 - borderwidth, y - w1 - borderwidth, x + w2 + borderwidth, y + w2 + borderwidth, border_colour);
 	GfxFillRect(blitter, dpi, x - w1, y - w1, x + w2, y + w2, colour);
-
-	w1++;
-	w2++;
-	GfxDrawLine(blitter, dpi, x - w1, y - w1, x + w2, y - w1, border_colour);
-	GfxDrawLine(blitter, dpi, x - w1, y + w2, x + w2, y + w2, border_colour);
-	GfxDrawLine(blitter, dpi, x - w1, y - w1, x - w1, y + w2, border_colour);
-	GfxDrawLine(blitter, dpi, x + w2, y - w1, x + w2, y + w2, border_colour);
 }
 
 bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)

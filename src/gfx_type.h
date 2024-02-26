@@ -11,6 +11,7 @@
 #define GFX_TYPE_H
 
 #include "core/endian_type.hpp"
+#include "core/enum_type.hpp"
 #include "core/geometry_type.hpp"
 #include "zoom_type.h"
 
@@ -249,6 +250,7 @@ enum Colours : uint8_t {
 	INVALID_COLOUR = 0xFF,
 };
 template <> struct EnumPropsT<Colours> : MakeEnumPropsT<Colours, byte, COLOUR_BEGIN, COLOUR_END, INVALID_COLOUR, 8> {};
+DECLARE_POSTFIX_INCREMENT(Colours)
 DECLARE_ENUM_AS_ADDABLE(Colours)
 
 /** Colour of the strings, see _string_colourmap in table/string_colours.h or docs/ottd-colourtext-palette.png */

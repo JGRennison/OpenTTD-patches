@@ -1301,7 +1301,7 @@ static void MinimapScreenCallback(void *userdata, void *buf, uint y, uint pitch,
 	/* Fill with the company colours */
 	byte owner_colours[OWNER_END + 1];
 	for (const Company *c : Company::Iterate()) {
-		owner_colours[c->index] = MKCOLOUR(_colour_gradient[c->colour][5]);
+		owner_colours[c->index] = MKCOLOUR(GetColourGradient(c->colour, SHADE_LIGHT));
 	}
 
 	/* Fill with some special colours */

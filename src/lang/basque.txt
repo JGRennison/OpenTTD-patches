@@ -934,8 +934,6 @@ STR_CURRENCY_DECREASE_EXCHANGE_RATE_TOOLTIP                     :{BLACK}Zure dib
 STR_CURRENCY_INCREASE_EXCHANGE_RATE_TOOLTIP                     :{BLACK}Zure dibisaren balioa libra (£) bat igo
 STR_CURRENCY_SET_EXCHANGE_RATE_TOOLTIP                          :{BLACK}Zure dibisaren balioa trukatzerakoan libra (£) batetan jarri
 
-STR_CURRENCY_SEPARATOR                                          :{LTBLUE}Banatzailea: {ORANGE}{STRING}
-STR_CURRENCY_SET_CUSTOM_CURRENCY_SEPARATOR_TOOLTIP              :{BLACK}Zure dibisarentzako banatzailea ezarri
 
 STR_CURRENCY_PREFIX                                             :{LTBLUE}Aurrizkia: {ORANGE}{STRING}
 STR_CURRENCY_SET_CUSTOM_CURRENCY_PREFIX_TOOLTIP                 :{BLACK}Zure dibisaren sinboloa finkatu
@@ -4880,6 +4878,7 @@ STR_STATION_NAME                                                :{STATION}
 STR_TOWN_NAME                                                   :{TOWN}
 STR_VEHICLE_NAME                                                :{VEHICLE}
 STR_WAYPOINT_NAME                                               :{WAYPOINT}
+
 
 STR_JUST_CARGO                                                  :{CARGO_LONG}
 STR_JUST_CHECKMARK                                              :{CHECKMARK}

@@ -3797,7 +3797,7 @@ private:
 		/* Highlight the group if a vehicle is dragged over it */
 		if (slot_id == this->slot_over) {
 			GfxFillRect(left + WidgetDimensions::scaled.framerect.left, y + WidgetDimensions::scaled.framerect.top, right - WidgetDimensions::scaled.framerect.right,
-					y + this->tiny_step_height - WidgetDimensions::scaled.framerect.bottom - WidgetDimensions::scaled.matrix.top, _colour_gradient[COLOUR_GREY][7]);
+					y + this->tiny_step_height - WidgetDimensions::scaled.framerect.bottom - WidgetDimensions::scaled.matrix.top, GetColourGradient(COLOUR_GREY, SHADE_LIGHTEST));
 		}
 
 		/* draw the selected group in white, else we draw it in black */

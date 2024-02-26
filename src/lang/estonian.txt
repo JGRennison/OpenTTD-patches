@@ -249,6 +249,8 @@ STR_COLOUR_RANDOM                                               :Suvaline
 ###length 17
 STR_COLOUR_SECONDARY_DARK_BLUE                                  :Tumesinine
 STR_COLOUR_SECONDARY_PALE_GREEN                                 :Kahvaturoheline
+STR_COLOUR_SECONDARY_SECONDARY_PINK                             :Roosa
+STR_COLOUR_SECONDARY_YELLOW                                     :Kollane
 STR_COLOUR_SECONDARY_RED                                        :Punane
 STR_COLOUR_SECONDARY_LIGHT_BLUE                                 :Helesinine
 STR_COLOUR_SECONDARY_GREEN                                      :Roheline
@@ -260,6 +262,7 @@ STR_COLOUR_SECONDARY_PURPLE                                     :Lilla
 STR_COLOUR_SECONDARY_ORANGE                                     :Oranž
 STR_COLOUR_SECONDARY_BROWN                                      :Pruun
 STR_COLOUR_SECONDARY_GREY                                       :Hall
+STR_COLOUR_SECONDARY_WHITE                                      :Valge
 STR_COLOUR_SECONDARY_SAME_AS_PRIMARY                            :Sama mis põhiline
 
 
@@ -413,9 +416,13 @@ STR_SORT_BY_POPULATION                                          :Rahvaarv
 STR_SORT_BY_RATING                                              :Hinnang
 STR_SORT_BY_NUM_VEHICLES                                        :Sõidukite koguarv
 STR_SORT_BY_TOTAL_PROFIT_LAST_YEAR                              :Eelmise aasta kogukasum
+STR_SORT_BY_TOTAL_PROFIT_LAST_PERIOD                            :Eelmise perioodi kogukasum
 STR_SORT_BY_TOTAL_PROFIT_THIS_YEAR                              :Selle aasta kogukasum
+STR_SORT_BY_TOTAL_PROFIT_THIS_PERIOD                            :Selle perioodi kogukasum
 STR_SORT_BY_AVERAGE_PROFIT_LAST_YEAR                            :Eelmise aasta keskmine kasum
+STR_SORT_BY_AVERAGE_PROFIT_LAST_PERIOD                          :Keskmine kasum eelmisel perioodil
 STR_SORT_BY_AVERAGE_PROFIT_THIS_YEAR                            :Selle aasta keskmine kasum
+STR_SORT_BY_AVERAGE_PROFIT_THIS_PERIOD                          :Keskmine kasum sellel perioodil
 
 # Group by options for vehicle list
 STR_GROUP_BY_NONE                                               :Puudub
@@ -678,6 +685,7 @@ STR_GRAPH_KEY_COMPANY_SELECTION_TOOLTIP                         :{BLACK}Klõpsa,
 # Company league window
 STR_COMPANY_LEAGUE_TABLE_CAPTION                                :{WHITE}Ettevõtete edetabel
 STR_COMPANY_LEAGUE_COMPANY_NAME                                 :{ORANGE}{COMPANY} {BLACK}{COMPANY_NUM} '{STRING}'
+STR_COMPANY_LEAGUE_COMPANY_RANK                                 :{YELLOW}#{NUM}
 STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_ENGINEER                   :Insener
 STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_TRAFFIC_MANAGER            :Liikluskorraldaja
 STR_COMPANY_LEAGUE_PERFORMANCE_TITLE_TRANSPORT_COORDINATOR      :Transpordikorraldaja
@@ -957,6 +965,7 @@ STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Uus {STR
 
 STR_NEWS_SHOW_VEHICLE_GROUP_TOOLTIP                             :{BLACK}Ava sõiduki jaole fokuseeritud jaoaken
 
+STR_NEWS_STATION_NOW_ACCEPTS_CARGO_LIST                         :{WHITE}{STATION} võtab nüüd vastu: {CARGO_LIST}
 
 STR_NEWS_OFFER_OF_SUBSIDY_EXPIRED                               :{BIG_FONT}{BLACK}Toetuse pakkumine lõppes:{}{}{STRING.g} kohast {STRING} kohta {STRING} veoste eest ei maksta enam toetusi
 STR_NEWS_SUBSIDY_WITHDRAWN_SERVICE                              :{BIG_FONT}{BLACK}Toetuse maksmise aeg sai läbi:{}{}{STRING}kohast {STRING} kohta {STRING} eest ei maksta enam edaspidi toetust
@@ -967,6 +976,8 @@ STR_NEWS_SERVICE_SUBSIDY_AWARDED_DOUBLE                         :{BIG_FONT}{BLAC
 STR_NEWS_SERVICE_SUBSIDY_AWARDED_TRIPLE                         :{BIG_FONT}{BLACK}Teenusetoetust makstakse ettevõttele {STRING}!{}{}{STRING} kohast {STRING} kohta {STRING} teenuse eest makstakse järgmise {UNITS_YEARS_OR_MINUTES} aasta jooksul kolmekordselt!
 STR_NEWS_SERVICE_SUBSIDY_AWARDED_QUADRUPLE                      :{BIG_FONT}{BLACK}Teenusetoetust makstakse ettevõttele {STRING}!{}{}{STRING} kohast {STRING} kohta {STRING} teenuse eest makstakse järgmise {UNITS_YEARS_OR_MINUTES} aasta jooksul neljakordselt!
 
+STR_NEWS_ROAD_REBUILDING_MONTHS                                 :{BIG_FONT}{BLACK}Liikluskaos {TOWN} linnas!{}{}{STRING} poolt rahastatud teede renoveerimisprogramm toob 6 kuud häda ja viletsust mootorsõiduki juhtidele!
+STR_NEWS_ROAD_REBUILDING_MINUTES                                :{BIG_FONT}{BLACK}Liikluskaos {TOWN} linnas!{}{}{STRING} poolt rahastatud teede renoveerimisprogramm toob 6 minutit häda ja viletsust mootorsõiduki juhtidele!
 STR_NEWS_EXCLUSIVE_RIGHTS_TITLE                                 :{BIG_FONT}{BLACK}Transpordimonopol!
 
 # Extra view window
@@ -1123,8 +1134,18 @@ STR_GAME_OPTIONS_BASE_MUSIC                                     :{BLACK}Lähtemu
 STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :{BLACK}Valib kasutatava lähtemuusikakogu
 STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :{BLACK}Rohkem teavet lähtemuusikakogu kohta
 
+STR_GAME_OPTIONS_SOCIAL_PLUGINS_NONE                            :{LTBLUE}(puuduvad pistikprogrammid sotsiaalplatvormidega integreerumiseks)
 
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_PLATFORM                         :{BLACK}Platvorm:
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE                            :{BLACK}Pistikprogrammi olek:
 
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_RUNNING                    :{GREEN}Töötab
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_FAILED                     :{RED}Alglaadimine ebaõnnestus
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_PLATFORM_NOT_RUNNING       :{ORANGE}{STRING} ei tööta
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_UNLOADED                   :{RED}Ei ole laetud
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_DUPLICATE                  :{RED}Duplikaat pistikprogramm
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_UNSUPPORTED_API            :{RED}Versioon ei ole toetatud
+STR_GAME_OPTIONS_SOCIAL_PLUGIN_STATE_INVALID_SIGNATURE          :{RED}Vigane signatuur
 
 STR_BASESET_STATUS                                              :{STRING} {RED}({NUM} puuduv/vigane fail{P "" s})
 
@@ -1139,8 +1160,6 @@ STR_CURRENCY_DECREASE_EXCHANGE_RATE_TOOLTIP                     :{BLACK}Langeta 
 STR_CURRENCY_INCREASE_EXCHANGE_RATE_TOOLTIP                     :{BLACK}Tõsta oma valuuta väärtust naela (£) suhtes
 STR_CURRENCY_SET_EXCHANGE_RATE_TOOLTIP                          :{BLACK}Määra oma valuuta kurss naela (£) suhtes
 
-STR_CURRENCY_SEPARATOR                                          :{LTBLUE}Eraldusmärk: {ORANGE}{STRING}
-STR_CURRENCY_SET_CUSTOM_CURRENCY_SEPARATOR_TOOLTIP              :{BLACK}Määra oma valuuta eraldusmärk
 
 STR_CURRENCY_PREFIX                                             :{LTBLUE}Eesliide: {ORANGE}{STRING}
 STR_CURRENCY_SET_CUSTOM_CURRENCY_PREFIX_TOOLTIP                 :{BLACK}Määra oma valuuta eesliide
@@ -1290,6 +1309,8 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_CENTER                        :Keskel
 STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Paremal
 
 
+STR_CONFIG_SETTING_INFINITE_MONEY                               :Lõpmatu raha: {STRING}
+STR_CONFIG_SETTING_INFINITE_MONEY_HELPTEXT                      :Võimaldab piiramatut kulutamist ja keelab ettevõtete pankrotid
 
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :Stardilaenu ülempiirang: {STRING}
 STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN_HELPTEXT                :Suurim summa, mida ettevõte saab laenata (arvestamata inflatsiooni)
@@ -1441,11 +1462,13 @@ STR_CONFIG_SETTING_AUTOSCROLL_EVERY_VIEWPORT                    :Igas vaates
 
 STR_CONFIG_SETTING_BRIBE                                        :Altkäemaksud kohalikele omavalitsustele: {STRING}
 ###length 2
-STR_CONFIG_SETTING_BRIBE_HELPTEXT                               :Võimaldab asulate omavalitsustele altkäemaksu pakkuda. Tabamise korral võetakse ettevõttelt kuueks kuuks ära õigus asulas tegutseda
+STR_CONFIG_SETTING_BRIBE_HELPTEXT                               :Võimaldab asulate omavalitsustele altkäemaksu pakkuda. Tabamise korral võetakse ettevõttelt kuueks kuuks õigus asulas tegutseda
+STR_CONFIG_SETTING_BRIBE_HELPTEXT_MINUTES                       :Võimaldab asulate omavalitsustele altkäemaksu pakkuda. Tabamise korral võetakse ettevõttelt kuueks minutiks õigus asulas tegutseda
 
 STR_CONFIG_SETTING_ALLOW_EXCLUSIVE                              :Ainuveoõiguste ostmine: {STRING}
 ###length 2
-STR_CONFIG_SETTING_ALLOW_EXCLUSIVE_HELPTEXT                     :Kui ettevõte ostab asulalt kaubaveo ainuõiguse, siis teised ettevõtted ei saa üks aasta uusi kaupu ega reisijaid
+STR_CONFIG_SETTING_ALLOW_EXCLUSIVE_HELPTEXT                     :Kui ettevõte ostab asulalt veo ainuõiguse, siis teisete ettevõttete jaamad (reisija ja kauba) ei saa 12 kuu jooksul kaupu
+STR_CONFIG_SETTING_ALLOW_EXCLUSIVE_HELPTEXT_MINUTES             :Kui ettevõte ostab asulalt veo ainuõiguse, siis teisete ettevõttete jaamad (reisija ja kauba) ei saa 12 kuu jooksul kaupu
 
 STR_CONFIG_SETTING_ALLOW_FUND_BUILDINGS                         :Luba ehitiste rahastamine: {STRING}
 STR_CONFIG_SETTING_ALLOW_FUND_BUILDINGS_HELPTEXT                :Võimaldab ettevõttel asulate kinnisvaraehitust rahastada
@@ -1515,6 +1538,7 @@ STR_CONFIG_SETTING_MINUTES_PER_YEAR_VALUE                       :{NUM}
 ###setting-zero-is-special
 STR_CONFIG_SETTING_MINUTES_PER_YEAR_FROZEN                      :0 (kalendriaeg külmutatud)
 
+STR_CONFIG_SETTING_CARGO_SCALE_VALUE                            :{NUM}%
 
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE                            :Vananenud sõidukite uuendamine: {STRING}
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE_HELPTEXT                   :Kui on sisse lülitatud, siis uuendatalse kõik kasutusaja lõpu lähedal olevad sõidukid automaatselt, järgides uuendamise tingimusi
@@ -1698,6 +1722,9 @@ STR_CONFIG_SETTING_RIGHT_MOUSE_BTN_EMU_OFF                      :Väljas
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE                        :Aken suletakse paremklõpsuga: {STRING}
 STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_HELPTEXT               :Sulgeb akna, kui selles paremklõps teha. Lülitab välja paremklõpsuga vihjed!
 ###length 3
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_NO                     :Ei
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_YES                    :Jah
+STR_CONFIG_SETTING_RIGHT_MOUSE_WND_CLOSE_YES_EXCEPT_STICKY      :Jah, välja arvatud kleepekad
 
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES                    :Salvestatud mängu nimes kasutatakse {STRING} kuupäevavormingut
 STR_CONFIG_SETTING_DATE_FORMAT_IN_SAVE_NAMES_HELPTEXT           :Kuupäeva vorming salvestatud mängu nimes
@@ -1838,6 +1865,8 @@ STR_CONFIG_SETTING_SERVINT_DISABLED                             :Väljas
 STR_CONFIG_SETTING_NOSERVICE                                    :Hoolduse keelamine rikete väljalülitamisel: {STRING}
 STR_CONFIG_SETTING_NOSERVICE_HELPTEXT                           :Kui on aktiveeritud, siis ei teostata hooldust sõidukitele mille tõrkumine ei ole võimalik
 
+STR_CONFIG_SETTING_STATION_LENGTH_LOADING_PENALTY               :Laadimiskiiruse aeglustus rongidele, mis on jaamast pikemad: {STRING}
+STR_CONFIG_SETTING_STATION_LENGTH_LOADING_PENALTY_HELPTEXT      :Sisselülitatud olekus laadivad jaama jaoks liiga pikad rongid kauem kui rongid, mis jaama mahuvad. See seade ei mõjuta rajaleidmist.
 
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :Vagunite kiiruspiirangud: {STRING}
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :Kui on aktiveeritud siis kasutatakse rongi maksimaalse kiiruse arvutamiseks ka vagunite kiiruse piirangut
@@ -2497,6 +2526,10 @@ STR_NETWORK_ASK_RELAY_NO                                        :{BLACK}Ei
 STR_NETWORK_ASK_RELAY_YES_ONCE                                  :{BLACK}Jah, ainult seekord
 STR_NETWORK_ASK_RELAY_YES_ALWAYS                                :{BLACK}jah, ära küsi uuesti
 
+STR_NETWORK_ASK_SURVEY_CAPTION                                  :Osaleda automaatses uuringus?
+STR_NETWORK_ASK_SURVEY_PREVIEW                                  :Vaata uuringutulemust
+STR_NETWORK_ASK_SURVEY_LINK                                     :Uuringust ja privaatsusest
+STR_NETWORK_ASK_SURVEY_NO                                       :Ei
 
 STR_NETWORK_SPECTATORS                                          :Vaatlejad
 
@@ -3620,8 +3653,12 @@ STR_LOCAL_AUTHORITY_ACTION_BRIBE                                :Paku kohalikule
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING            :{PUSH_COLOUR}{YELLOW}Pisikese kohaliku reklaamikampaania korraldamine meelitab rohkem reisijaid ja kaupu sinu veoteenuseid kasutama.{}Tõstab asulakeskuse lähiümbruses ajutiselt jaamade tegevushinnanguid.{}{POP_COLOUR}Maksumus: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING           :PUSH_COLOUR}{YELLOW}Keskmise reklaamikampaania korraldamine, et meelitada rohkem reisijaid ja kaupu sinu teenuste juurede.{}Tõstab ajutiselt asulakeskuse ümbruses jaamade tegevushinnanguid.{}{POP_COLOUR}Maksumus: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{PUSH_COLOUR}{YELLOW}Suure reklaamikampaania korraldamine, et meelitada rohkem reisijaid ja kaupu sinu teenuste juurede.{}Tõstab asulakeskuse kaugümbruses ajutiselt jaamade tegevushinnanguid.{}{POP_COLOUR}Maksumus: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION_MONTHS   :{PUSH_COLOUR}{YELLOW}Rahasta linnasüdame teedevõrgu rekonstrueerimist.{}Põhjustab märkimisväärseid liikluskatkestusi kuni kuueks kuuks.{}{POP_COLOUR}Maksumus: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION_MINUTES  :{PUSH_COLOUR}{YELLOW}Rahasta linnasüdame teedevõrgu rekonstrueerimist.{}Põhjustab märkimisväärseid liikluskatkestusi kuni kuueks minutiks.{}{POP_COLOUR}Maksumus: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{PUSH_COLOUR}{YELLOW}Oma ettevõtte auks kuju ehitamine.{}Tõstab püsivalt jaamade tegevushinnanguid selles asulas.{}{POP_COLOUR}Maksumus: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{PUSH_COLOUR}{YELLOW}Uute hooneehituste rahastamine selles asulas.{}Tõstab ajutiselt asula kasvutempot selles asulas.{}{POP_COLOUR}Maksumus: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT_MONTHS   :{PUSH_COLOUR}{YELLOW}Osta veo ainuõigus asulas 12 kuuks.{}Kohalik omavalitsus ei luba reisjatel ja kaubal kasutada teiste ettevõtete jaamu. Edukas altkättemaku andmine mõne teise ettevõtte poolt tühistab selle lepingu.{}{POP_COLOUR}Maksumus: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT_MINUTES  :{PUSH_COLOUR}{YELLOW}Osta veo ainuõigus asulas 12 minutiks.{}Kohalik omavalitsus ei luba reisjatel ja kaubal kasutada teiste ettevõtete jaamu. Edukas altkättemaku andmine mõne teise ettevõtte poolt tühistab selle lepingu.{}{POP_COLOUR}Maksumus: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE                        :{PUSH_COLOUR}{YELLOW}Kohalikule omavalitusele ettevõtte hinnangu tõstmise eesmärgil altkäemaksu pakkumine. Vahele jäädes tuleb trahvi maksta.{}{POP_COLOUR}Maksumus: {CURRENCY_LONG}
 
 # Goal window
@@ -3851,6 +3888,8 @@ STR_COMPANY_VIEW_INFRASTRUCTURE_BUTTON                          :{BLACK}Täpsust
 STR_COMPANY_VIEW_INFRASTRUCTURE_TOOLTIP                         :{BLACK}Vaata täpset taristu hulka
 STR_COMPANY_VIEW_GIVE_MONEY_BUTTON                              :{BLACK}Saada raha
 STR_COMPANY_VIEW_GIVE_MONEY_TOOLTIP                             :{BLACK}Saada sellele ettevõttele raha
+STR_COMPANY_VIEW_HOSTILE_TAKEOVER_BUTTON                        :{BLACK}Vaenulik ülevõtmine
+STR_COMPANY_VIEW_HOSTILE_TAKEOVER_TOOLTIP                       :{BLACK}Võta see ettevõte vaenulikult üle
 
 STR_COMPANY_VIEW_NEW_FACE_BUTTON                                :{BLACK}Uus nägu
 STR_COMPANY_VIEW_NEW_FACE_TOOLTIP                               :{BLACK}Vali presidendile uus nägu
@@ -4369,6 +4408,8 @@ STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Tühimas
 
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Kasum sel aastal: {LTBLUE}{CURRENCY_LONG} (eelmisel: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}Kasum sellel aastal: {LTBLUE}{CURRENCY_LONG} (eelmisel aastal: {CURRENCY_LONG}) {BLACK}Min. jõudlus: {LTBLUE}{POWER_TO_WEIGHT}
+STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{BLACK}Kasum sellel perioodil: {LTBLUE}{CURRENCY_LONG} (eelmisel perioodil: {CURRENCY_LONG})
+STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD_MIN_PERFORMANCE :{BLACK}Kasum sellel perioodil: {LTBLUE}{CURRENCY_LONG} (eelmisel perioodil: {CURRENCY_LONG}) {BLACK}Min. jõudlus: {LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Tehnoseisund: {LTBLUE}{COMMA}%  {BLACK}Rikkeid eelmisest hooldusest: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Valmistatud: {LTBLUE}{NUM}{BLACK} Väärtus: {LTBLUE}{CURRENCY_LONG}
@@ -4641,7 +4682,9 @@ STR_TIMETABLE_STATUS_NOT_STARTED                                :{BLACK}Graafiku
 STR_TIMETABLE_STATUS_START_AT_DATE                              :{BLACK}See graafik algab {STRING}
 STR_TIMETABLE_STATUS_START_IN_SECONDS                           :{BLACK}See graafik algab {COMMA}. sekundi pärast
 
+STR_TIMETABLE_START                                             :{BLACK}Alusta graafikut
 
+STR_TIMETABLE_START_SECONDS_QUERY                               :Sekundeid kuni graafik algab
 
 STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}Muuda aega
 STR_TIMETABLE_WAIT_TIME_TOOLTIP                                 :{BLACK}Muuda märgitud korraldusele määratud aega. Ctrl+klõps seab aja kõigile korraldustele
@@ -4776,6 +4819,7 @@ STR_TEXTFILE_VIEW_LICENCE                                       :{BLACK}Litsents
 STR_TEXTFILE_README_CAPTION                                     :{WHITE}{STRING} {STRING} abi.
 STR_TEXTFILE_CHANGELOG_CAPTION                                  :{WHITE}{STRING} muudatuste logi {STRING}
 STR_TEXTFILE_LICENCE_CAPTION                                    :{WHITE}{STRING} litsents {STRING}
+STR_TEXTFILE_SURVEY_RESULT_CAPTION                              :{WHITE}Uuringutulemuse eelvaade
 
 
 # Vehicle loading indicators
@@ -5708,6 +5752,7 @@ STR_STATION_NAME                                                :{STATION}
 STR_TOWN_NAME                                                   :{TOWN}
 STR_VEHICLE_NAME                                                :{VEHICLE}
 STR_WAYPOINT_NAME                                               :{WAYPOINT}
+
 
 STR_JUST_CARGO                                                  :{CARGO_LONG}
 STR_JUST_CHECKMARK                                              :{CHECKMARK}

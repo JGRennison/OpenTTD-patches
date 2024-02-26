@@ -52,6 +52,19 @@ struct CompanyInfrastructure {
 	char *Dump(char *buffer, const char *last) const;
 };
 
+class FreeUnitIDGenerator {
+public:
+	UnitID NextID() const;
+	UnitID UseID(UnitID index);
+	void ReleaseID(UnitID index);
+
+private:
+	using BitmapStorage = size_t;
+	static constexpr size_t BITMAP_SIZE = std::numeric_limits<BitmapStorage>::digits;
+
+	std::vector<BitmapStorage> used_bitmap;
+};
+
 enum CompanyBankruptcyFlags : byte {
 	CBRF_NONE      =   0x0,
 	CBRF_SALE      =   0x1, ///< the company has been marked for sale
@@ -150,6 +163,8 @@ struct Company : CompanyPool::PoolItem<&_company_pool>, CompanyProperties {
 	GroupStatistics group_default[VEH_COMPANY_END];  ///< NOSAVE: Statistics for the DEFAULT_GROUP group.
 
 	CompanyInfrastructure infrastructure; ///< NOSAVE: Counts of company owned infrastructure.
+
+	FreeUnitIDGenerator freeunits[VEH_COMPANY_END];
 
 	Money GetMaxLoan() const;
 
