@@ -29,6 +29,7 @@
 #include "linkgraph/linkgraphschedule.h"
 #include "tracerestrict.h"
 #include "newgrf_debug.h"
+#include "3rdparty/cpp-btree/btree_set.h"
 
 #include "table/strings.h"
 
@@ -456,10 +457,10 @@ void Station::RemoveIndustryToDeliver(Industry *ind)
  */
 void Station::RemoveFromAllNearbyLists()
 {
-	std::set<TownID> towns;
-	std::set<IndustryID> industries;
+	btree::btree_set<TownID> towns;
+	btree::btree_set<IndustryID> industries;
 
-	for (const auto &tile : this->catchment_tiles) {
+	for (TileIndex tile : this->catchment_tiles) {
 		TileType type = GetTileType(tile);
 		if (type == MP_HOUSE) {
 			towns.insert(GetTownIndex(tile));
