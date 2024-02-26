@@ -574,13 +574,13 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdScheduledDispatchSwapSchedules,                 0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SCHEDULED_DISPATCH_SWAP_SCHEDULES
 	DEF_CMD(CmdScheduledDispatchSetSlotFlags,                  0, CMDT_ROUTE_MANAGEMENT      ), // CMD_SCHEDULED_DISPATCH_SET_SLOT_FLAGS
 
-	DEF_CMD(CmdAddPlan,                              CMD_NO_TEST, CMDT_OTHER_MANAGEMENT      ), // CMD_ADD_PLAN
+	DEF_CMD(CmdAddPlan,                                        0, CMDT_OTHER_MANAGEMENT      ), // CMD_ADD_PLAN
 	DEF_CMD(CmdAddPlanLine,                          CMD_NO_TEST, CMDT_OTHER_MANAGEMENT      ), // CMD_ADD_PLAN_LINE
-	DEF_CMD(CmdRemovePlan,                           CMD_NO_TEST, CMDT_OTHER_MANAGEMENT      ), // CMD_REMOVE_PLAN
-	DEF_CMD(CmdRemovePlanLine,                       CMD_NO_TEST, CMDT_OTHER_MANAGEMENT      ), // CMD_REMOVE_PLAN_LINE
-	DEF_CMD(CmdChangePlanVisibility,                 CMD_NO_TEST, CMDT_OTHER_MANAGEMENT      ), // CMD_CHANGE_PLAN_VISIBILITY
-	DEF_CMD(CmdChangePlanColour,                     CMD_NO_TEST, CMDT_OTHER_MANAGEMENT      ), // CMD_CHANGE_PLAN_COLOUR
-	DEF_CMD(CmdRenamePlan,                           CMD_NO_TEST, CMDT_OTHER_MANAGEMENT      ), // CMD_RENAME_PLAN
+	DEF_CMD(CmdRemovePlan,                                     0, CMDT_OTHER_MANAGEMENT      ), // CMD_REMOVE_PLAN
+	DEF_CMD(CmdRemovePlanLine,                                 0, CMDT_OTHER_MANAGEMENT      ), // CMD_REMOVE_PLAN_LINE
+	DEF_CMD(CmdChangePlanVisibility,                           0, CMDT_OTHER_MANAGEMENT      ), // CMD_CHANGE_PLAN_VISIBILITY
+	DEF_CMD(CmdChangePlanColour,                               0, CMDT_OTHER_MANAGEMENT      ), // CMD_CHANGE_PLAN_COLOUR
+	DEF_CMD(CmdRenamePlan,                                     0, CMDT_OTHER_MANAGEMENT      ), // CMD_RENAME_PLAN
 
 	DEF_CMD(CmdDesyncCheck,                           CMD_SERVER, CMDT_SERVER_SETTING        ), // CMD_DESYNC_CHECK
 };
