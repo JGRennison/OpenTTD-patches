@@ -3615,6 +3615,22 @@ static bool IsVehicleRefitable(const Vehicle *v)
 	return false;
 }
 
+static StringID AdjustVehicleViewVelocityStringID(StringID str)
+{
+	if (_settings_client.gui.show_speed_first_vehicle_view) return str;
+
+	if (str == STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL) return STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END;
+
+	static_assert(STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END - STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END ==
+			STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL - STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL);
+
+	if (str >= STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL && str <= STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL) {
+		return str + STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END - STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL;
+	}
+
+	return str;
+}
+
 /** Window manager class for viewing a vehicle. */
 struct VehicleViewWindow : Window {
 private:
@@ -3969,6 +3985,8 @@ public:
 				}
 			}
 		}
+
+		str = AdjustVehicleViewVelocityStringID(str);
 
 		if (_settings_client.gui.show_order_number_vehicle_view && show_order_number && v->cur_implicit_order_index < v->GetNumOrders()) {
 			_temp_special_strings[0] = GetString(str);

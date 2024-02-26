@@ -314,6 +314,7 @@ struct GUISettings : public TimeSettings {
 	bool   show_group_hierarchy_name;                       ///< Show the full hierarchy in group names
 	bool   show_vehicle_group_hierarchy_name;               ///< Show the full group hierarchy in vehicle names
 	bool   show_order_number_vehicle_view;                  ///< Show order number in vehicle view window
+	bool   show_speed_first_vehicle_view;                   ///< Show speed before destination in vehicle view window
 	bool   hide_default_stop_location;                      ///< Hide default stop location for orders
 	bool   show_rail_polyline_tool;                         ///< Show rail polyline tool
 	bool   show_running_costs_calendar_year;                ///< Show vehicle running costs in calendar years

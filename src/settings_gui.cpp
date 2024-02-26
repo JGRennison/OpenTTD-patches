@@ -2281,6 +2281,7 @@ static SettingsContainer &GetSettingsTree()
 				vehicle_windows->Add(new ConditionallyHiddenSettingEntry("gui.show_vehicle_group_hierarchy_name", []() -> bool { return !_settings_client.gui.show_group_hierarchy_name; }));
 				vehicle_windows->Add(new SettingEntry("gui.enable_single_veh_shared_order_gui"));
 				vehicle_windows->Add(new SettingEntry("gui.show_order_number_vehicle_view"));
+				vehicle_windows->Add(new SettingEntry("gui.show_speed_first_vehicle_view"));
 				vehicle_windows->Add(new SettingEntry("gui.hide_default_stop_location"));
 				vehicle_windows->Add(new ConditionallyHiddenSettingEntry("gui.show_running_costs_calendar_year", []() -> bool { return GetGameSettings().economy.timekeeping_units != TKU_CALENDAR; }));
 			}
