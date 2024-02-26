@@ -1577,7 +1577,7 @@ void Window::FindWindowPlacementAndResize(int def_width, int def_height)
 		if (this->resize.step_width  > 1) enlarge_x -= enlarge_x % (int)this->resize.step_width;
 		if (this->resize.step_height > 1) enlarge_y -= enlarge_y % (int)this->resize.step_height;
 
-		ResizeWindow(this, enlarge_x, enlarge_y);
+		ResizeWindow(this, enlarge_x, enlarge_y, true, false);
 		/* ResizeWindow() calls this->OnResize(). */
 	} else {
 		/* Always call OnResize; that way the scrollbars and matrices get initialized. */
@@ -3617,7 +3617,7 @@ void ReInitAllWindows(bool zoom_changed)
 		ReInitWindow(FindWindowById(WC_MAIN_TOOLBAR, 0), zoom_changed);
 	}
 	ReInitWindow(FindWindowById(WC_STATUS_BAR, 0), zoom_changed);
-	for (Window *w : Window::IterateFromBack()) {
+	for (Window *w : Window::Iterate()) {
 		if (w->window_class == WC_MAIN_TOOLBAR || w->window_class == WC_STATUS_BAR) continue;
 		ReInitWindow(w, zoom_changed);
 	}
@@ -3731,7 +3731,7 @@ void RelocateAllWindows(int neww, int newh)
 		switch (w->window_class) {
 			case WC_MAIN_WINDOW:
 			case WC_BOOTSTRAP:
-				ResizeWindow(w, neww, newh);
+				ResizeWindow(w, neww, newh, true, false);
 				continue;
 
 			case WC_MAIN_TOOLBAR:
