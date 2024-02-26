@@ -319,7 +319,9 @@ uint Engine::DetermineCapacity(const Vehicle *v, uint16_t *mail_capacity) const
  */
 Money Engine::GetDisplayRunningCost() const
 {
-	return this->GetRunningCost() * DayLengthFactor();
+	Money cost = this->GetRunningCost();
+	if (_settings_client.gui.show_running_costs_calendar_year) cost *= DayLengthFactor();
+	return cost;
 }
 
 /**

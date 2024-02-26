@@ -3106,7 +3106,7 @@ struct VehicleDetailsWindow : Window {
 	{
 		if (EconTime::UsingWallclockUnits()) {
 			return STR_VEHICLE_INFO_AGE_RUNNING_COST_PERIOD;
-		} else if (DayLengthFactor() > 1) {
+		} else if (DayLengthFactor() > 1 && !_settings_client.gui.show_running_costs_calendar_year) {
 			return STR_VEHICLE_INFO_AGE_RUNNING_COST_ORIG_YR;
 		} else {
 			return STR_VEHICLE_INFO_AGE_RUNNING_COST_YR;

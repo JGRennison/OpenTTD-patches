@@ -4354,6 +4354,17 @@ void Vehicle::SetNext(Vehicle *next)
 }
 
 /**
+ * Gets the running cost of a vehicle  that can be sent into SetDParam for string processing.
+ * @return the vehicle's running cost
+ */
+Money Vehicle::GetDisplayRunningCost() const
+{
+	Money cost = this->GetRunningCost() >> 8;
+	if (_settings_client.gui.show_running_costs_calendar_year) cost *= DayLengthFactor();
+	return cost;
+}
+
+/**
  * Adds this vehicle to a shared vehicle chain.
  * @param shared_chain a vehicle of the chain with shared vehicles.
  * @pre !this->IsOrderListShared()

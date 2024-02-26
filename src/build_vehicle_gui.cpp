@@ -790,7 +790,7 @@ static StringID GetRunningCostString()
 {
 	if (EconTime::UsingWallclockUnits()) {
 		return STR_PURCHASE_INFO_RUNNINGCOST_PERIOD;
-	} else if (DayLengthFactor() > 1) {
+	} else if (DayLengthFactor() > 1 && !_settings_client.gui.show_running_costs_calendar_year) {
 		return STR_PURCHASE_INFO_RUNNINGCOST_ORIG_YEAR;
 	} else {
 		return STR_PURCHASE_INFO_RUNNINGCOST_YEAR;
