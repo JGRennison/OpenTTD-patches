@@ -1842,6 +1842,7 @@ STR_PLANS_CAPTION                                               :{WHITE}Plans
 STR_PLANS_NEW_PLAN                                              :{BLACK}New
 STR_PLANS_NEW_PLAN_TOOLTIP                                      :{BLACK}Create a new plan
 STR_PLANS_ADD_LINES                                             :{BLACK}Add lines
+STR_PLANS_ADD_LINES_TOOLTIP                                     :{BLACK}Add lines to the selected plan
 STR_PLANS_ADDING_LINES                                          :{BLACK}Adding...
 STR_PLANS_HIDE_ALL                                              :{BLACK}Hide all
 STR_PLANS_HIDE_ALL_TOOLTIP                                      :{BLACK}Set the visibility of all the plans and all their lines to false
@@ -1851,11 +1852,11 @@ STR_PLANS_VISIBILITY_PRIVATE                                    :{BLACK}Make pri
 STR_PLANS_VISIBILITY_PUBLIC                                     :{BLACK}Make public
 STR_PLANS_VISIBILITY_TOOLTIP                                    :{BLACK}Toggle the visibility of a plan. A public plan will be displayed in the plan window of the other companies but only its owner can add lines to it.
 STR_PLANS_COLOUR                                                :{BLACK}Colour
-STR_PLANS_COLOUR_TOOLTIP                                        :{BLACK}Set the colour of a plan.
+STR_PLANS_COLOUR_TOOLTIP                                        :{BLACK}Set the colour of a plan
 STR_PLANS_DELETE                                                :{BLACK}Delete
-STR_PLANS_DELETE_TOOLTIP                                        :{BLACK}Delete the selected item in the list
+STR_PLANS_DELETE_TOOLTIP                                        :{BLACK}Delete the selected plan
 STR_PLANS_TAKE_OWNERSHIP                                        :{BLACK}Take ownership
-STR_PLANS_TAKE_OWNERSHIP_TOOLTIP                                :{BLACK}Take ownership of the selected unowned item in the list
+STR_PLANS_TAKE_OWNERSHIP_TOOLTIP                                :{BLACK}Take ownership of the selected unowned plan
 STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :[Private]: {STRING3}
 STR_PLANS_LIST_ITEM_PLAN                                        :Plan #{NUM}: {NUM} line{P "" s} ({DATE_SHORT})
 STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{RAW_STRING}: {NUM} line{P "" s} ({DATE_SHORT})
