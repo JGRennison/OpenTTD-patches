@@ -1854,6 +1854,8 @@ STR_PLANS_COLOUR                                                :{BLACK}Colour
 STR_PLANS_COLOUR_TOOLTIP                                        :{BLACK}Set the colour of a plan.
 STR_PLANS_DELETE                                                :{BLACK}Delete
 STR_PLANS_DELETE_TOOLTIP                                        :{BLACK}Delete the selected item in the list
+STR_PLANS_TAKE_OWNERSHIP                                        :{BLACK}Take ownership
+STR_PLANS_TAKE_OWNERSHIP_TOOLTIP                                :{BLACK}Take ownership of the selected unowned item in the list
 STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :[Private]: {STRING3}
 STR_PLANS_LIST_ITEM_PLAN                                        :Plan #{NUM}: {NUM} line{P "" s} ({DATE_SHORT})
 STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{RAW_STRING}: {NUM} line{P "" s} ({DATE_SHORT})

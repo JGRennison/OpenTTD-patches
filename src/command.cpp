@@ -315,6 +315,7 @@ CommandProc CmdRemovePlanLine;
 CommandProc CmdChangePlanVisibility;
 CommandProc CmdChangePlanColour;
 CommandProc CmdRenamePlan;
+CommandProc CmdAcquireUnownedPlan;
 
 CommandProc CmdDesyncCheck;
 
@@ -581,6 +582,7 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdChangePlanVisibility,                           0, CMDT_OTHER_MANAGEMENT      ), // CMD_CHANGE_PLAN_VISIBILITY
 	DEF_CMD(CmdChangePlanColour,                               0, CMDT_OTHER_MANAGEMENT      ), // CMD_CHANGE_PLAN_COLOUR
 	DEF_CMD(CmdRenamePlan,                                     0, CMDT_OTHER_MANAGEMENT      ), // CMD_RENAME_PLAN
+	DEF_CMD(CmdAcquireUnownedPlan,                 CMD_SERVER_NS, CMDT_OTHER_MANAGEMENT      ), // CMD_ACQUIRE_UNOWNED_PLAN
 
 	DEF_CMD(CmdDesyncCheck,                           CMD_SERVER, CMDT_SERVER_SETTING        ), // CMD_DESYNC_CHECK
 };

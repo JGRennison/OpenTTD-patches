@@ -531,6 +531,7 @@ enum Commands {
 	CMD_CHANGE_PLAN_VISIBILITY,
 	CMD_CHANGE_PLAN_COLOUR,
 	CMD_RENAME_PLAN,
+	CMD_ACQUIRE_UNOWNED_PLAN,
 
 	CMD_DESYNC_CHECK,                 ///< Force desync checks to be run
 

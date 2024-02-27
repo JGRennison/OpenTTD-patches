@@ -14,6 +14,7 @@
 #include "plans_func.h"
 #include "window_func.h"
 #include "company_func.h"
+#include "company_base.h"
 #include "string_func.h"
 #include "window_gui.h"
 #include "table/strings.h"
@@ -243,6 +244,35 @@ CommandCost CmdRenamePlan(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
 	if (flags & DC_EXEC) {
 		p->name = text;
 		InvalidateWindowClassesData(WC_PLANS);
+	}
+
+	return CommandCost();
+}
+
+/**
+* Acquire an unowned plan
+* @param tile unused
+* @param flags type of operation
+* @param p1 ID of plan
+* @param p2 unused
+* @param text unused
+* @return the cost of this operation or an error
+*/
+CommandCost CmdAcquireUnownedPlan(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+{
+	Plan *p = Plan::GetIfValid(p1);
+	if (p == nullptr) return CMD_ERROR;
+	if (Company::IsValidID(p->owner)) return CMD_ERROR;
+	if (!Company::IsValidID(_current_company)) return CMD_ERROR;
+
+	if (flags & DC_EXEC) {
+		p->owner = _current_company;
+		InvalidateWindowClassesData(WC_PLANS);
+		if (p->visible) {
+			for (PlanLine *line : p->lines) {
+				if (line->visible) line->MarkDirty();
+			}
+		}
 	}
 
 	return CommandCost();

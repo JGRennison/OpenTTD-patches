@@ -59,7 +59,10 @@ static constexpr NWidgetPart _nested_plans_widgets[] = {
 					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_SHOW_ALL), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_SHOW_ALL, STR_PLANS_SHOW_ALL_TOOLTIP),
 				EndContainer(),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_DELETE), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_DELETE, STR_PLANS_DELETE_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_RENAME), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_BUTTON_RENAME, STR_NULL),
+				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_PLN_RENAME_SEL),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_RENAME), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_BUTTON_RENAME, STR_NULL),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_PLN_TAKE_OWNERSHIP), SetResize(1, 0), SetFill(1, 0), SetDataTip(STR_PLANS_TAKE_OWNERSHIP, STR_PLANS_TAKE_OWNERSHIP_TOOLTIP),
+				EndContainer(),
 			EndContainer(),
 			NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 		EndContainer(),
@@ -82,6 +85,7 @@ struct PlansWindow : Window {
 
 	Scrollbar *vscroll;
 	NWidgetStacked *hide_all_sel;
+	NWidgetStacked *rename_sel;
 	std::vector<ListItem> list; ///< The translation table linking panel indices to their related PlanID.
 	int selected; ///< What item is currently selected in the panel.
 	uint vis_btn_left; ///< left offset of visibility button
@@ -94,6 +98,8 @@ struct PlansWindow : Window {
 		this->vscroll = this->GetScrollbar(WID_PLN_SCROLLBAR);
 		this->hide_all_sel = this->GetWidget<NWidgetStacked>(WID_PLN_HIDE_ALL_SEL);
 		this->hide_all_sel->SetDisplayedPlane(0);
+		this->rename_sel = this->GetWidget<NWidgetStacked>(WID_PLN_RENAME_SEL);
+		this->rename_sel->SetDisplayedPlane(0);
 		this->FinishInitNested();
 
 		this->selected = INT_MAX;
@@ -141,6 +147,13 @@ struct PlansWindow : Window {
 					SetDParamStr(0, _current_plan->GetName().c_str());
 					ShowQueryString(STR_JUST_RAW_STRING, STR_PLANS_QUERY_RENAME_PLAN,
 						MAX_LENGTH_PLAN_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS);
+				}
+				break;
+			}
+
+			case WID_PLN_TAKE_OWNERSHIP: {
+				if (_current_plan != nullptr && !IsNonAdminNetworkClient()) {
+					DoCommandP(0, this->list[this->selected].plan_id, 0, CMD_ACQUIRE_UNOWNED_PLAN);
 				}
 				break;
 			}
@@ -255,11 +268,14 @@ struct PlansWindow : Window {
 		this->SetWidgetDisabledState(WID_PLN_HIDE_ALL, this->vscroll->GetCount() == 0);
 		this->SetWidgetDisabledState(WID_PLN_SHOW_ALL, this->vscroll->GetCount() == 0);
 		this->hide_all_sel->SetDisplayedPlane(this->vscroll->GetCount() != 0 && this->AllPlansHidden() ? 1 : 0);
-		if (_current_plan) {
+		if (_current_plan != nullptr) {
 			this->SetWidgetsDisabledState(_current_plan->owner != _local_company, WID_PLN_ADD_LINES, WID_PLN_VISIBILITY, WID_PLN_DELETE, WID_PLN_RENAME, WID_PLN_COLOUR);
 			this->GetWidget<NWidgetCore>(WID_PLN_VISIBILITY)->widget_data = _current_plan->visible_by_all ? STR_PLANS_VISIBILITY_PRIVATE : STR_PLANS_VISIBILITY_PUBLIC;
+			this->SetWidgetDisabledState(WID_PLN_TAKE_OWNERSHIP, Company::IsValidID(_current_plan->owner) || IsNonAdminNetworkClient());
+			this->rename_sel->SetDisplayedPlane(Company::IsValidID(_current_plan->owner) || !Company::IsValidID(_current_company) ? 0 : 1);
 		} else {
-			this->SetWidgetsDisabledState(true, WID_PLN_ADD_LINES, WID_PLN_VISIBILITY, WID_PLN_DELETE, WID_PLN_RENAME, WID_PLN_COLOUR);
+			this->SetWidgetsDisabledState(true, WID_PLN_ADD_LINES, WID_PLN_VISIBILITY, WID_PLN_DELETE, WID_PLN_RENAME, WID_PLN_COLOUR, WID_PLN_TAKE_OWNERSHIP);
+			this->rename_sel->SetDisplayedPlane(0);
 		}
 		this->DrawWidgets();
 	}
@@ -368,6 +384,10 @@ struct PlansWindow : Window {
 
 			case WID_PLN_RENAME:
 				*size = adddim(GetStringBoundingBox(STR_BUTTON_RENAME), padding);
+				break;
+
+			case WID_PLN_TAKE_OWNERSHIP:
+				*size = adddim(GetStringBoundingBox(STR_PLANS_TAKE_OWNERSHIP), padding);
 				break;
 		}
 	}
