@@ -771,6 +771,10 @@ int openttd_main(int argc, char *argv[])
 	SetSelfAsMainThread();
 	PerThreadSetup();
 	SlXvSetStaticCurrentVersions();
+
+	_switch_mode_time = std::chrono::steady_clock::now();
+	_switch_mode_time_valid = true;
+
 	std::string musicdriver;
 	std::string sounddriver;
 	std::string videodriver;

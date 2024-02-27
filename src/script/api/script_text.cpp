@@ -163,17 +163,19 @@ SQInteger ScriptText::_set(HSQUIRRELVM vm)
 
 std::string ScriptText::GetEncodedText()
 {
-	static StringIDList seen_ids;
 	int param_count = 0;
-	seen_ids.clear();
 	std::string result;
 	auto output = std::back_inserter(result);
 	if (this->GetActiveInstance()->IsTextParamMismatchAllowed()) {
+		static StringIDList seen_ids;
+		seen_ids.clear();
 		this->_GetEncodedTextTraditional(output, param_count, seen_ids);
 	} else {
+		static ScriptTextList seen_texts;
+		seen_texts.clear();
 		ParamList params;
-		this->_FillParamList(params);
-		this->_GetEncodedText(output, param_count, seen_ids, params);
+		this->_FillParamList(params, seen_texts);
+		this->_GetEncodedText(output, param_count, params);
 	}
 	if (param_count > SCRIPT_TEXT_MAX_PARAMETERS) throw Script_FatalError(fmt::format("{}: Too many parameters", GetGameStringName(this->string)));
 	return result;
@@ -274,14 +276,19 @@ void ScriptText::_GetEncodedTextTraditional(std::back_insert_iterator<std::strin
 	seen_ids.pop_back();
 }
 
-void ScriptText::_FillParamList(ParamList &params)
+void ScriptText::_FillParamList(ParamList &params, ScriptTextList &seen_texts)
 {
+	if (std::find(seen_texts.begin(), seen_texts.end(), this) != seen_texts.end()) throw Script_FatalError(fmt::format("{}: Circular reference detected", GetGameStringName(this->string)));
+	seen_texts.push_back(this);
+
 	for (int i = 0; i < this->paramc; i++) {
 		Param *p = &this->param[i];
 		params.emplace_back(this->string, i, p);
 		if (!std::holds_alternative<ScriptTextRef>(*p)) continue;
-		std::get<ScriptTextRef>(*p)->_FillParamList(params);
+		std::get<ScriptTextRef>(*p)->_FillParamList(params, seen_texts);
 	}
+
+	seen_texts.pop_back();
 }
 
 void ScriptText::ParamCheck::Encode(std::back_insert_iterator<std::string> &output)
@@ -293,12 +300,9 @@ void ScriptText::ParamCheck::Encode(std::back_insert_iterator<std::string> &outp
 	this->used = true;
 }
 
-void ScriptText::_GetEncodedText(std::back_insert_iterator<std::string> &output, int &param_count, StringIDList &seen_ids, ParamSpan args)
+void ScriptText::_GetEncodedText(std::back_insert_iterator<std::string> &output, int &param_count, ParamSpan args)
 {
 	const std::string &name = GetGameStringName(this->string);
-
-	if (std::find(seen_ids.begin(), seen_ids.end(), this->string) != seen_ids.end()) throw Script_FatalError(fmt::format("{}: Circular reference detected", name));
-	seen_ids.push_back(this->string);
 
 	Utf8Encode(output, SCC_ENCODED);
 	fmt::format_to(output, "{:X}", this->string);
@@ -337,7 +341,7 @@ void ScriptText::_GetEncodedText(std::back_insert_iterator<std::string> &output,
 				int count = 0;
 				fmt::format_to(output, ":");
 				ScriptTextRef &ref = std::get<ScriptTextRef>(*p.param);
-				ref->_GetEncodedText(output, count, seen_ids, args.subspan(idx));
+				ref->_GetEncodedText(output, count, args.subspan(idx));
 				p.used = true;
 				if (++count != cur_param.consumes) {
 					ScriptLog::Error(fmt::format("{}({}): {{{}}} expects {} to be consumed, but {} consumes {}", name, param_count + 1, cur_param.cmd, cur_param.consumes - 1, GetGameStringName(ref->string), count - 1));
@@ -358,8 +362,6 @@ void ScriptText::_GetEncodedText(std::back_insert_iterator<std::string> &output,
 
 		param_count += cur_param.consumes;
 	}
-
-	seen_ids.pop_back();
 }
 
 const std::string Text::GetDecodedText()

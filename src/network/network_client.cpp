@@ -1056,6 +1056,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_MAP_DONE(Packet
 
 	/* As we skipped switch-mode, update the time we "switched". */
 	_switch_mode_time = std::chrono::steady_clock::now();
+	_switch_mode_time_valid = true;
 
 	ShowClientList();
 
