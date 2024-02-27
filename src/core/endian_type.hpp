@@ -27,7 +27,7 @@
 #	error "TTD_ENDIAN is not defined; please set it to either TTD_LITTLE_ENDIAN or TTD_BIG_ENDIAN"
 #endif /* !TTD_ENDIAN */
 
-#if defined(__x86_64__) || defined(_M_X64) || defined(__aarch64__) || defined(_M_ARM64)
+#if !defined(NO_TAGGED_PTRS) && (defined(__x86_64__) || defined(_M_X64) || defined(__aarch64__) || defined(_M_ARM64))
 	/** Tagged pointers (upper bits) may be used on this architecture */
 #	define OTTD_UPPER_TAGGED_PTR 1
 #else

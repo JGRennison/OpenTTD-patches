@@ -536,6 +536,10 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     add_definitions(-DPOINTER_IS_64BIT)
 endif()
 
+if(OPTION_NO_TAGGED_PTRS)
+    add_definitions(-DNO_TAGGED_PTRS)
+endif()
+
 enable_testing()
 
 add_subdirectory(regression)
