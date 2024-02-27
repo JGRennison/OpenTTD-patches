@@ -675,6 +675,13 @@ item (FEAT_GLOBALVARS) {
 			Set whether signals should be drawn on the opposite side of the track for the most recently defined style (defined using the <span class="code">define_style</span> property).
 		</td>
 	</tr>
+	<tr><td>style_both_sides</td><td>0 or 1</td>
+		<td>
+			Set whether signals should be drawn on both sides of the track for the most recently defined style (defined using the <span class="code">define_style</span> property).<br />
+			If set, the <span class="code">signal_context_is_second</span> variable is true when drawing the second signal.<br />
+			If this and <span class="code">style_opposite_side</span> are both set, the first signal is drawn on the opposite side and the second signal is drawn on the usual side.
+		</td>
+	</tr>
 	<tr><td>style_realistic_braking_only</td><td>0 or 1</td>
 		<td>
 			Set whether signals using this style may only be built when realistic braking is enabled, for the most recently defined style (defined using the <span class="code">define_style</span> property).
@@ -722,6 +729,11 @@ item (FEAT_GLOBALVARS) {
 	<tr><td>signal_context_is_tunnel</td><td>0 or 1</td>
 		<td>
 			The signal is being drawn on a tunnel entrance/exit (not a bridge)
+		</td>
+	</tr>
+	<tr><td>signal_context_is_second</td><td>0 or 1</td>
+		<td>
+			The second signal is being drawn (on the opposite side to the first signal), see the style_both_sides property
 		</td>
 	</tr>
 	<tr><td>signal_context_info</td><td></td>

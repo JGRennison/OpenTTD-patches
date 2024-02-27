@@ -102,7 +102,7 @@ void ResolveRailTypeGUISignalSprites(RailTypeInfo *rti, uint8_t style, PalSprite
 
 	for (SignalType type = SIGTYPE_BLOCK; type < SIGTYPE_END; type = (SignalType)(type + 1)) {
 		for (SignalVariant var = SIG_ELECTRIC; var <= SIG_SEMAPHORE; var = (SignalVariant)(var + 1)) {
-			PalSpriteID red   = GetCustomSignalSprite(rti, INVALID_TILE, type, var, 0, CSSC_GUI, style).sprite;
+			PalSpriteID red   = GetCustomSignalSprite(rti, INVALID_TILE, type, var, 0, { CSSC_GUI }, style).sprite;
 			if (red.sprite != 0) {
 				signals[type][var][0] = { red.sprite + SIGNAL_TO_SOUTH, red.pal };
 			} else {
@@ -112,7 +112,7 @@ void ResolveRailTypeGUISignalSprites(RailTypeInfo *rti, uint8_t style, PalSprite
 				signals[type][var][1] = signals[type][var][0];
 				continue;
 			}
-			PalSpriteID green = GetCustomSignalSprite(rti, INVALID_TILE, type, var, 255, CSSC_GUI, style).sprite;
+			PalSpriteID green = GetCustomSignalSprite(rti, INVALID_TILE, type, var, 255, { CSSC_GUI }, style).sprite;
 			if (green.sprite != 0) {
 				signals[type][var][1] = { green.sprite + SIGNAL_TO_SOUTH, green.pal };
 			} else {
@@ -3221,7 +3221,7 @@ void DrawSingleSignal(TileIndex tile, const RailTypeInfo *rti, Track track, Sign
 
 	uint8_t style = 0;
 	if (_num_new_signal_styles > 0) {
-		switch (context) {
+		switch (context.ctx_mode) {
 			case CSSC_TRACK:
 				style = GetSignalStyle(tile, track);
 				break;
@@ -3236,14 +3236,19 @@ void DrawSingleSignal(TileIndex tile, const RailTypeInfo *rti, Track track, Sign
 		}
 	}
 
+	if (HasBit(_signal_style_masks.signal_both_sides, style) && ((context.ctx_flags & CSSCF_SECOND_SIGNAL) == 0)) {
+		/* Draw second signal on opposite side */
+		DrawSingleSignal(tile, rti, track, condition, image, pos, type, variant, prog, { context.ctx_mode, context.ctx_flags | CSSCF_SECOND_SIGNAL });
+	}
+
 	uint x, y;
-	GetSignalXY(tile, pos, HasBit(_signal_style_masks.signal_opposite_side, style), x, y);
+	GetSignalXY(tile, pos, HasBit(_signal_style_masks.signal_opposite_side, style) != ((context.ctx_flags & CSSCF_SECOND_SIGNAL) != 0), x, y);
 
 	uint8_t aspect;
 	if (condition == SIGNAL_STATE_GREEN) {
 		aspect = 1;
 		if (_extra_aspects > 0) {
-			switch (context) {
+			switch (context.ctx_mode) {
 				case CSSC_TRACK:
 					aspect = GetSignalAspect(tile, track);
 					break;
@@ -3341,7 +3346,7 @@ static void DrawSingleSignal(TileIndex tile, const RailTypeInfo *rti, Track trac
 	SignalVariant variant = GetSignalVariant(tile, track);
 
 	const TraceRestrictProgram *prog = IsRestrictedSignal(tile) ? GetExistingTraceRestrictProgram(tile, track) : nullptr;
-	DrawSingleSignal(tile, rti, track, condition, image, pos, type, variant, prog, CSSC_TRACK);
+	DrawSingleSignal(tile, rti, track, condition, image, pos, type, variant, prog, { CSSC_TRACK });
 }
 
 static void GetSignalXYByTrackdir(TileIndex tile, Trackdir td, bool opposite, uint &x, uint &y)
@@ -3400,6 +3405,11 @@ void MarkSingleSignalDirty(TileIndex tile, Trackdir td)
 		opposite = HasBit(_signal_style_masks.signal_opposite_side, GetSignalStyleGeneric(tile, TrackdirToTrack(td)));
 	}
 	MarkSingleSignalDirtyIntl(tile, td, opposite, [td](uint x, uint y) -> uint {
+		return GetSaveSlopeZ(x, y, TrackdirToTrack(td));
+	});
+
+	if (_signal_style_masks.signal_both_sides == 0 || !HasBit(_signal_style_masks.signal_both_sides, GetSignalStyleGeneric(tile, TrackdirToTrack(td)))) return;
+	MarkSingleSignalDirtyIntl(tile, td, !opposite, [td](uint x, uint y) -> uint {
 		return GetSaveSlopeZ(x, y, TrackdirToTrack(td));
 	});
 }

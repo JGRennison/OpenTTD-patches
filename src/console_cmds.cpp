@@ -3223,6 +3223,7 @@ DEF_CONSOLE_CMD(ConDumpSignalStyles)
 	IConsolePrintF(CC_DEFAULT, "    s = lookahead single signal");
 	IConsolePrintF(CC_DEFAULT, "    c = combined normal and shunt");
 	IConsolePrintF(CC_DEFAULT, "    r = realistic braking only");
+	IConsolePrintF(CC_DEFAULT, "    b = both sides");
 	IConsolePrintF(CC_DEFAULT, "  Extra aspects: %u", _extra_aspects);
 
 	btree::btree_map<uint32_t, const GRFFile *> grfs;
@@ -3234,7 +3235,7 @@ DEF_CONSOLE_CMD(ConDumpSignalStyles)
 			grfid = style.grffile->grfid;
 			grfs.insert(std::pair<uint32_t, const GRFFile *>(grfid, style.grffile));
 		}
-		IConsolePrintF(CC_DEFAULT, "  %2u: GRF: %08X, Local: %2u, Extra aspects: %3u, Flags: %c%c%c%c%c%c%c, %s",
+		IConsolePrintF(CC_DEFAULT, "  %2u: GRF: %08X, Local: %2u, Extra aspects: %3u, Flags: %c%c%c%c%c%c%c%c, %s",
 				(uint) (i + 1),
 				BSWAP32(grfid),
 				style.grf_local_id,
@@ -3246,6 +3247,7 @@ DEF_CONSOLE_CMD(ConDumpSignalStyles)
 				HasBit(style.style_flags, NSSF_LOOKAHEAD_SINGLE_SIGNAL) ? 's' : '-',
 				HasBit(style.style_flags, NSSF_COMBINED_NORMAL_SHUNT)   ? 'c' : '-',
 				HasBit(style.style_flags, NSSF_REALISTIC_BRAKING_ONLY)  ? 'r' : '-',
+				HasBit(style.style_flags, NSSF_BOTH_SIDES)              ? 'b' : '-',
 				GetStringPtr(style.name)
 		);
 	}

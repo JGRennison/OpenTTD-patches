@@ -51,7 +51,7 @@ uint32_t GetNewSignalsSideVariable()
 		switch (variable) {
 			case 0x40: return 0;
 			case A2VRI_SIGNALS_SIGNAL_RESTRICTION_INFO: return 0;
-			case A2VRI_SIGNALS_SIGNAL_CONTEXT: return this->signal_context;
+			case A2VRI_SIGNALS_SIGNAL_CONTEXT: return GetNewSignalsSignalContext(this->signal_context);
 			case A2VRI_SIGNALS_SIGNAL_STYLE: return MapSignalStyle(this->signal_style);
 			case A2VRI_SIGNALS_SIGNAL_SIDE: return GetNewSignalsSideVariable();
 			case A2VRI_SIGNALS_SIGNAL_VERTICAL_CLEARANCE: return 0xFF;
@@ -63,7 +63,7 @@ uint32_t GetNewSignalsSideVariable()
 		case A2VRI_SIGNALS_SIGNAL_RESTRICTION_INFO:
 			return GetNewSignalsRestrictedSignalsInfo(this->prog, this->tile, this->signal_style);
 		case A2VRI_SIGNALS_SIGNAL_CONTEXT:
-			return GetNewSignalsSignalContext(this->signal_context, this->tile);
+			return GetNewSignalsSignalContext(this->signal_context);
 		case A2VRI_SIGNALS_SIGNAL_STYLE: return MapSignalStyle(this->signal_style);
 		case A2VRI_SIGNALS_SIGNAL_SIDE: return GetNewSignalsSideVariable();
 		case A2VRI_SIGNALS_SIGNAL_VERTICAL_CLEARANCE: return GetNewSignalsVerticalClearanceInfo(this->tile, this->z);

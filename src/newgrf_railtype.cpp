@@ -37,7 +37,7 @@
 			case 0x43: return CalTime::CurDate().base();
 			case 0x44: return HZB_TOWN_EDGE;
 			case A2VRI_RAILTYPE_SIGNAL_RESTRICTION_INFO: return 0;
-			case A2VRI_RAILTYPE_SIGNAL_CONTEXT: return this->signal_context;
+			case A2VRI_RAILTYPE_SIGNAL_CONTEXT: return GetNewSignalsSignalContext(this->signal_context);
 			case A2VRI_RAILTYPE_SIGNAL_SIDE: return GetNewSignalsSideVariable();
 			case A2VRI_RAILTYPE_SIGNAL_VERTICAL_CLEARANCE: return 0xFF;
 			case A2VRI_RAILTYPE_ADJACENT_CROSSING: return 0;
@@ -63,7 +63,7 @@
 		case A2VRI_RAILTYPE_SIGNAL_RESTRICTION_INFO:
 			return GetNewSignalsRestrictedSignalsInfo(this->prog, this->tile, 0);
 		case A2VRI_RAILTYPE_SIGNAL_CONTEXT:
-			return GetNewSignalsSignalContext(this->signal_context, this->tile);
+			return GetNewSignalsSignalContext(this->signal_context);
 		case A2VRI_RAILTYPE_SIGNAL_SIDE:
 			return GetNewSignalsSideVariable();
 		case A2VRI_RAILTYPE_SIGNAL_VERTICAL_CLEARANCE:
@@ -175,7 +175,7 @@ static PalSpriteID GetRailTypeCustomSignalSprite(const RailTypeInfo *rti, TileIn
 	if (type == SIGTYPE_PROG && !HasBit(rti->ctrl_flags, RTCF_PROGSIG)) return { 0, PAL_NONE };
 	if (type == SIGTYPE_NO_ENTRY && !HasBit(rti->ctrl_flags, RTCF_NOENTRYSIG)) return { 0, PAL_NONE };
 
-	uint32_t param1 = (context == CSSC_GUI) ? 0x10 : 0x00;
+	uint32_t param1 = (context.ctx_mode == CSSC_GUI) ? 0x10 : 0x00;
 	uint32_t param2 = (type << 16) | (var << 8) | RemapAspect(aspect, rti->signal_extra_aspects, 0);
 	if ((prog != nullptr) && HasBit(rti->ctrl_flags, RTCF_RESTRICTEDSIG)) SetBit(param2, 24);
 	RailTypeResolverObject object(rti, tile, TCX_NORMAL, RTSG_SIGNALS, param1, param2, context, prog, z);
@@ -214,7 +214,7 @@ CustomSignalSpriteResult GetCustomSignalSprite(const RailTypeInfo *rti, TileInde
 		}
 		if (!HasBit(grf->new_signal_style_mask, style)) continue;
 
-		uint32_t param1 = (context == CSSC_GUI) ? 0x10 : 0x00;
+		uint32_t param1 = (context.ctx_mode == CSSC_GUI) ? 0x10 : 0x00;
 		uint32_t param2 = (type << 16) | (var << 8) | RemapAspect(aspect, grf->new_signal_extra_aspects, style);
 		if ((prog != nullptr) && HasBit(grf->new_signal_ctrl_flags, NSCF_RESTRICTEDSIG)) SetBit(param2, 24);
 		NewSignalsResolverObject object(grf, tile, TCX_NORMAL, param1, param2, context, style, prog, z);

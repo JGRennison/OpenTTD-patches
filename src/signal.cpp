@@ -1887,6 +1887,9 @@ static bool DetermineExtraAspectsVariable()
 		if (HasBit(_new_signal_styles[i].style_flags, NSSF_OPPOSITE_SIDE)) {
 			SetBit(_signal_style_masks.signal_opposite_side, i + 1);
 		}
+		if (HasBit(_new_signal_styles[i].style_flags, NSSF_BOTH_SIDES)) {
+			SetBit(_signal_style_masks.signal_both_sides, i + 1);
+		}
 		if (HasBit(_new_signal_styles[i].style_flags, NSSF_COMBINED_NORMAL_SHUNT)) {
 			SetBit(_signal_style_masks.combined_normal_shunt, i + 1);
 			SetBit(_signal_style_masks.no_tunnel_bridge, i + 1);

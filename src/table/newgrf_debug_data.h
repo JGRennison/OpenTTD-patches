@@ -1449,11 +1449,12 @@ class NIHSignals : public NIHelper {
 	uint Resolve(uint index, uint var, uint param, GetVariableExtra *extra) const override
 	{
 		extern TraceRestrictProgram *GetFirstTraceRestrictProgramOnTile(TileIndex t);
-		CustomSignalSpriteContext ctx = CSSC_TRACK;
+		CustomSignalSpriteContext ctx = { CSSC_TRACK };
 		uint8_t style = 0;
 		uint z = 0;
 		if (IsTunnelBridgeWithSignalSimulation(index)) {
-			ctx = IsTunnelBridgeSignalSimulationEntrance(index) ? CSSC_TUNNEL_BRIDGE_ENTRANCE : CSSC_TUNNEL_BRIDGE_EXIT;
+			ctx = { IsTunnelBridgeSignalSimulationEntrance(index) ? CSSC_TUNNEL_BRIDGE_ENTRANCE : CSSC_TUNNEL_BRIDGE_EXIT };
+			if (IsTunnel(index)) ctx.ctx_flags |= CSSCF_TUNNEL;
 			style = GetTunnelBridgeSignalStyle(index);
 			z = GetTunnelBridgeSignalZ(index, !IsTunnelBridgeSignalSimulationEntrance(index));
 		} else if (IsTileType(index, MP_RAILWAY) && HasSignals(index)) {

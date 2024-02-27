@@ -344,12 +344,24 @@ enum SpriteGroupCallbacksUsed : uint8_t {
 };
 DECLARE_ENUM_AS_BIT_SET(SpriteGroupCallbacksUsed)
 
-enum CustomSignalSpriteContext : uint8_t {
+enum CustomSignalSpriteContextMode : uint8_t {
 	CSSC_GUI = 0,
 	CSSC_TRACK,
 	CSSC_TUNNEL_BRIDGE_ENTRANCE,
 	CSSC_TUNNEL_BRIDGE_EXIT,
 	CSSC_BRIDGE_MIDDLE,
+};
+
+enum CustomSignalSpriteContextFlags : uint8_t {
+	CSSCF_NONE                          = 0,
+	CSSCF_TUNNEL                        = 1 << 1,
+	CSSCF_SECOND_SIGNAL                 = 1 << 2,
+};
+DECLARE_ENUM_AS_BIT_SET(CustomSignalSpriteContextFlags)
+
+struct CustomSignalSpriteContext {
+	CustomSignalSpriteContextMode ctx_mode;
+	CustomSignalSpriteContextFlags ctx_flags = CSSCF_NONE;
 };
 
 #endif /* NEWGRF_COMMONS_H */

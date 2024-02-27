@@ -554,6 +554,16 @@
 	The Action 0 Id field is not used, the value is ignored.
 	</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 1</p>
+	<h4 id="signals_style_both_sides">Set custom signal style signal drawn on both sides (mappable property: signals_style_both_sides)</h4>
+	<p>This applies to the most recent custom signal style defined using the <a href="#signals_define_style">signals_define_style</a> property.<br />
+	When enabled, signals using this style are drawn on both sides of the track.<br />
+	Bit 9 of <a href="#signals_signal_context">signals_signal_context</a> is set when drawing the second signal on the opposite side.</p>
+	<p>If this and <a href="#signals_style_opposite_side">signals_style_opposite_side</a> are both set, the first signal is drawn on the opposite side
+	and the second signal is drawn on the usual side.</p>
+	<p>The property length is 1 byte. 0 is disabled (default). 1 is enabled.<br />
+	The Action 0 Id field is not used, the value is ignored.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_signals_style</font>, version 3</p>
 	<h4 id="signals_style_realistic_braking_only">Set custom signal style signal requires realistic braking (mappable property: signals_style_realistic_braking_only)</h4>
 	<p>This applies to the most recent custom signal style defined using the <a href="#signals_define_style">signals_define_style</a> property.<br />
 	When enabled, signals using this style may only be built when realistic braking is enabled.</p>
@@ -929,6 +939,7 @@
 		</table>
 	</td></tr>
 	<tr><td>8</td><td>Tunnel tile</td></tr>
+	<tr><td>9</td><td>Second signal (being drawn on opposite side), see: <a href="#signals_style_both_sides">signals_style_both_sides</a></td></tr>
 	</table>
 	</p>
 	<p>This is indicated by the feature name: <font face="monospace">varaction2_signals_signal_context</font>, version 1</p>
