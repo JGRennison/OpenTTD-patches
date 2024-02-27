@@ -58,7 +58,7 @@ static int32_t _money_cheat_amount = 10000000;
  */
 static int32_t ClickMoneyCheat(int32_t p1, int32_t p2)
 {
-	DoCommandPEx(0, 0, 0, (uint64_t)(p2 * _money_cheat_amount), _network_server || _network_settings_access ? CMD_MONEY_CHEAT_ADMIN : CMD_MONEY_CHEAT);
+	DoCommandPEx(0, 0, 0, (uint64_t)(p2 * _money_cheat_amount), IsNetworkSettingsAdmin() ? CMD_MONEY_CHEAT_ADMIN : CMD_MONEY_CHEAT);
 	return _money_cheat_amount;
 }
 
@@ -212,13 +212,13 @@ static bool IsCheatAllowed(CheatNetworkMode mode)
 {
 	switch (mode) {
 		case CNM_ALL:
-			return !_networking || _network_server || _network_settings_access;
+			return !IsNonAdminNetworkClient();
 
 		case CNM_LOCAL_ONLY:
 			return !_networking;
 
 		case CNM_MONEY:
-			return !_networking || _network_server || _network_settings_access || _settings_game.difficulty.money_cheat_in_multiplayer;
+			return !IsNonAdminNetworkClient() || _settings_game.difficulty.money_cheat_in_multiplayer;
 	}
 	return false;
 }
@@ -507,7 +507,7 @@ struct CheatWindow : Window {
 		}
 		if (ce->mode == CNM_MONEY) {
 			if (!_networking) *ce->been_used = true;
-			DoCommandPEx(0, 0, 0, (std::strtoll(str, nullptr, 10) / _currency->rate), _network_server || _network_settings_access ? CMD_MONEY_CHEAT_ADMIN : CMD_MONEY_CHEAT);
+			DoCommandPEx(0, 0, 0, (std::strtoll(str, nullptr, 10) / _currency->rate), IsNetworkSettingsAdmin() ? CMD_MONEY_CHEAT_ADMIN : CMD_MONEY_CHEAT);
 			return;
 		}
 
@@ -532,7 +532,7 @@ static WindowDesc _cheats_desc(__FILE__, __LINE__,
 
 bool CheatWindowMayBeShown()
 {
-	return _game_mode != GM_EDITOR && (!_networking || _network_server || _network_settings_access || _settings_game.difficulty.money_cheat_in_multiplayer);
+	return _game_mode != GM_EDITOR && (!IsNonAdminNetworkClient() || _settings_game.difficulty.money_cheat_in_multiplayer);
 }
 
 /** Open cheat window. */

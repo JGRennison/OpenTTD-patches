@@ -1024,7 +1024,7 @@ void IniSaveWindowSettings(IniFile &ini, const char *grpname, void *desc)
  */
 bool SettingDesc::IsEditable(bool do_command) const
 {
-	if (!do_command && !(this->flags & SF_NO_NETWORK_SYNC) && _networking && !(_network_server || _network_settings_access) && !(this->flags & SF_PER_COMPANY)) return false;
+	if (!do_command && !(this->flags & SF_NO_NETWORK_SYNC) && IsNonAdminNetworkClient() && !(this->flags & SF_PER_COMPANY)) return false;
 	if (do_command && (this->flags & SF_NO_NETWORK_SYNC)) return false;
 	if ((this->flags & SF_NETWORK_ONLY) && !_networking && _game_mode != GM_MENU) return false;
 	if ((this->flags & SF_NO_NETWORK) && _networking) return false;
@@ -1772,7 +1772,7 @@ static void MaxNoAIsChange(int32_t new_value)
 {
 	if (GetGameSettings().difficulty.max_no_competitors != 0 &&
 			AI::GetInfoList()->size() == 0 &&
-			(!_networking || (_network_server || _network_settings_access))) {
+			!IsNonAdminNetworkClient()) {
 		ShowErrorMessage(STR_WARNING_NO_SUITABLE_AI, INVALID_STRING_ID, WL_CRITICAL);
 	}
 
@@ -3296,7 +3296,7 @@ bool SetSettingValue(const IntSettingDesc *sd, int32_t value, bool force_newgame
 	}
 
 	/* send non-company-based settings over the network */
-	if (!_networking || (_networking && (_network_server || _network_settings_access))) {
+	if (!IsNonAdminNetworkClient()) {
 		return DoCommandP(0, 0, value, CMD_CHANGE_SETTING, nullptr, setting->name);
 	}
 	return false;
@@ -3411,7 +3411,7 @@ void IConsoleSetSetting(const char *name, const char *value, bool force_newgame)
 	}
 
 	if (!success) {
-		if ((_network_server || _network_settings_access)) {
+		if (IsNetworkSettingsAdmin()) {
 			IConsoleError("This command/variable is not available during network games.");
 		} else {
 			IConsoleError("This command/variable is only available to a network server.");

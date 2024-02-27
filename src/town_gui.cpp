@@ -110,7 +110,7 @@ private:
 
 	static bool ChangeSettingsDisabled()
 	{
-		return _networking && !(_network_server || _network_settings_access) &&
+		return IsNonAdminNetworkClient() &&
 				!(_local_company != COMPANY_SPECTATOR && _settings_game.difficulty.override_town_settings_in_multiplayer);
 	}
 
@@ -508,7 +508,7 @@ public:
 					SetBit(p2, 16);
 					p2 |= (index - 1) << 8;
 				}
-				Commands cmd = (_networking && !(_network_server || _network_settings_access)) ? CMD_TOWN_SETTING_OVERRIDE_NON_ADMIN : CMD_TOWN_SETTING_OVERRIDE;
+				Commands cmd = IsNonAdminNetworkClient() ? CMD_TOWN_SETTING_OVERRIDE_NON_ADMIN : CMD_TOWN_SETTING_OVERRIDE;
 				DoCommandP(this->town->xy, this->window_number, p2, cmd | CMD_MSG(STR_ERROR_CAN_T_DO_THIS));
 				break;
 			}
@@ -575,7 +575,7 @@ public:
 	{
 		extern const Town *_viewport_highlight_town;
 		this->SetWidgetLoweredState(WID_TV_CATCHMENT, _viewport_highlight_town == this->town);
-		this->SetWidgetDisabledState(WID_TV_CHANGE_NAME, _networking && !(_network_server || _network_settings_access) &&
+		this->SetWidgetDisabledState(WID_TV_CHANGE_NAME, IsNonAdminNetworkClient() &&
 				!(_local_company != COMPANY_SPECTATOR && _settings_game.difficulty.rename_towns_in_multiplayer));
 
 		this->DrawWidgets();
@@ -786,7 +786,7 @@ public:
 	{
 		if (str == nullptr) return;
 
-		DoCommandP(0, this->window_number, 0, ((_networking && !(_network_server || _network_settings_access)) ? CMD_RENAME_TOWN_NON_ADMIN : CMD_RENAME_TOWN) | CMD_MSG(STR_ERROR_CAN_T_RENAME_TOWN), nullptr, str);
+		DoCommandP(0, this->window_number, 0, (IsNonAdminNetworkClient() ? CMD_RENAME_TOWN_NON_ADMIN : CMD_RENAME_TOWN) | CMD_MSG(STR_ERROR_CAN_T_RENAME_TOWN), nullptr, str);
 	}
 
 	bool IsNewGRFInspectable() const override

@@ -368,7 +368,7 @@ struct MainWindow : Window
 				/* You can only cheat for money in single player or when otherwise suitably authorised. */
 				if (!_networking || _settings_game.difficulty.money_cheat_in_multiplayer) {
 					DoCommandP(0, 10000000, 0, CMD_MONEY_CHEAT);
-				} else if (_network_server || _network_settings_access) {
+				} else if (IsNetworkSettingsAdmin()) {
 					DoCommandP(0, 10000000, 0, CMD_MONEY_CHEAT_ADMIN);
 				}
 				break;

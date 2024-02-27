@@ -208,7 +208,7 @@ static CallBackFunction SelectSignTool()
 
 static CallBackFunction ToolbarPauseClick(Window *)
 {
-	if (_networking && !(_network_server || _network_settings_access)) return CBF_NONE; // only server can pause the game
+	if (IsNonAdminNetworkClient()) return CBF_NONE; // only server can pause the game
 
 	if (DoCommandP(0, PM_PAUSED_NORMAL, _pause_mode == PM_UNPAUSED, CMD_PAUSE)) {
 		if (_settings_client.sound.confirm) SndPlayFx(SND_15_BEEP);
@@ -2140,7 +2140,7 @@ struct MainToolbarWindow : Window {
 		this->SetWidgetDisabledState(WID_TN_GOAL, Goal::GetNumItems() == 0);
 		this->SetWidgetDisabledState(WID_TN_STORY, StoryPage::GetNumItems() == 0);
 
-		this->SetWidgetDisabledState(WID_TN_PAUSE, _networking && !(_network_server || _network_settings_access)); // if not server, disable pause button
+		this->SetWidgetDisabledState(WID_TN_PAUSE, IsNonAdminNetworkClient()); // if not server, disable pause button
 
 		this->DrawWidgets();
 	}

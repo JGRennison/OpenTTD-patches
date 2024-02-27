@@ -22,4 +22,14 @@ extern bool _network_dedicated;  ///< are we a dedicated server?
 extern bool _is_network_server;  ///< Does this client wants to be a network-server?
 extern bool _network_settings_access;  ///< Can this client change server settings?
 
+inline bool IsNetworkSettingsAdmin()
+{
+	return _network_server || _network_settings_access;
+}
+
+inline bool IsNonAdminNetworkClient()
+{
+	return _networking && !(_network_server || _network_settings_access);
+}
+
 #endif /* NETWORK_H */

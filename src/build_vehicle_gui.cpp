@@ -2105,10 +2105,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		this->SetWidgetsDisabledState(this->sel_engine == INVALID_ENGINE, WID_BV_SHOW_HIDE, WID_BV_BUILD);
 
 		/* Disable renaming engines in network games if you are not the server. */
-		this->SetWidgetDisabledState(WID_BV_RENAME, this->sel_engine == INVALID_ENGINE || (_networking && !_network_server));
-
-		/* disable renaming engines in network games if you are not the server */
-		this->SetWidgetDisabledState(WID_BV_RENAME, _networking && !(_network_server || _network_settings_access));
+		this->SetWidgetDisabledState(WID_BV_RENAME, this->sel_engine == INVALID_ENGINE || IsNonAdminNetworkClient());
 
 		this->DrawWidgets();
 
