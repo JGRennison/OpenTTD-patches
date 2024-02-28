@@ -225,7 +225,7 @@ STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_HELPTEXT                 :When enabled an
 STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_IF_BREAKDOWNS_ON         :If vehicle breakdowns enabled
 
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER                     :No vehicles expire after: {STRING2}
-STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_HELPTEXT            :Vehicles which would otherwise expire after this year remain available forever
+STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_HELPTEXT            :Vehicles which would otherwise expire after this year remain available forever.{}Engine reliability decay is also stopped once this year is reached
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_VALUE               :{NUM}
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_ZERO                :Off
 

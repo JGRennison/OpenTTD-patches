@@ -827,8 +827,8 @@ void StartupEngines()
 {
 	/* Aging of vehicles stops, so account for that when starting late */
 	CalTime::Year aging_stop_year = _year_engine_aging_stops;
-	if (_settings_game.vehicle.no_introduce_vehicles_after > 0 && _settings_game.vehicle.no_expire_vehicles_after > 0) {
-		aging_stop_year = std::min<CalTime::Year>(aging_stop_year, std::max<CalTime::Year>(_settings_game.vehicle.no_introduce_vehicles_after, _settings_game.vehicle.no_expire_vehicles_after));
+	if (_settings_game.vehicle.no_expire_vehicles_after > 0) {
+		aging_stop_year = std::min<CalTime::Year>(aging_stop_year, _settings_game.vehicle.no_expire_vehicles_after);
 	}
 	const CalTime::Date aging_date = std::min(CalTime::CurDate(), CalTime::ConvertYMDToDate(aging_stop_year, 0, 1));
 	const CalTime::YearMonthDay aging_ymd = CalTime::ConvertDateToYMD(aging_date);
@@ -1197,8 +1197,10 @@ void EnginesMonthlyLoop()
 {
 	if (CalTime::CurYear() < _year_engine_aging_stops) {
 		CalTime::Date no_introduce_after = INT_MAX;
+		bool no_engine_aging = (_settings_game.vehicle.no_expire_vehicles_after > 0 && CalTime::CurYear() >= _settings_game.vehicle.no_expire_vehicles_after);
 		if (_settings_game.vehicle.no_introduce_vehicles_after > 0) {
-			if (_settings_game.vehicle.no_expire_vehicles_after > 0 && CalTime::CurYear() >= std::max<CalTime::Year>(_settings_game.vehicle.no_introduce_vehicles_after, _settings_game.vehicle.no_expire_vehicles_after)) {
+			if (no_engine_aging && CalTime::CurYear() >= _settings_game.vehicle.no_introduce_vehicles_after) {
+				/* No engine expiry or aging, and no introductions, so nothing to do */
 				return;
 			}
 			no_introduce_after = CalTime::ConvertYMDToDate(_settings_game.vehicle.no_introduce_vehicles_after, 0, 1) - 1;
@@ -1207,7 +1209,7 @@ void EnginesMonthlyLoop()
 		bool refresh = false;
 		for (Engine *e : Engine::Iterate()) {
 			/* Age the vehicle */
-			if ((e->flags & ENGINE_AVAILABLE) && e->age != INT32_MAX) {
+			if (!no_engine_aging && (e->flags & ENGINE_AVAILABLE) && e->age != INT32_MAX) {
 				e->age++;
 				CalcEngineReliability(e, true);
 				refresh = true;
