@@ -656,6 +656,17 @@ static void StartScripts()
 	ShowScriptDebugWindowIfScriptError();
 }
 
+template <typename F>
+void IterateVehicleAndOrderListOrders(F func)
+{
+	for (Order *order : Order::Iterate()) {
+		func(order);
+	}
+	for (Vehicle *v : Vehicle::IterateFrontOnly()) {
+		func(&(v->current_order));
+	}
+}
+
 /**
  * Perform a (large) amount of savegame conversion *magic* in order to
  * load older savegames and to fill the caches for various purposes.
@@ -1876,13 +1887,9 @@ bool AfterLoadGame()
 
 	/* Setting no refit flags to all orders in savegames from before refit in orders were added */
 	if (IsSavegameVersionBefore(SLV_36)) {
-		for (Order *order : Order::Iterate()) {
+		IterateVehicleAndOrderListOrders([](Order *order) {
 			order->SetRefit(CARGO_NO_REFIT);
-		}
-
-		for (Vehicle *v : Vehicle::Iterate()) {
-			v->current_order.SetRefit(CARGO_NO_REFIT);
-		}
+		});
 	}
 
 	/* from version 38 we have optional elrails, since we cannot know the
@@ -2154,49 +2161,42 @@ bool AfterLoadGame()
 		IntialiseOrderDestinationRefcountMap();
 	} else if (IsSavegameVersionBefore(SLV_94)) {
 		/* Unload and transfer are now mutual exclusive. */
-		for (Order *order : Order::Iterate()) {
+		IterateVehicleAndOrderListOrders([](Order *order) {
 			if ((order->GetUnloadType() & (OUFB_UNLOAD | OUFB_TRANSFER)) == (OUFB_UNLOAD | OUFB_TRANSFER)) {
 				order->SetUnloadType(OUFB_TRANSFER);
 				order->SetLoadType(OLFB_NO_LOAD);
 			}
-		}
-
-		for (Vehicle *v : Vehicle::Iterate()) {
-			if ((v->current_order.GetUnloadType() & (OUFB_UNLOAD | OUFB_TRANSFER)) == (OUFB_UNLOAD | OUFB_TRANSFER)) {
-				v->current_order.SetUnloadType(OUFB_TRANSFER);
-				v->current_order.SetLoadType(OLFB_NO_LOAD);
-			}
-		}
+		});
 	}
 
 	if (IsSavegameVersionBefore(SLV_DEPOT_UNBUNCHING) && SlXvIsFeatureMissing(XSLFI_DEPOT_UNBUNCHING)) {
 		/* OrderDepotActionFlags were moved, instead of starting at bit 4 they now start at bit 3,
 		 * this clobbers the wait is timetabled flag of XSLFI_TT_WAIT_IN_DEPOT (version 1). */
-		for (Order *order : Order::Iterate()) {
-			if (!order->IsType(OT_GOTO_DEPOT)) continue;
+		IterateVehicleAndOrderListOrders([](Order *order) {
+			if (!order->IsType(OT_GOTO_DEPOT)) return;
 			if (SlXvIsFeaturePresent(XSLFI_TT_WAIT_IN_DEPOT, 1, 1)) {
 				/* Bit 3 was previously the wait is timetabled flag, move that to xflags (version 2 of XSLFI_TT_WAIT_IN_DEPOT) */
 				order->SetWaitTimetabled(HasBit(order->GetRawFlags(), 3));
 			}
 			OrderDepotActionFlags flags = (OrderDepotActionFlags)(order->GetDepotActionType() >> 1);
 			order->SetDepotActionType(flags);
-		}
+		});
 	} else if (SlXvIsFeaturePresent(XSLFI_TT_WAIT_IN_DEPOT, 1, 1)) {
-		for (Order *order : Order::Iterate()) {
+		IterateVehicleAndOrderListOrders([](Order *order) {
 			/* Bit 3 was previously the wait is timetabled flag, move that to xflags (version 2 of XSLFI_TT_WAIT_IN_DEPOT) */
 			if (order->IsType(OT_GOTO_DEPOT)) order->SetWaitTimetabled(HasBit(order->GetRawFlags(), 3));
-		}
+		});
 	}
 	if (!IsSavegameVersionBefore(SLV_DEPOT_UNBUNCHING)) {
 		/* Move unbunch depot action from bit 2 to bit 3 */
-		for (Order *order : Order::Iterate()) {
-			if (!order->IsType(OT_GOTO_DEPOT)) continue;
+		IterateVehicleAndOrderListOrders([](Order *order) {
+			if (!order->IsType(OT_GOTO_DEPOT)) return;
 			OrderDepotActionFlags flags = order->GetDepotActionType();
 			if ((flags & ODATFB_SELL) != 0) {
 				flags ^= (ODATFB_SELL | ODATFB_UNBUNCH); // Move unbunch from bit 2 to bit 3 (sell to unbunch)
 				order->SetDepotActionType(flags);
 			}
-		}
+		});
 	}
 
 	if (SlXvIsFeaturePresent(XSLFI_JOKERPP, 1, SL_JOKER_1_23)) {
@@ -2626,9 +2626,9 @@ bool AfterLoadGame()
 
 	/* Trains could now stop in a specific location. */
 	if (IsSavegameVersionBefore(SLV_117)) {
-		for (Order *o : Order::Iterate()) {
+		IterateVehicleAndOrderListOrders([](Order *o) {
 			if (o->IsType(OT_GOTO_STATION)) o->SetStopLocation(OSL_PLATFORM_FAR_END);
-		}
+		});
 	}
 
 	if (IsSavegameVersionBefore(SLV_120)) {
@@ -3781,11 +3781,11 @@ bool AfterLoadGame()
 
 	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
 		/* convert wait for cargo orders to ordinary load if possible */
-		for (Order *order : Order::Iterate()) {
+		IterateVehicleAndOrderListOrders([](Order *order) {
 			if ((order->IsType(OT_GOTO_STATION) || order->IsType(OT_LOADING) || order->IsType(OT_IMPLICIT)) && order->GetLoadType() == static_cast<OrderLoadFlags>(1)) {
 				order->SetLoadType(OLF_LOAD_IF_POSSIBLE);
 			}
-		}
+		});
 	}
 
 	if (SlXvIsFeaturePresent(XSLFI_SIG_TUNNEL_BRIDGE, 1, 1)) {
