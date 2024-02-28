@@ -1882,9 +1882,9 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 
 	int vehicle_button_x = rtl ? ir.right - profit.width : ir.left;
 
-	uint max = static_cast<uint>(std::min<size_t>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->vehgroups.size()));
-	for (uint i = this->vscroll->GetPosition(); i < max; ++i) {
-		const GUIVehicleGroup &vehgroup = this->vehgroups[i];
+	auto [first, last] = this->vscroll->GetVisibleRangeIterators(this->vehgroups);
+	for (auto it = first; it != last; ++it) {
+		const GUIVehicleGroup &vehgroup = *it;
 		if (this->grouping == GB_NONE) {
 			const Vehicle *v = vehgroup.GetSingleVehicle();
 
