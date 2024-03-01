@@ -1842,8 +1842,8 @@ STR_PLANS_CAPTION                                               :{WHITE}Plans
 STR_PLANS_NEW_PLAN                                              :{BLACK}New
 STR_PLANS_NEW_PLAN_TOOLTIP                                      :{BLACK}Create a new plan
 STR_PLANS_ADD_LINES                                             :{BLACK}Add lines
-STR_PLANS_ADD_LINES_TOOLTIP                                     :{BLACK}Add lines to the selected plan
 STR_PLANS_ADDING_LINES                                          :{BLACK}Adding...
+STR_PLANS_ADD_LINES_TOOLTIP                                     :{BLACK}Add lines to the selected plan
 STR_PLANS_HIDE_ALL                                              :{BLACK}Hide all
 STR_PLANS_HIDE_ALL_TOOLTIP                                      :{BLACK}Set the visibility of all the plans and all their lines to false
 STR_PLANS_SHOW_ALL                                              :{BLACK}Show all
