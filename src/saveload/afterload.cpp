@@ -4440,7 +4440,7 @@ bool AfterLoadGame()
 		ScriptObject::InitializeRandomizers();
 	}
 
-	if (IsSavegameVersionBeforeOrAt(SLV_MULTITRACK_LEVEL_CROSSINGS)) {
+	if (IsSavegameVersionBeforeOrAt(SLV_MULTITRACK_LEVEL_CROSSINGS) && SlXvIsFeatureMissing(XSLFI_AUX_TILE_LOOP)) {
 		_settings_game.construction.flood_from_edges = false;
 	}
 
