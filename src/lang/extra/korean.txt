@@ -1771,7 +1771,7 @@ STR_PLANS_CAPTION                                               :{WHITE}계획
 STR_PLANS_NEW_PLAN                                              :{BLACK}새 계획
 STR_PLANS_NEW_PLAN_TOOLTIP                                      :{BLACK}새 계획을 작성합니다.
 STR_PLANS_ADD_LINES                                             :{BLACK}선 추가
-STR_PLANS_ADDING_LINES                                          :{BLACK}추가 중
+STR_PLANS_ADDING_LINES                                          :{BLACK}선 추가하기...
 STR_PLANS_HIDE_ALL                                              :{BLACK}모두 숨기기
 STR_PLANS_HIDE_ALL_TOOLTIP                                      :{BLACK}모든 계획을 보이지 않게 합니다.
 STR_PLANS_SHOW_ALL                                              :{BLACK}모두 보이기
