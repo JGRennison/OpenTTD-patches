@@ -1115,7 +1115,7 @@ static void ShipController(Ship *v)
 				v->x_pos = gp.x;
 				v->y_pos = gp.y;
 				v->UpdatePosition();
-				if ((v->vehstatus & VS_HIDDEN) == 0) v->Vehicle::UpdateViewport(true);
+				if ((v->vehstatus & VS_HIDDEN) == 0) v->UpdateViewport(true, false);
 				return;
 			}
 			/* Bridge exit */
