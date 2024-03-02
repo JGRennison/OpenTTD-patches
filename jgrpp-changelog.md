@@ -2,6 +2,24 @@
 
 * * *
 
+### v0.58.1 (2024-03-02)
+* Fix multiplayer desync after joining a server with the flood from edges setting enabled.
+* Fix timetabled waiting in depots.
+* Fix incorrect accounting of company quarterly statistics.
+* Fix trains failing to load at stations in some cases after leaving a conditional order loading loop at the previous station.
+* Fix the company infrastructure window not being drawn as a company window and not being removed on company deletion.
+* Fix main viewport crash or only partial redraw when changing the UI scale using the slider.
+* Fix display of ships entering viewports on an aqueduct.
+* Allow adding plans in the scenario editor.
+* Add setting for whether to show vehicle running costs per calendar year.
+* Add setting for whetehr to show speed before destination in vehicle status bar.
+* Add setting to disable script parameter randomisation.
+* Add "path signals only" mode to the signal cycle setting.
+* Adjust display of period numbers in wallclock time-keeping mode.
+* Stop engine reliability decay once the no vehicles expire after year setting is reached, instead of when the no vehicles expire and introduced after year settings are both reached.
+* Add NewGRF custom signal style flag to draw signal sprites on both sides.
+* Bump trunk base from commit 8bccb5805a94eb2acb0e581185ca34090f2b1397 to commit a602845d0a35331f1e012cd13ca921c6bc42b58d.
+
 ### v0.58.0 (2024-02-24)
 * Fix crash when road vehicles change length in drive-through road stops (e.g. due to refits).
 * Fix crash when showing the savegame file overwrite warning for a save with no readable version.
