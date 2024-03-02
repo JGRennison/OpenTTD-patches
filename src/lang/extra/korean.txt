@@ -613,8 +613,8 @@ STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_MODERN               :개선
 
 STR_CONFIG_SETTING_TICK_RATE                                    :게임 틱 속도: {STRING}
 STR_CONFIG_SETTING_TICK_RATE_HELPTEXT                           :1 게임틱을 몇 밀리초(ms)로 계산할 것인지 설정합니다.
-STR_CONFIG_SETTING_TICK_RATE_TRADITIONAL                        :30 ms/틱 (구식)
-STR_CONFIG_SETTING_TICK_RATE_MODERN                             :27 ms/틱 (현대식)
+STR_CONFIG_SETTING_TICK_RATE_TRADITIONAL                        :30밀리초/틱 (구식)
+STR_CONFIG_SETTING_TICK_RATE_MODERN                             :27밀리초/틱 (현대식)
 
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :도시 사이의 최소 거리: {STRING}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :지도를 생성하고 무작위로 도시를 배치할 때 도시 사이의 최소 거리를 설정합니다.
@@ -748,8 +748,8 @@ STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :열차 시간�
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT_EXTRA         :{STRING}{}경로 탐색 제한(모든 경로 탐색 및 경로 예약 관련 작업), 경유지/신호기에서의 회차, 드라이브스루 차량기지 등과 같은 다양한 기능을 사용하려면 YAPF 경로 탐색을 사용해야만 합니다.
 
-STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_CALENDAR           :{RED}[Setting disabled in calendar timekeeping mode]
-STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_WALLCLOCK          :{RED}[Setting disabled in wallclock timekeeping mode]
+STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_CALENDAR           :{RED}[달력 시간 모드에선 비활성화됨]
+STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_WALLCLOCK          :{RED}[벽시계 시간 모드에선 비활성화됨]
 
 STR_CHEAT_EDIT_MONEY_QUERY_CAPT                                 :{WHITE}돈을 늘리거나 줄입니다.
 STR_CHEAT_INFLATION_COST                                        :{LTBLUE}인플레이션 지출 배수 변경: {ORANGE}{DECIMAL}
@@ -1340,7 +1340,7 @@ STR_DEPARTURES_CALLING_AT_LIST                                  :{ORANGE}{STRING
 STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{STRING} / {STATION} 반복
 STR_DEPARTURES_TINY                                             :{TINY_FONT}{STRING}
 STR_DEPARTURES_VIA_DESCRIPTOR                                   :{STRING}{STRING}
-STR_DEPARTURES_VIA_AND                                          :{STRING} and {STRING}
+STR_DEPARTURES_VIA_AND                                          :{STRING} 및 {STRING}
 
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
 STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
@@ -1471,7 +1471,7 @@ STR_BUY_VEHICLE_TRAIN_LOCOMOTIVES                               :기관차 및 �
 STR_BUY_VEHICLE_TRAIN_WAGONS                                    :객화차
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}개발: {GOLD}{NUM}
-STR_PURCHASE_INFO_RUNNINGCOST_ORIG_YEAR                         :{BLACK}Running Cost: {GOLD}{CURRENCY_LONG}/original year
+STR_PURCHASE_INFO_RUNNINGCOST_ORIG_YEAR                         :{BLACK}유지비: {GOLD}{CURRENCY_LONG}/기존 년
 
 STR_BUY_REFIT_VEHICLE_BUY_VEHICLE_BUTTON                        :{BLACK}구입한 뒤 개조
 STR_BUY_REFIT_VEHICLE_BUY_VEHICLE_TOOLTIP                       :{BLACK}자동적으로 강조된 차량을 선택된 화물을 싣도록 개조합니다.
@@ -1541,7 +1541,7 @@ STR_NEED_REPAIR                                                 :{ORANGE}차량�
 
 STR_CURRENT_STATUS                                              :{BLACK}현재 상태: {STRING}
 
-STR_ENGINE_PREVIEW_RUNCOST_ORIG_YEAR                            :Running Cost: {CURRENCY_LONG}/original year
+STR_ENGINE_PREVIEW_RUNCOST_ORIG_YEAR                            :유지비: {CURRENCY_LONG}/기존 년
 
 STR_VEHICLE_INFO_TRAIN_LENGTH                                   :{BLACK}열차 길이: {LTBLUE}{DECIMAL} 칸 {STRING}
 STR_VEHICLE_INFO_WEIGHT_RATIOS                                  :{STRING} {STRING}
@@ -1550,7 +1550,7 @@ STR_VEHICLE_INFO_TE_WEIGHT_RATIO                                :{BLACK}최고 �
 STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS                        :{BLACK}전체 중량: {LTBLUE}{WEIGHT_SHORT} {STRING}
 STR_VEHICLE_INFO_MAX_SPEED_LOADED                               :{BLACK}가득 실었을 때 최대 속력: {LTBLUE}{VELOCITY}
 
-STR_VEHICLE_INFO_AGE_RUNNING_COST_ORIG_YR                       :{BLACK}Age: {LTBLUE}{STRING}{BLACK}   Running Cost: {LTBLUE}{CURRENCY_LONG}/original year
+STR_VEHICLE_INFO_AGE_RUNNING_COST_ORIG_YR                       :{BLACK}연령: {LTBLUE}{STRING}{BLACK}   유지비: {LTBLUE}{CURRENCY_LONG}/기존 년
 
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING} (평생: {CURRENCY_LONG})
 
@@ -1679,7 +1679,7 @@ STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_REFIT                     :({STRING}{G 0 "
 STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY_REFIT                 :({STRING}{G 0 "으" ""}로 개조하며 화물 종류에 따라 내리고 아무 화물이나 가득 싣기)
 STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD_REFIT               :({STRING}{G 0 "으" ""}로 개조하며 화물 종류에 따라 화물 종류에 따라 싣기)
 
-STR_ORDER_RV_DIR_ANY                                            :[any direction]
+STR_ORDER_RV_DIR_ANY                                            :[아무데나]
 STR_ORDER_RV_DIR_NE                                             :[북동쪽 방향]
 STR_ORDER_RV_DIR_SE                                             :[남동쪽 방향]
 STR_ORDER_RV_DIR_SW                                             :[남서쪽 방향]
@@ -1929,7 +1929,7 @@ STR_STATION_RATING_PERCENTAGE_COMMA                             :, {PLUS_NUM}%
 
 STR_STATION_RATING_TOOLTIP_SPEED                                :마지막으로 도착한 열차의 최대 속력{STRING}: {COLOUR}{VELOCITY}{STRING} ({STRING})
 
-STR_STATION_RATING_TOOLTIP_AGE                                  :지난 열차의 연식{STRING}: {COLOUR}{NUM}년{STRING}
+STR_STATION_RATING_TOOLTIP_AGE                                  :지난 열차의 연령{STRING}: {COLOUR}{NUM}년{STRING}
 
 STR_STATION_RATING_TOOLTIP_WAITTIME                             :지난 화물 적재 이후 지난 시간{STRING}: {STRING}
 STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP                        :지난 화물 적재 이후 지난 시간{STRING}: {STRING} (선박)
