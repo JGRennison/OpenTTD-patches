@@ -21,3 +21,5 @@
 # Modifier key toggle window
 
 STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}इस कंपनी का २५% अंश नहीं बेच सकते...
+
+STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :केवल पथ संकेत

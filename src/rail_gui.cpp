@@ -289,6 +289,8 @@ static void GenericPlaceSignals(TileIndex tile)
 	} else if (_settings_client.gui.cycle_signal_types == SIGNAL_CYCLE_ALL) {
 		cycle_types = SCG_PBS;
 		if (_settings_client.gui.signal_gui_mode == SIGNAL_GUI_ALL) cycle_types |= SCG_BLOCK;
+	} else if (_settings_client.gui.cycle_signal_types == SIGNAL_CYCLE_PATH) {
+		cycle_types = SCG_PBS;
 	} else {
 		cycle_types = SCG_CURRENT_GROUP;
 	}

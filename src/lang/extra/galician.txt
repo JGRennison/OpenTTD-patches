@@ -2208,6 +2208,8 @@ STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :Detallado
 STR_CONFIG_SETTING_CITY_IN_LABEL                                :Amosar se é cidade na etiqueta do nome da vila: {STRING}
 STR_CONFIG_SETTING_CITY_IN_LABEL_HELPTEXT                       :Amosar se unha vila tamén é unha cidade na súa etiqueta no mapa
 
+STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :Só sinais de ruta
+
 STR_CONFIG_SETTING_RESTRICT_PATCH                               :Axustes non-estándar que non están no OpenTTD Vanilla
 
 STR_VIEWPORT_TOWN_COLOUR                                        :{1:COLOUR}{0:TOWN}

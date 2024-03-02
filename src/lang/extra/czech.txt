@@ -2084,6 +2084,8 @@ STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :vypnutá
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_SIMPLE           :stručná
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :podrobná
 
+STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :pouze dokonalejší (PBS)
+
 STR_VIEWPORT_TOWN_COLOUR                                        :{1:COLOUR}{0:TOWN}
 STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {COLOUR}({COMMA})
 

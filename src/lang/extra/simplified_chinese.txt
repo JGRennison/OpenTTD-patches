@@ -2124,6 +2124,8 @@ STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :详细
 STR_CONFIG_SETTING_CITY_IN_LABEL                                :在城镇名中显示是否为都市: {STRING}
 STR_CONFIG_SETTING_CITY_IN_LABEL_HELPTEXT                       :显示一个城镇是否为都市
 
+STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :仅路径信号灯
+
 STR_VIEWPORT_TOWN_COLOUR                                        :{1:COLOUR}{0:TOWN}
 STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {COLOUR} ({COMMA})
 STR_VIEWPORT_TOWN_COLOUR_CITY                                   :{1:COLOUR}{0:TOWN} (都市)

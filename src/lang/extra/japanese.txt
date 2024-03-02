@@ -182,3 +182,5 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}この�
 STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}この会社の株を25%購入できません
 STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}この会社の株を25%売却できません
 STR_ERROR_PROTECTED                                             :{WHITE}この会社は開設から6年が経過していません
+
+STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :パス・一方通行パス

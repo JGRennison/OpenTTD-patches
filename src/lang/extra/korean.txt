@@ -1792,8 +1792,8 @@ STR_PLANS_CAPTION                                               :{WHITE}계획
 STR_PLANS_NEW_PLAN                                              :{BLACK}새 계획
 STR_PLANS_NEW_PLAN_TOOLTIP                                      :{BLACK}새 계획을 작성합니다.
 STR_PLANS_ADD_LINES                                             :{BLACK}선 추가
-STR_PLANS_ADD_LINES_TOOLTIP                                     :{BLACK}선택한 계획에 선을 추가합니다
 STR_PLANS_ADDING_LINES                                          :{BLACK}선 추가하기...
+STR_PLANS_ADD_LINES_TOOLTIP                                     :{BLACK}선택한 계획에 선을 추가합니다
 STR_PLANS_HIDE_ALL                                              :{BLACK}모두 숨기기
 STR_PLANS_HIDE_ALL_TOOLTIP                                      :{BLACK}모든 계획을 보이지 않게 합니다
 STR_PLANS_SHOW_ALL                                              :{BLACK}모두 보이기
@@ -2244,6 +2244,8 @@ STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :자세히
 
 STR_CONFIG_SETTING_CITY_IN_LABEL                                :도시 이름에 대도시 여부 표시: {STRING}
 STR_CONFIG_SETTING_CITY_IN_LABEL_HELPTEXT                       :지도 상에 표시되는 도시 이름에 대도시인지 여부를 표시합니다
+
+STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :경로 신호기만
 
 STR_CONFIG_SETTING_RESTRICT_PATCH                               :원본 OpenTTD에 있지 않은 비표준 설정
 
