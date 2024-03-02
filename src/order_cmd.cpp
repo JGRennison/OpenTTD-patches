@@ -2923,7 +2923,7 @@ std::vector<uint32_t> _remove_order_from_all_vehicles_depots;
 
 static bool IsBatchRemoveOrderDepotRemoved(DestinationID destination)
 {
-	if (destination / 32 >= _remove_order_from_all_vehicles_depots.size()) return false;
+	if (static_cast<size_t>(destination / 32) >= _remove_order_from_all_vehicles_depots.size()) return false;
 
 	return HasBit(_remove_order_from_all_vehicles_depots[destination / 32], destination % 32);
 }
