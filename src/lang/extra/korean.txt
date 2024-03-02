@@ -45,6 +45,8 @@ STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
 STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :칸/일
 
+STR_UNITS_SECONDS_SHORT                                         :{COMMA}초
+
 STR_BUTTON_RENAME                                               :{BLACK}이름 바꾸기
 
 STR_MEASURE_DIST_HEIGHTDIFF                                     :{BLACK}맨해튼 거리: {NUM}{}직선 거리: {NUM}{}가장 가까운 모서리로부터의 거리: {NUM}{}해발고도: {HEIGHT}{}고도차: {HEIGHT}
@@ -75,6 +77,7 @@ STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED                   :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_MINUTES                   :{TINY_FONT}{BLACK}운송 시간(분)
 STR_GRAPH_STATION_CARGO_CAPTION                                 :{WHITE}{STATION} - 대기 화물량 이력
 STR_GRAPH_STATION_CARGO_X_LABEL_DAYS                            :{TINY_FONT}{BLACK}{NUM}일 동안의 변동 사항
+STR_GRAPH_STATION_CARGO_X_LABEL_SECONDS                         :{TINY_FONT}{BLACK}{NUM}초 동안의 변동 사항
 STR_GRAPH_STATION_CARGO_TITLE                                   :{TINY_FONT}{BLACK}역에서 있던 화물량
 
 STR_GRAPH_CARGO_SPEED_MODE                                      :{TINY_FONT}{BLACK}평균 속력
@@ -276,11 +279,17 @@ STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME_HELPTEXT   :이 설정과 �
 STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW            :차량 정보 창에 경로 번호 표시: {STRING}
 STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW_HELPTEXT   :이 설정을 켜면, 차량 정보 창 하단의 출발/정지 부분에 현재 경로의 번호를 표시합니다
 
+STR_CONFIG_SETTING_SHOW_SPEED_FIRST_IN_VEHICLE_VIEW             :차량 정보 창에서 다음 목적지 앞에 속력 표시: {STRING}
+STR_CONFIG_SETTING_SHOW_SPEED_FIRST_IN_VEHICLE_VIEW_HELPTEXT    :이 설정을 켜면, 차량 정보 창의 출발/멈춤 버튼에 있는 다음 목적지 앞에 속력을 표시합니다
+
 STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION                   :정차 위치가 기본값이면 감추기: {STRING}
 STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION_HELPTEXT          :이 설정을 켜면, 경로의 정차 위치가 기본값과 동일하면 정차 위치를 감춥니다.
 
 STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL                              :다각건설 도구 표시: {STRING}
 STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL_HELPTEXT                     :이 설정을 켜면, 선로 건설 창에 다각건설 도구를 표시합니다.
+
+STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR             :달력 기반 1년당 차량 유지비 표시: {STRING}
+STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR_HELPTEXT    :1일의 길이 조절 값을 1 초과로 설정하면, 차량 유지비를 원본 1년 대신 달력 기반 1년 기준으로 표시합니다.
 
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :고급 다리/터널 신호기 활성화: {STRING}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :다리와 터널 위 신호기 시뮬레이션 고급 모드를 활성화합니다. 이 설정을 끄면, 고급 모드에 있지 않은 다리와 터널을 고급 모드로 변경할 수 없지만 다른 플레이어는 이 설정을 켜서 고급 모드를 사용할 수 있습니다.
@@ -604,8 +613,8 @@ STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_MODERN               :개선
 
 STR_CONFIG_SETTING_TICK_RATE                                    :게임 틱 속도: {STRING}
 STR_CONFIG_SETTING_TICK_RATE_HELPTEXT                           :1 게임틱을 몇 밀리초(ms)로 계산할 것인지 설정합니다.
-STR_CONFIG_SETTING_TICK_RATE_TRADITIONAL                        :30 ms/틱 (구식)
-STR_CONFIG_SETTING_TICK_RATE_MODERN                             :27 ms/틱 (현대식)
+STR_CONFIG_SETTING_TICK_RATE_TRADITIONAL                        :30밀리초/틱 (구식)
+STR_CONFIG_SETTING_TICK_RATE_MODERN                             :27밀리초/틱 (현대식)
 
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :도시 사이의 최소 거리: {STRING}
 STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :지도를 생성하고 무작위로 도시를 배치할 때 도시 사이의 최소 거리를 설정합니다.
@@ -678,6 +687,9 @@ STR_CONFIG_SETTING_IGNORE_OBJECT_INTRO_DATES_HELPTEXT           :플레이어가
 STR_CONFIG_SETTING_ALLOW_CONVERT_TOWN_ROAD_NO_HOUSES            :도시 소유의 도로를 집 건설 불가 도로로 바꾸는 것을 허용: {STRING}
 STR_CONFIG_SETTING_ALLOW_CONVERT_TOWN_ROAD_NO_HOUSES_HELPTEXT   :플레이어가 도시 소유의 도로를 집 건설 불가 도로 유형으로 변경할 수 있도록 허용합니다.{}이 설정을 켜면 도시가 집을 짓지 못하게 되어 결과적으로 도시의 규모가 줄어들 수 있기 때문에, 이 설정은 기본적으로 꺼져있습니다.
 
+STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY                  :1차 산업시설만 생성: {STRING}
+STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY_HELPTEXT         :이 설정을 켜면, 게임 플레이나 지도 생성 시에 1차 산업시설만 생성됩니다.
+
 STR_PURCHASE_LAND_PERMITTED_NO                                  :허용하지 않음
 STR_PURCHASE_LAND_PERMITTED_SINGLE                              :허용, 한 타일씩
 STR_PURCHASE_LAND_PERMITTED_AREA                                :허용, 여러 타일씩
@@ -735,6 +747,9 @@ STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :열차 시간�
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :열차 시간표에서 열차의 운행 시간을 '일'보다 자세한 '틱'으로 표시합니다. 1일은 74틱과 같습니다.
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT_EXTRA         :{STRING}{}경로 탐색 제한(모든 경로 탐색 및 경로 예약 관련 작업), 경유지/신호기에서의 회차, 드라이브스루 차량기지 등과 같은 다양한 기능을 사용하려면 YAPF 경로 탐색을 사용해야만 합니다.
+
+STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_CALENDAR           :{RED}[달력 시간 모드에선 비활성화됨]
+STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_WALLCLOCK          :{RED}[벽시계 시간 모드에선 비활성화됨]
 
 STR_CHEAT_EDIT_MONEY_QUERY_CAPT                                 :{WHITE}돈을 늘리거나 줄입니다.
 STR_CHEAT_INFLATION_COST                                        :{LTBLUE}인플레이션 지출 배수 변경: {ORANGE}{DECIMAL}
@@ -1325,7 +1340,7 @@ STR_DEPARTURES_CALLING_AT_LIST                                  :{ORANGE}{STRING
 STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{STRING} / {STATION} 반복
 STR_DEPARTURES_TINY                                             :{TINY_FONT}{STRING}
 STR_DEPARTURES_VIA_DESCRIPTOR                                   :{STRING}{STRING}
-STR_DEPARTURES_VIA_AND                                          :{STRING} and {STRING}
+STR_DEPARTURES_VIA_AND                                          :{STRING} 및 {STRING}
 
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
 STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
@@ -1456,6 +1471,7 @@ STR_BUY_VEHICLE_TRAIN_LOCOMOTIVES                               :기관차 및 �
 STR_BUY_VEHICLE_TRAIN_WAGONS                                    :객화차
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}개발: {GOLD}{NUM}
+STR_PURCHASE_INFO_RUNNINGCOST_ORIG_YEAR                         :{BLACK}유지비: {GOLD}{CURRENCY_LONG}/기존 년
 
 STR_BUY_REFIT_VEHICLE_BUY_VEHICLE_BUTTON                        :{BLACK}구입한 뒤 개조
 STR_BUY_REFIT_VEHICLE_BUY_VEHICLE_TOOLTIP                       :{BLACK}자동적으로 강조된 차량을 선택된 화물을 싣도록 개조합니다.
@@ -1525,12 +1541,16 @@ STR_NEED_REPAIR                                                 :{ORANGE}차량�
 
 STR_CURRENT_STATUS                                              :{BLACK}현재 상태: {STRING}
 
+STR_ENGINE_PREVIEW_RUNCOST_ORIG_YEAR                            :유지비: {CURRENCY_LONG}/기존 년
+
 STR_VEHICLE_INFO_TRAIN_LENGTH                                   :{BLACK}열차 길이: {LTBLUE}{DECIMAL} 칸 {STRING}
 STR_VEHICLE_INFO_WEIGHT_RATIOS                                  :{STRING} {STRING}
 STR_VEHICLE_INFO_POWER_WEIGHT_RATIO                             :{BLACK}힘 / 무게: {LTBLUE}{POWER_WEIGHT_RATIO}
 STR_VEHICLE_INFO_TE_WEIGHT_RATIO                                :{BLACK}최고 견인력 / 무게: {LTBLUE}{FORCE_WEIGHT_RATIO}
 STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS                        :{BLACK}전체 중량: {LTBLUE}{WEIGHT_SHORT} {STRING}
 STR_VEHICLE_INFO_MAX_SPEED_LOADED                               :{BLACK}가득 실었을 때 최대 속력: {LTBLUE}{VELOCITY}
+
+STR_VEHICLE_INFO_AGE_RUNNING_COST_ORIG_YR                       :{BLACK}연령: {LTBLUE}{STRING}{BLACK}   유지비: {LTBLUE}{CURRENCY_LONG}/기존 년
 
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING} (평생: {CURRENCY_LONG})
 
@@ -1659,6 +1679,7 @@ STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_REFIT                     :({STRING}{G 0 "
 STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY_REFIT                 :({STRING}{G 0 "으" ""}로 개조하며 화물 종류에 따라 내리고 아무 화물이나 가득 싣기)
 STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD_REFIT               :({STRING}{G 0 "으" ""}로 개조하며 화물 종류에 따라 화물 종류에 따라 싣기)
 
+STR_ORDER_RV_DIR_ANY                                            :[아무데나]
 STR_ORDER_RV_DIR_NE                                             :[북동쪽 방향]
 STR_ORDER_RV_DIR_SE                                             :[남동쪽 방향]
 STR_ORDER_RV_DIR_SW                                             :[남서쪽 방향]
@@ -1771,11 +1792,12 @@ STR_PLANS_CAPTION                                               :{WHITE}계획
 STR_PLANS_NEW_PLAN                                              :{BLACK}새 계획
 STR_PLANS_NEW_PLAN_TOOLTIP                                      :{BLACK}새 계획을 작성합니다.
 STR_PLANS_ADD_LINES                                             :{BLACK}선 추가
-STR_PLANS_ADDING_LINES                                          :{BLACK}추가 중
+STR_PLANS_ADD_LINES_TOOLTIP                                     :{BLACK}선택한 계획에 선을 추가합니다
+STR_PLANS_ADDING_LINES                                          :{BLACK}선 추가하기...
 STR_PLANS_HIDE_ALL                                              :{BLACK}모두 숨기기
-STR_PLANS_HIDE_ALL_TOOLTIP                                      :{BLACK}모든 계획을 보이지 않게 합니다.
+STR_PLANS_HIDE_ALL_TOOLTIP                                      :{BLACK}모든 계획을 보이지 않게 합니다
 STR_PLANS_SHOW_ALL                                              :{BLACK}모두 보이기
-STR_PLANS_SHOW_ALL_TOOLTIP                                      :{BLACK}모든 계획을 보이게 합니다.
+STR_PLANS_SHOW_ALL_TOOLTIP                                      :{BLACK}모든 계획을 보이게 합니다
 STR_PLANS_VISIBILITY_PRIVATE                                    :{BLACK}개인적으로
 STR_PLANS_VISIBILITY_PUBLIC                                     :{BLACK}공용으로
 STR_PLANS_VISIBILITY_TOOLTIP                                    :{BLACK}계획의 보기 권한을 수정합니다. 공용 계획은 타사가 계획 창에서 계획을 열람하거나 선을 추가할 수 있습니다.
@@ -1783,6 +1805,8 @@ STR_PLANS_COLOUR                                                :{BLACK}색
 STR_PLANS_COLOUR_TOOLTIP                                        :{BLACK}계획의 색을 설정합니다.
 STR_PLANS_DELETE                                                :{BLACK}삭제
 STR_PLANS_DELETE_TOOLTIP                                        :{BLACK}목록에서 선택된 계획을 삭제합니다.
+STR_PLANS_TAKE_OWNERSHIP                                        :{BLACK}소유권 취득
+STR_PLANS_TAKE_OWNERSHIP_TOOLTIP                                :{BLACK}소유권이 없는 이 선택한 계획의 소유권을 가져옵니다
 STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :[개인]: {STRING}
 STR_PLANS_LIST_ITEM_PLAN                                        :계획 #{NUM}: 선 {NUM}개 ({DATE_SHORT})
 STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{STRING}: 선 {NUM}개 ({DATE_SHORT})
@@ -1905,7 +1929,7 @@ STR_STATION_RATING_PERCENTAGE_COMMA                             :, {PLUS_NUM}%
 
 STR_STATION_RATING_TOOLTIP_SPEED                                :마지막으로 도착한 열차의 최대 속력{STRING}: {COLOUR}{VELOCITY}{STRING} ({STRING})
 
-STR_STATION_RATING_TOOLTIP_AGE                                  :지난 열차의 연식{STRING}: {COLOUR}{NUM}년{STRING}
+STR_STATION_RATING_TOOLTIP_AGE                                  :지난 열차의 연령{STRING}: {COLOUR}{NUM}년{STRING}
 
 STR_STATION_RATING_TOOLTIP_WAITTIME                             :지난 화물 적재 이후 지난 시간{STRING}: {STRING}
 STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP                        :지난 화물 적재 이후 지난 시간{STRING}: {STRING} (선박)
@@ -2111,6 +2135,17 @@ STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_TEXT                      :{WHITE}정말�
 
 STR_ERROR_SCHDISPATCH_TRIED_TO_ADD_TOO_MANY_SLOTS               :{WHITE}너무 많은 출발 슬롯을 한 번에 추가하려고 했습니다
 STR_ERROR_SCHDISPATCH_ADJUSTMENT_TOO_LARGE                      :{WHITE}출발 슬롯 조정값이 너무 큽니다
+
+STR_TOOLTIP_SEPARATION_CANNOT_ENABLE                            :{STRING}{}{}{STRING}
+STR_ERROR_SEPARATION_MUTUALLY_EXCLUSIVE                         :{WHITE}배차 일정, 자동 배차, 차량 기지 배차 간격 유지 중에서 하나만 사용할 수 있습니다
+
+STR_CANNOT_ENABLE_BECAUSE_UNBUNCHING                            :차량 기지 배차 간격 유지가 있어서 활성화할 수 없습니다
+STR_CANNOT_ENABLE_BECAUSE_SCHED_DISPATCH                        :배차 일정이 있어서 활성화할 수 없습니다
+STR_CANNOT_ENABLE_BECAUSE_AUTO_SEPARATION                       :자동 배차가 켜져있어서 활성화할 수 없습니다
+STR_CANNOT_ENABLE_BECAUSE_TIME_UNITS_UNUSABLE                   :현재 시간 단위를 사용할 수 없어서 활성화할 수 없습니다.{}설정에서 '일'대신 '분'으로 시간 표시하기를 켜세요.
+
+STR_ERROR_UNBUNCHING_NO_UNBUNCHING_SCHED_DISPATCH               :{WHITE}... 배차 일정을 이용하여 차량의 배차 간격을 유지할 수 없습니다
+STR_ERROR_UNBUNCHING_NO_UNBUNCHING_AUTO_SEPARATION              :{WHITE}... 자동 배차를 이용하여 차량의 배차 간격을 유지할 수 없습니다
 
 # Modifier key toggle window
 STR_MODIFIER_KEY_TOGGLE_CAPTION                                 :{WHITE}보조 키
