@@ -27,7 +27,7 @@ bool IsEngineBuildable(EngineID engine, VehicleType type, CompanyID company);
 bool IsEngineRefittable(EngineID engine);
 void SetYearEngineAgingStops();
 void CalcEngineReliability(Engine *e, bool new_month);
-void StartupOneEngine(Engine *e, CalTime::Date aging_date, const CalTime::YearMonthDay &aging_ymd, uint32_t seed, CalTime::Date no_introduce_after_date);
+void StartupOneEngine(Engine *e, const CalTime::YearMonthDay &aging_ymd, const CalTime::YearMonthDay &expire_stop_ymd, uint32_t seed, CalTime::Date no_introduce_after_date);
 
 uint GetTotalCapacityOfArticulatedParts(EngineID engine);
 

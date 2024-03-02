@@ -399,7 +399,7 @@ static bool FixTTOEngines()
 			CalTime::State backup = CalTime::Detail::now;
 			CalTime::Detail::now.cal_date += CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
 			CalTime::Detail::now.cal_ymd = CalTime::ConvertDateToYMD(CalTime::Detail::now.cal_date);
-			StartupOneEngine(e, aging_date, aging_ymd, 0, INT_MAX);
+			StartupOneEngine(e, aging_ymd, aging_ymd, 0, INT_MAX);
 			CalcEngineReliability(e, false);
 			e->intro_date -= CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta();
 			CalTime::Detail::now = backup;
