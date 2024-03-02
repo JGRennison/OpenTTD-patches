@@ -568,6 +568,7 @@ struct AISettings {
 struct ScriptSettings {
 	uint32_t script_max_opcode_till_suspend;   ///< max opcode calls till scripts will suspend
 	uint32_t script_max_memory_megabytes;      ///< limit on memory a single script instance may have allocated
+	bool     script_disable_param_randomisation; ///< disable script parameter randomisation
 };
 
 /** Settings related to the new pathfinder. */
