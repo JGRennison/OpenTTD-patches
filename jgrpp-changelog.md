@@ -12,7 +12,7 @@
 * Fix display of ships entering viewports on an aqueduct.
 * Allow adding plans in the scenario editor.
 * Add setting for whether to show vehicle running costs per calendar year.
-* Add setting for whetehr to show speed before destination in vehicle status bar.
+* Add setting for whether to show speed before destination in vehicle status bar.
 * Add setting to disable script parameter randomisation.
 * Add "path signals only" mode to the signal cycle setting.
 * Adjust display of period numbers in wallclock time-keeping mode.
