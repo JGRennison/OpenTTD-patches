@@ -54,7 +54,7 @@ static std::string CalculateHashV1(const std::string &filename)
 	fclose(f);
 
 	crypto_blake2b_final(&ctx, digest.data());
-	return FormatArrayAsHex(digest);
+	return FormatArrayAsHex(digest, true);
 }
 
 /**
@@ -87,7 +87,7 @@ static bool ValidateChecksum(const std::string &filename, const std::string &che
 		return false;
 	}
 	if (calculated_hash != hash) {
-		Debug(misc, 0, "Failed to validate signature: checksum mismatch for: {}", filename);
+		Debug(misc, 0, "Failed to validate signature: checksum mismatch for: {}, {}, {}", filename, calculated_hash, hash);
 		return false;
 	}
 

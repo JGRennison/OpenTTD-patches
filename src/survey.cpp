@@ -324,7 +324,7 @@ void SurveyGrfs(nlohmann::json &survey)
 		auto grfid = fmt::format("{:08x}", BSWAP32(c->ident.grfid));
 		auto &grf = survey[grfid];
 
-		grf["md5sum"] = FormatArrayAsHex(c->ident.md5sum);
+		grf["md5sum"] = FormatArrayAsHex(c->ident.md5sum, true);
 		grf["status"] = c->status;
 
 		if ((c->palette & GRFP_GRF_MASK) == GRFP_GRF_UNSET) grf["palette"] = "unset";
