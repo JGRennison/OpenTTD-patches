@@ -613,6 +613,7 @@ uint RoadVehicle::Crash(bool flooded)
 		/* If we're in a drive through road stop we ought to leave it */
 		if (IsInsideMM(this->state, RVSB_IN_DT_ROAD_STOP, RVSB_IN_DT_ROAD_STOP_END)) {
 			RoadStop::GetByTile(this->tile, GetRoadStopType(this->tile))->Leave(this);
+			this->state &= RVSB_ROAD_STOP_TRACKDIR_MASK;
 		}
 	}
 	this->crashed_ctr = flooded ? 2000 : 1; // max 2220, disappear pretty fast when flooded
