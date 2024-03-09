@@ -41,6 +41,7 @@ macro(compile_flags)
                 "$<$<CONFIG:Debug>:-Wa,-mbig-obj>" # Switch to pe-bigobj-x86-64 as x64 Debug builds push pe-x86-64 to the limits (linking errors with ASLR, ...)
             )
         endif()
+        add_compile_options(-Wno-stringop-overflow) # This warning false-positives on some MinGW versions so just turn it off
     endif()
 
     # Prepare a generator that checks if we are not a debug, and don't have asserts
