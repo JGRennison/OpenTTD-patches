@@ -3879,8 +3879,7 @@ static SaveOrLoadResult DoLoad(std::shared_ptr<LoadFilter> reader, bool load_che
 		 * No pools are loaded. References are not possible, and thus do not need resolving. */
 		SlLoadCheckChunks();
 	} else {
-		/* Unconditionally default this to 0 when loading a savegame */
-		_settings_game.construction.map_edge_mode = 0;
+		ResetSettingsToDefaultForLoad();
 
 		/* Load chunks and resolve references */
 		SlLoadChunks();
@@ -4014,8 +4013,7 @@ SaveOrLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, 
 
 			InitializeGame(256, 256, true, true); // set a mapsize of 256x256 for TTDPatch games or it might get confused
 
-			/* Unconditionally default this to 0 when loading a savegame */
-			_settings_game.construction.map_edge_mode = 0;
+			ResetSettingsToDefaultForLoad();
 
 			/* TTD/TTO savegames have no NewGRFs, TTDP savegame have them
 			 * and if so a new NewGRF list will be made in LoadOldSaveGame.

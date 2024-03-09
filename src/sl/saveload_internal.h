@@ -67,4 +67,6 @@ CompanyManagerFace ConvertFromOldCompanyManagerFace(uint32_t face);
 
 Order UnpackOldOrder(uint16_t packed);
 
+void ResetSettingsToDefaultForLoad();
+
 #endif /* SL_SAVELOAD_INTERNAL_H */

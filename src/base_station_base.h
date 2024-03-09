@@ -22,17 +22,15 @@
 typedef Pool<BaseStation, StationID, 32, 64000> StationPool;
 extern StationPool _station_pool;
 
-struct StationSpecList {
-	const StationSpec *spec;
+template <typename T>
+struct SpecMapping {
+	const T *spec;       ///< Custom spec.
 	uint32_t grfid;      ///< GRF ID of this custom station
 	uint16_t localidx;   ///< Station ID within GRF of station
 };
 
-struct RoadStopSpecList {
-	const RoadStopSpec *spec;
-	uint32_t grfid;      ///< GRF ID of this custom road stop
-	uint16_t localidx;   ///< Station ID within GRF of road stop
-};
+using StationSpecList = SpecMapping<StationSpec>;
+using RoadStopSpecList = SpecMapping<RoadStopSpec>;
 
 struct RoadStopTileData {
 	TileIndex tile;
@@ -322,5 +320,15 @@ struct SpecializedStation : public BaseStation {
 	 */
 	static Pool::IterateWrapper<T> Iterate(size_t from = 0) { return Pool::IterateWrapper<T>(from); }
 };
+
+/**
+ * Get spec mapping list for each supported custom spec type.
+ * @tparam T Spec type.
+ * @param bst Station of custom spec list.
+ * @return Speclist of custom spec type.
+ */
+template <class T> std::vector<SpecMapping<T>> &GetStationSpecList(BaseStation *bst);
+template <> inline std::vector<SpecMapping<StationSpec>> &GetStationSpecList<StationSpec>(BaseStation *bst) { return bst->speclist; }
+template <> inline std::vector<SpecMapping<RoadStopSpec>> &GetStationSpecList<RoadStopSpec>(BaseStation *bst) { return bst->roadstop_speclist; }
 
 #endif /* BASE_STATION_BASE_H */

@@ -176,6 +176,11 @@ struct SettingDesc {
 	 * @return true iff the value is the default value.
 	 */
 	virtual bool IsDefaultValue(void *object) const = 0;
+
+	/**
+	 * Reset the setting to its default value.
+	 */
+	virtual void ResetToDefault(void *object) const = 0;
 };
 
 /** Base integer type, including boolean, settings. Only these are shown in the settings UI. */
@@ -245,6 +250,7 @@ struct IntSettingDesc : SettingDesc {
 	void ParseValue(const IniItem *item, void *object) const override;
 	bool IsSameValue(const IniItem *item, void *object) const override;
 	bool IsDefaultValue(void *object) const override;
+	void ResetToDefault(void *object) const override;
 	int32_t Read(const void *object) const;
 
 private:
@@ -341,6 +347,7 @@ struct StringSettingDesc : SettingDesc {
 	void ParseValue(const IniItem *item, void *object) const override;
 	bool IsSameValue(const IniItem *item, void *object) const override;
 	bool IsDefaultValue(void *object) const override;
+	void ResetToDefault(void *object) const override;
 	const std::string &Read(const void *object) const;
 
 private:
@@ -359,6 +366,7 @@ struct ListSettingDesc : SettingDesc {
 	void ParseValue(const IniItem *item, void *object) const override;
 	bool IsSameValue(const IniItem *item, void *object) const override;
 	bool IsDefaultValue(void *object) const override;
+	void ResetToDefault(void *object) const override;
 };
 
 /** Placeholder for settings that have been removed, but might still linger in the savegame. */
@@ -372,6 +380,7 @@ struct NullSettingDesc : SettingDesc {
 	void ParseValue(const IniItem *item, void *object) const override { NOT_REACHED(); }
 	bool IsSameValue(const IniItem *item, void *object) const override { NOT_REACHED(); }
 	bool IsDefaultValue(void *object) const override { NOT_REACHED(); }
+	void ResetToDefault(void *object) const override {}
 };
 
 typedef std::initializer_list<std::unique_ptr<const SettingDesc>> SettingTable;

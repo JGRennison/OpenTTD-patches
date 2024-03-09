@@ -111,6 +111,8 @@ inline bool StartNewThread(std::thread *thr, const char *name, TFn&& _Fx, TArgs&
 				try {
 					/* Call user function with the given arguments. */
 					F(A...);
+				} catch (std::exception &e) {
+					error("Unhandled exception in %s thread: %s", name, e.what());
 				} catch (...) {
 					NOT_REACHED();
 				}

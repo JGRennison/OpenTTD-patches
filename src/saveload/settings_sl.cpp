@@ -201,9 +201,9 @@ struct PATSChunkHandler : ChunkHandler {
 
 	void Load() const override
 	{
-		/* Copy over default setting since some might not get loaded in
-		 * a networking environment. This ensures for example that the local
-		 * currency setting stays when joining a network-server */
+		/* Settings were previously reset to their defaults, so any settings missing in the savegame
+		 * are their default, and not "value of last game". AfterLoad might still fix
+		 * up values to become non-default, depending on the saveload version. */
 		LoadSettings(&_settings_game, _settings_sl_compat);
 	}
 
