@@ -2531,7 +2531,7 @@ class NIHNewLandscape : public NIHelper {
 		TileInfo ti;
 		ti.x = TileX(index);
 		ti.y = TileY(index);
-		ti.tileh = GetTilePixelSlope(index, &ti.z);
+		std::tie(ti.tileh, ti.z) = GetTilePixelSlope(index);
 		ti.tile = index;
 
 		NewLandscapeResolverObject ro(nullptr, &ti, NEW_LANDSCAPE_ROCKS);

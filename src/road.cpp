@@ -61,7 +61,7 @@ static bool IsPossibleCrossing(const TileIndex tile, Axis ax)
 	return (IsTileType(tile, MP_RAILWAY) &&
 		GetRailTileType(tile) == RAIL_TILE_NORMAL &&
 		GetTrackBits(tile) == (ax == AXIS_X ? TRACK_BIT_Y : TRACK_BIT_X) &&
-		GetFoundationSlope(tile) == SLOPE_FLAT);
+		std::get<0>(GetFoundationSlope(tile)) == SLOPE_FLAT);
 }
 
 /**
@@ -349,7 +349,7 @@ static TileIndex BuildTunnel(PathNode *current, TileIndex end_tile = INVALID_TIL
 {
 	const TileIndex start_tile = current->node.tile;
 	int start_z;
-	GetTileSlope(start_tile, &start_z);
+	std::tie(std::ignore, start_z) = GetTileSlopeZ(start_tile);
 
 	if (start_z == 0) return INVALID_TILE;
 
@@ -368,7 +368,7 @@ static TileIndex BuildTunnel(PathNode *current, TileIndex end_tile = INVALID_TIL
 			if (!IsValidTile(end_tile)) return INVALID_TILE;
 			if (tunnel_length > tunnel_length_limit) return INVALID_TILE;
 
-			GetTileSlope(end_tile, &end_z);
+			std::tie(std::ignore, end_z) = GetTileSlopeZ(end_tile);
 
 			if (start_z == end_z) break;
 
@@ -549,10 +549,10 @@ static bool IsValidNeighbourOfPreviousTile(const TileIndex tile, const TileIndex
 	auto get_slope_info = [](TileIndex t) -> slope_desc {
 		slope_desc desc;
 
-		desc.tile_slope = GetTileSlope(t, &desc.tile_z);
+		std::tie(desc.tile_slope, desc.tile_z) = GetTileSlopeZ(t);
 
 		desc.z = desc.tile_z;
-		desc.slope = GetFoundationSlopeFromTileSlope(t, desc.tile_slope, &desc.z);
+		desc.slope = UpdateFoundationSlopeFromTileSlope(t, desc.tile_slope, desc.z);
 
 		if (desc.slope == desc.tile_slope && desc.slope != SLOPE_FLAT && HasBit(VALID_LEVEL_CROSSING_SLOPES, desc.slope)) {
 			/* Synthesise a trivial flattening foundation */

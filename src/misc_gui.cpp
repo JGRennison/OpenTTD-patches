@@ -232,14 +232,15 @@ public:
 		this->landinfo_data.push_back(GetString(str));
 
 		/* Location */
-		std::stringstream tile_ss;
-		tile_ss << "0x" << std::setfill('0') << std::setw(4) << std::hex << std::uppercase << tile; // 0x%.4X
-
 		SetDParam(0, TileX(tile));
 		SetDParam(1, TileY(tile));
 		SetDParam(2, GetTileZ(tile));
-		SetDParamStr(3, tile_ss.str());
 		this->landinfo_data.push_back(GetString(STR_LAND_AREA_INFORMATION_LANDINFO_COORDS));
+
+		/* Tile index */
+		SetDParam(0, tile);
+		SetDParam(1, tile);
+		this->landinfo_data.push_back(GetString(STR_LAND_AREA_INFORMATION_LANDINFO_INDEX));
 
 		/* Local authority */
 		SetDParam(0, STR_LAND_AREA_INFORMATION_LOCAL_AUTHORITY_NONE);
@@ -448,6 +449,7 @@ static const char * const _credits[] = {
 	"  Matthijs Kooijman (blathijs) - Pathfinder-guru, Debian port (since 0.3)",
 	"  Christoph Elsenhans (frosch) - General coding (since 0.6)",
 	"  Lo\u00efc Guilloux (glx) - General / Windows Expert (since 0.4.5)",
+	"  Koen Bussemaker (Kuhnovic) - General / Ship pathfinder (since 14)",
 	"  Charles Pigott (LordAro) - General / Correctness police (since 1.9)",
 	"  Michael Lutz (michi_cc) - Path based signals (since 0.7)",
 	"  Niels Martin Hansen (nielsm) - Music system, general coding (since 1.9)",

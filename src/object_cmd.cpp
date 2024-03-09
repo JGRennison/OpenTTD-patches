@@ -332,8 +332,8 @@ CommandCost CmdBuildObject(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 		}
 
 		/* So, now the surface is checked... check the slope of said surface. */
-		int allowed_z;
-		if (GetTileSlope(tile, &allowed_z) != SLOPE_FLAT) allowed_z++;
+		auto [slope, allowed_z] = GetTileSlopeZ(tile);
+		if (slope != SLOPE_FLAT) allowed_z++;
 
 		for (TileIndex t : ta) {
 			uint16_t callback = CALLBACK_FAILED;
@@ -665,8 +665,7 @@ static void DrawTile_Object(TileInfo *ti, DrawTileProcParams params)
 static int GetSlopePixelZ_Object(TileIndex tile, uint x, uint y, bool)
 {
 	if (IsObjectType(tile, OBJECT_OWNED_LAND)) {
-		int z;
-		Slope tileh = GetTilePixelSlope(tile, &z);
+		auto [tileh, z] = GetTilePixelSlope(tile);
 
 		return z + GetPartialPixelZ(x & 0xF, y & 0xF, tileh);
 	} else {
@@ -1229,8 +1228,9 @@ static CommandCost TerraformTile_Object(TileIndex tile, DoCommandFlag flags, int
 		 *  - Allow autoslope by default.
 		 *  - Disallow autoslope if callback succeeds and returns non-zero.
 		 */
+		Slope tileh_old;
 		int z_old;
-		Slope tileh_old = GetTileSlope(tile, &z_old);
+		std::tie(tileh_old, z_old) = GetTileSlopeZ(tile);
 
 		/* Object height must not be changed. Slopes must not be steep. */
 		if (!IsSteepSlope(tileh_old) && !IsSteepSlope(tileh_new) && (GetObjectEffectiveZ(tile, spec, z_old, tileh_old) == GetObjectEffectiveZ(tile, spec, z_new, tileh_new))) {

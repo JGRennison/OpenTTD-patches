@@ -447,8 +447,7 @@ uint32_t GetNearbyTileInformation(TileIndex tile, bool grf_version8, uint32_t ma
 		result |= terrain_type << 8;
 	}
 	if (mask & 0xFF00FF) {
-		int z;
-		Slope tileh = GetTilePixelSlope(tile, &z);
+		auto [tileh, z] = GetTilePixelSlope(tile);
 		if (grf_version8) z /= TILE_HEIGHT;
 		result |= ClampTo<uint8_t>(z) << 16 | tileh;
 	}

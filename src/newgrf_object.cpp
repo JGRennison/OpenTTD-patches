@@ -369,7 +369,7 @@ static uint32_t GetCountAndDistanceOfClosestInstance(uint32_t local_id, uint32_t
 		case A2VRI_OBJECT_FOUNDATION_SLOPE: {
 			extern Foundation GetFoundation_Object(TileIndex tile, Slope tileh);
 			Slope slope = GetTileSlope(this->tile);
-			ApplyFoundationToSlope(GetFoundation_Object(this->tile, slope), &slope);
+			ApplyFoundationToSlope(GetFoundation_Object(this->tile, slope), slope);
 			return slope;
 		}
 
@@ -377,7 +377,7 @@ static uint32_t GetCountAndDistanceOfClosestInstance(uint32_t local_id, uint32_t
 			extern Foundation GetFoundation_Object(TileIndex tile, Slope tileh);
 			Slope slope = GetTileSlope(this->tile);
 			Slope orig_slope = slope;
-			ApplyFoundationToSlope(GetFoundation_Object(this->tile, slope), &slope);
+			ApplyFoundationToSlope(GetFoundation_Object(this->tile, slope), slope);
 			return slope ^ orig_slope;
 		}
 	}

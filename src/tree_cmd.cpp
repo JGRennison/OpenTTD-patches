@@ -773,8 +773,7 @@ static void DrawTile_Trees(TileInfo *ti, DrawTileProcParams params)
 
 static int GetSlopePixelZ_Trees(TileIndex tile, uint x, uint y, bool)
 {
-	int z;
-	Slope tileh = GetTilePixelSlope(tile, &z);
+	auto [tileh, z] = GetTilePixelSlope(tile);
 
 	return z + GetPartialPixelZ(x & 0xF, y & 0xF, tileh);
 }

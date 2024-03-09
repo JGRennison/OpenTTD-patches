@@ -906,7 +906,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}通貨�
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}通貨単位の選択
 
 
-###length 43
+###length 44
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :英ポンド
 STR_GAME_OPTIONS_CURRENCY_USD                                   :米ドル
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :欧州連合・ユーロ
@@ -2902,7 +2902,6 @@ STR_LAND_AREA_INFORMATION_TRAM_OWNER                            :{BLACK}軌道�
 STR_LAND_AREA_INFORMATION_RAIL_OWNER                            :{BLACK}線路所有者: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_LOCAL_AUTHORITY                       :{BLACK}所属街域: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_LOCAL_AUTHORITY_NONE                  :なし
-STR_LAND_AREA_INFORMATION_LANDINFO_COORDS                       :{BLACK}座標: {LTBLUE}{NUM}x{NUM}x{NUM}({STRING})
 STR_LAND_AREA_INFORMATION_BUILD_DATE                            :{BLACK}建設年: {LTBLUE}{DATE_LONG}
 STR_LAND_AREA_INFORMATION_STATION_CLASS                         :{BLACK}駅の種類: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_STATION_TYPE                          :{BLACK}駅の種類: {LTBLUE}{STRING}

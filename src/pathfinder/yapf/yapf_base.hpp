@@ -111,47 +111,43 @@ public:
 		m_veh = v;
 
 		Yapf().PfSetStartupNodes();
-		bool bDestFound = true;
 
 		for (;;) {
 			m_num_steps++;
-			Node *n = m_nodes.GetBestOpenNode();
-			if (n == nullptr) {
-				break;
-			}
+			Node *best_open_node = m_nodes.GetBestOpenNode();
+			if (best_open_node == nullptr) break;
 
-			/* if the best open node was worse than the best path found, we can finish */
-			if (m_pBestDestNode != nullptr && m_pBestDestNode->GetCost() < n->GetCostEstimate()) {
+			if (Yapf().PfDetectDestination(*best_open_node)) {
+				m_pBestDestNode = best_open_node;
 				break;
 			}
 
 			m_nodes.DequeueBestOpenNode();
-			Yapf().PfFollowNode(*n);
+			Yapf().PfFollowNode(*best_open_node);
 			if (m_max_search_nodes == 0 || m_nodes.ClosedCount() < m_max_search_nodes) {
-				m_nodes.PopAlreadyDequeuedOpenNode(n->GetKey());
-				m_nodes.InsertClosedNode(*n);
+				m_nodes.PopAlreadyDequeuedOpenNode(best_open_node->GetKey());
+				m_nodes.InsertClosedNode(*best_open_node);
 			} else {
-				m_nodes.ReenqueueOpenNode(*n);
-				bDestFound = false;
+				m_nodes.ReenqueueOpenNode(*best_open_node);
 				break;
 			}
 		}
 
-		bDestFound &= (m_pBestDestNode != nullptr);
+		const bool destination_found = (m_pBestDestNode != nullptr);
 
 		if (_debug_yapf_level >= 3) {
-			UnitID veh_idx = (m_veh != nullptr) ? m_veh->unitnumber : 0;
-			char ttc = Yapf().TransportTypeChar();
-			float cache_hit_ratio = (m_stats_cache_hits == 0) ? 0.0f : ((float)m_stats_cache_hits / (float)(m_stats_cache_hits + m_stats_cost_calcs) * 100.0f);
-			int cost = bDestFound ? m_pBestDestNode->m_cost : -1;
-			int dist = bDestFound ? m_pBestDestNode->m_estimate - m_pBestDestNode->m_cost : -1;
+			const UnitID veh_idx = (m_veh != nullptr) ? m_veh->unitnumber : 0;
+			const char ttc = Yapf().TransportTypeChar();
+			const float cache_hit_ratio = (m_stats_cache_hits == 0) ? 0.0f : ((float)m_stats_cache_hits / (float)(m_stats_cache_hits + m_stats_cost_calcs) * 100.0f);
+			const int cost = destination_found ? m_pBestDestNode->m_cost : -1;
+			const int dist = destination_found ? m_pBestDestNode->m_estimate - m_pBestDestNode->m_cost : -1;
 
 			DEBUG(yapf, 3, "[YAPF%c]%c%4d- %d rounds - %d open - %d closed - CHR %4.1f%% - C %d D %d",
-				ttc, bDestFound ? '-' : '!', veh_idx, m_num_steps, m_nodes.OpenCount(), m_nodes.ClosedCount(), cache_hit_ratio, cost, dist
+				ttc, destination_found ? '-' : '!', veh_idx, m_num_steps, m_nodes.OpenCount(), m_nodes.ClosedCount(), cache_hit_ratio, cost, dist
 			);
 		}
 
-		return bDestFound;
+		return destination_found;
 	}
 
 	/**
@@ -249,16 +245,6 @@ public:
 
 		/* have the cost or estimate callbacks marked this node as invalid? */
 		if (!bValid) return;
-
-		/* detect the destination */
-		bool bDestination = Yapf().PfDetectDestination(n);
-		if (bDestination) {
-			if (m_pBestDestNode == nullptr || n < *m_pBestDestNode) {
-				m_pBestDestNode = &n;
-			}
-			m_nodes.FoundBestNode(n);
-			return;
-		}
 
 		/* The new node can be set as the best intermediate node only once we're
 		 * certain it will be finalized by being inserted into the open list. */

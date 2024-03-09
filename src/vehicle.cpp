@@ -1665,7 +1665,7 @@ void CallVehicleTicks()
 			for (Train *u = front; u != nullptr; u = u->Next()) {
 				u->tick_counter++;
 				VehicleTickCargoAging(u);
-				if (!u->IsWagon() && !((front->vehstatus & VS_STOPPED) && front->cur_speed == 0)) VehicleTickMotion(u, front);
+				if (u->IsEngine() && !((front->vehstatus & VS_STOPPED) && front->cur_speed == 0)) VehicleTickMotion(u, front);
 			}
 		}
 	}
@@ -3813,8 +3813,8 @@ bool Vehicle::HasUnbunchingOrder() const
 static bool PreviousOrderIsUnbunching(const Vehicle *v)
 {
 	/* If we are headed for the first order, we must wrap around back to the last order. */
-	bool is_first_order = (v->GetOrder(v->cur_real_order_index) == v->GetFirstOrder());
-	Order *previous_order = (is_first_order) ? v->GetLastOrder() : v->GetOrder(v->cur_real_order_index - 1);
+	bool is_first_order = (v->GetOrder(v->cur_implicit_order_index) == v->GetFirstOrder());
+	Order *previous_order = (is_first_order) ? v->GetLastOrder() : v->GetOrder(v->cur_implicit_order_index - 1);
 
 	if (previous_order == nullptr || !previous_order->IsType(OT_GOTO_DEPOT)) return false;
 	return (previous_order->GetDepotActionType() & ODATFB_UNBUNCH) != 0;

@@ -1901,7 +1901,8 @@ bool CheckMapEdgesAreWater(bool allow_non_flat_void)
 {
 	auto check_tile = [&](uint x, uint y, Slope inner_edge) -> bool {
 		int h = 0;
-		Slope slope = GetTilePixelSlopeOutsideMap(x, y, &h);
+		Slope slope;
+		std::tie(slope, h) = GetTilePixelSlopeOutsideMap(x, y);
 		if (slope == SLOPE_FLAT && h == 0) return true;
 		if (allow_non_flat_void && h == 0 && (slope & inner_edge) == 0 && IsTileType(TileXY(x, y), MP_VOID)) return true;
 		return false;

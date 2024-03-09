@@ -237,7 +237,7 @@ Foundation GetBridgeFoundation(Slope tileh, Axis axis)
  */
 bool HasBridgeFlatRamp(Slope tileh, Axis axis)
 {
-	ApplyFoundationToSlope(GetBridgeFoundation(tileh, axis), &tileh);
+	ApplyFoundationToSlope(GetBridgeFoundation(tileh, axis), tileh);
 	/* If the foundation slope is flat the bridge has a non-flat ramp and vice versa. */
 	return (tileh != SLOPE_FLAT);
 }
@@ -263,12 +263,12 @@ static inline const PalSpriteID *GetBridgeSpriteTable(int index, BridgePieces ta
  * @param z TileZ corresponding to tileh, gets modified as well
  * @return Error or cost for bridge foundation
  */
-static CommandCost CheckBridgeSlope(BridgePieces bridge_piece, Axis axis, Slope *tileh, int *z)
+static CommandCost CheckBridgeSlope(BridgePieces bridge_piece, Axis axis, Slope &tileh, int &z)
 {
 	assert(bridge_piece == BRIDGE_PIECE_NORTH || bridge_piece == BRIDGE_PIECE_SOUTH);
 
-	Foundation f = GetBridgeFoundation(*tileh, axis);
-	*z += ApplyFoundationToSlope(f, tileh);
+	Foundation f = GetBridgeFoundation(tileh, axis);
+	z += ApplyFoundationToSlope(f, tileh);
 
 	Slope valid_inclined;
 	if (bridge_piece == BRIDGE_PIECE_NORTH) {
@@ -276,7 +276,7 @@ static CommandCost CheckBridgeSlope(BridgePieces bridge_piece, Axis axis, Slope 
 	} else {
 		valid_inclined = (axis == AXIS_X ? SLOPE_SW : SLOPE_SE);
 	}
-	if ((*tileh != SLOPE_FLAT) && (*tileh != valid_inclined)) return CMD_ERROR;
+	if ((tileh != SLOPE_FLAT) && (tileh != valid_inclined)) return CMD_ERROR;
 
 	if (f == FOUNDATION_NONE) return CommandCost();
 
@@ -444,13 +444,11 @@ CommandCost CmdBuildBridge(TileIndex end_tile, DoCommandFlag flags, uint32_t p1,
 	}
 	bridge_len += 2; // begin and end tiles/ramps
 
-	int z_start;
-	int z_end;
-	Slope tileh_start = GetTileSlope(tile_start, &z_start);
-	Slope tileh_end = GetTileSlope(tile_end, &z_end);
+	auto [tileh_start, z_start] = GetTileSlopeZ(tile_start);
+	auto [tileh_end, z_end] = GetTileSlopeZ(tile_end);
 
-	CommandCost terraform_cost_north = CheckBridgeSlope(BRIDGE_PIECE_NORTH, direction, &tileh_start, &z_start);
-	CommandCost terraform_cost_south = CheckBridgeSlope(BRIDGE_PIECE_SOUTH, direction, &tileh_end,   &z_end);
+	CommandCost terraform_cost_north = CheckBridgeSlope(BRIDGE_PIECE_NORTH, direction, tileh_start, z_start);
+	CommandCost terraform_cost_south = CheckBridgeSlope(BRIDGE_PIECE_SOUTH, direction, tileh_end,   z_end);
 
 	/* Aqueducts can't be built of flat land. */
 	if (transport_type == TRANSPORT_WATER && (tileh_start == SLOPE_FLAT || tileh_end == SLOPE_FLAT)) return_cmd_error(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
@@ -887,8 +885,9 @@ static inline CommandCost CanBuildChunnel(TileIndex tile, DiagDirection directio
 		tile += delta;
 		if (!IsValidTile(tile)) return_cmd_error(STR_ERROR_CHUNNEL_THROUGH_MAP_BORDER);
 		_build_tunnel_endtile = tile;
+		Slope end_tileh;
 		int end_z;
-		Slope end_tileh = GetTileSlope(tile, &end_z);
+		std::tie(end_tileh, end_z) = GetTileSlopeZ(tile);
 
 		if (start_z == end_z) {
 
@@ -989,9 +988,7 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32_t p
 		}
 	}
 
-	int start_z;
-	int end_z;
-	Slope start_tileh = GetTileSlope(start_tile, &start_z);
+	auto [start_tileh, start_z] = GetTileSlopeZ(start_tile);
 	DiagDirection direction = GetInclinedSlopeDirection(start_tileh);
 	if (direction == INVALID_DIAGDIR) return_cmd_error(STR_ERROR_SITE_UNSUITABLE_FOR_TUNNEL);
 
@@ -1027,10 +1024,11 @@ CommandCost CmdBuildTunnel(TileIndex start_tile, DoCommandFlag flags, uint32_t p
 	}
 
 	Slope end_tileh;
+	int end_z;
 	for (;;) {
 		end_tile += delta;
 		if (!IsValidTile(end_tile)) return_cmd_error(STR_ERROR_TUNNEL_THROUGH_MAP_BORDER);
-		end_tileh = GetTileSlope(end_tile, &end_z);
+		std::tie(end_tileh, end_z) = GetTileSlopeZ(end_tile);
 
 		if (start_z == end_z) {
 			if (is_chunnel && !crossed_sea){
@@ -1578,8 +1576,8 @@ static void DrawBridgePillars(const PalSpriteID *psid, const TileInfo *ti, Axis 
 	int z_back_north = ti->z;
 	int z_front_south = ti->z;
 	int z_back_south = ti->z;
-	GetSlopePixelZOnEdge(ti->tileh, south_dir, &z_front_south, &z_back_south);
-	GetSlopePixelZOnEdge(ti->tileh, ReverseDiagDir(south_dir), &z_front_north, &z_back_north);
+	GetSlopePixelZOnEdge(ti->tileh, south_dir, z_front_south, z_back_south);
+	GetSlopePixelZOnEdge(ti->tileh, ReverseDiagDir(south_dir), z_front_north, z_back_north);
 
 	/* Shared height of pillars */
 	int z_front = std::max(z_front_north, z_front_south);
@@ -1952,7 +1950,8 @@ static int GetTunnelBridgeSignalZNonRailCustom(TileIndex tile, bool side, bool e
 	if (IsTunnel(tile)) {
 		z = GetTileZ(tile) * TILE_HEIGHT;
 	} else {
-		Slope slope = GetTilePixelSlope(tile, &z);
+		Slope slope;
+		std::tie(slope, z) = GetTilePixelSlope(tile);
 		if (slope == SLOPE_FLAT) {
 			if (side == exit && dir == DIAGDIR_SE) z += 2;
 			if (side != exit && dir == DIAGDIR_SW) z += 2;
@@ -2575,8 +2574,7 @@ void DrawBridgeMiddle(const TileInfo *ti)
 
 static int GetSlopePixelZ_TunnelBridge(TileIndex tile, uint x, uint y, bool ground_vehicle)
 {
-	int z;
-	Slope tileh = GetTilePixelSlope(tile, &z);
+	auto [tileh, z] = GetTilePixelSlope(tile);
 
 	x &= 0xF;
 	y &= 0xF;
@@ -2590,7 +2588,7 @@ static int GetSlopePixelZ_TunnelBridge(TileIndex tile, uint x, uint y, bool grou
 		}
 
 		DiagDirection dir = GetTunnelBridgeDirection(tile);
-		z += ApplyPixelFoundationToSlope(GetBridgeFoundation(tileh, DiagDirToAxis(dir)), &tileh);
+		z += ApplyPixelFoundationToSlope(GetBridgeFoundation(tileh, DiagDirToAxis(dir)), tileh);
 
 		/* On the bridge ramp? */
 		if (ground_vehicle) {
@@ -3308,8 +3306,7 @@ static CommandCost TerraformTile_TunnelBridge(TileIndex tile, DoCommandFlag flag
 		DiagDirection direction = GetTunnelBridgeDirection(tile);
 		Axis axis = DiagDirToAxis(direction);
 		CommandCost res;
-		int z_old;
-		Slope tileh_old = GetTileSlope(tile, &z_old);
+		auto [tileh_old, z_old] = GetTileSlopeZ(tile);
 
 		if (IsRoadCustomBridgeHeadTile(tile)) {
 			const RoadBits pieces = GetCustomBridgeHeadAllRoadBits(tile);
@@ -3335,11 +3332,11 @@ static CommandCost TerraformTile_TunnelBridge(TileIndex tile, DoCommandFlag flag
 
 		/* Check if new slope is valid for bridges in general (so we can safely call GetBridgeFoundation()) */
 		if ((direction == DIAGDIR_NW) || (direction == DIAGDIR_NE)) {
-			CheckBridgeSlope(BRIDGE_PIECE_SOUTH, axis, &tileh_old, &z_old);
-			res = CheckBridgeSlope(BRIDGE_PIECE_SOUTH, axis, &tileh_new, &z_new);
+			CheckBridgeSlope(BRIDGE_PIECE_SOUTH, axis, tileh_old, z_old);
+			res = CheckBridgeSlope(BRIDGE_PIECE_SOUTH, axis, tileh_new, z_new);
 		} else {
-			CheckBridgeSlope(BRIDGE_PIECE_NORTH, axis, &tileh_old, &z_old);
-			res = CheckBridgeSlope(BRIDGE_PIECE_NORTH, axis, &tileh_new, &z_new);
+			CheckBridgeSlope(BRIDGE_PIECE_NORTH, axis, tileh_old, z_old);
+			res = CheckBridgeSlope(BRIDGE_PIECE_NORTH, axis, tileh_new, z_new);
 		}
 
 		/* Surface slope is valid and remains unchanged? */

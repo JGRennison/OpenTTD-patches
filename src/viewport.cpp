@@ -1568,7 +1568,7 @@ static void DrawAutorailSelection(const TileInfo *ti, HighLightStyle autorail_ty
 		extern bool IsValidFlatRailBridgeHeadTrackBits(Slope normalised_slope, DiagDirection bridge_direction, TrackBits tracks);
 
 		offset = _AutorailTilehSprite[SLOPE_FLAT][autorail_type];
-		const Slope real_tileh = GetTileSlope(ti->tile, nullptr);
+		const Slope real_tileh = GetTileSlope(ti->tile);
 		const Slope normalised_tileh = IsSteepSlope(real_tileh) ? SlopeWithOneCornerRaised(GetHighestSlopeCorner(real_tileh)) : real_tileh;
 		if (!IsValidFlatRailBridgeHeadTrackBits(normalised_tileh, GetTunnelBridgeDirection(ti->tile), TrackToTrackBits((Track) autorail_type))) {
 			offset = -offset;
@@ -1861,10 +1861,10 @@ static void ViewportAddLandscape()
 
 			if (tile_type != MP_VOID) {
 				/* We are inside the map => paint landscape. */
-				_cur_ti.tileh = GetTilePixelSlope(_cur_ti.tile, &_cur_ti.z);
+				std::tie(_cur_ti.tileh, _cur_ti.z) = GetTilePixelSlope(_cur_ti.tile);
 			} else {
 				/* We are outside the map => paint black. */
-				_cur_ti.tileh = GetTilePixelSlopeOutsideMap(tilecoord.x, tilecoord.y, &_cur_ti.z);
+				std::tie(_cur_ti.tileh, _cur_ti.z) = GetTilePixelSlopeOutsideMap(tilecoord.x, tilecoord.y);
 			}
 
 			int viewport_y = GetViewportY(tilecoord);
@@ -2923,9 +2923,9 @@ static void ViewportDrawPlans(const Viewport *vp, Blitter *blitter, DrawPixelInf
 	}
 }
 
-#define SLOPIFY_COLOUR(tile, height, vF, vW, vS, vE, vN, action) { \
+#define SLOPIFY_COLOUR(tile, vF, vW, vS, vE, vN, action) { \
 	if (show_slope) { \
-		const Slope slope = GetTileSlope((tile), (height)); \
+		const Slope slope = GetTileSlope((tile)); \
 		switch (slope) { \
 			case SLOPE_FLAT: \
 			case SLOPE_ELEVATED: \
@@ -2943,9 +2943,9 @@ static void ViewportDrawPlans(const Viewport *vp, Blitter *blitter, DrawPixelInf
 		action (vF); \
 	} \
 }
-#define RETURN_SLOPIFIED_COLOUR(tile, height, colour, colour_light, colour_dark) SLOPIFY_COLOUR(tile, height, colour, colour_light, colour_dark, colour_dark, colour_light, return)
-#define ASSIGN_SLOPIFIED_COLOUR(tile, height, colour, colour_light, colour_dark, to_var) SLOPIFY_COLOUR(tile, height, colour, colour_light, colour_dark, colour_dark, colour_light, to_var =)
-#define GET_SLOPE_INDEX(slope_index) SLOPIFY_COLOUR(tile, nullptr, 0, 1, 2, 3, 4, slope_index =)
+#define RETURN_SLOPIFIED_COLOUR(tile, colour, colour_light, colour_dark) SLOPIFY_COLOUR(tile, colour, colour_light, colour_dark, colour_dark, colour_light, return)
+#define ASSIGN_SLOPIFIED_COLOUR(tile, colour, colour_light, colour_dark, to_var) SLOPIFY_COLOUR(tile, colour, colour_light, colour_dark, colour_dark, colour_light, to_var =)
+#define GET_SLOPE_INDEX(slope_index) SLOPIFY_COLOUR(tile, 0, 1, 2, 3, 4, slope_index =)
 
 #define COL8TO32(x) _cur_palette.palette[x].data
 #define COLOUR_FROM_INDEX(x) ((const uint8_t *)&(x))[colour_index]
@@ -3023,7 +3023,7 @@ static bool ViewportMapGetColourVegetationCustomObject(uint32_t &colour, const T
 		if (show_slope) {
 			slope = GetTileSlope(tile);
 			extern Foundation GetFoundation_Object(TileIndex tile, Slope tileh);
-			ApplyFoundationToSlope(GetFoundation_Object(tile, slope), &slope);
+			ApplyFoundationToSlope(GetFoundation_Object(tile, slope), slope);
 			slope &= SLOPE_ELEVATED;
 		}
 		colour = _vp_map_vegetation_clear_colours[slope][cg][multi];
@@ -3082,7 +3082,7 @@ static bool ViewportMapGetColourVegetationCustomObject(uint32_t &colour, const T
 			if (show_slope) {
 				slope = GetTileSlope(tile);
 				extern Foundation GetFoundation_Object(TileIndex tile, Slope tileh);
-				ApplyFoundationToSlope(GetFoundation_Object(tile, slope), &slope);
+				ApplyFoundationToSlope(GetFoundation_Object(tile, slope), slope);
 				slope &= SLOPE_ELEVATED;
 			}
 			TreeGround tg = (TreeGround)GB(spec->vport_map_subtype, 0, 4);
@@ -3120,7 +3120,7 @@ static inline uint32_t ViewportMapGetColourVegetation(const TileIndex tile, Tile
 
 	switch (t) {
 		case MP_CLEAR: {
-			Slope slope = show_slope ? (Slope) (GetTileSlope(tile, nullptr) & 15) : SLOPE_FLAT;
+			Slope slope = show_slope ? (Slope) (GetTileSlope(tile) & 15) : SLOPE_FLAT;
 			uint multi;
 			ClearGround cg = GetClearGround(tile);
 			if (cg == CLEAR_FIELDS && colour_index & 1) {
@@ -3138,7 +3138,7 @@ static inline uint32_t ViewportMapGetColourVegetation(const TileIndex tile, Tile
 			const TreeGround tg = GetTreeGround(tile);
 			const uint td = GetTreeDensity(tile);
 			const uint tc = GetTreeCount(tile);
-			Slope slope = show_slope ? (Slope) (GetTileSlope(tile, nullptr) & 15) : SLOPE_FLAT;
+			Slope slope = show_slope ? (Slope) (GetTileSlope(tile) & 15) : SLOPE_FLAT;
 			return ViewportMapGetColourVegetationTree<is_32bpp>(tile, tg, td, tc, colour_index, slope);
 		}
 
@@ -3169,7 +3169,7 @@ static inline uint32_t ViewportMapGetColourVegetation(const TileIndex tile, Tile
 	if (is_32bpp) {
 		return COL8TO32(colour);
 	} else {
-		if (show_slope) ASSIGN_SLOPIFIED_COLOUR(tile, nullptr, colour, _lighten_colour[colour], _darken_colour[colour], colour);
+		if (show_slope) ASSIGN_SLOPIFIED_COLOUR(tile, colour, _lighten_colour[colour], _darken_colour[colour], colour);
 		return colour;
 	}
 }
@@ -3232,7 +3232,7 @@ static inline uint32_t ViewportMapGetColourIndustries(const TileIndex tile, cons
 	const uint32_t colours = ApplyMask(_settings_client.gui.show_height_on_viewport_map ? cs->height_colours[h] : cs->default_colour, &_smallmap_vehicles_andor[t2]);
 	uint32_t colour = COLOUR_FROM_INDEX(colours);
 
-	if (show_slope) ASSIGN_SLOPIFIED_COLOUR(tile, nullptr, colour, _lighten_colour[colour], _darken_colour[colour], colour);
+	if (show_slope) ASSIGN_SLOPIFIED_COLOUR(tile, colour, _lighten_colour[colour], _darken_colour[colour], colour);
 
 	return IS32(colour);
 }
@@ -3265,7 +3265,7 @@ static inline uint32_t ViewportMapGetColourOwner(const TileIndex tile, TileType 
 
 		const SmallMapColourScheme * const cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
 		uint32_t colour = COLOUR_FROM_INDEX(_settings_client.gui.show_height_on_viewport_map ? cs->height_colours[TileHeight(tile)] : cs->default_colour);
-		if (show_slope) ASSIGN_SLOPIFIED_COLOUR(tile, nullptr, colour, _lighten_colour[colour], _darken_colour[colour], colour);
+		if (show_slope) ASSIGN_SLOPIFIED_COLOUR(tile, colour, _lighten_colour[colour], _darken_colour[colour], colour);
 		return IS32(colour);
 
 	} else if (o == OWNER_TOWN) {
@@ -3276,7 +3276,7 @@ static inline uint32_t ViewportMapGetColourOwner(const TileIndex tile, TileType 
 	 * So we give the player a hint by mixing his colour with black. */
 	uint32_t colour = _legend_land_owners[_company_to_list_pos[o]].colour;
 	if (t != MP_STATION) {
-		if (show_slope) ASSIGN_SLOPIFIED_COLOUR(tile, nullptr, colour, _lighten_colour[colour], _darken_colour[colour], colour);
+		if (show_slope) ASSIGN_SLOPIFIED_COLOUR(tile, colour, _lighten_colour[colour], _darken_colour[colour], colour);
 	} else {
 		if (GetStationType(tile) == STATION_RAIL) colour = colour_index & 1 ? colour : PC_BLACK;
 	}
@@ -3373,7 +3373,7 @@ static inline uint32_t ViewportMapGetColourRoutes(const TileIndex tile, TileType
 		}
 	}
 
-	if (show_slope) ASSIGN_SLOPIFIED_COLOUR(tile, nullptr, colour, _lighten_colour[colour], _darken_colour[colour], colour);
+	if (show_slope) ASSIGN_SLOPIFIED_COLOUR(tile, colour, _lighten_colour[colour], _darken_colour[colour], colour);
 	return IS32(colour);
 }
 

@@ -1347,7 +1347,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Wybór w
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 43
+###length 44
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Funt brytyjski
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dolar amerykański
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -3458,7 +3458,8 @@ STR_LAND_AREA_INFORMATION_TRAM_OWNER                            :{BLACK}Właści
 STR_LAND_AREA_INFORMATION_RAIL_OWNER                            :{BLACK}Właściciel linii kolejowej: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_LOCAL_AUTHORITY                       :{BLACK}Lokalne władze: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_LOCAL_AUTHORITY_NONE                  :Brak
-STR_LAND_AREA_INFORMATION_LANDINFO_COORDS                       :{BLACK}Współrzędne: {LTBLUE}{NUM} x {NUM} x {NUM} ({STRING})
+STR_LAND_AREA_INFORMATION_LANDINFO_COORDS                       :{BLACK}Współrzędne: {LTBLUE}{NUM} x {NUM} x {NUM}
+STR_LAND_AREA_INFORMATION_LANDINFO_INDEX                        :{BLACK}Indeks pola: {LTBLUE}{NUM} ({HEX})
 STR_LAND_AREA_INFORMATION_BUILD_DATE                            :{BLACK}Zbudowano/odnowiono: {LTBLUE}{DATE_LONG}
 STR_LAND_AREA_INFORMATION_STATION_CLASS                         :{BLACK}Rodzaj stacji: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_STATION_TYPE                          :{BLACK}Typ stacji: {LTBLUE}{STRING}
@@ -5114,7 +5115,7 @@ STR_TIMETABLE_START_SECONDS_QUERY                               :Sekundy do uruc
 STR_TIMETABLE_CHANGE_TIME                                       :{BLACK}Zmień czas
 STR_TIMETABLE_WAIT_TIME_TOOLTIP                                 :{BLACK}Ustal ilość czasu, jaką powinno zająć zaznaczone polecenie. Użyj Ctrl, aby ustalić taki czas dla wszystkich poleceń
 
-STR_TIMETABLE_CLEAR_TIME                                        :{BLACK}Usuń czas
+STR_TIMETABLE_CLEAR_TIME                                        :{BLACK}Wyczyść czas
 STR_TIMETABLE_CLEAR_TIME_TOOLTIP                                :{BLACK}Wyczyść podany czas w zaznaczonym poleceniu. Użyj Ctrl, aby wyczyścić czasy we wszystkich poleceniach
 
 STR_TIMETABLE_CHANGE_SPEED                                      :{BLACK}Zmień limit prędkości
@@ -5229,8 +5230,6 @@ STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Game Script
 STR_AI_SETTINGS_CLOSE                                           :{BLACK}Zamknij
 STR_AI_SETTINGS_RESET                                           :{BLACK}Resetuj
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
-STR_AI_SETTINGS_SETTING_DEVIATION                               :{STRING}: {ORANGE}[{STRING}, {STRING}]
-STR_AI_SETTINGS_JUST_DEVIATION                                  :[{STRING}, {STRING}]
 
 
 # Textfile window

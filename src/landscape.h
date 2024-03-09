@@ -64,13 +64,13 @@ inline byte LowestTreePlacementSnowLine()
 }
 
 int GetSlopeZInCorner(Slope tileh, Corner corner);
-Slope GetFoundationSlopeFromTileSlope(TileIndex tile, Slope tileh, int *z = nullptr);
-Slope GetFoundationSlope(TileIndex tile, int *z = nullptr);
+Slope UpdateFoundationSlopeFromTileSlope(TileIndex tile, Slope tileh, int &tilez);
+std::tuple<Slope, int> GetFoundationSlope(TileIndex tile);
 
 uint GetPartialPixelZ(int x, int y, Slope corners);
 int GetSlopePixelZ(int x, int y, bool ground_vehicle = false);
 int GetSlopePixelZOutsideMap(int x, int y);
-void GetSlopePixelZOnEdge(Slope tileh, DiagDirection edge, int *z1, int *z2);
+void GetSlopePixelZOnEdge(Slope tileh, DiagDirection edge, int &z1, int &z2);
 
 /**
  * Determine the Z height of a corner relative to TileZ.
@@ -91,15 +91,12 @@ inline int GetSlopePixelZInCorner(Slope tileh, Corner corner)
  * If a tile does not have a foundation, the function returns the same as GetTilePixelSlope.
  *
  * @param tile The tile of interest.
- * @param z returns the z of the foundation slope. (Can be nullptr, if not needed)
- * @return The slope on top of the foundation.
+ * @return The slope on top of the foundation and the z of the foundation.
  */
-inline Slope GetFoundationPixelSlope(TileIndex tile, int *z)
+inline std::tuple<Slope, int> GetFoundationPixelSlope(TileIndex tile)
 {
-	dbg_assert(z != nullptr);
-	Slope s = GetFoundationSlope(tile, z);
-	*z *= TILE_HEIGHT;
-	return s;
+	auto [s, z] = GetFoundationSlope(tile);
+	return {s, z * TILE_HEIGHT};
 }
 
 /**
@@ -148,7 +145,7 @@ inline Point InverseRemapCoords(int x, int y)
 
 Point InverseRemapCoords2(int x, int y, bool clamp_to_map = false, bool *clamped = nullptr);
 
-uint ApplyFoundationToSlope(Foundation f, Slope *s);
+uint ApplyFoundationToSlope(Foundation f, Slope &s);
 /**
  * Applies a foundation to a slope.
  *
@@ -157,7 +154,7 @@ uint ApplyFoundationToSlope(Foundation f, Slope *s);
  * @param s  The #Slope to modify.
  * @return   Increment to the tile Z coordinate.
  */
-inline uint ApplyPixelFoundationToSlope(Foundation f, Slope *s)
+inline uint ApplyPixelFoundationToSlope(Foundation f, Slope &s)
 {
 	return ApplyFoundationToSlope(f, s) * TILE_HEIGHT;
 }
