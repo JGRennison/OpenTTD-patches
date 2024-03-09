@@ -206,14 +206,14 @@ struct GSConfigWindow : public Window {
 					TextColour colour;
 					uint idx = 0;
 					if (config_item.description.empty()) {
-						if (Game::GetInstance() == nullptr && config_item.random_deviation != 0 && !GetGameSettings().script.script_disable_param_randomisation) {
+						if (Game::GetInstance() == nullptr && config_item.random_deviation != 0) {
 							str = STR_AI_SETTINGS_JUST_DEVIATION;
 						} else {
 							str = STR_JUST_STRING1;
 						}
 						colour = TC_ORANGE;
 					} else {
-						if (Game::GetInstance() == nullptr && config_item.random_deviation != 0 && !GetGameSettings().script.script_disable_param_randomisation) {
+						if (Game::GetInstance() == nullptr && config_item.random_deviation != 0) {
 							str = STR_AI_SETTINGS_SETTING_DEVIATION;
 						} else {
 							str = STR_AI_SETTINGS_SETTING;
@@ -232,7 +232,7 @@ struct GSConfigWindow : public Window {
 							DrawArrowButtons(br.left, y + button_y_offset, COLOUR_YELLOW, (this->clicked_button == i) ? 1 + (this->clicked_increase != rtl) : 0, editable && current_value > config_item.min_value, editable && current_value < config_item.max_value);
 						}
 
-						if (Game::GetInstance() != nullptr || config_item.random_deviation == 0 || GetGameSettings().script.script_disable_param_randomisation) {
+						if (Game::GetInstance() != nullptr || config_item.random_deviation == 0) {
 							auto config_iterator = config_item.labels.find(current_value);
 							if (config_iterator != config_item.labels.end()) {
 								SetDParam(idx++, STR_JUST_RAW_STRING);

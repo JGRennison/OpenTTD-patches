@@ -2298,9 +2298,6 @@ STR_CONFIG_SETTING_CITY_IN_LABEL_HELPTEXT                       :Display if a to
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :Path signals only
 
-STR_CONFIG_SETTING_SCRIPT_DISABLE_PARAM_RANDOM                  :Disable script parameter randomisation: {STRING2}
-STR_CONFIG_SETTING_SCRIPT_DISABLE_PARAM_RANDOM_HELPTEXT         :Disable the randomisation of AI/GS script parameters.
-
 STR_CONFIG_SETTING_RESTRICT_PATCH                               :Non-standard settings which are not in vanilla OpenTTD
 
 ###length 4
