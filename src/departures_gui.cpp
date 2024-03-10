@@ -748,7 +748,6 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 	uint arrival = 0;
 
 	StateTicks now_date = _state_ticks;
-	StateTicks max_date = now_date + GetDeparturesMaxTicksAhead();
 
 	/* Draw each departure. */
 	for (uint i = 0; i < max_departures; ++i) {
@@ -771,11 +770,6 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 		}
 
 		if (i < this->vscroll->GetPosition()) {
-			continue;
-		}
-
-		/* If for some reason the departure is too far in the future or is at a negative time, skip it. */
-		if (d->scheduled_tick > max_date || d->scheduled_tick < 0) {
 			continue;
 		}
 

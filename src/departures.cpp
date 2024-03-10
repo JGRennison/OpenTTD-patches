@@ -114,13 +114,18 @@ static bool VehicleSetNextDepartureTime(Ticks *previous_departure, Ticks *waitin
 		if (order->IsScheduledDispatchOrder(true) && !(arrived_at_timing_point && is_current_implicit_order(order))) {
 			const DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(order->GetDispatchScheduleIndex());
 
-			StateTicks actual_departure         = -1;
+			StateTicks actual_departure         = INT64_MAX;
 			const StateTicks begin_time         = ds.GetScheduledDispatchStartTick();
 			const uint32_t dispatch_duration    = ds.GetScheduledDispatchDuration();
 			const int32_t max_delay             = ds.GetScheduledDispatchDelay();
 
-			/* Earliest possible departure according to schedue */
-			StateTicks earliest_departure = begin_time + ds.GetScheduledDispatchLastDispatch();
+			/* Earliest possible departure according to the schedule */
+			StateTicks earliest_departure = begin_time;
+			if (ds.GetScheduledDispatchLastDispatch() != INVALID_SCHEDULED_DISPATCH_OFFSET) {
+				earliest_departure += ds.GetScheduledDispatchLastDispatch();
+			} else {
+				earliest_departure--;
+			}
 
 			/* Earliest possible departure according to vehicle current timetable */
 			const StateTicks ready_to_depart_time = state_ticks_base + *previous_departure + order->GetTravelTime() + order->GetTimetabledWait();
@@ -148,9 +153,17 @@ static bool VehicleSetNextDepartureTime(Ticks *previous_departure, Ticks *waitin
 					current_departure += dispatch_duration;
 				}
 
-				if (actual_departure == -1 || actual_departure > current_departure) {
+				if (actual_departure > current_departure) {
 					actual_departure = current_departure;
 				}
+			}
+
+			if (actual_departure == INT64_MAX) {
+				/* Failed to find a dispatch slot for this departure at all, the schedule is invalid/empty.
+				 * Just treat it as a non-dispatch order. */
+				*previous_departure += order->GetTravelTime() + order->GetWaitTime();
+				*waiting_time = 0;
+				return false;
 			}
 
 			*waiting_time = (actual_departure - state_ticks_base).AsTicks() - *previous_departure - order->GetTravelTime();
