@@ -117,8 +117,8 @@ public:
 			Node *best_open_node = m_nodes.GetBestOpenNode();
 			if (best_open_node == nullptr) break;
 
-			if (Yapf().PfDetectDestination(*best_open_node)) {
-				m_pBestDestNode = best_open_node;
+			/* if the best open node was worse than the best path found, we can finish */
+			if (m_pBestDestNode != nullptr && m_pBestDestNode->GetCost() < best_open_node->GetCostEstimate()) {
 				break;
 			}
 
@@ -245,6 +245,16 @@ public:
 
 		/* have the cost or estimate callbacks marked this node as invalid? */
 		if (!bValid) return;
+
+		/* detect the destination */
+		bool bDestination = Yapf().PfDetectDestination(n);
+		if (bDestination) {
+			if (m_pBestDestNode == nullptr || n < *m_pBestDestNode) {
+				m_pBestDestNode = &n;
+			}
+			m_nodes.FoundBestNode(n);
+			return;
+		}
 
 		/* The new node can be set as the best intermediate node only once we're
 		 * certain it will be finalized by being inserted into the open list. */
