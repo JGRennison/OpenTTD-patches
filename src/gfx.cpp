@@ -2211,7 +2211,6 @@ bool AdjustGUIZoom(AdjustGUIZoomMode mode)
 
 	SetupWidgetDimensions();
 	UpdateAllVirtCoords();
-	if (mode != AGZM_STARTUP) FixTitleGameZoom();
 
 	extern void FlushDeparturesWindowTextCaches();
 	FlushDeparturesWindowTextCaches();
