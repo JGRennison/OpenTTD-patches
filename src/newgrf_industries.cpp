@@ -347,10 +347,10 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(byte para
 			if (index < 0) return 0; // invalid cargo
 			switch (variable) {
 				case 0x69: return this->industry->produced_cargo_waiting[index];
-				case 0x6A: return this->industry->this_month_production[index];
-				case 0x6B: return this->industry->this_month_transported[index];
-				case 0x6C: return this->industry->last_month_production[index];
-				case 0x6D: return this->industry->last_month_transported[index];
+				case 0x6A: return ClampTo<uint16_t>(this->industry->this_month_production[index]);
+				case 0x6B: return ClampTo<uint16_t>(this->industry->this_month_transported[index]);
+				case 0x6C: return ClampTo<uint16_t>(this->industry->last_month_production[index]);
+				case 0x6D: return ClampTo<uint16_t>(this->industry->last_month_transported[index]);
 				case 0x70: return this->industry->production_rate[index];
 				case 0x71: return this->industry->last_month_pct_transported[index];
 				default: NOT_REACHED();
@@ -396,15 +396,15 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(byte para
 		case 0x92: return this->industry->accepts_cargo[variable - 0x90];
 		case 0x93: return this->industry->prod_level;
 		/* amount of cargo produced so far THIS month. */
-		case 0x94: return this->industry->this_month_production[0];
-		case 0x95: return GB(this->industry->this_month_production[0], 8, 8);
-		case 0x96: return this->industry->this_month_production[1];
-		case 0x97: return GB(this->industry->this_month_production[1], 8, 8);
+		case 0x94: return ClampTo<uint16_t>(this->industry->this_month_production[0]);
+		case 0x95: return GB(ClampTo<uint16_t>(this->industry->this_month_production[0]), 8, 8);
+		case 0x96: return ClampTo<uint16_t>(this->industry->this_month_production[1]);
+		case 0x97: return GB(ClampTo<uint16_t>(this->industry->this_month_production[1]), 8, 8);
 		/* amount of cargo transported so far THIS month. */
-		case 0x98: return this->industry->this_month_transported[0];
-		case 0x99: return GB(this->industry->this_month_transported[0], 8, 8);
-		case 0x9A: return this->industry->this_month_transported[1];
-		case 0x9B: return GB(this->industry->this_month_transported[1], 8, 8);
+		case 0x98: return ClampTo<uint16_t>(this->industry->this_month_transported[0]);
+		case 0x99: return GB(ClampTo<uint16_t>(this->industry->this_month_transported[0]), 8, 8);
+		case 0x9A: return ClampTo<uint16_t>(this->industry->this_month_transported[1]);
+		case 0x9B: return GB(ClampTo<uint16_t>(this->industry->this_month_transported[1]), 8, 8);
 		/* fraction of cargo transported LAST month. */
 		case 0x9C:
 		case 0x9D: return this->industry->last_month_pct_transported[variable - 0x9C];

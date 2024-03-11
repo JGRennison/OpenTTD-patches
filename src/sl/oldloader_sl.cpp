@@ -822,18 +822,18 @@ static const OldChunks industry_chunk[] = {
 
 	OCL_SVAR(  OC_UINT8, Industry, prod_level ),
 
-	OCL_SVAR( OC_UINT16, Industry, this_month_production[0] ),
-	OCL_SVAR( OC_UINT16, Industry, this_month_production[1] ),
-	OCL_SVAR( OC_UINT16, Industry, this_month_transported[0] ),
-	OCL_SVAR( OC_UINT16, Industry, this_month_transported[1] ),
+	OCL_SVAR( OC_FILE_U16 | OC_VAR_U32, Industry, this_month_production[0] ),
+	OCL_SVAR( OC_FILE_U16 | OC_VAR_U32, Industry, this_month_production[1] ),
+	OCL_SVAR( OC_FILE_U16 | OC_VAR_U32, Industry, this_month_transported[0] ),
+	OCL_SVAR( OC_FILE_U16 | OC_VAR_U32, Industry, this_month_transported[1] ),
 
 	OCL_SVAR(  OC_UINT8, Industry, last_month_pct_transported[0] ),
 	OCL_SVAR(  OC_UINT8, Industry, last_month_pct_transported[1] ),
 
-	OCL_SVAR( OC_UINT16, Industry, last_month_production[0] ),
-	OCL_SVAR( OC_UINT16, Industry, last_month_production[1] ),
-	OCL_SVAR( OC_UINT16, Industry, last_month_transported[0] ),
-	OCL_SVAR( OC_UINT16, Industry, last_month_transported[1] ),
+	OCL_SVAR( OC_FILE_U16 | OC_VAR_U32, Industry, last_month_production[0] ),
+	OCL_SVAR( OC_FILE_U16 | OC_VAR_U32, Industry, last_month_production[1] ),
+	OCL_SVAR( OC_FILE_U16 | OC_VAR_U32, Industry, last_month_transported[0] ),
+	OCL_SVAR( OC_FILE_U16 | OC_VAR_U32, Industry, last_month_transported[1] ),
 
 	OCL_SVAR(  OC_UINT8, Industry, type ),
 	OCL_SVAR( OC_TTO | OC_FILE_U8 | OC_VAR_U16, Industry, counter ),

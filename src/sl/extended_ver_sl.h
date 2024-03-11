@@ -142,6 +142,7 @@ enum SlXvFeatureIndex {
 	XSLFI_VARIABLE_TICK_RATE,                     ///< Variable tick rate
 	XSLFI_ROAD_VEH_FLAGS,                         ///< Road vehicle flags
 	XSLFI_STATION_TILE_CACHE_FLAGS,               ///< Station tile cache flags
+	XSLFI_INDUSTRY_CARGO_TOTALS,                  ///< Industry cargo totals are 32 bit
 
 	XSLFI_SCRIPT_INT64,                           ///< See: SLV_SCRIPT_INT64
 	XSLFI_U64_TICK_COUNTER,                       ///< See: SLV_U64_TICK_COUNTER

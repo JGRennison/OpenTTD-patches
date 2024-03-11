@@ -67,16 +67,16 @@ struct Industry : IndustryPool::PoolItem<&_industry_pool> {
 	TileArea location;                                          ///< Location of the industry
 	Town *town;                                                 ///< Nearest town
 	Station *neutral_station;                                   ///< Associated neutral station
-	std::array<CargoID, INDUSTRY_NUM_INPUTS> accepts_cargo{};
-	std::array<CargoID, INDUSTRY_NUM_OUTPUTS> produced_cargo{};               ///< 16 production cargo slots
-	std::array<uint16_t,  INDUSTRY_NUM_OUTPUTS> produced_cargo_waiting{};     ///< amount of cargo produced per cargo
-	std::array<uint16_t,  INDUSTRY_NUM_OUTPUTS> incoming_cargo_waiting{};     ///< incoming cargo waiting to be processed
-	std::array<byte,    INDUSTRY_NUM_OUTPUTS> production_rate{};              ///< production rate for each cargo
-	std::array<uint16_t,  INDUSTRY_NUM_OUTPUTS> this_month_production{};      ///< stats of this month's production per cargo
-	std::array<uint16_t,  INDUSTRY_NUM_OUTPUTS> this_month_transported{};     ///< stats of this month's transport per cargo
-	std::array<byte,    INDUSTRY_NUM_OUTPUTS> last_month_pct_transported{};   ///< percentage transported per cargo in the last full month
-	std::array<uint16_t,  INDUSTRY_NUM_OUTPUTS> last_month_production{};      ///< total units produced per cargo in the last full month
-	std::array<uint16_t,  INDUSTRY_NUM_OUTPUTS> last_month_transported{};     ///< total units transported per cargo in the last full month
+	std::array<CargoID,  INDUSTRY_NUM_INPUTS> accepts_cargo{};
+	std::array<CargoID,  INDUSTRY_NUM_OUTPUTS> produced_cargo{};             ///< 16 production cargo slots
+	std::array<uint16_t, INDUSTRY_NUM_OUTPUTS> produced_cargo_waiting{};     ///< amount of cargo produced per cargo
+	std::array<uint16_t, INDUSTRY_NUM_OUTPUTS> incoming_cargo_waiting{};     ///< incoming cargo waiting to be processed
+	std::array<byte,     INDUSTRY_NUM_OUTPUTS> production_rate{};            ///< production rate for each cargo
+	std::array<uint32_t, INDUSTRY_NUM_OUTPUTS> this_month_production{};      ///< stats of this month's production per cargo
+	std::array<uint32_t, INDUSTRY_NUM_OUTPUTS> this_month_transported{};     ///< stats of this month's transport per cargo
+	std::array<byte,     INDUSTRY_NUM_OUTPUTS> last_month_pct_transported{}; ///< percentage transported per cargo in the last full month
+	std::array<uint32_t, INDUSTRY_NUM_OUTPUTS> last_month_production{};      ///< total units produced per cargo in the last full month
+	std::array<uint32_t, INDUSTRY_NUM_OUTPUTS> last_month_transported{};     ///< total units transported per cargo in the last full month
 
 	StationList stations_near;          ///< NOSAVE: List of nearby stations.
 	mutable std::string cached_name;    ///< NOSAVE: Cache of the resolved name of the industry

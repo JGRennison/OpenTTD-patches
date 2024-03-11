@@ -533,10 +533,10 @@ static bool TransportIndustryGoods(TileIndex tile)
 			/* fluctuating economy? */
 			if (EconomyIsInRecession()) cw = (cw + 1) / 2;
 
-			i->this_month_production[j] = std::min<uint>(i->this_month_production[j] + cw, 0xFFFF);
+			i->this_month_production[j] = SaturatingAdd<uint32_t>(i->this_month_production[j], cw);
 
 			uint am = MoveGoodsToStation(i->produced_cargo[j], cw, SourceType::Industry, i->index, &i->stations_near, i->exclusive_consumer);
-			i->this_month_transported[j] += am;
+			i->this_month_transported[j] = SaturatingAdd<uint32_t>(i->this_month_transported[j], am);
 
 			moved_cargo |= (am != 0);
 		}
@@ -2578,7 +2578,7 @@ static void UpdateIndustryStatistics(Industry *i)
 			byte pct = 0;
 			if (i->this_month_production[j] != 0) {
 				i->last_prod_year = EconTime::CurYear();
-				pct = ClampTo<byte>(i->this_month_transported[j] * 256 / i->this_month_production[j]);
+				pct = ClampTo<byte>(((uint64_t)i->this_month_transported[j]) * 256 / i->this_month_production[j]);
 			}
 			i->last_month_pct_transported[j] = pct;
 
