@@ -95,3 +95,13 @@ TEST_CASE("SoftClamp")
 	CHECK(1250 * million == SoftClamp(0, 1500 * million, 1000 * million));
 	CHECK(0 == SoftClamp(0, 1500 * million, -1500 * million));
 }
+
+TEST_CASE("SaturatingAdd")
+{
+	CHECK(SaturatingAdd<uint8_t>(2, 3) == 5);
+	CHECK(SaturatingAdd<uint8_t>(200, 200) == 255);
+	CHECK(SaturatingAdd<uint8_t>(255, 255) == 255);
+	CHECK(SaturatingAdd<uint8_t>(1, 255) == 255);
+	CHECK(SaturatingAdd<uint8_t>(255, 1) == 255);
+	CHECK(SaturatingAdd<uint8_t>(0, 254) == 254);
+}

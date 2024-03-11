@@ -414,6 +414,26 @@ constexpr uint64_t PowerOfTen(int power)
 	return result;
 }
 
+/**
+ * Unsigned saturating add.
+ */
+template<typename T, std::enable_if_t<std::is_unsigned_v<T>, int> = 0>
+constexpr inline T SaturatingAdd(T a, T b)
+{
+#ifdef WITH_OVERFLOW_BUILTINS
+	T c;
+	if (unlikely(__builtin_add_overflow(a, b, &c))) {
+		return std::numeric_limits<T>::max();
+	}
+	return c;
+#else
+	T c = a + b;
+	if (c < a) return std::numeric_limits<T>::max();
+	return c;
+#endif
+}
+
+
 uint32_t IntSqrt(uint32_t num);
 uint32_t IntSqrt64(uint64_t num);
 uint32_t IntCbrt(uint64_t num);
