@@ -1,31 +1,32 @@
-name: CodeQL
+name: CI (Linux)
 
 on:
-#  push:
-#    branches:
-#    - master
-#  pull_request:
-#    # The branches below must be a subset of the branches above
-#    branches:
-#    - master
-  workflow_dispatch:
+  workflow_call:
     inputs:
-      ref:
-        description: 'Ref to build (for Pull Requests, use refs/pull/NNN/head)'
+      compiler:
         required: true
+        type: string
+      cxxcompiler:
+        required: true
+        type: string
+      libraries:
+        required: true
+        type: string
+      extra-cmake-parameters:
+        required: true
+        type: string
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
+env:
+  CTEST_OUTPUT_ON_FAILURE: 1
 
 jobs:
-  analyze:
-    name: Analyze
+  linux:
+    name: CI
+
     runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
+    env:
+      CC: ${{ inputs.compiler }}
+      CXX: ${{ inputs.cxxcompiler }}
 
     steps:
     - name: Checkout
@@ -65,8 +66,9 @@ jobs:
           libharfbuzz-dev \
           libicu-dev \
           liblzma-dev \
+          libzstd-dev \
           liblzo2-dev \
-          libsdl2-dev \
+          ${{ inputs.libraries }} \
           zlib1g-dev \
           # EOF
 
@@ -77,55 +79,53 @@ jobs:
 
         # We only use breakpad from vcpkg, as its CMake files
         # are a bit special. So the Ubuntu's variant doesn't work.
-        ${{ runner.temp }}/vcpkg/vcpkg install breakpad
+        #${{ runner.temp }}/vcpkg/vcpkg install breakpad
 
         echo "::endgroup::"
       env:
         DEBIAN_FRONTEND: noninteractive
 
-    - name: Prepare build
+    - name: Get OpenGFX
+      run: |
+        mkdir -p ~/.local/share/openttd/baseset
+        cd ~/.local/share/openttd/baseset
+
+        echo "::group::Download OpenGFX"
+        curl -L https://cdn.openttd.org/opengfx-releases/0.6.0/opengfx-0.6.0-all.zip -o opengfx-all.zip
+        echo "::endgroup::"
+
+        echo "::group::Unpack OpenGFX"
+        unzip opengfx-all.zip
+        echo "::endgroup::"
+
+        rm -f opengfx-all.zip
+
+    - name: Install GCC problem matcher
+      uses: ammaraskar/gcc-problem-matcher@master
+
+    - name: Build
       run: |
         mkdir build
         cd build
 
         echo "::group::CMake"
-        cmake .. -DCMAKE_TOOLCHAIN_FILE=${{ runner.temp }}/vcpkg/scripts/buildsystems/vcpkg.cmake
+        cmake .. -DCMAKE_TOOLCHAIN_FILE=${{ runner.temp }}/vcpkg/scripts/buildsystems/vcpkg.cmake ${{ inputs.extra-cmake-parameters }}
         echo "::endgroup::"
-
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v3
-      with:
-        languages: cpp
-        config-file: ./.github/codeql/codeql-config.yml
-
-    - name: Build
-      run: |
-        cd build
 
         echo "::group::Build"
         echo "Running on $(nproc) cores"
-        cmake --build . -j $(nproc)
+        cmake --build . -j $(nproc) --target all openttd_test
         echo "::endgroup::"
 
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v3
-      with:
-        category: /language:cpp
-        upload: False
-        output: sarif-results
+    - name: Test
+      run: |
+        (
+          cd build
+          ctest -j $(nproc) --timeout 120
+        )
 
-    - name: Filter out table & generated code
-      uses: advanced-security/filter-sarif@v1
-      with:
-        patterns: |
-          +**/*.*
-          -**/table/*.*
-          -**/generated/**/*.*
-          -**/tests/*.*
-        input: sarif-results/cpp.sarif
-        output: sarif-results/cpp.sarif
+        # Re-enable vcpkg.
+        mv vcpkg-disabled.json vcpkg.json
 
-    - name: Upload results
-      uses: github/codeql-action/upload-sarif@v3
-      with:
-        sarif_file: sarif-results/cpp.sarif
+        # Check no tracked files have been modified.
+        git diff --exit-code

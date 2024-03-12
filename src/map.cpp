@@ -26,11 +26,6 @@
 
 #include "safeguards.h"
 
-#if defined(_MSC_VER)
-/* Why the hell is that not in all MSVC headers?? */
-extern "C" _CRTIMP void __cdecl _assert(void *, void *, unsigned);
-#endif
-
 uint _map_log_x;     ///< 2^_map_log_x == _map_size_x
 uint _map_log_y;     ///< 2^_map_log_y == _map_size_y
 uint _map_size_x;    ///< Size of the map along the X
@@ -140,34 +135,18 @@ void AllocateMap(uint size_x, uint size_y)
 
 
 #ifdef _DEBUG
-TileIndex TileAdd(TileIndex tile, TileIndexDiff add,
-	const char *exp, const char *file, int line)
+TileIndex TileAdd(TileIndex tile, TileIndexDiff offset)
 {
-	int dx;
-	int dy;
-	uint x;
-	uint y;
-
-	dx = add & MapMaxX();
+	int dx = offset & MapMaxX();
 	if (dx >= (int)MapSizeX() / 2) dx -= MapSizeX();
-	dy = (add - dx) / (int)MapSizeX();
+	int dy = (offset - dx) / (int)MapSizeX();
 
-	x = TileX(tile) + dx;
-	y = TileY(tile) + dy;
+	uint32_t x = TileX(tile) + dx;
+	uint32_t y = TileY(tile) + dy;
 
-	if (x >= MapSizeX() || y >= MapSizeY()) {
-		char buf[512];
-
-		seprintf(buf, lastof(buf), "TILE_ADD(%s) when adding 0x%.4X and 0x%.4X failed",
-			exp, tile, add);
-#if !defined(_MSC_VER)
-		fprintf(stderr, "%s:%d %s\n", file, line, buf);
-#else
-		_assert(buf, (char*)file, line);
-#endif
-	}
-
-	dbg_assert(TileXY(x, y) == TILE_MASK(tile + add));
+	assert(x < MapSizeX());
+	assert(y < MapSizeY());
+	assert(TileXY(x, y) == TILE_MASK(tile + add));
 
 	return TileXY(x, y);
 }

@@ -2490,6 +2490,21 @@ bool Vehicle::HandleBreakdown()
 }
 
 /**
+ * Update economy age of a vehicle.
+ * @param v Vehicle to update.
+ */
+void EconomyAgeVehicle(Vehicle *v)
+{
+	/* Stop if a virtual vehicle */
+	if (HasBit(v->subtype, GVSF_VIRTUAL)) return;
+
+	if (v->economy_age < EconTime::MAX_DATE.AsDelta()) {
+		v->economy_age++;
+		if (v->IsPrimaryVehicle() && v->economy_age == VEHICLE_PROFIT_MIN_AGE + 1) GroupStatistics::VehicleReachedMinAge(v);
+	}
+}
+
+/**
  * Update age of a vehicle.
  * @param v Vehicle to update.
  */
@@ -2498,10 +2513,7 @@ void AgeVehicle(Vehicle *v)
 	/* Stop if a virtual vehicle */
 	if (HasBit(v->subtype, GVSF_VIRTUAL)) return;
 
-	if (v->age < CalTime::MAX_DATE.AsDelta()) {
-		v->age++;
-		if (v->IsPrimaryVehicle() && v->age == VEHICLE_PROFIT_MIN_AGE + 1) GroupStatistics::VehicleReachedMinAge(v);
-	}
+	if (v->age < CalTime::MAX_DATE.AsDelta()) v->age++;
 
 	if (!v->IsPrimaryVehicle() && (v->type != VEH_TRAIN || !Train::From(v)->IsEngine())) return;
 
@@ -3795,12 +3807,41 @@ void Vehicle::HandleWaiting(bool stop_waiting, bool process_orders)
 }
 
 /**
+ * Check if the current vehicle has a full load order.
+ * @return true Iff this vehicle has a full load order.
+ */
+bool Vehicle::HasFullLoadOrder() const
+{
+	for (const Order *o : this->Orders()) {
+		if (o->IsType(OT_GOTO_STATION) && o->GetLoadType() & (OLFB_FULL_LOAD | OLF_FULL_LOAD_ANY)) return true;
+		if (o->IsType(OT_GOTO_STATION) && o->GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
+			for (CargoID cid = 0; cid < NUM_CARGO; cid++) {
+				if (o->GetCargoLoadType(cid) & (OLFB_FULL_LOAD | OLF_FULL_LOAD_ANY)) return true;
+			}
+		}
+	}
+	return false;
+}
+
+/**
+ * Check if the current vehicle has a conditional order.
+ * @return true Iff this vehicle has a conditional order.
+ */
+bool Vehicle::HasConditionalOrder() const
+{
+	for (const Order *o : this->Orders()) {
+		if (o->IsType(OT_CONDITIONAL)) return true;
+	}
+	return false;
+}
+
+/**
  * Check if the current vehicle has an unbunching order.
  * @return true Iff this vehicle has an unbunching order.
  */
 bool Vehicle::HasUnbunchingOrder() const
 {
-	for (Order *o : this->Orders()) {
+	for (const Order *o : this->Orders()) {
 		if (o->IsType(OT_GOTO_DEPOT) && o->GetDepotActionType() & ODATFB_UNBUNCH) return true;
 	}
 	return false;
@@ -4598,7 +4639,7 @@ void VehiclesYearlyLoop()
 		if (v->IsPrimaryVehicle()) {
 			/* show warning if vehicle is not generating enough income last 2 years (corresponds to a red icon in the vehicle list) */
 			Money profit = v->GetDisplayProfitThisYear();
-			if (v->age >= 730 && profit < 0) {
+			if (v->economy_age >= VEHICLE_PROFIT_MIN_AGE && profit < 0) {
 				if (_settings_client.gui.vehicle_income_warn && v->owner == _local_company) {
 					SetDParam(0, v->index);
 					SetDParam(1, profit);

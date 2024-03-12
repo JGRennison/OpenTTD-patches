@@ -138,10 +138,11 @@ private:
 		int idx;
 		Param *param;
 		bool used;
+		const char *cmd;
 
-		ParamCheck(StringID owner, int idx, Param *param) : owner(owner), idx(idx), param(param), used(false) {}
+		ParamCheck(StringID owner, int idx, Param *param) : owner(owner), idx(idx), param(param), used(false), cmd(nullptr) {}
 
-		void Encode(std::back_insert_iterator<std::string> &output);
+		void Encode(std::back_insert_iterator<std::string> &output, const char *cmd);
 	};
 
 	using ParamList = std::vector<ParamCheck>;
@@ -168,8 +169,9 @@ private:
 	 * @param output The output to write the encoded text to.
 	 * @param param_count The number of parameters that are consumed by the string.
 	 * @param args The parameters to be consumed.
+	 * @param first Whether it's the first call in the recursion.
 	 */
-	void _GetEncodedText(std::back_insert_iterator<std::string> &output, int &param_count, ParamSpan args);
+	void _GetEncodedText(std::back_insert_iterator<std::string> &output, int &param_count, ParamSpan args, bool first);
 
 	void _GetEncodedTextTraditional(std::back_insert_iterator<std::string> &output, int &param_count, StringIDList &seen_ids);
 

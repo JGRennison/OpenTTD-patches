@@ -12,7 +12,7 @@ jobs:
   macos:
     name: MacOS
 
-    runs-on: macos-latest
+    runs-on: macos-14
     env:
       MACOSX_DEPLOYMENT_TARGET: 10.13
 
@@ -39,6 +39,11 @@ jobs:
           core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
           core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
           core.exportVariable('VCPKG_BINARY_SOURCES', 'clear;x-gha,readwrite')
+
+    - name: Install vcpkg
+      run: |
+        git clone https://github.com/microsoft/vcpkg ${{ runner.temp }}/vcpkg
+        ${{ runner.temp }}/vcpkg/bootstrap-vcpkg.sh -disableMetrics
 
     - name: Install dependencies
       env:
@@ -89,7 +94,7 @@ jobs:
         cmake ${GITHUB_WORKSPACE} \
           -DCMAKE_OSX_ARCHITECTURES=arm64 \
           -DVCPKG_TARGET_TRIPLET=arm64-osx \
-          -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake \
+          -DCMAKE_TOOLCHAIN_FILE=${{ runner.temp }}/vcpkg/scripts/buildsystems/vcpkg.cmake \
           -DHOST_BINARY_DIR=${GITHUB_WORKSPACE}/build-host \
           -DCMAKE_BUILD_TYPE=Release \
           -DOPTION_TRIM_PATH_PREFIX=ON \
@@ -111,7 +116,7 @@ jobs:
         cmake ${GITHUB_WORKSPACE} \
           -DCMAKE_OSX_ARCHITECTURES=x86_64 \
           -DVCPKG_TARGET_TRIPLET=x64-osx \
-          -DCMAKE_TOOLCHAIN_FILE=/usr/local/share/vcpkg/scripts/buildsystems/vcpkg.cmake \
+          -DCMAKE_TOOLCHAIN_FILE=${{ runner.temp }}/vcpkg/scripts/buildsystems/vcpkg.cmake \
           -DHOST_BINARY_DIR=${GITHUB_WORKSPACE}/build-host \
           -DCMAKE_BUILD_TYPE=Release \
           -DOPTION_TRIM_PATH_PREFIX=ON \

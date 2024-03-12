@@ -2311,9 +2311,10 @@ static void CheckIfRoadVehNeedsService(RoadVehicle *v)
 
 void RoadVehicle::OnNewDay()
 {
-	if (!EconTime::UsingWallclockUnits()) AgeVehicle(this);
-
 	if (!this->IsFrontEngine()) return;
+
+	if (!EconTime::UsingWallclockUnits()) AgeVehicle(this);
+	EconomyAgeVehicle(this);
 
 	if ((++this->day_counter & 7) == 0) DecreaseVehicleValue(this);
 }

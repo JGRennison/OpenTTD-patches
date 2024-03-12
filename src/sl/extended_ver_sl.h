@@ -159,6 +159,7 @@ enum SlXvFeatureIndex {
 	XSLFI_CARGO_TRAVELLED,                        ///< See: SLV_CARGO_TRAVELLED (PR #11283)
 	XSLFI_SHIP_ACCELERATION,                      ///< See: SLV_SHIP_ACCELERATION (PR #10734)
 	XSLFI_DEPOT_UNBUNCHING,                       ///< See: SLV_DEPOT_UNBUNCHING (PR #11945)
+	XSLFI_VEHICLE_ECONOMY_AGE,                    ///< See: SLV_VEHICLE_ECONOMY_AGE (PR #12141)
 
 	XSLFI_TABLE_PATS,                             ///< Use upstream table format for PATS
 	XSLFI_TABLE_MISC_SL,                          ///< Use upstream table format for miscellaneous chunks:

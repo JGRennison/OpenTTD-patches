@@ -1170,8 +1170,17 @@ CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID s
 			if (new_order.GetNonStopType() != ONSF_STOP_EVERYWHERE && !v->IsGroundVehicle()) return CMD_ERROR;
 			if (_settings_game.order.nonstop_only && !(new_order.GetNonStopType() & ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS) && v->IsGroundVehicle()) return CMD_ERROR;
 			if (new_order.GetDepotOrderType() & ~(ODTFB_PART_OF_ORDERS | ((new_order.GetDepotOrderType() & ODTFB_PART_OF_ORDERS) != 0 ? ODTFB_SERVICE : 0))) return CMD_ERROR;
-			if (new_order.GetDepotActionType() & ~(ODATFB_HALT | ODATFB_SELL | ODATFB_NEAREST_DEPOT)) return CMD_ERROR;
-			if ((new_order.GetDepotOrderType() & ODTFB_SERVICE) && (new_order.GetDepotActionType() & ODATFB_HALT)) return CMD_ERROR;
+			if (new_order.GetDepotActionType() & ~(ODATFB_HALT | ODATFB_SELL | ODATFB_NEAREST_DEPOT | ODATFB_UNBUNCH)) return CMD_ERROR;
+
+			/* Vehicles cannot have a "service if needed" order that also has a depot action. */
+			if ((new_order.GetDepotOrderType() & ODTFB_SERVICE) && (new_order.GetDepotActionType() & (ODATFB_HALT | ODATFB_UNBUNCH))) return CMD_ERROR;
+
+			/* Check if we're allowed to have a new unbunching order. */
+			if ((new_order.GetDepotActionType() & ODATFB_UNBUNCH)) {
+				if (v->HasFullLoadOrder()) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_ADD_ORDER, STR_ERROR_UNBUNCHING_NO_UNBUNCHING_FULL_LOAD);
+				if (v->HasUnbunchingOrder()) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_ADD_ORDER, STR_ERROR_UNBUNCHING_ONLY_ONE_ALLOWED);
+				if (v->HasConditionalOrder()) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_ADD_ORDER, STR_ERROR_UNBUNCHING_NO_UNBUNCHING_CONDITIONAL);
+			}
 			break;
 		}
 
@@ -1951,19 +1960,14 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 			if (data == DA_UNBUNCH) {
 				/* Only one unbunching order is allowed in a vehicle's orders. If this order already has an unbunching action, no error is needed. */
 				if (v->HasUnbunchingOrder() && !(order->GetDepotActionType() & ODATFB_UNBUNCH)) return_cmd_error(STR_ERROR_UNBUNCHING_ONLY_ONE_ALLOWED);
+
 				if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) return_cmd_error(STR_ERROR_UNBUNCHING_NO_UNBUNCHING_SCHED_DISPATCH);
 				if (HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION)) return_cmd_error(STR_ERROR_UNBUNCHING_NO_UNBUNCHING_AUTO_SEPARATION);
-				for (Order *o : v->Orders()) {
-					/* We don't allow unbunching if the vehicle has a conditional order. */
-					if (o->IsType(OT_CONDITIONAL)) return_cmd_error(STR_ERROR_UNBUNCHING_NO_UNBUNCHING_CONDITIONAL);
-					/* We don't allow unbunching if the vehicle has a full load order. */
-					if (o->IsType(OT_GOTO_STATION) && o->GetLoadType() & (OLFB_FULL_LOAD | OLF_FULL_LOAD_ANY)) return_cmd_error(STR_ERROR_UNBUNCHING_NO_UNBUNCHING_FULL_LOAD);
-					if (o->IsType(OT_GOTO_STATION) && o->GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
-						for (CargoID cid = 0; cid < NUM_CARGO; cid++) {
-							if (o->GetCargoLoadType(cid) & (OLFB_FULL_LOAD | OLF_FULL_LOAD_ANY)) return_cmd_error(STR_ERROR_UNBUNCHING_NO_UNBUNCHING_FULL_LOAD);
-						}
-					}
-				}
+
+				/* We don't allow unbunching if the vehicle has a conditional order. */
+				if (v->HasConditionalOrder()) return_cmd_error(STR_ERROR_UNBUNCHING_NO_UNBUNCHING_CONDITIONAL);
+				/* We don't allow unbunching if the vehicle has a full load order. */
+				if (v->HasFullLoadOrder()) return_cmd_error(STR_ERROR_UNBUNCHING_NO_UNBUNCHING_FULL_LOAD);
 			}
 			break;
 

@@ -247,29 +247,31 @@ inline TileIndexDiff ToTileIndexDiff(TileIndexDiffC tidc)
 }
 
 
+/**
+ * Adds a given offset to a tile.
+ *
+ * @param tile The tile to add an offset to.
+ * @param offset The offset to add.
+ * @return The resulting tile.
+ */
 #ifndef _DEBUG
-	/**
-	 * Adds two tiles together.
-	 *
-	 * @param x One tile
-	 * @param y Another tile to add
-	 * @return The resulting tile(index)
-	 */
-#	define TILE_ADD(x, y) ((x) + (y))
+	constexpr TileIndex TileAdd(TileIndex tile, TileIndexDiff offset) { return tile + offset; }
 #else
-	extern TileIndex TileAdd(TileIndex tile, TileIndexDiff add,
-		const char *exp, const char *file, int line);
-#	define TILE_ADD(x, y) (TileAdd((x), (y), #x " + " #y, __FILE__, __LINE__))
+	TileIndex TileAdd(TileIndex tile, TileIndexDiff offset);
 #endif
 
 /**
  * Adds a given offset to a tile.
  *
- * @param tile The tile to add an offset on it
- * @param x The x offset to add to the tile
- * @param y The y offset to add to the tile
+ * @param tile The tile to add an offset to.
+ * @param x The x offset to add to the tile.
+ * @param y The y offset to add to the tile.
+ * @return The resulting tile.
  */
-#define TILE_ADDXY(tile, x, y) TILE_ADD(tile, TileDiffXY(x, y))
+inline TileIndex TileAddXY(TileIndex tile, int x, int y)
+{
+	return TileAdd(tile, TileDiffXY(x, y));
+}
 
 TileIndex TileAddWrap(TileIndex tile, int addx, int addy);
 TileIndex TileAddSaturating(TileIndex tile, int addx, int addy);
@@ -384,7 +386,7 @@ inline TileIndexDiff TileOffsByDir(Direction dir)
  */
 inline TileIndex TileAddByDir(TileIndex tile, Direction dir)
 {
-	return TILE_ADD(tile, TileOffsByDir(dir));
+	return TileAdd(tile, TileOffsByDir(dir));
 }
 
 /**
@@ -396,7 +398,7 @@ inline TileIndex TileAddByDir(TileIndex tile, Direction dir)
  */
 inline TileIndex TileAddByDiagDir(TileIndex tile, DiagDirection dir)
 {
-	return TILE_ADD(tile, TileOffsByDiagDir(dir));
+	return TileAdd(tile, TileOffsByDiagDir(dir));
 }
 
 /** Checks if two tiles are adjacent */

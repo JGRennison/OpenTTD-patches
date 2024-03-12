@@ -384,10 +384,12 @@ enum SaveLoadVersion : uint16_t {
 	SLV_ECONOMY_MODE_TIMEKEEPING_UNITS,     ///< 327  PR#11341 Mode to display economy measurements in wallclock units.
 	SLV_CALENDAR_SUB_DATE_FRACT,            ///< 328  PR#11428 Add sub_date_fract to measure calendar days.
 	SLV_SHIP_ACCELERATION,                  ///< 329  PR#10734 Start using Vehicle's acceleration field for ships too.
+
 	SLV_MAX_LOAN_FOR_COMPANY,               ///< 330  PR#11224 Separate max loan for each company.
 	SLV_DEPOT_UNBUNCHING,                   ///< 331  PR#11945 Allow unbunching shared order vehicles at a depot.
 	SLV_AI_LOCAL_CONFIG,                    ///< 332  PR#12003 Config of running AI is stored inside Company.
 	SLV_SCRIPT_RANDOMIZER,                  ///< 333  PR#12063 v14.0 Save script randomizers.
+	SLV_VEHICLE_ECONOMY_AGE,                ///< 334  PR#12141 Add vehicle age in economy year, for profit stats minimum age
 
 	SL_MAX_VERSION,                         ///< Highest possible saveload version
 
