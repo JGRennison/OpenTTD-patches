@@ -384,7 +384,13 @@ static bool ResizeSprites(SpriteLoader::SpriteCollection &sprite, unsigned int s
 		const unsigned int below_min_zoom_mask = (1 << _settings_client.gui.sprite_zoom_min) - 1;
 		if ((zoom_levels & below_min_zoom_mask) != 0 && !HasBit(sprite_avail, _settings_client.gui.sprite_zoom_min)) {
 			if (!HasBit(sprite_avail, ZOOM_LVL_OUT_2X)) ResizeSpriteOut(sprite, ZOOM_LVL_OUT_2X, false);
-			if (_settings_client.gui.sprite_zoom_min == ZOOM_LVL_OUT_4X) ResizeSpriteOut(sprite, ZOOM_LVL_OUT_4X, false);
+			if (_settings_client.gui.sprite_zoom_min == ZOOM_LVL_OUT_4X) {
+				if (first_avail != ZOOM_LVL_NORMAL) {
+					/* Ensure dimensions of ZOOM_LVL_NORMAL are set if the first available sprite level was ZOOM_LVL_OUT_2X */
+					if (!ResizeSpriteIn(sprite, first_avail, ZOOM_LVL_NORMAL, true)) return false;
+				}
+				ResizeSpriteOut(sprite, ZOOM_LVL_OUT_4X, false);
+			}
 			sprite_avail &= ~below_min_zoom_mask;
 			SetBit(sprite_avail, _settings_client.gui.sprite_zoom_min);
 			first_avail = _settings_client.gui.sprite_zoom_min;
