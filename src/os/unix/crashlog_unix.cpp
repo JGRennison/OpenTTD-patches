@@ -50,6 +50,7 @@
 #endif
 #endif /* __GLIBC__ */
 
+#include <atomic>
 #include <vector>
 
 #if defined(__EMSCRIPTEN__)
@@ -65,6 +66,9 @@
 /** The signals we want our crash handler to handle. */
 static const int _signals_to_handle[] = { SIGSEGV, SIGABRT, SIGFPE, SIGBUS, SIGILL, SIGQUIT };
 
+std::atomic<pid_t> _crash_tid;
+std::atomic<uint32_t> _crash_other_threads;
+
 #if defined(__GLIBC__) && defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3))
 #pragma GCC diagnostic ignored "-Wclobbered"
 #endif
@@ -73,6 +77,7 @@ static const int _signals_to_handle[] = { SIGSEGV, SIGABRT, SIGFPE, SIGBUS, SIGI
 static char *internal_fault_saved_buffer;
 static jmp_buf internal_fault_jmp_buf;
 sigset_t internal_fault_old_sig_proc_mask;
+std::atomic<bool> internal_fault_use_signal_handler;
 
 static void InternalFaultSigHandler(int sig)
 {
@@ -373,6 +378,18 @@ class CrashLogUnix : public CrashLog {
 	}
 
 	/**
+	 * Log crash trailer
+	 */
+	char *LogCrashTrailer(char *buffer, const char *last) const override
+	{
+		uint32_t other_crashed_threads = _crash_other_threads.load();
+		if (other_crashed_threads > 0) {
+			buffer += seprintf(buffer, last, "\n*** %u other threads have also crashed ***\n\n", other_crashed_threads);
+		}
+		return buffer;
+	}
+
+	/**
 	 * Show registers if possible
 	 */
 	char *LogRegisters(char *buffer, const char *last) const override
@@ -651,15 +668,7 @@ class CrashLogUnix : public CrashLog {
 			sigaddset(&sigs, signum);
 		}
 
-		struct sigaction sa;
-		memset(&sa, 0, sizeof(sa));
-		sa.sa_flags = SA_RESTART;
-		sa.sa_handler = InternalFaultSigHandler;
-		sa.sa_mask = sigs;
-
-		for (int signum : _signals_to_handle) {
-			sigaction(signum, &sa, nullptr);
-		}
+		internal_fault_use_signal_handler.store(true);
 		sigprocmask(SIG_UNBLOCK, &sigs, &internal_fault_old_sig_proc_mask);
 	}
 
@@ -667,9 +676,7 @@ class CrashLogUnix : public CrashLog {
 	{
 		internal_fault_saved_buffer = nullptr;
 
-		for (int signum : _signals_to_handle) {
-			signal(signum, SIG_DFL);
-		}
+		internal_fault_use_signal_handler.store(false);
 		sigprocmask(SIG_SETMASK, &internal_fault_old_sig_proc_mask, nullptr);
 	}
 
@@ -779,10 +786,44 @@ static void CDECL HandleCrash(int signum, siginfo_t *si, void *context)
 static void CDECL HandleCrash(int signum)
 #endif
 {
+	pid_t tid = 1;
+#if defined(WITH_DBG_GDB)
+	tid = syscall(SYS_gettid);
+#endif
+
+	pid_t already_crashed = _crash_tid.load();
+	do {
+		/* Is this a recursive call from the crash thread */
+		if (already_crashed == tid) {
+#if defined(__GLIBC__) && defined(WITH_SIGACTION)
+			if (internal_fault_use_signal_handler.load()) {
+				InternalFaultSigHandler(signum);
+				return;
+			}
+#endif
+
+			/* This should never be reached, just give up at this point */
+			_exit(43);
+		}
+
+		/* Is a different thread in the crash logger already? */
+		if (already_crashed != 0) {
+			/* Just sleep forever while the other thread is busy logging the crash */
+			_crash_other_threads++;
+			while (true) {
+				pause();
+			}
+		}
+
+		/* Atomically mark this thread as the crashing thread */
+	} while (!_crash_tid.compare_exchange_weak(already_crashed, tid));
+
+#ifndef WITH_SIGACTION
 	/* Disable all handling of signals by us, so we don't go into infinite loops. */
 	for (int signum : _signals_to_handle) {
 		signal(signum, SIG_DFL);
 	}
+#endif
 
 	const char *abort_reason = CrashLog::GetAbortCrashlogReason();
 	if (abort_reason != nullptr) {
@@ -817,21 +858,29 @@ static void CDECL HandleCrash(int signum)
 	ss.ss_flags = 0;
 	sigaltstack(&ss, nullptr);
 #endif
-	for (int signum : _signals_to_handle) {
+
 #ifdef WITH_SIGACTION
+	sigset_t sigs;
+	sigemptyset(&sigs);
+	for (int signum : _signals_to_handle) {
+		sigaddset(&sigs, signum);
+	}
+	for (int signum : _signals_to_handle) {
 		struct sigaction sa;
 		memset(&sa, 0, sizeof(sa));
 		sa.sa_flags = SA_SIGINFO | SA_RESTART;
 #ifdef WITH_SIGALTSTACK
 		sa.sa_flags |= SA_ONSTACK;
 #endif
-		sigemptyset(&sa.sa_mask);
+		sa.sa_mask = sigs;
 		sa.sa_sigaction = HandleCrash;
 		sigaction(signum, &sa, nullptr);
-#else
-		signal(signum, HandleCrash);
-#endif
 	}
+#else
+	for (int signum : _signals_to_handle) {
+		signal(signum, HandleCrash);
+	}
+#endif
 }
 
 /* static */ void CrashLog::InitThread()

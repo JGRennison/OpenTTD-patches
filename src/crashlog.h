@@ -117,6 +117,15 @@ protected:
 	 */
 	virtual char *LogRegisters(char *buffer, const char *last) const;
 
+	/**
+	 * Writes a final section in the crash log, if there is anything
+	 * to add at the end.
+	 * @param buffer The begin where to write at.
+	 * @param last   The last position in the buffer to write to.
+	 * @return the position of the \c '\0' character after the buffer.
+	 */
+	virtual char *LogCrashTrailer(char *buffer, const char *last) const;
+
 #ifdef USE_SCOPE_INFO
 	/**
 	 * Writes the scope info log to the buffer.

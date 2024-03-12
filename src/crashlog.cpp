@@ -137,6 +137,12 @@ char *CrashLog::LogCompiler(char *buffer, const char *last) const
 	return buffer;
 }
 
+/* virtual */ char *CrashLog::LogCrashTrailer(char *buffer, const char *last) const
+{
+	/* Stub implementation; not all OSes have anything to output for this section. */
+	return buffer;
+}
+
 #ifdef USE_SCOPE_INFO
 /* virtual */ char *CrashLog::LogScopeInfo(char *buffer, const char *last) const
 {
@@ -662,6 +668,9 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last)
 	});
 	buffer = this->TryCrashLogFaultSection(buffer, last, "news", [](CrashLog *self, char *buffer, const char *last) -> char * {
 		return self->LogRecentNews(buffer, last);
+	});
+	buffer = this->TryCrashLogFaultSection(buffer, last, "trailer", [](CrashLog *self, char *buffer, const char *last) -> char * {
+		return self->LogCrashTrailer(buffer, last);
 	});
 
 	buffer += seprintf(buffer, last, "*** End of OpenTTD Crash Report ***\n");
