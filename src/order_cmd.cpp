@@ -3192,6 +3192,10 @@ bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, 
 		offset = last % sched.GetScheduledDispatchDuration();
 	} else {
 		StateTicks slot = GetScheduledDispatchTime(sched, state_ticks);
+		if (slot == INVALID_STATE_TICKS) {
+			/* No next dispatch */
+			return OrderConditionCompare(order->GetConditionComparator(), 0, 0);
+		}
 		offset = (slot - sched.GetScheduledDispatchStartTick()).base() % sched.GetScheduledDispatchDuration();
 	}
 
