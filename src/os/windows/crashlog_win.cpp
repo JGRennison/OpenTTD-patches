@@ -40,6 +40,7 @@
 #else
 #include <setjmp.h>
 #endif
+#include <atomic>
 
 #include "../../safeguards.h"
 
@@ -70,12 +71,17 @@ class CrashLogWindows : public CrashLog {
 	/** Information about the encountered exception */
 	EXCEPTION_POINTERS *ep;
 
+public:
+	DWORD crash_thread_id;
+	std::atomic<uint32_t> other_crash_threads;
+
 	char *LogOSVersion(char *buffer, const char *last) const override;
 	char *LogError(char *buffer, const char *last, const char *message) const override;
 #if defined(_MSC_VER) || defined(WITH_DBGHELP)
 	char *LogStacktrace(char *buffer, const char *last) const override;
 #endif /* _MSC_VER || WITH_DBGHELP */
 	char *LogRegisters(char *buffer, const char *last) const override;
+	char *LogCrashTrailer(char *buffer, const char *last) const override;
 
 protected:
 	char *TryCrashLogFaultSection(char *buffer, const char *last, const char *section_name, CrashLogSectionWriter writer) override;
@@ -94,7 +100,7 @@ public:
 	 * @param ep the data related to the exception.
 	 */
 	CrashLogWindows(EXCEPTION_POINTERS *ep = nullptr) :
-		ep(ep)
+		ep(ep), crash_thread_id(GetCurrentThreadId())
 	{
 		this->crashlog[0] = '\0';
 		this->crashlog_filename[0] = '\0';
@@ -106,7 +112,7 @@ public:
 	/**
 	 * Points to the current crash log.
 	 */
-	static CrashLogWindows *current;
+	static std::atomic<CrashLogWindows *> current;
 
 	char *internal_fault_saved_buffer = nullptr;
 #if !defined(_MSC_VER)
@@ -114,7 +120,7 @@ public:
 #endif
 };
 
-/* static */ CrashLogWindows *CrashLogWindows::current = nullptr;
+/* static */ std::atomic<CrashLogWindows *> CrashLogWindows::current = nullptr;
 
 /* virtual */ char *CrashLogWindows::LogOSVersion(char *buffer, const char *last) const
 {
@@ -320,6 +326,18 @@ static const char *GetAccessViolationTypeString(uint type)
 		b++;
 	}
 	return buffer + seprintf(buffer, last, "\n\n");
+}
+
+/**
+ * Log crash trailer
+ */
+char *CrashLogWindows::LogCrashTrailer(char *buffer, const char *last) const
+{
+	uint32_t other_crashed_threads = this->other_crash_threads.load();
+	if (other_crashed_threads > 0) {
+		buffer += seprintf(buffer, last, "\n*** %u other threads have also crashed ***\n\n", other_crashed_threads);
+	}
+	return buffer;
 }
 
 #if defined(_MSC_VER) || defined(WITH_DBGHELP)
@@ -658,10 +676,26 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 	/* Disable our event loop. */
 	SetWindowLongPtr(GetActiveWindow(), GWLP_WNDPROC, (LONG_PTR)&DefWindowProc);
 
-	if (CrashLogWindows::current != nullptr) {
-		CrashLog::AfterCrashLogCleanup();
-		ImmediateExitProcess(2);
-	}
+	CrashLogWindows *log = nullptr;
+	CrashLogWindows *cur = CrashLogWindows::current.load();
+	do {
+		if (cur != nullptr) {
+			if (cur->crash_thread_id == GetCurrentThreadId()) {
+				/* The same thread has recursively reached the exception handler */
+				CrashLog::AfterCrashLogCleanup();
+				ImmediateExitProcess(2);
+			} else {
+				/* Another thread has also reached the exception handler, just pause/suspend it */
+				cur->other_crash_threads++;
+				while (true) {
+					Sleep(INFINITE);
+				}
+			}
+			return EXCEPTION_EXECUTE_HANDLER;
+		} else if (log == nullptr) {
+			log = new CrashLogWindows(ep);
+		}
+	} while (!CrashLogWindows::current.compare_exchange_weak(cur, log));
 
 	const char *abort_reason = CrashLog::GetAbortCrashlogReason();
 	if (abort_reason != nullptr) {
@@ -672,8 +706,6 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 		ImmediateExitProcess(3);
 	}
 
-	CrashLogWindows *log = new CrashLogWindows(ep);
-	CrashLogWindows::current = log;
 	log->MakeCrashLog(log->crashlog, lastof(log->crashlog));
 
 	/* Close any possible log files */
@@ -715,11 +747,12 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 
 static LONG WINAPI VectoredExceptionHandler(EXCEPTION_POINTERS *ep)
 {
-	if (CrashLogWindows::current != nullptr && CrashLogWindows::current->internal_fault_saved_buffer != nullptr) {
+	CrashLogWindows *cur = CrashLogWindows::current.load();
+	if (cur != nullptr && cur->crash_thread_id == GetCurrentThreadId() && cur->internal_fault_saved_buffer != nullptr) {
 #if defined(_MSC_VER)
 		return EXCEPTION_CONTINUE_SEARCH;
 #else
-		longjmp(CrashLogWindows::current->internal_fault_jmp_buf, ep->ExceptionRecord->ExceptionCode);
+		longjmp(cur->internal_fault_jmp_buf, ep->ExceptionRecord->ExceptionCode);
 #endif
 	}
 
@@ -846,7 +879,8 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 	switch (msg) {
 		case WM_INITDIALOG: {
 			uint crashlog_length = 0;
-			for (const char *p = CrashLogWindows::current->crashlog; *p != 0; p++) {
+			CrashLogWindows *cur = CrashLogWindows::current.load();
+			for (const char *p = cur->crashlog; *p != 0; p++) {
 				if (*p == '\n') {
 					/* Reserve extra space for LF to CRLF conversion */
 					crashlog_length++;
@@ -869,7 +903,7 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 			char *dos_nl = reinterpret_cast<char *>(crash_msgW + crash_msgW_length);
 
 			/* Convert unix -> dos newlines because the edit box only supports that properly :( */
-			const char *unix_nl = CrashLogWindows::current->crashlog;
+			const char *unix_nl = cur->crashlog;
 			char *p = dos_nl;
 			char32_t c;
 			while ((c = Utf8Consume(&unix_nl)) && p < (dos_nl + dos_nl_length - 1) - 4) { // 4 is max number of bytes per character
@@ -895,18 +929,18 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 				*desc = L'\0';
 			};
 
-			append_str(CrashLogWindows::current->crashlog_filename);
-			if (_settings_client.gui.developer > 0 && CrashLogWindows::current->crashdump_filename[0] != 0) {
+			append_str(cur->crashlog_filename);
+			if (_settings_client.gui.developer > 0 && cur->crashdump_filename[0] != 0) {
 				append_newline();
-				append_str(CrashLogWindows::current->crashdump_filename);
+				append_str(cur->crashdump_filename);
 			}
-			if (CrashLogWindows::current->savegame_filename[0] != 0) {
+			if (cur->savegame_filename[0] != 0) {
 				append_newline();
-				append_str(CrashLogWindows::current->savegame_filename);
+				append_str(cur->savegame_filename);
 			}
-			if (CrashLogWindows::current->screenshot_filename[0] != 0) {
+			if (cur->screenshot_filename[0] != 0) {
 				append_newline();
-				append_str(CrashLogWindows::current->screenshot_filename);
+				append_str(cur->screenshot_filename);
 			}
 
 			SetDlgItemText(wnd, 10, crash_desc_buf);
