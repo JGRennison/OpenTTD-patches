@@ -3,6 +3,7 @@ add_files(
     alloc_func.hpp
     alloc_type.hpp
     backup_type.hpp
+    bit_cast.hpp
     bitmath_func.hpp
     checksum_func.hpp
     container_func.hpp

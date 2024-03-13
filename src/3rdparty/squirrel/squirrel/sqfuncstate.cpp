@@ -12,6 +12,8 @@
 #include "sqopcodes.h"
 #include "sqfuncstate.h"
 
+#include "../../../core/bit_cast.hpp"
+
 #include "../../../safeguards.h"
 
 #ifdef _DEBUG_DUMP

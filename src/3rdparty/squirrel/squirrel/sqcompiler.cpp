@@ -15,6 +15,8 @@
 #include "sqvm.h"
 #include "sqtable.h"
 
+#include "../../../core/bit_cast.hpp"
+
 #include "../../../string_func.h"
 
 #include "../../../safeguards.h"

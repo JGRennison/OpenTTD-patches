@@ -17,6 +17,8 @@
 #include "sqarray.h"
 #include "sqclass.h"
 
+#include "../../../core/bit_cast.hpp"
+
 #include "../../../string_func.h"
 
 #include "../../../safeguards.h"
