@@ -146,7 +146,7 @@ TileIndex TileAdd(TileIndex tile, TileIndexDiff offset)
 
 	assert(x < MapSizeX());
 	assert(y < MapSizeY());
-	assert(TileXY(x, y) == TILE_MASK(tile + add));
+	assert(TileXY(x, y) == TILE_MASK(tile + offset));
 
 	return TileXY(x, y);
 }
