@@ -3291,6 +3291,7 @@ DEF_CONSOLE_CMD(ConDumpVersion)
 {
 	if (argc == 0) {
 		IConsoleHelp("Dump version info");
+		return true;
 	}
 
 	char buffer[65536];
