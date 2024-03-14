@@ -110,11 +110,7 @@ struct TrainCache {
 	/* Cached wagon override spritegroup */
 	const struct SpriteGroup *cached_override;
 
-	/* cached max. speed / acceleration data */
-	int cached_max_curve_speed;     ///< max consist speed limited by curves
-
 	/* cached values, recalculated on load and each time a vehicle is added to/removed from the consist. */
-	int cached_curve_speed_mod;     ///< curve speed modifier of the entire train
 	TrainCacheFlags cached_tflags;  ///< train cached flags
 	uint8_t cached_num_engines;     ///< total number of engines, including rear ends of multiheaded engines
 	uint16_t cached_centre_mass;    ///< Cached position of the centre of mass, from the front
@@ -124,6 +120,9 @@ struct TrainCache {
 	uint8_t cached_deceleration;    ///< Cached deceleration for realistic braking lookahead purposes
 
 	byte user_def_data;             ///< Cached property 0x25. Can be set by Callback 0x36.
+
+	int16_t cached_curve_speed_mod; ///< curve speed modifier of the entire train
+	uint16_t cached_max_curve_speed; ///< max consist speed limited by curves
 };
 
 /**
@@ -184,7 +183,7 @@ struct Train final : public GroundVehicle<Train, VEH_TRAIN> {
 
 	void ReserveTrackUnderConsist() const;
 
-	int GetCurveSpeedLimit() const;
+	uint16_t GetCurveSpeedLimit() const;
 
 	void ConsistChanged(ConsistChangeFlags allowed_changes);
 
@@ -479,7 +478,7 @@ protected: // These functions should not be called outside acceleration code.
 	 * Returns the curve speed modifier of this vehicle.
 	 * @return Current curve speed modifier, in fixed-point binary representation with 8 fractional bits.
 	 */
-	inline int GetCurveSpeedModifier() const
+	inline int16_t GetCurveSpeedModifier() const
 	{
 		return GetVehicleProperty(this, PROP_TRAIN_CURVE_SPEED_MOD, RailVehInfo(this->engine_type)->curve_speed_mod, true);
 	}
