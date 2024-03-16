@@ -597,6 +597,7 @@ public:
 	bool CanLeaveWithCargo(bool has_cargo, CargoID cargo) const;
 
 	TileIndex GetLocation(const Vehicle *v, bool airport = false) const;
+	TileIndex GetAuxiliaryLocation(bool secondary = false) const;
 
 	/** Checks if travel_time and wait_time apply to this order and if they are timetabled. */
 	inline bool IsCompletelyTimetabled() const

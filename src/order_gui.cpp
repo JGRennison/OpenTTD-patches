@@ -2811,6 +2811,7 @@ public:
 
 				if (_ctrl_pressed && sel < this->vehicle->GetNumOrders()) {
 					TileIndex xy = this->vehicle->GetOrder(sel)->GetLocation(this->vehicle);
+					if (xy == INVALID_TILE) xy = this->vehicle->GetOrder(sel)->GetAuxiliaryLocation(_shift_pressed);
 					if (xy != INVALID_TILE) ScrollMainWindowToTile(xy);
 					return;
 				}

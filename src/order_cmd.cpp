@@ -957,6 +957,30 @@ TileIndex Order::GetLocation(const Vehicle *v, bool airport) const
 }
 
 /**
+ * Returns a tile somewhat representing the order's auxiliary location (not related to vehicle movement).
+ * @param secondary Whether to return a second auxiliary location, if available.
+ * @return auxiliary location of order, or INVALID_TILE if none.
+ */
+TileIndex Order::GetAuxiliaryLocation(bool secondary) const
+{
+	if (this->IsType(OT_CONDITIONAL)) {
+		if (secondary && this->GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT && GB(this->GetXData(), 16, 16) != 0) {
+			const Station *st = Station::GetIfValid(GB(this->GetXData(), 16, 16) - 2);
+			if (st != nullptr) return st->xy;
+		}
+		if (ConditionVariableHasStationID(this->GetConditionVariable())) {
+			const Station *st = Station::GetIfValid(GB(this->GetXData2(), 0, 16) - 1);
+			if (st != nullptr) return st->xy;
+		}
+	}
+	if (this->IsType(OT_LABEL) && IsDestinationOrderLabelSubType(this->GetLabelSubType())) {
+		const BaseStation *st = BaseStation::GetIfValid(this->GetDestination());
+		if (st != nullptr) return st->xy;
+	}
+	return INVALID_TILE;
+}
+
+/**
  * Get the distance between two orders of a vehicle. Conditional orders are resolved
  * and the bigger distance of the two order branches is returned.
  * @param prev Origin order.
