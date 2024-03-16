@@ -466,55 +466,61 @@ static void IConsoleTabCompletion()
 			return;
 		}
 	}
+
+	struct match_state {
+		std::string prefix;
+		std::string candidate_str;
+		std::string common_prefix;
+		uint matches = 0;
+	};
+	match_state match_input;
+	match_state match_input_no_underscores;
+
+	match_input.prefix = std::string(input, cmdptr - input);
+	if (match_input.prefix.empty()) return;
+
 	extern std::string RemoveUnderscores(std::string name);
-	std::string prefix = RemoveUnderscores(std::string(input, cmdptr - input));
-	size_t prefix_length = prefix.size();
+	match_input_no_underscores.prefix = RemoveUnderscores(match_input.prefix);
+	if (match_input_no_underscores.prefix.empty()) return;
 
-	if (prefix_length == 0) return;
+	auto check_candidate = [&](const char *cmd_name, match_state &state) {
+		if (strncmp(cmd_name, state.prefix.c_str(), state.prefix.size()) != 0) return;
 
-	char buffer[4096];
-	char *b = buffer;
-	uint matches = 0;
-	std::string common_prefix;
-	auto check_candidate = [&](const std::string &cmd_name_str) {
-		const char *cmd_name = cmd_name_str.c_str();
-		if (matches == 0) {
-			common_prefix = cmd_name_str;
+		if (state.matches == 0) {
+			state.common_prefix = cmd_name;
 		} else {
-			const char *cp = common_prefix.c_str();
+			const char *cp = state.common_prefix.c_str();
 			const char *cmdp = cmd_name;
 			while (true) {
 				const char *end = cmdp;
 				char32_t a = Utf8Consume(cp);
 				char32_t b = Utf8Consume(cmdp);
 				if (a == 0 || b == 0 || a != b) {
-					common_prefix.resize(end - cmd_name);
+					state.common_prefix.resize(end - cmd_name);
 					break;
 				}
 			}
 		}
-		matches++;
-		b += seprintf(b, lastof(buffer), "%s ", cmd_name);
+		state.matches++;
+		if (!state.candidate_str.empty()) state.candidate_str += ' ';
+		state.candidate_str += cmd_name;
 	};
 	for (auto &it : IConsole::Commands()) {
-		const char *cmd_name = it.first.c_str();
 		const IConsoleCmd *cmd = &it.second;
-		if (strncmp(cmd_name, prefix.c_str(), prefix_length) == 0) {
-			if ((_settings_client.gui.console_show_unlisted || !cmd->unlisted) && (cmd->hook == nullptr || cmd->hook(false) != CHR_HIDE)) {
-				check_candidate(it.first);
-			}
+		if ((_settings_client.gui.console_show_unlisted || !cmd->unlisted) && (cmd->hook == nullptr || cmd->hook(false) != CHR_HIDE)) {
+			check_candidate(it.first.c_str(), match_input_no_underscores);
+			check_candidate(cmd->name.c_str(), match_input);
 		}
 	}
 	for (auto &it : IConsole::Aliases()) {
-		const char *cmd_name = it.first.c_str();
-		if (strncmp(cmd_name, prefix.c_str(), prefix_length) == 0) {
-			check_candidate(it.first);
-		}
+		check_candidate(it.first.c_str(), match_input_no_underscores);
+		check_candidate(it.second.name.c_str(), match_input);
 	}
-	if (matches > 0) {
-		_iconsole_cmdline.Assign(common_prefix.c_str());
-		if (matches > 1) {
-			IConsolePrint(CC_WHITE, buffer);
+	match_state &best = match_input_no_underscores.matches > match_input.matches ? match_input_no_underscores : match_input;
+	if (best.matches > 0) {
+		_iconsole_cmdline.Assign(best.common_prefix.c_str());
+		if (best.matches > 1) {
+			IConsolePrint(CC_WHITE, best.candidate_str.c_str());
 		}
 	}
 }
