@@ -636,6 +636,9 @@ class NIHVehicle : public NIHelper {
 				seprintf(buffer, lastof(buffer), "    Cargo ageing: %u, cargo load speed: %u",
 						e->info.decay_speed, e->info.load_amount);
 				output.print(buffer);
+				seprintf(buffer, lastof(buffer), "    Company availability: %X, climates: %X",
+						e->company_avail, e->info.climates);
+				output.print(buffer);
 
 				output.register_next_line_click_flag_toggle(2 << flag_shift);
 				if (output.flags & (2 << flag_shift)) {
