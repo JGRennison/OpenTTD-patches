@@ -772,8 +772,8 @@ int openttd_main(int argc, char *argv[])
 	PerThreadSetup();
 	SlXvSetStaticCurrentVersions();
 
-	_switch_mode_time = std::chrono::steady_clock::now();
-	_switch_mode_time_valid = true;
+	_game_session_stats.start_time = std::chrono::steady_clock::now();
+	_game_session_stats.savegame_size = std::nullopt;
 
 	std::string musicdriver;
 	std::string sounddriver;
@@ -1430,8 +1430,8 @@ void SwitchToMode(SwitchMode new_mode)
 
 	/* Keep track when we last switch mode. Used for survey, to know how long someone was in a game. */
 	if (new_mode != SM_SAVE_GAME) {
-		_switch_mode_time = std::chrono::steady_clock::now();
-		_switch_mode_time_valid = true;
+		_game_session_stats.start_time = std::chrono::steady_clock::now();
+		_game_session_stats.savegame_size = std::nullopt;
 	}
 
 	switch (new_mode) {

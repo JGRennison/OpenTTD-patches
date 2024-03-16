@@ -47,8 +47,6 @@
 
 #include "safeguards.h"
 
-std::string _savegame_id; ///< Unique ID of the current savegame.
-
 extern TileIndex _cur_tileloop_tile;
 extern TileIndex _aux_tileloop_tile;
 extern void ClearAllSignalSpeedRestrictions();
@@ -104,7 +102,7 @@ std::string GenerateUid(std::string_view subject)
  */
 void GenerateSavegameId()
 {
-	_savegame_id = GenerateUid("OpenTTD Savegame ID");
+	_game_session_stats.savegame_id = GenerateUid("OpenTTD Savegame ID");
 }
 
 void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settings)

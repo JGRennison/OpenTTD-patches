@@ -64,6 +64,7 @@ bool strtolower(std::string &str, std::string::size_type offs = 0);
 
 [[nodiscard]] bool StrValid(const char *str, const char *last) NOACCESS(2);
 void StrTrimInPlace(std::string &str);
+std::string_view StrTrimView(std::string_view str);
 
 const char *StrLastPathSegment(const char *path);
 

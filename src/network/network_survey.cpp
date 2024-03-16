@@ -22,8 +22,6 @@
 
 #include "../safeguards.h"
 
-extern std::string _savegame_id;
-
 NetworkSurveyHandler _survey = {};
 
 NLOHMANN_JSON_SERIALIZE_ENUM(NetworkSurveyHandler::Reason, {
@@ -46,7 +44,6 @@ std::string NetworkSurveyHandler::CreatePayload(Reason reason, bool for_preview)
 
 	survey["schema"] = NETWORK_SURVEY_VERSION;
 	survey["reason"] = reason;
-	survey["id"] = _savegame_id;
 	survey["date"] = fmt::format("{:%Y-%m-%d %H:%M:%S} (UTC)", fmt::gmtime(time(nullptr)));
 
 #ifdef SURVEY_KEY
@@ -55,6 +52,8 @@ std::string NetworkSurveyHandler::CreatePayload(Reason reason, bool for_preview)
 #else
 	survey["key"] = "";
 #endif
+
+	SurveyGameSession(survey["session"]);
 
 	{
 		auto &info = survey["info"];
