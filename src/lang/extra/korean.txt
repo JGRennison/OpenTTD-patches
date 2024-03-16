@@ -709,7 +709,7 @@ STR_CONFIG_SETTING_SAFER_CROSSINGS_HELPTEXT                     :건널목을 �
 STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE                       :차량 수리에 비용 지불: {STRING}
 STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE_HELPTEXT              :차량 수리에 비용 지불
 
-STR_CONFIG_SETTING_REPAIR_COST                                  :수리에 사용될 비용: 원래 가격의 1/{STRING}
+STR_CONFIG_SETTING_REPAIR_COST                                  :수리에 사용될 비용: 원래 가격의 {ORANGE}1/{STRING}
 STR_CONFIG_SETTING_REPAIR_COST_HELPTEXT                         :수리에 사용될 비용
 
 STR_CONFIG_OCCUPANCY_SMOOTHNESS                                 :매끄러운 경로 사용률 측정: {STRING}
