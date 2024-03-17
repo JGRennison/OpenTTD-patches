@@ -172,6 +172,12 @@ static bool IsVariableVeryCheap(uint16_t variable, GrfSpecFeature scope_feature)
 	return false;
 }
 
+static bool IsVariableIndependentOfSpecialTempStorage(uint16_t variable)
+{
+	/* This is a very conservative whitelist */
+	return variable < 0x40 || variable == 0x7C || variable == 0x7D;
+}
+
 static bool IsFeatureUsableForDSE(GrfSpecFeature feature)
 {
 	return true;
@@ -2247,7 +2253,7 @@ static uint OptimiseVarAction2InsertSpecialStoreOps(DeterministicSpriteGroup *gr
 				break;
 			}
 			if (next.variable == 0x7D && next.parameter == 0x100u + bit) break;
-			if (next.variable >= 0x40 && next.variable != 0x7D && next.variable != 0x7C) break; // crude whitelist of variables which will never read special registers
+			if (!IsVariableIndependentOfSpecialTempStorage(next.variable)) break; // crude whitelist of variables which will never read special registers
 		}
 		if (skip) continue;
 		DeterministicSpriteGroupAdjust store = {};
@@ -2393,7 +2399,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 				/* Don't try to skip over: unpredictable or unusable special stores, unskippable procedure calls, permanent stores, or another jump */
 				if (prev.operation == DSGA_OP_STO && (prev.type != DSGA_TYPE_NONE || prev.variable != 0x1A || prev.shift_num != 0 || prev.and_mask >= 0x100)) break;
 				if (prev.operation == DSGA_OP_STO_NC && prev.divmod_val >= 0x100) {
-					if (prev.divmod_val < 0x110 && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0) {
+					if (prev.divmod_val < 0x110 && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && IsVariableIndependentOfSpecialTempStorage(adjust.variable)) {
 						/* Storing a constant in a special register */
 						if (!HasBit(special_stores_mask, prev.divmod_val - 0x100)) {
 							special_stores[prev.divmod_val - 0x100] = prev.and_mask;
@@ -2408,6 +2414,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 				if (prev.variable == 0x7E) {
 					const VarAction2ProcedureCallVarReadAnnotation &anno = _varaction2_proc_call_var_read_annotations[prev.jump];
 					if (anno.unskippable) break;
+					if (anno.anno->special_register_mask != 0 && !IsVariableIndependentOfSpecialTempStorage(adjust.variable)) break;
 					if ((anno.relevant_stores & ~ok_stores).any()) break;
 					ok_stores |= anno.last_reads;
 
