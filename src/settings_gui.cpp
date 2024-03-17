@@ -2693,6 +2693,7 @@ static SettingsContainer &GetSettingsTree()
 			environment->Add(new SettingEntry("construction.map_edge_mode"));
 			environment->Add(new SettingEntry("station.cargo_class_rating_wait_time"));
 			environment->Add(new SettingEntry("station.station_size_rating_cargo_amount"));
+			environment->Add(new SettingEntry("construction.purchased_land_clear_ground"));
 		}
 
 		SettingsPage *ai = main->Add(new SettingsPage(STR_CONFIG_SETTING_AI));

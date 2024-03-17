@@ -629,7 +629,9 @@ static void DrawTile_Object(TileInfo *ti, DrawTileProcParams params)
 			dts = &_objects[type];
 		}
 
-		if (spec->flags & OBJECT_FLAG_HAS_NO_FOUNDATION) {
+		if ((spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) && _settings_game.construction.purchased_land_clear_ground) {
+			DrawObjectLandscapeGround(ti);
+		} else if (spec->flags & OBJECT_FLAG_HAS_NO_FOUNDATION) {
 			/* If an object has no foundation, but tries to draw a (flat) ground
 			 * type... we have to be nice and convert that for them. */
 			switch (dts->ground.sprite) {
@@ -1211,7 +1213,10 @@ static CommandCost TerraformTile_Object(TileIndex tile, DoCommandFlag flags, int
 	if (type == OBJECT_OWNED_LAND) {
 		/* Owned land remains unsold */
 		CommandCost ret = CheckTileOwnership(tile);
-		if (ret.Succeeded()) return CommandCost();
+		if (ret.Succeeded()) {
+			if (flags & DC_EXEC) SetObjectGroundTypeDensity(tile, OBJECT_GROUND_GRASS, 0);
+			return CommandCost();
+		}
 	} else if (AutoslopeEnabled() && type != OBJECT_TRANSMITTER && type != OBJECT_LIGHTHOUSE) {
 		const ObjectSpec *spec = ObjectSpec::Get(type);
 

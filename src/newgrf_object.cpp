@@ -459,6 +459,32 @@ uint16_t GetObjectCallback(CallbackID callback, uint32_t param1, uint32_t param2
 	return object.ResolveCallback();
 }
 
+void DrawObjectLandscapeGround(TileInfo *ti)
+{
+	if (IsTileOnWater(ti->tile) && GetObjectGroundType(ti->tile) != OBJECT_GROUND_SHORE) {
+		DrawWaterClassGround(ti);
+	} else {
+		switch (GetObjectGroundType(ti->tile)) {
+			case OBJECT_GROUND_GRASS:
+				DrawClearLandTile(ti, GetObjectGroundDensity(ti->tile));
+				break;
+
+			case OBJECT_GROUND_SNOW_DESERT:
+				DrawGroundSprite(GetSpriteIDForSnowDesert(ti->tileh, GetObjectGroundDensity(ti->tile)), PAL_NONE);
+				break;
+
+			case OBJECT_GROUND_SHORE:
+				DrawShoreTile(ti->tileh);
+				break;
+
+			default:
+				/* This should never be reached, just draw a black sprite to make the problem clear without being unnecessarily punitive */
+				DrawGroundSprite(SPR_FLAT_BARE_LAND + SlopeToSpriteOffset(ti->tileh), PALETTE_ALL_BLACK);
+				break;
+		}
+	}
+}
+
 /**
  * Draw an group of sprites on the map.
  * @param ti    Information about the tile to draw on.
@@ -474,28 +500,7 @@ static void DrawTileLayout(TileInfo *ti, const TileLayoutSpriteGroup *group, con
 	PaletteID pal  = dts->ground.pal;
 
 	if (spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) {
-		if (IsTileOnWater(ti->tile) && GetObjectGroundType(ti->tile) != OBJECT_GROUND_SHORE) {
-			DrawWaterClassGround(ti);
-		} else {
-			switch (GetObjectGroundType(ti->tile)) {
-				case OBJECT_GROUND_GRASS:
-					DrawClearLandTile(ti, GetObjectGroundDensity(ti->tile));
-					break;
-
-				case OBJECT_GROUND_SNOW_DESERT:
-					DrawGroundSprite(GetSpriteIDForSnowDesert(ti->tileh, GetObjectGroundDensity(ti->tile)), PAL_NONE);
-					break;
-
-				case OBJECT_GROUND_SHORE:
-					DrawShoreTile(ti->tileh);
-					break;
-
-				default:
-					/* This should never be reached, just draw a black sprite to make the problem clear without being unnecessarily punitive */
-					DrawGroundSprite(SPR_FLAT_BARE_LAND + SlopeToSpriteOffset(ti->tileh), PALETTE_ALL_BLACK);
-					break;
-			}
-		}
+		DrawObjectLandscapeGround(ti);
 	} else if (GB(image, 0, SPRITE_WIDTH) != 0) {
 		/* If the ground sprite is the default flat water sprite, draw also canal/river borders
 		 * Do not do this if the tile's WaterClass is 'land'. */

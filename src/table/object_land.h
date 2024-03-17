@@ -121,7 +121,7 @@ static const DrawTileSprites _object_hq[] = {
 
 #undef TILE_SPRITE_LINE
 
-#define M(name, size, build_cost_multiplier, clear_cost_multiplier, height, climate, gen_amount, flags) { GRFFilePropsBase<2>(), {0, 0, 0, 0}, INVALID_OBJECT_CLASS, name, climate, size, build_cost_multiplier, clear_cost_multiplier, 0, CalTime::MAX_DATE + 1, flags, OBJECT_CTRL_FLAG_NONE, {0, 0, 0, 0}, 0, height, 1, gen_amount, OVMT_DEFAULT, 0 }
+#define M(name, size, build_cost_multiplier, clear_cost_multiplier, height, climate, gen_amount, flags, ctrl_flags) { GRFFilePropsBase<2>(), {0, 0, 0, 0}, INVALID_OBJECT_CLASS, name, climate, size, build_cost_multiplier, clear_cost_multiplier, 0, CalTime::MAX_DATE + 1, flags, ctrl_flags, {0, 0, 0, 0}, 0, height, 1, gen_amount, OVMT_DEFAULT, 0 }
 
 /* Climates
  * T = Temperate
@@ -134,11 +134,11 @@ static const DrawTileSprites _object_hq[] = {
 #define Y 8
 /** Specification of the original object structures. */
 extern const ObjectSpec _original_objects[] = {
-	M(STR_LAI_OBJECT_DESCRIPTION_TRANSMITTER,          0x11,   0,   0, 10, T|A|S  , 15, OBJECT_FLAG_CANNOT_REMOVE | OBJECT_FLAG_ONLY_IN_SCENEDIT),
-	M(STR_LAI_OBJECT_DESCRIPTION_LIGHTHOUSE,           0x11,   0,   0,  8, T|A    ,  8, OBJECT_FLAG_CANNOT_REMOVE | OBJECT_FLAG_ONLY_IN_SCENEDIT | OBJECT_FLAG_SCALE_BY_WATER),
-	M(STR_TOWN_BUILDING_NAME_STATUE_1,                 0x11,   0,   0,  5, T|S|A|Y,  0, OBJECT_FLAG_CANNOT_REMOVE | OBJECT_FLAG_ONLY_IN_GAME | OBJECT_FLAG_ONLY_IN_SCENEDIT), // Yes, we disallow building this everywhere. Happens in "special" case!
-	M(STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND,   0x11,  10,  10,  0, T|S|A|Y,  0, OBJECT_FLAG_AUTOREMOVE | OBJECT_FLAG_ONLY_IN_GAME | OBJECT_FLAG_CLEAR_INCOME | OBJECT_FLAG_HAS_NO_FOUNDATION ), // Only non-silly use case is to use it when you cannot build a station, so disallow bridges
-	M(STR_LAI_OBJECT_DESCRIPTION_COMPANY_HEADQUARTERS, 0x22,   0,   0,  7, T|S|A|Y,  0, OBJECT_FLAG_CANNOT_REMOVE | OBJECT_FLAG_ONLY_IN_GAME),
+	M(STR_LAI_OBJECT_DESCRIPTION_TRANSMITTER,          0x11,   0,   0, 10, T|A|S  , 15, OBJECT_FLAG_CANNOT_REMOVE | OBJECT_FLAG_ONLY_IN_SCENEDIT, OBJECT_CTRL_FLAG_NONE ),
+	M(STR_LAI_OBJECT_DESCRIPTION_LIGHTHOUSE,           0x11,   0,   0,  8, T|A    ,  8, OBJECT_FLAG_CANNOT_REMOVE | OBJECT_FLAG_ONLY_IN_SCENEDIT | OBJECT_FLAG_SCALE_BY_WATER, OBJECT_CTRL_FLAG_NONE ),
+	M(STR_TOWN_BUILDING_NAME_STATUE_1,                 0x11,   0,   0,  5, T|S|A|Y,  0, OBJECT_FLAG_CANNOT_REMOVE | OBJECT_FLAG_ONLY_IN_GAME | OBJECT_FLAG_ONLY_IN_SCENEDIT, OBJECT_CTRL_FLAG_NONE ), // Yes, we disallow building this everywhere. Happens in "special" case!
+	M(STR_LAI_OBJECT_DESCRIPTION_COMPANY_OWNED_LAND,   0x11,  10,  10,  0, T|S|A|Y,  0, OBJECT_FLAG_AUTOREMOVE | OBJECT_FLAG_ONLY_IN_GAME | OBJECT_FLAG_CLEAR_INCOME | OBJECT_FLAG_HAS_NO_FOUNDATION, OBJECT_CTRL_FLAG_USE_LAND_GROUND ), // Only non-silly use case is to use it when you cannot build a station, so disallow bridges
+	M(STR_LAI_OBJECT_DESCRIPTION_COMPANY_HEADQUARTERS, 0x22,   0,   0,  7, T|S|A|Y,  0, OBJECT_FLAG_CANNOT_REMOVE | OBJECT_FLAG_ONLY_IN_GAME, OBJECT_CTRL_FLAG_NONE ),
 };
 
 #undef M

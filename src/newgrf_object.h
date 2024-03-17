@@ -207,6 +207,7 @@ static const size_t OBJECT_SPRITE_GROUP_PURCHASE = 1;
 
 uint16_t GetObjectCallback(CallbackID callback, uint32_t param1, uint32_t param2, const ObjectSpec *spec, Object *o, TileIndex tile, uint8_t view = 0);
 
+void DrawObjectLandscapeGround(TileInfo *ti);
 void DrawNewObjectTile(TileInfo *ti, const ObjectSpec *spec, int building_z_offset);
 void DrawNewObjectTileInGUI(int x, int y, const ObjectSpec *spec, uint8_t view);
 void AnimateNewObjectTile(TileIndex tile);

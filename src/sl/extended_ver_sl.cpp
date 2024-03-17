@@ -168,7 +168,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_DEPOT_ORDER_EXTRA_FLAGS,          XSCF_IGNORABLE_UNKNOWN,   1,   1, "depot_order_extra_flags",          nullptr, nullptr, nullptr          },
 	{ XSLFI_EXTRA_SIGNAL_TYPES,               XSCF_NULL,                1,   1, "extra_signal_types",               nullptr, nullptr, nullptr          },
 	{ XSLFI_BANKRUPTCY_EXTRA,                 XSCF_NULL,                2,   2, "bankruptcy_extra",                 nullptr, nullptr, nullptr          },
-	{ XSLFI_OBJECT_GROUND_TYPES,              XSCF_NULL,                3,   3, "object_ground_types",              nullptr, nullptr, nullptr          },
+	{ XSLFI_OBJECT_GROUND_TYPES,              XSCF_NULL,                4,   4, "object_ground_types",              nullptr, nullptr, nullptr          },
 	{ XSLFI_LINKGRAPH_AIRCRAFT,               XSCF_NULL,                1,   1, "linkgraph_aircraft",               nullptr, nullptr, nullptr          },
 	{ XSLFI_COMPANY_PW,                       XSCF_IGNORABLE_ALL,       2,   2, "company_password",                 nullptr, nullptr, "PLYP"           },
 	{ XSLFI_ST_INDUSTRY_CARGO_MODE,           XSCF_IGNORABLE_UNKNOWN,   1,   1, "st_industry_cargo_mode",           nullptr, nullptr, nullptr          },
