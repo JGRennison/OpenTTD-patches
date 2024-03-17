@@ -1247,6 +1247,11 @@ void DoFloodTile(TileIndex target)
 					SetObjectGroundTypeDensity(target, OBJECT_GROUND_SHORE, 3);
 					MarkTileDirtyByTile(target, VMDF_NOT_MAP_MODE);
 					flooded = true;
+				} else if ((spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) && (spec->flags & OBJECT_FLAG_HAS_NO_FOUNDATION)) {
+					SetWaterClass(target, WATER_CLASS_SEA);
+					SetObjectGroundTypeDensity(target, OBJECT_GROUND_SHORE, 3);
+					MarkTileDirtyByTile(target, VMDF_NOT_MAP_MODE);
+					flooded = true;
 				}
 				break;
 			}
