@@ -497,9 +497,10 @@ void RoadStop::Entry::CheckIntegrity(const RoadStop *rs) const
 	if (!HasBit(rs->status, RSSFB_BASE_ENTRY)) return;
 
 	/* The tile 'before' the road stop must not be part of this 'line' */
-	assert(!IsDriveThroughRoadStopContinuation(rs->xy, rs->xy - abs(TileOffsByDiagDir(GetRoadStopDir(rs->xy)))));
+	assert_msg(!IsDriveThroughRoadStopContinuation(rs->xy, rs->xy - abs(TileOffsByDiagDir(GetRoadStopDir(rs->xy)))), "xy: %X, index: %u", rs->xy, rs->index);
 
 	Entry temp;
 	temp.Rebuild(rs, rs->east == this);
-	if (temp.length != this->length || temp.occupied != this->occupied) NOT_REACHED();
+	assert_msg(temp.length == this->length && temp.occupied == this->occupied, "length: %u == %u, occupied: %u == %u, xy: %X, index: %u",
+			temp.length, this->length, temp.occupied, this->occupied, rs->xy, rs->index);
 }
