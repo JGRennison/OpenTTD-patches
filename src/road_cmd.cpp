@@ -601,6 +601,15 @@ CommandCost CheckAllowRemoveRoad(TileIndex tile, RoadBits remove, Owner owner, R
 	return CommandCost();
 }
 
+static void UpdateRoadStopTileDisallowedRoadDirection(TileIndex tile, DisallowedRoadDirections drd)
+{
+	if (IsRoadWaypoint(tile)) {
+		SetDriveThroughStopDisallowedRoadDirections(tile, drd);
+	} else {
+		RoadStop *rs = RoadStop::GetByTile(tile, GetRoadStopType(tile));
+		rs->ChangeDriveThroughDisallowedRoadDirections(drd);
+	}
+}
 
 /**
  * Delete a piece of road.
@@ -742,8 +751,8 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 			if (flags & DC_EXEC) {
 				/* A full diagonal road tile has two road bits. */
 				UpdateCompanyRoadInfrastructure(existing_rt, GetRoadOwner(tile, rtt), -2);
-				if (rtt == RTT_ROAD) {
-					SetDriveThroughStopDisallowedRoadDirections(tile, DRD_NONE);
+				if (rtt == RTT_ROAD && GetDriveThroughStopDisallowedRoadDirections(tile) != DRD_NONE) {
+					UpdateRoadStopTileDisallowedRoadDirection(tile, DRD_NONE);
 				}
 				SetRoadType(tile, rtt, INVALID_ROADTYPE);
 				MarkTileDirtyByTile(tile);
@@ -1206,12 +1215,7 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 					}
 
 					if (flags & DC_EXEC) {
-						if (IsRoadWaypoint(tile)) {
-							SetDriveThroughStopDisallowedRoadDirections(tile, dis_new);
-						} else {
-							RoadStop *rs = RoadStop::GetByTile(tile, GetRoadStopType(tile));
-							rs->ChangeDriveThroughDisallowedRoadDirections(dis_new);
-						}
+						UpdateRoadStopTileDisallowedRoadDirection(tile, dis_new);
 						MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 						NotifyRoadLayoutChanged(CountBits(dis_existing) > CountBits(dis_new));
 						UpdateRoadCachedOneWayStatesAroundTile(tile);
