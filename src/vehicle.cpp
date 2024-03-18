@@ -1278,8 +1278,10 @@ Vehicle::~Vehicle()
 
 	if (this->type < VEH_COMPANY_END) UpdateVehicleTileHash(this, true);
 	UpdateVehicleViewportHash(this, INVALID_COORD, 0);
-	DeleteVehicleNews(this->index, INVALID_STRING_ID);
-	DeleteNewGRFInspectWindow(GetGrfSpecFeature(this->type), this->index);
+	if (this->type != VEH_EFFECT) {
+		DeleteVehicleNews(this->index, INVALID_STRING_ID);
+		DeleteNewGRFInspectWindow(GetGrfSpecFeature(this->type), this->index);
+	}
 }
 
 /**
