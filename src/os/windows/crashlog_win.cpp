@@ -93,7 +93,7 @@ public:
 #endif /* _MSC_VER */
 
 	/** Buffer for the generated crash log */
-	char crashlog[65536 * 4];
+	std::span<char> crashlog_buffer;
 
 	/**
 	 * A crash log is always generated when it's generated.
@@ -102,7 +102,6 @@ public:
 	CrashLogWindows(EXCEPTION_POINTERS *ep = nullptr) :
 		ep(ep), crash_thread_id(GetCurrentThreadId())
 	{
-		this->crashlog[0] = '\0';
 		this->crashlog_filename[0] = '\0';
 		this->crashdump_filename[0] = '\0';
 		this->screenshot_filename[0] = '\0';
@@ -559,8 +558,8 @@ static const uint MAX_FRAMES     = 64;
 			MINIDUMP_USER_STREAM_INFORMATION musi;
 
 			userstream.Type        = LastReservedStream + 1;
-			userstream.Buffer      = const_cast<void *>(static_cast<const void*>(this->crashlog));
-			userstream.BufferSize  = (ULONG)strlen(this->crashlog) + 1;
+			userstream.Buffer      = const_cast<void *>(static_cast<const void*>(this->crashlog_buffer.data()));
+			userstream.BufferSize  = (ULONG)strlen(this->crashlog_buffer.data()) + 1;
 
 			musi.UserStreamCount   = 1;
 			musi.UserStreamArray   = &userstream;
@@ -693,7 +692,13 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 			}
 			return EXCEPTION_EXECUTE_HANDLER;
 		} else if (log == nullptr) {
-			log = new CrashLogWindows(ep);
+			/* Use VirtualAlloc to allocate the buffer for the crash log object and text buffer.
+			 * It is too large for the stack, and the crash may have been caused by heap corruption.
+			 * Make the crash log text buffer at least 4 x 64k, round allocation up to multiple of 64k. */
+			const size_t alloc_size = Align(sizeof(CrashLogWindows) + 0x40000, 0x10000);
+			void *raw_buffer = VirtualAlloc(nullptr, alloc_size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+			log = new (raw_buffer) CrashLogWindows(ep);
+			log->crashlog_buffer = std::span<char>(reinterpret_cast<char *>(raw_buffer) + sizeof(CrashLogWindows), reinterpret_cast<char *>(raw_buffer) + alloc_size);
 		}
 	} while (!CrashLogWindows::current.compare_exchange_weak(cur, log));
 
@@ -706,7 +711,7 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 		ImmediateExitProcess(3);
 	}
 
-	log->MakeCrashLog(log->crashlog, lastof(log->crashlog));
+	log->MakeCrashLog(log->crashlog_buffer.data(), log->crashlog_buffer.data() + log->crashlog_buffer.size() - 1);
 
 	/* Close any possible log files */
 	CloseConsoleLogIfActive();
@@ -880,7 +885,7 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 		case WM_INITDIALOG: {
 			uint crashlog_length = 0;
 			CrashLogWindows *cur = CrashLogWindows::current.load();
-			for (const char *p = cur->crashlog; *p != 0; p++) {
+			for (const char *p = cur->crashlog_buffer.data(); *p != 0; p++) {
 				if (*p == '\n') {
 					/* Reserve extra space for LF to CRLF conversion */
 					crashlog_length++;
@@ -903,7 +908,7 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 			char *dos_nl = reinterpret_cast<char *>(crash_msgW + crash_msgW_length);
 
 			/* Convert unix -> dos newlines because the edit box only supports that properly :( */
-			const char *unix_nl = cur->crashlog;
+			const char *unix_nl = cur->crashlog_buffer.data();
 			char *p = dos_nl;
 			char32_t c;
 			while ((c = Utf8Consume(&unix_nl)) && p < (dos_nl + dos_nl_length - 1) - 4) { // 4 is max number of bytes per character
