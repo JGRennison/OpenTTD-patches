@@ -196,7 +196,16 @@ typedef std::vector<StringSpriteToDraw> StringSpriteToDrawVector;
 typedef std::vector<ParentSpriteToDraw> ParentSpriteToDrawVector;
 typedef std::vector<ChildScreenSpriteToDraw> ChildScreenSpriteToDrawVector;
 
-typedef std::vector<std::pair<int, OrderType> > RankOrderTypeList;
+enum RouteStepOrderType : uint8_t {
+	RSOT_INVALID,
+	RSOT_GOTO_STATION,
+	RSOT_VIA_STATION,
+	RSOT_IMPLICIT,
+	RSOT_WAYPOINT,
+	RSOT_DEPOT,
+};
+
+typedef std::vector<std::pair<uint16_t, RouteStepOrderType>> RankOrderTypeList;
 typedef std::map<TileIndex, RankOrderTypeList> RouteStepsMap;
 
 const uint max_rank_order_type_count = 10;
@@ -2724,24 +2733,27 @@ static inline void DrawRouteStep(const Viewport * const vp, const TileIndex tile
 		for (RankOrderTypeList::const_iterator cit = list.begin(); cit != list.end(); cit++, y2 += char_height) {
 			bool ok = true;
 			switch (cit->second) {
-				case OT_GOTO_STATION:
+				case RSOT_GOTO_STATION:
 					SetDParam(1, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_STATION);
 					break;
-				case OT_GOTO_DEPOT:
+				case RSOT_VIA_STATION:
+					SetDParam(1, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_VIA_STATION);
+					break;
+				case RSOT_DEPOT:
 					SetDParam(1, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_DEPOT);
 					break;
-				case OT_GOTO_WAYPOINT:
+				case RSOT_WAYPOINT:
 					SetDParam(1, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_WAYPOINT);
 					break;
-				case OT_IMPLICIT:
+				case RSOT_IMPLICIT:
 					SetDParam(1, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_IMPLICIT);
 					break;
-				default: // OT_NOTHING OT_LOADING OT_LEAVESTATION OT_DUMMY OT_CONDITIONAL
+				default:
 					ok = false;
 					break;
 			}
 			if (ok) {
-				/* Write order's info */
+				/* Write order info */
 				SetDParam(0, cit->first);
 				DrawString(dpi_for_text.left + x_str, dpi_for_text.left + x_str + str_width - 1, dpi_for_text.top + y2,
 						STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, TC_FROMSTRING, SA_CENTER, false, FS_SMALL);
@@ -2756,13 +2768,36 @@ bool ViewportRouteOverlay::PrepareVehicleRouteSteps(const Vehicle *veh)
 
 	if (this->route_steps.empty()) {
 		/* Prepare data. */
-		int order_rank = 0;
+		uint16_t order_rank = 0;
 		for (const Order *order : veh->Orders()) {
 			order_rank++;
 			if (ViewportVehicleRouteShouldSkipOrder(order)) continue;
 			const TileIndex tile = order->GetLocation(veh, veh->type == VEH_AIRCRAFT);
 			if (tile == INVALID_TILE) continue;
-			this->route_steps[tile].push_back(std::pair<int, OrderType>(order_rank, order->GetType()));
+			RouteStepOrderType type = RSOT_INVALID;
+			switch (order->GetType()) {
+				case OT_GOTO_STATION:
+					type = (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) != 0 ? RSOT_VIA_STATION : RSOT_GOTO_STATION;
+					break;
+
+				case OT_IMPLICIT:
+					type = RSOT_IMPLICIT;
+					break;
+
+				case OT_GOTO_WAYPOINT:
+					type = RSOT_WAYPOINT;
+					break;
+
+				case OT_GOTO_DEPOT:
+					type = RSOT_DEPOT;
+					break;
+
+				default:
+					break;
+			}
+			if (type != RSOT_INVALID) {
+				this->route_steps[tile].push_back(std::pair<uint16_t, RouteStepOrderType>(order_rank, type));
+			}
 		}
 	}
 
