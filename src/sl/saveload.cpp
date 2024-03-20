@@ -185,9 +185,11 @@ void MemoryDumper::Flush(SaveFilter &writer)
 	this->FinaliseBlock();
 
 	size_t block_count = this->blocks.size();
+	DEBUG(sl, 3, "About to serialise " PRINTF_SIZE " bytes in " PRINTF_SIZE " blocks", this->completed_block_bytes, block_count);
 	for (size_t i = 0; i < block_count; i++) {
 		writer.Write(this->blocks[i].data, this->blocks[i].size);
 	}
+	DEBUG(sl, 3, "Serialised " PRINTF_SIZE " bytes in " PRINTF_SIZE " blocks",  this->completed_block_bytes, block_count);
 
 	writer.Finish();
 }
