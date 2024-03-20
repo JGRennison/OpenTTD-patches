@@ -2834,7 +2834,9 @@ struct FileWriter : SaveFilter {
 	{
 		if (this->file != nullptr) {
 			_game_session_stats.savegame_size = ftell(this->file);
-			fclose(this->file);
+			if (fclose(this->file) != 0) {
+				SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_WRITEABLE);
+			}
 		}
 		this->file = nullptr;
 	}
