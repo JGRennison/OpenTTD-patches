@@ -27,14 +27,16 @@ bool _video_vsync; ///< Whether we should use vsync (only if active video driver
 
 void VideoDriver::GameLoop()
 {
-	this->next_game_tick += this->GetGameInterval();
-
-	/* Avoid next_game_tick getting behind more and more if it cannot keep up. */
 	auto now = std::chrono::steady_clock::now();
-	if (this->next_game_tick < now - ALLOWED_DRIFT * this->GetGameInterval()) this->next_game_tick = now;
 
 	{
 		std::lock_guard<std::recursive_mutex> lock(this->game_state_mutex);
+
+		const auto interval = this->GetGameInterval();
+		this->next_game_tick += interval;
+
+		/* Avoid next_game_tick getting behind more and more if it cannot keep up. */
+		if (this->next_game_tick < now - ALLOWED_DRIFT * interval) this->next_game_tick = now;
 
 		::GameLoop();
 	}
