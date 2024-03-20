@@ -3721,7 +3721,7 @@ static bool ShouldVehicleContinueWaiting(Vehicle *v)
 	if (v->cur_implicit_order_index < v->GetNumOrders() && v->GetOrder(v->cur_implicit_order_index)->IsType(OT_IMPLICIT)) return false;
 
 	/* If conditional orders lead back to this order, just keep waiting without leaving the order */
-	bool loop = AdvanceOrderIndexDeferred(v, v->cur_implicit_order_index) == v->cur_implicit_order_index;
+	bool loop = AdvanceOrderIndexDeferred(v, v->cur_implicit_order_index + 1) == v->cur_implicit_order_index;
 	FlushAdvanceOrderIndexDeferred(v, loop);
 	if (loop) SetBit(v->vehicle_flags, VF_COND_ORDER_WAIT);
 	return loop;

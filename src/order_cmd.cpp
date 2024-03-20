@@ -3422,7 +3422,6 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 VehicleOrderID AdvanceOrderIndexDeferred(const Vehicle *v, VehicleOrderID index)
 {
 	int depth = 0;
-	++index;
 
 	do {
 		/* Wrap around. */
