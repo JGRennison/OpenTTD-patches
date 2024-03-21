@@ -374,12 +374,18 @@ void FioCreateDirectory(const std::string &name)
 #endif
 }
 
-void FioRenameFile(const std::string &oldname, const std::string &newname)
+/**
+ * Renames a file from oldname to newname.
+ * @param oldname file name to rename from
+ * @param newname file name to rename to
+ * @return true iff the operation succeeded
+ */
+bool FioRenameFile(const std::string &oldname, const std::string &newname)
 {
 #if defined(_WIN32)
-	_wrename(OTTD2FS(oldname).c_str(), OTTD2FS(newname).c_str());
+	return _wrename(OTTD2FS(oldname).c_str(), OTTD2FS(newname).c_str()) == 0;
 #else
-	rename(oldname.c_str(), newname.c_str());
+	return rename(oldname.c_str(), newname.c_str()) == 0;
 #endif
 }
 

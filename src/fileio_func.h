@@ -22,7 +22,7 @@ std::string FioFindFullPath(Subdirectory subdir, const std::string &filename);
 std::string FioGetDirectory(Searchpath sp, Subdirectory subdir);
 std::string FioFindDirectory(Subdirectory subdir);
 void FioCreateDirectory(const std::string &name);
-void FioRenameFile(const std::string &oldname, const std::string &newname);
+bool FioRenameFile(const std::string &oldname, const std::string &newname);
 
 const char *FiosGetScreenshotDir();
 
