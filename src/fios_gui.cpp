@@ -793,10 +793,10 @@ public:
 
 						auto type = GetDetailedFileType(file->type);
 
-						switch (type) {
-							case DFT_GAME_FILE: SaveOrLoad(file->name, SLO_CHECK, DFT_GAME_FILE, NO_DIRECTORY, false); break;
-							case DFT_ORDERLIST: break;
-							default: break;
+						if(GetDetailedFileType(file->type) == DFT_GAME_FILE) {
+
+							SaveOrLoad(file->name, SLO_CHECK, DFT_GAME_FILE, NO_DIRECTORY, false);
+							
 						}
 
 						this->InvalidateData(SLIWD_SELECTION_CHANGES);
