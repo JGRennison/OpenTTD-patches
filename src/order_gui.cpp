@@ -633,6 +633,8 @@ enum OrderDropDownID {
 static const StringID _order_manage_list_dropdown[] = {
 	STR_ORDER_REVERSE_ORDER_LIST,
 	STR_ORDER_APPEND_REVERSED_ORDER_LIST,
+	STR_ORDER_EXPORT_ORDER_LIST,
+	STR_ORDER_IMPORT_ORDER_LIST,
 	INVALID_STRING_ID
 };
 
@@ -3488,6 +3490,8 @@ public:
 				switch (index) {
 					case 0: this->OrderClick_ReverseOrderList(0); break;
 					case 1: this->OrderClick_ReverseOrderList(1); break;
+					case 2: /*TODO:Copy order list as Unified Order List Format*/break;
+					case 3: /*TODO:Pase order list as Unified Order List Format*/break;
 					default: NOT_REACHED();
 				}
 				break;

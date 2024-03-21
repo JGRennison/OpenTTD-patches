@@ -1681,6 +1681,8 @@ STR_ORDER_REVERSE_ORDER_LIST                                    :Reverse order l
 STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :Append reversed order list
 STR_ORDER_DUPLICATE_ORDER                                       :Duplicate order
 STR_ORDER_CHANGE_JUMP_TARGET                                    :Change jump target
+STR_ORDER_EXPORT_ORDER_LIST										:Copy order list to file
+STR_ORDER_IMPORT_ORDER_LIST										:Get order list from file
 
 STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON                               :Try acquire slot
 STR_ORDER_RELEASE_SLOT_BUTTON                                   :Release slot
