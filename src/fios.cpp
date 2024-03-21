@@ -33,6 +33,9 @@
 
 #include "safeguards.h"
 
+/*For some reason I need to pre-declare this function specifically, otherwise the whole thing just won't compile*/
+void FiosGetOrderlistList(SaveLoadOperation fop, bool show_dirs, FileList &file_list);
+
 /* Variables to display file lists */
 static std::string *_fios_path = nullptr;
 SortingBits _savegame_sort_order = SORT_BY_DATE | SORT_DESCENDING;
@@ -89,6 +92,10 @@ void FileList::BuildFileList(AbstractFileType abstract_filetype, SaveLoadOperati
 
 		case FT_HEIGHTMAP:
 			FiosGetHeightmapList(fop, show_dirs, *this);
+			break;
+
+		case FT_ORDERLIST:
+			FiosGetOrderlistList(fop, show_dirs, *this);
 			break;
 
 		default:
@@ -185,6 +192,7 @@ bool FiosBrowseTo(const FiosItem *item)
 		case FIOS_TYPE_OLDFILE:
 		case FIOS_TYPE_SCENARIO:
 		case FIOS_TYPE_OLD_SCENARIO:
+		case FIOS_TYPE_ORDERLIST:
 		case FIOS_TYPE_PNG:
 		case FIOS_TYPE_BMP:
 			return false;
@@ -497,6 +505,52 @@ void FiosGetSavegameList(SaveLoadOperation fop, bool show_dirs, FileList &file_l
 	_fios_path = &(*fios_save_path);
 
 	FiosGetFileList(fop, show_dirs, &FiosGetSavegameListCallback, NO_DIRECTORY, file_list);
+}
+
+/**
+ * Callback for FiosGetOrderlistList. It tells if a file is a orederlist or not.
+ * @param fop Purpose of collecting the list.
+ * @param file Name of the file to check.
+ * @param ext A pointer to the extension identifier inside file
+ * @param title Buffer if a callback wants to lookup the title of the file; nullptr to skip the lookup
+ * @param last Last available byte in buffer (to prevent buffer overflows); not used when title == nullptr
+ * @return a FIOS_TYPE_* type of the found file, FIOS_TYPE_INVALID if not a savegame
+ * @see FiosGetFileList
+ * @see FiosGetOrderlistList
+ */
+FiosType FiosGetOrderlistListCallback(SaveLoadOperation fop, const std::string &file, const char *ext, char *title, const char *last)
+{
+	/* Show orderlist files
+	 * .XML orderlist files
+	 */
+
+	/* Don't crash if we supply no extension */
+	if (ext == nullptr) ext = "";
+
+	if (StrEqualsIgnoreCase(ext, ".xml")) {
+		GetFileTitle(file, title, last, SAVE_DIR);
+		return FIOS_TYPE_ORDERLIST;
+	}
+
+	return FIOS_TYPE_INVALID;
+}
+
+/**
+ * Get a list of orderlists.
+ * @param fop Purpose of collecting the list.
+ * @param show_dirs Whether to show directories.
+ * @param file_list Destination of the found files.
+ * @see FiosGetFileList
+ */
+void FiosGetOrderlistList(SaveLoadOperation fop, bool show_dirs, FileList &file_list)
+{
+	static std::optional<std::string> fios_save_path;
+
+	if (!fios_save_path) fios_save_path = FioFindDirectory(SAVE_DIR);
+
+	_fios_path = &(*fios_save_path);
+
+	FiosGetFileList(fop, show_dirs, &FiosGetOrderlistListCallback, NO_DIRECTORY, file_list);
 }
 
 /**

@@ -35,6 +35,7 @@
 #include "tracerestrict.h"
 #include "scope.h"
 #include "core/backup_type.hpp"
+#include "fios.h"
 
 #include "widgets/order_widget.h"
 
@@ -3490,8 +3491,8 @@ public:
 				switch (index) {
 					case 0: this->OrderClick_ReverseOrderList(0); break;
 					case 1: this->OrderClick_ReverseOrderList(1); break;
-					case 2: /*TODO:Copy order list as Unified Order List Format*/break;
-					case 3: /*TODO:Pase order list as Unified Order List Format*/break;
+					case 2: ShowSaveLoadDialog(FT_ORDERLIST, SLO_SAVE); break;
+					case 3: ShowSaveLoadDialog(FT_ORDERLIST, SLO_LOAD); break;
 					default: NOT_REACHED();
 				}
 				break;
