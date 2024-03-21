@@ -49,6 +49,8 @@
 #include "../timer/timer_game_tick.h"
 #include <atomic>
 #include <string>
+#include <sys/stat.h>
+#include <sys/types.h>
 #ifdef __EMSCRIPTEN__
 #	include <emscripten.h>
 #endif
@@ -2809,19 +2811,24 @@ struct FileReader : LoadFilter {
 /** Yes, simply writing to a file. */
 struct FileWriter : SaveFilter {
 	FILE *file; ///< The file to write to.
+	std::string temp_name;
+	std::string target_name;
 
 	/**
 	 * Create the file writer, so it writes to a specific file.
 	 * @param file The file to write to.
+	 * @param temp_name The temporary name of the file being written to.
+	 * @param target_name The target name of the file to rename to, on success.
 	 */
-	FileWriter(FILE *file) : SaveFilter(nullptr), file(file)
+	FileWriter(FILE *file, std::string temp_name, std::string target_name) : SaveFilter(nullptr), file(file), temp_name(std::move(temp_name)), target_name(std::move(target_name))
 	{
 	}
 
 	/** Make sure everything is cleaned up. */
 	~FileWriter()
 	{
-		this->Finish();
+		this->CloseFile();
+		if (!this->temp_name.empty()) unlink(this->temp_name.c_str());
 	}
 
 	void Write(byte *buf, size_t size) override
@@ -2833,6 +2840,39 @@ struct FileWriter : SaveFilter {
 	}
 
 	void Finish() override
+	{
+		this->CloseFile();
+
+		size_t save_size = 0;
+		if (_game_session_stats.savegame_size.has_value()) save_size = _game_session_stats.savegame_size.value();
+
+		if (save_size <= 8) SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_WRITEABLE, "Insufficient bytes written");
+
+#if defined(_WIN32)
+		struct _stat st;
+		int stat_result = _wstat(OTTD2FS(this->temp_name).c_str(), &st);
+#else
+		struct stat st;
+		int stat_result = stat(this->temp_name.c_str(), &st);
+#endif
+		if (stat_result != 0) {
+			SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_WRITEABLE, "Failed to stat temporary save file");
+		}
+		if ((size_t)st.st_size != save_size) {
+			SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_WRITEABLE, stdstr_fmt("Temporary save file does not have expected file size: " PRINTF_SIZE " != " PRINTF_SIZE, (size_t)st.st_size, save_size));
+		}
+
+#if defined(_WIN32)
+		/* Renaming over an existing file is not supported on Windows, manually unlink the target filename first */
+		unlink(this->target_name.c_str());
+#endif
+
+		if (!FioRenameFile(this->temp_name, this->target_name)) SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_WRITEABLE, "Failed to rename temporary save file to target name");
+		this->temp_name.clear(); // Now no need to unlink temporary name
+	}
+
+private:
+	void CloseFile()
 	{
 		if (this->file != nullptr) {
 			_game_session_stats.savegame_size = ftell(this->file);
@@ -4063,22 +4103,32 @@ SaveOrLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, 
 		}
 		_sl.save_flags = save_flags;
 
-		FILE *fh = (fop == SLO_SAVE) ? FioFOpenFile(filename, "wb", sb) : FioFOpenFile(filename, "rb", sb);
+		FILE *fh = nullptr;
+		std::string temp_save_filename;
+		std::string temp_save_filename_suffix;
 
-		/* Make it a little easier to load savegames from the console */
-		if (fh == nullptr && fop != SLO_SAVE) fh = FioFOpenFile(filename, "rb", SAVE_DIR);
-		if (fh == nullptr && fop != SLO_SAVE) fh = FioFOpenFile(filename, "rb", BASE_DIR);
-		if (fh == nullptr && fop != SLO_SAVE) fh = FioFOpenFile(filename, "rb", SCENARIO_DIR);
+		if (fop == SLO_SAVE) {
+			temp_save_filename_suffix = stdstr_fmt(".tmp-%08x", InteractiveRandom());
+			fh = FioFOpenFile(filename + temp_save_filename_suffix, "wb", sb, nullptr, &temp_save_filename);
+		} else {
+			fh = FioFOpenFile(filename, "rb", sb);
+
+			/* Make it a little easier to load savegames from the console */
+			if (fh == nullptr) fh = FioFOpenFile(filename, "rb", SAVE_DIR);
+			if (fh == nullptr) fh = FioFOpenFile(filename, "rb", BASE_DIR);
+			if (fh == nullptr) fh = FioFOpenFile(filename, "rb", SCENARIO_DIR);
+		}
 
 		if (fh == nullptr) {
 			SlError(fop == SLO_SAVE ? STR_GAME_SAVELOAD_ERROR_FILE_NOT_WRITEABLE : STR_GAME_SAVELOAD_ERROR_FILE_NOT_READABLE);
 		}
 
 		if (fop == SLO_SAVE) { // SAVE game
+			if (temp_save_filename.size() <= temp_save_filename_suffix.size()) SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_WRITEABLE, "Failed to get temporary file name");
 			DEBUG(desync, 1, "save: %s; %s", debug_date_dumper().HexDate(), filename.c_str());
 			if (!_settings_client.gui.threaded_saves) threaded = false;
 
-			return DoSave(std::make_shared<FileWriter>(fh), threaded);
+			return DoSave(std::make_shared<FileWriter>(fh, temp_save_filename, temp_save_filename.substr(0, temp_save_filename.size() - temp_save_filename_suffix.size())), threaded);
 		}
 
 		/* LOAD game */
