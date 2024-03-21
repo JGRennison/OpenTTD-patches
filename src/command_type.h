@@ -335,7 +335,7 @@ enum Commands {
 	CMD_DUPLICATE_ORDER,              ///< duplicate an order
 	CMD_MASS_CHANGE_ORDER,            ///< mass change the target of an order
 
-	CMD_CHANGE_SERVICE_INT,           ///< change the server interval of a vehicle
+	CMD_CHANGE_SERVICE_INT,           ///< change the service interval of a vehicle
 
 	CMD_BUILD_INDUSTRY,               ///< build a new industry
 	CMD_INDUSTRY_SET_FLAGS,           ///< change industry control flags
@@ -504,7 +504,7 @@ enum Commands {
 	CMD_INSERT_SIGNAL_INSTRUCTION,    ///< insert a signal instruction
 	CMD_MODIFY_SIGNAL_INSTRUCTION,    ///< modifies a signal instruction
 	CMD_REMOVE_SIGNAL_INSTRUCTION,    ///< removes a signal instruction
-	CMD_SIGNAL_PROGRAM_MGMT,          ///< removes a signal program management command
+	CMD_SIGNAL_PROGRAM_MGMT,          ///< signal program management command
 
 	CMD_SCHEDULED_DISPATCH,                     ///< scheduled dispatch start
 	CMD_SCHEDULED_DISPATCH_ADD,                 ///< scheduled dispatch add
