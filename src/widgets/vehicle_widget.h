@@ -59,6 +59,7 @@ enum VehicleDetailsWidgets : WidgetID {
 	WID_VD_DETAILS_TRAIN_VEHICLES,      ///< Show all parts of the train with their description.
 	WID_VD_DETAILS_CAPACITY_OF_EACH,    ///< Show the capacity of all train parts.
 	WID_VD_DETAILS_TOTAL_CARGO,         ///< Show the capacity and carried cargo amounts aggregated per cargo of the train.
+	WID_VD_EXTRA_ACTIONS,               ///< Extra actions drop-down.
 };
 
 /** Widgets of the #VehicleListWindow class. */

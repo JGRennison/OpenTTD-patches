@@ -462,6 +462,7 @@ enum Commands {
 	CMD_TEMPLATE_REPLACE_VEHICLE,     ///< template replace a vehicle while it is in a depot
 	CMD_DEPOT_SELL_ALL_VEHICLES,      ///< sell all vehicles which are in a given depot
 	CMD_DEPOT_MASS_AUTOREPLACE,       ///< force the autoreplace to take action in a given depot
+	CMD_SET_TRAIN_SPEED_RESTRICTION,  ///< manually set train speed restriction
 
 	CMD_CREATE_GROUP,                 ///< create a new group
 	CMD_DELETE_GROUP,                 ///< delete a group

@@ -1619,6 +1619,10 @@ STR_VEHICLE_DETAILS_TRAIN_WAGON_VALUE_AND_SPEED                 :{LTBLUE}{ENGINE
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_WEIGHT                          :{BLACK}Total weight: {LTBLUE}{WEIGHT_SHORT} {BLACK}(empty) - {LTBLUE}{WEIGHT_SHORT} {BLACK}(loaded)
 STR_VEHICLE_DETAILS_TRAIN_MAX_SPEED                             :{BLACK}Max. speed: {LTBLUE}{VELOCITY} {BLACK}(empty) - {LTBLUE}{VELOCITY} {BLACK}(loaded)
 
+STR_VEHICLE_DETAILS_EXTRA_ACTIONS_TOOLTIP                       :{BLACK}Extra vehicle actions
+STR_VEHICLE_DETAILS_REMOVE_SPEED_RESTRICTION                    :Remove speed restriction
+STR_VEHICLE_DETAILS_SET_SPEED_RESTRICTION                       :Set speed restriction
+
 STR_ORDER_DROP_CARGO_TYPE_LOAD                                  :Load by cargo type
 STR_ORDER_DROP_CARGO_TYPE_UNLOAD                                :Unload by cargo type
 
@@ -2312,3 +2316,5 @@ STR_VIEWPORT_TOWN_COLOUR_CITY_POP                               :{WHITE}{TOWN} {
 
 STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :Picker tool
 STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Modifier key window
+
+STR_ERROR_CAN_T_CHANGE_SPEED_RESTRICTION                        :{WHITE}Can't change vehicle's speed restriction...

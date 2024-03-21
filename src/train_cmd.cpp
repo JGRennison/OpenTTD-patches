@@ -7733,3 +7733,35 @@ uint16_t Train::GetMaxWeight() const
 
 	return weight;
 }
+
+/**
+ * Set train speed restriction
+ * @param tile unused
+ * @param flags type of operation
+ * @param p1 vehicle
+ * @param p2 new speed restriction value
+ * @param text unused
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdSetTrainSpeedRestriction(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+{
+	Vehicle *v = Vehicle::GetIfValid(p1);
+	if (v == nullptr || v->type != VEH_TRAIN || !v->IsPrimaryVehicle()) return CMD_ERROR;
+
+	CommandCost ret = CheckVehicleControlAllowed(v);
+	if (ret.Failed()) return ret;
+
+	if (v->vehstatus & VS_CRASHED) return_cmd_error(STR_ERROR_VEHICLE_IS_DESTROYED);
+
+	if (flags & DC_EXEC) {
+		Train *t = Train::From(v);
+		if (HasBit(t->flags, VRF_PENDING_SPEED_RESTRICTION)) {
+			_pending_speed_restriction_change_map.erase(t->index);
+			ClrBit(t->flags, VRF_PENDING_SPEED_RESTRICTION);
+		}
+		t->speed_restriction = (uint16_t)p2;
+
+		SetWindowDirty(WC_VEHICLE_DETAILS, t->index);
+	}
+	return CommandCost();
+}

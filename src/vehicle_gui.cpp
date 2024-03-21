@@ -2757,6 +2757,7 @@ static_assert(WID_VD_DETAILS_TOTAL_CARGO      == WID_VD_DETAILS_CARGO_CARRIED + 
 static constexpr NWidgetPart _nested_nontrain_vehicle_details_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
+		NWidget(WWT_IMGBTN, COLOUR_GREY, WID_VD_EXTRA_ACTIONS), SetDataTip(SPR_ARROW_DOWN, STR_VEHICLE_DETAILS_EXTRA_ACTIONS_TOOLTIP),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_VD_CAPTION), SetDataTip(STR_VEHICLE_DETAILS_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
@@ -2780,6 +2781,7 @@ static constexpr NWidgetPart _nested_nontrain_vehicle_details_widgets[] = {
 static constexpr NWidgetPart _nested_train_vehicle_details_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
+		NWidget(WWT_IMGBTN, COLOUR_GREY, WID_VD_EXTRA_ACTIONS), SetDataTip(SPR_ARROW_DOWN, STR_VEHICLE_DETAILS_EXTRA_ACTIONS_TOOLTIP),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_VD_CAPTION), SetDataTip(STR_VEHICLE_DETAILS_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
@@ -2842,6 +2844,11 @@ struct VehicleDetailsWindow : Window {
 	bool vehicle_slots_line_shown;
 	bool vehicle_speed_restriction_line_shown;
 	bool vehicle_speed_adaptation_exempt_line_shown;
+
+	enum DropDownAction {
+		VDWDDA_CLEAR_SPEED_RESTRICTION,
+		VDWDDA_SET_SPEED_RESTRICTION,
+	};
 
 	/** Initialize a newly created vehicle details window */
 	VehicleDetailsWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
@@ -3331,6 +3338,8 @@ struct VehicleDetailsWindow : Window {
 			WID_VD_INCREASE_SERVICING_INTERVAL,
 			WID_VD_DECREASE_SERVICING_INTERVAL);
 
+		this->SetWidgetDisabledState(WID_VD_EXTRA_ACTIONS, v->type != VEH_TRAIN);
+
 		StringID str =
 			!v->ServiceIntervalIsCustom() ? STR_VEHICLE_DETAILS_DEFAULT :
 			v->ServiceIntervalIsPercent() ? STR_VEHICLE_DETAILS_PERCENT :
@@ -3382,6 +3391,18 @@ struct VehicleDetailsWindow : Window {
 				this->tab = (TrainDetailsWindowTabs)(widget - WID_VD_DETAILS_CARGO_CARRIED);
 				this->SetDirty();
 				break;
+
+			case WID_VD_EXTRA_ACTIONS: {
+				const Vehicle *v = Vehicle::Get(this->window_number);
+				DropDownList list;
+				if (v->type == VEH_TRAIN) {
+					bool change_allowed = IsVehicleControlAllowed(v, _local_company);
+					list.emplace_back(new DropDownListStringItem(STR_VEHICLE_DETAILS_REMOVE_SPEED_RESTRICTION, VDWDDA_CLEAR_SPEED_RESTRICTION, !change_allowed || Train::From(v)->speed_restriction == 0));
+					list.emplace_back(new DropDownListStringItem(STR_VEHICLE_DETAILS_SET_SPEED_RESTRICTION, VDWDDA_SET_SPEED_RESTRICTION, !change_allowed));
+				}
+				ShowDropDownList(this, std::move(list), -1, WID_VD_EXTRA_ACTIONS, 140);
+				break;
+			}
 		}
 	}
 
@@ -3415,7 +3436,30 @@ struct VehicleDetailsWindow : Window {
 				DoCommandP(v->tile, v->index, interval | (iscustom << 16) | (ispercent << 17), CMD_CHANGE_SERVICE_INT | CMD_MSG(STR_ERROR_CAN_T_CHANGE_SERVICING));
 				break;
 			}
+
+			case WID_VD_EXTRA_ACTIONS: {
+				const Vehicle *v = Vehicle::Get(this->window_number);
+				switch (index) {
+					case VDWDDA_CLEAR_SPEED_RESTRICTION:
+						DoCommandP(v->tile, v->index, 0, CMD_SET_TRAIN_SPEED_RESTRICTION | CMD_MSG(STR_ERROR_CAN_T_CHANGE_SPEED_RESTRICTION));
+						break;
+
+					case VDWDDA_SET_SPEED_RESTRICTION: {
+						SetDParam(0, ConvertKmhishSpeedToDisplaySpeed(Train::From(v)->speed_restriction, VEH_TRAIN));
+						ShowQueryString(STR_JUST_INT, STR_TIMETABLE_CHANGE_SPEED, 10, this, CS_NUMERAL, QSF_NONE);
+					}
+				}
+				break;
+			}
 		}
+	}
+
+	void OnQueryTextFinished(char *str) override
+	{
+		if (str == nullptr || StrEmpty(str)) return;
+
+		const Vehicle *v = Vehicle::Get(this->window_number);
+		DoCommandP(v->tile, v->index, ConvertDisplaySpeedToKmhishSpeed(std::strtoul(str, nullptr, 10), VEH_TRAIN), CMD_SET_TRAIN_SPEED_RESTRICTION | CMD_MSG(STR_ERROR_CAN_T_CHANGE_SPEED_RESTRICTION));
 	}
 
 	void OnResize() override

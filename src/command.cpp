@@ -246,6 +246,7 @@ CommandProc CmdAutoreplaceVehicle;
 CommandProc CmdTemplateReplaceVehicle;
 CommandProc CmdDepotSellAllVehicles;
 CommandProc CmdDepotMassAutoReplace;
+CommandProc CmdSetTrainSpeedRestriction;
 
 CommandProc CmdCreateGroup;
 CommandProc CmdAlterGroup;
@@ -515,6 +516,7 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdTemplateReplaceVehicle,               CMD_NO_TEST, CMDT_VEHICLE_MANAGEMENT    ), // CMD_TEMPLATE_REPLACE_VEHICLE
 	DEF_CMD(CmdDepotSellAllVehicles,                           0, CMDT_VEHICLE_CONSTRUCTION  ), // CMD_DEPOT_SELL_ALL_VEHICLES
 	DEF_CMD(CmdDepotMassAutoReplace,                 CMD_NO_TEST, CMDT_VEHICLE_CONSTRUCTION  ), // CMD_DEPOT_MASS_AUTOREPLACE
+	DEF_CMD(CmdSetTrainSpeedRestriction,                       0, CMDT_VEHICLE_MANAGEMENT    ), // CMD_SET_TRAIN_SPEED_RESTRICTION
 	DEF_CMD(CmdCreateGroup,                                    0, CMDT_ROUTE_MANAGEMENT      ), // CMD_CREATE_GROUP
 	DEF_CMD(CmdDeleteGroup,                                    0, CMDT_ROUTE_MANAGEMENT      ), // CMD_DELETE_GROUP
 	DEF_CMD(CmdAlterGroup,                                     0, CMDT_OTHER_MANAGEMENT      ), // CMD_ALTER_GROUP
