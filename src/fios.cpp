@@ -33,9 +33,6 @@
 
 #include "safeguards.h"
 
-/*For some reason I need to pre-declare this function specifically, otherwise the whole thing just won't compile*/
-void FiosGetOrderlistList(SaveLoadOperation fop, bool show_dirs, FileList &file_list);
-
 /* Variables to display file lists */
 static std::string *_fios_path = nullptr;
 SortingBits _savegame_sort_order = SORT_BY_DATE | SORT_DESCENDING;

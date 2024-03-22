@@ -56,6 +56,7 @@ void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fo
 void FiosGetSavegameList(SaveLoadOperation fop, bool show_dirs, FileList &file_list);
 void FiosGetScenarioList(SaveLoadOperation fop, bool show_dirs, FileList &file_list);
 void FiosGetHeightmapList(SaveLoadOperation fop, bool show_dirs, FileList &file_list);
+void FiosGetOrderlistList(SaveLoadOperation fop, bool show_dirs, FileList &file_list);
 
 bool FiosBrowseTo(const FiosItem *item);
 
@@ -68,6 +69,7 @@ std::string FiosMakeSavegameName(const char *name);
 FiosType FiosGetSavegameListCallback(SaveLoadOperation fop, const std::string &file, const char *ext, char *title, const char *last);
 FiosType FiosGetScenarioListCallback(SaveLoadOperation fop, const std::string &file, const char *ext, char *title, const char *last);
 FiosType FiosGetHeightmapListCallback(SaveLoadOperation fop, const std::string &file, const char *ext, char *title, const char *last);
+FiosType FiosGetOrderlistListCallback(SaveLoadOperation fop, const std::string &file, const char *ext, char *title, const char *last);
 
 void ScanScenarios();
 const char *FindScenario(const ContentInfo *ci, bool md5sum);
