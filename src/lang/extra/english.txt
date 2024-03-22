@@ -1622,6 +1622,7 @@ STR_VEHICLE_DETAILS_TRAIN_MAX_SPEED                             :{BLACK}Max. spe
 STR_VEHICLE_DETAILS_EXTRA_ACTIONS_TOOLTIP                       :{BLACK}Extra vehicle actions
 STR_VEHICLE_DETAILS_REMOVE_SPEED_RESTRICTION                    :Remove speed restriction
 STR_VEHICLE_DETAILS_SET_SPEED_RESTRICTION                       :Set speed restriction
+STR_VEHICLE_DETAILS_REMOVE_FROM_SLOT                            :Remove from slot:
 
 STR_ORDER_DROP_CARGO_TYPE_LOAD                                  :Load by cargo type
 STR_ORDER_DROP_CARGO_TYPE_UNLOAD                                :Unload by cargo type

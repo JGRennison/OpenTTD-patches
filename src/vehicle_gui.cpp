@@ -2848,6 +2848,7 @@ struct VehicleDetailsWindow : Window {
 	enum DropDownAction {
 		VDWDDA_CLEAR_SPEED_RESTRICTION,
 		VDWDDA_SET_SPEED_RESTRICTION,
+		VDWDDA_REMOVE_FROM_SLOT,
 	};
 
 	/** Initialize a newly created vehicle details window */
@@ -2953,6 +2954,19 @@ struct VehicleDetailsWindow : Window {
 	{
 		if (v->type != VEH_TRAIN) return false;
 		return HasBit(Train::From(v)->flags, VRF_SPEED_ADAPTATION_EXEMPT);
+	}
+
+	std::vector<TraceRestrictSlotID> GetVehicleSlots(const Vehicle *v) const
+	{
+		std::vector<TraceRestrictSlotID> slots;
+		TraceRestrictGetVehicleSlots(v->index, slots);
+
+		std::sort(slots.begin(), slots.end(), [&](TraceRestrictSlotID a, TraceRestrictSlotID b) -> bool {
+			int r = StrNaturalCompare(TraceRestrictSlot::Get(a)->name, TraceRestrictSlot::Get(b)->name);
+			if (r == 0) return a < b;
+			return r < 0;
+		});
+		return slots;
 	}
 
 	void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
@@ -3230,14 +3244,7 @@ struct VehicleDetailsWindow : Window {
 
 				bool should_show_slots = this->ShouldShowSlotsLine(v);
 				if (should_show_slots) {
-					std::vector<TraceRestrictSlotID> slots;
-					TraceRestrictGetVehicleSlots(v->index, slots);
-
-					std::sort(slots.begin(), slots.end(), [&](TraceRestrictSlotID a, TraceRestrictSlotID b) -> bool {
-						int r = StrNaturalCompare(TraceRestrictSlot::Get(a)->name, TraceRestrictSlot::Get(b)->name);
-						if (r == 0) return a < b;
-						return r < 0;
-					});
+					std::vector<TraceRestrictSlotID> slots = this->GetVehicleSlots(v);
 
 					SetDParam(0, slots.size());
 					std::string buffer = GetString(STR_TRACE_RESTRICT_SLOT_LIST_HEADER);
@@ -3338,7 +3345,7 @@ struct VehicleDetailsWindow : Window {
 			WID_VD_INCREASE_SERVICING_INTERVAL,
 			WID_VD_DECREASE_SERVICING_INTERVAL);
 
-		this->SetWidgetDisabledState(WID_VD_EXTRA_ACTIONS, v->type != VEH_TRAIN);
+		this->SetWidgetDisabledState(WID_VD_EXTRA_ACTIONS, v->type != VEH_TRAIN && !HasBit(v->vehicle_flags, VF_HAVE_SLOT));
 
 		StringID str =
 			!v->ServiceIntervalIsCustom() ? STR_VEHICLE_DETAILS_DEFAULT :
@@ -3400,6 +3407,16 @@ struct VehicleDetailsWindow : Window {
 					list.emplace_back(new DropDownListStringItem(STR_VEHICLE_DETAILS_REMOVE_SPEED_RESTRICTION, VDWDDA_CLEAR_SPEED_RESTRICTION, !change_allowed || Train::From(v)->speed_restriction == 0));
 					list.emplace_back(new DropDownListStringItem(STR_VEHICLE_DETAILS_SET_SPEED_RESTRICTION, VDWDDA_SET_SPEED_RESTRICTION, !change_allowed));
 				}
+				if (HasBit(v->vehicle_flags, VF_HAVE_SLOT)) {
+					if (!list.empty()) list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
+					list.push_back(std::make_unique<DropDownUnselectable<DropDownListStringItem>>(STR_VEHICLE_DETAILS_REMOVE_FROM_SLOT, -1));
+
+					std::vector<TraceRestrictSlotID> slots = this->GetVehicleSlots(v);
+					for (TraceRestrictSlotID slot_id : slots) {
+						SetDParam(0, slot_id);
+						list.emplace_back(new DropDownListCheckedItem(false, STR_TRACE_RESTRICT_SLOT_NAME, VDWDDA_REMOVE_FROM_SLOT | (slot_id << 8), TraceRestrictSlot::Get(slot_id)->owner != _local_company));
+					}
+				}
 				ShowDropDownList(this, std::move(list), -1, WID_VD_EXTRA_ACTIONS, 140);
 				break;
 			}
@@ -3439,7 +3456,7 @@ struct VehicleDetailsWindow : Window {
 
 			case WID_VD_EXTRA_ACTIONS: {
 				const Vehicle *v = Vehicle::Get(this->window_number);
-				switch (index) {
+				switch (GB(index, 0, 8)) {
 					case VDWDDA_CLEAR_SPEED_RESTRICTION:
 						DoCommandP(v->tile, v->index, 0, CMD_SET_TRAIN_SPEED_RESTRICTION | CMD_MSG(STR_ERROR_CAN_T_CHANGE_SPEED_RESTRICTION));
 						break;
@@ -3447,6 +3464,12 @@ struct VehicleDetailsWindow : Window {
 					case VDWDDA_SET_SPEED_RESTRICTION: {
 						SetDParam(0, ConvertKmhishSpeedToDisplaySpeed(Train::From(v)->speed_restriction, VEH_TRAIN));
 						ShowQueryString(STR_JUST_INT, STR_TIMETABLE_CHANGE_SPEED, 10, this, CS_NUMERAL, QSF_NONE);
+						break;
+					}
+
+					case VDWDDA_REMOVE_FROM_SLOT: {
+						DoCommandP(0, GB(index, 8, 16), v->index, CMD_REMOVE_VEHICLE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE));
+						break;
 					}
 				}
 				break;
