@@ -1043,13 +1043,19 @@ DEF_CONSOLE_CMD(ConJoinCompany)
 
 	CompanyID company_id = (CompanyID)(atoi(argv[1]) <= MAX_COMPANIES ? atoi(argv[1]) - 1 : atoi(argv[1]));
 
+	const NetworkClientInfo *info = NetworkClientInfo::GetByClientID(_network_own_client_id);
+	if (info == nullptr) {
+		IConsoleError("You have not joined the game yet!");
+		return true;
+	}
+
 	/* Check we have a valid company id! */
 	if (!Company::IsValidID(company_id) && company_id != COMPANY_SPECTATOR) {
 		IConsolePrintF(CC_ERROR, "Company does not exist. Company-id must be between 1 and %d.", MAX_COMPANIES);
 		return true;
 	}
 
-	if (NetworkClientInfo::GetByClientID(_network_own_client_id)->client_playas == company_id) {
+	if (info->client_playas == company_id) {
 		IConsoleError("You are already there!");
 		return true;
 	}

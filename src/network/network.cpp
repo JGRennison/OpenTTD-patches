@@ -812,6 +812,7 @@ public:
 	void OnConnect(SOCKET s) override
 	{
 		_networking = true;
+		_network_own_client_id = ClientID{};
 		new ClientNetworkGameSocketHandler(s, this->connection_string);
 		IConsoleCmdExec("exec scripts/on_client.scr 0");
 		NetworkClient_Connected();
