@@ -275,11 +275,10 @@ static constexpr NWidgetPart _nested_save_orderlist_dialog_widgets[] = {
 				NWidget(WWT_EDITBOX, COLOUR_GREY, WID_SL_SAVE_OSK_TITLE), SetPadding(2, 2, 2, 2), SetFill(1, 0), SetResize(1, 0),
 						SetDataTip(STR_SAVELOAD_OSKTITLE, STR_SAVELOAD_EDITBOX_TOOLTIP),
 			EndContainer(),
-			/* Save/delete buttons */
-			NWidget(NWID_HORIZONTAL),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SL_DELETE_SELECTION), SetDataTip(STR_SAVELOAD_DELETE_BUTTON, STR_SAVELOAD_DELETE_TOOLTIP), SetFill(1, 0), SetResize(1, 0),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SL_SAVE_GAME),        SetDataTip(STR_SAVELOAD_SAVE_BUTTON, STR_SAVELOAD_SAVE_TOOLTIP),     SetFill(1, 0), SetResize(1, 0),
-			EndContainer(),
+
+			/* Save button*/
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SL_SAVE_GAME),        SetDataTip(STR_SAVELOAD_SAVE_BUTTON, STR_SAVELOAD_SAVE_TOOLTIP),     SetFill(1, 0), SetResize(1, 0),
+
 		EndContainer(),
 	EndContainer(),
 };
@@ -465,9 +464,9 @@ public:
 		this->querystrings[WID_SL_FILTER] = &this->filter_editbox;
 		this->filter_editbox.cancel_button = QueryString::ACTION_CLEAR;
 
-		/* pause is only used in single-player, non-editor mode, non-menu mode. It
+		/* pause is only used in single-player, non-editor mode, non-menu mode, when not operationg on orderlists. It
 		 * will be unpaused in the WE_DESTROY event handler. */
-		if (_game_mode != GM_MENU && !_networking && _game_mode != GM_EDITOR) {
+		if (_game_mode != GM_MENU && !_networking && _game_mode != GM_EDITOR && this->abstract_filetype != FT_ORDERLIST) {
 			DoCommandP(0, PM_PAUSED_SAVELOAD, 1, CMD_PAUSE);
 		}
 		SetObjectToPlace(SPR_CURSOR_ZZZ, PAL_NONE, HT_NONE, WC_MAIN_WINDOW, 0);
@@ -747,6 +746,11 @@ public:
 				if (this->abstract_filetype == FT_HEIGHTMAP) {
 					this->Close();
 					ShowHeightmapLoad();
+				}else if (this->abstract_filetype == FT_ORDERLIST) {
+
+					this->Close();
+					FILE *dataFile = fopen(this->selected->name, "r");
+					
 				} else if (!_load_check_data.HasNewGrfs() || _load_check_data.grf_compatibility != GLC_NOT_FOUND || _settings_client.gui.UserIsAllowedToChangeNewGRFs()) {
 					_switch_mode = (_game_mode == GM_EDITOR) ? SM_LOAD_SCENARIO : SM_LOAD_GAME;
 					ClearErrorMessages();
