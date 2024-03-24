@@ -200,6 +200,7 @@
 		std::wstring OTTD2FS(const std::string &name);
 #	elif defined(WITH_ICONV)
 #		define fopen(file, mode) fopen(OTTD2FS(file).c_str(), mode)
+#		define unlink(file) unlink(OTTD2FS(file).c_str())
 		std::string FS2OTTD(const std::string &name);
 		std::string OTTD2FS(const std::string &name);
 #	else
