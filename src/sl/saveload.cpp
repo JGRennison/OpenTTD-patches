@@ -54,6 +54,9 @@
 #ifdef __EMSCRIPTEN__
 #	include <emscripten.h>
 #endif
+#ifndef _WIN32
+#	include <unistd.h>
+#endif /* _WIN32 */
 
 #include "../tbtr_template_vehicle.h"
 #include "../3rdparty/cpp-btree/btree_map.h"
