@@ -3491,8 +3491,77 @@ public:
 				switch (index) {
 					case 0: this->OrderClick_ReverseOrderList(0); break;
 					case 1: this->OrderClick_ReverseOrderList(1); break;
-					case 2: ShowSaveLoadDialog(FT_ORDERLIST, SLO_SAVE); break;
-					case 3: ShowSaveLoadDialog(FT_ORDERLIST, SLO_LOAD); break;
+					case 2: this->vehicle->orders->ToJSONString(); break;
+					case 3: this->vehicle->orders->FromJSONString(R"(
+		{
+		  "head": {
+			"scheduled-dispatch": [
+			  {
+				"duration": 106560,
+				"flags": 0,
+				"max-delay": 0,
+				"name": "alfredo",
+				"slots": [
+				  {
+					"flags": 0,
+					"offset": 4514
+				  },
+				  {
+					"flags": 0,
+					"offset": 90280
+				  }
+				],
+				"start-tick": 16729920
+			  }
+			]
+		  },
+		  "orders": [
+			{
+			  "destination-id": 0,
+			  "max-speed": 65535,
+			  "packed-data": 578,
+			  "refit-cargo": 254,
+			  "travel-time": 0,
+			  "wait-time": 0
+			},
+			{
+			  "destination-id": 0,
+			  "max-speed": 65535,
+			  "packed-data": 578,
+			  "refit-cargo": 254,
+			  "travel-time": 0,
+			  "wait-time": 0
+			},
+			{
+			  "destination-id": 0,
+			  "max-speed": 65535,
+			  "packed-data": 578,
+			  "refit-cargo": 254,
+			  "travel-time": 0,
+			  "wait-time": 0
+			},
+			{
+			  "destination-id": 0,
+			  "max-speed": 65535,
+			  "packed-data": 578,
+			  "refit-cargo": 254,
+			  "travel-time": 0,
+			  "wait-time": 0
+			},
+			{
+			  "destination-id": 0,
+			  "max-speed": 65535,
+			  "packed-data": 578,
+			  "refit-cargo": 254,
+			  "travel-time": 0,
+			  "wait-time": 0
+			}
+		  ]
+		}
+	)"); break;
+
+					//case 2: ShowSaveLoadDialog(FT_ORDERLIST, SLO_SAVE); break;
+					//case 3: ShowSaveLoadDialog(FT_ORDERLIST, SLO_LOAD); break;
 					default: NOT_REACHED();
 				}
 				break;
