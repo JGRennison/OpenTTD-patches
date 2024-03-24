@@ -271,6 +271,10 @@ public:
 	void MakeChangeCounter();
 	void MakeLabel(OrderLabelSubType subtype);
 
+	std::string ToJSONString() const;
+	static Order FromJSONString(std::string);
+
+
 	/**
 	 * Is this a 'goto' order with a real destination?
 	 * @return True if the type is either #OT_GOTO_WAYPOINT, #OT_GOTO_DEPOT or #OT_GOTO_STATION.
@@ -848,6 +852,7 @@ public:
 	inline std::vector<DispatchSlot> &GetScheduledDispatchMutable() { return this->scheduled_dispatch; }
 
 	void SetScheduledDispatch(std::vector<DispatchSlot> dispatch_list);
+
 	void AddScheduledDispatch(uint32_t offset);
 	void RemoveScheduledDispatch(uint32_t offset);
 	void AdjustScheduledDispatch(int32_t adjust);
@@ -924,6 +929,20 @@ public:
 	 */
 	inline int32_t GetScheduledDispatchDelay() const { return this->scheduled_dispatch_max_delay; }
 
+	/**
+	 * Get the scheduled dispatch flags
+	 * @return flags
+	 */
+	inline int8_t GetScheduledDispatchFlags() const {return this->scheduled_dispatch_flags; }
+
+	/**
+	 * Set the scheduled disaptch flags
+	 * @param flags
+	 */
+	inline void SetScheduledDispatchFlags(int8_t flags) { this->scheduled_dispatch_flags = flags; }
+
+
+	inline void BorrowSchedule(DispatchSchedule &other)
 	inline PositionBackup BackupPosition() const
 	{
 		return PositionBackup{ this->scheduled_dispatch_start_tick, this->scheduled_dispatch_last_dispatch };
@@ -1155,6 +1174,9 @@ public:
 	void InsertOrderAt(Order &&new_order, VehicleOrderID index);
 	void DeleteOrderAt(VehicleOrderID index);
 	void MoveOrder(VehicleOrderID from, VehicleOrderID to);
+
+	std::string ToJSONString();
+	static OrderList FromJSONString(std::string);
 
 	/**
 	 * Is this a shared order list?
