@@ -272,8 +272,7 @@ public:
 	void MakeLabel(OrderLabelSubType subtype);
 
 	std::string ToJSONString() const;
-	static Order FromJSONString(std::string);
-
+	static void FromJSONString(const Vehicle * vehicle,std::string jsonSTR);
 
 	/**
 	 * Is this a 'goto' order with a real destination?
@@ -1176,7 +1175,7 @@ public:
 	void MoveOrder(VehicleOrderID from, VehicleOrderID to);
 
 	std::string ToJSONString();
-	static OrderList FromJSONString(std::string);
+	static void FromJSONString(const Vehicle* v,std::string str);
 
 	/**
 	 * Is this a shared order list?
