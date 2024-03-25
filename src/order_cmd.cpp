@@ -277,6 +277,9 @@ std::string Order::ToJSONString() const
 	json["packed-data"] = this->Pack();
 
 	json["destination-id"] = this->GetDestination();
+	Station * station = Station::GetIfValid(this->GetDestination());
+	if(station != nullptr)
+		json["destination-name"] = station->cached_name;
 
 	if(this->extra.get() != nullptr){
 		auto& extraJson = json["extra"];
@@ -298,11 +301,29 @@ std::string Order::ToJSONString() const
 	return out;
 }
 
-Order Order::FromJSONString(std::string)
+void Order::FromJSONString(const Vehicle * v,std::string jsonSTR)
 {
+
+	/*
+		this->type    = (OrderType)GB(packed,  0,  8); //done
+		this->flags   = GB(packed,  8,  16); // done
+		this->dest    = GB(packed, 24, 16); // done
+		this->extra   = nullptr; //masive pain ?????? 
+		this->next    = nullptr;
+		this->refit_cargo   = CARGO_NO_REFIT;
+		this->occupancy     = 0;
+		this->wait_time     = 0;
+		this->travel_time   = 0;
+		this->max_speed     = UINT16_MAX;
+	*/
+	//hell
+	nlohmann::json json = nlohmann::json::parse(jsonSTR);
+
+	uint64_t order_pack = json.at("packed-data").get<uint64_t>();
+	uint64_t extra = json.at("packed-data").get<uint64_t>();
+
+	DoCommandPEx(v->tile, v->index, 0, order_pack, CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER), nullptr, nullptr, 0);
 	
-	Order newOrder;
-	return newOrder;
 }
 
 /**
@@ -893,21 +914,41 @@ std::string OrderList::ToJSONString()
 			json["orders"][i++] = nlohmann::json::parse(o->ToJSONString());
 		} while ((o = this->GetNext(o)) != this->GetFirstOrder());
 	}
-
-	std::cout << json.dump();
+	
+	std::cout << std::setw(4)<< json.dump() << "\n";
 	return json.dump();
 
 }
 
-OrderList OrderList::FromJSONString(std::string json_str)
+void OrderList::FromJSONString(const Vehicle * v,std::string json_str)
 {
-	OrderList list;
 	nlohmann::json json = nlohmann::json::parse(json_str);
 
-	if (json.contains("head")){
-		auto &headJson = json.at("head");
+	//plan... painful plan
+	CMD_DELETE_ORDER; //for all existing orders
+	CMD_INSERT_ORDER; //for each order new 
+
+	CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE;
+	CMD_SCHEDULED_DISPATCH_ADD;
+	CMD_SCHEDULED_DISPATCH_RENAME_SCHEDULE;
+
+	if (json.contains("orders")) {
+		auto &ordersJson = json["orders"];
+		if (ordersJson.is_array()) {
+			for (nlohmann::json::iterator it = ordersJson.begin(); it != ordersJson.end(); ++it) {
+				auto &orderJson = it.value();
+				Order::FromJSONString(v,orderJson.dump());
+
+
+			}
+
+		}
+	}
+
+	if (json.contains("orders") && json.contains("head")){
+		auto &headJson = json["head"];
 		if (headJson.contains("scheduled-dispatch")) {
-			auto &SDJson = headJson.at("scheduled-dispatch");
+			auto &SDJson = headJson["scheduled-dispatch"];
 			if (SDJson.is_array()) {
 				for (nlohmann::json::iterator it = SDJson.begin(); it != SDJson.end(); ++it) {
 					if (it.value().contains("slots")) {
@@ -934,8 +975,6 @@ OrderList OrderList::FromJSONString(std::string json_str)
 						dispatchSchedule.SetScheduledDispatchDelay(it.value().at("max-delay").template get<uint32_t>());
 						dispatchSchedule.SetScheduledDispatchFlags(it.value().at("flags").template get<uint8_t>());
 
-						list.dispatch_schedules.push_back(dispatchSchedule);
-
 					}
 				}
 			}
@@ -943,12 +982,8 @@ OrderList OrderList::FromJSONString(std::string json_str)
 
 	}
 
-	if (json.contains("orders")) {
 
-		/*Where do orders get allocated?*/
-	}
 
-	return list;
 }
 
 /**

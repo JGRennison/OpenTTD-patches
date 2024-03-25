@@ -518,13 +518,13 @@ void FiosGetSavegameList(SaveLoadOperation fop, bool show_dirs, FileList &file_l
 FiosType FiosGetOrderlistListCallback(SaveLoadOperation fop, const std::string &file, const char *ext, char *title, const char *last)
 {
 	/* Show orderlist files
-	 * .XML orderlist files
+	 * .json orderlist files
 	 */
 
 	/* Don't crash if we supply no extension */
 	if (ext == nullptr) ext = "";
 
-	if (StrEqualsIgnoreCase(ext, ".xml")) {
+	if (StrEqualsIgnoreCase(ext, ".json")) {
 		GetFileTitle(file, title, last, SAVE_DIR);
 		return FIOS_TYPE_ORDERLIST;
 	}
