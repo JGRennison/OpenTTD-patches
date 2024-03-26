@@ -353,8 +353,6 @@ enum Commands {
 	CMD_WANT_ENGINE_PREVIEW,          ///< confirm the preview of an engine
 	CMD_ENGINE_CTRL,                  ///< control availability of the engine for companies
 
-	CMD_SET_VEHICLE_UNIT_NUMBER,      ///< sets the unit number of a vehicle
-
 	CMD_RENAME_VEHICLE,               ///< rename a whole vehicle
 	CMD_RENAME_ENGINE,                ///< rename a engine (in the engine list)
 	CMD_RENAME_COMPANY,               ///< change the company name

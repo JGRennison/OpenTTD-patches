@@ -1786,30 +1786,6 @@ CommandCost CmdSendVehicleToDepot(TileIndex tile, DoCommandFlag flags, uint32_t 
 }
 
 /**
- * Sets the vehicle unit number
- * @param tile unused
- * @param flags type of operation
- * @param p1 vehicle ID to set number on
- * @param p2 vehicle unit number
- * @param text unused
- * @return the cost of this operation or an error
- */
-CommandCost CmdSetVehicleUnitNumber(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
-{
-	Vehicle *v = Vehicle::GetIfValid(p1);
-	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
-
-	CommandCost ret = CheckOwnership(v->owner);
-	if (ret.Failed()) return ret;
-
-	if (flags & DC_EXEC) {
-		v->unitnumber = (UnitID)p2;
-	}
-
-	return CommandCost();
-}
-
-/**
  * Give a custom name to your vehicle
  * @param tile unused
  * @param flags type of operation
