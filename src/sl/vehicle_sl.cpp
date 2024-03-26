@@ -572,7 +572,11 @@ void AfterLoadVehicles(bool part_of_load)
 		}
 
 		if (part_of_load && v->unitnumber != 0) {
-			Company::Get(v->owner)->freeunits[v->type].UseID(v->unitnumber);
+			if (v->IsPrimaryVehicle()) {
+				Company::Get(v->owner)->freeunits[v->type].UseID(v->unitnumber);
+			} else {
+				v->unitnumber = 0;
+			}
 		}
 
 		v->UpdateDeltaXY();
