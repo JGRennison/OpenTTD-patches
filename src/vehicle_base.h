@@ -907,6 +907,8 @@ public:
 
 	void ResetRefitCaps();
 
+	void ReleaseUnitNumber();
+
 	/**
 	 * Copy certain configurations and statistics of a vehicle after successful autoreplace/renew
 	 * The function shall copy everything that cannot be copied by a command (like orders / group etc),
@@ -917,6 +919,7 @@ public:
 	{
 		this->CopyConsistPropertiesFrom(src);
 
+		this->ReleaseUnitNumber();
 		this->unitnumber = src->unitnumber;
 
 		this->current_order = src->current_order;

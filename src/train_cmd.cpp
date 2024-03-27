@@ -2225,8 +2225,7 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 			}
 			/* Remove stuff not valid anymore for non-front engines. */
 			DeleteVehicleOrders(src);
-			Company::Get(src->owner)->freeunits[src->type].ReleaseID(src->unitnumber);
-			src->unitnumber = 0;
+			src->ReleaseUnitNumber();
 			if (!_settings_game.vehicle.non_leading_engines_keep_name) {
 				src->name.clear();
 			}

@@ -3710,6 +3710,17 @@ void Vehicle::ResetRefitCaps()
 	for (Vehicle *v = this; v != nullptr; v = v->Next()) v->refit_cap = v->cargo_cap;
 }
 
+/**
+ * Release the vehicle's unit number.
+ */
+void Vehicle::ReleaseUnitNumber()
+{
+	if (this->unitnumber != 0) {
+		Company::Get(this->owner)->freeunits[this->type].ReleaseID(this->unitnumber);
+		this->unitnumber = 0;
+	}
+}
+
 static bool ShouldVehicleContinueWaiting(Vehicle *v)
 {
 	if (v->GetNumOrders() < 1) return false;
