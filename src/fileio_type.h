@@ -36,7 +36,7 @@ enum DetailedFileType {
 	DFT_HEIGHTMAP_PNG, ///< PNG file.
 
 	/* Orderlist files */
-	DFT_ORDERLIST, ///< XML file.
+	DFT_ORDERLIST, ///< JSON file.
 
 	/* fios 'files' */
 	DFT_FIOS_DRIVE,  ///< A drive (letter) entry.
@@ -116,6 +116,7 @@ enum Subdirectory {
 	AUTOSAVE_DIR,  ///< Subdirectory of save for autosaves
 	SCENARIO_DIR,  ///< Base directory for all scenarios
 	HEIGHTMAP_DIR, ///< Subdirectory of scenario for heightmaps
+	ORDERLIST_DIR, ///< Subdirectort for all orderlists
 	OLD_GM_DIR,    ///< Old subdirectory for the music
 	OLD_DATA_DIR,  ///< Old subdirectory for the data.
 	BASESET_DIR,   ///< Subdirectory for all base data (base sets, intro game)

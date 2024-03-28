@@ -281,7 +281,10 @@ static constexpr NWidgetPart _nested_save_orderlist_dialog_widgets[] = {
 			EndContainer(),
 
 			/* Save button*/
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SL_SAVE_GAME),        SetDataTip(STR_SAVELOAD_SAVE_BUTTON, STR_SAVELOAD_SAVE_TOOLTIP),     SetFill(1, 0), SetResize(1, 0),
+			NWidget(NWID_HORIZONTAL),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SL_DELETE_SELECTION), SetDataTip(STR_SAVELOAD_DELETE_BUTTON, STR_SAVELOAD_DELETE_TOOLTIP), SetFill(1, 0), SetResize(1, 0),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SL_SAVE_GAME),        SetDataTip(STR_SAVELOAD_SAVE_BUTTON, STR_SAVELOAD_SAVE_TOOLTIP),     SetFill(1, 0), SetResize(1, 0),
+			EndContainer(),
 
 		EndContainer(),
 	EndContainer(),
@@ -495,6 +498,10 @@ public:
 
 			case FT_HEIGHTMAP:
 				o_dir.name = FioFindDirectory(HEIGHTMAP_DIR);
+				break;
+
+			case FT_ORDERLIST:
+				o_dir.name = FioFindDirectory(ORDERLIST_DIR);
 				break;
 
 			default:
@@ -909,7 +916,7 @@ public:
 		if (this->fop != SLO_SAVE) return;
 
 		if (this->IsWidgetLowered(WID_SL_DELETE_SELECTION)) { // Delete button clicked
-			if (!FiosDelete(this->filename_editbox.text.buf)) {
+			if (!FiosDelete(this->filename_editbox.text.buf, this->abstract_filetype)) {
 				ShowErrorMessage(STR_ERROR_UNABLE_TO_DELETE_FILE, INVALID_STRING_ID, WL_ERROR);
 			} else {
 				this->InvalidateData(SLIWD_RESCAN_FILES);

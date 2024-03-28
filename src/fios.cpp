@@ -259,9 +259,23 @@ std::string FiosMakeHeightmapName(const char *name)
  * @param name Filename to delete.
  * @return Whether the file deletion was successful.
  */
-bool FiosDelete(const char *name)
+bool FiosDelete(const char *name,AbstractFileType ft)
 {
-	std::string filename = FiosMakeSavegameName(name);
+	std::string filename;
+
+	switch (ft) {
+		case FT_SAVEGAME:
+		case FT_SCENARIO:
+			filename = FiosMakeSavegameName(name);
+			break;
+		case FT_ORDERLIST:
+			filename = FiosMakeOrderListName(name);
+			break;
+		default:
+			NOT_REACHED();
+			break;
+	}
+	
 	return unlink(filename.c_str()) == 0;
 }
 
@@ -530,7 +544,7 @@ FiosType FiosGetOrderlistListCallback(SaveLoadOperation fop, const std::string &
 	if (ext == nullptr) ext = "";
 
 	if (StrEqualsIgnoreCase(ext, ".json")) {
-		GetFileTitle(file, title, last, SAVE_DIR);
+		GetFileTitle(file, title, last, ORDERLIST_DIR);
 		return FIOS_TYPE_ORDERLIST;
 	}
 
@@ -548,7 +562,7 @@ void FiosGetOrderlistList(SaveLoadOperation fop, bool show_dirs, FileList &file_
 {
 	static std::optional<std::string> fios_save_path;
 
-	if (!fios_save_path) fios_save_path = FioFindDirectory(SAVE_DIR);
+	if (!fios_save_path) fios_save_path = FioFindDirectory(ORDERLIST_DIR);
 
 	_fios_path = &(*fios_save_path);
 

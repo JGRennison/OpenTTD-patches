@@ -63,7 +63,7 @@ bool FiosBrowseTo(const FiosItem *item);
 
 std::string FiosGetCurrentPath();
 std::optional<uint64_t> FiosGetDiskFreeSpace(const std::string &path);
-bool FiosDelete(const char *name);
+bool FiosDelete(const char *name, AbstractFileType file_type);
 std::string FiosMakeHeightmapName(const char *name);
 std::string FiosMakeSavegameName(const char *name);
 std::string FiosMakeOrderListName(const char *name);
