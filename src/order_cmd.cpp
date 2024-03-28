@@ -931,19 +931,7 @@ std::string OrderList::ToJSONString()
 	auto& headJson = json["head"];
 	for (unsigned int i = 0; auto &SD : SD_data) {
 
-		auto &SDJson = headJson["scheduled-dispatch"][i++];
- 
-		for (unsigned int i = 0; auto &SD_slot : SD.GetScheduledDispatch()) {
-			auto& slotsJson = SDJson["slots"][i++];
-			slotsJson["offset"] = SD_slot.offset;
-			slotsJson["flags"] = SD_slot.flags;
-		}
-		
-		SDJson["name"] = SD.ScheduleName();
-		SDJson["start-tick"] = SD.GetScheduledDispatchStartTick().value;
-		SDJson["duration"] = SD.GetScheduledDispatchDuration();
-		SDJson["max-delay"] = SD.GetScheduledDispatchDelay();
-		SDJson["flags"] = SD.GetScheduledDispatchFlags();
+		headJson["scheduled-dispatch"][i++] = nlohmann::json::parse(SD.ToJSONString());
 
 	}
 
@@ -985,52 +973,23 @@ void OrderList::FromJSONString(const Vehicle * v,std::string json_str)
 		if (ordersJson.is_array()) {
 			for (nlohmann::json::iterator it = ordersJson.begin(); it != ordersJson.end(); ++it) {
 				auto &orderJson = it.value();
-				Order new_order = Order::FromJSONString(orderJson.dump());
 				OrderID new_orderID = v->GetNumOrders();
 				DoCommandPEx(v->tile, v->index, new_orderID, 0, CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER), nullptr, orderJson.dump().c_str(), nullptr, 0);
 			}
 		}
 	}
 
-	if (json.contains("orders") && json.contains("head")){
+	if (json.contains("head")){
 		auto &headJson = json["head"];
 		if (headJson.contains("scheduled-dispatch")) {
 			auto &SDJson = headJson["scheduled-dispatch"];
 			if (SDJson.is_array()) {
 				for (nlohmann::json::iterator it = SDJson.begin(); it != SDJson.end(); ++it) {
-					if (it.value().contains("slots")) {
-
-						auto &slotsJson = it.value().at("slots");;
-						DispatchSchedule dispatchSchedule;
-
-						if (slotsJson.is_array()) {
-							for (nlohmann::json::iterator it = slotsJson.begin(); it != slotsJson.end(); ++it) {
-
-								DispatchSlot newDispatchSlot;
-
-								newDispatchSlot.offset = it.value().at("offset").template get<uint32_t>();
-								newDispatchSlot.flags = it.value().at("flags").template get<uint16_t>();
-
-								dispatchSchedule.GetScheduledDispatchMutable().push_back(newDispatchSlot);
-
-							}
-						}
-
-						dispatchSchedule.ScheduleName() = it.value().at("name").template get<std::string>();
-						dispatchSchedule.SetScheduledDispatchStartTick(it.value().at("start-tick").template get<uint32_t>());
-						dispatchSchedule.SetScheduledDispatchDuration(it.value().at("duration").template get<uint32_t>());
-						dispatchSchedule.SetScheduledDispatchDelay(it.value().at("max-delay").template get<uint32_t>());
-						dispatchSchedule.SetScheduledDispatchFlags(it.value().at("flags").template get<uint8_t>());
-
-					}
+					DoCommandPEx(0, v->index, 0, 0, CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE), nullptr, it.value().dump().c_str() , 0);
 				}
 			}
 		}
-
 	}
-
-
-
 }
 
 /**

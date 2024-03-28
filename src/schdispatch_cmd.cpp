@@ -20,6 +20,7 @@
 #include "settings_type.h"
 #include "schdispatch.h"
 #include "vehicle_gui.h"
+#include <3rdparty/nlohmann/json.hpp>
 
 #include <algorithm>
 
@@ -357,15 +358,15 @@ CommandCost CmdScheduledDispatchClear(TileIndex tile, DoCommandFlag flags, uint3
  * @param p1 Vehicle index
  * @param p2 Duration, in scaled tick
  * @param p3 Start tick
- * @param text unused
+ * @param text optional JSON string
  * @return the cost of this operation or an error
  */
-CommandCost CmdScheduledDispatchAddNewSchedule(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdScheduledDispatchAddNewSchedule(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *scheduleJson, const CommandAuxiliaryBase *aux_data)
 {
 	VehicleID veh = GB(p1, 0, 20);
 
 	Vehicle *v = Vehicle::GetIfValid(veh);
-	if (v == nullptr || !v->IsPrimaryVehicle() || p2 == 0) return CMD_ERROR;
+	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
@@ -376,10 +377,19 @@ CommandCost CmdScheduledDispatchAddNewSchedule(TileIndex tile, DoCommandFlag fla
 	if (flags & DC_EXEC) {
 		v->orders->GetScheduledDispatchScheduleSet().emplace_back();
 		DispatchSchedule &ds = v->orders->GetScheduledDispatchScheduleSet().back();
-		ds.SetScheduledDispatchDuration(p2);
-		ds.SetScheduledDispatchStartTick((StateTicks)p3);
-		ds.UpdateScheduledDispatch(nullptr);
-		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
+		if (scheduleJson == nullptr) {
+			if (p2 == 0) return CMD_ERROR;
+			ds.SetScheduledDispatchDuration(p2);
+			ds.SetScheduledDispatchStartTick((StateTicks)p3);
+			ds.UpdateScheduledDispatch(nullptr);
+			SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
+		} else {
+
+			DispatchSchedule new_ds = DispatchSchedule::FromJSONString(scheduleJson);
+			ds.BorrowSchedule(new_ds);
+
+		}
+
 	}
 
 	return CommandCost();
@@ -800,4 +810,57 @@ void DispatchSchedule::UpdateScheduledDispatch(const Vehicle *v)
 	if (this->UpdateScheduledDispatchToDate(_state_ticks) && v != nullptr) {
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 	}
+}
+
+DispatchSchedule DispatchSchedule::FromJSONString(std::string jsonString)
+{
+	nlohmann::json json = nlohmann::json::parse(jsonString);
+
+	DispatchSchedule new_schedule;
+
+	if (json.contains("slots")) {
+
+		auto &slotsJson = json.at("slots");
+
+		if (slotsJson.is_array()) {
+			for (nlohmann::json::iterator it = slotsJson.begin(); it != slotsJson.end(); ++it) {
+
+				DispatchSlot newDispatchSlot;
+
+				newDispatchSlot.offset = it.value().at("offset").template get<uint32_t>();
+				newDispatchSlot.flags = it.value().at("flags").template get<uint16_t>();
+
+				new_schedule.GetScheduledDispatchMutable().push_back(newDispatchSlot);
+
+			}
+		}
+	}
+	
+	new_schedule.ScheduleName() = json.at("name").get<std::string>();
+	new_schedule.SetScheduledDispatchStartTick(json.at("start-tick").get<uint32_t>());
+	new_schedule.SetScheduledDispatchDuration(json.at("duration").get<uint32_t>());
+	new_schedule.SetScheduledDispatchDelay(json.at("max-delay").get<uint32_t>());
+	new_schedule.SetScheduledDispatchFlags(json.at("flags").get<uint8_t>());
+	
+	return new_schedule;
+}
+
+std::string DispatchSchedule::ToJSONString()
+{
+
+	nlohmann::json json;
+
+	for (unsigned int i = 0; auto & SD_slot : this->GetScheduledDispatch()) {
+		auto &slotsJson = json["slots"][i++];
+		slotsJson["offset"] = SD_slot.offset;
+		slotsJson["flags"] = SD_slot.flags;
+	}
+
+	json["name"] = this->ScheduleName();
+	json["start-tick"] = this->GetScheduledDispatchStartTick().value;
+	json["duration"] = this->GetScheduledDispatchDuration();
+	json["max-delay"] = this->GetScheduledDispatchDelay();
+	json["flags"] = this->GetScheduledDispatchFlags();
+
+	return json.dump();
 }
