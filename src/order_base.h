@@ -1005,12 +1005,16 @@ public:
 	OrderIterator<T> begin() { return OrderIterator<T>(this->begin_ptr); }
 	OrderIterator<T> end() { return OrderIterator<T>(this->end_ptr); }
 	bool empty() { return this->begin_ptr == this->end_ptr; }
+
+	static DispatchSchedule FromJSONString(std::string jsonString);
+	std::string ToJSONString();
 };
 
 /**
  * Shared order list linking together the linked list of orders and the list
  *  of vehicles sharing this order list.
  */
+
 struct OrderList : OrderListPool::PoolItem<&_orderlist_pool> {
 private:
 	friend void AfterLoadVehiclesPhase1(bool part_of_load); ///< For instantiating the shared vehicle chain
