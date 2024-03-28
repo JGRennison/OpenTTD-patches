@@ -40,11 +40,12 @@
 #include "tracerestrict.h"
 #include "train.h"
 #include "date_func.h"
+#include "3rdparty/nlohmann/json.hpp"
 
 #include "table/strings.h"
 
 #include "3rdparty/robin_hood/robin_hood.h"
-
+#include <3rdparty/nlohmann/json.hpp>
 #include "safeguards.h"
 
 /* DestinationID must be at least as large as every these below, because it can
@@ -267,6 +268,62 @@ void Order::MakeLabel(OrderLabelSubType subtype)
 {
 	this->type = OT_LABEL;
 	this->flags = subtype;
+}
+
+std::string Order::ToJSONString() const
+{
+	std::string out;
+	nlohmann::json json;
+	json["packed-data"] = this->Pack();
+
+	json["destination-id"] = this->GetDestination();
+	Station * station = Station::GetIfValid(this->GetDestination());
+	if(station != nullptr)
+		json["destination-name"] = station->cached_name;
+
+	if(this->extra.get() != nullptr){
+		auto& extraJson = json["extra"];
+
+		extraJson["cargo-type-flags"] = this->extra.get()->cargo_type_flags;
+		extraJson["colour"] = this->extra.get()->colour;
+		extraJson["dispatch-index"] = this->extra.get()->dispatch_index;
+		extraJson["xdata"] = this->extra.get()->xdata;
+		extraJson["xdata2"] = this->extra.get()->xdata2;
+		extraJson["xflags"] = this->extra.get()->xflags;
+	}
+
+	json["refit-cargo"] = this->GetRefitCargo();
+	json["wait-time"] = this->GetWaitTime();
+	json["travel-time"] = this->GetTravelTime();
+	json["max-speed"] = this->GetMaxSpeed();
+
+	out = json.dump();
+	return out;
+}
+
+void Order::FromJSONString(const Vehicle * v,std::string jsonSTR)
+{
+
+	/*
+		this->type    = (OrderType)GB(packed,  0,  8); //done
+		this->flags   = GB(packed,  8,  16); // done
+		this->dest    = GB(packed, 24, 16); // done
+		this->extra   = nullptr; //masive pain ?????? 
+		this->next    = nullptr;
+		this->refit_cargo   = CARGO_NO_REFIT;
+		this->occupancy     = 0;
+		this->wait_time     = 0;
+		this->travel_time   = 0;
+		this->max_speed     = UINT16_MAX;
+	*/
+	//hell
+	nlohmann::json json = nlohmann::json::parse(jsonSTR);
+
+	uint64_t order_pack = json.at("packed-data").get<uint64_t>();
+	uint64_t extra = json.at("packed-data").get<uint64_t>();
+
+	DoCommandPEx(v->tile, v->index, 0, order_pack, CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER), nullptr, nullptr, 0);
+	
 }
 
 /**
@@ -822,6 +879,111 @@ void OrderList::MoveOrder(int from, int to)
 		one_before->next = moving_one;
 	}
 	this->ReindexOrderList();
+}
+
+std::string OrderList::ToJSONString()
+{
+
+	nlohmann::json json;
+	auto& SD_data = this->GetScheduledDispatchScheduleSet();
+
+	auto& headJson = json["head"];
+	for (unsigned int i = 0; auto &SD : SD_data) {
+
+		auto &SDJson = headJson["scheduled-dispatch"][i++];
+ 
+		for (unsigned int i = 0; auto &SD_slot : SD.GetScheduledDispatch()) {
+			auto& slotsJson = SDJson["slots"][i++];
+			slotsJson["offset"] = SD_slot.offset;
+			slotsJson["flags"] = SD_slot.flags;
+		}
+		
+		SDJson["name"] = SD.ScheduleName();
+		SDJson["start-tick"] = SD.GetScheduledDispatchStartTick().value;
+		SDJson["duration"] = SD.GetScheduledDispatchDuration();
+		SDJson["max-delay"] = SD.GetScheduledDispatchDelay();
+		SDJson["flags"] = SD.GetScheduledDispatchFlags();
+
+	}
+
+	const Order* o = this->GetFirstOrder();
+
+	if (o != nullptr) {
+		int i = 0;
+		do {
+			json["orders"][i++] = nlohmann::json::parse(o->ToJSONString());
+		} while ((o = this->GetNext(o)) != this->GetFirstOrder());
+	}
+	
+	std::cout << std::setw(4)<< json.dump() << "\n";
+	return json.dump();
+
+}
+
+void OrderList::FromJSONString(const Vehicle * v,std::string json_str)
+{
+	nlohmann::json json = nlohmann::json::parse(json_str);
+
+	//plan... painful plan
+	CMD_DELETE_ORDER; //for all existing orders
+	CMD_INSERT_ORDER; //for each order new 
+
+	CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE;
+	CMD_SCHEDULED_DISPATCH_ADD;
+	CMD_SCHEDULED_DISPATCH_RENAME_SCHEDULE;
+
+	if (json.contains("orders")) {
+		auto &ordersJson = json["orders"];
+		if (ordersJson.is_array()) {
+			for (nlohmann::json::iterator it = ordersJson.begin(); it != ordersJson.end(); ++it) {
+				auto &orderJson = it.value();
+				Order::FromJSONString(v,orderJson.dump());
+
+
+			}
+
+		}
+	}
+
+	if (json.contains("orders") && json.contains("head")){
+		auto &headJson = json["head"];
+		if (headJson.contains("scheduled-dispatch")) {
+			auto &SDJson = headJson["scheduled-dispatch"];
+			if (SDJson.is_array()) {
+				for (nlohmann::json::iterator it = SDJson.begin(); it != SDJson.end(); ++it) {
+					if (it.value().contains("slots")) {
+
+						auto &slotsJson = it.value().at("slots");;
+						DispatchSchedule dispatchSchedule;
+
+						if (slotsJson.is_array()) {
+							for (nlohmann::json::iterator it = slotsJson.begin(); it != slotsJson.end(); ++it) {
+
+								DispatchSlot newDispatchSlot;
+
+								newDispatchSlot.offset = it.value().at("offset").template get<uint32_t>();
+								newDispatchSlot.flags = it.value().at("flags").template get<uint16_t>();
+
+								dispatchSchedule.GetScheduledDispatchMutable().push_back(newDispatchSlot);
+
+							}
+						}
+
+						dispatchSchedule.ScheduleName() = it.value().at("name").template get<std::string>();
+						dispatchSchedule.SetScheduledDispatchStartTick(it.value().at("start-tick").template get<uint32_t>());
+						dispatchSchedule.SetScheduledDispatchDuration(it.value().at("duration").template get<uint32_t>());
+						dispatchSchedule.SetScheduledDispatchDelay(it.value().at("max-delay").template get<uint32_t>());
+						dispatchSchedule.SetScheduledDispatchFlags(it.value().at("flags").template get<uint8_t>());
+
+					}
+				}
+			}
+		}
+
+	}
+
+
+
 }
 
 /**
