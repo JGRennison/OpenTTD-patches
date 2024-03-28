@@ -29,6 +29,10 @@
 #include "gamelog.h"
 #include "stringfilter_type.h"
 #include "gamelog.h"
+#include "vehicle_base.h"
+#include <string>
+#include <fstream>
+#include <streambuf>
 
 #include "widgets/fios_widget.h"
 
@@ -370,6 +374,7 @@ struct SaveLoadWindow : public Window {
 private:
 	static const uint EDITBOX_MAX_SIZE   =  50;
 
+	const Vehicle*  veh;
 	QueryString filename_editbox; ///< Filename editbox.
 	AbstractFileType abstract_filetype; /// Type of file to select.
 	SaveLoadOperation fop;        ///< File operation to perform.
@@ -403,10 +408,12 @@ public:
 		this->filename_editbox.text.Assign(GenerateDefaultSaveName());
 	}
 
-	SaveLoadWindow(WindowDesc *desc, AbstractFileType abstract_filetype, SaveLoadOperation fop)
+	SaveLoadWindow(WindowDesc *desc, AbstractFileType abstract_filetype, SaveLoadOperation fop,const Vehicle * veh = nullptr)
 			: Window(desc), filename_editbox(64), abstract_filetype(abstract_filetype), fop(fop), filter_editbox(EDITBOX_MAX_SIZE)
 	{
 		assert(this->fop == SLO_SAVE || this->fop == SLO_LOAD);
+
+		this->veh = veh;
 
 		/* For saving, construct an initial file name. */
 		if (this->fop == SLO_SAVE) {
@@ -748,9 +755,14 @@ public:
 					ShowHeightmapLoad();
 				}else if (this->abstract_filetype == FT_ORDERLIST) {
 
+					std::ifstream t(this->selected->name);
+					std::stringstream buffer;
+					buffer << t.rdbuf();
+
+					veh->orders->FromJSONString(veh, buffer.str());
+
 					this->Close();
-					FILE *dataFile = fopen(this->selected->name, "r");
-					
+
 				} else if (!_load_check_data.HasNewGrfs() || _load_check_data.grf_compatibility != GLC_NOT_FOUND || _settings_client.gui.UserIsAllowedToChangeNewGRFs()) {
 					_switch_mode = (_game_mode == GM_EDITOR) ? SM_LOAD_SCENARIO : SM_LOAD_GAME;
 					ClearErrorMessages();
@@ -846,6 +858,18 @@ public:
 			case WID_SL_SAVE_GAME: // Save game
 				/* Note, this is also called via the OSK; and we need to lower the button. */
 				this->HandleButtonClick(WID_SL_SAVE_GAME);
+
+				if (this->abstract_filetype == FT_ORDERLIST) {
+
+					std::string fileName = FiosMakeOrderListName(this->filename_editbox.text.buf);
+					std::ofstream output;
+					output.open(fileName);
+					output << this->veh->orders->ToJSONString();
+					output.close();
+
+					this->Close();
+				}
+
 				break;
 		}
 	}
@@ -1085,7 +1109,7 @@ static WindowDesc _save_orderlist_dialog_desc(__FILE__, __LINE__,
  * @param abstract_filetype Kind of file to handle.
  * @param fop File operation to perform (load or save).
  */
-void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop)
+void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop,const Vehicle * veh)
 {
 	CloseWindowById(WC_SAVELOAD, 0);
 
@@ -1105,5 +1129,5 @@ void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fo
 		sld = (abstract_filetype == FT_HEIGHTMAP) ? &_load_heightmap_dialog_desc : &_load_dialog_desc;
 	}
 
-	new SaveLoadWindow(sld, abstract_filetype, fop);
+	new SaveLoadWindow(sld, abstract_filetype, fop, veh);
 }

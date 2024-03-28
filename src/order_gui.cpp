@@ -1548,6 +1548,7 @@ private:
 	};
 
 	int selected_order;
+	VehicleID vehicle_id;
 	VehicleOrderID order_over;         ///< Order over which another order is dragged, \c INVALID_VEH_ORDER_ID if none.
 	OrderPlaceObjectState goto_type;
 	Scrollbar *vscroll;
@@ -3491,89 +3492,8 @@ public:
 				switch (index) {
 					case 0: this->OrderClick_ReverseOrderList(0); break;
 					case 1: this->OrderClick_ReverseOrderList(1); break;
-					case 2: this->vehicle->orders->ToJSONString(); break;
-					case 3: this->vehicle->orders->FromJSONString(this->vehicle, R"({
-  "head": {
-    "scheduled-dispatch": [
-      {
-        "duration": 106560,
-        "flags": 0,
-        "max-delay": 0,
-        "name": "alfredo",
-        "slots": [
-          {
-            "flags": 0,
-            "offset": 4514
-          },
-          {
-            "flags": 0,
-            "offset": 90280
-          }
-        ],
-        "start-tick": 16729920
-      }
-    ]
-  },
-  "orders": [
-    {
-      "destination-id": 2,
-      "destination-name": "Grateley Halt",
-      "max-speed": 65535,
-      "packed-data": 33554513,
-      "refit-cargo": 254,
-      "travel-time": 0,
-      "wait-time": 0
-    },
-    {
-      "destination-id": 3,
-      "destination-name": "Grateley Exchange",
-      "max-speed": 65535,
-      "packed-data": 50331729,
-      "refit-cargo": 254,
-      "travel-time": 0,
-      "wait-time": 0
-    },
-    {
-      "destination-id": 4,
-      "destination-name": "Grateley Annexe",
-      "max-speed": 65535,
-      "packed-data": 67108945,
-      "refit-cargo": 254,
-      "travel-time": 0,
-      "wait-time": 0
-    },
-    {
-      "destination-id": 3,
-      "destination-name": "Grateley Exchange",
-      "max-speed": 65535,
-      "packed-data": 50331729,
-      "refit-cargo": 254,
-      "travel-time": 0,
-      "wait-time": 0
-    },
-    {
-      "destination-id": 2,
-      "destination-name": "Grateley Halt",
-      "max-speed": 65535,
-      "packed-data": 33554513,
-      "refit-cargo": 254,
-      "travel-time": 0,
-      "wait-time": 0
-    },
-    {
-      "destination-id": 1,
-      "destination-name": "Grateley Transfer",
-      "max-speed": 65535,
-      "packed-data": 16777297,
-      "refit-cargo": 254,
-      "travel-time": 0,
-      "wait-time": 0
-    }
-  ]
-})"); break;
-
-					//case 2: ShowSaveLoadDialog(FT_ORDERLIST, SLO_SAVE); break;
-					//case 3: ShowSaveLoadDialog(FT_ORDERLIST, SLO_LOAD); break;
+					case 2: ShowSaveLoadDialog(FT_ORDERLIST, SLO_SAVE, this->GetVehicle()); break;
+					case 3: ShowSaveLoadDialog(FT_ORDERLIST, SLO_LOAD, this->GetVehicle()); break;
 					default: NOT_REACHED();
 				}
 				break;

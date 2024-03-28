@@ -15,6 +15,7 @@
 #include "newgrf_config.h"
 #include "network/core/tcp_content_type.h"
 #include <vector>
+#include <order_type.h>
 
 
 /** Special values for save-load window for the data parameter of #InvalidateWindowData. */
@@ -51,7 +52,7 @@ DECLARE_ENUM_AS_BIT_SET(SortingBits)
 /* Variables to display file lists */
 extern SortingBits _savegame_sort_order;
 
-void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop);
+void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop,const Vehicle * veh = nullptr);
 
 void FiosGetSavegameList(SaveLoadOperation fop, bool show_dirs, FileList &file_list);
 void FiosGetScenarioList(SaveLoadOperation fop, bool show_dirs, FileList &file_list);
@@ -65,6 +66,8 @@ std::optional<uint64_t> FiosGetDiskFreeSpace(const std::string &path);
 bool FiosDelete(const char *name);
 std::string FiosMakeHeightmapName(const char *name);
 std::string FiosMakeSavegameName(const char *name);
+std::string FiosMakeOrderListName(const char *name);
+
 
 FiosType FiosGetSavegameListCallback(SaveLoadOperation fop, const std::string &file, const char *ext, char *title, const char *last);
 FiosType FiosGetScenarioListCallback(SaveLoadOperation fop, const std::string &file, const char *ext, char *title, const char *last);

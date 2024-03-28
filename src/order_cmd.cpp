@@ -26,6 +26,7 @@
 #include "core/container_func.hpp"
 #include "core/pool_func.hpp"
 #include "core/random_func.hpp"
+#include "core/serialisation.hpp"
 #include "aircraft.h"
 #include "roadveh.h"
 #include "station_base.h"
@@ -41,12 +42,14 @@
 #include "train.h"
 #include "date_func.h"
 #include "3rdparty/nlohmann/json.hpp"
+#include "command_aux.h"
 
 #include "table/strings.h"
 
 #include "3rdparty/robin_hood/robin_hood.h"
 #include <3rdparty/nlohmann/json.hpp>
 #include "safeguards.h"
+#include <error.h>
 
 /* DestinationID must be at least as large as every these below, because it can
  * be any of them
@@ -301,29 +304,67 @@ std::string Order::ToJSONString() const
 	return out;
 }
 
-void Order::FromJSONString(const Vehicle * v,std::string jsonSTR)
+Order Order::FromJSONString(std::string jsonSTR)
 {
-
-	/*
-		this->type    = (OrderType)GB(packed,  0,  8); //done
-		this->flags   = GB(packed,  8,  16); // done
-		this->dest    = GB(packed, 24, 16); // done
-		this->extra   = nullptr; //masive pain ?????? 
-		this->next    = nullptr;
-		this->refit_cargo   = CARGO_NO_REFIT;
-		this->occupancy     = 0;
-		this->wait_time     = 0;
-		this->travel_time   = 0;
-		this->max_speed     = UINT16_MAX;
-	*/
-	//hell
 	nlohmann::json json = nlohmann::json::parse(jsonSTR);
 
-	uint64_t order_pack = json.at("packed-data").get<uint64_t>();
-	uint64_t extra = json.at("packed-data").get<uint64_t>();
+	if (!json.contains("packed-data") && json["packed_data"].is_number_integer()) {
 
-	DoCommandPEx(v->tile, v->index, 0, order_pack, CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER), nullptr, nullptr, 0);
+		Order errOrder;
+
+		errOrder.MakeLabel(OLST_TEXT);
+		errOrder.SetColour(COLOUR_RED);
+		errOrder.SetLabelText("JSON_ERR: JSON does not contain mandatory 'packed-data' field for this order");
+
+		return errOrder;
+	}
+
+	Order new_order = Order(json.at("packed-data").get<uint64_t>());
 	
+	if (json.contains("destination-id") && json["destination-id"].is_number_integer()) 
+		json["destination-id"].get_to(new_order.dest);
+		
+	
+
+	if (json.contains("extra") && json["extra"].is_object()) {
+		auto &extraJson = json["extra"];
+
+		new_order.AllocExtraInfo();
+
+		if (extraJson.contains("cargo-type-flags") && extraJson["cargo-type-flags"].is_array()) 
+			for (int i = 0; i < 64; i++) 
+				extraJson["cargo-type-flags"][i].get_to(new_order.extra->cargo_type_flags[i]);
+
+		if (extraJson.contains("colour"))
+			extraJson["colour"].get_to(new_order.extra->colour);
+
+		if (extraJson.contains("dispatch-index"))
+			 extraJson["dispatch-index"].get_to(new_order.extra->dispatch_index);
+
+		if (extraJson.contains("xdata"))
+			extraJson["xdata"].get_to(new_order.extra->xdata);
+
+		if (extraJson.contains("xdata2"))
+			 extraJson["xdata2"].get_to(new_order.extra->xdata2);
+
+		if (extraJson.contains("xflags"))
+			 extraJson["xflags"].get_to(new_order.extra->xflags);
+		
+	}
+
+	if (json.contains("refit-cargo"))
+		json["refit-cargo"].get_to(new_order.refit_cargo);
+
+	if (json.contains("wait-time"))
+		json["wait-time"].get_to(new_order.wait_time);
+
+	if (json.contains("travel-time"))
+		json["travel-time"].get_to(new_order.travel_time);
+
+	if (json.contains("max-speed"))
+		json["max-speed"].get_to(new_order.max_speed);
+
+	return new_order;
 }
 
 /**
@@ -915,33 +956,39 @@ std::string OrderList::ToJSONString()
 		} while ((o = this->GetNext(o)) != this->GetFirstOrder());
 	}
 	
-	std::cout << std::setw(4)<< json.dump() << "\n";
 	return json.dump();
 
 }
 
 void OrderList::FromJSONString(const Vehicle * v,std::string json_str)
 {
-	nlohmann::json json = nlohmann::json::parse(json_str);
 
-	//plan... painful plan
-	CMD_DELETE_ORDER; //for all existing orders
-	CMD_INSERT_ORDER; //for each order new 
+	Order errOrder;
 
-	CMD_SCHEDULED_DISPATCH_ADD_NEW_SCHEDULE;
-	CMD_SCHEDULED_DISPATCH_ADD;
-	CMD_SCHEDULED_DISPATCH_RENAME_SCHEDULE;
+	errOrder.MakeLabel(OLST_TEXT);
+	errOrder.SetColour(COLOUR_RED);
+
+	nlohmann::json json;
+	try {
+		json = nlohmann::json::parse(json_str);
+	} catch(nlohmann::json::parse_error e){
+
+		ShowErrorMessage(STR_ERROR_JON, STR_ERROR_ORDERLIST_MALFORMED_JSON,WL_ERROR);
+		return;
+	}
+
+	//delete all orders before setting the new orders
+	DoCommandP(v->tile, v->index, v->GetNumOrders(), CMD_DELETE_ORDER | CMD_MSG(STR_ERROR_CAN_T_DELETE_THIS_ORDER));
 
 	if (json.contains("orders")) {
 		auto &ordersJson = json["orders"];
 		if (ordersJson.is_array()) {
 			for (nlohmann::json::iterator it = ordersJson.begin(); it != ordersJson.end(); ++it) {
 				auto &orderJson = it.value();
-				Order::FromJSONString(v,orderJson.dump());
-
-
+				Order new_order = Order::FromJSONString(orderJson.dump());
+				OrderID new_orderID = v->GetNumOrders();
+				DoCommandPEx(v->tile, v->index, new_orderID, 0, CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER), nullptr, orderJson.dump().c_str(), nullptr, 0);
 			}
-
 		}
 	}
 
@@ -1179,16 +1226,19 @@ uint GetOrderDistance(const Order *prev, const Order *cur, const Vehicle *v, int
  *  - p2 = (bit 0 - 15) - the selected order (if any). If the last order is given,
  *                        the order will be inserted before that one
  * @param p3 packed order to insert
- * @param text unused
+ * @param orderJson is an optional field for an Order object encoded as JSON
  * @return the cost of this operation or an error
  */
-CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *orderJson, const CommandAuxiliaryBase *aux_data)
 {
-	VehicleID veh          = GB(p1,  0, 20);
-	VehicleOrderID sel_ord = GB(p2,  0, 16);
-	Order new_order(p3);
+	Order new_order = (orderJson != nullptr) ? Order::FromJSONString(orderJson) : Order(p3);
 
-	return CmdInsertOrderIntl(flags, Vehicle::GetIfValid(veh), sel_ord, new_order, false);
+	VehicleOrderID sel_ord = GB(p2, 0, 16);
+	VehicleID veh = GB(p1, 0, 20);
+
+	CommandCost ret = CmdInsertOrderIntl(flags, Vehicle::GetIfValid(veh), sel_ord, new_order, false);
+	
+	return ret;
 }
 
 /**

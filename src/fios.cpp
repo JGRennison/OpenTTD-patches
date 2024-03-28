@@ -229,6 +229,11 @@ static std::string FiosMakeFilename(const std::string *path, const char *name, c
  * @param last Last element of buffer \a buf.
  * @return The completed filename.
  */
+
+std::string FiosMakeOrderListName(const char *name)
+{
+	return FiosMakeFilename(_fios_path, name, ".json");
+}
 std::string FiosMakeSavegameName(const char *name)
 {
 	const char *extension = (_game_mode == GM_EDITOR) ? ".scn" : ".sav";
