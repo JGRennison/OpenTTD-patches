@@ -272,7 +272,7 @@ public:
 	void MakeLabel(OrderLabelSubType subtype);
 
 	std::string ToJSONString() const;
-	static void FromJSONString(const Vehicle * vehicle,std::string jsonSTR);
+	static Order FromJSONString(std::string jsonSTR);
 
 	/**
 	 * Is this a 'goto' order with a real destination?
