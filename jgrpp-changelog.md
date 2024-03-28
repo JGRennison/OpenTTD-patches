@@ -2,6 +2,31 @@
 
 * * *
 
+### v0.58.2 (2024-03-28)
+* Fix crash with some GRFs when the maximum sprite resolution setting was set to 2x.
+* Fix crash which could occur when clearing a crashed road vehicle from a drive-through road stop.
+* Fix crash when the autosave uses real time setting and the autosave interval were both disabled.
+* Fix crash which could occur after removing road from a one-way road/tram road stop.
+* Fix drawing of black text in some drop-down menus.
+* Fix incorrect handling of invalid or empty dispatch schedules in the departure board window.
+* Fix handling of missing last or next scheduled dispatch times.
+* Fix changes to the title game zoom level when changing the UI scale setting.
+* Fix vehicles leaving dots behind in viewport map mode in some cases.
+* Fix incorrect sprites being shown for some GRFs.
+* Fix crash in the engine preview window with certain GRFs.
+* Fix road vehicles not remaining loading as expected when the next order is for the same station.
+* Fix train unit numbers being incorrectly marked as in use after an autoreplace operation.
+* Allow manually removing/setting train speed restrictions from the vehicle details window.
+* Allow removing a vehicle from slots owned by the current company from the vehicle details window.
+* Show viewport route step markers for go via station orders using a different tag.
+* Add setting to show purchased land using clear tile ground sprites (dirt, grass, snow, desert, etc).
+* Add ctrl-click scroll-to for stations referenced by conditional orders.
+* Allow industry monthly production and transported totals to be greater than 64k.
+* Allow engine reliability increases but not decreases after the no vehicles expire after year setting is reached.
+* Remove setting to disable script parameter randomisation, because the feature has been removed.
+* Fix signature validation for social/presence plugins.
+* Bump trunk base from commit a602845d0a35331f1e012cd13ca921c6bc42b58d to commit 3e625b5b1a81b00f774ca87b48d3e4f4e9d014c3.
+
 ### v0.58.1 (2024-03-02)
 * Fix multiplayer desync after joining a server with the flood from edges setting enabled.
 * Fix timetabled waiting in depots.

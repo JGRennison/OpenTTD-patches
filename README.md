@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.58.1
+## JGR's Patchpack version 0.58.2
 
 This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
 
@@ -217,6 +217,7 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add map generation settings to control river/lake, rocky patch, and tropic zone generation.
 * Add generation of wide rivers.
 * Add settings to customise the size of town zones, and city zones.
+* Add setting to show purchased land using clear tile ground sprites (dirt, grass, snow, desert, etc).
 
 #### Construction
 
