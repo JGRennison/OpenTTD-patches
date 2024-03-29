@@ -97,7 +97,7 @@ inline CommandCost RemoveEngineReplacementForCompany(Company *c, EngineID engine
 
 bool CheckAutoreplaceValidity(EngineID from, EngineID to, CompanyID company);
 
-CommandCost CopyHeadSpecificThings(Vehicle*, Vehicle*, DoCommandFlag);
+CommandCost CopyHeadSpecificThings(Vehicle*, Vehicle*, DoCommandFlag, bool start_stop_check);
 
 bool AutoreplaceMultiPartShipWouldSucceed(EngineID e, const Vehicle *old_veh, CargoTypes all_cargoes);
 

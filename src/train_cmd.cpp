@@ -7446,7 +7446,7 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 
 		// If we bought a new engine or reused one from the depot, copy some parameters from the incoming primary engine
 		if (incoming != new_chain) {
-			CopyHeadSpecificThings(incoming, new_chain, flags);
+			CopyHeadSpecificThings(incoming, new_chain, flags, false);
 			NeutralizeStatus(incoming);
 
 			// additionally, if we don't want to use the template refit, refit as incoming

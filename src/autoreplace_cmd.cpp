@@ -557,8 +557,9 @@ static inline CommandCost CmdMoveVehicle(const Vehicle *v, const Vehicle *after,
  * @param old_head The old front vehicle (no wagons attached anymore)
  * @param new_head The new head of the completely replaced vehicle chain
  * @param flags the command flags to use
+ * @param start_stop_check whether to run the start-stop check
  */
-CommandCost CopyHeadSpecificThings(Vehicle *old_head, Vehicle *new_head, DoCommandFlag flags)
+CommandCost CopyHeadSpecificThings(Vehicle *old_head, Vehicle *new_head, DoCommandFlag flags, bool start_stop_check)
 {
 	CommandCost cost = CommandCost();
 
@@ -569,7 +570,7 @@ CommandCost CopyHeadSpecificThings(Vehicle *old_head, Vehicle *new_head, DoComma
 	if (cost.Succeeded() && old_head != new_head) cost.AddCost(DoCommand(0, old_head->group_id, new_head->index, DC_EXEC, CMD_ADD_VEHICLE_GROUP));
 
 	/* Perform start/stop check whether the new vehicle suits newgrf restrictions etc. */
-	if (cost.Succeeded()) {
+	if (start_stop_check && cost.Succeeded()) {
 		/* Start the vehicle, might be denied by certain things */
 		assert((new_head->vehstatus & VS_STOPPED) != 0);
 		cost.AddCost(CmdStartStopVehicle(new_head, true));
@@ -797,7 +798,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlag flags, bool wagon
 			}
 
 			/* The new vehicle chain is constructed, now take over orders and everything... */
-			if (cost.Succeeded()) cost.AddCost(CopyHeadSpecificThings(old_head, new_head, flags));
+			if (cost.Succeeded()) cost.AddCost(CopyHeadSpecificThings(old_head, new_head, flags, true));
 
 			if (cost.Succeeded()) {
 				/* Success ! */
@@ -864,7 +865,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlag flags, bool wagon
 			*nothing_to_do = false;
 
 			/* The new vehicle is constructed, now take over orders and everything... */
-			cost.AddCost(CopyHeadSpecificThings(old_head, new_head, flags));
+			cost.AddCost(CopyHeadSpecificThings(old_head, new_head, flags, true));
 
 			if (cost.Succeeded()) {
 				/* The new vehicle is constructed, now take over cargo */
