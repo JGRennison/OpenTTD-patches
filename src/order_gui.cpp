@@ -1619,7 +1619,7 @@ private:
 
 	bool InsertNewOrder(uint64_t order_pack)
 	{
-		return DoCommandPEx(this->vehicle->tile, this->vehicle->index, 0, order_pack, CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER), nullptr, nullptr, 0);
+		return DoCommandPEx(this->vehicle->tile, this->vehicle->index, this->OrderGetSel(), order_pack, CMD_INSERT_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER), nullptr, nullptr, 0);
 	}
 
 	bool ModifyOrder(VehicleOrderID sel_ord, uint32_t p2, bool error_msg = true, const char *text = nullptr)
