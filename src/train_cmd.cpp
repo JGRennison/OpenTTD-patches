@@ -7367,10 +7367,15 @@ CommandCost CmdTemplateReplaceVehicle(TileIndex tile, DoCommandFlag flags, uint3
 			if (!tv->IsSetKeepRemainingVehicles()) {
 				/* Sell leftovers */
 				for (const Train *u : in) {
-					buy.AddCost(DoCommand(u->tile, u->index, 0, flags, CMD_SELL_VEHICLE));
+					/* Do not dry-run selling each part using CMD_SELL_VEHICLE because this can fail due to consist/wagon-attachment callbacks */
+					buy.AddCost(-u->value);
+					if (u->other_multiheaded_part != nullptr) {
+						buy.AddCost(-u->other_multiheaded_part->value);
+					}
 				}
 			}
 		}
+		if (buy.Failed()) buy.MultiplyCost(0);
 		return buy;
 	}
 
