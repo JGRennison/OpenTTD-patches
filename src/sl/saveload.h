@@ -1075,6 +1075,7 @@ std::vector<SaveLoad> SlTableHeader(const NamedSaveLoadTable &slt);
 std::vector<SaveLoad> SlTableHeaderOrRiff(const NamedSaveLoadTable &slt);
 void SlSaveTableObjectChunk(const SaveLoadTable &slt);
 void SlLoadTableOrRiffFiltered(const SaveLoadTable &slt);
+void SlLoadTableWithArrayLengthPrefixesMissing();
 
 inline void SlSaveTableObjectChunk(const NamedSaveLoadTable &slt)
 {

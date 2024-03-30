@@ -104,6 +104,9 @@ static void Save_NGRF()
 
 static void Load_NGRF_common(GRFConfig *&grfconfig)
 {
+	if (SlXvIsFeaturePresent(XSLFI_TABLE_NEWGRF_SL, 1, 1)) {
+		SlLoadTableWithArrayLengthPrefixesMissing();
+	}
 	std::vector<SaveLoad> sld = SlTableHeaderOrRiff(_grfconfig_desc);
 	ClearGRFConfigList(&grfconfig);
 	while (SlIterateArray() != -1) {

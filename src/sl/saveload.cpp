@@ -230,11 +230,16 @@ size_t MemoryDumper::GetSize() const
 	return this->completed_block_bytes + (this->bufe ? (MEMORY_CHUNK_SIZE - (this->bufe - this->buf)) : 0);
 }
 
+enum SaveLoadBlockFlags {
+	SLBF_TABLE_ARRAY_LENGTH_PREFIX_MISSING, ///< Table chunk arrays were incorrectly saved without the length prefix, skip reading the length prefix on load
+};
+
 /** The saveload struct, containing reader-writer functions, buffer, version, etc. */
 struct SaveLoadParams {
 	SaveLoadAction action;               ///< are we doing a save or a load atm.
 	NeedLength need_length;              ///< working in NeedLength (Autolength) mode?
 	byte block_mode;                     ///< ???
+	uint8_t block_flags;                 ///< block flags: SaveLoadBlockFlags
 	bool error;                          ///< did an error occur or not
 
 	size_t obj_len;                      ///< the length of the current object we are busy with
@@ -1308,6 +1313,36 @@ void SlArray(void *array, size_t length, VarType conv)
 {
 	if (_sl.action == SLA_PTRS || _sl.action == SLA_NULL) return;
 
+	if (SlIsTableChunk()) {
+		assert(_sl.need_length == NL_NONE);
+
+		switch (_sl.action) {
+			case SLA_SAVE:
+				SlWriteArrayLength(length);
+				break;
+
+			case SLA_LOAD_CHECK:
+			case SLA_LOAD: {
+				if (!HasBit(_sl.block_flags, SLBF_TABLE_ARRAY_LENGTH_PREFIX_MISSING)) {
+					size_t sv_length = SlReadArrayLength();
+					if (GetVarMemType(conv) == SLE_VAR_NULL) {
+						/* We don't know this field, so we assume the length in the savegame is correct. */
+						length = sv_length;
+					} else if (sv_length != length) {
+						/* If the SLE_ARR changes size, a savegame bump is required
+						 * and the developer should have written conversion lines.
+						 * Error out to make this more visible. */
+						SlErrorCorrupt("Fixed-length array is of wrong length");
+					}
+				}
+				break;
+			}
+
+			default:
+				break;
+		}
+	}
+
 	/* Automatically calculate the length? */
 	if (_sl.need_length != NL_NONE) {
 		SlSetLength(SlCalcArrayLen(length, conv));
@@ -2286,6 +2321,11 @@ void SlLoadTableOrRiffFiltered(const SaveLoadTable &slt)
 	}
 }
 
+void SlLoadTableWithArrayLengthPrefixesMissing()
+{
+	SetBit(_sl.block_flags, SLBF_TABLE_ARRAY_LENGTH_PREFIX_MISSING);
+}
+
 /**
  * Save or Load (a list of) global variables.
  * @param slt The SaveLoad table with objects to save/load.
@@ -2428,6 +2468,7 @@ static void SlLoadChunk(const ChunkHandler &ch)
 	size_t endoffs;
 
 	_sl.block_mode = m;
+	_sl.block_flags = 0;
 	_sl.obj_len = 0;
 
 	SaveLoadChunkExtHeaderFlags ext_flags = static_cast<SaveLoadChunkExtHeaderFlags>(0);
@@ -2514,6 +2555,7 @@ static void SlLoadCheckChunk(const ChunkHandler *ch, uint32_t chunk_id)
 	size_t endoffs;
 
 	_sl.block_mode = m;
+	_sl.block_flags = 0;
 	_sl.obj_len = 0;
 
 	SaveLoadChunkExtHeaderFlags ext_flags = static_cast<SaveLoadChunkExtHeaderFlags>(0);
@@ -2637,6 +2679,7 @@ static void SlSaveChunk(const ChunkHandler &ch)
 	if (_debug_sl_level >= 3) written = SlGetBytesWritten();
 
 	_sl.block_mode = ch.type;
+	_sl.block_flags = 0;
 	_sl.expect_table_header = (_sl.block_mode == CH_TABLE || _sl.block_mode == CH_SPARSE_TABLE);
 	_sl.need_length = (_sl.expect_table_header || _sl.block_mode == CH_RIFF) ? NL_WANTLENGTH : NL_NONE;
 

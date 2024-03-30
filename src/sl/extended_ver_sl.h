@@ -168,6 +168,7 @@ enum SlXvFeatureIndex {
 	                                              ///<     v2: SUBS, CMDL, CMPU, ERNW, DEPT, CAPY, ECMY, EIDS, ENGN, GOAL, GRPS, RAIL, OBJS, SIGN, PSAC, STPE, STPA
 	XSLFI_TABLE_SCRIPT_SL,                        ///< Use upstream table format for script chunks
 	XSLFI_TABLE_NEWGRF_SL,                        ///< Use upstream table format for NewGRF/ID mapping chunks
+	                                              ///<     In v1, NGRF chunks were saved incorrectly: see SLBF_TABLE_ARRAY_LENGTH_PREFIX_MISSING
 	XSLFI_TABLE_INDUSTRY_SL,                      ///< Use upstream table format for industry chunks: IBLD, ITBL
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
