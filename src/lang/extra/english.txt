@@ -1502,11 +1502,11 @@ STR_VEHICLE_LIST_TIMETABLE_DELAY_ON_TIME                        :{STRING2}, Time
 STR_VEHICLE_LIST_ORDER_OCCUPANCY_AVERAGE                        :{STRING2}, Average order occupancy: {COMMA}%
 
 STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING2} (lifetime: {CURRENCY_LONG})
-STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE                           :Cancel Servicing/Send to
-STR_VEHICLE_LIST_SEND_TRAIN_TO_DEPOT_SELL                       :Send to Depot and sell
-STR_VEHICLE_LIST_SEND_ROAD_VEHICLE_TO_DEPOT_SELL                :Send to Depot and sell
-STR_VEHICLE_LIST_SEND_SHIP_TO_DEPOT_SELL                        :Send to Depot and sell
-STR_VEHICLE_LIST_SEND_AIRCRAFT_TO_HANGAR_SELL                   :Send to Hangar and sell
+STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE                           :Cancel servicing/send to
+STR_VEHICLE_LIST_SEND_TRAIN_TO_DEPOT_SELL                       :Send to depot and sell
+STR_VEHICLE_LIST_SEND_ROAD_VEHICLE_TO_DEPOT_SELL                :Send to depot and sell
+STR_VEHICLE_LIST_SEND_SHIP_TO_DEPOT_SELL                        :Send to depot and sell
+STR_VEHICLE_LIST_SEND_AIRCRAFT_TO_HANGAR_SELL                   :Send to hangar and sell
 
 STR_VEHICLE_LIST_CHANGE_ORDER_STATION                           :Move order to another station
 STR_VEHICLE_LIST_CHANGE_ORDER_WAYPOINT                          :Move order to another waypoint
@@ -2007,7 +2007,7 @@ STR_STATION_RATING_TOOLTIP_AIRCRAFT                             :Aircraft
 STR_STATION_RATING_TOOLTIP_INVALID                              :N/A
 
 STR_TMPL_RPL_TITLE                                              :{WHITE}Template Replacement
-STR_TMPL_TEMPLATE_REPLACEMENT                                   :Template Replacement
+STR_TMPL_TEMPLATE_REPLACEMENT                                   :Template replacement
 STR_TMPL_TRAINS_IN_GROUP                                        :{BLACK}Trains in group
 STR_TMPL_AVAILABLE_TEMPLATES                                    :{BLACK}Available Templates
 STR_TMPL_DEFINE_TEMPLATE                                        :{BLACK}New
