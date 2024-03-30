@@ -263,7 +263,7 @@ bool SlXvIsFeaturePresent(const std::array<uint16_t, XSLFI_SIZE> &feature_versio
 }
 
 /**
- * Returns true if @p feature is present and has a version inclusively bounded by @p min_version and @p max_version
+ * Returns the feature name for the given feature index
  */
 const char *SlXvGetFeatureName(SlXvFeatureIndex feature)
 {
