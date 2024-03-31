@@ -1501,7 +1501,7 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 			case WID_GRAPH_FOOTER_CUSTOM:
 				if (_cargo_payment_x_mode) {
 					SetDParam(0, STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED);
-					SetDParam(1, STR_UNIT_NAME_VELOCITY_IMPERIAL + _settings_game.locale.units_velocity);
+					SetDParam(1, GetVelocityUnitName(VEH_TRAIN));
 				} else {
 					if (_settings_time.time_in_minutes) {
 						SetDParam(0, STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_MINUTES);

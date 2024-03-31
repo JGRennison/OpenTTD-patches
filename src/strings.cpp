@@ -858,6 +858,31 @@ static const Units _units_time_years_or_minutes[] = {
 	{ { 12 }, STR_UNITS_MINUTES, 0 },
 };
 
+StringID GetVelocityUnitName(VehicleType type)
+{
+	uint8_t setting = (type == VEH_SHIP || type == VEH_AIRCRAFT) ? _settings_game.locale.units_velocity_nautical : _settings_game.locale.units_velocity;
+
+	assert(setting < lengthof(_units_velocity_calendar));
+	assert(setting < lengthof(_units_velocity_realtime));
+	static_assert(lengthof(_units_velocity_calendar) == 5 && lengthof(_units_velocity_realtime) == 5);
+
+	switch (setting) {
+		case 0:
+		case 1:
+		case 2:
+			return STR_UNIT_NAME_VELOCITY_IMPERIAL + setting;
+
+		case 3:
+			return EconTime::UsingWallclockUnits() ? STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK : STR_UNIT_NAME_VELOCITY_GAMEUNITS;
+
+		case 4:
+			return STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_KNOTS;
+
+		default:
+			NOT_REACHED();
+	}
+}
+
 /**
  * Get the correct velocity units depending on the vehicle type and whether we're using real-time units.
  * @param type VehicleType to convert velocity for.

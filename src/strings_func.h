@@ -71,6 +71,8 @@ uint32_t GetStringGRFID(StringID string);
 uint ConvertKmhishSpeedToDisplaySpeed(uint speed, VehicleType type);
 uint ConvertDisplaySpeedToKmhishSpeed(uint speed, VehicleType type);
 
+StringID GetVelocityUnitName(VehicleType type);
+
 /**
  * Pack velocity and vehicle type for use with SCC_VELOCITY string parameter.
  * @param speed Display speed for parameter.
