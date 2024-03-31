@@ -44,6 +44,7 @@ STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
 STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :cadros/día
+STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK                      :cadros/seg
 
 STR_BUTTON_RENAME                                               :{BLACK}Renomear
 

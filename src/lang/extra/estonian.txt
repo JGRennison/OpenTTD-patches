@@ -2,6 +2,7 @@ STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :miili tunnis
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
 STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :ruutu/päev
+STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK                      :ruutu/sek
 
 STR_BUTTON_RENAME                                               :{BLACK}Nimevahetus
 

@@ -2,6 +2,7 @@ STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
 STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :casillas/día
+STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK                      :casillas/seg.
 
 STR_BUTTON_RENAME                                               :{BLACK}Renombrar
 

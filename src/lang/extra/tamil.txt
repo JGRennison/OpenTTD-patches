@@ -1,6 +1,8 @@
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
+STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :வட்டங்கள்/நாள்
+STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK                      :வட்டங்கள்/வினாடி
 
 STR_VEHICLE_TYPE_TRAINS                                         :இரயில்வண்டிகள்
 STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :சாலை வாகனங்கள்

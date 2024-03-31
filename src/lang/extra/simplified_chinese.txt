@@ -44,6 +44,7 @@ STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :英里/小时
 STR_UNIT_NAME_VELOCITY_METRIC                                   :千米/小时
 STR_UNIT_NAME_VELOCITY_SI                                       :米/秒
 STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :格/天
+STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK                      :格/秒
 
 STR_BUTTON_RENAME                                               :{BLACK}重命名
 

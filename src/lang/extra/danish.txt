@@ -1,6 +1,8 @@
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :miles/t
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
+STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :fliser/dag
+STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK                      :fliser/sek.
 
 STR_BUTTON_RENAME                                               :{BLACK}Omdøb
 

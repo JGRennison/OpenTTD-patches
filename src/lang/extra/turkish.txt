@@ -1,6 +1,8 @@
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mil/s
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
+STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :karo/gün
+STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK                      :karo/sn
 
 STR_BUTTON_RENAME                                               :{BLACK}Yeni ad
 

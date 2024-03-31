@@ -2,6 +2,7 @@ STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
 STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :cases/jour
+STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK                      :cases/s
 
 STR_BUTTON_RENAME                                               :{BLACK}Renommer
 

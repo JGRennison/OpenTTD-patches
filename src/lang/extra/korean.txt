@@ -44,6 +44,7 @@ STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
 STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :칸/일
+STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK                      :칸/초
 
 STR_UNITS_SECONDS_SHORT                                         :{COMMA}초
 

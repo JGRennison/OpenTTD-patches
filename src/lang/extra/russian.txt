@@ -1,7 +1,8 @@
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :миль/ч
 STR_UNIT_NAME_VELOCITY_METRIC                                   :км/ч
 STR_UNIT_NAME_VELOCITY_SI                                       :м/с
-STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :клетки в день
+STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :клеток/день
+STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK                      :клеток/сек.
 
 STR_BUTTON_RENAME                                               :{BLACK}Переименовать
 

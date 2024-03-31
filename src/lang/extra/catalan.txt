@@ -1,7 +1,8 @@
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :cel·les/dia
+STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :caselles/dia
+STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK                      :caselles/segon
 
 STR_BUTTON_RENAME                                               :{BLACK}Canvia el nom
 

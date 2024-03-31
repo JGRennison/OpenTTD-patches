@@ -1,6 +1,8 @@
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :міль/г
 STR_UNIT_NAME_VELOCITY_METRIC                                   :км/г
 STR_UNIT_NAME_VELOCITY_SI                                       :м/с
+STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :клетак/дзень
+STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK                      :клетак/сек.
 
 STR_BUTTON_RENAME                                               :{BLACK}Перайменаваць
 

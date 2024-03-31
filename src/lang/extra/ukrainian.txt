@@ -2,6 +2,7 @@ STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :миль/год
 STR_UNIT_NAME_VELOCITY_METRIC                                   :км/год
 STR_UNIT_NAME_VELOCITY_SI                                       :м/с
 STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :клітинок/день
+STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK                      :клітинок/секунду
 
 STR_BUTTON_RENAME                                               :{BLACK}Назва
 

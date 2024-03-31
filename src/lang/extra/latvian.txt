@@ -1,7 +1,8 @@
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :jūdzes stundā
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :lauciņi/diena
+STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :rūtiņas/dienā
+STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK                      :rūtiņas/sek.
 
 STR_BUTTON_RENAME                                               :{BLACK}Pārdēvēt
 

@@ -82,6 +82,7 @@ STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
 STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :tiles/day
+STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK                      :tiles/sec
 
 STR_UNITS_SECONDS_SHORT                                         :{COMMA}{NBSP}s
 

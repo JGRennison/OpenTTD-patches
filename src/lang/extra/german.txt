@@ -39,7 +39,8 @@ STR_RIVERS_EXTREMELY_MANY                                       :{RED}Extrem vie
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :Kacheln/Tag
+STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :Felder/Tag
+STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK                      :Felder/Sekunde
 
 STR_BUTTON_RENAME                                               :{BLACK}Umbenennen
 

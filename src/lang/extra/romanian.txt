@@ -1,7 +1,8 @@
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
-STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :dale/zi
+STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :pătrățele/zi
+STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK                      :pătrățele/secunda
 
 STR_BUTTON_RENAME                                               :{BLACK}Nume nou
 

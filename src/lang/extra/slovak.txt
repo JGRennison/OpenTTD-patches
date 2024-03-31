@@ -2,6 +2,7 @@ STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s
 STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :políčka/deň
+STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK                      :políčka/sekunda
 
 STR_BUTTON_RENAME                                               :{BLACK}Premenovať
 
