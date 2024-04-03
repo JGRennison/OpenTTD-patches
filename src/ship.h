@@ -64,6 +64,7 @@ struct Ship final : public SpecializedVehicle<Ship, VEH_SHIP> {
 	void OnPeriodic() override;
 	Trackdir GetVehicleTrackdir() const override;
 	TileIndex GetOrderStationLocation(StationID station) override;
+	TileIndex GetCargoTile() const override { return this->First()->tile; }
 	ClosestDepot FindClosestDepot() override;
 	void UpdateCache();
 	void SetDestTile(TileIndex tile) override;
