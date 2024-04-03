@@ -114,6 +114,7 @@ struct Aircraft final : public SpecializedVehicle<Aircraft, VEH_AIRCRAFT> {
 	void OnPeriodic() override;
 	uint Crash(bool flooded = false) override;
 	TileIndex GetOrderStationLocation(StationID station) override;
+	TileIndex GetCargoTile() const override { return this->First()->tile; }
 	ClosestDepot FindClosestDepot() override;
 
 	/**
