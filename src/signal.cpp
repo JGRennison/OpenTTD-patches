@@ -70,17 +70,17 @@ static const TrackdirBits _enterdir_to_trackdirbits[DIAGDIR_END] = {
 
 SignalType NextSignalType(SignalType cur, SignalCycleGroups which_signals)
 {
-	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
-		switch (cur) {
-			case SIGTYPE_PBS:        return SIGTYPE_PBS_ONEWAY;
-			case SIGTYPE_PBS_ONEWAY: return SIGTYPE_BLOCK;
-			default:                 return SIGTYPE_PBS;
-		}
-	}
-
 	if (which_signals == SCG_CURRENT_GROUP) which_signals = IsPbsSignal(cur) ? SCG_PBS : SCG_BLOCK;
 	bool pbs   = which_signals & SCG_PBS;
 	bool block = which_signals & SCG_BLOCK;
+
+	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+		switch (cur) {
+			case SIGTYPE_PBS:        return SIGTYPE_PBS_ONEWAY;
+			case SIGTYPE_PBS_ONEWAY: return block ? SIGTYPE_BLOCK : SIGTYPE_PBS;
+			default:                 return SIGTYPE_PBS;
+		}
+	}
 
 	switch(cur) {
 		case SIGTYPE_BLOCK:      return block ? SIGTYPE_ENTRY      : SIGTYPE_PBS;

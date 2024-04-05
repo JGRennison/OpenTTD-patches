@@ -284,13 +284,13 @@ static void GenericPlaceSignals(TileIndex tile)
 
 	/* Which signals should we cycle through? */
 	SignalCycleGroups cycle_types;
-	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+	if (_settings_client.gui.cycle_signal_types == SIGNAL_CYCLE_PATH) {
+		cycle_types = SCG_PBS;
+	} else if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
 		cycle_types = SCG_BLOCK | SCG_PBS;
 	} else if (_settings_client.gui.cycle_signal_types == SIGNAL_CYCLE_ALL) {
 		cycle_types = SCG_PBS;
 		if (_settings_client.gui.signal_gui_mode == SIGNAL_GUI_ALL) cycle_types |= SCG_BLOCK;
-	} else if (_settings_client.gui.cycle_signal_types == SIGNAL_CYCLE_PATH) {
-		cycle_types = SCG_PBS;
 	} else {
 		cycle_types = SCG_CURRENT_GROUP;
 	}
