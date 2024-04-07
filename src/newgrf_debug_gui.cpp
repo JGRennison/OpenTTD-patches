@@ -23,6 +23,7 @@
 #include "zoom_func.h"
 #include "scope.h"
 #include "debug_settings.h"
+#include "viewport_func.h"
 
 #include "engine_base.h"
 #include "industry.h"
@@ -1580,6 +1581,9 @@ struct SpriteAlignerWindow : Window {
 			case WID_SA_DOWN:
 			case WID_SA_LEFT:
 			case WID_SA_RIGHT: {
+				/* Make sure that there are no concurrent draw jobs executing */
+				ViewportDoDrawProcessAllPending();
+
 				/*
 				 * Yes... this is a hack.
 				 *
@@ -1593,19 +1597,21 @@ struct SpriteAlignerWindow : Window {
 				 * used by someone and the sprite cache isn't big enough for that
 				 * particular NewGRF developer.
 				 */
-				Sprite *spr = const_cast<Sprite *>(GetSprite(this->current_sprite, SpriteType::Normal, 0));
+				Sprite *spr = const_cast<Sprite *>(GetSprite(this->current_sprite, SpriteType::Normal, UINT8_MAX));
 
 				/* Remember the original offsets of the current sprite, if not already in mapping. */
 				if (this->offs_start_map.count(this->current_sprite) == 0) {
 					this->offs_start_map[this->current_sprite] = XyOffs(spr->x_offs, spr->y_offs);
 				}
 				int amt = ScaleByZoom(_ctrl_pressed ? 8 : 1, SpriteAlignerWindow::zoom);
-				switch (widget) {
-					/* Move eight units at a time if ctrl is pressed. */
-					case WID_SA_UP:    spr->y_offs -= amt; break;
-					case WID_SA_DOWN:  spr->y_offs += amt; break;
-					case WID_SA_LEFT:  spr->x_offs -= amt; break;
-					case WID_SA_RIGHT: spr->x_offs += amt; break;
+				for (Sprite *s = spr; s != nullptr; s = s->next) {
+					switch (widget) {
+						/* Move eight units at a time if ctrl is pressed. */
+						case WID_SA_UP:    s->y_offs -= amt; break;
+						case WID_SA_DOWN:  s->y_offs += amt; break;
+						case WID_SA_LEFT:  s->x_offs -= amt; break;
+						case WID_SA_RIGHT: s->x_offs += amt; break;
+					}
 				}
 				/* Of course, we need to redraw the sprite, but where is it used?
 				 * Everywhere is a safe bet. */
