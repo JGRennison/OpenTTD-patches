@@ -172,11 +172,11 @@ enum CargoSuffixInOut {
 template <typename TC, typename TS>
 static inline void GetAllCargoSuffixes(CargoSuffixInOut use_input, CargoSuffixType cst, const Industry *ind, IndustryType ind_type, const IndustrySpec *indspec, const TC &cargoes, TS &suffixes)
 {
-	static_assert(lengthof(cargoes) <= lengthof(suffixes));
+	static_assert(std::tuple_size_v<std::remove_reference_t<decltype(cargoes)>> <= std::tuple_size_v<std::remove_reference_t<decltype(suffixes)>>);
 
 	if (indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED) {
 		/* Reworked behaviour with new many-in-many-out scheme */
-		for (uint j = 0; j < lengthof(suffixes); j++) {
+		for (size_t j = 0; j < std::size(suffixes); j++) {
 			if (cargoes[j] != INVALID_CARGO) {
 				byte local_id = indspec->grf_prop.grffile->cargo_map[cargoes[j]]; // should we check the value for valid?
 				uint cargotype = local_id << 16 | use_input;
@@ -188,7 +188,7 @@ static inline void GetAllCargoSuffixes(CargoSuffixInOut use_input, CargoSuffixTy
 		}
 	} else {
 		/* Compatible behaviour with old 3-in-2-out scheme */
-		for (uint j = 0; j < lengthof(suffixes); j++) {
+		for (size_t j = 0; j < std::size(suffixes); j++) {
 			suffixes[j].text[0] = '\0';
 			suffixes[j].display = CSD_CARGO;
 		}
@@ -444,11 +444,11 @@ public:
 				Dimension d = {0, 0};
 				for (const auto &indtype : this->list) {
 					const IndustrySpec *indsp = GetIndustrySpec(indtype);
-					CargoSuffix cargo_suffix[lengthof(indsp->accepts_cargo)];
+					std::array<CargoSuffix, std::tuple_size_v<decltype(indsp->accepts_cargo)>> cargo_suffix{};
 
 					/* Measure the accepted cargoes, if any. */
 					GetAllCargoSuffixes(CARGOSUFFIX_IN, CST_FUND, nullptr, indtype, indsp, indsp->accepts_cargo, cargo_suffix);
-					std::string cargostring = this->MakeCargoListString(indsp->accepts_cargo.data(), cargo_suffix, indsp->accepts_cargo.size(), STR_INDUSTRY_VIEW_REQUIRES_N_CARGO);
+					std::string cargostring = this->MakeCargoListString(indsp->accepts_cargo.data(), cargo_suffix.data(), indsp->accepts_cargo.size(), STR_INDUSTRY_VIEW_REQUIRES_N_CARGO);
 					Dimension strdim = GetStringBoundingBox(cargostring);
 					if (strdim.width > max_minwidth) {
 						extra_lines_req = std::max(extra_lines_req, strdim.width / max_minwidth + 1);
@@ -458,7 +458,7 @@ public:
 
 					/* Measure the produced cargoes, if any. */
 					GetAllCargoSuffixes(CARGOSUFFIX_OUT, CST_FUND, nullptr, indtype, indsp, indsp->produced_cargo, cargo_suffix);
-					cargostring = this->MakeCargoListString(indsp->produced_cargo.data(), cargo_suffix, indsp->produced_cargo.size(), STR_INDUSTRY_VIEW_PRODUCES_N_CARGO);
+					cargostring = this->MakeCargoListString(indsp->produced_cargo.data(), cargo_suffix.data(), indsp->produced_cargo.size(), STR_INDUSTRY_VIEW_PRODUCES_N_CARGO);
 					strdim = GetStringBoundingBox(cargostring);
 					if (strdim.width > max_minwidth) {
 						extra_lines_prd = std::max(extra_lines_prd, strdim.width / max_minwidth + 1);
@@ -560,16 +560,16 @@ public:
 					ir.top += GetCharacterHeight(FS_NORMAL);
 				}
 
-				CargoSuffix cargo_suffix[lengthof(indsp->accepts_cargo)];
+				std::array<CargoSuffix, std::tuple_size_v<decltype(indsp->accepts_cargo)>> cargo_suffix{};
 
 				/* Draw the accepted cargoes, if any. Otherwise, will print "Nothing". */
 				GetAllCargoSuffixes(CARGOSUFFIX_IN, CST_FUND, nullptr, this->selected_type, indsp, indsp->accepts_cargo, cargo_suffix);
-				std::string cargostring = this->MakeCargoListString(indsp->accepts_cargo.data(), cargo_suffix, indsp->accepts_cargo.size(), STR_INDUSTRY_VIEW_REQUIRES_N_CARGO);
+				std::string cargostring = this->MakeCargoListString(indsp->accepts_cargo.data(), cargo_suffix.data(), indsp->accepts_cargo.size(), STR_INDUSTRY_VIEW_REQUIRES_N_CARGO);
 				ir.top = DrawStringMultiLine(ir, cargostring);
 
 				/* Draw the produced cargoes, if any. Otherwise, will print "Nothing". */
 				GetAllCargoSuffixes(CARGOSUFFIX_OUT, CST_FUND, nullptr, this->selected_type, indsp, indsp->produced_cargo, cargo_suffix);
-				cargostring = this->MakeCargoListString(indsp->produced_cargo.data(), cargo_suffix, indsp->produced_cargo.size(), STR_INDUSTRY_VIEW_PRODUCES_N_CARGO);
+				cargostring = this->MakeCargoListString(indsp->produced_cargo.data(), cargo_suffix.data(), indsp->produced_cargo.size(), STR_INDUSTRY_VIEW_PRODUCES_N_CARGO);
 				ir.top = DrawStringMultiLine(ir, cargostring);
 
 				/* Get the additional purchase info text, if it has not already been queried. */
@@ -804,7 +804,7 @@ static inline bool IsProductionAlterable(const Industry *i)
 {
 	const IndustrySpec *is = GetIndustrySpec(i->type);
 	bool has_prod = false;
-	for (size_t j = 0; j < lengthof(is->production_rate); j++) {
+	for (size_t j = 0; j < std::size(is->production_rate); j++) {
 		if (is->production_rate[j] != 0) {
 			has_prod = true;
 			break;
@@ -907,13 +907,13 @@ public:
 			ir.top += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_wide;
 		}
 
-		CargoSuffix cargo_suffix[lengthof(i->accepts_cargo)];
+		std::array<CargoSuffix, std::tuple_size_v<decltype(i->accepts_cargo)>> cargo_suffix{};
 		GetAllCargoSuffixes(CARGOSUFFIX_IN, CST_VIEW, i, i->type, ind, i->accepts_cargo, cargo_suffix);
 
 		const int label_indent = WidgetDimensions::scaled.hsep_normal + this->cargo_icon_size.width;
 		bool stockpiling = HasBit(ind->callback_mask, CBM_IND_PRODUCTION_CARGO_ARRIVAL) || HasBit(ind->callback_mask, CBM_IND_PRODUCTION_256_TICKS);
 
-		for (byte j = 0; j < lengthof(i->accepts_cargo); j++) {
+		for (size_t j = 0; j < std::size(i->accepts_cargo); j++) {
 			if (i->accepts_cargo[j] == INVALID_CARGO) continue;
 			has_accept = true;
 			if (first) {
@@ -956,7 +956,7 @@ public:
 		int text_y_offset = (line_height - GetCharacterHeight(FS_NORMAL)) / 2;
 		int button_y_offset = (line_height - SETTING_BUTTON_HEIGHT) / 2;
 		first = true;
-		for (byte j = 0; j < lengthof(i->produced_cargo); j++) {
+		for (size_t j = 0; j < std::size(i->produced_cargo); j++) {
 			if (i->produced_cargo[j] == INVALID_CARGO) continue;
 			if (first) {
 				if (has_accept) ir.top += WidgetDimensions::scaled.vsep_wide;
@@ -1054,7 +1054,7 @@ public:
 					case EA_RATE:
 						if (pt.y >= this->production_offset_y) {
 							int row = (pt.y - this->production_offset_y) / this->cheat_line_height;
-							for (uint j = 0; j < lengthof(i->produced_cargo); j++) {
+							for (size_t j = 0; j < std::size(i->produced_cargo); j++) {
 								if (i->produced_cargo[j] == INVALID_CARGO) continue;
 								row--;
 								if (row < 0) {
@@ -1213,7 +1213,7 @@ static void UpdateIndustryProduction(Industry *i)
 	const IndustrySpec *indspec = GetIndustrySpec(i->type);
 	if (indspec->UsesOriginalEconomy()) i->RecomputeProductionMultipliers();
 
-	for (byte j = 0; j < lengthof(i->produced_cargo); j++) {
+	for (size_t j = 0; j < std::size(i->produced_cargo); j++) {
 		if (i->produced_cargo[j] != INVALID_CARGO) {
 			i->last_month_production[j] = _industry_cargo_scaler.Scale(8 * i->production_rate[j]);
 		}
@@ -1488,7 +1488,7 @@ protected:
 	 */
 	static inline int GetCargoTransportedPercentsIfValid(const Industry *i, uint id)
 	{
-		assert(id < lengthof(i->produced_cargo));
+		assert((size_t)id < std::size(i->produced_cargo));
 
 		if (i->produced_cargo[id] == INVALID_CARGO) return -1;
 		return ToPercent8(i->last_month_pct_transported[id]);
@@ -1507,14 +1507,14 @@ protected:
 		if (filter == CargoFilterCriteria::CF_NONE) return 0;
 
 		int percentage = 0, produced_cargo_count = 0;
-		for (uint id = 0; id < lengthof(i->produced_cargo); id++) {
+		for (size_t id = 0; id < std::size(i->produced_cargo); id++) {
 			if (filter == CargoFilterCriteria::CF_ANY) {
 				int transported = GetCargoTransportedPercentsIfValid(i, id);
 				if (transported != -1) {
 					produced_cargo_count++;
 					percentage += transported;
 				}
-				if (produced_cargo_count == 0 && id == lengthof(i->produced_cargo) - 1 && percentage == 0) {
+				if (produced_cargo_count == 0 && id == std::size(i->produced_cargo) - 1 && percentage == 0) {
 					return transported;
 				}
 			} else if (filter == i->produced_cargo[id]) {
@@ -1551,7 +1551,7 @@ protected:
 		if (filter == CargoFilterCriteria::CF_NONE) return IndustryTypeSorter(a, b, filter);
 
 		uint prod_a = 0, prod_b = 0;
-		for (uint i = 0; i < lengthof(a->produced_cargo); i++) {
+		for (size_t i = 0; i < std::size(a->produced_cargo); i++) {
 			if (filter == CargoFilterCriteria::CF_ANY) {
 				if (a->produced_cargo[i] != INVALID_CARGO) prod_a += a->last_month_production[i];
 				if (b->produced_cargo[i] != INVALID_CARGO) prod_b += b->last_month_production[i];
@@ -1585,7 +1585,7 @@ protected:
 		/* Industry name */
 		SetDParam(p++, i->index);
 
-		static CargoSuffix cargo_suffix[lengthof(i->produced_cargo)];
+		std::array<CargoSuffix, std::tuple_size_v<decltype(i->produced_cargo)>> cargo_suffix{};
 		GetAllCargoSuffixes(CARGOSUFFIX_OUT, CST_DIR, i, i->type, indsp, i->produced_cargo, cargo_suffix);
 
 		/* Get industry productions (CargoID, production, suffix, transported) */
@@ -1597,7 +1597,7 @@ protected:
 		};
 		std::vector<CargoInfo> cargos;
 
-		for (byte j = 0; j < lengthof(i->produced_cargo); j++) {
+		for (size_t j = 0; j < std::size(i->produced_cargo); j++) {
 			if (i->produced_cargo[j] == INVALID_CARGO) continue;
 			cargos.push_back({ i->produced_cargo[j], i->last_month_production[j], cargo_suffix[j].text.c_str(), ToPercent8(i->last_month_pct_transported[j]) });
 		}
@@ -2471,7 +2471,7 @@ struct CargoesRow {
 			int other_count = 0;
 
 			const IndustrySpec *indsp = GetIndustrySpec(ind_fld->u.industry.ind_type);
-			assert(CargoesField::max_cargoes <= lengthof(indsp->produced_cargo));
+			assert(CargoesField::max_cargoes <= std::size(indsp->produced_cargo));
 			for (uint i = 0; i < CargoesField::max_cargoes; i++) {
 				int col = cargo_fld->ConnectCargo(indsp->produced_cargo[i], true);
 				if (col < 0) others[other_count++] = indsp->produced_cargo[i];
@@ -2530,7 +2530,7 @@ struct CargoesRow {
 			int other_count = 0;
 
 			const IndustrySpec *indsp = GetIndustrySpec(ind_fld->u.industry.ind_type);
-			assert(CargoesField::max_cargoes <= lengthof(indsp->accepts_cargo));
+			assert(CargoesField::max_cargoes <= std::size(indsp->accepts_cargo));
 			for (uint i = 0; i < CargoesField::max_cargoes; i++) {
 				int col = cargo_fld->ConnectCargo(indsp->accepts_cargo[i], false);
 				if (col < 0) others[other_count++] = indsp->accepts_cargo[i];
@@ -2547,7 +2547,7 @@ struct CargoesRow {
 					HouseSpec *hs = HouseSpec::Get(h);
 					if (!hs->enabled) continue;
 
-					for (uint j = 0; j < lengthof(hs->accepts_cargo); j++) {
+					for (size_t j = 0; j < std::size(hs->accepts_cargo); j++) {
 						if (hs->cargo_acceptance[j] > 0 && cargo_fld->u.cargo.vertical_cargoes[i] == hs->accepts_cargo[j]) {
 							cargo_fld->ConnectCargo(cargo_fld->u.cargo.vertical_cargoes[i], false);
 							goto next_cargo;
@@ -2769,7 +2769,7 @@ struct IndustryCargoesWindow : public Window {
 				HouseSpec *hs = HouseSpec::Get(h);
 				if (!hs->enabled || !(hs->building_availability & climate_mask)) continue;
 
-				for (uint j = 0; j < lengthof(hs->accepts_cargo); j++) {
+				for (size_t j = 0; j < std::size(hs->accepts_cargo); j++) {
 					if (hs->cargo_acceptance[j] > 0 && cargoes[i] == hs->accepts_cargo[j]) return true;
 				}
 			}
@@ -3341,9 +3341,9 @@ void ShowIndustryTooltip(Window *w, const TileIndex tile)
 	}
 
 	if (_settings_client.gui.industry_tooltip_show_required || _settings_client.gui.industry_tooltip_show_stockpiled) {
-		const size_t accepted_cargo_count = lengthof(industry->accepts_cargo);
+		const size_t accepted_cargo_count = std::size(industry->accepts_cargo);
 
-		CargoSuffix suffixes[accepted_cargo_count];
+		std::array<CargoSuffix, std::tuple_size_v<decltype(industry->accepts_cargo)>> suffixes{};
 		GetAllCargoSuffixes(CARGOSUFFIX_IN, CST_VIEW, industry, industry->type, industry_spec, industry->accepts_cargo, suffixes);
 
 		// Have to query the stockpiling right now, in case callback 37 returns fail.
@@ -3411,9 +3411,9 @@ void ShowIndustryTooltip(Window *w, const TileIndex tile)
 	}
 
 	if (_settings_client.gui.industry_tooltip_show_produced) {
-		const size_t produced_cargo_count = lengthof(industry->produced_cargo);
+		const size_t produced_cargo_count = std::size(industry->produced_cargo);
 
-		CargoSuffix suffixes[produced_cargo_count];
+		std::array<CargoSuffix, std::tuple_size_v<decltype(industry->produced_cargo)>> suffixes{};
 		GetAllCargoSuffixes(CARGOSUFFIX_OUT, CST_VIEW, industry, industry->type, industry_spec, industry->produced_cargo, suffixes);
 
 		// Print out amounts of produced cargo.

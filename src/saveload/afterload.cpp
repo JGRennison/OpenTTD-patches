@@ -3650,7 +3650,7 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_EXTEND_INDUSTRY_CARGO_SLOTS)) {
 		/* Make sure added industry cargo slots are cleared */
 		for (Industry *i : Industry::Iterate()) {
-			for (size_t ci = 2; ci < lengthof(i->produced_cargo); ci++) {
+			for (size_t ci = 2; ci < std::size(i->produced_cargo); ci++) {
 				i->produced_cargo[ci] = INVALID_CARGO;
 				i->produced_cargo_waiting[ci] = 0;
 				i->production_rate[ci] = 0;
@@ -3660,13 +3660,13 @@ bool AfterLoadGame()
 				i->this_month_production[ci] = 0;
 				i->this_month_transported[ci] = 0;
 			}
-			for (size_t ci = 3; ci < lengthof(i->accepts_cargo); ci++) {
+			for (size_t ci = 3; ci < std::size(i->accepts_cargo); ci++) {
 				i->accepts_cargo[ci] = INVALID_CARGO;
 				i->incoming_cargo_waiting[ci] = 0;
 			}
 			/* Make sure last_cargo_accepted_at is copied to elements for every valid input cargo.
 			 * The loading routine should put the original singular value into the first array element. */
-			for (size_t ci = 0; ci < lengthof(i->accepts_cargo); ci++) {
+			for (size_t ci = 0; ci < std::size(i->accepts_cargo); ci++) {
 				if (i->accepts_cargo[ci] != INVALID_CARGO) {
 					i->last_cargo_accepted_at[ci] = i->last_cargo_accepted_at[0];
 				} else {

@@ -3818,12 +3818,12 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 
 			case 0x25: { // variable length produced cargoes
 				byte num_cargoes = buf->ReadByte();
-				if (num_cargoes > lengthof(indsp->produced_cargo)) {
+				if (num_cargoes > std::size(indsp->produced_cargo)) {
 					GRFError *error = DisableGrf(STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG);
 					error->param_value[1] = prop;
 					return CIR_DISABLED;
 				}
-				for (uint i = 0; i < lengthof(indsp->produced_cargo); i++) {
+				for (uint i = 0; i < std::size(indsp->produced_cargo); i++) {
 					if (i < num_cargoes) {
 						CargoID cargo = GetCargoTranslation(buf->ReadByte(), _cur.grffile);
 						indsp->produced_cargo[i] = cargo;
@@ -3837,12 +3837,12 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 
 			case 0x26: { // variable length accepted cargoes
 				byte num_cargoes = buf->ReadByte();
-				if (num_cargoes > lengthof(indsp->accepts_cargo)) {
+				if (num_cargoes > std::size(indsp->accepts_cargo)) {
 					GRFError *error = DisableGrf(STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG);
 					error->param_value[1] = prop;
 					return CIR_DISABLED;
 				}
-				for (uint i = 0; i < lengthof(indsp->accepts_cargo); i++) {
+				for (uint i = 0; i < std::size(indsp->accepts_cargo); i++) {
 					if (i < num_cargoes) {
 						CargoID cargo = GetCargoTranslation(buf->ReadByte(), _cur.grffile);
 						indsp->accepts_cargo[i] = cargo;
@@ -3856,12 +3856,12 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 
 			case 0x27: { // variable length production rates
 				byte num_cargoes = buf->ReadByte();
-				if (num_cargoes > lengthof(indsp->production_rate)) {
+				if (num_cargoes > std::size(indsp->production_rate)) {
 					GRFError *error = DisableGrf(STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG);
 					error->param_value[1] = prop;
 					return CIR_DISABLED;
 				}
-				for (uint i = 0; i < lengthof(indsp->production_rate); i++) {
+				for (uint i = 0; i < std::size(indsp->production_rate); i++) {
 					if (i < num_cargoes) {
 						indsp->production_rate[i] = buf->ReadByte();
 					} else {
@@ -3874,13 +3874,13 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 			case 0x28: { // variable size input/output production multiplier table
 				byte num_inputs = buf->ReadByte();
 				byte num_outputs = buf->ReadByte();
-				if (num_inputs > lengthof(indsp->accepts_cargo) || num_outputs > lengthof(indsp->produced_cargo)) {
+				if (num_inputs > std::size(indsp->accepts_cargo) || num_outputs > std::size(indsp->produced_cargo)) {
 					GRFError *error = DisableGrf(STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG);
 					error->param_value[1] = prop;
 					return CIR_DISABLED;
 				}
-				for (uint i = 0; i < lengthof(indsp->accepts_cargo); i++) {
-					for (uint j = 0; j < lengthof(indsp->produced_cargo); j++) {
+				for (uint i = 0; i < std::size(indsp->accepts_cargo); i++) {
+					for (uint j = 0; j < std::size(indsp->produced_cargo); j++) {
 						uint16_t mult = 0;
 						if (i < num_inputs && j < num_outputs) mult = buf->ReadWord();
 						indsp->input_cargo_multiplier[i][j] = mult;
@@ -11151,10 +11151,10 @@ static void FinaliseIndustriesArray()
 		}
 
 		/* Apply default cargo translation map for unset cargo slots */
-		for (uint i = 0; i < lengthof(indsp.produced_cargo); ++i) {
+		for (uint i = 0; i < std::size(indsp.produced_cargo); ++i) {
 			if (!IsValidCargoID(indsp.produced_cargo[i])) indsp.produced_cargo[i] = GetCargoIDByLabel(GetActiveCargoLabel(indsp.produced_cargo_label[i]));
 		}
-		for (uint i = 0; i < lengthof(indsp.accepts_cargo); ++i) {
+		for (uint i = 0; i < std::size(indsp.accepts_cargo); ++i) {
 			if (!IsValidCargoID(indsp.accepts_cargo[i])) indsp.accepts_cargo[i] = GetCargoIDByLabel(GetActiveCargoLabel(indsp.accepts_cargo_label[i]));
 		}
 	}

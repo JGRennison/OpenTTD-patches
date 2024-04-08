@@ -242,12 +242,12 @@ SpriteID TileZoneCheckUnservedIndustriesEvaluation(TileIndex tile, Owner owner)
 				if (st->facilities & (~(FACIL_BUS_STOP | FACIL_TRUCK_STOP)) || st->facilities == (FACIL_BUS_STOP | FACIL_TRUCK_STOP)) {
 					return ZONING_INVALID_SPRITE_ID;
 				} else if (st->facilities & (FACIL_BUS_STOP | FACIL_TRUCK_STOP)) {
-					for (uint i = 0; i < lengthof(ind->produced_cargo); i++) {
+					for (uint i = 0; i < std::size(ind->produced_cargo); i++) {
 						if (ind->produced_cargo[i] != INVALID_CARGO && st->facilities & (IsCargoInClass(ind->produced_cargo[i], CC_PASSENGERS) ? FACIL_BUS_STOP : FACIL_TRUCK_STOP)) {
 							return ZONING_INVALID_SPRITE_ID;
 						}
 					}
-					for (uint i = 0; i < lengthof(ind->accepts_cargo); i++) {
+					for (uint i = 0; i < std::size(ind->accepts_cargo); i++) {
 						if (ind->accepts_cargo[i] != INVALID_CARGO && st->facilities & (IsCargoInClass(ind->accepts_cargo[i], CC_PASSENGERS) ? FACIL_BUS_STOP : FACIL_TRUCK_STOP)) {
 							return ZONING_INVALID_SPRITE_ID;
 						}

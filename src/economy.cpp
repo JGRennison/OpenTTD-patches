@@ -1403,11 +1403,11 @@ static void TriggerIndustryProduction(Industry *i)
 			SetWindowDirty(WC_INDUSTRY_VIEW, i->index);
 		}
 	} else {
-		for (uint ci_in = 0; ci_in < lengthof(i->incoming_cargo_waiting); ci_in++) {
+		for (size_t ci_in = 0; ci_in < std::size(i->incoming_cargo_waiting); ci_in++) {
 			uint cargo_waiting = i->incoming_cargo_waiting[ci_in];
 			if (cargo_waiting == 0 || i->accepts_cargo[ci_in] == INVALID_CARGO) continue;
 
-			for (uint ci_out = 0; ci_out < lengthof(i->produced_cargo_waiting); ci_out++) {
+			for (size_t ci_out = 0; ci_out < std::size(i->produced_cargo_waiting); ci_out++) {
 				if (i->produced_cargo[ci_out] == INVALID_CARGO) continue;
 				i->produced_cargo_waiting[ci_out] = ClampTo<uint16_t>(i->produced_cargo_waiting[ci_out] + (cargo_waiting * indspec->input_cargo_multiplier[ci_in][ci_out] / 256));
 			}

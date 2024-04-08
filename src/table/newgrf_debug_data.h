@@ -1245,7 +1245,7 @@ class NIHIndustry : public NIHelper {
 					output.print(buffer);
 				}
 				output.print("  Produces:");
-				for (uint i = 0; i < lengthof(ind->produced_cargo); i++) {
+				for (uint i = 0; i < std::size(ind->produced_cargo); i++) {
 					if (ind->produced_cargo[i] != INVALID_CARGO) {
 						seprintf(buffer, lastof(buffer), "    %s:", GetStringPtr(CargoSpec::Get(ind->produced_cargo[i])->name));
 						output.print(buffer);
@@ -1261,7 +1261,7 @@ class NIHIndustry : public NIHelper {
 					}
 				}
 				output.print("  Accepts:");
-				for (uint i = 0; i < lengthof(ind->accepts_cargo); i++) {
+				for (uint i = 0; i < std::size(ind->accepts_cargo); i++) {
 					if (ind->accepts_cargo[i] != INVALID_CARGO) {
 						seprintf(buffer, lastof(buffer), "    %s: waiting: %u",
 								GetStringPtr(CargoSpec::Get(ind->accepts_cargo[i])->name), ind->incoming_cargo_waiting[i]);

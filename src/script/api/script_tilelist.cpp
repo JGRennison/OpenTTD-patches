@@ -97,7 +97,7 @@ ScriptTileList_IndustryAccepting::ScriptTileList_IndustryAccepting(IndustryID in
 		CargoArray acceptance = ::GetAcceptanceAroundTiles(cur_tile, 1, 1, radius);
 		{
 			bool cargo_accepts = false;
-			for (byte j = 0; j < lengthof(i->accepts_cargo); j++) {
+			for (size_t j = 0; j < i->accepts_cargo.size(); j++) {
 				if (i->accepts_cargo[j] != INVALID_CARGO && acceptance[i->accepts_cargo[j]] != 0) cargo_accepts = true;
 			}
 			if (!cargo_accepts) continue;

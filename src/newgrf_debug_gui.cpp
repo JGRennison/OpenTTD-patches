@@ -653,20 +653,20 @@ struct NewGRFInspectWindow : Window {
 
 				TextColour colour = (this->selected_sprite_group == group && group != nullptr) ? TC_LIGHT_BLUE : TC_BLACK;
 				if (highlight_tag != 0) {
-					for (uint i = 0; i < lengthof(this->selected_highlight_tags); i++) {
+					for (uint i = 0; i < std::size(this->selected_highlight_tags); i++) {
 						if (this->selected_highlight_tags[i] == highlight_tag) {
 							static const TextColour text_colours[] = { TC_YELLOW, TC_GREEN, TC_ORANGE, TC_CREAM, TC_BROWN, TC_RED };
-							static_assert(lengthof(this->selected_highlight_tags) == lengthof(text_colours));
+							static_assert(std::tuple_size_v<decltype(this->selected_highlight_tags)> == lengthof(text_colours));
 							colour = text_colours[i];
 							break;
 						}
 					}
 				}
 				if (group != nullptr) {
-					for (uint i = 0; i < lengthof(this->marked_groups); i++) {
+					for (uint i = 0; i < std::size(this->marked_groups); i++) {
 						if (this->marked_groups[i] == group) {
 							static const uint8_t mark_colours[] = { PC_YELLOW, PC_GREEN, PC_ORANGE, PC_DARK_BLUE, PC_RED, PC_LIGHT_BLUE, 0xAE /* purple */, 0x6C /* brown */ };
-							static_assert(lengthof(this->marked_groups) == lengthof(mark_colours));
+							static_assert(std::tuple_size_v<decltype(this->marked_groups)> == lengthof(mark_colours));
 							Rect mark_ir = ir.Indent(WidgetDimensions::scaled.hsep_normal, rtl).WithWidth(WidgetDimensions::scaled.hsep_normal, rtl).Translate(0, (scroll_offset * this->resize.step_height));
 							GfxFillRect(mark_ir.left, mark_ir.top, mark_ir.right, mark_ir.top + this->resize.step_height - 1, mark_colours[i]);
 							break;

@@ -2365,7 +2365,7 @@ struct CompanyWindow : Window
 			/* Owners of company */
 			{
 				int plane = SZSP_HORIZONTAL;
-				for (uint i = 0; i < lengthof(c->share_owners); i++) {
+				for (size_t i = 0; i < std::size(c->share_owners); i++) {
 					if (c->share_owners[i] != INVALID_COMPANY) {
 						plane = 0;
 						break;
