@@ -17,7 +17,7 @@
 static void Save_NSID()
 {
 	SlSetLength(4 + (_new_signal_style_mapping.size() * 5));
-	SlWriteUint32(_new_signal_style_mapping.size());
+	SlWriteUint32((uint)_new_signal_style_mapping.size());
 	for (const NewSignalStyleMapping &mapping : _new_signal_style_mapping) {
 		SlWriteUint32(mapping.grfid);
 		SlWriteByte(mapping.grf_local_id);

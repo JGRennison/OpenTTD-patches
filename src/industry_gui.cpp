@@ -1486,9 +1486,9 @@ protected:
 	 * @param id cargo slot
 	 * @return percents of cargo transported, or -1 if industry doesn't use this cargo slot
 	 */
-	static inline int GetCargoTransportedPercentsIfValid(const Industry *i, uint id)
+	static inline int GetCargoTransportedPercentsIfValid(const Industry *i, size_t id)
 	{
-		assert((size_t)id < std::size(i->produced_cargo));
+		assert(id < std::size(i->produced_cargo));
 
 		if (i->produced_cargo[id] == INVALID_CARGO) return -1;
 		return ToPercent8(i->last_month_pct_transported[id]);
