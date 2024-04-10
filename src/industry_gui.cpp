@@ -2354,11 +2354,11 @@ struct CargoesField {
 		}
 		/* col = 0 -> left of first col, 1 -> left of 2nd col, ... this->u.cargo.num_cargoes right of last-col. */
 
-		int vpos = vert_inter_industry_space / 2 + CargoesField::cargo_border.width;
+		int vpos = (vert_inter_industry_space / 2) + (CargoesField::cargo_border.width / 2);
 		uint row;
 		for (row = 0; row < MAX_CARGOES; row++) {
 			if (pt.y < vpos) return INVALID_CARGO;
-			if (pt.y < vpos + GetCharacterHeight(FS_NORMAL)) break;
+			if (pt.y < vpos + (int)CargoesField::cargo_line.height) break;
 			vpos += GetCharacterHeight(FS_NORMAL) + CargoesField::cargo_space.width;
 		}
 		if (row == MAX_CARGOES) return INVALID_CARGO;
