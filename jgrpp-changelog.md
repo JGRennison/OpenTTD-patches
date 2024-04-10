@@ -2,6 +2,21 @@
 
 * * *
 
+### v0.58.3 (2024-04-10)
+* Fix stuttering when playing sound effects on Windows.
+* Fix incorrect cargo payment calculations for cargo in the mail compartment of aircraft and in non-first parts of multi-part ships.
+* Fix path-only signal cycle mode being ignored when using realistic braking.
+* Template-based train replacement:
+  * Fix replacement failing when using NewGRFs with complex wagon attachment and/or start/stop restrictions.
+  * Fix incorrect cost estimation when using NewGRFs with complex start/stop restrictions.
+* Wallclock timekeeping mode:
+  * Fix game units (tiles/second) being shown as tiles/day.
+  * Fix time units shown for past production in the industry window.
+* Fix cargo dist effect of distance on demand setting for values greater than 100%. (The scaling/demand allocation algorithm has been adjusted in general).
+* Fix velocity units used in cargo payments graph x-axis label.
+* Fix click/tooltip alignment of cargo lines in the industry chains window.
+* Fix changing sprite alignments in the sprite aligner window not being applied as expected.
+
 ### v0.58.2 (2024-03-28)
 * Fix crash with some GRFs when the maximum sprite resolution setting was set to 2x.
 * Fix crash which could occur when clearing a crashed road vehicle from a drive-through road stop.
