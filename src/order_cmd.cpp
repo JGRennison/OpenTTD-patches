@@ -859,6 +859,11 @@ std::string OrderList::ToJSONString()
 	json["version"] = ORDERLIST_JSON_OUTPUT_VERSION;
 	json["source"] = std::string(_openttd_revision);
 
+	if (this == nullptr) { //order list not intiailised, return an empty result
+		json["error"] = "Orderlist was not initialised";
+		return json.dump();
+	};
+
 	auto& SD_data = this->GetScheduledDispatchScheduleSet();
 	auto& headJson = json["head"];
 	for (unsigned int i = 0; auto &SD : SD_data) {
