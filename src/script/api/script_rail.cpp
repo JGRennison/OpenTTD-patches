@@ -448,6 +448,7 @@ static bool IsValidSignalType(int signal_type)
 	EnforcePrecondition(false, ScriptMap::DistanceManhattan(tile, front) == 1)
 	EnforcePrecondition(false, ::IsPlainRailTile(tile));
 	EnforcePrecondition(false, ::IsValidSignalType(signal));
+	EnforcePrecondition(false, signal < SIGNALTYPE_TWOWAY || _settings_game.vehicle.train_braking_model == TBM_ORIGINAL);
 
 	Track track = INVALID_TRACK;
 	uint signal_cycles = 0;
@@ -464,7 +465,7 @@ static bool IsValidSignalType(int signal_type)
 
 	uint p1 = track;
 	if (signal < SIGNALTYPE_TWOWAY) {
-		if (signal != SIGNALTYPE_PBS && signal != SIGNALTYPE_PBS_ONEWAY) signal_cycles++;
+		if (signal != SIGNALTYPE_PBS && signal != SIGNALTYPE_PBS_ONEWAY && _settings_game.vehicle.train_braking_model == TBM_ORIGINAL) signal_cycles++;
 		p1 |= (signal_cycles << 15);
 	}
 	p1 |= ((signal >= SIGNALTYPE_TWOWAY ? signal ^ SIGNALTYPE_TWOWAY : signal) << 5);
