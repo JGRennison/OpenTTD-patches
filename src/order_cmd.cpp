@@ -41,8 +41,8 @@
 #include "tracerestrict.h"
 #include "train.h"
 #include "date_func.h"
-#include "3rdparty/nlohmann/json.hpp"
 #include "command_aux.h"
+#include "rev.h"
 #include "schdispatch.h"
 
 #include "table/strings.h"
@@ -851,9 +851,13 @@ void OrderList::MoveOrder(VehicleOrderID from, VehicleOrderID to)
 std::string OrderList::ToJSONString()
 {
 
-	nlohmann::json json;
-	auto& SD_data = this->GetScheduledDispatchScheduleSet();
 
+	nlohmann::json json;
+
+	json["version"] = ORDERLIST_JSON_OUTPUT_VERSION;
+	json["source"] = std::string(_openttd_revision);
+
+	auto& SD_data = this->GetScheduledDispatchScheduleSet();
 	auto& headJson = json["head"];
 	for (unsigned int i = 0; auto &SD : SD_data) {
 
