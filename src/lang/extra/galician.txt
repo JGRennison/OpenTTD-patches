@@ -46,6 +46,8 @@ STR_UNIT_NAME_VELOCITY_SI                                       :m/s
 STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :cadros/día
 STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK                      :cadros/seg
 
+STR_UNITS_SECONDS_SHORT                                         :{COMMA}{NBSP}s
+
 STR_BUTTON_RENAME                                               :{BLACK}Renomear
 
 STR_MEASURE_DIST_HEIGHTDIFF                                     :{BLACK}Distancia Manhattan: {NUM}{}Distancia a voo de paxaro: {NUM}{}Distancia dende o borde máis próximo: {NUM}{}Altitude dende o mar: {HEIGHT}{}Diferencia de altitude: {HEIGHT}
@@ -76,6 +78,7 @@ STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED                   :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_MINUTES                   :{TINY_FONT}{BLACK}Minutos en tránsito
 STR_GRAPH_STATION_CARGO_CAPTION                                 :{WHITE}{STATION} - Historial de espera de carga
 STR_GRAPH_STATION_CARGO_X_LABEL_DAYS                            :{TINY_FONT}{BLACK}Desenvolvemento nos últimos {NUM} días
+STR_GRAPH_STATION_CARGO_X_LABEL_SECONDS                         :{TINY_FONT}{BLACK}Desenvolvemento nos últimos {NUM} segundos
 STR_GRAPH_STATION_CARGO_TITLE                                   :{TINY_FONT}{BLACK}Unidades de carga agardando na estación
 
 STR_GRAPH_CARGO_SPEED_MODE                                      :{TINY_FONT}{BLACK}Velocidade media
@@ -277,11 +280,18 @@ STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME_HELPTEXT   :Cando se habili
 STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW            :Amosar o número de orde na ventá de vista do vehículo: {STRING}
 STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW_HELPTEXT   :Cando está activado, a orde actual do vehículo amósase na barra de inicio/parada da ventá de vista do vehículo.
 
+STR_CONFIG_SETTING_SHOW_SPEED_FIRST_IN_VEHICLE_VIEW             :Amosar a velocidade antes do destino na xanela de vista do vehículo: {STRING}
+STR_CONFIG_SETTING_SHOW_SPEED_FIRST_IN_VEHICLE_VIEW_HELPTEXT    :Cando está habilitado, amosar a velocidade do vehículo antes do destino na barra de inicio/parada da xanela de vista do vehículo
+
+
 STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION                   :Ocultar as ubicacións predeterminadas das ordes de paradas: {STRING}
 STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION_HELPTEXT          :Cando está activado, ocúltase a ubicación de parada da orde cando coincide co predeterminado.
 
 STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL                              :Amosar a ferramenta de polilínea de ferrocarril: {STRING}
 STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL_HELPTEXT                     :Cando habilitado, a barra de ferramentas de construción de ferrocarril inclúe un botón para construír usando o modo de polilínea.
+
+STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR             :Amosar os custos de funcionamento do vehículo por ano calendario: {STRING}
+STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR_HELPTEXT    :Ao usar un factor de lonxitude do día maior que un, amosar os custos de funcionamento do vehículo por ano calendario en vez de por ano orixinal.
 
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Habilitar modos de sinais avanzadas en pontes/túneis: {STRING}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Habilita o uso de modos avanzados de simulación de sinais en pontes e túneis. Cando se desactiva, os pontes/túneis que non están xa en modo avanzado non se poden cambiar a modo avanzado, sen embargo outros xogadores poden escoller habilitar esta opción e usar o modo avanzado.
@@ -679,6 +689,12 @@ STR_CONFIG_SETTING_IGNORE_OBJECT_INTRO_DATES_HELPTEXT           :Establece se os
 STR_CONFIG_SETTING_ALLOW_CONVERT_TOWN_ROAD_NO_HOUSES            :Permitir a conversión das estradas da vila a un tipo sen casas: {STRING}
 STR_CONFIG_SETTING_ALLOW_CONVERT_TOWN_ROAD_NO_HOUSES_HELPTEXT   :Se se permite aos xogadores converter as estradas pertencentes á vila nun tipo de estrada que non permita casas.{}Isto está desactivado por defecto porque facelo pode evitar que as vilas constrúan casas, o que fai que diminúan.
 
+STR_CONFIG_SETTING_PURCHASED_LAND_CLEAR_GROUND                  :Usar cadro de terreo limpo para terreo comprado: {STRING}
+STR_CONFIG_SETTING_PURCHASED_LAND_CLEAR_GROUND_HELPTEXT         :Se está habilitado, o terreo comprado é mostrado usando o mesmo tipo de terreo que os cadros de terreo limpo, isto é, terra nu a herba, costa, neve, deserto, etc.
+
+STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY                  :Xerar só industrias primarias: {STRING}
+STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY_HELPTEXT         :Se está habilitado, só se xeran industrias primarias durante o xogo e a xeración de mapas.
+
 STR_PURCHASE_LAND_PERMITTED_NO                                  :No
 STR_PURCHASE_LAND_PERMITTED_SINGLE                              :Si, un cadro por vez
 STR_PURCHASE_LAND_PERMITTED_AREA                                :Si, grandes areas por vez
@@ -736,6 +752,9 @@ STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Mostra-lo horar
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Mostra-los tempos de viaxe nos horarios en ticks en vez de en días
 
 STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT_EXTRA         :{STRING}{}Varias características requiren o uso do pathfinder YAPF, incluíndo: restricións de enrutamento (todas as accións relacionadas co pathfinder e a reserva), inversión en puntos de referencia/sinais e pasaxe a través de depósitos de trens.
+
+STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_CALENDAR           :{RED}[Configuración desactivada no modo de tempo do calendario]
+STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_WALLCLOCK          :{RED}[Configuración desactivada no modo de tempo do reloxo]
 
 STR_CHEAT_EDIT_MONEY_QUERY_CAPT                                 :{WHITE}Aumentar ou disminuir os cartos
 STR_CHEAT_INFLATION_COST                                        :{LTBLUE}Modificar o factor da inflación de custos: {ORANGE}{DECIMAL}
@@ -1457,6 +1476,7 @@ STR_BUY_VEHICLE_TRAIN_LOCOMOTIVES                               :Locomotoras e c
 STR_BUY_VEHICLE_TRAIN_WAGONS                                    :Vagóns
 
 STR_PURCHASE_INFO_DESIGNED                                      :{BLACK}Deseñado: {GOLD}{NUM}
+STR_PURCHASE_INFO_RUNNINGCOST_ORIG_YEAR                         :{BLACK}Custo de mantemento: {GOLD}{CURRENCY_LONG}/ano orixinal
 
 STR_BUY_REFIT_VEHICLE_BUY_VEHICLE_BUTTON                        :{BLACK}Reaxustar despois de mercar
 STR_BUY_REFIT_VEHICLE_BUY_VEHICLE_TOOLTIP                       :{BLACK}Automáticamente reaxustar a carga seleccionada no vehículo destacado despois de mercalo
@@ -1526,12 +1546,16 @@ STR_NEED_REPAIR                                                 :{ORANGE}O vehí
 
 STR_CURRENT_STATUS                                              :{BLACK}Estado actual: {STRING}
 
+STR_ENGINE_PREVIEW_RUNCOST_ORIG_YEAR                            :Custo de mantemento: {CURRENCY_LONG}/ano orixinal
+
 STR_VEHICLE_INFO_TRAIN_LENGTH                                   :{BLACK}Lonxitude do tren {LTBLUE}{DECIMAL} cadro{P "" s} {STRING}
 STR_VEHICLE_INFO_WEIGHT_RATIOS                                  :{STRING} {STRING}
 STR_VEHICLE_INFO_POWER_WEIGHT_RATIO                             :{BLACK}Potencia / peso: {LTBLUE}{POWER_WEIGHT_RATIO}
 STR_VEHICLE_INFO_TE_WEIGHT_RATIO                                :{BLACK}Esforzo máximo de tracción / peso: {LTBLUE}{FORCE_WEIGHT_RATIO}
 STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS                        :{BLACK}Peso total: {LTBLUE}{WEIGHT_SHORT} {STRING}
 STR_VEHICLE_INFO_MAX_SPEED_LOADED                               :{BLACK}Velocidade máxima (cheo): {LTBLUE}{VELOCITY}
+
+STR_VEHICLE_INFO_AGE_RUNNING_COST_ORIG_YR                       :{BLACK}Idade: {LTBLUE}{STRING}{BLACK}   Custo de mantemento: {LTBLUE}{CURRENCY_LONG}/ano orixinal
 
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING} (vida útil: {CURRENCY_LONG})
 
@@ -1548,6 +1572,11 @@ STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE_AND_SPEED      :{LTBLUE}{ENGINE
 STR_VEHICLE_DETAILS_TRAIN_WAGON_VALUE_AND_SPEED                 :{LTBLUE}{ENGINE}{BLACK}   Valor: {LTBLUE}{CURRENCY_LONG} {BLACK}Velocidade máxima: {LTBLUE}{VELOCITY}
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_WEIGHT                          :{BLACK}Peso total: {LTBLUE}{WEIGHT_SHORT} {BLACK}(baleiro) - {LTBLUE}{WEIGHT_SHORT} {BLACK}(cargado)
 STR_VEHICLE_DETAILS_TRAIN_MAX_SPEED                             :{BLACK}Velocidade máxima: {LTBLUE}{VELOCITY} {BLACK}(baleiro) - {LTBLUE}{VELOCITY} {BLACK}(cargado)
+
+STR_VEHICLE_DETAILS_EXTRA_ACTIONS_TOOLTIP                       :{BLACK}Accións adicionais do vehículo
+STR_VEHICLE_DETAILS_REMOVE_SPEED_RESTRICTION                    :Eliminar restrición de velocidade
+STR_VEHICLE_DETAILS_SET_SPEED_RESTRICTION                       :Establecer restrición de velocidade
+STR_VEHICLE_DETAILS_REMOVE_FROM_SLOT                            :Eliminar do slot:
 
 STR_ORDER_DROP_CARGO_TYPE_LOAD                                  :Cargar por tipo de cargamento
 STR_ORDER_DROP_CARGO_TYPE_UNLOAD                                :Descargar por tipo de cargamento
@@ -1773,6 +1802,7 @@ STR_PLANS_NEW_PLAN                                              :{BLACK}Novo
 STR_PLANS_NEW_PLAN_TOOLTIP                                      :{BLACK}Crear un novo plan
 STR_PLANS_ADD_LINES                                             :{BLACK}Engadir liñas
 STR_PLANS_ADDING_LINES                                          :{BLACK}Engadindo...
+STR_PLANS_ADD_LINES_TOOLTIP                                     :{BLACK}Engadir liñas o plan seleccionado
 STR_PLANS_HIDE_ALL                                              :{BLACK}Agochar todo
 STR_PLANS_HIDE_ALL_TOOLTIP                                      :{BLACK}Fixar a visibilidade de todos os plans e as súas liñas a falso
 STR_PLANS_SHOW_ALL                                              :{BLACK}Amosar todo
@@ -1784,6 +1814,8 @@ STR_PLANS_COLOUR                                                :{BLACK}Cor
 STR_PLANS_COLOUR_TOOLTIP                                        :{BLACK}Fixa a cor dun plan
 STR_PLANS_DELETE                                                :{BLACK}Eliminar
 STR_PLANS_DELETE_TOOLTIP                                        :{BLACK}Eliminar o ítem seleccionado na lista
+STR_PLANS_TAKE_OWNERSHIP                                        :{BLACK}Tomar posesión
+STR_PLANS_TAKE_OWNERSHIP_TOOLTIP                                :{BLACK}Tomar posesión do plan sen dono seleccionado
 STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :[Privado]: {STRING}
 STR_PLANS_LIST_ITEM_PLAN                                        :Plan #{NUM}: {NUM} liña{P "" s} ({DATE_SHORT})
 STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{STRING}: {NUM} liña{P "" s} ({DATE_SHORT})
@@ -1859,6 +1891,7 @@ STR_FORMAT_GROUP_VEHICLE_NAME_LONG                              :{GROUP} - {STRI
 
 STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP                            :{BROWN}{NUM} {STRING}
 STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_STATION                    :{BLACK}ES
+STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_VIA_STATION                :{GRAY}VE
 STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_WAYPOINT                   :{GRAY}PR
 STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_IMPLICIT                   :{GRAY}IM
 STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_DEPOT                      :{RED}DE
@@ -2112,6 +2145,17 @@ STR_SCHDISPATCH_QUERY_REMOVE_SCHEDULE_TEXT                      :{WHITE}Seguro q
 STR_ERROR_SCHDISPATCH_TRIED_TO_ADD_TOO_MANY_SLOTS               :{WHITE}Intentouse engadir demasiados slots de saída ó mesmo tempo
 STR_ERROR_SCHDISPATCH_ADJUSTMENT_TOO_LARGE                      :{WHITE}O axuste do slot de saída é demasiado grande
 
+STR_TOOLTIP_SEPARATION_CANNOT_ENABLE                            :{STRING}{}{}{STRING}
+STR_ERROR_SEPARATION_MUTUALLY_EXCLUSIVE                         :{WHITE}Só se pode activar unha das seguintes opcións: despacho programado, separación automática e desagrupación de depósitos ao mesmo tempo.
+
+STR_CANNOT_ENABLE_BECAUSE_UNBUNCHING                            :Non se pode activar porque hai unha orde de desagrupación de depósitos presente.
+STR_CANNOT_ENABLE_BECAUSE_SCHED_DISPATCH                        :Non se pode activar porque o despacho programado está activado.
+STR_CANNOT_ENABLE_BECAUSE_AUTO_SEPARATION                       :Non se pode activar porque a separación automática está activada.
+STR_CANNOT_ENABLE_BECAUSE_TIME_UNITS_UNUSABLE                   :Non se pode activar porque as unidades de tempo actuais non son utilizables.{}Habilitar a visualización do tempo en minutos nas opcións.
+
+STR_ERROR_UNBUNCHING_NO_UNBUNCHING_SCHED_DISPATCH               :{WHITE}... non se pode desagrupar un vehículo usando o despacho programado.
+STR_ERROR_UNBUNCHING_NO_UNBUNCHING_AUTO_SEPARATION              :{WHITE}... non se pode desagrupar un vehículo usando a separación automática.
+
 # Modifier key toggle window
 STR_MODIFIER_KEY_TOGGLE_CAPTION                                 :{WHITE}Teclas modificadoras
 STR_SHIFT_KEY_NAME                                              :{BLACK}Shift
@@ -2220,3 +2264,6 @@ STR_VIEWPORT_TOWN_COLOUR_CITY_POP                               :{WHITE}{TOWN} {
 
 STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :Ferramenta de selección
 STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Fiestra da tecla modificadora
+
+STR_ERROR_CAN_T_CHANGE_SPEED_RESTRICTION                        :{WHITE}Non se pode cambiar a restrición de velocidade do vehículo...
+
