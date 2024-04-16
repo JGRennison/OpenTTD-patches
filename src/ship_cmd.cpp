@@ -397,11 +397,10 @@ bool RecentreShipSpriteBounds(Vehicle *v)
 	Ship *ship = Ship::From(v);
 	if (ship->rotation != ship->cur_image_valid_dir) {
 		ship->cur_image_valid_dir  = INVALID_DIR;
-		Point offset = RemapCoords(ship->x_offs, ship->y_offs, 0);
-		ship->sprite_seq_bounds.left = -offset.x - 16;
-		ship->sprite_seq_bounds.right = ship->sprite_seq_bounds.left + 32;
-		ship->sprite_seq_bounds.top = -offset.y - 16;
-		ship->sprite_seq_bounds.bottom = ship->sprite_seq_bounds.top + 32;
+		ship->sprite_seq_bounds.left = -16;
+		ship->sprite_seq_bounds.right = 16;
+		ship->sprite_seq_bounds.top = -16;
+		ship->sprite_seq_bounds.bottom = 16;
 		return true;
 	}
 	return false;
