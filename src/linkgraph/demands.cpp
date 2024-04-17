@@ -314,8 +314,8 @@ void DemandCalculator::CalcDemand(LinkGraphJob &job, const std::vector<bool> &re
 			if (this->mod_dist > 0) {
 				const int32_t distance = DistanceMaxPlusManhattan(job[from_id].XY(), job[to_id].XY());
 				/* Scale distance around base_distance by (mod_dist * (100 / 1024)).
-				 * Note that this means that the distance range is always compressed because mod_dist <= 1024. */
-				scaled_distance = this->base_distance + (((distance - this->base_distance) * this->mod_dist) / 1024);
+				 * mod_dist may be > 1024, so clamp result to be non-negative */
+				scaled_distance = std::max(0, this->base_distance + (((distance - this->base_distance) * this->mod_dist) / 1024));
 			}
 
 			/* Scale the accuracy by distance around accuracy / 2 */
@@ -421,8 +421,15 @@ DemandCalculator::DemandCalculator(LinkGraphJob &job) :
 	this->accuracy = settings.accuracy;
 	this->mod_dist = settings.demand_distance;
 	if (this->mod_dist > 100) {
-		/* Increase effect of mod_dist > 100 */
-		this->mod_dist = 100 + ((this->mod_dist - 100) * 4);
+		/* Increase effect of mod_dist > 100.
+		 * Quadratic:
+		 *   100 --> 100
+		 *   150 --> 308
+		 *   200 --> 933
+		 *   255 --> 2102
+		 */
+		int over100 = this->mod_dist - 100;
+		this->mod_dist = 100 + ((over100 * over100) / 12);
 	}
 
 	if (settings.GetDistributionType(cargo) == DT_MANUAL) return;
