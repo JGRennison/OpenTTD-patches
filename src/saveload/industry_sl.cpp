@@ -64,6 +64,10 @@ public:
 	{
 		size_t len = SlGetStructListLength(INDUSTRY_NUM_INPUTS);
 
+		for (size_t j = 0; j < INDUSTRY_NUM_INPUTS; j++) {
+			i->accepts_cargo[j] = INVALID_CARGO;
+		}
+
 		for (size_t j = 0; j < len; j++) {
 			AcceptedCargo a = {};
 			SlObject(&a, this->GetDescription());
@@ -118,6 +122,17 @@ public:
 	void Load(Industry *i) const override
 	{
 		size_t len = SlGetStructListLength(INDUSTRY_NUM_OUTPUTS);
+
+		for (size_t j = 0; j < INDUSTRY_NUM_OUTPUTS; j++) {
+			i->produced_cargo[j] = INVALID_CARGO;
+			i->produced_cargo_waiting[j] = 0;
+			i->production_rate[j] = 0;
+			i->this_month_production[j] = 0;
+			i->this_month_transported[j] = 0;
+			i->last_month_production[j] = 0;
+			i->last_month_transported[j] = 0;
+			i->last_month_pct_transported[j] = 0;
+		}
 
 		for (size_t j = 0; j < len; j++) {
 			ProducedCargo p = {};
