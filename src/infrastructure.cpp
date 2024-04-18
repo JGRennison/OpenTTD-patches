@@ -60,21 +60,6 @@ void PayStationSharingFee(Vehicle *v, const Station *st)
 	PaySharingFee(v, st->owner, (cost << 8) / DAY_TICKS);
 }
 
-uint16_t is2_GetWeight(Train *v)
-{
-	uint16_t weight = (CargoSpec::Get(v->cargo_type)->weight * v->cargo.StoredCount() * FreightWagonMult(v->cargo_type)) / 16;
-		/* Vehicle weight is not added for articulated parts. */
-	if (!v->IsArticulatedPart()) {
-		weight += GetVehicleProperty(v, PROP_TRAIN_WEIGHT, RailVehInfo(v->engine_type)->weight);
-	}
-		/* Powered wagons have extra weight added. */
-	if (HasBit(v->flags, VRF_POWEREDWAGON)) {
-		weight += RailVehInfo(v->gcache.first_engine)->pow_wag_weight;
-	}
-		return weight;
-}
-
-
 /**
  * Pay the daily fee for trains on foreign tracks.
  * @param v The vehicle to pay the fee for.
@@ -85,9 +70,9 @@ void PayDailyTrackSharingFee(Train *v)
 	if (owner == v->owner) return;
 	Money cost = _settings_game.economy.sharing_fee[VEH_TRAIN] << 8;
 	/* Cost is calculated per 1000 tonnes */
-	cost = cost * is2_GetWeight(v) / 1000;
+	cost = (cost * v->gcache.cached_weight) / 1000;
 	/* Only pay the required fraction */
-	cost = cost * v->running_ticks / DAY_TICKS;
+	cost = (cost * v->running_ticks) / DAY_TICKS;
 	if (cost != 0) PaySharingFee(v, owner, cost);
 }
 
