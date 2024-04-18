@@ -118,21 +118,20 @@ struct PacketWriter : SaveFilter {
 	/**
 	 * Transfer all packets from here to the network's queue while holding
 	 * the lock on our mutex.
-	 * @param socket The network socket to write to.
 	 * @return True iff the last packet of the map has been sent.
 	 */
-	bool TransferToNetworkQueue(ServerNetworkGameSocketHandler *socket)
+	bool TransferToNetworkQueue()
 	{
 		std::lock_guard<std::mutex> lock(this->mutex);
 
 		if (this->map_size_packet) {
 			/* Don't queue the PACKET_SERVER_MAP_SIZE before the corresponding PACKET_SERVER_MAP_BEGIN */
-			socket->SendPrependPacket(std::move(this->map_size_packet), PACKET_SERVER_MAP_BEGIN);
+			this->cs->SendPrependPacket(std::move(this->map_size_packet), PACKET_SERVER_MAP_BEGIN);
 		}
 		bool last_packet = false;
 		for (auto &p : this->packets) {
 			if (p->GetPacketType() == PACKET_SERVER_MAP_DONE) last_packet = true;
-			socket->SendPacket(std::move(p));
+			this->cs->SendPacket(std::move(p));
 
 		}
 		this->packets.clear();
@@ -142,12 +141,12 @@ struct PacketWriter : SaveFilter {
 
 	void Write(byte *buf, size_t size) override
 	{
+		std::lock_guard<std::mutex> lock(this->mutex);
+
 		/* We want to abort the saving when the socket is closed. */
 		if (this->cs == nullptr) SlError(STR_NETWORK_ERROR_LOSTCONNECTION);
 
 		if (this->current == nullptr) this->current = std::make_unique<Packet>(PACKET_SERVER_MAP_DATA, TCP_MTU);
-
-		std::lock_guard<std::mutex> lock(this->mutex);
 
 		byte *bufe = buf + size;
 		while (buf != bufe) {
@@ -165,10 +164,10 @@ struct PacketWriter : SaveFilter {
 
 	void Finish() override
 	{
+		std::lock_guard<std::mutex> lock(this->mutex);
+
 		/* We want to abort the saving when the socket is closed. */
 		if (this->cs == nullptr) SlError(STR_NETWORK_ERROR_LOSTCONNECTION);
-
-		std::lock_guard<std::mutex> lock(this->mutex);
 
 		/* Make sure the last packet is flushed. */
 		if (this->current != nullptr) this->packets.push_back(std::move(this->current));
@@ -489,6 +488,17 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendDesyncLog(const std::strin
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendNewGRFCheck()
 {
 	auto p = std::make_unique<Packet>(PACKET_SERVER_CHECK_NEWGRFS, TCP_MTU);
+
+	/* Invalid packet when status is anything but STATUS_INACTIVE. */
+	if (this->status != STATUS_INACTIVE) return this->CloseConnection(NETWORK_RECV_STATUS_MALFORMED_PACKET);
+
+	this->status = STATUS_NEWGRFS_CHECK;
+
+	if (_grfconfig == nullptr) {
+		/* There are no NewGRFs, continue with the game password. */
+		return this->SendNeedGamePassword();
+	}
+
 	const GRFConfig *c;
 	uint grf_count = 0;
 
@@ -508,15 +518,16 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendNewGRFCheck()
 /** Request the game password. */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendNeedGamePassword()
 {
+	/* Invalid packet when status is anything but STATUS_NEWGRFS_CHECK. */
+	if (this->status != STATUS_NEWGRFS_CHECK) return this->CloseConnection(NETWORK_RECV_STATUS_MALFORMED_PACKET);
+
+	this->status = STATUS_AUTH_GAME;
+
 	if (_settings_client.network.server_password.empty()) {
 		/* Do not actually need a game password, continue with the company password. */
 		return this->SendNeedCompanyPassword();
 	}
 
-	/* Invalid packet when status is STATUS_AUTH_GAME or higher */
-	if (this->status >= STATUS_AUTH_GAME) return this->CloseConnection(NETWORK_RECV_STATUS_MALFORMED_PACKET);
-
-	this->status = STATUS_AUTH_GAME;
 	/* Reset 'lag' counters */
 	this->last_frame = this->last_frame_server = _frame_counter;
 
@@ -533,15 +544,16 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendNeedGamePassword()
 /** Request the company password. */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendNeedCompanyPassword()
 {
+	/* Invalid packet when status is anything but STATUS_AUTH_GAME. */
+	if (this->status != STATUS_AUTH_GAME) return this->CloseConnection(NETWORK_RECV_STATUS_MALFORMED_PACKET);
+
+	this->status = STATUS_AUTH_COMPANY;
+
 	NetworkClientInfo *ci = this->GetInfo();
 	if (!Company::IsValidID(ci->client_playas) || _network_company_states[ci->client_playas].password.empty()) {
 		return this->SendWelcome();
 	}
 
-	/* Invalid packet when status is STATUS_AUTH_COMPANY or higher */
-	if (this->status >= STATUS_AUTH_COMPANY) return this->CloseConnection(NETWORK_RECV_STATUS_MALFORMED_PACKET);
-
-	this->status = STATUS_AUTH_COMPANY;
 	/* Reset 'lag' counters */
 	this->last_frame = this->last_frame_server = _frame_counter;
 
@@ -555,10 +567,11 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendNeedCompanyPassword()
 /** Send the client a welcome message with some basic information. */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendWelcome()
 {
-	/* Invalid packet when status is AUTH or higher */
-	if (this->status >= STATUS_AUTHORIZED) return this->CloseConnection(NETWORK_RECV_STATUS_MALFORMED_PACKET);
+	/* Invalid packet when status is anything but STATUS_AUTH_COMPANY. */
+	if (this->status != STATUS_AUTH_COMPANY) return this->CloseConnection(NETWORK_RECV_STATUS_MALFORMED_PACKET);
 
 	this->status = STATUS_AUTHORIZED;
+
 	/* Reset 'lag' counters */
 	this->last_frame = this->last_frame_server = _frame_counter;
 
@@ -659,7 +672,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendMap()
 	}
 
 	if (this->status == STATUS_MAP) {
-		bool last_packet = this->savegame->TransferToNetworkQueue(this);
+		bool last_packet = this->savegame->TransferToNetworkQueue();
 		if (last_packet) {
 			/* Done reading, make sure saving is done as well */
 			this->savegame->Destroy();
@@ -1014,13 +1027,6 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_JOIN(Packet &p)
 
 	/* Make sure companies to which people try to join are not autocleaned */
 	if (Company::IsValidID(playas)) _network_company_states[playas].months_empty = 0;
-
-	this->status = STATUS_NEWGRFS_CHECK;
-
-	if (_grfconfig == nullptr) {
-		/* Continue asking for the game password. */
-		return this->SendNeedGamePassword();
-	}
 
 	return this->SendNewGRFCheck();
 }
