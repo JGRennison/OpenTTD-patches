@@ -2908,11 +2908,6 @@ struct FileWriter : SaveFilter {
 			SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_WRITEABLE, stdstr_fmt("Temporary save file does not have expected file size: " PRINTF_SIZE " != " PRINTF_SIZE, (size_t)st.st_size, save_size));
 		}
 
-#if defined(_WIN32)
-		/* Renaming over an existing file is not supported on Windows, manually unlink the target filename first */
-		unlink(this->target_name.c_str());
-#endif
-
 		if (!FioRenameFile(this->temp_name, this->target_name)) SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_WRITEABLE, "Failed to rename temporary save file to target name");
 		this->temp_name.clear(); // Now no need to unlink temporary name
 	}
