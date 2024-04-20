@@ -5088,9 +5088,9 @@ void BuildOilRig(TileIndex tile)
 	if (_settings_game.station.serve_neutral_industries) {
 		StationList nearby = std::move(st->industry->stations_near);
 		st->industry->stations_near.clear();
-		for (Station *near : nearby) {
-			near->RecomputeCatchment(true);
-			UpdateStationAcceptance(near, true);
+		for (Station *st_near : nearby) {
+			st_near->RecomputeCatchment(true);
+			UpdateStationAcceptance(st_near, true);
 		}
 	}
 
