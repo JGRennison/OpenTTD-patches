@@ -99,7 +99,7 @@ public:
 	 */
 	void SetInterval(const TPeriod interval, bool reset = true)
 	{
-		this->period = interval;
+		TimerManager<TTimerType>::ChangeRegisteredTimerPeriod(*this, interval);
 		if (reset) this->storage = {};
 	}
 
@@ -151,7 +151,7 @@ public:
 	 */
 	void Reset(const TPeriod timeout)
 	{
-		this->period = timeout;
+		TimerManager<TTimerType>::ChangeRegisteredTimerPeriod(*this, timeout);
 		this->fired = false;
 		this->storage = {};
 	}
