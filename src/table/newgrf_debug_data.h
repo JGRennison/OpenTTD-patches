@@ -627,14 +627,14 @@ class NIHVehicle : public NIHelper {
 						e->age, e->info.base_life.base(), e->duration_phase_1, e->duration_phase_2, e->duration_phase_3,
 						e->duration_phase_1 + e->duration_phase_2 + e->duration_phase_3);
 				output.print(buffer);
-				seprintf(buffer, lastof(buffer), "    Reliability: %u, spd_dec: %u, start: %u, max: %u, final: %u",
-						e->reliability, e->reliability_spd_dec, e->reliability_start, e->reliability_max, e->reliability_final);
+				seprintf(buffer, lastof(buffer), "    Reliability: %u, spd_dec: %u (%u), start: %u, max: %u, final: %u",
+						e->reliability, e->reliability_spd_dec, e->info.decay_speed, e->reliability_start, e->reliability_max, e->reliability_final);
 				output.print(buffer);
 				seprintf(buffer, lastof(buffer), "    Cargo type: %u, refit mask: 0x" OTTD_PRINTFHEX64 ", refit cost: %u",
 						e->info.cargo_type, e->info.refit_mask, e->info.refit_cost);
 				output.print(buffer);
-				seprintf(buffer, lastof(buffer), "    Cargo ageing: %u, cargo load speed: %u",
-						e->info.decay_speed, e->info.load_amount);
+				seprintf(buffer, lastof(buffer), "    Cargo age period: %u, cargo load speed: %u",
+						e->info.cargo_age_period, e->info.load_amount);
 				output.print(buffer);
 				seprintf(buffer, lastof(buffer), "    Company availability: %X, climates: %X",
 						e->company_avail, e->info.climates);
