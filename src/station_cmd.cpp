@@ -71,6 +71,8 @@
 
 #include "safeguards.h"
 
+static StationSpec::TileFlags GetStationTileFlags(StationGfx gfx, const StationSpec *statspec);
+
 bool _town_noise_no_update = false;
 
 /**
@@ -945,7 +947,7 @@ CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statsp
 		// default stations/waypoints
 		static const uint8_t st_flags[8] = { 0x50, 0xA0, 0x50, 0xA0, 0x50 | 0x26, 0xA0 | 0x1C, 0x50 | 0x89, 0xA0 | 0x43 };
 		disallowed_pillar_flags = (BridgePiecePillarFlags) st_flags[layout];
-	} else if (HasBit(statspec->blocked, layout)) {
+	} else if ((GetStationTileFlags(layout, statspec) & StationSpec::TileFlags::Blocked) == StationSpec::TileFlags::Blocked) {
 		// non-track station tiles
 		disallowed_pillar_flags = (BridgePiecePillarFlags) 0;
 	} else {
@@ -1459,21 +1461,29 @@ static void RestoreTrainReservation(Train *v)
 }
 
 /**
+ * Get station tile flags for the given StationGfx.
+ * @param gfx StationGfx of station tile.
+ * @param statspec Station spec of station tile.
+ * @return Tile flags to apply.
+ */
+static StationSpec::TileFlags GetStationTileFlags(StationGfx gfx, const StationSpec *statspec)
+{
+	/* Default stations do not draw pylons under roofs (gfx >= 4) */
+	if (statspec == nullptr || gfx >= statspec->tileflags.size()) return gfx < 4 ? StationSpec::TileFlags::Pylons : StationSpec::TileFlags::None;
+	return statspec->tileflags[gfx];
+}
+
+/**
  * Set rail station tile flags for the given tile.
  * @param tile Tile to set flags on.
  * @param statspec Statspec of the tile.
  */
 void SetRailStationTileFlags(TileIndex tile, const StationSpec *statspec)
 {
-	const StationGfx gfx = GetStationGfx(tile);
-	bool blocked = statspec != nullptr && HasBit(statspec->blocked, gfx);
-	/* Default stations do not draw pylons under roofs (gfx >= 4) */
-	bool pylons = statspec != nullptr ? HasBit(statspec->pylons, gfx) : gfx < 4;
-	bool wires = statspec == nullptr || !HasBit(statspec->wires, gfx);
-
-	SetStationTileBlocked(tile, blocked);
-	SetStationTileHavePylons(tile, pylons);
-	SetStationTileHaveWires(tile, wires);
+	const auto flags = GetStationTileFlags(GetStationGfx(tile), statspec);
+	SetStationTileBlocked(tile, (flags & StationSpec::TileFlags::Blocked) == StationSpec::TileFlags::Blocked);
+	SetStationTileHavePylons(tile, (flags & StationSpec::TileFlags::Pylons) == StationSpec::TileFlags::Pylons);
+	SetStationTileHaveWires(tile, (flags & StationSpec::TileFlags::NoWires) != StationSpec::TileFlags::NoWires);
 }
 
 /**

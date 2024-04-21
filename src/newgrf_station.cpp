@@ -1100,9 +1100,9 @@ void UpdateStationTileCacheFlags(bool force_update)
 			if (statspec == nullptr) continue;
 
 			checksum.Update(j);
-			checksum.Update(statspec->blocked);
-			checksum.Update(statspec->pylons);
-			checksum.Update(statspec->wires);
+			for (StationSpec::TileFlags flags : statspec->tileflags) {
+				checksum.Update(static_cast<uint64_t>(flags));
+			}
 		}
 	}
 

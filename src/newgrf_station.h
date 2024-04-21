@@ -10,6 +10,7 @@
 #ifndef NEWGRF_STATION_H
 #define NEWGRF_STATION_H
 
+#include "core/enum_type.hpp"
 #include "newgrf_animation_type.h"
 #include "newgrf_callbacks.h"
 #include "newgrf_class.h"
@@ -131,7 +132,7 @@ struct StationSpec : NewGRFSpecBase<StationClassID> {
 	StationSpec() : name(0),
 		disallowed_platforms(0), disallowed_lengths(0),
 		cargo_threshold(0), cargo_triggers(0),
-		callback_mask(0), flags(0), pylons(0), wires(0), blocked(0),
+		callback_mask(0), flags(0),
 		animation({0, 0, 0, 0}), internal_flags(0) {}
 	/**
 	 * Properties related the the grf file.
@@ -175,11 +176,16 @@ struct StationSpec : NewGRFSpecBase<StationClassID> {
 
 	uint8_t flags; ///< Bitmask of flags, bit 0: use different sprite set; bit 1: divide cargo about by station size
 
-	uint8_t pylons;  ///< Bitmask of base tiles (0 - 7) which should contain elrail pylons
-	uint8_t wires;   ///< Bitmask of base tiles (0 - 7) which should contain elrail wires
-	uint8_t blocked; ///< Bitmask of base tiles (0 - 7) which are blocked to trains
 	uint8_t bridge_height[8]; ///< Minimum height for a bridge above, 0 for none
 	uint8_t bridge_disallowed_pillars[8]; ///< Disallowed pillar flags for a bridge above
+
+	enum class TileFlags : uint8_t {
+		None = 0,
+		Pylons = 1U << 0, ///< Tile should contain catenary pylons.
+		NoWires = 1U << 1, ///< Tile should NOT contain catenary wires.
+		Blocked = 1U << 2, ///< Tile is blocked to vehicles.
+	};
+	std::vector<TileFlags> tileflags; ///< List of tile flags.
 
 	AnimationInfo animation;
 
@@ -195,6 +201,7 @@ struct StationSpec : NewGRFSpecBase<StationClassID> {
 	 */
 	std::vector<std::vector<std::vector<uint8_t>>> layouts;
 };
+DECLARE_ENUM_AS_BIT_SET(StationSpec::TileFlags);
 
 /** Class containing information relating to station classes. */
 using StationClass = NewGRFClass<StationSpec, StationClassID, STAT_CLASS_MAX>;
