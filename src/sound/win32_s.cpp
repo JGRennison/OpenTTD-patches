@@ -26,18 +26,26 @@
 static FSoundDriver_Win32 iFSoundDriver_Win32;
 
 static HWAVEOUT _waveout;
-static WAVEHDR _wave_hdr[2];
+static std::array<WAVEHDR, 3> _wave_hdr{};
 static int _bufsize;
 static HANDLE _thread;
 static DWORD _threadId;
 static HANDLE _event;
 
-static void PrepareHeader(WAVEHDR *hdr)
+static void PrepareHeader(HWAVEOUT waveout, WAVEHDR &hdr)
 {
-	hdr->dwBufferLength = _bufsize * 4;
-	hdr->dwFlags = 0;
-	hdr->lpData = MallocT<char>(_bufsize * 4);
-	if (waveOutPrepareHeader(_waveout, hdr, sizeof(WAVEHDR)) != MMSYSERR_NOERROR) throw "waveOutPrepareHeader failed";
+	hdr = {};
+	hdr.dwBufferLength = _bufsize * 4;
+	hdr.dwFlags = 0;
+	hdr.lpData = MallocT<char>(_bufsize * 4);
+	if (waveOutPrepareHeader(waveout, &hdr, sizeof(WAVEHDR)) != MMSYSERR_NOERROR) throw "waveOutPrepareHeader failed";
+}
+
+static void UnPrepareHeader(HWAVEOUT waveout, WAVEHDR &hdr)
+{
+	waveOutUnprepareHeader(waveout, &hdr, sizeof(WAVEHDR));
+	free(hdr.lpData);
+	hdr.lpData = nullptr;
 }
 
 static DWORD WINAPI SoundThread(LPVOID)
@@ -45,10 +53,10 @@ static DWORD WINAPI SoundThread(LPVOID)
 	SetCurrentThreadName("ottd:win-sound");
 
 	do {
-		for (WAVEHDR *hdr = _wave_hdr; hdr != endof(_wave_hdr); hdr++) {
-			if ((hdr->dwFlags & WHDR_INQUEUE) != 0) continue;
-			MxMixSamples(hdr->lpData, hdr->dwBufferLength / 4);
-			if (waveOutWrite(_waveout, hdr, sizeof(WAVEHDR)) != MMSYSERR_NOERROR) {
+		for (WAVEHDR &hdr : _wave_hdr) {
+			if ((hdr.dwFlags & WHDR_INQUEUE) != 0) continue;
+			MxMixSamples(hdr.lpData, hdr.dwBufferLength / 4);
+			if (waveOutWrite(_waveout, &hdr, sizeof(WAVEHDR)) != MMSYSERR_NOERROR) {
 				MessageBox(nullptr, L"Sounds are disabled until restart.", L"waveOutWrite failed", MB_ICONINFORMATION);
 				return 0;
 			}
@@ -61,7 +69,7 @@ static DWORD WINAPI SoundThread(LPVOID)
 
 const char *SoundDriver_Win32::Start(const StringList &parm)
 {
-	WAVEFORMATEX wfex;
+	WAVEFORMATEX wfex{};
 	wfex.wFormatTag = WAVE_FORMAT_PCM;
 	wfex.nChannels = 2;
 	wfex.wBitsPerSample = 16;
@@ -70,7 +78,7 @@ const char *SoundDriver_Win32::Start(const StringList &parm)
 	wfex.nAvgBytesPerSec = wfex.nSamplesPerSec * wfex.nBlockAlign;
 
 	/* Limit buffer size to prevent overflows. */
-	_bufsize = GetDriverParamInt(parm, "samples", 2048);
+	_bufsize = GetDriverParamInt(parm, "samples", 4096);
 	_bufsize = std::min<int>(_bufsize, UINT16_MAX);
 
 	try {
@@ -80,8 +88,9 @@ const char *SoundDriver_Win32::Start(const StringList &parm)
 
 		MxInitialize(wfex.nSamplesPerSec);
 
-		PrepareHeader(&_wave_hdr[0]);
-		PrepareHeader(&_wave_hdr[1]);
+		for (WAVEHDR &hdr : _wave_hdr) {
+			PrepareHeader(_waveout, hdr);
+		}
 
 		if (nullptr == (_thread = CreateThread(nullptr, 8192, SoundThread, 0, 0, &_threadId))) throw "Failed to create thread";
 	} catch (const char *error) {
@@ -102,8 +111,9 @@ void SoundDriver_Win32::Stop()
 
 	/* Close the sound device. */
 	waveOutReset(waveout);
-	waveOutUnprepareHeader(waveout, &_wave_hdr[0], sizeof(WAVEHDR));
-	waveOutUnprepareHeader(waveout, &_wave_hdr[1], sizeof(WAVEHDR));
+	for (WAVEHDR &hdr : _wave_hdr) {
+		UnPrepareHeader(waveout, hdr);
+	}
 	waveOutClose(waveout);
 
 	CloseHandle(_thread);
