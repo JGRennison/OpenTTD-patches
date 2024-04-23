@@ -3590,7 +3590,7 @@ draw_default_foundation:
 					stop_draw_mode = (RoadStopDrawMode)GetRegister(0x100);
 				}
 				t = dts;
-				if (type == STATION_ROADWAYPOINT && (stopspec->draw_mode & ROADSTOP_DRAW_MODE_WAYP_GROUND)) {
+				if (type == STATION_ROADWAYPOINT && (stop_draw_mode & ROADSTOP_DRAW_MODE_WAYP_GROUND)) {
 					draw_ground = true;
 				}
 			}
