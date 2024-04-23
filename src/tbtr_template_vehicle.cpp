@@ -160,6 +160,7 @@ bool ShouldServiceTrainForTemplateReplacement(const Train *t, const TemplateVehi
 	if (needed_money > c->money) return false;
 	TBTRDiffFlags diff = TrainTemplateDifference(t, tv);
 	if (diff & TBTRDF_CONSIST) {
+		if (_settings_game.difficulty.infinite_money) return true;
 		/* Check money.
 		 * We want 2*(the price of the whole template) without looking at the value of the vehicle(s) we are going to sell, or not need to buy. */
 		for (const TemplateVehicle *tv_unit = tv; tv_unit != nullptr; tv_unit = tv_unit->GetNextUnit()) {
