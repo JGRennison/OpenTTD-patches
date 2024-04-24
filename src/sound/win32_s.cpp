@@ -20,6 +20,7 @@
 #include <versionhelpers.h>
 #include "../os/windows/win32.h"
 #include "../thread.h"
+#include <array>
 
 #include "../safeguards.h"
 
