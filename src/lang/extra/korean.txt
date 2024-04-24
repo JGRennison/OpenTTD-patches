@@ -688,6 +688,9 @@ STR_CONFIG_SETTING_IGNORE_OBJECT_INTRO_DATES_HELPTEXT           :플레이어가
 STR_CONFIG_SETTING_ALLOW_CONVERT_TOWN_ROAD_NO_HOUSES            :도시 소유의 도로를 집 건설 불가 도로로 바꾸는 것을 허용: {STRING}
 STR_CONFIG_SETTING_ALLOW_CONVERT_TOWN_ROAD_NO_HOUSES_HELPTEXT   :플레이어가 도시 소유의 도로를 집 건설 불가 도로 유형으로 변경할 수 있도록 허용합니다.{}이 설정을 켜면 도시가 집을 짓지 못하게 되어 결과적으로 도시의 규모가 줄어들 수 있기 때문에, 이 설정은 기본적으로 꺼져있습니다.
 
+STR_CONFIG_SETTING_PURCHASED_LAND_CLEAR_GROUND                  :소유권 땅 바닥에 잔디 바닥 사용: {STRING}
+STR_CONFIG_SETTING_PURCHASED_LAND_CLEAR_GROUND_HELPTEXT         :이 설정을 켜면, 소유권 땅 바닥을 잔디, 해안, 눈, 사막 등과 같은 깔끔한 지형 칸으로 표시합니다.
+
 STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY                  :1차 산업시설만 생성: {STRING}
 STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY_HELPTEXT         :이 설정을 켜면, 게임 플레이나 지도 생성 시에 1차 산업시설만 생성됩니다.
 
@@ -709,7 +712,7 @@ STR_CONFIG_SETTING_SAFER_CROSSINGS_HELPTEXT                     :건널목을 �
 STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE                       :차량 수리에 비용 지불: {STRING}
 STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE_HELPTEXT              :차량 수리에 비용 지불
 
-STR_CONFIG_SETTING_REPAIR_COST                                  :수리에 사용될 비용: 원래 가격의 1/{STRING}
+STR_CONFIG_SETTING_REPAIR_COST                                  :수리에 사용될 비용: 원래 가격의 {ORANGE}1/{STRING}
 STR_CONFIG_SETTING_REPAIR_COST_HELPTEXT                         :수리에 사용될 비용
 
 STR_CONFIG_OCCUPANCY_SMOOTHNESS                                 :매끄러운 경로 사용률 측정: {STRING}
@@ -1569,6 +1572,11 @@ STR_VEHICLE_DETAILS_TRAIN_WAGON_VALUE_AND_SPEED                 :{LTBLUE}{ENGINE
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_WEIGHT                          :{BLACK}총 무게: {LTBLUE}{WEIGHT_SHORT} {BLACK}(빈차) - {LTBLUE}{WEIGHT_SHORT} {BLACK}(가득)
 STR_VEHICLE_DETAILS_TRAIN_MAX_SPEED                             :{BLACK}최대 속력: {LTBLUE}{VELOCITY} {BLACK}(빈차) - {LTBLUE}{VELOCITY} {BLACK}(가득)
 
+STR_VEHICLE_DETAILS_EXTRA_ACTIONS_TOOLTIP                       :{BLACK}추가 차량 동작
+STR_VEHICLE_DETAILS_REMOVE_SPEED_RESTRICTION                    :속력 제한 제거
+STR_VEHICLE_DETAILS_SET_SPEED_RESTRICTION                       :속력 제한 설정
+STR_VEHICLE_DETAILS_REMOVE_FROM_SLOT                            :슬롯에서 제거:
+
 STR_ORDER_DROP_CARGO_TYPE_LOAD                                  :화물 종류에 따라 싣기
 STR_ORDER_DROP_CARGO_TYPE_UNLOAD                                :화물 종류에 따라 하차
 
@@ -1875,14 +1883,15 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :항공기 {COMM
 
 STR_FORMAT_DATE_MINUTES                                         :{0:STRING}:{1:STRING}
 
-STR_HHMM_WITH_DATE_Y                                            :{TIME_HHMM} / {NUM}
-STR_HHMM_WITH_DATE_YM                                           :{TIME_HHMM} / {DATE_SHORT}
-STR_HHMM_WITH_DATE_YMD                                          :{TIME_HHMM} / {DATE_LONG}
+STR_HHMM_WITH_DATE_Y                                            :{1:NUM} {0:TIME_HHMM}
+STR_HHMM_WITH_DATE_YM                                           :{1:DATE_SHORT} {0:TIME_HHMM}
+STR_HHMM_WITH_DATE_YMD                                          :{1:DATE_LONG} {0:TIME_HHMM}
 
 STR_FORMAT_GROUP_VEHICLE_NAME_LONG                              :{GROUP} - {STRING}
 
 STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP                            :{BROWN}{NUM} {STRING}
 STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_STATION                    :{BLACK}역
+STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_VIA_STATION                :{GRAY}통
 STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_WAYPOINT                   :{GRAY}경
 STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_IMPLICIT                   :{GRAY}암
 STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_DEPOT                      :{RED}기
@@ -2257,3 +2266,5 @@ STR_VIEWPORT_TOWN_COLOUR_CITY_POP                               :{WHITE}{TOWN} {
 
 STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :선택 도구
 STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :보조 키 창
+
+STR_ERROR_CAN_T_CHANGE_SPEED_RESTRICTION                        :{WHITE}차량의 속력 제한을 변경할 수 없습니다...
