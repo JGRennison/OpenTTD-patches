@@ -2472,7 +2472,7 @@ class NIHRoadStop : public NIHelper {
 		const RoadStopSpec *spec = GetRoadStopSpec(index);
 		if (spec) {
 			uint class_id = RoadStopClass::Get(spec->cls_id)->global_id;
-			char *b = buffer + seprintf(buffer, lastof(buffer), "  class ID: %c%c%c%c, spec ID: %u", class_id >> 24, class_id >> 16, class_id >> 8, class_id, spec->spec_id);
+			char *b = buffer + seprintf(buffer, lastof(buffer), "  class ID: %c%c%c%c", class_id >> 24, class_id >> 16, class_id >> 8, class_id);
 			if (spec->grf_prop.grffile != nullptr) {
 				b += seprintf(b, lastof(buffer), "  (local ID: %u)", spec->grf_prop.local_id);
 			}

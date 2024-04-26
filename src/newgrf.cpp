@@ -5145,7 +5145,6 @@ static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const
 
 				uint32_t classid = buf->ReadDWord();
 				rs->cls_id = RoadStopClass::Allocate(BSWAP32(classid));
-				rs->spec_id = id + i;
 				break;
 			}
 
