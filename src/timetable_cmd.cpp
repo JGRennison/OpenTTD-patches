@@ -1010,10 +1010,12 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 				/* Possible jam, clear time and restart timetable for all vehicles.
 				 * Otherwise we risk trains blocking 1-lane stations for long times. */
 				ChangeTimetable(v, v->cur_timetable_order_index, 0, travel_field ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, false);
-				for (Vehicle *v2 = v->FirstShared(); v2 != nullptr; v2 = v2->NextShared()) {
-					/* Clear VF_TIMETABLE_STARTED but do not call ClearSeparation */
-					ClrBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
-					v2->lateness_counter = 0;
+				if (!HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
+					for (Vehicle *v2 = v->FirstShared(); v2 != nullptr; v2 = v2->NextShared()) {
+						/* Clear VF_TIMETABLE_STARTED but do not call ClearSeparation */
+						ClrBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
+						v2->lateness_counter = 0;
+					}
 				}
 				SetTimetableWindowsDirty(v);
 				return;
