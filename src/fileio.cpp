@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include <pwd.h>
 #endif
+#include <charconv>
 #include <sys/stat.h>
 #include <array>
 #include <sstream>
@@ -492,6 +493,21 @@ bool TarScanner::AddFile(Subdirectory sd, const std::string &filename)
 	return this->AddFile(filename, 0);
 }
 
+/**
+ * Helper to extract a string for the tar header. We must assume that the tar
+ * header contains garbage and is malicious. So, we cannot rely on the string
+ * being properly terminated.
+ * As such, do not use strlen to determine the actual length (explicitly or
+ * implictly via the std::string constructor), but pass the buffer bounds
+ * explicitly.
+ * @param buffer The buffer to read from.
+ * @return The string data.
+ */
+static std::string ExtractString(std::span<char> buffer)
+{
+	return StrMakeValid(std::string_view(buffer.begin(), buffer.end()));
+}
+
 bool TarScanner::AddFile(const std::string &filename, size_t basepath_length, const std::string &tar_filename)
 {
 	/* No tar within tar. */
@@ -538,7 +554,6 @@ bool TarScanner::AddFile(const std::string &filename, size_t basepath_length, co
 	TarLinkList links; ///< Temporary list to collect links
 
 	TarHeader th;
-	char buf[sizeof(th.name) + 1], *end;
 	char name[sizeof(th.prefix) + 1 + sizeof(th.name) + 1];
 	char link[sizeof(th.linkname) + 1];
 	char dest[sizeof(th.prefix) + 1 + sizeof(th.name) + 1 + 1 + sizeof(th.linkname) + 1];
@@ -574,9 +589,18 @@ bool TarScanner::AddFile(const std::string &filename, size_t basepath_length, co
 		/* Copy the name of the file in a safe way at the end of 'name' */
 		strecat(name, th.name, lastof(name));
 
-		/* Calculate the size of the file.. for some strange reason this is stored as a string */
-		strecpy(buf, th.size, lastof(buf));
-		size_t skip = std::strtoul(buf, &end, 8);
+		/* The size of the file, for some strange reason, this is stored as a string in octals. */
+		std::string size = ExtractString(th.size);
+		size_t skip = 0;
+		if (!size.empty()) {
+			StrTrimInPlace(size);
+			auto [_, err] = std::from_chars(size.data(), size.data() + size.size(), skip, 8);
+			if (err != std::errc()) {
+				DEBUG(misc, 0, "The file '%s' has an invalid size for '%s'", filename.c_str(), name);
+				fclose(f);
+				return false;
+			}
+		}
 
 		switch (th.typeflag) {
 			case '\0':
