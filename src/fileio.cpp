@@ -11,6 +11,7 @@
 #include "fileio_func.h"
 #include "spriteloader/spriteloader.hpp"
 #include "debug.h"
+#include "debug_fmt.h"
 #include "fios.h"
 #include "string_func.h"
 #include "tar_type.h"
@@ -69,9 +70,6 @@ std::vector<Searchpath> _valid_searchpaths;
 std::vector<Searchpath> _valid_searchpaths_excluding_cwd;
 std::array<TarList, NUM_SUBDIRS> _tar_list;
 TarFileList _tar_filelist[NUM_SUBDIRS];
-
-typedef std::map<std::string, std::string> TarLinkList;
-static TarLinkList _tar_linklist[NUM_SUBDIRS]; ///< List of directory links
 
 extern bool FiosIsValidFile(const char *path, const struct dirent *ent, struct stat *sb);
 
@@ -307,17 +305,6 @@ FILE *FioFOpenFile(const std::string &filename, const char *mode, Subdirectory s
 			first = false;
 		}
 
-		/* Resolve ONE directory link */
-		for (const auto &link : _tar_linklist[subdir]) {
-			const std::string &src = link.first;
-			size_t len = src.length();
-			if (resolved_name.length() >= len && resolved_name[len - 1] == PATHSEPCHAR && src.compare(0, len, resolved_name, 0, len) == 0) {
-				/* Apply link */
-				resolved_name.replace(0, len, link.second);
-				break; // Only resolve one level
-			}
-		}
-
 		TarFileList::iterator it = _tar_filelist[subdir].find(resolved_name);
 		if (it != _tar_filelist[subdir].end()) {
 			f = FioFOpenFileTar(it->second, filesize);
@@ -401,27 +388,6 @@ void AppendPathSeparator(std::string &buf)
 	if (buf.empty()) return;
 
 	if (buf.back() != PATHSEPCHAR) buf.push_back(PATHSEPCHAR);
-}
-
-static void TarAddLink(const std::string &srcParam, const std::string &destParam, Subdirectory subdir)
-{
-	std::string src = srcParam;
-	std::string dest = destParam;
-	/* Tar internals assume lowercase */
-	std::transform(src.begin(), src.end(), src.begin(), tolower);
-	std::transform(dest.begin(), dest.end(), dest.begin(), tolower);
-
-	TarFileList::iterator dest_file = _tar_filelist[subdir].find(dest);
-	if (dest_file != _tar_filelist[subdir].end()) {
-		/* Link to file. Process the link like the destination file. */
-		_tar_filelist[subdir].insert(TarFileList::value_type(src, dest_file->second));
-	} else {
-		/* Destination file not found. Assume 'link to directory'
-		 * Append PATHSEPCHAR to 'src' and 'dest' if needed */
-		const std::string src_path = ((*src.rbegin() == PATHSEPCHAR) ? src : src + PATHSEPCHAR);
-		const std::string dst_path = (dest.length() == 0 ? "" : ((*dest.rbegin() == PATHSEPCHAR) ? dest : dest + PATHSEPCHAR));
-		_tar_linklist[subdir].insert(TarLinkList::value_type(src_path, dst_path));
-	}
 }
 
 /**
@@ -551,8 +517,6 @@ bool TarScanner::AddFile(const std::string &filename, size_t basepath_length, co
 	std::string filename_base = StrLastPathSegment(filename);
 	SimplifyFileName(filename_base.data());
 
-	TarLinkList links; ///< Temporary list to collect links
-
 	TarHeader th;
 	char name[sizeof(th.prefix) + 1 + sizeof(th.name) + 1];
 	char link[sizeof(th.linkname) + 1];
@@ -624,71 +588,9 @@ bool TarScanner::AddFile(const std::string &filename, size_t basepath_length, co
 
 			case '1': // hard links
 			case '2': { // symbolic links
-				/* Copy the destination of the link in a safe way at the end of 'linkname' */
-				strecpy(link, th.linkname, lastof(link));
+				std::string link = ExtractString(th.linkname);
 
-				if (strlen(name) == 0 || strlen(link) == 0) break;
-
-				/* Convert to lowercase and our PATHSEPCHAR */
-				SimplifyFileName(name);
-				SimplifyFileName(link);
-
-				/* Only allow relative links */
-				if (link[0] == PATHSEPCHAR) {
-					DEBUG(misc, 5, "Ignoring absolute link in tar: %s -> %s", name, link);
-					break;
-				}
-
-				/* Process relative path.
-				 * Note: The destination of links must not contain any directory-links. */
-				strecpy(dest, name, lastof(dest));
-				char *destpos = strrchr(dest, PATHSEPCHAR);
-				if (destpos == nullptr) destpos = dest;
-				*destpos = '\0';
-
-				char *pos = link;
-				while (*pos != '\0') {
-					char *next = strchr(pos, PATHSEPCHAR);
-					if (next == nullptr) {
-						next = pos + strlen(pos);
-					} else {
-						/* Terminate the substring up to the path separator character. */
-						*next++= '\0';
-					}
-
-					if (strcmp(pos, ".") == 0) {
-						/* Skip '.' (current dir) */
-					} else if (strcmp(pos, "..") == 0) {
-						/* level up */
-						if (dest[0] == '\0') {
-							DEBUG(misc, 5, "Ignoring link pointing outside of data directory: %s -> %s", name, link);
-							break;
-						}
-
-						/* Truncate 'dest' after last PATHSEPCHAR.
-						 * This assumes that the truncated part is a real directory and not a link. */
-						destpos = strrchr(dest, PATHSEPCHAR);
-						if (destpos == nullptr) destpos = dest;
-						*destpos = '\0';
-					} else {
-						/* Append at end of 'dest' */
-						if (destpos != dest) destpos = strecpy(destpos, PATHSEP, lastof(dest));
-						destpos = strecpy(destpos, pos, lastof(dest));
-					}
-
-					if (destpos >= lastof(dest)) {
-						DEBUG(misc, 0, "The length of a link in tar-file '%s' is too large (malformed?)", filename.c_str());
-						fclose(f);
-						return false;
-					}
-
-					pos = next;
-				}
-
-				/* Store links in temporary list */
-				DEBUG(misc, 6, "Found link in tar: %s -> %s", name, dest);
-				links.insert(TarLinkList::value_type(filename_base + PATHSEPCHAR + name, filename_base + PATHSEPCHAR + dest));
-
+				Debug(misc, 5, "Ignoring link in tar: {} -> {}", name, link);
 				break;
 			}
 
@@ -718,19 +620,6 @@ bool TarScanner::AddFile(const std::string &filename, size_t basepath_length, co
 
 	DEBUG(misc, 4, "Found tar '%s' with " PRINTF_SIZE " new files", filename.c_str(), num);
 	fclose(f);
-
-	/* Resolve file links and store directory links.
-	 * We restrict usage of links to two cases:
-	 *  1) Links to directories:
-	 *      Both the source path and the destination path must NOT contain any further links.
-	 *      When resolving files at most one directory link is resolved.
-	 *  2) Links to files:
-	 *      The destination path must NOT contain any links.
-	 *      The source path may contain one directory link.
-	 */
-	for (auto &it : links) {
-		TarAddLink(it.first, it.second, this->subdir);
-	}
 
 	return true;
 }
