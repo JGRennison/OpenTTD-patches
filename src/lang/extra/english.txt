@@ -2168,7 +2168,7 @@ STR_SCHDISPATCH_SLOT_TOOLTIP_TAG                                :{}Tag {NUM}
 STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}No previous departures.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Last departure at {TT_TIME}.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}Last departure has not left yet, it will depart at {TT_TIME}.
-STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}This schedule requires {COMMA} vehicle{P "" s}.
+STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}This schedule is estimated to require at least {COMMA} vehicle{P "" s}.
 STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}This schedule repeats every {STRING1}.
 STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}This schedule began at {TT_TIME}, and ends at {TT_TIME}.
 STR_SCHDISPATCH_SUMMARY_L4                                      :{BLACK}Maximum delay of {STRING1} is allowed before the slot is skipped.
