@@ -753,6 +753,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 			} else {
 				std::string subgroup_padding(padding);
 				subgroup_padding += "  ";
+				bool found_error_group = false;
 				for (const auto &range : (*ranges)) {
 					char *p = this->buffer;
 					p += seprintf(p, lastof(this->buffer), "%srange: %X -> %X", padding, range.low, range.high);
@@ -767,6 +768,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 					}
 					print();
 					this->DumpSpriteGroup(range.group, subgroup_padding.c_str(), SGDF_RANGE);
+					if (range.group == dsg->error_group) found_error_group = true;
 				}
 				if (default_group != nullptr) {
 					char *p = this->buffer;
@@ -776,6 +778,13 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 					}
 					print();
 					this->DumpSpriteGroup(default_group, subgroup_padding.c_str(), SGDF_DEFAULT);
+					if (default_group == dsg->error_group) found_error_group = true;
+				}
+				if (this->more_details && !found_error_group && dsg->error_group != nullptr) {
+					char *p = this->buffer;
+					p += seprintf(p, lastof(this->buffer), "%sunreachable error group", padding);
+					print();
+					this->DumpSpriteGroup(dsg->error_group, subgroup_padding.c_str(), SGDF_DEFAULT);
 				}
 			}
 			break;
