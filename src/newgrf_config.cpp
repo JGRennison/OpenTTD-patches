@@ -540,6 +540,15 @@ void ResetGRFConfig(bool defaults)
 	AppendStaticGRFConfigs(&_grfconfig);
 }
 
+/** Get the count of non-static GRFs in a GRF config list */
+uint GetGRFConfigListNonStaticCount(const GRFConfig *config)
+{
+	uint grf_count = 0;
+	for (const GRFConfig *c = config; c != nullptr; c = c->next) {
+		if (!HasBit(c->flags, GCF_STATIC)) grf_count++;
+	}
+	return grf_count;
+}
 
 /**
  * Check if all GRFs in the GRF config from a savegame can be loaded.

@@ -15,6 +15,7 @@
 #include "newgrf_sl.h"
 #include "../fios.h"
 #include "../load_check.h"
+#include "../debug.h"
 
 #include "../safeguards.h"
 
@@ -98,6 +99,8 @@ struct NGRFChunkHandler : ChunkHandler {
 			if (IsSavegameVersionBefore(SLV_101)) c->SetSuitablePalette();
 			AppendToGRFConfigList(&grfconfig, c);
 		}
+
+		DEBUG(sl, 2, "Loaded %u NewGRFs", GetGRFConfigListNonStaticCount(grfconfig));
 	}
 
 	void Load() const override

@@ -233,6 +233,7 @@ void AppendStaticGRFConfigs(GRFConfig **dst);
 void AppendToGRFConfigList(GRFConfig **dst, GRFConfig *el);
 void ClearGRFConfigList(GRFConfig **config);
 void ResetGRFConfig(bool defaults);
+uint GetGRFConfigListNonStaticCount(const GRFConfig *config);
 GRFListCompatibility IsGoodGRFConfigList(GRFConfig *grfconfig);
 bool FillGRFDetails(GRFConfig *config, bool is_static, Subdirectory subdir = NEWGRF_DIR);
 std::string GRFBuildParamList(const GRFConfig *c);

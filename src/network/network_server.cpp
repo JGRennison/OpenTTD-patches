@@ -499,15 +499,8 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendNewGRFCheck()
 		return this->SendNeedGamePassword();
 	}
 
-	const GRFConfig *c;
-	uint grf_count = 0;
-
-	for (c = _grfconfig; c != nullptr; c = c->next) {
-		if (!HasBit(c->flags, GCF_STATIC)) grf_count++;
-	}
-
-	p->Send_uint32(grf_count);
-	for (c = _grfconfig; c != nullptr; c = c->next) {
+	p->Send_uint32(GetGRFConfigListNonStaticCount(_grfconfig));
+	for (const GRFConfig *c = _grfconfig; c != nullptr; c = c->next) {
 		if (!HasBit(c->flags, GCF_STATIC)) SerializeGRFIdentifier(*p, c->ident);
 	}
 
