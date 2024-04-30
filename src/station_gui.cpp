@@ -2034,7 +2034,11 @@ struct StationViewWindow : public Window {
 			tr.top += WidgetDimensions::scaled.vsep_wide;
 		}
 
-		DrawString(tr, EconTime::UsingWallclockUnits() ? STR_STATION_VIEW_SUPPLY_RATINGS_TITLE_MINUTE : STR_STATION_VIEW_SUPPLY_RATINGS_TITLE_MONTH);
+		if (EconTime::UsingWallclockUnits()) {
+			DrawString(tr, (DayLengthFactor() > 1) ? STR_STATION_VIEW_SUPPLY_RATINGS_TITLE_PRODUCTION_INTERVAL : STR_STATION_VIEW_SUPPLY_RATINGS_TITLE_MINUTE);
+		} else {
+			DrawString(tr, STR_STATION_VIEW_SUPPLY_RATINGS_TITLE_MONTH);
+		}
 		tr.top += GetCharacterHeight(FS_NORMAL);
 
 		this->ratings_list_y = tr.top;

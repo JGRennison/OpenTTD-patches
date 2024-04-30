@@ -117,6 +117,7 @@
 
 void CallLandscapeTick();
 void IncreaseDate();
+void IncreaseCalendarDate();
 void DoPaletteAnimations();
 void MusicLoop();
 void CallWindowGameTickEvent();
@@ -2245,6 +2246,9 @@ void StateGameLoop()
 
 		RunAuxiliaryTileLoop();
 		if (DateDetail::_tick_skip_counter < DayLengthFactor()) {
+			if (_settings_game.economy.timekeeping_units == TKU_WALLCLOCK && !(_game_mode == GM_MENU || _game_mode == GM_BOOTSTRAP)) {
+				IncreaseCalendarDate();
+			}
 			AnimateAnimatedTiles();
 			RunTileLoop(true);
 			CallVehicleTicks();

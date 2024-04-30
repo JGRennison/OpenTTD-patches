@@ -2835,6 +2835,22 @@ static StringID _service_interval_dropdown_wallclock[] = {
 	INVALID_STRING_ID,
 };
 
+static StringID _service_interval_dropdown_wallclock_daylength[] = {
+	STR_VEHICLE_DETAILS_DEFAULT,
+	STR_VEHICLE_DETAILS_PRODUCTION_INTERVALS,
+	STR_VEHICLE_DETAILS_PERCENT,
+	INVALID_STRING_ID,
+};
+
+const StringID *GetServiceIntervalDropDownTexts()
+{
+	if (EconTime::UsingWallclockUnits()) {
+		return DayLengthFactor() > 1 ? _service_interval_dropdown_wallclock_daylength : _service_interval_dropdown_wallclock;
+	} else {
+		return _service_interval_dropdown_calendar;
+	}
+}
+
 /** Class for managing the vehicle details window. */
 struct VehicleDetailsWindow : Window {
 	TrainDetailsWindowTabs tab; ///< For train vehicles: which tab is displayed.
@@ -3052,7 +3068,8 @@ struct VehicleDetailsWindow : Window {
 
 			case WID_VD_SERVICE_INTERVAL_DROPDOWN: {
 				Dimension d{0, 0};
-				for (const StringID *strs : {_service_interval_dropdown_calendar, _service_interval_dropdown_wallclock}) {
+				{
+					const StringID *strs = GetServiceIntervalDropDownTexts();
 					while (*strs != INVALID_STRING_ID) {
 						d = maxdim(d, GetStringBoundingBox(*strs++));
 					}
@@ -3313,10 +3330,15 @@ struct VehicleDetailsWindow : Window {
 				/* We're using wallclock units. Show minutes since last serviced. */
 				if (EconTime::UsingWallclockUnits()) {
 					int minutes_since_serviced = (EconTime::CurDate() - v->date_of_last_service).base() / EconTime::DAYS_IN_ECONOMY_WALLCLOCK_MONTH;
-					SetDParam(1, STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO);
+					SetDParam(1, DayLengthFactor() > 1 ? STR_VEHICLE_DETAILS_LAST_SERVICE_PRODUCTION_INTERVALS_AGO : STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO);
 					SetDParam(2, minutes_since_serviced);
-					DrawString(tr.left, tr.right, CenterBounds(r.top, r.bottom, GetCharacterHeight(FS_NORMAL)),
-						v->ServiceIntervalIsPercent() ? STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT : STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES);
+					StringID str;
+					if (v->ServiceIntervalIsPercent()) {
+						str = STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT;
+					} else {
+						str = DayLengthFactor() > 1 ? STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PRODUCTION_INTERVALS : STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES;
+					}
+					DrawString(tr.left, tr.right, CenterBounds(r.top, r.bottom, GetCharacterHeight(FS_NORMAL)), str);
 					break;
 				}
 
@@ -3347,10 +3369,8 @@ struct VehicleDetailsWindow : Window {
 
 		this->SetWidgetDisabledState(WID_VD_EXTRA_ACTIONS, v->type != VEH_TRAIN && !HasBit(v->vehicle_flags, VF_HAVE_SLOT));
 
-		StringID str =
-			!v->ServiceIntervalIsCustom() ? STR_VEHICLE_DETAILS_DEFAULT :
-			v->ServiceIntervalIsPercent() ? STR_VEHICLE_DETAILS_PERCENT :
-			EconTime::UsingWallclockUnits() ? STR_VEHICLE_DETAILS_MINUTES : STR_VEHICLE_DETAILS_DAYS;
+		const StringID *texts = GetServiceIntervalDropDownTexts();
+		StringID str = !v->ServiceIntervalIsCustom() ? texts[0] : (v->ServiceIntervalIsPercent() ? texts[2] : texts[1]);
 		this->GetWidget<NWidgetCore>(WID_VD_SERVICE_INTERVAL_DROPDOWN)->widget_data = str;
 
 		this->DrawWidgets();
@@ -3380,7 +3400,7 @@ struct VehicleDetailsWindow : Window {
 			case WID_VD_SERVICE_INTERVAL_DROPDOWN: {
 				const Vehicle *v = Vehicle::Get(this->window_number);
 				ShowDropDownMenu(this,
-						EconTime::UsingWallclockUnits() ? _service_interval_dropdown_wallclock : _service_interval_dropdown_calendar,
+						GetServiceIntervalDropDownTexts(),
 						v->ServiceIntervalIsCustom() ? (v->ServiceIntervalIsPercent() ? 2 : 1) : 0, widget, 0, 0, 0, DDSF_SHARED);
 				break;
 			}
@@ -3431,7 +3451,11 @@ struct VehicleDetailsWindow : Window {
 			if (v->ServiceIntervalIsPercent()) {
 				tool_tip = widget == WID_VD_INCREASE_SERVICING_INTERVAL ? STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_PERCENT : STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_PERCENT;
 			} else if (EconTime::UsingWallclockUnits()) {
-				tool_tip = widget == WID_VD_INCREASE_SERVICING_INTERVAL ? STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_MINUTES : STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_MINUTES;
+				if (DayLengthFactor() > 1) {
+					tool_tip = widget == WID_VD_INCREASE_SERVICING_INTERVAL ? STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_PRODINT : STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_PRODINT;
+				} else {
+					tool_tip = widget == WID_VD_INCREASE_SERVICING_INTERVAL ? STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_MINUTES : STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_MINUTES;
+				}
 			} else {
 				tool_tip = widget == WID_VD_INCREASE_SERVICING_INTERVAL ? STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_DAYS : STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_DAYS;
 			}

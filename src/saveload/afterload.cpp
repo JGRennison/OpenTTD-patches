@@ -682,6 +682,10 @@ bool AfterLoadGame()
 	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH, 5) && IsSavegameVersionBefore(SLV_ECONOMY_MODE_TIMEKEEPING_UNITS)) {
 		_settings_game.economy.timekeeping_units = TKU_CALENDAR;
 	}
+	/* Wallclock unit games which previously ran at an effective day length of 1 should remain that way */
+	if (SlXvIsFeatureMissing(XSLFI_VARIABLE_DAY_LENGTH, 7) && _settings_game.economy.timekeeping_units == TKU_WALLCLOCK) {
+		_settings_game.economy.day_length_factor = 1;
+	}
 	UpdateEffectiveDayLengthFactor();
 
 	SetupTickRate();

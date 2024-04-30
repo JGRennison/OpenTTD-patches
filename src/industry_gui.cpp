@@ -960,7 +960,11 @@ public:
 			if (i->produced_cargo[j] == INVALID_CARGO) continue;
 			if (first) {
 				if (has_accept) ir.top += WidgetDimensions::scaled.vsep_wide;
-				DrawString(ir, EconTime::UsingWallclockUnits() ? STR_INDUSTRY_VIEW_PRODUCTION_LAST_MINUTE_TITLE : STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE);
+				if (EconTime::UsingWallclockUnits()) {
+					DrawString(ir, (DayLengthFactor() > 1) ? STR_INDUSTRY_VIEW_PRODUCTION_LAST_PRODUCTION_INTERVAL_TITLE : STR_INDUSTRY_VIEW_PRODUCTION_LAST_MINUTE_TITLE);
+				} else {
+					DrawString(ir, STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE);
+				}
 				ir.top += GetCharacterHeight(FS_NORMAL);
 				if (this->editable == EA_RATE) this->production_offset_y = ir.top;
 				first = false;

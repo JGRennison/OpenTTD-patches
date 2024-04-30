@@ -592,7 +592,12 @@ public:
 		DrawString(tr, STR_TOWN_VIEW_POPULATION_HOUSES);
 		tr.top += GetCharacterHeight(FS_NORMAL);
 
-		StringID str_last_period = EconTime::UsingWallclockUnits() ? STR_TOWN_VIEW_CARGO_LAST_MINUTE_MAX : STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX;
+		StringID str_last_period;
+		if (EconTime::UsingWallclockUnits()) {
+			str_last_period = (DayLengthFactor() > 1) ? STR_TOWN_VIEW_CARGO_LAST_PRODUCTION_INTERVAL_MAX : STR_TOWN_VIEW_CARGO_LAST_MINUTE_MAX;
+		} else {
+			str_last_period = STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX;
+		}
 
 		for (auto tpe : {TPE_PASSENGERS, TPE_MAIL}) {
 			for (CargoID cid : CargoSpec::town_production_cargoes[tpe]) {

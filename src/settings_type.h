@@ -902,7 +902,7 @@ struct GameSettings {
 
 	uint8_t EffectiveDayLengthFactor() const
 	{
-		return this->economy.timekeeping_units == TKU_CALENDAR ? this->economy.day_length_factor : 1;
+		return this->economy.day_length_factor;
 	}
 };
 

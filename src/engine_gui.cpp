@@ -204,10 +204,10 @@ static StringID ProcessEngineCapacityString(StringID str)
 
 static StringID GetRunningCostString()
 {
-	if (EconTime::UsingWallclockUnits()) {
-		return STR_ENGINE_PREVIEW_RUNCOST_PERIOD;
-	} else if (DayLengthFactor() > 1 && !_settings_client.gui.show_running_costs_calendar_year) {
+	if (DayLengthFactor() > 1 && !_settings_client.gui.show_running_costs_calendar_year) {
 		return STR_ENGINE_PREVIEW_RUNCOST_ORIG_YEAR;
+	} else if (EconTime::UsingWallclockUnits()) {
+		return STR_ENGINE_PREVIEW_RUNCOST_PERIOD;
 	} else {
 		return STR_ENGINE_PREVIEW_RUNCOST_YEAR;
 	}

@@ -467,7 +467,7 @@ static void OnNewEconomyDay()
 	}
 }
 
-static void IncreaseCalendarDate()
+void IncreaseCalendarDate()
 {
 	/* If calendar day progress is frozen, don't try to advance time. */
 	if (CalTime::IsCalendarFrozen()) return;

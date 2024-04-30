@@ -588,6 +588,10 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 						SetDParam(0, STR_TIMETABLE_MINUTES);
 						SetDParam(1, time / _settings_time.ticks_per_minute);
 						GetString(builder, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL);
+					} else if (EconTime::UsingWallclockUnits() && DayLengthFactor() > 1) {
+						SetDParam(0, STR_UNITS_SECONDS);
+						SetDParam(1, time / (DAY_TICKS / 2));
+						GetString(builder, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL);
 					} else {
 						SetDParam(0, time / (DAY_TICKS * DayLengthFactor()));
 						GetString(builder, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION);
@@ -656,7 +660,13 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 			SetDParam(3, i->to_id);
 			SetDParam(4, link.Usage() * 100 / (link.capacity + 1));
 			SetDParamStr(5, std::move(buf));
-			GuiShowTooltips(this->window, EconTime::UsingWallclockUnits() ? STR_LINKGRAPH_STATS_TOOLTIP_MINUTE : STR_LINKGRAPH_STATS_TOOLTIP_MONTH, close_cond);
+			StringID msg;
+			if (EconTime::UsingWallclockUnits()) {
+				msg = (DayLengthFactor() > 1) ? STR_LINKGRAPH_STATS_TOOLTIP_PRODUCTION_INTERVAL : STR_LINKGRAPH_STATS_TOOLTIP_MINUTE;
+			} else {
+				msg = STR_LINKGRAPH_STATS_TOOLTIP_MONTH;
+			}
+			GuiShowTooltips(this->window, msg, close_cond);
 			return true;
 		}
 	}

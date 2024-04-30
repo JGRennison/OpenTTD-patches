@@ -844,6 +844,7 @@ static const Units _units_time_days_or_seconds[] = {
 static const Units _units_time_months_or_minutes[] = {
 	{ { 1 }, STR_UNITS_MONTHS,  0 },
 	{ { 1 }, STR_UNITS_MINUTES, 0 },
+	{ { 1 }, STR_UNITS_PRODUCTION_INTERVALS, 0 },
 };
 
 /** Unit conversions for time in calendar years or economic periods */
@@ -856,6 +857,7 @@ static const Units _units_time_years_or_periods[] = {
 static const Units _units_time_years_or_minutes[] = {
 	{ { 1  }, STR_UNITS_YEARS,  0 },
 	{ { 12 }, STR_UNITS_MINUTES, 0 },
+	{ { 1  }, STR_UNITS_PERIODS, 0 },
 };
 
 StringID GetVelocityUnitName(VehicleType type)
@@ -1751,13 +1753,16 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 				case SCC_UNITS_DAYS_OR_SECONDS: { // {UNITS_DAYS_OR_SECONDS}
 					uint8_t realtime = EconTime::UsingWallclockUnits(_game_mode == GM_MENU);
 					const auto &x = _units_time_days_or_seconds[realtime];
-					auto tmp_params = MakeParameters(x.c.ToDisplay(args.GetNextParameter<int64_t>()), x.decimal_places);
+					int64_t duration = args.GetNextParameter<int64_t>();
+					if (realtime) duration *= DayLengthFactor();
+					auto tmp_params = MakeParameters(x.c.ToDisplay(duration), x.decimal_places);
 					FormatString(builder, GetStringPtr(x.s), tmp_params);
 					break;
 				}
 
 				case SCC_UNITS_MONTHS_OR_MINUTES: { // {UNITS_MONTHS_OR_MINUTES}
 					uint8_t realtime = EconTime::UsingWallclockUnits(_game_mode == GM_MENU);
+					if (realtime > 0 && DayLengthFactor() > 1) realtime++;
 					const auto &x = _units_time_months_or_minutes[realtime];
 					auto tmp_params = MakeParameters(x.c.ToDisplay(args.GetNextParameter<int64_t>()), x.decimal_places);
 					FormatString(builder, GetStringPtr(x.s), tmp_params);
@@ -1774,6 +1779,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 
 				case SCC_UNITS_YEARS_OR_MINUTES: { // {UNITS_YEARS_OR_MINUTES}
 					uint8_t realtime = EconTime::UsingWallclockUnits(_game_mode == GM_MENU);
+					if (realtime > 0 && DayLengthFactor() > 1) realtime++;
 					const auto &x = _units_time_years_or_minutes[realtime];
 					auto tmp_params = MakeParameters(x.c.ToDisplay(args.GetNextParameter<int64_t>()), x.decimal_places);
 					FormatString(builder, GetStringPtr(x.s), tmp_params);

@@ -12,6 +12,7 @@ static size_t ConvertLandscape(const char *value);
 
 static StringID SettingTitleWallclock(const IntSettingDesc &sd);
 static StringID SettingHelpWallclock(const IntSettingDesc &sd);
+static StringID SettingHelpWallclockTriple(const IntSettingDesc &sd);
 
 /* Callback function used in _settings[] as well as _gui_settings[] */
 static void UpdateTimeSettings(int32_t new_value);

@@ -1095,6 +1095,12 @@ static StringID SettingHelpWallclock(const IntSettingDesc &sd)
 	return EconTime::UsingWallclockUnits(_game_mode == GM_MENU) ? sd.str_help + 1 : sd.str_help;
 }
 
+/** Switch setting help depending on wallclock setting */
+static StringID SettingHelpWallclockTriple(const IntSettingDesc &sd)
+{
+	return EconTime::UsingWallclockUnits(_game_mode == GM_MENU) ? sd.str_help + ((GetGameSettings().economy.day_length_factor > 1) ? 2 : 1) : sd.str_help;
+}
+
 /** Setting values for velocity unit localisation */
 static void SettingsValueVelocityUnit(const IntSettingDesc &, uint first_param, int32_t value)
 {
@@ -2288,7 +2294,13 @@ static bool TownCargoScaleGUI(SettingOnGuiCtrlData &data)
 {
 	switch (data.type) {
 		case SOGCT_VALUE_DPARAMS:
-			if (!EconTime::UsingWallclockUnits(_game_mode == GM_MENU)) SetDParam(data.offset, STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY + GetGameSettings().economy.town_cargo_scale_mode);
+			if (GetGameSettings().economy.day_length_factor > 1) {
+				if (GetGameSettings().economy.town_cargo_scale_mode) {
+					SetDParam(data.offset, STR_CONFIG_SETTING_CARGO_SCALE_VALUE_REAL_TIME);
+				} else {
+					SetDParam(data.offset, EconTime::UsingWallclockUnits(_game_mode == GM_MENU) ? STR_CONFIG_SETTING_CARGO_SCALE_VALUE_PER_PRODUCTION_INTERVAL : STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY);
+				}
+			}
 			return true;
 
 		default:
@@ -2305,7 +2317,27 @@ static bool IndustryCargoScaleGUI(SettingOnGuiCtrlData &data)
 			return true;
 
 		case SOGCT_VALUE_DPARAMS:
-			if (!EconTime::UsingWallclockUnits(_game_mode == GM_MENU)) SetDParam(data.offset, STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY + GetGameSettings().economy.industry_cargo_scale_mode);
+			if (GetGameSettings().economy.day_length_factor > 1) {
+				if (GetGameSettings().economy.town_cargo_scale_mode) {
+					SetDParam(data.offset, STR_CONFIG_SETTING_CARGO_SCALE_VALUE_REAL_TIME);
+				} else {
+					SetDParam(data.offset, EconTime::UsingWallclockUnits(_game_mode == GM_MENU) ? STR_CONFIG_SETTING_CARGO_SCALE_VALUE_PER_PRODUCTION_INTERVAL : STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY);
+				}
+			}
+			return true;
+
+		default:
+			return false;
+	}
+}
+
+static bool TownCargoScaleModeGUI(SettingOnGuiCtrlData &data)
+{
+	switch (data.type) {
+		case SOGCT_VALUE_DPARAMS:
+			if (data.text == STR_CONFIG_SETTING_CARGO_SCALE_MODE_MONTHLY && EconTime::UsingWallclockUnits(_game_mode == GM_MENU)) {
+				data.text = STR_CONFIG_SETTING_CARGO_SCALE_MODE_PER_PRODUCTION_INTERVAL;
+			}
 			return true;
 
 		default:
@@ -2322,7 +2354,7 @@ static bool IndustryCargoScaleModeGUI(SettingOnGuiCtrlData &data)
 			return true;
 
 		default:
-			return WallclockModeDisabledGUI(data);
+			return TownCargoScaleModeGUI(data);
 	}
 }
 
