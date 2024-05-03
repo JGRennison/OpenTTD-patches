@@ -395,15 +395,16 @@ void AppendPathSeparator(std::string &buf)
  * Replace '/' by #PATHSEPCHAR, and force 'name' to lowercase.
  * @param name Filename to process.
  */
-static void SimplifyFileName(char *name)
+static void SimplifyFileName(std::string &name)
 {
-	/* Force lowercase */
-	strtolower(name);
-
-	/* Tar-files always have '/' path-separator, but we want our PATHSEPCHAR */
+	for (char &c : name) {
+		/* Force lowercase */
+		c = std::tolower(c);
 #if (PATHSEPCHAR != '/')
-	for (char *n = name; *n != '\0'; n++) if (*n == '/') *n = PATHSEPCHAR;
+		/* Tar-files always have '/' path-separator, but we want our PATHSEPCHAR */
+		if (c == '/') c = PATHSEPCHAR;
 #endif
+	}
 }
 
 /**
@@ -422,7 +423,7 @@ uint TarScanner::DoScan(Subdirectory sd)
 
 /* static */ uint TarScanner::DoScan(TarScanner::Mode mode)
 {
-	DEBUG(misc, 2, "Scanning for tars");
+	Debug(misc, 2, "Scanning for tars");
 	TarScanner fs;
 	uint num = 0;
 	if (mode & TarScanner::BASESET) {
@@ -443,7 +444,7 @@ uint TarScanner::DoScan(Subdirectory sd)
 		num += fs.DoScan(SCENARIO_DIR);
 		num += fs.DoScan(HEIGHTMAP_DIR);
 	}
-	DEBUG(misc, 2, "Scan complete, found %d files", num);
+	Debug(misc, 2, "Scan complete, found {} files", num);
 	return num;
 }
 
@@ -474,7 +475,7 @@ static std::string ExtractString(std::span<char> buffer)
 	return StrMakeValid(std::string_view(buffer.begin(), buffer.end()));
 }
 
-bool TarScanner::AddFile(const std::string &filename, size_t basepath_length, const std::string &tar_filename)
+bool TarScanner::AddFile(const std::string &filename, size_t, [[maybe_unused]] const std::string &tar_filename)
 {
 	/* No tar within tar. */
 	assert(tar_filename.empty());
@@ -485,7 +486,7 @@ bool TarScanner::AddFile(const std::string &filename, size_t basepath_length, co
 		char mode[8];
 		char uid[8];
 		char gid[8];
-		char size[12];       ///< Size of the file, in ASCII
+		char size[12];       ///< Size of the file, in ASCII octals
 		char mtime[12];
 		char chksum[8];
 		char typeflag;
@@ -515,12 +516,9 @@ bool TarScanner::AddFile(const std::string &filename, size_t basepath_length, co
 	_tar_list[this->subdir][filename] = std::string{};
 
 	std::string filename_base = StrLastPathSegment(filename);
-	SimplifyFileName(filename_base.data());
+	SimplifyFileName(filename_base);
 
 	TarHeader th;
-	char name[sizeof(th.prefix) + 1 + sizeof(th.name) + 1];
-	char link[sizeof(th.linkname) + 1];
-	char dest[sizeof(th.prefix) + 1 + sizeof(th.name) + 1 + 1 + sizeof(th.linkname) + 1];
 	size_t num = 0, pos = 0;
 
 	/* Make a char of 512 empty bytes */
@@ -537,21 +535,21 @@ bool TarScanner::AddFile(const std::string &filename, size_t basepath_length, co
 			/* If we have only zeros in the block, it can be an end-of-file indicator */
 			if (memcmp(&th, &empty[0], 512) == 0) continue;
 
-			DEBUG(misc, 0, "The file '%s' isn't a valid tar-file", filename.c_str());
+			Debug(misc, 0, "The file '{}' isn't a valid tar-file", filename);
 			fclose(f);
 			return false;
 		}
 
-		name[0] = '\0';
+		std::string name;
 
 		/* The prefix contains the directory-name */
 		if (th.prefix[0] != '\0') {
-			strecpy(name, th.prefix, lastof(name));
-			strecat(name, PATHSEP, lastof(name));
+			name = ExtractString(th.prefix);
+			name += PATHSEP;
 		}
 
 		/* Copy the name of the file in a safe way at the end of 'name' */
-		strecat(name, th.name, lastof(name));
+		name += ExtractString(th.name);
 
 		/* The size of the file, for some strange reason, this is stored as a string in octals. */
 		std::string size = ExtractString(th.size);
@@ -560,7 +558,7 @@ bool TarScanner::AddFile(const std::string &filename, size_t basepath_length, co
 			StrTrimInPlace(size);
 			auto [_, err] = std::from_chars(size.data(), size.data() + size.size(), skip, 8);
 			if (err != std::errc()) {
-				DEBUG(misc, 0, "The file '%s' has an invalid size for '%s'", filename.c_str(), name);
+				Debug(misc, 0, "The file '{}' has an invalid size for '{}'", filename, name);
 				fclose(f);
 				return false;
 			}
@@ -569,7 +567,7 @@ bool TarScanner::AddFile(const std::string &filename, size_t basepath_length, co
 		switch (th.typeflag) {
 			case '\0':
 			case '0': { // regular file
-				if (strlen(name) == 0) break;
+				if (name.empty()) break;
 
 				/* Store this entry in the list */
 				TarFileListEntry entry;
@@ -580,7 +578,7 @@ bool TarScanner::AddFile(const std::string &filename, size_t basepath_length, co
 				/* Convert to lowercase and our PATHSEPCHAR */
 				SimplifyFileName(name);
 
-				DEBUG(misc, 6, "Found file in tar: %s (" PRINTF_SIZE " bytes, " PRINTF_SIZE " offset)", name, skip, pos);
+				Debug(misc, 6, "Found file in tar: {} ({} bytes, {} offset)", name, skip, pos);
 				if (_tar_filelist[this->subdir].insert(TarFileList::value_type(filename_base + PATHSEPCHAR + name, entry)).second) num++;
 
 				break;
@@ -599,7 +597,7 @@ bool TarScanner::AddFile(const std::string &filename, size_t basepath_length, co
 				SimplifyFileName(name);
 
 				/* Store the first directory name we detect */
-				DEBUG(misc, 6, "Found dir in tar: %s", name);
+				Debug(misc, 6, "Found dir in tar: {}", name);
 				if (_tar_list[this->subdir][filename].empty()) _tar_list[this->subdir][filename] = name;
 				break;
 
@@ -611,14 +609,14 @@ bool TarScanner::AddFile(const std::string &filename, size_t basepath_length, co
 		/* Skip to the next block.. */
 		skip = Align(skip, 512);
 		if (fseek(f, skip, SEEK_CUR) < 0) {
-			DEBUG(misc, 0, "The file '%s' can't be read as a valid tar-file", filename.c_str());
+			Debug(misc, 0, "The file '{}' can't be read as a valid tar-file", filename);
 			fclose(f);
 			return false;
 		}
 		pos += skip;
 	}
 
-	DEBUG(misc, 4, "Found tar '%s' with " PRINTF_SIZE " new files", filename.c_str(), num);
+	Debug(misc, 4, "Found tar '{}' with {} new files", filename, num);
 	fclose(f);
 
 	return true;
@@ -641,7 +639,7 @@ bool ExtractTar(const std::string &tar_filename, Subdirectory subdir)
 
 	/* The file doesn't have a sub directory! */
 	if (dirname.empty()) {
-		DEBUG(misc, 3, "Extracting %s failed; archive rejected, the contents must be in a sub directory", tar_filename.c_str());
+		Debug(misc, 3, "Extracting {} failed; archive rejected, the contents must be in a sub directory", tar_filename);
 		return false;
 	}
 
@@ -651,7 +649,7 @@ bool ExtractTar(const std::string &tar_filename, Subdirectory subdir)
 	if (p == std::string::npos) return false;
 
 	filename.replace(p + 1, std::string::npos, dirname);
-	DEBUG(misc, 8, "Extracting %s to directory %s", tar_filename.c_str(), filename.c_str());
+	Debug(misc, 8, "Extracting {} to directory {}", tar_filename, filename);
 	FioCreateDirectory(filename);
 
 	for (auto &it2 : _tar_filelist[subdir]) {
@@ -662,20 +660,20 @@ bool ExtractTar(const std::string &tar_filename, Subdirectory subdir)
 		name.remove_prefix(name.find_first_of(PATHSEPCHAR) + 1);
 		filename.replace(p + 1, std::string::npos, name);
 
-		DEBUG(misc, 9, "  extracting %s", filename.c_str());
+		Debug(misc, 9, "  extracting {}", filename);
 
 		/* First open the file in the .tar. */
 		size_t to_copy = 0;
 		std::unique_ptr<FILE, FileDeleter> in(FioFOpenFileTar(it2.second, &to_copy));
 		if (!in) {
-			DEBUG(misc, 6, "Extracting %s failed; could not open %s", filename.c_str(), tar_filename.c_str());
+			Debug(misc, 6, "Extracting {} failed; could not open {}", filename, tar_filename);
 			return false;
 		}
 
 		/* Now open the 'output' file. */
 		std::unique_ptr<FILE, FileDeleter> out(fopen(filename.c_str(), "wb"));
 		if (!out) {
-			DEBUG(misc, 6, "Extracting %s failed; could not open %s", filename.c_str(), filename.c_str());
+			Debug(misc, 6, "Extracting {} failed; could not open {}", filename, filename);
 			return false;
 		}
 
@@ -688,12 +686,12 @@ bool ExtractTar(const std::string &tar_filename, Subdirectory subdir)
 		}
 
 		if (to_copy != 0) {
-			DEBUG(misc, 6, "Extracting %s failed; still %i bytes to copy", filename.c_str(), (int)to_copy);
+			Debug(misc, 6, "Extracting {} failed; still {} bytes to copy", filename, to_copy);
 			return false;
 		}
 	}
 
-	DEBUG(misc, 9, "  extraction successful");
+	Debug(misc, 9, "  extraction successful");
 	return true;
 }
 
@@ -715,26 +713,28 @@ extern void DetermineBasePaths(const char *exe);
  */
 static bool ChangeWorkingDirectoryToExecutable(const char *exe)
 {
-	char tmp[MAX_PATH];
-	strecpy(tmp, exe, lastof(tmp));
+	std::string path = exe;
 
-	bool success = false;
 #ifdef WITH_COCOA
-	char *app_bundle = strchr(tmp, '.');
-	while (app_bundle != nullptr && !StrStartsWithIgnoreCase(app_bundle, ".app")) app_bundle = strchr(&app_bundle[1], '.');
-
-	if (app_bundle != nullptr) *app_bundle = '\0';
-#endif /* WITH_COCOA */
-	char *s = strrchr(tmp, PATHSEPCHAR);
-	if (s != nullptr) {
-		*s = '\0';
-		if (chdir(tmp) != 0) {
-			DEBUG(misc, 0, "Directory with the binary does not exist?");
-		} else {
-			success = true;
+	for (size_t pos = path.find_first_of('.'); pos != std::string::npos; pos = path.find_first_of('.', pos + 1)) {
+		if (StrEqualsIgnoreCase(path.substr(pos, 4), ".app")) {
+			path.erase(pos);
+			break;
 		}
 	}
-	return success;
+#endif /* WITH_COCOA */
+
+	size_t pos = path.find_last_of(PATHSEPCHAR);
+	if (pos == std::string::npos) return false;
+
+	path.erase(pos);
+
+	if (chdir(path.c_str()) != 0) {
+		Debug(misc, 0, "Directory with the binary does not exist?");
+		return false;
+	}
+
+	return true;
 }
 
 /**
@@ -888,7 +888,7 @@ void DetermineBasePaths(const char *exe)
 	if (cwd[0] != '\0') {
 		/* Go back to the current working directory. */
 		if (chdir(cwd) != 0) {
-			DEBUG(misc, 0, "Failed to return to working directory!");
+			Debug(misc, 0, "Failed to return to working directory!");
 		}
 	}
 
@@ -941,7 +941,7 @@ void DeterminePaths(const char *exe, bool only_local_path)
 
 	const std::vector<Searchpath> &vsp = _do_scan_working_directory ? _valid_searchpaths : _valid_searchpaths_excluding_cwd;
 	for (Searchpath sp : vsp) {
-		DEBUG(misc, 3, "%s added as search path", _searchpaths[sp].c_str());
+		Debug(misc, 3, "{} added as search path", _searchpaths[sp]);
 	}
 
 	std::string config_dir;
@@ -963,9 +963,9 @@ void DeterminePaths(const char *exe, bool only_local_path)
 				};
 
 			config_dir.clear();
-			for (uint i = 0; i < lengthof(new_openttd_cfg_order); i++) {
-				if (IsValidSearchPath(new_openttd_cfg_order[i])) {
-					config_dir = _searchpaths[new_openttd_cfg_order[i]];
+			for (const auto &searchpath : new_openttd_cfg_order) {
+				if (IsValidSearchPath(searchpath)) {
+					config_dir = _searchpaths[searchpath];
 					break;
 				}
 			}
@@ -974,7 +974,7 @@ void DeterminePaths(const char *exe, bool only_local_path)
 		_config_file = config_dir + "openttd.cfg";
 	}
 
-	DEBUG(misc, 1, "%s found as config directory", config_dir.c_str());
+	Debug(misc, 1, "{} found as config directory", config_dir);
 
 	_highscore_file = config_dir + "hs.dat";
 	extern std::string _hotkeys_file;
@@ -1010,26 +1010,26 @@ void DeterminePaths(const char *exe, bool only_local_path)
 	FioCreateDirectory(_personal_dir);
 #endif
 
-	DEBUG(misc, 1, "%s found as personal directory", _personal_dir.c_str());
+	Debug(misc, 1, "{} found as personal directory", _personal_dir);
 
 	static const Subdirectory default_subdirs[] = {
 		SAVE_DIR, AUTOSAVE_DIR, SCENARIO_DIR, HEIGHTMAP_DIR, BASESET_DIR, NEWGRF_DIR, AI_DIR, AI_LIBRARY_DIR, GAME_DIR, GAME_LIBRARY_DIR, SCREENSHOT_DIR, SOCIAL_INTEGRATION_DIR
 	};
 
-	for (uint i = 0; i < lengthof(default_subdirs); i++) {
-		FioCreateDirectory(_personal_dir + _subdirs[default_subdirs[i]]);
+	for (const auto &default_subdir : default_subdirs) {
+		FioCreateDirectory(_personal_dir + _subdirs[default_subdir]);
 	}
 
 	/* If we have network we make a directory for the autodownloading of content */
 	_searchpaths[SP_AUTODOWNLOAD_DIR] = _personal_dir + "content_download" PATHSEP;
-	DEBUG(misc, 3, "%s added as search path", _searchpaths[SP_AUTODOWNLOAD_DIR].c_str());
+	Debug(misc, 3, "{} added as search path", _searchpaths[SP_AUTODOWNLOAD_DIR]);
 	FioCreateDirectory(_searchpaths[SP_AUTODOWNLOAD_DIR]);
 	FillValidSearchPaths(only_local_path);
 
 	/* Create the directory for each of the types of content */
-	const Subdirectory dirs[] = { SCENARIO_DIR, HEIGHTMAP_DIR, BASESET_DIR, NEWGRF_DIR, AI_DIR, AI_LIBRARY_DIR, GAME_DIR, GAME_LIBRARY_DIR, SOCIAL_INTEGRATION_DIR };
-	for (uint i = 0; i < lengthof(dirs); i++) {
-		FioCreateDirectory(FioGetDirectory(SP_AUTODOWNLOAD_DIR, dirs[i]));
+	const Subdirectory subdirs[] = { SCENARIO_DIR, HEIGHTMAP_DIR, BASESET_DIR, NEWGRF_DIR, AI_DIR, AI_LIBRARY_DIR, GAME_DIR, GAME_LIBRARY_DIR, SOCIAL_INTEGRATION_DIR };
+	for (const auto &subdir : subdirs) {
+		FioCreateDirectory(FioGetDirectory(SP_AUTODOWNLOAD_DIR, subdir));
 	}
 
 	extern std::string _log_file;
