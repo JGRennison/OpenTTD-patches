@@ -116,7 +116,6 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Open train vehicle details window on total cargo tab if shift pressed.
 * Add news/advice setting to warn if no depot order in vehicle schedule.
 * [Add buttons to collapse/expand all groups](http://www.tt-forums.net/viewtopic.php?f=33&t=74365).
-* Add a menu item to the vehicle list to assign all listed vehicles to a new group.
 * Add a setting to include the train length and group name in the vehicle details window.
 * Add a setting for whether to open the new vehicle GUI when share-cloning.
 * Add setting to disable mass action buttons for top-level vehicle lists.
@@ -132,7 +131,6 @@ See [installation.md](/installation.md) for instructions on how to install.
 
 * [Automated timetables and separation](http://www.tt-forums.net/viewtopic.php?f=33&t=46391).
 * Allow clearing of timetable time fields which are at 0. Allow explicitly setting timetable time fields to 0 without clearing them.  
-* Allow changing/clearing the timetabled waiting time and max speed of all of a vehicle's orders at once.  
 * Add client setting to show the remainder ticks in timetable, after dividing to days or minutes.  
 * Add a company setting to control the number of ticks used in auto-fill timetable rounding.
 * [Cargo type orders](https://www.tt-forums.net/viewtopic.php?p=1047749).  
@@ -167,7 +165,6 @@ See [installation.md](/installation.md) for instructions on how to install.
 
 * [Departure boards](https://www.tt-forums.net/viewtopic.php?f=33&t=49956).
 * Add road waypoints.
-* Add NewGRF road stops.
 * Add a setting to increase the station catchment radius.
 * Station rating: track "last visited vehicle type" separately per cargo.
 * Add setting to scale station cargo capacity and rating tolerance by size.
@@ -188,7 +185,6 @@ See [installation.md](/installation.md) for instructions on how to install.
 
 #### Towns
 
-* [Town cargo generation factor](http://www.tt-forums.net/viewtopic.php?t=46399).
 * [Rating in town label](http://www.tt-forums.net/viewtopic.php?f=33&t=42598).
 * [Random town road reconstruction](https://www.tt-forums.net/viewtopic.php?f=33&t=36438). This defaults to off.
 * Add very and extremely slow options to town growth rate setting.
@@ -205,7 +201,6 @@ See [installation.md](/installation.md) for instructions on how to install.
 
 #### Industries
 
-* Industry cargo generation factor.
 * Allow linking only inputs or outputs to the smallmap and map mode viewports in the industry chain window.
 
 #### Map and Landscaping
@@ -215,7 +210,6 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add a new tree placement mode (perfect).
 * [Minimum town distance](https://www.tt-forums.net/viewtopic.php?f=33&t=33625).
 * Add map generation settings to control river/lake, rocky patch, and tropic zone generation.
-* Add generation of wide rivers.
 * Add settings to customise the size of town zones, and city zones.
 * Add setting to show purchased land using clear tile ground sprites (dirt, grass, snow, desert, etc).
 
@@ -223,7 +217,6 @@ See [installation.md](/installation.md) for instructions on how to install.
 
 * Enable building rivers in game. Off by default.
 * Add a setting to disable removing sea/rivers.
-* Allow building objects by area (1x1 objects only).
 * Allow purchasing a region of tiles at once, by dragging.
 * Add setting to control if and how land purchasing is permitted.
 * Add a company rate limit for land purchasing.
@@ -305,7 +298,6 @@ See [installation.md](/installation.md) for instructions on how to install.
 * Add setting to allow non server admins to use the money cheat in multiplayer.
 * Allow clicking the money text in the cheats window to enter a quantity.
 * Add cheats to set inflation income and cost factors.
-* Add cheat to set all station ratings to 100%.
 * Add cheat to set all town local authority ratings to Outstanding.
 
 #### Cargo Distribution and Link Graph
@@ -324,7 +316,6 @@ See [installation.md](/installation.md) for instructions on how to install.
 
 #### Console and Scripts
 
-* Add basic tab-completion to the console window.
 * Add console commands for conditional execution from game date.
 * [Daily/monthly/yearly scripts](http://www.tt-forums.net/viewtopic.php?f=33&t=49595)
 
