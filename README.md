@@ -1,6 +1,10 @@
 ## JGR's Patchpack version 0.58.3
 
-This is a collection of patches applied to [OpenTTD](http://www.openttd.org/)
+This is a collection of features and other modifications applied to [OpenTTD](http://www.openttd.org/).  
+It's a separate version of the game which can be installed and played alongside the standard game, not a loadable mod (NewGRF, script, or so on).
+
+This is mainly intended to be used by players who are already familiar with the standard game and how to play it.  
+It is not aimed at beginner/novice players. Some features and settings are there for very experienced players and so may have a steep learning curve.
 
 * * *
 
@@ -16,13 +20,13 @@ section "Licensing" below for details,
 
 See [below](#openttd) for the original OpenTTD readme.
 
-The thread for this patchpack can be found [here](http://www.tt-forums.net/viewtopic.php?f=33&t=73469).
-
 See [jgrpp-changelog.md](jgrpp-changelog.md) for the changelog.
 
 See the [wiki](https://github.com/JGRennison/OpenTTD-patches/wiki) for guides on how to use some of the included features.
 
 See [installation.md](/installation.md) for instructions on how to install.
+
+The TT-Forums thread for this patchpack can be found [here](http://www.tt-forums.net/viewtopic.php?f=33&t=73469).
 
 (Nearly all of the patches which are listed below have been modified, fixed or extended in some way, and so are not the same as the originals which are linked).
 
