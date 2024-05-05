@@ -2,6 +2,28 @@
 
 * * *
 
+### v0.59.0 (2024-05-05)
+* Fix loading recent vanilla savegame versions resulting in incorrect industry cargoes.
+* Fix incorrect station catchment/acceptance which could occur when an oil rig/water industry completed construction, which could cause multiplayer desyncs.
+* Fix AI construction of block signals when using realistic braking.
+* Fix incorrect train weights being used for calculating infrastructure sharing track fees.
+* Fix vehicles leaving dots behind in viewport map mode in some cases.
+* Fix NewGRF train motion animations for some NewGRFs which use articulated engines.
+* Fix template-based train replacement not triggering replacements for companies nominally in debt when using the infinite money setting.
+* Fix text filters in dual-pane train purchase window when using NewGRFs with variable vehicle names.
+* Road vehicles no longer remaining loading when the next order is for the same station if the next order has a different required direction.
+* Enable the cargo capacity/running cost sort mode in the dual pane train purchase window.
+* The vehicle capacity sort modes in the build vehicle windows now take into account the selected refit cargo.
+* Timekeeping:
+  * The day length factor setting is now enabled in wallclock timekeeping mode. This scales the economy speed, but not the calendar speed.
+  * Fix timing of engine preview offers in wallclock timekeeping mode.
+* Scheduled dispatch:
+  * When using scheduled dispatch and timetable automation at the same time, vehicle lateness values are no longer reset when congestion is detected.
+  * The number of vehicles required text is now clarified to be an estimate.
+* Further increase effect size of cargo dist effect of distance on demand setting for values greater than 100%.
+* Further reduce the possibility of stuttering when playing sound effects on Windows.
+* Bump trunk base from commit 3e625b5b1a81b00f774ca87b48d3e4f4e9d014c3 to commit bd7120bae41b6e7ac86c664c8220b59cd57242bb.
+
 ### v0.58.3 (2024-04-10)
 * Fix stuttering when playing sound effects on Windows.
 * Fix incorrect cargo payment calculations for cargo in the mail compartment of aircraft and in non-first parts of multi-part ships.
