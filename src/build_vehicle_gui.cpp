@@ -2192,7 +2192,7 @@ static Hotkey buildvehicle_hotkeys[] = {
 };
 HotkeyList BuildVehicleWindow::hotkeys("buildvehicle", buildvehicle_hotkeys);
 
-static EngList_SortTypeFunction * const  _sorter_loco[11] = {
+static EngList_SortTypeFunction * const  _sorter_loco[12] = {
 	/* Locomotives */
 	&EngineNumberSorter,
 	&EngineCostSorter,
@@ -2204,10 +2204,11 @@ static EngList_SortTypeFunction * const  _sorter_loco[11] = {
 	&EngineRunningCostSorter,
 	&EnginePowerVsRunningCostSorter,
 	&EngineReliabilitySorter,
-	&TrainEngineCapacitySorter
+	&TrainEngineCapacitySorter,
+	&TrainEngineCapacityVsRunningCostSorter
 };
 
-static EngList_SortTypeFunction * const _sorter_wagon[7] = {
+static EngList_SortTypeFunction * const _sorter_wagon[8] = {
 	/* Wagons */
 	&EngineNumberSorter,
 	&EngineCostSorter,
@@ -2215,10 +2216,11 @@ static EngList_SortTypeFunction * const _sorter_wagon[7] = {
 	&EngineIntroDateSorter,
 	&EngineNameSorter,
 	&EngineRunningCostSorter,
-	&TrainEngineCapacitySorter
+	&TrainEngineCapacitySorter,
+	&TrainEngineCapacityVsRunningCostSorter
 };
 
-static const StringID _sort_listing_loco[12] = {
+static const StringID _sort_listing_loco[13] = {
 	/* Locomotives */
 	STR_SORT_BY_ENGINE_ID,
 	STR_SORT_BY_COST,
@@ -2231,10 +2233,11 @@ static const StringID _sort_listing_loco[12] = {
 	STR_SORT_BY_POWER_VS_RUNNING_COST,
 	STR_SORT_BY_RELIABILITY,
 	STR_SORT_BY_CARGO_CAPACITY,
+	STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST,
 	INVALID_STRING_ID
 };
 
-static const StringID _sort_listing_wagon[8] = {
+static const StringID _sort_listing_wagon[9] = {
 	/* Wagons */
 	STR_SORT_BY_ENGINE_ID,
 	STR_SORT_BY_COST,
@@ -2243,6 +2246,7 @@ static const StringID _sort_listing_wagon[8] = {
 	STR_SORT_BY_NAME,
 	STR_SORT_BY_RUNNING_COST,
 	STR_SORT_BY_CARGO_CAPACITY,
+	STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST,
 	INVALID_STRING_ID
 };
 
