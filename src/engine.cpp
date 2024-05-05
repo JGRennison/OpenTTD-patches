@@ -223,9 +223,10 @@ bool Engine::CanPossiblyCarryCargo() const
  * For aircraft the main capacity is determined. Mail might be present as well.
  * @param v Vehicle of interest; nullptr in purchase list
  * @param mail_capacity returns secondary cargo (mail) capacity of aircraft
+ * @param attempt_refit cargo ID to attempt to use, when v is nullptr
  * @return Capacity
  */
-uint Engine::DetermineCapacity(const Vehicle *v, uint16_t *mail_capacity) const
+uint Engine::DetermineCapacity(const Vehicle *v, uint16_t *mail_capacity, CargoID attempt_refit) const
 {
 	assert(v == nullptr || this->index == v->engine_type);
 	if (mail_capacity != nullptr) *mail_capacity = 0;
@@ -234,7 +235,16 @@ uint Engine::DetermineCapacity(const Vehicle *v, uint16_t *mail_capacity) const
 
 	bool new_multipliers = HasBit(this->info.misc_flags, EF_NO_DEFAULT_CARGO_MULTIPLIER);
 	CargoID default_cargo = this->GetDefaultCargoType();
-	CargoID cargo_type = (v != nullptr) ? v->cargo_type : default_cargo;
+	CargoID cargo_type;
+	if (v != nullptr) {
+		cargo_type = v->cargo_type;
+	} else {
+		if (attempt_refit != INVALID_CARGO && HasBit(this->info.refit_mask, attempt_refit)) {
+			cargo_type = attempt_refit;
+		} else {
+			cargo_type = default_cargo;
+		}
+	}
 
 	if (mail_capacity != nullptr && this->type == VEH_AIRCRAFT && IsCargoInClass(cargo_type, CC_PASSENGERS)) {
 		*mail_capacity = GetEngineProperty(this->index, PROP_AIRCRAFT_MAIL_CAPACITY, this->u.air.mail_capacity, v);

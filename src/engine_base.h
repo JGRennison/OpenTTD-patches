@@ -112,7 +112,7 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 		return this->info.cargo_type;
 	}
 
-	uint DetermineCapacity(const Vehicle *v, uint16_t *mail_capacity = nullptr) const;
+	uint DetermineCapacity(const Vehicle *v, uint16_t *mail_capacity = nullptr, CargoID attempt_refit = INVALID_CARGO) const;
 
 	bool CanCarryCargo() const;
 	bool CanPossiblyCarryCargo() const;
@@ -125,12 +125,13 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	 * For articulated engines use GetCapacityOfArticulatedParts
 	 *
 	 * @param mail_capacity returns secondary cargo (mail) capacity of aircraft
+	 * @param attempt_refit cargo ID to attempt to use
 	 * @return The default capacity
 	 * @see GetDefaultCargoType
 	 */
-	uint GetDisplayDefaultCapacity(uint16_t *mail_capacity = nullptr) const
+	uint GetDisplayDefaultCapacity(uint16_t *mail_capacity = nullptr, CargoID attempt_refit = INVALID_CARGO) const
 	{
-		return this->DetermineCapacity(nullptr, mail_capacity);
+		return this->DetermineCapacity(nullptr, mail_capacity, attempt_refit);
 	}
 
 	Money GetRunningCost() const;

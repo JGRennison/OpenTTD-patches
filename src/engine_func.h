@@ -29,6 +29,6 @@ void SetYearEngineAgingStops();
 void CalcEngineReliability(Engine *e, bool new_month);
 void StartupOneEngine(Engine *e, const CalTime::YearMonthDay &aging_ymd, const CalTime::YearMonthDay &expire_stop_ymd, uint32_t seed, CalTime::Date no_introduce_after_date);
 
-uint GetTotalCapacityOfArticulatedParts(EngineID engine);
+uint GetTotalCapacityOfArticulatedParts(EngineID engine, CargoID attempt_refit = INVALID_CARGO);
 
 #endif /* ENGINE_FUNC_H */

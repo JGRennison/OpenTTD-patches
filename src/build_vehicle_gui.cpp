@@ -36,6 +36,7 @@
 #include "querystring_gui.h"
 #include "stringfilter_type.h"
 #include "hotkeys.h"
+#include "3rdparty/cpp-btree/btree_map.h"
 
 #include "widgets/build_vehicle_widget.h"
 
@@ -204,6 +205,29 @@ bool _engine_sort_show_hidden_engines[] = {false, false, false, false}; ///< Las
 bool _engine_sort_show_hidden_locos     = false;                        ///< Last set 'show hidden locos' setting.
 bool _engine_sort_show_hidden_wagons    = false;                        ///< Last set 'show hidden wagons' setting.
 static CargoID _engine_sort_last_cargo_criteria[] = {CargoFilterCriteria::CF_ANY, CargoFilterCriteria::CF_ANY, CargoFilterCriteria::CF_ANY, CargoFilterCriteria::CF_ANY}; ///< Last set filter criteria, for each vehicle type.
+
+struct BuildVehicleWindowBase;
+
+struct EngineCapacityCache {
+	const BuildVehicleWindowBase *parent = nullptr;
+	CargoID current_cargo = INVALID_CARGO;
+	btree::btree_map<EngineID, uint> capacities;
+
+	void UpdateCargoFilter(const BuildVehicleWindowBase *parent, CargoID cargo_filter_criteria)
+	{
+		this->parent = parent;
+
+		if (cargo_filter_criteria >= NUM_CARGO) cargo_filter_criteria = INVALID_CARGO;
+
+		if (cargo_filter_criteria != this->current_cargo) {
+			this->current_cargo = cargo_filter_criteria;
+			this->capacities.clear();
+		}
+	}
+
+	uint GetArticulatedCapacity(EngineID eng, bool dual_headed = false);
+};
+static EngineCapacityCache *_engine_sort_capacity_cache = nullptr;
 
 static byte _last_sort_criteria_loco      = 0;
 static bool _last_sort_order_loco         = false;
@@ -449,8 +473,8 @@ static bool TrainEngineCapacitySorter(const GUIEngineListItem &a, const GUIEngin
 	const RailVehicleInfo *rvi_a = RailVehInfo(a.engine_id);
 	const RailVehicleInfo *rvi_b = RailVehInfo(b.engine_id);
 
-	int va = GetTotalCapacityOfArticulatedParts(a.engine_id) * (rvi_a->railveh_type == RAILVEH_MULTIHEAD ? 2 : 1);
-	int vb = GetTotalCapacityOfArticulatedParts(b.engine_id) * (rvi_b->railveh_type == RAILVEH_MULTIHEAD ? 2 : 1);
+	int va = _engine_sort_capacity_cache->GetArticulatedCapacity(a.engine_id, rvi_a->railveh_type == RAILVEH_MULTIHEAD);
+	int vb = _engine_sort_capacity_cache->GetArticulatedCapacity(b.engine_id, rvi_b->railveh_type == RAILVEH_MULTIHEAD);
 	int r = va - vb;
 
 	/* Use EngineID to sort instead since we want consistent sorting */
@@ -469,8 +493,8 @@ static bool TrainEngineCapacityVsRunningCostSorter(const GUIEngineListItem &a, c
 	const RailVehicleInfo *rvi_a = RailVehInfo(a.engine_id);
 	const RailVehicleInfo *rvi_b = RailVehInfo(b.engine_id);
 
-	uint va = GetTotalCapacityOfArticulatedParts(a.engine_id) * (rvi_a->railveh_type == RAILVEH_MULTIHEAD ? 2 : 1);
-	uint vb = GetTotalCapacityOfArticulatedParts(b.engine_id) * (rvi_b->railveh_type == RAILVEH_MULTIHEAD ? 2 : 1);
+	uint va = _engine_sort_capacity_cache->GetArticulatedCapacity(a.engine_id, rvi_a->railveh_type == RAILVEH_MULTIHEAD);
+	uint vb = _engine_sort_capacity_cache->GetArticulatedCapacity(b.engine_id, rvi_b->railveh_type == RAILVEH_MULTIHEAD);
 
 	return GenericEngineValueVsRunningCostSorter(a, va, b, vb);
 }
@@ -502,8 +526,8 @@ static bool TrainEnginesThenWagonsSorter(const GUIEngineListItem &a, const GUIEn
  */
 static bool RoadVehEngineCapacitySorter(const GUIEngineListItem &a, const GUIEngineListItem &b)
 {
-	int va = GetTotalCapacityOfArticulatedParts(a.engine_id);
-	int vb = GetTotalCapacityOfArticulatedParts(b.engine_id);
+	int va = _engine_sort_capacity_cache->GetArticulatedCapacity(a.engine_id);
+	int vb = _engine_sort_capacity_cache->GetArticulatedCapacity(b.engine_id);
 	int r = va - vb;
 
 	/* Use EngineID to sort instead since we want consistent sorting */
@@ -519,7 +543,9 @@ static bool RoadVehEngineCapacitySorter(const GUIEngineListItem &a, const GUIEng
  */
 static bool RoadVehEngineCapacityVsRunningCostSorter(const GUIEngineListItem &a, const GUIEngineListItem &b)
 {
-	return GenericEngineValueVsRunningCostSorter(a, GetTotalCapacityOfArticulatedParts(a.engine_id), b, GetTotalCapacityOfArticulatedParts(b.engine_id));
+	int capacity_a = _engine_sort_capacity_cache->GetArticulatedCapacity(a.engine_id);
+	int capacity_b = _engine_sort_capacity_cache->GetArticulatedCapacity(b.engine_id);
+	return GenericEngineValueVsRunningCostSorter(a, capacity_a, b, capacity_b);
 }
 
 /* Ship vehicle sorting functions */
@@ -532,8 +558,8 @@ static bool RoadVehEngineCapacityVsRunningCostSorter(const GUIEngineListItem &a,
  */
 static bool ShipEngineCapacitySorter(const GUIEngineListItem &a, const GUIEngineListItem &b)
 {
-	int va = GetTotalCapacityOfArticulatedParts(a.engine_id);
-	int vb = GetTotalCapacityOfArticulatedParts(b.engine_id);
+	int va = _engine_sort_capacity_cache->GetArticulatedCapacity(a.engine_id);
+	int vb = _engine_sort_capacity_cache->GetArticulatedCapacity(b.engine_id);
 	int r = va - vb;
 
 	/* Use EngineID to sort instead since we want consistent sorting */
@@ -549,7 +575,9 @@ static bool ShipEngineCapacitySorter(const GUIEngineListItem &a, const GUIEngine
  */
 static bool ShipEngineCapacityVsRunningCostSorter(const GUIEngineListItem &a, const GUIEngineListItem &b)
 {
-	return GenericEngineValueVsRunningCostSorter(a, GetTotalCapacityOfArticulatedParts(a.engine_id), b, GetTotalCapacityOfArticulatedParts(b.engine_id));
+	int capacity_a = _engine_sort_capacity_cache->GetArticulatedCapacity(a.engine_id);
+	int capacity_b = _engine_sort_capacity_cache->GetArticulatedCapacity(b.engine_id);
+	return GenericEngineValueVsRunningCostSorter(a, capacity_a, b, capacity_b);
 }
 
 /* Aircraft sorting functions */
@@ -1475,6 +1503,24 @@ struct BuildVehicleWindowBase : Window {
 	}
 };
 
+uint EngineCapacityCache::GetArticulatedCapacity(EngineID eng, bool dual_headed)
+{
+	auto iter = this->capacities.insert({ eng, 0 });
+	if (iter.second) {
+		/* New cache entry */
+		const Engine *e = Engine::Get(eng);
+		if (this->current_cargo != INVALID_CARGO && this->current_cargo != e->GetDefaultCargoType() && HasBit(e->info.callback_mask, CBM_VEHICLE_REFIT_CAPACITY) && e->refit_capacity_values == nullptr) {
+			/* Expensive path simulating vehicle construction is required to determine capacity */
+			TestedEngineDetails te{};
+			this->parent->FillTestedEngineCapacity(eng, this->current_cargo, te);
+			iter.first->second = te.all_capacities.GetSum<uint>();
+		} else {
+			iter.first->second = GetTotalCapacityOfArticulatedParts(eng, this->current_cargo) * (dual_headed ? 2 : 1);
+		}
+	}
+	return iter.first->second;
+}
+
 /** GUI for building vehicles. */
 struct BuildVehicleWindow : BuildVehicleWindowBase {
 	union {
@@ -1491,6 +1537,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 	int details_height;                         ///< Minimal needed height of the details panels, in text lines (found so far).
 	Scrollbar *vscroll;
 	TestedEngineDetails te;                     ///< Tested cost and capacity after refit.
+	EngineCapacityCache capacity_cache;         ///< Engine capacity cache.
 
 	StringFilter string_filter;                 ///< Filter for vehicle name
 	QueryString vehicle_editbox;                ///< Filter editbox
@@ -1727,6 +1774,10 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		/* invalidate cached values for name sorter - engine names could change */
 		_last_engine[0] = _last_engine[1] = INVALID_ENGINE;
 
+		/* setup engine capacity cache */
+		this->capacity_cache.UpdateCargoFilter(this, this->cargo_filter_criteria);
+		_engine_sort_capacity_cache = &(this->capacity_cache);
+
 		/* make engines first, and then wagons, sorted by selected sort_criteria */
 		_engine_sort_direction = false;
 		EngList_Sort(list, TrainEnginesThenWagonsSorter);
@@ -1863,6 +1914,10 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 				this->eng_list.emplace_back(variant, e->info.variant_id, e->display_flags | EngineDisplayFlags::Shaded, 0);
 			}
 		}
+
+		/* setup engine capacity cache */
+		this->capacity_cache.UpdateCargoFilter(this, this->cargo_filter_criteria);
+		_engine_sort_capacity_cache = &(this->capacity_cache);
 
 		_engine_sort_direction = this->descending_sort_order;
 		EngList_Sort(this->eng_list, _engine_sort_functions[this->vehicle_type][this->sort_criteria]);
@@ -2303,6 +2358,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		bool show_hidden;                              ///< State of the 'show hidden' button.
 		int details_height;                            ///< Minimal needed height of the details panels (found so far).
 		TestedEngineDetails te;                        ///< Tested cost and capacity after refit.
+		EngineCapacityCache capacity_cache;            ///< Engine capacity cache.
 		StringFilter string_filter;                    ///< Filter for vehicle name
 		QueryString vehicle_editbox { MAX_LENGTH_VEHICLE_NAME_CHARS * MAX_CHAR_LENGTH, MAX_LENGTH_VEHICLE_NAME_CHARS }; ///< Filter editbox
 	};
@@ -2606,6 +2662,10 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 		/* invalidate cached values for name sorter - engine names could change */
 		_last_engine[0] = _last_engine[1] = INVALID_ENGINE;
+
+		/* setup engine capacity cache */
+		state.capacity_cache.UpdateCargoFilter(this, state.cargo_filter_criteria);
+		_engine_sort_capacity_cache = &(state.capacity_cache);
 
 		/* Sort */
 		_engine_sort_direction = state.descending_sort_order;

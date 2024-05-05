@@ -159,11 +159,12 @@ void ShowEnginePreviewWindow(EngineID engine)
 /**
  * Get the capacity of an engine with articulated parts.
  * @param engine The engine to get the capacity of.
+ * @param attempt_refit Attempt to get capacity when refitting to this cargo.
  * @return The capacity.
  */
-uint GetTotalCapacityOfArticulatedParts(EngineID engine)
+uint GetTotalCapacityOfArticulatedParts(EngineID engine, CargoID attempt_refit)
 {
-	CargoArray cap = GetCapacityOfArticulatedParts(engine);
+	CargoArray cap = GetCapacityOfArticulatedParts(engine, attempt_refit);
 	return cap.GetSum<uint>();
 }
 

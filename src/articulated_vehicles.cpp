@@ -8,6 +8,7 @@
 /** @file articulated_vehicles.cpp Implementation of articulated vehicles. */
 
 #include "stdafx.h"
+#include "articulated_vehicles.h"
 #include "core/bitmath_func.hpp"
 #include "core/random_func.hpp"
 #include "train.h"
@@ -141,15 +142,23 @@ void GetArticulatedPartsEngineIDs(EngineID engine_type, bool purchase_window, st
  * Returns the default (non-refitted) capacity of a specific EngineID.
  * @param engine the EngineID of interest
  * @param cargo_type returns the default cargo type, if needed
+ * @param attempt_refit cargo ID to attempt to use
  * @return capacity
  */
-static inline uint16_t GetVehicleDefaultCapacity(EngineID engine, CargoID *cargo_type)
+static inline uint16_t GetVehicleDefaultCapacity(EngineID engine, CargoID *cargo_type, CargoID attempt_refit = INVALID_CARGO)
 {
 	const Engine *e = Engine::Get(engine);
-	CargoID cargo = (e->CanCarryCargo() ? e->GetDefaultCargoType() : INVALID_CARGO);
+	CargoID cargo = INVALID_CARGO;
+	if (e->CanCarryCargo()) {
+		if (attempt_refit != INVALID_CARGO && HasBit(e->info.refit_mask, attempt_refit)) {
+			cargo = attempt_refit;
+		} else {
+			cargo = e->GetDefaultCargoType();
+		}
+	}
 	if (cargo_type != nullptr) *cargo_type = cargo;
 	if (cargo == INVALID_CARGO) return 0;
-	return e->GetDisplayDefaultCapacity();
+	return e->GetDisplayDefaultCapacity(nullptr, cargo);
 }
 
 /**
@@ -175,16 +184,20 @@ static inline CargoTypes GetAvailableVehicleCargoTypes(EngineID engine, bool inc
 /**
  * Get the capacity of the parts of a given engine.
  * @param engine The engine to get the capacities from.
+ * @param attempt_refit Attempt to get capacity when refitting to this cargo.
  * @return The cargo capacities.
  */
-CargoArray GetCapacityOfArticulatedParts(EngineID engine)
+CargoArray GetCapacityOfArticulatedParts(EngineID engine, CargoID attempt_refit)
 {
 	CargoArray capacity{};
 	const Engine *e = Engine::Get(engine);
 
-	CargoID cargo_type;
-	uint16_t cargo_capacity = GetVehicleDefaultCapacity(engine, &cargo_type);
-	if (cargo_type < NUM_CARGO) capacity[cargo_type] = cargo_capacity;
+	auto get_engine_cargo = [&capacity, attempt_refit](EngineID eng) {
+		CargoID cargo_type;
+		uint16_t cargo_capacity = GetVehicleDefaultCapacity(eng, &cargo_type, attempt_refit);
+		if (cargo_type < NUM_CARGO) capacity[cargo_type] += cargo_capacity;
+	};
+	get_engine_cargo(engine);
 
 	if (!e->IsArticulatedCallbackVehicleType()) return capacity;
 
@@ -194,8 +207,7 @@ CargoArray GetCapacityOfArticulatedParts(EngineID engine)
 		EngineID artic_engine = GetNextArticulatedPart(i, engine);
 		if (artic_engine == INVALID_ENGINE) break;
 
-		cargo_capacity = GetVehicleDefaultCapacity(artic_engine, &cargo_type);
-		if (cargo_type < NUM_CARGO) capacity[cargo_type] += cargo_capacity;
+		get_engine_cargo(artic_engine);
 	}
 
 	return capacity;
