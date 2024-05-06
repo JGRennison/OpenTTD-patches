@@ -383,7 +383,7 @@ struct SDLVkMapping {
 	const uint8_t map_to;
 
 	constexpr SDLVkMapping(SDL_Keycode vk_first, SDL_Keycode vk_last, uint8_t map_first, [[maybe_unused]] uint8_t map_last)
-		: vk_from(vk_first), vk_count(vk_first - vk_last + 1), map_to(map_first)
+		: vk_from(vk_first), vk_count(vk_last - vk_first), map_to(map_first)
 	{
 		assert((vk_last - vk_first) == (map_last - map_first));
 	}
