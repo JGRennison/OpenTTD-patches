@@ -3708,6 +3708,19 @@ static bool IsVehicleRefitable(const Vehicle *v)
 
 static StringID AdjustVehicleViewVelocityStringID(StringID str)
 {
+	if (_settings_client.gui.shorten_vehicle_view_status) {
+		const bool speed_first = _settings_client.gui.show_speed_first_vehicle_view;
+		if (str == STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL) {
+			return speed_first ? STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_SHORT : STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_SHORT_END;
+		}
+		if (str == STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL) {
+			return speed_first ? STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_SHORT : STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_SHORT_END;
+		}
+		if (str == STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL) {
+			return speed_first ? STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_SHORT : STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_SHORT_END;
+		}
+	}
+
 	if (_settings_client.gui.show_speed_first_vehicle_view) return str;
 
 	if (str == STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL) return STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END;

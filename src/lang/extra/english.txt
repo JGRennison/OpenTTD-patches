@@ -333,6 +333,9 @@ STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW_HELPTEXT   :When enabled, t
 STR_CONFIG_SETTING_SHOW_SPEED_FIRST_IN_VEHICLE_VIEW             :Show speed before destination in vehicle view window: {STRING2}
 STR_CONFIG_SETTING_SHOW_SPEED_FIRST_IN_VEHICLE_VIEW_HELPTEXT    :When enabled, show the vehicle speed before the destination in the vehicle view window start/stop bar
 
+STR_CONFIG_SETTING_SHORTEN_STATUS_VEHICLE_VIEW                  :Shorten status vehicle view window: {STRING2}
+STR_CONFIG_SETTING_SHORTEN_STATUS_VEHICLE_VIEW_HELPTEXT         :When enabled, shorten the text used to show the destination in the vehicle view window start/stop bar
+
 STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION                   :Hide default order stop locations: {STRING2}
 STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION_HELPTEXT          :When enabled, hide the order stop location when it matches the default.
 
@@ -1594,6 +1597,14 @@ STR_VEHICLE_STATUS_CANNOT_REACH_STATION_VEL_END                 :{LTBLUE}Cannot 
 STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}Cannot reach {WAYPOINT}, {VELOCITY}
 STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}Cannot reach {DEPOT}, {VELOCITY}
 STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Cannot reach {DEPOT}, {VELOCITY}
+
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_SHORT                :{LTBLUE}{1:VELOCITY} - {0:STATION}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_SHORT               :{LTBLUE}{1:VELOCITY} - {0:WAYPOINT}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_SHORT                  :{ORANGE}{1:VELOCITY} - {0:DEPOT}
+
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_SHORT_END            :{LTBLUE}{STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_SHORT_END           :{LTBLUE}{WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_SHORT_END              :{ORANGE}{DEPOT}, {VELOCITY}
 
 STR_BREAKDOWN_TYPE_CRITICAL                                     :Mechanical failure
 STR_BREAKDOWN_TYPE_EM_STOP                                      :Emergency stop
