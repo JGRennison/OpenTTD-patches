@@ -233,6 +233,9 @@ public:
 	void MakeChangeCounter();
 	void MakeLabel(OrderLabelSubType subtype);
 
+	std::string ToJSONString() const;
+	static Order FromJSONString(std::string jsonSTR);
+
 	/**
 	 * Is this a 'goto' order with a real destination?
 	 * @return True if the type is either #OT_GOTO_WAYPOINT, #OT_GOTO_DEPOT or #OT_GOTO_STATION.
@@ -780,6 +783,7 @@ public:
 	inline std::vector<DispatchSlot> &GetScheduledDispatchMutable() { return this->scheduled_dispatch; }
 
 	void SetScheduledDispatch(std::vector<DispatchSlot> dispatch_list);
+
 	void AddScheduledDispatch(uint32_t offset);
 	void RemoveScheduledDispatch(uint32_t offset);
 	void AdjustScheduledDispatch(int32_t adjust);
@@ -856,6 +860,19 @@ public:
 	 */
 	inline int32_t GetScheduledDispatchDelay() const { return this->scheduled_dispatch_max_delay; }
 
+	/**
+	 * Get the scheduled dispatch flags
+	 * @return flags
+	 */
+	inline int8_t GetScheduledDispatchFlags() const {return this->scheduled_dispatch_flags; }
+
+	/**
+	 * Set the scheduled disaptch flags
+	 * @param flags
+	 */
+	inline void SetScheduledDispatchFlags(int8_t flags) { this->scheduled_dispatch_flags = flags; }
+
+
 	inline void BorrowSchedule(DispatchSchedule &other)
 	{
 		this->CopyBasicFields(other);
@@ -869,12 +886,16 @@ public:
 
 	inline std::string &ScheduleName() { return this->name; }
 	inline const std::string &ScheduleName() const { return this->name; }
+
+	static DispatchSchedule FromJSONString(std::string jsonString);
+	std::string ToJSONString();
 };
 
 /**
  * Shared order list linking together the linked list of orders and the list
  *  of vehicles sharing this order list.
  */
+
 struct OrderList : OrderListPool::PoolItem<&_orderlist_pool> {
 private:
 	friend void AfterLoadVehicles(bool part_of_load); ///< For instantiating the shared vehicle chain
@@ -959,6 +980,9 @@ public:
 	void DeleteOrderAt(int index);
 	void MoveOrder(int from, int to);
 
+	std::string ToJSONString();
+	static void FromJSONString(const Vehicle* v,std::string str);
+
 	/**
 	 * Is this a shared order list?
 	 * @return whether this order list is shared among multiple vehicles
@@ -1025,7 +1049,7 @@ public:
 	void DebugCheckSanity() const;
 #endif
 	bool CheckOrderListIndexing() const;
-
+	
 	inline std::vector<DispatchSchedule> &GetScheduledDispatchScheduleSet() { return this->dispatch_schedules; }
 	inline const std::vector<DispatchSchedule> &GetScheduledDispatchScheduleSet() const { return this->dispatch_schedules; }
 
