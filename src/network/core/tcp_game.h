@@ -175,7 +175,7 @@ protected:
 
 	/**
 	 * Try to join the server:
-	 * string  OpenTTD revision (norev000 if no revision).
+	 * string  OpenTTD revision (norev0000 if no revision).
 	 * string  Name of the client (max NETWORK_NAME_LENGTH).
 	 * uint8_t ID of the company to play as (1..MAX_COMPANIES).
 	 * uint8_t ID of the clients Language.
