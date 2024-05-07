@@ -38,6 +38,19 @@ struct Filtering {
 	uint8_t criteria; ///< Filtering criteria
 };
 
+template <typename T>
+struct GUIListParamConfig {
+	using SortParameterReference = const T&;
+	static const bool constructor_init = true;
+};
+
+template <>
+struct GUIListParamConfig<std::nullptr_t>
+{
+	using SortParameterReference = const std::nullptr_t;
+	static const bool constructor_init = false;
+};
+
 /**
  * List template of 'things' \p T to sort in a GUI.
  * @tparam T Type of data stored in the list to represent each item.
@@ -61,8 +74,8 @@ protected:
 
 	/* If sort parameters are used then params must be a reference, however if not then params cannot be a reference as
 	 * it will not be able to reference anything. */
-	using SortParameterReference = std::conditional_t<std::is_same_v<P, std::nullptr_t>, P, P&>;
-	const SortParameterReference params;
+	using SortParameterReference = typename GUIListParamConfig<P>::SortParameterReference;
+	SortParameterReference params;
 
 	/**
 	 * Check if the list is sortable
@@ -84,7 +97,7 @@ protected:
 
 public:
 	/* If sort parameters are not used then we don't require a reference to the params. */
-	template <typename T_ = T, typename P_ = P, typename _F = F, std::enable_if_t<std::is_same_v<P_, std::nullptr_t>>* = nullptr>
+	template <typename T_ = T, typename P_ = P, typename _F = F, std::enable_if_t<!GUIListParamConfig<P_>::constructor_init>* = nullptr>
 	GUIList() :
 		sort_func_list(nullptr),
 		filter_func_list(nullptr),
@@ -93,12 +106,12 @@ public:
 		filter_type(0),
 		resort_timer(1),
 		resort_interval(DAY_TICKS * 10), /* Resort every 10 days by default */
-		params(nullptr)
+		params(P_())
 	{};
 
 	/* If sort parameters are used then we require a reference to the params. */
-	template <typename T_ = T, typename P_ = P, typename _F = F, std::enable_if_t<!std::is_same_v<P_, std::nullptr_t>>* = nullptr>
-	GUIList(const P &params) :
+	template <typename T_ = T, typename P_ = P, typename _F = F, std::enable_if_t<GUIListParamConfig<P_>::constructor_init>* = nullptr>
+	GUIList(SortParameterReference params) :
 		sort_func_list(nullptr),
 		filter_func_list(nullptr),
 		flags(VL_NONE),
@@ -108,6 +121,9 @@ public:
 		resort_interval(DAY_TICKS * 10), /* Resort every 10 days by default */
 		params(params)
 	{};
+
+	template <typename T_ = T, typename P_ = P, typename _F = F, std::enable_if_t<!std::is_same_v<P_, std::nullptr_t>>* = nullptr>
+	SortParameterReference &SortParameterData() { return this->params; }
 
 	/**
 	 * Get the sorttype of the list
