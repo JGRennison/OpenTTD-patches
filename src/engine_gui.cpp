@@ -374,7 +374,9 @@ void DrawVehicleEngine(int left, int right, int preferred_x, int y, EngineID eng
 void EngList_Sort(GUIEngineList &el, EngList_SortTypeFunction compare)
 {
 	if (el.size() < 2) return;
-	std::sort(el.begin(), el.end(), compare);
+	std::sort(el.begin(), el.end(), [&](const GUIEngineListItem &a, const GUIEngineListItem &b) {
+		return compare(a, b, el.SortParameterData());
+	});
 }
 
 /**
@@ -389,6 +391,8 @@ void EngList_SortPartial(GUIEngineList &el, EngList_SortTypeFunction compare, si
 	if (num_items < 2) return;
 	assert(begin < el.size());
 	assert(begin + num_items <= el.size());
-	std::sort(el.begin() + begin, el.begin() + begin + num_items, compare);
+	std::sort(el.begin() + begin, el.begin() + begin + num_items, [&](const GUIEngineListItem &a, const GUIEngineListItem &b) {
+		return compare(a, b, el.SortParameterData());
+	});
 }
 

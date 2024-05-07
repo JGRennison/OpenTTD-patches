@@ -32,7 +32,7 @@
 
 void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_list, const Scrollbar &sb, EngineID selected_id, bool show_count, GroupID selected_group);
 
-static bool EngineNumberSorter(const GUIEngineListItem &a, const GUIEngineListItem &b)
+static bool EngineNumberSorter(const GUIEngineListItem &a, const GUIEngineListItem &b, const GUIEngineListSortCache &cache)
 {
 	return Engine::Get(a.engine_id)->list_position < Engine::Get(b.engine_id)->list_position;
 }

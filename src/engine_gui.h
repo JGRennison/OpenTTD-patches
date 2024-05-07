@@ -16,6 +16,25 @@
 #include "vehicle_type.h"
 #include "engine_base.h"
 #include "window_type.h"
+#include "3rdparty/cpp-btree/btree_map.h"
+
+struct BuildVehicleWindowBase;
+
+struct GUIEngineListSortCache {
+	const BuildVehicleWindowBase *parent = nullptr;
+	CargoID current_cargo = INVALID_CARGO;
+	mutable btree::btree_map<EngineID, uint> capacities;
+
+	void UpdateCargoFilter(const BuildVehicleWindowBase *parent, CargoID cargo_filter_criteria);
+	uint GetArticulatedCapacity(EngineID eng, bool dual_headed = false) const;
+};
+
+template <>
+struct GUIListParamConfig<GUIEngineListSortCache>
+{
+	using SortParameterReference = GUIEngineListSortCache;
+	static const bool constructor_init = false;
+};
 
 struct GUIEngineListItem {
 	EngineID engine_id;       ///< Engine to display in build purchase list
@@ -29,9 +48,9 @@ struct GUIEngineListItem {
 	bool operator == (const EngineID &other) const { return this->engine_id == other; }
 };
 
-typedef GUIList<GUIEngineListItem, std::nullptr_t, CargoID> GUIEngineList;
+typedef GUIList<GUIEngineListItem, GUIEngineListSortCache, CargoID> GUIEngineList;
 
-typedef bool EngList_SortTypeFunction(const GUIEngineListItem&, const GUIEngineListItem&); ///< argument type for #EngList_Sort.
+typedef bool EngList_SortTypeFunction(const GUIEngineListItem&, const GUIEngineListItem&, const GUIEngineListSortCache &); ///< argument type for #EngList_Sort.
 void EngList_Sort(GUIEngineList &el, EngList_SortTypeFunction compare);
 void EngList_SortPartial(GUIEngineList &el, EngList_SortTypeFunction compare, size_t begin, size_t num_items);
 
