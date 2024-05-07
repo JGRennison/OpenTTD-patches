@@ -24,7 +24,7 @@ static const RailTypeLabel RAILTYPE_LABEL_MAGLEV   = 'MGLV';
  *
  * This enumeration defines all 4 possible railtypes.
  */
-enum RailType : byte {
+enum RailType : uint8_t {
 	RAILTYPE_BEGIN    = 0,          ///< Used for iterations
 	RAILTYPE_RAIL     = 0,          ///< Standard non-electric rails
 	RAILTYPE_ELECTRIC = 1,          ///< Electric rails
@@ -37,7 +37,7 @@ enum RailType : byte {
 /** Allow incrementing of Track variables */
 DECLARE_POSTFIX_INCREMENT(RailType)
 /** Define basic enum properties */
-template <> struct EnumPropsT<RailType> : MakeEnumPropsT<RailType, byte, RAILTYPE_BEGIN, RAILTYPE_END, INVALID_RAILTYPE, 6> {};
+template <> struct EnumPropsT<RailType> : MakeEnumPropsT<RailType, uint8_t, RAILTYPE_BEGIN, RAILTYPE_END, INVALID_RAILTYPE, 6> {};
 
 /**
  * The different railtypes we support, but then a bitmask of them.

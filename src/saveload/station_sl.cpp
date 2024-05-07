@@ -53,7 +53,7 @@ struct FlowSaveLoad {
 typedef std::pair<const StationID, CargoPacketList > StationCargoPair;
 
 static OldPersistentStorage _old_st_persistent_storage;
-static byte _old_last_vehicle_type;
+static uint8_t _old_last_vehicle_type;
 
 /**
  * Swap the temporary packets with the packets without specific destination in

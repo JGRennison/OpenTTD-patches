@@ -43,7 +43,7 @@ public:
 	 * Set the volume, if possible.
 	 * @param vol The new volume.
 	 */
-	virtual void SetVolume(byte vol) = 0;
+	virtual void SetVolume(uint8_t vol) = 0;
 
 	/**
 	 * Is playback in a failed state?

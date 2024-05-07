@@ -772,7 +772,7 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 
 		case PSO_IF: {
 			SignalIf *si = static_cast<SignalIf*>(insn);
-			byte act = GB(p2, 0, 1);
+			uint8_t act = GB(p2, 0, 1);
 			if (act == 0) { // Set code
 				SignalConditionCode code = (SignalConditionCode) GB(p2, 1, 8);
 				if (code > PSC_MAX)

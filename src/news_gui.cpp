@@ -1019,7 +1019,7 @@ void NewsLoop()
 	/* no news item yet */
 	if (_total_news == 0) return;
 
-	static byte _last_clean_month = 0;
+	static uint8_t _last_clean_month = 0;
 
 	if (_last_clean_month != EconTime::CurMonth()) {
 		RemoveOldNewsItems();

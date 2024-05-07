@@ -80,7 +80,7 @@ Point _cursorpos_drag_start;
 
 int _scrollbar_start_pos;
 int _scrollbar_size;
-byte _scroller_click_timeout = 0;
+uint8_t _scroller_click_timeout = 0;
 
 Window *_scrolling_viewport; ///< A viewport is being scrolled with the mouse.
 Rect _scrolling_viewport_bound; ///< A viewport is being scrolled with the mouse, the overlay currently covers this viewport rectangle.
@@ -1968,7 +1968,7 @@ void ResetWindowSystem()
 
 static void DecreaseWindowCounters()
 {
-	static byte hundredth_tick_timeout = 100;
+	static uint8_t hundredth_tick_timeout = 100;
 
 	if (_scroller_click_timeout != 0) _scroller_click_timeout--;
 	if (hundredth_tick_timeout != 0) hundredth_tick_timeout--;

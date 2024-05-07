@@ -22,7 +22,7 @@
 
 #include "../safeguards.h"
 
-static byte _old_last_vehicle_type;
+static uint8_t _old_last_vehicle_type;
 static uint8_t _num_specs;
 static uint8_t _num_roadstop_specs;
 static uint32_t _num_roadstop_custom_tiles;

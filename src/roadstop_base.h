@@ -74,7 +74,7 @@ struct RoadStop : RoadStopPool::PoolItem<&_roadstop_pool> {
 		void Rebuild(const RoadStop *rs, int side = -1);
 	};
 
-	byte            status; ///< Current status of the Stop, @see RoadStopSatusFlag. Access using *Bay and *Busy functions.
+	uint8_t         status; ///< Current status of the Stop, @see RoadStopSatusFlag. Access using *Bay and *Busy functions.
 	TileIndex       xy;     ///< Position on the map
 	struct RoadStop *next;  ///< Next stop of the given type at this station
 

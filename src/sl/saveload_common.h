@@ -418,8 +418,8 @@ enum SaveLoadVersion : uint16_t {
 	SL_CHILLPP_233 = 233,
 };
 
-byte SlReadByte();
-void SlWriteByte(byte b);
+uint8_t SlReadByte();
+void SlWriteByte(uint8_t b);
 
 int SlReadUint16();
 uint32_t SlReadUint32();

@@ -15,7 +15,7 @@
 #include "saveload.h"
 #include "saveload_buffer.h"
 
-typedef std::vector<byte> Buffer;
+typedef std::vector<uint8_t> Buffer;
 
 // Variable length integers are stored in Variable Length Quantity
 // format (http://en.wikipedia.org/wiki/Variable-length_quantity)
@@ -25,18 +25,18 @@ static void WriteVLI(Buffer &b, uint i)
 	uint lsmask =  0x7F;
 	uint msmask = ~0x7F;
 	while(i & msmask) {
-		byte part = (i & lsmask) | 0x80;
+		uint8_t part = (i & lsmask) | 0x80;
 		b.push_back(part);
 		i >>= 7;
 	}
-	b.push_back((byte) i);
+	b.push_back((uint8_t) i);
 }
 
 static uint ReadVLI()
 {
 	uint shift = 0;
 	uint val = 0;
-	byte b;
+	uint8_t b;
 
 	b = SlReadByte();
 	while(b & 0x80) {

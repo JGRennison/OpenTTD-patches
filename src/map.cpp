@@ -93,7 +93,7 @@ void AllocateMap(uint size_x, uint size_y)
 
 	const size_t total_size = (sizeof(Tile) + sizeof(TileExtended)) * _map_size;
 
-	byte *buf = nullptr;
+	uint8_t *buf = nullptr;
 #if defined(__linux__) && defined(MADV_HUGEPAGE)
 	const size_t alignment = 2 * 1024 * 1024;
 	/* First try mmap with a 2MB alignment, if that fails, just use calloc */
@@ -106,7 +106,7 @@ void AllocateMap(uint size_x, uint size_y)
 
 			/* target is now aligned, allocated has been adjusted accordingly */
 
-			const size_t remove_front = static_cast<byte *>(target) - static_cast<byte *>(ret);
+			const size_t remove_front = static_cast<uint8_t *>(target) - static_cast<uint8_t *>(ret);
 			if (remove_front != 0) {
 				munmap(ret, remove_front);
 			}
@@ -119,13 +119,13 @@ void AllocateMap(uint size_x, uint size_y)
 			madvise(target, total_size, MADV_HUGEPAGE);
 			DEBUG(map, 2, "Using mmap for map allocation");
 
-			buf = static_cast<byte *>(target);
+			buf = static_cast<uint8_t *>(target);
 			_munmap_size = total_size;
 		}
 	}
 #endif
 
-	if (buf == nullptr) buf = CallocT<byte>(total_size);
+	if (buf == nullptr) buf = CallocT<uint8_t>(total_size);
 
 	_m = reinterpret_cast<Tile *>(buf);
 	_me = reinterpret_cast<TileExtended *>(buf + (_map_size * sizeof(Tile)));

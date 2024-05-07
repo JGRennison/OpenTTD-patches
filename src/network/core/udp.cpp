@@ -239,7 +239,7 @@ void NetworkUDPSocketHandler::Receive_EX_MULTI(Packet &p, NetworkAddress &client
 		Packet merged(this, TCP_MTU, 0);
 		merged.ReserveBuffer(total_payload);
 		for (auto &frag : fs.fragments) {
-			merged.Send_binary((const byte *)frag.data(), frag.size());
+			merged.Send_binary((const uint8_t *)frag.data(), frag.size());
 		}
 		merged.ParsePacketSize();
 		merged.PrepareToRead();

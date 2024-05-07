@@ -22,43 +22,43 @@ static const uint SNOW_LINE_DAYS   = 32; ///< Number of days in each month in th
  * @ingroup SnowLineGroup
  */
 struct SnowLine {
-	byte table[SNOW_LINE_MONTHS][SNOW_LINE_DAYS]; ///< Height of the snow line each day of the year
-	byte highest_value; ///< Highest snow line of the year
-	byte lowest_value;  ///< Lowest snow line of the year
+	uint8_t table[SNOW_LINE_MONTHS][SNOW_LINE_DAYS]; ///< Height of the snow line each day of the year
+	uint8_t highest_value; ///< Highest snow line of the year
+	uint8_t lowest_value;  ///< Lowest snow line of the year
 };
 
 bool IsSnowLineSet();
-void SetSnowLine(byte table[SNOW_LINE_MONTHS][SNOW_LINE_DAYS]);
-byte GetSnowLineUncached();
+void SetSnowLine(uint8_t table[SNOW_LINE_MONTHS][SNOW_LINE_DAYS]);
+uint8_t GetSnowLineUncached();
 void UpdateCachedSnowLine();
 void UpdateCachedSnowLineBounds();
 void ClearSnowLine();
 
-inline byte GetSnowLine()
+inline uint8_t GetSnowLine()
 {
-	extern byte _cached_snowline;
+	extern uint8_t _cached_snowline;
 	return _cached_snowline;
 }
 
-inline byte HighestSnowLine()
+inline uint8_t HighestSnowLine()
 {
-	extern byte _cached_highest_snowline;
+	extern uint8_t _cached_highest_snowline;
 	return _cached_highest_snowline;
 }
 
-inline byte LowestSnowLine()
+inline uint8_t LowestSnowLine()
 {
-	extern byte _cached_lowest_snowline;
+	extern uint8_t _cached_lowest_snowline;
 	return _cached_lowest_snowline;
 }
 
-inline byte HighestTreePlacementSnowLine()
+inline uint8_t HighestTreePlacementSnowLine()
 {
-	extern byte _cached_tree_placement_highest_snowline;
+	extern uint8_t _cached_tree_placement_highest_snowline;
 	return _cached_tree_placement_highest_snowline;
 }
 
-inline byte LowestTreePlacementSnowLine()
+inline uint8_t LowestTreePlacementSnowLine()
 {
 	return LowestSnowLine();
 }
@@ -169,6 +169,6 @@ void RunTileLoop(bool apply_day_length = false);
 void RunAuxiliaryTileLoop();
 
 void InitializeLandscape();
-bool GenerateLandscape(byte mode);
+bool GenerateLandscape(uint8_t mode);
 
 #endif /* LANDSCAPE_H */

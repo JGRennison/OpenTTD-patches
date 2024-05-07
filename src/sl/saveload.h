@@ -56,7 +56,7 @@ enum SavegameType {
 	SGT_INVALID = 0xFF, ///< broken savegame (used internally)
 };
 
-enum SaveModeFlags : byte {
+enum SaveModeFlags : uint8_t {
 	SMF_NONE             = 0,
 	SMF_NET_SERVER       = 1 << 0, ///< Network server save
 	SMF_ZSTD_OK          = 1 << 1, ///< Zstd OK
@@ -275,7 +275,7 @@ using upstream_sl::MakeConditionallyUpstreamChunkHandler;
 using upstream_sl::MakeSaveUpstreamFeatureConditionalLoadUpstreamChunkHandler;
 
 struct NullStruct {
-	byte null;
+	uint8_t null;
 };
 
 /** A table of ChunkHandler entries. */
@@ -905,10 +905,10 @@ inline constexpr void *SlVarWrapper(void* ptr)
  * @param minor Minor number of the version to check against. If \a minor is 0 or not specified, only the major number is checked.
  * @return Savegame version is earlier than the specified version.
  */
-inline bool IsSavegameVersionBefore(SaveLoadVersion major, byte minor = 0)
+inline bool IsSavegameVersionBefore(SaveLoadVersion major, uint8_t minor = 0)
 {
 	extern SaveLoadVersion _sl_version;
-	extern byte            _sl_minor_version;
+	extern uint8_t         _sl_minor_version;
 	return _sl_version < major || (minor > 0 && _sl_version == major && _sl_minor_version < minor);
 }
 
@@ -971,7 +971,7 @@ inline void *GetVariableAddress(const void *object, const SaveLoad &sld)
 	/* Everything else should be a non-null pointer. */
 	assert(object != nullptr);
 #endif
-	return const_cast<byte *>((const byte *)object + (ptrdiff_t)sld.address);
+	return const_cast<uint8_t *>((const uint8_t *)object + (ptrdiff_t)sld.address);
 }
 
 int64_t ReadValue(const void *ptr, VarType conv);
@@ -992,10 +992,10 @@ size_t SlCalcObjLength(const void *object, const SaveLoadTable &slt);
  * @return Span of the saved data, in the autolength temp buffer
  */
 template <typename F>
-std::span<byte> SlSaveToTempBuffer(F proc)
+std::span<uint8_t> SlSaveToTempBuffer(F proc)
 {
 	extern uint8_t SlSaveToTempBufferSetup();
-	extern std::span<byte> SlSaveToTempBufferRestore(uint8_t state);
+	extern std::span<uint8_t> SlSaveToTempBufferRestore(uint8_t state);
 
 	uint8_t state = SlSaveToTempBufferSetup();
 	proc();
@@ -1011,7 +1011,7 @@ std::span<byte> SlSaveToTempBuffer(F proc)
 template <typename F>
 std::vector<uint8_t> SlSaveToVector(F proc)
 {
-	std::span<byte> result = SlSaveToTempBuffer(proc);
+	std::span<uint8_t> result = SlSaveToTempBuffer(proc);
 	return std::vector<uint8_t>(result.begin(), result.end());
 }
 
@@ -1040,8 +1040,8 @@ bool SlConditionallySave(F proc)
 
 struct SlLoadFromBufferState {
 	size_t old_obj_len;
-	byte *old_bufp;
-	byte *old_bufe;
+	uint8_t *old_bufp;
+	uint8_t *old_bufe;
 };
 
 /**
@@ -1049,10 +1049,10 @@ struct SlLoadFromBufferState {
  * @param proc The callback procedure that is called
  */
 template <typename F>
-void SlLoadFromBuffer(const byte *buffer, size_t length, F proc)
+void SlLoadFromBuffer(const uint8_t *buffer, size_t length, F proc)
 {
-	extern SlLoadFromBufferState SlLoadFromBufferSetup(const byte *buffer, size_t length);
-	extern void SlLoadFromBufferRestore(const SlLoadFromBufferState &state, const byte *buffer, size_t length);
+	extern SlLoadFromBufferState SlLoadFromBufferSetup(const uint8_t *buffer, size_t length);
+	extern void SlLoadFromBufferRestore(const SlLoadFromBufferState &state, const uint8_t *buffer, size_t length);
 
 	SlLoadFromBufferState state = SlLoadFromBufferSetup(buffer, length);
 	proc();

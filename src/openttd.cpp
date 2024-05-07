@@ -357,7 +357,7 @@ static void WriteSavegameInfo(const char *name)
 	extern std::string _sl_xv_version_label;
 	extern SaveLoadVersion _sl_xv_upstream_version;
 	uint32_t last_ottd_rev = 0;
-	byte ever_modified = 0;
+	uint8_t ever_modified = 0;
 	bool removed_newgrfs = false;
 
 	GamelogInfo(_load_check_data.gamelog_actions, &last_ottd_rev, &ever_modified, &removed_newgrfs);

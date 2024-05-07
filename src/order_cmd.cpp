@@ -178,7 +178,7 @@ void Order::MakeLoading(bool ordered)
  *
  * @return true if the jump should be taken
  */
-bool Order::UpdateJumpCounter(byte percent, bool dry_run)
+bool Order::UpdateJumpCounter(uint8_t percent, bool dry_run)
 {
 	const int8_t jump_counter = this->GetJumpCounter();
 	if (dry_run) return jump_counter >= 0;
@@ -3371,7 +3371,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 			if (mode == PCO_DEFERRED) {
 				_pco_deferred_original_percent_cond.insert({ ord, ord->GetJumpCounter() });
 			}
-			skip_order = ord->UpdateJumpCounter((byte)value, mode == PCO_DRY_RUN);
+			skip_order = ord->UpdateJumpCounter((uint8_t)value, mode == PCO_DRY_RUN);
 			break;
 		}
 		case OCV_REMAINING_LIFETIME: skip_order = OrderConditionCompare(occ, std::max(DateDeltaToYearDelta(v->max_age - v->age + DAYS_IN_LEAP_YEAR - 1).base(), 0), value); break;

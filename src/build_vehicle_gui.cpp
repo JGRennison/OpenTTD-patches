@@ -198,8 +198,8 @@ static constexpr NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 	EndContainer(),
 };
 
-bool _engine_sort_direction;                     ///< \c false = descending, \c true = ascending.
-byte _engine_sort_last_criteria[]       = {0, 0, 0, 0};                 ///< Last set sort criteria, for each vehicle type.
+bool _engine_sort_direction;                                            ///< \c false = descending, \c true = ascending.
+uint8_t _engine_sort_last_criteria[]    = {0, 0, 0, 0};                 ///< Last set sort criteria, for each vehicle type.
 bool _engine_sort_last_order[]          = {false, false, false, false}; ///< Last set direction of the sort order, for each vehicle type.
 bool _engine_sort_show_hidden_engines[] = {false, false, false, false}; ///< Last set 'show hidden engines' setting for each vehicle type.
 bool _engine_sort_show_hidden_locos     = false;                        ///< Last set 'show hidden locos' setting.
@@ -229,11 +229,11 @@ struct EngineCapacityCache {
 };
 static EngineCapacityCache *_engine_sort_capacity_cache = nullptr;
 
-static byte _last_sort_criteria_loco      = 0;
+static uint8_t _last_sort_criteria_loco   = 0;
 static bool _last_sort_order_loco         = false;
 static CargoID _last_filter_criteria_loco = CargoFilterCriteria::CF_ANY;
 
-static byte _last_sort_criteria_wagon      = 0;
+static uint8_t _last_sort_criteria_wagon   = 0;
 static bool _last_sort_order_wagon         = false;
 static CargoID _last_filter_criteria_wagon = CargoFilterCriteria::CF_ANY;
 
@@ -1528,7 +1528,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		RoadType roadtype;   ///< Road type to show, or #INVALID_ROADTYPE.
 	} filter;                                   ///< Filter to apply.
 	bool descending_sort_order;                 ///< Sort direction, @see _engine_sort_direction
-	byte sort_criteria;                         ///< Current sort criterium.
+	uint8_t sort_criteria;                      ///< Current sort criterium.
 	bool show_hidden_engines;                   ///< State of the 'show hidden engines' button.
 	EngineID sel_engine;                        ///< Currently selected engine, or #INVALID_ENGINE
 	EngineID rename_engine;                     ///< Engine being renamed.
@@ -2349,7 +2349,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 	struct PanelState {
 		bool descending_sort_order; ///< Sort direction, @see _engine_sort_direction
-		byte sort_criteria;         ///< Current sort criterium.
+		uint8_t sort_criteria;      ///< Current sort criterium.
 		EngineID sel_engine;        ///< Currently selected engine, or #INVALID_ENGINE
 		EngineID rename_engine {};  ///< Engine being renamed.
 		GUIEngineList eng_list;
@@ -3151,7 +3151,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		switch (widget) {
 			case WID_BV_SORT_DROPDOWN_LOCO: {
 				if (this->loco.sort_criteria != index) {
-					this->loco.sort_criteria = static_cast<byte>(index);
+					this->loco.sort_criteria = static_cast<uint8_t>(index);
 					_last_sort_criteria_loco = this->loco.sort_criteria;
 					this->loco.eng_list.ForceRebuild();
 				}
@@ -3160,7 +3160,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 			case WID_BV_CARGO_FILTER_DROPDOWN_LOCO: { // Select a cargo filter criteria
 				if (this->loco.cargo_filter_criteria != index) {
-					this->loco.cargo_filter_criteria = static_cast<byte>(index);
+					this->loco.cargo_filter_criteria = static_cast<uint8_t>(index);
 					_last_filter_criteria_loco = this->loco.cargo_filter_criteria;
 					/* deactivate filter if criteria is 'Show All', activate it otherwise */
 					this->loco.eng_list.SetFilterState(this->loco.cargo_filter_criteria != CargoFilterCriteria::CF_ANY);
@@ -3171,7 +3171,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 			case WID_BV_SORT_DROPDOWN_WAGON: {
 				if (this->wagon.sort_criteria != index) {
-					this->wagon.sort_criteria = static_cast<byte>(index);
+					this->wagon.sort_criteria = static_cast<uint8_t>(index);
 					_last_sort_criteria_wagon = this->wagon.sort_criteria;
 					this->wagon.eng_list.ForceRebuild();
 				}
@@ -3180,7 +3180,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 			case WID_BV_CARGO_FILTER_DROPDOWN_WAGON: { // Select a cargo filter criteria
 				if (this->wagon.cargo_filter_criteria != index) {
-					this->wagon.cargo_filter_criteria = static_cast<byte>(index);
+					this->wagon.cargo_filter_criteria = static_cast<uint8_t>(index);
 					_last_filter_criteria_wagon = this->wagon.cargo_filter_criteria;
 					/* deactivate filter if criteria is 'Show All', activate it otherwise */
 					this->wagon.eng_list.SetFilterState(this->wagon.cargo_filter_criteria != CargoFilterCriteria::CF_ANY);

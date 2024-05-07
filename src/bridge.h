@@ -63,7 +63,7 @@ enum BridgeSpecCtrlFlags {
  */
 struct BridgeSpec {
 	CalTime::Year avail_year;    ///< the year where it becomes available
-	byte min_length;             ///< the minimum length (not counting start and end tile)
+	uint8_t min_length;          ///< the minimum length (not counting start and end tile)
 	uint16_t max_length;         ///< the maximum length (not counting start and end tile)
 	uint16_t price;              ///< the price multiplier
 	uint16_t speed;              ///< maximum travel speed (1 unit = 1/1.6 mph = 1 km-ish/h)
@@ -72,9 +72,9 @@ struct BridgeSpec {
 	StringID material;           ///< the string that contains the bridge description
 	StringID transport_name[2];  ///< description of the bridge, when built for road or rail
 	PalSpriteID **sprite_table;  ///< table of sprites for drawing the bridge
-	byte flags;                  ///< bit 0 set: disable drawing of far pillars.
-	byte ctrl_flags;             ///< control flags
-	byte pillar_flags[12];       ///< bridge pillar flags: 6 x pairs of x and y flags
+	uint8_t flags;               ///< bit 0 set: disable drawing of far pillars.
+	uint8_t ctrl_flags;          ///< control flags
+	uint8_t pillar_flags[12];    ///< bridge pillar flags: 6 x pairs of x and y flags
 };
 
 extern BridgeSpec _bridge[MAX_BRIDGES];

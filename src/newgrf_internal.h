@@ -145,7 +145,7 @@ public:
 	 * @param numsets Number of sets to define.
 	 * @param numents Number of sprites per set to define.
 	 */
-	void AddSpriteSets(byte feature, SpriteID first_sprite, uint first_set, uint numsets, uint numents)
+	void AddSpriteSets(uint8_t feature, SpriteID first_sprite, uint first_set, uint numsets, uint numents)
 	{
 		assert(feature < GSF_END);
 		for (uint i = 0; i < numsets; i++) {
@@ -161,7 +161,7 @@ public:
 	 * @return true if there are any valid sets.
 	 * @note Spritesets with zero sprites are valid to allow callback-failures.
 	 */
-	bool HasValidSpriteSets(byte feature) const
+	bool HasValidSpriteSets(uint8_t feature) const
 	{
 		assert(feature < GSF_END);
 		return !this->spritesets[feature].empty();
@@ -174,7 +174,7 @@ public:
 	 * @return true if the set is valid.
 	 * @note Spritesets with zero sprites are valid to allow callback-failures.
 	 */
-	bool IsValidSpriteSet(byte feature, uint set) const
+	bool IsValidSpriteSet(uint8_t feature, uint set) const
 	{
 		assert(feature < GSF_END);
 		return this->spritesets[feature].find(set) != this->spritesets[feature].end();
@@ -186,7 +186,7 @@ public:
 	 * @param set Set to query.
 	 * @return First sprite of the set.
 	 */
-	SpriteID GetSprite(byte feature, uint set) const
+	SpriteID GetSprite(uint8_t feature, uint set) const
 	{
 		assert(IsValidSpriteSet(feature, set));
 		return this->spritesets[feature].find(set)->second.sprite;
@@ -198,7 +198,7 @@ public:
 	 * @param set Set to query.
 	 * @return Number of sprites in the set.
 	 */
-	uint GetNumEnts(byte feature, uint set) const
+	uint GetNumEnts(uint8_t feature, uint set) const
 	{
 		assert(IsValidSpriteSet(feature, set));
 		return this->spritesets[feature].find(set)->second.num_sprites;
@@ -227,7 +227,7 @@ DECLARE_ENUM_AS_BIT_SET(VarAction2AdjustInferenceFlags)
 struct VarAction2TempStoreInferenceVarSource {
 	DeterministicSpriteGroupAdjustType type;
 	uint16_t variable;
-	byte shift_num;
+	uint8_t shift_num;
 	uint32_t parameter;
 	uint32_t and_mask;
 	uint32_t add_val;
@@ -280,7 +280,7 @@ inline void OptimiseVarAction2PreCheckAdjust(VarAction2OptimiseState &state, con
 struct VarAction2AdjustInfo {
 	GrfSpecFeature feature;
 	GrfSpecFeature scope_feature;
-	byte varsize;
+	uint8_t varsize;
 };
 
 const SpriteGroup *PruneTargetSpriteGroup(const SpriteGroup *result);

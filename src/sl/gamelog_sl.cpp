@@ -101,7 +101,7 @@ static void Load_GLOG_common(std::vector<LoggedAction> &gamelog_actions)
 {
 	assert(gamelog_actions.empty());
 
-	byte type;
+	uint8_t type;
 	while ((type = SlReadByte()) != GLAT_NONE) {
 		if (type >= GLAT_END) SlErrorCorrupt("Invalid gamelog action type");
 		GamelogActionType at = (GamelogActionType)type;

@@ -65,7 +65,7 @@ private:
 	std::vector<BitmapStorage> used_bitmap;
 };
 
-enum CompanyBankruptcyFlags : byte {
+enum CompanyBankruptcyFlags : uint8_t {
 	CBRF_NONE      =   0x0,
 	CBRF_SALE      =   0x1, ///< the company has been marked for sale
 	CBRF_SALE_ONLY =   0x2, ///< the company has been marked for sale without being in a bankruptcy state first
@@ -88,13 +88,13 @@ struct CompanyProperties {
 	CompanyManagerFace face;         ///< Face description of the president.
 
 	Money money;                     ///< Money owned by the company.
-	byte money_fraction;             ///< Fraction of money of the company, too small to represent in #money.
+	uint8_t money_fraction;          ///< Fraction of money of the company, too small to represent in #money.
 	Money current_loan;              ///< Amount of money borrowed from the bank.
 	Money max_loan;                  ///< Max allowed amount of the loan or COMPANY_MAX_LOAN_DEFAULT.
 
 	Colours colour;                  ///< Company colour.
 
-	byte block_preview;              ///< Number of quarters that the company is not allowed to get new exclusive engine previews (see CompaniesGenStatistics).
+	uint8_t block_preview;           ///< Number of quarters that the company is not allowed to get new exclusive engine previews (see CompaniesGenStatistics).
 
 	TileIndex location_of_HQ;        ///< Northern tile of HQ; #INVALID_TILE when there is none.
 	TileIndex last_build_coordinate; ///< Coordinate of the last build thing by this company.
@@ -105,7 +105,7 @@ struct CompanyProperties {
 	int32_t display_inaugurated_period;///< Wallclock display period of starting the company.
 	YearDelta age_years;             ///< Number of economy years that the company has been operational.
 
-	byte months_of_bankruptcy;       ///< Number of months that the company is unable to pay its debts
+	uint8_t months_of_bankruptcy;    ///< Number of months that the company is unable to pay its debts
 	CompanyID bankrupt_last_asked;   ///< Which company was most recently asked about buying it?
 	CompanyBankruptcyFlags bankrupt_flags; ///< bankruptcy flags
 	CompanyMask bankrupt_asked;      ///< which companies were asked about buying it?
@@ -127,7 +127,7 @@ struct CompanyProperties {
 	std::array<Expenses, 3> yearly_expenses{}; ///< Expenses of the company for the last three years.
 	CompanyEconomyEntry cur_economy;                       ///< Economic data of the company of this quarter.
 	CompanyEconomyEntry old_economy[MAX_HISTORY_QUARTERS]; ///< Economic data of the company of the last #MAX_HISTORY_QUARTERS quarters.
-	byte num_valid_stat_ent;                               ///< Number of valid statistical entries in #old_economy.
+	uint8_t num_valid_stat_ent;                            ///< Number of valid statistical entries in #old_economy.
 
 	Livery livery[LS_END];
 

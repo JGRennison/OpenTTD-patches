@@ -277,8 +277,8 @@ protected:
 	 *  uint16_t   Number of NewGRFs in the packet, with for each of the NewGRFs:
 	 *      uint32_t   Lookup table index for the NewGRF.
 	 *      uint32_t   Unique NewGRF ID.
-	 *      byte[16]   MD5 checksum of the NewGRF
-	 *      string     Name of the NewGRF.
+	 *      uint8_t[16] MD5 checksum of the NewGRF
+	 *      string      Name of the NewGRF.
 	 *
 	 * The lookup table built using these packets are used by the deserialisation
 	 * of the NewGRFs for servers in the GC_LISTING. These updates are additive,

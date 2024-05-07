@@ -18,15 +18,15 @@
 #include <string>
 #include <limits>
 
-void   BufferSend_bool  (std::vector<byte> &buffer, size_t limit, bool   data);
-void   BufferSend_uint8 (std::vector<byte> &buffer, size_t limit, uint8_t  data);
-void   BufferSend_uint16(std::vector<byte> &buffer, size_t limit, uint16_t data);
-void   BufferSend_uint32(std::vector<byte> &buffer, size_t limit, uint32_t data);
-void   BufferSend_uint64(std::vector<byte> &buffer, size_t limit, uint64_t data);
-void   BufferSend_string(std::vector<byte> &buffer, size_t limit, const std::string_view data);
-size_t BufferSend_binary_until_full(std::vector<byte> &buffer, size_t limit, const byte *begin, const byte *end);
-void   BufferSend_binary(std::vector<byte> &buffer, size_t limit, const byte *data, const size_t size);
-void   BufferSend_buffer(std::vector<byte> &buffer, size_t limit, const byte *data, const size_t size);
+void   BufferSend_bool  (std::vector<uint8_t> &buffer, size_t limit, bool     data);
+void   BufferSend_uint8 (std::vector<uint8_t> &buffer, size_t limit, uint8_t  data);
+void   BufferSend_uint16(std::vector<uint8_t> &buffer, size_t limit, uint16_t data);
+void   BufferSend_uint32(std::vector<uint8_t> &buffer, size_t limit, uint32_t data);
+void   BufferSend_uint64(std::vector<uint8_t> &buffer, size_t limit, uint64_t data);
+void   BufferSend_string(std::vector<uint8_t> &buffer, size_t limit, const std::string_view data);
+size_t BufferSend_binary_until_full(std::vector<uint8_t> &buffer, size_t limit, const uint8_t *begin, const uint8_t *end);
+void   BufferSend_binary(std::vector<uint8_t> &buffer, size_t limit, const uint8_t *data, const size_t size);
+void   BufferSend_buffer(std::vector<uint8_t> &buffer, size_t limit, const uint8_t *data, const size_t size);
 
 template <typename T>
 struct BufferSerialisationHelper {
@@ -66,30 +66,30 @@ struct BufferSerialisationHelper {
 		BufferSend_string(self->GetSerialisationBuffer(), self->GetSerialisationLimit(), data);
 	}
 
-	size_t Send_binary_until_full(const byte *begin, const byte *end)
+	size_t Send_binary_until_full(const uint8_t *begin, const uint8_t *end)
 	{
 		T *self = static_cast<T *>(this);
 		return BufferSend_binary_until_full(self->GetSerialisationBuffer(), self->GetSerialisationLimit(), begin, end);
 	}
 
-	void Send_binary(const byte *data, const size_t size)
+	void Send_binary(const uint8_t *data, const size_t size)
 	{
 		T *self = static_cast<T *>(this);
 		BufferSend_binary(self->GetSerialisationBuffer(), self->GetSerialisationLimit(), data, size);
 	}
 
-	void Send_binary(std::span<const byte> data)
+	void Send_binary(std::span<const uint8_t> data)
 	{
 		this->Send_binary(data.data(), data.size());
 	}
 
-	void Send_buffer(const byte *data, const size_t size)
+	void Send_buffer(const uint8_t *data, const size_t size)
 	{
 		T *self = static_cast<T *>(this);
 		BufferSend_buffer(self->GetSerialisationBuffer(), self->GetSerialisationLimit(), data, size);
 	}
 
-	void Send_buffer(const std::vector<byte> &data)
+	void Send_buffer(const std::vector<uint8_t> &data)
 	{
 		this->Send_buffer(data.data(), data.size());
 	}
@@ -100,7 +100,7 @@ void BufferRecvStringValidate(std::string &buffer, StringValidationSettings sett
 template <typename T>
 struct BufferDeserialisationHelper {
 private:
-	const byte *GetBuffer()
+	const uint8_t *GetBuffer()
 	{
 		return static_cast<T *>(this)->GetDeserialisationBuffer();
 	}
@@ -253,7 +253,7 @@ public:
 	 * @param buffer The buffer to put the data into.
 	 * @param size   The size of the data.
 	 */
-	void Recv_binary(byte *buffer, size_t size)
+	void Recv_binary(uint8_t *buffer, size_t size)
 	{
 		if (!this->CanRecvBytes(size, true)) return;
 
@@ -267,7 +267,7 @@ public:
 	 * Reads binary data.
 	 * @param buffer The buffer to put the data into.
 	 */
-	void Recv_binary(std::span<byte> buffer)
+	void Recv_binary(std::span<uint8_t> buffer)
 	{
 		this->Recv_binary(buffer.data(), buffer.size());
 	}
@@ -331,11 +331,11 @@ public:
 };
 
 struct BufferSerialiser : public BufferSerialisationHelper<BufferSerialiser> {
-	std::vector<byte> &buffer;
+	std::vector<uint8_t> &buffer;
 
-	BufferSerialiser(std::vector<byte> &buffer) : buffer(buffer) {}
+	BufferSerialiser(std::vector<uint8_t> &buffer) : buffer(buffer) {}
 
-	std::vector<byte> &GetSerialisationBuffer() { return this->buffer; }
+	std::vector<uint8_t> &GetSerialisationBuffer() { return this->buffer; }
 	size_t GetSerialisationLimit() const { return std::numeric_limits<size_t>::max(); }
 };
 

@@ -145,7 +145,7 @@ static std::vector<SaveLoad> GetSettingsDesc(bool is_loading)
 		}
 
 		SaveLoadAddrProc *address_proc = [](void *base, size_t extra) -> void* {
-			return const_cast<byte *>((const byte *)base + (ptrdiff_t)extra);
+			return const_cast<uint8_t *>((const uint8_t *)base + (ptrdiff_t)extra);
 		};
 		saveloads.push_back({sd->name, new_cmd, new_type, sd->save.length, SL_MIN_VERSION, SL_MAX_VERSION, sd->save.size, address_proc, reinterpret_cast<uintptr_t>(sd->save.address), nullptr});
 	}

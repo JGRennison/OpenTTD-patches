@@ -19,7 +19,7 @@ public:
 	struct SpriteData {
 		BlitterSpriteFlags flags;
 		uint32_t offset[ZOOM_LVL_SPR_COUNT][2]; ///< Offsets (from .data) to streams for different zoom levels, and the normal and remap image information.
-		byte data[];                            ///< Data, all zoomlevels.
+		uint8_t data[];                         ///< Data, all zoomlevels.
 	};
 
 	Blitter_32bppOptimized()

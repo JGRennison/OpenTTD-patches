@@ -586,18 +586,18 @@ struct GoodsEntry {
 		max_waiting_cargo(0)
 	{}
 
-	byte status; ///< Status of this cargo, see #GoodsEntryStatus.
+	uint8_t status; ///< Status of this cargo, see #GoodsEntryStatus.
 
 	/**
 	 * Number of rating-intervals (up to 255) since the last vehicle tried to load this cargo.
 	 * The unit used is STATION_RATING_TICKS.
 	 * This does not imply there was any cargo to load.
 	 */
-	byte time_since_pickup;
+	uint8_t time_since_pickup;
 
-	byte last_vehicle_type;
+	uint8_t last_vehicle_type;
 
-	byte rating;            ///< %Station rating for this cargo.
+	uint8_t rating;         ///< %Station rating for this cargo.
 
 	/**
 	 * Maximum speed (up to 255) of the last vehicle that tried to load this cargo.
@@ -608,15 +608,15 @@ struct GoodsEntry {
 	 *  - Ships: 0.5 * km-ish/h
 	 *  - Aircraft: 8 * mph
 	 */
-	byte last_speed;
+	uint8_t last_speed;
 
 	/**
 	 * Age in years (up to 255) of the last vehicle that tried to load this cargo.
 	 * This does not imply there was any cargo to load.
 	 */
-	byte last_age;
+	uint8_t last_age;
 
-	byte amount_fract;      ///< Fractional part of the amount in the cargo list
+	uint8_t amount_fract;   ///< Fractional part of the amount in the cargo list
 
 	std::unique_ptr<GoodsEntryData> data;
 
@@ -723,8 +723,8 @@ struct Airport : public TileArea {
 	Airport() : TileArea(INVALID_TILE, 0, 0) {}
 
 	uint64_t flags;     ///< stores which blocks on the airport are taken. was 16 bit earlier on, then 32
-	byte type;          ///< Type of this airport, @see AirportTypes
-	byte layout;        ///< Airport layout number.
+	uint8_t type;       ///< Type of this airport, @see AirportTypes
+	uint8_t layout;     ///< Airport layout number.
 	Direction rotation; ///< How this airport is rotated.
 
 	PersistentStorage *psa; ///< Persistent storage for NewGRF airports.
@@ -899,8 +899,8 @@ public:
 
 	StationHadVehicleOfType had_vehicle_of_type;
 
-	byte time_since_load;
-	byte time_since_unload;
+	uint8_t time_since_load;
+	uint8_t time_since_unload;
 
 	std::vector<Vehicle *> loading_vehicles;
 	GoodsEntry goods[NUM_CARGO];  ///< Goods at this station
@@ -967,7 +967,7 @@ public:
 
 	bool IsWithinRangeOfDockingTile(TileIndex tile, uint max_distance) const;
 
-	uint32_t GetNewGRFVariable(const ResolverObject &object, uint16_t variable, byte parameter, bool *available) const override;
+	uint32_t GetNewGRFVariable(const ResolverObject &object, uint16_t variable, uint8_t parameter, bool *available) const override;
 
 	void GetTileArea(TileArea *ta, StationType type) const override;
 };

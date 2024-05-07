@@ -310,11 +310,11 @@ static const char *GetAccessViolationTypeString(uint type)
 
 	buffer += seprintf(buffer, last, "\n Bytes at instruction pointer:\n");
 #ifdef _M_AMD64
-	byte *b = (byte*)ep->ContextRecord->Rip;
+	uint8_t *b = (uint8_t*)ep->ContextRecord->Rip;
 #elif defined(_M_IX86)
-	byte *b = (byte*)ep->ContextRecord->Eip;
+	uint8_t *b = (uint8_t*)ep->ContextRecord->Eip;
 #elif defined(_M_ARM64)
-	byte *b = (byte*)ep->ContextRecord->Pc;
+	uint8_t *b = (uint8_t*)ep->ContextRecord->Pc;
 #endif
 	for (int i = 0; i != 24; i++) {
 		if (IsBadReadPtr(b, 1)) {

@@ -107,11 +107,11 @@ enum GrfSpecFeature : uint8_t {
 static const uint32_t INVALID_GRFID = 0xFFFFFFFF;
 
 struct GRFLabel {
-	byte label;
+	uint8_t label;
 	uint32_t nfo_line;
 	size_t pos;
 
-	GRFLabel(byte label, uint32_t nfo_line, size_t pos) : label(label), nfo_line(nfo_line), pos(pos) {}
+	GRFLabel(uint8_t label, uint32_t nfo_line, size_t pos) : label(label), nfo_line(nfo_line), pos(pos) {}
 };
 
 enum GRFPropertyMapFallbackMode {
@@ -327,7 +327,7 @@ struct NewSignalStyle;
 struct GRFFile : ZeroedMemoryAllocator {
 	std::string filename;
 	uint32_t grfid;
-	byte grf_version;
+	uint8_t grf_version;
 
 	uint sound_offset;
 	uint16_t num_sounds;
@@ -382,15 +382,15 @@ struct GRFFile : ZeroedMemoryAllocator {
 	uint32_t observed_feature_tests;         ///< Observed feature test bits (see: GRFFeatureTestObservationFlag)
 
 	const SpriteGroup *new_signals_group;    ///< New signals sprite group
-	byte new_signal_ctrl_flags;              ///< Ctrl flags for new signals
-	byte new_signal_extra_aspects;           ///< Number of extra aspects for new signals
+	uint8_t new_signal_ctrl_flags;           ///< Ctrl flags for new signals
+	uint8_t new_signal_extra_aspects;        ///< Number of extra aspects for new signals
 	uint16_t new_signal_style_mask;          ///< New signal styles usable with this GRF
 	NewSignalStyle *current_new_signal_style; ///< Current new signal style being defined by this GRF
 
 	const SpriteGroup *new_rocks_group;      ///< New landscape rocks group
-	byte new_landscape_ctrl_flags;           ///< Ctrl flags for new landscape
+	uint8_t new_landscape_ctrl_flags;        ///< Ctrl flags for new landscape
 
-	byte ctrl_flags;                         ///< General GRF control flags
+	uint8_t ctrl_flags;                      ///< General GRF control flags
 
 	btree::btree_map<uint16_t, uint> string_map; ///< Map of local GRF string ID to string ID
 
@@ -434,7 +434,7 @@ struct GRFLoadedFeatures {
  */
 inline bool HasGrfMiscBit(GrfMiscBit bit)
 {
-	extern byte _misc_grf_features;
+	extern uint8_t _misc_grf_features;
 	return HasBit(_misc_grf_features, bit);
 }
 
@@ -450,7 +450,7 @@ void ResetPersistentNewGRFData();
 #define grfmsg(severity, ...) if ((severity) == 0 || _debug_grf_level >= (severity)) _intl_grfmsg(severity, __VA_ARGS__)
 void CDECL _intl_grfmsg(int severity, const char *str, ...) WARN_FORMAT(2, 3);
 
-bool GetGlobalVariable(byte param, uint32_t *value, const GRFFile *grffile);
+bool GetGlobalVariable(uint8_t param, uint32_t *value, const GRFFile *grffile);
 
 StringID MapGRFStringID(uint32_t grfid, StringID str);
 void ShowNewGRFError();

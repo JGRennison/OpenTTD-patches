@@ -75,7 +75,7 @@ struct MAPTChunkHandler : ChunkHandler {
 
 	void Load() const override
 	{
-		std::array<byte, MAP_SL_BUF_SIZE> buf;
+		std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 		TileIndex size = MapSize();
 
 		for (TileIndex i = 0; i != size;) {
@@ -86,7 +86,7 @@ struct MAPTChunkHandler : ChunkHandler {
 
 	void Save() const override
 	{
-		std::array<byte, MAP_SL_BUF_SIZE> buf;
+		std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 		TileIndex size = MapSize();
 
 		SlSetLength(size);
@@ -102,7 +102,7 @@ struct MAPHChunkHandler : ChunkHandler {
 
 	void Load() const override
 	{
-		std::array<byte, MAP_SL_BUF_SIZE> buf;
+		std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 		TileIndex size = MapSize();
 
 		for (TileIndex i = 0; i != size;) {
@@ -113,7 +113,7 @@ struct MAPHChunkHandler : ChunkHandler {
 
 	void Save() const override
 	{
-		std::array<byte, MAP_SL_BUF_SIZE> buf;
+		std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 		TileIndex size = MapSize();
 
 		SlSetLength(size);
@@ -129,7 +129,7 @@ struct MAPOChunkHandler : ChunkHandler {
 
 	void Load() const override
 	{
-		std::array<byte, MAP_SL_BUF_SIZE> buf;
+		std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 		TileIndex size = MapSize();
 
 		for (TileIndex i = 0; i != size;) {
@@ -140,7 +140,7 @@ struct MAPOChunkHandler : ChunkHandler {
 
 	void Save() const override
 	{
-		std::array<byte, MAP_SL_BUF_SIZE> buf;
+		std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 		TileIndex size = MapSize();
 
 		SlSetLength(size);
@@ -186,7 +186,7 @@ struct M3LOChunkHandler : ChunkHandler {
 
 	void Load() const override
 	{
-		std::array<byte, MAP_SL_BUF_SIZE> buf;
+		std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 		TileIndex size = MapSize();
 
 		for (TileIndex i = 0; i != size;) {
@@ -197,7 +197,7 @@ struct M3LOChunkHandler : ChunkHandler {
 
 	void Save() const override
 	{
-		std::array<byte, MAP_SL_BUF_SIZE> buf;
+		std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 		TileIndex size = MapSize();
 
 		SlSetLength(size);
@@ -213,7 +213,7 @@ struct M3HIChunkHandler : ChunkHandler {
 
 	void Load() const override
 	{
-		std::array<byte, MAP_SL_BUF_SIZE> buf;
+		std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 		TileIndex size = MapSize();
 
 		for (TileIndex i = 0; i != size;) {
@@ -224,7 +224,7 @@ struct M3HIChunkHandler : ChunkHandler {
 
 	void Save() const override
 	{
-		std::array<byte, MAP_SL_BUF_SIZE> buf;
+		std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 		TileIndex size = MapSize();
 
 		SlSetLength(size);
@@ -240,7 +240,7 @@ struct MAP5ChunkHandler : ChunkHandler {
 
 	void Load() const override
 	{
-		std::array<byte, MAP_SL_BUF_SIZE> buf;
+		std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 		TileIndex size = MapSize();
 
 		for (TileIndex i = 0; i != size;) {
@@ -251,7 +251,7 @@ struct MAP5ChunkHandler : ChunkHandler {
 
 	void Save() const override
 	{
-		std::array<byte, MAP_SL_BUF_SIZE> buf;
+		std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 		TileIndex size = MapSize();
 
 		SlSetLength(size);
@@ -267,7 +267,7 @@ struct MAPEChunkHandler : ChunkHandler {
 
 	void Load() const override
 	{
-		std::array<byte, MAP_SL_BUF_SIZE> buf;
+		std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 		TileIndex size = MapSize();
 
 		if (IsSavegameVersionBefore(SLV_42)) {
@@ -291,7 +291,7 @@ struct MAPEChunkHandler : ChunkHandler {
 
 	void Save() const override
 	{
-		std::array<byte, MAP_SL_BUF_SIZE> buf;
+		std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 		TileIndex size = MapSize();
 
 		SlSetLength(size);
@@ -307,7 +307,7 @@ struct MAP7ChunkHandler : ChunkHandler {
 
 	void Load() const override
 	{
-		std::array<byte, MAP_SL_BUF_SIZE> buf;
+		std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 		TileIndex size = MapSize();
 
 		for (TileIndex i = 0; i != size;) {
@@ -318,7 +318,7 @@ struct MAP7ChunkHandler : ChunkHandler {
 
 	void Save() const override
 	{
-		std::array<byte, MAP_SL_BUF_SIZE> buf;
+		std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 		TileIndex size = MapSize();
 
 		SlSetLength(size);

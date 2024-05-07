@@ -102,7 +102,7 @@ struct ETileArea : TileArea {
  * if centered, C/P start from the centre and c/p are not available.
  * @return Platform information in bit-stuffed format.
  */
-uint32_t GetPlatformInfo(Axis axis, byte tile, int platforms, int length, int x, int y, bool centred)
+uint32_t GetPlatformInfo(Axis axis, uint8_t tile, int platforms, int length, int x, int y, bool centred)
 {
 	uint32_t retval = 0;
 
@@ -142,7 +142,7 @@ uint32_t GetPlatformInfo(Axis axis, byte tile, int platforms, int length, int x,
  */
 static TileIndex FindRailStationEnd(TileIndex tile, TileIndexDiff delta, bool check_type, bool check_axis)
 {
-	byte orig_type = 0;
+	uint8_t orig_type = 0;
 	Axis orig_axis = AXIS_X;
 	StationID sid = GetStationIndex(tile);
 
@@ -430,7 +430,7 @@ uint32_t StationScopeResolver::GetNearbyStationInfo(uint32_t parameter, StationS
 	return this->st->GetNewGRFVariable(this->ro, variable, parameter, &(extra->available));
 }
 
-uint32_t Station::GetNewGRFVariable(const ResolverObject &object, uint16_t variable, byte parameter, bool *available) const
+uint32_t Station::GetNewGRFVariable(const ResolverObject &object, uint16_t variable, uint8_t parameter, bool *available) const
 {
 	switch (variable) {
 		case 0x48: { // Accepted cargo types
@@ -496,7 +496,7 @@ uint32_t Station::GetNewGRFVariable(const ResolverObject &object, uint16_t varia
 	return UINT_MAX;
 }
 
-uint32_t Waypoint::GetNewGRFVariable(const ResolverObject &object, uint16_t variable, byte parameter, bool *available) const
+uint32_t Waypoint::GetNewGRFVariable(const ResolverObject &object, uint16_t variable, uint8_t parameter, bool *available) const
 {
 	switch (variable) {
 		case 0x48: return 0; // Accepted cargo types
@@ -687,7 +687,7 @@ uint16_t GetStationCallback(CallbackID callback, uint32_t param1, uint32_t param
  * @param numtracks Number of platforms.
  * @return Succeeded or failed command.
  */
-CommandCost PerformStationTileSlopeCheck(TileIndex north_tile, TileIndex cur_tile, RailType rt, const StationSpec *statspec, Axis axis, byte plat_len, byte numtracks)
+CommandCost PerformStationTileSlopeCheck(TileIndex north_tile, TileIndex cur_tile, RailType rt, const StationSpec *statspec, Axis axis, uint8_t plat_len, uint8_t numtracks)
 {
 	TileIndexDiff diff = cur_tile - north_tile;
 	Slope slope = GetTileSlope(cur_tile);
@@ -757,7 +757,7 @@ int AllocateSpecToStation(const StationSpec *statspec, BaseStation *st, bool exe
  * @param specindex Index of the custom station within the Station's spec list.
  * @return Indicates whether the StationSpec was deallocated.
  */
-void DeallocateSpecFromStation(BaseStation *st, byte specindex)
+void DeallocateSpecFromStation(BaseStation *st, uint8_t specindex)
 {
 	/* specindex of 0 (default) is never freeable */
 	if (specindex == 0) return;

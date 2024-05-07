@@ -422,7 +422,7 @@ struct LanguageFileWriter : LanguageWriter, FileWriter {
 
 	void WriteHeader(const LanguagePackHeader *header) override
 	{
-		this->Write((const byte *)header, sizeof(*header));
+		this->Write((const uint8_t *)header, sizeof(*header));
 	}
 
 	void Finalise() override
@@ -433,7 +433,7 @@ struct LanguageFileWriter : LanguageWriter, FileWriter {
 		this->FileWriter::Finalise();
 	}
 
-	void Write(const byte *buffer, size_t length) override
+	void Write(const uint8_t *buffer, size_t length) override
 	{
 		if (length == 0) return;
 		if (fwrite(buffer, sizeof(*buffer), length, this->fh) != length) {

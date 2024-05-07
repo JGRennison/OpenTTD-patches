@@ -228,7 +228,7 @@ static void TrainDetailsCargoTab(const CargoSummaryItem *item, int left, int rig
  * @param right The right most coordinate to draw
  * @param y     The y coordinate
  */
-static void TrainDetailsInfoTab(const Train *v, int left, int right, int y, byte line_number)
+static void TrainDetailsInfoTab(const Train *v, int left, int right, int y, uint8_t line_number)
 {
 	const RailVehicleInfo *rvi = RailVehInfo(v->engine_type);
 	bool show_speed = !UsesWagonOverride(v) && (_settings_game.vehicle.wagon_speed_limits || rvi->railveh_type != RAILVEH_WAGON);
@@ -425,7 +425,7 @@ void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16_t v
 	if (det_tab != TDW_TAB_TOTALS) {
 		Direction dir = rtl ? DIR_E : DIR_W;
 		int x = rtl ? r.right : r.left;
-		byte line_number = 0;
+		uint8_t line_number = 0;
 		for (; v != nullptr && vscroll_pos > -vscroll_cap; v = v->GetNextVehicle()) {
 			GetCargoSummaryOfArticulatedVehicle(v, _cargo_summary);
 

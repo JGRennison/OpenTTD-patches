@@ -30,7 +30,7 @@
 extern TileIndex _cur_tileloop_tile;
 extern TileIndex _aux_tileloop_tile;
 extern uint16_t _disaster_delay;
-extern byte _trees_tick_ctr;
+extern uint8_t _trees_tick_ctr;
 extern uint64_t _aspect_cfg_hash;
 
 /* Keep track of current game position */
@@ -79,7 +79,7 @@ void ResetViewportAfterLoadGame()
 	MarkWholeScreenDirty();
 }
 
-byte _age_cargo_skip_counter; ///< Skip aging of cargo? Used before savegame version 162.
+uint8_t _age_cargo_skip_counter; ///< Skip aging of cargo? Used before savegame version 162.
 extern TimeoutTimer<TimerGameTick> _new_competitor_timeout;
 
 static const NamedSaveLoad _date_desc[] = {

@@ -32,7 +32,7 @@ enum RoadType : uint8_t {
 	INVALID_ROADTYPE = 63,   ///< flag for invalid roadtype
 };
 DECLARE_POSTFIX_INCREMENT(RoadType)
-template <> struct EnumPropsT<RoadType> : MakeEnumPropsT<RoadType, byte, ROADTYPE_BEGIN, ROADTYPE_END, INVALID_ROADTYPE, 6> {};
+template <> struct EnumPropsT<RoadType> : MakeEnumPropsT<RoadType, uint8_t, ROADTYPE_BEGIN, ROADTYPE_END, INVALID_ROADTYPE, 6> {};
 
 /**
  * The different roadtypes we support, but then a bitmask of them.
@@ -71,6 +71,6 @@ enum RoadBits : uint8_t {
 	ROAD_END  = ROAD_ALL + 1,        ///< Out-of-range roadbits, used for iterations
 };
 DECLARE_ENUM_AS_BIT_SET(RoadBits)
-template <> struct EnumPropsT<RoadBits> : MakeEnumPropsT<RoadBits, byte, ROAD_NONE, ROAD_END, ROAD_NONE, 4> {};
+template <> struct EnumPropsT<RoadBits> : MakeEnumPropsT<RoadBits, uint8_t, ROAD_NONE, ROAD_END, ROAD_NONE, 4> {};
 
 #endif /* ROAD_TYPE_H */

@@ -1458,7 +1458,7 @@ static bool GrowTownWithBridge(const Town *t, const TileIndex tile, const DiagDi
 
 	std::bitset <MAX_BRIDGES> tried;
 	uint n = MAX_BRIDGES;
-	byte bridge_type = RandomRange(n);
+	uint8_t bridge_type = RandomRange(n);
 
 	for (;;) {
 		/* Can we actually build the bridge? */
@@ -2387,12 +2387,12 @@ CommandCost CmdFoundTown(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 		if (ret.Failed()) return ret;
 	}
 
-	static const byte price_mult[][TSZ_RANDOM + 1] = {{ 15, 25, 40, 25 }, { 20, 35, 55, 35 }};
+	static const uint8_t price_mult[][TSZ_RANDOM + 1] = {{ 15, 25, 40, 25 }, { 20, 35, 55, 35 }};
 	/* multidimensional arrays have to have defined length of non-first dimension */
 	static_assert(lengthof(price_mult[0]) == 4);
 
 	CommandCost cost(EXPENSES_OTHER, _price[PR_BUILD_TOWN]);
-	byte mult = price_mult[city][size];
+	uint8_t mult = price_mult[city][size];
 
 	cost.MultiplyCost(mult);
 
@@ -2616,7 +2616,7 @@ static Town *CreateRandomTown(uint attempts, uint32_t townnameparts, TownSize si
 	return nullptr;
 }
 
-static const byte _num_initial_towns[4] = {5, 11, 23, 46};  // very low, low, normal, high
+static const uint8_t _num_initial_towns[4] = {5, 11, 23, 46};  // very low, low, normal, high
 
 /**
  * Generate a number of towns with a given layout.
@@ -2725,7 +2725,7 @@ HouseZonesBits GetTownRadiusGroup(const Town *t, TileIndex tile)
  * @param random_bits Random bits for newgrf houses to use.
  * @pre The house can be built here.
  */
-static inline void ClearMakeHouseTile(TileIndex tile, Town *t, byte counter, byte stage, HouseID type, byte random_bits)
+static inline void ClearMakeHouseTile(TileIndex tile, Town *t, uint8_t counter, uint8_t stage, HouseID type, uint8_t random_bits)
 {
 	[[maybe_unused]] CommandCost cc = DoCommand(tile, 0, 0, DC_EXEC | DC_AUTO | DC_NO_WATER | DC_TOWN, CMD_LANDSCAPE_CLEAR);
 	assert(cc.Succeeded());
@@ -2748,7 +2748,7 @@ static inline void ClearMakeHouseTile(TileIndex tile, Town *t, byte counter, byt
  * @param random_bits Random bits for newgrf houses to use.
  * @pre The house can be built here.
  */
-static void MakeTownHouse(TileIndex tile, Town *t, byte counter, byte stage, HouseID type, byte random_bits)
+static void MakeTownHouse(TileIndex tile, Town *t, uint8_t counter, uint8_t stage, HouseID type, uint8_t random_bits)
 {
 	BuildingFlags size = HouseSpec::Get(type)->building_flags;
 
@@ -3005,7 +3005,7 @@ static CommandCost CheckCanBuildHouse(HouseID house, const Town *t, bool manual)
  * @param house house type
  * @param random_bits random bits for the house
  */
-static void DoBuildHouse(Town *t, TileIndex tile, HouseID house, byte random_bits)
+static void DoBuildHouse(Town *t, TileIndex tile, HouseID house, uint8_t random_bits)
 {
 	t->cache.num_houses++;
 
@@ -3018,8 +3018,8 @@ static void DoBuildHouse(Town *t, TileIndex tile, HouseID house, byte random_bit
 		t->stadium_count++;
 	}
 
-	byte construction_counter = 0;
-	byte construction_stage = 0;
+	uint8_t construction_counter = 0;
+	uint8_t construction_stage = 0;
 
 	if (_generating_world || _game_mode == GM_EDITOR) {
 		uint32_t r = Random();
@@ -3062,7 +3062,7 @@ CommandCost CmdBuildHouse(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
 	HouseID house = GB(p1, 0, 16);
 	Town *t = Town::Get(GB(p1, 16, 16));
 	if (t == nullptr) return CMD_ERROR;
-	byte random_bits = GB(p2, 0, 8);
+	uint8_t random_bits = GB(p2, 0, 8);
 
 	int max_z = GetTileMaxZ(tile);
 	bool above_snowline = (_settings_game.game_creation.landscape == LT_ARCTIC) && (max_z > HighestSnowLine());
@@ -3158,7 +3158,7 @@ static bool BuildTownHouse(Town *t, TileIndex tile)
 		tile = FindPlaceForTownHouseAroundTile(tile, t, house);
 		if (tile == INVALID_TILE) continue;
 
-		byte random_bits = Random();
+		uint8_t random_bits = Random();
 
 		/* Check if GRF allows this house */
 		if (!HouseAllowsConstruction(house, tile, t, random_bits)) continue;
@@ -3597,7 +3597,7 @@ CommandCost CmdDeleteTown(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
  * Factor in the cost of each town action.
  * @see TownActions
  */
-const byte _town_action_costs[TACT_COUNT] = {
+const uint8_t _town_action_costs[TACT_COUNT] = {
 	2, 4, 9, 35, 48, 53, 117, 175
 };
 

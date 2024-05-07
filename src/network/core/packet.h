@@ -49,7 +49,7 @@ private:
 	/** The current read/write position in the packet */
 	PacketSize pos;
 	/** The buffer of this packet. */
-	std::vector<byte> buffer;
+	std::vector<uint8_t> buffer;
 	/** The limit for the packet size. */
 	size_t limit;
 
@@ -65,10 +65,10 @@ public:
 	/* Sending/writing of packets */
 	void PrepareToSend();
 
-	std::vector<byte> &GetSerialisationBuffer() { return this->buffer; }
+	std::vector<uint8_t> &GetSerialisationBuffer() { return this->buffer; }
 	size_t GetSerialisationLimit() const { return this->limit; }
 
-	const byte *GetDeserialisationBuffer() const { return this->buffer.data(); }
+	const uint8_t *GetDeserialisationBuffer() const { return this->buffer.data(); }
 	size_t GetDeserialisationBufferSize() const { return this->buffer.size(); }
 	PacketSize &GetDeserialisationPosition() { return this->pos; }
 	bool CanDeserialiseBytes(size_t bytes_to_read, bool raise_error) { return this->CanReadFromPacket(bytes_to_read, raise_error); }
@@ -89,7 +89,7 @@ public:
 
 	size_t RemainingBytesToTransfer() const;
 
-	const byte *GetBufferData() const { return this->buffer.data(); }
+	const uint8_t *GetBufferData() const { return this->buffer.data(); }
 	PacketSize GetRawPos() const { return this->pos; }
 	void ReserveBuffer(size_t size) { this->buffer.reserve(size); }
 
@@ -194,14 +194,14 @@ public:
 
 struct SubPacketDeserialiser : public BufferDeserialisationHelper<SubPacketDeserialiser> {
 	NetworkSocketHandler *cs;
-	const byte *data;
+	const uint8_t *data;
 	size_t size;
 	PacketSize pos;
 
-	SubPacketDeserialiser(Packet &p, const byte *data, size_t size, PacketSize pos = 0) : cs(p.GetParentSocket()), data(data), size(size), pos(pos) {}
-	SubPacketDeserialiser(Packet &p, const std::vector<byte> &buffer, PacketSize pos = 0) : cs(p.GetParentSocket()), data(buffer.data()), size(buffer.size()), pos(pos) {}
+	SubPacketDeserialiser(Packet &p, const uint8_t *data, size_t size, PacketSize pos = 0) : cs(p.GetParentSocket()), data(data), size(size), pos(pos) {}
+	SubPacketDeserialiser(Packet &p, const std::vector<uint8_t> &buffer, PacketSize pos = 0) : cs(p.GetParentSocket()), data(buffer.data()), size(buffer.size()), pos(pos) {}
 
-	const byte *GetDeserialisationBuffer() const { return this->data; }
+	const uint8_t *GetDeserialisationBuffer() const { return this->data; }
 	size_t GetDeserialisationBufferSize() const { return this->size; }
 	PacketSize &GetDeserialisationPosition() { return this->pos; }
 	bool CanDeserialiseBytes(size_t bytes_to_read, bool raise_error);

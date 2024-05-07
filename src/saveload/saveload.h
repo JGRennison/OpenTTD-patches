@@ -21,7 +21,7 @@
 #include <list>
 
 extern SaveLoadVersion _sl_version;
-extern byte            _sl_minor_version;
+extern uint8_t         _sl_minor_version;
 extern const SaveLoadVersion SAVEGAME_VERSION;
 extern const SaveLoadVersion MAX_LOAD_SAVEGAME_VERSION;
 
@@ -265,7 +265,7 @@ enum VarTypes {
 typedef uint32_t VarType;
 
 /** Type of data saved. */
-enum SaveLoadType : byte {
+enum SaveLoadType : uint8_t {
 	SL_VAR         =  0, ///< Save/load a variable.
 	SL_REF         =  1, ///< Save/load a reference.
 	SL_STRUCT      =  2, ///< Save/load a struct.
@@ -861,7 +861,7 @@ inline constexpr bool SlCheckVarSize(SaveLoadType cmd, VarType type, size_t leng
  * @param minor Minor number of the version to check against. If \a minor is 0 or not specified, only the major number is checked.
  * @return Savegame version is earlier than the specified version.
  */
-inline bool IsSavegameVersionBefore(SaveLoadVersion major, byte minor = 0)
+inline bool IsSavegameVersionBefore(SaveLoadVersion major, uint8_t minor = 0)
 {
 	return _sl_version < major || (minor > 0 && _sl_version == major && _sl_minor_version < minor);
 }

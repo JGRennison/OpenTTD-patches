@@ -157,8 +157,8 @@ struct VehicleCache {
 	uint16_t cached_cargo_age_period; ///< Number of ticks before carried cargo is aged.
 	uint16_t cached_image_curvature;  ///< Cached neighbour curvature, see: VCF_IMAGE_CURVATURE
 
-	byte cached_vis_effect;  ///< Visual effect to show (see #VisualEffect)
-	byte cached_veh_flags;   ///< Vehicle cache flags (see #VehicleCacheFlags)
+	uint8_t cached_vis_effect;  ///< Visual effect to show (see #VisualEffect)
+	uint8_t cached_veh_flags;   ///< Vehicle cache flags (see #VehicleCacheFlags)
 };
 
 /** Sprite sequence for a vehicle part. */
@@ -357,9 +357,9 @@ public:
 	Vehicle *hash_tile_prev;            ///< NOSAVE: Previous vehicle in the tile location hash.
 	TileIndex hash_tile_current = INVALID_TILE; ///< NOSAVE: current tile used for tile location hash.
 
-	byte breakdown_severity;            ///< severity of the breakdown. Note that lower means more severe
-	byte breakdown_type;                ///< Type of breakdown
-	byte breakdown_chance_factor;       ///< Improved breakdowns: current multiplier for breakdown_chance * 128, used for head vehicle only
+	uint8_t breakdown_severity;         ///< severity of the breakdown. Note that lower means more severe
+	uint8_t breakdown_type;             ///< Type of breakdown
+	uint8_t breakdown_chance_factor;    ///< Improved breakdowns: current multiplier for breakdown_chance * 128, used for head vehicle only
 	Owner owner;                        ///< Which company owns the vehicle?
 
 	SpriteID colourmap;                 ///< NOSAVE: cached colour mapping
@@ -373,10 +373,10 @@ public:
 	CalTime::Date date_of_last_service_newgrf; ///< Last date the vehicle had a service at a depot, unchanged by the date cheat to protect against unsafe NewGRF behavior.
 	uint16_t reliability;               ///< Reliability.
 	uint16_t reliability_spd_dec;       ///< Reliability decrease speed.
-	byte breakdown_ctr;                 ///< Counter for managing breakdown events. @see Vehicle::HandleBreakdown
-	byte breakdown_delay;               ///< Counter for managing breakdown length.
-	byte breakdowns_since_last_service; ///< Counter for the amount of breakdowns.
-	byte breakdown_chance;              ///< Current chance of breakdowns.
+	uint8_t breakdown_ctr;                 ///< Counter for managing breakdown events. @see Vehicle::HandleBreakdown
+	uint8_t breakdown_delay;               ///< Counter for managing breakdown length.
+	uint8_t breakdowns_since_last_service; ///< Counter for the amount of breakdowns.
+	uint8_t breakdown_chance;              ///< Current chance of breakdowns.
 
 	int32_t x_pos;                      ///< x coordinate.
 	int32_t y_pos;                      ///< y coordinate.
@@ -388,32 +388,32 @@ public:
 	 * 0xfd == custom sprite, 0xfe == custom second head sprite
 	 * 0xff == reserved for another custom sprite
 	 */
-	byte spritenum;
+	uint8_t spritenum;
 	UnitID unitnumber;                  ///< unit number, for display purposes only
 	VehicleSpriteSeq sprite_seq;        ///< Vehicle appearance.
 	Rect16 sprite_seq_bounds;
-	byte x_extent;                      ///< x-extent of vehicle bounding box
-	byte y_extent;                      ///< y-extent of vehicle bounding box
-	byte z_extent;                      ///< z-extent of vehicle bounding box
+	uint8_t x_extent;                   ///< x-extent of vehicle bounding box
+	uint8_t y_extent;                   ///< y-extent of vehicle bounding box
+	uint8_t z_extent;                   ///< z-extent of vehicle bounding box
 	int8_t x_bb_offs;                   ///< x offset of vehicle bounding box
 	int8_t y_bb_offs;                   ///< y offset of vehicle bounding box
 	int8_t x_offs;                      ///< x offset for vehicle sprite
 	int8_t y_offs;                      ///< y offset for vehicle sprite
 
-	byte progress;                      ///< The percentage (if divided by 256) this vehicle already crossed the tile unit.
+	uint8_t progress;                   ///< The percentage (if divided by 256) this vehicle already crossed the tile unit.
 	TextEffectID fill_percent_te_id;    ///< a text-effect id to a loading indicator object
 	uint16_t load_unload_ticks;         ///< Ticks to wait before starting next cycle.
 
 	uint16_t cur_speed;                 ///< current speed
-	byte subspeed;                      ///< fractional speed
-	byte acceleration;                  ///< used by train & aircraft
+	uint8_t subspeed;                   ///< fractional speed
+	uint8_t acceleration;               ///< used by train & aircraft
 
 	uint32_t motion_counter;            ///< counter to occasionally play a vehicle sound. (Also used as virtual train client ID).
 
 	uint16_t random_bits;               ///< Bits used for randomized variational spritegroups.
-	byte waiting_triggers;              ///< Triggers to be yet matched before rerandomizing the random bits.
+	uint8_t waiting_triggers;           ///< Triggers to be yet matched before rerandomizing the random bits.
 
-	byte cargo_subtype;                 ///< Used for livery refits (NewGRF variations)
+	uint8_t cargo_subtype;              ///< Used for livery refits (NewGRF variations)
 
 	StationID last_station_visited;     ///< The last station we stopped at.
 	StationID last_loading_station;     ///< Last station the vehicle has stopped at and could possibly leave from with any cargo loaded. (See VF_LAST_LOAD_ST_SEP).
@@ -425,13 +425,13 @@ public:
 	uint16_t cargo_age_counter;         ///< Ticks till cargo is aged next.
 	int8_t trip_occupancy;              ///< NOSAVE: Occupancy of vehicle of the current trip (updated after leaving a station).
 
-	byte day_counter;                   ///< Increased by one for each day
-	byte tick_counter;                  ///< Increased by one for each tick
+	uint8_t day_counter;                ///< Increased by one for each day
+	uint8_t tick_counter;               ///< Increased by one for each tick
 	uint8_t order_occupancy_average;    ///< NOSAVE: order occupancy average. 0 = invalid, 1 = n/a, 16-116 = 0-100%
 	uint16_t running_ticks;             ///< Number of ticks this vehicle was not stopped this day
 
-	byte vehstatus;                     ///< Status
-	byte subtype;                       ///< subtype (Filled with values from #AircraftSubType/#DisasterSubType/#EffectVehicleType/#GroundVehicleSubtypeFlags)
+	uint8_t vehstatus;                  ///< Status
+	uint8_t subtype;                    ///< subtype (Filled with values from #AircraftSubType/#DisasterSubType/#EffectVehicleType/#GroundVehicleSubtypeFlags)
 	GroupID group_id;                   ///< Index of group Pool array
 
 	Order current_order;                ///< The current order (+ status, like: loading)

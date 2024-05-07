@@ -139,7 +139,7 @@ struct PacketWriter : SaveFilter {
 		return last_packet;
 	}
 
-	void Write(byte *buf, size_t size) override
+	void Write(uint8_t *buf, size_t size) override
 	{
 		std::lock_guard<std::mutex> lock(this->mutex);
 
@@ -148,7 +148,7 @@ struct PacketWriter : SaveFilter {
 
 		if (this->current == nullptr) this->current = std::make_unique<Packet>(PACKET_SERVER_MAP_DATA, TCP_MTU);
 
-		byte *bufe = buf + size;
+		uint8_t *bufe = buf + size;
 		while (buf != bufe) {
 			size_t written = this->current->Send_binary_until_full(buf, bufe);
 			buf += written;
@@ -240,14 +240,14 @@ bool ServerNetworkGameSocketHandler::ParseKeyPasswordPacket(Packet &p, NetworkSh
 	crypto_blake2b_update(&ctx, shared_secret.data(),          shared_secret.size());       // Shared secret
 	crypto_blake2b_update(&ctx, client_pub_key.data(),         client_pub_key.size());      // Client pub key
 	crypto_blake2b_update(&ctx, keys.x25519_pub_key.data(),    keys.x25519_pub_key.size()); // Server pub key
-	crypto_blake2b_update(&ctx, (const byte *)password.data(), password.size());            // Password
+	crypto_blake2b_update(&ctx, (const uint8_t *)password.data(), password.size());         // Password
 	crypto_blake2b_final (&ctx, ss.shared_data.data());
 
 	/* NetworkSharedSecrets::shared_data now contains 2 keys worth of hash, first key is used for up direction, second key for down direction (if any) */
 
 	crypto_wipe(shared_secret.data(), shared_secret.size());
 
-	std::vector<byte> message = p.Recv_binary(p.RemainingBytesToTransfer());
+	std::vector<uint8_t> message = p.Recv_binary(p.RemainingBytesToTransfer());
 	if (message.size() < 8) return false;
 	if ((message.size() == 8) != (payload == nullptr)) {
 		/* Payload expected but not present, or vice versa, just give up */
@@ -329,7 +329,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::CloseConnection(NetworkRecvSta
 
 	/* We just lost one client :( */
 	if (this->status >= STATUS_AUTHORIZED) _network_game_info.clients_on--;
-	extern byte _network_clients_connected;
+	extern uint8_t _network_clients_connected;
 	_network_clients_connected--;
 
 	this->SendPackets(true);
@@ -347,7 +347,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::CloseConnection(NetworkRecvSta
  */
 /* static */ bool ServerNetworkGameSocketHandler::AllowConnection()
 {
-	extern byte _network_clients_connected;
+	extern uint8_t _network_clients_connected;
 	bool accept = _network_clients_connected < MAX_CLIENTS;
 
 	/* We can't go over the MAX_CLIENTS limit here. However, the
@@ -476,7 +476,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendDesyncLog(const std::strin
 		auto p = std::make_unique<Packet>(PACKET_SERVER_DESYNC_LOG, TCP_MTU);
 		size_t size = std::min<size_t>(log.size() - offset, TCP_MTU - 2 - p->Size());
 		p->Send_uint16(static_cast<uint16_t>(size));
-		p->Send_binary((const byte *)(log.data() + offset), size);
+		p->Send_binary((const uint8_t *)(log.data() + offset), size);
 		this->SendPacket(std::move(p));
 
 		offset += size;
@@ -845,7 +845,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendRConResult(uint16_t colour
 {
 	assert(this->rcon_reply_key != nullptr);
 
-	std::vector<byte> message;
+	std::vector<uint8_t> message;
 	BufferSerialiser buffer(message);
 	buffer.Send_uint16(colour);
 	buffer.Send_string(command);
@@ -1294,7 +1294,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_DESYNC_LOG(Pack
 {
 	uint size = p.Recv_uint16();
 	this->desync_log.resize(this->desync_log.size() + size);
-	p.Recv_binary((byte *)(this->desync_log.data() + this->desync_log.size() - size), size);
+	p.Recv_binary((uint8_t *)(this->desync_log.data() + this->desync_log.size() - size), size);
 	DEBUG(net, 2, "Received %u bytes of client desync log", size);
 	this->receive_limit += p.Size();
 	return NETWORK_RECV_STATUS_OKAY;
@@ -1760,7 +1760,7 @@ void NetworkPopulateCompanyStats(NetworkCompanyStats *stats)
 	/* Go through all vehicles and count the type of vehicles */
 	for (const Vehicle *v : Vehicle::IterateFrontOnly()) {
 		if (!Company::IsValidID(v->owner) || !v->IsPrimaryVehicle() || HasBit(v->subtype, GVSF_VIRTUAL)) continue;
-		byte type = 0;
+		uint8_t type = 0;
 		switch (v->type) {
 			case VEH_TRAIN: type = NETWORK_VEH_TRAIN; break;
 			case VEH_ROAD: type = RoadVehicle::From(v)->IsBus() ? NETWORK_VEH_BUS : NETWORK_VEH_LORRY; break;

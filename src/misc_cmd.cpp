@@ -213,7 +213,7 @@ CommandCost CmdPause(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t 
 			PauseMode prev_mode = _pause_mode;
 
 			if ((p2 & 1) == 0) {
-				_pause_mode = static_cast<PauseMode>(_pause_mode & (byte)~p1);
+				_pause_mode = static_cast<PauseMode>(_pause_mode & (uint8_t)~p1);
 				_pause_countdown = (p2 >> 1);
 
 				/* If the only remaining reason to be paused is that we saw a command during pause, unpause. */
@@ -221,7 +221,7 @@ CommandCost CmdPause(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t 
 					_pause_mode = PM_UNPAUSED;
 				}
 			} else {
-				_pause_mode = static_cast<PauseMode>(_pause_mode | (byte)p1);
+				_pause_mode = static_cast<PauseMode>(_pause_mode | (uint8_t)p1);
 			}
 
 			NetworkHandlePauseChange(prev_mode, (PauseMode)p1);

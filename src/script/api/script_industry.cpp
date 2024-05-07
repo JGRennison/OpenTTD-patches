@@ -260,7 +260,7 @@
 	auto company_id = ::Industry::Get(industry_id)->exclusive_supplier;
 	if (!::Company::IsValidID(company_id)) return ScriptCompany::COMPANY_INVALID;
 
-	return (ScriptCompany::CompanyID)((byte)company_id);
+	return (ScriptCompany::CompanyID)((uint8_t)company_id);
 }
 
 /* static */ bool ScriptIndustry::SetExclusiveSupplier(IndustryID industry_id, ScriptCompany::CompanyID company_id)
@@ -280,7 +280,7 @@
 	auto company_id = ::Industry::Get(industry_id)->exclusive_consumer;
 	if (!::Company::IsValidID(company_id)) return ScriptCompany::COMPANY_INVALID;
 
-	return (ScriptCompany::CompanyID)((byte)company_id);
+	return (ScriptCompany::CompanyID)((uint8_t)company_id);
 }
 
 /* static */ bool ScriptIndustry::SetExclusiveConsumer(IndustryID industry_id, ScriptCompany::CompanyID company_id)

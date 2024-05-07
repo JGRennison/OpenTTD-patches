@@ -309,7 +309,7 @@ struct ViewportDrawerDynamic {
 	TransparencyOptionBits transparency_opt;
 	TransparencyOptionBits invisibility_opt;
 
-	const byte *pal2trsp_remap_ptr = nullptr;
+	const uint8_t *pal2trsp_remap_ptr = nullptr;
 
 	SpritePointerHolder sprite_data;
 
@@ -435,7 +435,7 @@ bool _draw_dirty_blocks = false;
 std::atomic<uint> _dirty_block_colour;
 static VpSpriteSorter _vp_sprite_sorter = nullptr;
 
-const byte *_pal2trsp_remap_ptr = nullptr;
+const uint8_t *_pal2trsp_remap_ptr = nullptr;
 
 static RailSnapMode _rail_snap_mode = RSM_NO_SNAP; ///< Type of rail track snapping (polyline tool).
 static LineSnapPoints _tile_snap_points; ///< Tile to which a rail track will be snapped to (polyline tool).
@@ -495,7 +495,7 @@ static void FillViewportCoverageRect()
 
 using ScrollViewportPixelCacheGenericFillRegion = void (*)(Viewport *vp, int x, int y, int width, int height);
 
-static bool ScrollViewportPixelCacheGeneric(Viewport *vp, std::vector<byte> &cache, int offset_x, int offset_y, uint pixel_width, ScrollViewportPixelCacheGenericFillRegion fill_region)
+static bool ScrollViewportPixelCacheGeneric(Viewport *vp, std::vector<uint8_t> &cache, int offset_x, int offset_y, uint pixel_width, ScrollViewportPixelCacheGenericFillRegion fill_region)
 {
 	if (cache.empty()) return false;
 	if (abs(offset_x) >= vp->width || abs(offset_y) >= vp->height) return true;
@@ -2448,7 +2448,7 @@ void ViewportDrawDirtyBlocks(const DrawPixelInfo *dpi, bool increment_colour)
 
 	dst = dpi->dst_ptr;
 
-	byte bo = UnScaleByZoom(dpi->left + dpi->top, dpi->zoom) & 1;
+	uint8_t bo = UnScaleByZoom(dpi->left + dpi->top, dpi->zoom) & 1;
 	do {
 		for (int i = (bo ^= 1); i < right; i += 2) blitter->SetPixel(dst, i, 0, (uint8_t)colour);
 		dst = blitter->MoveTo(dst, 0, 1);
@@ -5836,7 +5836,7 @@ static int CalcHeightdiff(HighLightStyle style, uint distance, TileIndex start_t
 
 			/* In the case of an area we can determine whether we were dragging south or
 			 * east by checking the X-coordinates of the tiles */
-			byte style_t = (byte)(TileX(end_tile) > TileX(start_tile));
+			uint8_t style_t = (uint8_t)(TileX(end_tile) > TileX(start_tile));
 			start_tile = TileAdd(start_tile, ToTileIndexDiff(heightdiff_area_by_dir[style_t]));
 			end_tile   = TileAdd(end_tile, ToTileIndexDiff(heightdiff_area_by_dir[2 + style_t]));
 			[[fallthrough]];
@@ -5870,7 +5870,7 @@ static int CalcHeightdiff(HighLightStyle style, uint distance, TileIndex start_t
 			if (swap && distance == 0) style = flip_style_direction[style];
 
 			/* Use lookup table for start-tile based on HighLightStyle direction */
-			byte style_t = style * 2;
+			uint8_t style_t = style * 2;
 			dbg_assert(style_t < lengthof(heightdiff_line_by_dir) - 13);
 			h0 = TileHeight(TileAdd(start_tile, ToTileIndexDiff(heightdiff_line_by_dir[style_t])));
 			uint ht = TileHeight(TileAdd(start_tile, ToTileIndexDiff(heightdiff_line_by_dir[style_t + 1])));

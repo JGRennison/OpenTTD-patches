@@ -403,7 +403,7 @@ uint32_t GetTerrainType(TileIndex tile, TileContext context)
  * @param axis Axis of a railways station.
  * @return The tile at the offset.
  */
-TileIndex GetNearbyTile(byte parameter, TileIndex tile, bool signed_offsets, Axis axis)
+TileIndex GetNearbyTile(uint8_t parameter, TileIndex tile, bool signed_offsets, Axis axis)
 {
 	int8_t x = GB(parameter, 0, 4);
 	int8_t y = GB(parameter, 4, 4);
@@ -443,7 +443,7 @@ uint32_t GetNearbyTileInformation(TileIndex tile, bool grf_version8, uint32_t ma
 	}
 	if (mask & 0xFE00) {
 		/* Return 0 if the tile is a land tile */
-		byte terrain_type = (HasTileWaterClass(tile) ? (GetWaterClass(tile) + 1) & 3 : 0) << 5 | GetTerrainType(tile) << 2 | (tile_type == MP_WATER ? 1 : 0) << 1;
+		uint8_t terrain_type = (HasTileWaterClass(tile) ? (GetWaterClass(tile) + 1) & 3 : 0) << 5 | GetTerrainType(tile) << 2 | (tile_type == MP_WATER ? 1 : 0) << 1;
 		result |= terrain_type << 8;
 	}
 	if (mask & 0xFF00FF) {

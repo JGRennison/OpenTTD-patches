@@ -27,7 +27,7 @@ DECLARE_ENUM_AS_BIT_SET(SpriteFileFlags)
 class SpriteFile : public RandomAccessFile {
 	size_t content_begin;   ///< The begin of the content of the sprite file, i.e. after the container metadata.
 	bool palette_remap;     ///< Whether or not a remap of the palette is required for this file.
-	byte container_version; ///< Container format of the sprite file.
+	uint8_t container_version; ///< Container format of the sprite file.
 
 public:
 	SpriteFileFlags flags = SFF_NONE;
@@ -46,7 +46,7 @@ public:
 	 * Get the version number of container type used by the file.
 	 * @return The version.
 	 */
-	byte GetContainerVersion() const { return this->container_version; }
+	uint8_t GetContainerVersion() const { return this->container_version; }
 
 	/**
 	 * Seek to the begin of the content, i.e. the position just after the container version has been determined.

@@ -103,9 +103,9 @@ public:
 	EngineID engine_type;               ///< The type of engine used for this vehicle.
 	CargoID cargo_type;                 ///< type of cargo this vehicle is carrying
 	uint16_t cargo_cap;                 ///< total capacity
-	byte cargo_subtype;
+	uint8_t cargo_subtype;
 
-	byte subtype;
+	uint8_t subtype;
 	RailType railtype;
 
 	VehicleID index;

@@ -504,7 +504,7 @@ static const uint MAX_REFIT_CYCLE = 256;
  * @param dest_cargo_type Destination cargo type.
  * @return the best sub type
  */
-byte GetBestFittingSubType(const Vehicle *v_from, Vehicle *v_for, CargoID dest_cargo_type)
+uint8_t GetBestFittingSubType(const Vehicle *v_from, Vehicle *v_for, CargoID dest_cargo_type)
 {
 	v_from = v_from->GetFirstEnginePart();
 	v_for = v_for->GetFirstEnginePart();
@@ -518,7 +518,7 @@ byte GetBestFittingSubType(const Vehicle *v_from, Vehicle *v_for, CargoID dest_c
 		include(subtypes, GetCargoSubtypeText(v_from));
 	}
 
-	byte ret_refit_cyc = 0;
+	uint8_t ret_refit_cyc = 0;
 	bool success = false;
 	if (!subtypes.empty()) {
 		/* Check whether any articulated part is refittable to 'dest_cargo_type' with a subtype listed in 'subtypes' */
@@ -528,7 +528,7 @@ byte GetBestFittingSubType(const Vehicle *v_from, Vehicle *v_for, CargoID dest_c
 			if (!HasBit(e->info.refit_mask, dest_cargo_type) && v->cargo_type != dest_cargo_type) continue;
 
 			CargoID old_cargo_type = v->cargo_type;
-			byte old_cargo_subtype = v->cargo_subtype;
+			uint8_t old_cargo_subtype = v->cargo_subtype;
 
 			/* Set the 'destination' cargo */
 			v->cargo_type = dest_cargo_type;
@@ -578,7 +578,7 @@ const Vehicle *GetMostSeverelyBrokenEngine(const Train *v)
 {
 	assert(v->IsFrontEngine());
 	const Vehicle *w = v;
-	byte most_severe_type = 255;
+	uint8_t most_severe_type = 255;
 	for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
 		if (u->breakdown_ctr == 1) {
 			if (u->breakdown_type < most_severe_type) {
@@ -595,7 +595,7 @@ const Vehicle *GetMostSeverelyBrokenEngine(const Train *v)
 /** Option to refit a vehicle chain */
 struct RefitOption {
 	CargoID cargo;    ///< Cargo to refit to
-	byte subtype;     ///< Subcargo to use
+	uint8_t subtype;     ///< Subcargo to use
 	StringID string;  ///< GRF-local String to display for the cargo
 
 	/**
@@ -726,7 +726,7 @@ struct RefitWindow : public Window {
 			if (v->type == VEH_SHIP && this->num_vehicles == 1 && v->index != this->selected_vehicle) continue;
 			const Engine *e = v->GetEngine();
 			CargoTypes cmask = e->info.refit_mask;
-			byte callback_mask = e->info.callback_mask;
+			uint8_t callback_mask = e->info.callback_mask;
 
 			/* Skip this engine if it does not carry anything */
 			if (!e->CanCarryCargo()) continue;
@@ -754,7 +754,7 @@ struct RefitWindow : public Window {
 					/* Make a note of the original cargo type. It has to be
 					 * changed to test the cargo & subtype... */
 					CargoID temp_cargo = v->cargo_type;
-					byte temp_subtype  = v->cargo_subtype;
+					uint8_t temp_subtype  = v->cargo_subtype;
 
 					v->cargo_type = cid;
 
@@ -1994,7 +1994,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 
 			/* company colour stripe along vehicle description row */
 			if (_settings_client.gui.show_vehicle_list_company_colour && v->owner != this->vli.company) {
-				byte ccolour = 0;
+				uint8_t ccolour = 0;
 				Company *c = Company::Get(v->owner);
 				if (c != nullptr) {
 					ccolour = GetColourGradient(c->colour, SHADE_LIGHTER);
@@ -3230,7 +3230,7 @@ struct VehicleDetailsWindow : Window {
 				tr.top += GetCharacterHeight(FS_NORMAL);
 
 				/* Draw breakdown & reliability */
-				byte total_engines = 0;
+				uint8_t total_engines = 0;
 				if (v->type == VEH_TRAIN) {
 					/* we want to draw the average reliability and total number of breakdowns */
 					uint32_t total_reliability = 0;

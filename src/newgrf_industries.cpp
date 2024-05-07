@@ -114,7 +114,7 @@ uint32_t IndustriesScopeResolver::GetClosestIndustry(IndustryType type) const
  * @param town_filter Do we filter on the same town as the current industry?
  * @return the formatted answer to the callback : rr(reserved) cc(count) dddd(manhattan distance of closest sister)
  */
-uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(byte param_setID, byte layout_filter, bool town_filter, uint32_t mask) const
+uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t param_setID, uint8_t layout_filter, bool town_filter, uint32_t mask) const
 {
 	uint32_t GrfID = GetRegister(0x100);  ///< Get the GRFID of the definition to look for in register 100h
 	IndustryType ind_index;
@@ -144,7 +144,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(byte para
 		/* If the filter is 0, it could be because none was specified as well as being really a 0.
 		 * In either case, just do the regular var67 */
 		if (mask & 0xFFFF) closest_dist = this->GetClosestIndustry(ind_index);
-		if (mask & 0xFF0000) count = ClampTo<byte>(Industry::GetIndustryTypeCount(ind_index));
+		if (mask & 0xFF0000) count = ClampTo<uint8_t>(Industry::GetIndustryTypeCount(ind_index));
 	} else if (layout_filter == 0 && town_filter) {
 		/* Count only those which match the same industry type and town */
 		std::unique_ptr<IndustryLocationDistanceAndCountCache> &cache = this->town_location_distance_cache;
@@ -259,7 +259,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(byte para
 
 		/* Company info */
 		case 0x45: {
-			byte colours = 0;
+			uint8_t colours = 0;
 			bool is_ai = false;
 
 			const Company *c = Company::GetIfValid(this->industry->founder);
@@ -324,7 +324,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(byte para
 		 * 68 is the same as 67, but with a filtering on selected layout */
 		case 0x67:
 		case 0x68: {
-			byte layout_filter = 0;
+			uint8_t layout_filter = 0;
 			bool town_filter = false;
 			if (variable == 0x68) {
 				uint32_t reg = GetRegister(0x101);
@@ -572,7 +572,7 @@ CommandCost CheckIfCallBackAllowsCreation(TileIndex tile, IndustryType type, siz
 	ind.location.tile = tile;
 	ind.location.w = 0; // important to mark the industry invalid
 	ind.type = type;
-	ind.selected_layout = (byte)layout;
+	ind.selected_layout = (uint8_t)layout;
 	ind.town = ClosestTownFromTile(tile, UINT_MAX);
 	ind.random = initial_random_bits;
 	ind.founder = founder;

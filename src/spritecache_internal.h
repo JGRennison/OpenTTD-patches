@@ -38,7 +38,7 @@ public:
 
 	void Allocate(uint32_t size)
 	{
-		this->ptr.reset(MallocT<byte>(size));
+		this->ptr.reset(MallocT<uint8_t>(size));
 		this->size = size;
 	}
 

@@ -45,7 +45,7 @@ struct PBSTileInfo {
 	PBSTileInfo(TileIndex _t, Trackdir _td, bool _okay) : tile(_t), trackdir(_td), okay(_okay) {}
 };
 
-enum TrainReservationLookAheadItemType : byte {
+enum TrainReservationLookAheadItemType : uint8_t {
 	TRLIT_STATION                = 0,     ///< Station/waypoint
 	TRLIT_REVERSE                = 1,     ///< Reverse behind signal
 	TRLIT_TRACK_SPEED            = 2,     ///< Track or bridge speed limit

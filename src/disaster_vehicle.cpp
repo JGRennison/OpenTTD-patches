@@ -963,11 +963,11 @@ static const Disaster _disasters[] = {
 
 void DoDisaster()
 {
-	byte buf[lengthof(_disasters)];
+	uint8_t buf[lengthof(_disasters)];
 
-	byte j = 0;
+	uint8_t j = 0;
 	for (size_t i = 0; i != lengthof(_disasters); i++) {
-		if (CalTime::CurYear() >= _disasters[i].min_year && CalTime::CurYear() < _disasters[i].max_year) buf[j++] = (byte)i;
+		if (CalTime::CurYear() >= _disasters[i].min_year && CalTime::CurYear() < _disasters[i].max_year) buf[j++] = (uint8_t)i;
 	}
 
 	if (j == 0) return;

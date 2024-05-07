@@ -110,7 +110,7 @@ void ResetHouseClassIDs()
 	_class_mapping = {};
 }
 
-HouseClassID AllocateHouseClassID(byte grf_class_id, uint32_t grfid)
+HouseClassID AllocateHouseClassID(uint8_t grf_class_id, uint32_t grfid)
 {
 	/* Start from 1 because 0 means that no class has been assigned. */
 	for (size_t i = 1; i != std::size(_class_mapping); i++) {
@@ -207,7 +207,7 @@ static uint32_t GetNumHouses(HouseID house_id, const Town *town)
  * @param grf_version8 True, if we are dealing with a new NewGRF which uses GRF version >= 8.
  * @return a construction of bits obeying the newgrf format
  */
-static uint32_t GetNearbyTileInformation(byte parameter, TileIndex tile, bool grf_version8, uint32_t mask)
+static uint32_t GetNearbyTileInformation(uint8_t parameter, TileIndex tile, bool grf_version8, uint32_t mask)
 {
 	tile = GetNearbyTile(parameter, tile);
 	return GetNearbyTileInformation(tile, grf_version8, mask);
@@ -561,7 +561,7 @@ static inline PaletteID GetHouseColour(HouseID house_id, TileIndex tile = INVALI
 	return GENERAL_SPRITE_COLOUR(hs->random_colour[TileHash2Bit(TileX(tile), TileY(tile))]);
 }
 
-static void DrawTileLayout(const TileInfo *ti, const TileLayoutSpriteGroup *group, byte stage, HouseID house_id)
+static void DrawTileLayout(const TileInfo *ti, const TileLayoutSpriteGroup *group, uint8_t stage, HouseID house_id)
 {
 	const DrawTileSprites *dts = group->ProcessRegisters(&stage);
 
@@ -582,7 +582,7 @@ static void DrawTileLayout(const TileInfo *ti, const TileLayoutSpriteGroup *grou
 
 static void DrawTileLayoutInGUI(int x, int y, const TileLayoutSpriteGroup *group, HouseID house_id, bool ground)
 {
-	byte stage = TOWN_HOUSE_COMPLETED;
+	uint8_t stage = TOWN_HOUSE_COMPLETED;
 	const DrawTileSprites *dts = group->ProcessRegisters(&stage);
 
 	PaletteID palette = GetHouseColour(house_id);
@@ -621,7 +621,7 @@ void DrawNewHouseTile(TileInfo *ti, HouseID house_id)
 	if (group != nullptr && group->type == SGT_TILELAYOUT) {
 		/* Limit the building stage to the number of stages supplied. */
 		const TileLayoutSpriteGroup *tlgroup = (const TileLayoutSpriteGroup *)group;
-		byte stage = GetHouseBuildingStage(ti->tile);
+		uint8_t stage = GetHouseBuildingStage(ti->tile);
 		DrawTileLayout(ti, tlgroup, stage, house_id);
 	}
 }
@@ -683,7 +683,7 @@ uint8_t GetNewHouseTileAnimationSpeed(TileIndex tile)
  * @param random_bits feature random bits for the house
  * @return false if callback 17 disallows construction, true in other cases
  */
-bool HouseAllowsConstruction(HouseID house_id, TileIndex tile, Town *t, byte random_bits)
+bool HouseAllowsConstruction(HouseID house_id, TileIndex tile, Town *t, uint8_t random_bits)
 {
 	const HouseSpec *hs = HouseSpec::Get(house_id);
 	if (HasBit(hs->callback_mask, CBM_HOUSE_ALLOW_CONSTRUCTION)) {
@@ -771,7 +771,7 @@ bool NewHouseTileLoop(TileIndex tile)
 	return true;
 }
 
-static void DoTriggerHouse(TileIndex tile, HouseTrigger trigger, byte base_random, bool first)
+static void DoTriggerHouse(TileIndex tile, HouseTrigger trigger, uint8_t base_random, bool first)
 {
 	/* We can't trigger a non-existent building... */
 	assert_tile(IsTileType(tile, MP_HOUSE), tile);
@@ -792,8 +792,8 @@ static void DoTriggerHouse(TileIndex tile, HouseTrigger trigger, byte base_rando
 	SetHouseTriggers(tile, object.GetRemainingTriggers());
 
 	/* Rerandomise bits. Scopes other than SELF are invalid for houses. For bug-to-bug-compatibility with TTDP we ignore the scope. */
-	byte new_random_bits = Random();
-	byte random_bits = GetHouseRandomBits(tile);
+	uint8_t new_random_bits = Random();
+	uint8_t random_bits = GetHouseRandomBits(tile);
 	uint32_t reseed = object.GetReseedSum();
 	random_bits &= ~reseed;
 	random_bits |= (first ? new_random_bits : base_random) & reseed;

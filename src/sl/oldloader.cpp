@@ -33,10 +33,10 @@ static inline OldChunkType GetOldChunkType(OldChunkType type)     {return (OldCh
 static inline OldChunkType GetOldChunkVarType(OldChunkType type)  {return (OldChunkType)(GB(type, 8, 8) << 8);}
 static inline OldChunkType GetOldChunkFileType(OldChunkType type) {return (OldChunkType)(GB(type, 16, 8) << 16);}
 
-static inline byte CalcOldVarLen(OldChunkType type)
+static inline uint8_t CalcOldVarLen(OldChunkType type)
 {
-	static const byte type_mem_size[] = {0, 1, 1, 2, 2, 4, 4, 8};
-	byte length = GB(type, 8, 8);
+	static const uint8_t type_mem_size[] = {0, 1, 1, 2, 2, 4, 4, 8};
+	uint8_t length = GB(type, 8, 8);
 	assert(length != 0 && length < lengthof(type_mem_size));
 	return type_mem_size[length];
 }
@@ -46,7 +46,7 @@ static inline byte CalcOldVarLen(OldChunkType type)
  * Reads a byte from a file (do not call yourself, use ReadByte())
  *
  */
-static byte ReadByteFromFile(LoadgameState *ls)
+static uint8_t ReadByteFromFile(LoadgameState *ls)
 {
 	/* To avoid slow reads, we read BUFFER_SIZE of bytes per time
 	and just return a byte per time */
@@ -73,7 +73,7 @@ static byte ReadByteFromFile(LoadgameState *ls)
  * Reads a byte from the buffer and decompress if needed
  *
  */
-byte ReadByte(LoadgameState *ls)
+uint8_t ReadByte(LoadgameState *ls)
 {
 	/* Old savegames have a nice compression algorithm (RLE)
 	which means that we have a chunk, which starts with a length
@@ -109,7 +109,7 @@ byte ReadByte(LoadgameState *ls)
  */
 bool LoadChunk(LoadgameState *ls, void *base, const OldChunks *chunks)
 {
-	byte *base_ptr = (byte*)base;
+	uint8_t *base_ptr = (uint8_t*)base;
 
 	for (const OldChunks *chunk = chunks; chunk->type != OC_END; chunk++) {
 		if (((chunk->type & OC_TTD) && _savegame_type == SGT_TTO) ||
@@ -118,8 +118,8 @@ bool LoadChunk(LoadgameState *ls, void *base, const OldChunks *chunks)
 			continue;
 		}
 
-		byte *ptr = (byte*)chunk->ptr;
-		if (chunk->type & OC_DEREFERENCE_POINTER) ptr = *(byte**)ptr;
+		uint8_t *ptr = (uint8_t*)chunk->ptr;
+		if (chunk->type & OC_DEREFERENCE_POINTER) ptr = *(uint8_t**)ptr;
 
 		for (uint i = 0; i < chunk->amount; i++) {
 			/* Handle simple types */

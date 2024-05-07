@@ -275,7 +275,7 @@ const char *NetworkGameSocketHandler::ReceiveCommand(Packet &p, CommandPacket &c
 	StringValidationSettings settings = (!_network_server && GetCommandFlags(cp.cmd) & CMD_STR_CTRL) != 0 ? SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK : SVS_REPLACE_WITH_QUESTION_MARK;
 	p.Recv_string(cp.text, settings);
 
-	byte callback = p.Recv_uint8();
+	uint8_t callback = p.Recv_uint8();
 	if (callback >= lengthof(_callback_table))  return "invalid callback";
 
 	cp.callback = _callback_table[callback];
@@ -306,7 +306,7 @@ void NetworkGameSocketHandler::SendCommand(Packet &p, const CommandPacket &cp)
 	p.Send_uint32(cp.tile);
 	p.Send_string(cp.text.c_str());
 
-	byte callback = 0;
+	uint8_t callback = 0;
 	while (callback < lengthof(_callback_table) && _callback_table[callback] != cp.callback) {
 		callback++;
 	}

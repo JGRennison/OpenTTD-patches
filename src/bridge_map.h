@@ -360,7 +360,7 @@ inline bool IsCustomBridgeHeadTile(TileIndex t)
 inline TrackBits GetBridgeReservationTrackBits(TileIndex t)
 {
 	assert_tile(IsRailBridgeHeadTile(t), t);
-	byte track_b = GB(_m[t].m2, 0, 3);
+	uint8_t track_b = GB(_m[t].m2, 0, 3);
 	Track track = (Track)(track_b - 1);    // map array saves Track+1
 	if (track_b == 0) return TRACK_BIT_NONE;
 	return (TrackBits)(TrackToTrackBits(track) | (HasBit(_m[t].m2, 3) ? TrackToTrackBits(TrackToOppositeTrack(track)) : 0));
@@ -378,7 +378,7 @@ inline void SetBridgeReservationTrackBits(TileIndex t, TrackBits b)
 	assert(!TracksOverlap(b));
 	Track track = RemoveFirstTrack(&b);
 	SB(_m[t].m2, 0, 3, track == INVALID_TRACK ? 0 : track + 1);
-	SB(_m[t].m2, 3, 1, (byte)(b != TRACK_BIT_NONE));
+	SB(_m[t].m2, 3, 1, (uint8_t)(b != TRACK_BIT_NONE));
 }
 
 

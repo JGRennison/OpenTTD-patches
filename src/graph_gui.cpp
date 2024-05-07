@@ -185,9 +185,9 @@ protected:
 	static const int MIN_GRID_PIXEL_SIZE    =  20; ///< Minimum distance between graph lines.
 
 	uint64_t excluded_data; ///< bitmask of the datasets that shouldn't be displayed.
-	byte num_dataset;
-	byte num_on_x_axis;
-	byte num_vert_lines;
+	uint8_t num_dataset;
+	uint8_t num_on_x_axis;
+	uint8_t num_vert_lines;
 
 	/* The starting month and year that values are plotted against. */
 	EconTime::Month month;
@@ -201,7 +201,7 @@ protected:
 	uint16_t x_values_increment;
 
 	StringID format_str_y_axis;
-	byte colours[GRAPH_MAX_DATASETS];
+	uint8_t colours[GRAPH_MAX_DATASETS];
 	OverflowSafeInt64 cost[GRAPH_MAX_DATASETS][GRAPH_NUM_MONTHS]; ///< Stored costs for the last #GRAPH_NUM_MONTHS months
 
 	/**
@@ -457,7 +457,7 @@ protected:
 				/* Centre the dot between the grid lines. */
 				x = r.left + (x_sep / 2);
 
-				byte colour  = this->colours[i];
+				uint8_t colour  = this->colours[i];
 				uint prev_x = INVALID_DATAPOINT_POS;
 				uint prev_y = INVALID_DATAPOINT_POS;
 
@@ -622,7 +622,7 @@ public:
 			if (!Company::IsValidID(c)) SetBit(excluded_companies, c);
 		}
 
-		byte nums = 0;
+		uint8_t nums = 0;
 		for (const Company *c : Company::Iterate()) {
 			nums = std::min(this->num_vert_lines, std::max(nums, c->num_valid_stat_ent));
 		}
@@ -1010,7 +1010,7 @@ struct DeliveredCargoGraphWindow : ExcludingCargoBaseGraphWindow {
 			if (!Company::IsValidID(c)) SetBit(excluded_companies, c);
 		}
 
-		byte nums = 0;
+		uint8_t nums = 0;
 		for (const Company *c : Company::Iterate()) {
 			nums = std::min(this->num_vert_lines, std::max(nums, c->num_valid_stat_ent));
 		}
@@ -1489,7 +1489,7 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			this->colours[i] = cs->legend_colour;
 			for (int j = 0; j != this->num_on_x_axis; j++) {
-				const byte ctt = _cargo_payment_x_mode ? static_cast<byte>(factor / static_cast<float>((j + 1) * this->x_values_increment)) : (j + 1) * 4;
+				const uint8_t ctt = _cargo_payment_x_mode ? static_cast<uint8_t>(factor / static_cast<float>((j + 1) * this->x_values_increment)) : (j + 1) * 4;
 				this->cost[i][j] = GetTransportedGoodsIncome(_cargo_payment_x_mode ? 1 : 10, _cargo_payment_x_mode ? 200 : 20, ctt, cs->Index());
 			}
 			i++;
@@ -1993,7 +1993,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 			/* Redraw box if lowered */
 			if (lowered) DrawFrameRect(r.left, y, r.right, y + this->line_height - 1, COLOUR_BROWN, lowered ? FR_LOWERED : FR_NONE);
 
-			const byte clk_dif = lowered ? 1 : 0;
+			const uint8_t clk_dif = lowered ? 1 : 0;
 			const int rect_x = clk_dif + (rtl ? ir.right - this->legend_width : ir.left);
 
 			GfxFillRect(rect_x, y + padding + clk_dif, rect_x + this->legend_width, y + row_height - 1 + clk_dif, PC_BLACK);

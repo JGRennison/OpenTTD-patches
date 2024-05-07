@@ -135,7 +135,7 @@ struct HouseClassMapping {
 };
 
 void ResetHouseClassIDs();
-HouseClassID AllocateHouseClassID(byte grf_class_id, uint32_t grfid);
+HouseClassID AllocateHouseClassID(uint8_t grf_class_id, uint32_t grfid);
 
 void InitializeBuildingCounts();
 void IncreaseBuildingCount(Town *t, HouseID house_id);
@@ -151,7 +151,7 @@ uint16_t GetHouseCallback(CallbackID callback, uint32_t param1, uint32_t param2,
 		bool not_yet_constructed = false, uint8_t initial_random_bits = 0, CargoTypes watched_cargo_triggers = 0);
 void WatchedCargoCallback(TileIndex tile, CargoTypes trigger_cargoes);
 
-bool HouseAllowsConstruction(HouseID house_id, TileIndex tile, Town *t, byte random_bits);
+bool HouseAllowsConstruction(HouseID house_id, TileIndex tile, Town *t, uint8_t random_bits);
 bool CanDeleteHouse(TileIndex tile);
 
 bool NewHouseTileLoop(TileIndex tile);

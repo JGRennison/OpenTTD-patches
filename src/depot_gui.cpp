@@ -1146,7 +1146,7 @@ static void DepotSellAllConfirmationCallback(Window *win, bool confirmed)
 	if (confirmed) {
 		DepotWindow *w = (DepotWindow*)win;
 		TileIndex tile = w->window_number;
-		byte vehtype = w->type;
+		uint8_t vehtype = w->type;
 		DoCommandP(tile, vehtype, 0, CMD_DEPOT_SELL_ALL_VEHICLES);
 	}
 }

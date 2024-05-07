@@ -58,7 +58,7 @@ public:
 	/** Parameters related to blitting. */
 	struct BlitterParams {
 		const void *sprite; ///< Pointer to the sprite how ever the encoder stored it
-		const byte *remap;  ///< XXX -- Temporary storage for remap array
+		const uint8_t *remap;  ///< XXX -- Temporary storage for remap array
 		int brightness_adjust; ///< Brightness adjustment
 
 		int skip_left;      ///< How much pixels of the source to skip on the left (based on zoom of dst)

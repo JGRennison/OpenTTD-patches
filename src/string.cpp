@@ -210,7 +210,7 @@ const char *str_fix_scc_encoded(char *str, const char *last)
  * @param data Array to format
  * @return Converted string.
  */
-std::string FormatArrayAsHex(std::span<const byte> data, bool upper_case)
+std::string FormatArrayAsHex(std::span<const uint8_t> data, bool upper_case)
 {
 	std::string hex_output;
 	hex_output.resize(data.size() * 2);

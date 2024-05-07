@@ -362,7 +362,7 @@ const SpriteGroup *RandomizedSpriteGroup::Resolve(ResolverObject &object) const
 	ScopeResolver *scope = object.GetScope(this->var_scope, this->var_scope_count);
 	if (object.callback == CBID_RANDOM_TRIGGER) {
 		/* Handle triggers */
-		byte match = this->triggers & object.waiting_triggers;
+		uint8_t match = this->triggers & object.waiting_triggers;
 		bool res = (this->cmp_mode == RSG_CMP_ANY) ? (match != 0) : (match == this->triggers);
 
 		if (res) {
@@ -372,7 +372,7 @@ const SpriteGroup *RandomizedSpriteGroup::Resolve(ResolverObject &object) const
 	}
 
 	uint32_t mask = ((uint)this->groups.size() - 1) << this->lowest_randbit;
-	byte index = (scope->GetRandomBits() & mask) >> this->lowest_randbit;
+	uint8_t index = (scope->GetRandomBits() & mask) >> this->lowest_randbit;
 
 	return SpriteGroup::Resolve(this->groups[index], object, false);
 }
@@ -629,7 +629,7 @@ void SpriteGroupDumper::DumpSpriteGroup(const SpriteGroup *sg, const char *paddi
 		if (var_scope == VSG_SCOPE_RELATIVE) {
 			char *b = scope_buffer;
 			b += seprintf(b, lastof(scope_buffer), "%s[%s, ", _sg_scope_names[var_scope], _sg_relative_scope_modes[GB(var_scope_count, 8, 2)]);
-			byte offset = GB(var_scope_count, 0, 8);
+			uint8_t offset = GB(var_scope_count, 0, 8);
 			if (HasBit(var_scope_count, 15)) {
 				b += seprintf(b, lastof(scope_buffer), "var 0x100]");
 			} else {

@@ -36,7 +36,7 @@ extern StringList _network_bind_list;
 extern StringList _network_host_list;
 extern StringList _network_ban_list;
 
-byte NetworkSpectatorCount();
+uint8_t NetworkSpectatorCount();
 uint NetworkClientCount();
 bool NetworkIsValidClientName(const std::string_view client_name);
 bool NetworkValidateOurClientName();

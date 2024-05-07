@@ -249,7 +249,7 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 	/* Only for use with TRPISP_PBS_RES_END_ACQ_DRY and TRPAUF_PBS_RES_END_SIMULATE */
 	static TraceRestrictSlotTemporaryState pbs_res_end_acq_dry_slot_temporary_state;
 
-	byte have_previous_signal = 0;
+	uint8_t have_previous_signal = 0;
 	TileIndex previous_signal_tile[3];
 
 	size_t size = this->items.size();

@@ -111,7 +111,7 @@ static_assert(sizeof(BitmapInfoHeader) == 40);
 
 /** Format of palette data in BMP header */
 struct RgbQuad {
-	byte blue, green, red, reserved;
+	uint8_t blue, green, red, reserved;
 };
 static_assert(sizeof(RgbQuad) == 4);
 
@@ -214,7 +214,7 @@ static bool MakeBMPImage(const char *name, ScreenshotCallback *callb, void *user
 				/* Convert from 'native' 32bpp to BMP-like 24bpp.
 				 * Works for both big and little endian machines */
 				Colour *src = ((Colour *)buff) + n * w;
-				byte *dst = line;
+				uint8_t *dst = line;
 				for (uint i = 0; i < w; i++) {
 					dst[i * 3    ] = src[i].b;
 					dst[i * 3 + 1] = src[i].g;
@@ -432,21 +432,21 @@ static bool MakePNGImage(const char *name, ScreenshotCallback *callb, void *user
 
 /** Definition of a PCX file header. */
 struct PcxHeader {
-	byte manufacturer;
-	byte version;
-	byte rle;
-	byte bpp;
+	uint8_t manufacturer;
+	uint8_t version;
+	uint8_t rle;
+	uint8_t bpp;
 	uint32_t unused;
 	uint16_t xmax, ymax;
 	uint16_t hdpi, vdpi;
-	byte pal_small[16 * 3];
-	byte reserved;
-	byte planes;
+	uint8_t pal_small[16 * 3];
+	uint8_t reserved;
+	uint8_t planes;
 	uint16_t pitch;
 	uint16_t cpal;
 	uint16_t width;
 	uint16_t height;
-	byte filler[54];
+	uint8_t filler[54];
 };
 static_assert(sizeof(PcxHeader) == 128);
 
@@ -521,7 +521,7 @@ static bool MakePCXImage(const char *name, ScreenshotCallback *callb, void *user
 		/* write them to pcx */
 		for (i = 0; i != n; i++) {
 			const uint8_t *bufp = buff + i * w;
-			byte runchar = bufp[0];
+			uint8_t runchar = bufp[0];
 			uint runcount = 1;
 			uint j;
 
@@ -573,7 +573,7 @@ static bool MakePCXImage(const char *name, ScreenshotCallback *callb, void *user
 	}
 
 	/* Palette is word-aligned, copy it to a temporary byte array */
-	byte tmp[256 * 3];
+	uint8_t tmp[256 * 3];
 
 	for (uint i = 0; i < 256; i++) {
 		tmp[i * 3 + 0] = palette[i].r;
@@ -866,7 +866,7 @@ static bool MakeLargeWorldScreenshot(ScreenshotType t, uint32_t width = 0, uint3
  */
 static void HeightmapCallback(void *, void *buffer, uint y, uint, uint n)
 {
-	byte *buf = (byte *)buffer;
+	uint8_t *buf = (uint8_t *)buffer;
 	while (n > 0) {
 		TileIndex ti = TileXY(MapMaxX(), y);
 		for (uint x = MapMaxX(); true; x--) {
@@ -1121,7 +1121,7 @@ static Owner GetMinimapOwner(TileIndex tile)
  * @param tile The tile of which we would like to get the colour.
  * @return The color palette value
  */
-static byte GetTopographyValue(TileIndex tile)
+static uint8_t GetTopographyValue(TileIndex tile)
 {
 	const auto tile_type = GetTileType(tile);
 
@@ -1216,7 +1216,7 @@ static byte GetTopographyValue(TileIndex tile)
  * @param tile The tile of which we would like to get the colour.
  * @return The color palette value
  */
-static byte GetIndustryValue(TileIndex tile)
+static uint8_t GetIndustryValue(TileIndex tile)
 {
 	const auto tile_type = GetTileType(tile);
 
@@ -1278,7 +1278,7 @@ void MinimapScreenCallback(void *userdata, void *buf, uint y, uint pitch, uint n
 		uint col = (MapSizeX() - 1) - (i % pitch);
 
 		TileIndex tile = TileXY(col, row);
-		byte val = colorCallback(tile);
+		uint8_t val = colorCallback(tile);
 
 		uint32_t colour_buf = 0;
 		colour_buf  = (_cur_palette.palette[val].b << 0);
@@ -1299,7 +1299,7 @@ void MinimapScreenCallback(void *userdata, void *buf, uint y, uint pitch, uint n
 static void MinimapScreenCallback(void *userdata, void *buf, uint y, uint pitch, uint n)
 {
 	/* Fill with the company colours */
-	byte owner_colours[OWNER_END + 1];
+	uint8_t owner_colours[OWNER_END + 1];
 	for (const Company *c : Company::Iterate()) {
 		owner_colours[c->index] = MKCOLOUR(GetColourGradient(c->colour, SHADE_LIGHT));
 	}
@@ -1311,7 +1311,7 @@ static void MinimapScreenCallback(void *userdata, void *buf, uint y, uint pitch,
 	owner_colours[OWNER_DEITY]   = PC_DARK_GREY; // industry
 	owner_colours[OWNER_END]     = PC_BLACK;
 
-	MinimapScreenCallback(userdata, buf, y, pitch, n, [&](TileIndex tile) -> byte {
+	MinimapScreenCallback(userdata, buf, y, pitch, n, [&](TileIndex tile) -> uint8_t {
 		return owner_colours[GetMinimapOwner(tile)];
 	});
 }

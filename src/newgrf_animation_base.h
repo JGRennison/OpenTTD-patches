@@ -19,10 +19,10 @@
 
 template <typename Tobj>
 struct TileAnimationFrameAnimationHelper {
-	static byte Get(Tobj *obj, TileIndex tile) { return GetAnimationFrame(tile); }
-	static bool Set(Tobj *obj, TileIndex tile, byte frame)
+	static uint8_t Get(Tobj *obj, TileIndex tile) { return GetAnimationFrame(tile); }
+	static bool Set(Tobj *obj, TileIndex tile, uint8_t frame)
 	{
-		byte prev = GetAnimationFrame(tile);
+		uint8_t prev = GetAnimationFrame(tile);
 		if (frame != prev) {
 			SetAnimationFrame(tile, frame);
 			return true;

@@ -408,7 +408,7 @@ ScriptLogTypes::LogData &ScriptInstance::GetLogData()
 				ScriptLog::Error("Maximum string length is 254 chars. No data saved.");
 				return false;
 			}
-			SlWriteByte((byte)len);
+			SlWriteByte((uint8_t)len);
 			SlArray(const_cast<char *>(buf), len, SLE_CHAR);
 			return true;
 		}
@@ -561,7 +561,7 @@ bool ScriptInstance::IsPaused()
 
 /* static */ bool ScriptInstance::LoadObjects(ScriptData *data)
 {
-	byte type = SlReadByte();
+	uint8_t type = SlReadByte();
 	switch (type) {
 		case SQSL_INT: {
 			int64_t value;
@@ -571,7 +571,7 @@ bool ScriptInstance::IsPaused()
 		}
 
 		case SQSL_STRING: {
-			byte len = SlReadByte();
+			uint8_t len = SlReadByte();
 			static char buf[std::numeric_limits<decltype(len)>::max()];
 			SlArray(buf, len, SLE_CHAR);
 			if (data != nullptr) data->push_back(StrMakeValid(std::string_view(buf, len)));
@@ -586,7 +586,7 @@ bool ScriptInstance::IsPaused()
 		}
 
 		case SQSL_BOOL: {
-			byte sl_byte = SlReadByte();
+			uint8_t sl_byte = SlReadByte();
 			if (data != nullptr) data->push_back((SQBool)(sl_byte != 0));
 			return true;
 		}
@@ -660,7 +660,7 @@ bool ScriptInstance::IsPaused()
 
 /* static */ void ScriptInstance::LoadEmpty()
 {
-	byte sl_byte = SlReadByte();
+	uint8_t sl_byte = SlReadByte();
 	/* Check if there was anything saved at all. */
 	if (sl_byte == 0) return;
 
@@ -674,7 +674,7 @@ bool ScriptInstance::IsPaused()
 		return nullptr;
 	}
 
-	byte sl_byte = SlReadByte();
+	uint8_t sl_byte = SlReadByte();
 	/* Check if there was anything saved at all. */
 	if (sl_byte == 0) return nullptr;
 

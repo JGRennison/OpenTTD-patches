@@ -14,9 +14,9 @@
 
 /** Sprite loader for graphics coming from a (New)GRF. */
 class SpriteLoaderGrf final : public SpriteLoader {
-	byte container_ver;
+	uint8_t container_ver;
 public:
-	SpriteLoaderGrf(byte container_ver) : container_ver(container_ver) {}
+	SpriteLoaderGrf(uint8_t container_ver) : container_ver(container_ver) {}
 	uint8_t LoadSprite(SpriteLoader::SpriteCollection &sprite, SpriteFile &file, size_t file_pos, SpriteType sprite_type, bool load_32bpp, uint count, uint16_t control_flags, uint8_t zoom_levels) override;
 };
 

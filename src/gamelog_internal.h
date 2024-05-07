@@ -39,14 +39,14 @@ struct LoggedChange {
 	GamelogChangeType ct; ///< Type of change logged in this struct
 	union {
 		struct {
-			byte mode;       ///< new game mode - Editor x Game
-			byte landscape;  ///< landscape (temperate, arctic, ...)
+			uint8_t mode;        ///< new game mode - Editor x Game
+			uint8_t landscape;   ///< landscape (temperate, arctic, ...)
 		} mode;
 		struct {
-			char *text;      ///< revision string, _openttd_revision
-			uint32_t newgrf; ///< _openttd_newgrf_version
-			uint16_t slver;  ///< _sl_version
-			byte modified;   ///< _openttd_revision_modified
+			char *text;          ///< revision string, _openttd_revision
+			uint32_t newgrf;     ///< _openttd_newgrf_version
+			uint16_t slver;      ///< _sl_version
+			uint8_t modified;    ///< _openttd_revision_modified
 		} revision;
 		struct {
 			uint32_t type;       ///< type of savegame, @see SavegameType
@@ -72,7 +72,7 @@ struct LoggedChange {
 		struct {
 			uint64_t data;       ///< additional data
 			uint32_t grfid;      ///< ID of problematic GRF
-			byte bug;            ///< type of bug, @see enum GRFBugs
+			uint8_t bug;         ///< type of bug, @see enum GRFBugs
 		} grfbug;
 	};
 };

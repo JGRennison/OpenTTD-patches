@@ -44,7 +44,7 @@ struct DropdownWindow : Window {
 	Rect wi_rect;                 ///< Rect of the button that opened the dropdown.
 	DropDownList list;            ///< List with dropdown menu items.
 	int selected_result;          ///< Result value of the selected item in the list.
-	byte click_delay = 0;         ///< Timer to delay selection.
+	uint8_t click_delay = 0;      ///< Timer to delay selection.
 	bool drag_mode = true;
 	DropDownModeFlags mode_flags; ///< Mode flags.
 	int scrolling = 0;            ///< If non-zero, auto-scroll the item list (one time).

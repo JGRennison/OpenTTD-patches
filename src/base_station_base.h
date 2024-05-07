@@ -80,8 +80,8 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 	std::vector<RoadStopSpecList> roadstop_speclist; ///< List of road stop specs of this station
 
 	uint16_t random_bits;           ///< Random bits assigned to this station
-	byte waiting_triggers;          ///< Waiting triggers (NewGRF) for this station
-	byte delete_ctr;                ///< Delete counter. If greater than 0 then it is decremented until it reaches 0; the waypoint is then is deleted.
+	uint8_t waiting_triggers;       ///< Waiting triggers (NewGRF) for this station
+	uint8_t delete_ctr;             ///< Delete counter. If greater than 0 then it is decremented until it reaches 0; the waypoint is then is deleted.
 	uint8_t cached_anim_triggers;              ///< NOSAVE: Combined animation trigger bitmask, used to determine if trigger processing should happen.
 	uint8_t cached_roadstop_anim_triggers;     ///< NOSAVE: Combined animation trigger bitmask for road stops, used to determine if trigger processing should happen.
 	CargoTypes cached_cargo_triggers;          ///< NOSAVE: Combined cargo trigger bitmask
@@ -119,7 +119,7 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 	 * @param available will return false if ever the variable asked for does not exist
 	 * @return the value stored in the corresponding variable
 	 */
-	virtual uint32_t GetNewGRFVariable(const struct ResolverObject &object, uint16_t variable, byte parameter, bool *available) const = 0;
+	virtual uint32_t GetNewGRFVariable(const struct ResolverObject &object, uint16_t variable, uint8_t parameter, bool *available) const = 0;
 
 	/**
 	 * Update the coordinated of the sign (as shown in the viewport).
@@ -195,7 +195,7 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 		return (this->facilities & facilities) != 0;
 	}
 
-	inline byte GetRoadStopRandomBits(TileIndex tile) const
+	inline uint8_t GetRoadStopRandomBits(TileIndex tile) const
 	{
 		for (const RoadStopTileData &tile_data : this->custom_roadstop_tile_data) {
 			if (tile_data.tile == tile) return tile_data.random_bits;
@@ -203,7 +203,7 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 		return 0;
 	}
 
-	inline byte GetRoadStopAnimationFrame(TileIndex tile) const
+	inline uint8_t GetRoadStopAnimationFrame(TileIndex tile) const
 	{
 		for (const RoadStopTileData &tile_data : this->custom_roadstop_tile_data) {
 			if (tile_data.tile == tile) return tile_data.animation_frame;
@@ -212,11 +212,11 @@ struct BaseStation : StationPool::PoolItem<&_station_pool> {
 	}
 
 private:
-	bool SetRoadStopTileData(TileIndex tile, byte data, bool animation);
+	bool SetRoadStopTileData(TileIndex tile, uint8_t data, bool animation);
 
 public:
-	inline void SetRoadStopRandomBits(TileIndex tile, byte random_bits) { this->SetRoadStopTileData(tile, random_bits, false); }
-	inline bool SetRoadStopAnimationFrame(TileIndex tile, byte frame) { return this->SetRoadStopTileData(tile, frame, true); }
+	inline void SetRoadStopRandomBits(TileIndex tile, uint8_t random_bits) { this->SetRoadStopTileData(tile, random_bits, false); }
+	inline bool SetRoadStopAnimationFrame(TileIndex tile, uint8_t frame) { return this->SetRoadStopTileData(tile, frame, true); }
 	void RemoveRoadStopTileData(TileIndex tile);
 
 	static void PostDestructor(size_t index);

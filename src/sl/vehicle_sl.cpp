@@ -257,7 +257,7 @@ static void CheckValidVehicles()
 	}
 }
 
-extern byte _age_cargo_skip_counter; // From misc_sl.cpp
+extern uint8_t _age_cargo_skip_counter; // From misc_sl.cpp
 
 static std::vector<Vehicle *> _load_invalid_vehicles_to_delete;
 
@@ -1279,7 +1279,7 @@ struct train_venc {
 	uint16_t cached_veh_weight;
 	uint16_t cached_uncapped_decel;
 	uint8_t cached_deceleration;
-	byte user_def_data;
+	uint8_t user_def_data;
 	int16_t cached_curve_speed_mod;
 	uint16_t cached_max_curve_speed;
 };

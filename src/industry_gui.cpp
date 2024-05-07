@@ -178,7 +178,7 @@ static inline void GetAllCargoSuffixes(CargoSuffixInOut use_input, CargoSuffixTy
 		/* Reworked behaviour with new many-in-many-out scheme */
 		for (size_t j = 0; j < std::size(suffixes); j++) {
 			if (cargoes[j] != INVALID_CARGO) {
-				byte local_id = indspec->grf_prop.grffile->cargo_map[cargoes[j]]; // should we check the value for valid?
+				uint8_t local_id = indspec->grf_prop.grffile->cargo_map[cargoes[j]]; // should we check the value for valid?
 				uint cargotype = local_id << 16 | use_input;
 				GetCargoSuffix(cargotype, cst, ind, ind_type, indspec, suffixes[j]);
 			} else {
@@ -836,7 +836,7 @@ class IndustryViewWindow : public Window
 	Editability editable;     ///< Mode for changing production
 	InfoLine editbox_line;    ///< The line clicked to open the edit box
 	InfoLine clicked_line;    ///< The line of the button that has been clicked
-	byte clicked_button;      ///< The button that has been clicked (to raise)
+	uint8_t clicked_button;   ///< The button that has been clicked (to raise)
 	int production_offset_y;  ///< The offset of the production texts/buttons
 	int info_height;          ///< Height needed for the #WID_IV_INFO panel
 	int cheat_line_height;    ///< Height of each line for the #WID_IV_INFO panel
@@ -1081,10 +1081,10 @@ public:
 						case EA_MULTIPLIER:
 							if (decrease) {
 								if (i->prod_level <= PRODLEVEL_MINIMUM) return;
-								i->prod_level = static_cast<byte>(std::max<uint>(i->prod_level / 2, PRODLEVEL_MINIMUM));
+								i->prod_level = static_cast<uint8_t>(std::max<uint>(i->prod_level / 2, PRODLEVEL_MINIMUM));
 							} else {
 								if (i->prod_level >= PRODLEVEL_MAXIMUM) return;
-								i->prod_level = static_cast<byte>(std::min<uint>(i->prod_level * 2, PRODLEVEL_MAXIMUM));
+								i->prod_level = static_cast<uint8_t>(std::min<uint>(i->prod_level * 2, PRODLEVEL_MAXIMUM));
 							}
 							break;
 
@@ -1096,7 +1096,7 @@ public:
 								if (i->production_rate[line - IL_RATE1] >= 255) return;
 								/* a zero production industry is unlikely to give anything but zero, so push it a little bit */
 								int new_prod = i->production_rate[line - IL_RATE1] == 0 ? 1 : i->production_rate[line - IL_RATE1] * 2;
-								i->production_rate[line - IL_RATE1] = ClampTo<byte>(new_prod);
+								i->production_rate[line - IL_RATE1] = ClampTo<uint8_t>(new_prod);
 							}
 							break;
 
@@ -1584,7 +1584,7 @@ protected:
 	StringID GetIndustryString(const Industry *i) const
 	{
 		const IndustrySpec *indsp = GetIndustrySpec(i->type);
-		byte p = 0;
+		uint8_t p = 0;
 
 		/* Industry name */
 		SetDParam(p++, i->index);

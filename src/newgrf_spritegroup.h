@@ -83,7 +83,7 @@ public:
 	SpriteGroupFlags sg_flags = SGF_NONE;
 
 	virtual SpriteID GetResult() const { return 0; }
-	virtual byte GetNumResults() const { return 0; }
+	virtual uint8_t GetNumResults() const { return 0; }
 	virtual uint16_t GetCallbackResult() const { return CALLBACK_FAILED; }
 	virtual void AnalyseCallbacks(AnalyseCallbackOperation &op) const {};
 
@@ -452,7 +452,7 @@ struct DeterministicSpriteGroupAdjust {
 	DeterministicSpriteGroupAdjustOperation operation;
 	DeterministicSpriteGroupAdjustType type;
 	uint16_t variable;
-	byte shift_num;
+	uint8_t shift_num;
 	DeterministicSpriteGroupAdjustFlags adjust_flags = DSGAF_NONE;
 	uint32_t parameter;  ///< Used for variables between 0x60 and 0x7F inclusive.
 	uint32_t and_mask;
@@ -529,9 +529,9 @@ struct RandomizedSpriteGroup : SpriteGroup {
 	VarSpriteGroupScopeOffset var_scope_count;
 
 	RandomizedSpriteGroupCompareMode cmp_mode; ///< Check for these triggers:
-	byte triggers;
+	uint8_t triggers;
 
-	byte lowest_randbit; ///< Look for this in the per-object randomized bitmask:
+	uint8_t lowest_randbit; ///< Look for this in the per-object randomized bitmask:
 
 	std::vector<const SpriteGroup *> groups; ///< Take the group with appropriate index:
 
@@ -587,7 +587,7 @@ struct ResultSpriteGroup : SpriteGroup {
 	 * @param num_sprites The number of sprites per set.
 	 * @return A spritegroup representing the sprite number result.
 	 */
-	ResultSpriteGroup(SpriteID sprite, byte num_sprites) :
+	ResultSpriteGroup(SpriteID sprite, uint8_t num_sprites) :
 		SpriteGroup(SGT_RESULT),
 		sprite(sprite),
 		num_sprites(num_sprites)
@@ -595,9 +595,9 @@ struct ResultSpriteGroup : SpriteGroup {
 	}
 
 	SpriteID sprite;
-	byte num_sprites;
+	uint8_t num_sprites;
 	SpriteID GetResult() const override { return this->sprite; }
-	byte GetNumResults() const override { return this->num_sprites; }
+	uint8_t GetNumResults() const override { return this->num_sprites; }
 };
 
 /**

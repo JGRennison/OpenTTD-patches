@@ -16,14 +16,14 @@
 #include "zoom_type.h"
 
 /** Variant of the signal, i.e. how does the signal look? */
-enum SignalVariant {
+enum SignalVariant : uint8_t {
 	SIG_ELECTRIC  = 0, ///< Light signal
 	SIG_SEMAPHORE = 1, ///< Old-fashioned semaphore signal
 };
 
 
 /** Type of signal, i.e. how does the signal behave? */
-enum SignalType : byte {
+enum SignalType : uint8_t {
 	SIGTYPE_BLOCK      = 0, ///< block signal
 	SIGTYPE_ENTRY      = 1, ///< presignal block entry
 	SIGTYPE_EXIT       = 2, ///< presignal block exit
@@ -38,7 +38,7 @@ enum SignalType : byte {
 	SIGTYPE_FIRST_PBS_SPRITE = SIGTYPE_PBS,
 };
 /** Helper information for extract tool. */
-template <> struct EnumPropsT<SignalType> : MakeEnumPropsT<SignalType, byte, SIGTYPE_BLOCK, SIGTYPE_END, SIGTYPE_END, 3> {};
+template <> struct EnumPropsT<SignalType> : MakeEnumPropsT<SignalType, uint8_t, SIGTYPE_BLOCK, SIGTYPE_END, SIGTYPE_END, 3> {};
 
 /** Reference to a signal
  *

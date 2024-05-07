@@ -373,7 +373,7 @@ static WindowDesc _build_bridge_desc(__FILE__, __LINE__,
  * @param transport_type The transport type
  * @param road_rail_type The road/rail type
  */
-void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transport_type, byte road_rail_type)
+void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transport_type, uint8_t road_rail_type)
 {
 	CloseWindowByClass(WC_BUILD_BRIDGE);
 

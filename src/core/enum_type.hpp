@@ -49,7 +49,7 @@
  *  other templates below. Here we have only forward declaration. For each enum type
  *  we will create specialization derived from MakeEnumPropsT<>.
  *  i.e.:
- *    template <> struct EnumPropsT<Track> : MakeEnumPropsT<Track, byte, TRACK_BEGIN, TRACK_END, INVALID_TRACK> {};
+ *    template <> struct EnumPropsT<Track> : MakeEnumPropsT<Track, uint8_t, TRACK_BEGIN, TRACK_END, INVALID_TRACK> {};
  */
 template <typename Tenum_t> struct EnumPropsT;
 
@@ -58,7 +58,7 @@ template <typename Tenum_t> struct EnumPropsT;
  *  from outsize. It is used as base class of several EnumPropsT specializations each
  *  dedicated to one of commonly used enumeration types.
  *  @param Tenum_t enumeration type that you want to describe
- *  @param Tstorage_t what storage type would be sufficient (i.e. byte)
+ *  @param Tstorage_t what storage type would be sufficient (i.e. uint8_t)
  *  @param Tbegin first valid value from the contiguous range (i.e. TRACK_BEGIN)
  *  @param Tend one past the last valid value from the contiguous range (i.e. TRACK_END)
  *  @param Tinvalid value used as invalid value marker (i.e. INVALID_TRACK)
@@ -67,7 +67,7 @@ template <typename Tenum_t> struct EnumPropsT;
 template <typename Tenum_t, typename Tstorage_t, Tenum_t Tbegin, Tenum_t Tend, Tenum_t Tinvalid, uint Tnum_bits = 8 * sizeof(Tstorage_t)>
 struct MakeEnumPropsT {
 	typedef Tenum_t type;                     ///< enum type (i.e. Trackdir)
-	typedef Tstorage_t storage;               ///< storage type (i.e. byte)
+	typedef Tstorage_t storage;               ///< storage type (i.e. uint8_t)
 	static const Tenum_t begin = Tbegin;      ///< lowest valid value (i.e. TRACKDIR_BEGIN)
 	static const Tenum_t end = Tend;          ///< one after the last valid value (i.e. TRACKDIR_END)
 	static const Tenum_t invalid = Tinvalid;  ///< what value is used as invalid value (i.e. INVALID_TRACKDIR)

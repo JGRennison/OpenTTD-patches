@@ -15,7 +15,7 @@
 /**
  * Enum for all companies/owners.
  */
-enum Owner : byte {
+enum Owner : uint8_t {
 	/* All companies below MAX_COMPANIES are playable
 	 * companies, above, they are special, computer controlled 'companies' */
 	OWNER_BEGIN     = 0x00, ///< First owner
@@ -47,7 +47,7 @@ static const uint MIN_COMPETITORS_INTERVAL = 0;   ///< The minimum interval (in 
 static const uint MAX_COMPETITORS_INTERVAL = 500; ///< The maximum interval (in minutes) between competitors.
 
 /** Define basic enum properties */
-template <> struct EnumPropsT<Owner> : MakeEnumPropsT<Owner, byte, OWNER_BEGIN, OWNER_END, INVALID_OWNER> {};
+template <> struct EnumPropsT<Owner> : MakeEnumPropsT<Owner, uint8_t, OWNER_BEGIN, OWNER_END, INVALID_OWNER> {};
 
 typedef Owner CompanyID;
 

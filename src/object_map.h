@@ -62,7 +62,7 @@ inline ObjectID GetObjectIndex(TileIndex t)
  * @pre IsTileType(t, MP_OBJECT)
  * @return The random bits.
  */
-inline byte GetObjectRandomBits(TileIndex t)
+inline uint8_t GetObjectRandomBits(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
 	return _m[t].m3;
@@ -188,7 +188,7 @@ inline void SetObjectHasViewportMapViewOverride(TileIndex t, bool map_view_overr
  * @param wc     Water class for this object.
  * @param random Random data to store on the tile
  */
-inline void MakeObject(TileIndex t, Owner o, ObjectID index, WaterClass wc, byte random)
+inline void MakeObject(TileIndex t, Owner o, ObjectID index, WaterClass wc, uint8_t random)
 {
 	SetTileType(t, MP_OBJECT);
 	SetTileOwner(t, o);

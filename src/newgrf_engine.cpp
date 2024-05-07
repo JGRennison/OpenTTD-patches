@@ -57,7 +57,7 @@ const SpriteGroup *GetWagonOverrideSpriteSet(EngineID engine, CargoID cargo, Eng
 	return nullptr;
 }
 
-void SetCustomEngineSprites(EngineID engine, byte cargo, const SpriteGroup *group)
+void SetCustomEngineSprites(EngineID engine, uint8_t cargo, const SpriteGroup *group)
 {
 	Engine *e = Engine::Get(engine);
 	assert(cargo < lengthof(e->grf_prop.spritegroup));
@@ -137,7 +137,7 @@ enum TTDPAircraftMovementStates {
  * Map OTTD aircraft movement states to TTDPatch style movement states
  * (VarAction 2 Variable 0xE2)
  */
-byte MapAircraftMovementState(const Aircraft *v)
+uint8_t MapAircraftMovementState(const Aircraft *v)
 {
 	const Station *st = GetTargetAirportIfValid(v);
 	if (st == nullptr) return AMS_TTDP_FLIGHT_TO_TOWER;
@@ -264,7 +264,7 @@ enum TTDPAircraftMovementActions {
  * (VarAction 2 Variable 0xE6)
  * This is not fully supported yet but it's enough for Planeset.
  */
-static byte MapAircraftMovementAction(const Aircraft *v)
+static uint8_t MapAircraftMovementAction(const Aircraft *v)
 {
 	switch (v->state) {
 		case HANGAR:
@@ -412,8 +412,8 @@ static const Livery *LiveryHelper(EngineID engine, const Vehicle *v)
 static uint32_t PositionHelper(const Vehicle *v, bool consecutive)
 {
 	const Vehicle *u;
-	byte chain_before = 0;
-	byte chain_after  = 0;
+	uint8_t chain_before = 0;
+	uint8_t chain_after  = 0;
 
 	for (u = v->First(); u != v; u = u->Next()) {
 		chain_before++;
@@ -563,7 +563,7 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 		case 0x42: { // Consist cargo information
 			if ((extra->mask & 0x00FFFFFF) == 0) {
 				if (!HasBit(v->grf_cache.cache_valid, NCVV_CONSIST_CARGO_INFORMATION_UD)) {
-					byte user_def_data = 0;
+					uint8_t user_def_data = 0;
 					if (v->type == VEH_TRAIN) {
 						for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
 							user_def_data |= Train::From(u)->tcache.user_def_data;
@@ -576,8 +576,8 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 			}
 			if (!HasBit(v->grf_cache.cache_valid, NCVV_CONSIST_CARGO_INFORMATION)) {
 				std::array<uint8_t, NUM_CARGO> common_cargoes{};
-				byte cargo_classes = 0;
-				byte user_def_data = 0;
+				uint8_t cargo_classes = 0;
+				uint8_t user_def_data = 0;
 
 				for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
 					if (v->type == VEH_TRAIN) user_def_data |= Train::From(u)->tcache.user_def_data;
@@ -647,7 +647,7 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 				const Vehicle *w = v->Next();
 				assert(w != nullptr);
 				uint16_t altitude = ClampTo<uint16_t>(v->z_pos - w->z_pos); // Aircraft height - shadow height
-				byte airporttype = ATP_TTDP_LARGE;
+				uint8_t airporttype = ATP_TTDP_LARGE;
 
 				const Station *st = GetTargetAirportIfValid(Aircraft::From(v));
 
@@ -737,9 +737,9 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 
 		case 0x4D: // Position within articulated vehicle
 			if (!HasBit(v->grf_cache.cache_valid, NCVV_POSITION_IN_VEHICLE)) {
-				byte artic_before = 0;
+				uint8_t artic_before = 0;
 				for (const Vehicle *u = v; u->IsArticulatedPart(); u = u->Previous()) artic_before++;
-				byte artic_after = 0;
+				uint8_t artic_after = 0;
 				for (const Vehicle *u = v; u->HasArticulatedPart(); u = u->Next()) artic_after++;
 				v->grf_cache.position_in_vehicle = artic_before | artic_after << 8;
 				SetBit(v->grf_cache.cache_valid, NCVV_POSITION_IN_VEHICLE);
@@ -1413,7 +1413,7 @@ static void DoTriggerVehicle(Vehicle *v, VehicleTrigger trigger, uint16_t base_r
 	}
 
 	/* Rerandomise bits. Scopes other than SELF are invalid for rerandomisation. For bug-to-bug-compatibility with TTDP we ignore the scope. */
-	byte new_random_bits = Random();
+	uint8_t new_random_bits = Random();
 	v->random_bits &= ~reseed;
 	v->random_bits |= (first ? new_random_bits : base_random_bits) & reseed;
 

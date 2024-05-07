@@ -25,7 +25,7 @@ struct CommandDeserialisationBuffer : public BufferDeserialisationHelper<Command
 
 	CommandDeserialisationBuffer(const uint8_t *buffer, size_t size) : buffer(buffer), size(size) {}
 
-	const byte *GetDeserialisationBuffer() const { return this->buffer; }
+	const uint8_t *GetDeserialisationBuffer() const { return this->buffer; }
 	size_t GetDeserialisationBufferSize() const { return this->size; }
 	size_t &GetDeserialisationPosition() { return this->pos; }
 
@@ -44,17 +44,17 @@ struct CommandDeserialisationBuffer : public BufferDeserialisationHelper<Command
 };
 
 struct CommandSerialisationBuffer : public BufferSerialisationHelper<CommandSerialisationBuffer> {
-	std::vector<byte> &buffer;
+	std::vector<uint8_t> &buffer;
 	size_t limit;
 
-	CommandSerialisationBuffer(std::vector<byte> &buffer, size_t limit) : buffer(buffer), limit(limit) {}
+	CommandSerialisationBuffer(std::vector<uint8_t> &buffer, size_t limit) : buffer(buffer), limit(limit) {}
 
-	std::vector<byte> &GetSerialisationBuffer() { return this->buffer; }
+	std::vector<uint8_t> &GetSerialisationBuffer() { return this->buffer; }
 	size_t GetSerialisationLimit() const { return this->limit; }
 };
 
 struct CommandAuxiliarySerialised : public CommandAuxiliaryBase {
-	std::vector<byte> serialised_data;
+	std::vector<uint8_t> serialised_data;
 
 	CommandAuxiliaryBase *Clone() const override
 	{

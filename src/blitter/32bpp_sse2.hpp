@@ -61,7 +61,7 @@ public:
 	struct SpriteData {
 		BlitterSpriteFlags flags;
 		SpriteInfo infos[ZOOM_LVL_SPR_COUNT];
-		byte data[]; ///< Data, all zoomlevels.
+		uint8_t data[]; ///< Data, all zoomlevels.
 	};
 
 	Sprite *Encode(const SpriteLoader::SpriteCollection &sprite, AllocatorProc *allocator);

@@ -51,7 +51,7 @@ enum ExtraTreePlacement {
 };
 
 /** Determines when to consider building more trees. */
-byte _trees_tick_ctr;
+uint8_t _trees_tick_ctr;
 
 static const uint16_t DEFAULT_TREE_STEPS = 1000;             ///< Default number of attempts for placing trees.
 static const uint16_t DEFAULT_RAINFOREST_TREE_STEPS = 15000; ///< Default number of attempts for placing extra trees at rainforest in tropic.
@@ -240,7 +240,7 @@ static void PlaceTree(TileIndex tile, uint32_t r)
 	TreeType tree = GetRandomTreeType(tile, GB(r, 24, 8));
 
 	if (tree != TREE_INVALID) {
-		PlantTreesOnTile(tile, tree, GB(r, 22, 2), std::min<byte>(GB(r, 16, 3), 6));
+		PlantTreesOnTile(tile, tree, GB(r, 22, 2), std::min<uint8_t>(GB(r, 16, 3), 6));
 		MarkTileDirtyByTile(tile);
 
 		/* Rerandomize ground, if neither snow nor shore */
@@ -550,7 +550,7 @@ CommandCost CmdPlantTree(TileIndex end_tile, DoCommandFlag flags, uint32_t p1, u
 {
 	StringID msg = INVALID_STRING_ID;
 	CommandCost cost(EXPENSES_OTHER);
-	const byte tree_to_plant = GB(p1, 0, 8); // We cannot use Extract as min and max are climate specific.
+	const uint8_t tree_to_plant = GB(p1, 0, 8); // We cannot use Extract as min and max are climate specific.
 
 	if (p2 >= MapSize()) return CMD_ERROR;
 	/* Check the tree type within the current climate */
@@ -685,7 +685,7 @@ CommandCost CmdPlantTree(TileIndex end_tile, DoCommandFlag flags, uint32_t p1, u
 }
 
 struct TreeListEnt : PalSpriteID {
-	byte x, y;
+	uint8_t x, y;
 };
 
 static void DrawTile_Trees(TileInfo *ti, DrawTileProcParams params)
@@ -1056,7 +1056,7 @@ uint DecrementTreeCounter()
 	if (scaled_map_size >= 256) return scaled_map_size >> 8;
 
 	/* byte underflow */
-	byte old_trees_tick_ctr = _trees_tick_ctr;
+	uint8_t old_trees_tick_ctr = _trees_tick_ctr;
 	_trees_tick_ctr -= scaled_map_size;
 	return old_trees_tick_ctr <= _trees_tick_ctr ? 1 : 0;
 }

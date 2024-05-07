@@ -90,7 +90,7 @@ inline bool LiftHasDestination(TileIndex t)
  * @param t the tile
  * @param dest new destination
  */
-inline void SetLiftDestination(TileIndex t, byte dest)
+inline void SetLiftDestination(TileIndex t, uint8_t dest)
 {
 	SetBit(_me[t].m7, 0);
 	SB(_me[t].m7, 1, 3, dest);
@@ -101,7 +101,7 @@ inline void SetLiftDestination(TileIndex t, byte dest)
  * @param t the tile
  * @return destination
  */
-inline byte GetLiftDestination(TileIndex t)
+inline uint8_t GetLiftDestination(TileIndex t)
 {
 	return GB(_me[t].m7, 1, 3);
 }
@@ -122,7 +122,7 @@ inline void HaltLift(TileIndex t)
  * @param t the tile
  * @return position, from 0 to 36
  */
-inline byte GetLiftPosition(TileIndex t)
+inline uint8_t GetLiftPosition(TileIndex t)
 {
 	return GB(_me[t].m6, 2, 6);
 }
@@ -132,7 +132,7 @@ inline byte GetLiftPosition(TileIndex t)
  * @param t the tile
  * @param pos position, from 0 to 36
  */
-inline void SetLiftPosition(TileIndex t, byte pos)
+inline void SetLiftPosition(TileIndex t, uint8_t pos)
 {
 	SB(_me[t].m6, 2, 6, pos);
 }
@@ -180,10 +180,10 @@ inline void SetHouseCompleted(TileIndex t, bool status)
  * @pre IsTileType(t, MP_HOUSE)
  * @return the building stage of the house
  */
-inline byte GetHouseBuildingStage(TileIndex t)
+inline uint8_t GetHouseBuildingStage(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
-	return IsHouseCompleted(t) ? (byte)TOWN_HOUSE_COMPLETED : GB(_m[t].m5, 3, 2);
+	return IsHouseCompleted(t) ? (uint8_t)TOWN_HOUSE_COMPLETED : GB(_m[t].m5, 3, 2);
 }
 
 /**
@@ -192,7 +192,7 @@ inline byte GetHouseBuildingStage(TileIndex t)
  * @pre IsTileType(t, MP_HOUSE)
  * @return the construction stage of the house
  */
-inline byte GetHouseConstructionTick(TileIndex t)
+inline uint8_t GetHouseConstructionTick(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
 	return IsHouseCompleted(t) ? 0 : GB(_m[t].m5, 0, 3);
@@ -259,7 +259,7 @@ inline CalTime::Year GetHouseAge(TileIndex t)
  * @param random the new random bits
  * @pre IsTileType(t, MP_HOUSE)
  */
-inline void SetHouseRandomBits(TileIndex t, byte random)
+inline void SetHouseRandomBits(TileIndex t, uint8_t random)
 {
 	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
 	_m[t].m1 = random;
@@ -272,7 +272,7 @@ inline void SetHouseRandomBits(TileIndex t, byte random)
  * @pre IsTileType(t, MP_HOUSE)
  * @return random bits
  */
-inline byte GetHouseRandomBits(TileIndex t)
+inline uint8_t GetHouseRandomBits(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
 	return _m[t].m1;
@@ -285,7 +285,7 @@ inline byte GetHouseRandomBits(TileIndex t)
  * @param triggers the activated triggers
  * @pre IsTileType(t, MP_HOUSE)
  */
-inline void SetHouseTriggers(TileIndex t, byte triggers)
+inline void SetHouseTriggers(TileIndex t, uint8_t triggers)
 {
 	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
 	SB(_m[t].m3, 0, 5, triggers);
@@ -298,7 +298,7 @@ inline void SetHouseTriggers(TileIndex t, byte triggers)
  * @pre IsTileType(t, MP_HOUSE)
  * @return triggers
  */
-inline byte GetHouseTriggers(TileIndex t)
+inline uint8_t GetHouseTriggers(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
 	return GB(_m[t].m3, 0, 5);
@@ -310,7 +310,7 @@ inline byte GetHouseTriggers(TileIndex t)
  * @pre IsTileType(t, MP_HOUSE)
  * @return time remaining
  */
-inline byte GetHouseProcessingTime(TileIndex t)
+inline uint8_t GetHouseProcessingTime(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
 	return GB(_me[t].m6, 2, 6);
@@ -322,7 +322,7 @@ inline byte GetHouseProcessingTime(TileIndex t)
  * @param time the time to be set
  * @pre IsTileType(t, MP_HOUSE)
  */
-inline void SetHouseProcessingTime(TileIndex t, byte time)
+inline void SetHouseProcessingTime(TileIndex t, uint8_t time)
 {
 	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
 	SB(_me[t].m6, 2, 6, time);
@@ -349,7 +349,7 @@ inline void DecHouseProcessingTime(TileIndex t)
  * @param random_bits required for newgrf houses
  * @pre IsTileType(t, MP_CLEAR)
  */
-inline void MakeHouseTile(TileIndex t, TownID tid, byte counter, byte stage, HouseID type, byte random_bits)
+inline void MakeHouseTile(TileIndex t, TownID tid, uint8_t counter, uint8_t stage, HouseID type, uint8_t random_bits)
 {
 	dbg_assert_tile(IsTileType(t, MP_CLEAR), t);
 

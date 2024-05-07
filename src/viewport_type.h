@@ -64,9 +64,9 @@ struct Viewport {
 	uint64_t last_overlay_rebuild_counter = 0;
 	uint64_t last_plan_update_number = 0;
 	ViewPortMapDrawVehiclesCache map_draw_vehicles_cache;
-	std::vector<byte> land_pixel_cache;
-	std::vector<byte> overlay_pixel_cache;
-	std::vector<byte> plan_pixel_cache;
+	std::vector<uint8_t> land_pixel_cache;
+	std::vector<uint8_t> overlay_pixel_cache;
+	std::vector<uint8_t> plan_pixel_cache;
 
 	uint GetDirtyBlockWidthShift() const { return this->GetDirtyBlockShift(); }
 	uint GetDirtyBlockHeightShift() const { return this->GetDirtyBlockShift(); }
@@ -209,7 +209,7 @@ enum ViewportDragDropSelectionProcess {
 /**
  * Target of the viewport scrolling GS method
  */
-enum ViewportScrollTarget {
+enum ViewportScrollTarget : uint8_t {
 	VST_EVERYONE, ///< All players
 	VST_COMPANY,  ///< All players in specific company
 	VST_CLIENT,   ///< Single player
@@ -223,7 +223,7 @@ enum FoundationPart {
 	FOUNDATION_PART_END
 };
 
-enum ViewportMarkDirtyFlags : byte {
+enum ViewportMarkDirtyFlags : uint8_t {
 	VMDF_NONE                  = 0,
 	VMDF_NOT_MAP_MODE          = 0x1,
 	VMDF_NOT_MAP_MODE_NON_VEG  = 0x2,

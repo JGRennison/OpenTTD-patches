@@ -101,7 +101,7 @@ bool _record_sync_records = false;
 static_assert((int)NETWORK_COMPANY_NAME_LENGTH == MAX_LENGTH_COMPANY_NAME_CHARS * MAX_CHAR_LENGTH);
 
 /** The amount of clients connected */
-byte _network_clients_connected = 0;
+uint8_t _network_clients_connected = 0;
 
 extern std::string GenerateUid(std::string_view subject);
 
@@ -151,9 +151,9 @@ NetworkClientInfo::~NetworkClientInfo()
 	return nullptr;
 }
 
-byte NetworkSpectatorCount()
+uint8_t NetworkSpectatorCount()
 {
-	byte count = 0;
+	uint8_t count = 0;
 
 	for (const NetworkClientInfo *ci : NetworkClientInfo::Iterate()) {
 		if (ci->client_playas == COMPANY_SPECTATOR) count++;
@@ -233,7 +233,7 @@ std::vector<uint8_t> GenerateGeneralPasswordHash(const std::string &password, co
 {
 	if (password.empty()) return {};
 
-	std::vector<byte> data;
+	std::vector<uint8_t> data;
 	data.reserve(password_server_id.size() + password.size() + 10);
 	BufferSerialiser buffer(data);
 
@@ -241,7 +241,7 @@ std::vector<uint8_t> GenerateGeneralPasswordHash(const std::string &password, co
 	buffer.Send_string(password_server_id);
 	buffer.Send_string(password);
 
-	std::vector<byte> output;
+	std::vector<uint8_t> output;
 	output.resize(64);
 	crypto_blake2b(output.data(), output.size(), data.data(), data.size());
 
@@ -295,8 +295,8 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 			SetDParam(1, data.auxdata >> 16);
 			SetDParamStr(0, GetString(STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION));
 
-			extern byte GetCurrentGrfLangID();
-			byte lang_id = GetCurrentGrfLangID();
+			extern uint8_t GetCurrentGrfLangID();
+			uint8_t lang_id = GetCurrentGrfLangID();
 			bool use_specific_string = lang_id <= 2 || lang_id == 0x15 || lang_id == 0x3A || lang_id == 0x3D; // English, German, Korean, Czech
 			if (use_specific_string && self_send) {
 				strid = STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY;
@@ -1254,7 +1254,7 @@ void NetworkGameLoop()
 				if (aux_str[0] == '<' && aux_str[1] != '>') {
 					auto aux = std::make_unique<CommandAuxiliarySerialised>();
 					for (const char *data = aux_str + 1; data[0] != 0 && data[1] != 0 && data[0] != '>'; data += 2) {
-						byte e = 0;
+						uint8_t e = 0;
 						std::from_chars(data, data + 2, e, 16);
 						aux->serialised_data.emplace_back(e);
 					}

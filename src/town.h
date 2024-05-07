@@ -82,10 +82,10 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	TinyString name;                 ///< Custom town name. If empty, the town was not renamed and uses the generated name.
 	mutable std::string cached_name; ///< NOSAVE: Cache of the resolved name of the town, if not using a custom town name
 
-	byte flags;                      ///< See #TownFlags.
+	uint8_t flags;                   ///< See #TownFlags.
 
-	byte override_flags;             ///< Bitmask of enabled flag overrides. See #TownSettingOverrideFlags.
-	byte override_values;            ///< Bitmask of flag override values. See #TownSettingOverrideFlags.
+	uint8_t override_flags;          ///< Bitmask of enabled flag overrides. See #TownSettingOverrideFlags.
+	uint8_t override_values;         ///< Bitmask of flag override values. See #TownSettingOverrideFlags.
 	TownTunnelMode build_tunnels;    ///< If/when towns are allowed to build road tunnels (if TSOF_OVERRIDE_BUILD_TUNNELS set in override_flags)
 	uint8_t max_road_slope;          ///< Maximum number of consecutive sloped road tiles which towns are allowed to build (if TSOF_OVERRIDE_BUILD_INCLINED_ROADS set in override_flags)
 
@@ -110,7 +110,7 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 
 	std::string text; ///< General text with additional information.
 
-	inline byte GetPercentTransported(CargoID cid) const
+	inline uint8_t GetPercentTransported(CargoID cid) const
 	{
 		if (!IsValidCargoID(cid)) return 0;
 		return this->supplied[cid].old_act * 256 / (this->supplied[cid].old_max + 1);
@@ -123,8 +123,8 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	uint16_t grow_counter;           ///< counter to count when to grow, value is smaller than or equal to growth_rate
 	uint16_t growth_rate;            ///< town growth rate
 
-	byte fund_buildings_months;      ///< fund buildings program in action?
-	byte road_build_months;          ///< fund road reconstruction in action?
+	uint8_t fund_buildings_months;   ///< fund buildings program in action?
+	uint8_t road_build_months;       ///< fund road reconstruction in action?
 
 	bool larger_town;                ///< if this is a larger town and should grow more quickly
 	TownLayout layout;               ///< town specific road layout
@@ -299,7 +299,7 @@ enum TownActions {
 };
 DECLARE_ENUM_AS_BIT_SET(TownActions)
 
-extern const byte _town_action_costs[TACT_COUNT];
+extern const uint8_t _town_action_costs[TACT_COUNT];
 extern TownID _new_town_id;
 
 /**

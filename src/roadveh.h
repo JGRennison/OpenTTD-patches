@@ -77,7 +77,7 @@ static const uint RVC_DRIVE_THROUGH_STOP_FRAME           = 11;
 static const uint RVC_DEPOT_STOP_FRAME                   = 11;
 
 /** The number of ticks a vehicle has for overtaking. */
-static const byte RV_OVERTAKE_TIMEOUT = 35;
+static const uint8_t RV_OVERTAKE_TIMEOUT = 35;
 
 /** Maximum segments of road vehicle path cache */
 static const uint8_t RV_PATH_CACHE_SEGMENTS = 16;
@@ -140,19 +140,19 @@ enum RoadVehicleFlags {
  * Buses, trucks and trams belong to this class.
  */
 struct RoadVehicle final : public GroundVehicle<RoadVehicle, VEH_ROAD> {
-	byte state;             ///< @see RoadVehicleStates
-	byte frame;
+	uint8_t state;                                 ///< @see RoadVehicleStates
+	uint8_t frame;
 	uint16_t blocked_ctr;
-	byte overtaking;        ///< Set to #RVSB_DRIVE_SIDE when overtaking, otherwise 0.
-	byte overtaking_ctr;    ///< The length of the current overtake attempt.
+	uint8_t overtaking;                            ///< Set to #RVSB_DRIVE_SIDE when overtaking, otherwise 0.
+	uint8_t overtaking_ctr;                        ///< The length of the current overtake attempt.
 	std::unique_ptr<RoadVehPathCache> cached_path; ///< Cached path.
-	RoadTypes compatible_roadtypes; ///< Roadtypes this consist is powered on.
-	uint16_t crashed_ctr;   ///< Animation counter when the vehicle has crashed. @see RoadVehIsCrashed
-	byte reverse_ctr;
-	byte critical_breakdown_count;  ///< Counter for the number of critical breakdowns since last service
-	uint8_t rvflags;                ///< Road vehicle flags
+	RoadTypes compatible_roadtypes;                ///< Roadtypes this consist is powered on.
+	uint16_t crashed_ctr;                          ///< Animation counter when the vehicle has crashed. @see RoadVehIsCrashed
+	uint8_t reverse_ctr;
+	uint8_t critical_breakdown_count;              ///< Counter for the number of critical breakdowns since last service
+	uint8_t rvflags;                               ///< Road vehicle flags
 
-	RoadType roadtype;              ///< Roadtype of this vehicle.
+	RoadType roadtype;                             ///< Roadtype of this vehicle.
 
 	/** We don't want GCC to zero our struct! It already is zeroed and has an index! */
 	RoadVehicle() : GroundVehicleBase() {}
@@ -207,7 +207,7 @@ struct RoadVehicle final : public GroundVehicle<RoadVehicle, VEH_ROAD> {
 		return RV_OVERTAKE_TIMEOUT + (this->gcache.cached_total_length / 2) - (VEHICLE_LENGTH / 2);
 	}
 
-	void SetRoadVehicleOvertaking(byte overtaking);
+	void SetRoadVehicleOvertaking(uint8_t overtaking);
 
 	inline RoadVehPathCache &GetOrCreatePathCache()
 	{
@@ -290,7 +290,7 @@ protected: // These functions should not be called outside acceleration code.
 	 * Allows to know the tractive effort value that this vehicle will use.
 	 * @return Tractive effort value from the engine.
 	 */
-	inline byte GetTractiveEffort() const
+	inline uint8_t GetTractiveEffort() const
 	{
 		/* The tractive effort coefficient is in units of 1/256.  */
 		return GetVehicleProperty(this, PROP_ROADVEH_TRACTIVE_EFFORT, RoadVehInfo(this->engine_type)->tractive_effort);
@@ -300,7 +300,7 @@ protected: // These functions should not be called outside acceleration code.
 	 * Gets the area used for calculating air drag.
 	 * @return Area of the engine in m^2.
 	 */
-	inline byte GetAirDragArea() const
+	inline uint8_t GetAirDragArea() const
 	{
 		return 6;
 	}
@@ -309,7 +309,7 @@ protected: // These functions should not be called outside acceleration code.
 	 * Gets the air drag coefficient of this vehicle.
 	 * @return Air drag value from the engine.
 	 */
-	inline byte GetAirDrag() const
+	inline uint8_t GetAirDrag() const
 	{
 		return RoadVehInfo(this->engine_type)->air_drag;
 	}

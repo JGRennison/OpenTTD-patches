@@ -224,7 +224,7 @@ inline Track GetRailDepotTrack(TileIndex t)
 inline TrackBits GetRailReservationTrackBits(TileIndex t)
 {
 	dbg_assert_tile(IsPlainRailTile(t), t);
-	byte track_b = GB(_m[t].m2, 8, 3);
+	uint8_t track_b = GB(_m[t].m2, 8, 3);
 	Track track = (Track)(track_b - 1);    // map array saves Track+1
 	if (track_b == 0) return TRACK_BIT_NONE;
 	return (TrackBits)(TrackToTrackBits(track) | (HasBit(_m[t].m2, 11) ? TrackToTrackBits(TrackToOppositeTrack(track)) : 0));
@@ -243,7 +243,7 @@ inline void SetTrackReservation(TileIndex t, TrackBits b)
 	dbg_assert(!TracksOverlap(b));
 	Track track = RemoveFirstTrack(&b);
 	SB(_m[t].m2, 8, 3, track == INVALID_TRACK ? 0 : track + 1);
-	SB(_m[t].m2, 11, 1, (byte)(b != TRACK_BIT_NONE));
+	SB(_m[t].m2, 11, 1, (uint8_t)(b != TRACK_BIT_NONE));
 }
 
 /**
@@ -300,7 +300,7 @@ inline bool HasDepotReservation(TileIndex t)
 inline void SetDepotReservation(TileIndex t, bool b)
 {
 	dbg_assert_tile(IsRailDepot(t), t);
-	SB(_m[t].m5, 4, 1, (byte)b);
+	SB(_m[t].m5, 4, 1, (uint8_t)b);
 }
 
 /**
@@ -317,14 +317,14 @@ inline TrackBits GetDepotReservationTrackBits(TileIndex t)
 inline SignalType GetSignalType(TileIndex t, Track track)
 {
 	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
-	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 4 : 0;
+	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 4 : 0;
 	return (SignalType)GB(_m[t].m2, pos, 3);
 }
 
 inline void SetSignalType(TileIndex t, Track track, SignalType s)
 {
 	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
-	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 4 : 0;
+	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 4 : 0;
 	SB(_m[t].m2, pos, 3, s);
 	if (track == INVALID_TRACK) SB(_m[t].m2, 4, 3, s);
 }
@@ -362,8 +362,8 @@ inline bool IsOnewaySignal(TileIndex t, Track track)
 
 inline void CycleSignalSide(TileIndex t, Track track)
 {
-	byte sig;
-	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 4 : 6;
+	uint8_t sig;
+	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 4 : 6;
 
 	sig = GB(_m[t].m3, pos, 2);
 	if (--sig == 0) sig = (IsPbsSignal(GetSignalType(t, track)) || _settings_game.vehicle.train_braking_model == TBM_REALISTIC) ? 2 : 3;
@@ -372,13 +372,13 @@ inline void CycleSignalSide(TileIndex t, Track track)
 
 inline SignalVariant GetSignalVariant(TileIndex t, Track track)
 {
-	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 7 : 3;
+	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 7 : 3;
 	return (SignalVariant)GB(_m[t].m2, pos, 1);
 }
 
 inline void SetSignalVariant(TileIndex t, Track track, SignalVariant v)
 {
-	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 7 : 3;
+	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 7 : 3;
 	SB(_m[t].m2, pos, 1, v);
 	if (track == INVALID_TRACK) SB(_m[t].m2, 7, 1, v);
 }
@@ -386,14 +386,14 @@ inline void SetSignalVariant(TileIndex t, Track track, SignalVariant v)
 inline uint8_t GetSignalAspect(TileIndex t, Track track)
 {
 	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
-	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 3 : 0;
+	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 3 : 0;
 	return GB(_me[t].m7, pos, 3);
 }
 
 inline void SetSignalAspect(TileIndex t, Track track, uint8_t aspect)
 {
 	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
-	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 3 : 0;
+	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 3 : 0;
 	SB(_me[t].m7, pos, 3, aspect);
 }
 
@@ -405,7 +405,7 @@ inline bool NonZeroSignalStylePossiblyOnTile(TileIndex t)
 inline uint8_t GetSignalStyle(TileIndex t, Track track)
 {
 	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
-	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 4 : 0;
+	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 4 : 0;
 	return GB(_me[t].m6, pos, 4);
 }
 
@@ -424,21 +424,21 @@ inline uint8_t GetSignalStyleGeneric(TileIndex t, Track track)
 inline void SetSignalStyle(TileIndex t, Track track, uint8_t style)
 {
 	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
-	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 4 : 0;
+	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 4 : 0;
 	SB(_me[t].m6, pos, 4, style);
 }
 
 inline bool GetSignalAlwaysReserveThrough(TileIndex t, Track track)
 {
 	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
-	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 7 : 6;
+	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 7 : 6;
 	return HasBit(_me[t].m7, pos);
 }
 
 inline void SetSignalAlwaysReserveThrough(TileIndex t, Track track, bool reserve_through)
 {
 	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
-	byte pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 7 : 6;
+	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 7 : 6;
 	SB(_me[t].m7, pos, 1, reserve_through ? 1 : 0);
 }
 
@@ -468,7 +468,7 @@ inline uint GetSignalStates(TileIndex tile)
  * @param signalbit the signal
  * @return the state of the signal
  */
-inline SignalState GetSingleSignalState(TileIndex t, byte signalbit)
+inline SignalState GetSingleSignalState(TileIndex t, uint8_t signalbit)
 {
 	return (SignalState)HasBit(GetSignalStates(t), signalbit);
 }
@@ -499,7 +499,7 @@ inline uint GetPresentSignals(TileIndex tile)
  * @param signalbit the signal
  * @return true if and only if the signal is present
  */
-inline bool IsSignalPresent(TileIndex t, byte signalbit)
+inline bool IsSignalPresent(TileIndex t, uint8_t signalbit)
 {
 	return HasBit(GetPresentSignals(t), signalbit);
 }

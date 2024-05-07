@@ -31,11 +31,11 @@ class RandomAccessFile {
 	FILE *file_handle;               ///< File handle of the open file.
 	size_t pos;                      ///< Position in the file of the end of the read buffer.
 
-	byte *buffer;                    ///< Current position within the local buffer.
-	byte *buffer_end;                ///< Last valid byte of buffer.
-	byte buffer_start[BUFFER_SIZE];  ///< Local buffer when read from file.
+	uint8_t *buffer;                    ///< Current position within the local buffer.
+	uint8_t *buffer_end;                ///< Last valid byte of buffer.
+	uint8_t buffer_start[BUFFER_SIZE];  ///< Local buffer when read from file.
 
-	byte ReadByteIntl();
+	uint8_t ReadByteIntl();
 	uint16_t ReadWordIntl();
 	uint32_t ReadDwordIntl();
 
@@ -52,7 +52,7 @@ public:
 	size_t GetPos() const;
 	void SeekTo(size_t pos, int mode);
 
-	inline byte ReadByte()
+	inline uint8_t ReadByte()
 	{
 		if (likely(this->buffer != this->buffer_end)) return *this->buffer++;
 		return this->ReadByteIntl();

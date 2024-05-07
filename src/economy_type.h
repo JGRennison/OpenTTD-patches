@@ -28,9 +28,9 @@ enum EconomyType : uint8_t {
 struct Economy {
 	Money max_loan;                         ///< NOSAVE: Maximum possible loan
 	int16_t fluct;                          ///< Economy fluctuation status
-	byte interest_rate;                     ///< Interest
-	byte infl_amount;                       ///< inflation amount
-	byte infl_amount_pr;                    ///< inflation rate for payment rates
+	uint8_t interest_rate;                  ///< Interest
+	uint8_t infl_amount;                    ///< inflation amount
+	uint8_t infl_amount_pr;                 ///< inflation rate for payment rates
 	uint32_t industry_daily_change_counter; ///< Bits 31-16 are number of industry to be performed, 15-0 are fractional collected daily
 	uint32_t industry_daily_increment;      ///< The value which will increment industry_daily_change_counter. Computed value. NOSAVE
 	uint64_t inflation_prices;              ///< Cumulated inflation of prices since game start; 16 bit fractional part
@@ -154,7 +154,7 @@ typedef Money Prices[PR_END]; ///< Prices of everything. @see Price
 typedef int8_t PriceMultipliers[PR_END];
 
 /** Types of expenses. */
-enum ExpensesType : byte {
+enum ExpensesType : uint8_t {
 	EXPENSES_CONSTRUCTION =  0,   ///< Construction costs.
 	EXPENSES_NEW_VEHICLES,        ///< New vehicles.
 	EXPENSES_TRAIN_RUN,           ///< Running costs trains.
@@ -175,7 +175,7 @@ enum ExpensesType : byte {
 };
 
 /** Define basic enum properties for ExpensesType */
-template <> struct EnumPropsT<ExpensesType> : MakeEnumPropsT<ExpensesType, byte, EXPENSES_CONSTRUCTION, EXPENSES_END, INVALID_EXPENSES, 8> {};
+template <> struct EnumPropsT<ExpensesType> : MakeEnumPropsT<ExpensesType, uint8_t, EXPENSES_CONSTRUCTION, EXPENSES_END, INVALID_EXPENSES, 8> {};
 
 /**
  * Data type for storage of Money for each #ExpensesType category.
@@ -241,21 +241,21 @@ static const uint LOCK_DEPOT_TILE_FACTOR = 2;
 struct CargoPayment;
 typedef uint32_t CargoPaymentID;
 
-enum CargoPaymentAlgorithm : byte {
+enum CargoPaymentAlgorithm : uint8_t {
 	CPA_BEGIN = 0,       ///< Used for iterations and limit testing
 	CPA_TRADITIONAL = 0, ///< Traditional algorithm
 	CPA_MODERN,          ///< Modern algorithm
 	CPA_END,             ///< Used for iterations and limit testing
 };
 
-enum TickRateMode : byte {
+enum TickRateMode : uint8_t {
 	TRM_BEGIN = 0,       ///< Used for iterations and limit testing
 	TRM_TRADITIONAL = 0, ///< Traditional value (30ms)
 	TRM_MODERN,          ///< Modern value (27ms)
 	TRM_END,             ///< Used for iterations and limit testing
 };
 
-enum CargoScalingMode : byte {
+enum CargoScalingMode : uint8_t {
 	CSM_BEGIN = 0,         ///< Used for iterations and limit testing
 	CSM_MONTHLY = 0,       ///< Traditional cargo scaling
 	CSM_DAYLENGTH,         ///< Also scale by day length

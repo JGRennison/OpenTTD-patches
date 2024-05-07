@@ -76,7 +76,7 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 CommandCost CmdBuildRoadVehicle(TileIndex tile, DoCommandFlag flags, const Engine *e, Vehicle **v);
 CommandCost CmdBuildShip       (TileIndex tile, DoCommandFlag flags, const Engine *e, Vehicle **v);
 CommandCost CmdBuildAircraft   (TileIndex tile, DoCommandFlag flags, const Engine *e, Vehicle **v);
-static CommandCost GetRefitCost(const Vehicle *v, EngineID engine_type, CargoID new_cid, byte new_subtype, bool *auto_refit_allowed);
+static CommandCost GetRefitCost(const Vehicle *v, EngineID engine_type, CargoID new_cid, uint8_t new_subtype, bool *auto_refit_allowed);
 
 /**
  * Build a vehicle.
@@ -295,7 +295,7 @@ CommandCost CmdSellVirtualVehicle(TileIndex tile, DoCommandFlag flags, uint32_t 
  * @param[out] auto_refit_allowed The refit is allowed as an auto-refit.
  * @return Price for refitting
  */
-static int GetRefitCostFactor(const Vehicle *v, EngineID engine_type, CargoID new_cid, byte new_subtype, bool *auto_refit_allowed)
+static int GetRefitCostFactor(const Vehicle *v, EngineID engine_type, CargoID new_cid, uint8_t new_subtype, bool *auto_refit_allowed)
 {
 	/* Prepare callback param with info about the new cargo type. */
 	const Engine *e = Engine::Get(engine_type);
@@ -327,7 +327,7 @@ static int GetRefitCostFactor(const Vehicle *v, EngineID engine_type, CargoID ne
  * @param[out] auto_refit_allowed The refit is allowed as an auto-refit.
  * @return Price for refitting
  */
-static CommandCost GetRefitCost(const Vehicle *v, EngineID engine_type, CargoID new_cid, byte new_subtype, bool *auto_refit_allowed)
+static CommandCost GetRefitCost(const Vehicle *v, EngineID engine_type, CargoID new_cid, uint8_t new_subtype, bool *auto_refit_allowed)
 {
 	ExpensesType expense_type;
 	const Engine *e = Engine::Get(engine_type);
@@ -369,7 +369,7 @@ struct RefitResult {
 	Vehicle *v;         ///< Vehicle to refit
 	uint capacity;      ///< New capacity of vehicle
 	uint mail_capacity; ///< New mail capacity of aircraft
-	byte subtype;       ///< cargo subtype to refit to
+	uint8_t subtype;       ///< cargo subtype to refit to
 };
 
 /**
@@ -384,7 +384,7 @@ struct RefitResult {
  * @param auto_refit   Refitting is done as automatic refitting outside a depot.
  * @return Refit cost.
  */
-static CommandCost RefitVehicle(Vehicle *v, bool only_this, uint8_t num_vehicles, CargoID new_cid, byte new_subtype, DoCommandFlag flags, bool auto_refit)
+static CommandCost RefitVehicle(Vehicle *v, bool only_this, uint8_t num_vehicles, CargoID new_cid, uint8_t new_subtype, DoCommandFlag flags, bool auto_refit)
 {
 	CommandCost cost(v->GetExpenseType(false));
 	uint total_capacity = 0;
@@ -402,7 +402,7 @@ static CommandCost RefitVehicle(Vehicle *v, bool only_this, uint8_t num_vehicles
 	std::vector<RefitResult> refit_result;
 
 	v->InvalidateNewGRFCacheOfChain();
-	byte actual_subtype = new_subtype;
+	uint8_t actual_subtype = new_subtype;
 	for (; v != nullptr; v = (only_this ? nullptr : v->Next())) {
 		/* Reset actual_subtype for every new vehicle */
 		if (!v->IsArticulatedPart()) actual_subtype = new_subtype;
@@ -428,7 +428,7 @@ static CommandCost RefitVehicle(Vehicle *v, bool only_this, uint8_t num_vehicles
 
 		/* Back up the vehicle's cargo type */
 		CargoID temp_cid = v->cargo_type;
-		byte temp_subtype = v->cargo_subtype;
+		uint8_t temp_subtype = v->cargo_subtype;
 		if (refittable) {
 			v->cargo_type = new_cid;
 			v->cargo_subtype = actual_subtype;
@@ -560,7 +560,7 @@ CommandCost CmdRefitVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 
 	/* Check cargo */
 	CargoID new_cid = GB(p2, 0, 8);
-	byte new_subtype = GB(p2, 8, 8);
+	uint8_t new_subtype = GB(p2, 8, 8);
 	if (new_cid >= NUM_CARGO) return CMD_ERROR;
 
 	/* For aircraft there is always only one. */
@@ -1622,7 +1622,7 @@ CommandCost CmdCloneVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 				assert(w != nullptr);
 
 				/* Find out what's the best sub type */
-				byte subtype = GetBestFittingSubType(v, w, v->cargo_type);
+				uint8_t subtype = GetBestFittingSubType(v, w, v->cargo_type);
 				if (w->cargo_type != v->cargo_type || w->cargo_subtype != subtype) {
 					CommandCost cost = DoCommand(0, w->index, v->cargo_type | 1U << 25 | (subtype << 8), flags, GetCmdRefitVeh(v));
 					if (cost.Succeeded()) total_cost.AddCost(cost);

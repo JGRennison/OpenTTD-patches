@@ -1119,7 +1119,7 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32_t p1, uint32_t p2, uint64_
 	_additional_cash_required = 0;
 
 	/* Get pointer to command handler */
-	byte cmd_id = cmd & CMD_ID_MASK;
+	uint cmd_id = cmd & CMD_ID_MASK;
 	assert(cmd_id < lengthof(_command_proc_table));
 
 	const Command &command = _command_proc_table[cmd_id];
@@ -1177,7 +1177,7 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32_t p1, uint32_t p2, uint64_
 		if (_debug_desync_level >= 1) {
 			std::string aux_str;
 			if (aux_data != nullptr) {
-				std::vector<byte> buffer;
+				std::vector<uint8_t> buffer;
 				CommandSerialisationBuffer serialiser(buffer, SHRT_MAX);
 				aux_data->Serialise(serialiser);
 				aux_str = FormatArrayAsHex(buffer);

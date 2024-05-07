@@ -49,9 +49,9 @@ void GameLoop();
 
 void CreateConsole();
 
-extern byte _dirkeys;        ///< 1 = left, 2 = up, 4 = right, 8 = down
+extern uint8_t _dirkeys;     ///< 1 = left, 2 = up, 4 = right, 8 = down
 extern bool _fullscreen;
-extern byte _support8bpp;
+extern uint8_t _support8bpp;
 extern CursorVars _cursor;
 extern bool _ctrl_pressed;   ///< Is Ctrl pressed?
 extern bool _shift_pressed;  ///< Is Shift pressed?
@@ -210,8 +210,8 @@ void SortResolutions();
 bool ToggleFullScreen(bool fs);
 
 /* gfx.cpp */
-byte GetCharacterWidth(FontSize size, char32_t key);
-byte GetDigitWidth(FontSize size = FS_NORMAL);
+uint8_t GetCharacterWidth(FontSize size, char32_t key);
+uint8_t GetDigitWidth(FontSize size = FS_NORMAL);
 void GetBroadestDigit(uint *front, uint *next, FontSize size = FS_NORMAL);
 uint64_t GetBroadestDigitsValue(uint count, FontSize size = FS_NORMAL);
 

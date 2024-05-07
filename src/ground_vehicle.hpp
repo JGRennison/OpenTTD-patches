@@ -72,9 +72,9 @@ struct GroundVehicleAcceleration {
  * virtual uint16_t      GetWeightWithoutCargo() const = 0;
  * virtual uint16_t      GetCargoWeight() const = 0;
  * virtual uint16_t      GetWeight() const = 0;
- * virtual byte          GetTractiveEffort() const = 0;
- * virtual byte          GetAirDrag() const = 0;
- * virtual byte          GetAirDragArea() const = 0;
+ * virtual uint8_t       GetTractiveEffort() const = 0;
+ * virtual uint8_t       GetAirDrag() const = 0;
+ * virtual uint8_t       GetAirDragArea() const = 0;
  * virtual AccelStatus   GetAccelerationStatus() const = 0;
  * virtual uint16_t      GetCurrentSpeed() const = 0;
  * virtual uint32_t      GetRollingFriction() const = 0;
@@ -439,9 +439,9 @@ protected:
 	 */
 	inline uint DoUpdateSpeed(GroundVehicleAcceleration accel, int min_speed, int max_speed, int advisory_max_speed, bool use_realistic_braking)
 	{
-		const byte initial_subspeed = this->subspeed;
+		const uint8_t initial_subspeed = this->subspeed;
 		uint spd = this->subspeed + accel.acceleration;
-		this->subspeed = (byte)spd;
+		this->subspeed = (uint8_t)spd;
 
 		if (!use_realistic_braking) {
 			max_speed = std::min(max_speed, advisory_max_speed);
@@ -490,7 +490,7 @@ protected:
 					this->subspeed = 0;
 				} else {
 					tempspeed = braking_speed;
-					this->subspeed = (byte)spd;
+					this->subspeed = (uint8_t)spd;
 				}
 			} else {
 				tempspeed = advisory_max_speed;

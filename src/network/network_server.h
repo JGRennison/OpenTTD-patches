@@ -24,7 +24,7 @@ extern NetworkClientSocketPool _networkclientsocket_pool;
 class ServerNetworkGameSocketHandler : public NetworkClientSocketPool::PoolItem<&_networkclientsocket_pool>, public NetworkGameSocketHandler, public TCPListenHandler<ServerNetworkGameSocketHandler, PACKET_SERVER_FULL, PACKET_SERVER_BANNED> {
 	NetworkGameKeys intl_keys;
 	uint64_t min_key_message_id = 0;
-	byte *rcon_reply_key = nullptr;
+	uint8_t *rcon_reply_key = nullptr;
 
 protected:
 	NetworkRecvStatus Receive_CLIENT_JOIN(Packet &p) override;
@@ -76,8 +76,8 @@ public:
 
 	static const char *GetClientStatusName(ClientStatus status);
 
-	byte lag_test;               ///< Byte used for lag-testing the client
-	byte last_token;             ///< The last random token we did send to verify the client is listening
+	uint8_t lag_test;            ///< Byte used for lag-testing the client
+	uint8_t last_token;          ///< The last random token we did send to verify the client is listening
 	uint32_t last_token_frame;   ///< The last frame we received the right token
 	ClientStatus status;         ///< Status of this client
 	CommandQueue outgoing_queue; ///< The command-queue awaiting delivery; conceptually more a bucket to gather commands in, after which the whole bucket is sent to the client.

@@ -102,7 +102,7 @@ static void *AllocSprite(size_t mem_req);
  * @param num the amount of sprites to skip
  * @return true if the data could be correctly skipped.
  */
-bool SkipSpriteData(SpriteFile &file, byte type, uint16_t num)
+bool SkipSpriteData(SpriteFile &file, uint8_t type, uint16_t num)
 {
 	if (type & 2) {
 		file.SkipBytes(num);
@@ -454,9 +454,9 @@ static void *ReadRecolourSprite(SpriteFile &file, uint num)
 	 * number of recolour sprites that are 17 bytes that only exist in DOS
 	 * GRFs which are the same as 257 byte recolour sprites, but with the last
 	 * 240 bytes zeroed.  */
-	byte *dest = (byte *)AllocSprite(RECOLOUR_SPRITE_SIZE);
+	uint8_t *dest = (uint8_t *)AllocSprite(RECOLOUR_SPRITE_SIZE);
 
-	auto read_data = [&](byte *targ) {
+	auto read_data = [&](uint8_t *targ) {
 		file.ReadBlock(targ, std::min(num, RECOLOUR_SPRITE_SIZE));
 		if (num > RECOLOUR_SPRITE_SIZE) {
 			file.SkipBytes(num - RECOLOUR_SPRITE_SIZE);
@@ -464,7 +464,7 @@ static void *ReadRecolourSprite(SpriteFile &file, uint num)
 	};
 
 	if (file.NeedsPaletteRemap()) {
-		byte *dest_tmp = AllocaM(byte, RECOLOUR_SPRITE_SIZE);
+		uint8_t *dest_tmp = AllocaM(uint8_t, RECOLOUR_SPRITE_SIZE);
 
 		/* Only a few recolour sprites are less than 257 bytes */
 		if (num < RECOLOUR_SPRITE_SIZE) memset(dest_tmp, 0, RECOLOUR_SPRITE_SIZE);
@@ -490,7 +490,7 @@ static const char *GetSpriteTypeName(SpriteType type)
 		"recolour",      // SpriteType::Recolour
 	};
 
-	return sprite_types[static_cast<byte>(type)];
+	return sprite_types[static_cast<uint8_t>(type)];
 }
 
 /**
@@ -564,7 +564,7 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 		s->missing_zoom_levels = 0;
 
 		SpriteLoader::CommonPixel *src = sprite[ZOOM_LVL_NORMAL].data;
-		byte *dest = s->data;
+		uint8_t *dest = s->data;
 		while (num-- > 0) {
 			*dest++ = src->m;
 			src++;
@@ -648,10 +648,10 @@ void ReadGRFSpriteOffsets(SpriteFile &file)
 			prev_id = id;
 			uint length = file.ReadDword();
 			if (length > 0) {
-				byte colour = file.ReadByte() & SCC_MASK;
+				uint8_t colour = file.ReadByte() & SCC_MASK;
 				length--;
 				if (length > 0) {
-					byte zoom = file.ReadByte();
+					uint8_t zoom = file.ReadByte();
 					length--;
 					if (colour != 0) {
 						static const ZoomLevel zoom_lvl_map[6] = {ZOOM_LVL_OUT_4X, ZOOM_LVL_NORMAL, ZOOM_LVL_OUT_2X, ZOOM_LVL_OUT_8X, ZOOM_LVL_OUT_16X, ZOOM_LVL_OUT_32X};
@@ -686,7 +686,7 @@ bool LoadNextSprite(int load_index, SpriteFile &file, uint file_sprite_id)
 	/* Read sprite header. */
 	uint32_t num = file.GetContainerVersion() >= 2 ? file.ReadDword() : file.ReadWord();
 	if (num == 0) return false;
-	byte grf_type = file.ReadByte();
+	uint8_t grf_type = file.ReadByte();
 
 	SpriteType type;
 	void *data = nullptr;
@@ -909,7 +909,7 @@ static void *AllocSprite(size_t mem_req)
  */
 void *SimpleSpriteAlloc(size_t size)
 {
-	return MallocT<byte>(size);
+	return MallocT<uint8_t>(size);
 }
 
 /**
@@ -929,7 +929,7 @@ static void *HandleInvalidSpriteRequest(SpriteID sprite, SpriteType requested, S
 		return GetRawSprite(sprite, sc->GetType(), UINT8_MAX, allocator);
 	}
 
-	byte warning_level = sc->GetWarned() ? 6 : 0;
+	uint8_t warning_level = sc->GetWarned() ? 6 : 0;
 	sc->SetWarned(true);
 	DEBUG(sprite, warning_level, "Tried to load %s sprite #%d as a %s sprite. Probable cause: NewGRF interference", GetSpriteTypeName(available), sprite, GetSpriteTypeName(requested));
 
@@ -1025,7 +1025,7 @@ uint32_t GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
 	SpriteCache *sc = GetSpriteCache(sprite_id);
 	if (sc->GetType() != SpriteType::Normal) return 0;
 
-	const byte * const remap = (palette_id == PAL_NONE ? nullptr : GetNonSprite(GB(palette_id, 0, PALETTE_WIDTH), SpriteType::Recolour) + 1);
+	const uint8_t * const remap = (palette_id == PAL_NONE ? nullptr : GetNonSprite(GB(palette_id, 0, PALETTE_WIDTH), SpriteType::Recolour) + 1);
 
 	SpriteFile &file = *sc->file;
 	size_t file_pos = sc->file_pos;

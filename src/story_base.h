@@ -27,7 +27,7 @@ extern uint32_t _story_page_next_sort_value;
 /*
  * Each story page element is one of these types.
  */
-enum StoryPageElementType : byte {
+enum StoryPageElementType : uint8_t {
 	SPET_TEXT = 0,       ///< A text element.
 	SPET_LOCATION,       ///< An element that references a tile along with a one-line text.
 	SPET_GOAL,           ///< An element that references a goal.
@@ -39,10 +39,10 @@ enum StoryPageElementType : byte {
 };
 
 /** Define basic enum properties */
-template <> struct EnumPropsT<StoryPageElementType> : MakeEnumPropsT<StoryPageElementType, byte, SPET_TEXT, SPET_END, INVALID_SPET, 8> {};
+template <> struct EnumPropsT<StoryPageElementType> : MakeEnumPropsT<StoryPageElementType, uint8_t, SPET_TEXT, SPET_END, INVALID_SPET, 8> {};
 
 /** Flags available for buttons */
-enum StoryPageButtonFlags : byte {
+enum StoryPageButtonFlags : uint8_t {
 	SPBF_NONE        = 0,
 	SPBF_FLOAT_LEFT  = 1 << 0,
 	SPBF_FLOAT_RIGHT = 1 << 1,
@@ -50,7 +50,7 @@ enum StoryPageButtonFlags : byte {
 DECLARE_ENUM_AS_BIT_SET(StoryPageButtonFlags)
 
 /** Mouse cursors usable by story page buttons. */
-enum StoryPageButtonCursor : byte {
+enum StoryPageButtonCursor : uint8_t {
 	SPBC_MOUSE,
 	SPBC_ZZZ,
 	SPBC_BUOY,
@@ -111,7 +111,7 @@ enum StoryPageButtonCursor : byte {
 };
 
 /** Define basic enum properties */
-template <> struct EnumPropsT<StoryPageButtonCursor> : MakeEnumPropsT<StoryPageButtonCursor, byte, SPBC_MOUSE, SPBC_END, INVALID_SPBC, 8> {};
+template <> struct EnumPropsT<StoryPageButtonCursor> : MakeEnumPropsT<StoryPageButtonCursor, uint8_t, SPBC_MOUSE, SPBC_END, INVALID_SPBC, 8> {};
 
 /**
  * Checks if a StoryPageButtonCursor value is valid.

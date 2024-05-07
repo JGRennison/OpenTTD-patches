@@ -26,11 +26,11 @@ static const size_t MEMORY_CHUNK_SIZE = 128 * 1024;
 
 /** A buffer for reading (and buffering) savegame data. */
 struct ReadBuffer {
-	byte buf[MEMORY_CHUNK_SIZE]; ///< Buffer we're going to read from.
-	byte *bufp;                  ///< Location we're at reading the buffer.
-	byte *bufe;                  ///< End of the buffer we can read from.
+	uint8_t buf[MEMORY_CHUNK_SIZE];     ///< Buffer we're going to read from.
+	uint8_t *bufp;                      ///< Location we're at reading the buffer.
+	uint8_t *bufe;                      ///< End of the buffer we can read from.
 	std::shared_ptr<LoadFilter> reader; ///< The filter used to actually read.
-	size_t read;                 ///< The amount of read bytes so far from the filter.
+	size_t read;                        ///< The amount of read bytes so far from the filter.
 
 	/**
 	 * Initialise our variables.
@@ -47,7 +47,7 @@ struct ReadBuffer {
 
 	inline void SkipBytes(size_t bytes)
 	{
-		byte *b = this->bufp + bytes;
+		uint8_t *b = this->bufp + bytes;
 		if (likely(b <= this->bufe)) {
 			this->bufp = b;
 		} else {
@@ -55,12 +55,12 @@ struct ReadBuffer {
 		}
 	}
 
-	inline byte RawReadByte()
+	inline uint8_t RawReadByte()
 	{
 		return *this->bufp++;
 	}
 
-	inline byte ReadByte()
+	inline uint8_t ReadByte()
 	{
 		if (unlikely(this->bufp == this->bufe)) {
 			this->AcquireBytes();
@@ -69,7 +69,7 @@ struct ReadBuffer {
 		return RawReadByte();
 	}
 
-	inline byte PeekByte()
+	inline uint8_t PeekByte()
 	{
 		if (unlikely(this->bufp == this->bufe)) {
 			this->AcquireBytes();
@@ -120,7 +120,7 @@ struct ReadBuffer {
 #endif
 	}
 
-	inline void CopyBytes(byte *ptr, size_t length)
+	inline void CopyBytes(uint8_t *ptr, size_t length)
 	{
 		while (length) {
 			if (unlikely(this->bufp == this->bufe)) {
@@ -134,7 +134,7 @@ struct ReadBuffer {
 		}
 	}
 
-	inline void CopyBytes(std::span<byte> buffer)
+	inline void CopyBytes(std::span<uint8_t> buffer)
 	{
 		this->CopyBytes(buffer.data(), buffer.size());
 	}
@@ -153,10 +153,10 @@ struct ReadBuffer {
 /** Container for dumping the savegame (quickly) to memory. */
 struct MemoryDumper {
 	struct BufferInfo {
-		byte *data;
+		uint8_t *data;
 		size_t size = 0;
 
-		BufferInfo(byte *d) : data(d) {}
+		BufferInfo(uint8_t *d) : data(d) {}
 		~BufferInfo() { free(this->data); }
 
 		BufferInfo(const BufferInfo &) = delete;
@@ -164,19 +164,19 @@ struct MemoryDumper {
 	};
 
 	std::vector<BufferInfo> blocks;         ///< Buffer with blocks of allocated memory.
-	byte *buf = nullptr;                    ///< Buffer we're going to write to.
-	byte *bufe = nullptr;                   ///< End of the buffer we write to.
+	uint8_t *buf = nullptr;                 ///< Buffer we're going to write to.
+	uint8_t *bufe = nullptr;                ///< End of the buffer we write to.
 	size_t completed_block_bytes = 0;       ///< Total byte count of completed blocks.
 
-	byte *autolen_buf = nullptr;
-	byte *autolen_buf_end = nullptr;
-	byte *saved_buf = nullptr;
-	byte *saved_bufe = nullptr;
+	uint8_t *autolen_buf = nullptr;
+	uint8_t *autolen_buf_end = nullptr;
+	uint8_t *saved_buf = nullptr;
+	uint8_t *saved_bufe = nullptr;
 
 	MemoryDumper()
 	{
 		const size_t size = 8192;
-		this->autolen_buf = CallocT<byte>(size);
+		this->autolen_buf = CallocT<uint8_t>(size);
 		this->autolen_buf_end = this->autolen_buf + size;
 	}
 
@@ -199,7 +199,7 @@ struct MemoryDumper {
 	 * Write a single byte into the dumper.
 	 * @param b The byte to write.
 	 */
-	inline void WriteByte(byte b)
+	inline void WriteByte(uint8_t b)
 	{
 		/* Are we at the end of this chunk? */
 		if (unlikely(this->buf == this->bufe)) {
@@ -209,7 +209,7 @@ struct MemoryDumper {
 		*this->buf++ = b;
 	}
 
-	inline void CopyBytes(const byte *ptr, size_t length)
+	inline void CopyBytes(const uint8_t *ptr, size_t length)
 	{
 		while (length) {
 			if (unlikely(this->buf == this->bufe)) {
@@ -223,12 +223,12 @@ struct MemoryDumper {
 		}
 	}
 
-	inline void CopyBytes(std::span<const byte> buffer)
+	inline void CopyBytes(std::span<const uint8_t> buffer)
 	{
 		this->CopyBytes(buffer.data(), buffer.size());
 	}
 
-	inline void RawWriteByte(byte b)
+	inline void RawWriteByte(uint8_t b)
 	{
 		*this->buf++ = b;
 	}
@@ -277,7 +277,7 @@ struct MemoryDumper {
 	void Flush(SaveFilter &writer);
 	size_t GetSize() const;
 	void StartAutoLength();
-	std::span<byte> StopAutoLength();
+	std::span<uint8_t> StopAutoLength();
 	bool IsAutoLengthActive() const { return this->saved_buf != nullptr; }
 };
 

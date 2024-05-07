@@ -1103,7 +1103,7 @@ extern Point _cursorpos_drag_start;
 
 extern int _scrollbar_start_pos;
 extern int _scrollbar_size;
-extern byte _scroller_click_timeout;
+extern uint8_t _scroller_click_timeout;
 
 extern Window *_scrolling_viewport;
 extern Rect _scrolling_viewport_bound;

@@ -25,7 +25,7 @@
 template <class T>
 class ring_buffer
 {
-	std::unique_ptr<byte, FreeDeleter> data;
+	std::unique_ptr<uint8_t, FreeDeleter> data;
 	uint32_t head = 0;
 	uint32_t count = 0;
 	uint32_t mask = (uint32_t)-1;
@@ -219,11 +219,11 @@ public:
 	void construct_from(const U &other)
 	{
 		uint32_t cap = round_up_size((uint32_t)other.size());
-		this->data.reset(MallocT<byte>(cap * sizeof(T)));
+		this->data.reset(MallocT<uint8_t>(cap * sizeof(T)));
 		this->mask = cap - 1;
 		this->head = 0;
 		this->count = (uint32_t)other.size();
-		byte *ptr = this->data.get();
+		uint8_t *ptr = this->data.get();
 		for (const T &item : other) {
 			new (ptr) T(item);
 			ptr += sizeof(T);
@@ -259,12 +259,12 @@ public:
 			if (!other.empty()) {
 				if (other.size() > this->capacity()) {
 					uint32_t cap = round_up_size(other.count);
-					this->data.reset(MallocT<byte>(cap * sizeof(T)));
+					this->data.reset(MallocT<uint8_t>(cap * sizeof(T)));
 					this->mask = cap - 1;
 				}
 				this->head = 0;
 				this->count = other.count;
-				byte *ptr = this->data.get();
+				uint8_t *ptr = this->data.get();
 				for (const T &item : other) {
 					new (ptr) T(item);
 					ptr += sizeof(T);
@@ -341,8 +341,8 @@ private:
 	void reallocate(uint32_t new_cap)
 	{
 		const uint32_t cap = round_up_size(new_cap);
-		byte *new_buf = MallocT<byte>(cap * sizeof(T));
-		byte *pos = new_buf;
+		uint8_t *new_buf = MallocT<uint8_t>(cap * sizeof(T));
+		uint8_t *pos = new_buf;
 		for (T &item : *this) {
 			new (pos) T(std::move(item));
 			item.~T();
@@ -522,8 +522,8 @@ private:
 		if (this->count + num > (uint32_t)this->capacity()) {
 			/* grow container */
 			const uint32_t cap = round_up_size(this->count + num);
-			byte *new_buf = MallocT<byte>(cap * sizeof(T));
-			byte *write_to = new_buf;
+			uint8_t *new_buf = MallocT<uint8_t>(cap * sizeof(T));
+			uint8_t *write_to = new_buf;
 			const uint32_t end = this->head + this->count;
 			for (uint32_t idx = this->head; idx != end; idx++) {
 				if (idx == pos) {

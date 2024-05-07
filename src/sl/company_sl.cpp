@@ -653,7 +653,7 @@ static void Save_PLYP()
 		return;
 	}
 
-	std::vector<byte> buffer = SlSaveToVector([]() {
+	std::vector<uint8_t> buffer = SlSaveToVector([]() {
 		SlWriteUint32((uint32_t)_network_company_server_id.size());
 		MemoryDumper::GetCurrent()->CopyBytes((const uint8_t *)_network_company_server_id.data(), _network_company_server_id.size());
 

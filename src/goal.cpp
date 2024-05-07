@@ -295,7 +295,7 @@ CommandCost CmdGoalQuestion(TileIndex tile, DoCommandFlag flags, uint32_t p1, ui
 
 	static_assert(GOAL_QUESTION_BUTTON_COUNT < 29);
 	uint32_t button_mask = GB(p2, 0, GOAL_QUESTION_BUTTON_COUNT);
-	byte type = GB(p2, 29, 2);
+	uint8_t type = GB(p2, 29, 2);
 	bool is_client = HasBit(p2, 31);
 
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
@@ -352,7 +352,7 @@ CommandCost CmdGoalQuestionAnswer(TileIndex tile, DoCommandFlag flags, uint32_t 
 	}
 
 	if (flags & DC_EXEC) {
-		Game::NewEvent(new ScriptEventGoalQuestionAnswer(p1, (ScriptCompany::CompanyID)(byte)_current_company, (ScriptGoal::QuestionButton)(1 << p2)));
+		Game::NewEvent(new ScriptEventGoalQuestionAnswer(p1, (ScriptCompany::CompanyID)(uint8_t)_current_company, (ScriptGoal::QuestionButton)(1 << p2)));
 	}
 
 	return CommandCost();

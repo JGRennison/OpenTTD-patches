@@ -51,10 +51,10 @@ static void ResetClientConnectionKeyStates();
 struct PacketReader : LoadFilter {
 	static const size_t CHUNK = 32 * 1024;  ///< 32 KiB chunks of memory.
 
-	std::vector<byte *> blocks;             ///< Buffer with blocks of allocated memory.
-	byte *buf;                              ///< Buffer we're going to write to/read from.
-	byte *bufe;                             ///< End of the buffer we write to/read from.
-	byte **block;                           ///< The block we're reading from/writing to.
+	std::vector<uint8_t *> blocks;          ///< Buffer with blocks of allocated memory.
+	uint8_t *buf;                           ///< Buffer we're going to write to/read from.
+	uint8_t *bufe;                          ///< End of the buffer we write to/read from.
+	uint8_t **block;                        ///< The block we're reading from/writing to.
 	size_t written_bytes;                   ///< The total number of bytes we've written.
 	size_t read_bytes;                      ///< The total number of read bytes.
 
@@ -98,18 +98,18 @@ struct PacketReader : LoadFilter {
 		if (p.RemainingBytesToTransfer() == 0) return;
 
 		/* Allocate a new chunk and add the remaining data. */
-		this->blocks.push_back(this->buf = CallocT<byte>(CHUNK));
+		this->blocks.push_back(this->buf = CallocT<uint8_t>(CHUNK));
 		this->bufe = this->buf + CHUNK;
 
 		p.TransferOutWithLimit(TransferOutMemCopy, this->bufe - this->buf, this);
 	}
 
-	size_t Read(byte *rbuf, size_t size) override
+	size_t Read(uint8_t *rbuf, size_t size) override
 	{
 		/* Limit the amount to read to whatever we still have. */
 		size_t ret_size = size = std::min(this->written_bytes - this->read_bytes, size);
 		this->read_bytes += ret_size;
-		const byte *rbufe = rbuf + ret_size;
+		const uint8_t *rbufe = rbuf + ret_size;
 
 		while (rbuf != rbufe) {
 			if (this->buf == this->bufe) {
@@ -396,7 +396,7 @@ static uint32_t last_ack_frame;
 /** One bit of 'entropy' used to generate a salt for the company passwords. */
 static uint32_t _company_password_game_seed;
 /** Network server's x25519 public key, used for key derivation */
-static std::array<byte, 32> _server_x25519_pub_key;
+static std::array<uint8_t, 32> _server_x25519_pub_key;
 /** Key message ID counter */
 static uint64_t _next_key_message_id;
 /** The other bit of 'entropy' used to generate a salt for the server, rcon, and settings passwords. */
@@ -431,14 +431,14 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendKeyPasswordPacket(PacketTy
 	crypto_blake2b_update(&ctx, shared_secret.data(),          shared_secret.size());          // Shared secret
 	crypto_blake2b_update(&ctx, keys.x25519_pub_key.data(),    keys.x25519_pub_key.size());    // Client pub key
 	crypto_blake2b_update(&ctx, _server_x25519_pub_key.data(), _server_x25519_pub_key.size()); // Server pub key
-	crypto_blake2b_update(&ctx, (const byte *)password.data(), password.size());               // Password
+	crypto_blake2b_update(&ctx, (const uint8_t *)password.data(), password.size());               // Password
 	crypto_blake2b_final (&ctx, ss.shared_data.data());
 
 	/* NetworkSharedSecrets::shared_data now contains 2 keys worth of hash, first key is used for up direction, second key for down direction (if any) */
 
 	crypto_wipe(shared_secret.data(), shared_secret.size());
 
-	std::vector<byte> message;
+	std::vector<uint8_t> message;
 	BufferSerialiser buffer(message);
 
 	/* Put monotonically increasing counter in message */
@@ -623,7 +623,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncLog(const std::strin
 		auto p = std::make_unique<Packet>(PACKET_CLIENT_DESYNC_LOG, TCP_MTU);
 		size_t size = std::min<size_t>(log.size() - offset, TCP_MTU - 2 - p->Size());
 		p->Send_uint16((uint16_t)size);
-		p->Send_binary((const byte *)(log.data() + offset), size);
+		p->Send_binary((const uint8_t *)(log.data() + offset), size);
 		my_client->SendPacket(std::move(p));
 
 		offset += size;
@@ -1239,7 +1239,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_DESYNC_LOG(Pack
 {
 	uint size = p.Recv_uint16();
 	this->server_desync_log.resize(this->server_desync_log.size() + size);
-	p.Recv_binary((byte *)(this->server_desync_log.data() + this->server_desync_log.size() - size), size);
+	p.Recv_binary((uint8_t *)(this->server_desync_log.data() + this->server_desync_log.size() - size), size);
 	DEBUG(net, 2, "Received %u bytes of server desync log", size);
 	return NETWORK_RECV_STATUS_OKAY;
 }
@@ -1324,7 +1324,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_RCON(Packet &p)
 	p.Recv_binary(nonce);
 	p.Recv_binary(mac);
 
-	std::vector<byte> message = p.Recv_binary(p.RemainingBytesToTransfer());
+	std::vector<uint8_t> message = p.Recv_binary(p.RemainingBytesToTransfer());
 
 	static_assert(std::tuple_size<decltype(NetworkSharedSecrets::shared_data)>::value == 64);
 	if (crypto_aead_unlock(message.data(), mac.data(), this->last_rcon_shared_secrets.shared_data.data() + 32, nonce.data(), nullptr, 0, message.data(), message.size()) == 0) {

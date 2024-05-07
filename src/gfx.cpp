@@ -37,9 +37,9 @@
 
 #include "safeguards.h"
 
-byte _dirkeys;        ///< 1 = left, 2 = up, 4 = right, 8 = down
+uint8_t _dirkeys;     ///< 1 = left, 2 = up, 4 = right, 8 = down
 bool _fullscreen;
-byte _support8bpp;
+uint8_t _support8bpp;
 CursorVars _cursor;
 bool _ctrl_pressed;   ///< Is Ctrl pressed?
 bool _shift_pressed;  ///< Is Shift pressed?
@@ -64,13 +64,13 @@ uint32_t _pause_countdown;
 std::string _switch_baseset;
 static bool _adjust_gui_zoom_startup_done = false;
 
-static byte _stringwidth_table[FS_END][224]; ///< Cache containing width of often used characters. @see GetCharacterWidth()
+static uint8_t _stringwidth_table[FS_END][224]; ///< Cache containing width of often used characters. @see GetCharacterWidth()
 DrawPixelInfo *_cur_dpi;
 
 struct GfxBlitterCtx {
 	const DrawPixelInfo *dpi;
-	const byte *colour_remap_ptr = nullptr;
-	byte string_colourremap[3]; ///< Recoloursprite for stringdrawing. The grf loader ensures that #SpriteType::Font sprites only use colours 0 to 2.
+	const uint8_t *colour_remap_ptr = nullptr;
+	uint8_t string_colourremap[3]; ///< Recoloursprite for stringdrawing. The grf loader ensures that #SpriteType::Font sprites only use colours 0 to 2.
 	int sprite_brightness_adjust = 0;
 
 	GfxBlitterCtx(const DrawPixelInfo *dpi) : dpi(dpi) {}
@@ -163,7 +163,7 @@ void GfxFillRect(Blitter *blitter, const DrawPixelInfo *dpi, int left, int top, 
 			break;
 
 		case FILLRECT_CHECKER: {
-			byte bo = (oleft - left + dpi->left + otop - top + dpi->top) & 1;
+			uint8_t bo = (oleft - left + dpi->left + otop - top + dpi->top) & 1;
 			do {
 				for (int i = (bo ^= 1); i < right; i += 2) blitter->SetPixel(dst, i, 0, (uint8_t)colour);
 				dst = blitter->MoveTo(dst, 0, 1);
@@ -462,7 +462,7 @@ void DrawBox(const DrawPixelInfo *dpi, int x, int y, int dx1, int dy1, int dx2, 
 	 *            ....V.
 	 */
 
-	static const byte colour = PC_WHITE;
+	static const uint8_t colour = PC_WHITE;
 
 	GfxDrawLineUnscaled(dpi, x, y, x + dx1, y + dy1, colour);
 	GfxDrawLineUnscaled(dpi, x, y, x + dx2, y + dy2, colour);
@@ -506,7 +506,7 @@ void GfxBlitterCtx::SetColourRemap(TextColour colour)
 	colour &= ~(TC_NO_SHADE | TC_IS_PALETTE_COLOUR | TC_FORCED);
 
 	this->string_colourremap[0] = 0;
-	this->string_colourremap[1] = raw_colour ? (byte)colour : _string_colourmap[colour];
+	this->string_colourremap[1] = raw_colour ? (uint8_t)colour : _string_colourmap[colour];
 	this->string_colourremap[2] = no_shade ? 0 : 1;
 	this->colour_remap_ptr = this->string_colourremap;
 }
@@ -1263,9 +1263,9 @@ std::unique_ptr<uint32_t[]> DrawSpriteToRgbaBuffer(SpriteID spriteId, ZoomLevel 
 	dim_size = static_cast<size_t>(dim.width) * dim.height;
 
 	/* If the current blitter is a paletted blitter, we have to render to an extra buffer and resolve the palette later. */
-	std::unique_ptr<byte[]> pal_buffer{};
+	std::unique_ptr<uint8_t[]> pal_buffer{};
 	if (blitter->GetScreenDepth() == 8) {
-		pal_buffer = std::make_unique<byte[]>(dim_size);
+		pal_buffer = std::make_unique<uint8_t[]>(dim_size);
 		dpi.dst_ptr = pal_buffer.get();
 	}
 
@@ -1278,7 +1278,7 @@ std::unique_ptr<uint32_t[]> DrawSpriteToRgbaBuffer(SpriteID spriteId, ZoomLevel 
 	if (blitter->GetScreenDepth() == 8) {
 		/* Resolve palette. */
 		uint32_t *dst = result.get();
-		const byte *src = pal_buffer.get();
+		const uint8_t *src = pal_buffer.get();
 		for (size_t i = 0; i < dim_size; ++i) {
 			*dst++ = _cur_palette.palette[*src++].data;
 		}
@@ -1318,7 +1318,7 @@ void LoadStringWidthTable(bool monospace)
  * @param key   Character code glyph
  * @return Width of the character glyph
  */
-byte GetCharacterWidth(FontSize size, char32_t key)
+uint8_t GetCharacterWidth(FontSize size, char32_t key)
 {
 	/* Use _stringwidth_table cache if possible */
 	if (key >= 32 && key < 256) return _stringwidth_table[size][key - 32];
@@ -1331,9 +1331,9 @@ byte GetCharacterWidth(FontSize size, char32_t key)
  * @param size  Font of the digit
  * @return Width of the digit.
  */
-byte GetDigitWidth(FontSize size)
+uint8_t GetDigitWidth(FontSize size)
 {
-	byte width = 0;
+	uint8_t width = 0;
 	for (char c = '0'; c <= '9'; c++) {
 		width = std::max(GetCharacterWidth(size, c), width);
 	}

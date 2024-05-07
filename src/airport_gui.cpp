@@ -36,11 +36,11 @@
 
 static AirportClassID _selected_airport_class; ///< the currently visible airport class
 static int _selected_airport_index;            ///< the index of the selected airport in the current class or -1
-static byte _selected_airport_layout;          ///< selected airport layout number.
+static uint8_t _selected_airport_layout;       ///< selected airport layout number.
 
 static void ShowBuildAirportPicker(Window *parent);
 
-SpriteID GetCustomAirportSprite(const AirportSpec *as, byte layout);
+SpriteID GetCustomAirportSprite(const AirportSpec *as, uint8_t layout);
 
 void CcBuildAirport(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
@@ -339,7 +339,7 @@ public:
 				for (int i = 0; i < NUM_AIRPORTS; i++) {
 					const AirportSpec *as = AirportSpec::Get(i);
 					if (!as->enabled) continue;
-					for (byte layout = 0; layout < as->num_table; layout++) {
+					for (uint8_t layout = 0; layout < as->num_table; layout++) {
 						SpriteID sprite = GetCustomAirportSprite(as, layout);
 						if (sprite != 0) {
 							Dimension d = GetSpriteSize(sprite);
@@ -355,7 +355,7 @@ public:
 				for (int i = NEW_AIRPORT_OFFSET; i < NUM_AIRPORTS; i++) {
 					const AirportSpec *as = AirportSpec::Get(i);
 					if (!as->enabled) continue;
-					for (byte layout = 0; layout < as->num_table; layout++) {
+					for (uint8_t layout = 0; layout < as->num_table; layout++) {
 						StringID string = GetAirportTextCallback(as, layout, CBID_AIRPORT_ADDITIONAL_TEXT);
 						if (string == STR_UNDEFINED) continue;
 

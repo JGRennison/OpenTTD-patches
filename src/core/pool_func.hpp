@@ -125,9 +125,9 @@ DEFINE_POOL_METHOD(inline void *)::AllocateItem(size_t size, size_t index, Pool:
 			memset((void *)item, 0, sizeof(Titem));
 		}
 	} else if (Tzero) {
-		item = (Titem *)CallocT<byte>(size);
+		item = (Titem *)CallocT<uint8_t>(size);
 	} else {
-		item = (Titem *)MallocT<byte>(size);
+		item = (Titem *)MallocT<uint8_t>(size);
 	}
 	this->data[index] = Tops::PutPtr(item, param);
 	SetBit(this->free_bitmap[index / 64], index % 64);

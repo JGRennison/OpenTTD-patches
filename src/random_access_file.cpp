@@ -97,7 +97,7 @@ void RandomAccessFile::SeekTo(size_t pos, int mode)
  * Read a byte from the file.
  * @return Read byte.
  */
-byte RandomAccessFile::ReadByteIntl()
+uint8_t RandomAccessFile::ReadByteIntl()
 {
 	if (this->buffer == this->buffer_end) {
 		this->buffer = this->buffer_start;
@@ -116,7 +116,7 @@ byte RandomAccessFile::ReadByteIntl()
  */
 uint16_t RandomAccessFile::ReadWordIntl()
 {
-	byte b = this->ReadByteIntl();
+	uint8_t b = this->ReadByteIntl();
 	return (this->ReadByteIntl() << 8) | b;
 }
 

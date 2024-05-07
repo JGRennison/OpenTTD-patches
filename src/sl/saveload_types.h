@@ -121,7 +121,7 @@ enum SaveLoadTypes {
 	SL_VARVEC      = 14, ///< Save/load a primitive type vector.
 };
 
-typedef byte SaveLoadType; ///< Save/load type. @see SaveLoadTypes
+typedef uint8_t SaveLoadType; ///< Save/load type. @see SaveLoadTypes
 
 /** SaveLoad type struct. Do NOT use this directly but use the SLE_ macros defined just below! */
 struct SaveLoad {

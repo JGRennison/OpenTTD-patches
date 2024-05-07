@@ -44,14 +44,14 @@ enum WaterTileType {
 };
 
 /** classes of water (for #WATER_TILE_CLEAR water tile type). */
-enum WaterClass {
+enum WaterClass : uint8_t {
 	WATER_CLASS_SEA,     ///< Sea.
 	WATER_CLASS_CANAL,   ///< Canal.
 	WATER_CLASS_RIVER,   ///< River.
 	WATER_CLASS_INVALID, ///< Used for industry tiles on land (also for oilrig if newgrf says so).
 };
 /** Helper information for extract tool. */
-template <> struct EnumPropsT<WaterClass> : MakeEnumPropsT<WaterClass, byte, WATER_CLASS_SEA, WATER_CLASS_INVALID, WATER_CLASS_INVALID, 2> {};
+template <> struct EnumPropsT<WaterClass> : MakeEnumPropsT<WaterClass, uint8_t, WATER_CLASS_SEA, WATER_CLASS_INVALID, WATER_CLASS_INVALID, 2> {};
 
 /** Sections of the water depot. */
 enum DepotPart {
@@ -317,7 +317,7 @@ inline DiagDirection GetLockDirection(TileIndex t)
  * @return The part.
  * @pre IsTileType(t, MP_WATER) && IsLock(t)
  */
-inline byte GetLockPart(TileIndex t)
+inline uint8_t GetLockPart(TileIndex t)
 {
 	dbg_assert_tile(IsLock(t), t);
 	return GB(_m[t].m5, WBL_LOCK_PART_BEGIN, WBL_LOCK_PART_COUNT);
@@ -329,7 +329,7 @@ inline byte GetLockPart(TileIndex t)
  * @return Random bits of the tile.
  * @pre IsTileType(t, MP_WATER)
  */
-inline byte GetWaterTileRandomBits(TileIndex t)
+inline uint8_t GetWaterTileRandomBits(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_WATER), t);
 	return _m[t].m4;

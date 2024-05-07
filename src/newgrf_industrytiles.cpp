@@ -33,7 +33,7 @@
  * @param grf_version8 True, if we are dealing with a new NewGRF which uses GRF version >= 8.
  * @return a construction of bits obeying the newgrf format
  */
-uint32_t GetNearbyIndustryTileInformation(byte parameter, TileIndex tile, IndustryID index, bool signed_offsets, bool grf_version8, uint32_t mask)
+uint32_t GetNearbyIndustryTileInformation(uint8_t parameter, TileIndex tile, IndustryID index, bool signed_offsets, bool grf_version8, uint32_t mask)
 {
 	if (parameter != 0) tile = GetNearbyTile(parameter, tile, signed_offsets); // only perform if it is required
 	bool is_same_industry = (IsTileType(tile, MP_INDUSTRY) && GetIndustryIndex(tile) == index);
@@ -56,8 +56,8 @@ uint32_t GetNearbyIndustryTileInformation(byte parameter, TileIndex tile, Indust
  */
 uint32_t GetRelativePosition(TileIndex tile, TileIndex ind_tile)
 {
-	byte x = TileX(tile) - TileX(ind_tile);
-	byte y = TileY(tile) - TileY(ind_tile);
+	uint8_t x = TileX(tile) - TileX(ind_tile);
+	uint8_t y = TileY(tile) - TileY(ind_tile);
 
 	return ((y & 0xF) << 20) | ((x & 0xF) << 16) | (y << 8) | x;
 }
@@ -159,7 +159,7 @@ uint32_t IndustryTileResolverObject::GetDebugID() const
 	return GetIndustryTileSpec(gfx)->grf_prop.local_id;
 }
 
-static void IndustryDrawTileLayout(const TileInfo *ti, const TileLayoutSpriteGroup *group, byte rnd_colour, byte stage)
+static void IndustryDrawTileLayout(const TileInfo *ti, const TileLayoutSpriteGroup *group, uint8_t rnd_colour, uint8_t stage)
 {
 	const DrawTileSprites *dts = group->ProcessRegisters(&stage);
 
@@ -211,7 +211,7 @@ bool DrawNewIndustryTile(TileInfo *ti, Industry *i, IndustryGfx gfx, const Indus
 
 	/* Limit the building stage to the number of stages supplied. */
 	const TileLayoutSpriteGroup *tlgroup = (const TileLayoutSpriteGroup *)group;
-	byte stage = GetIndustryConstructionStage(ti->tile);
+	uint8_t stage = GetIndustryConstructionStage(ti->tile);
 	IndustryDrawTileLayout(ti, tlgroup, i->random_colour, stage);
 	return true;
 }
@@ -339,8 +339,8 @@ static void DoTriggerIndustryTile(TileIndex tile, IndustryTileTrigger trigger, I
 	SetIndustryTriggers(tile, object.GetRemainingTriggers());
 
 	/* Rerandomise tile bits */
-	byte new_random_bits = Random();
-	byte random_bits = GetIndustryRandomBits(tile);
+	uint8_t new_random_bits = Random();
+	uint8_t random_bits = GetIndustryRandomBits(tile);
 	random_bits &= ~object.reseed[VSG_SCOPE_SELF];
 	random_bits |= new_random_bits & object.reseed[VSG_SCOPE_SELF];
 	SetIndustryRandomBits(tile, random_bits);

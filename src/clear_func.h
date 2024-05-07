@@ -13,9 +13,9 @@
 #include "tile_cmd.h"
 
 void DrawHillyLandTile(const TileInfo *ti);
-void DrawClearLandTile(const TileInfo *ti, byte set);
+void DrawClearLandTile(const TileInfo *ti, uint8_t set);
 
-SpriteID GetSpriteIDForClearLand(const Slope slope, byte set);
+SpriteID GetSpriteIDForClearLand(const Slope slope, uint8_t set);
 SpriteID GetSpriteIDForHillyLand(const Slope slope, const uint rough_index);
 SpriteID GetSpriteIDForRocks(const Slope slope, const uint tile_hash);
 SpriteID GetSpriteIDForFields(const Slope slope, const uint field_type);

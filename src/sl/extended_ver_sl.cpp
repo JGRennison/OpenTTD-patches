@@ -730,14 +730,14 @@ static void IgnoreWrongLengthExtraData(const SlxiSubChunkInfo *info, uint32_t le
 static void loadVL(const SlxiSubChunkInfo *info, uint32_t length)
 {
 	_sl_xv_version_label.resize(length);
-	ReadBuffer::GetCurrent()->CopyBytes(reinterpret_cast<byte *>(_sl_xv_version_label.data()), length);
+	ReadBuffer::GetCurrent()->CopyBytes(reinterpret_cast<uint8_t *>(_sl_xv_version_label.data()), length);
 	DEBUG(sl, 2, "SLXI version label: %s", _sl_xv_version_label.c_str());
 }
 
 static uint32_t saveVL(const SlxiSubChunkInfo *info, bool dry_run)
 {
 	const size_t length = strlen(_openttd_revision);
-	if (!dry_run) MemoryDumper::GetCurrent()->CopyBytes(reinterpret_cast<const byte *>(_openttd_revision), length);
+	if (!dry_run) MemoryDumper::GetCurrent()->CopyBytes(reinterpret_cast<const uint8_t *>(_openttd_revision), length);
 	return static_cast<uint32_t>(length);
 }
 

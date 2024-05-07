@@ -29,14 +29,14 @@
 extern TileIndex _cur_tileloop_tile;
 extern TileIndex _aux_tileloop_tile;
 extern uint16_t _disaster_delay;
-extern byte _trees_tick_ctr;
+extern uint8_t _trees_tick_ctr;
 
 /* Keep track of current game position */
 extern int _saved_scrollpos_x;
 extern int _saved_scrollpos_y;
 extern ZoomLevel _saved_scrollpos_zoom;
 
-extern byte _age_cargo_skip_counter; ///< Skip aging of cargo? Used before savegame version 162.
+extern uint8_t _age_cargo_skip_counter; ///< Skip aging of cargo? Used before savegame version 162.
 extern TimeoutTimer<TimerGameTick> _new_competitor_timeout;
 
 namespace upstream_sl {

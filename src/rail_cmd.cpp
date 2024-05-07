@@ -295,7 +295,7 @@ RailType AllocateRailType(RailTypeLabel label)
 	return INVALID_RAILTYPE;
 }
 
-static const byte _track_sloped_sprites[14] = {
+static const uint8_t _track_sloped_sprites[14] = {
 	14, 15, 22, 13,
 	 0, 21, 17, 12,
 	23,  0, 18, 20,
@@ -1997,7 +1997,7 @@ static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uin
 	bool remove = HasBit(p2, 5);
 	bool autofill = HasBit(p2, 6);
 	bool minimise_gaps = HasBit(p2, 10);
-	byte signal_density = GB(p2, 24, 8);
+	uint8_t signal_density = GB(p2, 24, 8);
 	uint8_t signal_style = GB(p2, 11, 4);
 	bool allow_station = HasBit(p3, 0);
 
@@ -2024,7 +2024,7 @@ static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uin
 	SignalType sigtype = Extract<SignalType, 7, 3>(p2);
 	if (sigtype > SIGTYPE_LAST) return CMD_ERROR;
 
-	byte signals;
+	uint8_t signals;
 	/* copy the signal-style of the first rail-piece if existing */
 	if (HasSignalOnTrack(tile, track)) {
 		signals = GetPresentSignals(tile) & SignalOnTrack(track);
@@ -2042,7 +2042,7 @@ static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uin
 		signals = IsPbsSignal(sigtype) ? SignalAlongTrackdir(trackdir) : SignalOnTrack(track);
 	}
 
-	byte signal_dir = 0;
+	uint8_t signal_dir = 0;
 	if (signals & SignalAlongTrackdir(trackdir))   SetBit(signal_dir, 0);
 	if (signals & SignalAgainstTrackdir(trackdir)) SetBit(signal_dir, 1);
 
@@ -3900,7 +3900,7 @@ void DrawTrackBits(TileInfo *ti, TrackBits track, RailType rt, RailGroundType rg
 		DrawGroundSprite(image, pal, &(_halftile_sub_sprite[halftile_corner]));
 
 		if (_game_mode != GM_MENU && _settings_client.gui.show_track_reservation && HasReservedTracks(ti->tile, CornerToTrackBits(halftile_corner))) {
-			static const byte _corner_to_track_sprite[] = {3, 1, 2, 0};
+			static const uint8_t _corner_to_track_sprite[] = {3, 1, 2, 0};
 			DrawGroundSprite(_corner_to_track_sprite[halftile_corner] + rti->base_sprites.single_n, PALETTE_CRASH, nullptr, 0, -(int)TILE_HEIGHT);
 		}
 	}
@@ -3964,7 +3964,7 @@ void DrawTrackBits(TileInfo *ti, TrackBits track)
 
 static void DrawSignals(TileIndex tile, TrackBits rails, const RailTypeInfo *rti)
 {
-	auto MAYBE_DRAW_SIGNAL = [&](byte signalbit, SignalOffsets image, uint pos, Track track) {
+	auto MAYBE_DRAW_SIGNAL = [&](uint8_t signalbit, SignalOffsets image, uint pos, Track track) {
 		if (IsSignalPresent(tile, signalbit)) DrawSingleSignal(tile, rti, track, GetSingleSignalState(tile, signalbit), image, pos);
 	};
 
@@ -4185,7 +4185,7 @@ static Foundation GetFoundation_Track(TileIndex tile, Slope tileh)
 RailGroundType RailTrackToFence(TileIndex tile, TrackBits rail)
 {
 	Owner owner = GetTileOwner(tile);
-	byte fences = 0;
+	uint8_t fences = 0;
 
 	for (DiagDirection d = DIAGDIR_BEGIN; d < DIAGDIR_END; d++) {
 		static const TrackBits dir_to_trackbits[DIAGDIR_END] = {TRACK_BIT_3WAY_NE, TRACK_BIT_3WAY_SE, TRACK_BIT_3WAY_SW, TRACK_BIT_3WAY_NW};
@@ -4340,7 +4340,7 @@ static TrackStatus GetTileTrackStatus_Track(TileIndex tile, TransportType mode, 
 		case RAIL_TILE_SIGNALS: {
 			trackbits = GetTrackBits(tile);
 			if (sub_mode & TTSSM_NO_RED_SIGNALS) break;
-			byte a = GetPresentSignals(tile);
+			uint8_t a = GetPresentSignals(tile);
 			uint b = GetSignalStates(tile);
 
 			b &= a;
@@ -4601,8 +4601,8 @@ static void ChangeTileOwner_Track(TileIndex tile, Owner old_owner, Owner new_own
 	}
 }
 
-static const byte _fractcoords_behind[4] = { 0x8F, 0x8, 0x80, 0xF8 };
-static const byte _fractcoords_enter[4] = { 0x8A, 0x48, 0x84, 0xA8 };
+static const uint8_t _fractcoords_behind[4] = { 0x8F, 0x8, 0x80, 0xF8 };
+static const uint8_t _fractcoords_enter[4] = { 0x8A, 0x48, 0x84, 0xA8 };
 static const int8_t _deltacoord_leaveoffset[8] = {
 	-1,  0,  1,  0, /* x */
 	 0,  1,  0, -1  /* y */
@@ -4670,13 +4670,13 @@ static VehicleEnterTileStatus VehicleEnter_Track(Vehicle *u, TileIndex tile, int
 	/* Calculate the point where the following wagon should be activated. */
 	int length = v->CalcNextVehicleOffset();
 
-	byte fract_coord_leave =
+	uint8_t fract_coord_leave =
 		((_fractcoords_enter[dir] & 0x0F) + // x
 			(length + 1) * _deltacoord_leaveoffset[dir]) +
 		(((_fractcoords_enter[dir] >> 4) +  // y
 			((length + 1) * _deltacoord_leaveoffset[dir + 4])) << 4);
 
-	byte fract_coord = (x & 0xF) + ((y & 0xF) << 4);
+	uint8_t fract_coord = (x & 0xF) + ((y & 0xF) << 4);
 
 	if (_fractcoords_behind[dir] == fract_coord) {
 		/* make sure a train is not entering the tile from behind */

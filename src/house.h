@@ -20,7 +20,7 @@
  * Simple value that indicates the house has reached the final stage of
  * construction.
  */
-static const byte TOWN_HOUSE_COMPLETED = 3;
+static const uint8_t TOWN_HOUSE_COMPLETED = 3;
 
 static const HouseID NUM_HOUSES_PER_GRF = 255;    ///< Number of supported houses per NewGRF; limited to 255 to allow extending Action3 with an extended byte later on.
 
@@ -104,31 +104,31 @@ DECLARE_ENUM_AS_BIT_SET(HouseCtrlFlags)
 
 struct HouseSpec {
 	/* Standard properties */
-	CalTime::Year min_year;                   ///< introduction year of the house
-	CalTime::Year max_year;                   ///< last year it can be built
-	byte population;                          ///< population (Zero on other tiles in multi tile house.)
-	byte removal_cost;                        ///< cost multiplier for removing it
-	StringID building_name;                   ///< building name
-	uint16_t remove_rating_decrease;          ///< rating decrease if removed
-	byte mail_generation;                     ///< mail generation multiplier (tile based, as the acceptances below)
-	byte cargo_acceptance[HOUSE_NUM_ACCEPTS]; ///< acceptance level for the cargo slots
-	CargoID accepts_cargo[HOUSE_NUM_ACCEPTS]; ///< input cargo slots
+	CalTime::Year min_year;                            ///< introduction year of the house
+	CalTime::Year max_year;                            ///< last year it can be built
+	uint8_t population;                                ///< population (Zero on other tiles in multi tile house.)
+	uint8_t removal_cost;                              ///< cost multiplier for removing it
+	StringID building_name;                            ///< building name
+	uint16_t remove_rating_decrease;                   ///< rating decrease if removed
+	uint8_t mail_generation;                           ///< mail generation multiplier (tile based, as the acceptances below)
+	uint8_t cargo_acceptance[HOUSE_NUM_ACCEPTS];       ///< acceptance level for the cargo slots
+	CargoID accepts_cargo[HOUSE_NUM_ACCEPTS];          ///< input cargo slots
 	CargoLabel accepts_cargo_label[HOUSE_NUM_ACCEPTS]; ///< input landscape cargo slots
-	BuildingFlags building_flags;             ///< some flags that describe the house (size, stadium etc...)
-	HouseZones building_availability;         ///< where can it be built (climates, zones)
-	bool enabled;                             ///< the house is available to build (true by default, but can be disabled by newgrf)
+	BuildingFlags building_flags;                      ///< some flags that describe the house (size, stadium etc...)
+	HouseZones building_availability;                  ///< where can it be built (climates, zones)
+	bool enabled;                                      ///< the house is available to build (true by default, but can be disabled by newgrf)
 
 	/* NewHouses properties */
 	GRFFileProps grf_prop;                    ///< Properties related the the grf file
 	uint16_t callback_mask;                   ///< Bitmask of house callbacks that have to be called
 	Colours random_colour[4];                 ///< 4 "random" colours
-	byte probability;                         ///< Relative probability of appearing (16 is the standard value)
+	uint8_t probability;                      ///< Relative probability of appearing (16 is the standard value)
 	HouseExtraFlags extra_flags;              ///< some more flags
 	HouseCtrlFlags ctrl_flags;                ///< control flags
 	HouseClassID class_id;                    ///< defines the class this house has (not grf file based)
 	AnimationInfo animation;                  ///< information about the animation.
-	byte processing_time;                     ///< Periodic refresh multiplier
-	byte minimum_life;                        ///< The minimum number of years this house will survive before the town rebuilds it
+	uint8_t processing_time;                  ///< Periodic refresh multiplier
+	uint8_t minimum_life;                     ///< The minimum number of years this house will survive before the town rebuilds it
 	CargoTypes watched_cargoes;               ///< Cargo types watched for acceptance.
 
 	Money GetRemovalCost() const;

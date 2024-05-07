@@ -16,7 +16,7 @@
  * @param bytes_to_write The amount of bytes we want to try to write.
  * @return True iff the given amount of bytes can be written to the packet.
  */
-[[maybe_unused]] static bool BufferCanWriteToPacket(const std::vector<byte> &buffer, size_t limit, size_t bytes_to_write)
+[[maybe_unused]] static bool BufferCanWriteToPacket(const std::vector<uint8_t> &buffer, size_t limit, size_t bytes_to_write)
 {
 	return buffer.size() + bytes_to_write <= limit;
 }
@@ -37,7 +37,7 @@
  * Package a boolean in the packet.
  * @param data The data to send.
  */
-void BufferSend_bool(std::vector<byte> &buffer, size_t limit, bool data)
+void BufferSend_bool(std::vector<uint8_t> &buffer, size_t limit, bool data)
 {
 	BufferSend_uint8(buffer, limit, data ? 1 : 0);
 }
@@ -46,7 +46,7 @@ void BufferSend_bool(std::vector<byte> &buffer, size_t limit, bool data)
  * Package a 8 bits integer in the packet.
  * @param data The data to send.
  */
-void BufferSend_uint8(std::vector<byte> &buffer, size_t limit, uint8_t data)
+void BufferSend_uint8(std::vector<uint8_t> &buffer, size_t limit, uint8_t data)
 {
 	assert(BufferCanWriteToPacket(buffer, limit, sizeof(data)));
 	buffer.emplace_back(data);
@@ -56,7 +56,7 @@ void BufferSend_uint8(std::vector<byte> &buffer, size_t limit, uint8_t data)
  * Package a 16 bits integer in the packet.
  * @param data The data to send.
  */
-void BufferSend_uint16(std::vector<byte> &buffer, size_t limit, uint16_t data)
+void BufferSend_uint16(std::vector<uint8_t> &buffer, size_t limit, uint16_t data)
 {
 	assert(BufferCanWriteToPacket(buffer, limit, sizeof(data)));
 	buffer.insert(buffer.end(), {
@@ -69,7 +69,7 @@ void BufferSend_uint16(std::vector<byte> &buffer, size_t limit, uint16_t data)
  * Package a 32 bits integer in the packet.
  * @param data The data to send.
  */
-void BufferSend_uint32(std::vector<byte> &buffer, size_t limit, uint32_t data)
+void BufferSend_uint32(std::vector<uint8_t> &buffer, size_t limit, uint32_t data)
 {
 	assert(BufferCanWriteToPacket(buffer, limit, sizeof(data)));
 	buffer.insert(buffer.end(), {
@@ -84,7 +84,7 @@ void BufferSend_uint32(std::vector<byte> &buffer, size_t limit, uint32_t data)
  * Package a 64 bits integer in the packet.
  * @param data The data to send.
  */
-void BufferSend_uint64(std::vector<byte> &buffer, size_t limit, uint64_t data)
+void BufferSend_uint64(std::vector<uint8_t> &buffer, size_t limit, uint64_t data)
 {
 	assert(BufferCanWriteToPacket(buffer, limit, sizeof(data)));
 	buffer.insert(buffer.end(), {
@@ -104,7 +104,7 @@ void BufferSend_uint64(std::vector<byte> &buffer, size_t limit, uint64_t data)
  * the string + '\0'. No size-byte or something.
  * @param data The string to send
  */
-void BufferSend_string(std::vector<byte> &buffer, size_t limit, const std::string_view data)
+void BufferSend_string(std::vector<uint8_t> &buffer, size_t limit, const std::string_view data)
 {
 	assert(BufferCanWriteToPacket(buffer, limit, data.size() + 1));
 	buffer.insert(buffer.end(), data.begin(), data.end());
@@ -119,7 +119,7 @@ void BufferSend_string(std::vector<byte> &buffer, size_t limit, const std::strin
  * @param end   The end of the buffer to send.
  * @return The number of bytes that were added to this packet.
  */
-size_t BufferSend_binary_until_full(std::vector<byte> &buffer, size_t limit, const byte *begin, const byte *end)
+size_t BufferSend_binary_until_full(std::vector<uint8_t> &buffer, size_t limit, const uint8_t *begin, const uint8_t *end)
 {
 	size_t amount = std::min<size_t>(end - begin, limit - buffer.size());
 	buffer.insert(buffer.end(), begin, begin + amount);
@@ -130,7 +130,7 @@ size_t BufferSend_binary_until_full(std::vector<byte> &buffer, size_t limit, con
  * Sends a binary data over the network.
  * @param data The data to send
  */
-void BufferSend_binary(std::vector<byte> &buffer, size_t limit, const byte *data, const size_t size)
+void BufferSend_binary(std::vector<uint8_t> &buffer, size_t limit, const uint8_t *data, const size_t size)
 {
 	assert(data != nullptr);
 	assert(BufferCanWriteToPacket(buffer, limit, size));
@@ -142,7 +142,7 @@ void BufferSend_binary(std::vector<byte> &buffer, size_t limit, const byte *data
  * The data is length prefixed with a uint16.
  * @param data The string to send
  */
-void BufferSend_buffer(std::vector<byte> &buffer, size_t limit, const byte *data, const size_t size)
+void BufferSend_buffer(std::vector<uint8_t> &buffer, size_t limit, const uint8_t *data, const size_t size)
 {
 	assert(size <= UINT16_MAX);
 	assert(BufferCanWriteToPacket(buffer, limit, size + 2));

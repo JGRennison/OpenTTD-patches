@@ -56,12 +56,12 @@ static SpriteFile &LoadGrfFile(const std::string &filename, uint load_index, boo
 
 	DEBUG(sprite, 2, "Reading grf-file '%s'", filename.c_str());
 
-	byte container_ver = file.GetContainerVersion();
+	uint8_t container_ver = file.GetContainerVersion();
 	if (container_ver == 0) usererror("Base grf '%s' is corrupt", filename.c_str());
 	ReadGRFSpriteOffsets(file);
 	if (container_ver >= 2) {
 		/* Read compression. */
-		byte compression = file.ReadByte();
+		uint8_t compression = file.ReadByte();
 		if (compression != 0) usererror("Unsupported compression format");
 	}
 
@@ -93,12 +93,12 @@ static void LoadGrfFileIndexed(const std::string &filename, const SpriteID *inde
 
 	DEBUG(sprite, 2, "Reading indexed grf-file '%s'", filename.c_str());
 
-	byte container_ver = file.GetContainerVersion();
+	uint8_t container_ver = file.GetContainerVersion();
 	if (container_ver == 0) usererror("Base grf '%s' is corrupt", filename.c_str());
 	ReadGRFSpriteOffsets(file);
 	if (container_ver >= 2) {
 		/* Read compression. */
-		byte compression = file.ReadByte();
+		uint8_t compression = file.ReadByte();
 		if (compression != 0) usererror("Unsupported compression format");
 	}
 
@@ -434,7 +434,7 @@ static SpriteID GetSpriteIDForClearGround(const ClearGround cg, const Slope slop
 {
 	switch (cg) {
 		case CLEAR_GRASS:
-			return GetSpriteIDForClearLand(slope, (byte) multi);
+			return GetSpriteIDForClearLand(slope, (uint8_t)multi);
 		case CLEAR_ROUGH:
 			return GetSpriteIDForHillyLand(slope, multi);
 		case CLEAR_ROCKS:
@@ -467,8 +467,8 @@ void GfxDetermineMainColours()
 	extern uint32_t _vp_map_vegetation_clear_colours[16][6][8];
 	memset(_vp_map_vegetation_clear_colours, 0, sizeof(_vp_map_vegetation_clear_colours));
 	const struct {
-		byte min;
-		byte max;
+		uint8_t min;
+		uint8_t max;
 	} multi[6] = {
 		{ 0, 3 }, // CLEAR_GRASS, density
 		{ 0, 7 }, // CLEAR_ROUGH, "random" based on position

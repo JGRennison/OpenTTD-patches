@@ -22,7 +22,7 @@
 /** The maximum amount of roadstops a single GRF is allowed to add */
 static const int NUM_ROADSTOPS_PER_GRF = 64000;
 
-enum RoadStopClassID : byte {
+enum RoadStopClassID : uint8_t {
 	ROADSTOP_CLASS_BEGIN = 0,    ///< The lowest valid value
 	ROADSTOP_CLASS_DFLT = 0,     ///< Default road stop class.
 	ROADSTOP_CLASS_WAYP,         ///< Waypoint class.
@@ -43,7 +43,7 @@ enum RoadStopRandomTrigger {
  * Various different options for availability, restricting
  * the roadstop to be only for busses or for trucks.
  */
-enum RoadStopAvailabilityType : byte {
+enum RoadStopAvailabilityType : uint8_t {
 	ROADSTOPTYPE_PASSENGER,    ///< This RoadStop is for passenger (bus) stops.
 	ROADSTOPTYPE_FREIGHT,      ///< This RoadStop is for freight (truck) stops.
 	ROADSTOPTYPE_ALL,          ///< This RoadStop is for both types of station road stops.
@@ -55,7 +55,7 @@ enum RoadStopAvailabilityType : byte {
  * Different draw modes to disallow rendering of some parts of the stop
  * or road.
  */
-enum RoadStopDrawMode : byte {
+enum RoadStopDrawMode : uint8_t {
 	ROADSTOP_DRAW_MODE_NONE        = 0,
 	ROADSTOP_DRAW_MODE_ROAD        = 1 << 0, ///< Bay stops: Draw the road itself
 	ROADSTOP_DRAW_MODE_OVERLAY     = 1 << 1, ///< Drive-through stops: Draw the road overlay, e.g. pavement
@@ -76,8 +76,8 @@ enum RoadStopSpecFlags {
 };
 
 enum RoadStopSpecIntlFlags {
-	RSIF_BRIDGE_HEIGHTS_SET,            ///< byte bridge_height[6] is set.
-	RSIF_BRIDGE_DISALLOWED_PILLARS_SET, ///< byte bridge_disallowed_pillars[6] is set.
+	RSIF_BRIDGE_HEIGHTS_SET,            ///< bridge_height[6] is set.
+	RSIF_BRIDGE_DISALLOWED_PILLARS_SET, ///< bridge_disallowed_pillars[6] is set.
 };
 
 /** Scope resolver for road stops. */
@@ -157,8 +157,8 @@ struct RoadStopSpec {
 
 	AnimationInfo animation;
 
-	byte bridge_height[6];               ///< Minimum height for a bridge above, 0 for none
-	byte bridge_disallowed_pillars[6];   ///< Disallowed pillar flags for a bridge above
+	uint8_t bridge_height[6];             ///< Minimum height for a bridge above, 0 for none
+	uint8_t bridge_disallowed_pillars[6]; ///< Disallowed pillar flags for a bridge above
 
 	uint8_t build_cost_multiplier = 16;  ///< Build cost multiplier per tile.
 	uint8_t clear_cost_multiplier = 16;  ///< Clear cost multiplier per tile.
@@ -181,7 +181,7 @@ struct RoadStopSpec {
 };
 
 template <>
-struct EnumPropsT<RoadStopClassID> : MakeEnumPropsT<RoadStopClassID, byte, ROADSTOP_CLASS_BEGIN, ROADSTOP_CLASS_MAX, ROADSTOP_CLASS_MAX, 8> {};
+struct EnumPropsT<RoadStopClassID> : MakeEnumPropsT<RoadStopClassID, uint8_t, ROADSTOP_CLASS_BEGIN, ROADSTOP_CLASS_MAX, ROADSTOP_CLASS_MAX, 8> {};
 
 typedef NewGRFClass<RoadStopSpec, RoadStopClassID, ROADSTOP_CLASS_MAX> RoadStopClass;
 
@@ -200,7 +200,7 @@ bool GetIfStopIsForType(const RoadStopSpec *roadstopspec, RoadStopType rs, RoadT
 
 const RoadStopSpec *GetRoadStopSpec(TileIndex t);
 int AllocateRoadStopSpecToStation(const RoadStopSpec *statspec, BaseStation *st, bool exec);
-void DeallocateRoadStopSpecFromStation(BaseStation *st, byte specindex);
+void DeallocateRoadStopSpecFromStation(BaseStation *st, uint8_t specindex);
 void StationUpdateRoadStopCachedTriggers(BaseStation *st);
 
 #endif /* NEWGRF_ROADSTATION_H */

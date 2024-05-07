@@ -905,7 +905,7 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const VarAction2Ad
 		std::vector<DeterministicSpriteGroupAdjust> *proc = _cur.GetInlinableGroupAdjusts(dsg, false);
 		if (proc == nullptr) return false;
 
-		byte shift_num = adjust.shift_num;
+		uint8_t shift_num = adjust.shift_num;
 		uint32_t and_mask = adjust.and_mask;
 
 		// Initial value state is 0

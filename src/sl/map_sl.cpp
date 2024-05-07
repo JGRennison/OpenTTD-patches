@@ -58,7 +58,7 @@ static const uint MAP_SL_BUF_SIZE = 4096;
 
 static void Load_MAPT()
 {
-	std::array<byte, MAP_SL_BUF_SIZE> buf;
+	std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 	TileIndex size = MapSize();
 
 	for (TileIndex i = 0; i != size;) {
@@ -99,7 +99,7 @@ static void Load_MAPH()
 		return;
 	}
 
-	std::array<byte, MAP_SL_BUF_SIZE> buf;
+	std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 	TileIndex size = MapSize();
 
 	for (TileIndex i = 0; i != size;) {
@@ -110,7 +110,7 @@ static void Load_MAPH()
 
 static void Load_MAP1()
 {
-	std::array<byte, MAP_SL_BUF_SIZE> buf;
+	std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 	TileIndex size = MapSize();
 
 	for (TileIndex i = 0; i != size;) {
@@ -135,7 +135,7 @@ static void Load_MAP2()
 
 static void Load_MAP3()
 {
-	std::array<byte, MAP_SL_BUF_SIZE> buf;
+	std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 	TileIndex size = MapSize();
 
 	for (TileIndex i = 0; i != size;) {
@@ -146,7 +146,7 @@ static void Load_MAP3()
 
 static void Load_MAP4()
 {
-	std::array<byte, MAP_SL_BUF_SIZE> buf;
+	std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 	TileIndex size = MapSize();
 
 	for (TileIndex i = 0; i != size;) {
@@ -157,7 +157,7 @@ static void Load_MAP4()
 
 static void Load_MAP5()
 {
-	std::array<byte, MAP_SL_BUF_SIZE> buf;
+	std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 	TileIndex size = MapSize();
 
 	for (TileIndex i = 0; i != size;) {
@@ -168,7 +168,7 @@ static void Load_MAP5()
 
 static void Load_MAP6()
 {
-	std::array<byte, MAP_SL_BUF_SIZE> buf;
+	std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 	TileIndex size = MapSize();
 
 	if (IsSavegameVersionBefore(SLV_42)) {
@@ -192,7 +192,7 @@ static void Load_MAP6()
 
 static void Load_MAP7()
 {
-	std::array<byte, MAP_SL_BUF_SIZE> buf;
+	std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 	TileIndex size = MapSize();
 
 	for (TileIndex i = 0; i != size;) {
@@ -222,7 +222,7 @@ static void Load_WMAP()
 	const TileIndex size = MapSize();
 
 #if TTD_ENDIAN == TTD_LITTLE_ENDIAN
-	reader->CopyBytes((byte *) _m, size * 8);
+	reader->CopyBytes((uint8_t *) _m, size * 8);
 #else
 	for (TileIndex i = 0; i != size; i++) {
 		reader->CheckBytes(8);
@@ -246,7 +246,7 @@ static void Load_WMAP()
 		}
 	} else if (_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 2) {
 #if TTD_ENDIAN == TTD_LITTLE_ENDIAN
-		reader->CopyBytes((byte *) _me, size * 4);
+		reader->CopyBytes((uint8_t *) _me, size * 4);
 #else
 		for (TileIndex i = 0; i != size; i++) {
 			reader->CheckBytes(4);
@@ -273,8 +273,8 @@ static void Save_WMAP()
 	SlSetLength(size * 12);
 
 #if TTD_ENDIAN == TTD_LITTLE_ENDIAN
-	dumper->CopyBytes((byte *) _m, size * 8);
-	dumper->CopyBytes((byte *) _me, size * 4);
+	dumper->CopyBytes((uint8_t *) _m, size * 8);
+	dumper->CopyBytes((uint8_t *) _me, size * 4);
 #else
 	for (TileIndex i = 0; i != size; i++) {
 		dumper->CheckBytes(8);

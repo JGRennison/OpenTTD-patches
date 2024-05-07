@@ -25,7 +25,7 @@ struct Sprite {
 	uint32_t lru;                ///< Sprite cache LRU of this sprite structure.
 	uint8_t missing_zoom_levels; ///< Bitmask of zoom levels missing in data
 	Sprite *next = nullptr;      ///< Next sprite structure, this is the only member which may be changed after the sprite has been inserted in the sprite cache
-	byte data[];                 ///< Sprite data.
+	uint8_t data[];              ///< Sprite data.
 };
 
 /*
@@ -58,10 +58,10 @@ inline const Sprite *GetSprite(SpriteID sprite, SpriteType type, uint8_t zoom_le
 	return (Sprite*)GetRawSprite(sprite, type, zoom_levels);
 }
 
-inline const byte *GetNonSprite(SpriteID sprite, SpriteType type)
+inline const uint8_t *GetNonSprite(SpriteID sprite, SpriteType type)
 {
 	dbg_assert(type == SpriteType::Recolour);
-	return (byte*)GetRawSprite(sprite, type, UINT8_MAX);
+	return (uint8_t*)GetRawSprite(sprite, type, UINT8_MAX);
 }
 
 void GfxInitSpriteMem();
@@ -74,7 +74,7 @@ SpriteFile &OpenCachedSpriteFile(const std::string &filename, Subdirectory subdi
 void ReadGRFSpriteOffsets(SpriteFile &file);
 size_t GetGRFSpriteOffset(uint32_t id);
 bool LoadNextSprite(int load_index, SpriteFile &file, uint file_sprite_id);
-bool SkipSpriteData(SpriteFile &file, byte type, uint16_t num);
+bool SkipSpriteData(SpriteFile &file, uint8_t type, uint16_t num);
 void DupSprite(SpriteID old_spr, SpriteID new_spr);
 
 uint32_t GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id);
@@ -89,9 +89,9 @@ public:
 		return (const Sprite*)(this->cache.find(sprite | (static_cast<uint32_t>(type) << 29))->second);
 	}
 
-	inline const byte *GetRecolourSprite(SpriteID sprite) const
+	inline const uint8_t *GetRecolourSprite(SpriteID sprite) const
 	{
-		return (const byte*)(this->cache.find(sprite | (static_cast<uint32_t>(SpriteType::Recolour) << 29))->second);
+		return (const uint8_t*)(this->cache.find(sprite | (static_cast<uint32_t>(SpriteType::Recolour) << 29))->second);
 	}
 
 	void Clear()
