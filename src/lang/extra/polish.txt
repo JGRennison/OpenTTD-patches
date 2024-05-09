@@ -1,1 +1,83 @@
+##override on
+STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Autoodnowa zawiodła przy {VEHICLE}{}{STRING1}
+STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}NewGRF "{RAW_STRING}" zwrócił błąd krytyczny: {}{STRING7}
+STR_NEWGRF_ERROR_POPUP                                          :{WHITE}NewGRF "{RAW_STRING}" zwrócił błąd: {}{STRING7}
+STR_ORDER_TEXT                                                  :{STRING6} {STRING2} {STRING} {STRING}
+##override off
 
+##no-translate on
+STR_JUST_DECIMAL1                                               :{DECIMAL1}
+STR_JUST_TIME_HHMM                                              :{TIME_HHMM}
+STR_JUST_STRING3                                                :{STRING3}
+STR_JUST_VELOCITY                                               :{VELOCITY}
+STR_JUST_TT_TICKS                                               :{TT_TICKS}
+STR_JUST_TT_TICKS_LONG                                          :{TT_TICKS_LONG}
+STR_JUST_TT_TIME                                                :{TT_TIME}
+STR_JUST_TT_TIME_ABS                                            :{TT_TIME_ABS}
+STR_JUST_STATION                                                :{STATION}
+
+STR_RED_INT                                                     :{RED}{NUM}
+
+STR_VIEWPORT_TOWN_LABEL                                         :{VP_TOWN_LABEL1}
+STR_VIEWPORT_TOWN_LABEL_TINY                                    :{TINY_FONT}{VP_TOWN_LABEL2}
+##no-translate off
+
+##after STR_CONFIG_SETTING_TREE_PLACER_IMPROVED
+STR_CONFIG_SETTING_TREE_PLACER_PERFECT                          :Perfect
+
+##after STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT
+STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT_EXTRA                   :{STRING}, 'Perfect' ulepsza rozszerzanie i grupowanie
+
+##after STR_FINANCES_SECTION_OTHER
+STR_FINANCES_SECTION_INFRASTRUCTURE_COSTS                       :{GOLD}Udostępnianie infrastruktury
+STR_FINANCES_SECTION_INFRASTRUCTURE_INCOME                      :{GOLD}Udostępnianie infrastruktury
+
+##after STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC_EQ                   :asymetryczne (równa dystrybucja)
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC_NEAREST              :asymetryczne (najbliższe)
+
+##after STR_CONFIG_SETTING_ZOOM_LVL_OUT_8X
+STR_CONFIG_SETTING_ZOOM_LVL_OUT_16X                             :16x
+STR_CONFIG_SETTING_ZOOM_LVL_OUT_32X                             :32x
+STR_CONFIG_SETTING_ZOOM_LVL_OUT_64X                             :64x
+STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128x
+
+##after STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_MOST_USED
+##default-translation STR_COLOUR_DEFAULT
+STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_DEFAULT                    :Domyślne
+
+##after STR_ORDER_CONDITIONAL_MAX_RELIABILITY
+STR_ORDER_CONDITIONAL_CARGO_WAITING                             :Towar oczekujący
+STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :Towar zaakceptowany
+STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :Wolne perony
+STR_ORDER_CONDITIONAL_PERCENT                                   :Jak często (w procentach)
+STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :Okupowanie miejsc
+STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :Pociąg w miejscu
+STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :Procent załadunku
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :Ilość towaru oczekującego
+STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :Wartość licznika
+STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :Obecny czas/data
+STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :Status rozkładu
+STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Miejsce wysyłki
+
+##after STR_ORDER_STOP_LOCATION_FAR_END
+STR_ORDER_STOP_LOCATION_THROUGH                                 :[przez załadunek]
+
+##before STR_CONFIG_SETTING_TOWN_GROWTH_NONE
+STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :Ekstremalnie wolne
+STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :Bardzo wolne
+
+##before STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_OFF
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :Co każdą {COMMA}{NBSP}minutę{P 0 "" s}
+
+##after STR_RIVERS_LOT
+STR_RIVERS_VERY_MANY                                            :{RED}Bardzo dużo
+STR_RIVERS_EXTREMELY_MANY                                       :{RED}Ekstremalnie dużo
+
+##after STR_CONFIG_SETTING_BRIBE_HELPTEXT_MINUTES
+STR_CONFIG_SETTING_BRIBE_HELPTEXT_PERIODS                       :Pozwól firmom na próbę dania łapówki urzędowi miasta. Jeśli łapówka zostanie zauważona przez służby, firma nie będzie mogła działać w miescie przez pół okresu
+
+##after STR_CONFIG_SETTING_ALLOW_EXCLUSIVE_HELPTEXT_MINUTES
+STR_CONFIG_SETTING_ALLOW_EXCLUSIVE_HELPTEXT_PERIODS              :Jeżeli firma kupi eksluzywne prawa transporu w mieście, stacje konkurencji (towarowe i pasażerskie) nie będą otrzymywać towarów przez jeden okres
+
+##end-after
