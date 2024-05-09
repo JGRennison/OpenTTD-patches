@@ -81,3 +81,168 @@ STR_CONFIG_SETTING_BRIBE_HELPTEXT_PERIODS                       :Pozwól firmom 
 STR_CONFIG_SETTING_ALLOW_EXCLUSIVE_HELPTEXT_PERIODS              :Jeżeli firma kupi eksluzywne prawa transporu w mieście, stacje konkurencji (towarowe i pasażerskie) nie będą otrzymywać towarów przez jeden okres
 
 ##end-after
+
+STR_COMMA_SEPARATOR                                             :,{SP}
+
+STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
+STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
+STR_UNIT_NAME_VELOCITY_SI                                       :m/s
+STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :pól/dzień
+STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK                      :pół/sekundę
+
+STR_UNITS_SECONDS_SHORT                                         :{COMMA}{NBSP}s
+STR_UNITS_PRODUCTION_INTERVALS                                  :{NUM}{NBSP}interwał produkcji{P "" s}
+
+STR_BUTTON_RENAME                                               :{BLACK}Zmień nazwę
+
+STR_MEASURE_DIST_HEIGHTDIFF                                     :{BLACK}Metryka miejska: {NUM}{}Odległość w linii prostej: {NUM}{}Odległość od najbliższej krawędzi: {NUM}{}Wysokość n.p.m.: {HEIGHT}{}Różnica wysokości: {HEIGHT}
+
+STR_SORT_BY_PROFIT_LIFETIME                                     :Życiowy zysk
+STR_SORT_BY_AVG_ORDER_OCCUPANCY                                 :Średni poziom załadunku pojazdów współdzielących polecenia
+STR_SORT_BY_MAX_SPEED_LOADED                                    :Prędkość maksymalna (pełny załadunek)
+STR_SORT_BY_VEHICLES_CALLING                                    :Ilość pojazdów wzywających
+STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST                      :Maksymalny załadunek/koszt utrzymania
+STR_SORT_BY_VEHICLE_COUNT                                       :Ilość pojazdów
+
+STR_SCENEDIT_TOOLBAR_PLACE_HOUSE                                :{BLACK}Zbuduj dom
+
+STR_SETTINGS_MENU_ZONING                                        :Miejscowy plan zagospodarowania przestrzennego
+
+STR_SETTINGS_MENU_MONEY_TEXT_EFFECTS                            :Powiadomienia przychód/koszt pokazane
+STR_SETTINGS_MENU_SHOW_HIDDEN_SIGNS                             :Ukryte znaki i nazwy pokazane
+
+STR_MAP_MENU_PLAN_LIST                                          :Lista planów
+
+STR_VEHICLE_TYPE_TRAINS                                         :Pociągi
+STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Pojazdy drogowe
+STR_VEHICLE_TYPE_SHIPS                                          :Statki
+STR_VEHICLE_TYPE_AIRCRAFT                                       :Pojazdy powietrzne
+
+STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED                     :{TINY_FONT}{BLACK}Średnia prędkość przejazdu ({STRING})
+STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED                   :{TINY_FONT}{BLACK}Przychód za dowóz 1 jednostki (lub 1,000 litrów) ładunku na dystansie 200 pól
+STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_MINUTES                   :{TINY_FONT}{BLACK}Minut w drodze
+STR_GRAPH_STATION_CARGO_CAPTION                                 :{WHITE}{STATION} - Oczekuje na historię ładunku
+STR_GRAPH_STATION_CARGO_X_LABEL_DAYS                            :{TINY_FONT}{BLACK}Wzrostu przez ostatnie {NUM} dni
+STR_GRAPH_STATION_CARGO_X_LABEL_SECONDS                         :{TINY_FONT}{BLACK}Wzrostu przez ostatnie {NUM} sekund
+STR_GRAPH_STATION_CARGO_TITLE                                   :{TINY_FONT}{BLACK}Jednostek towarów oczekujących na stacji
+
+STR_GRAPH_CARGO_SPEED_MODE                                      :{TINY_FONT}{BLACK}średnia prędkość
+STR_GRAPH_CARGO_TOOLTIP_TIME_MODE                               :{BLACK}Wyświetl czas w podróży na osi x
+STR_GRAPH_CARGO_TOOLTIP_SPEED_MODE                              :{BLACK}Wyświetl średni czas podróży na osi x
+
+STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE                       :{TINY_FONT}{BLACK}Firmy
+STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE                         :{TINY_FONT}{BLACK}Towary
+STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE_TOOLTIP               :{BLACK}Wyświetl jedną linię na każdą zaznaczoną firmę
+STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE_TOOLTIP                 :{BLACK}Wyświetl jedną linię na każdy zaznaczony towar
+
+STR_GRAPH_LAST_72_PRODUCTION_INTERVALS_TIME_LABEL               :{TINY_FONT}{BLACK}Ostatnie 72 okresy produkcji
+
+STR_SMALLMAP_SCREENSHOT                                         :{BLACK}Zrzut ekranu
+
+STR_NEWS_VEHICLE_NO_DEPOT_ORDER                                 :{WHITE}{VEHICLE} nie ma polecenia wjazdu do warsztatu w rozkładzie
+STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE} nie udało się zatrzymać w {STRING1} ze względu na za dużą prędkość
+
+STR_NEWS_ROAD_REBUILDING_PERIODS                                :{BIG_FONT}{BLACK}Chaos drogowy w {TOWN}!{}{}Program rekonstrukcji dróg fundowany przez {RAW_STRING} przynosi 0,5 okresu trudności dla kierowców!
+STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_PERIOD                    :{BIG_FONT}{BLACK}Władze lokalne {TOWN} podpisują kontrakt z {RAW_STRING} na 1 okres wyłączności usług transportowych!
+
+STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Niestandardowy interwał (minuty w prawdziwym życiu)
+STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT                    :{WHITE}Interwał autozapisu w minutach (w prawdziwym życiu)
+
+STR_CONFIG_SETTING_ADVISED_LEAVE_DEFAULT                        :Zaleca się pozostawić to ustawienie na domyślnej wartości
+
+STR_CONFIG_SETTING_TRAIN_BRAKING_REALISTIC                      :Realistyczne {PUSH_COLOUR}{RED}(Expert){POP_COLOUR}
+STR_CONFIG_SETTING_TRAIN_BRAKING_ASPECT_LIMITED_ON              :Wł. {PUSH_COLOUR}{RED}(Expert, Difficult){POP_COLOUR}
+
+STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED        :{WHITE}Realistyczne hamowanie nie może być włączone. Przynajmniej jeden sygnał wejściowy lub sygnał dwukierunkowy jest na mapie.
+
+STR_CONFIG_SETTING_DELIVERY_BALANCED                            :Zbalansowane
+
+STR_CONFIG_SETTING_RUNNING_COSTS_IN_DEPOT                       :Koszt utrzymania pojazdów w warsztacie: {STRING2}
+STR_CONFIG_SETTING_RUNNING_COSTS_IN_DEPOT_HELPTEXT              :Ustaw poziom konserwacji i kosztu utrzymania pojazdów podczas oczekiwania w warsztacie (pojazdy nie zatrzymane)
+STR_CONFIG_SETTING_RUNNING_COSTS_IN_DEPOT_VALUE                 :1 / {COMMA}
+
+STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED                   :Koszt utrzymania pojazdów stojących: {STRING2}
+STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED_HELPTEXT          :Ustaw poziom konserwacji i kosztu utrzymania pojazdów podczas postoju, ale nie w warsztacie
+STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED_VALUE             :1 / {COMMA}
+
+STR_CONFIG_SETTING_MONEY_CHEAT_MULTIPLAYER                      :Zezwól klientom multiplayer na zwiększenie ilości pieniędzy za pomocą menu ułatwnień: {STRING2}
+STR_CONFIG_SETTING_MONEY_CHEAT_MULTIPLAYER_HELPTEXT             :Jeśli włączone, także klienci multiplayer bez uprawnień administratora mogą używać zwiększania ilości pieniędzy za pomocą ułatwnień. Ta opcja jest zawsze dostępna w trybie singleplayer oraz dla administratorów.
+
+STR_CONFIG_SETTING_RENAME_TOWNS_MULTIPLAYER                     :Zezwól klientom multiplayer na zmianę nazwy miast: {STRING2}
+STR_CONFIG_SETTING_RENAME_TOWNS_MULTIPLAYER_HELPTEXT            :Jeśli włączone, także klienci multiplayer bez uprawnień administratora, oraz nie oglądający rozgrywkę, mogą zmieniać nazwy miast. Ta opcja jest zawsze dostępna w trybie singleplayer oraz dla administratorów.
+
+STR_CONFIG_SETTING_OVERRIDE_TOWN_SETTINGS_MULTIPLAYER           :Zezwól klientom multiplayer na nadpisanie ustawień miasta: {STRING2}
+STR_CONFIG_SETTING_OVERRIDE_TOWN_SETTINGS_MULTIPLAYER_HELPTEXT  :Jeśli włączone, także klienci multiplayer bez uprawnień administratora, oraz nie oglądający rozgrywkę, mogą nadpisać ustawienia pojedyńczych miast. Ta opcja jest zawsze dostępna w trybie singleplayer oraz dla administratorów.
+
+STR_CONFIG_SETTING_CATCHMENT_INCREASE                           :Zwiększ zasięg stacji: {STRING2}
+STR_CONFIG_SETTING_CATCHMENT_INCREASE_HELPTEXT                  :Zwiększ promień zasięgu stacji o tyle pól.
+
+STR_CONFIG_SETTING_STATION_RATING_CARGO_CLASS_WAIT_TIME         :Tolerancja ocen stacji na czas oczekiwania ma polegać na typie towaru: {STRING2}
+STR_CONFIG_SETTING_STATION_RATING_CARGO_CLASS_WAIT_TIME_HELPTEXT:Gdy włączone, efekt oczekiwania od ostatniego rozładunku towaru na oceny stacji będzie zależał od typu towaru. Pasażerowie, poczta, kosztowności, towary mrożone i towary ekspresowe są o wiele mniej tolerancyjne na oczekiwanie. Towary hurtowe i ciecze są bardziej.
+
+STR_CONFIG_SETTING_STATION_RATING_SIZE_CARGO_AMOUNT             :Pojemność towarowa stacji i tolerancja na oceny zależne od rozmiaru stacji: {STRING2}
+STR_CONFIG_SETTING_STATION_RATING_SIZE_CARGO_AMOUNT_HELPTEXT    :Jeśli włączone, pojemność towarowa stacji jest skrócona i efekt towarów oczekujących na oceny stacji będą zależne od rozmiaru stacji. Większe stacje mogą przechowywać więcej towarów i są bardziej odporne na duże ilości oczekującego towaru.
+
+STR_CONFIG_SETTING_CARGO_DELIVERY_MODE                          :Tryb dystrybucji towarów: {STRING2}
+STR_CONFIG_SETTING_CARGO_DELIVERY_MODE_HELPTEXT                 :Metoda używana by dostarczyć towary do przemysłów otaczających stację.
+
+STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL                          :Model hamowania pociągu: {STRING2}
+STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL_HELPTEXT                 :Wybierz model fizyczny dla hamowania pociągu. "Oryginalny" model pozwala pociągom na natychmiastowe zatrzymanie. W "realistycznym" modelu, pociąi mają drogę zatrzymania i będą rezerwować bloki do przodu w odpowiedni sposób, i nie mogą natychmiast się zatrzymać. {}{}"Realistyczny" model ma duży wpływ na sygnały i projektowanie torów, i przez to jest zaawansowaną opcją, która nie jest odpowiednia dla początkujących. W szczególności sygnały wejściowe i dwukierunkowe są nie dozwolone, i wszystkie sygnały używają PBS (Path-based signalling).
+
+STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED             :Realistyczne hamowanie pociągu jest ograniczone aspektem: {STRING2}
+STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED_HELPTEXT    :W modelu realistycznym hamowania, ogranicz patrzenie w przód pociągów do aspektu sygnałów (nie pozwalaj na zarezerwowanie nielimitowane ilości sygnałów){}To wymaga NewGRF który pozwala na wielo-aspektowe sygnały. {}{}To jest zaawansowane ustawienie i zwiększy ono trudność rozgrywki, oraz wymaga dodatkowe przemyślenia podczas projektowania sieci.
+
+STR_CONFIG_SETTING_LIMIT_TRAIN_ACCELERATION                     :Ogranicz przyspieszenie pociągu: {STRING2}
+STR_CONFIG_SETTING_LIMIT_TRAIN_ACCELERATION_HELPTEXT            :Podczas używania modelu realistycznego hamowania, także ogranicz maksymalną prędkość przyspieszenia pociągu. To ustawienie jest po to, by zapobiec rozlewaniu napojów pasażerów ze względu na zbyt duże przyspieszenie.
+
+STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT                     :Maksymalna prędkość pociągu podczas ładunku/rozładunku na stacji dłuższej od niego: {STRING2}
+STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_HELPTEXT            :Maksymalna prędkość pociągu podczas ładunku/rozładunku, gdy stacja jest dłuższa od niego.
+
+STR_CONFIG_SETTING_RAIL_DEPOT_SPEED_LIMIT                       :Maksymalna prędkość w warsztacie: {STRING2}
+STR_CONFIG_SETTING_RAIL_DEPOT_SPEED_LIMIT_HELPTEXT              :Maksymalna dozwolona prędkość dla pociągów podczas wjeżdżania lub wyjeżdzania z warsztatu.
+
+STR_CONFIG_SETTING_NON_LEADING_ENGINES_KEEP_NAME                :Lokomotywy nie-prowadzące zachowują niestandardowe nazwy: {STRING2}
+STR_CONFIG_SETTING_NON_LEADING_ENGINES_KEEP_NAME_HELPTEXT       :Czy lokomotywy z niestandardowymi nazwami powinny zachować ich nazwę, gdy zostaną przeniesione na nie-prowadzącą pozycję w składnie pociągu.
+
+STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING                :Zjanduj drogę aż do tyłu sygnałów jednokierunkowych: {STRING2}
+STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING_HELPTEXT       :Gdy włączone, algorytm znajdowania drogi YAPF może znaleźć drogę tylko do tyłu sygnału jednokierunkowego.
+
+STR_CONFIG_SETTING_INFLATION_FIXED_DATES                        :Włącz inflację od 1920 do 2090: {STRING2}
+STR_CONFIG_SETTING_INFLATION_FIXED_DATES_HELPTEXT               :Gdy włączone, inflacja jest zawsze stosowana od 1920 do 2090, niezależnie od roku rozpoczęcia gry. To jest model inflacji używany od OpenTTD 1.11.{}Gdy wyłączone, inflacja jest stosowana od roku rozpoczęcia gry przez 170 lat. To jest model inflacji używany do wersji OpenTTD 1.10.
+
+STR_CONFIG_SETTING_IMPROVED_BREAKDOWNS                          :Zezwól na ulepszone awarie: {STRING2}
+
+STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :Statki unikają kolizji: {STRING2}
+STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :Gdy włączone, statki będą unikać kolizji. To ustawienie daje najlepsze rezultaty gdy skręty o 90° są zabronione.
+
+STR_CONFIG_SETTING_CHUNNEL                                      :Zezwól na konstrukcję tuneli pod wodą: {STRING2}
+STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :Gdy włączone, tunele mogą być budowane pod akwenami wody na poziomie morza. Na każdym końcu tunelu przerwa między tunelem a brzegiem akewenu musi być między {NUM} a {NUM} pól.
+
+STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :Pociągi różnych firm nie mogą wywoływać kolizji ze sobą: {STRING2}
+STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :To ustawienie jest przeznaczone, by zapobiec niezaufanym graczom przed wywoływaniem kolizji w grach z włączonym udostępnianiem infrastruktury.
+
+STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING               :Pojazdy drogowe mogą wyprzedzać: {STRING2}
+STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING_HELPTEXT      :Zezwól pojazdom drowogym na wyprzedzanie.
+
+STR_CONFIG_SETTING_ROADVEH_CANT_QUANTUM_TUNNEL                  :Zapobiegaj pojazdom drogowym przed przejeżdżaniem przez siebe, gdy są one zablokowane.: {STRING2}
+STR_CONFIG_SETTING_ROADVEH_CANT_QUANTUM_TUNNEL_HELPTEXT         :Wyłącz możliwość przejeżdżania prze siebie dla pojazdów drogowych, gdy ich droga jest zablokowana przez długi okres czasu.
+
+STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT                    :Warszaty pociągowe "Drive-through": {STRING2}
+STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT_HELPTEXT           :Zezwól na emulację warsztatów pociągowych "drive-through". Pociągi mogą poruszać się między warsztatami położynymi tyłem do siebie, opcjonalnie z warsztatami pośrednimi pomiędzy. Wymaga algorytmu znajdowania drogi YAPF.
+
+STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE                :Ostrzeż, gdy pociąg utknął przez restrykcje kierowania: {STRING2}
+STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE_HELPTEXT       :Wyślij ostrzeżenie o pociągach które czekają na sygnałach PBS (Path-based signals), przez bardzo długi czas ze względu na restrykcje kierowania.
+
+STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER                          :Ostrzeż, gdy pojazd nie ma polecenia pojechania do warsztatu: {STRING2}
+STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_HELPTEXT                 :Gdy włączone, i gdy przegląd poleceń pojazdu także jest włączony, wiadomość w prasie jest wysłana, gdy pociąg, pojazd drogowy lub statek nie ma polecenia pojechania do warsztatu w swoim rozkładzie.
+STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_IF_BREAKDOWNS_ON         :Czy awarie pojazdów włączone
+
+STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER                     :Nie wycofuj pojazdów po: {STRING2}
+STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_HELPTEXT            :Pojazdy które powinny zostać wycofane po tym roku pozostaną dostepne na zawsze.{}Degradacja niezawodności lokomotyw także jest zatrzymana gdy ten rok jest osiągnięty.
+STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_VALUE               :{NUM}
+STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_ZERO                :Wył.
+
+STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER                  :Nie wprowadzaj pojazdów po: {STRING2}
+STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_HELPTEXT         :Pojazdy, które powinny być wprowadzone w lub po tym roku nigdy nie zostaną.
+STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_VALUE            :{NUM}
+STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_ZERO             :Wył.
