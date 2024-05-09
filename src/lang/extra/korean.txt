@@ -38,6 +38,10 @@ STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :현실에서 �
 STR_RIVERS_VERY_MANY                                            :{RED}매우 많이
 STR_RIVERS_EXTREMELY_MANY                                       :{RED}아주 극히 많이
 
+STR_CONFIG_SETTING_BRIBE_HELPTEXT_PERIODS                       :회사가 지역 도시 당국에 뇌물을 주는 것을 허용합니다. 뇌물 행위가 적발되는 경우, 회사는 해당 도시에서 절반 간격 동안 아무 행동도 할 수 없습니다
+
+STR_CONFIG_SETTING_ALLOW_EXCLUSIVE_HELPTEXT_PERIODS             :한 회사가 어떤 도시의 독점 수송권을 구매하면, 그 도시에 있는 상대편의 역에서는 한 간격 동안 (승객을 포함한) 그 어떠한 화물도 받을 수 없습니다
+
 STR_COMMA_SEPARATOR                                             :,{SP}
 
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
@@ -47,6 +51,7 @@ STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :칸/일
 STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK                      :칸/초
 
 STR_UNITS_SECONDS_SHORT                                         :{COMMA}초
+STR_UNITS_PRODUCTION_INTERVALS                                  :{NUM} 생산간격
 
 STR_BUTTON_RENAME                                               :{BLACK}이름 바꾸기
 
@@ -90,10 +95,15 @@ STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE                         :{TINY_FONT}{BLA
 STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE_TOOLTIP               :{BLACK}선택한 회사를 각각 하나의 선으로 표시합니다
 STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE_TOOLTIP                 :{BLACK}선택한 화물를 각각 하나의 선으로 표시합니다
 
+STR_GRAPH_LAST_72_PRODUCTION_INTERVALS_TIME_LABEL               :{TINY_FONT}{BLACK}지난 72 생산기간
+
 STR_SMALLMAP_SCREENSHOT                                         :{BLACK}스크린샷
 
 STR_NEWS_VEHICLE_NO_DEPOT_ORDER                                 :{WHITE}{VEHICLE}의 경로에는 기지가 존재하지 않습니다
 STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE} : 속력이 너무 빨라서 {STRING}에 멈추지 못했습니다
+
+STR_NEWS_ROAD_REBUILDING_PERIODS                                :{BIG_FONT}{BLACK}{TOWN}에서 교통 혼잡 발생!{}{}{STRING}에 의해 시행된 도로 재건축 투자가 운전자들에게 절반 기간 동안의 고통을 안겨주었습니다!
+STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_PERIOD                    :{BIG_FONT}{BLACK}{TOWN}의 지역 당국이 {STRING} 회사와 한 기간 동안의 독점 수송권에 서명하였습니다!
 
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :사용자 설정 (현실 분)
 STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT                    :{WHITE}자동 저장 간격 (단위: 현실 분)
@@ -282,6 +292,9 @@ STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW_HELPTEXT   :이 설정을 �
 
 STR_CONFIG_SETTING_SHOW_SPEED_FIRST_IN_VEHICLE_VIEW             :차량 정보 창에서 다음 목적지 앞에 속력 표시: {STRING}
 STR_CONFIG_SETTING_SHOW_SPEED_FIRST_IN_VEHICLE_VIEW_HELPTEXT    :이 설정을 켜면, 차량 정보 창의 출발/멈춤 버튼에 있는 다음 목적지 앞에 속력을 표시합니다
+
+STR_CONFIG_SETTING_SHORTEN_STATUS_VEHICLE_VIEW                  :차량 정보 창의 상태를 간략하게 표시: {STRING}
+STR_CONFIG_SETTING_SHORTEN_STATUS_VEHICLE_VIEW_HELPTEXT         :이 설정을 켜면, 차량 정보 창의 출발/정지 버튼의 목적지를 표시하는 문구를 간략하게 표시합니다
 
 STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION                   :정차 위치가 기본값이면 감추기: {STRING}
 STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION_HELPTEXT          :이 설정을 켜면, 경로의 정차 위치가 기본값과 동일하면 정차 위치를 감춥니다.
@@ -532,8 +545,12 @@ STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE_HELPTEXT_EXTRA     :{STRING}{}게�
 STR_CONFIG_SETTING_CARGO_SCALE_MODE_MONTHLY                     :월별
 STR_CONFIG_SETTING_CARGO_SCALE_MODE_GAME_TIME                   :게임 시간
 
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_PER_PRODUCTION_INTERVAL     :생산간격 당
+
 STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY                    :{NUM}% (월별)
 STR_CONFIG_SETTING_CARGO_SCALE_VALUE_REAL_TIME                  :{NUM}% (게임 시간)
+
+STR_CONFIG_SETTING_CARGO_SCALE_VALUE_PER_PRODUCTION_INTERVAL    :{NUM}% (생산간격당)
 
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :이 고도 위에는 도시를 생성하지 않음: {STRING}
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :지도를 생성할 때 특정 고도 위에는 도시를 만들지 않도록 만듭니다.
@@ -774,6 +791,8 @@ STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}수송량: {C
 STR_LINKGRAPH_STATS_TOOLTIP_USAGE                               :{}사용량: {CARGO_LONG}
 STR_LINKGRAPH_STATS_TOOLTIP_PLANNED                             :{}계획됨: {CARGO_LONG}
 STR_LINKGRAPH_STATS_TOOLTIP_DISTANCE                            :맨해튼 거리: {COMMA}칸{}직선 거리: {COMMA}칸
+
+STR_LINKGRAPH_STATS_TOOLTIP_PRODUCTION_INTERVAL                 :{BLACK}1 생산간격 당 {CARGO_LONG}의 화물이 {STATION}에서 {STATION}까지 수송 예정입니다 (수용량의 {COMMA}%){STRING}
 
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL                         :{BLACK}다각건설 모드로 선로를 건설합니다. CTRL 키를 누르면 건설/철거모드를 바꿀 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
 
@@ -1288,6 +1307,8 @@ STR_NEWGRF_TOO_MANY_STRINGS_DETAIL                              :{WHITE}몇몇 �
 
 STR_TOWN_VIEW_NOISE_IN_TOWN_NO_LIMIT                            :{BLACK}현재 소음 수준: {ORANGE}{COMMA}
 
+STR_TOWN_VIEW_CARGO_LAST_PRODUCTION_INTERVAL_MAX                :{BLACK}{CARGO_LIST} 지난 간격: {ORANGE}{COMMA}{BLACK}  최대: {ORANGE}{COMMA}
+
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS                :도로 건설
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_LEVEL_CROSSINGS      :건널목 건설
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TUNNELS                    :터널 건설
@@ -1425,6 +1446,8 @@ STR_INDUSTRY_VIEW_REQUIRED_TOOLTIP_NEXT                         :, {STRING}{STRI
 STR_INDUSTRY_VIEW_STOCKPILED_TOOLTIP                            :{CARGO_LONG} 대기 중{STRING}
 STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION                 :{CARGO_LONG}{STRING} ({COMMA}%)
 
+STR_INDUSTRY_VIEW_PRODUCTION_LAST_PRODUCTION_INTERVAL_TITLE     :{BLACK}지난 간격 생산량:
+
 STR_DEPOT_VIEW_COUNT_TOOLTIP                                    :{BLACK}{COMMA}대가 있음
 STR_DEPOT_VIEW_COUNT_STOPPED_TOOLTIP                            :{BLACK}차량 {COMMA}대가 정지함
 STR_DEPOT_VIEW_COUNT_WAITING_TOOLTIP                            :{BLACK}차량 {COMMA}대가 대기 중
@@ -1436,6 +1459,8 @@ STR_DEPOT_VIEW_MIXED_CONTENTS_TOOLTIP                           :{BLACK}{STRING}
 
 STR_STATION_VIEW_NAME_TOOLTIP                                   :{STATION}{NBSP}{STATION_FEATURES}
 STR_STATION_VIEW_CARGO_LINE_TOOLTIP                             :{STRING} ({COMMA}%): {CARGO_SHORT}
+
+STR_STATION_VIEW_SUPPLY_RATINGS_TITLE_PRODUCTION_INTERVAL       :{BLACK}생산간격 당 공급 및 지역 등급
 
 STR_VEHICLE_LIST_AGE                                            :{STRING}, 연령: {COMMA}년 ({COMMA})
 STR_VEHICLE_LIST_AGE_RED                                        :{STRING}, 연령: {RED}{COMMA} {BLACK}년 ({COMMA})
@@ -1523,6 +1548,14 @@ STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}{WAYPOI
 STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}{DEPOT}에 갈 수 없음, {VELOCITY}
 STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}{DEPOT}에 갈 수 없음, {VELOCITY}
 
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_SHORT                :{LTBLUE}{1:VELOCITY} - {0:STATION}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_SHORT               :{LTBLUE}{1:VELOCITY} - {0:WAYPOINT}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_SHORT                  :{ORANGE}{1:VELOCITY} - {0:DEPOT}
+
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_SHORT_END            :{LTBLUE}{STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_SHORT_END           :{LTBLUE}{WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_SHORT_END              :{ORANGE}{DEPOT}, {VELOCITY}
+
 STR_BREAKDOWN_TYPE_CRITICAL                                     :기계적 고장
 STR_BREAKDOWN_TYPE_EM_STOP                                      :비상 정지
 STR_BREAKDOWN_TYPE_LOW_SPEED                                    :{VELOCITY}로 속도 제한
@@ -1576,6 +1609,14 @@ STR_VEHICLE_DETAILS_EXTRA_ACTIONS_TOOLTIP                       :{BLACK}추가 �
 STR_VEHICLE_DETAILS_REMOVE_SPEED_RESTRICTION                    :속력 제한 제거
 STR_VEHICLE_DETAILS_SET_SPEED_RESTRICTION                       :속력 제한 설정
 STR_VEHICLE_DETAILS_REMOVE_FROM_SLOT                            :슬롯에서 제거:
+
+STR_VEHICLE_DETAILS_PRODUCTION_INTERVALS                        :생산 간격
+
+STR_VEHICLE_DETAILS_LAST_SERVICE_PRODUCTION_INTERVALS_AGO       :지난 점검: {LTBLUE}{NUM}간격
+STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PRODUCTION_INTERVALS     :{BLACK}점검 간격: {LTBLUE}{COMMA}간격{BLACK}   {STRING}
+
+STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_PRODINT :{BLACK}점검 간격을 5 생산간격씩 늘립니다. CTRL+클릭하면 점검 간격을 1 생산간격씩 늘립니다
+STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_PRODINT :{BLACK}점검 간격을 5 생산간격씩 줄입니다. CTRL+클릭하면 점검 간격을 1 생산간격씩 줄입니다
 
 STR_ORDER_DROP_CARGO_TYPE_LOAD                                  :화물 종류에 따라 싣기
 STR_ORDER_DROP_CARGO_TYPE_UNLOAD                                :화물 종류에 따라 하차
