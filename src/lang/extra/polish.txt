@@ -246,3 +246,154 @@ STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER                  :Nie wprowadzaj 
 STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_HELPTEXT         :Pojazdy, które powinny być wprowadzone w lub po tym roku nigdy nie zostaną.
 STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_VALUE            :{NUM}
 STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_ZERO             :Wył.
+
+STR_CONFIG_SETTING_SHOW_WAGON_INTRO_YEAR                        :Pokaż datę wprowadzenia wagonu w menu zakupu pojazdu: {STRING2}
+STR_CONFIG_SETTING_SHOW_WAGON_INTRO_YEAR_HELPTEXT               :Dodaj wers do menu zakupu pojazdu, pokazujący datę wprowadzenia wagonu.
+
+STR_CONFIG_SETTING_SHOW_TRAIN_LENGTH_IN_DETAILS                 :Pokaż długość pociągu w okienku detali: {STRING2}
+STR_CONFIG_SETTING_SHOW_TRAIN_LENGTH_IN_DETAILS_HELPTEXT        :Pokaż długość pociągu w okienku detali.
+
+STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS                :Pokaż grupę pojazdu w okienku detali: {STRING2}
+STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS_HELPTEXT       :Pokaż nazwę grupy pojazdu w okienku detali pojazdu.
+
+STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS          :Pokaż proporcje wagi pociągu w okienku detali: {STRING2}
+STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS_HELPTEXT :Pokaż proporcje wagi pociągu w okienku detali.
+
+STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_RECOLOUR                 :Pokaż domyślne ograniczone sygnały z niebieskimi znakami: {STRING2}
+STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_RECOLOUR_HELPTEXT        :Pokazuje elektroniczne sygnały z ograniczeniami kierowania wraz z niebieskim znakiem, gdy gracz używa domyślnej grafiki sygnałów. To nie ma wpływu na grafiki sygnałów z NewGRF. Ustawienie ma ułatwić rozpoznawanie ograniczonych sygnałów.
+
+STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF                             :Pokazuj wszystkie grafiki sygnałów używając grafiki domyślnej: {STRING2}
+STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT                    :Pokaż wszystkie sygnały używając domyślnej grafiki, zamiast grafiki z dowolnych NewGRF. To ustawienie ma ułatwić rozpoznawanie sygnałów, gdy NewGRF dodają nie dokładne grafiki.
+STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT_EXTRA              :{STRING}{}Tryb "Tylko dla ograniczonych sygnałów" używa domyślnych grafik dla sygnałów z ograniczeniami kierowania, gdy "Pokaż domyślne ograniczone sygnały z niebieskimi znakami" jest włączone i NewGRF nie ma grafik dla sygnałów ograniczonych.
+STR_CONFIG_SETTING_SHOW_ALL_SIG_RESTRICTED_RECOLOUR             :Tylko dla ograniczonych sygnałów
+
+STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES             :Pokaż zaawansowane ustawienia ograniczania sygnałów: {STRING2}
+STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :Pokaż zaawansowane ustawienia ograniczania sygnałów. Gdy wyłączone, nie które zaawansowane opcje nie będą pokazane, ale nadal będą dostępne dla wszystkich graczy.
+
+STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES                        :Pokaż opcję programowalnych sygnałów wejścia: {STRING2}
+STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES_HELPTEXT               :Gdy wyłączone, przyciski by budować i konfigurować programowalne sygnały wejścia nie będą pokazywane w UI, ale nadal będą dostępne dla wszystkich graczy.
+
+STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES                     :Pokaż blokadę jednokierunkową: {STRING2}
+STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES_HELPTEXT            :Gdy wyłączone, przyciski by budować i konfigurować blokadę jednokierunkową nie będą pokazywane w UI, ale nadal będą dostępne dla wszystkich graczy.
+
+STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES               :Pokaż zaawansowane opcje ładowania: {STRING2}
+STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES_HELPTEXT      :Pokaż zaawansowane opcje ładowania (ładowanie/rozładowywanie przez, kierunek pojazdów drogowych). Gdy wyłączone, niektóre tryby nie będą pokazywane w UI, ale nadal będą dostępne dla wszystkich graczy.
+
+STR_CONFIG_SETTING_DISABLE_TOP_VEH_LIST_MASS_ACTIONS            :Wyłącz przyciski akcji masowej dla najwyższych list pojazdów: {STRING2}
+STR_CONFIG_SETTING_DISABLE_TOP_VEH_LIST_MASS_ACTIONS_HELPTEXT   :To wyłączy przyciski serwisu/warsztatu i przyciski start/stop dla wszystkich pojazdów i niegrupowanych list pojazdów. Ta opcja ma zapobiec przypadkowemu kliknięciu któryś z tych przycisków.
+
+STR_CONFIG_SETTING_SHOW_DEPOT_SELL_GUI                          :Pokaż opcję "idź do warsztatu/hangaru i sprzedaj": {STRING2}
+STR_CONFIG_SETTING_SHOW_DEPOT_SELL_GUI_HELPTEXT                 :Gdy włączone, ctrl-kliknięcie przycisku "idź do warsztatu" pozwala na zmianę trybu obecnego polecenia warsztatu.
+
+STR_CONFIG_SETTING_OPEN_VEHICLE_GUI_CLONE_SHARE                 :Otwórz okienko nowego pojazdu podczas współ-klonowania.: {STRING2}
+STR_CONFIG_SETTING_OPEN_VEHICLE_GUI_CLONE_SHARE_HELPTEXT        :Gdy włączone, otwórz okienko nowo-sklonowanego pojazdu podczas klonowania pojazdu z poleceniami współdzielonymi z okienka warsztatu.
+
+STR_CONFIG_SETTING_VEHICLE_NAMES                                :Nazwy pojazdów names: {STRING2}
+STR_CONFIG_SETTING_VEHICLE_NAMES_HELPTEXT                       :Ustaw schemat nazywania pojazdów. To nie ma wpływu na pojazdy z niestandardową nazwą.
+STR_CONFIG_SETTING_VEHICLE_NAMES_TRADITIONAL                    :Tradycyjnie
+STR_CONFIG_SETTING_VEHICLE_NAMES_MODERN                         :Nowocześnie
+STR_CONFIG_SETTING_VEHICLE_NAMES_LONG                           :Długo
+
+STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES                       :Cieniuj drzewa na spadkach: {STRING2}
+STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES_HELPTEXT              :Zmień jasność drzew na zboczach gór. To poprawi wygląd lasów w terenach górzystych.
+
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE                        :Pytaj przed wyburzeniem struktury: {STRING2}
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_HELPTEXT               :Zapytaj o potwierdzenie przed nieodwracalnym wyburzeniem struktur.
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_OFF                    :Wył.
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_INDUSTRY               :Przemysł
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_ALL                    :Przemysł i stacje kolejowe
+
+STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW              :Oddziel lokomotywy od wagonów w okienku zakupu taboru: {STRING2}
+STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_HELPTEXT     :Gdy włączone, okienko zakupu taboru pokazuje lokomotywy i wagony oddzielnie, w dwóch kolumnach.
+
+STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_DUAL_BUTTONS :Pokaż oddzielne przyciski zakupu w okienku zakupu taboru: {STRING2}
+STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_DUAL_BUTTONS_HELPTEXT :Gdy włączone, i lista zakupu lokomotyw jak i lista zakupu wagonów w okienku zakupu taborów będzie miała własne przyciski.
+
+STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL                    :Zezwól na ukrycie oznaczeń indywidualnych posterunków: {STRING2}
+STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL_HELPTEXT           :Gdy włączone, można ukryć oznaczenie indywidualnego posterunku.{}To jest przydatne, gdy posterunki są używane dekoracyjne lub gdy mniej ważne posterunki nie potrzebują oznaczenia.
+
+STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION                      :Wyłącz animacje wody: {STRING2}
+STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_HELPTEXT             :Gdy włączone, wyłącza animację wody gdy poziom zoom'u jest równy lub większy niż ustawiony.{}To może być przydatne, by uniknąć artefaktów graficznych z animowaną wodą na wysokich poziomach zoom'u.
+STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_8X                   :Powiększenie 8x i wyżej
+STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_16X                  :Powiększenie 16x i wyżej
+STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_32X                  :Powiększenie 32x i wyżej
+
+STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT              :Pokaż zapełnienie polecenia: {STRING2}
+STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT_HELPTEXT     :Pokaż dokładne zapełnienie dla każdego polecenia, przy otwieraniu okienka poleceń pojazdu.
+
+STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME                    :Pokaż hierarchię grupy w nazwie: {STRING2}
+STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME_HELPTEXT           :Gdy włączone, nazwy grup będą miały pełną hierarchię ich rodzicielskich  nazw grup.
+
+STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME            :Pokaż hierarchię grupy w nazwie pojazdu: {STRING2}
+STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME_HELPTEXT   :Gdy włączone, i gdy "Pokaż hierarchię grupy w nazwie" jest włączone, nazwy pojazdów które posiadają nazwę grupy używają nazwy grupy z hierarchią.
+
+STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW            :Pokaż numer polecenia w okienku pojazdu: {STRING2}
+STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW_HELPTEXT   :Gdy włączone, obecne polecenie pojazdu jest widoczne w okienku pojazdu.
+
+STR_CONFIG_SETTING_SHOW_SPEED_FIRST_IN_VEHICLE_VIEW             :Pokaż prędkość przed celem w okienku pojadzu: {STRING2}
+STR_CONFIG_SETTING_SHOW_SPEED_FIRST_IN_VEHICLE_VIEW_HELPTEXT    :Gdy włączone, pokaż prędkość pojazdu przed celem podróży pojazdu w okienku pojazdu.
+
+STR_CONFIG_SETTING_SHORTEN_STATUS_VEHICLE_VIEW                  :Skróć nazwę celu podróży w okienku pojazdu: {STRING2}
+STR_CONFIG_SETTING_SHORTEN_STATUS_VEHICLE_VIEW_HELPTEXT         :Gdy włączone, skróć tekst używany by pokazać cel w okienku pojazdu.
+
+STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION                   :Ukryj domyślne lokalizacje poleceń stopu: {STRING2}
+STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION_HELPTEXT          :Gdy włączone, ukryj lokalizację polecenia zatrzymania gdy zgadza się z domyślną.
+
+STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL                              :Pokaż narzędie toru poli-liniowego: {STRING2}
+STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL_HELPTEXT                     :Gdy włączone, pasek budowy sieci kolejowej posiada przycisk do użycia narzędzia poli-lini.
+
+STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR             :Pokaż koszty utrzymania pojazdu na rok kalendarzowy/okres: {STRING2}
+STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR_HELPTEXT    :Podczas używania proporcji długości dnia większej niż jeden, pokaż koszty utrzymania pojazdu na jeden rok kalendarzowy lub jeden okres, zamiast na jeden oryginalny rok.
+
+STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Włącz zaawansowane tryby sygnałów na tunelach/mostach: {STRING2}
+STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Zezwala na użycie zaawansowanych trybów symulacji sygnałów na tunelach i mostach. Gdy wyłączone, mosty/tunele, które jeszcze nie są w trybie zaawansowanym nie mogą być zmienione w tryb zaawansowany, lecz inni gracze mogą włączyć to ustawienie i używać trybu zaawansowanego.
+
+STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED                    :Sortuj tory przez prędkość: {STRING2}
+STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED_HELPTEXT           :Sortuj typy torów przez kompatybilność i prędkość zamiast używając sortowania domyślnego.
+
+STR_CONFIG_SETTING_MAX_SIGNAL_EVALUATIONS                       :Maksymalna ilość zmian programowalnych sygnałów wejściowych w jednej chwili: {STRING2}
+STR_CONFIG_SETTING_MAX_SIGNAL_EVALUATIONS_HELPTEXT              :Maksymalna ilość zmian programowalnych sygnałów wejściowych w jednej chwili
+
+STR_CONFIG_SETTING_RAINFORESTLINE_HEIGHT                        :Linia wysokości dżungli: {STRING2}
+STR_CONFIG_SETTING_RAINFORESTLINE_HEIGHT_HELPTEXT               :Ustaw, na jakiej wysokości zaczyna się dżungla w rejonie sub-tropikalnym. Dżungla ma wpływ na warunki wzrostu przemysłu i miast.
+
+STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MODE                       :Tryb granicy klimatu: {STRING2}
+STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MODE_HELPTEXT              :Czy linia śniegu i linia dżungli/pustyni ma być automatycznie kalkulowana na podstawie procentu pokrycia, lub czy ma być kontrolowana manualnie.
+STR_CONFIG_SETTING_CLIMATE_THRESHOLD_COVERAGE                   :Automatycznie
+STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MANUAL                     :Manualnie
+
+STR_CONFIG_SETTING_RIVER_MIN_LENGTH                             :Minimalna długość rzek: {STRING2}
+STR_CONFIG_SETTING_RIVER_MIN_LENGTH_HELPTEXT                    :Minimalna długość rzek. To także kontroluje generowanie jezior.
+
+STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM                           :Losowość drogi rzeki: {STRING2}
+STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM_HELPTEXT                  :Wybierz jak losowa ma być droga rzeki.
+
+STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL                           :Rzeki wymagają, by ich źródła były na szczytach gór: {STRING2}
+STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL_HELPTEXT                  :Wybierz, czy rzeki wymagają, by ich źródła były na szczytach gór.
+
+STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH                          :Szerokość tropików dookoła rzek: {STRING2}
+STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH_HELPTEXT                 :Kontroluje szerokość rejonu tropikalnego, który otacza rzeki w rejonie sub-tropikalnym.{}To jest całkowita szerokość rejonu, liczona od brzego do brzegu.
+
+STR_CONFIG_SETTING_LAKE_TROPICS_WIDTH                           :Szerokość tropików dookoła jezior: {STRING2}
+STR_CONFIG_SETTING_LAKE_TROPICS_WIDTH_HELPTEXT                  :Kontroluje szerokość rejonu tropikalnego, który otacza jeziora w rejonie sub-tropikalnym.{}To jest całkowita szerokość rejonu, liczona od brzego do brzegu.
+
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH                          :Szerokość tropików dookoła brzegu oceanu: {STRING2}
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_HELPTEXT                 :Kontroluje szerokość rejonu tropikalnego, który otacza oceany w rejonie sub-tropikalnym.
+
+###length 4
+##default-translation STR_COLOUR_DEFAULT
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_DEFAULT                  :Domyślne
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_MEDIUM                   :Średnie
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_LARGE                    :Duże
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_EXTRALARGE               :Bardzo duże
+
+STR_CONFIG_SETTING_LAKE_SIZE                                    :Wielkość jezior: {STRING2}
+STR_CONFIG_SETTING_LAKE_SIZE_HELPTEXT                           :Kontroluje rozmiar jezior, które są generowane wraz z rzekami.
+STR_CONFIG_SETTING_LAKE_SIZE_VALUE                              :{NUM}
+STR_CONFIG_SETTING_LAKE_SIZE_ZERO                               :Brak jezior
+
+STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS                     :Rzeki i jeziora mogą być generowane w pod-tropikalnych klimatach pustyń: {STRING2}
+STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS_HELPTEXT            :Zezwala na to, czy rzeki i jeziora mogą być generowane w pod-tropikalnych klimatach pustyń.
+
+STR_CONFIG_SETTING_ROCKS_AMOUNT                                 :Wielkość rejonów skalistych: {STRING2}
+STR_CONFIG_SETTING_ROCKS_AMOUNT_HELPTEXT                        :Ustala rozmiar rejonów skalistych. Wysokie wartości pokrywają znaczną część mapy.
