@@ -1604,6 +1604,8 @@ static bool CheckRestartLoadingAtRoadStop(RoadVehicle *v)
 {
 	if (v->GetNumOrders() < 1 || !Company::Get(v->owner)->settings.remain_if_next_order_same_station) return false;
 
+	if (v->cur_implicit_order_index < v->GetNumOrders() && v->GetOrder(v->cur_implicit_order_index)->IsType(OT_IMPLICIT)) return false;
+
 	StationID station_id = v->current_order.GetDestination();
 	VehicleOrderID next_order_idx = AdvanceOrderIndexDeferred(v, v->cur_implicit_order_index);
 	const Order *next_order = v->GetOrder(next_order_idx);
@@ -1612,7 +1614,8 @@ static bool CheckRestartLoadingAtRoadStop(RoadVehicle *v)
 			(next_order->GetRoadVehTravelDirection() == INVALID_DIAGDIR || next_order->GetRoadVehTravelDirection() == DirToDiagDir(v->direction)) &&
 			!(next_order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) &&
 			IsInfraTileUsageAllowed(VEH_ROAD, v->owner, v->tile) &&
-			GetRoadStopType(v->tile) == (v->IsBus() ? ROADSTOP_BUS : ROADSTOP_TRUCK)) {
+			GetRoadStopType(v->tile) == (v->IsBus() ? ROADSTOP_BUS : ROADSTOP_TRUCK) &&
+			GetStationIndex(v->tile) == station_id) {
 		v->current_order.Free();
 		ProcessOrders(v);
 
