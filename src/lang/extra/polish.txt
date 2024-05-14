@@ -397,3 +397,58 @@ STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS_HELPTEXT            :Zezwala na to, 
 
 STR_CONFIG_SETTING_ROCKS_AMOUNT                                 :Wielkość rejonów skalistych: {STRING2}
 STR_CONFIG_SETTING_ROCKS_AMOUNT_HELPTEXT                        :Ustala rozmiar rejonów skalistych. Wysokie wartości pokrywają znaczną część mapy.
+
+STR_CONFIG_SETTING_HEIGHT_ROCKS                                 :Wielkość rejonów skalistych z wysokością: {STRING2}
+STR_CONFIG_SETTING_HEIGHT_ROCKS_HELPTEXT                        :Ustala jak bardzo rozmiar rejonów skalistych wzrasta wraz z wysokością. To ustawienie łączy się z ustawienem "Wielkość rejonó skalistych", i działa najlepiej gdy tamto ustawienie jest ustawione na małe wartości.
+
+STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY                           :Zezwalaj tylko na polecenia non-stop: {STRING2}
+STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY_HELPTEXT                  :Zezwól na tworzenie tylko poleceneń non-stop dla pociągów i pojazdów drogowych.
+
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE                      :Pokaż drogę podczas skupiania się na pojedynczym pojeździe: {STRING2}
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_HELPTEXT             :Gdy włączone, i okienko pojazdu jest skupione, pokaż znaczniki lub/i linie pomiędzy miejscami poleceń pojazdu.{}Tryb "Tylko stacje" tylko pokazuje gdzie pojazd zatrzymuje się na stacji.
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_OFF                  :Wył.
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_ALL_LOCATIONS        :Wszystkie miejsca poleceń
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_STATIONS_ONLY        :Tylko stacje
+
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS                     :Pokaż znaczniki drogi pojazdu=: {STRING2}
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS_HELPTEXT            :Gdy włączone, i okienko pojazdu jest skupione, znacznik z numerem polecenia i jego typ jest pokazany w każdym miejscu, gdzie jest polecenie.
+
+STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR             :Zaznacz pojazdy innych firm w listach z kolorem ich firmy: {STRING2}
+STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR_HELPTEXT    :Pojazdy w okienku list pojazdów, które są posiadane przez inną firmę niż właściciel listy pojazdów są zaznaczone kolorowym kwadratem w kolorze firmy pojazdu.
+
+STR_CONFIG_SETTING_ENABLE_SINGLE_VEH_SHARED_ORDER_GUI           :Włącz pojedyńcze pojazdy w okienku współdzielonych poleceń: {STRING2}
+STR_CONFIG_SETTING_ENABLE_SINGLE_VEH_SHARED_ORDER_GUI_HELPTEXT  :Zezwól na używanie okienka współdzielonych poleceń dla pojedyńczych pojazdów, nawet bez współdzielenia poleceń.
+
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SLOPES                     :Pokaż nachylenia: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SLOPES_HELPTEXT            :Gdy włączone, nachylenia są cieniowane podczas używania trybu mapy.
+
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_HEIGHT                     :Pokaż wysokość: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_HEIGHT_HELPTEXT            :Gdy włączone, podczas używania mapy wysokość jest cieniowana.
+
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_BRIDGES                    :Pokaż mosty: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_BRIDGES_HELPTEXT           :Gdy włączone, mosty są pokazywane jako przerywane linie w trybie mapy.
+
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_TUNNELS                    :Pokaż tunele: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_TUNNELS_HELPTEXT           :Gdy włączone, tunele są pokazywane jako przerywane linie w trybie mapy.
+
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP               :Pokaż przewijające okno podglądu: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_HELPTEXT      :Podczas przewijania okna podglądu, które nie jest w trybie mapy, pokaż gdzie to okno jest na jakimkolwiek oknie podglądu mapy.
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_NOTHING       :Nie pokazuj
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_CONTOUR       :Kontur
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_BLEND         :Zmieszaj z białym (tylko 32bpp)
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_SCROLLING_VP_ALL           :Zmieszaj + kontur
+
+STR_CONFIG_SETTING_VIEWPORT_MAP_USE_OWNER_COLOUR_BRIDGE_TUNNEL  :Użyj koloru właściela dla mostów i tunelów: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_USE_OWNER_COLOUR_BRIDGE_TUNNEL_HELPTEXT :Gdy włączone, w trybie mapy, linie mostów i tunelów są w kolorze ich właściciela.
+
+STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE                    :Tryb domyślny: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_DEFAULT_MODE_HELPTEXT           :Domyślny tryb wyświetlania dla głównego okna podglądu i jakikolwiek dodatkowych, gdy w trybie mapy.
+
+STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK                 :Funkcja podwójnego kliknięcia: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_HELPTEXT        :Jaka akcja ma być wykonana, podczas podwójnego kliknięcia na okno podglądu, gdy w trybie mapy.
+STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_DO_NOTHING      :Nic nie rób
+STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_ZOOM_MAIN       :Przbyliż bezpośrednio do 1x
+STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_NEW_EXTRA       :Otwórz dodatkowe okno podglądu
+
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE              :Pokaż linie drogi pojazdu: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE_HELPTEXT     :Gdy włączone, i okienko pojazdu jest skupione, między miejscami każdego polecenia pojazdu, narysowane są linie. (Polecenia warunkowe są pokazane przy użyciu żółtych linii).
