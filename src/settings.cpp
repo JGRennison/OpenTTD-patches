@@ -2295,7 +2295,7 @@ static bool TownCargoScaleGUI(SettingOnGuiCtrlData &data)
 	switch (data.type) {
 		case SOGCT_VALUE_DPARAMS:
 			if (GetGameSettings().economy.day_length_factor > 1) {
-				if (GetGameSettings().economy.town_cargo_scale_mode) {
+				if (GetGameSettings().economy.town_cargo_scale_mode == CSM_DAYLENGTH) {
 					SetDParam(data.offset, STR_CONFIG_SETTING_CARGO_SCALE_VALUE_REAL_TIME);
 				} else {
 					SetDParam(data.offset, EconTime::UsingWallclockUnits(_game_mode == GM_MENU) ? STR_CONFIG_SETTING_CARGO_SCALE_VALUE_PER_PRODUCTION_INTERVAL : STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY);
@@ -2318,7 +2318,7 @@ static bool IndustryCargoScaleGUI(SettingOnGuiCtrlData &data)
 
 		case SOGCT_VALUE_DPARAMS:
 			if (GetGameSettings().economy.day_length_factor > 1) {
-				if (GetGameSettings().economy.town_cargo_scale_mode) {
+				if (GetGameSettings().economy.industry_cargo_scale_mode == CSM_DAYLENGTH) {
 					SetDParam(data.offset, STR_CONFIG_SETTING_CARGO_SCALE_VALUE_REAL_TIME);
 				} else {
 					SetDParam(data.offset, EconTime::UsingWallclockUnits(_game_mode == GM_MENU) ? STR_CONFIG_SETTING_CARGO_SCALE_VALUE_PER_PRODUCTION_INTERVAL : STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY);
