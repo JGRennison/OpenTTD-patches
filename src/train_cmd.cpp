@@ -1119,6 +1119,7 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 				LimitSpeedFromLookAhead(max_speed, stats, this->lookahead->current_position, this->lookahead->reservation_end_position,
 						0, this->lookahead->reservation_end_z - stats.z_pos);
 			}
+			advisory_max_speed = std::min(advisory_max_speed, max_speed);
 			VehicleOrderID current_order_index = this->cur_real_order_index;
 			const Order *order = &(this->current_order);
 			StationID last_station_visited = this->last_station_visited;
