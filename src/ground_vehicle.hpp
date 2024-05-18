@@ -468,10 +468,12 @@ protected:
 			}
 		}
 
+		bool brake_overheated = false;
 		if (this->cur_speed > max_speed) {
 			if (use_realistic_braking && accel.braking >= 0) {
-				extern void TrainBrakesOverheatedBreakdown(Vehicle *v);
-				TrainBrakesOverheatedBreakdown(this);
+				extern void TrainBrakesOverheatedBreakdown(Vehicle *v, int speed, int max_speed);
+				TrainBrakesOverheatedBreakdown(this, this->cur_speed, max_speed);
+				brake_overheated = true;
 			}
 			tempmax = std::max(this->cur_speed - (this->cur_speed / 10) - 1, max_speed);
 		}
@@ -480,9 +482,9 @@ protected:
 			new_subspeed = Clamp(advisory_max_speed << 8, new_lb_subspeed, new_subspeed);
 
 			if ((new_subspeed >> 8) > tempmax) {
-				if (use_realistic_braking && accel.braking >= 0) {
-					extern void TrainBrakesOverheatedBreakdown(Vehicle *v);
-					TrainBrakesOverheatedBreakdown(this);
+				if (use_realistic_braking && accel.braking >= 0 && !brake_overheated) {
+					extern void TrainBrakesOverheatedBreakdown(Vehicle *v, int speed, int max_speed);
+					TrainBrakesOverheatedBreakdown(this, (new_subspeed >> 8), tempmax);
 				}
 				new_subspeed = tempmax << 8;
 			}
