@@ -219,7 +219,7 @@ std::string GenerateCompanyPasswordHash(const std::string &password, const std::
 	checksum.Append(salted_password_string.data(), salted_password_string.size());
 	checksum.Finish(digest);
 
-	return FormatArrayAsHex(digest);
+	return FormatArrayAsHex(digest, false);
 }
 
 /**
@@ -1375,7 +1375,7 @@ std::string NetworkGenerateRandomKeyString(uint bytes)
 	uint8_t *key = AllocaM(uint8_t, bytes);
 	RandomBytesWithFallback({ key, bytes });
 
-	return FormatArrayAsHex({key, bytes});
+	return FormatArrayAsHex({key, bytes}, false);
 }
 
 /** This tries to launch the network for a given OS */
