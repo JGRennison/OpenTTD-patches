@@ -123,8 +123,6 @@ private:
 	char buffer[24];
 };
 
-const char *GetLogPrefix();
-
 void ClearDesyncMsgLog();
 void LogDesyncMsg(std::string msg);
 char *DumpDesyncMsgLog(char *buffer, const char *last);
