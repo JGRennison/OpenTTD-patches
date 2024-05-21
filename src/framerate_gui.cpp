@@ -1042,7 +1042,7 @@ void ConPrintFramerate()
 	const int count2 = NUM_FRAMERATE_POINTS / 4;
 	const int count3 = NUM_FRAMERATE_POINTS / 1;
 
-	IConsolePrintF(TC_SILVER, "Based on num. data points: %d %d %d", count1, count2, count3);
+	IConsolePrint(TC_SILVER, "Based on num. data points: {} {} {}", count1, count2, count3);
 
 	static const char *MEASUREMENT_NAMES[PFE_MAX] = {
 		"Game loop",
@@ -1060,7 +1060,7 @@ void ConPrintFramerate()
 		"AI/GS scripts total",
 		"Game script",
 	};
-	char ai_name_buf[128];
+	std::string ai_name_buf;
 
 	static const PerformanceElement rate_elements[] = { PFE_GAMELOOP, PFE_DRAWING, PFE_VIDEO };
 
@@ -1069,7 +1069,7 @@ void ConPrintFramerate()
 	for (const PerformanceElement *e = rate_elements; e < rate_elements + lengthof(rate_elements); e++) {
 		auto &pf = _pf_data[*e];
 		if (pf.num_valid == 0) continue;
-		IConsolePrintF(TC_GREEN, "%s rate: %.2ffps  (expected: %.2ffps)",
+		IConsolePrint(TC_GREEN, "{} rate: {:.2f}fps  (expected: {:.2f}fps)",
 			MEASUREMENT_NAMES[*e],
 			pf.GetRate(),
 			pf.expected_rate);
@@ -1079,14 +1079,14 @@ void ConPrintFramerate()
 	for (PerformanceElement e = PFE_FIRST; e < PFE_MAX; e++) {
 		auto &pf = _pf_data[e];
 		if (pf.num_valid == 0) continue;
-		const char *name;
+		std::string_view name;
 		if (e < PFE_AI0) {
 			name = MEASUREMENT_NAMES[e];
 		} else {
-			seprintf(ai_name_buf, lastof(ai_name_buf), "AI %d %s", e - PFE_AI0 + 1, GetAIName(e - PFE_AI0)),
+			ai_name_buf = fmt::format("AI {} {}", e - PFE_AI0 + 1, GetAIName(e - PFE_AI0));
 			name = ai_name_buf;
 		}
-		IConsolePrintF(TC_LIGHT_BLUE, "%s times: %.2fms  %.2fms  %.2fms",
+		IConsolePrint(TC_LIGHT_BLUE, "{} times: {:.2f}ms  {:.2f}ms  {:.2f}ms",
 			name,
 			pf.GetAverageDurationMilliseconds(count1),
 			pf.GetAverageDurationMilliseconds(count2),
@@ -1095,10 +1095,17 @@ void ConPrintFramerate()
 	}
 
 	if (!printed_anything) {
-		IConsoleWarning("No performance measurements have been taken yet");
+		IConsolePrint(CC_ERROR, "No performance measurements have been taken yet.");
 	}
 }
 
+/**
+ * This drains the PFE_SOUND measurement data queue into _pf_data.
+ * PFE_SOUND measurements are made by the mixer thread and so cannot be stored
+ * into _pf_data directly, because this would not be thread safe and would violate
+ * the invariants of the FPS and frame graph windows.
+ * @see PerformanceMeasurement::~PerformanceMeasurement()
+ */
 void ProcessPendingPerformanceMeasurements()
 {
 	if (_sound_perf_pending.load(std::memory_order_acquire)) {

@@ -341,7 +341,9 @@ TEST_CASE("FormatArrayAsHex")
 {
 	CHECK(FormatArrayAsHex(std::array<uint8_t, 0>{}) == "");
 	CHECK(FormatArrayAsHex(std::array<uint8_t, 1>{0x12}) == "12");
-	CHECK(FormatArrayAsHex(std::array<uint8_t, 4>{0x13, 0x38, 0x42, 0xAF}) == "133842af");
+	CHECK(FormatArrayAsHex(std::array<uint8_t, 4>{0x13, 0x38, 0x42, 0xAF}) == "133842AF");
+	CHECK(FormatArrayAsHex(std::array<uint8_t, 4>{0x13, 0x38, 0x42, 0xAF}, true) == "133842AF");
+	CHECK(FormatArrayAsHex(std::array<uint8_t, 4>{0x13, 0x38, 0x42, 0xAF}, false) == "133842af");
 }
 
 TEST_CASE("ConvertHexToBytes")

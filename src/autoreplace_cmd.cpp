@@ -778,7 +778,6 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlag flags, bool wagon
 
 			/* Sell superfluous new vehicles that could not be inserted. */
 			if (cost.Succeeded() && wagon_removal) {
-				assert(Train::From(new_head)->gcache.cached_total_length <= _settings_game.vehicle.max_train_length * TILE_SIZE);
 				for (auto it = std::next(std::begin(replacements)); it != std::end(replacements); ++it) {
 					Vehicle *wagon = it->new_veh;
 					if (wagon == nullptr) continue;

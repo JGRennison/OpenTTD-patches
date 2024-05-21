@@ -1180,7 +1180,7 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32_t p1, uint32_t p2, uint64_
 				std::vector<uint8_t> buffer;
 				CommandSerialisationBuffer serialiser(buffer, SHRT_MAX);
 				aux_data->Serialise(serialiser);
-				aux_str = FormatArrayAsHex(buffer);
+				aux_str = FormatArrayAsHex(buffer, false);
 			}
 			std::string text_buf;
 			if (text != nullptr) {

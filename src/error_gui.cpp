@@ -386,8 +386,8 @@ void ShowErrorMessage(StringID summary_msg, StringID detailed_msg, WarningLevel 
 		if (textref_stack_size > 0) StopTextRefStackUsage();
 
 		switch (wl) {
-			case WL_WARNING: IConsolePrint(CC_WARNING, message.c_str()); break;
-			default:         IConsoleError(message.c_str()); break;
+			case WL_WARNING: IConsolePrint(CC_WARNING, message); break;
+			default:         IConsolePrint(CC_ERROR, message); break;
 		}
 	}
 

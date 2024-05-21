@@ -2,6 +2,22 @@
 
 * * *
 
+### v0.59.1 (2024-05-20)
+* Fix crash when sorting by capacity in autoreplace window.
+* Fix non-percentage servicing interval when using wallclock mode.
+* Fix road vehicles skipping orders when using implicit orders.
+* Fix setting default value for industry cargo scaling mode when loading old savegames.
+* Fix setting display for industry cargo scaling.
+* Fix crash which could occur when using autorenew/autoreplace wagon removal with leading engines longer than the train length limit.
+* Fix crash which could occur with loading certain GRFs.
+* Fix multiplayer desync when joining a server after previously loading a scenario.
+* Fix keyboard input issues on Linux/SDL.
+* Realistic braking:
+  * Fix accuracy issues with realistic acceleration and braking when a train is underpowered for ascending or descending a steep slope.
+  * Reduce sensitivity of train brakes overheated breakdown.
+* Add setting to shorten vehicle view status text.
+* Bump trunk base from commit bd7120bae41b6e7ac86c664c8220b59cd57242bb to commit 88cf99017a26f887230d2c14d057a97bbf077f7c.
+
 ### v0.59.0 (2024-05-05)
 * Fix loading recent vanilla savegame versions resulting in incorrect industry cargoes.
 * Fix incorrect station catchment/acceptance which could occur when an oil rig/water industry completed construction, which could cause multiplayer desyncs.
