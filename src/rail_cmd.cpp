@@ -3215,10 +3215,6 @@ void DrawRestrictedSignal(SignalType type, SpriteID sprite, int x, int y, int z,
 void DrawSingleSignal(TileIndex tile, const RailTypeInfo *rti, Track track, SignalState condition, SignalOffsets image, uint pos, SignalType type,
 		SignalVariant variant, const TraceRestrictProgram *prog, CustomSignalSpriteContext context)
 {
-	bool show_restricted = (prog != nullptr);
-
-	if (type == SIGTYPE_NO_ENTRY) pos ^= 1;
-
 	uint8_t style = 0;
 	if (_num_new_signal_styles > 0) {
 		switch (context.ctx_mode) {
@@ -3240,6 +3236,10 @@ void DrawSingleSignal(TileIndex tile, const RailTypeInfo *rti, Track track, Sign
 		/* Draw second signal on opposite side */
 		DrawSingleSignal(tile, rti, track, condition, image, pos, type, variant, prog, { context.ctx_mode, context.ctx_flags | CSSCF_SECOND_SIGNAL });
 	}
+
+	bool show_restricted = (prog != nullptr);
+
+	if (type == SIGTYPE_NO_ENTRY) pos ^= 1;
 
 	uint x, y;
 	GetSignalXY(tile, pos, HasBit(_signal_style_masks.signal_opposite_side, style) != ((context.ctx_flags & CSSCF_SECOND_SIGNAL) != 0), x, y);
