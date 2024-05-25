@@ -93,7 +93,7 @@ void NormalizeTrainVehInDepot(const Train *u);
 
 inline int GetTrainRealisticBrakingTargetDecelerationLimit(int acceleration_type)
 {
-	return 120 + (acceleration_type * 48);
+	return _settings_game.vehicle.train_acc_braking_percent * (120 + (acceleration_type * 48)) / 100;
 }
 
 /** Flags for TrainCache::cached_tflags */
