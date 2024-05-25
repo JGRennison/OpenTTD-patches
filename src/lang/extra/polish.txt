@@ -1,4 +1,4 @@
-##override on
+override on
 STR_NEWS_VEHICLE_AUTORENEW_FAILED                               :{WHITE}Autoodnowa zawiodła przy {VEHICLE}{}{STRING1}
 STR_NEWGRF_ERROR_FATAL_POPUP                                    :{WHITE}NewGRF "{RAW_STRING}" zwrócił błąd krytyczny: {}{STRING7}
 STR_NEWGRF_ERROR_POPUP                                          :{WHITE}NewGRF "{RAW_STRING}" zwrócił błąd: {}{STRING7}
@@ -452,3 +452,105 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_ACTION_DBLCLICK_NEW_EXTRA       :Otwórz dodatko
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE              :Pokaż linie drogi pojazdu: {STRING2}
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE_HELPTEXT     :Gdy włączone, i okienko pojazdu jest skupione, między miejscami każdego polecenia pojazdu, narysowane są linie. (Polecenia warunkowe są pokazane przy użyciu żółtych linii).
+
+STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :Styl rysowania lini drogi pojazdu: {STRING2}
+STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_HELPTEXT        :Jaki ma być styl rysowania lini pomiędzy miejscami poleceń pojazdu.
+STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :kreskowane linie {COMMA} piksel{P "" s}
+STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :proste linie
+
+STR_CONFIG_SETTING_AUTOSAVE                                     :Auto-zapisywanie: {STRING2}
+STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :Wybierz interwał między automatycznymi zapisami gry
+
+STR_CONFIG_SETTING_AUTOSAVE_REALTIME                            :Interwał auto-zapisywania używa czasu rzeczywistego: {STRING2}
+STR_CONFIG_SETTING_AUTOSAVE_REALTIME_HELPTEXT                   :Gdy włączone, interwał auto-zapisywania używa czasu rzeczywistego zamiast czasu wskazówek zegara, (gdy zaupauzowane, autozapisywanie się zatrzyma dopóki nie zrobisz żadnej zmiany w grze). {} Gdy wyłaczone, interwały auto-zapisywania używają czasu symulacji.
+
+STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT               :Autozapis podczas utraty sieci: {STRING2}
+STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT_HELPTEXT      :Gdy włączone, klienic multiplayer automatycznie zapiszą grę jeśli zostaną odłączeni od serwera.
+
+STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM                   :Ostrzeż przed nadpisaniem istniejących zapisów gry: {STRING2}
+STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_HELPTEXT          :Czy zapisywanie gry lub mapy wysokości o nazwie już isteniejącego pliku ma pokazywać okienko potwierdzenia.
+STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_DISABLED          :Nie
+STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_DIFFERENT         :Tylko jeśli różne
+STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_DIFFERENT_UNKNOWN :Tylko jeśli różne lub nieznane
+STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_ENABLED           :Tak
+
+STR_CONFIG_SETTING_AUTO_TIMETABLE_BY_DEFAULT                    :Domyślnie używaj automatycznego rozkładu jazdy: {STRING2}
+STR_CONFIG_SETTING_AUTO_TIMETABLE_BY_DEFAULT_HELPTEXT           :Wybierz, czy automatyczne ustawianie rozkładu jazdy powinno być włączone domyślnie dla nowych pojazdów
+
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT              :Domyślnie używaj rozkładu by zapewnić separację pojazdów: {STRING2}
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT_HELPTEXT     :Wybierz, czy zapewnianie sepracaji pojazdów za pomocą rozkłado powinno być włączone domyślnie dla nowych pojazdów.
+
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS                     :Pokaż pozostałe ticki w rozkładzie: {STRING2}
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS_HELPTEXT            :Podczas konwersji między tickami na dnie/minuty w rozkładzie, pokaż resztę ticków pozostałych przy dzieleniu.
+
+STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS                       :Używaj ustawień czasu klienta zamiast ustawień czasu zapisu: {STRING2}
+STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS_HELPTEXT              :Wybierz, czy użwyać ustawień czasu klienta na wyświetlanie czasu, zamiast ustawień czasu zapisanych w pliku zapisu.
+
+STR_CONFIG_SETTING_TIME_IN_MINUTES                              :Pokaż czas w minutach zamiast dniach: {STRING2}
+STR_CONFIG_SETTING_TIME_IN_MINUTES_HELPTEXT                     :Wybierz czy używać godzin i minut zamiast dni.
+
+STR_CONFIG_SETTING_TICKS_PER_MINUTE                             :Ticki per minute: {STRING2}
+STR_CONFIG_SETTING_TICKS_PER_MINUTE_HELPTEXT                    :Ilość ticków gry na minutę.
+
+STR_CONFIG_SETTING_DATE_WITH_TIME                               :Pokaż date i czas w pasku statusu: {STRING2}
+STR_CONFIG_SETTING_DATE_WITH_TIME_HELPTEXT                      :Pokaż datę i czas gry w pasku statusu.
+
+STR_CONFIG_SETTING_CLOCK_OFFSET                                 :Przesunięcie czasu w minutach: {STRING2}
+STR_CONFIG_SETTING_CLOCK_OFFSET_HELPTEXT                        :Ilość minut o ile przesunięty jest czas gry
+
+STR_CONFIG_SETTING_DATE_WITH_TIME_NONE                          :Brak
+STR_CONFIG_SETTING_DATE_WITH_TIME_Y                             :Rok
+STR_CONFIG_SETTING_DATE_WITH_TIME_YM                            :Miesiąc i rok
+STR_CONFIG_SETTING_DATE_WITH_TIME_YMD                           :Pełna data
+
+STR_CONFIG_SETTING_TIMETABLE_START_TEXT_ENTRY                   :Wpisz czas rozpoczęcia rozkładu jako tekst (wymaga czasu podanego w minutach) {STRING2}
+STR_CONFIG_SETTING_TIMETABLE_START_TEXT_ENTRY_HELPTEXT          :Wybierz czy czas startu rozkładu może być wpisany jako tekst jeżeli czas jest pokazywany w minutach.
+
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION                         :Używaj rozkładu jazdy by zapewnić separację pojazdów: {STRING2}
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION_HELPTEXT                :Wybierz czy używać separacji pojazdów za pomocą rozkładu, podczas używania automatycznego rozkładu jazdy.
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE                    :Współczynnik separacji automatycznego rozkładu: {STRING2}
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE_HELPTEXT           :Jak dużo separacji pojazdów za pomocą autoomatycznego rozkładu ma być użyte podczas każedego kroku
+
+STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS            :Zaokrąglij automatycznie wypełnione czasy rozkładów do wielokrotności tylu ticków: {STRING2}
+STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_HELPTEXT   :Czasy rozkładu poprawione przez automatyczny rozkład nie są zaokrąglane. Jeden dzień o długości 1 to 74 ticki.{} Domyślnie używana jest wartość ticków na minutę gry, inaczej 74 ticki są użyte.
+STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_VALUE      :{COMMA}{NBSP}tick{P 0 "" s}
+###setting-zero-is-special
+##default-translation STR_COLOUR_DEFAULT
+STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_DEFAULT    :Domyślnie
+
+STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION          :Domyślny czas trwania dla nowych harmonogranów wyjazdów: {STRING2}
+STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_HELPTEXT :To ustawia domyślną długość dla nowych harmonogranów wyjazdów. Domyślna wartość to 24 godziny (1440 minuty). (Gdy rozkład jest w dniach, ustawienie domyślne to 1 rok)
+STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_VALUE    :{COMMA}{NBSP}minuta{P 0 "" s}
+###setting-zero-is-special
+##default-translation STR_COLOUR_DEFAULT
+STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_DEFAULT  :Domyślnie
+
+STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE                            :Domyślne typy dróg/torów (po nowej grze/załadowaniu gry) {STRING2}
+STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_HELPTEXT                   :"Pierwsze dostępne" wybiera najstarszy typ drogi/torów, "najnowszy" używa najnowszy typ drogi/torów, "najczęściej używany" wybiera obecnie najczęściej występujący typ, "domyślny" wybiera typ domyślny.
+
+STR_CONFIG_SETTING_ENABLE_BUILD_RIVER                           :Włącz budowanie rzek: {STRING2}
+STR_CONFIG_SETTING_ENABLE_BUILD_RIVER_HELPTEXT                  :Włącz budowanie rzek.
+
+STR_CONFIG_SETTING_ENABLE_REMOVE_WATER                          :Włacz usuwanie rzek i oceanów: {STRING2}
+STR_CONFIG_SETTING_ENABLE_REMOVE_WATER_HELPTEXT                 :Włacz usuwanie rzek i oceanów
+
+STR_CONFIG_SETTING_SHARING_RAIL                                 :Zezwól na współdzielenie torów: {STRING2}
+STR_CONFIG_SETTING_SHARING_ROAD                                 :Zezwól na współdzielenie dróg i warsztatów: {STRING2}
+STR_CONFIG_SETTING_SHARING_WATER                                :Zezwól na współdzielenie portów i stoczni: {STRING2}
+STR_CONFIG_SETTING_SHARING_AIR                                  :Zezwól na współdzielenie lotnisk: {STRING2}
+STR_CONFIG_SETTING_SHARING_FEE_RAIL                             :Dzienna opłata za korzystanie z torów przez pociągi: {STRING2} za 1000 ton
+STR_CONFIG_SETTING_SHARING_FEE_ROAD                             :Opłata za postój dla pojazdów drogowych: {STRING2} za dzień
+STR_CONFIG_SETTING_SHARING_FEE_WATER                            :Opłata za dokowanie statków: {STRING2} za dzień
+STR_CONFIG_SETTING_SHARING_FEE_AIR                              :Opłata terminalowa dla statku powietrznego: {STRING2} za dzień
+STR_CONFIG_SETTING_SHARING_FEE_HELPTEXT                         :Opłata ta jest uiszczana za nieskalowany dzień (tj. czas trwania dnia przy długości dnia równej 1, czyli 74 ticków).
+STR_CONFIG_SETTING_SHARING_PAYMENT_IN_DEBT                      :Zezwolenie zadłużonym firmom na wnoszenie opłat za współdzielenie: {STRING2}
+STR_CONFIG_SETTING_SHARING_USED_BY_VEHICLES                     :Nie można zmienić tego ustawienia, pojazdy korzystają ze współdzielonej infrastruktury.
+STR_CONFIG_SETTING_SHARING_ORDERS_TO_OTHERS                     :Nie można zmienić tego ustawienia, pojazdy mają zamówienia do miejsc docelowych innych.
+
+STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_RAIL               :Zezwól konkurentom na kupowanie i odnawianie pociągów w zajezdniach: {STRING2}
+STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_ROAD               :Umożliwienie konkurentom kupowania i odnawiania pojazdów drogowych w zajezdniach: {STRING2}
+STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_WATER              :Zezwól konkurentom na kupowanie i odnawianie statków w magazynach: {STRING2}
+STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_AIR                :Umożliwienie konkurentom kupowania i odnawiania samolotów w hangarach: {STRING2}
+
+STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION                       :Włacz adaptację prędkości pociągu: {STRING2}
+STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :Gdy włączone, szybsze pociągi dostosują swoją prędkość do wolniejszych pociągów przed nimi.
