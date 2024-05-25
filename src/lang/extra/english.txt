@@ -195,6 +195,10 @@ STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED_HELPTEXT    :In the realisti
 STR_CONFIG_SETTING_LIMIT_TRAIN_ACCELERATION                     :Limit train acceleration: {STRING2}
 STR_CONFIG_SETTING_LIMIT_TRAIN_ACCELERATION_HELPTEXT            :When using the realistic train braking model, also limit the maximum acceleration of trains. This is to prevent passengers from spilling their drinks due to some train types otherwise accelerating excessively quickly.
 
+STR_CONFIG_SETTING_TRAIN_ACC_BRAKING_PERCENT                    :Train acceleration/braking scale factor: {STRING2}
+STR_CONFIG_SETTING_TRAIN_ACC_BRAKING_PERCENT_HELPTEXT           :The percentage by which train acceleration and braking is adjusted.{}{}This setting can be used to alter the acceleration and braking of trains, without changing the maximum speed of trains.
+STR_CONFIG_SETTING_TRAIN_ACC_BRAKING_PERCENT_VALUE              :{COMMA}%
+
 STR_CONFIG_SETTING_TRACK_EDIT_IGNORE_REALISTIC_BRAKING          :Track editing ignores realistic braking: {STRING2}
 STR_CONFIG_SETTING_TRACK_EDIT_IGNORE_REALISTIC_BRAKING_HELPTEXT :Allow track editing to ignore the realistic train braking model. When enabled, restrictions on editing/removing the reservation of moving trains are not enforced. This may result in non-realistic train braking behaviour.
 
