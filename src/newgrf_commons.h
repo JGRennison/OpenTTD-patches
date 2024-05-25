@@ -354,8 +354,8 @@ enum CustomSignalSpriteContextMode : uint8_t {
 
 enum CustomSignalSpriteContextFlags : uint8_t {
 	CSSCF_NONE                          = 0,
-	CSSCF_TUNNEL                        = 1 << 1,
-	CSSCF_SECOND_SIGNAL                 = 1 << 2,
+	CSSCF_TUNNEL                        = 1 << 0,
+	CSSCF_SECOND_SIGNAL                 = 1 << 1,
 };
 DECLARE_ENUM_AS_BIT_SET(CustomSignalSpriteContextFlags)
 

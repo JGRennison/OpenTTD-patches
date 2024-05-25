@@ -2295,7 +2295,7 @@ static bool TownCargoScaleGUI(SettingOnGuiCtrlData &data)
 	switch (data.type) {
 		case SOGCT_VALUE_DPARAMS:
 			if (GetGameSettings().economy.day_length_factor > 1) {
-				if (GetGameSettings().economy.town_cargo_scale_mode) {
+				if (GetGameSettings().economy.town_cargo_scale_mode == CSM_DAYLENGTH) {
 					SetDParam(data.offset, STR_CONFIG_SETTING_CARGO_SCALE_VALUE_REAL_TIME);
 				} else {
 					SetDParam(data.offset, EconTime::UsingWallclockUnits(_game_mode == GM_MENU) ? STR_CONFIG_SETTING_CARGO_SCALE_VALUE_PER_PRODUCTION_INTERVAL : STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY);
@@ -2318,7 +2318,7 @@ static bool IndustryCargoScaleGUI(SettingOnGuiCtrlData &data)
 
 		case SOGCT_VALUE_DPARAMS:
 			if (GetGameSettings().economy.day_length_factor > 1) {
-				if (GetGameSettings().economy.town_cargo_scale_mode) {
+				if (GetGameSettings().economy.industry_cargo_scale_mode == CSM_DAYLENGTH) {
 					SetDParam(data.offset, STR_CONFIG_SETTING_CARGO_SCALE_VALUE_REAL_TIME);
 				} else {
 					SetDParam(data.offset, EconTime::UsingWallclockUnits(_game_mode == GM_MENU) ? STR_CONFIG_SETTING_CARGO_SCALE_VALUE_PER_PRODUCTION_INTERVAL : STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY);
@@ -3452,7 +3452,7 @@ void IConsoleSetSetting(const char *name, const char *value, bool force_newgame)
 		const IntSettingDesc *isd = sd->AsIntSetting();
 		size_t val = isd->ParseValue(value);
 		if (!_settings_error_list.empty()) {
-			IConsolePrintF(CC_ERROR, "'%s' is not a valid value for this setting.", value);
+			IConsolePrint(CC_ERROR, "'{}' is not a valid value for this setting.", value);
 			_settings_error_list.clear();
 			return;
 		}
@@ -3461,9 +3461,9 @@ void IConsoleSetSetting(const char *name, const char *value, bool force_newgame)
 
 	if (!success) {
 		if (IsNetworkSettingsAdmin()) {
-			IConsoleError("This command/variable is not available during network games.");
+			IConsolePrint(CC_ERROR, "This command/variable is not available during network games.");
 		} else {
-			IConsoleError("This command/variable is only available to a network server.");
+			IConsolePrint(CC_ERROR, "This command/variable is only available to a network server.");
 		}
 	}
 }

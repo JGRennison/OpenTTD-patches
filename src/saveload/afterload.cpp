@@ -4071,7 +4071,7 @@ bool AfterLoadGame()
 		} else if (SlXvIsFeaturePresent(XSLFI_INDUSTRY_CARGO_ADJ, 1, 1)) {
 			_settings_game.economy.industry_cargo_scale = ScaleQuantity(100, _settings_game.old_economy.industry_cargo_scale_factor);
 		}
-		if (!SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_ADJ, 2)) {
+		if (!SlXvIsFeaturePresent(XSLFI_INDUSTRY_CARGO_ADJ, 2)) {
 			_settings_game.economy.industry_cargo_scale_mode = CSM_MONTHLY;
 		}
 	}

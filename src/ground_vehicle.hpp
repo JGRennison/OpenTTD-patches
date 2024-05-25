@@ -439,11 +439,12 @@ protected:
 	 */
 	inline uint DoUpdateSpeed(GroundVehicleAcceleration accel, int min_speed, int max_speed, int advisory_max_speed, bool use_realistic_braking)
 	{
-		const uint8_t initial_subspeed = this->subspeed;
-		uint spd = this->subspeed + accel.acceleration;
-		this->subspeed = (uint8_t)spd;
+		int new_subspeed = ((int)this->subspeed + accel.acceleration) + (this->cur_speed << 8);
+		int new_lb_subspeed = 0;
 
-		if (!use_realistic_braking) {
+		if (use_realistic_braking) {
+			new_lb_subspeed = ((int)this->subspeed + accel.braking) + (this->cur_speed << 8);
+		} else {
 			max_speed = std::min(max_speed, advisory_max_speed);
 		}
 
@@ -467,34 +468,25 @@ protected:
 			}
 		}
 
+		bool brake_overheated = false;
 		if (this->cur_speed > max_speed) {
 			if (use_realistic_braking && accel.braking >= 0) {
-				extern void TrainBrakesOverheatedBreakdown(Vehicle *v);
-				TrainBrakesOverheatedBreakdown(this);
+				extern void TrainBrakesOverheatedBreakdown(Vehicle *v, int speed, int max_speed);
+				TrainBrakesOverheatedBreakdown(this, this->cur_speed, max_speed);
+				brake_overheated = true;
 			}
 			tempmax = std::max(this->cur_speed - (this->cur_speed / 10) - 1, max_speed);
 		}
 
-		int tempspeed = this->cur_speed + ((int)spd >> 8);
+		if (use_realistic_braking && new_subspeed > (advisory_max_speed << 8) && new_lb_subspeed < new_subspeed) {
+			new_subspeed = Clamp(advisory_max_speed << 8, new_lb_subspeed, new_subspeed);
 
-		if (use_realistic_braking && tempspeed > advisory_max_speed && accel.braking != accel.acceleration) {
-			spd = initial_subspeed + accel.braking;
-			int braking_speed = this->cur_speed + ((int)spd >> 8);
-			if (braking_speed >= advisory_max_speed) {
-				if (braking_speed > tempmax) {
-					if (use_realistic_braking && accel.braking >= 0) {
-						extern void TrainBrakesOverheatedBreakdown(Vehicle *v);
-						TrainBrakesOverheatedBreakdown(this);
-					}
-					tempspeed = tempmax;
-					this->subspeed = 0;
-				} else {
-					tempspeed = braking_speed;
-					this->subspeed = (uint8_t)spd;
+			if ((new_subspeed >> 8) > tempmax) {
+				if (use_realistic_braking && accel.braking >= 0 && !brake_overheated) {
+					extern void TrainBrakesOverheatedBreakdown(Vehicle *v, int speed, int max_speed);
+					TrainBrakesOverheatedBreakdown(this, (new_subspeed >> 8), tempmax);
 				}
-			} else {
-				tempspeed = advisory_max_speed;
-				this->subspeed = 0;
+				new_subspeed = tempmax << 8;
 			}
 		}
 
@@ -503,9 +495,12 @@ protected:
 		 * threshold for some reason. That makes acceleration fail and assertions
 		 * happen in Clamp. So make it explicit that min_speed overrules the maximum
 		 * speed by explicit ordering of min and max. */
-		tempspeed = std::min(tempspeed, tempmax);
+		new_subspeed = std::min(new_subspeed, (tempmax << 8) + 255);
 
-		this->cur_speed = std::max(tempspeed, min_speed);
+		new_subspeed = std::max(new_subspeed, min_speed << 8);
+
+		this->cur_speed = new_subspeed >> 8;
+		this->subspeed = (uint8_t)new_subspeed;
 
 		int scaled_spd = this->GetAdvanceSpeed(this->cur_speed);
 

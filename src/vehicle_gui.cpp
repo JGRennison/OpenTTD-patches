@@ -3014,15 +3014,16 @@ struct VehicleDetailsWindow : Window {
 				for (uint i = 0; i < lengthof(info_strings); i++) {
 					dim = maxdim(dim, GetStringBoundingBox(info_strings[i]));
 				}
+				StringID last_year_profit_str = EconTime::UsingWallclockUnits() ? STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD : STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR;
 				if (v->type == VEH_TRAIN && _settings_client.gui.show_train_length_in_details) {
 					SetDParamMaxValue(0, _settings_game.vehicle.max_train_length * 10);
 					SetDParam(1, 1);
 					SetDParam(2, STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME);
-					SetDParam(3, STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR);
+					SetDParam(3, last_year_profit_str);
 					for (uint i = 4; i < 7; i++) SetDParamMaxValue(i, 1 << 24);
 					dim = maxdim(dim, GetStringBoundingBox(STR_VEHICLE_INFO_TRAIN_LENGTH));
 				} else {
-					SetDParam(0, STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR);
+					SetDParam(0, last_year_profit_str);
 					for (uint i = 1; i < 4; i++) SetDParamMaxValue(i, 1 << 24);
 					dim = maxdim(dim, GetStringBoundingBox(STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME));
 				}
@@ -3210,18 +3211,19 @@ struct VehicleDetailsWindow : Window {
 				}
 
 				/* Draw profit */
+				StringID last_year_profit_str = EconTime::UsingWallclockUnits() ? STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD : STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR;
 				if (v->type == VEH_TRAIN && _settings_client.gui.show_train_length_in_details) {
 					const GroundVehicleCache *gcache = v->GetGroundVehicleCache();
 					SetDParam(0, CeilDiv(gcache->cached_total_length * 10, TILE_SIZE));
 					SetDParam(1, 1);
 					SetDParam(2, STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME);
-					SetDParam(3, STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR);
+					SetDParam(3, last_year_profit_str);
 					SetDParam(4, v->GetDisplayProfitThisYear());
 					SetDParam(5, v->GetDisplayProfitLastYear());
 					SetDParam(6, v->GetDisplayProfitLifetime());
 					DrawString(tr, STR_VEHICLE_INFO_TRAIN_LENGTH);
 				} else {
-					SetDParam(0, STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR);
+					SetDParam(0, last_year_profit_str);
 					SetDParam(1, v->GetDisplayProfitThisYear());
 					SetDParam(2, v->GetDisplayProfitLastYear());
 					SetDParam(3, v->GetDisplayProfitLifetime());

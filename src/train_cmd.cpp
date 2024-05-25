@@ -1119,6 +1119,7 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 				LimitSpeedFromLookAhead(max_speed, stats, this->lookahead->current_position, this->lookahead->reservation_end_position,
 						0, this->lookahead->reservation_end_z - stats.z_pos);
 			}
+			advisory_max_speed = std::min(advisory_max_speed, max_speed);
 			VehicleOrderID current_order_index = this->cur_real_order_index;
 			const Order *order = &(this->current_order);
 			StationID last_station_visited = this->last_station_visited;
@@ -6606,7 +6607,7 @@ static bool TrainLocoHandler(Train *v, bool mode)
 		return mode ? true : HandleCrashedTrain(v); // 'this' can be deleted here
 	} else if (v->crash_anim_pos > 0) {
 		/* Reduce realistic braking brake overheating */
-		v->crash_anim_pos--;
+		v->crash_anim_pos -= (v->crash_anim_pos + 255) >> 8;
 	}
 
 	if (v->force_proceed != TFP_NONE) {
@@ -7564,8 +7565,9 @@ void TrainRoadVehicleCrashBreakdown(Vehicle *v)
 	t->reliability = 0;
 }
 
-void TrainBrakesOverheatedBreakdown(Vehicle *v)
+void TrainBrakesOverheatedBreakdown(Vehicle *v, int speed, int max_speed)
 {
+	if (v->type != VEH_TRAIN) return;
 	Train *t = Train::From(v)->First();
 	if (t->breakdown_ctr != 0 || (t->vehstatus & VS_CRASHED)) return;
 
@@ -7573,7 +7575,7 @@ void TrainBrakesOverheatedBreakdown(Vehicle *v)
 		ShowVehicleViewWindow(t);
 	}
 
-	t->crash_anim_pos = std::min<uint>(1500, t->crash_anim_pos + 200);
+	t->crash_anim_pos = std::min<uint>(1500, t->crash_anim_pos + Clamp(((speed - max_speed) * speed) / 2, 0, 500));
 	if (t->crash_anim_pos < 1500) return;
 
 	t->breakdown_ctr = 2;
