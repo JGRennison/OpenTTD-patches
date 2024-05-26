@@ -2276,18 +2276,6 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t 
 	Train *v = nullptr;
 	if (HasReservedTracks(tile, TrackToTrackBits(track))) {
 		v = GetTrainForReservation(tile, track);
-	} else if (IsPbsSignal(GetSignalType(tile, track))) {
-		/* PBS signal, might be the end of a path reservation. */
-		Trackdir td = TrackToTrackdir(track);
-		for (int i = 0; v == nullptr && i < 2; i++, td = ReverseTrackdir(td)) {
-			/* Only test the active signal side. */
-			if (!HasSignalOnTrackdir(tile, ReverseTrackdir(td))) continue;
-			TileIndex next = TileAddByDiagDir(tile, TrackdirToExitdir(td));
-			TrackBits tracks = TrackdirBitsToTrackBits(TrackdirReachesTrackdirs(td));
-			if (HasReservedTracks(next, tracks)) {
-				v = GetTrainForReservation(next, TrackBitsToTrack(GetReservedTrackbits(next) & tracks));
-			}
-		}
 	}
 	if (v != nullptr) {
 		CommandCost ret = CheckTrainReservationPreventsTrackModification(v);

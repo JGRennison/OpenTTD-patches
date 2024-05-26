@@ -62,6 +62,12 @@ struct GUIVehicleGroup {
 		});
 		return oldest->economy_age;
 	}
+
+	uint8_t GetOrderOccupancyAverage() const
+	{
+		if (this->NumVehicles() < 1) return 0;
+		return this->vehicles_begin[0]->GetOrderOccupancyAverage();
+	}
 };
 
 typedef GUIList<GUIVehicleGroup, std::nullptr_t, CargoID> GUIVehicleGroupList;

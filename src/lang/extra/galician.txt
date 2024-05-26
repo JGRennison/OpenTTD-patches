@@ -38,6 +38,10 @@ STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :Cada {COMMA} mi
 STR_RIVERS_VERY_MANY                                            :{RED}Moitísimos
 STR_RIVERS_EXTREMELY_MANY                                       :{RED}Extremadamente moitos
 
+STR_CONFIG_SETTING_BRIBE_HELPTEXT_PERIODS                       :Permitir ás empresas intentar subornar á autoridade local da vila. Se o suborno é detectado por un inspector, a empresa non poderá actuar na vila durante medio período.
+
+STR_CONFIG_SETTING_ALLOW_EXCLUSIVE_HELPTEXT_PERIODS             :Se unha empresa compra dereitos de transporte exclusivos para unha vila, as estacións dos opoñentes (de pasaxeiros e carga) non recibirán carga durante un período.
+
 STR_COMMA_SEPARATOR                                             :,{SP}
 
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
@@ -47,6 +51,7 @@ STR_UNIT_NAME_VELOCITY_GAMEUNITS                                :cadros/día
 STR_UNIT_NAME_VELOCITY_GAMEUNITS_WALLCLOCK                      :cadros/seg
 
 STR_UNITS_SECONDS_SHORT                                         :{COMMA}{NBSP}s
+STR_UNITS_PRODUCTION_INTERVALS                                  :{NUM}{NBSP}intervalo{P "" s} de produción
 
 STR_BUTTON_RENAME                                               :{BLACK}Renomear
 
@@ -90,10 +95,15 @@ STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE                         :{TINY_FONT}{BLA
 STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE_TOOLTIP               :{BLACK}Amosar unha liña por cada empresa seleccionada
 STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE_TOOLTIP                 :{BLACK}Amosar unha liña por cada carga seleccionada
 
+STR_GRAPH_LAST_72_PRODUCTION_INTERVALS_TIME_LABEL               :{TINY_FONT}{BLACK}Últimos 72 intervalos de produción
+
 STR_SMALLMAP_SCREENSHOT                                         :{BLACK}Captura de pantalla
 
 STR_NEWS_VEHICLE_NO_DEPOT_ORDER                                 :{WHITE}{VEHICLE} Non ten unha orde de depósito no seu horario
 STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE} non puido parar en {STRING} polo exceso de velocidade
+
+STR_NEWS_ROAD_REBUILDING_PERIODS                                :{BIG_FONT}{BLACK}Caos no tráfico en {TOWN}!{}{}O programa de reconstrución de estradas financiado por {STRING} trae medio período de miseria aos automobilistas!
+STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_PERIOD                    :{BIG_FONT}{BLACK}A autoridade local de {TOWN} asina un contrato con {STRING} por 1 período de dereitos de transporte exclusivos!
 
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM_LABEL   :Intervalo personalizado (minutos reais)
 STR_GAME_OPTIONS_AUTOSAVE_MINUTES_QUERY_CAPT                    :{WHITE}Intervalo de autogardado en minutos reais
@@ -283,6 +293,8 @@ STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW_HELPTEXT   :Cando está act
 STR_CONFIG_SETTING_SHOW_SPEED_FIRST_IN_VEHICLE_VIEW             :Amosar a velocidade antes do destino na xanela de vista do vehículo: {STRING}
 STR_CONFIG_SETTING_SHOW_SPEED_FIRST_IN_VEHICLE_VIEW_HELPTEXT    :Cando está habilitado, amosar a velocidade do vehículo antes do destino na barra de inicio/parada da xanela de vista do vehículo
 
+STR_CONFIG_SETTING_SHORTEN_STATUS_VEHICLE_VIEW                  :Acortar a xanela de vista do estado do vehículo: {STRING}
+STR_CONFIG_SETTING_SHORTEN_STATUS_VEHICLE_VIEW_HELPTEXT         :Cando está habilitado, acurta o texto usado para amosar o destino na barra de inicio/parada da xanela de vista do vehículo.
 
 STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION                   :Ocultar as ubicacións predeterminadas das ordes de paradas: {STRING}
 STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION_HELPTEXT          :Cando está activado, ocúltase a ubicación de parada da orde cando coincide co predeterminado.
@@ -533,8 +545,12 @@ STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE_HELPTEXT_EXTRA     :{STRING}{}O mod
 STR_CONFIG_SETTING_CARGO_SCALE_MODE_MONTHLY                     :Mensualmente
 STR_CONFIG_SETTING_CARGO_SCALE_MODE_GAME_TIME                   :Tempo de xogo
 
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_PER_PRODUCTION_INTERVAL     :Por intervalo de produción
+
 STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY                    :{NUM}% (mensualmente)
 STR_CONFIG_SETTING_CARGO_SCALE_VALUE_REAL_TIME                  :{NUM}% (tempo de xogo)
+
+STR_CONFIG_SETTING_CARGO_SCALE_VALUE_PER_PRODUCTION_INTERVAL    :{NUM}% (por intervalo de produción)
 
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :Sen vilas por enriba da altitude: {STRING}
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :Non se constrúen vilas por enriba da altitude especificada durante a creación do mapa.
@@ -775,6 +791,8 @@ STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capacidade: {
 STR_LINKGRAPH_STATS_TOOLTIP_USAGE                               :{}Uso: {CARGO_LONG}
 STR_LINKGRAPH_STATS_TOOLTIP_PLANNED                             :{}Planificado: {CARGO_LONG}
 STR_LINKGRAPH_STATS_TOOLTIP_DISTANCE                            :Distancia Manhattan: {COMMA} cadro{P 0 "" s}{}Distancia en liña recta: {COMMA} cadro{P 1 "" s}
+
+STR_LINKGRAPH_STATS_TOOLTIP_PRODUCTION_INTERVAL                 :{BLACK}{CARGO_LONG} a ser transportado por intervalo de produción desde {STATION} ata {STATION} ({COMMA}% da capacidade){STRING}
 
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL                         :{BLACK}Construír vías utilizando o modo poliliña. Ctrl alterna construír/borrar para a construción de ferrocarrís. Shift alterna construír/amosar a estimación de custos
 
@@ -1289,6 +1307,8 @@ STR_NEWGRF_TOO_MANY_STRINGS_DETAIL                              :{WHITE}Algúns 
 
 STR_TOWN_VIEW_NOISE_IN_TOWN_NO_LIMIT                            :{BLACK}Límite de ruído na localidade: {ORANGE}{COMMA}
 
+STR_TOWN_VIEW_CARGO_LAST_PRODUCTION_INTERVAL_MAX                :{BLACK}{CARGO_LIST} último intervalo: {ORANGE}{COMMA}{BLACK}  máx: {ORANGE}{COMMA}
+
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS                :Permitido construír estradas
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_LEVEL_CROSSINGS      :Permitido construír pasos a nivel
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TUNNELS                    :Permitido construír túneis
@@ -1426,6 +1446,8 @@ STR_INDUSTRY_VIEW_REQUIRED_TOOLTIP_NEXT                         :, {STRING}{STRI
 STR_INDUSTRY_VIEW_STOCKPILED_TOOLTIP                            :{CARGO_LONG} waiting{STRING}
 STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION                 :{CARGO_LONG}{STRING} ({COMMA}%)
 
+STR_INDUSTRY_VIEW_PRODUCTION_LAST_PRODUCTION_INTERVAL_TITLE     :{BLACK}Produción no último intervalo:
+
 STR_DEPOT_VIEW_COUNT_TOOLTIP                                    :{BLACK}{COMMA} vehículo{P "" s} dentro
 STR_DEPOT_VIEW_COUNT_STOPPED_TOOLTIP                            :{BLACK}{COMMA} vehiculo{P "" s} parado{P "" s} dentro
 STR_DEPOT_VIEW_COUNT_WAITING_TOOLTIP                            :{BLACK}{COMMA} vehículo{P "" s} esperando dentro
@@ -1437,6 +1459,8 @@ STR_DEPOT_VIEW_MIXED_CONTENTS_TOOLTIP                           :{BLACK}{STRING}
 
 STR_STATION_VIEW_NAME_TOOLTIP                                   :{STATION}{NBSP}{STATION_FEATURES}
 STR_STATION_VIEW_CARGO_LINE_TOOLTIP                             :{STRING} ({COMMA}%): {CARGO_SHORT}
+
+STR_STATION_VIEW_SUPPLY_RATINGS_TITLE_PRODUCTION_INTERVAL       :{BLACK}Suministro por intervalo de produción e valoración local:
 
 STR_VEHICLE_LIST_AGE                                            :{STRING}, Idade: {COMMA} ano{P "" s} ({COMMA})
 STR_VEHICLE_LIST_AGE_RED                                        :{STRING}, Idade: {RED}{COMMA} {BLACK}ano{P "" s} ({COMMA})
@@ -1524,6 +1548,14 @@ STR_VEHICLE_STATUS_CANNOT_REACH_WAYPOINT_VEL_END                :{LTBLUE}Non pod
 STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}Non pode chegar a {DEPOT}, {VELOCITY}
 STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Non pode chegar a {DEPOT}, {VELOCITY}
 
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_SHORT                :{LTBLUE}{1:VELOCITY} - {0:STATION}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_SHORT               :{LTBLUE}{1:VELOCITY} - {0:WAYPOINT}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_SHORT                  :{ORANGE}{1:VELOCITY} - {0:DEPOT}
+
+STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_SHORT_END            :{LTBLUE}{STATION}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_WAYPOINT_VEL_SHORT_END           :{LTBLUE}{WAYPOINT}, {VELOCITY}
+STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_SHORT_END              :{ORANGE}{DEPOT}, {VELOCITY}
+
 STR_BREAKDOWN_TYPE_CRITICAL                                     :Fallo mecánico
 STR_BREAKDOWN_TYPE_EM_STOP                                      :Parada de emerxencia
 STR_BREAKDOWN_TYPE_LOW_SPEED                                    :Limitado a {VELOCITY}
@@ -1577,6 +1609,14 @@ STR_VEHICLE_DETAILS_EXTRA_ACTIONS_TOOLTIP                       :{BLACK}Accións
 STR_VEHICLE_DETAILS_REMOVE_SPEED_RESTRICTION                    :Eliminar restrición de velocidade
 STR_VEHICLE_DETAILS_SET_SPEED_RESTRICTION                       :Establecer restrición de velocidade
 STR_VEHICLE_DETAILS_REMOVE_FROM_SLOT                            :Eliminar do slot:
+
+STR_VEHICLE_DETAILS_PRODUCTION_INTERVALS                        :Intervalos de produción
+
+STR_VEHICLE_DETAILS_LAST_SERVICE_PRODUCTION_INTERVALS_AGO       :Último servizo: {LTBLUE}fai {NUM} intervalo{P "" s}
+STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PRODUCTION_INTERVALS     :{BLACK}Intervalo de servizo: {LTBLUE}{COMMA}{NBSP}intervalo{P "" s}{BLACK} {STRING}
+
+STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_PRODINT :{BLACK}Aumentar o intervalo de servizo en 5 intervalos de produción. Ctrl+Click para aumentar o intervalo de servizo en 1 intervalo de produción.
+STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_PRODINT :{BLACK}Diminuír o intervalo de servizo en 5 intervalos de produción. Ctrl+Click para diminuír o intervalo de servizo en 1 intervalo de produción.
 
 STR_ORDER_DROP_CARGO_TYPE_LOAD                                  :Cargar por tipo de cargamento
 STR_ORDER_DROP_CARGO_TYPE_UNLOAD                                :Descargar por tipo de cargamento
@@ -2266,4 +2306,3 @@ STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :Ferramenta de s
 STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Fiestra da tecla modificadora
 
 STR_ERROR_CAN_T_CHANGE_SPEED_RESTRICTION                        :{WHITE}Non se pode cambiar a restrición de velocidade do vehículo...
-

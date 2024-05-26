@@ -74,6 +74,7 @@ static BaseVehicleListWindow::VehicleGroupSortFunction VehicleGroupTotalProfitTh
 static BaseVehicleListWindow::VehicleGroupSortFunction VehicleGroupTotalProfitLastYearSorter;
 static BaseVehicleListWindow::VehicleGroupSortFunction VehicleGroupAverageProfitThisYearSorter;
 static BaseVehicleListWindow::VehicleGroupSortFunction VehicleGroupAverageProfitLastYearSorter;
+static BaseVehicleListWindow::VehicleGroupSortFunction VehicleGroupAverageOrderOccupancySorter;
 
 /** Wrapper to convert a VehicleIndividualSortFunction to a VehicleGroupSortFunction */
 template <BaseVehicleListWindow::VehicleIndividualSortFunction func>
@@ -100,6 +101,16 @@ enum VehicleSortType
 	VST_TIMETABLE_DELAY,
 	VST_AVERAGE_ORDER_OCCUPANCY,
 	VST_MAX_SPEED_LOADED,
+};
+
+enum VehicleGroupSortType
+{
+	VGST_LENGTH,
+	VGST_TOTAL_PROFIT_THIS_YEAR,
+	VGST_TOTAL_PROFIT_LAST_YEAR,
+	VGST_AVERAGE_PROFIT_THIS_YEAR,
+	VGST_AVERAGE_PROFIT_LAST_YEAR,
+	VGST_AVERAGE_ORDER_OCCUPANCY,
 };
 
 BaseVehicleListWindow::VehicleGroupSortFunction * const BaseVehicleListWindow::vehicle_group_none_sorter_funcs[] = {
@@ -147,6 +158,7 @@ BaseVehicleListWindow::VehicleGroupSortFunction * const BaseVehicleListWindow::v
 	&VehicleGroupTotalProfitLastYearSorter,
 	&VehicleGroupAverageProfitThisYearSorter,
 	&VehicleGroupAverageProfitLastYearSorter,
+	&VehicleGroupAverageOrderOccupancySorter,
 };
 
 const StringID BaseVehicleListWindow::vehicle_group_shared_orders_sorter_names[] = {
@@ -155,6 +167,7 @@ const StringID BaseVehicleListWindow::vehicle_group_shared_orders_sorter_names[]
 	STR_SORT_BY_TOTAL_PROFIT_LAST_YEAR,
 	STR_SORT_BY_AVERAGE_PROFIT_THIS_YEAR,
 	STR_SORT_BY_AVERAGE_PROFIT_LAST_YEAR,
+	STR_SORT_BY_AVG_ORDER_OCCUPANCY,
 	INVALID_STRING_ID
 };
 
@@ -1507,6 +1520,12 @@ static bool VehicleGroupAverageProfitLastYearSorter(const GUIVehicleGroup &a, co
 	return a.GetDisplayProfitLastYear() * static_cast<uint>(b.NumVehicles()) < b.GetDisplayProfitLastYear() * static_cast<uint>(a.NumVehicles());
 }
 
+/** Sort vehicle groups by the average vehicle occupancy */
+static bool VehicleGroupAverageOrderOccupancySorter(const GUIVehicleGroup &a, const GUIVehicleGroup &b)
+{
+	return a.GetOrderOccupancyAverage() < b.GetOrderOccupancyAverage();
+}
+
 /** Sort vehicles by their number */
 static bool VehicleNumberSorter(const Vehicle * const &a, const Vehicle * const &b)
 {
@@ -2002,9 +2021,26 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 				GfxFillRect((tr.right - 1) - (GetCharacterHeight(FS_SMALL) - 2), ir.top + 1, tr.right - 1, (ir.top + 1) + (GetCharacterHeight(FS_SMALL) - 2), ccolour, FILLRECT_OPAQUE);
 			}
 		} else {
-			SetDParam(0, vehgroup.GetDisplayProfitThisYear());
-			SetDParam(1, vehgroup.GetDisplayProfitLastYear());
-			DrawString(tr.left, tr.right, ir.bottom - GetCharacterHeight(FS_SMALL) - WidgetDimensions::scaled.framerect.bottom, STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR);
+			StringID str = STR_JUST_STRING2;
+			SetDParam(0, STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR);
+			SetDParam(1, vehgroup.GetDisplayProfitThisYear());
+			SetDParam(2, vehgroup.GetDisplayProfitLastYear());
+
+			switch (this->vehgroups.SortType()) {
+				case VGST_AVERAGE_ORDER_OCCUPANCY: {
+					uint8_t occupancy_average = vehgroup.GetOrderOccupancyAverage();
+					if (occupancy_average >= 16) {
+						str = STR_VEHICLE_LIST_ORDER_OCCUPANCY_AVERAGE;
+						SetDParam(3, occupancy_average - 16);
+					}
+					break;
+				}
+
+				default:
+					break;
+			}
+
+			DrawString(tr.left, tr.right, ir.bottom - GetCharacterHeight(FS_SMALL) - WidgetDimensions::scaled.framerect.bottom, str);
 		}
 
 		DrawVehicleProfitButton(vehgroup.GetOldestVehicleAge(), vehgroup.GetDisplayProfitLastYear(), vehgroup.NumVehicles(), vehicle_button_x, ir.top + GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal);
