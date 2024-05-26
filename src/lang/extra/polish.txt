@@ -554,3 +554,47 @@ STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_AIR                :Umożliwienie k
 
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION                       :Włacz adaptację prędkości pociągu: {STRING2}
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :Gdy włączone, szybsze pociągi dostosują swoją prędkość do wolniejszych pociągów przed nimi.
+
+STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES                 :Road vehicles slow down in curves: {STRING2}
+STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES_HELPTEXT        :When enabled, road vehicles slow down in curves. (Only with realistic acceleration)
+
+STR_CONFIG_SETTING_SIMULATE_SIGNALS                             :Symuluj sygnały w tunelach, mostach co: {STRING2}
+STR_CONFIG_SETTING_SIMULATE_SIGNALS_HELPTEXT                    :To określa rozstaw sygnałów dla mostów i tuneli. Rzeczywisty rozstaw może się nieznacznie różnić od tego, aby uniknąć nierównego rozstawu. Zmiana tego ustawienia nie powoduje zmiany sygnalizacji istniejących mostów i tuneli.
+STR_CONFIG_SETTING_SIMULATE_SIGNALS_VALUE                       :{COMMA} pól{P 0 "" s}
+
+STR_CONFIG_SETTING_DAY_LENGTH_FACTOR                            :Współczynnik długości dnia: {STRING2}
+STR_CONFIG_SETTING_DAY_LENGTH_FACTOR_HELPTEXT                   :Tempo gry jest spowolnione przez ten czynnik.
+
+STR_CONFIG_SETTING_TOWN_TUNNELS                                 :Miasta mogą budować tunele: {STRING2}
+STR_CONFIG_SETTING_TOWN_TUNNELS_HELPTEXT                        :Na jakich warunkach miasta mogą budować tunele drogowe.
+
+###length 3
+STR_CONFIG_SETTING_TOWN_TUNNELS_FORBIDDEN                       :Zabronione
+STR_CONFIG_SETTING_TOWN_TUNNELS_ALLOWED_OBSTRUCTION             :Tylko na małe przeszkody
+STR_CONFIG_SETTING_TOWN_TUNNELS_ALLOWED                         :Zezwolone
+
+STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE                          :Ograniczenie miast budujących ciągłe pochyłe drogi: {STRING2}
+STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_HELPTEXT                 :Ogranicza długość kolejnych pochyłych pól drogi, które miasta będą budować. Można to wykorzystać, aby uniemożliwić miastom budowanie długich prostych odcinków dróg w górę lub w dół zboczy górskich.
+STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_VALUE                    :{NUM} pól{P "" s}
+STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO                     :Bez limitu
+
+STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES                           :Miasta mogą budować mosty: {STRING2}
+STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT                  :Włączenie tego ustawienia umożliwia miastom budowanie mostów.
+
+STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA          :{STRING}{}Wyłącza to branże związane z wycinką drzew.{}Nie gwarantuje pełnej zgodności ze wszystkimi przemysłowymi NewGRF'ami.
+
+STR_CONFIG_SETTING_TOWN_CARGO_SCALE_MODE                        :Przedział czasu skalowania produkcji ładunku miejskiego: {STRING2}
+STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE                    :Przedział czasu dla skalowania produkcji ładunków przemysłowych: {STRING2}
+
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :Miesięczny, lub na interwał produkcji: Produkcja ładunku na miesiąc lub na interwał produkcji jest skalowana.{}{}Czas gry: Produkcja ładunku na jednostkę czasu gry jest skalowana (produkcja ładunku na miesiąc lub przedział produkcyjny jest również skalowana przez współczynnik długości dnia). Bardzo wysokie współczynniki skalowania mogą być nieosiągalne.
+STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE_HELPTEXT_EXTRA     :{STRING}{}Tryb czasu gry nie gwarantuje pełnej kompatybilności ze wszystkimi przemysłowymi NewGRF'ami.
+
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_MONTHLY                     :Miesięcznie
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_GAME_TIME                   :Czasu-gry
+
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_PER_PRODUCTION_INTERVAL     :Na interwał produkcji
+
+STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY                    :{NUM}% (miesięcznie)
+STR_CONFIG_SETTING_CARGO_SCALE_VALUE_REAL_TIME                  :{NUM}% (czasu-gry)
+
+STR_CONFIG_SETTING_CARGO_SCALE_VALUE_PER_PRODUCTION_INTERVAL    :{NUM}% (na interwał produkcji)
