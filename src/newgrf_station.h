@@ -220,7 +220,7 @@ inline uint16_t GetStationLayoutKey(uint8_t platforms, uint8_t length)
  */
 inline bool IsWaypointClass(const StationClass &cls)
 {
-	return cls.global_id == STATION_CLASS_LABEL_WAYPOINT;
+	return cls.global_id == STATION_CLASS_LABEL_WAYPOINT || GB(cls.global_id, 24, 8) == UINT8_MAX;
 }
 
 /* Evaluate a tile's position within a station, and return the result a bitstuffed format. */

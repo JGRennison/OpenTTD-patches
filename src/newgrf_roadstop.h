@@ -220,7 +220,7 @@ void StationUpdateRoadStopCachedTriggers(BaseStation *st);
  */
 inline bool IsWaypointClass(const RoadStopClass &cls)
 {
-	return cls.global_id == ROADSTOP_CLASS_LABEL_WAYPOINT;
+	return cls.global_id == ROADSTOP_CLASS_LABEL_WAYPOINT || GB(cls.global_id, 24, 8) == UINT8_MAX;
 }
 
 #endif /* NEWGRF_ROADSTATION_H */
