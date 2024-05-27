@@ -2114,7 +2114,7 @@ uint32_t _network_join_bytes;           ///< The number of bytes we already down
 uint32_t _network_join_bytes_total;     ///< The total number of bytes to download.
 
 struct NetworkJoinStatusWindow : Window {
-	NetworkPasswordType password_type;
+	std::shared_ptr<NetworkAuthenticationPasswordRequest> request;
 
 	NetworkJoinStatusWindow(WindowDesc *desc) : Window(desc)
 	{
@@ -2210,16 +2210,12 @@ struct NetworkJoinStatusWindow : Window {
 
 	void OnQueryTextFinished(char *str) override
 	{
-		if (StrEmpty(str)) {
+		if (StrEmpty(str) || this->request == nullptr) {
 			NetworkDisconnect();
 			return;
 		}
 
-		switch (this->password_type) {
-			case NETWORK_GAME_PASSWORD:    MyClient::SendGamePassword   (str); break;
-			case NETWORK_COMPANY_PASSWORD: MyClient::SendCompanyPassword(str); break;
-			default: NOT_REACHED();
-		}
+		this->request->Reply(str);
 	}
 };
 
@@ -2247,11 +2243,11 @@ void ShowJoinStatusWindow()
 	new NetworkJoinStatusWindow(&_network_join_status_window_desc);
 }
 
-void ShowNetworkNeedPassword(NetworkPasswordType npt)
+void ShowNetworkNeedPassword(NetworkPasswordType npt, std::shared_ptr<NetworkAuthenticationPasswordRequest> request)
 {
 	NetworkJoinStatusWindow *w = (NetworkJoinStatusWindow *)FindWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
 	if (w == nullptr) return;
-	w->password_type = npt;
+	w->request = request;
 
 	StringID caption;
 	switch (npt) {

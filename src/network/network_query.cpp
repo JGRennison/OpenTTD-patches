@@ -82,7 +82,7 @@ void QueryNetworkGameSocketHandler::Send()
  */
 NetworkRecvStatus QueryNetworkGameSocketHandler::SendGameInfo()
 {
-	auto p = std::make_unique<Packet>(PACKET_CLIENT_GAME_INFO);
+	auto p = std::make_unique<Packet>(this, PACKET_CLIENT_GAME_INFO);
 	p->Send_uint32(FIND_SERVER_EXTENDED_TOKEN);
 	p->Send_uint8(PACKET_SERVER_GAME_INFO_EXTENDED);       // reply type
 	p->Send_uint16(0);                                     // flags
