@@ -61,6 +61,7 @@ template SocketList TCPListenHandler<ServerNetworkGameSocketHandler, PACKET_SERV
 static NetworkAuthenticationDefaultPasswordProvider _password_provider(_settings_client.network.server_password); ///< Provides the password validation for the game's password.
 static NetworkAuthenticationDefaultAuthorizedKeyHandler _authorized_key_handler(_settings_client.network.server_authorized_keys); ///< Provides the authorized key handling for the game authentication.
 static NetworkAuthenticationDefaultAuthorizedKeyHandler _rcon_authorized_key_handler(_settings_client.network.rcon_authorized_keys); ///< Provides the authorized key validation for rcon.
+static NetworkAuthenticationDefaultAuthorizedKeyHandler _settings_authorized_key_handler(_settings_client.network.settings_authorized_keys); ///< Provides the authorized key validation for settings access.
 
 
 /** Writing a savegame directly to a number of packets. */
@@ -1124,6 +1125,11 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_SETTINGS_PASSWO
 	if (!p.CanReadFromPacket(1)) {
 		if (this->settings_authed) DEBUG(net, 0, "[settings-ctrl] client-id %d deauthed", this->client_id);
 		this->settings_authed = false;
+	} else if (_settings_authorized_key_handler.IsAllowed(this->peer_public_key)) {
+		/* Public key in allow list */
+		DEBUG(net, 0, "[settings-ctrl] client-id %d (pubkey)", this->client_id);
+		this->settings_authed = true;
+		this->settings_auth_failures = 0;
 	} else if (_settings_client.network.settings_password.empty() ||
 			!this->ParseKeyPasswordPacket(p, ss, _settings_client.network.settings_password, nullptr, 0)) {
 		DEBUG(net, 0, "[settings-ctrl] wrong password from client-id %d", this->client_id);

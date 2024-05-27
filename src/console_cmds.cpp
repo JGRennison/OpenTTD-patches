@@ -954,6 +954,7 @@ DEF_CONSOLE_CMD(ConSettingsAccess)
 	if (argc == 0) {
 		IConsolePrint(CC_HELP, "Enable changing game settings from this client. Usage: 'settings_access <password>'");
 		IConsolePrint(CC_HELP, "Send an empty password \"\" to drop access");
+		IConsolePrint(CC_HELP, "When your client's public key is in the 'authorized keys' for 'settings', the password is not checked and may be '*'.");
 		return true;
 	}
 
@@ -2144,6 +2145,7 @@ DEF_CONSOLE_CMD(ConCompanyPassword)
 static std::vector<std::pair<std::string_view, std::vector<std::string> *>> _console_cmd_authorized_keys{
 	{ "rcon", &_settings_client.network.rcon_authorized_keys },
 	{ "server", &_settings_client.network.server_authorized_keys },
+	{ "settings", &_settings_client.network.settings_authorized_keys },
 };
 
 /**

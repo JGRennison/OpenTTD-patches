@@ -199,6 +199,7 @@ private:
 		"server_bind_addresses",
 		"server_authorized_keys",
 		"rcon_authorized_keys",
+		"settings_authorized_keys",
 	};
 
 public:
@@ -2782,6 +2783,7 @@ static void HandlePrivateSettingDescs(IniFile &private_ini, SettingDescProc *pro
 		proc_list(private_ini, "bans", _network_ban_list);
 		proc_list(private_ini, "server_authorized_keys", _settings_client.network.server_authorized_keys);
 		proc_list(private_ini, "rcon_authorized_keys", _settings_client.network.rcon_authorized_keys);
+		proc_list(private_ini, "settings_authorized_keys", _settings_client.network.settings_authorized_keys);
 	}
 }
 

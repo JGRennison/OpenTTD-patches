@@ -440,6 +440,7 @@ struct NetworkSettings {
 	std::vector<std::string> rcon_authorized_keys;        ///< Public keys of clients that are authorized to use the rconsole (server side).
 	std::string admin_password;                           ///< password for the admin network
 	std::string settings_password;                        ///< password for game settings (server side)
+	std::vector<std::string> settings_authorized_keys;    ///< Public keys of clients that are authorized to use settings access (server side).
 	std::string client_name;                              ///< name of the player (as client)
 	std::string client_secret_key;                        ///< The secret key of the client for authorized key logins.
 	std::string client_public_key;                        ///< The public key of the client for authorized key logins.
