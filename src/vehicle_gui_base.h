@@ -16,7 +16,7 @@
 #include "vehicle_base.h"
 #include "vehiclelist.h"
 #include "window_gui.h"
-#include "widgets/dropdown_type.h"
+#include "dropdown_type.h"
 #include "cargo_type.h"
 #include <iterator>
 #include <numeric>

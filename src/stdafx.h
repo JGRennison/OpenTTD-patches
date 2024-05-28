@@ -28,6 +28,13 @@
 
 #if defined(__APPLE__)
 #	include "os/macosx/osx_stdafx.h"
+#else
+/* It seems that we need to include stdint.h before anything else
+ * We need INT64_MAX, which for most systems comes from stdint.h.
+ * For OSX the inclusion is already done in osx_stdafx.h. */
+#	define __STDC_LIMIT_MACROS
+#	define __STDC_FORMAT_MACROS
+#	include <stdint.h>
 #endif /* __APPLE__ */
 
 #if defined(__HAIKU__)
@@ -35,16 +42,6 @@
 #	include <unistd.h>
 #	define _DEFAULT_SOURCE
 #	define _GNU_SOURCE
-#endif
-
-/* It seems that we need to include stdint.h before anything else
- * We need INT64_MAX, which for most systems comes from stdint.h. However, MSVC
- * does not have stdint.h.
- * For OSX the inclusion is already done in osx_stdafx.h. */
-#if !defined(__APPLE__) && (!defined(_MSC_VER) || _MSC_VER >= 1600)
-#	define __STDC_LIMIT_MACROS
-#	define __STDC_FORMAT_MACROS
-#	include <stdint.h>
 #endif
 
 #include <algorithm>
@@ -121,9 +118,6 @@
 #	pragma warning(disable: 4200)  // nonstandard extension used : zero-sized array in struct/union
 #	pragma warning(disable: 4355)  // 'this' : used in base member initializer list
 
-#	if (_MSC_VER < 1400)                   // MSVC 2005 safety checks
-#		error "Only MSVC 2005 or higher are supported. MSVC 2003 and earlier are not! Upgrade your compiler."
-#	endif /* (_MSC_VER < 1400) */
 #	pragma warning(disable: 4291)   // no matching operator delete found; memory will not be freed if initialization throws an exception (reason: our overloaded functions never throw an exception)
 #	pragma warning(disable: 4996)   // 'function': was declared deprecated
 #	pragma warning(disable: 6308)   // code analyzer: 'realloc' might return null pointer: assigning null pointer to 't_ptr', which is passed as an argument to 'realloc', will cause the original memory block to be leaked
@@ -133,15 +127,7 @@
 #	pragma warning(disable: 6255)   // code analyzer: _alloca indicates failure by raising a stack overflow exception. Consider using _malloca instead
 #	pragma warning(disable: 6246)   // code analyzer: Local declaration of 'statspec' hides declaration of the same name in outer scope. For additional information, see previous declaration at ...
 
-#	if (_MSC_VER == 1500)           // Addresses item #13 on http://blogs.msdn.com/b/vcblog/archive/2008/08/11/tr1-fixes-in-vc9-sp1.aspx, for Visual Studio 2008
-#		define _DO_NOT_DECLARE_INTERLOCKED_INTRINSICS_IN_MEMORY
-#		include <intrin.h>
-#	endif
-
 #	include <malloc.h> // alloca()
-#	if (_MSC_VER < 1900)
-#		define inline __forceinline
-#	endif
 
 #	define CDECL _cdecl
 #	define WARN_FORMAT(string, args)

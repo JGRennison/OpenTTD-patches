@@ -55,12 +55,13 @@
 #include "company_gui.h"
 #include "linkgraph/linkgraph_base.h"
 #include "linkgraph/refresh.h"
-#include "widgets/station_widget.h"
 #include "zoning.h"
 #include "tunnelbridge_map.h"
 #include "cheat_type.h"
 #include "newgrf_roadstop.h"
 #include "core/math_func.hpp"
+
+#include "widgets/station_widget.h"
 
 #include "table/strings.h"
 

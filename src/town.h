@@ -24,8 +24,10 @@
 
 template <typename T>
 struct BuildingCounts {
-	T id_count[NUM_HOUSES];
-	T class_count[HOUSE_CLASS_MAX];
+	std::vector<T> id_count;
+	std::vector<T> class_count;
+
+	bool operator==(const BuildingCounts&) const = default;
 };
 
 static const uint CUSTOM_TOWN_NUMBER_DIFFICULTY  = 4; ///< value for custom town number in difficulty settings

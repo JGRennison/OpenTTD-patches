@@ -2725,6 +2725,7 @@ STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :{WHITE}Не у�
 STR_NETWORK_ERROR_BAD_SERVER_NAME                               :{WHITE}Не указано имя сервера. Его можно ввести в верхней части окна «Сетевая игра».
 STR_NETWORK_ERROR_WRONG_REVISION                                :{WHITE}Версия этого клиента не совместима с версией сервера
 STR_NETWORK_ERROR_WRONG_PASSWORD                                :{WHITE}Неверный пароль
+STR_NETWORK_ERROR_NOT_ON_ALLOW_LIST                             :{WHITE}Ваш клиент отсутствует в списке разрешённых
 STR_NETWORK_ERROR_SERVER_FULL                                   :{WHITE}Сервер переполнен
 STR_NETWORK_ERROR_SERVER_BANNED                                 :{WHITE}Вас заблокировали на этом сервере
 STR_NETWORK_ERROR_KICKED                                        :{WHITE}Вас отключили от игры
@@ -2740,7 +2741,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Неве
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Подключение утеряно
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}В течение {NUM} секунд{P ы "" ""} от сервера не поступало никаких данных
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :общая ошибка
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :ошибка синхронизации
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :не смог загрузить карту
@@ -2752,6 +2753,7 @@ STR_NETWORK_ERROR_CLIENT_NOT_EXPECTED                           :получен 
 STR_NETWORK_ERROR_CLIENT_WRONG_REVISION                         :версии не совпадают
 STR_NETWORK_ERROR_CLIENT_NAME_IN_USE                            :это имя уже используется
 STR_NETWORK_ERROR_CLIENT_WRONG_PASSWORD                         :неверный пароль
+STR_NETWORK_ERROR_CLIENT_NOT_ON_ALLOW_LIST                      :нет в списке разрешённых
 STR_NETWORK_ERROR_CLIENT_COMPANY_MISMATCH                       :неправильный параметр company в DoCommand
 STR_NETWORK_ERROR_CLIENT_KICKED                                 :вас выкинул сервер
 STR_NETWORK_ERROR_CLIENT_CHEATER                                :попытался применить чит
@@ -4569,7 +4571,7 @@ STR_VEHICLE_VIEW_AIRCRAFT_STATUS_START_STOP_TOOLTIP             :{BLACK}Теку
 # Messages in the start stop button in the vehicle view
 STR_VEHICLE_STATUS_LOADING_UNLOADING                            :{LTBLUE}Разгрузка/Погрузка
 STR_VEHICLE_STATUS_LEAVING                                      :{LTBLUE}Отъезжает
-STR_VEHICLE_STATUS_WAITING_UNBUNCHING                           :{LTBLUE}Ожидание развязки
+STR_VEHICLE_STATUS_WAITING_UNBUNCHING                           :{LTBLUE}Ожидание распределения на маршрут
 STR_VEHICLE_STATUS_CRASHED                                      :{RED}Попал в аварию!
 STR_VEHICLE_STATUS_BROKEN_DOWN                                  :{RED}Поломка
 STR_VEHICLE_STATUS_STOPPED                                      :{RED}Остановлен
@@ -4634,10 +4636,10 @@ STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}Ёмко
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK}Выручка перевозки: {LTBLUE}{CURRENCY_LONG}
 
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS                     :{BLACK}ТО каждые {LTBLUE}{COMMA}{NBSP}дней{BLACK}. {STRING}
-STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES                  :{BLACK}ТО каждые {LTBLUE}{COMMA}{NBSP}минут{BLACK}. {STRING}
+STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES                  :{BLACK}ТО кажд{P 0 ую ые ые} {LTBLUE}{COMMA}{NBSP}минут{P у ы ""}{BLACK}. {STRING}
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT                  :{BLACK}ТО при сниж. на {LTBLUE}{COMMA}%{BLACK}. {STRING}
 STR_VEHICLE_DETAILS_LAST_SERVICE_DATE                           :ТО: {LTBLUE}{DATE_LONG}
-STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO                    :ТО: {LTBLUE}{NUM}{NBSP}мин. назад
+STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO                    :ТО: {LTBLUE}{NUM} мин. назад
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_DAYS    :{BLACK}Увеличить интервал ТО на 10{NBSP}дней. Ctrl+щелчок{NBSP}- увеличить на 5{NBSP}дней.
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_MINUTES :{BLACK}Увеличить интервал ТО на 5{NBSP}минут. Ctrl+щелчок{NBSP}- увеличить на 1{NBSP}минуту.
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_PERCENT :{BLACK}Увеличить интервал ТО на 10%. Ctrl+щелчок{NBSP}- увеличить на 5%.
@@ -4828,7 +4830,7 @@ STR_ORDER_REFIT_ORDER                                           :(Переобо
 STR_ORDER_REFIT_STOP_ORDER                                      :(Переоборуд. под {STRING.acc} и стоп)
 STR_ORDER_STOP_ORDER                                            :(Стоп)
 
-STR_ORDER_WAIT_TO_UNBUNCH                                       :(распределить)
+STR_ORDER_WAIT_TO_UNBUNCH                                       :(Распределить)
 
 STR_ORDER_GO_TO_STATION                                         :{STRING} {STATION} {STRING}
 STR_ORDER_GO_TO_STATION_CAN_T_USE_STATION                       :{PUSH_COLOUR}{RED}(Неверный тип){POP_COLOUR} {STRING} {STATION} {STRING}
@@ -5081,7 +5083,7 @@ STR_MESSAGE_ESTIMATED_COST                                      :{WHITE}Пред
 STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Предполагаемый доход: {CURRENCY_LONG}
 
 # Saveload messages
-STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Идёт сохранение,{}пожалуйста, дождитесь завершения!
+STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Идёт сохранение;{}пожалуйста, дождитесь завершения!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Ошибка автосохранения
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Не удалось прочитать диск
 STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Невозможно сохранить игру{}{STRING}
@@ -5457,7 +5459,7 @@ STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Нево
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Невозможно продать самолёт...
 
 STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Слишком много транспорта в игре
-STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Невозможно изменить частоту тех. обслуживания...
+STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Невозможно изменить частоту технического обслуживания...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... транспортное средство уничтожено
 

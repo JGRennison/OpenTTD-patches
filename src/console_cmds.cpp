@@ -2171,22 +2171,11 @@ DEF_CONSOLE_CMD(ConCompanyPassword)
 }
 
 /** All the known authorized keys with their name. */
-static std::vector<std::pair<std::string_view, std::vector<std::string> *>> _console_cmd_authorized_keys{
+static std::vector<std::pair<std::string_view, NetworkAuthorizedKeys *>> _console_cmd_authorized_keys{
 	{ "rcon", &_settings_client.network.rcon_authorized_keys },
 	{ "server", &_settings_client.network.server_authorized_keys },
 	{ "settings", &_settings_client.network.settings_authorized_keys },
 };
-
-/**
- * Simple helper to find the location of the given authorized key in the authorized keys.
- * @param authorized_keys The keys to look through.
- * @param authorized_key The key to look for.
- * @return The iterator to the location of the authorized key, or \c authorized_keys.end().
- */
-static auto FindKey(std::vector<std::string> *authorized_keys, std::string_view authorized_key)
-{
-	return std::find_if(authorized_keys->begin(), authorized_keys->end(), [authorized_key](auto &value) { return StrEqualsIgnoreCase(value, authorized_key); });
-}
 
 DEF_CONSOLE_CMD(ConNetworkAuthorizedKey)
 {
@@ -2231,11 +2220,8 @@ DEF_CONSOLE_CMD(ConNetworkAuthorizedKey)
 			}
 		}
 
-		auto iter = FindKey(authorized_keys, authorized_key);
-
 		if (StrEqualsIgnoreCase(argv[1], "add")) {
-			if (iter == authorized_keys->end()) {
-				authorized_keys->push_back(authorized_key);
+			if (authorized_keys->Add(authorized_key)) {
 				IConsolePrint(CC_INFO, "Added {} to {}.", authorized_key, name);
 			} else {
 				IConsolePrint(CC_WARNING, "Not added {} to {} as it already exists.", authorized_key, name);
@@ -2244,8 +2230,7 @@ DEF_CONSOLE_CMD(ConNetworkAuthorizedKey)
 		}
 
 		if (StrEqualsIgnoreCase(argv[1], "remove")) {
-			if (iter != authorized_keys->end()) {
-				authorized_keys->erase(iter);
+			if (authorized_keys->Remove(authorized_key)) {
 				IConsolePrint(CC_INFO, "Removed {} from {}.", authorized_key, name);
 			} else {
 				IConsolePrint(CC_WARNING, "Not removed {} from {} as it does not exist.", authorized_key, name);
@@ -2452,10 +2437,14 @@ DEF_CONSOLE_CMD(ConFont)
 		IConsolePrint(CC_HELP, "Manage the fonts configuration.");
 		IConsolePrint(CC_HELP, "Usage 'font'.");
 		IConsolePrint(CC_HELP, "  Print out the fonts configuration.");
-		IConsolePrint(CC_HELP, "Usage 'font [medium|small|large|mono] [<name>] [<size>] [aa|noaa]'.");
+		IConsolePrint(CC_HELP, "  The \"Currently active\" configuration is the one actually in effect (after interface scaling and replacing unavailable fonts).");
+		IConsolePrint(CC_HELP, "  The \"Requested\" configuration is the one requested via console command or config file.");
+		IConsolePrint(CC_HELP, "Usage 'font [medium|small|large|mono] [<font name>] [<size>] [aa|noaa]'.");
 		IConsolePrint(CC_HELP, "  Change the configuration for a font.");
 		IConsolePrint(CC_HELP, "  Omitting an argument will keep the current value.");
-		IConsolePrint(CC_HELP, "  Set <name> to \"\" for the sprite font (size and aa have no effect on sprite font).");
+		IConsolePrint(CC_HELP, "  Set <font name> to \"\" for the default font. Note that <size> and aa/noaa have no effect if the default font is in use, and fixed defaults are used instead.");
+		IConsolePrint(CC_HELP, "  If the sprite font is enabled in Game Options, it is used instead of the default font.");
+		IConsolePrint(CC_HELP, "  The <size> is automatically multiplied by the current interface scaling.");
 		return true;
 	}
 
@@ -2513,7 +2502,9 @@ DEF_CONSOLE_CMD(ConFont)
 			InitFontCache(fs == FS_MONO);
 			fc = FontCache::Get(fs);
 		}
-		IConsolePrint(CC_DEFAULT, "{}: \"{}\" {} {} [\"{}\" {} {}]", FontSizeToName(fs), fc->GetFontName(), fc->GetFontSize(), GetFontAAState(fs) ? "aa" : "noaa", setting->font, setting->size, setting->aa ? "aa" : "noaa");
+		IConsolePrint(CC_DEFAULT, "{} font:", FontSizeToName(fs));
+		IConsolePrint(CC_DEFAULT, "Currently active: \"{}\", size {}, {}", fc->GetFontName(), fc->GetFontSize(), GetFontAAState(fs) ? "aa" : "noaa");
+		IConsolePrint(CC_DEFAULT, "Requested: \"{}\", size {}, {}", setting->font, setting->size, setting->aa ? "aa" : "noaa");
 	}
 
 	FontChanged();

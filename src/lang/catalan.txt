@@ -2575,6 +2575,7 @@ STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :{WHITE}No s'ha 
 STR_NETWORK_ERROR_BAD_SERVER_NAME                               :{WHITE}No s'ha establit un nom per al vostre servidor. El nom s'estableix a la part superior de la finestra multijugador.
 STR_NETWORK_ERROR_WRONG_REVISION                                :{WHITE}La revisió d'aquest client no concorda amb la revisió del servidor
 STR_NETWORK_ERROR_WRONG_PASSWORD                                :{WHITE}Contrasenya incorrecta
+STR_NETWORK_ERROR_NOT_ON_ALLOW_LIST                             :{WHITE}No esteu en la llista de clients permesos
 STR_NETWORK_ERROR_SERVER_FULL                                   :{WHITE}El servidor està ple
 STR_NETWORK_ERROR_SERVER_BANNED                                 :{WHITE}Estàs exclòs d'aquest servidor
 STR_NETWORK_ERROR_KICKED                                        :{WHITE}T'han fet fora de la partida
@@ -2590,7 +2591,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}El vostr
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Possible pèrdua de connexió
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}Durant el darrer {NUM} segon{P "" s} no han arribat dades del servidor
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :error general
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :error de sincronització
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :no es pot carregar el mapa
@@ -2602,6 +2603,7 @@ STR_NETWORK_ERROR_CLIENT_NOT_EXPECTED                           :s'ha rebut un p
 STR_NETWORK_ERROR_CLIENT_WRONG_REVISION                         :revisió incorrecta
 STR_NETWORK_ERROR_CLIENT_NAME_IN_USE                            :nom ja utilitzat
 STR_NETWORK_ERROR_CLIENT_WRONG_PASSWORD                         :contrasenya incorrecta
+STR_NETWORK_ERROR_CLIENT_NOT_ON_ALLOW_LIST                      :no en la llista de permesos
 STR_NETWORK_ERROR_CLIENT_COMPANY_MISMATCH                       :id-companyia erroni en DoCommand
 STR_NETWORK_ERROR_CLIENT_KICKED                                 :tret pel servidor
 STR_NETWORK_ERROR_CLIENT_CHEATER                                :s'ha intentat utilitzar una trampa
@@ -4642,7 +4644,7 @@ STR_ORDER_REFIT_ORDER                                           :(Remodela a {ST
 STR_ORDER_REFIT_STOP_ORDER                                      :(Remodela a {STRING} i para)
 STR_ORDER_STOP_ORDER                                            :(Para)
 
-STR_ORDER_WAIT_TO_UNBUNCH                                       :(espera per a deixar espai entre vehicles)
+STR_ORDER_WAIT_TO_UNBUNCH                                       :(Espera per a deixar espai entre vehicles)
 
 STR_ORDER_GO_TO_STATION                                         :{STRING} {STATION} {STRING}
 STR_ORDER_GO_TO_STATION_CAN_T_USE_STATION                       :{PUSH_COLOUR}{RED}(No pot usar l'estació){POP_COLOUR} {STRING} {STATION} {STRING}
@@ -4994,7 +4996,7 @@ STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}No pots 
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}No es pot construir la seu de la companyia...
 
 # Town related errors
-STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Impossible construir poblacions
+STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Impossible construir poblacions...
 STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE}No es pot canviar el nom de la població...
 STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :{WHITE}No es pot construir una població aquí...
 STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}No es pot expandir la població...

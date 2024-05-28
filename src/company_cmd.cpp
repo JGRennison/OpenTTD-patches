@@ -37,13 +37,14 @@
 #include "story_base.h"
 #include "zoning.h"
 #include "tbtr_template_vehicle_func.h"
-#include "widgets/statusbar_widget.h"
 #include "core/backup_type.hpp"
 #include "debug_desync.h"
 #include "timer/timer.h"
 #include "timer/timer_game_tick.h"
 #include "tilehighlight_func.h"
 #include "plans_func.h"
+
+#include "widgets/statusbar_widget.h"
 
 #include "table/strings.h"
 

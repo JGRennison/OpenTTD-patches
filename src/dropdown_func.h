@@ -7,10 +7,10 @@
 
 /** @file dropdown_func.h Functions related to the drop down widget. */
 
-#ifndef WIDGETS_DROPDOWN_FUNC_H
-#define WIDGETS_DROPDOWN_FUNC_H
+#ifndef DROPDOWN_FUNC_H
+#define DROPDOWN_FUNC_H
 
-#include "../window_gui.h"
+#include "window_gui.h"
 #include "dropdown_type.h"
 
 /* Show drop down menu containing a fixed list of strings */
@@ -21,4 +21,4 @@ int HideDropDownMenu(Window *pw);
 
 void GetParentWindowInfo(Window *w, WindowClass &parent_wc, WindowNumber &parent_wn);
 
-#endif /* WIDGETS_DROPDOWN_FUNC_H */
+#endif /* DROPDOWN_FUNC_H */

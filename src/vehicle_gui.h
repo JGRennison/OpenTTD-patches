@@ -16,7 +16,7 @@
 #include "station_type.h"
 #include "engine_type.h"
 #include "company_type.h"
-#include "widgets/dropdown_func.h"
+#include "dropdown_func.h"
 #include <vector>
 
 void ShowVehicleRefitWindow(const Vehicle *v, VehicleOrderID order, Window *parent, bool auto_refit = false, bool is_virtual_train = false);

@@ -32,6 +32,8 @@
 #include "smallmap_colours.h"
 #include "smallmap_gui.h"
 
+#include "widgets/smallmap_widget.h"
+
 #include "table/strings.h"
 
 #include <bitset>

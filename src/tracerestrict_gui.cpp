@@ -21,8 +21,8 @@
 #include "company_base.h"
 #include "company_func.h"
 #include "tilehighlight_func.h"
-#include "widgets/dropdown_func.h"
-#include "widgets/dropdown_type.h"
+#include "dropdown_func.h"
+#include "dropdown_type.h"
 #include "gui.h"
 #include "gfx_func.h"
 #include "rail_map.h"
@@ -643,7 +643,7 @@ static const TraceRestrictDropDownListSet *GetSortedCargoTypeDropDownListSet()
  */
 static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &selected)
 {
-	GUIGroupList list;
+	GUIGroupOnlyList list;
 
 	for (const Group *g : Group::Iterate()) {
 		if (g->owner == owner && g->vehicle_type == VEH_TRAIN) {
@@ -652,7 +652,7 @@ static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &sel
 	}
 
 	list.ForceResort();
-	SortGUIGroupList(list);
+	SortGUIGroupOnlyList(list);
 
 	DropDownList dlist;
 	selected = -1;

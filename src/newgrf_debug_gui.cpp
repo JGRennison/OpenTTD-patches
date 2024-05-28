@@ -24,6 +24,7 @@
 #include "scope.h"
 #include "debug_settings.h"
 #include "viewport_func.h"
+#include "dropdown_type.h"
 
 #include "engine_base.h"
 #include "industry.h"
@@ -47,7 +48,6 @@
 
 #include "newgrf_config.h"
 
-#include "widgets/dropdown_type.h"
 #include "widgets/newgrf_debug_widget.h"
 
 #include "table/strings.h"

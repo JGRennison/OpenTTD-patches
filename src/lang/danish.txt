@@ -2574,6 +2574,7 @@ STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :{WHITE}Dit spil
 STR_NETWORK_ERROR_BAD_SERVER_NAME                               :{WHITE}Dit servernavn er ikke indstillet. Navnet kan indstilles øverst i Netværksspil vinduet
 STR_NETWORK_ERROR_WRONG_REVISION                                :{WHITE}Revisionen af denne klient passer ikke sammen med serverens revision
 STR_NETWORK_ERROR_WRONG_PASSWORD                                :{WHITE}Forkert kodeord
+STR_NETWORK_ERROR_NOT_ON_ALLOW_LIST                             :{WHITE}Du er ikke på listen over tilladte klienter
 STR_NETWORK_ERROR_SERVER_FULL                                   :{WHITE}Serveren er fuld
 STR_NETWORK_ERROR_SERVER_BANNED                                 :{WHITE}Du er udelukket fra denne server
 STR_NETWORK_ERROR_KICKED                                        :{WHITE}Du blev smidt ud af spillet
@@ -2589,7 +2590,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Dit spil
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Mulig forbindelses tab
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}De{P 0 t ""} sidste {NUM} sekund{P "" er} er der ikke ankommet data fra serveren
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :generel fejl
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :synkroniseringsfejl
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :kunne ikke hente kortet
@@ -2601,6 +2602,7 @@ STR_NETWORK_ERROR_CLIENT_NOT_EXPECTED                           :modtog en ikke 
 STR_NETWORK_ERROR_CLIENT_WRONG_REVISION                         :forkert revision
 STR_NETWORK_ERROR_CLIENT_NAME_IN_USE                            :navnet er allerede i brug
 STR_NETWORK_ERROR_CLIENT_WRONG_PASSWORD                         :forkert spil kodeord
+STR_NETWORK_ERROR_CLIENT_NOT_ON_ALLOW_LIST                      :ikke på listen over tilladelser
 STR_NETWORK_ERROR_CLIENT_COMPANY_MISMATCH                       :forkert firma-id i DoCommand
 STR_NETWORK_ERROR_CLIENT_KICKED                                 :smidt ud af serveren
 STR_NETWORK_ERROR_CLIENT_CHEATER                                :prøvede at snyde
@@ -4447,10 +4449,10 @@ STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}Kapacite
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK}Værdi af overført fragt: {LTBLUE}{CURRENCY_LONG}
 
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS                     :{BLACK}Serviceinterval: {LTBLUE}{COMMA}{NBSP}dage{BLACK}   {STRING}
-STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES                  :{BLACK}Serviceinterval: {LTBLUE}{COMMA}{NBSP}minutter{BLACK}   {STRING}
+STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES                  :{BLACK}Serviceinterval: {LTBLUE}{COMMA}{NBSP}minut{P "" ter}{BLACK} {STRING}
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT                  :{BLACK}Serviceinterval: {LTBLUE}{COMMA}%{BLACK}   {STRING}
 STR_VEHICLE_DETAILS_LAST_SERVICE_DATE                           :Sidste service: {LTBLUE}{DATE_LONG}
-STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO                    :Last service: {LTBLUE}{NUM} minutter siden
+STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO                    :sidste service: {LTBLUE}{NUM} minut{P "" ter} siden
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_DAYS    :{BLACK}Forøg serviceintervallet med 10 dage. Ctrl+klik for at øge serviceintervallet med 5 dage
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_MINUTES :{BLACK}Forøg serviceintervallet med 5 minutter. Ctrl+klik for at øge serviceintervallet med 1 minut
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_PERCENT :{BLACK}Forøg serviceintervallet med 10 procent. Ctrl+klik for at øge serviceintervallet med 5 procent
@@ -4641,7 +4643,7 @@ STR_ORDER_REFIT_ORDER                                           :(Tilpas til {ST
 STR_ORDER_REFIT_STOP_ORDER                                      :(Tilpas til {STRING} og stop)
 STR_ORDER_STOP_ORDER                                            :(Stop)
 
-STR_ORDER_WAIT_TO_UNBUNCH                                       :(vent med at pakke ud)
+STR_ORDER_WAIT_TO_UNBUNCH                                       :(vent med at afkoble)
 
 STR_ORDER_GO_TO_STATION                                         :{STRING} {STATION} {STRING}
 STR_ORDER_GO_TO_STATION_CAN_T_USE_STATION                       :{PUSH_COLOUR}{RED}(Kan ikke bruge station){POP_COLOUR} {STRING} {STATION} {STRING}
@@ -4993,7 +4995,7 @@ STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Kan ikke
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Kan ikke bygge selskabets hovedkvarter...
 
 # Town related errors
-STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Kan ikke bygge nogen byer
+STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Kan ikke bygge nogen byer...
 STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE}Kan ikke omdøbe byen...
 STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :{WHITE}Kan ikke bygge en by her...
 STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}Kan ikke udvide byen...

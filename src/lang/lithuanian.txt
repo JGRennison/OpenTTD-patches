@@ -385,6 +385,14 @@ STR_COLOUR_WHITE                                                :Balta
 STR_COLOUR_RANDOM                                               :Atsitiktinė
 
 ###length 17
+STR_COLOUR_SECONDARY_DARK_BLUE                                  :Tamsiai mėlynas/-a
+STR_COLOUR_SECONDARY_LIGHT_BLUE                                 :Šviesiai mėlynas/-a
+STR_COLOUR_SECONDARY_GREEN                                      :Žalias/-a
+STR_COLOUR_SECONDARY_DARK_GREEN                                 :Tamsiai žalias/-a
+STR_COLOUR_SECONDARY_BLUE                                       :Mėlynas/-a
+STR_COLOUR_SECONDARY_CREAM                                      :Kremas
+STR_COLOUR_SECONDARY_BROWN                                      :Rudas/-a
+STR_COLOUR_SECONDARY_GREY                                       :Pilkas/-a
 
 
 # Units used in OpenTTD
@@ -1173,7 +1181,10 @@ STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP                       :{BLACK}Pažymė
 
 
 STR_GAME_OPTIONS_GUI_SCALE_1X                                   :1x
+STR_GAME_OPTIONS_GUI_SCALE_2X                                   :2x
+STR_GAME_OPTIONS_GUI_SCALE_3X                                   :3x
 STR_GAME_OPTIONS_GUI_SCALE_4X                                   :4x
+STR_GAME_OPTIONS_GUI_SCALE_5X                                   :5x
 
 
 STR_GAME_OPTIONS_GRAPHICS                                       :{BLACK}Grafika
@@ -1311,6 +1322,7 @@ STR_CONFIG_SETTING_TYPE_GAME_MENU                               :žaidimo (įra�
 STR_CONFIG_SETTING_TYPE_GAME_INGAME                             :žaidimo (įrašoma kiekvieną kartą išsaugant žaidimą. Galioja tik šiuo metu aktyviai kompanijai ir tik aktyviam žaidimui)
 STR_CONFIG_SETTING_TYPE_COMPANY_MENU                            :kompanijos (įrašoma pradedant naują žaidimą)
 STR_CONFIG_SETTING_TYPE_COMPANY_INGAME                          :kompanijos (įrašoma kiekvieną kartą išsaugant žaidimą. Galioja tik šiuo metu aktyviai kompanijai)
+STR_CONFIG_SETTING_RESET_ALL_CONFIRMATION_DIALOG_CAPTION        :{WHITE}Atsargiai!
 STR_CONFIG_SETTING_RESET_ALL_CONFIRMATION_DIALOG_TEXT           :{WHITE}Šis veiksmas iš naujo nustatys visus žaidimo nustatymus į numatytąsias vertes.{}Ar tikrai norite tęsti?
 
 STR_CONFIG_SETTING_RESTRICT_CATEGORY                            :{BLACK}Kategorija:
@@ -1567,8 +1579,10 @@ STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Kartą atsirad�
 
 ###length 2
 
+STR_CONFIG_SETTING_MINUTES_PER_YEAR                             :Minutės per metus: {STRING}
 
 ###setting-zero-is-special
+STR_CONFIG_SETTING_MINUTES_PER_YEAR_FROZEN                      :0 (kalendoriaus laikas užšalęs/sustabdytas)
 
 
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE                            :Automatiškai atnaujinti transporto priemonę, kai ji pasensta: {STRING}
@@ -2287,9 +2301,11 @@ STR_LIVERY_TRAIN_TOOLTIP                                        :{BLACK}Rodyti t
 STR_LIVERY_ROAD_VEHICLE_TOOLTIP                                 :{BLACK}Rodyti automobilių spalvas
 STR_LIVERY_SHIP_TOOLTIP                                         :{BLACK}Rodyti laivų spalvas
 STR_LIVERY_AIRCRAFT_TOOLTIP                                     :{BLACK}Rodyti lėktuvų spalvas
+STR_LIVERY_TRAIN_GROUP_TOOLTIP                                  :{BLACK}Rodyti traukinių grupių spalvas
 STR_LIVERY_PRIMARY_TOOLTIP                                      :{BLACK}Pasirinkite pirminę spalvą pasirinktai schemai. Spustelėjus laikant nuspaustą Ctrl klavišą, pasirinkta spava bus nustatyta visoms schemoms.
 STR_LIVERY_SECONDARY_TOOLTIP                                    :{BLACK}Pasirinkite antrinę spalvą pasirinktai schemai. Spustelėjus laikant nuspaustą Ctrl klavišą, pasirinkta spava bus nustatyta visoms schemoms.
 STR_LIVERY_PANEL_TOOLTIP                                        :{BLACK}Pasirinkite objektą, kurio spalvas norite pakeisti. Spragsint laikant nuspaustą Ctrl klavišą, galėsite pasirinkti iškart kelis objektus.
+STR_LIVERY_TRAIN_GROUP_EMPTY                                    :Nėra nustatytų traukinių grupių
 
 ###length 23
 STR_LIVERY_DEFAULT                                              :Numatytosios spalvos
@@ -2514,6 +2530,10 @@ STR_NETWORK_ASK_RELAY_NO                                        :{BLACK}Ne
 STR_NETWORK_ASK_RELAY_YES_ONCE                                  :{BLACK}Taip, bet tik šįkart
 STR_NETWORK_ASK_RELAY_YES_ALWAYS                                :{BLACK}Taip, ir prašau nebeklausti
 
+STR_NETWORK_ASK_SURVEY_CAPTION                                  :Dalyvauti automatinėje apklausoje?
+STR_NETWORK_ASK_SURVEY_PREVIEW                                  :Peržiūrėti apklausos rezultatus
+STR_NETWORK_ASK_SURVEY_LINK                                     :Apie apklausą ir privatumą
+STR_NETWORK_ASK_SURVEY_NO                                       :Ne
 
 STR_NETWORK_SPECTATORS                                          :Stebėtojai
 
@@ -2571,7 +2591,7 @@ STR_NETWORK_ERROR_TIMEOUT_JOIN                                  :{WHITE}Per ilga
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Galimas ryšio praradimas
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}Paskutines {NUM} sekund{P ė ės žių} jokių duomenų iš serverio
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :klaida
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :sinchronizacijos klaida
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :negali užkrauti žemėlapio
@@ -3251,10 +3271,12 @@ STR_MAPGEN_MAPSIZE                                              :{BLACK}Žemėla
 STR_MAPGEN_MAPSIZE_TOOLTIP                                      :{BLACK}Pasirinkite žemėlapio dydį langeliais. Prieinamų langelių skaičius bus šiek tiek mažesnis.
 STR_MAPGEN_BY                                                   :{BLACK}*
 STR_MAPGEN_NUMBER_OF_TOWNS                                      :{BLACK}Miestų kiekis:
+STR_MAPGEN_NUMBER_OF_TOWNS_TOOLTIP                              :{BLACK}Pasirinkti gyvenviečių tankumą, arba pasirinktinę reikšmę
 STR_MAPGEN_TOWN_NAME_LABEL                                      :{BLACK}Miestų pavadinimai:
 STR_MAPGEN_TOWN_NAME_DROPDOWN_TOOLTIP                           :{BLACK}Pasirink miestų pavadinimų tipą
 STR_MAPGEN_DATE                                                 :{BLACK}Pradžios data:
 STR_MAPGEN_NUMBER_OF_INDUSTRIES                                 :{BLACK}Pramonės įmonių kiekis:
+STR_MAPGEN_NUMBER_OF_INDUSTRIES_TOOLTIP                         :{BLACK}Pasirinkti pramonės tankumą, arba pasirinktinę reikšmę
 STR_MAPGEN_HEIGHTMAP_HEIGHT                                     :{BLACK}Didžiausias aukštis
 STR_MAPGEN_HEIGHTMAP_HEIGHT_UP                                  :{BLACK}Padidinti didžiausią galimą reljefo aukštį vienetu
 STR_MAPGEN_HEIGHTMAP_HEIGHT_DOWN                                :{BLACK}Sumažinti didžiausią galimą reljefo aukštį vienetu
@@ -3274,6 +3296,7 @@ STR_MAPGEN_VARIETY                                              :{BLACK}Įvairov
 STR_MAPGEN_GENERATE                                             :{WHITE}Sukurti
 STR_MAPGEN_NEWGRF_SETTINGS                                      :{BLACK}NewGRF Nustatymai
 STR_MAPGEN_NEWGRF_SETTINGS_TOOLTIP                              :{BLACK}Rodyti NewGRF nustatymus
+STR_MAPGEN_AI_SETTINGS                                          :{BLACK}DI nustatymai
 STR_MAPGEN_AI_SETTINGS_TOOLTIP                                  :{BLACK}Rodyti DI nustatymus
 STR_MAPGEN_GS_SETTINGS                                          :{BLACK}Žaidimo scenarijaus nustatymai
 STR_MAPGEN_GS_SETTINGS_TOOLTIP                                  :{BLACK}Rodyti žaidimo scenarijaus nustatymus
@@ -3330,6 +3353,7 @@ STR_SE_MAPGEN_FLAT_WORLD                                        :{WHITE}Lygi že
 STR_SE_MAPGEN_FLAT_WORLD_TOOLTIP                                :{BLACK}Sukurti lygią žemę
 STR_SE_MAPGEN_RANDOM_LAND                                       :{WHITE}Atsitiktinis reljefas
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT                                 :{BLACK}Lygumos aukštis:
+STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_TOOLTIP                         :{BLACK}Pasirinkite žemės aukštį virš jūros lygio
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_DOWN                            :{BLACK}Pakeisti lygumos aukštį vienu žemyn
 STR_SE_MAPGEN_FLAT_WORLD_HEIGHT_UP                              :{BLACK}Pakelti žemės lygį vienu aukščiu
 
@@ -3767,10 +3791,11 @@ STR_FINANCES_CAPITAL_EXPENSES_TITLE                             :{WHITE}Kapitali
 STR_FINANCES_SECTION_CONSTRUCTION                               :{GOLD}Konstrukcijos
 STR_FINANCES_SECTION_NEW_VEHICLES                               :{GOLD}Nauja technika
 STR_FINANCES_SECTION_TRAIN_RUNNING_COSTS                        :{GOLD}Traukinių sąnaudos
-STR_FINANCES_SECTION_ROAD_VEHICLE_RUNNING_COSTS                 :{GOLD}Automobilių sąnaudos
+STR_FINANCES_SECTION_ROAD_VEHICLE_RUNNING_COSTS                 :{GOLD}Kelio transporto priemonės
 STR_FINANCES_SECTION_AIRCRAFT_RUNNING_COSTS                     :{GOLD}Lėktuvų sąnaudos
 STR_FINANCES_SECTION_SHIP_RUNNING_COSTS                         :{GOLD}Laivų sąnaudos
 STR_FINANCES_SECTION_TRAIN_REVENUE                              :{GOLD}Traukiniai
+STR_FINANCES_SECTION_ROAD_VEHICLE_REVENUE                       :{GOLD}Transporto priemonės
 STR_FINANCES_SECTION_AIRCRAFT_REVENUE                           :{GOLD}Lėktuvas
 STR_FINANCES_SECTION_LOAN_INTEREST                              :{GOLD}Paskolos palūkanos
 STR_FINANCES_SECTION_OTHER                                      :{GOLD}Kita
@@ -3781,6 +3806,7 @@ STR_FINANCES_POSITIVE_INCOME                                    :{BLACK}+{CURREN
 STR_FINANCES_PROFIT                                             :{WHITE}Pelnas
 STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}Sąskaitos balansas
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}Paskola
+STR_FINANCES_INTEREST_RATE                                      :{WHITE}Paskolų palūkanos: {BLACK}{NUM}%
 STR_FINANCES_MAX_LOAN                                           :{WHITE}Didžiausia paskola: {BLACK}{CURRENCY_LONG}
 STR_FINANCES_TOTAL_CURRENCY                                     :{BLACK}{CURRENCY_LONG}
 STR_FINANCES_BANK_BALANCE                                       :{WHITE}{CURRENCY_LONG}
@@ -4203,6 +4229,12 @@ STR_ENGINE_PREVIEW_SHIP.ka                                      :laivą
 STR_ENGINE_PREVIEW_SHIP.kuo                                     :laivu
 STR_ENGINE_PREVIEW_SHIP.kur                                     :laive
 
+STR_ENGINE_PREVIEW_COST_WEIGHT                                  :Kaina: {CURRENCY_LONG}  Svoris: {WEIGHT_SHORT}
+STR_ENGINE_PREVIEW_COST_MAX_SPEED                               :Kaina: {CURRENCY_LONG}  Maksimalus greitis: {VELOCITY}
+STR_ENGINE_PREVIEW_SPEED_POWER                                  :Greitis: {VELOCITY}  Galia: {POWER}
+STR_ENGINE_PREVIEW_SPEED_POWER_MAX_TE                           :Greitis: {VELOCITY}  Galia: {POWER}  Maks. „T.E“.: {FORCE}
+STR_ENGINE_PREVIEW_CAPACITY                                     :Talpa: {CARGO_LONG}
+STR_ENGINE_PREVIEW_CAPACITY_2                                   :Talpa: {CARGO_LONG}, {CARGO_LONG}
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Keisti tr. priemones {STRING} - {STRING}
@@ -5194,6 +5226,8 @@ STR_ERROR_AIRCRAFT_NOT_ENOUGH_RANGE                             :{WHITE}... lėk
 
 # Extra messages which go on the third line of errors, explaining why orders failed
 STR_ERROR_NO_AIRPORT                                            :{WHITE}Nėra jokio oro ar sraigtasparnio uosto
+STR_ERROR_NO_STOP_COMPATIBLE_ROAD_TYPE                          :{WHITE}Nėra jokių stabdymų su palaikomu keliu (tipu)
+STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE                          :{WHITE}Nėra jokių stabdymų su palaikomu tramvajaus tipu
 
 # Timetable related errors
 STR_ERROR_CAN_T_TIMETABLE_VEHICLE                               :{WHITE}Neįmanoma sudaryti grafiko...

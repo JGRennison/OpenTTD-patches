@@ -11,8 +11,12 @@
 #include "window_func.h"
 #include "window_gui.h"
 #include "screenshot.h"
+
 #include "widgets/screenshot_widget.h"
+
 #include "table/strings.h"
+
+#include "safeguards.h"
 
 struct ScreenshotWindow : Window {
 	ScreenshotWindow(WindowDesc *desc) : Window(desc)

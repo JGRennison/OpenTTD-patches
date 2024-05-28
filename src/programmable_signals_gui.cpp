@@ -16,7 +16,7 @@
 #include "viewport_func.h"
 #include "textbuf_gui.h"
 #include "company_func.h"
-#include "widgets/dropdown_func.h"
+#include "dropdown_func.h"
 #include "gui.h"
 #include "gfx_func.h"
 #include "tilehighlight_func.h"

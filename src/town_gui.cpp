@@ -31,7 +31,7 @@
 #include "core/geometry_func.hpp"
 #include "genworld.h"
 #include "stringfilter_type.h"
-#include "widgets/dropdown_func.h"
+#include "dropdown_func.h"
 #include "newgrf_config.h"
 #include "newgrf_house.h"
 #include "date_func.h"

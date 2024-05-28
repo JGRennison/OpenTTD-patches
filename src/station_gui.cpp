@@ -20,7 +20,7 @@
 #include "string_func.h"
 #include "window_func.h"
 #include "viewport_func.h"
-#include "widgets/dropdown_func.h"
+#include "dropdown_func.h"
 #include "station_base.h"
 #include "waypoint_base.h"
 #include "tilehighlight_func.h"
@@ -132,6 +132,15 @@ void FindStationsAroundSelection(IsSpecializedStationRightType<T> is_right_type)
 
 	/* Tile area for TileHighlightData */
 	TileArea location(TileVirtXY(_thd.pos.x, _thd.pos.y), _thd.size.x / TILE_SIZE - 1, _thd.size.y / TILE_SIZE - 1);
+
+	/* If the current tile is already a station, then it must be the nearest station. */
+	if (IsTileType(location.tile, MP_STATION) && GetTileOwner(location.tile) == _local_company) {
+		T *st = T::GetByTile(location.tile);
+		if (st != nullptr) {
+			SetViewportCatchmentSpecializedStation<T>(st, true);
+			return;
+		}
+	}
 
 	/* Extended area by one tile */
 	uint x = TileX(location.tile);

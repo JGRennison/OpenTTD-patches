@@ -2215,6 +2215,7 @@ static void DoCreateTown(Town *t, TileIndex tile, uint32_t townnameparts, TownSi
 	UpdateTownRadius(t);
 	t->flags = 0;
 	t->cache.population = 0;
+	InitializeBuildingCounts(t);
 	/* Spread growth across ticks so even if there are many
 	 * similar towns they're unlikely to grow all in one tick */
 	t->grow_counter = t->index % TOWN_GROWTH_TICKS;
@@ -3111,20 +3112,19 @@ static bool BuildTownHouse(Town *t, TileIndex tile)
 	/* bits 0-4 are used
 	 * bits 11-15 are used
 	 * bits 5-10 are not used. */
-	HouseID houses[NUM_HOUSES];
-	uint num = 0;
-	uint probs[NUM_HOUSES];
+	static std::vector<std::pair<HouseID, uint>> probs;
+	probs.clear();
+
 	uint probability_max = 0;
 
 	/* Generate a list of all possible houses that can be built. */
-	for (uint i = 0; i < NUM_HOUSES; i++) {
-		if (IsHouseTypeAllowed((HouseID)i, above_snowline, zone, false).Failed()) continue;
-		if (IsAnotherHouseTypeAllowedInTown(t, (HouseID)i).Failed()) continue;
+	for (const auto &hs : HouseSpec::Specs()) {
+		if (IsHouseTypeAllowed(hs.Index(), above_snowline, zone, false).Failed()) continue;
+		if (IsAnotherHouseTypeAllowedInTown(t, hs.Index()).Failed()) continue;
 
-		uint cur_prob = HouseSpec::Get(i)->probability;
+		uint cur_prob = hs.probability;
 		probability_max += cur_prob;
-		probs[num] = cur_prob;
-		houses[num++] = (HouseID)i;
+		probs.emplace_back(std::make_pair(hs.Index(), cur_prob));
 	}
 
 	TileIndex baseTile = tile;
@@ -3139,18 +3139,17 @@ static bool BuildTownHouse(Town *t, TileIndex tile)
 
 		uint r = RandomRange(probability_max);
 		uint i;
-		for (i = 0; i < num; i++) {
-			if (probs[i] > r) break;
-			r -= probs[i];
+		for (i = 0; i < probs.size(); i++) {
+			if (probs[i].second > r) break;
+			r -= probs[i].second;
 		}
 
-		HouseID house = houses[i];
-		probability_max -= probs[i];
+		HouseID house = probs[i].first;
+		probability_max -= probs[i].second;
 
 		/* remove tested house from the set */
-		num--;
-		houses[i] = houses[num];
-		probs[i] = probs[num];
+		probs[i] = probs.back();
+		probs.pop_back();
 
 		CommandCost ret = CheckCanBuildHouse(house, t, false);
 		if (ret.Failed()) continue;
@@ -4578,17 +4577,3 @@ extern const TileTypeProcs _tile_type_town_procs = {
 	GetFoundation_Town,      // get_foundation_proc
 	TerraformTile_Town,      // terraform_tile_proc
 };
-
-
-HouseSpec _house_specs[NUM_HOUSES];
-
-void ResetHouses()
-{
-	ResetHouseClassIDs();
-
-	auto insert = std::copy(std::begin(_original_house_specs), std::end(_original_house_specs), std::begin(_house_specs));
-	std::fill(insert, std::end(_house_specs), HouseSpec{});
-
-	/* Reset any overrides that have been set. */
-	_house_mngr.ResetOverride();
-}

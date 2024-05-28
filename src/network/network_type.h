@@ -73,7 +73,6 @@ struct NetworkCompanyStats {
 /** Some state information of a company, especially for servers */
 struct NetworkCompanyState {
 	std::string password; ///< The password for the company
-	uint16_t months_empty;  ///< How many months the company is empty
 };
 
 struct NetworkClientInfo;
@@ -167,6 +166,19 @@ struct NetworkTextMessageData {
 		p.Send_uint64(this->data);
 		p.Send_uint64(this->auxdata);
 	}
+};
+
+/**
+ * Simple helper to (more easily) manage authorized keys.
+ *
+ * The authorized keys are hexadecimal representations of their binary form.
+ * The authorized keys are case insensitive.
+ */
+class NetworkAuthorizedKeys : public std::vector<std::string> {
+public:
+	bool Contains(std::string_view key) const;
+	bool Add(std::string_view key);
+	bool Remove(std::string_view key);
 };
 
 #endif /* NETWORK_TYPE_H */

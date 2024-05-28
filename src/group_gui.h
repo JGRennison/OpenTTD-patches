@@ -12,9 +12,23 @@
 
 #include "company_type.h"
 #include "vehicle_type.h"
+#include "group.h"
+#include "sortlist_type.h"
 
 void ShowCompanyGroup(CompanyID company, VehicleType veh, GroupID group = INVALID_GROUP, bool need_existing_window = false);
 void ShowCompanyGroupForVehicle(const Vehicle *v);
 void DeleteGroupHighlightOfVehicle(const Vehicle *v);
+
+struct GUIGroupListItem {
+	const Group *group;
+	int8_t indent;              ///< Display indentation level.
+
+	constexpr GUIGroupListItem(const Group *group, int8_t indent) : group(group), indent(indent) {}
+};
+
+using GUIGroupList = GUIList<GUIGroupListItem>;
+
+void BuildGuiGroupList(GUIGroupList &dst, bool fold, Owner owner, VehicleType veh_type);
+void SortGUIGroupList(GUIGroupList &list);
 
 #endif /* GROUP_GUI_H */

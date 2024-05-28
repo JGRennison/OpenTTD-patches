@@ -26,7 +26,7 @@
 #include "vehicle_func.h"
 #include "autoreplace_gui.h"
 #include "string_func.h"
-#include "widgets/dropdown_func.h"
+#include "dropdown_func.h"
 #include "timetable.h"
 #include "articulated_vehicles.h"
 #include "spritecache.h"
@@ -440,18 +440,20 @@ DropDownList BaseVehicleListWindow::BuildActionDropdownList(bool show_autoreplac
 	bool disable = this->own_vehicles == 0;
 	bool mass_action_disable = disable || (_settings_client.gui.disable_top_veh_list_mass_actions && consider_top_level);
 
-	if (show_autoreplace) list.push_back(std::make_unique<DropDownListStringItem>(STR_VEHICLE_LIST_REPLACE_VEHICLES, ADI_REPLACE, disable));
-	if (show_autoreplace && show_template_replace) {
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_TMPL_TEMPLATE_REPLACEMENT, ADI_TEMPLATE_REPLACE, disable));
+	/* Autoreplace actions. */
+	if (show_autoreplace) {
+		list.push_back(std::make_unique<DropDownListStringItem>(STR_VEHICLE_LIST_REPLACE_VEHICLES, ADI_REPLACE, disable));
+		if (show_template_replace) {
+			list.push_back(std::make_unique<DropDownListStringItem>(STR_TMPL_TEMPLATE_REPLACEMENT, ADI_TEMPLATE_REPLACE, disable));
+		}
+		list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
 	}
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_VEHICLE_LIST_SEND_FOR_SERVICING, ADI_SERVICE, mass_action_disable));
-	list.push_back(std::make_unique<DropDownListStringItem>(this->vehicle_depot_name[this->vli.vtype], ADI_DEPOT, mass_action_disable));
-	if (_settings_client.gui.show_depot_sell_gui) list.push_back(std::make_unique<DropDownListStringItem>(this->vehicle_depot_sell_name[this->vli.vtype], ADI_DEPOT_SELL, mass_action_disable));
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE, ADI_CANCEL_DEPOT, mass_action_disable));
 
+	/* Group actions. */
 	if (show_group) {
 		list.push_back(std::make_unique<DropDownListStringItem>(STR_GROUP_ADD_SHARED_VEHICLE, ADI_ADD_SHARED, disable));
 		list.push_back(std::make_unique<DropDownListStringItem>(STR_GROUP_REMOVE_ALL_VEHICLES, ADI_REMOVE_ALL, disable));
+		list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
 	}
 	list.push_back(std::make_unique<DropDownListStringItem>(STR_TRACE_RESTRICT_SLOT_MANAGE, ADI_TRACERESTRICT_SLOT_MGMT, false));
 	if (_settings_client.gui.show_adv_tracerestrict_features) {
@@ -463,6 +465,14 @@ DropDownList BaseVehicleListWindow::BuildActionDropdownList(bool show_autoreplac
 	if (show_create_group) {
 		list.push_back(std::make_unique<DropDownListStringItem>(STR_VEHICLE_LIST_CREATE_GROUP, ADI_CREATE_GROUP, disable));
 	}
+
+	list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
+
+	/* Depot actions. */
+	list.push_back(std::make_unique<DropDownListStringItem>(STR_VEHICLE_LIST_SEND_FOR_SERVICING, ADI_SERVICE, mass_action_disable));
+	list.push_back(std::make_unique<DropDownListStringItem>(this->vehicle_depot_name[this->vli.vtype], ADI_DEPOT, mass_action_disable));
+	if (_settings_client.gui.show_depot_sell_gui) list.push_back(std::make_unique<DropDownListStringItem>(this->vehicle_depot_sell_name[this->vli.vtype], ADI_DEPOT_SELL, mass_action_disable));
+	list.push_back(std::make_unique<DropDownListStringItem>(STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE, ADI_CANCEL_DEPOT, mass_action_disable));
 
 	return list;
 }

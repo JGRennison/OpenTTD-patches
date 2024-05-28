@@ -9,7 +9,7 @@
 
 #include "stdafx.h"
 #include "openttd.h"
-#include "widgets/dropdown_func.h"
+#include "dropdown_func.h"
 #include "widget_type.h"
 #include "window_func.h"
 #include "gui.h"

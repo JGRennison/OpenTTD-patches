@@ -12,20 +12,13 @@
 
 #include "table/strings.h"
 
-/**
- * Helper for defining the class method's signatures.
- * @param type The type of the class.
- */
-#define DEFINE_NEWGRF_CLASS_METHOD(type) \
-	template <typename Tspec, typename Tid, Tid Tmax> \
-	type NewGRFClass<Tspec, Tid, Tmax>
-
 /** Instantiate the array. */
 template <typename Tspec, typename Tid, Tid Tmax>
 NewGRFClass<Tspec, Tid, Tmax> NewGRFClass<Tspec, Tid, Tmax>::classes[Tmax];
 
 /** Reset the class, i.e. clear everything. */
-DEFINE_NEWGRF_CLASS_METHOD(void)::ResetClass()
+template <typename Tspec, typename Tid, Tid Tmax>
+void NewGRFClass<Tspec, Tid, Tmax>::ResetClass()
 {
 	this->global_id = 0;
 	this->name      = STR_EMPTY;
@@ -35,7 +28,8 @@ DEFINE_NEWGRF_CLASS_METHOD(void)::ResetClass()
 }
 
 /** Reset the classes, i.e. clear everything. */
-DEFINE_NEWGRF_CLASS_METHOD(void)::Reset()
+template <typename Tspec, typename Tid, Tid Tmax>
+void NewGRFClass<Tspec, Tid, Tmax>::Reset()
 {
 	for (Tid i = (Tid)0; i < Tmax; i++) {
 		classes[i].ResetClass();
@@ -51,7 +45,8 @@ DEFINE_NEWGRF_CLASS_METHOD(void)::Reset()
  * @note Upon allocating the same global class ID for a
  *       second time, this first allocation will be given.
  */
-DEFINE_NEWGRF_CLASS_METHOD(Tid)::Allocate(uint32_t global_id)
+template <typename Tspec, typename Tid, Tid Tmax>
+Tid NewGRFClass<Tspec, Tid, Tmax>::Allocate(uint32_t global_id)
 {
 	for (Tid i = (Tid)0; i < Tmax; i++) {
 		if (classes[i].global_id == global_id) {
@@ -72,7 +67,8 @@ DEFINE_NEWGRF_CLASS_METHOD(Tid)::Allocate(uint32_t global_id)
  * Insert a spec into the class.
  * @param spec The spec to insert.
  */
-DEFINE_NEWGRF_CLASS_METHOD(void)::Insert(Tspec *spec)
+template <typename Tspec, typename Tid, Tid Tmax>
+void NewGRFClass<Tspec, Tid, Tmax>::Insert(Tspec *spec)
 {
 	this->spec.push_back(spec);
 
@@ -84,7 +80,8 @@ DEFINE_NEWGRF_CLASS_METHOD(void)::Insert(Tspec *spec)
  * @param spec The spec to assign.
  * @note The spec must have a valid class id set.
  */
-DEFINE_NEWGRF_CLASS_METHOD(void)::Assign(Tspec *spec)
+template <typename Tspec, typename Tid, Tid Tmax>
+void NewGRFClass<Tspec, Tid, Tmax>::Assign(Tspec *spec)
 {
 	assert(spec->cls_id < Tmax);
 	Get(spec->cls_id)->Insert(spec);
@@ -94,7 +91,8 @@ DEFINE_NEWGRF_CLASS_METHOD(void)::Assign(Tspec *spec)
  * Get whether the class ID is valid (for iteration).
  * @return Whether the class ID is valid.
  */
-DEFINE_NEWGRF_CLASS_METHOD(bool)::IsClassIDValid(Tid cls_id)
+template <typename Tspec, typename Tid, Tid Tmax>
+bool NewGRFClass<Tspec, Tid, Tmax>::IsClassIDValid(Tid cls_id)
 {
 	return cls_id < Tmax && classes[cls_id].global_id != 0;
 }
@@ -115,7 +113,8 @@ NewGRFClass<Tspec, Tid, Tmax> *NewGRFClass<Tspec, Tid, Tmax>::Get(Tid cls_id)
  * Get the number of allocated classes.
  * @return The number of classes.
  */
-DEFINE_NEWGRF_CLASS_METHOD(uint)::GetClassCount()
+template <typename Tspec, typename Tid, Tid Tmax>
+uint NewGRFClass<Tspec, Tid, Tmax>::GetClassCount()
 {
 	uint i;
 	for (i = 0; i < Tmax && classes[i].global_id != 0; i++) {}
@@ -126,7 +125,8 @@ DEFINE_NEWGRF_CLASS_METHOD(uint)::GetClassCount()
  * Get the number of classes available to the user.
  * @return The number of classes.
  */
-DEFINE_NEWGRF_CLASS_METHOD(uint)::GetUIClassCount()
+template <typename Tspec, typename Tid, Tid Tmax>
+uint NewGRFClass<Tspec, Tid, Tmax>::GetUIClassCount()
 {
 	uint cnt = 0;
 	for (uint i = 0; i < Tmax && classes[i].global_id != 0; i++) {
@@ -139,7 +139,8 @@ DEFINE_NEWGRF_CLASS_METHOD(uint)::GetUIClassCount()
  * Get whether at least one class is available to the user.
  * @return Whether at least one class is available to the user.
  */
-DEFINE_NEWGRF_CLASS_METHOD(bool)::HasUIClass()
+template <typename Tspec, typename Tid, Tid Tmax>
+bool NewGRFClass<Tspec, Tid, Tmax>::HasUIClass()
 {
 	for (uint i = 0; i < Tmax && classes[i].global_id != 0; i++) {
 		if (classes[i].GetUISpecCount() > 0) return true;
@@ -152,7 +153,8 @@ DEFINE_NEWGRF_CLASS_METHOD(bool)::HasUIClass()
  * @param index UI index of a class.
  * @return The class ID of the class.
  */
-DEFINE_NEWGRF_CLASS_METHOD(Tid)::GetUIClass(uint index)
+template <typename Tspec, typename Tid, Tid Tmax>
+Tid NewGRFClass<Tspec, Tid, Tmax>::GetUIClass(uint index)
 {
 	for (uint i = 0; i < Tmax && classes[i].global_id != 0; i++) {
 		if (classes[i].GetUISpecCount() == 0) continue;
@@ -166,7 +168,8 @@ DEFINE_NEWGRF_CLASS_METHOD(Tid)::GetUIClass(uint index)
  * @param index  The index where to find the spec.
  * @return The spec at given location.
  */
-DEFINE_NEWGRF_CLASS_METHOD(const Tspec *)::GetSpec(uint index) const
+template <typename Tspec, typename Tid, Tid Tmax>
+const Tspec *NewGRFClass<Tspec, Tid, Tmax>::GetSpec(uint index) const
 {
 	/* If the custom spec isn't defined any more, then the GRF file probably was not loaded. */
 	return index < this->GetSpecCount() ? this->spec[index] : nullptr;
@@ -177,7 +180,8 @@ DEFINE_NEWGRF_CLASS_METHOD(const Tspec *)::GetSpec(uint index) const
  * @param ui_index UI index of the spec.
  * @return index of the spec, or -1 if out of range.
  */
-DEFINE_NEWGRF_CLASS_METHOD(int)::GetIndexFromUI(int ui_index) const
+template <typename Tspec, typename Tid, Tid Tmax>
+int NewGRFClass<Tspec, Tid, Tmax>::GetIndexFromUI(int ui_index) const
 {
 	if (ui_index < 0) return -1;
 	for (uint i = 0; i < this->GetSpecCount(); i++) {
@@ -192,7 +196,8 @@ DEFINE_NEWGRF_CLASS_METHOD(int)::GetIndexFromUI(int ui_index) const
  * @param index index of the spec.
  * @return UI index of the spec, or -1 if out of range.
  */
-DEFINE_NEWGRF_CLASS_METHOD(int)::GetUIFromIndex(int index) const
+template <typename Tspec, typename Tid, Tid Tmax>
+int NewGRFClass<Tspec, Tid, Tmax>::GetUIFromIndex(int index) const
 {
 	if ((uint)index >= this->GetSpecCount()) return -1;
 	uint ui_index = 0;
@@ -209,7 +214,8 @@ DEFINE_NEWGRF_CLASS_METHOD(int)::GetUIFromIndex(int index) const
  * @param index    Pointer to return the index of the spec in its class. If nullptr then not used.
  * @return The spec.
  */
-DEFINE_NEWGRF_CLASS_METHOD(const Tspec *)::GetByGrf(uint32_t grfid, uint16_t local_id, int *index)
+template <typename Tspec, typename Tid, Tid Tmax>
+const Tspec *NewGRFClass<Tspec, Tid, Tmax>::GetByGrf(uint32_t grfid, uint16_t local_id, int *index)
 {
 	uint j;
 
@@ -227,23 +233,3 @@ DEFINE_NEWGRF_CLASS_METHOD(const Tspec *)::GetByGrf(uint32_t grfid, uint16_t loc
 
 	return nullptr;
 }
-
-#undef DEFINE_NEWGRF_CLASS_METHOD
-
-/** Force instantiation of the methods so we don't get linker errors. */
-#define INSTANTIATE_NEWGRF_CLASS_METHODS(name, Tspec, Tid, Tmax) \
-	template void name::ResetClass(); \
-	template void name::Reset(); \
-	template Tid name::Allocate(uint32_t global_id); \
-	template void name::Insert(Tspec *spec); \
-	template void name::Assign(Tspec *spec); \
-	template bool name::IsClassIDValid(Tid cls_id); \
-	template NewGRFClass<Tspec, Tid, Tmax> *name::Get(Tid cls_id); \
-	template uint name::GetClassCount(); \
-	template uint name::GetUIClassCount(); \
-	template bool name::HasUIClass(); \
-	template Tid name::GetUIClass(uint index); \
-	template const Tspec *name::GetSpec(uint index) const; \
-	template int name::GetUIFromIndex(int index) const; \
-	template int name::GetIndexFromUI(int ui_index) const; \
-	template const Tspec *name::GetByGrf(uint32_t grfid, uint16_t localidx, int *index);

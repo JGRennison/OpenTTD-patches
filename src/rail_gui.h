@@ -12,7 +12,7 @@
 
 #include "rail_gui_type.h"
 #include "rail_type.h"
-#include "widgets/dropdown_type.h"
+#include "dropdown_type.h"
 
 struct Window *ShowBuildRailToolbar(RailType railtype);
 void ShowBuildRailToolbarWithPickTile(RailType railtype, TileIndex tile);

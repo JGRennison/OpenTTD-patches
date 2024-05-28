@@ -39,7 +39,7 @@
 #include "window_func.h"
 #include "window_gui.h"
 #include "zoom_func.h"
-#include "group_gui_list.h"
+#include "group_gui.h"
 
 #include "tbtr_template_gui_main.h"
 #include "tbtr_template_gui_create.h"
@@ -197,8 +197,6 @@ class TemplateReplaceWindow : public Window {
 private:
 
 	GUIGroupList groups;          ///< List of groups
-
-	std::vector<int> indents; ///< Indentation levels
 
 	int bottom_matrix_item_size = 0;
 
@@ -520,7 +518,7 @@ public:
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) &&
 						(this->selected_group_index >= 0) && (this->selected_group_index < (int)this->groups.size())) {
 					uint32_t tv_index = ((this->templates)[selected_template_index])->index;
-					int current_group_index = (this->groups)[this->selected_group_index]->index;
+					int current_group_index = (this->groups)[this->selected_group_index].group->index;
 
 					DoCommandP(0, current_group_index, tv_index, CMD_ISSUE_TEMPLATE_REPLACEMENT, nullptr);
 					this->UpdateButtonState();
@@ -532,7 +530,7 @@ public:
 					return;
 				}
 
-				int current_group_index = (this->groups)[this->selected_group_index]->index;
+				int current_group_index = (this->groups)[this->selected_group_index].group->index;
 
 				DoCommandP(0, current_group_index, 0, CMD_DELETE_TEMPLATE_REPLACEMENT, nullptr);
 				this->UpdateButtonState();
@@ -617,36 +615,13 @@ public:
 		return -1;
 	}
 
-	void AddParents(GUIGroupList *source, GroupID parent, int indent)
-	{
-		for (const Group *g : *source) {
-			if (g->parent == parent) {
-				this->groups.push_back(g);
-				this->indents.push_back(indent);
-				AddParents(source, g->index, indent + 1);
-			}
-		}
-	}
-
 	void BuildGroupList()
 	{
 		if (!this->groups.NeedRebuild()) return;
 
 		this->groups.clear();
-		this->indents.clear();
 
-		GUIGroupList list;
-
-		for (const Group *g : Group::Iterate()) {
-			if (g->owner == this->owner && g->vehicle_type == VEH_TRAIN) {
-				list.push_back(g);
-			}
-		}
-
-		list.ForceResort();
-		SortGUIGroupList(list);
-
-		AddParents(&list, INVALID_GROUP, 0);
+		BuildGuiGroupList(this->groups, false, this->owner, VEH_TRAIN);
 
 		this->groups.shrink_to_fit();
 		this->groups.RebuildDone();
@@ -671,7 +646,8 @@ public:
 
 		/* Then treat all groups defined by/for the current company */
 		for (int i = this->vscroll[0]->GetPosition(); i < max; ++i) {
-			const Group *g = (this->groups)[i];
+			const GUIGroupListItem &item = (this->groups)[i];
+			const Group *g = item.group;
 			GroupID g_id = g->index;
 
 			/* Fill the background of the current cell in a darker tone for the currently selected template */
@@ -694,7 +670,7 @@ public:
 
 			SetDParam(0, g_id);
 			StringID str = STR_GROUP_NAME;
-			draw_text(left + ScaleGUITrad(4 + this->indents[i] * 10), col1 - ScaleGUITrad(4), str, TC_BLACK, SA_LEFT);
+			draw_text(left + ScaleGUITrad(4 + item.indent * 10), col1 - ScaleGUITrad(4), str, TC_BLACK, SA_LEFT);
 
 			const TemplateID tid = GetTemplateIDByGroupIDRecursive(g_id);
 			const TemplateID tid_self = GetTemplateIDByGroupID(g_id);
@@ -932,7 +908,7 @@ public:
 
 		GroupID g_id = -1;
 		if (group_ok) {
-			const Group *g = (this->groups)[this->selected_group_index];
+			const Group *g = (this->groups)[this->selected_group_index].group;
 			g_id = g->index;
 		}
 

@@ -163,7 +163,7 @@ void IterateSettingsTables(std::function<void(const SettingTable &, void *)> han
 	for (auto &table : _generic_setting_tables) {
 		handler(table, &_settings_game);
 	}
-	handler(_currency_settings, &_custom_currency);
+	handler(_currency_settings, &GetCustomCurrency());
 	handler(_company_settings, &_settings_client.company);
 }
 
@@ -2766,7 +2766,7 @@ static void HandleSettingDescs(IniFile &generic_ini, SettingDescProc *proc, Sett
 		proc(generic_ini, table, "patches", &_settings_newgame, only_startup);
 	}
 
-	proc(generic_ini, _currency_settings, "currency", &_custom_currency, only_startup);
+	proc(generic_ini, _currency_settings, "currency", &GetCustomCurrency(), only_startup);
 	proc(generic_ini, _company_settings, "company", &_settings_client.company, only_startup);
 
 }

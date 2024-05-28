@@ -2575,6 +2575,7 @@ STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :{WHITE}Ihr Spie
 STR_NETWORK_ERROR_BAD_SERVER_NAME                               :{WHITE}Ihr Servername wurde nicht gesetzt. Der Name kann oben im Mehrspielerfenster gesetzt werden
 STR_NETWORK_ERROR_WRONG_REVISION                                :{WHITE}Diese Version des Spiels entspricht nicht der des Servers
 STR_NETWORK_ERROR_WRONG_PASSWORD                                :{WHITE}Falsches Passwort
+STR_NETWORK_ERROR_NOT_ON_ALLOW_LIST                             :{WHITE}Sie sind nicht auf der Liste der erlaubten Clients
 STR_NETWORK_ERROR_SERVER_FULL                                   :{WHITE}Der Server ist voll
 STR_NETWORK_ERROR_SERVER_BANNED                                 :{WHITE}Sie sind auf diesem Server gesperrt
 STR_NETWORK_ERROR_KICKED                                        :{WHITE}Sie wurden vom Server hinausgeworfen
@@ -2590,7 +2591,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Ihr Spie
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Möglicher Verbindungsabbruch
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}Die letzte{P 0 "" n} {NUM} Sekunde{P "" n} wurden keine Daten vom Server empfangen
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :Allgemeiner Fehler
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :Synchronisationsfehler
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :Spielfeld konnte nicht geladen werden
@@ -2602,6 +2603,7 @@ STR_NETWORK_ERROR_CLIENT_NOT_EXPECTED                           :Ungültiges ode
 STR_NETWORK_ERROR_CLIENT_WRONG_REVISION                         :Falsche Version
 STR_NETWORK_ERROR_CLIENT_NAME_IN_USE                            :Name wird bereits verwendet
 STR_NETWORK_ERROR_CLIENT_WRONG_PASSWORD                         :Falsches Spielpasswort
+STR_NETWORK_ERROR_CLIENT_NOT_ON_ALLOW_LIST                      :nicht auf Erlaubnisliste
 STR_NETWORK_ERROR_CLIENT_COMPANY_MISMATCH                       :Falsche Firmen-ID in DoCommand
 STR_NETWORK_ERROR_CLIENT_KICKED                                 :vom Server hinausgeworfen
 STR_NETWORK_ERROR_CLIENT_CHEATER                                :hat versucht zu mogeln
@@ -4994,7 +4996,7 @@ STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Firmenka
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Firmensitz kann nicht gebaut werden ...
 
 # Town related errors
-STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Bau von Städten unmöglich
+STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Bau von Städten unmöglich …
 STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE}Die Stadt kann nicht umbenannt werden ...
 STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :{WHITE}Stadt kann hier nicht gegründet werden ...
 STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}Stadt kann nicht vergrößert werden ...
