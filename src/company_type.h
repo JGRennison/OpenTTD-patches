@@ -71,6 +71,7 @@ enum CompanyCtrlAction {
 	CCA_NEW_AI, ///< Create a new AI company.
 	CCA_DELETE, ///< Delete a company.
 	CCA_SALE,   ///< Offer a company for sale.
+	CCA_MERGE,  ///< Merge companies.
 
 	CCA_END,    ///< Sentinel for end.
 };

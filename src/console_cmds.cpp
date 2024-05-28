@@ -1183,6 +1183,35 @@ DEF_CONSOLE_CMD(ConOfferCompanySale)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConMergeCompanies)
+{
+	if (argc != 3) {
+		IConsolePrint(CC_HELP, "Merge two companies together. Usage: 'merge_companies <main-company-id> <to-merge-company-id>'");
+		IConsolePrint(CC_HELP, "The first company ID <main-company-id> will be left with the combined assets of both companies.");
+		IConsolePrint(CC_HELP, "The second company ID <to-merge-company-id> will be removed, with all assets transfered to the first company ID.");
+		IConsolePrint(CC_HELP, "For company-id's, see the list of companies from the dropdown menu. Company 1 is 1, etc.");
+		return true;
+	}
+
+	CompanyID main_company = (CompanyID)(atoi(argv[1]) - 1);
+	CompanyID to_merge_company = (CompanyID)(atoi(argv[2]) - 1);
+
+	/* Check valid range */
+	if (!Company::IsValidID(main_company)) {
+		IConsolePrintF(CC_ERROR, "Main company does not exist. Company-id must be between 1 and %d.", MAX_COMPANIES);
+		return true;
+	}
+	if (!Company::IsValidID(to_merge_company)) {
+		IConsolePrintF(CC_ERROR, "Company to merge does not exist. Company-id must be between 1 and %d.", MAX_COMPANIES);
+		return true;
+	}
+
+	DoCommandP(0, CCA_MERGE | (main_company << 16) | (to_merge_company << 24), 0, CMD_COMPANY_CTRL);
+	IConsolePrint(CC_DEFAULT, "Companies merged.");
+
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConNetworkClients)
 {
 	if (argc == 0) {
@@ -4139,6 +4168,7 @@ void IConsoleStdLibRegister()
 	IConsole::CmdRegister("reset_company",           ConResetCompany,     ConHookServerOnly);
 	IConsole::AliasRegister("clean_company",         "reset_company %A");
 	IConsole::CmdRegister("offer_company_sale",      ConOfferCompanySale, ConHookServerOrNoNetwork);
+	IConsole::CmdRegister("merge_companies",         ConMergeCompanies,   ConHookServerOrNoNetwork);
 	IConsole::CmdRegister("client_name",             ConClientNickChange, ConHookServerOnly);
 	IConsole::CmdRegister("kick",                    ConKick,             ConHookServerOnly);
 	IConsole::CmdRegister("ban",                     ConBan,              ConHookServerOnly);

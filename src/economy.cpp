@@ -2490,11 +2490,16 @@ static void DoAcquireCompany(Company *c, bool hostile_takeover)
 
 	ChangeOwnershipOfCompanyItems(ci, _current_company);
 
+	PostAcquireCompany(c);
+}
+
+void PostAcquireCompany(Company *c)
+{
 	if (c->is_ai) AI::Stop(c->index);
 
 	c->bankrupt_asked = 0;
 
-	DeleteCompanyWindows(ci);
+	DeleteCompanyWindows(c->index);
 	InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS, 0);
 	InvalidateWindowClassesData(WC_SHIPS_LIST, 0);

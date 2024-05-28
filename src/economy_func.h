@@ -60,4 +60,6 @@ int PercentageToScaleQuantityFactor(uint percentage);
 
 void UpdateCargoScalers();
 
+void PostAcquireCompany(Company *c);
+
 #endif /* ECONOMY_FUNC_H */
