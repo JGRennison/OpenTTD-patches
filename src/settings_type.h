@@ -694,6 +694,7 @@ struct VehicleSettings {
 	uint8_t  train_braking_model;              ///< braking model for trains
 	uint8_t  realistic_braking_aspect_limited; ///< realistic braking lookahead is aspect limited
 	bool     limit_train_acceleration;         ///< when using realistic braking, also limit train acceleration
+	bool     track_edit_ignores_realistic_braking; ///< when using realistic braking, allow track editing operations to ignore realistic braking restrictions
 	uint8_t  roadveh_acceleration_model;       ///< realistic acceleration for road vehicles
 	uint8_t  train_slope_steepness;            ///< Steepness of hills for trains when using realistic acceleration
 	uint8_t  roadveh_slope_steepness;          ///< Steepness of hills for road vehicles when using realistic acceleration
