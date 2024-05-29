@@ -50,6 +50,8 @@ struct CompanyInfrastructure {
 	uint32_t GetTramTotal() const;
 
 	char *Dump(char *buffer, const char *last) const;
+
+	bool operator==(const CompanyInfrastructure &) const = default;
 };
 
 class FreeUnitIDGenerator {

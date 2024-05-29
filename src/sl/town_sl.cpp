@@ -377,6 +377,8 @@ void SlResetTNNC()
 	_town_zone_radii_no_update = false;
 }
 
+static_assert(std::tuple_size<decltype(TownCache::squared_town_zone_radius)>::value == HZB_END);
+
 void Save_TNNC()
 {
 	assert(_sl_xv_feature_versions[XSLFI_TNNC_CHUNK] != 0);
@@ -391,7 +393,7 @@ void Save_TNNC()
 
 	if (IsGetTownZonesCallbackHandlerPresent()) {
 		flags |= 1;
-		length += Town::GetNumItems() * lengthof(TownCache::squared_town_zone_radius) * 4;
+		length += Town::GetNumItems() * HZB_END * 4;
 	}
 
 	SlSetLength(length);
@@ -403,7 +405,7 @@ void Save_TNNC()
 		SlWriteUint32(t->index);
 		SlWriteUint16(t->noise_reached);
 		if (flags & 1) {
-			for (uint i = 0; i < lengthof(TownCache::squared_town_zone_radius); i++) {
+			for (uint i = 0; i < HZB_END; i++) {
 				SlWriteUint32(t->cache.squared_town_zone_radius[i]);
 			}
 		}
@@ -430,7 +432,7 @@ void Load_TNNC()
 		if (t == nullptr) SlErrorCorrupt("TNNC: invalid town ID");
 		t->noise_reached = SlReadUint16();
 		if (flags & 1) {
-			for (uint i = 0; i < lengthof(TownCache::squared_town_zone_radius); i++) {
+			for (uint i = 0; i < HZB_END; i++) {
 				t->cache.squared_town_zone_radius[i] = SlReadUint32();
 			}
 		}

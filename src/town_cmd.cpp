@@ -2105,7 +2105,7 @@ static bool GrowTown(Town *t)
  */
 void UpdateTownRadius(Town *t)
 {
-	static const uint32_t _town_squared_town_zone_radius_data[23][HZB_END] = {
+	static const std::array<std::array<uint32_t, HZB_END>, 23> _town_squared_town_zone_radius_data = {{
 		{  4,  0,  0,  0,  0}, // 0
 		{ 16,  0,  0,  0,  0},
 		{ 25,  0,  0,  0,  0},
@@ -2129,7 +2129,7 @@ void UpdateTownRadius(Town *t)
 		{121, 81,  0, 49, 25}, // 80
 		{121, 81,  0, 49, 25},
 		{121, 81,  0, 49, 36}, // 88
-	};
+	}};
 
 	if (_settings_game.economy.town_zone_calc_mode) {
 		int mass = t->cache.num_houses / 8;
@@ -2149,7 +2149,7 @@ void UpdateTownRadius(Town *t)
 		return;
 	}
 
-	MemSetT(t->cache.squared_town_zone_radius, 0, lengthof(t->cache.squared_town_zone_radius));
+	t->cache.squared_town_zone_radius = {};
 
 	uint16_t cb_result = GetTownZonesCallback(t);
 	if (cb_result == 0) {
@@ -2162,7 +2162,7 @@ void UpdateTownRadius(Town *t)
 	}
 
 	if (t->cache.num_houses < 92) {
-		memcpy(t->cache.squared_town_zone_radius, _town_squared_town_zone_radius_data[t->cache.num_houses / 4], sizeof(t->cache.squared_town_zone_radius));
+		t->cache.squared_town_zone_radius = _town_squared_town_zone_radius_data[t->cache.num_houses / 4];
 	} else {
 		int mass = t->cache.num_houses / 8;
 		/* Actually we are proportional to sqrt() but that's right because we are covering an area.
