@@ -12,7 +12,7 @@
 #define TIMER_MANAGER_H
 
 #include "../stdafx.h"
-#include <set>
+#include "../3rdparty/cpp-btree/btree_set.h"
 
 template <typename TTimerType>
 class BaseTimer;
@@ -112,9 +112,9 @@ private:
 	};
 
 	/** Singleton list, to store all the active timers. */
-	static std::set<BaseTimer<TTimerType> *, base_timer_sorter> &GetTimers()
+	static btree::btree_set<BaseTimer<TTimerType> *, base_timer_sorter> &GetTimers()
 	{
-		static std::set<BaseTimer<TTimerType> *, base_timer_sorter> timers;
+		static btree::btree_set<BaseTimer<TTimerType> *, base_timer_sorter> timers;
 		return timers;
 	}
 };

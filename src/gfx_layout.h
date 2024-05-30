@@ -14,6 +14,8 @@
 #include "gfx_func.h"
 #include "core/math_func.hpp"
 
+#include "3rdparty/cpp-btree/btree_map.h"
+
 #include <map>
 #include <string>
 #include <stack>
@@ -85,7 +87,7 @@ public:
 };
 
 /** Mapping from index to font. The pointer is owned by FontColourMap. */
-using FontMap = std::map<int, Font *>;
+using FontMap = btree::btree_map<int, Font *>;
 
 /**
  * Interface to glue fallback and normal layouter into one.
@@ -173,7 +175,7 @@ private:
 
 	static LineCacheItem &GetCachedParagraphLayout(std::string_view str, const FontState &state);
 
-	using FontColourMap = std::map<TextColour, std::unique_ptr<Font>>;
+	using FontColourMap = btree::btree_map<TextColour, std::unique_ptr<Font>>;
 	static FontColourMap fonts[FS_END];
 public:
 	static Font *GetFont(FontSize size, TextColour colour);

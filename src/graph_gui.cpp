@@ -23,6 +23,7 @@
 #include "zoom_func.h"
 #include "unit_conversion.h"
 #include "core/math_func.hpp"
+#include "station_base.h"
 
 #include "widgets/graph_widget.h"
 
@@ -31,7 +32,6 @@
 #include <math.h>
 
 #include "safeguards.h"
-#include "station_base.h"
 
 /* Bitmasks of company and cargo indices that shouldn't be drawn. */
 static CompanyMask _legend_excluded_companies;

@@ -18,6 +18,7 @@
 #include "core/arena_alloc.hpp"
 
 #include "3rdparty/cpp-btree/btree_map.h"
+#include "3rdparty/robin_hood/robin_hood.h"
 #include <bitset>
 #include <vector>
 
@@ -68,11 +69,11 @@ public:
 	std::vector<const SpriteGroup *> spritegroups;
 
 	/* VarAction2 temporary storage variable tracking */
-	btree::btree_map<const SpriteGroup *, VarAction2GroupVariableTracking *> group_temp_store_variable_tracking;
+	robin_hood::unordered_flat_map<const SpriteGroup *, VarAction2GroupVariableTracking *> group_temp_store_variable_tracking;
 	UniformArenaAllocator<sizeof(VarAction2GroupVariableTracking), 1024> group_temp_store_variable_tracking_storage;
-	btree::btree_map<const SpriteGroup *, VarAction2ProcedureAnnotation *> procedure_annotations;
+	robin_hood::unordered_flat_map<const SpriteGroup *, VarAction2ProcedureAnnotation *> procedure_annotations;
 	UniformArenaAllocator<sizeof(VarAction2ProcedureAnnotation), 1024> procedure_annotations_storage;
-	btree::btree_map<const DeterministicSpriteGroup *, std::vector<DeterministicSpriteGroupAdjust> *> inlinable_adjust_groups;
+	robin_hood::unordered_flat_map<const DeterministicSpriteGroup *, std::vector<DeterministicSpriteGroupAdjust> *> inlinable_adjust_groups;
 	UniformArenaAllocator<sizeof(std::vector<DeterministicSpriteGroupAdjust>), 1024> inlinable_adjust_groups_storage;
 	std::vector<DeterministicSpriteGroup *> dead_store_elimination_candidates;
 

@@ -25,6 +25,7 @@
 #include "../economy_base.h"
 #include "../event_logs.h"
 #include "../3rdparty/cpp-btree/btree_map.h"
+#include "../3rdparty/robin_hood/robin_hood.h"
 #include "../core/format.hpp"
 
 #include "saveload.h"
@@ -296,7 +297,7 @@ void AfterLoadVehicles(bool part_of_load)
 		 * a) both next_shared and previous_shared are not set for pre 5,2 games
 		 * b) both next_shared and previous_shared are set for later games
 		 */
-		std::map<Order*, OrderList*> mapping;
+		robin_hood::unordered_flat_map<Order*, OrderList*> mapping;
 
 		for (Vehicle *v : Vehicle::Iterate()) {
 			si_v = v;

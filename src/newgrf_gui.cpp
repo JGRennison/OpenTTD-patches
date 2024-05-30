@@ -37,7 +37,8 @@
 
 #include "table/sprites.h"
 
-#include <map>
+#include "3rdparty/robin_hood/robin_hood.h"
+
 #include <numeric>
 #include "safeguards.h"
 
@@ -595,7 +596,7 @@ void ShowNewGRFTextfileWindow(TextfileType file_type, const GRFConfig *c)
 	new NewGRFTextfileWindow(file_type, c);
 }
 
-typedef std::map<uint32_t, const GRFConfig *> GrfIdMap; ///< Map of grfid to the grf config.
+typedef robin_hood::unordered_flat_map<uint32_t, const GRFConfig *> GrfIdMap; ///< Map of grfid to the grf config.
 
 /**
  * Add all grf configs from \a c into the map.
@@ -605,8 +606,7 @@ typedef std::map<uint32_t, const GRFConfig *> GrfIdMap; ///< Map of grfid to the
 static void FillGrfidMap(const GRFConfig *c, GrfIdMap *grfid_map)
 {
 	while (c != nullptr) {
-		std::pair<uint32_t, const GRFConfig *> p(c->ident.grfid, c);
-		grfid_map->insert(p);
+		grfid_map->insert({c->ident.grfid, c});
 		c = c->next;
 	}
 }

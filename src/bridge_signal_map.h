@@ -15,15 +15,21 @@
 #include "signal_type.h"
 #include "core/bitmath_func.hpp"
 #include "3rdparty/cpp-btree/btree_set.h"
+#include "3rdparty/robin_hood/robin_hood.h"
 
 #include <vector>
-#include <unordered_map>
 
 struct LongBridgeSignalStorage {
 	std::vector<uint64_t> signal_red_bits;
+
+	LongBridgeSignalStorage() = default;
+	LongBridgeSignalStorage(const LongBridgeSignalStorage &other) = delete;
+	LongBridgeSignalStorage(LongBridgeSignalStorage &&other) = default;
+	LongBridgeSignalStorage& operator=(const LongBridgeSignalStorage &other) = delete;
+	LongBridgeSignalStorage& operator=(LongBridgeSignalStorage &&other) = default;
 };
 
-extern std::unordered_map<TileIndex, LongBridgeSignalStorage> _long_bridge_signal_sim_map;
+extern robin_hood::unordered_flat_map<TileIndex, LongBridgeSignalStorage> _long_bridge_signal_sim_map;
 
 extern btree::btree_set<uint32_t> _bridge_signal_style_map;
 

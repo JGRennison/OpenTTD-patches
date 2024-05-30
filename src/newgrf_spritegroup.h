@@ -20,7 +20,7 @@
 #include "newgrf_storage.h"
 #include "newgrf_commons.h"
 
-#include "3rdparty/cpp-btree/btree_set.h"
+#include "3rdparty/robin_hood/robin_hood.h"
 
 #include <map>
 #include <vector>
@@ -541,8 +541,8 @@ protected:
 	const SpriteGroup *Resolve(ResolverObject &object) const override;
 };
 
-extern std::map<const DeterministicSpriteGroup *, DeterministicSpriteGroupShadowCopy> _deterministic_sg_shadows;
-extern std::map<const RandomizedSpriteGroup *, RandomizedSpriteGroupShadowCopy> _randomized_sg_shadows;
+extern robin_hood::unordered_node_map<const DeterministicSpriteGroup *, DeterministicSpriteGroupShadowCopy> _deterministic_sg_shadows;
+extern robin_hood::unordered_flat_map<const RandomizedSpriteGroup *, RandomizedSpriteGroupShadowCopy> _randomized_sg_shadows;
 extern bool _grfs_loaded_with_sg_shadow_enable;
 
 /* This contains a callback result. A failed callback has a value of
@@ -779,7 +779,7 @@ private:
 
 	const SpriteGroup *top_default_group = nullptr;
 	const SpriteGroup *top_graphics_group = nullptr;
-	btree::btree_set<const DeterministicSpriteGroup *> seen_dsgs;
+	robin_hood::unordered_flat_set<const DeterministicSpriteGroup *> seen_dsgs;
 
 	enum SpriteGroupDumperFlags {
 		SGDF_DEFAULT          = 1 << 0,
