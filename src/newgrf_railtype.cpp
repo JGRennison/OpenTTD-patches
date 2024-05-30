@@ -18,6 +18,7 @@
 #include "town.h"
 #include "signal_func.h"
 #include "road.h"
+#include "newgrf_dump.h"
 
 #include "safeguards.h"
 

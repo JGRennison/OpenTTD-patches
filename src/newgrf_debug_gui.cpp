@@ -38,6 +38,7 @@
 #include "newgrf_airport.h"
 #include "newgrf_airporttiles.h"
 #include "newgrf_debug.h"
+#include "newgrf_dump.h"
 #include "newgrf_object.h"
 #include "newgrf_spritegroup.h"
 #include "newgrf_station.h"

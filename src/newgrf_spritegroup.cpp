@@ -20,6 +20,7 @@
 #include "scope.h"
 #include "debug_settings.h"
 #include "newgrf_engine.h"
+#include "newgrf_dump.h"
 #include <bit>
 
 #include "safeguards.h"

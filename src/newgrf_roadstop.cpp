@@ -25,6 +25,7 @@
 #include "newgrf_animation_base.h"
 #include "newgrf_sound.h"
 #include "newgrf_extension.h"
+#include "newgrf_dump.h"
 
 #include "safeguards.h"
 

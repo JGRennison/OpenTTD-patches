@@ -284,6 +284,7 @@ add_files(
     newgrf_config.h
     newgrf_debug.h
     newgrf_debug_gui.cpp
+    newgrf_dump.h
     newgrf_engine.cpp
     newgrf_engine.h
     newgrf_extension.cpp
