@@ -483,13 +483,6 @@ enum DeterministicSpriteGroupFlags : uint8_t {
 };
 DECLARE_ENUM_AS_BIT_SET(DeterministicSpriteGroupFlags)
 
-struct DeterministicSpriteGroupShadowCopy {
-	std::vector<DeterministicSpriteGroupAdjust> adjusts;
-	std::vector<DeterministicSpriteGroupRange> ranges;
-	const SpriteGroup *default_group;
-	bool calculated_result;
-};
-
 struct DeterministicSpriteGroup : SpriteGroup {
 	DeterministicSpriteGroup() : SpriteGroup(SGT_DETERMINISTIC) {}
 
@@ -518,10 +511,6 @@ enum RandomizedSpriteGroupCompareMode : uint8_t {
 	RSG_CMP_ALL,
 };
 
-struct RandomizedSpriteGroupShadowCopy {
-	std::vector<const SpriteGroup *> groups;
-};
-
 struct RandomizedSpriteGroup : SpriteGroup {
 	RandomizedSpriteGroup() : SpriteGroup(SGT_RANDOMIZED) {}
 
@@ -541,8 +530,6 @@ protected:
 	const SpriteGroup *Resolve(ResolverObject &object) const override;
 };
 
-extern robin_hood::unordered_node_map<const DeterministicSpriteGroup *, DeterministicSpriteGroupShadowCopy> _deterministic_sg_shadows;
-extern robin_hood::unordered_flat_map<const RandomizedSpriteGroup *, RandomizedSpriteGroupShadowCopy> _randomized_sg_shadows;
 extern bool _grfs_loaded_with_sg_shadow_enable;
 
 /* This contains a callback result. A failed callback has a value of

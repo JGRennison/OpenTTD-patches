@@ -284,6 +284,20 @@ struct VarAction2AdjustInfo {
 	uint8_t varsize;
 };
 
+struct DeterministicSpriteGroupShadowCopy {
+	std::vector<DeterministicSpriteGroupAdjust> adjusts;
+	std::vector<DeterministicSpriteGroupRange> ranges;
+	const SpriteGroup *default_group;
+	bool calculated_result;
+};
+
+struct RandomizedSpriteGroupShadowCopy {
+	std::vector<const SpriteGroup *> groups;
+};
+
+extern robin_hood::unordered_node_map<const DeterministicSpriteGroup *, DeterministicSpriteGroupShadowCopy> _deterministic_sg_shadows;
+extern robin_hood::unordered_flat_map<const RandomizedSpriteGroup *, RandomizedSpriteGroupShadowCopy> _randomized_sg_shadows;
+
 const SpriteGroup *PruneTargetSpriteGroup(const SpriteGroup *result);
 void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const VarAction2AdjustInfo info, DeterministicSpriteGroup *group, DeterministicSpriteGroupAdjust &adjust);
 void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, const VarAction2AdjustInfo info, DeterministicSpriteGroup *group, std::vector<DeterministicSpriteGroupAdjust> &saved_adjusts);
