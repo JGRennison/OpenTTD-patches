@@ -94,7 +94,7 @@ struct ZoningWindow : public Window {
 		for (const ZoningModeInfo &info : _zone_modes) {
 			if (info.debug && !IsDebugEnabled()) continue;
 			SetDParamStr(0, info.param);
-			list.push_back(std::make_unique<DropDownListStringItem>(info.str, info.mode, false));
+			list.push_back(MakeDropDownListStringItem(info.str, info.mode, false));
 		}
 		ShowDropDownList(this, std::move(list), current, widget);
 	}

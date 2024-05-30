@@ -1717,7 +1717,7 @@ void SmallMapWindow::ScreenshotCallbackHandler(void *buf, uint y, uint pitch, ui
 	dpi.height = n;
 	dpi.width = (((MapMaxX() + MapMaxY()) * 2) * this->ui_zoom) / this->tile_zoom;
 	dpi.pitch = pitch;
-	dpi.zoom = ZOOM_LVL_NORMAL;
+	dpi.zoom = ZOOM_LVL_MIN;
 	dpi.left = 0;
 	dpi.top = y;
 

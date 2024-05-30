@@ -1049,7 +1049,7 @@ int openttd_main(int argc, char *argv[])
 	InitializeSpriteSorter();
 
 	/* Initialize the zoom level of the screen to normal */
-	_screen.zoom = ZOOM_LVL_NORMAL;
+	_screen.zoom = ZOOM_LVL_MIN;
 
 	/* The video driver is now selected, now initialise GUI zoom */
 	AdjustGUIZoom(AGZM_STARTUP);

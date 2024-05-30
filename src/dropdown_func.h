@@ -21,4 +21,12 @@ int HideDropDownMenu(Window *pw);
 
 void GetParentWindowInfo(Window *w, WindowClass &parent_wc, WindowNumber &parent_wn);
 
+/* Helper functions for commonly used drop down list items. */
+std::unique_ptr<DropDownListItem> MakeDropDownListDividerItem();
+std::unique_ptr<DropDownListItem> MakeDropDownListStringItem(StringID str, int value, bool masked = false, bool shaded = false);
+std::unique_ptr<DropDownListItem> MakeDropDownListStringItem(const std::string &str, int value, bool masked = false, bool shaded = false);
+std::unique_ptr<DropDownListItem> MakeDropDownListIconItem(SpriteID sprite, PaletteID palette, StringID str, int value, bool masked = false, bool shaded = false);
+std::unique_ptr<DropDownListItem> MakeDropDownListIconItem(const Dimension &dim, SpriteID sprite, PaletteID palette, StringID str, int value, bool masked = false, bool shaded = false);
+std::unique_ptr<DropDownListItem> MakeDropDownListCheckedItem(bool checked, StringID str, int value, bool masked = false, bool shaded = false);
+
 #endif /* DROPDOWN_FUNC_H */

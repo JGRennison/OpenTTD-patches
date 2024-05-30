@@ -24,6 +24,7 @@
 #include "core/geometry_func.hpp"
 #include "rail_gui.h"
 #include "road_gui.h"
+#include "dropdown_type.h"
 #include "dropdown_func.h"
 
 #include "widgets/autoreplace_widget.h"
@@ -562,8 +563,8 @@ public:
 
 			case WID_RV_TRAIN_ENGINEWAGON_DROPDOWN: {
 				DropDownList list;
-				list.push_back(std::make_unique<DropDownListStringItem>(STR_REPLACE_ENGINES, 1, false));
-				list.push_back(std::make_unique<DropDownListStringItem>(STR_REPLACE_WAGONS, 0, false));
+				list.push_back(MakeDropDownListStringItem(STR_REPLACE_ENGINES, 1));
+				list.push_back(MakeDropDownListStringItem(STR_REPLACE_WAGONS, 0));
 				ShowDropDownList(this, std::move(list), this->replace_engines ? 1 : 0, WID_RV_TRAIN_ENGINEWAGON_DROPDOWN);
 				break;
 			}

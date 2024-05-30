@@ -32,7 +32,7 @@ WidgetDimensions WidgetDimensions::scaled = {};
 
 /**
  * Scale a RectPadding to GUI zoom level.
- * @param r RectPadding at ZOOM_LVL_BASE (traditional "normal" interface size).
+ * @param r RectPadding at ZOOM_BASE (traditional "normal" interface size).
  * @return RectPadding at #ZOOM_LVL_GUI (current interface size).
  */
 static inline RectPadding ScaleGUITrad(const RectPadding &r)
@@ -42,7 +42,7 @@ static inline RectPadding ScaleGUITrad(const RectPadding &r)
 
 /**
  * Scale a Dimension to GUI zoom level.
- * @param d Dimension at ZOOM_LVL_BASE (traditional "normal" interface size).
+ * @param d Dimension at ZOOM_BASE (traditional "normal" interface size).
  * @return Dimension at #ZOOM_LVL_GUI (current interface size).
  */
 static inline Dimension ScaleGUITrad(const Dimension &dim)
@@ -57,7 +57,7 @@ static inline Dimension ScaleGUITrad(const Dimension &dim)
 Dimension GetScaledSpriteSize(SpriteID sprid)
 {
 	Point offset;
-	Dimension d = GetSpriteSize(sprid, &offset, ZOOM_LVL_OUT_4X);
+	Dimension d = GetSpriteSize(sprid, &offset, ZOOM_LVL_NORMAL);
 	d.width  -= offset.x;
 	d.height -= offset.y;
 	return ScaleGUITrad(d);
@@ -3292,7 +3292,7 @@ std::unique_ptr<NWidgetBase> MakeCompanyButtonRows(WidgetID widget_first, Widget
 	std::unique_ptr<NWidgetHorizontal> hor = nullptr; // Storage for buttons in one row.
 	int hor_length = 0;
 
-	Dimension sprite_size = GetSpriteSize(SPR_COMPANY_ICON, nullptr, ZOOM_LVL_OUT_4X);
+	Dimension sprite_size = GetSpriteSize(SPR_COMPANY_ICON, nullptr, ZOOM_LVL_NORMAL);
 	sprite_size.width  += WidgetDimensions::unscaled.matrix.Horizontal();
 	sprite_size.height += WidgetDimensions::unscaled.matrix.Vertical();
 

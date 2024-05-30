@@ -8,18 +8,49 @@
 /** @file dropdown.cpp Implementation of the dropdown widget. */
 
 #include "stdafx.h"
-#include "window_gui.h"
+#include "dropdown_type.h"
+#include "dropdown_func.h"
+#include "dropdown_common_type.h"
 #include "string_func.h"
 #include "strings_func.h"
+#include "window_gui.h"
 #include "window_func.h"
 #include "guitimer_func.h"
 #include "zoom_func.h"
-#include "dropdown_type.h"
 
 #include "widgets/dropdown_widget.h"
 
 #include "safeguards.h"
 
+std::unique_ptr<DropDownListItem> MakeDropDownListDividerItem()
+{
+	return std::make_unique<DropDownListDividerItem>(-1);
+}
+
+std::unique_ptr<DropDownListItem> MakeDropDownListStringItem(StringID str, int value, bool masked, bool shaded)
+{
+	return std::make_unique<DropDownListStringItem>(str, value, masked, shaded);
+}
+
+std::unique_ptr<DropDownListItem> MakeDropDownListStringItem(const std::string &str, int value, bool masked, bool shaded)
+{
+	return std::make_unique<DropDownListStringItem>(str, value, masked, shaded);
+}
+
+std::unique_ptr<DropDownListItem> MakeDropDownListIconItem(SpriteID sprite, PaletteID palette, StringID str, int value, bool masked, bool shaded)
+{
+	return std::make_unique<DropDownListIconItem>(sprite, palette, str, value, masked, shaded);
+}
+
+std::unique_ptr<DropDownListItem> MakeDropDownListIconItem(const Dimension &dim, SpriteID sprite, PaletteID palette, StringID str, int value, bool masked, bool shaded)
+{
+	return std::make_unique<DropDownListIconItem>(dim, sprite, palette, str, value, masked, shaded);
+}
+
+std::unique_ptr<DropDownListItem> MakeDropDownListCheckedItem(bool checked, StringID str, int value, bool masked, bool shaded)
+{
+	return std::make_unique<DropDownListCheckedItem>(checked, str, value, masked, shaded);
+}
 
 static constexpr NWidgetPart _nested_dropdown_menu_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
@@ -451,7 +482,7 @@ void ShowDropDownMenu(Window *w, const StringID *strings, int selected, WidgetID
 
 	for (uint i = 0; strings[i] != INVALID_STRING_ID; i++) {
 		if (i >= 32 || !HasBit(hidden_mask, i)) {
-			list.push_back(std::make_unique<DropDownListStringItem>(strings[i], i, i < 32 && HasBit(disabled_mask, i)));
+			list.push_back(MakeDropDownListStringItem(strings[i], i, i < 32 && HasBit(disabled_mask, i)));
 		}
 	}
 

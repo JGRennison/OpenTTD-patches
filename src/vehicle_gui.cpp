@@ -26,7 +26,9 @@
 #include "vehicle_func.h"
 #include "autoreplace_gui.h"
 #include "string_func.h"
+#include "dropdown_type.h"
 #include "dropdown_func.h"
+#include "dropdown_common_type.h"
 #include "timetable.h"
 #include "articulated_vehicles.h"
 #include "spritecache.h"
@@ -402,17 +404,17 @@ DropDownList BaseVehicleListWindow::BuildCargoDropDownList(bool full) const
 	DropDownList list;
 
 	/* Add item for disabling filtering. */
-	list.push_back(std::make_unique<DropDownListStringItem>(this->GetCargoFilterLabel(CargoFilterCriteria::CF_ANY), CargoFilterCriteria::CF_ANY, false));
+	list.push_back(MakeDropDownListStringItem(this->GetCargoFilterLabel(CargoFilterCriteria::CF_ANY), CargoFilterCriteria::CF_ANY));
 	/* Add item for freight (i.e. vehicles with cargo capacity and with no passenger capacity). */
-	list.push_back(std::make_unique<DropDownListStringItem>(this->GetCargoFilterLabel(CargoFilterCriteria::CF_FREIGHT), CargoFilterCriteria::CF_FREIGHT, false));
+	list.push_back(MakeDropDownListStringItem(this->GetCargoFilterLabel(CargoFilterCriteria::CF_FREIGHT), CargoFilterCriteria::CF_FREIGHT));
 	/* Add item for vehicles not carrying anything, e.g. train engines. */
-	list.push_back(std::make_unique<DropDownListStringItem>(this->GetCargoFilterLabel(CargoFilterCriteria::CF_NONE), CargoFilterCriteria::CF_NONE, false));
+	list.push_back(MakeDropDownListStringItem(this->GetCargoFilterLabel(CargoFilterCriteria::CF_NONE), CargoFilterCriteria::CF_NONE));
 
 	/* Add cargos */
 	Dimension d = GetLargestCargoIconSize();
 	for (const CargoSpec *cs : _sorted_cargo_specs) {
 		if (!full && !HasBit(this->used_cargoes, cs->Index())) continue;
-		list.push_back(std::make_unique<DropDownListIconItem>(d, cs->GetCargoIcon(), PAL_NONE, cs->name, cs->Index(), false, !HasBit(this->used_cargoes, cs->Index())));
+		list.push_back(MakeDropDownListIconItem(d, cs->GetCargoIcon(), PAL_NONE, cs->name, cs->Index(), false, !HasBit(this->used_cargoes, cs->Index())));
 	}
 
 	return list;
@@ -442,37 +444,37 @@ DropDownList BaseVehicleListWindow::BuildActionDropdownList(bool show_autoreplac
 
 	/* Autoreplace actions. */
 	if (show_autoreplace) {
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_VEHICLE_LIST_REPLACE_VEHICLES, ADI_REPLACE, disable));
+		list.push_back(MakeDropDownListStringItem(STR_VEHICLE_LIST_REPLACE_VEHICLES, ADI_REPLACE, disable));
 		if (show_template_replace) {
-			list.push_back(std::make_unique<DropDownListStringItem>(STR_TMPL_TEMPLATE_REPLACEMENT, ADI_TEMPLATE_REPLACE, disable));
+			list.push_back(MakeDropDownListStringItem(STR_TMPL_TEMPLATE_REPLACEMENT, ADI_TEMPLATE_REPLACE, disable));
 		}
-		list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
+		list.push_back(MakeDropDownListDividerItem());
 	}
 
 	/* Group actions. */
 	if (show_group) {
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_GROUP_ADD_SHARED_VEHICLE, ADI_ADD_SHARED, disable));
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_GROUP_REMOVE_ALL_VEHICLES, ADI_REMOVE_ALL, disable));
-		list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
+		list.push_back(MakeDropDownListStringItem(STR_GROUP_ADD_SHARED_VEHICLE, ADI_ADD_SHARED, disable));
+		list.push_back(MakeDropDownListStringItem(STR_GROUP_REMOVE_ALL_VEHICLES, ADI_REMOVE_ALL, disable));
+		list.push_back(MakeDropDownListDividerItem());
 	}
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_TRACE_RESTRICT_SLOT_MANAGE, ADI_TRACERESTRICT_SLOT_MGMT, false));
+	list.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_SLOT_MANAGE, ADI_TRACERESTRICT_SLOT_MGMT, false));
 	if (_settings_client.gui.show_adv_tracerestrict_features) {
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_TRACE_RESTRICT_COUNTER_MANAGE, ADI_TRACERESTRICT_COUNTER_MGMT, false));
+		list.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_COUNTER_MANAGE, ADI_TRACERESTRICT_COUNTER_MGMT, false));
 	}
 	if (change_order_str != 0) {
-		list.push_back(std::make_unique<DropDownListStringItem>(change_order_str, ADI_CHANGE_ORDER, disable));
+		list.push_back(MakeDropDownListStringItem(change_order_str, ADI_CHANGE_ORDER, disable));
 	}
 	if (show_create_group) {
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_VEHICLE_LIST_CREATE_GROUP, ADI_CREATE_GROUP, disable));
+		list.push_back(MakeDropDownListStringItem(STR_VEHICLE_LIST_CREATE_GROUP, ADI_CREATE_GROUP, disable));
 	}
 
-	list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
+	list.push_back(MakeDropDownListDividerItem());
 
 	/* Depot actions. */
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_VEHICLE_LIST_SEND_FOR_SERVICING, ADI_SERVICE, mass_action_disable));
-	list.push_back(std::make_unique<DropDownListStringItem>(this->vehicle_depot_name[this->vli.vtype], ADI_DEPOT, mass_action_disable));
-	if (_settings_client.gui.show_depot_sell_gui) list.push_back(std::make_unique<DropDownListStringItem>(this->vehicle_depot_sell_name[this->vli.vtype], ADI_DEPOT_SELL, mass_action_disable));
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE, ADI_CANCEL_DEPOT, mass_action_disable));
+	list.push_back(MakeDropDownListStringItem(STR_VEHICLE_LIST_SEND_FOR_SERVICING, ADI_SERVICE, mass_action_disable));
+	list.push_back(MakeDropDownListStringItem(this->vehicle_depot_name[this->vli.vtype], ADI_DEPOT, mass_action_disable));
+	if (_settings_client.gui.show_depot_sell_gui) list.push_back(MakeDropDownListStringItem(this->vehicle_depot_sell_name[this->vli.vtype], ADI_DEPOT_SELL, mass_action_disable));
+	list.push_back(MakeDropDownListStringItem(STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE, ADI_CANCEL_DEPOT, mass_action_disable));
 
 	return list;
 }
@@ -1358,12 +1360,12 @@ struct RefitWindow : public Window {
 
 				DropDownList dlist;
 				int selected = 0;
-				dlist.emplace_back(new DropDownListStringItem(STR_REFIT_WHOLE_SHIP, 0, false));
+				dlist.push_back(MakeDropDownListStringItem(STR_REFIT_WHOLE_SHIP, 0, false));
 
 				int offset = 1;
 				for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
 					if (u->index == this->selected_vehicle && this->num_vehicles == 1) selected = offset;
-					dlist.emplace_back(new DropDownListStringItem(this->GetShipPartName(u), offset, false));
+					dlist.push_back(MakeDropDownListStringItem(this->GetShipPartName(u), offset, false));
 					offset++;
 				}
 
@@ -3472,17 +3474,17 @@ struct VehicleDetailsWindow : Window {
 				DropDownList list;
 				if (v->type == VEH_TRAIN) {
 					bool change_allowed = IsVehicleControlAllowed(v, _local_company);
-					list.emplace_back(new DropDownListStringItem(STR_VEHICLE_DETAILS_REMOVE_SPEED_RESTRICTION, VDWDDA_CLEAR_SPEED_RESTRICTION, !change_allowed || Train::From(v)->speed_restriction == 0));
-					list.emplace_back(new DropDownListStringItem(STR_VEHICLE_DETAILS_SET_SPEED_RESTRICTION, VDWDDA_SET_SPEED_RESTRICTION, !change_allowed));
+					list.push_back(MakeDropDownListStringItem(STR_VEHICLE_DETAILS_REMOVE_SPEED_RESTRICTION, VDWDDA_CLEAR_SPEED_RESTRICTION, !change_allowed || Train::From(v)->speed_restriction == 0));
+					list.push_back(MakeDropDownListStringItem(STR_VEHICLE_DETAILS_SET_SPEED_RESTRICTION, VDWDDA_SET_SPEED_RESTRICTION, !change_allowed));
 				}
 				if (HasBit(v->vehicle_flags, VF_HAVE_SLOT)) {
-					if (!list.empty()) list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
+					if (!list.empty()) list.push_back(MakeDropDownListDividerItem());
 					list.push_back(std::make_unique<DropDownUnselectable<DropDownListStringItem>>(STR_VEHICLE_DETAILS_REMOVE_FROM_SLOT, -1));
 
 					std::vector<TraceRestrictSlotID> slots = this->GetVehicleSlots(v);
 					for (TraceRestrictSlotID slot_id : slots) {
 						SetDParam(0, slot_id);
-						list.emplace_back(new DropDownListCheckedItem(false, STR_TRACE_RESTRICT_SLOT_NAME, VDWDDA_REMOVE_FROM_SLOT | (slot_id << 8), TraceRestrictSlot::Get(slot_id)->owner != _local_company));
+						list.push_back(MakeDropDownListCheckedItem(false, STR_TRACE_RESTRICT_SLOT_NAME, VDWDDA_REMOVE_FROM_SLOT | (slot_id << 8), TraceRestrictSlot::Get(slot_id)->owner != _local_company));
 					}
 				}
 				ShowDropDownList(this, std::move(list), -1, WID_VD_EXTRA_ACTIONS, 140);
@@ -4220,10 +4222,10 @@ public:
 				} else if (_ctrl_pressed && _settings_client.gui.show_depot_sell_gui && v->current_order.IsType(OT_GOTO_DEPOT)) {
 					OrderDepotActionFlags flags = v->current_order.GetDepotActionType() & (ODATFB_HALT | ODATFB_SELL);
 					DropDownList list;
-					list.emplace_back(new DropDownListStringItem(STR_VEHICLE_LIST_SEND_FOR_SERVICING, DEPOT_SERVICE | DEPOT_DONT_CANCEL, !flags));
-					list.emplace_back(new DropDownListStringItem(BaseVehicleListWindow::vehicle_depot_name[v->type], DEPOT_DONT_CANCEL, flags == ODATFB_HALT));
-					list.emplace_back(new DropDownListStringItem(BaseVehicleListWindow::vehicle_depot_sell_name[v->type], DEPOT_SELL | DEPOT_DONT_CANCEL, flags == (ODATFB_HALT | ODATFB_SELL)));
-					list.emplace_back(new DropDownListStringItem(STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE, DEPOT_CANCEL, false));
+					list.push_back(MakeDropDownListStringItem(STR_VEHICLE_LIST_SEND_FOR_SERVICING, DEPOT_SERVICE | DEPOT_DONT_CANCEL, !flags));
+					list.push_back(MakeDropDownListStringItem(BaseVehicleListWindow::vehicle_depot_name[v->type], DEPOT_DONT_CANCEL, flags == ODATFB_HALT));
+					list.push_back(MakeDropDownListStringItem(BaseVehicleListWindow::vehicle_depot_sell_name[v->type], DEPOT_SELL | DEPOT_DONT_CANCEL, flags == (ODATFB_HALT | ODATFB_SELL)));
+					list.push_back(MakeDropDownListStringItem(STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE, DEPOT_CANCEL, false));
 					ShowDropDownList(this, std::move(list), -1, widget);
 				} else {
 					this->HandleButtonClick(WID_VV_GOTO_DEPOT);

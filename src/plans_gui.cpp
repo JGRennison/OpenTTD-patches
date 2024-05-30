@@ -15,6 +15,7 @@
 #include "company_base.h"
 #include "company_gui.h"
 #include "settings_gui.h"
+#include "dropdown_func.h"
 #include "window_gui.h"
 #include "window_func.h"
 #include "viewport_func.h"
@@ -172,7 +173,7 @@ struct PlansWindow : Window {
 				if (_current_plan) {
 					DropDownList list;
 					auto add_colour = [&](Colours colour) {
-						list.emplace_back(new DropDownListStringItem(STR_COLOUR_DARK_BLUE + colour, colour, false));
+						list.push_back(MakeDropDownListStringItem(STR_COLOUR_DARK_BLUE + colour, colour, false));
 					};
 					add_colour(COLOUR_WHITE);
 					add_colour(COLOUR_YELLOW);

@@ -13,6 +13,9 @@
 #include "window_func.h"
 #include "viewport_func.h"
 #include "command_func.h"
+#include "dropdown_type.h"
+#include "dropdown_func.h"
+#include "dropdown_common_type.h"
 #include "vehicle_gui.h"
 #include "rail_gui.h"
 #include "road.h"
@@ -139,9 +142,9 @@ static void PopupMainToolbarMenu(Window *w, WidgetID widget, const std::initiali
 	int i = 0;
 	for (StringID string : strings) {
 		if (string == STR_NULL) {
-			list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
+			list.push_back(MakeDropDownListDividerItem());
 		} else {
-			list.push_back(std::make_unique<DropDownListStringItem>(string, i, false));
+			list.push_back(MakeDropDownListStringItem(string, i));
 			i++;
 		}
 	}
@@ -168,18 +171,18 @@ static void PopupMainCompanyToolbMenu(Window *w, WidgetID widget, CompanyMask gr
 			if (!_networking) break;
 
 			/* Add the client list button for the companies menu */
-			list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_COMPANY_LIST_CLIENT_LIST, CTMN_CLIENT_LIST, false));
+			list.push_back(MakeDropDownListStringItem(STR_NETWORK_COMPANY_LIST_CLIENT_LIST, CTMN_CLIENT_LIST));
 
 			if (_local_company != COMPANY_SPECTATOR) {
-				list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_COMPANY_LIST_SPECTATE, CTMN_SPECTATE, false));
+				list.push_back(MakeDropDownListStringItem(STR_NETWORK_COMPANY_LIST_SPECTATE, CTMN_SPECTATE));
 			}
 			break;
 		case WID_TN_STORY:
-			list.push_back(std::make_unique<DropDownListStringItem>(STR_STORY_BOOK_SPECTATOR, CTMN_SPECTATOR, false));
+			list.push_back(MakeDropDownListStringItem(STR_STORY_BOOK_SPECTATOR, CTMN_SPECTATOR));
 			break;
 
 		case WID_TN_GOAL:
-			list.push_back(std::make_unique<DropDownListStringItem>(STR_GOALS_SPECTATOR, CTMN_SPECTATOR, false));
+			list.push_back(MakeDropDownListStringItem(STR_GOALS_SPECTATOR, CTMN_SPECTATOR));
 			break;
 	}
 
@@ -265,35 +268,35 @@ enum OptionMenuEntries {
 static CallBackFunction ToolbarOptionsClick(Window *w)
 {
 	DropDownList list;
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_SETTINGS_MENU_GAME_OPTIONS,             OME_GAMEOPTIONS, false));
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE,     OME_SETTINGS, false));
+	list.push_back(MakeDropDownListStringItem(STR_SETTINGS_MENU_GAME_OPTIONS,             OME_GAMEOPTIONS));
+	list.push_back(MakeDropDownListStringItem(STR_SETTINGS_MENU_CONFIG_SETTINGS_TREE,     OME_SETTINGS));
 	/* Changes to the per-AI settings don't get send from the server to the clients. Clients get
 	 * the settings once they join but never update it. As such don't show the window at all
 	 * to network clients. */
 	if (!_networking || _network_server) {
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_SETTINGS_MENU_AI_SETTINGS,          OME_AI_SETTINGS, false));
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_SETTINGS_MENU_GAMESCRIPT_SETTINGS,  OME_GAMESCRIPT_SETTINGS, false));
+		list.push_back(MakeDropDownListStringItem(STR_SETTINGS_MENU_AI_SETTINGS,          OME_AI_SETTINGS));
+		list.push_back(MakeDropDownListStringItem(STR_SETTINGS_MENU_GAMESCRIPT_SETTINGS,  OME_GAMESCRIPT_SETTINGS));
 	}
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_SETTINGS_MENU_NEWGRF_SETTINGS,          OME_NEWGRFSETTINGS, false));
+	list.push_back(MakeDropDownListStringItem(STR_SETTINGS_MENU_NEWGRF_SETTINGS,          OME_NEWGRFSETTINGS, false));
 	if (CheatWindowMayBeShown()) {
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_SETTINGS_MENU_SANDBOX_OPTIONS,      OME_SANDBOX, false));
+		list.push_back(MakeDropDownListStringItem(STR_SETTINGS_MENU_SANDBOX_OPTIONS,      OME_SANDBOX, false));
 	}
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_SETTINGS_MENU_ZONING,                   OME_ZONING, false));
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS,     OME_TRANSPARENCIES, false));
-	list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
-	list.push_back(std::make_unique<DropDownListCheckedItem>(HasBit(_display_opt, DO_SHOW_TOWN_NAMES),       STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED,    OME_SHOW_TOWNNAMES, false));
-	list.push_back(std::make_unique<DropDownListCheckedItem>(HasBit(_display_opt, DO_SHOW_STATION_NAMES),    STR_SETTINGS_MENU_STATION_NAMES_DISPLAYED, OME_SHOW_STATIONNAMES, false));
-	list.push_back(std::make_unique<DropDownListCheckedItem>(HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES),   STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED,     OME_SHOW_WAYPOINTNAMES, false));
-	list.push_back(std::make_unique<DropDownListCheckedItem>(HasBit(_display_opt, DO_SHOW_SIGNS),            STR_SETTINGS_MENU_SIGNS_DISPLAYED,         OME_SHOW_SIGNS, false));
-	list.push_back(std::make_unique<DropDownListCheckedItem>(HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS), STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS,   OME_SHOW_COMPETITOR_SIGNS, false));
+	list.push_back(MakeDropDownListStringItem(STR_SETTINGS_MENU_ZONING,                   OME_ZONING, false));
+	list.push_back(MakeDropDownListStringItem(STR_SETTINGS_MENU_TRANSPARENCY_OPTIONS,     OME_TRANSPARENCIES, false));
+	list.push_back(MakeDropDownListDividerItem());
+	list.push_back(MakeDropDownListCheckedItem(HasBit(_display_opt, DO_SHOW_TOWN_NAMES),       STR_SETTINGS_MENU_TOWN_NAMES_DISPLAYED,    OME_SHOW_TOWNNAMES, false));
+	list.push_back(MakeDropDownListCheckedItem(HasBit(_display_opt, DO_SHOW_STATION_NAMES),    STR_SETTINGS_MENU_STATION_NAMES_DISPLAYED, OME_SHOW_STATIONNAMES, false));
+	list.push_back(MakeDropDownListCheckedItem(HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES),   STR_SETTINGS_MENU_WAYPOINTS_DISPLAYED,     OME_SHOW_WAYPOINTNAMES, false));
+	list.push_back(MakeDropDownListCheckedItem(HasBit(_display_opt, DO_SHOW_SIGNS),            STR_SETTINGS_MENU_SIGNS_DISPLAYED,         OME_SHOW_SIGNS, false));
+	list.push_back(MakeDropDownListCheckedItem(HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS), STR_SETTINGS_MENU_SHOW_COMPETITOR_SIGNS,   OME_SHOW_COMPETITOR_SIGNS, false));
 	if (_settings_client.gui.allow_hiding_waypoint_labels) {
-		list.push_back(std::make_unique<DropDownListCheckedItem>(HasBit(_extra_display_opt, XDO_SHOW_HIDDEN_SIGNS), STR_SETTINGS_MENU_SHOW_HIDDEN_SIGNS, OME_SHOW_HIDDEN_SIGNS, false));
+		list.push_back(MakeDropDownListCheckedItem(HasBit(_extra_display_opt, XDO_SHOW_HIDDEN_SIGNS), STR_SETTINGS_MENU_SHOW_HIDDEN_SIGNS, OME_SHOW_HIDDEN_SIGNS, false));
 	}
-	list.push_back(std::make_unique<DropDownListCheckedItem>(HasBit(_display_opt, DO_FULL_ANIMATION),        STR_SETTINGS_MENU_FULL_ANIMATION,          OME_FULL_ANIMATION, false));
-	list.push_back(std::make_unique<DropDownListCheckedItem>(HasBit(_display_opt, DO_FULL_DETAIL),           STR_SETTINGS_MENU_FULL_DETAIL,             OME_FULL_DETAILS, false));
-	list.push_back(std::make_unique<DropDownListCheckedItem>(IsTransparencySet(TO_HOUSES),                   STR_SETTINGS_MENU_TRANSPARENT_BUILDINGS,   OME_TRANSPARENTBUILDINGS, false));
-	list.push_back(std::make_unique<DropDownListCheckedItem>(IsTransparencySet(TO_SIGNS),                    STR_SETTINGS_MENU_TRANSPARENT_SIGNS,       OME_SHOW_STATIONSIGNS, false));
-	list.push_back(std::make_unique<DropDownListCheckedItem>(HasBit(_extra_display_opt, XDO_SHOW_MONEY_TEXT_EFFECTS), STR_SETTINGS_MENU_MONEY_TEXT_EFFECTS, OME_SHOW_MONEYTEXT, false));
+	list.push_back(MakeDropDownListCheckedItem(HasBit(_display_opt, DO_FULL_ANIMATION),        STR_SETTINGS_MENU_FULL_ANIMATION,          OME_FULL_ANIMATION, false));
+	list.push_back(MakeDropDownListCheckedItem(HasBit(_display_opt, DO_FULL_DETAIL),           STR_SETTINGS_MENU_FULL_DETAIL,             OME_FULL_DETAILS, false));
+	list.push_back(MakeDropDownListCheckedItem(IsTransparencySet(TO_HOUSES),                   STR_SETTINGS_MENU_TRANSPARENT_BUILDINGS,   OME_TRANSPARENTBUILDINGS, false));
+	list.push_back(MakeDropDownListCheckedItem(IsTransparencySet(TO_SIGNS),                    STR_SETTINGS_MENU_TRANSPARENT_SIGNS,       OME_SHOW_STATIONSIGNS, false));
+	list.push_back(MakeDropDownListCheckedItem(HasBit(_extra_display_opt, XDO_SHOW_MONEY_TEXT_EFFECTS), STR_SETTINGS_MENU_MONEY_TEXT_EFFECTS, OME_SHOW_MONEYTEXT, false));
 
 	ShowDropDownList(w, std::move(list), 0, WID_TN_SETTINGS, 140, DDMF_INSTANT_CLOSE);
 	if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
@@ -429,11 +432,11 @@ enum MapMenuEntries {
 static CallBackFunction ToolbarMapClick(Window *w)
 {
 	DropDownList list;
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_MAP_MENU_MAP_OF_WORLD,            MME_SHOW_SMALLMAP,          false));
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_MAP_MENU_EXTRA_VIEWPORT,          MME_SHOW_EXTRAVIEWPORTS,    false));
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_MAP_MENU_LINGRAPH_LEGEND,         MME_SHOW_LINKGRAPH,         false));
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_MAP_MENU_SIGN_LIST,               MME_SHOW_SIGNLISTS,         false));
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_MAP_MENU_PLAN_LIST,               MME_SHOW_PLANS,             false));
+	list.push_back(MakeDropDownListStringItem(STR_MAP_MENU_MAP_OF_WORLD,            MME_SHOW_SMALLMAP,          false));
+	list.push_back(MakeDropDownListStringItem(STR_MAP_MENU_EXTRA_VIEWPORT,          MME_SHOW_EXTRAVIEWPORTS,    false));
+	list.push_back(MakeDropDownListStringItem(STR_MAP_MENU_LINGRAPH_LEGEND,         MME_SHOW_LINKGRAPH,         false));
+	list.push_back(MakeDropDownListStringItem(STR_MAP_MENU_SIGN_LIST,               MME_SHOW_SIGNLISTS,         false));
+	list.push_back(MakeDropDownListStringItem(STR_MAP_MENU_PLAN_LIST,               MME_SHOW_PLANS,             false));
 	PopupMainToolbarMenu(w, WID_TN_SMALL_MAP, std::move(list), 0);
 	return CBF_NONE;
 }
@@ -441,12 +444,12 @@ static CallBackFunction ToolbarMapClick(Window *w)
 static CallBackFunction ToolbarScenMapTownDir(Window *w)
 {
 	DropDownList list;
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_MAP_MENU_MAP_OF_WORLD,            MME_SHOW_SMALLMAP,          false));
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_MAP_MENU_EXTRA_VIEWPORT,          MME_SHOW_EXTRAVIEWPORTS,    false));
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_MAP_MENU_SIGN_LIST,               MME_SHOW_SIGNLISTS,         false));
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_MAP_MENU_PLAN_LIST,               MME_SHOW_PLANS,             false));
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_TOWN_MENU_TOWN_DIRECTORY,         MME_SHOW_TOWNDIRECTORY,     false));
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_INDUSTRY_MENU_INDUSTRY_DIRECTORY, MME_SHOW_INDUSTRYDIRECTORY, false));
+	list.push_back(MakeDropDownListStringItem(STR_MAP_MENU_MAP_OF_WORLD,            MME_SHOW_SMALLMAP,          false));
+	list.push_back(MakeDropDownListStringItem(STR_MAP_MENU_EXTRA_VIEWPORT,          MME_SHOW_EXTRAVIEWPORTS,    false));
+	list.push_back(MakeDropDownListStringItem(STR_MAP_MENU_SIGN_LIST,               MME_SHOW_SIGNLISTS,         false));
+	list.push_back(MakeDropDownListStringItem(STR_MAP_MENU_PLAN_LIST,               MME_SHOW_PLANS,             false));
+	list.push_back(MakeDropDownListStringItem(STR_TOWN_MENU_TOWN_DIRECTORY,         MME_SHOW_TOWNDIRECTORY,     false));
+	list.push_back(MakeDropDownListStringItem(STR_INDUSTRY_MENU_INDUSTRY_DIRECTORY, MME_SHOW_INDUSTRYDIRECTORY, false));
 	PopupMainToolbarMenu(w, WID_TE_SMALL_MAP, std::move(list), 0);
 	return CBF_NONE;
 }
@@ -655,13 +658,13 @@ static void AddDropDownLeagueTableOptions(DropDownList &list)
 {
 	if (LeagueTable::GetNumItems() > 0) {
 		for (LeagueTable *lt : LeagueTable::Iterate()) {
-			list.push_back(std::make_unique<DropDownListStringItem>(lt->title, lt->index, false));
+			list.push_back(MakeDropDownListStringItem(lt->title, lt->index));
 		}
 	} else {
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_GRAPH_MENU_COMPANY_LEAGUE_TABLE, LTMN_PERFORMANCE_LEAGUE, false));
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_GRAPH_MENU_DETAILED_PERFORMANCE_RATING, LTMN_PERFORMANCE_RATING, false));
+		list.push_back(MakeDropDownListStringItem(STR_GRAPH_MENU_COMPANY_LEAGUE_TABLE, LTMN_PERFORMANCE_LEAGUE));
+		list.push_back(MakeDropDownListStringItem(STR_GRAPH_MENU_DETAILED_PERFORMANCE_RATING, LTMN_PERFORMANCE_RATING));
 		if (!_networking) {
-			list.push_back(std::make_unique<DropDownListStringItem>(STR_GRAPH_MENU_HIGHSCORE, LTMN_HIGHSCORE, false));
+			list.push_back(MakeDropDownListStringItem(STR_GRAPH_MENU_HIGHSCORE, LTMN_HIGHSCORE));
 		}
 	}
 }
@@ -670,12 +673,12 @@ static CallBackFunction ToolbarGraphsClick(Window *w)
 {
 	DropDownList list;
 
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_GRAPH_MENU_OPERATING_PROFIT_GRAPH, GRMN_OPERATING_PROFIT_GRAPH, false));
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_GRAPH_MENU_INCOME_GRAPH, GRMN_INCOME_GRAPH, false));
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_GRAPH_MENU_DELIVERED_CARGO_GRAPH, GRMN_DELIVERED_CARGO_GRAPH, false));
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_GRAPH_MENU_PERFORMANCE_HISTORY_GRAPH, GRMN_PERFORMANCE_HISTORY_GRAPH, false));
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_GRAPH_MENU_COMPANY_VALUE_GRAPH, GRMN_COMPANY_VALUE_GRAPH, false));
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_GRAPH_MENU_CARGO_PAYMENT_RATES, GRMN_CARGO_PAYMENT_RATES, false));
+	list.push_back(MakeDropDownListStringItem(STR_GRAPH_MENU_OPERATING_PROFIT_GRAPH, GRMN_OPERATING_PROFIT_GRAPH));
+	list.push_back(MakeDropDownListStringItem(STR_GRAPH_MENU_INCOME_GRAPH, GRMN_INCOME_GRAPH));
+	list.push_back(MakeDropDownListStringItem(STR_GRAPH_MENU_DELIVERED_CARGO_GRAPH, GRMN_DELIVERED_CARGO_GRAPH));
+	list.push_back(MakeDropDownListStringItem(STR_GRAPH_MENU_PERFORMANCE_HISTORY_GRAPH, GRMN_PERFORMANCE_HISTORY_GRAPH));
+	list.push_back(MakeDropDownListStringItem(STR_GRAPH_MENU_COMPANY_VALUE_GRAPH, GRMN_COMPANY_VALUE_GRAPH));
+	list.push_back(MakeDropDownListStringItem(STR_GRAPH_MENU_CARGO_PAYMENT_RATES, GRMN_CARGO_PAYMENT_RATES));
 
 	if (_toolbar_mode != TB_NORMAL) AddDropDownLeagueTableOptions(list);
 
@@ -940,7 +943,7 @@ static CallBackFunction MenuClickBuildTram(int index)
 static CallBackFunction ToolbarBuildWaterClick(Window *w)
 {
 	DropDownList list;
-	list.push_back(std::make_unique<DropDownListIconItem>(SPR_IMG_BUILD_CANAL, PAL_NONE, STR_WATERWAYS_MENU_WATERWAYS_CONSTRUCTION, 0, false));
+	list.push_back(MakeDropDownListIconItem(SPR_IMG_BUILD_CANAL, PAL_NONE, STR_WATERWAYS_MENU_WATERWAYS_CONSTRUCTION, 0, false));
 	ShowDropDownList(w, std::move(list), 0, WID_TN_WATER, 140, DDMF_INSTANT_CLOSE);
 	if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 	return CBF_NONE;
@@ -962,7 +965,7 @@ static CallBackFunction MenuClickBuildWater(int)
 static CallBackFunction ToolbarBuildAirClick(Window *w)
 {
 	DropDownList list;
-	list.push_back(std::make_unique<DropDownListIconItem>(SPR_IMG_AIRPORT, PAL_NONE, STR_AIRCRAFT_MENU_AIRPORT_CONSTRUCTION, 0, false));
+	list.push_back(MakeDropDownListIconItem(SPR_IMG_AIRPORT, PAL_NONE, STR_AIRCRAFT_MENU_AIRPORT_CONSTRUCTION, 0, false));
 	ShowDropDownList(w, std::move(list), 0, WID_TN_AIR, 140, DDMF_INSTANT_CLOSE);
 	if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 	return CBF_NONE;
@@ -984,9 +987,9 @@ static CallBackFunction MenuClickBuildAir(int)
 static CallBackFunction ToolbarForestClick(Window *w)
 {
 	DropDownList list;
-	list.push_back(std::make_unique<DropDownListIconItem>(SPR_IMG_LANDSCAPING, PAL_NONE, STR_LANDSCAPING_MENU_LANDSCAPING, 0, false));
-	list.push_back(std::make_unique<DropDownListIconItem>(SPR_IMG_PLANTTREES, PAL_NONE, STR_LANDSCAPING_MENU_PLANT_TREES, 1, false));
-	list.push_back(std::make_unique<DropDownListIconItem>(SPR_IMG_SIGN, PAL_NONE, STR_LANDSCAPING_MENU_PLACE_SIGN, 2, false));
+	list.push_back(MakeDropDownListIconItem(SPR_IMG_LANDSCAPING, PAL_NONE, STR_LANDSCAPING_MENU_LANDSCAPING, 0, false));
+	list.push_back(MakeDropDownListIconItem(SPR_IMG_PLANTTREES, PAL_NONE, STR_LANDSCAPING_MENU_PLANT_TREES, 1, false));
+	list.push_back(MakeDropDownListIconItem(SPR_IMG_SIGN, PAL_NONE, STR_LANDSCAPING_MENU_PLACE_SIGN, 2, false));
 	ShowDropDownList(w, std::move(list), 0, WID_TN_LANDSCAPE, 100, DDMF_INSTANT_CLOSE);
 	if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
 	return CBF_NONE;
@@ -1182,21 +1185,21 @@ static CallBackFunction ToolbarHelpClick(Window *w)
 	WidgetID widget = (_game_mode == GM_EDITOR) ? (WidgetID)WID_TE_HELP : (WidgetID)WID_TN_HELP;
 
 	DropDownList list;
-	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_LAND_BLOCK_INFO,           HME_LANDINFO,      false));
-	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_SHOW_PICKER_TOOL,          HME_PICKER,        _local_company == COMPANY_SPECTATOR));
-	list.emplace_back(new DropDownListItem(-1, false));
-	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_HELP,                      HME_HELP,          false));
-	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_TOGGLE_CONSOLE,            HME_CONSOLE,       false));
-	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_AI_DEBUG,                  HME_SCRIPT_DEBUG,  false));
-	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_SCREENSHOT,                HME_SCREENSHOT,    false));
-	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_SHOW_FRAMERATE,            HME_FRAMERATE,     false));
-	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS, HME_MODIFIER_KEYS, false));
-	list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_ABOUT_OPENTTD,             HME_ABOUT,         false));
+	list.push_back(MakeDropDownListStringItem(STR_ABOUT_MENU_LAND_BLOCK_INFO,           HME_LANDINFO,      false));
+	list.push_back(MakeDropDownListStringItem(STR_ABOUT_MENU_SHOW_PICKER_TOOL,          HME_PICKER,        _local_company == COMPANY_SPECTATOR));
+	list.push_back(MakeDropDownListDividerItem());
+	list.push_back(MakeDropDownListStringItem(STR_ABOUT_MENU_HELP,                      HME_HELP,          false));
+	list.push_back(MakeDropDownListStringItem(STR_ABOUT_MENU_TOGGLE_CONSOLE,            HME_CONSOLE,       false));
+	list.push_back(MakeDropDownListStringItem(STR_ABOUT_MENU_AI_DEBUG,                  HME_SCRIPT_DEBUG,  false));
+	list.push_back(MakeDropDownListStringItem(STR_ABOUT_MENU_SCREENSHOT,                HME_SCREENSHOT,    false));
+	list.push_back(MakeDropDownListStringItem(STR_ABOUT_MENU_SHOW_FRAMERATE,            HME_FRAMERATE,     false));
+	list.push_back(MakeDropDownListStringItem(STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS, HME_MODIFIER_KEYS, false));
+	list.push_back(MakeDropDownListStringItem(STR_ABOUT_MENU_ABOUT_OPENTTD,             HME_ABOUT,         false));
 	if (_settings_client.gui.newgrf_developer_tools) {
-		list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_SPRITE_ALIGNER,         HME_SPRITE_ALIGNER,       false));
-		list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES,  HME_BOUNDING_BOXES,       false));
-		list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_TOGGLE_DIRTY_BLOCKS,    HME_DIRTY_BLOCKS,         false));
-		list.emplace_back(new DropDownListStringItem(STR_ABOUT_MENU_TOGGLE_WIDGET_OUTLINES, HME_WIDGET_OUTLINES,      false));
+		list.push_back(MakeDropDownListStringItem(STR_ABOUT_MENU_SPRITE_ALIGNER,         HME_SPRITE_ALIGNER,       false));
+		list.push_back(MakeDropDownListStringItem(STR_ABOUT_MENU_TOGGLE_BOUNDING_BOXES,  HME_BOUNDING_BOXES,       false));
+		list.push_back(MakeDropDownListStringItem(STR_ABOUT_MENU_TOGGLE_DIRTY_BLOCKS,    HME_DIRTY_BLOCKS,         false));
+		list.push_back(MakeDropDownListStringItem(STR_ABOUT_MENU_TOGGLE_WIDGET_OUTLINES, HME_WIDGET_OUTLINES,      false));
 	}
 	PopupMainToolbarMenu(w, widget, std::move(list), 0);
 
@@ -2798,7 +2801,7 @@ MainToolbarScaleAdjuster::MainToolbarScaleAdjuster()
 		/* Bump scale to next integer multiple */
 		_gui_scale = Clamp(100 * ((_gui_scale / 100) + 1), MIN_INTERFACE_SCALE, MAX_INTERFACE_SCALE);
 
-		int8_t new_zoom = ScaleGUITrad(1) <= 1 ? ZOOM_LVL_OUT_4X : ScaleGUITrad(1) >= 4 ? ZOOM_LVL_MIN : ZOOM_LVL_OUT_2X;
+		int8_t new_zoom = ScaleGUITrad(1) <= 1 ? ZOOM_LVL_NORMAL : ScaleGUITrad(1) >= 4 ? ZOOM_LVL_MIN : ZOOM_LVL_IN_2X;
 		_gui_zoom = static_cast<ZoomLevel>(Clamp(new_zoom, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max));
 		SetupWidgetDimensions();
 	}

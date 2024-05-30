@@ -26,6 +26,8 @@
 #include "settings_type.h"
 #include "viewport_func.h"
 #include "zoom_func.h"
+#include "dropdown_func.h"
+#include "dropdown_common_type.h"
 #include "core/geometry_func.hpp"
 #include "tilehighlight_func.h"
 
@@ -1040,7 +1042,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				const DispatchSchedule &schedule = this->GetSelectedSchedule();
 				DropDownList list;
 				auto add_item = [&](StringID string, int result) {
-					std::unique_ptr<DropDownListStringItem> item(new DropDownListStringItem(string, result, false));
+					std::unique_ptr<DropDownListStringItem> item = std::make_unique<DropDownListStringItem>(string, result, false);
 					item->SetColourFlags(TC_FORCED);
 					list.emplace_back(std::move(item));
 				};
@@ -1049,7 +1051,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				add_item(STR_SCHDISPATCH_REMOVE_SCHEDULE, SCH_MD_REMOVE_SCHEDULE);
 				add_item(STR_SCHDISPATCH_DUPLICATE_SCHEDULE, SCH_MD_DUPLICATE_SCHEDULE);
 				add_item(STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES, SCH_MD_APPEND_VEHICLE_SCHEDULES);
-				list.push_back(std::make_unique<DropDownListCheckedItem>(schedule.GetScheduledDispatchReuseSlots(), STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS, SCH_MD_REUSE_DEPARTURE_SLOTS, false));
+				list.push_back(MakeDropDownListCheckedItem(schedule.GetScheduledDispatchReuseSlots(), STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS, SCH_MD_REUSE_DEPARTURE_SLOTS, false));
 				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGEMENT);
 				break;
 			}
@@ -1105,7 +1107,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 				DropDownList list;
 				auto add_item = [&](StringID str, uint bit, bool disabled) {
-					list.push_back(std::make_unique<DropDownListCheckedItem>(HasBit(selected_slot->flags, bit), str, bit, disabled));
+					list.push_back(MakeDropDownListCheckedItem(HasBit(selected_slot->flags, bit), str, bit, disabled));
 				};
 				add_item(STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT, DispatchSlot::SDSF_REUSE_SLOT, schedule.GetScheduledDispatchReuseSlots());
 				for (uint8_t flag_bit = DispatchSlot::SDSF_FIRST_TAG; flag_bit <= DispatchSlot::SDSF_LAST_TAG; flag_bit++) {
@@ -1515,7 +1517,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 			DropDownList list;
 			for (uint i = 0; i < 24; i++) {
 				SetDParam(0, i);
-				list.emplace_back(new DropDownListStringItem(STR_JUST_INT, i, false));
+				list.push_back(MakeDropDownListStringItem(STR_JUST_INT, i, false));
 			}
 			ShowDropDownList(this, std::move(list), current.ClockHour(), widget);
 		};
@@ -1524,7 +1526,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 			DropDownList list;
 			for (uint i = 0; i < 60; i++) {
 				SetDParam(0, i);
-				list.emplace_back(new DropDownListStringItem(STR_JUST_INT, i, false));
+				list.push_back(MakeDropDownListStringItem(STR_JUST_INT, i, false));
 			}
 			ShowDropDownList(this, std::move(list), current.ClockMinute(), widget);
 		};

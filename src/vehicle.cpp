@@ -82,13 +82,13 @@ static const uint GEN_HASHX_BUCKET_BITS = 7;
 static const uint GEN_HASHY_BUCKET_BITS = 6;
 
 /* Compute hash for vehicle coord */
-#define GEN_HASHX(x)    GB((x), GEN_HASHX_BUCKET_BITS + ZOOM_LVL_SHIFT, GEN_HASHX_BITS)
-#define GEN_HASHY(y)   (GB((y), GEN_HASHY_BUCKET_BITS + ZOOM_LVL_SHIFT, GEN_HASHY_BITS) << GEN_HASHX_BITS)
+#define GEN_HASHX(x)    GB((x), GEN_HASHX_BUCKET_BITS + ZOOM_BASE_SHIFT, GEN_HASHX_BITS)
+#define GEN_HASHY(y)   (GB((y), GEN_HASHY_BUCKET_BITS + ZOOM_BASE_SHIFT, GEN_HASHY_BITS) << GEN_HASHX_BITS)
 #define GEN_HASH(x, y) (GEN_HASHY(y) + GEN_HASHX(x))
 
 /* Maximum size until hash repeats */
-//static const int GEN_HASHX_SIZE = 1 << (GEN_HASHX_BUCKET_BITS + GEN_HASHX_BITS + ZOOM_LVL_SHIFT);
-//static const int GEN_HASHY_SIZE = 1 << (GEN_HASHY_BUCKET_BITS + GEN_HASHY_BITS + ZOOM_LVL_SHIFT);
+//static const int GEN_HASHX_SIZE = 1 << (GEN_HASHX_BUCKET_BITS + GEN_HASHX_BITS + ZOOM_BASE_SHIFT);
+//static const int GEN_HASHY_SIZE = 1 << (GEN_HASHY_BUCKET_BITS + GEN_HASHY_BITS + ZOOM_BASE_SHIFT);
 
 /* Increments to reach next bucket in hash table */
 //static const int GEN_HASHX_INC = 1;
@@ -1955,8 +1955,8 @@ struct ViewportHashBound {
 static const int VHB_BASE_MARGIN = 70;
 
 static ViewportHashBound GetViewportHashBound(int l, int r, int t, int b, int x_margin, int y_margin) {
-	int xl = (l - ((VHB_BASE_MARGIN + x_margin) * ZOOM_LVL_BASE)) >> (7 + ZOOM_LVL_SHIFT);
-	int xu = (r + (x_margin * ZOOM_LVL_BASE))                 >> (7 + ZOOM_LVL_SHIFT);
+	int xl = (l - ((VHB_BASE_MARGIN + x_margin) * ZOOM_BASE)) >> (7 + ZOOM_BASE_SHIFT);
+	int xu = (r + (x_margin * ZOOM_BASE))                     >> (7 + ZOOM_BASE_SHIFT);
 	/* compare after shifting instead of before, so that lower bits don't affect comparison result */
 	if (xu - xl < (1 << 6)) {
 		xl &= 0x3F;
@@ -1967,8 +1967,8 @@ static ViewportHashBound GetViewportHashBound(int l, int r, int t, int b, int x_
 		xu = 0x3F;
 	}
 
-	int yl = (t - ((VHB_BASE_MARGIN + y_margin) * ZOOM_LVL_BASE)) >> (6 + ZOOM_LVL_SHIFT);
-	int yu = (b + (y_margin * ZOOM_LVL_BASE))                 >> (6 + ZOOM_LVL_SHIFT);
+	int yl = (t - ((VHB_BASE_MARGIN + y_margin) * ZOOM_BASE)) >> (6 + ZOOM_BASE_SHIFT);
+	int yu = (b + (y_margin * ZOOM_BASE))                     >> (6 + ZOOM_BASE_SHIFT);
 	/* compare after shifting instead of before, so that lower bits don't affect comparison result */
 	if (yu - yl < (1 << 6)) {
 		yl = (yl & 0x3F) << 6;
@@ -1994,10 +1994,10 @@ void ViewportAddVehiclesIntl(DrawPixelInfo *dpi)
 	const ViewportHashBound vhb = GetViewportHashBound(l, r, t, b,
 			update_vehicles ? MAX_VEHICLE_PIXEL_X - VHB_BASE_MARGIN : 0, update_vehicles ? MAX_VEHICLE_PIXEL_Y - VHB_BASE_MARGIN : 0);
 
-	const int ul = l - (MAX_VEHICLE_PIXEL_X * ZOOM_LVL_BASE);
-	const int ur = r + (MAX_VEHICLE_PIXEL_X * ZOOM_LVL_BASE);
-	const int ut = t - (MAX_VEHICLE_PIXEL_Y * ZOOM_LVL_BASE);
-	const int ub = b + (MAX_VEHICLE_PIXEL_Y * ZOOM_LVL_BASE);
+	const int ul = l - (MAX_VEHICLE_PIXEL_X * ZOOM_BASE);
+	const int ur = r + (MAX_VEHICLE_PIXEL_X * ZOOM_BASE);
+	const int ut = t - (MAX_VEHICLE_PIXEL_Y * ZOOM_BASE);
+	const int ub = b + (MAX_VEHICLE_PIXEL_Y * ZOOM_BASE);
 
 	for (int y = vhb.yl;; y = (y + (1 << 6)) & (0x3F << 6)) {
 		for (int x = vhb.xl;; x = (x + 1) & 0x3F) {
@@ -2827,8 +2827,8 @@ void Vehicle::UpdateViewport(bool dirty)
 	Point pt = RemapCoords(this->x_pos + this->x_offs, this->y_pos + this->y_offs, this->z_pos);
 	new_coord.left   += pt.x;
 	new_coord.top    += pt.y;
-	new_coord.right  += pt.x + 2 * ZOOM_LVL_BASE;
-	new_coord.bottom += pt.y + 2 * ZOOM_LVL_BASE;
+	new_coord.right  += pt.x + 2 * ZOOM_BASE;
+	new_coord.bottom += pt.y + 2 * ZOOM_BASE;
 
 	UpdateVehicleViewportHash(this, new_coord.left, new_coord.top);
 
@@ -2857,8 +2857,8 @@ void Vehicle::UpdateViewportDeferred()
 	Point pt = RemapCoords(this->x_pos + this->x_offs, this->y_pos + this->y_offs, this->z_pos);
 	new_coord.left   += pt.x;
 	new_coord.top    += pt.y;
-	new_coord.right  += pt.x + 2 * ZOOM_LVL_BASE;
-	new_coord.bottom += pt.y + 2 * ZOOM_LVL_BASE;
+	new_coord.right  += pt.x + 2 * ZOOM_BASE;
+	new_coord.bottom += pt.y + 2 * ZOOM_BASE;
 
 	UpdateVehicleViewportHashDeferred(this, new_coord.left, new_coord.top);
 

@@ -1346,6 +1346,7 @@ CommandCost CmdRenamePresident(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 			}
 		}
 
+		InvalidateWindowClassesData(WC_COMPANY, 1);
 		MarkWholeScreenDirty();
 		CompanyAdminUpdate(c);
 	}

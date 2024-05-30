@@ -542,7 +542,7 @@ void Town::UpdateVirtCoord()
 
 	SetDParam(0, this->index);
 	SetDParam(1, this->LabelParam2());
-	this->cache.sign.UpdatePosition(HasBit(_display_opt, DO_SHOW_TOWN_NAMES) ? ZOOM_LVL_OUT_128X : ZOOM_LVL_END, pt.x, pt.y - 24 * ZOOM_LVL_BASE, STR_VIEWPORT_TOWN_LABEL, STR_VIEWPORT_TOWN_TINY_WHITE);
+	this->cache.sign.UpdatePosition(HasBit(_display_opt, DO_SHOW_TOWN_NAMES) ? ZOOM_LVL_OUT_32X : ZOOM_LVL_END, pt.x, pt.y - 24 * ZOOM_BASE, STR_VIEWPORT_TOWN_LABEL, STR_VIEWPORT_TOWN_TINY_WHITE);
 
 	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeTown(this->index));
 

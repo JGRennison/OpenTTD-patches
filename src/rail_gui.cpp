@@ -23,6 +23,7 @@
 #include "sound_func.h"
 #include "company_func.h"
 #include "dropdown_type.h"
+#include "dropdown_func.h"
 #include "tunnelbridge.h"
 #include "tilehighlight_func.h"
 #include "spritecache.h"
@@ -2214,10 +2215,10 @@ public:
 
 			case WID_BS_STYLE: {
 				DropDownList list;
-				list.emplace_back(new DropDownListStringItem(STR_BUILD_SIGNAL_DEFAULT_STYLE, 0, false));
+				list.push_back(MakeDropDownListStringItem(STR_BUILD_SIGNAL_DEFAULT_STYLE, 0, false));
 				for (uint i = 0; i < _num_new_signal_styles; i++) {
 					if (HasBit(_enabled_new_signal_styles_mask, i + 1)) {
-						list.emplace_back(new DropDownListStringItem(_new_signal_styles[i].name, i + 1, false));
+						list.push_back(MakeDropDownListStringItem(_new_signal_styles[i].name, i + 1, false));
 					}
 				}
 				ShowDropDownList(this, std::move(list), _cur_signal_style, widget);
@@ -2844,7 +2845,7 @@ DropDownList GetRailTypeDropDownList(bool for_replacement, bool all_option)
 	DropDownList list;
 
 	if (all_option) {
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_REPLACE_ALL_RAILTYPE, INVALID_RAILTYPE, false));
+		list.push_back(MakeDropDownListStringItem(STR_REPLACE_ALL_RAILTYPE, INVALID_RAILTYPE));
 	}
 
 	Dimension d = { 0, 0 };
@@ -2866,16 +2867,16 @@ DropDownList GetRailTypeDropDownList(bool for_replacement, bool all_option)
 		SetDParam(0, rti->strings.menu_text);
 		SetDParam(1, rti->max_speed);
 		if (for_replacement) {
-			list.push_back(std::make_unique<DropDownListStringItem>(rti->strings.replace_text, rt, !HasBit(avail_railtypes, rt)));
+			list.push_back(MakeDropDownListStringItem(rti->strings.replace_text, rt, !HasBit(avail_railtypes, rt)));
 		} else {
 			StringID str = rti->max_speed > 0 ? STR_TOOLBAR_RAILTYPE_VELOCITY : STR_JUST_STRING;
-			list.push_back(std::make_unique<DropDownListIconItem>(d, rti->gui_sprites.build_x_rail, PAL_NONE, str, rt, !HasBit(avail_railtypes, rt)));
+			list.push_back(MakeDropDownListIconItem(d, rti->gui_sprites.build_x_rail, PAL_NONE, str, rt, !HasBit(avail_railtypes, rt)));
 		}
 	}
 
 	if (list.empty()) {
 		/* Empty dropdowns are not allowed */
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_NONE, INVALID_RAILTYPE, true));
+		list.push_back(MakeDropDownListStringItem(STR_NONE, INVALID_RAILTYPE, true));
 	}
 
 	return list;

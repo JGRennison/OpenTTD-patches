@@ -77,9 +77,9 @@ static DropDownList BuildVisibilityDropDownList()
 {
 	DropDownList list;
 
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_SERVER_VISIBILITY_LOCAL, SERVER_GAME_TYPE_LOCAL, false));
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_SERVER_VISIBILITY_INVITE_ONLY, SERVER_GAME_TYPE_INVITE_ONLY, false));
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_SERVER_VISIBILITY_PUBLIC, SERVER_GAME_TYPE_PUBLIC, false));
+	list.push_back(MakeDropDownListStringItem(STR_NETWORK_SERVER_VISIBILITY_LOCAL, SERVER_GAME_TYPE_LOCAL));
+	list.push_back(MakeDropDownListStringItem(STR_NETWORK_SERVER_VISIBILITY_INVITE_ONLY, SERVER_GAME_TYPE_INVITE_ONLY));
+	list.push_back(MakeDropDownListStringItem(STR_NETWORK_SERVER_VISIBILITY_PUBLIC, SERVER_GAME_TYPE_PUBLIC));
 
 	return list;
 }
@@ -105,8 +105,8 @@ public:
 		this->Add(std::make_unique<NWidgetLeaf>(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NG_YEARS, STR_NETWORK_SERVER_LIST_PLAY_TIME_CAPTION, STR_NETWORK_SERVER_LIST_PLAY_TIME_CAPTION_TOOLTIP));
 
 		leaf = std::make_unique<NWidgetLeaf>(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NG_INFO, STR_EMPTY, STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP);
-		leaf->SetMinimalSize(14 + GetSpriteSize(SPR_LOCK, nullptr, ZOOM_LVL_OUT_4X).width
-		                        + GetSpriteSize(SPR_BLOT, nullptr, ZOOM_LVL_OUT_4X).width, 12);
+		leaf->SetMinimalSize(14 + GetSpriteSize(SPR_LOCK, nullptr, ZOOM_LVL_NORMAL).width
+		                        + GetSpriteSize(SPR_BLOT, nullptr, ZOOM_LVL_NORMAL).width, 12);
 		leaf->SetFill(0, 1);
 		this->Add(std::move(leaf));
 	}
@@ -1507,8 +1507,8 @@ private:
 	static void OnClickClientAdmin([[maybe_unused]] NetworkClientListWindow *w, [[maybe_unused]] Point pt, ClientID client_id)
 	{
 		DropDownList list;
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK, DD_CLIENT_ADMIN_KICK, false));
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN, DD_CLIENT_ADMIN_BAN, false));
+		list.push_back(MakeDropDownListStringItem(STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK, DD_CLIENT_ADMIN_KICK));
+		list.push_back(MakeDropDownListStringItem(STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN, DD_CLIENT_ADMIN_BAN));
 
 		Rect wi_rect;
 		wi_rect.left   = pt.x;
@@ -1529,8 +1529,8 @@ private:
 	static void OnClickCompanyAdmin([[maybe_unused]] NetworkClientListWindow *w, [[maybe_unused]] Point pt, CompanyID company_id)
 	{
 		DropDownList list;
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_RESET, DD_COMPANY_ADMIN_RESET, NetworkCompanyHasClients(company_id)));
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK, DD_COMPANY_ADMIN_UNLOCK, !NetworkCompanyIsPassworded(company_id)));
+		list.push_back(MakeDropDownListStringItem(STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_RESET, DD_COMPANY_ADMIN_RESET, NetworkCompanyHasClients(company_id)));
+		list.push_back(MakeDropDownListStringItem(STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK, DD_COMPANY_ADMIN_UNLOCK, !NetworkCompanyIsPassworded(company_id)));
 
 		Rect wi_rect;
 		wi_rect.left   = pt.x;

@@ -16,6 +16,7 @@
 #include "core/geometry_func.hpp"
 #include "settings_type.h"
 #include "dropdown_type.h"
+#include "dropdown_func.h"
 
 #include "widgets/date_widget.h"
 
@@ -81,14 +82,14 @@ struct SetDateWindow : Window {
 
 			case WID_SD_DAY:
 				for (uint i = 0; i < 31; i++) {
-					list.push_back(std::make_unique<DropDownListStringItem>(STR_DAY_NUMBER_1ST + i, i + 1, false));
+					list.push_back(MakeDropDownListStringItem(STR_DAY_NUMBER_1ST + i, i + 1));
 				}
 				selected = this->date.day;
 				break;
 
 			case WID_SD_MONTH:
 				for (uint i = 0; i < 12; i++) {
-					list.push_back(std::make_unique<DropDownListStringItem>(STR_MONTH_JAN + i, i, false));
+					list.push_back(MakeDropDownListStringItem(STR_MONTH_JAN + i, i));
 				}
 				selected = this->date.month;
 				break;
@@ -96,7 +97,7 @@ struct SetDateWindow : Window {
 			case WID_SD_YEAR:
 				for (EconTime::Year i = this->min_year; i <= this->max_year; i++) {
 					SetDParam(0, i);
-					list.push_back(std::make_unique<DropDownListStringItem>(STR_JUST_INT, i.base(), false));
+					list.push_back(MakeDropDownListStringItem(STR_JUST_INT, i.base()));
 				}
 				selected = this->date.year.base();
 				break;
@@ -206,7 +207,7 @@ struct SetMinutesWindow : SetDateWindow
 			case WID_SD_DAY:
 				for (uint i = 0; i < 60; i++) {
 					SetDParam(0, i);
-					list.emplace_back(new DropDownListStringItem(STR_JUST_INT, i, false));
+					list.push_back(MakeDropDownListStringItem(STR_JUST_INT, i, false));
 				}
 				selected = this->minutes.ClockMinute();
 				break;
@@ -214,7 +215,7 @@ struct SetMinutesWindow : SetDateWindow
 			case WID_SD_MONTH:
 				for (uint i = 0; i < 24; i++) {
 					SetDParam(0, i);
-					list.emplace_back(new DropDownListStringItem(STR_JUST_INT, i, false));
+					list.push_back(MakeDropDownListStringItem(STR_JUST_INT, i, false));
 				}
 				selected = this->minutes.ClockHour();
 

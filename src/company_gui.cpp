@@ -24,6 +24,7 @@
 #include "strings_func.h"
 #include "date_func.h"
 #include "dropdown_type.h"
+#include "dropdown_common_type.h"
 #include "tilehighlight_func.h"
 #include "company_base.h"
 #include "core/geometry_func.hpp"
@@ -592,26 +593,6 @@ void ShowCompanyFinances(CompanyID company)
 	new CompanyFinancesWindow(&_company_finances_desc, company);
 }
 
-/* List of colours for the livery window */
-static const StringID _colour_dropdown[] = {
-	STR_COLOUR_DARK_BLUE,
-	STR_COLOUR_PALE_GREEN,
-	STR_COLOUR_PINK,
-	STR_COLOUR_YELLOW,
-	STR_COLOUR_RED,
-	STR_COLOUR_LIGHT_BLUE,
-	STR_COLOUR_GREEN,
-	STR_COLOUR_DARK_GREEN,
-	STR_COLOUR_BLUE,
-	STR_COLOUR_CREAM,
-	STR_COLOUR_MAUVE,
-	STR_COLOUR_PURPLE,
-	STR_COLOUR_ORANGE,
-	STR_COLOUR_BROWN,
-	STR_COLOUR_GREY,
-	STR_COLOUR_WHITE,
-};
-
 /* Association of liveries to livery classes */
 static const LiveryClass _livery_class[LS_END] = {
 	LC_OTHER,
@@ -629,7 +610,7 @@ static const LiveryClass _livery_class[LS_END] = {
 template <SpriteID TSprite = SPR_SQUARE>
 class DropDownListColourItem : public DropDownIcon<DropDownString<DropDownListItem>> {
 public:
-	DropDownListColourItem(int colour, bool masked) : DropDownIcon<DropDownString<DropDownListItem>>(TSprite, GENERAL_SPRITE_COLOUR(colour % COLOUR_END), colour < COLOUR_END ? _colour_dropdown[colour] : STR_COLOUR_DEFAULT, colour, masked)
+	DropDownListColourItem(int colour, bool masked) : DropDownIcon<DropDownString<DropDownListItem>>(TSprite, GENERAL_SPRITE_COLOUR(colour % COLOUR_END), colour < COLOUR_END ? (STR_COLOUR_DARK_BLUE + colour) : STR_COLOUR_DEFAULT, colour, masked)
 	{
 	}
 };
@@ -687,8 +668,8 @@ private:
 			default_col = (primary ? default_livery->colour1 : default_livery->colour2) + COLOUR_END;
 			list.push_back(std::make_unique<DropDownListColourItem<>>(default_col, false));
 		}
-		for (uint i = 0; i < lengthof(_colour_dropdown); i++) {
-			list.push_back(std::make_unique<DropDownListColourItem<>>(i, HasBit(used_colours, i)));
+		for (Colours colour = COLOUR_BEGIN; colour != COLOUR_END; colour++) {
+			list.push_back(std::make_unique<DropDownListColourItem<>>(colour, HasBit(used_colours, colour)));
 		}
 
 		uint8_t sel;
@@ -823,8 +804,8 @@ public:
 			case WID_SCL_PRI_COL_DROPDOWN: {
 				this->square = GetSpriteSize(SPR_SQUARE);
 				int string_padding = this->square.width + WidgetDimensions::scaled.hsep_normal + padding.width;
-				for (const StringID *id = _colour_dropdown; id != endof(_colour_dropdown); id++) {
-					size->width = std::max(size->width, GetStringBoundingBox(*id).width + string_padding);
+				for (Colours colour = COLOUR_BEGIN; colour != COLOUR_END; colour++) {
+					size->width = std::max(size->width, GetStringBoundingBox(STR_COLOUR_DARK_BLUE + colour).width + string_padding);
 				}
 				size->width = std::max(size->width, GetStringBoundingBox(STR_COLOUR_DEFAULT).width + string_padding);
 				break;
@@ -2585,6 +2566,14 @@ struct CompanyWindow : Window
 		}
 	}
 
+	void OnResize() override
+	{
+		NWidgetResizeBase *wid = this->GetWidget<NWidgetResizeBase>(WID_C_FACE_TITLE);
+		SetDParam(0, this->owner);
+		int y = GetStringHeight(STR_COMPANY_VIEW_PRESIDENT_MANAGER_TITLE, wid->current_x);
+		if (wid->UpdateVerticalSize(y)) this->ReInit(0, 0);
+	}
+
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
@@ -2728,7 +2717,6 @@ struct CompanyWindow : Window
 		}
 	}
 
-
 	/**
 	 * Some data on this window has become invalid.
 	 * @param data Information about the changed data.
@@ -2736,25 +2724,30 @@ struct CompanyWindow : Window
 	 */
 	void OnInvalidateData(int data = 0, bool gui_scope = true) override
 	{
-		if (this->window_number == _local_company) return;
+		if (this->window_number != _local_company) {
+			if (_settings_game.economy.allow_shares) { // Shares are allowed
+				const Company *c = Company::Get(this->window_number);
 
-		if (_settings_game.economy.allow_shares) { // Shares are allowed
-			const Company *c = Company::Get(this->window_number);
+				/* If all shares are owned by someone (none by nobody), disable buy button */
+				this->SetWidgetDisabledState(WID_C_BUY_SHARE, GetAmountOwnedBy(c, INVALID_OWNER) == 0 ||
+						/* Only 25% left to buy. If the company is human, disable buying it up.. TODO issues! */
+						(GetAmountOwnedBy(c, INVALID_OWNER) == 1 && !c->is_ai) ||
+						/* Spectators cannot do anything of course */
+						_local_company == COMPANY_SPECTATOR);
 
-			/* If all shares are owned by someone (none by nobody), disable buy button */
-			this->SetWidgetDisabledState(WID_C_BUY_SHARE, GetAmountOwnedBy(c, INVALID_OWNER) == 0 ||
-					/* Only 25% left to buy. If the company is human, disable buying it up.. TODO issues! */
-					(GetAmountOwnedBy(c, INVALID_OWNER) == 1 && !c->is_ai) ||
-					/* Spectators cannot do anything of course */
-					_local_company == COMPANY_SPECTATOR);
+				/* If the company doesn't own any shares, disable sell button */
+				this->SetWidgetDisabledState(WID_C_SELL_SHARE, (GetAmountOwnedBy(c, _local_company) == 0) ||
+						/* Spectators cannot do anything of course */
+						_local_company == COMPANY_SPECTATOR);
+			} else { // Shares are not allowed, disable buy/sell buttons
+				this->DisableWidget(WID_C_BUY_SHARE);
+				this->DisableWidget(WID_C_SELL_SHARE);
+			}
+		}
 
-			/* If the company doesn't own any shares, disable sell button */
-			this->SetWidgetDisabledState(WID_C_SELL_SHARE, (GetAmountOwnedBy(c, _local_company) == 0) ||
-					/* Spectators cannot do anything of course */
-					_local_company == COMPANY_SPECTATOR);
-		} else { // Shares are not allowed, disable buy/sell buttons
-			this->DisableWidget(WID_C_BUY_SHARE);
-			this->DisableWidget(WID_C_SELL_SHARE);
+		if (gui_scope && data == 1) {
+			/* Manually call OnResize to adjust minimum height of president name widget. */
+			OnResize();
 		}
 	}
 };

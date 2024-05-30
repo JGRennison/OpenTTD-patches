@@ -270,7 +270,7 @@ STR_UNITS_PERIODS                                               :{NUM}{NBSP}per�
 # Common window strings
 STR_LIST_FILTER_TITLE                                           :{BLACK}Filtro:
 STR_LIST_FILTER_OSKTITLE                                        :{BLACK}Inserir uma ou mais palavras-chave para filtrar a lista
-STR_LIST_FILTER_TOOLTIP                                         :{BLACK}Digite uma ou mais palavras-chave para procurar na lista
+STR_LIST_FILTER_TOOLTIP                                         :{BLACK}Introduza uma ou mais palavras-chave para procurar na lista
 
 STR_TOOLTIP_GROUP_ORDER                                         :{BLACK}Escolher a ordem de agrupamento
 STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Escolher a ordenação (descendente/ascendente)
@@ -405,7 +405,7 @@ STR_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TRACK                        :{BLACK}Construi
 STR_TOOLBAR_TOOLTIP_BUILD_ROADS                                 :{BLACK}Construir infraestrutura rodoviária
 STR_TOOLBAR_TOOLTIP_BUILD_TRAMWAYS                              :{BLACK}Construir infraestrutura para bondes
 STR_TOOLBAR_TOOLTIP_BUILD_SHIP_DOCKS                            :{BLACK}Construir infraestrutura hidroviária
-STR_TOOLBAR_TOOLTIP_BUILD_AIRPORTS                              :{BLACK}Construir aeroportos
+STR_TOOLBAR_TOOLTIP_BUILD_AIRPORTS                              :{BLACK}Construir aeroporto
 STR_TOOLBAR_TOOLTIP_LANDSCAPING                                 :{BLACK}Abrir menu de paisagismo, menu de árvores ou colocar uma placa
 STR_TOOLBAR_TOOLTIP_SHOW_SOUND_MUSIC_WINDOW                     :{BLACK}Abrir janela de som/música
 STR_TOOLBAR_TOOLTIP_SHOW_LAST_MESSAGE_NEWS                      :{BLACK}Abrir última mensagem/notícia, histórico de mensagens ou apagar todas as mensagens
@@ -418,7 +418,7 @@ STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}Editor de Cenário
 STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_BACKWARD    :{BLACK}Mover a data inicial 1 ano para trás
 STR_SCENEDIT_TOOLBAR_TOOLTIP_MOVE_THE_STARTING_DATE_FORWARD     :{BLACK}Mover a data inicial 1 ano para frente
-STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}Clique para digitar o ano de início
+STR_SCENEDIT_TOOLBAR_TOOLTIP_SET_DATE                           :{BLACK}Clique para alterar o ano de início
 STR_SCENEDIT_TOOLBAR_TOOLTIP_DISPLAY_MAP_TOWN_DIRECTORY         :{BLACK}Abrir mapa, visualização extra, lista de placas, de localidades ou de indústrias
 STR_SCENEDIT_TOOLBAR_LANDSCAPE_GENERATION                       :{BLACK}Abrir menu de paisagismo ou gerar um novo mundo
 STR_SCENEDIT_TOOLBAR_TOWN_GENERATION                            :{BLACK}Construir ou gerar localidades
@@ -506,7 +506,7 @@ STR_ROAD_MENU_ROAD_CONSTRUCTION                                 :Construção de
 STR_ROAD_MENU_TRAM_CONSTRUCTION                                 :Construção de linha de bonde
 
 # Waterways construction menu
-STR_WATERWAYS_MENU_WATERWAYS_CONSTRUCTION                       :Construção de hidrovias
+STR_WATERWAYS_MENU_WATERWAYS_CONSTRUCTION                       :Construção de hidrovia
 
 # Aairport construction menu
 STR_AIRCRAFT_MENU_AIRPORT_CONSTRUCTION                          :Construção de aeroporto
@@ -668,7 +668,7 @@ STR_PERFORMANCE_DETAIL_TOTAL                                    :{BLACK}Total:
 
 STR_PERFORMANCE_DETAIL_VEHICLES_TOOLTIP_YEARS                   :{BLACK}Número de veículos que geraram lucro no último ano. Isso inclui veículos rodoviários, trens, embarcações e aeronaves
 STR_PERFORMANCE_DETAIL_VEHICLES_TOOLTIP_PERIODS                 :{BLACK}Número de veículos que geraram lucro no último período. Isso inclui veículos rodoviários, trens, embarcações e aeronaves
-STR_PERFORMANCE_DETAIL_STATIONS_TOOLTIP                         :{BLACK}Número de estações atendidas recentemente. Estações de trem, paradas de ônibus, aeroportos, etc. são contados separadamente, mesmo que pertençam à mesma estação
+STR_PERFORMANCE_DETAIL_STATIONS_TOOLTIP                         :{BLACK}Número de estações atendidas recentemente. Estações de trem, paradas de ônibus, aeroportos, etc., são contados separadamente, mesmo que pertençam à mesma estação
 STR_PERFORMANCE_DETAIL_MIN_PROFIT_TOOLTIP_YEARS                 :{BLACK}Lucro do veículo com o menor rendimento (apenas veículos com mais de dois anos são considerados)
 STR_PERFORMANCE_DETAIL_MIN_PROFIT_TOOLTIP_PERIODS               :{BLACK}Lucro do veículo com o menor rendimento (apenas veículos com mais de dois períodos são considerados)
 STR_PERFORMANCE_DETAIL_MIN_INCOME_TOOLTIP                       :{BLACK}Quantia de dinheiro obtida no trimestre com o menor lucro dos últimos 12 trimestres
@@ -680,7 +680,7 @@ STR_PERFORMANCE_DETAIL_LOAN_TOOLTIP                             :{BLACK}O montan
 STR_PERFORMANCE_DETAIL_TOTAL_TOOLTIP                            :{BLACK}Total de pontos de pontos possíveis
 
 # Music window
-STR_MUSIC_JAZZ_JUKEBOX_CAPTION                                  :{WHITE}Jukebox de Jazz
+STR_MUSIC_JAZZ_JUKEBOX_CAPTION                                  :{WHITE}Jukebox de Música
 STR_MUSIC_PLAYLIST_ALL                                          :{TINY_FONT}{BLACK}Todos
 STR_MUSIC_PLAYLIST_OLD_STYLE                                    :{TINY_FONT}{BLACK}Antigo
 STR_MUSIC_PLAYLIST_NEW_STYLE                                    :{TINY_FONT}{BLACK}Moderno
@@ -1530,8 +1530,8 @@ STR_CONFIG_SETTING_ERRMSG_DURATION                              :Duração da me
 STR_CONFIG_SETTING_ERRMSG_DURATION_HELPTEXT                     :Tempo de exibição de mensagens de erro numa janela vermelha. Algumas mensagens de erro (crítico) não são fechadas automaticamente após este tempo e precisam ser fechadas manualmente
 
 STR_CONFIG_SETTING_HOVER_DELAY                                  :Mostrar textos de ajuda: {STRING}
-STR_CONFIG_SETTING_HOVER_DELAY_HELPTEXT                         :Tempo que o cursor deve ficar sobre algum elemento da interface para que os textos de ajuda sejam mostrados. Outro modo de exibir os textos de ajuda é fixar este valor em 0 e clicar com o botão direito do mouse
-STR_CONFIG_SETTING_HOVER_DELAY_VALUE                            :Manter o cursor por {COMMA} milissegundo{P 0 "" s}
+STR_CONFIG_SETTING_HOVER_DELAY_HELPTEXT                         :Tempo que o ponteiro do mouse deve ficar sobre algum elemento da interface para que os textos de ajuda sejam mostrados. Outro modo de exibir os textos de ajuda é fixar este valor em 0 e clicar com o botão direito do mouse
+STR_CONFIG_SETTING_HOVER_DELAY_VALUE                            :Manter o ponteiro por {COMMA} milissegundo{P 0 "" s}
 ###setting-zero-is-special
 STR_CONFIG_SETTING_HOVER_DELAY_DISABLED                         :Botão direito
 
@@ -1673,7 +1673,7 @@ STR_CONFIG_SETTING_SCROLLWHEEL_SCROLL                           :Mover o mapa
 STR_CONFIG_SETTING_SCROLLWHEEL_OFF                              :Desativado
 
 STR_CONFIG_SETTING_OSK_ACTIVATION                               :Teclado virtual: {STRING}
-STR_CONFIG_SETTING_OSK_ACTIVATION_HELPTEXT                      :Escolher o método para mostrar o teclado virtual para inserir texto em caixas de diálogo usando o cursor. Isto é útil para dispositivos pequenos que não possuem teclados
+STR_CONFIG_SETTING_OSK_ACTIVATION_HELPTEXT                      :Escolher o método para mostrar o teclado virtual para inserir texto em caixas de diálogo usando apenas o cursor. Isto é útil para dispositivos pequenos que não possuem teclados
 ###length 4
 STR_CONFIG_SETTING_OSK_ACTIVATION_DISABLED                      :Desativado
 STR_CONFIG_SETTING_OSK_ACTIVATION_DOUBLE_CLICK                  :Clique duplo
@@ -1736,7 +1736,7 @@ STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE             :Mostrar chegada
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :Mostrar os horários previstos de chegada e de partida nos quadros de horários
 
 STR_CONFIG_SETTING_QUICKGOTO                                    :Criação rápida de ordens de veículos: {STRING}
-STR_CONFIG_SETTING_QUICKGOTO_HELPTEXT                           :Pré-selecionar o cursor 'Ir Para' ao abrir a janela de ordens
+STR_CONFIG_SETTING_QUICKGOTO_HELPTEXT                           :Pré-selecionar o 'cursor Ir para' ao abrir a janela de ordens
 
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE                            :Tipo de trilho padrão (ao iniciar novo/abrir jogo): {STRING}
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE_HELPTEXT                   :Tipo de trilho a ser selecionado ao iniciar novo/abrir um jogo. 'Primeiro disponível' seleciona o tipo de trilho mais antigo. 'Último disponível' seleciona o tipo mais novo de trilho e 'Mais utilizado' seleciona o tipo que é mais usado atualmente
@@ -1749,7 +1749,7 @@ STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :Mostrar caminho
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :Usar uma cor diferente nos trajetos reservados para auxiliar na solução de problemas com trens que se recusam a entrar em seções controlados por sinais de caminho
 
 STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS                     :Manter as ferramentas de construção ativas após o uso: {STRING}
-STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS_HELPTEXT            :Manter as ferramentas de construção de pontes, túneis, etc. abertas após o uso
+STR_CONFIG_SETTING_PERSISTENT_BUILDINGTOOLS_HELPTEXT            :Manter as ferramentas de construção de pontes, túneis, etc., abertas após o uso
 
 STR_CONFIG_SETTING_AUTO_REMOVE_SIGNALS                          :Remover automaticamente os sinais durante a construção de ferrovias: {STRING}
 STR_CONFIG_SETTING_AUTO_REMOVE_SIGNALS_HELPTEXT                 :Remover automaticamente os sinais durante a construção de ferrovias se os sinais estiverem no caminho. Isso pode, potencialmente, causar acidentes de trens
@@ -2420,8 +2420,8 @@ STR_NETWORK_SERVER_LIST_ADD_SERVER_TOOLTIP                      :{BLACK}Adiciona
 STR_NETWORK_SERVER_LIST_START_SERVER                            :{BLACK}Iniciar servidor
 STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP                    :{BLACK}Iniciar um servidor próprio
 
-STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Digitar o seu nome
-STR_NETWORK_SERVER_LIST_ENTER_SERVER_ADDRESS                    :{BLACK}Digitar o endereço de servidor ou código de convite
+STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE                    :{BLACK}Introduza o seu nome
+STR_NETWORK_SERVER_LIST_ENTER_SERVER_ADDRESS                    :{BLACK}Endereço do servidor ou código de convite
 
 # Start new multiplayer server
 STR_NETWORK_START_SERVER_CAPTION                                :{WHITE}Iniciar novo jogo multijogador
@@ -2440,7 +2440,7 @@ STR_NETWORK_START_SERVER_COMPANIES_SELECT                       :{BLACK}{NUM} em
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES                    :{BLACK}Número máximo de empresas:
 STR_NETWORK_START_SERVER_NUMBER_OF_COMPANIES_TOOLTIP            :{BLACK}Limitar o servidor a um certo número de empresas
 
-STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Coloque o nome para o jogo em rede
+STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE                 :{BLACK}Introduza um nome para o jogo em rede
 
 # Network connecting window
 STR_NETWORK_CONNECTING_CAPTION                                  :{WHITE}Conectando...
@@ -2461,8 +2461,8 @@ STR_NETWORK_CONNECTING_SPECIAL_2                                :{BLACK}Obtendo 
 
 STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Desconectar
 
-STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Servidor protegido. Digite a senha
-STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Empresa protegida. Digite a senha
+STR_NETWORK_NEED_GAME_PASSWORD_CAPTION                          :{WHITE}Servidor protegido. Introduza a senha
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Empresa protegida. Introduza a senha
 
 # Network company list added strings
 STR_NETWORK_COMPANY_LIST_CLIENT_LIST                            :Jogadores conectados
@@ -2560,7 +2560,7 @@ STR_NETWORK_CHAT_CLIENT                                         :[Privado] {STRI
 STR_NETWORK_CHAT_TO_CLIENT                                      :[Privado] Para {STRING}: {WHITE}{STRING}
 STR_NETWORK_CHAT_ALL                                            :[Todos] {STRING}: {WHITE}{STRING}
 STR_NETWORK_CHAT_EXTERNAL                                       :[{3:STRING}] {0:STRING}: {WHITE}{1:STRING}
-STR_NETWORK_CHAT_OSKTITLE                                       :{BLACK}Digitar a mensagem para conversar na rede
+STR_NETWORK_CHAT_OSKTITLE                                       :{BLACK}Introduza a mensagem para conversar na rede
 
 # Network messages
 STR_NETWORK_ERROR_NOTAVAILABLE                                  :{WHITE}Não foram encontradas interfaces de rede ou o jogo foi compilado sem ENABLE_NETWORK
@@ -2646,14 +2646,14 @@ STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}O servid
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} foi expulso. Motivo: ({STRING})
 
 STR_NETWORK_ERROR_COORDINATOR_REGISTRATION_FAILED               :{WHITE}Falha ao registrar o servidor
-STR_NETWORK_ERROR_COORDINATOR_REUSE_OF_INVITE_CODE              :{WHITE}Outro servidor com o mesmo código de convite foi registrado. Mudando para o tipo de jogo "local".
+STR_NETWORK_ERROR_COORDINATOR_REUSE_OF_INVITE_CODE              :{WHITE}Outro servidor com o mesmo código de convite foi registrado. Mudando o jogo para o tipo "local".
 STR_NETWORK_ERROR_COORDINATOR_ISOLATED                          :{WHITE}O seu servidor não permite conexões remotas
 STR_NETWORK_ERROR_COORDINATOR_ISOLATED_DETAIL                   :{WHITE}Outros jogadores não poderão se conectar ao seu servidor
 
 # Content downloading window
 STR_CONTENT_TITLE                                               :{WHITE}Download de conteúdo
 STR_CONTENT_TYPE_CAPTION                                        :{BLACK}Tipo
-STR_CONTENT_TYPE_CAPTION_TOOLTIP                                :{BLACK}Tipo do conteúdo
+STR_CONTENT_TYPE_CAPTION_TOOLTIP                                :{BLACK}Tipo de conteúdo
 STR_CONTENT_NAME_CAPTION                                        :{BLACK}Nome
 STR_CONTENT_NAME_CAPTION_TOOLTIP                                :{BLACK}Nome do conteúdo
 STR_CONTENT_MATRIX_TOOLTIP                                      :{BLACK}Clique numa linha para ver os detalhes{}Clique na caixa de seleção para marcar e fazer o download
@@ -2912,8 +2912,8 @@ STR_STATION_BUILD_CARGO_TRAM_ORIENTATION                        :{WHITE}Orienta�
 STR_STATION_BUILD_CARGO_TRAM_ORIENTATION_TOOLTIP                :{BLACK}Escolher a orientação da estação de bondes de carga
 
 # Waterways toolbar (last two for SE only)
-STR_WATERWAYS_TOOLBAR_CAPTION                                   :{WHITE}Construção de Hidrovias
-STR_WATERWAYS_TOOLBAR_CAPTION_SE                                :{WHITE}Hidrovias
+STR_WATERWAYS_TOOLBAR_CAPTION                                   :{WHITE}Construção de Hidrovia
+STR_WATERWAYS_TOOLBAR_CAPTION_SE                                :{WHITE}Hidrovia
 STR_WATERWAYS_TOOLBAR_BUILD_CANALS_TOOLTIP                      :{BLACK}Construir canais. Pressione também Shift para só mostrar o custo estimado
 STR_WATERWAYS_TOOLBAR_BUILD_LOCKS_TOOLTIP                       :{BLACK}Construir eclusas. Pressione também Shift para só mostrar o custo estimado
 STR_WATERWAYS_TOOLBAR_BUILD_DEPOT_TOOLTIP                       :{BLACK}Construir depósito de embarcações (para compra e manutenção de embarcações). Pressione também Shift para só mostrar o custo estimado
@@ -2982,11 +2982,11 @@ STR_TREES_RANDOM_TYPE_TOOLTIP                                   :{BLACK}Plantar 
 STR_TREES_RANDOM_TREES_BUTTON                                   :{BLACK}Plantar Aleatoriamente
 STR_TREES_RANDOM_TREES_TOOLTIP                                  :{BLACK}Plantar árvores aleatoriamente no terreno
 STR_TREES_MODE_NORMAL_BUTTON                                    :{BLACK}Normal
-STR_TREES_MODE_NORMAL_TOOLTIP                                   :{BLACK}Plantar árvores isoladas ao arrastar o cursor sobre o terreno
+STR_TREES_MODE_NORMAL_TOOLTIP                                   :{BLACK}Plantar árvores isoladas ao arrastar o ponteiro sobre o terreno
 STR_TREES_MODE_FOREST_SM_BUTTON                                 :{BLACK}Bosque
-STR_TREES_MODE_FOREST_SM_TOOLTIP                                :{BLACK}Plantar florestas pequenas ao arrastar o cursor sobre o terreno
+STR_TREES_MODE_FOREST_SM_TOOLTIP                                :{BLACK}Plantar florestas pequenas ao arrastar o ponteiro sobre o terreno
 STR_TREES_MODE_FOREST_LG_BUTTON                                 :{BLACK}Floresta
-STR_TREES_MODE_FOREST_LG_TOOLTIP                                :{BLACK}Plantar florestas grandes ao arrastar o cursor sobre o terreno
+STR_TREES_MODE_FOREST_LG_TOOLTIP                                :{BLACK}Plantar florestas grandes ao arrastar o ponteiro sobre o terreno
 
 # Land generation window (SE)
 STR_TERRAFORM_TOOLBAR_LAND_GENERATION_CAPTION                   :{WHITE}Geração de Terreno
@@ -3014,8 +3014,8 @@ STR_FOUND_TOWN_EXPAND_ALL_TOWNS                                 :{BLACK}Expandir
 STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}Fazer com que todas as localidades cresçam ligeiramente
 
 STR_FOUND_TOWN_NAME_TITLE                                       :{YELLOW}Nome da localidade:
-STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}Digitar o nome da localidade
-STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}Clique para digitar o nome da localidade
+STR_FOUND_TOWN_NAME_EDITOR_TITLE                                :{BLACK}Introduza o nome da localidade
+STR_FOUND_TOWN_NAME_EDITOR_HELP                                 :{BLACK}Clique para editar o nome da localidade
 STR_FOUND_TOWN_NAME_RANDOM_BUTTON                               :{BLACK}Nome aleatório
 STR_FOUND_TOWN_NAME_RANDOM_TOOLTIP                              :{BLACK}Gerar novo nome aleatório
 
@@ -3283,7 +3283,7 @@ STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}Você q
 STR_SAVELOAD_DIRECTORY                                          :{STRING} (Diretório)
 STR_SAVELOAD_PARENT_DIRECTORY                                   :{STRING} (Diretório raiz)
 
-STR_SAVELOAD_OSKTITLE                                           :{BLACK}Digitar um nome para o jogo que será gravado
+STR_SAVELOAD_OSKTITLE                                           :{BLACK}Introduza um nome para o jogo que será gravado
 
 # World generation
 STR_MAPGEN_WORLD_GENERATION_CAPTION                             :{WHITE}Geração de Mapas
@@ -3459,7 +3459,7 @@ STR_NEWGRF_SETTINGS_INCOMPATIBLE                                :{RED}Incompatí
 # NewGRF save preset window
 STR_SAVE_PRESET_CAPTION                                         :{WHITE}Salvar predefinição
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Lista de predefinições disponíveis, selecione uma para copiar o nome e usar na gravação abaixo
-STR_SAVE_PRESET_TITLE                                           :{BLACK}Digitar um nome para a predefinição
+STR_SAVE_PRESET_TITLE                                           :{BLACK}Introduza um nome para a predefinição
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Nome que está selecionado para salvar a predefinição
 STR_SAVE_PRESET_CANCEL                                          :{BLACK}Cancelar
 STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Não alterar a predefinição
@@ -3603,7 +3603,7 @@ STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Centrali
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Ir para a próxima placa
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Ir para a placa anterior
 
-STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Digitar um nome para a placa
+STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Introduza um nome para a placa
 
 # Town directory window
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Localidades
@@ -3920,7 +3920,7 @@ STR_COMPANY_VIEW_PRESIDENT_NAME_TOOLTIP                         :{BLACK}Alterar 
 
 STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION                     :Nome da Empresa
 STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION                 :Nome do Presidente
-STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Digitar a quantia de dinheiro que você quer dar
+STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION                       :Introduza o valor que você quer dar
 
 STR_BUY_COMPANY_MESSAGE                                         :{WHITE}Estamos procurando uma empresa de transportes para comprar a nossa empresa.{}{}Você deseja comprar {COMPANY} por {CURRENCY_LONG}?
 STR_BUY_COMPANY_HOSTILE_TAKEOVER                                :{WHITE}Na aquisição hostil de {COMPANY} você irá adquirir todos os ativos, liquidar todos os empréstimos e pagar dois anos de lucros.{}{}O total estimado é de {CURRENCY_LONG}.{}{}Você deseja continuar esta aquisição hostil?
@@ -4271,9 +4271,9 @@ STR_ENGINE_PREVIEW_SHIP                                         :{G=f}embarcaç�
 STR_ENGINE_PREVIEW_TEXT3                                        :{BLACK}{STRING}{}{5:STRING}{}{STRING}
 STR_ENGINE_PREVIEW_TEXT4                                        :{BLACK}{STRING}{}{STRING}{}{STRING}{}{STRING}
 STR_ENGINE_PREVIEW_COST_WEIGHT                                  :Custo: {CURRENCY_LONG}  Peso: {WEIGHT_SHORT}
-STR_ENGINE_PREVIEW_COST_MAX_SPEED                               :Custo: {CURRENCY_LONG}  Velocidade máx.: {VELOCITY}
+STR_ENGINE_PREVIEW_COST_MAX_SPEED                               :Custo: {CURRENCY_LONG}  Veloc. máx.: {VELOCITY}
 STR_ENGINE_PREVIEW_SPEED_POWER                                  :Velocidade: {VELOCITY}  Potência: {POWER}
-STR_ENGINE_PREVIEW_SPEED_POWER_MAX_TE                           :Velocidade: {VELOCITY}  Potência: {POWER}  Tração máx.: {FORCE}
+STR_ENGINE_PREVIEW_SPEED_POWER_MAX_TE                           :Veloc.: {VELOCITY}  Potência: {POWER}  Tração máx.: {FORCE}
 STR_ENGINE_PREVIEW_TYPE                                         :Tipo de aeronave: {STRING}
 STR_ENGINE_PREVIEW_TYPE_RANGE                                   :Tipo de aeronave: {STRING}   Autonomia: {COMMA} quadrados
 STR_ENGINE_PREVIEW_RUNCOST_YEAR                                 :Custo Operacional: {CURRENCY_LONG}/ano
@@ -4431,9 +4431,9 @@ STR_VEHICLE_INFO_AGE_RUNNING_COST_PERIOD                        :{BLACK}Idade: {
 
 STR_VEHICLE_INFO_MAX_SPEED                                      :{BLACK}Velocidade máx.: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_MAX_SPEED_TYPE                                 :{BLACK}Velocidade máx.: {LTBLUE}{VELOCITY} {BLACK}Tipo de aeronave: {LTBLUE}{STRING}
-STR_VEHICLE_INFO_MAX_SPEED_TYPE_RANGE                           :{BLACK}Velocidade máx.: {LTBLUE}{VELOCITY} {BLACK}Tipo de aeronave: {LTBLUE}{STRING} {BLACK}Autonomia: {LTBLUE}{COMMA} quadrados
-STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Peso: {LTBLUE}{WEIGHT_SHORT} {BLACK}Potência: {LTBLUE}{POWER}{BLACK} Velocidade máx.: {LTBLUE}{VELOCITY}
-STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Peso: {LTBLUE}{WEIGHT_SHORT} {BLACK}Potência: {LTBLUE}{POWER}{BLACK} Velocidade máx.: {LTBLUE}{VELOCITY} {BLACK}Força de Tração máx.: {LTBLUE}{FORCE}
+STR_VEHICLE_INFO_MAX_SPEED_TYPE_RANGE                           :{BLACK}Veloc. máx.: {LTBLUE}{VELOCITY} {BLACK}Tipo de aeronave: {LTBLUE}{STRING} {BLACK}Autonomia: {LTBLUE}{COMMA} quadrados
+STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED                         :{BLACK}Peso: {LTBLUE}{WEIGHT_SHORT} {BLACK}Potência: {LTBLUE}{POWER}{BLACK} Veloc. máx.: {LTBLUE}{VELOCITY}
+STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE                  :{BLACK}Peso: {LTBLUE}{WEIGHT_SHORT} {BLACK}Potência: {LTBLUE}{POWER}{BLACK} Veloc. máx.: {LTBLUE}{VELOCITY} {BLACK}Tração máx.: {LTBLUE}{FORCE}
 
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Lucro neste ano: {LTBLUE}{CURRENCY_LONG} (último ano: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}Lucro neste ano: {LTBLUE}{CURRENCY_LONG} (último ano: {CURRENCY_LONG}) {BLACK}Desempenho mín.: {LTBLUE}{POWER_TO_WEIGHT}
@@ -4602,7 +4602,7 @@ STR_ORDER_CONDITIONAL_COMPARATOR_IS_TRUE                        :for verdadeiro
 STR_ORDER_CONDITIONAL_COMPARATOR_IS_FALSE                       :for falso
 
 STR_ORDER_CONDITIONAL_VALUE_TOOLTIP                             :{BLACK}O valor para comparar com os dados do veículo
-STR_ORDER_CONDITIONAL_VALUE_CAPT                                :{WHITE}Digitar um valor para comparar
+STR_ORDER_CONDITIONAL_VALUE_CAPT                                :{WHITE}Introduza um valor para comparar
 
 STR_ORDERS_SKIP_BUTTON                                          :{BLACK}Saltar
 STR_ORDERS_SKIP_TOOLTIP                                         :{BLACK}Saltar a ordem atual e iniciar a próxima. Ctrl+Clique para saltar até a ordem selecionada
@@ -4900,9 +4900,9 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Receita 
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Gravação ainda sendo executada,{}por favor aguarde até terminar!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Salvamento automático falhou
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Não é possível ler a unidade
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Salvar Jogo Falhou{}{STRING}
+STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Falha ao salvar jogo...
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Não é possível apagar o arquivo
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Abrir Jogo Falhou{}{STRING}
+STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Falha ao abrir jogo...
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Erro interno: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Jogo salvo está corrompido - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Jogo salvo foi feito com uma versão mais recente
@@ -4954,7 +4954,7 @@ STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :{WHITE}Terreno 
 STR_ERROR_CAN_T_DO_THIS                                         :{WHITE}Não é possível fazer isto...
 STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}A construção deve ser demolida primeiro
 STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}Não é possível limpar esta área...
-STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... local inadequado
+STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... local não adequado
 STR_ERROR_ALREADY_BUILT                                         :{WHITE}... já construído
 STR_ERROR_OWNED_BY                                              :{WHITE}... pertence a {STRING}
 STR_ERROR_AREA_IS_OWNED_BY_ANOTHER                              :{WHITE}... área pertence a outra empresa
@@ -4972,9 +4972,9 @@ STR_ERROR_LOCAL_AUTHORITY_REFUSES_NOISE                         :{WHITE}A autori
 STR_ERROR_BRIBE_FAILED                                          :{WHITE}A sua tentativa de suborno foi descoberta por um investigador regional
 
 # Levelling errors
-STR_ERROR_CAN_T_RAISE_LAND_HERE                                 :{WHITE}Não é possível elevar terreno aqui...
-STR_ERROR_CAN_T_LOWER_LAND_HERE                                 :{WHITE}Não é possível abaixar terreno aqui...
-STR_ERROR_CAN_T_LEVEL_LAND_HERE                                 :{WHITE}Não é possível nivelar o terreno aqui...
+STR_ERROR_CAN_T_RAISE_LAND_HERE                                 :{WHITE}Não é possível elevar este terreno...
+STR_ERROR_CAN_T_LOWER_LAND_HERE                                 :{WHITE}Não é possível abaixar este terreno...
+STR_ERROR_CAN_T_LEVEL_LAND_HERE                                 :{WHITE}Não é possível nivelar este terreno...
 STR_ERROR_EXCAVATION_WOULD_DAMAGE                               :{WHITE}A escavação danificaria o túnel
 STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :{WHITE}... já está ao nível do mar
 STR_ERROR_TOO_HIGH                                              :{WHITE}... muito alto
@@ -5082,7 +5082,7 @@ STR_ERROR_CAN_T_BUILD_TRAIN_WAYPOINT                            :{WHITE}Não é 
 STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :{WHITE}Não é possível colocar boia aqui...
 STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :{WHITE}Não é possível alterar o nome do ponto de controle...
 
-STR_ERROR_CAN_T_REMOVE_TRAIN_WAYPOINT                           :{WHITE}Não é possível remover ponto de controle de trem daqui...
+STR_ERROR_CAN_T_REMOVE_TRAIN_WAYPOINT                           :{WHITE}Não é possível remover ponto de controle de trem aqui...
 STR_ERROR_MUST_REMOVE_RAILWAYPOINT_FIRST                        :{WHITE}Precisa remover o ponto de controle ferroviário primeiro
 STR_ERROR_BUOY_IN_THE_WAY                                       :{WHITE}... boia no caminho
 STR_ERROR_BUOY_IS_IN_USE                                        :{WHITE}... boia está em uso por outra empresa!
@@ -5137,25 +5137,25 @@ STR_ERROR_CROSSING_DISALLOWED_RAIL                              :{WHITE}Passagen
 STR_ERROR_CROSSING_DISALLOWED_ROAD                              :{WHITE}Passagens de nível não são permitidas para este tipo de estrada
 STR_ERROR_CAN_T_BUILD_SIGNALS_HERE                              :{WHITE}Não é possível construir sinais aqui...
 STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK                            :{WHITE}Não é possível construir ferrovia aqui...
-STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK                           :{WHITE}Não é possível remover ferrovia daqui...
-STR_ERROR_CAN_T_REMOVE_SIGNALS_FROM                             :{WHITE}Não é possível remover sinais daqui...
-STR_ERROR_SIGNAL_CAN_T_CONVERT_SIGNALS_HERE                     :{WHITE}Não é possível converter os sinais daqui...
+STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK                           :{WHITE}Não é possível remover ferrovia aqui...
+STR_ERROR_CAN_T_REMOVE_SIGNALS_FROM                             :{WHITE}Não é possível remover sinais aqui...
+STR_ERROR_SIGNAL_CAN_T_CONVERT_SIGNALS_HERE                     :{WHITE}Não é possível converter os sinais aqui...
 STR_ERROR_THERE_IS_NO_RAILROAD_TRACK                            :{WHITE}... não existe uma ferrovia
 STR_ERROR_THERE_ARE_NO_SIGNALS                                  :{WHITE}... não existem sinais
 
-STR_ERROR_CAN_T_CONVERT_RAIL                                    :{WHITE}Não é possível converter o tipo de trilho daqui...
+STR_ERROR_CAN_T_CONVERT_RAIL                                    :{WHITE}Não é possível converter o tipo de trilho aqui...
 
 # Road construction errors
 STR_ERROR_MUST_REMOVE_ROAD_FIRST                                :{WHITE}Precisa remover a estrada primeiro
 STR_ERROR_ONEWAY_ROADS_CAN_T_HAVE_JUNCTION                      :{WHITE}... estradas de sentido único não podem ter junções
 STR_ERROR_CAN_T_BUILD_ROAD_HERE                                 :{WHITE}Não é possível construir estrada aqui...
 STR_ERROR_CAN_T_BUILD_TRAMWAY_HERE                              :{WHITE}Não é possível construir linha de bonde aqui...
-STR_ERROR_CAN_T_REMOVE_ROAD_FROM                                :{WHITE}Não é possível remover estrada daqui...
-STR_ERROR_CAN_T_REMOVE_TRAMWAY_FROM                             :{WHITE}Não é possível remover linha de bonde daqui...
+STR_ERROR_CAN_T_REMOVE_ROAD_FROM                                :{WHITE}Não é possível remover estrada aqui...
+STR_ERROR_CAN_T_REMOVE_TRAMWAY_FROM                             :{WHITE}Não é possível remover linha de bonde aqui...
 STR_ERROR_THERE_IS_NO_ROAD                                      :{WHITE}... não existe uma estrada
 STR_ERROR_THERE_IS_NO_TRAMWAY                                   :{WHITE}... não existe uma linha de bonde
-STR_ERROR_CAN_T_CONVERT_ROAD                                    :{WHITE}Não é possível converter o tipo de estrada daqui...
-STR_ERROR_CAN_T_CONVERT_TRAMWAY                                 :{WHITE}Não é possível converter o tipo de linha de bonde daqui...
+STR_ERROR_CAN_T_CONVERT_ROAD                                    :{WHITE}Não é possível converter o tipo de estrada aqui...
+STR_ERROR_CAN_T_CONVERT_TRAMWAY                                 :{WHITE}Não é possível converter o tipo de linha de bonde aqui...
 STR_ERROR_NO_SUITABLE_ROAD                                      :{WHITE}Estrada não adequada
 STR_ERROR_NO_SUITABLE_TRAMWAY                                   :{WHITE}Linha de bonde não adequada
 

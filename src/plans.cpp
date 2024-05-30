@@ -47,8 +47,8 @@ void PlanLine::UpdateVisualExtents()
 		if (y > max_y) max_y = y;
 	}
 
-	this->viewport_extents = { (int)(min_x * TILE_SIZE * 2 * ZOOM_LVL_BASE), (int)(min_y * TILE_SIZE * ZOOM_LVL_BASE),
-			(int)((max_x + 1) * TILE_SIZE * 2 * ZOOM_LVL_BASE), (int)((max_y + 1) * TILE_SIZE * ZOOM_LVL_BASE) };
+	this->viewport_extents = { (int)(min_x * TILE_SIZE * 2 * ZOOM_BASE), (int)(min_y * TILE_SIZE * ZOOM_BASE),
+			(int)((max_x + 1) * TILE_SIZE * 2 * ZOOM_BASE), (int)((max_y + 1) * TILE_SIZE * ZOOM_BASE) };
 }
 
 bool Plan::ValidateNewLine()

@@ -23,6 +23,7 @@
 #include "newgrf_airport.h"
 #include "newgrf_callbacks.h"
 #include "dropdown_type.h"
+#include "dropdown_func.h"
 #include "core/geometry_func.hpp"
 #include "hotkeys.h"
 #include "vehicle_func.h"
@@ -233,7 +234,7 @@ class BuildAirportWindow : public PickerWindowBase {
 		DropDownList list;
 
 		for (uint i = 0; AirportClass::IsClassIDValid((AirportClassID)i); i++) {
-			list.push_back(std::make_unique<DropDownListStringItem>(AirportClass::Get((AirportClassID)i)->name, i, false));
+			list.push_back(MakeDropDownListStringItem(AirportClass::Get((AirportClassID)i)->name, i, false));
 		}
 
 		return list;

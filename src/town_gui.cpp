@@ -472,11 +472,11 @@ public:
 					}
 					case TSOF_OVERRIDE_BUILD_INCLINED_ROADS: {
 						DropDownList dlist;
-						dlist.emplace_back(new DropDownListStringItem(STR_COLOUR_DEFAULT, 0, false));
-						dlist.emplace_back(new DropDownListStringItem(STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO, 1, false));
+						dlist.push_back(MakeDropDownListStringItem(STR_COLOUR_DEFAULT, 0, false));
+						dlist.push_back(MakeDropDownListStringItem(STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO, 1, false));
 						for (int i = 1; i <= 8; i++) {
 							SetDParam(0, i);
-							dlist.emplace_back(new DropDownListStringItem(STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_VALUE, i + 1, false));
+							dlist.push_back(MakeDropDownListStringItem(STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_VALUE, i + 1, false));
 						}
 						ShowDropDownList(this, std::move(dlist), HasBit(this->town->override_flags, idx) ? this->town->max_road_slope + 1 : 0, WID_TA_SETTING);
 						break;

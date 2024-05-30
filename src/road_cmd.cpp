@@ -2286,7 +2286,7 @@ void DrawRoadBitsTunnelBridge(TileInfo *ti)
 /** Tile callback function for rendering a road tile to the screen */
 static void DrawTile_Road(TileInfo *ti, DrawTileProcParams params)
 {
-	if (!IsBridgeAbove(ti->tile) && GetRoadTileType(ti->tile) != ROAD_TILE_DEPOT && params.min_visible_height > (int)((TILE_HEIGHT + BB_HEIGHT_UNDER_BRIDGE) * ZOOM_LVL_BASE)) return;
+	if (!IsBridgeAbove(ti->tile) && GetRoadTileType(ti->tile) != ROAD_TILE_DEPOT && params.min_visible_height > (int)((TILE_HEIGHT + BB_HEIGHT_UNDER_BRIDGE) * ZOOM_BASE)) return;
 
 	switch (GetRoadTileType(ti->tile)) {
 		case ROAD_TILE_NORMAL:

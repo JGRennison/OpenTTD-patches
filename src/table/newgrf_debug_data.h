@@ -1520,7 +1520,7 @@ class NIHSignals : public NIHelper {
 
 	/* virtual */ void FillOptionsDropDown(uint index, DropDownList &list) const override
 	{
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE, 0, !IsTileType(index, MP_RAILWAY)));
+		list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE, 0, !IsTileType(index, MP_RAILWAY)));
 	}
 
 	/* virtual */ void OnOptionsDropdownSelect(uint index, int selected) const override
@@ -1807,8 +1807,8 @@ class NIHRailType : public NIHelper {
 
 	/* virtual */ void FillOptionsDropDown(uint index, DropDownList &list) const override
 	{
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE, 0, !IsLevelCrossingTile(index)));
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS, 1, !(IsTileType(index, MP_RAILWAY) && HasSignals(index))));
+		list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE, 0, !IsLevelCrossingTile(index)));
+		list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS, 1, !(IsTileType(index, MP_RAILWAY) && HasSignals(index))));
 	}
 
 	/* virtual */ void OnOptionsDropdownSelect(uint index, int selected) const override
@@ -2389,7 +2389,7 @@ class NIHRoadType : public NIHelper {
 
 	/* virtual */ void FillOptionsDropDown(uint index, DropDownList &list) const override
 	{
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE, 0, !IsLevelCrossingTile(index)));
+		list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE, 0, !IsLevelCrossingTile(index)));
 	}
 
 	/* virtual */ void OnOptionsDropdownSelect(uint index, int selected) const override

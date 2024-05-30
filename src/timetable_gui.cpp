@@ -1071,10 +1071,10 @@ struct TimetableWindow : GeneralVehicleWindow {
 								(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) && !order->IsType(OT_CONDITIONAL));
 				OrderLeaveType current = order != nullptr ? order->GetLeaveType() : OLT_END;
 				DropDownList list;
-				list.emplace_back(std::make_unique<DropDownListCheckedItem>(current == OLT_NORMAL, STR_TIMETABLE_LEAVE_NORMAL, OLT_NORMAL, leave_type_disabled));
-				list.emplace_back(std::make_unique<DropDownListCheckedItem>(current == OLT_LEAVE_EARLY, STR_TIMETABLE_LEAVE_EARLY, OLT_LEAVE_EARLY, leave_type_disabled));
-				list.emplace_back(std::make_unique<DropDownListCheckedItem>(current == OLT_LEAVE_EARLY_FULL_ANY, STR_TIMETABLE_LEAVE_EARLY_FULL_ANY, OLT_LEAVE_EARLY_FULL_ANY, leave_type_disabled || !order->IsType(OT_GOTO_STATION)));
-				list.emplace_back(std::make_unique<DropDownListCheckedItem>(current == OLT_LEAVE_EARLY_FULL_ALL, STR_TIMETABLE_LEAVE_EARLY_FULL_ALL, OLT_LEAVE_EARLY_FULL_ALL, leave_type_disabled || !order->IsType(OT_GOTO_STATION)));
+				list.emplace_back(MakeDropDownListCheckedItem(current == OLT_NORMAL, STR_TIMETABLE_LEAVE_NORMAL, OLT_NORMAL, leave_type_disabled));
+				list.emplace_back(MakeDropDownListCheckedItem(current == OLT_LEAVE_EARLY, STR_TIMETABLE_LEAVE_EARLY, OLT_LEAVE_EARLY, leave_type_disabled));
+				list.emplace_back(MakeDropDownListCheckedItem(current == OLT_LEAVE_EARLY_FULL_ANY, STR_TIMETABLE_LEAVE_EARLY_FULL_ANY, OLT_LEAVE_EARLY_FULL_ANY, leave_type_disabled || !order->IsType(OT_GOTO_STATION)));
+				list.emplace_back(MakeDropDownListCheckedItem(current == OLT_LEAVE_EARLY_FULL_ALL, STR_TIMETABLE_LEAVE_EARLY_FULL_ALL, OLT_LEAVE_EARLY_FULL_ALL, leave_type_disabled || !order->IsType(OT_GOTO_STATION)));
 				ShowDropDownList(this, std::move(list), -1, widget, 0, DDMF_NONE, DDSF_SHARED);
 				break;
 			}
@@ -1084,15 +1084,15 @@ struct TimetableWindow : GeneralVehicleWindow {
 				if (real >= this->vehicle->GetNumOrders()) real = 0;
 				const Order *order = this->vehicle->GetOrder(real);
 				DropDownList list;
-				list.emplace_back(new DropDownListStringItem(STR_TIMETABLE_ASSIGN_SCHEDULE_NONE, -1, false));
+				list.push_back(MakeDropDownListStringItem(STR_TIMETABLE_ASSIGN_SCHEDULE_NONE, -1, false));
 
 				for (uint i = 0; i < v->orders->GetScheduledDispatchScheduleCount(); i++) {
 					const DispatchSchedule &ds = this->vehicle->orders->GetDispatchScheduleByIndex(i);
 					if (ds.ScheduleName().empty()) {
 						SetDParam(0, i + 1);
-						list.emplace_back(new DropDownListStringItem(STR_TIMETABLE_ASSIGN_SCHEDULE_ID, i, false));
+						list.push_back(MakeDropDownListStringItem(STR_TIMETABLE_ASSIGN_SCHEDULE_ID, i, false));
 					} else {
-						list.emplace_back(new DropDownListStringItem(ds.ScheduleName(), i, false));
+						list.push_back(MakeDropDownListStringItem(ds.ScheduleName(), i, false));
 					}
 				}
 				ShowDropDownList(this, std::move(list), order->GetDispatchScheduleIndex(), WID_VT_ASSIGN_SCHEDULE);

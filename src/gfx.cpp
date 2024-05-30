@@ -79,11 +79,11 @@ struct GfxBlitterCtx {
 };
 
 static void GfxMainBlitterViewport(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub = nullptr, SpriteID sprite_id = SPR_CURSOR_MOUSE);
-static void GfxMainBlitter(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub = nullptr, SpriteID sprite_id = SPR_CURSOR_MOUSE, ZoomLevel zoom = ZOOM_LVL_NORMAL);
+static void GfxMainBlitter(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub = nullptr, SpriteID sprite_id = SPR_CURSOR_MOUSE, ZoomLevel zoom = ZOOM_LVL_MIN);
 
 static ReusableBuffer<uint8_t> _cursor_backup;
 
-ZoomLevel _gui_zoom  = ZOOM_LVL_OUT_4X;     ///< GUI Zoom level
+ZoomLevel _gui_zoom  = ZOOM_LVL_NORMAL;     ///< GUI Zoom level
 ZoomLevel _font_zoom = _gui_zoom;           ///< Sprite font Zoom level (not clamped)
 int _gui_scale       = MIN_INTERFACE_SCALE; ///< GUI scale, 100 is 100%.
 int _gui_scale_cfg;                         ///< GUI scale in config.
@@ -113,7 +113,7 @@ uint32_t _gfx_debug_flags;
 /**
  * Applies a certain FillRectMode-operation to a rectangle [left, right] x [top, bottom] on the screen.
  *
- * @pre dpi->zoom == ZOOM_LVL_NORMAL, right >= left, bottom >= top
+ * @pre dpi->zoom == ZOOM_LVL_MIN, right >= left, bottom >= top
  * @param blitter Blitter to use
  * @param dpi Draw pixel info
  * @param left Minimum X (inclusive)
@@ -132,7 +132,7 @@ void GfxFillRect(Blitter *blitter, const DrawPixelInfo *dpi, int left, int top, 
 	const int otop = top;
 	const int oleft = left;
 
-	if (dpi->zoom != ZOOM_LVL_NORMAL) return;
+	if (dpi->zoom != ZOOM_LVL_MIN) return;
 	if (left > right || top > bottom) return;
 	if (right < dpi->left || left >= dpi->left + dpi->width) return;
 	if (bottom < dpi->top || top >= dpi->top + dpi->height) return;
@@ -219,7 +219,7 @@ static std::vector<LineSegment> MakePolygonSegments(const std::vector<Point> &sh
  * The odd-even winding rule is used, i.e. self-intersecting polygons will have holes in them.
  * Left and top edges are inclusive, right and bottom edges are exclusive.
  * @note For rectangles the GfxFillRect function will be faster.
- * @pre dpi->zoom == ZOOM_LVL_NORMAL
+ * @pre dpi->zoom == ZOOM_LVL_MIN
  * @param shape List of points on the polygon.
  * @param colour An 8 bit palette index (FILLRECT_OPAQUE and FILLRECT_CHECKER) or a recolour spritenumber (FILLRECT_RECOLOUR).
  * @param mode
@@ -232,7 +232,7 @@ void GfxFillPolygon(const std::vector<Point> &shape, int colour, FillRectMode mo
 {
 	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 	const DrawPixelInfo *dpi = _cur_dpi;
-	if (dpi->zoom != ZOOM_LVL_NORMAL) return;
+	if (dpi->zoom != ZOOM_LVL_MIN) return;
 
 	std::vector<LineSegment> segments = MakePolygonSegments(shape, Point{ dpi->left, dpi->top });
 
@@ -1289,7 +1289,7 @@ std::unique_ptr<uint32_t[]> DrawSpriteToRgbaBuffer(SpriteID spriteId, ZoomLevel 
 
 static void GfxMainBlitterViewport(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub, SpriteID sprite_id)
 {
-	GfxBlitter<ZOOM_LVL_BASE, false>(ctx, sprite, x, y, mode, sub, sprite_id, ctx.dpi->zoom);
+	GfxBlitter<ZOOM_BASE, false>(ctx, sprite, x, y, mode, sub, sprite_id, ctx.dpi->zoom);
 }
 
 static void GfxMainBlitter(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub, SpriteID sprite_id, ZoomLevel zoom)
@@ -1632,7 +1632,7 @@ void DrawDirtyBlocks()
 					_cur_dpi->height = _screen.height;
 					_cur_dpi->pitch = _screen.pitch;
 					_cur_dpi->dst_ptr = _screen.dst_ptr;
-					_cur_dpi->zoom = ZOOM_LVL_NORMAL;
+					_cur_dpi->zoom = ZOOM_LVL_MIN;
 
 					_dirty_viewport = vp;
 					_dirty_viewport_disp_flags = w->viewport_widget->disp_flags;
@@ -1932,7 +1932,7 @@ bool FillDrawPixelInfo(DrawPixelInfo *n, int left, int top, int width, int heigh
 	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 	const DrawPixelInfo *o = _cur_dpi;
 
-	n->zoom = ZOOM_LVL_NORMAL;
+	n->zoom = ZOOM_LVL_MIN;
 
 	assert(width > 0);
 	assert(height > 0);
@@ -2158,7 +2158,7 @@ void UpdateGUIZoom()
 		_gui_scale = Clamp(_gui_scale_cfg, MIN_INTERFACE_SCALE, MAX_INTERFACE_SCALE);
 	}
 
-	int8_t new_zoom = ScaleGUITrad(1) <= 1 ? ZOOM_LVL_OUT_4X : ScaleGUITrad(1) >= 4 ? ZOOM_LVL_MIN : ZOOM_LVL_OUT_2X;
+	int8_t new_zoom = ScaleGUITrad(1) <= 1 ? ZOOM_LVL_NORMAL : ScaleGUITrad(1) >= 4 ? ZOOM_LVL_IN_4X : ZOOM_LVL_IN_2X;
 	/* Font glyphs should not be clamped to min/max zoom. */
 	_font_zoom = static_cast<ZoomLevel>(new_zoom);
 	/* Ensure the gui_zoom is clamped between min/max. */

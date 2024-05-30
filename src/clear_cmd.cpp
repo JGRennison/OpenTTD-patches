@@ -173,7 +173,7 @@ static void DrawTile_Clear(TileInfo *ti, DrawTileProcParams params)
 			break;
 
 		case CLEAR_FIELDS:
-			if (params.min_visible_height <= 4 * ZOOM_LVL_BASE) {
+			if (params.min_visible_height <= (4 * ZOOM_BASE)) {
 				DrawGroundSprite(GetSpriteIDForFields(ti->tileh, GetFieldType(ti->tile)), PAL_NONE);
 				DrawClearLandFence(ti);
 			}

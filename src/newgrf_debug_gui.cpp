@@ -1053,13 +1053,13 @@ struct NewGRFInspectWindow : Window {
 
 			case WID_NGRFI_SPRITE_DUMP_OPTIONS: {
 				DropDownList list;
-				list.push_back(std::make_unique<DropDownListStringItem>(STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO, NGIWDDO_GOTO_SPRITE, false));
-				list.push_back(std::make_unique<DropDownListStringItem>(STR_NEWGRF_INSPECT_SPRITE_DUMP_CLEAR, NGIWDDO_CLEAR, false));
-				list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
-				list.push_back(std::make_unique<DropDownListCheckedItem>(!this->click_to_mark_mode, STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_HIGHLIGHT, NGIWDDO_CLICK_TO_HIGHLIGHT, false));
-				list.push_back(std::make_unique<DropDownListCheckedItem>(this->click_to_mark_mode, STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_MARK, NGIWDDO_CLICK_TO_MARK, false));
-				list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
-				list.push_back(std::make_unique<DropDownListCheckedItem>(this->sprite_dump_more_details, STR_NEWGRF_INSPECT_SPRITE_DUMP_MORE_DETAILS, NGIWDDO_MORE_DETAILS, false));
+				list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO, NGIWDDO_GOTO_SPRITE, false));
+				list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_SPRITE_DUMP_CLEAR, NGIWDDO_CLEAR, false));
+				list.push_back(MakeDropDownListDividerItem());
+				list.push_back(MakeDropDownListCheckedItem(!this->click_to_mark_mode, STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_HIGHLIGHT, NGIWDDO_CLICK_TO_HIGHLIGHT, false));
+				list.push_back(MakeDropDownListCheckedItem(this->click_to_mark_mode, STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_MARK, NGIWDDO_CLICK_TO_MARK, false));
+				list.push_back(MakeDropDownListDividerItem());
+				list.push_back(MakeDropDownListCheckedItem(this->sprite_dump_more_details, STR_NEWGRF_INSPECT_SPRITE_DUMP_MORE_DETAILS, NGIWDDO_MORE_DETAILS, false));
 
 				ShowDropDownList(this, std::move(list), 0, WID_NGRFI_SPRITE_DUMP_OPTIONS, 140);
 				break;
@@ -1673,7 +1673,7 @@ struct SpriteAlignerWindow : Window {
 		}
 
 		SpriteAlignerWindow::zoom = Clamp(SpriteAlignerWindow::zoom, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max);
-		for (ZoomLevel z = ZOOM_LVL_NORMAL; z < ZOOM_LVL_SPR_COUNT; z++) {
+		for (ZoomLevel z = ZOOM_LVL_BEGIN; z < ZOOM_LVL_SPR_COUNT; z++) {
 			this->SetWidgetsDisabledState(z < _settings_client.gui.zoom_min || z > _settings_client.gui.zoom_max, WID_SA_ZOOM + z);
 			this->SetWidgetsLoweredState(SpriteAlignerWindow::zoom == z, WID_SA_ZOOM + z);
 		}
@@ -1742,12 +1742,12 @@ static constexpr NWidgetPart _nested_sprite_aligner_widgets[] = {
 					NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_SA_SCROLLBAR),
 				EndContainer(),
 				NWidget(NWID_VERTICAL),
-					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_NORMAL), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_MIN, STR_NULL), SetFill(1, 0),
-					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_OUT_2X), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_IN_2X, STR_NULL), SetFill(1, 0),
-					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_OUT_4X), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_NORMAL, STR_NULL), SetFill(1, 0),
-					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_OUT_8X), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_OUT_2X, STR_NULL), SetFill(1, 0),
-					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_OUT_16X), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_OUT_4X, STR_NULL), SetFill(1, 0),
-					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_OUT_32X), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_OUT_8X, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_IN_4X), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_MIN, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_IN_2X), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_IN_2X, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_NORMAL), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_NORMAL, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_OUT_2X), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_OUT_2X, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_OUT_4X), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_OUT_4X, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_OUT_8X), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_OUT_8X, STR_NULL), SetFill(1, 0),
 				EndContainer(),
 			EndContainer(),
 		EndContainer(),
