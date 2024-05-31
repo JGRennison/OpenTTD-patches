@@ -1725,7 +1725,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_RCON(Packet &p)
 	bool done = false;
 	if (_rcon_authorized_key_handler.IsAllowed(this->peer_public_key)) {
 		/* We are allowed, try to handle using '*' password */
-		size_t saved_pos = p.GetDeserialisationPosition();
+		PacketSize saved_pos = p.GetDeserialisationPosition();
 		if (this->ParseKeyPasswordPacket(p, ss, "*", &command, NETWORK_RCONCOMMAND_LENGTH)) {
 			done = true;
 		} else {
