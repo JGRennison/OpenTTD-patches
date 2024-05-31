@@ -433,11 +433,11 @@ void ReloadNewGRFData(); // in saveload/afterload.cpp
 void ResetNewGRFData();
 void ResetPersistentNewGRFData();
 
-#define grfmsg(severity, ...) if ((severity) == 0 || _debug_grf_level >= (severity)) _intl_grfmsg(severity, __VA_ARGS__)
+#define grfmsg(severity, ...) do { if ((severity) == 0 || _debug_grf_level >= (severity)) _intl_grfmsg(severity, __VA_ARGS__); } while(false)
 void CDECL _intl_grfmsg(int severity, const char *str, ...) WARN_FORMAT(2, 3);
 
 void GrfMsgI(int severity, const std::string &msg);
-#define GrfMsg(severity, format_string, ...) GrfMsgI(severity, fmt::format(FMT_STRING(format_string), ## __VA_ARGS__))
+#define GrfMsg(severity, format_string, ...) do { if ((severity) == 0 || _debug_grf_level >= (severity)) GrfMsgI(severity, fmt::format(FMT_STRING(format_string), ## __VA_ARGS__)); } while(false)
 
 bool GetGlobalVariable(uint8_t param, uint32_t *value, const GRFFile *grffile);
 
