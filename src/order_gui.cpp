@@ -187,19 +187,19 @@ public:
 		this->Window::Close();
 	}
 
-	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		if (widget == WID_CTO_HEADER) {
-			(*size).height = std::max((*size).height, (uint) GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical());
+			size.height = std::max(size.height, (uint) GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical());
 		} else if (WID_CTO_CARGO_LABEL_FIRST <= widget && widget <= WID_CTO_CARGO_LABEL_LAST) {
-			(*size).width  = std::max((*size).width, WidgetDimensions::scaled.framerect.left + this->CARGO_ICON_WIDTH + WidgetDimensions::scaled.framerect.Horizontal() + this->max_cargo_name_width + padding.width);
-			(*size).height = std::max((*size).height, (uint) GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical());
+			size.width  = std::max(size.width, WidgetDimensions::scaled.framerect.left + this->CARGO_ICON_WIDTH + WidgetDimensions::scaled.framerect.Horizontal() + this->max_cargo_name_width + padding.width);
+			size.height = std::max(size.height, (uint) GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical());
 		} else if ((WID_CTO_CARGO_DROPDOWN_FIRST <= widget && widget <= WID_CTO_CARGO_DROPDOWN_LAST) || widget == WID_CTO_SET_TO_ALL_DROPDOWN) {
-			(*size).width  = std::max((*size).width, WidgetDimensions::scaled.dropdowntext.Horizontal() + this->max_cargo_dropdown_width + NWidgetLeaf::GetDropdownBoxDimension().width);
-			(*size).height = std::max((*size).height, (uint) WidgetDimensions::scaled.dropdowntext.Vertical() + GetCharacterHeight(FS_NORMAL));
+			size.width  = std::max(size.width, WidgetDimensions::scaled.dropdowntext.Horizontal() + this->max_cargo_dropdown_width + NWidgetLeaf::GetDropdownBoxDimension().width);
+			size.height = std::max(size.height, (uint) WidgetDimensions::scaled.dropdowntext.Vertical() + GetCharacterHeight(FS_NORMAL));
 		} else if (widget == WID_CTO_SET_TO_ALL_LABEL) {
-			(*size).width = std::max((*size).width, this->max_cargo_name_width + WidgetDimensions::scaled.framerect.right + padding.width);
-			(*size).height = std::max((*size).height, (uint) GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical());
+			size.width = std::max(size.width, this->max_cargo_name_width + WidgetDimensions::scaled.framerect.right + padding.width);
+			size.height = std::max(size.height, (uint) GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical());
 		}
 	}
 
@@ -1972,18 +1972,18 @@ public:
 		this->GeneralVehicleWindow::Close();
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_O_OCCUPANCY_LIST:
 				SetDParamMaxValue(0, 100);
-				size->width = GetStringBoundingBox(STR_ORDERS_OCCUPANCY_PERCENT).width + 10 + WidgetDimensions::unscaled.framerect.Horizontal();
+				size.width = GetStringBoundingBox(STR_ORDERS_OCCUPANCY_PERCENT).width + 10 + WidgetDimensions::unscaled.framerect.Horizontal();
 				/* FALL THROUGH */
 
 			case WID_O_SEL_OCCUPANCY:
 			case WID_O_ORDER_LIST:
-				resize->height = GetCharacterHeight(FS_NORMAL);
-				size->height = 6 * resize->height + padding.height;
+				resize.height = GetCharacterHeight(FS_NORMAL);
+				size.height = 6 * resize.height + padding.height;
 				break;
 
 			case WID_O_COND_VARIABLE: {
@@ -1996,7 +1996,7 @@ public:
 				}
 				d.width += padding.width;
 				d.height += padding.height;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 
@@ -2007,13 +2007,13 @@ public:
 				}
 				d.width += padding.width;
 				d.height += padding.height;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 
 			case WID_O_OCCUPANCY_TOGGLE:
 				SetDParamMaxValue(0, 100);
-				size->width = GetStringBoundingBox(STR_ORDERS_OCCUPANCY_PERCENT).width + 10 + WidgetDimensions::unscaled.framerect.Horizontal();
+				size.width = GetStringBoundingBox(STR_ORDERS_OCCUPANCY_PERCENT).width + 10 + WidgetDimensions::unscaled.framerect.Horizontal();
 				break;
 
 			case WID_O_TIMETABLE_VIEW: {
@@ -2023,13 +2023,13 @@ public:
 				d.height = std::max(d.height, spr_d.height);
 				d.width += padding.width;
 				d.height += padding.height;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 
 			case WID_O_SHARED_ORDER_LIST:
 			case WID_O_ADD_VEH_GROUP:
-				size->width = std::max(size->width, NWidgetLeaf::GetResizeBoxDimension().width);
+				size.width = std::max(size.width, NWidgetLeaf::GetResizeBoxDimension().width);
 				break;
 		}
 	}

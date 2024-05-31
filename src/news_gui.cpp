@@ -360,7 +360,7 @@ struct NewsWindow : Window {
 		return pt;
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		StringID str = STR_NULL;
 		switch (widget) {
@@ -369,12 +369,12 @@ struct NewsWindow : Window {
 				 * thus it doesn't get the default sizing of a caption. */
 				Dimension d2 = GetStringBoundingBox(STR_NEWS_MESSAGE_CAPTION);
 				d2.height += WidgetDimensions::scaled.captiontext.Vertical();
-				*size = maxdim(*size, d2);
+				size = maxdim(size, d2);
 				return;
 			}
 
 			case WID_N_MGR_FACE:
-				*size = maxdim(*size, GetScaledSpriteSize(SPR_GRADIENT));
+				size = maxdim(size, GetScaledSpriteSize(SPR_GRADIENT));
 				break;
 
 			case WID_N_MGR_NAME:
@@ -408,15 +408,15 @@ struct NewsWindow : Window {
 					Dimension d2 = GetStringBoundingBox(this->GetWidget<NWidgetCore>(WID_N_SHOW_GROUP)->widget_data);
 					d2.height += WidgetDimensions::scaled.captiontext.Vertical();
 					d2.width += WidgetDimensions::scaled.captiontext.Horizontal();
-					*size = d2;
+					size = d2;
 				} else {
 					/* Hide 'Show group window' button if this news is not about a vehicle. */
-					size->width = 0;
-					size->height = 0;
-					resize->width = 0;
-					resize->height = 0;
-					fill->width = 0;
-					fill->height = 0;
+					size.width = 0;
+					size.height = 0;
+					resize.width = 0;
+					resize.height = 0;
+					fill.width = 0;
+					fill.height = 0;
 				}
 				return;
 
@@ -425,13 +425,13 @@ struct NewsWindow : Window {
 		}
 
 		/* Update minimal size with length of the multi-line string. */
-		Dimension d = *size;
+		Dimension d = size;
 		d.width = (d.width >= padding.width) ? d.width - padding.width : 0;
 		d.height = (d.height >= padding.height) ? d.height - padding.height : 0;
 		d = GetStringMultiLineBoundingBox(str, d);
 		d.width += padding.width;
 		d.height += padding.height;
-		*size = maxdim(*size, d);
+		size = maxdim(size, d);
 	}
 
 	void SetStringParameters(WidgetID widget) const override
@@ -687,12 +687,13 @@ static bool ReadyForNextNewsItem()
 /** Move to the next ticker item */
 static void MoveToNextTickerItem()
 {
-	assert(!std::empty(_news));
-
 	/* There is no status bar, so no reason to show news;
 	 * especially important with the end game screen when
 	 * there is no status bar but possible news. */
 	if (FindWindowById(WC_STATUS_BAR, 0) == nullptr) return;
+
+	/* No news to move to. */
+	if (std::empty(_news)) return;
 
 	/* if we're not at the latest item, then move on */
 	while (_statusbar_news != std::begin(_news)) {
@@ -721,8 +722,6 @@ static void MoveToNextTickerItem()
 /** Move to the next news item */
 static void MoveToNextNewsItem()
 {
-	assert(!std::empty(_news));
-
 	/* There is no status bar, so no reason to show news;
 	 * especially important with the end game screen when
 	 * there is no status bar but possible news. */
@@ -730,6 +729,9 @@ static void MoveToNextNewsItem()
 
 	CloseWindowById(WC_NEWS_WINDOW, 0); // close the newspapers window if shown
 	_forced_news = std::end(_news);
+
+	/* No news to move to. */
+	if (std::empty(_news)) return;
 
 	/* if we're not at the latest item, then move on */
 	while (_current_news != std::begin(_news)) {
@@ -757,28 +759,38 @@ static void MoveToNextNewsItem()
 /** Delete a news item from the queue */
 static std::list<NewsItem>::iterator DeleteNewsItem(std::list<NewsItem>::iterator ni)
 {
-	if (_forced_news == ni || _current_news == ni) {
-		/* When we're the current news, go to the previous item first;
-		 * we just possibly made that the last news item. */
-		if (_current_news == ni) _current_news = (_current_news == std::begin(_news)) ? std::end(_news) : std::prev(_current_news);
+	bool updateCurrentNews = (_forced_news == ni || _current_news == ni);
+	bool updateStatusbarNews = (_statusbar_news == ni);
 
+	if (updateCurrentNews) {
+		/* When we're the current news, go to the next older item first;
+		 * we just possibly made that the last news item. */
+		if (_current_news == ni) ++_current_news;
+		if (_forced_news == ni) _forced_news = std::end(_news);
+	}
+
+	if (updateStatusbarNews) {
+		/* When we're the current news, go to the next older item first;
+		 * we just possibly made that the last news item. */
+		++_statusbar_news;
+	}
+
+	/* Delete the news from the news queue. */
+	ni = _news.erase(ni);
+
+	if (updateCurrentNews) {
 		/* About to remove the currently forced item (shown as newspapers) ||
 		 * about to remove the currently displayed item (newspapers) */
 		MoveToNextNewsItem();
 	}
 
-	if (_statusbar_news == ni) {
-		/* When we're the current news, go to the previous item first;
-		 * we just possibly made that the last news item. */
-		 if (_statusbar_news == ni) _statusbar_news = (_statusbar_news == std::begin(_news)) ? std::end(_news) : std::prev(_statusbar_news);
-
+	if (updateStatusbarNews) {
 		/* About to remove the currently displayed item (ticker, or just a reminder) */
 		InvalidateWindowData(WC_STATUS_BAR, 0, SBI_NEWS_DELETED); // invalidate the statusbar
 		MoveToNextTickerItem();
 	}
 
-	/* Delete the news from the news queue. */
-	return _news.erase(ni);
+	return ni;
 }
 
 /**
@@ -1025,7 +1037,7 @@ static void ShowNewsMessage(NewsIterator ni)
  */
 bool HideActiveNewsMessage()
 {
-	NewsWindow *w = (NewsWindow*)FindWindowById(WC_NEWS_WINDOW, 0);
+	NewsWindow *w = dynamic_cast<NewsWindow *>(FindWindowById(WC_NEWS_WINDOW, 0));
 	if (w == nullptr) return false;
 	w->Close();
 	return true;
@@ -1107,19 +1119,19 @@ struct MessageHistoryWindow : Window {
 		this->OnInvalidateData(0);
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		if (widget == WID_MH_BACKGROUND) {
 			this->line_height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
-			resize->height = this->line_height;
+			resize.height = this->line_height;
 
 			/* Months are off-by-one, so it's actually 8. Not using
 			 * month 12 because the 1 is usually less wide. */
 			SetDParam(0, CalTime::ConvertYMDToDate(CalTime::ORIGINAL_MAX_YEAR, 7, 30));
 			this->date_width = GetStringBoundingBox(STR_JUST_DATE_TINY).width + WidgetDimensions::scaled.hsep_wide;
 
-			size->height = 4 * resize->height + WidgetDimensions::scaled.framerect.Vertical(); // At least 4 lines are visible.
-			size->width = std::max(200u, size->width); // At least 200 pixels wide.
+			size.height = 4 * resize.height + WidgetDimensions::scaled.framerect.Vertical(); // At least 4 lines are visible.
+			size.width = std::max(200u, size.width); // At least 200 pixels wide.
 		}
 	}
 

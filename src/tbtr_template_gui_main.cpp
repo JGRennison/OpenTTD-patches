@@ -258,18 +258,18 @@ public:
 		this->Window::Close();
 	}
 
-	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		switch (widget) {
 			case TRW_WIDGET_TOP_MATRIX:
-				resize->height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.matrix.Vertical();
-				size->height = 8 * resize->height;
+				resize.height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.matrix.Vertical();
+				size.height = 8 * resize.height;
 				break;
 			case TRW_WIDGET_BOTTOM_MATRIX: {
 				int base_resize = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.matrix.Vertical();
 				int target_resize = WidgetDimensions::scaled.matrix.top + GetCharacterHeight(FS_NORMAL) + ScaleGUITrad(GetVehicleHeight(VEH_TRAIN));
-				this->bottom_matrix_item_size = resize->height = CeilT<int>(target_resize, base_resize);
-				size->height = 4 * resize->height;
+				this->bottom_matrix_item_size = resize.height = CeilT<int>(target_resize, base_resize);
+				size.height = 4 * resize.height;
 
 				int gap = ScaleGUITrad(TRW_GAP);
 
@@ -284,7 +284,7 @@ public:
 				/* use buy cost width as nominal width for name field */
 				uint left_side = ScaleGUITrad(TRW_LEFT_OFFSET) + this->buy_cost_width * 2;
 				uint right_side = this->refit_text_width + this->depot_text_width + this->remainder_text_width + this->old_text_width + ScaleGUITrad(TRW_RIGHT_OFFSET);
-				size->width = std::max(size->width, left_side + gap + right_side);
+				size.width = std::max(size.width, left_side + gap + right_side);
 				break;
 			}
 			case TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN: {
@@ -297,15 +297,15 @@ public:
 				}
 				d.width += padding.width;
 				d.height += padding.height;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 			case TRW_WIDGET_TMPL_CONFIG_HEADER:
-				size->height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
+				size.height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
 				break;
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIG_RIGHTPANEL:
 			case TRW_WIDGET_TMPL_BUTTONS_EDIT_RIGHTPANEL:
-				size->width = std::max(size->width, NWidgetLeaf::GetResizeBoxDimension().width);
+				size.width = std::max(size.width, NWidgetLeaf::GetResizeBoxDimension().width);
 				break;
 		}
 	}

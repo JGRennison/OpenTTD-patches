@@ -239,67 +239,74 @@ public:
 		}
 	}
 
+	std::pair<StringID, TextColour> PrepareActionInfoString(int action_index) const
+	{
+		TextColour colour = TC_FROMSTRING;
+		StringID text = STR_NULL;
+		if (action_index >= 0x100) {
+			SetDParam(1, STR_EMPTY);
+			switch (action_index - 0x100) {
+				case TSOF_OVERRIDE_BUILD_ROADS:
+					SetDParam(1, STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_HELPTEXT);
+					break;
+				case TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS:
+					SetDParam(1, STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS_HELPTEXT);
+					break;
+				case TSOF_OVERRIDE_BUILD_TUNNELS:
+					SetDParam(1, STR_CONFIG_SETTING_TOWN_TUNNELS_HELPTEXT);
+					break;
+				case TSOF_OVERRIDE_BUILD_INCLINED_ROADS:
+					SetDParam(1, STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_HELPTEXT);
+					break;
+				case TSOF_OVERRIDE_GROWTH:
+					SetDParam(1, STR_CONFIG_SETTING_TOWN_GROWTH_HELPTEXT);
+					break;
+				case TSOF_OVERRIDE_BUILD_BRIDGES:
+					SetDParam(1, STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT);
+					break;
+			}
+			text = STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TEXT;
+			SetDParam(0, STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS + action_index - 0x100);
+		} else {
+			colour = TC_YELLOW;
+			switch (action_index) {
+				case 0:
+					text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING;
+					break;
+				case 1:
+					text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING;
+					break;
+				case 2:
+					text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING;
+					break;
+				case 3:
+					text = EconTime::UsingWallclockUnits() ? STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION_MINUTES : STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION_MONTHS;
+					break;
+				case 4:
+					text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY;
+					break;
+				case 5:
+					text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS;
+					break;
+				case 6:
+					text = EconTime::UsingWallclockUnits() ? STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT_MINUTES : STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT_MONTHS;
+					break;
+				case 7:
+					text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE;
+					break;
+			}
+			SetDParam(0, _price[PR_TOWN_ACTION] * _town_action_costs[action_index] >> 8);
+		}
+
+		return { text, colour };
+	}
+
 	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
 			case WID_TA_ACTION_INFO:
 				if (this->sel_index != -1) {
-					TextColour colour = TC_FROMSTRING;
-					StringID text = STR_NULL;
-					if (this->sel_index >= 0x100) {
-						SetDParam(1, STR_EMPTY);
-						switch (this->sel_index - 0x100) {
-							case TSOF_OVERRIDE_BUILD_ROADS:
-								SetDParam(1, STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_HELPTEXT);
-								break;
-							case TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS:
-								SetDParam(1, STR_CONFIG_SETTING_ALLOW_TOWN_LEVEL_CROSSINGS_HELPTEXT);
-								break;
-							case TSOF_OVERRIDE_BUILD_TUNNELS:
-								SetDParam(1, STR_CONFIG_SETTING_TOWN_TUNNELS_HELPTEXT);
-								break;
-							case TSOF_OVERRIDE_BUILD_INCLINED_ROADS:
-								SetDParam(1, STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_HELPTEXT);
-								break;
-							case TSOF_OVERRIDE_GROWTH:
-								SetDParam(1, STR_CONFIG_SETTING_TOWN_GROWTH_HELPTEXT);
-								break;
-							case TSOF_OVERRIDE_BUILD_BRIDGES:
-								SetDParam(1, STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT);
-								break;
-						}
-						text = STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TEXT;
-						SetDParam(0, STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS + this->sel_index - 0x100);
-					} else {
-						colour = TC_YELLOW;
-						switch (this->sel_index) {
-							case 0:
-								text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING;
-								break;
-							case 1:
-								text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING;
-								break;
-							case 2:
-								text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING;
-								break;
-							case 3:
-								text = EconTime::UsingWallclockUnits() ? STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION_MINUTES : STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION_MONTHS;
-								break;
-							case 4:
-								text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY;
-								break;
-							case 5:
-								text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS;
-								break;
-							case 6:
-								text = EconTime::UsingWallclockUnits() ? STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT_MINUTES : STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT_MONTHS;
-								break;
-							case 7:
-								text = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE;
-								break;
-						}
-						SetDParam(0, _price[PR_TOWN_ACTION] * _town_action_costs[this->sel_index] >> 8);
-					}
+					auto [text, colour] = this->PrepareActionInfoString(this->sel_index);
 					DrawStringMultiLine(r.Shrink(WidgetDimensions::scaled.framerect), text, colour);
 				}
 				break;
@@ -371,34 +378,38 @@ public:
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_TA_ACTION_INFO: {
-				assert(size->width > padding.width && size->height > padding.height);
+				assert(size.width > padding.width && size.height > padding.height);
 				Dimension d = {0, 0};
 				for (int i = 0; i < TACT_COUNT; i++) {
-					SetDParam(0, _price[PR_TOWN_ACTION] * _town_action_costs[i] >> 8);
-					d = maxdim(d, GetStringMultiLineBoundingBox(STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_SMALL_ADVERTISING + i, *size));
+					auto [text, _] = this->PrepareActionInfoString(i);
+					d = maxdim(d, GetStringMultiLineBoundingBox(text, size));
+				}
+				for (int i = TSOF_OVERRIDE_BEGIN; i < TSOF_OVERRIDE_END; i++) {
+					auto [text, _] = this->PrepareActionInfoString(i + 0x100);
+					d = maxdim(d, GetStringMultiLineBoundingBox(text, size));
 				}
 				d.width += padding.width;
 				d.height += padding.height;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 
 			case WID_TA_COMMAND_LIST:
-				size->height = (5 + SETTING_OVERRIDE_COUNT) * GetCharacterHeight(FS_NORMAL) + padding.height;
-				size->width = GetStringBoundingBox(STR_LOCAL_AUTHORITY_ACTIONS_TITLE).width;
+				size.height = (5 + SETTING_OVERRIDE_COUNT) * GetCharacterHeight(FS_NORMAL) + padding.height;
+				size.width = GetStringBoundingBox(STR_LOCAL_AUTHORITY_ACTIONS_TITLE).width;
 				for (uint i = 0; i < TACT_COUNT; i++ ) {
-					size->width = std::max(size->width, GetStringBoundingBox(STR_LOCAL_AUTHORITY_ACTION_SMALL_ADVERTISING_CAMPAIGN + i).width + padding.width);
+					size.width = std::max(size.width, GetStringBoundingBox(STR_LOCAL_AUTHORITY_ACTION_SMALL_ADVERTISING_CAMPAIGN + i).width + padding.width);
 				}
-				size->width += padding.width;
+				size.width += padding.width;
 				break;
 
 			case WID_TA_RATING_INFO:
-				resize->height = std::max({this->icon_size.height + WidgetDimensions::scaled.vsep_normal, this->exclusive_size.height + WidgetDimensions::scaled.vsep_normal, (uint)GetCharacterHeight(FS_NORMAL)});
-				size->height = 9 * resize->height + padding.height;
+				resize.height = std::max({this->icon_size.height + WidgetDimensions::scaled.vsep_normal, this->exclusive_size.height + WidgetDimensions::scaled.vsep_normal, (uint)GetCharacterHeight(FS_NORMAL)});
+				size.height = 9 * resize.height + padding.height;
 				break;
 		}
 	}
@@ -714,11 +725,11 @@ public:
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_TV_INFO:
-				size->height = GetDesiredInfoHeight(size->width) + padding.height;
+				size.height = GetDesiredInfoHeight(size.width) + padding.height;
 				break;
 		}
 	}
@@ -1077,14 +1088,14 @@ public:
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_TD_SORT_ORDER: {
 				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->widget_data);
 				d.width += padding.width + Window::SortButtonWidth() * 2; // Doubled since the string is centred and it also looks better.
 				d.height += padding.height;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 			case WID_TD_SORT_CRITERIA: {
@@ -1094,7 +1105,7 @@ public:
 				}
 				d.width += padding.width;
 				d.height += padding.height;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 			case WID_TD_LIST: {
@@ -1111,11 +1122,11 @@ public:
 				Dimension icon_size = GetSpriteSize(SPR_TOWN_RATING_GOOD);
 				d.width += icon_size.width + 2;
 				d.height = std::max(d.height, icon_size.height);
-				resize->height = d.height;
+				resize.height = d.height;
 				d.height *= 5;
 				d.width += padding.width;
 				d.height += padding.height;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 			case WID_TD_WORLD_POPULATION: {
@@ -1125,7 +1136,7 @@ public:
 				Dimension d = GetStringBoundingBox(STR_TOWN_DIRECTORY_INFO);
 				d.width += padding.width;
 				d.height += padding.height;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 		}
@@ -1868,7 +1879,7 @@ public:
 		}
 	}
 
-	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_HP_HOUSE_SETS: {
@@ -1876,24 +1887,24 @@ public:
 				for (uint i = 0; i < this->house_list.NumHouseSets(); i++) {
 					max_w = std::max(max_w, GetStringBoundingBox(this->house_list.GetNameOfHouseSet(i)).width);
 				}
-				size->width = std::max(size->width, max_w + padding.width);
+				size.width = std::max(size.width, max_w + padding.width);
 				this->line_height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.matrix.Vertical();
-				size->height = this->house_list.NumHouseSets() * this->line_height;
+				size.height = this->house_list.NumHouseSets() * this->line_height;
 				break;
 			}
 
 			case WID_HP_HOUSE_NAME:
-				size->width = 120; // we do not want this window to get too wide, better clip
+				size.width = 120; // we do not want this window to get too wide, better clip
 				break;
 
 			case WID_HP_HISTORICAL_BUILDING:
-				size->width = std::max(size->width, GetStringBoundingBox(STR_HOUSE_BUILD_HISTORICAL_BUILDING).width + padding.width);
+				size.width = std::max(size.width, GetStringBoundingBox(STR_HOUSE_BUILD_HISTORICAL_BUILDING).width + padding.width);
 				break;
 
 			case WID_HP_HOUSE_POPULATION:
 				SetDParam(0, 0);
 				/* max popultion is 255 - 3 digits */
-				size->width = std::max(size->width, GetStringBoundingBox(STR_HOUSE_BUILD_HOUSE_POPULATION).width + 3 * GetDigitWidth() + padding.width);
+				size.width = std::max(size.width, GetStringBoundingBox(STR_HOUSE_BUILD_HOUSE_POPULATION).width + 3 * GetDigitWidth() + padding.width);
 				break;
 
 			case WID_HP_HOUSE_ZONES: {
@@ -1901,7 +1912,7 @@ public:
 					SetDParam(2 * i, STR_HOUSE_BUILD_HOUSE_ZONE_ENABLED); // colour
 					SetDParam(2 * i + 1, i + 1); // digit: 1(center)/2/3/4/5(edge)
 				}
-				size->width = std::max(size->width, GetStringBoundingBox(STR_HOUSE_BUILD_HOUSE_ZONES).width + padding.width);
+				size.width = std::max(size.width, GetStringBoundingBox(STR_HOUSE_BUILD_HOUSE_ZONES).width + padding.width);
 				break;
 			}
 
@@ -1914,7 +1925,7 @@ public:
 				dim = maxdim(dim, GetStringBoundingBox(STR_HOUSE_BUILD_LANDSCAPE));
 				dim.width += padding.width;
 				dim.height += padding.height;
-				*size = maxdim(*size, dim);
+				size = maxdim(size, dim);
 				break;
 			}
 
@@ -1926,18 +1937,18 @@ public:
 				Dimension dim = GetStringBoundingBox(STR_HOUSE_BUILD_YEARS);
 				dim.width += 14 * GetDigitWidth() + padding.width; // space for about 16 digits (14 + two zeros) should be enough, don't make the window too wide
 				dim.height += padding.height;
-				*size = maxdim(*size, dim);
+				size = maxdim(size, dim);
 				break;
 			}
 
 			case WID_HP_HOUSE_SELECT_MATRIX:
-				resize->height = 1; // don't snap to rows of this matrix
+				resize.height = 1; // don't snap to rows of this matrix
 				break;
 
 			/* these texts can be long, better clip */
 			case WID_HP_HOUSE_ACCEPTANCE:
 			case WID_HP_HOUSE_SUPPLY:
-				size->width = 0;
+				size.width = 0;
 				break;
 
 			default: break;
@@ -2100,7 +2111,7 @@ struct SelectTownWindow : Window {
 		this->FinishInitNested();
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		if (widget != WID_ST_PANEL) return;
 
@@ -2111,11 +2122,11 @@ struct SelectTownWindow : Window {
 			d = maxdim(d, GetStringBoundingBox(STR_SELECT_TOWN_LIST_ITEM));
 		}
 
-		resize->height = d.height;
+		resize.height = d.height;
 		d.height *= 5;
 		d.width += WidgetDimensions::scaled.framerect.Horizontal();
 		d.height += WidgetDimensions::scaled.framerect.Vertical();
-		*size = d;
+		size = d;
 	}
 
 	void DrawWidget(const Rect &r, WidgetID widget) const override

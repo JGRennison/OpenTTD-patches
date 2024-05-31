@@ -195,7 +195,7 @@ static const std::map<int, StringID> _volume_labels = {
 	{  127, STR_GAME_OPTIONS_VOLUME_100 },
 };
 
-static const NWidgetPart _nested_social_plugins_widgets[] = {
+static constexpr NWidgetPart _nested_social_plugins_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_FRAME, COLOUR_GREY, WID_GO_SOCIAL_PLUGIN_TITLE), SetDataTip(STR_JUST_STRING2, STR_NULL),
 			NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
@@ -210,7 +210,7 @@ static const NWidgetPart _nested_social_plugins_widgets[] = {
 	EndContainer(),
 };
 
-static const NWidgetPart _nested_social_plugins_none_widgets[] = {
+static constexpr NWidgetPart _nested_social_plugins_none_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_TEXT, COLOUR_GREY), SetMinimalSize(0, 12), SetFill(1, 0), SetDataTip(STR_GAME_OPTIONS_SOCIAL_PLUGINS_NONE, STR_NULL),
 	EndContainer(),
@@ -669,7 +669,7 @@ struct GameOptionsWindow : Window {
 		if (changed) this->ReInit(0, 0, this->flags & WF_CENTERED);
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_GO_TEXT_SFX_VOLUME:
@@ -677,7 +677,7 @@ struct GameOptionsWindow : Window {
 				Dimension d = maxdim(GetStringBoundingBox(STR_GAME_OPTIONS_SFX_VOLUME), GetStringBoundingBox(STR_GAME_OPTIONS_MUSIC_VOLUME));
 				d.width += padding.width;
 				d.height += padding.height;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 
@@ -690,7 +690,7 @@ struct GameOptionsWindow : Window {
 			case WID_GO_BASE_SFX_DROPDOWN:
 			case WID_GO_BASE_MUSIC_DROPDOWN: {
 				int selected;
-				size->width = std::max(size->width, GetDropDownListDimension(this->BuildDropDownList(widget, &selected)).width + padding.width);
+				size.width = std::max(size.width, GetDropDownListDimension(this->BuildDropDownList(widget, &selected)).width + padding.width);
 				break;
 			}
 		}
@@ -2846,14 +2846,14 @@ struct GameSettingsWindow : Window {
 		_circle_size = maxdim(GetSpriteSize(SPR_CIRCLE_FOLDED), GetSpriteSize(SPR_CIRCLE_UNFOLDED));
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_GS_OPTIONSPANEL:
-				resize->height = SETTING_HEIGHT = std::max({(int)_circle_size.height, SETTING_BUTTON_HEIGHT, GetCharacterHeight(FS_NORMAL)}) + WidgetDimensions::scaled.vsep_normal;
-				resize->width = 1;
+				resize.height = SETTING_HEIGHT = std::max({(int)_circle_size.height, SETTING_BUTTON_HEIGHT, GetCharacterHeight(FS_NORMAL)}) + WidgetDimensions::scaled.vsep_normal;
+				resize.width = 1;
 
-				size->height = 5 * resize->height + WidgetDimensions::scaled.framerect.Vertical();
+				size.height = 5 * resize.height + WidgetDimensions::scaled.framerect.Vertical();
 				break;
 
 			case WID_GS_HELP_TEXT: {
@@ -2864,16 +2864,16 @@ struct GameSettingsWindow : Window {
 				};
 				for (uint i = 0; i < lengthof(setting_types); i++) {
 					SetDParam(0, setting_types[i]);
-					size->width = std::max(size->width, GetStringBoundingBox(STR_CONFIG_SETTING_TYPE).width + padding.width);
+					size.width = std::max(size.width, GetStringBoundingBox(STR_CONFIG_SETTING_TYPE).width + padding.width);
 				}
-				size->height = 2 * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal +
-						std::max(size->height, GetSettingsTree().GetMaxHelpHeight(size->width));
+				size.height = 2 * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal +
+						std::max(size.height, GetSettingsTree().GetMaxHelpHeight(size.width));
 				break;
 			}
 
 			case WID_GS_RESTRICT_CATEGORY:
 			case WID_GS_RESTRICT_TYPE:
-				size->width = std::max(GetStringBoundingBox(STR_CONFIG_SETTING_RESTRICT_CATEGORY).width, GetStringBoundingBox(STR_CONFIG_SETTING_RESTRICT_TYPE).width);
+				size.width = std::max(GetStringBoundingBox(STR_CONFIG_SETTING_RESTRICT_CATEGORY).width, GetStringBoundingBox(STR_CONFIG_SETTING_RESTRICT_TYPE).width);
 				break;
 
 			default:
@@ -3551,7 +3551,7 @@ struct CustomCurrencyWindow : Window {
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			/* Set the appropriate width for the up/down buttons. */
@@ -3559,21 +3559,21 @@ struct CustomCurrencyWindow : Window {
 			case WID_CC_RATE_UP:
 			case WID_CC_YEAR_DOWN:
 			case WID_CC_YEAR_UP:
-				*size = maxdim(*size, {(uint)SETTING_BUTTON_WIDTH / 2, (uint)SETTING_BUTTON_HEIGHT});
+				size = maxdim(size, {(uint)SETTING_BUTTON_WIDTH / 2, (uint)SETTING_BUTTON_HEIGHT});
 				break;
 
 			/* Set the appropriate width for the edit buttons. */
 			case WID_CC_SEPARATOR_EDIT:
 			case WID_CC_PREFIX_EDIT:
 			case WID_CC_SUFFIX_EDIT:
-				*size = maxdim(*size, {(uint)SETTING_BUTTON_WIDTH, (uint)SETTING_BUTTON_HEIGHT});
+				size = maxdim(size, {(uint)SETTING_BUTTON_WIDTH, (uint)SETTING_BUTTON_HEIGHT});
 				break;
 
 			/* Make sure the window is wide enough for the widest exchange rate */
 			case WID_CC_RATE:
 				SetDParam(0, 1);
 				SetDParam(1, INT32_MAX);
-				*size = GetStringBoundingBox(STR_CURRENCY_EXCHANGE_RATE);
+				size = GetStringBoundingBox(STR_CURRENCY_EXCHANGE_RATE);
 				break;
 		}
 	}

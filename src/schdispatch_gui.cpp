@@ -281,7 +281,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		return nullptr;
 	}
 
-	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_SCHDISPATCH_MATRIX: {
@@ -303,22 +303,22 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				this->header_width = std::max(this->delete_flag_width, this->arrow_flag_width);
 				this->base_width = unumber.width + this->header_width + 4;
 
-				resize->height = min_height;
-				resize->width = base_width + WidgetDimensions::scaled.framerect.left + WidgetDimensions::scaled.framerect.right;
-				size->width = resize->width * 3;
-				size->height = resize->height * 3;
+				resize.height = min_height;
+				resize.width = base_width + WidgetDimensions::scaled.framerect.left + WidgetDimensions::scaled.framerect.right;
+				size.width = resize.width * 3;
+				size.height = resize.height * 3;
 
-				fill->width = resize->width;
-				fill->height = resize->height;
+				fill.width = resize.width;
+				fill.height = resize.height;
 				break;
 			}
 
 			case WID_SCHDISPATCH_SUMMARY_PANEL:
-				size->height = (5 + this->extra_line_count) * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical() + (WidgetDimensions::scaled.vsep_wide * 2);
+				size.height = (5 + this->extra_line_count) * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical() + (WidgetDimensions::scaled.vsep_wide * 2);
 				uint warning_count = this->warning_count;
 				if (warning_count > 0) {
 					const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
-					size->height += warning_count * std::max<int>(warning_dimensions.height, GetCharacterHeight(FS_NORMAL));
+					size.height += warning_count * std::max<int>(warning_dimensions.height, GetCharacterHeight(FS_NORMAL));
 				}
 				break;
 		}
@@ -1461,7 +1461,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 		return pt;
 	}
 
-	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		Dimension d = {0, 0};
 		switch (widget) {
@@ -1496,7 +1496,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 
 		d.width += padding.width;
 		d.height += padding.height;
-		*size = d;
+		size = d;
 	}
 
 	virtual void SetStringParameters(WidgetID widget) const override

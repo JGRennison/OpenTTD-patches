@@ -84,7 +84,7 @@ void ShowScreenshotWindow()
 
 void SetScreenshotWindowHidden(bool hidden)
 {
-	ScreenshotWindow *scw = (ScreenshotWindow *) FindWindowById(WC_SCREENSHOT, 0);
+	ScreenshotWindow *scw = dynamic_cast<ScreenshotWindow *>(FindWindowById(WC_SCREENSHOT, 0));
 	if (scw != nullptr) {
 		if (hidden) {
 			scw->SetDirtyAsBlocks();

@@ -134,12 +134,32 @@ BaseVehicleListWindow::VehicleGroupSortFunction * const BaseVehicleListWindow::v
 	&VehicleIndividualToGroupSorterWrapper<VehicleMaxSpeedLoadedSorter>,
 };
 
-const StringID BaseVehicleListWindow::vehicle_group_none_sorter_names[] = {
+const StringID BaseVehicleListWindow::vehicle_group_none_sorter_names_calendar[] = {
 	STR_SORT_BY_NUMBER,
 	STR_SORT_BY_NAME,
 	STR_SORT_BY_AGE,
 	STR_SORT_BY_PROFIT_THIS_YEAR,
 	STR_SORT_BY_PROFIT_LAST_YEAR,
+	STR_SORT_BY_PROFIT_LIFETIME,
+	STR_SORT_BY_TOTAL_CAPACITY_PER_CARGOTYPE,
+	STR_SORT_BY_RELIABILITY,
+	STR_SORT_BY_MAX_SPEED,
+	STR_SORT_BY_MODEL,
+	STR_SORT_BY_VALUE,
+	STR_SORT_BY_LENGTH,
+	STR_SORT_BY_LIFE_TIME,
+	STR_SORT_BY_TIMETABLE_DELAY,
+	STR_SORT_BY_AVG_ORDER_OCCUPANCY,
+	STR_SORT_BY_MAX_SPEED_LOADED,
+	INVALID_STRING_ID
+};
+
+const StringID BaseVehicleListWindow::vehicle_group_none_sorter_names_wallclock[] = {
+	STR_SORT_BY_NUMBER,
+	STR_SORT_BY_NAME,
+	STR_SORT_BY_AGE,
+	STR_SORT_BY_PROFIT_THIS_PERIOD,
+	STR_SORT_BY_PROFIT_LAST_PERIOD,
 	STR_SORT_BY_PROFIT_LIFETIME,
 	STR_SORT_BY_TOTAL_CAPACITY_PER_CARGOTYPE,
 	STR_SORT_BY_RELIABILITY,
@@ -163,12 +183,22 @@ BaseVehicleListWindow::VehicleGroupSortFunction * const BaseVehicleListWindow::v
 	&VehicleGroupAverageOrderOccupancySorter,
 };
 
-const StringID BaseVehicleListWindow::vehicle_group_shared_orders_sorter_names[] = {
+const StringID BaseVehicleListWindow::vehicle_group_shared_orders_sorter_names_calendar[] = {
 	STR_SORT_BY_NUM_VEHICLES,
 	STR_SORT_BY_TOTAL_PROFIT_THIS_YEAR,
 	STR_SORT_BY_TOTAL_PROFIT_LAST_YEAR,
 	STR_SORT_BY_AVERAGE_PROFIT_THIS_YEAR,
 	STR_SORT_BY_AVERAGE_PROFIT_LAST_YEAR,
+	STR_SORT_BY_AVG_ORDER_OCCUPANCY,
+	INVALID_STRING_ID
+};
+
+const StringID BaseVehicleListWindow::vehicle_group_shared_orders_sorter_names_wallclock[] = {
+	STR_SORT_BY_NUM_VEHICLES,
+	STR_SORT_BY_TOTAL_PROFIT_THIS_PERIOD,
+	STR_SORT_BY_TOTAL_PROFIT_LAST_PERIOD,
+	STR_SORT_BY_AVERAGE_PROFIT_THIS_PERIOD,
+	STR_SORT_BY_AVERAGE_PROFIT_LAST_PERIOD,
 	STR_SORT_BY_AVG_ORDER_OCCUPANCY,
 	INVALID_STRING_ID
 };
@@ -990,20 +1020,20 @@ struct RefitWindow : public Window {
 		this->DrawWidgets();
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_VR_MATRIX:
-				resize->height = GetCharacterHeight(FS_NORMAL) + padding.height;
-				size->height = resize->height * 8;
+				resize.height = GetCharacterHeight(FS_NORMAL) + padding.height;
+				size.height = resize.height * 8;
 				break;
 
 			case WID_VR_VEHICLE_PANEL_DISPLAY:
-				size->height = ScaleGUITrad(GetVehicleHeight(Vehicle::Get(this->window_number)->type));
+				size.height = ScaleGUITrad(GetVehicleHeight(Vehicle::Get(this->window_number)->type));
 				break;
 
 			case WID_VR_INFO:
-				size->width = this->information_width + padding.height;
+				size.width = this->information_width + padding.height;
 				break;
 		}
 	}
@@ -2298,20 +2328,20 @@ public:
 		this->RefreshRouteOverlay();
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_VL_LIST:
-				resize->height = GetVehicleListHeight(this->vli.vtype, 1);
+				resize.height = GetVehicleListHeight(this->vli.vtype, 1);
 
 				switch (this->vli.vtype) {
 					case VEH_TRAIN:
 					case VEH_ROAD:
-						size->height = 6 * resize->height;
+						size.height = 6 * resize.height;
 						break;
 					case VEH_SHIP:
 					case VEH_AIRCRAFT:
-						size->height = 4 * resize->height;
+						size.height = 4 * resize.height;
 						break;
 					default: NOT_REACHED();
 				}
@@ -2321,22 +2351,22 @@ public:
 				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->widget_data);
 				d.width += padding.width + Window::SortButtonWidth() * 2; // Doubled since the string is centred and it also looks better.
 				d.height += padding.height;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 
 			case WID_VL_GROUP_BY_PULLDOWN:
-				size->width = GetStringListWidth(this->vehicle_group_by_names) + padding.width;
+				size.width = GetStringListWidth(this->vehicle_group_by_names) + padding.width;
 				break;
 
 			case WID_VL_SORT_BY_PULLDOWN:
-				size->width = GetStringListWidth(this->vehicle_group_none_sorter_names);
-				size->width = std::max(size->width, GetStringListWidth(this->vehicle_group_shared_orders_sorter_names));
-				size->width += padding.width;
+				size.width = GetStringListWidth(EconTime::UsingWallclockUnits() ? this->vehicle_group_none_sorter_names_wallclock : this->vehicle_group_none_sorter_names_calendar);
+				size.width = std::max(size.width, GetStringListWidth(EconTime::UsingWallclockUnits() ? this->vehicle_group_shared_orders_sorter_names_wallclock : this->vehicle_group_shared_orders_sorter_names_calendar));
+				size.width += padding.width;
 				break;
 
 			case WID_VL_FILTER_BY_CARGO:
-				size->width = std::max(size->width, GetDropDownListDimension(this->BuildCargoDropDownList(true)).width + padding.width);
+				size.width = std::max(size.width, GetDropDownListDimension(this->BuildCargoDropDownList(true)).width + padding.width);
 				break;
 
 			case WID_VL_MANAGE_VEHICLES_DROPDOWN: {
@@ -2344,7 +2374,7 @@ public:
 						this->vli.vtype == VEH_TRAIN, this->GetChangeOrderStringID());
 				d.height += padding.height;
 				d.width  += padding.width;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 		}
@@ -3033,7 +3063,7 @@ struct VehicleDetailsWindow : Window {
 		return slots;
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_VD_TOP_DETAILS: {
@@ -3050,7 +3080,7 @@ struct VehicleDetailsWindow : Window {
 				if (this->vehicle_slots_line_shown) lines++;
 				if (this->vehicle_speed_restriction_line_shown) lines++;
 				if (this->vehicle_speed_adaptation_exempt_line_shown) lines++;
-				size->height = lines * GetCharacterHeight(FS_NORMAL) + padding.height;
+				size.height = lines * GetCharacterHeight(FS_NORMAL) + padding.height;
 
 				for (uint i = 0; i < 5; i++) SetDParamMaxValue(i, INT16_MAX);
 				static const StringID info_strings[] = {
@@ -3088,7 +3118,7 @@ struct VehicleDetailsWindow : Window {
 				}
 				SetDParam(0, STR_VEHICLE_INFO_AGE);
 				dim = maxdim(dim, GetStringBoundingBox(this->GetRunningCostString()));
-				size->width = dim.width + padding.width;
+				size.width = dim.width + padding.width;
 				break;
 			}
 
@@ -3097,11 +3127,11 @@ struct VehicleDetailsWindow : Window {
 				switch (v->type) {
 					case VEH_ROAD:
 					case VEH_SHIP:
-						size->height = this->GetRoadOrShipVehDetailsHeight(v) + padding.height;
+						size.height = this->GetRoadOrShipVehDetailsHeight(v) + padding.height;
 						break;
 
 					case VEH_AIRCRAFT:
-						size->height = 5 * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal * 2 + padding.height;
+						size.height = 5 * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal * 2 + padding.height;
 						break;
 
 					default:
@@ -3111,8 +3141,8 @@ struct VehicleDetailsWindow : Window {
 			}
 
 			case WID_VD_MATRIX:
-				resize->height = std::max<uint>(ScaleGUITrad(14), GetCharacterHeight(FS_NORMAL) + padding.height);
-				size->height = 4 * resize->height;
+				resize.height = std::max<uint>(ScaleGUITrad(14), GetCharacterHeight(FS_NORMAL) + padding.height);
+				size.height = 4 * resize.height;
 				break;
 
 			case WID_VD_SERVICE_INTERVAL_DROPDOWN: {
@@ -3125,7 +3155,7 @@ struct VehicleDetailsWindow : Window {
 				}
 				d.width += padding.width;
 				d.height += padding.height;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 
@@ -3142,11 +3172,11 @@ struct VehicleDetailsWindow : Window {
 					/* Vehicle was last serviced at year 0, and we're at max year */
 					SetDParamMaxValue(2, EconTime::DateAtStartOfYear(EconTime::MAX_YEAR));
 				}
-				size->width = std::max(
+				size.width = std::max(
 					GetStringBoundingBox(STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT).width,
 					GetStringBoundingBox(STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS).width
 				) + padding.width;
-				size->height = GetCharacterHeight(FS_NORMAL) + padding.height;
+				size.height = GetCharacterHeight(FS_NORMAL) + padding.height;
 				break;
 		}
 	}
@@ -3919,24 +3949,24 @@ public:
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		const Vehicle *v = Vehicle::Get(this->window_number);
 		switch (widget) {
 			case WID_VV_START_STOP:
-				size->height = std::max<uint>({size->height, (uint)GetCharacterHeight(FS_NORMAL), GetScaledSpriteSize(SPR_WARNING_SIGN).height, GetScaledSpriteSize(SPR_FLAG_VEH_STOPPED).height, GetScaledSpriteSize(SPR_FLAG_VEH_RUNNING).height}) + padding.height;
+				size.height = std::max<uint>({size.height, (uint)GetCharacterHeight(FS_NORMAL), GetScaledSpriteSize(SPR_WARNING_SIGN).height, GetScaledSpriteSize(SPR_FLAG_VEH_STOPPED).height, GetScaledSpriteSize(SPR_FLAG_VEH_RUNNING).height}) + padding.height;
 				break;
 
 			case WID_VV_FORCE_PROCEED:
 				if (v->type != VEH_TRAIN) {
-					size->height = 0;
-					size->width = 0;
+					size.height = 0;
+					size.width = 0;
 				}
 				break;
 
 			case WID_VV_VIEWPORT:
-				size->width = VV_INITIAL_VIEWPORT_WIDTH;
-				size->height = (v->type == VEH_TRAIN) ? VV_INITIAL_VIEWPORT_HEIGHT_TRAIN : VV_INITIAL_VIEWPORT_HEIGHT;
+				size.width = VV_INITIAL_VIEWPORT_WIDTH;
+				size.height = (v->type == VEH_TRAIN) ? VV_INITIAL_VIEWPORT_HEIGHT_TRAIN : VV_INITIAL_VIEWPORT_HEIGHT;
 				break;
 		}
 	}

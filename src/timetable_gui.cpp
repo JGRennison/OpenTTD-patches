@@ -399,7 +399,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 		return (travelling && v->lateness_counter < 0);
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_VT_ARRIVAL_DEPARTURE_PANEL:
@@ -412,18 +412,18 @@ struct TimetableWindow : GeneralVehicleWindow {
 				}
 				this->deparr_time_width = GetStringBoundingBox(STR_JUST_TT_TIME).width + 4;
 				this->deparr_abbr_width = std::max(GetStringBoundingBox(STR_TIMETABLE_ARRIVAL_ABBREVIATION).width, GetStringBoundingBox(STR_TIMETABLE_DEPARTURE_ABBREVIATION).width);
-				size->width = this->deparr_abbr_width + WidgetDimensions::scaled.hsep_wide + this->deparr_time_width + padding.width;
+				size.width = this->deparr_abbr_width + WidgetDimensions::scaled.hsep_wide + this->deparr_time_width + padding.width;
 				[[fallthrough]];
 
 			case WID_VT_ARRIVAL_DEPARTURE_SELECTION:
 			case WID_VT_TIMETABLE_PANEL:
-				resize->height = std::max<int>(GetCharacterHeight(FS_NORMAL), GetSpriteSize(SPR_LOCK).height);
-				size->height = 8 * resize->height + padding.height;
+				resize.height = std::max<int>(GetCharacterHeight(FS_NORMAL), GetSpriteSize(SPR_LOCK).height);
+				size.height = 8 * resize.height + padding.height;
 				break;
 
 			case WID_VT_SUMMARY_PANEL: {
 				Dimension d = GetSpriteSize(SPR_WARNING_SIGN);
-				size->height = 2 * GetCharacterHeight(FS_NORMAL) + std::min<int>(MAX_SUMMARY_WARNINGS, this->summary_warnings) * std::max<int>(d.height, GetCharacterHeight(FS_NORMAL)) + padding.height;
+				size.height = 2 * GetCharacterHeight(FS_NORMAL) + std::min<int>(MAX_SUMMARY_WARNINGS, this->summary_warnings) * std::max<int>(d.height, GetCharacterHeight(FS_NORMAL)) + padding.height;
 				break;
 			}
 		}

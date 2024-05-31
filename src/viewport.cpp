@@ -1953,7 +1953,7 @@ void ViewportAddString(ViewportDrawerDynamic *vdd, const DrawPixelInfo *dpi, Zoo
 	int right  = left + dpi->width;
 	int bottom = top + dpi->height;
 
-	int sign_height     = ScaleByZoom(WidgetDimensions::scaled.fullbevel.top + GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.fullbevel.bottom, dpi->zoom);
+	int sign_height     = ScaleByZoom(WidgetDimensions::scaled.fullbevel.top + GetCharacterHeight(small ? FS_SMALL : FS_NORMAL) + WidgetDimensions::scaled.fullbevel.bottom, dpi->zoom);
 	int sign_half_width = ScaleByZoom((small ? sign->width_small : sign->width_normal) / 2, dpi->zoom);
 
 	if (bottom < sign->top ||
@@ -1978,8 +1978,7 @@ void ViewportAddString(ViewportDrawerDynamic *vdd, const DrawPixelInfo *dpi, Zoo
 
 static Rect ExpandRectWithViewportSignMargins(Rect r, ZoomLevel zoom)
 {
-	/* Pessimistically always use normal font, but also assume small font is never larger in either dimension */
-	const int fh = GetCharacterHeight(FS_NORMAL);
+	const int fh = std::max(GetCharacterHeight(FS_NORMAL), GetCharacterHeight(FS_SMALL));
 	const int max_tw = _viewport_sign_maxwidth / 2 + 1;
 	const int expand_y = ScaleByZoom(WidgetDimensions::scaled.fullbevel.top + fh + WidgetDimensions::scaled.fullbevel.bottom, zoom);
 	const int expand_x = ScaleByZoom(WidgetDimensions::scaled.fullbevel.left + max_tw + WidgetDimensions::scaled.fullbevel.right, zoom);
@@ -2132,13 +2131,16 @@ void ViewportSign::MarkDirty(ZoomLevel maxzoom) const
 
 	Rect zoomlevels[ZOOM_LVL_END];
 
+	const uint small_height = WidgetDimensions::scaled.fullbevel.top + GetCharacterHeight(FS_SMALL) + WidgetDimensions::scaled.fullbevel.bottom + 1;
+	const uint normal_height = WidgetDimensions::scaled.fullbevel.top + GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.fullbevel.bottom + 1;
+
 	for (ZoomLevel zoom = ZOOM_LVL_BEGIN; zoom != ZOOM_LVL_END; zoom++) {
 		const ZoomLevel small_from = (maxzoom == ZOOM_LVL_OUT_2X) ? ZOOM_LVL_OUT_2X : ZOOM_LVL_OUT_4X;
-		const int width = (zoom >= small_from) ? this->width_small : this->width_normal ;
+		const int width = (zoom >= small_from) ? this->width_small : this->width_normal;
 		zoomlevels[zoom].left   = this->center - ScaleByZoom(width / 2 + 1, zoom);
 		zoomlevels[zoom].top    = this->top    - ScaleByZoom(1, zoom);
 		zoomlevels[zoom].right  = this->center + ScaleByZoom(width / 2 + 1, zoom);
-		zoomlevels[zoom].bottom = this->top    + ScaleByZoom(WidgetDimensions::scaled.fullbevel.top + GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.fullbevel.bottom + 1, zoom);
+		zoomlevels[zoom].bottom = this->top    + ScaleByZoom((zoom >= small_from) ? small_height : normal_height, zoom);
 	}
 
 	for (Viewport *vp : _viewport_window_cache) {
@@ -2463,7 +2465,7 @@ static void ViewportDrawStrings(ViewportDrawerDynamic *vdd, ZoomLevel zoom, cons
 		int w = GB(ss.width, 0, 15);
 		int x = UnScaleByZoom(ss.x, zoom);
 		int y = UnScaleByZoom(ss.y, zoom);
-		int h = WidgetDimensions::scaled.fullbevel.Vertical() + (small ? GetCharacterHeight(FS_SMALL) : GetCharacterHeight(FS_NORMAL));
+		int h = WidgetDimensions::scaled.fullbevel.Vertical() + GetCharacterHeight(small ? FS_SMALL : FS_NORMAL);
 
 		SetDParam(0, ss.params[0]);
 		SetDParam(1, ss.params[1]);
@@ -5013,7 +5015,7 @@ static bool CheckClickOnViewportSign(const Viewport *vp, int x, int y, const Vie
 {
 	bool small = (vp->zoom >= ZOOM_LVL_OUT_4X);
 	int sign_half_width = ScaleByZoom((small ? sign->width_small : sign->width_normal) / 2, vp->zoom);
-	int sign_height = ScaleByZoom(WidgetDimensions::scaled.fullbevel.top + (small ? GetCharacterHeight(FS_SMALL) : GetCharacterHeight(FS_NORMAL)) + WidgetDimensions::scaled.fullbevel.bottom, vp->zoom);
+	int sign_height = ScaleByZoom(WidgetDimensions::scaled.fullbevel.top + GetCharacterHeight(small ? FS_SMALL : FS_NORMAL) + WidgetDimensions::scaled.fullbevel.bottom, vp->zoom);
 
 	return y >= sign->top && y < sign->top + sign_height &&
 			x >= sign->center - sign_half_width && x < sign->center + sign_half_width;
@@ -5117,7 +5119,7 @@ ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeStation(StationID id)
 	item.top = st->sign.top;
 
 	/* Assume the sign can be a candidate for drawing, so measure its width */
-	_viewport_sign_maxwidth = std::max<int>(_viewport_sign_maxwidth, st->sign.width_normal);
+	_viewport_sign_maxwidth = std::max<int>({_viewport_sign_maxwidth, st->sign.width_normal, st->sign.width_small});
 
 	return item;
 }
@@ -5134,7 +5136,7 @@ ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeWaypoint(StationID id)
 	item.top = st->sign.top;
 
 	/* Assume the sign can be a candidate for drawing, so measure its width */
-	_viewport_sign_maxwidth = std::max<int>(_viewport_sign_maxwidth, st->sign.width_normal);
+	_viewport_sign_maxwidth = std::max<int>({_viewport_sign_maxwidth, st->sign.width_normal, st->sign.width_small});
 
 	return item;
 }
@@ -5151,7 +5153,7 @@ ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeTown(TownID id)
 	item.top = town->cache.sign.top;
 
 	/* Assume the sign can be a candidate for drawing, so measure its width */
-	_viewport_sign_maxwidth = std::max<int>(_viewport_sign_maxwidth, town->cache.sign.width_normal);
+	_viewport_sign_maxwidth = std::max<int>({_viewport_sign_maxwidth, town->cache.sign.width_normal, town->cache.sign.width_small});
 
 	return item;
 }
@@ -5168,7 +5170,7 @@ ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeSign(SignID id)
 	item.top = sign->sign.top;
 
 	/* Assume the sign can be a candidate for drawing, so measure its width */
-	_viewport_sign_maxwidth = std::max<int>(_viewport_sign_maxwidth, sign->sign.width_normal);
+	_viewport_sign_maxwidth = std::max<int>({_viewport_sign_maxwidth, sign->sign.width_normal, sign->sign.width_small});
 
 	return item;
 }

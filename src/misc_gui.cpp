@@ -90,23 +90,23 @@ public:
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		if (widget != WID_LI_BACKGROUND) return;
 
-		size->height = WidgetDimensions::scaled.frametext.Vertical();
+		size.height = WidgetDimensions::scaled.frametext.Vertical();
 		for (size_t i = 0; i < this->landinfo_data.size(); i++) {
 			uint width = GetStringBoundingBox(this->landinfo_data[i]).width + WidgetDimensions::scaled.frametext.Horizontal();
-			size->width = std::max(size->width, width);
+			size.width = std::max(size.width, width);
 
-			size->height += GetCharacterHeight(FS_NORMAL) + (i == 0 ? WidgetDimensions::scaled.vsep_wide : WidgetDimensions::scaled.vsep_normal);
+			size.height += GetCharacterHeight(FS_NORMAL) + (i == 0 ? WidgetDimensions::scaled.vsep_wide : WidgetDimensions::scaled.vsep_normal);
 		}
 
 		if (!this->cargo_acceptance.empty()) {
 			uint width = GetStringBoundingBox(this->cargo_acceptance).width + WidgetDimensions::scaled.frametext.Horizontal();
-			size->width = std::max(size->width, std::min(static_cast<uint>(ScaleGUITrad(300)), width));
+			size.width = std::max(size.width, std::min(static_cast<uint>(ScaleGUITrad(300)), width));
 			SetDParamStr(0, cargo_acceptance);
-			size->height += GetStringHeight(STR_JUST_RAW_STRING, size->width - WidgetDimensions::scaled.frametext.Horizontal());
+			size.height += GetStringHeight(STR_JUST_RAW_STRING, size.width - WidgetDimensions::scaled.frametext.Horizontal());
 		}
 	}
 
@@ -441,7 +441,7 @@ static WindowDesc _about_desc(__FILE__, __LINE__,
 	std::begin(_nested_about_widgets), std::end(_nested_about_widgets)
 );
 
-static const char * const _credits[] = {
+static const std::initializer_list<const std::string_view> _credits = {
 	"Original design by Chris Sawyer",
 	"Original graphics by Simon Foster",
 	"",
@@ -533,7 +533,7 @@ struct AboutWindow : public Window {
 		if (widget == WID_A_COPYRIGHT) SetDParamStr(0, _openttd_revision_year);
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		if (widget != WID_A_SCROLLING_TEXT) return;
 
@@ -543,10 +543,10 @@ struct AboutWindow : public Window {
 		d.height = this->line_height * num_visible_lines;
 
 		d.width = 0;
-		for (uint i = 0; i < lengthof(_credits); i++) {
-			d.width = std::max(d.width, GetStringBoundingBox(_credits[i]).width);
+		for (const auto &str : _credits) {
+			d.width = std::max(d.width, GetStringBoundingBox(str).width);
 		}
-		*size = maxdim(*size, d);
+		size = maxdim(size, d);
 
 		/* Set scroll interval based on required speed. To keep scrolling smooth,
 		 * the interval is adjusted rather than the distance moved. */
@@ -560,9 +560,9 @@ struct AboutWindow : public Window {
 		int y = this->text_position;
 
 		/* Show all scrolling _credits */
-		for (uint i = 0; i < lengthof(_credits); i++) {
+		for (const auto &str : _credits) {
 			if (y >= r.top + 7 && y < r.bottom - this->line_height) {
-				DrawString(r.left, r.right, y, _credits[i], TC_BLACK, SA_LEFT | SA_FORCE);
+				DrawString(r.left, r.right, y, str, TC_BLACK, SA_LEFT | SA_FORCE);
 			}
 			y += this->line_height;
 		}
@@ -574,7 +574,7 @@ struct AboutWindow : public Window {
 		if (count > 0) {
 			this->text_position -= count;
 			/* If the last text has scrolled start a new from the start */
-			if (this->text_position < (int)(this->GetWidget<NWidgetBase>(WID_A_SCROLLING_TEXT)->pos_y - lengthof(_credits) * this->line_height)) {
+			if (this->text_position < (int)(this->GetWidget<NWidgetBase>(WID_A_SCROLLING_TEXT)->pos_y - std::size(_credits) * this->line_height)) {
 				this->text_position = this->GetWidget<NWidgetBase>(WID_A_SCROLLING_TEXT)->pos_y + this->GetWidget<NWidgetBase>(WID_A_SCROLLING_TEXT)->current_y;
 			}
 			this->SetWidgetDirty(WID_A_SCROLLING_TEXT);
@@ -755,21 +755,21 @@ struct TooltipsWindow : public Window
 		return pt;
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		if (widget != WID_TT_BACKGROUND) return;
 		if (this->params.size() == 0) {
-			size->width  = std::min<uint>(GetStringBoundingBox(this->buffer).width, ScaleGUITrad(194));
-			size->height = GetStringHeight(this->buffer, size->width);
+			size.width  = std::min<uint>(GetStringBoundingBox(this->buffer).width, ScaleGUITrad(194));
+			size.height = GetStringHeight(this->buffer, size.width);
 		} else {
 			CopyInDParam(this->params);
-			size->width  = std::min<uint>(GetStringBoundingBox(this->string_id).width, ScaleGUITrad(194));
-			size->height = GetStringHeight(this->string_id, size->width);
+			size.width  = std::min<uint>(GetStringBoundingBox(this->string_id).width, ScaleGUITrad(194));
+			size.height = GetStringHeight(this->string_id, size.width);
 		}
 
 		/* Increase slightly to have some space around the box. */
-		size->width  += WidgetDimensions::scaled.framerect.Horizontal()  + WidgetDimensions::scaled.fullbevel.Horizontal();
-		size->height += WidgetDimensions::scaled.framerect.Vertical()    + WidgetDimensions::scaled.fullbevel.Vertical();
+		size.width  += WidgetDimensions::scaled.framerect.Horizontal()  + WidgetDimensions::scaled.fullbevel.Horizontal();
+		size.height += WidgetDimensions::scaled.framerect.Vertical()    + WidgetDimensions::scaled.fullbevel.Vertical();
 	}
 
 	void DrawWidget(const Rect &r, WidgetID widget) const override
@@ -1061,17 +1061,17 @@ struct QueryStringWindow : public Window
 		this->ReInit();
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		if (widget == WID_QS_DEFAULT && (this->flags & QSF_ENABLE_DEFAULT) == 0) {
 			/* We don't want this widget to show! */
-			fill->width = 0;
-			resize->width = 0;
-			size->width = 0;
+			fill.width = 0;
+			resize.width = 0;
+			size.width = 0;
 		}
 
 		if (widget == WID_QS_WARNING) {
-			*size = this->warning_size;
+			size = this->warning_size;
 		}
 	}
 
@@ -1241,13 +1241,13 @@ struct QueryWindow : public Window {
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		if (widget != WID_Q_TEXT) return;
 
 		if (!this->precomposed) this->message_str = GetString(this->message);
 
-		*size = GetStringMultiLineBoundingBox(this->message_str, *size);
+		size = GetStringMultiLineBoundingBox(this->message_str, size);
 	}
 
 	void DrawWidget(const Rect &r, WidgetID widget) const override

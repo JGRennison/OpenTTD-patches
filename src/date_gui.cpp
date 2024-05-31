@@ -106,7 +106,7 @@ struct SetDateWindow : Window {
 		ShowDropDownList(this, std::move(list), selected, widget);
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		Dimension d = {0, 0};
 		switch (widget) {
@@ -132,7 +132,7 @@ struct SetDateWindow : Window {
 
 		d.width += padding.width;
 		d.height += padding.height;
-		*size = d;
+		size = d;
 	}
 
 	void SetStringParameters(WidgetID widget) const override
@@ -225,7 +225,7 @@ struct SetMinutesWindow : SetDateWindow
 		ShowDropDownList(this, std::move(list), selected, widget);
 	}
 
-	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		Dimension d = {0, 0};
 		switch (widget) {
@@ -248,7 +248,7 @@ struct SetMinutesWindow : SetDateWindow
 
 		d.width += padding.width;
 		d.height += padding.height;
-		*size = d;
+		size = d;
 	}
 
 	virtual void SetStringParameters(WidgetID widget) const override

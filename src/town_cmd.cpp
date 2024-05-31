@@ -1573,8 +1573,8 @@ static inline bool RoadTypesAllowHouseHere(TileIndex t)
 	static const TileIndexDiffC tiles[] = { {-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1} };
 	bool allow = false;
 
-	for (const TileIndexDiffC *ptr = tiles; ptr != endof(tiles); ++ptr) {
-		TileIndex cur_tile = t + ToTileIndexDiff(*ptr);
+	for (const auto &ptr : tiles) {
+		TileIndex cur_tile = t + ToTileIndexDiff(ptr);
 		if (!IsValidTile(cur_tile)) continue;
 
 		if (!(IsTileType(cur_tile, MP_ROAD) || IsAnyRoadStopTile(cur_tile))) continue;
@@ -2067,21 +2067,20 @@ static bool GrowTown(Town *t)
 	TileIndex tile = t->xy; // The tile we are working with ATM
 
 	/* Find a road that we can base the construction on. */
-	const TileIndexDiffC *ptr;
-	for (ptr = _town_coord_mod; ptr != endof(_town_coord_mod); ++ptr) {
+	for (const auto &ptr : _town_coord_mod) {
 		if (GetTownRoadBits(tile) != ROAD_NONE) {
 			bool success = GrowTownAtRoad(t, tile);
 			cur_company.Restore();
 			return success;
 		}
-		tile = TileAdd(tile, ToTileIndexDiff(*ptr));
+		tile = TileAdd(tile, ToTileIndexDiff(ptr));
 	}
 
 	/* No road available, try to build a random road block by
 	 * clearing some land and then building a road there. */
 	if (TownAllowedToBuildRoads(t)) {
 		tile = t->xy;
-		for (ptr = _town_coord_mod; ptr != endof(_town_coord_mod); ++ptr) {
+		for (const auto &ptr : _town_coord_mod) {
 			/* Only work with plain land that not already has a house */
 			if (!IsTileType(tile, MP_HOUSE) && IsTileFlat(tile)) {
 				if (DoCommand(tile, 0, 0, DC_AUTO | DC_NO_WATER | DC_TOWN, CMD_LANDSCAPE_CLEAR).Succeeded()) {
@@ -2091,7 +2090,7 @@ static bool GrowTown(Town *t)
 					return true;
 				}
 			}
-			tile = TileAdd(tile, ToTileIndexDiff(*ptr));
+			tile = TileAdd(tile, ToTileIndexDiff(ptr));
 		}
 	}
 

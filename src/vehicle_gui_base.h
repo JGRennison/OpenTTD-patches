@@ -120,8 +120,10 @@ public:
 	static const StringID vehicle_depot_sell_name[];
 
 	static const StringID vehicle_group_by_names[];
-	static const StringID vehicle_group_none_sorter_names[];
-	static const StringID vehicle_group_shared_orders_sorter_names[];
+	static const StringID vehicle_group_none_sorter_names_calendar[];
+	static const StringID vehicle_group_none_sorter_names_wallclock[];
+	static const StringID vehicle_group_shared_orders_sorter_names_calendar[];
+	static const StringID vehicle_group_shared_orders_sorter_names_wallclock[];
 	static VehicleGroupSortFunction * const vehicle_group_none_sorter_funcs[];
 	static VehicleGroupSortFunction * const vehicle_group_shared_orders_sorter_funcs[];
 
@@ -151,9 +153,9 @@ public:
 	{
 		switch (this->grouping) {
 			case GB_NONE:
-				return vehicle_group_none_sorter_names;
+				return EconTime::UsingWallclockUnits() ? vehicle_group_none_sorter_names_wallclock : vehicle_group_none_sorter_names_calendar;
 			case GB_SHARED_ORDERS:
-				return vehicle_group_shared_orders_sorter_names;
+				return EconTime::UsingWallclockUnits() ? vehicle_group_shared_orders_sorter_names_wallclock : vehicle_group_shared_orders_sorter_names_calendar;
 			default:
 				NOT_REACHED();
 		}

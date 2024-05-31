@@ -2593,16 +2593,16 @@ public:
 		this->ResetObjectToPlaceAction();
 	}
 
-	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		switch (widget) {
 			case TR_WIDGET_INSTRUCTION_LIST:
-				resize->height = GetCharacterHeight(FS_NORMAL);
-				size->height = 6 * resize->height + WidgetDimensions::scaled.framerect.Vertical();
+				resize.height = GetCharacterHeight(FS_NORMAL);
+				size.height = 6 * resize.height + WidgetDimensions::scaled.framerect.Vertical();
 				break;
 
 			case TR_WIDGET_GOTO_SIGNAL:
-				size->width = std::max<uint>(12, NWidgetScrollbar::GetVerticalDimension().width);
+				size.width = std::max<uint>(12, NWidgetScrollbar::GetVerticalDimension().width);
 				break;
 		}
 	}
@@ -3882,15 +3882,15 @@ public:
 		this->Window::Close();
 	}
 
-	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_TRSL_LIST_SLOTS: {
-				size->width = this->ComputeSlotInfoSize();
-				resize->height = this->tiny_step_height;
+				size.width = this->ComputeSlotInfoSize();
+				resize.height = this->tiny_step_height;
 
 				/* Minimum height is the height of the list widget minus all vehicles... */
-				size->height = 4 * GetVehicleListHeight(this->vli.vtype, this->tiny_step_height) - this->tiny_step_height;
+				size.height = 4 * GetVehicleListHeight(this->vli.vtype, this->tiny_step_height) - this->tiny_step_height;
 
 				/* ... minus the buttons at the bottom ... */
 				uint max_icon_height = GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_CREATE_SLOT)->widget_data).height;
@@ -3899,27 +3899,27 @@ public:
 				max_icon_height = std::max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_SET_SLOT_MAX_OCCUPANCY)->widget_data).height);
 
 				/* Get a multiple of tiny_step_height of that amount */
-				size->height = Ceil(size->height - max_icon_height, tiny_step_height);
+				size.height = Ceil(size.height - max_icon_height, tiny_step_height);
 				break;
 			}
 
 			case WID_TRSL_ALL_VEHICLES:
-				size->width = this->ComputeSlotInfoSize();
-				size->height = this->tiny_step_height;
+				size.width = this->ComputeSlotInfoSize();
+				size.height = this->tiny_step_height;
 				break;
 
 			case WID_TRSL_SORT_BY_ORDER: {
 				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->widget_data);
 				d.width += padding.width + Window::SortButtonWidth() * 2; // Doubled since the string is centred and it also looks better.
 				d.height += padding.height;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 
 			case WID_TRSL_LIST_VEHICLE:
 				this->ComputeSlotInfoSize();
-				resize->height = GetVehicleListHeight(this->vli.vtype, this->tiny_step_height);
-				size->height = 4 * resize->height;
+				resize.height = GetVehicleListHeight(this->vli.vtype, this->tiny_step_height);
+				size.height = 4 * resize.height;
 				break;
 		}
 	}
@@ -3995,7 +3995,7 @@ public:
 				WID_TRSL_CREATE_SLOT);
 
 		/* Set text of sort by dropdown */
-		this->GetWidget<NWidgetCore>(WID_TRSL_SORT_BY_DROPDOWN)->widget_data = this->vehicle_group_none_sorter_names[this->vehgroups.SortType()];
+		this->GetWidget<NWidgetCore>(WID_TRSL_SORT_BY_DROPDOWN)->widget_data = this->GetVehicleSorterNames()[this->vehgroups.SortType()];
 
 		this->GetWidget<NWidgetCore>(WID_TRSL_FILTER_BY_CARGO)->widget_data = this->GetCargoFilterLabel(this->cargo_filter_criteria);
 
@@ -4052,7 +4052,7 @@ public:
 				break;
 
 			case WID_TRSL_SORT_BY_DROPDOWN: // Select sorting criteria dropdown menu
-				ShowDropDownMenu(this, this->vehicle_group_none_sorter_names, this->vehgroups.SortType(), WID_TRSL_SORT_BY_DROPDOWN, 0,
+				ShowDropDownMenu(this, this->GetVehicleSorterNames(), this->vehgroups.SortType(), WID_TRSL_SORT_BY_DROPDOWN, 0,
 						this->GetSorterDisableMask(this->vli.vtype));
 				return;
 
@@ -4473,13 +4473,13 @@ public:
 		this->owner = this->ctr_company;
 	}
 
-	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_TRCL_LIST_COUNTERS: {
-				size->width = std::max<uint>(size->width, this->ComputeInfoSize());
-				resize->height = this->tiny_step_height;
-				size->height = std::max<uint>(size->height, 8 * resize->height);
+				size.width = std::max<uint>(size.width, this->ComputeInfoSize());
+				resize.height = this->tiny_step_height;
+				size.height = std::max<uint>(size.height, 8 * resize.height);
 				break;
 			}
 		}

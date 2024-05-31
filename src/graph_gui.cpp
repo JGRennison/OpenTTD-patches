@@ -539,7 +539,7 @@ protected:
 	}
 
 public:
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		if (widget != WID_GRAPH_GRAPH) return;
 
@@ -570,9 +570,9 @@ public:
 		SetDParam(1, INT64_MAX);
 		uint y_label_width = GetStringBoundingBox(STR_GRAPH_Y_LABEL).width;
 
-		size->width  = std::max<uint>(size->width,  ScaleGUITrad(5) + y_label_width + this->num_vert_lines * (x_label_width + ScaleGUITrad(5)) + ScaleGUITrad(9));
-		size->height = std::max<uint>(size->height, ScaleGUITrad(5) + (1 + MIN_GRAPH_NUM_LINES_Y * 2 + (this->draw_dates ? 3 : 1)) * GetCharacterHeight(FS_SMALL) + ScaleGUITrad(4));
-		size->height = std::max<uint>(size->height, size->width / 3);
+		size.width  = std::max<uint>(size.width,  ScaleGUITrad(5) + y_label_width + this->num_vert_lines * (x_label_width + ScaleGUITrad(5)) + ScaleGUITrad(9));
+		size.height = std::max<uint>(size.height, ScaleGUITrad(5) + (1 + MIN_GRAPH_NUM_LINES_Y * 2 + (this->draw_dates ? 3 : 1)) * GetCharacterHeight(FS_SMALL) + ScaleGUITrad(4));
+		size.height = std::max<uint>(size.height, size.width / 3);
 	}
 
 	void DrawWidget(const Rect &r, WidgetID widget) const override
@@ -805,7 +805,7 @@ struct ExcludingCargoBaseGraphWindow : BaseGraphWindow {
 		this->legend_width = (GetCharacterHeight(FS_SMALL) - ScaleGUITrad(1)) * 9 / 6;
 	}
 
-	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		if (widget != WID_ECBG_MATRIX) {
 			BaseGraphWindow::UpdateWidgetSize(widget, size, padding, fill, resize);
@@ -818,13 +818,13 @@ struct ExcludingCargoBaseGraphWindow : BaseGraphWindow {
 			d.width += this->legend_width + WidgetDimensions::scaled.hsep_normal; // colour field
 			d.width += WidgetDimensions::scaled.framerect.Horizontal();
 			d.height += WidgetDimensions::scaled.framerect.Vertical();
-			*size = maxdim(d, *size);
+			size = maxdim(d, size);
 		}
 
-		this->line_height = size->height;
-		size->height = this->line_height * 11; /* Default number of cargo types in most climates. */
-		resize->width = 0;
-		resize->height = this->line_height;
+		this->line_height = size.height;
+		size.height = this->line_height * 11; /* Default number of cargo types in most climates. */
+		resize.width = 0;
+		resize.height = this->line_height;
 	}
 
 	virtual void DrawWidget(const Rect &r, WidgetID widget) const override
@@ -1353,14 +1353,14 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		if (widget != WID_CPR_MATRIX) {
 			BaseGraphWindow::UpdateWidgetSize(widget, size, padding, fill, resize);
 			return;
 		}
 
-		size->height = GetCharacterHeight(FS_SMALL) + WidgetDimensions::scaled.framerect.Vertical();
+		size.height = GetCharacterHeight(FS_SMALL) + WidgetDimensions::scaled.framerect.Vertical();
 
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			SetDParam(0, cs->name);
@@ -1368,13 +1368,13 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 			d.width += this->legend_width + WidgetDimensions::scaled.hsep_normal; // colour field
 			d.width += WidgetDimensions::scaled.framerect.Horizontal();
 			d.height += WidgetDimensions::scaled.framerect.Vertical();
-			*size = maxdim(d, *size);
+			size = maxdim(d, size);
 		}
 
-		this->line_height = size->height;
-		size->height = this->line_height * 11; /* Default number of cargo types in most climates. */
-		resize->width = 0;
-		resize->height = this->line_height;
+		this->line_height = size.height;
+		size.height = this->line_height * 11; /* Default number of cargo types in most climates. */
+		resize.width = 0;
+		resize.height = this->line_height;
 	}
 
 	void DrawWidget(const Rect &r, WidgetID widget) const override
@@ -1619,12 +1619,12 @@ struct PerformanceRatingDetailWindow : Window {
 	uint score_detail_left;
 	uint score_detail_right;
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_PRD_SCORE_FIRST:
 				this->bar_height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.fullbevel.Vertical();
-				size->height = this->bar_height + WidgetDimensions::scaled.matrix.Vertical();
+				size.height = this->bar_height + WidgetDimensions::scaled.matrix.Vertical();
 
 				uint score_info_width = 0;
 				for (uint i = SCORE_BEGIN; i < SCORE_END; i++) {
@@ -1660,9 +1660,9 @@ struct PerformanceRatingDetailWindow : Window {
 				SetDParam(1, max);
 				uint score_detail_width = GetStringBoundingBox(STR_PERFORMANCE_DETAIL_AMOUNT_CURRENCY).width;
 
-				size->width = WidgetDimensions::scaled.frametext.Horizontal() + score_info_width + WidgetDimensions::scaled.hsep_wide + this->bar_width + WidgetDimensions::scaled.hsep_wide + score_detail_width;
+				size.width = WidgetDimensions::scaled.frametext.Horizontal() + score_info_width + WidgetDimensions::scaled.hsep_wide + this->bar_width + WidgetDimensions::scaled.hsep_wide + score_detail_width;
 				uint left  = WidgetDimensions::scaled.frametext.left;
-				uint right = size->width - WidgetDimensions::scaled.frametext.right;
+				uint right = size.width - WidgetDimensions::scaled.frametext.right;
 
 				bool rtl = _current_text_dir == TD_RTL;
 				this->score_info_left  = rtl ? right - score_info_width : left;
@@ -1942,7 +1942,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		if (widget < WID_SCG_MATRIX) {
 			BaseGraphWindow::UpdateWidgetSize(widget, size, padding, fill, resize);
@@ -1955,13 +1955,13 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 			d.width += this->legend_width + 4; // color field
 			d.width += WidgetDimensions::scaled.framerect.Horizontal();
 			d.height += WidgetDimensions::scaled.framerect.Vertical();
-			*size = maxdim(d, *size);
+			size = maxdim(d, size);
 		}
 
-		this->line_height = size->height;
-		size->height = this->line_height * 11; /* Default number of cargo types in most climates. */
-		resize->width = 0;
-		resize->height = this->line_height;
+		this->line_height = size.height;
+		size.height = this->line_height * 11; /* Default number of cargo types in most climates. */
+		resize.width = 0;
+		resize.height = this->line_height;
 	}
 
 	void DrawWidget(const Rect &r, WidgetID widget) const override

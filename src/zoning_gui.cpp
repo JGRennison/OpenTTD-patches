@@ -139,22 +139,22 @@ struct ZoningWindow : public Window {
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		switch (widget) {
 			case ZTW_OUTER_DROPDOWN:
 			case ZTW_INNER_DROPDOWN:
 				for (const ZoningModeInfo &info : _zone_modes) {
 					SetDParamStr(0, info.param);
-					*size = maxdim(*size, GetStringBoundingBox(info.str));
+					size = maxdim(size, GetStringBoundingBox(info.str));
 				}
 				break;
 
 			default:
 				return;
 		}
-		size->width += padding.width;
-		size->height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.dropdowntext.Vertical();
+		size.width += padding.width;
+		size.height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.dropdowntext.Vertical();
 	}
 };
 

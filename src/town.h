@@ -63,12 +63,14 @@ struct TownCache {
 
 /** Town setting override flags */
 enum TownSettingOverrideFlags {
+	TSOF_OVERRIDE_BEGIN                     = 0, // Begin marker
 	TSOF_OVERRIDE_BUILD_ROADS               = 0,
 	TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS     = 1,
 	TSOF_OVERRIDE_BUILD_TUNNELS             = 2,
 	TSOF_OVERRIDE_BUILD_INCLINED_ROADS      = 3,
 	TSOF_OVERRIDE_GROWTH                    = 4,
 	TSOF_OVERRIDE_BUILD_BRIDGES             = 5,
+	TSOF_OVERRIDE_END, // End marker
 };
 
 /** Town data structure. */

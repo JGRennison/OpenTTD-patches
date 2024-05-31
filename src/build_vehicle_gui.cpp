@@ -1269,6 +1269,9 @@ void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_li
 	int small_text_y_offset  = ir.Height() - GetCharacterHeight(FS_SMALL);
 	int replace_icon_y_offset = (ir.Height() - replace_icon.height) / 2;
 
+	const int offset = (rtl ? -circle_width : circle_width) / 2;
+	const int level_width = rtl ? -WidgetDimensions::scaled.hsep_indent : WidgetDimensions::scaled.hsep_indent;
+
 	int y = ir.top;
 	for (auto it = first; it != last; ++it) {
 		const auto &item = *it;
@@ -1276,6 +1279,21 @@ void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_li
 		bool has_variants = (item.flags & EngineDisplayFlags::HasVariants) != EngineDisplayFlags::None;
 		bool is_folded    = (item.flags & EngineDisplayFlags::IsFolded)    != EngineDisplayFlags::None;
 		bool shaded       = (item.flags & EngineDisplayFlags::Shaded)      != EngineDisplayFlags::None;
+
+		if (item.indent > 0) {
+			/* Draw tree continuation lines. */
+			int tx = (rtl ? ir.right : ir.left) + offset;
+			int ty = y - WidgetDimensions::scaled.matrix.top;
+			for (uint lvl = 1; lvl <= item.indent; ++lvl) {
+				if (HasBit(item.level_mask, lvl)) GfxDrawLine(tx, ty, tx, ty + step_size - 1, linecolour, WidgetDimensions::scaled.fullbevel.top);
+				if (lvl < item.indent) tx += level_width;
+			}
+			/* Draw our node in the tree. */
+			int ycentre = y + normal_text_y_offset + GetCharacterHeight(FS_NORMAL) / 2 - 1;
+			if (!HasBit(item.level_mask, item.indent)) GfxDrawLine(tx, ty, tx, ycentre, linecolour, WidgetDimensions::scaled.fullbevel.top);
+			GfxDrawLine(tx, ycentre, tx + offset - (rtl ? -1 : 1), ycentre, linecolour, WidgetDimensions::scaled.fullbevel.top);
+		}
+
 		/* Note: num_engines is only used in the autoreplace GUI, so it is correct to use _local_company here. */
 		const uint num_engines = GetGroupNumEngines(_local_company, selected_group, item.engine_id);
 
@@ -1302,14 +1320,6 @@ void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_li
 		if (has_variants) {
 			Rect fr = ir.Indent(indent, rtl).WithWidth(circle_width, rtl);
 			DrawSpriteIgnorePadding(is_folded ? SPR_CIRCLE_FOLDED : SPR_CIRCLE_UNFOLDED, PAL_NONE, {fr.left, y, fr.right, y + ir.Height() - 1}, SA_CENTER);
-		}
-		if (indent > 0) {
-			/* Draw tree lines */
-			Rect fr = ir.Indent(indent - WidgetDimensions::scaled.hsep_indent, rtl).WithWidth(circle_width, rtl);
-			int ycenter = y + normal_text_y_offset + GetCharacterHeight(FS_NORMAL) / 2;
-			bool continues = std::next(it) != std::end(eng_list) && std::next(it)->indent == item.indent;
-			GfxDrawLine(fr.left + circle_width / 2, y - WidgetDimensions::scaled.matrix.top, fr.left + circle_width / 2, continues ? y - WidgetDimensions::scaled.matrix.top + step_size - 1 : ycenter, linecolour, WidgetDimensions::scaled.fullbevel.top);
-			GfxDrawLine(fr.left + circle_width / 2, ycenter, fr.right, ycenter, linecolour, WidgetDimensions::scaled.fullbevel.top);
 		}
 		y += step_size;
 	}
@@ -1338,6 +1348,44 @@ void DisplayVehicleSortDropDown(Window *w, VehicleType vehicle_type, int selecte
 	ShowDropDownMenu(w, _engine_sort_listing[vehicle_type], selected, button, 0, hidden_mask);
 }
 
+/**
+ * Add children to GUI engine list to build a hierarchical tree.
+ * @param dst Destination list.
+ * @param src Source list.
+ * @param parent Current tree parent (set by self with recursion).
+ * @param indent Current tree indentation level (set by self with recursion).
+ */
+void GUIEngineListAddChildren(GUIEngineList &dst, const GUIEngineList &src, EngineID parent, uint8_t indent)
+{
+	for (const auto &item : src) {
+		if (item.variant_id != parent || item.engine_id == parent) continue;
+
+		const Engine *e = Engine::Get(item.engine_id);
+		EngineDisplayFlags flags = item.flags;
+		if (e->display_last_variant != INVALID_ENGINE) flags &= ~EngineDisplayFlags::Shaded;
+		dst.emplace_back(e->display_last_variant == INVALID_ENGINE ? item.engine_id : e->display_last_variant, item.engine_id, flags, indent);
+
+		/* Add variants if not folded */
+		if ((item.flags & (EngineDisplayFlags::HasVariants | EngineDisplayFlags::IsFolded)) == EngineDisplayFlags::HasVariants) {
+			/* Add this engine again as a child */
+			if ((item.flags & EngineDisplayFlags::Shaded) == EngineDisplayFlags::None) {
+				dst.emplace_back(item.engine_id, item.engine_id, EngineDisplayFlags::None, indent + 1);
+			}
+			GUIEngineListAddChildren(dst, src, item.engine_id, indent + 1);
+		}
+	}
+
+	if (indent > 0 || dst.empty()) return;
+
+	/* Hierarchy is complete, traverse in reverse to find where indentation levels continue. */
+	uint16_t level_mask = 0;
+	for (auto it = std::rbegin(dst); std::next(it) != std::rend(dst); ++it) {
+		auto next_it = std::next(it);
+		SB(level_mask, it->indent, 1, it->indent <= next_it->indent);
+		next_it->level_mask = level_mask;
+	}
+}
+
 /** Enum referring to the Hotkeys in the build vehicle window */
 enum BuildVehicleHotkeys {
 	BVHK_FOCUS_FILTER_BOX, ///< Focus the edit box for editing the filter string
@@ -1357,27 +1405,6 @@ struct BuildVehicleWindowBase : Window {
 		this->virtual_train_mode = (virtual_train_out != nullptr);
 		if (this->virtual_train_mode) this->window_number = 0;
 		this->listview_mode = (tile == INVALID_TILE) && !virtual_train_mode;
-	}
-
-	void AddChildren(GUIEngineList &eng_list, const GUIEngineList &source, EngineID parent, int indent)
-	{
-		for (const auto &item : source) {
-			if (item.variant_id != parent || item.engine_id == parent) continue;
-
-			const Engine *e = Engine::Get(item.engine_id);
-			EngineDisplayFlags flags = item.flags;
-			if (e->display_last_variant != INVALID_ENGINE) flags &= ~EngineDisplayFlags::Shaded;
-			eng_list.emplace_back(e->display_last_variant == INVALID_ENGINE ? item.engine_id : e->display_last_variant, item.engine_id, flags, indent);
-
-			/* Add variants if not folded */
-			if ((item.flags & (EngineDisplayFlags::HasVariants | EngineDisplayFlags::IsFolded)) == EngineDisplayFlags::HasVariants) {
-				/* Add this engine again as a child */
-				if ((item.flags & EngineDisplayFlags::Shaded) == EngineDisplayFlags::None) {
-					eng_list.emplace_back(item.engine_id, item.engine_id, EngineDisplayFlags::None, indent + 1);
-				}
-				AddChildren(eng_list, source, item.engine_id, indent + 1);
-			}
-		}
 	}
 
 	void AddVirtualEngine(Train *toadd)
@@ -1873,7 +1900,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 			default: NOT_REACHED();
 			case VEH_TRAIN:
 				this->GenerateBuildTrainList(list);
-				AddChildren(this->eng_list, list, INVALID_ENGINE, 0);
+				GUIEngineListAddChildren(this->eng_list, list);
 				this->eng_list.shrink_to_fit();
 				this->eng_list.RebuildDone();
 				return;
@@ -1914,7 +1941,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		EngList_Sort(this->eng_list, _engine_sort_functions[this->vehicle_type][this->sort_criteria]);
 
 		this->eng_list.swap(list);
-		AddChildren(this->eng_list, list, INVALID_ENGINE, 0);
+		GUIEngineListAddChildren(this->eng_list, list, INVALID_ENGINE, 0);
 		this->eng_list.shrink_to_fit();
 		this->eng_list.RebuildDone();
 	}
@@ -2083,43 +2110,43 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_BV_LIST:
-				resize->height = GetEngineListHeight(this->vehicle_type);
-				size->height = 3 * resize->height;
-				size->width = std::max(size->width, GetVehicleImageCellSize(this->vehicle_type, EIT_PURCHASE).extend_left + GetVehicleImageCellSize(this->vehicle_type, EIT_PURCHASE).extend_right + 165) + padding.width;
+				resize.height = GetEngineListHeight(this->vehicle_type);
+				size.height = 3 * resize.height;
+				size.width = std::max(size.width, GetVehicleImageCellSize(this->vehicle_type, EIT_PURCHASE).extend_left + GetVehicleImageCellSize(this->vehicle_type, EIT_PURCHASE).extend_right + 165) + padding.width;
 				break;
 
 			case WID_BV_PANEL:
-				size->height = GetCharacterHeight(FS_NORMAL) * this->details_height + padding.height;
+				size.height = GetCharacterHeight(FS_NORMAL) * this->details_height + padding.height;
 				break;
 
 			case WID_BV_SORT_ASCENDING_DESCENDING: {
 				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->widget_data);
 				d.width += padding.width + Window::SortButtonWidth() * 2; // Doubled since the string is centred and it also looks better.
 				d.height += padding.height;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 
 			case WID_BV_CARGO_FILTER_DROPDOWN:
-				size->width = std::max(size->width, GetDropDownListDimension(this->BuildCargoDropDownList()).width + padding.width);
+				size.width = std::max(size.width, GetDropDownListDimension(this->BuildCargoDropDownList()).width + padding.width);
 				break;
 
 			case WID_BV_BUILD:
-				*size = GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_BUTTON + this->vehicle_type);
-				*size = maxdim(*size, GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_BUTTON + this->vehicle_type));
-				size->width += padding.width;
-				size->height += padding.height;
+				size = GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_BUTTON + this->vehicle_type);
+				size = maxdim(size, GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_BUTTON + this->vehicle_type));
+				size.width += padding.width;
+				size.height += padding.height;
 				break;
 
 			case WID_BV_SHOW_HIDE:
-				*size = GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON + this->vehicle_type);
-				*size = maxdim(*size, GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON + this->vehicle_type));
-				size->width += padding.width;
-				size->height += padding.height;
+				size = GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON + this->vehicle_type);
+				size = maxdim(size, GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON + this->vehicle_type));
+				size.width += padding.width;
+				size.height += padding.height;
 				break;
 		}
 	}
@@ -2677,10 +2704,10 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		GUIEngineList list;
 
 		this->GenerateBuildTrainList(list, this->loco, false, _sorter_loco);
-		AddChildren(this->loco.eng_list, list, INVALID_ENGINE, 0);
+		GUIEngineListAddChildren(this->loco.eng_list, list, INVALID_ENGINE, 0);
 
 		this->GenerateBuildTrainList(list, this->wagon, true, _sorter_wagon);
-		AddChildren(this->wagon.eng_list, list, INVALID_ENGINE, 0);
+		GUIEngineListAddChildren(this->wagon.eng_list, list, INVALID_ENGINE, 0);
 
 		this->loco.eng_list.shrink_to_fit();
 		this->loco.eng_list.RebuildDone();
@@ -2987,17 +3014,17 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_BV_LIST_LOCO: {
-				resize->height = GetEngineListHeight(this->vehicle_type);
-				size->height = 3 * resize->height;
+				resize.height = GetEngineListHeight(this->vehicle_type);
+				size.height = 3 * resize.height;
 				break;
 			}
 
 			case WID_BV_PANEL_LOCO: {
-				size->height = this->loco.details_height;
+				size.height = this->loco.details_height;
 				break;
 			}
 
@@ -3005,18 +3032,18 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->widget_data);
 				d.width += padding.width + Window::SortButtonWidth() * 2; // Doubled since the string is centred and it also looks better.
 				d.height += padding.height;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 
 			case WID_BV_LIST_WAGON: {
-				resize->height = GetEngineListHeight(this->vehicle_type);
-				size->height = 3 * resize->height;
+				resize.height = GetEngineListHeight(this->vehicle_type);
+				size.height = 3 * resize.height;
 				break;
 			}
 
 			case WID_BV_PANEL_WAGON: {
-				size->height = this->wagon.details_height;
+				size.height = this->wagon.details_height;
 				break;
 			}
 
@@ -3024,22 +3051,22 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->widget_data);
 				d.width += padding.width + Window::SortButtonWidth() * 2; // Doubled since the string is centred and it also looks better.
 				d.height += padding.height;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 
 			case WID_BV_SHOW_HIDE_LOCO: // Fallthrough
 			case WID_BV_SHOW_HIDE_WAGON:
 			case WID_BV_COMB_SHOW_HIDE: {
-				*size = GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON + this->vehicle_type);
-				*size = maxdim(*size, GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON + this->vehicle_type));
-				size->width += padding.width;
-				size->height += padding.height;
+				size = GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON + this->vehicle_type);
+				size = maxdim(size, GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON + this->vehicle_type));
+				size.width += padding.width;
+				size.height += padding.height;
 				break;
 			}
 
 			case WID_BV_RENAME_LOCO: {
-				*size = maxdim(*size, NWidgetLeaf::GetResizeBoxDimension());
+				size = maxdim(size, NWidgetLeaf::GetResizeBoxDimension());
 				break;
 			}
 		}
