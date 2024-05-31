@@ -11,6 +11,7 @@
 #define NETWORK_CRYPTO_INTERNAL_H
 
 #include "network_crypto.h"
+#include <array>
 
 /** The number of bytes the public and secret keys are in X25519. */
 constexpr size_t X25519_KEY_SIZE = 32;

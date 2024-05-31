@@ -19,6 +19,7 @@
 #include "table/strings.h"
 #include "company_func.h"
 #include "core/tinystring_type.hpp"
+#include <array>
 #include <list>
 #include <memory>
 

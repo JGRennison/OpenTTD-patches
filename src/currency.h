@@ -13,6 +13,7 @@
 #include "date_type.h"
 #include "settings_type.h"
 #include "strings_type.h"
+#include <array>
 
 static const int CF_NOEURO = 0; ///< Currency never switches to the Euro (as far as known).
 static const int CF_ISEURO = 1; ///< Currency _is_ the Euro.
