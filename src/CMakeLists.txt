@@ -165,6 +165,7 @@ add_files(
     engine_func.h
     engine_gui.cpp
     engine_gui.h
+    engine_override.h
     engine_type.h
     error.h
     error_gui.cpp

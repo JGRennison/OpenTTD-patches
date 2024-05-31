@@ -53,6 +53,7 @@
 #include "station_base.h"
 #include "crashlog.h"
 #include "engine_func.h"
+#include "engine_override.h"
 #include "core/random_func.hpp"
 #include "rail_gui.h"
 #include "road_gui.h"

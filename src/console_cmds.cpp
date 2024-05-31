@@ -40,6 +40,7 @@
 #include "newgrf_profiling.h"
 #include "console_func.h"
 #include "engine_base.h"
+#include "engine_override.h"
 #include "road.h"
 #include "rail.h"
 #include "game/game.hpp"

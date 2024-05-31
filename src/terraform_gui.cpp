@@ -30,6 +30,7 @@
 #include "object.h"
 #include "hotkeys.h"
 #include "engine_base.h"
+#include "engine_override.h"
 #include "terraform_gui.h"
 #include "cheat_func.h"
 #include "town_gui.h"

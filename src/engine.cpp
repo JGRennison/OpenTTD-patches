@@ -25,6 +25,7 @@
 #include "engine_gui.h"
 #include "engine_func.h"
 #include "engine_base.h"
+#include "engine_override.h"
 #include "company_base.h"
 #include "vehicle_func.h"
 #include "articulated_vehicles.h"

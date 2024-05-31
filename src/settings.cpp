@@ -79,6 +79,7 @@
 #include "statusbar_gui.h"
 #include "graph_gui.h"
 #include "string_func_extra.h"
+#include "engine_override.h"
 
 #include "void_map.h"
 #include "station_base.h"
