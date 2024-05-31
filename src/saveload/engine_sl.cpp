@@ -115,6 +115,8 @@ struct EIDSChunkHandler : ChunkHandler {
 			EngineIDMapping *eid = &_engine_mngr.emplace_back();
 			SlObject(eid, slt);
 		}
+
+		_engine_mngr.ReIndex();
 	}
 };
 

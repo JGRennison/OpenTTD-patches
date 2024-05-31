@@ -13,6 +13,7 @@
 #include "engine_type.h"
 #include "vehicle_type.h"
 
+#include "3rdparty/robin_hood/robin_hood.h"
 #include <vector>
 
 struct EngineIDMapping {
@@ -29,8 +30,26 @@ struct EngineIDMapping {
 struct EngineOverrideManager : std::vector<EngineIDMapping> {
 	static const uint NUM_DEFAULT_ENGINES; ///< Number of default entries
 
+private:
+	static uint64_t HashKey(VehicleType type, uint16_t grf_local_id, uint32_t grfid)
+	{
+		return grfid | (static_cast<uint64_t>(grf_local_id) << 32) | (static_cast<uint64_t>(type) << 48);
+	}
+
+	static uint64_t HashKey(const EngineIDMapping &eid)
+	{
+		return HashKey(eid.type, eid.internal_id, eid.grfid);
+	}
+
+	robin_hood::unordered_map<uint64_t, EngineID> mapping_index;
+
+public:
 	void ResetToDefaultMapping();
 	EngineID GetID(VehicleType type, uint16_t grf_local_id, uint32_t grfid);
+
+	void AddToIndex(EngineID id);
+	void RemoveFromIndex(EngineID id);
+	void ReIndex();
 
 	static bool ResetToCurrentNewGRFConfig();
 };

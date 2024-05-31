@@ -569,8 +569,10 @@ static Engine *GetNewEngine(const GRFFile *file, VehicleType type, uint16_t inte
 
 		/* Reserve the engine slot */
 		if (!static_access) {
+			_engine_mngr.RemoveFromIndex(engine);
 			EngineIDMapping *eid = _engine_mngr.data() + engine;
 			eid->grfid           = scope_grfid; // Note: this is INVALID_GRFID if dynamic_engines is disabled, so no reservation
+			_engine_mngr.AddToIndex(engine);
 		}
 
 		return e;
@@ -597,6 +599,7 @@ static Engine *GetNewEngine(const GRFFile *file, VehicleType type, uint16_t inte
 			type,
 			std::min<uint8_t>(internal_id, _engine_counts[type]) // substitute_id == _engine_counts[subtype] means "no substitute"
 	});
+	_engine_mngr.AddToIndex(e->index);
 
 	if (engine_pool_size != Engine::GetPoolSize()) {
 		/* Resize temporary engine data ... */
