@@ -2618,6 +2618,7 @@ static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, con
 
 			case 0x22: // long maximum year
 				housespec->max_year = buf->ReadWord();
+				if (housespec->max_year == UINT16_MAX) housespec->max_year = CalTime::MAX_YEAR;
 				break;
 
 			case 0x23: { // variable length cargo types accepted
