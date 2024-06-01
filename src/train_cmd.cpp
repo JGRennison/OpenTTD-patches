@@ -3781,6 +3781,8 @@ void FreeTrainTrackReservation(Train *v, TileIndex origin, Trackdir orig_td)
 			TileIndex end = GetOtherTunnelBridgeEnd(tile);
 			bool free = TunnelBridgeIsFree(tile, end, v, TBIFM_ACROSS_ONLY).Succeeded();
 			if (!free) break;
+		} else if (IsTunnelBridgeWithSignalSimulation(tile) && IsTunnelBridgeSignalSimulationExitOnly(tile) && TrackdirEntersTunnelBridge(tile, td)) {
+			break;
 		}
 
 		/* Don't free first station/bridge/tunnel if we are on it. */
@@ -5722,6 +5724,9 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 							v->wait_counter = 0;
 							return false;
 						}
+						goto reverse_train_direction;
+					} else if (!(v->track & TRACK_BIT_WORMHOLE) && IsTunnelBridgeWithSignalSimulation(gp.new_tile) &&
+							IsTunnelBridgeSignalSimulationExitOnly(gp.new_tile) && v->force_proceed == TFP_NONE) {
 						goto reverse_train_direction;
 					} else {
 						TryReserveRailTrack(gp.new_tile, TrackBitsToTrack(chosen_track), false);
