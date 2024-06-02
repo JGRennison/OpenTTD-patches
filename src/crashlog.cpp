@@ -580,7 +580,7 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last)
 
 		buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u)\n", EconTime::CurYear().base(), EconTime::CurMonth() + 1, EconTime::CurDay(), EconTime::CurDateFract(), TickSkipCounter(), DayLengthFactor());
 		buffer += seprintf(buffer, last, "Calendar date: %i-%02i-%02i (%i, %i)\n", CalTime::CurYear().base(), CalTime::CurMonth() + 1, CalTime::CurDay(), CalTime::CurDateFract(), CalTime::CurSubDateFract());
-		LogGameLoadDateTimes(buffer, last);
+		buffer = LogGameLoadDateTimes(buffer, last);
 		return buffer;
 	});
 
@@ -683,7 +683,7 @@ static char *LogDesyncDateHeader(char *buffer, const char *last)
 	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u), %08X\n",
 			EconTime::CurYear().base(), EconTime::CurMonth() + 1, EconTime::CurDay(), EconTime::CurDateFract(), TickSkipCounter(), DayLengthFactor(), _frame_counter);
 	buffer += seprintf(buffer, last, "Calendar date: %i-%02i-%02i (%i, %i)\n", CalTime::CurYear().base(), CalTime::CurMonth() + 1, CalTime::CurDay(), CalTime::CurDateFract(), CalTime::CurSubDateFract());
-	LogGameLoadDateTimes(buffer, last);
+	buffer = LogGameLoadDateTimes(buffer, last);
 	if (_networking && !_network_server) {
 		extern EconTime::Date _last_sync_date;
 		extern EconTime::DateFract _last_sync_date_fract;

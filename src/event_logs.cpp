@@ -108,7 +108,7 @@ void ClearSpecialEventsLog()
 	_special_event_log.Reset();
 }
 
-void LogGameLoadDateTimes(char *buffer, const char *last)
+char *LogGameLoadDateTimes(char *buffer, const char *last)
 {
 	if (_game_load_time != 0) {
 		buffer += seprintf(buffer, last, "Game loaded at: %i-%02i-%02i (%i, %i), (" OTTD_PRINTF64 " state ticks ago), ",
@@ -117,4 +117,5 @@ void LogGameLoadDateTimes(char *buffer, const char *last)
 		buffer += UTCTime::Format(buffer, last, _game_load_time, "%Y-%m-%d %H:%M:%S");
 		buffer += seprintf(buffer, last, "\n");
 	}
+	return buffer;
 }
