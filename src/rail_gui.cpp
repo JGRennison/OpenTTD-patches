@@ -2205,6 +2205,7 @@ public:
 
 			case WID_BS_TOGGLE_SIZE:
 				_settings_client.gui.signal_gui_mode = (_settings_client.gui.signal_gui_mode == SIGNAL_GUI_ALL) ? SIGNAL_GUI_PATH : SIGNAL_GUI_ALL;
+				SetWindowDirty(WC_GAME_OPTIONS, WN_GAME_OPTIONS_GAME_SETTINGS);
 				this->SetSignalUIMode();
 				this->ReInit();
 				break;
