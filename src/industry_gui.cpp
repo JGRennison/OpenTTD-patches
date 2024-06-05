@@ -1630,7 +1630,7 @@ protected:
 		for (size_t j = 0; j < std::size(i->produced_cargo); j++) {
 			if (i->produced_cargo[j] == INVALID_CARGO) continue;
 			CargoSuffix cargo_suffix;
-			GetCargoSuffix(CARGOSUFFIX_OUT, CST_DIR, i, i->type, indsp, i->produced_cargo[j], j, cargo_suffix);
+			GetCargoSuffix(CARGOSUFFIX_OUT, CST_DIR, i, i->type, indsp, i->produced_cargo[j], (uint8_t)j, cargo_suffix);
 			cargos.emplace_back(i->produced_cargo[j], i->last_month_production[j], ToPercent8(i->last_month_pct_transported[j]), std::move(cargo_suffix.text));
 		}
 
