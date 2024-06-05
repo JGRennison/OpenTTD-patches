@@ -4647,8 +4647,8 @@ char *Vehicle::DumpVehicleFlagsMultiline(char *b, const char *last, const char *
 	DumpVehicleFlagsGeneric(this, dump, dump_header);
 	if (this->type == VEH_TRAIN) {
 		const Train *t = Train::From(this);
-		b += seprintf(b, last, "%strack: 0x%02X", base_indent, (uint) t->track);
-		if (t->reverse_distance > 0) b += seprintf(b, last, "%sreverse_distance: %u", base_indent, t->reverse_distance);
+		b += seprintf(b, last, "%strack: 0x%02X\n", base_indent, (uint) t->track);
+		if (t->reverse_distance > 0) b += seprintf(b, last, "%sreverse_distance: %u\n", base_indent, t->reverse_distance);
 	} else if (this->type == VEH_ROAD) {
 		const RoadVehicle *r = RoadVehicle::From(this);
 		b += seprintf(b, last, "%sRV state:%X\n%sRV frame:%X\n", base_indent, r->state, base_indent, r->frame);
