@@ -670,6 +670,13 @@ static CommandCost ClearTile_Water(TileIndex tile, DoCommandFlag flags)
 
 void ForceClearWaterTile(TileIndex tile)
 {
+	if (IsWaterTile(tile) && IsCanal(tile)) {
+		Owner owner = GetTileOwner(tile);
+		if (Company::IsValidID(owner)) {
+			Company::Get(owner)->infrastructure.water--;
+			DirtyCompanyInfrastructureWindows(owner);
+		}
+	}
 	bool remove = IsDockingTile(tile);
 	DoClearSquare(tile);
 	MarkCanalsAndRiversAroundDirty(tile);
