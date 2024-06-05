@@ -551,13 +551,12 @@ void TriggerRoadStopRandomisation(Station *st, TileIndex tile, RoadStopRandomTri
  */
 bool GetIfNewStopsByType(RoadStopType rs, RoadType roadtype)
 {
-	for (uint i = 0; RoadStopClass::IsClassIDValid((RoadStopClassID)i); i++) {
+	for (const auto &cls : RoadStopClass::Classes()) {
 		/* Ignore the waypoint class. */
-		if (i == ROADSTOP_CLASS_WAYP) continue;
-		const RoadStopClass *roadstopclass = RoadStopClass::Get((RoadStopClassID)i);
+		if (cls.Index() == ROADSTOP_CLASS_WAYP) continue;
 		/* Ignore the default class with only the default station. */
-		if (i == ROADSTOP_CLASS_DFLT && roadstopclass->GetSpecCount() == 1) continue;
-		if (GetIfClassHasNewStopsByType(roadstopclass, rs, roadtype)) return true;
+		if (cls.Index() == ROADSTOP_CLASS_DFLT && cls.GetSpecCount() == 1) continue;
+		if (GetIfClassHasNewStopsByType(&cls, rs, roadtype)) return true;
 	}
 	return false;
 }
@@ -571,8 +570,8 @@ bool GetIfNewStopsByType(RoadStopType rs, RoadType roadtype)
  */
 bool GetIfClassHasNewStopsByType(const RoadStopClass *roadstopclass, RoadStopType rs, RoadType roadtype)
 {
-	for (uint j = 0; j < roadstopclass->GetSpecCount(); j++) {
-		if (GetIfStopIsForType(roadstopclass->GetSpec(j), rs, roadtype)) return true;
+	for (const auto spec : roadstopclass->Specs()) {
+		if (GetIfStopIsForType(spec, rs, roadtype)) return true;
 	}
 	return false;
 }

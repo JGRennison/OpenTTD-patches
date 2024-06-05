@@ -204,7 +204,7 @@ void CcRoadDepot(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_
  *           bit 3: #Axis of the road for drive-through stops.
  *           bit 5..10: The roadtype.
  *           bit 16..31: Station ID to join (NEW_STATION if build new one).
- * @param p3 bit 0..7: Roadstop class.
+ * @param p3 bit 0..15: Roadstop class.
  *           bit 16..31: Roadstopspec index.
  * @param cmd Unused.
  * @see CmdBuildRoadStop
@@ -219,7 +219,7 @@ void CcRoadStop(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t
 
 	bool connect_to_road = true;
 
-	RoadStopClassID spec_class = Extract<RoadStopClassID, 0, 8>(p3);
+	RoadStopClassID spec_class = Extract<RoadStopClassID, 0, 16>(p3);
 	uint16_t spec_index        = GB(p3, 16, 16);
 	if ((uint)spec_class < RoadStopClass::GetClassCount() && spec_index < RoadStopClass::Get(spec_class)->GetSpecCount()) {
 		const RoadStopSpec *roadstopspec = RoadStopClass::Get(spec_class)->GetSpec(spec_index);
@@ -1349,7 +1349,7 @@ public:
 
 		this->ChangeWindowClass((rs == ROADSTOP_BUS) ? WC_BUS_STATION : WC_TRUCK_STATION);
 
-		if (!newstops || _roadstop_gui_settings.roadstop_class >= (int)RoadStopClass::GetClassCount()) {
+		if (!newstops || _roadstop_gui_settings.roadstop_class >= RoadStopClass::GetClassCount()) {
 			/* There's no new stops available or the list has reduced in size.
 			 * Now, set the default road stops as selected. */
 			_roadstop_gui_settings.roadstop_class = ROADSTOP_CLASS_DFLT;
@@ -1412,14 +1412,10 @@ public:
 
 		this->roadstop_classes.clear();
 
-		for (uint i = 0; RoadStopClass::IsClassIDValid((RoadStopClassID)i); i++) {
-			RoadStopClassID rs_id = (RoadStopClassID)i;
-			if (rs_id == ROADSTOP_CLASS_WAYP) {
-				// Skip waypoints.
-				continue;
-			}
-			RoadStopClass *rs_class = RoadStopClass::Get(rs_id);
-			if (GetIfClassHasNewStopsByType(rs_class, this->road_stop_type, _cur_roadtype)) this->roadstop_classes.push_back(rs_id);
+		for (const auto &cls : RoadStopClass::Classes()) {
+			/* Skip waypoints. */
+			if (cls.Index() == ROADSTOP_CLASS_WAYP) continue;
+			if (GetIfClassHasNewStopsByType(&cls, this->road_stop_type, _cur_roadtype)) this->roadstop_classes.push_back(cls.Index());
 		}
 
 		if (this->ShowNewStops()) {

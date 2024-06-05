@@ -1469,7 +1469,7 @@ static void RestoreTrainReservation(Train *v)
  * - p1 = (bit 16-23) - platform length
  * - p1 = (bit 24)    - allow stations directly adjacent to other stations.
  * @param p2 various bitstuffed elements
- * - p2 = (bit  0- 7) - custom station class
+ * - p2 = (bit  0-15) - custom station class
  * - p2 = (bit 16-31) - station ID to join (NEW_STATION if build new one)
  * @param p3 various bitstuffed elements
  * - p3 = (bit  0-15) - custom station id
@@ -1485,7 +1485,7 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32_
 	uint8_t plat_len  = GB(p1, 16, 8);
 	bool adjacent     = HasBit(p1, 24);
 
-	StationClassID spec_class = Extract<StationClassID, 0, 8>(p2);
+	StationClassID spec_class = Extract<StationClassID, 0, 16>(p2);
 	uint16_t spec_index         = GB(p3, 0, 16);
 	StationID station_to_join = GB(p2, 16, 16);
 
@@ -2108,7 +2108,7 @@ static CommandCost FindJoiningRoadStop(StationID existing_stop, StationID statio
  *           bit 3: #Axis of the road for drive-through stops.
  *           bit 5..10: The roadtype.
  *           bit 16..31: Station ID to join (NEW_STATION if build new one).
- * @param p3 bit 0..7: Roadstop class.
+ * @param p3 bit 0..15: Roadstop class.
  *           bit 16..31: Roadstopspec index.
  * @param text Unused.
  * @return The cost of this operation or an error.
@@ -2127,7 +2127,7 @@ CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32_t p1, u
 	uint8_t width = (uint8_t)GB(p1, 0, 8);
 	uint8_t length = (uint8_t)GB(p1, 8, 8);
 
-	RoadStopClassID spec_class = Extract<RoadStopClassID, 0, 8>(p3);
+	RoadStopClassID spec_class = Extract<RoadStopClassID, 0, 16>(p3);
 	uint16_t spec_index          = GB(p3, 16, 16);
 
 	/* Check if the given station class is valid */

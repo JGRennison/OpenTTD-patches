@@ -64,9 +64,9 @@ void ResetObjects();
 
 /** Class IDs for objects. */
 enum ObjectClassID : uint16_t {
-	OBJECT_CLASS_BEGIN   =      0, ///< The lowest valid value
-	OBJECT_CLASS_MAX     = 0xFFFF, ///< Maximum number of classes.
-	INVALID_OBJECT_CLASS = 0xFFFF, ///< Class for the less fortunate.
+	OBJECT_CLASS_BEGIN   = 0,          ///< The lowest valid value
+	OBJECT_CLASS_MAX     = UINT16_MAX, ///< Maximum number of classes.
+	INVALID_OBJECT_CLASS = UINT16_MAX, ///< Class for the less fortunate.
 };
 /** Allow incrementing of ObjectClassID variables */
 DECLARE_POSTFIX_INCREMENT(ObjectClassID)

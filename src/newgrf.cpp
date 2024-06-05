@@ -394,10 +394,24 @@ static GRFError *DisableGrf(StringID message = STR_NULL, GRFConfig *config = nul
 struct StringIDMapping {
 	uint32_t grfid;   ///< Source NewGRF.
 	StringID source;  ///< Source StringID (GRF local).
-	StringID *target; ///< Destination for mapping result.
+	std::function<void(StringID)> func; ///< Function for mapping result.
+
+	StringIDMapping(uint32_t grfid, StringID source, std::function<void(StringID)> &&func) : grfid(grfid), source(source), func(std::move(func)) { }
 };
-typedef std::vector<StringIDMapping> StringIDMappingVector;
-static StringIDMappingVector _string_to_grf_mapping;
+
+/** Strings to be mapped during load. */
+static std::vector<StringIDMapping> _string_to_grf_mapping;
+
+/**
+ * Record a static StringID for getting translated later.
+ * @param source Source StringID (GRF local).
+ * @param func Function to call to set the mapping result.
+ */
+static void AddStringForMapping(StringID source, std::function<void(StringID)> &&func)
+{
+	func(STR_UNDEFINED);
+	_string_to_grf_mapping.emplace_back(_cur.grffile->grfid, source, std::move(func));
+}
 
 /**
  * Record a static StringID for getting translated later.
@@ -406,8 +420,7 @@ static StringIDMappingVector _string_to_grf_mapping;
  */
 static void AddStringForMapping(StringID source, StringID *target)
 {
-	*target = STR_UNDEFINED;
-	_string_to_grf_mapping.push_back({_cur.grffile->grfid, source, target});
+	AddStringForMapping(source, [target](StringID str) { *target = str; });
 }
 
 /**
@@ -2113,7 +2126,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 				break;
 
 			case 0x1D: // Station Class name
-				AddStringForMapping(buf->ReadWord(), &StationClass::Get(statspec->cls_id)->name);
+				AddStringForMapping(buf->ReadWord(), [statspec](StringID str) { StationClass::Get(statspec->cls_id)->name = str; });
 				break;
 
 			default:
@@ -4376,8 +4389,7 @@ static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, const G
 			}
 
 			case 0x09: { // Class name
-				ObjectClass *objclass = ObjectClass::Get(spec->cls_id);
-				AddStringForMapping(buf->ReadWord(), &objclass->name);
+				AddStringForMapping(buf->ReadWord(), [spec](StringID str) { ObjectClass::Get(spec->cls_id)->name = str; });
 				break;
 			}
 
@@ -5176,7 +5188,7 @@ static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const
 				if (MappedPropertyLengthMismatch(buf, 2, mapping_entry)) break;
 				[[fallthrough]];
 			case 0x0B: // Road Stop Class name
-				AddStringForMapping(buf->ReadWord(), &RoadStopClass::Get(rs->cls_id)->name);
+				AddStringForMapping(buf->ReadWord(), [rs](StringID str) { RoadStopClass::Get(rs->cls_id)->name = str; });
 				break;
 
 			case A0RPI_ROADSTOP_DRAW_MODE:
@@ -11616,7 +11628,7 @@ extern void InitGRFTownGeneratorNames();
 static void AfterLoadGRFs()
 {
 	for (StringIDMapping &it : _string_to_grf_mapping) {
-		*it.target = MapGRFStringID(it.grfid, it.source);
+		it.func(MapGRFStringID(it.grfid, it.source));
 	}
 	_string_to_grf_mapping.clear();
 

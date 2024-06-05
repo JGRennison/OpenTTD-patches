@@ -1098,12 +1098,10 @@ void DumpStationSpriteGroup(const StationSpec *statspec, BaseStation *st, Sprite
 void UpdateStationTileCacheFlags(bool force_update)
 {
 	SimpleChecksum64 checksum;
-	for (uint i = 0; StationClass::IsClassIDValid((StationClassID)i); i++) {
-		StationClass *stclass = StationClass::Get((StationClassID)i);
-
-		checksum.Update(stclass->GetSpecCount());
-		for (uint j = 0; j < stclass->GetSpecCount(); j++) {
-			const StationSpec *statspec = stclass->GetSpec(j);
+	for (const StationClass &cls : StationClass::Classes()) {
+		checksum.Update(cls.GetSpecCount());
+		for (uint j = 0; j < cls.GetSpecCount(); j++) {
+			const StationSpec *statspec = cls.GetSpec(j);
 			if (statspec == nullptr) continue;
 
 			checksum.Update(j);

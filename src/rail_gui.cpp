@@ -1326,15 +1326,11 @@ public:
 
 		this->station_classes.clear();
 
-		for (uint i = 0; StationClass::IsClassIDValid((StationClassID)i); i++) {
-			StationClassID station_class_id = (StationClassID)i;
-			if (station_class_id == StationClassID::STAT_CLASS_WAYP) {
-				// Skip waypoints.
-				continue;
-			}
-			StationClass *station_class = StationClass::Get(station_class_id);
-			if (station_class->GetUISpecCount() == 0) continue;
-			station_classes.push_back(station_class_id);
+		for (const auto &cls : StationClass::Classes()) {
+			/* Skip waypoints. */
+			if (cls.Index() == STAT_CLASS_WAYP) continue;
+			if (cls.GetUISpecCount() == 0) continue;
+			station_classes.push_back(cls.Index());
 		}
 
 		if (_railstation.newstations) {

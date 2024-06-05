@@ -184,14 +184,14 @@ static inline void GetAllCargoSuffixes(CargoSuffixInOut use_input, CargoSuffixTy
 				uint cargotype = local_id << 16 | use_input;
 				GetCargoSuffix(cargotype, cst, ind, ind_type, indspec, suffixes[j]);
 			} else {
-				suffixes[j].text[0] = '\0';
+				suffixes[j].text.clear();
 				suffixes[j].display = CSD_CARGO;
 			}
 		}
 	} else {
 		/* Compatible behaviour with old 3-in-2-out scheme */
 		for (size_t j = 0; j < std::size(suffixes); j++) {
-			suffixes[j].text[0] = '\0';
+			suffixes[j].text.clear();
 			suffixes[j].display = CSD_CARGO;
 		}
 		switch (use_input) {
@@ -207,6 +207,33 @@ static inline void GetAllCargoSuffixes(CargoSuffixInOut use_input, CargoSuffixTy
 			default:
 				NOT_REACHED();
 		}
+	}
+}
+
+/**
+ * Gets the strings to display after the cargo of industries (using callback 37)
+ * @param use_input get suffixes for output cargo or input cargo?
+ * @param cst the cargo suffix type (for which window is it requested). @see CargoSuffixType
+ * @param ind the industry (nullptr if in fund window)
+ * @param ind_type the industry type
+ * @param indspec the industry spec
+ * @param cargo cargotype. for INVALID_CARGO no suffix will be determined
+ * @param slot accepts/produced slot number, used for old-style 3-in/2-out industries.
+ * @param suffix is filled with the suffix
+ */
+void GetCargoSuffix(CargoSuffixInOut use_input, CargoSuffixType cst, const Industry *ind, IndustryType ind_type, const IndustrySpec *indspec, CargoID cargo, uint8_t slot, CargoSuffix &suffix)
+{
+	suffix.text.clear();
+	suffix.display = CSD_CARGO;
+	if (!IsValidCargoID(cargo)) return;
+	if (indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED) {
+		uint8_t local_id = indspec->grf_prop.grffile->cargo_map[cargo]; // should we check the value for valid?
+		uint cargotype = local_id << 16 | use_input;
+		GetCargoSuffix(cargotype, cst, ind, ind_type, indspec, suffix);
+	} else if (use_input == CARGOSUFFIX_IN) {
+		if (slot < 3) GetCargoSuffix(slot, cst, ind, ind_type, indspec, suffix);
+	} else if (use_input == CARGOSUFFIX_OUT) {
+		if (slot < 2) GetCargoSuffix(slot + 3, cst, ind, ind_type, indspec, suffix);
 	}
 }
 
@@ -1589,21 +1616,22 @@ protected:
 		/* Industry name */
 		SetDParam(p++, i->index);
 
-		std::array<CargoSuffix, std::tuple_size_v<decltype(i->produced_cargo)>> cargo_suffix{};
-		GetAllCargoSuffixes(CARGOSUFFIX_OUT, CST_DIR, i, i->type, indsp, i->produced_cargo, cargo_suffix);
-
 		/* Get industry productions (CargoID, production, suffix, transported) */
 		struct CargoInfo {
-			CargoID cargo_id;
-			uint32_t production;
-			const char *suffix;
-			uint transported;
+			CargoID cargo_id;    ///< Cargo ID.
+			uint16_t production; ///< Production last month.
+			uint transported;    ///< Percent transported last month.
+			std::string suffix;  ///< Cargo suffix.
+
+			CargoInfo(CargoID cargo_id, uint16_t production, uint transported, std::string &&suffix) : cargo_id(cargo_id), production(production), transported(transported), suffix(std::move(suffix)) {}
 		};
 		std::vector<CargoInfo> cargos;
 
 		for (size_t j = 0; j < std::size(i->produced_cargo); j++) {
 			if (i->produced_cargo[j] == INVALID_CARGO) continue;
-			cargos.push_back({ i->produced_cargo[j], i->last_month_production[j], cargo_suffix[j].text.c_str(), ToPercent8(i->last_month_pct_transported[j]) });
+			CargoSuffix cargo_suffix;
+			GetCargoSuffix(CARGOSUFFIX_OUT, CST_DIR, i, i->type, indsp, i->produced_cargo[j], j, cargo_suffix);
+			cargos.emplace_back(i->produced_cargo[j], i->last_month_production[j], ToPercent8(i->last_month_pct_transported[j]), std::move(cargo_suffix.text));
 		}
 
 		switch (static_cast<IndustryDirectoryWindow::SorterType>(this->industries.SortType())) {
@@ -1640,11 +1668,11 @@ protected:
 
 		/* Display first 3 cargos */
 		for (size_t j = 0; j < std::min<size_t>(3, cargos.size()); j++) {
-			CargoInfo ci = cargos[j];
+			CargoInfo &ci = cargos[j];
 			SetDParam(p++, STR_INDUSTRY_DIRECTORY_ITEM_INFO);
 			SetDParam(p++, ci.cargo_id);
 			SetDParam(p++, ci.production);
-			SetDParamStr(p++, ci.suffix);
+			SetDParamStr(p++, std::move(ci.suffix));
 			SetDParam(p++, ci.transported);
 		}
 
