@@ -311,12 +311,12 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 
 			bool using_realistic_braking = Train::From(this)->UsingRealisticBraking();
 
-			if (using_realistic_braking) {
-				accel = DivTowardsPositiveInf(accel * _settings_game.vehicle.train_acc_braking_percent, 100);
-			}
-
 			if (using_realistic_braking && _settings_game.vehicle.limit_train_acceleration) {
 				accel = std::min(accel, 250);
+			}
+
+			if (using_realistic_braking) {
+				accel = DivTowardsPositiveInf(accel * _settings_game.vehicle.train_acc_braking_percent, 100);
 			}
 		}
 
