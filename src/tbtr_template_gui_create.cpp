@@ -105,8 +105,6 @@ static WindowDesc _template_create_window_desc(__FILE__, __LINE__,
 	std::begin(_widgets), std::end(_widgets)
 );
 
-void ShowTemplateTrainBuildVehicleWindow(Train **virtual_train);
-
 static void TrainDepotMoveVehicle(const Vehicle *wagon, VehicleID sel, const Vehicle *head)
 {
 	const Vehicle *v = Vehicle::Get(sel);

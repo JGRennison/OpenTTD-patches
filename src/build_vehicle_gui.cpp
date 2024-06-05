@@ -61,6 +61,9 @@ static constexpr NWidgetPart _nested_build_vehicle_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_BV_CAPTION), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS), SetTextStyle(TC_WHITE),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_TOGGLE_DUAL_PANE_SEL),
+			NWidget(WWT_IMGBTN, COLOUR_GREY, WID_BV_TOGGLE_DUAL_PANE), SetDataTip(SPR_LARGE_SMALL_WINDOW, STR_BUY_VEHICLE_TRAIN_TOGGLE_DUAL_PANE_TOOLTIP),
+		EndContainer(),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -101,6 +104,7 @@ static constexpr NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_BV_CAPTION), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS), SetTextStyle(TC_WHITE),
+		NWidget(WWT_IMGBTN, COLOUR_GREY, WID_BV_TOGGLE_DUAL_PANE), SetDataTip(SPR_LARGE_SMALL_WINDOW, STR_BUY_VEHICLE_TRAIN_TOGGLE_DUAL_PANE_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -1393,6 +1397,7 @@ enum BuildVehicleHotkeys {
 
 struct BuildVehicleWindowBase : Window {
 	VehicleType vehicle_type;                   ///< Type of vehicles shown in the window.
+	TileIndex tile;                             ///< Original tile.
 	bool virtual_train_mode;                    ///< Are we building a virtual train?
 	Train **virtual_train_out;                  ///< Virtual train ptr
 	bool listview_mode;                         ///< If set, only display the available vehicles and do not show a 'build' button.
@@ -1400,6 +1405,7 @@ struct BuildVehicleWindowBase : Window {
 	BuildVehicleWindowBase(WindowDesc *desc, TileIndex tile, VehicleType type, Train **virtual_train_out) : Window(desc)
 	{
 		this->vehicle_type = type;
+		this->tile = tile;
 		this->window_number = tile == INVALID_TILE ? (int)type : tile;
 		this->virtual_train_out = virtual_train_out;
 		this->virtual_train_mode = (virtual_train_out != nullptr);
@@ -1504,6 +1510,18 @@ struct BuildVehicleWindowBase : Window {
 		/* Purchase test was not possible or failed, fill in the defaults instead. */
 		te = {};
 		te.FillDefaultCapacities(e);
+	}
+
+	void ChangeDualPaneMode(bool new_value)
+	{
+		_settings_client.gui.dual_pane_train_purchase_window = new_value;
+		SetWindowDirty(WC_GAME_OPTIONS, WN_GAME_OPTIONS_GAME_SETTINGS);
+
+		if (this->virtual_train_out != nullptr) {
+			ShowTemplateTrainBuildVehicleWindow(this->virtual_train_out);
+		} else {
+			ShowBuildVehicleWindow(this->tile, this->vehicle_type);
+		}
 	}
 };
 
@@ -1624,6 +1642,8 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		widget->SetLowered(this->show_hidden_engines);
 
 		this->details_height = ((this->vehicle_type == VEH_TRAIN) ? 10 : 9);
+
+		this->GetWidget<NWidgetStacked>(WID_BV_TOGGLE_DUAL_PANE_SEL)->SetDisplayedPlane((this->vehicle_type == VEH_TRAIN) ? 0 : SZSP_NONE);
 
 		this->FinishInitNested(this->window_number);
 
@@ -2052,6 +2072,11 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 					SetDParam(0, PackEngineNameDParam(sel_eng, EngineNameContext::Generic));
 					ShowQueryString(STR_ENGINE_NAME, STR_QUERY_RENAME_TRAIN_TYPE_CAPTION + this->vehicle_type, MAX_LENGTH_ENGINE_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
 				}
+				break;
+			}
+
+			case WID_BV_TOGGLE_DUAL_PANE: {
+				this->ChangeDualPaneMode(true);
 				break;
 			}
 		}
@@ -2788,6 +2813,10 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		}
 
 		switch (widget) {
+			case WID_BV_TOGGLE_DUAL_PANE: {
+				this->ChangeDualPaneMode(false);
+				break;
+			}
 
 			/* Locomotives */
 
