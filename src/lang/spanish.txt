@@ -2575,6 +2575,7 @@ STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :{WHITE}No se ha
 STR_NETWORK_ERROR_BAD_SERVER_NAME                               :{WHITE}No se ha establecido el nombre de tu servidor. El nombre se puede establecer en la parte superior de la ventana de Multijugador
 STR_NETWORK_ERROR_WRONG_REVISION                                :{WHITE}La versión de este cliente no corresponde con la versión del servidor
 STR_NETWORK_ERROR_WRONG_PASSWORD                                :{WHITE}Contraseña incorrecta
+STR_NETWORK_ERROR_NOT_ON_ALLOW_LIST                             :{WHITE}No estás en la lista de clientes permitidos
 STR_NETWORK_ERROR_SERVER_FULL                                   :{WHITE}El servidor está completo
 STR_NETWORK_ERROR_SERVER_BANNED                                 :{WHITE}Se ha prohibido tu acceso al servidor
 STR_NETWORK_ERROR_KICKED                                        :{WHITE}Has sido expulsado del servidor
@@ -2590,7 +2591,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Tu nombr
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Posible pérdida de conexión
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}No se han recibido datos del servidor desde hace {NUM} segundo{P "" s}
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :error general
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :error de desincronización
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :no se puede cargar el mapa
@@ -2602,6 +2603,7 @@ STR_NETWORK_ERROR_CLIENT_NOT_EXPECTED                           :recibido paquet
 STR_NETWORK_ERROR_CLIENT_WRONG_REVISION                         :versión incorrecta
 STR_NETWORK_ERROR_CLIENT_NAME_IN_USE                            :nombre en uso
 STR_NETWORK_ERROR_CLIENT_WRONG_PASSWORD                         :contraseña incorrecta
+STR_NETWORK_ERROR_CLIENT_NOT_ON_ALLOW_LIST                      :no está en la lista de permitidos
 STR_NETWORK_ERROR_CLIENT_COMPANY_MISMATCH                       :empresa incorrecta en un DoCommand
 STR_NETWORK_ERROR_CLIENT_KICKED                                 :expulsado por el servidor
 STR_NETWORK_ERROR_CLIENT_CHEATER                                :ha intentado usar un truco
@@ -3487,7 +3489,9 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Tipo de carrete
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}Parámetro de variable NewGRF 60+x (hexadecimal)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Alinear sprite {COMMA} ({STRING})
+STR_SPRITE_ALIGNER_CAPTION_NO_ACTION                            :{WHITE}Alineando sprite: ({STRING}:{NUM})
+STR_SPRITE_ALIGNER_CAPTION_ACTIONA                              :{WHITE}Alineando sprite: Acción 0xA, {COMMA} ({STRING}:{NUM})
+STR_SPRITE_ALIGNER_CAPTION_ACTION5                              :{WHITE}Alineando sprite: Acción 0x5, tipo {HEX}, {COMMA} ({STRING}:{NUM})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Siguiente sprite
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Va al siguiente sprite (ignorando pseudosprites, sprites recoloreados y sprites de fuente) y pasa del último al primer sprite
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Ir a sprite
@@ -3496,6 +3500,7 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Sprite a
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Salta al sprite anterior (ignorando pseudosprites, sprites recoloreados y sprites de fuente) y pasa del primer al último sprite
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Representa el sprite seleccionado. Su alineamiento es ignorado al dibujarlo
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Mover el sprite, cambiando los ajustes X e Y. Ctrl+clic mueve el sprite ocho unidades de una sola vez
+STR_SPRITE_ALIGNER_SPRITE                                       :{STRING}:{NUM}
 
 ###length 2
 STR_SPRITE_ALIGNER_CENTRE_OFFSET                                :{BLACK}Desviación (offset) centrada
@@ -4448,10 +4453,10 @@ STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}Capacida
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK}Créditos de Transferencia: {LTBLUE}{CURRENCY_LONG}
 
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS                     :{BLACK}Intervalo de mantenimiento: {LTBLUE}{COMMA}{NBSP}días{BLACK} {STRING}
-STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES                  :{BLACK}Intervalo de mantenimiento: {LTBLUE}{COMMA}{NBSP}minutos{BLACK}   {STRING}
+STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES                  :{BLACK}Intervalo de mantenimiento: {LTBLUE}{COMMA}{NBSP}minuto{P "" s}{BLACK}   {STRING}
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT                  :{BLACK}Intervalo de mantenimiento: {LTBLUE}{COMMA}%{BLACK} {STRING}
 STR_VEHICLE_DETAILS_LAST_SERVICE_DATE                           :Último mantenimiento: {LTBLUE}{DATE_LONG}
-STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO                    :Último mantenimiento: {LTBLUE}hace {NUM} minutos
+STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO                    :Último mantenimiento: {LTBLUE}hace {NUM} minuto{P "" s}
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_DAYS    :{BLACK}Incrementar el intervalo de mantenimiento en 10 días. Ctrl+clic para incrementar el período en 5 días
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_MINUTES :{BLACK}Incrementar el intervalo de mantenimiento en 5 minutos. Ctrl+clic para incrementar el período en un minuto
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_PERCENT :{BLACK}Incrementar el intervalo de mantenimiento en un 10%. Ctrl+clic para incrementar el período en un 5%
@@ -4642,7 +4647,7 @@ STR_ORDER_REFIT_ORDER                                           :(Reformar a {ST
 STR_ORDER_REFIT_STOP_ORDER                                      :(Reformar a {STRING} y detenerse)
 STR_ORDER_STOP_ORDER                                            :(Detenerse)
 
-STR_ORDER_WAIT_TO_UNBUNCH                                       :(esperar para distanciarse)
+STR_ORDER_WAIT_TO_UNBUNCH                                       :(Esperar para distanciarse)
 
 STR_ORDER_GO_TO_STATION                                         :{STRING} {STATION} {STRING}
 STR_ORDER_GO_TO_STATION_CAN_T_USE_STATION                       :{PUSH_COLOUR}{RED}(No puede usar la estación){POP_COLOUR} {STRING} {STATION} {STRING}
@@ -4898,9 +4903,9 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Ingreso 
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}El guardado está en progreso,{}¡por favor espera hasta que termine!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Error al autoguardar
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}No es posible leer la unidad
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Error guardando partida{}{STRING}
+STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Error al guardar la partida...
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}No es posible borrar el archivo
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Carga de Partida Errónea{}{STRING}
+STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Error al cargar la partida...
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Error interno: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Partida guardada corrupta - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :La partida guardada ha sido realizada con una versión más nueva
@@ -4994,7 +4999,7 @@ STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}No se pu
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}No puede construirse la sede de la empresa...
 
 # Town related errors
-STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}No se puede construir ningún municipio
+STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}No se puede generar ningún municipio...
 STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE}No se puede renombrar el municipio...
 STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :{WHITE}No se puede construir un municipio aquí...
 STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}No se puede expandir este municipio...
@@ -5832,6 +5837,7 @@ STR_JUST_DATE_ISO                                               :{DATE_ISO}
 STR_JUST_STRING                                                 :{STRING}
 STR_JUST_STRING1                                                :{STRING}
 STR_JUST_STRING2                                                :{STRING}
+STR_JUST_STRING4                                                :{STRING}
 STR_JUST_STRING_STRING                                          :{STRING}{STRING}
 STR_JUST_RAW_STRING                                             :{STRING}
 STR_JUST_BIG_RAW_STRING                                         :{BIG_FONT}{STRING}

@@ -2590,7 +2590,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}O teu no
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Posible perda da conexión
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}Nos últimos {NUM} segundo{P "" s} non chegaron datos do servidor
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :erro xeral
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :erro de descincronización
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :no se puido carga-lo mapa
@@ -3487,7 +3487,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Tipo de estrada
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}Parámetro de variable NewGRF 60+x (hexadecimal)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Aliñar sprite {COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Seguinte sprite
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Ir ao sprite seguinte, ignorando pseudosprites, sprites recoloreados e sprites de fonte, e volvendo a empezar ao chegar á fin
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Ir a sprite
@@ -4898,9 +4897,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Ingreso 
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Gravación en progreso,{}por favor agarda ata que remate!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Autogravado fallido
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}No se pode lee-la unidade
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Gravación da partida fallida{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Non se pode borra-lo arquivo
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Carga da partida fallida{}{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Erro interno: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Partida gravada corrupta - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :A partida gravouse cunha versión máis nova do xogo

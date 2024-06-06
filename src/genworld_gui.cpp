@@ -19,8 +19,9 @@
 #include "fios.h"
 #include "string_func.h"
 #include "gui.h"
-#include "widgets/dropdown_type.h"
-#include "widgets/dropdown_func.h"
+#include "dropdown_type.h"
+#include "dropdown_common_type.h"
+#include "dropdown_func.h"
 #include "querystring_gui.h"
 #include "town.h"
 #include "core/geometry_func.hpp"
@@ -392,7 +393,7 @@ static DropDownList BuildMapsizeDropDown(int other_dimension)
 
 	for (uint i = MIN_MAP_SIZE_BITS; i <= MAX_MAP_SIZE_BITS; i++) {
 		SetDParam(0, 1LL << i);
-		list.push_back(std::make_unique<DropDownListStringItem>((i + other_dimension > MAX_MAP_TILES_BITS) ? STR_RED_INT : STR_JUST_INT, i, false));
+		list.push_back(MakeDropDownListStringItem((i + other_dimension > MAX_MAP_TILES_BITS) ? STR_RED_INT : STR_JUST_INT, i, false));
 	}
 
 	return list;
@@ -405,20 +406,20 @@ static DropDownList BuildTownNameDropDown()
 	/* Add and sort newgrf townnames generators */
 	const auto &grf_names = GetGRFTownNameList();
 	for (uint i = 0; i < grf_names.size(); i++) {
-		list.push_back(std::make_unique<DropDownListStringItem>(grf_names[i], BUILTIN_TOWNNAME_GENERATOR_COUNT + i, false));
+		list.push_back(MakeDropDownListStringItem(grf_names[i], BUILTIN_TOWNNAME_GENERATOR_COUNT + i));
 	}
 	std::sort(list.begin(), list.end(), DropDownListStringItem::NatSortFunc);
 
 	size_t newgrf_size = list.size();
 	/* Insert newgrf_names at the top of the list */
 	if (newgrf_size > 0) {
-		list.push_back(std::make_unique<DropDownListDividerItem>(-1, false)); // separator line
+		list.push_back(MakeDropDownListDividerItem()); // separator line
 		newgrf_size++;
 	}
 
 	/* Add and sort original townnames generators */
 	for (uint i = 0; i < BUILTIN_TOWNNAME_GENERATOR_COUNT; i++) {
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH + i, i, false));
+		list.push_back(MakeDropDownListStringItem(STR_MAPGEN_TOWN_NAME_ORIGINAL_ENGLISH + i, i));
 	}
 	std::sort(list.begin() + newgrf_size, list.end(), DropDownListStringItem::NatSortFunc);
 
@@ -643,15 +644,15 @@ struct GenerateLandscapeWindow : public Window {
 		this->SetDirty();
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		Dimension d{0, (uint)GetCharacterHeight(FS_NORMAL)};
 		const StringID *strs = nullptr;
 		switch (widget) {
 			case WID_GL_TEMPERATE: case WID_GL_ARCTIC:
 			case WID_GL_TROPICAL: case WID_GL_TOYLAND:
-				size->width += WidgetDimensions::scaled.fullbevel.Horizontal();
-				size->height += WidgetDimensions::scaled.fullbevel.Vertical();
+				size.width += WidgetDimensions::scaled.fullbevel.Horizontal();
+				size.height += WidgetDimensions::scaled.fullbevel.Vertical();
 				break;
 
 			case WID_GL_HEIGHTMAP_HEIGHT_TEXT:
@@ -682,12 +683,12 @@ struct GenerateLandscapeWindow : public Window {
 
 			case WID_GL_SNOW_LEVEL_TEXT:
 				SetDParamMaxValue(0, MAX_TILE_HEIGHT);
-				*size = maxdim(*size, GetStringBoundingBox(STR_JUST_INT));
+				size = maxdim(size, GetStringBoundingBox(STR_JUST_INT));
 				break;
 
 			case WID_GL_RAINFOREST_LEVEL_TEXT:
 				SetDParamMaxValue(0, MAX_RAINFOREST_HEIGHT);
-				*size = maxdim(*size, GetStringBoundingBox(STR_JUST_INT));
+				size = maxdim(size, GetStringBoundingBox(STR_JUST_INT));
 				break;
 
 			case WID_GL_HEIGHTMAP_SIZE_TEXT:
@@ -736,7 +737,7 @@ struct GenerateLandscapeWindow : public Window {
 				break;
 
 			case WID_GL_HEIGHTMAP_NAME_TEXT:
-				size->width = 0;
+				size.width = 0;
 				break;
 
 			default:
@@ -749,7 +750,7 @@ struct GenerateLandscapeWindow : public Window {
 		}
 		d.width += padding.width;
 		d.height += padding.height;
-		*size = maxdim(*size, d);
+		size = maxdim(size, d);
 	}
 
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
@@ -1270,14 +1271,14 @@ struct CreateScenarioWindow : public Window
 		this->DrawWidgets();
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		StringID str = STR_JUST_INT;
 		switch (widget) {
 			case WID_CS_TEMPERATE: case WID_CS_ARCTIC:
 			case WID_CS_TROPICAL: case WID_CS_TOYLAND:
-				size->width += WidgetDimensions::scaled.fullbevel.Horizontal();
-				size->height += WidgetDimensions::scaled.fullbevel.Vertical();
+				size.width += WidgetDimensions::scaled.fullbevel.Horizontal();
+				size.height += WidgetDimensions::scaled.fullbevel.Vertical();
 				break;
 
 			case WID_CS_START_DATE_TEXT:
@@ -1300,7 +1301,7 @@ struct CreateScenarioWindow : public Window
 		Dimension d = GetStringBoundingBox(str);
 		d.width += padding.width;
 		d.height += padding.height;
-		*size = maxdim(*size, d);
+		size = maxdim(size, d);
 	}
 
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
@@ -1559,23 +1560,23 @@ struct GenerateProgressWindow : public Window {
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_GP_PROGRESS_BAR: {
 				SetDParamMaxValue(0, 100);
-				*size = GetStringBoundingBox(STR_GENERATION_PROGRESS);
+				size = GetStringBoundingBox(STR_GENERATION_PROGRESS);
 				/* We need some spacing for the 'border' */
-				size->height += WidgetDimensions::scaled.frametext.Horizontal();
-				size->width  += WidgetDimensions::scaled.frametext.Vertical();
+				size.height += WidgetDimensions::scaled.frametext.Horizontal();
+				size.width  += WidgetDimensions::scaled.frametext.Vertical();
 				break;
 			}
 
 			case WID_GP_PROGRESS_TEXT:
 				for (uint i = 0; i < GWP_CLASS_COUNT; i++) {
-					size->width = std::max(size->width, GetStringBoundingBox(_generation_class_table[i]).width + padding.width);
+					size.width = std::max(size.width, GetStringBoundingBox(_generation_class_table[i]).width + padding.width);
 				}
-				size->height = GetCharacterHeight(FS_NORMAL) * 2 + WidgetDimensions::scaled.vsep_normal;
+				size.height = GetCharacterHeight(FS_NORMAL) * 2 + WidgetDimensions::scaled.vsep_normal;
 				break;
 		}
 	}

@@ -33,10 +33,12 @@ static const char* _packet_game_type_names[] {
 	"SERVER_GAME_INFO",
 	"CLIENT_GAME_INFO",
 	"SERVER_GAME_INFO_EXTENDED",
+	"SERVER_AUTH_REQUEST",
+	"CLIENT_AUTH_RESPONSE",
+	"SERVER_AUTH_COMPLETED",
+	"CLIENT_IDENTIFY",
 	"SERVER_CHECK_NEWGRFS",
 	"CLIENT_NEWGRFS_CHECKED",
-	"SERVER_NEED_GAME_PASSWORD",
-	"CLIENT_GAME_PASSWORD",
 	"SERVER_NEED_COMPANY_PASSWORD",
 	"CLIENT_COMPANY_PASSWORD",
 	"CLIENT_SETTINGS_PASSWORD",
@@ -153,9 +155,11 @@ NetworkRecvStatus NetworkGameSocketHandler::HandlePacket(Packet &p)
 		case PACKET_SERVER_GAME_INFO:             return this->Receive_SERVER_GAME_INFO(p);
 		case PACKET_SERVER_GAME_INFO_EXTENDED:    return this->Receive_SERVER_GAME_INFO_EXTENDED(p);
 		case PACKET_SERVER_CLIENT_INFO:           return this->Receive_SERVER_CLIENT_INFO(p);
-		case PACKET_SERVER_NEED_GAME_PASSWORD:    return this->Receive_SERVER_NEED_GAME_PASSWORD(p);
+		case PACKET_CLIENT_IDENTIFY:              return this->Receive_CLIENT_IDENTIFY(p);
+		case PACKET_SERVER_AUTH_REQUEST:          return this->Receive_SERVER_AUTH_REQUEST(p);
 		case PACKET_SERVER_NEED_COMPANY_PASSWORD: return this->Receive_SERVER_NEED_COMPANY_PASSWORD(p);
-		case PACKET_CLIENT_GAME_PASSWORD:         return this->Receive_CLIENT_GAME_PASSWORD(p);
+		case PACKET_CLIENT_AUTH_RESPONSE:         return this->Receive_CLIENT_AUTH_RESPONSE(p);
+		case PACKET_SERVER_ENABLE_ENCRYPTION:     return this->Receive_SERVER_ENABLE_ENCRYPTION(p);
 		case PACKET_CLIENT_COMPANY_PASSWORD:      return this->Receive_CLIENT_COMPANY_PASSWORD(p);
 		case PACKET_CLIENT_SETTINGS_PASSWORD:     return this->Receive_CLIENT_SETTINGS_PASSWORD(p);
 		case PACKET_SERVER_SETTINGS_ACCESS:       return this->Receive_SERVER_SETTINGS_ACCESS(p);
@@ -233,57 +237,59 @@ NetworkRecvStatus NetworkGameSocketHandler::ReceiveInvalidPacket(PacketGameType 
 	return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 }
 
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_FULL(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_FULL); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_BANNED(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_BANNED); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_JOIN(Packet &p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_JOIN); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_ERROR(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_ERROR); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_GAME_INFO(Packet &p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_GAME_INFO); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_GAME_INFO(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_GAME_INFO); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_GAME_INFO_EXTENDED(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_GAME_INFO_EXTENDED); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_CLIENT_INFO(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_CLIENT_INFO); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_NEED_GAME_PASSWORD(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_NEED_GAME_PASSWORD); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_NEED_COMPANY_PASSWORD(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_NEED_COMPANY_PASSWORD); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_GAME_PASSWORD(Packet &p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_GAME_PASSWORD); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_COMPANY_PASSWORD(Packet &p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_COMPANY_PASSWORD); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_SETTINGS_PASSWORD(Packet &p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_SETTINGS_PASSWORD); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_SETTINGS_ACCESS(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_SETTINGS_ACCESS); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_WELCOME(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_WELCOME); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_GETMAP(Packet &p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_GETMAP); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_WAIT(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_WAIT); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_MAP_BEGIN(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_MAP_BEGIN); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_MAP_SIZE(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_MAP_SIZE); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_MAP_DATA(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_MAP_DATA); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_MAP_DONE(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_MAP_DONE); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_MAP_OK(Packet &p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_MAP_OK); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_JOIN(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_JOIN); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_FRAME(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_FRAME); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_SYNC(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_SYNC); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_ACK(Packet &p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_ACK); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet &p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_COMMAND); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_COMMAND(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_COMMAND); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_CHAT(Packet &p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_CHAT); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_CHAT(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_CHAT); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_EXTERNAL_CHAT(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_EXTERNAL_CHAT); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_SET_PASSWORD(Packet &p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_SET_PASSWORD); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_SET_NAME(Packet &p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_SET_NAME); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_QUIT(Packet &p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_QUIT); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet &p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_ERROR); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_DESYNC_LOG(Packet &p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_DESYNC_LOG); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_DESYNC_LOG(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_DESYNC_LOG); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_DESYNC_MSG(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_DESYNC_LOG); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_DESYNC_SYNC_DATA(Packet &p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_DESYNC_SYNC_DATA); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_QUIT(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_QUIT); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_ERROR_QUIT(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_ERROR_QUIT); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_SHUTDOWN(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_SHUTDOWN); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_NEWGAME(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_NEWGAME); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_RCON(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_RCON); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_RCON(Packet &p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_RCON); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_CHECK_NEWGRFS(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_CHECK_NEWGRFS); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_NEWGRFS_CHECKED(Packet &p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_NEWGRFS_CHECKED); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_MOVE(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_MOVE); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_MOVE(Packet &p) { return this->ReceiveInvalidPacket(PACKET_CLIENT_MOVE); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_COMPANY_UPDATE(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_COMPANY_UPDATE); }
-NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_CONFIG_UPDATE(Packet &p) { return this->ReceiveInvalidPacket(PACKET_SERVER_CONFIG_UPDATE); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_FULL(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_FULL); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_BANNED(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_BANNED); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_JOIN(Packet &) { return this->ReceiveInvalidPacket(PACKET_CLIENT_JOIN); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_ERROR(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_ERROR); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_GAME_INFO(Packet &) { return this->ReceiveInvalidPacket(PACKET_CLIENT_GAME_INFO); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_GAME_INFO(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_GAME_INFO); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_GAME_INFO_EXTENDED(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_GAME_INFO_EXTENDED); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_CLIENT_INFO(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_CLIENT_INFO); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_IDENTIFY(Packet &) { return this->ReceiveInvalidPacket(PACKET_CLIENT_IDENTIFY); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_AUTH_REQUEST(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_AUTH_REQUEST); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_NEED_COMPANY_PASSWORD(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_NEED_COMPANY_PASSWORD); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_AUTH_RESPONSE(Packet &) { return this->ReceiveInvalidPacket(PACKET_CLIENT_AUTH_RESPONSE); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_ENABLE_ENCRYPTION(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_ENABLE_ENCRYPTION); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_COMPANY_PASSWORD(Packet &) { return this->ReceiveInvalidPacket(PACKET_CLIENT_COMPANY_PASSWORD); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_SETTINGS_PASSWORD(Packet &) { return this->ReceiveInvalidPacket(PACKET_CLIENT_SETTINGS_PASSWORD); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_SETTINGS_ACCESS(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_SETTINGS_ACCESS); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_WELCOME(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_WELCOME); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_GETMAP(Packet &) { return this->ReceiveInvalidPacket(PACKET_CLIENT_GETMAP); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_WAIT(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_WAIT); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_MAP_BEGIN(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_MAP_BEGIN); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_MAP_SIZE(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_MAP_SIZE); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_MAP_DATA(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_MAP_DATA); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_MAP_DONE(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_MAP_DONE); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_MAP_OK(Packet &) { return this->ReceiveInvalidPacket(PACKET_CLIENT_MAP_OK); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_JOIN(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_JOIN); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_FRAME(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_FRAME); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_SYNC(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_SYNC); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_ACK(Packet &) { return this->ReceiveInvalidPacket(PACKET_CLIENT_ACK); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet &) { return this->ReceiveInvalidPacket(PACKET_CLIENT_COMMAND); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_COMMAND(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_COMMAND); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_CHAT(Packet &) { return this->ReceiveInvalidPacket(PACKET_CLIENT_CHAT); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_CHAT(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_CHAT); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_EXTERNAL_CHAT(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_EXTERNAL_CHAT); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_SET_PASSWORD(Packet &) { return this->ReceiveInvalidPacket(PACKET_CLIENT_SET_PASSWORD); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_SET_NAME(Packet &) { return this->ReceiveInvalidPacket(PACKET_CLIENT_SET_NAME); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_QUIT(Packet &) { return this->ReceiveInvalidPacket(PACKET_CLIENT_QUIT); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet &) { return this->ReceiveInvalidPacket(PACKET_CLIENT_ERROR); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_DESYNC_LOG(Packet &) { return this->ReceiveInvalidPacket(PACKET_CLIENT_DESYNC_LOG); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_DESYNC_LOG(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_DESYNC_LOG); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_DESYNC_MSG(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_DESYNC_LOG); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_DESYNC_SYNC_DATA(Packet &) { return this->ReceiveInvalidPacket(PACKET_CLIENT_DESYNC_SYNC_DATA); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_QUIT(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_QUIT); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_ERROR_QUIT(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_ERROR_QUIT); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_SHUTDOWN(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_SHUTDOWN); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_NEWGAME(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_NEWGAME); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_RCON(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_RCON); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_RCON(Packet &) { return this->ReceiveInvalidPacket(PACKET_CLIENT_RCON); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_CHECK_NEWGRFS(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_CHECK_NEWGRFS); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_NEWGRFS_CHECKED(Packet &) { return this->ReceiveInvalidPacket(PACKET_CLIENT_NEWGRFS_CHECKED); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_MOVE(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_MOVE); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_CLIENT_MOVE(Packet &) { return this->ReceiveInvalidPacket(PACKET_CLIENT_MOVE); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_COMPANY_UPDATE(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_COMPANY_UPDATE); }
+NetworkRecvStatus NetworkGameSocketHandler::Receive_SERVER_CONFIG_UPDATE(Packet &) { return this->ReceiveInvalidPacket(PACKET_SERVER_CONFIG_UPDATE); }
 
 std::string NetworkGameSocketHandler::GetDebugInfo() const { return ""; }
 

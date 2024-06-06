@@ -29,8 +29,8 @@ struct Sprite {
 };
 
 /*
- * Allow skipping sprites with zoom < ZOOM_LVL_OUT_4X, for sprite min zoom setting at 1x, if ZOOM_LVL_OUT_4X bit of present zoom levels is set.
- * Allow skipping sprites with zoom < ZOOM_LVL_OUT_2X, for sprite min zoom setting at 2x, if either ZOOM_LVL_OUT_4X or ZOOM_LVL_OUT_2X bits of present zoom levels are set.
+ * Allow skipping sprites with zoom < ZOOM_LVL_NORMAL, for sprite min zoom setting at 1x, if ZOOM_LVL_NORMAL bit of present zoom levels is set.
+ * Allow skipping sprites with zoom < ZOOM_LVL_IN_2X, for sprite min zoom setting at 2x, if either ZOOM_LVL_NORMAL or ZOOM_LVL_IN_2X bits of present zoom levels are set.
  */
 enum SpriteCacheCtrlFlags {
 	SCC_PAL_ZOOM_START            =  0, ///< Start bit of present zoom levels in palette mode.
@@ -70,6 +70,7 @@ void GfxClearFontSpriteCache();
 void IncreaseSpriteLRU();
 
 SpriteFile &OpenCachedSpriteFile(const std::string &filename, Subdirectory subdir, bool palette_remap);
+std::span<const std::unique_ptr<SpriteFile>> GetCachedSpriteFiles();
 
 void ReadGRFSpriteOffsets(SpriteFile &file);
 size_t GetGRFSpriteOffset(uint32_t id);

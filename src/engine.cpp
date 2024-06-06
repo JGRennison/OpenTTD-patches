@@ -25,6 +25,7 @@
 #include "engine_gui.h"
 #include "engine_func.h"
 #include "engine_base.h"
+#include "engine_override.h"
 #include "company_base.h"
 #include "vehicle_func.h"
 #include "articulated_vehicles.h"
@@ -578,6 +579,7 @@ void EngineOverrideManager::ResetToDefaultMapping()
 			eid.substitute_id   = internal_id;
 		}
 	}
+	this->ReIndex();
 }
 
 /**
@@ -591,14 +593,21 @@ void EngineOverrideManager::ResetToDefaultMapping()
  */
 EngineID EngineOverrideManager::GetID(VehicleType type, uint16_t grf_local_id, uint32_t grfid)
 {
+	auto iter = this->mapping_index.find(HashKey(type, grf_local_id, grfid));
+	EngineID id = (iter != this->mapping_index.end()) ? iter->second : INVALID_ENGINE;
+
+#ifdef _DEBUG
 	EngineID index = 0;
 	for (const EngineIDMapping &eid : *this) {
 		if (eid.type == type && eid.grfid == grfid && eid.internal_id == grf_local_id) {
+			assert(id == index);
 			return index;
 		}
 		index++;
 	}
-	return INVALID_ENGINE;
+	assert(id == INVALID_ENGINE);
+#endif
+	return id;
 }
 
 /**
@@ -617,6 +626,26 @@ bool EngineOverrideManager::ResetToCurrentNewGRFConfig()
 	ReloadNewGRFData();
 
 	return true;
+}
+
+void EngineOverrideManager::AddToIndex(EngineID id)
+{
+	this->mapping_index.insert({ HashKey((*this)[id]), id });
+}
+
+void EngineOverrideManager::RemoveFromIndex(EngineID id)
+{
+	this->mapping_index.erase(HashKey((*this)[id]));
+}
+
+void EngineOverrideManager::ReIndex()
+{
+	this->mapping_index.clear();
+	EngineID index = 0;
+	for (const EngineIDMapping &eid : *this) {
+		this->mapping_index.insert({ HashKey(eid), index });
+		index++;
+	}
 }
 
 /**

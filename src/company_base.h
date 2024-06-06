@@ -50,6 +50,8 @@ struct CompanyInfrastructure {
 	uint32_t GetTramTotal() const;
 
 	char *Dump(char *buffer, const char *last) const;
+
+	bool operator==(const CompanyInfrastructure &) const = default;
 };
 
 class FreeUnitIDGenerator {
@@ -105,6 +107,7 @@ struct CompanyProperties {
 	int32_t display_inaugurated_period;///< Wallclock display period of starting the company.
 	YearDelta age_years;             ///< Number of economy years that the company has been operational.
 
+	uint8_t months_empty = 0;        ///< NOSAVE: Number of months this company has not had a client in multiplayer.
 	uint8_t months_of_bankruptcy;    ///< Number of months that the company is unable to pay its debts
 	CompanyID bankrupt_last_asked;   ///< Which company was most recently asked about buying it?
 	CompanyBankruptcyFlags bankrupt_flags; ///< bankruptcy flags

@@ -330,7 +330,7 @@ struct CheatWindow : Window {
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		if (widget != WID_C_PANEL) return;
 
@@ -379,8 +379,8 @@ struct CheatWindow : Window {
 		this->line_height = std::max<uint>(this->line_height, SETTING_BUTTON_HEIGHT);
 		this->line_height = std::max<uint>(this->line_height, GetCharacterHeight(FS_NORMAL)) + WidgetDimensions::scaled.framerect.Vertical();
 
-		size->width = width + WidgetDimensions::scaled.hsep_wide * 4 + this->box.width + SETTING_BUTTON_WIDTH /* stuff on the left */ + WidgetDimensions::scaled.hsep_wide * 2 /* extra spacing on right */;
-		size->height = WidgetDimensions::scaled.framerect.Vertical() + this->line_height * lines;
+		size.width = width + WidgetDimensions::scaled.hsep_wide * 4 + this->box.width + SETTING_BUTTON_WIDTH /* stuff on the left */ + WidgetDimensions::scaled.hsep_wide * 2 /* extra spacing on right */;
+		size.height = WidgetDimensions::scaled.framerect.Vertical() + this->line_height * lines;
 	}
 
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
@@ -507,7 +507,7 @@ struct CheatWindow : Window {
 		}
 		if (ce->mode == CNM_MONEY) {
 			if (!_networking) *ce->been_used = true;
-			DoCommandPEx(0, 0, 0, (std::strtoll(str, nullptr, 10) / _currency->rate), IsNetworkSettingsAdmin() ? CMD_MONEY_CHEAT_ADMIN : CMD_MONEY_CHEAT);
+			DoCommandPEx(0, 0, 0, (std::strtoll(str, nullptr, 10) / GetCurrency().rate), IsNetworkSettingsAdmin() ? CMD_MONEY_CHEAT_ADMIN : CMD_MONEY_CHEAT);
 			return;
 		}
 

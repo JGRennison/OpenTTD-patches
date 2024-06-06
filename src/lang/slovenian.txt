@@ -2328,7 +2328,7 @@ STR_NETWORK_ERROR_TIMEOUT_JOIN                                  :{WHITE}Priklop 
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Povezava je mogoče prekinjena
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}Zadnj{P 0 o i e ih} {NUM} sekund{P o i e ""} ni bilo prejetih nobenih podatkov s strežnika
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :splošna napaka
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :desinhronizacijska napaka
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :ni mogoče naložiti zemljevida
@@ -3082,7 +3082,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :Tip železnice
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}NewGRF spremenljivka 60+x parameter (hexadecimal)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Uravnavam sličico {COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Naslednja sličica
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Nadaljuj k naslednji navadni sličici, zanemari vse navidezne/pobarvane/besedilne sličice in okvir na koncu
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Pojdi na sličico
@@ -4285,9 +4284,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Predvide
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Shranjevanje poteka,{}Prosim počakaj, da se zaključi!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Samodejno shranjevanje spodletelo
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Pogona ni mogoče prebrati
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Shranjevanje igre ni uspelo{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Datoteke ni mogoče zbrisati
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Nalaganje igre ni uspelo{}{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Interna napaka: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Napaka v shranjeni igri - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Igra je bila shranjena z novejso razlicico

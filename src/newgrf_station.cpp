@@ -24,14 +24,15 @@
 #include "newgrf_animation_base.h"
 #include "newgrf_class_func.h"
 #include "newgrf_extension.h"
+#include "newgrf_dump.h"
 #include "core/checksum_func.hpp"
 
 #include "safeguards.h"
 
 uint64_t _station_tile_cache_hash = 0;
 
-template <typename Tspec, typename Tid, Tid Tmax>
-/* static */ void NewGRFClass<Tspec, Tid, Tmax>::InsertDefaults()
+template <>
+/* static */ void StationClass::InsertDefaults()
 {
 	/* Set up initial data */
 	StationClass::Get(StationClass::Allocate('DFLT'))->name = STR_STATION_CLASS_DFLT;
@@ -40,13 +41,14 @@ template <typename Tspec, typename Tid, Tid Tmax>
 	StationClass::Get(StationClass::Allocate('WAYP'))->Insert(nullptr);
 }
 
-template <typename Tspec, typename Tid, Tid Tmax>
-bool NewGRFClass<Tspec, Tid, Tmax>::IsUIAvailable(uint) const
+template <>
+bool StationClass::IsUIAvailable(uint) const
 {
 	return true;
 }
 
-INSTANTIATE_NEWGRF_CLASS_METHODS(StationClass, StationSpec, StationClassID, STAT_CLASS_MAX)
+/* Instantiate StationClass. */
+template class NewGRFClass<StationSpec, StationClassID, STAT_CLASS_MAX>;
 
 static const uint NUM_STATIONSSPECS_PER_STATION = 255; ///< Maximum number of parts per station.
 
@@ -1096,12 +1098,10 @@ void DumpStationSpriteGroup(const StationSpec *statspec, BaseStation *st, Sprite
 void UpdateStationTileCacheFlags(bool force_update)
 {
 	SimpleChecksum64 checksum;
-	for (uint i = 0; StationClass::IsClassIDValid((StationClassID)i); i++) {
-		StationClass *stclass = StationClass::Get((StationClassID)i);
-
-		checksum.Update(stclass->GetSpecCount());
-		for (uint j = 0; j < stclass->GetSpecCount(); j++) {
-			const StationSpec *statspec = stclass->GetSpec(j);
+	for (const StationClass &cls : StationClass::Classes()) {
+		checksum.Update(cls.GetSpecCount());
+		for (uint j = 0; j < cls.GetSpecCount(); j++) {
+			const StationSpec *statspec = cls.GetSpec(j);
 			if (statspec == nullptr) continue;
 
 			checksum.Update(j);

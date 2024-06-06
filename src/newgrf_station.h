@@ -90,13 +90,13 @@ struct StationResolverObject : public ResolverObject {
 	uint32_t GetDebugID() const override;
 };
 
-enum StationClassID : uint8_t {
+enum StationClassID : uint16_t {
 	STAT_CLASS_BEGIN = 0,    ///< the lowest valid value
 	STAT_CLASS_DFLT = 0,     ///< Default station class.
 	STAT_CLASS_WAYP,         ///< Waypoint class.
-	STAT_CLASS_MAX = 255,    ///< Maximum number of classes.
+	STAT_CLASS_MAX = UINT16_MAX, ///< Maximum number of classes.
 };
-template <> struct EnumPropsT<StationClassID> : MakeEnumPropsT<StationClassID, uint8_t, STAT_CLASS_BEGIN, STAT_CLASS_MAX, STAT_CLASS_MAX, 8> {};
+template <> struct EnumPropsT<StationClassID> : MakeEnumPropsT<StationClassID, uint8_t, STAT_CLASS_BEGIN, STAT_CLASS_MAX, STAT_CLASS_MAX, 16> {};
 
 /** Allow incrementing of StationClassID variables */
 DECLARE_POSTFIX_INCREMENT(StationClassID)
@@ -195,8 +195,8 @@ struct StationSpec {
 	std::vector<std::vector<std::vector<uint8_t>>> layouts;
 };
 
-/** Struct containing information relating to station classes. */
-typedef NewGRFClass<StationSpec, StationClassID, STAT_CLASS_MAX> StationClass;
+/** Class containing information relating to station classes. */
+using StationClass = NewGRFClass<StationSpec, StationClassID, STAT_CLASS_MAX>;
 
 const StationSpec *GetStationSpec(TileIndex t);
 

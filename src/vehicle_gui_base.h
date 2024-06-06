@@ -16,7 +16,7 @@
 #include "vehicle_base.h"
 #include "vehiclelist.h"
 #include "window_gui.h"
-#include "widgets/dropdown_type.h"
+#include "dropdown_type.h"
 #include "cargo_type.h"
 #include <iterator>
 #include <numeric>
@@ -61,6 +61,12 @@ struct GUIVehicleGroup {
 			return v_a->economy_age < v_b->economy_age;
 		});
 		return oldest->economy_age;
+	}
+
+	uint8_t GetOrderOccupancyAverage() const
+	{
+		if (this->NumVehicles() < 1) return 0;
+		return this->vehicles_begin[0]->GetOrderOccupancyAverage();
 	}
 };
 
@@ -114,8 +120,10 @@ public:
 	static const StringID vehicle_depot_sell_name[];
 
 	static const StringID vehicle_group_by_names[];
-	static const StringID vehicle_group_none_sorter_names[];
-	static const StringID vehicle_group_shared_orders_sorter_names[];
+	static const StringID vehicle_group_none_sorter_names_calendar[];
+	static const StringID vehicle_group_none_sorter_names_wallclock[];
+	static const StringID vehicle_group_shared_orders_sorter_names_calendar[];
+	static const StringID vehicle_group_shared_orders_sorter_names_wallclock[];
 	static VehicleGroupSortFunction * const vehicle_group_none_sorter_funcs[];
 	static VehicleGroupSortFunction * const vehicle_group_shared_orders_sorter_funcs[];
 
@@ -145,9 +153,9 @@ public:
 	{
 		switch (this->grouping) {
 			case GB_NONE:
-				return vehicle_group_none_sorter_names;
+				return EconTime::UsingWallclockUnits() ? vehicle_group_none_sorter_names_wallclock : vehicle_group_none_sorter_names_calendar;
 			case GB_SHARED_ORDERS:
-				return vehicle_group_shared_orders_sorter_names;
+				return EconTime::UsingWallclockUnits() ? vehicle_group_shared_orders_sorter_names_wallclock : vehicle_group_shared_orders_sorter_names_calendar;
 			default:
 				NOT_REACHED();
 		}

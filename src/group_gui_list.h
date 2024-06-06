@@ -13,7 +13,7 @@
 #include "group.h"
 #include "sortlist_type.h"
 
-typedef GUIList<const Group*> GUIGroupList;
-void SortGUIGroupList(GUIGroupList &list);
+typedef GUIList<const Group*> GUIGroupOnlyList;
+void SortGUIGroupOnlyList(GUIGroupOnlyList &list);
 
 #endif /* GROUP_GUI_LIST_H */

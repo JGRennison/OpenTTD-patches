@@ -15,6 +15,7 @@
 #include "clear_map.h"
 #include "core/hash_func.hpp"
 #include "string_func.h"
+#include "newgrf_dump.h"
 
 #include "safeguards.h"
 

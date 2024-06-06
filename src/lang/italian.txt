@@ -2624,7 +2624,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Il nome 
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Possibile perdita di connessione
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}Per {NUM} second{P o i} non sono stati ricevuti dati dal server
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :errore generale
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :errore di sincronizzazione
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :impossibile caricare la mappa
@@ -3527,7 +3527,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Tipo di strada
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}Parametro variabile NewGRF 60+x (esadecimale)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Allineamento sprite {COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Successivo
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Procede al successivo sprite normale, saltanto qualsiasi sprite speciale, di ricoloramento o carattere e tornando al primo se viene raggiunto l'ultimo della lista
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Vai a
@@ -4938,9 +4937,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Ricavo s
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Salvataggio in corso,{}prego attenderne la fine!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Salvataggio automatico non riuscito
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Impossibile leggere dall'unità
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Salvataggio non riuscito{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Impossibile eliminare il file
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Caricamento non riuscito{}{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Errore interno: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Salvataggio danneggiato - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Salvataggio creato con una versione più recente

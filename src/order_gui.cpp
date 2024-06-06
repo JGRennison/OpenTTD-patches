@@ -15,8 +15,8 @@
 #include "timetable.h"
 #include "strings_func.h"
 #include "company_func.h"
-#include "widgets/dropdown_type.h"
-#include "widgets/dropdown_func.h"
+#include "dropdown_type.h"
+#include "dropdown_func.h"
 #include "textbuf_gui.h"
 #include "string_func.h"
 #include "tilehighlight_func.h"
@@ -187,19 +187,19 @@ public:
 		this->Window::Close();
 	}
 
-	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		if (widget == WID_CTO_HEADER) {
-			(*size).height = std::max((*size).height, (uint) GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical());
+			size.height = std::max(size.height, (uint) GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical());
 		} else if (WID_CTO_CARGO_LABEL_FIRST <= widget && widget <= WID_CTO_CARGO_LABEL_LAST) {
-			(*size).width  = std::max((*size).width, WidgetDimensions::scaled.framerect.left + this->CARGO_ICON_WIDTH + WidgetDimensions::scaled.framerect.Horizontal() + this->max_cargo_name_width + padding.width);
-			(*size).height = std::max((*size).height, (uint) GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical());
+			size.width  = std::max(size.width, WidgetDimensions::scaled.framerect.left + this->CARGO_ICON_WIDTH + WidgetDimensions::scaled.framerect.Horizontal() + this->max_cargo_name_width + padding.width);
+			size.height = std::max(size.height, (uint) GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical());
 		} else if ((WID_CTO_CARGO_DROPDOWN_FIRST <= widget && widget <= WID_CTO_CARGO_DROPDOWN_LAST) || widget == WID_CTO_SET_TO_ALL_DROPDOWN) {
-			(*size).width  = std::max((*size).width, WidgetDimensions::scaled.dropdowntext.Horizontal() + this->max_cargo_dropdown_width + NWidgetLeaf::GetDropdownBoxDimension().width);
-			(*size).height = std::max((*size).height, (uint) WidgetDimensions::scaled.dropdowntext.Vertical() + GetCharacterHeight(FS_NORMAL));
+			size.width  = std::max(size.width, WidgetDimensions::scaled.dropdowntext.Horizontal() + this->max_cargo_dropdown_width + NWidgetLeaf::GetDropdownBoxDimension().width);
+			size.height = std::max(size.height, (uint) WidgetDimensions::scaled.dropdowntext.Vertical() + GetCharacterHeight(FS_NORMAL));
 		} else if (widget == WID_CTO_SET_TO_ALL_LABEL) {
-			(*size).width = std::max((*size).width, this->max_cargo_name_width + WidgetDimensions::scaled.framerect.right + padding.width);
-			(*size).height = std::max((*size).height, (uint) GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical());
+			size.width = std::max(size.width, this->max_cargo_name_width + WidgetDimensions::scaled.framerect.right + padding.width);
+			size.height = std::max(size.height, (uint) GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical());
 		}
 	}
 
@@ -1295,8 +1295,8 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 	if (timetable && timetable_wait_time_valid && order->GetLeaveType() != OLT_NORMAL && edge != 0) {
 		edge = DrawString(rtl ? left : edge + 3, rtl ? edge - 3 : right, y, STR_TIMETABLE_LEAVE_EARLY_ORDER + order->GetLeaveType() - OLT_LEAVE_EARLY, colour);
 	}
-	if (timetable && HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && order->IsScheduledDispatchOrder(false) && edge != 0) {
-		StringID str = order->IsWaitTimetabled() ? STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER : STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME;
+	if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && order->IsScheduledDispatchOrder(false) && edge != 0) {
+		StringID str = (order->IsWaitTimetabled() || !timetable) ? STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER : STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME;
 		const DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(order->GetDispatchScheduleIndex());
 		if (!ds.ScheduleName().empty()) {
 			SetDParam(0, STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NAMED_SCHEDULE);
@@ -1972,18 +1972,18 @@ public:
 		this->GeneralVehicleWindow::Close();
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_O_OCCUPANCY_LIST:
 				SetDParamMaxValue(0, 100);
-				size->width = GetStringBoundingBox(STR_ORDERS_OCCUPANCY_PERCENT).width + 10 + WidgetDimensions::unscaled.framerect.Horizontal();
+				size.width = GetStringBoundingBox(STR_ORDERS_OCCUPANCY_PERCENT).width + 10 + WidgetDimensions::unscaled.framerect.Horizontal();
 				/* FALL THROUGH */
 
 			case WID_O_SEL_OCCUPANCY:
 			case WID_O_ORDER_LIST:
-				resize->height = GetCharacterHeight(FS_NORMAL);
-				size->height = 6 * resize->height + padding.height;
+				resize.height = GetCharacterHeight(FS_NORMAL);
+				size.height = 6 * resize.height + padding.height;
 				break;
 
 			case WID_O_COND_VARIABLE: {
@@ -1996,7 +1996,7 @@ public:
 				}
 				d.width += padding.width;
 				d.height += padding.height;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 
@@ -2007,13 +2007,13 @@ public:
 				}
 				d.width += padding.width;
 				d.height += padding.height;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 
 			case WID_O_OCCUPANCY_TOGGLE:
 				SetDParamMaxValue(0, 100);
-				size->width = GetStringBoundingBox(STR_ORDERS_OCCUPANCY_PERCENT).width + 10 + WidgetDimensions::unscaled.framerect.Horizontal();
+				size.width = GetStringBoundingBox(STR_ORDERS_OCCUPANCY_PERCENT).width + 10 + WidgetDimensions::unscaled.framerect.Horizontal();
 				break;
 
 			case WID_O_TIMETABLE_VIEW: {
@@ -2023,13 +2023,13 @@ public:
 				d.height = std::max(d.height, spr_d.height);
 				d.width += padding.width;
 				d.height += padding.height;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 
 			case WID_O_SHARED_ORDER_LIST:
 			case WID_O_ADD_VEH_GROUP:
-				size->width = std::max(size->width, NWidgetLeaf::GetResizeBoxDimension().width);
+				size.width = std::max(size.width, NWidgetLeaf::GetResizeBoxDimension().width);
 				break;
 		}
 	}
@@ -2885,15 +2885,15 @@ public:
 				if (order == nullptr) break;
 
 				DropDownList list;
-				list.push_back(std::make_unique<DropDownListStringItem>(STR_ORDER_DUPLICATE_ORDER, 0, false));
-				if (order->IsType(OT_CONDITIONAL)) list.push_back(std::make_unique<DropDownListStringItem>(STR_ORDER_CHANGE_JUMP_TARGET, 1, false));
+				list.push_back(MakeDropDownListStringItem(STR_ORDER_DUPLICATE_ORDER, 0, false));
+				if (order->IsType(OT_CONDITIONAL)) list.push_back(MakeDropDownListStringItem(STR_ORDER_CHANGE_JUMP_TARGET, 1, false));
 
 				if (this->vehicle->type == VEH_TRAIN && order->IsType(OT_GOTO_STATION) && (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
 					const OrderStopLocation osl = order->GetStopLocation();
-					list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
-					list.push_back(std::make_unique<DropDownListCheckedItem>(osl == OSL_PLATFORM_NEAR_END, STR_ORDER_STOP_LOCATION_NEAR_END, 0x200 + OSL_PLATFORM_NEAR_END, false));
-					list.push_back(std::make_unique<DropDownListCheckedItem>(osl == OSL_PLATFORM_MIDDLE, STR_ORDER_STOP_LOCATION_MIDDLE, 0x200 + OSL_PLATFORM_MIDDLE, false));
-					list.push_back(std::make_unique<DropDownListCheckedItem>(osl == OSL_PLATFORM_FAR_END, STR_ORDER_STOP_LOCATION_FAR_END, 0x200 + OSL_PLATFORM_FAR_END, false));
+					list.push_back(MakeDropDownListDividerItem());
+					list.push_back(MakeDropDownListCheckedItem(osl == OSL_PLATFORM_NEAR_END, STR_ORDER_STOP_LOCATION_NEAR_END, 0x200 + OSL_PLATFORM_NEAR_END, false));
+					list.push_back(MakeDropDownListCheckedItem(osl == OSL_PLATFORM_MIDDLE, STR_ORDER_STOP_LOCATION_MIDDLE, 0x200 + OSL_PLATFORM_MIDDLE, false));
+					list.push_back(MakeDropDownListCheckedItem(osl == OSL_PLATFORM_FAR_END, STR_ORDER_STOP_LOCATION_FAR_END, 0x200 + OSL_PLATFORM_FAR_END, false));
 					if (osl == OSL_PLATFORM_THROUGH || _settings_client.gui.show_adv_load_mode_features) {
 						bool allowed = _settings_client.gui.show_adv_load_mode_features;
 						if (allowed) {
@@ -2905,28 +2905,28 @@ public:
 								}
 							}
 						}
-						list.push_back(std::make_unique<DropDownListCheckedItem>(osl == OSL_PLATFORM_THROUGH, STR_ORDER_STOP_LOCATION_THROUGH, 0x200 + OSL_PLATFORM_THROUGH, !allowed));
+						list.push_back(MakeDropDownListCheckedItem(osl == OSL_PLATFORM_THROUGH, STR_ORDER_STOP_LOCATION_THROUGH, 0x200 + OSL_PLATFORM_THROUGH, !allowed));
 					}
 				}
 
 				if (this->vehicle->type == VEH_ROAD && (order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT)) && _settings_game.pf.pathfinder_for_roadvehs == VPF_YAPF) {
 					const DiagDirection dir = order->GetRoadVehTravelDirection();
 					if (_settings_client.gui.show_adv_load_mode_features || dir != INVALID_DIAGDIR) {
-						list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
-						list.push_back(std::make_unique<DropDownListCheckedItem>(dir == INVALID_DIAGDIR, STR_ORDER_RV_DIR_ANY, 0x300 + INVALID_DIAGDIR, false));
-						list.push_back(std::make_unique<DropDownListCheckedItem>(dir == DIAGDIR_NE, STR_ORDER_RV_DIR_NE, 0x300 + DIAGDIR_NE, false));
-						list.push_back(std::make_unique<DropDownListCheckedItem>(dir == DIAGDIR_SE, STR_ORDER_RV_DIR_SE, 0x300 + DIAGDIR_SE, false));
-						list.push_back(std::make_unique<DropDownListCheckedItem>(dir == DIAGDIR_SW, STR_ORDER_RV_DIR_SW, 0x300 + DIAGDIR_SW, false));
-						list.push_back(std::make_unique<DropDownListCheckedItem>(dir == DIAGDIR_NW, STR_ORDER_RV_DIR_NW, 0x300 + DIAGDIR_NW, false));
+						list.push_back(MakeDropDownListDividerItem());
+						list.push_back(MakeDropDownListCheckedItem(dir == INVALID_DIAGDIR, STR_ORDER_RV_DIR_ANY, 0x300 + INVALID_DIAGDIR, false));
+						list.push_back(MakeDropDownListCheckedItem(dir == DIAGDIR_NE, STR_ORDER_RV_DIR_NE, 0x300 + DIAGDIR_NE, false));
+						list.push_back(MakeDropDownListCheckedItem(dir == DIAGDIR_SE, STR_ORDER_RV_DIR_SE, 0x300 + DIAGDIR_SE, false));
+						list.push_back(MakeDropDownListCheckedItem(dir == DIAGDIR_SW, STR_ORDER_RV_DIR_SW, 0x300 + DIAGDIR_SW, false));
+						list.push_back(MakeDropDownListCheckedItem(dir == DIAGDIR_NW, STR_ORDER_RV_DIR_NW, 0x300 + DIAGDIR_NW, false));
 					}
 				}
 
 				if (!order->IsType(OT_IMPLICIT)) {
-					list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
+					list.push_back(MakeDropDownListDividerItem());
 					const Colours current_colour = order->GetColour();
-					list.push_back(std::make_unique<DropDownListCheckedItem>(current_colour == INVALID_COLOUR, STR_COLOUR_DEFAULT, 0x100 + INVALID_COLOUR, false));
+					list.push_back(MakeDropDownListCheckedItem(current_colour == INVALID_COLOUR, STR_COLOUR_DEFAULT, 0x100 + INVALID_COLOUR, false));
 					auto add_colour = [&](Colours colour) {
-						list.push_back(std::make_unique<DropDownListCheckedItem>(current_colour == colour, STR_COLOUR_DARK_BLUE + colour, 0x100 + colour, false));
+						list.push_back(MakeDropDownListCheckedItem(current_colour == colour, STR_COLOUR_DARK_BLUE + colour, 0x100 + colour, false));
 					};
 					add_colour(COLOUR_YELLOW);
 					add_colour(COLOUR_LIGHT_BLUE);
@@ -2985,17 +2985,17 @@ public:
 						}
 					}
 					DropDownList list;
-					list.push_back(std::make_unique<DropDownListStringItem>(STR_ORDER_GO_TO, ODDI_GO_TO, false));
-					list.push_back(std::make_unique<DropDownListStringItem>((this->vehicle->type == VEH_AIRCRAFT) ? STR_ORDER_GO_TO_NEAREST_HANGAR : STR_ORDER_GO_TO_NEAREST_DEPOT, ODDI_GO_TO_NEAREST_DEPOT, false));
-					list.push_back(std::make_unique<DropDownListStringItem>(STR_ORDER_CONDITIONAL, ODDI_CONDITIONAL, false));
-					list.push_back(std::make_unique<DropDownListStringItem>(STR_ORDER_SHARE, ODDI_SHARE, false));
-					list.push_back(std::make_unique<DropDownListStringItem>(STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON, ODDI_TRY_ACQUIRE_SLOT, false));
-					list.push_back(std::make_unique<DropDownListStringItem>(STR_ORDER_RELEASE_SLOT_BUTTON, ODDI_RELEASE_SLOT, false));
+					list.push_back(MakeDropDownListStringItem(STR_ORDER_GO_TO, ODDI_GO_TO, false));
+					list.push_back(MakeDropDownListStringItem((this->vehicle->type == VEH_AIRCRAFT) ? STR_ORDER_GO_TO_NEAREST_HANGAR : STR_ORDER_GO_TO_NEAREST_DEPOT, ODDI_GO_TO_NEAREST_DEPOT, false));
+					list.push_back(MakeDropDownListStringItem(STR_ORDER_CONDITIONAL, ODDI_CONDITIONAL, false));
+					list.push_back(MakeDropDownListStringItem(STR_ORDER_SHARE, ODDI_SHARE, false));
+					list.push_back(MakeDropDownListStringItem(STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON, ODDI_TRY_ACQUIRE_SLOT, false));
+					list.push_back(MakeDropDownListStringItem(STR_ORDER_RELEASE_SLOT_BUTTON, ODDI_RELEASE_SLOT, false));
 					if (show_counters) {
-						list.push_back(std::make_unique<DropDownListStringItem>(STR_ORDER_CHANGE_COUNTER_BUTTON, ODDI_CHANGE_COUNTER, false));
+						list.push_back(MakeDropDownListStringItem(STR_ORDER_CHANGE_COUNTER_BUTTON, ODDI_CHANGE_COUNTER, false));
 					}
-					list.push_back(std::make_unique<DropDownListStringItem>(STR_ORDER_LABEL_TEXT_BUTTON, ODDI_LABEL_TEXT, false));
-					list.push_back(std::make_unique<DropDownListStringItem>(STR_ORDER_LABEL_DEPARTURES_VIA_BUTTON, ODDI_LABEL_DEPARTURES_VIA, false));
+					list.push_back(MakeDropDownListStringItem(STR_ORDER_LABEL_TEXT_BUTTON, ODDI_LABEL_TEXT, false));
+					list.push_back(MakeDropDownListStringItem(STR_ORDER_LABEL_DEPARTURES_VIA_BUTTON, ODDI_LABEL_DEPARTURES_VIA, false));
 
 					ShowDropDownList(this, std::move(list), sel, WID_O_GOTO, 0, DDMF_NONE, DDSF_SHARED);
 				}
@@ -3073,9 +3073,9 @@ public:
 					const DispatchSchedule &ds = this->vehicle->orders->GetDispatchScheduleByIndex(i);
 					if (ds.ScheduleName().empty()) {
 						SetDParam(0, i + 1);
-						list.emplace_back(new DropDownListStringItem(STR_TIMETABLE_ASSIGN_SCHEDULE_ID, i, false));
+						list.push_back(MakeDropDownListStringItem(STR_TIMETABLE_ASSIGN_SCHEDULE_ID, i, false));
 					} else {
-						list.emplace_back(new DropDownListStringItem(ds.ScheduleName(), i, false));
+						list.push_back(MakeDropDownListStringItem(ds.ScheduleName(), i, false));
 					}
 				}
 				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_COND_SCHED_SELECT, 0);
@@ -3104,7 +3104,7 @@ public:
 				DropDownList list;
 				for (size_t i = 0; i < _sorted_standard_cargo_specs.size(); ++i) {
 					const CargoSpec *cs = _sorted_cargo_specs[i];
-					list.emplace_back(new DropDownListStringItem(cs->name, cs->Index(), false));
+					list.push_back(MakeDropDownListStringItem(cs->name, cs->Index(), false));
 				}
 				if (!list.empty()) ShowDropDownList(this, std::move(list), value, widget, 0);
 				break;
@@ -3149,7 +3149,7 @@ public:
 							continue;
 						}
 					}
-					list.push_back(std::make_unique<DropDownListStringItem>(OrderStringForVariable(this->vehicle, _order_conditional_variable[i]), _order_conditional_variable[i], false));
+					list.push_back(MakeDropDownListStringItem(OrderStringForVariable(this->vehicle, _order_conditional_variable[i]), _order_conditional_variable[i], false));
 				}
 				ShowDropDownList(this, std::move(list), ocv, WID_O_COND_VARIABLE);
 				break;
@@ -3164,11 +3164,11 @@ public:
 					const int false_cond = ((int)OCC_IS_FALSE) << 16;
 					int first_last_value = 0;
 					SB(first_last_value, ODCB_MODE_START, ODCB_MODE_COUNT, ODCM_FIRST_LAST);
-					list.emplace_back(new DropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_FIRST, true_cond | first_last_value, false));
-					list.emplace_back(new DropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_FIRST, false_cond | first_last_value, false));
+					list.push_back(MakeDropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_FIRST, true_cond | first_last_value, false));
+					list.push_back(MakeDropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_FIRST, false_cond | first_last_value, false));
 					SetBit(first_last_value, ODFLCB_LAST_SLOT);
-					list.emplace_back(new DropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_LAST, true_cond | first_last_value, false));
-					list.emplace_back(new DropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_LAST, false_cond | first_last_value, false));
+					list.push_back(MakeDropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_LAST, true_cond | first_last_value, false));
+					list.push_back(MakeDropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_LAST, false_cond | first_last_value, false));
 
 					uint16_t slot_flags = 0;
 					uint schedule_index = GB(o->GetXData(), 0, 16);
@@ -3185,8 +3185,8 @@ public:
 							SB(tag_cond_value, ODCB_MODE_START, ODCB_MODE_COUNT, OCDM_TAG);
 							SB(tag_cond_value, ODFLCB_TAG_START, ODFLCB_TAG_COUNT, tag);
 							SetDParam(0, tag + 1);
-							list.emplace_back(new DropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG, true_cond | tag_cond_value, false));
-							list.emplace_back(new DropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG, false_cond | tag_cond_value, false));
+							list.push_back(MakeDropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG, true_cond | tag_cond_value, false));
+							list.push_back(MakeDropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG, false_cond | tag_cond_value, false));
 						}
 					}
 
@@ -3280,9 +3280,9 @@ public:
 
 			case WID_O_COUNTER_OP: {
 				DropDownList list;
-				list.emplace_back(new DropDownListStringItem(STR_TRACE_RESTRICT_COUNTER_INCREASE, 0, false));
-				list.emplace_back(new DropDownListStringItem(STR_TRACE_RESTRICT_COUNTER_DECREASE, 1, false));
-				list.emplace_back(new DropDownListStringItem(STR_TRACE_RESTRICT_COUNTER_SET, 2, false));
+				list.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_COUNTER_INCREASE, 0, false));
+				list.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_COUNTER_DECREASE, 1, false));
+				list.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_COUNTER_SET, 2, false));
 				int selected = this->vehicle->GetOrder(this->OrderGetSel())->GetCounterOperation();
 				ShowDropDownList(this, std::move(list), selected, WID_O_COUNTER_OP, 0);
 				break;
@@ -3314,8 +3314,8 @@ public:
 
 			case WID_O_DEPARTURE_VIA_TYPE: {
 				DropDownList list;
-				list.emplace_back(new DropDownListStringItem(STR_ORDER_LABEL_DEPARTURES_SHOW_AS_VIA, OLST_DEPARTURES_VIA, false));
-				list.emplace_back(new DropDownListStringItem(STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA, OLST_DEPARTURES_REMOVE_VIA, false));
+				list.push_back(MakeDropDownListStringItem(STR_ORDER_LABEL_DEPARTURES_SHOW_AS_VIA, OLST_DEPARTURES_VIA, false));
+				list.push_back(MakeDropDownListStringItem(STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA, OLST_DEPARTURES_REMOVE_VIA, false));
 				int selected = this->vehicle->GetOrder(this->OrderGetSel())->GetLabelSubType();
 				ShowDropDownList(this, std::move(list), selected, WID_O_DEPARTURE_VIA_TYPE, 0);
 				break;

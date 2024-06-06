@@ -2902,7 +2902,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Ваша
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Злучэньне згублена
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}На працягу {NUM} сэкунд{P ы аў аў} не атрымана ніякіх дадзеных з боку сэрвэра
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :агульная памылка
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :памылка сынхранізацыі
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :не ўдалося загрузіць мапу
@@ -3817,7 +3817,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Тып даро
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}Парамэтр зьменнай NewGRF 60+x (шаснаццаткавы)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Выраўноўваньне спрайта {COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Наступны спрайт
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Перайсьці да наступнага звычайнага спрайта, прапускаючы змяняючыя колер, шрыфтавыя, псэўдаспрайты. Пераход з канца сьпісу да першага спрайта.
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Перайсьці да спрайта
@@ -5250,9 +5249,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Мерк
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Ідзе захаваньне,{}калі ласка, дачакайцеся завяршэньня!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Памылка аўтазахаваньня
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Не атрымалася прачытаць дыск
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Немагчыма захаваць гульню{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Немагчыма выдаліць файл
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Немагчыма загрузіць гульню{}{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Унутраная памылка: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Файл пашкоджаны — {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Захаваньне зроблена ў больш новай вэрсіі

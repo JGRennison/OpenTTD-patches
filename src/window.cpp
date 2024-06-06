@@ -23,7 +23,7 @@
 #include "tilehighlight_func.h"
 #include "network/network.h"
 #include "querystring_gui.h"
-#include "widgets/dropdown_func.h"
+#include "dropdown_func.h"
 #include "strings_func.h"
 #include "settings_type.h"
 #include "settings_func.h"
@@ -899,7 +899,7 @@ void DrawOverlappedWindow(Window *w, int left, int top, int right, int bottom, D
 	dp->top = top - w->top;
 	dp->pitch = _screen.pitch;
 	dp->dst_ptr = BlitterFactory::GetCurrentBlitter()->MoveTo(_screen.dst_ptr, left, top);
-	dp->zoom = ZOOM_LVL_NORMAL;
+	dp->zoom = ZOOM_LVL_MIN;
 	w->OnPaint();
 	if (unlikely(flags & DOWF_SHOW_DEBUG)) {
 		if (w->viewport != nullptr) ViewportDoDrawProcessAllPending();

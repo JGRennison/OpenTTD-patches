@@ -2258,7 +2258,7 @@ STR_NETWORK_ERROR_TIMEOUT_JOIN                                  :{WHITE}למחש
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}איבוד קשר אפשרי
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}ב- {NUM} שני{P "יה" "ות"} האחרוות לא התקבל מידע מהשרת
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :שגיאה כללית
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :שגירת סינכרון
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :טעינת מפה נכשלה
@@ -3069,7 +3069,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :סוג מסיל
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}משתנה NewGRF פרמטר 60+x (הקסה-דצימלי)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}מיישר ספרייט {COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}הספרייט הבא
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}עבור לספרייט הבא, כאשר נדלג על כל הספרייטים המיוחדים ולבסוף נחזור לתחילת הרשימה
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}דלג לספרייט
@@ -4320,9 +4319,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}{CURRENC
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}!שמירה מתבצעת,{} אנא המתן עד לסיום השמירה
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}שמירה אוטומטית נכשלה
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}לא ניתן לקרוא מהדיסק
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}שמירת המשחק נכשלה{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}לא ניתן למחוק את הקובץ
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}טעינת המשחק נכשלה{}{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :שגיאה פנימית: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :קובץ השמיקה פגום - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :קובץ השמירה נשמר עם גירסא חדישה יותר של המשחק

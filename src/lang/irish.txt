@@ -2349,7 +2349,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Níl d'a
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Seans gur cailleadh an nasc
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}Le {NUM} {P sh sh s s s} ní bhfuarthas aon sonraí ón bhfreastalaí
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :earráid ghinearálta
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :earráid dísioncronaithe
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :níorbh fhéidir an léarscáil a lódáil
@@ -3208,7 +3208,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :Cineál iarnró
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}Athróg NewGRF paraiméadar 60+x (heicsidheachúil)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Ag ailíniú sprite {COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}An chéad sprite eile
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Téigh chuig an chéad gnáth-sprite eile, ag scipeáil thar aon bhréag-sprite nó sprite athdhathaithe/clófhoirne agus ag timfhilleadh ag an deireadh
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Téigh chuig sprite
@@ -4494,9 +4493,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Ioncam M
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Fós ag sábháil,{}fan go mbeidh sé críochnaithe!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Theip ar uathshábháil
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Ní féidir an tiomántán a léamh
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Theip ar Shábháil Cluiche{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Ní féidir comhad a scriosadh
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Theip ar Lódáil Cluiche{}{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Earráid inmheánach: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Cluiche sábháilte briste - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Rinneadh an cluiche sábháilte le leagan níos nuaí

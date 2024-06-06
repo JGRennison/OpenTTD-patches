@@ -79,7 +79,7 @@ int GetBridgeHeight(TileIndex t)
 	return h + 1 + ApplyFoundationToSlope(f, tileh);
 }
 
-std::unordered_map<TileIndex, LongBridgeSignalStorage> _long_bridge_signal_sim_map;
+robin_hood::unordered_flat_map<TileIndex, LongBridgeSignalStorage> _long_bridge_signal_sim_map;
 
 SignalState GetBridgeEntranceSimulatedSignalStateExtended(TileIndex t, uint16_t signal)
 {

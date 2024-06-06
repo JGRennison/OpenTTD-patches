@@ -2376,7 +2376,7 @@ STR_NETWORK_ERROR_TIMEOUT_JOIN                                  :{WHITE}Computat
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Connexus forsitan amissus
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}In {NUM} prior{P e ibus} secund{P o is} nulla data e servatro accipitur
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :error generalis
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :error desync
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :non potuit legere tabulam
@@ -3157,7 +3157,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :Typus ferriviae
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}NewGRF var 60+x parametrum (sedecimale)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Dirigens spiritum {COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Spiritum secundum
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Procedere ad spiritum naturalem secundum et, termino contacto, ad primum revertere
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Ire ad spiritum
@@ -4392,9 +4391,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Reditus 
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Adhuc in servando,{}maneas usque ad terminum!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Autoservare defecit
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Non poterat discum legere
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Servare Ludum Defecit{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Non poterat fasciculum delere
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Legere Ludum Defecit{}{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Mendum internum: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Ludus corruptus - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Ludus servatus est in editione noviore

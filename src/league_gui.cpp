@@ -9,7 +9,6 @@
 
 #include "stdafx.h"
 #include "league_gui.h"
-
 #include "company_base.h"
 #include "company_gui.h"
 #include "gui.h"
@@ -22,7 +21,9 @@
 #include "town.h"
 #include "viewport_func.h"
 #include "window_gui.h"
+
 #include "widgets/league_widget.h"
+
 #include "table/strings.h"
 #include "table/sprites.h"
 
@@ -128,7 +129,7 @@ public:
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		if (widget != WID_PLT_BACKGROUND) return;
 
@@ -161,8 +162,8 @@ public:
 
 		this->text_width = widest_width + WidgetDimensions::scaled.hsep_indent * 3; // Keep some extra spacing
 
-		size->width = WidgetDimensions::scaled.framerect.Horizontal() + this->ordinal_width + this->icon.width + this->text_width + WidgetDimensions::scaled.hsep_wide;
-		size->height = this->line_height * MAX_COMPANIES + WidgetDimensions::scaled.framerect.Vertical();
+		size.width = WidgetDimensions::scaled.framerect.Horizontal() + this->ordinal_width + this->icon.width + this->text_width + WidgetDimensions::scaled.hsep_wide;
+		size.height = this->line_height * MAX_COMPANIES + WidgetDimensions::scaled.framerect.Vertical();
 	}
 
 	void OnGameTick() override
@@ -358,7 +359,7 @@ public:
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		if (widget != WID_SLT_BACKGROUND) return;
 
@@ -384,18 +385,18 @@ public:
 		if (!show_icon_column) this->icon_size.width = 0;
 		else this->icon_size.width += WidgetDimensions::scaled.hsep_wide;
 
-		size->width = this->rank_width + this->icon_size.width + this->text_width + this->score_width + WidgetDimensions::scaled.framerect.Horizontal() + WidgetDimensions::scaled.hsep_wide * 2;
-		size->height = this->line_height * std::max<uint>(3u, (unsigned)this->rows.size()) + WidgetDimensions::scaled.framerect.Vertical();
+		size.width = this->rank_width + this->icon_size.width + this->text_width + this->score_width + WidgetDimensions::scaled.framerect.Horizontal() + WidgetDimensions::scaled.hsep_wide * 2;
+		size.height = this->line_height * std::max<uint>(3u, (unsigned)this->rows.size()) + WidgetDimensions::scaled.framerect.Vertical();
 
 		if (!lt->header.empty()) {
 			SetDParamStr(0, lt->header);
-			this->header_height = GetStringHeight(STR_JUST_RAW_STRING, size->width - WidgetDimensions::scaled.framerect.Horizontal()) + WidgetDimensions::scaled.vsep_wide;
-			size->height += header_height;
+			this->header_height = GetStringHeight(STR_JUST_RAW_STRING, size.width - WidgetDimensions::scaled.framerect.Horizontal()) + WidgetDimensions::scaled.vsep_wide;
+			size.height += header_height;
 		} else this->header_height = 0;
 
 		if (!lt->footer.empty()) {
 			SetDParamStr(0, lt->footer);
-			size->height += GetStringHeight(STR_JUST_RAW_STRING, size->width - WidgetDimensions::scaled.framerect.Horizontal()) + WidgetDimensions::scaled.vsep_wide;
+			size.height += GetStringHeight(STR_JUST_RAW_STRING, size.width - WidgetDimensions::scaled.framerect.Horizontal()) + WidgetDimensions::scaled.vsep_wide;
 		}
 	}
 

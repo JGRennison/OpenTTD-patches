@@ -15,6 +15,7 @@
 #include "company_base.h"
 #include "company_gui.h"
 #include "settings_gui.h"
+#include "dropdown_func.h"
 #include "window_gui.h"
 #include "window_func.h"
 #include "viewport_func.h"
@@ -172,7 +173,7 @@ struct PlansWindow : Window {
 				if (_current_plan) {
 					DropDownList list;
 					auto add_colour = [&](Colours colour) {
-						list.emplace_back(new DropDownListStringItem(STR_COLOUR_DARK_BLUE + colour, colour, false));
+						list.push_back(MakeDropDownListStringItem(STR_COLOUR_DARK_BLUE + colour, colour, false));
 					};
 					add_colour(COLOUR_WHITE);
 					add_colour(COLOUR_YELLOW);
@@ -348,25 +349,25 @@ struct PlansWindow : Window {
 		this->vscroll->SetCapacityFromWidget(this, WID_PLN_LIST, WidgetDimensions::scaled.framerect.Vertical());
 	}
 
-	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_PLN_LIST:
 				this->company_icon_spr_dim = GetSpriteSize(SPR_COMPANY_ICON);
-				resize->height = std::max<int>(GetCharacterHeight(FS_NORMAL), SETTING_BUTTON_HEIGHT);
-				size->height = resize->height * 5 + WidgetDimensions::scaled.framerect.Vertical();
+				resize.height = std::max<int>(GetCharacterHeight(FS_NORMAL), SETTING_BUTTON_HEIGHT);
+				size.height = resize.height * 5 + WidgetDimensions::scaled.framerect.Vertical();
 				break;
 
 			case WID_PLN_NEW:
-				*size = adddim(maxdim(GetStringBoundingBox(STR_PLANS_NEW_PLAN), GetStringBoundingBox(STR_PLANS_ADDING_LINES)), padding);
+				size = adddim(maxdim(GetStringBoundingBox(STR_PLANS_NEW_PLAN), GetStringBoundingBox(STR_PLANS_ADDING_LINES)), padding);
 				break;
 
 			case WID_PLN_ADD_LINES:
-				*size = adddim(GetStringBoundingBox(STR_PLANS_ADD_LINES), padding);
+				size = adddim(GetStringBoundingBox(STR_PLANS_ADD_LINES), padding);
 				break;
 
 			case WID_PLN_VISIBILITY:
-				*size = adddim(maxdim(GetStringBoundingBox(STR_PLANS_VISIBILITY_PRIVATE), GetStringBoundingBox(STR_PLANS_VISIBILITY_PUBLIC)), padding);
+				size = adddim(maxdim(GetStringBoundingBox(STR_PLANS_VISIBILITY_PRIVATE), GetStringBoundingBox(STR_PLANS_VISIBILITY_PUBLIC)), padding);
 				break;
 
 			case WID_PLN_COLOUR: {
@@ -374,20 +375,20 @@ struct PlansWindow : Window {
 				for (uint8_t colour = COLOUR_BEGIN; colour != COLOUR_END; ++colour) {
 					dim = maxdim(dim, GetStringBoundingBox(STR_COLOUR_DARK_BLUE + colour));
 				}
-				*size = adddim(dim, padding);
+				size = adddim(dim, padding);
 				break;
 			}
 
 			case WID_PLN_DELETE:
-				*size = adddim(GetStringBoundingBox(STR_PLANS_DELETE), padding);
+				size = adddim(GetStringBoundingBox(STR_PLANS_DELETE), padding);
 				break;
 
 			case WID_PLN_RENAME:
-				*size = adddim(GetStringBoundingBox(STR_BUTTON_RENAME), padding);
+				size = adddim(GetStringBoundingBox(STR_BUTTON_RENAME), padding);
 				break;
 
 			case WID_PLN_TAKE_OWNERSHIP:
-				*size = adddim(GetStringBoundingBox(STR_PLANS_TAKE_OWNERSHIP), padding);
+				size = adddim(GetStringBoundingBox(STR_PLANS_TAKE_OWNERSHIP), padding);
 				break;
 		}
 	}

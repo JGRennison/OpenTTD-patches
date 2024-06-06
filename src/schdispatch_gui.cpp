@@ -26,6 +26,8 @@
 #include "settings_type.h"
 #include "viewport_func.h"
 #include "zoom_func.h"
+#include "dropdown_func.h"
+#include "dropdown_common_type.h"
 #include "core/geometry_func.hpp"
 #include "tilehighlight_func.h"
 
@@ -279,7 +281,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		return nullptr;
 	}
 
-	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_SCHDISPATCH_MATRIX: {
@@ -301,22 +303,22 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				this->header_width = std::max(this->delete_flag_width, this->arrow_flag_width);
 				this->base_width = unumber.width + this->header_width + 4;
 
-				resize->height = min_height;
-				resize->width = base_width + WidgetDimensions::scaled.framerect.left + WidgetDimensions::scaled.framerect.right;
-				size->width = resize->width * 3;
-				size->height = resize->height * 3;
+				resize.height = min_height;
+				resize.width = base_width + WidgetDimensions::scaled.framerect.left + WidgetDimensions::scaled.framerect.right;
+				size.width = resize.width * 3;
+				size.height = resize.height * 3;
 
-				fill->width = resize->width;
-				fill->height = resize->height;
+				fill.width = resize.width;
+				fill.height = resize.height;
 				break;
 			}
 
 			case WID_SCHDISPATCH_SUMMARY_PANEL:
-				size->height = (5 + this->extra_line_count) * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical() + (WidgetDimensions::scaled.vsep_wide * 2);
+				size.height = (5 + this->extra_line_count) * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical() + (WidgetDimensions::scaled.vsep_wide * 2);
 				uint warning_count = this->warning_count;
 				if (warning_count > 0) {
 					const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
-					size->height += warning_count * std::max<int>(warning_dimensions.height, GetCharacterHeight(FS_NORMAL));
+					size.height += warning_count * std::max<int>(warning_dimensions.height, GetCharacterHeight(FS_NORMAL));
 				}
 				break;
 		}
@@ -1040,7 +1042,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				const DispatchSchedule &schedule = this->GetSelectedSchedule();
 				DropDownList list;
 				auto add_item = [&](StringID string, int result) {
-					std::unique_ptr<DropDownListStringItem> item(new DropDownListStringItem(string, result, false));
+					std::unique_ptr<DropDownListStringItem> item = std::make_unique<DropDownListStringItem>(string, result, false);
 					item->SetColourFlags(TC_FORCED);
 					list.emplace_back(std::move(item));
 				};
@@ -1049,7 +1051,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				add_item(STR_SCHDISPATCH_REMOVE_SCHEDULE, SCH_MD_REMOVE_SCHEDULE);
 				add_item(STR_SCHDISPATCH_DUPLICATE_SCHEDULE, SCH_MD_DUPLICATE_SCHEDULE);
 				add_item(STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES, SCH_MD_APPEND_VEHICLE_SCHEDULES);
-				list.push_back(std::make_unique<DropDownListCheckedItem>(schedule.GetScheduledDispatchReuseSlots(), STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS, SCH_MD_REUSE_DEPARTURE_SLOTS, false));
+				list.push_back(MakeDropDownListCheckedItem(schedule.GetScheduledDispatchReuseSlots(), STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS, SCH_MD_REUSE_DEPARTURE_SLOTS, false));
 				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGEMENT);
 				break;
 			}
@@ -1105,7 +1107,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 				DropDownList list;
 				auto add_item = [&](StringID str, uint bit, bool disabled) {
-					list.push_back(std::make_unique<DropDownListCheckedItem>(HasBit(selected_slot->flags, bit), str, bit, disabled));
+					list.push_back(MakeDropDownListCheckedItem(HasBit(selected_slot->flags, bit), str, bit, disabled));
 				};
 				add_item(STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT, DispatchSlot::SDSF_REUSE_SLOT, schedule.GetScheduledDispatchReuseSlots());
 				for (uint8_t flag_bit = DispatchSlot::SDSF_FIRST_TAG; flag_bit <= DispatchSlot::SDSF_LAST_TAG; flag_bit++) {
@@ -1459,7 +1461,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 		return pt;
 	}
 
-	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		Dimension d = {0, 0};
 		switch (widget) {
@@ -1494,7 +1496,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 
 		d.width += padding.width;
 		d.height += padding.height;
-		*size = d;
+		size = d;
 	}
 
 	virtual void SetStringParameters(WidgetID widget) const override
@@ -1515,7 +1517,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 			DropDownList list;
 			for (uint i = 0; i < 24; i++) {
 				SetDParam(0, i);
-				list.emplace_back(new DropDownListStringItem(STR_JUST_INT, i, false));
+				list.push_back(MakeDropDownListStringItem(STR_JUST_INT, i, false));
 			}
 			ShowDropDownList(this, std::move(list), current.ClockHour(), widget);
 		};
@@ -1524,7 +1526,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 			DropDownList list;
 			for (uint i = 0; i < 60; i++) {
 				SetDParam(0, i);
-				list.emplace_back(new DropDownListStringItem(STR_JUST_INT, i, false));
+				list.push_back(MakeDropDownListStringItem(STR_JUST_INT, i, false));
 			}
 			ShowDropDownList(this, std::move(list), current.ClockMinute(), widget);
 		};

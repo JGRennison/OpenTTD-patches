@@ -22,7 +22,8 @@
 #include "station_type.h"
 #include "newgrf_airport.h"
 #include "newgrf_callbacks.h"
-#include "widgets/dropdown_type.h"
+#include "dropdown_type.h"
+#include "dropdown_func.h"
 #include "core/geometry_func.hpp"
 #include "hotkeys.h"
 #include "vehicle_func.h"
@@ -232,8 +233,8 @@ class BuildAirportWindow : public PickerWindowBase {
 	{
 		DropDownList list;
 
-		for (uint i = 0; AirportClass::IsClassIDValid((AirportClassID)i); i++) {
-			list.push_back(std::make_unique<DropDownListStringItem>(AirportClass::Get((AirportClassID)i)->name, i, false));
+		for (const auto &cls : AirportClass::Classes()) {
+			list.push_back(MakeDropDownListStringItem(cls.name, cls.Index()));
 		}
 
 		return list;
@@ -308,17 +309,17 @@ public:
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_AP_CLASS_DROPDOWN: {
 				Dimension d = {0, 0};
-				for (uint i = 0; i < AirportClass::GetClassCount(); i++) {
-					d = maxdim(d, GetStringBoundingBox(AirportClass::Get((AirportClassID)i)->name));
+				for (const auto &cls : AirportClass::Classes()) {
+					d = maxdim(d, GetStringBoundingBox(cls.name));
 				}
 				d.width += padding.width;
 				d.height += padding.height;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 
@@ -327,11 +328,11 @@ public:
 					const AirportSpec *as = AirportSpec::Get(i);
 					if (!as->enabled) continue;
 
-					size->width = std::max(size->width, GetStringBoundingBox(as->name).width + padding.width);
+					size.width = std::max(size.width, GetStringBoundingBox(as->name).width + padding.width);
 				}
 
 				this->line_height = GetCharacterHeight(FS_NORMAL) + padding.height;
-				size->height = 5 * this->line_height;
+				size.height = 5 * this->line_height;
 				break;
 			}
 
@@ -345,7 +346,7 @@ public:
 							Dimension d = GetSpriteSize(sprite);
 							d.width += WidgetDimensions::scaled.framerect.Horizontal();
 							d.height += WidgetDimensions::scaled.framerect.Vertical();
-							*size = maxdim(d, *size);
+							size = maxdim(d, size);
 						}
 					}
 				}
@@ -359,8 +360,8 @@ public:
 						StringID string = GetAirportTextCallback(as, layout, CBID_AIRPORT_ADDITIONAL_TEXT);
 						if (string == STR_UNDEFINED) continue;
 
-						Dimension d = GetStringMultiLineBoundingBox(string, *size);
-						*size = maxdim(d, *size);
+						Dimension d = GetStringMultiLineBoundingBox(string, size);
+						size = maxdim(d, size);
 					}
 				}
 				break;
@@ -537,14 +538,12 @@ public:
 		if (change_class) {
 			/* If that fails, select the first available airport
 			 * from the first class where airports are available. */
-			for (AirportClassID j = APC_BEGIN; j < APC_MAX; j++) {
-				AirportClass *apclass = AirportClass::Get(j);
-				for (uint i = 0; i < apclass->GetSpecCount(); i++) {
-					const AirportSpec *as = apclass->GetSpec(i);
+			for (const auto &cls : AirportClass::Classes()) {
+				for (const auto &as : cls.Specs()) {
 					if (as->IsAvailable()) {
-						_selected_airport_class = j;
-						this->vscroll->SetCount(apclass->GetSpecCount());
-						this->SelectOtherAirport(i);
+						_selected_airport_class = cls.Index();
+						this->vscroll->SetCount(cls.GetSpecCount());
+						this->SelectOtherAirport(as->GetIndex());
 						return;
 					}
 				}

@@ -53,6 +53,7 @@
 #include "station_base.h"
 #include "crashlog.h"
 #include "engine_func.h"
+#include "engine_override.h"
 #include "core/random_func.hpp"
 #include "rail_gui.h"
 #include "road_gui.h"
@@ -1049,7 +1050,7 @@ int openttd_main(int argc, char *argv[])
 	InitializeSpriteSorter();
 
 	/* Initialize the zoom level of the screen to normal */
-	_screen.zoom = ZOOM_LVL_NORMAL;
+	_screen.zoom = ZOOM_LVL_MIN;
 
 	/* The video driver is now selected, now initialise GUI zoom */
 	AdjustGUIZoom(AGZM_STARTUP);
@@ -1321,7 +1322,7 @@ bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileTy
 	SaveOrLoadResult result = (lf == nullptr) ? SaveOrLoad(filename, fop, dft, subdir) : LoadWithFilter(std::move(lf));
 	if (result == SL_OK) return true;
 
-	if (error_detail != nullptr) *error_detail = GetSaveLoadErrorString();
+	if (error_detail != nullptr) *error_detail = GetString(GetSaveLoadErrorType()) + GetString(GetSaveLoadErrorMessage());
 
 	if (_network_dedicated && ogm == GM_MENU) {
 		/*
@@ -1475,8 +1476,7 @@ void SwitchToMode(SwitchMode new_mode)
 			ResetWindowSystem();
 
 			if (!SafeLoad(_file_to_saveload.name, _file_to_saveload.file_op, _file_to_saveload.detail_ftype, GM_NORMAL, NO_DIRECTORY)) {
-				SetDParamStr(0, GetSaveLoadErrorString());
-				ShowErrorMessage(STR_JUST_RAW_STRING, INVALID_STRING_ID, WL_CRITICAL);
+				ShowErrorMessage(GetSaveLoadErrorType(), GetSaveLoadErrorMessage(), WL_CRITICAL);
 			} else {
 				if (_file_to_saveload.abstract_ftype == FT_SCENARIO) {
 					OnStartScenario();
@@ -1519,8 +1519,7 @@ void SwitchToMode(SwitchMode new_mode)
 				/* Cancel the saveload pausing */
 				DoCommandP(0, PM_PAUSED_SAVELOAD, 0, CMD_PAUSE);
 			} else {
-				SetDParamStr(0, GetSaveLoadErrorString());
-				ShowErrorMessage(STR_JUST_RAW_STRING, INVALID_STRING_ID, WL_CRITICAL);
+				ShowErrorMessage(GetSaveLoadErrorType(), GetSaveLoadErrorMessage(), WL_CRITICAL);
 			}
 
 			UpdateSocialIntegration(GM_EDITOR);
@@ -1557,8 +1556,7 @@ void SwitchToMode(SwitchMode new_mode)
 			SaveModeFlags flags = SMF_NONE;
 			if (_game_mode == GM_EDITOR) flags |= SMF_SCENARIO;
 			if (SaveOrLoad(_file_to_saveload.name, SLO_SAVE, DFT_GAME_FILE, NO_DIRECTORY, true, flags) != SL_OK) {
-				SetDParamStr(0, GetSaveLoadErrorString());
-				ShowErrorMessage(STR_JUST_RAW_STRING, INVALID_STRING_ID, WL_ERROR);
+				ShowErrorMessage(GetSaveLoadErrorType(), GetSaveLoadErrorMessage(), WL_ERROR);
 			} else {
 				CloseWindowById(WC_SAVELOAD, 0);
 			}
@@ -1752,10 +1750,10 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 			if (old_town_caches[i].part_of_subsidy != t->cache.part_of_subsidy) {
 				CCLOG("town cache population mismatch: town %i, (old size: %u, new size: %u)", (int)t->index, old_town_caches[i].part_of_subsidy, t->cache.part_of_subsidy);
 			}
-			if (MemCmpT(old_town_caches[i].squared_town_zone_radius, t->cache.squared_town_zone_radius, lengthof(t->cache.squared_town_zone_radius)) != 0) {
+			if (old_town_caches[i].squared_town_zone_radius != t->cache.squared_town_zone_radius) {
 				CCLOG("town cache squared_town_zone_radius mismatch: town %i", (int)t->index);
 			}
-			if (MemCmpT(&old_town_caches[i].building_counts, &t->cache.building_counts) != 0) {
+			if (old_town_caches[i].building_counts != t->cache.building_counts) {
 				CCLOG("town cache building_counts mismatch: town %i", (int)t->index);
 			}
 			if (old_town_stations_nears[i] != t->stations_near) {
@@ -1810,7 +1808,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 
 		uint i = 0;
 		for (const Company *c : Company::Iterate()) {
-			if (MemCmpT(old_infrastructure.data() + i, &c->infrastructure) != 0) {
+			if (old_infrastructure[i] != c->infrastructure) {
 				CCLOG("infrastructure cache mismatch: company %i", (int)c->index);
 				char buffer[4096];
 				old_infrastructure[i].Dump(buffer, lastof(buffer));
@@ -1966,10 +1964,10 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 				};
 				switch (u->type) {
 					case VEH_TRAIN:
-						if (memcmp(&gro_cache[length], &Train::From(u)->gcache, sizeof(GroundVehicleCache)) != 0) {
+						if (gro_cache[length] != Train::From(u)->gcache) {
 							print_gv_cache_diff("train", gro_cache[length], Train::From(u)->gcache);
 						}
-						if (memcmp(&tra_cache[length], &Train::From(u)->tcache, sizeof(TrainCache)) != 0) {
+						if (tra_cache[length] != Train::From(u)->tcache) {
 							CCLOGV("train cache mismatch: %c%c%c%c%c%c%c%c%c%c%c",
 									tra_cache[length].cached_override != Train::From(u)->tcache.cached_override ? 'o' : '-',
 									tra_cache[length].cached_curve_speed_mod != Train::From(u)->tcache.cached_curve_speed_mod ? 'C' : '-',
@@ -1994,12 +1992,12 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 						}
 						break;
 					case VEH_ROAD:
-						if (memcmp(&gro_cache[length], &RoadVehicle::From(u)->gcache, sizeof(GroundVehicleCache)) != 0) {
+						if (gro_cache[length] != RoadVehicle::From(u)->gcache) {
 							print_gv_cache_diff("road vehicle", gro_cache[length], Train::From(u)->gcache);
 						}
 						break;
 					case VEH_AIRCRAFT:
-						if (memcmp(&air_cache[length], &Aircraft::From(u)->acache, sizeof(AircraftCache)) != 0) {
+						if (air_cache[length] != Aircraft::From(u)->acache) {
 							CCLOGV("Aircraft vehicle cache mismatch: %c%c",
 									air_cache[length].cached_max_range != Aircraft::From(u)->acache.cached_max_range ? 'r' : '-',
 									air_cache[length].cached_max_range_sqr != Aircraft::From(u)->acache.cached_max_range_sqr ? 's' : '-');

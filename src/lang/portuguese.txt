@@ -1714,10 +1714,10 @@ STR_CONFIG_SETTING_PAUSE_ON_NEW_GAME_HELPTEXT                   :Quando ativo, o
 STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL                          :Durante pausa permitir: {STRING}
 STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_HELPTEXT                 :Seleccionar que acções podem ser feitas enquanto o jogo está em pausa
 ###length 4
-STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_NO_ACTIONS               :Nenhuma acção
+STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_NO_ACTIONS               :Nenhuma ação
 STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_NON_CONSTRUCTION     :Todas as acções sem construção
 STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_NON_LANDSCAPING      :Todas expecto acções que modificam o terreno
-STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_ACTIONS              :Todas as acções
+STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_ACTIONS              :Todas as ações
 
 STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS                       :Usar a lista avançada de veículos: {STRING}
 STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS_HELPTEXT              :Ativar a utilização de listas avançadas de veículos para o agrupamento de veículos
@@ -2091,8 +2091,8 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_VOLUME_IMPERIAL           :Imperial (gal)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VOLUME_METRIC             :Métrico (l)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VOLUME_SI                 :SI (m³)
 
-STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE                     :Unidades de esforço de tracção: {STRING}
-STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_HELPTEXT            :Quando a força de tracção é mostrada no interface de utilizador, mostrar na unidade seleccionada
+STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE                     :Unidades de esforço de tração: {STRING}
+STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_HELPTEXT            :Sempre que o esforço de tração (ou força de tração) for exibido na interface do utilizador, será mostrado nessas unidades
 ###length 3
 STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_IMPERIAL            :Imperial (lbf)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_METRIC              :Métrico (kgf)
@@ -2575,6 +2575,7 @@ STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :{WHITE}O seu no
 STR_NETWORK_ERROR_BAD_SERVER_NAME                               :{WHITE}O seu nome do seu servidor não foi definido. O nome pode ser definido no topo da janela de Multi-jogador
 STR_NETWORK_ERROR_WRONG_REVISION                                :{WHITE}A revisão deste cliente não condiz com a revisão do servidor
 STR_NETWORK_ERROR_WRONG_PASSWORD                                :{WHITE}Palavra-chave incorrecta
+STR_NETWORK_ERROR_NOT_ON_ALLOW_LIST                             :{WHITE}Você não está na lista de clientes permitidos
 STR_NETWORK_ERROR_SERVER_FULL                                   :{WHITE}Servidor cheio
 STR_NETWORK_ERROR_SERVER_BANNED                                 :{WHITE}Foi banido deste servidor
 STR_NETWORK_ERROR_KICKED                                        :{WHITE}Você foi expulso do jogo
@@ -2590,7 +2591,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}O seu no
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Possível perda de conexão
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}No{P 0 "" s} último{P 0 "" s} {NUM} segundo{P "" s} nenhum dado foi recebido do servidor
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :erro geral
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :erro de dessincronização
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :não foi possível carregar o mapa
@@ -2602,6 +2603,7 @@ STR_NETWORK_ERROR_CLIENT_NOT_EXPECTED                           :foi recebido um
 STR_NETWORK_ERROR_CLIENT_WRONG_REVISION                         :revisão incorrecta
 STR_NETWORK_ERROR_CLIENT_NAME_IN_USE                            :nome já está a ser utilizado
 STR_NETWORK_ERROR_CLIENT_WRONG_PASSWORD                         :palavra-chave incorrecta
+STR_NETWORK_ERROR_CLIENT_NOT_ON_ALLOW_LIST                      :não está na lista de permissões
 STR_NETWORK_ERROR_CLIENT_COMPANY_MISMATCH                       :ID da empresa errado na aplicação de rede
 STR_NETWORK_ERROR_CLIENT_KICKED                                 :avisado pelo servidor
 STR_NETWORK_ERROR_CLIENT_CHEATER                                :estava a tentar usar batota
@@ -3487,7 +3489,9 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Tipo de estrada
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}Parâmetro da variável 60+x do NewGRF (hexadecimal)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}A alinhar gráfico {COMMA} ({STRING})
+STR_SPRITE_ALIGNER_CAPTION_NO_ACTION                            :{WHITE}Alinhando sprite: ({STRING}:{NUM})
+STR_SPRITE_ALIGNER_CAPTION_ACTIONA                              :{WHITE}Alinhando sprite: Ação 0xA, {COMMA} ({STRING}:{NUM})
+STR_SPRITE_ALIGNER_CAPTION_ACTION5                              :{WHITE}Alinhando sprite: Ação 0x5, tipo {HEX}, {COMMA} ({STRING}:{NUM})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Gráfico seguinte
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Proceder ao gráfico normal seguinte, ignorando quaisquer gráficos pseudo/recolorir/tipo-de-letra e dando a volta no fim
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Ir para o gráfico
@@ -3496,6 +3500,7 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Gráfico
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Proceder ao gráfico normal anterior, ignorando quaisquer gráficos pseudo/recolorir/tipo-de-letra e dando a volta no início
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Representação do gráfico seleccionado actualmente. O alinhamento é ignorado a desenhar este gráfico
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Desloca o gráfico, alterando os intervalos  X e Y. Ctrl+Clique desloca o gráfico 8 unidades de uma só vez
+STR_SPRITE_ALIGNER_SPRITE                                       :{STRING}:{NUM}
 
 ###length 2
 STR_SPRITE_ALIGNER_CENTRE_OFFSET                                :{BLACK}Deslocamento centrado
@@ -3533,7 +3538,7 @@ STR_NEWGRF_ERROR_UNEXPECTED_SPRITE                              :Gráfico invál
 STR_NEWGRF_ERROR_UNKNOWN_PROPERTY                               :Propriedade de Ação 0 desconhecida {4:HEX} (sprite {3:NUM})
 STR_NEWGRF_ERROR_INVALID_ID                                     :Tentativa de uso de ID Inválido (sprite {3:NUM})
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} contém um objecto gráfico corrompido. Todos os objectos gráficos corrompidos serão apresentados como um ponto de interrogação (?) vermelho.
-STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Contém múltiplas entradas Action 8 - (sprite {3:NUM})
+STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Contém múltiplas entradas Ação 8 - (sprite {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Leitura além dos limites do pseudo-sprite (sprite {3:NUM})
 STR_NEWGRF_ERROR_GRM_FAILED                                     :Recursos GRF pedidos não disponíveis (sprite {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} foi desativado por {STRING}
@@ -3645,10 +3650,10 @@ STR_LOCAL_AUTHORITY_ZONE                                        :{BLACK}Zona
 STR_LOCAL_AUTHORITY_ZONE_TOOLTIP                                :{BLACK}Mostrar a zona dentro dos limites da autoridade local
 STR_LOCAL_AUTHORITY_COMPANY_RATINGS                             :{BLACK}Classificações de empresas de transporte:
 STR_LOCAL_AUTHORITY_COMPANY_RATING                              :{YELLOW}{COMPANY} {COMPANY_NUM}: {ORANGE}{STRING}
-STR_LOCAL_AUTHORITY_ACTIONS_TITLE                               :{BLACK}Acções disponíveis:
-STR_LOCAL_AUTHORITY_ACTIONS_TOOLTIP                             :{BLACK}Lista de acções disponíveis nesta localidade - fazer clique no item para mais detalhes
+STR_LOCAL_AUTHORITY_ACTIONS_TITLE                               :{BLACK}Ações disponíveis:
+STR_LOCAL_AUTHORITY_ACTIONS_TOOLTIP                             :{BLACK}Lista de ações disponíveis nesta localidade - clique no item para mais detalhes
 STR_LOCAL_AUTHORITY_DO_IT_BUTTON                                :{BLACK}Aplicar
-STR_LOCAL_AUTHORITY_DO_IT_TOOLTIP                               :{BLACK}Realizar a acção destacada na lista acima
+STR_LOCAL_AUTHORITY_DO_IT_TOOLTIP                               :{BLACK}Realizar a ação destacada na lista acima
 
 ###length 8
 STR_LOCAL_AUTHORITY_ACTION_SMALL_ADVERTISING_CAMPAIGN           :Pequena campanha publicitária
@@ -4090,7 +4095,7 @@ STR_PURCHASE_INFO_ALL_TYPES                                     :Todos os tipos 
 STR_PURCHASE_INFO_NONE                                          :Nenhum
 STR_PURCHASE_INFO_ENGINES_ONLY                                  :Apenas locomotivas
 STR_PURCHASE_INFO_ALL_BUT                                       :Todas menos {CARGO_LIST}
-STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Máx. Força de Tracção: {GOLD}{FORCE}
+STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Esforço de Tração Máx: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Alcance: {GOLD}{COMMA} mosaicos
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Tipo de aeronave: {GOLD}{STRING}
 
@@ -4448,10 +4453,10 @@ STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}Capacida
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK}Créditos de Transferência: {LTBLUE}{CURRENCY_LONG}
 
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS                     :{BLACK}Intervalo de manutenção: {LTBLUE}{COMMA}{NBSP}dias{BLACK} {STRING}
-STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES                  :{BLACK}Intervalo de manutenção: {LTBLUE}{COMMA}{NBSP}minutos{BLACK} {STRING}
+STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES                  :{BLACK}Intervalo de manutenção: {LTBLUE}{COMMA}{NBSP}minuto{P "" s}{BLACK} {STRING}
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT                  :{BLACK}Intervalo de manutenção: {LTBLUE}{COMMA}%{BLACK} {STRING}
 STR_VEHICLE_DETAILS_LAST_SERVICE_DATE                           :Última manutenção: {LTBLUE}{DATE_LONG}
-STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO                    :Última manutenção: {LTBLUE}{NUM} minutos atrás
+STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO                    :Última manutenção: {LTBLUE}{NUM} minuto{P "" s} atrás
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_DAYS    :{BLACK}Aumentar o intervalo de manutenção em 10 dias. Ctrl+Clique para aumentar o intervalo de manutenção em 5 dias
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_MINUTES :{BLACK}Aumentar o intervalo de manutenção em 5 minutos. Ctrl+Clique para aumentar o intervalo de manutenção em 1 minuto
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_PERCENT :{BLACK}Aumentar o intervalo de manutenção em 10%. Ctrl+Clique para aumentar o intervalo de manutenção em 5%
@@ -4642,7 +4647,7 @@ STR_ORDER_REFIT_ORDER                                           :(Adaptar para {
 STR_ORDER_REFIT_STOP_ORDER                                      :(Adaptar para {STRING} e parar)
 STR_ORDER_STOP_ORDER                                            :(Parar)
 
-STR_ORDER_WAIT_TO_UNBUNCH                                       :(esperar por desagrupar)
+STR_ORDER_WAIT_TO_UNBUNCH                                       :(Esperar por desagrupar)
 
 STR_ORDER_GO_TO_STATION                                         :{STRING} {STATION} {STRING}
 STR_ORDER_GO_TO_STATION_CAN_T_USE_STATION                       :{PUSH_COLOUR}{RED}(Não pode usar a estação){POP_COLOUR} {STRING} {STATION} {STRING}
@@ -4898,9 +4903,9 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Lucro Es
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Gravação ainda em curso,{}por favor aguarde!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Falha ao guardar automaticamente
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Não é possível ler unidade
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Falha ao guardar jogo{}{STRING}
+STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Falha ao guardar jogo...
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Não é possível eliminar ficheiro
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Falha ao abrir jogo{}{STRING}
+STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Falha ao carregar jogo...
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Erro interno: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Ficheiro corrompido - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Jogo gravado numa versão mais recente do jogo
@@ -4994,7 +4999,7 @@ STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Não é 
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Não é possível construir sede da empresa...
 
 # Town related errors
-STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Não é possível construir localidades
+STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Não é possível construir localidades...
 STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE}Não é possível renomear localidade...
 STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :{WHITE}Não é possível construir uma localidade aqui...
 STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}Não é possível expandir localidade...
@@ -5832,6 +5837,7 @@ STR_JUST_DATE_ISO                                               :{DATE_ISO}
 STR_JUST_STRING                                                 :{STRING}
 STR_JUST_STRING1                                                :{STRING}
 STR_JUST_STRING2                                                :{STRING}
+STR_JUST_STRING4                                                :{STRING}
 STR_JUST_STRING_STRING                                          :{STRING}{STRING}
 STR_JUST_RAW_STRING                                             :{STRING}
 STR_JUST_BIG_RAW_STRING                                         :{BIG_FONT}{STRING}

@@ -11,8 +11,9 @@
 #define CURRENCY_H
 
 #include "date_type.h"
-#include "string_func.h"
+#include "settings_type.h"
 #include "strings_type.h"
+#include <array>
 
 static const int CF_NOEURO = 0; ///< Currency never switches to the Euro (as far as known).
 static const int CF_ISEURO = 1; ///< Currency _is_ the Euro.
@@ -98,11 +99,25 @@ struct CurrencySpec {
 	}
 };
 
-extern CurrencySpec _currency_specs[CURRENCY_END];
+extern std::array<CurrencySpec, CURRENCY_END> _currency_specs;
 
-/* XXX small hack, but makes the rest of the code a bit nicer to read */
-#define _custom_currency (_currency_specs[CURRENCY_CUSTOM])
-#define _currency ((const CurrencySpec*)&_currency_specs[GetGameSettings().locale.currency])
+/**
+ * Get the custom currency.
+ * @return Reference to custom currency.
+ */
+inline CurrencySpec &GetCustomCurrency()
+{
+	return _currency_specs[CURRENCY_CUSTOM];
+}
+
+/**
+ * Get the currently selected currency.
+ * @return Read-only reference to the current currency.
+ */
+inline const CurrencySpec &GetCurrency()
+{
+	return _currency_specs[GetGameSettings().locale.currency];
+}
 
 uint64_t GetMaskOfAllowedCurrencies();
 void CheckSwitchToEuro();

@@ -28,6 +28,8 @@
 #include "scope_info.h"
 #include "newgrf_extension.h"
 #include "newgrf_analysis.h"
+#include "newgrf_dump.h"
+#include "engine_override.h"
 
 #include "safeguards.h"
 

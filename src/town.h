@@ -19,13 +19,16 @@
 #include "table/strings.h"
 #include "company_func.h"
 #include "core/tinystring_type.hpp"
+#include <array>
 #include <list>
 #include <memory>
 
 template <typename T>
 struct BuildingCounts {
-	T id_count[NUM_HOUSES];
-	T class_count[HOUSE_CLASS_MAX];
+	std::vector<T> id_count;
+	std::vector<T> class_count;
+
+	bool operator==(const BuildingCounts&) const = default;
 };
 
 static const uint CUSTOM_TOWN_NUMBER_DIFFICULTY  = 4; ///< value for custom town number in difficulty settings
@@ -55,18 +58,20 @@ struct TownCache {
 	uint32_t population;                        ///< Current population of people
 	TrackedViewportSign sign;                   ///< Location of name sign, UpdateVirtCoord updates this
 	PartOfSubsidy part_of_subsidy;              ///< Is this town a source/destination of a subsidy?
-	uint32_t squared_town_zone_radius[HZB_END]; ///< UpdateTownRadius updates this given the house count
+	std::array<uint32_t, HZB_END> squared_town_zone_radius; ///< UpdateTownRadius updates this given the house count
 	BuildingCounts<uint16_t> building_counts;   ///< The number of each type of building in the town
 };
 
 /** Town setting override flags */
 enum TownSettingOverrideFlags {
+	TSOF_OVERRIDE_BEGIN                     = 0, // Begin marker
 	TSOF_OVERRIDE_BUILD_ROADS               = 0,
 	TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS     = 1,
 	TSOF_OVERRIDE_BUILD_TUNNELS             = 2,
 	TSOF_OVERRIDE_BUILD_INCLINED_ROADS      = 3,
 	TSOF_OVERRIDE_GROWTH                    = 4,
 	TSOF_OVERRIDE_BUILD_BRIDGES             = 5,
+	TSOF_OVERRIDE_END, // End marker
 };
 
 /** Town data structure. */

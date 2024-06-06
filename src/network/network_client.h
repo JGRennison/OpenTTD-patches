@@ -15,6 +15,7 @@
 /** Class for handling the client side of the game connection. */
 class ClientNetworkGameSocketHandler : public NetworkGameSocketHandler {
 private:
+	std::unique_ptr<class NetworkAuthenticationClientHandler> authentication_handler; ///< The handler for the authentication.
 	std::string connection_string;                 ///< Address we are connected to.
 	std::shared_ptr<struct PacketReader> savegame; ///< Packet reader for reading the savegame.
 	uint8_t token;                                 ///< The token we need to send back to the server to prove we're the right client.
@@ -24,8 +25,9 @@ private:
 	enum ServerStatus {
 		STATUS_INACTIVE,      ///< The client is not connected nor active.
 		STATUS_JOIN,          ///< We are trying to join a server.
-		STATUS_NEWGRFS_CHECK, ///< Last action was checking NewGRFs.
 		STATUS_AUTH_GAME,     ///< Last action was requesting game (server) password.
+		STATUS_ENCRYPTED,     ///< The game authentication has completed and from here on the connection to the server is encrypted.
+		STATUS_NEWGRFS_CHECK, ///< Last action was checking NewGRFs.
 		STATUS_AUTH_COMPANY,  ///< Last action was requesting company password.
 		STATUS_AUTHORIZED,    ///< The client is authorized at the server.
 		STATUS_MAP_WAIT,      ///< The client is waiting as someone else is downloading the map.
@@ -54,7 +56,8 @@ protected:
 	NetworkRecvStatus Receive_SERVER_BANNED(Packet &p) override;
 	NetworkRecvStatus Receive_SERVER_ERROR(Packet &p) override;
 	NetworkRecvStatus Receive_SERVER_CLIENT_INFO(Packet &p) override;
-	NetworkRecvStatus Receive_SERVER_NEED_GAME_PASSWORD(Packet &p) override;
+	NetworkRecvStatus Receive_SERVER_AUTH_REQUEST(Packet &p) override;
+	NetworkRecvStatus Receive_SERVER_ENABLE_ENCRYPTION(Packet &p) override;
 	NetworkRecvStatus Receive_SERVER_NEED_COMPANY_PASSWORD(Packet &p) override;
 	NetworkRecvStatus Receive_SERVER_SETTINGS_ACCESS(Packet &p) override;
 	NetworkRecvStatus Receive_SERVER_WELCOME(Packet &p) override;
@@ -83,6 +86,7 @@ protected:
 	static NetworkRecvStatus SendNewGRFsOk();
 	static NetworkRecvStatus SendGetMap();
 	static NetworkRecvStatus SendMapOk();
+	static NetworkRecvStatus SendIdentify();
 	void CheckConnection();
 
 	NetworkRecvStatus SendKeyPasswordPacket(PacketType packet_type, NetworkSharedSecrets &ss, const std::string &password, const std::string *payload);
@@ -111,7 +115,7 @@ public:
 	static NetworkRecvStatus SendQuit();
 	static NetworkRecvStatus SendAck();
 
-	static NetworkRecvStatus SendGamePassword(const std::string &password);
+	static NetworkRecvStatus SendAuthResponse();
 	static NetworkRecvStatus SendCompanyPassword(const std::string &password);
 	static NetworkRecvStatus SendSettingsPassword(const std::string &password);
 

@@ -2574,6 +2574,7 @@ STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :{WHITE}Your pla
 STR_NETWORK_ERROR_BAD_SERVER_NAME                               :{WHITE}Your server name has not been set. The name can be set at the top of the Multiplayer window
 STR_NETWORK_ERROR_WRONG_REVISION                                :{WHITE}The revision of this client does not match the server's revision
 STR_NETWORK_ERROR_WRONG_PASSWORD                                :{WHITE}Wrong password
+STR_NETWORK_ERROR_NOT_ON_ALLOW_LIST                             :{WHITE}You are not on the list of allowed clients
 STR_NETWORK_ERROR_SERVER_FULL                                   :{WHITE}The server is full
 STR_NETWORK_ERROR_SERVER_BANNED                                 :{WHITE}You are banned from this server
 STR_NETWORK_ERROR_KICKED                                        :{WHITE}You were kicked out of the game
@@ -2589,7 +2590,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Your pla
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Possible connection loss
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}The last {NUM} second{P "" s} no data has arrived from the server
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :general error
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :desync error
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :could not load map
@@ -2601,6 +2602,7 @@ STR_NETWORK_ERROR_CLIENT_NOT_EXPECTED                           :received invali
 STR_NETWORK_ERROR_CLIENT_WRONG_REVISION                         :wrong revision
 STR_NETWORK_ERROR_CLIENT_NAME_IN_USE                            :name already in use
 STR_NETWORK_ERROR_CLIENT_WRONG_PASSWORD                         :wrong password
+STR_NETWORK_ERROR_CLIENT_NOT_ON_ALLOW_LIST                      :not on allow list
 STR_NETWORK_ERROR_CLIENT_COMPANY_MISMATCH                       :wrong company in DoCommand
 STR_NETWORK_ERROR_CLIENT_KICKED                                 :kicked by server
 STR_NETWORK_ERROR_CLIENT_CHEATER                                :was trying to use a cheat
@@ -3486,7 +3488,9 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Road type
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}NewGRF variable 60+x parameter (hexadecimal)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Aligning sprite {COMMA} ({RAW_STRING})
+STR_SPRITE_ALIGNER_CAPTION_NO_ACTION                            :{WHITE}Aligning sprite: ({RAW_STRING}:{NUM})
+STR_SPRITE_ALIGNER_CAPTION_ACTIONA                              :{WHITE}Aligning sprite: Action 0xA, {COMMA} ({RAW_STRING}:{NUM})
+STR_SPRITE_ALIGNER_CAPTION_ACTION5                              :{WHITE}Aligning sprite: Action 0x5, type {HEX}, {COMMA} ({RAW_STRING}:{NUM})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Next sprite
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Proceed to the next normal sprite, skipping any pseudo/recolour/font sprites and wrapping around from the last sprite to the first
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Go to sprite
@@ -3495,6 +3499,7 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Previous
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Proceed to the previous normal sprite, skipping any pseudo/recolour/font sprites and wrapping around from the first sprite to the last
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Representation of the currently selected sprite. The alignment is ignored when drawing this sprite
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Move the sprite around, changing the X and Y offsets. Ctrl+Click to move the sprite eight units at a time
+STR_SPRITE_ALIGNER_SPRITE                                       :{RAW_STRING}:{NUM}
 
 ###length 2
 STR_SPRITE_ALIGNER_CENTRE_OFFSET                                :{BLACK}Offset centred
@@ -4447,10 +4452,10 @@ STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}Capacity
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK}Transfer Credits: {LTBLUE}{CURRENCY_LONG}
 
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS                     :{BLACK}Servicing interval: {LTBLUE}{COMMA}{NBSP}days{BLACK}   {STRING1}
-STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES                  :{BLACK}Servicing interval: {LTBLUE}{COMMA}{NBSP}minutes{BLACK}   {STRING1}
+STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES                  :{BLACK}Servicing interval: {LTBLUE}{COMMA}{NBSP}minute{P "" s}{BLACK}   {STRING1}
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT                  :{BLACK}Servicing interval: {LTBLUE}{COMMA}%{BLACK}   {STRING1}
 STR_VEHICLE_DETAILS_LAST_SERVICE_DATE                           :Last service: {LTBLUE}{DATE_LONG}
-STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO                    :Last service: {LTBLUE}{NUM} minutes ago
+STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO                    :Last service: {LTBLUE}{NUM} minute{P "" s} ago
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_DAYS    :{BLACK}Increase servicing interval by 10 days. Ctrl+Click to increase servicing interval by 5 days
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_MINUTES :{BLACK}Increase servicing interval by 5 minutes. Ctrl+Click to increase servicing interval by 1 minute
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_PERCENT :{BLACK}Increase servicing interval by 10 percent. Ctrl+Click to increase servicing interval by 5 percent
@@ -4641,7 +4646,7 @@ STR_ORDER_REFIT_ORDER                                           :(Refit to {STRI
 STR_ORDER_REFIT_STOP_ORDER                                      :(Refit to {STRING} and stop)
 STR_ORDER_STOP_ORDER                                            :(Stop)
 
-STR_ORDER_WAIT_TO_UNBUNCH                                       :(wait to unbunch)
+STR_ORDER_WAIT_TO_UNBUNCH                                       :(Wait to unbunch)
 
 STR_ORDER_GO_TO_STATION                                         :{STRING} {STATION} {STRING1}
 STR_ORDER_GO_TO_STATION_CAN_T_USE_STATION                       :{PUSH_COLOUR}{RED}(Can't use station){POP_COLOUR} {STRING} {STATION} {STRING1}
@@ -4897,9 +4902,9 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Estimate
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Saving still in progress,{}please wait until it is finished!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Autosave failed
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Unable to read drive
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Game Save Failed{}{STRING1}
+STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Game save failed...
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Unable to delete file
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Game Load Failed{}{STRING1}
+STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Game load failed...
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Internal error: {RAW_STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Broken savegame - {RAW_STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Savegame is made with newer version
@@ -4993,7 +4998,7 @@ STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Can't bu
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Can't build company headquarters...
 
 # Town related errors
-STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Can't build any towns
+STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Can't build any towns...
 STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE}Can't rename town...
 STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :{WHITE}Can't found town here...
 STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}Can't expand town...
@@ -5831,6 +5836,7 @@ STR_JUST_DATE_ISO                                               :{DATE_ISO}
 STR_JUST_STRING                                                 :{STRING}
 STR_JUST_STRING1                                                :{STRING1}
 STR_JUST_STRING2                                                :{STRING2}
+STR_JUST_STRING4                                                :{STRING4}
 STR_JUST_STRING_STRING                                          :{STRING}{STRING}
 STR_JUST_RAW_STRING                                             :{RAW_STRING}
 STR_JUST_BIG_RAW_STRING                                         :{BIG_FONT}{RAW_STRING}

@@ -27,9 +27,13 @@ class ServerNetworkGameSocketHandler : public NetworkClientSocketPool::PoolItem<
 	uint8_t *rcon_reply_key = nullptr;
 
 protected:
+	std::unique_ptr<class NetworkAuthenticationServerHandler> authentication_handler; ///< The handler for the authentication.
+	std::string peer_public_key; ///< The public key of our client.
+
 	NetworkRecvStatus Receive_CLIENT_JOIN(Packet &p) override;
+	NetworkRecvStatus Receive_CLIENT_IDENTIFY(Packet &p) override;
 	NetworkRecvStatus Receive_CLIENT_GAME_INFO(Packet &p) override;
-	NetworkRecvStatus Receive_CLIENT_GAME_PASSWORD(Packet &p) override;
+	NetworkRecvStatus Receive_CLIENT_AUTH_RESPONSE(Packet &p) override;
 	NetworkRecvStatus Receive_CLIENT_COMPANY_PASSWORD(Packet &p) override;
 	NetworkRecvStatus Receive_CLIENT_SETTINGS_PASSWORD(Packet &p) override;
 	NetworkRecvStatus Receive_CLIENT_GETMAP(Packet &p) override;
@@ -52,7 +56,8 @@ protected:
 	NetworkRecvStatus SendGameInfoExtended(PacketGameType reply_type, uint16_t flags, uint16_t version);
 	NetworkRecvStatus SendNewGRFCheck();
 	NetworkRecvStatus SendWelcome();
-	NetworkRecvStatus SendNeedGamePassword();
+	NetworkRecvStatus SendAuthRequest();
+	NetworkRecvStatus SendEnableEncryption();
 	NetworkRecvStatus SendNeedCompanyPassword();
 
 	bool ParseKeyPasswordPacket(Packet &p, NetworkSharedSecrets &ss, const std::string &password, std::string *payload, size_t length);
@@ -61,8 +66,9 @@ public:
 	/** Status of a client */
 	enum ClientStatus {
 		STATUS_INACTIVE,      ///< The client is not connected nor active.
-		STATUS_NEWGRFS_CHECK, ///< The client is checking NewGRFs.
 		STATUS_AUTH_GAME,     ///< The client is authorizing with game (server) password.
+		STATUS_IDENTIFY,      ///< The client is identifying itself.
+		STATUS_NEWGRFS_CHECK, ///< The client is checking NewGRFs.
 		STATUS_AUTH_COMPANY,  ///< The client is authorizing with company password.
 		STATUS_AUTHORIZED,    ///< The client is authorized.
 		STATUS_MAP_WAIT,      ///< The client is waiting as someone else is downloading the map.
@@ -150,6 +156,7 @@ public:
 	}
 
 	const char *GetClientIP();
+	std::string_view GetPeerPublicKey() const { return this->peer_public_key; }
 
 	static ServerNetworkGameSocketHandler *GetByClientID(ClientID client_id);
 };

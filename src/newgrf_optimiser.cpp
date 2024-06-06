@@ -3154,11 +3154,9 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 
 static void PopulateRailStationAdvancedLayoutVariableUsage()
 {
-	for (uint i = 0; StationClass::IsClassIDValid((StationClassID)i); i++) {
-		StationClass *stclass = StationClass::Get((StationClassID)i);
-
-		for (uint j = 0; j < stclass->GetSpecCount(); j++) {
-			const StationSpec *statspec = stclass->GetSpec(j);
+	for (const StationClass &cls : StationClass::Classes()) {
+		for (uint j = 0; j < cls.GetSpecCount(); j++) {
+			const StationSpec *statspec = cls.GetSpec(j);
 			if (statspec == nullptr) continue;
 
 			std::bitset<256> bits;

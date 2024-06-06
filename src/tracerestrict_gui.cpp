@@ -21,8 +21,8 @@
 #include "company_base.h"
 #include "company_func.h"
 #include "tilehighlight_func.h"
-#include "widgets/dropdown_func.h"
-#include "widgets/dropdown_type.h"
+#include "dropdown_func.h"
+#include "dropdown_type.h"
 #include "gui.h"
 #include "gfx_func.h"
 #include "rail_map.h"
@@ -643,7 +643,7 @@ static const TraceRestrictDropDownListSet *GetSortedCargoTypeDropDownListSet()
  */
 static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &selected)
 {
-	GUIGroupList list;
+	GUIGroupOnlyList list;
 
 	for (const Group *g : Group::Iterate()) {
 		if (g->owner == owner && g->vehicle_type == VEH_TRAIN) {
@@ -652,19 +652,19 @@ static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &sel
 	}
 
 	list.ForceResort();
-	SortGUIGroupList(list);
+	SortGUIGroupOnlyList(list);
 
 	DropDownList dlist;
 	selected = -1;
 
 	if (group_id == DEFAULT_GROUP) selected = DEFAULT_GROUP;
-	dlist.emplace_back(new DropDownListStringItem(STR_GROUP_DEFAULT_TRAINS, DEFAULT_GROUP, false));
+	dlist.push_back(MakeDropDownListStringItem(STR_GROUP_DEFAULT_TRAINS, DEFAULT_GROUP, false));
 
 	for (size_t i = 0; i < list.size(); ++i) {
 		const Group *g = list[i];
 		if (group_id == g->index) selected = group_id;
 		SetDParam(0, g->index | GROUP_NAME_HIERARCHY);
-		dlist.emplace_back(new DropDownListStringItem(STR_GROUP_NAME, g->index, false));
+		dlist.push_back(MakeDropDownListStringItem(STR_GROUP_NAME, g->index, false));
 	}
 
 	return dlist;
@@ -717,11 +717,11 @@ DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &
 		if (slot_id == s->index) selected = slot_id;
 		if (s->vehicle_type == vehtype) {
 			SetDParam(0, s->index);
-			dlist.emplace_back(new DropDownListStringItem(STR_TRACE_RESTRICT_SLOT_NAME, s->index, false));
+			dlist.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_SLOT_NAME, s->index, false));
 		} else {
 			SetDParam(0, STR_REPLACE_VEHICLE_TRAIN + s->vehicle_type);
 			SetDParam(1, s->index);
-			dlist.emplace_back(new DropDownListStringItem(STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED, s->index, false));
+			dlist.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED, s->index, false));
 		}
 	}
 
@@ -761,7 +761,7 @@ DropDownList GetCounterDropDownList(Owner owner, TraceRestrictCounterID ctr_id, 
 		const TraceRestrictCounter *s = list[i];
 		if (ctr_id == s->index) selected = ctr_id;
 		SetDParam(0, s->index);
-		dlist.emplace_back(new DropDownListStringItem(STR_TRACE_RESTRICT_COUNTER_NAME, s->index, false));
+		dlist.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_COUNTER_NAME, s->index, false));
 	}
 
 	return dlist;
@@ -1982,7 +1982,7 @@ public:
 					DropDownList dlist;
 					for (const TraceRestrictDropDownListItem &item : GetTypeDropDownListItems(type)) {
 						if (!ShouldHideTypeDropDownListItem(item.flags)) {
-							dlist.emplace_back(new DropDownListStringItem(item.str, item.type, false));
+							dlist.push_back(MakeDropDownListStringItem(item.str, item.type, false));
 						}
 					}
 					ShowDropDownList(this, std::move(dlist), type, widget, 0);
@@ -2593,16 +2593,16 @@ public:
 		this->ResetObjectToPlaceAction();
 	}
 
-	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		switch (widget) {
 			case TR_WIDGET_INSTRUCTION_LIST:
-				resize->height = GetCharacterHeight(FS_NORMAL);
-				size->height = 6 * resize->height + WidgetDimensions::scaled.framerect.Vertical();
+				resize.height = GetCharacterHeight(FS_NORMAL);
+				size.height = 6 * resize.height + WidgetDimensions::scaled.framerect.Vertical();
 				break;
 
 			case TR_WIDGET_GOTO_SIGNAL:
-				size->width = std::max<uint>(12, NWidgetScrollbar::GetVerticalDimension().width);
+				size.width = std::max<uint>(12, NWidgetScrollbar::GetVerticalDimension().width);
 				break;
 		}
 	}
@@ -3440,7 +3440,7 @@ private:
 			list.emplace_back(MakeCompanyDropDownListItem(c->index));
 			if (c->index == value) missing_ok = true;
 		}
-		list.emplace_back(new DropDownListStringItem(STR_TRACE_RESTRICT_UNDEFINED_COMPANY, INVALID_COMPANY, false));
+		list.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_UNDEFINED_COMPANY, INVALID_COMPANY, false));
 		if (INVALID_COMPANY == value) missing_ok = true;
 
 		assert(missing_ok == true);
@@ -3882,15 +3882,15 @@ public:
 		this->Window::Close();
 	}
 
-	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_TRSL_LIST_SLOTS: {
-				size->width = this->ComputeSlotInfoSize();
-				resize->height = this->tiny_step_height;
+				size.width = this->ComputeSlotInfoSize();
+				resize.height = this->tiny_step_height;
 
 				/* Minimum height is the height of the list widget minus all vehicles... */
-				size->height = 4 * GetVehicleListHeight(this->vli.vtype, this->tiny_step_height) - this->tiny_step_height;
+				size.height = 4 * GetVehicleListHeight(this->vli.vtype, this->tiny_step_height) - this->tiny_step_height;
 
 				/* ... minus the buttons at the bottom ... */
 				uint max_icon_height = GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_CREATE_SLOT)->widget_data).height;
@@ -3899,27 +3899,27 @@ public:
 				max_icon_height = std::max(max_icon_height, GetSpriteSize(this->GetWidget<NWidgetCore>(WID_TRSL_SET_SLOT_MAX_OCCUPANCY)->widget_data).height);
 
 				/* Get a multiple of tiny_step_height of that amount */
-				size->height = Ceil(size->height - max_icon_height, tiny_step_height);
+				size.height = Ceil(size.height - max_icon_height, tiny_step_height);
 				break;
 			}
 
 			case WID_TRSL_ALL_VEHICLES:
-				size->width = this->ComputeSlotInfoSize();
-				size->height = this->tiny_step_height;
+				size.width = this->ComputeSlotInfoSize();
+				size.height = this->tiny_step_height;
 				break;
 
 			case WID_TRSL_SORT_BY_ORDER: {
 				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->widget_data);
 				d.width += padding.width + Window::SortButtonWidth() * 2; // Doubled since the string is centred and it also looks better.
 				d.height += padding.height;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 
 			case WID_TRSL_LIST_VEHICLE:
 				this->ComputeSlotInfoSize();
-				resize->height = GetVehicleListHeight(this->vli.vtype, this->tiny_step_height);
-				size->height = 4 * resize->height;
+				resize.height = GetVehicleListHeight(this->vli.vtype, this->tiny_step_height);
+				size.height = 4 * resize.height;
 				break;
 		}
 	}
@@ -3995,7 +3995,7 @@ public:
 				WID_TRSL_CREATE_SLOT);
 
 		/* Set text of sort by dropdown */
-		this->GetWidget<NWidgetCore>(WID_TRSL_SORT_BY_DROPDOWN)->widget_data = this->vehicle_group_none_sorter_names[this->vehgroups.SortType()];
+		this->GetWidget<NWidgetCore>(WID_TRSL_SORT_BY_DROPDOWN)->widget_data = this->GetVehicleSorterNames()[this->vehgroups.SortType()];
 
 		this->GetWidget<NWidgetCore>(WID_TRSL_FILTER_BY_CARGO)->widget_data = this->GetCargoFilterLabel(this->cargo_filter_criteria);
 
@@ -4052,7 +4052,7 @@ public:
 				break;
 
 			case WID_TRSL_SORT_BY_DROPDOWN: // Select sorting criteria dropdown menu
-				ShowDropDownMenu(this, this->vehicle_group_none_sorter_names, this->vehgroups.SortType(), WID_TRSL_SORT_BY_DROPDOWN, 0,
+				ShowDropDownMenu(this, this->GetVehicleSorterNames(), this->vehgroups.SortType(), WID_TRSL_SORT_BY_DROPDOWN, 0,
 						this->GetSorterDisableMask(this->vli.vtype));
 				return;
 
@@ -4473,13 +4473,13 @@ public:
 		this->owner = this->ctr_company;
 	}
 
-	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_TRCL_LIST_COUNTERS: {
-				size->width = std::max<uint>(size->width, this->ComputeInfoSize());
-				resize->height = this->tiny_step_height;
-				size->height = std::max<uint>(size->height, 8 * resize->height);
+				size.width = std::max<uint>(size.width, this->ComputeInfoSize());
+				resize.height = this->tiny_step_height;
+				size.height = std::max<uint>(size.height, 8 * resize.height);
 				break;
 			}
 		}

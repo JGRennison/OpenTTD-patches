@@ -17,6 +17,7 @@
 #include "newgrf_extension.h"
 #include "water_map.h"
 #include "string_func.h"
+#include "newgrf_dump.h"
 #include <list>
 
 #include "safeguards.h"

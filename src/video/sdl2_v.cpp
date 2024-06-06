@@ -524,7 +524,7 @@ struct SDLVkMapping {
 	const bool unprintable;
 
 	constexpr SDLVkMapping(SDL_Keycode vk_first, SDL_Keycode vk_last, uint8_t map_first, [[maybe_unused]] uint8_t map_last, bool unprintable)
-		: vk_from(vk_first), vk_count(vk_last - vk_first), map_to(map_first), unprintable(unprintable)
+		: vk_from(vk_first), vk_count(vk_last - vk_first + 1), map_to(map_first), unprintable(unprintable)
 	{
 		assert((vk_last - vk_first) == (map_last - map_first));
 	}
@@ -600,14 +600,13 @@ static constexpr SDLVkMapping _vk_mapping[] = {
 
 static uint ConvertSdlKeyIntoMy(SDL_Keysym *sym, char32_t *character)
 {
-	const SDLVkMapping *map;
 	uint key = 0;
 	bool unprintable = false;
 
-	for (map = _vk_mapping; map != endof(_vk_mapping); ++map) {
-		if ((uint)(sym->sym - map->vk_from) <= map->vk_count) {
-			key = sym->sym - map->vk_from + map->map_to;
-			unprintable = map->unprintable;
+	for (const auto &map : _vk_mapping) {
+		if (IsInsideBS(sym->sym, map.vk_from, map.vk_count)) {
+			key = sym->sym - map.vk_from + map.map_to;
+			unprintable = map.unprintable;
 			break;
 		}
 	}
@@ -640,12 +639,11 @@ static uint ConvertSdlKeyIntoMy(SDL_Keysym *sym, char32_t *character)
  */
 static uint ConvertSdlKeycodeIntoMy(SDL_Keycode kc)
 {
-	const SDLVkMapping *map;
 	uint key = 0;
 
-	for (map = _vk_mapping; map != endof(_vk_mapping); ++map) {
-		if ((uint)(kc - map->vk_from) <= map->vk_count) {
-			key = kc - map->vk_from + map->map_to;
+	for (const auto &map : _vk_mapping) {
+		if (IsInsideBS(kc, map.vk_from, map.vk_count)) {
+			key = kc - map.vk_from + map.map_to;
 			break;
 		}
 	}

@@ -23,6 +23,7 @@
 #include "clear_func.h"
 #include "newgrf_animation_base.h"
 #include "newgrf_extension.h"
+#include "newgrf_dump.h"
 
 #include "safeguards.h"
 
@@ -138,20 +139,21 @@ void ResetObjects()
 	_object_specs[OBJECT_TRANSMITTER].cls_id = ObjectClass::Allocate('TRNS');
 }
 
-template <typename Tspec, typename Tid, Tid Tmax>
-/* static */ void NewGRFClass<Tspec, Tid, Tmax>::InsertDefaults()
+template <>
+/* static */ void ObjectClass::InsertDefaults()
 {
 	ObjectClass::Get(ObjectClass::Allocate('LTHS'))->name = STR_OBJECT_CLASS_LTHS;
 	ObjectClass::Get(ObjectClass::Allocate('TRNS'))->name = STR_OBJECT_CLASS_TRNS;
 }
 
-template <typename Tspec, typename Tid, Tid Tmax>
-bool NewGRFClass<Tspec, Tid, Tmax>::IsUIAvailable(uint index) const
+template <>
+bool ObjectClass::IsUIAvailable(uint index) const
 {
 	return this->GetSpec(index)->IsEverAvailable();
 }
 
-INSTANTIATE_NEWGRF_CLASS_METHODS(ObjectClass, ObjectSpec, ObjectClassID, OBJECT_CLASS_MAX)
+/* Instantiate ObjectClass. */
+template class NewGRFClass<ObjectSpec, ObjectClassID, OBJECT_CLASS_MAX>;
 
 /* virtual */ uint32_t ObjectScopeResolver::GetRandomBits() const
 {

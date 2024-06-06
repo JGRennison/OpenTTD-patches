@@ -88,7 +88,7 @@ void NetworkUDPSocketHandler::SendPacket(Packet &p, NetworkAddress &recv, bool a
 		const size_t packet_size = p.Size();
 		const uint8_t frag_count = (uint8_t)((packet_size + PAYLOAD_MTU - 1) / PAYLOAD_MTU);
 
-		Packet frag(PACKET_UDP_EX_MULTI);
+		Packet frag(this, PACKET_UDP_EX_MULTI);
 		uint8_t current_frag = 0;
 		size_t offset = 0;
 		while (offset < packet_size) {
@@ -147,7 +147,7 @@ void NetworkUDPSocketHandler::ReceivePackets()
 			memset(&client_addr, 0, sizeof(client_addr));
 
 			/* The limit is UDP_MTU, but also allocate that much as we need to read the whole packet in one go. */
-			Packet p(this, UDP_MTU, UDP_MTU);
+			Packet p(Packet::ReadTag{}, this, UDP_MTU, UDP_MTU);
 			socklen_t client_len = sizeof(client_addr);
 
 			/* Try to receive anything */
@@ -169,7 +169,10 @@ void NetworkUDPSocketHandler::ReceivePackets()
 				DEBUG(net, 1, "received a packet with mismatching size from %s, (%u, %u)", NetworkAddressDumper().GetAddressAsString(&address), (uint)nbytes, (uint)p.Size());
 				continue;
 			}
-			p.PrepareToRead();
+			if (!p.PrepareToRead()) {
+				DEBUG(net, 1, "Invalid packet received (too small / decryption error)");
+				continue;
+			}
 
 			/* Handle the packet */
 			this->HandleUDPPacket(p, address);
@@ -236,13 +239,13 @@ void NetworkUDPSocketHandler::Receive_EX_MULTI(Packet &p, NetworkAddress &client
 		DEBUG(net, 6, "[udp] merged multi-part packet from %s: " OTTD_PRINTFHEX64 ", %u bytes",
 				NetworkAddressDumper().GetAddressAsString(client_addr), token, total_payload);
 
-		Packet merged(this, TCP_MTU, 0);
+		Packet merged(Packet::ReadTag{}, this, TCP_MTU, 0);
 		merged.ReserveBuffer(total_payload);
 		for (auto &frag : fs.fragments) {
 			merged.Send_binary((const uint8_t *)frag.data(), frag.size());
 		}
 		merged.ParsePacketSize();
-		merged.PrepareToRead();
+		if (!merged.PrepareToRead()) return;
 
 		/* If the size does not match the packet must be corrupted.
 		 * Otherwise it will be marked as corrupted later on. */

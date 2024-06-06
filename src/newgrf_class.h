@@ -18,19 +18,16 @@
  * Struct containing information relating to NewGRF classes for stations and airports.
  */
 template <typename Tspec, typename Tid, Tid Tmax>
-struct NewGRFClass {
+class NewGRFClass {
 private:
-	uint ui_count;             ///< Number of specs in this class potentially available to the user.
+	uint ui_count = 0;         ///< Number of specs in this class potentially available to the user.
 	std::vector<Tspec *> spec; ///< List of specifications.
 
 	/**
 	 * The actual classes.
-	 * @note We store pointers to members of this array in various places outside this class (e.g. to 'name' for GRF string resolving).
-	 *       Thus this must be a static array, and cannot be a self-resizing vector or similar.
+	 * @note This may be reallocated during initialization so pointers may be invalidated.
 	 */
-	static NewGRFClass<Tspec, Tid, Tmax> classes[Tmax];
-
-	void ResetClass();
+	static inline std::vector<NewGRFClass<Tspec, Tid, Tmax>> classes;
 
 	/** Initialise the defaults. */
 	static void InsertDefaults();
@@ -39,8 +36,24 @@ public:
 	uint32_t global_id; ///< Global ID for class, e.g. 'DFLT', 'WAYP', etc.
 	StringID name;      ///< Name of this class.
 
+	/* Public constructor as emplace_back needs access. */
+	NewGRFClass(uint32_t global_id, StringID name) : global_id(global_id), name(name) { }
+
+	/**
+	 * Get read-only span of specs of this class.
+	 * @return Read-only span of specs.
+	 */
+	std::span<Tspec * const> Specs() const { return this->spec; }
+
+	/**
+	 * Get read-only span of all classes of this type.
+	 * @return Read-only span of classes.
+	 */
+	static std::span<NewGRFClass<Tspec, Tid, Tmax> const> Classes() { return NewGRFClass::classes; }
+
 	void Insert(Tspec *spec);
 
+	Tid Index() const { return static_cast<Tid>(std::distance(&*std::cbegin(NewGRFClass::classes), this)); }
 	/** Get the number of allocated specs within the class. */
 	uint GetSpecCount() const { return static_cast<uint>(this->spec.size()); }
 	/** Get the number of potentially user-available specs within the class. */

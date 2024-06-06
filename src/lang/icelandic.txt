@@ -2038,7 +2038,7 @@ STR_NETWORK_ERROR_TIMEOUT_JOIN                                  :{WHITE}Tölvan 
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Hefur líklega misst sambandið
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}Síðustu {NUM} sekúndu{P "" r} hafa engin gögn borist frá þjóninum
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :almenn villa
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :samstillingarvilla
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :gat ekki opnað kort
@@ -2768,7 +2768,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :Tegund spora
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}NewGRF breyta 60+x stilling (hexadecimal)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Samræmi hreyfimynd{COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Næsta hreyfimynd
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Halda áfram á næstu venjulegu hreyfimynd, sleppir gervi/endurlitun/letur hreyfimyndum og fer aftur á byrjun í lokin.
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Velja hreyfimynd
@@ -3902,9 +3901,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Áætla�
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Vistun er enn í gangi,{}vinsamlegast bíddu á meðan hún klárst!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Sjálfvirk vistun mistókst
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Get ekki lesið af drifi
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Vistun leiks mistókst{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Get ekki eytt skrá
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Mistókst að opna leik{}{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Innri villa: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Bilun í vistuðum leik - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Leikur er vistaður í nýrri útgáfu

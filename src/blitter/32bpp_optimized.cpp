@@ -317,9 +317,9 @@ template <bool Tpal_to_rgb> Sprite *Blitter_32bppOptimized::EncodeInternal(const
 	ZoomLevel zoom_max;
 	uint8_t missing_zoom_levels = 0;
 
-	if (sprite[ZOOM_LVL_NORMAL].type == SpriteType::Font) {
-		zoom_min = ZOOM_LVL_NORMAL;
-		zoom_max = ZOOM_LVL_NORMAL;
+	if (sprite[ZOOM_LVL_MIN].type == SpriteType::Font) {
+		zoom_min = ZOOM_LVL_MIN;
+		zoom_max = ZOOM_LVL_MIN;
 	} else {
 		zoom_min = _settings_client.gui.zoom_min;
 		zoom_max = (ZoomLevel) std::min(_settings_client.gui.zoom_max, ZOOM_LVL_DRAW_SPR);
@@ -478,10 +478,10 @@ template <bool Tpal_to_rgb> Sprite *Blitter_32bppOptimized::EncodeInternal(const
 		missing_zoom_levels = UINT8_MAX;
 	}
 
-	dest_sprite->height = sprite[ZOOM_LVL_NORMAL].height;
-	dest_sprite->width  = sprite[ZOOM_LVL_NORMAL].width;
-	dest_sprite->x_offs = sprite[ZOOM_LVL_NORMAL].x_offs;
-	dest_sprite->y_offs = sprite[ZOOM_LVL_NORMAL].y_offs;
+	dest_sprite->height = sprite[ZOOM_LVL_MIN].height;
+	dest_sprite->width  = sprite[ZOOM_LVL_MIN].width;
+	dest_sprite->x_offs = sprite[ZOOM_LVL_MIN].x_offs;
+	dest_sprite->y_offs = sprite[ZOOM_LVL_MIN].y_offs;
 	dest_sprite->next = nullptr;
 	dest_sprite->missing_zoom_levels = missing_zoom_levels;
 

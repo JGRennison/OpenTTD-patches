@@ -560,7 +560,7 @@ static void FormatGenericCurrency(StringBuilder builder, const CurrencySpec *spe
 	}
 
 	const char *separator = _settings_game.locale.digit_group_separator_currency.c_str();
-	if (StrEmpty(separator)) separator = _currency->separator.c_str();
+	if (StrEmpty(separator)) separator = GetCurrency().separator.c_str();
 	if (StrEmpty(separator)) separator = _langpack.langpack->digit_group_separator_currency;
 	FormatNumber(builder, number, separator);
 	if (number_str != STR_NULL) {
@@ -1578,11 +1578,11 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 				}
 
 				case SCC_CURRENCY_SHORT: // {CURRENCY_SHORT}
-					FormatGenericCurrency(builder, _currency, args.GetNextParameter<int64_t>(), true);
+					FormatGenericCurrency(builder, &GetCurrency(), args.GetNextParameter<int64_t>(), true);
 					break;
 
 				case SCC_CURRENCY_LONG: // {CURRENCY_LONG}
-					FormatGenericCurrency(builder, _currency, args.GetNextParameter<int64_t>(), false);
+					FormatGenericCurrency(builder, &GetCurrency(), args.GetNextParameter<int64_t>(), false);
 					break;
 
 				case SCC_DATE_TINY: // {DATE_TINY}
@@ -2193,55 +2193,49 @@ static const char _initial_name_letters[] = {
 	'K', 'L', 'M', 'N', 'P', 'R', 'S', 'T', 'W',
 };
 
-static void GenAndCoName(StringBuilder builder, uint32_t arg)
+static std::span<const char * const> GetSurnameOptions()
 {
-	const char * const *base;
-	uint num;
+	if (_settings_game.game_creation.landscape == LT_TOYLAND) return _silly_surname_list;
+	return _surname_list;
+}
 
-	if (_settings_game.game_creation.landscape == LT_TOYLAND) {
-		base = _silly_surname_list;
-		num  = lengthof(_silly_surname_list);
-	} else {
-		base = _surname_list;
-		num  = lengthof(_surname_list);
-	}
+/**
+ * Get the surname of the president with the given seed.
+ * @param seed The seed the surname was generated from.
+ * @return The surname.
+ */
+static const char *GetSurname(uint32_t seed)
+{
+	auto surname_options = GetSurnameOptions();
+	return surname_options[surname_options.size() * GB(seed, 16, 8) >> 8];
+}
 
-	builder += base[num * GB(arg, 16, 8) >> 8];
+static void GenAndCoName(StringBuilder &builder, uint32_t seed)
+{
+	builder += GetSurname(seed);
 	builder += " & Co.";
 }
 
-static void GenPresidentName(StringBuilder builder, uint32_t x)
+static void GenPresidentName(StringBuilder builder, uint32_t seed)
 {
-	char initial[] = "?. ";
-	const char * const *base;
-	uint num;
-	uint i;
+	builder += _initial_name_letters[std::size(_initial_name_letters) * GB(seed, 0, 8) >> 8];
+	builder += ". ";
 
-	initial[0] = _initial_name_letters[sizeof(_initial_name_letters) * GB(x, 0, 8) >> 8];
-	builder += initial;
-
-	i = (sizeof(_initial_name_letters) + 35) * GB(x, 8, 8) >> 8;
-	if (i < sizeof(_initial_name_letters)) {
-		initial[0] = _initial_name_letters[i];
-		builder += initial;
+	/* The second initial is optional. */
+	size_t index = (std::size(_initial_name_letters) + 35) * GB(seed, 8, 8) >> 8;
+	if (index < std::size(_initial_name_letters)) {
+		builder += _initial_name_letters[index];
+		builder += ". ";
 	}
 
-	if (_settings_game.game_creation.landscape == LT_TOYLAND) {
-		base = _silly_surname_list;
-		num  = lengthof(_silly_surname_list);
-	} else {
-		base = _surname_list;
-		num  = lengthof(_surname_list);
-	}
-
-	builder += base[num * GB(x, 16, 8) >> 8];
+	builder += GetSurname(seed);
 }
 
 static void GetSpecialNameString(StringBuilder builder, int ind, StringParameters &args)
 {
 	switch (ind) {
 		case 1: // not used
-			builder += _silly_company_names[std::min<uint>(args.GetNextParameter<uint16_t>(), lengthof(_silly_company_names) - 1)];
+			builder += _silly_company_names[std::min<size_t>(args.GetNextParameter<uint16_t>(), std::size(_silly_company_names) - 1)];
 			return;
 
 		case 2: // used for Foobar & Co company names

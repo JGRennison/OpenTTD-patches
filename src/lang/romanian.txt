@@ -2586,7 +2586,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Numele t
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Posibilă pierdere a conexiunii
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}În ultimele {NUM} secunde nu s-au mai primit date de la server
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :eroare generală
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :eroare de desincronizare
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :nu pot încărca harta
@@ -3481,7 +3481,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Tip de drum
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}Parametru variabilă 60+x NewGRF (hexadecimal)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Aliniere imagine {COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Imaginea următoare
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Mergi la următoarea imagine normală, sărind peste pseudo-imagini, recolorări sau fonturi și repornește când s-a ajuns la sfârșit
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Mergi la imagine
@@ -4892,9 +4891,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Venit es
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Salvarea se efectueaza încã,{}vã rugãm asteptati pânã se încheie!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Auto-salvarea a esuat
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Discul nu a putut fi citit
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Salvarea jocului eșuată{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Ștergerea fișierului a eșuat
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Încărcarea jocului eșuată{}{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Eroare internă: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Salvare eronată - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Salvarea a fost făcută cu o versiune mai nouă

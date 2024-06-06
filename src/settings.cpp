@@ -79,6 +79,7 @@
 #include "statusbar_gui.h"
 #include "graph_gui.h"
 #include "string_func_extra.h"
+#include "engine_override.h"
 
 #include "void_map.h"
 #include "station_base.h"
@@ -163,7 +164,7 @@ void IterateSettingsTables(std::function<void(const SettingTable &, void *)> han
 	for (auto &table : _generic_setting_tables) {
 		handler(table, &_settings_game);
 	}
-	handler(_currency_settings, &_custom_currency);
+	handler(_currency_settings, &GetCustomCurrency());
 	handler(_company_settings, &_settings_client.company);
 }
 
@@ -197,6 +198,9 @@ private:
 		"newgrf",
 		"servers",
 		"server_bind_addresses",
+		"server_authorized_keys",
+		"rcon_authorized_keys",
+		"settings_authorized_keys",
 	};
 
 public:
@@ -2763,7 +2767,7 @@ static void HandleSettingDescs(IniFile &generic_ini, SettingDescProc *proc, Sett
 		proc(generic_ini, table, "patches", &_settings_newgame, only_startup);
 	}
 
-	proc(generic_ini, _currency_settings, "currency", &_custom_currency, only_startup);
+	proc(generic_ini, _currency_settings, "currency", &GetCustomCurrency(), only_startup);
 	proc(generic_ini, _company_settings, "company", &_settings_client.company, only_startup);
 
 }
@@ -2778,6 +2782,9 @@ static void HandlePrivateSettingDescs(IniFile &private_ini, SettingDescProc *pro
 		proc_list(private_ini, "server_bind_addresses", _network_bind_list);
 		proc_list(private_ini, "servers", _network_host_list);
 		proc_list(private_ini, "bans", _network_ban_list);
+		proc_list(private_ini, "server_authorized_keys", _settings_client.network.server_authorized_keys);
+		proc_list(private_ini, "rcon_authorized_keys", _settings_client.network.rcon_authorized_keys);
+		proc_list(private_ini, "settings_authorized_keys", _settings_client.network.settings_authorized_keys);
 	}
 }
 
@@ -2975,7 +2982,7 @@ void LoadFromConfig(bool startup)
 		if (FindWindowById(WC_ERRMSG, 0) == nullptr) ShowFirstError();
 	} else {
 		PostTransparencyOptionLoad();
-		if (_fallback_gui_zoom_max && _settings_client.gui.zoom_max <= ZOOM_LVL_OUT_32X) {
+		if (_fallback_gui_zoom_max && _settings_client.gui.zoom_max <= ZOOM_LVL_OUT_8X) {
 			_settings_client.gui.zoom_max = ZOOM_LVL_MAX;
 		}
 	}

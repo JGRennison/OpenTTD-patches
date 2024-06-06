@@ -7,11 +7,11 @@
 
 /** @file slider_type.h Types related to the horizontal slider widget. */
 
-#ifndef WIDGETS_SLIDER_TYPE_H
-#define WIDGETS_SLIDER_TYPE_H
+#ifndef SLIDER_TYPE_H
+#define SLIDER_TYPE_H
 
-#include "../window_type.h"
-#include "../gfx_func.h"
+#include "core/geometry_type.hpp"
+#include "strings_type.h"
 
 #include <map>
 
@@ -26,4 +26,4 @@ inline bool ClickSliderWidget(Rect r, Point pt, int min_value, int max_value, ui
 	return true;
 }
 
-#endif /* WIDGETS_SLIDER_TYPE_H */
+#endif /* SLIDER_TYPE_H */

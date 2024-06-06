@@ -2088,7 +2088,7 @@ STR_NETWORK_ERROR_TIMEOUT_JOIN                                  :{WHITE}Zure ord
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Konexio galera posiblea
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}Azkeneko {NUM} segunduetan ez da zerbitzaritik daturik jaso
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :Akats orokorra
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :Sinkronizazio akatsa
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :Ezin izan da mapa kargatu
@@ -2830,7 +2830,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :Trenbide mota
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}NewGRF aldagaia 60+x parametroetan (hexadecimala)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}"Sprit"-a lerrokatu {COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Urrengo "sprit"-a
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Hurrengo grafiko arrunta erabili, pseudo/birkoloretu/grafiko tipoak desgaituz
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Joan "sprit"-era
@@ -4014,9 +4013,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Gutxi go
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Oraindik artxiboa gordetzen,{}mesedez itxaron amaitu arte!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Gordetze automatikoak huts egin du
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Ezin izan da driverra irakurri
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Jokoa gordetzeak huts egin du{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Ezin izan da artxiboa ezabatu
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Jokoa kargatzeak huts egin du{}{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Barne akatsa: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Gordetako jokoa hautsia dago - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Gordetako jokoa bertsio berriago batekin egin da

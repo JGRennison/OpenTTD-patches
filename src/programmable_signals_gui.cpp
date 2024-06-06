@@ -16,7 +16,7 @@
 #include "viewport_func.h"
 #include "textbuf_gui.h"
 #include "company_func.h"
-#include "widgets/dropdown_func.h"
+#include "dropdown_func.h"
 #include "gui.h"
 #include "gfx_func.h"
 #include "tilehighlight_func.h"
@@ -600,12 +600,12 @@ public:
 		}
 	}
 
-	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		switch (widget) {
 			case PROGRAM_WIDGET_INSTRUCTION_LIST:
-				resize->height = GetCharacterHeight(FS_NORMAL);
-				size->height = 6 * resize->height + WidgetDimensions::scaled.framerect.Vertical();
+				resize.height = GetCharacterHeight(FS_NORMAL);
+				size.height = 6 * resize.height + WidgetDimensions::scaled.framerect.Vertical();
 				break;
 		}
 	}

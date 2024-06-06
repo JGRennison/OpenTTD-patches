@@ -498,19 +498,17 @@ char *CrashLog::LogGamelog(char *buffer, const char *last) const
  */
 char *CrashLog::LogRecentNews(char *buffer, const char *last) const
 {
-	uint total = 0;
-	for (NewsItem *news = _latest_news; news != nullptr; news = news->prev) {
-		total++;
-	}
+	uint total = static_cast<uint>(GetNews().size());
 	uint show = std::min<uint>(total, 32);
 	buffer += seprintf(buffer, last, "Recent news messages (%u of %u):\n", show, total);
 
 	int i = 0;
-	for (NewsItem *news = _latest_news; i < 32 && news != nullptr; news = news->prev, i++) {
-		CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(news->date);
+	for (const auto &news : GetNews()) {
+		CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(news.date);
 		buffer += seprintf(buffer, last, "(%i-%02i-%02i) StringID: %u, Type: %u, Ref1: %u, %u, Ref2: %u, %u\n",
-		                   ymd.year.base(), ymd.month + 1, ymd.day, news->string_id, news->type,
-		                   news->reftype1, news->ref1, news->reftype2, news->ref2);
+		                   ymd.year.base(), ymd.month + 1, ymd.day, news.string_id, news.type,
+		                   news.reftype1, news.ref1, news.reftype2, news.ref2);
+		if (++i > 32) break;
 	}
 	buffer += seprintf(buffer, last, "\n");
 	return buffer;
@@ -582,7 +580,7 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last)
 
 		buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u)\n", EconTime::CurYear().base(), EconTime::CurMonth() + 1, EconTime::CurDay(), EconTime::CurDateFract(), TickSkipCounter(), DayLengthFactor());
 		buffer += seprintf(buffer, last, "Calendar date: %i-%02i-%02i (%i, %i)\n", CalTime::CurYear().base(), CalTime::CurMonth() + 1, CalTime::CurDay(), CalTime::CurDateFract(), CalTime::CurSubDateFract());
-		LogGameLoadDateTimes(buffer, last);
+		buffer = LogGameLoadDateTimes(buffer, last);
 		return buffer;
 	});
 
@@ -685,7 +683,7 @@ static char *LogDesyncDateHeader(char *buffer, const char *last)
 	buffer += seprintf(buffer, last, "In game date: %i-%02i-%02i (%i, %i) (DL: %u), %08X\n",
 			EconTime::CurYear().base(), EconTime::CurMonth() + 1, EconTime::CurDay(), EconTime::CurDateFract(), TickSkipCounter(), DayLengthFactor(), _frame_counter);
 	buffer += seprintf(buffer, last, "Calendar date: %i-%02i-%02i (%i, %i)\n", CalTime::CurYear().base(), CalTime::CurMonth() + 1, CalTime::CurDay(), CalTime::CurDateFract(), CalTime::CurSubDateFract());
-	LogGameLoadDateTimes(buffer, last);
+	buffer = LogGameLoadDateTimes(buffer, last);
 	if (_networking && !_network_server) {
 		extern EconTime::Date _last_sync_date;
 		extern EconTime::DateFract _last_sync_date_fract;

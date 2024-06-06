@@ -230,7 +230,7 @@ uint8_t LoadSpriteV1(SpriteLoader::SpriteCollection &sprite, SpriteFile &file, s
 	/* Type 0xFF indicates either a colourmap or some other non-sprite info; we do not handle them here */
 	if (type == 0xFF) return 0;
 
-	ZoomLevel zoom_lvl = (sprite_type != SpriteType::MapGen) ? ZOOM_LVL_OUT_4X : ZOOM_LVL_NORMAL;
+	ZoomLevel zoom_lvl = (sprite_type != SpriteType::MapGen) ? ZOOM_LVL_NORMAL : ZOOM_LVL_MIN;
 
 	sprite[zoom_lvl].height = file.ReadByte();
 	sprite[zoom_lvl].width  = file.ReadWord();
@@ -258,7 +258,7 @@ uint8_t LoadSpriteV1(SpriteLoader::SpriteCollection &sprite, SpriteFile &file, s
 
 uint8_t LoadSpriteV2(SpriteLoader::SpriteCollection &sprite, SpriteFile &file, size_t file_pos, SpriteType sprite_type, bool load_32bpp, uint count, uint16_t control_flags, uint8_t zoom_levels)
 {
-	static const ZoomLevel zoom_lvl_map[6] = {ZOOM_LVL_OUT_4X, ZOOM_LVL_NORMAL, ZOOM_LVL_OUT_2X, ZOOM_LVL_OUT_8X, ZOOM_LVL_OUT_16X, ZOOM_LVL_OUT_32X};
+	static const ZoomLevel zoom_lvl_map[6] = {ZOOM_LVL_NORMAL, ZOOM_LVL_IN_4X, ZOOM_LVL_IN_2X, ZOOM_LVL_OUT_2X, ZOOM_LVL_OUT_4X, ZOOM_LVL_OUT_8X};
 
 	/* Is the sprite not present/stripped in the GRF? */
 	if (file_pos == SIZE_MAX) return 0;
@@ -268,18 +268,18 @@ uint8_t LoadSpriteV2(SpriteLoader::SpriteCollection &sprite, SpriteFile &file, s
 
 	uint8_t available_levels = GB(control_flags, load_32bpp ? SCC_32BPP_ZOOM_START : SCC_PAL_ZOOM_START, 6);
 	uint8_t skip_levels = 0;
-	ZoomLevel zoom_min = sprite_type == SpriteType::Font ? ZOOM_LVL_NORMAL : _settings_client.gui.sprite_zoom_min;
+	ZoomLevel zoom_min = sprite_type == SpriteType::Font ? ZOOM_LVL_MIN : _settings_client.gui.sprite_zoom_min;
 
 	if (unlikely(sprite_type == SpriteType::MapGen)) {
 		available_levels = UINT8_MAX;
 		zoom_levels = 0x3F;
 	} else if (available_levels != 0) {
-		if (zoom_min >= ZOOM_LVL_OUT_2X && (HasBit(available_levels, ZOOM_LVL_OUT_2X) || HasBit(available_levels, ZOOM_LVL_OUT_4X))) {
-			ClrBit(available_levels, ZOOM_LVL_NORMAL);
+		if (zoom_min >= ZOOM_LVL_IN_2X && (HasBit(available_levels, ZOOM_LVL_IN_2X) || HasBit(available_levels, ZOOM_LVL_NORMAL))) {
+			ClrBit(available_levels, ZOOM_LVL_IN_4X);
 		}
-		if (zoom_min >= ZOOM_LVL_OUT_4X && HasBit(available_levels, ZOOM_LVL_OUT_4X)) {
-			ClrBit(available_levels, ZOOM_LVL_NORMAL);
-			ClrBit(available_levels, ZOOM_LVL_OUT_2X);
+		if (zoom_min >= ZOOM_LVL_NORMAL && HasBit(available_levels, ZOOM_LVL_NORMAL)) {
+			ClrBit(available_levels, ZOOM_LVL_IN_4X);
+			ClrBit(available_levels, ZOOM_LVL_IN_2X);
 		}
 		if (zoom_levels == 0) {
 			skip_levels = available_levels;
@@ -333,7 +333,7 @@ uint8_t LoadSpriteV2(SpriteLoader::SpriteCollection &sprite, SpriteFile &file, s
 		}
 
 		if (is_wanted_colour_depth && is_wanted_zoom_lvl) {
-			ZoomLevel zoom_lvl = (sprite_type != SpriteType::MapGen) ? zoom_lvl_map[zoom] : ZOOM_LVL_NORMAL;
+			ZoomLevel zoom_lvl = (sprite_type != SpriteType::MapGen) ? zoom_lvl_map[zoom] : ZOOM_LVL_MIN;
 
 			if (HasBit(loaded_sprites, zoom_lvl)) {
 				/* We already have this zoom level, skip sprite. */

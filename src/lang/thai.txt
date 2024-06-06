@@ -2217,7 +2217,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}ชื�
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}การเชื่อมต่อล้มเหลว
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}{NUM} วินาทีสุดท้ายไม่มีข้อมูลส่งถึงเครื่องแม่ข่าย
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :การผิดพลาดทั่วไป
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :desync ผิดพลาด
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :ไม่สามารถโหลดแผนที่ได้
@@ -3014,7 +3014,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :ประเภ
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}NewGRF ตัวแปร 60+x parameter (hexadecimal)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Aligning sprite {COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}sprite ถัดไป
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}เคลื่อนไปยัง sprite ปกติอันถัดไป โดยข้าม pseudo/recolour/font และวกกลับเมื่อถึงจุดสิ้นสุด
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}ไปยัง sprite
@@ -4242,9 +4241,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}รา�
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}ขณะนี้กำลังบันทึก,{}โปรดรอจนกว่าจะเสร็จ!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}บันทึกอัตโนมัติล้มเหลว!!!
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}ไม่สามารถอ่านข้อมูลได้
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}บันทึกเกมล้มเหลว!!!{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}ไม่สามารถทำการลบไฟล์
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}โหลดเกมล้มเหลว{}{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :ข้อผิดพลาดจากภายใน: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :เกมที่บันทึกไว้ เสีย - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :เกมที่บันทึกไว้ สำหรับเวอร์ชันใหม่

@@ -16,7 +16,7 @@
 #include "station_type.h"
 #include "engine_type.h"
 #include "company_type.h"
-#include "widgets/dropdown_func.h"
+#include "dropdown_func.h"
 #include <vector>
 
 void ShowVehicleRefitWindow(const Vehicle *v, VehicleOrderID order, Window *parent, bool auto_refit = false, bool is_virtual_train = false);
@@ -57,6 +57,7 @@ void DrawShipImage(const Vehicle *v, const Rect &r, VehicleID selection, EngineI
 void DrawAircraftImage(const Vehicle *v, const Rect &r, VehicleID selection, EngineImageType image_type);
 
 void ShowBuildVehicleWindow(TileIndex tile, VehicleType type);
+void ShowTemplateTrainBuildVehicleWindow(Train **virtual_train);
 
 uint ShowRefitOptionsList(int left, int right, int y, EngineID engine);
 StringID GetCargoSubtypeText(const Vehicle *v);

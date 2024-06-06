@@ -68,6 +68,8 @@ struct AircraftCache {
 	uint32_t cached_max_range_sqr; ///< Cached squared maximum range.
 	uint16_t cached_max_range;     ///< Cached maximum range.
 	uint8_t image_movement_state;  ///< Cached image aircraft movement state
+
+	bool operator==(const AircraftCache &) const = default;
 };
 
 /**

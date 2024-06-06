@@ -2733,7 +2733,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Tvoje im
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Moguć gubitak veze
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}U poslednj{P 0 oj e ih} {NUM} sekund{P i e i} nije primljen nijedan podatak sa servera
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :opšta greška
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :desinhronizacija
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :neuspešno učitavanje terena
@@ -3613,7 +3613,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Vrsta puta
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}NewGRF promenljiva 60+x parametar (heksadecimalno)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Poravnjavanje sprajta {COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Sledeći sprajt
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Prelazi na sledeći normalan sprajt, preskačući sve pseudo/prebojavajuće/font sprajtove i vraća se na početak posle zadnjeg
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Idi na sprajt
@@ -5004,9 +5003,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Procena 
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Čuvanje je još u toku,{}molimo sačekaj dok se ne završi!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Neuspešno automatsko čuvanje
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Čitanje sa diska nije uspelo
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Čuvanje pozicije nije uspelo{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Brisanje datoteke nije uspelo
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Učitavanje pozicije nije uspelo{}{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Unutrašnja greška: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Neispravno sačuvana igra - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Igra je sačuvana sa novijom verzijom igre

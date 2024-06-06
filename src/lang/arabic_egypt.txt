@@ -2070,7 +2070,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}اسم �
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}احتمال فقد الاتصال
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}اخر {NUM} ثواني لم تصل بيانات من السيرفر
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :خطاء عام
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :خطأ في DESYNC
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :لايمكن تحميل الخريطة
@@ -2859,7 +2859,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :نوع سكة �
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}متغير الاضافات الجديدة +60 * نمط (hexadecimal)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}موائمة صورة العفريتة {COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}العفريتة التالية
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}نابع للعفريتة الطبيعية التالية، تجاوز اي عفريتة موقوفة/ مصبوغة/مخطوطة و انهي المتاعة في النهاية.
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}اذهب الى العفريتة
@@ -4058,9 +4057,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}الدخ
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}الحفظ مازال جاريا الآن{}الرجاء الأنتظار حتر ينتهي
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}فشل الحفظ التلقائي
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}لا يمكن قرائة القرص
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}فشل حفظ اللعبة{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}لا يمكن حذف الملف
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}فشل فتح اللعبة{}{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :خطأ داخلي: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :لعبه محفوظه غير صالحه - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :اللعبة حفظت بنسخة أحدث

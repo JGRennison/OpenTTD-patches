@@ -525,7 +525,7 @@ STR_NEWS_MENU_MESSAGE_HISTORY_MENU                              :Historial de mi
 STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :Esborra tots els missatges
 
 # About menu
-STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Informació de la casella
+STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Detalls de les caselles
 STR_ABOUT_MENU_HELP                                             :Ajuda i manuals
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Commuta la consola
 STR_ABOUT_MENU_AI_DEBUG                                         :Depuració de les IA i l'script de partida
@@ -2575,6 +2575,7 @@ STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :{WHITE}No s'ha 
 STR_NETWORK_ERROR_BAD_SERVER_NAME                               :{WHITE}No s'ha establit un nom per al vostre servidor. El nom s'estableix a la part superior de la finestra multijugador.
 STR_NETWORK_ERROR_WRONG_REVISION                                :{WHITE}La revisió d'aquest client no concorda amb la revisió del servidor
 STR_NETWORK_ERROR_WRONG_PASSWORD                                :{WHITE}Contrasenya incorrecta
+STR_NETWORK_ERROR_NOT_ON_ALLOW_LIST                             :{WHITE}No esteu en la llista de clients permesos
 STR_NETWORK_ERROR_SERVER_FULL                                   :{WHITE}El servidor està ple
 STR_NETWORK_ERROR_SERVER_BANNED                                 :{WHITE}Estàs exclòs d'aquest servidor
 STR_NETWORK_ERROR_KICKED                                        :{WHITE}T'han fet fora de la partida
@@ -2590,7 +2591,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}El vostr
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Possible pèrdua de connexió
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}Durant el darrer {NUM} segon{P "" s} no han arribat dades del servidor
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :error general
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :error de sincronització
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :no es pot carregar el mapa
@@ -2602,6 +2603,7 @@ STR_NETWORK_ERROR_CLIENT_NOT_EXPECTED                           :s'ha rebut un p
 STR_NETWORK_ERROR_CLIENT_WRONG_REVISION                         :revisió incorrecta
 STR_NETWORK_ERROR_CLIENT_NAME_IN_USE                            :nom ja utilitzat
 STR_NETWORK_ERROR_CLIENT_WRONG_PASSWORD                         :contrasenya incorrecta
+STR_NETWORK_ERROR_CLIENT_NOT_ON_ALLOW_LIST                      :no en la llista de permesos
 STR_NETWORK_ERROR_CLIENT_COMPANY_MISMATCH                       :id-companyia erroni en DoCommand
 STR_NETWORK_ERROR_CLIENT_KICKED                                 :tret pel servidor
 STR_NETWORK_ERROR_CLIENT_CHEATER                                :s'ha intentat utilitzar una trampa
@@ -3068,7 +3070,7 @@ STR_INDUSTRY_CARGOES_SELECT_INDUSTRY                            :{BLACK}Seleccio
 STR_INDUSTRY_CARGOES_SELECT_INDUSTRY_TOOLTIP                    :{BLACK}Selecciona la indústria que vols mostrar
 
 # Land area window
-STR_LAND_AREA_INFORMATION_CAPTION                               :{WHITE}Informació del terreny
+STR_LAND_AREA_INFORMATION_CAPTION                               :{WHITE}Detalls de la casella
 STR_LAND_AREA_INFORMATION_LOCATION_TOOLTIP                      :{BLACK}Centra la vista principal al lloc on està la casella. Amb Ctrl+clic, s'obre una vista nova on hi ha la casella.
 STR_LAND_AREA_INFORMATION_COST_TO_CLEAR_N_A                     :{BLACK}Cost de neteja: {LTBLUE}N/A
 STR_LAND_AREA_INFORMATION_COST_TO_CLEAR                         :{BLACK}Cost de neteja: {RED}{CURRENCY_LONG}
@@ -3487,7 +3489,9 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Tipus de carret
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}Paràmetre NewGRF variable 60+x (hexadecimal)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Alineant sprite {COMMA} ({STRING})
+STR_SPRITE_ALIGNER_CAPTION_NO_ACTION                            :{WHITE}Alineació de l'sprite: ({STRING}:{NUM})
+STR_SPRITE_ALIGNER_CAPTION_ACTIONA                              :{WHITE}Alineació de l'sprite: Acció 0xA, {COMMA} ({STRING}:{NUM})
+STR_SPRITE_ALIGNER_CAPTION_ACTION5                              :{WHITE}Alineació de l'sprite: Acció 0x5, tipus {HEX}, {COMMA} ({STRING}:{NUM})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Sprite següent
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Procedeix cap al següent sprite normal, saltant qualsevol sprite pseudo/recolor/font i passant de l'últim sprite al primer
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Vés a l'sprite
@@ -3496,6 +3500,7 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Sprite a
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Procedeix cap a l'sprite normal anterior, saltant qualsevol sprite pseudo/recolor/font i passant del primer sprite a l'últim
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Representació de l'sprite seleccionat actualment. L'alineació s'ignora quan es dibuixa aquest sprite
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Desplaça l'sprite un píxel en el sentit indicat. Amb Ctrl+Clic el desplaça 8 píxels.
+STR_SPRITE_ALIGNER_SPRITE                                       :{STRING}:{NUM}
 
 ###length 2
 STR_SPRITE_ALIGNER_CENTRE_OFFSET                                :{BLACK}Modificador centrat
@@ -4642,7 +4647,7 @@ STR_ORDER_REFIT_ORDER                                           :(Remodela a {ST
 STR_ORDER_REFIT_STOP_ORDER                                      :(Remodela a {STRING} i para)
 STR_ORDER_STOP_ORDER                                            :(Para)
 
-STR_ORDER_WAIT_TO_UNBUNCH                                       :(espera per a deixar espai entre vehicles)
+STR_ORDER_WAIT_TO_UNBUNCH                                       :(Espera per a deixar espai entre vehicles)
 
 STR_ORDER_GO_TO_STATION                                         :{STRING} {STATION} {STRING}
 STR_ORDER_GO_TO_STATION_CAN_T_USE_STATION                       :{PUSH_COLOUR}{RED}(No pot usar l'estació){POP_COLOUR} {STRING} {STATION} {STRING}
@@ -4898,9 +4903,9 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Ingresso
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Es desa la partida.{}Espera que acabi l'operació!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Ha fallat el desat automàtic
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Impossible llegir la unitat de disc
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Error guardant la partida{}{STRING}
+STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}La partida no s'ha pogut desar...
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Impossible esborrar l'arxiu
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Error carregant la partida{}{STRING}
+STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}La partida no s'ha pogut carregar...
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Error Intern: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :L'arxiu de la partida està corromput - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :La partida està desada amb una versió més moderna
@@ -4994,7 +4999,7 @@ STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}No pots 
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}No es pot construir la seu de la companyia...
 
 # Town related errors
-STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Impossible construir poblacions
+STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Impossible construir poblacions...
 STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE}No es pot canviar el nom de la població...
 STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :{WHITE}No es pot construir una població aquí...
 STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}No es pot expandir la població...
@@ -5832,6 +5837,7 @@ STR_JUST_DATE_ISO                                               :{DATE_ISO}
 STR_JUST_STRING                                                 :{STRING}
 STR_JUST_STRING1                                                :{STRING}
 STR_JUST_STRING2                                                :{STRING}
+STR_JUST_STRING4                                                :{STRING}
 STR_JUST_STRING_STRING                                          :{STRING}{STRING}
 STR_JUST_RAW_STRING                                             :{STRING}
 STR_JUST_BIG_RAW_STRING                                         :{BIG_FONT}{STRING}

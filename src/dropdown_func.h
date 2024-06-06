@@ -7,10 +7,10 @@
 
 /** @file dropdown_func.h Functions related to the drop down widget. */
 
-#ifndef WIDGETS_DROPDOWN_FUNC_H
-#define WIDGETS_DROPDOWN_FUNC_H
+#ifndef DROPDOWN_FUNC_H
+#define DROPDOWN_FUNC_H
 
-#include "../window_gui.h"
+#include "window_gui.h"
 #include "dropdown_type.h"
 
 /* Show drop down menu containing a fixed list of strings */
@@ -21,4 +21,12 @@ int HideDropDownMenu(Window *pw);
 
 void GetParentWindowInfo(Window *w, WindowClass &parent_wc, WindowNumber &parent_wn);
 
-#endif /* WIDGETS_DROPDOWN_FUNC_H */
+/* Helper functions for commonly used drop down list items. */
+std::unique_ptr<DropDownListItem> MakeDropDownListDividerItem();
+std::unique_ptr<DropDownListItem> MakeDropDownListStringItem(StringID str, int value, bool masked = false, bool shaded = false);
+std::unique_ptr<DropDownListItem> MakeDropDownListStringItem(const std::string &str, int value, bool masked = false, bool shaded = false);
+std::unique_ptr<DropDownListItem> MakeDropDownListIconItem(SpriteID sprite, PaletteID palette, StringID str, int value, bool masked = false, bool shaded = false);
+std::unique_ptr<DropDownListItem> MakeDropDownListIconItem(const Dimension &dim, SpriteID sprite, PaletteID palette, StringID str, int value, bool masked = false, bool shaded = false);
+std::unique_ptr<DropDownListItem> MakeDropDownListCheckedItem(bool checked, StringID str, int value, bool masked = false, bool shaded = false);
+
+#endif /* DROPDOWN_FUNC_H */

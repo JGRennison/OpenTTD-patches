@@ -37,13 +37,14 @@
 #include "story_base.h"
 #include "zoning.h"
 #include "tbtr_template_vehicle_func.h"
-#include "widgets/statusbar_widget.h"
 #include "core/backup_type.hpp"
 #include "debug_desync.h"
 #include "timer/timer.h"
 #include "timer/timer_game_tick.h"
 #include "tilehighlight_func.h"
 #include "plans_func.h"
+
+#include "widgets/statusbar_widget.h"
 
 #include "table/strings.h"
 
@@ -931,6 +932,7 @@ void CompanyAdminRemove(CompanyID company_id, CompanyRemoveReason reason)
  * - bits 0..15: CompanyCtrlAction
  * - bits 16..23: CompanyID
  * - bits 24..31: CompanyRemoveReason (with CCA_DELETE)
+ * - bits 24..31: CompanyID to merge (with CCA_MERGE)
  * @param p2 ClientID
  * @param text unused
  * @return the cost of this operation or an error
@@ -1068,6 +1070,38 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 			c->bankrupt_asked = 1 << c->index; // Don't ask the owner
 			c->bankrupt_timeout = 0;
 			CloseWindowById(WC_BUY_COMPANY, c->index);
+			break;
+		}
+
+		case CCA_MERGE: {
+			Company *c = Company::GetIfValid(company_id);
+			if (c == nullptr) return CMD_ERROR;
+
+			CompanyID to_merge_id = (CompanyID)GB(p1, 24, 8);
+			if (to_merge_id == company_id) return CMD_ERROR;
+
+			Company *to_merge = Company::GetIfValid(to_merge_id);
+			if (to_merge == nullptr) return CMD_ERROR;
+
+			if (!(flags & DC_EXEC)) return CommandCost();
+
+			SubtractMoneyFromAnyCompany(c, CommandCost(EXPENSES_OTHER, to_merge->current_loan - to_merge->money));
+
+			DEBUG(desync, 1, "merge_companies: %s, company_id: %u, merged_company_id: %u", debug_date_dumper().HexDate(), company_id, to_merge_id);
+
+			CompanyNewsInformation *cni = new CompanyNewsInformation(to_merge, c);
+
+			SetDParam(0, STR_NEWS_COMPANY_MERGER_TITLE);
+			SetDParam(1, STR_NEWS_MERGER_TAKEOVER_TITLE);
+			SetDParamStr(2, cni->company_name);
+			SetDParamStr(3, cni->other_company_name);
+			AddCompanyNewsItem(STR_MESSAGE_NEWS_FORMAT, cni);
+			AI::BroadcastNewEvent(new ScriptEventCompanyMerger(to_merge_id, company_id));
+			Game::NewEvent(new ScriptEventCompanyMerger(to_merge_id, company_id));
+
+			ChangeOwnershipOfCompanyItems(to_merge_id, company_id);
+
+			PostAcquireCompany(to_merge);
 			break;
 		}
 
@@ -1312,6 +1346,7 @@ CommandCost CmdRenamePresident(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 			}
 		}
 
+		InvalidateWindowClassesData(WC_COMPANY, 1);
 		MarkWholeScreenDirty();
 		CompanyAdminUpdate(c);
 	}

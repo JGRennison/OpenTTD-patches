@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include "debug.h"
 #include "newgrf_spritegroup.h"
+#include "newgrf_internal.h"
 #include "newgrf_profiling.h"
 #include "core/pool_func.hpp"
 #include "vehicle_type.h"
@@ -19,6 +20,7 @@
 #include "scope.h"
 #include "debug_settings.h"
 #include "newgrf_engine.h"
+#include "newgrf_dump.h"
 #include <bit>
 
 #include "safeguards.h"
@@ -28,8 +30,8 @@ INSTANTIATE_POOL_METHODS(SpriteGroup)
 
 TemporaryStorageArray<int32_t, 0x110> _temp_store;
 
-std::map<const DeterministicSpriteGroup *, DeterministicSpriteGroupShadowCopy> _deterministic_sg_shadows;
-std::map<const RandomizedSpriteGroup *, RandomizedSpriteGroupShadowCopy> _randomized_sg_shadows;
+robin_hood::unordered_node_map<const DeterministicSpriteGroup *, DeterministicSpriteGroupShadowCopy> _deterministic_sg_shadows;
+robin_hood::unordered_flat_map<const RandomizedSpriteGroup *, RandomizedSpriteGroupShadowCopy> _randomized_sg_shadows;
 bool _grfs_loaded_with_sg_shadow_enable = false;
 
 GrfSpecFeature GetGrfSpecFeatureForParentScope(GrfSpecFeature feature)

@@ -45,7 +45,7 @@ void Waypoint::UpdateVirtCoord()
 	if (_viewport_sign_kdtree_valid && this->sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeWaypoint(this->index));
 
 	SetDParam(0, this->index);
-	this->sign.UpdatePosition(ShouldShowBaseStationViewportLabel(this) ? ZOOM_LVL_DRAW_SPR : ZOOM_LVL_END, pt.x, pt.y - 32 * ZOOM_LVL_BASE, STR_VIEWPORT_WAYPOINT, STR_VIEWPORT_WAYPOINT_TINY);
+	this->sign.UpdatePosition(ShouldShowBaseStationViewportLabel(this) ? ZOOM_LVL_DRAW_SPR : ZOOM_LVL_END, pt.x, pt.y - 32 * ZOOM_BASE, STR_VIEWPORT_WAYPOINT, STR_VIEWPORT_WAYPOINT_TINY);
 
 	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeWaypoint(this->index));
 
@@ -194,7 +194,7 @@ extern CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec 
  * - p1 = (bit 16-23) - height of waypoint
  * - p1 = (bit 24)    - allow waypoints directly adjacent to other waypoints.
  * @param p2 various bitstuffed elements
- * - p2 = (bit  0- 7) - custom station class
+ * - p2 = (bit  0-15) - custom station class
  * - p2 = (bit 31-16) - station ID to join
  * @param p3 various bitstuffed elements
  * - p3 = (bit  0-31) - custom station id
@@ -209,7 +209,7 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 	uint8_t height = GB(p1, 16, 8);
 	bool adjacent  = HasBit(p1, 24);
 
-	StationClassID spec_class = Extract<StationClassID, 0, 8>(p2);
+	StationClassID spec_class = Extract<StationClassID, 0, 16>(p2);
 	StationID station_to_join = GB(p2, 16, 16);
 
 	uint spec_index           = GB(p3, 0, 32);
@@ -351,7 +351,7 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
  *           bit 8..15: Length of the road stop.
  *           bit 16: Allow stations directly adjacent to other stations.
  *           bit 17: #Axis of the road.
- * @param p2 bit  0..7:  Custom road stop class
+ * @param p2 bit  0..15: Custom road stop class
  *           bit 16..31: Station ID to join (NEW_STATION if build new one).
  * @param p3 various bitstuffed elements
  * - p3 = (bit  0-31) - custom road stop id
@@ -366,7 +366,7 @@ CommandCost CmdBuildRoadWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 	bool adjacent = HasBit(p1, 16);
 	Axis axis = Extract<Axis, 17, 1>(p1);
 
-	RoadStopClassID spec_class = Extract<RoadStopClassID, 0, 8>(p2);
+	RoadStopClassID spec_class = Extract<RoadStopClassID, 0, 16>(p2);
 	uint spec_index            = GB(p3, 0, 32);
 
 	/* Check if the given road stop class is valid */

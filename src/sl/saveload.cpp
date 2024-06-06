@@ -3583,19 +3583,23 @@ void SetSaveLoadError(StringID str)
 	_sl.error_str = str;
 }
 
-/** Get the string representation of the error message */
-std::string GetSaveLoadErrorString()
+/** Return the appropriate initial string for an error depending on whether we are saving or loading. */
+StringID GetSaveLoadErrorType()
 {
-	SetDParam(0, _sl.error_str);
-	SetDParamStr(1, _sl.extra_msg);
-	return GetString(_sl.action == SLA_SAVE ? STR_ERROR_GAME_SAVE_FAILED : STR_ERROR_GAME_LOAD_FAILED);
+	return _sl.action == SLA_SAVE ? STR_ERROR_GAME_SAVE_FAILED : STR_ERROR_GAME_LOAD_FAILED;
+}
+
+/** Return the description of the error. **/
+StringID GetSaveLoadErrorMessage()
+{
+	SetDParamStr(0, _sl.extra_msg);
+	return _sl.error_str;
 }
 
 /** Show a gui message when saving has failed */
 static void SaveFileError()
 {
-	SetDParamStr(0, GetSaveLoadErrorString());
-	ShowErrorMessage(STR_JUST_RAW_STRING, INVALID_STRING_ID, WL_ERROR);
+	ShowErrorMessage(GetSaveLoadErrorType(), GetSaveLoadErrorMessage(), WL_ERROR);
 	SaveFileDone();
 }
 
@@ -3632,7 +3636,7 @@ static SaveOrLoadResult SaveFileToDisk(bool threaded)
 		 * cancelled due to a client disconnecting. */
 		if (_sl.error_str != STR_NETWORK_ERROR_LOSTCONNECTION) {
 			/* Skip the "colour" character */
-			DEBUG(sl, 0, "%s", strip_leading_colours(GetSaveLoadErrorString()));
+			DEBUG(sl, 0, "%s%s", strip_leading_colours(GetString(GetSaveLoadErrorType())), GetString(GetSaveLoadErrorMessage()).c_str());
 			asfp = SaveFileError;
 		}
 
@@ -4072,7 +4076,7 @@ SaveOrLoadResult LoadWithFilter(std::shared_ptr<LoadFilter> reader)
 		ClearSaveLoadState();
 
 		/* Skip the "colour" character */
-		DEBUG(sl, 0, "%s", strip_leading_colours(GetSaveLoadErrorString()));
+		DEBUG(sl, 0, "%s%s", strip_leading_colours(GetString(GetSaveLoadErrorType())), GetString(GetSaveLoadErrorMessage()).c_str());
 
 		return SL_REINIT;
 	}
@@ -4181,7 +4185,7 @@ SaveOrLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, 
 		ClearSaveLoadState();
 
 		/* Skip the "colour" character */
-		if (fop != SLO_CHECK) DEBUG(sl, 0, "%s", strip_leading_colours(GetSaveLoadErrorString()));
+		if (fop != SLO_CHECK) DEBUG(sl, 0, "%s%s", strip_leading_colours(GetString(GetSaveLoadErrorType())), GetString(GetSaveLoadErrorMessage()).c_str());
 
 		/* A saver/loader exception!! reinitialize all variables to prevent crash! */
 		return (fop == SLO_LOAD) ? SL_REINIT : SL_ERROR;

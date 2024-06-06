@@ -2374,7 +2374,7 @@ STR_NETWORK_ERROR_TIMEOUT_JOIN                                  :{WHITE}Bha an c
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Dh'fhaoidte gun deach ceangal air chall
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}Cha tàinig dàta sam bith on fhrithealaiche fad {NUM} {P diog dhiog diogan diog}
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :mearachd choitcheann
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :mearachd sioncronachaidh
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :cha b' urrainn dhuinn am mapa a luchdadh
@@ -3188,7 +3188,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :Seòrsa an rèi
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}Paramadair 60+x (sia-dheicheach) caochladair NewGRF
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}A' co-thaobhachadh sprite {COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}An t-ath sprite
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Lean air adhart dhan ath sprite àbhaisteach, a' gearradh leum thairis air sprites mas fhìor/ath-dhathaidh/crutha-chlò is a' pasgadh aig an deireadh gun chiad sprite
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Rach dhan sprite
@@ -4401,9 +4400,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Tuairmse
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Ga shàbhaladh fhathast,{}fuirich greis gus am bi e deiseil!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Dh’fhàillig leis an fhèin-shàbhaladh
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Cha ghabh an draibh leughadh
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Dh’fhàillig le sàbhaladh a’ gheama{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Cha ghabh am faidhle sguabadh às
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Dh’fhàillig le luchdadh a’ gheama{}{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Mearachd taobh a-staigh: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Tha an geama air shàbhaladh briste - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Chaidh an sàbhaladh seo a dhèanamh le tionndadh as ùire dhen gheama

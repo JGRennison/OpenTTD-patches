@@ -22,6 +22,7 @@
 #include "clear_func.h"
 #include "tree_map.h"
 #include "scope.h"
+#include "debug_fmt.h"
 #include "table/tree_land.h"
 #include "blitter/32bpp_base.hpp"
 
@@ -54,25 +55,25 @@ static SpriteFile &LoadGrfFile(const std::string &filename, uint load_index, boo
 
 	SpriteFile &file = OpenCachedSpriteFile(filename, BASESET_DIR, needs_palette_remap);
 
-	DEBUG(sprite, 2, "Reading grf-file '%s'", filename.c_str());
+	Debug(sprite, 2, "Reading grf-file '{}'", filename);
 
 	uint8_t container_ver = file.GetContainerVersion();
-	if (container_ver == 0) usererror("Base grf '%s' is corrupt", filename.c_str());
+	if (container_ver == 0) UserError("Base grf '{}' is corrupt", filename);
 	ReadGRFSpriteOffsets(file);
 	if (container_ver >= 2) {
 		/* Read compression. */
 		uint8_t compression = file.ReadByte();
-		if (compression != 0) usererror("Unsupported compression format");
+		if (compression != 0) UserError("Unsupported compression format");
 	}
 
 	while (LoadNextSprite(load_index, file, sprite_id)) {
 		load_index++;
 		sprite_id++;
 		if (load_index >= MAX_SPRITES) {
-			usererror("Too many sprites. Recompile with higher MAX_SPRITES value or remove some custom GRF files.");
+			UserError("Too many sprites. Recompile with higher MAX_SPRITES value or remove some custom GRF files.");
 		}
 	}
-	DEBUG(sprite, 2, "Currently %i sprites are loaded", load_index);
+	Debug(sprite, 2, "Currently {} sprites are loaded", load_index);
 
 	return file;
 }
@@ -91,15 +92,15 @@ static void LoadGrfFileIndexed(const std::string &filename, const SpriteID *inde
 
 	SpriteFile &file = OpenCachedSpriteFile(filename, BASESET_DIR, needs_palette_remap);
 
-	DEBUG(sprite, 2, "Reading indexed grf-file '%s'", filename.c_str());
+	Debug(sprite, 2, "Reading indexed grf-file '{}'", filename);
 
 	uint8_t container_ver = file.GetContainerVersion();
-	if (container_ver == 0) usererror("Base grf '%s' is corrupt", filename.c_str());
+	if (container_ver == 0) UserError("Base grf '{}' is corrupt", filename);
 	ReadGRFSpriteOffsets(file);
 	if (container_ver >= 2) {
 		/* Read compression. */
 		uint8_t compression = file.ReadByte();
-		if (compression != 0) usererror("Unsupported compression format");
+		if (compression != 0) UserError("Unsupported compression format");
 	}
 
 	while ((start = *index_tbl++) != END) {
@@ -124,40 +125,31 @@ void CheckExternalFiles()
 
 	const GraphicsSet *used_set = BaseGraphics::GetUsedSet();
 
-	DEBUG(grf, 1, "Using the %s base graphics set", used_set->name.c_str());
+	Debug(grf, 1, "Using the {} base graphics set", used_set->name);
 
-	static const size_t ERROR_MESSAGE_LENGTH = 256;
-	static const size_t MISSING_FILE_MESSAGE_LENGTH = 128;
-
-	/* Allocate for a message for each missing file and for one error
-	 * message per set.
-	 */
-	char error_msg[MISSING_FILE_MESSAGE_LENGTH * (GraphicsSet::NUM_FILES + SoundsSet::NUM_FILES) + 2 * ERROR_MESSAGE_LENGTH];
-	error_msg[0] = '\0';
-	char *add_pos = error_msg;
-	const char *last = lastof(error_msg);
-
+	std::string error_msg;
+	auto output_iterator = std::back_inserter(error_msg);
 	if (used_set->GetNumInvalid() != 0) {
 		/* Not all files were loaded successfully, see which ones */
-		add_pos += seprintf(add_pos, last, "Trying to load graphics set '%s', but it is incomplete. The game will probably not run correctly until you properly install this set or select another one. See section 4.1 of README.md.\n\nThe following files are corrupted or missing:\n", used_set->name.c_str());
+		fmt::format_to(output_iterator, "Trying to load graphics set '{}', but it is incomplete. The game will probably not run correctly until you properly install this set or select another one. See section 4.1 of README.md.\n\nThe following files are corrupted or missing:\n", used_set->name);
 		for (uint i = 0; i < GraphicsSet::NUM_FILES; i++) {
 			MD5File::ChecksumResult res = GraphicsSet::CheckMD5(&used_set->files[i], BASESET_DIR);
-			if (res != MD5File::CR_MATCH) add_pos += seprintf(add_pos, last, "\t%s is %s (%s)\n", used_set->files[i].filename.c_str(), res == MD5File::CR_MISMATCH ? "corrupt" : "missing", used_set->files[i].missing_warning.c_str());
+			if (res != MD5File::CR_MATCH) fmt::format_to(output_iterator, "\t{} is {} ({})\n", used_set->files[i].filename, res == MD5File::CR_MISMATCH ? "corrupt" : "missing", used_set->files[i].missing_warning);
 		}
-		add_pos += seprintf(add_pos, last, "\n");
+		fmt::format_to(output_iterator, "\n");
 	}
 
 	const SoundsSet *sounds_set = BaseSounds::GetUsedSet();
 	if (sounds_set->GetNumInvalid() != 0) {
-		add_pos += seprintf(add_pos, last, "Trying to load sound set '%s', but it is incomplete. The game will probably not run correctly until you properly install this set or select another one. See section 4.1 of README.md.\n\nThe following files are corrupted or missing:\n", sounds_set->name.c_str());
+		fmt::format_to(output_iterator, "Trying to load sound set '{}', but it is incomplete. The game will probably not run correctly until you properly install this set or select another one. See section 4.1 of README.md.\n\nThe following files are corrupted or missing:\n", sounds_set->name);
 
 		static_assert(SoundsSet::NUM_FILES == 1);
 		/* No need to loop each file, as long as there is only a single
 		 * sound file. */
-		add_pos += seprintf(add_pos, last, "\t%s is %s (%s)\n", sounds_set->files->filename.c_str(), SoundsSet::CheckMD5(sounds_set->files, BASESET_DIR) == MD5File::CR_MISMATCH ? "corrupt" : "missing", sounds_set->files->missing_warning.c_str());
+		fmt::format_to(output_iterator, "\t{} is {} ({})\n", sounds_set->files->filename, SoundsSet::CheckMD5(sounds_set->files, BASESET_DIR) == MD5File::CR_MISMATCH ? "corrupt" : "missing", sounds_set->files->missing_warning);
 	}
 
-	if (add_pos != error_msg) ShowInfoF("%s", error_msg);
+	if (!error_msg.empty()) ShowInfoI(error_msg);
 }
 
 void InitGRFGlobalVars()
@@ -271,9 +263,9 @@ static void LoadSpriteTables()
 	LoadNewGRF(SPR_NEWGRFS_BASE, 2);
 
 	uint total_extra_graphics = SPR_NEWGRFS_BASE - SPR_OPENTTD_BASE;
-	DEBUG(sprite, 4, "Checking sprites from fallback grf");
+	Debug(sprite, 4, "Checking sprites from fallback grf");
 	_missing_extra_graphics = GetSpriteCountForFile(master_filename, SPR_OPENTTD_BASE, SPR_NEWGRFS_BASE);
-	DEBUG(sprite, 1, "%u extra sprites, %u from baseset, %u from fallback", total_extra_graphics, total_extra_graphics - _missing_extra_graphics, _missing_extra_graphics);
+	Debug(sprite, 1, "{} extra sprites, {} from baseset, {} from fallback", total_extra_graphics, total_extra_graphics - _missing_extra_graphics, _missing_extra_graphics);
 
 	/* The original baseset extra graphics intentionally make use of the fallback graphics.
 	 * Let's say everything which provides less than 500 sprites misses the rest intentionally. */
@@ -286,19 +278,19 @@ static void LoadSpriteTables()
 }
 
 
-static void RealChangeBlitter(const char *repl_blitter)
+static void RealChangeBlitter(const std::string_view repl_blitter)
 {
-	const char *cur_blitter = BlitterFactory::GetCurrentBlitter()->GetName();
-	if (strcmp(cur_blitter, repl_blitter) == 0) return;
+	const std::string_view cur_blitter = BlitterFactory::GetCurrentBlitter()->GetName();
+	if (cur_blitter == repl_blitter) return;
 
-	DEBUG(driver, 1, "Switching blitter from '%s' to '%s'... ", cur_blitter, repl_blitter);
+	Debug(driver, 1, "Switching blitter from '{}' to '{}'... ", cur_blitter, repl_blitter);
 	Blitter *new_blitter = BlitterFactory::SelectBlitter(repl_blitter);
 	if (new_blitter == nullptr) NOT_REACHED();
-	DEBUG(driver, 1, "Successfully switched to %s.", repl_blitter);
+	Debug(driver, 1, "Successfully switched to {}.", repl_blitter);
 
 	if (!VideoDriver::GetInstance()->AfterBlitterChange()) {
 		/* Failed to switch blitter, let's hope we can return to the old one. */
-		if (BlitterFactory::SelectBlitter(cur_blitter) == nullptr || !VideoDriver::GetInstance()->AfterBlitterChange()) usererror("Failed to reinitialize video driver. Specify a fixed blitter in the config");
+		if (BlitterFactory::SelectBlitter(cur_blitter) == nullptr || !VideoDriver::GetInstance()->AfterBlitterChange()) UserError("Failed to reinitialize video driver. Specify a fixed blitter in the config");
 	}
 
 	/* Clear caches that might have sprites for another blitter. */
@@ -337,7 +329,7 @@ static bool SwitchNewGRFBlitter()
 
 	/* Search the best blitter. */
 	static const struct {
-		const char *name;
+		const std::string_view name;
 		uint animation; ///< 0: no support, 1: do support, 2: both
 		uint min_base_depth, max_base_depth, min_grf_depth, max_grf_depth;
 	} replacement_blitters[] = {
@@ -357,23 +349,22 @@ static bool SwitchNewGRFBlitter()
 	};
 
 	const bool animation_wanted = HasBit(_display_opt, DO_FULL_ANIMATION);
-	const char *cur_blitter = BlitterFactory::GetCurrentBlitter()->GetName();
+	const std::string_view cur_blitter = BlitterFactory::GetCurrentBlitter()->GetName();
 
-	for (uint i = 0; i < lengthof(replacement_blitters); i++) {
-		if (animation_wanted && (replacement_blitters[i].animation == 0)) continue;
-		if (!animation_wanted && (replacement_blitters[i].animation == 1)) continue;
+	for (const auto &replacement_blitter : replacement_blitters) {
+		if (animation_wanted && (replacement_blitter.animation == 0)) continue;
+		if (!animation_wanted && (replacement_blitter.animation == 1)) continue;
 
-		if (!IsInsideMM(depth_wanted_by_base, replacement_blitters[i].min_base_depth, replacement_blitters[i].max_base_depth + 1)) continue;
-		if (!IsInsideMM(depth_wanted_by_grf, replacement_blitters[i].min_grf_depth, replacement_blitters[i].max_grf_depth + 1)) continue;
-		const char *repl_blitter = replacement_blitters[i].name;
+		if (!IsInsideMM(depth_wanted_by_base, replacement_blitter.min_base_depth, replacement_blitter.max_base_depth + 1)) continue;
+		if (!IsInsideMM(depth_wanted_by_grf, replacement_blitter.min_grf_depth, replacement_blitter.max_grf_depth + 1)) continue;
 
-		if (strcmp(repl_blitter, cur_blitter) == 0) {
+		if (replacement_blitter.name == cur_blitter) {
 			return false;
 		}
-		if (BlitterFactory::GetBlitterFactory(repl_blitter) == nullptr) continue;
+		if (BlitterFactory::GetBlitterFactory(replacement_blitter.name) == nullptr) continue;
 
 		/* Inform the video driver we want to switch blitter as soon as possible. */
-		VideoDriver::GetInstance()->QueueOnMainThread(std::bind(&RealChangeBlitter, repl_blitter));
+		VideoDriver::GetInstance()->QueueOnMainThread(std::bind(&RealChangeBlitter, replacement_blitter.name));
 		break;
 	}
 
@@ -518,7 +509,7 @@ void GfxDetermineMainColours()
 /** Initialise and load all the sprites. */
 void GfxLoadSprites()
 {
-	DEBUG(sprite, 2, "Loading sprite set %d", _settings_game.game_creation.landscape);
+	Debug(sprite, 2, "Loading sprite set {}", _settings_game.game_creation.landscape);
 
 	_grf_bug_too_many_strings = false;
 
@@ -533,7 +524,7 @@ void GfxLoadSprites()
 	UpdateRouteStepSpriteSize();
 	UpdateCursorSize();
 
-	DEBUG(sprite, 2, "Completed loading sprite set %d", _settings_game.game_creation.landscape);
+	Debug(sprite, 2, "Completed loading sprite set {}", _settings_game.game_creation.landscape);
 }
 
 GraphicsSet::GraphicsSet()
