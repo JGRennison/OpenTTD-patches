@@ -1517,6 +1517,7 @@ STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_BUTTON                  :{BLACK}Пере
 STR_BUY_VEHICLE_TRAIN_RENAME_WAGON_BUTTON                       :{BLACK}Переименовать вагон
 STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_TOOLTIP                 :{BLACK}Переименовать локомотив или моторный вагон
 STR_BUY_VEHICLE_TRAIN_RENAME_WAGON_TOOLTIP                      :{BLACK}Переименовать вагон
+STR_BUY_VEHICLE_TRAIN_TOGGLE_DUAL_PANE_TOOLTIP                  :{BLACK}Переключить отдельные локомотивы и вагоны
 
 STR_QUERY_RENAME_TRAIN_TYPE_LOCOMOTIVE_CAPTION                  :{WHITE}Переименовать тип локомотива
 STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION                       :{WHITE}Переименовать тип вагона
