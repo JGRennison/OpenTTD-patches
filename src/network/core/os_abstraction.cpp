@@ -82,7 +82,7 @@ const char *NetworkError::AsString() const
 #if defined(_WIN32)
 		wchar_t buffer[512];
 		if (FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, this->error,
-			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), buffer, lengthof(buffer), nullptr) == 0) {
+			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), buffer, static_cast<DWORD>(std::size(buffer)), nullptr) == 0) {
 			char errbuffer[32];
 			seprintf(errbuffer, lastof(errbuffer), "Unknown error %d", this->error);
 			this->message.assign(errbuffer);

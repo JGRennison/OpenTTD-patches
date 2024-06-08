@@ -728,39 +728,31 @@ void PostMainLoop()
 extern void DedicatedFork();
 #endif
 
-/** Options of OpenTTD. */
-static const OptionData _options[] = {
-	 GETOPT_SHORT_VALUE('I'),
-	 GETOPT_SHORT_VALUE('S'),
-	 GETOPT_SHORT_VALUE('M'),
-	 GETOPT_SHORT_VALUE('m'),
-	 GETOPT_SHORT_VALUE('s'),
-	 GETOPT_SHORT_VALUE('v'),
-	 GETOPT_SHORT_VALUE('b'),
-	GETOPT_SHORT_OPTVAL('D'),
-	 GETOPT_SHORT_VALUE('n'),
-	 GETOPT_SHORT_VALUE('p'),
-	 GETOPT_SHORT_VALUE('P'),
+/**
+ * Create all the options that OpenTTD supports. Each option is
+ * always a single character with no, an optional or a required value.
+ * @return The available options.
+ */
+static std::vector<OptionData> CreateOptions()
+{
+	std::vector<OptionData> options;
+	/* Options that require a parameter. */
+	for (char c : "GIMPSbcmnpqrstv") options.push_back({ .type = ODF_HAS_VALUE, .id = c, .shortname = c });
 #if !defined(_WIN32)
-	 GETOPT_SHORT_NOVAL('f'),
+	options.push_back({ .type = ODF_HAS_VALUE, .id = 'f', .shortname = 'f' });
 #endif
-	 GETOPT_SHORT_VALUE('r'),
-	 GETOPT_SHORT_VALUE('t'),
-	GETOPT_SHORT_OPTVAL('d'),
-	 GETOPT_SHORT_NOVAL('e'),
-	GETOPT_SHORT_OPTVAL('g'),
-	 GETOPT_SHORT_VALUE('G'),
-	 GETOPT_SHORT_VALUE('c'),
-	 GETOPT_SHORT_NOVAL('x'),
-	 GETOPT_SHORT_NOVAL('X'),
-	 GETOPT_SHORT_VALUE('q'),
-	 GETOPT_SHORT_VALUE('K'),
-	 GETOPT_SHORT_NOVAL('h'),
-	 GETOPT_SHORT_NOVAL('Q'),
-	 GETOPT_SHORT_VALUE('J'),
-	 GETOPT_SHORT_NOVAL('Z'),
-	GETOPT_END()
-};
+
+	/* Options with an optional parameter. */
+	for (char c : "Ddg") options.push_back({ .type = ODF_OPTIONAL_VALUE, .id = c, .shortname = c });
+
+	/* Options without a parameter. */
+	for (char c : "QXehx") options.push_back({ .type = ODF_NO_VALUE, .id = c, .shortname = c });
+
+	/* Non-upstream options */
+	for (char c : "KJZ") options.push_back({ .type = ODF_HAS_VALUE, .id = c, .shortname = c });
+
+	return options;
+}
 
 /**
  * Main entry point for this lovely game.
@@ -795,7 +787,8 @@ int openttd_main(int argc, char *argv[])
 	_game_mode = GM_MENU;
 	_switch_mode = SM_MENU;
 
-	GetOptData mgo(argc - 1, argv + 1, _options);
+	auto options = CreateOptions();
+	GetOptData mgo(std::span(argv + 1, argc - 1), options);
 	int ret = 0;
 
 	int i;
@@ -942,7 +935,7 @@ int openttd_main(int argc, char *argv[])
 		if (i == -2) break;
 	}
 
-	if (i == -2 || mgo.numleft > 0) {
+	if (i == -2 || !mgo.arguments.empty()) {
 		/* Either the user typed '-h', they made an error, or they added unrecognized command line arguments.
 		 * In all cases, print the help, and exit.
 		 *

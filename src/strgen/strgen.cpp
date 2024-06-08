@@ -494,37 +494,38 @@ static inline char *mkpath(char *buf, const char *last, const char *path, const 
  * this for all Windows machines to keep identical behaviour,
  * no matter what your compiler was.
  */
-static inline char *replace_pathsep(char *s)
+static std::string replace_pathsep(std::string s)
 {
-	for (char *c = s; *c != '\0'; c++) if (*c == '/') *c = '\\';
+	for (char &c : s) {
+		if (c == '/') c = '\\';
+	}
 	return s;
 }
 #else
-static inline char *replace_pathsep(char *s) { return s; }
+static std::string replace_pathsep(std::string s) { return s; }
 #endif
 
 /** Options of strgen. */
 static const OptionData _opts[] = {
-	GETOPT_GENERAL('C', '\0', "-export-commands", ODF_NO_VALUE),
-	GETOPT_GENERAL('L', '\0', "-export-plurals",  ODF_NO_VALUE),
-	GETOPT_GENERAL('P', '\0', "-export-pragmas",  ODF_NO_VALUE),
-	  GETOPT_NOVAL(     't',  "--todo"),
-	  GETOPT_NOVAL(     'w',  "--warning"),
-	  GETOPT_NOVAL(     'h',  "--help"),
-	GETOPT_GENERAL('h', '?',  nullptr,            ODF_NO_VALUE),
-	  GETOPT_VALUE(     's',  "--source_dir"),
-	  GETOPT_VALUE(     'd',  "--dest_dir"),
-	GETOPT_END(),
+	{ .type = ODF_NO_VALUE, .id = 'C', .longname = "-export-commands" },
+	{ .type = ODF_NO_VALUE, .id = 'L', .longname = "-export-plurals" },
+	{ .type = ODF_NO_VALUE, .id = 'P', .longname = "-export-pragmas" },
+	{ .type = ODF_NO_VALUE, .id = 't', .shortname = 't', .longname = "--todo" },
+	{ .type = ODF_NO_VALUE, .id = 'w', .shortname = 'w', .longname = "--warning" },
+	{ .type = ODF_NO_VALUE, .id = 'h', .shortname = 'h', .longname = "--help" },
+	{ .type = ODF_NO_VALUE, .id = 'h', .shortname = '?' },
+	{ .type = ODF_HAS_VALUE, .id = 's', .shortname = 's', .longname = "--source_dir" },
+	{ .type = ODF_HAS_VALUE, .id = 'd', .shortname = 'd', .longname = "--dest_dir" },
 };
 
 int CDECL main(int argc, char *argv[])
 {
 	char pathbuf[MAX_PATH];
 	char pathbuf2[MAX_PATH];
-	const char *src_dir = ".";
-	const char *dest_dir = nullptr;
+	std::string src_dir = ".";
+	std::string dest_dir;
 
-	GetOptData mgo(argc - 1, argv + 1, _opts);
+	GetOptData mgo(std::span(argv + 1, argc - 1), _opts);
 	for (;;) {
 		int i = mgo.GetOpt();
 		if (i == -1) break;
@@ -556,9 +557,9 @@ int CDECL main(int argc, char *argv[])
 
 			case 'P':
 				printf("name\tflags\tdefault\tdescription\n");
-				for (size_t j = 0; j < lengthof(_pragmas); j++) {
+				for (const auto &pragma : _pragmas) {
 					printf("\"%s\"\t%s\t\"%s\"\t\"%s\"\n",
-							_pragmas[j][0], _pragmas[j][1], _pragmas[j][2], _pragmas[j][3]);
+							pragma[0], pragma[1], pragma[2], pragma[3]);
 				}
 				return 0;
 
@@ -601,16 +602,16 @@ int CDECL main(int argc, char *argv[])
 		}
 	}
 
-	if (dest_dir == nullptr) dest_dir = src_dir; // if dest_dir is not specified, it equals src_dir
+	if (dest_dir.empty()) dest_dir = src_dir; // if dest_dir is not specified, it equals src_dir
 
 	try {
 		/* strgen has two modes of operation. If no (free) arguments are passed
 		 * strgen generates strings.h to the destination directory. If it is supplied
 		 * with a (free) parameter the program will translate that language to destination
 		 * directory. As input english.txt is parsed from the source directory */
-		if (mgo.numleft == 0) {
-			mkpath(pathbuf, lastof(pathbuf), src_dir, "english.txt");
-			mkpath2(pathbuf2, lastof(pathbuf2), src_dir, "extra", "english.txt");
+		if (mgo.arguments.empty()) {
+			mkpath(pathbuf, lastof(pathbuf), src_dir.c_str(), "english.txt");
+			mkpath2(pathbuf2, lastof(pathbuf2), src_dir.c_str(), "extra", "english.txt");
 
 			/* parse master file */
 			StringData data(TEXT_TAB_END);
@@ -619,41 +620,41 @@ int CDECL main(int argc, char *argv[])
 			if (_errors != 0) return 1;
 
 			/* write strings.h */
-			ottd_mkdir(dest_dir);
-			mkpath(pathbuf, lastof(pathbuf), dest_dir, "strings.h");
+			ottd_mkdir(dest_dir.c_str());
+			mkpath(pathbuf, lastof(pathbuf), dest_dir.c_str(), "strings.h");
 
 			HeaderFileWriter writer(pathbuf);
 			writer.WriteHeader(data);
 			writer.Finalise(data);
 			if (_errors != 0) return 1;
-		} else if (mgo.numleft >= 1) {
+		} else {
 			char *r;
 
-			mkpath(pathbuf, lastof(pathbuf), src_dir, "english.txt");
-			mkpath2(pathbuf2, lastof(pathbuf2), src_dir, "extra", "english.txt");
+			mkpath(pathbuf, lastof(pathbuf), src_dir.c_str(), "english.txt");
+			mkpath2(pathbuf2, lastof(pathbuf2), src_dir.c_str(), "extra", "english.txt");
 
 			StringData data(TEXT_TAB_END);
 			/* parse master file and check if target file is correct */
 			FileStringReader master_reader(data, pathbuf, pathbuf2, true, false);
 			master_reader.ParseFile();
 
-			for (int i = 0; i < mgo.numleft; i++) {
+			for (auto &argument : mgo.arguments) {
 				data.FreeTranslation();
 
-				const char *translation = replace_pathsep(mgo.argv[i]);
-				const char *file = strrchr(translation, PATHSEPCHAR);
+				std::string translation = replace_pathsep(argument);
+				const char *file = strrchr(translation.c_str(), PATHSEPCHAR);
 				const char *translation2 = nullptr;
 				if (file != nullptr) {
-					mkpath2(pathbuf2, lastof(pathbuf2), src_dir, "extra", file + 1);
+					mkpath2(pathbuf2, lastof(pathbuf2), src_dir.c_str(), "extra", file + 1);
 					translation2 = pathbuf2;
 				}
-				FileStringReader translation_reader(data, translation, translation2, false, file == nullptr || strcmp(file + 1, "english.txt") != 0);
+				FileStringReader translation_reader(data, translation.c_str(), translation2, false, file == nullptr || strcmp(file + 1, "english.txt") != 0);
 				translation_reader.ParseFile(); // target file
 				if (_errors != 0) return 1;
 
 				/* get the targetfile, strip any directories and append to destination path */
-				r = strrchr(mgo.argv[i], PATHSEPCHAR);
-				mkpath(pathbuf, lastof(pathbuf), dest_dir, (r != nullptr) ? &r[1] : mgo.argv[i]);
+				r = strrchr(argument, PATHSEPCHAR);
+				mkpath(pathbuf, lastof(pathbuf), dest_dir.c_str(), (r != nullptr) ? &r[1] : argument);
 
 				/* rename the .txt (input-extension) to .lng */
 				r = strrchr(pathbuf, '.');

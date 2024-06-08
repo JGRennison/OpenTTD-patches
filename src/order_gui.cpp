@@ -1988,11 +1988,11 @@ public:
 
 			case WID_O_COND_VARIABLE: {
 				Dimension d = {0, 0};
-				for (uint i = 0; i < lengthof(_order_conditional_variable); i++) {
-					if (this->vehicle->type != VEH_TRAIN && _order_conditional_variable[i] == OCV_FREE_PLATFORMS) {
+				for (const auto &ocv : _order_conditional_variable) {
+					if (this->vehicle->type != VEH_TRAIN && ocv == OCV_FREE_PLATFORMS) {
 						continue;
 					}
-					d = maxdim(d, GetStringBoundingBox(OrderStringForVariable(this->vehicle, _order_conditional_variable[i])));
+					d = maxdim(d, GetStringBoundingBox(OrderStringForVariable(this->vehicle, ocv)));
 				}
 				d.width += padding.width;
 				d.height += padding.height;
@@ -3135,23 +3135,23 @@ public:
 				break;
 
 			case WID_O_COND_VARIABLE: {
-				const OrderConditionVariable ocv = this->vehicle->GetOrder(this->OrderGetSel())->GetConditionVariable();
+				const OrderConditionVariable current_ocv = this->vehicle->GetOrder(this->OrderGetSel())->GetConditionVariable();
 				DropDownList list;
-				for (uint i = 0; i < lengthof(_order_conditional_variable); i++) {
-					if (this->vehicle->type != VEH_TRAIN && _order_conditional_variable[i] == OCV_FREE_PLATFORMS) {
+				for (const auto &ocv : _order_conditional_variable) {
+					if (this->vehicle->type != VEH_TRAIN && ocv == OCV_FREE_PLATFORMS) {
 						continue;
 					}
-					if (ocv != _order_conditional_variable[i]) {
-						if (_order_conditional_variable[i] == OCV_COUNTER_VALUE && !_settings_client.gui.show_adv_tracerestrict_features) {
+					if (current_ocv != ocv) {
+						if (ocv == OCV_COUNTER_VALUE && !_settings_client.gui.show_adv_tracerestrict_features) {
 							continue;
 						}
-						if ((_order_conditional_variable[i] == OCV_DISPATCH_SLOT) && this->vehicle->orders->GetScheduledDispatchScheduleCount() == 0) {
+						if ((ocv == OCV_DISPATCH_SLOT) && this->vehicle->orders->GetScheduledDispatchScheduleCount() == 0) {
 							continue;
 						}
 					}
-					list.push_back(MakeDropDownListStringItem(OrderStringForVariable(this->vehicle, _order_conditional_variable[i]), _order_conditional_variable[i], false));
+					list.push_back(MakeDropDownListStringItem(OrderStringForVariable(this->vehicle, ocv), ocv, false));
 				}
-				ShowDropDownList(this, std::move(list), ocv, WID_O_COND_VARIABLE);
+				ShowDropDownList(this, std::move(list), current_ocv, WID_O_COND_VARIABLE);
 				break;
 			}
 

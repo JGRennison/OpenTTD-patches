@@ -152,9 +152,9 @@ void LinkGraphSchedule::JoinNext()
  */
 /* static */ void LinkGraphSchedule::Run(LinkGraphJob *job)
 {
-	for (uint i = 0; i < lengthof(instance.handlers); ++i) {
+	for (const auto &handler : instance.handlers) {
 		if (job->IsJobAborted()) return;
-		instance.handlers[i]->Run(*job);
+		handler->Run(*job);
 	}
 
 	/*

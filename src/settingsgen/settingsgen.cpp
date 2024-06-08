@@ -391,12 +391,11 @@ static bool CompareFiles(const char *n1, const char *n2)
 
 /** Options of settingsgen. */
 static const OptionData _opts[] = {
-	  GETOPT_NOVAL(     'h', "--help"),
-	GETOPT_GENERAL('h', '?', nullptr, ODF_NO_VALUE),
-	  GETOPT_VALUE(     'o', "--output"),
-	  GETOPT_VALUE(     'b', "--before"),
-	  GETOPT_VALUE(     'a', "--after"),
-	GETOPT_END(),
+	{ .type = ODF_NO_VALUE, .id = 'h', .shortname = 'h', .longname = "--help" },
+	{ .type = ODF_NO_VALUE, .id = 'h', .shortname = '?' },
+	{ .type = ODF_HAS_VALUE, .id = 'o', .shortname = 'o', .longname = "--output" },
+	{ .type = ODF_HAS_VALUE, .id = 'b', .shortname = 'b', .longname = "--before" },
+	{ .type = ODF_HAS_VALUE, .id = 'a', .shortname = 'a', .longname = "--after" },
 };
 
 /**
@@ -442,7 +441,7 @@ int CDECL main(int argc, char *argv[])
 	const char *before_file = nullptr;
 	const char *after_file = nullptr;
 
-	GetOptData mgo(argc - 1, argv + 1, _opts);
+	GetOptData mgo(std::span(argv + 1, argc - 1), _opts);
 	for (;;) {
 		int i = mgo.GetOpt();
 		if (i == -1) break;
@@ -479,7 +478,7 @@ int CDECL main(int argc, char *argv[])
 	_stored_output.Clear();
 	_post_amble_output.Clear();
 
-	for (int i = 0; i < mgo.numleft; i++) ProcessIniFile(mgo.argv[i]);
+	for (auto &argument : mgo.arguments) ProcessIniFile(argument);
 
 	/* Write output. */
 	if (output_file == nullptr) {

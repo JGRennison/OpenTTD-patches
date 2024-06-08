@@ -3089,8 +3089,8 @@ struct VehicleDetailsWindow : Window {
 					STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE,
 					STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS
 				};
-				for (uint i = 0; i < lengthof(info_strings); i++) {
-					dim = maxdim(dim, GetStringBoundingBox(info_strings[i]));
+				for (const auto &info_string : info_strings) {
+					dim = maxdim(dim, GetStringBoundingBox(info_string));
 				}
 				StringID last_year_profit_str = EconTime::UsingWallclockUnits() ? STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD : STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR;
 				if (v->type == VEH_TRAIN && _settings_client.gui.show_train_length_in_details) {
