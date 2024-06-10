@@ -628,8 +628,6 @@ int CDECL main(int argc, char *argv[])
 			writer.Finalise(data);
 			if (_errors != 0) return 1;
 		} else {
-			char *r;
-
 			mkpath(pathbuf, lastof(pathbuf), src_dir.c_str(), "english.txt");
 			mkpath2(pathbuf2, lastof(pathbuf2), src_dir.c_str(), "extra", "english.txt");
 
@@ -641,7 +639,7 @@ int CDECL main(int argc, char *argv[])
 			for (auto &argument : mgo.arguments) {
 				data.FreeTranslation();
 
-				std::string translation = replace_pathsep(argument);
+				const std::string translation = replace_pathsep(argument);
 				const char *file = strrchr(translation.c_str(), PATHSEPCHAR);
 				const char *translation2 = nullptr;
 				if (file != nullptr) {
@@ -653,11 +651,10 @@ int CDECL main(int argc, char *argv[])
 				if (_errors != 0) return 1;
 
 				/* get the targetfile, strip any directories and append to destination path */
-				r = strrchr(argument, PATHSEPCHAR);
-				mkpath(pathbuf, lastof(pathbuf), dest_dir.c_str(), (r != nullptr) ? &r[1] : argument);
+				mkpath(pathbuf, lastof(pathbuf), dest_dir.c_str(), (file != nullptr) ? file + 1 : translation.c_str());
 
 				/* rename the .txt (input-extension) to .lng */
-				r = strrchr(pathbuf, '.');
+				char *r = strrchr(pathbuf, '.');
 				if (r == nullptr || strcmp(r, ".txt") != 0) r = strchr(pathbuf, '\0');
 				strecpy(r, ".lng", lastof(pathbuf));
 
