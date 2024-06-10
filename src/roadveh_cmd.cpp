@@ -979,7 +979,7 @@ static bool CheckRoadBlockedForOvertaking(OvertakeData *od)
  */
 static bool IsNonOvertakingStationTile(TileIndex tile, DiagDirection diag_dir)
 {
-	if (!IsTileType(tile, MP_STATION)) return false;
+	if (!IsTileType(tile, MP_STATION) || IsRoadWaypoint(tile)) return false;
 	if (!IsDriveThroughStopTile(tile)) return true;
 	const DisallowedRoadDirections diagdir_to_drd[DIAGDIR_END] = { DRD_NORTHBOUND, DRD_NORTHBOUND, DRD_SOUTHBOUND, DRD_SOUTHBOUND };
 	return GetDriveThroughStopDisallowedRoadDirections(tile) != diagdir_to_drd[diag_dir];
