@@ -275,7 +275,7 @@ class CrashLogUnix : public CrashLog {
 	{
 		struct utsname name;
 		if (uname(&name) < 0) {
-			return buffer + seprintf(buffer, last, "Could not get OS version: %s\n", strerror(errno));
+			return buffer + seprintf(buffer, last, "Could not get OS version: %s\n", StrErrorDumper().GetLast());
 		}
 
 		return buffer + seprintf(buffer, last,

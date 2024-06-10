@@ -1392,3 +1392,33 @@ public:
 #endif /* defined(WITH_COCOA) && !defined(STRGEN) && !defined(SETTINGSGEN) */
 
 #endif
+
+const char *StrErrorDumper::Get(int errornum)
+{
+#if defined(_WIN32)
+	if (strerror_s(this->buf, lengthof(this->buf), errornum) == 0) {
+		return this->buf;
+	}
+#else
+	struct StrErrorRHelper {
+		static bool Success(char *result) { return true; }      ///< GNU-specific
+		static bool Success(int result) { return result == 0; } ///< XSI-compliant
+
+		static const char *GetString(char *result, const char *buffer) { return result; } ///< GNU-specific
+		static const char *GetString(int result, const char *buffer) { return buffer; }   ///< XSI-compliant
+	};
+
+	auto result = strerror_r(errornum, this->buf, lengthof(this->buf));
+	if (StrErrorRHelper::Success(result)) {
+		return StrErrorRHelper::GetString(result, this->buf);
+	}
+#endif
+
+	seprintf(this->buf, lastof(this->buf), "Unknown error %d", errornum);
+	return this->buf;
+}
+
+const char *StrErrorDumper::GetLast()
+{
+	return this->Get(errno);
+}

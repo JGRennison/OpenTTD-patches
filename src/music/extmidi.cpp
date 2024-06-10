@@ -125,7 +125,7 @@ void MusicDriver_ExtMidi::DoPlay()
 		}
 
 		case -1:
-			DEBUG(driver, 0, "extmidi: couldn't fork: %s", strerror(errno));
+			DEBUG(driver, 0, "extmidi: couldn't fork: %s", StrErrorDumper().GetLast());
 			[[fallthrough]];
 
 		default:
