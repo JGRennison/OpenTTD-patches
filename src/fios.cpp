@@ -251,8 +251,7 @@ std::string FiosMakeHeightmapName(const char *name)
  */
 bool FiosDelete(const char *name)
 {
-	std::string filename = FiosMakeSavegameName(name);
-	return unlink(filename.c_str()) == 0;
+	return FioRemove(FiosMakeSavegameName(name));
 }
 
 typedef FiosType fios_getlist_callback_proc(SaveLoadOperation fop, const std::string &filename, const char *ext, char *title, const char *last);

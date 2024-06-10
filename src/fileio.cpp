@@ -363,6 +363,21 @@ void FioCreateDirectory(const std::string &name)
 }
 
 /**
+ * Remove a file.
+ * @param filename Filename to remove.
+ * @return true iff the file was removed.
+ */
+bool FioRemove(const std::string &filename)
+{
+	if (unlink(filename.c_str()) != 0) {
+		Debug(misc, 0, "Removing {} failed: {}", filename, StrErrorDumper().GetLast());
+		return false;
+	}
+
+	return true;
+}
+
+/**
  * Renames a file from oldname to newname.
  * @param oldname file name to rename from
  * @param newname file name to rename to

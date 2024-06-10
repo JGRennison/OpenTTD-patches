@@ -19,11 +19,10 @@
 
 #include "../../safeguards.h"
 
-static int ParseCommandLine(char *line, char **argv, int max_argc)
+static auto ParseCommandLine(char *line)
 {
-	int n = 0;
-
-	do {
+	std::vector<char *> arguments;
+	for (;;) {
 		/* skip whitespace */
 		while (*line == ' ' || *line == '\t') line++;
 
@@ -32,31 +31,28 @@ static int ParseCommandLine(char *line, char **argv, int max_argc)
 
 		/* special handling when quoted */
 		if (*line == '"') {
-			argv[n++] = ++line;
+			arguments.push_back(++line);
 			while (*line != '"') {
-				if (*line == '\0') return n;
+				if (*line == '\0') return arguments;
 				line++;
 			}
 		} else {
-			argv[n++] = line;
+			arguments.push_back(line);
 			while (*line != ' ' && *line != '\t') {
-				if (*line == '\0') return n;
+				if (*line == '\0') return arguments;
 				line++;
 			}
 		}
 		*line++ = '\0';
-	} while (n != max_argc);
+	};
 
-	return n;
+	return arguments;
 }
 
 void CreateConsole();
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
-	int argc;
-	char *argv[64]; // max 64 command line arguments
-
 	/* Set system timer resolution to 1ms. */
 	timeBeginPeriod(1);
 
@@ -78,15 +74,15 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	/* setup random seed to something quite random */
 	SetRandomSeed(GetTickCount());
 
-	argc = ParseCommandLine(cmdline.data(), argv, lengthof(argv));
+	auto arguments = ParseCommandLine(cmdline.data());
 
 	/* Make sure our arguments contain only valid UTF-8 characters. */
-	for (int i = 0; i < argc; i++) StrMakeValidInPlace(argv[i]);
+	for (auto argument : arguments) StrMakeValidInPlace(argument);
 
-	openttd_main(argc, argv);
+	int ret = openttd_main(arguments);
 
 	/* Restore system timer resolution. */
 	timeEndPeriod(1);
 
-	return 0;
+	return ret;
 }

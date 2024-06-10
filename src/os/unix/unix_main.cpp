@@ -31,5 +31,5 @@ int CDECL main(int argc, char *argv[])
 
 	signal(SIGPIPE, SIG_IGN);
 
-	return openttd_main(argc, argv);
+	return openttd_main(std::span(argv, argc));
 }

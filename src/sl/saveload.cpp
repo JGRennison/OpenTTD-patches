@@ -2874,7 +2874,7 @@ struct FileWriter : SaveFilter {
 	~FileWriter()
 	{
 		this->CloseFile();
-		if (!this->temp_name.empty()) unlink(this->temp_name.c_str());
+		if (!this->temp_name.empty()) FioRemove(this->temp_name);
 	}
 
 	void Write(uint8_t *buf, size_t size) override
