@@ -41,6 +41,11 @@ macro(compile_flags)
                 "$<$<CONFIG:Debug>:-Wa,-mbig-obj>" # Switch to pe-bigobj-x86-64 as x64 Debug builds push pe-x86-64 to the limits (linking errors with ASLR, ...)
             )
         endif()
+        if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+            # Fix MinGW's incorrect assumption that the incoming stack at function calls is 16-byte aligned
+            # The Win32 API/calling convention only requires and guarantees 4-byte alignment, leading to alignment problems with SSE/AVX/etc
+            add_compile_options(-mincoming-stack-boundary=2 -mpreferred-stack-boundary=2)
+        endif()
         add_compile_options(-Wno-stringop-overflow) # This warning false-positives on some MinGW versions so just turn it off
     endif()
 
