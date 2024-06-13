@@ -1047,10 +1047,12 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					list.emplace_back(std::move(item));
 				};
 				add_item(STR_SCHDISPATCH_RESET_LAST_DISPATCH, SCH_MD_RESET_LAST_DISPATCHED);
+				list.push_back(MakeDropDownListDividerItem());
 				add_item(STR_SCHDISPATCH_CLEAR, SCH_MD_CLEAR_SCHEDULE);
 				add_item(STR_SCHDISPATCH_REMOVE_SCHEDULE, SCH_MD_REMOVE_SCHEDULE);
 				add_item(STR_SCHDISPATCH_DUPLICATE_SCHEDULE, SCH_MD_DUPLICATE_SCHEDULE);
 				add_item(STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES, SCH_MD_APPEND_VEHICLE_SCHEDULES);
+				list.push_back(MakeDropDownListDividerItem());
 				list.push_back(MakeDropDownListCheckedItem(schedule.GetScheduledDispatchReuseSlots(), STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS, SCH_MD_REUSE_DEPARTURE_SLOTS, false));
 				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGEMENT);
 				break;
@@ -1110,6 +1112,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					list.push_back(MakeDropDownListCheckedItem(HasBit(selected_slot->flags, bit), str, bit, disabled));
 				};
 				add_item(STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT, DispatchSlot::SDSF_REUSE_SLOT, schedule.GetScheduledDispatchReuseSlots());
+				list.push_back(MakeDropDownListDividerItem());
 				for (uint8_t flag_bit = DispatchSlot::SDSF_FIRST_TAG; flag_bit <= DispatchSlot::SDSF_LAST_TAG; flag_bit++) {
 					SetDParam(0, 1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG);
 					add_item(STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_TAG, flag_bit, false);
