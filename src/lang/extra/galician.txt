@@ -2136,8 +2136,8 @@ STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS_TOOLTIP                   :{BLACK}Establec
 STR_SCHDISPATCH_MANAGE_SLOT                                     :{BLACK}Xestionar Slot
 STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT                       :Reutilizar este slot de saída
 STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT_TOOLTIP               :{BLACK}Establecer se a franxa de saída seleccionada pode ser utilizada máis dunha vez.
-STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_TAG                        :Etiqueta {NUM}
-STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_TAG_TOOLTIP                :{BLACK}Etiquetar a franxa de saída seleccionada (para usar con ordes condicionais).
+STR_SCHDISPATCH_TAG_DEPARTURE                                   :Etiqueta {NUM}
+STR_SCHDISPATCH_TAG_DEPARTURE_TOOLTIP                           :{BLACK}Etiquetar a franxa de saída seleccionada (para usar con ordes condicionais).
 STR_SCHDISPATCH_NO_SCHEDULES                                    :{BLACK}Sen programas
 STR_SCHDISPATCH_SCHEDULE_ID                                     :{BLACK}Programa {NUM} de {NUM}
 STR_SCHDISPATCH_NAMED_SCHEDULE_ID                               :{BLACK}{STRING} ({NUM} de {NUM})

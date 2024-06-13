@@ -479,7 +479,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					SetDParam(0, str);
 					_temp_special_strings[0] += GetString(STR_SCHDISPATCH_MANAGE_TOOLTIP_SUFFIX);
 				};
-				add_suffix(STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_TAG_TOOLTIP);
+				add_suffix(STR_SCHDISPATCH_TAG_DEPARTURE_TOOLTIP);
 				GuiShowTooltips(this, SPECSTR_TEMP_START, close_cond);
 				return true;
 			}
@@ -1115,7 +1115,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				list.push_back(MakeDropDownListDividerItem());
 				for (uint8_t flag_bit = DispatchSlot::SDSF_FIRST_TAG; flag_bit <= DispatchSlot::SDSF_LAST_TAG; flag_bit++) {
 					SetDParam(0, 1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG);
-					add_item(STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_TAG, flag_bit, false);
+					add_item(STR_SCHDISPATCH_TAG_DEPARTURE, flag_bit, false);
 				}
 
 				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGE_SLOT);

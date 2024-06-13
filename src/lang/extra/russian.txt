@@ -1112,7 +1112,7 @@ STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_RENAME                   :{WHITE}Нево
 STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_MODIFY                   :{WHITE}Невозможно изменить этот счётчик...
 
 # Programmable Pre-Signals
-STR_PROGRAM_SIGNAL_TOOLTIP                                      :{BLACK}Программируемый пресигнал 
+STR_PROGRAM_SIGNAL_TOOLTIP                                      :{BLACK}Программируемый пресигнал
 
 STR_ERR_PROGSIG_INVALID_INSTRUCTION                             :{WHITE}Невозможно вставить инструкцию после инструкции с недопустимым идентификатором
 STR_ERR_PROGSIG_INVALID_OPCODE                                  :{WHITE}Невозможно вставить инструкцию с таким опкодом
@@ -2140,8 +2140,8 @@ STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS_TOOLTIP                   :{BLACK}Уста
 STR_SCHDISPATCH_MANAGE_SLOT                                     :{BLACK}Управление слотом
 STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT                       :Повторное использование слота отправления
 STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT_TOOLTIP               :{BLACK}Установить, может ли выбранный слот отправления использоваться более одного раза.
-STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_TAG                        :Метка {NUM}
-STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_TAG_TOOLTIP                :{BLACK}Отметить выбранный слот отправления (для использования с условными заказами).
+STR_SCHDISPATCH_TAG_DEPARTURE                                   :Метка {NUM}
+STR_SCHDISPATCH_TAG_DEPARTURE_TOOLTIP                           :{BLACK}Отметить выбранный слот отправления (для использования с условными заказами).
 STR_SCHDISPATCH_NO_SCHEDULES                                    :{BLACK}Нет расписаний
 STR_SCHDISPATCH_SCHEDULE_ID                                     :{BLACK}Расписание {NUM} для {NUM}
 STR_SCHDISPATCH_NAMED_SCHEDULE_ID                               :{BLACK}{STRING} ({NUM} для {NUM})
