@@ -1254,7 +1254,7 @@ static void SlString(void *ptr, size_t length, VarType conv)
  * @param ptr the string being manipulated
  * @param conv must be SLE_FILE_STRING
  */
-static void SlStdString(std::string &str, VarType conv)
+void SlStdString(std::string &str, VarType conv)
 {
 	switch (_sl.action) {
 		case SLA_SAVE: {

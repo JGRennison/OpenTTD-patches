@@ -191,6 +191,7 @@ static void AddNewScheduledDispatchSchedule(VehicleID vindex)
 struct SchdispatchWindow : GeneralVehicleWindow {
 	int schedule_index;
 	int clicked_widget;     ///< The widget that was clicked (used to determine what to do in OnQueryTextFinished)
+	int click_subaction;    ///< Subaction for clicked_widget
 	Scrollbar *vscroll;     ///< Verticle scrollbar
 	uint num_columns;       ///< Number of columns.
 
@@ -216,6 +217,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		SCH_MD_DUPLICATE_SCHEDULE,
 		SCH_MD_APPEND_VEHICLE_SCHEDULES,
 		SCH_MD_REUSE_DEPARTURE_SLOTS,
+		SCH_MD_RENAME_TAG,
 	};
 
 
@@ -469,6 +471,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				add_suffix(STR_SCHDISPATCH_DUPLICATE_SCHEDULE_TOOLTIP);
 				add_suffix(STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES_TOOLTIP);
 				add_suffix(STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS_TOOLTIP);
+				add_suffix(STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_TOOLTIP);
 				GuiShowTooltips(this, SPECSTR_TEMP_START, close_cond);
 				return true;
 			}
@@ -547,7 +550,9 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						for (uint8_t flag_bit = DispatchSlot::SDSF_FIRST_TAG; flag_bit <= DispatchSlot::SDSF_LAST_TAG; flag_bit++) {
 							if (HasBit(flags, flag_bit)) {
 								SetDParam(0, 1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG);
-								_temp_special_strings[0] += GetString(STR_SCHDISPATCH_SLOT_TOOLTIP_TAG);
+								std::string_view name = ds.GetSupplementaryName(SDSNT_DEPARTURE_TAG, flag_bit - DispatchSlot::SDSF_FIRST_TAG);
+								SetDParamStr(1, name);
+								_temp_special_strings[0] += GetString(name.empty() ? STR_SCHDISPATCH_SLOT_TOOLTIP_TAG : STR_SCHDISPATCH_SLOT_TOOLTIP_TAG_NAMED);
 							}
 						}
 					}
@@ -1054,6 +1059,13 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				add_item(STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES, SCH_MD_APPEND_VEHICLE_SCHEDULES);
 				list.push_back(MakeDropDownListDividerItem());
 				list.push_back(MakeDropDownListCheckedItem(schedule.GetScheduledDispatchReuseSlots(), STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS, SCH_MD_REUSE_DEPARTURE_SLOTS, false));
+				list.push_back(MakeDropDownListDividerItem());
+				for (uint8_t tag = 0; tag < DispatchSchedule::DEPARTURE_TAG_COUNT; tag++) {
+					SetDParam(0, tag + 1);
+					std::string_view name = schedule.GetSupplementaryName(SDSNT_DEPARTURE_TAG, tag);
+					SetDParamStr(1, name);
+					add_item(name.empty() ? STR_SCHDISPATCH_RENAME_DEPARTURE_TAG : STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_NAMED, SCH_MD_RENAME_TAG | (tag << 16));
+				}
 				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGEMENT);
 				break;
 			}
@@ -1115,7 +1127,9 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				list.push_back(MakeDropDownListDividerItem());
 				for (uint8_t flag_bit = DispatchSlot::SDSF_FIRST_TAG; flag_bit <= DispatchSlot::SDSF_LAST_TAG; flag_bit++) {
 					SetDParam(0, 1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG);
-					add_item(STR_SCHDISPATCH_TAG_DEPARTURE, flag_bit, false);
+					std::string_view name = schedule.GetSupplementaryName(SDSNT_DEPARTURE_TAG, flag_bit - DispatchSlot::SDSF_FIRST_TAG);
+					SetDParamStr(1, name);
+					add_item(name.empty() ? STR_SCHDISPATCH_TAG_DEPARTURE : STR_SCHDISPATCH_TAG_DEPARTURE_NAMED, flag_bit, false);
 				}
 
 				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGE_SLOT);
@@ -1167,7 +1181,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		switch (widget) {
 			case WID_SCHDISPATCH_MANAGEMENT: {
 				if (!this->IsScheduleSelected()) break;
-				switch((ManagementDropdown)index) {
+				switch((ManagementDropdown)index & 0xFFFF) {
 					case SCH_MD_RESET_LAST_DISPATCHED:
 						DoCommandP(0, this->vehicle->index | (this->schedule_index << 20), 0, CMD_SCHEDULED_DISPATCH_RESET_LAST_DISPATCH | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 						break;
@@ -1199,6 +1213,14 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 					case SCH_MD_REUSE_DEPARTURE_SLOTS: {
 						DoCommandP(0, this->vehicle->index | (this->schedule_index << 20), this->GetSelectedSchedule().GetScheduledDispatchReuseSlots() ? 0 : 1, CMD_SCHEDULED_DISPATCH_SET_REUSE_SLOTS | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+						break;
+					}
+
+					case SCH_MD_RENAME_TAG: {
+						this->clicked_widget = WID_SCHDISPATCH_MANAGEMENT;
+						this->click_subaction = index;
+						SetDParamStr(0, this->GetSelectedSchedule().GetSupplementaryName(SDSNT_DEPARTURE_TAG, index >> 16));
+						ShowQueryString(STR_JUST_RAW_STRING, STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_CAPTION, MAX_LENGTH_VEHICLE_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
 						break;
 					}
 				}
@@ -1295,6 +1317,17 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 				if (val != 0) {
 					DoCommandP(0, v->index | (this->schedule_index << 20), val, CMD_SCHEDULED_DISPATCH_ADJUST | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				}
+				break;
+			}
+
+			case WID_SCHDISPATCH_MANAGEMENT: {
+				if (str == nullptr) return;
+
+				switch (this->click_subaction & 0xFFFF) {
+					case SCH_MD_RENAME_TAG:
+						DoCommandP(0, v->index | (this->schedule_index << 20), this->click_subaction >> 16, CMD_SCHEDULED_DISPATCH_RENAME_TAG | CMD_MSG(STR_ERROR_CAN_T_RENAME_DEPARTURE_TAG), nullptr, str);
+						break;
 				}
 				break;
 			}

@@ -481,6 +481,46 @@ CommandCost CmdScheduledDispatchRenameSchedule(TileIndex tile, DoCommandFlag fla
 }
 
 /**
+ * Rename scheduled dispatch departure tag
+ *
+ * @param tile Not used.
+ * @param flags Operation to perform.
+ * @param p1 Vehicle index
+ * @param p2 Tag ID
+ * @param text name
+ * @return the cost of this operation or an error
+ */
+CommandCost CmdScheduledDispatchRenameTag(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+{
+	VehicleID veh = GB(p1, 0, 20);
+	uint schedule_index = GB(p1, 20, 12);
+
+	Vehicle *v = Vehicle::GetIfValid(veh);
+	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
+
+	CommandCost ret = CheckOwnership(v->owner);
+	if (ret.Failed()) return ret;
+
+	if (v->orders == nullptr) return CMD_ERROR;
+
+	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return CMD_ERROR;
+	if (p2 >= DispatchSchedule::DEPARTURE_TAG_COUNT) return CMD_ERROR;
+
+	std::string name;
+	if (!StrEmpty(text)) {
+		if (Utf8StringLength(text) >= MAX_LENGTH_VEHICLE_NAME_CHARS) return CMD_ERROR;
+		name = text;
+	}
+
+	if (flags & DC_EXEC) {
+		v->orders->GetDispatchScheduleByIndex(schedule_index).SetSupplementaryName(SDSNT_DEPARTURE_TAG, static_cast<uint16_t>(p2), std::move(name));
+		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH | STWDF_ORDERS);
+	}
+
+	return CommandCost();
+}
+
+/**
  * Duplicate scheduled dispatch schedule
  *
  * @param tile Not used.
@@ -799,5 +839,27 @@ void DispatchSchedule::UpdateScheduledDispatch(const Vehicle *v)
 {
 	if (this->UpdateScheduledDispatchToDate(_state_ticks) && v != nullptr) {
 		SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
+	}
+}
+
+static inline uint32_t SupplementaryNameKey(ScheduledDispatchSupplementaryNameType name_type, uint16_t id)
+{
+	return (static_cast<uint32_t>(name_type) << 16) | id;
+}
+
+std::string_view DispatchSchedule::GetSupplementaryName(ScheduledDispatchSupplementaryNameType name_type, uint16_t id) const
+{
+	auto iter = this->supplementary_names.find(SupplementaryNameKey(name_type, id));
+	if (iter == this->supplementary_names.end()) return {};
+	return iter->second;
+}
+
+void DispatchSchedule::SetSupplementaryName(ScheduledDispatchSupplementaryNameType name_type, uint16_t id, std::string name)
+{
+	uint32_t key = SupplementaryNameKey(name_type, id);
+	if (name.empty()) {
+		this->supplementary_names.erase(key);
+	} else {
+		this->supplementary_names.insert({ key, std::move(name) });
 	}
 }

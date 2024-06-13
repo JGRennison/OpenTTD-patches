@@ -1121,11 +1121,13 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				SetDParam(3, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator());
 				SetDParam(4, order->GetXData());
 			} else if (ocv == OCV_DISPATCH_SLOT) {
+				const DispatchSchedule *selected_schedule = nullptr;
 				SetDParam(0, STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DISPLAY);
 				if (GB(order->GetXData(), 0, 16) != UINT16_MAX) {
 					bool have_name = false;
 					if (GB(order->GetXData(), 0, 16) < v->orders->GetScheduledDispatchScheduleCount()) {
 						const DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(GB(order->GetXData(), 0, 16));
+						selected_schedule = &ds;
 						if (!ds.ScheduleName().empty()) {
 							_temp_special_strings[0] = ds.ScheduleName();
 							have_name = true;
@@ -1150,8 +1152,15 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 						break;
 
 					case OCDM_TAG: {
-						auto tmp_params = MakeParameters(GB(value, ODFLCB_TAG_START, ODFLCB_TAG_COUNT) + 1);
-						_temp_special_strings[1] = GetStringWithArgs((order->GetConditionComparator() == OCC_IS_FALSE) ? STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG : STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG, tmp_params);
+						StringID str = (order->GetConditionComparator() == OCC_IS_FALSE) ? STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG : STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG;
+						uint tag_id = GB(value, ODFLCB_TAG_START, ODFLCB_TAG_COUNT);
+						std::string_view name;
+						if (selected_schedule != nullptr) {
+							name = selected_schedule->GetSupplementaryName(SDSNT_DEPARTURE_TAG, tag_id);
+							if (!name.empty()) str++;
+						}
+						auto tmp_params = MakeParameters(tag_id + 1, std::string{name});
+						_temp_special_strings[1] = GetStringWithArgs(str, tmp_params);
 						SetDParam(4, SPECSTR_TEMP_START + 1);
 						break;
 					}
@@ -3170,23 +3179,32 @@ public:
 					list.push_back(MakeDropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_LAST, true_cond | first_last_value, false));
 					list.push_back(MakeDropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_LAST, false_cond | first_last_value, false));
 
+					const DispatchSchedule *ds = nullptr;
 					uint16_t slot_flags = 0;
 					uint schedule_index = GB(o->GetXData(), 0, 16);
 					if (schedule_index < this->vehicle->orders->GetScheduledDispatchScheduleCount()) {
-						const DispatchSchedule &ds = this->vehicle->orders->GetDispatchScheduleByIndex(schedule_index);
-						for (const DispatchSlot &slot : ds.GetScheduledDispatch()) {
+						ds = &(this->vehicle->orders->GetDispatchScheduleByIndex(schedule_index));
+						for (const DispatchSlot &slot : ds->GetScheduledDispatch()) {
 							slot_flags |= slot.flags;
 						}
 					}
 
-					for (uint8_t tag = 0; tag <= (DispatchSlot::SDSF_LAST_TAG - DispatchSlot::SDSF_FIRST_TAG); tag++) {
+					for (uint8_t tag = 0; tag < DispatchSchedule::DEPARTURE_TAG_COUNT; tag++) {
 						if (HasBit(slot_flags, tag + DispatchSlot::SDSF_FIRST_TAG)) {
 							int tag_cond_value = 0;
 							SB(tag_cond_value, ODCB_MODE_START, ODCB_MODE_COUNT, OCDM_TAG);
 							SB(tag_cond_value, ODFLCB_TAG_START, ODFLCB_TAG_COUNT, tag);
 							SetDParam(0, tag + 1);
-							list.push_back(MakeDropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG, true_cond | tag_cond_value, false));
-							list.push_back(MakeDropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG, false_cond | tag_cond_value, false));
+							uint string_offset = 0;
+							if (ds != nullptr) {
+								std::string_view name = ds->GetSupplementaryName(SDSNT_DEPARTURE_TAG, tag);
+								if (!name.empty()) {
+									SetDParamStr(1, name);
+									string_offset = 1;
+								}
+							}
+							list.push_back(MakeDropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG + string_offset, true_cond | tag_cond_value, false));
+							list.push_back(MakeDropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG + string_offset, false_cond | tag_cond_value, false));
 						}
 					}
 
