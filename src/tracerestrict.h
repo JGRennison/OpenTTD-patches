@@ -601,7 +601,7 @@ private:
 		TraceRestrictRefId inline_ref_ids[4];
 		ptr_buffer ptr_ref_ids;
 
-		// Actual construction/destruction done by struct TraceRestrictProgram
+		/* Actual construction/destruction done by struct TraceRestrictProgram */
 		refid_list_union() {}
 		~refid_list_union() {}
 	};

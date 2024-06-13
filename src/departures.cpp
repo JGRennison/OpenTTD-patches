@@ -192,7 +192,7 @@ static bool VehicleSetNextDepartureTime(Ticks *previous_departure, Ticks *waitin
 
 static void ScheduledDispatchDepartureLocalFix(DepartureList *departure_list)
 {
-	/* Seperate departure by each shared order group */
+	/* Separate departure by each shared order group */
 	btree::btree_map<uint32_t, std::vector<Departure*>> separated_departure;
 	for (Departure* departure : *departure_list) {
 		separated_departure[departure->vehicle->orders->index].push_back(departure);

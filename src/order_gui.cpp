@@ -1017,7 +1017,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 
 			SetDParam(1, order->GetConditionSkipToOrder() + 1);
 			const OrderConditionVariable ocv = order->GetConditionVariable();
-			/* handle some non-ordinary cases seperately */
+			/* handle some non-ordinary cases separately */
 			if (ocv == OCV_UNCONDITIONALLY) {
 				SetDParam(0, STR_ORDER_CONDITIONAL_UNCONDITIONAL);
 			} else if (ocv == OCV_PERCENT) {
