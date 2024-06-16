@@ -252,7 +252,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 		 * This yields a number x on a 0-1 scale, but shifted 16 bits to the left.
 		 * We then calculate 64 + 128x, clamped to 0-255, but still shifted 16 bits to the left.
 		 * Then we apply a correction for multiengine trains, and in the end we shift it 16 bits to the right to get a 0-255 number.
-		 * @note A seperate correction for multiheaded engines is done in CheckVehicleBreakdown. We can't do that here because it would affect the whole consist.
+		 * @note A separate correction for multiheaded engines is done in CheckVehicleBreakdown. We can't do that here because it would affect the whole consist.
 		 */
 		uint64_t breakdown_factor = (uint64_t)abs(resistance) * (uint64_t)(this->cur_speed << 16);
 		breakdown_factor /= (std::max(force, (int64_t)100) * this->gcache.cached_max_track_speed);
@@ -309,8 +309,14 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 				ShowTrainTooHeavyAdviceMessage(this);
 			}
 
-			if (Train::From(this)->UsingRealisticBraking() && _settings_game.vehicle.limit_train_acceleration) {
+			bool using_realistic_braking = Train::From(this)->UsingRealisticBraking();
+
+			if (using_realistic_braking && _settings_game.vehicle.limit_train_acceleration) {
 				accel = std::min(accel, 250);
+			}
+
+			if (using_realistic_braking) {
+				accel = DivTowardsPositiveInf(accel * _settings_game.vehicle.train_acc_braking_percent, 100);
 			}
 		}
 

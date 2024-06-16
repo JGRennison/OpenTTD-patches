@@ -32,6 +32,8 @@
 #include "smallmap_colours.h"
 #include "smallmap_gui.h"
 
+#include "widgets/smallmap_widget.h"
+
 #include "table/strings.h"
 
 #include <bitset>
@@ -1098,16 +1100,16 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 	/* Rebuild colour indices if necessary. */
 	if (SmallMapWindow::map_height_limit == _settings_game.construction.map_height_limit) return;
 
-	for (uint n = 0; n < lengthof(_heightmap_schemes); n++) {
+	for (auto &heightmap_scheme : _heightmap_schemes) {
 		/* The heights go from 0 up to and including maximum. */
 		int heights = _settings_game.construction.map_height_limit + 1;
-		_heightmap_schemes[n].height_colours = ReallocT<uint32_t>(_heightmap_schemes[n].height_colours, heights);
+		heightmap_scheme.height_colours = ReallocT<uint32_t>(heightmap_scheme.height_colours, heights);
 
 		for (int z = 0; z < heights; z++) {
-			size_t access_index = (_heightmap_schemes[n].colour_count * z) / heights;
+			size_t access_index = (heightmap_scheme.colour_count * z) / heights;
 
 			/* Choose colour by mapping the range (0..max heightlevel) on the complete colour table. */
-			_heightmap_schemes[n].height_colours[z] = _heightmap_schemes[n].height_colours_base[access_index];
+			heightmap_scheme.height_colours[z] = heightmap_scheme.height_colours_base[access_index];
 		}
 	}
 
@@ -1715,7 +1717,7 @@ void SmallMapWindow::ScreenshotCallbackHandler(void *buf, uint y, uint pitch, ui
 	dpi.height = n;
 	dpi.width = (((MapMaxX() + MapMaxY()) * 2) * this->ui_zoom) / this->tile_zoom;
 	dpi.pitch = pitch;
-	dpi.zoom = ZOOM_LVL_NORMAL;
+	dpi.zoom = ZOOM_LVL_MIN;
 	dpi.left = 0;
 	dpi.top = y;
 

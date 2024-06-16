@@ -2574,6 +2574,7 @@ STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :{WHITE}Je spele
 STR_NETWORK_ERROR_BAD_SERVER_NAME                               :{WHITE}Je servernaam is niet ingesteld. Je kunt de naam instellen bovenin het venster Netwerkspel
 STR_NETWORK_ERROR_WRONG_REVISION                                :{WHITE}De revisie van deze client komt niet overeen met de revisie van de server
 STR_NETWORK_ERROR_WRONG_PASSWORD                                :{WHITE}Ongeldig wachtwoord
+STR_NETWORK_ERROR_NOT_ON_ALLOW_LIST                             :{WHITE}Je staat niet op de lijst met toegestane clients
 STR_NETWORK_ERROR_SERVER_FULL                                   :{WHITE}De server is vol
 STR_NETWORK_ERROR_SERVER_BANNED                                 :{WHITE}Je bent verbannen van deze server
 STR_NETWORK_ERROR_KICKED                                        :{WHITE}Je bent van de server geschopt
@@ -2589,7 +2590,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Je spele
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Mogelijk verbinding verbroken
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}In de afgelopen {NUM} seconde{P "" n} is er geen data ontvangen van de server
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :algemene fout
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :desynchronisatiefout
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :kan kaart niet laden
@@ -2601,6 +2602,7 @@ STR_NETWORK_ERROR_CLIENT_NOT_EXPECTED                           :ongeldig of onv
 STR_NETWORK_ERROR_CLIENT_WRONG_REVISION                         :foute revisie
 STR_NETWORK_ERROR_CLIENT_NAME_IN_USE                            :naam al in gebruik
 STR_NETWORK_ERROR_CLIENT_WRONG_PASSWORD                         :fout spelwachtwoord
+STR_NETWORK_ERROR_CLIENT_NOT_ON_ALLOW_LIST                      :niet op toegestane lijst
 STR_NETWORK_ERROR_CLIENT_COMPANY_MISMATCH                       :verkeerd bedrijfsnummer in verstuurd commando
 STR_NETWORK_ERROR_CLIENT_KICKED                                 :eruit geschopt door server
 STR_NETWORK_ERROR_CLIENT_CHEATER                                :probeerde vals te spelen
@@ -3486,7 +3488,9 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Wegtype
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}Parameter 60+x voor NewGRF-variabele (hexadecimaal)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Sprite uitlijnen {COMMA} ({STRING})
+STR_SPRITE_ALIGNER_CAPTION_NO_ACTION                            :{WHITE}Sprite uitlijnen: ({STRING}:{NUM})
+STR_SPRITE_ALIGNER_CAPTION_ACTIONA                              :{WHITE}Sprite uitlijnen: actie 0xA, {COMMA} ({STRING}:{NUM})
+STR_SPRITE_ALIGNER_CAPTION_ACTION5                              :{WHITE}Sprite uitlijnen: actie 0x5, type {HEX}, {COMMA} ({STRING}:{NUM})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Volgende sprite
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Doorgaan met volgende normale sprite, alle pseudo-/herkleur-/lettertype-sprites overslaan; bij het einde terug naar het begin
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Ga naar sprite
@@ -3495,6 +3499,7 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Vorige s
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Doorgaan met de vorige normale sprite, alle pseudo-/herkleur-/lettertype-sprites overslaan; bij het einde terug naar het begin
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Voorbeeld van de huidige sprite. De uitlijning wordt genegeerd bij het weergeven van deze sprite.
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Sprite verplaatsen, dit verandert X en Y offsets. Ctr+klik om de sprite 8 eenheden per keer te verplaatsen.
+STR_SPRITE_ALIGNER_SPRITE                                       :{STRING}:{NUM}
 
 ###length 2
 STR_SPRITE_ALIGNER_CENTRE_OFFSET                                :{BLACK}Op offset gecentreerd
@@ -4447,10 +4452,10 @@ STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}Capacite
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK}Geldoverdracht: {LTBLUE}{CURRENCY_LONG}
 
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS                     :{BLACK}Onderhoudstermijn: {LTBLUE}{COMMA}{NBSP}dagen{BLACK} {STRING}
-STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES                  :{BLACK}Onderhoudstermijn: {LTBLUE}{COMMA}{NBSP}minuten{BLACK}   {STRING}
+STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES                  :{BLACK}Onderhoudstermijn: {LTBLUE}{COMMA}{NBSP}minu{P ut ten}{BLACK} {STRING}
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT                  :{BLACK}Onderhoudstermijn: {LTBLUE}{COMMA}%{BLACK} {STRING}
 STR_VEHICLE_DETAILS_LAST_SERVICE_DATE                           :Laatste onderhoud: {LTBLUE}{DATE_LONG}
-STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO                    :Laatste onderhoud: {LTBLUE}{NUM} minuten geleden
+STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO                    :Laatste onderhoud: {LTBLUE}{NUM} minu{P ut ten} geleden
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_DAYS    :{BLACK}Vergroot de onderhoudstermijn met 10 dagen. Ctrl+klik voor een verhoging met 5 dagen
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_MINUTES :{BLACK}Vergroot de onderhoudstermijng met 5 minuten. Ctrl+klik voor een verhoging met 1 minuut
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_PERCENT :{BLACK}Vergroot de onderhoudstermijn met 10 procent. Ctrl+klik voor een verhoging met 5 procent
@@ -4641,7 +4646,7 @@ STR_ORDER_REFIT_ORDER                                           :(Ombouwen naar 
 STR_ORDER_REFIT_STOP_ORDER                                      :(Ombouwen naar {STRING} en stop)
 STR_ORDER_STOP_ORDER                                            :(Stop)
 
-STR_ORDER_WAIT_TO_UNBUNCH                                       :(wacht op ontkreukelen)
+STR_ORDER_WAIT_TO_UNBUNCH                                       :(Wacht op ontkreukelen)
 
 STR_ORDER_GO_TO_STATION                                         :{STRING} {STATION} {STRING}
 STR_ORDER_GO_TO_STATION_CAN_T_USE_STATION                       :{PUSH_COLOUR}{RED}(Kan station niet gebruiken){POP_COLOUR} {STRING} {STATION} {STRING}
@@ -4897,9 +4902,9 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Verwacht
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Opslaan van spel is nog bezig,{}Wacht tot dit voltooid is!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Automatisch opslaan mislukt
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Kan niet lezen van schijf
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Opslaan spel mislukt{}{STRING}
+STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Spel opslaan mislukt...
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Kan bestand niet verwijderen
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Laden spel mislukt{}{STRING}
+STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Spel laden spel mislukt...
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Interne fout: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Opgeslagen spel beschadigd - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Opgeslagen spel hoort bij een nieuwere versie
@@ -4993,7 +4998,7 @@ STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Kan het 
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Kan bedrijfshoofdkantoor niet bouwen...
 
 # Town related errors
-STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Kan geen steden bouwen
+STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Kan geen steden bouwen...
 STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE}Kan stad niet hernoemen...
 STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :{WHITE}Kan hier geen nieuwe stad bouwen...
 STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}Kan dorp niet uitbreiden...
@@ -5831,6 +5836,7 @@ STR_JUST_DATE_ISO                                               :{DATE_ISO}
 STR_JUST_STRING                                                 :{STRING}
 STR_JUST_STRING1                                                :{STRING}
 STR_JUST_STRING2                                                :{STRING}
+STR_JUST_STRING4                                                :{STRING}
 STR_JUST_STRING_STRING                                          :{STRING}{STRING}
 STR_JUST_RAW_STRING                                             :{STRING}
 STR_JUST_BIG_RAW_STRING                                         :{BIG_FONT}{STRING}

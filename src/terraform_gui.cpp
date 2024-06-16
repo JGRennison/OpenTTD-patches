@@ -30,6 +30,7 @@
 #include "object.h"
 #include "hotkeys.h"
 #include "engine_base.h"
+#include "engine_override.h"
 #include "terraform_gui.h"
 #include "cheat_func.h"
 #include "town_gui.h"
@@ -628,12 +629,12 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		if (widget != WID_ETT_DOTS) return;
 
-		size->width  = std::max<uint>(size->width,  ScaleGUITrad(59));
-		size->height = std::max<uint>(size->height, ScaleGUITrad(31));
+		size.width  = std::max<uint>(size.width,  ScaleGUITrad(59));
+		size.height = std::max<uint>(size.height, ScaleGUITrad(31));
 	}
 
 	void DrawWidget(const Rect &r, WidgetID widget) const override

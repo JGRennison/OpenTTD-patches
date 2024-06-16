@@ -27,6 +27,8 @@
 #include "hotkeys.h"
 #include "road_gui.h"
 #include "zoom_func.h"
+#include "dropdown_type.h"
+#include "dropdown_func.h"
 #include "engine_base.h"
 #include "strings_func.h"
 #include "core/geometry_func.hpp"
@@ -202,7 +204,7 @@ void CcRoadDepot(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_
  *           bit 3: #Axis of the road for drive-through stops.
  *           bit 5..10: The roadtype.
  *           bit 16..31: Station ID to join (NEW_STATION if build new one).
- * @param p3 bit 0..7: Roadstop class.
+ * @param p3 bit 0..15: Roadstop class.
  *           bit 16..31: Roadstopspec index.
  * @param cmd Unused.
  * @see CmdBuildRoadStop
@@ -217,7 +219,7 @@ void CcRoadStop(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t
 
 	bool connect_to_road = true;
 
-	RoadStopClassID spec_class = Extract<RoadStopClassID, 0, 8>(p3);
+	RoadStopClassID spec_class = Extract<RoadStopClassID, 0, 16>(p3);
 	uint16_t spec_index        = GB(p3, 16, 16);
 	if ((uint)spec_class < RoadStopClass::GetClassCount() && spec_index < RoadStopClass::Get(spec_class)->GetSpecCount()) {
 		const RoadStopSpec *roadstopspec = RoadStopClass::Get(spec_class)->GetSpec(spec_index);
@@ -1143,12 +1145,12 @@ struct BuildRoadDepotWindow : public PickerWindowBase {
 		this->FinishInitNested(TRANSPORT_ROAD);
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		if (!IsInsideMM(widget, WID_BROD_DEPOT_NE, WID_BROD_DEPOT_NW + 1)) return;
 
-		size->width  = ScaleGUITrad(64) + WidgetDimensions::scaled.fullbevel.Horizontal();
-		size->height = ScaleGUITrad(48) + WidgetDimensions::scaled.fullbevel.Vertical();
+		size.width  = ScaleGUITrad(64) + WidgetDimensions::scaled.fullbevel.Horizontal();
+		size.height = ScaleGUITrad(48) + WidgetDimensions::scaled.fullbevel.Vertical();
 	}
 
 	void DrawWidget(const Rect &r, WidgetID widget) const override
@@ -1347,7 +1349,7 @@ public:
 
 		this->ChangeWindowClass((rs == ROADSTOP_BUS) ? WC_BUS_STATION : WC_TRUCK_STATION);
 
-		if (!newstops || _roadstop_gui_settings.roadstop_class >= (int)RoadStopClass::GetClassCount()) {
+		if (!newstops || _roadstop_gui_settings.roadstop_class >= RoadStopClass::GetClassCount()) {
 			/* There's no new stops available or the list has reduced in size.
 			 * Now, set the default road stops as selected. */
 			_roadstop_gui_settings.roadstop_class = ROADSTOP_CLASS_DFLT;
@@ -1410,14 +1412,10 @@ public:
 
 		this->roadstop_classes.clear();
 
-		for (uint i = 0; RoadStopClass::IsClassIDValid((RoadStopClassID)i); i++) {
-			RoadStopClassID rs_id = (RoadStopClassID)i;
-			if (rs_id == ROADSTOP_CLASS_WAYP) {
-				// Skip waypoints.
-				continue;
-			}
-			RoadStopClass *rs_class = RoadStopClass::Get(rs_id);
-			if (GetIfClassHasNewStopsByType(rs_class, this->road_stop_type, _cur_roadtype)) this->roadstop_classes.push_back(rs_id);
+		for (const auto &cls : RoadStopClass::Classes()) {
+			/* Skip waypoints. */
+			if (cls.Index() == ROADSTOP_CLASS_WAYP) continue;
+			if (GetIfClassHasNewStopsByType(&cls, this->road_stop_type, _cur_roadtype)) this->roadstop_classes.push_back(cls.Index());
 		}
 
 		if (this->ShowNewStops()) {
@@ -1514,7 +1512,7 @@ public:
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_BROS_NEWST_LIST: {
@@ -1522,10 +1520,10 @@ public:
 				for (auto rs_class : this->roadstop_classes) {
 					d = maxdim(d, GetStringBoundingBox(RoadStopClass::Get(rs_class)->name));
 				}
-				size->width = std::max(size->width, d.width + padding.width);
+				size.width = std::max(size.width, d.width + padding.width);
 				this->line_height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.matrix.Vertical();
-				size->height = 5 * this->line_height;
-				resize->height = this->line_height;
+				size.height = 5 * this->line_height;
+				resize.height = this->line_height;
 				break;
 			}
 
@@ -1540,7 +1538,7 @@ public:
 						d = maxdim(d, GetStringBoundingBox(str));
 					}
 				}
-				size->width = std::max(size->width, d.width + padding.width);
+				size.width = std::max(size.width, d.width + padding.width);
 				break;
 			}
 
@@ -1550,22 +1548,22 @@ public:
 			case WID_BROS_STATION_NW:
 			case WID_BROS_STATION_X:
 			case WID_BROS_STATION_Y:
-				size->width  = ScaleGUITrad(64) + WidgetDimensions::scaled.fullbevel.Horizontal();
-				size->height = ScaleGUITrad(32 + (this->building_height * 8)) + WidgetDimensions::scaled.fullbevel.Vertical();
+				size.width  = ScaleGUITrad(64) + WidgetDimensions::scaled.fullbevel.Horizontal();
+				size.height = ScaleGUITrad(32 + (this->building_height * 8)) + WidgetDimensions::scaled.fullbevel.Vertical();
 				break;
 
 			case WID_BROS_IMAGE:
-				size->width  = ScaleGUITrad(64) + WidgetDimensions::scaled.fullbevel.Horizontal();
-				size->height = ScaleGUITrad(48) + WidgetDimensions::scaled.fullbevel.Vertical();
+				size.width  = ScaleGUITrad(64) + WidgetDimensions::scaled.fullbevel.Horizontal();
+				size.height = ScaleGUITrad(48) + WidgetDimensions::scaled.fullbevel.Vertical();
 				break;
 
 			case WID_BROS_MATRIX:
-				fill->height = 1;
-				resize->height = 1;
+				fill.height = 1;
+				resize.height = 1;
 				break;
 
 			case WID_BROS_ACCEPTANCE:
-				size->height = this->coverage_height;
+				size.height = this->coverage_height;
 				break;
 		}
 	}
@@ -2051,21 +2049,21 @@ struct BuildRoadWaypointWindow : PickerWindowBase {
 		this->PickerWindowBase::Close();
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_BROW_WAYPOINT_MATRIX:
 				/* Two blobs high and three wide. */
-				size->width  += resize->width  * 2;
-				size->height += resize->height * 1;
+				size.width  += resize.width  * 2;
+				size.height += resize.height * 1;
 
 				/* Resizing in X direction only at blob size, but at pixel level in Y. */
-				resize->height = 1;
+				resize.height = 1;
 				break;
 
 			case WID_BROW_WAYPOINT:
-				size->width  = ScaleGUITrad(64) + 2;
-				size->height = ScaleGUITrad(58) + 2;
+				size.width  = ScaleGUITrad(64) + 2;
+				size.height = ScaleGUITrad(58) + 2;
 				break;
 		}
 	}
@@ -2319,7 +2317,7 @@ DropDownList GetRoadTypeDropDownList(RoadTramTypes rtts, bool for_replacement, b
 	DropDownList list;
 
 	if (all_option) {
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_REPLACE_ALL_ROADTYPE, INVALID_ROADTYPE, false));
+		list.push_back(MakeDropDownListStringItem(STR_REPLACE_ALL_ROADTYPE, INVALID_ROADTYPE));
 	}
 
 	Dimension d = { 0, 0 };
@@ -2341,16 +2339,16 @@ DropDownList GetRoadTypeDropDownList(RoadTramTypes rtts, bool for_replacement, b
 		SetDParam(0, rti->strings.menu_text);
 		SetDParam(1, rti->max_speed / 2);
 		if (for_replacement) {
-			list.push_back(std::make_unique<DropDownListStringItem>(rti->strings.replace_text, rt, !HasBit(avail_roadtypes, rt)));
+			list.push_back(MakeDropDownListStringItem(rti->strings.replace_text, rt, !HasBit(avail_roadtypes, rt)));
 		} else {
 			StringID str = rti->max_speed > 0 ? STR_TOOLBAR_RAILTYPE_VELOCITY : STR_JUST_STRING;
-			list.push_back(std::make_unique<DropDownListIconItem>(d, rti->gui_sprites.build_x_road, PAL_NONE, str, rt, !HasBit(avail_roadtypes, rt)));
+			list.push_back(MakeDropDownListIconItem(d, rti->gui_sprites.build_x_road, PAL_NONE, str, rt, !HasBit(avail_roadtypes, rt)));
 		}
 	}
 
 	if (list.empty()) {
 		/* Empty dropdowns are not allowed */
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_NONE, INVALID_ROADTYPE, true));
+		list.push_back(MakeDropDownListStringItem(STR_NONE, INVALID_ROADTYPE, true));
 	}
 
 	return list;
@@ -2383,12 +2381,12 @@ DropDownList GetScenRoadTypeDropDownList(RoadTramTypes rtts)
 		SetDParam(0, rti->strings.menu_text);
 		SetDParam(1, rti->max_speed / 2);
 		StringID str = rti->max_speed > 0 ? STR_TOOLBAR_RAILTYPE_VELOCITY : STR_JUST_STRING;
-		list.push_back(std::make_unique<DropDownListIconItem>(d, rti->gui_sprites.build_x_road, PAL_NONE, str, rt, !HasBit(avail_roadtypes, rt)));
+		list.push_back(MakeDropDownListIconItem(d, rti->gui_sprites.build_x_road, PAL_NONE, str, rt, !HasBit(avail_roadtypes, rt)));
 	}
 
 	if (list.empty()) {
 		/* Empty dropdowns are not allowed */
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_NONE, -1, true));
+		list.push_back(MakeDropDownListStringItem(STR_NONE, -1, true));
 	}
 
 	return list;

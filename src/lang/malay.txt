@@ -1935,7 +1935,7 @@ STR_NETWORK_ERROR_TIMEOUT_JOIN                                  :{WHITE}Komputer
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Mungkin kehilangan penyambungan
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}Tiada data diterima pada beberapa {NUM} saat yang terakhir
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :kesilapan am
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :kesilapan sinkronisasi (desync)
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :tidak boleh membuka peta
@@ -2669,7 +2669,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :Jenis landasan
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}Pemboleh ubah NewGRF, parameter 60+x (hexadecimal)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Megalih peperi {COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Peperi seterusnya
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Teruskan ke peperi seterusan yang biasa, melangkau sebarang peperi pseudo/warna kembali/fon dan memusing balik semula
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Pergi ke peperi
@@ -3808,9 +3807,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Jangkaan
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Penyimpanan sedang berlaku,{}sila tunggu sehingga selesai!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Penyimpanan automatik gagal dilakukan
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Gagal dalam membaca cakera
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Penyimpanan Permainan Gagal{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Tidak boleh memadamkan fail
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Pembukaan Permainan Gagal{}{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Kesilapan dalaman: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Simpanan permainan yang rosak - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Simpanan permainan ini telah dibuat dengan versi yang lebih baru

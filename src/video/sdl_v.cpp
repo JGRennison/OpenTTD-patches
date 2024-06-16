@@ -187,9 +187,9 @@ static void GetVideoModes()
 
 	_all_modes = (SDL_ListModes(nullptr, SDL_SWSURFACE | (_fullscreen ? SDL_FULLSCREEN : 0)) == (void*)-1);
 	if (modes == (void*)-1) {
-		for (uint i = 0; i < lengthof(_default_resolutions); i++) {
-			if (SDL_VideoModeOK(_default_resolutions[i].width, _default_resolutions[i].height, 8, SDL_FULLSCREEN) != 0) {
-				_resolutions.push_back(_default_resolutions[i]);
+		for (const auto &default_resolution : _default_resolutions) {
+			if (SDL_VideoModeOK(default_resolution.width, default_resolution.height, 8, SDL_FULLSCREEN) != 0) {
+				_resolutions.push_back(default_resolution);
 			}
 		}
 	} else {
@@ -383,7 +383,7 @@ struct SDLVkMapping {
 	const uint8_t map_to;
 
 	constexpr SDLVkMapping(SDL_Keycode vk_first, SDL_Keycode vk_last, uint8_t map_first, [[maybe_unused]] uint8_t map_last)
-		: vk_from(vk_first), vk_count(vk_last - vk_first), map_to(map_first)
+		: vk_from(vk_first), vk_count(vk_last - vk_first + 1), map_to(map_first)
 	{
 		assert((vk_last - vk_first) == (map_last - map_first));
 	}
@@ -447,12 +447,11 @@ static constexpr SDLVkMapping _vk_mapping[] = {
 
 static uint ConvertSdlKeyIntoMy(SDL_keysym *sym, char32_t *character)
 {
-	const SDLVkMapping *map;
 	uint key = 0;
 
-	for (map = _vk_mapping; map != endof(_vk_mapping); ++map) {
-		if ((uint)(sym->sym - map->vk_from) <= map->vk_count) {
-			key = sym->sym - map->vk_from + map->map_to;
+	for (const auto &map : _vk_mapping) {
+		if (IsInsideBS(sym->sym, map.vk_from, map.vk_count)) {
+			key = sym->sym - map.vk_from + map.map_to;
 			break;
 		}
 	}

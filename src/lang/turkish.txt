@@ -2590,7 +2590,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}İsminiz
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Olası bağlantı kaybı
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}Son {NUM} saniyedir sunucudan hiç veri gelmedi
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :genel hata
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :desync hatası
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :harita yüklenemiyor
@@ -3487,7 +3487,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Yol türü:
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}NewGRF değişkeni 60+x parametresi (onaltılı)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Nesne hizalanıyor {COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Sonraki nesne
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Tüm sahte/yeniden renklendirme/yazı tipi nesnelerini ve sondaki nesneden atlayarak bir sonraki normal nesneye geç
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Nesneye git
@@ -4898,9 +4897,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Tahmini 
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Kayıt işlemi sürüyor,{}lütfen bitene kadar bekleyin!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Otomatik kayıt başarısız
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Sürücü okunamıyor
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Oyun kaydedilemedi{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Dosya silinemedi
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Dosya yüklenemedi{}{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :İç hata: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Bozuk kayıtlı oyun - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Oyun yeni bir sürümle kaydedilmiş.

@@ -12,6 +12,7 @@
 
 #include "core/overflowsafe_type.hpp"
 #include "core/enum_type.hpp"
+#include <array>
 
 typedef OverflowSafeInt64 Money;
 

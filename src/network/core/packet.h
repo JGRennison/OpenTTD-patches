@@ -45,6 +45,9 @@ typedef uint8_t  PacketType; ///< Identifier for the packet
  *     (year % 4 == 0) and ((year % 100 != 0) or (year % 400 == 0))
  */
 struct Packet : public BufferSerialisationHelper<Packet>, public BufferDeserialisationHelper<Packet> {
+	static constexpr size_t EncodedLengthOfPacketSize() { return sizeof(PacketSize); }
+	static constexpr size_t EncodedLengthOfPacketType() { return sizeof(PacketType); }
+
 private:
 	/** The current read/write position in the packet */
 	PacketSize pos;
@@ -57,8 +60,9 @@ private:
 	NetworkSocketHandler *cs;
 
 public:
-	Packet(NetworkSocketHandler *cs, size_t limit, size_t initial_read_size = sizeof(PacketSize));
-	Packet(PacketType type, size_t limit = COMPAT_MTU);
+	struct ReadTag{};
+	Packet(ReadTag tag, NetworkSocketHandler *cs, size_t limit, size_t initial_read_size = EncodedLengthOfPacketSize());
+	Packet(NetworkSocketHandler *cs, PacketType type, size_t limit = COMPAT_MTU);
 
 	void ResetState(PacketType type);
 
@@ -82,7 +86,7 @@ public:
 	bool HasPacketSizeData() const;
 	bool ParsePacketSize();
 	size_t Size() const;
-	void PrepareToRead();
+	[[nodiscard]] bool PrepareToRead();
 	PacketType GetPacketType() const;
 
 	bool CanReadFromPacket(size_t bytes_to_read, bool close_connection = false);
@@ -188,6 +192,21 @@ public:
 		if (bytes > 0) this->pos += bytes;
 		return bytes;
 	}
+
+	/**
+	 * Send as many of the bytes as possible in the packet. This can mean
+	 * that it is possible that not all bytes are sent. To cope with this
+	 * the function returns the span of bytes that were not sent.
+	 * @param span The span describing the range of bytes to send.
+	 * @return The span of bytes that were not written.
+	 */
+	std::span<const uint8_t> Send_bytes(const std::span<const uint8_t> span)
+	{
+		size_t amount = this->Send_binary_until_full(span.data(), span.data() + span.size());
+		return span.subspan(amount);
+	}
+
+	size_t Recv_bytes(std::span<uint8_t> span);
 
 	NetworkSocketHandler *GetParentSocket() { return this->cs; }
 };

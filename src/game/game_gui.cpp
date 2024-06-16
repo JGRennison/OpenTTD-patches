@@ -14,7 +14,8 @@
 #include "../window_func.h"
 #include "../network/network.h"
 #include "../network/network_content.h"
-#include "../widgets/dropdown_func.h"
+#include "../dropdown_type.h"
+#include "../dropdown_func.h"
 #include "../settings_type.h"
 
 #include "game.hpp"
@@ -142,19 +143,19 @@ struct GSConfigWindow : public Window {
 		this->vscroll->SetCount(this->visible_settings.size());
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_GSC_SETTINGS:
 				this->line_height = std::max(SETTING_BUTTON_HEIGHT, GetCharacterHeight(FS_NORMAL)) + padding.height;
-				resize->width = 1;
-				resize->height = this->line_height;
-				size->height = 5 * this->line_height;
+				resize.width = 1;
+				resize.height = this->line_height;
+				size.height = 5 * this->line_height;
 				break;
 
 			case WID_GSC_GSLIST:
 				this->line_height = GetCharacterHeight(FS_NORMAL) + padding.height;
-				size->height = 1 * this->line_height;
+				size.height = 1 * this->line_height;
 				break;
 		}
 	}
@@ -324,7 +325,7 @@ struct GSConfigWindow : public Window {
 
 							DropDownList list;
 							for (int i = config_item.min_value; i <= config_item.max_value; i++) {
-								list.push_back(std::make_unique<DropDownListStringItem>(config_item.labels.find(i)->second, i, false));
+								list.push_back(MakeDropDownListStringItem(config_item.labels.find(i)->second, i));
 							}
 
 							ShowDropDownListAt(this, std::move(list), old_val, WID_GSC_SETTING_DROPDOWN, wi_rect, COLOUR_ORANGE);

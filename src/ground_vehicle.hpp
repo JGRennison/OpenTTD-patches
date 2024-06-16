@@ -15,6 +15,7 @@
 #include "landscape.h"
 #include "window_func.h"
 #include "tunnel_map.h"
+
 #include "widgets/vehicle_widget.h"
 
 /** What is the status of our acceleration? */
@@ -46,6 +47,8 @@ struct GroundVehicleCache {
 
 	/* Cached UI information. */
 	uint16_t last_speed;              ///< The last speed we did display, so we only have to redraw when this changes.
+
+	bool operator==(const GroundVehicleCache &) const = default;
 };
 
 /** Ground vehicle flags. */

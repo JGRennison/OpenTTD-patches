@@ -1123,7 +1123,7 @@ static void ShipController(Ship *v)
 
 			/* Ship is back on the bridge head, we need to consume its path
 			 * cache entry here as we didn't have to choose a ship track. */
-			 if (!v->cached_path.empty()) v->cached_path.pop_front();
+			if (!v->cached_path.empty()) v->cached_path.pop_front();
 		}
 
 		/* update image of ship, as well as delta XY */

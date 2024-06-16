@@ -13,6 +13,7 @@
 #include "../game/game.hpp"
 #include "../window_func.h"
 #include "../error.h"
+#include "../fileio_func.h"
 #include "../base_media_base.h"
 #include "../settings_type.h"
 #include "network_content.h"
@@ -204,7 +205,7 @@ void ClientNetworkContentSocketHandler::RequestContentList(ContentType type)
 
 	this->Connect();
 
-	auto p = std::make_unique<Packet>(PACKET_CONTENT_CLIENT_INFO_LIST);
+	auto p = std::make_unique<Packet>(this, PACKET_CONTENT_CLIENT_INFO_LIST);
 	p->Send_uint8 ((uint8_t)type);
 	p->Send_uint32(0xffffffff);
 	p->Send_uint8 (2);
@@ -239,7 +240,7 @@ void ClientNetworkContentSocketHandler::RequestContentList(uint count, const Con
 		 * The rest of the packet can be used for the IDs. */
 		uint p_count = std::min<uint>(count, (TCP_MTU - sizeof(PacketSize) - sizeof(uint8_t) - sizeof(uint16_t)) / sizeof(uint32_t));
 
-		auto p = std::make_unique<Packet>(PACKET_CONTENT_CLIENT_INFO_ID, TCP_MTU);
+		auto p = std::make_unique<Packet>(this, PACKET_CONTENT_CLIENT_INFO_ID, TCP_MTU);
 		p->Send_uint16(p_count);
 
 		for (uint i = 0; i < p_count; i++) {
@@ -269,7 +270,7 @@ void ClientNetworkContentSocketHandler::RequestContentList(ContentVector *cv, bo
 	uint offset = 0;
 
 	while (cv->size() > offset) {
-		auto p = std::make_unique<Packet>(send_md5sum ? PACKET_CONTENT_CLIENT_INFO_EXTID_MD5 : PACKET_CONTENT_CLIENT_INFO_EXTID, TCP_MTU);
+		auto p = std::make_unique<Packet>(this, send_md5sum ? PACKET_CONTENT_CLIENT_INFO_EXTID_MD5 : PACKET_CONTENT_CLIENT_INFO_EXTID, TCP_MTU);
 		const uint to_send = std::min<uint>(static_cast<uint>(cv->size() - offset), max_per_packet);
 		p->Send_uint8(static_cast<uint8_t>(to_send));
 
@@ -371,7 +372,7 @@ void ClientNetworkContentSocketHandler::DownloadSelectedContentFallback(const Co
 		 * The rest of the packet can be used for the IDs. */
 		uint p_count = std::min<uint>(count, (TCP_MTU - sizeof(PacketSize) - sizeof(uint8_t) - sizeof(uint16_t)) / sizeof(uint32_t));
 
-		auto p = std::make_unique<Packet>(PACKET_CONTENT_CLIENT_CONTENT, TCP_MTU);
+		auto p = std::make_unique<Packet>(this, PACKET_CONTENT_CLIENT_CONTENT, TCP_MTU);
 		p->Send_uint16(p_count);
 
 		for (uint i = 0; i < p_count; i++) {
@@ -556,7 +557,7 @@ void ClientNetworkContentSocketHandler::AfterDownload()
 	this->curFile = nullptr;
 
 	if (GunzipFile(this->curInfo)) {
-		unlink(GetFullFilename(this->curInfo, true).c_str());
+		FioRemove(GetFullFilename(this->curInfo, true));
 
 		Subdirectory sd = GetContentInfoSubDir(this->curInfo->type);
 		if (sd == NO_DIRECTORY) NOT_REACHED();
@@ -568,7 +569,7 @@ void ClientNetworkContentSocketHandler::AfterDownload()
 		if (this->curInfo->type == CONTENT_TYPE_BASE_MUSIC) {
 			/* Music can't be in a tar. So extract the tar! */
 			ExtractTar(fname, BASESET_DIR);
-			unlink(fname.c_str());
+			FioRemove(fname);
 		}
 
 #ifdef __EMSCRIPTEN__

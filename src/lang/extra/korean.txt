@@ -2138,8 +2138,8 @@ STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS_TOOLTIP                   :{BLACK}출발 �
 STR_SCHDISPATCH_MANAGE_SLOT                                     :{BLACK}슬롯 관리
 STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT                       :출발 슬롯 재사용
 STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT_TOOLTIP               :{BLACK}선택한 출발 슬롯을 1번 이상 재사용해도 되는지 여부를 설정합니다.
-STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_TAG                        :태그 {NUM}
-STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_TAG_TOOLTIP                :{BLACK}(조건부 경로에 사용하기 위해) 선택한 출발 슬롯에 태그를 붙입니다.
+STR_SCHDISPATCH_TAG_DEPARTURE                                   :태그 {NUM}
+STR_SCHDISPATCH_TAG_DEPARTURE_TOOLTIP                           :{BLACK}(조건부 경로에 사용하기 위해) 선택한 출발 슬롯에 태그를 붙입니다.
 STR_SCHDISPATCH_NO_SCHEDULES                                    :{BLACK}일정 없음
 STR_SCHDISPATCH_SCHEDULE_ID                                     :{BLACK}일정 {NUM}/{NUM}
 STR_SCHDISPATCH_NAMED_SCHEDULE_ID                               :{BLACK}{STRING} ({NUM}/{NUM})

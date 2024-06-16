@@ -93,7 +93,7 @@ void NormalizeTrainVehInDepot(const Train *u);
 
 inline int GetTrainRealisticBrakingTargetDecelerationLimit(int acceleration_type)
 {
-	return 120 + (acceleration_type * 48);
+	return _settings_game.vehicle.train_acc_braking_percent * (120 + (acceleration_type * 48)) / 100;
 }
 
 /** Flags for TrainCache::cached_tflags */
@@ -123,6 +123,8 @@ struct TrainCache {
 
 	int16_t cached_curve_speed_mod; ///< curve speed modifier of the entire train
 	uint16_t cached_max_curve_speed; ///< max consist speed limited by curves
+
+	bool operator==(const TrainCache &) const = default;
 };
 
 /**

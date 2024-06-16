@@ -96,7 +96,7 @@ extern uint32_t _pause_countdown;
 void AskExitGame();
 void AskExitToGameMenu();
 
-int openttd_main(int argc, char *argv[]);
+int openttd_main(std::span<char * const> arguments);
 void StateGameLoop();
 void HandleExitGameRequest();
 void InitMusicDriver(bool init_volume);

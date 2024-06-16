@@ -17,6 +17,7 @@
 #include "newgrf_extension.h"
 #include "water_map.h"
 #include "string_func.h"
+#include "newgrf_dump.h"
 #include <list>
 
 #include "safeguards.h"
@@ -97,8 +98,8 @@ static GenericCallbackList _gcl[GSF_END];
  */
 void ResetGenericCallbacks()
 {
-	for (uint8_t feature = 0; feature < lengthof(_gcl); feature++) {
-		_gcl[feature].clear();
+	for (auto &gcl : _gcl) {
+		gcl.clear();
 	}
 }
 

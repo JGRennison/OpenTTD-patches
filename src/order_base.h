@@ -742,7 +742,13 @@ struct DispatchSlot {
 	};
 };
 
+enum ScheduledDispatchSupplementaryNameType : uint16_t {
+	SDSNT_DEPARTURE_TAG                           = 0, ///< Departure slot tag
+};
+
 struct DispatchSchedule {
+	static constexpr uint DEPARTURE_TAG_COUNT = 4;
+
 private:
 	friend SaveLoadTable GetDispatchScheduleDescription();              ///< Saving and loading of dispatch schedules
 
@@ -754,6 +760,7 @@ private:
 	uint8_t scheduled_dispatch_flags = 0;                               ///< Flags
 
 	std::string name;                                                   ///< Name of dispatch schedule
+	btree::btree_map<uint32_t, std::string> supplementary_names;        ///< Supplementary name strings
 
 	inline void CopyBasicFields(const DispatchSchedule &other)
 	{
@@ -869,7 +876,13 @@ public:
 
 	inline std::string &ScheduleName() { return this->name; }
 	inline const std::string &ScheduleName() const { return this->name; }
+
+	std::string_view GetSupplementaryName(ScheduledDispatchSupplementaryNameType name_type, uint16_t id) const;
+	void SetSupplementaryName(ScheduledDispatchSupplementaryNameType name_type, uint16_t id, std::string name);
+	btree::btree_map<uint32_t, std::string> &GetSupplementaryNameMap() { return this->supplementary_names; }
 };
+
+static_assert(DispatchSchedule::DEPARTURE_TAG_COUNT == 1 + (DispatchSlot::SDSF_LAST_TAG - DispatchSlot::SDSF_FIRST_TAG));
 
 /**
  * Shared order list linking together the linked list of orders and the list

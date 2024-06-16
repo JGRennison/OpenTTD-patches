@@ -32,7 +32,7 @@ WidgetDimensions WidgetDimensions::scaled = {};
 
 /**
  * Scale a RectPadding to GUI zoom level.
- * @param r RectPadding at ZOOM_LVL_BASE (traditional "normal" interface size).
+ * @param r RectPadding at ZOOM_BASE (traditional "normal" interface size).
  * @return RectPadding at #ZOOM_LVL_GUI (current interface size).
  */
 static inline RectPadding ScaleGUITrad(const RectPadding &r)
@@ -42,7 +42,7 @@ static inline RectPadding ScaleGUITrad(const RectPadding &r)
 
 /**
  * Scale a Dimension to GUI zoom level.
- * @param d Dimension at ZOOM_LVL_BASE (traditional "normal" interface size).
+ * @param d Dimension at ZOOM_BASE (traditional "normal" interface size).
  * @return Dimension at #ZOOM_LVL_GUI (current interface size).
  */
 static inline Dimension ScaleGUITrad(const Dimension &dim)
@@ -57,7 +57,7 @@ static inline Dimension ScaleGUITrad(const Dimension &dim)
 Dimension GetScaledSpriteSize(SpriteID sprid)
 {
 	Point offset;
-	Dimension d = GetSpriteSize(sprid, &offset, ZOOM_LVL_OUT_4X);
+	Dimension d = GetSpriteSize(sprid, &offset, ZOOM_LVL_NORMAL);
 	d.width  -= offset.x;
 	d.height -= offset.y;
 	return ScaleGUITrad(d);
@@ -1234,7 +1234,7 @@ void NWidgetStacked::SetupSmallestSize(Window *w)
 		Dimension fill    = {(this->shown_plane == SZSP_HORIZONTAL), (this->shown_plane == SZSP_VERTICAL)};
 		Dimension resize  = {(this->shown_plane == SZSP_HORIZONTAL), (this->shown_plane == SZSP_VERTICAL)};
 		/* Here we're primarily interested in the value of resize */
-		if (this->index >= 0) w->UpdateWidgetSize(this->index, &size, padding, &fill, &resize);
+		if (this->index >= 0) w->UpdateWidgetSize(this->index, size, padding, fill, resize);
 
 		this->smallest_x = size.width;
 		this->smallest_y = size.height;
@@ -1881,7 +1881,7 @@ void NWidgetMatrix::SetupSmallestSize(Window *w)
 	Dimension fill    = {0, 0};
 	Dimension resize  = {this->pip_inter + this->children.front()->smallest_x, this->pip_inter + this->children.front()->smallest_y};
 
-	if (this->index >= 0) w->UpdateWidgetSize(this->index, &size, padding, &fill, &resize);
+	if (this->index >= 0) w->UpdateWidgetSize(this->index, size, padding, fill, resize);
 
 	this->smallest_x = size.width;
 	this->smallest_y = size.height;
@@ -2166,7 +2166,7 @@ void NWidgetBackground::SetupSmallestSize(Window *w)
 					case WWT_FRAME: padding = {WidgetDimensions::scaled.frametext.Horizontal(), WidgetDimensions::scaled.frametext.Vertical()}; break;
 					case WWT_INSET: padding = {WidgetDimensions::scaled.inset.Horizontal(),     WidgetDimensions::scaled.inset.Vertical()};     break;
 				}
-				w->UpdateWidgetSize(this->index, &d, padding, &fill, &resize);
+				w->UpdateWidgetSize(this->index, d, padding, fill, resize);
 			}
 		}
 		this->smallest_x = d.width;
@@ -2808,7 +2808,7 @@ void NWidgetLeaf::SetupSmallestSize(Window *w)
 			NOT_REACHED();
 	}
 
-	if (this->index >= 0) w->UpdateWidgetSize(this->index, &size, padding, &fill, &resize);
+	if (this->index >= 0) w->UpdateWidgetSize(this->index, size, padding, fill, resize);
 
 	this->smallest_x = size.width;
 	this->smallest_y = size.height;
@@ -3292,7 +3292,7 @@ std::unique_ptr<NWidgetBase> MakeCompanyButtonRows(WidgetID widget_first, Widget
 	std::unique_ptr<NWidgetHorizontal> hor = nullptr; // Storage for buttons in one row.
 	int hor_length = 0;
 
-	Dimension sprite_size = GetSpriteSize(SPR_COMPANY_ICON, nullptr, ZOOM_LVL_OUT_4X);
+	Dimension sprite_size = GetSpriteSize(SPR_COMPANY_ICON, nullptr, ZOOM_LVL_NORMAL);
 	sprite_size.width  += WidgetDimensions::unscaled.matrix.Horizontal();
 	sprite_size.height += WidgetDimensions::unscaled.matrix.Vertical();
 

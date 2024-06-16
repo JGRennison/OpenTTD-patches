@@ -53,6 +53,7 @@
 #include "station_base.h"
 #include "crashlog.h"
 #include "engine_func.h"
+#include "engine_override.h"
 #include "core/random_func.hpp"
 #include "rail_gui.h"
 #include "road_gui.h"
@@ -727,47 +728,38 @@ void PostMainLoop()
 extern void DedicatedFork();
 #endif
 
-/** Options of OpenTTD. */
-static const OptionData _options[] = {
-	 GETOPT_SHORT_VALUE('I'),
-	 GETOPT_SHORT_VALUE('S'),
-	 GETOPT_SHORT_VALUE('M'),
-	 GETOPT_SHORT_VALUE('m'),
-	 GETOPT_SHORT_VALUE('s'),
-	 GETOPT_SHORT_VALUE('v'),
-	 GETOPT_SHORT_VALUE('b'),
-	GETOPT_SHORT_OPTVAL('D'),
-	 GETOPT_SHORT_VALUE('n'),
-	 GETOPT_SHORT_VALUE('p'),
-	 GETOPT_SHORT_VALUE('P'),
+/**
+ * Create all the options that OpenTTD supports. Each option is
+ * always a single character with no, an optional or a required value.
+ * @return The available options.
+ */
+static std::vector<OptionData> CreateOptions()
+{
+	std::vector<OptionData> options;
+	/* Options that require a parameter. */
+	for (char c : "GIMPSbcmnpqrstv") options.push_back({ .type = ODF_HAS_VALUE, .id = c, .shortname = c });
 #if !defined(_WIN32)
-	 GETOPT_SHORT_NOVAL('f'),
+	options.push_back({ .type = ODF_HAS_VALUE, .id = 'f', .shortname = 'f' });
 #endif
-	 GETOPT_SHORT_VALUE('r'),
-	 GETOPT_SHORT_VALUE('t'),
-	GETOPT_SHORT_OPTVAL('d'),
-	 GETOPT_SHORT_NOVAL('e'),
-	GETOPT_SHORT_OPTVAL('g'),
-	 GETOPT_SHORT_VALUE('G'),
-	 GETOPT_SHORT_VALUE('c'),
-	 GETOPT_SHORT_NOVAL('x'),
-	 GETOPT_SHORT_NOVAL('X'),
-	 GETOPT_SHORT_VALUE('q'),
-	 GETOPT_SHORT_VALUE('K'),
-	 GETOPT_SHORT_NOVAL('h'),
-	 GETOPT_SHORT_NOVAL('Q'),
-	 GETOPT_SHORT_VALUE('J'),
-	 GETOPT_SHORT_NOVAL('Z'),
-	GETOPT_END()
-};
+
+	/* Options with an optional parameter. */
+	for (char c : "Ddg") options.push_back({ .type = ODF_OPTIONAL_VALUE, .id = c, .shortname = c });
+
+	/* Options without a parameter. */
+	for (char c : "QXehx") options.push_back({ .type = ODF_NO_VALUE, .id = c, .shortname = c });
+
+	/* Non-upstream options */
+	for (char c : "KJZ") options.push_back({ .type = ODF_HAS_VALUE, .id = c, .shortname = c });
+
+	return options;
+}
 
 /**
  * Main entry point for this lovely game.
- * @param argc The number of arguments passed to this game.
- * @param argv The values of the arguments.
+ * @param arguments The command line arguments passed to the application.
  * @return 0 when there is no error.
  */
-int openttd_main(int argc, char *argv[])
+int openttd_main(std::span<char * const> arguments)
 {
 	SetSelfAsMainThread();
 	PerThreadSetup();
@@ -794,7 +786,8 @@ int openttd_main(int argc, char *argv[])
 	_game_mode = GM_MENU;
 	_switch_mode = SM_MENU;
 
-	GetOptData mgo(argc - 1, argv + 1, _options);
+	auto options = CreateOptions();
+	GetOptData mgo(arguments.subspan(1), options);
 	int ret = 0;
 
 	int i;
@@ -884,7 +877,7 @@ int openttd_main(int argc, char *argv[])
 			break;
 		case 'q':
 		case 'K': {
-			DeterminePaths(argv[0], only_local_path);
+			DeterminePaths(arguments[0], only_local_path);
 			if (StrEmpty(mgo.opt)) {
 				ret = 1;
 				return ret;
@@ -941,13 +934,13 @@ int openttd_main(int argc, char *argv[])
 		if (i == -2) break;
 	}
 
-	if (i == -2 || mgo.numleft > 0) {
+	if (i == -2 || !mgo.arguments.empty()) {
 		/* Either the user typed '-h', they made an error, or they added unrecognized command line arguments.
 		 * In all cases, print the help, and exit.
 		 *
 		 * The next two functions are needed to list the graphics sets. We can't do them earlier
 		 * because then we cannot show it on the debug console as that hasn't been configured yet. */
-		DeterminePaths(argv[0], only_local_path);
+		DeterminePaths(arguments[0], only_local_path);
 		TarScanner::DoScan(TarScanner::BASESET);
 		BaseGraphics::FindSets();
 		BaseSounds::FindSets();
@@ -956,7 +949,7 @@ int openttd_main(int argc, char *argv[])
 		return ret;
 	}
 
-	DeterminePaths(argv[0], only_local_path);
+	DeterminePaths(arguments[0], only_local_path);
 	TarScanner::DoScan(TarScanner::BASESET);
 
 	if (dedicated) DEBUG(net, 3, "Starting dedicated server, version %s", _openttd_revision);
@@ -1049,7 +1042,7 @@ int openttd_main(int argc, char *argv[])
 	InitializeSpriteSorter();
 
 	/* Initialize the zoom level of the screen to normal */
-	_screen.zoom = ZOOM_LVL_NORMAL;
+	_screen.zoom = ZOOM_LVL_MIN;
 
 	/* The video driver is now selected, now initialise GUI zoom */
 	AdjustGUIZoom(AGZM_STARTUP);
@@ -1321,7 +1314,7 @@ bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileTy
 	SaveOrLoadResult result = (lf == nullptr) ? SaveOrLoad(filename, fop, dft, subdir) : LoadWithFilter(std::move(lf));
 	if (result == SL_OK) return true;
 
-	if (error_detail != nullptr) *error_detail = GetSaveLoadErrorString();
+	if (error_detail != nullptr) *error_detail = GetString(GetSaveLoadErrorType()) + GetString(GetSaveLoadErrorMessage());
 
 	if (_network_dedicated && ogm == GM_MENU) {
 		/*
@@ -1475,8 +1468,7 @@ void SwitchToMode(SwitchMode new_mode)
 			ResetWindowSystem();
 
 			if (!SafeLoad(_file_to_saveload.name, _file_to_saveload.file_op, _file_to_saveload.detail_ftype, GM_NORMAL, NO_DIRECTORY)) {
-				SetDParamStr(0, GetSaveLoadErrorString());
-				ShowErrorMessage(STR_JUST_RAW_STRING, INVALID_STRING_ID, WL_CRITICAL);
+				ShowErrorMessage(GetSaveLoadErrorType(), GetSaveLoadErrorMessage(), WL_CRITICAL);
 			} else {
 				if (_file_to_saveload.abstract_ftype == FT_SCENARIO) {
 					OnStartScenario();
@@ -1519,8 +1511,7 @@ void SwitchToMode(SwitchMode new_mode)
 				/* Cancel the saveload pausing */
 				DoCommandP(0, PM_PAUSED_SAVELOAD, 0, CMD_PAUSE);
 			} else {
-				SetDParamStr(0, GetSaveLoadErrorString());
-				ShowErrorMessage(STR_JUST_RAW_STRING, INVALID_STRING_ID, WL_CRITICAL);
+				ShowErrorMessage(GetSaveLoadErrorType(), GetSaveLoadErrorMessage(), WL_CRITICAL);
 			}
 
 			UpdateSocialIntegration(GM_EDITOR);
@@ -1557,8 +1548,7 @@ void SwitchToMode(SwitchMode new_mode)
 			SaveModeFlags flags = SMF_NONE;
 			if (_game_mode == GM_EDITOR) flags |= SMF_SCENARIO;
 			if (SaveOrLoad(_file_to_saveload.name, SLO_SAVE, DFT_GAME_FILE, NO_DIRECTORY, true, flags) != SL_OK) {
-				SetDParamStr(0, GetSaveLoadErrorString());
-				ShowErrorMessage(STR_JUST_RAW_STRING, INVALID_STRING_ID, WL_ERROR);
+				ShowErrorMessage(GetSaveLoadErrorType(), GetSaveLoadErrorMessage(), WL_ERROR);
 			} else {
 				CloseWindowById(WC_SAVELOAD, 0);
 			}
@@ -1752,10 +1742,10 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 			if (old_town_caches[i].part_of_subsidy != t->cache.part_of_subsidy) {
 				CCLOG("town cache population mismatch: town %i, (old size: %u, new size: %u)", (int)t->index, old_town_caches[i].part_of_subsidy, t->cache.part_of_subsidy);
 			}
-			if (MemCmpT(old_town_caches[i].squared_town_zone_radius, t->cache.squared_town_zone_radius, lengthof(t->cache.squared_town_zone_radius)) != 0) {
+			if (old_town_caches[i].squared_town_zone_radius != t->cache.squared_town_zone_radius) {
 				CCLOG("town cache squared_town_zone_radius mismatch: town %i", (int)t->index);
 			}
-			if (MemCmpT(&old_town_caches[i].building_counts, &t->cache.building_counts) != 0) {
+			if (old_town_caches[i].building_counts != t->cache.building_counts) {
 				CCLOG("town cache building_counts mismatch: town %i", (int)t->index);
 			}
 			if (old_town_stations_nears[i] != t->stations_near) {
@@ -1810,7 +1800,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 
 		uint i = 0;
 		for (const Company *c : Company::Iterate()) {
-			if (MemCmpT(old_infrastructure.data() + i, &c->infrastructure) != 0) {
+			if (old_infrastructure[i] != c->infrastructure) {
 				CCLOG("infrastructure cache mismatch: company %i", (int)c->index);
 				char buffer[4096];
 				old_infrastructure[i].Dump(buffer, lastof(buffer));
@@ -1966,10 +1956,10 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 				};
 				switch (u->type) {
 					case VEH_TRAIN:
-						if (memcmp(&gro_cache[length], &Train::From(u)->gcache, sizeof(GroundVehicleCache)) != 0) {
+						if (gro_cache[length] != Train::From(u)->gcache) {
 							print_gv_cache_diff("train", gro_cache[length], Train::From(u)->gcache);
 						}
-						if (memcmp(&tra_cache[length], &Train::From(u)->tcache, sizeof(TrainCache)) != 0) {
+						if (tra_cache[length] != Train::From(u)->tcache) {
 							CCLOGV("train cache mismatch: %c%c%c%c%c%c%c%c%c%c%c",
 									tra_cache[length].cached_override != Train::From(u)->tcache.cached_override ? 'o' : '-',
 									tra_cache[length].cached_curve_speed_mod != Train::From(u)->tcache.cached_curve_speed_mod ? 'C' : '-',
@@ -1994,12 +1984,12 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 						}
 						break;
 					case VEH_ROAD:
-						if (memcmp(&gro_cache[length], &RoadVehicle::From(u)->gcache, sizeof(GroundVehicleCache)) != 0) {
+						if (gro_cache[length] != RoadVehicle::From(u)->gcache) {
 							print_gv_cache_diff("road vehicle", gro_cache[length], Train::From(u)->gcache);
 						}
 						break;
 					case VEH_AIRCRAFT:
-						if (memcmp(&air_cache[length], &Aircraft::From(u)->acache, sizeof(AircraftCache)) != 0) {
+						if (air_cache[length] != Aircraft::From(u)->acache) {
 							CCLOGV("Aircraft vehicle cache mismatch: %c%c",
 									air_cache[length].cached_max_range != Aircraft::From(u)->acache.cached_max_range ? 'r' : '-',
 									air_cache[length].cached_max_range_sqr != Aircraft::From(u)->acache.cached_max_range_sqr ? 's' : '-');

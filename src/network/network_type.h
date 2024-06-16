@@ -11,6 +11,8 @@
 #define NETWORK_TYPE_H
 
 #include "../core/enum_type.hpp"
+#include <vector>
+#include <string>
 
 /** How many clients can we have */
 static const uint MAX_CLIENTS = 255;
@@ -73,7 +75,6 @@ struct NetworkCompanyStats {
 /** Some state information of a company, especially for servers */
 struct NetworkCompanyState {
 	std::string password; ///< The password for the company
-	uint16_t months_empty;  ///< How many months the company is empty
 };
 
 struct NetworkClientInfo;
@@ -146,6 +147,7 @@ enum NetworkErrorCode {
 	NETWORK_ERROR_TIMEOUT_MAP,
 	NETWORK_ERROR_TIMEOUT_JOIN,
 	NETWORK_ERROR_INVALID_CLIENT_NAME,
+	NETWORK_ERROR_NOT_ON_ALLOW_LIST,
 
 	NETWORK_ERROR_END,
 };
@@ -166,6 +168,19 @@ struct NetworkTextMessageData {
 		p.Send_uint64(this->data);
 		p.Send_uint64(this->auxdata);
 	}
+};
+
+/**
+ * Simple helper to (more easily) manage authorized keys.
+ *
+ * The authorized keys are hexadecimal representations of their binary form.
+ * The authorized keys are case insensitive.
+ */
+class NetworkAuthorizedKeys : public std::vector<std::string> {
+public:
+	bool Contains(std::string_view key) const;
+	bool Add(std::string_view key);
+	bool Remove(std::string_view key);
 };
 
 #endif /* NETWORK_TYPE_H */

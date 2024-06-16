@@ -139,8 +139,6 @@ static CommandCost TerraformTileHeight(TerraformerState *ts, TileIndex tile, int
 
 	/* Recurse to neighboured corners if height difference is larger than 1 */
 	{
-		const TileIndexDiffC *ttm;
-
 		TileIndex orig_tile = tile;
 		static const TileIndexDiffC _terraform_tilepos[] = {
 			{ 1,  0}, // move to tile in SE
@@ -149,8 +147,8 @@ static CommandCost TerraformTileHeight(TerraformerState *ts, TileIndex tile, int
 			{ 0, -2}  // undo last move, and move to tile in NE
 		};
 
-		for (ttm = _terraform_tilepos; ttm != endof(_terraform_tilepos); ttm++) {
-			tile += ToTileIndexDiff(*ttm);
+		for (const auto &ttm : _terraform_tilepos) {
+			tile += ToTileIndexDiff(ttm);
 
 			if (tile >= MapSize()) continue;
 			/* Make sure we don't wrap around the map */

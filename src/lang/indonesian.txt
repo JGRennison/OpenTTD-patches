@@ -2539,7 +2539,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Nama pem
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Koneksi mungkin terputus
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}Dalam {NUM} detik tak ada data diterima dari server
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :Kesalahan umum
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :Kesalahan de-sinkronisasi
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :Tak dapat memuat peta
@@ -3424,7 +3424,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Tipe jalan
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}Variabel NewGRF harus 60+x (hexadecimal)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Menjajarkan sprite {COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Sprite berikutnya
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Pergi ke sprite normal berikutnya, lewati sprite bayangan/warna ulang/huruf dan pembungkus saat mulai
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Pergi ke sprite
@@ -4785,9 +4784,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Perkiraa
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Penyimpanan sedang berlangsung,{}mohon tunggu hingga selesai
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Simpan otomatis gagal
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Tidak dapat membaca drive
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Penyimpanan Game gagal{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Tidak mampu untuk menghapus file/berkas
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Gagal membuka permainan{}{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Kesalahan Internal: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Berkas simpanan permainan rusak - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Berkas simpanan dibuat dari versi yang lebih baru

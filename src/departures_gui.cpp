@@ -302,13 +302,13 @@ public:
 		}
 	}
 
-	virtual void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_DB_LIST:
-				resize->height = DeparturesWindow::entry_height;
-				size->height = 2 * resize->height;
-				size->width = this->min_width;
+				resize.height = DeparturesWindow::entry_height;
+				size.height = 2 * resize.height;
+				size.width = this->min_width;
 				break;
 		}
 	}

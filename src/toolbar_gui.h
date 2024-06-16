@@ -11,7 +11,7 @@
 #define TOOLBAR_GUI_H
 
 #include "company_type.h"
-#include "widgets/dropdown_type.h"
+#include "dropdown_type.h"
 
 enum MainToolbarHotkeys {
 	MTHK_PAUSE,

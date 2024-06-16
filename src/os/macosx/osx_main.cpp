@@ -43,7 +43,7 @@ int CDECL main(int argc, char *argv[])
 
 	signal(SIGPIPE, SIG_IGN);
 
-	int ret = openttd_main(argc, argv);
+	int ret = openttd_main(std::span(argv, argc));
 
 	CocoaReleaseAutoreleasePool();
 

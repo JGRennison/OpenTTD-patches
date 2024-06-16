@@ -15,6 +15,7 @@
 #include "road_type.h"
 #include "fileio_type.h"
 #include "debug.h"
+#include "newgrf_act5.h"
 #include "core/bitmath_func.hpp"
 #include "core/alloc_type.hpp"
 #include "core/mem_func.hpp"
@@ -237,21 +238,6 @@ struct GRFVariableMapEntry {
 	uint32_t output_param = 0;
 };
 
-/** The type of action 5 type. */
-enum Action5BlockType {
-	A5BLOCK_FIXED,                ///< Only allow replacing a whole block of sprites. (TTDP compatible)
-	A5BLOCK_ALLOW_OFFSET,         ///< Allow replacing any subset by specifiing an offset.
-	A5BLOCK_INVALID,              ///< unknown/not-implemented type
-};
-/** Information about a single action 5 type. */
-struct Action5Type {
-	Action5BlockType block_type;  ///< How is this Action5 type processed?
-	SpriteID sprite_base;         ///< Load the sprites starting from this sprite.
-	uint16_t min_sprites;         ///< If the Action5 contains less sprites, the whole block will be ignored.
-	uint16_t max_sprites;         ///< If the Action5 contains more sprites, only the first max_sprites sprites will be used.
-	const char *name;             ///< Name for error messages.
-};
-
 struct Action5TypeRemapDefinition {
 	const char *name; // nullptr indicates the end of the list
 	const Action5Type info;
@@ -447,8 +433,11 @@ void ReloadNewGRFData(); // in saveload/afterload.cpp
 void ResetNewGRFData();
 void ResetPersistentNewGRFData();
 
-#define grfmsg(severity, ...) if ((severity) == 0 || _debug_grf_level >= (severity)) _intl_grfmsg(severity, __VA_ARGS__)
+#define grfmsg(severity, ...) do { if ((severity) == 0 || _debug_grf_level >= (severity)) _intl_grfmsg(severity, __VA_ARGS__); } while(false)
 void CDECL _intl_grfmsg(int severity, const char *str, ...) WARN_FORMAT(2, 3);
+
+void GrfMsgI(int severity, const std::string &msg);
+#define GrfMsg(severity, format_string, ...) do { if ((severity) == 0 || _debug_grf_level >= (severity)) GrfMsgI(severity, fmt::format(FMT_STRING(format_string), ## __VA_ARGS__)); } while(false)
 
 bool GetGlobalVariable(uint8_t param, uint32_t *value, const GRFFile *grffile);
 

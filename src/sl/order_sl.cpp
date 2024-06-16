@@ -311,6 +311,54 @@ static void SetupDescs_ORDL()
 	_filtered_ordl_slot_desc = SlFilterObject(GetDispatchSlotDescription());
 }
 
+static void SaveDispatchSchedule(DispatchSchedule &ds)
+{
+	SlObjectSaveFiltered(&ds, _filtered_ordl_sd_desc);
+
+	SlWriteUint32((uint32_t)ds.GetScheduledDispatchMutable().size());
+	for (DispatchSlot &slot : ds.GetScheduledDispatchMutable()) {
+		SlObjectSaveFiltered(&slot, _filtered_ordl_slot_desc);
+	}
+
+	{
+		btree::btree_map<uint32_t, std::string> &names = ds.GetSupplementaryNameMap();
+		SlWriteUint32((uint32_t)names.size());
+		for (auto &it : names) {
+			SlWriteUint32(it.first);
+			SlStdString(it.second, SLE_STR);
+		}
+	}
+}
+
+static void LoadDispatchSchedule(DispatchSchedule &ds)
+{
+	SlObjectLoadFiltered(&ds, _filtered_ordl_sd_desc);
+	if (SlXvIsFeaturePresent(XSLFI_SCHEDULED_DISPATCH, 1, 4) && _old_scheduled_dispatch_start_full_date_fract != 0) {
+		_old_scheduled_dispatch_start_full_date_fract_map[&ds] = _old_scheduled_dispatch_start_full_date_fract;
+	}
+
+	if (SlXvIsFeaturePresent(XSLFI_SCHEDULED_DISPATCH, 1, 6)) {
+		ds.GetScheduledDispatchMutable().reserve(_old_scheduled_dispatch_slots.size());
+		for (uint32_t slot : _old_scheduled_dispatch_slots) {
+			ds.GetScheduledDispatchMutable().push_back({ slot, 0 });
+		}
+	} else {
+		ds.GetScheduledDispatchMutable().resize(SlReadUint32());
+		for (DispatchSlot &slot : ds.GetScheduledDispatchMutable()) {
+			SlObjectLoadFiltered(&slot, _filtered_ordl_slot_desc);
+		}
+	}
+
+	if (SlXvIsFeaturePresent(XSLFI_SCHEDULED_DISPATCH, 8)) {
+		uint32_t string_count = SlReadUint32();
+		btree::btree_map<uint32_t, std::string> &names = ds.GetSupplementaryNameMap();
+		for (uint32_t i = 0; i < string_count; i++) {
+			uint32_t key = SlReadUint32();
+			SlStdString(names[key], SLE_STR);
+		}
+	}
+}
+
 static void Save_ORDL()
 {
 	SetupDescs_ORDL();
@@ -321,12 +369,7 @@ static void Save_ORDL()
 			SlObjectSaveFiltered(list, _filtered_ordl_desc);
 			SlWriteUint32(list->GetScheduledDispatchScheduleCount());
 			for (DispatchSchedule &ds : list->GetScheduledDispatchScheduleSet()) {
-				SlObjectSaveFiltered(&ds, _filtered_ordl_sd_desc);
-
-				SlWriteUint32((uint32_t)ds.GetScheduledDispatchMutable().size());
-				for (DispatchSlot &slot : ds.GetScheduledDispatchMutable()) {
-					SlObjectSaveFiltered(&slot, _filtered_ordl_slot_desc);
-				}
+				SaveDispatchSchedule(ds);
 			}
 		}, list);
 	}
@@ -358,22 +401,7 @@ static void Load_ORDL()
 			uint count = SlXvIsFeaturePresent(XSLFI_SCHEDULED_DISPATCH, 3) ? SlReadUint32() : 1;
 			list->GetScheduledDispatchScheduleSet().resize(count);
 			for (DispatchSchedule &ds : list->GetScheduledDispatchScheduleSet()) {
-				SlObjectLoadFiltered(&ds, _filtered_ordl_sd_desc);
-				if (SlXvIsFeaturePresent(XSLFI_SCHEDULED_DISPATCH, 1, 4) && _old_scheduled_dispatch_start_full_date_fract != 0) {
-					_old_scheduled_dispatch_start_full_date_fract_map[&ds] = _old_scheduled_dispatch_start_full_date_fract;
-				}
-
-				if (SlXvIsFeaturePresent(XSLFI_SCHEDULED_DISPATCH, 1, 6)) {
-					ds.GetScheduledDispatchMutable().reserve(_old_scheduled_dispatch_slots.size());
-					for (uint32_t slot : _old_scheduled_dispatch_slots) {
-						ds.GetScheduledDispatchMutable().push_back({ slot, 0 });
-					}
-				} else {
-					ds.GetScheduledDispatchMutable().resize(SlReadUint32());
-					for (DispatchSlot &slot : ds.GetScheduledDispatchMutable()) {
-						SlObjectLoadFiltered(&slot, _filtered_ordl_slot_desc);
-					}
-				}
+				LoadDispatchSchedule(ds);
 			}
 		}
 	}
@@ -426,6 +454,8 @@ void Save_BKOR()
 	 * normal games this information isn't needed. */
 	if (!_networking || !_network_server) return;
 
+	SetupDescs_ORDL();
+
 	for (OrderBackup *ob : OrderBackup::Iterate()) {
 		SlSetArrayIndex(ob->index);
 		SlAutolength([](void *data) {
@@ -433,7 +463,7 @@ void Save_BKOR()
 			SlObject(ob, GetOrderBackupDescription());
 			SlWriteUint32((uint)ob->dispatch_schedules.size());
 			for (DispatchSchedule &ds : ob->dispatch_schedules) {
-				SlObject(&ds, GetDispatchScheduleDescription());
+				SaveDispatchSchedule(ds);
 			}
 		}, ob);
 	}
@@ -443,6 +473,8 @@ void Load_BKOR()
 {
 	int index;
 
+	SetupDescs_ORDL();
+
 	while ((index = SlIterateArray()) != -1) {
 		/* set num_orders to 0 so it's a valid OrderList */
 		OrderBackup *ob = new (index) OrderBackup();
@@ -451,7 +483,11 @@ void Load_BKOR()
 			uint count = SlReadUint32();
 			ob->dispatch_schedules.resize(count);
 			for (DispatchSchedule &ds : ob->dispatch_schedules) {
-				SlObject(&ds, GetDispatchScheduleDescription());
+				if (SlXvIsFeaturePresent(XSLFI_SCHEDULED_DISPATCH, 8)) {
+					LoadDispatchSchedule(ds);
+				} else {
+					SlObject(&ds, GetDispatchScheduleDescription());
+				}
 			}
 		}
 	}

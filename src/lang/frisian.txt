@@ -2120,7 +2120,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Disse na
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Mooglik ferbinning kwyt
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}De lêste{NUM} seconde{P "" s} is gjin data oankom fan e server
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :algemiene flater
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :koe it lân net lade
 STR_NETWORK_ERROR_CLIENT_CONNECTION_LOST                        :ferbining kwyt
@@ -2806,7 +2806,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :spoar soart
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}NewGRF fariabele 60+x parameter (heksadesimaal)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Rjochted ôfbylding {COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Folgend flak
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Gean fierder nei de folgjende ôfbylding, sla pseudo/werkleure/lettertype ôfbyldings oer en begjin wer oernei at it ein berikke is
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Gean nei ôfbylding
@@ -3861,9 +3860,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Dit gjit
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Spul noch an it bewarjen,{}graach nog efkes geduld!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Automatysk opslaan net slagge
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Koe net fan 'e skiif lêze
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Opslaan Mislearre{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Kin bestân net fuortsmite
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Laden Mislearre{}{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Interne flater: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Stikkene savegame - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Spul is makke mei in neiere fersje

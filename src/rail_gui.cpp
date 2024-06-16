@@ -22,7 +22,8 @@
 #include "date_func.h"
 #include "sound_func.h"
 #include "company_func.h"
-#include "widgets/dropdown_type.h"
+#include "dropdown_type.h"
+#include "dropdown_func.h"
 #include "tunnelbridge.h"
 #include "tilehighlight_func.h"
 #include "spritecache.h"
@@ -1325,15 +1326,11 @@ public:
 
 		this->station_classes.clear();
 
-		for (uint i = 0; StationClass::IsClassIDValid((StationClassID)i); i++) {
-			StationClassID station_class_id = (StationClassID)i;
-			if (station_class_id == StationClassID::STAT_CLASS_WAYP) {
-				// Skip waypoints.
-				continue;
-			}
-			StationClass *station_class = StationClass::Get(station_class_id);
-			if (station_class->GetUISpecCount() == 0) continue;
-			station_classes.push_back(station_class_id);
+		for (const auto &cls : StationClass::Classes()) {
+			/* Skip waypoints. */
+			if (cls.Index() == STAT_CLASS_WAYP) continue;
+			if (cls.GetUISpecCount() == 0) continue;
+			station_classes.push_back(cls.Index());
 		}
 
 		if (_railstation.newstations) {
@@ -1453,7 +1450,7 @@ public:
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_BRAS_NEWST_LIST: {
@@ -1461,17 +1458,17 @@ public:
 				for (auto station_class : this->station_classes) {
 					d = maxdim(d, GetStringBoundingBox(StationClass::Get(station_class)->name));
 				}
-				size->width = std::max(size->width, d.width + padding.width);
+				size.width = std::max(size.width, d.width + padding.width);
 				this->line_height = GetCharacterHeight(FS_NORMAL) + padding.height;
-				size->height = 5 * this->line_height;
-				resize->height = this->line_height;
+				size.height = 5 * this->line_height;
+				resize.height = this->line_height;
 				break;
 			}
 
 			case WID_BRAS_SHOW_NEWST_TYPE: {
 				if (!_railstation.newstations) {
-					size->width = 0;
-					size->height = 0;
+					size.width = 0;
+					size.height = 0;
 					break;
 				}
 
@@ -1486,25 +1483,25 @@ public:
 						d = maxdim(d, GetStringBoundingBox(str));
 					}
 				}
-				size->width = std::max(size->width, d.width + padding.width);
-				size->width = std::min<uint>(size->width, ScaleGUITrad(400));
+				size.width = std::max(size.width, d.width + padding.width);
+				size.width = std::min<uint>(size.width, ScaleGUITrad(400));
 				break;
 			}
 
 			case WID_BRAS_PLATFORM_DIR_X:
 			case WID_BRAS_PLATFORM_DIR_Y:
 			case WID_BRAS_IMAGE:
-				size->width  = ScaleGUITrad(64) + WidgetDimensions::scaled.fullbevel.Horizontal();
-				size->height = ScaleGUITrad(58) + WidgetDimensions::scaled.fullbevel.Vertical();
+				size.width  = ScaleGUITrad(64) + WidgetDimensions::scaled.fullbevel.Horizontal();
+				size.height = ScaleGUITrad(58) + WidgetDimensions::scaled.fullbevel.Vertical();
 				break;
 
 			case WID_BRAS_COVERAGE_TEXTS:
-				size->height = this->coverage_height;
+				size.height = this->coverage_height;
 				break;
 
 			case WID_BRAS_MATRIX:
-				fill->height = 1;
-				resize->height = 1;
+				fill.height = 1;
+				resize.height = 1;
 				break;
 		}
 	}
@@ -2055,16 +2052,16 @@ public:
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		if (widget == WID_BS_DRAG_SIGNALS_DENSITY_LABEL) {
 			/* Two digits for signals density. */
-			size->width = std::max(size->width, 2 * GetDigitWidth() + padding.width + WidgetDimensions::scaled.framerect.Horizontal());
+			size.width = std::max(size.width, 2 * GetDigitWidth() + padding.width + WidgetDimensions::scaled.framerect.Horizontal());
 		} else if (IsInsideMM(widget, WID_BS_SEMAPHORE_NORM, WID_BS_ELECTRIC_PBS_OWAY + 1)) {
-			size->width = std::max(size->width, this->sig_sprite_size.width + padding.width);
-			size->height = std::max(size->height, this->sig_sprite_size.height + padding.height);
+			size.width = std::max(size.width, this->sig_sprite_size.width + padding.width);
+			size.height = std::max(size.height, this->sig_sprite_size.height + padding.height);
 		} else if (widget == WID_BS_CAPTION) {
-			size->width += WidgetDimensions::scaled.frametext.Horizontal();
+			size.width += WidgetDimensions::scaled.frametext.Horizontal();
 		}
 	}
 
@@ -2208,16 +2205,17 @@ public:
 
 			case WID_BS_TOGGLE_SIZE:
 				_settings_client.gui.signal_gui_mode = (_settings_client.gui.signal_gui_mode == SIGNAL_GUI_ALL) ? SIGNAL_GUI_PATH : SIGNAL_GUI_ALL;
+				SetWindowDirty(WC_GAME_OPTIONS, WN_GAME_OPTIONS_GAME_SETTINGS);
 				this->SetSignalUIMode();
 				this->ReInit();
 				break;
 
 			case WID_BS_STYLE: {
 				DropDownList list;
-				list.emplace_back(new DropDownListStringItem(STR_BUILD_SIGNAL_DEFAULT_STYLE, 0, false));
+				list.push_back(MakeDropDownListStringItem(STR_BUILD_SIGNAL_DEFAULT_STYLE, 0, false));
 				for (uint i = 0; i < _num_new_signal_styles; i++) {
 					if (HasBit(_enabled_new_signal_styles_mask, i + 1)) {
-						list.emplace_back(new DropDownListStringItem(_new_signal_styles[i].name, i + 1, false));
+						list.push_back(MakeDropDownListStringItem(_new_signal_styles[i].name, i + 1, false));
 					}
 				}
 				ShowDropDownList(this, std::move(list), _cur_signal_style, widget);
@@ -2398,12 +2396,12 @@ struct BuildRailDepotWindow : public PickerWindowBase {
 		this->LowerWidget(WID_BRAD_DEPOT_NE + _build_depot_direction);
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		if (!IsInsideMM(widget, WID_BRAD_DEPOT_NE, WID_BRAD_DEPOT_NW + 1)) return;
 
-		size->width  = ScaleGUITrad(64) + WidgetDimensions::scaled.fullbevel.Horizontal();
-		size->height = ScaleGUITrad(48) + WidgetDimensions::scaled.fullbevel.Vertical();
+		size.width  = ScaleGUITrad(64) + WidgetDimensions::scaled.fullbevel.Horizontal();
+		size.height = ScaleGUITrad(48) + WidgetDimensions::scaled.fullbevel.Vertical();
 	}
 
 	void DrawWidget(const Rect &r, WidgetID widget) const override
@@ -2553,21 +2551,21 @@ struct BuildRailWaypointWindow : PickerWindowBase {
 		this->PickerWindowBase::Close(data);
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_BRW_WAYPOINT_MATRIX:
 				/* Two blobs high and three wide. */
-				size->width  += resize->width  * 2;
-				size->height += resize->height * 1;
+				size.width  += resize.width  * 2;
+				size.height += resize.height * 1;
 
 				/* Resizing in X direction only at blob size, but at pixel level in Y. */
-				resize->height = 1;
+				resize.height = 1;
 				break;
 
 			case WID_BRW_WAYPOINT:
-				size->width  = ScaleGUITrad(64) + WidgetDimensions::scaled.fullbevel.Horizontal();
-				size->height = ScaleGUITrad(58) + WidgetDimensions::scaled.fullbevel.Vertical();
+				size.width  = ScaleGUITrad(64) + WidgetDimensions::scaled.fullbevel.Horizontal();
+				size.height = ScaleGUITrad(58) + WidgetDimensions::scaled.fullbevel.Vertical();
 				break;
 		}
 	}
@@ -2761,7 +2759,7 @@ static void SetDefaultRailGui()
 		case 0: {
 			/* Use first available type */
 			std::vector<RailType>::const_iterator it = std::find_if(_sorted_railtypes.begin(), _sorted_railtypes.end(),
-					[](RailType r){ return HasRailTypeAvail(_local_company, r); });
+					[](RailType r) { return HasRailTypeAvail(_local_company, r); });
 			rt = it != _sorted_railtypes.end() ? *it : RAILTYPE_BEGIN;
 			break;
 		}
@@ -2844,7 +2842,7 @@ DropDownList GetRailTypeDropDownList(bool for_replacement, bool all_option)
 	DropDownList list;
 
 	if (all_option) {
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_REPLACE_ALL_RAILTYPE, INVALID_RAILTYPE, false));
+		list.push_back(MakeDropDownListStringItem(STR_REPLACE_ALL_RAILTYPE, INVALID_RAILTYPE));
 	}
 
 	Dimension d = { 0, 0 };
@@ -2866,16 +2864,16 @@ DropDownList GetRailTypeDropDownList(bool for_replacement, bool all_option)
 		SetDParam(0, rti->strings.menu_text);
 		SetDParam(1, rti->max_speed);
 		if (for_replacement) {
-			list.push_back(std::make_unique<DropDownListStringItem>(rti->strings.replace_text, rt, !HasBit(avail_railtypes, rt)));
+			list.push_back(MakeDropDownListStringItem(rti->strings.replace_text, rt, !HasBit(avail_railtypes, rt)));
 		} else {
 			StringID str = rti->max_speed > 0 ? STR_TOOLBAR_RAILTYPE_VELOCITY : STR_JUST_STRING;
-			list.push_back(std::make_unique<DropDownListIconItem>(d, rti->gui_sprites.build_x_rail, PAL_NONE, str, rt, !HasBit(avail_railtypes, rt)));
+			list.push_back(MakeDropDownListIconItem(d, rti->gui_sprites.build_x_rail, PAL_NONE, str, rt, !HasBit(avail_railtypes, rt)));
 		}
 	}
 
 	if (list.empty()) {
 		/* Empty dropdowns are not allowed */
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_NONE, INVALID_RAILTYPE, true));
+		list.push_back(MakeDropDownListStringItem(STR_NONE, INVALID_RAILTYPE, true));
 	}
 
 	return list;

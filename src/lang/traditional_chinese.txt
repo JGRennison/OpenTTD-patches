@@ -2493,7 +2493,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}你的�
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}可能發生連線中斷
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}最後 {NUM} 秒沒有資料從伺服器過來
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :一般錯誤
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :失去同步
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :無法載入地圖
@@ -3373,7 +3373,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :道路類型
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}NewGRF variable 60+x 參數（16 進位）
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}定位 Sprite {COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}下一個子畫面
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}繼續處理下個正常的子畫面，略過任何虛位／重新著色／文字字型相關的子畫面，並在到達最後的子畫面後，返回第一個子畫面繼續進行處理。
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}前往子畫面
@@ -4726,9 +4725,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}預估�
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}遊戲還在儲存中，{}請稍候！
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}自動儲存失敗
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}無法讀取磁碟
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}遊戲儲存失敗{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}無法刪除檔案
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}遊戲載入失敗{}{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :內部錯誤：{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :損壞的存檔 - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :該存檔是由較新版本的遊戲所產生

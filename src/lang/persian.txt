@@ -1924,7 +1924,7 @@ STR_NETWORK_ERROR_TIMEOUT_JOIN                                  :{WHITE}شما �
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}اتصال مورد استفاده قطع شد
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}در {NUM} ثانیه گذشته هیچ داده ای از سرویس دهنده دریافت نگردیده
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :خطای اصلی
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :خطای ناهمگام سازی
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :نمی توان نقشه را بارگزاری کرد
@@ -2675,7 +2675,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :نوع ریل
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}متغیر NewGRF 60 + پارامتر (hexadecimal)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}جابجا کردن تصویر گرافیک {COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}تصویر بعدی
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}نمایش تصویر بعدی، بدون انجام دادن هر گونه تغییرات در آخر
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}رفتن به تصویر
@@ -3494,9 +3493,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}در آ�
 
 # Saveload messages
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}درایو خوانده می شود
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}بازی ذخیره نشد{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}فایل حذف نمی شود
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}بازی بارگزاری نشد{}{STRING}
 
 # Map generation messages
 

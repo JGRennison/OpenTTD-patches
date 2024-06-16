@@ -202,7 +202,7 @@ static FILE *FioFOpenFileSp(const std::string &filename, const char *mode, Searc
 	 * a string, but a variable, it 'renames' the variable,
 	 * so make that variable to makes it compile happily */
 	wchar_t Lmode[5];
-	MultiByteToWideChar(CP_ACP, 0, mode, -1, Lmode, lengthof(Lmode));
+	MultiByteToWideChar(CP_ACP, 0, mode, -1, Lmode, static_cast<int>(std::size(Lmode)));
 #endif
 	FILE *f = nullptr;
 	std::string buf;
@@ -360,6 +360,21 @@ void FioCreateDirectory(const std::string &name)
 #else
 	mkdir(OTTD2FS(name).c_str(), 0755);
 #endif
+}
+
+/**
+ * Remove a file.
+ * @param filename Filename to remove.
+ * @return true iff the file was removed.
+ */
+bool FioRemove(const std::string &filename)
+{
+	if (unlink(filename.c_str()) != 0) {
+		Debug(misc, 0, "Removing {} failed: {}", filename, StrErrorDumper().GetLast());
+		return false;
+	}
+
+	return true;
 }
 
 /**

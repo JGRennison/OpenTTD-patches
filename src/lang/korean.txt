@@ -2575,6 +2575,7 @@ STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :{WHITE}접속�
 STR_NETWORK_ERROR_BAD_SERVER_NAME                               :{WHITE}서버 이름을 지정하지 않았습니다. 서버 이름은 멀티플레이 창 맨 위에서 설정할 수 있습니다.
 STR_NETWORK_ERROR_WRONG_REVISION                                :{WHITE}이 접속자의 게임 버전이 서버의 버전과 일치하지 않습니다
 STR_NETWORK_ERROR_WRONG_PASSWORD                                :{WHITE}잘못된 비밀번호입니다
+STR_NETWORK_ERROR_NOT_ON_ALLOW_LIST                             :{WHITE}접속이 허용된 접속자가 아닙니다
 STR_NETWORK_ERROR_SERVER_FULL                                   :{WHITE}서버에 인원이 가득 찼습니다
 STR_NETWORK_ERROR_SERVER_BANNED                                 :{WHITE}서버 관리자에 의해 접속이 차단되었습니다
 STR_NETWORK_ERROR_KICKED                                        :{WHITE}서버에서 강제로 추방되었습니다
@@ -2590,7 +2591,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}사용�
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}가능한 연결 손실
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}마지막 {NUM}초간 서버로부터 데이터를 받지 못했습니다
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :일반 오류
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :비동기화 오류
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :지도 불러오기 실패
@@ -2602,6 +2603,7 @@ STR_NETWORK_ERROR_CLIENT_NOT_EXPECTED                           :잘못된 패�
 STR_NETWORK_ERROR_CLIENT_WRONG_REVISION                         :잘못된 버전
 STR_NETWORK_ERROR_CLIENT_NAME_IN_USE                            :이미 사용중인 이름
 STR_NETWORK_ERROR_CLIENT_WRONG_PASSWORD                         :잘못된 비밀번호
+STR_NETWORK_ERROR_CLIENT_NOT_ON_ALLOW_LIST                      :접속이 허용되지 않음
 STR_NETWORK_ERROR_CLIENT_COMPANY_MISMATCH                       :DoCommand 구문 내의 잘못된 회사
 STR_NETWORK_ERROR_CLIENT_KICKED                                 :강제추방
 STR_NETWORK_ERROR_CLIENT_CHEATER                                :치트 사용 시도
@@ -3487,7 +3489,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :도로 종류
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}NewGRF 변수 60+x 매개 변수 (16진법)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}스프라이트 정렬 {COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}다음 스프라이트
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}(유사/재색상/글씨 스프라이트를 제외한) 다음 보통 스프라이트로 이동하고, 마지막 스프라이트에 다다르면 다시 처음으로 돌아갑니다.
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}스프라이트 번호 입력
@@ -4898,9 +4899,9 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}예상 �
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}저장 중입니다.{}끝날 때까지 기다려주세요!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}자동 저장 실패
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}드라이브를 읽을 수 없습니다
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}게임 저장 실패{}{STRING}
+STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}게임을 저장하지 못 했습니다...
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}파일을 삭제할 수 없습니다
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}게임 불러오기 실패{}{STRING}
+STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}게임을 불러오지 못 했습니다...
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :내부 오류: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :손상된 게임 저장 파일 - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :상위 버전의 게임 저장 파일입니다
@@ -4994,7 +4995,7 @@ STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}회사�
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}본사를 건설할 수 없습니다...
 
 # Town related errors
-STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}도시를 만들 수 없습니다
+STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}도시를 만들 수 없습니다...
 STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE}도시 이름을 바꿀 수 없습니다...
 STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :{WHITE}여기에 도시를 건설할 수 없습니다...
 STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}도시를 확장할 수 없습니다...

@@ -542,7 +542,7 @@ void Town::UpdateVirtCoord()
 
 	SetDParam(0, this->index);
 	SetDParam(1, this->LabelParam2());
-	this->cache.sign.UpdatePosition(HasBit(_display_opt, DO_SHOW_TOWN_NAMES) ? ZOOM_LVL_OUT_128X : ZOOM_LVL_END, pt.x, pt.y - 24 * ZOOM_LVL_BASE, STR_VIEWPORT_TOWN_LABEL, STR_VIEWPORT_TOWN_TINY_WHITE);
+	this->cache.sign.UpdatePosition(HasBit(_display_opt, DO_SHOW_TOWN_NAMES) ? ZOOM_LVL_OUT_32X : ZOOM_LVL_END, pt.x, pt.y - 24 * ZOOM_BASE, STR_VIEWPORT_TOWN_LABEL, STR_VIEWPORT_TOWN_TINY_WHITE);
 
 	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeTown(this->index));
 
@@ -1089,6 +1089,45 @@ bool MayTownModifyRoad(TileIndex tile)
 }
 
 /**
+ * Get the calendar date of the earliest town-buildable road type.
+ * @return introduction date of earliest road type, or INT32_MAX if none available.
+ */
+static CalTime::Date GetTownRoadTypeFirstIntroductionDate()
+{
+	const RoadTypeInfo *best = nullptr;
+	for (RoadType rt = ROADTYPE_BEGIN; rt != ROADTYPE_END; rt++) {
+		if (RoadTypeIsTram(rt)) continue;
+		const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
+		if (rti->label == 0) continue; // Unused road type.
+		if (!HasBit(rti->flags, ROTF_TOWN_BUILD)) continue; // Town can't build this road type.
+
+		if (best != nullptr && rti->introduction_date >= best->introduction_date) continue;
+		best = rti;
+	}
+
+	if (best == nullptr) return INT32_MAX;
+	return best->introduction_date;
+}
+
+/**
+ * Check if towns are able to build road.
+ * @return true iff the towns are currently able to build road.
+ */
+bool CheckTownRoadTypes()
+{
+	auto min_date = GetTownRoadTypeFirstIntroductionDate();
+	if (min_date <= CalTime::CurDate()) return true;
+
+	if (min_date < INT32_MAX) {
+		SetDParam(0, min_date);
+		ShowErrorMessage(STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_YET, STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_YET_EXPLANATION, WL_CRITICAL);
+	} else {
+		ShowErrorMessage(STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_AT_ALL, STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_AT_ALL_EXPLANATION, WL_CRITICAL);
+	}
+	return false;
+}
+
+/**
  * Check for parallel road inside a given distance.
  *   Assuming a road from (tile - TileOffsByDiagDir(dir)) to tile,
  *   is there a parallel road left or right of it within distance dist_multi?
@@ -1573,8 +1612,8 @@ static inline bool RoadTypesAllowHouseHere(TileIndex t)
 	static const TileIndexDiffC tiles[] = { {-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1} };
 	bool allow = false;
 
-	for (const TileIndexDiffC *ptr = tiles; ptr != endof(tiles); ++ptr) {
-		TileIndex cur_tile = t + ToTileIndexDiff(*ptr);
+	for (const auto &ptr : tiles) {
+		TileIndex cur_tile = t + ToTileIndexDiff(ptr);
 		if (!IsValidTile(cur_tile)) continue;
 
 		if (!(IsTileType(cur_tile, MP_ROAD) || IsAnyRoadStopTile(cur_tile))) continue;
@@ -2067,21 +2106,20 @@ static bool GrowTown(Town *t)
 	TileIndex tile = t->xy; // The tile we are working with ATM
 
 	/* Find a road that we can base the construction on. */
-	const TileIndexDiffC *ptr;
-	for (ptr = _town_coord_mod; ptr != endof(_town_coord_mod); ++ptr) {
+	for (const auto &ptr : _town_coord_mod) {
 		if (GetTownRoadBits(tile) != ROAD_NONE) {
 			bool success = GrowTownAtRoad(t, tile);
 			cur_company.Restore();
 			return success;
 		}
-		tile = TileAdd(tile, ToTileIndexDiff(*ptr));
+		tile = TileAdd(tile, ToTileIndexDiff(ptr));
 	}
 
 	/* No road available, try to build a random road block by
 	 * clearing some land and then building a road there. */
 	if (TownAllowedToBuildRoads(t)) {
 		tile = t->xy;
-		for (ptr = _town_coord_mod; ptr != endof(_town_coord_mod); ++ptr) {
+		for (const auto &ptr : _town_coord_mod) {
 			/* Only work with plain land that not already has a house */
 			if (!IsTileType(tile, MP_HOUSE) && IsTileFlat(tile)) {
 				if (DoCommand(tile, 0, 0, DC_AUTO | DC_NO_WATER | DC_TOWN, CMD_LANDSCAPE_CLEAR).Succeeded()) {
@@ -2091,7 +2129,7 @@ static bool GrowTown(Town *t)
 					return true;
 				}
 			}
-			tile = TileAdd(tile, ToTileIndexDiff(*ptr));
+			tile = TileAdd(tile, ToTileIndexDiff(ptr));
 		}
 	}
 
@@ -2105,7 +2143,7 @@ static bool GrowTown(Town *t)
  */
 void UpdateTownRadius(Town *t)
 {
-	static const uint32_t _town_squared_town_zone_radius_data[23][HZB_END] = {
+	static const std::array<std::array<uint32_t, HZB_END>, 23> _town_squared_town_zone_radius_data = {{
 		{  4,  0,  0,  0,  0}, // 0
 		{ 16,  0,  0,  0,  0},
 		{ 25,  0,  0,  0,  0},
@@ -2129,7 +2167,7 @@ void UpdateTownRadius(Town *t)
 		{121, 81,  0, 49, 25}, // 80
 		{121, 81,  0, 49, 25},
 		{121, 81,  0, 49, 36}, // 88
-	};
+	}};
 
 	if (_settings_game.economy.town_zone_calc_mode) {
 		int mass = t->cache.num_houses / 8;
@@ -2149,7 +2187,7 @@ void UpdateTownRadius(Town *t)
 		return;
 	}
 
-	MemSetT(t->cache.squared_town_zone_radius, 0, lengthof(t->cache.squared_town_zone_radius));
+	t->cache.squared_town_zone_radius = {};
 
 	uint16_t cb_result = GetTownZonesCallback(t);
 	if (cb_result == 0) {
@@ -2162,7 +2200,7 @@ void UpdateTownRadius(Town *t)
 	}
 
 	if (t->cache.num_houses < 92) {
-		memcpy(t->cache.squared_town_zone_radius, _town_squared_town_zone_radius_data[t->cache.num_houses / 4], sizeof(t->cache.squared_town_zone_radius));
+		t->cache.squared_town_zone_radius = _town_squared_town_zone_radius_data[t->cache.num_houses / 4];
 	} else {
 		int mass = t->cache.num_houses / 8;
 		/* Actually we are proportional to sqrt() but that's right because we are covering an area.
@@ -2215,6 +2253,7 @@ static void DoCreateTown(Town *t, TileIndex tile, uint32_t townnameparts, TownSi
 	UpdateTownRadius(t);
 	t->flags = 0;
 	t->cache.population = 0;
+	InitializeBuildingCounts(t);
 	/* Spread growth across ticks so even if there are many
 	 * similar towns they're unlikely to grow all in one tick */
 	t->grow_counter = t->index % TOWN_GROWTH_TICKS;
@@ -3111,20 +3150,19 @@ static bool BuildTownHouse(Town *t, TileIndex tile)
 	/* bits 0-4 are used
 	 * bits 11-15 are used
 	 * bits 5-10 are not used. */
-	HouseID houses[NUM_HOUSES];
-	uint num = 0;
-	uint probs[NUM_HOUSES];
+	static std::vector<std::pair<HouseID, uint>> probs;
+	probs.clear();
+
 	uint probability_max = 0;
 
 	/* Generate a list of all possible houses that can be built. */
-	for (uint i = 0; i < NUM_HOUSES; i++) {
-		if (IsHouseTypeAllowed((HouseID)i, above_snowline, zone, false).Failed()) continue;
-		if (IsAnotherHouseTypeAllowedInTown(t, (HouseID)i).Failed()) continue;
+	for (const auto &hs : HouseSpec::Specs()) {
+		if (IsHouseTypeAllowed(hs.Index(), above_snowline, zone, false).Failed()) continue;
+		if (IsAnotherHouseTypeAllowedInTown(t, hs.Index()).Failed()) continue;
 
-		uint cur_prob = HouseSpec::Get(i)->probability;
+		uint cur_prob = hs.probability;
 		probability_max += cur_prob;
-		probs[num] = cur_prob;
-		houses[num++] = (HouseID)i;
+		probs.emplace_back(std::make_pair(hs.Index(), cur_prob));
 	}
 
 	TileIndex baseTile = tile;
@@ -3139,18 +3177,17 @@ static bool BuildTownHouse(Town *t, TileIndex tile)
 
 		uint r = RandomRange(probability_max);
 		uint i;
-		for (i = 0; i < num; i++) {
-			if (probs[i] > r) break;
-			r -= probs[i];
+		for (i = 0; i < probs.size(); i++) {
+			if (probs[i].second > r) break;
+			r -= probs[i].second;
 		}
 
-		HouseID house = houses[i];
-		probability_max -= probs[i];
+		HouseID house = probs[i].first;
+		probability_max -= probs[i].second;
 
 		/* remove tested house from the set */
-		num--;
-		houses[i] = houses[num];
-		probs[i] = probs[num];
+		probs[i] = probs.back();
+		probs.pop_back();
 
 		CommandCost ret = CheckCanBuildHouse(house, t, false);
 		if (ret.Failed()) continue;
@@ -4578,17 +4615,3 @@ extern const TileTypeProcs _tile_type_town_procs = {
 	GetFoundation_Town,      // get_foundation_proc
 	TerraformTile_Town,      // terraform_tile_proc
 };
-
-
-HouseSpec _house_specs[NUM_HOUSES];
-
-void ResetHouses()
-{
-	ResetHouseClassIDs();
-
-	auto insert = std::copy(std::begin(_original_house_specs), std::end(_original_house_specs), std::begin(_house_specs));
-	std::fill(insert, std::end(_house_specs), HouseSpec{});
-
-	/* Reset any overrides that have been set. */
-	_house_mngr.ResetOverride();
-}

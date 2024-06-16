@@ -13,6 +13,7 @@
 #include "compat/engine_sl_compat.h"
 
 #include "../engine_base.h"
+#include "../engine_override.h"
 #include "../string_func.h"
 #include <vector>
 
@@ -114,6 +115,8 @@ struct EIDSChunkHandler : ChunkHandler {
 			EngineIDMapping *eid = &_engine_mngr.emplace_back();
 			SlObject(eid, slt);
 		}
+
+		_engine_mngr.ReIndex();
 	}
 };
 

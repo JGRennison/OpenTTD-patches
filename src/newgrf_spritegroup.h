@@ -20,8 +20,6 @@
 #include "newgrf_storage.h"
 #include "newgrf_commons.h"
 
-#include "3rdparty/cpp-btree/btree_set.h"
-
 #include <map>
 #include <vector>
 
@@ -483,13 +481,6 @@ enum DeterministicSpriteGroupFlags : uint8_t {
 };
 DECLARE_ENUM_AS_BIT_SET(DeterministicSpriteGroupFlags)
 
-struct DeterministicSpriteGroupShadowCopy {
-	std::vector<DeterministicSpriteGroupAdjust> adjusts;
-	std::vector<DeterministicSpriteGroupRange> ranges;
-	const SpriteGroup *default_group;
-	bool calculated_result;
-};
-
 struct DeterministicSpriteGroup : SpriteGroup {
 	DeterministicSpriteGroup() : SpriteGroup(SGT_DETERMINISTIC) {}
 
@@ -518,10 +509,6 @@ enum RandomizedSpriteGroupCompareMode : uint8_t {
 	RSG_CMP_ALL,
 };
 
-struct RandomizedSpriteGroupShadowCopy {
-	std::vector<const SpriteGroup *> groups;
-};
-
 struct RandomizedSpriteGroup : SpriteGroup {
 	RandomizedSpriteGroup() : SpriteGroup(SGT_RANDOMIZED) {}
 
@@ -541,8 +528,6 @@ protected:
 	const SpriteGroup *Resolve(ResolverObject &object) const override;
 };
 
-extern std::map<const DeterministicSpriteGroup *, DeterministicSpriteGroupShadowCopy> _deterministic_sg_shadows;
-extern std::map<const RandomizedSpriteGroup *, RandomizedSpriteGroupShadowCopy> _randomized_sg_shadows;
 extern bool _grfs_loaded_with_sg_shadow_enable;
 
 /* This contains a callback result. A failed callback has a value of
@@ -758,49 +743,6 @@ struct ResolverObject {
 	 * and should return an identifier recognisable by the NewGRF developer.
 	 */
 	virtual uint32_t GetDebugID() const { return 0; }
-};
-
-enum DumpSpriteGroupPrintOp {
-	DSGPO_PRINT,
-	DSGPO_START,
-	DSGPO_END,
-	DSGPO_NFO_LINE,
-};
-
-using DumpSpriteGroupPrinter = std::function<void(const SpriteGroup *, DumpSpriteGroupPrintOp, uint32_t, const char *)>;
-
-struct SpriteGroupDumper {
-	bool use_shadows = false;
-	bool more_details = false;
-
-private:
-	char buffer[1024];
-	DumpSpriteGroupPrinter print_fn;
-
-	const SpriteGroup *top_default_group = nullptr;
-	const SpriteGroup *top_graphics_group = nullptr;
-	btree::btree_set<const DeterministicSpriteGroup *> seen_dsgs;
-
-	enum SpriteGroupDumperFlags {
-		SGDF_DEFAULT          = 1 << 0,
-		SGDF_RANGE            = 1 << 1,
-	};
-
-	char *DumpSpriteGroupAdjust(char *p, const char *last, const DeterministicSpriteGroupAdjust &adjust, const char *padding, uint32_t &highlight_tag, uint &conditional_indent);
-	void DumpSpriteGroup(const SpriteGroup *sg, const char *prefix, uint flags);
-
-public:
-	SpriteGroupDumper(DumpSpriteGroupPrinter print) : print_fn(print) {}
-
-	void DumpSpriteGroup(const SpriteGroup *sg, uint flags)
-	{
-		this->DumpSpriteGroup(sg, "", flags);
-	}
-
-	void Print(const char *msg)
-	{
-		this->print_fn(nullptr, DSGPO_PRINT, 0, msg);
-	}
 };
 
 uint32_t EvaluateDeterministicSpriteGroupAdjust(DeterministicSpriteGroupSize size, const DeterministicSpriteGroupAdjust &adjust, ScopeResolver *scope, uint32_t last_value, uint32_t value);

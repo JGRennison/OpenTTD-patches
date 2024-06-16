@@ -24,8 +24,8 @@
 #include "network_udp.h"
 #include "../window_func.h"
 #include "../gfx_func.h"
-#include "../widgets/dropdown_type.h"
-#include "../widgets/dropdown_func.h"
+#include "../dropdown_type.h"
+#include "../dropdown_func.h"
 #include "../querystring_gui.h"
 #include "../sortlist_type.h"
 #include "../company_func.h"
@@ -77,9 +77,9 @@ static DropDownList BuildVisibilityDropDownList()
 {
 	DropDownList list;
 
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_SERVER_VISIBILITY_LOCAL, SERVER_GAME_TYPE_LOCAL, false));
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_SERVER_VISIBILITY_INVITE_ONLY, SERVER_GAME_TYPE_INVITE_ONLY, false));
-	list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_SERVER_VISIBILITY_PUBLIC, SERVER_GAME_TYPE_PUBLIC, false));
+	list.push_back(MakeDropDownListStringItem(STR_NETWORK_SERVER_VISIBILITY_LOCAL, SERVER_GAME_TYPE_LOCAL));
+	list.push_back(MakeDropDownListStringItem(STR_NETWORK_SERVER_VISIBILITY_INVITE_ONLY, SERVER_GAME_TYPE_INVITE_ONLY));
+	list.push_back(MakeDropDownListStringItem(STR_NETWORK_SERVER_VISIBILITY_PUBLIC, SERVER_GAME_TYPE_PUBLIC));
 
 	return list;
 }
@@ -105,8 +105,8 @@ public:
 		this->Add(std::make_unique<NWidgetLeaf>(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NG_YEARS, STR_NETWORK_SERVER_LIST_PLAY_TIME_CAPTION, STR_NETWORK_SERVER_LIST_PLAY_TIME_CAPTION_TOOLTIP));
 
 		leaf = std::make_unique<NWidgetLeaf>(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NG_INFO, STR_EMPTY, STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP);
-		leaf->SetMinimalSize(14 + GetSpriteSize(SPR_LOCK, nullptr, ZOOM_LVL_OUT_4X).width
-		                        + GetSpriteSize(SPR_BLOT, nullptr, ZOOM_LVL_OUT_4X).width, 12);
+		leaf->SetMinimalSize(14 + GetSpriteSize(SPR_LOCK, nullptr, ZOOM_LVL_NORMAL).width
+		                        + GetSpriteSize(SPR_BLOT, nullptr, ZOOM_LVL_NORMAL).width, 12);
 		leaf->SetFill(0, 1);
 		this->Add(std::move(leaf));
 	}
@@ -484,48 +484,48 @@ public:
 		this->flag_offset = this->blot_offset + ScaleGUITrad(2) + GetSpriteSize(SPR_BLOT).width;
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_NG_MATRIX:
-				resize->height = std::max(GetSpriteSize(SPR_BLOT).height, (uint)GetCharacterHeight(FS_NORMAL)) + padding.height;
-				fill->height = resize->height;
-				size->height = 12 * resize->height;
+				resize.height = std::max(GetSpriteSize(SPR_BLOT).height, (uint)GetCharacterHeight(FS_NORMAL)) + padding.height;
+				fill.height = resize.height;
+				size.height = 12 * resize.height;
 				break;
 
 			case WID_NG_LASTJOINED:
-				size->height = std::max(GetSpriteSize(SPR_BLOT).height, (uint)GetCharacterHeight(FS_NORMAL)) + WidgetDimensions::scaled.matrix.Vertical();
+				size.height = std::max(GetSpriteSize(SPR_BLOT).height, (uint)GetCharacterHeight(FS_NORMAL)) + WidgetDimensions::scaled.matrix.Vertical();
 				break;
 
 			case WID_NG_LASTJOINED_SPACER:
-				size->width = NWidgetScrollbar::GetVerticalDimension().width;
+				size.width = NWidgetScrollbar::GetVerticalDimension().width;
 				break;
 
 			case WID_NG_NAME:
-				size->width += 2 * Window::SortButtonWidth(); // Make space for the arrow
+				size.width += 2 * Window::SortButtonWidth(); // Make space for the arrow
 				break;
 
 			case WID_NG_CLIENTS:
-				size->width += 2 * Window::SortButtonWidth(); // Make space for the arrow
+				size.width += 2 * Window::SortButtonWidth(); // Make space for the arrow
 				SetDParamMaxValue(0, MAX_CLIENTS);
 				SetDParamMaxValue(1, MAX_CLIENTS);
 				SetDParamMaxValue(2, MAX_COMPANIES);
 				SetDParamMaxValue(3, MAX_COMPANIES);
-				*size = maxdim(*size, GetStringBoundingBox(STR_NETWORK_SERVER_LIST_GENERAL_ONLINE));
+				size = maxdim(size, GetStringBoundingBox(STR_NETWORK_SERVER_LIST_GENERAL_ONLINE));
 				break;
 
 			case WID_NG_MAPSIZE:
-				size->width += 2 * Window::SortButtonWidth(); // Make space for the arrow
+				size.width += 2 * Window::SortButtonWidth(); // Make space for the arrow
 				SetDParamMaxValue(0, MAX_MAP_SIZE);
 				SetDParamMaxValue(1, MAX_MAP_SIZE);
-				*size = maxdim(*size, GetStringBoundingBox(STR_NETWORK_SERVER_LIST_MAP_SIZE_SHORT));
+				size = maxdim(size, GetStringBoundingBox(STR_NETWORK_SERVER_LIST_MAP_SIZE_SHORT));
 				break;
 
 			case WID_NG_DATE:
 			case WID_NG_YEARS:
-				size->width += 2 * Window::SortButtonWidth(); // Make space for the arrow
+				size.width += 2 * Window::SortButtonWidth(); // Make space for the arrow
 				SetDParamMaxValue(0, 5);
-				*size = maxdim(*size, GetStringBoundingBox(STR_JUST_INT));
+				size = maxdim(size, GetStringBoundingBox(STR_JUST_INT));
 				break;
 		}
 	}
@@ -1021,13 +1021,13 @@ struct NetworkStartServerWindow : public Window {
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_NSS_CONNTYPE_BTN:
-				*size = maxdim(maxdim(GetStringBoundingBox(STR_NETWORK_SERVER_VISIBILITY_LOCAL), GetStringBoundingBox(STR_NETWORK_SERVER_VISIBILITY_PUBLIC)), GetStringBoundingBox(STR_NETWORK_SERVER_VISIBILITY_INVITE_ONLY));
-				size->width += padding.width;
-				size->height += padding.height;
+				size = maxdim(maxdim(GetStringBoundingBox(STR_NETWORK_SERVER_VISIBILITY_LOCAL), GetStringBoundingBox(STR_NETWORK_SERVER_VISIBILITY_PUBLIC)), GetStringBoundingBox(STR_NETWORK_SERVER_VISIBILITY_INVITE_ONLY));
+				size.width += padding.width;
+				size.height += padding.height;
 				break;
 		}
 	}
@@ -1507,8 +1507,8 @@ private:
 	static void OnClickClientAdmin([[maybe_unused]] NetworkClientListWindow *w, [[maybe_unused]] Point pt, ClientID client_id)
 	{
 		DropDownList list;
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK, DD_CLIENT_ADMIN_KICK, false));
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN, DD_CLIENT_ADMIN_BAN, false));
+		list.push_back(MakeDropDownListStringItem(STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK, DD_CLIENT_ADMIN_KICK));
+		list.push_back(MakeDropDownListStringItem(STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN, DD_CLIENT_ADMIN_BAN));
 
 		Rect wi_rect;
 		wi_rect.left   = pt.x;
@@ -1529,8 +1529,8 @@ private:
 	static void OnClickCompanyAdmin([[maybe_unused]] NetworkClientListWindow *w, [[maybe_unused]] Point pt, CompanyID company_id)
 	{
 		DropDownList list;
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_RESET, DD_COMPANY_ADMIN_RESET, NetworkCompanyHasClients(company_id)));
-		list.push_back(std::make_unique<DropDownListStringItem>(STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK, DD_COMPANY_ADMIN_UNLOCK, !NetworkCompanyIsPassworded(company_id)));
+		list.push_back(MakeDropDownListStringItem(STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_RESET, DD_COMPANY_ADMIN_RESET, NetworkCompanyHasClients(company_id)));
+		list.push_back(MakeDropDownListStringItem(STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK, DD_COMPANY_ADMIN_UNLOCK, !NetworkCompanyIsPassworded(company_id)));
 
 		Rect wi_rect;
 		wi_rect.left   = pt.x;
@@ -1684,7 +1684,7 @@ public:
 		this->SetWidgetDisabledState(WID_CL_SERVER_NAME_EDIT, !_network_server);
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_CL_SERVER_NAME:
@@ -1695,14 +1695,14 @@ public:
 					const NetworkClientInfo *own_ci = NetworkClientInfo::GetByClientID(_network_own_client_id);
 					SetDParamStr(0, own_ci != nullptr ? own_ci->client_name : _settings_client.network.client_name);
 				}
-				*size = GetStringBoundingBox(STR_JUST_RAW_STRING);
-				size->width = std::min(size->width, static_cast<uint>(ScaleGUITrad(200))); // By default, don't open the window too wide.
+				size = GetStringBoundingBox(STR_JUST_RAW_STRING);
+				size.width = std::min(size.width, static_cast<uint>(ScaleGUITrad(200))); // By default, don't open the window too wide.
 				break;
 
 			case WID_CL_SERVER_VISIBILITY:
-				*size = maxdim(maxdim(GetStringBoundingBox(STR_NETWORK_SERVER_VISIBILITY_LOCAL), GetStringBoundingBox(STR_NETWORK_SERVER_VISIBILITY_PUBLIC)), GetStringBoundingBox(STR_NETWORK_SERVER_VISIBILITY_INVITE_ONLY));
-				size->width += padding.width;
-				size->height += padding.height;
+				size = maxdim(maxdim(GetStringBoundingBox(STR_NETWORK_SERVER_VISIBILITY_LOCAL), GetStringBoundingBox(STR_NETWORK_SERVER_VISIBILITY_PUBLIC)), GetStringBoundingBox(STR_NETWORK_SERVER_VISIBILITY_INVITE_ONLY));
+				size.width += padding.width;
+				size.height += padding.height;
 				break;
 
 			case WID_CL_MATRIX: {
@@ -1710,10 +1710,10 @@ public:
 				height += WidgetDimensions::scaled.framerect.Vertical();
 				this->line_height = std::max(height, (uint)GetCharacterHeight(FS_NORMAL)) + padding.height;
 
-				resize->width = 1;
-				resize->height = this->line_height;
-				fill->height = this->line_height;
-				size->height = std::max(size->height, 5 * this->line_height);
+				resize.width = 1;
+				resize.height = this->line_height;
+				fill.height = this->line_height;
+				size.height = std::max(size.height, 5 * this->line_height);
 				break;
 			}
 		}
@@ -2114,7 +2114,7 @@ uint32_t _network_join_bytes;           ///< The number of bytes we already down
 uint32_t _network_join_bytes_total;     ///< The total number of bytes to download.
 
 struct NetworkJoinStatusWindow : Window {
-	NetworkPasswordType password_type;
+	std::shared_ptr<NetworkAuthenticationPasswordRequest> request;
 
 	NetworkJoinStatusWindow(WindowDesc *desc) : Window(desc)
 	{
@@ -2173,28 +2173,28 @@ struct NetworkJoinStatusWindow : Window {
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_NJS_PROGRESS_BAR:
 				/* Account for the statuses */
 				for (uint i = 0; i < NETWORK_JOIN_STATUS_END; i++) {
-					*size = maxdim(*size, GetStringBoundingBox(STR_NETWORK_CONNECTING_1 + i));
+					size = maxdim(size, GetStringBoundingBox(STR_NETWORK_CONNECTING_1 + i));
 				}
 				/* For the number of waiting (other) players */
 				SetDParamMaxValue(0, MAX_CLIENTS);
-				*size = maxdim(*size, GetStringBoundingBox(STR_NETWORK_CONNECTING_WAITING));
+				size = maxdim(size, GetStringBoundingBox(STR_NETWORK_CONNECTING_WAITING));
 				/* We need some spacing for the 'border' */
-				size->height += WidgetDimensions::scaled.frametext.Horizontal();
-				size->width  += WidgetDimensions::scaled.frametext.Vertical();
+				size.height += WidgetDimensions::scaled.frametext.Horizontal();
+				size.width  += WidgetDimensions::scaled.frametext.Vertical();
 				break;
 
 			case WID_NJS_PROGRESS_TEXT:
 				/* Account for downloading ~ 10 MiB */
 				SetDParamMaxDigits(0, 8);
 				SetDParamMaxDigits(1, 8);
-				*size = maxdim(*size, GetStringBoundingBox(STR_NETWORK_CONNECTING_DOWNLOADING_1));
-				*size = maxdim(*size, GetStringBoundingBox(STR_NETWORK_CONNECTING_DOWNLOADING_1));
+				size = maxdim(size, GetStringBoundingBox(STR_NETWORK_CONNECTING_DOWNLOADING_1));
+				size = maxdim(size, GetStringBoundingBox(STR_NETWORK_CONNECTING_DOWNLOADING_1));
 				break;
 		}
 	}
@@ -2210,16 +2210,12 @@ struct NetworkJoinStatusWindow : Window {
 
 	void OnQueryTextFinished(char *str) override
 	{
-		if (StrEmpty(str)) {
+		if (StrEmpty(str) || this->request == nullptr) {
 			NetworkDisconnect();
 			return;
 		}
 
-		switch (this->password_type) {
-			case NETWORK_GAME_PASSWORD:    MyClient::SendGamePassword   (str); break;
-			case NETWORK_COMPANY_PASSWORD: MyClient::SendCompanyPassword(str); break;
-			default: NOT_REACHED();
-		}
+		this->request->Reply(str);
 	}
 };
 
@@ -2247,11 +2243,11 @@ void ShowJoinStatusWindow()
 	new NetworkJoinStatusWindow(&_network_join_status_window_desc);
 }
 
-void ShowNetworkNeedPassword(NetworkPasswordType npt)
+void ShowNetworkNeedPassword(NetworkPasswordType npt, std::shared_ptr<NetworkAuthenticationPasswordRequest> request)
 {
-	NetworkJoinStatusWindow *w = (NetworkJoinStatusWindow *)FindWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
+	NetworkJoinStatusWindow *w = dynamic_cast<NetworkJoinStatusWindow *>(FindWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN));
 	if (w == nullptr) return;
-	w->password_type = npt;
+	w->request = request;
 
 	StringID caption;
 	switch (npt) {
@@ -2385,10 +2381,10 @@ struct NetworkAskRelayWindow : public Window {
 		this->Window::Close();
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		if (widget == WID_NAR_TEXT) {
-			*size = GetStringBoundingBox(STR_NETWORK_ASK_RELAY_TEXT);
+			size = GetStringBoundingBox(STR_NETWORK_ASK_RELAY_TEXT);
 		}
 	}
 
@@ -2488,10 +2484,10 @@ struct NetworkAskSurveyWindow : public Window {
 		this->InitNested(0);
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		if (widget == WID_NAS_TEXT) {
-			*size = GetStringBoundingBox(STR_NETWORK_ASK_SURVEY_TEXT);
+			size = GetStringBoundingBox(STR_NETWORK_ASK_SURVEY_TEXT);
 		}
 	}
 

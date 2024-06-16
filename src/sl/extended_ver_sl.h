@@ -280,7 +280,7 @@ struct SlxiSubChunkInfo {
 	const char *name;                             ///< feature name, this *IS* saved, so must be globally unique
 	SlxiSubChunkSaveProc *save_proc;              ///< save procedure of the sub chunk, this may be nullptr in which case no extra chunk data is saved
 	SlxiSubChunkLoadProc *load_proc;              ///< load procedure of the sub chunk, this may be nullptr in which case the extra chunk data must be missing or of 0 length
-	const char *chunk_list;                       ///< this is a list of chunks that this feature uses, which should be written to the savegame, this must be a comma-seperated list of 4-character IDs, with no spaces, or nullptr
+	const char *chunk_list;                       ///< this is a list of chunks that this feature uses, which should be written to the savegame, this must be a comma-separated list of 4-character IDs, with no spaces, or nullptr
 };
 
 void SlXvResetState();

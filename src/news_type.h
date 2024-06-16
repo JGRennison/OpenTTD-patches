@@ -15,6 +15,7 @@
 #include "gfx_type.h"
 #include "strings_type.h"
 #include "sound_type.h"
+#include <list>
 #include <vector>
 
 /**
@@ -126,8 +127,6 @@ struct NewsAllocatedData {
 
 /** Information about a single item of news. */
 struct NewsItem {
-	NewsItem *prev;              ///< Previous news item
-	NewsItem *next;              ///< Next news item
 	StringID string_id;          ///< Message text
 	CalTime::Date date;          ///< Date of the news
 	uint64_t creation_tick;      ///< Tick when news was created
@@ -168,5 +167,8 @@ struct CompanyNewsInformation : NewsAllocatedData {
 
 	CompanyNewsInformation(const struct Company *c, const struct Company *other = nullptr);
 };
+
+using NewsContainer = std::list<NewsItem>; ///< Container type for storing news items.
+using NewsIterator = NewsContainer::const_iterator; ///< Iterator type for news items.
 
 #endif /* NEWS_TYPE_H */

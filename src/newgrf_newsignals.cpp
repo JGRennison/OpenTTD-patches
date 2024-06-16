@@ -14,6 +14,7 @@
 #include "map_func.h"
 #include "tracerestrict.h"
 #include "string_func.h"
+#include "newgrf_dump.h"
 
 #include "safeguards.h"
 

@@ -36,7 +36,7 @@ static TextEffectID _free_text_effect = 0;
 /** Reset the text effect */
 void TextEffect::Reset()
 {
-	this->MarkDirty(ZOOM_LVL_OUT_8X);
+	this->MarkDirty(ZOOM_LVL_TEXT_EFFECT);
 	this->width_normal = 0;
 	this->string_id = INVALID_STRING_ID;
 	this->params_1 = _free_text_effect;
@@ -69,7 +69,7 @@ TextEffectID AddTextEffect(StringID msg, int center, int y, uint8_t duration, Te
 	te.width_normal = 0;
 	SetDParam(0, param1);
 	SetDParam(1, param2);
-	te.UpdatePosition(ZOOM_LVL_OUT_8X, center, y, msg);
+	te.UpdatePosition(ZOOM_LVL_TEXT_EFFECT, center, y, msg);
 
 	return i;
 }
@@ -85,7 +85,7 @@ void UpdateTextEffect(TextEffectID te_id, StringID msg, uint64_t param1, uint64_
 
 	SetDParam(0, param1);
 	SetDParam(1, param2);
-	te->UpdatePosition(ZOOM_LVL_OUT_8X, te->center, te->top, te->string_id, te->string_id - 1);
+	te->UpdatePosition(ZOOM_LVL_TEXT_EFFECT, te->center, te->top, te->string_id, te->string_id - 1);
 }
 
 void UpdateAllTextEffectVirtCoords()
@@ -94,7 +94,7 @@ void UpdateAllTextEffectVirtCoords()
 		if (te.string_id == INVALID_STRING_ID) continue;
 		SetDParam(0, te.params_1);
 		SetDParam(1, te.params_2);
-		te.UpdatePosition(ZOOM_LVL_OUT_8X, te.center, te.top, te.string_id, te.string_id - 1);
+		te.UpdatePosition(ZOOM_LVL_TEXT_EFFECT, te.center, te.top, te.string_id, te.string_id - 1);
 	}
 }
 
@@ -118,10 +118,10 @@ void MoveAllTextEffects(uint delta_ms)
 			continue;
 		}
 
-		te.MarkDirty(ZOOM_LVL_OUT_8X);
+		te.MarkDirty(ZOOM_LVL_TEXT_EFFECT);
 		te.duration -= count;
-		te.top -= count * ZOOM_LVL_BASE;
-		te.MarkDirty(ZOOM_LVL_OUT_8X);
+		te.top -= count * ZOOM_BASE;
+		te.MarkDirty(ZOOM_LVL_TEXT_EFFECT);
 	}
 }
 
@@ -135,7 +135,7 @@ void InitTextEffects()
 void DrawTextEffects(ViewportDrawerDynamic *vdd, DrawPixelInfo *dpi, bool load_transparent)
 {
 	/* Don't draw the text effects when zoomed out a lot */
-	if (dpi->zoom > ZOOM_LVL_OUT_8X) return;
+	if (dpi->zoom > ZOOM_LVL_TEXT_EFFECT) return;
 
 	const int bottom_threshold = dpi->top + dpi->height;
 	const int top_threshold = dpi->top - ScaleByZoom(WidgetDimensions::scaled.framerect.Horizontal() + GetCharacterHeight(FS_NORMAL), dpi->zoom);
@@ -144,7 +144,7 @@ void DrawTextEffects(ViewportDrawerDynamic *vdd, DrawPixelInfo *dpi, bool load_t
 	for (TextEffect &te : _text_effects) {
 		if (te.string_id == INVALID_STRING_ID) continue;
 		if ((te.mode == TE_RISING || show_loading) && te.top > top_threshold && te.top < bottom_threshold) {
-			ViewportAddString(vdd, dpi, ZOOM_LVL_OUT_8X, &te, te.string_id, te.string_id - 1, STR_NULL, te.params_1, te.params_2);
+			ViewportAddString(vdd, dpi, ZOOM_LVL_TEXT_EFFECT, &te, te.string_id, te.string_id - 1, STR_NULL, te.params_1, te.params_2);
 		}
 	}
 }

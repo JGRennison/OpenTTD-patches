@@ -174,7 +174,7 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 	if (!this->IsConnected()) return nullptr;
 
 	if (this->packet_recv == nullptr) {
-		this->packet_recv = std::make_unique<Packet>(this, TCP_MTU);
+		this->packet_recv = std::make_unique<Packet>(Packet::ReadTag{}, this, TCP_MTU);
 	}
 
 	Packet &p = *this->packet_recv.get();
@@ -230,10 +230,11 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 		}
 	}
 
-
-	p.PrepareToRead();
-
-	/* Prepare for receiving a new packet */
+	if (!p.PrepareToRead()) {
+		DEBUG(net, 0, "Invalid packet received (too small / decryption error)");
+		this->CloseConnection();
+		return nullptr;
+	}
 	return std::move(this->packet_recv);
 }
 

@@ -2574,6 +2574,7 @@ STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :{WHITE}Dit spil
 STR_NETWORK_ERROR_BAD_SERVER_NAME                               :{WHITE}Dit servernavn er ikke indstillet. Navnet kan indstilles øverst i Netværksspil vinduet
 STR_NETWORK_ERROR_WRONG_REVISION                                :{WHITE}Revisionen af denne klient passer ikke sammen med serverens revision
 STR_NETWORK_ERROR_WRONG_PASSWORD                                :{WHITE}Forkert kodeord
+STR_NETWORK_ERROR_NOT_ON_ALLOW_LIST                             :{WHITE}Du er ikke på listen over tilladte klienter
 STR_NETWORK_ERROR_SERVER_FULL                                   :{WHITE}Serveren er fuld
 STR_NETWORK_ERROR_SERVER_BANNED                                 :{WHITE}Du er udelukket fra denne server
 STR_NETWORK_ERROR_KICKED                                        :{WHITE}Du blev smidt ud af spillet
@@ -2589,7 +2590,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Dit spil
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Mulig forbindelses tab
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}De{P 0 t ""} sidste {NUM} sekund{P "" er} er der ikke ankommet data fra serveren
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :generel fejl
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :synkroniseringsfejl
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :kunne ikke hente kortet
@@ -2601,6 +2602,7 @@ STR_NETWORK_ERROR_CLIENT_NOT_EXPECTED                           :modtog en ikke 
 STR_NETWORK_ERROR_CLIENT_WRONG_REVISION                         :forkert revision
 STR_NETWORK_ERROR_CLIENT_NAME_IN_USE                            :navnet er allerede i brug
 STR_NETWORK_ERROR_CLIENT_WRONG_PASSWORD                         :forkert spil kodeord
+STR_NETWORK_ERROR_CLIENT_NOT_ON_ALLOW_LIST                      :ikke på listen over tilladelser
 STR_NETWORK_ERROR_CLIENT_COMPANY_MISMATCH                       :forkert firma-id i DoCommand
 STR_NETWORK_ERROR_CLIENT_KICKED                                 :smidt ud af serveren
 STR_NETWORK_ERROR_CLIENT_CHEATER                                :prøvede at snyde
@@ -3486,7 +3488,9 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Vej type
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}NewGRF variabel 60+x parameter (hexadecimal)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Justerer sprite {COMMA} ({STRING})
+STR_SPRITE_ALIGNER_CAPTION_NO_ACTION                            :{WHITE}Justering af sprite: ({STRING}:{NUM})
+STR_SPRITE_ALIGNER_CAPTION_ACTIONA                              :{WHITE}Justering af sprite: Handling 0xA, {COMMA} ({STRING}:{NUM})
+STR_SPRITE_ALIGNER_CAPTION_ACTION5                              :{WHITE}Justering af sprite: Handling 0x5, type {HEX}, {COMMA} ({STRING}:{NUM})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Næste sprite
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Fortsæt til næste normale sprite, spring pseudo/omfarvning/font-sprites over og med omløb fra enden til starten
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Gå til sprite
@@ -3495,6 +3499,7 @@ STR_SPRITE_ALIGNER_PREVIOUS_BUTTON                              :{BLACK}Forrige 
 STR_SPRITE_ALIGNER_PREVIOUS_TOOLTIP                             :{BLACK}Fortsæt til den forrige normal sprite, spring pseudo/omfarvning/font-sprites over og omløb fra starten til slutningen
 STR_SPRITE_ALIGNER_SPRITE_TOOLTIP                               :{BLACK}Repræsentation af den markerede sprite. Justeringen ignoreres når denne sprite tegnes.
 STR_SPRITE_ALIGNER_MOVE_TOOLTIP                                 :{BLACK}Flyt spriten rundt for at ændre X- og Y-forskydningen. Ctrl+Klik for at flytte spriten otte enheder af gangen
+STR_SPRITE_ALIGNER_SPRITE                                       :{STRING}:{NUM}
 
 ###length 2
 STR_SPRITE_ALIGNER_CENTRE_OFFSET                                :{BLACK}Forskudt centreret
@@ -4447,10 +4452,10 @@ STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}Kapacite
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK}Værdi af overført fragt: {LTBLUE}{CURRENCY_LONG}
 
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS                     :{BLACK}Serviceinterval: {LTBLUE}{COMMA}{NBSP}dage{BLACK}   {STRING}
-STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES                  :{BLACK}Serviceinterval: {LTBLUE}{COMMA}{NBSP}minutter{BLACK}   {STRING}
+STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES                  :{BLACK}Serviceinterval: {LTBLUE}{COMMA}{NBSP}minut{P "" ter}{BLACK} {STRING}
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT                  :{BLACK}Serviceinterval: {LTBLUE}{COMMA}%{BLACK}   {STRING}
 STR_VEHICLE_DETAILS_LAST_SERVICE_DATE                           :Sidste service: {LTBLUE}{DATE_LONG}
-STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO                    :Last service: {LTBLUE}{NUM} minutter siden
+STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO                    :sidste service: {LTBLUE}{NUM} minut{P "" ter} siden
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_DAYS    :{BLACK}Forøg serviceintervallet med 10 dage. Ctrl+klik for at øge serviceintervallet med 5 dage
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_MINUTES :{BLACK}Forøg serviceintervallet med 5 minutter. Ctrl+klik for at øge serviceintervallet med 1 minut
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_PERCENT :{BLACK}Forøg serviceintervallet med 10 procent. Ctrl+klik for at øge serviceintervallet med 5 procent
@@ -4641,7 +4646,7 @@ STR_ORDER_REFIT_ORDER                                           :(Tilpas til {ST
 STR_ORDER_REFIT_STOP_ORDER                                      :(Tilpas til {STRING} og stop)
 STR_ORDER_STOP_ORDER                                            :(Stop)
 
-STR_ORDER_WAIT_TO_UNBUNCH                                       :(vent med at pakke ud)
+STR_ORDER_WAIT_TO_UNBUNCH                                       :(vent med at afkoble)
 
 STR_ORDER_GO_TO_STATION                                         :{STRING} {STATION} {STRING}
 STR_ORDER_GO_TO_STATION_CAN_T_USE_STATION                       :{PUSH_COLOUR}{RED}(Kan ikke bruge station){POP_COLOUR} {STRING} {STATION} {STRING}
@@ -4897,9 +4902,9 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Anslået
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Gemmer stadig,{}vent venligst!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Fejl under autogem
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Kan ikke læse drevet
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Fejl under gemning af spil{}{STRING}
+STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Fejl under lagring af spil...
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Kan ikke slette fil
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Fejl under indlæsning af spil{}{STRING}
+STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Fejl under indlæsning af spil...
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Intern fejl: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Ødelagt gemt spil - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Spillet er gemt med en nyere version
@@ -4993,7 +4998,7 @@ STR_ERROR_CAN_T_BUY_COMPANY                                     :{WHITE}Kan ikke
 STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :{WHITE}Kan ikke bygge selskabets hovedkvarter...
 
 # Town related errors
-STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Kan ikke bygge nogen byer
+STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Kan ikke bygge nogen byer...
 STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE}Kan ikke omdøbe byen...
 STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :{WHITE}Kan ikke bygge en by her...
 STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}Kan ikke udvide byen...
@@ -5831,6 +5836,7 @@ STR_JUST_DATE_ISO                                               :{DATE_ISO}
 STR_JUST_STRING                                                 :{STRING}
 STR_JUST_STRING1                                                :{STRING}
 STR_JUST_STRING2                                                :{STRING}
+STR_JUST_STRING4                                                :{STRING}
 STR_JUST_STRING_STRING                                          :{STRING}{STRING}
 STR_JUST_RAW_STRING                                             :{STRING}
 STR_JUST_BIG_RAW_STRING                                         :{BIG_FONT}{STRING}

@@ -215,28 +215,6 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	}
 };
 
-struct EngineIDMapping {
-	uint32_t grfid;          ///< The GRF ID of the file the entity belongs to
-	uint16_t internal_id;    ///< The internal ID within the GRF file
-	VehicleType type;        ///< The engine type
-	uint8_t  substitute_id;  ///< The (original) entity ID to use if this GRF is not available (currently not used)
-};
-
-/**
- * Stores the mapping of EngineID to the internal id of newgrfs.
- * Note: This is not part of Engine, as the data in the EngineOverrideManager and the engine pool get resetted in different cases.
- */
-struct EngineOverrideManager : std::vector<EngineIDMapping> {
-	static const uint NUM_DEFAULT_ENGINES; ///< Number of default entries
-
-	void ResetToDefaultMapping();
-	EngineID GetID(VehicleType type, uint16_t grf_local_id, uint32_t grfid);
-
-	static bool ResetToCurrentNewGRFConfig();
-};
-
-extern EngineOverrideManager _engine_mngr;
-
 inline const EngineInfo *EngInfo(EngineID e)
 {
 	return &Engine::Get(e)->info;

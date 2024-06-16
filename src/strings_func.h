@@ -110,6 +110,11 @@ void SetDParamMaxValue(size_t n, T max_value, uint min_count = 0, FontSize size 
 void SetDParamStr(size_t n, const char *str);
 void SetDParamStr(size_t n, std::string str);
 
+inline void SetDParamStr(size_t n, std::string_view str)
+{
+	SetDParamStr(n, std::string{str});
+}
+
 void CopyInDParam(const std::span<const StringParameterBackup> backup, uint offset = 0);
 void CopyOutDParam(std::vector<StringParameterBackup> &backup, size_t num);
 bool HaveDParamChanged(const std::vector<StringParameterBackup> &backup);

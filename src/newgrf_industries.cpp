@@ -18,6 +18,7 @@
 #include "company_base.h"
 #include "error.h"
 #include "strings_func.h"
+#include "newgrf_dump.h"
 #include "core/random_func.hpp"
 
 #include "table/strings.h"

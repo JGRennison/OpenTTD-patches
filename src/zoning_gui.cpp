@@ -9,7 +9,7 @@
 
 #include "stdafx.h"
 #include "openttd.h"
-#include "widgets/dropdown_func.h"
+#include "dropdown_func.h"
 #include "widget_type.h"
 #include "window_func.h"
 #include "gui.h"
@@ -94,7 +94,7 @@ struct ZoningWindow : public Window {
 		for (const ZoningModeInfo &info : _zone_modes) {
 			if (info.debug && !IsDebugEnabled()) continue;
 			SetDParamStr(0, info.param);
-			list.push_back(std::make_unique<DropDownListStringItem>(info.str, info.mode, false));
+			list.push_back(MakeDropDownListStringItem(info.str, info.mode, false));
 		}
 		ShowDropDownList(this, std::move(list), current, widget);
 	}
@@ -139,22 +139,22 @@ struct ZoningWindow : public Window {
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, const Dimension &padding, Dimension *fill, Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		switch (widget) {
 			case ZTW_OUTER_DROPDOWN:
 			case ZTW_INNER_DROPDOWN:
 				for (const ZoningModeInfo &info : _zone_modes) {
 					SetDParamStr(0, info.param);
-					*size = maxdim(*size, GetStringBoundingBox(info.str));
+					size = maxdim(size, GetStringBoundingBox(info.str));
 				}
 				break;
 
 			default:
 				return;
 		}
-		size->width += padding.width;
-		size->height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.dropdowntext.Vertical();
+		size.width += padding.width;
+		size.height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.dropdowntext.Vertical();
 	}
 };
 

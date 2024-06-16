@@ -2673,7 +2673,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Jméno v
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Pravděpodobná ztráta spojení
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}Během poslední{P 0 "" ch ch} {NUM} sekund{P y "" ""} nepřišla ze serveru žádná data
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :všeobecná chyba
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :chyba v synchronizaci
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :nelze nahrát hru
@@ -3574,7 +3574,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Typ silnice
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}Hodnota NewGRF proměnné 60+x (šestnáctkově)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Zarovávání spritu {COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Další sprite
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Jít na další normální sprite (s grafikou), přičemž se přeskakují pseudo-/barvící/znakové sprity a při dosažení konce se jde zase na začátek
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Jít na sprite
@@ -4988,9 +4987,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Odhadova
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Ukládání ještě běží,{}počkej prosím, než doběhne!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Automatické uložení selhalo
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Nelze číst z jednotky
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Uložení hry selhalo{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Nelze smazat soubor
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Nelze otevřít hru{}{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Vnitřní chyba: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Poškozená hra - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Uložená hra je z novější verze

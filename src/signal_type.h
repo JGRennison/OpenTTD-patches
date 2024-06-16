@@ -74,9 +74,9 @@ enum SignalCycleGroups : uint8_t {
 };
 DECLARE_ENUM_AS_BIT_SET(SignalCycleGroups)
 
-static const int SIGNAL_DIRTY_LEFT   = 14 * ZOOM_LVL_BASE;
-static const int SIGNAL_DIRTY_RIGHT  = 14 * ZOOM_LVL_BASE;
-static const int SIGNAL_DIRTY_TOP    = 30 * ZOOM_LVL_BASE;
-static const int SIGNAL_DIRTY_BOTTOM =  5 * ZOOM_LVL_BASE;
+static const int SIGNAL_DIRTY_LEFT   = 14 * ZOOM_BASE;
+static const int SIGNAL_DIRTY_RIGHT  = 14 * ZOOM_BASE;
+static const int SIGNAL_DIRTY_TOP    = 30 * ZOOM_BASE;
+static const int SIGNAL_DIRTY_BOTTOM =  5 * ZOOM_BASE;
 
 #endif /* SIGNAL_TYPE_H */

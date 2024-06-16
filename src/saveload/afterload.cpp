@@ -2841,7 +2841,7 @@ bool AfterLoadGame()
 			uint8_t old_start;
 			uint8_t num_frames;
 		};
-		static const AirportTileConversion atc[] = {
+		static const AirportTileConversion atcs[] = {
 			{31,  12}, // APT_RADAR_GRASS_FENCE_SW
 			{50,   4}, // APT_GRASS_FENCE_NE_FLAG
 			{62,   2}, // 1 unused tile
@@ -2856,17 +2856,17 @@ bool AfterLoadGame()
 			if (IsAirportTile(t)) {
 				StationGfx old_gfx = GetStationGfx(t);
 				uint8_t offset = 0;
-				for (uint i = 0; i < lengthof(atc); i++) {
-					if (old_gfx < atc[i].old_start) {
+				for (const auto &atc : atcs) {
+					if (old_gfx < atc.old_start) {
 						SetStationGfx(t, old_gfx - offset);
 						break;
 					}
-					if (old_gfx < atc[i].old_start + atc[i].num_frames) {
-						SetAnimationFrame(t, old_gfx - atc[i].old_start);
-						SetStationGfx(t, atc[i].old_start - offset);
+					if (old_gfx < atc.old_start + atc.num_frames) {
+						SetAnimationFrame(t, old_gfx - atc.old_start);
+						SetStationGfx(t, atc.old_start - offset);
 						break;
 					}
-					offset += atc[i].num_frames - 1;
+					offset += atc.num_frames - 1;
 				}
 			}
 		}
@@ -3325,9 +3325,9 @@ bool AfterLoadGame()
 
 	if (IsSavegameVersionBefore(SLV_165)) {
 		/* Adjust zoom level to account for new levels */
-		_saved_scrollpos_zoom = static_cast<ZoomLevel>(_saved_scrollpos_zoom + ZOOM_LVL_SHIFT);
-		_saved_scrollpos_x *= ZOOM_LVL_BASE;
-		_saved_scrollpos_y *= ZOOM_LVL_BASE;
+		_saved_scrollpos_zoom = static_cast<ZoomLevel>(_saved_scrollpos_zoom + ZOOM_BASE_SHIFT);
+		_saved_scrollpos_x *= ZOOM_BASE;
+		_saved_scrollpos_y *= ZOOM_BASE;
 	}
 
 	/* When any NewGRF has been changed the availability of some vehicles might

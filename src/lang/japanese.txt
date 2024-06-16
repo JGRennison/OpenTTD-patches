@@ -2421,7 +2421,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}プレ�
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}接続切断の可能性
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}過去{NUM}秒間にわたりサーバーからデータを受信できていません
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :一般エラー
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :同期エラー
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :マップロード失敗
@@ -3295,7 +3295,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE                  :線路の種類
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}NewGRFの可変60+xパラメーター (16進)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}スプライト{COMMA} 配列 ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}次のスプライト
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}次のノーマルスプライトに進みます。始端と終端は連続しているものとみなし、疑似/リカラー/フォントスプライトはスキップします
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}スプライトへ飛ぶ
@@ -4612,9 +4611,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}収益(�
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}ゲームを保存しています{}完了までしばらくお待ちください!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}自動保存に失敗しました
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}ドライブを読み込めません
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}ゲームの保存に失敗しました{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}ファイルを削除できません
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}ゲームの読み込みに失敗しました{}{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :内部エラー: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :破損したセーブゲーム: {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :このファイルは上位のバージョンによって保存されたものです

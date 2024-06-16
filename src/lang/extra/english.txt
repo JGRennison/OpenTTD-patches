@@ -195,6 +195,13 @@ STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED_HELPTEXT    :In the realisti
 STR_CONFIG_SETTING_LIMIT_TRAIN_ACCELERATION                     :Limit train acceleration: {STRING2}
 STR_CONFIG_SETTING_LIMIT_TRAIN_ACCELERATION_HELPTEXT            :When using the realistic train braking model, also limit the maximum acceleration of trains. This is to prevent passengers from spilling their drinks due to some train types otherwise accelerating excessively quickly.
 
+STR_CONFIG_SETTING_TRAIN_ACC_BRAKING_PERCENT                    :Train acceleration/braking scale factor: {STRING2}
+STR_CONFIG_SETTING_TRAIN_ACC_BRAKING_PERCENT_HELPTEXT           :The percentage by which train acceleration and braking is adjusted.{}{}This setting can be used to alter the acceleration and braking of trains, without changing the maximum speed of trains.
+STR_CONFIG_SETTING_TRAIN_ACC_BRAKING_PERCENT_VALUE              :{COMMA}%
+
+STR_CONFIG_SETTING_TRACK_EDIT_IGNORE_REALISTIC_BRAKING          :Track editing ignores realistic braking: {STRING2}
+STR_CONFIG_SETTING_TRACK_EDIT_IGNORE_REALISTIC_BRAKING_HELPTEXT :Allow track editing to ignore the realistic train braking model. When enabled, restrictions on editing/removing the reservation of moving trains are not enforced. This may result in non-realistic train braking behaviour.
+
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT                     :Train through load maximum speed: {STRING2}
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_HELPTEXT            :The maximum permitted speed for trains when through loading at a station
 
@@ -1567,6 +1574,7 @@ STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_BUTTON                  :{BLACK}Rename L
 STR_BUY_VEHICLE_TRAIN_RENAME_WAGON_BUTTON                       :{BLACK}Rename Wagon
 STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_TOOLTIP                 :{BLACK}Rename locomotive or power car
 STR_BUY_VEHICLE_TRAIN_RENAME_WAGON_TOOLTIP                      :{BLACK}Rename wagon
+STR_BUY_VEHICLE_TRAIN_TOGGLE_DUAL_PANE_TOOLTIP                  :{BLACK}Toggle separate locomotives and wagons
 
 STR_QUERY_RENAME_TRAIN_TYPE_LOCOMOTIVE_CAPTION                  :{WHITE}Rename locomotive type
 STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION                       :{WHITE}Rename wagon type
@@ -1715,8 +1723,14 @@ STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_FIRST         :is first slot
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_FIRST     :is not first slot
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_LAST          :is last slot
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_LAST      :is not last slot
+
+###length 2
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG          :has tag {NUM}
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG_NAMED    :has tag {NUM} ({RAW_STRING})
+
+###length 2
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG  :doesn't have tag {NUM}
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG_NAMED :doesn't have tag {NUM} ({RAW_STRING})
 
 STR_ORDERS_MANAGE_LIST                                          :{BLACK}Manage List
 STR_ORDERS_MANAGE_LIST_TOOLTIP                                  :{BLACK}Manage this order list
@@ -2187,11 +2201,17 @@ STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES                        :{BLACK}Append S
 STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES_TOOLTIP                :{BLACK}Append the dispatch schedules from another vehicle.
 STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS                           :Re-use departure slots
 STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS_TOOLTIP                   :{BLACK}Set whether departure slots may be used more than once.
+STR_SCHDISPATCH_RENAME_DEPARTURE_TAG                            :Rename tag {NUM}
+STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_NAMED                      :Rename tag {NUM}: {RAW_STRING}
+STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_TOOLTIP                    :{BLACK}Rename departure slot tags (for use with conditional orders)
+STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_CAPTION                    :{BLACK}Name departure slot tag
+STR_ERROR_CAN_T_RENAME_DEPARTURE_TAG                            :{WHITE}Can't name departure tag...
 STR_SCHDISPATCH_MANAGE_SLOT                                     :{BLACK}Manage Slot
 STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT                       :Re-use departure slot
 STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT_TOOLTIP               :{BLACK}Set whether the selected departure slot may be used more than once.
-STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_TAG                        :Tag {NUM}
-STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_TAG_TOOLTIP                :{BLACK}Tag the selected departure slot (for use with conditional orders).
+STR_SCHDISPATCH_TAG_DEPARTURE                                   :Tag {NUM}
+STR_SCHDISPATCH_TAG_DEPARTURE_NAMED                             :Tag {NUM}: {RAW_STRING}
+STR_SCHDISPATCH_TAG_DEPARTURE_TOOLTIP                           :{BLACK}Tag the selected departure slot (for use with conditional orders).
 STR_SCHDISPATCH_NO_SCHEDULES                                    :{BLACK}No Schedules
 STR_SCHDISPATCH_SCHEDULE_ID                                     :{BLACK}Schedule {NUM} of {NUM}
 STR_SCHDISPATCH_NAMED_SCHEDULE_ID                               :{BLACK}{RAW_STRING} ({NUM} of {NUM})
@@ -2207,6 +2227,7 @@ STR_SCHDISPATCH_SLOT_TOOLTIP_NEXT                               :{}Next availabl
 STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE                              :{}Departure slot may be used more than once
 STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX                        : ({TT_TIME})
 STR_SCHDISPATCH_SLOT_TOOLTIP_TAG                                :{}Tag {NUM}
+STR_SCHDISPATCH_SLOT_TOOLTIP_TAG_NAMED                          :{}Tag {NUM}: {RAW_STRING}
 
 STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}No previous departures.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Last departure at {TT_TIME}.

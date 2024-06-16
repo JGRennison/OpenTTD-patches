@@ -147,6 +147,10 @@ add_files(
     dock_gui.cpp
     driver.cpp
     driver.h
+    dropdown.cpp
+    dropdown_common_type.h
+    dropdown_func.h
+    dropdown_type.h
     economy.cpp
     economy_base.h
     economy_func.h
@@ -161,6 +165,7 @@ add_files(
     engine_func.h
     engine_gui.cpp
     engine_gui.h
+    engine_override.h
     engine_type.h
     error.h
     error_gui.cpp
@@ -258,6 +263,7 @@ add_files(
     music_gui.cpp
     newgrf.cpp
     newgrf.h
+    newgrf_act5.h
     newgrf_airport.cpp
     newgrf_airport.h
     newgrf_airporttiles.cpp
@@ -280,6 +286,7 @@ add_files(
     newgrf_config.h
     newgrf_debug.h
     newgrf_debug_gui.cpp
+    newgrf_dump.h
     newgrf_engine.cpp
     newgrf_engine.h
     newgrf_extension.cpp
@@ -420,6 +427,8 @@ add_files(
     signs_func.h
     signs_gui.cpp
     signs_type.h
+    slider.cpp
+    slider_func.h
     slope_func.h
     slope_type.h
     smallmap_colours.h

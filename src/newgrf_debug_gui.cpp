@@ -12,6 +12,7 @@
 #include <functional>
 #include "core/backup_type.hpp"
 #include "core/container_func.hpp"
+#include "core/geometry_func.hpp"
 #include "window_gui.h"
 #include "window_func.h"
 #include "random_access_file_type.h"
@@ -24,6 +25,7 @@
 #include "scope.h"
 #include "debug_settings.h"
 #include "viewport_func.h"
+#include "dropdown_type.h"
 
 #include "engine_base.h"
 #include "industry.h"
@@ -34,9 +36,11 @@
 #include "train.h"
 #include "roadveh.h"
 
+#include "newgrf_act5.h"
 #include "newgrf_airport.h"
 #include "newgrf_airporttiles.h"
 #include "newgrf_debug.h"
+#include "newgrf_dump.h"
 #include "newgrf_object.h"
 #include "newgrf_spritegroup.h"
 #include "newgrf_station.h"
@@ -47,7 +51,6 @@
 
 #include "newgrf_config.h"
 
-#include "widgets/dropdown_type.h"
 #include "widgets/newgrf_debug_widget.h"
 
 #include "table/strings.h"
@@ -217,25 +220,14 @@ public:
 	}
 
 	/**
-	 * Allows to know the size of the persistent storage.
+	 * Gets the span containing the persistent storage.
 	 * @param index Index of the item.
 	 * @param grfid Parameter for the PSA. Only required for items with parameters.
-	 * @return Size of the persistent storage in indices.
+	 * @return Span of the storage array or an empty span when not present.
 	 */
-	virtual uint GetPSASize(uint index, uint32_t grfid) const
+	virtual const std::span<int32_t> GetPSA([[maybe_unused]] uint index, [[maybe_unused]] uint32_t grfid) const
 	{
-		return 0;
-	}
-
-	/**
-	 * Gets the first position of the array containing the persistent storage.
-	 * @param index Index of the item.
-	 * @param grfid Parameter for the PSA. Only required for items with parameters.
-	 * @return Pointer to the first position of the storage array or nullptr if not present.
-	 */
-	virtual const int32_t *GetPSAFirstPosition(uint index, uint32_t grfid) const
-	{
-		return nullptr;
+		return {};
 	}
 
 	virtual std::vector<uint32_t> GetPSAGRFIDs(uint index) const
@@ -458,25 +450,25 @@ struct NewGRFInspectWindow : Window {
 		GetFeatureHelper(this->window_number)->SetStringParameters(this->GetFeatureIndex());
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_NGRFI_VEH_CHAIN: {
 				assert(this->HasChainIndex());
 				GrfSpecFeature f = GetFeatureNum(this->window_number);
 				if (f == GSF_SHIPS) {
-					size->height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
+					size.height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
 					break;
 				}
-				size->height = std::max(size->height, GetVehicleImageCellSize((VehicleType)(VEH_TRAIN + (f - GSF_TRAINS)), EIT_IN_DEPOT).height + 2 + WidgetDimensions::scaled.bevel.Vertical());
+				size.height = std::max(size.height, GetVehicleImageCellSize((VehicleType)(VEH_TRAIN + (f - GSF_TRAINS)), EIT_IN_DEPOT).height + 2 + WidgetDimensions::scaled.bevel.Vertical());
 				break;
 			}
 
 			case WID_NGRFI_MAINPANEL:
-				resize->height = std::max(11, GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal);
-				resize->width  = 1;
+				resize.height = std::max(11, GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal);
+				resize.width  = 1;
 
-				size->height = 5 * resize->height + WidgetDimensions::scaled.frametext.Vertical();
+				size.height = 5 * resize.height + WidgetDimensions::scaled.frametext.Vertical();
 				break;
 		}
 	}
@@ -774,25 +766,24 @@ struct NewGRFInspectWindow : Window {
 
 		std::vector<uint32_t> psa_grfids = nih->GetPSAGRFIDs(index);
 		for (const uint32_t grfid : psa_grfids) {
-			uint psa_size = nih->GetPSASize(index, grfid);
-			const int32_t *psa = nih->GetPSAFirstPosition(index, grfid);
-			if (psa_size != 0 && psa != nullptr) {
+			auto psa = nih->GetPSA(index, grfid);
+			if (!psa.empty()) {
 				if (nih->PSAWithParameter()) {
 					this->DrawString(r, i++, "Persistent storage [%08X]:", BSWAP32(grfid));
 				} else {
 					this->DrawString(r, i++, "Persistent storage:");
 				}
-				assert(psa_size % 4 == 0);
+				assert(psa.size() % 4 == 0);
 				uint last_non_blank = 0;
-				for (uint j = 0; j < psa_size; j++) {
+				for (uint j = 0; j < (uint)psa.size(); j++) {
 					if (psa[j] != 0) last_non_blank = j + 1;
 				}
 				const uint psa_limit = (last_non_blank + 3) & ~3;
-				for (uint j = 0; j < psa_limit; j += 4, psa += 4) {
-					this->DrawString(r, i++, "  %i: %i %i %i %i", j, psa[0], psa[1], psa[2], psa[3]);
+				for (uint j = 0; j < psa_limit; j += 44) {
+					this->DrawString(r, i++, "  %i: %i %i %i %i", j, psa[j], psa[j + 1], psa[j + 2], psa[j + 3]);
 				}
-				if (last_non_blank != psa_size) {
-					this->DrawString(r, i++, "  %i to %i are all 0", psa_limit, psa_size - 1);
+				if (last_non_blank != (uint)psa.size()) {
+					this->DrawString(r, i++, "  %i to %i are all 0", psa_limit, (uint)(psa.size() - 1));
 				}
 			}
 		}
@@ -1053,13 +1044,13 @@ struct NewGRFInspectWindow : Window {
 
 			case WID_NGRFI_SPRITE_DUMP_OPTIONS: {
 				DropDownList list;
-				list.push_back(std::make_unique<DropDownListStringItem>(STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO, NGIWDDO_GOTO_SPRITE, false));
-				list.push_back(std::make_unique<DropDownListStringItem>(STR_NEWGRF_INSPECT_SPRITE_DUMP_CLEAR, NGIWDDO_CLEAR, false));
-				list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
-				list.push_back(std::make_unique<DropDownListCheckedItem>(!this->click_to_mark_mode, STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_HIGHLIGHT, NGIWDDO_CLICK_TO_HIGHLIGHT, false));
-				list.push_back(std::make_unique<DropDownListCheckedItem>(this->click_to_mark_mode, STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_MARK, NGIWDDO_CLICK_TO_MARK, false));
-				list.push_back(std::make_unique<DropDownListDividerItem>(-1, false));
-				list.push_back(std::make_unique<DropDownListCheckedItem>(this->sprite_dump_more_details, STR_NEWGRF_INSPECT_SPRITE_DUMP_MORE_DETAILS, NGIWDDO_MORE_DETAILS, false));
+				list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO, NGIWDDO_GOTO_SPRITE, false));
+				list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_SPRITE_DUMP_CLEAR, NGIWDDO_CLEAR, false));
+				list.push_back(MakeDropDownListDividerItem());
+				list.push_back(MakeDropDownListCheckedItem(!this->click_to_mark_mode, STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_HIGHLIGHT, NGIWDDO_CLICK_TO_HIGHLIGHT, false));
+				list.push_back(MakeDropDownListCheckedItem(this->click_to_mark_mode, STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_MARK, NGIWDDO_CLICK_TO_MARK, false));
+				list.push_back(MakeDropDownListDividerItem());
+				list.push_back(MakeDropDownListCheckedItem(this->sprite_dump_more_details, STR_NEWGRF_INSPECT_SPRITE_DUMP_MORE_DETAILS, NGIWDDO_MORE_DETAILS, false));
 
 				ShowDropDownList(this, std::move(list), 0, WID_NGRFI_SPRITE_DUMP_OPTIONS, 140);
 				break;
@@ -1398,7 +1389,6 @@ GrfSpecFeature GetGrfSpecFeature(VehicleType type)
 }
 
 
-
 /**** Sprite Aligner ****/
 
 /** Window used for aligning sprites. */
@@ -1412,12 +1402,17 @@ struct SpriteAlignerWindow : Window {
 	static inline ZoomLevel zoom = ZOOM_LVL_END;
 	static bool centre;
 	static bool crosshair;
+	const Action5Type *act5_type = nullptr; ///< Sprite Area of current selected sprite.
 
 	SpriteAlignerWindow(WindowDesc *desc, WindowNumber wno) : Window(desc)
 	{
 		/* On first opening, set initial zoom to current zoom level. */
 		if (SpriteAlignerWindow::zoom == ZOOM_LVL_END) SpriteAlignerWindow::zoom = _gui_zoom;
 		SpriteAlignerWindow::zoom = Clamp(SpriteAlignerWindow::zoom, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max);
+
+		/* Oh yes, we assume there is at least one normal sprite! */
+		while (GetSpriteType(this->current_sprite) != SpriteType::Normal) this->current_sprite++;
+		this->SelectAction5Type();
 
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_SA_SCROLLBAR);
@@ -1427,9 +1422,6 @@ struct SpriteAlignerWindow : Window {
 		this->SetWidgetLoweredState(WID_SA_CENTRE, SpriteAlignerWindow::centre);
 		this->SetWidgetLoweredState(WID_SA_CROSSHAIR, SpriteAlignerWindow::crosshair);
 
-		/* Oh yes, we assume there is at least one normal sprite! */
-		while (GetSpriteType(this->current_sprite) != SpriteType::Normal) this->current_sprite++;
-
 		this->InvalidateData(0, true);
 	}
 
@@ -1438,8 +1430,22 @@ struct SpriteAlignerWindow : Window {
 		const Sprite *spr = GetSprite(this->current_sprite, SpriteType::Normal, ZoomMask(ZOOM_LVL_GUI));
 		switch (widget) {
 			case WID_SA_CAPTION:
-				SetDParam(0, this->current_sprite);
-				SetDParamStr(1, GetOriginFile(this->current_sprite)->GetSimplifiedFilename());
+				if (this->act5_type != nullptr) {
+					SetDParam(0, STR_SPRITE_ALIGNER_CAPTION_ACTION5);
+					SetDParam(1, this->act5_type - GetAction5Types().data());
+					SetDParam(2, this->current_sprite - this->act5_type->sprite_base);
+					SetDParamStr(3, GetOriginFile(this->current_sprite)->GetSimplifiedFilename());
+					SetDParam(4, GetSpriteLocalID(this->current_sprite));
+				} else if (this->current_sprite < SPR_OPENTTD_BASE) {
+					SetDParam(0, STR_SPRITE_ALIGNER_CAPTION_ACTIONA);
+					SetDParam(1, this->current_sprite);
+					SetDParamStr(2, GetOriginFile(this->current_sprite)->GetSimplifiedFilename());
+					SetDParam(3, GetSpriteLocalID(this->current_sprite));
+				} else {
+					SetDParam(0, STR_SPRITE_ALIGNER_CAPTION_NO_ACTION);
+					SetDParamStr(1, GetOriginFile(this->current_sprite)->GetSimplifiedFilename());
+					SetDParam(2, GetSpriteLocalID(this->current_sprite));
+				}
 				break;
 
 			case WID_SA_OFFSETS_ABS:
@@ -1467,19 +1473,27 @@ struct SpriteAlignerWindow : Window {
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
 			case WID_SA_SPRITE:
-				size->height = ScaleGUITrad(200);
+				size.height = ScaleGUITrad(200);
 				break;
-			case WID_SA_LIST:
-				SetDParamMaxDigits(0, 6);
-				size->width = GetStringBoundingBox(STR_JUST_COMMA).width + padding.width;
-				resize->height = GetCharacterHeight(FS_NORMAL) + padding.height;
-				resize->width  = 1;
-				fill->height = resize->height;
+
+			case WID_SA_LIST: {
+				Dimension d = {};
+				for (const auto &spritefile : GetCachedSpriteFiles()) {
+					SetDParamStr(0, spritefile->GetSimplifiedFilename());
+					SetDParamMaxDigits(1, 6);
+					d = maxdim(d, GetStringBoundingBox(STR_SPRITE_ALIGNER_SPRITE));
+				}
+				size.width = d.width + padding.width;
+				resize.height = GetCharacterHeight(FS_NORMAL) + padding.height;
+				resize.width = 1;
+				fill.height = resize.height;
 				break;
+			}
+
 			default:
 				break;
 		}
@@ -1531,8 +1545,15 @@ struct SpriteAlignerWindow : Window {
 				Rect ir = r.Shrink(WidgetDimensions::scaled.matrix);
 				auto [first, last] = this->vscroll->GetVisibleRangeIterators(list);
 				for (auto it = first; it != last; ++it) {
-					SetDParam(0, *it);
-					DrawString(ir, STR_JUST_COMMA, *it == this->current_sprite ? TC_WHITE : TC_BLACK, SA_RIGHT | SA_FORCE);
+					const SpriteFile *file = GetOriginFile(*it);
+					if (file == nullptr) {
+						SetDParam(0, *it);
+						DrawString(ir, STR_JUST_COMMA, *it == this->current_sprite ? TC_WHITE : (TC_GREY | TC_NO_SHADE), SA_RIGHT | SA_FORCE);
+					} else {
+						SetDParamStr(0, file->GetSimplifiedFilename());
+						SetDParam(1, GetSpriteLocalID(*it));
+						DrawString(ir, STR_SPRITE_ALIGNER_SPRITE, *it == this->current_sprite ? TC_WHITE : TC_BLACK);
+					}
 					ir.top += step_size;
 				}
 				break;
@@ -1547,6 +1568,7 @@ struct SpriteAlignerWindow : Window {
 				do {
 					this->current_sprite = (this->current_sprite == 0 ? GetMaxSpriteID() :  this->current_sprite) - 1;
 				} while (GetSpriteType(this->current_sprite) != SpriteType::Normal);
+				this->SelectAction5Type();
 				this->SetDirty();
 				break;
 
@@ -1558,6 +1580,7 @@ struct SpriteAlignerWindow : Window {
 				do {
 					this->current_sprite = (this->current_sprite + 1) % GetMaxSpriteID();
 				} while (GetSpriteType(this->current_sprite) != SpriteType::Normal);
+				this->SelectAction5Type();
 				this->SetDirty();
 				break;
 
@@ -1573,6 +1596,7 @@ struct SpriteAlignerWindow : Window {
 					SpriteID spr = *it;
 					if (GetSpriteType(spr) == SpriteType::Normal) this->current_sprite = spr;
 				}
+				this->SelectAction5Type();
 				this->SetDirty();
 				break;
 			}
@@ -1655,6 +1679,7 @@ struct SpriteAlignerWindow : Window {
 		while (GetSpriteType(this->current_sprite) != SpriteType::Normal) {
 			this->current_sprite = (this->current_sprite + 1) % GetMaxSpriteID();
 		}
+		this->SelectAction5Type();
 		this->SetDirty();
 	}
 
@@ -1673,7 +1698,7 @@ struct SpriteAlignerWindow : Window {
 		}
 
 		SpriteAlignerWindow::zoom = Clamp(SpriteAlignerWindow::zoom, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max);
-		for (ZoomLevel z = ZOOM_LVL_NORMAL; z < ZOOM_LVL_SPR_COUNT; z++) {
+		for (ZoomLevel z = ZOOM_LVL_BEGIN; z < ZOOM_LVL_SPR_COUNT; z++) {
 			this->SetWidgetsDisabledState(z < _settings_client.gui.zoom_min || z > _settings_client.gui.zoom_max, WID_SA_ZOOM + z);
 			this->SetWidgetsLoweredState(SpriteAlignerWindow::zoom == z, WID_SA_ZOOM + z);
 		}
@@ -1683,6 +1708,19 @@ struct SpriteAlignerWindow : Window {
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_SA_LIST);
 	}
+
+private:
+	void SelectAction5Type()
+	{
+		const auto act5types = GetAction5Types();
+		for (auto it = std::begin(act5types); it != std::end(act5types); ++it) {
+			if (it->sprite_base <= this->current_sprite && this->current_sprite < it->sprite_base + it->max_sprites) {
+				this->act5_type = &*it;
+				return;
+			}
+		}
+		this->act5_type = nullptr;
+	}
 };
 
 bool SpriteAlignerWindow::centre = true;
@@ -1691,7 +1729,7 @@ bool SpriteAlignerWindow::crosshair = true;
 static constexpr NWidgetPart _nested_sprite_aligner_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_SA_CAPTION), SetDataTip(STR_SPRITE_ALIGNER_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_SA_CAPTION), SetDataTip(STR_JUST_STRING4, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
 	EndContainer(),
@@ -1742,12 +1780,12 @@ static constexpr NWidgetPart _nested_sprite_aligner_widgets[] = {
 					NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_SA_SCROLLBAR),
 				EndContainer(),
 				NWidget(NWID_VERTICAL),
-					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_NORMAL), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_MIN, STR_NULL), SetFill(1, 0),
-					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_OUT_2X), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_IN_2X, STR_NULL), SetFill(1, 0),
-					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_OUT_4X), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_NORMAL, STR_NULL), SetFill(1, 0),
-					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_OUT_8X), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_OUT_2X, STR_NULL), SetFill(1, 0),
-					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_OUT_16X), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_OUT_4X, STR_NULL), SetFill(1, 0),
-					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_OUT_32X), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_OUT_8X, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_IN_4X), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_MIN, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_IN_2X), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_IN_2X, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_NORMAL), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_NORMAL, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_OUT_2X), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_OUT_2X, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_OUT_4X), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_OUT_4X, STR_NULL), SetFill(1, 0),
+					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_SA_ZOOM + ZOOM_LVL_OUT_8X), SetDataTip(STR_CONFIG_SETTING_ZOOM_LVL_OUT_8X, STR_NULL), SetFill(1, 0),
 				EndContainer(),
 			EndContainer(),
 		EndContainer(),

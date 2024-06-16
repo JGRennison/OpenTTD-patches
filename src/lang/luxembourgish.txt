@@ -2588,7 +2588,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Däi Spi
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Méigleche Verbindungsverloscht
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}Déi lescht {NUM} Sekonn{P "" e} si keng Date vum Server komm
 
-###length 21
+###length 22
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :generellen Feeler
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :desync Feeler
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :konnt d'Kaart net lueden
@@ -3485,7 +3485,6 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Stroossentyp
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}NewGRF Variabel 60+x Parameter (hexadezimal)
 
 # Sprite aligner window
-STR_SPRITE_ALIGNER_CAPTION                                      :{WHITE}Alignéiren d'Sprite {COMMA} ({STRING})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Nächst Sprite
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Géi weider op déi nächst normal Sprite, iwwersprang all pseudo/recolour/font Sprite an sprang un den Ufank no der leschter.
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Géi op Sprite
@@ -4896,9 +4895,7 @@ STR_MESSAGE_ESTIMATED_INCOME                                    :{WHITE}Geschät
 STR_ERROR_SAVE_STILL_IN_PROGRESS                                :{WHITE}Nach amgaangen ze späicheren.{} W.e.g. waarde bis daat fäerdeg ass!
 STR_ERROR_AUTOSAVE_FAILED                                       :{WHITE}Fehler beim Autospäicheren
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Kann net um Laafwierk liesen
-STR_ERROR_GAME_SAVE_FAILED                                      :{WHITE}Fehler beim Späicheren{}{STRING}
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :{WHITE}Kann d'Datei net läschen
-STR_ERROR_GAME_LOAD_FAILED                                      :{WHITE}Fehler beim Lueden{}{STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Interne Feeler: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Futtissen Späicherstand - {STRING}
 STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME                        :Spillstand ass mat enger méi neier Versioun gemaach

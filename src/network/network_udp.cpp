@@ -60,9 +60,9 @@ struct UDPSocket {
 static UDPSocket _udp_client("Client"); ///< udp client socket
 static UDPSocket _udp_server("Server"); ///< udp server socket
 
-static Packet PrepareUdpClientFindServerPacket()
+static Packet PrepareUdpClientFindServerPacket(NetworkUDPSocketHandler *socket)
 {
-	Packet p(PACKET_UDP_CLIENT_FIND_SERVER);
+	Packet p(socket, PACKET_UDP_CLIENT_FIND_SERVER);
 	p.Send_uint32(FIND_SERVER_EXTENDED_TOKEN);
 	p.Send_uint16(0); // flags
 	p.Send_uint16(0); // version
@@ -92,7 +92,7 @@ void ServerNetworkUDPSocketHandler::Receive_CLIENT_FIND_SERVER(Packet &p, Networ
 		return;
 	}
 
-	Packet packet(PACKET_UDP_SERVER_RESPONSE);
+	Packet packet(this, PACKET_UDP_SERVER_RESPONSE);
 	this->SendPacket(packet, client_addr);
 
 	DEBUG(net, 7, "Queried from %s", client_addr.GetHostname());
@@ -103,7 +103,7 @@ void ServerNetworkUDPSocketHandler::Reply_CLIENT_FIND_SERVER_extended(Packet &p,
 	[[maybe_unused]] uint16_t flags = p.Recv_uint16();
 	uint16_t version = p.Recv_uint16();
 
-	Packet packet(PACKET_UDP_EX_SERVER_RESPONSE);
+	Packet packet(this, PACKET_UDP_EX_SERVER_RESPONSE);
 	this->SendPacket(packet, client_addr);
 
 	DEBUG(net, 7, "Queried (extended: %u) from %s", version, client_addr.GetHostname());
@@ -140,7 +140,7 @@ static void NetworkUDPBroadCast(NetworkUDPSocketHandler *socket)
 	for (NetworkAddress &addr : _broadcast_list) {
 		DEBUG(net, 5, "Broadcasting to %s", addr.GetHostname());
 
-		Packet p = PrepareUdpClientFindServerPacket();
+		Packet p = PrepareUdpClientFindServerPacket(socket);
 		socket->SendPacket(p, addr, true, true);
 	}
 }

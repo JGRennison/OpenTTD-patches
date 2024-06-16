@@ -96,12 +96,12 @@ public:
 		this->Window::Close();
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		if (widget == WID_BEM_MESSAGE) {
-			*size = GetStringBoundingBox(STR_MISSING_GRAPHICS_ERROR);
-			size->width += WidgetDimensions::scaled.frametext.Horizontal();
-			size->height += WidgetDimensions::scaled.frametext.Vertical();
+			size = GetStringBoundingBox(STR_MISSING_GRAPHICS_ERROR);
+			size.width += WidgetDimensions::scaled.frametext.Horizontal();
+			size.height += WidgetDimensions::scaled.frametext.Vertical();
 		}
 	}
 
@@ -210,7 +210,7 @@ public:
 		this->Window::Close();
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		/* We cache the button size. This is safe as no reinit can happen here. */
 		if (this->button_size.width == 0) {
@@ -222,13 +222,13 @@ public:
 		switch (widget) {
 			case WID_BAFD_QUESTION:
 				/* The question is twice as wide as the buttons, and determine the height based on the width. */
-				size->width = this->button_size.width * 2;
-				size->height = GetStringHeight(STR_MISSING_GRAPHICS_SET_MESSAGE, size->width - WidgetDimensions::scaled.frametext.Horizontal()) + WidgetDimensions::scaled.frametext.Vertical();
+				size.width = this->button_size.width * 2;
+				size.height = GetStringHeight(STR_MISSING_GRAPHICS_SET_MESSAGE, size.width - WidgetDimensions::scaled.frametext.Horizontal()) + WidgetDimensions::scaled.frametext.Vertical();
 				break;
 
 			case WID_BAFD_YES:
 			case WID_BAFD_NO:
-				*size = this->button_size;
+				size = this->button_size;
 				break;
 		}
 	}
@@ -290,10 +290,10 @@ public:
 #	include "video/video_driver.hpp"
 
 class BootstrapEmscripten : public ContentCallback {
-	bool downloading{false};
-	uint total_files{0};
-	uint total_bytes{0};
-	uint downloaded_bytes{0};
+	bool downloading = false;
+	uint total_files = 0;
+	uint total_bytes = 0;
+	uint downloaded_bytes = 0;
 
 public:
 	BootstrapEmscripten()

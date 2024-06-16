@@ -15,7 +15,8 @@
 #include "gfx_func.h"
 #include "string_func.h"
 #include "textfile_gui.h"
-#include "widgets/dropdown_type.h"
+#include "dropdown_type.h"
+#include "dropdown_func.h"
 #include "gfx_layout.h"
 #include "debug.h"
 #include "debug_fmt.h"
@@ -134,14 +135,14 @@ uint TextfileWindow::GetContentHeight()
 	return this->lines.back().bottom;
 }
 
-/* virtual */ void TextfileWindow::UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize)
+/* virtual */ void TextfileWindow::UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize)
 {
 	switch (widget) {
 		case WID_TF_BACKGROUND:
-			resize->height = GetCharacterHeight(FS_MONO);
+			resize.height = GetCharacterHeight(FS_MONO);
 
-			size->height = 4 * resize->height + WidgetDimensions::scaled.frametext.Vertical(); // At least 4 lines are visible.
-			size->width = std::max(200u, size->width); // At least 200 pixels wide.
+			size.height = 4 * resize.height + WidgetDimensions::scaled.frametext.Vertical(); // At least 4 lines are visible.
+			size.width = std::max(200u, size.width); // At least 200 pixels wide.
 			break;
 	}
 }
@@ -536,7 +537,7 @@ void TextfileWindow::AfterLoadMarkdown()
 			DropDownList list;
 			for (size_t line : this->jumplist) {
 				SetDParamStr(0, this->lines[line].text);
-				list.push_back(std::make_unique<DropDownListStringItem>(STR_TEXTFILE_JUMPLIST_ITEM, (int)line, false));
+				list.push_back(MakeDropDownListStringItem(STR_TEXTFILE_JUMPLIST_ITEM, (int)line));
 			}
 			ShowDropDownList(this, std::move(list), -1, widget);
 			break;

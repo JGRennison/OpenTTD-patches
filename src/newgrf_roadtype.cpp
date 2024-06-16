@@ -14,6 +14,7 @@
 #include "date_func.h"
 #include "depot_base.h"
 #include "town.h"
+#include "newgrf_dump.h"
 
 #include "safeguards.h"
 

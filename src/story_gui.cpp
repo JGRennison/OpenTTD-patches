@@ -16,8 +16,8 @@
 #include "core/geometry_func.hpp"
 #include "company_func.h"
 #include "command_func.h"
-#include "widgets/dropdown_type.h"
-#include "widgets/dropdown_func.h"
+#include "dropdown_type.h"
+#include "dropdown_func.h"
 #include "sortlist_type.h"
 #include "goal_base.h"
 #include "viewport_func.h"
@@ -256,11 +256,11 @@ protected:
 		for (const StoryPage *p : this->story_pages) {
 			bool current_page = p->index == this->selected_page_id;
 			if (!p->title.empty()) {
-				list.push_back(std::make_unique<DropDownListStringItem>(p->title, p->index, current_page));
+				list.push_back(MakeDropDownListStringItem(p->title, p->index, current_page));
 			} else {
 				/* No custom title => use a generic page title with page number. */
 				SetDParam(0, page_num);
-				list.push_back(std::make_unique<DropDownListStringItem>(STR_STORY_BOOK_GENERIC_PAGE_ITEM, p->index, current_page));
+				list.push_back(MakeDropDownListStringItem(STR_STORY_BOOK_GENERIC_PAGE_ITEM, p->index, current_page));
 			}
 			page_num++;
 		}
@@ -754,7 +754,7 @@ public:
 		}
 	}
 
-	void UpdateWidgetSize(WidgetID widget, Dimension *size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension *fill, [[maybe_unused]] Dimension *resize) override
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		if (widget != WID_SB_SEL_PAGE && widget != WID_SB_PAGE_PANEL) return;
 
@@ -783,14 +783,14 @@ public:
 
 				d.width += padding.width;
 				d.height += padding.height;
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 
 			case WID_SB_PAGE_PANEL: {
 				d.height *= 5;
 				d.height += padding.height + WidgetDimensions::scaled.frametext.Vertical();
-				*size = maxdim(*size, d);
+				size = maxdim(size, d);
 				break;
 			}
 		}
