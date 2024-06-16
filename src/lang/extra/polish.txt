@@ -598,3 +598,206 @@ STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY                    :{NUM}% (miesię
 STR_CONFIG_SETTING_CARGO_SCALE_VALUE_REAL_TIME                  :{NUM}% (czasu-gry)
 
 STR_CONFIG_SETTING_CARGO_SCALE_VALUE_PER_PRODUCTION_INTERVAL    :{NUM}% (na interwał produkcji)
+
+STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :Brak miast powyżej poziomu wysokości: {STRING2}
+STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :Podczas tworzenia mapy nie są budowane miasta powyżej określonego poziomu wysokości.
+
+STR_CONFIG_SETTING_MIN_TOWN_LAND_AREA                           :Minimalny przyległy obszar lądowy dla miast: {STRING2}
+STR_CONFIG_SETTING_MIN_TOWN_LAND_AREA_HELPTEXT                  :Miasta mogą być umieszczane tylko na sąsiadujących ze sobą obszarach lądowych o powierzchni co najmniej tylu pól.
+
+STR_CONFIG_SETTING_MIN_CITY_LAND_AREA                           :Minimalny przyległy obszar lądowy dla metropolii: {STRING2}
+STR_CONFIG_SETTING_MIN_CITY_LAND_AREA_HELPTEXT                  :Metropolie mogą być umieszczane tylko na sąsiadujących ze sobą obszarach lądowych o powierzchni co najmniej tylu pól.
+
+STR_CONFIG_SETTING_MIN_LAND_AREA_VALUE                          :{NUM}
+STR_CONFIG_SETTING_MIN_LAND_AREA_ZERO                           :Wył.
+
+STR_CONFIG_SETTING_FLOOD_FROM_EDGES                             :Woda zalewa krawędzie mapy: {STRING2}
+STR_CONFIG_SETTING_FLOOD_FROM_EDGES_HELPTEXT                    :Czy woda zalewa pola krawędzi na poziomie morza od krawędzi mapy.
+
+STR_CONFIG_SETTING_MAP_EDGE_MODE                                :Zachowanie krawędzi mapy: {STRING2}
+STR_CONFIG_SETTING_MAP_EDGE_MODE_HELPTEXT                       :Czy dozwolone jest podniesienie krawędzi mapy powyżej poziomu morza i jak wyświetlany jest pusty obszar poza mapą.
+##default-translation STR_COLOUR_DEFAULT
+STR_CONFIG_SETTING_MAP_EDGE_MODE_DEFAULT                        :Domyślne
+STR_CONFIG_SETTING_MAP_EDGE_MODE_SEA_LEVEL                      :Krawędzie mapy ograniczone do poziomu morza
+STR_CONFIG_SETTING_MAP_EDGE_MODE_SEA_LEVEL_OUTSIDE_WATER        :Krawędzie mapy ograniczone do poziomu morza, poza mapą pokazane jako woda.
+
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE                        :Dostosowanie rozmieszczenia drzew arktycznych: {STRING2}
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_HELPTEXT               :Dostosuj rozmieszczenie drzew wokół linii śniegu w klimacie artystycznym. Drzewa przerzedzają się powyżej linii śniegu. Drzewa są mieszanką klimatu arktycznego i umiarkowanego tuż poniżej linii śniegu. Poniżej tej linii drzewa należą do klimatu umiarkowanego.
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE                  :Zasięg drzewa arktycznego: {STRING2}
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE_HELPTEXT         :Przybliżony zasięg drzew arktycznych wokół linii śniegu.
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_DYNAMIC_RANGE          :Sezonowa szerokość linii śniegu dla drzew arktycznych: {STRING2}
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_DYNAMIC_RANGE_HELPTEXT :W przypadku korzystania z sezonowo zmiennej linii śniegu, jaki procent zmienności linii śniegu należy wykorzystać jako linię śniegu do umieszczania drzew arktycznych. 0% wykorzystuje dolną (zimową) linię śniegu, 100% wykorzystuje cały zakres między letnią i zimową linią śniegu.
+
+STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS                           :Budowa dróg publicznych łączących miasta: {STRING2}
+STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_HELPTEXT                  :Generuje drogi publiczne łączące miasta. Zajmuje trochę czasu na większych mapach. Opcja "Buduj i omijaj" generuje drogi, które omijają zakręty i tworzą połączenia przypominające siatkę.
+STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_NONE                      :Brak (domyślnie)
+STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_WITH_CURVES               :Buduj z krzywymi
+STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_AVOID_CURVES              :Budowanie i unikanie zakrętów
+
+STR_CONFIG_SETTING_TREE_GROWTH                                  :Prędkość wzrostu drzewa: {STRING2}
+STR_CONFIG_SETTING_TREE_GROWTH_HELPTEXT                         :Kontroluj tempo wzrostu drzew podczas gry. Może to mieć wpływ na branże, które opierają się na wzroście drzew, na przykład tartaki.
+STR_CONFIG_SETTING_TREE_GROWTH_NORMAL                           :Normalna
+STR_CONFIG_SETTING_TREE_GROWTH_SLOW                             :Wolna
+STR_CONFIG_SETTING_TREE_GROWTH_VERY_SLOW                        :Bardzo wolna
+STR_CONFIG_SETTING_TREE_GROWTH_EXTREMELY_SLOW                   :Ekstremalnie wolna
+STR_CONFIG_SETTING_TREE_GROWTH_STATIC                           :Brak
+
+STR_CONFIG_SETTING_TOWN_ZONES                                   :{ORANGE} Niestandardowe strefy miejskie
+STR_CONFIG_SETTING_TOWN_ZONE_CALC_MODE                          :Użyj niestandardowych obliczeń strefy miejskiej: {STRING2}
+STR_CONFIG_SETTING_TOWN_ZONE_CALC_MODE_HELPTEXT                 :Umożliwia ręczną konfigurację rozmiaru stref miejskich generowanych przez miasta. Domyślne wartości dla niestandardowych ustawień strefy miasta są podobne do domyślnego generowania miasta. Niektóre strefy wymagają tylko niewielkich zmian, podczas gdy Strefa 0 w szczególności korzysta z większych wartości.
+STR_CONFIG_SETTING_TOWN_ZONE_0_MULT                             :Mnożnik dla strefy miasta 0: {STRING2}
+STR_CONFIG_SETTING_TOWN_ZONE_0_MULT_HELPTEXT                    :Mnożnik rozmiaru strefy miasta 0 (najbardziej oddalone drogi bez chodników). To ustawienie może korzystać z dużych wartości.
+STR_CONFIG_SETTING_TOWN_ZONE_1_MULT                             :Mnożnik dla strefy miasta 1: {STRING2}
+STR_CONFIG_SETTING_TOWN_ZONE_1_MULT_HELPTEXT                    :Mnożnik rozmiaru strefy miasta 1 (strefa zewnętrzna z chodnikami). To ustawienie działa najlepiej z niewielkimi zmianami.
+STR_CONFIG_SETTING_TOWN_ZONE_2_MULT                             :Mnożnik dla strefy miasta 2: {STRING2}
+STR_CONFIG_SETTING_TOWN_ZONE_2_MULT_HELPTEXT                    :Mnożnik rozmiaru strefy miasta 2 (strefa zewnętrzna z chodnikami). To ustawienie działa najlepiej z niewielkimi zmianami.
+STR_CONFIG_SETTING_TOWN_ZONE_3_MULT                             :Mnożnik dla strefy miasta 3: {STRING2}
+STR_CONFIG_SETTING_TOWN_ZONE_3_MULT_HELPTEXT                    :Mnożnik rozmiaru strefy miasta 3 (wewnętrzne drogi wysadzane drzewami). To ustawienie działa najlepiej z niewielkimi zmianami.
+STR_CONFIG_SETTING_TOWN_ZONE_4_MULT                             :Mnożnik dla strefy miasta 4: {STRING2}
+STR_CONFIG_SETTING_TOWN_ZONE_4_MULT_HELPTEXT                    :Mnożnik rozmiaru strefy miasta 4 (najbardziej wewnętrzne drogi z oświetleniem ulicznym). To ustawienie działa najlepiej z niewielkimi zmianami.
+STR_CONFIG_SETTING_CITY_ZONE_0_MULT                             :Mnożnik dla strefy metropolii 0: {STRING2}
+STR_CONFIG_SETTING_CITY_ZONE_0_MULT_HELPTEXT                    :Mnożnik rozmiaru strefy metropolii 0 (najbardziej oddalone drogi bez chodników). To ustawienie może korzystać z dużych wartości.
+STR_CONFIG_SETTING_CITY_ZONE_1_MULT                             :Mnożnik dla strefy metropolii 1: {STRING2}
+STR_CONFIG_SETTING_CITY_ZONE_1_MULT_HELPTEXT                    :Mnożnik rozmiaru strefy metropolii 1 (strefa zewnętrzna z chodnikami). To ustawienie działa najlepiej z niewielkimi zmianami.
+STR_CONFIG_SETTING_CITY_ZONE_2_MULT                             :Mnożnik dla strefy metropolii 2: {STRING2}
+STR_CONFIG_SETTING_CITY_ZONE_2_MULT_HELPTEXT                    :Mnożnik rozmiaru strefy metropolii 2 (strefa zewnętrzna z chodnikami). To ustawienie działa najlepiej z niewielkimi zmianami.
+STR_CONFIG_SETTING_CITY_ZONE_3_MULT                             :Mnożnik dla strefy metropolii 3: {STRING2}
+STR_CONFIG_SETTING_CITY_ZONE_3_MULT_HELPTEXT                    :Mnożnik rozmiaru strefy metropolii 3 (wewnętrzne drogi wysadzane drzewami). To ustawienie działa najlepiej z niewielkimi zmianami.
+STR_CONFIG_SETTING_CITY_ZONE_4_MULT                             :Mnożnik dla strefy metropolii 4: {STRING2}
+STR_CONFIG_SETTING_CITY_ZONE_4_MULT_HELPTEXT                    :Mnożnik rozmiaru strefy metropolii 4 (najbardziej wewnętrzne drogi z oświetleniem ulicznym). To ustawienie działa najlepiej z niewielkimi zmianami.
+
+STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED                :Prędkość wzrostu miasta zależy od przewożonego ładunku: {STRING2}
+STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED_HELPTEXT       :Procent prędkości wzrostu miasta, który zależy od proporcji ładunku przewiezionego w mieście w ostatnim miesiącu.{} Ten procent obliczonej prędkości wzrostu miasta jest mnożony przez ułamek pasażerów i poczty, które zostały przewiezione w ostatnim miesiącu. To ustawienie może jedynie zmniejszyć prędkość wzrostu miasta, a nie ją zwiększyć.
+
+STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION                   :Prawdopodobieństwo losowej przebudowy dróg miejskich: {STRING2}
+STR_CONFIG_SETTING_RANDOM_ROAD_RECONSTRUCTION_HELPTEXT          :Prawdopodobieństwo losowej przebudowy dróg miejskich: {STRING2} Prawdopodobieństwo losowej przebudowy dróg miejskich (0 = wył., 1000 = maks.)
+
+STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM                      :Algorytm płatności za ładunek: {STRING2}
+STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_HELPTEXT             :Algorytm używany do obliczania, ile pieniędzy należy zapłacić za dostarczenie ładunku do miejsca przeznaczenia.
+STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_TRADITIONAL          :Tradycyjny
+STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_MODERN               :Nowy
+
+STR_CONFIG_SETTING_TICK_RATE                                    :Częstotliwość tick'ów gry: {STRING2}
+STR_CONFIG_SETTING_TICK_RATE_HELPTEXT                           :Liczba milisekund na tick gry.
+STR_CONFIG_SETTING_TICK_RATE_TRADITIONAL                        :30 ms/tick (tradycyjny)
+STR_CONFIG_SETTING_TICK_RATE_MODERN                             :27 ms/tick (nowy)
+
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Minimalna odległość między miastami: {STRING2}
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Ustawienie minimalnej odległości (w liczbie pól) między miastami na potrzeby generowania mapy i losowego znajdowania.
+
+STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO                       :Nadpisanie trybu dystrybucji dla tego ładunku: {STRING2}
+STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM                 :Zastąpienie trybu dystrybucji dla {STRING}: {STRING2}
+STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_HELPTEXT              :"(domyślny)" oznacza, że tryb dystrybucji jest domyślny dla klasy tego ładunku. "symetryczny" oznacza, że mniej więcej taka sama liczba ładunków zostanie wysłana ze stacji A do stacji B, jak z B do A. "asymetryczny" oznacza, że dowolna ilość ładunku może zostać wysłana w dowolnym kierunku. "ręczny" oznacza, że dla tego ładunku nie będzie miała miejsca żadna automatyczna dystrybucja.
+STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_DEFAULT               :(domyślny)
+STR_CONFIG_SETTING_DISTRIBUTION_HELPTEXT_EXTRA                  :{STRING}{}"asymetryczny (równa dystrybucja)" oznacza, że ładunek zostanie rozdzielony w taki sposób, że każda stacja odbiorcza otrzyma w przybliżeniu taką samą ilość ładunku. "asymetryczny (najbliższy)" oznacza, że ładunek zostanie wysłany do najbliższej stacji odbiorczej.
+
+STR_CONFIG_SETTING_AIRCRAFT_PATH_COST                           :Odległość skalowania ścieżek wykorzystujących samoloty: {STRING2}
+STR_CONFIG_SETTING_AIRCRAFT_PATH_COST_HELPTEXT                  :Skaluje to koszt (metrykę odległości) ścieżek wykorzystujących samoloty w taki sposób, że wydają się one dłuższe/mniej bezpośrednie niż są w rzeczywistości. Zmniejsza to tendencję do przeciążania bezpośrednich tras wykorzystujących samoloty.
+
+STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER          :Synchronizacja ustawień lokalizacji z serwerem w trybie wieloosobowym: {STRING2}
+STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER_HELPTEXT :Po dołączeniu do gry wieloosobowej jako klient sieciowy należy zmienić ustawienia lokalizacji, aby pasowały do serwera.
+
+STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS                    :{ORANGE}Tabele odjazdu
+STR_CONFIG_SETTING_INTERFACE_WALLCLOCK                          :{ORANGE}Zegar ścienny
+STR_CONFIG_SETTING_INTERFACE_TIME_CLIENT                        :{ORANGE}Ustawienia klienta
+STR_CONFIG_SETTING_INTERFACE_TIME_SAVEGAME                      :{ORANGE}Ustawienia pliku zapisu
+STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}Rozkłady
+STR_CONFIG_SETTING_INTERFACE_SIGNALS                            :{ORANGE}Sygnały
+STR_CONFIG_SETTING_INTERFACE_SAVE                               :{ORANGE}Zapis i autozapis
+STR_CONFIG_SETTING_INTERFACE_VEHICLE_WINDOWS                    :{ORANGE}Okienka pojazdów
+STR_CONFIG_SETTING_GENWORLD_RIVERS_LAKES                        :{ORANGE}Jeziora i rzeki
+STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST_PER_CARGO_OVERRIDE     :{ORANGE}Dystrybucja towarów - nadpisanie dla każdego towaru
+STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS                         :{ORANGE}Tryb mapy
+STR_CONFIG_SETTING_VEHICLE_ROUTE_OVERLAY                        :{ORANGE}Nakładka trasy pojazdu
+STR_CONFIG_SETTING_SHARING                                      :{ORANGE}Współdzielenie infrastruktury
+STR_CONFIG_SETTING_SCENARIO_EDITOR                              :{ORANGE}Edytor scenariuszy
+
+STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE                  :Zmiana trasy pojazdów drogowych po zmianie układu dróg: {STRING2}
+STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_HELPTEXT         :Czy przekierowywać wszystkie pojazdy drogowe na mapie, gdy zmienia się układ dróg. Może to poprawić reakcję pojazdów drogowych na zmieniający się układ dróg kosztem wydajności. Należy pamiętać, że jeśli ta opcja jest ustawiona na "Tak", rozwój miasta może spowodować przekierowanie pojazdów drogowych, co może spowodować spowolnienie na dużych mapach.
+STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_NO               :Nie
+STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_REMOVE_ONLY      :Tylko usuwanie dróg
+STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_YES              :Tak
+
+STR_CONFIG_SETTING_ENABLE_ROAD_CUSTOM_BRIDGE_HEADS              :Włącz niestandardowe głowice mostu drogowego: {STRING2}
+STR_CONFIG_SETTING_ENABLE_ROAD_CUSTOM_BRIDGE_HEADS_HELPTEXT     :Umożliwienie mostom drogowym posiadania niestandardowych, nieprostych, płaskich płytek wjazdowych/wyjazdowych.
+STR_CONFIG_SETTING_ENABLE_RAIL_CUSTOM_BRIDGE_HEADS              :Włącz niestandardowe głowice mostów szynowych: {STRING2}
+STR_CONFIG_SETTING_ENABLE_RAIL_CUSTOM_BRIDGE_HEADS_HELPTEXT     :Umożliwienie mostom kolejowym posiadania niestandardowych, nieprostych płaskich płytek wjazdowych/wyjazdowych.
+
+STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES              :Zezwalaj na wszystkie obiekty NewGRF pod mostami: {STRING2}
+STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES_HELPTEXT     :Zezwalaj na budowanie wszystkich obiektów NewGRF pod mostami, nawet jeśli nie jest to włączone przez GRF.{} Może to powodować problemy graficzne.
+
+STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES             :Zezwalaj na stacje kolejowe/punkty trasy NewGRF pod mostami: {STRING2}
+STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES_HELPTEXT    :Jeśli opcja ta jest włączona, stacje kolejowe/punkty trasy NewGRF, które nie określają, czy mogą być budowane pod mostami, będą dozwolone pod mostami bez żadnych ograniczeń.
+
+STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES            :Zezwalaj na przystanki drogowe/tramwajowe pod mostami: {STRING2}
+STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT   :Zezwolenie na przystanki drogowe/tramwajowe pod mostami. Przystanki przelotowe wymagają 1 poziomu prześwitu, zatoki wjazdowe wymagają 2 poziomów prześwitu.
+STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT_EXTRA :{STRING}{}Nowe przystanki drogowe/tramwajowe GRF mogą nadpisywać to ustawienie i zezwalać lub nie zezwalać na niestandardowe przystanki pod mostami oraz ustawiać niestandardowe wymagania dotyczące prześwitu.
+
+STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES                    :Zezwalaj na doki pod mostami: {STRING2}
+STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES_HELPTEXT           :Zezwalaj na doki pod mostami. Doki wymagają 2 poziomów prześwitu. {} Może to powodować problemy graficzne.
+
+STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED                      :Zezwolenie na zakup gruntów: {STRING2}
+STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED_HELPTEXT             :Ustalenie, czy firmy mogą kupować płytki gruntu i w jakiej ilości.  
+
+STR_CONFIG_SETTING_BUILD_OBJECT_PERMITTED                       :Zezwalaj na masową budowę obiektów: {STRING2}
+STR_CONFIG_SETTING_BUILD_OBJECT_PERMITTED_HELPTEXT              :Określenie, czy firmy mogą budować obiekty według obszarów, zamiast pojedynczo.
+
+STR_CONFIG_SETTING_NO_EXPIRE_OBJECTS_AFTER                      :Żadne obiekty nie wygasną po: {STRING2}
+STR_CONFIG_SETTING_NO_EXPIRE_OBJECTS_AFTER_HELPTEXT             :Przedmioty, które w przeciwnym razie wygasłyby po tym roku, pozostają dostępne na zawsze
+STR_CONFIG_SETTING_NO_EXPIRE_OBJECTS_AFTER_VALUE                :{NUM}
+STR_CONFIG_SETTING_NO_EXPIRE_OBJECTS_AFTER_ZERO                 :Wył.
+
+STR_CONFIG_SETTING_IGNORE_OBJECT_INTRO_DATES                    :Ignorowanie dat wprowadzenia obiektu: {STRING2}
+STR_CONFIG_SETTING_IGNORE_OBJECT_INTRO_DATES_HELPTEXT           :Określa, czy gracze mogą budować obiekty przed datą ich wprowadzenia. {} Nie dotyczy obiektów zbudowanych podczas generowania mapy.
+
+STR_CONFIG_SETTING_ALLOW_CONVERT_TOWN_ROAD_NO_HOUSES            :Zezwalaj na konwertowanie dróg miejskich na typy inne niż domy: {STRING2}
+STR_CONFIG_SETTING_ALLOW_CONVERT_TOWN_ROAD_NO_HOUSES_HELPTEXT   :Czy zezwolić graczom na konwersję dróg należących do miasta na typ drogi, który nie pozwala na budowę domów? Domyślnie jest to wyłączone, ponieważ może to uniemożliwić miastom budowanie domów, co spowoduje ich kurczenie się.
+
+STR_CONFIG_SETTING_PURCHASED_LAND_CLEAR_GROUND                  :Użyj przezroczystego kafelka gruntu dla zakupionego terenu: {STRING2}
+STR_CONFIG_SETTING_PURCHASED_LAND_CLEAR_GROUND_HELPTEXT         :Jeśli opcja ta jest włączona, zakupiony teren jest wyświetlany przy użyciu tego samego typu podłoża, co czyste kafelki terenu, tj. od gołej ziemi do trawy, wybrzeża, śniegu, pustyni itp.
+
+STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY                  :Generuj tylko podstawowy przemysł: {STRING2}
+STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY_HELPTEXT         :Jeśli opcja ta jest włączona, podczas gry i generowania map generowane są tylko podstawowe gałęzie przemysłu.
+
+STR_PURCHASE_LAND_PERMITTED_NO                                  :Nie
+STR_PURCHASE_LAND_PERMITTED_SINGLE                              :Tak, 1 płytka na raz
+STR_PURCHASE_LAND_PERMITTED_AREA                                :Tak, duże obszary na raz
+
+STR_PURCHASE_LAND_NOT_PERMITTED                                 :Zakup gruntów jest niedozwolony
+STR_PURCHASE_LAND_NOT_PERMITTED_BULK                            :Zakup dużych obszarów ziemi jest niedozwolony
+
+STR_BUILD_OBJECT_NOT_PERMITTED_BULK                             :Budowanie dużych obszarów obiektów jest niedozwolone
+
+STR_CONFIG_SETTING_ADJACENT_CROSSINGS                           :Zamknięcie sąsiednich przejazdów kolejowych: {STRING2}
+STR_CONFIG_SETTING_ADJACENT_CROSSINGS_HELPTEXT                  :Zamyka wszystkie sąsiadujące przejazdy kolejowe na równoległych torach, gdy jeden lub więcej z nich jest zajęty.
+
+STR_CONFIG_SETTING_SAFER_CROSSINGS                              :Bezpieczniejsze przejazdy kolejowe: {STRING2}
+STR_CONFIG_SETTING_SAFER_CROSSINGS_HELPTEXT                     :Zmiany na przejazdach kolejowych w celu poprawy bezpieczeństwa pojazdów drogowych.
+
+STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE                       :Zapłata za naprawę pojazdów: {STRING2}
+STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE_HELPTEXT              :Opłaty za naprawę pojazdów, które uległy awarii.
+
+STR_CONFIG_SETTING_REPAIR_COST                                  :Koszt naprawy pojazdów: 1/{STRING2} kosztu pojazdu
+STR_CONFIG_SETTING_REPAIR_COST_HELPTEXT                         :Koszt naprawy pojazdów, które uległy awarii, jako ułamek bieżącego kosztu zakupu pojazdu. Koszt jest podwajany, jeśli pojazd jest starszy niż jego maksymalny wiek.
+
+STR_CONFIG_OCCUPANCY_SMOOTHNESS                                 :Płynność pomiaru zajętości rzędu: {STRING2}
+STR_CONFIG_OCCUPANCY_SMOOTHNESS_HELPTEXT                        :0% ustawia pomiar na ostatnią wartość, 100% pozostawia go bez zmian.
+
+STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE                       :Wcześniejsze zamówienie po klonowaniu/kopiowaniu/udostępnianiu: {STRING2}
+STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE_HELPTEXT              :Po sklonowaniu pojazdu lub skopiowaniu/udostępnieniu zleceń z istniejącego pojazdu.{} Dla pociągów, pojazdów drogowych i statków: jeśli pojazd znajduje się w zajezdni, która znajduje się na liście zleceń, przejdź do zlecenia, które następuje po jednym ze zleceń dla tej zajezdni.{} Dla samolotów: jeśli samolot znajduje się w hangarze, a powiązane lotnisko znajduje się na liście zleceń, przejdź do jednego ze zleceń dla tego lotniska.
+
+STR_CONFIG_SETTING_COPY_CLONE_ADD_TO_GROUP                      :Dodanie pojazdu do grupy przy kopiowaniu-klonowaniu: {STRING2}
+STR_CONFIG_SETTING_COPY_CLONE_ADD_TO_GROUP_HELPTEXT             :Określa, czy sklonowane pojazdy, które nie współdzielą zleceń, są dodawane do grupy skopiowanego pojazdu.
+
+STR_CONFIG_SETTING_REMAIN_IF_NEXT_ORDER_SAME_STATION            :Pozostań w stacji, jeśli następne zamówienie dotyczy tej samej stacji: {STRING2}
+STR_CONFIG_SETTING_REMAIN_IF_NEXT_ORDER_SAME_STATION_HELPTEXT   :Jeśli następne zamówienie pojazdu dotyczy tej samej stacji, z której pojazd miałby wyjechać, rozpocznie on ponowny załadunek/rozładunek zamiast wyjeżdżać.
+
+STR_CONFIG_SETTING_SCENARIO_MULTIPLE_BUILDINGS                  :Zezwalaj na wiele kościołów/stadionów: {STRING2}
+STR_CONFIG_SETTING_SCENARIO_MULTIPLE_BUILDINGS_HELPTEXT         :Umożliwienie ręcznego dodawania kościołów i stadionów, jeśli w mieście jest już jeden.
+
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_DATES                  :Zignoruj ograniczenia dotyczące roku zamieszkania: {STRING2}
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_DATES_HELPTEXT         :Umożliwia ręczne dodawanie domów, które nie są dostępne dla bieżącej daty.
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES                  :Ignorowanie ograniczeń strefy domowej: {STRING2}
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_HELPTEXT         :Umożliwia ręczne dodawanie domów, które nie są odpowiednie dla docelowej strefy miasta.
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_GRF                    :Ignorowanie ograniczeń GRF: {STRING2}
+STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_GRF_HELPTEXT           :Zezwalaj na ręczne dodawanie domów, nawet jeśli nie jest to dozwolone przez GRF domu.
