@@ -309,7 +309,7 @@ char *strcasestr(const char *haystack, const char *needle);
 /**
  * The use of a struct is so that when used as an argument to seprintf/etc, the buffer lives
  * on the stack with a lifetime which lasts until the end of the statement.
- * This avoids using a static buffer which is thread-unsafe, or needing to call malloc, which would then nee to be freed.
+ * This avoids using a static buffer which is thread-unsafe, or needing to call malloc, which would then need to be freed.
  */
 struct StrErrorDumper {
 	const char *Get(int errornum);
