@@ -252,6 +252,24 @@ public:
 		}
 	}
 
+	template <typename InputIt, typename = std::enable_if_t<std::is_convertible<typename std::iterator_traits<InputIt>::iterator_category, std::input_iterator_tag>::value>>
+	ring_buffer(InputIt first, InputIt last)
+	{
+		if (first == last) return;
+
+		uint32_t size = (uint32_t)std::distance(first, last);
+		uint32_t cap = round_up_size(size);
+		this->data.reset(MallocT<uint8_t>(cap * sizeof(T)));
+		this->mask = cap - 1;
+		this->head = 0;
+		this->count = size;
+		uint8_t *ptr = this->data.get();
+		for (auto iter = first; iter != last; ++iter) {
+			new (ptr) T(*iter);
+			ptr += sizeof(T);
+		}
+	}
+
 	ring_buffer& operator =(const ring_buffer &other)
 	{
 		if (&other != this) {
