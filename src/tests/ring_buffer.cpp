@@ -13,18 +13,48 @@
 
 #include "../core/ring_buffer.hpp"
 
-std::ostream &operator<<(std::ostream &os, const ring_buffer<uint32_t>::iterator &iter) {
+struct NonTrivialTestType {
+	uint32_t value;
+
+	NonTrivialTestType() : value(0) {}
+	NonTrivialTestType(uint32_t val) : value(val) {}
+	NonTrivialTestType(const NonTrivialTestType &other) : value(other.value) {}
+	NonTrivialTestType& operator=(const NonTrivialTestType &other) { this->value = other.value; return *this; }
+
+	bool operator==(uint32_t val) const { return this->value == val; }
+};
+
+struct MoveOnlyTestType {
+	uint32_t value;
+
+	MoveOnlyTestType() : value(0) {}
+	MoveOnlyTestType(uint32_t val) : value(val) {}
+	MoveOnlyTestType(const MoveOnlyTestType &) = delete;
+	MoveOnlyTestType(MoveOnlyTestType &&other) : value(other.value) {}
+	MoveOnlyTestType& operator=(const MoveOnlyTestType &) = delete;
+	MoveOnlyTestType& operator=(MoveOnlyTestType &&other) { this->value = other.value; return *this; }
+
+	bool operator==(uint32_t val) const { return this->value == val; }
+};
+
+uint32_t TestValueOf(uint32_t val) { return val; }
+uint32_t TestValueOf(const NonTrivialTestType &val) { return val.value; }
+uint32_t TestValueOf(const MoveOnlyTestType &val) { return val.value; }
+
+template <typename T>
+std::ostream &operator<<(std::ostream &os, const typename ring_buffer<T>::iterator &iter) {
 	return os << "Position: " << std::hex << iter.debug_raw_position();
 }
 
-void DumpRing(const ring_buffer<uint32_t> &ring)
+template <typename T>
+void DumpRing(const ring_buffer<T> &ring)
 {
 	char buffer[1024];
 	char *b = buffer;
 	const char *end = buffer + 1024;
 	b += snprintf(b, end - b, "Ring: Size: %u, Cap: %u, {", (uint)ring.size(), (uint)ring.capacity());
-	for (uint32_t it : ring) {
-		b += snprintf(b, end - b, " %u,", it);
+	for (const auto &it : ring) {
+		b += snprintf(b, end - b, " %u,", TestValueOf(it));
 	}
 	b--;
 	b += snprintf(b, end - b, " }");
@@ -32,7 +62,8 @@ void DumpRing(const ring_buffer<uint32_t> &ring)
 	WARN(buffer);
 }
 
-bool Matches(const ring_buffer<uint32_t> &ring, std::initializer_list<uint32_t> data)
+template <typename T>
+bool Matches(const ring_buffer<T> &ring, std::initializer_list<uint32_t> data)
 {
 	if (ring.size() != data.size()) {
 		DumpRing(ring);
@@ -40,8 +71,8 @@ bool Matches(const ring_buffer<uint32_t> &ring, std::initializer_list<uint32_t> 
 	}
 
 	auto data_iter = data.begin();
-	for (uint32_t it : ring) {
-		if (it != *data_iter) {
+	for (const auto &it : ring) {
+		if (TestValueOf(it) != *data_iter) {
 			DumpRing(ring);
 			return false;
 		}
@@ -51,9 +82,13 @@ bool Matches(const ring_buffer<uint32_t> &ring, std::initializer_list<uint32_t> 
 	return true;
 }
 
-TEST_CASE("RingBuffer - basic tests")
+static_assert(std::is_trivially_copyable_v<uint32_t>);
+static_assert(!std::is_trivially_copyable_v<NonTrivialTestType>);
+static_assert(!std::is_trivially_copyable_v<MoveOnlyTestType>);
+
+TEMPLATE_TEST_CASE("RingBuffer - basic tests", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
 {
-	ring_buffer<uint32_t> ring({ 1, 2, 3, 4, 5, 6 });
+	ring_buffer<TestType> ring({ 1, 2, 3, 4, 5, 6 });
 	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6 }));
 
 	ring.push_front(0);
@@ -75,9 +110,9 @@ TEST_CASE("RingBuffer - basic tests")
 	CHECK(ring[4] == 10);
 }
 
-TEST_CASE("RingBuffer - front resize")
+TEMPLATE_TEST_CASE("RingBuffer - front resize", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
 {
-	ring_buffer<uint32_t> ring({ 1, 2, 3, 4, 5, 6, 7, 8 });
+	ring_buffer<TestType> ring({ 1, 2, 3, 4, 5, 6, 7, 8 });
 	CHECK(ring.size() == 8);
 	CHECK(ring.capacity() == 8);
 
@@ -87,9 +122,9 @@ TEST_CASE("RingBuffer - front resize")
 	CHECK(ring.capacity() == 16);
 }
 
-TEST_CASE("RingBuffer - front resize 2")
+TEMPLATE_TEST_CASE("RingBuffer - front resize 2", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
 {
-	ring_buffer<uint32_t> ring({ 1, 2, 3, 4, 5, 6, 7, 8 });
+	ring_buffer<TestType> ring({ 1, 2, 3, 4, 5, 6, 7, 8 });
 	CHECK(ring.size() == 8);
 	CHECK(ring.capacity() == 8);
 
@@ -107,9 +142,9 @@ TEST_CASE("RingBuffer - front resize 2")
 	CHECK(ring.capacity() == 16);
 }
 
-TEST_CASE("RingBuffer - back resize")
+TEMPLATE_TEST_CASE("RingBuffer - back resize", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
 {
-	ring_buffer<uint32_t> ring({ 1, 2, 3, 4, 5, 6, 7, 8 });
+	ring_buffer<TestType> ring({ 1, 2, 3, 4, 5, 6, 7, 8 });
 	CHECK(ring.size() == 8);
 	CHECK(ring.capacity() == 8);
 
@@ -119,9 +154,9 @@ TEST_CASE("RingBuffer - back resize")
 	CHECK(ring.capacity() == 16);
 }
 
-TEST_CASE("RingBuffer - back resize 2")
+TEMPLATE_TEST_CASE("RingBuffer - back resize 2", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
 {
-	ring_buffer<uint32_t> ring({ 1, 2, 3, 4, 5, 6, 7, 8 });
+	ring_buffer<TestType> ring({ 1, 2, 3, 4, 5, 6, 7, 8 });
 	CHECK(ring.size() == 8);
 	CHECK(ring.capacity() == 8);
 
@@ -139,9 +174,9 @@ TEST_CASE("RingBuffer - back resize 2")
 	CHECK(ring.capacity() == 16);
 }
 
-TEST_CASE("RingBuffer - insert at ends no grow")
+TEMPLATE_TEST_CASE("RingBuffer - insert at ends no grow", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
 {
-	ring_buffer<uint32_t> ring({ 1, 2, 3, 4, 5, 6, 7 });
+	ring_buffer<TestType> ring({ 1, 2, 3, 4, 5, 6, 7 });
 	CHECK(ring.size() == 7);
 	CHECK(ring.capacity() == 8);
 
@@ -151,7 +186,7 @@ TEST_CASE("RingBuffer - insert at ends no grow")
 	CHECK(ring.capacity() == 8);
 	CHECK(iter == ring.begin());
 
-	ring = ring_buffer<uint32_t>({ 1, 2, 3, 4, 5, 6, 7 });
+	ring = ring_buffer<TestType>({ 1, 2, 3, 4, 5, 6, 7 });
 	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6, 7 }));
 	CHECK(ring.size() == 7);
 	CHECK(ring.capacity() == 8);
@@ -163,9 +198,9 @@ TEST_CASE("RingBuffer - insert at ends no grow")
 	CHECK(iter == ring.end() - 1);
 }
 
-TEST_CASE("RingBuffer - insert at ends shifted no grow")
+TEMPLATE_TEST_CASE("RingBuffer - insert at ends shifted no grow", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
 {
-	ring_buffer<uint32_t> ring({ 1, 2, 3, 4, 5, 6, 7 });
+	ring_buffer<TestType> ring({ 1, 2, 3, 4, 5, 6, 7 });
 	ring.pop_front();
 	ring.pop_front();
 	ring.push_back(20);
@@ -179,7 +214,7 @@ TEST_CASE("RingBuffer - insert at ends shifted no grow")
 	CHECK(ring.capacity() == 8);
 	CHECK(iter == ring.begin());
 
-	ring = ring_buffer<uint32_t>({ 1, 2, 3, 4, 5, 6, 7 });
+	ring = ring_buffer<TestType>({ 1, 2, 3, 4, 5, 6, 7 });
 	ring.pop_front();
 	ring.pop_front();
 	ring.push_back(20);
@@ -194,9 +229,9 @@ TEST_CASE("RingBuffer - insert at ends shifted no grow")
 	CHECK(iter == ring.end() - 1);
 }
 
-TEST_CASE("RingBuffer - insert in middle (begin) no grow")
+TEMPLATE_TEST_CASE("RingBuffer - insert in middle (begin) no grow", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
 {
-	ring_buffer<uint32_t> ring({ 1, 2, 3, 4, 5, 6, 7 });
+	ring_buffer<TestType> ring({ 1, 2, 3, 4, 5, 6, 7 });
 	ring.pop_front();
 	ring.pop_front();
 	ring.push_back(20);
@@ -205,8 +240,8 @@ TEST_CASE("RingBuffer - insert in middle (begin) no grow")
 	CHECK(ring.capacity() == 8);
 
 	/* Insert closer to beginning, beginning should be shifted backwards */
-	uint32_t *pre_begin = &ring[0];
-	uint32_t *pre_end = &ring[ring.size() - 1];
+	TestType *pre_begin = &ring[0];
+	TestType *pre_end = &ring[ring.size() - 1];
 	auto iter = ring.insert(ring.begin() + 2, 10);
 	CHECK(Matches(ring, { 3, 4, 10, 5, 6, 7, 20, 21 }));
 	CHECK(ring.size() == 8);
@@ -216,9 +251,9 @@ TEST_CASE("RingBuffer - insert in middle (begin) no grow")
 	CHECK(pre_end == &ring[ring.size() - 1]);
 }
 
-TEST_CASE("RingBuffer - insert in middle (end) no grow")
+TEMPLATE_TEST_CASE("RingBuffer - insert in middle (end) no grow", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
 {
-	ring_buffer<uint32_t> ring({ 1, 2, 3, 4, 5, 6, 7 });
+	ring_buffer<TestType> ring({ 1, 2, 3, 4, 5, 6, 7 });
 	ring.pop_front();
 	ring.pop_front();
 	ring.push_back(20);
@@ -227,8 +262,8 @@ TEST_CASE("RingBuffer - insert in middle (end) no grow")
 	CHECK(ring.capacity() == 8);
 
 	/* Insert closer to end, end should be shifted forwards */
-	uint32_t *pre_begin = &ring[0];
-	uint32_t *pre_end = &ring[ring.size() - 1];
+	TestType *pre_begin = &ring[0];
+	TestType *pre_end = &ring[ring.size() - 1];
 	auto iter = ring.insert(ring.begin() + 5, 10);
 	CHECK(Matches(ring, { 3, 4, 5, 6, 7, 10, 20, 21 }));
 	CHECK(ring.size() == 8);
@@ -238,9 +273,9 @@ TEST_CASE("RingBuffer - insert in middle (end) no grow")
 	CHECK(pre_end != &ring[ring.size() - 1]);
 }
 
-TEST_CASE("RingBuffer - insert at beginning grow")
+TEMPLATE_TEST_CASE("RingBuffer - insert at beginning grow", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
 {
-	ring_buffer<uint32_t> ring({ 3, 4, 5, 6, 7, 8 });
+	ring_buffer<TestType> ring({ 3, 4, 5, 6, 7, 8 });
 	ring.push_front(2);
 	ring.push_front(1);
 	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6, 7, 8 }));
@@ -252,9 +287,9 @@ TEST_CASE("RingBuffer - insert at beginning grow")
 	CHECK(iter == ring.begin());
 }
 
-TEST_CASE("RingBuffer - insert at end grow")
+TEMPLATE_TEST_CASE("RingBuffer - insert at end grow", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
 {
-	ring_buffer<uint32_t> ring({ 3, 4, 5, 6, 7, 8 });
+	ring_buffer<TestType> ring({ 3, 4, 5, 6, 7, 8 });
 	ring.push_front(2);
 	ring.push_front(1);
 	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6, 7, 8 }));
@@ -266,9 +301,9 @@ TEST_CASE("RingBuffer - insert at end grow")
 	CHECK(iter == ring.end() - 1);
 }
 
-TEST_CASE("RingBuffer - insert in middle (begin) grow")
+TEMPLATE_TEST_CASE("RingBuffer - insert in middle (begin) grow", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
 {
-	ring_buffer<uint32_t> ring({ 3, 4, 5, 6, 7, 8 });
+	ring_buffer<TestType> ring({ 3, 4, 5, 6, 7, 8 });
 	ring.push_front(2);
 	ring.push_front(1);
 	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6, 7, 8 }));
@@ -281,9 +316,9 @@ TEST_CASE("RingBuffer - insert in middle (begin) grow")
 	CHECK(iter == ring.begin() + 2);
 }
 
-TEST_CASE("RingBuffer - insert in middle (end) grow")
+TEMPLATE_TEST_CASE("RingBuffer - insert in middle (end) grow", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
 {
-	ring_buffer<uint32_t> ring({ 3, 4, 5, 6, 7, 8 });
+	ring_buffer<TestType> ring({ 3, 4, 5, 6, 7, 8 });
 	ring.push_front(2);
 	ring.push_front(1);
 	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6, 7, 8 }));
@@ -296,9 +331,9 @@ TEST_CASE("RingBuffer - insert in middle (end) grow")
 	CHECK(iter == ring.begin() + 6);
 }
 
-TEST_CASE("RingBuffer - insert multi at start")
+TEMPLATE_TEST_CASE("RingBuffer - insert multi at start", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
 {
-	ring_buffer<uint32_t> ring({ 3, 4, 5, 6, 7, 8 });
+	ring_buffer<TestType> ring({ 3, 4, 5, 6, 7, 8 });
 	auto iter = ring.insert(ring.begin(), { 1, 2 });
 	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6, 7, 8 }));
 	CHECK(ring.capacity() == 8);
@@ -315,9 +350,9 @@ TEST_CASE("RingBuffer - insert multi at start")
 	CHECK(iter == ring.begin());
 }
 
-TEST_CASE("RingBuffer - insert multi at end")
+TEMPLATE_TEST_CASE("RingBuffer - insert multi at end", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
 {
-	ring_buffer<uint32_t> ring({ 3, 4, 5, 6, 7, 8 });
+	ring_buffer<TestType> ring({ 3, 4, 5, 6, 7, 8 });
 	auto iter = ring.insert(ring.end(), { 1, 2 });
 	CHECK(Matches(ring, { 3, 4, 5, 6, 7, 8, 1, 2 }));
 	CHECK(ring.capacity() == 8);
@@ -334,9 +369,9 @@ TEST_CASE("RingBuffer - insert multi at end")
 	CHECK(iter == ring.end() - 2);
 }
 
-TEST_CASE("RingBuffer - insert multi in middle")
+TEMPLATE_TEST_CASE("RingBuffer - insert multi in middle", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
 {
-	ring_buffer<uint32_t> ring({ 3, 4, 5, 6, 7, 8 });
+	ring_buffer<TestType> ring({ 3, 4, 5, 6, 7, 8 });
 	auto iter = ring.insert(ring.begin() + 3, { 1, 2 });
 	CHECK(Matches(ring, { 3, 4, 5, 1, 2, 6, 7, 8 }));
 	CHECK(ring.capacity() == 8);
@@ -353,11 +388,11 @@ TEST_CASE("RingBuffer - insert multi in middle")
 	CHECK(iter == ring.begin() + 2);
 }
 
-TEST_CASE("RingBuffer - erase")
+TEMPLATE_TEST_CASE("RingBuffer - erase", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
 {
-	ring_buffer<uint32_t> ring;
+	ring_buffer<TestType> ring;
 	auto setup_ring = [&]() {
-		ring = ring_buffer<uint32_t>({ 3, 4, 5, 6, 7, 8 });
+		ring = ring_buffer<TestType>({ 3, 4, 5, 6, 7, 8 });
 		ring.push_front(2);
 		ring.push_front(1);
 		CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6, 7, 8 }));
@@ -365,7 +400,7 @@ TEST_CASE("RingBuffer - erase")
 	};
 
 	setup_ring();
-	uint32_t *expect_front = &ring[1];
+	TestType *expect_front = &ring[1];
 	auto iter = ring.erase(ring.begin());
 	CHECK(Matches(ring, { 2, 3, 4, 5, 6, 7, 8 }));
 	CHECK(ring.capacity() == 8);
@@ -373,7 +408,7 @@ TEST_CASE("RingBuffer - erase")
 	CHECK(expect_front == &ring[0]);
 
 	setup_ring();
-	uint32_t *expect_back = &ring[ring.size() - 2];
+	TestType *expect_back = &ring[ring.size() - 2];
 	iter = ring.erase(ring.end() - 1);
 	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6, 7 }));
 	CHECK(ring.capacity() == 8);
@@ -397,11 +432,11 @@ TEST_CASE("RingBuffer - erase")
 	CHECK(expect_back == &ring[ring.size() - 1]);
 }
 
-TEST_CASE("RingBuffer - erase multi")
+TEMPLATE_TEST_CASE("RingBuffer - erase multi", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
 {
-	ring_buffer<uint32_t> ring;
+	ring_buffer<TestType> ring;
 	auto setup_ring = [&]() {
-		ring = ring_buffer<uint32_t>({ 3, 4, 5, 6, 7, 8 });
+		ring = ring_buffer<TestType>({ 3, 4, 5, 6, 7, 8 });
 		ring.push_front(2);
 		ring.push_front(1);
 		CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6, 7, 8 }));
@@ -409,7 +444,7 @@ TEST_CASE("RingBuffer - erase multi")
 	};
 
 	setup_ring();
-	uint32_t *expect_front = &ring[2];
+	TestType *expect_front = &ring[2];
 	auto iter = ring.erase(ring.begin(), ring.begin() + 2);
 	CHECK(Matches(ring, { 3, 4, 5, 6, 7, 8 }));
 	CHECK(ring.capacity() == 8);
@@ -417,7 +452,7 @@ TEST_CASE("RingBuffer - erase multi")
 	CHECK(expect_front == &ring[0]);
 
 	setup_ring();
-	uint32_t *expect_back = &ring[ring.size() - 3];
+	TestType *expect_back = &ring[ring.size() - 3];
 	iter = ring.erase(ring.end() - 2, ring.end());
 	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6 }));
 	CHECK(ring.capacity() == 8);
@@ -447,9 +482,9 @@ TEST_CASE("RingBuffer - erase multi")
 	CHECK(iter == ring.begin() + 1);
 }
 
-TEST_CASE("RingBuffer - shrink to fit")
+TEMPLATE_TEST_CASE("RingBuffer - shrink to fit", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
 {
-	ring_buffer<uint32_t> ring({ 3, 4, 5, 6, 7, 8 });
+	ring_buffer<TestType> ring({ 3, 4, 5, 6, 7, 8 });
 	ring.push_front(2);
 	ring.push_front(1);
 	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6, 7, 8 }));
@@ -470,9 +505,9 @@ TEST_CASE("RingBuffer - shrink to fit")
 	CHECK(ring.capacity() == 8);
 }
 
-TEST_CASE("RingBuffer - reserve")
+TEMPLATE_TEST_CASE("RingBuffer - reserve", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
 {
-	ring_buffer<uint32_t> ring({ 3, 4, 5, 6, 7, 8 });
+	ring_buffer<TestType> ring({ 3, 4, 5, 6, 7, 8 });
 	ring.push_front(2);
 	ring.push_front(1);
 	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6, 7, 8 }));
@@ -483,9 +518,9 @@ TEST_CASE("RingBuffer - reserve")
 	CHECK(ring.capacity() == 16);
 }
 
-TEST_CASE("RingBuffer - resize")
+TEMPLATE_TEST_CASE("RingBuffer - resize", "[ring]", uint8_t, uint32_t, NonTrivialTestType)
 {
-	ring_buffer<uint32_t> ring({ 3, 4, 5, 6, 7, 8 });
+	ring_buffer<TestType> ring({ 3, 4, 5, 6, 7, 8 });
 	ring.push_front(2);
 	ring.push_front(1);
 	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6, 7, 8 }));
@@ -494,4 +529,29 @@ TEST_CASE("RingBuffer - resize")
 	ring.resize(12);
 	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6, 7, 8, 0, 0, 0, 0 }));
 	CHECK(ring.capacity() == 16);
+}
+
+TEMPLATE_TEST_CASE("RingBuffer - basic move-only test", "[ring]", uint8_t, uint32_t, NonTrivialTestType, MoveOnlyTestType)
+{
+	TestType init[] = { 1, 2, 3, 4, 5, 6 };
+	ring_buffer<TestType> ring(std::make_move_iterator(std::begin(init)), std::make_move_iterator(std::end(init)));
+	CHECK(Matches(ring, { 1, 2, 3, 4, 5, 6 }));
+
+	ring.push_front(0);
+	CHECK(Matches(ring, { 0, 1, 2, 3, 4, 5, 6 }));
+
+	ring.pop_back();
+	CHECK(Matches(ring, { 0, 1, 2, 3, 4, 5 }));
+
+	ring.push_back(10);
+	ring.push_back(11);
+	CHECK(Matches(ring, { 0, 1, 2, 3, 4, 5, 10, 11 }));
+
+	ring.pop_front();
+	ring.pop_front();
+	CHECK(Matches(ring, { 2, 3, 4, 5, 10, 11 }));
+	CHECK(ring.capacity() == 8);
+
+	CHECK(ring[0] == 2);
+	CHECK(ring[4] == 10);
 }
