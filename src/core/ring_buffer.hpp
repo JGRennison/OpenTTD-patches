@@ -264,10 +264,14 @@ public:
 				}
 				this->head = 0;
 				this->count = other.count;
-				uint8_t *ptr = this->data.get();
-				for (const T &item : other) {
-					new (ptr) T(item);
-					ptr += sizeof(T);
+				if constexpr (std::is_trivially_copyable_v<T>) {
+					other.memcpy_to(this->data.get());
+				} else {
+					uint8_t *ptr = this->data.get();
+					for (const T &item : other) {
+						new (ptr) T(item);
+						ptr += sizeof(T);
+					}
 				}
 			}
 		}
@@ -338,15 +342,47 @@ public:
 	}
 
 private:
+	uint8_t *memcpy_to(uint8_t *target, uint32_t start_pos, uint32_t end_pos) const
+	{
+		if (start_pos == end_pos) return target;
+
+		const uint8_t *start_ptr = static_cast<const uint8_t *>(this->raw_ptr_at_pos(start_pos));
+		const uint8_t *end_ptr = static_cast<const uint8_t *>(this->raw_ptr_at_pos(end_pos));
+		if (end_ptr <= start_ptr) {
+			/* Copy in two chunks due to wrap */
+
+			const uint8_t *buffer_end = this->data.get() + (this->capacity() * sizeof(T));
+			memcpy(target, start_ptr, buffer_end - start_ptr);
+			target += buffer_end - start_ptr;
+
+			memcpy(target, this->data.get(), end_ptr - this->data.get());
+			target += end_ptr - this->data.get();
+		} else {
+			/* Copy in one chunk */
+			memcpy(target, start_ptr, end_ptr - start_ptr);
+			target += end_ptr - start_ptr;
+		}
+		return target;
+	}
+
+	uint8_t *memcpy_to(uint8_t *target) const
+	{
+		return this->memcpy_to(target, this->head, this->head + this->count);
+	}
+
 	void reallocate(uint32_t new_cap)
 	{
 		const uint32_t cap = round_up_size(new_cap);
 		uint8_t *new_buf = MallocT<uint8_t>(cap * sizeof(T));
-		uint8_t *pos = new_buf;
-		for (T &item : *this) {
-			new (pos) T(std::move(item));
-			item.~T();
-			pos += sizeof(T);
+		if constexpr (std::is_trivially_copyable_v<T>) {
+			this->memcpy_to(new_buf);
+		} else {
+			uint8_t *pos = new_buf;
+			for (T &item : *this) {
+				new (pos) T(std::move(item));
+				item.~T();
+				pos += sizeof(T);
+			}
 		}
 		this->mask = cap - 1;
 		this->head = 0;
@@ -523,17 +559,22 @@ private:
 			/* grow container */
 			const uint32_t cap = round_up_size(this->count + num);
 			uint8_t *new_buf = MallocT<uint8_t>(cap * sizeof(T));
-			uint8_t *write_to = new_buf;
-			const uint32_t end = this->head + this->count;
-			for (uint32_t idx = this->head; idx != end; idx++) {
-				if (idx == pos) {
-					/* gap for inserted items */
-					write_to += num * sizeof(T);
+			if constexpr (std::is_trivially_copyable_v<T>) {
+				uint8_t *insert_gap = this->memcpy_to(new_buf, this->head, pos);
+				this->memcpy_to(insert_gap + (num * sizeof(T)), pos, this->head + this->count);
+			} else {
+				uint8_t *write_to = new_buf;
+				const uint32_t end = this->head + this->count;
+				for (uint32_t idx = this->head; idx != end; idx++) {
+					if (idx == pos) {
+						/* gap for inserted items */
+						write_to += num * sizeof(T);
+					}
+					T &item = *this->ptr_at_pos(idx);
+					new (write_to) T(std::move(item));
+					item.~T();
+					write_to += sizeof(T);
 				}
-				T &item = *this->ptr_at_pos(idx);
-				new (write_to) T(std::move(item));
-				item.~T();
-				write_to += sizeof(T);
 			}
 			uint32_t res = pos - this->head;
 			this->mask = cap - 1;
