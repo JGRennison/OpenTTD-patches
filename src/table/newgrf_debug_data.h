@@ -240,8 +240,8 @@ class NIHVehicle : public NIHelper {
 					v->current_loading_time, v->current_loading_time / _settings_time.ticks_per_minute);
 			output.print(buffer);
 		}
-		seprintf(buffer, lastof(buffer), "  Speed: %u, sub-speed: %u, acceleration: %u",
-				v->cur_speed, v->subspeed, v->acceleration);
+		seprintf(buffer, lastof(buffer), "  Speed: %u, sub-speed: %u, progress: %u, acceleration: %u",
+				v->cur_speed, v->subspeed, v->progress, v->acceleration);
 		output.print(buffer);
 		seprintf(buffer, lastof(buffer), "  Reliability: %u, spd_dec: %u, needs service: %s",
 				v->reliability, v->reliability_spd_dec, v->NeedsServicing() ? "yes" : "no");
