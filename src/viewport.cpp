@@ -607,7 +607,9 @@ void ClearViewportCache(Viewport *vp)
 {
 	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
 		memset(vp->map_draw_vehicles_cache.done_hash_bits, 0, sizeof(vp->map_draw_vehicles_cache.done_hash_bits));
-		vp->map_draw_vehicles_cache.vehicle_pixels.assign(vp->map_draw_vehicles_cache.vehicle_pixels.size(), false);
+		if (!vp->map_draw_vehicles_cache.vehicle_pixels.empty()) {
+			MemSetT(vp->map_draw_vehicles_cache.vehicle_pixels.data(), 0, vp->map_draw_vehicles_cache.vehicle_pixels.size());
+		}
 	}
 }
 
@@ -4444,7 +4446,7 @@ void UpdateViewportSizeZoom(Viewport *vp)
 	UpdateViewportDirtyBlockLeftMargin(vp);
 	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
 		memset(vp->map_draw_vehicles_cache.done_hash_bits, 0, sizeof(vp->map_draw_vehicles_cache.done_hash_bits));
-		vp->map_draw_vehicles_cache.vehicle_pixels.assign(vp->ScreenArea(), false);
+		vp->map_draw_vehicles_cache.vehicle_pixels.assign(CeilDivT<size_t>(vp->ScreenArea(), VP_BLOCK_BITS), 0);
 
 		if (BlitterFactory::GetCurrentBlitter()->GetScreenDepth() == 32) {
 			vp->land_pixel_cache.assign(vp->ScreenArea() * 4, 0xD7);

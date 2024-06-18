@@ -14,6 +14,7 @@
 #include "strings_type.h"
 #include "table/strings.h"
 
+#include <limits>
 #include <vector>
 
 class LinkGraphOverlay;
@@ -30,9 +31,12 @@ enum ViewportMapType {
 	VPMT_MAX = VPMT_INDUSTRY,
 };
 
+using ViewPortBlockT = size_t;
+static constexpr uint VP_BLOCK_BITS = std::numeric_limits<ViewPortBlockT>::digits;
+
 struct ViewPortMapDrawVehiclesCache {
 	uint64_t done_hash_bits[64];
-	std::vector<bool> vehicle_pixels;
+	std::vector<ViewPortBlockT> vehicle_pixels;
 };
 
 /**

@@ -2081,7 +2081,8 @@ void ViewportMapDrawVehicles(DrawPixelInfo *dpi, Viewport *vp)
 							if (pt.x >= l && pt.x < r && pt.y >= t && pt.y < b) {
 								const int pixel_x = UnScaleByZoomLower(pt.x - l, dpi->zoom);
 								const int pixel_y = UnScaleByZoomLower(pt.y - t, dpi->zoom);
-								vp->map_draw_vehicles_cache.vehicle_pixels[pixel_x + (pixel_y) * vp->width] = true;
+								const int pos = pixel_x + (pixel_y) * vp->width;
+								SetBit(vp->map_draw_vehicles_cache.vehicle_pixels[pos / VP_BLOCK_BITS], pos % VP_BLOCK_BITS);
 							}
 						}
 						v = v->hash_viewport_next;
@@ -2103,9 +2104,17 @@ void ViewportMapDrawVehicles(DrawPixelInfo *dpi, Viewport *vp)
 	const int db = UnScaleByZoomLower(dpi->top + dpi->height - (vp->virtual_top & mask), dpi->zoom);
 	int y_ptr = vp->width * dt;
 	for (int y = dt; y < db; y++, y_ptr += vp->width) {
-		for (int x = dl; x < dr; x++) {
-			if (vp->map_draw_vehicles_cache.vehicle_pixels[y_ptr + x]) {
-				blitter->SetPixel32(dpi->dst_ptr, x - dl, y - dt, PC_WHITE, Colour(0xFC, 0xFC, 0xFC).data);
+		const uint row_start = static_cast<uint>(y_ptr + dl);
+		const uint row_end = static_cast<uint>(y_ptr + dr);
+
+		ViewPortBlockT ignore_mask = GetBitMaskSC<ViewPortBlockT>(0, row_start % VP_BLOCK_BITS);
+		const ViewPortBlockT *ptr = vp->map_draw_vehicles_cache.vehicle_pixels.data() + (row_start / VP_BLOCK_BITS);
+		for (uint block = row_start - (row_start % VP_BLOCK_BITS); block < row_end; block += VP_BLOCK_BITS, ignore_mask = 0, ptr++) {
+			const ViewPortBlockT value = *ptr & ~ignore_mask;
+			for (uint8_t bit : SetBitIterator(value)) {
+				uint pos = block + bit;
+				if (pos >= row_end) break;
+				blitter->SetPixel32(dpi->dst_ptr, pos - row_start, y - dt, PC_WHITE, Colour(0xFC, 0xFC, 0xFC).data);
 			}
 		}
 	}
