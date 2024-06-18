@@ -395,7 +395,7 @@ static SigInfo ExploreSegment(Owner owner)
 						 * ANY conventional signal in REVERSE direction
 						 * (if it is a presignal EXIT and it changes, it will be added to 'to-be-done' set later) */
 						if (HasSignalOnTrackdir(tile, reversedir)) {
-							if (IsPbsSignalNonExtended(sig)) {
+							if (IsPbsSignalNonExtended(sig) || IsNoEntrySignal(sig)) {
 								info.flags |= SF_PBS;
 								if (_extra_aspects > 0 && GetSignalStateByTrackdir(tile, reversedir) == SIGNAL_STATE_GREEN && !IsRailSpecialSignalAspect(tile, track)) {
 									_tbpset.Add(tile, reversedir);
@@ -407,7 +407,7 @@ static SigInfo ExploreSegment(Owner owner)
 						}
 
 						if (HasSignalOnTrackdir(tile, trackdir)) {
-							if (!IsOnewaySignal(sig)) info.flags |= SF_PBS;
+							if (!IsOnewaySignal(sig) || IsNoEntrySignal(sig)) info.flags |= SF_PBS;
 							if (_extra_aspects > 0) {
 								info.out_signal_tile = tile;
 								info.out_signal_trackdir = trackdir;
