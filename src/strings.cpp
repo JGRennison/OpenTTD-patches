@@ -1957,7 +1957,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 								string_id = indsp->station_name;
 							}
 						}
-						if (st->extra_name_index != UINT16_MAX && st->extra_name_index < _extra_station_names_used) {
+						if (st->extra_name_index != UINT16_MAX && st->extra_name_index < _extra_station_names.size()) {
 							string_id = _extra_station_names[st->extra_name_index].str;
 						}
 

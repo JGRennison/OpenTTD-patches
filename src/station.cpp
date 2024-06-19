@@ -39,8 +39,7 @@
 StationPool _station_pool("Station");
 INSTANTIATE_POOL_METHODS(Station)
 
-std::array<ExtraStationNameInfo, MAX_EXTRA_STATION_NAMES> _extra_station_names;
-uint _extra_station_names_used;
+std::vector<ExtraStationNameInfo> _extra_station_names;
 uint8_t _extra_station_names_probability;
 
 const StationCargoList _empty_cargo_list{};
@@ -768,4 +767,12 @@ Money AirportMaintenanceCost(Owner owner)
 bool StationCompare::operator() (const Station *lhs, const Station *rhs) const
 {
 	return lhs->index < rhs->index;
+}
+
+void ClearExtraStationNames()
+{
+	_extra_station_names.clear();
+	_extra_station_names.shrink_to_fit();
+
+	_extra_station_names_probability = 0;
 }

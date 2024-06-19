@@ -319,13 +319,13 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 		return STR_SV_STNAME;
 	}
 
-	bool use_extra_names = _extra_station_names_used > 0;
+	bool use_extra_names = !_extra_station_names.empty();
 	auto check_extra_names = [&]() -> bool {
 		if (use_extra_names) {
 			use_extra_names = false;
 			const bool near_water = CountMapSquareAround(tile, CMSAWater) >= 5;
 			std::vector<uint16_t> candidates;
-			for (uint i = 0; i < _extra_station_names_used; i++) {
+			for (size_t i = 0; i < _extra_station_names.size(); i++) {
 				const ExtraStationNameInfo &info = _extra_station_names[i];
 				if (extra_names[i]) continue;
 				if (!HasBit(info.flags, name_class)) continue;
