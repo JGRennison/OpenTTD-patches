@@ -1254,10 +1254,13 @@ static void SlString(void *ptr, size_t length, VarType conv)
  * @param ptr the string being manipulated
  * @param conv must be SLE_FILE_STRING
  */
-void SlStdString(std::string &str, VarType conv)
+void SlStdString(std::string *ptr, VarType conv)
 {
 	switch (_sl.action) {
 		case SLA_SAVE: {
+			dbg_assert(ptr != nullptr);
+			std::string &str = *ptr;
+
 			SlWriteArrayLength(str.size());
 			SlCopyBytes(str.data(), str.size());
 			break;
@@ -1269,6 +1272,9 @@ void SlStdString(std::string &str, VarType conv)
 				SlSkipBytes(len);
 				return;
 			}
+
+			dbg_assert(ptr != nullptr);
+			std::string &str = *ptr;
 
 			str.resize(len);
 			SlCopyBytes(str.data(), len);
@@ -1992,7 +1998,7 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 					}
 					break;
 				}
-				case SL_STDSTR: SlStdString(*static_cast<std::string *>(ptr), sld.conv); break;
+				case SL_STDSTR: SlStdString(static_cast<std::string *>(ptr), sld.conv); break;
 				default: NOT_REACHED();
 			}
 			break;
@@ -2216,7 +2222,7 @@ std::vector<SaveLoad> SlTableHeader(const NamedSaveLoadTable &slt)
 				}
 
 				std::string key;
-				SlStdString(key, SLE_STR);
+				SlStdString(&key, SLE_STR);
 
 				auto sld_it = std::lower_bound(key_lookup.begin(), key_lookup.end(), key);
 				if (sld_it == key_lookup.end() || sld_it->name != key) {

@@ -325,7 +325,7 @@ static void SaveDispatchSchedule(DispatchSchedule &ds)
 		SlWriteUint32((uint32_t)names.size());
 		for (auto &it : names) {
 			SlWriteUint32(it.first);
-			SlStdString(it.second, SLE_STR);
+			SlStdString(&(it.second), SLE_STR);
 		}
 	}
 }
@@ -354,7 +354,7 @@ static void LoadDispatchSchedule(DispatchSchedule &ds)
 		btree::btree_map<uint32_t, std::string> &names = ds.GetSupplementaryNameMap();
 		for (uint32_t i = 0; i < string_count; i++) {
 			uint32_t key = SlReadUint32();
-			SlStdString(names[key], SLE_STR);
+			SlStdString(&(names[key]), SLE_STR);
 		}
 	}
 }
