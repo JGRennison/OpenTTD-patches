@@ -1014,16 +1014,15 @@ Point TranslateXYToTileCoord(const Viewport *vp, int x, int y, bool clamp_to_map
  * when you just want the tile, make x = zoom_x and y = zoom_y */
 static Point GetTileFromScreenXY(int x, int y, int zoom_x, int zoom_y)
 {
-	Window *w;
-	Viewport *vp;
-	Point pt;
+	Window *w = FindWindowFromPt(x, y);
+	if (w != nullptr) {
+		Viewport *vp = IsPtInWindowViewport(w, x, y);
+		if (vp != nullptr) {
+			return TranslateXYToTileCoord(vp, zoom_x, zoom_y);
+		}
+	}
 
-	if ( (w = FindWindowFromPt(x, y)) != nullptr &&
-			 (vp = IsPtInWindowViewport(w, x, y)) != nullptr)
-				return TranslateXYToTileCoord(vp, zoom_x, zoom_y);
-
-	pt.y = pt.x = -1;
-	return pt;
+	return { -1, -1 };
 }
 
 Point GetTileBelowCursor()
@@ -1210,8 +1209,9 @@ static void AddCombinedSprite(SpriteID image, PaletteID pal, int x, int y, int z
 	if (left >= _vdd->dpi.left + _vdd->dpi.width ||
 			right <= _vdd->dpi.left ||
 			top >= _vdd->dpi.top + _vdd->dpi.height ||
-			bottom <= _vdd->dpi.top)
+			bottom <= _vdd->dpi.top) {
 		return;
+	}
 
 	AddChildSpriteScreen(image, pal, pt.x, pt.y, false, sub, false, ChildScreenSpritePositionMode::Absolute);
 	if (left < _vd.combine_left) _vd.combine_left = left;
@@ -4471,11 +4471,11 @@ void UpdateViewportSizeZoom(Viewport *vp)
 
 void UpdateActiveScrollingViewport(Window *w)
 {
-	if (w && (!_settings_client.gui.show_scrolling_viewport_on_map || w->viewport->zoom >= ZOOM_LVL_DRAW_MAP)) w = nullptr;
+	if (w != nullptr && (!_settings_client.gui.show_scrolling_viewport_on_map || w->viewport->zoom >= ZOOM_LVL_DRAW_MAP)) w = nullptr;
 
 	const bool bound_valid = (_scrolling_viewport_bound.left != _scrolling_viewport_bound.right);
 
-	if (!w && !bound_valid) return;
+	if (w == nullptr && !bound_valid) return;
 
 	const int gap = ScaleByZoom(1, ZOOM_LVL_MAX);
 
@@ -4483,11 +4483,11 @@ void UpdateActiveScrollingViewport(Window *w)
 		return { vp->next_scrollpos_x, vp->next_scrollpos_y, vp->next_scrollpos_x + vp->virtual_width + 1, vp->next_scrollpos_y + vp->virtual_height + 1 };
 	};
 
-	if (w && !bound_valid) {
+	if (w != nullptr  && !bound_valid) {
 		const Rect bounds = get_bounds(w->viewport);
 		MarkAllViewportMapsDirty(bounds.left, bounds.top, bounds.right, bounds.bottom);
 		_scrolling_viewport_bound = bounds;
-	} else if (!w && bound_valid) {
+	} else if (w == nullptr && bound_valid) {
 		const Rect &bounds = _scrolling_viewport_bound;
 		MarkAllViewportMapsDirty(bounds.left, bounds.top, bounds.right, bounds.bottom);
 		_scrolling_viewport_bound = { 0, 0, 0, 0 };
@@ -4797,8 +4797,8 @@ void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile, Viewp
 
 static void MarkRoutePathsDirty(const std::vector<DrawnPathRouteTileLine> &lines)
 {
-	for (std::vector<DrawnPathRouteTileLine>::const_iterator it = lines.begin(); it != lines.end(); ++it) {
-		MarkTileLineDirty(it->from_tile, it->to_tile, VMDF_NOT_LANDSCAPE);
+	for (const DrawnPathRouteTileLine &it : lines) {
+		MarkTileLineDirty(it.from_tile, it.to_tile, VMDF_NOT_LANDSCAPE);
 	}
 }
 
