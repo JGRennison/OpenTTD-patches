@@ -4441,8 +4441,8 @@ void UpdateViewportSizeZoom(Viewport *vp)
 {
 	vp->dirty_blocks_per_column = CeilDiv(vp->height, vp->GetDirtyBlockHeight());
 	vp->dirty_blocks_per_row = CeilDiv(vp->width, vp->GetDirtyBlockWidth());
-	uint size = vp->dirty_blocks_per_row * vp->dirty_blocks_per_column;
-	vp->dirty_blocks.assign(size, false);
+	vp->dirty_blocks_column_pitch = CeilDivT(vp->dirty_blocks_per_column, VP_BLOCK_BITS);
+	vp->dirty_blocks.assign(vp->dirty_blocks_column_pitch * vp->dirty_blocks_per_row, 0);
 	UpdateViewportDirtyBlockLeftMargin(vp);
 	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
 		memset(vp->map_draw_vehicles_cache.done_hash_bits, 0, sizeof(vp->map_draw_vehicles_cache.done_hash_bits));
@@ -4539,14 +4539,39 @@ void MarkViewportDirty(Viewport * const vp, int left, int top, int right, int bo
 	uint w = (std::max<int>(0, UnScaleByZoom(right, vp->zoom) - 1 - vp->dirty_block_left_margin) >> vp->GetDirtyBlockWidthShift()) + 1 - x;
 	uint h = ((UnScaleByZoom(bottom, vp->zoom) - 1) >> vp->GetDirtyBlockHeightShift()) + 1 - y;
 
-	uint column_skip = vp->dirty_blocks_per_column - h;
-	uint pos = (x * vp->dirty_blocks_per_column) + y;
-	for (uint i = 0; i < w; i++) {
-		for (uint j = 0; j < h; j++) {
-			vp->dirty_blocks[pos] = true;
-			pos++;
+	if (w == 0 || h == 0) return;
+
+	uint col_start = (x * vp->dirty_blocks_column_pitch) + (y / VP_BLOCK_BITS);
+	uint y_end = y + h;
+	if ((y_end - 1) / VP_BLOCK_BITS == y / VP_BLOCK_BITS) {
+		/* Only dirtying a single block row */
+		const ViewPortBlockT mask = GetBitMaskSC<ViewPortBlockT>(y % VP_BLOCK_BITS, h);
+		for (uint i = 0; i < w; i++, col_start += vp->dirty_blocks_column_pitch) {
+			vp->dirty_blocks[col_start] |= mask;
 		}
-		pos += column_skip;
+	} else {
+		/* Dirtying multiple block rows */
+		const uint h_non_first = y_end - Align(y + 1, VP_BLOCK_BITS); // Height, excluding the first block
+		for (uint i = 0; i < w; i++, col_start += vp->dirty_blocks_column_pitch) {
+			uint pos = col_start;
+
+			/* Set only high bits for first block in column */
+			vp->dirty_blocks[pos] |= (~static_cast<ViewPortBlockT>(0)) << (y % VP_BLOCK_BITS);
+
+			uint left = h_non_first;
+			while (left > 0) {
+				pos++;
+				if (left < VP_BLOCK_BITS) {
+					/* Set only low bits for last block in column */
+					vp->dirty_blocks[pos] |= GetBitMaskSC<ViewPortBlockT>(0, left);
+					break;
+				} else {
+					/* Set all bits for middle blocks in column */
+					vp->dirty_blocks[pos] = ~static_cast<ViewPortBlockT>(0);
+				}
+				left -= VP_BLOCK_BITS;
+			}
+		}
 	}
 	vp->is_dirty = true;
 

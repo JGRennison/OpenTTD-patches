@@ -3514,7 +3514,7 @@ DEF_CONSOLE_CMD(ConViewportMarkDirty)
 	uint b = std::min<uint>(t + ((argc > 4) ? strtoul(argv[4], nullptr, 0) : 1), vp->dirty_blocks_per_column);
 	for (uint x = l; x < r; x++) {
 		for (uint y = t; y < b; y++) {
-			vp->dirty_blocks[(x * vp->dirty_blocks_per_column) + y] = true;
+			SetBit(vp->dirty_blocks[(x * vp->dirty_blocks_column_pitch) + (y / VP_BLOCK_BITS)], y % VP_BLOCK_BITS);
 		}
 	}
 	vp->is_dirty = true;

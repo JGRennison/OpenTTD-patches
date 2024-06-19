@@ -58,7 +58,8 @@ struct Viewport {
 
 	LinkGraphOverlay *overlay;
 
-	std::vector<bool> dirty_blocks;
+	std::vector<ViewPortBlockT> dirty_blocks;
+	uint dirty_blocks_column_pitch;
 	uint dirty_blocks_per_column;
 	uint dirty_blocks_per_row;
 	uint8_t dirty_block_left_margin;

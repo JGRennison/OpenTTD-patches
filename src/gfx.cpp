@@ -1667,52 +1667,93 @@ void DrawDirtyBlocks()
 					}
 
 					const uint grid_w = vp->dirty_blocks_per_row;
-					const uint grid_h = vp->dirty_blocks_per_column;
 
-					uint pos = 0;
-					uint x = 0;
-					do {
-						uint y = 0;
-						do {
-							if (vp->dirty_blocks[pos]) {
-								uint left = x;
-								uint top = y;
+					uint column_pos = 0;
+					for (uint x = 0; x < grid_w; x++, column_pos += vp->dirty_blocks_column_pitch) {
+						for (uint offset = 0; offset < vp->dirty_blocks_column_pitch; offset++) {
+							const uint start = column_pos + offset;
+							while (vp->dirty_blocks[start] != 0) {
+								const ViewPortBlockT first_block = vp->dirty_blocks[start];
+								const uint first_block_start = FindFirstBit(first_block);
+								const uint left = x;
 								uint right = x + 1;
-								uint bottom = y;
-								uint p = pos;
+								const uint top = (offset * VP_BLOCK_BITS) + first_block_start;
 
 								/* First try coalescing downwards */
-								do {
-									vp->dirty_blocks[p] = false;
-									p++;
-									bottom++;
-								} while (bottom != grid_h && vp->dirty_blocks[p]);
+
+								/* First block */
+								const uint first_block_count = std::countr_one(first_block >> first_block_start);
+								vp->dirty_blocks[start] &= ~GetBitMaskSC<ViewPortBlockT>(0, first_block_start + first_block_count);
+
+								const ViewPortBlockT first_block_bits = first_block ^ vp->dirty_blocks[start];
+
+								uint bottom = top + first_block_count;
+								uint non_first_complete_blocks = 0;
+								ViewPortBlockT last_partial_block_bits = 0;
+
+								if (bottom % VP_BLOCK_BITS == 0) {
+									/* First block ended at the block boundary, continue at the next block */
+									for (uint block_y = offset + 1; block_y < vp->dirty_blocks_column_pitch; block_y++) {
+										ViewPortBlockT &current_block = vp->dirty_blocks[column_pos + block_y];
+										if (current_block == 0) break;
+										const uint count = std::countr_one(current_block);
+										bottom += count;
+										if (count == VP_BLOCK_BITS) {
+											/* Complete block */
+											current_block = 0;
+											non_first_complete_blocks++;
+										} else {
+											/* Partial block, stop here */
+											last_partial_block_bits = GetBitMaskSC<ViewPortBlockT>(0, count);
+											current_block &= ~last_partial_block_bits;
+											break;
+										}
+									}
+								}
 
 								/* Try coalescing to the right too. */
-								uint block_h = (bottom - y);
-								p = pos;
-
+								uint next_col_pos = start;
 								while (right != grid_w) {
-									uint p2 = (p += grid_h);
-									uint check_h = block_h;
-									/* Check if a full line of dirty flags is set. */
-									do {
-										if (!vp->dirty_blocks[p2]) goto no_more_coalesc;
-										p2++;
-									} while (--check_h != 0);
+									next_col_pos += vp->dirty_blocks_column_pitch;
+									uint pos = next_col_pos;
+
+									if ((vp->dirty_blocks[pos] & first_block_bits) != first_block_bits) {
+										/* First block doesn't match, give up */
+										break;
+									}
+									pos++;
+									if (non_first_complete_blocks > 0) {
+										auto iter = vp->dirty_blocks.begin() + pos;
+										auto not_all_bits_set = [](const ViewPortBlockT &val) {
+											return (~val) != 0;
+										};
+										if (std::any_of(iter, iter + non_first_complete_blocks, not_all_bits_set)) {
+											/* Complete blocks don't match, give up */
+											break;
+										}
+										pos += non_first_complete_blocks;
+									}
+									if (last_partial_block_bits != 0 && (vp->dirty_blocks[pos] & last_partial_block_bits) != last_partial_block_bits) {
+										/* Last block doesn't match, give up */
+										break;
+									}
 
 									/* Wohoo, can combine it one step to the right!
 									 * Do that, and clear the bits. */
 									right++;
 
-									check_h = block_h;
-									p2 = p;
-									do {
-										vp->dirty_blocks[p2] = false;
-										p2++;
-									} while (--check_h != 0);
+									pos = next_col_pos;
+									vp->dirty_blocks[pos] &= ~first_block_bits;
+									pos++;
+									if (non_first_complete_blocks > 0) {
+										auto iter = vp->dirty_blocks.begin() + pos;
+										std::fill(iter, iter + non_first_complete_blocks, 0);
+										pos += non_first_complete_blocks;
+									}
+									if (last_partial_block_bits != 0) {
+										vp->dirty_blocks[pos] &= ~last_partial_block_bits;
+									}
 								}
-								no_more_coalesc:
 
 								assert(_cur_dpi == &bk);
 								int draw_left = std::max<int>(0, ((left == 0) ? 0 : vp->dirty_block_left_margin + (left << vp->GetDirtyBlockWidthShift())) + vp->left);
@@ -1723,8 +1764,8 @@ void DrawDirtyBlocks()
 									DrawDirtyViewport(0, draw_left, draw_top, draw_right, draw_bottom);
 								}
 							}
-						} while (pos++, ++y != grid_h);
-					} while (++x != grid_w);
+						}
+					}
 
 					_transparency_opt = to_backup;
 					w->viewport->ClearDirty();
