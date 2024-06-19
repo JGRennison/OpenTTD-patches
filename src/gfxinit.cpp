@@ -154,11 +154,8 @@ void CheckExternalFiles()
 
 void InitGRFGlobalVars()
 {
-	extern uint _extra_station_names_used;
-	_extra_station_names_used = 0;
-
-	extern uint8_t _extra_station_names_probability;
-	_extra_station_names_probability = 0;
+	extern void ClearExtraStationNames();
+	ClearExtraStationNames();
 
 	extern bool _allow_rocks_desert;
 	_allow_rocks_desert = false;

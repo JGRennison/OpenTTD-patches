@@ -50,8 +50,7 @@ struct ExtraStationNameInfo {
 	uint16_t flags;
 };
 
-extern std::array<ExtraStationNameInfo, MAX_EXTRA_STATION_NAMES> _extra_station_names;
-extern uint _extra_station_names_used;
+extern std::vector<ExtraStationNameInfo> _extra_station_names;
 extern uint8_t _extra_station_names_probability;
 
 class FlowStatMap;

@@ -2925,11 +2925,11 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
 				uint16_t str = buf->ReadWord();
 				uint16_t flags = buf->ReadWord();
-				if (_extra_station_names_used < MAX_EXTRA_STATION_NAMES) {
-					ExtraStationNameInfo &info = _extra_station_names[_extra_station_names_used];
-					AddStringForMapping(str, &info.str);
+				if (_extra_station_names.size() < MAX_EXTRA_STATION_NAMES) {
+					size_t idx = _extra_station_names.size();
+					ExtraStationNameInfo &info = _extra_station_names.emplace_back();
+					AddStringForMapping(str, idx, [](StringID str, size_t idx) { _extra_station_names[idx].str = str; });
 					info.flags = flags;
-					_extra_station_names_used++;
 				}
 				break;
 			}
