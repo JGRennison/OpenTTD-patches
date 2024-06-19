@@ -13,6 +13,7 @@
 
 #include "newgrf_internal.h"
 #include "core/container_func.hpp"
+#include "core/bit_cast.hpp"
 #include "debug.h"
 #include "debug_fmt.h"
 #include "fileio_func.h"
@@ -388,15 +389,18 @@ static GRFError *DisableGrf(StringID message = STR_NULL, GRFConfig *config = nul
 	return &config->error.value();
 }
 
+using StringIDMappingHandler = void(*)(StringID, uintptr_t);
+
 /**
  * Information for mapping static StringIDs.
  */
 struct StringIDMapping {
 	uint32_t grfid;   ///< Source NewGRF.
 	StringID source;  ///< Source StringID (GRF local).
-	std::function<void(StringID)> func; ///< Function for mapping result.
+	StringIDMappingHandler func; ///< Function for mapping result.
+	uintptr_t func_data;         ///< Data for func.
 
-	StringIDMapping(uint32_t grfid, StringID source, std::function<void(StringID)> &&func) : grfid(grfid), source(source), func(std::move(func)) { }
+	StringIDMapping(uint32_t grfid, StringID source, uintptr_t func_data, StringIDMappingHandler func) : grfid(grfid), source(source), func(func), func_data(func_data) { }
 };
 
 /** Strings to be mapped during load. */
@@ -405,22 +409,31 @@ static std::vector<StringIDMapping> _string_to_grf_mapping;
 /**
  * Record a static StringID for getting translated later.
  * @param source Source StringID (GRF local).
- * @param func Function to call to set the mapping result.
+ * @param target Destination for the mapping result.
  */
-static void AddStringForMapping(StringID source, std::function<void(StringID)> &&func)
+static void AddStringForMapping(StringID source, StringID *target)
 {
-	func(STR_UNDEFINED);
-	_string_to_grf_mapping.emplace_back(_cur.grffile->grfid, source, std::move(func));
+	*target = STR_UNDEFINED;
+	_string_to_grf_mapping.emplace_back(_cur.grffile->grfid, source, reinterpret_cast<uintptr_t>(target), nullptr);
 }
 
 /**
  * Record a static StringID for getting translated later.
  * @param source Source StringID (GRF local).
- * @param target Destination for the mapping result.
+ * @param data Arbitrary data (e.g pointer), must fit into a uintptr_t.
+ * @param func Function to call to set the mapping result.
  */
-static void AddStringForMapping(StringID source, StringID *target)
+template <typename T, typename F>
+static void AddStringForMapping(StringID source, T data, F func)
 {
-	AddStringForMapping(source, [target](StringID str) { *target = str; });
+	static_assert(sizeof(T) <= sizeof(uintptr_t));
+
+	func(STR_UNDEFINED, data);
+
+	_string_to_grf_mapping.emplace_back(_cur.grffile->grfid, source, bit_cast_to_storage<uintptr_t>(data), [](StringID str, uintptr_t func_data) {
+		F handler;
+		handler(str, bit_cast_from_storage<T>(func_data));
+	});
 }
 
 /**
@@ -2126,7 +2139,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 				break;
 
 			case 0x1D: // Station Class name
-				AddStringForMapping(buf->ReadWord(), [statspec](StringID str) { StationClass::Get(statspec->cls_id)->name = str; });
+				AddStringForMapping(buf->ReadWord(), statspec, [](StringID str, StationSpec *statspec) { StationClass::Get(statspec->cls_id)->name = str; });
 				break;
 
 			default:
@@ -4389,7 +4402,7 @@ static ChangeInfoResult ObjectChangeInfo(uint id, int numinfo, int prop, const G
 			}
 
 			case 0x09: { // Class name
-				AddStringForMapping(buf->ReadWord(), [spec](StringID str) { ObjectClass::Get(spec->cls_id)->name = str; });
+				AddStringForMapping(buf->ReadWord(), spec, [](StringID str, ObjectSpec *spec) { ObjectClass::Get(spec->cls_id)->name = str; });
 				break;
 			}
 
@@ -5188,7 +5201,7 @@ static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const
 				if (MappedPropertyLengthMismatch(buf, 2, mapping_entry)) break;
 				[[fallthrough]];
 			case 0x0B: // Road Stop Class name
-				AddStringForMapping(buf->ReadWord(), [rs](StringID str) { RoadStopClass::Get(rs->cls_id)->name = str; });
+				AddStringForMapping(buf->ReadWord(), rs, [](StringID str, RoadStopSpec *rs) { RoadStopClass::Get(rs->cls_id)->name = str; });
 				break;
 
 			case A0RPI_ROADSTOP_DRAW_MODE:
@@ -11628,7 +11641,12 @@ extern void InitGRFTownGeneratorNames();
 static void AfterLoadGRFs()
 {
 	for (StringIDMapping &it : _string_to_grf_mapping) {
-		it.func(MapGRFStringID(it.grfid, it.source));
+		StringID str = MapGRFStringID(it.grfid, it.source);
+		if (it.func == nullptr) {
+			*reinterpret_cast<StringID *>(it.func_data) = str;
+		} else {
+			it.func(str, it.func_data);
+		}
 	}
 	_string_to_grf_mapping.clear();
 
