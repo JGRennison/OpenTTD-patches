@@ -15,7 +15,6 @@ This document does not describe the player-visible changes/additions described i
 * Support using sigaction and sigaltstack for more information and correct handling of stack overflow crashes (Unix).
 * Attempt to log stack overflow and heap corruption exceptions (Windows).
 * Demangle C++ symbols (Unix).
-* Attempt to handle crashes which occur within the crashlog handler, by skipping or only partially writing the faulting section.
 * Emit a "crash" log, savegame and screenshot on multiplayer desync.
 * Add crash/desync information to output screenshot and savegame files.
 * Multiplayer server and client exchange desync logs after a desync occurs.
@@ -79,7 +78,6 @@ This document does not describe the player-visible changes/additions described i
 * Various deques and queues have been replaced with ring buffers.
 * Remove mutexes from SmallStack, only used from the main thread.
 * Add a third parameter p3, and an auxiliary data mechanism to DoCommand/CommandContainer.
-* Add a free bitmap for pool slots.
 * Maintain free list for text effect entries.
 * Many fields have been widened.
 * Change underlying data structures for ScriptList, create reverse mapping on demand instead of unconditionally.
@@ -133,7 +131,6 @@ This document does not describe the player-visible changes/additions described i
 ### Save and load
 
 * Feature versioning, see readme and code.
-* Extend gamelog to not truncate version strings.
 * Save/load the map in a single chunk, such that it can be saved/loaded in one pass.
 * Various other changes to savegame format and settings handling, see readme and code for details.
 * Replace read/write accessors and buffering.
@@ -170,8 +167,6 @@ This document does not describe the player-visible changes/additions described i
 
 * Use multiple threads for NewGRF scan MD5 calculations, on multi-CPU machines.
 * Avoid redundant re-scans for AI and game script files.
-* Avoid iterating vehicle list to release disaster vehicles if there are none.
-* Avoid quadratic behaviour in updating station nearby lists in RecomputeCatchmentForAll.
 
 ### Command line
 
