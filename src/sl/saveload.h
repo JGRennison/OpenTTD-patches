@@ -1061,7 +1061,7 @@ void SlLoadFromBuffer(const uint8_t *buffer, size_t length, F proc)
 }
 
 void SlGlobList(const SaveLoadTable &slt);
-void SlStdString(std::string &str, VarType conv);
+void SlStdString(std::string *str, VarType conv);
 void SlArray(void *array, size_t length, VarType conv);
 void SlObject(void *object, const SaveLoadTable &slt);
 bool SlObjectMember(void *object, const SaveLoad &sld);
