@@ -11,6 +11,7 @@
 #define BITMATH_FUNC_HPP
 
 #include <bit>
+#include <limits>
 #include <type_traits>
 
 /**
@@ -192,14 +193,16 @@ constexpr T ToggleBit(T &x, const uint8_t y)
  *
  * @param start The start bit
  * @param count The number of bits
- * @pre start + count < sizeof(T) * 8
  * @return The bit mask
  */
 template <typename T>
 constexpr T GetBitMaskSC(const uint8_t start, const uint8_t count)
 {
-	typename std::make_unsigned<T>::type mask = 1;
-	return (T)(((mask << count) - 1) << start);
+	using U = typename std::make_unsigned<T>::type;
+	constexpr uint BIT_WIDTH = std::numeric_limits<U>::digits;
+
+	U mask = ((static_cast<U>(1) << (count & (BIT_WIDTH - 1))) - 1) | (count >= BIT_WIDTH ? ~static_cast<U>(0) : 0);
+	return (T)(mask << start);
 }
 
 /**

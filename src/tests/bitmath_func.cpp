@@ -71,8 +71,12 @@ TEST_CASE("SetBitIterator tests")
 
 TEST_CASE("GetBitMaskSC tests")
 {
-	CHECK(GetBitMaskSC<uint>(4, 4) == 0xF0);
-	CHECK(GetBitMaskSC<uint>(28, 4) == 0xF0000000);
+	CHECK(GetBitMaskSC<uint64_t>(36, 4) == 0xF000000000ULL);
+	CHECK(GetBitMaskSC<uint64_t>(60, 4) == 0xF000000000000000ULL);
+	CHECK(GetBitMaskSC<uint64_t>(0, 64) == 0xFFFFFFFFFFFFFFFFULL);
+	CHECK(GetBitMaskSC<uint32_t>(4, 4) == 0xF0);
+	CHECK(GetBitMaskSC<uint32_t>(28, 4) == 0xF0000000);
+	CHECK(GetBitMaskSC<uint32_t>(0, 32) == 0xFFFFFFFF);
 	CHECK(GetBitMaskSC<uint8_t>(7, 1) == 0x80);
 	CHECK(GetBitMaskSC<uint8_t>(0, 1) == 1);
 	CHECK(GetBitMaskSC<uint8_t>(0, 0) == 0);
@@ -81,8 +85,12 @@ TEST_CASE("GetBitMaskSC tests")
 
 TEST_CASE("GetBitMaskFL tests")
 {
-	CHECK(GetBitMaskFL<uint>(4, 7) == 0xF0);
-	CHECK(GetBitMaskFL<uint>(28, 31) == 0xF0000000);
+	CHECK(GetBitMaskFL<uint64_t>(36, 39) == 0xF000000000ULL);
+	CHECK(GetBitMaskFL<uint64_t>(60, 63) == 0xF000000000000000ULL);
+	CHECK(GetBitMaskFL<uint64_t>(0, 63) == 0xFFFFFFFFFFFFFFFFULL);
+	CHECK(GetBitMaskFL<uint32_t>(4, 7) == 0xF0);
+	CHECK(GetBitMaskFL<uint32_t>(28, 31) == 0xF0000000);
+	CHECK(GetBitMaskFL<uint32_t>(0, 31) == 0xFFFFFFFF);
 	CHECK(GetBitMaskFL<uint8_t>(7, 7) == 0x80);
 	CHECK(GetBitMaskFL<uint8_t>(0, 0) == 1);
 	CHECK(GetBitMaskFL<uint8_t>(3, 4) == 0x18);
