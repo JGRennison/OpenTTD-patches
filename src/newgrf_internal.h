@@ -93,7 +93,7 @@ public:
 	std::pair<VarAction2ProcedureAnnotation *, bool> GetVarAction2ProcedureAnnotation(const SpriteGroup *group)
 	{
 		VarAction2ProcedureAnnotation *&ptr = this->procedure_annotations[group];
-		if (!ptr) {
+		if (ptr == nullptr) {
 			ptr = new (this->procedure_annotations_storage.Allocate()) VarAction2ProcedureAnnotation();
 			return std::make_pair(ptr, true);
 		} else {
@@ -105,7 +105,7 @@ public:
 	{
 		if (make_new) {
 			std::vector<DeterministicSpriteGroupAdjust> *&ptr = this->inlinable_adjust_groups[group];
-			if (!ptr) ptr = new (this->inlinable_adjust_groups_storage.Allocate()) std::vector<DeterministicSpriteGroupAdjust>();
+			if (ptr == nullptr) ptr = new (this->inlinable_adjust_groups_storage.Allocate()) std::vector<DeterministicSpriteGroupAdjust>();
 			return ptr;
 		} else {
 			auto iter = this->inlinable_adjust_groups.find(group);
