@@ -2468,7 +2468,7 @@ static void ShowBuildTrainDepotPicker(Window *parent)
 }
 
 struct BuildRailWaypointWindow : PickerWindowBase {
-	using WaypointList = GUIList<uint>;
+	using WaypointList = GUIList<uint16_t>;
 	static const uint FILTER_LENGTH = 20;
 
 	const StationClass *waypoints;

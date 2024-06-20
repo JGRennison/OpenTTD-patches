@@ -1967,7 +1967,7 @@ static void ShowRVStationPicker(Window *parent, RoadStopType rs)
 }
 
 struct BuildRoadWaypointWindow : PickerWindowBase {
-	using WaypointList = GUIList<uint>;
+	using WaypointList = GUIList<uint16_t>;
 	static const uint FILTER_LENGTH = 20;
 
 	const RoadStopClass *waypoints;
