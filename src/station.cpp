@@ -544,7 +544,7 @@ void Station::RecomputeCatchment(bool no_clear_nearby_lists)
 
 		/* This tile sub-loop doesn't need to test any tiles, they are simply added to the catchment set. */
 		TileArea ta2 = TileArea(tile, 1, 1).Expand(r);
-		for (TileIndex tile2 : ta2) this->catchment_tiles.SetTile(tile2);
+		this->catchment_tiles.SetTiles(ta2);
 	}
 
 	/* Search catchment tiles for towns and industries */

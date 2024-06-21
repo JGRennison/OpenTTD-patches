@@ -10,6 +10,7 @@
 #include "stdafx.h"
 
 #include "tilearea_type.h"
+#include "bitmap_type.h"
 
 #include "safeguards.h"
 
@@ -294,4 +295,44 @@ TileIterator &DiagonalTileIterator::operator++()
 		return std::make_unique<DiagonalTileIterator>(corner1, corner2);
 	}
 	return std::make_unique<OrthogonalTileIterator>(corner1, corner2);
+}
+
+/**
+ * Add a set of tiles as part of the tile area.
+ * @param area Tile area to add.
+ */
+void BitmapTileArea::SetTiles(const TileArea &area)
+{
+	if (area.w == 0 || area.h == 0) return;
+
+	assert(this->Contains(area.tile));
+	assert(this->Contains(area.tile + TileDiffXY(area.w - 1, area.h - 1)));
+
+	auto [row_idx, start_bit] = this->Index(area.tile);
+	if (start_bit + area.w <= BLOCK_BITS) {
+		/* Update only one block */
+		BlockT mask = GetBitMaskSC<BlockT>(start_bit, area.w);
+		for (uint h = area.h; h > 0; h--, row_idx += this->RowPitch()) {
+			this->data[row_idx] |= mask;
+		}
+	} else {
+		/* Update multiple blocks */
+		for (uint h = area.h; h > 0; h--, row_idx += this->RowPitch()) {
+			uint idx = row_idx;
+			this->data[idx] |= (~static_cast<BlockT>(0)) << start_bit;
+			uint w = area.w - (BLOCK_BITS - start_bit);
+			while (w > 0) {
+				idx++;
+				if (w < BLOCK_BITS) {
+					/* Set LSBs, and finish row */
+					this->data[idx] |= GetBitMaskSC<BlockT>(0, w);
+					break;
+				} else {
+					/* Set all bits */
+					this->data[idx] = ~static_cast<BlockT>(0);
+					w -= BLOCK_BITS;
+				}
+			}
+		}
+	}
 }
