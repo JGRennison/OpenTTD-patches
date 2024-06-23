@@ -3048,7 +3048,7 @@ public:
 				const Order *order = this->vehicle->GetOrder(this->OrderGetSel());
 				TraceRestrictSlotID value = order->GetXData();
 				DropDownList list = GetSlotDropDownList(this->vehicle->owner, value, selected, this->vehicle->type, order->GetConditionVariable() == OCV_SLOT_OCCUPANCY);
-				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_COND_SLOT, 0);
+				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_COND_SLOT, 0, DDMF_NONE, DDSF_SHARED);
 				break;
 			}
 
@@ -3056,19 +3056,19 @@ public:
 				int selected;
 				TraceRestrictCounterID value = GB(this->vehicle->GetOrder(this->OrderGetSel())->GetXData(), 16, 16);
 				DropDownList list = GetCounterDropDownList(this->vehicle->owner, value, selected);
-				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_COND_COUNTER, 0);
+				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_COND_COUNTER, 0, DDMF_NONE, DDSF_SHARED);
 				break;
 			}
 
 			case WID_O_COND_TIME_DATE: {
 				ShowDropDownMenu(this, _order_time_date_dropdown, this->vehicle->GetOrder(this->OrderGetSel())->GetConditionValue(),
-						WID_O_COND_TIME_DATE, _settings_game.game_time.time_in_minutes ? 0 : 7, 0);
+						WID_O_COND_TIME_DATE, _settings_game.game_time.time_in_minutes ? 0 : 7, 0, 0, DDSF_SHARED);
 				break;
 			}
 
 			case WID_O_COND_TIMETABLE: {
 				ShowDropDownMenu(this, _order_timetable_dropdown, this->vehicle->GetOrder(this->OrderGetSel())->GetConditionValue(),
-						WID_O_COND_TIMETABLE, 0, 0);
+						WID_O_COND_TIMETABLE, 0, 0, 0, DDSF_SHARED);
 				break;
 			}
 
@@ -3087,13 +3087,13 @@ public:
 						list.push_back(MakeDropDownListStringItem(ds.ScheduleName(), i, false));
 					}
 				}
-				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_COND_SCHED_SELECT, 0);
+				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_COND_SCHED_SELECT, 0, DDMF_NONE, DDSF_SHARED);
 				break;
 			}
 
 			case WID_O_COND_SCHED_TEST: {
 				uint16_t value = this->vehicle->GetOrder(this->OrderGetSel())->GetConditionValue();
-				ShowDropDownMenu(this, _order_dispatch_slot_dropdown, HasBit(value, ODCB_LAST_DISPATCHED) ? 1 : 0, WID_O_COND_SCHED_TEST, 0, 0);
+				ShowDropDownMenu(this, _order_dispatch_slot_dropdown, HasBit(value, ODCB_LAST_DISPATCHED) ? 1 : 0, WID_O_COND_SCHED_TEST, 0, 0, 0, DDSF_SHARED);
 				break;
 			}
 
@@ -3115,7 +3115,7 @@ public:
 					const CargoSpec *cs = _sorted_cargo_specs[i];
 					list.push_back(MakeDropDownListStringItem(cs->name, cs->Index(), false));
 				}
-				if (!list.empty()) ShowDropDownList(this, std::move(list), value, widget, 0);
+				if (!list.empty()) ShowDropDownList(this, std::move(list), value, widget, 0, DDMF_NONE, DDSF_SHARED);
 				break;
 			}
 
@@ -3160,7 +3160,7 @@ public:
 					}
 					list.push_back(MakeDropDownListStringItem(OrderStringForVariable(this->vehicle, ocv), ocv, false));
 				}
-				ShowDropDownList(this, std::move(list), current_ocv, WID_O_COND_VARIABLE);
+				ShowDropDownList(this, std::move(list), current_ocv, WID_O_COND_VARIABLE, 0, DDMF_NONE, DDSF_SHARED);
 				break;
 			}
 
@@ -3209,7 +3209,7 @@ public:
 					}
 
 					int selected = (((int)o->GetConditionComparator()) << 16) | (o->GetConditionValue() & ~GetBitMaskSC<uint16_t>(ODCB_LAST_DISPATCHED, 1));
-					ShowDropDownList(this, std::move(list), selected, WID_O_COND_COMPARATOR, 0);
+					ShowDropDownList(this, std::move(list), selected, WID_O_COND_COMPARATOR, 0, DDMF_NONE, DDSF_SHARED);
 					break;
 				}
 				uint mask;
@@ -3292,7 +3292,7 @@ public:
 				int selected;
 				TraceRestrictSlotID value = this->vehicle->GetOrder(this->OrderGetSel())->GetDestination();
 				DropDownList list = GetSlotDropDownList(this->vehicle->owner, value, selected, this->vehicle->type, false);
-				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_SLOT, 0);
+				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_SLOT, 0, DDMF_NONE, DDSF_SHARED);
 				break;
 			}
 
@@ -3302,7 +3302,7 @@ public:
 				list.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_COUNTER_DECREASE, 1, false));
 				list.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_COUNTER_SET, 2, false));
 				int selected = this->vehicle->GetOrder(this->OrderGetSel())->GetCounterOperation();
-				ShowDropDownList(this, std::move(list), selected, WID_O_COUNTER_OP, 0);
+				ShowDropDownList(this, std::move(list), selected, WID_O_COUNTER_OP, 0, DDMF_NONE, DDSF_SHARED);
 				break;
 			}
 
@@ -3310,7 +3310,7 @@ public:
 				int selected;
 				TraceRestrictCounterID value = this->vehicle->GetOrder(this->OrderGetSel())->GetDestination();
 				DropDownList list = GetCounterDropDownList(this->vehicle->owner, value, selected);
-				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_CHANGE_COUNTER, 0);
+				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_CHANGE_COUNTER, 0, DDMF_NONE, DDSF_SHARED);
 				break;
 			}
 
@@ -3335,7 +3335,7 @@ public:
 				list.push_back(MakeDropDownListStringItem(STR_ORDER_LABEL_DEPARTURES_SHOW_AS_VIA, OLST_DEPARTURES_VIA, false));
 				list.push_back(MakeDropDownListStringItem(STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA, OLST_DEPARTURES_REMOVE_VIA, false));
 				int selected = this->vehicle->GetOrder(this->OrderGetSel())->GetLabelSubType();
-				ShowDropDownList(this, std::move(list), selected, WID_O_DEPARTURE_VIA_TYPE, 0);
+				ShowDropDownList(this, std::move(list), selected, WID_O_DEPARTURE_VIA_TYPE, 0, DDMF_NONE, DDSF_SHARED);
 				break;
 			}
 		}
