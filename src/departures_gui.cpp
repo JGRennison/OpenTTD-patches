@@ -164,29 +164,31 @@ protected:
 		CompanyMask companies = 0;
 		int unitnumber_max[4] = { -1, -1, -1, -1 };
 
-		for (const Vehicle *v : Vehicle::IterateFrontOnly()) {
-			if (v->type < 4 && this->show_types[v->type] && v->IsPrimaryVehicle()) {
-				for(const Order *order : v->Orders()) {
+		for (const Vehicle *veh : Vehicle::IterateFrontOnly()) {
+			if (veh->type < 4 && this->show_types[veh->type] && veh->IsPrimaryVehicle() && veh == veh->FirstShared()) {
+				for (const Order *order : veh->Orders()) {
 					if ((order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT) || order->IsType(OT_IMPLICIT))
 							&& order->GetDestination() == this->station) {
-						this->vehicles.push_back(v);
+						for (const Vehicle *v = veh; v != nullptr; v = v->NextShared()) {
+							this->vehicles.push_back(v);
 
-						if (_settings_client.gui.departure_show_vehicle) {
-							if (v->name.empty() && !(v->group_id != DEFAULT_GROUP && _settings_client.gui.vehicle_names != 0)) {
-								if (v->unitnumber > unitnumber_max[v->type]) unitnumber_max[v->type] = v->unitnumber;
-							} else {
-								SetDParam(0, v->index | (_settings_client.gui.departure_show_group ? VEHICLE_NAME_NO_GROUP : 0));
-								int width = (GetStringBoundingBox(STR_DEPARTURES_VEH)).width + 4;
-								if (width > this->veh_width) this->veh_width = width;
+							if (_settings_client.gui.departure_show_vehicle) {
+								if (v->name.empty() && !(v->group_id != DEFAULT_GROUP && _settings_client.gui.vehicle_names != 0)) {
+									if (v->unitnumber > unitnumber_max[v->type]) unitnumber_max[v->type] = v->unitnumber;
+								} else {
+									SetDParam(0, v->index | (_settings_client.gui.departure_show_group ? VEHICLE_NAME_NO_GROUP : 0));
+									int width = (GetStringBoundingBox(STR_DEPARTURES_VEH)).width + 4;
+									if (width > this->veh_width) this->veh_width = width;
+								}
 							}
-						}
 
-						if (v->group_id != INVALID_GROUP && v->group_id != DEFAULT_GROUP && _settings_client.gui.departure_show_group) {
-							groups.insert(v->group_id);
-						}
+							if (v->group_id != INVALID_GROUP && v->group_id != DEFAULT_GROUP && _settings_client.gui.departure_show_group) {
+								groups.insert(v->group_id);
+							}
 
-						if (_settings_client.gui.departure_show_company) {
-							SetBit(companies, v->owner);
+							if (_settings_client.gui.departure_show_company) {
+								SetBit(companies, v->owner);
+							}
 						}
 						break;
 					}
