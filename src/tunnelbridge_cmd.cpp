@@ -2861,17 +2861,27 @@ static bool ClickTile_TunnelBridge(TileIndex tile)
 
 	/* Show vehicles found in tunnel. */
 	if (IsTunnelTile(tile)) {
-		int count = 0;
 		TileIndex tile_end = GetOtherTunnelBridgeEnd(tile);
-		for (const Train *t : Train::IterateFrontOnly()) {
-			if (!t->IsFrontEngine()) continue;
-			if (tile == t->tile || tile_end == t->tile) {
-				ShowVehicleViewWindow(t);
-				count++;
+		VehicleType veh_type = GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL ? VEH_TRAIN : VEH_ROAD;
+
+		std::vector<const Vehicle *> candidates;
+		for (TileIndex test_tile : { tile, tile_end }) {
+			for (const Vehicle *v = GetFirstVehicleOnPos(test_tile, veh_type); v != nullptr; v = v->HashTileNext()) {
+				if (v->IsFrontEngine()) candidates.push_back(v);
 			}
-			if (count > 19) break;  // no more than 20 windows open
 		}
-		if (count > 0) return true;
+		std::sort(candidates.begin(), candidates.end(), [&](const Vehicle *a, const Vehicle *b) {
+			return a->index < b->index;
+		});
+
+		/* No more than 20 windows open */
+		if (candidates.size() > 20) candidates.resize(20);
+
+		for (const Vehicle *v : candidates) {
+			ShowVehicleViewWindow(v);
+		}
+
+		if (!candidates.empty()) return true;
 	}
 	return false;
 }
