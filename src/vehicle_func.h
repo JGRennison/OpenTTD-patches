@@ -55,6 +55,7 @@ uint CountVehiclesInChain(const Vehicle *v);
  * @note Use this function when you have the intention that all vehicles
  *       should be iterated over.
  * @param tile The location on the map
+ * @param type The vehicle type
  * @param data Arbitrary data passed to \a proc.
  * @param proc The proc that determines whether a vehicle will be "found".
  */
@@ -70,6 +71,7 @@ inline void FindVehicleOnPos(TileIndex tile, VehicleType type, void *data, Vehic
  * @note Use #FindVehicleOnPos when you have the intention that all vehicles
  *       should be iterated over.
  * @param tile The location on the map
+ * @param type The vehicle type
  * @param data Arbitrary data passed to \a proc.
  * @param proc The \a proc that determines whether a vehicle will be "found".
  * @return True if proc returned non-nullptr.
@@ -91,6 +93,7 @@ inline bool HasVehicleOnPos(TileIndex tile, VehicleType type, void *data, Vehicl
  *       should be iterated over.
  * @param x    The X location on the map
  * @param y    The Y location on the map
+ * @param type The vehicle type
  * @param data Arbitrary data passed to proc
  * @param proc The proc that determines whether a vehicle will be "found".
  */
@@ -107,6 +110,7 @@ inline void FindVehicleOnPosXY(int x, int y, VehicleType type, void *data, Vehic
  *       should be iterated over.
  * @param x    The X location on the map
  * @param y    The Y location on the map
+ * @param type The vehicle type
  * @param data Arbitrary data passed to proc
  * @param proc The proc that determines whether a vehicle will be "found".
  * @return True if proc returned non-nullptr.

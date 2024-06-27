@@ -556,6 +556,7 @@ Vehicle *VehicleFromPosXY(int x, int y, VehicleType type, void *data, VehicleFro
  * Helper function for FindVehicleOnPos/HasVehicleOnPos.
  * @note Do not call this function directly!
  * @param tile The location on the map
+ * @param type The vehicle type
  * @param data Arbitrary data passed to \a proc.
  * @param proc The proc that determines whether a vehicle will be "found".
  * @param find_first Whether to return on the first found or iterate over
