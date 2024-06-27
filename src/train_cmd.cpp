@@ -1700,11 +1700,11 @@ static std::vector<Train *> FindGoodVehiclePosList(const Train *src)
 		}
 	}
 
-	if (candidates.empty()) return nullptr;
-
-	return *std::min_element(candidates.begin(), candidates.end(), [&](const Train *a, const Train *b) {
+	std::sort(candidates.begin(), candidates.end(), [](const Train *a, const Train *b) {
 		return a->index < b->index;
 	});
+
+	return candidates;
 }
 
 /** Helper type for lists/vectors of trains */
@@ -2102,7 +2102,17 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 	/* if nothing is selected as destination, try and find a matching vehicle to drag to. */
 	Train *dst;
 	if (d == INVALID_VEHICLE) {
-		dst = (src->IsEngine() || (flags & DC_AUTOREPLACE)) ? nullptr : FindGoodVehiclePos(src);
+		if (!src->IsEngine() && !src->IsVirtual() && !(flags & DC_AUTOREPLACE)) {
+			/* Try each possible destination target, if none succeed do not append to a free wagon chain */
+			std::vector<Train *> destination_candidates = FindGoodVehiclePosList(src);
+			for (Train *try_dest : destination_candidates) {
+				uint32_t try_p2 = p2;
+				SB(try_p2, 0, 20, try_dest->index);
+				CommandCost cost = CmdMoveRailVehicle(tile, flags, p1, try_p2, text);
+				if (cost.Succeeded()) return cost;
+			}
+		}
+		dst = nullptr;
 	} else {
 		dst = Train::GetIfValid(d);
 		if (dst == nullptr) return check_on_failure(CMD_ERROR);
@@ -2118,7 +2128,7 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 	src = src->GetFirstEnginePart();
 	if (dst != nullptr) {
 		dst = dst->GetFirstEnginePart();
-		assert(HasBit(dst->subtype, GVSF_VIRTUAL) == HasBit(src->subtype, GVSF_VIRTUAL));
+		if (HasBit(dst->subtype, GVSF_VIRTUAL) != HasBit(src->subtype, GVSF_VIRTUAL)) return CMD_ERROR;
 	}
 
 	/* don't move the same vehicle.. */
