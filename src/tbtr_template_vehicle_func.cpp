@@ -321,7 +321,7 @@ void CopyWagonStatus(TemplateVehicle *from, Train *to)
 	to->cargo_subtype = from->cargo_subtype;
 }
 
-uint CountsTrainsNeedingTemplateReplacement(GroupID g_id, const TemplateVehicle *tv)
+uint CountTrainsNeedingTemplateReplacement(GroupID g_id, const TemplateVehicle *tv)
 {
 	uint count = 0;
 	if (!tv) return count;

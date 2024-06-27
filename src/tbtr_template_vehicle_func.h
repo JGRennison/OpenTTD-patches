@@ -42,7 +42,7 @@ struct TemplateDepotVehicles {
 	Train* ContainsEngine(EngineID eid, Train *not_in);
 };
 
-uint CountsTrainsNeedingTemplateReplacement(GroupID g_id, const TemplateVehicle *tv);
+uint CountTrainsNeedingTemplateReplacement(GroupID g_id, const TemplateVehicle *tv);
 
 CommandCost TestBuyAllTemplateVehiclesInChain(TemplateVehicle *tv, TileIndex tile);
 
