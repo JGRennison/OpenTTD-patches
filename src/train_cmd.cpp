@@ -1504,17 +1504,22 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 		CheckConsistencyOfArticulatedVehicle(v);
 
 		/* Try to connect the vehicle to one of free chains of wagons. */
-		for (Train *w : Train::IterateFrontOnly()) {
-			if (w->tile == tile &&              ///< Same depot
-					w->IsFreeWagon() &&             ///< A free wagon chain
+		std::vector<Train *> candidates;
+		for (Train *w = Train::From(GetFirstVehicleOnPos(tile, VEH_TRAIN)); w != nullptr; w = w->HashTileNext()) {
+			if (w->IsFreeWagon() &&                 ///< A free wagon chain
 					w->engine_type == e->index &&   ///< Same type
 					w->First() != v &&              ///< Don't connect to ourself
 					!(w->vehstatus & VS_CRASHED) && ///< Not crashed/flooded
-					w->owner == v->owner &&         ///< Same owner
-					!w->IsVirtual()) {              ///< Not virtual
-					if (DoCommand(0, v->index | 1 << 20, w->Last()->index, DC_EXEC, CMD_MOVE_RAIL_VEHICLE).Succeeded()) {
-						break;
-					}
+					w->owner == v->owner) {         ///< Same owner
+				candidates.push_back(w);
+			}
+		}
+		std::sort(candidates.begin(), candidates.end(), [](const Train *a, const Train *b) {
+			return a->index < b->index;
+		});
+		for (Train *w : candidates) {
+			if (DoCommand(0, v->index | 1 << 20, w->Last()->index, DC_EXEC, CMD_MOVE_RAIL_VEHICLE).Succeeded()) {
+				break;
 			}
 		}
 
@@ -1528,15 +1533,19 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlag flags, const 
 void NormalizeTrainVehInDepot(const Train *u)
 {
 	assert(u->IsEngine());
-	for (const Train *v : Train::IterateFrontOnly()) {
-		if (v->IsFreeWagon() && v->tile == u->tile &&
+	std::vector<Train *> candidates;
+	for (Train *v = Train::From(GetFirstVehicleOnPos(u->tile, VEH_TRAIN)); v != nullptr; v = v->HashTileNext()) {
+		if (v->IsFreeWagon() &&
 				v->track == TRACK_BIT_DEPOT &&
-				v->owner == u->owner &&
-				!v->IsVirtual()) {
-			if (DoCommand(0, v->index | 1 << 20, u->index, DC_EXEC,
-					CMD_MOVE_RAIL_VEHICLE).Failed())
-				break;
+				v->owner == u->owner) {
+			candidates.push_back(v);
 		}
+	}
+	std::sort(candidates.begin(), candidates.end(), [](const Train *a, const Train *b) {
+		return a->index < b->index;
+	});
+	for (Train *v : candidates) {
+		if (DoCommand(0, v->index | 1 << 20, u->index, DC_EXEC, CMD_MOVE_RAIL_VEHICLE).Failed()) break;
 	}
 }
 
@@ -1670,23 +1679,32 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 	return CommandCost();
 }
 
-static Train *FindGoodVehiclePos(const Train *src)
+static std::vector<Train *> FindGoodVehiclePosList(const Train *src)
 {
 	EngineID eng = src->engine_type;
 	TileIndex tile = src->tile;
 
-	for (Train *dst : Train::IterateFrontOnly()) {
-		if (dst->IsFreeWagon() && dst->tile == tile && !(dst->vehstatus & VS_CRASHED) && dst->owner == src->owner && !dst->IsVirtual()) {
+	std::vector<Train *> candidates;
+
+	for (Train *dst = Train::From(GetFirstVehicleOnPos(tile, VEH_TRAIN)); dst != nullptr; dst = dst->HashTileNext()) {
+		if (dst->IsFreeWagon() && !(dst->vehstatus & VS_CRASHED) && dst->owner == src->owner) {
 			/* check so all vehicles in the line have the same engine. */
 			Train *t = dst;
 			while (t->engine_type == eng) {
 				t = t->Next();
-				if (t == nullptr) return dst;
+				if (t == nullptr) {
+					candidates.push_back(dst);
+					break;
+				}
 			}
 		}
 	}
 
-	return nullptr;
+	if (candidates.empty()) return nullptr;
+
+	return *std::min_element(candidates.begin(), candidates.end(), [&](const Train *a, const Train *b) {
+		return a->index < b->index;
+	});
 }
 
 /** Helper type for lists/vectors of trains */
