@@ -794,6 +794,12 @@ public:
 	}
 
 	/**
+	 * Get the next vehicle in the tile hash chain.
+	 * @return the next vehicle in the tile hash chain or nullptr when there isn't a next vehicle.
+	 */
+	inline Vehicle *HashTileNext() const { return this->hash_tile_next; }
+
+	/**
 	 * Get the vehicle at offset \a n of this vehicle chain.
 	 * @param n Offset from the current vehicle.
 	 * @return The new vehicle or nullptr if the offset is out-of-bounds.
@@ -1494,6 +1500,12 @@ struct SpecializedVehicle : public Vehicle {
 	 * @return Previous vehicle in the consist.
 	 */
 	inline T *GetPrevVehicle() const { return (T *)this->Vehicle::GetPrevVehicle(); }
+
+	/**
+	 * Get the next vehicle in the tile hash chain.
+	 * @return the next vehicle in the tile hash chain or nullptr when there isn't a next vehicle.
+	 */
+	inline T *HashTileNext() const { return (T *)this->Vehicle::HashTileNext(); }
 
 	/**
 	 * Tests whether given index is a valid index for vehicle of this type

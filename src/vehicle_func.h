@@ -82,6 +82,8 @@ inline bool HasVehicleOnPos(TileIndex tile, VehicleType type, void *data, Vehicl
 	return VehicleFromPos(tile, type, data, proc, true) != nullptr;
 }
 
+Vehicle *GetFirstVehicleOnPos(TileIndex tile, VehicleType type);
+
 /**
  * Find a vehicle from a specific location. It will call proc for ALL vehicles
  * on the tile and YOU must make SURE that the "best one" is stored in the

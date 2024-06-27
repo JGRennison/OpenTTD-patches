@@ -582,6 +582,25 @@ Vehicle *VehicleFromPos(TileIndex tile, VehicleType type, void *data, VehicleFro
 }
 
 /**
+ * Returns the first vehicle on a specific location, this should be iterated using Vehicle::HashTileNext.
+ * @note Use #GetFirstVehicleOnPos when you have the intention that all vehicles should be iterated over using Vehicle::HashTileNext. The iteration order is non-deterministic.
+ * @param tile The location on the map
+ * @param type The vehicle type
+ * @return First vehicle or nullptr.
+ */
+Vehicle *GetFirstVehicleOnPos(TileIndex tile, VehicleType type)
+{
+	VehicleTypeTileHash &vhash = _vehicle_tile_hashes[type];
+
+	auto iter = vhash.find(tile);
+	if (iter != vhash.end()) {
+		return Vehicle::Get(iter->second);
+	} else {
+		return nullptr;
+	}
+}
+
+/**
  * Callback that returns 'real' vehicles lower or at height \c *(int*)data .
  * @param v Vehicle to examine.
  * @param data unused.
