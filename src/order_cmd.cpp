@@ -70,6 +70,8 @@ DECLARE_ENUM_AS_BIT_SET(CmdInsertOrderIntlFlags)
 
 static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID sel_ord, const Order &new_order, CmdInsertOrderIntlFlags insert_flags);
 
+extern void SetOrderFixedWaitTime(Vehicle *v, VehicleOrderID order_number, uint32_t wait_time, bool wait_timetabled, bool wait_fixed);
+
 void IntialiseOrderDestinationRefcountMap()
 {
 	ClearOrderDestinationRefcountMap();
@@ -1067,7 +1069,7 @@ CommandCost CmdDuplicateOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, 
 	Order new_order;
 	new_order.AssignOrder(*src_order);
 	const bool wait_fixed = new_order.IsWaitFixed();
-	const bool wait_timetabled = wait_fixed && new_order.IsWaitTimetabled();
+	const bool wait_timetabled = new_order.IsWaitTimetabled();
 	new_order.SetWaitTimetabled(false);
 	new_order.SetTravelTimetabled(false);
 	new_order.SetTravelTime(0);
@@ -1079,10 +1081,7 @@ CommandCost CmdDuplicateOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, 
 		Order *order = v->orders->GetOrderAt(sel_ord + 1);
 		order->SetRefit(new_order.GetRefitCargo());
 		order->SetMaxSpeed(new_order.GetMaxSpeed());
-		if (wait_fixed) {
-			extern void SetOrderFixedWaitTime(Vehicle *v, VehicleOrderID order_number, uint32_t wait_time, bool wait_timetabled);
-			SetOrderFixedWaitTime(v, sel_ord + 1, new_order.GetWaitTime(), wait_timetabled);
-		}
+		SetOrderFixedWaitTime(v, sel_ord + 1, new_order.GetWaitTime(), wait_timetabled, wait_fixed);
 	}
 	new_order.Free();
 	return CommandCost();
@@ -1837,7 +1836,7 @@ CommandCost CmdReverseOrderList(TileIndex tile, DoCommandFlag flags, uint32_t p1
 				Order new_order;
 				new_order.AssignOrder(*v->GetOrder(i));
 				const bool wait_fixed = new_order.IsWaitFixed();
-				const bool wait_timetabled = wait_fixed && new_order.IsWaitTimetabled();
+				const bool wait_timetabled = new_order.IsWaitTimetabled();
 				new_order.SetWaitTimetabled(false);
 				new_order.SetTravelTimetabled(false);
 				new_order.SetTravelTime(0);
@@ -1848,10 +1847,7 @@ CommandCost CmdReverseOrderList(TileIndex tile, DoCommandFlag flags, uint32_t p1
 					Order *order = v->orders->GetOrderAt(order_count);
 					order->SetRefit(new_order.GetRefitCargo());
 					order->SetMaxSpeed(new_order.GetMaxSpeed());
-					if (wait_fixed) {
-						extern void SetOrderFixedWaitTime(Vehicle *v, VehicleOrderID order_number, uint32_t wait_time, bool wait_timetabled);
-						SetOrderFixedWaitTime(v, order_count, new_order.GetWaitTime(), wait_timetabled);
-					}
+					SetOrderFixedWaitTime(v, order_count, new_order.GetWaitTime(), wait_timetabled, wait_fixed);
 				}
 				new_order.Free();
 			}
@@ -3892,19 +3888,16 @@ CommandCost CmdMassChangeOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 						new_order.AssignOrder(*order);
 						new_order.SetDestination(to_dest);
 						const bool wait_fixed = new_order.IsWaitFixed();
-						const bool wait_timetabled = wait_fixed && new_order.IsWaitTimetabled();
+						const bool wait_timetabled = new_order.IsWaitTimetabled();
 						new_order.SetWaitTimetabled(false);
-						new_order.SetTravelTimetabled(false);
+						if (!new_order.IsTravelFixed()) new_order.SetTravelTimetabled(false);
 						if (CmdInsertOrderIntl(flags, v, index + 1, new_order, CIOIF_ALLOW_LOAD_BY_CARGO_TYPE | CIOIF_ALLOW_DUPLICATE_UNBUNCH).Succeeded()) {
 							DoCommand(0, v->index, index, flags, CMD_DELETE_ORDER);
 
 							order = v->orders->GetOrderAt(index);
 							order->SetRefit(new_order.GetRefitCargo());
 							order->SetMaxSpeed(new_order.GetMaxSpeed());
-							if (wait_fixed) {
-								extern void SetOrderFixedWaitTime(Vehicle *v, VehicleOrderID order_number, uint32_t wait_time, bool wait_timetabled);
-								SetOrderFixedWaitTime(v, index, new_order.GetWaitTime(), wait_timetabled);
-							}
+							SetOrderFixedWaitTime(v, index, new_order.GetWaitTime(), wait_timetabled, wait_fixed);
 							changed = true;
 						}
 
