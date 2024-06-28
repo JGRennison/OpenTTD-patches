@@ -155,6 +155,13 @@ STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED_HELPTEXT    :No modelo de fr
 STR_CONFIG_SETTING_LIMIT_TRAIN_ACCELERATION                     :Limitar a aceleración dos trens: {STRING}
 STR_CONFIG_SETTING_LIMIT_TRAIN_ACCELERATION_HELPTEXT            :Ao usar o modelo realista de frenado de trens, tamén limitar a aceleración máxima dos trens. Isto é para evitar que os pasaxeiros derramen as súas bebidas debido a que algúns tipos de trens aceleran excesivamente rápido..
 
+STR_CONFIG_SETTING_TRAIN_ACC_BRAKING_PERCENT                    :Factor da escala de aceleración/freado do tren: {STRING}
+STR_CONFIG_SETTING_TRAIN_ACC_BRAKING_PERCENT_HELPTEXT           :A porcentaxe pola que se axusta a aceleración e o frenado do tren.{}{}Esta configuración pode usarse para alterar a aceleración e o frenado dos trens, sen cambiar a velocidade máxima dos trens.
+STR_CONFIG_SETTING_TRAIN_ACC_BRAKING_PERCENT_VALUE              :{COMMA}%
+
+STR_CONFIG_SETTING_TRACK_EDIT_IGNORE_REALISTIC_BRAKING          :A edición de vías ignora o frenado realista: {STRING}
+STR_CONFIG_SETTING_TRACK_EDIT_IGNORE_REALISTIC_BRAKING_HELPTEXT :Permitir que a edición de vías ignore o modelo de frenado realista dos trens. Cando está habilitado, non se aplican restricións á edición/eliminación da reserva dos trens en movemento. Isto pode resultar nun comportamento de frenado do tren non realista.
+
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT                     :Velocidade máxima de carga en movemento do tren: {STRING}
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_HELPTEXT            :A velocidade máxima permitida os trens cando están cargando en movemento
 
@@ -1517,6 +1524,7 @@ STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_BUTTON                  :{BLACK}Renomear
 STR_BUY_VEHICLE_TRAIN_RENAME_WAGON_BUTTON                       :{BLACK}Renomear vagón
 STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_TOOLTIP                 :{BLACK}Renomear locomotora ou coche motriz
 STR_BUY_VEHICLE_TRAIN_RENAME_WAGON_TOOLTIP                      :{BLACK}Renomear vagón
+STR_BUY_VEHICLE_TRAIN_TOGGLE_DUAL_PANE_TOOLTIP                  :{BLACK}Alternar entre locomotoras e vagóns separados
 
 STR_QUERY_RENAME_TRAIN_TYPE_LOCOMOTIVE_CAPTION                  :{WHITE}Renomear tipo de locomotora
 STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION                       :{WHITE}Renomear tipo de vagón
@@ -1665,8 +1673,12 @@ STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_FIRST         :é o primeiro s
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_FIRST     :non é o primeiro slot
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_LAST          :é o último slot
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_LAST      :non é o último slot
+
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG          :ten a etiqueta {NUM}
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG_NAMED    :ten a etiqueta {NUM} ({STRING})
+
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG  :non ten a etiqueta {NUM}
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG_NAMED :non ten a etiqueta {NUM} ({STRING})
 
 STR_ORDERS_MANAGE_LIST                                          :{BLACK}Xestionar lista
 STR_ORDERS_MANAGE_LIST_TOOLTIP                                  :{BLACK}Xestiona esta lista de ordes
@@ -2133,10 +2145,16 @@ STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES                        :{BLACK}Engadir 
 STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES_TOOLTIP                :{BLACK}Engadir as programacións dende outro vehículo.
 STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS                           :Reutilizar franxas de saída
 STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS_TOOLTIP                   :{BLACK}Establecer se as franxas de saída poden ser usadas máis dunha vez.
+STR_SCHDISPATCH_RENAME_DEPARTURE_TAG                            :Renomear etiqueta {NUM}
+STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_NAMED                      :Renomear etiqueta {NUM}: {STRING}
+STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_TOOLTIP                    :{BLACK}Renomear etiquetas de slot de saída (para usar con ordes condicionais)
+STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_CAPTION                    :{BLACK}Nomear a etiqueta do slot de saída
+STR_ERROR_CAN_T_RENAME_DEPARTURE_TAG                            :{WHITE}Non se pode nomear a etiqueta de saída...
 STR_SCHDISPATCH_MANAGE_SLOT                                     :{BLACK}Xestionar Slot
 STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT                       :Reutilizar este slot de saída
 STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT_TOOLTIP               :{BLACK}Establecer se a franxa de saída seleccionada pode ser utilizada máis dunha vez.
 STR_SCHDISPATCH_TAG_DEPARTURE                                   :Etiqueta {NUM}
+STR_SCHDISPATCH_TAG_DEPARTURE_NAMED                             :Etiqueta {NUM}: {STRING}
 STR_SCHDISPATCH_TAG_DEPARTURE_TOOLTIP                           :{BLACK}Etiquetar a franxa de saída seleccionada (para usar con ordes condicionais).
 STR_SCHDISPATCH_NO_SCHEDULES                                    :{BLACK}Sen programas
 STR_SCHDISPATCH_SCHEDULE_ID                                     :{BLACK}Programa {NUM} de {NUM}
@@ -2153,6 +2171,7 @@ STR_SCHDISPATCH_SLOT_TOOLTIP_NEXT                               :{}Seguinte slot
 STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE                              :{}O slot de saída pódese usar máis dunha vez
 STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX                        : ({TT_TIME})
 STR_SCHDISPATCH_SLOT_TOOLTIP_TAG                                :{}Etiqueta {NUM}
+STR_SCHDISPATCH_SLOT_TOOLTIP_TAG_NAMED                          :{}Etiqueta {NUM}: {STRING}
 
 STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}Sen saídas previas.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Última saída ás {TT_TIME}.
