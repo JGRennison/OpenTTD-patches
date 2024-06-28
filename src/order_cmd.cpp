@@ -61,7 +61,14 @@ INSTANTIATE_POOL_METHODS(OrderList)
 btree::btree_map<uint32_t, uint32_t> _order_destination_refcount_map;
 bool _order_destination_refcount_map_valid = false;
 
-CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID sel_ord, const Order &new_order, bool allow_load_by_cargo_type);
+enum CmdInsertOrderIntlFlags : uint8_t {
+	CIOIF_NONE                          = 0,      ///< No flags
+	CIOIF_ALLOW_LOAD_BY_CARGO_TYPE      = 1 << 0, ///< Allow load by cargo type
+	CIOIF_ALLOW_DUPLICATE_UNBUNCH       = 1 << 1, ///< Allow duplicate unbunch orders
+};
+DECLARE_ENUM_AS_BIT_SET(CmdInsertOrderIntlFlags)
+
+static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID sel_ord, const Order &new_order, CmdInsertOrderIntlFlags insert_flags);
 
 void IntialiseOrderDestinationRefcountMap()
 {
@@ -1026,7 +1033,7 @@ CommandCost CmdInsertOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 	VehicleOrderID sel_ord = GB(p2,  0, 16);
 	Order new_order(p3);
 
-	return CmdInsertOrderIntl(flags, Vehicle::GetIfValid(veh), sel_ord, new_order, false);
+	return CmdInsertOrderIntl(flags, Vehicle::GetIfValid(veh), sel_ord, new_order, CIOIF_NONE);
 }
 
 /**
@@ -1066,7 +1073,7 @@ CommandCost CmdDuplicateOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, 
 	new_order.SetTravelTime(0);
 	new_order.SetTravelFixed(false);
 	new_order.SetDispatchScheduleIndex(-1);
-	CommandCost cost = CmdInsertOrderIntl(flags, v, sel_ord + 1, new_order, true);
+	CommandCost cost = CmdInsertOrderIntl(flags, v, sel_ord + 1, new_order, CIOIF_ALLOW_LOAD_BY_CARGO_TYPE);
 	if (cost.Failed()) return cost;
 	if (flags & DC_EXEC) {
 		Order *order = v->orders->GetOrderAt(sel_ord + 1);
@@ -1081,7 +1088,7 @@ CommandCost CmdDuplicateOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, 
 	return CommandCost();
 }
 
-CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID sel_ord, const Order &new_order, bool allow_load_by_cargo_type) {
+static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID sel_ord, const Order &new_order, CmdInsertOrderIntlFlags insert_flags) {
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
@@ -1111,7 +1118,7 @@ CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID s
 			/* Filter invalid load/unload types. */
 			switch (new_order.GetLoadType()) {
 				case OLFB_CARGO_TYPE_LOAD:
-					if (allow_load_by_cargo_type) break;
+					if ((insert_flags & CIOIF_ALLOW_LOAD_BY_CARGO_TYPE) != 0) break;
 					return CMD_ERROR;
 
 				case OLF_LOAD_IF_POSSIBLE:
@@ -1129,7 +1136,7 @@ CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID s
 			switch (new_order.GetUnloadType()) {
 				case OUF_UNLOAD_IF_POSSIBLE: case OUFB_UNLOAD: case OUFB_TRANSFER: case OUFB_NO_UNLOAD: break;
 				case OUFB_CARGO_TYPE_UNLOAD:
-					if (allow_load_by_cargo_type) break;
+					if ((insert_flags & CIOIF_ALLOW_LOAD_BY_CARGO_TYPE) != 0) break;
 					return CMD_ERROR;
 				default: return CMD_ERROR;
 			}
@@ -1203,7 +1210,7 @@ CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOrderID s
 			/* Check if we're allowed to have a new unbunching order. */
 			if ((new_order.GetDepotActionType() & ODATFB_UNBUNCH)) {
 				if (v->HasFullLoadOrder()) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_ADD_ORDER, STR_ERROR_UNBUNCHING_NO_UNBUNCHING_FULL_LOAD);
-				if (v->HasUnbunchingOrder()) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_ADD_ORDER, STR_ERROR_UNBUNCHING_ONLY_ONE_ALLOWED);
+				if ((insert_flags & CIOIF_ALLOW_DUPLICATE_UNBUNCH) == 0 && v->HasUnbunchingOrder()) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_ADD_ORDER, STR_ERROR_UNBUNCHING_ONLY_ONE_ALLOWED);
 				if (v->HasConditionalOrder()) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_ADD_ORDER, STR_ERROR_UNBUNCHING_NO_UNBUNCHING_CONDITIONAL);
 			}
 			break;
@@ -1835,7 +1842,7 @@ CommandCost CmdReverseOrderList(TileIndex tile, DoCommandFlag flags, uint32_t p1
 				new_order.SetTravelTimetabled(false);
 				new_order.SetTravelTime(0);
 				new_order.SetTravelFixed(false);
-				CommandCost cost = CmdInsertOrderIntl(flags, v, order_count, new_order, true);
+				CommandCost cost = CmdInsertOrderIntl(flags, v, order_count, new_order, CIOIF_ALLOW_LOAD_BY_CARGO_TYPE);
 				if (cost.Failed()) return cost;
 				if (flags & DC_EXEC) {
 					Order *order = v->orders->GetOrderAt(order_count);
@@ -3888,7 +3895,7 @@ CommandCost CmdMassChangeOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 						const bool wait_timetabled = wait_fixed && new_order.IsWaitTimetabled();
 						new_order.SetWaitTimetabled(false);
 						new_order.SetTravelTimetabled(false);
-						if (CmdInsertOrderIntl(flags, v, index + 1, new_order, true).Succeeded()) {
+						if (CmdInsertOrderIntl(flags, v, index + 1, new_order, CIOIF_ALLOW_LOAD_BY_CARGO_TYPE | CIOIF_ALLOW_DUPLICATE_UNBUNCH).Succeeded()) {
 							DoCommand(0, v->index, index, flags, CMD_DELETE_ORDER);
 
 							order = v->orders->GetOrderAt(index);
