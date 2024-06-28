@@ -22,7 +22,7 @@
  * A std::vector is used to mark which tiles are contained.
  */
 class BitmapTileArea : public TileArea {
-	friend struct BitmapTileIterator;
+	friend class BitmapTileIterator;
 
 protected:
 	using BlockT = uint32_t;
