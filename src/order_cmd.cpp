@@ -1065,6 +1065,7 @@ CommandCost CmdDuplicateOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, 
 	new_order.SetTravelTimetabled(false);
 	new_order.SetTravelTime(0);
 	new_order.SetTravelFixed(false);
+	new_order.SetDispatchScheduleIndex(-1);
 	CommandCost cost = CmdInsertOrderIntl(flags, v, sel_ord + 1, new_order, true);
 	if (cost.Failed()) return cost;
 	if (flags & DC_EXEC) {
