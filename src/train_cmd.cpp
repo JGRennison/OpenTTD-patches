@@ -4258,7 +4258,7 @@ static bool HasLongReservePbsSignalOnTrackdir(Train* v, TileIndex tile, Trackdir
 		if (IsNoEntrySignal(tile, TrackdirToTrack(trackdir))) return false;
 		if (IsRestrictedSignal(tile)) {
 			const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(trackdir));
-			if (prog && prog->actions_used_flags & TRPAUF_LONG_RESERVE) {
+			if (prog != nullptr && prog->actions_used_flags & TRPAUF_LONG_RESERVE) {
 				TraceRestrictProgramResult out;
 				if (default_value) out.flags |= TRPRF_LONG_RESERVE;
 				TraceRestrictProgramInput input(tile, trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr);
@@ -4441,7 +4441,7 @@ static Track ChooseTrainTrack(Train *v, TileIndex tile, DiagDirection enterdir, 
 		if (track != INVALID_TRACK && HasPbsSignalOnTrackdir(tile, TrackEnterdirToTrackdir(track, enterdir)) && !IsNoEntrySignal(tile, track)) {
 			if (IsRestrictedSignal(tile) && v->force_proceed != TFP_SIGNAL) {
 				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, track);
-				if (prog && prog->actions_used_flags & (TRPAUF_WAIT_AT_PBS | TRPAUF_SLOT_ACQUIRE | TRPAUF_TRAIN_NOT_STUCK)) {
+				if (prog != nullptr && prog->actions_used_flags & (TRPAUF_WAIT_AT_PBS | TRPAUF_SLOT_ACQUIRE | TRPAUF_TRAIN_NOT_STUCK)) {
 					TraceRestrictProgramResult out;
 					TraceRestrictProgramInput input(tile, TrackEnterdirToTrackdir(track, enterdir), nullptr, nullptr);
 					input.permitted_slot_operations = TRPISP_ACQUIRE;
@@ -5326,7 +5326,7 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
 	auto try_exit_reservation = [&]() -> bool {
 		if (IsTunnelBridgeRestrictedSignal(tile)) {
 			const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(td));
-			if (prog && prog->actions_used_flags & (TRPAUF_WAIT_AT_PBS | TRPAUF_SLOT_ACQUIRE)) {
+			if (prog != nullptr && prog->actions_used_flags & (TRPAUF_WAIT_AT_PBS | TRPAUF_SLOT_ACQUIRE)) {
 				TraceRestrictProgramResult out;
 				TraceRestrictProgramInput input(tile, td, nullptr, nullptr);
 				input.permitted_slot_operations = TRPISP_ACQUIRE;
@@ -5932,7 +5932,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 
 						if (IsTunnelBridgeRestrictedSignal(old_tile)) {
 							const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(old_tile, track);
-							if (prog && prog->actions_used_flags & TRPAUF_SLOT_RELEASE_BACK) {
+							if (prog != nullptr && prog->actions_used_flags & TRPAUF_SLOT_RELEASE_BACK) {
 								TraceRestrictProgramResult out;
 								TraceRestrictProgramInput input(old_tile, trackdir, nullptr, nullptr);
 								input.permitted_slot_operations = TRPISP_RELEASE_BACK;
@@ -6173,7 +6173,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					if (HasSignalOnTrack(gp.old_tile, track)) {
 						if (IsRestrictedSignal(gp.old_tile)) {
 							const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(gp.old_tile, track);
-							if (prog && prog->actions_used_flags & TRPAUF_SLOT_RELEASE_BACK) {
+							if (prog != nullptr && prog->actions_used_flags & TRPAUF_SLOT_RELEASE_BACK) {
 								TraceRestrictProgramResult out;
 								TraceRestrictProgramInput input(gp.old_tile, ReverseTrackdir(rev_trackdir), nullptr, nullptr);
 								input.permitted_slot_operations = TRPISP_RELEASE_BACK;
@@ -6191,7 +6191,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					if (TrackdirEntersTunnelBridge(gp.old_tile, rev_trackdir)) {
 						if (IsTunnelBridgeRestrictedSignal(gp.old_tile)) {
 							const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(gp.old_tile, track);
-							if (prog && prog->actions_used_flags & TRPAUF_SLOT_RELEASE_BACK) {
+							if (prog != nullptr && prog->actions_used_flags & TRPAUF_SLOT_RELEASE_BACK) {
 								TraceRestrictProgramResult out;
 								TraceRestrictProgramInput input(gp.old_tile, ReverseTrackdir(rev_trackdir), nullptr, nullptr);
 								input.permitted_slot_operations = TRPISP_RELEASE_BACK;

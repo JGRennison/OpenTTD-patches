@@ -300,7 +300,7 @@ private:
 		if (GetSignalType(tile, TrackdirToTrack(trackdir)) == SIGTYPE_PBS && !HasSignalOnTrackdir(tile, trackdir)) {
 			flags_to_check |= TRPAUF_REVERSE;
 		}
-		if (prog && prog->actions_used_flags & flags_to_check) {
+		if (prog != nullptr && prog->actions_used_flags & flags_to_check) {
 			prog->Execute(Yapf().GetVehicle(), TraceRestrictProgramInput(tile, trackdir, &TraceRestrictPreviousSignalCallback, &n), out);
 			if (out.flags & TRPRF_RESERVE_THROUGH && is_res_through != nullptr) {
 				*is_res_through = true;
@@ -326,7 +326,7 @@ private:
 	{
 		const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(trackdir));
 		TraceRestrictProgramActionsUsedFlags flags_to_check = TRPAUF_PF;
-		if (prog && prog->actions_used_flags & flags_to_check) {
+		if (prog != nullptr && prog->actions_used_flags & flags_to_check) {
 			prog->Execute(Yapf().GetVehicle(), TraceRestrictProgramInput(tile, trackdir, &TraceRestrictPreviousSignalCallback, &n), out);
 			if (out.flags & TRPRF_DENY) {
 				n.m_segment->m_end_segment_reason |= ESRB_DEAD_END;
@@ -428,7 +428,7 @@ public:
 					if (IsNoEntrySignal(sig_type)) {
 						if (ShouldCheckTraceRestrict(n, tile)) {
 							const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(trackdir));
-							if (prog && prog->actions_used_flags & TRPAUF_PF) {
+							if (prog != nullptr && prog->actions_used_flags & TRPAUF_PF) {
 								TraceRestrictProgramResult out;
 								prog->Execute(Yapf().GetVehicle(), TraceRestrictProgramInput(tile, trackdir, &TraceRestrictPreviousSignalCallback, &n), out);
 								if (out.flags & TRPRF_DENY) {

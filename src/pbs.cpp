@@ -366,7 +366,7 @@ static uint16_t ApplyTunnelBridgeLookaheadSignalSpeedRestriction(TileIndex tile,
 			trackdir = GetTunnelBridgeExitTrackdir(tile);
 		}
 		const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(trackdir));
-		if (prog && prog->actions_used_flags & TRPAUF_SPEED_RESTRICTION) {
+		if (prog != nullptr && prog->actions_used_flags & TRPAUF_SPEED_RESTRICTION) {
 			TraceRestrictProgramResult out;
 			TraceRestrictProgramInput input(tile, trackdir, nullptr, nullptr);
 			prog->Execute(v, input, out);
@@ -650,7 +650,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 				uint16_t speed_restriction = lookahead->speed_restriction;
 				if (v != nullptr) {
 					const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(trackdir));
-					if (prog && prog->actions_used_flags & au_flags) {
+					if (prog != nullptr && prog->actions_used_flags & au_flags) {
 						TraceRestrictProgramResult out;
 						TraceRestrictProgramInput input(tile, trackdir, nullptr, nullptr);
 						prog->Execute(v, input, out);
@@ -1507,7 +1507,7 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
 			if (GetSignalAlwaysReserveThrough(ft.m_new_tile, TrackdirToTrack(td))) return false;
 			if (IsRestrictedSignal(ft.m_new_tile)) {
 				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(ft.m_new_tile, TrackdirToTrack(td));
-				if (prog && prog->actions_used_flags & TRPAUF_RESERVE_THROUGH) {
+				if (prog != nullptr && prog->actions_used_flags & TRPAUF_RESERVE_THROUGH) {
 					TraceRestrictProgramResult out;
 					prog->Execute(v, TraceRestrictProgramInput(ft.m_new_tile, td, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr), out);
 					if (out.flags & TRPRF_RESERVE_THROUGH) {
