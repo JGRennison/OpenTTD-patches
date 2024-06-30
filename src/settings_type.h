@@ -262,6 +262,7 @@ struct GUISettings : public TimeSettings {
 	uint8_t     drag_signals_density;                            ///< many signals density
 	bool        drag_signals_fixed_distance;                     ///< keep fixed distance between signals when dragging
 	bool        drag_signals_skip_stations;                      ///< continue past station/waypoint tiles when auto-fill dragging signals
+	bool        drag_signals_stop_restricted_signal;             ///< when removing signals using auto-fill drag, sto pwhen reaching a signal with an attached routing restriction
 	CalTime::Year semaphore_build_before;                        ///< build semaphore signals automatically before this year
 	uint8_t     news_message_timeout;                            ///< how much longer than the news message "age" should we keep the message in the history
 	bool        show_track_reservation;                          ///< highlight reserved tracks.

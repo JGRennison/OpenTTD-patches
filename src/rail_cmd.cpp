@@ -1473,17 +1473,18 @@ static void ReReserveTrainPath(Train *v)
  * @param tile tile where to build the signals
  * @param flags operation to perform
  * @param p1 various bitstuffed elements
- * - p1 = (bit 0-2) - track-orientation, valid values: 0-5 (Track enum)
- * - p1 = (bit 3)   - 1 = override signal/semaphore, or pre/exit/combo signal or (for bit 7) toggle variant (CTRL-toggle)
- * - p1 = (bit 4)   - 0 = signals, 1 = semaphores
- * - p1 = (bit 5-7) - type of the signal, for valid values see enum SignalType in rail_map.h
- * - p1 = (bit 8)   - convert the present signal type and variant
- * - p1 = (bit 9-10)- cycle through which signal sets?
- * - p1 = (bit 15-16)-cycle the signal direction this many times
- * - p1 = (bit 17)  - 1 = don't modify an existing signal but don't fail either, 0 = always set new signal type
- * - p1 = (bit 18)  - permit creation of/conversion to bidirectionally signalled bridges/tunnels
- * - p1 = (bit 19-22)-signal style
- * - p1 = (bit 23-27)-signal spacing
+ * - p1 = (bit 0-2)   - track-orientation, valid values: 0-5 (Track enum)
+ * - p1 = (bit 3)     - 1 = override signal/semaphore, or pre/exit/combo signal or (for bit 7) toggle variant (CTRL-toggle)
+ * - p1 = (bit 4)     - 0 = signals, 1 = semaphores
+ * - p1 = (bit 5-7)   - type of the signal, for valid values see enum SignalType in rail_map.h
+ * - p1 = (bit 8)     - convert the present signal type and variant
+ * - p1 = (bit 9-10)  - cycle through which signal sets?
+ * - p1 = (bit 15-16) - cycle the signal direction this many times
+ * - p1 = (bit 17)    - 1 = don't modify an existing signal but don't fail either, 0 = always set new signal type
+ * - p1 = (bit 18)    - permit creation of/conversion to bidirectionally signalled bridges/tunnels
+ * - p1 = (bit 19-22) - signal style
+ * - p1 = (bit 23-27) - signal spacing
+ * - p1 = (bit 28)    - disallow removing restricted signals
  * @param p2 used for CmdBuildManySignals() to copy direction of first signal
  * @param text unused
  * @return the cost of this operation or an error
@@ -1983,6 +1984,7 @@ static bool CheckSignalAutoFill(TileIndex &tile, Trackdir &trackdir, int &signal
  * - p2 = (bit 24-31) - user defined signals_density
  * @param p3 various bitstuffed elements
  * - p3 = (bit  0)    - 1 = skip over rail stations/waypoints, 0 = stop at rail stations/waypoints
+ * - p3 = (bit  1)    - 1 = stop at restricted signals on remove, 0 = allow removing restricted signals
  * @param text unused
  * @return the cost of this operation or an error
  */
@@ -2000,6 +2002,7 @@ static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uin
 	uint8_t signal_density = GB(p2, 24, 8);
 	uint8_t signal_style = GB(p2, 11, 4);
 	bool allow_station = HasBit(p3, 0);
+	bool no_remove_restricted_signal = HasBit(p3, 1);
 
 	if (p1 >= MapSize() || !ValParamTrackOrientation(track)) return CMD_ERROR;
 	TileIndex end_tile = p1;
@@ -2088,6 +2091,7 @@ static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uin
 			SB(param1, 19, 4, signal_style);
 			if (!remove && signal_ctr == 0) SetBit(param1, 17);
 			if (!remove) SB(param1, 23, 5, Clamp<int>(GB(p2, 24, 8), 1, 16));
+			if (remove && no_remove_restricted_signal) SetBit(param1, 28);
 
 			/* Pick the correct orientation for the track direction */
 			signals = 0;
@@ -2107,6 +2111,9 @@ static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uin
 				last_suitable_ctr = signal_ctr;
 				last_suitable_tile = tile;
 				last_suitable_trackdir = trackdir;
+			} else if (ret.GetErrorMessage() == STR_ERROR_RESTRICTED_SIGNAL) {
+				last_error = ret;
+				break;
 			} else if (!test_only && last_suitable_tile != INVALID_TILE && ret.GetErrorMessage() != STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING) {
 				/* If a signal can't be placed, place it at the last possible position. */
 				SB(param1, 0, 3, TrackdirToTrack(last_suitable_trackdir));
@@ -2183,6 +2190,7 @@ static CommandCost CmdSignalTrackHelper(TileIndex tile, DoCommandFlag flags, uin
  * - p2 = (bit 24-31) - user defined signals_density
  * @param p3 various bitstuffed elements
  * - p3 = (bit  0)    - 1 = skip over rail stations/waypoints, 0 = stop at rail stations/waypoints
+ * - p3 = (bit  1)    - 1 = stop at restricted signals on remove, 0 = allow removing restricted signals
  * @param text unused
  * @return the cost of this operation or an error
  * @see CmdSignalTrackHelper
@@ -2196,10 +2204,9 @@ CommandCost CmdBuildSignalTrack(TileIndex tile, DoCommandFlag flags, uint32_t p1
  * Remove signals
  * @param tile coordinates where signal is being deleted from
  * @param flags operation to perform
- * @param p1 various bitstuffed elements, only track information is used
+ * @param p1 various bitstuffed elements, only relevant bits shown, see CmdBuildSingleSignal for full list
  *           - (bit  0- 2) - track-orientation, valid values: 0-5 (Track enum)
- *           - (bit  3)    - override signal/semaphore, or pre/exit/combo signal (CTRL-toggle)
- *           - (bit  4)    - 0 = signals, 1 = semaphores
+ *           - (bit 28)    - disallow removing restricted signals
  * @param p2 unused
  * @param text unused
  * @return the cost of this operation or an error
@@ -2207,6 +2214,7 @@ CommandCost CmdBuildSignalTrack(TileIndex tile, DoCommandFlag flags, uint32_t p1
 CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	Track track = Extract<Track, 0, 3>(p1);
+	bool no_remove_restricted = HasBit(p1, 28);
 	Money cost = _price[PR_CLEAR_SIGNALS];
 
 	if (IsTileType(tile, MP_TUNNELBRIDGE)) {
@@ -2216,6 +2224,7 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t 
 		}
 		if (!IsTunnelBridgeWithSignalSimulation(tile)) return_cmd_error(STR_ERROR_THERE_ARE_NO_SIGNALS);
 		TileIndex end = GetOtherTunnelBridgeEnd(tile);
+		if (no_remove_restricted && (IsTunnelBridgeRestrictedSignal(tile) || IsTunnelBridgeRestrictedSignal(end))) return_cmd_error(STR_ERROR_RESTRICTED_SIGNAL);
 		CommandCost ret = TunnelBridgeIsFree(tile, end, nullptr, TBIFM_ACROSS_ONLY);
 		if (ret.Failed()) return ret;
 
@@ -2227,6 +2236,7 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t 
 		if (!HasSignalOnTrack(tile, track)) {
 			return_cmd_error(STR_ERROR_THERE_ARE_NO_SIGNALS);
 		}
+		if (no_remove_restricted && GetExistingTraceRestrictProgram(tile, track) != nullptr) return_cmd_error(STR_ERROR_RESTRICTED_SIGNAL);
 	}
 
 	/* Only water can remove signals from anyone */
@@ -2326,6 +2336,7 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t 
  * - p2 = (bit 24-31) - user defined signals_density
  * @param p3 various bitstuffed elements
  * - p3 = (bit  0)    - 1 = skip over rail stations/waypoints, 0 = stop at rail stations/waypoints
+ * - p3 = (bit  1)    - 1 = stop at restricted signals on remove, 0 = allow removing restricted signals
  * @param text unused
  * @return the cost of this operation or an error
  * @see CmdSignalTrackHelper

@@ -816,6 +816,9 @@ STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_ANYWHERE         :Anywhere
 STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS                   :When auto-fill dragging, continue past stations/waypoints: {STRING2}
 STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS_HELPTEXT          :Select the behaviour of signal placement when Ctrl+dragging signals. If disabled, signal placement stops when reaching a station/waypoint tile. If enabled, signal placement continues on the far side of rail stations/waypoints
 
+STR_CONFIG_SETTING_DRAG_SIGNALS_STOP_RESTRICTED_SIGNAL          :When removing signals using auto-fill drag, stop at restricted signals: {STRING2}
+STR_CONFIG_SETTING_DRAG_SIGNALS_STOP_RESTRICTED_SIGNAL_HELPTEXT :Select the behaviour of signal placement when removing signal using Ctrl+dragging. If enabled, removal of signals stops when reaching a signal with an attached routing restriction program
+
 STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED                   :{WHITE}Can't change setting...
 STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED_NEWGRF            :{WHITE}...setting is observed by a NewGRF
 
@@ -1959,6 +1962,7 @@ STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Can't bu
 STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Can't remove road waypoint here...
 STR_ERROR_MUST_REMOVE_ROADWAYPOINT_FIRST                        :{WHITE}Must remove road waypoint first
 STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}... unsuitable signal type
+STR_ERROR_RESTRICTED_SIGNAL                                     :{WHITE}... signal has attached routing restriction program
 STR_ERROR_SIGNAL_CHANGES                                        :{WHITE}Number of programmable pre-signal evaluations exceeded limit
 
 STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}Bridge is too low for station

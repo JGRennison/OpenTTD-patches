@@ -2356,6 +2356,7 @@ static SettingsContainer &GetSettingsTree()
 				signals->Add(new SettingEntry("gui.cycle_signal_types"));
 				signals->Add(new SettingEntry("gui.drag_signals_fixed_distance"));
 				signals->Add(new SettingEntry("gui.drag_signals_skip_stations"));
+				signals->Add(new SettingEntry("gui.drag_signals_stop_restricted_signal"));
 				signals->Add(new SettingEntry("gui.auto_remove_signals"));
 				signals->Add(new SettingEntry("gui.show_restricted_signal_recolour"));
 				signals->Add(new SettingEntry("gui.show_all_signal_default"));

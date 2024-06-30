@@ -496,6 +496,7 @@ static void HandleAutoSignalPlacement()
 		SB(p2, 10, 1, !_settings_client.gui.drag_signals_fixed_distance);
 	}
 	SB(p3, 0, 1, _settings_client.gui.drag_signals_skip_stations);
+	SB(p3, 1, 1, _ctrl_pressed && _settings_client.gui.drag_signals_stop_restricted_signal);
 
 	/* _settings_client.gui.drag_signals_density is given as a parameter such that each user
 	 * in a network game can specify their own signal density */
