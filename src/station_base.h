@@ -715,6 +715,11 @@ struct GoodsEntry {
 	{
 		return this->data != nullptr ? this->data->flows : _empty_flows;
 	}
+
+	void RemoveDataIfUnused()
+	{
+		if (this->data != nullptr && this->data->MayBeRemoved()) this->data.reset();
+	}
 };
 
 /** All airport-related information. Only valid if tile != INVALID_TILE. */

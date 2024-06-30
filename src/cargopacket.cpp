@@ -636,7 +636,7 @@ bool VehicleCargoList::Stage(bool accepted, StationID current_station, StationID
 	CargoPacketList transfer_deliver;
 	std::vector<CargoPacket *> keep;
 
-	const FlowStatMap &flows = ge->CreateData().flows;
+	const FlowStatMap &flows = ge->ConstFlows();
 
 	bool force_keep = (order_flags & OUFB_NO_UNLOAD) != 0;
 	bool force_unload = (order_flags & OUFB_UNLOAD) != 0;

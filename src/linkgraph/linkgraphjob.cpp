@@ -182,6 +182,7 @@ void LinkGraphJob::FinaliseJob()
 			geflows.insert(std::move(*it));
 		}
 		geflows.SortStorage();
+		ge.RemoveDataIfUnused();
 		InvalidateWindowData(WC_STATION_VIEW, st->index, this->Cargo());
 	}
 }
