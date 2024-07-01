@@ -532,10 +532,14 @@ static bool IsCloseToTown(TileIndex tile, uint dist)
 }
 
 /** Resize the sign (label) of the town after it changes population. */
-void Town::UpdateVirtCoord()
+void Town::UpdateVirtCoord(bool only_if_label_changed)
 {
 	if (IsHeadless()) return;
+
+	auto label_rating = this->town_label_rating;
 	this->UpdateLabel();
+	if (only_if_label_changed && label_rating == this->town_label_rating) return;
+
 	Point pt = RemapCoords2(TileX(this->xy) * TILE_SIZE, TileY(this->xy) * TILE_SIZE);
 
 	if (_viewport_sign_kdtree_valid && this->cache.sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeTown(this->index));
@@ -4142,7 +4146,7 @@ static void UpdateTownRating(Town *t)
 		t->ratings[i] = Clamp(t->ratings[i], RATING_MINIMUM, RATING_MAXIMUM);
 	}
 
-	t->UpdateVirtCoord();
+	t->UpdateVirtCoord(true);
 	SetWindowDirty(WC_TOWN_AUTHORITY, t->index);
 }
 

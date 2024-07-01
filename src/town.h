@@ -168,7 +168,7 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 		return ClampTo<uint16_t>((this->cache.population / _settings_game.economy.town_noise_population[_settings_game.difficulty.town_council_tolerance]) + 3);
 	}
 
-	void UpdateVirtCoord();
+	void UpdateVirtCoord(bool only_if_label_changed = false);
 
 	inline const char *GetCachedName() const
 	{
