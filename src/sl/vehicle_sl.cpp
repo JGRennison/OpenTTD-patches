@@ -262,13 +262,13 @@ extern uint8_t _age_cargo_skip_counter; // From misc_sl.cpp
 
 static std::vector<Vehicle *> _load_invalid_vehicles_to_delete;
 
-/** Called after load to update coordinates */
-void AfterLoadVehicles(bool part_of_load)
+/** Called after load for phase 1 of vehicle initialisation */
+void AfterLoadVehiclesPhase1(bool part_of_load)
 {
 	_load_invalid_vehicles_to_delete.clear();
 
 	const Vehicle *si_v = nullptr;
-	SCOPE_INFO_FMT([&si_v], "AfterLoadVehicles: %s", scope_dumper().VehicleInfo(si_v));
+	SCOPE_INFO_FMT([&si_v], "AfterLoadVehiclesPhase1: %s", scope_dumper().VehicleInfo(si_v));
 	for (Vehicle *v : Vehicle::Iterate()) {
 		si_v = v;
 		/* Reinstate the previous pointer */
@@ -420,15 +420,6 @@ void AfterLoadVehicles(bool part_of_load)
 			}
 		}
 
-		if (SlXvIsFeaturePresent(XSLFI_TEMPLATE_REPLACEMENT) && (_network_server || !_networking)) {
-			for (Train *t : Train::Iterate()) {
-				si_v = t;
-				if (t->IsVirtual() && t->First() == t) {
-					delete t;
-				}
-			}
-		}
-
 		if (IsSavegameVersionBefore(SLV_VEHICLE_ECONOMY_AGE) && SlXvIsFeatureMissing(XSLFI_VEHICLE_ECONOMY_AGE)) {
 			/* Set vehicle economy age based on calendar age. */
 			for (Vehicle *v : Vehicle::Iterate()) {
@@ -439,10 +430,16 @@ void AfterLoadVehicles(bool part_of_load)
 	si_v = nullptr;
 
 	CheckValidVehicles();
+}
 
+/** Called after load for phase 2 of vehicle initialisation */
+void AfterLoadVehiclesPhase2(bool part_of_load)
+{
+	const Vehicle *si_v = nullptr;
+	SCOPE_INFO_FMT([&si_v], "AfterLoadVehiclesPhase2: %s", scope_dumper().VehicleInfo(si_v));
 	for (Vehicle *v : Vehicle::IterateFrontOnly()) {
 		si_v = v;
-		assert(v->first != nullptr);
+		assert(v->First() != nullptr);
 
 		v->trip_occupancy = CalcPercentVehicleFilled(v, nullptr);
 
@@ -495,6 +492,16 @@ void AfterLoadVehicles(bool part_of_load)
 				break;
 
 			default: break;
+		}
+	}
+
+	if (part_of_load && SlXvIsFeaturePresent(XSLFI_TEMPLATE_REPLACEMENT) && (_network_server || !_networking)) {
+		for (Train *t : Train::IterateFrontOnly()) {
+			si_v = t;
+			if (t->IsVirtual()) {
+				t->unitnumber = 0;
+				delete t;
+			}
 		}
 	}
 

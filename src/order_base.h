@@ -890,7 +890,7 @@ static_assert(DispatchSchedule::DEPARTURE_TAG_COUNT == 1 + (DispatchSlot::SDSF_L
  */
 struct OrderList : OrderListPool::PoolItem<&_orderlist_pool> {
 private:
-	friend void AfterLoadVehicles(bool part_of_load); ///< For instantiating the shared vehicle chain
+	friend void AfterLoadVehiclesPhase1(bool part_of_load); ///< For instantiating the shared vehicle chain
 	friend SaveLoadTable GetOrderListDescription(); ///< Saving and loading of order lists.
 	friend upstream_sl::SaveLoadTable upstream_sl::GetOrderListDescription(); ///< Saving and loading of order lists.
 	friend void Ptrs_ORDL(); ///< Saving and loading of order lists.

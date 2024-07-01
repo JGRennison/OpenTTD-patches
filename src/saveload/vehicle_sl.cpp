@@ -28,7 +28,6 @@
 
 #include "../safeguards.h"
 
-void AfterLoadVehicles(bool part_of_load);
 bool TrainController(Train *v, Vehicle *nomove, bool reverse = true); // From train_cmd.cpp
 void ReverseTrainDirection(Train *v);
 void ReverseTrainSwapVeh(Train *v, int l, int r);

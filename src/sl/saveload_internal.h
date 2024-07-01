@@ -25,7 +25,8 @@ void MoveBuoysToWaypoints();
 void MoveWaypointsToBaseStations();
 SaveLoadTable GetBaseStationDescription();
 
-void AfterLoadVehicles(bool part_of_load);
+void AfterLoadVehiclesPhase1(bool part_of_load);
+void AfterLoadVehiclesPhase2(bool part_of_load);
 void AfterLoadVehiclesRemoveAnyFoundInvalid();
 void AfterLoadEngines();
 void FixupTrainLengths();
