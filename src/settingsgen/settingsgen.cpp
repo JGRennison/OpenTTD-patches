@@ -16,6 +16,11 @@
 
 #include <stdarg.h>
 
+#if !defined(_WIN32) || defined(__CYGWIN__)
+#include <unistd.h>
+#include <sys/stat.h>
+#endif
+
 #include "../safeguards.h"
 
 /**
