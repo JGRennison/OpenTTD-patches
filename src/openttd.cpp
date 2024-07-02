@@ -749,7 +749,8 @@ static std::vector<OptionData> CreateOptions()
 	for (char c : "QXehx") options.push_back({ .type = ODF_NO_VALUE, .id = c, .shortname = c });
 
 	/* Non-upstream options */
-	for (char c : "KJZ") options.push_back({ .type = ODF_HAS_VALUE, .id = c, .shortname = c });
+	for (char c : "KJ") options.push_back({ .type = ODF_HAS_VALUE, .id = c, .shortname = c });
+	for (char c : "Z") options.push_back({ .type = ODF_NO_VALUE, .id = c, .shortname = c });
 
 	return options;
 }
