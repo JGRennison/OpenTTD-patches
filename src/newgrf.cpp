@@ -9509,11 +9509,11 @@ static bool ChangeGRFFeatureTestName(uint8_t langid, std::string_view str)
 	for (const GRFFeatureInfo *info = _grf_feature_list; info->name != nullptr; info++) {
 		if (str == info->name) {
 			_current_grf_feature_test.feature = info;
-			GrfMsg(2, "Action 14 feature test: found feature named: '{}' (version: %u) in 'FTST'->'NAME'", str, info->version);
+			GrfMsg(2, "Action 14 feature test: found feature named: '{}' (version: {}) in 'FTST'->'NAME'", StrMakeValid(str), info->version);
 			return true;
 		}
 	}
-	GrfMsg(2, "Action 14 feature test: could not find feature named: '{}' in 'FTST'->'NAME'", str);
+	GrfMsg(2, "Action 14 feature test: could not find feature named: '{}' in 'FTST'->'NAME'", StrMakeValid(str));
 	_current_grf_feature_test.feature = nullptr;
 	return true;
 }
