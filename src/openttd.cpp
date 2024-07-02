@@ -273,12 +273,10 @@ void CDECL ShowInfoF(const char *str, ...)
  */
 static void ShowHelp()
 {
-	char buf[8192];
-	char *p = buf;
+	char buf[2048];
 
-	p += seprintf(p, lastof(buf), "OpenTTD %s\n", _openttd_revision);
-	p = strecpy(p,
-		"\n"
+	std::string msg = stdstr_fmt("OpenTTD %s\n", _openttd_revision);
+	msg += "\n"
 		"\n"
 		"Command line options:\n"
 		"  -v drv              = Set video driver (see below)\n"
@@ -309,46 +307,49 @@ static void ShowHelp()
 		"  -Q                  = Don't scan for/load NewGRF files on startup\n"
 		"  -QQ                 = Disable NewGRF scanning/loading entirely\n"
 		"  -Z                  = Write detailed version information and exit\n"
-		"\n",
-		lastof(buf)
-	);
+		"\n";
 
 	/* List the graphics packs */
-	p = BaseGraphics::GetSetsList(p, lastof(buf));
+	BaseGraphics::GetSetsList(buf, lastof(buf));
+	msg += buf;
 
 	/* List the sounds packs */
-	p = BaseSounds::GetSetsList(p, lastof(buf));
+	BaseSounds::GetSetsList(buf, lastof(buf));
+	msg += buf;
 
 	/* List the music packs */
-	p = BaseMusic::GetSetsList(p, lastof(buf));
+	BaseMusic::GetSetsList(buf, lastof(buf));
+	msg += buf;
 
 	/* List the drivers */
-	p = DriverFactoryBase::GetDriversInfo(p, lastof(buf));
+	DriverFactoryBase::GetDriversInfo(buf, lastof(buf));
+	msg += buf;
 
 	/* List the blitters */
-	p = BlitterFactory::GetBlittersInfo(p, lastof(buf));
+	BlitterFactory::GetBlittersInfo(buf, lastof(buf));
+	msg += buf;
 
 	/* List the debug facilities. */
-	p = DumpDebugFacilityNames(p, lastof(buf));
+	DumpDebugFacilityNames(buf, lastof(buf));
+	msg += buf;
 
 	/* We need to initialize the AI, so it finds the AIs */
 	AI::Initialize();
-	const std::string ai_list = AI::GetConsoleList(true);
-	p = strecpy(p, ai_list.c_str(), lastof(buf));
+	msg += AI::GetConsoleList(true);
 	AI::Uninitialize(true);
 
 	/* We need to initialize the GameScript, so it finds the GSs */
 	Game::Initialize();
-	const std::string game_list = Game::GetConsoleList(true);
-	p = strecpy(p, game_list.c_str(), lastof(buf));
+	msg += Game::GetConsoleList(true);
 	Game::Uninitialize(true);
 
 	/* ShowInfo put output to stderr, but version information should go
 	 * to stdout; this is the only exception */
 #if !defined(_WIN32)
-	printf("%s\n", buf);
+	msg += "\n";
+	fputs(msg.c_str(), stdout);
 #else
-	ShowInfoI(buf);
+	ShowInfoI(msg);
 #endif
 }
 
