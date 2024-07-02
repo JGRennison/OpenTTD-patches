@@ -2456,7 +2456,7 @@ struct CompanyWindow : Window
 		int y = r.top;
 
 		uint rail_pieces = c->infrastructure.signal;
-		for (uint i = 0; i < lengthof(c->infrastructure.rail); i++) rail_pieces += c->infrastructure.rail[i];
+		for (uint32_t pieces : c->infrastructure.rail) rail_pieces += pieces;
 		if (rail_pieces != 0) {
 			SetDParam(0, rail_pieces);
 			DrawString(r.left, r.right, y, STR_COMPANY_VIEW_INFRASTRUCTURE_RAIL);
@@ -2464,7 +2464,7 @@ struct CompanyWindow : Window
 		}
 
 		uint road_pieces = 0;
-		for (uint i = 0; i < lengthof(c->infrastructure.road); i++) road_pieces += c->infrastructure.road[i];
+		for (uint32_t pieces : c->infrastructure.road) road_pieces += pieces;
 		if (road_pieces != 0) {
 			SetDParam(0, road_pieces);
 			DrawString(r.left, r.right, y, STR_COMPANY_VIEW_INFRASTRUCTURE_ROAD);
