@@ -2,6 +2,40 @@
 
 * * *
 
+### v0.60.0 (2024-07-02)
+* Fix incorrect water infrastructure total when changing owner of object on water, and when removing objects on water using a multiple-tile clear.
+* Fix vehicle route overlay focus handling in orders window for some drop downs.
+* Fix template replacements failing when old trains parts were to be stored in the depot, and this would result in a free wagon chain longer than the maximum train length.
+* Fix the link graph refresher creating unnecessary links in some cases when using autorefit with cargo-type load orders.
+* Fix crash which could occur when loading old savegames in some cases.
+* Fix signal blocks containing no-entry signals not being promoted to PBS.
+* Fix handling of reservations when reserving up to a one way tunnel-bridge exit.
+* Fix vehicle window showing wrong text for profit last period in wallclock timekeeping mode.
+* Fix wrong behaviour of drop downs in the routing restriction window in some special cases.
+* Allow sorting by average order occupancy in shared order group mode.
+* Allow road vehicle overtaking in road waypoint tiles.
+* Allow changing the maximum tunnel length and maximum bridge height settings in network games.
+* Clicking on a tunnel to show the vehicles inside is now also implemented for road/tram tunnels.
+* Add setting for auto-fill drag signal removal to stop at signals with an attached routing restriction (default on).
+* Add button to toggle train purchase window dual pane mode.
+* Add console command to merge two companies.
+* Orders:
+  * Fix duplicate order duplicating dispatch schedule assignment.
+  * Fix not being able to move depot unbunch orders to another depot.
+  * Preserve wait time/timetabled state when duplicating or moving the target of orders.
+* Realistic braking:
+  * Allow removing reservation boundary signal.
+  * Add setting to allow track editing to ignore realistic braking restrictions.
+  * Add setting to uniformly scale the acceleration and braking of trains (when using realistic braking).
+* Scheduled dispatch:
+  * Show scheduled dispatch label in order window.
+  * Allow naming departure slot tags.
+* NewGRF signals:
+  * Fix display of signal styles which show signals on both sides.
+  * Fix signal GRFs which check whether the signal is on a tunnel portal.
+* Fix crashes which could occur on 32 bit Windows builds, when using an SSE blitter.
+* Bump trunk base from commit 88cf99017a26f887230d2c14d057a97bbf077f7c to commit b2218e75d4dea4261c6638579d3e501080b85bdc.
+
 ### v0.59.1 (2024-05-20)
 * Fix crash when sorting by capacity in autoreplace window.
 * Fix non-percentage servicing interval when using wallclock mode.
