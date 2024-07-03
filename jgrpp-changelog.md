@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.60.1 (2024-07-03)
+* Fix network clients being disconnected when attempting to join a multiplayer game.
+* Fix false-positive warning messages about inconsistencies which could cause multiplayer desyncs.
+* Fix -Z (version info) command line option.
+* Fix command line help text being truncated.
+
 ### v0.60.0 (2024-07-02)
 * Fix incorrect water infrastructure total when changing owner of object on water, and when removing objects on water using a multiple-tile clear.
 * Fix vehicle route overlay focus handling in orders window for some drop downs.
