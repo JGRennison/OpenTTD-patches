@@ -136,7 +136,7 @@ struct PacketWriter : SaveFilter {
 		}
 		bool last_packet = false;
 		for (auto &p : this->packets) {
-			if (p->GetPacketType() == PACKET_SERVER_MAP_DONE) last_packet = true;
+			if (p->GetTransmitPacketType() == PACKET_SERVER_MAP_DONE) last_packet = true;
 			this->cs->SendPacket(std::move(p));
 
 		}

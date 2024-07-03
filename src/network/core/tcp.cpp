@@ -69,7 +69,7 @@ void NetworkTCPSocketHandler::SendPacket(std::unique_ptr<Packet> packet)
 {
 	assert(packet != nullptr);
 
-	packet->PrepareToSend();
+	packet->PrepareForSendQueue();
 
 	this->packet_queue.push_back(std::move(packet));
 }
@@ -84,11 +84,11 @@ void NetworkTCPSocketHandler::SendPrependPacket(std::unique_ptr<Packet> packet, 
 {
 	assert(packet != nullptr);
 
-	packet->PrepareToSend();
+	packet->PrepareForSendQueue();
 
 	if (queue_after_packet_type >= 0) {
 		for (auto iter = this->packet_queue.begin(); iter != this->packet_queue.end(); ++iter) {
-			if ((*iter)->GetPacketType() == queue_after_packet_type) {
+			if ((*iter)->GetTransmitPacketType() == queue_after_packet_type) {
 				++iter;
 				this->packet_queue.insert(iter, std::move(packet));
 				return;
@@ -131,6 +131,7 @@ SendPacketsState NetworkTCPSocketHandler::SendPackets(bool closing_down)
 
 	while (!this->packet_queue.empty()) {
 		Packet &p = *this->packet_queue.front();
+		p.CheckPendingPreSendEncryption();
 		ssize_t res = p.TransferOut<int>(send, this->sock, 0);
 		if (res == -1) {
 			NetworkError err = NetworkError::GetLast();

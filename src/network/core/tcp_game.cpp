@@ -295,7 +295,7 @@ std::string NetworkGameSocketHandler::GetDebugInfo() const { return ""; }
 
 void NetworkGameSocketHandler::LogSentPacket(const Packet &pkt)
 {
-	PacketGameType type = (PacketGameType)pkt.GetPacketType();
+	PacketGameType type = (PacketGameType)pkt.GetTransmitPacketType();
 	DEBUG(net, 5, "[tcp/game] sent packet type %d (%s) to client %d, %s", type, GetPacketGameTypeName(type), this->client_id, this->GetDebugInfo().c_str());
 }
 

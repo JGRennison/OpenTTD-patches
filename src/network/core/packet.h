@@ -51,6 +51,10 @@ struct Packet : public BufferSerialisationHelper<Packet>, public BufferDeseriali
 private:
 	/** The current read/write position in the packet */
 	PacketSize pos;
+	/** Whether encryption is required for this packet */
+	bool encyption_pending = false;
+	/** Packet type, for transmitted packets */
+	PacketType tx_packet_type;
 	/** The buffer of this packet. */
 	std::vector<uint8_t> buffer;
 	/** The limit for the packet size. */
@@ -59,6 +63,8 @@ private:
 	/** Socket we're associated with. */
 	NetworkSocketHandler *cs;
 
+	void PreSendEncryption();
+
 public:
 	struct ReadTag{};
 	Packet(ReadTag tag, NetworkSocketHandler *cs, size_t limit, size_t initial_read_size = EncodedLengthOfPacketSize());
@@ -66,8 +72,21 @@ public:
 
 	void ResetState(PacketType type);
 
+	void PrepareForSendQueue();
+
+	inline void CheckPendingPreSendEncryption()
+	{
+		if (this->encyption_pending) {
+			this->PreSendEncryption();
+		}
+	}
+
 	/* Sending/writing of packets */
-	void PrepareToSend();
+	inline void PrepareToSend()
+	{
+		this->PrepareForSendQueue();
+		this->CheckPendingPreSendEncryption();
+	}
 
 	std::vector<uint8_t> &GetSerialisationBuffer() { return this->buffer; }
 	size_t GetSerialisationLimit() const { return this->limit; }
@@ -88,6 +107,7 @@ public:
 	size_t Size() const;
 	[[nodiscard]] bool PrepareToRead();
 	PacketType GetPacketType() const;
+	PacketType GetTransmitPacketType() const { return this->tx_packet_type; }
 
 	bool CanReadFromPacket(size_t bytes_to_read, bool close_connection = false);
 

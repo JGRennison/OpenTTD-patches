@@ -54,12 +54,16 @@ Packet::Packet(NetworkSocketHandler *cs, PacketType type, size_t limit) : pos(0)
 void Packet::ResetState(PacketType type)
 {
 	this->buffer.clear();
+	this->tx_packet_type = type;
 
 	/* Allocate space for the the size so we can write that in just before sending the packet. */
 	size_t size = EncodedLengthOfPacketSize();
 	if (cs != nullptr && cs->send_encryption_handler != nullptr) {
 		/* Allocate some space for the message authentication code of the encryption. */
 		size += cs->send_encryption_handler->MACSize();
+		this->encyption_pending = true;
+	} else {
+		this->encyption_pending = false;
 	}
 	assert(this->CanWriteToPacket(size));
 	this->buffer.resize(size, 0);
@@ -70,7 +74,7 @@ void Packet::ResetState(PacketType type)
 /**
  * Writes the packet size from the raw packet from packet->size
  */
-void Packet::PrepareToSend()
+void Packet::PrepareForSendQueue()
 {
 	/* Prevent this to be called twice and for packets that have been received. */
 	assert(this->buffer[0] == 0 && this->buffer[1] == 0);
@@ -78,15 +82,17 @@ void Packet::PrepareToSend()
 	this->buffer[0] = GB(this->Size(), 0, 8);
 	this->buffer[1] = GB(this->Size(), 8, 8);
 
-	if (cs != nullptr && cs->send_encryption_handler != nullptr) {
-		size_t offset = EncodedLengthOfPacketSize();
-		size_t mac_size = cs->send_encryption_handler->MACSize();
-		size_t message_offset = offset + mac_size;
-		cs->send_encryption_handler->Encrypt(std::span(&this->buffer[offset], mac_size), std::span(&this->buffer[message_offset], this->buffer.size() - message_offset));
-	}
-
-	this->pos  = 0; // We start reading from here
+	this->pos = 0; // We start reading from here
 	this->buffer.shrink_to_fit();
+}
+
+void Packet::PreSendEncryption()
+{
+	this->encyption_pending = false;
+	size_t offset = EncodedLengthOfPacketSize();
+	size_t mac_size = cs->send_encryption_handler->MACSize();
+	size_t message_offset = offset + mac_size;
+	cs->send_encryption_handler->Encrypt(std::span(&this->buffer[offset], mac_size), std::span(&this->buffer[message_offset], this->buffer.size() - message_offset));
 }
 
 /**
