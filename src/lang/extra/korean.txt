@@ -155,6 +155,13 @@ STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED_HELPTEXT    :현실적 감�
 STR_CONFIG_SETTING_LIMIT_TRAIN_ACCELERATION                     :열차 가속 제한: {STRING}
 STR_CONFIG_SETTING_LIMIT_TRAIN_ACCELERATION_HELPTEXT            :현실적 열차 감속 모델을 사용할 경우, 열차의 최대 가속 또한 제한합니다. 이 설정은 일부 열차에서 지나치게 빠른 가속으로 인해 승객들이 음료수를 흘리는 것을 방지하기 위함입니다.
 
+STR_CONFIG_SETTING_TRAIN_ACC_BRAKING_PERCENT                    :열차 감/가속 배수: {STRING}
+STR_CONFIG_SETTING_TRAIN_ACC_BRAKING_PERCENT_HELPTEXT           :열차의 가속과 감속을 얼마나 조정할지에 대한 백분율 값입니다.{}{}이 설정은 열차의 최대 속력을 변경하지 않고 열차의 가속과 감속을 조절하는데 사용할 수 있습니다.
+STR_CONFIG_SETTING_TRAIN_ACC_BRAKING_PERCENT_VALUE              :{COMMA}%
+
+STR_CONFIG_SETTING_TRACK_EDIT_IGNORE_REALISTIC_BRAKING          :선로 편집시 현실적 감속 무시: {STRING}
+STR_CONFIG_SETTING_TRACK_EDIT_IGNORE_REALISTIC_BRAKING_HELPTEXT :현실적 열차 감속 모델을 무시하고 선로를 편집하는 것을 허용합니다. 이 설정을 켜면, 움직이는 열차가 예약산 선로를 수정/제거하는 제한이 사라집니다. 이 경우 비현실적 감속이 발생할 수 있습니다.
+
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT                     :차례로 나눠 실을 때 열차 속력: {STRING}
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_HELPTEXT            :역에서 열차가 화물을 차례로 나눠 실으며 움직일 때 열차의 최대 허용 속력입니다.
 
@@ -760,6 +767,9 @@ STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_ANYWHERE         :어디에나
 
 STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS                   :드래그로 신호기 자동 설치시 역/경유지 무시: {STRING}
 STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS_HELPTEXT          :신호기를 CTRL + 드래그하여 놓을 때의 행동을 선택합니다. 이 설정을 끄면, 신호기는 역/경유지 칸까지만 설치됩니다. 이 설정을 켜면, 역/경유지의 너머까지 신호기가 계속 설치됩니다.
+
+STR_CONFIG_SETTING_DRAG_SIGNALS_STOP_RESTRICTED_SIGNAL          :드래그로 신호기를 자동 제거할 때, 경로 제한 신호기 앞에서 제거를 멈추기: {STRING}
+STR_CONFIG_SETTING_DRAG_SIGNALS_STOP_RESTRICTED_SIGNAL_HELPTEXT :CTRL+드래그를 이용하여 신호기를 제거할 때의 신호기 설치/제거 행동 방식을 선택합니다. 이 설정을 켜면, 신호기를 제거할 때 경로 제한 프로그램이 있는 신호기 앞에 있는 신호기까지만 제거될 것입니다.
 
 STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED                   :{WHITE}설정을 변경할 수 없습니다...
 STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED_NEWGRF            :{WHITE}...NewGRF가 사용 중인 설정입니다
@@ -1517,6 +1527,7 @@ STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_BUTTON                  :{BLACK}기관�
 STR_BUY_VEHICLE_TRAIN_RENAME_WAGON_BUTTON                       :{BLACK}객화차 이름 지정
 STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_TOOLTIP                 :{BLACK}기관차나 동력차의 모델명을 변경합니다
 STR_BUY_VEHICLE_TRAIN_RENAME_WAGON_TOOLTIP                      :{BLACK}객화차의 모델명을 변경합니다
+STR_BUY_VEHICLE_TRAIN_TOGGLE_DUAL_PANE_TOOLTIP                  :{BLACK}기관차와 객화차 따로보기
 
 STR_QUERY_RENAME_TRAIN_TYPE_LOCOMOTIVE_CAPTION                  :{WHITE}기관차의 모델명을 변경합니다
 STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION                       :{WHITE}객화차의 모델명을 변경합니다
@@ -1665,8 +1676,12 @@ STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_FIRST         :첫 번째 슬�
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_FIRST     :첫 번째 슬롯이 아닐 때
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_LAST          :마지막 슬롯일 때
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_LAST      :마지막 슬롯이 아닐 때
+
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG          :태그 {0:NUM}{P 0 "이" "가"} 있을 때
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG_NAMED    :태그 {0:NUM}({1:STRING}){P 0 "이" "가"} 있을 때
+
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG  :태그 {0:NUM}{P 0 "이" "가"} 없을 때
+STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG_NAMED :태그 {0:NUM}({1:STRING}){P 0 "이" "가"} 없을 때
 
 STR_ORDERS_MANAGE_LIST                                          :{BLACK}목록 관리
 STR_ORDERS_MANAGE_LIST_TOOLTIP                                  :{BLACK}이 경로 목록 관리
@@ -1893,6 +1908,7 @@ STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}여기�
 STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}이 도로 경유지를 제거할 수 없습니다...
 STR_ERROR_MUST_REMOVE_ROADWAYPOINT_FIRST                        :{WHITE}도로 경유지를 먼저 제거하십시오
 STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}... 적절하지 않은 신호기 종류입니다
+STR_ERROR_RESTRICTED_SIGNAL                                     :{WHITE}... 신호기에 경로 제한 프로그램이 있습니다
 STR_ERROR_SIGNAL_CHANGES                                        :{WHITE}프로그램 신호기가 한 번에 바꿀 수 있는 제한 횟수를 넘어섰습니다.
 
 STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}여기에 역을 짓기에는 다리가 너무 낮습니다.
@@ -2135,10 +2151,16 @@ STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES                        :{BLACK}다른 �
 STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES_TOOLTIP                :{BLACK}다른 차량의 배차 일정을 덧붙입니다.
 STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS                           :출발 슬롯 재사용
 STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS_TOOLTIP                   :{BLACK}출발 슬롯을 1번 이상 재사용해도 되는지 여부를 설정합니다.
+STR_SCHDISPATCH_RENAME_DEPARTURE_TAG                            :태그 {NUM} 이름 바꾸기
+STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_NAMED                      :태그 {NUM} 이름 바꾸기: {STRING}
+STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_TOOLTIP                    :{BLACK}출발 슬롯 태그 이름 바꾸기 (조건부 경로에 사용)
+STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_CAPTION                    :{BLACK}출발 슬롯 태그 이름 바꾸기
+STR_ERROR_CAN_T_RENAME_DEPARTURE_TAG                            :{WHITE}출발 슬롯 태그의 이름을 바꿀 수 없습니다...
 STR_SCHDISPATCH_MANAGE_SLOT                                     :{BLACK}슬롯 관리
 STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT                       :출발 슬롯 재사용
 STR_SCHDISPATCH_REUSE_THIS_DEPARTURE_SLOT_TOOLTIP               :{BLACK}선택한 출발 슬롯을 1번 이상 재사용해도 되는지 여부를 설정합니다.
 STR_SCHDISPATCH_TAG_DEPARTURE                                   :태그 {NUM}
+STR_SCHDISPATCH_TAG_DEPARTURE_NAMED                             :태그 {NUM}: {STRING}
 STR_SCHDISPATCH_TAG_DEPARTURE_TOOLTIP                           :{BLACK}(조건부 경로에 사용하기 위해) 선택한 출발 슬롯에 태그를 붙입니다.
 STR_SCHDISPATCH_NO_SCHEDULES                                    :{BLACK}일정 없음
 STR_SCHDISPATCH_SCHEDULE_ID                                     :{BLACK}일정 {NUM}/{NUM}
@@ -2155,6 +2177,7 @@ STR_SCHDISPATCH_SLOT_TOOLTIP_NEXT                               :{}다음 이용
 STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE                              :{}출발 슬롯을 1번 이상 재사용 가능함
 STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX                        : ({TT_TIME})
 STR_SCHDISPATCH_SLOT_TOOLTIP_TAG                                :{}태그 {NUM}
+STR_SCHDISPATCH_SLOT_TOOLTIP_TAG_NAMED                          :{}태그 {NUM}: {STRING}
 
 STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}이전 출발이 없습니다.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}최근 출발: {TT_TIME}
