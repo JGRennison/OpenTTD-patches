@@ -143,7 +143,7 @@ enum PacketGameType : uint8_t {
 	PACKET_END,                          ///< Must ALWAYS be on the end of this list!! (period)
 };
 
-const char *GetPacketTypeName(PacketGameType type);
+const char *GetPacketGameTypeName(PacketGameType type);
 
 /** Packet that wraps a command */
 struct CommandPacket;
