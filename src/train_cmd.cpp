@@ -5754,7 +5754,8 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						}
 						goto reverse_train_direction;
 					} else if (!(v->track & TRACK_BIT_WORMHOLE) && IsTunnelBridgeWithSignalSimulation(gp.new_tile) &&
-							IsTunnelBridgeSignalSimulationExitOnly(gp.new_tile) && v->force_proceed == TFP_NONE) {
+							IsTunnelBridgeSignalSimulationExitOnly(gp.new_tile) && TrackdirEntersTunnelBridge(gp.new_tile, FindFirstTrackdir(trackdirbits)) &&
+							v->force_proceed == TFP_NONE) {
 						goto reverse_train_direction;
 					} else {
 						TryReserveRailTrack(gp.new_tile, TrackBitsToTrack(chosen_track), false);
