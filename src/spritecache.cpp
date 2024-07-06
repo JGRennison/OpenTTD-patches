@@ -752,14 +752,13 @@ bool LoadNextSprite(int load_index, SpriteFile &file, uint file_sprite_id)
 	}
 
 	SpriteCache *sc = AllocateSpriteCache(load_index);
+	sc->Clear(); // Clear existing entry before changing type field
 	sc->file = &file;
 	sc->file_pos = file_pos;
 	sc->SetType(type);
 	if (data != nullptr) {
 		assert(data == _last_sprite_allocation.GetPtr());
 		sc->Assign(std::move(_last_sprite_allocation));
-	} else {
-		sc->Clear();
 	}
 	sc->id = file_sprite_id;
 	sc->count = count;
