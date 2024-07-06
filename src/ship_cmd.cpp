@@ -587,14 +587,11 @@ static void ShipArrivesAt(const Vehicle *v, Station *st)
  *
  * @param v Ship to navigate
  * @param tile Tile, the ship is about to enter
- * @param enterdir Direction of entering
  * @param tracks Available track choices on \a tile
  * @return Track to choose, or INVALID_TRACK when to reverse.
  */
-static Track ChooseShipTrack(Ship *v, TileIndex tile, DiagDirection enterdir, TrackBits tracks)
+static Track ChooseShipTrack(Ship *v, TileIndex tile, TrackBits tracks)
 {
-	dbg_assert(IsValidDiagDirection(enterdir));
-
 	bool path_found = true;
 	Track track;
 
@@ -621,7 +618,7 @@ static Track ChooseShipTrack(Ship *v, TileIndex tile, DiagDirection enterdir, Tr
 
 		switch (_settings_game.pf.pathfinder_for_ships) {
 			case VPF_NPF: track = NPFShipChooseTrack(v, path_found); break;
-			case VPF_YAPF: track = YapfShipChooseTrack(v, tile, enterdir, tracks, path_found, v->cached_path); break;
+			case VPF_YAPF: track = YapfShipChooseTrack(v, tile, path_found, v->cached_path); break;
 			default: NOT_REACHED();
 		}
 	}
@@ -1065,7 +1062,7 @@ static void ShipController(Ship *v)
 				}
 
 				/* Choose a direction, and continue if we find one */
-				Track track = ChooseShipTrack(v, gp.new_tile, diagdir, tracks);
+				Track track = ChooseShipTrack(v, gp.new_tile, tracks);
 				if (track == INVALID_TRACK) return ReverseShip(v);
 
 				/* Try to avoid collision and keep distance between ships. */

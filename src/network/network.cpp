@@ -41,16 +41,22 @@
 #include "../core/serialisation.hpp"
 #include "../3rdparty/monocypher/monocypher.h"
 #include "../settings_internal.h"
+#ifdef DEBUG_DUMP_COMMANDS
+#	include "../fileio_func.h"
+#	include "../command_aux.h"
+#	include "../3rdparty/nlohmann/json.hpp"
+#	include <charconv>
+#endif
 #include <sstream>
 #include <iomanip>
 #include <tuple>
 
 #ifdef DEBUG_DUMP_COMMANDS
-#include "../fileio_func.h"
-#include "../command_aux.h"
-#include "../3rdparty/nlohmann/json.hpp"
-#include <charconv>
-/** When running the server till the wait point, run as fast as we can! */
+/** Helper variable to make the dedicated server go fast until the (first) join.
+ * Used to load the desync debug logs, i.e. for reproducing a desync.
+ * There's basically no need to ever enable this, unless you really know what
+ * you are doing, i.e. debugging a desync.
+ * See docs/desync.md for details. */
 bool _ddc_fastforward = true;
 #endif /* DEBUG_DUMP_COMMANDS */
 
@@ -1238,7 +1244,7 @@ void NetworkGameLoop()
 		}
 
 		while (f != nullptr && !feof(f)) {
-			if (EconTime::CurDate() == next_date && EconTime::CurDateFract() == next_date_fract) {
+			if (EconTime::CurDate() == next_date && EconTime::CurDateFract() == next_date_fract && TickSkipCounter() == next_tick_skip_counter) {
 				if (cp != nullptr) {
 					NetworkSendCommand(cp->tile, cp->p1, cp->p2, cp->p3, cp->cmd & ~CMD_FLAGS_MASK, nullptr, cp->text.c_str(), cp->company, cp->aux_data.get());
 					DEBUG(net, 0, "injecting: %s; %02x; %06x; %08x; %08x; " OTTD_PRINTFHEX64PAD " %08x; \"%s\"%s (%s)",
@@ -1255,6 +1261,13 @@ void NetworkGameLoop()
 					}
 					check_sync_state = false;
 				}
+			}
+
+			/* Skip all entries in the command-log till we caught up with the current game again. */
+			if (std::make_tuple(EconTime::CurDate(), EconTime::CurDateFract(), TickSkipCounter()) > std::make_tuple(next_date, next_date_fract, next_tick_skip_counter)) {
+				DEBUG(net, 0, "Skipping to next command at %s", debug_date_dumper().HexDate(next_date, next_date_fract, next_tick_skip_counter));
+				cp.reset();
+				check_sync_state = false;
 			}
 
 			if (cp != nullptr || check_sync_state) break;

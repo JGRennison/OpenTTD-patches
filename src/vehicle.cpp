@@ -2834,7 +2834,15 @@ void VehicleEnterDepot(Vehicle *v)
 
 		/* If we've entered our unbunching depot, record the round trip duration. */
 		if (v->current_order.GetDepotActionType() & ODATFB_UNBUNCH && v->unbunch_state != nullptr && v->unbunch_state->depot_unbunching_last_departure != INVALID_STATE_TICKS) {
-			v->unbunch_state->round_trip_time = (_state_ticks - v->unbunch_state->depot_unbunching_last_departure).AsTicks();
+			Ticks measured_round_trip = (_state_ticks - v->unbunch_state->depot_unbunching_last_departure).AsTicks();
+			Ticks &rtt = v->unbunch_state->round_trip_time;
+			if (rtt == 0) {
+				/* This might be our first round trip. */
+				rtt = measured_round_trip;
+			} else {
+				/* If we have a previous trip, smooth the effects of outlier trip calculations caused by jams or other interference. */
+				rtt = Clamp(measured_round_trip, (rtt / 2), ClampTo<Ticks>(rtt * 2));
+			}
 		}
 
 		v->current_order.MakeDummy();
@@ -3932,7 +3940,7 @@ void Vehicle::LeaveUnbunchingDepot()
 	SetWindowDirty(WC_VEHICLE_TIMETABLE, this->index);
 
 	/* Find the average travel time of vehicles that we share orders with. */
-	uint num_vehicles = 0;
+	int num_vehicles = 0;
 	Ticks total_travel_time = 0;
 
 	Vehicle *u = this->FirstShared();
@@ -3945,10 +3953,10 @@ void Vehicle::LeaveUnbunchingDepot()
 	}
 
 	/* Make sure we cannot divide by 0. */
-	num_vehicles = std::max(num_vehicles, 1u);
+	num_vehicles = std::max(num_vehicles, 1);
 
 	/* Calculate the separation by finding the average travel time, then calculating equal separation (minimum 1 tick) between vehicles. */
-	Ticks separation = std::max((total_travel_time / num_vehicles / num_vehicles), 1u);
+	Ticks separation = std::max((total_travel_time / num_vehicles / num_vehicles), 1);
 	StateTicks next_departure = _state_ticks + separation;
 
 	/* Set the departure time of all vehicles that we share orders with. */
@@ -3959,6 +3967,7 @@ void Vehicle::LeaveUnbunchingDepot()
 
 		if (u->unbunch_state == nullptr) u->unbunch_state.reset(new VehicleUnbunchState());
 		u->unbunch_state->depot_unbunching_next_departure = next_departure;
+		SetWindowDirty(WC_VEHICLE_VIEW, u->index);
 	}
 }
 

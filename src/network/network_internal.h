@@ -36,19 +36,6 @@ static const uint32_t FIND_SERVER_EXTENDED_TOKEN = 0x2A49582A;
 #define ENABLE_NETWORK_SYNC_EVERY_FRAME
 #endif /* RANDOM_DEBUG */
 
-/**
- * Helper variable to make the dedicated server go fast until the (first) join.
- * Used to load the desync debug logs, i.e. for reproducing a desync.
- * There's basically no need to ever enable this, unless you really know what
- * you are doing, i.e. debugging a desync.
- * See docs/desync.txt for details.
- */
-#ifdef DEBUG_DUMP_COMMANDS
-extern bool _ddc_fastforward;
-#else
-#define _ddc_fastforward (false)
-#endif /* DEBUG_DUMP_COMMANDS */
-
 typedef class ServerNetworkGameSocketHandler NetworkClientSocket;
 
 /** Status of the clients during joining. */

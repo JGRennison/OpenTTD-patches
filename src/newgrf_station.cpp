@@ -1115,19 +1115,7 @@ void UpdateStationTileCacheFlags(bool force_update)
 		_station_tile_cache_hash = checksum.state;
 
 		for (TileIndex t = 0; t < MapSize(); t++) {
-			if (HasStationTileRail(t)) {
-				StationGfx gfx = GetStationGfx(t);
-				const StationSpec *statspec = GetStationSpec(t);
-
-				bool blocked = statspec != nullptr && HasBit(statspec->blocked, gfx);
-				/* Default stations do not draw pylons under roofs (gfx >= 4) */
-				bool pylons = statspec != nullptr ? HasBit(statspec->pylons, gfx) : gfx < 4;
-				bool wires = statspec == nullptr || !HasBit(statspec->wires, gfx);
-
-				SetStationTileBlocked(t, blocked);
-				SetStationTileHavePylons(t, pylons);
-				SetStationTileHaveWires(t, wires);
-			}
+			if (HasStationTileRail(t)) SetRailStationTileFlags(t, GetStationSpec(t));
 		}
 	}
 }

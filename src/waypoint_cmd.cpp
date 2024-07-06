@@ -320,16 +320,7 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 			if (old_specindex != map_spec_index) DeallocateSpecFromStation(wp, old_specindex);
 			SetCustomStationSpecIndex(tile, map_spec_index);
 
-			/* Should be the same as layout but axis component could be wrong... */
-			StationGfx gfx = GetStationGfx(tile);
-			bool blocked = spec != nullptr && HasBit(spec->blocked, gfx);
-			/* Default stations do not draw pylons under roofs (gfx >= 4) */
-			bool pylons = spec != nullptr ? HasBit(spec->pylons, gfx) : gfx < 4;
-			bool wires = spec == nullptr || !HasBit(spec->wires, gfx);
-
-			SetStationTileBlocked(tile, blocked);
-			SetStationTileHavePylons(tile, pylons);
-			SetStationTileHaveWires(tile, wires);
+			SetRailStationTileFlags(tile, spec);
 
 			SetRailStationReservation(tile, reserved);
 			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
