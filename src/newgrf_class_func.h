@@ -120,8 +120,8 @@ uint NewGRFClass<Tspec, Tid, Tmax>::GetUIClassCount()
 template <typename Tspec, typename Tid, Tid Tmax>
 bool NewGRFClass<Tspec, Tid, Tmax>::HasUIClass()
 {
-	for (uint i = 0; i < Tmax && classes[i].global_id != 0; i++) {
-		if (classes[i].GetUISpecCount() > 0) return true;
+	for (const auto &cls : NewGRFClass::classes) {
+		if (cls.GetUISpecCount() > 0) return true;
 	}
 	return false;
 }
