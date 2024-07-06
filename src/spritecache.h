@@ -13,7 +13,7 @@
 #include "gfx_type.h"
 #include "zoom_type.h"
 #include "spriteloader/spriteloader.hpp"
-#include "3rdparty/cpp-btree/btree_map.h"
+#include "3rdparty/robin_hood/robin_hood.h"
 
 /** Data structure describing a sprite. */
 struct Sprite {
@@ -82,7 +82,7 @@ uint32_t GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id);
 
 struct SpritePointerHolder {
 private:
-	btree::btree_map<uint32_t, const void *> cache;
+	robin_hood::unordered_map<uint32_t, const void *> cache;
 
 public:
 	inline const Sprite *GetSprite(SpriteID sprite, SpriteType type) const
