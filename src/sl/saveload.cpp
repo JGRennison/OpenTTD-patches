@@ -2588,7 +2588,7 @@ static void SlLoadCheckChunk(const ChunkHandler *ch, uint32_t chunk_id)
 			if (ext_flags) {
 				SlErrorCorruptFmt("CH_ARRAY does not take chunk header extension flags: 0x%X in %s", ext_flags, ChunkIDDumper()(chunk_id));
 			}
-			if (ch && ch->load_check_proc) {
+			if (ch != nullptr && ch->load_check_proc) {
 				ch->load_check_proc();
 			} else {
 				if (m == CH_TABLE) SlSkipTableHeader();
@@ -2600,7 +2600,7 @@ static void SlLoadCheckChunk(const ChunkHandler *ch, uint32_t chunk_id)
 			if (ext_flags) {
 				SlErrorCorruptFmt("CH_SPARSE_ARRAY does not take chunk header extension flags: 0x%X in %s", ext_flags, ChunkIDDumper()(chunk_id));
 			}
-			if (ch && ch->load_check_proc) {
+			if (ch != nullptr && ch->load_check_proc) {
 				ch->load_check_proc();
 			} else {
 				if (m == CH_SPARSE_TABLE) SlSkipTableHeader();
@@ -2632,7 +2632,7 @@ static void SlLoadCheckChunk(const ChunkHandler *ch, uint32_t chunk_id)
 				}
 				_sl.obj_len = len;
 				endoffs = _sl.reader->GetSize() + len;
-				if (ch && ch->load_check_proc) {
+				if (ch != nullptr && ch->load_check_proc) {
 					ch->load_check_proc();
 				} else {
 					SlSkipBytes(len);
