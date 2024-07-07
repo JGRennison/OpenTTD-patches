@@ -138,7 +138,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_ROAD_LAYOUT_CHANGE_CTR,           XSCF_NULL,                1,   1, "road_layout_change_ctr",           nullptr, nullptr, nullptr          },
 	{ XSLFI_TOWN_CARGO_MATRIX,                XSCF_NULL,                0,   1, "town_cargo_matrix",                nullptr, nullptr, nullptr          },
 	{ XSLFI_STATE_CHECKSUM,                   XSCF_NULL,                1,   1, "state_checksum",                   nullptr, nullptr, nullptr          },
-	{ XSLFI_DEBUG,                            XSCF_IGNORABLE_ALL,       1,   1, "debug",                            nullptr, nullptr, "DBGL,DBGC"      },
+	{ XSLFI_DEBUG,                            XSCF_IGNORABLE_ALL,       2,   2, "debug",                            nullptr, nullptr, "DBGD"           },
 	{ XSLFI_FLOW_STAT_FLAGS,                  XSCF_NULL,                1,   1, "flow_stat_flags",                  nullptr, nullptr, nullptr          },
 	{ XSLFI_SPEED_RESTRICTION,                XSCF_NULL,                1,   1, "speed_restriction",                nullptr, nullptr, "VESR"           },
 	{ XSLFI_STATION_GOODS_EXTRA,              XSCF_NULL,                1,   1, "station_goods_extra",              nullptr, nullptr, nullptr          },
