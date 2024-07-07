@@ -2332,6 +2332,17 @@ void SlLoadTableWithArrayLengthPrefixesMissing()
 	SetBit(_sl.block_flags, SLBF_TABLE_ARRAY_LENGTH_PREFIX_MISSING);
 }
 
+void SlSkipChunkContents()
+{
+	if (SlIsTableChunk()) SlSkipTableHeader();
+
+	if (_sl.block_mode == CH_RIFF) {
+		SlSkipBytes(SlGetFieldLength());
+	} else {
+		SlSkipArray();
+	}
+}
+
 /**
  * Save or Load (a list of) global variables.
  * @param slt The SaveLoad table with objects to save/load.

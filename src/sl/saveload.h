@@ -1079,6 +1079,8 @@ void SlSaveTableObjectChunk(const SaveLoadTable &slt);
 void SlLoadTableOrRiffFiltered(const SaveLoadTable &slt);
 void SlLoadTableWithArrayLengthPrefixesMissing();
 
+void SlSkipChunkContents();
+
 inline void SlSaveTableObjectChunk(const NamedSaveLoadTable &slt)
 {
 	SlSaveTableObjectChunk(SlTableHeader(slt));
