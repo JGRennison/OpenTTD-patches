@@ -15,36 +15,39 @@
 #include "../safeguards.h"
 
 
-static const SaveLoad _tunnel_desc[] = {
-	 SLE_CONDVAR(Tunnel, tile_n,           SLE_UINT32,             SL_MIN_VERSION, SL_MAX_VERSION),
-	 SLE_CONDVAR(Tunnel, tile_s,           SLE_UINT32,             SL_MIN_VERSION, SL_MAX_VERSION),
-	 SLE_CONDVAR(Tunnel, height,            SLE_UINT8,             SL_MIN_VERSION, SL_MAX_VERSION),
-	 SLE_CONDVAR(Tunnel, is_chunnel,         SLE_BOOL,             SL_MIN_VERSION, SL_MAX_VERSION),
-	SLE_CONDVAR_X(Tunnel, style,            SLE_UINT8,             SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_NEW_SIGNAL_STYLES)),
+static const NamedSaveLoad _tunnel_desc[] = {
+	NSL("tile_n",     SLE_VAR(Tunnel, tile_n, SLE_UINT32)),
+	NSL("tile_s",     SLE_VAR(Tunnel, tile_s, SLE_UINT32)),
+	NSL("height",     SLE_VAR(Tunnel, height, SLE_UINT8)),
+	NSL("is_chunnel", SLE_VAR(Tunnel, is_chunnel, SLE_BOOL)),
+	NSL("style",      SLE_CONDVAR_X(Tunnel, style, SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_NEW_SIGNAL_STYLES))),
 };
 
 static void Save_TUNN()
 {
+	std::vector<SaveLoad> slt = SlTableHeader(_tunnel_desc);
+
 	for (Tunnel *tunnel : Tunnel::Iterate()) {
 		SlSetArrayIndex(tunnel->index);
-		SlObject(tunnel, _tunnel_desc);
+		SlObjectSaveFiltered(tunnel, slt);
 	}
 }
 
 static void Load_TUNN()
 {
-	int index;
+	std::vector<SaveLoad> slt = SlTableHeaderOrRiff(_tunnel_desc);
 
+	int index;
 	while ((index = SlIterateArray()) != -1) {
 		Tunnel *tunnel = new (index) Tunnel();
-		SlObject(tunnel, _tunnel_desc);
+		SlObjectLoadFiltered(tunnel, slt);
 		tunnel->UpdateIndexes();
 	}
 }
 
 
 extern const ChunkHandler tunnel_chunk_handlers[] = {
-	{ 'TUNN', Save_TUNN, Load_TUNN, nullptr, nullptr, CH_ARRAY },
+	{ 'TUNN', Save_TUNN, Load_TUNN, nullptr, nullptr, CH_TABLE },
 };
 
 extern const ChunkHandlerTable _tunnel_chunk_handlers(tunnel_chunk_handlers);
