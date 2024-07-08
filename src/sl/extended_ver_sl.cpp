@@ -163,7 +163,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_MORE_HOUSES,                      XSCF_NULL,                2,   2, "more_houses",                      nullptr, nullptr, nullptr          },
 	{ XSLFI_CUSTOM_TOWN_ZONE,                 XSCF_IGNORABLE_UNKNOWN,   1,   1, "custom_town_zone",                 nullptr, nullptr, nullptr          },
 	{ XSLFI_STATION_CARGO_HISTORY,            XSCF_NULL,                2,   2, "station_cargo_history",            nullptr, nullptr, nullptr          },
-	{ XSLFI_TRAIN_SPEED_ADAPTATION,           XSCF_NULL,                2,   2, "train_speed_adaptation",           nullptr, nullptr, "TSAS"           },
+	{ XSLFI_TRAIN_SPEED_ADAPTATION,           XSCF_NULL,                3,   3, "train_speed_adaptation",           nullptr, nullptr, "TSAS"           },
 	{ XSLFI_EXTRA_STATION_NAMES,              XSCF_NULL,                1,   1, "extra_station_names",              nullptr, nullptr, nullptr          },
 	{ XSLFI_DEPOT_ORDER_EXTRA_FLAGS,          XSCF_IGNORABLE_UNKNOWN,   1,   1, "depot_order_extra_flags",          nullptr, nullptr, nullptr          },
 	{ XSLFI_EXTRA_SIGNAL_TYPES,               XSCF_NULL,                1,   1, "extra_signal_types",               nullptr, nullptr, nullptr          },

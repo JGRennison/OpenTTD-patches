@@ -13,47 +13,45 @@
 
 using SignalSpeedType = std::pair<const SignalSpeedKey, SignalSpeedValue>;
 
-static const SaveLoad _train_speed_adaptation_map_desc[] = {
-	SLE_CONDVAR_X(SignalSpeedType, first.signal_track,           SLE_FILE_U8  | SLE_VAR_U16,    SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TRAIN_SPEED_ADAPTATION, 1, 1)),
-	SLE_CONDVAR_X(SignalSpeedType, first.signal_track,           SLE_UINT16,                    SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TRAIN_SPEED_ADAPTATION, 2)),
-	SLE_VAR(SignalSpeedType, first.last_passing_train_dir, SLE_UINT8),
-	SLE_VAR(SignalSpeedType, second.train_speed,           SLE_UINT16),
-	SLE_VAR(SignalSpeedType, second.time_stamp,            SLE_UINT64),
+static const NamedSaveLoad _train_speed_adaptation_map_desc[] = {
+	NSLT("signal_tile",                 SLE_VAR(SignalSpeedType, first.signal_tile,            SLE_UINT32)),
+	NSL("signal_track",           SLE_CONDVAR_X(SignalSpeedType, first.signal_track,           SLE_FILE_U8  | SLE_VAR_U16,    SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TRAIN_SPEED_ADAPTATION, 1, 1))),
+	NSL("signal_track",           SLE_CONDVAR_X(SignalSpeedType, first.signal_track,           SLE_UINT16,                    SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TRAIN_SPEED_ADAPTATION, 2))),
+	NSL("last_passing_train_dir",       SLE_VAR(SignalSpeedType, first.last_passing_train_dir, SLE_UINT8)),
+	NSL("train_speed",                  SLE_VAR(SignalSpeedType, second.train_speed,           SLE_UINT16)),
+	NSL("time_stamp",                   SLE_VAR(SignalSpeedType, second.time_stamp,            SLE_UINT64)),
 };
-
-static std::vector<SaveLoad> _filtered_train_speed_adaptation_map_desc;
 
 static void Load_TSAS()
 {
-	_filtered_train_speed_adaptation_map_desc = SlFilterObject(_train_speed_adaptation_map_desc);
+	const bool table_mode = SlIsTableChunk();
+	std::vector<SaveLoad> slt = SlTableHeaderOrRiff(_train_speed_adaptation_map_desc);
+
 	int index;
 	SignalSpeedType data;
 	while ((index = SlIterateArray()) != -1) {
-		const_cast<SignalSpeedKey &>(data.first).signal_tile = index;
-		SlObjectLoadFiltered(&data, _filtered_train_speed_adaptation_map_desc);
+		if (!table_mode) {
+			const_cast<SignalSpeedKey &>(data.first).signal_tile = index;
+		}
+		SlObjectLoadFiltered(&data, slt);
 		_signal_speeds.insert(data);
 	}
-	_filtered_train_speed_adaptation_map_desc.clear();
-}
-
-static void RealSave_TSAS(SignalSpeedType *data)
-{
-	SlObjectSaveFiltered(data, _filtered_train_speed_adaptation_map_desc);
 }
 
 static void Save_TSAS()
 {
-	_filtered_train_speed_adaptation_map_desc = SlFilterObject(_train_speed_adaptation_map_desc);
+	std::vector<SaveLoad> slt = SlTableHeader(_train_speed_adaptation_map_desc);
+
+	int index = 0;
 	for (auto &it : _signal_speeds) {
-		SlSetArrayIndex(it.first.signal_tile);
+		SlSetArrayIndex(index++);
 		SignalSpeedType *data = &it;
-		SlAutolength((AutolengthProc*) RealSave_TSAS, data);
+		SlObjectSaveFiltered(data, slt);
 	}
-	_filtered_train_speed_adaptation_map_desc.clear();
 }
 
 extern const ChunkHandler train_speed_adaptation_chunk_handlers[] = {
-	{ 'TSAS', Save_TSAS, Load_TSAS, nullptr, nullptr, CH_SPARSE_ARRAY },
+	{ 'TSAS', Save_TSAS, Load_TSAS, nullptr, nullptr, CH_TABLE },
 };
 
 extern const ChunkHandlerTable _train_speed_adaptation_chunk_handlers(train_speed_adaptation_chunk_handlers);
