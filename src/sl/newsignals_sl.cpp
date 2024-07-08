@@ -14,13 +14,19 @@
 
 #include "../safeguards.h"
 
+static const NamedSaveLoad _new_signal_style_mapping_desc[] = {
+	NSLT("grfid",        SLE_VAR(NewSignalStyleMapping, grfid, SLE_UINT32)),
+	NSLT("grf_local_id", SLE_VAR(NewSignalStyleMapping, grf_local_id, SLE_UINT8)),
+};
+
 static void Save_NSID()
 {
-	SlSetLength(4 + (_new_signal_style_mapping.size() * 5));
-	SlWriteUint32((uint)_new_signal_style_mapping.size());
-	for (const NewSignalStyleMapping &mapping : _new_signal_style_mapping) {
-		SlWriteUint32(mapping.grfid);
-		SlWriteByte(mapping.grf_local_id);
+	std::vector<SaveLoad> slt = SlTableHeader(_new_signal_style_mapping_desc);
+
+	int index = 0;
+	for (NewSignalStyleMapping &it : _new_signal_style_mapping) {
+		SlSetArrayIndex(index++);
+		SlObjectSaveFiltered(&it, slt);
 	}
 }
 
@@ -28,17 +34,28 @@ static void Load_NSID()
 {
 	_new_signal_style_mapping.fill({});
 
-	uint count = SlReadUint32();
-	for (uint i = 0; i < count; i++) {
-		NewSignalStyleMapping mapping;
-		mapping.grfid = SlReadUint32();
-		mapping.grf_local_id = SlReadByte();
-		if (i < _new_signal_style_mapping.size()) _new_signal_style_mapping[i] = mapping;
+	if (SlIsTableChunk()) {
+		std::vector<SaveLoad> slt = SlTableHeader(_new_signal_style_mapping_desc);
+
+		int index;
+		while ((index = SlIterateArray()) != -1) {
+			NewSignalStyleMapping mapping;
+			SlObjectLoadFiltered(&mapping, slt);
+			if (static_cast<size_t>(index) < _new_signal_style_mapping.size()) _new_signal_style_mapping[index] = mapping;
+		}
+	} else {
+		uint count = SlReadUint32();
+		for (uint i = 0; i < count; i++) {
+			NewSignalStyleMapping mapping;
+			mapping.grfid = SlReadUint32();
+			mapping.grf_local_id = SlReadByte();
+			if (i < _new_signal_style_mapping.size()) _new_signal_style_mapping[i] = mapping;
+		}
 	}
 }
 
 static const ChunkHandler new_signal_chunk_handlers[] = {
-	{ 'NSID', Save_NSID, Load_NSID, nullptr,   nullptr, CH_RIFF },
+	{ 'NSID', Save_NSID, Load_NSID, nullptr,   nullptr, CH_TABLE },
 };
 
 extern const ChunkHandlerTable _new_signal_chunk_handlers(new_signal_chunk_handlers);
