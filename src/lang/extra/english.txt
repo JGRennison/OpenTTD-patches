@@ -184,7 +184,7 @@ STR_CONFIG_SETTING_STATION_RATING_SIZE_CARGO_AMOUNT             :Station cargo c
 STR_CONFIG_SETTING_STATION_RATING_SIZE_CARGO_AMOUNT_HELPTEXT    :When enabled, the cargo capacity of stations before waiting cargo is truncated and the effect of the waiting cargo amount on the station rating for that cargo depend on the size of the station. Larger stations can store more cargo and are more tolerant of large amounts of waiting cargo.
 
 STR_CONFIG_SETTING_CARGO_DELIVERY_MODE                          :Cargo delivery distribution mode: {STRING2}
-STR_CONFIG_SETTING_CARGO_DELIVERY_MODE_HELPTEXT                 :The method used to deliver cargo to industries surrounding a station.
+STR_CONFIG_SETTING_CARGO_DELIVERY_MODE_HELPTEXT                 :The method used to distribute cargo delivered to a station to industries in the station's catchment area.{}The "original" mode distributes all cargo to the closest industry (measured from the station sign tile).{}The "balanced" mode distributes cargo equally to all accepting industries in the station's catchment area.
 
 STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL                          :Train braking model: {STRING2}
 STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL_HELPTEXT                 :Select the physics model for train braking. The "original" model allows trains to stop instantly. In the "realistic" model, trains have a stopping distance and will reserve ahead accordingly, trains cannot stop instantly.{}{}The "realistic" model has many implications for signalling and track layout design, and is therefore an advanced feature which may not be suitable for beginners. In particular pre-signals and two-way signals are not permitted, and PBS is used for all signalling.
