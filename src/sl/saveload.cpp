@@ -1532,6 +1532,33 @@ void SlSaveLoadRef(void *ptr, VarType conv)
 	}
 }
 
+static uint SlGetListTypeLengthSize(size_t size)
+{
+	if (SlIsTableChunk()) {
+		return SlGetArrayLength(size);
+	} else {
+		return 4;
+	}
+}
+
+static void SlWriteListLength(size_t size)
+{
+	if (SlIsTableChunk()) {
+		SlWriteArrayLength(size);
+	} else {
+		SlWriteUint32(static_cast<uint32_t>(size));
+	}
+}
+
+static size_t SlReadListLength()
+{
+	if (SlIsTableChunk()) {
+		return SlReadArrayLength();
+	} else {
+		return IsSavegameVersionBefore(SLV_69) ? SlReadUint16() : SlReadUint32();
+	}
+}
+
 /**
  * Template class to help with list-like types.
  */
@@ -1551,7 +1578,7 @@ public:
 
 		const SlStorageT *list = static_cast<const SlStorageT *>(storage);
 
-		int type_size = SlCalcConvFileLen(SLE_FILE_U32); // Size of the length of the list.
+		int type_size = SlGetListTypeLengthSize(list->size()); // Size of the length of the list.
 		int item_size = SlCalcConvFileLen(cmd == SL_VAR ? conv : (VarType)SLE_FILE_U32);
 		return list->size() * item_size + type_size;
 	}
@@ -1580,7 +1607,7 @@ public:
 
 		switch (_sl.action) {
 			case SLA_SAVE:
-				SlWriteUint32((uint32_t)list->size());
+				SlWriteListLength(list->size());
 
 				for (auto &item : *list) {
 					SlSaveLoadMember(cmd, &item, conv);
@@ -1591,8 +1618,8 @@ public:
 			case SLA_LOAD: {
 				size_t length;
 				switch (cmd) {
-					case SL_VAR: length = SlReadUint32(); break;
-					case SL_REF: length = IsSavegameVersionBefore(SLV_69) ? SlReadUint16() : SlReadUint32(); break;
+					case SL_VAR: length = SlReadListLength(); break;
+					case SL_REF: length = SlReadListLength(); break;
 					default: NOT_REACHED();
 				}
 
@@ -1629,10 +1656,11 @@ static inline size_t SlCalcRefListLen(const void *list)
 {
 	const PtrList *l = (const PtrList *) list;
 
-	int type_size = IsSavegameVersionBefore(SLV_69) ? 2 : 4;
-	/* Each entry is saved as type_size bytes, plus type_size bytes are used for the length
+	int type_size = SlGetListTypeLengthSize(l->size());
+	int item_size = SlCalcRefLen();
+	/* Each entry is saved as item_size bytes, plus type_size bytes are used for the length
 	 * of the list */
-	return l->size() * type_size + type_size;
+	return l->size() * item_size + type_size;
 }
 
 /**
@@ -1643,9 +1671,10 @@ static inline size_t SlCalcRefListLen(const void *list)
 static inline size_t SlCalcVarListLen(const void *list, size_t item_size)
 {
 	const PtrList *l = (const PtrList *) list;
-	/* Each entry is saved as item_size bytes, plus 4 bytes are used for the length
+	int type_size = SlGetListTypeLengthSize(l->size());
+	/* Each entry is saved as item_size bytes, plus type_size bytes are used for the length
 	 * of the list */
-	return l->size() * item_size + 4;
+	return l->size() * item_size + type_size;
 }
 
 /**
@@ -1665,7 +1694,7 @@ static void SlRefList(void *list, SLRefType conv)
 
 	switch (_sl.action) {
 		case SLA_SAVE: {
-			SlWriteUint32((uint32_t)l->size());
+			SlWriteListLength(l->size());
 
 			for (auto iter = l->begin(); iter != l->end(); ++iter) {
 				void *ptr = *iter;
@@ -1675,7 +1704,7 @@ static void SlRefList(void *list, SLRefType conv)
 		}
 		case SLA_LOAD_CHECK:
 		case SLA_LOAD: {
-			size_t length = IsSavegameVersionBefore(SLV_69) ? SlReadUint16() : SlReadUint32();
+			size_t length = SlReadListLength();
 			if constexpr (!std::is_same_v<PtrList, std::list<void *>>) {
 				l->reserve(length);
 			}
@@ -1718,7 +1747,7 @@ static void SlVarList(void *list, VarType conv)
 
 	switch (_sl.action) {
 		case SLA_SAVE: {
-			SlWriteUint32((uint32_t)l->size());
+			SlWriteListLength(l->size());
 
 			typename PtrList::iterator iter;
 			for (iter = l->begin(); iter != l->end(); ++iter) {
@@ -1728,7 +1757,7 @@ static void SlVarList(void *list, VarType conv)
 		}
 		case SLA_LOAD_CHECK:
 		case SLA_LOAD: {
-			size_t length = SlReadUint32();
+			size_t length = SlReadListLength();
 			l->resize(length);
 
 			typename PtrList::iterator iter;
