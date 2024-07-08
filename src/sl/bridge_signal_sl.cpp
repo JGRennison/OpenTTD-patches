@@ -12,41 +12,29 @@
 #include "saveload.h"
 #include <vector>
 
-/** stub save header struct */
-struct LongBridgeSignalStorageStub {
-	uint32_t length;
-};
-
-static const SaveLoad _long_bridge_signal_storage_stub_desc[] = {
-	SLE_VAR(LongBridgeSignalStorageStub, length, SLE_UINT32),
+static const NamedSaveLoad _long_bridge_signal_storage_desc[] = {
+	NSL("signal_red_bits", SLE_VARVEC(LongBridgeSignalStorage, signal_red_bits, SLE_UINT64)),
 };
 
 static void Load_XBSS()
 {
+	std::vector<SaveLoad> slt = SlTableHeaderOrRiff(_long_bridge_signal_storage_desc);
+
 	int index;
-	LongBridgeSignalStorageStub stub;
 	while ((index = SlIterateArray()) != -1) {
 		LongBridgeSignalStorage &lbss = _long_bridge_signal_sim_map[index];
-		SlObject(&stub, _long_bridge_signal_storage_stub_desc);
-		lbss.signal_red_bits.resize(stub.length);
-		SlArray(lbss.signal_red_bits.data(), stub.length, SLE_UINT64);
+		SlObjectLoadFiltered(&lbss, slt);
 	}
-}
-
-static void RealSave_XBSS(const LongBridgeSignalStorage *lbss)
-{
-	LongBridgeSignalStorageStub stub;
-	stub.length = (uint32_t)lbss->signal_red_bits.size();
-	SlObject(&stub, _long_bridge_signal_storage_stub_desc);
-	SlArray(const_cast<uint64_t*>(lbss->signal_red_bits.data()), stub.length, SLE_UINT64);
 }
 
 static void Save_XBSS()
 {
-	for (const auto &it : _long_bridge_signal_sim_map) {
-		const LongBridgeSignalStorage &lbss = it.second;
+	std::vector<SaveLoad> slt = SlTableHeader(_long_bridge_signal_storage_desc);
+
+	for (auto &it : _long_bridge_signal_sim_map) {
+		LongBridgeSignalStorage &lbss = it.second;
 		SlSetArrayIndex(it.first);
-		SlAutolength((AutolengthProc*) RealSave_XBSS, const_cast<LongBridgeSignalStorage*>(&lbss));
+		SlObjectSaveFiltered(&lbss, slt);
 	}
 }
 
@@ -67,7 +55,7 @@ static void Save_XBST()
 }
 
 extern const ChunkHandler bridge_signal_chunk_handlers[] = {
-	{ 'XBSS', Save_XBSS, Load_XBSS, nullptr, nullptr, CH_SPARSE_ARRAY },
+	{ 'XBSS', Save_XBSS, Load_XBSS, nullptr, nullptr, CH_SPARSE_TABLE },
 	{ 'XBST', Save_XBST, Load_XBST, nullptr, nullptr, CH_RIFF },
 };
 
