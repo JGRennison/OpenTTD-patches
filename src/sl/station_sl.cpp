@@ -862,7 +862,7 @@ static const ChunkHandler station_chunk_handlers[] = {
 	{ 'STNS', nullptr,       Load_STNS,     Ptrs_STNS,     nullptr, CH_ARRAY },
 	{ 'STNN', Save_STNN,     Load_STNN,     Ptrs_STNN,     nullptr, CH_ARRAY },
 	{ 'ROAD', Save_ROADSTOP, Load_ROADSTOP, Ptrs_ROADSTOP, nullptr, CH_ARRAY },
-	{ 'DOCK', nullptr,       Load_DOCK,     nullptr,       nullptr, CH_ARRAY },
+	{ 'DOCK', nullptr,       Load_DOCK,     nullptr,       nullptr, CH_READONLY },
 };
 
 extern const ChunkHandlerTable _station_chunk_handlers(station_chunk_handlers);
