@@ -14,8 +14,8 @@
 #include "saveload.h"
 #include <vector>
 
-static const SaveLoad _trace_restrict_mapping_desc[] = {
-  SLE_VAR(TraceRestrictMappingItem, program_id, SLE_UINT32),
+static const NamedSaveLoad _trace_restrict_mapping_desc[] = {
+	NSL("program_id", SLE_VAR(TraceRestrictMappingItem, program_id, SLE_UINT32)),
 };
 
 /**
@@ -23,10 +23,12 @@ static const SaveLoad _trace_restrict_mapping_desc[] = {
  */
 static void Load_TRRM()
 {
+	std::vector<SaveLoad> slt = SlTableHeaderOrRiff(_trace_restrict_mapping_desc);
+
 	int index;
 	while ((index = SlIterateArray()) != -1) {
 		TraceRestrictMappingItem &item = _tracerestrictprogram_mapping[index];
-		SlObject(&item, _trace_restrict_mapping_desc);
+		SlObjectLoadFiltered(&item, slt);
 	}
 }
 
@@ -35,24 +37,31 @@ static void Load_TRRM()
  */
 static void Save_TRRM()
 {
+	std::vector<SaveLoad> slt = SlTableHeader(_trace_restrict_mapping_desc);
+
 	for (TraceRestrictMapping::iterator iter = _tracerestrictprogram_mapping.begin();
 			iter != _tracerestrictprogram_mapping.end(); ++iter) {
 		SlSetArrayIndex(iter->first);
-		SlObject(&(iter->second), _trace_restrict_mapping_desc);
+		SlObjectSaveFiltered(&(iter->second), slt);
 	}
 }
+
+static const NamedSaveLoad _trace_restrict_program_desc[] = {
+	NSL("items", SLE_VARVEC(TraceRestrictProgram, items, SLE_UINT32)),
+};
 
 /**
  * Load program pool
  */
 static void Load_TRRP()
 {
+	std::vector<SaveLoad> slt = SlTableHeaderOrRiff(_trace_restrict_program_desc);
+
 	int index;
 	while ((index = SlIterateArray()) != -1) {
 		TraceRestrictProgram *prog = new (index) TraceRestrictProgram();
-		uint32_t prog_length = SlReadUint32();
-		prog->items.resize(prog_length);
-		if (prog_length > 0) SlArray(prog->items.data(), prog_length, SLE_UINT32);
+		SlObjectLoadFiltered(prog, slt);
+
 		if (SlXvIsFeaturePresent(XSLFI_JOKERPP)) {
 			for (size_t i = 0; i < prog->items.size(); i++) {
 				TraceRestrictItem &item = prog->items[i]; // note this is a reference,
@@ -102,28 +111,20 @@ static void Load_TRRP()
  */
 static void Save_TRRP()
 {
+	std::vector<SaveLoad> slt = SlTableHeader(_trace_restrict_program_desc);
+
 	for (TraceRestrictProgram *prog : TraceRestrictProgram::Iterate()) {
 		SlSetArrayIndex(prog->index);
-		SlSetLength(4 + (prog->items.size() * 4));
-		SlWriteUint32((uint32_t)prog->items.size());
-		SlArray(prog->items.data(), prog->items.size(), SLE_UINT32);
+		SlObjectSaveFiltered(prog, slt);
 	}
 }
 
-/** program length save header struct */
-struct TraceRestrictSlotStub {
-	uint32_t length;
-};
-
-static const SaveLoad _trace_restrict_slot_stub_desc[] = {
-	SLE_VAR(TraceRestrictSlotStub, length, SLE_UINT32),
-};
-
-static const SaveLoad _trace_restrict_slot_desc[] = {
-	SLE_VAR(TraceRestrictSlot, max_occupancy, SLE_UINT32),
-	SLE_SSTR(TraceRestrictSlot, name, SLF_ALLOW_CONTROL),
-	SLE_VAR(TraceRestrictSlot, owner, SLE_UINT8),
-	SLE_CONDVAR_X(TraceRestrictSlot, vehicle_type, SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TRACE_RESTRICT, 13)),
+static const NamedSaveLoad _trace_restrict_slot_desc[] = {
+	NSL("max_occupancy", SLE_VAR(TraceRestrictSlot, max_occupancy, SLE_UINT32)),
+	NSL("name",          SLE_SSTR(TraceRestrictSlot, name, SLE_STR | SLF_ALLOW_CONTROL)),
+	NSL("owner",         SLE_VAR(TraceRestrictSlot, owner, SLE_UINT8)),
+	NSL("vehicle_type",  SLE_CONDVAR_X(TraceRestrictSlot, vehicle_type, SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TRACE_RESTRICT, 13))),
+	NSL("occupants",     SLE_VARVEC(TraceRestrictSlot, occupants, SLE_UINT32)),
 };
 
 /**
@@ -131,28 +132,14 @@ static const SaveLoad _trace_restrict_slot_desc[] = {
  */
 static void Load_TRRS()
 {
+	std::vector<SaveLoad> slt = SlTableHeaderOrRiff(_trace_restrict_slot_desc);
+
 	int index;
-	TraceRestrictSlotStub stub;
 	while ((index = SlIterateArray()) != -1) {
 		TraceRestrictSlot *slot = new (index) TraceRestrictSlot();
-		SlObject(slot, _trace_restrict_slot_desc);
-		SlObject(&stub, _trace_restrict_slot_stub_desc);
-		slot->occupants.resize(stub.length);
-		if (stub.length) SlArray(slot->occupants.data(), stub.length, SLE_UINT32);
+		SlObjectLoadFiltered(slot, slt);
 	}
 	TraceRestrictSlot::RebuildVehicleIndex();
-}
-
-/**
- * Save a slot, used by SlAutolength
- */
-static void RealSave_TRRS(TraceRestrictSlot *slot)
-{
-	SlObject(slot, _trace_restrict_slot_desc);
-	TraceRestrictSlotStub stub;
-	stub.length = (uint32_t)slot->occupants.size();
-	SlObject(&stub, _trace_restrict_slot_stub_desc);
-	if (stub.length) SlArray(slot->occupants.data(), stub.length, SLE_UINT32);
 }
 
 /**
@@ -160,16 +147,18 @@ static void RealSave_TRRS(TraceRestrictSlot *slot)
  */
 static void Save_TRRS()
 {
+	std::vector<SaveLoad> slt = SlTableHeader(_trace_restrict_slot_desc);
+
 	for (TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
 		SlSetArrayIndex(slot->index);
-		SlAutolength((AutolengthProc*) RealSave_TRRS, slot);
+		SlObjectSaveFiltered(slot, slt);
 	}
 }
 
-static const SaveLoad _trace_restrict_counter_desc[] = {
-	SLE_VAR(TraceRestrictCounter, value, SLE_INT32),
-	SLE_SSTR(TraceRestrictCounter, name, SLF_ALLOW_CONTROL),
-	SLE_VAR(TraceRestrictCounter, owner, SLE_UINT8),
+static const NamedSaveLoad _trace_restrict_counter_desc[] = {
+	NSL("value", SLE_VAR(TraceRestrictCounter, value, SLE_INT32)),
+	NSL("name",  SLE_SSTR(TraceRestrictCounter, name, SLE_STR | SLF_ALLOW_CONTROL)),
+	NSL("owner", SLE_VAR(TraceRestrictCounter, owner, SLE_UINT8)),
 };
 
 /**
@@ -177,10 +166,12 @@ static const SaveLoad _trace_restrict_counter_desc[] = {
  */
 static void Load_TRRC()
 {
+	std::vector<SaveLoad> slt = SlTableHeaderOrRiff(_trace_restrict_counter_desc);
+
 	int index;
 	while ((index = SlIterateArray()) != -1) {
 		TraceRestrictCounter *ctr = new (index) TraceRestrictCounter();
-		SlObject(ctr, _trace_restrict_counter_desc);
+		SlObjectLoadFiltered(ctr, slt);
 	}
 }
 
@@ -189,9 +180,11 @@ static void Load_TRRC()
  */
 static void Save_TRRC()
 {
+	std::vector<SaveLoad> slt = SlTableHeader(_trace_restrict_counter_desc);
+
 	for (TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
 		SlSetArrayIndex(ctr->index);
-		SlObject(ctr, _trace_restrict_counter_desc);
+		SlObjectSaveFiltered(ctr, slt);
 	}
 }
 
@@ -207,10 +200,10 @@ void AfterLoadTraceRestrict()
 }
 
 extern const ChunkHandler trace_restrict_chunk_handlers[] = {
-	{ 'TRRM', Save_TRRM, Load_TRRM, nullptr, nullptr, CH_SPARSE_ARRAY },    // Trace Restrict Mapping chunk
-	{ 'TRRP', Save_TRRP, Load_TRRP, nullptr, nullptr, CH_ARRAY },           // Trace Restrict Mapping Program Pool chunk
-	{ 'TRRS', Save_TRRS, Load_TRRS, nullptr, nullptr, CH_ARRAY },           // Trace Restrict Slot Pool chunk
-	{ 'TRRC', Save_TRRC, Load_TRRC, nullptr, nullptr, CH_ARRAY },           // Trace Restrict Counter Pool chunk
+	{ 'TRRM', Save_TRRM, Load_TRRM, nullptr, nullptr, CH_SPARSE_TABLE },    // Trace Restrict Mapping chunk
+	{ 'TRRP', Save_TRRP, Load_TRRP, nullptr, nullptr, CH_TABLE },           // Trace Restrict Mapping Program Pool chunk
+	{ 'TRRS', Save_TRRS, Load_TRRS, nullptr, nullptr, CH_TABLE },           // Trace Restrict Slot Pool chunk
+	{ 'TRRC', Save_TRRC, Load_TRRC, nullptr, nullptr, CH_TABLE },           // Trace Restrict Counter Pool chunk
 };
 
 extern const ChunkHandlerTable _trace_restrict_chunk_handlers(trace_restrict_chunk_handlers);
