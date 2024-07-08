@@ -210,7 +210,7 @@ static void Load_MISC()
 static const ChunkHandler misc_chunk_handlers[] = {
 	{ 'DATE', Save_DATE, Load_DATE, nullptr, Check_DATE, CH_TABLE },
 	MakeSaveUpstreamFeatureConditionalLoadUpstreamChunkHandler<'VIEW', XSLFI_TABLE_MISC_SL>(Load_VIEW, nullptr, nullptr),
-	{ 'MISC', nullptr, Load_MISC, nullptr, nullptr, CH_UNUSED },
+	{ 'MISC', nullptr, Load_MISC, nullptr, nullptr, CH_READONLY },
 };
 
 extern const ChunkHandlerTable _misc_chunk_handlers(misc_chunk_handlers);
