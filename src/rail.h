@@ -398,12 +398,12 @@ inline bool Rail90DegTurnDisallowedTilesFromDiagDir(TileIndex t1, TileIndex t2, 
 
 inline bool Rail90DegTurnDisallowedAdjacentTiles(TileIndex t1, TileIndex t2, bool def = _settings_game.pf.forbid_90_deg)
 {
-	return Rail90DegTurnDisallowedTilesFromDiagDir(t1, t2, DiagdirBetweenTiles(t1, t2));
+	return Rail90DegTurnDisallowedTilesFromDiagDir(t1, t2, DiagdirBetweenTiles(t1, t2), def);
 }
 
 inline bool Rail90DegTurnDisallowedTilesFromTrackdir(TileIndex t1, TileIndex t2, Trackdir t1_td, bool def = _settings_game.pf.forbid_90_deg)
 {
-	return Rail90DegTurnDisallowedTilesFromDiagDir(t1, t2, TrackdirToExitdir(t1_td));
+	return Rail90DegTurnDisallowedTilesFromDiagDir(t1, t2, TrackdirToExitdir(t1_td), def);
 }
 
 /**
