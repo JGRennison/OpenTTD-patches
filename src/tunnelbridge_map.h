@@ -369,7 +369,7 @@ inline bool IsTunnelBridgeWithSignalSimulation(TileIndex t)
 /**
  * Is this a tunnel/bridge entrance tile with signal?
  * Tunnel bridge signal simulation has allways bit 5 on at entrance.
- * @param t the tile that might be a tunnel/bridge.
+ * @param t the tunnel/bridge tile.
  * @pre IsTileType(t, MP_TUNNELBRIDGE)
  * @return true if and only if this tile is a tunnel/bridge entrance.
  */
@@ -392,7 +392,7 @@ inline bool IsTunnelBridgeSignalSimulationEntranceTile(TileIndex t)
 
 /**
  * Is this a tunnel/bridge entrance tile with signal only?
- * @param t the tile that might be a tunnel/bridge.
+ * @param t the tunnel/bridge tile.
  * @pre IsTileType(t, MP_TUNNELBRIDGE)
  * @return true if and only if this tile is a tunnel/bridge entrance only.
  */
@@ -404,7 +404,7 @@ inline bool IsTunnelBridgeSignalSimulationEntranceOnly(TileIndex t)
 
 /**
  * Is this a tunnel/bridge exit?
- * @param t the tile that might be a tunnel/bridge.
+ * @param t the tunnel/bridge tile.
  * @pre IsTileType(t, MP_TUNNELBRIDGE)
  * @return true if and only if this tile is a tunnel/bridge exit.
  */
@@ -426,7 +426,7 @@ inline bool IsTunnelBridgeSignalSimulationExitTile(TileIndex t)
 
 /**
  * Is this a tunnel/bridge exit only?
- * @param t the tile that might be a tunnel/bridge.
+ * @param t the tunnel/bridge tile.
  * @pre IsTileType(t, MP_TUNNELBRIDGE)
  * @return true if and only if this tile is a tunnel/bridge exit only.
  */
