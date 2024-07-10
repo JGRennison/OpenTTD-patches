@@ -473,7 +473,7 @@ public:
 					return -1;
 				}
 			}
-			if (n.flags_u.flags_s.m_reverse_pending && entering && IsTunnelBridgeSignalSimulationEntrance(tile)) {
+			if ((TrackFollower::DoTrackMasking() || n.flags_u.flags_s.m_reverse_pending) && entering && IsTunnelBridgeSignalSimulationEntrance(tile)) {
 				n.m_segment->m_end_segment_reason |= ESRB_SAFE_TILE;
 			}
 		}
@@ -774,6 +774,15 @@ no_entry_cost: // jump here at the beginning if the node has no parent (it is th
 					end_segment_reason |= ESRB_SAFE_TILE | ESRB_DEAD_END;
 					extra_cost += Yapf().PfGetSettings().rail_lastred_exit_penalty;
 				}
+			} else if (TrackFollower::DoTrackMasking() &&
+					_settings_game.pf.back_of_one_way_pbs_waiting_point &&
+					IsTunnelBridgeWithSignalSimulation(next.tile) &&
+					IsTunnelBridgeSignalSimulationExitOnly(next.tile) &&
+					IsTunnelBridgePBS(next.tile) &&
+					TrackdirEntersTunnelBridge(next.tile, next.td)) {
+				/* Possible safe tile, but not so good as it's the back of a signal... */
+				end_segment_reason |= ESRB_SAFE_TILE | ESRB_DEAD_END;
+				extra_cost += Yapf().PfGetSettings().rail_lastred_exit_penalty;
 			}
 
 			/* Check the next tile for the rail type. */
