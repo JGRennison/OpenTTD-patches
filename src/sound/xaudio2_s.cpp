@@ -27,7 +27,11 @@
 
 #include <windows.h>
 #include <mmsystem.h>
+#ifdef _MSC_VER
 #include <wrl\client.h>
+#else
+#include <wrl/client.h>
+#endif
 #include <xaudio2.h>
 
 using Microsoft::WRL::ComPtr;
@@ -121,12 +125,16 @@ static StreamingVoiceContext *_voice_context = nullptr;
 static HRESULT CreateXAudio(API_XAudio2Create xAudio2Create)
 {
 	HRESULT hr;
+#ifdef _MSC_VER
 	__try {
+#endif
 		UINT32 flags = 0;
 		hr = xAudio2Create(_xaudio2.GetAddressOf(), flags, XAUDIO2_DEFAULT_PROCESSOR);
+#ifdef _MSC_VER
 	} __except (EXCEPTION_EXECUTE_HANDLER) {
 		hr = GetExceptionCode();
 	}
+#endif
 
 	return hr;
 }
