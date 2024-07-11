@@ -1578,8 +1578,8 @@ public:
 
 		const SlStorageT *list = static_cast<const SlStorageT *>(storage);
 
-		int type_size = SlGetListTypeLengthSize(list->size()); // Size of the length of the list.
-		int item_size = SlCalcConvFileLen(cmd == SL_VAR ? conv : (VarType)SLE_FILE_U32);
+		uint type_size = SlGetListTypeLengthSize(list->size()); // Size of the length of the list.
+		uint item_size = SlCalcConvFileLen(cmd == SL_VAR ? conv : (VarType)SLE_FILE_U32);
 		return list->size() * item_size + type_size;
 	}
 
@@ -1656,8 +1656,8 @@ static inline size_t SlCalcRefListLen(const void *list)
 {
 	const PtrList *l = (const PtrList *) list;
 
-	int type_size = SlGetListTypeLengthSize(l->size());
-	int item_size = SlCalcRefLen();
+	uint type_size = SlGetListTypeLengthSize(l->size());
+	size_t item_size = SlCalcRefLen();
 	/* Each entry is saved as item_size bytes, plus type_size bytes are used for the length
 	 * of the list */
 	return l->size() * item_size + type_size;
@@ -1671,7 +1671,7 @@ static inline size_t SlCalcRefListLen(const void *list)
 static inline size_t SlCalcVarListLen(const void *list, size_t item_size)
 {
 	const PtrList *l = (const PtrList *) list;
-	int type_size = SlGetListTypeLengthSize(l->size());
+	uint type_size = SlGetListTypeLengthSize(l->size());
 	/* Each entry is saved as item_size bytes, plus type_size bytes are used for the length
 	 * of the list */
 	return l->size() * item_size + type_size;
