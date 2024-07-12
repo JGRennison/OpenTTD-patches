@@ -63,11 +63,6 @@ static void Check_DBGC()
 
 static void Save_DBGD()
 {
-	if (!SlIsTableChunk()) {
-		SlSkipChunkContents();
-		return;
-	}
-
 	std::vector<NamedSaveLoad> nsl;
 	if (_save_DBGC_data) {
 		extern std::string _config_file_text;
