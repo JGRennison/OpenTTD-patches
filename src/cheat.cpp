@@ -18,13 +18,13 @@
 /** All the cheats. */
 Cheats _cheats;
 
-std::map<std::string, Cheat> _unknown_cheats;
+std::map<std::string, bool> _unknown_cheat_fields;
 
 /** Reinitialise all the cheats. */
 void InitializeCheats()
 {
 	memset(&_cheats, 0, sizeof(Cheats));
-	_unknown_cheats.clear();
+	_unknown_cheat_fields.clear();
 }
 
 /**

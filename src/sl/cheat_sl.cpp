@@ -18,7 +18,7 @@
 
 #include "../safeguards.h"
 
-extern std::map<std::string, Cheat> _unknown_cheats;
+extern std::map<std::string, bool> _unknown_cheat_fields; // This requires reference stability (during load)
 
 struct ExtraCheatNameDesc {
 	const char *name;
@@ -32,38 +32,58 @@ static ExtraCheatNameDesc _extra_cheat_descs[] = {
 	{ "town_rating",      &_cheats.town_rating },
 };
 
-static const SaveLoad _cheats_desc[] = {
-	SLE_VAR(Cheats, magic_bulldozer.been_used, SLE_BOOL),
-	SLE_VAR(Cheats, magic_bulldozer.value, SLE_BOOL),
-	SLE_VAR(Cheats, switch_company.been_used, SLE_BOOL),
-	SLE_VAR(Cheats, switch_company.value, SLE_BOOL),
-	SLE_VAR(Cheats, money.been_used, SLE_BOOL),
-	SLE_VAR(Cheats, money.value, SLE_BOOL),
-	SLE_VAR(Cheats, crossing_tunnels.been_used, SLE_BOOL),
-	SLE_VAR(Cheats, crossing_tunnels.value, SLE_BOOL),
-	SLE_NULL(1),
-	SLE_NULL(1), // Needs to be two NULL fields. See Load_CHTS().
-	SLE_VAR(Cheats, no_jetcrash.been_used, SLE_BOOL),
-	SLE_VAR(Cheats, no_jetcrash.value, SLE_BOOL),
-	SLE_NULL(1),
-	SLE_NULL(1), // Needs to be two NULL fields. See Load_CHTS().
-	SLE_VAR(Cheats, change_date.been_used, SLE_BOOL),
-	SLE_VAR(Cheats, change_date.value, SLE_BOOL),
-	SLE_VAR(Cheats, setup_prod.been_used, SLE_BOOL),
-	SLE_VAR(Cheats, setup_prod.value, SLE_BOOL),
-	SLE_NULL(1),
-	SLE_NULL(1), // Needs to be two NULL fields. See Load_CHTS().
-	SLE_VAR(Cheats, edit_max_hl.been_used, SLE_BOOL),
-	SLE_VAR(Cheats, edit_max_hl.value, SLE_BOOL),
-};
+std::vector<NamedSaveLoad> GetCheatsDesc(bool save) {
+	static const NamedSaveLoad _cheats_desc[] = {
+		NSL("magic_bulldozer.been_used",  SLE_VAR(Cheats, magic_bulldozer.been_used, SLE_BOOL)),
+		NSL("magic_bulldozer.value",      SLE_VAR(Cheats, magic_bulldozer.value, SLE_BOOL)),
+		NSL("switch_company.been_used",   SLE_VAR(Cheats, switch_company.been_used, SLE_BOOL)),
+		NSL("switch_company.value",       SLE_VAR(Cheats, switch_company.value, SLE_BOOL)),
+		NSL("money.been_used",            SLE_VAR(Cheats, money.been_used, SLE_BOOL)),
+		NSL("money.value",                SLE_VAR(Cheats, money.value, SLE_BOOL)),
+		NSL("crossing_tunnels.been_used", SLE_VAR(Cheats, crossing_tunnels.been_used, SLE_BOOL)),
+		NSL("crossing_tunnels.value",     SLE_VAR(Cheats, crossing_tunnels.value, SLE_BOOL)),
+		NSL("", SLE_NULL(1)),
+		NSL("", SLE_NULL(1)), // Needs to be two NULL fields. See Load_CHTS().
+		NSL("no_jetcrash.been_used",      SLE_VAR(Cheats, no_jetcrash.been_used, SLE_BOOL)),
+		NSL("no_jetcrash.value,",         SLE_VAR(Cheats, no_jetcrash.value, SLE_BOOL)),
+		NSL("", SLE_NULL(1)),
+		NSL("", SLE_NULL(1)), // Needs to be two NULL fields. See Load_CHTS().
+		NSL("change_date.been_used",      SLE_VAR(Cheats, change_date.been_used, SLE_BOOL)),
+		NSL("change_date.value",          SLE_VAR(Cheats, change_date.value, SLE_BOOL)),
+		NSL("setup_prod.been_used",       SLE_VAR(Cheats, setup_prod.been_used, SLE_BOOL)),
+		NSL("setup_prod.value",           SLE_VAR(Cheats, setup_prod.value, SLE_BOOL)),
+		NSL("", SLE_NULL(1)),
+		NSL("", SLE_NULL(1)), // Needs to be two NULL fields. See Load_CHTS().
+		NSL("edit_max_hl.been_used",      SLE_VAR(Cheats, edit_max_hl.been_used, SLE_BOOL)),
+		NSL("edit_max_hl.value",          SLE_VAR(Cheats, edit_max_hl.value, SLE_BOOL)),
+		NSLT("station_rating.been_used",  SLE_VAR(Cheats, station_rating.been_used, SLE_BOOL)),
+		NSLT("station_rating.value",      SLE_VAR(Cheats, station_rating.value, SLE_BOOL)),
+		NSLT("inflation_cost.been_used",  SLE_VAR(Cheats, inflation_cost.been_used, SLE_BOOL)),
+		NSLT("inflation_cost.value",      SLE_VAR(Cheats, inflation_cost.value, SLE_BOOL)),
+		NSLT("inflation_income.been_used",SLE_VAR(Cheats, inflation_income.been_used, SLE_BOOL)),
+		NSLT("inflation_income.value",    SLE_VAR(Cheats, inflation_income.value, SLE_BOOL)),
+		NSLT("town_rating.been_used",     SLE_VAR(Cheats, town_rating.been_used, SLE_BOOL)),
+		NSLT("town_rating.value",         SLE_VAR(Cheats, town_rating.value, SLE_BOOL)),
+	};
+
+	std::vector<NamedSaveLoad> desc(std::begin(_cheats_desc), std::end(_cheats_desc));
+	if (save) {
+		for (auto &it : _unknown_cheat_fields) {
+			desc.push_back(NSLT(it.first.c_str(), SLEG_VAR(it.second, SLE_BOOL)));
+		}
+	}
+	return desc;
+}
 
 /**
  * Save the cheat values.
  */
 static void Save_CHTS()
 {
-	SlSetLength(std::size(_cheats_desc));
-	SlObject(&_cheats, _cheats_desc);
+	std::vector<SaveLoad> slt = SlTableHeader(GetCheatsDesc(true));
+
+	SlSetArrayIndex(0);
+	SlObjectSaveFiltered(&_cheats, slt);
 }
 
 /**
@@ -71,21 +91,39 @@ static void Save_CHTS()
  */
 static void Load_CHTS()
 {
-	size_t count = SlGetFieldLength();
-	std::vector<SaveLoad> slt;
+	if (SlIsTableChunk()) {
+		struct UnknownCheatHandler : public TableHeaderSpecialHandler {
+			bool MissingField(const std::string &key, uint8_t type, std::vector<SaveLoad> &saveloads) override {
+				if (type == SLE_FILE_I8) {
+					DEBUG(sl, 1, "CHTS chunk: Unknown cheat field: '%s'", key.c_str());
+					saveloads.push_back(SLEG_VAR(_unknown_cheat_fields[key], SLE_BOOL));
+					return true;
+				}
 
-	/* Cheats were added over the years without a savegame bump. They are
-	 * stored as 2 SLE_BOOLs per entry. "count" indicates how many SLE_BOOLs
-	 * are stored for this savegame. So read only "count" SLE_BOOLs (and in
-	 * result "count / 2" cheats). */
-	for (auto &sld : _cheats_desc) {
-		count--;
-		slt.push_back(sld);
+				return false;
+			}
+		};
 
-		if (count == 0) break;
+		UnknownCheatHandler uch{};
+		std::vector<SaveLoad> slt = SlTableHeader(GetCheatsDesc(false), &uch);
+
+		if (SlIterateArray() == -1) return;
+		SlObjectLoadFiltered(&_cheats, slt);
+		if (SlIterateArray() != -1) {
+			SlErrorCorruptFmt("Too many CHTS entries");
+		}
+	} else {
+		size_t count = SlGetFieldLength();
+		std::vector<SaveLoad> slt = SlTableHeaderOrRiff(GetCheatsDesc(false));
+
+		/* Cheats were added over the years without a savegame bump. They are
+		 * stored as 2 SLE_BOOLs per entry. "count" indicates how many SLE_BOOLs
+		 * are stored for this savegame. So read only "count" SLE_BOOLs (and in
+		 * result "count / 2" cheats). */
+		if (count < slt.size()) slt.resize(count);
+
+		SlObject(&_cheats, slt);
 	}
-
-	SlObject(&_cheats, slt);
 }
 
 /**
@@ -125,46 +163,16 @@ static void Load_CHTX()
 		}
 		if (!found) {
 			DEBUG(sl, 1, "CHTX chunk: Could not find cheat: '%s'", current_cheat.name);
-			_unknown_cheats[current_cheat.name] = current_cheat.cht;
+			_unknown_cheat_fields[std::string(current_cheat.name) + ".been_used"] = current_cheat.cht.been_used;
+			_unknown_cheat_fields[std::string(current_cheat.name) + ".value"] = current_cheat.cht.value;
 		}
 	}
 }
 
-/**
- * Save the extra cheat values.
- */
-static void Save_CHTX()
-{
-	struct CheatsExtSave {
-		const char *name;
-		Cheat cht;
-	};
-
-	static const SaveLoad _cheats_ext_save_desc[] = {
-		SLE_STR(CheatsExtSave, name,           SLE_STR, 0),
-		SLE_VAR(CheatsExtSave, cht.been_used,  SLE_BOOL),
-		SLE_VAR(CheatsExtSave, cht.value,      SLE_BOOL),
-	};
-
-	SlAutolength([](void *) {
-		SlWriteUint32(0);                                                               // flags
-		SlWriteUint32((uint32_t)(lengthof(_extra_cheat_descs) + _unknown_cheats.size())); // cheat count
-
-		for (uint j = 0; j < lengthof(_extra_cheat_descs); j++) {
-			CheatsExtSave save = { _extra_cheat_descs[j].name, *(_extra_cheat_descs[j].cht) };
-			SlObject(&save, _cheats_ext_save_desc);
-		}
-		for (const auto &iter : _unknown_cheats) {
-			CheatsExtSave save = { iter.first.c_str(), iter.second };
-			SlObject(&save, _cheats_ext_save_desc);
-		}
-	}, nullptr);
-}
-
 /** Chunk handlers related to cheats. */
 static const ChunkHandler cheat_chunk_handlers[] = {
-	{ 'CHTS', Save_CHTS, Load_CHTS, nullptr, nullptr, CH_RIFF },
-	{ 'CHTX', Save_CHTX, Load_CHTX, nullptr, nullptr, CH_RIFF },
+	{ 'CHTS', Save_CHTS, Load_CHTS, nullptr, nullptr, CH_TABLE },
+	{ 'CHTX', nullptr,   Load_CHTX, nullptr, nullptr, CH_READONLY },
 };
 
 extern const ChunkHandlerTable _cheat_chunk_handlers(cheat_chunk_handlers);
