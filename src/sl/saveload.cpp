@@ -2208,7 +2208,7 @@ static uint8_t GetSavegameTableFileType(const SaveLoad &sld)
  * @param slt The NamedSaveLoad table with objects to save/load.
  * @return The ordered SaveLoad array to use.
  */
-std::vector<SaveLoad> SlTableHeader(const NamedSaveLoadTable &slt)
+std::vector<SaveLoad> SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecialHandler *special_handler)
 {
 	/* You can only use SlTableHeader if you are a CH_TABLE. */
 	assert(_sl.block_mode == CH_TABLE || _sl.block_mode == CH_SPARSE_TABLE);
@@ -2255,6 +2255,8 @@ std::vector<SaveLoad> SlTableHeader(const NamedSaveLoadTable &slt)
 
 				auto sld_it = std::lower_bound(key_lookup.begin(), key_lookup.end(), key);
 				if (sld_it == key_lookup.end() || sld_it->name != key) {
+					if (special_handler != nullptr && special_handler->MissingField(key, type, saveloads)) continue; // Special handler took responsibility for missing field
+
 					/* SLA_LOADCHECK triggers this debug statement a lot and is perfectly normal. */
 					DEBUG(sl, _sl.action == SLA_LOAD ? 2 : 6, "Field '%s' of type 0x%02X not found, skipping", key.c_str(), type);
 

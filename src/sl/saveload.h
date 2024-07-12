@@ -1071,9 +1071,15 @@ void SlObjectSaveFiltered(void *object, const SaveLoadTable &slt);
 void SlObjectLoadFiltered(void *object, const SaveLoadTable &slt);
 void SlObjectPtrOrNullFiltered(void *object, const SaveLoadTable &slt);
 
+struct TableHeaderSpecialHandler {
+	virtual ~TableHeaderSpecialHandler() {}
+
+	virtual bool MissingField(const std::string &key, uint8_t type, std::vector<SaveLoad> &saveloads) { return false; } // By default, do not handle
+};
+
 bool SlIsTableChunk();
 void SlSkipTableHeader();
-std::vector<SaveLoad> SlTableHeader(const NamedSaveLoadTable &slt);
+std::vector<SaveLoad> SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecialHandler *special_handler = nullptr);
 std::vector<SaveLoad> SlTableHeaderOrRiff(const NamedSaveLoadTable &slt);
 void SlSaveTableObjectChunk(const SaveLoadTable &slt);
 void SlLoadTableOrRiffFiltered(const SaveLoadTable &slt);
