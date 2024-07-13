@@ -143,7 +143,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_SPEED_RESTRICTION,                XSCF_NULL,                1,   1, "speed_restriction",                nullptr, nullptr, "VESR"           },
 	{ XSLFI_STATION_GOODS_EXTRA,              XSCF_NULL,                1,   1, "station_goods_extra",              nullptr, nullptr, nullptr          },
 	{ XSLFI_DOCKING_CACHE_VER,                XSCF_IGNORABLE_ALL,       3,   3, "docking_cache_ver",                nullptr, nullptr, nullptr          },
-	{ XSLFI_EXTRA_CHEATS,                     XSCF_NULL,                1,   1, "extra_cheats",                     nullptr, nullptr, "CHTX"           },
+	{ XSLFI_EXTRA_CHEATS,                     XSCF_NULL,                2,   2, "extra_cheats",                     nullptr, nullptr, nullptr          },
 	{ XSLFI_TOWN_MULTI_BUILDING,              XSCF_NULL,                1,   1, "town_multi_building",              nullptr, nullptr, nullptr          },
 	{ XSLFI_SHIP_LOST_COUNTER,                XSCF_NULL,                1,   1, "ship_lost_counter",                nullptr, nullptr, nullptr          },
 	{ XSLFI_BUILD_OBJECT_RATE_LIMIT,          XSCF_NULL,                1,   1, "build_object_rate_limit",          nullptr, nullptr, nullptr          },
