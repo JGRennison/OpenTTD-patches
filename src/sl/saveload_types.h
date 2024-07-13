@@ -162,6 +162,5 @@ inline constexpr NamedSaveLoad NSLT(const char *name, SaveLoad save_load)
 {
 	return { name, save_load, NSLF_TABLE_ONLY };
 }
-using NamedSaveLoadTable = std::span<const NamedSaveLoad>;
 
 #endif /* SL_SAVELOAD_TYPES_H */
