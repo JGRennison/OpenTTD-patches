@@ -1316,7 +1316,7 @@ void Save_VENC()
 		return;
 	}
 
-	SlAutolength([](void *) {
+	SlAutolength([]() {
 		int types[4] = {};
 		int total = 0;
 		for (Vehicle *v : Vehicle::Iterate()) {
@@ -1377,7 +1377,7 @@ void Save_VENC()
 			SlWriteUint32(a->index);
 			SlWriteUint16(a->acache.cached_max_range);
 		}
-	}, nullptr);
+	});
 }
 
 void Load_VENC()
@@ -1610,7 +1610,7 @@ void Save_VLKA()
 	for (Train *t : Train::Iterate()) {
 		if (t->lookahead != nullptr) {
 			SlSetArrayIndex(t->index);
-			SlAutolength((AutolengthProc*) RealSave_VLKA, t->lookahead.get());
+			SlAutolength(RealSave_VLKA, t->lookahead.get());
 		}
 	}
 }

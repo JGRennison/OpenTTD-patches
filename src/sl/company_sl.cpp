@@ -491,7 +491,7 @@ static void Save_PLYR()
 {
 	for (Company *c : Company::Iterate()) {
 		SlSetArrayIndex(c->index);
-		SlAutolength((AutolengthProc*)SaveLoad_PLYR, c);
+		SlAutolength(SaveLoad_PLYR, c);
 	}
 }
 

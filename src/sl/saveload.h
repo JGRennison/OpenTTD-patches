@@ -83,7 +83,6 @@ bool IsNetworkServerSave();
 bool IsScenarioSave();
 
 typedef void ChunkSaveLoadProc();
-typedef void AutolengthProc(void *arg);
 
 void SlUnreachablePlaceholder();
 
@@ -980,11 +979,26 @@ void WriteValue(void *ptr, VarType conv, int64_t val);
 void SlSetArrayIndex(uint index);
 int SlIterateArray();
 
-void SlAutolength(AutolengthProc *proc, void *arg);
 size_t SlGetFieldLength();
 void SlSetLength(size_t length);
 size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld);
 size_t SlCalcObjLength(const void *object, const SaveLoadTable &slt);
+
+/**
+ * Run proc, automatically prepending the written length
+ * @param proc The callback procedure that is called
+ * @param args Any
+ */
+template <typename F, typename... Args>
+void SlAutolength(F proc, Args... args)
+{
+	extern void SlAutolengthSetup();
+	extern void SlAutolengthCompletion();
+
+	SlAutolengthSetup();
+	proc(std::forward<Args>(args)...);
+	SlAutolengthCompletion();
+}
 
 /**
  * Run proc, saving result in the autolength temp buffer

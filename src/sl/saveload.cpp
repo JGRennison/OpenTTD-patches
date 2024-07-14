@@ -2383,19 +2383,17 @@ void SlGlobList(const SaveLoadTable &slt)
 	SlObject(nullptr, slt);
 }
 
-/**
- * Do something of which I have no idea what it is :P
- * @param proc The callback procedure that is called
- * @param arg The variable that will be used for the callback procedure
- */
-void SlAutolength(AutolengthProc *proc, void *arg)
+void SlAutolengthSetup()
 {
 	assert(_sl.action == SLA_SAVE);
 	assert(_sl.need_length == NL_WANTLENGTH);
 
 	_sl.need_length = NL_NONE;
 	_sl.dumper->StartAutoLength();
-	proc(arg);
+}
+
+void SlAutolengthCompletion()
+{
 	auto result = _sl.dumper->StopAutoLength();
 	/* Setup length */
 	_sl.need_length = NL_WANTLENGTH;

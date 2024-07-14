@@ -336,7 +336,7 @@ static void Save_LGRP()
 	FilterDescs();
 	for (LinkGraph *lg : LinkGraph::Iterate()) {
 		SlSetArrayIndex(lg->index);
-		SlAutolength((AutolengthProc*)DoSave_LGRP, lg);
+		SlAutolength(DoSave_LGRP, lg);
 	}
 }
 
@@ -348,7 +348,7 @@ static void Save_LGRJ()
 	FilterDescs();
 	for (LinkGraphJob *lgj : LinkGraphJob::Iterate()) {
 		SlSetArrayIndex(lgj->index);
-		SlAutolength((AutolengthProc*)DoSave_LGRJ, lgj);
+		SlAutolength(DoSave_LGRJ, lgj);
 	}
 }
 

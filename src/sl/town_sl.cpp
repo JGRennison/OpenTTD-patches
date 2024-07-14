@@ -317,7 +317,7 @@ static void Save_TOWN()
 	SetupDescs_TOWN();
 	for (Town *t : Town::Iterate()) {
 		SlSetArrayIndex(t->index);
-		SlAutolength((AutolengthProc*)RealSave_Town, t);
+		SlAutolength(RealSave_Town, t);
 	}
 }
 

@@ -622,7 +622,7 @@ static void Save_STNN()
 	/* Write the stations */
 	for (BaseStation *st : BaseStation::Iterate()) {
 		SlSetArrayIndex(st->index);
-		SlAutolength((AutolengthProc*)RealSave_STNN, st);
+		SlAutolength(RealSave_STNN, st);
 	}
 }
 

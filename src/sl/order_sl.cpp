@@ -364,14 +364,13 @@ static void Save_ORDL()
 	SetupDescs_ORDL();
 	for (OrderList *list : OrderList::Iterate()) {
 		SlSetArrayIndex(list->index);
-		SlAutolength([](void *data) {
-			OrderList *list = static_cast<OrderList *>(data);
+		SlAutolength([&]() {
 			SlObjectSaveFiltered(list, _filtered_ordl_desc);
 			SlWriteUint32(list->GetScheduledDispatchScheduleCount());
 			for (DispatchSchedule &ds : list->GetScheduledDispatchScheduleSet()) {
 				SaveDispatchSchedule(ds);
 			}
-		}, list);
+		});
 	}
 }
 
@@ -458,14 +457,13 @@ void Save_BKOR()
 
 	for (OrderBackup *ob : OrderBackup::Iterate()) {
 		SlSetArrayIndex(ob->index);
-		SlAutolength([](void *data) {
-			OrderBackup *ob = static_cast<OrderBackup *>(data);
+		SlAutolength([&]() {
 			SlObject(ob, GetOrderBackupDescription());
 			SlWriteUint32((uint)ob->dispatch_schedules.size());
 			for (DispatchSchedule &ds : ob->dispatch_schedules) {
 				SaveDispatchSchedule(ds);
 			}
-		}, ob);
+		});
 	}
 }
 

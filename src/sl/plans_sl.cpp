@@ -40,7 +40,7 @@ static void Save_PLAN()
 {
 	for (Plan *p : Plan::Iterate()) {
 		SlSetArrayIndex(p->index);
-		SlAutolength((AutolengthProc*) RealSave_PLAN, p);
+		SlAutolength(RealSave_PLAN, p);
 	}
 }
 
