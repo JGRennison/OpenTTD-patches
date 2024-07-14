@@ -25,7 +25,7 @@ static const NamedSaveLoad _train_speed_adaptation_map_desc[] = {
 static void Load_TSAS()
 {
 	const bool table_mode = SlIsTableChunk();
-	std::vector<SaveLoad> slt = SlTableHeaderOrRiff(_train_speed_adaptation_map_desc);
+	SaveLoadTableData slt = SlTableHeaderOrRiff(_train_speed_adaptation_map_desc);
 
 	int index;
 	SignalSpeedType data;
@@ -40,7 +40,7 @@ static void Load_TSAS()
 
 static void Save_TSAS()
 {
-	std::vector<SaveLoad> slt = SlTableHeader(_train_speed_adaptation_map_desc);
+	SaveLoadTableData slt = SlTableHeader(_train_speed_adaptation_map_desc);
 
 	int index = 0;
 	for (auto &it : _signal_speeds) {

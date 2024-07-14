@@ -1092,17 +1092,30 @@ struct TableHeaderSpecialHandler {
 
 bool SlIsTableChunk();
 void SlSkipTableHeader();
-std::vector<SaveLoad> SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecialHandler *special_handler = nullptr);
-std::vector<SaveLoad> SlTableHeaderOrRiff(const NamedSaveLoadTable &slt);
+SaveLoadTableData SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecialHandler *special_handler = nullptr);
+SaveLoadTableData SlTableHeaderOrRiff(const NamedSaveLoadTable &slt);
 void SlSaveTableObjectChunk(const SaveLoadTable &slt);
 void SlLoadTableOrRiffFiltered(const SaveLoadTable &slt);
 void SlLoadTableWithArrayLengthPrefixesMissing();
+
+void SlSetStructListLength(size_t length);
+size_t SlGetStructListLength(size_t limit);
 
 void SlSkipChunkContents();
 
 inline void SlSaveTableObjectChunk(const NamedSaveLoadTable &slt)
 {
 	SlSaveTableObjectChunk(SlTableHeader(slt));
+}
+
+inline void SlLoadTableObjectChunk(const NamedSaveLoadTable &slt)
+{
+	SlLoadTableOrRiffFiltered(SlTableHeader(slt));
+}
+
+inline void SlLoadTableObjectChunk(const SaveLoadTable &slt)
+{
+	SlLoadTableOrRiffFiltered(slt);
 }
 
 inline void SlLoadTableOrRiffFiltered(const NamedSaveLoadTable &slt)

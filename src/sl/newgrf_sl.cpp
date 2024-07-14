@@ -36,7 +36,7 @@ static const NamedSaveLoad _newgrf_mapping_desc_new[] = {
  */
 void Save_NewGRFMapping(const OverrideManagerBase &mapping)
 {
-	std::vector<SaveLoad> sld = SlTableHeader(_newgrf_mapping_desc_new);
+	SaveLoadTableData sld = SlTableHeader(_newgrf_mapping_desc_new);
 
 	for (uint i = 0; i < mapping.GetMaxMapping(); i++) {
 		if (mapping.mappings[i].grfid == 0 &&
@@ -60,7 +60,7 @@ void Load_NewGRFMapping(OverrideManagerBase &mapping)
 	uint max_id = mapping.GetMaxMapping();
 
 	SaveLoadTable slt;
-	std::vector<SaveLoad> sld;
+	SaveLoadTableData sld;
 
 	if (SlXvIsFeaturePresent(XSLFI_NEWGRF_ENTITY_EXTRA) || SlIsTableChunk()) {
 		sld = SlTableHeaderOrRiff(_newgrf_mapping_desc_new);
@@ -91,7 +91,7 @@ static const NamedSaveLoad _grfconfig_desc[] = {
 
 static void Save_NGRF()
 {
-	std::vector<SaveLoad> sld = SlTableHeader(_grfconfig_desc);
+	SaveLoadTableData sld = SlTableHeader(_grfconfig_desc);
 	int index = 0;
 
 	for (GRFConfig *c = _grfconfig; c != nullptr; c = c->next) {
@@ -108,7 +108,7 @@ static void Load_NGRF_common(GRFConfig *&grfconfig)
 	if (SlXvIsFeaturePresent(XSLFI_TABLE_NEWGRF_SL, 1, 1)) {
 		SlLoadTableWithArrayLengthPrefixesMissing();
 	}
-	std::vector<SaveLoad> sld = SlTableHeaderOrRiff(_grfconfig_desc);
+	SaveLoadTableData sld = SlTableHeaderOrRiff(_grfconfig_desc);
 	ClearGRFConfigList(&grfconfig);
 	while (SlIterateArray() != -1) {
 		GRFConfig *c = new GRFConfig();

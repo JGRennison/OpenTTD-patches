@@ -256,6 +256,12 @@ struct MemoryDumper {
 		this->CopyBytes(buffer.data(), buffer.size());
 	}
 
+	/** For limited/special purposes only */
+	inline void UnWriteByte()
+	{
+		this->buf--;
+	}
+
 	inline void RawWriteByte(uint8_t b)
 	{
 		*this->buf++ = b;
@@ -331,6 +337,7 @@ struct MemoryDumper {
 
 	void Flush(SaveFilter &writer);
 	size_t GetSize() const;
+	size_t GetWriteOffsetGeneric() const;
 	void StartAutoLength();
 	std::span<uint8_t> StopAutoLength();
 	bool IsAutoLengthActive() const { return this->saved_buf != nullptr; }

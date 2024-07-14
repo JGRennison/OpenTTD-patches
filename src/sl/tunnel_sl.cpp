@@ -25,7 +25,7 @@ static const NamedSaveLoad _tunnel_desc[] = {
 
 static void Save_TUNN()
 {
-	std::vector<SaveLoad> slt = SlTableHeader(_tunnel_desc);
+	SaveLoadTableData slt = SlTableHeader(_tunnel_desc);
 
 	for (Tunnel *tunnel : Tunnel::Iterate()) {
 		SlSetArrayIndex(tunnel->index);
@@ -35,7 +35,7 @@ static void Save_TUNN()
 
 static void Load_TUNN()
 {
-	std::vector<SaveLoad> slt = SlTableHeaderOrRiff(_tunnel_desc);
+	SaveLoadTableData slt = SlTableHeaderOrRiff(_tunnel_desc);
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {

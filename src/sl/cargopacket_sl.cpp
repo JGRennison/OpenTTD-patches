@@ -181,7 +181,7 @@ NamedSaveLoadTable GetCargoPacketDesc()
  */
 static void Save_CAPA()
 {
-	std::vector<SaveLoad> slt = SlTableHeader(GetCargoPacketDesc());
+	SaveLoadTableData slt = SlTableHeader(GetCargoPacketDesc());
 
 	for (CargoPacket *cp : CargoPacket::Iterate()) {
 		SlSetArrayIndex(cp->index);
@@ -194,7 +194,7 @@ static void Save_CAPA()
  */
 static void Load_CAPA()
 {
-	std::vector<SaveLoad> slt = SlTableHeaderOrRiff(GetCargoPacketDesc());
+	SaveLoadTableData slt = SlTableHeaderOrRiff(GetCargoPacketDesc());
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {

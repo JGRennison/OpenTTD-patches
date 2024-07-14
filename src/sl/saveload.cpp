@@ -230,6 +230,19 @@ size_t MemoryDumper::GetSize() const
 	return this->completed_block_bytes + (this->bufe ? (MEMORY_CHUNK_SIZE - (this->bufe - this->buf)) : 0);
 }
 
+/**
+ * Get the size of the memory dump made so far.
+ * @return The size.
+ */
+size_t MemoryDumper::GetWriteOffsetGeneric() const
+{
+	if (this->saved_buf != nullptr) {
+		return this->buf - this->autolen_buf;
+	} else {
+		return this->GetSize();
+	}
+}
+
 enum SaveLoadBlockFlags {
 	SLBF_TABLE_ARRAY_LENGTH_PREFIX_MISSING, ///< Table chunk arrays were incorrectly saved without the length prefix, skip reading the length prefix on load
 };
@@ -1886,6 +1899,11 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld)
 		case SL_WRITEBYTE: return 1; // a uint8_t is logically of size 1
 		case SL_VEH_INCLUDE: return SlCalcObjLength(object, GetVehicleDescription(VEH_END));
 		case SL_ST_INCLUDE: return SlCalcObjLength(object, GetBaseStationDescription());
+
+		case SL_STRUCT:
+		case SL_STRUCTLIST:
+			NOT_REACHED(); // SlAutolength or similar should be used for sub-structs
+
 		default: NOT_REACHED();
 	}
 	return 0;
@@ -1906,6 +1924,8 @@ static void SlFilterObjectMember(const SaveLoad &sld, std::vector<SaveLoad> &sav
 		case SL_RING:
 		case SL_STDSTR:
 		case SL_VARVEC:
+		case SL_STRUCT:
+		case SL_STRUCTLIST:
 			/* CONDITIONAL saveload types depend on the savegame version */
 			if (!SlIsObjectValidInSavegame(sld)) return;
 
@@ -1921,6 +1941,8 @@ static void SlFilterObjectMember(const SaveLoad &sld, std::vector<SaveLoad> &sav
 						case SL_REFLIST:
 						case SL_PTRRING:
 						case SL_VEC:
+						case SL_STRUCT:
+						case SL_STRUCTLIST:
 							break;
 
 						/* non-ptr types do not require SLA_PTRS or SLA_NULL actions */
@@ -2028,6 +2050,51 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 					break;
 				}
 				case SL_STDSTR: SlStdString(static_cast<std::string *>(ptr), sld.conv); break;
+				default: NOT_REACHED();
+			}
+			break;
+
+		case SL_STRUCT:
+		case SL_STRUCTLIST:
+			switch (action) {
+				case SLA_SAVE: {
+					if (sld.cmd == SL_STRUCT) {
+						/* Number of structs written in the savegame: write a value of 1, change to zero later if nothing after this was written */
+						_sl.dumper->WriteByte(1);
+						size_t offset = _sl.dumper->GetWriteOffsetGeneric();
+						sld.struct_handler->Save(object);
+						if (offset == _sl.dumper->GetWriteOffsetGeneric()) {
+							/* Nothing was actaully written, so it's safe to change the 1 above to 0 */
+							_sl.dumper->UnWriteByte(); // This is fine iff nothing has been written since the WriteByte(1)
+							_sl.dumper->RawWriteByte(0);
+						}
+					} else {
+						sld.struct_handler->Save(object);
+					}
+					break;
+				}
+
+				case SLA_LOAD_CHECK: {
+					if (sld.cmd == SL_STRUCT && SlIsTableChunk()) {
+						if (SlGetStructListLength(1) == 0) break;
+					}
+					sld.struct_handler->LoadCheck(object);
+					break;
+				}
+
+				case SLA_LOAD: {
+					if (sld.cmd == SL_STRUCT && SlIsTableChunk()) {
+						if (SlGetStructListLength(1) == 0) break;
+					}
+					sld.struct_handler->Load(object);
+					break;
+				}
+
+				case SLA_PTRS:
+					sld.struct_handler->FixPointers(object);
+					break;
+
+				case SLA_NULL: break;
 				default: NOT_REACHED();
 			}
 			break;
@@ -2141,34 +2208,18 @@ bool SlIsTableChunk()
 
 void SlSkipTableHeader()
 {
+	uint sub_tables = 0;
 	while (true) {
 		uint8_t type = SlReadByte();
 		if (type == SLE_FILE_END) break;
 
+		if ((type & SLE_FILE_TYPE_MASK) == SLE_FILE_STRUCT) sub_tables++;
+
 		SlString(nullptr, 0, SLE_FILE_STRING | SLE_VAR_NULL);
 	}
-}
-
-/**
- * Calculate the size of the table header.
- * @param slt The SaveLoad table with objects to save/load.
- * @return size of given object.
- */
-static size_t SlCalcTableHeader(const NamedSaveLoadTable &slt)
-{
-	size_t length = 0;
-
-	for (auto &nsld : slt) {
-		if (StrEmpty(nsld.name) || !SlIsObjectValidInSavegame(nsld.save_load)) continue;
-
-		length += 1 + SlCalcStringLen(&nsld.name, 0, SLE_STR);
+	for (uint i = 0; i < sub_tables; i++) {
+		SlSkipTableHeader();
 	}
-
-	length++; // End-of-list entry.
-
-	/* SL_STRUCTLIST, SL_STRUCT not currently implemented */
-
-	return length;
 }
 
 /**
@@ -2198,9 +2249,42 @@ static uint8_t GetSavegameTableFileType(const SaveLoad &sld)
 		case SL_WRITEBYTE:
 			return SLE_FILE_U8;
 
+		case SL_STRUCT:
+		case SL_STRUCTLIST:
+			return SLE_FILE_STRUCT | SLE_FILE_HAS_LENGTH_FIELD;
+
 		default: NOT_REACHED();
 	}
 }
+
+/**
+ * Handler that is assigned when there is a struct read in the savegame which
+ * is not known to the code. This means we are going to skip it.
+ */
+class SaveLoadSkipStructHandler : public SaveLoadStructHandler {
+	void Save(void *) const override
+	{
+		NOT_REACHED();
+	}
+
+	void Load(void *object) const override
+	{
+		size_t length = SlGetStructListLength(UINT32_MAX);
+		for (; length > 0; length--) {
+			SlObjectLoadFiltered(object, this->GetLoadDescription());
+		}
+	}
+
+	void LoadCheck(void *object) const override
+	{
+		this->Load(object);
+	}
+
+	NamedSaveLoadTable GetDescription() const override
+	{
+		return {};
+	}
+};
 
 /**
  * Save or Load a table header.
@@ -2208,12 +2292,12 @@ static uint8_t GetSavegameTableFileType(const SaveLoad &sld)
  * @param slt The NamedSaveLoad table with objects to save/load.
  * @return The ordered SaveLoad array to use.
  */
-std::vector<SaveLoad> SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecialHandler *special_handler)
+SaveLoadTableData SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecialHandler *special_handler)
 {
 	/* You can only use SlTableHeader if you are a CH_TABLE. */
 	assert(_sl.block_mode == CH_TABLE || _sl.block_mode == CH_SPARSE_TABLE);
 
-	std::vector<SaveLoad> saveloads;
+	SaveLoadTableData saveloads;
 
 	switch (_sl.action) {
 		case SLA_LOAD_CHECK:
@@ -2261,15 +2345,20 @@ std::vector<SaveLoad> SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSp
 					DEBUG(sl, _sl.action == SLA_LOAD ? 2 : 6, "Field '%s' of type 0x%02X not found, skipping", key.c_str(), type);
 
 					SaveLoadType saveload_type;
+					SaveLoadStructHandler *struct_handler = nullptr;
 					switch (type & SLE_FILE_TYPE_MASK) {
 						case SLE_FILE_STRING:
 							/* Strings are always marked with SLE_FILE_HAS_LENGTH_FIELD, as they are a list of chars. */
 							saveload_type = SL_STDSTR;
 							break;
 
-						case SLE_FILE_STRUCT:
-							SlErrorCorrupt("SLE_FILE_STRUCT not supported yet");
+						case SLE_FILE_STRUCT: {
+							saveload_type = SL_STRUCTLIST;
+							auto handler = std::make_unique<SaveLoadSkipStructHandler>();
+							struct_handler = handler.get();
+							saveloads.struct_handlers.push_back(std::move(handler));
 							break;
+						}
 
 						default:
 							saveload_type = (type & SLE_FILE_HAS_LENGTH_FIELD) ? SL_ARR : SL_VAR;
@@ -2277,7 +2366,7 @@ std::vector<SaveLoad> SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSp
 					}
 
 					/* We don't know this field, so read to nothing. */
-					saveloads.push_back({ true, saveload_type, ((VarType)type & SLE_FILE_TYPE_MASK) | SLE_VAR_NULL, 1, SL_MIN_VERSION, SL_MAX_VERSION, SLTAG_TABLE_UNKNOWN, nullptr, SlXvFeatureTest() });
+					saveloads.push_back({ true, saveload_type, ((VarType)type & SLE_FILE_TYPE_MASK) | SLE_VAR_NULL, 1, SL_MIN_VERSION, SL_MAX_VERSION, SLTAG_TABLE_UNKNOWN, nullptr, SlXvFeatureTest(), struct_handler });
 					continue;
 				}
 
@@ -2292,17 +2381,28 @@ std::vector<SaveLoad> SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSp
 					SlErrorCorrupt("Field type is different than expected");
 				}
 				saveloads.push_back(*sld_it->save_load);
+
+				if ((type & SLE_FILE_TYPE_MASK) == SLE_FILE_STRUCT) {
+					std::unique_ptr<SaveLoadStructHandler> handler = saveloads.back().struct_handler_factory();
+					saveloads.back().struct_handler = handler.get();
+					saveloads.struct_handlers.push_back(std::move(handler));
+				}
 			}
 
-			/* SL_STRUCTLIST, SL_STRUCT not currently implemented */
+			for (auto &sld : saveloads) {
+				if (sld.cmd == SL_STRUCTLIST || sld.cmd == SL_STRUCT) {
+					sld.struct_handler->table_data = SlTableHeader(sld.struct_handler->GetDescription());
+				}
+			}
 
 			break;
 		}
 
 		case SLA_SAVE: {
-			/* Automatically calculate the length? */
-			if (_sl.need_length != NL_NONE) {
-				SlSetLength(SlCalcTableHeader(slt));
+			const NeedLength orig_need_length = _sl.need_length;
+			if (orig_need_length != NL_NONE) {
+				_sl.need_length = NL_NONE;
+				_sl.dumper->StartAutoLength();
 			}
 
 			for (auto &nsld : slt) {
@@ -2319,7 +2419,21 @@ std::vector<SaveLoad> SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSp
 			/* Add an end-of-header marker. */
 			SlWriteByte(SLE_FILE_END);
 
-			/* SL_STRUCTLIST, SL_STRUCT not currently implemented */
+			for (auto &sld : saveloads) {
+				if (sld.cmd == SL_STRUCTLIST || sld.cmd == SL_STRUCT) {
+					std::unique_ptr<SaveLoadStructHandler> handler = sld.struct_handler_factory();
+					sld.struct_handler = handler.get();
+					sld.struct_handler->table_data = SlTableHeader(sld.struct_handler->GetDescription());
+					saveloads.struct_handlers.push_back(std::move(handler));
+				}
+			}
+
+			if (orig_need_length != NL_NONE) {
+				auto result = _sl.dumper->StopAutoLength();
+				_sl.need_length = orig_need_length;
+				SlSetLength(result.size());
+				_sl.dumper->CopyBytes(result);
+			}
 
 			break;
 		}
@@ -2330,11 +2444,11 @@ std::vector<SaveLoad> SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSp
 	return saveloads;
 }
 
-std::vector<SaveLoad> SlTableHeaderOrRiff(const NamedSaveLoadTable &slt)
+SaveLoadTableData SlTableHeaderOrRiff(const NamedSaveLoadTable &slt)
 {
 	if (SlIsTableChunk()) return SlTableHeader(slt);
 
-	std::vector<SaveLoad> saveloads;
+	SaveLoadTableData saveloads;
 	for (auto &nsld : slt) {
 		if ((nsld.nsl_flags & NSLF_TABLE_ONLY) != 0) continue;
 		SlFilterObjectMember(nsld.save_load, saveloads);
@@ -2361,6 +2475,28 @@ void SlLoadTableOrRiffFiltered(const SaveLoadTable &slt)
 void SlLoadTableWithArrayLengthPrefixesMissing()
 {
 	SetBit(_sl.block_flags, SLBF_TABLE_ARRAY_LENGTH_PREFIX_MISSING);
+}
+
+/**
+ * Set the length of this list.
+ * @param The length of the list.
+ */
+void SlSetStructListLength(size_t length)
+{
+	SlWriteArrayLength(length);
+}
+
+/**
+ * Get the length of this list; if it exceeds the limit, error out.
+ * @param limit The maximum size the list can be.
+ * @return The length of the list.
+ */
+size_t SlGetStructListLength(size_t limit)
+{
+	size_t length = SlReadArrayLength();
+	if (length > limit) SlErrorCorrupt("List exceeds storage size");
+
+	return length;
 }
 
 void SlSkipChunkContents()

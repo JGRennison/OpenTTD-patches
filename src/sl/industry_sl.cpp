@@ -167,7 +167,7 @@ static const NamedSaveLoad _industrytype_builder_desc[] = {
 /** Save industry-type build data. */
 static void Save_ITBL()
 {
-	std::vector<SaveLoad> sld = SlTableHeader(_industrytype_builder_desc);
+	SaveLoadTableData sld = SlTableHeader(_industrytype_builder_desc);
 
 	for (int i = 0; i < NUM_INDUSTRYTYPES; i++) {
 		SlSetArrayIndex(i);
@@ -178,7 +178,7 @@ static void Save_ITBL()
 /** Load industry-type build data. */
 static void Load_ITBL()
 {
-	std::vector<SaveLoad> sld = SlTableHeaderOrRiff(_industrytype_builder_desc);
+	SaveLoadTableData sld = SlTableHeaderOrRiff(_industrytype_builder_desc);
 
 	for (IndustryType it = 0; it < NUM_INDUSTRYTYPES; it++) {
 		_industry_builder.builddata[it].Reset();

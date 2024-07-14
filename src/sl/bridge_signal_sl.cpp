@@ -18,7 +18,7 @@ static const NamedSaveLoad _long_bridge_signal_storage_desc[] = {
 
 static void Load_XBSS()
 {
-	std::vector<SaveLoad> slt = SlTableHeaderOrRiff(_long_bridge_signal_storage_desc);
+	SaveLoadTableData slt = SlTableHeaderOrRiff(_long_bridge_signal_storage_desc);
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
@@ -29,7 +29,7 @@ static void Load_XBSS()
 
 static void Save_XBSS()
 {
-	std::vector<SaveLoad> slt = SlTableHeader(_long_bridge_signal_storage_desc);
+	SaveLoadTableData slt = SlTableHeader(_long_bridge_signal_storage_desc);
 
 	for (auto &it : _long_bridge_signal_sim_map) {
 		LongBridgeSignalStorage &lbss = it.second;
