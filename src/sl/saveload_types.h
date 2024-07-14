@@ -131,6 +131,7 @@ struct SaveLoad {
 	uint16_t length;     ///< (conditional) length of the variable (eg. arrays) (max array size is 65536 elements)
 	SaveLoadVersion version_from; ///< save/load the variable starting from this savegame version
 	SaveLoadVersion version_to;   ///< save/load the variable until this savegame version
+	uint16_t label_tag;  ///< for labelling purposes
 	/* NOTE: This element either denotes the address of the variable for a global
 	 * variable, or the offset within a struct which is then bound to a variable
 	 * during runtime. Decision on which one to use is controlled by the function
@@ -138,6 +139,18 @@ struct SaveLoad {
 	void *address;       ///< address of variable OR offset of variable in the struct (max offset is 65536)
 	size_t size;         ///< the sizeof size.
 	SlXvFeatureTest ext_feature_test;  ///< extended feature test
+};
+
+inline constexpr SaveLoad SLTAG(uint16_t label_tag, SaveLoad save_load)
+{
+	save_load.label_tag = label_tag;
+	return save_load;
+}
+
+enum SaveLoadTags {
+	SLTAG_DEFAULT,
+	SLTAG_TABLE_UNKNOWN,
+	SLTAG_CUSTOM_START,
 };
 
 enum NamedSaveLoadFlags : uint8_t {
