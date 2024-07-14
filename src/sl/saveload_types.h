@@ -263,16 +263,16 @@ public:
 template <class TImpl, class TObject>
 class TypedSaveLoadStructHandler : public SaveLoadStructHandler {
 public:
-	void Save([[maybe_unused]] TObject *object) const {}
+	virtual void Save([[maybe_unused]] TObject *object) const {}
 	void Save(void *object) const override { static_cast<const TImpl *>(this)->Save(static_cast<TObject *>(object)); }
 
-	void Load([[maybe_unused]] TObject *object) const {}
+	virtual void Load([[maybe_unused]] TObject *object) const {}
 	void Load(void *object) const override { static_cast<const TImpl *>(this)->Load(static_cast<TObject *>(object)); }
 
-	void LoadCheck([[maybe_unused]] TObject *object) const {}
+	virtual void LoadCheck([[maybe_unused]] TObject *object) const {}
 	void LoadCheck(void *object) const override { static_cast<const TImpl *>(this)->LoadCheck(static_cast<TObject *>(object)); }
 
-	void FixPointers([[maybe_unused]] TObject *object) const {}
+	virtual void FixPointers([[maybe_unused]] TObject *object) const {}
 	void FixPointers(void *object) const override { static_cast<const TImpl *>(this)->FixPointers(static_cast<TObject *>(object)); }
 };
 
