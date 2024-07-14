@@ -137,7 +137,6 @@ struct SaveLoad {
 	 * during runtime. Decision on which one to use is controlled by the function
 	 * that is called to save it. address: global=true, offset: global=false */
 	void *address;       ///< address of variable OR offset of variable in the struct (max offset is 65536)
-	size_t size;         ///< the sizeof size.
 	SlXvFeatureTest ext_feature_test;  ///< extended feature test
 };
 
