@@ -2456,6 +2456,21 @@ SaveLoadTableData SlTableHeaderOrRiff(const NamedSaveLoadTable &slt)
 	return saveloads;
 }
 
+SaveLoadTableData SlPrepareNamedSaveLoadTableForPtrOrNull(const NamedSaveLoadTable &slt)
+{
+	SaveLoadTableData saveloads;
+	SlFilterNamedSaveLoadTable(slt, saveloads);
+	for (auto &sld : saveloads) {
+		if (sld.cmd == SL_STRUCTLIST || sld.cmd == SL_STRUCT) {
+			std::unique_ptr<SaveLoadStructHandler> handler = sld.struct_handler_factory();
+			sld.struct_handler = handler.get();
+			saveloads.struct_handlers.push_back(std::move(handler));
+			sld.struct_handler->table_data = SlPrepareNamedSaveLoadTableForPtrOrNull(sld.struct_handler->GetDescription());
+		}
+	}
+	return saveloads;
+}
+
 void SlSaveTableObjectChunk(const SaveLoadTable &slt)
 {
 	SlSetArrayIndex(0);
