@@ -1080,6 +1080,7 @@ void SlObject(void *object, const SaveLoadTable &slt);
 bool SlObjectMember(void *object, const SaveLoad &sld);
 
 std::vector<SaveLoad> SlFilterObject(const SaveLoadTable &slt);
+std::vector<SaveLoad> SlFilterNamedSaveLoadTable(const NamedSaveLoadTable &nslt);
 void SlObjectSaveFiltered(void *object, const SaveLoadTable &slt);
 void SlObjectLoadFiltered(void *object, const SaveLoadTable &slt);
 void SlObjectPtrOrNullFiltered(void *object, const SaveLoadTable &slt);

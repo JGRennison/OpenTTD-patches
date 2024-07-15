@@ -1990,6 +1990,21 @@ std::vector<SaveLoad> SlFilterObject(const SaveLoadTable &slt)
 	return save;
 }
 
+void SlFilterNamedSaveLoadTable(const NamedSaveLoadTable &nslt, std::vector<SaveLoad> &save)
+{
+	for (auto &nsld : nslt) {
+		if ((nsld.nsl_flags & NSLF_TABLE_ONLY) != 0) continue;
+		SlFilterObjectMember(nsld.save_load, save);
+	}
+}
+
+std::vector<SaveLoad> SlFilterNamedSaveLoadTable(const NamedSaveLoadTable &nslt)
+{
+	std::vector<SaveLoad> save;
+	SlFilterNamedSaveLoadTable(nslt, save);
+	return save;
+}
+
 template <SaveLoadAction action, bool check_version>
 bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 {
@@ -2449,10 +2464,7 @@ SaveLoadTableData SlTableHeaderOrRiff(const NamedSaveLoadTable &slt)
 	if (SlIsTableChunk()) return SlTableHeader(slt);
 
 	SaveLoadTableData saveloads;
-	for (auto &nsld : slt) {
-		if ((nsld.nsl_flags & NSLF_TABLE_ONLY) != 0) continue;
-		SlFilterObjectMember(nsld.save_load, saveloads);
-	}
+	SlFilterNamedSaveLoadTable(slt, saveloads);
 	return saveloads;
 }
 
