@@ -166,7 +166,7 @@ enum SlXvFeatureIndex {
 	XSLFI_TABLE_MISC_SL,                          ///< Use upstream table format for miscellaneous chunks:
 	                                              ///<     v1: DATE, VIEW, MAPS
 	                                              ///<     v2: SUBS, CMDL, CMPU, ERNW, DEPT, CAPY, ECMY, EIDS, ENGN, GOAL, GRPS, RAIL, OBJS, SIGN, PSAC, STPE, STPA
-	                                              ///<     v3: CAPA
+	                                              ///<     v3: CAPA, CITY
 	XSLFI_TABLE_SCRIPT_SL,                        ///< Use upstream table format for script chunks
 	XSLFI_TABLE_NEWGRF_SL,                        ///< Use upstream table format for NewGRF/ID mapping chunks
 	                                              ///<     In v1, NGRF chunks were saved incorrectly: see SLBF_TABLE_ARRAY_LENGTH_PREFIX_MISSING

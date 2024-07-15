@@ -152,124 +152,18 @@ void UpdateHousesAndTowns(bool cargo_update_required, bool old_map_position)
 	RebuildTownCaches(cargo_update_required, old_map_position);
 }
 
-/** Save and load of towns. */
-static const SaveLoad _town_desc[] = {
-	SLE_CONDVAR(Town, xy,                    SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_6),
-	SLE_CONDVAR(Town, xy,                    SLE_UINT32,                 SLV_6, SL_MAX_VERSION),
-
-	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_3),                   ///< population, no longer in use
-	SLE_CONDNULL(4, SLV_3, SLV_85),                  ///< population, no longer in use
-	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_92),                  ///< num_houses, no longer in use
-
-	SLE_CONDVAR(Town, townnamegrfid,         SLE_UINT32, SLV_66, SL_MAX_VERSION),
-	    SLE_VAR(Town, townnametype,          SLE_UINT16),
-	    SLE_VAR(Town, townnameparts,         SLE_UINT32),
-	SLE_CONDSTR(Town, name,                  SLE_STR | SLF_ALLOW_CONTROL, 0, SLV_84, SL_MAX_VERSION),
-
-	    SLE_VAR(Town, flags,                 SLE_UINT8),
-	SLE_CONDVAR_X(Town, church_count,        SLE_UINT16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TOWN_MULTI_BUILDING)),
-	SLE_CONDVAR_X(Town, stadium_count,       SLE_UINT16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TOWN_MULTI_BUILDING)),
-	SLE_CONDVAR(Town, statues,               SLE_FILE_U8  | SLE_VAR_U16, SL_MIN_VERSION, SLV_104),
-	SLE_CONDVAR(Town, statues,               SLE_UINT16,               SLV_104, SL_MAX_VERSION),
-
-	SLE_CONDNULL(1, SL_MIN_VERSION, SLV_2),                   ///< sort_index, no longer in use
-
-	SLE_CONDVAR(Town, have_ratings,          SLE_FILE_U8  | SLE_VAR_U16, SL_MIN_VERSION, SLV_104),
-	SLE_CONDVAR(Town, have_ratings,          SLE_UINT16,               SLV_104, SL_MAX_VERSION),
-	SLE_CONDARR(Town, ratings,               SLE_INT16, 8,               SL_MIN_VERSION, SLV_104),
-	SLE_CONDARR(Town, ratings,               SLE_INT16, MAX_COMPANIES, SLV_104, SL_MAX_VERSION),
-	SLE_CONDNULL_X(MAX_COMPANIES, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP)),
-	/* failed bribe attempts are stored since savegame format 4 */
-	SLE_CONDARR(Town, unwanted,              SLE_INT8,  8,               SLV_4, SLV_104),
-	SLE_CONDARR(Town, unwanted,              SLE_INT8,  MAX_COMPANIES, SLV_104, SL_MAX_VERSION),
-
-	SLE_CONDVAR(Town, supplied[0].old_max, SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_9),
-	SLE_CONDVAR(Town, supplied[2].old_max, SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_9),
-	SLE_CONDVAR(Town, supplied[0].new_max, SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_9),
-	SLE_CONDVAR(Town, supplied[2].new_max, SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_9),
-	SLE_CONDVAR(Town, supplied[0].old_act, SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_9),
-	SLE_CONDVAR(Town, supplied[2].old_act, SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_9),
-	SLE_CONDVAR(Town, supplied[0].new_act, SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_9),
-	SLE_CONDVAR(Town, supplied[2].new_act, SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_9),
-
-	SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232)),
-	SLE_CONDVAR(Town, supplied[0].old_max, SLE_UINT32,                 SLV_9, SLV_165),
-	SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232)),
-	SLE_CONDVAR(Town, supplied[2].old_max, SLE_UINT32,                 SLV_9, SLV_165),
-	SLE_CONDNULL_X(8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232)),
-	SLE_CONDVAR(Town, supplied[0].new_max, SLE_UINT32,                 SLV_9, SLV_165),
-	SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232)),
-	SLE_CONDVAR(Town, supplied[2].new_max, SLE_UINT32,                 SLV_9, SLV_165),
-	SLE_CONDNULL_X(8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232)),
-	SLE_CONDVAR(Town, supplied[0].old_act, SLE_UINT32,                 SLV_9, SLV_165),
-	SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232)),
-	SLE_CONDVAR(Town, supplied[2].old_act, SLE_UINT32,                 SLV_9, SLV_165),
-	SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232)),
-	SLE_CONDVAR(Town, supplied[0].new_act, SLE_UINT32,                 SLV_9, SLV_165),
-	SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232)),
-	SLE_CONDVAR(Town, supplied[2].new_act, SLE_UINT32,                 SLV_9, SLV_165),
-
-	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_164),                 ///< pct_pass_transported / pct_mail_transported, now computed on the fly
-	SLE_CONDNULL_X(3, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232)),
-
-	SLE_CONDVAR(Town, received[TAE_FOOD].old_act,      SLE_UINT16,                 SL_MIN_VERSION, SLV_165),
-	SLE_CONDVAR(Town, received[TAE_WATER].old_act,     SLE_UINT16,                 SL_MIN_VERSION, SLV_165),
-	SLE_CONDNULL_X(2, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232)),
-	SLE_CONDVAR(Town, received[TAE_FOOD].new_act,      SLE_UINT16,                 SL_MIN_VERSION, SLV_165),
-	SLE_CONDVAR(Town, received[TAE_WATER].new_act,     SLE_UINT16,                 SL_MIN_VERSION, SLV_165),
-	SLE_CONDNULL_X(2, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232)),
-
-	SLE_CONDARR(Town, goal, SLE_UINT32, NUM_TAE, SLV_165, SL_MAX_VERSION),
-
-	SLE_CONDSSTR(Town, text,                 SLE_STR | SLF_ALLOW_CONTROL, SLV_168, SL_MAX_VERSION),
-
-	SLE_CONDVAR(Town, time_until_rebuild,    SLE_FILE_U8 | SLE_VAR_U16,  SL_MIN_VERSION, SLV_54),
-	SLE_CONDVAR(Town, grow_counter,          SLE_FILE_U8 | SLE_VAR_U16,  SL_MIN_VERSION, SLV_54),
-	SLE_CONDVAR(Town, growth_rate,           SLE_FILE_U8 | SLE_VAR_I16,  SL_MIN_VERSION, SLV_54),
-
-	SLE_CONDNULL_X(2, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP)),
-	SLE_CONDVAR(Town, time_until_rebuild,    SLE_UINT16,                SLV_54, SL_MAX_VERSION),
-	SLE_CONDNULL_X(2, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP, SL_JOKER_1_26)),
-	SLE_CONDVAR(Town, grow_counter,          SLE_UINT16,                SLV_54, SL_MAX_VERSION),
-
-	SLE_CONDVAR(Town, growth_rate,           SLE_FILE_I16 | SLE_VAR_U16, SLV_54, SLV_165),
-	SLE_CONDNULL_X(2, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP, SL_JOKER_1_26)),
-	SLE_CONDVAR(Town, growth_rate,           SLE_UINT16,                 SLV_165, SL_MAX_VERSION),
-
-	    SLE_VAR(Town, fund_buildings_months, SLE_UINT8),
-	    SLE_VAR(Town, road_build_months,     SLE_UINT8),
-
-	SLE_CONDVAR(Town, exclusivity,           SLE_UINT8,                  SLV_2, SL_MAX_VERSION),
-	SLE_CONDNULL_X(1, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232)),
-	SLE_CONDVAR(Town, exclusive_counter,     SLE_UINT8,                  SLV_2, SL_MAX_VERSION),
-
-	SLE_CONDVAR(Town, larger_town,           SLE_BOOL,                  SLV_56, SL_MAX_VERSION),
-	SLE_CONDVAR(Town, layout,                SLE_UINT8,                SLV_113, SL_MAX_VERSION),
-
-	SLE_CONDREFLIST(Town, psa_list,          REF_STORAGE,              SLV_161, SL_MAX_VERSION),
-
-	SLE_CONDNULL(4, SLV_166, SLV_EXTEND_CARGOTYPES),  ///< cargo_produced, no longer in use
-	SLE_CONDNULL(8, SLV_EXTEND_CARGOTYPES, SLV_REMOVE_TOWN_CARGO_CACHE),  ///< cargo_produced, no longer in use
-	SLE_CONDNULL(30, SLV_2, SLV_REMOVE_TOWN_CARGO_CACHE), ///< old reserved space
-
-	SLE_CONDVAR_X(Town, override_flags,      SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TOWN_SETTING_OVERRIDE)),
-	SLE_CONDVAR_X(Town, override_values,     SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TOWN_SETTING_OVERRIDE)),
-	SLE_CONDVAR_X(Town, build_tunnels,       SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TOWN_SETTING_OVERRIDE)),
-	SLE_CONDVAR_X(Town, max_road_slope,      SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TOWN_SETTING_OVERRIDE)),
+static const NamedSaveLoad _town_supplied_desc[] = {
+	NSL("old_max", SLE_CONDVAR(TransportedCargoStat<uint32_t>, old_max, SLE_UINT32, SLV_165, SL_MAX_VERSION)),
+	NSL("new_max", SLE_CONDVAR(TransportedCargoStat<uint32_t>, new_max, SLE_UINT32, SLV_165, SL_MAX_VERSION)),
+	NSL("old_act", SLE_CONDVAR(TransportedCargoStat<uint32_t>, old_act, SLE_UINT32, SLV_165, SL_MAX_VERSION)),
+	NSL("new_act", SLE_CONDVAR(TransportedCargoStat<uint32_t>, new_act, SLE_UINT32, SLV_165, SL_MAX_VERSION)),
 };
 
-static const SaveLoad _town_supplied_desc[] = {
-	SLE_CONDVAR(TransportedCargoStat<uint32_t>, old_max, SLE_UINT32, SLV_165, SL_MAX_VERSION),
-	SLE_CONDVAR(TransportedCargoStat<uint32_t>, new_max, SLE_UINT32, SLV_165, SL_MAX_VERSION),
-	SLE_CONDVAR(TransportedCargoStat<uint32_t>, old_act, SLE_UINT32, SLV_165, SL_MAX_VERSION),
-	SLE_CONDVAR(TransportedCargoStat<uint32_t>, new_act, SLE_UINT32, SLV_165, SL_MAX_VERSION),
-};
-
-static const SaveLoad _town_received_desc[] = {
-	SLE_CONDVAR(TransportedCargoStat<uint16_t>, old_max, SLE_UINT16, SLV_165, SL_MAX_VERSION),
-	SLE_CONDVAR(TransportedCargoStat<uint16_t>, new_max, SLE_UINT16, SLV_165, SL_MAX_VERSION),
-	SLE_CONDVAR(TransportedCargoStat<uint16_t>, old_act, SLE_UINT16, SLV_165, SL_MAX_VERSION),
-	SLE_CONDVAR(TransportedCargoStat<uint16_t>, new_act, SLE_UINT16, SLV_165, SL_MAX_VERSION),
+static const NamedSaveLoad _town_received_desc[] = {
+	NSL("old_max", SLE_CONDVAR(TransportedCargoStat<uint16_t>, old_max, SLE_UINT16, SLV_165, SL_MAX_VERSION)),
+	NSL("new_max", SLE_CONDVAR(TransportedCargoStat<uint16_t>, new_max, SLE_UINT16, SLV_165, SL_MAX_VERSION)),
+	NSL("old_act", SLE_CONDVAR(TransportedCargoStat<uint16_t>, old_act, SLE_UINT16, SLV_165, SL_MAX_VERSION)),
+	NSL("new_act", SLE_CONDVAR(TransportedCargoStat<uint16_t>, new_act, SLE_UINT16, SLV_165, SL_MAX_VERSION)),
 };
 
 static const SaveLoad _town_received_desc_spp[] = {
@@ -279,16 +173,184 @@ static const SaveLoad _town_received_desc_spp[] = {
 	SLE_CONDVAR(TransportedCargoStat<uint16_t>, new_act, SLE_FILE_U32 | SLE_VAR_U16, SLV_165, SL_MAX_VERSION),
 };
 
-std::vector<SaveLoad> _filtered_town_desc;
-std::vector<SaveLoad> _filtered_town_supplied_desc;
-std::vector<SaveLoad> _filtered_town_received_desc;
+struct TownSuppliedStructHandler final : public TypedSaveLoadStructHandler<TownSuppliedStructHandler, Town> {
+	NamedSaveLoadTable GetDescription() const override
+	{
+		return _town_supplied_desc;
+	}
 
-static void SetupDescs_TOWN()
-{
-	_filtered_town_desc = SlFilterObject(_town_desc);
-	_filtered_town_supplied_desc = SlFilterObject(_town_supplied_desc);
-	_filtered_town_received_desc = SlFilterObject(_town_received_desc);
-}
+	void Save(Town *t) const override
+	{
+		SlSetStructListLength(std::size(t->supplied));
+		for (auto &supplied : t->supplied) {
+			SlObjectSaveFiltered(&supplied, this->GetLoadDescription());
+		}
+	}
+
+	void Load(Town *t) const override
+	{
+		size_t count = SlGetStructListLength(std::size(t->supplied));
+		for (size_t i = 0; i < count; i++) {
+			SlObjectLoadFiltered(&t->supplied[i], this->GetLoadDescription());
+		}
+	}
+};
+
+struct TownReceivedStructHandler final : public TypedSaveLoadStructHandler<TownReceivedStructHandler, Town> {
+	NamedSaveLoadTable GetDescription() const override
+	{
+		return _town_received_desc;
+	}
+
+	void Save(Town *t) const override
+	{
+		SlSetStructListLength(std::size(t->received));
+		for (auto &received : t->received) {
+			SlObjectSaveFiltered(&received, this->GetLoadDescription());
+		}
+	}
+
+	void Load(Town *t) const override
+	{
+		size_t count = SlGetStructListLength(std::size(t->received));
+		for (size_t i = 0; i < count; i++) {
+			SlObjectLoadFiltered(&t->received[i], this->GetLoadDescription());
+		}
+	}
+};
+
+struct TownSettingsOverrideStructHandler final : public TypedSaveLoadStructHandler<TownSettingsOverrideStructHandler, Town> {
+	NamedSaveLoadTable GetDescription() const override
+	{
+		static const NamedSaveLoad _settings_override_desc[] = {
+			NSL("override_flags",  SLE_VAR(Town, override_flags,      SLE_UINT8)),
+			NSL("override_values", SLE_VAR(Town, override_values,     SLE_UINT8)),
+			NSL("build_tunnels",   SLE_VAR(Town, build_tunnels,       SLE_UINT8)),
+			NSL("max_road_slope",  SLE_VAR(Town, max_road_slope,      SLE_UINT8)),
+		};
+		return _settings_override_desc;
+	}
+
+	void Save(Town *t) const override
+	{
+		SlObjectSaveFiltered(t, this->GetLoadDescription());
+	}
+
+	void Load(Town *t) const override
+	{
+		SlObjectLoadFiltered(t, this->GetLoadDescription());
+	}
+};
+
+/** Save and load of towns. */
+static const NamedSaveLoad _town_desc[] = {
+	NSL("xy", SLE_CONDVAR(Town, xy,                    SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_6)),
+	NSL("xy", SLE_CONDVAR(Town, xy,                    SLE_UINT32,                 SLV_6, SL_MAX_VERSION)),
+
+	NSL("", SLE_CONDNULL(2, SL_MIN_VERSION, SLV_3)),                   ///< population, no longer in use
+	NSL("", SLE_CONDNULL(4, SLV_3, SLV_85)),                           ///< population, no longer in use
+	NSL("", SLE_CONDNULL(2, SL_MIN_VERSION, SLV_92)),                  ///< num_houses, no longer in use
+
+	NSL("townnamegrfid",   SLE_CONDVAR(Town, townnamegrfid,         SLE_UINT32, SLV_66, SL_MAX_VERSION)),
+	NSL("townnametype",        SLE_VAR(Town, townnametype,          SLE_UINT16)),
+	NSL("townnameparts",       SLE_VAR(Town, townnameparts,         SLE_UINT32)),
+	NSL("name",            SLE_CONDSTR(Town, name,                  SLE_STR | SLF_ALLOW_CONTROL, 0, SLV_84, SL_MAX_VERSION)),
+
+	NSL("flags",               SLE_VAR(Town, flags,                 SLE_UINT8)),
+	NSL("church_count",  SLE_CONDVAR_X(Town, church_count,        SLE_UINT16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TOWN_MULTI_BUILDING))),
+	NSL("stadium_count", SLE_CONDVAR_X(Town, stadium_count,       SLE_UINT16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TOWN_MULTI_BUILDING))),
+	NSL("statues",         SLE_CONDVAR(Town, statues,               SLE_FILE_U8  | SLE_VAR_U16, SL_MIN_VERSION, SLV_104)),
+	NSL("statues",         SLE_CONDVAR(Town, statues,               SLE_UINT16,               SLV_104, SL_MAX_VERSION)),
+
+	NSL("", SLE_CONDNULL(1, SL_MIN_VERSION, SLV_2)),                   ///< sort_index, no longer in use
+
+	NSL("have_ratings",    SLE_CONDVAR(Town, have_ratings,          SLE_FILE_U8  | SLE_VAR_U16, SL_MIN_VERSION, SLV_104)),
+	NSL("have_ratings",    SLE_CONDVAR(Town, have_ratings,          SLE_UINT16,               SLV_104, SL_MAX_VERSION)),
+	NSL("ratings",         SLE_CONDARR(Town, ratings,               SLE_INT16, 8,               SL_MIN_VERSION, SLV_104)),
+	NSL("ratings",         SLE_CONDARR(Town, ratings,               SLE_INT16, MAX_COMPANIES, SLV_104, SL_MAX_VERSION)),
+	NSL("", SLE_CONDNULL_X(MAX_COMPANIES, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP))),
+	/* failed bribe attempts are stored since savegame format 4 */
+	NSL("unwanted",        SLE_CONDARR(Town, unwanted,              SLE_INT8,  8,               SLV_4, SLV_104)),
+	NSL("unwanted",        SLE_CONDARR(Town, unwanted,              SLE_INT8,  MAX_COMPANIES, SLV_104, SL_MAX_VERSION)),
+
+	NSL("", SLE_CONDVAR(Town, supplied[0].old_max, SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_9)),
+	NSL("", SLE_CONDVAR(Town, supplied[2].old_max, SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_9)),
+	NSL("", SLE_CONDVAR(Town, supplied[0].new_max, SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_9)),
+	NSL("", SLE_CONDVAR(Town, supplied[2].new_max, SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_9)),
+	NSL("", SLE_CONDVAR(Town, supplied[0].old_act, SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_9)),
+	NSL("", SLE_CONDVAR(Town, supplied[2].old_act, SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_9)),
+	NSL("", SLE_CONDVAR(Town, supplied[0].new_act, SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_9)),
+	NSL("", SLE_CONDVAR(Town, supplied[2].new_act, SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_9)),
+
+	NSL("",                                SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232))),
+	NSL("supplied[CT_PASSENGERS].old_max", SLE_CONDVAR(Town, supplied[0].old_max, SLE_UINT32,                 SLV_9, SLV_165)),
+	NSL("",                                SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232))),
+	NSL("supplied[CT_MAIL].old_max",       SLE_CONDVAR(Town, supplied[2].old_max, SLE_UINT32,                 SLV_9, SLV_165)),
+	NSL("",                                SLE_CONDNULL_X(8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232))),
+	NSL("supplied[CT_PASSENGERS].new_max", SLE_CONDVAR(Town, supplied[0].new_max, SLE_UINT32,                 SLV_9, SLV_165)),
+	NSL("",                                SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232))),
+	NSL("supplied[CT_MAIL].new_max",       SLE_CONDVAR(Town, supplied[2].new_max, SLE_UINT32,                 SLV_9, SLV_165)),
+	NSL("",                                SLE_CONDNULL_X(8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232))),
+	NSL("supplied[CT_PASSENGERS].old_act", SLE_CONDVAR(Town, supplied[0].old_act, SLE_UINT32,                 SLV_9, SLV_165)),
+	NSL("",                                SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232))),
+	NSL("supplied[CT_MAIL].old_act",       SLE_CONDVAR(Town, supplied[2].old_act, SLE_UINT32,                 SLV_9, SLV_165)),
+	NSL("",                                SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232))),
+	NSL("supplied[CT_PASSENGERS].new_act", SLE_CONDVAR(Town, supplied[0].new_act, SLE_UINT32,                 SLV_9, SLV_165)),
+	NSL("",                                SLE_CONDNULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232))),
+	NSL("supplied[CT_MAIL].new_act",       SLE_CONDVAR(Town, supplied[2].new_act, SLE_UINT32,                 SLV_9, SLV_165)),
+
+	NSL("",                                SLE_CONDNULL(2, SL_MIN_VERSION, SLV_164)), ///< pct_pass_transported / pct_mail_transported, now computed on the fly
+	NSL("",                                SLE_CONDNULL_X(3, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232))),
+
+	NSL("received[TE_FOOD].old_act",       SLE_CONDVAR(Town, received[TAE_FOOD].old_act,      SLE_UINT16,                 SL_MIN_VERSION, SLV_165)),
+	NSL("received[TAE_WATER].old_act",     SLE_CONDVAR(Town, received[TAE_WATER].old_act,     SLE_UINT16,                 SL_MIN_VERSION, SLV_165)),
+	NSL("",                                SLE_CONDNULL_X(2, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232))),
+	NSL("received[TE_FOOD].new_act",       SLE_CONDVAR(Town, received[TAE_FOOD].new_act,      SLE_UINT16,                 SL_MIN_VERSION, SLV_165)),
+	NSL("received[TE_WATER].new_act",      SLE_CONDVAR(Town, received[TAE_WATER].new_act,     SLE_UINT16,                 SL_MIN_VERSION, SLV_165)),
+	NSL("",                                SLE_CONDNULL_X(2, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232))),
+
+	NSL("goal",                            SLE_CONDARR(Town, goal, SLE_UINT32, NUM_TAE, SLV_165, SL_MAX_VERSION)),
+
+	NSL("text",                            SLE_CONDSSTR(Town, text, SLE_STR | SLF_ALLOW_CONTROL, SLV_168, SL_MAX_VERSION)),
+
+	NSL("time_until_rebuild",              SLE_CONDVAR(Town, time_until_rebuild,    SLE_FILE_U8 | SLE_VAR_U16,  SL_MIN_VERSION, SLV_54)),
+	NSL("grow_counter",                    SLE_CONDVAR(Town, grow_counter,          SLE_FILE_U8 | SLE_VAR_U16,  SL_MIN_VERSION, SLV_54)),
+	NSL("growth_rate",                     SLE_CONDVAR(Town, growth_rate,           SLE_FILE_U8 | SLE_VAR_I16,  SL_MIN_VERSION, SLV_54)),
+
+	NSL("",                                SLE_CONDNULL_X(2, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP))),
+	NSL("time_until_rebuild",              SLE_CONDVAR(Town, time_until_rebuild,    SLE_UINT16,                SLV_54, SL_MAX_VERSION)),
+	NSL("",                                SLE_CONDNULL_X(2, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP, SL_JOKER_1_26))),
+	NSL("grow_counter",                    SLE_CONDVAR(Town, grow_counter,          SLE_UINT16,                SLV_54, SL_MAX_VERSION)),
+
+	NSL("growth_rate",                     SLE_CONDVAR(Town, growth_rate,           SLE_FILE_I16 | SLE_VAR_U16, SLV_54, SLV_165)),
+	NSL("",                                SLE_CONDNULL_X(2, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP, SL_JOKER_1_26))),
+	NSL("growth_rate",                     SLE_CONDVAR(Town, growth_rate,           SLE_UINT16,                 SLV_165, SL_MAX_VERSION)),
+
+	NSL("fund_buildings_months",           SLE_VAR(Town, fund_buildings_months, SLE_UINT8)),
+	NSL("road_build_months",               SLE_VAR(Town, road_build_months,     SLE_UINT8)),
+
+	NSL("exclusivity",                     SLE_CONDVAR(Town, exclusivity,           SLE_UINT8,                  SLV_2, SL_MAX_VERSION)),
+	NSL("",                                SLE_CONDNULL_X(1, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232))),
+	NSL("exclusive_counter",               SLE_CONDVAR(Town, exclusive_counter,     SLE_UINT8,                  SLV_2, SL_MAX_VERSION)),
+
+	NSL("larger_town",                     SLE_CONDVAR(Town, larger_town,           SLE_BOOL,                  SLV_56, SL_MAX_VERSION)),
+	NSL("layout",                          SLE_CONDVAR(Town, layout,                SLE_UINT8,                SLV_113, SL_MAX_VERSION)),
+
+	NSL("psa_list",                        SLE_CONDREFLIST(Town, psa_list,          REF_STORAGE,              SLV_161, SL_MAX_VERSION)),
+
+	NSL("", SLE_CONDNULL(4, SLV_166, SLV_EXTEND_CARGOTYPES)),  ///< cargo_produced, no longer in use
+	NSL("", SLE_CONDNULL(8, SLV_EXTEND_CARGOTYPES, SLV_REMOVE_TOWN_CARGO_CACHE)),  ///< cargo_produced, no longer in use
+	NSL("", SLE_CONDNULL(30, SLV_2, SLV_REMOVE_TOWN_CARGO_CACHE)), ///< old reserved space
+
+	NSL("", SLE_CONDVAR_X(Town, override_flags,      SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TOWN_SETTING_OVERRIDE))),
+	NSL("", SLE_CONDVAR_X(Town, override_values,     SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TOWN_SETTING_OVERRIDE))),
+	NSL("", SLE_CONDVAR_X(Town, build_tunnels,       SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TOWN_SETTING_OVERRIDE))),
+	NSL("", SLE_CONDVAR_X(Town, max_road_slope,      SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TOWN_SETTING_OVERRIDE))),
+
+	NSLT_STRUCTLIST<TownSuppliedStructHandler>("supplied"),
+	NSLT_STRUCTLIST<TownReceivedStructHandler>("received"),
+	NSLT_STRUCT<TownSettingsOverrideStructHandler>("setting_overrides"),
+};
 
 static void Save_HIDS()
 {
@@ -300,52 +362,50 @@ static void Load_HIDS()
 	Load_NewGRFMapping(_house_mngr);
 }
 
-static void RealSave_Town(Town *t)
-{
-	SlObjectSaveFiltered(t, _filtered_town_desc);
-
-	for (CargoID i = 0; i < NUM_CARGO; i++) {
-		SlObjectSaveFiltered(&t->supplied[i], _filtered_town_supplied_desc);
-	}
-	for (int i = TAE_BEGIN; i < NUM_TAE; i++) {
-		SlObjectSaveFiltered(&t->received[i], _filtered_town_received_desc);
-	}
-}
-
 static void Save_TOWN()
 {
-	SetupDescs_TOWN();
+	SaveLoadTableData slt = SlTableHeader(_town_desc);
+
 	for (Town *t : Town::Iterate()) {
 		SlSetArrayIndex(t->index);
-		SlAutolength(RealSave_Town, t);
+		SlObjectSaveFiltered(t, slt);
 	}
 }
 
 static void Load_TOWN()
 {
-	SetupDescs_TOWN();
-	int index;
-	uint num_cargo = IsSavegameVersionBefore(SLV_EXTEND_CARGOTYPES) ? 32 : NUM_CARGO;
+	SaveLoadTableData slt = SlTableHeaderOrRiff(_town_desc);
 
+	std::vector<SaveLoad> supplied_desc;
+	std::vector<SaveLoad> received_desc;
+	if (!SlIsTableChunk()) {
+		supplied_desc = SlFilterNamedSaveLoadTable(_town_supplied_desc);
+		if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
+			received_desc = SlFilterObject(_town_received_desc_spp);
+		} else {
+			received_desc = SlFilterNamedSaveLoadTable(_town_received_desc);
+		}
+	}
+
+	uint num_cargo = IsSavegameVersionBefore(SLV_EXTEND_CARGOTYPES) ? 32 : NUM_CARGO;
+	static_assert(static_cast<uint>(TAE_BEGIN) == 0 && static_cast<uint>(NUM_TAE) == 6);
+
+	int index;
 	while ((index = SlIterateArray()) != -1) {
 		Town *t = new (index) Town();
-		SlObjectLoadFiltered(t, _filtered_town_desc);
-
-		for (CargoID i = 0; i < num_cargo; i++) {
-			SlObjectLoadFiltered(&t->supplied[i], _filtered_town_supplied_desc);
-		}
-		if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
-			for (int i = TAE_BEGIN; i < NUM_TAE; i++) {
-				SlObject(&t->received[i], _town_received_desc_spp);
-			}
-		} else {
-			for (int i = TAE_BEGIN; i < NUM_TAE; i++) {
-				SlObjectLoadFiltered(&t->received[i], _filtered_town_received_desc);
-			}
-		}
+		SlObjectLoadFiltered(t, slt);
 
 		if (t->townnamegrfid == 0 && !IsInsideMM(t->townnametype, SPECSTR_TOWNNAME_START, SPECSTR_TOWNNAME_LAST + 1) && GetStringTab(t->townnametype) != TEXT_TAB_OLD_CUSTOM) {
 			SlErrorCorrupt("Invalid town name generator");
+		}
+
+		if (SlIsTableChunk()) continue;
+
+		for (CargoID i = 0; i < num_cargo; i++) {
+			SlObjectLoadFiltered(&t->supplied[i], supplied_desc);
+		}
+		for (int i = TAE_BEGIN; i < NUM_TAE; i++) {
+			SlObjectLoadFiltered(&t->received[i], received_desc);
 		}
 
 		if ((!IsSavegameVersionBefore(SLV_166) && IsSavegameVersionBefore(SLV_REMOVE_TOWN_CARGO_CACHE)) || SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_MATRIX)) {
@@ -365,9 +425,10 @@ static void Ptrs_TOWN()
 	/* Don't run when savegame version lower than 161. */
 	if (IsSavegameVersionBefore(SLV_161)) return;
 
-	SetupDescs_TOWN();
+	SaveLoadTableData slt = SlPrepareNamedSaveLoadTableForPtrOrNull(_town_desc);
+
 	for (Town *t : Town::Iterate()) {
-		SlObjectPtrOrNullFiltered(t, _filtered_town_desc);
+		SlObjectPtrOrNullFiltered(t, slt);
 	}
 }
 
@@ -455,7 +516,7 @@ static ChunkSaveLoadSpecialOpResult Special_TNNC(uint32_t chunk_id, ChunkSaveLoa
 /** Chunk handler for towns. */
 static const ChunkHandler town_chunk_handlers[] = {
 	{ 'HIDS', Save_HIDS, Load_HIDS, nullptr,   nullptr, CH_TABLE },
-	{ 'CITY', Save_TOWN, Load_TOWN, Ptrs_TOWN, nullptr, CH_ARRAY },
+	{ 'CITY', Save_TOWN, Load_TOWN, Ptrs_TOWN, nullptr, CH_TABLE },
 	{ 'TNNC', Save_TNNC, Load_TNNC, nullptr,   nullptr, CH_RIFF,  Special_TNNC },
 };
 
