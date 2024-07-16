@@ -163,6 +163,7 @@ enum SlXvFeatureIndex {
 	XSLFI_VEHICLE_ECONOMY_AGE,                    ///< See: SLV_VEHICLE_ECONOMY_AGE (PR #12141)
 
 	XSLFI_TABLE_PATS,                             ///< Use upstream table format for PATS
+	XSLFI_TABLE_PLYR,                             ///< Use table format for PLYR
 	XSLFI_TABLE_MISC_SL,                          ///< Use upstream table format for miscellaneous chunks:
 	                                              ///<     v1: DATE, VIEW, MAPS
 	                                              ///<     v2: SUBS, CMDL, CMPU, ERNW, DEPT, CAPY, ECMY, EIDS, ENGN, GOAL, GRPS, RAIL, OBJS, SIGN, PSAC, STPE, STPA

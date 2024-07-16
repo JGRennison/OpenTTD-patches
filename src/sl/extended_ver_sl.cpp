@@ -214,6 +214,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_VEHICLE_ECONOMY_AGE,              XSCF_NULL,                1,   1, "slv_vehicle_economy_age",          nullptr, nullptr, nullptr          },
 
 	{ XSLFI_TABLE_PATS,                       XSCF_NULL,                1,   1, "table_pats",                       nullptr, nullptr, nullptr          },
+	{ XSLFI_TABLE_PLYR,                       XSCF_NULL,                1,   1, "table_plyr",                       nullptr, nullptr, nullptr          },
 	{ XSLFI_TABLE_MISC_SL,                    XSCF_NULL,                3,   3, "table_misc_sl",                    nullptr, nullptr, nullptr          },
 	{ XSLFI_TABLE_SCRIPT_SL,                  XSCF_NULL,                1,   1, "table_script_sl",                  nullptr, nullptr, nullptr          },
 	{ XSLFI_TABLE_NEWGRF_SL,                  XSCF_NULL,                2,   2, "table_newgrf_sl",                  nullptr, nullptr, nullptr          },

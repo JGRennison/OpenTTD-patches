@@ -3706,21 +3706,6 @@ static const SaveLoad _settings_ext_load_desc[] = {
 };
 
 /**
- * Internal structure used in SaveSettingsPlyx()
- */
-struct SettingsExtSave {
-	uint32_t flags;
-	const char *name;
-	uint32_t setting_length;
-};
-
-static const SaveLoad _settings_ext_save_desc[] = {
-	SLE_VAR(SettingsExtSave, flags,          SLE_UINT32),
-	SLE_STR(SettingsExtSave, name,           SLE_STR, 0),
-	SLE_VAR(SettingsExtSave, setting_length, SLE_UINT32),
-};
-
-/**
  * Load handler for settings which go in the PATX chunk
  * @param object can be either nullptr in which case we load global variables or
  * a pointer to a struct which is getting saved
@@ -3865,65 +3850,17 @@ void LoadSettingsPlyx(bool skip)
 	}
 }
 
-/**
- * Save handler for settings which go in the PLYX chunk
- */
-void SaveSettingsPlyx()
+std::vector<NamedSaveLoad> FillPlyrExtraSettingsDesc()
 {
-	SettingsExtSave current_setting;
+	std::vector<NamedSaveLoad> settings_desc;
 
-	std::vector<uint32_t> company_setting_counts;
-
-	size_t length = 8;
-	uint32_t companies_count = 0;
-
-	for (Company *c : Company::Iterate()) {
-		length += 12;
-		companies_count++;
-		uint32_t setting_count = 0;
-		for (auto &sd : _company_settings) {
-			if (sd->patx_name == nullptr) continue;
-			uint32_t setting_length = (uint32_t)SlCalcObjMemberLength(&(c->settings), sd->save);
-			if (!setting_length) continue;
-
-			current_setting.name = sd->patx_name;
-
-			// add length of setting header
-			length += SlCalcObjLength(&current_setting, _settings_ext_save_desc);
-
-			// add length of actual setting
-			length += setting_length;
-
-			setting_count++;
-		}
-		company_setting_counts.push_back(setting_count);
-	}
-	SlSetLength(length);
-
-	SlWriteUint32(0);                          // flags
-	SlWriteUint32(companies_count);            // companies count
-
-	size_t index = 0;
-	for (Company *c : Company::Iterate()) {
-		length += 12;
-		companies_count++;
-		SlWriteUint32(c->index);               // company ID
-		SlWriteUint32(0);                      // flags
-		SlWriteUint32(company_setting_counts[index]); // setting count
-		index++;
-
-		for (auto &sd : _company_settings) {
-			if (sd->patx_name == nullptr) continue;
-			uint32_t setting_length = (uint32_t)SlCalcObjMemberLength(&(c->settings), sd->save);
-			if (!setting_length) continue;
-
-			current_setting.flags = 0;
-			current_setting.name = sd->patx_name;
-			current_setting.setting_length = setting_length;
-			SlObject(&current_setting, _settings_ext_save_desc);
-			SlObjectMember(&(c->settings), sd->save);
+	for (auto &sd : _company_settings) {
+		if (sd->patx_name != nullptr) {
+			settings_desc.push_back(NSL(sd->patx_name, sd->save));
 		}
 	}
+
+	return settings_desc;
 }
 
 static void Load_OPTS()
