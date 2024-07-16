@@ -1093,9 +1093,9 @@ struct TableHeaderSpecialHandler {
 
 bool SlIsTableChunk();
 void SlSkipTableHeader();
-SaveLoadTableData SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecialHandler *special_handler = nullptr);
-SaveLoadTableData SlTableHeaderOrRiff(const NamedSaveLoadTable &slt);
-SaveLoadTableData SlPrepareNamedSaveLoadTableForPtrOrNull(const NamedSaveLoadTable &slt);
+[[nodiscard]] SaveLoadTableData SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecialHandler *special_handler = nullptr);
+[[nodiscard]] SaveLoadTableData SlTableHeaderOrRiff(const NamedSaveLoadTable &slt);
+[[nodiscard]] SaveLoadTableData SlPrepareNamedSaveLoadTableForPtrOrNull(const NamedSaveLoadTable &slt);
 void SlSaveTableObjectChunk(const SaveLoadTable &slt);
 void SlLoadTableOrRiffFiltered(const SaveLoadTable &slt);
 void SlLoadTableWithArrayLengthPrefixesMissing();
