@@ -107,11 +107,7 @@ static void Load_CHTS()
 		UnknownCheatHandler uch{};
 		SaveLoadTableData slt = SlTableHeader(GetCheatsDesc(false), &uch);
 
-		if (SlIterateArray() == -1) return;
-		SlObjectLoadFiltered(&_cheats, slt);
-		if (SlIterateArray() != -1) {
-			SlErrorCorruptFmt("Too many CHTS entries");
-		}
+		SlLoadTableObjectChunk(slt, &_cheats);
 	} else {
 		size_t count = SlGetFieldLength();
 		SaveLoadTableData slt = SlTableHeaderOrRiff(GetCheatsDesc(false));

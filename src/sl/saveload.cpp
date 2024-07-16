@@ -2483,16 +2483,16 @@ SaveLoadTableData SlPrepareNamedSaveLoadTableForPtrOrNull(const NamedSaveLoadTab
 	return saveloads;
 }
 
-void SlSaveTableObjectChunk(const SaveLoadTable &slt)
+void SlSaveTableObjectChunk(const SaveLoadTable &slt, void *object)
 {
 	SlSetArrayIndex(0);
-	SlObjectSaveFiltered(nullptr, slt);
+	SlObjectSaveFiltered(object, slt);
 }
 
-void SlLoadTableOrRiffFiltered(const SaveLoadTable &slt)
+void SlLoadTableOrRiffFiltered(const SaveLoadTable &slt, void *object)
 {
 	if (SlIsTableChunk() && SlIterateArray() == -1) return;
-	SlObjectLoadFiltered(nullptr, slt);
+	SlObjectLoadFiltered(object, slt);
 	if (SlIsTableChunk() && SlIterateArray() != -1) {
 		uint32_t id = _sl.current_chunk_id;
 		SlErrorCorruptFmt("Too many %s entries", ChunkIDDumper()(id));

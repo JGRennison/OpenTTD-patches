@@ -1096,8 +1096,8 @@ void SlSkipTableHeader();
 [[nodiscard]] SaveLoadTableData SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecialHandler *special_handler = nullptr);
 [[nodiscard]] SaveLoadTableData SlTableHeaderOrRiff(const NamedSaveLoadTable &slt);
 [[nodiscard]] SaveLoadTableData SlPrepareNamedSaveLoadTableForPtrOrNull(const NamedSaveLoadTable &slt);
-void SlSaveTableObjectChunk(const SaveLoadTable &slt);
-void SlLoadTableOrRiffFiltered(const SaveLoadTable &slt);
+void SlSaveTableObjectChunk(const SaveLoadTable &slt, void *object = nullptr);
+void SlLoadTableOrRiffFiltered(const SaveLoadTable &slt, void *object = nullptr);
 void SlLoadTableWithArrayLengthPrefixesMissing();
 
 void SlSetStructListLength(size_t length);
@@ -1105,24 +1105,24 @@ size_t SlGetStructListLength(size_t limit);
 
 void SlSkipChunkContents();
 
-inline void SlSaveTableObjectChunk(const NamedSaveLoadTable &slt)
+inline void SlSaveTableObjectChunk(const NamedSaveLoadTable &slt, void *object = nullptr)
 {
-	SlSaveTableObjectChunk(SlTableHeader(slt));
+	SlSaveTableObjectChunk(SlTableHeader(slt), object);
 }
 
-inline void SlLoadTableObjectChunk(const NamedSaveLoadTable &slt)
+inline void SlLoadTableObjectChunk(const NamedSaveLoadTable &slt, void *object = nullptr)
 {
-	SlLoadTableOrRiffFiltered(SlTableHeader(slt));
+	SlLoadTableOrRiffFiltered(SlTableHeader(slt), object);
 }
 
-inline void SlLoadTableObjectChunk(const SaveLoadTable &slt)
+inline void SlLoadTableObjectChunk(const SaveLoadTable &slt, void *object = nullptr)
 {
-	SlLoadTableOrRiffFiltered(slt);
+	SlLoadTableOrRiffFiltered(slt, object);
 }
 
-inline void SlLoadTableOrRiffFiltered(const NamedSaveLoadTable &slt)
+inline void SlLoadTableOrRiffFiltered(const NamedSaveLoadTable &slt, void *object = nullptr)
 {
-	SlLoadTableOrRiffFiltered(SlTableHeaderOrRiff(slt));
+	SlLoadTableOrRiffFiltered(SlTableHeaderOrRiff(slt), object);
 }
 
 [[noreturn]] void CDECL SlErrorFmt(StringID string, const char *msg, ...) WARN_FORMAT(2, 3);
