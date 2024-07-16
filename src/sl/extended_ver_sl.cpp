@@ -180,7 +180,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_RV_ORDER_EXTRA_FLAGS,             XSCF_IGNORABLE_UNKNOWN,   1,   1, "rv_order_extra_flags",             nullptr, nullptr, nullptr          },
 	{ XSLFI_GRF_ROADSTOPS,                    XSCF_NULL,                3,   3, "grf_road_stops",                   nullptr, nullptr, nullptr          },
 	{ XSLFI_INDUSTRY_ANIM_MASK,               XSCF_IGNORABLE_ALL,       1,   1, "industry_anim_mask",               nullptr, nullptr, nullptr          },
-	{ XSLFI_NEW_SIGNAL_STYLES,                XSCF_NULL,                3,   3, "new_signal_styles",                nullptr, nullptr, "XBST,NSID"      },
+	{ XSLFI_NEW_SIGNAL_STYLES,                XSCF_NULL,                4,   4, "new_signal_styles",                nullptr, nullptr, "XBST,NSID"      },
 	{ XSLFI_NO_TREE_COUNTER,                  XSCF_IGNORABLE_ALL,       1,   1, "no_tree_counter",                  nullptr, nullptr, nullptr          },
 	{ XSLFI_TOWN_SETTING_OVERRIDE,            XSCF_NULL,                1,   1, "town_setting_override",            nullptr, nullptr, nullptr          },
 	{ XSLFI_LINKGRAPH_SPARSE_EDGES,           XSCF_NULL,                1,   1, "linkgraph_sparse_edges",           nullptr, nullptr, nullptr          },
