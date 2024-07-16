@@ -280,11 +280,12 @@ void NeutralizeStatus(Train *t)
 TBTRDiffFlags TrainTemplateDifference(const Train *t, const TemplateVehicle *tv)
 {
 	TBTRDiffFlags diff = TBTRDF_NONE;
+	const bool check_refit_as_template = tv->refit_as_template;
 	while (t != nullptr && tv != nullptr) {
 		if (t->engine_type != tv->engine_type) {
 			return TBTRDF_ALL;
 		}
-		if (tv->refit_as_template && (t->cargo_type != tv->cargo_type || t->cargo_subtype != tv->cargo_subtype)) {
+		if (check_refit_as_template && (t->cargo_type != tv->cargo_type || t->cargo_subtype != tv->cargo_subtype)) {
 			diff |= TBTRDF_REFIT;
 		}
 		if (HasBit(t->flags, VRF_REVERSE_DIRECTION) != HasBit(tv->ctrl_flags, TVCF_REVERSED)) {
