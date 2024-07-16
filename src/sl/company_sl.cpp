@@ -311,40 +311,19 @@ static const SaveLoad _company_desc[] = {
 static const SaveLoad _company_settings_desc[] = {
 	/* Engine renewal settings */
 	SLE_CONDNULL(512, SLV_16, SLV_19),
-	SLE_CONDREF(Company, engine_renew_list,            REF_ENGINE_RENEWS,   SLV_19, SL_MAX_VERSION),
-	SLE_CONDVAR(Company, settings.engine_renew,        SLE_BOOL,            SLV_16, SL_MAX_VERSION),
-	SLE_CONDVAR(Company, settings.engine_renew_months, SLE_INT16,           SLV_16, SL_MAX_VERSION),
-	SLE_CONDVAR(Company, settings.engine_renew_money,  SLE_UINT32,          SLV_16, SL_MAX_VERSION),
-	SLE_CONDVAR(Company, settings.renew_keep_length,   SLE_BOOL,             SLV_2, SL_MAX_VERSION),
+	SLE_CONDREF(CompanyProperties, engine_renew_list,            REF_ENGINE_RENEWS,   SLV_19, SL_MAX_VERSION),
+	SLE_CONDVAR(CompanyProperties, settings.engine_renew,        SLE_BOOL,            SLV_16, SL_MAX_VERSION),
+	SLE_CONDVAR(CompanyProperties, settings.engine_renew_months, SLE_INT16,           SLV_16, SL_MAX_VERSION),
+	SLE_CONDVAR(CompanyProperties, settings.engine_renew_money,  SLE_UINT32,          SLV_16, SL_MAX_VERSION),
+	SLE_CONDVAR(CompanyProperties, settings.renew_keep_length,   SLE_BOOL,             SLV_2, SL_MAX_VERSION),
 
 	/* Default vehicle settings */
-	SLE_CONDVAR(Company, settings.vehicle.servint_ispercent,   SLE_BOOL,     SLV_120, SL_MAX_VERSION),
-	SLE_CONDVAR(Company, settings.vehicle.servint_trains,    SLE_UINT16,     SLV_120, SL_MAX_VERSION),
-	SLE_CONDVAR(Company, settings.vehicle.servint_roadveh,   SLE_UINT16,     SLV_120, SL_MAX_VERSION),
-	SLE_CONDVAR(Company, settings.vehicle.servint_aircraft,  SLE_UINT16,     SLV_120, SL_MAX_VERSION),
-	SLE_CONDVAR(Company, settings.vehicle.servint_ships,     SLE_UINT16,     SLV_120, SL_MAX_VERSION),
-	SLE_CONDVAR_X(Company, settings.vehicle.auto_timetable_by_default, SLE_BOOL, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AUTO_TIMETABLE, 2, 2)),
-
-	SLE_CONDNULL(63, SLV_2, SLV_144), // old reserved space
-};
-
-static const SaveLoad _company_settings_skip_desc[] = {
-	/* Engine renewal settings */
-	SLE_CONDNULL(512, SLV_16, SLV_19),
-	SLE_CONDNULL(2, SLV_19, SLV_69),                 // engine_renew_list
-	SLE_CONDNULL(4, SLV_69, SL_MAX_VERSION),     // engine_renew_list
-	SLE_CONDNULL(1, SLV_16, SL_MAX_VERSION),     // settings.engine_renew
-	SLE_CONDNULL(2, SLV_16, SL_MAX_VERSION),     // settings.engine_renew_months
-	SLE_CONDNULL(4, SLV_16, SL_MAX_VERSION),     // settings.engine_renew_money
-	SLE_CONDNULL(1,  SLV_2, SL_MAX_VERSION),     // settings.renew_keep_length
-
-	/* Default vehicle settings */
-	SLE_CONDNULL(1, SLV_120, SL_MAX_VERSION),    // settings.vehicle.servint_ispercent
-	SLE_CONDNULL(2, SLV_120, SL_MAX_VERSION),    // settings.vehicle.servint_trains
-	SLE_CONDNULL(2, SLV_120, SL_MAX_VERSION),    // settings.vehicle.servint_roadveh
-	SLE_CONDNULL(2, SLV_120, SL_MAX_VERSION),    // settings.vehicle.servint_aircraft
-	SLE_CONDNULL(2, SLV_120, SL_MAX_VERSION),    // settings.vehicle.servint_ships
-	SLE_CONDNULL_X(1, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AUTO_TIMETABLE, 2, 2)), // settings.vehicle.auto_timetable_by_default
+	SLE_CONDVAR(CompanyProperties, settings.vehicle.servint_ispercent,   SLE_BOOL,     SLV_120, SL_MAX_VERSION),
+	SLE_CONDVAR(CompanyProperties, settings.vehicle.servint_trains,    SLE_UINT16,     SLV_120, SL_MAX_VERSION),
+	SLE_CONDVAR(CompanyProperties, settings.vehicle.servint_roadveh,   SLE_UINT16,     SLV_120, SL_MAX_VERSION),
+	SLE_CONDVAR(CompanyProperties, settings.vehicle.servint_aircraft,  SLE_UINT16,     SLV_120, SL_MAX_VERSION),
+	SLE_CONDVAR(CompanyProperties, settings.vehicle.servint_ships,     SLE_UINT16,     SLV_120, SL_MAX_VERSION),
+	SLE_CONDVAR_X(CompanyProperties, settings.vehicle.auto_timetable_by_default, SLE_BOOL, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_AUTO_TIMETABLE, 2, 2)),
 
 	SLE_CONDNULL(63, SLV_2, SLV_144), // old reserved space
 };
@@ -418,12 +397,7 @@ static void SaveLoad_PLYR_common(Company *c, CompanyProperties *cprops)
 	int i;
 
 	SlObject(cprops, _company_desc);
-	if (c != nullptr) {
-		SlObject(c, _company_settings_desc);
-	} else {
-		char nothing;
-		SlObject(&nothing, _company_settings_skip_desc);
-	}
+	SlObject(cprops, _company_settings_desc);
 
 	/* Keep backwards compatible for savegames, so load the old AI block */
 	if (IsSavegameVersionBefore(SLV_107) && cprops->is_ai) {
@@ -548,7 +522,8 @@ static void Check_PLYR()
 static void Ptrs_PLYR()
 {
 	for (Company *c : Company::Iterate()) {
-		SlObject(c, _company_settings_desc);
+		CompanyProperties *cprops = c;
+		SlObject(cprops, _company_settings_desc);
 	}
 }
 
