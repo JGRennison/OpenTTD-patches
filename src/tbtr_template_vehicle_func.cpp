@@ -58,7 +58,7 @@ Money CalculateOverallTemplateCost(const TemplateVehicle *tv)
 {
 	Money val = 0;
 
-	for (; tv; tv = tv->GetNextUnit()) {
+	for (; tv != nullptr; tv = tv->GetNextUnit()) {
 		val += (Engine::Get(tv->engine_type))->GetCost();
 	}
 	return val;
@@ -68,7 +68,7 @@ Money CalculateOverallTemplateDisplayRunningCost(const TemplateVehicle *tv)
 {
 	Money val = 0;
 
-	for (; tv; tv = tv->GetNextUnit()) {
+	for (; tv != nullptr; tv = tv->GetNextUnit()) {
 		val += (Engine::Get(tv->engine_type))->GetDisplayRunningCost();
 	}
 	return val;
@@ -76,7 +76,7 @@ Money CalculateOverallTemplateDisplayRunningCost(const TemplateVehicle *tv)
 
 void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y, int height)
 {
-	if (!tv) return;
+	if (tv == nullptr) return;
 
 	bool rtl = _current_text_dir == TD_RTL;
 
@@ -91,7 +91,7 @@ void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y, int hei
 	const TemplateVehicle *t = tv;
 	int offset = rtl ? max_width : 0;
 
-	while (t) {
+	while (t != nullptr) {
 		t->sprite_seq.Draw(offset + ((rtl ? -1 : 1) * t->image_dimensions.GetOffsetX()), t->image_dimensions.GetOffsetY() + ScaleSpriteTrad(10), t->colourmap, false);
 
 		offset += (rtl ? -1 : 1) * t->image_dimensions.GetDisplayImageWidth();
@@ -99,10 +99,10 @@ void DrawTemplate(const TemplateVehicle *tv, int left, int right, int y, int hei
 	}
 }
 
-// copy important stuff from the virtual vehicle to the template
+/* Copy important stuff from the virtual vehicle to the template */
 void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev, Train *virt)
 {
-	if (prev) {
+	if (prev != nullptr) {
 		prev->SetNext(tmp);
 		tmp->SetPrev(prev);
 		tmp->SetFirst(prev->First());
@@ -110,16 +110,16 @@ void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev
 	tmp->railtype = virt->railtype;
 	tmp->owner = virt->owner;
 
-	// set the subtype but also clear the virtual flag while doing it
+	/* Set the subtype but also clear the virtual flag while doing it */
 	tmp->subtype = virt->subtype & ~(1 << GVSF_VIRTUAL);
-	// set the cargo type and capacity
+	/* Set the cargo type and capacity */
 	tmp->cargo_type = virt->cargo_type;
 	tmp->cargo_subtype = virt->cargo_subtype;
 	tmp->cargo_cap = virt->cargo_cap;
 
 	SB(tmp->ctrl_flags, TVCF_REVERSED, 1, HasBit(virt->flags, VRF_REVERSE_DIRECTION) ? 1 : 0);
 
-	if (!virt->Previous()) {
+	if (virt->Previous() == nullptr) {
 		uint cargo_weight = 0;
 		uint full_cargo_weight = 0;
 		for (const Train *u = virt; u != nullptr; u = u->Next()) {
@@ -140,8 +140,8 @@ void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev
 	tmp->colourmap = GetUncachedTrainPaletteIgnoringGroup(virt);
 }
 
-// create a full TemplateVehicle based train according to a virtual train
-TemplateVehicle* TemplateVehicleFromVirtualTrain(Train *virt)
+/* Create a full TemplateVehicle based train according to a virtual train */
+TemplateVehicle *TemplateVehicleFromVirtualTrain(Train *virt)
 {
 	assert(virt != nullptr);
 
@@ -149,7 +149,7 @@ TemplateVehicle* TemplateVehicleFromVirtualTrain(Train *virt)
 
 	TemplateVehicle *tmp = nullptr;
 	TemplateVehicle *prev = nullptr;
-	for (; virt; virt = virt->Next()) {
+	for (; virt != nullptr; virt = virt->Next()) {
 		tmp = new TemplateVehicle(virt->engine_type);
 		SetupTemplateVehicleFromVirtual(tmp, prev, virt);
 		prev = tmp;
@@ -159,7 +159,6 @@ TemplateVehicle* TemplateVehicleFromVirtualTrain(Train *virt)
 	return tmp->First();
 }
 
-// forward declaration, defined in train_cmd.cpp
 CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, uint16_t data, uint32_t user);
 
 Train *DeleteVirtualTrain(Train *chain, Train *to_del)
@@ -174,7 +173,7 @@ Train *DeleteVirtualTrain(Train *chain, Train *to_del)
 	}
 }
 
-// retrieve template vehicle from template replacement that belongs to the given group
+/* Retrieve template vehicle from template replacement that belongs to the given group */
 TemplateVehicle *GetTemplateVehicleByGroupID(GroupID gid)
 {
 	if (gid >= NEW_GROUP) return nullptr;
@@ -198,7 +197,7 @@ bool TemplateVehicleContainsEngineOfRailtype(const TemplateVehicle *tv, RailType
 
 	/* For standard rail engines, allow only those */
 	if (type == RAILTYPE_BEGIN || type == RAILTYPE_RAIL) {
-		while (tv) {
+		while (tv != nullptr) {
 			if (tv->railtype != type) {
 				return false;
 			}
@@ -207,7 +206,7 @@ bool TemplateVehicleContainsEngineOfRailtype(const TemplateVehicle *tv, RailType
 		return true;
 	}
 	/* For electrified rail engines, standard wagons or engines are allowed to be included */
-	while (tv) {
+	while (tv != nullptr) {
 		if (tv->railtype == type) {
 			return true;
 		}
@@ -257,11 +256,11 @@ Train *TemplateDepotVehicles::ContainsEngine(EngineID eid, Train *not_in)
 	for (VehicleID id : this->vehicles) {
 		Train *t = Train::GetIfValid(id);
 		if (t == nullptr) continue;
-		// conditions: v is stopped in the given depot, has the right engine and if 'not_in' is given v must not be contained within 'not_in'
-		// if 'not_in' is nullptr, no check is needed
+		/* Conditions: v is stopped in the given depot, has the right engine and if 'not_in' is given v must not be contained within 'not_in'.
+		 * If 'not_in' is nullptr, no check is needed. */
 		if (t->owner == _current_company
-				// If the veh belongs to a chain, wagons will not return true on IsStoppedInDepot(), only primary vehicles will
-				// in case of t not a primary veh, we demand it to be a free wagon to consider it for replacement
+				/* If the veh belongs to a chain, wagons will not return true on IsStoppedInDepot(), only primary vehicles will.
+				 * In case of t not a primary veh, we demand it to be a free wagon to consider it for replacement. */
 				&& IsTrainUsableAsTemplateReplacementSource(t)
 				&& t->engine_type == eid
 				&& (not_in == nullptr || not_in->First() != t->First())) {
@@ -278,7 +277,8 @@ void NeutralizeStatus(Train *t)
 	DoCommand(0, t->index, 0, DC_EXEC, CMD_RENAME_VEHICLE, nullptr);
 }
 
-TBTRDiffFlags TrainTemplateDifference(const Train *t, const TemplateVehicle *tv) {
+TBTRDiffFlags TrainTemplateDifference(const Train *t, const TemplateVehicle *tv)
+{
 	TBTRDiffFlags diff = TBTRDF_NONE;
 	while (t != nullptr && tv != nullptr) {
 		if (t->engine_type != tv->engine_type) {
@@ -301,7 +301,7 @@ TBTRDiffFlags TrainTemplateDifference(const Train *t, const TemplateVehicle *tv)
 
 void BreakUpRemainders(Train *t)
 {
-	while (t) {
+	while (t != nullptr) {
 		Train *move;
 		if (HasBit(t->subtype, GVSF_ENGINE)) {
 			move = t;
@@ -314,7 +314,7 @@ void BreakUpRemainders(Train *t)
 	}
 }
 
-// make sure the real train wagon has the right cargo
+/* Make sure the real train wagon has the right cargo */
 void CopyWagonStatus(TemplateVehicle *from, Train *to)
 {
 	to->cargo_type = from->cargo_type;
@@ -324,7 +324,7 @@ void CopyWagonStatus(TemplateVehicle *from, Train *to)
 uint CountTrainsNeedingTemplateReplacement(GroupID g_id, const TemplateVehicle *tv)
 {
 	uint count = 0;
-	if (!tv) return count;
+	if (tv == nullptr) return count;
 
 	for (Train *t : Train::IterateFrontOnly()) {
 		if (t->IsPrimaryVehicle() && t->group_id == g_id && TrainTemplateDifference(t, tv) != TBTRDF_NONE) {
@@ -334,36 +334,34 @@ uint CountTrainsNeedingTemplateReplacement(GroupID g_id, const TemplateVehicle *
 	return count;
 }
 
-// refit each vehicle in t as is in tv, assume t and tv contain the same types of vehicles
+/* Refit each vehicle in t as is in tv, assume t and tv contain the same types of vehicles */
 CommandCost CmdRefitTrainFromTemplate(Train *t, TemplateVehicle *tv, DoCommandFlag flags)
 {
 	CommandCost cost(t->GetExpenseType(false));
 
-	while (t && tv) {
-		// refit t as tv
+	while (t != nullptr && tv != nullptr) {
+		/* Refit t as tv */
 		uint32_t cb = GetCmdRefitVeh(t);
 
 		cost.AddCost(DoCommand(t->tile, t->index, tv->cargo_type | tv->cargo_subtype << 8 | (1 << 16) | (1 << 31), flags, cb));
 
-		// next
 		t = t->GetNextUnit();
 		tv = tv->GetNextUnit();
 	}
 	return cost;
 }
 
-// set unit direction of each vehicle in t as is in tv, assume t and tv contain the same types of vehicles
+/* Set unit direction of each vehicle in t as is in tv, assume t and tv contain the same types of vehicles */
 CommandCost CmdSetTrainUnitDirectionFromTemplate(Train *t, TemplateVehicle *tv, DoCommandFlag flags)
 {
 	CommandCost cost(t->GetExpenseType(false));
 
-	while (t && tv) {
-		// refit t as tv
+	while (t != nullptr && tv != nullptr) {
+		/* Refit t as tv */
 		if (HasBit(t->flags, VRF_REVERSE_DIRECTION) != HasBit(tv->ctrl_flags, TVCF_REVERSED)) {
 			cost.AddCost(DoCommand(t->tile, t->index, true, flags, CMD_REVERSE_TRAIN_DIRECTION | CMD_MSG(STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE)));
 		}
 
-		// next
 		t = t->GetNextUnit();
 		tv = tv->GetNextUnit();
 	}
@@ -378,7 +376,7 @@ CommandCost TestBuyAllTemplateVehiclesInChain(TemplateVehicle *tv, TileIndex til
 {
 	CommandCost cost(EXPENSES_NEW_VEHICLES);
 
-	for (; tv; tv = tv->GetNextUnit()) {
+	for (; tv != nullptr; tv = tv->GetNextUnit()) {
 		cost.AddCost(DoCommand(tile, tv->engine_type, 0, DC_NONE, CMD_BUILD_VEHICLE));
 	}
 
@@ -400,15 +398,15 @@ void TransferCargoForTrain(Train *old_veh, Train *new_head)
 	const CargoID cargo_type = old_veh->cargo_type;
 	const uint8_t cargo_subtype = old_veh->cargo_subtype;
 
-	// how much cargo has to be moved (if possible)
+	/* How much cargo has to be moved (if possible) */
 	uint remainingAmount = old_veh->cargo.TotalCount();
-	// each vehicle in the new chain shall be given as much of the old cargo as possible, until none is left
+	/* Each vehicle in the new chain shall be given as much of the old cargo as possible, until none is left */
 	for (Train *tmp = new_head; tmp != nullptr && remainingAmount > 0; tmp = tmp->GetNextUnit()) {
 		if (tmp->cargo_type == cargo_type && tmp->cargo_subtype == cargo_subtype) {
-			// calculate the free space for new cargo on the current vehicle
+			/* Calculate the free space for new cargo on the current vehicle */
 			uint curCap = tmp->cargo_cap - tmp->cargo.TotalCount();
 			uint moveAmount = std::min(remainingAmount, curCap);
-			// move (parts of) the old vehicle's cargo onto the current vehicle of the new chain
+			/* Move (parts of) the old vehicle's cargo onto the current vehicle of the new chain */
 			if (moveAmount > 0) {
 				old_veh->cargo.Shift(moveAmount, &tmp->cargo);
 				remainingAmount -= moveAmount;
