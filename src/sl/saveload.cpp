@@ -685,7 +685,7 @@ size_t SlGetBytesWritten()
  * x = ((x & 0x7F) << 8) + SlReadByte();
  * @return Return the value of the index
  */
-static uint SlReadSimpleGamma()
+uint SlReadSimpleGamma()
 {
 	uint i = SlReadByte();
 	if (HasBit(i, 7)) {
@@ -727,7 +727,7 @@ static uint SlReadSimpleGamma()
  * @param i Index being written
  */
 
-static void SlWriteSimpleGamma(size_t i)
+void SlWriteSimpleGamma(size_t i)
 {
 	if (i >= (1 << 7)) {
 		if (i >= (1 << 14)) {
@@ -752,7 +752,7 @@ static void SlWriteSimpleGamma(size_t i)
 }
 
 /** Return how many bytes used to encode a gamma value */
-static inline uint SlGetGammaLength(size_t i)
+uint SlGetGammaLength(size_t i)
 {
 	return 1 + (i >= (1 << 7)) + (i >= (1 << 14)) + (i >= (1 << 21)) + (i >= (1 << 28));
 }

@@ -984,6 +984,10 @@ void SlSetLength(size_t length);
 size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld);
 size_t SlCalcObjLength(const void *object, const SaveLoadTable &slt);
 
+uint SlReadSimpleGamma();
+void SlWriteSimpleGamma(size_t i);
+uint SlGetGammaLength(size_t i);
+
 /**
  * Run proc, automatically prepending the written length
  * @param proc The callback procedure that is called
