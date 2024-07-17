@@ -156,22 +156,6 @@ void AfterLoadRoadStops()
 	}
 }
 
-static const SaveLoad _roadstop_desc[] = {
-	SLE_VAR(RoadStop, xy,           SLE_UINT32),
-	SLE_CONDNULL(1, SL_MIN_VERSION, SLV_45),
-	SLE_VAR(RoadStop, status,       SLE_UINT8),
-	/* Index was saved in some versions, but this is not needed */
-	SLE_CONDNULL(4, SL_MIN_VERSION, SLV_9),
-	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_45),
-	SLE_CONDNULL(1, SL_MIN_VERSION, SLV_26),
-
-	SLE_REF(RoadStop, next,         REF_ROADSTOPS),
-	SLE_CONDNULL(2, SL_MIN_VERSION, SLV_45),
-
-	SLE_CONDNULL(4, SL_MIN_VERSION, SLV_25),
-	SLE_CONDNULL(1, SLV_25, SLV_26),
-};
-
 static const SaveLoad _old_station_desc[] = {
 	SLE_CONDVAR(Station, xy,                         SLE_FILE_U16 | SLE_VAR_U32,  SL_MIN_VERSION, SLV_6),
 	SLE_CONDVAR(Station, xy,                         SLE_UINT32,                  SLV_6, SL_MAX_VERSION),
@@ -527,14 +511,6 @@ static void SetupDescs_STNN()
 	_filtered_roadstop_speclist_desc = SlFilterObject(_roadstop_speclist_desc);
 }
 
-std::vector<SaveLoad> _filtered_roadstop_desc;
-
-static void SetupDescs_ROADSTOP()
-{
-	_filtered_roadstop_desc = SlFilterObject(_roadstop_desc);
-}
-
-
 static void RealSave_STNN(BaseStation *bst)
 {
 	_num_specs = (uint8_t)bst->speclist.size();
@@ -824,34 +800,6 @@ static void Ptrs_STNN()
 	}
 }
 
-static void Save_ROADSTOP()
-{
-	SetupDescs_ROADSTOP();
-	for (RoadStop *rs : RoadStop::Iterate()) {
-		SlSetArrayIndex(rs->index);
-		SlObjectSaveFiltered(rs, _filtered_roadstop_desc);
-	}
-}
-
-static void Load_ROADSTOP()
-{
-	SetupDescs_ROADSTOP();
-	int index;
-	while ((index = SlIterateArray()) != -1) {
-		RoadStop *rs = new (index) RoadStop(INVALID_TILE);
-
-		SlObjectLoadFiltered(rs, _filtered_roadstop_desc);
-	}
-}
-
-static void Ptrs_ROADSTOP()
-{
-	SetupDescs_ROADSTOP();
-	for (RoadStop *rs : RoadStop::Iterate()) {
-		SlObjectPtrOrNullFiltered(rs, _filtered_roadstop_desc);
-	}
-}
-
 static void Load_DOCK()
 {
 	extern void SlSkipArray();
@@ -861,7 +809,7 @@ static void Load_DOCK()
 static const ChunkHandler station_chunk_handlers[] = {
 	{ 'STNS', nullptr,       Load_STNS,     Ptrs_STNS,     nullptr, CH_READONLY },
 	{ 'STNN', Save_STNN,     Load_STNN,     Ptrs_STNN,     nullptr, CH_ARRAY },
-	{ 'ROAD', Save_ROADSTOP, Load_ROADSTOP, Ptrs_ROADSTOP, nullptr, CH_ARRAY },
+	MakeUpstreamChunkHandler<'ROAD', GeneralUpstreamChunkLoadInfo>(),
 	{ 'DOCK', nullptr,       Load_DOCK,     nullptr,       nullptr, CH_READONLY },
 };
 
