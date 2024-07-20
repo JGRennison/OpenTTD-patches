@@ -125,7 +125,7 @@ enum SaveLoadTypes {
 
 typedef uint8_t SaveLoadType; ///< Save/load type. @see SaveLoadTypes
 
-using SaveLoadStructHandlerFactory = std::unique_ptr<struct SaveLoadStructHandler> (*)();
+using SaveLoadStructHandlerFactory = std::unique_ptr<class SaveLoadStructHandler> (*)();
 
 /** SaveLoad type struct. Do NOT use this directly but use the SLE_ macros defined just below! */
 struct SaveLoad {
@@ -193,7 +193,7 @@ inline constexpr NamedSaveLoad NSLT_STRUCT(const char *name, SaveLoadStructHandl
 template <typename T>
 inline constexpr NamedSaveLoad NSLT_STRUCT(const char *name, SaveLoadVersion from = SL_MIN_VERSION, SaveLoadVersion to = SL_MAX_VERSION, SlXvFeatureTest extver = {})
 {
-	SaveLoadStructHandlerFactory factory = []() -> std::unique_ptr<struct SaveLoadStructHandler> {
+	SaveLoadStructHandlerFactory factory = []() -> std::unique_ptr<class SaveLoadStructHandler> {
 		return std::make_unique<T>();
 	};
 	return NSLT_STRUCT(name, factory, from, to, extver);
@@ -207,14 +207,14 @@ inline constexpr NamedSaveLoad NSLT_STRUCTLIST(const char *name, SaveLoadStructH
 template <typename T>
 inline constexpr NamedSaveLoad NSLT_STRUCTLIST(const char *name, SaveLoadVersion from = SL_MIN_VERSION, SaveLoadVersion to = SL_MAX_VERSION, SlXvFeatureTest extver = {})
 {
-	SaveLoadStructHandlerFactory factory = []() -> std::unique_ptr<struct SaveLoadStructHandler> {
+	SaveLoadStructHandlerFactory factory = []() -> std::unique_ptr<class SaveLoadStructHandler> {
 		return std::make_unique<T>();
 	};
 	return NSLT_STRUCTLIST(name, factory, from, to, extver);
 }
 
 struct SaveLoadTableData : public std::vector<SaveLoad> {
-	std::vector<std::unique_ptr<struct SaveLoadStructHandler>> struct_handlers;
+	std::vector<std::unique_ptr<class SaveLoadStructHandler>> struct_handlers;
 };
 
 /** Handler for saving/loading a SL_STRUCT/SL_STRUCTLIST. */
