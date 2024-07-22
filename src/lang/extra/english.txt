@@ -350,7 +350,7 @@ STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL                              :Show rail polyl
 STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL_HELPTEXT                     :When enabled, the rail construction toolbar includes a button to build using the polyline mode.
 
 STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR             :Show vehicle running costs per calendar year/period: {STRING2}
-STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR_HELPTEXT    :When using a day length factor greater than one, show vehicle running costs per calendar year (in calendar mode) or per period (in wallclock mode) instead of per original year.
+STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR_HELPTEXT    :When using a economy speed reduction factor greater than one, show vehicle running costs per calendar year (in calendar mode) or per period (in wallclock mode) instead of per original year.
 
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Enable signals on bridges/tunnels advanced modes: {STRING2}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Enables use of advanced modes of signal simulation on bridges and tunnels. When disabled, bridges/tunnels which are not already in an advanced mode cannot be changed to an advanced mode, however other players may choose to enable this setting and use an advanced mode.
@@ -519,7 +519,7 @@ STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE                    :Auto timetable 
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE_HELPTEXT           :How much of the vehicle separation auto timetable change to apply at each step
 
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS            :Round up auto-filled timetable times to multiples of this many ticks: {STRING2}
-STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_HELPTEXT   :Timetable times adjusted by timetable automation are not rounded. A day at a day length of 1 is 74 ticks.{}By default the game ticks per minute value is used if using minutes, otherwise 74 ticks is used.
+STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_HELPTEXT   :Timetable times adjusted by timetable automation are not rounded. An unscaled day is 74 ticks.{}By default the game ticks per minute value is used if using minutes, otherwise 74 ticks is used.
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_VALUE      :{COMMA}{NBSP}tick{P 0 "" s}
 ###setting-zero-is-special
 ##default-translation STR_COLOUR_DEFAULT
@@ -549,7 +549,7 @@ STR_CONFIG_SETTING_SHARING_FEE_RAIL                             :Daily track tol
 STR_CONFIG_SETTING_SHARING_FEE_ROAD                             :Stopping fee for road vehicles: {STRING2} per day
 STR_CONFIG_SETTING_SHARING_FEE_WATER                            :Docking fee for ships: {STRING2} per day
 STR_CONFIG_SETTING_SHARING_FEE_AIR                              :Terminal fee for aircraft: {STRING2} per day
-STR_CONFIG_SETTING_SHARING_FEE_HELPTEXT                         :This fee is paid per unscaled day (i.e. the duration of a day at a day length of 1, this is 74 ticks).
+STR_CONFIG_SETTING_SHARING_FEE_HELPTEXT                         :This fee is paid per unscaled economy day (i.e. per 74 ticks).
 STR_CONFIG_SETTING_SHARING_PAYMENT_IN_DEBT                      :Allow companies in debt to pay sharing fees: {STRING2}
 STR_CONFIG_SETTING_SHARING_USED_BY_VEHICLES                     :Can't change this setting, vehicles are using shared infrastructure.
 STR_CONFIG_SETTING_SHARING_ORDERS_TO_OTHERS                     :Can't change this setting, vehicles have orders to destinations of others.
@@ -569,8 +569,8 @@ STR_CONFIG_SETTING_SIMULATE_SIGNALS                             :Simulate signal
 STR_CONFIG_SETTING_SIMULATE_SIGNALS_HELPTEXT                    :This sets the target signal spacing for newly signalled bridges and tunnels. The actual spacing may slightly differ from this to avoid uneven spacing. Changing this setting does not re-signal existing signalled bridges and tunnels.
 STR_CONFIG_SETTING_SIMULATE_SIGNALS_VALUE                       :{COMMA} tile{P 0 "" s}
 
-STR_CONFIG_SETTING_DAY_LENGTH_FACTOR                            :Day length factor: {STRING2}
-STR_CONFIG_SETTING_DAY_LENGTH_FACTOR_HELPTEXT                   :Game pace is slowed by this factor
+STR_CONFIG_SETTING_DAY_LENGTH_FACTOR                            :Economy speed reduction factor: {STRING2}
+STR_CONFIG_SETTING_DAY_LENGTH_FACTOR_HELPTEXT                   :This scales the length of economic time periods and proportionally slows the game processes which occur in those time periods. Economic time periods are used for: town and industry cargo production, town growth, natural processes such as grass and tree growth, infrastructure maintenance costs, station rating calculations, and so on.{}In calendar timekeeping mode this scales the length of days/months/years, and so therefore also slows processes controlled by the calendar speed such as introduction and expiry of vehicle/house/etc models and seasonal changes such as snow line movement.{}In wallclock mode this scales the length of periods and industry production intervals.{}{}This setting was formerly known as the day length factor.
 
 STR_CONFIG_SETTING_TOWN_TUNNELS                                 :Towns are allowed to build tunnels: {STRING2}
 STR_CONFIG_SETTING_TOWN_TUNNELS_HELPTEXT                        :Under what conditions are towns allowed to build road tunnels
@@ -593,7 +593,7 @@ STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA          :{STRING}{}This 
 STR_CONFIG_SETTING_TOWN_CARGO_SCALE_MODE                        :Time interval for town cargo production scaling: {STRING2}
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE                    :Time interval for industry cargo production scaling: {STRING2}
 
-STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :Monthly/per production interval: The cargo production per month or production interval is scaled.{}{}Game-time: The cargo production per unit of game time is scaled, (the cargo production per month or production interval is also scaled by the day length factor). Very high scaling factors may not be achievable.
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :Monthly/per production interval: The cargo production per month or production interval is scaled.{}{}Game-time: The cargo production per unit of game time is scaled, (the cargo production per month or production interval is also scaled by the economy speed reduction factor). Very high scaling factors may not be achievable.
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE_HELPTEXT_EXTRA     :{STRING}{}Game-time mode is not guaranteed to be fully compatible with all industry NewGRFs.
 
 STR_CONFIG_SETTING_CARGO_SCALE_MODE_MONTHLY                     :Monthly
