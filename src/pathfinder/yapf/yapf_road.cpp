@@ -207,7 +207,7 @@ public:
 			/* move to the next tile */
 			tile = F.m_new_tile;
 			trackdir = new_td;
-			if (tiles > MAX_RV_PF_TILES) break;
+			if (tiles > MAX_RV_PF_TILES) return false;
 		}
 
 		/* save end of segment back to the node */
