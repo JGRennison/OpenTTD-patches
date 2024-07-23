@@ -2243,8 +2243,13 @@ void SlSkipTableHeader()
 static uint8_t GetSavegameTableFileType(const SaveLoad &sld)
 {
 	switch (sld.cmd) {
-		case SL_VAR:
-			return GetVarFileType(sld.conv); break;
+		case SL_VAR: {
+			VarType type = GetVarFileType(sld.conv);
+			if (type == SLE_FILE_VEHORDERID) {
+				return SlXvIsFeaturePresent(XSLFI_MORE_VEHICLE_ORDERS) ? SLE_FILE_U16 : SLE_FILE_U8;
+			}
+			return type;
+		}
 
 		case SL_STR:
 		case SL_STDSTR:

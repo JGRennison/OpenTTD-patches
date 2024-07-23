@@ -124,7 +124,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_TRAIN_FLAGS_EXTRA,                XSCF_NULL,                1,   1, "train_flags_extra",                nullptr, nullptr, nullptr          },
 	{ XSLFI_VEHICLE_FLAGS_EXTRA,              XSCF_NULL,                1,   1, "veh_flags_extra",                  nullptr, nullptr, nullptr          },
 	{ XSLFI_TRAIN_THROUGH_LOAD,               XSCF_NULL,                2,   2, "train_through_load",               nullptr, nullptr, nullptr          },
-	{ XSLFI_ORDER_EXTRA_DATA,                 XSCF_NULL,                3,   3, "order_extra_data",                 nullptr, nullptr, nullptr          },
+	{ XSLFI_ORDER_EXTRA_DATA,                 XSCF_NULL,                4,   4, "order_extra_data",                 nullptr, nullptr, nullptr          },
 	{ XSLFI_WHOLE_MAP_CHUNK,                  XSCF_NULL,                2,   2, "whole_map_chunk",                  nullptr, nullptr, "WMAP"           },
 	{ XSLFI_ST_LAST_VEH_TYPE,                 XSCF_NULL,                1,   1, "station_last_veh_type",            nullptr, nullptr, nullptr          },
 	{ XSLFI_SELL_AT_DEPOT_ORDER,              XSCF_NULL,                1,   1, "sell_at_depot_order",              nullptr, nullptr, nullptr          },

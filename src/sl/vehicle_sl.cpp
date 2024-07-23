@@ -1216,28 +1216,32 @@ static void Ptrs_VEHS()
 	}
 }
 
-const SaveLoadTable GetOrderExtraInfoDescription();
+const NamedSaveLoadTable GetOrderExtraInfoDescription();
 
 void Save_VEOX()
 {
+	std::vector<SaveLoad> slt = SlFilterNamedSaveLoadTable(GetOrderExtraInfoDescription());
+
 	/* save extended order info for vehicle current order */
 	for (Vehicle *v : Vehicle::Iterate()) {
 		if (v->current_order.extra) {
 			SlSetArrayIndex(v->index);
-			SlObject(v->current_order.extra.get(), GetOrderExtraInfoDescription());
+			SlObject(v->current_order.extra.get(), slt);
 		}
 	}
 }
 
 void Load_VEOX()
 {
+	std::vector<SaveLoad> slt = SlFilterNamedSaveLoadTable(GetOrderExtraInfoDescription());
+
 	/* load extended order info for vehicle current order */
 	int index;
 	while ((index = SlIterateArray()) != -1) {
 		Vehicle *v = Vehicle::GetIfValid(index);
 		assert(v != nullptr);
 		v->current_order.AllocExtraInfo();
-		SlObject(v->current_order.extra.get(), GetOrderExtraInfoDescription());
+		SlObject(v->current_order.extra.get(), slt);
 	}
 }
 
