@@ -500,7 +500,7 @@ inline constexpr void *SlVarWrapper(void* ptr)
  * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  * @note In general, it is better to use one of the SLE_* macros below.
  */
-#define SLE_GENERAL_X(cmd, base, variable, type, length, from, to, extver) SaveLoad {false, cmd, type, length, from, to, SLTAG_DEFAULT, SlVarWrapper<decltype(base::variable), cmd, type, length>((void*)cpp_offsetof(base, variable)), extver}
+#define SLE_GENERAL_X(cmd, base, variable, type, length, from, to, extver) SaveLoad {false, cmd, type, length, from, to, SLTAG_DEFAULT, { SlVarWrapper<decltype(base::variable), cmd, type, length>((void*)cpp_offsetof(base, variable)) }, extver}
 #define SLE_GENERAL(cmd, base, variable, type, length, from, to) SLE_GENERAL_X(cmd, base, variable, type, length, from, to, SlXvFeatureTest())
 
 /**
@@ -718,8 +718,8 @@ inline constexpr void *SlVarWrapper(void* ptr)
 /** Translate values ingame to different values in the savegame and vv. */
 #define SLE_WRITEBYTE(base, variable) SLE_GENERAL(SL_WRITEBYTE, base, variable, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION)
 
-#define SLE_VEH_INCLUDE() SaveLoad { false, SL_VEH_INCLUDE, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION, SLTAG_DEFAULT, nullptr, SlXvFeatureTest()}
-#define SLE_ST_INCLUDE() SaveLoad { false, SL_ST_INCLUDE, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION, SLTAG_DEFAULT, nullptr, SlXvFeatureTest()}
+#define SLE_VEH_INCLUDE() SaveLoad { false, SL_VEH_INCLUDE, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION, SLTAG_DEFAULT, { nullptr }, SlXvFeatureTest()}
+#define SLE_ST_INCLUDE() SaveLoad { false, SL_ST_INCLUDE, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION, SLTAG_DEFAULT, { nullptr }, SlXvFeatureTest()}
 
 /**
  * Storage of global simple variables, references (pointers), and arrays.
@@ -731,7 +731,7 @@ inline constexpr void *SlVarWrapper(void* ptr)
  * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  * @note In general, it is better to use one of the SLEG_* macros below.
  */
-#define SLEG_GENERAL_X(cmd, variable, type, length, from, to, extver) SaveLoad {true, cmd, type, length, from, to, SLTAG_DEFAULT, SlVarWrapper<decltype(variable), cmd, type, length>((void*)&variable), extver}
+#define SLEG_GENERAL_X(cmd, variable, type, length, from, to, extver) SaveLoad {true, cmd, type, length, from, to, SLTAG_DEFAULT, { SlVarWrapper<decltype(variable), cmd, type, length>((void*)&variable) }, extver}
 #define SLEG_GENERAL(cmd, variable, type, length, from, to) SLEG_GENERAL_X(cmd, variable, type, length, from, to, SlXvFeatureTest())
 
 /**
@@ -896,7 +896,7 @@ inline constexpr void *SlVarWrapper(void* ptr)
  * @param from   First savegame version that has the empty space.
  * @param to     Last savegame version that has the empty space.
  */
-#define SLEG_CONDNULL(length, from, to) SaveLoad {true, SL_ARR, SLE_FILE_U8 | SLE_VAR_NULL, length, from, to, SLTAG_DEFAULT, nullptr, SlXvFeatureTest()}
+#define SLEG_CONDNULL(length, from, to) SaveLoad {true, SL_ARR, SLE_FILE_U8 | SLE_VAR_NULL, length, from, to, SLTAG_DEFAULT, { nullptr }, SlXvFeatureTest()}
 
 /**
  * Checks whether the savegame is below \a major.\a minor.
