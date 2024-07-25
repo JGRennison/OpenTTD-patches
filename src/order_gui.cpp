@@ -1430,6 +1430,8 @@ enum {
 	OHK_NO_UNLOAD,
 	OHK_NO_LOAD,
 	OHK_REFIT,
+	OHK_DUPLICATE,
+	OHK_RETARGET_JUMP,
 	OHK_CLOSE,
 };
 
@@ -1907,6 +1909,23 @@ private:
 			this->OrderClick_Refit(0, false);
 		} else if (this->IsWidgetActiveInLayout(WID_O_REFIT_DROPDOWN)) {
 			this->OrderClick_Refit(0, true);
+		}
+	}
+
+	void OrderClick_DuplicateHotkey()
+	{
+		VehicleOrderID sel = this->OrderGetSel();
+		if (this->vehicle->GetOrder(sel) != nullptr) {
+			DoCommandP(this->vehicle->tile, this->vehicle->index, sel, CMD_DUPLICATE_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER));
+		}
+	}
+
+	void OrderClick_RetargetJumpHotkey()
+	{
+		VehicleOrderID sel = this->OrderGetSel();
+		const Order *order = this->vehicle->GetOrder(sel);
+		if (order != nullptr && order->IsType(OT_CONDITIONAL)) {
+			this->OrderClick_Goto(OPOS_CONDITIONAL_RETARGET);
 		}
 	}
 
@@ -3604,6 +3623,8 @@ public:
 			case OHK_NO_UNLOAD:      this->OrderClick_Unload(OUFB_NO_UNLOAD, true); break;
 			case OHK_NO_LOAD:        this->OrderClick_FullLoad(OLFB_NO_LOAD, true); break;
 			case OHK_REFIT:          this->OrderClick_RefitHotkey(); break;
+			case OHK_DUPLICATE:      this->OrderClick_DuplicateHotkey(); break;
+			case OHK_RETARGET_JUMP:  this->OrderClick_RetargetJumpHotkey(); break;
 			case OHK_CLOSE:          this->Close(); break;
 			default: return ES_NOT_HANDLED;
 		}
@@ -3806,6 +3827,8 @@ static Hotkey order_hotkeys[] = {
 	Hotkey((uint16_t)0, "no_unload", OHK_NO_UNLOAD),
 	Hotkey((uint16_t)0, "no_load", OHK_NO_LOAD),
 	Hotkey((uint16_t)0, "refit", OHK_REFIT),
+	Hotkey((uint16_t)0, "duplicate", OHK_DUPLICATE),
+	Hotkey((uint16_t)0, "retarget_jump", OHK_RETARGET_JUMP),
 	Hotkey((uint16_t)0, "close", OHK_CLOSE),
 	HOTKEY_LIST_END
 };
