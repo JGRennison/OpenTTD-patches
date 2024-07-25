@@ -475,6 +475,20 @@ public:
 	}
 
 	/**
+	 * Check if given widget is active in the current window layout.
+	 * This means that the widget exists, is not disabled and is not in a non-selected NWidgetStacked sub-tree.
+	 * @param widget_index : index of the widget in the window to check
+	 * @return true if given widget is active in the current window layout
+	 */
+	inline bool IsWidgetActiveInLayout(WidgetID widget_index) const
+	{
+		const NWidgetCore *nwid = this->GetWidget<NWidgetCore>(widget_index);
+		if (nwid == nullptr) return false;
+
+		return nwid->IsActiveInLayout();
+	}
+
+	/**
 	 * Sets the lowered/raised status of a widget.
 	 * @param widget_index index of this widget in the window
 	 * @param lowered_stat status to use ie: lowered = true, raised = false

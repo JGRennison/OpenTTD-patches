@@ -1133,6 +1133,20 @@ void NWidgetCore::FillWidgetLookup(WidgetLookup &widget_lookup)
 	if (this->index >= 0) widget_lookup[this->index] = this;
 }
 
+bool NWidgetCore::IsActiveInLayout() const
+{
+	if (this->IsDisabled()) return false;
+
+	const NWidgetBase *child = this;
+	for (const NWidgetBase *nwid_parent = this->parent; nwid_parent != nullptr; child = nwid_parent, nwid_parent = nwid_parent->parent) {
+		if (const NWidgetStacked *stack = dynamic_cast<const NWidgetStacked *>(nwid_parent); stack != nullptr) {
+			if (!stack->IsChildSelected(child)) return false;
+		}
+	}
+
+	return true;
+}
+
 NWidgetCore *NWidgetCore::GetWidgetFromPos(int x, int y)
 {
 	return (IsInsideBS(x, this->pos_x, this->current_x) && IsInsideBS(y, this->pos_y, this->current_y)) ? this : nullptr;
@@ -1351,6 +1365,12 @@ bool NWidgetStacked::SetDisplayedPlane(int plane)
 	/* In case widget IDs are repeated, make sure Window::GetWidget works on displayed widgets. */
 	if (static_cast<size_t>(this->shown_plane) < this->children.size()) this->children[shown_plane]->FillWidgetLookup(*this->widget_lookup);
 	return true;
+}
+
+bool NWidgetStacked::IsChildSelected(const NWidgetBase *child) const
+{
+	if (this->shown_plane >= SZSP_BEGIN || static_cast<size_t>(this->shown_plane) >= this->children.size()) return false;
+	return this->children[this->shown_plane].get() == child;
 }
 
 NWidgetPIPContainer::NWidgetPIPContainer(WidgetType tp, NWidContainerFlags flags) : NWidgetContainer(tp)

@@ -386,6 +386,8 @@ public:
 	inline void SetDisabled(bool disabled);
 	inline bool IsDisabled() const;
 
+	bool IsActiveInLayout() const;
+
 	void FillWidgetLookup(WidgetLookup &widget_lookup) override;
 	NWidgetCore *GetWidgetFromPos(int x, int y) override;
 	bool IsHighlighted() const override;
@@ -516,6 +518,8 @@ public:
 	void FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets) override;
 
 	bool SetDisplayedPlane(int plane);
+
+	bool IsChildSelected(const NWidgetBase *child) const;
 
 	int shown_plane; ///< Plane being displayed (for #NWID_SELECTION only).
 	const WidgetID index; ///< If non-negative, index in the #Window::widget_lookup.
