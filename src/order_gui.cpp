@@ -1429,6 +1429,7 @@ enum {
 	OHK_TRANSFER,
 	OHK_NO_UNLOAD,
 	OHK_NO_LOAD,
+	OHK_REFIT,
 	OHK_CLOSE,
 };
 
@@ -1897,6 +1898,15 @@ private:
 			} else {
 				ShowVehicleRefitWindow(this->vehicle, this->OrderGetSel(), this, auto_refit);
 			}
+		}
+	}
+
+	void OrderClick_RefitHotkey()
+	{
+		if (this->IsWidgetActiveInLayout(WID_O_REFIT)) {
+			this->OrderClick_Refit(0, false);
+		} else if (this->IsWidgetActiveInLayout(WID_O_REFIT_DROPDOWN)) {
+			this->OrderClick_Refit(0, true);
 		}
 	}
 
@@ -3593,6 +3603,7 @@ public:
 			case OHK_TRANSFER:       this->OrderClick_Unload(OUFB_TRANSFER, true); break;
 			case OHK_NO_UNLOAD:      this->OrderClick_Unload(OUFB_NO_UNLOAD, true); break;
 			case OHK_NO_LOAD:        this->OrderClick_FullLoad(OLFB_NO_LOAD, true); break;
+			case OHK_REFIT:          this->OrderClick_RefitHotkey(); break;
 			case OHK_CLOSE:          this->Close(); break;
 			default: return ES_NOT_HANDLED;
 		}
@@ -3794,6 +3805,7 @@ static Hotkey order_hotkeys[] = {
 	Hotkey((uint16_t)0, "transfer", OHK_TRANSFER),
 	Hotkey((uint16_t)0, "no_unload", OHK_NO_UNLOAD),
 	Hotkey((uint16_t)0, "no_load", OHK_NO_LOAD),
+	Hotkey((uint16_t)0, "refit", OHK_REFIT),
 	Hotkey((uint16_t)0, "close", OHK_CLOSE),
 	HOTKEY_LIST_END
 };
