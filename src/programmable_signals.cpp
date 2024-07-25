@@ -649,6 +649,21 @@ void SignalProgram::DebugPrintProgram()
 	}
 }
 
+static CommandCost ValidateSignalTileTrack(TileIndex tile, Track track)
+{
+	if (!IsValidTrack(track)) return CMD_ERROR;
+
+	if (!IsPlainRailTile(tile) || !HasTrack(tile, track) || !HasSignalOnTrack(tile, track) || !IsPresignalProgrammable(tile, track)) {
+		return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
+	}
+
+	if (!IsTileOwner(tile, _current_company)) {
+		return_cmd_error(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER);
+	}
+
+	return CommandCost();
+}
+
 /** Insert a signal instruction into the signal program.
  *
  * @param tile The Tile on which to perform the operation
@@ -668,18 +683,16 @@ CommandCost CmdInsertSignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 	uint instruction_id = GB(p1, 3, 16);
 	SignalOpcode op     = Extract<SignalOpcode, 19,  8>(p1);
 
-	if (!IsValidTrack(track) || !IsPlainRailTile(tile) || !HasTrack(tile, track)) {
-		return CMD_ERROR;
-	}
-
-	if (!IsTileOwner(tile, _current_company))
-		return_cmd_error(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER);
+	CommandCost check_signal = ValidateSignalTileTrack(tile, track);
+	if (check_signal.Failed()) return check_signal;
 
 	SignalProgram *prog = GetSignalProgram(SignalReference(tile, track));
-	if (!prog)
+	if (prog == nullptr) {
 		return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
-	if (instruction_id >= prog->instructions.size())
+	}
+	if (instruction_id >= prog->instructions.size()) {
 		return_cmd_error(STR_ERR_PROGSIG_INVALID_INSTRUCTION);
+	}
 
 	bool exec = (flags & DC_EXEC) != 0;
 
@@ -742,19 +755,16 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 	Track track         = Extract<Track, 0, 3 >(p1);
 	uint instruction_id = GB(p1, 3, 16);
 
-	if (!IsValidTrack(track) || !IsPlainRailTile(tile) || !HasTrack(tile, track)) {
-		return CMD_ERROR;
-	}
-
-	if (!IsTileOwner(tile, _current_company))
-		return_cmd_error(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER);
+	CommandCost check_signal = ValidateSignalTileTrack(tile, track);
+	if (check_signal.Failed()) return check_signal;
 
 	SignalProgram *prog = GetExistingSignalProgram(SignalReference(tile, track));
-	if (!prog)
+	if (prog == nullptr) {
 		return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
-
-	if (instruction_id > prog->instructions.size())
+	}
+	if (instruction_id >= prog->instructions.size()) {
 		return_cmd_error(STR_ERR_PROGSIG_INVALID_INSTRUCTION);
+	}
 
 	bool exec = (flags & DC_EXEC) != 0;
 
@@ -916,19 +926,17 @@ CommandCost CmdRemoveSignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 	Track track         = Extract<Track, 0, 3 >(p1);
 	uint instruction_id = GB(p1, 3, 16);
 
-	if (!IsValidTrack(track) || !IsPlainRailTile(tile) || !HasTrack(tile, track)) {
-		return CMD_ERROR;
-	}
-
-	if (!IsTileOwner(tile, _current_company))
-		return_cmd_error(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER);
+	CommandCost check_signal = ValidateSignalTileTrack(tile, track);
+	if (check_signal.Failed()) return check_signal;
 
 	SignalProgram *prog = GetExistingSignalProgram(SignalReference(tile, track));
-	if (!prog)
+	if (prog == nullptr) {
 		return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
+	}
 
-	if (instruction_id > prog->instructions.size())
+	if (instruction_id >= prog->instructions.size()) {
 		return_cmd_error(STR_ERR_PROGSIG_INVALID_INSTRUCTION);
+	}
 
 	bool exec = (flags & DC_EXEC) != 0;
 
@@ -1055,11 +1063,8 @@ CommandCost CmdSignalProgramMgmt(TileIndex tile, DoCommandFlag flags, uint32_t p
 	Track track = Extract<Track, 0, 3>(p1);
 	SignalProgramMgmtCode mgmt = static_cast<SignalProgramMgmtCode>(GB(p1, 3, 4));
 
-	if (!IsValidTrack(track) || !IsPlainRailTile(tile) || !HasTrack(tile, track)) {
-		return CMD_ERROR;
-	}
-
-	if (!IsTileOwner(tile, _current_company)) return_cmd_error(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER);
+	CommandCost check_signal = ValidateSignalTileTrack(tile, track);
+	if (check_signal.Failed()) return check_signal;
 
 	switch (mgmt) {
 		case SPMC_REMOVE: {
