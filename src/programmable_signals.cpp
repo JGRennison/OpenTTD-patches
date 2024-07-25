@@ -1061,17 +1061,19 @@ CommandCost CmdSignalProgramMgmt(TileIndex tile, DoCommandFlag flags, uint32_t p
 
 	if (!IsTileOwner(tile, _current_company)) return_cmd_error(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER);
 
-	SignalProgram *prog = GetExistingSignalProgram(SignalReference(tile, track));
-	if (!prog) return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
-
 	switch (mgmt) {
-		case SPMC_REMOVE:
+		case SPMC_REMOVE: {
+			SignalProgram *prog = GetExistingSignalProgram(SignalReference(tile, track));
+			if (prog == nullptr) return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
 			if (exec) {
 				prog->first_instruction->Remove();
 			}
 			break;
+		}
 
 		case SPMC_CLONE: {
+			SignalProgram *prog = GetSignalProgram(SignalReference(tile, track));
+
 			TileIndex src_tile = p2;
 			Track src_track = Extract<Track, 7, 3>(p1);
 			if (!IsValidTrack(src_track) || !IsPlainRailTile(src_tile) || !HasTrack(src_tile, src_track)) {
