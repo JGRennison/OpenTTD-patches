@@ -768,6 +768,9 @@ STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_ANYWHERE         :En calquer luga
 STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS                   :Cando arrastras de auto-recheo, continúa máis aló das estacións/puntos de referencia: {STRING}
 STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS_HELPTEXT          :Selecciona o comportamento da colocación de sinais cando se fai Ctrl+arrastrar coas sinais. Se estiver desactivado, a colocación de sinais detense ao alcanzar unha baldosa de estación/punto de referencia. Se estiver activado, a colocación de sinais continúa no lado afastado das estacións de ferrocarril/puntos de referencia.
 
+STR_CONFIG_SETTING_DRAG_SIGNALS_STOP_RESTRICTED_SIGNAL          :Cando se eliminan sinais usando arrastre automático, deter nos sinais restrinxidos: {STRING}
+STR_CONFIG_SETTING_DRAG_SIGNALS_STOP_RESTRICTED_SIGNAL_HELPTEXT :Selecciona o comportamento da colocación de sinais ao eliminar sinais usando Ctrl+arrastre. Se está habilitado, a eliminación de sinais detense ao chegar a un sinal cun programa de restrición de ruta adxunto
+
 STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED                   :{WHITE}Non se pode modificar a opción...
 STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED_NEWGRF            :{WHITE}...o axuste está controlado por un NewGRF
 
@@ -1904,6 +1907,7 @@ STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Non se p
 STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Non se pode eliminar o punto de ruta aqui...
 STR_ERROR_MUST_REMOVE_ROADWAYPOINT_FIRST                        :{WHITE}Debes eliminar o punto de ruta de estrada primeiro
 STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}... tipo de sinal non axeitado
+STR_ERROR_RESTRICTED_SIGNAL                                     :{WHITE}... o sinal ten un programa de restrición de ruta adxunto
 STR_ERROR_SIGNAL_CHANGES                                        :{WHITE}O número de avaliacións de pre-sinais programables excedeu o límite.
 
 STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}A pont é demasiado baixa para unha estación
