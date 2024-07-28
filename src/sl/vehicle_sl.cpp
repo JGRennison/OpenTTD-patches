@@ -1216,7 +1216,7 @@ static void Ptrs_VEHS()
 	}
 }
 
-const NamedSaveLoadTable GetOrderExtraInfoDescription();
+NamedSaveLoadTable GetOrderExtraInfoDescription();
 
 void Save_VEOX()
 {
