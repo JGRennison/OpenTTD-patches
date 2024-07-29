@@ -2412,6 +2412,7 @@ SaveLoadTableData SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecia
 			for (auto &sld : saveloads) {
 				if (sld.cmd == SL_STRUCTLIST || sld.cmd == SL_STRUCT) {
 					sld.struct_handler->table_data = SlTableHeader(sld.struct_handler->GetDescription());
+					sld.struct_handler->LoadedTableDescription();
 				}
 			}
 

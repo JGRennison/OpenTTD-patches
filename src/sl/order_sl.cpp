@@ -337,16 +337,19 @@ struct DispatchNameStructHandler final : public TypedSaveLoadStructHandler<Dispa
 
 	void Load(DispatchSchedule *ds) const override
 	{
-		SaveLoadTable slt = this->GetLoadDescription();
-		if (slt.size() != 2 || slt[0].label_tag != SLTAG_CUSTOM_0 || slt[1].label_tag != SLTAG_CUSTOM_1) {
-			SlErrorCorrupt("Dispatch names sub-chunk fields not as expected");
-		}
-
 		size_t string_count = SlGetStructListLength(UINT32_MAX);
 		btree::btree_map<uint32_t, std::string> &names = ds->GetSupplementaryNameMap();
 		for (size_t i = 0; i < string_count; i++) {
 			uint32_t key = SlReadUint32();
 			SlStdString(&(names[key]), SLE_STR);
+		}
+	}
+
+	void LoadedTableDescription() override
+	{
+		SaveLoadTable slt = this->GetLoadDescription();
+		if (slt.size() != 2 || slt[0].label_tag != SLTAG_CUSTOM_0 || slt[1].label_tag != SLTAG_CUSTOM_1) {
+			SlErrorCorrupt("Dispatch names sub-chunk fields not as expected");
 		}
 	}
 };

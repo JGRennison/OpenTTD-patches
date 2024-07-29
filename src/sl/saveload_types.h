@@ -259,6 +259,11 @@ public:
 	 * @param object The object to fix.
 	 */
 	virtual void FixPointers([[maybe_unused]] void *object) const {}
+
+	/**
+	 * Called immediately after table_data is populated during header load.
+	 */
+	virtual void LoadedTableDescription() {};
 };
 
 
