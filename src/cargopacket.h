@@ -582,7 +582,7 @@ public:
 	/** The super class ought to know what it's doing. */
 	friend class CargoList<StationCargoList, StationCargoPacketMap>;
 	/** The stations, via GoodsEntry, have a CargoList. */
-	friend SaveLoadTable GetGoodsDesc();
+	friend NamedSaveLoadTable GetGoodsDesc();
 	friend upstream_sl::SlStationGoods;
 
 	friend class CargoLoad;

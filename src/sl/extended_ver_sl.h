@@ -174,6 +174,8 @@ enum SlXvFeatureIndex {
 	XSLFI_TABLE_INDUSTRY_SL,                      ///< Use table format for industry chunks:
 	                                              ///<     v1: IBLD, ITBL
 	                                              ///<     v2: INDY
+	XSLFI_TABLE_STATION_SL,                       ///< Use table format for station chunks:
+	                                              ///<     v1: STNN
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk

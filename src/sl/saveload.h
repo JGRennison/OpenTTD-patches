@@ -719,7 +719,9 @@ inline constexpr void *SlVarWrapper(void* ptr)
 #define SLE_WRITEBYTE(base, variable) SLE_GENERAL(SL_WRITEBYTE, base, variable, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION)
 
 #define SLE_VEH_INCLUDE() SaveLoad { false, SL_VEH_INCLUDE, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION, SLTAG_DEFAULT, { nullptr }, SlXvFeatureTest()}
-#define SLE_ST_INCLUDE() SaveLoad { false, SL_ST_INCLUDE, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION, SLTAG_DEFAULT, { nullptr }, SlXvFeatureTest()}
+
+/** SaveLoad include, for non-table use with SlFilterObject/SlFilterNamedSaveLoadTable. */
+#define SLE_INCLUDE(inc_functor) SaveLoad { false, SL_INCLUDE, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION, SLTAG_DEFAULT, { .include_functor = inc_functor }, SlXvFeatureTest()}
 
 /**
  * Storage of global simple variables, references (pointers), and arrays.
@@ -987,6 +989,7 @@ size_t SlCalcObjLength(const void *object, const SaveLoadTable &slt);
 uint SlReadSimpleGamma();
 void SlWriteSimpleGamma(size_t i);
 uint SlGetGammaLength(size_t i);
+constexpr uint SlGetMaxGammaLength() { return 5; }
 
 /**
  * Run proc, automatically prepending the written length
@@ -1084,6 +1087,7 @@ void SlObject(void *object, const SaveLoadTable &slt);
 bool SlObjectMember(void *object, const SaveLoad &sld);
 
 std::vector<SaveLoad> SlFilterObject(const SaveLoadTable &slt);
+void SlFilterNamedSaveLoadTable(const NamedSaveLoadTable &nslt, std::vector<SaveLoad> &save);
 std::vector<SaveLoad> SlFilterNamedSaveLoadTable(const NamedSaveLoadTable &nslt);
 void SlObjectSaveFiltered(void *object, const SaveLoadTable &slt);
 void SlObjectLoadFiltered(void *object, const SaveLoadTable &slt);

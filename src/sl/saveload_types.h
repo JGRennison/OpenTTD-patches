@@ -120,12 +120,13 @@ enum SaveLoadTypes {
 	/* non-normal save-load types */
 	SL_WRITEBYTE,
 	SL_VEH_INCLUDE,
-	SL_ST_INCLUDE,
+	SL_INCLUDE,
 };
 
 typedef uint8_t SaveLoadType; ///< Save/load type. @see SaveLoadTypes
 
 using SaveLoadStructHandlerFactory = std::unique_ptr<class SaveLoadStructHandler> (*)();
+using SaveLoadIncludeFunctor = void (*)(std::vector<struct SaveLoad> &);
 
 /** SaveLoad type struct. Do NOT use this directly but use the SLE_ macros defined just below! */
 struct SaveLoad {
@@ -144,6 +145,7 @@ struct SaveLoad {
 		 * that is called to save it. address: global=true, offset: global=false */
 		void *address;                                       ///< address of variable OR offset of variable in the struct (max offset is 65536)
 		SaveLoadStructHandlerFactory struct_handler_factory; ///< factory function pointer for SaveLoadStructHandler
+		SaveLoadIncludeFunctor include_functor;              ///< include functor for SL_INCLUDE
 	};
 
 	SlXvFeatureTest ext_feature_test;  ///< extended feature test
@@ -162,6 +164,7 @@ enum SaveLoadTags {
 	SLTAG_CUSTOM_START,
 	SLTAG_CUSTOM_0 = SLTAG_CUSTOM_START,
 	SLTAG_CUSTOM_1,
+	SLTAG_CUSTOM_2,
 };
 
 enum NamedSaveLoadFlags : uint8_t {
@@ -213,6 +216,12 @@ inline constexpr NamedSaveLoad NSLT_STRUCTLIST(const char *name, SaveLoadVersion
 		return std::make_unique<T>();
 	};
 	return NSLT_STRUCTLIST(name, factory, from, to, extver);
+}
+
+inline constexpr NamedSaveLoad NSLTAG(uint16_t label_tag, NamedSaveLoad nsl)
+{
+	nsl.save_load.label_tag = label_tag;
+	return nsl;
 }
 
 struct SaveLoadTableData : public std::vector<SaveLoad> {
