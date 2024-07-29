@@ -160,6 +160,8 @@ enum SaveLoadTags {
 	SLTAG_DEFAULT,
 	SLTAG_TABLE_UNKNOWN,
 	SLTAG_CUSTOM_START,
+	SLTAG_CUSTOM_0 = SLTAG_CUSTOM_START,
+	SLTAG_CUSTOM_1,
 };
 
 enum NamedSaveLoadFlags : uint8_t {

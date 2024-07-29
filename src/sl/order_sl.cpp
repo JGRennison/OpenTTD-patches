@@ -313,8 +313,8 @@ using DispatchSupplementaryNamePair = std::pair<const uint32_t, std::string>;
 NamedSaveLoadTable GetDispatchSupplementaryNamePairDescription()
 {
 	static const NamedSaveLoad _dispatch_name_pair_desc[] = {
-		NSL("key",           SLTAG(SLTAG_CUSTOM_START,      SLE_VAR(DispatchSupplementaryNamePair, first,                                       SLE_UINT32))),
-		NSL("value",         SLTAG(SLTAG_CUSTOM_START + 1, SLE_SSTR(DispatchSupplementaryNamePair, second,                                      SLE_STR))),
+		NSL("key",           SLTAG(SLTAG_CUSTOM_0,  SLE_VAR(DispatchSupplementaryNamePair, first,                                       SLE_UINT32))),
+		NSL("value",         SLTAG(SLTAG_CUSTOM_1, SLE_SSTR(DispatchSupplementaryNamePair, second,                                      SLE_STR))),
 	};
 
 	return _dispatch_name_pair_desc;
@@ -338,7 +338,7 @@ struct DispatchNameStructHandler final : public TypedSaveLoadStructHandler<Dispa
 	void Load(DispatchSchedule *ds) const override
 	{
 		SaveLoadTable slt = this->GetLoadDescription();
-		if (slt.size() != 2 || slt[0].label_tag != SLTAG_CUSTOM_START || slt[1].label_tag != SLTAG_CUSTOM_START + 1) {
+		if (slt.size() != 2 || slt[0].label_tag != SLTAG_CUSTOM_0 || slt[1].label_tag != SLTAG_CUSTOM_1) {
 			SlErrorCorrupt("Dispatch names sub-chunk fields not as expected");
 		}
 

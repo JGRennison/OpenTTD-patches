@@ -22,8 +22,8 @@ struct AnimatedTileStructHandler : public SaveLoadStructHandler {
 	NamedSaveLoadTable GetDescription() const override
 	{
 		static const NamedSaveLoad _anim_tiles_sub_desc[] = {
-			NSLT("tile",     SLTAG(SLTAG_CUSTOM_START,     SLE_VAR(AnimatedTilePair, first, SLE_UINT32))),
-			NSLT("speed",    SLTAG(SLTAG_CUSTOM_START + 1, SLE_VAR(AnimatedTilePair, second.speed, SLE_UINT8))),
+			NSLT("tile",     SLTAG(SLTAG_CUSTOM_0, SLE_VAR(AnimatedTilePair, first, SLE_UINT32))),
+			NSLT("speed",    SLTAG(SLTAG_CUSTOM_1, SLE_VAR(AnimatedTilePair, second.speed, SLE_UINT8))),
 		};
 		return _anim_tiles_sub_desc;
 	}
@@ -45,7 +45,7 @@ struct AnimatedTileStructHandler : public SaveLoadStructHandler {
 	void Load([[maybe_unused]] void *object) const override
 	{
 		auto slt = this->GetLoadDescription();
-		if (slt.size() != 2 || slt[0].label_tag != SLTAG_CUSTOM_START || slt[1].label_tag != SLTAG_CUSTOM_START + 1) {
+		if (slt.size() != 2 || slt[0].label_tag != SLTAG_CUSTOM_0 || slt[1].label_tag != SLTAG_CUSTOM_1) {
 			SlErrorCorrupt("Table format ANIT chunk fields not as expected");
 		}
 
