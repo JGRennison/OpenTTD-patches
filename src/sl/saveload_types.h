@@ -283,4 +283,12 @@ public:
 	void FixPointers(void *object) const override { static_cast<const TImpl *>(this)->FixPointers(static_cast<TObject *>(object)); }
 };
 
+class HeaderOnlySaveLoadStructHandler : public SaveLoadStructHandler {
+public:
+	void Save(void *object) const override { NOT_REACHED(); }
+	void Load(void *object) const override { NOT_REACHED(); }
+	void LoadCheck(void *object) const override { NOT_REACHED(); }
+	void FixPointers(void *object) const override { NOT_REACHED(); }
+};
+
 #endif /* SL_SAVELOAD_TYPES_H */
