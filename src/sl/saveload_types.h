@@ -273,6 +273,11 @@ public:
 	 * Called immediately after table_data is populated during header load.
 	 */
 	virtual void LoadedTableDescription() {};
+
+	/**
+	 * Called immediately after table_data is populated during header save.
+	 */
+	virtual void SavedTableDescription() {};
 };
 
 

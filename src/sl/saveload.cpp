@@ -2440,6 +2440,7 @@ SaveLoadTableData SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecia
 					std::unique_ptr<SaveLoadStructHandler> handler = sld.struct_handler_factory();
 					sld.struct_handler = handler.get();
 					sld.struct_handler->table_data = SlTableHeader(sld.struct_handler->GetDescription());
+					sld.struct_handler->SavedTableDescription();
 					saveloads.struct_handlers.push_back(std::move(handler));
 				}
 			}
