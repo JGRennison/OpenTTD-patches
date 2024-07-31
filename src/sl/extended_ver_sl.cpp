@@ -183,7 +183,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_NEW_SIGNAL_STYLES,                XSCF_NULL,                4,   4, "new_signal_styles",                nullptr, nullptr, "XBST,NSID"      },
 	{ XSLFI_NO_TREE_COUNTER,                  XSCF_IGNORABLE_ALL,       1,   1, "no_tree_counter",                  nullptr, nullptr, nullptr          },
 	{ XSLFI_TOWN_SETTING_OVERRIDE,            XSCF_NULL,                1,   1, "town_setting_override",            nullptr, nullptr, nullptr          },
-	{ XSLFI_LINKGRAPH_SPARSE_EDGES,           XSCF_NULL,                1,   1, "linkgraph_sparse_edges",           nullptr, nullptr, nullptr          },
+	{ XSLFI_LINKGRAPH_SPARSE_EDGES,           XSCF_NULL,                2,   2, "linkgraph_sparse_edges",           nullptr, nullptr, nullptr          },
 	{ XSLFI_AUX_TILE_LOOP,                    XSCF_NULL,                1,   1, "aux_tile_loop",                    nullptr, nullptr, nullptr          },
 	{ XSLFI_NEWGRF_ENTITY_EXTRA,              XSCF_NULL,                2,   2, "newgrf_entity_extra",              nullptr, nullptr, nullptr          },
 	{ XSLFI_TNNC_CHUNK,                       XSCF_IGNORABLE_ALL,       0,   1, "tnnc_chunk",                       nullptr, nullptr, "TNNC"           },
@@ -220,6 +220,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_TABLE_NEWGRF_SL,                  XSCF_NULL,                2,   2, "table_newgrf_sl",                  nullptr, nullptr, nullptr          },
 	{ XSLFI_TABLE_INDUSTRY_SL,                XSCF_NULL,                2,   2, "table_industry_sl",                nullptr, nullptr, nullptr          },
 	{ XSLFI_TABLE_STATION_SL,                 XSCF_NULL,                1,   1, "table_station_sl",                 nullptr, nullptr, nullptr          },
+	{ XSLFI_TABLE_LINKGRAPH_SL,               XSCF_NULL,                1,   1, "table_linkgraph_sl",               nullptr, nullptr, nullptr          },
 
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr }, // This is the end marker
 };
