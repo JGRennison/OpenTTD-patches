@@ -599,15 +599,17 @@ static const NamedSaveLoad _station_cargo_history_desc[] = {
 
 static void LoadStationCargoHistoryData(Station *st)
 {
-	uint16_t *data = st->station_cargo_history[0].data();
-	ReadBuffer::GetCurrent()->ReadUint16sToHandler(st->station_cargo_history.size() * MAX_STATION_CARGO_HISTORY_DAYS, [&](uint16_t val) {
-		*data = val;
-		data++;
-	});
-	if (SlXvIsFeaturePresent(XSLFI_STATION_CARGO_HISTORY, 1, 1)) {
-		for (auto &history : st->station_cargo_history) {
-			for (uint16_t &amount : history) {
-				amount = RXCompressUint(amount);
+	if (!st->station_cargo_history.empty()) {
+		uint16_t *data = st->station_cargo_history[0].data();
+		ReadBuffer::GetCurrent()->ReadUint16sToHandler(st->station_cargo_history.size() * MAX_STATION_CARGO_HISTORY_DAYS, [&](uint16_t val) {
+			*data = val;
+			data++;
+		});
+		if (SlXvIsFeaturePresent(XSLFI_STATION_CARGO_HISTORY, 1, 1)) {
+			for (auto &history : st->station_cargo_history) {
+				for (uint16_t &amount : history) {
+					amount = RXCompressUint(amount);
+				}
 			}
 		}
 	}
