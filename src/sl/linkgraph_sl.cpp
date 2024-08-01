@@ -96,14 +96,14 @@ struct LinkGraphNodeStructHandler final : public TypedSaveLoadStructHandler<Link
 
 	void Load(LinkGraph *lg) const override
 	{
-		uint num_nodes = SlGetStructListLength(UINT16_MAX);
+		uint num_nodes = static_cast<uint>(SlGetStructListLength(UINT16_MAX));
 		lg->Init(num_nodes);
 
 		for (NodeID from = 0; from < num_nodes; ++from) {
 			Node *node = &lg->nodes[from];
 			SlObjectLoadFiltered(node, this->GetLoadDescription());
 
-			uint num_edges = SlGetStructListLength(UINT16_MAX);
+			uint num_edges = static_cast<uint>(SlGetStructListLength(UINT16_MAX));
 			for (uint i = 0; i < num_edges; i++) {
 				NodeID to = SlReadUint16();
 				SlObjectLoadFiltered(&lg->edges[std::make_pair(from, to)], this->edge_description);

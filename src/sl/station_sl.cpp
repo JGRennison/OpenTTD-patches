@@ -328,7 +328,7 @@ struct StationGoodsFlowStructHandler final : public TypedSaveLoadStructHandler<S
 	{
 		ReadBuffer *buffer = ReadBuffer::GetCurrent();
 
-		uint num_flows = SlGetStructListLength(UINT32_MAX);
+		uint num_flows = static_cast<uint>(SlGetStructListLength(UINT32_MAX));
 
 		FlowStatMap &flows = ge->data->flows;
 		flows.reserve(num_flows);
@@ -395,7 +395,7 @@ struct StationGoodsCargoStructHandler final : public TypedSaveLoadStructHandler<
 
 	void Load(GoodsEntry *ge) const override
 	{
-		uint num_dests = SlGetStructListLength(UINT32_MAX);
+		uint num_dests = static_cast<uint>(SlGetStructListLength(UINT32_MAX));
 
 		StationCargoPair pair;
 		for (uint j = 0; j < num_dests; ++j) {
