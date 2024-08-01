@@ -2661,6 +2661,7 @@ static SettingsContainer &GetSettingsTree()
 				industries->Add(new SettingEntry("station.serve_neutral_industries"));
 				industries->Add(new SettingEntry("station.station_delivery_mode"));
 				industries->Add(new SettingEntry("economy.spawn_primary_industry_only"));
+				industries->Add(new SettingEntry("economy.industry_event_rate"));
 			}
 
 			SettingsPage *cdist = environment->Add(new SettingsPage(STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST));

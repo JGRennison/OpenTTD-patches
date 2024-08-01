@@ -1026,14 +1026,13 @@ void SetPriceBaseMultiplier(Price price, int factor)
  */
 void StartupIndustryDailyChanges(bool init_counter)
 {
-	uint map_size = MapLogX() + MapLogY();
 	/* After getting map size, it needs to be scaled appropriately and divided by 31,
 	 * which stands for the days in a month.
 	 * Using just 31 will make it so that a monthly reset (based on the real number of days of that month)
 	 * would not be needed.
 	 * Since it is based on "fractional parts", the leftover days will not make much of a difference
 	 * on the overall total number of changes performed */
-	_economy.industry_daily_increment = (1 << map_size) / 31;
+	_economy.industry_daily_increment = (MapSize() * _settings_game.economy.industry_event_rate) / (31 * 100);
 
 	if (init_counter) {
 		/* A new game or a savegame from an older version will require the counter to be initialized */
