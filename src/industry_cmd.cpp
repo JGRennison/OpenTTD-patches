@@ -437,7 +437,7 @@ static void AddAcceptedCargo_Industry(TileIndex tile, CargoArray &acceptance, Ca
 		uint16_t res = GetIndustryTileCallback(CBID_INDTILE_ACCEPT_CARGO, 0, 0, gfx, Industry::GetByTile(tile), tile);
 		if (res != CALLBACK_FAILED) {
 			accepts_cargo.fill(INVALID_CARGO);
-			for (uint i = 0; i < 3; i++) accepts_cargo[i] = GetCargoTranslation(GB(res, i * 5, 5), itspec->grf_prop.grffile);
+			for (uint i = 0; i < INDUSTRY_ORIGINAL_NUM_INPUTS; i++) accepts_cargo[i] = GetCargoTranslation(GB(res, i * 5, 5), itspec->grf_prop.grffile);
 		}
 	}
 
@@ -446,7 +446,7 @@ static void AddAcceptedCargo_Industry(TileIndex tile, CargoArray &acceptance, Ca
 		uint16_t res = GetIndustryTileCallback(CBID_INDTILE_CARGO_ACCEPTANCE, 0, 0, gfx, Industry::GetByTile(tile), tile);
 		if (res != CALLBACK_FAILED) {
 			cargo_acceptance.fill(0);
-			for (uint i = 0; i < 3; i++) cargo_acceptance[i] = GB(res, i * 4, 4);
+			for (uint i = 0; i < INDUSTRY_ORIGINAL_NUM_INPUTS; i++) cargo_acceptance[i] = GB(res, i * 4, 4);
 		}
 	}
 
@@ -1745,7 +1745,7 @@ static CommandCost CheckIfFarEnoughFromConflictingIndustry(TileIndex tile, int t
 
 	/* On a large map with many industries, it may be faster to check an area. */
 	static const int dmax = 14;
-	if (Industry::GetNumItems() > (size_t) (dmax * dmax * 2)) {
+	if (Industry::GetNumItems() > static_cast<size_t>(dmax * dmax * 2)) {
 		const Industry *i = nullptr;
 		TileArea tile_area = TileArea(tile, 1, 1).Expand(dmax);
 		for (TileIndex atile : tile_area) {

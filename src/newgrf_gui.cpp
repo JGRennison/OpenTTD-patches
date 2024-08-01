@@ -606,7 +606,7 @@ typedef robin_hood::unordered_flat_map<uint32_t, const GRFConfig *> GrfIdMap; //
 static void FillGrfidMap(const GRFConfig *c, GrfIdMap *grfid_map)
 {
 	while (c != nullptr) {
-		grfid_map->insert({c->ident.grfid, c});
+		grfid_map->emplace(c->ident.grfid, c);
 		c = c->next;
 	}
 }

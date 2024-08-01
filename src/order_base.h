@@ -178,6 +178,7 @@ public:
 	Order *next;          ///< Pointer to next order. If nullptr, end of list
 
 	Order() : flags(0), refit_cargo(CARGO_NO_REFIT), max_speed(UINT16_MAX) {}
+	Order(uint8_t type, uint8_t flags, DestinationID dest) : flags(flags), dest(dest), type(type), refit_cargo(CARGO_NO_REFIT), occupancy(0), wait_time(0), travel_time(0), max_speed(UINT16_MAX) {}
 	~Order();
 
 	Order(uint64_t packed);

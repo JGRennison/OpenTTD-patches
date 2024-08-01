@@ -36,7 +36,7 @@ template <typename T, size_t N> struct ArrayT<T[N]> {
 template <typename E, typename T>
 inline typename ArrayT<T>::Item ItemAtT(E idx, const T &t, typename ArrayT<T>::Item t_unk)
 {
-	if ((size_t)idx >= ArrayT<T>::length) {
+	if (static_cast<size_t>(idx) >= ArrayT<T>::length) {
 		return t_unk;
 	}
 	return t[idx];
@@ -50,7 +50,7 @@ inline typename ArrayT<T>::Item ItemAtT(E idx, const T &t, typename ArrayT<T>::I
 template <typename E, typename T>
 inline typename ArrayT<T>::Item ItemAtT(E idx, const T &t, typename ArrayT<T>::Item t_unk, E idx_inv, typename ArrayT<T>::Item t_inv)
 {
-	if ((size_t)idx < ArrayT<T>::length) {
+	if (static_cast<size_t>(idx) < ArrayT<T>::length) {
 		return t[idx];
 	}
 	if (idx == idx_inv) {
