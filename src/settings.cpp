@@ -2052,6 +2052,11 @@ static void DayLengthChanged(int32_t new_value)
 	MarkWholeScreenDirty();
 }
 
+static void IndustryEventRateChanged(int32_t new_value)
+{
+	if (_game_mode != GM_MENU) StartupIndustryDailyChanges(false);
+}
+
 static void TownZoneModeChanged(int32_t new_value)
 {
 	InvalidateWindowClassesData(WC_GAME_OPTIONS);
