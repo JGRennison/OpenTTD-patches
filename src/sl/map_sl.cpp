@@ -54,17 +54,12 @@ static void Check_MAPS()
 	_load_check_data.map_size_y = _map_dim_y;
 }
 
-static const uint MAP_SL_BUF_SIZE = 4096;
-
 static void Load_MAPT()
 {
-	std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
-	TileIndex size = MapSize();
-
-	for (TileIndex i = 0; i != size;) {
-		SlArray(buf.data(), MAP_SL_BUF_SIZE, SLE_UINT8);
-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].type = buf[j];
-	}
+	TileIndex i = 0;
+	ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
+		_m[i++].type = val;
+	});
 }
 
 static void Check_MAPH_common()
@@ -88,128 +83,101 @@ static void Load_MAPH()
 	if (SlXvIsFeaturePresent(XSLFI_CHILLPP)) {
 		if (SlGetFieldLength() != 0) {
 			_sl_xv_feature_versions[XSLFI_HEIGHT_8_BIT] = 2;
-			std::array<uint16_t, MAP_SL_BUF_SIZE> buf;
-			TileIndex size = MapSize();
 
-			for (TileIndex i = 0; i != size;) {
-				SlArray(buf.data(), MAP_SL_BUF_SIZE, SLE_UINT16);
-				for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].height = buf[j];
-			}
+			TileIndex i = 0;
+			ReadBuffer::GetCurrent()->ReadUint16sToHandler(MapSize(), [&](uint16_t val) {
+				_m[i++].height = val;
+			});
 		}
 		return;
 	}
 
-	std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
-	TileIndex size = MapSize();
-
-	for (TileIndex i = 0; i != size;) {
-		SlArray(buf.data(), MAP_SL_BUF_SIZE, SLE_UINT8);
-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].height = buf[j];
-	}
+	TileIndex i = 0;
+	ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
+		_m[i++].height = val;
+	});
 }
 
 static void Load_MAP1()
 {
-	std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
-	TileIndex size = MapSize();
-
-	for (TileIndex i = 0; i != size;) {
-		SlArray(buf.data(), MAP_SL_BUF_SIZE, SLE_UINT8);
-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].m1 = buf[j];
-	}
+	TileIndex i = 0;
+	ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
+		_m[i++].m1 = val;
+	});
 }
 
 static void Load_MAP2()
 {
-	std::array<uint16_t, MAP_SL_BUF_SIZE> buf;
-	TileIndex size = MapSize();
-
-	for (TileIndex i = 0; i != size;) {
-		SlArray(buf.data(), MAP_SL_BUF_SIZE,
-			/* In those versions the m2 was 8 bits */
-			IsSavegameVersionBefore(SLV_5) ? SLE_FILE_U8 | SLE_VAR_U16 : SLE_UINT16
-		);
-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].m2 = buf[j];
+	TileIndex i = 0;
+	if (IsSavegameVersionBefore(SLV_5)) {
+		/* In those versions the m2 was 8 bits */
+		ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
+			_m[i++].m2 = val;
+		});
+	} else {
+		ReadBuffer::GetCurrent()->ReadUint16sToHandler(MapSize(), [&](uint16_t val) {
+			_m[i++].m2 = val;
+		});
 	}
 }
 
 static void Load_MAP3()
 {
-	std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
-	TileIndex size = MapSize();
-
-	for (TileIndex i = 0; i != size;) {
-		SlArray(buf.data(), MAP_SL_BUF_SIZE, SLE_UINT8);
-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].m3 = buf[j];
-	}
+	TileIndex i = 0;
+	ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
+		_m[i++].m3 = val;
+	});
 }
 
 static void Load_MAP4()
 {
-	std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
-	TileIndex size = MapSize();
-
-	for (TileIndex i = 0; i != size;) {
-		SlArray(buf.data(), MAP_SL_BUF_SIZE, SLE_UINT8);
-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].m4 = buf[j];
-	}
+	TileIndex i = 0;
+	ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
+		_m[i++].m4 = val;
+	});
 }
 
 static void Load_MAP5()
 {
-	std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
-	TileIndex size = MapSize();
-
-	for (TileIndex i = 0; i != size;) {
-		SlArray(buf.data(), MAP_SL_BUF_SIZE, SLE_UINT8);
-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].m5 = buf[j];
-	}
+	TileIndex i = 0;
+	ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
+		_m[i++].m5 = val;
+	});
 }
 
 static void Load_MAP6()
 {
-	std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 	TileIndex size = MapSize();
 
+	TileIndex i = 0;
 	if (IsSavegameVersionBefore(SLV_42)) {
-		for (TileIndex i = 0; i != size;) {
-			/* 1024, otherwise we overflow on 64x64 maps! */
-			SlArray(buf.data(), 1024, SLE_UINT8);
-			for (uint j = 0; j != 1024; j++) {
-				_me[i++].m6 = GB(buf[j], 0, 2);
-				_me[i++].m6 = GB(buf[j], 2, 2);
-				_me[i++].m6 = GB(buf[j], 4, 2);
-				_me[i++].m6 = GB(buf[j], 6, 2);
-			}
-		}
+		ReadBuffer::GetCurrent()->ReadBytesToHandler(size / 4, [&](uint8_t val) {
+			_me[i++].m6 = GB(val, 0, 2);
+			_me[i++].m6 = GB(val, 2, 2);
+			_me[i++].m6 = GB(val, 4, 2);
+			_me[i++].m6 = GB(val, 6, 2);
+		});
 	} else {
-		for (TileIndex i = 0; i != size;) {
-			SlArray(buf.data(), MAP_SL_BUF_SIZE, SLE_UINT8);
-			for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _me[i++].m6 = buf[j];
-		}
+		ReadBuffer::GetCurrent()->ReadBytesToHandler(size, [&](uint8_t val) {
+			_me[i++].m6 = val;
+		});
 	}
 }
 
 static void Load_MAP7()
 {
-	std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
-	TileIndex size = MapSize();
-
-	for (TileIndex i = 0; i != size;) {
-		SlArray(buf.data(), MAP_SL_BUF_SIZE, SLE_UINT8);
-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _me[i++].m7 = buf[j];
-	}
+	TileIndex i = 0;
+	ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
+		_me[i++].m7 = val;
+	});
 }
 
 static void Load_MAP8()
 {
-	std::array<uint16_t, MAP_SL_BUF_SIZE> buf;
-	TileIndex size = MapSize();
-
-	for (TileIndex i = 0; i != size;) {
-		SlArray(buf.data(), MAP_SL_BUF_SIZE, SLE_UINT16);
-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _me[i++].m8 = buf[j];
-	}
+	TileIndex i = 0;
+	ReadBuffer::GetCurrent()->ReadUint16sToHandler(MapSize(), [&](uint16_t val) {
+		_me[i++].m8 = val;
+	});
 }
 
 static void Load_WMAP()
@@ -348,32 +316,24 @@ struct MAP8 {
 };
 
 template <typename T>
-struct MAP_VarType {};
-
-template <>
-struct MAP_VarType<uint8_t>
-{
-	static const VarType var_type = SLE_UINT8;
-};
-
-template <>
-struct MAP_VarType<uint16_t>
-{
-	static const VarType var_type = SLE_UINT16;
-};
-
-template <typename T>
 static void Save_MAP()
 {
 	assert(_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 0);
 
-	std::array<typename T::FieldT, MAP_SL_BUF_SIZE> buf;
-	TileIndex size = MapSize();
+	static_assert(std::is_same_v<typename T::FieldT, uint8_t> || std::is_same_v<typename T::FieldT, uint16_t>);
 
+	TileIndex size = MapSize();
 	SlSetLength(size * sizeof(typename T::FieldT));
-	for (TileIndex i = 0; i != size;) {
-		for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) buf[j] = T::GetField(i++);
-		SlArray(buf.data(), MAP_SL_BUF_SIZE, MAP_VarType<typename T::FieldT>::var_type);
+
+	TileIndex i = 0;
+	if constexpr (std::is_same_v<typename T::FieldT, uint8_t>) {
+		MemoryDumper::GetCurrent()->WriteBytesFromHandler(size, [&]() -> uint8_t {
+			return T::GetField(i++);
+		});
+	} else {
+		MemoryDumper::GetCurrent()->WriteUint16sFromHandler(size, [&]() -> uint16_t {
+			return T::GetField(i++);
+		});
 	}
 }
 

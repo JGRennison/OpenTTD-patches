@@ -139,7 +139,7 @@ static std::vector<SaveLoad> GetSettingsDesc(bool is_loading)
 		if (is_loading && (sd->flags & SF_NO_NETWORK_SYNC) && _networking && !_network_server) {
 			if (IsSavegameVersionBefore(SLV_TABLE_CHUNKS)) {
 				/* We don't want to read this setting, so we do need to skip over it. */
-				saveloads.push_back({sd->name, new_cmd, GetVarFileType(new_type) | SLE_VAR_NULL, sd->save.length, SL_MIN_VERSION, SL_MAX_VERSION, 0, nullptr, 0, nullptr});
+				saveloads.push_back({sd->name, new_cmd, GetVarFileType(new_type) | SLE_VAR_NULL, sd->save.length, SL_MIN_VERSION, SL_MAX_VERSION, nullptr, 0, nullptr});
 			}
 			continue;
 		}
@@ -147,7 +147,7 @@ static std::vector<SaveLoad> GetSettingsDesc(bool is_loading)
 		SaveLoadAddrProc *address_proc = [](void *base, size_t extra) -> void* {
 			return const_cast<uint8_t *>((const uint8_t *)base + (ptrdiff_t)extra);
 		};
-		saveloads.push_back({sd->name, new_cmd, new_type, sd->save.length, SL_MIN_VERSION, SL_MAX_VERSION, sd->save.size, address_proc, reinterpret_cast<uintptr_t>(sd->save.address), nullptr});
+		saveloads.push_back({sd->name, new_cmd, new_type, sd->save.length, SL_MIN_VERSION, SL_MAX_VERSION, address_proc, reinterpret_cast<uintptr_t>(sd->save.address), nullptr});
 	}
 
 	return saveloads;

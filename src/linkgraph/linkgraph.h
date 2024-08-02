@@ -382,10 +382,10 @@ public:
 protected:
 	friend class LinkGraph::ConstNode;
 	friend class LinkGraph::Node;
-	friend SaveLoadTable GetLinkGraphDesc();
-	friend SaveLoadTable GetLinkGraphJobDesc();
-	friend void Save_LinkGraph(LinkGraph &lg);
-	friend void Load_LinkGraph(LinkGraph &lg);
+	friend struct LinkGraphNodeStructHandler;
+	friend struct LinkGraphNonTableHelper;
+	friend NamedSaveLoadTable GetLinkGraphDesc();
+	friend NamedSaveLoadTable GetLinkGraphJobDesc();
 
 	friend upstream_sl::SaveLoadTable upstream_sl::GetLinkGraphDesc();
 	friend upstream_sl::SaveLoadTable upstream_sl::GetLinkGraphJobDesc();

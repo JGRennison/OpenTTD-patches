@@ -21,7 +21,7 @@ static const NamedSaveLoad _new_signal_style_mapping_desc[] = {
 
 static void Save_NSID()
 {
-	std::vector<SaveLoad> slt = SlTableHeader(_new_signal_style_mapping_desc);
+	SaveLoadTableData slt = SlTableHeader(_new_signal_style_mapping_desc);
 
 	int index = 0;
 	for (NewSignalStyleMapping &it : _new_signal_style_mapping) {
@@ -35,7 +35,7 @@ static void Load_NSID()
 	_new_signal_style_mapping.fill({});
 
 	if (SlIsTableChunk()) {
-		std::vector<SaveLoad> slt = SlTableHeader(_new_signal_style_mapping_desc);
+		SaveLoadTableData slt = SlTableHeader(_new_signal_style_mapping_desc);
 
 		int index;
 		while ((index = SlIterateArray()) != -1) {

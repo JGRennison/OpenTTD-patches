@@ -42,7 +42,8 @@ namespace upstream_sl {
  */
 struct OrderBackup : OrderBackupPool::PoolItem<&_order_backup_pool>, BaseConsist {
 private:
-	friend SaveLoadTable GetOrderBackupDescription(); ///< Saving and loading of order backups.
+	friend NamedSaveLoadTable GetOrderBackupDescription(); ///< Saving and loading of order backups.
+	friend struct OrderBackupDispatchScheduleStructHandler; ///< Saving and loading of order backups.
 	friend upstream_sl::SaveLoadTable upstream_sl::GetOrderBackupDescription(); ///< Saving and loading of order backups.
 	friend void Load_BKOR();   ///< Creating empty orders upon savegame loading.
 	friend void Save_BKOR();   ///< Saving orders upon savegame saving.

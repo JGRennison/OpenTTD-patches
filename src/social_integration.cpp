@@ -59,14 +59,14 @@ public:
 	void Scan()
 	{
 #ifdef _WIN32
-		std::string extension = "-social.dll";
+		const char *extension = "-social.dll";
 #elif defined(__APPLE__)
-		std::string extension = "-social.dylib";
+		const char *extension = "-social.dylib";
 #else
-		std::string extension = "-social.so";
+		const char *extension = "-social.so";
 #endif
 
-		this->FileScanner::Scan(extension.c_str(), SOCIAL_INTEGRATION_DIR, false);
+		this->FileScanner::Scan(extension, SOCIAL_INTEGRATION_DIR, false);
 	}
 
 	bool AddFile(const std::string &filename, size_t basepath_length, const std::string &) override

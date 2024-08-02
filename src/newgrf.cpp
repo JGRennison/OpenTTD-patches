@@ -277,7 +277,7 @@ struct GRFLocation {
 	}
 };
 
-static btree::btree_map<GRFLocation, SpriteID> _grm_sprites;
+static btree::btree_map<GRFLocation, std::pair<SpriteID, uint16_t>> _grm_sprites;
 typedef btree::btree_map<GRFLocation, std::unique_ptr<uint8_t[]>> GRFLineToSpriteOverride;
 static GRFLineToSpriteOverride _grf_line_to_action6_sprite_override;
 static bool _action6_override_active = false;
@@ -2583,7 +2583,7 @@ static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, con
 				/* Check if the cargo types should not be changed */
 				if (cargotypes == 0xFFFFFFFF) break;
 
-				for (uint j = 0; j < 3; j++) {
+				for (uint j = 0; j < HOUSE_ORIGINAL_NUM_ACCEPTS; j++) {
 					/* Get the cargo number from the 'list' */
 					uint8_t cargo_part = GB(cargotypes, 8 * j, 8);
 					CargoID cargo = GetCargoTranslation(cargo_part, _cur.grffile);
@@ -2594,6 +2594,7 @@ static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, con
 					} else {
 						housespec->accepts_cargo[j] = cargo;
 					}
+					housespec->accepts_cargo_label[j] = CT_INVALID;
 				}
 				break;
 			}
@@ -3373,6 +3374,7 @@ static ChangeInfoResult IndustrytilesChangeInfo(uint indtid, int numinfo, int pr
 				uint16_t acctp = buf->ReadWord();
 				tsp->accepts_cargo[prop - 0x0A] = GetCargoTranslation(GB(acctp, 0, 8), _cur.grffile);
 				tsp->acceptance[prop - 0x0A] = Clamp(GB(acctp, 8, 8), 0, 16);
+				tsp->accepts_cargo_label[prop - 0x0A] = CT_INVALID;
 				break;
 			}
 
@@ -3459,14 +3461,14 @@ static ChangeInfoResult IgnoreIndustryProperty(int prop, ByteReader *buf)
 		case 0x0C:
 		case 0x0D:
 		case 0x0E:
-		case 0x10:
+		case 0x10: // INDUSTRY_ORIGINAL_NUM_OUTPUTS bytes
 		case 0x1B:
 		case 0x1F:
 		case 0x24:
 			buf->ReadWord();
 			break;
 
-		case 0x11:
+		case 0x11: // INDUSTRY_ORIGINAL_NUM_INPUTS bytes + 1
 		case 0x1A:
 		case 0x1C:
 		case 0x1D:
@@ -3498,7 +3500,7 @@ static ChangeInfoResult IgnoreIndustryProperty(int prop, ByteReader *buf)
 		}
 
 		case 0x16:
-			for (uint8_t j = 0; j < 3; j++) buf->ReadByte();
+			for (uint8_t j = 0; j < INDUSTRY_ORIGINAL_NUM_INPUTS; j++) buf->ReadByte();
 			break;
 
 		case 0x15:
@@ -3746,14 +3748,14 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 				break;
 
 			case 0x10: // Production cargo types
-				for (uint8_t j = 0; j < 2; j++) {
+				for (uint8_t j = 0; j < INDUSTRY_ORIGINAL_NUM_OUTPUTS; j++) {
 					indsp->produced_cargo[j] = GetCargoTranslation(buf->ReadByte(), _cur.grffile);
 					indsp->produced_cargo_label[j] = CT_INVALID;
 				}
 				break;
 
 			case 0x11: // Acceptance cargo types
-				for (uint8_t j = 0; j < 3; j++) {
+				for (uint8_t j = 0; j < INDUSTRY_ORIGINAL_NUM_INPUTS; j++) {
 					indsp->accepts_cargo[j] = GetCargoTranslation(buf->ReadByte(), _cur.grffile);
 					indsp->accepts_cargo_label[j] = CT_INVALID;
 				}
@@ -6300,22 +6302,22 @@ static void NewSpriteGroup(ByteReader *buf)
 					act_group = group;
 					group->version = type;
 					if (type == 0) {
-						group->num_input = 3;
-						for (uint i = 0; i < 3; i++) {
+						group->num_input = INDUSTRY_ORIGINAL_NUM_INPUTS;
+						for (uint i = 0; i < INDUSTRY_ORIGINAL_NUM_INPUTS; i++) {
 							group->subtract_input[i] = (int16_t)buf->ReadWord(); // signed
 						}
-						group->num_output = 2;
-						for (uint i = 0; i < 2; i++) {
+						group->num_output = INDUSTRY_ORIGINAL_NUM_OUTPUTS;
+						for (uint i = 0; i < INDUSTRY_ORIGINAL_NUM_OUTPUTS; i++) {
 							group->add_output[i] = buf->ReadWord(); // unsigned
 						}
 						group->again = buf->ReadByte();
 					} else if (type == 1) {
-						group->num_input = 3;
-						for (uint i = 0; i < 3; i++) {
+						group->num_input = INDUSTRY_ORIGINAL_NUM_INPUTS;
+						for (uint i = 0; i < INDUSTRY_ORIGINAL_NUM_INPUTS; i++) {
 							group->subtract_input[i] = buf->ReadByte();
 						}
-						group->num_output = 2;
-						for (uint i = 0; i < 2; i++) {
+						group->num_output = INDUSTRY_ORIGINAL_NUM_OUTPUTS;
+						for (uint i = 0; i < INDUSTRY_ORIGINAL_NUM_OUTPUTS; i++) {
 							group->add_output[i] = buf->ReadByte();
 						}
 						group->again = buf->ReadByte();
@@ -8028,6 +8030,21 @@ static void GRFInfo(ByteReader *buf)
 	Debug(grf, 1, "GRFInfo: Loaded GRFv{} set {:08X} - {} (palette: {}, version: {})", version, BSWAP32(grfid), StrMakeValid(name), (_cur.grfconfig->palette & GRFP_USE_MASK) ? "Windows" : "DOS", _cur.grfconfig->version);
 }
 
+/**
+ * Check if a sprite ID range is within the GRM reversed range for the currently loading NewGRF.
+ * @param first_sprite First sprite of range.
+ * @param num_sprites Number of sprites in the range.
+ * @return True iff the NewGRF has reserved a range equal to or greater than the provided range.
+ */
+static bool IsGRMReservedSprite(SpriteID first_sprite, uint16_t num_sprites)
+{
+	for (const auto &grm_sprite : _grm_sprites) {
+		if (grm_sprite.first.grfid != _cur.grffile->grfid) continue;
+		if (grm_sprite.second.first <= first_sprite && grm_sprite.second.first + grm_sprite.second.second >= first_sprite + num_sprites) return true;
+	}
+	return false;
+}
+
 /* Action 0x0A */
 static void SpriteReplace(ByteReader *buf)
 {
@@ -8048,6 +8065,19 @@ static void SpriteReplace(ByteReader *buf)
 		GrfMsg(2, "SpriteReplace: [Set {}] Changing {} sprites, beginning with {}",
 			i, num_sprites, first_sprite
 		);
+
+		if (first_sprite + num_sprites >= SPR_OPENTTD_BASE) {
+			/* Outside allowed range, check for GRM sprite reservations. */
+			if (!IsGRMReservedSprite(first_sprite, num_sprites)) {
+				GrfMsg(0, "SpriteReplace: [Set {}] Changing {} sprites, beginning with {}, above limit of {} and not within reserved range, ignoring.",
+					i, num_sprites, first_sprite, SPR_OPENTTD_BASE);
+
+				for (uint j = 0; j < num_sprites; j++) {
+					LoadNextSprite(-1, *_cur.file, _cur.nfo_line);
+				}
+				return;
+			}
+		}
 
 		for (uint j = 0; j < num_sprites; j++) {
 			int load_index = first_sprite + j;
@@ -8423,7 +8453,7 @@ static void ParamSet(ByteReader *buf)
 
 							/* Reserve space at the current sprite ID */
 							GrfMsg(4, "ParamSet: GRM: Allocated {} sprites at {}", count, _cur.spriteid);
-							_grm_sprites[GRFLocation(_cur.grffile->grfid, _cur.nfo_line)] = _cur.spriteid;
+							_grm_sprites[GRFLocation(_cur.grffile->grfid, _cur.nfo_line)] = std::make_pair(_cur.spriteid, count);
 							_cur.spriteid += count;
 						}
 					}
@@ -8457,7 +8487,7 @@ static void ParamSet(ByteReader *buf)
 							switch (op) {
 								case 0:
 									/* Return space reserved during reservation stage */
-									src1 = _grm_sprites[GRFLocation(_cur.grffile->grfid, _cur.nfo_line)];
+									src1 = _grm_sprites[GRFLocation(_cur.grffile->grfid, _cur.nfo_line)].first;
 									GrfMsg(4, "ParamSet: GRM: Using pre-allocated sprites at {}", src1);
 									break;
 

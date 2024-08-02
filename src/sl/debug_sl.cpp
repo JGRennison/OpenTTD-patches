@@ -85,7 +85,7 @@ static void Load_DBGD()
 		NSLT("config", SLEG_SSTR(_loadgame_DBGC_data, SLE_STR | SLF_ALLOW_CONTROL | SLF_ALLOW_NEWLINE)),
 		NSLT("log",    SLEG_SSTR(_loadgame_DBGL_data, SLE_STR | SLF_ALLOW_CONTROL | SLF_ALLOW_NEWLINE)),
 	};
-	SlLoadTableOrRiffFiltered(nsl);
+	SlLoadTableObjectChunk(nsl);
 }
 
 static void Check_DBGD()
@@ -99,7 +99,7 @@ static void Check_DBGD()
 		NSLT("config", SLEG_SSTR(_load_check_data.debug_config_data, SLE_STR | SLF_ALLOW_CONTROL | SLF_ALLOW_NEWLINE)),
 		NSLT("log",    SLEG_SSTR(_load_check_data.debug_log_data, SLE_STR | SLF_ALLOW_CONTROL | SLF_ALLOW_NEWLINE)),
 	};
-	SlLoadTableOrRiffFiltered(nsl);
+	SlLoadTableObjectChunk(nsl);
 }
 
 extern const ChunkHandler debug_chunk_handlers[] = {

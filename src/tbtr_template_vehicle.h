@@ -88,7 +88,7 @@ private:
 	TemplateVehicle *first;                     ///< NOSAVE: pointer to the first vehicle in the chain
 
 public:
-	friend const SaveLoadTable GTD();
+	friend NamedSaveLoadTable GetTemplateVehicleDesc();
 	friend void AfterLoadTemplateVehicles();
 
 	// Template usage configuration
