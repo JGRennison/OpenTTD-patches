@@ -2472,8 +2472,16 @@ SaveLoadTableData SlTableHeaderOrRiff(const NamedSaveLoadTable &slt)
 
 SaveLoadTableData SlPrepareNamedSaveLoadTableForPtrOrNull(const NamedSaveLoadTable &slt)
 {
+	const bool table_mode = (_sl.action == SLA_NULL) || SlIsTableChunk();
 	SaveLoadTableData saveloads;
-	SlFilterNamedSaveLoadTable(slt, saveloads);
+	for (auto &nsld : slt) {
+		if (table_mode) {
+			if (StrEmpty(nsld.name)) continue;
+		} else {
+			if ((nsld.nsl_flags & NSLF_TABLE_ONLY) != 0) continue;
+		}
+		SlFilterObjectMember(nsld.save_load, saveloads);
+	}
 	for (auto &sld : saveloads) {
 		if (sld.cmd == SL_STRUCTLIST || sld.cmd == SL_STRUCT) {
 			std::unique_ptr<SaveLoadStructHandler> handler = sld.struct_handler_factory();
@@ -2689,6 +2697,7 @@ static void SlLoadChunk(const ChunkHandler &ch)
 		/* read in real header */
 		m = SlReadByte();
 		_sl.block_mode = m;
+		_sl.chunk_block_modes[_sl.current_chunk_id] = m;
 	}
 
 	_sl.expect_table_header = (_sl.block_mode == CH_TABLE || _sl.block_mode == CH_SPARSE_TABLE);
@@ -2776,6 +2785,7 @@ static void SlLoadCheckChunk(const ChunkHandler *ch, uint32_t chunk_id)
 		/* read in real header */
 		m = SlReadByte();
 		_sl.block_mode = m;
+		_sl.chunk_block_modes[_sl.current_chunk_id] = m;
 	}
 
 	_sl.expect_table_header = (_sl.block_mode == CH_TABLE || _sl.block_mode == CH_SPARSE_TABLE);
@@ -3012,6 +3022,7 @@ static void SlFixPointers()
 
 	for (auto &ch : ChunkHandlers()) {
 		_sl.current_chunk_id = ch.id;
+		_sl.block_mode = _sl.chunk_block_modes[_sl.current_chunk_id];
 		if (ch.special_proc != nullptr) {
 			if (ch.special_proc(ch.id, CSLSO_PRE_PTRS) == CSLSOR_LOAD_CHUNK_CONSUMED) continue;
 		}
