@@ -1786,7 +1786,7 @@ STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP                           :{BLACK}시간�
 
 STR_TIMETABLE_SCHEDULED_DISPATCH                                :{BLACK}배차 일정
 STR_TIMETABLE_SCHEDULED_DISPATCH_TOOLTIP                        :{BLACK}시간표 시작 시간 자동 설정을 위한 '배차 일정' 창을 엽니다.
-STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER                          :{PUSH_COLOUR}{YELLOW}[배차 일정{STRING}의 기준]{POP_COLOUR}
+STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER                          :{PUSH_COLOUR}{YELLOW}[{STRING}배차 일정의 기준]{POP_COLOUR}
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME             :{PUSH_COLOUR}{RED}[{STRING}배차 기준 - 대기 시간표가 작성되지 않음]{POP_COLOUR}
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_SCHEDULE_INDEX           :{NUM}{NBSP}-{NBSP}
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NAMED_SCHEDULE           :{STRING}{NBSP}-{NBSP}
@@ -2105,7 +2105,7 @@ STR_SCHDISPATCH_ENABLED                                         :{BLACK}활성�
 STR_SCHDISPATCH_ENABLED_TOOLTIP                                 :{BLACK}배차 일정을 활성화합니다. 자동 배차 조절과 같이 사용할 수 없습니다.
 STR_SCHDISPATCH_ADD                                             :{BLACK}출발 슬롯 추가
 STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}이 일정에 새 출발 슬롯을 추가합니다.
-STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA                               :{BLACK}{STRING} CTRL + 클릭하면 여러 출발 슬록을 한 번에 추가할 수 있습니다.
+STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA                               :{BLACK}{STRING} CTRL + 클릭하면 여러 출발 슬롯을 한 번에 추가할 수 있습니다.
 STR_SCHDISPATCH_ADD_CAPTION                                     :{BLACK}출발 슬롯
 STR_SCHDISPATCH_DURATION                                        :{BLACK}반복 주기
 STR_SCHDISPATCH_DURATION_TOOLTIP                                :{BLACK}이 일정의 반복 주기를 설정합니다.
@@ -2246,7 +2246,7 @@ STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_EXTRA                     :{STRING}{}{BLAC
 STR_CONFIG_SETTING_ALLOW_SHARES                                 :다른 회사의 지분을 사는 것을 허용: {STRING}
 STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :이 설정을 켜면, 회사의 지분을 거래할 수 있게 됩니다. 회사의 지분을 거래하려면 해당 회사가 어느 정도 오래되어야 합니다
 
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :지분 거래를 허용할 최소 회사 나이: {STRING}년
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :지분 거래를 허용할 최소 회사 나이: {STRING}
 STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :지분을 사고 팔기 위해 필요한 회사의 최소 나이를 설정합니다.
 STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_VALUE                   :{COMMA}년
 STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_NO_MIN                  :제한 없음
