@@ -95,8 +95,8 @@ struct Pool : PoolBase {
 	using ParamType = typename Tops::Tparam_type;
 	using PtrType = typename Tops::Tptr;
 
-	/* Ensure the highest possible index, i.e. Tmax_size -1, is within the bounds of Tindex. */
-	static_assert(Tmax_size - 1 <= MAX_UVALUE(Tindex));
+	/* Ensure Tmax_size is within the bounds of Tindex. */
+	static_assert((uint64_t)(Tmax_size - 1) >> 8 * sizeof(Tindex) == 0);
 
 	static constexpr size_t MAX_SIZE = Tmax_size; ///< Make template parameter accessible from outside
 
@@ -295,7 +295,7 @@ public:
 		inline void operator delete(void *p)
 		{
 			if (p == nullptr) return;
-			Titem *pn = static_cast<Titem *>(p);
+			Titem *pn = (Titem *)p;
 			dbg_assert_msg(pn == Tpool->Get(pn->index), "name: %s", Tpool->name);
 			Tpool->FreeItem(pn->index);
 		}

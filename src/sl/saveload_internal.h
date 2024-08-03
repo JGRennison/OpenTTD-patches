@@ -23,6 +23,7 @@ void ResetOldNames();
 void ResetOldWaypoints();
 void MoveBuoysToWaypoints();
 void MoveWaypointsToBaseStations();
+SaveLoadTable GetBaseStationDescription();
 
 void AfterLoadVehiclesPhase1(bool part_of_load);
 void AfterLoadVehiclesPhase2(bool part_of_load);

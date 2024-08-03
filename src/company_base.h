@@ -17,7 +17,6 @@
 #include "settings_type.h"
 #include "group.h"
 #include <array>
-#include <numeric>
 #include <string>
 
 static const Money COMPANY_MAX_LOAN_DEFAULT = INT64_MIN;
@@ -32,9 +31,9 @@ struct CompanyEconomyEntry {
 };
 
 struct CompanyInfrastructure {
-	std::array<uint32_t, RAILTYPE_END> rail{}; ///< Count of company owned track bits for each rail type.
 	std::array<uint32_t, ROADTYPE_END> road{}; ///< Count of company owned track bits for each road type.
 	uint32_t signal{};                         ///< Count of company owned signals.
+	std::array<uint32_t, RAILTYPE_END> rail{}; ///< Count of company owned track bits for each rail type.
 	uint32_t water{};                          ///< Count of company owned track bits for canals.
 	uint32_t station{};                        ///< Count of company owned station tiles.
 	uint32_t airport{};                        ///< Count of company owned airports.
@@ -42,7 +41,9 @@ struct CompanyInfrastructure {
 	/** Get total sum of all owned track bits. */
 	uint32_t GetRailTotal() const
 	{
-		return std::accumulate(std::begin(this->rail), std::end(this->rail), 0U);
+		uint32_t total = 0;
+		for (RailType rt =  RAILTYPE_BEGIN; rt < RAILTYPE_END; rt++) total += this->rail[rt];
+		return total;
 	}
 
 	uint32_t GetRoadTotal() const;
@@ -157,7 +158,7 @@ struct Company : CompanyPool::PoolItem<&_company_pool>, CompanyProperties {
 	RailTypes avail_railtypes;         ///< Rail types available to this company.
 	RoadTypes avail_roadtypes;         ///< Road types available to this company.
 
-	std::unique_ptr<class AIInstance> ai_instance;
+	class AIInstance *ai_instance;
 	class AIInfo *ai_info;
 	std::unique_ptr<class AIConfig> ai_config;
 

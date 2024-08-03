@@ -117,17 +117,17 @@ DEFINE_POOL_METHOD(inline void *)::AllocateItem(size_t size, size_t index, Pool:
 	Titem *item;
 	if (Tcache && this->alloc_cache != nullptr) {
 		dbg_assert(sizeof(Titem) == size);
-		item = reinterpret_cast<Titem *>(this->alloc_cache);
+		item = (Titem *)this->alloc_cache;
 		this->alloc_cache = this->alloc_cache->next;
 		if (Tzero) {
 			/* Explicitly casting to (void *) prevents a clang warning -
 			 * we are actually memsetting a (not-yet-constructed) object */
-			memset(static_cast<void *>(item), 0, sizeof(Titem));
+			memset((void *)item, 0, sizeof(Titem));
 		}
 	} else if (Tzero) {
-		item = reinterpret_cast<Titem *>(CallocT<uint8_t>(size));
+		item = (Titem *)CallocT<uint8_t>(size);
 	} else {
-		item = reinterpret_cast<Titem *>(MallocT<uint8_t>(size));
+		item = (Titem *)MallocT<uint8_t>(size);
 	}
 	this->data[index] = Tops::PutPtr(item, param);
 	SetBit(this->free_bitmap[index / 64], index % 64);
@@ -192,7 +192,7 @@ DEFINE_POOL_METHOD(void)::FreeItem(size_t index)
 	dbg_assert(index < this->size);
 	dbg_assert(this->data[index] != Tops::NullValue());
 	if (Tcache) {
-		AllocCache *ac = reinterpret_cast<AllocCache *>(this->data[index]);
+		AllocCache *ac = (AllocCache *)this->data[index];
 		ac->next = this->alloc_cache;
 		this->alloc_cache = ac;
 	} else {

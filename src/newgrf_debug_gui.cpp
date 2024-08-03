@@ -779,7 +779,7 @@ struct NewGRFInspectWindow : Window {
 					if (psa[j] != 0) last_non_blank = j + 1;
 				}
 				const uint psa_limit = (last_non_blank + 3) & ~3;
-				for (uint j = 0; j < psa_limit; j += 4) {
+				for (uint j = 0; j < psa_limit; j += 44) {
 					this->DrawString(r, i++, "  %i: %i %i %i %i", j, psa[j], psa[j + 1], psa[j + 2], psa[j + 3]);
 				}
 				if (last_non_blank != (uint)psa.size()) {

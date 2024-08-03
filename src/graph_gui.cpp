@@ -1440,6 +1440,7 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 					ToggleBit(_legend_excluded_cargo, (*it)->Index());
 					this->UpdateExcludedData();
 					this->UpdateCargoExcludingGraphs();
+					break;
 				}
 				break;
 			}

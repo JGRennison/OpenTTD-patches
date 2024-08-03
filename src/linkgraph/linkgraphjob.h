@@ -128,7 +128,7 @@ private:
 
 	typedef std::vector<NodeAnnotation> NodeAnnotationVector;
 
-	friend NamedSaveLoadTable GetLinkGraphJobDesc();
+	friend SaveLoadTable GetLinkGraphJobDesc();
 	friend upstream_sl::SaveLoadTable upstream_sl::GetLinkGraphJobDesc();
 	friend void GetLinkGraphJobDayLengthScaleAfterLoad(LinkGraphJob *lgj);
 	friend void LinkGraphFixupAfterLoad(bool compression_was_date);

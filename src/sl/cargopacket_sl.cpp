@@ -155,23 +155,23 @@ extern btree::btree_map<uint64_t, Money> _cargo_packet_deferred_payments;
  * some of the variables itself are private.
  * @return the saveload description for CargoPackets.
  */
-NamedSaveLoadTable GetCargoPacketDesc()
+SaveLoadTable GetCargoPacketDesc()
 {
-	static const NamedSaveLoad _cargopacket_desc[] = {
-		NSL("source",             SLE_VAR(CargoPacket, first_station,            SLE_UINT16)),
-		NSL("source_xy",          SLE_VAR(CargoPacket, source_xy,                SLE_UINT32)),
-		NSL("loaded_at_xy",       SLE_VAR(CargoPacket, next_hop,                 SLE_FILE_U32 | SLE_VAR_U16)),
-		NSL("count",              SLE_VAR(CargoPacket, count,                    SLE_UINT16)),
-		NSL("periods_in_transit", SLE_CONDVAR_X(CargoPacket, periods_in_transit, SLE_FILE_U8 | SLE_VAR_U16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_MORE_CARGO_AGE, 0, 0))),
-		NSL("periods_in_transit", SLE_CONDVAR_X(CargoPacket, periods_in_transit, SLE_UINT16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_MORE_CARGO_AGE))),
-		NSL("feeder_share",       SLE_VAR(CargoPacket, feeder_share,             SLE_INT64)),
-		NSL("source_type",        SLE_CONDVAR(CargoPacket, source_type,          SLE_UINT8,  SLV_125, SL_MAX_VERSION)),
-		NSL("source_id",          SLE_CONDVAR(CargoPacket, source_id,            SLE_UINT16, SLV_125, SL_MAX_VERSION)),
-		NSL("travelled.x",        SLE_CONDVAR_X(CargoPacket, travelled.x,        SLE_INT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CARGO_TRAVELLED))),
-		NSL("travelled.y",        SLE_CONDVAR_X(CargoPacket, travelled.y,        SLE_INT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CARGO_TRAVELLED))),
+	static const SaveLoad _cargopacket_desc[] = {
+		     SLE_VAR(CargoPacket, first_station,   SLE_UINT16),
+		     SLE_VAR(CargoPacket, source_xy,       SLE_UINT32),
+		     SLE_VAR(CargoPacket, next_hop,        SLE_FILE_U32 | SLE_VAR_U16),
+		     SLE_VAR(CargoPacket, count,           SLE_UINT16),
+		SLE_CONDVAR_X(CargoPacket, periods_in_transit, SLE_FILE_U8 | SLE_VAR_U16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_MORE_CARGO_AGE, 0, 0)),
+		SLE_CONDVAR_X(CargoPacket, periods_in_transit, SLE_UINT16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_MORE_CARGO_AGE)),
+		     SLE_VAR(CargoPacket, feeder_share,    SLE_INT64),
+		 SLE_CONDVAR(CargoPacket, source_type,     SLE_UINT8,  SLV_125, SL_MAX_VERSION),
+		 SLE_CONDVAR(CargoPacket, source_id,       SLE_UINT16, SLV_125, SL_MAX_VERSION),
+		SLE_CONDVAR_X(CargoPacket, travelled.x, SLE_INT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CARGO_TRAVELLED)),
+		SLE_CONDVAR_X(CargoPacket, travelled.y, SLE_INT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CARGO_TRAVELLED)),
 
 		/* Used to be paid_for, but that got changed. */
-		NSL("", SLE_CONDNULL(1, SL_MIN_VERSION, SLV_121)),
+		SLE_CONDNULL(1, SL_MIN_VERSION, SLV_121),
 	};
 	return _cargopacket_desc;
 }
@@ -181,11 +181,10 @@ NamedSaveLoadTable GetCargoPacketDesc()
  */
 static void Save_CAPA()
 {
-	SaveLoadTableData slt = SlTableHeader(GetCargoPacketDesc());
-
+	std::vector<SaveLoad> filtered_packet_desc = SlFilterObject(GetCargoPacketDesc());
 	for (CargoPacket *cp : CargoPacket::Iterate()) {
 		SlSetArrayIndex(cp->index);
-		SlObjectSaveFiltered(cp, slt);
+		SlObjectSaveFiltered(cp, filtered_packet_desc);
 	}
 }
 
@@ -194,12 +193,11 @@ static void Save_CAPA()
  */
 static void Load_CAPA()
 {
-	SaveLoadTableData slt = SlTableHeaderOrRiff(GetCargoPacketDesc());
-
+	std::vector<SaveLoad> filtered_packet_desc = SlFilterObject(GetCargoPacketDesc());
 	int index;
 	while ((index = SlIterateArray()) != -1) {
 		CargoPacket *cp = new (index) CargoPacket();
-		SlObjectLoadFiltered(cp, slt);
+		SlObjectLoadFiltered(cp, filtered_packet_desc);
 	}
 }
 
@@ -239,7 +237,7 @@ void Load_CPDP()
 
 /** Chunk handlers related to cargo packets. */
 static const ChunkHandler cargopacket_chunk_handlers[] = {
-	{ 'CAPA', Save_CAPA, Load_CAPA, nullptr, nullptr, CH_TABLE },
+	{ 'CAPA', Save_CAPA, Load_CAPA, nullptr, nullptr, CH_ARRAY },
 	{ 'CPDP', Save_CPDP, Load_CPDP, nullptr, nullptr, CH_RIFF  },
 };
 

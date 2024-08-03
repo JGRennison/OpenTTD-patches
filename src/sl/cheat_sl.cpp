@@ -80,7 +80,7 @@ std::vector<NamedSaveLoad> GetCheatsDesc(bool save) {
  */
 static void Save_CHTS()
 {
-	SaveLoadTableData slt = SlTableHeader(GetCheatsDesc(true));
+	std::vector<SaveLoad> slt = SlTableHeader(GetCheatsDesc(true));
 
 	SlSetArrayIndex(0);
 	SlObjectSaveFiltered(&_cheats, slt);
@@ -105,12 +105,16 @@ static void Load_CHTS()
 		};
 
 		UnknownCheatHandler uch{};
-		SaveLoadTableData slt = SlTableHeader(GetCheatsDesc(false), &uch);
+		std::vector<SaveLoad> slt = SlTableHeader(GetCheatsDesc(false), &uch);
 
-		SlLoadTableObjectChunk(slt, &_cheats);
+		if (SlIterateArray() == -1) return;
+		SlObjectLoadFiltered(&_cheats, slt);
+		if (SlIterateArray() != -1) {
+			SlErrorCorruptFmt("Too many CHTS entries");
+		}
 	} else {
 		size_t count = SlGetFieldLength();
-		SaveLoadTableData slt = SlTableHeaderOrRiff(GetCheatsDesc(false));
+		std::vector<SaveLoad> slt = SlTableHeaderOrRiff(GetCheatsDesc(false));
 
 		/* Cheats were added over the years without a savegame bump. They are
 		 * stored as 2 SLE_BOOLs per entry. "count" indicates how many SLE_BOOLs

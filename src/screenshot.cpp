@@ -41,6 +41,8 @@ static const char * const SCREENSHOT_NAME = "screenshot"; ///< Default filename 
 static const char * const HEIGHTMAP_NAME  = "heightmap";  ///< Default filename of a saved heightmap.
 
 std::string _screenshot_format_name;  ///< Extension of the current screenshot format (corresponds with #_cur_screenshot_format).
+uint _num_screenshot_formats;         ///< Number of available screenshot formats.
+uint _cur_screenshot_format;          ///< Index of the currently selected screenshot format in #_screenshot_formats.
 static std::string _screenshot_name;  ///< Filename of the screenshot file.
 std::string _full_screenshot_path;    ///< Pathname of the screenshot file.
 uint _heightmap_highest_peak;         ///< When saving a heightmap, this contains the highest peak on the map.
@@ -598,26 +600,24 @@ static const ScreenshotFormat _screenshot_formats[] = {
 	{"pcx", &MakePCXImage},
 };
 
-/* The currently loaded screenshot format. Set to a valid value as it might be used in early crash logs, when InitializeScreenshotFormats has not been called yet. */
-static const ScreenshotFormat *_cur_screenshot_format = std::begin(_screenshot_formats);
-
 /** Get filename extension of current screenshot file format. */
 const char *GetCurrentScreenshotExtension()
 {
-	return _cur_screenshot_format->extension;
+	return _screenshot_formats[_cur_screenshot_format].extension;
 }
 
 /** Initialize screenshot format information on startup, with #_screenshot_format_name filled from the loadsave code. */
 void InitializeScreenshotFormats()
 {
-	for (auto &format : _screenshot_formats) {
-		if (_screenshot_format_name == format.extension) {
-			_cur_screenshot_format = &format;
-			return;
+	uint j = 0;
+	for (uint i = 0; i < lengthof(_screenshot_formats); i++) {
+		if (_screenshot_format_name.compare(_screenshot_formats[i].extension) == 0) {
+			j = i;
+			break;
 		}
 	}
-
-	_cur_screenshot_format = std::begin(_screenshot_formats);
+	_cur_screenshot_format = j;
+	_num_screenshot_formats = lengthof(_screenshot_formats);
 }
 
 /**
@@ -746,7 +746,8 @@ static const char *MakeScreenshotName(const char *default_fn, const char *ext, b
 /** Make a screenshot of the current screen. */
 static bool MakeSmallScreenshot(bool crashlog)
 {
-	return _cur_screenshot_format->proc(MakeScreenshotName(SCREENSHOT_NAME, _cur_screenshot_format->extension, crashlog), CurrentScreenCallback, nullptr, _screen.width, _screen.height,
+	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
+	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension, crashlog), CurrentScreenCallback, nullptr, _screen.width, _screen.height,
 			BlitterFactory::GetCurrentBlitter()->GetScreenDepth(), _cur_palette.palette);
 }
 
@@ -851,7 +852,8 @@ static bool MakeLargeWorldScreenshot(ScreenshotType t, uint32_t width = 0, uint3
 	Viewport vp;
 	SetupScreenshotViewport(t, &vp, width, height);
 
-	return _cur_screenshot_format->proc(MakeScreenshotName(SCREENSHOT_NAME, _cur_screenshot_format->extension), LargeWorldCallback, &vp, vp.width, vp.height,
+	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
+	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), LargeWorldCallback, &vp, vp.width, vp.height,
 			BlitterFactory::GetCurrentBlitter()->GetScreenDepth(), _cur_palette.palette);
 }
 
@@ -898,7 +900,8 @@ bool MakeHeightmapScreenshot(const char *filename)
 		_heightmap_highest_peak = std::max(h, _heightmap_highest_peak);
 	}
 
-	return _cur_screenshot_format->proc(filename, HeightmapCallback, nullptr, MapSizeX(), MapSizeY(), 8, palette);
+	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
+	return sf->proc(filename, HeightmapCallback, nullptr, MapSizeX(), MapSizeY(), 8, palette);
 }
 
 static ScreenshotType _confirmed_screenshot_type; ///< Screenshot type the current query is about to confirm.
@@ -1003,7 +1006,8 @@ static bool RealMakeScreenshot(ScreenshotType t, std::string name, uint32_t widt
 			break;
 
 		case SC_HEIGHTMAP: {
-			ret = MakeHeightmapScreenshot(MakeScreenshotName(HEIGHTMAP_NAME, _cur_screenshot_format->extension));
+			const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
+			ret = MakeHeightmapScreenshot(MakeScreenshotName(HEIGHTMAP_NAME, sf->extension));
 			break;
 		}
 
@@ -1078,7 +1082,8 @@ static void SmallMapCallback(void *userdata, void *buf, uint y, uint pitch, uint
 bool MakeSmallMapScreenshot(unsigned int width, unsigned int height, SmallMapWindow *window)
 {
 	_screenshot_name[0] = '\0';
-	bool ret = _cur_screenshot_format->proc(MakeScreenshotName(SCREENSHOT_NAME, _cur_screenshot_format->extension), SmallMapCallback, window, width, height, BlitterFactory::GetCurrentBlitter()->GetScreenDepth(), _cur_palette.palette);
+	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
+	bool ret = sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), SmallMapCallback, window, width, height, BlitterFactory::GetCurrentBlitter()->GetScreenDepth(), _cur_palette.palette);
 	ShowScreenshotResultMessage(SC_SMALLMAP, ret);
 	return ret;
 }
@@ -1329,7 +1334,8 @@ bool MakeMinimapWorldScreenshot(const char *name)
 	_screenshot_name.clear();
 	if (name != nullptr) _screenshot_name.assign(name);
 
-	return _cur_screenshot_format->proc(MakeScreenshotName(SCREENSHOT_NAME, _cur_screenshot_format->extension), MinimapScreenCallback, nullptr, MapSizeX(), MapSizeY(), 32, _cur_palette.palette);
+	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
+	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), MinimapScreenCallback, nullptr, MapSizeX(), MapSizeY(), 32, _cur_palette.palette);
 }
 
 /**
@@ -1340,7 +1346,8 @@ bool MakeTopographyScreenshot(const char *name)
 	_screenshot_name.clear();
 	if (name != nullptr) _screenshot_name.assign(name);
 
-	return _cur_screenshot_format->proc(MakeScreenshotName(SCREENSHOT_NAME, _cur_screenshot_format->extension), TopographyScreenCallback, nullptr, MapSizeX(), MapSizeY(), 32, _cur_palette.palette);
+	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
+	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), TopographyScreenCallback, nullptr, MapSizeX(), MapSizeY(), 32, _cur_palette.palette);
 }
 
 /**
@@ -1351,5 +1358,6 @@ bool MakeIndustryScreenshot(const char *name)
 	_screenshot_name.clear();
 	if (name != nullptr) _screenshot_name.assign(name);
 
-	return _cur_screenshot_format->proc(MakeScreenshotName(SCREENSHOT_NAME, _cur_screenshot_format->extension), IndustryScreenCallback, nullptr, MapSizeX(), MapSizeY(), 32, _cur_palette.palette);
+	const ScreenshotFormat *sf = _screenshot_formats + _cur_screenshot_format;
+	return sf->proc(MakeScreenshotName(SCREENSHOT_NAME, sf->extension), IndustryScreenCallback, nullptr, MapSizeX(), MapSizeY(), 32, _cur_palette.palette);
 }

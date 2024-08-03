@@ -793,7 +793,6 @@ struct EconomySettings {
 	bool     disable_inflation_newgrf_flag;  ///< Disable NewGRF inflation flag
 	CargoPaymentAlgorithm payment_algorithm; ///< Cargo payment algorithm
 	TickRateMode tick_rate;                  ///< Tick rate mode
-	uint8_t industry_event_rate;             ///< Rate of industry events
 };
 
 struct OldEconomySettings {

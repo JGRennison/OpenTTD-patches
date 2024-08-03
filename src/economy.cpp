@@ -1026,13 +1026,14 @@ void SetPriceBaseMultiplier(Price price, int factor)
  */
 void StartupIndustryDailyChanges(bool init_counter)
 {
+	uint map_size = MapLogX() + MapLogY();
 	/* After getting map size, it needs to be scaled appropriately and divided by 31,
 	 * which stands for the days in a month.
 	 * Using just 31 will make it so that a monthly reset (based on the real number of days of that month)
 	 * would not be needed.
 	 * Since it is based on "fractional parts", the leftover days will not make much of a difference
 	 * on the overall total number of changes performed */
-	_economy.industry_daily_increment = (MapSize() * _settings_game.economy.industry_event_rate) / (31 * 100);
+	_economy.industry_daily_increment = (1 << map_size) / 31;
 
 	if (init_counter) {
 		/* A new game or a savegame from an older version will require the counter to be initialized */
@@ -1658,22 +1659,6 @@ struct IsEmptyAction
 };
 
 /**
- * Action to check if a vehicle is unloading cargo.
- */
-struct IsUnloadingAction
-{
-	/**
-	 * Checks if the vehicle is unloading cargo.
-	 * @param v Vehicle to be checked.
-	 * @return true if v is unloading, false otherwise.
-	 */
-	bool operator()(const Vehicle *v)
-	{
-		return HasBit(v->vehicle_flags, VF_CARGO_UNLOADING);
-	}
-};
-
-/**
  * Action to check whether a vehicle is wholly in the platform.
  */
 struct ThroughLoadTrainInPlatformAction
@@ -1789,14 +1774,14 @@ struct FinalizeRefitAction
 /**
  * Refit a vehicle in a station.
  * @param v Vehicle to be refitted.
- * @param v_start v->GetFirstEnginePart().
  * @param consist_capleft Added cargo capacities in the consist.
  * @param st Station the vehicle is loading at.
  * @param next_station Possible next stations the vehicle can travel to.
  * @param new_cid Target cargo for refit.
  */
-static void HandleStationRefit(Vehicle *v, Vehicle *v_start, CargoArray &consist_capleft, Station *st, CargoStationIDStackSet next_station, CargoID new_cid)
+static void HandleStationRefit(Vehicle *v, CargoArray &consist_capleft, Station *st, CargoStationIDStackSet next_station, CargoID new_cid)
 {
+	Vehicle *v_start = v->GetFirstEnginePart();
 	if (!IterateVehicleParts(v_start, IsEmptyAction())) return;
 	if (v->type == VEH_TRAIN && !IterateVehicleParts(v_start, ThroughLoadTrainInPlatformAction())) return;
 
@@ -2054,7 +2039,6 @@ static void LoadUnloadVehicle(Vehicle *front)
 	CargoPayment *payment = front->cargo_payment;
 
 	uint artic_part = 0; // Articulated part we are currently trying to load. (not counting parts without capacity)
-	bool suppress_artic_load = false;
 	for (Vehicle *v = front; v != nullptr; v = v->Next()) {
 		if (pull_through_mode && HasBit(Train::From(v)->flags, VRF_BEYOND_PLATFORM_END)) {
 			if (v->cargo_cap != 0) {
@@ -2092,10 +2076,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 			}
 			platform_length_left -= length;
 		}
-		if (v == front || !v->IsArticulatedPart()) {
-			artic_part = 0;
-			suppress_artic_load = false;
-		}
+		if (v == front || !v->Previous()->HasArticulatedPart()) artic_part = 0;
 		if (v->cargo_cap == 0) continue;
 		artic_part++;
 
@@ -2170,9 +2151,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 				/* We have finished unloading (cargo count == 0) */
 				ClrBit(v->vehicle_flags, VF_CARGO_UNLOADING);
 			}
-			if (front->current_order.IsRefit() && front->current_order.GetRefitCargo() != v->cargo_type) {
-				suppress_artic_load = true;
-			}
+
 			continue;
 		}
 
@@ -2182,17 +2161,10 @@ static void LoadUnloadVehicle(Vehicle *front)
 
 		/* This order has a refit, if this is the first vehicle part carrying cargo and the whole vehicle is empty, try refitting. */
 		if (front->current_order.IsRefit() && artic_part == 1) {
-			Vehicle *v_start = v->GetFirstEnginePart();
-			if (front->current_order.GetRefitCargo() != v->cargo_type && IterateVehicleParts(v_start, IsUnloadingAction())) {
-				suppress_artic_load = true;
-				continue;
-			}
-			HandleStationRefit(v, v_start, consist_capleft, st, next_station, front->current_order.GetRefitCargo());
+			HandleStationRefit(v, consist_capleft, st, next_station, front->current_order.GetRefitCargo());
 			ge = &st->goods[v->cargo_type];
 			ged = &ge->CreateData();
 		}
-
-		if (suppress_artic_load) continue;
 
 		/* Do not pick up goods when we have no-load set. */
 		if (GetLoadType(v) & OLFB_NO_LOAD) continue;

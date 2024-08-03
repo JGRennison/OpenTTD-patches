@@ -139,34 +139,6 @@ struct ReadBuffer {
 		this->CopyBytes(buffer.data(), buffer.size());
 	}
 
-	template <typename F>
-	inline void ReadBytesToHandler(size_t length, F handler)
-	{
-		while (length) {
-			if (unlikely(this->bufp == this->bufe)) {
-				this->AcquireBytes();
-			}
-			size_t to_copy = std::min<size_t>(this->bufe - this->bufp, length);
-			for (size_t i = 0; i < to_copy; i++) {
-				handler(this->RawReadByte());
-			}
-			length -= to_copy;
-		}
-	}
-
-	template <typename F>
-	inline void ReadUint16sToHandler(size_t length, F handler)
-	{
-		while (length) {
-			this->CheckBytes(2);
-			size_t to_copy = std::min<size_t>((this->bufe - this->bufp) / 2, length);
-			for (size_t i = 0; i < to_copy; i++) {
-				handler(this->RawReadUint16());
-			}
-			length -= to_copy;
-		}
-	}
-
 	/**
 	 * Get the size of the memory dump made so far.
 	 * @return The size.
@@ -256,12 +228,6 @@ struct MemoryDumper {
 		this->CopyBytes(buffer.data(), buffer.size());
 	}
 
-	/** For limited/special purposes only */
-	inline void UnWriteByte()
-	{
-		this->buf--;
-	}
-
 	inline void RawWriteByte(uint8_t b)
 	{
 		*this->buf++ = b;
@@ -308,36 +274,8 @@ struct MemoryDumper {
 		this->buf += 8;
 	}
 
-	template <typename F>
-	inline void WriteBytesFromHandler(size_t length, F handler)
-	{
-		while (length) {
-			this->CheckBytes(1);
-			size_t to_copy = std::min<size_t>(this->bufe - this->buf, length);
-			for (size_t i = 0; i < to_copy; i++) {
-				this->RawWriteByte(handler());
-			}
-			length -= to_copy;
-		}
-	}
-
-	template <typename F>
-	inline void WriteUint16sFromHandler(size_t length, F handler)
-	{
-		while (length) {
-			this->CheckBytes(2);
-			size_t to_copy = std::min<size_t>((this->bufe - this->buf) / 2, length);
-			for (size_t i = 0; i < to_copy; i++) {
-				this->RawWriteUint16(handler());
-			}
-			length -= to_copy;
-		}
-	}
-
-
 	void Flush(SaveFilter &writer);
 	size_t GetSize() const;
-	size_t GetWriteOffsetGeneric() const;
 	void StartAutoLength();
 	std::span<uint8_t> StopAutoLength();
 	bool IsAutoLengthActive() const { return this->saved_buf != nullptr; }

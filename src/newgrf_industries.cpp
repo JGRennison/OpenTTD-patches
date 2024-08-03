@@ -495,9 +495,15 @@ static const GRFFile *GetGrffile(IndustryType type)
 IndustriesResolverObject::IndustriesResolverObject(TileIndex tile, Industry *indus, IndustryType type, uint32_t random_bits,
 		CallbackID callback, uint32_t callback_param1, uint32_t callback_param2)
 	: ResolverObject(GetGrffile(type), callback, callback_param1, callback_param2),
-	industries_scope(*this, tile, indus, type, random_bits)
+	industries_scope(*this, tile, indus, type, random_bits),
+	town_scope(nullptr)
 {
 	this->root_spritegroup = GetIndustrySpec(type)->grf_prop.spritegroup[0];
+}
+
+IndustriesResolverObject::~IndustriesResolverObject()
+{
+	delete this->town_scope;
 }
 
 /**
@@ -506,7 +512,7 @@ IndustriesResolverObject::IndustriesResolverObject(TileIndex tile, Industry *ind
  */
 TownScopeResolver *IndustriesResolverObject::GetTown()
 {
-	if (!this->town_scope.has_value()) {
+	if (this->town_scope == nullptr) {
 		Town *t = nullptr;
 		bool readonly = true;
 		if (this->industries_scope.industry != nullptr) {
@@ -516,9 +522,9 @@ TownScopeResolver *IndustriesResolverObject::GetTown()
 			t = ClosestTownFromTile(this->industries_scope.tile, UINT_MAX);
 		}
 		if (t == nullptr) return nullptr;
-		this->town_scope.emplace(*this, t, readonly);
+		this->town_scope = new TownScopeResolver(*this, t, readonly);
 	}
-	return &*this->town_scope;
+	return this->town_scope;
 }
 
 GrfSpecFeature IndustriesResolverObject::GetFeature() const

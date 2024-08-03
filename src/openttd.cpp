@@ -778,7 +778,7 @@ int openttd_main(std::span<char * const> arguments)
 	std::string sounds_set;
 	std::string music_set;
 	Dimension resolution = {0, 0};
-	std::unique_ptr<AfterNewGRFScan> scanner = std::make_unique<AfterNewGRFScan>();
+	std::unique_ptr<AfterNewGRFScan> scanner(new AfterNewGRFScan());
 	bool dedicated = false;
 	bool only_local_path = false;
 

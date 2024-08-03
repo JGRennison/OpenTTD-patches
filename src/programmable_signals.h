@@ -77,7 +77,9 @@ public:
 	inline SignalInstruction *Previous() const { return this->previous; }
 
 	/// Get the Id of this instruction
-	inline int Id() const { return find_index(program->instructions, const_cast<SignalInstruction *>(this)); }
+	inline int Id() const
+	// Const cast is safe (perculiarity of SmallVector)
+	{ return find_index(program->instructions, const_cast<SignalInstruction*>(this)); }
 
 	/// Insert this instruction, placing it before @p before_insn
 	virtual void Insert(SignalInstruction *before_insn);
@@ -95,12 +97,13 @@ public:
 
 	/// Gets a reference to the previous member. This is only intended for use by
 	/// the saveload code.
-	inline SignalInstruction *&GetPrevHandle() { return previous; }
+	inline SignalInstruction *&GetPrevHandle()
+	{ return previous; }
 
 	/// Sets the previous instruction of this instruction. This is only intended
 	/// to be used by instructions to update links during insertion and removal.
-	inline void SetPrevious(SignalInstruction *prev) { previous = prev; }
-
+	inline void SetPrevious(SignalInstruction *prev)
+	{ previous = prev; }
 	/// Set the next instruction. This is only intended to be used by instructions
 	/// to update links during insertion and removal
 	virtual void SetNext(SignalInstruction *next_insn) = 0;
@@ -109,7 +112,7 @@ protected:
 	/// Constructs an instruction
 	/// @param prog the program to add this instruction to
 	/// @param op the opcode of the instruction
-	SignalInstruction(SignalProgram *prog, SignalOpcode op);
+	SignalInstruction(SignalProgram *prog, SignalOpcode op) ;
 	virtual ~SignalInstruction();
 
 	const SignalOpcode opcode;
@@ -141,7 +144,7 @@ public:
 	inline SignalConditionCode ConditionCode() const { return this->cond_code; }
 
 	/// Evaluate the condition
-	virtual bool Evaluate(SignalVM &vm) = 0;
+	virtual bool Evaluate(SignalVM& vm) = 0;
 
 	/// Destroy the condition. Any children should also be destroyed
 	virtual ~SignalCondition();
@@ -159,7 +162,7 @@ protected:
 class SignalSimpleCondition: public SignalCondition {
 public:
 	SignalSimpleCondition(SignalConditionCode code);
-	bool Evaluate(SignalVM &vm) override;
+	bool Evaluate(SignalVM& vm) override;
 };
 
 /** Comparator to use for variable conditions. */
@@ -219,7 +222,7 @@ class SignalStateCondition: public SignalCondition {
 		bool CheckSignalValid();
 		void Invalidate();
 
-		bool Evaluate(SignalVM &vm) override;
+		bool Evaluate(SignalVM& vm) override;
 		virtual ~SignalStateCondition();
 
 		SignalReference this_sig;
@@ -237,7 +240,7 @@ class SignalSlotCondition: public SignalConditionComparable {
 		bool CheckSlotValid();
 		void Invalidate();
 
-		bool Evaluate(SignalVM &vm) override;
+		bool Evaluate(SignalVM& vm) override;
 		virtual ~SignalSlotCondition();
 
 		SignalReference this_sig;
@@ -254,7 +257,7 @@ class SignalCounterCondition: public SignalConditionComparable {
 		bool CheckCounterValid();
 		void Invalidate();
 
-		bool Evaluate(SignalVM &vm) override;
+		bool Evaluate(SignalVM& vm) override;
 		virtual ~SignalCounterCondition();
 
 		SignalReference this_sig;
@@ -413,7 +416,7 @@ extern ProgramList _signal_programs;
 inline bool HasProgrammableSignals(SignalReference ref)
 {
 	return IsTileType(ref.tile, MP_RAILWAY) && GetRailTileType(ref.tile) == RAIL_TILE_SIGNALS
-			&& IsPresignalProgrammable(ref.tile, ref.track);
+	    && IsPresignalProgrammable(ref.tile, ref.track);
 }
 
 /// Shows the programming window for the signal identified by @p tile and

@@ -103,30 +103,25 @@ typedef uint32_t VarType;
 
 /** Type of data saved. */
 enum SaveLoadTypes {
-	SL_VAR = 0,          ///< Save/load a variable.
-	SL_REF,              ///< Save/load a reference.
-	SL_ARR,              ///< Save/load a fixed-size array of #SL_VAR elements.
-	SL_STR,              ///< Save/load a string.
-	SL_REFLIST,          ///< Save/load a list of #SL_REF elements.
-	SL_RING,             ///< Save/load a ring of #SL_VAR elements.
-	SL_VEC,              ///< Save/load a vector of #SL_REF elements.
-	SL_STDSTR,           ///< Save/load a std::string.
-	SL_PTRRING,          ///< Save/load a ring of #SL_REF elements.
-	SL_VARVEC,           ///< Save/load a primitive type vector.
-
-	SL_STRUCT,           ///< Save/load a struct.
-	SL_STRUCTLIST,       ///< Save/load a list of structs.
+	SL_VAR         =  0, ///< Save/load a variable.
+	SL_REF         =  1, ///< Save/load a reference.
+	SL_ARR         =  2, ///< Save/load a fixed-size array of #SL_VAR elements.
+	SL_STR         =  3, ///< Save/load a string.
+	SL_REFLIST     =  4, ///< Save/load a list of #SL_REF elements.
+	SL_RING        =  5, ///< Save/load a ring of #SL_VAR elements.
+	SL_VEC         =  6, ///< Save/load a vector of #SL_REF elements.
+	SL_STDSTR      =  7, ///< Save/load a std::string.
 
 	/* non-normal save-load types */
-	SL_WRITEBYTE,
-	SL_VEH_INCLUDE,
-	SL_INCLUDE,
+	SL_WRITEBYTE   =  8,
+	SL_VEH_INCLUDE =  9,
+	SL_ST_INCLUDE  = 10,
+
+	SL_PTRRING     = 13, ///< Save/load a ring of #SL_REF elements.
+	SL_VARVEC      = 14, ///< Save/load a primitive type vector.
 };
 
 typedef uint8_t SaveLoadType; ///< Save/load type. @see SaveLoadTypes
-
-using SaveLoadStructHandlerFactory = std::unique_ptr<class SaveLoadStructHandler> (*)();
-using SaveLoadIncludeFunctor = void (*)(std::vector<struct SaveLoad> &);
 
 /** SaveLoad type struct. Do NOT use this directly but use the SLE_ macros defined just below! */
 struct SaveLoad {
@@ -136,35 +131,13 @@ struct SaveLoad {
 	uint16_t length;     ///< (conditional) length of the variable (eg. arrays) (max array size is 65536 elements)
 	SaveLoadVersion version_from; ///< save/load the variable starting from this savegame version
 	SaveLoadVersion version_to;   ///< save/load the variable until this savegame version
-	uint16_t label_tag;  ///< for labelling purposes
-
-	union {
-		/* NOTE: This element either denotes the address of the variable for a global
-		 * variable, or the offset within a struct which is then bound to a variable
-		 * during runtime. Decision on which one to use is controlled by the function
-		 * that is called to save it. address: global=true, offset: global=false */
-		void *address;                                       ///< address of variable OR offset of variable in the struct (max offset is 65536)
-		SaveLoadStructHandlerFactory struct_handler_factory; ///< factory function pointer for SaveLoadStructHandler
-		SaveLoadIncludeFunctor include_functor;              ///< include functor for SL_INCLUDE
-	};
-
+	/* NOTE: This element either denotes the address of the variable for a global
+	 * variable, or the offset within a struct which is then bound to a variable
+	 * during runtime. Decision on which one to use is controlled by the function
+	 * that is called to save it. address: global=true, offset: global=false */
+	void *address;       ///< address of variable OR offset of variable in the struct (max offset is 65536)
+	size_t size;         ///< the sizeof size.
 	SlXvFeatureTest ext_feature_test;  ///< extended feature test
-	SaveLoadStructHandler *struct_handler = nullptr;
-};
-
-inline constexpr SaveLoad SLTAG(uint16_t label_tag, SaveLoad save_load)
-{
-	save_load.label_tag = label_tag;
-	return save_load;
-}
-
-enum SaveLoadTags {
-	SLTAG_DEFAULT,
-	SLTAG_TABLE_UNKNOWN,
-	SLTAG_CUSTOM_START,
-	SLTAG_CUSTOM_0 = SLTAG_CUSTOM_START,
-	SLTAG_CUSTOM_1,
-	SLTAG_CUSTOM_2,
 };
 
 enum NamedSaveLoadFlags : uint8_t {
@@ -189,120 +162,6 @@ inline constexpr NamedSaveLoad NSLT(const char *name, SaveLoad save_load)
 {
 	return { name, save_load, NSLF_TABLE_ONLY };
 }
-
-inline constexpr NamedSaveLoad NSLT_STRUCT(const char *name, SaveLoadStructHandlerFactory factory, SaveLoadVersion from = SL_MIN_VERSION, SaveLoadVersion to = SL_MAX_VERSION, SlXvFeatureTest extver = {})
-{
-	return { name, SaveLoad { true, SL_STRUCT, SLE_FILE_STRUCT, 0, from, to, SLTAG_DEFAULT, { .struct_handler_factory = factory }, extver }, NSLF_TABLE_ONLY };
-}
-
-template <typename T>
-inline constexpr NamedSaveLoad NSLT_STRUCT(const char *name, SaveLoadVersion from = SL_MIN_VERSION, SaveLoadVersion to = SL_MAX_VERSION, SlXvFeatureTest extver = {})
-{
-	SaveLoadStructHandlerFactory factory = []() -> std::unique_ptr<class SaveLoadStructHandler> {
-		return std::make_unique<T>();
-	};
-	return NSLT_STRUCT(name, factory, from, to, extver);
-}
-
-inline constexpr NamedSaveLoad NSLT_STRUCTLIST(const char *name, SaveLoadStructHandlerFactory factory, SaveLoadVersion from = SL_MIN_VERSION, SaveLoadVersion to = SL_MAX_VERSION, SlXvFeatureTest extver = {})
-{
-	return { name, SaveLoad { true, SL_STRUCTLIST, SLE_FILE_STRUCT, 0, from, to, SLTAG_DEFAULT, { .struct_handler_factory = factory }, extver }, NSLF_TABLE_ONLY };
-}
-
-template <typename T>
-inline constexpr NamedSaveLoad NSLT_STRUCTLIST(const char *name, SaveLoadVersion from = SL_MIN_VERSION, SaveLoadVersion to = SL_MAX_VERSION, SlXvFeatureTest extver = {})
-{
-	SaveLoadStructHandlerFactory factory = []() -> std::unique_ptr<class SaveLoadStructHandler> {
-		return std::make_unique<T>();
-	};
-	return NSLT_STRUCTLIST(name, factory, from, to, extver);
-}
-
-inline constexpr NamedSaveLoad NSLTAG(uint16_t label_tag, NamedSaveLoad nsl)
-{
-	nsl.save_load.label_tag = label_tag;
-	return nsl;
-}
-
-struct SaveLoadTableData : public std::vector<SaveLoad> {
-	std::vector<std::unique_ptr<class SaveLoadStructHandler>> struct_handlers;
-};
-
-/** Handler for saving/loading a SL_STRUCT/SL_STRUCTLIST. */
-class SaveLoadStructHandler {
-public:
-	SaveLoadTableData table_data;
-
-	virtual ~SaveLoadStructHandler() = default;
-
-	/**
-	 * Get the (static) description of the fields in the savegame.
-	 */
-	virtual NamedSaveLoadTable GetDescription() const = 0;
-
-	/**
-	 * Get the (current) description of the fields in the savegame.
-	 */
-	SaveLoadTable GetLoadDescription() const { return this->table_data; }
-
-	/**
-	 * Save the object to disk.
-	 * @param object The object to store.
-	 */
-	virtual void Save([[maybe_unused]] void *object) const {}
-
-	/**
-	 * Load the object from disk.
-	 * @param object The object to load.
-	 */
-	virtual void Load([[maybe_unused]] void *object) const {}
-
-	/**
-	 * Similar to load, but used only to validate savegames.
-	 * @param object The object to load.
-	 */
-	virtual void LoadCheck([[maybe_unused]] void *object) const {}
-
-	/**
-	 * A post-load callback to fix #SL_REF integers into pointers.
-	 * @param object The object to fix.
-	 */
-	virtual void FixPointers([[maybe_unused]] void *object) const {}
-
-	/**
-	 * Called immediately after table_data is populated during header load.
-	 */
-	virtual void LoadedTableDescription() {};
-
-	/**
-	 * Called immediately after table_data is populated during header save.
-	 */
-	virtual void SavedTableDescription() {};
-};
-
-
-template <class TImpl, class TObject>
-class TypedSaveLoadStructHandler : public SaveLoadStructHandler {
-public:
-	virtual void Save([[maybe_unused]] TObject *object) const {}
-	void Save(void *object) const override { static_cast<const TImpl *>(this)->Save(static_cast<TObject *>(object)); }
-
-	virtual void Load([[maybe_unused]] TObject *object) const {}
-	void Load(void *object) const override { static_cast<const TImpl *>(this)->Load(static_cast<TObject *>(object)); }
-
-	virtual void LoadCheck([[maybe_unused]] TObject *object) const {}
-	void LoadCheck(void *object) const override { static_cast<const TImpl *>(this)->LoadCheck(static_cast<TObject *>(object)); }
-
-	virtual void FixPointers([[maybe_unused]] TObject *object) const {}
-	void FixPointers(void *object) const override { static_cast<const TImpl *>(this)->FixPointers(static_cast<TObject *>(object)); }
-};
-
-class HeaderOnlySaveLoadStructHandler : public SaveLoadStructHandler {
-public:
-	void Save(void *object) const override { NOT_REACHED(); }
-	void Load(void *object) const override { NOT_REACHED(); }
-	void LoadCheck(void *object) const override { NOT_REACHED(); }
-	void FixPointers(void *object) const override { NOT_REACHED(); }
-};
+using NamedSaveLoadTable = std::span<const NamedSaveLoad>;
 
 #endif /* SL_SAVELOAD_TYPES_H */

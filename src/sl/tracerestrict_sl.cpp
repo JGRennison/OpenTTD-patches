@@ -23,7 +23,7 @@ static const NamedSaveLoad _trace_restrict_mapping_desc[] = {
  */
 static void Load_TRRM()
 {
-	SaveLoadTableData slt = SlTableHeaderOrRiff(_trace_restrict_mapping_desc);
+	std::vector<SaveLoad> slt = SlTableHeaderOrRiff(_trace_restrict_mapping_desc);
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
@@ -37,7 +37,7 @@ static void Load_TRRM()
  */
 static void Save_TRRM()
 {
-	SaveLoadTableData slt = SlTableHeader(_trace_restrict_mapping_desc);
+	std::vector<SaveLoad> slt = SlTableHeader(_trace_restrict_mapping_desc);
 
 	for (TraceRestrictMapping::iterator iter = _tracerestrictprogram_mapping.begin();
 			iter != _tracerestrictprogram_mapping.end(); ++iter) {
@@ -55,7 +55,7 @@ static const NamedSaveLoad _trace_restrict_program_desc[] = {
  */
 static void Load_TRRP()
 {
-	SaveLoadTableData slt = SlTableHeaderOrRiff(_trace_restrict_program_desc);
+	std::vector<SaveLoad> slt = SlTableHeaderOrRiff(_trace_restrict_program_desc);
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
@@ -111,7 +111,7 @@ static void Load_TRRP()
  */
 static void Save_TRRP()
 {
-	SaveLoadTableData slt = SlTableHeader(_trace_restrict_program_desc);
+	std::vector<SaveLoad> slt = SlTableHeader(_trace_restrict_program_desc);
 
 	for (TraceRestrictProgram *prog : TraceRestrictProgram::Iterate()) {
 		SlSetArrayIndex(prog->index);
@@ -132,7 +132,7 @@ static const NamedSaveLoad _trace_restrict_slot_desc[] = {
  */
 static void Load_TRRS()
 {
-	SaveLoadTableData slt = SlTableHeaderOrRiff(_trace_restrict_slot_desc);
+	std::vector<SaveLoad> slt = SlTableHeaderOrRiff(_trace_restrict_slot_desc);
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
@@ -147,7 +147,7 @@ static void Load_TRRS()
  */
 static void Save_TRRS()
 {
-	SaveLoadTableData slt = SlTableHeader(_trace_restrict_slot_desc);
+	std::vector<SaveLoad> slt = SlTableHeader(_trace_restrict_slot_desc);
 
 	for (TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
 		SlSetArrayIndex(slot->index);
@@ -166,7 +166,7 @@ static const NamedSaveLoad _trace_restrict_counter_desc[] = {
  */
 static void Load_TRRC()
 {
-	SaveLoadTableData slt = SlTableHeaderOrRiff(_trace_restrict_counter_desc);
+	std::vector<SaveLoad> slt = SlTableHeaderOrRiff(_trace_restrict_counter_desc);
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
@@ -180,7 +180,7 @@ static void Load_TRRC()
  */
 static void Save_TRRC()
 {
-	SaveLoadTableData slt = SlTableHeader(_trace_restrict_counter_desc);
+	std::vector<SaveLoad> slt = SlTableHeader(_trace_restrict_counter_desc);
 
 	for (TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
 		SlSetArrayIndex(ctr->index);

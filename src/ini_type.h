@@ -28,9 +28,9 @@ struct IniItem {
 	std::optional<std::string> value; ///< The value of this item
 	std::string comment;              ///< The comment associated with this item
 
-	IniItem(std::string_view name);
+	IniItem(const std::string &name);
 
-	void SetValue(std::string_view value);
+	void SetValue(const std::string_view value);
 };
 
 /** A group within an ini file. */
@@ -40,12 +40,12 @@ struct IniGroup {
 	std::string name;    ///< name of group
 	std::string comment; ///< comment for group
 
-	IniGroup(std::string_view name, IniGroupType type);
+	IniGroup(const std::string &name, IniGroupType type);
 
-	const IniItem *GetItem(std::string_view name) const;
-	IniItem &GetOrCreateItem(std::string_view name);
-	IniItem &CreateItem(std::string_view name);
-	void RemoveItem(std::string_view name);
+	const IniItem *GetItem(const std::string &name) const;
+	IniItem &GetOrCreateItem(const std::string &name);
+	IniItem &CreateItem(const std::string &name);
+	void RemoveItem(const std::string &name);
 	void Clear();
 };
 
@@ -61,11 +61,11 @@ struct IniLoadFile {
 	IniLoadFile(const IniGroupNameList &list_group_names = {}, const IniGroupNameList &seq_group_names = {});
 	virtual ~IniLoadFile() { }
 
-	const IniGroup *GetGroup(std::string_view name) const;
-	IniGroup *GetGroup(std::string_view name);
-	IniGroup &GetOrCreateGroup(std::string_view name);
-	IniGroup &CreateGroup(std::string_view name);
-	void RemoveGroup(std::string_view name);
+	const IniGroup *GetGroup(const std::string &name) const;
+	IniGroup *GetGroup(const std::string &name);
+	IniGroup &GetOrCreateGroup(const std::string &name);
+	IniGroup &CreateGroup(const std::string &name);
+	void RemoveGroup(const std::string &name);
 
 	void LoadFromDisk(const std::string &filename, Subdirectory subdir, std::string *save = nullptr);
 

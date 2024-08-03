@@ -13,11 +13,9 @@
 #include "../strings_type.h"
 
 struct SaveLoad;
-struct NamedSaveLoad;
 
 /** A table of SaveLoad entries. */
 using SaveLoadTable = std::span<const SaveLoad>;
-using NamedSaveLoadTable = std::span<const NamedSaveLoad>;
 
 namespace upstream_sl {
 	struct SaveLoad;

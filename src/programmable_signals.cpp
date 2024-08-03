@@ -196,7 +196,7 @@ void SignalSlotCondition::SetSlot(TraceRestrictSlotID slot_id)
 	}
 }
 
-/*virtual*/ bool SignalSlotCondition::Evaluate(SignalVM &vm)
+/*virtual*/ bool SignalSlotCondition::Evaluate(SignalVM& vm)
 {
 	if (!this->CheckSlotValid()) {
 		DEBUG(misc, 1, "Signal (%x, %d) has an invalid condition", this->this_sig.tile, this->this_sig.track);
@@ -260,7 +260,7 @@ void SignalCounterCondition::SetCounter(TraceRestrictCounterID ctr_id)
 	}
 }
 
-/*virtual*/ bool SignalCounterCondition::Evaluate(SignalVM &vm)
+/*virtual*/ bool SignalCounterCondition::Evaluate(SignalVM& vm)
 {
 	if (!this->CheckCounterValid()) {
 		DEBUG(misc, 1, "Signal (%x, %d) has an invalid condition", this->this_sig.tile, this->this_sig.track);
@@ -275,9 +275,9 @@ SignalStateCondition::SignalStateCondition(SignalReference this_sig,
 	: SignalCondition(PSC_SIGNAL_STATE), this_sig(this_sig), sig_tile(sig_tile)
 	, sig_track(sig_track)
 {
-	if (this->CheckSignalValid()) {
-		AddSignalDependency(SignalReference(this->sig_tile, TrackdirToTrack(sig_track)), this->this_sig);
-	}
+	if (this->CheckSignalValid())
+		AddSignalDependency(SignalReference(this->sig_tile, TrackdirToTrack(sig_track)),
+																				this->this_sig);
 }
 
 bool SignalStateCondition::IsSignalValid() const
@@ -299,16 +299,17 @@ void SignalStateCondition::Invalidate()
 	this->sig_tile = INVALID_TILE;
 }
 
+
 void SignalStateCondition::SetSignal(TileIndex tile, Trackdir track)
 {
-	if (this->IsSignalValid()) {
-		RemoveSignalDependency(SignalReference(this->sig_tile, TrackdirToTrack(sig_track)), this->this_sig);
-	}
+	if (this->IsSignalValid())
+		RemoveSignalDependency(SignalReference(this->sig_tile, TrackdirToTrack(sig_track)),
+																					 this->this_sig);
 	this->sig_tile = tile;
 	this->sig_track = track;
-	if (this->CheckSignalValid()) {
-		AddSignalDependency(SignalReference(this->sig_tile, TrackdirToTrack(sig_track)), this->this_sig);
-	}
+	if (this->CheckSignalValid())
+		AddSignalDependency(SignalReference(this->sig_tile, TrackdirToTrack(sig_track)),
+																				this->this_sig);
 }
 
 /*virtual*/ SignalStateCondition::~SignalStateCondition()
@@ -316,11 +317,12 @@ void SignalStateCondition::SetSignal(TileIndex tile, Trackdir track)
 	if (_cleaning_signal_programs) return;
 
 	if (this->IsSignalValid()) {
-		RemoveSignalDependency(SignalReference(this->sig_tile, TrackdirToTrack(sig_track)), this->this_sig);
+		RemoveSignalDependency(SignalReference(this->sig_tile, TrackdirToTrack(sig_track)),
+																					 this->this_sig);
 	}
 }
 
-/*virtual*/ bool SignalStateCondition::Evaluate(SignalVM &vm)
+/*virtual*/ bool SignalStateCondition::Evaluate(SignalVM& vm)
 {
 	if (!this->CheckSignalValid()) {
 		DEBUG(misc, 1, "Signal (%x, %d) has an invalid condition", this->this_sig.tile, this->this_sig.track);
@@ -364,9 +366,7 @@ SignalSpecial::SignalSpecial(SignalProgram *prog, SignalOpcode op)
 	if (opcode == PSO_FIRST) {
 		while (this->next->Opcode() != PSO_LAST) this->next->Remove();
 	} else if (opcode == PSO_LAST) {
-	} else {
-		NOT_REACHED();
-	}
+	} else NOT_REACHED();
 }
 
 /*static*/ void SignalSpecial::link(SignalSpecial *first, SignalSpecial *last)
@@ -403,9 +403,7 @@ SignalIf::PseudoInstruction::PseudoInstruction(SignalProgram *prog, SignalIf *bl
 		previous = block;
 	} else if (op == PSO_IF_ENDIF) {
 		previous = block->if_true;
-	} else {
-		NOT_REACHED();
-	}
+	} else NOT_REACHED();
 }
 
 /*virtual*/ void SignalIf::PseudoInstruction::Remove()
@@ -415,9 +413,7 @@ SignalIf::PseudoInstruction::PseudoInstruction(SignalProgram *prog, SignalIf *bl
 		while(this->block->if_false) this->block->if_false->Remove();
 	} else if (opcode == PSO_IF_ENDIF) {
 		this->block->if_false = nullptr;
-	} else {
-		NOT_REACHED();
-	}
+	} else NOT_REACHED();
 	delete this;
 }
 
@@ -433,9 +429,7 @@ SignalIf::PseudoInstruction::PseudoInstruction(SignalProgram *prog, SignalIf *bl
 		this->block->if_false = next_insn;
 	} else if (this->opcode == PSO_IF_ENDIF) {
 		this->block->after = next_insn;
-	} else {
-		NOT_REACHED();
-	}
+	} else NOT_REACHED();
 }
 
 SignalIf::SignalIf(SignalProgram *prog, bool raw)
@@ -567,7 +561,7 @@ void FreeSignalPrograms()
 SignalState RunSignalProgram(SignalReference ref, uint num_exits, uint num_green)
 {
 	SignalProgram *program = GetExistingSignalProgram(ref);
-	if (program == nullptr) return SIGNAL_STATE_RED;
+	if (!program) return SIGNAL_STATE_RED;
 	SignalVM vm;
 	vm.program = program;
 	vm.num_exits = num_exits;
@@ -585,10 +579,10 @@ SignalState RunSignalProgram(SignalReference ref, uint num_exits, uint num_green
 void RemoveProgramDependencies(SignalReference dependency_target, SignalReference signal_to_update)
 {
 	SignalProgram *prog = GetExistingSignalProgram(signal_to_update);
-	if (prog == nullptr) return;
+	if (!prog) return;
 	for (SignalInstruction *insn : prog->instructions) {
 		if (insn->Opcode() == PSO_IF) {
-			SignalIf *ifi = static_cast<SignalIf *>(insn);
+			SignalIf* ifi = static_cast<SignalIf*>(insn);
 			if (ifi->condition->ConditionCode() == PSC_SIGNAL_STATE) {
 				SignalStateCondition* c = static_cast<SignalStateCondition*>(ifi->condition);
 				if (c->sig_tile == dependency_target.tile && TrackdirToTrack(c->sig_track) == dependency_target.track) {
@@ -606,12 +600,12 @@ void RemoveProgramDependencies(SignalReference dependency_target, SignalReferenc
 void RemoveProgramSlotDependencies(TraceRestrictSlotID slot_being_removed, SignalReference signal_to_update)
 {
 	SignalProgram *prog = GetExistingSignalProgram(signal_to_update);
-	if (prog == nullptr) return;
+	if (!prog) return;
 	for (SignalInstruction *insn : prog->instructions) {
 		if (insn->Opcode() == PSO_IF) {
-			SignalIf *ifi = static_cast<SignalIf *>(insn);
+			SignalIf* ifi = static_cast<SignalIf*>(insn);
 			if (ifi->condition->ConditionCode() == PSC_SLOT_OCC || ifi->condition->ConditionCode() == PSC_SLOT_OCC_REM) {
-				SignalSlotCondition *c = static_cast<SignalSlotCondition *>(ifi->condition);
+				SignalSlotCondition* c = static_cast<SignalSlotCondition*>(ifi->condition);
 				if (c->slot_id == slot_being_removed) {
 					c->Invalidate();
 				}
@@ -627,12 +621,12 @@ void RemoveProgramSlotDependencies(TraceRestrictSlotID slot_being_removed, Signa
 void RemoveProgramCounterDependencies(TraceRestrictCounterID ctr_being_removed, SignalReference signal_to_update)
 {
 	SignalProgram *prog = GetExistingSignalProgram(signal_to_update);
-	if (prog == nullptr) return;
+	if (!prog) return;
 	for (SignalInstruction *insn : prog->instructions) {
 		if (insn->Opcode() == PSO_IF) {
-			SignalIf *ifi = static_cast<SignalIf *>(insn);
+			SignalIf* ifi = static_cast<SignalIf*>(insn);
 			if (ifi->condition->ConditionCode() == PSC_COUNTER) {
-				SignalCounterCondition *c = static_cast<SignalCounterCondition *>(ifi->condition);
+				SignalCounterCondition* c = static_cast<SignalCounterCondition*>(ifi->condition);
 				if (c->ctr_id == ctr_being_removed) {
 					c->Invalidate();
 				}
@@ -655,21 +649,6 @@ void SignalProgram::DebugPrintProgram()
 	}
 }
 
-static CommandCost ValidateSignalTileTrack(TileIndex tile, Track track)
-{
-	if (!IsValidTrack(track)) return CMD_ERROR;
-
-	if (!IsPlainRailTile(tile) || !HasTrack(tile, track) || !HasSignalOnTrack(tile, track) || !IsPresignalProgrammable(tile, track)) {
-		return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
-	}
-
-	if (!IsTileOwner(tile, _current_company)) {
-		return_cmd_error(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER);
-	}
-
-	return CommandCost();
-}
-
 /** Insert a signal instruction into the signal program.
  *
  * @param tile The Tile on which to perform the operation
@@ -689,16 +668,18 @@ CommandCost CmdInsertSignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 	uint instruction_id = GB(p1, 3, 16);
 	SignalOpcode op     = Extract<SignalOpcode, 19,  8>(p1);
 
-	CommandCost check_signal = ValidateSignalTileTrack(tile, track);
-	if (check_signal.Failed()) return check_signal;
+	if (!IsValidTrack(track) || !IsPlainRailTile(tile) || !HasTrack(tile, track)) {
+		return CMD_ERROR;
+	}
+
+	if (!IsTileOwner(tile, _current_company))
+		return_cmd_error(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER);
 
 	SignalProgram *prog = GetSignalProgram(SignalReference(tile, track));
-	if (prog == nullptr) {
+	if (!prog)
 		return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
-	}
-	if (instruction_id >= prog->instructions.size()) {
+	if (instruction_id >= prog->instructions.size())
 		return_cmd_error(STR_ERR_PROGSIG_INVALID_INSTRUCTION);
-	}
 
 	bool exec = (flags & DC_EXEC) != 0;
 
@@ -761,16 +742,19 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 	Track track         = Extract<Track, 0, 3 >(p1);
 	uint instruction_id = GB(p1, 3, 16);
 
-	CommandCost check_signal = ValidateSignalTileTrack(tile, track);
-	if (check_signal.Failed()) return check_signal;
+	if (!IsValidTrack(track) || !IsPlainRailTile(tile) || !HasTrack(tile, track)) {
+		return CMD_ERROR;
+	}
+
+	if (!IsTileOwner(tile, _current_company))
+		return_cmd_error(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER);
 
 	SignalProgram *prog = GetExistingSignalProgram(SignalReference(tile, track));
-	if (prog == nullptr) {
+	if (!prog)
 		return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
-	}
-	if (instruction_id >= prog->instructions.size()) {
+
+	if (instruction_id > prog->instructions.size())
 		return_cmd_error(STR_ERR_PROGSIG_INVALID_INSTRUCTION);
-	}
 
 	bool exec = (flags & DC_EXEC) != 0;
 
@@ -778,22 +762,21 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 	switch (insn->Opcode()) {
 		case PSO_SET_SIGNAL: {
 			SignalState state = (SignalState) p2;
-			if (state > SIGNAL_STATE_MAX) {
+			if (state > SIGNAL_STATE_MAX)
 				return_cmd_error(STR_ERR_PROGSIG_INVALID_SIGNAL_STATE);
-			}
-			if (!exec) return CommandCost();
+			if (!exec)
+				return CommandCost();
 			SignalSet *ss = static_cast<SignalSet*>(insn);
 			ss->to_state = state;
 		} break;
 
 		case PSO_IF: {
-			SignalIf *si = static_cast<SignalIf *>(insn);
+			SignalIf *si = static_cast<SignalIf*>(insn);
 			uint8_t act = GB(p2, 0, 1);
 			if (act == 0) { // Set code
 				SignalConditionCode code = (SignalConditionCode) GB(p2, 1, 8);
-				if (code > PSC_MAX) {
+				if (code > PSC_MAX)
 					return_cmd_error(STR_ERR_PROGSIG_INVALID_CONDITION);
-				}
 				if (!exec) return CommandCost();
 
 				SignalCondition *cond;
@@ -853,9 +836,8 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 						TileIndex ti = (TileIndex) GB(p2, 5, 27);
 
 						if (!IsValidTile(ti) || !IsValidTrackdir(td) || !HasSignalOnTrackdir(ti, td)
-								|| GetTileOwner(ti) != _current_company) {
+								|| GetTileOwner(ti) != _current_company)
 							return_cmd_error(STR_ERR_PROGSIG_INVALID_SIGNAL);
-						}
 						if (!exec) return CommandCost();
 						sc->SetSignal(ti, td);
 					} break;
@@ -882,7 +864,7 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 					} break;
 
 					case PSC_COUNTER: {
-						SignalCounterCondition *sc = static_cast<SignalCounterCondition *>(si->condition);
+						SignalCounterCondition *sc = static_cast<SignalCounterCondition*>(si->condition);
 						SignalConditionField f = (SignalConditionField) GB(p2, 1, 2);
 						uint32_t val = GB(p2, 3, 27);
 						if (f == SCF_COMPARATOR) {
@@ -934,17 +916,19 @@ CommandCost CmdRemoveSignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 	Track track         = Extract<Track, 0, 3 >(p1);
 	uint instruction_id = GB(p1, 3, 16);
 
-	CommandCost check_signal = ValidateSignalTileTrack(tile, track);
-	if (check_signal.Failed()) return check_signal;
+	if (!IsValidTrack(track) || !IsPlainRailTile(tile) || !HasTrack(tile, track)) {
+		return CMD_ERROR;
+	}
+
+	if (!IsTileOwner(tile, _current_company))
+		return_cmd_error(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER);
 
 	SignalProgram *prog = GetExistingSignalProgram(SignalReference(tile, track));
-	if (prog == nullptr) {
+	if (!prog)
 		return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
-	}
 
-	if (instruction_id >= prog->instructions.size()) {
+	if (instruction_id > prog->instructions.size())
 		return_cmd_error(STR_ERR_PROGSIG_INVALID_INSTRUCTION);
-	}
 
 	bool exec = (flags & DC_EXEC) != 0;
 
@@ -973,13 +957,14 @@ CommandCost CmdRemoveSignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 
 static void CloneInstructions(SignalProgram *prog, SignalInstruction *insert_before, SignalInstruction *si)
 {
-	while (si != nullptr) {
-		switch (si->Opcode()) {
+	while(true) {
+		if(si == nullptr) break;
+		switch(si->Opcode()) {
 			case PSO_SET_SIGNAL: {
-				SignalSet *set = new SignalSet(prog, ((SignalSet *)si)->to_state);
+				SignalSet *set = new SignalSet(prog, ((SignalSet*)si)->to_state);
 				set->Insert(insert_before);
 
-				si = ((SignalSet *)si)->next;
+				si = ((SignalSet*)si)->next;
 				break;
 			}
 
@@ -987,8 +972,8 @@ static void CloneInstructions(SignalProgram *prog, SignalInstruction *insert_bef
 				SignalIf *if_ins = new SignalIf(prog);
 				if_ins->Insert(insert_before);
 
-				CloneInstructions(prog, if_ins->if_true, ((SignalIf *)si)->if_true);
-				CloneInstructions(prog, if_ins->if_false, ((SignalIf *)si)->if_false);
+				CloneInstructions(prog, if_ins->if_true, ((SignalIf*)si)->if_true);
+				CloneInstructions(prog, if_ins->if_false, ((SignalIf*)si)->if_false);
 
 				SignalCondition *src_cond = ((SignalIf *) si)->condition;
 				SignalConditionCode code = src_cond->ConditionCode();
@@ -1035,7 +1020,7 @@ static void CloneInstructions(SignalProgram *prog, SignalInstruction *insert_bef
 					default: NOT_REACHED();
 				}
 
-				si = ((SignalIf *)si)->after;
+				si = ((SignalIf*)si)->after;
 				break;
 			}
 
@@ -1070,22 +1055,23 @@ CommandCost CmdSignalProgramMgmt(TileIndex tile, DoCommandFlag flags, uint32_t p
 	Track track = Extract<Track, 0, 3>(p1);
 	SignalProgramMgmtCode mgmt = static_cast<SignalProgramMgmtCode>(GB(p1, 3, 4));
 
-	CommandCost check_signal = ValidateSignalTileTrack(tile, track);
-	if (check_signal.Failed()) return check_signal;
+	if (!IsValidTrack(track) || !IsPlainRailTile(tile) || !HasTrack(tile, track)) {
+		return CMD_ERROR;
+	}
+
+	if (!IsTileOwner(tile, _current_company)) return_cmd_error(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER);
+
+	SignalProgram *prog = GetExistingSignalProgram(SignalReference(tile, track));
+	if (!prog) return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
 
 	switch (mgmt) {
-		case SPMC_REMOVE: {
-			SignalProgram *prog = GetExistingSignalProgram(SignalReference(tile, track));
-			if (prog == nullptr) return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
+		case SPMC_REMOVE:
 			if (exec) {
 				prog->first_instruction->Remove();
 			}
 			break;
-		}
 
 		case SPMC_CLONE: {
-			SignalProgram *prog = GetSignalProgram(SignalReference(tile, track));
-
 			TileIndex src_tile = p2;
 			Track src_track = Extract<Track, 7, 3>(p1);
 			if (!IsValidTrack(src_track) || !IsPlainRailTile(src_tile) || !HasTrack(src_tile, src_track)) {
@@ -1099,7 +1085,7 @@ CommandCost CmdSignalProgramMgmt(TileIndex tile, DoCommandFlag flags, uint32_t p
 
 			if (exec) {
 				prog->first_instruction->Remove();
-				CloneInstructions(prog, prog->last_instruction, ((SignalSpecial *) src_prog->first_instruction)->next);
+				CloneInstructions(prog, prog->last_instruction, ((SignalSpecial*) src_prog->first_instruction)->next);
 			}
 			break;
 		}

@@ -104,12 +104,12 @@ struct Order : OrderPool::PoolItem<&_order_pool> {
 private:
 	friend SaveLoadTable GetVehicleDescription(VehicleType vt);           ///< Saving and loading the current order of vehicles.
 	friend void Load_VEHS();                                              ///< Loading of ancient vehicles.
-	friend NamedSaveLoadTable GetOrderDescription();                      ///< Saving and loading of orders.
-	friend struct OrderExtraDataStructHandler;                            ///< Saving and loading of orders.
+	friend SaveLoadTable GetOrderDescription();                           ///< Saving and loading of orders.
 	friend upstream_sl::SaveLoadTable upstream_sl::GetOrderDescription(); ///< Saving and loading of orders.
 	friend upstream_sl::SlVehicleCommon;
 	friend upstream_sl::SlVehicleDisaster;
 	friend void Load_ORDX();                                             ///< Saving and loading of orders.
+	friend void Save_ORDX();                                             ///< Saving and loading of orders.
 	friend void Load_VEOX();                                             ///< Saving and loading of orders.
 	friend void Save_VEOX();                                             ///< Saving and loading of orders.
 
@@ -178,7 +178,6 @@ public:
 	Order *next;          ///< Pointer to next order. If nullptr, end of list
 
 	Order() : flags(0), refit_cargo(CARGO_NO_REFIT), max_speed(UINT16_MAX) {}
-	Order(uint8_t type, uint8_t flags, DestinationID dest) : flags(flags), dest(dest), type(type), refit_cargo(CARGO_NO_REFIT), occupancy(0), wait_time(0), travel_time(0), max_speed(UINT16_MAX) {}
 	~Order();
 
 	Order(uint64_t packed);
@@ -751,7 +750,7 @@ struct DispatchSchedule {
 	static constexpr uint DEPARTURE_TAG_COUNT = 4;
 
 private:
-	friend NamedSaveLoadTable GetDispatchScheduleDescription();         ///< Saving and loading of dispatch schedules
+	friend SaveLoadTable GetDispatchScheduleDescription();              ///< Saving and loading of dispatch schedules
 
 	std::vector<DispatchSlot> scheduled_dispatch;                       ///< Scheduled dispatch slots
 	StateTicks scheduled_dispatch_start_tick = -1;                      ///< Scheduled dispatch start tick
@@ -892,7 +891,7 @@ static_assert(DispatchSchedule::DEPARTURE_TAG_COUNT == 1 + (DispatchSlot::SDSF_L
 struct OrderList : OrderListPool::PoolItem<&_orderlist_pool> {
 private:
 	friend void AfterLoadVehiclesPhase1(bool part_of_load); ///< For instantiating the shared vehicle chain
-	friend NamedSaveLoadTable GetOrderListDescription(); ///< Saving and loading of order lists.
+	friend SaveLoadTable GetOrderListDescription(); ///< Saving and loading of order lists.
 	friend upstream_sl::SaveLoadTable upstream_sl::GetOrderListDescription(); ///< Saving and loading of order lists.
 	friend void Ptrs_ORDL(); ///< Saving and loading of order lists.
 

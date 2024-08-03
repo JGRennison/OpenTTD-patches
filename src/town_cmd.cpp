@@ -2203,7 +2203,7 @@ void UpdateTownRadius(Town *t)
 		return;
 	}
 
-	if (t->cache.num_houses < std::size(_town_squared_town_zone_radius_data) * 4) {
+	if (t->cache.num_houses < 92) {
 		t->cache.squared_town_zone_radius = _town_squared_town_zone_radius_data[t->cache.num_houses / 4];
 	} else {
 		int mass = t->cache.num_houses / 8;
@@ -3166,7 +3166,7 @@ static bool BuildTownHouse(Town *t, TileIndex tile)
 
 		uint cur_prob = hs.probability;
 		probability_max += cur_prob;
-		probs.emplace_back(hs.Index(), cur_prob);
+		probs.emplace_back(std::make_pair(hs.Index(), cur_prob));
 	}
 
 	TileIndex baseTile = tile;

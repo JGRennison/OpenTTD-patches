@@ -1216,32 +1216,28 @@ static void Ptrs_VEHS()
 	}
 }
 
-NamedSaveLoadTable GetOrderExtraInfoDescription();
+const SaveLoadTable GetOrderExtraInfoDescription();
 
 void Save_VEOX()
 {
-	std::vector<SaveLoad> slt = SlFilterNamedSaveLoadTable(GetOrderExtraInfoDescription());
-
 	/* save extended order info for vehicle current order */
 	for (Vehicle *v : Vehicle::Iterate()) {
 		if (v->current_order.extra) {
 			SlSetArrayIndex(v->index);
-			SlObject(v->current_order.extra.get(), slt);
+			SlObject(v->current_order.extra.get(), GetOrderExtraInfoDescription());
 		}
 	}
 }
 
 void Load_VEOX()
 {
-	std::vector<SaveLoad> slt = SlFilterNamedSaveLoadTable(GetOrderExtraInfoDescription());
-
 	/* load extended order info for vehicle current order */
 	int index;
 	while ((index = SlIterateArray()) != -1) {
 		Vehicle *v = Vehicle::GetIfValid(index);
 		assert(v != nullptr);
 		v->current_order.AllocExtraInfo();
-		SlObject(v->current_order.extra.get(), slt);
+		SlObject(v->current_order.extra.get(), GetOrderExtraInfoDescription());
 	}
 }
 
@@ -1320,7 +1316,7 @@ void Save_VENC()
 		return;
 	}
 
-	SlAutolength([]() {
+	SlAutolength([](void *) {
 		int types[4] = {};
 		int total = 0;
 		for (Vehicle *v : Vehicle::Iterate()) {
@@ -1381,7 +1377,7 @@ void Save_VENC()
 			SlWriteUint32(a->index);
 			SlWriteUint16(a->acache.cached_max_range);
 		}
-	});
+	}, nullptr);
 }
 
 void Load_VENC()
@@ -1614,7 +1610,7 @@ void Save_VLKA()
 	for (Train *t : Train::Iterate()) {
 		if (t->lookahead != nullptr) {
 			SlSetArrayIndex(t->index);
-			SlAutolength(RealSave_VLKA, t->lookahead.get());
+			SlAutolength((AutolengthProc*) RealSave_VLKA, t->lookahead.get());
 		}
 	}
 }

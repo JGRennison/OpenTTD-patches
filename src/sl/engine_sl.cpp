@@ -117,7 +117,7 @@ void AfterLoadEngines()
 static const ChunkHandler engine_chunk_handlers[] = {
 	MakeUpstreamChunkHandler<'EIDS', GeneralUpstreamChunkLoadInfo>(),
 	MakeUpstreamChunkHandler<'ENGN', GeneralUpstreamChunkLoadInfo>(),
-	{ 'ENGS', nullptr,   Load_ENGS, nullptr, nullptr, CH_READONLY  },
+	{ 'ENGS', nullptr,   Load_ENGS, nullptr, nullptr, CH_RIFF  },
 };
 
 extern const ChunkHandlerTable _engine_chunk_handlers(engine_chunk_handlers);

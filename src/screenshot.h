@@ -43,6 +43,8 @@ void SetScreenshotAuxiliaryText(const char *key, const char *value);
 inline void ClearScreenshotAuxiliaryText() { SetScreenshotAuxiliaryText(nullptr, nullptr); }
 
 extern std::string _screenshot_format_name;
+extern uint _num_screenshot_formats;
+extern uint _cur_screenshot_format;
 extern std::string _full_screenshot_path;
 
 #endif /* SCREENSHOT_H */

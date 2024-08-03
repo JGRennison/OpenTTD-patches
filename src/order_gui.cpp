@@ -1336,8 +1336,10 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
  */
 static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 {
-	/* Override the index as it is not coming from a pool, so would not be initialised correctly. */
-	Order order;
+	/* Hack-ish; unpack order 0, so everything gets initialised with either zero
+	 * or a suitable default value for the variable. Then also override the index
+	 * as it is not coming from a pool, so would be initialised. */
+	Order order(0);
 	order.index = 0;
 
 	/* check depot first */
@@ -1427,9 +1429,6 @@ enum {
 	OHK_TRANSFER,
 	OHK_NO_UNLOAD,
 	OHK_NO_LOAD,
-	OHK_REFIT,
-	OHK_DUPLICATE,
-	OHK_RETARGET_JUMP,
 	OHK_CLOSE,
 };
 
@@ -1898,32 +1897,6 @@ private:
 			} else {
 				ShowVehicleRefitWindow(this->vehicle, this->OrderGetSel(), this, auto_refit);
 			}
-		}
-	}
-
-	void OrderClick_RefitHotkey()
-	{
-		if (this->IsWidgetActiveInLayout(WID_O_REFIT)) {
-			this->OrderClick_Refit(0, false);
-		} else if (this->IsWidgetActiveInLayout(WID_O_REFIT_DROPDOWN)) {
-			this->OrderClick_Refit(0, true);
-		}
-	}
-
-	void OrderClick_DuplicateHotkey()
-	{
-		VehicleOrderID sel = this->OrderGetSel();
-		if (this->vehicle->GetOrder(sel) != nullptr) {
-			DoCommandP(this->vehicle->tile, this->vehicle->index, sel, CMD_DUPLICATE_ORDER | CMD_MSG(STR_ERROR_CAN_T_INSERT_NEW_ORDER));
-		}
-	}
-
-	void OrderClick_RetargetJumpHotkey()
-	{
-		VehicleOrderID sel = this->OrderGetSel();
-		const Order *order = this->vehicle->GetOrder(sel);
-		if (order != nullptr && order->IsType(OT_CONDITIONAL)) {
-			this->OrderClick_Goto(OPOS_CONDITIONAL_RETARGET);
 		}
 	}
 
@@ -3620,9 +3593,6 @@ public:
 			case OHK_TRANSFER:       this->OrderClick_Unload(OUFB_TRANSFER, true); break;
 			case OHK_NO_UNLOAD:      this->OrderClick_Unload(OUFB_NO_UNLOAD, true); break;
 			case OHK_NO_LOAD:        this->OrderClick_FullLoad(OLFB_NO_LOAD, true); break;
-			case OHK_REFIT:          this->OrderClick_RefitHotkey(); break;
-			case OHK_DUPLICATE:      this->OrderClick_DuplicateHotkey(); break;
-			case OHK_RETARGET_JUMP:  this->OrderClick_RetargetJumpHotkey(); break;
 			case OHK_CLOSE:          this->Close(); break;
 			default: return ES_NOT_HANDLED;
 		}
@@ -3824,9 +3794,6 @@ static Hotkey order_hotkeys[] = {
 	Hotkey((uint16_t)0, "transfer", OHK_TRANSFER),
 	Hotkey((uint16_t)0, "no_unload", OHK_NO_UNLOAD),
 	Hotkey((uint16_t)0, "no_load", OHK_NO_LOAD),
-	Hotkey((uint16_t)0, "refit", OHK_REFIT),
-	Hotkey((uint16_t)0, "duplicate", OHK_DUPLICATE),
-	Hotkey((uint16_t)0, "retarget_jump", OHK_RETARGET_JUMP),
 	Hotkey((uint16_t)0, "close", OHK_CLOSE),
 	HOTKEY_LIST_END
 };
@@ -3943,8 +3910,8 @@ static constexpr NWidgetPart _nested_orders_train_widgets[] = {
 		EndContainer(),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_O_OCCUPANCY_TOGGLE), SetMinimalSize(36, 12), SetDataTip(STR_ORDERS_OCCUPANCY_BUTTON, STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_SHARED),
-			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_O_SHARED_ORDER_LIST), SetAspect(1), SetDataTip(SPR_SHARED_ORDERS_ICON, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_ADD_VEH_GROUP), SetAspect(1), SetDataTip(STR_BLACK_PLUS, STR_ORDERS_NEW_GROUP_TOOLTIP),
+			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_O_SHARED_ORDER_LIST), SetMinimalSize(12, 12), SetDataTip(SPR_SHARED_ORDERS_ICON, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_ADD_VEH_GROUP), SetMinimalSize(12, 12), SetDataTip(STR_BLACK_PLUS, STR_ORDERS_NEW_GROUP_TOOLTIP),
 		EndContainer(),
 	EndContainer(),
 
@@ -4097,8 +4064,8 @@ static constexpr NWidgetPart _nested_orders_widgets[] = {
 
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_O_OCCUPANCY_TOGGLE), SetMinimalSize(36, 12), SetDataTip(STR_ORDERS_OCCUPANCY_BUTTON, STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_SHARED),
-			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_O_SHARED_ORDER_LIST), SetAspect(1), SetDataTip(SPR_SHARED_ORDERS_ICON, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_ADD_VEH_GROUP), SetAspect(1), SetDataTip(STR_BLACK_PLUS, STR_ORDERS_NEW_GROUP_TOOLTIP),
+			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_O_SHARED_ORDER_LIST), SetMinimalSize(12, 12), SetDataTip(SPR_SHARED_ORDERS_ICON, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP),
+			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_ADD_VEH_GROUP), SetMinimalSize(12, 12), SetDataTip(STR_BLACK_PLUS, STR_ORDERS_NEW_GROUP_TOOLTIP),
 		EndContainer(),
 	EndContainer(),
 
@@ -4156,7 +4123,7 @@ static constexpr NWidgetPart _nested_other_orders_widgets[] = {
 		NWidget(WWT_PANEL, COLOUR_GREY), SetFill(1, 0), SetResize(1, 0),
 		EndContainer(),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_O_OCCUPANCY_TOGGLE), SetMinimalSize(36, 12), SetDataTip(STR_ORDERS_OCCUPANCY_BUTTON, STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP),
-		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_O_SHARED_ORDER_LIST), SetAspect(1), SetDataTip(SPR_SHARED_ORDERS_ICON, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP),
+		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_O_SHARED_ORDER_LIST), SetMinimalSize(12, 12), SetDataTip(SPR_SHARED_ORDERS_ICON, STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP),
 		NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 	EndContainer(),
 };
