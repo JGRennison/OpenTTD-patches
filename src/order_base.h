@@ -106,12 +106,12 @@ private:
 	friend void Load_VEHS();                                              ///< Loading of ancient vehicles.
 	friend NamedSaveLoadTable GetOrderDescription();                      ///< Saving and loading of orders.
 	friend struct OrderExtraDataStructHandler;                            ///< Saving and loading of orders.
+	friend struct VehicleOrderExtraDataStructHandler;                     ///< Saving and loading of orders.
 	friend upstream_sl::SaveLoadTable upstream_sl::GetOrderDescription(); ///< Saving and loading of orders.
 	friend upstream_sl::SlVehicleCommon;
 	friend upstream_sl::SlVehicleDisaster;
 	friend void Load_ORDX();                                             ///< Saving and loading of orders.
 	friend void Load_VEOX();                                             ///< Saving and loading of orders.
-	friend void Save_VEOX();                                             ///< Saving and loading of orders.
 
 	uint16_t flags;       ///< Load/unload types, depot order/action types.
 	DestinationID dest;   ///< The destination of the order.

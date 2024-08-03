@@ -36,6 +36,8 @@
 
 extern btree::btree_multimap<VehicleID, PendingSpeedRestrictionChange> _pending_speed_restriction_change_map;
 
+extern SaveLoadStructHandlerFactory MakeOrderExtraDataStructHandler();
+
 /**
  * Link front and rear multiheaded engines to each other
  * This is done when loading a savegame
@@ -772,6 +774,27 @@ struct VehicleTypeStructHandler final : public TypedSaveLoadStructHandler<Vehicl
 	}
 };
 
+struct VehicleOrderExtraDataStructHandler final : public TypedSaveLoadStructHandler<VehicleOrderExtraDataStructHandler, Vehicle> {
+	NamedSaveLoadTable GetDescription() const override
+	{
+		extern NamedSaveLoadTable GetOrderExtraInfoDescription();
+		return GetOrderExtraInfoDescription();
+	}
+
+	void Save(Vehicle *v) const override
+	{
+		if (!v->current_order.extra) return;
+
+		SlObjectSaveFiltered(v->current_order.extra.get(), this->GetLoadDescription());
+	}
+
+	void Load(Vehicle *v) const override
+	{
+		v->current_order.AllocExtraInfo();
+		SlObjectLoadFiltered(v->current_order.extra.get(), this->GetLoadDescription());
+	}
+};
+
 const NamedSaveLoadTable GetVehicleUnbunchStateDescription()
 {
 	static const NamedSaveLoad _vehicle_unbunch_state_desc[] = {
@@ -1014,6 +1037,9 @@ NamedSaveLoadTable GetVehicleDescription(VehicleType vt)
 		NSL("current_order.travel_time",SLE_CONDVAR_X(Vehicle, current_order.travel_time, SLE_FILE_U16 | SLE_VAR_U32, SLV_67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 0, 5))),
 		NSL("current_order.travel_time",SLE_CONDVAR_X(Vehicle, current_order.travel_time, SLE_UINT32,                 SLV_67, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLE_EXTRA, 6))),
 		NSL("current_order.max_speed",    SLE_CONDVAR(Vehicle, current_order.max_speed,   SLE_UINT16,                 SLV_174, SL_MAX_VERSION)),
+
+		NSLT_STRUCT<VehicleOrderExtraDataStructHandler>("current_order.extra"),
+
 		NSL("timetable_start",          SLE_CONDVAR_X(Vehicle, timetable_start,           SLE_FILE_I32 | SLE_VAR_I64, SLV_129, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLES_START_TICKS, 0, 2))),
 		NSL("timetable_start",          SLE_CONDVAR_X(Vehicle, timetable_start,           SLE_INT64,                  SLV_129, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLES_START_TICKS, 3))),
 		NSL("",                        SLEG_CONDVAR_X(_old_timetable_start_subticks,      SLE_UINT16,                 SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLES_START_TICKS, 2, 2))),
@@ -1418,23 +1444,9 @@ static void Ptrs_VEHS()
 	}
 }
 
-NamedSaveLoadTable GetOrderExtraInfoDescription();
-
-void Save_VEOX()
-{
-	std::vector<SaveLoad> slt = SlFilterNamedSaveLoadTable(GetOrderExtraInfoDescription());
-
-	/* save extended order info for vehicle current order */
-	for (Vehicle *v : Vehicle::Iterate()) {
-		if (v->current_order.extra) {
-			SlSetArrayIndex(v->index);
-			SlObject(v->current_order.extra.get(), slt);
-		}
-	}
-}
-
 void Load_VEOX()
 {
+	extern NamedSaveLoadTable GetOrderExtraInfoDescription();
 	std::vector<SaveLoad> slt = SlFilterNamedSaveLoadTable(GetOrderExtraInfoDescription());
 
 	/* load extended order info for vehicle current order */
@@ -1793,7 +1805,7 @@ void Load_VUBS()
 
 static const ChunkHandler veh_chunk_handlers[] = {
 	{ 'VEHS', Save_VEHS, Load_VEHS, Ptrs_VEHS, nullptr, CH_SPARSE_TABLE },
-	{ 'VEOX', Save_VEOX, Load_VEOX, nullptr,   nullptr, CH_SPARSE_ARRAY },
+	{ 'VEOX', nullptr,   Load_VEOX, nullptr,   nullptr, CH_READONLY },
 	{ 'VESR', Save_VESR, Load_VESR, nullptr,   nullptr, CH_SPARSE_ARRAY },
 	{ 'VENC', Save_VENC, Load_VENC, nullptr,   nullptr, CH_RIFF,         Special_VENC },
 	{ 'VLKA', nullptr,   Load_VLKA, nullptr,   nullptr, CH_READONLY },
