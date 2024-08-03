@@ -119,7 +119,6 @@ enum SaveLoadTypes {
 
 	/* non-normal save-load types */
 	SL_WRITEBYTE,
-	SL_VEH_INCLUDE,
 	SL_INCLUDE,
 };
 
@@ -190,18 +189,40 @@ inline constexpr NamedSaveLoad NSLT(const char *name, SaveLoad save_load)
 	return { name, save_load, NSLF_TABLE_ONLY };
 }
 
-inline constexpr NamedSaveLoad NSLT_STRUCT(const char *name, SaveLoadStructHandlerFactory factory, SaveLoadVersion from = SL_MIN_VERSION, SaveLoadVersion to = SL_MAX_VERSION, SlXvFeatureTest extver = {})
-{
-	return { name, SaveLoad { true, SL_STRUCT, SLE_FILE_STRUCT, 0, from, to, SLTAG_DEFAULT, { .struct_handler_factory = factory }, extver }, NSLF_TABLE_ONLY };
-}
-
-template <typename T>
-inline constexpr NamedSaveLoad NSLT_STRUCT(const char *name, SaveLoadVersion from = SL_MIN_VERSION, SaveLoadVersion to = SL_MAX_VERSION, SlXvFeatureTest extver = {})
+template<typename T, auto... ARGS>
+inline constexpr SaveLoadStructHandlerFactory MakeSaveLoadStructHandlerFactory()
 {
 	SaveLoadStructHandlerFactory factory = []() -> std::unique_ptr<class SaveLoadStructHandler> {
-		return std::make_unique<T>();
+		return std::make_unique<T>(ARGS...);
 	};
-	return NSLT_STRUCT(name, factory, from, to, extver);
+	return factory;
+}
+
+inline constexpr NamedSaveLoad NSL_STRUCT_COMMON(const char *name, NamedSaveLoadFlags nsl_flags, SaveLoadStructHandlerFactory factory, SaveLoadVersion from, SaveLoadVersion to, SlXvFeatureTest extver)
+{
+	return { name, SaveLoad { true, SL_STRUCT, SLE_FILE_STRUCT, 0, from, to, SLTAG_DEFAULT, { .struct_handler_factory = factory }, extver }, nsl_flags };
+}
+
+inline constexpr NamedSaveLoad NSL_STRUCT(const char *name, SaveLoadStructHandlerFactory factory, SaveLoadVersion from = SL_MIN_VERSION, SaveLoadVersion to = SL_MAX_VERSION, SlXvFeatureTest extver = {})
+{
+	return NSL_STRUCT_COMMON(name, NSLF_NONE, factory, from, to, extver);
+}
+
+template <typename T, typename... Args>
+inline constexpr NamedSaveLoad NSL_STRUCT(const char *name, Args&&... args)
+{
+	return NSL_STRUCT(name, MakeSaveLoadStructHandlerFactory<T>(), std::forward<Args>(args)...);
+}
+
+inline constexpr NamedSaveLoad NSLT_STRUCT(const char *name, SaveLoadStructHandlerFactory factory, SaveLoadVersion from = SL_MIN_VERSION, SaveLoadVersion to = SL_MAX_VERSION, SlXvFeatureTest extver = {})
+{
+	return NSL_STRUCT_COMMON(name, NSLF_TABLE_ONLY, factory, from, to, extver);
+}
+
+template <typename T, typename... Args>
+inline constexpr NamedSaveLoad NSLT_STRUCT(const char *name, Args&&... args)
+{
+	return NSLT_STRUCT(name, MakeSaveLoadStructHandlerFactory<T>(), std::forward<Args>(args)...);
 }
 
 inline constexpr NamedSaveLoad NSLT_STRUCTLIST(const char *name, SaveLoadStructHandlerFactory factory, SaveLoadVersion from = SL_MIN_VERSION, SaveLoadVersion to = SL_MAX_VERSION, SlXvFeatureTest extver = {})
@@ -212,10 +233,7 @@ inline constexpr NamedSaveLoad NSLT_STRUCTLIST(const char *name, SaveLoadStructH
 template <typename T>
 inline constexpr NamedSaveLoad NSLT_STRUCTLIST(const char *name, SaveLoadVersion from = SL_MIN_VERSION, SaveLoadVersion to = SL_MAX_VERSION, SlXvFeatureTest extver = {})
 {
-	SaveLoadStructHandlerFactory factory = []() -> std::unique_ptr<class SaveLoadStructHandler> {
-		return std::make_unique<T>();
-	};
-	return NSLT_STRUCTLIST(name, factory, from, to, extver);
+	return NSLT_STRUCTLIST(name, MakeSaveLoadStructHandlerFactory<T>(), from, to, extver);
 }
 
 inline constexpr NamedSaveLoad NSLTAG(uint16_t label_tag, NamedSaveLoad nsl)

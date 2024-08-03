@@ -1897,7 +1897,6 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld)
 			}
 			break;
 		case SL_WRITEBYTE: return 1; // a uint8_t is logically of size 1
-		case SL_VEH_INCLUDE: return SlCalcObjLength(object, GetVehicleDescription(VEH_END));
 
 		case SL_STRUCT:
 		case SL_STRUCTLIST:
@@ -1960,11 +1959,6 @@ static void SlFilterObjectMember(const SaveLoad &sld, std::vector<SaveLoad> &sav
 		 * object description to use. */
 		case SL_WRITEBYTE:
 			if (_sl.action == SLA_SAVE) save.push_back(sld);
-			break;
-
-		/* SL_VEH_INCLUDE loads common code for vehicles */
-		case SL_VEH_INCLUDE:
-			SlFilterObject(GetVehicleDescription(VEH_END), save);
 			break;
 
 		case SL_INCLUDE:
@@ -2125,11 +2119,6 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 				case SLA_NULL: break;
 				default: NOT_REACHED();
 			}
-			break;
-
-		/* SL_VEH_INCLUDE loads common code for vehicles */
-		case SL_VEH_INCLUDE:
-			SlObject(ptr, GetVehicleDescription(VEH_END));
 			break;
 
 		default: NOT_REACHED();
@@ -2472,8 +2461,16 @@ SaveLoadTableData SlTableHeaderOrRiff(const NamedSaveLoadTable &slt)
 
 SaveLoadTableData SlPrepareNamedSaveLoadTableForPtrOrNull(const NamedSaveLoadTable &slt)
 {
+	const bool table_mode = (_sl.action == SLA_NULL) || SlIsTableChunk();
 	SaveLoadTableData saveloads;
-	SlFilterNamedSaveLoadTable(slt, saveloads);
+	for (auto &nsld : slt) {
+		if (table_mode) {
+			if (StrEmpty(nsld.name)) continue;
+		} else {
+			if ((nsld.nsl_flags & NSLF_TABLE_ONLY) != 0) continue;
+		}
+		SlFilterObjectMember(nsld.save_load, saveloads);
+	}
 	for (auto &sld : saveloads) {
 		if (sld.cmd == SL_STRUCTLIST || sld.cmd == SL_STRUCT) {
 			std::unique_ptr<SaveLoadStructHandler> handler = sld.struct_handler_factory();
@@ -2689,6 +2686,7 @@ static void SlLoadChunk(const ChunkHandler &ch)
 		/* read in real header */
 		m = SlReadByte();
 		_sl.block_mode = m;
+		_sl.chunk_block_modes[_sl.current_chunk_id] = m;
 	}
 
 	_sl.expect_table_header = (_sl.block_mode == CH_TABLE || _sl.block_mode == CH_SPARSE_TABLE);
@@ -2776,6 +2774,7 @@ static void SlLoadCheckChunk(const ChunkHandler *ch, uint32_t chunk_id)
 		/* read in real header */
 		m = SlReadByte();
 		_sl.block_mode = m;
+		_sl.chunk_block_modes[_sl.current_chunk_id] = m;
 	}
 
 	_sl.expect_table_header = (_sl.block_mode == CH_TABLE || _sl.block_mode == CH_SPARSE_TABLE);
@@ -3012,6 +3011,7 @@ static void SlFixPointers()
 
 	for (auto &ch : ChunkHandlers()) {
 		_sl.current_chunk_id = ch.id;
+		_sl.block_mode = _sl.chunk_block_modes[_sl.current_chunk_id];
 		if (ch.special_proc != nullptr) {
 			if (ch.special_proc(ch.id, CSLSO_PRE_PTRS) == CSLSOR_LOAD_CHUNK_CONSUMED) continue;
 		}

@@ -8073,6 +8073,7 @@ static void SpriteReplace(ByteReader *buf)
 					i, num_sprites, first_sprite, SPR_OPENTTD_BASE);
 
 				for (uint j = 0; j < num_sprites; j++) {
+					_cur.nfo_line++;
 					LoadNextSprite(-1, *_cur.file, _cur.nfo_line);
 				}
 				return;
