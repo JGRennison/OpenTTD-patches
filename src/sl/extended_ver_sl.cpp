@@ -140,7 +140,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_STATE_CHECKSUM,                   XSCF_NULL,                1,   1, "state_checksum",                   nullptr, nullptr, nullptr          },
 	{ XSLFI_DEBUG,                            XSCF_IGNORABLE_ALL,       2,   2, "debug",                            nullptr, nullptr, "DBGD"           },
 	{ XSLFI_FLOW_STAT_FLAGS,                  XSCF_NULL,                1,   1, "flow_stat_flags",                  nullptr, nullptr, nullptr          },
-	{ XSLFI_SPEED_RESTRICTION,                XSCF_NULL,                1,   1, "speed_restriction",                nullptr, nullptr, "VESR"           },
+	{ XSLFI_SPEED_RESTRICTION,                XSCF_NULL,                2,   2, "speed_restriction",                nullptr, nullptr, "VESR"           },
 	{ XSLFI_STATION_GOODS_EXTRA,              XSCF_NULL,                1,   1, "station_goods_extra",              nullptr, nullptr, nullptr          },
 	{ XSLFI_DOCKING_CACHE_VER,                XSCF_IGNORABLE_ALL,       3,   3, "docking_cache_ver",                nullptr, nullptr, nullptr          },
 	{ XSLFI_EXTRA_CHEATS,                     XSCF_NULL,                2,   2, "extra_cheats",                     nullptr, nullptr, nullptr          },

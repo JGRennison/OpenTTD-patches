@@ -1459,13 +1459,13 @@ void Load_VEOX()
 	}
 }
 
-const SaveLoadTable GetVehicleSpeedRestrictionDescription()
+const NamedSaveLoadTable GetVehicleSpeedRestrictionDescription()
 {
-	static const SaveLoad _vehicle_speed_restriction_desc[] = {
-		     SLE_VAR(PendingSpeedRestrictionChange, distance,                 SLE_UINT16),
-		     SLE_VAR(PendingSpeedRestrictionChange, new_speed,                SLE_UINT16),
-		     SLE_VAR(PendingSpeedRestrictionChange, prev_speed,               SLE_UINT16),
-		     SLE_VAR(PendingSpeedRestrictionChange, flags,                    SLE_UINT16),
+	static const NamedSaveLoad _vehicle_speed_restriction_desc[] = {
+		NSL("distance",   SLE_VAR(PendingSpeedRestrictionChange, distance,                 SLE_UINT16)),
+		NSL("new_speed",  SLE_VAR(PendingSpeedRestrictionChange, new_speed,                SLE_UINT16)),
+		NSL("prev_speed", SLE_VAR(PendingSpeedRestrictionChange, prev_speed,               SLE_UINT16)),
+		NSL("flags",      SLE_VAR(PendingSpeedRestrictionChange, flags,                    SLE_UINT16)),
 	};
 
 	return _vehicle_speed_restriction_desc;
@@ -1473,20 +1473,24 @@ const SaveLoadTable GetVehicleSpeedRestrictionDescription()
 
 void Save_VESR()
 {
+	SaveLoadTableData slt = SlTableHeader(GetVehicleSpeedRestrictionDescription());
+
 	for (auto &it : _pending_speed_restriction_change_map) {
 		SlSetArrayIndex(it.first);
 		PendingSpeedRestrictionChange *ptr = &(it.second);
-		SlObject(ptr, GetVehicleSpeedRestrictionDescription());
+		SlObjectSaveFiltered(ptr, slt);
 	}
 }
 
 void Load_VESR()
 {
+	SaveLoadTableData slt = SlTableHeaderOrRiff(GetVehicleSpeedRestrictionDescription());
+
 	int index;
 	while ((index = SlIterateArray()) != -1) {
 		auto iter = _pending_speed_restriction_change_map.insert({ static_cast<VehicleID>(index), {} });
 		PendingSpeedRestrictionChange *ptr = &(iter->second);
-		SlObject(ptr, GetVehicleSpeedRestrictionDescription());
+		SlObjectLoadFiltered(ptr, slt);
 	}
 }
 
@@ -1806,7 +1810,7 @@ void Load_VUBS()
 static const ChunkHandler veh_chunk_handlers[] = {
 	{ 'VEHS', Save_VEHS, Load_VEHS, Ptrs_VEHS, nullptr, CH_SPARSE_TABLE },
 	{ 'VEOX', nullptr,   Load_VEOX, nullptr,   nullptr, CH_READONLY },
-	{ 'VESR', Save_VESR, Load_VESR, nullptr,   nullptr, CH_SPARSE_ARRAY },
+	{ 'VESR', Save_VESR, Load_VESR, nullptr,   nullptr, CH_SPARSE_TABLE },
 	{ 'VENC', Save_VENC, Load_VENC, nullptr,   nullptr, CH_RIFF,         Special_VENC },
 	{ 'VLKA', nullptr,   Load_VLKA, nullptr,   nullptr, CH_READONLY },
 	{ 'VUBS', nullptr,   Load_VUBS, nullptr,   nullptr, CH_READONLY },
