@@ -1897,7 +1897,6 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld)
 			}
 			break;
 		case SL_WRITEBYTE: return 1; // a uint8_t is logically of size 1
-		case SL_VEH_INCLUDE: return SlCalcObjLength(object, GetVehicleDescription(VEH_END));
 
 		case SL_STRUCT:
 		case SL_STRUCTLIST:
@@ -1960,11 +1959,6 @@ static void SlFilterObjectMember(const SaveLoad &sld, std::vector<SaveLoad> &sav
 		 * object description to use. */
 		case SL_WRITEBYTE:
 			if (_sl.action == SLA_SAVE) save.push_back(sld);
-			break;
-
-		/* SL_VEH_INCLUDE loads common code for vehicles */
-		case SL_VEH_INCLUDE:
-			SlFilterObject(GetVehicleDescription(VEH_END), save);
 			break;
 
 		case SL_INCLUDE:
@@ -2125,11 +2119,6 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 				case SLA_NULL: break;
 				default: NOT_REACHED();
 			}
-			break;
-
-		/* SL_VEH_INCLUDE loads common code for vehicles */
-		case SL_VEH_INCLUDE:
-			SlObject(ptr, GetVehicleDescription(VEH_END));
 			break;
 
 		default: NOT_REACHED();

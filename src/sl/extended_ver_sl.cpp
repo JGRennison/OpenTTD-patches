@@ -221,6 +221,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_TABLE_INDUSTRY_SL,                XSCF_NULL,                2,   2, "table_industry_sl",                nullptr, nullptr, nullptr          },
 	{ XSLFI_TABLE_STATION_SL,                 XSCF_NULL,                1,   1, "table_station_sl",                 nullptr, nullptr, nullptr          },
 	{ XSLFI_TABLE_LINKGRAPH_SL,               XSCF_NULL,                1,   1, "table_linkgraph_sl",               nullptr, nullptr, nullptr          },
+	{ XSLFI_TABLE_VEHICLE_SL,                 XSCF_NULL,                1,   1, "table_vehicle_sl",                 nullptr, nullptr, nullptr          },
 
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr }, // This is the end marker
 };

@@ -119,7 +119,6 @@ enum SaveLoadTypes {
 
 	/* non-normal save-load types */
 	SL_WRITEBYTE,
-	SL_VEH_INCLUDE,
 	SL_INCLUDE,
 };
 

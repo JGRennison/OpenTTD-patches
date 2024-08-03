@@ -102,7 +102,7 @@ namespace upstream_sl {
  */
 struct Order : OrderPool::PoolItem<&_order_pool> {
 private:
-	friend SaveLoadTable GetVehicleDescription(VehicleType vt);           ///< Saving and loading the current order of vehicles.
+	friend NamedSaveLoadTable GetVehicleDescription(VehicleType vt);      ///< Saving and loading the current order of vehicles.
 	friend void Load_VEHS();                                              ///< Loading of ancient vehicles.
 	friend NamedSaveLoadTable GetOrderDescription();                      ///< Saving and loading of orders.
 	friend struct OrderExtraDataStructHandler;                            ///< Saving and loading of orders.
