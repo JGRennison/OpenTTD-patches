@@ -199,15 +199,31 @@ inline constexpr SaveLoadStructHandlerFactory MakeSaveLoadStructHandlerFactory()
 	return factory;
 }
 
-inline constexpr NamedSaveLoad NSLT_STRUCT(const char *name, SaveLoadStructHandlerFactory factory, SaveLoadVersion from = SL_MIN_VERSION, SaveLoadVersion to = SL_MAX_VERSION, SlXvFeatureTest extver = {})
+inline constexpr NamedSaveLoad NSL_STRUCT_COMMON(const char *name, NamedSaveLoadFlags nsl_flags, SaveLoadStructHandlerFactory factory, SaveLoadVersion from, SaveLoadVersion to, SlXvFeatureTest extver)
 {
-	return { name, SaveLoad { true, SL_STRUCT, SLE_FILE_STRUCT, 0, from, to, SLTAG_DEFAULT, { .struct_handler_factory = factory }, extver }, NSLF_TABLE_ONLY };
+	return { name, SaveLoad { true, SL_STRUCT, SLE_FILE_STRUCT, 0, from, to, SLTAG_DEFAULT, { .struct_handler_factory = factory }, extver }, nsl_flags };
 }
 
-template <typename T>
-inline constexpr NamedSaveLoad NSLT_STRUCT(const char *name, SaveLoadVersion from = SL_MIN_VERSION, SaveLoadVersion to = SL_MAX_VERSION, SlXvFeatureTest extver = {})
+inline constexpr NamedSaveLoad NSL_STRUCT(const char *name, SaveLoadStructHandlerFactory factory, SaveLoadVersion from = SL_MIN_VERSION, SaveLoadVersion to = SL_MAX_VERSION, SlXvFeatureTest extver = {})
 {
-	return NSLT_STRUCT(name, MakeSaveLoadStructHandlerFactory<T>(), from, to, extver);
+	return NSL_STRUCT_COMMON(name, NSLF_NONE, factory, from, to, extver);
+}
+
+template <typename T, typename... Args>
+inline constexpr NamedSaveLoad NSL_STRUCT(const char *name, Args&&... args)
+{
+	return NSL_STRUCT(name, MakeSaveLoadStructHandlerFactory<T>(), std::forward<Args>(args)...);
+}
+
+inline constexpr NamedSaveLoad NSLT_STRUCT(const char *name, SaveLoadStructHandlerFactory factory, SaveLoadVersion from = SL_MIN_VERSION, SaveLoadVersion to = SL_MAX_VERSION, SlXvFeatureTest extver = {})
+{
+	return NSL_STRUCT_COMMON(name, NSLF_TABLE_ONLY, factory, from, to, extver);
+}
+
+template <typename T, typename... Args>
+inline constexpr NamedSaveLoad NSLT_STRUCT(const char *name, Args&&... args)
+{
+	return NSLT_STRUCT(name, MakeSaveLoadStructHandlerFactory<T>(), std::forward<Args>(args)...);
 }
 
 inline constexpr NamedSaveLoad NSLT_STRUCTLIST(const char *name, SaveLoadStructHandlerFactory factory, SaveLoadVersion from = SL_MIN_VERSION, SaveLoadVersion to = SL_MAX_VERSION, SlXvFeatureTest extver = {})
