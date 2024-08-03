@@ -117,7 +117,7 @@ static bool SetBankSource(MixerChannel *mc, const SoundEntry *sound)
 	assert(sound != nullptr);
 
 	/* Check for valid sound size. */
-	if (sound->file_size == 0 || sound->file_size > ((size_t)-1) - 2) return false;
+	if (sound->file_size == 0 || sound->file_size > SIZE_MAX - 2) return false;
 
 	if (!(sound->bits_per_sample == 8 || sound->bits_per_sample == 16)) {
 		DEBUG(sound, 0, "SetBankSource: Incorrect bits_per_sample: %u", sound->bits_per_sample);

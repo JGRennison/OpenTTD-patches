@@ -358,14 +358,6 @@ char (&ArraySizeHelper(T (&array)[N]))[N];
  */
 #define cpp_sizeof(base, variable) (sizeof(((base*)8)->variable))
 
-/**
- * Gets the length of an array variable within a class.
- * @param base     The class the variable is in.
- * @param variable The array variable to get the size of.
- * @return the length of the array
- */
-#define cpp_lengthof(base, variable) (cpp_sizeof(base, variable) / cpp_sizeof(base, variable[0]))
-
 
 /* take care of some name clashes on MacOS */
 #if defined(__APPLE__)
@@ -462,7 +454,7 @@ inline void free(const void *ptr)
  * The largest value that can be entered in a variable
  * @param type the type of the variable
  */
-#define MAX_UVALUE(type) ((type)~(type)0)
+#define MAX_UVALUE(type) (static_cast<type>(~static_cast<type>(0)))
 
 #if defined(_MSC_VER) && !defined(_DEBUG)
 #	define IGNORE_UNINITIALIZED_WARNING_START __pragma(warning(push)) __pragma(warning(disable:4700))

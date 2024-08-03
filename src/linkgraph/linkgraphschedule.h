@@ -46,7 +46,7 @@ private:
 	~LinkGraphSchedule();
 	typedef std::list<LinkGraph *> GraphList;
 	typedef std::list<std::unique_ptr<LinkGraphJob>> JobList;
-	friend SaveLoadTable GetLinkGraphScheduleDesc();
+	friend NamedSaveLoadTable GetLinkGraphScheduleDesc();
 	friend upstream_sl::SaveLoadTable upstream_sl::GetLinkGraphScheduleDesc();
 
 protected:

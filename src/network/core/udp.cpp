@@ -165,7 +165,7 @@ void NetworkUDPSocketHandler::ReceivePackets()
 
 			/* If the size does not match the packet must be corrupted.
 			 * Otherwise it will be marked as corrupted later on. */
-			if (!p.ParsePacketSize() || (size_t)nbytes != p.Size()) {
+			if (!p.ParsePacketSize() || static_cast<size_t>(nbytes) != p.Size()) {
 				DEBUG(net, 1, "received a packet with mismatching size from %s, (%u, %u)", NetworkAddressDumper().GetAddressAsString(&address), (uint)nbytes, (uint)p.Size());
 				continue;
 			}

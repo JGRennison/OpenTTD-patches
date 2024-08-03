@@ -975,23 +975,23 @@ static std::pair<const Rect16 *, const Rect16 *> GetDesertOrRainforestData()
 }
 
 template <typename F>
-void DesertOrRainforestProcessTiles(const std::pair<const Rect16 *, const Rect16 *> desert_rainforest_data, const Rect16 *&data, TileIndex tile, F handle_tile)
+bool DesertOrRainforestProcessTiles(const std::pair<const Rect16 *, const Rect16 *> desert_rainforest_data, TileIndex tile, F handle_tile)
 {
-	for (data = desert_rainforest_data.first; data != desert_rainforest_data.second; ++data) {
+	for (const Rect16 *data = desert_rainforest_data.first; data != desert_rainforest_data.second; ++data) {
 		const Rect16 r = *data;
 		for (int16_t x = r.left; x <= r.right; x++) {
 			for (int16_t y = r.top; y <= r.bottom; y++) {
 				TileIndex t = AddTileIndexDiffCWrap(tile, { x, y });
-				if (handle_tile(t)) return;
+				if (handle_tile(t)) return false;
 			}
 		}
 	}
+	return true;
 }
 
 static void CreateDesertOrRainForest(uint desert_tropic_line)
 {
-	TileIndex update_freq = MapSize() / 4;
-	const Rect16 *data;
+	uint update_freq = MapSize() / 4;
 
 	const std::pair<const Rect16 *, const Rect16 *> desert_rainforest_data = GetDesertOrRainforestData();
 
@@ -1000,10 +1000,10 @@ static void CreateDesertOrRainForest(uint desert_tropic_line)
 
 		if (!IsValidTile(tile)) continue;
 
-		DesertOrRainforestProcessTiles(desert_rainforest_data, data, tile, [&](TileIndex t) -> bool {
+		bool ok = DesertOrRainforestProcessTiles(desert_rainforest_data, tile, [&](TileIndex t) -> bool {
 			return (t != INVALID_TILE && (TileHeight(t) >= desert_tropic_line || IsTileType(t, MP_WATER)));
 		});
-		if (data == desert_rainforest_data.second) {
+		if (ok) {
 			SetTropicZone(tile, TROPICZONE_DESERT);
 		}
 	}
@@ -1019,10 +1019,10 @@ static void CreateDesertOrRainForest(uint desert_tropic_line)
 
 		if (!IsValidTile(tile)) continue;
 
-		DesertOrRainforestProcessTiles(desert_rainforest_data, data, tile, [&](TileIndex t) -> bool {
+		bool ok = DesertOrRainforestProcessTiles(desert_rainforest_data, tile, [&](TileIndex t) -> bool {
 			return (t != INVALID_TILE && IsTileType(t, MP_CLEAR) && IsClearGround(t, CLEAR_DESERT));
 		});
-		if (data == desert_rainforest_data.second) {
+		if (ok) {
 			SetTropicZone(tile, TROPICZONE_RAINFOREST);
 		}
 	}

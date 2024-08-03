@@ -188,6 +188,7 @@ public:
 
 			/* if there are more trackdirs available & reachable, we are at the end of segment */
 			if (KillFirstBit(F.m_new_td_bits) != TRACKDIR_BIT_NONE) break;
+			if (tiles > MAX_RV_PF_TILES) break;
 
 			Trackdir new_td = (Trackdir)FindFirstBit(F.m_new_td_bits);
 
@@ -207,7 +208,6 @@ public:
 			/* move to the next tile */
 			tile = F.m_new_tile;
 			trackdir = new_td;
-			if (tiles > MAX_RV_PF_TILES) break;
 		}
 
 		/* save end of segment back to the node */

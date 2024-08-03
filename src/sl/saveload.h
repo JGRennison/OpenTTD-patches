@@ -83,7 +83,6 @@ bool IsNetworkServerSave();
 bool IsScenarioSave();
 
 typedef void ChunkSaveLoadProc();
-typedef void AutolengthProc(void *arg);
 
 void SlUnreachablePlaceholder();
 
@@ -501,7 +500,7 @@ inline constexpr void *SlVarWrapper(void* ptr)
  * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  * @note In general, it is better to use one of the SLE_* macros below.
  */
-#define SLE_GENERAL_X(cmd, base, variable, type, length, from, to, extver) SaveLoad {false, cmd, type, length, from, to, SlVarWrapper<decltype(base::variable), cmd, type, length>((void*)cpp_offsetof(base, variable)), sizeof(base::variable), extver}
+#define SLE_GENERAL_X(cmd, base, variable, type, length, from, to, extver) SaveLoad {false, cmd, type, length, from, to, SLTAG_DEFAULT, { SlVarWrapper<decltype(base::variable), cmd, type, length>((void*)cpp_offsetof(base, variable)) }, extver}
 #define SLE_GENERAL(cmd, base, variable, type, length, from, to) SLE_GENERAL_X(cmd, base, variable, type, length, from, to, SlXvFeatureTest())
 
 /**
@@ -719,8 +718,10 @@ inline constexpr void *SlVarWrapper(void* ptr)
 /** Translate values ingame to different values in the savegame and vv. */
 #define SLE_WRITEBYTE(base, variable) SLE_GENERAL(SL_WRITEBYTE, base, variable, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION)
 
-#define SLE_VEH_INCLUDE() {false, SL_VEH_INCLUDE, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION, nullptr, 0, SlXvFeatureTest()}
-#define SLE_ST_INCLUDE() {false, SL_ST_INCLUDE, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION, nullptr, 0, SlXvFeatureTest()}
+#define SLE_VEH_INCLUDE() SaveLoad { false, SL_VEH_INCLUDE, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION, SLTAG_DEFAULT, { nullptr }, SlXvFeatureTest()}
+
+/** SaveLoad include, for non-table use with SlFilterObject/SlFilterNamedSaveLoadTable. */
+#define SLE_INCLUDE(inc_functor) SaveLoad { false, SL_INCLUDE, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION, SLTAG_DEFAULT, { .include_functor = inc_functor }, SlXvFeatureTest()}
 
 /**
  * Storage of global simple variables, references (pointers), and arrays.
@@ -732,7 +733,7 @@ inline constexpr void *SlVarWrapper(void* ptr)
  * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  * @note In general, it is better to use one of the SLEG_* macros below.
  */
-#define SLEG_GENERAL_X(cmd, variable, type, length, from, to, extver) SaveLoad {true, cmd, type, length, from, to, SlVarWrapper<decltype(variable), cmd, type, length>((void*)&variable), sizeof(variable), extver}
+#define SLEG_GENERAL_X(cmd, variable, type, length, from, to, extver) SaveLoad {true, cmd, type, length, from, to, SLTAG_DEFAULT, { SlVarWrapper<decltype(variable), cmd, type, length>((void*)&variable) }, extver}
 #define SLEG_GENERAL(cmd, variable, type, length, from, to) SLEG_GENERAL_X(cmd, variable, type, length, from, to, SlXvFeatureTest())
 
 /**
@@ -896,9 +897,8 @@ inline constexpr void *SlVarWrapper(void* ptr)
  * @param length Length of the empty space.
  * @param from   First savegame version that has the empty space.
  * @param to     Last savegame version that has the empty space.
- * @param extver SlXvFeatureTest to test (along with from and to) which savegames have empty space
  */
-#define SLEG_CONDNULL(length, from, to) {true, SL_ARR, SLE_FILE_U8 | SLE_VAR_NULL, length, from, to, (void*)nullptr, SlXvFeatureTest()}
+#define SLEG_CONDNULL(length, from, to) SaveLoad {true, SL_ARR, SLE_FILE_U8 | SLE_VAR_NULL, length, from, to, SLTAG_DEFAULT, { nullptr }, SlXvFeatureTest()}
 
 /**
  * Checks whether the savegame is below \a major.\a minor.
@@ -981,11 +981,31 @@ void WriteValue(void *ptr, VarType conv, int64_t val);
 void SlSetArrayIndex(uint index);
 int SlIterateArray();
 
-void SlAutolength(AutolengthProc *proc, void *arg);
 size_t SlGetFieldLength();
 void SlSetLength(size_t length);
 size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld);
 size_t SlCalcObjLength(const void *object, const SaveLoadTable &slt);
+
+uint SlReadSimpleGamma();
+void SlWriteSimpleGamma(size_t i);
+uint SlGetGammaLength(size_t i);
+constexpr uint SlGetMaxGammaLength() { return 5; }
+
+/**
+ * Run proc, automatically prepending the written length
+ * @param proc The callback procedure that is called
+ * @param args Any
+ */
+template <typename F, typename... Args>
+void SlAutolength(F proc, Args... args)
+{
+	extern void SlAutolengthSetup();
+	extern void SlAutolengthCompletion();
+
+	SlAutolengthSetup();
+	proc(std::forward<Args>(args)...);
+	SlAutolengthCompletion();
+}
 
 /**
  * Run proc, saving result in the autolength temp buffer
@@ -1067,6 +1087,8 @@ void SlObject(void *object, const SaveLoadTable &slt);
 bool SlObjectMember(void *object, const SaveLoad &sld);
 
 std::vector<SaveLoad> SlFilterObject(const SaveLoadTable &slt);
+void SlFilterNamedSaveLoadTable(const NamedSaveLoadTable &nslt, std::vector<SaveLoad> &save);
+std::vector<SaveLoad> SlFilterNamedSaveLoadTable(const NamedSaveLoadTable &nslt);
 void SlObjectSaveFiltered(void *object, const SaveLoadTable &slt);
 void SlObjectLoadFiltered(void *object, const SaveLoadTable &slt);
 void SlObjectPtrOrNullFiltered(void *object, const SaveLoadTable &slt);
@@ -1079,22 +1101,36 @@ struct TableHeaderSpecialHandler {
 
 bool SlIsTableChunk();
 void SlSkipTableHeader();
-std::vector<SaveLoad> SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecialHandler *special_handler = nullptr);
-std::vector<SaveLoad> SlTableHeaderOrRiff(const NamedSaveLoadTable &slt);
-void SlSaveTableObjectChunk(const SaveLoadTable &slt);
-void SlLoadTableOrRiffFiltered(const SaveLoadTable &slt);
+[[nodiscard]] SaveLoadTableData SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecialHandler *special_handler = nullptr);
+[[nodiscard]] SaveLoadTableData SlTableHeaderOrRiff(const NamedSaveLoadTable &slt);
+[[nodiscard]] SaveLoadTableData SlPrepareNamedSaveLoadTableForPtrOrNull(const NamedSaveLoadTable &slt);
+void SlSaveTableObjectChunk(const SaveLoadTable &slt, void *object = nullptr);
+void SlLoadTableOrRiffFiltered(const SaveLoadTable &slt, void *object = nullptr);
 void SlLoadTableWithArrayLengthPrefixesMissing();
+
+void SlSetStructListLength(size_t length);
+size_t SlGetStructListLength(size_t limit);
 
 void SlSkipChunkContents();
 
-inline void SlSaveTableObjectChunk(const NamedSaveLoadTable &slt)
+inline void SlSaveTableObjectChunk(const NamedSaveLoadTable &slt, void *object = nullptr)
 {
-	SlSaveTableObjectChunk(SlTableHeader(slt));
+	SlSaveTableObjectChunk(SlTableHeader(slt), object);
 }
 
-inline void SlLoadTableOrRiffFiltered(const NamedSaveLoadTable &slt)
+inline void SlLoadTableObjectChunk(const NamedSaveLoadTable &slt, void *object = nullptr)
 {
-	SlLoadTableOrRiffFiltered(SlTableHeaderOrRiff(slt));
+	SlLoadTableOrRiffFiltered(SlTableHeader(slt), object);
+}
+
+inline void SlLoadTableObjectChunk(const SaveLoadTable &slt, void *object = nullptr)
+{
+	SlLoadTableOrRiffFiltered(slt, object);
+}
+
+inline void SlLoadTableOrRiffFiltered(const NamedSaveLoadTable &slt, void *object = nullptr)
+{
+	SlLoadTableOrRiffFiltered(SlTableHeaderOrRiff(slt), object);
 }
 
 [[noreturn]] void CDECL SlErrorFmt(StringID string, const char *msg, ...) WARN_FORMAT(2, 3);

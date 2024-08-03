@@ -2919,8 +2919,8 @@ void CheckOrders(const Vehicle *v)
 			}
 		}
 
-		/* Check if the last and the first order are the same */
-		if (v->GetNumOrders() > 1) {
+		/* Check if the last and the first order are the same, and the first order is a go to order */
+		if (v->GetNumOrders() > 1 && v->orders->GetFirstOrder()->IsGotoOrder()) {
 			const Order *last = v->GetLastOrder();
 
 			if (v->orders->GetFirstOrder()->Equals(*last)) {

@@ -35,7 +35,7 @@ struct GoodsEntry; // forward-declare for Stage() and RerouteStalePackets()
 
 template <class Tinst, class Tcont> class CargoList;
 class StationCargoList; // forward-declare, so we can use it in VehicleCargoList.
-extern SaveLoadTable GetCargoPacketDesc();
+extern NamedSaveLoadTable GetCargoPacketDesc();
 
 namespace upstream_sl {
 	extern upstream_sl::SaveLoadTable GetCargoPacketDesc();
@@ -79,7 +79,7 @@ private:
 	friend class VehicleCargoList;
 	friend class StationCargoList;
 	/** We want this to be saved, right? */
-	friend SaveLoadTable GetCargoPacketDesc();
+	friend NamedSaveLoadTable GetCargoPacketDesc();
 	friend upstream_sl::SaveLoadTable upstream_sl::GetCargoPacketDesc();
 	friend void Load_CPDP();
 public:
@@ -582,7 +582,7 @@ public:
 	/** The super class ought to know what it's doing. */
 	friend class CargoList<StationCargoList, StationCargoPacketMap>;
 	/** The stations, via GoodsEntry, have a CargoList. */
-	friend SaveLoadTable GetGoodsDesc();
+	friend NamedSaveLoadTable GetGoodsDesc();
 	friend upstream_sl::SlStationGoods;
 
 	friend class CargoLoad;

@@ -163,13 +163,20 @@ enum SlXvFeatureIndex {
 	XSLFI_VEHICLE_ECONOMY_AGE,                    ///< See: SLV_VEHICLE_ECONOMY_AGE (PR #12141)
 
 	XSLFI_TABLE_PATS,                             ///< Use upstream table format for PATS
+	XSLFI_TABLE_PLYR,                             ///< Use table format for PLYR
 	XSLFI_TABLE_MISC_SL,                          ///< Use upstream table format for miscellaneous chunks:
 	                                              ///<     v1: DATE, VIEW, MAPS
 	                                              ///<     v2: SUBS, CMDL, CMPU, ERNW, DEPT, CAPY, ECMY, EIDS, ENGN, GOAL, GRPS, RAIL, OBJS, SIGN, PSAC, STPE, STPA
+	                                              ///<     v3: CAPA, CITY, ROAD
 	XSLFI_TABLE_SCRIPT_SL,                        ///< Use upstream table format for script chunks
 	XSLFI_TABLE_NEWGRF_SL,                        ///< Use upstream table format for NewGRF/ID mapping chunks
 	                                              ///<     In v1, NGRF chunks were saved incorrectly: see SLBF_TABLE_ARRAY_LENGTH_PREFIX_MISSING
-	XSLFI_TABLE_INDUSTRY_SL,                      ///< Use upstream table format for industry chunks: IBLD, ITBL
+	XSLFI_TABLE_INDUSTRY_SL,                      ///< Use table format for industry chunks:
+	                                              ///<     v1: IBLD, ITBL
+	                                              ///<     v2: INDY
+	XSLFI_TABLE_STATION_SL,                       ///< Use table format for station chunks:
+	                                              ///<     v1: STNN
+	XSLFI_TABLE_LINKGRAPH_SL,                     ///< Use table format for link graph chunks:
 
 	XSLFI_RIFF_HEADER_60_BIT,                     ///< Size field in RIFF chunk header is 60 bit
 	XSLFI_HEIGHT_8_BIT,                           ///< Map tile height is 8 bit instead of 4 bit, but savegame version may be before this became true in trunk

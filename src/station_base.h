@@ -325,7 +325,7 @@ public:
 	/* for save/load use only */
 	inline void SetRawFlags(uint16_t flags)
 	{
-		this->flags = flags;;
+		this->flags = flags;
 	}
 
 private:

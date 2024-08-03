@@ -927,6 +927,20 @@ NWidgetBase *NWidgetBase::GetWidgetOfType(WidgetType tp)
 	return (this->type == tp) ? this : nullptr;
 }
 
+void NWidgetBase::ApplyAspectRatio()
+{
+	if (this->aspect_ratio == 0) return;
+	if (this->smallest_x == 0 || this->smallest_y == 0) return;
+
+	uint x = this->smallest_x;
+	uint y = this->smallest_y;
+	if ((this->aspect_flags & AspectFlags::ResizeX) == AspectFlags::ResizeX) x = std::max(this->smallest_x, static_cast<uint>(this->smallest_y * std::abs(this->aspect_ratio)));
+	if ((this->aspect_flags & AspectFlags::ResizeY) == AspectFlags::ResizeY) y = std::max(this->smallest_y, static_cast<uint>(this->smallest_x / std::abs(this->aspect_ratio)));
+
+	this->smallest_x = x;
+	this->smallest_y = y;
+}
+
 void NWidgetBase::AdjustPaddingForZoom()
 {
 	this->padding = ScaleGUITrad(this->uz_padding);
@@ -942,6 +956,28 @@ NWidgetResizeBase::NWidgetResizeBase(WidgetType tp, uint fill_x, uint fill_y) : 
 {
 	this->fill_x = fill_x;
 	this->fill_y = fill_y;
+}
+
+/**
+ * Set desired aspect ratio of this widget.
+ * @param ratio Desired aspect ratio, or 0 for none.
+ * @param flags Dimensions which should be resized.
+ */
+void NWidgetResizeBase::SetAspect(float ratio, AspectFlags flags)
+{
+	this->aspect_ratio = ratio;
+	this->aspect_flags = flags;
+}
+
+/**
+ * Set desired aspect ratio of this widget, in terms of horizontal and vertical dimensions.
+ * @param x_ratio Desired horizontal component of aspect ratio.
+ * @param y_ratio Desired vertical component of aspect ratio.
+ * @param flags Dimensions which should be resized.
+ */
+void NWidgetResizeBase::SetAspect(int x_ratio, int y_ratio, AspectFlags flags)
+{
+	this->SetAspect(static_cast<float>(x_ratio) / static_cast<float>(y_ratio), flags);
 }
 
 void NWidgetResizeBase::AdjustPaddingForZoom()
@@ -1133,6 +1169,20 @@ void NWidgetCore::FillWidgetLookup(WidgetLookup &widget_lookup)
 	if (this->index >= 0) widget_lookup[this->index] = this;
 }
 
+bool NWidgetCore::IsActiveInLayout() const
+{
+	if (this->IsDisabled()) return false;
+
+	const NWidgetBase *child = this;
+	for (const NWidgetBase *nwid_parent = this->parent; nwid_parent != nullptr; child = nwid_parent, nwid_parent = nwid_parent->parent) {
+		if (const NWidgetStacked *stack = dynamic_cast<const NWidgetStacked *>(nwid_parent); stack != nullptr) {
+			if (!stack->IsChildSelected(child)) return false;
+		}
+	}
+
+	return true;
+}
+
 NWidgetCore *NWidgetCore::GetWidgetFromPos(int x, int y)
 {
 	return (IsInsideBS(x, this->pos_x, this->current_x) && IsInsideBS(y, this->pos_y, this->current_y)) ? this : nullptr;
@@ -1242,6 +1292,7 @@ void NWidgetStacked::SetupSmallestSize(Window *w)
 		this->fill_y = fill.height;
 		this->resize_x = resize.width;
 		this->resize_y = resize.height;
+		this->ApplyAspectRatio();
 		return;
 	}
 
@@ -1265,6 +1316,7 @@ void NWidgetStacked::SetupSmallestSize(Window *w)
 		this->fill_y = std::lcm(this->fill_y, child_wid->fill_y);
 		this->resize_x = std::lcm(this->resize_x, child_wid->resize_x);
 		this->resize_y = std::lcm(this->resize_y, child_wid->resize_y);
+		this->ApplyAspectRatio();
 	}
 }
 
@@ -1351,6 +1403,12 @@ bool NWidgetStacked::SetDisplayedPlane(int plane)
 	/* In case widget IDs are repeated, make sure Window::GetWidget works on displayed widgets. */
 	if (static_cast<size_t>(this->shown_plane) < this->children.size()) this->children[shown_plane]->FillWidgetLookup(*this->widget_lookup);
 	return true;
+}
+
+bool NWidgetStacked::IsChildSelected(const NWidgetBase *child) const
+{
+	if (this->shown_plane >= SZSP_BEGIN || static_cast<size_t>(this->shown_plane) >= this->children.size()) return false;
+	return this->children[this->shown_plane].get() == child;
 }
 
 NWidgetPIPContainer::NWidgetPIPContainer(WidgetType tp, NWidContainerFlags flags) : NWidgetContainer(tp)
@@ -1448,6 +1506,11 @@ void NWidgetHorizontal::SetupSmallestSize(Window *w)
 		this->smallest_y = cur_height; // Smallest height got changed, try again.
 	}
 	/* 2. For containers that must maintain equal width, extend child minimal size. */
+	for (const auto &child_wid : this->children) {
+		child_wid->smallest_y = this->smallest_y - child_wid->padding.Vertical();
+		child_wid->ApplyAspectRatio();
+		longest = std::max(longest, child_wid->smallest_x);
+	}
 	if (this->flags & NC_EQUALSIZE) {
 		for (const auto &child_wid : this->children) {
 			if (child_wid->fill_x == 1) child_wid->smallest_x = longest;
@@ -1637,6 +1700,11 @@ void NWidgetVertical::SetupSmallestSize(Window *w)
 		this->smallest_x = cur_width; // Smallest width got changed, try again.
 	}
 	/* 2. For containers that must maintain equal width, extend children minimal size. */
+	for (const auto &child_wid : this->children) {
+		child_wid->smallest_x = this->smallest_x - child_wid->padding.Horizontal();
+		child_wid->ApplyAspectRatio();
+		highest = std::max(highest, child_wid->smallest_y);
+	}
 	if (this->flags & NC_EQUALSIZE) {
 		for (const auto &child_wid : this->children) {
 			if (child_wid->fill_y == 1) child_wid->smallest_y = highest;
@@ -1773,6 +1841,7 @@ void NWidgetSpacer::SetupSmallestSize(Window *)
 {
 	this->smallest_x = this->min_x;
 	this->smallest_y = this->min_y;
+	this->ApplyAspectRatio();
 }
 
 void NWidgetSpacer::FillWidgetLookup(WidgetLookup &)
@@ -1889,6 +1958,7 @@ void NWidgetMatrix::SetupSmallestSize(Window *w)
 	this->fill_y = fill.height;
 	this->resize_x = resize.width;
 	this->resize_y = resize.height;
+	this->ApplyAspectRatio();
 }
 
 void NWidgetMatrix::AssignSizePosition(SizingType, int x, int y, uint given_width, uint given_height, bool)
@@ -2147,6 +2217,7 @@ void NWidgetBackground::SetupSmallestSize(Window *w)
 			this->smallest_x += this->child->padding.Horizontal();
 			this->smallest_y += this->child->padding.Vertical();
 		}
+		this->ApplyAspectRatio();
 	} else {
 		Dimension d = {this->min_x, this->min_y};
 		Dimension fill = {this->fill_x, this->fill_y};
@@ -2175,6 +2246,7 @@ void NWidgetBackground::SetupSmallestSize(Window *w)
 		this->fill_y = fill.height;
 		this->resize_x = resize.width;
 		this->resize_y = resize.height;
+		this->ApplyAspectRatio();
 	}
 }
 
@@ -2273,6 +2345,7 @@ void NWidgetViewport::SetupSmallestSize(Window *)
 {
 	this->smallest_x = this->min_x;
 	this->smallest_y = this->min_y;
+	this->ApplyAspectRatio();
 }
 
 void NWidgetViewport::Draw(const Window *w)
@@ -2577,9 +2650,13 @@ NWidgetLeaf::NWidgetLeaf(WidgetType tp, Colours colour, WidgetID index, uint32_t
 		case WWT_MATRIX:
 		case NWID_BUTTON_DROPDOWN:
 		case NWID_PUSHBUTTON_DROPDOWN:
+			this->SetFill(0, 0);
+			break;
+
 		case WWT_ARROWBTN:
 		case WWT_PUSHARROWBTN:
 			this->SetFill(0, 0);
+			this->SetAspect(WidgetDimensions::ASPECT_LEFT_RIGHT_BUTTON);
 			break;
 
 		case WWT_EDITBOX:
@@ -2598,24 +2675,28 @@ NWidgetLeaf::NWidgetLeaf(WidgetType tp, Colours colour, WidgetID index, uint32_t
 			this->SetFill(0, 0);
 			this->SetMinimalSize(WidgetDimensions::WD_STICKYBOX_WIDTH, WidgetDimensions::WD_CAPTION_HEIGHT);
 			this->SetDataTip(STR_NULL, STR_TOOLTIP_STICKY);
+			this->SetAspect(this->min_x, this->min_y);
 			break;
 
 		case WWT_SHADEBOX:
 			this->SetFill(0, 0);
 			this->SetMinimalSize(WidgetDimensions::WD_SHADEBOX_WIDTH, WidgetDimensions::WD_CAPTION_HEIGHT);
 			this->SetDataTip(STR_NULL, STR_TOOLTIP_SHADE);
+			this->SetAspect(this->min_x, this->min_y);
 			break;
 
 		case WWT_DEBUGBOX:
 			this->SetFill(0, 0);
 			this->SetMinimalSize(WidgetDimensions::WD_DEBUGBOX_WIDTH, WidgetDimensions::WD_CAPTION_HEIGHT);
 			this->SetDataTip(STR_NULL, STR_TOOLTIP_DEBUG);
+			this->SetAspect(this->min_x, this->min_y);
 			break;
 
 		case WWT_DEFSIZEBOX:
 			this->SetFill(0, 0);
 			this->SetMinimalSize(WidgetDimensions::WD_DEFSIZEBOX_WIDTH, WidgetDimensions::WD_CAPTION_HEIGHT);
 			this->SetDataTip(STR_NULL, STR_TOOLTIP_DEFSIZE);
+			this->SetAspect(this->min_x, this->min_y);
 			break;
 
 		case WWT_RESIZEBOX:
@@ -2628,6 +2709,7 @@ NWidgetLeaf::NWidgetLeaf(WidgetType tp, Colours colour, WidgetID index, uint32_t
 			this->SetFill(0, 0);
 			this->SetMinimalSize(WidgetDimensions::WD_CLOSEBOX_WIDTH, WidgetDimensions::WD_CAPTION_HEIGHT);
 			this->SetDataTip(STR_NULL, STR_TOOLTIP_CLOSE_WINDOW);
+			this->SetAspect(this->min_x, this->min_y);
 			break;
 
 		case WWT_DROPDOWN:
@@ -2816,6 +2898,7 @@ void NWidgetLeaf::SetupSmallestSize(Window *w)
 	this->fill_y = fill.height;
 	this->resize_x = resize.width;
 	this->resize_y = resize.height;
+	this->ApplyAspectRatio();
 }
 
 void NWidgetLeaf::Draw(const Window *w)
@@ -3127,6 +3210,13 @@ static const NWidgetPart *MakeNWidget(const NWidgetPart *nwid_begin, const NWidg
 				if (nwc != nullptr) {
 					nwc->scrollbar_index = nwid_begin->u.widget.index;
 				}
+				break;
+			}
+
+			case WPT_ASPECT: {
+				if (dest == nullptr) [[unlikely]] throw std::runtime_error("WPT_ASPECT requires NWidgetBase");
+				dest->aspect_ratio = nwid_begin->u.aspect.ratio;
+				dest->aspect_flags = nwid_begin->u.aspect.flags;
 				break;
 			}
 

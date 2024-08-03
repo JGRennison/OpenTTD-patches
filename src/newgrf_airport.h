@@ -130,8 +130,8 @@ struct AirportSpec {
 	/** Get the index of this spec. */
 	uint8_t GetIndex() const
 	{
-		assert(this >= specs && this < endof(specs));
-		return (uint8_t)(this - specs);
+		assert(this >= std::begin(specs) && this < std::end(specs));
+		return static_cast<uint8_t>(std::distance(std::cbegin(specs), this));
 	}
 
 	static const AirportSpec dummy; ///< The dummy airport.
@@ -174,7 +174,7 @@ struct AirportScopeResolver : public ScopeResolver {
 /** Resolver object for airports. */
 struct AirportResolverObject : public ResolverObject {
 	AirportScopeResolver airport_scope;
-	std::unique_ptr<TownScopeResolver> town_scope; ///< The town scope resolver (created on the first call).
+	std::optional<TownScopeResolver> town_scope = std::nullopt; ///< The town scope resolver (created on the first call).
 
 	AirportResolverObject(TileIndex tile, Station *st, uint8_t airport_id, uint8_t layout,
 			CallbackID callback = CBID_NO_CALLBACK, uint32_t callback_param1 = 0, uint32_t callback_param2 = 0);
