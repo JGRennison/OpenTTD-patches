@@ -112,7 +112,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_LINKGRAPH_DAY_SCALE,              XSCF_NULL,                6,   6, "linkgraph_day_scale",              nullptr, nullptr, nullptr          },
 	{ XSLFI_TEMPLATE_REPLACEMENT,             XSCF_NULL,               10,  10, "template_replacement",             nullptr, nullptr, "TRPL,TMPL"      },
 	{ XSLFI_MORE_RAIL_TYPES,                  XSCF_NULL,                0,   1, "more_rail_types",                  nullptr, nullptr, nullptr          },
-	{ XSLFI_CARGO_TYPE_ORDERS,                XSCF_NULL,                3,   3, "cargo_type_orders",                nullptr, nullptr, "ORDX,VEOX"      },
+	{ XSLFI_CARGO_TYPE_ORDERS,                XSCF_NULL,                4,   4, "cargo_type_orders",                nullptr, nullptr, nullptr          },
 	{ XSLFI_EXTENDED_GAMELOG,                 XSCF_NULL,                2,   2, "extended_gamelog",                 nullptr, nullptr, nullptr          },
 	{ XSLFI_STATION_CATCHMENT_INC,            XSCF_NULL,                1,   1, "station_catchment_inc",            nullptr, nullptr, nullptr          },
 	{ XSLFI_CUSTOM_BRIDGE_HEADS,              XSCF_NULL,                4,   4, "custom_bridge_heads",              nullptr, nullptr, nullptr          },
@@ -120,7 +120,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_SCHEDULED_DISPATCH,               XSCF_NULL,                8,   8, "scheduled_dispatch",               nullptr, nullptr, nullptr          },
 	{ XSLFI_MORE_TOWN_GROWTH_RATES,           XSCF_NULL,                1,   1, "more_town_growth_rates",           nullptr, nullptr, nullptr          },
 	{ XSLFI_MULTIPLE_DOCKS,                   XSCF_NULL,                2,   2, "multiple_docks",                   nullptr, nullptr, nullptr          },
-	{ XSLFI_TIMETABLE_EXTRA,                  XSCF_NULL,                7,   7, "timetable_extra",                  nullptr, nullptr, "ORDX"           },
+	{ XSLFI_TIMETABLE_EXTRA,                  XSCF_NULL,                8,   8, "timetable_extra",                  nullptr, nullptr, nullptr          },
 	{ XSLFI_TRAIN_FLAGS_EXTRA,                XSCF_NULL,                1,   1, "train_flags_extra",                nullptr, nullptr, nullptr          },
 	{ XSLFI_VEHICLE_FLAGS_EXTRA,              XSCF_NULL,                1,   1, "veh_flags_extra",                  nullptr, nullptr, nullptr          },
 	{ XSLFI_TRAIN_THROUGH_LOAD,               XSCF_NULL,                2,   2, "train_through_load",               nullptr, nullptr, nullptr          },
@@ -140,7 +140,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_STATE_CHECKSUM,                   XSCF_NULL,                1,   1, "state_checksum",                   nullptr, nullptr, nullptr          },
 	{ XSLFI_DEBUG,                            XSCF_IGNORABLE_ALL,       2,   2, "debug",                            nullptr, nullptr, "DBGD"           },
 	{ XSLFI_FLOW_STAT_FLAGS,                  XSCF_NULL,                1,   1, "flow_stat_flags",                  nullptr, nullptr, nullptr          },
-	{ XSLFI_SPEED_RESTRICTION,                XSCF_NULL,                1,   1, "speed_restriction",                nullptr, nullptr, "VESR"           },
+	{ XSLFI_SPEED_RESTRICTION,                XSCF_NULL,                2,   2, "speed_restriction",                nullptr, nullptr, "VESR"           },
 	{ XSLFI_STATION_GOODS_EXTRA,              XSCF_NULL,                1,   1, "station_goods_extra",              nullptr, nullptr, nullptr          },
 	{ XSLFI_DOCKING_CACHE_VER,                XSCF_IGNORABLE_ALL,       3,   3, "docking_cache_ver",                nullptr, nullptr, nullptr          },
 	{ XSLFI_EXTRA_CHEATS,                     XSCF_NULL,                2,   2, "extra_cheats",                     nullptr, nullptr, nullptr          },
@@ -157,7 +157,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_ANIMATED_TILE_EXTRA,              XSCF_NULL,                2,   2, "animated_tile_extra",              nullptr, nullptr, nullptr          },
 	{ XSLFI_NEWGRF_INFO_EXTRA,                XSCF_NULL,                1,   1, "newgrf_info_extra",                nullptr, nullptr, nullptr          },
 	{ XSLFI_INDUSTRY_CARGO_ADJ,               XSCF_IGNORABLE_UNKNOWN,   2,   2, "industry_cargo_adj",               nullptr, nullptr, nullptr          },
-	{ XSLFI_REALISTIC_TRAIN_BRAKING,          XSCF_NULL,               11,  11, "realistic_train_braking",          nullptr, nullptr, "VLKA"           },
+	{ XSLFI_REALISTIC_TRAIN_BRAKING,          XSCF_NULL,               12,  12, "realistic_train_braking",          nullptr, nullptr, nullptr          },
 	{ XSLFI_INFLATION_FIXED_DATES,            XSCF_IGNORABLE_ALL,       1,   1, "inflation_fixed_dates",            nullptr, nullptr, nullptr          },
 	{ XSLFI_WATER_FLOODING,                   XSCF_NULL,                2,   2, "water_flooding",                   nullptr, nullptr, nullptr          },
 	{ XSLFI_MORE_HOUSES,                      XSCF_NULL,                2,   2, "more_houses",                      nullptr, nullptr, nullptr          },
@@ -210,7 +210,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_NEWGRF_LAST_SERVICE,              XSCF_NULL,                1,   1, "slv_newgrf_last_service",          nullptr, nullptr, nullptr          },
 	{ XSLFI_CARGO_TRAVELLED,                  XSCF_NULL,                1,   1, "slv_cargo_travelled",              nullptr, nullptr, nullptr          },
 	{ XSLFI_SHIP_ACCELERATION,                XSCF_NULL,                1,   1, "slv_ship_acceleration",            nullptr, nullptr, nullptr          },
-	{ XSLFI_DEPOT_UNBUNCHING,                 XSCF_NULL,                1,   1, "slv_depot_unbunching",             nullptr, nullptr, "VUBS"           },
+	{ XSLFI_DEPOT_UNBUNCHING,                 XSCF_NULL,                2,   2, "slv_depot_unbunching",             nullptr, nullptr, nullptr          },
 	{ XSLFI_VEHICLE_ECONOMY_AGE,              XSCF_NULL,                1,   1, "slv_vehicle_economy_age",          nullptr, nullptr, nullptr          },
 
 	{ XSLFI_TABLE_PATS,                       XSCF_NULL,                1,   1, "table_pats",                       nullptr, nullptr, nullptr          },
@@ -221,6 +221,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_TABLE_INDUSTRY_SL,                XSCF_NULL,                2,   2, "table_industry_sl",                nullptr, nullptr, nullptr          },
 	{ XSLFI_TABLE_STATION_SL,                 XSCF_NULL,                1,   1, "table_station_sl",                 nullptr, nullptr, nullptr          },
 	{ XSLFI_TABLE_LINKGRAPH_SL,               XSCF_NULL,                1,   1, "table_linkgraph_sl",               nullptr, nullptr, nullptr          },
+	{ XSLFI_TABLE_VEHICLE_SL,                 XSCF_NULL,                1,   1, "table_vehicle_sl",                 nullptr, nullptr, nullptr          },
 
 	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr }, // This is the end marker
 };

@@ -441,7 +441,7 @@ public:
 	/** The super class ought to know what it's doing. */
 	friend class CargoList<VehicleCargoList, CargoPacketList>;
 	/** The vehicles have a cargo list (and we want that saved). */
-	friend SaveLoadTable GetVehicleDescription(VehicleType vt);
+	friend NamedSaveLoadTable GetVehicleDescription(VehicleType vt);
 
 	friend class CargoShift;
 	friend class CargoTransfer;
