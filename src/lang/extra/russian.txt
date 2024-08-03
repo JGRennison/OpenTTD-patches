@@ -718,6 +718,9 @@ STR_CONFIG_SETTING_PURCHASED_LAND_CLEAR_GROUND_HELPTEXT         :Если эта
 STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY                  :Генерировать только сырьевые предприятия: {STRING}
 STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY_HELPTEXT         :Если включено, то при создании карты и во время игры будут появляться только сырьевые предприятия.
 
+STR_CONFIG_SETTING_INDUSTRY_EVENT_RATE                          :Частота событий на предприятиях: {STRING2}
+STR_CONFIG_SETTING_INDUSTRY_EVENT_RATE_HELPTEXT                 :Установите количество событий на предприятиях за экономический период времени в системе отчёта времени «Реальное время», или за месяц/год в системе отчёта времени «Календарь». Это включает в себя изменения в производстве, открытие и закрытие предприятий.
+
 STR_PURCHASE_LAND_PERMITTED_NO                                  :Нет
 STR_PURCHASE_LAND_PERMITTED_SINGLE                              :Да, по 1 клетке за раз
 STR_PURCHASE_LAND_PERMITTED_AREA                                :Да, по большой площади за раз
