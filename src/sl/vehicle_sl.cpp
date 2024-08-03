@@ -802,6 +802,120 @@ struct VehicleUnbunchStateStructHandler final : public TypedSaveLoadStructHandle
 	}
 };
 
+const NamedSaveLoadTable GetVehicleLookAheadItemDescription()
+{
+	static const NamedSaveLoad _vehicle_look_ahead_item_desc[] = {
+		NSL("start",          SLE_VAR(TrainReservationLookAheadItem, start,    SLE_INT32)),
+		NSL("end",            SLE_VAR(TrainReservationLookAheadItem, end,      SLE_INT32)),
+		NSL("z_pos",          SLE_VAR(TrainReservationLookAheadItem, z_pos,    SLE_INT16)),
+		NSL("data_id",  SLE_CONDVAR_X(TrainReservationLookAheadItem, data_id,  SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 0, 9))),
+		NSL("data_id",  SLE_CONDVAR_X(TrainReservationLookAheadItem, data_id,  SLE_UINT32,                 SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 10))),
+		NSL("data_aux", SLE_CONDVAR_X(TrainReservationLookAheadItem, data_aux, SLE_UINT16,                 SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 9))),
+		NSL("type",           SLE_VAR(TrainReservationLookAheadItem, type,     SLE_UINT8)),
+	};
+
+	return _vehicle_look_ahead_item_desc;
+}
+
+struct TrainLookaheadItemStructHandler final : public TypedSaveLoadStructHandler<TrainLookaheadItemStructHandler, TrainReservationLookAhead> {
+	NamedSaveLoadTable GetDescription() const override
+	{
+		return GetVehicleLookAheadItemDescription();
+	}
+
+	void Save(TrainReservationLookAhead *lookahead) const override
+	{
+		SlSetStructListLength(lookahead->items.size());
+		for (TrainReservationLookAheadItem &item : lookahead->items) {
+			SlObjectSaveFiltered(&item, this->GetLoadDescription());
+		}
+	}
+
+	void Load(TrainReservationLookAhead *lookahead) const override
+	{
+		lookahead->items.resize(SlGetStructListLength(UINT32_MAX));
+		for (TrainReservationLookAheadItem &item : lookahead->items) {
+			SlObjectLoadFiltered(&item, this->GetLoadDescription());
+		}
+	}
+};
+
+const NamedSaveLoadTable GetVehicleLookAheadCurveDescription()
+{
+	static const NamedSaveLoad _vehicle_look_ahead_curve_desc[] = {
+		NSL("position",       SLE_VAR(TrainReservationLookAheadCurve, position, SLE_INT32)),
+		NSL("dir_diff",       SLE_VAR(TrainReservationLookAheadCurve, dir_diff, SLE_UINT8)),
+	};
+
+	return _vehicle_look_ahead_curve_desc;
+}
+
+struct TrainLookaheadCurveStructHandler final : public TypedSaveLoadStructHandler<TrainLookaheadCurveStructHandler, TrainReservationLookAhead> {
+	NamedSaveLoadTable GetDescription() const override
+	{
+		return GetVehicleLookAheadCurveDescription();
+	}
+
+	void Save(TrainReservationLookAhead *lookahead) const override
+	{
+		SlSetStructListLength(lookahead->curves.size());
+		for (TrainReservationLookAheadCurve &curve : lookahead->curves) {
+			SlObjectSaveFiltered(&curve, this->GetLoadDescription());
+		}
+	}
+
+	void Load(TrainReservationLookAhead *lookahead) const override
+	{
+		lookahead->curves.resize(SlGetStructListLength(UINT32_MAX));
+		for (TrainReservationLookAheadCurve &curve : lookahead->curves) {
+			SlObjectLoadFiltered(&curve, this->GetLoadDescription());
+		}
+	}
+};
+
+const NamedSaveLoadTable GetVehicleLookAheadDescription()
+{
+	static const NamedSaveLoad _vehicle_look_ahead_desc[] = {
+		NSL("reservation_end_tile",         SLE_VAR(TrainReservationLookAhead, reservation_end_tile,         SLE_UINT32)),
+		NSL("reservation_end_trackdir",     SLE_VAR(TrainReservationLookAhead, reservation_end_trackdir,     SLE_UINT8)),
+		NSL("current_position",             SLE_VAR(TrainReservationLookAhead, current_position,             SLE_INT32)),
+		NSL("reservation_end_position",     SLE_VAR(TrainReservationLookAhead, reservation_end_position,     SLE_INT32)),
+		NSL("lookahead_end_position", SLE_CONDVAR_X(TrainReservationLookAhead, lookahead_end_position,       SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 9))),
+		NSL("reservation_end_z",            SLE_VAR(TrainReservationLookAhead, reservation_end_z,            SLE_INT16)),
+		NSL("tunnel_bridge_reserved_tiles", SLE_VAR(TrainReservationLookAhead, tunnel_bridge_reserved_tiles, SLE_INT16)),
+		NSL("flags",                        SLE_VAR(TrainReservationLookAhead, flags,                        SLE_UINT16)),
+		NSL("speed_restriction",            SLE_VAR(TrainReservationLookAhead, speed_restriction,            SLE_UINT16)),
+		NSL("next_extend_position",   SLE_CONDVAR_X(TrainReservationLookAhead, next_extend_position,         SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 5))),
+		NSL("cached_zpos",            SLE_CONDVAR_X(TrainReservationLookAhead, cached_zpos,                  SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 6))),
+		NSL("zpos_refresh_remaining", SLE_CONDVAR_X(TrainReservationLookAhead, zpos_refresh_remaining,       SLE_UINT8,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 6))),
+
+		NSLT_STRUCTLIST<TrainLookaheadItemStructHandler>("items"),
+		NSLT_STRUCTLIST<TrainLookaheadCurveStructHandler>("curves"),
+	};
+
+	return _vehicle_look_ahead_desc;
+}
+
+struct TrainLookaheadStateStructHandler final : public TypedSaveLoadStructHandler<TrainLookaheadStateStructHandler, Train> {
+	NamedSaveLoadTable GetDescription() const override
+	{
+		return GetVehicleLookAheadDescription();
+	}
+
+	void Save(Train *t) const override
+	{
+		if (t->lookahead != nullptr) {
+			SlObjectSaveFiltered(t->lookahead.get(), this->GetLoadDescription());
+		}
+	}
+
+	void Load(Train *t) const override
+	{
+		t->lookahead.reset(new TrainReservationLookAhead());
+		SlObjectLoadFiltered(t->lookahead.get(), this->GetLoadDescription());
+	}
+};
+
 /**
  * Make it possible to make the saveload tables "friends" of other classes.
  * @param vt the vehicle type. Can be VEH_END for the common vehicle description data
@@ -1007,6 +1121,8 @@ NamedSaveLoadTable GetVehicleDescription(VehicleType vt)
 		NSL("speed_restriction",        SLE_CONDVAR_X(Train, speed_restriction,         SLE_UINT16,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPEED_RESTRICTION))),
 		NSL("signal_speed_restriction", SLE_CONDVAR_X(Train, signal_speed_restriction,  SLE_UINT16,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TRAIN_SPEED_ADAPTATION))),
 		NSL("critical_breakdown_count", SLE_CONDVAR_X(Train, critical_breakdown_count,  SLE_UINT8,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_IMPROVED_BREAKDOWNS, 2))),
+
+		NSLT_STRUCT<TrainLookaheadStateStructHandler>("lookahead"),
 	};
 
 	static const NamedSaveLoad _roadveh_desc[] = {
@@ -1637,91 +1753,27 @@ static ChunkSaveLoadSpecialOpResult Special_VENC(uint32_t chunk_id, ChunkSaveLoa
 	return CSLSOR_NONE;
 }
 
-const SaveLoadTable GetVehicleLookAheadDescription()
-{
-	static const SaveLoad _vehicle_look_ahead_desc[] = {
-		     SLE_VAR(TrainReservationLookAhead, reservation_end_tile,         SLE_UINT32),
-		     SLE_VAR(TrainReservationLookAhead, reservation_end_trackdir,     SLE_UINT8),
-		     SLE_VAR(TrainReservationLookAhead, current_position,             SLE_INT32),
-		     SLE_VAR(TrainReservationLookAhead, reservation_end_position,     SLE_INT32),
-		SLE_CONDVAR_X(TrainReservationLookAhead, lookahead_end_position,      SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 9)),
-		     SLE_VAR(TrainReservationLookAhead, reservation_end_z,            SLE_INT16),
-		     SLE_VAR(TrainReservationLookAhead, tunnel_bridge_reserved_tiles, SLE_INT16),
-		     SLE_VAR(TrainReservationLookAhead, flags,                        SLE_UINT16),
-		     SLE_VAR(TrainReservationLookAhead, speed_restriction,            SLE_UINT16),
-		SLE_CONDVAR_X(TrainReservationLookAhead, next_extend_position,        SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 5)),
-		SLE_CONDVAR_X(TrainReservationLookAhead, cached_zpos,                 SLE_INT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 6)),
-		SLE_CONDVAR_X(TrainReservationLookAhead, zpos_refresh_remaining,      SLE_UINT8,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 6)),
-	};
-
-	return _vehicle_look_ahead_desc;
-}
-
-const SaveLoadTable GetVehicleLookAheadItemDescription()
-{
-	static const SaveLoad _vehicle_look_ahead_item_desc[] = {
-		     SLE_VAR(TrainReservationLookAheadItem, start,                    SLE_INT32),
-		     SLE_VAR(TrainReservationLookAheadItem, end,                      SLE_INT32),
-		     SLE_VAR(TrainReservationLookAheadItem, z_pos,                    SLE_INT16),
-		SLE_CONDVAR_X(TrainReservationLookAheadItem, data_id, SLE_FILE_U16 | SLE_VAR_U32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 0, 9)),
-		SLE_CONDVAR_X(TrainReservationLookAheadItem, data_id,                 SLE_UINT32,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 10)),
-		SLE_CONDVAR_X(TrainReservationLookAheadItem, data_aux,                SLE_UINT16,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_REALISTIC_TRAIN_BRAKING, 9)),
-		     SLE_VAR(TrainReservationLookAheadItem, type,                     SLE_UINT8),
-	};
-
-	return _vehicle_look_ahead_item_desc;
-}
-
-const SaveLoadTable GetVehicleLookAheadCurveDescription()
-{
-	static const SaveLoad _vehicle_look_ahead_curve_desc[] = {
-		     SLE_VAR(TrainReservationLookAheadCurve, position,                SLE_INT32),
-		     SLE_VAR(TrainReservationLookAheadCurve, dir_diff,                SLE_UINT8),
-	};
-
-	return _vehicle_look_ahead_curve_desc;
-}
-
-static void RealSave_VLKA(TrainReservationLookAhead *lookahead)
-{
-	SlObject(lookahead, GetVehicleLookAheadDescription());
-	SlWriteUint32((uint32_t)lookahead->items.size());
-	for (TrainReservationLookAheadItem &item : lookahead->items) {
-		SlObject(&item, GetVehicleLookAheadItemDescription());
-	}
-	SlWriteUint32((uint32_t)lookahead->curves.size());
-	for (TrainReservationLookAheadCurve &curve : lookahead->curves) {
-		SlObject(&curve, GetVehicleLookAheadCurveDescription());
-	}
-}
-
-void Save_VLKA()
-{
-	for (Train *t : Train::Iterate()) {
-		if (t->lookahead != nullptr) {
-			SlSetArrayIndex(t->index);
-			SlAutolength(RealSave_VLKA, t->lookahead.get());
-		}
-	}
-}
-
 void Load_VLKA()
 {
+	std::vector<SaveLoad> lookahead_desc = SlFilterNamedSaveLoadTable(GetVehicleLookAheadDescription());
+	std::vector<SaveLoad> item_desc = SlFilterNamedSaveLoadTable(GetVehicleLookAheadItemDescription());
+	std::vector<SaveLoad> curve_desc = SlFilterNamedSaveLoadTable(GetVehicleLookAheadCurveDescription());
+
 	int index;
 	while ((index = SlIterateArray()) != -1) {
 		Train *t = Train::GetIfValid(index);
 		assert(t != nullptr);
 		t->lookahead.reset(new TrainReservationLookAhead());
-		SlObject(t->lookahead.get(), GetVehicleLookAheadDescription());
+		SlObjectLoadFiltered(t->lookahead.get(), lookahead_desc);
 		uint32_t items = SlReadUint32();
 		t->lookahead->items.resize(items);
 		for (uint i = 0; i < items; i++) {
-			SlObject(&t->lookahead->items[i], GetVehicleLookAheadItemDescription());
+			SlObjectLoadFiltered(&t->lookahead->items[i], item_desc);
 		}
 		uint32_t curves = SlReadUint32();
 		t->lookahead->curves.resize(curves);
 		for (uint i = 0; i < curves; i++) {
-			SlObject(&t->lookahead->curves[i], GetVehicleLookAheadCurveDescription());
+			SlObjectLoadFiltered(&t->lookahead->curves[i], curve_desc);
 		}
 	}
 }
@@ -1744,7 +1796,7 @@ static const ChunkHandler veh_chunk_handlers[] = {
 	{ 'VEOX', Save_VEOX, Load_VEOX, nullptr,   nullptr, CH_SPARSE_ARRAY },
 	{ 'VESR', Save_VESR, Load_VESR, nullptr,   nullptr, CH_SPARSE_ARRAY },
 	{ 'VENC', Save_VENC, Load_VENC, nullptr,   nullptr, CH_RIFF,         Special_VENC },
-	{ 'VLKA', Save_VLKA, Load_VLKA, nullptr,   nullptr, CH_SPARSE_ARRAY },
+	{ 'VLKA', nullptr,   Load_VLKA, nullptr,   nullptr, CH_READONLY },
 	{ 'VUBS', nullptr,   Load_VUBS, nullptr,   nullptr, CH_READONLY },
 };
 
