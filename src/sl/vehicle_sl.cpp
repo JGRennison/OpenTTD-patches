@@ -772,6 +772,36 @@ struct VehicleTypeStructHandler final : public TypedSaveLoadStructHandler<Vehicl
 	}
 };
 
+const NamedSaveLoadTable GetVehicleUnbunchStateDescription()
+{
+	static const NamedSaveLoad _vehicle_unbunch_state_desc[] = {
+		NSL("last_departure",  SLE_VAR(VehicleUnbunchState, depot_unbunching_last_departure,                SLE_INT64)),
+		NSL("next_departure",  SLE_VAR(VehicleUnbunchState, depot_unbunching_next_departure,                SLE_INT64)),
+		NSL("round_trip_time", SLE_VAR(VehicleUnbunchState, round_trip_time,                                SLE_INT32)),
+	};
+	return _vehicle_unbunch_state_desc;
+}
+
+struct VehicleUnbunchStateStructHandler final : public TypedSaveLoadStructHandler<VehicleUnbunchStateStructHandler, Vehicle> {
+	NamedSaveLoadTable GetDescription() const override
+	{
+		return GetVehicleUnbunchStateDescription();
+	}
+
+	void Save(Vehicle *v) const override
+	{
+		if (v->unbunch_state != nullptr) {
+			SlObjectSaveFiltered(v->unbunch_state.get(), this->GetLoadDescription());
+		}
+	}
+
+	void Load(Vehicle *v) const override
+	{
+		v->unbunch_state.reset(new VehicleUnbunchState());
+		SlObjectLoadFiltered(v->unbunch_state.get(), this->GetLoadDescription());
+	}
+};
+
 /**
  * Make it possible to make the saveload tables "friends" of other classes.
  * @param vt the vehicle type. Can be VEH_END for the common vehicle description data
@@ -947,6 +977,8 @@ NamedSaveLoadTable GetVehicleDescription(VehicleType vt)
 		NSL("",                        SLE_CONDNULL_X(2,                                                              SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP))),
 
 		NSL("",                        SLE_CONDNULL_X(160,                                                            SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP))),
+
+		NSLT_STRUCT<VehicleUnbunchStateStructHandler>("depot_unbunch_state"),
 	};
 
 	static const NamedSaveLoad _train_desc[] = {
@@ -1694,35 +1726,16 @@ void Load_VLKA()
 	}
 }
 
-const SaveLoadTable GetVehicleUnbunchStateDescription()
-{
-	static const SaveLoad _vehicle_unbunch_state_desc[] = {
-		SLE_VAR(VehicleUnbunchState, depot_unbunching_last_departure,                SLE_INT64),
-		SLE_VAR(VehicleUnbunchState, depot_unbunching_next_departure,                SLE_INT64),
-		SLE_VAR(VehicleUnbunchState, round_trip_time,                                SLE_INT32),
-	};
-
-	return _vehicle_unbunch_state_desc;
-}
-
-void Save_VUBS()
-{
-	for (Vehicle *v : Vehicle::IterateFrontOnly()) {
-		if (v->unbunch_state != nullptr) {
-			SlSetArrayIndex(v->index);
-			SlObject(v->unbunch_state.get(), GetVehicleUnbunchStateDescription());
-		}
-	}
-}
-
 void Load_VUBS()
 {
+	std::vector<SaveLoad> unbunch_desc = SlFilterNamedSaveLoadTable(GetVehicleUnbunchStateDescription());
+
 	int index;
 	while ((index = SlIterateArray()) != -1) {
 		Vehicle *v = Vehicle::GetIfValid(index);
 		assert(v != nullptr);
 		v->unbunch_state.reset(new VehicleUnbunchState());
-		SlObject(v->unbunch_state.get(), GetVehicleUnbunchStateDescription());
+		SlObjectLoadFiltered(v->unbunch_state.get(), unbunch_desc);
 	}
 }
 
@@ -1732,7 +1745,7 @@ static const ChunkHandler veh_chunk_handlers[] = {
 	{ 'VESR', Save_VESR, Load_VESR, nullptr,   nullptr, CH_SPARSE_ARRAY },
 	{ 'VENC', Save_VENC, Load_VENC, nullptr,   nullptr, CH_RIFF,         Special_VENC },
 	{ 'VLKA', Save_VLKA, Load_VLKA, nullptr,   nullptr, CH_SPARSE_ARRAY },
-	{ 'VUBS', Save_VUBS, Load_VUBS, nullptr,   nullptr, CH_SPARSE_ARRAY },
+	{ 'VUBS', nullptr,   Load_VUBS, nullptr,   nullptr, CH_READONLY },
 };
 
 extern const ChunkHandlerTable _veh_chunk_handlers(veh_chunk_handlers);
