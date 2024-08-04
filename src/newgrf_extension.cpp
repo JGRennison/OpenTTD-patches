@@ -74,6 +74,7 @@ extern const GRFFeatureInfo _grf_feature_list[] = {
 	GRFFeatureInfo("more_varaction2_types", 1, GFTOF_MORE_VARACTION2_TYPES),
 	GRFFeatureInfo("multi_part_ships", 3, GFTOF_MULTI_PART_SHIPS),
 	GRFFeatureInfo("more_stations_per_grf", 1),
+	GRFFeatureInfo("varaction2_house_uncapped_building_counts", 1),
 	GRFFeatureInfo(),
 };
 
@@ -157,6 +158,10 @@ extern const GRFVariableMapDefinition _grf_action2_remappable_variables[] = {
 	GRFVariableMapDefinition(GSF_STATIONS, A2VRI_STATION_INFO_NEARBY_TILES_V2, "station_station_info_nearby_tiles_v2"),
 	GRFVariableMapDefinition(GSF_OBJECTS, A2VRI_OBJECT_FOUNDATION_SLOPE, "object_foundation_tile_slope"),
 	GRFVariableMapDefinition(GSF_OBJECTS, A2VRI_OBJECT_FOUNDATION_SLOPE_CHANGE, "object_foundation_change_tile_slope"),
+	GRFVariableMapDefinition(GSF_HOUSES, A2VRI_HOUSE_SAME_ID_MAP_COUNT, "house_same_id_map_count"),
+	GRFVariableMapDefinition(GSF_HOUSES, A2VRI_HOUSE_SAME_CLASS_MAP_COUNT, "house_same_class_map_count"),
+	GRFVariableMapDefinition(GSF_HOUSES, A2VRI_HOUSE_SAME_ID_TOWN_COUNT, "house_same_id_town_count"),
+	GRFVariableMapDefinition(GSF_HOUSES, A2VRI_HOUSE_SAME_CLASS_TOWN_COUNT, "house_same_class_town_count"),
 	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x40, "roadstop_view"),
 	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x41, "roadstop_type"),
 	GRFVariableMapDefinition(GSF_ROADSTOPS, 0x42, "roadstop_terrain_type"),

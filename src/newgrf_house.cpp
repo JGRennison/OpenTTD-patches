@@ -23,6 +23,7 @@
 #include "newgrf_cargo.h"
 #include "station_base.h"
 #include "newgrf_analysis.h"
+#include "newgrf_extension.h"
 
 #include "safeguards.h"
 
@@ -410,6 +411,11 @@ static uint32_t GetDistanceFromNearbyHouse(uint8_t parameter, TileIndex tile, Ho
 
 		/* Number of this type of building on the map. */
 		case 0x44: return GetNumHouses(this->house_id, this->town);
+
+		case A2VRI_HOUSE_SAME_ID_MAP_COUNT:     return _building_counts.id_count[this->house_id];
+		case A2VRI_HOUSE_SAME_CLASS_MAP_COUNT:  return _building_counts.class_count[HouseSpec::Get(this->house_id)->class_id];
+		case A2VRI_HOUSE_SAME_ID_TOWN_COUNT:    return this->town->cache.building_counts.id_count[this->house_id];
+		case A2VRI_HOUSE_SAME_CLASS_TOWN_COUNT: return this->town->cache.building_counts.class_count[HouseSpec::Get(this->house_id)->class_id];
 
 		/* Whether the town is being created or just expanded. */
 		case 0x45: return _generating_world ? 1 : 0;

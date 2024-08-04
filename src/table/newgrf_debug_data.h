@@ -937,6 +937,10 @@ static const NIVariable _niv_house[] = {
 	NIV(0x65, "distance of nearest house matching a given criterion"),
 	NIV(0x66, "class and ID of nearby house tile"),
 	NIV(0x67, "GRFID of nearby house tile"),
+	NIV(A2VRI_HOUSE_SAME_ID_MAP_COUNT, "building count: same ID, map"),
+	NIV(A2VRI_HOUSE_SAME_CLASS_MAP_COUNT, "building count: same class, map"),
+	NIV(A2VRI_HOUSE_SAME_ID_TOWN_COUNT, "building count: same ID, town"),
+	NIV(A2VRI_HOUSE_SAME_CLASS_TOWN_COUNT, "building count: same class, town"),
 	NIV_END()
 };
 

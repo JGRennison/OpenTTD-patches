@@ -38,6 +38,7 @@
 	<li><a href="#builtin-functions">Builtin functions</a></li>
 	<li><a href="#switch-types">Additional switch types</a></li>
 	<li><a href="#ship-callbacks">Ship callbacks</a></li>
+	<li><a href="#house-variables">House variables</a></li>
 	<li><a href="#railtype-properties">Railtype properties</a></li>
 	<li><a href="#railtype-variables">Railtype variables</a></li>
 	<li><a href="#roadtype-properties">Roadtype properties</a></li>
@@ -94,6 +95,14 @@
 		If this callback is not handled or if CB_RESULT_NO_TEXT is returned, a default name is used.<br />
 		<span class="code">getbits(extra_callback_info1, 0, 8)</span> contains the index of the part of the ship. The first/primary part is 0, each subsequent part increases the value by 1.
 	</p>
+
+	<h3 id="house-variables"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Houses#House_variables">House variables</a></h3>
+	<p>Variables in the table below which are not supported by the version of OpenTTD being used return a value of 0.</p>
+	<table>
+		<tr><th>Name</th><th>Value range</th><th>Comment</th></tr>
+		<tr><td>same_house_count_town_uncapped</td><td>0..4294967295</td><td>Number of the houses with the same ID in the same town as this house (not clamped to 0xFF)</td></tr>
+		<tr><td>same_house_count_map_uncapped</td><td>0..4294967295</td><td>Number of the houses with the same ID on the entire map (not clamped to 0xFF)</td></tr>
+	</table>
 
 	<h3 id="railtype-properties"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#Railtype_properties">Railtype properties</a></h3>
 	<table>

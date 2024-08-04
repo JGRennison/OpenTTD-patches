@@ -50,6 +50,7 @@
 	<li><a href="#varaction2_additional_types">Variational Action 2 - Additional Types</a></li>
 	<li><a href="#varaction2_vehicles">Variational Action 2 - Vehicles</a></li>
 	<li><a href="#varaction2_station">Variational Action 2 - Stations</a></li>
+	<li><a href="#varaction2_house">Variational Action 2 - Houses</a></li>
 	<li><a href="#varaction2_railtypes">Variational Action 2 - Railtypes</a></li>
 	<li><a href="#varaction2_object">Variational Action 2 - Objects</a></li>
 	<li><a href="#varaction2_airporttiles">Variational Action 2 - Airport tiles</a></li>
@@ -824,6 +825,24 @@
 	<br />
 	The remaining bits are reserved for future use and should be masked.<br />
 	This requires <font face="monospace">varaction2_station_station_nearby_info_v2</font>, version 1.
+	</p>
+	<br />
+	<h3 id="varaction2_house"><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Houses">Variational Action 2 - Houses</a></h3>
+	<h4 id="house_same_id_town_count">Building count: same ID, current town (mappable variable: house_same_id_town_count)</h4>
+	<p>This is the same as bits 0 - 7 of <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Houses#Building_counts_.2844.29">44/Building counts</a>, except not clamped to a maximum of 0xFF.<br />
+	This requires <font face="monospace">varaction2_house_uncapped_building_counts</font>, version 1.
+	</p>
+	<h4 id="house_same_class_town_count">Building count: same class, current town (mappable variable: house_same_class_town_count)</h4>
+	<p>This is the same as bits 16 - 23 of <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Houses#Building_counts_.2844.29">44/Building counts</a>, except not clamped to a maximum of 0xFF.<br />
+	This requires <font face="monospace">varaction2_house_uncapped_building_counts</font>, version 1.
+	</p>
+	<h4 id="house_same_id_map_count">Building count: same ID, whole map (mappable variable: house_same_id_map_count)</h4>
+	<p>This is the same as bits 8 - 15 of <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Houses#Building_counts_.2844.29">44/Building counts</a>, except not clamped to a maximum of 0xFF.<br />
+	This requires <font face="monospace">varaction2_house_uncapped_building_counts</font>, version 1.
+	</p>
+	<h4 id="house_same_class_map_count">Building count: same class, total (mappable variable: house_same_class_map_count)</h4>
+	<p>This is the same as bits 24 - 31 of <a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Houses#Building_counts_.2844.29">44/Building counts</a>, except not clamped to a maximum of 0xFF.<br />
+	This requires <font face="monospace">varaction2_house_uncapped_building_counts</font>, version 1.
 	</p>
 	<br />
 	<h3 id="varaction2_railtypes"><a href="https://newgrf-specs.tt-wiki.net/wiki/VariationalAction2/Railtypes">Variational Action 2 - Railtypes</a></h3>
