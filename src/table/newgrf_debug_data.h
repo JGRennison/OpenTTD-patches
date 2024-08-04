@@ -1619,11 +1619,11 @@ class NIHObject : public NIHelper {
 
 			{
 				CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(spec->introduction_date);
-				char *b = buffer + seprintf(buffer, lastof(buffer), " intro: %4i-%02i-%02i",
+				char *b = buffer + seprintf(buffer, lastof(buffer), "  intro: %i-%02i-%02i",
 						ymd.year.base(), ymd.month + 1, ymd.day);
 				if (spec->end_of_life_date < CalTime::MAX_DATE) {
 					ymd = CalTime::ConvertDateToYMD(spec->end_of_life_date);
-					seprintf(b, lastof(buffer), ", end of life: %4i-%02i-%02i",
+					seprintf(b, lastof(buffer), ", end of life: %i-%02i-%02i",
 							ymd.year.base(), ymd.month + 1, ymd.day);
 				}
 				output.print(buffer);
