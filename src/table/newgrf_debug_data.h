@@ -977,6 +977,14 @@ class NIHHouse : public NIHelper {
 		seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", hs->animation.frames, hs->animation.status, hs->animation.speed, hs->animation.triggers);
 		output.print(buffer);
 
+		{
+			char *b = buffer + seprintf(buffer, lastof(buffer), "  min year: %d", hs->min_year.base());
+			if (hs->max_year < CalTime::MAX_YEAR) {
+				seprintf(b, lastof(buffer), ", max year %d", hs->max_year.base());
+			}
+			output.print(buffer);
+		}
+
 		if (GetCleanHouseType(index) != GetHouseType(index)) {
 			hs = HouseSpec::Get(GetCleanHouseType(index));
 			b = buffer + seprintf(buffer, lastof(buffer), "  Untranslated House Type: %u", GetCleanHouseType(index));
