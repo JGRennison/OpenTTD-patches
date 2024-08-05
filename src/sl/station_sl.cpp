@@ -629,6 +629,11 @@ struct StationGoodsStructHandler final : public TypedSaveLoadStructHandler<Stati
 		SlSetStructListLength(NUM_CARGO);
 
 		for (GoodsEntry &ge : st->goods) {
+			if (ge.data != nullptr) {
+				_cargo_reserved_count = ge.data->cargo.ReservedCount();
+			} else {
+				_cargo_reserved_count = 0;
+			}
 			SlObjectSaveFiltered(&ge, this->GetLoadDescription());
 		}
 	}
