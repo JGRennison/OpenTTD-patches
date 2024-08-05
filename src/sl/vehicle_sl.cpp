@@ -1080,7 +1080,7 @@ NamedSaveLoadTable GetVehicleDescription(VehicleType vt)
 		NSL("profit_this_year",           SLE_CONDVAR(Vehicle, profit_this_year,          SLE_INT64,                  SLV_65, SL_MAX_VERSION)),
 		NSL("profit_last_year",           SLE_CONDVAR(Vehicle, profit_last_year,          SLE_FILE_I32 | SLE_VAR_I64, SL_MIN_VERSION, SLV_65)),
 		NSL("profit_last_year",           SLE_CONDVAR(Vehicle, profit_last_year,          SLE_INT64,                  SLV_65, SL_MAX_VERSION)),
-		NSL("profit_lifetime",          SLE_CONDVAR_X(Vehicle,profit_lifetime,            SLE_INT64,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VEH_LIFETIME_PROFIT))),
+		NSL("profit_lifetime",          SLE_CONDVAR_X(Vehicle, profit_lifetime,           SLE_INT64,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VEH_LIFETIME_PROFIT))),
 		NSL("",                          SLEG_CONDVAR(         _cargo_feeder_share,       SLE_FILE_I32 | SLE_VAR_I64, SLV_51, SLV_65)),
 		NSL("",                          SLEG_CONDVAR(         _cargo_feeder_share,       SLE_INT64,                  SLV_65, SLV_68)),
 		NSL("",                          SLE_CONDNULL(4                                           ,                   SLV_51, SLV_68)), // _cargo_loaded_at_xy
@@ -1134,12 +1134,12 @@ NamedSaveLoadTable GetVehicleDescription(VehicleType vt)
 		NSL("flags",                      SLE_CONDVAR(Train, flags,                     SLE_FILE_U8  | SLE_VAR_U32,  SLV_2, SLV_100)),
 		NSL("flags",                    SLE_CONDVAR_X(Train, flags,                     SLE_FILE_U16 | SLE_VAR_U32,  SLV_100, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TRAIN_FLAGS_EXTRA, 0, 0))),
 		NSL("flags",                    SLE_CONDVAR_X(Train, flags,                     SLE_UINT32,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TRAIN_FLAGS_EXTRA, 1))),
-		NSL("",                          SLE_CONDNULL(2, SLV_2, SLV_60)),
+		NSL("",                          SLE_CONDNULL(2,                                                             SLV_2, SLV_60)),
 
 		NSL("wait_counter",               SLE_CONDVAR(Train, wait_counter,              SLE_UINT16,                  SLV_136, SL_MAX_VERSION)),
 		NSL("tunnel_bridge_signal_num", SLE_CONDVAR_X(Train, tunnel_bridge_signal_num,  SLE_UINT16,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SIG_TUNNEL_BRIDGE, 5))),
 
-		NSL("",                          SLE_CONDNULL(2, SLV_2, SLV_20)),
+		NSL("",                          SLE_CONDNULL(2,                                                             SLV_2, SLV_20)),
 		NSL("gv_flags",                   SLE_CONDVAR(Train, gv_flags,                  SLE_UINT16,                  SLV_139, SL_MAX_VERSION)),
 		NSL("",                        SLE_CONDNULL_X(2,                                                             SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232))),
 		NSL("",                          SLE_CONDNULL(11,                                                            SLV_2, SLV_144)), // old reserved space
@@ -1167,7 +1167,7 @@ NamedSaveLoadTable GetVehicleDescription(VehicleType vt)
 		NSL("path.tile",              SLEG_CONDVARVEC(_path_tile,                            SLE_UINT32,             SLV_ROADVEH_PATH_CACHE, SL_MAX_VERSION)),
 		NSL("path.layout_ctr",         SLEG_CONDVAR_X(_path_layout_ctr,                      SLE_UINT32,             SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ROAD_LAYOUT_CHANGE_CTR))),
 
-		NSL("",  SLE_CONDNULL(2,                                                             SLV_6,  SLV_69)),
+		NSL("",                          SLE_CONDNULL(2,                                                             SLV_6,  SLV_69)),
 		NSL("gv_flags",                   SLE_CONDVAR(RoadVehicle, gv_flags,                 SLE_UINT16,             SLV_139, SL_MAX_VERSION)),
 		NSL("",                          SLE_CONDNULL(4,                                                             SLV_69, SLV_131)),
 		NSL("",                          SLE_CONDNULL(2,                                                             SLV_6, SLV_131)),
@@ -1222,18 +1222,18 @@ NamedSaveLoadTable GetVehicleDescription(VehicleType vt)
 
 		NSL("",                       SLE_CONDNULL_X(5,                                                              SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP))),
 
-		NSL("tile",                      SLE_CONDVAR(Vehicle, tile,                     SLE_FILE_U16 | SLE_VAR_U32,  SL_MIN_VERSION,   SLV_6)),
+		NSL("tile",                      SLE_CONDVAR(Vehicle, tile,                     SLE_FILE_U16 | SLE_VAR_U32,  SL_MIN_VERSION, SLV_6)),
 		NSL("tile",                      SLE_CONDVAR(Vehicle, tile,                     SLE_UINT32,                  SLV_6, SL_MAX_VERSION)),
 
-		NSL("x_pos",                     SLE_CONDVAR(Vehicle, x_pos,                    SLE_FILE_I16 | SLE_VAR_I32,  SL_MIN_VERSION,   SLV_6)),
+		NSL("x_pos",                     SLE_CONDVAR(Vehicle, x_pos,                    SLE_FILE_I16 | SLE_VAR_I32,  SL_MIN_VERSION, SLV_6)),
 		NSL("x_pos",                     SLE_CONDVAR(Vehicle, x_pos,                    SLE_INT32,                   SLV_6, SL_MAX_VERSION)),
-		NSL("y_pos",                     SLE_CONDVAR(Vehicle, y_pos,                    SLE_FILE_I16 | SLE_VAR_I32,  SL_MIN_VERSION,   SLV_6)),
+		NSL("y_pos",                     SLE_CONDVAR(Vehicle, y_pos,                    SLE_FILE_I16 | SLE_VAR_I32,  SL_MIN_VERSION, SLV_6)),
 		NSL("y_pos",                     SLE_CONDVAR(Vehicle, y_pos,                    SLE_INT32,                   SLV_6, SL_MAX_VERSION)),
 		NSL("z_pos",                   SLE_CONDVAR_X(Vehicle, z_pos,                    SLE_FILE_U8  | SLE_VAR_I32,  SL_MIN_VERSION, SLV_164, SlXvFeatureTest(XSLFTO_AND, XSLFI_ZPOS_32_BIT, 0, 0))),
 		NSL("z_pos",                   SLE_CONDVAR_X(Vehicle, z_pos,                    SLE_INT32,                   SLV_164, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_OR, XSLFI_ZPOS_32_BIT))),
 
 		NSL("sprite[0]",                     SLE_VAR(Vehicle, sprite_seq.seq[0].sprite, SLE_FILE_U16 | SLE_VAR_U32)),
-		NSL("",                         SLE_CONDNULL(5,                                                              SL_MIN_VERSION,  SLV_59)),
+		NSL("",                         SLE_CONDNULL(5,                                                              SL_MIN_VERSION, SLV_59)),
 		NSL("progress",                      SLE_VAR(Vehicle, progress,                 SLE_UINT8)),
 		NSL("vehstatus",                     SLE_VAR(Vehicle, vehstatus,                SLE_UINT8)),
 
