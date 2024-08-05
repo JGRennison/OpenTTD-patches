@@ -941,6 +941,12 @@ static const NIVariable _niv_house[] = {
 	NIV(A2VRI_HOUSE_SAME_CLASS_MAP_COUNT, "building count: same class, map"),
 	NIV(A2VRI_HOUSE_SAME_ID_TOWN_COUNT, "building count: same ID, town"),
 	NIV(A2VRI_HOUSE_SAME_CLASS_TOWN_COUNT, "building count: same class, town"),
+	NIVF(A2VRI_HOUSE_OTHER_OLD_ID_MAP_COUNT, "building count: other old ID, map", NIVF_SHOW_PARAMS),
+	NIVF(A2VRI_HOUSE_OTHER_OLD_ID_TOWN_COUNT, "building count: other old ID, town", NIVF_SHOW_PARAMS),
+	NIVF(A2VRI_HOUSE_OTHER_ID_MAP_COUNT, "building count: other ID, map", NIVF_SHOW_PARAMS),
+	NIVF(A2VRI_HOUSE_OTHER_CLASS_MAP_COUNT, "building count: other class, map", NIVF_SHOW_PARAMS),
+	NIVF(A2VRI_HOUSE_OTHER_ID_TOWN_COUNT, "building count: other ID, town", NIVF_SHOW_PARAMS),
+	NIVF(A2VRI_HOUSE_OTHER_CLASS_TOWN_COUNT, "building count: other class, town", NIVF_SHOW_PARAMS),
 	NIV_END()
 };
 

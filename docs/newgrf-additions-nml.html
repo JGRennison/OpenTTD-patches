@@ -102,6 +102,14 @@
 		<tr><th>Name</th><th>Value range</th><th>Comment</th></tr>
 		<tr><td>same_house_count_town_uncapped</td><td>0..4294967295</td><td>Number of the houses with the same ID in the same town as this house (not clamped to 0xFF)</td></tr>
 		<tr><td>same_house_count_map_uncapped</td><td>0..4294967295</td><td>Number of the houses with the same ID on the entire map (not clamped to 0xFF)</td></tr>
+		<tr><td>same_class_count_town</td><td>0..4294967295</td><td>Number of the houses with the same class in the same town as this house (not clamped to 0xFF). The class of the north tile of the use is used for this purpose, as other tiles don't normally have a class.</td></tr>
+		<tr><td>same_class_count_map</td><td>0..4294967295</td><td>Number of the houses with the same class on the entire map (not clamped to 0xFF). The class of the north tile of the use is used for this purpose, as other tiles don't normally have a class.</td></tr>
+		<tr><td>old_house_count_town_uncapped</td><td>0..4294967295</td><td>Number of the houses with the given old ID in the same town as this house (not clamped to 0xFF)</td></tr>
+		<tr><td>old_house_count_map_uncapped</td><td>0..4294967295</td><td>Number of the houses with the given old ID on the entire map (not clamped to 0xFF)</td></tr>
+		<tr><td>other_house_count_town_uncapped</td><td>0..4294967295</td><td>Number of the houses with the given new ID in the same town as this house (not clamped to 0xFF)</td></tr>
+		<tr><td>other_house_count_map_uncapped</td><td>0..4294967295</td><td>Number of the houses with the given new ID on the entire map (not clamped to 0xFF)</td></tr>
+		<tr><td>other_class_count_town_uncapped</td><td>0..4294967295</td><td>Number of the houses with the same class as the house with the given new ID in the same town as this house (not clamped to 0xFF)</td></tr>
+		<tr><td>other_class_count_map_uncapped</td><td>0..4294967295</td><td>Number of the houses with the same class as the house with the given new ID on the entire map (not clamped to 0xFF)</td></tr>
 	</table>
 
 	<h3 id="railtype-properties"><a href="https://newgrf-specs.tt-wiki.net/wiki/NML:Railtypes#Railtype_properties">Railtype properties</a></h3>

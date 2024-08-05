@@ -391,6 +391,21 @@ static uint32_t GetDistanceFromNearbyHouse(uint8_t parameter, TileIndex tile, Ho
 	return 0;
 }
 
+HouseID HouseScopeResolver::GetOtherHouseID(uint32_t parameter) const
+{
+	const HouseSpec *hs = HouseSpec::Get(this->house_id);
+	if (hs->grf_prop.grffile == nullptr) return INVALID_HOUSE_ID;
+
+	return _house_mngr.GetID(parameter, hs->grf_prop.grffile->grfid);
+}
+
+template <typename F>
+uint32_t HouseScopeResolver::OtherHouseIDVariable(uint32_t parameter, F func) const
+{
+	HouseID new_house = this->GetOtherHouseID(parameter);
+	return new_house == INVALID_HOUSE_ID ? 0 : func(new_house);
+}
+
 /**
  * @note Used by the resolver to get values for feature 07 deterministic spritegroups.
  */
@@ -429,14 +444,16 @@ static uint32_t GetDistanceFromNearbyHouse(uint8_t parameter, TileIndex tile, Ho
 		/* Building counts for old houses with id = parameter. */
 		case 0x60: return parameter < NEW_HOUSE_OFFSET ? GetNumHouses(parameter, this->town) : 0;
 
-		/* Building counts for new houses with id = parameter. */
-		case 0x61: {
-			const HouseSpec *hs = HouseSpec::Get(this->house_id);
-			if (hs->grf_prop.grffile == nullptr) return 0;
+		case A2VRI_HOUSE_OTHER_OLD_ID_MAP_COUNT:  return parameter < NEW_HOUSE_OFFSET ? _building_counts.id_count[parameter] : 0;
+		case A2VRI_HOUSE_OTHER_OLD_ID_TOWN_COUNT: return parameter < NEW_HOUSE_OFFSET ? this->town->cache.building_counts.id_count[parameter] : 0;
 
-			HouseID new_house = _house_mngr.GetID(parameter, hs->grf_prop.grffile->grfid);
-			return new_house == INVALID_HOUSE_ID ? 0 : GetNumHouses(new_house, this->town);
-		}
+		/* Building counts for new houses with id = parameter. */
+		case 0x61: return this->OtherHouseIDVariable(parameter, [&](HouseID new_house) { return GetNumHouses(new_house, this->town); });
+
+		case A2VRI_HOUSE_OTHER_ID_MAP_COUNT:     return this->OtherHouseIDVariable(parameter, [&](HouseID new_house) { return _building_counts.id_count[new_house]; });
+		case A2VRI_HOUSE_OTHER_CLASS_MAP_COUNT:  return this->OtherHouseIDVariable(parameter, [&](HouseID new_house) { return _building_counts.class_count[HouseSpec::Get(new_house)->class_id]; });
+		case A2VRI_HOUSE_OTHER_ID_TOWN_COUNT:    return this->OtherHouseIDVariable(parameter, [&](HouseID new_house) { return this->town->cache.building_counts.id_count[new_house]; });
+		case A2VRI_HOUSE_OTHER_CLASS_TOWN_COUNT: return this->OtherHouseIDVariable(parameter, [&](HouseID new_house) { return this->town->cache.building_counts.class_count[HouseSpec::Get(new_house)->class_id]; });
 
 		/* Land info for nearby tiles. */
 		case 0x62: return GetNearbyTileInformation(parameter, this->tile, this->ro.grffile->grf_version >= 8, extra->mask);
