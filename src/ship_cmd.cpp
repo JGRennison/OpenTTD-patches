@@ -1113,7 +1113,7 @@ static void ShipController(Ship *v)
 				v->y_pos = gp.y;
 				v->UpdatePosition();
 				if ((v->vehstatus & VS_HIDDEN) == 0) v->UpdateViewport(true, false);
-				return;
+				continue;
 			}
 			/* Bridge exit */
 			if (_settings_game.vehicle.ship_collision_avoidance && gp.new_tile != TileVirtXY(v->x_pos, v->y_pos)) HandleSpeedOnAqueduct(v, gp.new_tile, v->tile);
