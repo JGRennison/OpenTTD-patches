@@ -32,6 +32,35 @@ struct ReadBuffer {
 	std::shared_ptr<LoadFilter> reader; ///< The filter used to actually read.
 	size_t read;                        ///< The amount of read bytes so far from the filter.
 
+	static inline uint16_t RawReadUint16At(uint8_t *b)
+	{
+#if OTTD_ALIGNMENT == 0
+		return FROM_BE16(*((const unaligned_uint16 *)b));
+#else
+		return (b[0] << 8) | b[1];
+#endif
+	}
+
+	static inline uint32_t RawReadUint32At(uint8_t *b)
+	{
+#if OTTD_ALIGNMENT == 0
+		return FROM_BE32(*((const unaligned_uint32 *)b));
+#else
+		return (RawReadUint16At(b) << 16) | RawReadUint16At(b + 2);
+#endif
+	}
+
+	static inline uint64_t RawReadUint64At(uint8_t *b)
+	{
+#if OTTD_ALIGNMENT == 0
+		return FROM_BE64(*((const unaligned_uint64 *)b));
+#else
+		uint32_t x = this->RawReadUint32At(b);
+		uint32_t y = this->RawReadUint32At(b + 4);
+		return (uint64_t)x << 32 | y;
+#endif
+	}
+
 	/**
 	 * Initialise our variables.
 	 * @param reader The filter to actually read data.
@@ -83,41 +112,25 @@ struct ReadBuffer {
 		while (unlikely(this->bufp + bytes > this->bufe)) this->AcquireBytes();
 	}
 
-	inline int RawReadUint16()
+	inline uint16_t RawReadUint16()
 	{
-#if OTTD_ALIGNMENT == 0
-		int x = FROM_BE16(*((const unaligned_uint16 *) this->bufp));
+		uint16_t x = RawReadUint16At(this->bufp);
 		this->bufp += 2;
 		return x;
-#else
-		int x = this->RawReadByte() << 8;
-		return x | this->RawReadByte();
-#endif
 	}
 
 	inline uint32_t RawReadUint32()
 	{
-#if OTTD_ALIGNMENT == 0
-		uint32_t x = FROM_BE32(*((const unaligned_uint32 *) this->bufp));
+		uint32_t x = RawReadUint32At(this->bufp);
 		this->bufp += 4;
 		return x;
-#else
-		uint32_t x = this->RawReadUint16() << 16;
-		return x | this->RawReadUint16();
-#endif
 	}
 
 	inline uint64_t RawReadUint64()
 	{
-#if OTTD_ALIGNMENT == 0
-		uint64_t x = FROM_BE64(*((const unaligned_uint64 *) this->bufp));
+		uint64_t x = RawReadUint64At(this->bufp);
 		this->bufp += 8;
 		return x;
-#else
-		uint32_t x = this->RawReadUint32();
-		uint32_t y = this->RawReadUint32();
-		return (uint64_t)x << 32 | y;
-#endif
 	}
 
 	inline void CopyBytes(uint8_t *ptr, size_t length)
@@ -147,9 +160,11 @@ struct ReadBuffer {
 				this->AcquireBytes();
 			}
 			size_t to_copy = std::min<size_t>(this->bufe - this->bufp, length);
+			uint8_t *b = this->bufp;
 			for (size_t i = 0; i < to_copy; i++) {
-				handler(this->RawReadByte());
+				handler(*b++);
 			}
+			this->bufp = b;
 			length -= to_copy;
 		}
 	}
@@ -160,9 +175,13 @@ struct ReadBuffer {
 		while (length) {
 			this->CheckBytes(2);
 			size_t to_copy = std::min<size_t>((this->bufe - this->bufp) / 2, length);
+			uint8_t *b = this->bufp;
 			for (size_t i = 0; i < to_copy; i++) {
-				handler(this->RawReadUint16());
+				uint16_t val = RawReadUint16At(b);
+				b += 2;
+				handler(val);
 			}
+			this->bufp = b;
 			length -= to_copy;
 		}
 	}
