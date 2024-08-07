@@ -56,9 +56,10 @@ static void Check_MAPS()
 
 static void Load_MAPT()
 {
-	TileIndex i = 0;
+	Tile *m = _m;
 	ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
-		_m[i++].type = val;
+		m->type = val;
+		m++;
 	});
 }
 
@@ -84,64 +85,72 @@ static void Load_MAPH()
 		if (SlGetFieldLength() != 0) {
 			_sl_xv_feature_versions[XSLFI_HEIGHT_8_BIT] = 2;
 
-			TileIndex i = 0;
+			Tile *m = _m;
 			ReadBuffer::GetCurrent()->ReadUint16sToHandler(MapSize(), [&](uint16_t val) {
-				_m[i++].height = val;
+				m->height = val;
+				m++;
 			});
 		}
 		return;
 	}
 
-	TileIndex i = 0;
+	Tile *m = _m;
 	ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
-		_m[i++].height = val;
+		m->height = val;
+		m++;
 	});
 }
 
 static void Load_MAP1()
 {
-	TileIndex i = 0;
+	Tile *m = _m;
 	ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
-		_m[i++].m1 = val;
+		m->m1 = val;
+		m++;
 	});
 }
 
 static void Load_MAP2()
 {
-	TileIndex i = 0;
+	Tile *m = _m;
 	if (IsSavegameVersionBefore(SLV_5)) {
 		/* In those versions the m2 was 8 bits */
 		ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
-			_m[i++].m2 = val;
+			m->m2 = val;
+			m++;
 		});
 	} else {
 		ReadBuffer::GetCurrent()->ReadUint16sToHandler(MapSize(), [&](uint16_t val) {
-			_m[i++].m2 = val;
+			m->m2 = val;
+			m++;
 		});
 	}
 }
 
 static void Load_MAP3()
 {
-	TileIndex i = 0;
+	Tile *m = _m;
 	ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
-		_m[i++].m3 = val;
+		m->m3 = val;
+		m++;
 	});
 }
 
 static void Load_MAP4()
 {
-	TileIndex i = 0;
+	Tile *m = _m;
 	ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
-		_m[i++].m4 = val;
+		m->m4 = val;
+		m++;
 	});
 }
 
 static void Load_MAP5()
 {
-	TileIndex i = 0;
+	Tile *m = _m;
 	ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
-		_m[i++].m5 = val;
+		m->m5 = val;
+		m++;
 	});
 }
 
@@ -149,34 +158,38 @@ static void Load_MAP6()
 {
 	TileIndex size = MapSize();
 
-	TileIndex i = 0;
+	TileExtended *me = _me;
 	if (IsSavegameVersionBefore(SLV_42)) {
 		ReadBuffer::GetCurrent()->ReadBytesToHandler(size / 4, [&](uint8_t val) {
-			_me[i++].m6 = GB(val, 0, 2);
-			_me[i++].m6 = GB(val, 2, 2);
-			_me[i++].m6 = GB(val, 4, 2);
-			_me[i++].m6 = GB(val, 6, 2);
+			me[0].m6 = GB(val, 0, 2);
+			me[1].m6 = GB(val, 2, 2);
+			me[2].m6 = GB(val, 4, 2);
+			me[3].m6 = GB(val, 6, 2);
+			me += 4;
 		});
 	} else {
 		ReadBuffer::GetCurrent()->ReadBytesToHandler(size, [&](uint8_t val) {
-			_me[i++].m6 = val;
+			me->m6 = val;
+			me++;
 		});
 	}
 }
 
 static void Load_MAP7()
 {
-	TileIndex i = 0;
+	TileExtended *me = _me;
 	ReadBuffer::GetCurrent()->ReadBytesToHandler(MapSize(), [&](uint8_t val) {
-		_me[i++].m7 = val;
+		me->m7 = val;
+		me++;
 	});
 }
 
 static void Load_MAP8()
 {
-	TileIndex i = 0;
+	TileExtended *me = _me;
 	ReadBuffer::GetCurrent()->ReadUint16sToHandler(MapSize(), [&](uint16_t val) {
-		_me[i++].m8 = val;
+		me->m8 = val;
+		me++;
 	});
 }
 
@@ -192,37 +205,41 @@ static void Load_WMAP()
 #if TTD_ENDIAN == TTD_LITTLE_ENDIAN
 	reader->CopyBytes((uint8_t *) _m, size * 8);
 #else
-	for (TileIndex i = 0; i != size; i++) {
+	Tile *m_start = _m;
+	Tile *m_end = _m + size;
+	for (Tile *m = m_start; m != m_end; m++) {
 		reader->CheckBytes(8);
-		_m[i].type = reader->RawReadByte();
-		_m[i].height = reader->RawReadByte();
+		m->type = reader->RawReadByte();
+		m->height = reader->RawReadByte();
 		uint16_t m2 = reader->RawReadByte();
 		m2 |= ((uint16_t) reader->RawReadByte()) << 8;
-		_m[i].m2 = m2;
-		_m[i].m1 = reader->RawReadByte();
-		_m[i].m3 = reader->RawReadByte();
-		_m[i].m4 = reader->RawReadByte();
-		_m[i].m5 = reader->RawReadByte();
+		m->m2 = m2;
+		m->m1 = reader->RawReadByte();
+		m->m3 = reader->RawReadByte();
+		m->m4 = reader->RawReadByte();
+		m->m5 = reader->RawReadByte();
 	}
 #endif
 
+	TileExtended *me_start = _me;
+	TileExtended *me_end = _me + size;
 	if (_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 1) {
-		for (TileIndex i = 0; i != size; i++) {
+		for (TileExtended *me = me_start; me != me_end; me++) {
 			reader->CheckBytes(2);
-			_me[i].m6 = reader->RawReadByte();
-			_me[i].m7 = reader->RawReadByte();
+			me->m6 = reader->RawReadByte();
+			me->m7 = reader->RawReadByte();
 		}
 	} else if (_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 2) {
 #if TTD_ENDIAN == TTD_LITTLE_ENDIAN
 		reader->CopyBytes((uint8_t *) _me, size * 4);
 #else
-		for (TileIndex i = 0; i != size; i++) {
+		for (TileExtended *me = me_start; me != me_end; me++) {
 			reader->CheckBytes(4);
-			_me[i].m6 = reader->RawReadByte();
-			_me[i].m7 = reader->RawReadByte();
+			me->m6 = reader->RawReadByte();
+			me->m7 = reader->RawReadByte();
 			uint16_t m8 = reader->RawReadByte();
 			m8 |= ((uint16_t) reader->RawReadByte()) << 8;
-			_me[i].m8 = m8;
+			me->m8 = m8;
 		}
 #endif
 	} else {
