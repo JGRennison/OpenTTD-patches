@@ -139,18 +139,24 @@ void ReadBuffer::SkipBytesSlowPath(size_t bytes)
 	}
 }
 
-void ReadBuffer::AcquireBytes()
+void ReadBuffer::AcquireBytes(size_t bytes)
 {
 	size_t remainder = this->bufe - this->bufp;
 	if (remainder) {
 		memmove(this->buf, this->bufp, remainder);
 	}
-	size_t len = this->reader->Read(this->buf + remainder, lengthof(this->buf) - remainder);
-	if (len == 0) SlErrorCorrupt("Unexpected end of chunk");
+	size_t total = remainder;
+	size_t target = remainder + bytes;
+	do {
+		size_t len = this->reader->Read(this->buf + total, lengthof(this->buf) - total);
+		if (len == 0) SlErrorCorrupt("Unexpected end of chunk");
 
-	this->read += len;
+		total += len;
+	} while (total < target);
+
+	this->read += total - remainder;
 	this->bufp = this->buf;
-	this->bufe = this->buf + remainder + len;
+	this->bufe = this->buf + total;
 }
 
 void MemoryDumper::FinaliseBlock()

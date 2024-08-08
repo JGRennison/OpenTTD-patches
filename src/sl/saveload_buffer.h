@@ -106,7 +106,7 @@ struct ReadBuffer {
 	static ReadBuffer *GetCurrent();
 
 	void SkipBytesSlowPath(size_t bytes);
-	void AcquireBytes();
+	void AcquireBytes(size_t bytes = 0);
 
 	inline void SkipBytes(size_t bytes)
 	{
@@ -138,7 +138,7 @@ struct ReadBuffer {
 
 	inline void CheckBytes(size_t bytes)
 	{
-		while (unlikely(this->bufp + bytes > this->bufe)) this->AcquireBytes();
+		if (unlikely(this->bufp + bytes > this->bufe)) this->AcquireBytes(bytes);
 	}
 
 	inline RawReadBuffer ReadRawBytes(size_t bytes)
