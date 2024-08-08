@@ -687,27 +687,30 @@ size_t SlGetBytesWritten()
  */
 uint SlReadSimpleGamma()
 {
-	uint i = SlReadByte();
-	if (HasBit(i, 7)) {
-		i &= ~0x80;
-		if (HasBit(i, 6)) {
-			i &= ~0x40;
-			if (HasBit(i, 5)) {
-				i &= ~0x20;
-				if (HasBit(i, 4)) {
-					i &= ~0x10;
-					if (HasBit(i, 3)) {
-						SlErrorCorrupt("Unsupported gamma");
-					}
-					i = SlReadByte(); // 32 bits only.
-				}
-				i = (i << 8) | SlReadByte();
-			}
-			i = (i << 8) | SlReadByte();
-		}
-		i = (i << 8) | SlReadByte();
+	return _sl.reader->ReadSimpleGamma();
+}
+
+uint ReadBuffer::ReadSimpleGamma()
+{
+	if (unlikely(this->bufp == this->bufe)) {
+		this->AcquireBytes();
 	}
-	return i;
+
+	uint8_t first_byte = *this->bufp++;
+	uint extra_bytes = std::countl_one<uint8_t>(first_byte);
+	if (extra_bytes == 0) return first_byte;
+	if (extra_bytes > 4) SlErrorCorrupt("Unsupported gamma");
+
+	uint result = first_byte & (0x7F >> extra_bytes);
+
+	this->CheckBytes(extra_bytes);
+	uint8_t *b = this->bufp;
+	this->bufp += extra_bytes;
+	for (uint i = 0; i < extra_bytes; i++) {
+		result <<= 8;
+		result |= *b++;
+	}
+	return result;
 }
 
 /**

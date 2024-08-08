@@ -136,6 +136,8 @@ struct ReadBuffer {
 		return *this->bufp;
 	}
 
+	uint ReadSimpleGamma();
+
 	inline void CheckBytes(size_t bytes)
 	{
 		if (unlikely(this->bufp + bytes > this->bufe)) this->AcquireBytes(bytes);
