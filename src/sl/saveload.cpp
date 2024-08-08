@@ -643,20 +643,17 @@ void SlWriteByte(uint8_t b)
 
 void SlWriteUint16(uint16_t v)
 {
-	_sl.dumper->CheckBytes(2);
-	_sl.dumper->RawWriteUint16(v);
+	_sl.dumper->RawWriteBytes(2).RawWriteUint16(v);
 }
 
 void SlWriteUint32(uint32_t v)
 {
-	_sl.dumper->CheckBytes(4);
-	_sl.dumper->RawWriteUint32(v);
+	_sl.dumper->RawWriteBytes(4).RawWriteUint32(v);
 }
 
 void SlWriteUint64(uint64_t v)
 {
-	_sl.dumper->CheckBytes(8);
-	_sl.dumper->RawWriteUint64(v);
+	_sl.dumper->RawWriteBytes(8).RawWriteUint64(v);
 }
 
 /**
@@ -732,26 +729,34 @@ uint SlReadSimpleGamma()
 
 void SlWriteSimpleGamma(size_t i)
 {
+	MemoryDumper *dumper = MemoryDumper::GetCurrent();
+	RawMemoryDumper raw_dumper = dumper->BorrowRawWriteBytes(SlGetMaxGammaLength());
+	raw_dumper.RawWriteSimpleGamma(i);
+	dumper->ReturnRawWriteBytes(raw_dumper);
+}
+
+void RawMemoryDumper::RawWriteSimpleGamma(size_t i)
+{
 	if (i >= (1 << 7)) {
 		if (i >= (1 << 14)) {
 			if (i >= (1 << 21)) {
 				if (i >= (1 << 28)) {
 					assert(i <= UINT32_MAX); // We can only support 32 bits for now.
-					SlWriteByte((uint8_t)(0xF0));
-					SlWriteByte((uint8_t)(i >> 24));
+					*this->buf++ = ((uint8_t)(0xF0));
+					*this->buf++ = ((uint8_t)(i >> 24));
 				} else {
-					SlWriteByte((uint8_t)(0xE0 | (i >> 24)));
+					*this->buf++ = ((uint8_t)(0xE0 | (i >> 24)));
 				}
-				SlWriteByte((uint8_t)(i >> 16));
+				*this->buf++ = ((uint8_t)(i >> 16));
 			} else {
-				SlWriteByte((uint8_t)(0xC0 | (i >> 16)));
+				*this->buf++ = ((uint8_t)(0xC0 | (i >> 16)));
 			}
-			SlWriteByte((uint8_t)(i >> 8));
+			*this->buf++ = ((uint8_t)(i >> 8));
 		} else {
-			SlWriteByte((uint8_t)(0x80 | (i >> 8)));
+			*this->buf++ = ((uint8_t)(0x80 | (i >> 8)));
 		}
 	}
-	SlWriteByte((uint8_t)i);
+	*this->buf++ = ((uint8_t)i);
 }
 
 /** Return how many bytes used to encode a gamma value */
@@ -2076,8 +2081,7 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 						sld.struct_handler->Save(object);
 						if (offset == _sl.dumper->GetWriteOffsetGeneric()) {
 							/* Nothing was actaully written, so it's safe to change the 1 above to 0 */
-							_sl.dumper->UnWriteByte(); // This is fine iff nothing has been written since the WriteByte(1)
-							_sl.dumper->RawWriteByte(0);
+							_sl.dumper->ReplaceLastWrittenByte(0); // This is fine iff nothing has been written since the WriteByte(1)
 						}
 					} else {
 						sld.struct_handler->Save(object);

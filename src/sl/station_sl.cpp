@@ -304,10 +304,13 @@ struct StationGoodsFlowStructHandler final : public TypedSaveLoadStructHandler<S
 
 		for (const FlowStat &stat : ged->flows) {
 			uint32_t sum_shares = 0;
-			dumper->CheckBytes(2 + 2);
-			dumper->RawWriteUint16(stat.GetOrigin());
-			dumper->RawWriteUint16(stat.GetRawFlags());
-			SlWriteSimpleGamma(stat.size());
+
+			RawMemoryDumper dump = dumper->BorrowRawWriteBytes(2 + 2 + SlGetMaxGammaLength());
+			dump.RawWriteUint16(stat.GetOrigin());
+			dump.RawWriteUint16(stat.GetRawFlags());
+			dump.RawWriteSimpleGamma(stat.size());
+			dumper->ReturnRawWriteBytes(dump);
+
 			for (const auto &it : stat) {
 				StationID via = it.second;
 				uint32_t share = it.first - sum_shares;
@@ -316,10 +319,10 @@ struct StationGoodsFlowStructHandler final : public TypedSaveLoadStructHandler<S
 				dbg_assert(share > 0);
 
 				/* This is performance-sensitive, manually unroll */
-				dumper->CheckBytes(2 + 4 + 1);
-				dumper->RawWriteUint16(via);
-				dumper->RawWriteUint32(share);
-				dumper->RawWriteByte(restricted ? 1 : 0);
+				dump = dumper->RawWriteBytes(2 + 4 + 1);
+				dump.RawWriteUint16(via);
+				dump.RawWriteUint32(share);
+				dump.RawWriteByte(restricted ? 1 : 0);
 			}
 		}
 	}
@@ -670,18 +673,20 @@ struct StationCargoHistoryStructHandler final : public TypedSaveLoadStructHandle
 	void Save(Station *st) const override
 	{
 		MemoryDumper *dumper = MemoryDumper::GetCurrent();
-		SlWriteUint64(st->station_cargo_history_cargoes);
-		SlWriteSimpleGamma(st->station_cargo_history.size() * MAX_STATION_CARGO_HISTORY_DAYS);
+		RawMemoryDumper dump = dumper->BorrowRawWriteBytes(8 + SlGetMaxGammaLength() + (st->station_cargo_history.size() * MAX_STATION_CARGO_HISTORY_DAYS * 2));
 
-		dumper->CheckBytes(st->station_cargo_history.size() * MAX_STATION_CARGO_HISTORY_DAYS * 2);
+		dump.RawWriteUint64(st->station_cargo_history_cargoes);
+		dump.RawWriteSimpleGamma(st->station_cargo_history.size() * MAX_STATION_CARGO_HISTORY_DAYS);
+
 		for (const auto &history : st->station_cargo_history) {
 			uint i = st->station_cargo_history_offset;
 			do {
-				dumper->RawWriteUint16(history[i]);
+				dump.RawWriteUint16(history[i]);
 				i++;
 				if (i == MAX_STATION_CARGO_HISTORY_DAYS) i = 0;
 			} while (i != st->station_cargo_history_offset);
 		}
+		dumper->ReturnRawWriteBytes(dump);
 	}
 
 	void Load(Station *st) const override

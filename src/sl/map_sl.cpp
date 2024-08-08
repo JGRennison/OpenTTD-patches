@@ -261,23 +261,27 @@ static void Save_WMAP()
 	dumper->CopyBytes((uint8_t *) _m, size * 8);
 	dumper->CopyBytes((uint8_t *) _me, size * 4);
 #else
-	for (TileIndex i = 0; i != size; i++) {
-		dumper->CheckBytes(8);
-		dumper->RawWriteByte(_m[i].type);
-		dumper->RawWriteByte(_m[i].height);
-		dumper->RawWriteByte(GB(_m[i].m2, 0, 8));
-		dumper->RawWriteByte(GB(_m[i].m2, 8, 8));
-		dumper->RawWriteByte(_m[i].m1);
-		dumper->RawWriteByte(_m[i].m3);
-		dumper->RawWriteByte(_m[i].m4);
-		dumper->RawWriteByte(_m[i].m5);
+	Tile *m_start = _m;
+	Tile *m_end = _m + size;
+	for (Tile *m = m_start; m != m_end; m++) {
+		RawMemoryDumper dump = dumper->RawWriteBytes(8);
+		dump.RawWriteByte(m->type);
+		dump.RawWriteByte(m->height);
+		dump.RawWriteByte(GB(m->m2, 0, 8));
+		dump.RawWriteByte(GB(m->m2, 8, 8));
+		dump.RawWriteByte(m->m1);
+		dump.RawWriteByte(m->m3);
+		dump.RawWriteByte(m->m4);
+		dump.RawWriteByte(m->m5);
 	}
-	for (TileIndex i = 0; i != size; i++) {
-		dumper->CheckBytes(4);
-		dumper->RawWriteByte(_me[i].m6);
-		dumper->RawWriteByte(_me[i].m7);
-		dumper->RawWriteByte(GB(_me[i].m8, 0, 8));
-		dumper->RawWriteByte(GB(_me[i].m8, 8, 8));
+	TileExtended *me_start = _me;
+	TileExtended *me_end = _me + size;
+	for (TileExtended *me = me_start; me != me_end; me++) {
+		RawMemoryDumper dump = dumper->RawWriteBytes(4);
+		dump.RawWriteByte(me->m6);
+		dump.RawWriteByte(me->m7);
+		dump.RawWriteByte(GB(me->m8, 0, 8));
+		dump.RawWriteByte(GB(me->m8, 8, 8));
 	}
 #endif
 }

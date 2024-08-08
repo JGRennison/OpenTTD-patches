@@ -213,6 +213,77 @@ struct ReadBuffer {
 };
 
 
+namespace SlSerialise {
+	inline void RawWriteUint16At(uint8_t *b, uint16_t v)
+	{
+#if OTTD_ALIGNMENT == 0
+		*((unaligned_uint16 *)b) = TO_BE16(v);
+#else
+		b[0] = GB(v, 8, 8);
+		b[1] = GB(v, 0, 8);
+#endif
+	}
+
+	inline void RawWriteUint32At(uint8_t *b, uint32_t v)
+	{
+#if OTTD_ALIGNMENT == 0
+		*((unaligned_uint32 *)b) = TO_BE32(v);
+#else
+		b[0] = GB(v, 24, 8);
+		b[1] = GB(v, 16, 8);
+		b[2] = GB(v, 8, 8);
+		b[3] = GB(v, 0, 8);
+#endif
+	}
+
+	inline void RawWriteUint64At(uint8_t *b, uint64_t v)
+	{
+#if OTTD_ALIGNMENT == 0
+		*((unaligned_uint64 *)b) = TO_BE64(v);
+#else
+		b[0] = GB(v, 56, 8);
+		b[1] = GB(v, 48, 8);
+		b[2] = GB(v, 40, 8);
+		b[3] = GB(v, 32, 8);
+		b[4] = GB(v, 24, 8);
+		b[5] = GB(v, 16, 8);
+		b[6] = GB(v, 8, 8);
+		b[7] = GB(v, 0, 8);
+#endif
+	}
+}
+
+struct RawMemoryDumper {
+	uint8_t *buf;                       ///< Buffer we're going to write to.
+
+	RawMemoryDumper(uint8_t *b) : buf(b) {}
+
+	inline void RawWriteByte(uint8_t b)
+	{
+		*this->buf++ = b;
+	}
+
+	inline void RawWriteUint16(uint16_t v)
+	{
+		SlSerialise::RawWriteUint16At(this->buf, v);
+		this->buf += 2;
+	}
+
+	inline void RawWriteUint32(uint32_t v)
+	{
+		SlSerialise::RawWriteUint32At(this->buf, v);
+		this->buf += 4;
+	}
+
+	inline void RawWriteUint64(uint64_t v)
+	{
+		SlSerialise::RawWriteUint64At(this->buf, v);
+		this->buf += 8;
+	}
+
+	void RawWriteSimpleGamma(size_t i);
+};
+
 /** Container for dumping the savegame (quickly) to memory. */
 struct MemoryDumper {
 	struct BufferInfo {
@@ -235,44 +306,6 @@ struct MemoryDumper {
 	uint8_t *autolen_buf_end = nullptr;
 	uint8_t *saved_buf = nullptr;
 	uint8_t *saved_bufe = nullptr;
-
-	static inline void RawWriteUint16At(uint8_t *b, uint16_t v)
-	{
-#if OTTD_ALIGNMENT == 0
-		*((unaligned_uint16 *)b) = TO_BE16(v);
-#else
-		b[0] = GB(v, 8, 8);
-		b[1] = GB(v, 0, 8);
-#endif
-	}
-
-	static inline void RawWriteUint32At(uint8_t *b, uint32_t v)
-	{
-#if OTTD_ALIGNMENT == 0
-		*((unaligned_uint32 *)b) = TO_BE32(v);
-#else
-		b[0] = GB(v, 24, 8);
-		b[1] = GB(v, 16, 8);
-		b[2] = GB(v, 8, 8);
-		b[3] = GB(v, 0, 8);
-#endif
-	}
-
-	static inline void RawWriteUint64At(uint8_t *b, uint64_t v)
-	{
-#if OTTD_ALIGNMENT == 0
-		*((unaligned_uint64 *)b) = TO_BE64(v);
-#else
-		b[0] = GB(v, 56, 8);
-		b[1] = GB(v, 48, 8);
-		b[2] = GB(v, 40, 8);
-		b[3] = GB(v, 32, 8);
-		b[4] = GB(v, 24, 8);
-		b[5] = GB(v, 16, 8);
-		b[6] = GB(v, 8, 8);
-		b[7] = GB(v, 0, 8);
-#endif
-	}
 
 	MemoryDumper()
 	{
@@ -330,32 +363,28 @@ struct MemoryDumper {
 	}
 
 	/** For limited/special purposes only */
-	inline void UnWriteByte()
+	inline void ReplaceLastWrittenByte(uint8_t b)
 	{
-		this->buf--;
+		*(this->buf - 1) = b;
 	}
 
-	inline void RawWriteByte(uint8_t b)
+	inline RawMemoryDumper RawWriteBytes(size_t bytes)
 	{
-		*this->buf++ = b;
+		this->CheckBytes(bytes);
+		RawMemoryDumper raw_dumper(this->buf);
+		this->buf += bytes;
+		return raw_dumper;
 	}
 
-	inline void RawWriteUint16(uint16_t v)
+	inline RawMemoryDumper BorrowRawWriteBytes(size_t bytes)
 	{
-		RawWriteUint16At(this->buf, v);
-		this->buf += 2;
+		this->CheckBytes(bytes);
+		return RawMemoryDumper(this->buf);
 	}
 
-	inline void RawWriteUint32(uint32_t v)
+	inline void ReturnRawWriteBytes(RawMemoryDumper raw_dumper)
 	{
-		RawWriteUint32At(this->buf, v);
-		this->buf += 4;
-	}
-
-	inline void RawWriteUint64(uint64_t v)
-	{
-		RawWriteUint64At(this->buf, v);
-		this->buf += 8;
+		this->buf = raw_dumper.buf;
 	}
 
 	template <typename F>
@@ -382,7 +411,7 @@ struct MemoryDumper {
 			size_t to_copy = std::min<size_t>((this->bufe - this->buf) / 2, length);
 			uint8_t *b = this->buf;
 			for (size_t i = 0; i < to_copy; i++) {
-				RawWriteUint16At(b, handler());
+				SlSerialise::RawWriteUint16At(b, handler());
 				b += 2;
 			}
 			this->buf = b;
