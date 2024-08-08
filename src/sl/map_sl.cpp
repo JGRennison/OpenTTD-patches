@@ -282,54 +282,68 @@ static void Save_WMAP()
 #endif
 }
 
-struct MAPT {
-	typedef uint8_t FieldT;
-	static const FieldT &GetField(TileIndex t) { return _m[t].type; }
+struct MapTileReader {
+	Tile *m;
+
+	MapTileReader() { this->m = _m; }
+	Tile *Next() { return this->m++; }
 };
 
-struct MAPH {
-	typedef uint8_t FieldT;
-	static const FieldT &GetField(TileIndex t) { return _m[t].height; }
+struct MapTileExtendedReader {
+	TileExtended *me;
+
+	MapTileExtendedReader() { this->me = _me; }
+	TileExtended *Next() { return this->me++; }
 };
 
-struct MAP1 {
+struct MAPT : MapTileReader {
 	typedef uint8_t FieldT;
-	static const FieldT &GetField(TileIndex t) { return _m[t].m1; }
+	FieldT GetNextField() { return this->Next()->type; }
 };
 
-struct MAP2 {
+struct MAPH : MapTileReader {
+	typedef uint8_t FieldT;
+	FieldT GetNextField() { return this->Next()->height; }
+};
+
+struct MAP1 : MapTileReader {
+	typedef uint8_t FieldT;
+	FieldT GetNextField() { return this->Next()->m1; }
+};
+
+struct MAP2 : MapTileReader {
 	typedef uint16_t FieldT;
-	static const FieldT &GetField(TileIndex t) { return _m[t].m2; }
+	FieldT GetNextField() { return this->Next()->m2; }
 };
 
-struct MAP3 {
+struct MAP3 : MapTileReader {
 	typedef uint8_t FieldT;
-	static const FieldT &GetField(TileIndex t) { return _m[t].m3; }
+	FieldT GetNextField() { return this->Next()->m3; }
 };
 
-struct MAP4 {
+struct MAP4 : MapTileReader {
 	typedef uint8_t FieldT;
-	static const FieldT &GetField(TileIndex t) { return _m[t].m4; }
+	FieldT GetNextField() { return this->Next()->m4; }
 };
 
-struct MAP5 {
+struct MAP5 : MapTileReader {
 	typedef uint8_t FieldT;
-	static const FieldT &GetField(TileIndex t) { return _m[t].m5; }
+	FieldT GetNextField() { return this->Next()->m5; }
 };
 
-struct MAP6 {
+struct MAP6 : MapTileExtendedReader {
 	typedef uint8_t FieldT;
-	static const FieldT &GetField(TileIndex t) { return _me[t].m6; }
+	FieldT GetNextField() { return this->Next()->m6; }
 };
 
-struct MAP7 {
+struct MAP7 : MapTileExtendedReader {
 	typedef uint8_t FieldT;
-	static const FieldT &GetField(TileIndex t) { return _me[t].m7; }
+	FieldT GetNextField() { return this->Next()->m7; }
 };
 
-struct MAP8 {
+struct MAP8 : MapTileExtendedReader {
 	typedef uint16_t FieldT;
-	static const FieldT &GetField(TileIndex t) { return _me[t].m8; }
+	FieldT GetNextField() { return this->Next()->m8; }
 };
 
 template <typename T>
@@ -342,14 +356,14 @@ static void Save_MAP()
 	TileIndex size = MapSize();
 	SlSetLength(size * sizeof(typename T::FieldT));
 
-	TileIndex i = 0;
+	T map_reader{};
 	if constexpr (std::is_same_v<typename T::FieldT, uint8_t>) {
 		MemoryDumper::GetCurrent()->WriteBytesFromHandler(size, [&]() -> uint8_t {
-			return T::GetField(i++);
+			return map_reader.GetNextField();
 		});
 	} else {
 		MemoryDumper::GetCurrent()->WriteUint16sFromHandler(size, [&]() -> uint16_t {
-			return T::GetField(i++);
+			return map_reader.GetNextField();
 		});
 	}
 }
