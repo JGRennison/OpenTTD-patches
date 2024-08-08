@@ -539,11 +539,12 @@ public:
 			/* If that fails, select the first available airport
 			 * from the first class where airports are available. */
 			for (const auto &cls : AirportClass::Classes()) {
-				for (const auto &as : cls.Specs()) {
+				for (uint i = 0; i < cls.GetSpecCount(); i++) {
+					const AirportSpec *as = cls.GetSpec(i);
 					if (as->IsAvailable()) {
 						_selected_airport_class = cls.Index();
 						this->vscroll->SetCount(cls.GetSpecCount());
-						this->SelectOtherAirport(as->GetIndex());
+						this->SelectOtherAirport(i);
 						return;
 					}
 				}
