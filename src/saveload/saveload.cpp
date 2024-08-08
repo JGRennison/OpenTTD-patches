@@ -1067,7 +1067,7 @@ void SlSaveLoadRef(void *ptr, VarType conv)
 			break;
 		case SLA_LOAD_CHECK:
 		case SLA_LOAD:
-			*(size_t *)ptr = IsSavegameVersionBefore(SLV_69) ? SlReadUint16() : SlReadUint32();
+			*(size_t *)ptr = IsSavegameVersionBefore(SLV_69) ? (size_t)SlReadUint16() : SlReadUint32();
 			break;
 		case SLA_PTRS:
 			*(void **)ptr = IntToReference(*(size_t *)ptr, (SLRefType)conv);

@@ -423,7 +423,7 @@ enum SaveLoadVersion : uint16_t {
 uint8_t SlReadByte();
 void SlWriteByte(uint8_t b);
 
-int SlReadUint16();
+uint16_t SlReadUint16();
 uint32_t SlReadUint32();
 uint64_t SlReadUint64();
 
