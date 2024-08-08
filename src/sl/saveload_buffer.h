@@ -24,15 +24,8 @@ struct SaveFilter;
 /** Save in chunks of 128 KiB. */
 static const size_t MEMORY_CHUNK_SIZE = 128 * 1024;
 
-/** A buffer for reading (and buffering) savegame data. */
-struct ReadBuffer {
-	uint8_t buf[MEMORY_CHUNK_SIZE];     ///< Buffer we're going to read from.
-	uint8_t *bufp;                      ///< Location we're at reading the buffer.
-	uint8_t *bufe;                      ///< End of the buffer we can read from.
-	std::shared_ptr<LoadFilter> reader; ///< The filter used to actually read.
-	size_t read;                        ///< The amount of read bytes so far from the filter.
-
-	static inline uint16_t RawReadUint16At(uint8_t *b)
+namespace SlSerialise {
+	inline uint16_t RawReadUint16At(uint8_t *b)
 	{
 #if OTTD_ALIGNMENT == 0
 		return FROM_BE16(*((const unaligned_uint16 *)b));
@@ -41,7 +34,7 @@ struct ReadBuffer {
 #endif
 	}
 
-	static inline uint32_t RawReadUint32At(uint8_t *b)
+	inline uint32_t RawReadUint32At(uint8_t *b)
 	{
 #if OTTD_ALIGNMENT == 0
 		return FROM_BE32(*((const unaligned_uint32 *)b));
@@ -50,7 +43,7 @@ struct ReadBuffer {
 #endif
 	}
 
-	static inline uint64_t RawReadUint64At(uint8_t *b)
+	inline uint64_t RawReadUint64At(uint8_t *b)
 	{
 #if OTTD_ALIGNMENT == 0
 		return FROM_BE64(*((const unaligned_uint64 *)b));
@@ -60,6 +53,47 @@ struct ReadBuffer {
 		return (uint64_t)x << 32 | y;
 #endif
 	}
+}
+
+struct RawReadBuffer {
+	uint8_t *bufp;                      ///< Location we're at reading the buffer.
+
+	RawReadBuffer(uint8_t *b) : bufp(b) {}
+
+	inline uint8_t RawReadByte()
+	{
+		return *this->bufp++;
+	}
+
+	inline uint16_t RawReadUint16()
+	{
+		uint16_t x = SlSerialise::RawReadUint16At(this->bufp);
+		this->bufp += 2;
+		return x;
+	}
+
+	inline uint32_t RawReadUint32()
+	{
+		uint32_t x = SlSerialise::RawReadUint32At(this->bufp);
+		this->bufp += 4;
+		return x;
+	}
+
+	inline uint64_t RawReadUint64()
+	{
+		uint64_t x = SlSerialise::RawReadUint64At(this->bufp);
+		this->bufp += 8;
+		return x;
+	}
+};
+
+/** A buffer for reading (and buffering) savegame data. */
+struct ReadBuffer {
+	uint8_t *bufp;                      ///< Location we're at reading the buffer.
+	uint8_t *bufe;                      ///< End of the buffer we can read from.
+	std::shared_ptr<LoadFilter> reader; ///< The filter used to actually read.
+	size_t read;                        ///< The amount of read bytes so far from the filter.
+	uint8_t buf[MEMORY_CHUNK_SIZE];     ///< Buffer we're going to read from.
 
 	/**
 	 * Initialise our variables.
@@ -84,18 +118,13 @@ struct ReadBuffer {
 		}
 	}
 
-	inline uint8_t RawReadByte()
-	{
-		return *this->bufp++;
-	}
-
 	inline uint8_t ReadByte()
 	{
 		if (unlikely(this->bufp == this->bufe)) {
 			this->AcquireBytes();
 		}
 
-		return RawReadByte();
+		return *this->bufp++;;
 	}
 
 	inline uint8_t PeekByte()
@@ -112,25 +141,12 @@ struct ReadBuffer {
 		while (unlikely(this->bufp + bytes > this->bufe)) this->AcquireBytes();
 	}
 
-	inline uint16_t RawReadUint16()
+	inline RawReadBuffer ReadRawBytes(size_t bytes)
 	{
-		uint16_t x = RawReadUint16At(this->bufp);
-		this->bufp += 2;
-		return x;
-	}
-
-	inline uint32_t RawReadUint32()
-	{
-		uint32_t x = RawReadUint32At(this->bufp);
-		this->bufp += 4;
-		return x;
-	}
-
-	inline uint64_t RawReadUint64()
-	{
-		uint64_t x = RawReadUint64At(this->bufp);
-		this->bufp += 8;
-		return x;
+		this->CheckBytes(bytes);
+		RawReadBuffer buf(this->bufp);
+		this->bufp += bytes;
+		return buf;
 	}
 
 	inline void CopyBytes(uint8_t *ptr, size_t length)
@@ -177,7 +193,7 @@ struct ReadBuffer {
 			size_t to_copy = std::min<size_t>((this->bufe - this->bufp) / 2, length);
 			uint8_t *b = this->bufp;
 			for (size_t i = 0; i < to_copy; i++) {
-				uint16_t val = RawReadUint16At(b);
+				uint16_t val = SlSerialise::RawReadUint16At(b);
 				b += 2;
 				handler(val);
 			}

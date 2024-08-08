@@ -208,16 +208,16 @@ static void Load_WMAP()
 	Tile *m_start = _m;
 	Tile *m_end = _m + size;
 	for (Tile *m = m_start; m != m_end; m++) {
-		reader->CheckBytes(8);
-		m->type = reader->RawReadByte();
-		m->height = reader->RawReadByte();
-		uint16_t m2 = reader->RawReadByte();
-		m2 |= ((uint16_t) reader->RawReadByte()) << 8;
+		RawReadBuffer buf = reader->ReadRawBytes(8);
+		m->type = buf.RawReadByte();
+		m->height = buf.RawReadByte();
+		uint16_t m2 = buf.RawReadByte();
+		m2 |= ((uint16_t) buf.RawReadByte()) << 8;
 		m->m2 = m2;
-		m->m1 = reader->RawReadByte();
-		m->m3 = reader->RawReadByte();
-		m->m4 = reader->RawReadByte();
-		m->m5 = reader->RawReadByte();
+		m->m1 = buf.RawReadByte();
+		m->m3 = buf.RawReadByte();
+		m->m4 = buf.RawReadByte();
+		m->m5 = buf.RawReadByte();
 	}
 #endif
 
@@ -225,20 +225,20 @@ static void Load_WMAP()
 	TileExtended *me_end = _me + size;
 	if (_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 1) {
 		for (TileExtended *me = me_start; me != me_end; me++) {
-			reader->CheckBytes(2);
-			me->m6 = reader->RawReadByte();
-			me->m7 = reader->RawReadByte();
+			RawReadBuffer buf = reader->ReadRawBytes(2);
+			me->m6 = buf.RawReadByte();
+			me->m7 = buf.RawReadByte();
 		}
 	} else if (_sl_xv_feature_versions[XSLFI_WHOLE_MAP_CHUNK] == 2) {
 #if TTD_ENDIAN == TTD_LITTLE_ENDIAN
 		reader->CopyBytes((uint8_t *) _me, size * 4);
 #else
 		for (TileExtended *me = me_start; me != me_end; me++) {
-			reader->CheckBytes(4);
-			me->m6 = reader->RawReadByte();
-			me->m7 = reader->RawReadByte();
-			uint16_t m8 = reader->RawReadByte();
-			m8 |= ((uint16_t) reader->RawReadByte()) << 8;
+			RawReadBuffer buf = reader->ReadRawBytes(4);
+			me->m6 = buf.RawReadByte();
+			me->m7 = buf.RawReadByte();
+			uint16_t m8 = buf.RawReadByte();
+			m8 |= ((uint16_t) buf.RawReadByte()) << 8;
 			me->m8 = m8;
 		}
 #endif

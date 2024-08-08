@@ -613,20 +613,17 @@ void SlSkipBytes(size_t length)
 
 uint16_t SlReadUint16()
 {
-	_sl.reader->CheckBytes(2);
-	return _sl.reader->RawReadUint16();
+	return _sl.reader->ReadRawBytes(2).RawReadUint16();
 }
 
 uint32_t SlReadUint32()
 {
-	_sl.reader->CheckBytes(4);
-	return _sl.reader->RawReadUint32();
+	return _sl.reader->ReadRawBytes(4).RawReadUint32();
 }
 
 uint64_t SlReadUint64()
 {
-	_sl.reader->CheckBytes(8);
-	return _sl.reader->RawReadUint64();
+	return _sl.reader->ReadRawBytes(8).RawReadUint64();
 }
 
 /**

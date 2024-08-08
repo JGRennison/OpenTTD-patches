@@ -326,29 +326,29 @@ struct StationGoodsFlowStructHandler final : public TypedSaveLoadStructHandler<S
 
 	void Load(GoodsEntry *ge) const override
 	{
-		ReadBuffer *buffer = ReadBuffer::GetCurrent();
+		ReadBuffer *reader = ReadBuffer::GetCurrent();
 
 		uint num_flows = static_cast<uint>(SlGetStructListLength(UINT32_MAX));
 
 		FlowStatMap &flows = ge->data->flows;
 		flows.reserve(num_flows);
 		for (uint32_t j = 0; j < num_flows; ++j) {
-			buffer->CheckBytes(2 + 2);
-			StationID source = buffer->RawReadUint16();
-			uint16_t flags = buffer->RawReadUint16();
+			RawReadBuffer buf = reader->ReadRawBytes(2 + 2);
+			StationID source = buf.RawReadUint16();
+			uint16_t flags = buf.RawReadUint16();
 			uint32_t flow_count = SlReadSimpleGamma();
 
-			buffer->CheckBytes(2 + 4 + 1);
-			StationID via = buffer->RawReadUint16();
-			uint32_t share = buffer->RawReadUint32();
-			bool restricted = (buffer->RawReadByte() != 0);
+			buf = reader->ReadRawBytes(2 + 4 + 1);
+			StationID via = buf.RawReadUint16();
+			uint32_t share = buf.RawReadUint32();
+			bool restricted = (buf.RawReadByte() != 0);
 			FlowStat &fs = *(flows.insert(flows.end(), FlowStat(source, via, share, restricted)));
 			fs.SetRawFlags(flags);
 			for (uint32_t k = 1; k < flow_count; ++k) {
-				buffer->CheckBytes(2 + 4 + 1);
-				via = buffer->RawReadUint16();
-				share = buffer->RawReadUint32();
-				restricted = (buffer->RawReadByte() != 0);
+				buf = reader->ReadRawBytes(2 + 4 + 1);
+				via = buf.RawReadUint16();
+				share = buf.RawReadUint32();
+				restricted = (buf.RawReadByte() != 0);
 				fs.AppendShare(via, share, restricted);
 			}
 		}
@@ -957,7 +957,9 @@ static void Load_STNN()
 	std::unique_ptr<GoodsEntryData> spare_ged;
 
 	const uint num_cargo = IsSavegameVersionBefore(SLV_EXTEND_CARGOTYPES) ? 32 : NUM_CARGO;
-	ReadBuffer *buffer = ReadBuffer::GetCurrent();
+	ReadBuffer *reader = ReadBuffer::GetCurrent();
+
+	const bool read_restricted = !IsSavegameVersionBefore(SLV_187);
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
@@ -993,20 +995,20 @@ static void Load_STNN()
 					ge.data->flows.reserve(_num_flows);
 					for (uint32_t j = 0; j < _num_flows; ++j) {
 						FlowSaveLoad flow;
-						buffer->CheckBytes(2 + 4);
-						flow.source = buffer->RawReadUint16();
-						uint32_t flow_count = buffer->RawReadUint32();
+						RawReadBuffer buf = reader->ReadRawBytes(2 + 4);
+						flow.source = buf.RawReadUint16();
+						uint32_t flow_count = buf.RawReadUint32();
 
-						buffer->CheckBytes(2 + 4 + 1);
-						flow.via = buffer->RawReadUint16();
-						flow.share = buffer->RawReadUint32();
-						flow.restricted = (buffer->RawReadByte() != 0);
+						buf = reader->ReadRawBytes(2 + 4 + 1);
+						flow.via = buf.RawReadUint16();
+						flow.share = buf.RawReadUint32();
+						flow.restricted = (buf.RawReadByte() != 0);
 						FlowStat *fs = &(*(ge.data->flows.insert(ge.data->flows.end(), FlowStat(flow.source, flow.via, flow.share, flow.restricted))));
 						for (uint32_t k = 1; k < flow_count; ++k) {
-							buffer->CheckBytes(2 + 4 + 1);
-							flow.via = buffer->RawReadUint16();
-							flow.share = buffer->RawReadUint32();
-							flow.restricted = (buffer->RawReadByte() != 0);
+							buf = reader->ReadRawBytes(2 + 4 + 1);
+							flow.via = buf.RawReadUint16();
+							flow.share = buf.RawReadUint32();
+							flow.restricted = (buf.RawReadByte() != 0);
 							fs->AppendShare(flow.via, flow.share, flow.restricted);
 						}
 						fs->SetRawFlags(SlReadUint16());
@@ -1016,11 +1018,11 @@ static void Load_STNN()
 					FlowStat *fs = nullptr;
 					for (uint32_t j = 0; j < _num_flows; ++j) {
 						// SlObject(&flow, _flow_desc); /* this is highly performance-sensitive, manually unroll */
-						buffer->CheckBytes(2 + 2 + 4);
-						flow.source = buffer->RawReadUint16();
-						flow.via = buffer->RawReadUint16();
-						flow.share = buffer->RawReadUint32();
-						if (!IsSavegameVersionBefore(SLV_187)) flow.restricted = (buffer->ReadByte() != 0);
+						RawReadBuffer buf = reader->ReadRawBytes(2 + 2 + 4 + (read_restricted ? 1 : 0));
+						flow.source = buf.RawReadUint16();
+						flow.via = buf.RawReadUint16();
+						flow.share = buf.RawReadUint32();
+						if (read_restricted) flow.restricted = (buf.RawReadByte() != 0);
 
 						if (fs == nullptr || prev_source != flow.source) {
 							fs = &(*(ge.data->flows.insert(ge.data->flows.end(), FlowStat(flow.source, flow.via, flow.share, flow.restricted))));
