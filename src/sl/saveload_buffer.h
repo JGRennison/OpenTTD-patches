@@ -220,6 +220,44 @@ struct MemoryDumper {
 	uint8_t *saved_buf = nullptr;
 	uint8_t *saved_bufe = nullptr;
 
+	static inline void RawWriteUint16At(uint8_t *b, uint16_t v)
+	{
+#if OTTD_ALIGNMENT == 0
+		*((unaligned_uint16 *)b) = TO_BE16(v);
+#else
+		b[0] = GB(v, 8, 8);
+		b[1] = GB(v, 0, 8);
+#endif
+	}
+
+	static inline void RawWriteUint32At(uint8_t *b, uint32_t v)
+	{
+#if OTTD_ALIGNMENT == 0
+		*((unaligned_uint32 *)b) = TO_BE32(v);
+#else
+		b[0] = GB(v, 24, 8);
+		b[1] = GB(v, 16, 8);
+		b[2] = GB(v, 8, 8);
+		b[3] = GB(v, 0, 8);
+#endif
+	}
+
+	static inline void RawWriteUint64At(uint8_t *b, uint64_t v)
+	{
+#if OTTD_ALIGNMENT == 0
+		*((unaligned_uint64 *)b) = TO_BE64(v);
+#else
+		b[0] = GB(v, 56, 8);
+		b[1] = GB(v, 48, 8);
+		b[2] = GB(v, 40, 8);
+		b[3] = GB(v, 32, 8);
+		b[4] = GB(v, 24, 8);
+		b[5] = GB(v, 16, 8);
+		b[6] = GB(v, 8, 8);
+		b[7] = GB(v, 0, 8);
+#endif
+	}
+
 	MemoryDumper()
 	{
 		const size_t size = 8192;
@@ -288,42 +326,19 @@ struct MemoryDumper {
 
 	inline void RawWriteUint16(uint16_t v)
 	{
-#if OTTD_ALIGNMENT == 0
-		*((unaligned_uint16 *) this->buf) = TO_BE16(v);
-#else
-		this->buf[0] = GB(v, 8, 8);
-		this->buf[1] = GB(v, 0, 8);
-#endif
+		RawWriteUint16At(this->buf, v);
 		this->buf += 2;
 	}
 
 	inline void RawWriteUint32(uint32_t v)
 	{
-#if OTTD_ALIGNMENT == 0
-		*((unaligned_uint32 *) this->buf) = TO_BE32(v);
-#else
-		this->buf[0] = GB(v, 24, 8);
-		this->buf[1] = GB(v, 16, 8);
-		this->buf[2] = GB(v, 8, 8);
-		this->buf[3] = GB(v, 0, 8);
-#endif
+		RawWriteUint32At(this->buf, v);
 		this->buf += 4;
 	}
 
 	inline void RawWriteUint64(uint64_t v)
 	{
-#if OTTD_ALIGNMENT == 0
-		*((unaligned_uint64 *) this->buf) = TO_BE64(v);
-#else
-		this->buf[0] = GB(v, 56, 8);
-		this->buf[1] = GB(v, 48, 8);
-		this->buf[2] = GB(v, 40, 8);
-		this->buf[3] = GB(v, 32, 8);
-		this->buf[4] = GB(v, 24, 8);
-		this->buf[5] = GB(v, 16, 8);
-		this->buf[6] = GB(v, 8, 8);
-		this->buf[7] = GB(v, 0, 8);
-#endif
+		RawWriteUint64At(this->buf, v);
 		this->buf += 8;
 	}
 
@@ -333,9 +348,12 @@ struct MemoryDumper {
 		while (length) {
 			this->CheckBytes(1);
 			size_t to_copy = std::min<size_t>(this->bufe - this->buf, length);
+			uint8_t *b = this->buf;
 			for (size_t i = 0; i < to_copy; i++) {
-				this->RawWriteByte(handler());
+				*b = handler();
+				b++;
 			}
+			this->buf = b;
 			length -= to_copy;
 		}
 	}
@@ -346,9 +364,12 @@ struct MemoryDumper {
 		while (length) {
 			this->CheckBytes(2);
 			size_t to_copy = std::min<size_t>((this->bufe - this->buf) / 2, length);
+			uint8_t *b = this->buf;
 			for (size_t i = 0; i < to_copy; i++) {
-				this->RawWriteUint16(handler());
+				RawWriteUint16At(b, handler());
+				b += 2;
 			}
+			this->buf = b;
 			length -= to_copy;
 		}
 	}
