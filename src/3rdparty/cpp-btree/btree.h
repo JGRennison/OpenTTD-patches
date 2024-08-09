@@ -491,22 +491,34 @@ class btree_node {
   struct leaf_fields : public base_fields {
     // The array of values. Only the first count of these values have been
     // constructed and are valid.
-    mutable_value_type values[kNodeValues];
+    union {
+        mutable_value_type values[kNodeValues];
+        value_type non_mutable_values[kNodeValues];
+    };
+
+    ~leaf_fields() = delete;
   };
+  static_assert(sizeof(leaf_fields::values) == sizeof(leaf_fields::non_mutable_values));
 
   struct internal_fields : public leaf_fields {
     // The array of child pointers. The keys in children_[i] are all less than
     // key(i). The keys in children_[i + 1] are all greater than key(i). There
     // are always count + 1 children.
     btree_node *children[kNodeValues + 1];
+
+    ~internal_fields() = delete;
   };
 
   struct root_fields : public internal_fields {
     btree_node *rightmost;
     size_type size;
+
+    ~root_fields() = delete;
   };
 
  public:
+  ~btree_node() = delete;
+
   // Getter/setter for whether this is a leaf node or not. This value doesn't
   // change after the node is created.
   bool leaf() const { return fields_.leaf; }
@@ -544,11 +556,12 @@ class btree_node {
     return params_type::key(fields_.values[i]);
   }
   reference value(int i) {
-    return reinterpret_cast<reference>(fields_.values[i]);
+    return fields_.non_mutable_values[i];
   }
   const_reference value(int i) const {
-    return reinterpret_cast<const_reference>(fields_.values[i]);
+    return fields_.non_mutable_values[i];
   }
+
   mutable_value_type* mutable_value(int i) {
     return &fields_.values[i];
   }
