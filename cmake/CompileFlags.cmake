@@ -85,12 +85,6 @@ macro(compile_flags)
             -Wno-unused-parameter
             # We use 'ABCD' multichar for SaveLoad chunks identifiers
             -Wno-multichar
-
-            # Compilers complains about that we break strict-aliasing.
-            #  On most places we don't see how to fix it, and it doesn't
-            #  break anything. So disable strict-aliasing to make the
-            #  compiler all happy.
-            -fno-strict-aliasing
         )
 
         if(OPTION_TRIM_PATH_PREFIX)
