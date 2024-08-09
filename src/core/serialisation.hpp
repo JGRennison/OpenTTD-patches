@@ -244,7 +244,7 @@ public:
 
 		size_t length = ttd_strnlen((const char *)(this->GetBuffer() + pos), this->GetBufferSize() - pos - 1);
 		buffer.assign((const char *)(this->GetBuffer() + pos), length);
-		pos += (decltype(pos))length + 1;
+		pos += static_cast<std::remove_reference_t<decltype(pos)>>(length + 1);
 		BufferRecvStringValidate(buffer, settings);
 	}
 
@@ -260,7 +260,7 @@ public:
 		auto &pos = static_cast<T *>(this)->GetDeserialisationPosition();
 
 		memcpy(buffer, &this->GetBuffer()[pos], size);
-		pos += (decltype(pos)) size;
+		pos += static_cast<std::remove_reference_t<decltype(pos)>>(size);
 	}
 
 	/**
@@ -284,7 +284,7 @@ public:
 		auto &pos = static_cast<T *>(this)->GetDeserialisationPosition();
 
 		std::span<const uint8_t> view { &this->GetBuffer()[pos], size };
-		pos += (decltype(pos)) size;
+		pos += static_cast<std::remove_reference_t<decltype(pos)>>(size);
 
 		return view;
 	}
