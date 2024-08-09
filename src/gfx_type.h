@@ -14,6 +14,7 @@
 #include "core/enum_type.hpp"
 #include "core/geometry_type.hpp"
 #include "zoom_type.h"
+#include <vector>
 
 typedef uint32_t SpriteID;  ///< The number of a sprite, without mapping bits and colourtables
 typedef uint32_t PaletteID; ///< The number of the palette
@@ -113,6 +114,13 @@ struct AnimCursor {
 	uint8_t display_time; ///< Amount of ticks this sprite will be shown
 };
 
+struct CursorSprite {
+	PalSpriteID image; ///< Image.
+	Point pos; ///< Relative position.
+
+	constexpr CursorSprite(SpriteID spr, PaletteID pal, int x, int y) : image({spr, pal}), pos({x, y}) {}
+};
+
 /** Collection of variables for cursor-display and -animation */
 struct CursorVars {
 	/* Logical mouse position */
@@ -127,9 +135,7 @@ struct CursorVars {
 	int h_wheel;
 
 	/* Mouse appearance */
-	PalSpriteID sprite_seq[16];   ///< current image of cursor
-	Point sprite_pos[16];         ///< relative position of individual sprites
-	uint sprite_count;            ///< number of sprites to draw
+	std::vector<CursorSprite> sprites; ///< Sprites comprising cursor.
 	Point total_offs, total_size; ///< union of sprite properties
 
 	Point draw_pos, draw_size;    ///< position and size bounding-box for drawing

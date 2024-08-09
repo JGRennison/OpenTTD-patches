@@ -74,6 +74,7 @@ public:
 		} else {
 			lc->revision.text = stredup(_revision_text.c_str());
 		}
+		StrMakeValidInPlace(lc->revision.text);
 	}
 
 	void LoadCheck(LoggedChange *lc) const override { this->Load(lc); }

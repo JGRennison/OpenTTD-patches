@@ -929,7 +929,7 @@ private:
 
 	/* Constants for sorting towns */
 	static const StringID sorter_names[];
-	static GUITownList::SortFunction * const sorter_funcs[];
+	static const std::initializer_list<GUITownList::SortFunction * const> sorter_funcs;
 
 	StringFilter string_filter;             ///< Filter for towns
 	QueryString townname_editbox;           ///< Filter editbox
@@ -942,6 +942,7 @@ private:
 	{
 		if (this->towns.NeedRebuild()) {
 			this->towns.clear();
+			this->towns.reserve(Town::GetNumItems());
 
 			for (const Town *t : Town::Iterate()) {
 				if (this->string_filter.IsEmpty()) {
@@ -953,7 +954,6 @@ private:
 				if (this->string_filter.GetState()) this->towns.push_back(t);
 			}
 
-			this->towns.shrink_to_fit();
 			this->towns.RebuildDone();
 			this->vscroll->SetCount(this->towns.size()); // Update scrollbar as well.
 		}
@@ -1270,7 +1270,7 @@ const StringID TownDirectoryWindow::sorter_names[] = {
 };
 
 /** Available town directory sorting functions. */
-GUITownList::SortFunction * const TownDirectoryWindow::sorter_funcs[] = {
+const std::initializer_list<GUITownList::SortFunction * const> TownDirectoryWindow::sorter_funcs = {
 	&TownNameSorter,
 	&TownPopulationSorter,
 	&TownRatingSorter,

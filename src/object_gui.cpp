@@ -54,8 +54,8 @@ class BuildObjectWindow : public Window {
 
 	static Listing   last_sorting;         ///< Default sorting of #GUIObjectClassList.
 	static Filtering last_filtering;       ///< Default filtering of #GUIObjectClassList.
-	static GUIObjectClassList::SortFunction   * const sorter_funcs[]; ///< Sort functions of the #GUIObjectClassList.
-	static GUIObjectClassList::FilterFunction * const filter_funcs[]; ///< Filter functions of the #GUIObjectClassList.
+	static const std::initializer_list<GUIObjectClassList::SortFunction   * const> sorter_funcs; ///< Sort functions of the #GUIObjectClassList.
+	static const std::initializer_list<GUIObjectClassList::FilterFunction * const> filter_funcs; ///< Filter functions of the #GUIObjectClassList.
 	GUIObjectClassList object_classes;     ///< Available object classes.
 	StringFilter string_filter;            ///< Filter for available objects.
 	QueryString filter_editbox;            ///< Filter editbox.
@@ -142,6 +142,7 @@ public:
 		if (!this->object_classes.NeedRebuild()) return;
 
 		this->object_classes.clear();
+		this->object_classes.reserve(ObjectClass::GetClassCount());
 
 		for (const auto &cls : ObjectClass::Classes()) {
 			if (cls.GetUISpecCount() == 0) continue; // Is this needed here?
@@ -149,7 +150,6 @@ public:
 		}
 
 		this->object_classes.Filter(this->string_filter);
-		this->object_classes.shrink_to_fit();
 		this->object_classes.RebuildDone();
 		this->object_classes.Sort();
 
@@ -697,11 +697,11 @@ HotkeyList BuildObjectWindow::hotkeys("buildobject", buildobject_hotkeys, BuildO
 Listing BuildObjectWindow::last_sorting = { false, 0 };
 Filtering BuildObjectWindow::last_filtering = { false, 0 };
 
-BuildObjectWindow::GUIObjectClassList::SortFunction * const BuildObjectWindow::sorter_funcs[] = {
+const std::initializer_list<BuildObjectWindow::GUIObjectClassList::SortFunction * const> BuildObjectWindow::sorter_funcs = {
 	&ObjectClassIDSorter,
 };
 
-BuildObjectWindow::GUIObjectClassList::FilterFunction * const BuildObjectWindow::filter_funcs[] = {
+const std::initializer_list<BuildObjectWindow::GUIObjectClassList::FilterFunction * const> BuildObjectWindow::filter_funcs = {
 	&TagNameFilter,
 };
 

@@ -108,11 +108,6 @@ void BuildDepotVehicleList(VehicleType type, TileIndex tile, VehicleList *engine
 
 	BuildDepotVehicleListData bdvld{engines, wagons, individual_wagons};
 	FindVehicleOnPos(tile, type, &bdvld, BuildDepotVehicleListProc);
-
-	/* Ensure the lists are not wasting too much space. If the lists are fresh
-	 * (i.e. built within a command) then this will actually do nothing. */
-	engines->shrink_to_fit();
-	if (wagons != nullptr && wagons != engines) wagons->shrink_to_fit();
 }
 
 /** Cargo filter functions */
@@ -238,6 +233,5 @@ bool GenerateVehicleSortList(VehicleList *list, const VehicleListIdentifier &vli
 		default: return false;
 	}
 
-	list->shrink_to_fit();
 	return true;
 }

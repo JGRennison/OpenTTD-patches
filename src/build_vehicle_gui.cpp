@@ -760,7 +760,7 @@ static bool CargoAndEngineFilter(const GUIEngineListItem *item, const CargoID ci
 	}
 }
 
-static GUIEngineList::FilterFunction * const _filter_funcs[] = {
+static GUIEngineList::FilterFunction * const _engine_filter_funcs[] = {
 	&CargoAndEngineFilter,
 };
 
@@ -1700,7 +1700,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		this->cargo_filter_criteria = _engine_sort_last_cargo_criteria[this->vehicle_type];
 		if (this->cargo_filter_criteria < NUM_CARGO && !HasBit(_standard_cargo_mask, this->cargo_filter_criteria)) this->cargo_filter_criteria = CargoFilterCriteria::CF_ANY;
 
-		this->eng_list.SetFilterFuncs(_filter_funcs);
+		this->eng_list.SetFilterFuncs(_engine_filter_funcs);
 		this->eng_list.SetFilterState(this->cargo_filter_criteria != CargoFilterCriteria::CF_ANY);
 	}
 
@@ -1921,7 +1921,6 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 			case VEH_TRAIN:
 				this->GenerateBuildTrainList(list);
 				GUIEngineListAddChildren(this->eng_list, list);
-				this->eng_list.shrink_to_fit();
 				this->eng_list.RebuildDone();
 				return;
 			case VEH_ROAD:
@@ -1962,7 +1961,6 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 		this->eng_list.swap(list);
 		GUIEngineListAddChildren(this->eng_list, list, INVALID_ENGINE, 0);
-		this->eng_list.shrink_to_fit();
 		this->eng_list.RebuildDone();
 	}
 
@@ -2568,7 +2566,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		state.cargo_filter_criteria = last_filter;
 		if (state.cargo_filter_criteria < NUM_CARGO && !HasBit(_standard_cargo_mask, state.cargo_filter_criteria)) state.cargo_filter_criteria = CargoFilterCriteria::CF_ANY;
 
-		state.eng_list.SetFilterFuncs(_filter_funcs);
+		state.eng_list.SetFilterFuncs(_engine_filter_funcs);
 		state.eng_list.SetFilterState(state.cargo_filter_criteria != CargoFilterCriteria::CF_ANY);
 	}
 

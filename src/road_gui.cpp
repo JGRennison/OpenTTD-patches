@@ -1239,8 +1239,8 @@ private:
 
 	static Listing   last_sorting;           ///< Default sorting of #GUIRoadStopClassList.
 	static Filtering last_filtering;         ///< Default filtering of #GUIRoadStopClassList.
-	static GUIRoadStopClassList::SortFunction * const sorter_funcs[];   ///< Sort functions of the #GUIRoadStopClassList.
-	static GUIRoadStopClassList::FilterFunction * const filter_funcs[]; ///< Filter functions of the #GUIRoadStopClassList.
+	static const std::initializer_list<GUIRoadStopClassList::SortFunction * const> sorter_funcs;   ///< Sort functions of the #GUIRoadStopClassList.
+	static const std::initializer_list<GUIRoadStopClassList::FilterFunction * const> filter_funcs; ///< Filter functions of the #GUIRoadStopClassList.
 	GUIRoadStopClassList roadstop_classes;     ///< Available road stop classes.
 	StringFilter string_filter;              ///< Filter for available road stop classes.
 	QueryString filter_editbox;              ///< Filter editbox.
@@ -1411,6 +1411,7 @@ public:
 		if (!this->roadstop_classes.NeedRebuild()) return;
 
 		this->roadstop_classes.clear();
+		this->roadstop_classes.reserve(RoadStopClass::GetClassCount());
 
 		for (const auto &cls : RoadStopClass::Classes()) {
 			/* Skip waypoints. */
@@ -1420,7 +1421,6 @@ public:
 
 		if (this->ShowNewStops()) {
 			this->roadstop_classes.Filter(this->string_filter);
-			this->roadstop_classes.shrink_to_fit();
 			this->roadstop_classes.RebuildDone();
 			this->roadstop_classes.Sort();
 
@@ -1775,11 +1775,11 @@ HotkeyList BuildRoadStationWindow::tram_hotkeys("buildtramstop", buildtramstop_h
 Listing BuildRoadStationWindow::last_sorting = { false, 0 };
 Filtering BuildRoadStationWindow::last_filtering = { false, 0 };
 
-BuildRoadStationWindow::GUIRoadStopClassList::SortFunction * const BuildRoadStationWindow::sorter_funcs[] = {
+const std::initializer_list<BuildRoadStationWindow::GUIRoadStopClassList::SortFunction * const> BuildRoadStationWindow::sorter_funcs = {
 	&RoadStopClassIDSorter,
 };
 
-BuildRoadStationWindow::GUIRoadStopClassList::FilterFunction * const BuildRoadStationWindow::filter_funcs[] = {
+const std::initializer_list<BuildRoadStationWindow::GUIRoadStopClassList::FilterFunction * const> BuildRoadStationWindow::filter_funcs = {
 	&TagNameFilter,
 };
 

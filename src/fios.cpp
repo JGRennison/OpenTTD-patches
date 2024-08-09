@@ -415,8 +415,6 @@ static void FiosGetFileList(SaveLoadOperation fop, bool show_dirs, fios_getlist_
 
 	/* Show drives */
 	FiosGetDrives(file_list);
-
-	file_list.shrink_to_fit();
 }
 
 /**

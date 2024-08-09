@@ -186,8 +186,8 @@ protected:
 	static Listing last_sorting;
 
 	/* Constants for sorting servers */
-	static GUIGameServerList::SortFunction * const sorter_funcs[];
-	static GUIGameServerList::FilterFunction * const filter_funcs[];
+	static const std::initializer_list<GUIGameServerList::SortFunction * const> sorter_funcs;
+	static const std::initializer_list<GUIGameServerList::FilterFunction * const> filter_funcs;
 
 	NetworkGameList *server;        ///< Selected server.
 	NetworkGameList *last_joined;   ///< The last joined server.
@@ -246,7 +246,6 @@ protected:
 			this->servers.SetFilterState(false);
 		}
 
-		this->servers.shrink_to_fit();
 		this->servers.RebuildDone();
 		this->vscroll->SetCount(this->servers.size());
 
@@ -467,8 +466,8 @@ public:
 		this->requery_timer.SetInterval(NETWORK_LIST_REFRESH_DELAY * 1000);
 
 		this->servers.SetListing(this->last_sorting);
-		this->servers.SetSortFuncs(this->sorter_funcs);
-		this->servers.SetFilterFuncs(this->filter_funcs);
+		this->servers.SetSortFuncs(NetworkGameWindow::sorter_funcs);
+		this->servers.SetFilterFuncs(NetworkGameWindow::filter_funcs);
 		this->servers.ForceRebuild();
 	}
 
@@ -871,7 +870,7 @@ public:
 };
 
 Listing NetworkGameWindow::last_sorting = {false, 5};
-GUIGameServerList::SortFunction * const NetworkGameWindow::sorter_funcs[] = {
+const std::initializer_list<GUIGameServerList::SortFunction * const> NetworkGameWindow::sorter_funcs = {
 	&NGameNameSorter,
 	&NGameClientSorter,
 	&NGameMapSizeSorter,
@@ -880,7 +879,7 @@ GUIGameServerList::SortFunction * const NetworkGameWindow::sorter_funcs[] = {
 	&NGameAllowedSorter
 };
 
-GUIGameServerList::FilterFunction * const NetworkGameWindow::filter_funcs[] = {
+const std::initializer_list<GUIGameServerList::FilterFunction * const> NetworkGameWindow::filter_funcs = {
 	&NGameSearchFilter
 };
 

@@ -1367,7 +1367,7 @@ static bool CargoFilter(const Industry * const *industry, const std::pair<CargoI
 	return accepted_cargo_matches && produced_cargo_matches;
 }
 
-static GUIIndustryList::FilterFunction * const _filter_funcs[] = { &CargoFilter };
+static GUIIndustryList::FilterFunction * const _industry_filter_funcs[] = { &CargoFilter };
 
 /** Enum referring to the Hotkeys in the industry directory window */
 enum IndustryDirectoryHotkeys {
@@ -1383,7 +1383,7 @@ protected:
 
 	/* Constants for sorting industries */
 	static const StringID sorter_names[];
-	static GUIIndustryList::SortFunction * const sorter_funcs[];
+	static const std::initializer_list<GUIIndustryList::SortFunction * const> sorter_funcs;
 
 	GUIIndustryList industries{IndustryDirectoryWindow::produced_cargo_filter};
 	Scrollbar *vscroll;
@@ -1455,7 +1455,7 @@ protected:
 		this->produced_cargo_filter_criteria = CargoFilterCriteria::CF_ANY;
 		this->accepted_cargo_filter_criteria = CargoFilterCriteria::CF_ANY;
 
-		this->industries.SetFilterFuncs(_filter_funcs);
+		this->industries.SetFilterFuncs(_industry_filter_funcs);
 
 		bool is_filtering_necessary = this->produced_cargo_filter_criteria != CargoFilterCriteria::CF_ANY || this->accepted_cargo_filter_criteria != CargoFilterCriteria::CF_ANY;
 
@@ -1480,6 +1480,7 @@ protected:
 	{
 		if (this->industries.NeedRebuild()) {
 			this->industries.clear();
+			this->industries.reserve(Industry::GetNumItems());
 
 			for (const Industry *i : Industry::Iterate()) {
 				if (this->string_filter.IsEmpty()) {
@@ -1491,7 +1492,6 @@ protected:
 				if (this->string_filter.GetState()) this->industries.push_back(i);
 			}
 
-			this->industries.shrink_to_fit();
 			this->industries.RebuildDone();
 
 			auto filter = std::make_pair(this->accepted_cargo_filter_criteria, this->produced_cargo_filter_criteria);
@@ -1964,7 +1964,7 @@ HotkeyList IndustryDirectoryWindow::hotkeys("industrydirectory", industrydirecto
 Listing IndustryDirectoryWindow::last_sorting = {false, 0};
 
 /* Available station sorting functions. */
-GUIIndustryList::SortFunction * const IndustryDirectoryWindow::sorter_funcs[] = {
+const std::initializer_list<GUIIndustryList::SortFunction * const> IndustryDirectoryWindow::sorter_funcs = {
 	&IndustryNameSorter,
 	&IndustryTypeSorter,
 	&IndustryProductionSorter,

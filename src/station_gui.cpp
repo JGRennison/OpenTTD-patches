@@ -286,7 +286,7 @@ protected:
 
 	/* Constants for sorting stations */
 	static const StringID sorter_names[];
-	static GUIStationList::SortFunction * const sorter_funcs[];
+	static const std::initializer_list<GUIStationList::SortFunction * const> sorter_funcs;
 
 	static btree::btree_map<StationID, uint> station_vehicle_calling_counts;
 
@@ -339,7 +339,6 @@ protected:
 			}
 		}
 
-		this->stations.shrink_to_fit();
 		this->stations.RebuildDone();
 
 		this->vscroll->SetCount(this->stations.size()); // Update the scrollbar
@@ -469,7 +468,7 @@ protected:
 	/** Sort the stations list */
 	void SortStationsList()
 	{
-		if (this->sorter_funcs[this->stations.SortType()] == &StationVehiclesCallingSorter && this->stations.WouldSort()) {
+		if (this->sorter_funcs.begin()[this->stations.SortType()] == &StationVehiclesCallingSorter && this->stations.WouldSort()) {
 			PrepareStationVehiclesCallingSorter(this->filter.facilities);
 		}
 		if (!this->stations.Sort()) return;
@@ -824,7 +823,7 @@ public:
 btree::btree_map<StationID, uint> CompanyStationsWindow::station_vehicle_calling_counts;
 
 /* Available station sorting functions */
-GUIStationList::SortFunction * const CompanyStationsWindow::sorter_funcs[] = {
+const std::initializer_list<GUIStationList::SortFunction * const> CompanyStationsWindow::sorter_funcs = {
 	&StationNameSorter,
 	&StationTypeSorter,
 	&StationWaitingTotalSorter,

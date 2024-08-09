@@ -60,12 +60,12 @@ struct SignList {
 		DEBUG(misc, 3, "Building sign list");
 
 		this->signs.clear();
+		this->signs.reserve(Sign::GetNumItems());
 
 		for (const Sign *si : Sign::Iterate()) this->signs.push_back(si);
 
 		this->signs.SetFilterState(true);
 		this->FilterSignList();
-		this->signs.shrink_to_fit();
 		this->signs.RebuildDone();
 	}
 
@@ -101,14 +101,14 @@ struct SignList {
 	}
 
 	/** Filter sign list excluding OWNER_DEITY */
-	static bool OwnerDeityFilter(const Sign * const *a, StringFilter &filter)
+	static bool OwnerDeityFilter(const Sign * const *a, StringFilter &)
 	{
 		/* You should never be able to edit signs of owner DEITY */
 		return (*a)->owner != OWNER_DEITY;
 	}
 
 	/** Filter sign list by owner */
-	static bool OwnerVisibilityFilter(const Sign * const *a, StringFilter &filter)
+	static bool OwnerVisibilityFilter(const Sign * const *a, StringFilter &)
 	{
 		assert(!HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS));
 		/* Hide sign if non-own signs are hidden in the viewport */

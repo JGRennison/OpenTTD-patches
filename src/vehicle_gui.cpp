@@ -115,7 +115,7 @@ enum VehicleGroupSortType
 	VGST_AVERAGE_ORDER_OCCUPANCY,
 };
 
-BaseVehicleListWindow::VehicleGroupSortFunction * const BaseVehicleListWindow::vehicle_group_none_sorter_funcs[] = {
+const std::initializer_list<BaseVehicleListWindow::VehicleGroupSortFunction * const> BaseVehicleListWindow::vehicle_group_none_sorter_funcs = {
 	&VehicleIndividualToGroupSorterWrapper<VehicleNumberSorter>,
 	&VehicleIndividualToGroupSorterWrapper<VehicleNameSorter>,
 	&VehicleIndividualToGroupSorterWrapper<VehicleAgeSorter>,
@@ -174,7 +174,7 @@ const StringID BaseVehicleListWindow::vehicle_group_none_sorter_names_wallclock[
 	INVALID_STRING_ID
 };
 
-BaseVehicleListWindow::VehicleGroupSortFunction * const BaseVehicleListWindow::vehicle_group_shared_orders_sorter_funcs[] = {
+const std::initializer_list<BaseVehicleListWindow::VehicleGroupSortFunction * const> BaseVehicleListWindow::vehicle_group_shared_orders_sorter_funcs = {
 	&VehicleGroupLengthSorter,
 	&VehicleGroupTotalProfitThisYearSorter,
 	&VehicleGroupTotalProfitLastYearSorter,
@@ -338,7 +338,7 @@ static bool GroupCargoFilter(const GUIVehicleGroup* group, const CargoID cid)
 	return false;
 }
 
-static GUIVehicleGroupList::FilterFunction * const _filter_funcs[] = {
+static GUIVehicleGroupList::FilterFunction * const _vehicle_group_filter_funcs[] = {
 	&GroupCargoFilter,
 };
 
@@ -361,7 +361,7 @@ void BaseVehicleListWindow::SetCargoFilter(CargoID cid)
 void BaseVehicleListWindow::SetCargoFilterArray()
 {
 	this->cargo_filter_criteria = CargoFilterCriteria::CF_ANY;
-	this->vehgroups.SetFilterFuncs(_filter_funcs);
+	this->vehgroups.SetFilterFuncs(_vehicle_group_filter_funcs);
 	this->vehgroups.SetFilterState(this->cargo_filter_criteria != CargoFilterCriteria::CF_ANY);
 }
 
@@ -4637,7 +4637,7 @@ void SetMouseCursorVehicle(const Vehicle *v, EngineImageType image_type)
 {
 	bool rtl = _current_text_dir == TD_RTL;
 
-	_cursor.sprite_count = 0;
+	_cursor.sprites.clear();
 	int total_width = 0;
 	int y_offset = 0;
 	bool rotor_seq = false; // Whether to draw the rotor of the vehicle in this step.
@@ -4657,18 +4657,12 @@ void SetMouseCursorVehicle(const Vehicle *v, EngineImageType image_type)
 			v->GetImage(rtl ? DIR_E : DIR_W, image_type, &seq);
 		}
 
-		if (_cursor.sprite_count + seq.count > lengthof(_cursor.sprite_seq)) break;
-
 		int x_offs = 0;
 		if (v->type == VEH_TRAIN) x_offs = Train::From(v)->GetCursorImageOffset();
 
 		for (uint i = 0; i < seq.count; ++i) {
 			PaletteID pal2 = (v->vehstatus & VS_CRASHED) || !seq.seq[i].pal ? pal : seq.seq[i].pal;
-			_cursor.sprite_seq[_cursor.sprite_count].sprite = seq.seq[i].sprite;
-			_cursor.sprite_seq[_cursor.sprite_count].pal = pal2;
-			_cursor.sprite_pos[_cursor.sprite_count].x = rtl ? (-total_width + x_offs) : (total_width + x_offs);
-			_cursor.sprite_pos[_cursor.sprite_count].y = y_offset;
-			_cursor.sprite_count++;
+			_cursor.sprites.emplace_back(seq.seq[i].sprite, pal2, rtl ? (-total_width + x_offs) : (total_width + x_offs), y_offset);
 		}
 
 		if (v->type == VEH_AIRCRAFT && v->subtype == AIR_HELICOPTER && !rotor_seq) {
@@ -4684,8 +4678,8 @@ void SetMouseCursorVehicle(const Vehicle *v, EngineImageType image_type)
 		/* Center trains and road vehicles on the front vehicle */
 		int offs = (ScaleSpriteTrad(VEHICLEINFO_FULL_VEHICLE_WIDTH) - total_width) / 2;
 		if (rtl) offs = -offs;
-		for (uint i = 0; i < _cursor.sprite_count; ++i) {
-			_cursor.sprite_pos[i].x += offs;
+		for (auto &cs : _cursor.sprites) {
+			cs.pos.x += offs;
 		}
 	}
 

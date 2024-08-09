@@ -587,7 +587,7 @@ class NIHVehicle : public NIHelper {
 					if (v->IsGroundVehicle()) root_spritegroup = GetWagonOverrideSpriteSet(v->engine_type, v->cargo_type, v->GetGroundVehicleCache()->first_engine);
 					if (root_spritegroup == nullptr) {
 						CargoID cargo = v->cargo_type;
-						assert(cargo < lengthof(e->grf_prop.spritegroup));
+						assert(cargo < std::size(e->grf_prop.spritegroup));
 						root_spritegroup = e->grf_prop.spritegroup[cargo] != nullptr ? e->grf_prop.spritegroup[cargo] : e->grf_prop.spritegroup[SpriteGroupCargo::SG_DEFAULT];
 					}
 					auto iter = e->sprite_group_cb36_properties_used.find(root_spritegroup);

@@ -205,7 +205,6 @@ private:
 	Scrollbar *vscroll[3];
 	// listing/sorting continued
 	GUITemplateList templates;
-	GUITemplateList::SortFunction **template_sorter_funcs;
 
 	int selected_template_index;
 	int selected_group_index;
@@ -221,9 +220,6 @@ private:
 public:
 	TemplateReplaceWindow(WindowDesc *wdesc) : Window(wdesc)
 	{
-		// listing/sorting
-		templates.SetSortFuncs(this->template_sorter_funcs);
-
 		this->sel_railtype = INVALID_RAILTYPE;
 
 		this->details_height = 10 * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();

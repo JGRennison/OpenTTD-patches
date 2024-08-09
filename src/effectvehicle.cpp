@@ -553,61 +553,33 @@ static bool BubbleTick(EffectVehicle *v)
 	return true;
 }
 
+struct EffectProcs {
+	using InitProc = void(EffectVehicle *);
+	using TickProc = bool(EffectVehicle *);
 
-typedef void EffectInitProc(EffectVehicle *v);
-typedef bool EffectTickProc(EffectVehicle *v);
+	InitProc *init_proc; ///< Function to initialise an effect vehicle after construction.
+	TickProc *tick_proc; ///< Functions for controlling effect vehicles at each tick.
+	TransparencyOption transparency; ///< Transparency option affecting the effect.
 
-/** Functions to initialise an effect vehicle after construction. */
-static EffectInitProc * const _effect_init_procs[] = {
-	ChimneySmokeInit,   // EV_CHIMNEY_SMOKE
-	SteamSmokeInit,     // EV_STEAM_SMOKE
-	DieselSmokeInit,    // EV_DIESEL_SMOKE
-	ElectricSparkInit,  // EV_ELECTRIC_SPARK
-	SmokeInit,          // EV_CRASH_SMOKE
-	ExplosionLargeInit, // EV_EXPLOSION_LARGE
-	BreakdownSmokeInit, // EV_BREAKDOWN_SMOKE
-	ExplosionSmallInit, // EV_EXPLOSION_SMALL
-	BulldozerInit,      // EV_BULLDOZER
-	BubbleInit,         // EV_BUBBLE
-	SmokeInit,          // EV_BREAKDOWN_SMOKE_AIRCRAFT
-	SmokeInit,          // EV_COPPER_MINE_SMOKE
+	constexpr EffectProcs(InitProc *init_proc, TickProc *tick_proc, TransparencyOption transparency)
+		: init_proc(init_proc), tick_proc(tick_proc), transparency(transparency) {}
 };
-static_assert(lengthof(_effect_init_procs) == EV_END);
 
-/** Functions for controlling effect vehicles at each tick. */
-static EffectTickProc * const _effect_tick_procs[] = {
-	ChimneySmokeTick,   // EV_CHIMNEY_SMOKE
-	SteamSmokeTick,     // EV_STEAM_SMOKE
-	DieselSmokeTick,    // EV_DIESEL_SMOKE
-	ElectricSparkTick,  // EV_ELECTRIC_SPARK
-	SmokeTick,          // EV_CRASH_SMOKE
-	ExplosionLargeTick, // EV_EXPLOSION_LARGE
-	BreakdownSmokeTick, // EV_BREAKDOWN_SMOKE
-	ExplosionSmallTick, // EV_EXPLOSION_SMALL
-	BulldozerTick,      // EV_BULLDOZER
-	BubbleTick,         // EV_BUBBLE
-	SmokeTick,          // EV_BREAKDOWN_SMOKE_AIRCRAFT
-	SmokeTick,          // EV_COPPER_MINE_SMOKE
-};
-static_assert(lengthof(_effect_tick_procs) == EV_END);
-
-/** Transparency options affecting the effects. */
-static const TransparencyOption _effect_transparency_options[] = {
-	TO_INDUSTRIES,      // EV_CHIMNEY_SMOKE
-	TO_INVALID,         // EV_STEAM_SMOKE
-	TO_INVALID,         // EV_DIESEL_SMOKE
-	TO_INVALID,         // EV_ELECTRIC_SPARK
-	TO_INVALID,         // EV_CRASH_SMOKE
-	TO_INVALID,         // EV_EXPLOSION_LARGE
-	TO_INVALID,         // EV_BREAKDOWN_SMOKE
-	TO_INVALID,         // EV_EXPLOSION_SMALL
-	TO_INVALID,         // EV_BULLDOZER
-	TO_INDUSTRIES,      // EV_BUBBLE
-	TO_INVALID,         // EV_BREAKDOWN_SMOKE_AIRCRAFT
-	TO_INDUSTRIES,      // EV_COPPER_MINE_SMOKE
-};
-static_assert(lengthof(_effect_transparency_options) == EV_END);
-
+/** Per-EffectVehicleType handling. */
+static std::array<EffectProcs, EV_END> _effect_procs = {{
+	{ ChimneySmokeInit,   ChimneySmokeTick,   TO_INDUSTRIES }, // EV_CHIMNEY_SMOKE
+	{ SteamSmokeInit,     SteamSmokeTick,     TO_INVALID    }, // EV_STEAM_SMOKE
+	{ DieselSmokeInit,    DieselSmokeTick,    TO_INVALID    }, // EV_DIESEL_SMOKE
+	{ ElectricSparkInit,  ElectricSparkTick,  TO_INVALID    }, // EV_ELECTRIC_SPARK
+	{ SmokeInit,          SmokeTick,          TO_INVALID    }, // EV_CRASH_SMOKE
+	{ ExplosionLargeInit, ExplosionLargeTick, TO_INVALID    }, // EV_EXPLOSION_LARGE
+	{ BreakdownSmokeInit, BreakdownSmokeTick, TO_INVALID    }, // EV_BREAKDOWN_SMOKE
+	{ ExplosionSmallInit, ExplosionSmallTick, TO_INVALID    }, // EV_EXPLOSION_SMALL
+	{ BulldozerInit,      BulldozerTick,      TO_INVALID    }, // EV_BULLDOZER
+	{ BubbleInit,         BubbleTick,         TO_INDUSTRIES }, // EV_BUBBLE
+	{ SmokeInit,          SmokeTick,          TO_INVALID    }, // EV_BREAKDOWN_SMOKE_AIRCRAFT
+	{ SmokeInit,          SmokeTick,          TO_INDUSTRIES }, // EV_COPPER_MINE_SMOKE
+}};
 
 /**
  * Create an effect vehicle at a particular location.
@@ -630,7 +602,7 @@ EffectVehicle *CreateEffectVehicle(int x, int y, int z, EffectVehicleType type)
 	v->UpdateDeltaXY();
 	v->vehstatus = VS_UNCLICKABLE;
 
-	_effect_init_procs[type](v);
+	_effect_procs[type].init_proc(v);
 
 	v->UpdateIsDrawn();
 
@@ -674,7 +646,7 @@ bool EffectVehicle::Tick()
 {
 	DEBUG_UPDATESTATECHECKSUM("EffectVehicle::Tick: v: %u, x: %d, y: %d", this->index, this->x_pos, this->y_pos);
 	UpdateStateChecksum((((uint64_t) this->x_pos) << 32) | this->y_pos);
-	return _effect_tick_procs[this->subtype](this);
+	return _effect_procs[this->subtype].tick_proc(this);
 }
 
 void EffectVehicle::UpdateDeltaXY()
@@ -692,7 +664,7 @@ void EffectVehicle::UpdateDeltaXY()
  */
 TransparencyOption EffectVehicle::GetTransparencyOption() const
 {
-	return _effect_transparency_options[this->subtype];
+	return _effect_procs[this->subtype].transparency;
 }
 
 extern std::vector<VehicleID> _remove_from_tick_effect_veh_cache;

@@ -15,6 +15,7 @@
 #include "../gfx_type.h"
 #include "../spriteloader/spriteloader.hpp"
 #include "../misc/lrucache.hpp"
+#include <vector>
 
 typedef void (*OGLProc)();
 typedef OGLProc (*GetOGLProcAddressProc)(const char *proc);
@@ -65,9 +66,7 @@ private:
 
 	Point cursor_pos;                    ///< Cursor position
 	bool cursor_in_window;               ///< Cursor inside this window
-	PalSpriteID cursor_sprite_seq[16];   ///< Current image of cursor
-	Point cursor_sprite_pos[16];         ///< Relative position of individual cursor sprites
-	uint cursor_sprite_count;            ///< Number of cursor sprites to draw
+	std::vector<CursorSprite> cursor_sprites; ///< Sprites comprising cursor
 
 	OpenGLBackend();
 	~OpenGLBackend();
