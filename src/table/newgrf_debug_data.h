@@ -789,7 +789,7 @@ static const NIVariable _niv_stations[] = {
 
 class NIHStation : public NIHelper {
 	bool IsInspectable(uint index) const override        { return GetStationSpec(index) != nullptr; }
-	uint GetParent(uint index) const override            { return GetTownInspectWindowNumber(Station::GetByTile(index)->town); }
+	uint GetParent(uint index) const override            { return GetTownInspectWindowNumber(BaseStation::GetByTile(index)->town); }
 	bool ShowSpriteDumpButton(uint index) const override { return true; }
 	const void *GetInstance(uint index)const override    { return nullptr; }
 	const void *GetSpec(uint index) const override       { return GetStationSpec(index); }
@@ -798,7 +798,7 @@ class NIHStation : public NIHelper {
 
 	uint Resolve(uint index, uint var, uint param, GetVariableExtra *extra) const override
 	{
-		StationResolverObject ro(GetStationSpec(index), Station::GetByTile(index), index, INVALID_RAILTYPE);
+		StationResolverObject ro(GetStationSpec(index), BaseStation::GetByTile(index), index, INVALID_RAILTYPE);
 		return ro.GetScope(VSG_SCOPE_SELF)->GetVariable(var, param, extra);
 	}
 
