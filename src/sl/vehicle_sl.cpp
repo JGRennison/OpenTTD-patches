@@ -29,6 +29,7 @@
 #include "../core/format.hpp"
 
 #include "saveload.h"
+#include "vehicle_sl.h"
 
 #include <map>
 
@@ -939,6 +940,43 @@ struct TrainLookaheadStateStructHandler final : public TypedSaveLoadStructHandle
 	}
 };
 
+NamedSaveLoadTable DispatchRecordsStructHandlerBase::GetDescription() const
+{
+	static const NamedSaveLoad _record_desc[] = {
+		NSL("id",                           SLE_VAR(RecordPair, first,                 SLE_UINT16)),
+		NSL("dispatched",                   SLE_VAR(RecordPair, second.dispatched,     SLE_INT64)),
+		NSL("offset",                       SLE_VAR(RecordPair, second.offset,         SLE_UINT32)),
+		NSL("slot_flags",                   SLE_VAR(RecordPair, second.slot_flags,     SLE_UINT16)),
+		NSL("record_flags",                 SLE_VAR(RecordPair, second.record_flags,   SLE_UINT8)),
+	};
+
+	return _record_desc;
+}
+
+void DispatchRecordsStructHandlerBase::SaveDispatchRecords(btree::btree_map<uint16_t, LastDispatchRecord> &records) const
+{
+	SlSetStructListLength(records.size());
+	for (RecordPair &it : records) {
+		SlObjectSaveFiltered(&it, this->GetLoadDescription());
+	}
+}
+
+void DispatchRecordsStructHandlerBase::LoadDispatchRecords(btree::btree_map<uint16_t, LastDispatchRecord> &records) const
+{
+	size_t count = SlGetStructListLength(UINT32_MAX);
+	for (size_t i = 0; i < count; i++) {
+		RecordPair it{};
+		SlObjectLoadFiltered(&it, this->GetLoadDescription());
+		records.insert(it);
+	}
+}
+
+struct VehicleDispatchRecordsStructHandlerBase final : public DispatchRecordsStructHandlerBase {
+	void Save(void *object) const override { this->SaveDispatchRecords(static_cast<Vehicle *>(object)->dispatch_records); }
+
+	void Load(void *object) const override { this->LoadDispatchRecords(static_cast<Vehicle *>(object)->dispatch_records); }
+};
+
 /**
  * Make it possible to make the saveload tables "friends" of other classes.
  * @param vt the vehicle type. Can be VEH_END for the common vehicle description data
@@ -1119,6 +1157,7 @@ NamedSaveLoadTable GetVehicleDescription(VehicleType vt)
 		NSL("",                        SLE_CONDNULL_X(160,                                                            SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP))),
 
 		NSLT_STRUCT<VehicleUnbunchStateStructHandler>("depot_unbunch_state"),
+		NSLT_STRUCTLIST<VehicleDispatchRecordsStructHandlerBase>("dispatch_records"),
 	};
 
 	static const NamedSaveLoad _train_desc[] = {

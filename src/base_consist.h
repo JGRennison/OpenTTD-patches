@@ -14,10 +14,25 @@
 #include "date_type.h"
 #include "timetable.h"
 #include "core/tinystring_type.hpp"
+#include "3rdparty/cpp-btree/btree_map.h"
+
+struct LastDispatchRecord {
+	enum RecordFlags {
+		RF_FIRST_SLOT = 0,  ///< Dispatch slot was first
+		RF_LAST_SLOT,       ///< Dispatch slot was last
+	};
+
+	StateTicks dispatched;
+	uint32_t offset;
+	uint16_t slot_flags;
+	uint8_t record_flags;
+};
 
 /** Various front vehicle properties that are preserved when autoreplacing, using order-backup or switching front engines within a consist. */
 struct BaseConsist {
 	TinyString name;                          ///< Name of vehicle
+
+	btree::btree_map<uint16_t, LastDispatchRecord> dispatch_records; ///< Records of last scheduled dispatches
 
 	/* Used for timetabling. */
 	uint32_t current_order_time;              ///< How many ticks have passed since this order started.

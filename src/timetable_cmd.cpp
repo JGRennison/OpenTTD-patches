@@ -808,9 +808,11 @@ void UpdateSeparationOrder(Vehicle *v_start)
  * Get next scheduled dispatch time
  * @param ds Dispatch schedule.
  * @param leave_time Leave time.
- * @return Dispatch time, or INVALID_STATE_TICKS
+ * @return Pair of:
+ * * Dispatch time, or INVALID_STATE_TICKS
+ * * Index of departure slot, or -1
  */
-StateTicks GetScheduledDispatchTime(const DispatchSchedule &ds, StateTicks leave_time)
+std::pair<StateTicks, int> GetScheduledDispatchTime(const DispatchSchedule &ds, StateTicks leave_time)
 {
 	const uint32_t dispatch_duration = ds.GetScheduledDispatchDuration();
 	const int32_t max_delay          = ds.GetScheduledDispatchDelay();
@@ -828,9 +830,13 @@ StateTicks GetScheduledDispatchTime(const DispatchSchedule &ds, StateTicks leave
 	}
 
 	StateTicks first_slot = INVALID_STATE_TICKS;
+	int first_slot_index = -1;
 
 	/* Find next available slots */
+	int slot_idx = 0;
 	for (const DispatchSlot &slot : ds.GetScheduledDispatch()) {
+		int this_slot = slot_idx++;
+
 		auto current_offset = slot.offset;
 		if (current_offset >= dispatch_duration) continue;
 
@@ -847,10 +853,25 @@ StateTicks GetScheduledDispatchTime(const DispatchSchedule &ds, StateTicks leave
 
 		if (first_slot == INVALID_STATE_TICKS || first_slot > current_departure) {
 			first_slot = current_departure;
+			first_slot_index = this_slot;
 		}
 	}
 
-	return first_slot;
+	return std::make_pair(first_slot, first_slot_index);
+}
+
+LastDispatchRecord MakeLastDispatchRecord(const DispatchSchedule &ds, StateTicks slot, int slot_index)
+{
+	uint8_t record_flags = 0;
+	if (slot_index == 0) SetBit(record_flags, LastDispatchRecord::RF_FIRST_SLOT);
+	if (slot_index == (int)(ds.GetScheduledDispatch().size() - 1)) SetBit(record_flags, LastDispatchRecord::RF_LAST_SLOT);
+	const DispatchSlot &dispatch_slot = ds.GetScheduledDispatch()[slot_index];
+	return {
+		slot,
+		dispatch_slot.offset,
+		dispatch_slot.flags,
+		record_flags,
+	};
 }
 
 /**
@@ -896,7 +917,11 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 			ds.UpdateScheduledDispatch(v);
 
 			const int wait_offset = real_current_order->GetTimetabledWait();
-			StateTicks slot = GetScheduledDispatchTime(ds, _state_ticks + wait_offset);
+
+			StateTicks slot;
+			int slot_index;
+			std::tie(slot, slot_index) = GetScheduledDispatchTime(ds, _state_ticks + wait_offset);
+
 			if (slot != INVALID_STATE_TICKS) {
 				just_started = !HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
 				SetBit(v->vehicle_flags, VF_TIMETABLE_STARTED);
@@ -904,6 +929,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 				ds.SetScheduledDispatchLastDispatch((slot - ds.GetScheduledDispatchStartTick()).AsTicks());
 				SetTimetableWindowsDirty(v, STWDF_SCHEDULED_DISPATCH);
 				set_scheduled_dispatch = true;
+				v->dispatch_records[static_cast<uint16_t>(real_implicit_order->GetDispatchScheduleIndex())] = MakeLastDispatchRecord(ds, slot, slot_index);
 			}
 		}
 	}

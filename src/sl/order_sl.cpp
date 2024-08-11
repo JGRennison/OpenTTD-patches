@@ -13,6 +13,7 @@
 #include "../network/network.h"
 
 #include "saveload_internal.h"
+#include "vehicle_sl.h"
 
 #include "../safeguards.h"
 
@@ -449,6 +450,12 @@ struct OrderBackupDispatchScheduleStructHandler final : public DispatchScheduleS
 	void Load(void *object) const override { this->LoadSchedules(static_cast<OrderBackup *>(object)->dispatch_schedules); }
 };
 
+struct OrderBackupDispatchRecordsStructHandlerBase final : public DispatchRecordsStructHandlerBase {
+	void Save(void *object) const override { this->SaveDispatchRecords(static_cast<OrderBackup *>(object)->dispatch_records); }
+
+	void Load(void *object) const override { this->LoadDispatchRecords(static_cast<OrderBackup *>(object)->dispatch_records); }
+};
+
 NamedSaveLoadTable GetOrderListDescription()
 {
 	static const NamedSaveLoad _orderlist_desc[] = {
@@ -488,6 +495,7 @@ NamedSaveLoadTable GetOrderBackupDescription()
 		NSL("",                         SLE_CONDNULL_X(18,                                                                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 2, 2))),
 
 		NSLT_STRUCTLIST<OrderBackupDispatchScheduleStructHandler>("dispatch_schedule"),
+		NSLT_STRUCTLIST<OrderBackupDispatchRecordsStructHandlerBase>("dispatch_records"),
 	};
 
 	return _order_backup_desc;

@@ -194,7 +194,7 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 				DispatchSchedule predicted_ds;
 				predicted_ds.BorrowSchedule(ds);
 				predicted_ds.UpdateScheduledDispatchToDate(_state_ticks + sum);
-				StateTicks slot = GetScheduledDispatchTime(predicted_ds, _state_ticks + sum + order->GetTimetabledWait());
+				StateTicks slot = GetScheduledDispatchTime(predicted_ds, _state_ticks + sum + order->GetTimetabledWait()).first;
 				predicted_ds.ReturnSchedule(ds);
 				if (slot == INVALID_STATE_TICKS) return;
 				sum = (slot - _state_ticks).AsTicks();

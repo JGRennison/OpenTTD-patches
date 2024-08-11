@@ -60,4 +60,6 @@ void BaseConsist::CopyConsistPropertiesFrom(const BaseConsist *src)
 	} else {
 		ClrBit(this->vehicle_flags, VF_SCHEDULED_DISPATCH);
 	}
+
+	this->dispatch_records = src->dispatch_records;
 }

@@ -2255,6 +2255,7 @@ CommandCost CmdMoveRailVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 			/* Remove stuff not valid anymore for non-front engines. */
 			DeleteVehicleOrders(src);
 			src->ReleaseUnitNumber();
+			src->dispatch_records.clear();
 			if (!_settings_game.vehicle.non_leading_engines_keep_name) {
 				src->name.clear();
 			}

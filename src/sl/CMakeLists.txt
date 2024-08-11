@@ -54,5 +54,6 @@ add_files(
     train_speed_adaptation.cpp
     tunnel_sl.cpp
     vehicle_sl.cpp
+    vehicle_sl.h
     waypoint_sl.cpp
 )

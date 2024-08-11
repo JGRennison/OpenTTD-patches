@@ -431,6 +431,19 @@ CommandCost CmdScheduledDispatchRemoveSchedule(TileIndex tile, DoCommandFlag fla
 				}
 			}
 		}
+		for (Vehicle *v2 = v->FirstShared(); v2 != nullptr; v2 = v2->NextShared()) {
+			if (v2->dispatch_records.empty()) continue;
+
+			btree::btree_map<uint16_t, LastDispatchRecord> new_records;
+			for (auto &iter : v2->dispatch_records) {
+				if (iter.first < schedule_index) {
+					new_records[iter.first] = std::move(iter.second);
+				} else if (iter.first > schedule_index) {
+					new_records[iter.first - 1] = std::move(iter.second);
+				}
+			}
+			v2->dispatch_records = std::move(new_records);
+		}
 		SchdispatchInvalidateWindows(v);
 	}
 
@@ -680,6 +693,23 @@ CommandCost CmdScheduledDispatchSwapSchedules(TileIndex tile, DoCommandFlag flag
 				} else if (dispatch_slot == schedule_index_2) {
 					SB(o->GetXDataRef(), 0, 16, schedule_index_1);
 				}
+			}
+		}
+		for (Vehicle *v2 = v->FirstShared(); v2 != nullptr; v2 = v2->NextShared()) {
+			if (v2->dispatch_records.empty()) continue;
+
+			auto iter_1 = v2->dispatch_records.find(static_cast<uint16_t>(schedule_index_1));
+			auto iter_2 = v2->dispatch_records.find(static_cast<uint16_t>(schedule_index_2));
+			if (iter_1 != v2->dispatch_records.end() && iter_2 != v2->dispatch_records.end()) {
+				std::swap(iter_1->second, iter_2->second);
+			} else if (iter_1 != v2->dispatch_records.end()) {
+				LastDispatchRecord r = std::move(iter_1->second);
+				v2->dispatch_records.erase(iter_1);
+				v2->dispatch_records[static_cast<uint16_t>(schedule_index_2)] = std::move(r);
+			} else if (iter_2 != v2->dispatch_records.end()) {
+				LastDispatchRecord r = std::move(iter_2->second);
+				v2->dispatch_records.erase(iter_2);
+				v2->dispatch_records[static_cast<uint16_t>(schedule_index_1)] = std::move(r);
 			}
 		}
 		SchdispatchInvalidateWindows(v);

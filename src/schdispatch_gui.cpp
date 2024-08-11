@@ -526,7 +526,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						}
 						have_last = true;
 					}
-					StateTicks next_slot = GetScheduledDispatchTime(ds, _state_ticks);
+					StateTicks next_slot = GetScheduledDispatchTime(ds, _state_ticks).first;
 					if (next_slot != INVALID_STATE_TICKS && ((next_slot - ds.GetScheduledDispatchStartTick()).AsTicks() % ds.GetScheduledDispatchDuration() == slot->offset)) {
 						if (!have_last) _temp_special_strings[0] += '\n';
 						_temp_special_strings[0] += GetString(STR_SCHDISPATCH_SLOT_TOOLTIP_NEXT);
@@ -638,7 +638,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				const StateTicks start_tick = ds.GetScheduledDispatchStartTick();
 				const StateTicks end_tick = ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchDuration();
 
-				StateTicks slot = GetScheduledDispatchTime(ds, _state_ticks);
+				StateTicks slot = GetScheduledDispatchTime(ds, _state_ticks).first;
 				int32_t next_offset = (slot != INVALID_STATE_TICKS) ? (slot - ds.GetScheduledDispatchStartTick()).AsTicks() % ds.GetScheduledDispatchDuration() : INT32_MIN;
 
 				int32_t last_dispatch;
@@ -806,8 +806,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 					y += WidgetDimensions::scaled.vsep_wide;
 
-					if (ds.GetScheduledDispatchLastDispatch() != INVALID_SCHEDULED_DISPATCH_OFFSET) {
-						const StateTicks last_departure = ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchLastDispatch();
+					auto show_last_departure = [&](const StateTicks last_departure, bool vehicle_mode, std::string details) {
 						StringID str;
 						if (_state_ticks < last_departure) {
 							str = STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE;
@@ -815,7 +814,16 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						} else {
 							str = STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST;
 						}
+						if (vehicle_mode) str += (STR_SCHDISPATCH_SUMMARY_VEHICLE_DEPARTURE_PAST - STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST);
+
 						SetDParam(0, last_departure);
+						if (details.empty()) {
+							SetDParam(1, STR_EMPTY);
+						} else {
+							SetDParam(1, STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAILS);
+							SetDParamStr(2, std::move(details));
+						}
+
 						DrawString(ir.left, ir.right, y, str);
 						y += GetCharacterHeight(FS_NORMAL);
 
@@ -836,12 +844,42 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 								set_next_departure_update(_settings_time.FromTickMinutes(target + ((hours + 1) * 60) + 1));
 							}
 						}
+					};
+
+					auto record_iter = v->dispatch_records.find(static_cast<uint16_t>(this->schedule_index));
+					if (record_iter != v->dispatch_records.end()) {
+						const LastDispatchRecord &record = record_iter->second;
+						std::string details;
+						auto add_detail = [&](StringID str) {
+							auto tmp_params = MakeParameters(str);
+							GetStringWithArgs(StringBuilder(details), details.empty() ? STR_JUST_STRING : STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_SEPARATOR, tmp_params);
+						};
+						if (HasBit(record.record_flags, LastDispatchRecord::RF_FIRST_SLOT)) add_detail(STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_WAS_FIRST);
+						if (HasBit(record.record_flags, LastDispatchRecord::RF_LAST_SLOT)) add_detail(STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_WAS_LAST);
+
+						for (uint8_t flag_bit = DispatchSlot::SDSF_FIRST_TAG; flag_bit <= DispatchSlot::SDSF_LAST_TAG; flag_bit++) {
+							if (HasBit(record.slot_flags, flag_bit)) {
+								std::string_view name = ds.GetSupplementaryName(SDSNT_DEPARTURE_TAG, flag_bit - DispatchSlot::SDSF_FIRST_TAG);
+								auto tmp_params = MakeParameters(1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG, std::string{name});
+								_temp_special_strings[1] = GetStringWithArgs(name.empty() ? STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG : STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG_NAMED, tmp_params);
+								add_detail(SPECSTR_TEMP_START + 1);
+							}
+						}
+
+						show_last_departure(record.dispatched, true, std::move(details));
+					} else {
+						DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_VEHICLE_NO_LAST_DEPARTURE);
+						y += GetCharacterHeight(FS_NORMAL);
+					}
+
+					if (ds.GetScheduledDispatchLastDispatch() != INVALID_SCHEDULED_DISPATCH_OFFSET) {
+						show_last_departure(ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchLastDispatch(), false, "");
 					} else {
 						DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE);
 						y += GetCharacterHeight(FS_NORMAL);
 					}
 
-					const StateTicks next_departure = GetScheduledDispatchTime(ds, _state_ticks);
+					const StateTicks next_departure = GetScheduledDispatchTime(ds, _state_ticks).first;
 					if (next_departure != INVALID_STATE_TICKS) {
 						set_next_departure_update(next_departure + ds.GetScheduledDispatchDelay());
 						SetDParam(0, next_departure);

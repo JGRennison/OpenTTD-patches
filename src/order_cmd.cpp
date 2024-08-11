@@ -2657,6 +2657,7 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
 				 * We reset the order indices, if the new orders are different.
 				 * (We mainly do this to keep the order indices valid and in range.) */
 				DeleteVehicleOrders(dst, false, ShouldResetOrderIndicesOnOrderCopy(src, dst));
+				dst->dispatch_records.clear();
 
 				dst->orders = src->orders;
 
@@ -2745,6 +2746,7 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
 				 * We only the order indices, if the new orders are different.
 				 * (We mainly do this to keep the order indices valid and in range.) */
 				DeleteVehicleOrders(dst, true, ShouldResetOrderIndicesOnOrderCopy(src, dst));
+				dst->dispatch_records.clear();
 
 				order_dst = &first;
 				for (const Order *order : src->Orders()) {
@@ -3219,7 +3221,7 @@ bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, 
 		}
 		offset = last % sched.GetScheduledDispatchDuration();
 	} else {
-		StateTicks slot = GetScheduledDispatchTime(sched, state_ticks);
+		StateTicks slot = GetScheduledDispatchTime(sched, state_ticks).first;
 		if (slot == INVALID_STATE_TICKS) {
 			/* No next dispatch */
 			return OrderConditionCompare(order->GetConditionComparator(), 0, 0);

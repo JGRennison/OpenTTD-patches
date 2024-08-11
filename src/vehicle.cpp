@@ -4995,11 +4995,20 @@ void AdjustVehicleStateTicksBase(StateTicksDelta delta)
 			if (v->unbunch_state->depot_unbunching_last_departure != INVALID_STATE_TICKS) v->unbunch_state->depot_unbunching_last_departure += delta;
 			if (v->unbunch_state->depot_unbunching_next_departure != INVALID_STATE_TICKS) v->unbunch_state->depot_unbunching_next_departure += delta;
 		}
+		for (auto &it : v->dispatch_records) {
+			it.second.dispatched += delta;
+		}
 	}
 
 	for (OrderList *order_list : OrderList::Iterate()) {
 		for (DispatchSchedule &ds : order_list->GetScheduledDispatchScheduleSet()) {
 			ds.SetScheduledDispatchStartTick(ds.GetScheduledDispatchStartTick() + delta);
+		}
+	}
+
+	for (OrderBackup *ob : OrderBackup::Iterate()) {
+		for (auto &it : ob->dispatch_records) {
+			it.second.dispatched += delta;
 		}
 	}
 }

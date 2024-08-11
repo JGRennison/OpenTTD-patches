@@ -41,6 +41,6 @@ struct TimetableProgress {
 std::vector<TimetableProgress> PopulateSeparationState(const Vehicle *v_start);
 
 struct DispatchSchedule;
-StateTicks GetScheduledDispatchTime(const DispatchSchedule &ds, StateTicks leave_time);
+std::pair<StateTicks, int> GetScheduledDispatchTime(const DispatchSchedule &ds, StateTicks leave_time);
 
 #endif /* TIMETABLE_H */
