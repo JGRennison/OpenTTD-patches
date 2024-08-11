@@ -718,6 +718,9 @@ STR_CONFIG_SETTING_PURCHASED_LAND_CLEAR_GROUND_HELPTEXT         :이 설정을 �
 STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY                  :1차 산업시설만 생성: {STRING}
 STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY_HELPTEXT         :이 설정을 켜면, 게임 플레이나 지도 생성 시에 1차 산업시설만 생성됩니다.
 
+STR_CONFIG_SETTING_INDUSTRY_EVENT_RATE                          :산업시설 이벤트 비율: {STRING}
+STR_CONFIG_SETTING_INDUSTRY_EVENT_RATE_HELPTEXT                 :벽시계 시간 단위 모드에서 경제 시간 단위 당, 또는 달력 시간 단위 모드에서 월/연 당 산업시설 이벤트의 비율을 조절합니다. 산업시설의 생산량 변화, 개설, 폐쇄 등이 연관되어 있습니다.
+
 STR_PURCHASE_LAND_PERMITTED_NO                                  :허용하지 않음
 STR_PURCHASE_LAND_PERMITTED_SINGLE                              :허용, 한 타일씩
 STR_PURCHASE_LAND_PERMITTED_AREA                                :허용, 여러 타일씩
