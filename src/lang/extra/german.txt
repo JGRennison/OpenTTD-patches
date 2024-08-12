@@ -810,10 +810,13 @@ STR_TRACE_RESTRICT_TIME_DAY_ITEM_SHORT                          :Tag
 STR_TRACE_RESTRICT_TIME_MONTH_ITEM_SHORT                        :Monat
 STR_TRACE_RESTRICT_TIMETABLE_LATENESS                           :Verspätet
 STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :Verfrüht
+
 STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT                           :nächste Abreisezeit
 STR_TRACE_RESTRICT_DISPATCH_SLOT_LAST                           :letzte Abreisezeit
+
 STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_NEXT                     :nächster
 STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_LAST                     :letzter
+
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Wert
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}Routing-Beschränkungen
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}Routing-Beschränkungen - geteilt durch {COMMA} Signale
@@ -1720,6 +1723,7 @@ STR_SCHDISPATCH_SCHEDULE_ID                                     :{BLACK}Zeitplan
 
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Letzte Abfahrt am {TT_TIME}.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}Letzte Abfahrt hat den Bahnhof noch nicht verlassen; Abfahrt am {TT_TIME}.
+
 STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}Dieser Fahrplan erfordert {COMMA} Fahrzeug{P "" e}.
 STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}Dieser Fahrplan wiederholt sich alle {STRING}.
 STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}Dieser Fahrplan begann am {TT_TIME} und endet am {TT_TIME}.

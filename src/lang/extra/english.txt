@@ -1068,10 +1068,17 @@ STR_TRACE_RESTRICT_TIME_DAY_ITEM_SHORT                          :day
 STR_TRACE_RESTRICT_TIME_MONTH_ITEM_SHORT                        :month
 STR_TRACE_RESTRICT_TIMETABLE_LATENESS                           :lateness
 STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :earliness
+
+###length 3
 STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT                           :next departure slot
 STR_TRACE_RESTRICT_DISPATCH_SLOT_LAST                           :last departure slot
+STR_TRACE_RESTRICT_DISPATCH_SLOT_VEH                            :vehicle's departure slot
+
+###length 3
 STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_NEXT                     :next
 STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_LAST                     :last
+STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_VEH                      :vehicle
+
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Value
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}Routefinding restriction
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}Routefinding restriction - shared by {COMMA} signals

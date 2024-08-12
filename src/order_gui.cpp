@@ -816,12 +816,6 @@ static const StringID _order_timetable_dropdown[] = {
 	INVALID_STRING_ID
 };
 
-static const StringID _order_dispatch_slot_dropdown[] = {
-	STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT,
-	STR_TRACE_RESTRICT_DISPATCH_SLOT_LAST,
-	INVALID_STRING_ID
-};
-
 StringID OrderStringForVariable(const Vehicle *v, OrderConditionVariable ocv)
 {
 	if (ocv == OCV_VEH_IN_SLOT && v->type != VEH_TRAIN) return STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT;
@@ -1143,7 +1137,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				}
 
 				const uint16_t value = order->GetConditionValue();
-				SetDParam(3, HasBit(value, ODCB_LAST_DISPATCHED) ? STR_TRACE_RESTRICT_DISPATCH_SLOT_LAST : STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT);
+				SetDParam(3, STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT + GB(value, ODCB_SRC_START, ODCB_SRC_COUNT));
 
 				switch ((OrderDispatchConditionModes)GB(value, ODCB_MODE_START, ODCB_MODE_COUNT)) {
 					case ODCM_FIRST_LAST:
@@ -2378,7 +2372,7 @@ public:
 					if (ocv == OCV_CARGO_WAITING_AMOUNT) {
 						aux2_sel->SetDisplayedPlane(DP_COND_AUX2_VIA);
 					} else if (is_sched_dispatch) {
-						this->GetWidget<NWidgetCore>(WID_O_COND_SCHED_TEST)->widget_data = HasBit(order->GetConditionValue(), ODCB_LAST_DISPATCHED) ? STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_LAST : STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_NEXT;
+						this->GetWidget<NWidgetCore>(WID_O_COND_SCHED_TEST)->widget_data = STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_NEXT + GB(order->GetConditionValue(), ODCB_SRC_START, ODCB_SRC_COUNT);
 						aux2_sel->SetDisplayedPlane(DP_COND_AUX2_SCHED_TEST);
 					} else {
 						aux2_sel->SetDisplayedPlane(SZSP_NONE);
@@ -3120,7 +3114,11 @@ public:
 
 			case WID_O_COND_SCHED_TEST: {
 				uint16_t value = this->vehicle->GetOrder(this->OrderGetSel())->GetConditionValue();
-				ShowDropDownMenu(this, _order_dispatch_slot_dropdown, HasBit(value, ODCB_LAST_DISPATCHED) ? 1 : 0, WID_O_COND_SCHED_TEST, 0, 0, 0, DDSF_SHARED);
+				DropDownList list;
+				list.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_DISPATCH_SLOT_VEH, ODCS_VEH, false));
+				list.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT, ODCS_NEXT, false));
+				list.push_back(MakeDropDownListStringItem(STR_TRACE_RESTRICT_DISPATCH_SLOT_LAST, ODCS_LAST, false));
+				ShowDropDownList(this, std::move(list), GB(value, ODCB_SRC_START, ODCB_SRC_COUNT), WID_O_COND_SCHED_TEST, 0, DDMF_NONE, DDSF_SHARED);
 				break;
 			}
 
@@ -3235,7 +3233,7 @@ public:
 						}
 					}
 
-					int selected = (((int)o->GetConditionComparator()) << 16) | (o->GetConditionValue() & ~GetBitMaskSC<uint16_t>(ODCB_LAST_DISPATCHED, 1));
+					int selected = (((int)o->GetConditionComparator()) << 16) | (o->GetConditionValue() & ~GetBitMaskSC<uint16_t>(ODCB_SRC_START, ODCB_SRC_COUNT));
 					ShowDropDownList(this, std::move(list), selected, WID_O_COND_COMPARATOR, 0, DDMF_NONE, DDSF_SHARED);
 					break;
 				}
@@ -3469,7 +3467,7 @@ public:
 				if (o == nullptr) return;
 				if (o->GetConditionVariable() == OCV_DISPATCH_SLOT) {
 					this->ModifyOrder(this->OrderGetSel(), MOF_COND_COMPARATOR | (index >> 16) << 8);
-					this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE | ((o->GetConditionValue() & GetBitMaskSC<uint16_t>(ODCB_LAST_DISPATCHED, 1)) | (index & 0xFFFF)) << 8);
+					this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE | ((o->GetConditionValue() & GetBitMaskSC<uint16_t>(ODCB_SRC_START, ODCB_SRC_COUNT)) | (index & 0xFFFF)) << 8);
 				} else {
 					this->ModifyOrder(this->OrderGetSel(), MOF_COND_COMPARATOR | index << 8);
 				}
@@ -3507,9 +3505,10 @@ public:
 			case WID_O_COND_SCHED_TEST: {
 				const Order *o = this->vehicle->GetOrder(this->OrderGetSel());
 				if (o == nullptr) return;
-				const uint16_t last = GetBitMaskSC<uint16_t>(ODCB_LAST_DISPATCHED, 1);
-				index = (index != 0 ? last : 0) | (o->GetConditionValue() & ~last);
-				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE | index << 8);
+				const uint16_t mask = GetBitMaskSC<uint16_t>(ODCB_SRC_START, ODCB_SRC_COUNT);
+				uint16_t value = (o->GetConditionValue() & ~mask);
+				SB(value, ODCB_SRC_START, ODCB_SRC_COUNT, index);
+				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE | value << 8);
 				break;
 			}
 

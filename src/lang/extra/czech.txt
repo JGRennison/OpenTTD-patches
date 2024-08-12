@@ -900,10 +900,13 @@ STR_TRACE_RESTRICT_TIME_DAY_ITEM_SHORT                          :den
 STR_TRACE_RESTRICT_TIME_MONTH_ITEM_SHORT                        :měsíc
 STR_TRACE_RESTRICT_TIMETABLE_LATENESS                           :zpoždění
 STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :náskok
+
 STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT                           :následující výpravní pořadí
 STR_TRACE_RESTRICT_DISPATCH_SLOT_LAST                           :poslední výpravní pořadí
+
 STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_NEXT                     :další
 STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_LAST                     :poslední
+
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Hodnota
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}Omezení směrování
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}Omezení směrování - sdíleno {COMMA} návěstidly
@@ -1966,6 +1969,7 @@ STR_ERROR_CAN_T_RENAME_SCHEDULE                                 :{WHITE}Nelze po
 
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Poslední odjezd v {TT_TIME}.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}Poslední pořadí ještě neodjelo, odjede v {TT_TIME}.
+
 STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}Tento rozvrh vyžaduje {COMMA} vozid{P lo la el}.
 STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}Tento rozvrh se opakuje každých {STRING}.
 STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}Tento rozvrh začal v {TT_TIME} a skončí v {TT_TIME}.

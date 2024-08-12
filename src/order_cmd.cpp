@@ -2334,7 +2334,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 						break;
 					case OCV_DISPATCH_SLOT:
 						if (occ != OCC_IS_TRUE && occ != OCC_IS_FALSE) order->SetConditionComparator(OCC_IS_TRUE);
-						order->SetConditionValue(0);
+						order->SetConditionValue(ODCS_VEH << ODCB_SRC_START);
 						order->GetXDataRef() = UINT16_MAX;
 						break;
 
@@ -3200,33 +3200,75 @@ static uint16_t GetFreeStationPlatforms(StationID st_id)
 	return counter;
 }
 
+bool EvaluateDispatchSlotConditionalOrderVehicleRecord(const Order *order, const LastDispatchRecord &record)
+{
+	bool value = false;
+	switch ((OrderDispatchConditionModes)GB(order->GetConditionValue(), ODCB_MODE_START, ODCB_MODE_COUNT)) {
+		case ODCM_FIRST_LAST:
+			if (HasBit(order->GetConditionValue(), ODFLCB_LAST_SLOT)) {
+				value = HasBit(record.record_flags, LastDispatchRecord::RF_LAST_SLOT);
+			} else {
+				value = HasBit(record.record_flags, LastDispatchRecord::RF_FIRST_SLOT);
+			}
+			break;
+
+		case OCDM_TAG: {
+			uint8_t tag = (uint8_t)GB(order->GetConditionValue(), ODFLCB_TAG_START, ODFLCB_TAG_COUNT);
+			value = HasBit(record.slot_flags, DispatchSlot::SDSF_FIRST_TAG + tag);
+			break;
+		}
+	}
+
+	return OrderConditionCompare(order->GetConditionComparator(), value ? 1 : 0, 0);
+}
+
 bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, StateTicks state_ticks, bool *predicted)
 {
-	uint schedule_index = GB(order->GetXData(), 0, 16);
+	uint16_t schedule_index = static_cast<uint16_t>(GB(order->GetXData(), 0, 16));
 	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return false;
 	const DispatchSchedule &sched = v->orders->GetDispatchScheduleByIndex(schedule_index);
-	if (sched.GetScheduledDispatch().size() == 0) return false;
+
+	const OrderDispatchConditionSources src = (OrderDispatchConditionSources)GB(order->GetConditionValue(), ODCB_SRC_START, ODCB_SRC_COUNT);
+	if (src == ODCS_VEH) {
+		if (predicted != nullptr) *predicted = true;
+
+		auto iter = v->dispatch_records.find(schedule_index);
+		if (iter == v->dispatch_records.end()) return OrderConditionCompare(order->GetConditionComparator(), 0, 0);
+
+		return EvaluateDispatchSlotConditionalOrderVehicleRecord(order, iter->second);
+	}
+
+	if (sched.GetScheduledDispatch().empty()) return false;
 
 	if (predicted != nullptr) *predicted = true;
 
 	int32_t offset;
-	if (HasBit(order->GetConditionValue(), ODCB_LAST_DISPATCHED)) {
-		int32_t last = sched.GetScheduledDispatchLastDispatch();
-		if (last == INVALID_SCHEDULED_DISPATCH_OFFSET) {
-			/* No last dispatched */
-			return OrderConditionCompare(order->GetConditionComparator(), 0, 0);
+	switch (src) {
+		case ODCS_LAST: {
+			int32_t last = sched.GetScheduledDispatchLastDispatch();
+			if (last == INVALID_SCHEDULED_DISPATCH_OFFSET) {
+				/* No last dispatched */
+				return OrderConditionCompare(order->GetConditionComparator(), 0, 0);
+			}
+			if (last < 0) {
+				last += sched.GetScheduledDispatchDuration() * (1 + (-last / sched.GetScheduledDispatchDuration()));
+			}
+			offset = last % sched.GetScheduledDispatchDuration();
+			break;
 		}
-		if (last < 0) {
-			last += sched.GetScheduledDispatchDuration() * (1 + (-last / sched.GetScheduledDispatchDuration()));
+
+		case ODCS_NEXT: {
+			StateTicks slot = GetScheduledDispatchTime(sched, state_ticks).first;
+			if (slot == INVALID_STATE_TICKS) {
+				/* No next dispatch */
+				return OrderConditionCompare(order->GetConditionComparator(), 0, 0);
+			}
+			offset = (slot - sched.GetScheduledDispatchStartTick()).base() % sched.GetScheduledDispatchDuration();
+			break;
 		}
-		offset = last % sched.GetScheduledDispatchDuration();
-	} else {
-		StateTicks slot = GetScheduledDispatchTime(sched, state_ticks).first;
-		if (slot == INVALID_STATE_TICKS) {
-			/* No next dispatch */
-			return OrderConditionCompare(order->GetConditionComparator(), 0, 0);
-		}
-		offset = (slot - sched.GetScheduledDispatchStartTick()).base() % sched.GetScheduledDispatchDuration();
+
+		default:
+			NOT_REACHED();
 	}
 
 	bool value = false;

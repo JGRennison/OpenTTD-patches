@@ -919,10 +919,13 @@ STR_TRACE_RESTRICT_TIME_DAY_ITEM_SHORT                          :日
 STR_TRACE_RESTRICT_TIME_MONTH_ITEM_SHORT                        :月
 STR_TRACE_RESTRICT_TIMETABLE_LATENESS                           :延误
 STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :提前
+
 STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT                           :下个出发条目
 STR_TRACE_RESTRICT_DISPATCH_SLOT_LAST                           :上个出发条目
+
 STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_NEXT                     :下个
 STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_LAST                     :上个
+
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}值
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}寻路限制
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}寻路限制——由{COMMA}个信号共降
@@ -2003,6 +2006,7 @@ STR_SCHDISPATCH_MOVE_SCHEDULE                                   :{BLACK}更改�
 
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}最新的出发条目在 {TT_TIME}.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}最新的出发条目还没有离开，它将在{TT_TIME}离开
+
 STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}这个计划调度需要{COMMA}辆车
 STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}这个计划调度每{STRING}重复一次
 STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}这个计划调度开始在{TT_TIME}，结束在{TT_TIME}

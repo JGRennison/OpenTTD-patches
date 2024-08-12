@@ -1016,10 +1016,13 @@ STR_TRACE_RESTRICT_TIME_DAY_ITEM_SHORT                          :día
 STR_TRACE_RESTRICT_TIME_MONTH_ITEM_SHORT                        :mes
 STR_TRACE_RESTRICT_TIMETABLE_LATENESS                           :atraso
 STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :adianto
+
 STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT                           :seguinte slot de saída
 STR_TRACE_RESTRICT_DISPATCH_SLOT_LAST                           :último slot de saída
+
 STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_NEXT                     :seguinte
 STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_LAST                     :último
+
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Valor
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}Restrición de busca de rutas
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}Restrición de busca de rutas - compartida por {COMMA} sinais
@@ -2178,8 +2181,10 @@ STR_SCHDISPATCH_SLOT_TOOLTIP_TAG                                :{}Etiqueta {NUM
 STR_SCHDISPATCH_SLOT_TOOLTIP_TAG_NAMED                          :{}Etiqueta {NUM}: {STRING}
 
 STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}Sen saídas previas.
+
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Última saída ás {TT_TIME}.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}A última saída aínda non saíu, sairá ás {TT_TIME}.
+
 STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}Este programa require {COMMA} vehículo{P "" s}.
 STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}Este programa repítese cada {STRING}.
 STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}Este programa comezou ás {TT_TIME}, e remata ás {TT_TIME}.

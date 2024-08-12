@@ -270,10 +270,47 @@ enum OrderTimetableConditionMode {
 	OTCM_END
 };
 
+/**
+ * Condition value field for OCV_DISPATCH_SLOT
+ *  0                   1
+ *  0 1 2 3 4 5 6 7 8 9 0
+ * +-+-+-+-+-+-+-+-+-+-+-+
+ * | |Src|         |Mode |
+ * | |   |         |     |
+ * +-+-+-+-+-+-+-+-+-+-+-+
+ *
+ * Mode = ODCM_FIRST_LAST
+ *  0                   1
+ *  0 1 2 3 4 5 6 7 8 9 0
+ * +-+-+-+-+-+-+-+-+-+-+-+
+ * |X|Src|         |Mode |
+ * | |   |         |     |
+ * +-+-+-+-+-+-+-+-+-+-+-+
+ *  |
+ * First/last slot bit
+ *
+ * Mode = OCDM_TAG
+ *  0                   1
+ *  0 1 2 3 4 5 6 7 8 9 0
+ * +-+-+-+-+-+-+-+-+-+-+-+
+ * | |Src| |Tag|   |Mode |
+ * | |   | |   |   |     |
+ * +-+-+-+-+-+-+-+-+-+-+-+
+ *           |
+ *           Slot tag
+*/
+
 enum OrderDispatchConditionBits {
-	ODCB_LAST_DISPATCHED     = 1,
+	ODCB_SRC_START           = 1,
+	ODCB_SRC_COUNT           = 2,
 	ODCB_MODE_START          = 8,
 	ODCB_MODE_COUNT          = 3,
+};
+
+enum OrderDispatchConditionSources : uint8_t {
+	ODCS_NEXT                = 0,
+	ODCS_LAST                = 1,
+	ODCS_VEH                 = 2,
 };
 
 enum OrderDispatchConditionModes : uint8_t {

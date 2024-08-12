@@ -1019,10 +1019,13 @@ STR_TRACE_RESTRICT_TIME_DAY_ITEM_SHORT                          :день
 STR_TRACE_RESTRICT_TIME_MONTH_ITEM_SHORT                        :месяц
 STR_TRACE_RESTRICT_TIMETABLE_LATENESS                           :опоздание
 STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :ранность
+
 STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT                           :следующий слот отправления
 STR_TRACE_RESTRICT_DISPATCH_SLOT_LAST                           :последний слот отправления
+
 STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_NEXT                     :следующий
 STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_LAST                     :последний
+
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Значение
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}Ограничение на прокладку маршрута
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}Ограничение на прокладку маршрута - всего {COMMA} сигналов
@@ -2184,8 +2187,10 @@ STR_SCHDISPATCH_SLOT_TOOLTIP_TAG                                :{}Метка {N
 STR_SCHDISPATCH_SLOT_TOOLTIP_TAG_NAMED                          :{}Метка {NUM}: {STRING}
 
 STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}Предыдущих отправлений нет.
+
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Последнее отправление в {TT_TIME}.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}Последнее отправление ещё не ушло, оно будет отбывать в {TT_TIME}.
+
 STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}По оценкам, для выполнения этого расписания потребуется не менее {COMMA} транспорт{P "" а ов}.
 STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}Это расписание повторяется каждый {STRING}.
 STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}Это расписание началось в {TT_TIME}, и закончится в {TT_TIME}.

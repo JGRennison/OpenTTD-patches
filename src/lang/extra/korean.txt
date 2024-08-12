@@ -1019,10 +1019,13 @@ STR_TRACE_RESTRICT_TIME_DAY_ITEM_SHORT                          :일
 STR_TRACE_RESTRICT_TIME_MONTH_ITEM_SHORT                        :월
 STR_TRACE_RESTRICT_TIMETABLE_LATENESS                           :지연
 STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :조착
+
 STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT                           :다음 출발 슬롯
 STR_TRACE_RESTRICT_DISPATCH_SLOT_LAST                           :마지막 출발 슬롯
+
 STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_NEXT                     :다음
 STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_LAST                     :마지막
+
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}값
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}경로 탐색 제한
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}경로 탐색 제한 - {COMMA}개의 신호기와 공유
@@ -2183,8 +2186,10 @@ STR_SCHDISPATCH_SLOT_TOOLTIP_TAG                                :{}태그 {NUM}
 STR_SCHDISPATCH_SLOT_TOOLTIP_TAG_NAMED                          :{}태그 {NUM}: {STRING}
 
 STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}이전 출발이 없습니다.
+
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}최근 출발: {TT_TIME}
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}최근 배차된 열차가 아직 출발하지 않았습니다. {TT_TIME}에 출발할 예정입니다.
+
 STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}이 일정에는 {COMMA}대의 열차가 필요합니다.
 STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}이 일정은 {STRING}마다 반복됩니다.
 STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}이 일정은 {TT_TIME}에 시작되어서 {TT_TIME}에 끝납니다.
