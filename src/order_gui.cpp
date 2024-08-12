@@ -2854,8 +2854,19 @@ public:
 					/* Deselect clicked order */
 					this->selected_order = -1;
 				} else if (sel == this->selected_order) {
-					if (this->vehicle->type == VEH_TRAIN && sel < this->vehicle->GetNumOrders()) {
-						int osl = ((this->vehicle->GetOrder(sel)->GetStopLocation() + 1) % OSL_END);
+					if (sel >= this->vehicle->GetNumOrders()) {
+						this->UpdateButtonState();
+						return;
+					}
+
+					const Order *order = this->vehicle->GetOrder(sel);
+
+					if (order->IsType(OT_LABEL) && order->GetLabelSubType() == OLST_TEXT) {
+						if (this->IsWidgetActiveInLayout(WID_O_TEXT_LABEL)) this->OnClick({}, WID_O_TEXT_LABEL, click_count);
+						return;
+					}
+					if (this->vehicle->type == VEH_TRAIN) {
+						int osl = ((order->GetStopLocation() + 1) % OSL_END);
 						if (osl == OSL_PLATFORM_THROUGH && !_settings_client.gui.show_adv_load_mode_features) {
 							osl = OSL_PLATFORM_NEAR_END;
 						}
@@ -2870,8 +2881,8 @@ public:
 						}
 						this->ModifyOrder(sel, MOF_STOP_LOCATION | osl << 8);
 					}
-					if (this->vehicle->type == VEH_ROAD && sel < this->vehicle->GetNumOrders() && _settings_game.pf.pathfinder_for_roadvehs == VPF_YAPF) {
-						DiagDirection current = this->vehicle->GetOrder(sel)->GetRoadVehTravelDirection();
+					if (this->vehicle->type == VEH_ROAD && _settings_game.pf.pathfinder_for_roadvehs == VPF_YAPF) {
+						DiagDirection current = order->GetRoadVehTravelDirection();
 						if (_settings_client.gui.show_adv_load_mode_features || current != INVALID_DIAGDIR) {
 							uint dir = (current + 1) & 0xFF;
 							if (dir >= DIAGDIR_END) dir = INVALID_DIAGDIR;
