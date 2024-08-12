@@ -793,7 +793,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 		for (int i = least_order->v->GetNumOrders(); i > 0; --i) {
 			/* If the order is a conditional branch, handle it. */
 			if (order->IsType(OT_CONDITIONAL)) {
-				switch(GetDepartureConditionalOrderMode(order, least_order->v, least_order->expected_tick)) {
+				switch (GetDepartureConditionalOrderMode(order, least_order->v, state_ticks_base + least_order->expected_tick)) {
 						case 0: {
 							/* Give up */
 							break;
