@@ -236,7 +236,11 @@ struct SignListWindow : Window, SignList {
 				if (it == this->signs.end()) return;
 
 				const Sign *si = *it;
-				ScrollMainWindowToTile(TileVirtXY(si->x, si->y));
+				if (_ctrl_pressed) {
+					ShowExtraViewportWindow(TileVirtXY(si->x, si->y));
+				} else {
+					ScrollMainWindowToTile(TileVirtXY(si->x, si->y));
+				}
 				break;
 			}
 
