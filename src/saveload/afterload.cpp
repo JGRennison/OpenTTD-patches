@@ -4063,7 +4063,7 @@ bool AfterLoadGame()
 			_settings_game.economy.town_cargo_scale = ScaleQuantity(100, _settings_game.old_economy.town_cargo_scale_factor);
 		}
 		if (!SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_ADJ, 3)) {
-			_settings_game.economy.town_cargo_scale_mode = CSM_MONTHLY;
+			_settings_game.economy.town_cargo_scale_mode = CSM_NORMAL;
 		}
 
 		if (SlXvIsFeatureMissing(XSLFI_INDUSTRY_CARGO_ADJ)) {
@@ -4072,7 +4072,7 @@ bool AfterLoadGame()
 			_settings_game.economy.industry_cargo_scale = ScaleQuantity(100, _settings_game.old_economy.industry_cargo_scale_factor);
 		}
 		if (!SlXvIsFeaturePresent(XSLFI_INDUSTRY_CARGO_ADJ, 2)) {
-			_settings_game.economy.industry_cargo_scale_mode = CSM_MONTHLY;
+			_settings_game.economy.industry_cargo_scale_mode = CSM_NORMAL;
 		}
 	}
 

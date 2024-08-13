@@ -590,21 +590,15 @@ STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT                  :Enabling this s
 
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA          :{STRING}{}This excludes tree-cutting industries.{}This is not guaranteed to be fully compatible with all industry NewGRFs.
 
-STR_CONFIG_SETTING_TOWN_CARGO_SCALE_MODE                        :Time interval for town cargo production scaling: {STRING2}
-STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE                    :Time interval for industry cargo production scaling: {STRING2}
+STR_CONFIG_SETTING_TOWN_CARGO_SCALE_MODE                        :Town cargo production scaling mode: {STRING2}
+STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE                    :Industry cargo production scaling mode: {STRING2}
 
-STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :Monthly/per production interval: The cargo production per month or production interval is scaled.{}{}Game-time: The cargo production per unit of game time is scaled, (the cargo production per month or production interval is also scaled by the economy speed reduction factor). Very high scaling factors may not be achievable.
-STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE_HELPTEXT_EXTRA     :{STRING}{}Game-time mode is not guaranteed to be fully compatible with all industry NewGRFs.
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :The scaling factor for cargo production per month/production interval may optionally be multiplied by the economy speed reduction factor.
 
-STR_CONFIG_SETTING_CARGO_SCALE_MODE_MONTHLY                     :Monthly
-STR_CONFIG_SETTING_CARGO_SCALE_MODE_GAME_TIME                   :Game-time
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_NORMAL                      :Normal
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_ECON_SPEED_REDUCTION_MULT   :Multiply by economy speed reduction factor
 
-STR_CONFIG_SETTING_CARGO_SCALE_MODE_PER_PRODUCTION_INTERVAL     :Per production interval
-
-STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY                    :{NUM}% (monthly)
-STR_CONFIG_SETTING_CARGO_SCALE_VALUE_REAL_TIME                  :{NUM}% (game-time)
-
-STR_CONFIG_SETTING_CARGO_SCALE_VALUE_PER_PRODUCTION_INTERVAL    :{NUM}% (per production interval)
+STR_CONFIG_SETTING_CARGO_SCALE_VALUE_ECON_SPEED_REDUCTION_MULT  :{NUM}% x economy speed reduction factor
 
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :No towns above height level: {STRING2}
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :No towns above the specified height level are built during map creation.

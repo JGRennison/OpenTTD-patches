@@ -547,17 +547,6 @@ STR_CONFIG_SETTING_TOWN_CARGO_SCALE_MODE                        :도시 화물 �
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE                    :산업시설 화물 생성 조정에 적용할 시간 간격: {STRING}
 
 STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :월별: 1개월당 화물 생산량이 조정됩니다.{}{}게임 시간: 게임 시간의 단위 당 화물 생산량이 조정됩니다. (또한 1개월당 화물 생산량은 1일의 길이 조절 설정에 의해 조정되기도 합니다.) 매우 높은 값은 적용되지 않을 수도 있습니다.
-STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE_HELPTEXT_EXTRA     :{STRING}{}게임 시간 모드는 모든 산업시설 관련 NewGRF에 적용되지 않을 수도 있습니다.
-
-STR_CONFIG_SETTING_CARGO_SCALE_MODE_MONTHLY                     :월별
-STR_CONFIG_SETTING_CARGO_SCALE_MODE_GAME_TIME                   :게임 시간
-
-STR_CONFIG_SETTING_CARGO_SCALE_MODE_PER_PRODUCTION_INTERVAL     :생산기간 당
-
-STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY                    :{NUM}% (월별)
-STR_CONFIG_SETTING_CARGO_SCALE_VALUE_REAL_TIME                  :{NUM}% (게임 시간)
-
-STR_CONFIG_SETTING_CARGO_SCALE_VALUE_PER_PRODUCTION_INTERVAL    :{NUM}% (생산기간당)
 
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :이 고도 위에는 도시를 생성하지 않음: {STRING}
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :지도를 생성할 때 특정 고도 위에는 도시를 만들지 않도록 만듭니다.

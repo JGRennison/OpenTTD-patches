@@ -258,7 +258,7 @@ enum TickRateMode : uint8_t {
 
 enum CargoScalingMode : uint8_t {
 	CSM_BEGIN = 0,         ///< Used for iterations and limit testing
-	CSM_MONTHLY = 0,       ///< Traditional cargo scaling
+	CSM_NORMAL = 0,        ///< Normal cargo scaling
 	CSM_DAYLENGTH,         ///< Also scale by day length
 	CSM_END,               ///< Used for iterations and limit testing
 };

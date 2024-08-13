@@ -547,17 +547,6 @@ STR_CONFIG_SETTING_TOWN_CARGO_SCALE_MODE                        :Intervalo de te
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE                    :Intervalo de tempo para o escalado da produción de carga da industria: {STRING}
 
 STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :Mensual: A produción de carga por mes é escalada.{}{}Tempo de xogo: A produción de carga por unidade de tempo de xogo é escalada (a produción de carga por mes tamén é escalada polo factor de lonxitude do día). Pode non ser posible alcanzar factores de escalado moi altos.
-STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE_HELPTEXT_EXTRA     :{STRING}{}O modo de tempo de xogo non se garante que sexa totalmente compatible con todos os NewGRFs de industria.
-
-STR_CONFIG_SETTING_CARGO_SCALE_MODE_MONTHLY                     :Mensualmente
-STR_CONFIG_SETTING_CARGO_SCALE_MODE_GAME_TIME                   :Tempo de xogo
-
-STR_CONFIG_SETTING_CARGO_SCALE_MODE_PER_PRODUCTION_INTERVAL     :Por intervalo de produción
-
-STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY                    :{NUM}% (mensualmente)
-STR_CONFIG_SETTING_CARGO_SCALE_VALUE_REAL_TIME                  :{NUM}% (tempo de xogo)
-
-STR_CONFIG_SETTING_CARGO_SCALE_VALUE_PER_PRODUCTION_INTERVAL    :{NUM}% (por intervalo de produción)
 
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :Sen vilas por enriba da altitude: {STRING}
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :Non se constrúen vilas por enriba da altitude especificada durante a creación do mapa.

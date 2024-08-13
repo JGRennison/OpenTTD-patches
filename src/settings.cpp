@@ -2340,12 +2340,8 @@ static bool TownCargoScaleGUI(SettingOnGuiCtrlData &data)
 {
 	switch (data.type) {
 		case SOGCT_VALUE_DPARAMS:
-			if (GetGameSettings().economy.day_length_factor > 1) {
-				if (GetGameSettings().economy.town_cargo_scale_mode == CSM_DAYLENGTH) {
-					SetDParam(data.offset, STR_CONFIG_SETTING_CARGO_SCALE_VALUE_REAL_TIME);
-				} else {
-					SetDParam(data.offset, EconTime::UsingWallclockUnits(_game_mode == GM_MENU) ? STR_CONFIG_SETTING_CARGO_SCALE_VALUE_PER_PRODUCTION_INTERVAL : STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY);
-				}
+			if (GetGameSettings().economy.day_length_factor > 1 && GetGameSettings().economy.town_cargo_scale_mode == CSM_DAYLENGTH) {
+				SetDParam(data.offset, STR_CONFIG_SETTING_CARGO_SCALE_VALUE_ECON_SPEED_REDUCTION_MULT);
 			}
 			return true;
 
@@ -2363,44 +2359,13 @@ static bool IndustryCargoScaleGUI(SettingOnGuiCtrlData &data)
 			return true;
 
 		case SOGCT_VALUE_DPARAMS:
-			if (GetGameSettings().economy.day_length_factor > 1) {
-				if (GetGameSettings().economy.industry_cargo_scale_mode == CSM_DAYLENGTH) {
-					SetDParam(data.offset, STR_CONFIG_SETTING_CARGO_SCALE_VALUE_REAL_TIME);
-				} else {
-					SetDParam(data.offset, EconTime::UsingWallclockUnits(_game_mode == GM_MENU) ? STR_CONFIG_SETTING_CARGO_SCALE_VALUE_PER_PRODUCTION_INTERVAL : STR_CONFIG_SETTING_CARGO_SCALE_VALUE_MONTHLY);
-				}
+			if (GetGameSettings().economy.day_length_factor > 1 && GetGameSettings().economy.industry_cargo_scale_mode == CSM_DAYLENGTH) {
+				SetDParam(data.offset, STR_CONFIG_SETTING_CARGO_SCALE_VALUE_ECON_SPEED_REDUCTION_MULT);
 			}
 			return true;
 
 		default:
 			return false;
-	}
-}
-
-static bool TownCargoScaleModeGUI(SettingOnGuiCtrlData &data)
-{
-	switch (data.type) {
-		case SOGCT_VALUE_DPARAMS:
-			if (data.text == STR_CONFIG_SETTING_CARGO_SCALE_MODE_MONTHLY && EconTime::UsingWallclockUnits(_game_mode == GM_MENU)) {
-				data.text = STR_CONFIG_SETTING_CARGO_SCALE_MODE_PER_PRODUCTION_INTERVAL;
-			}
-			return true;
-
-		default:
-			return false;
-	}
-}
-
-static bool IndustryCargoScaleModeGUI(SettingOnGuiCtrlData &data)
-{
-	switch (data.type) {
-		case SOGCT_DESCRIPTION_TEXT:
-			SetDParam(0, data.text);
-			data.text = STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE_HELPTEXT_EXTRA;
-			return true;
-
-		default:
-			return TownCargoScaleModeGUI(data);
 	}
 }
 
