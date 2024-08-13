@@ -469,21 +469,23 @@ void ShowDropDownList(Window *w, DropDownList &&list, int selected, WidgetID but
  * Show a dropdown menu window near a widget of the parent window.
  * The result code of the items is their index in the \a strings list.
  * @param w             Parent window that wants the dropdown menu.
- * @param strings       Menu list, end with #INVALID_STRING_ID
+ * @param strings       Menu list.
  * @param selected      Index of initial selected item.
  * @param button        Button widget number of the parent window \a w that wants the dropdown menu.
  * @param disabled_mask Bitmask for disabled items (items with their bit set are displayed, but not selectable in the dropdown list).
  * @param hidden_mask   Bitmask for hidden items (items with their bit set are not copied to the dropdown list).
  * @param width         Minimum width of the dropdown menu.
  */
-void ShowDropDownMenu(Window *w, const StringID *strings, int selected, WidgetID button, uint32_t disabled_mask, uint32_t hidden_mask, uint width, DropDownSyncFocus sync_parent_focus)
+void ShowDropDownMenu(Window *w, std::span<const StringID> strings, int selected, WidgetID button, uint32_t disabled_mask, uint32_t hidden_mask, uint width, DropDownSyncFocus sync_parent_focus)
 {
 	DropDownList list;
 
-	for (uint i = 0; strings[i] != INVALID_STRING_ID; i++) {
+	uint i = 0;
+	for (auto string : strings) {
 		if (i >= 32 || !HasBit(hidden_mask, i)) {
-			list.push_back(MakeDropDownListStringItem(strings[i], i, i < 32 && HasBit(disabled_mask, i)));
+			list.push_back(MakeDropDownListStringItem(string, i, i < 32 && HasBit(disabled_mask, i)));
 		}
+		++i;
 	}
 
 	if (!list.empty()) ShowDropDownList(w, std::move(list), selected, button, width, DDMF_NONE, sync_parent_focus);

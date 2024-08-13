@@ -459,7 +459,7 @@ STR_TOOLBAR_TOOLTIP_DISPLAY_COMPANY_LEAGUE                      :{BLACK}A válla
 STR_TOOLBAR_TOOLTIP_FUND_CONSTRUCTION_OF_NEW                    :{BLACK}Gazdasági épületek listázása, ipari lánc megnyitása, vagy új gazdasági épületek építése
 STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_TRAINS              :{BLACK}Vonatlista megnyitása. Ctrl+kattintással válszthatsz a csoport- vagy járműlista között
 STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_ROAD_VEHICLES       :{BLACK}Közúti járműlista megnyitása. Ctrl+kattintással válszthatsz a csoport- vagy járműlista között
-STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_SHIPS               :{BLACK}Hajóista megnyitása. Ctrl+kattintással válszthatsz a csoport- vagy járműlista között
+STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_SHIPS               :{BLACK}Hajólista megnyitása. Ctrl+kattintással válszthatsz a csoport- vagy járműlista között
 STR_TOOLBAR_TOOLTIP_DISPLAY_LIST_OF_COMPANY_AIRCRAFT            :{BLACK}Repülőgéplista megnyitása. Ctrl+kattintással válszthatsz a csoport- vagy járműlista között
 STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_IN                            :{BLACK}Nagyítás
 STR_TOOLBAR_TOOLTIP_ZOOM_THE_VIEW_OUT                           :{BLACK}Kicsinyítés
@@ -1020,11 +1020,6 @@ STR_GAME_OPTIONS_VOLUME                                         :Hangerő
 STR_GAME_OPTIONS_SFX_VOLUME                                     :Hang effektek
 STR_GAME_OPTIONS_MUSIC_VOLUME                                   :Zene
 
-STR_GAME_OPTIONS_VOLUME_0                                       :0%
-STR_GAME_OPTIONS_VOLUME_25                                      :25%
-STR_GAME_OPTIONS_VOLUME_50                                      :50%
-STR_GAME_OPTIONS_VOLUME_75                                      :75%
-STR_GAME_OPTIONS_VOLUME_100                                     :100%
 
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Pénznem
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}A használt pénznem kiválasztása
@@ -1121,11 +1116,6 @@ STR_GAME_OPTIONS_GUI_FONT_SPRITE_TOOLTIP                        :{BLACK}Jelöld 
 STR_GAME_OPTIONS_GUI_FONT_AA                                    :{BLACK}Betűtípusok simítása
 STR_GAME_OPTIONS_GUI_FONT_AA_TOOLTIP                            :{BLACK}Jelöld be ezt, ha lesimított betűket akarsz.
 
-STR_GAME_OPTIONS_GUI_SCALE_1X                                   :1x
-STR_GAME_OPTIONS_GUI_SCALE_2X                                   :2x
-STR_GAME_OPTIONS_GUI_SCALE_3X                                   :3x
-STR_GAME_OPTIONS_GUI_SCALE_4X                                   :4x
-STR_GAME_OPTIONS_GUI_SCALE_5X                                   :5x
 
 STR_GAME_OPTIONS_PARTICIPATE_SURVEY_FRAME                       :{BLACK}Automata felmérés
 STR_GAME_OPTIONS_PARTICIPATE_SURVEY                             :{BLACK}Részvétel automata felmérésben
@@ -3455,8 +3445,11 @@ STR_GENERATION_ABORT_MESSAGE                                    :{YELLOW}Tényle
 STR_GENERATION_PROGRESS                                         :{WHITE}{NUM}% kész
 STR_GENERATION_PROGRESS_NUM                                     :{BLACK}{NUM} / {NUM}
 STR_GENERATION_WORLD_GENERATION                                 :{BLACK}Világ létrehozása
+STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}Tájkép generálás
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}Folyó generálás
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}Durva és köves területek generálása
+STR_GENERATION_TOWN_GENERATION                                  :{BLACK}Város generálás
+STR_GENERATION_INDUSTRY_GENERATION                              :{BLACK}Ipar generálás
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}Mozgathatatlan létesítmények létrehozása
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}Fák generálása
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Játék beállítása
@@ -3550,6 +3543,7 @@ STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE                  :Út típus
 STR_NEWGRF_INSPECT_QUERY_CAPTION                                :{WHITE}NewGRF változó 60+x paraméter (hexadecimális)
 
 # Sprite aligner window
+STR_SPRITE_ALIGNER_CAPTION_NO_ACTION                            :{WHITE}Sprite elhelyezés: ({STRING}:{NUM})
 STR_SPRITE_ALIGNER_NEXT_BUTTON                                  :{BLACK}Következő sprite
 STR_SPRITE_ALIGNER_NEXT_TOOLTIP                                 :{BLACK}Továbbhaladás a következő normál spritera, kihagyva bármilyen ál/átszínező/betű spriteokat, a végén folytatva az elsővel
 STR_SPRITE_ALIGNER_GOTO_BUTTON                                  :{BLACK}Ugrás a spritehoz
@@ -5343,6 +5337,8 @@ STR_ERROR_NO_VEHICLES_AVAILABLE_YET                             :{WHITE}Még nin
 STR_ERROR_NO_VEHICLES_AVAILABLE_YET_EXPLANATION                 :{WHITE}Indíts új játékot {DATE_SHORT} után, vagy használj olyan NewGRF-et, ami tartalmaz megfelelően korai járműveket!
 
 STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_AT_ALL                    :{WHITE}Nincs városban építhető út-típus
+STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_AT_ALL_EXPLANATION        :{WHITE}Saját NewGRF konfiguráció módosítása
+STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_YET                       :{WHITE}Még nem érhető el városban építhető úttípus
 
 # Specific vehicle errors
 STR_ERROR_CAN_T_MAKE_TRAIN_PASS_SIGNAL                          :{WHITE}Nem haladhatja meg a vonat a megállj jelzést...

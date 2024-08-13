@@ -3772,23 +3772,15 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 				break;
 
 			case 0x15: { // Random sound effects
-				indsp->number_of_sounds = buf->ReadByte();
-				uint8_t *sounds = MallocT<uint8_t>(indsp->number_of_sounds);
+				uint8_t num_sounds = buf->ReadByte();
 
-				try {
-					for (uint8_t j = 0; j < indsp->number_of_sounds; j++) {
-						sounds[j] = buf->ReadByte();
-					}
-				} catch (...) {
-					free(sounds);
-					throw;
+				std::vector<uint8_t> sounds;
+				sounds.reserve(num_sounds);
+				for (uint8_t j = 0; j < num_sounds; ++j) {
+					sounds.push_back(buf->ReadByte());
 				}
 
-				if (HasBit(indsp->cleanup_flag, CLEAN_RANDOMSOUNDS)) {
-					free(indsp->random_sounds);
-				}
-				indsp->random_sounds = sounds;
-				SetBit(indsp->cleanup_flag, CLEAN_RANDOMSOUNDS);
+				indsp->random_sounds = std::move(sounds);
 				break;
 			}
 
@@ -3937,35 +3929,6 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 }
 
 /**
- * Create a copy of the tile table so it can be freed later
- * without problems.
- * @param as The AirportSpec to copy the arrays of.
- */
-static void DuplicateTileTable(AirportSpec *as)
-{
-	AirportTileTable **table_list = MallocT<AirportTileTable*>(as->num_table);
-	for (int i = 0; i < as->num_table; i++) {
-		uint num_tiles = 1;
-		const AirportTileTable *it = as->table[0];
-		do {
-			num_tiles++;
-		} while ((++it)->ti.x != -0x80);
-		table_list[i] = MallocT<AirportTileTable>(num_tiles);
-		MemCpyT(table_list[i], as->table[i], num_tiles);
-	}
-	as->table = table_list;
-	HangarTileTable *depot_table = nullptr;
-	if (as->nof_depots > 0) {
-		depot_table = MallocT<HangarTileTable>(as->nof_depots);
-		MemCpyT(depot_table, as->depot_table, as->nof_depots);
-	}
-	as->depot_table = depot_table;
-	Direction *rotation = MallocT<Direction>(as->num_table);
-	MemCpyT(rotation, as->rotation, as->num_table);
-	as->rotation = rotation;
-}
-
-/**
  * Define properties for airports
  * @param airport Local ID of the airport.
  * @param numinfo Number of subsequent airport IDs to change the property for.
@@ -4020,89 +3983,68 @@ static ChangeInfoResult AirportChangeInfo(uint airport, int numinfo, int prop, c
 					as->grf_prop.grffile = _cur.grffile;
 					/* override the default airport */
 					_airport_mngr.Add(airport + i, _cur.grffile->grfid, subs_id);
-					/* Create a copy of the original tiletable so it can be freed later. */
-					DuplicateTileTable(as);
 				}
 				break;
 			}
 
 			case 0x0A: { // Set airport layout
-				uint8_t old_num_table = as->num_table;
-				as->num_table = buf->ReadByte(); // Number of layouts
-				free(as->rotation);
-				as->rotation = MallocT<Direction>(as->num_table);
-				uint32_t defsize = buf->ReadDWord();  // Total size of the definition
-				AirportTileTable **tile_table = CallocT<AirportTileTable*>(as->num_table); // Table with tiles to compose the airport
-				AirportTileTable *att = CallocT<AirportTileTable>(defsize); // Temporary array to read the tile layouts from the GRF
-				int size;
-				const AirportTileTable *copy_from;
-				try {
-					for (uint8_t j = 0; j < as->num_table; j++) {
-						const_cast<Direction&>(as->rotation[j]) = (Direction)buf->ReadByte();
-						for (int k = 0;; k++) {
-							att[k].ti.x = buf->ReadByte(); // Offsets from northermost tile
-							att[k].ti.y = buf->ReadByte();
+				uint8_t num_layouts = buf->ReadByte();
+				buf->ReadDWord(); // Total size of definition, unneeded.
+				uint8_t size_x = 0;
+				uint8_t size_y = 0;
 
-							if (att[k].ti.x == 0 && att[k].ti.y == 0x80) {
-								/*  Not the same terminator.  The one we are using is rather
-								 * x = -80, y = 0 .  So, adjust it. */
-								att[k].ti.x = -0x80;
-								att[k].ti.y =  0;
-								att[k].gfx  =  0;
+				std::vector<AirportTileLayout> layouts;
+				layouts.reserve(num_layouts);
 
-								size = k + 1;
-								copy_from = att;
-								break;
-							}
+				for (uint8_t j = 0; j != num_layouts; ++j) {
+					auto &layout = layouts.emplace_back();
+					layout.rotation = static_cast<Direction>(buf->ReadByte() & 6); // Rotation can only be DIR_NORTH, DIR_EAST, DIR_SOUTH or DIR_WEST.
 
-							att[k].gfx = buf->ReadByte();
-
-							if (att[k].gfx == 0xFE) {
-								/* Use a new tile from this GRF */
-								int local_tile_id = buf->ReadWord();
-
-								/* Read the ID from the _airporttile_mngr. */
-								uint16_t tempid = _airporttile_mngr.GetID(local_tile_id, _cur.grffile->grfid);
-
-								if (tempid == INVALID_AIRPORTTILE) {
-									GrfMsg(2, "AirportChangeInfo: Attempt to use airport tile {} with airport id {}, not yet defined. Ignoring.", local_tile_id, airport + i);
-								} else {
-									/* Declared as been valid, can be used */
-									att[k].gfx = tempid;
-								}
-							} else if (att[k].gfx == 0xFF) {
-								att[k].ti.x = (int8_t)GB(att[k].ti.x, 0, 8);
-								att[k].ti.y = (int8_t)GB(att[k].ti.y, 0, 8);
-							}
-
-							if (as->rotation[j] == DIR_E || as->rotation[j] == DIR_W) {
-								as->size_x = std::max<uint8_t>(as->size_x, att[k].ti.y + 1);
-								as->size_y = std::max<uint8_t>(as->size_y, att[k].ti.x + 1);
-							} else {
-								as->size_x = std::max<uint8_t>(as->size_x, att[k].ti.x + 1);
-								as->size_y = std::max<uint8_t>(as->size_y, att[k].ti.y + 1);
-							}
+					for (;;) {
+						auto &tile = layout.tiles.emplace_back();
+						tile.ti.x = buf->ReadByte();
+						tile.ti.y = buf->ReadByte();
+						if (tile.ti.x == 0 && tile.ti.y == 0x80) {
+							/* Convert terminator to our own. */
+							tile.ti.x = -0x80;
+							tile.ti.y = 0;
+							tile.gfx = 0;
+							break;
 						}
-						tile_table[j] = CallocT<AirportTileTable>(size);
-						memcpy(tile_table[j], copy_from, sizeof(*copy_from) * size);
+
+						tile.gfx = buf->ReadByte();
+
+						if (tile.gfx == 0xFE) {
+							/* Use a new tile from this GRF */
+							int local_tile_id = buf->ReadWord();
+
+							/* Read the ID from the _airporttile_mngr. */
+							uint16_t tempid = _airporttile_mngr.GetID(local_tile_id, _cur.grffile->grfid);
+
+							if (tempid == INVALID_AIRPORTTILE) {
+								GrfMsg(2, "AirportChangeInfo: Attempt to use airport tile {} with airport id {}, not yet defined. Ignoring.", local_tile_id, airport + i);
+							} else {
+								/* Declared as been valid, can be used */
+								tile.gfx = tempid;
+							}
+						} else if (tile.gfx == 0xFF) {
+							tile.ti.x = static_cast<int8_t>(GB(tile.ti.x, 0, 8));
+							tile.ti.y = static_cast<int8_t>(GB(tile.ti.y, 0, 8));
+						}
+
+						/* Determine largest size. */
+						if (layout.rotation == DIR_E || layout.rotation == DIR_W) {
+							size_x = std::max<uint8_t>(size_x, tile.ti.y + 1);
+							size_y = std::max<uint8_t>(size_y, tile.ti.x + 1);
+						} else {
+							size_x = std::max<uint8_t>(size_x, tile.ti.x + 1);
+							size_y = std::max<uint8_t>(size_y, tile.ti.y + 1);
+						}
 					}
-					/* Free old layouts in the airport spec */
-					for (int j = 0; j < old_num_table; j++) {
-						/* remove the individual layouts */
-						free(as->table[j]);
-					}
-					free(as->table);
-					/* Install final layout construction in the airport spec */
-					as->table = tile_table;
-					free(att);
-				} catch (...) {
-					for (int i = 0; i < as->num_table; i++) {
-						free(tile_table[i]);
-					}
-					free(tile_table);
-					free(att);
-					throw;
 				}
+				as->layouts = std::move(layouts);
+				as->size_x = size_x;
+				as->size_y = size_y;
 				break;
 			}
 
@@ -6104,10 +6046,10 @@ static void NewSpriteGroup(ByteReader *buf)
 
 			std::vector<DeterministicSpriteGroupRange> ranges;
 			ranges.resize(buf->ReadByte());
-			for (uint i = 0; i < ranges.size(); i++) {
-				ranges[i].group = GetGroupFromGroupID(setid, type, buf->ReadWord());
-				ranges[i].low   = buf->ReadVarSize(varsize);
-				ranges[i].high  = buf->ReadVarSize(varsize);
+			for (auto &range : ranges) {
+				range.group = GetGroupFromGroupID(setid, type, buf->ReadWord());
+				range.low   = buf->ReadVarSize(varsize);
+				range.high  = buf->ReadVarSize(varsize);
 			}
 
 			group->default_group = GetGroupFromGroupID(setid, type, buf->ReadWord());
@@ -6445,8 +6387,7 @@ static bool IsValidGroupID(uint16_t groupid, const char *function)
 
 static void VehicleMapSpriteGroup(ByteReader *buf, uint8_t feature, uint8_t idcount)
 {
-	static EngineID *last_engines;
-	static uint last_engines_count;
+	static std::vector<EngineID> last_engines; // Engine IDs are remembered in case the next action is a wagon override.
 	bool wagover = false;
 
 	/* Test for 'wagon override' flag */
@@ -6455,18 +6396,14 @@ static void VehicleMapSpriteGroup(ByteReader *buf, uint8_t feature, uint8_t idco
 		/* Strip off the flag */
 		idcount = GB(idcount, 0, 7);
 
-		if (last_engines_count == 0) {
+		if (last_engines.empty()) {
 			GrfMsg(0, "VehicleMapSpriteGroup: WagonOverride: No engine to do override with");
 			return;
 		}
 
-		GrfMsg(6, "VehicleMapSpriteGroup: WagonOverride: {} engines, {} wagons",
-				last_engines_count, idcount);
+		GrfMsg(6, "VehicleMapSpriteGroup: WagonOverride: {} engines, {} wagons", last_engines.size(), idcount);
 	} else {
-		if (last_engines_count != idcount) {
-			last_engines = ReallocT(last_engines, idcount);
-			last_engines_count = idcount;
-		}
+		last_engines.resize(idcount);
 	}
 
 	EngineID *engines = AllocaM(EngineID, idcount);
@@ -6501,7 +6438,7 @@ static void VehicleMapSpriteGroup(ByteReader *buf, uint8_t feature, uint8_t idco
 			GrfMsg(7, "VehicleMapSpriteGroup: [{}] Engine {}...", i, engine);
 
 			if (wagover) {
-				SetWagonOverrideSprites(engine, cid, GetGroupByID(groupid), last_engines, last_engines_count);
+				SetWagonOverrideSprites(engine, cid, GetGroupByID(groupid), last_engines);
 			} else {
 				SetCustomEngineSprites(engine, cid, GetGroupByID(groupid));
 			}
@@ -6517,7 +6454,7 @@ static void VehicleMapSpriteGroup(ByteReader *buf, uint8_t feature, uint8_t idco
 		EngineID engine = engines[i];
 
 		if (wagover) {
-			SetWagonOverrideSprites(engine, SpriteGroupCargo::SG_DEFAULT, GetGroupByID(groupid), last_engines, last_engines_count);
+			SetWagonOverrideSprites(engine, SpriteGroupCargo::SG_DEFAULT, GetGroupByID(groupid), last_engines);
 		} else {
 			SetCustomEngineSprites(engine, SpriteGroupCargo::SG_DEFAULT, GetGroupByID(groupid));
 			SetEngineGRF(engine, _cur.grffile);
@@ -10430,18 +10367,6 @@ static void ResetCustomHouses()
 static void ResetCustomAirports()
 {
 	for (GRFFile * const file : _grf_files) {
-		for (auto &as : file->airportspec) {
-			if (as != nullptr) {
-				/* We need to remove the tiles layouts */
-				for (int j = 0; j < as->num_table; j++) {
-					/* remove the individual layouts */
-					free(as->table[j]);
-				}
-				free(as->table);
-				free(as->depot_table);
-				free(as->rotation);
-			}
-		}
 		file->airportspec.clear();
 		file->airtspec.clear();
 	}

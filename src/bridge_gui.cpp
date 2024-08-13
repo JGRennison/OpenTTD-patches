@@ -86,7 +86,11 @@ private:
 	static Listing last_sorting; ///< Last setting of the sort.
 
 	/* Constants for sorting the bridges */
-	static const StringID sorter_names[];
+	static inline const StringID sorter_names[] = {
+		STR_SORT_BY_NUMBER,
+		STR_SORT_BY_COST,
+		STR_SORT_BY_MAX_SPEED,
+	};
 	static const std::initializer_list<GUIBridgeList::SortFunction * const> sorter_funcs;
 
 	/* Internal variables */
@@ -137,7 +141,7 @@ private:
 		this->bridges.Sort();
 
 		/* Display the current sort variant */
-		this->GetWidget<NWidgetCore>(WID_BBS_DROPDOWN_CRITERIA)->widget_data = this->sorter_names[this->bridges.SortType()];
+		this->GetWidget<NWidgetCore>(WID_BBS_DROPDOWN_CRITERIA)->widget_data = BuildBridgeWindow::sorter_names[this->bridges.SortType()];
 
 		/* Set the modified widgets dirty */
 		this->SetWidgetDirty(WID_BBS_DROPDOWN_CRITERIA);
@@ -175,8 +179,8 @@ public:
 		this->FinishInitNested(GB(br_type, 15, 2)); // Initializes 'this->icon_width'.
 
 		this->parent = FindWindowById(WC_BUILD_TOOLBAR, GB(this->type, 15, 2));
-		this->bridges.SetListing(this->last_sorting);
-		this->bridges.SetSortFuncs(this->sorter_funcs);
+		this->bridges.SetListing(BuildBridgeWindow::last_sorting);
+		this->bridges.SetSortFuncs(BuildBridgeWindow::sorter_funcs);
 		this->bridges.NeedResort();
 		this->SortBridgeList();
 
@@ -185,7 +189,7 @@ public:
 
 	void Close(int data = 0) override
 	{
-		this->last_sorting = this->bridges.GetListing();
+		BuildBridgeWindow::last_sorting = this->bridges.GetListing();
 		this->Window::Close();
 	}
 
@@ -200,10 +204,7 @@ public:
 				break;
 			}
 			case WID_BBS_DROPDOWN_CRITERIA: {
-				Dimension d = {0, 0};
-				for (const StringID *str = this->sorter_names; *str != INVALID_STRING_ID; str++) {
-					d = maxdim(d, GetStringBoundingBox(*str));
-				}
+				Dimension d = GetStringListBoundingBox(BuildBridgeWindow::sorter_names);
 				d.width += padding.width;
 				d.height += padding.height;
 				size = maxdim(size, d);
@@ -289,7 +290,7 @@ public:
 				break;
 
 			case WID_BBS_DROPDOWN_CRITERIA:
-				ShowDropDownMenu(this, this->sorter_names, this->bridges.SortType(), WID_BBS_DROPDOWN_CRITERIA, 0, 0);
+				ShowDropDownMenu(this, BuildBridgeWindow::sorter_names, this->bridges.SortType(), WID_BBS_DROPDOWN_CRITERIA, 0, 0);
 				break;
 		}
 	}
@@ -317,14 +318,6 @@ const std::initializer_list<GUIBridgeList::SortFunction * const> BuildBridgeWind
 	&BridgeIndexSorter,
 	&BridgePriceSorter,
 	&BridgeSpeedSorter
-};
-
-/** Names of the sorting functions. */
-const StringID BuildBridgeWindow::sorter_names[] = {
-	STR_SORT_BY_NUMBER,
-	STR_SORT_BY_COST,
-	STR_SORT_BY_MAX_SPEED,
-	INVALID_STRING_ID
 };
 
 /** Widgets of the bridge gui. */

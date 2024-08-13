@@ -80,7 +80,6 @@ enum PanelWidgets {
 static const StringID _program_insert[] = {
 	STR_PROGSIG_INSERT_IF,
 	STR_PROGSIG_INSERT_SET_SIGNAL,
-	INVALID_STRING_ID
 };
 
 static SignalOpcode OpcodeForIndex(int index)
@@ -116,7 +115,6 @@ static const StringID _program_condvar[] = {
 	/* PSC_SLOT_OCC*/     STR_PROGSIG_COND_SLOT,
 	/* PSC_SLOT_OCC_REM*/ STR_PROGSIG_COND_SLOT_REMAINING,
 	/* PSC_COUNTER*/      STR_PROGSIG_COND_COUNTER,
-	INVALID_STRING_ID
 };
 
 // TODO: These should probably lose the ORDER
@@ -129,14 +127,12 @@ static const StringID _program_comparator[] = {
 	/* SGC_MORE_THAN_EQUALS */   STR_ORDER_CONDITIONAL_COMPARATOR_MORE_EQUALS,
 	/* SGC_IS_TRUE */            STR_ORDER_CONDITIONAL_COMPARATOR_IS_TRUE,
 	/* SGC_IS_FALSE */           STR_ORDER_CONDITIONAL_COMPARATOR_IS_FALSE,
-	INVALID_STRING_ID
 };
 static const uint _program_comparator_hide_mask = 0xC0;
 
 static const StringID _program_sigstate[] = {
 	STR_COLOUR_RED,
 	STR_COLOUR_GREEN,
-	INVALID_STRING_ID
 };
 
 /** Get the string for a condition */

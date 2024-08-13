@@ -465,7 +465,6 @@ public:
 							STR_COLOUR_DEFAULT,
 							STR_CONFIG_SETTING_OFF,
 							STR_CONFIG_SETTING_ON,
-							INVALID_STRING_ID
 						};
 						ShowDropDownMenu(this, names, value, WID_TA_SETTING, 0, 0);
 						break;
@@ -476,7 +475,6 @@ public:
 							STR_CONFIG_SETTING_TOWN_TUNNELS_FORBIDDEN,
 							STR_CONFIG_SETTING_TOWN_TUNNELS_ALLOWED_OBSTRUCTION,
 							STR_CONFIG_SETTING_TOWN_TUNNELS_ALLOWED,
-							INVALID_STRING_ID
 						};
 						ShowDropDownMenu(this, names, HasBit(this->town->override_flags, idx) ? this->town->build_tunnels + 1 : 0, WID_TA_SETTING, 0, 0);
 						break;
@@ -497,7 +495,6 @@ public:
 						const StringID names[] = {
 							STR_COLOUR_DEFAULT,
 							STR_CONFIG_SETTING_TOWN_GROWTH_NONE,
-							INVALID_STRING_ID
 						};
 						ShowDropDownMenu(this, names, value, WID_TA_SETTING, 0, 0);
 						break;
@@ -928,7 +925,11 @@ private:
 	static Listing last_sorting;
 
 	/* Constants for sorting towns */
-	static const StringID sorter_names[];
+	static inline const StringID sorter_names[] = {
+		STR_SORT_BY_NAME,
+		STR_SORT_BY_POPULATION,
+		STR_SORT_BY_RATING,
+	};
 	static const std::initializer_list<GUITownList::SortFunction * const> sorter_funcs;
 
 	StringFilter string_filter;             ///< Filter for towns
@@ -1099,10 +1100,7 @@ public:
 				break;
 			}
 			case WID_TD_SORT_CRITERIA: {
-				Dimension d = {0, 0};
-				for (uint i = 0; TownDirectoryWindow::sorter_names[i] != INVALID_STRING_ID; i++) {
-					d = maxdim(d, GetStringBoundingBox(TownDirectoryWindow::sorter_names[i]));
-				}
+				Dimension d = GetStringListBoundingBox(TownDirectoryWindow::sorter_names);
 				d.width += padding.width;
 				d.height += padding.height;
 				size = maxdim(size, d);
@@ -1260,14 +1258,6 @@ static Hotkey towndirectory_hotkeys[] = {
 HotkeyList TownDirectoryWindow::hotkeys("towndirectory", towndirectory_hotkeys);
 
 Listing TownDirectoryWindow::last_sorting = {false, 0};
-
-/** Names of the sorting functions. */
-const StringID TownDirectoryWindow::sorter_names[] = {
-	STR_SORT_BY_NAME,
-	STR_SORT_BY_POPULATION,
-	STR_SORT_BY_RATING,
-	INVALID_STRING_ID
-};
 
 /** Available town directory sorting functions. */
 const std::initializer_list<GUITownList::SortFunction * const> TownDirectoryWindow::sorter_funcs = {

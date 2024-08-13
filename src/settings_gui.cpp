@@ -160,37 +160,27 @@ static void AddCustomRefreshRates()
 	std::copy(monitorRates.begin(), monitorRates.end(), std::inserter(_refresh_rates, _refresh_rates.end()));
 }
 
-static const std::map<int, StringID> _scale_labels = {
-	{  100, STR_GAME_OPTIONS_GUI_SCALE_1X },
-	{  125, STR_NULL },
-	{  150, STR_NULL },
-	{  175, STR_NULL },
-	{  200, STR_GAME_OPTIONS_GUI_SCALE_2X },
-	{  225, STR_NULL },
-	{  250, STR_NULL },
-	{  275, STR_NULL },
-	{  300, STR_GAME_OPTIONS_GUI_SCALE_3X },
-	{  325, STR_NULL },
-	{  350, STR_NULL },
-	{  375, STR_NULL },
-	{  400, STR_GAME_OPTIONS_GUI_SCALE_4X },
-	{  425, STR_NULL },
-	{  450, STR_NULL },
-	{  475, STR_NULL },
-	{  500, STR_GAME_OPTIONS_GUI_SCALE_5X },
-};
+static const int SCALE_NMARKS = (MAX_INTERFACE_SCALE - MIN_INTERFACE_SCALE) / 25 + 1; // Show marks at 25% increments
+static const int VOLUME_NMARKS = 9; // Show 5 values and 4 empty marks.
 
-static const std::map<int, StringID> _volume_labels = {
-	{  0, STR_GAME_OPTIONS_VOLUME_0 },
-	{  15, STR_NULL },
-	{  31, STR_GAME_OPTIONS_VOLUME_25 },
-	{  47, STR_NULL },
-	{  63, STR_GAME_OPTIONS_VOLUME_50 },
-	{  79, STR_NULL },
-	{  95, STR_GAME_OPTIONS_VOLUME_75 },
-	{  111, STR_NULL },
-	{  127, STR_GAME_OPTIONS_VOLUME_100 },
-};
+static StringID ScaleMarkFunc(int, int, int value)
+{
+	/* Label only every 100% mark. */
+	if (value % 100 != 0) return STR_NULL;
+
+	SetDParam(0, value / 100);
+	SetDParam(1, 0);
+	return STR_GAME_OPTIONS_GUI_SCALE_MARK;
+}
+
+static StringID VolumeMarkFunc(int, int mark, int value)
+{
+	/* Label only every other mark. */
+	if (mark % 2 != 0) return STR_NULL;
+
+	SetDParam(0, value / 31 * 25); // 0-127 does not map nicely to 0-100. Dividing first gives us nice round numbers.
+	return STR_GAME_OPTIONS_VOLUME_MARK;
+}
 
 static constexpr NWidgetPart _nested_social_plugins_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
@@ -593,7 +583,7 @@ struct GameOptionsWindow : Window {
 				break;
 
 			case WID_GO_GUI_SCALE:
-				DrawSliderWidget(r, MIN_INTERFACE_SCALE, MAX_INTERFACE_SCALE, this->gui_scale, _scale_labels);
+				DrawSliderWidget(r, MIN_INTERFACE_SCALE, MAX_INTERFACE_SCALE, SCALE_NMARKS, this->gui_scale, ScaleMarkFunc);
 				break;
 
 			case WID_GO_VIDEO_DRIVER_INFO:
@@ -602,11 +592,11 @@ struct GameOptionsWindow : Window {
 				break;
 
 			case WID_GO_BASE_SFX_VOLUME:
-				DrawSliderWidget(r, 0, INT8_MAX, _settings_client.music.effect_vol, _volume_labels);
+				DrawSliderWidget(r, 0, INT8_MAX, VOLUME_NMARKS, _settings_client.music.effect_vol, VolumeMarkFunc);
 				break;
 
 			case WID_GO_BASE_MUSIC_VOLUME:
-				DrawSliderWidget(r, 0, INT8_MAX, _settings_client.music.music_vol, _volume_labels);
+				DrawSliderWidget(r, 0, INT8_MAX, VOLUME_NMARKS, _settings_client.music.music_vol, VolumeMarkFunc);
 				break;
 		}
 	}
@@ -825,8 +815,7 @@ struct GameOptionsWindow : Window {
 			}
 
 			case WID_GO_GUI_SCALE:
-				if (ClickSliderWidget(this->GetWidget<NWidgetBase>(widget)->GetCurrentRect(), pt, MIN_INTERFACE_SCALE, MAX_INTERFACE_SCALE, this->gui_scale)) {
-					if (!_ctrl_pressed) this->gui_scale = ((this->gui_scale + 12) / 25) * 25;
+				if (ClickSliderWidget(this->GetWidget<NWidgetBase>(widget)->GetCurrentRect(), pt, MIN_INTERFACE_SCALE, MAX_INTERFACE_SCALE, _ctrl_pressed ? 0 : SCALE_NMARKS, this->gui_scale)) {
 					this->SetWidgetDirty(widget);
 				}
 
@@ -861,7 +850,7 @@ struct GameOptionsWindow : Window {
 			case WID_GO_BASE_SFX_VOLUME:
 			case WID_GO_BASE_MUSIC_VOLUME: {
 				uint8_t &vol = (widget == WID_GO_BASE_MUSIC_VOLUME) ? _settings_client.music.music_vol : _settings_client.music.effect_vol;
-				if (ClickSliderWidget(this->GetWidget<NWidgetBase>(widget)->GetCurrentRect(), pt, 0, INT8_MAX, vol)) {
+				if (ClickSliderWidget(this->GetWidget<NWidgetBase>(widget)->GetCurrentRect(), pt, 0, INT8_MAX, 0, vol)) {
 					if (widget == WID_GO_BASE_MUSIC_VOLUME) {
 						MusicDriver::GetInstance()->SetVolume(vol);
 					} else {

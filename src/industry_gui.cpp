@@ -1382,7 +1382,12 @@ protected:
 	static Listing last_sorting;
 
 	/* Constants for sorting industries */
-	static const StringID sorter_names[];
+	static inline const StringID sorter_names[] = {
+		STR_SORT_BY_NAME,
+		STR_SORT_BY_TYPE,
+		STR_SORT_BY_PRODUCTION,
+		STR_SORT_BY_TRANSPORTED,
+	};
 	static const std::initializer_list<GUIIndustryList::SortFunction * const> sorter_funcs;
 
 	GUIIndustryList industries{IndustryDirectoryWindow::produced_cargo_filter};
@@ -1791,10 +1796,7 @@ public:
 			}
 
 			case WID_ID_DROPDOWN_CRITERIA: {
-				Dimension d = {0, 0};
-				for (uint i = 0; IndustryDirectoryWindow::sorter_names[i] != INVALID_STRING_ID; i++) {
-					d = maxdim(d, GetStringBoundingBox(IndustryDirectoryWindow::sorter_names[i]));
-				}
+				Dimension d = GetStringListBoundingBox(IndustryDirectoryWindow::sorter_names);
 				d.width += padding.width;
 				d.height += padding.height;
 				size = maxdim(size, d);
@@ -1969,15 +1971,6 @@ const std::initializer_list<GUIIndustryList::SortFunction * const> IndustryDirec
 	&IndustryTypeSorter,
 	&IndustryProductionSorter,
 	&IndustryTransportedCargoSorter
-};
-
-/* Names of the sorting functions */
-const StringID IndustryDirectoryWindow::sorter_names[] = {
-	STR_SORT_BY_NAME,
-	STR_SORT_BY_TYPE,
-	STR_SORT_BY_PRODUCTION,
-	STR_SORT_BY_TRANSPORTED,
-	INVALID_STRING_ID
 };
 
 CargoID IndustryDirectoryWindow::produced_cargo_filter = CargoFilterCriteria::CF_ANY;

@@ -141,7 +141,8 @@ extern uint8_t GetAirportNoiseLevelForDistance(const struct AirportSpec *as, uin
 
 	if (_settings_game.economy.station_noise_level) {
 		uint dist;
-		AirportGetNearestTown(as, as->rotation[0], tile, AirportTileTableIterator(as->table[0], tile), dist);
+		const auto &layout = as->layouts[0];
+		AirportGetNearestTown(as, layout.rotation, tile, AirportTileTableIterator(layout.tiles.data(), tile), dist);
 		return GetAirportNoiseLevelForDistance(as, dist);
 	}
 
@@ -157,7 +158,8 @@ extern uint8_t GetAirportNoiseLevelForDistance(const struct AirportSpec *as, uin
 	if (!as->IsWithinMapBounds(0, tile)) return INVALID_TOWN;
 
 	uint dist;
-	return AirportGetNearestTown(as, as->rotation[0], tile, AirportTileTableIterator(as->table[0], tile), dist)->index;
+	const auto &layout = as->layouts[0];
+	return AirportGetNearestTown(as, layout.rotation, tile, AirportTileTableIterator(layout.tiles.data(), tile), dist)->index;
 }
 
 /* static */ SQInteger ScriptAirport::GetMaintenanceCostFactor(AirportType type)

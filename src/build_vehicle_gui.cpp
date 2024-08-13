@@ -686,7 +686,7 @@ EngList_SortTypeFunction * const _engine_sort_functions[][13] = {{
 }};
 
 /** Dropdown menu strings for the vehicle sort criteria. */
-const StringID _engine_sort_listing[][14] = {{
+const std::initializer_list<const StringID> _engine_sort_listing[] = {{
 	/* Trains */
 	STR_SORT_BY_ENGINE_ID,
 	STR_SORT_BY_COST,
@@ -701,7 +701,6 @@ const StringID _engine_sort_listing[][14] = {{
 	STR_SORT_BY_CARGO_CAPACITY,
 	STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST,
 	STR_SORT_BY_VEHICLE_COUNT,
-	INVALID_STRING_ID
 }, {
 	/* Road vehicles */
 	STR_SORT_BY_ENGINE_ID,
@@ -717,7 +716,6 @@ const StringID _engine_sort_listing[][14] = {{
 	STR_SORT_BY_CARGO_CAPACITY,
 	STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST,
 	STR_SORT_BY_VEHICLE_COUNT,
-	INVALID_STRING_ID
 }, {
 	/* Ships */
 	STR_SORT_BY_ENGINE_ID,
@@ -730,7 +728,6 @@ const StringID _engine_sort_listing[][14] = {{
 	STR_SORT_BY_CARGO_CAPACITY,
 	STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST,
 	STR_SORT_BY_VEHICLE_COUNT,
-	INVALID_STRING_ID
 }, {
 	/* Aircraft */
 	STR_SORT_BY_ENGINE_ID,
@@ -744,7 +741,6 @@ const StringID _engine_sort_listing[][14] = {{
 	STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST,
 	STR_SORT_BY_VEHICLE_COUNT,
 	STR_SORT_BY_RANGE,
-	INVALID_STRING_ID
 }};
 
 /** Filters vehicles by cargo and engine (in case of rail vehicle). */
@@ -2114,7 +2110,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 				break;
 
 			case WID_BV_SORT_DROPDOWN:
-				SetDParam(0, _engine_sort_listing[this->vehicle_type][this->sort_criteria]);
+				SetDParam(0, std::data(_engine_sort_listing[this->vehicle_type])[this->sort_criteria]);
 				break;
 
 			case WID_BV_CARGO_FILTER_DROPDOWN:
@@ -2321,7 +2317,7 @@ static EngList_SortTypeFunction * const _sorter_wagon[8] = {
 	&TrainEngineCapacityVsRunningCostSorter
 };
 
-static const StringID _sort_listing_loco[13] = {
+static const StringID _sort_listing_loco[12] = {
 	/* Locomotives */
 	STR_SORT_BY_ENGINE_ID,
 	STR_SORT_BY_COST,
@@ -2335,10 +2331,9 @@ static const StringID _sort_listing_loco[13] = {
 	STR_SORT_BY_RELIABILITY,
 	STR_SORT_BY_CARGO_CAPACITY,
 	STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST,
-	INVALID_STRING_ID
 };
 
-static const StringID _sort_listing_wagon[9] = {
+static const StringID _sort_listing_wagon[8] = {
 	/* Wagons */
 	STR_SORT_BY_ENGINE_ID,
 	STR_SORT_BY_COST,
@@ -2348,7 +2343,6 @@ static const StringID _sort_listing_wagon[9] = {
 	STR_SORT_BY_RUNNING_COST,
 	STR_SORT_BY_CARGO_CAPACITY,
 	STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST,
-	INVALID_STRING_ID
 };
 
 /**

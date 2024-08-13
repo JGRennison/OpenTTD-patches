@@ -3423,7 +3423,10 @@ private:
 		this->drop_down_list_mapping[button] = list_set;
 		int selected = GetDropDownListIndexByValue(list_set, value, missing_ok);
 		if (button == TR_WIDGET_VALUE_DROPDOWN) this->value_drop_down_is_company = false;
-		ShowDropDownMenu(this, list_set->string_array, selected, button, disabled_mask, hidden_mask);
+
+		const StringID *end = list_set->string_array;
+		while (*end != INVALID_STRING_ID) end++;
+		ShowDropDownMenu(this, std::span<const StringID>(list_set->string_array, end), selected, button, disabled_mask, hidden_mask);
 	}
 
 	/**

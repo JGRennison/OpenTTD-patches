@@ -537,9 +537,7 @@ void DeserializeNetworkGameInfoExtended(Packet &p, NetworkGameInfo &info)
 void SerializeGRFIdentifier(Packet &p, const GRFIdentifier &grf)
 {
 	p.Send_uint32(grf.grfid);
-	for (size_t j = 0; j < grf.md5sum.size(); j++) {
-		p.Send_uint8(grf.md5sum[j]);
-	}
+	p.Send_bytes(grf.md5sum);
 }
 
 /**
@@ -550,9 +548,7 @@ void SerializeGRFIdentifier(Packet &p, const GRFIdentifier &grf)
 void DeserializeGRFIdentifier(Packet &p, GRFIdentifier &grf)
 {
 	grf.grfid = p.Recv_uint32();
-	for (size_t j = 0; j < grf.md5sum.size(); j++) {
-		grf.md5sum[j] = p.Recv_uint8();
-	}
+	p.Recv_bytes(grf.md5sum);
 }
 
 /**

@@ -14,7 +14,7 @@
 #include "dropdown_type.h"
 
 /* Show drop down menu containing a fixed list of strings */
-void ShowDropDownMenu(Window *w, const StringID *strings, int selected, WidgetID button, uint32_t disabled_mask, uint32_t hidden_mask, uint width = 0, DropDownSyncFocus sync_parent_focus = DDSF_NONE);
+void ShowDropDownMenu(Window *w, std::span<const StringID> strings, int selected, WidgetID button, uint32_t disabled_mask, uint32_t hidden_mask, uint width = 0, DropDownSyncFocus sync_parent_focus = DDSF_NONE);
 
 /* Hide drop down menu of a parent window */
 int HideDropDownMenu(Window *pw);

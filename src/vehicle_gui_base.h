@@ -119,11 +119,11 @@ public:
 	static const StringID vehicle_depot_name[];
 	static const StringID vehicle_depot_sell_name[];
 
-	static const StringID vehicle_group_by_names[];
-	static const StringID vehicle_group_none_sorter_names_calendar[];
-	static const StringID vehicle_group_none_sorter_names_wallclock[];
-	static const StringID vehicle_group_shared_orders_sorter_names_calendar[];
-	static const StringID vehicle_group_shared_orders_sorter_names_wallclock[];
+	static const std::initializer_list<const StringID> vehicle_group_by_names;
+	static const std::initializer_list<const StringID> vehicle_group_none_sorter_names_calendar;
+	static const std::initializer_list<const StringID> vehicle_group_none_sorter_names_wallclock;
+	static const std::initializer_list<const StringID> vehicle_group_shared_orders_sorter_names_calendar;
+	static const std::initializer_list<const StringID> vehicle_group_shared_orders_sorter_names_wallclock;
 	static const std::initializer_list<VehicleGroupSortFunction * const> vehicle_group_none_sorter_funcs;
 	static const std::initializer_list<VehicleGroupSortFunction * const> vehicle_group_shared_orders_sorter_funcs;
 
@@ -149,7 +149,7 @@ public:
 			StringID change_order_str = 0, bool show_create_group = false, bool consider_top_level = false);
 	bool ShouldShowActionDropdownList() const;
 
-	const StringID *GetVehicleSorterNames()
+	std::span<const StringID> GetVehicleSorterNames()
 	{
 		switch (this->grouping) {
 			case GB_NONE:

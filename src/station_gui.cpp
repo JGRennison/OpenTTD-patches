@@ -285,7 +285,15 @@ protected:
 	};
 
 	/* Constants for sorting stations */
-	static const StringID sorter_names[];
+	static inline const StringID sorter_names[] = {
+		STR_SORT_BY_NAME,
+		STR_SORT_BY_FACILITY,
+		STR_SORT_BY_WAITING_TOTAL,
+		STR_SORT_BY_WAITING_AVAILABLE,
+		STR_SORT_BY_RATING_MAX,
+		STR_SORT_BY_RATING_MIN,
+		STR_SORT_BY_VEHICLES_CALLING,
+	};
 	static const std::initializer_list<GUIStationList::SortFunction * const> sorter_funcs;
 
 	static btree::btree_map<StationID, uint> station_vehicle_calling_counts;
@@ -501,7 +509,7 @@ public:
 			if (HasBit(this->filter.facilities, i)) this->LowerWidget(i + WID_STL_TRAIN);
 		}
 
-		this->GetWidget<NWidgetCore>(WID_STL_SORTDROPBTN)->widget_data = this->sorter_names[this->stations.SortType()];
+		this->GetWidget<NWidgetCore>(WID_STL_SORTDROPBTN)->widget_data = CompanyStationsWindow::sorter_names[this->stations.SortType()];
 	}
 
 	void Close(int data = 0) override
@@ -524,10 +532,7 @@ public:
 			}
 
 			case WID_STL_SORTDROPBTN: {
-				Dimension d = {0, 0};
-				for (int i = 0; CompanyStationsWindow::sorter_names[i] != INVALID_STRING_ID; i++) {
-					d = maxdim(d, GetStringBoundingBox(CompanyStationsWindow::sorter_names[i]));
-				}
+				Dimension d = GetStringListBoundingBox(CompanyStationsWindow::sorter_names);
 				d.width += padding.width;
 				d.height += padding.height;
 				size = maxdim(size, d);
@@ -729,7 +734,7 @@ public:
 				break;
 
 			case WID_STL_SORTDROPBTN: // select sorting criteria dropdown menu
-				ShowDropDownMenu(this, this->sorter_names, this->stations.SortType(), WID_STL_SORTDROPBTN, 0, 0);
+				ShowDropDownMenu(this, CompanyStationsWindow::sorter_names, this->stations.SortType(), WID_STL_SORTDROPBTN, 0, 0);
 				break;
 
 			case WID_STL_CARGODROPDOWN:
@@ -746,7 +751,7 @@ public:
 				this->stations.SetSortType(index);
 
 				/* Display the current sort variant */
-				this->GetWidget<NWidgetCore>(WID_STL_SORTDROPBTN)->widget_data = this->sorter_names[this->stations.SortType()];
+				this->GetWidget<NWidgetCore>(WID_STL_SORTDROPBTN)->widget_data = CompanyStationsWindow::sorter_names[this->stations.SortType()];
 
 				this->SetDirty();
 			}
@@ -831,18 +836,6 @@ const std::initializer_list<GUIStationList::SortFunction * const> CompanyStation
 	&StationRatingMaxSorter,
 	&StationRatingMinSorter,
 	&StationVehiclesCallingSorter
-};
-
-/* Names of the sorting functions */
-const StringID CompanyStationsWindow::sorter_names[] = {
-	STR_SORT_BY_NAME,
-	STR_SORT_BY_FACILITY,
-	STR_SORT_BY_WAITING_TOTAL,
-	STR_SORT_BY_WAITING_AVAILABLE,
-	STR_SORT_BY_RATING_MAX,
-	STR_SORT_BY_RATING_MIN,
-	STR_SORT_BY_VEHICLES_CALLING,
-	INVALID_STRING_ID
 };
 
 static constexpr NWidgetPart _nested_company_stations_widgets[] = {
@@ -1402,8 +1395,22 @@ struct StationViewWindow : public Window {
 		ALH_ACCEPTS = 3,  ///< Height of the accepted cargo view.
 	};
 
-	static const StringID _sort_names[];  ///< Names of the sorting options in the dropdown.
-	static const StringID _group_names[]; ///< Names of the grouping options in the dropdown.
+	/** Names of the sorting options in the dropdown. */
+	static inline const StringID sort_names[] = {
+		STR_STATION_VIEW_WAITING_STATION,
+		STR_STATION_VIEW_WAITING_AMOUNT,
+		STR_STATION_VIEW_PLANNED_STATION,
+		STR_STATION_VIEW_PLANNED_AMOUNT,
+	};
+	/** Names of the grouping options in the dropdown. */
+	static inline const StringID group_names[] = {
+		STR_STATION_VIEW_GROUP_S_V_D,
+		STR_STATION_VIEW_GROUP_S_D_V,
+		STR_STATION_VIEW_GROUP_V_S_D,
+		STR_STATION_VIEW_GROUP_V_D_S,
+		STR_STATION_VIEW_GROUP_D_S_V,
+		STR_STATION_VIEW_GROUP_D_V_S,
+	};
 
 	/**
 	 * Sort types of the different 'columns'.
@@ -1538,11 +1545,11 @@ struct StationViewWindow : public Window {
 			case WID_SV_GROUP_BY:
 			case WID_SV_SORT_BY: {
 				uint width = 0;
-				for (const StringID *str = _group_names; *str != INVALID_STRING_ID; str++) {
-					width = std::max(width, GetStringBoundingBox(*str).width);
+				for (StringID str : StationViewWindow::group_names) {
+					width = std::max(width, GetStringBoundingBox(str).width);
 				}
-				for (const StringID *str = _sort_names; *str != INVALID_STRING_ID; str++) {
-					width = std::max(width, GetStringBoundingBox(*str).width);
+				for (StringID str : StationViewWindow::sort_names) {
+					width = std::max(width, GetStringBoundingBox(str).width);
 				}
 				size.width = width + padding.width;
 				break;
@@ -2180,14 +2187,14 @@ struct StationViewWindow : public Window {
 				 * sorting criteria for columns 1, 2, and 3. Column 0 is always
 				 * sorted by cargo ID. The others can theoretically be sorted
 				 * by different things but there is no UI for that. */
-				ShowDropDownMenu(this, _sort_names,
+				ShowDropDownMenu(this, StationViewWindow::sort_names,
 						this->current_mode * 2 + (this->sortings[1] == CargoSortType::Count ? 1 : 0),
 						WID_SV_SORT_BY, 0, 0);
 				break;
 			}
 
 			case WID_SV_GROUP_BY: {
-				ShowDropDownMenu(this, _group_names, this->grouping_index, WID_SV_GROUP_BY, 0, 0);
+				ShowDropDownMenu(this, StationViewWindow::group_names, this->grouping_index, WID_SV_GROUP_BY, 0, 0);
 				break;
 			}
 
@@ -2265,7 +2272,7 @@ struct StationViewWindow : public Window {
 	void SelectSortBy(int index)
 	{
 		_settings_client.gui.station_gui_sort_by = index;
-		switch (_sort_names[index]) {
+		switch (StationViewWindow::sort_names[index]) {
 			case STR_STATION_VIEW_WAITING_STATION:
 				this->current_mode = MODE_WAITING;
 				this->sortings[1] = this->sortings[2] = this->sortings[3] = CargoSortType::AsGrouping;
@@ -2286,7 +2293,7 @@ struct StationViewWindow : public Window {
 				NOT_REACHED();
 		}
 		/* Display the current sort variant */
-		this->GetWidget<NWidgetCore>(WID_SV_SORT_BY)->widget_data = _sort_names[index];
+		this->GetWidget<NWidgetCore>(WID_SV_SORT_BY)->widget_data = StationViewWindow::sort_names[index];
 		this->SetDirty();
 	}
 
@@ -2298,8 +2305,8 @@ struct StationViewWindow : public Window {
 	{
 		this->grouping_index = index;
 		_settings_client.gui.station_gui_group_order = index;
-		this->GetWidget<NWidgetCore>(WID_SV_GROUP_BY)->widget_data = _group_names[index];
-		switch (_group_names[index]) {
+		this->GetWidget<NWidgetCore>(WID_SV_GROUP_BY)->widget_data = StationViewWindow::group_names[index];
+		switch (StationViewWindow::group_names[index]) {
 			case STR_STATION_VIEW_GROUP_S_V_D:
 				this->groupings[1] = GR_SOURCE;
 				this->groupings[2] = GR_NEXT;
@@ -2380,24 +2387,6 @@ struct StationViewWindow : public Window {
 	{
 		::ShowNewGRFInspectWindow(GSF_FAKE_STATION_STRUCT, this->window_number);
 	}
-};
-
-const StringID StationViewWindow::_sort_names[] = {
-	STR_STATION_VIEW_WAITING_STATION,
-	STR_STATION_VIEW_WAITING_AMOUNT,
-	STR_STATION_VIEW_PLANNED_STATION,
-	STR_STATION_VIEW_PLANNED_AMOUNT,
-	INVALID_STRING_ID
-};
-
-const StringID StationViewWindow::_group_names[] = {
-	STR_STATION_VIEW_GROUP_S_V_D,
-	STR_STATION_VIEW_GROUP_S_D_V,
-	STR_STATION_VIEW_GROUP_V_S_D,
-	STR_STATION_VIEW_GROUP_V_D_S,
-	STR_STATION_VIEW_GROUP_D_S_V,
-	STR_STATION_VIEW_GROUP_D_V_S,
-	INVALID_STRING_ID
 };
 
 static WindowDesc _station_view_desc(__FILE__, __LINE__,

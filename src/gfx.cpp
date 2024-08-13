@@ -27,6 +27,7 @@
 #include "transparency.h"
 #include "core/backup_type.hpp"
 #include "core/container_func.hpp"
+#include "core/geometry_func.hpp"
 #include "viewport_func.h"
 
 #include "table/string_colours.h"
@@ -898,17 +899,32 @@ Dimension GetStringBoundingBox(StringID strid, FontSize start_fontsize)
 
 /**
  * Get maximum width of a list of strings.
- * @param list List of strings, terminated with INVALID_STRING_ID.
+ * @param list List of strings.
  * @param fontsize Font size to use.
  * @return Width of longest string within the list.
  */
-uint GetStringListWidth(const StringID *list, FontSize fontsize)
+uint GetStringListWidth(std::span<const StringID> list, FontSize fontsize)
 {
 	uint width = 0;
-	for (const StringID *str = list; *str != INVALID_STRING_ID; str++) {
-		width = std::max(width, GetStringBoundingBox(*str, fontsize).width);
+	for (auto str : list) {
+		width = std::max(width, GetStringBoundingBox(str, fontsize).width);
 	}
 	return width;
+}
+
+/**
+ * Get maximum dimension of a list of strings.
+ * @param list List of strings, terminated by INVALID_STRING_ID.
+ * @param fontsize Font size to use.
+ * @return Dimension of highest and longest string within the list.
+ */
+Dimension GetStringListBoundingBox(std::span<const StringID> list, FontSize fontsize)
+{
+	Dimension d{0, 0};
+	for (auto str : list) {
+		d = maxdim(d, GetStringBoundingBox(str, fontsize));
+	}
+	return d;
 }
 
 /**

@@ -134,7 +134,7 @@ const std::initializer_list<BaseVehicleListWindow::VehicleGroupSortFunction * co
 	&VehicleIndividualToGroupSorterWrapper<VehicleMaxSpeedLoadedSorter>,
 };
 
-const StringID BaseVehicleListWindow::vehicle_group_none_sorter_names_calendar[] = {
+const std::initializer_list<const StringID> BaseVehicleListWindow::vehicle_group_none_sorter_names_calendar = {
 	STR_SORT_BY_NUMBER,
 	STR_SORT_BY_NAME,
 	STR_SORT_BY_AGE,
@@ -151,10 +151,9 @@ const StringID BaseVehicleListWindow::vehicle_group_none_sorter_names_calendar[]
 	STR_SORT_BY_TIMETABLE_DELAY,
 	STR_SORT_BY_AVG_ORDER_OCCUPANCY,
 	STR_SORT_BY_MAX_SPEED_LOADED,
-	INVALID_STRING_ID
 };
 
-const StringID BaseVehicleListWindow::vehicle_group_none_sorter_names_wallclock[] = {
+const std::initializer_list<const StringID> BaseVehicleListWindow::vehicle_group_none_sorter_names_wallclock = {
 	STR_SORT_BY_NUMBER,
 	STR_SORT_BY_NAME,
 	STR_SORT_BY_AGE,
@@ -171,7 +170,6 @@ const StringID BaseVehicleListWindow::vehicle_group_none_sorter_names_wallclock[
 	STR_SORT_BY_TIMETABLE_DELAY,
 	STR_SORT_BY_AVG_ORDER_OCCUPANCY,
 	STR_SORT_BY_MAX_SPEED_LOADED,
-	INVALID_STRING_ID
 };
 
 const std::initializer_list<BaseVehicleListWindow::VehicleGroupSortFunction * const> BaseVehicleListWindow::vehicle_group_shared_orders_sorter_funcs = {
@@ -183,30 +181,27 @@ const std::initializer_list<BaseVehicleListWindow::VehicleGroupSortFunction * co
 	&VehicleGroupAverageOrderOccupancySorter,
 };
 
-const StringID BaseVehicleListWindow::vehicle_group_shared_orders_sorter_names_calendar[] = {
+const std::initializer_list<const StringID> BaseVehicleListWindow::vehicle_group_shared_orders_sorter_names_calendar = {
 	STR_SORT_BY_NUM_VEHICLES,
 	STR_SORT_BY_TOTAL_PROFIT_THIS_YEAR,
 	STR_SORT_BY_TOTAL_PROFIT_LAST_YEAR,
 	STR_SORT_BY_AVERAGE_PROFIT_THIS_YEAR,
 	STR_SORT_BY_AVERAGE_PROFIT_LAST_YEAR,
 	STR_SORT_BY_AVG_ORDER_OCCUPANCY,
-	INVALID_STRING_ID
 };
 
-const StringID BaseVehicleListWindow::vehicle_group_shared_orders_sorter_names_wallclock[] = {
+const std::initializer_list<const StringID> BaseVehicleListWindow::vehicle_group_shared_orders_sorter_names_wallclock = {
 	STR_SORT_BY_NUM_VEHICLES,
 	STR_SORT_BY_TOTAL_PROFIT_THIS_PERIOD,
 	STR_SORT_BY_TOTAL_PROFIT_LAST_PERIOD,
 	STR_SORT_BY_AVERAGE_PROFIT_THIS_PERIOD,
 	STR_SORT_BY_AVERAGE_PROFIT_LAST_PERIOD,
 	STR_SORT_BY_AVG_ORDER_OCCUPANCY,
-	INVALID_STRING_ID
 };
 
-const StringID BaseVehicleListWindow::vehicle_group_by_names[] = {
+const std::initializer_list<const StringID> BaseVehicleListWindow::vehicle_group_by_names = {
 	STR_GROUP_BY_NONE,
 	STR_GROUP_BY_SHARED_ORDERS,
-	INVALID_STRING_ID
 };
 
 const StringID BaseVehicleListWindow::vehicle_depot_name[] = {
@@ -2477,7 +2472,7 @@ public:
 		}
 
 		/* Set text of group by dropdown widget. */
-		this->GetWidget<NWidgetCore>(WID_VL_GROUP_BY_PULLDOWN)->widget_data = this->vehicle_group_by_names[this->grouping];
+		this->GetWidget<NWidgetCore>(WID_VL_GROUP_BY_PULLDOWN)->widget_data = std::data(this->vehicle_group_by_names)[this->grouping];
 
 		/* Set text of sort by dropdown widget. */
 		this->GetWidget<NWidgetCore>(WID_VL_SORT_BY_PULLDOWN)->widget_data = this->GetVehicleSorterNames()[this->vehgroups.SortType()];
@@ -2914,24 +2909,21 @@ static StringID _service_interval_dropdown_calendar[] = {
 	STR_VEHICLE_DETAILS_DEFAULT,
 	STR_VEHICLE_DETAILS_DAYS,
 	STR_VEHICLE_DETAILS_PERCENT,
-	INVALID_STRING_ID,
 };
 
 static StringID _service_interval_dropdown_wallclock[] = {
 	STR_VEHICLE_DETAILS_DEFAULT,
 	STR_VEHICLE_DETAILS_MINUTES,
 	STR_VEHICLE_DETAILS_PERCENT,
-	INVALID_STRING_ID,
 };
 
 static StringID _service_interval_dropdown_wallclock_daylength[] = {
 	STR_VEHICLE_DETAILS_DEFAULT,
 	STR_VEHICLE_DETAILS_PRODUCTION_INTERVALS,
 	STR_VEHICLE_DETAILS_PERCENT,
-	INVALID_STRING_ID,
 };
 
-const StringID *GetServiceIntervalDropDownTexts()
+std::span<const StringID> GetServiceIntervalDropDownTexts()
 {
 	if (EconTime::UsingWallclockUnits()) {
 		return DayLengthFactor() > 1 ? _service_interval_dropdown_wallclock_daylength : _service_interval_dropdown_wallclock;
@@ -3157,13 +3149,7 @@ struct VehicleDetailsWindow : Window {
 				break;
 
 			case WID_VD_SERVICE_INTERVAL_DROPDOWN: {
-				Dimension d{0, 0};
-				{
-					const StringID *strs = GetServiceIntervalDropDownTexts();
-					while (*strs != INVALID_STRING_ID) {
-						d = maxdim(d, GetStringBoundingBox(*strs++));
-					}
-				}
+				Dimension d = GetStringListBoundingBox(GetServiceIntervalDropDownTexts());
 				d.width += padding.width;
 				d.height += padding.height;
 				size = maxdim(size, d);
@@ -3460,7 +3446,7 @@ struct VehicleDetailsWindow : Window {
 
 		this->SetWidgetDisabledState(WID_VD_EXTRA_ACTIONS, v->type != VEH_TRAIN && !HasBit(v->vehicle_flags, VF_HAVE_SLOT));
 
-		const StringID *texts = GetServiceIntervalDropDownTexts();
+		std::span<const StringID> texts = GetServiceIntervalDropDownTexts();
 		StringID str = !v->ServiceIntervalIsCustom() ? texts[0] : (v->ServiceIntervalIsPercent() ? texts[2] : texts[1]);
 		this->GetWidget<NWidgetCore>(WID_VD_SERVICE_INTERVAL_DROPDOWN)->widget_data = str;
 

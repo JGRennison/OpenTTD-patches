@@ -52,7 +52,6 @@ static const StringID _cargo_type_load_order_drowdown[] = {
 	STR_CARGO_TYPE_ORDERS_DROP_FULL_LOAD, // OLFB_FULL_LOAD
 	STR_EMPTY,
 	STR_ORDER_DROP_NO_LOADING,            // OLFB_NO_LOAD
-	INVALID_STRING_ID
 };
 static const uint32_t _cargo_type_load_order_drowdown_hidden_mask = 0xA; // 01010
 
@@ -63,7 +62,6 @@ static const StringID _cargo_type_unload_order_drowdown[] = {
 	STR_ORDER_DROP_TRANSFER,           // OUFB_TRANSFER
 	STR_EMPTY,
 	STR_ORDER_DROP_NO_UNLOADING,       // OUFB_NO_UNLOAD
-	INVALID_STRING_ID
 };
 static const uint32_t _cargo_type_unload_order_drowdown_hidden_mask = 0x8; // 01000
 
@@ -88,7 +86,7 @@ private:
 	static const uint8_t CARGO_ICON_WIDTH  = 12;
 	static const uint8_t CARGO_ICON_HEIGHT =  8;
 
-	const StringID *cargo_type_order_dropdown; ///< Strings used to populate order dropdowns.
+	std::span<const StringID> cargo_type_order_dropdown; ///< Strings used to populate order dropdowns.
 	uint32_t cargo_type_order_dropdown_hmask;  ///< Hidden mask for order dropdowns.
 
 	uint max_cargo_name_width;     ///< Greatest width of cargo names.
@@ -109,8 +107,8 @@ private:
 			this->max_cargo_name_width = std::max(this->max_cargo_name_width, GetStringBoundingBox(STR_JUST_STRING).width);
 		}
 		this->max_cargo_dropdown_width = 0;
-		for (int i = 0; this->cargo_type_order_dropdown[i] != INVALID_STRING_ID; i++) {
-			SetDParam(0, this->cargo_type_order_dropdown[i]);
+		for (StringID str : this->cargo_type_order_dropdown) {
+			SetDParam(0, str);
 			this->max_cargo_dropdown_width = std::max(this->max_cargo_dropdown_width, GetStringBoundingBox(STR_JUST_STRING).width);
 		}
 	}
@@ -589,7 +587,6 @@ static const StringID _order_non_stop_drowdown[] = {
 	STR_ORDER_GO_NON_STOP_TO,
 	STR_ORDER_GO_VIA,
 	STR_ORDER_GO_NON_STOP_VIA,
-	INVALID_STRING_ID
 };
 
 static const StringID _order_full_load_drowdown[] = {
@@ -602,7 +599,6 @@ static const StringID _order_full_load_drowdown[] = {
 	STR_EMPTY,
 	STR_EMPTY,
 	STR_ORDER_DROP_CARGO_TYPE_LOAD,
-	INVALID_STRING_ID
 };
 
 static const StringID _order_unload_drowdown[] = {
@@ -615,7 +611,6 @@ static const StringID _order_unload_drowdown[] = {
 	STR_EMPTY,
 	STR_EMPTY,
 	STR_ORDER_DROP_CARGO_TYPE_UNLOAD,
-	INVALID_STRING_ID
 };
 
 enum OrderDropDownID {
@@ -633,7 +628,6 @@ enum OrderDropDownID {
 static const StringID _order_manage_list_dropdown[] = {
 	STR_ORDER_REVERSE_ORDER_LIST,
 	STR_ORDER_APPEND_REVERSED_ORDER_LIST,
-	INVALID_STRING_ID
 };
 
 /** Variables for conditional orders; this defines the order of appearance in the dropdown box */
@@ -669,7 +663,6 @@ static const StringID _order_conditional_condition[] = {
 	STR_ORDER_CONDITIONAL_COMPARATOR_MORE_EQUALS,
 	STR_ORDER_CONDITIONAL_COMPARATOR_IS_TRUE,
 	STR_ORDER_CONDITIONAL_COMPARATOR_IS_FALSE,
-	INVALID_STRING_ID,
 };
 
 static const StringID _order_conditional_condition_has[] = {
@@ -681,7 +674,6 @@ static const StringID _order_conditional_condition_has[] = {
 	STR_ORDER_CONDITIONAL_COMPARATOR_HAS_MORE_EQUALS,
 	STR_ORDER_CONDITIONAL_COMPARATOR_HAS,
 	STR_ORDER_CONDITIONAL_COMPARATOR_HAS_NO,
-	INVALID_STRING_ID,
 };
 
 static const StringID _order_conditional_condition_accepts[] = {
@@ -693,7 +685,6 @@ static const StringID _order_conditional_condition_accepts[] = {
 	STR_NULL,
 	STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS,
 	STR_ORDER_CONDITIONAL_COMPARATOR_DOES_NOT_ACCEPT,
-	INVALID_STRING_ID,
 };
 
 static const StringID _order_conditional_condition_occupancy[] = {
@@ -705,7 +696,6 @@ static const StringID _order_conditional_condition_occupancy[] = {
 	STR_NULL,
 	STR_ORDER_CONDITIONAL_COMPARATOR_FULLY_OCCUPIED,
 	STR_ORDER_CONDITIONAL_COMPARATOR_NOT_YET_FULLY_OCCUPIED,
-	INVALID_STRING_ID,
 };
 
 static const StringID _order_conditional_condition_is_in_slot[] = {
@@ -717,7 +707,6 @@ static const StringID _order_conditional_condition_is_in_slot[] = {
 	STR_NULL,
 	STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_IN_SLOT,
 	STR_ORDER_CONDITIONAL_COMPARATOR_TRAIN_NOT_IN_SLOT,
-	INVALID_STRING_ID,
 };
 
 static const StringID _order_conditional_condition_is_in_slot_non_train[] = {
@@ -729,7 +718,6 @@ static const StringID _order_conditional_condition_is_in_slot_non_train[] = {
 	STR_NULL,
 	STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_IN_SLOT,
 	STR_ORDER_CONDITIONAL_COMPARATOR_VEHICLE_NOT_IN_SLOT,
-	INVALID_STRING_ID,
 };
 
 static const StringID _order_conditional_condition_dispatch_slot_first[] = {
@@ -741,7 +729,6 @@ static const StringID _order_conditional_condition_dispatch_slot_first[] = {
 	STR_NULL,
 	STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_FIRST,
 	STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_FIRST,
-	INVALID_STRING_ID,
 };
 
 static const StringID _order_conditional_condition_dispatch_slot_last[] = {
@@ -753,7 +740,6 @@ static const StringID _order_conditional_condition_dispatch_slot_last[] = {
 	STR_NULL,
 	STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_LAST,
 	STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_LAST,
-	INVALID_STRING_ID,
 };
 
 static const StringID _order_conditional_condition_dispatch_slot_tag[] = {
@@ -765,7 +751,6 @@ static const StringID _order_conditional_condition_dispatch_slot_tag[] = {
 	STR_NULL,
 	STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG,
 	STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG,
-	INVALID_STRING_ID,
 };
 
 extern uint ConvertSpeedToDisplaySpeed(uint speed, VehicleType type);
@@ -777,7 +762,6 @@ static const StringID _order_depot_action_dropdown[] = {
 	STR_ORDER_DROP_HALT_DEPOT,
 	STR_ORDER_DROP_UNBUNCH,
 	STR_ORDER_DROP_SELL_DEPOT,
-	INVALID_STRING_ID
 };
 
 static int DepotActionStringIndex(const Order *order)
@@ -798,7 +782,6 @@ static int DepotActionStringIndex(const Order *order)
 static const StringID _order_refit_action_dropdown[] = {
 	STR_ORDER_DROP_REFIT_AUTO,
 	STR_ORDER_DROP_REFIT_AUTO_ANY,
-	INVALID_STRING_ID
 };
 
 static const StringID _order_time_date_dropdown[] = {
@@ -807,13 +790,11 @@ static const StringID _order_time_date_dropdown[] = {
 	STR_TRACE_RESTRICT_TIME_HOUR_MINUTE,
 	STR_TRACE_RESTRICT_TIME_DAY,
 	STR_TRACE_RESTRICT_TIME_MONTH,
-	INVALID_STRING_ID
 };
 
 static const StringID _order_timetable_dropdown[] = {
 	STR_TRACE_RESTRICT_TIMETABLE_LATENESS,
 	STR_TRACE_RESTRICT_TIMETABLE_EARLINESS,
-	INVALID_STRING_ID
 };
 
 StringID OrderStringForVariable(const Vehicle *v, OrderConditionVariable ocv)
@@ -1594,7 +1575,7 @@ private:
 	 * @param order the order to evaluate
 	 * @return the StringIDs to display
 	 */
-	static const StringID *GetComparatorStrings(const Vehicle *v, const Order *order)
+	static std::span<const StringID> GetComparatorStrings(const Vehicle *v, const Order *order)
 	{
 		if (order == nullptr) return _order_conditional_condition;
 		switch (order->GetConditionVariable()) {
@@ -2031,10 +2012,7 @@ public:
 			}
 
 			case WID_O_COND_COMPARATOR: {
-				Dimension d = {0, 0};
-				for (int i = 0; _order_conditional_condition[i] != INVALID_STRING_ID; i++) {
-					d = maxdim(d, GetStringBoundingBox(_order_conditional_condition[i]));
-				}
+				Dimension d = GetStringListBoundingBox(_order_conditional_condition);
 				d.width += padding.width;
 				d.height += padding.height;
 				size = maxdim(size, d);
