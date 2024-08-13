@@ -214,12 +214,12 @@ static bool VehicleSetNextDepartureTime(Ticks *previous_departure, Ticks *waitin
 	return false;
 }
 
-static void ScheduledDispatchDepartureLocalFix(DepartureList *departure_list)
+static void ScheduledDispatchDepartureLocalFix(DepartureList &departure_list)
 {
 	/* Separate departure by each shared order group */
-	btree::btree_map<uint32_t, std::vector<Departure*>> separated_departure;
-	for (Departure* departure : *departure_list) {
-		separated_departure[departure->vehicle->orders->index].push_back(departure);
+	btree::btree_map<uint32_t, std::vector<Departure *>> separated_departure;
+	for (auto &departure : departure_list) {
+		separated_departure[departure->vehicle->orders->index].push_back(departure.get());
 	}
 
 	for (auto& pair : separated_departure) {
@@ -255,7 +255,7 @@ static void ScheduledDispatchDepartureLocalFix(DepartureList *departure_list)
 	}
 
 	/* Re-sort the departure list */
-	std::sort(departure_list->begin(), departure_list->end(), [](Departure * const &a, Departure * const &b) -> bool {
+	std::sort(departure_list.begin(), departure_list.end(), [](std::unique_ptr<Departure> &a, std::unique_ptr<Departure> &b) -> bool {
 		return a->scheduled_tick < b->scheduled_tick;
 	});
 }
@@ -270,7 +270,7 @@ static void ScheduledDispatchDepartureLocalFix(DepartureList *departure_list)
  * @param show_freight whether to include freight vehicles
  * @return a list of departures, which is empty if an error occurred
  */
-DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehicle *> &vehicles, DepartureType type, bool show_vehicles_via, bool show_pax, bool show_freight)
+DepartureList MakeDepartureList(StationID station, const std::vector<const Vehicle *> &vehicles, DepartureType type, bool show_vehicles_via, bool show_pax, bool show_freight)
 {
 	/* This function is the meat of the departure boards functionality. */
 	/* As an overview, it works by repeatedly considering the best possible next departure to show. */
@@ -279,13 +279,13 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 	/* This code can probably be made more efficient. I haven't done so in order to keep both its (relative) simplicity and my (relative) sanity. */
 	/* Having written that, it's not exactly slow at the moment. */
 
-	/* The list of departures which will be returned as a result. */
-	std::vector<Departure*> *result = new std::vector<Departure*>();
+	if (!show_pax && !show_freight) return {};
 
-	if (!show_pax && !show_freight) return result;
+	/* The list of departures which will be returned as a result. */
+	std::vector<std::unique_ptr<Departure>> result;
 
 	/* A list of the next scheduled orders to be considered for inclusion in the departure list. */
-	std::vector<OrderDate*> next_orders;
+	std::vector<std::unique_ptr<OrderDate>> next_orders;
 
 	/* The maximum possible date for departures to be scheduled to occur. */
 	const Ticks max_ticks = GetDeparturesMaxTicksAhead();
@@ -426,7 +426,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 						break;
 					}
 
-					OrderDate *od = new OrderDate();
+					std::unique_ptr<OrderDate> od = std::make_unique<OrderDate>();
 					od->order = order;
 					od->v = v;
 					/* We store the expected date for now, so that vehicles will be shown in order of expected time. */
@@ -449,18 +449,18 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 
 					/* Update least_order if this is the current least order. */
 					if (least_order == nullptr) {
-						least_order = od;
+						least_order = od.get();
 					} else if (type == D_ARRIVAL) {
 						if ((least_order->expected_tick - least_order->lateness - least_order->EffectiveWaitingTime()) > (od->expected_tick - od->lateness - od->EffectiveWaitingTime())) {
-							least_order = od;
+							least_order = od.get();
 						}
 					} else {
 						if ((least_order->expected_tick - least_order->lateness) > (od->expected_tick - od->lateness)) {
-							least_order = od;
+							least_order = od.get();
 						}
 					}
 
-					next_orders.push_back(od);
+					next_orders.push_back(std::move(od));
 
 					/* We're done with this vehicle. */
 					break;
@@ -494,13 +494,14 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 		/* least_order is the best candidate for the next departure. */
 
 		/* First, we check if we can stop looking for departures yet. */
-		if (result->size() >= _settings_client.gui.max_departures ||
+		if (result.size() >= _settings_client.gui.max_departures ||
 				least_order->expected_tick - least_order->lateness > max_ticks) {
 			break;
 		}
 
 		/* We already know the least order and that it's a suitable departure, so make it into a departure. */
-		Departure *d = new Departure();
+		std::unique_ptr<Departure> departure_ptr = std::make_unique<Departure>();
+		Departure *d = departure_ptr.get();
 		d->scheduled_tick = state_ticks_base + least_order->expected_tick - least_order->lateness;
 		d->lateness = least_order->lateness;
 		d->status = least_order->status;
@@ -675,8 +676,8 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 				bool duplicate = false;
 
 				if (_settings_client.gui.departure_merge_identical) {
-					for (uint i = 0; i < result->size(); ++i) {
-						if (*d == *((*result)[i])) {
+					for (uint i = 0; i < result.size(); ++i) {
+						if (*d == *(result[i])) {
 							duplicate = true;
 							break;
 						}
@@ -684,11 +685,11 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 				}
 
 				if (!duplicate) {
-					result->push_back(d);
+					result.push_back(std::move(departure_ptr));
 
 					if (_settings_client.gui.departure_smart_terminus && type == D_DEPARTURE) {
-						for (uint i = 0; i < result->size() - 1; ++i) {
-							Departure *d_first = (*result)[i];
+						for (uint i = 0; i < result.size() - 1; ++i) {
+							Departure *d_first = result[i].get();
 							uint k = (uint)d_first->calling_at.size() - 2;
 							uint j = (uint)d->calling_at.size();
 							while (j > 0) {
@@ -723,8 +724,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 
 					/* If the vehicle is expected to be late, we want to know what time it will arrive rather than depart. */
 					/* This is done because it looked silly to me to have a vehicle not be expected for another few days, yet it be at the same time pulling into the station. */
-					if (d->status != D_ARRIVED &&
-							d->lateness > 0) {
+					if (d->status != D_ARRIVED && d->lateness > 0) {
 						d->lateness -= least_order->order->GetWaitTime();
 					}
 				}
@@ -799,8 +799,8 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 				bool duplicate = false;
 
 				if (_settings_client.gui.departure_merge_identical) {
-					for (uint i = 0; i < result->size(); ++i) {
-						if (*d == *((*result)[i])) {
+					for (uint i = 0; i < result.size(); ++i) {
+						if (*d == *(result[i])) {
 							duplicate = true;
 							break;
 						}
@@ -808,7 +808,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 				}
 
 				if (!duplicate) {
-					result->push_back(d);
+					result.push_back(std::move(departure_ptr));
 				}
 			}
 		}
@@ -906,7 +906,7 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 
 		/* Find the new least order. */
 		for (uint i = 0; i < next_orders.size(); ++i) {
-			OrderDate *od = next_orders[i];
+			OrderDate *od = next_orders[i].get();
 
 			Ticks lod = least_order->expected_tick - least_order->lateness;
 			Ticks odd = od->expected_tick - od->lateness;
@@ -920,12 +920,6 @@ DepartureList* MakeDepartureList(StationID station, const std::vector<const Vehi
 				least_order = od;
 			}
 		}
-	}
-
-	/* Avoid leaking OrderDate structs */
-	for (uint i = 0; i < next_orders.size(); ++i) {
-		OrderDate *od = next_orders[i];
-		delete od;
 	}
 
 	if (type == D_DEPARTURE) ScheduledDispatchDepartureLocalFix(result);

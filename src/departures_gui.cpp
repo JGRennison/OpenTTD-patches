@@ -90,8 +90,8 @@ template<bool Twaypoint = false>
 struct DeparturesWindow : public Window {
 protected:
 	StationID station;         ///< The station whose departures we're showing.
-	DepartureList *departures; ///< The current list of departures from this station.
-	DepartureList *arrivals;   ///< The current list of arrivals from this station.
+	DepartureList departures;  ///< The current list of departures from this station.
+	DepartureList arrivals;    ///< The current list of arrivals from this station.
 	bool departures_invalid;   ///< The departures and arrivals list are currently invalid.
 	bool vehicles_invalid;     ///< The vehicles list is currently invalid.
 	uint entry_height;         ///< The height of an entry in the departures list.
@@ -114,7 +114,6 @@ protected:
 	virtual uint GetMinWidth() const;
 	static void RecomputeDateWidth();
 	virtual void DrawDeparturesListItems(const Rect &r) const;
-	void DeleteDeparturesList(DepartureList* list);
 
 	void ToggleCargoFilter(WidgetID widget, bool &flag)
 	{
@@ -236,8 +235,6 @@ public:
 
 	DeparturesWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc),
 		station(window_number),
-		departures(new DepartureList()),
-		arrivals(new DepartureList()),
 		departures_invalid(true),
 		vehicles_invalid(true),
 		elapsed_ms(0),
@@ -287,12 +284,6 @@ public:
 		this->RefreshVehicleList();
 
 		if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
-	}
-
-	virtual ~DeparturesWindow()
-	{
-		this->DeleteDeparturesList(this->departures);
-		this->DeleteDeparturesList(this->arrivals);
 	}
 
 	void SetupValues()
@@ -409,22 +400,22 @@ public:
 
 				id_v += (uint32_t)this->vscroll->GetPosition();
 
-				if (id_v >= (this->departures->size() + this->arrivals->size())) return; // click out of list bound
+				if (id_v >= (this->departures.size() + this->arrivals.size())) return; // click out of list bound
 
 				uint departure = 0;
 				uint arrival = 0;
 
 				/* Draw each departure. */
 				for (uint i = 0; i <= id_v; ++i) {
-					const Departure *d;
+					const Departure *d = nullptr;
 
-					if (arrival == this->arrivals->size()) {
-						d = (*(this->departures))[departure++];
-					} else if (departure == this->departures->size()) {
-						d = (*(this->arrivals))[arrival++];
+					if (arrival == this->arrivals.size()) {
+						d = this->departures[departure++].get();
+					} else if (departure == this->departures.size()) {
+						d = this->arrivals[arrival++].get();
 					} else {
-						d = (*(this->departures))[departure];
-						const Departure *a = (*(this->arrivals))[arrival];
+						d = this->departures[departure].get();
+						const Departure *a = this->arrivals[arrival].get();
 
 						if (a->scheduled_tick < d->scheduled_tick) {
 							d = a;
@@ -492,12 +483,18 @@ public:
 		/* Recompute the list of departures if we're due to. */
 		if (this->calc_tick_countdown <= 0) {
 			this->calc_tick_countdown = _settings_client.gui.departure_calc_frequency;
-			this->DeleteDeparturesList(this->departures);
-			this->DeleteDeparturesList(this->arrivals);
 			bool show_pax = _settings_client.gui.departure_only_passengers ? true : this->show_pax;
 			bool show_freight = _settings_client.gui.departure_only_passengers ? false : this->show_freight;
-			this->departures = (this->departure_types[0] || _settings_client.gui.departure_show_both ? MakeDepartureList(this->station, this->vehicles, D_DEPARTURE, Twaypoint || this->departure_types[2], show_pax, show_freight) : new DepartureList());
-			this->arrivals   = (this->departure_types[1] && !_settings_client.gui.departure_show_both ? MakeDepartureList(this->station, this->vehicles, D_ARRIVAL, false, show_pax, show_freight) : new DepartureList());
+			if (this->departure_types[0] || _settings_client.gui.departure_show_both) {
+				this->departures = MakeDepartureList(this->station, this->vehicles, D_DEPARTURE, Twaypoint || this->departure_types[2], show_pax, show_freight);
+			} else {
+				this->departures.clear();
+			}
+			if (this->departure_types[1] && !_settings_client.gui.departure_show_both) {
+				this->arrivals = MakeDepartureList(this->station, this->vehicles, D_ARRIVAL, false, show_pax, show_freight);
+			} else {
+				this->arrivals.clear();
+			}
 			this->departures_invalid = false;
 			this->SetWidgetDirty(WID_DB_LIST);
 		}
@@ -530,7 +527,7 @@ public:
 
 	virtual void OnPaint() override
 	{
-		this->vscroll->SetCount(std::min<uint>(_settings_client.gui.max_departures, (uint)this->departures->size() + (uint)this->arrivals->size()));
+		this->vscroll->SetCount(std::min<uint>(_settings_client.gui.max_departures, (uint)this->departures.size() + (uint)this->arrivals.size()));
 		this->DrawWidgets();
 	}
 
@@ -641,23 +638,6 @@ uint DeparturesWindow<Twaypoint>::GetMinWidth() const
 }
 
 /**
- * Deletes this window's departure list.
- */
-template<bool Twaypoint>
-void DeparturesWindow<Twaypoint>::DeleteDeparturesList(DepartureList *list)
-{
-	/* SmallVector uses free rather than delete on its contents (which doesn't invoke the destructor), so we need to delete each departure manually. */
-	for (uint i = 0; i < list->size(); ++i) {
-		Departure **d = &(*list)[i];
-		delete *d;
-		/* Make sure a double free doesn't happen. */
-		*d = nullptr;
-	}
-	delete list;
-	list = nullptr;
-}
-
-/**
  * Draws a list of departures.
  */
 template<bool Twaypoint>
@@ -676,7 +656,7 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 	const int text_right = right - (rtl ? text_offset :           0);
 
 	int y = r.top + 1;
-	uint max_departures = std::min<uint>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), (uint)this->departures->size() + (uint)this->arrivals->size());
+	uint max_departures = std::min<uint>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), (uint)this->departures.size() + (uint)this->arrivals.size());
 
 	if (max_departures > _settings_client.gui.max_departures) {
 		max_departures = _settings_client.gui.max_departures;
@@ -755,13 +735,13 @@ void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
 	for (uint i = 0; i < max_departures; ++i) {
 		const Departure *d;
 
-		if (arrival == this->arrivals->size()) {
-			d = (*(this->departures))[departure++];
-		} else if (departure == this->departures->size()) {
-			d = (*(this->arrivals))[arrival++];
+		if (arrival == this->arrivals.size()) {
+			d = this->departures[departure++].get();
+		} else if (departure == this->departures.size()) {
+			d = this->arrivals[arrival++].get();
 		} else {
-			d = (*(this->departures))[departure];
-			const Departure *a = (*(this->arrivals))[arrival];
+			d = this->departures[departure].get();
+			const Departure *a = this->arrivals[arrival].get();
 
 			if (a->scheduled_tick < d->scheduled_tick) {
 				d = a;

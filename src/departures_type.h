@@ -113,6 +113,6 @@ struct Departure {
 	}
 };
 
-typedef std::vector<Departure*> DepartureList;
+typedef std::vector<std::unique_ptr<Departure>> DepartureList;
 
 #endif /* DEPARTURES_TYPE_H */
