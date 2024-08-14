@@ -21,6 +21,7 @@
 #include "newgrf_spritegroup.h"
 #include "newgrf_town.h"
 #include <vector>
+#include <unordered_map>
 
 /** Scope resolver for stations. */
 struct StationScopeResolver : public ScopeResolver {
@@ -191,15 +192,8 @@ struct StationSpec : NewGRFSpecBase<StationClassID> {
 
 	uint8_t internal_flags; ///< Bitmask of internal spec flags (StationSpecIntlFlags)
 
-	/**
-	 * Custom platform layouts.
-	 * This is a 2D array containing an array of tiles.
-	 * 1st layer is platform lengths.
-	 * 2nd layer is tracks (width).
-	 * These can be sparsely populated, and the upper limit is not defined but
-	 * limited to 255.
-	 */
-	std::vector<std::vector<std::vector<uint8_t>>> layouts;
+	/** Custom platform layouts, keyed by platform and length combined. */
+	std::unordered_map<uint16_t, std::vector<uint8_t>> layouts;
 };
 DECLARE_ENUM_AS_BIT_SET(StationSpec::TileFlags);
 
@@ -207,6 +201,17 @@ DECLARE_ENUM_AS_BIT_SET(StationSpec::TileFlags);
 using StationClass = NewGRFClass<StationSpec, StationClassID, STAT_CLASS_MAX>;
 
 const StationSpec *GetStationSpec(TileIndex t);
+
+/**
+ * Get the station layout key for a given station layout size.
+ * @param platforms Number of platforms.
+ * @param length Length of platforms.
+ * @returns Key of station layout.
+ */
+inline uint16_t GetStationLayoutKey(uint8_t platforms, uint8_t length)
+{
+	return (length << 8U) | platforms;
+}
 
 /**
  * Test if a StationClass is the waypoint class.
