@@ -55,13 +55,6 @@ struct BaseVehicle
 
 static const VehicleID INVALID_VEHICLE = 0xFFFFF; ///< Constant representing a non-existing vehicle.
 
-/** Pathfinding option states */
-enum VehiclePathFinders {
-	// Original PathFinder (OPF) used to be 0
-	VPF_NPF  = 1, ///< New PathFinder
-	VPF_YAPF = 2, ///< Yet Another PathFinder
-};
-
 /** Flags to add to p1 for goto depot commands. */
 enum DepotCommand {
 	DEPOT_SELL          = (1U << 25), ///< Go to depot and sell order

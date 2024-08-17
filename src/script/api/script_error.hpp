@@ -122,6 +122,8 @@ public:
 
 	/**
 	 * All general related error messages.
+	 *
+	 * @see ScriptErrorType
 	 */
 	enum ErrorMessages {
 		/** Initial error value */

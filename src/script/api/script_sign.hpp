@@ -22,6 +22,8 @@ class ScriptSign : public ScriptObject {
 public:
 	/**
 	 * All sign related error messages.
+	 *
+	 * @see ScriptErrorType
 	 */
 	enum ErrorMessages {
 

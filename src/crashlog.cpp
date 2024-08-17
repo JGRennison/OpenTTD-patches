@@ -224,13 +224,6 @@ char *CrashLog::LogOpenTTDVersion(char *buffer, const char *last) const
  */
 char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 {
-	auto pathfinder_name = [](uint8_t pf) -> const char * {
-		switch (pf) {
-			case VPF_NPF: return "NPF";
-			case VPF_YAPF: return "YAPF";
-			default: return "-";
-		};
-	};
 	auto mode_name = []() -> const char * {
 		switch (_game_mode) {
 			case GM_MENU: return "MENU";
@@ -250,8 +243,7 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 			" Network:      %s\n"
 			" Sound driver: %s\n"
 			" Sound set:    %s (%u)\n"
-			" Video driver: %s\n"
-			" Pathfinder:   %s %s %s\n",
+			" Video driver: %s\n",
 			BlitterFactory::GetCurrentBlitter() == nullptr ? "none" : BlitterFactory::GetCurrentBlitter()->GetName(),
 			BaseGraphics::GetUsedSet() == nullptr ? "none" : BaseGraphics::GetUsedSet()->name.c_str(),
 			BaseGraphics::GetUsedSet() == nullptr ? UINT32_MAX : BaseGraphics::GetUsedSet()->version,
@@ -263,8 +255,7 @@ char *CrashLog::LogConfiguration(char *buffer, const char *last) const
 			SoundDriver::GetInstance() == nullptr ? "none" : SoundDriver::GetInstance()->GetName(),
 			BaseSounds::GetUsedSet() == nullptr ? "none" : BaseSounds::GetUsedSet()->name.c_str(),
 			BaseSounds::GetUsedSet() == nullptr ? UINT32_MAX : BaseSounds::GetUsedSet()->version,
-			VideoDriver::GetInstance() == nullptr ? "none" : VideoDriver::GetInstance()->GetInfoString(),
-			pathfinder_name(_settings_game.pf.pathfinder_for_trains), pathfinder_name(_settings_game.pf.pathfinder_for_roadvehs), pathfinder_name(_settings_game.pf.pathfinder_for_ships)
+			VideoDriver::GetInstance() == nullptr ? "none" : VideoDriver::GetInstance()->GetInfoString()
 	);
 	buffer += seprintf(buffer, last, " Game mode:    %s", mode_name());
 	if (_switch_mode != SM_NONE) buffer += seprintf(buffer, last, ", SM: %u", _switch_mode);

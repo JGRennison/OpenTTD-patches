@@ -184,13 +184,9 @@ static std::initializer_list<SettingsCompat> _settings_compat{
 	SLCX_VAR("vehicle.smoke_amount"),
 	SLCX_NULL_X(1, SL_MIN_VERSION, SLV_159, SlXvFeatureTest(XSLFTO_OR, XSLFI_CHILLPP, SL_CHILLPP_232)), // order.gotodepot
 	SLCX_VAR("pf.roadveh_queue"),
-	SLCX_VAR("pf.new_pathfinding_all"),
-	SLCX_VAR("pf.yapf.ship_use_yapf"),
-	SLCX_VAR("pf.yapf.road_use_yapf"),
-	SLCX_VAR("pf.yapf.rail_use_yapf"),
-	SLCX_VAR("pf.pathfinder_for_trains"),
-	SLCX_VAR("pf.pathfinder_for_roadvehs"),
-	SLCX_VAR("pf.pathfinder_for_ships"),
+	SLCX_NULL(1, SL_MIN_VERSION, SLV_87), // pf.new_pathfinding_all
+	SLCX_NULL(3, SLV_28, SLV_87), // pf.yapf.*_use_yapf
+	SLCX_NULL(3, SLV_87, SLV_TABLE_CHUNKS), // pf.pathfinder_for_*
 	SLCX_VAR("vehicle.never_expire_vehicles"),
 	SLCX_NULL_X(1, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP)), // vehicle.exact_intro_date
 	SLCX_VAR("vehicle.max_trains"),
@@ -338,26 +334,14 @@ static std::initializer_list<SettingsCompat> _settings_compat{
 	SLCX_VAR("pf.reserve_paths"),
 	SLCX_VAR("pf.path_backoff_interval"),
 	SLCX_NULL(3, SL_MIN_VERSION, SLV_REMOVE_OPF), // pf.opf.pf_maxlength & pf.opf.pf_maxdepth
-	SLCX_VAR("pf.npf.npf_max_search_nodes"),
-	SLCX_VAR("pf.npf.npf_rail_firstred_penalty"),
-	SLCX_VAR("pf.npf.npf_rail_firstred_exit_penalty"),
-	SLCX_VAR("pf.npf.npf_rail_lastred_penalty"),
-	SLCX_VAR("pf.npf.npf_rail_station_penalty"),
-	SLCX_VAR("pf.npf.npf_rail_slope_penalty"),
-	SLCX_VAR("pf.npf.npf_rail_curve_penalty"),
-	SLCX_VAR("pf.npf.npf_rail_depot_reverse_penalty"),
-	SLCX_VAR("pf.npf.npf_rail_pbs_cross_penalty"),
-	SLCX_VAR("pf.npf.npf_rail_pbs_signal_back_penalty"),
-	SLCX_VAR("pf.npf.npf_buoy_penalty"),
-	SLCX_VAR("pf.npf.npf_water_curve_penalty"),
-	SLCX_VAR("pf.npf.npf_road_curve_penalty"),
-	SLCX_VAR("pf.npf.npf_crossing_penalty"),
-	SLCX_VAR("pf.npf.npf_road_drive_through_penalty"),
+	SLCX_NULL(32, SL_MIN_VERSION, SLV_TABLE_CHUNKS), // pf.npf.npf_max_search_nodes, 7 pf.npf.npf_rail_*
+	SLCX_NULL(8, SLV_100, SLV_TABLE_CHUNKS), // pf.npf.npf_rail_pbs_cross_penalty, pf.npf.npf_rail_pbs_signal_back_penalty
+	SLCX_NULL(16, SL_MIN_VERSION, SLV_TABLE_CHUNKS), // pf.npf.npf_buoy_penalty, pf.npf.npf_water_curve_penalty, pf.npf.npf_road_curve_penalty, pf.npf.npf_crossing_penalty
+	SLCX_NULL(4, SLV_47, SLV_TABLE_CHUNKS), // pf.npf.npf_road_drive_through_penalty
 	SLCX_NULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP)), // pf.npf.npf_road_trafficlight_penalty
 	SLCX_NULL_X(4, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232)), // pf.npf.npf_road_trafficlight_penalty
-	SLCX_VAR("pf.npf.npf_road_dt_occupied_penalty"),
-	SLCX_VAR("pf.npf.npf_road_bay_occupied_penalty"),
-	SLCX_VAR("pf.npf.maximum_go_to_depot_penalty"),
+	SLCX_NULL(8, SLV_130, SLV_TABLE_CHUNKS), // pf.npf.npf_road_dt_occupied_penalty, pf.npf.npf_road_bay_occupied_penalty
+	SLCX_NULL(4, SLV_131, SLV_TABLE_CHUNKS), // pf.npf.maximum_go_to_depot_penalty
 	SLCX_VAR("pf.yapf.disable_node_optimization"),
 	SLCX_VAR("pf.yapf.max_search_nodes"),
 	SLCX_VAR("pf.yapf.rail_firstred_twoway_eol"),

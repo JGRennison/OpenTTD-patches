@@ -2480,13 +2480,10 @@ static SettingsContainer &GetSettingsTree()
 			SettingsPage *routing = vehicles->Add(new SettingsPage(STR_CONFIG_SETTING_VEHICLES_ROUTING));
 			{
 				routing->Add(new SettingEntry("vehicle.road_side"));
-				routing->Add(new SettingEntry("pf.pathfinder_for_trains"));
 				routing->Add(new SettingEntry("difficulty.line_reverse_mode"));
 				routing->Add(new SettingEntry("pf.reverse_at_signals"));
 				routing->Add(new SettingEntry("pf.back_of_one_way_pbs_waiting_point"));
 				routing->Add(new SettingEntry("pf.forbid_90_deg"));
-				routing->Add(new SettingEntry("pf.pathfinder_for_roadvehs"));
-				routing->Add(new SettingEntry("pf.pathfinder_for_ships"));
 				routing->Add(new SettingEntry("pf.reroute_rv_on_layout_change"));
 				routing->Add(new SettingEntry("vehicle.drive_through_train_depot"));
 			}

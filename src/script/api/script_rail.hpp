@@ -23,6 +23,8 @@ class ScriptRail : public ScriptObject {
 public:
 	/**
 	 * All rail related error messages.
+	 *
+	 * @see ScriptErrorType
 	 */
 	enum ErrorMessages {
 		/** Base for rail building / maintaining errors */

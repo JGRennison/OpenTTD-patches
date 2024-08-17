@@ -2071,13 +2071,6 @@ static void MaxVehiclesChanged(int32_t new_value)
 	MarkWholeScreenDirty();
 }
 
-static void InvalidateShipPathCache(int32_t new_value)
-{
-	for (Ship *s : Ship::Iterate()) {
-		s->cached_path.clear();
-	}
-}
-
 static void ImprovedBreakdownsSettingChanged(int32_t new_value)
 {
 	if (!_settings_game.vehicle.improved_breakdowns) return;
@@ -2303,33 +2296,6 @@ static bool ChunnelSettingGUI(SettingOnGuiCtrlData &data)
 			SetDParam(0, 3);
 			SetDParam(1, 8);
 			return true;
-
-		default:
-			return false;
-	}
-}
-
-static bool TrainPathfinderSettingGUI(SettingOnGuiCtrlData &data)
-{
-	switch (data.type) {
-		case SOGCT_DESCRIPTION_TEXT:
-			SetDParam(0, data.text);
-			data.text = STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT_EXTRA;
-			return true;
-
-		case SOGCT_GUI_SPRITE:
-			if (data.val != VPF_YAPF) {
-				data.output = SPR_WARNING_SIGN;
-				return true;
-			}
-			return false;
-
-		case SOGCT_GUI_WARNING_TEXT:
-			if (data.val != VPF_YAPF) {
-				data.text = STR_CONFIG_SETTING_ADVISED_LEAVE_DEFAULT;
-				return true;
-			}
-			return false;
 
 		default:
 			return false;

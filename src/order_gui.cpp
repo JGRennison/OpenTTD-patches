@@ -902,7 +902,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 						SetDParam(7, STR_EMPTY);
 					}
 				}
-				if (v->type == VEH_ROAD && order->GetRoadVehTravelDirection() != INVALID_DIAGDIR && _settings_game.pf.pathfinder_for_roadvehs == VPF_YAPF) {
+				if (v->type == VEH_ROAD && order->GetRoadVehTravelDirection() != INVALID_DIAGDIR) {
 					SetDParam(7, order->GetRoadVehTravelDirection() + STR_ORDER_RV_DIR_NE);
 				}
 			}
@@ -973,7 +973,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				SetTimetableParams(8, order->GetWaitTime());
 				timetable_wait_time_valid = true;
 			}
-			if (!timetable && v->type == VEH_ROAD && order->GetRoadVehTravelDirection() != INVALID_DIAGDIR && _settings_game.pf.pathfinder_for_roadvehs == VPF_YAPF) {
+			if (!timetable && v->type == VEH_ROAD && order->GetRoadVehTravelDirection() != INVALID_DIAGDIR) {
 				SetDParam(7, order->GetRoadVehTravelDirection() + STR_ORDER_RV_DIR_NE);
 			}
 			break;
@@ -2859,7 +2859,7 @@ public:
 						}
 						this->ModifyOrder(sel, MOF_STOP_LOCATION | osl << 8);
 					}
-					if (this->vehicle->type == VEH_ROAD && _settings_game.pf.pathfinder_for_roadvehs == VPF_YAPF) {
+					if (this->vehicle->type == VEH_ROAD) {
 						DiagDirection current = order->GetRoadVehTravelDirection();
 						if (_settings_client.gui.show_adv_load_mode_features || current != INVALID_DIAGDIR) {
 							uint dir = (current + 1) & 0xFF;
@@ -2928,7 +2928,7 @@ public:
 					}
 				}
 
-				if (this->vehicle->type == VEH_ROAD && (order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT)) && _settings_game.pf.pathfinder_for_roadvehs == VPF_YAPF) {
+				if (this->vehicle->type == VEH_ROAD && (order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT))) {
 					const DiagDirection dir = order->GetRoadVehTravelDirection();
 					if (_settings_client.gui.show_adv_load_mode_features || dir != INVALID_DIAGDIR) {
 						list.push_back(MakeDropDownListDividerItem());

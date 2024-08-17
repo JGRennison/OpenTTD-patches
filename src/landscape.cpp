@@ -29,7 +29,7 @@
 #include "object_base.h"
 #include "company_func.h"
 #include "tunnelbridge_map.h"
-#include "pathfinder/npf/aystar.h"
+#include "pathfinder/aystar.h"
 #include "sl/saveload.h"
 #include "framerate_type.h"
 #include "town.h"

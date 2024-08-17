@@ -25,7 +25,7 @@
 #include "landscape.h"
 #include "road.h"
 #include "town.h"
-#include "pathfinder/npf/aystar.h"
+#include "pathfinder/aystar.h"
 #include "tunnelbridge.h"
 #include "road_func.h"
 #include "roadveh.h"

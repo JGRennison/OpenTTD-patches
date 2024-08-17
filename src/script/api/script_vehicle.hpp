@@ -21,6 +21,8 @@ class ScriptVehicle : public ScriptObject {
 public:
 	/**
 	 * All vehicle related error messages.
+	 *
+	 * @see ScriptErrorType
 	 */
 	enum ErrorMessages {
 		/** Base for vehicle related errors */
@@ -187,8 +189,8 @@ public:
 	 * Get the current age of a vehicle.
 	 * @param vehicle_id The vehicle to get the age of.
 	 * @pre IsValidVehicle(vehicle_id).
-	 * @return The current age the vehicle has.
-	 * @note The age is in days.
+	 * @return The current age of the vehicle in calendar-days.
+	 * @see \ref ScriptCalendarTime
 	 */
 	static SQInteger GetAge(VehicleID vehicle_id);
 
@@ -198,8 +200,8 @@ public:
 	 * @param wagon The wagon in the vehicle to get the age of.
 	 * @pre IsValidVehicle(vehicle_id).
 	 * @pre wagon < GetNumWagons(vehicle_id).
-	 * @return The current age the vehicle has.
-	 * @note The age is in days.
+	 * @return The current age of the vehicle in calendar-days.
+	 * @see \ref ScriptCalendarTime
 	 */
 	static SQInteger GetWagonAge(VehicleID vehicle_id, SQInteger wagon);
 
@@ -207,8 +209,8 @@ public:
 	 * Get the maximum age of a vehicle.
 	 * @param vehicle_id The vehicle to get the age of.
 	 * @pre IsPrimaryVehicle(vehicle_id).
-	 * @return The maximum age the vehicle has.
-	 * @note The age is in days.
+	 * @return The maximum age for the vehicle in calendar-days.
+	 * @see \ref ScriptCalendarTime
 	 */
 	static SQInteger GetMaxAge(VehicleID vehicle_id);
 
@@ -216,8 +218,8 @@ public:
 	 * Get the age a vehicle has left (maximum - current).
 	 * @param vehicle_id The vehicle to get the age of.
 	 * @pre IsPrimaryVehicle(vehicle_id).
-	 * @return The age the vehicle has left.
-	 * @note The age is in days.
+	 * @return The remaining age of the vehicle in calendar-days.
+	 * @see \ref ScriptCalendarTime
 	 */
 	static SQInteger GetAgeLeft(VehicleID vehicle_id);
 
@@ -244,10 +246,10 @@ public:
 	 * Get the running cost of this vehicle.
 	 * @param vehicle_id The vehicle to get the running cost of.
 	 * @pre IsPrimaryVehicle(vehicle_id).
-	 * @return The running cost of the vehicle per year.
-	 * @note Cost is per year; divide by 365 to get per day.
+	 * @return The running cost of the vehicle per economy-year.
 	 * @note This is not equal to ScriptEngine::GetRunningCost for Trains, because
 	 *   wagons and second engines can add up in the calculation too.
+	 * @see \ref ScriptEconomyTime
 	 */
 	static Money GetRunningCost(VehicleID vehicle_id);
 
@@ -255,7 +257,8 @@ public:
 	 * Get the current profit of a vehicle.
 	 * @param vehicle_id The vehicle to get the profit of.
 	 * @pre IsPrimaryVehicle(vehicle_id).
-	 * @return The current profit the vehicle has.
+	 * @return The profit the vehicle has made this economy-year so far.
+	 * @see \ref ScriptEconomyTime
 	 */
 	static Money GetProfitThisYear(VehicleID vehicle_id);
 
@@ -263,7 +266,8 @@ public:
 	 * Get the profit of last year of a vehicle.
 	 * @param vehicle_id The vehicle to get the profit of.
 	 * @pre IsPrimaryVehicle(vehicle_id).
-	 * @return The profit the vehicle had last year.
+	 * @return The profit the vehicle made in the previous economy-year.
+	 * @see \ref ScriptEconomyTime
 	 */
 	static Money GetProfitLastYear(VehicleID vehicle_id);
 
