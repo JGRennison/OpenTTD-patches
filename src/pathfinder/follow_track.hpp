@@ -123,12 +123,14 @@ struct CFollowTrackT
 		m_old_tile = old_tile;
 		m_old_td = old_td;
 		m_err = EC_NONE;
-		dbg_assert_tile(
-			((GetTileTrackdirBits(m_old_tile, TT(), (IsRoadTT() && m_veh != nullptr) ? (this->IsTram() ? RTT_TRAM : RTT_ROAD) : 0)
-			& TrackdirToTrackdirBits(m_old_td)) != 0) ||
-			(IsTram() && GetSingleTramBit(m_old_tile) != INVALID_DIAGDIR), // Disable the assertion for single tram bits
-			m_old_tile
-		);
+
+		dbg_assert_tile([&]() {
+			if (IsTram() && GetSingleTramBit(m_old_tile) != INVALID_DIAGDIR) return true; // Skip the check for single tram bits
+			const uint sub_mode = (IsRoadTT() && m_veh != nullptr) ? (this->IsTram() ? RTT_TRAM : RTT_ROAD) : 0;
+			const TrackdirBits old_tile_valid_dirs = GetTileTrackdirBits(m_old_tile, TT(), sub_mode);
+			return (old_tile_valid_dirs & TrackdirToTrackdirBits(m_old_td)) != TRACKDIR_BIT_NONE;
+		}(), m_old_tile);
+
 		m_exitdir = TrackdirToExitdir(m_old_td);
 		if (ForcedReverse()) return true;
 		if (!CanExitOldTile()) return false;

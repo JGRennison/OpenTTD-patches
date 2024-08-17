@@ -1101,6 +1101,7 @@ STR_GAME_OPTIONS_VOLUME                                         :Громкос�
 STR_GAME_OPTIONS_SFX_VOLUME                                     :Звуковые эффекты
 STR_GAME_OPTIONS_MUSIC_VOLUME                                   :Музыка
 
+STR_GAME_OPTIONS_VOLUME_MARK                                    :{NUM}%
 
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Валюта
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Смена используемой в игре валюты
@@ -1198,6 +1199,7 @@ STR_GAME_OPTIONS_GUI_FONT_SPRITE_TOOLTIP                        :{BLACK}Пост
 STR_GAME_OPTIONS_GUI_FONT_AA                                    :{BLACK}Сглаживание шрифтов
 STR_GAME_OPTIONS_GUI_FONT_AA_TOOLTIP                            :{BLACK}Поставьте отметку, чтобы включить сглаживание масштабируемых шрифтов
 
+STR_GAME_OPTIONS_GUI_SCALE_MARK                                 :{DECIMAL}x
 
 STR_GAME_OPTIONS_PARTICIPATE_SURVEY_FRAME                       :{BLACK}Автоматический сбор данных
 STR_GAME_OPTIONS_PARTICIPATE_SURVEY                             :{BLACK}Разрешить сбор и отправку данных
@@ -1225,6 +1227,7 @@ STR_GAME_OPTIONS_BASE_SFX_DESCRIPTION_TOOLTIP                   :{BLACK}Допо
 STR_GAME_OPTIONS_BASE_MUSIC                                     :{BLACK}Основной музыкальный пакет
 STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :{BLACK}Выбор основного музыкального пакета
 STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :{BLACK}Дополнительная информация о выбранном музыкальном пакете
+
 
 STR_GAME_OPTIONS_SOCIAL_PLUGINS_NONE                            :{LTBLUE}(модули взаимодействия с социальными платформами не установлены)
 

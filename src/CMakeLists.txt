@@ -75,6 +75,7 @@ add_files(
     bridge_map.h
     bridge_signal_map.h
     build_vehicle_gui.cpp
+    cachecheck.cpp
     cargo_type.h
     cargoaction.cpp
     cargoaction.h

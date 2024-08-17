@@ -1055,6 +1055,34 @@ bool NetworkServerStart()
 	return true;
 }
 
+/**
+ * Perform tasks when the server is started. This consists of things
+ * like putting the server's client in a valid company and resetting the restart time.
+ */
+void NetworkOnGameStart()
+{
+	if (!_network_server) return;
+
+	/* Update the static game info to set the values from the new game. */
+	NetworkServerUpdateGameInfo();
+
+	ChangeNetworkRestartTime(true);
+
+	if (!_network_dedicated) {
+		Company *c = Company::GetIfValid(_local_company);
+		NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(CLIENT_ID_SERVER);
+		if (c != nullptr && ci != nullptr) {
+			/*
+			 * If the company has not been named yet, the company was just started.
+			 * Otherwise it would have gotten a name already, so announce it as a new company.
+			 */
+			if (c->name_1 == STR_SV_UNNAMED && c->name.empty()) NetworkServerNewCompany(c, ci);
+		}
+
+		ShowClientList();
+	}
+}
+
 /* The server is rebooting...
  * The only difference with NetworkDisconnect, is the packets that is sent */
 void NetworkReboot()

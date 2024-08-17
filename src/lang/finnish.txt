@@ -956,6 +956,7 @@ STR_GAME_OPTIONS_VOLUME                                         :Äänenvoimakku
 STR_GAME_OPTIONS_SFX_VOLUME                                     :Äänitehosteet
 STR_GAME_OPTIONS_MUSIC_VOLUME                                   :Musiikki
 
+STR_GAME_OPTIONS_VOLUME_MARK                                    :{NUM}{NBSP}%
 
 STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :{BLACK}Rahayksikkö
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :{BLACK}Rahayksikön valinta
@@ -1053,6 +1054,7 @@ STR_GAME_OPTIONS_GUI_FONT_SPRITE_TOOLTIP                        :{BLACK}Valitse 
 STR_GAME_OPTIONS_GUI_FONT_AA                                    :{BLACK}Pehmennä kirjasinten reunoja
 STR_GAME_OPTIONS_GUI_FONT_AA_TOOLTIP                            :{BLACK}Valitse tämä ruutu pehmentääksesi muuttuvan kokoisten fonttien reunoja
 
+STR_GAME_OPTIONS_GUI_SCALE_MARK                                 :{DECIMAL}×
 
 STR_GAME_OPTIONS_PARTICIPATE_SURVEY_FRAME                       :{BLACK}Automatisoitu tutkimus
 STR_GAME_OPTIONS_PARTICIPATE_SURVEY                             :{BLACK}Osallistu automatisoituun tutkimukseen
@@ -1080,6 +1082,7 @@ STR_GAME_OPTIONS_BASE_SFX_DESCRIPTION_TOOLTIP                   :{BLACK}Lisätie
 STR_GAME_OPTIONS_BASE_MUSIC                                     :{BLACK}Musiikkipaketti
 STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :{BLACK}Valitse käytettävä musiikkipaketti
 STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :{BLACK}Lisätietoja musiikkipaketista
+
 
 STR_GAME_OPTIONS_SOCIAL_PLUGINS_NONE                            :{LTBLUE}(ei sosiaalisten alustojen integroinnin liitännäisiä asennettuna)
 

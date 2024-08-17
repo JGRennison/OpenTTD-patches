@@ -70,6 +70,8 @@ void NetworkPrintClients();
 std::string_view NetworkGetPublicKeyOfClient(ClientID client_id);
 void NetworkHandlePauseChange(PauseMode prev_mode, PauseMode changed_mode);
 
+void NetworkOnGameStart();
+
 /*** Commands ran by the server ***/
 void NetworkServerEconomyDailyLoop();
 void NetworkServerEconomyMonthlyLoop();
