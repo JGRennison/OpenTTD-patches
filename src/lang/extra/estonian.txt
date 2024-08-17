@@ -87,3 +87,19 @@ STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Selle et
 STR_ERROR_PROTECTED                                             :{WHITE}See ettevõtte pole veel piisavalt vana, et aktsiaid vahetada...
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :Ainult täiustatud
+
+STR_WARNING_PASSWORD_SECURITY                                   :{YELLOW}Hoiatus: Serveriadministraatorid võivad olla võimelised lugema siinset teksti.
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Ettevõte on kaitstud. Sisesta salasõna
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK                    :Salasõnaga avamine
+STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK                      :{YELLOW}Kas oled kindel, et soovid nullida ettevõtte '{COMPANY}' salasõna?
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Sisestatud salasõna ei salvestata
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}Määra ettevõtte uus salasõna
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}Ettevõtte salasõna
+STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}Esialgne ettevõtte salasõna
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Määra ettevõtte salasõna uute ettevõtete esialgseks salasõnaks
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Salasõna
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Ettevõtte kaitsmine salasõnaga, et võõrad ei saaks ilma loata ühineda
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Vali ettevõttele salasõna

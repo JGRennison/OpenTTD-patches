@@ -93,3 +93,19 @@ STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}No pots 
 STR_ERROR_PROTECTED                                             :{WHITE}Aquesta companyia ja no negocia participacions...
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :Només avançada
+
+STR_WARNING_PASSWORD_SECURITY                                   :{YELLOW}Avís: Els administradors del servidor potser poden llegir el que escriviu aquí.
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Companyia protegida: escriviu-ne la contrasenya
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK                    :Desbloca la contrasenya
+STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK                      :{YELLOW}Esteu segur que voleu restablir la contrasenya de la companyia «{COMPANY}»?
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}No desis la nova contrasenya.
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}Estableix aquesta nova contrasenya per a la companyia.
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}Contrasenya de la companyia
+STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}Contrasenya predeterminada de companyies noves
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Utilitza com a contrasenya predeterminada de companyies noves la d'aquesta companyia.
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Contrasenya
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Protegeix la vostra companyia amb una contrasenya per tal d'evitar que la controlin altres usuaris no autoritzats.
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Estableix la contrasenya de la companyia.

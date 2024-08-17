@@ -82,3 +82,17 @@ STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Ne povas
 STR_ERROR_PROTECTED                                             :{WHITE}Ĉi tiu kompanio ne sufiĉe aĝas por jam komerci dividaĵojn...
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :Nur vojrezervaj semaforoj
+
+STR_WARNING_PASSWORD_SECURITY                                   :{YELLOW}Atentu: La serviladministrantoj eventuale povas legi ajnan tekston entajpitan ĉi tie.
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Kompanio estas protektata. Enigu pasvorton
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Ne konservu la pasvorton.
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}Donu la novan pasvorton al la kompanio.
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}Kompania pasvorto
+STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}Fari defaŭltan kompanipasvorton.
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Uzu ĉi tiun kompanipasvorton kiel defaŭlto por novaj kompanioj.
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Pasvorto
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Pasvorte protektu vian kompanion por eviti ke eksteruloj aliĝu
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Agordu kompanian pasvorton

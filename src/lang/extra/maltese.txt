@@ -30,3 +30,5 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :Ajruplan {COMMA
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+# Network set password

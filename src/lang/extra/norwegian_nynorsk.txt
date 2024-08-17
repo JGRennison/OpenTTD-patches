@@ -76,3 +76,16 @@ STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Kan ikkj
 STR_ERROR_PROTECTED                                             :{WHITE}Det her firmaet sel ikkje aksjer enno...
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :Kun avanserte signaler
+
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Firmaet er beskytta. Skriv inn passord
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Ikkje lagre passordet
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}Gje firmaet det nye passordet
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}Firmapassord
+STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}Standard passord for firma
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Bruk passordet fra dette firmaet som standard for nye firma
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Passord
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Passordbeskytt firmaet ditt slik at ikkje alle og einkvar kan verte med.
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Vel firmapassord

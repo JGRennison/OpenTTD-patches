@@ -78,3 +78,18 @@ STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Не м�
 STR_ERROR_PROTECTED                                             :{WHITE}Тази компания все още не е достатъчно стара да предлага акции...
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :Само напреднат
+
+STR_WARNING_PASSWORD_SECURITY                                   :{YELLOW}Внимание: Администраторите на сървъра могат да прочетат всеки текст, въведен тук.
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Компанията е защитена. Въведете парола
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK                    :Отключване на парола
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Незапазвай паролата
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}Дай на компанията новата парола
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}Парола на компанията
+STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}Парола по подразбиране за компания
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Използване на тази парола по подразбиране за нови компании
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Парола
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Постави парола за да предпазиш компанията си от неоторизирани потребители.
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Поставяне парола на компанията

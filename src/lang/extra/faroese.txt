@@ -75,3 +75,16 @@ STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Kann ikk
 STR_ERROR_PROTECTED                                             :{WHITE}Hendan fyritøkan er ikki nóg gomul at býta partabrøv enn...
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :Leið tekin einans
+
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Fyritøka er vard. Skriva loyniorð
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Goym ikki skrivaða loyniorðið
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}Gev fyritøkuni tað nýggja loyniorðið
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}Fyritøku loyniorð
+STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}Vanligt fyritøku loyniorð
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Nýt hetta fyritøku loyniorðið sum vanligt fyri nýggjar fyritøkur
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Loyniorð
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Verj tína fyritøku við einum loyniorðið so eingin óynsktur tekur lut í henni
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Áset fyritøku loyniorð

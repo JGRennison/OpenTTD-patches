@@ -93,3 +93,19 @@ STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Kan geen
 STR_ERROR_PROTECTED                                             :{WHITE}Dit bedrijf verhandelt nog geen aandelen...
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :Alleen routeseinen
+
+STR_WARNING_PASSWORD_SECURITY                                   :{YELLOW}Waarschuwing: het kan zijn dat serverbeheerders de tekst kunnen lezen die hier is ingevoerd.
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Bedrijf is beveiligd. Voer wachtwoord in
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK                    :Wachtwoord ontgrendelen
+STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK                      :{YELLOW}Weet je zeker dat je het wachtwoord voor bedrijf '{COMPANY}' wilt terugstellen?
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Ingevoerd wachtwoord niet opslaan
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}Bedrijf het nieuwe wachtwoord geven
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}Bedrijfswachtwoord
+STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}Standaard bedrijfswachtwoord
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Dit bedrijfswachtwoord gebruiken als standaard voor nieuwe bedrijven
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Wachtwoord
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Beveilig het bedrijf met een wachtwoord zodat niet-geautoriseerde personen niet mee kunnen doen
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Bedrijfswachtwoord instellen

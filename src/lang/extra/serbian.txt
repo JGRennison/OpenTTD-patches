@@ -87,3 +87,19 @@ STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Prodaja 
 STR_ERROR_PROTECTED                                             :{WHITE}Ovo preduzeće nije dovoljno dugo aktivno za trgovinu akcijama...
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :Samo putna
+
+STR_WARNING_PASSWORD_SECURITY                                   :{YELLOW}Upozorenje: Administratori servera će moći da pročitaju sav tekst koji je ovde unesen.
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Preduzeće je zaštićeno. Unesi lozinku
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK                    :Otključavanje lozinkom
+STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK                      :{YELLOW}Da li zaista želiš da promeniš lozinku preduzeća '{COMPANY}'?
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Otkaži unetu lozinku
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}Postavi preduzeću novu lozinku
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}Lozinka za preduzeće
+STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}Podrazumevana lozinka za preduzeće
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Koristi ovu lozinku kao podrazumevanu za nova preduzeća
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Lozinka
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Zaštiti svoje preduzeće lozinkom kako se drugi korisnici ne bi nedozvoljeno pridruživali
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Postavi lozinku za preduzeće

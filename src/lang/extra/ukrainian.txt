@@ -87,3 +87,19 @@ STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Немо
 STR_ERROR_PROTECTED                                             :{WHITE}Ця компанія поки ще не продається...
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :тільки маршрутні
+
+STR_WARNING_PASSWORD_SECURITY                                   :{YELLOW}Попередження: Адміністратори серверів можуть мати можливість читати будь-який текст, введений тут.
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Компанія захищена паролем. Введіть пароль
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK                    :Розблокувати пароль
+STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK                      :{YELLOW}Дійсно бажаєш скинути пароль компанії '{COMPANY}'?
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Не запам'ятовувати введений пароль
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}Дати компанії новий пароль
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}Пароль компанії
+STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}Використовувати як стандартний
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Використовувати цей пароль для нових компаній
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Пароль
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Пароль захищає вашу компанію від приєднання інших гравців
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Встановлення паролю

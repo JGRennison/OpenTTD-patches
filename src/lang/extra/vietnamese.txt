@@ -93,3 +93,19 @@ STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Không t
 STR_ERROR_PROTECTED                                             :{WHITE}Công ty này chưa tồn tại đủ lâu để mua bán cổ phần...
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :Đèn hiệu giành đường
+
+STR_WARNING_PASSWORD_SECURITY                                   :{YELLOW}Chú ý: quản trị máy chủ có thể đọc mọi dòng chữ nhập ở đây.
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Công ty yêu cầu xác thực. Nhập mật khẩu
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK                    :Mật khẩu công ty
+STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK                      :{YELLOW}Bạn có muốn đặt lại mật khẩu cho công ty '{COMPANY}'?
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Không được ghi mật khẩu đã nhập
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}Nhập mật khẩu mới cho công ty
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}Mật khẩu công ty
+STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}Mật khẩu công ty mặc định
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Dùng mật khẩu công ty này là mật khẩu mặc định cho các công ty mới
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Mật khẩu
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Công ty đòi hỏi xác thực mật khẩu sẽ ngăn không cho người khác gia nhập, điều khiển
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Đặt mật khẩu công ty

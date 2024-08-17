@@ -75,3 +75,14 @@ STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Kin net 
 STR_ERROR_PROTECTED                                             :{WHITE}Dit bedriuw is noch net âld genoch om oandielen te ferhannelje...
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :route seinen allinech
+
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Bedriuw is beskerme. Fier wachtwurd yn
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}It ynfulde wachtwurd net bewarje
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}Jou it bedriuw it nije wachtwurd
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}Bedriuwswachtwurd
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Brûk dit bedriuwswachtwurd gewoanwei foar alle nije bedriuwen
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Wachtwurd
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Bedriuwswachtwurd ynstelle

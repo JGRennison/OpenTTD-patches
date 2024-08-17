@@ -2323,3 +2323,19 @@ STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :Ferramenta de s
 STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :Fiestra da tecla modificadora
 
 STR_ERROR_CAN_T_CHANGE_SPEED_RESTRICTION                        :{WHITE}Non se pode cambiar a restrición de velocidade do vehículo...
+
+STR_WARNING_PASSWORD_SECURITY                                   :{YELLOW}Ollo: Os administradores do servidor poderían ler calquer texto escrito aquí.
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}A compañía está protexida. Introduce o contrasinal
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK                    :Desbloquear contrasinal
+STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK                      :{YELLOW}Estás seguro de querer restablecer o contrasinal da compañía '{COMPANY}'?
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Non grava-lo contrasinal introducido
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}Asignar á compañía o novo contrasinal
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}Contrasinal da compañía
+STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}Contrasinal por defecto para a compañía
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Usar o contrasinal desta compañía por defecto para as novas compañías
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Contrasinal
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Protexe a túa compañía cun contrasinal para evitar que usuarios non autorizados se unan
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Establece o contrasinal da compañía

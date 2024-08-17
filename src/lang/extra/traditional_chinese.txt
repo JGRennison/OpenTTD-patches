@@ -85,3 +85,19 @@ STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}無法�
 STR_ERROR_PROTECTED                                             :{WHITE}這間公司才剛成立，還不能交易股票...
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :僅限路徑號誌
+
+STR_WARNING_PASSWORD_SECURITY                                   :{YELLOW}警告：伺服器管理者可能可以閱讀在此處輸入的任何文字訊息
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}公司受保護，輸入密碼
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK                    :密碼解鎖
+STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK                      :{YELLOW}你確定要重設 '{COMPANY}'的公司密碼嗎?
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}不要儲存所輸入的密碼
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}為公司設定新的密碼
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}公司密碼
+STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}預設公司密碼
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}使用此密碼當作未來新公司的預設密碼
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}密碼
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}以密碼保護您的公司，避免未授權的玩家接手
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}設定公司密碼

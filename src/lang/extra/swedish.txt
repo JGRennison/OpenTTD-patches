@@ -88,3 +88,19 @@ STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Kan inte
 STR_ERROR_PROTECTED                                             :{WHITE}Det här företaget bedriver inte aktiehandel ännu...
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :Endast avancerade
+
+STR_WARNING_PASSWORD_SECURITY                                   :{YELLOW}Varning: Serveradministratörer kan ha möjlighet att läsa text som skrivs här.
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Företaget är skyddat. Ange lösenord
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK                    :Lås upp med lösenord
+STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK                      :{YELLOW}Är du säker på att du vill återställa företaget {COMPANY}s lösenord?
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Spara inte det inmatade lösenordet
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}Ge företaget det nya lösenordet
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}Företagslösenord
+STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}Förvalt företagslösenord
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Använd detta företagslösenord som förval för nya företag
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Lösenord
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Lösenordsskydda ditt företag för att förhindra att obehöriga spelare ansluter
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Ange företagets lösenord

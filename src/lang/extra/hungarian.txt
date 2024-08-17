@@ -91,3 +91,19 @@ STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Nem adha
 STR_ERROR_PROTECTED                                             :{WHITE}Ez a vállalat egyelőre még nem rendelkezik részvényekkel...
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :Csak irányjelzők
+
+STR_WARNING_PASSWORD_SECURITY                                   :{YELLOW}Figyelem: A szerver adminjai láthatják az itt beírt szöveget.
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}A vállalat jelszóval van védve. Írd be
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK                    :Jelszó feloldása
+STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK                      :{YELLOW}Biztos vissza akarod állítani a '{COMPANY}' vállalat jelszavát?
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Ne mentsd el a megadott jelszót
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}Add meg az új vállalati jelszót
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}Vállalati jelszó
+STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}Alapértelmezett vállalati jelszó
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Ez a jelszó legyen az alapértelmezett jelszó az új vállalatoknál
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Jelszó
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Védd le a vállalatodat jelszóval ha nem akarod hogy mások csatlakozzanak hozzá
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Vállalati jelszó beállítása

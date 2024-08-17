@@ -119,3 +119,19 @@ STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Can't se
 STR_ERROR_PROTECTED                                             :{WHITE}This company is not old enough to trade shares yet...
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :Path signals only
+
+STR_WARNING_PASSWORD_SECURITY                                   :{YELLOW}Warning: Server administrators may be able to read any text entered here.
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Company is protected. Enter password
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK                    :Password unlock
+STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK                      :{YELLOW}Are you sure you want to reset the password of company '{COMPANY}'?
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Do not save the entered password
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}Give the company the new password
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}Company password
+STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}Default company password
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Use this company password as default for new companies
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Password
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Password-protect your company to prevent unauthorized users from joining
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Set company password

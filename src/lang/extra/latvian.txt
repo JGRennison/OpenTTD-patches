@@ -88,3 +88,19 @@ STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Nevar p�
 STR_ERROR_PROTECTED                                             :{WHITE}Šis uzņēmums ir par jaunu lai tirgotu akcijas...
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :tikai ceļa signāliem
+
+STR_WARNING_PASSWORD_SECURITY                                   :{YELLOW}Brīdinājums: servera administrators var izlasīt jebkuru tekstu, kas šeit tiek ievadīts.
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Uzņēmums ir aizsargāts. Ievadiet paroli
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK                    :Paroles atbloķēšana
+STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK                      :{YELLOW}Vai esat pārliecināts, ka vēlaties atiestatīt paroli komānijai '{COMPANY}'?
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Nesaglabāt ievadīto paroli
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}Piešķirt uzņēmumam jaunu paroli
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}Uzņēmuma parole
+STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}Uzņēmuma noklusējuma parole
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Izmantot šo paroli kā noklusējuma jauniem uzņēmumiem
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Parole
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Aizsargājiet savu uzņēmumu ar paroli, lai novērstu neatļautu lietotāju pievienošanos
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Iestatīt uzņēmuma paroli

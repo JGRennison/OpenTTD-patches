@@ -30,3 +30,5 @@ STR_TRADITIONAL_AIRCRAFT_NAME                                   :विमान
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+# Network set password

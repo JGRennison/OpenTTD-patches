@@ -92,3 +92,19 @@ STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}25% podi
 STR_ERROR_PROTECTED                                             :{WHITE}S akciami tejto spoločnosti nie je zatiaľ možné obchodovať...
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :Iba trasové návestidlá
+
+STR_WARNING_PASSWORD_SECURITY                                   :{YELLOW}Upozornenie: Administrátori serveru môžu prečítať tento text.
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Spoločnosť je chránená. Zadaj heslo
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK                    :Odomknúť heslom
+STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK                      :{YELLOW}Ste si istý, že chcete zresetovať heslo pre spoločnosť '{COMPANY}'?
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Neukladať zadané heslo
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}Nastaviť spoločnosti nové heslo
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}Heslo spoločnosti
+STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}Predvolené heslo spoločnosti
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Použiť toto heslo ako predvolené pre nové spoločnosti
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Heslo
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Ochrániť svoju spoločnosť heslom, aby sa zabránilo pripojeniu neoprávnených užívateľov
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Nastavte heslo spoločnosti

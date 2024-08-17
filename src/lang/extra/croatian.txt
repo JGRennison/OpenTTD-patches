@@ -84,3 +84,17 @@ STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Nije mog
 STR_ERROR_PROTECTED                                             :{WHITE}Ova tvrtka još nije dovoljno stara da bi trgovala udjelima...
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :Samo putni signali
+
+STR_WARNING_PASSWORD_SECURITY                                   :{YELLOW}Upozorenje: Administratori servera mogu pročitati bilo koji tekst upisan ovdje.
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Tvrtka je zaštićena. Unesite zaporku
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Nemoj spremiti upisanu zaporku
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}Daj tvrtci novu zaporku
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}Zaporka tvrtke
+STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}Inicijalna zaporka tvrtke
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Uporabi zaporku ove tvrtke kao inicijalnu za nove tvrtke
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Zaporka
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Zaštiti šifrom svoju tvrtku od korištenja od strane neovlaštenih korisnika.
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Postavi zaporku tvrtke

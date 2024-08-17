@@ -2138,3 +2138,19 @@ STR_VIEWPORT_TOWN_COLOUR_CITY_POP                               :{WHITE}{TOWN} {
 
 STR_ABOUT_MENU_SHOW_PICKER_TOOL                                 :选择器
 STR_ABOUT_MENU_SHOW_TOGGLE_MODIFIER_KEYS                        :修饰键
+
+STR_WARNING_PASSWORD_SECURITY                                   :{YELLOW}注意：服务器管理员可以看到你所输入的文字
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}公司需要密码：
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK                    :密码解锁
+STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK                      :{YELLOW}你确定要重置 {COMPANY} 的公司密码吗？
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}不保存所输入的密码
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}为公司设置新密码
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}公司密码
+STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}默认公司密码
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}将此公司密码作为新公司的默认密码
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}密码
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}设置密码可以防止未经授权的用户随意加入。
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}设置公司密码

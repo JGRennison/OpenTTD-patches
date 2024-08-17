@@ -184,3 +184,19 @@ STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}この�
 STR_ERROR_PROTECTED                                             :{WHITE}この会社は開設から6年が経過していません
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :パス・一方通行パス
+
+STR_WARNING_PASSWORD_SECURITY                                   :{YELLOW}警告: サーバーの管理者はここに入力された文章をすべて読めます。
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}この会社は保護されています。経営に参画するにはパスワードを入力してください
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK                    :パスワードのアンロック
+STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK                      :{YELLOW}会社 '{COMPANY}'のパスワードをリセットしてもよろしいですか？
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}入力したパスワードを保存しない
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}会社パスワードを変更
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}会社パスワード
+STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}デフォルトの会社パスワード
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}このパスワードを新しい交通会社の規定パスワードとして使用します
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}パスワード
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}認証されていないプレーヤーの参加を防ぐために、会社をパスワードで保護します
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}会社パスワードを設定

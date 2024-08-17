@@ -88,3 +88,19 @@ STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Nu se po
 STR_ERROR_PROTECTED                                             :{WHITE}Compania nu are vechimea necesară pentru tranzacționarea de acțiuni...
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :Doar avansat
+
+STR_WARNING_PASSWORD_SECURITY                                   :{YELLOW}Avertisment: Administratorii serverului pot citi orice text introdus aici.
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Companie protejată. Introdu parola
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK                    :Deblocare cu parolă
+STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK                      :{YELLOW}Sigur vrei să resetezi parola companiei '{COMPANY}'?
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Parola introdusă nu se va salva
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}Schimbarea parolei pentru companie
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}Parola pentru companie
+STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}Parola implicită pentru companie
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Folosește implicit parola acestei companii pentru cele nou create
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Parola
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Protejează-ți compania cu o parolă pentru a preveni accesul neautorizat
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Alege parola companiei

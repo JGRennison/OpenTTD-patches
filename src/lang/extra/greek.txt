@@ -87,3 +87,19 @@ STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Αδύν
 STR_ERROR_PROTECTED                                             :{WHITE}Αυτή η εταιρία δεν είναι αρκετά παλιά για συναλλαγή μετοχών...
 
 STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :Μόνο σηματοδότες τροχιάς
+
+STR_WARNING_PASSWORD_SECURITY                                   :{YELLOW}Προσοχή: Οι διαχειριστές του server μπορεί να έχουν την δυνατότητα να διαβάσουν οποιδήποτε κείμενο εισαχθεί εδώ.
+STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION                       :{WHITE}Η εταιρεία προστατεύεται από κωδικό. Εισάγετε κωδικό
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_UNLOCK                    :Ξεκλείδωμα κωδικού
+STR_NETWORK_CLIENT_LIST_ASK_COMPANY_UNLOCK                      :{YELLOW}Σίγουρα θέλετε να επαναφέρετε τον κωδικό της εταιρίας '{COMPANY}';
+
+# Network set password
+STR_COMPANY_PASSWORD_CANCEL                                     :{BLACK}Να μην αποθηκευτεί ο κωδικός
+STR_COMPANY_PASSWORD_OK                                         :{BLACK}Δώστε στην εταιρεία νέο κωδικό
+STR_COMPANY_PASSWORD_CAPTION                                    :{WHITE}Κωδικός εταιρείας
+STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}Προκαθορισμένος κωδικός εταιρείας
+STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}Χρήση αυτού του κωδικού ως προεπιλογή για τις νέες εταιρείες
+
+STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Κωδικός
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Προστατεύστε την εταιρεία με κωδικό ώστε να αποφύγετε την συμμετοχή ανεπιθύμητων παικτών
+STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Θέση του κωδικού της εταιρείας

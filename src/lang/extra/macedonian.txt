@@ -30,3 +30,5 @@ STR_VEHICLE_TYPE_AIRCRAFT                                       :Летала
 # Scheduled Dispatch
 
 # Modifier key toggle window
+
+# Network set password
