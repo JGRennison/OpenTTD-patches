@@ -1134,7 +1134,7 @@ bool AfterLoadGame()
 		}
 	}
 
-	if (SlXvIsFeatureMissing(XSLFI_MORE_STATION_TYPES)) {
+	if (SlXvIsFeatureMissing(XSLFI_MORE_STATION_TYPES) && IsSavegameVersionBefore(SLV_INCREASE_STATION_TYPE_FIELD_SIZE)) {
 		/* Expansion of station type field in m6 */
 		for (TileIndex t = 0; t < MapSize(); t++) {
 			if (IsTileType(t, MP_STATION)) {
