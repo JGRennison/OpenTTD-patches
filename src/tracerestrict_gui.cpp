@@ -144,13 +144,16 @@ enum PanelWidgets {
 /**
  * drop down list string array, and corresponding integer values
  *
- * value_array *must* be at least as long as string_array,
- * where the length of string_array is defined as the offset
- * of the first INVALID_STRING_ID
+ * value_array *must* be at least as long as string_array
  */
 struct TraceRestrictDropDownListSet {
-	const StringID *string_array;
-	const uint *value_array;
+	std::span<const StringID> string_array;
+	std::span<const uint> value_array;
+
+	TraceRestrictDropDownListSet(std::span<const StringID> string_array, std::span<const uint> value_array) : string_array(string_array), value_array(value_array.first(string_array.size()))
+	{
+		assert(value_array.size() >= string_array.size());
+	}
 };
 
 static const StringID _program_insert_str[] = {
@@ -171,7 +174,6 @@ static const StringID _program_insert_str[] = {
 	STR_TRACE_RESTRICT_PF_PENALTY_CONTROL,
 	STR_TRACE_RESTRICT_SPEED_ADAPTATION_CONTROL,
 	STR_TRACE_RESTRICT_SIGNAL_MODE_CONTROL,
-	INVALID_STRING_ID
 };
 static const uint32_t _program_insert_else_hide_mask    = 8;     ///< disable bitmask for else
 static const uint32_t _program_insert_or_if_hide_mask   = 4;     ///< disable bitmask for orif
@@ -211,7 +213,6 @@ static const TraceRestrictDropDownListSet _program_insert = {
 static const StringID _deny_value_str[] = {
 	STR_TRACE_RESTRICT_PF_DENY,
 	STR_TRACE_RESTRICT_PF_ALLOW,
-	INVALID_STRING_ID
 };
 static const uint _deny_value_val[] = {
 	0,
@@ -226,7 +227,6 @@ static const TraceRestrictDropDownListSet _deny_value = {
 static const StringID _reserve_through_value_str[] = {
 	STR_TRACE_RESTRICT_RESERVE_THROUGH,
 	STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL,
-	INVALID_STRING_ID
 };
 static const uint _reserve_through_value_val[] = {
 	0,
@@ -242,7 +242,6 @@ static const StringID _long_reserve_value_str[] = {
 	STR_TRACE_RESTRICT_LONG_RESERVE,
 	STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL,
 	STR_TRACE_RESTRICT_LONG_RESERVE_UNLESS_STOPPING,
-	INVALID_STRING_ID
 };
 static const uint _long_reserve_value_val[] = {
 	0,
@@ -260,7 +259,6 @@ static const StringID _wait_at_pbs_value_str[] = {
 	STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL,
 	STR_TRACE_RESTRICT_PBS_RES_END_WAIT_SHORT,
 	STR_TRACE_RESTRICT_PBS_RES_END_WAIT_CANCEL_SHORT,
-	INVALID_STRING_ID
 };
 static const uint _wait_at_pbs_value_val[] = {
 	TRWAPVF_WAIT_AT_PBS,
@@ -283,7 +281,6 @@ static const StringID _direction_value_str[] = {
 	STR_TRACE_RESTRICT_DIRECTION_NW,
 	STR_TRACE_RESTRICT_DIRECTION_TUNBRIDGE_ENTRANCE,
 	STR_TRACE_RESTRICT_DIRECTION_TUNBRIDGE_EXIT,
-	INVALID_STRING_ID
 };
 static const uint _direction_value_val[] = {
 	TRDTSV_FRONT,
@@ -314,7 +311,6 @@ static const StringID _train_status_value_str[] = {
 	STR_TRACE_RESTRICT_TRAIN_STATUS_LOST,
 	STR_TRACE_RESTRICT_TRAIN_STATUS_REQUIRES_SERVICE,
 	STR_TRACE_RESTRICT_TRAIN_STATUS_STOPPING_AT_STATION_WAYPOINT,
-	INVALID_STRING_ID
 };
 static const uint _train_status_value_val[] = {
 	TRTSVF_EMPTY,
@@ -339,7 +335,6 @@ static const TraceRestrictDropDownListSet _train_status_value = {
 static const StringID _reverse_value_str[] = {
 	STR_TRACE_RESTRICT_REVERSE_SIG,
 	STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL,
-	INVALID_STRING_ID
 };
 static const uint _reverse_value_val[] = {
 	TRRVF_REVERSE,
@@ -354,7 +349,6 @@ static const TraceRestrictDropDownListSet _reverse_value = {
 static const StringID _news_control_value_str[] = {
 	STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_SHORT,
 	STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL_SHORT,
-	INVALID_STRING_ID
 };
 static const uint _news_control_value_val[] = {
 	TRRVF_REVERSE,
@@ -372,7 +366,6 @@ static const StringID _time_date_value_str[] = {
 	STR_TRACE_RESTRICT_TIME_HOUR_MINUTE,
 	STR_TRACE_RESTRICT_TIME_DAY,
 	STR_TRACE_RESTRICT_TIME_MONTH,
-	INVALID_STRING_ID
 };
 static const uint _time_date_value_val[] = {
 	TRTDVF_MINUTE,
@@ -393,7 +386,6 @@ static const StringID _engine_class_value_str[] = {
 	STR_LIVERY_ELECTRIC,
 	STR_LIVERY_MONORAIL,
 	STR_LIVERY_MAGLEV,
-	INVALID_STRING_ID
 };
 static const uint _engine_class_value_val[] = {
 	EC_STEAM,    ///< Steam rail engine.
@@ -413,7 +405,6 @@ static const StringID _diagdir_value_str[] = {
 	STR_TRACE_RESTRICT_DIRECTION_SE,
 	STR_TRACE_RESTRICT_DIRECTION_SW,
 	STR_TRACE_RESTRICT_DIRECTION_NW,
-	INVALID_STRING_ID
 };
 static const uint _diagdir_value_val[] = {
 	DIAGDIR_NE,
@@ -430,7 +421,6 @@ static const TraceRestrictDropDownListSet _diagdir_value = {
 static const StringID _dtarget_direction_aux_value_str[] = {
 	STR_TRACE_RESTRICT_VARIABLE_CURRENT_ORDER,
 	STR_TRACE_RESTRICT_VARIABLE_NEXT_ORDER,
-	INVALID_STRING_ID
 };
 static const uint _target_direction_aux_value_val[] = {
 	TRTDCAF_CURRENT_ORDER,
@@ -445,7 +435,6 @@ static const TraceRestrictDropDownListSet _target_direction_aux_value = {
 static const StringID _pf_penalty_control_value_str[] = {
 	STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_SHORT,
 	STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL_SHORT,
-	INVALID_STRING_ID
 };
 static const uint _pf_penalty_control_value_val[] = {
 	TRPPCF_NO_PBS_BACK_PENALTY,
@@ -460,7 +449,6 @@ static const TraceRestrictDropDownListSet _pf_penalty_control_value = {
 static const StringID _speed_adaptation_control_value_str[] = {
 	STR_TRACE_RESTRICT_MAKE_TRAIN_SPEED_ADAPTATION_EXEMPT_SHORT,
 	STR_TRACE_RESTRICT_REMOVE_TRAIN_SPEED_ADAPTATION_EXEMPT_SHORT,
-	INVALID_STRING_ID
 };
 static const uint _speed_adaptation_control_value_val[] = {
 	TRSACF_SPEED_ADAPT_EXEMPT,
@@ -475,7 +463,6 @@ static const TraceRestrictDropDownListSet _speed_adaptation_control_value = {
 static const StringID _signal_mode_control_value_str[] = {
 	STR_TRACE_RESTRICT_USE_NORMAL_ASPECT_MODE_SHORT,
 	STR_TRACE_RESTRICT_USE_SHUNT_ASPECT_MODE_SHORT,
-	INVALID_STRING_ID
 };
 static const uint _signal_mode_control_value_val[] = {
 	TRSMCF_NORMAL_ASPECT,
@@ -493,13 +480,10 @@ static const TraceRestrictDropDownListSet _signal_mode_control_value = {
  */
 static int GetDropDownListIndexByValue(const TraceRestrictDropDownListSet *list_set, uint value, bool missing_ok)
 {
-	const StringID *string_array = list_set->string_array;
-	const uint *value_array = list_set->value_array;
+	std::span<const uint> value_array = list_set->value_array;
 
-	for (; *string_array != INVALID_STRING_ID; string_array++, value_array++) {
-		if (*value_array == value) {
-			return value_array - list_set->value_array;
-		}
+	for (int i = 0; i < static_cast<int>(value_array.size()); i++) {
+		if (value_array[i] == value) return i;
 	}
 	assert(missing_ok == true);
 	return -1;
@@ -768,7 +752,6 @@ DropDownList GetCounterDropDownList(Owner owner, TraceRestrictCounterID ctr_id, 
 static const StringID _cargo_cond_ops_str[] = {
 	STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_CARGO_EQUALS,
 	STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_CARGO_NOT_EQUALS,
-	INVALID_STRING_ID,
 };
 static const uint _cargo_cond_ops_val[] = {
 	TRCO_IS,
@@ -782,7 +765,6 @@ static const TraceRestrictDropDownListSet _cargo_cond_ops = {
 static const StringID _train_status_cond_ops_str[] = {
 	STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_HAS_STATUS,
 	STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_DOESNT_HAVE_STATUS,
-	INVALID_STRING_ID,
 };
 static const uint _train_status_cond_ops_val[] = {
 	TRCO_IS,
@@ -796,7 +778,6 @@ static const TraceRestrictDropDownListSet _train_status_cond_ops = {
 static const StringID _passes_through_cond_ops_str[] = {
 	STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_PASS,
 	STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_DOESNT_PASS,
-	INVALID_STRING_ID,
 };
 static const uint _passes_through_cond_ops_val[] = {
 	TRCO_IS,
@@ -816,7 +797,6 @@ static const StringID _slot_op_subtypes_str[] = {
 	STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT,
 	STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE,
 	STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE,
-	INVALID_STRING_ID,
 };
 static const uint _slot_op_subtypes_val[] = {
 	TRSCOF_ACQUIRE_WAIT,
@@ -837,7 +817,6 @@ static const StringID _counter_op_cond_ops_str[] = {
 	STR_TRACE_RESTRICT_COUNTER_INCREASE,
 	STR_TRACE_RESTRICT_COUNTER_DECREASE,
 	STR_TRACE_RESTRICT_COUNTER_SET,
-	INVALID_STRING_ID,
 };
 static const uint _counter_op_cond_ops_val[] = {
 	TRCCOF_INCREASE,
@@ -883,7 +862,6 @@ static const TraceRestrictDropDownListSet *GetCondOpDropDownListSet(TraceRestric
 		STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_LESS_EQUALS,
 		STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_MORE_THAN,
 		STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_MORE_EQUALS,
-		INVALID_STRING_ID,
 	};
 	static const uint val_long[] = {
 		TRCO_IS,
@@ -900,7 +878,6 @@ static const TraceRestrictDropDownListSet *GetCondOpDropDownListSet(TraceRestric
 	static const StringID str_short[] = {
 		STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_EQUALS,
 		STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_NOT_EQUALS,
-		INVALID_STRING_ID,
 	};
 	static const uint val_short[] = {
 		TRCO_IS,
@@ -926,7 +903,6 @@ static const TraceRestrictDropDownListSet *GetCondOpDropDownListSet(TraceRestric
 			return &set_long;
 	}
 	NOT_REACHED();
-	return nullptr;
 }
 
 /**
@@ -1079,7 +1055,6 @@ static const StringID _condflags_dropdown_str[] = {
 	STR_TRACE_RESTRICT_CONDITIONAL_ELSE,
 	STR_TRACE_RESTRICT_CONDITIONAL_ELIF,
 	STR_TRACE_RESTRICT_CONDITIONAL_ORIF,
-	INVALID_STRING_ID,
 };
 static const uint _condflags_dropdown_val[] = {
 	CFDDT_ELSE,
@@ -1096,7 +1071,6 @@ static const StringID _pf_penalty_dropdown_str[] = {
 	STR_TRACE_RESTRICT_PF_VALUE_MEDIUM,
 	STR_TRACE_RESTRICT_PF_VALUE_LARGE,
 	STR_TRACE_RESTRICT_PF_VALUE_CUSTOM,
-	INVALID_STRING_ID,
 };
 static const uint _pf_penalty_dropdown_val[] = {
 	TRPPPI_SMALL,
@@ -3424,9 +3398,7 @@ private:
 		int selected = GetDropDownListIndexByValue(list_set, value, missing_ok);
 		if (button == TR_WIDGET_VALUE_DROPDOWN) this->value_drop_down_is_company = false;
 
-		const StringID *end = list_set->string_array;
-		while (*end != INVALID_STRING_ID) end++;
-		ShowDropDownMenu(this, std::span<const StringID>(list_set->string_array, end), selected, button, disabled_mask, hidden_mask);
+		ShowDropDownMenu(this, list_set->string_array, selected, button, disabled_mask, hidden_mask);
 	}
 
 	/**
