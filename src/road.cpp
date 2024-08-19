@@ -11,8 +11,6 @@
 #include <algorithm>
 #include <memory>
 #include <numeric>
-#include <unordered_map>
-#include <unordered_set>
 #include <vector>
 #include "rail_map.h"
 #include "road_map.h"
