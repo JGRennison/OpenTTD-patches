@@ -769,8 +769,6 @@ STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED_NEWGRF            :{WHITE}...NewGR
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :열차 시간표의 1일을 74틱으로 바꿔 표시: {STRING}
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :열차 시간표에서 열차의 운행 시간을 '일'보다 자세한 '틱'으로 표시합니다. 1일은 74틱과 같습니다.
 
-STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT_EXTRA         :{STRING}{}경로 탐색 제한(모든 경로 탐색 및 경로 예약 관련 작업), 경유지/신호기에서의 회차, 드라이브스루 차량기지 등과 같은 다양한 기능을 사용하려면 YAPF 경로 탐색을 사용해야만 합니다.
-
 STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_CALENDAR           :{RED}[달력 시간 모드에선 비활성화됨]
 STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_WALLCLOCK          :{RED}[벽시계 시간 모드에선 비활성화됨]
 

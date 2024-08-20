@@ -766,8 +766,6 @@ STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED_NEWGRF            :{WHITE}...o axu
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :Mostra-lo horario en ticks en lugar de en días: {STRING}
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Mostra-los tempos de viaxe nos horarios en ticks en vez de en días
 
-STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT_EXTRA         :{STRING}{}Varias características requiren o uso do pathfinder YAPF, incluíndo: restricións de enrutamento (todas as accións relacionadas co pathfinder e a reserva), inversión en puntos de referencia/sinais e pasaxe a través de depósitos de trens.
-
 STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_CALENDAR           :{RED}[Configuración desactivada no modo de tempo do calendario]
 STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_WALLCLOCK          :{RED}[Configuración desactivada no modo de tempo do reloxo]
 
