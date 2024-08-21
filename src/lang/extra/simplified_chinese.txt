@@ -1,51 +1,19 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 STR_CONFIG_SETTING_TREE_PLACER_PERFECT                          :完善
 
-
 STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT_EXTRA                   :{STRING}，“完善”改良了树木的生长和扩散
-
 
 STR_FINANCES_SECTION_INFRASTRUCTURE_COSTS                       :{GOLD}基建共享
 STR_FINANCES_SECTION_INFRASTRUCTURE_INCOME                      :{GOLD}基建共享
 
-
 STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC_EQ                   :不对称（平均分配）
 STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC_NEAREST              :不对称（最近距离）
-
 
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_16X                             :16 倍
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_32X                             :32 倍
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_64X                             :64 倍
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128 倍
 
-
-
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_DEFAULT                    :默认
-
 
 STR_ORDER_CONDITIONAL_CARGO_WAITING                             :等待货物
 STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :接受货物
@@ -60,27 +28,19 @@ STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :当前时间/�
 STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :时刻表状态
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :调度槽位
 
-
 STR_ORDER_STOP_LOCATION_THROUGH                                 :[通过式装载]
-
 
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :极慢
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :很慢
 
-
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :每 {COMMA} 分钟
-
 
 STR_RIVERS_VERY_MANY                                            :{RED}很多
 STR_RIVERS_EXTREMELY_MANY                                       :{RED}极多
 
-
 STR_CONFIG_SETTING_BRIBE_HELPTEXT_PERIODS                       :允许公司尝试贿赂当地的城镇管理机构。如果贿赂被检察机关发现，公司将无法在该镇活动半周期。
 
-
 STR_CONFIG_SETTING_ALLOW_EXCLUSIVE_HELPTEXT_PERIODS             :如果一家公司购买了一个城镇的独家运输权，对手的车站（乘客和货物）将在一个周期内无法收到任何货物。
-
-
 
 STR_COMMA_SEPARATOR                                             :,{SP}
 
@@ -387,8 +347,6 @@ STR_CONFIG_SETTING_LAKE_TROPICS_WIDTH_HELPTEXT                  :控制在亚热
 STR_CONFIG_SETTING_COAST_TROPICS_WIDTH                          :海岸湿润区域宽度：{STRING}
 STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_HELPTEXT                 :控制亚热带景观税中围绕海岸生成的湿润区域的宽度
 
-###length 4
-
 STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_DEFAULT                  :默认
 STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_MEDIUM                   :中等
 STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_LARGE                    :大
@@ -521,15 +479,11 @@ STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE_HELPTEXT           :在每个步骤
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS            :舍入自动调整的时刻表的游戏刻：{STRING}
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_HELPTEXT   :时刻表的“自动”功能所调整的时刻表时间没有四舍五入。一天的时长在未缩放时为 74 游戏刻。{}如果使用分钟显示时刻表时间，则会使用“每分钟游戏刻数”定义的数值，否则使用一天的默认时长 74 刻。
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_VALUE      :{COMMA}{NBSP}刻
-
-
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_DEFAULT    :默认
 
 STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION          :计划调度时刻表默认时长：{STRING}
 STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_HELPTEXT :本项设置新计划调度的默认时长。默认值为 24 小时（1440 分钟）。在使用“日”作为计时单位时，默认时长为一年。
 STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_VALUE    :{COMMA}{NBSP}分
-
-
 STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_DEFAULT  :默认
 
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE                            :默认道路与电车道（开始新游戏或加载游戏后）：{STRING}
@@ -575,7 +529,6 @@ STR_CONFIG_SETTING_DAY_LENGTH_FACTOR_HELPTEXT                   :本项调整经
 STR_CONFIG_SETTING_TOWN_TUNNELS                                 :允许城镇建造隧道：{STRING}
 STR_CONFIG_SETTING_TOWN_TUNNELS_HELPTEXT                        :在什么条件下城镇被允许建造道路隧道
 
-###length 3
 STR_CONFIG_SETTING_TOWN_TUNNELS_FORBIDDEN                       :禁止
 STR_CONFIG_SETTING_TOWN_TUNNELS_ALLOWED_OBSTRUCTION             :仅在有小障碍时允许
 STR_CONFIG_SETTING_TOWN_TUNNELS_ALLOWED                         :允许
@@ -617,7 +570,6 @@ STR_CONFIG_SETTING_FLOOD_FROM_EDGES_HELPTEXT                    :控制水是否
 
 STR_CONFIG_SETTING_MAP_EDGE_MODE                                :地图边缘行为：{STRING}
 STR_CONFIG_SETTING_MAP_EDGE_MODE_HELPTEXT                       :是否允许将地图边缘抬高到海平面以上，以及如何显示地图外的虚空区域
-
 STR_CONFIG_SETTING_MAP_EDGE_MODE_DEFAULT                        :默认
 STR_CONFIG_SETTING_MAP_EDGE_MODE_SEA_LEVEL                      :地图边缘限制为海平面高度
 STR_CONFIG_SETTING_MAP_EDGE_MODE_SEA_LEVEL_OUTSIDE_WATER        :地图边缘限制为海平面高度，地图外部显示为水域
@@ -822,8 +774,6 @@ STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED_NEWGRF            :{WHITE}……�
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :在时刻表中以刻而不是日为单位：{STRING}
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :在时刻表中以刻而不是日为显示单位
 
-STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT_EXTRA         :{STRING}{}各种功能需要使用 YAPF 寻路器，包括寻路限制（所有与路径规划和预留相关的操作）、在路点/信号处掉头与直通车辆段、
-
 STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_CALENDAR           :{RED}[本设置在日历时间模式中禁用]
 STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_WALLCLOCK          :{RED}[本设置在挂钟时间模式中禁用]
 
@@ -855,7 +805,6 @@ STR_BUILD_SIGNAL_SEMAPHORE_PROG_TOOLTIP                         :{BLACK}可编�
 STR_BUILD_SIGNAL_SEMAPHORE_NO_ENTRY_TOOLTIP                     :{BLACK}禁入信号（臂板）{}路径信号灯为列车预留一条到安全停车位的路径，而其它路径仍然可以使用，从而允许一列以上的列车同时进入一个信号区间。禁入信号不允许列车逆行。
 STR_BUILD_SIGNAL_ELECTRIC_PROG_TOOLTIP                          :{BLACK}可编程逻辑信号（电子）{}可编程逻辑信号是一种复合信号，允许制定复杂的通行规则。
 STR_BUILD_SIGNAL_ELECTRIC_NO_ENTRY_TOOLTIP                      :{BLACK}禁入信号（电子）{}路径信号灯为列车预留一条到安全停车位的路径，而其它路径仍然可以使用，从而允许一列以上的列车同时进入一个信号区间。禁入信号不允许列车逆行。
-
 STR_BUILD_SIGNAL_DEFAULT_STYLE                                  :默认
 STR_BUILD_SIGNAL_STYLE_TOOLTIP                                  :{BLACK}选择信号样式
 
@@ -1063,12 +1012,10 @@ STR_TRACE_RESTRICT_TIME_MONTH_ITEM_SHORT                        :月
 STR_TRACE_RESTRICT_TIMETABLE_LATENESS                           :延误
 STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :早点
 
-###length 3
 STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT                           :下个发车时间
 STR_TRACE_RESTRICT_DISPATCH_SLOT_LAST                           :最后一个发车时间
 STR_TRACE_RESTRICT_DISPATCH_SLOT_VEH                            :载具的发车时间
 
-###length 3
 STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_NEXT                     :下个
 STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_LAST                     :最后一个
 STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_VEH                      :载具
@@ -1372,7 +1319,6 @@ STR_TOWN_VIEW_NOISE_IN_TOWN_NO_LIMIT                            :{BLACK}城镇�
 
 STR_TOWN_VIEW_CARGO_LAST_PRODUCTION_INTERVAL_MAX                :{BLACK}上生产周期的{CARGO_LIST}数：{ORANGE}{COMMA}{BLACK}  最大：{ORANGE}{COMMA}
 
-###length 6
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS                :允许建造道路
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_LEVEL_CROSSINGS      :允许建造铁道道口
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TUNNELS                    :允许建筑隧道
@@ -1731,11 +1677,9 @@ STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_FIRST     :不是第一条
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_LAST          :是最后一条
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_NOT_LAST      :不是最后一条
 
-###length 2
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG          :有标签 #{NUM}
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_HAS_TAG_NAMED    :有标签 #{NUM}（{STRING}）
 
-###length 2
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG  :没有标签 #{NUM}
 STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG_NAMED :没有标签 #{NUM}（{STRING}）
 
@@ -1902,7 +1846,6 @@ STR_CARGO_TYPE_LOAD_ORDERS_DROP_TOOLTIP                         :{BLACK}改变�
 STR_CARGO_TYPE_UNLOAD_ORDERS_DROP_TOOLTIP                       :{BLACK}改变这种货物的卸载行为
 STR_CARGO_TYPE_ORDERS_SET_TO_ALL_LABEL                          :{BLACK}设置全部为：
 STR_CARGO_TYPE_ORDERS_SET_TO_ALL_TOOLTIP                        :{BLACK}设置全部货物的加载/卸载行为为当前所选的
-
 
 STR_SCREENSHOT_WORLD_SCREENSHOT_DEFAULT_ZOOM                    :{BLACK}以默认缩放比例全地图截图
 STR_SCREENSHOT_WORLD_SCREENSHOT_CURRENT_ZOOM                    :{BLACK}以当前缩放比例全地图截图
@@ -2245,12 +2188,10 @@ STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_WAS_FIRST              :最早发车时
 STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_WAS_LAST               :最晚发车时间
 STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG                    :标签 #{NUM}
 STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG_NAMED              :标签 #{NUM}（{STRING}）
-# TODO
-###length 2
+
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}最后一班已于 {TT_TIME} 发车。
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}最后一班尚未发车，计划于 {TT_TIME} 发车。
 
-###length 2
 STR_SCHDISPATCH_SUMMARY_VEHICLE_DEPARTURE_PAST                  :{BLACK}当前载具已于 {TT_TIME} 发车{STRING}。
 STR_SCHDISPATCH_SUMMARY_VEHICLE_DEPARTURE_FUTURE                :{BLACK}当前载具尚未离开，计划于 {TT_TIME} 发车{STRING}。
 
@@ -2321,7 +2262,6 @@ STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :启用时允许
 STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :公司可发售股份的最小已存续年份数：{STRING}
 STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :设置公司可发售股份的最小已存续年份数
 STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_VALUE                   :{COMMA} 年
-
 STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_NO_MIN                  :没有最低年限
 
 STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}（{COMMA}% 由 {COMPANY} 所有）
@@ -2396,7 +2336,6 @@ STR_CONFIG_SETTING_CYCLE_SIGNAL_PBS                             :仅路径信号
 
 STR_CONFIG_SETTING_RESTRICT_PATCH                               :非原版设置
 
-###length 4
 STR_VIEWPORT_TOWN_COLOUR                                        :{1:COLOUR}{0:TOWN}
 STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {COLOUR}（{COMMA}）
 STR_VIEWPORT_TOWN_COLOUR_CITY                                   :{1:COLOUR}{0:TOWN}（都市）
