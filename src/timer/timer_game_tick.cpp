@@ -51,7 +51,7 @@ void TimeoutTimer<TimerGameTick>::Elapsed(TimerGameTick::TElapsed delta)
 template<>
 void TimerManager<TimerGameTick>::Elapsed(TimerGameTick::TElapsed delta)
 {
-	for (auto timer : TimerManager<TimerGameTick>::GetTimers()) {
+	for (auto timer : TimerManager<TimerGameTick>::GetTimerVector()) {
 		timer->Elapsed(delta);
 	}
 }

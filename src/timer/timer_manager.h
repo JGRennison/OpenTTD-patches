@@ -117,6 +117,19 @@ private:
 		static btree::btree_set<BaseTimer<TTimerType> *, base_timer_sorter> timers;
 		return timers;
 	}
+
+	/** List of active timers, as a std::vector, to allow for timers to be added/removed during iteration. */
+	static std::vector<BaseTimer<TTimerType> *> GetTimerVector()
+	{
+		std::vector<BaseTimer<TTimerType> *> result;
+
+		const auto &timers = TimerManager::GetTimers();
+		result.reserve(timers.size());
+		for (BaseTimer<TTimerType> * timer : timers) {
+			result.push_back(timer);
+		}
+		return result;
+	}
 };
 
 #endif /* TIMER_MANAGER_H */
