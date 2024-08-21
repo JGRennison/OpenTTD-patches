@@ -1113,17 +1113,14 @@ public:
 	 */
 	static size_t SlCalcLen(const void *storage, VarType conv, SaveLoadType cmd = SL_VAR)
 	{
-		assert(cmd == SL_VAR || cmd == SL_REF || cmd == SL_STDSTR);
+		assert(cmd == SL_VAR || cmd == SL_REF);
 
 		const SlStorageT *list = static_cast<const SlStorageT *>(storage);
 
-		size_t type_size = SlGetArrayLength(list->size());
-		if constexpr (std::is_same_v<std::vector<std::string>, SlStorageT> || std::is_same_v<ring_buffer<std::string>, SlStorageT>) {
-			return std::accumulate(list->begin(), list->end(), type_size, [](size_t sum, const std::string &str) { return sum + SlCalcStdStringLen(&str); });
-		} else {
-			size_t item_size = SlCalcConvFileLen(cmd == SL_VAR ? conv : (VarType)SLE_FILE_U32);
-			return list->size() * item_size + type_size;
-		}
+
+		int type_size = SlGetArrayLength(list->size());
+		int item_size = SlCalcConvFileLen(cmd == SL_VAR ? conv : (VarType)SLE_FILE_U32);
+		return list->size() * item_size + type_size;
 	}
 
 	static void SlSaveLoadMember(SaveLoadType cmd, Tvar *item, VarType conv)
@@ -1289,7 +1286,12 @@ static inline size_t SlCalcRingLen(const void *ring, VarType conv)
 		case SLE_VAR_U32: return SlStorageHelper<ring_buffer_sl, uint32_t>::SlCalcLen(ring, conv);
 		case SLE_VAR_I64: return SlStorageHelper<ring_buffer_sl, int64_t>::SlCalcLen(ring, conv);
 		case SLE_VAR_U64: return SlStorageHelper<ring_buffer_sl, uint64_t>::SlCalcLen(ring, conv);
-		case SLE_VAR_STR: return SlStorageHelper<ring_buffer_sl, std::string>::SlCalcLen(ring, conv, SL_STDSTR);
+
+		case SLE_VAR_STR:
+			/* Strings are a length-prefixed field type in the savegame table format,
+			 * these may not be directly stored in another length-prefixed container type. */
+			NOT_REACHED();
+
 		default: NOT_REACHED();
 	}
 }
@@ -1311,7 +1313,16 @@ static void SlRing(void *ring, VarType conv)
 		case SLE_VAR_U32: SlStorageHelper<ring_buffer_sl, uint32_t>::SlSaveLoad(ring, conv); break;
 		case SLE_VAR_I64: SlStorageHelper<ring_buffer_sl, int64_t>::SlSaveLoad(ring, conv); break;
 		case SLE_VAR_U64: SlStorageHelper<ring_buffer_sl, uint64_t>::SlSaveLoad(ring, conv); break;
-		case SLE_VAR_STR: SlStorageHelper<ring_buffer_sl, std::string>::SlSaveLoad(ring, conv, SL_STDSTR); break;
+
+		case SLE_VAR_STR:
+			/* Strings are a length-prefixed field type in the savegame table format,
+			 * these may not be directly stored in another length-prefixed container type.
+			 * This is permitted for load-related actions, because invalid fields of this type are present
+			 * from SLV_COMPANY_ALLOW_LIST up to SLV_COMPANY_ALLOW_LIST_V2. */
+			assert(_sl.action != SLA_SAVE);
+			SlStorageHelper<ring_buffer_sl, std::string>::SlSaveLoad(ring, conv, SL_STDSTR);
+			break;
+
 		default: NOT_REACHED();
 	}
 }
@@ -1333,7 +1344,12 @@ static inline size_t SlCalcVectorLen(const void *vector, VarType conv)
 		case SLE_VAR_U32: return SlStorageHelper<std::vector, uint32_t>::SlCalcLen(vector, conv);
 		case SLE_VAR_I64: return SlStorageHelper<std::vector, int64_t>::SlCalcLen(vector, conv);
 		case SLE_VAR_U64: return SlStorageHelper<std::vector, uint64_t>::SlCalcLen(vector, conv);
-		case SLE_VAR_STR: return SlStorageHelper<std::vector, std::string>::SlCalcLen(vector, conv, SL_STDSTR);
+
+		case SLE_VAR_STR:
+			/* Strings are a length-prefixed field type in the savegame table format,
+			 * these may not be directly stored in another length-prefixed container type. */
+			NOT_REACHED();
+
 		default: NOT_REACHED();
 	}
 }
@@ -1355,7 +1371,16 @@ static void SlVector(void *vector, VarType conv)
 		case SLE_VAR_U32: SlStorageHelper<std::vector, uint32_t>::SlSaveLoad(vector, conv); break;
 		case SLE_VAR_I64: SlStorageHelper<std::vector, int64_t>::SlSaveLoad(vector, conv); break;
 		case SLE_VAR_U64: SlStorageHelper<std::vector, uint64_t>::SlSaveLoad(vector, conv); break;
-		case SLE_VAR_STR: SlStorageHelper<std::vector, std::string>::SlSaveLoad(vector, conv, SL_STDSTR); break;
+
+		case SLE_VAR_STR:
+			/* Strings are a length-prefixed field type in the savegame table format,
+			 * these may not be directly stored in another length-prefixed container type.
+			 * This is permitted for load-related actions, because invalid fields of this type are present
+			 * from SLV_COMPANY_ALLOW_LIST up to SLV_COMPANY_ALLOW_LIST_V2. */
+			assert(_sl.action != SLA_SAVE);
+			SlStorageHelper<std::vector, std::string>::SlSaveLoad(vector, conv, SL_STDSTR);
+			break;
+
 		default: NOT_REACHED();
 	}
 }
