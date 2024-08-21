@@ -192,6 +192,9 @@ class btree_unique_container : public btree_container<Tree> {
   size_type count(const key_type &key) const {
     return this->tree_.count_unique(key);
   }
+  bool contains(const key_type &key) const {
+    return this->count(key) > 0;
+  }
 
   // Insertion routines.
   std::pair<iterator,bool> insert(const value_type &x) {
@@ -310,6 +313,9 @@ class btree_multi_container : public btree_container<Tree> {
   }
   size_type count(const key_type &key) const {
     return this->tree_.count_multi(key);
+  }
+  bool contains(const key_type &key) const {
+    return this->find(key) != this->end();
   }
 
   // Insertion routines.
