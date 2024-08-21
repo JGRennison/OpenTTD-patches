@@ -24,6 +24,8 @@
 #include "landscape.h"
 #include "widgets/statusbar_widget.h"
 #include "event_logs.h"
+#include "timer/timer.h"
+#include "timer/timer_game_calendar.h"
 
 #include "safeguards.h"
 
@@ -512,6 +514,16 @@ void IncreaseCalendarDate()
 
 	/* yes, call various yearly loops */
 	if (new_year) OnNewCalendarYear();
+
+	uint calendar_triggers = 0;
+	SetBit(calendar_triggers, TimerGameCalendar::DAY);
+	if ((CalTime::CurDate().base() % 7) == 3) SetBit(calendar_triggers, TimerGameCalendar::WEEK);
+	if (new_month) {
+		SetBit(calendar_triggers, TimerGameCalendar::MONTH);
+		if ((CalTime::CurMonth() % 3) == 0) SetBit(calendar_triggers, TimerGameCalendar::QUARTER);
+	}
+	if (new_year) SetBit(calendar_triggers, TimerGameCalendar::YEAR);
+	TimerManager<TimerGameCalendar>::Elapsed(calendar_triggers);
 }
 
 static void IncreaseEconomyDate()
