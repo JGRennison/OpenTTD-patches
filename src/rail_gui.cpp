@@ -1048,7 +1048,6 @@ static Hotkey railtoolbar_hotkeys[] = {
 	Hotkey('R', "remove", WID_RAT_REMOVE),
 	Hotkey('C', "convert", WID_RAT_CONVERT_RAIL),
 	Hotkey(WKC_CTRL | 'C', "convert_track", WID_RAT_CONVERT_RAIL_TRACK),
-	HOTKEY_LIST_END
 };
 HotkeyList BuildRailToolbarWindow::hotkeys("railtoolbar", railtoolbar_hotkeys, RailToolbarGlobalHotkeys);
 
@@ -1781,7 +1780,6 @@ static EventState BuildRailStationGlobalHotkeys(int hotkey)
 
 static Hotkey buildrailstation_hotkeys[] = {
 	Hotkey('F', "focus_filter_box", BRASHK_FOCUS_FILTER_BOX),
-	HOTKEY_LIST_END
 };
 HotkeyList BuildRailStationWindow::hotkeys("buildrailstation", buildrailstation_hotkeys, BuildRailStationGlobalHotkeys);
 
@@ -2293,7 +2291,6 @@ static Hotkey signaltoolbar_hotkeys[] = {
 	Hotkey('H', "signal_pbs", WID_BS_ELECTRIC_PBS),
 	Hotkey('J', "signal_pbs_oneway", WID_BS_ELECTRIC_PBS_OWAY),
 	Hotkey((uint16_t)0, "signal_no_entry", WID_BS_ELECTRIC_NO_ENTRY),
-	HOTKEY_LIST_END
 };
 HotkeyList BuildSignalWindow::hotkeys("signaltoolbar", signaltoolbar_hotkeys);
 

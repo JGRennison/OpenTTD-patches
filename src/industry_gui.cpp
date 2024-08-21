@@ -1959,7 +1959,6 @@ public:
 
 static Hotkey industrydirectory_hotkeys[] = {
 	Hotkey('F', "focus_filter_box", IDHK_FOCUS_FILTER_BOX),
-	HOTKEY_LIST_END
 };
 HotkeyList IndustryDirectoryWindow::hotkeys("industrydirectory", industrydirectory_hotkeys);
 

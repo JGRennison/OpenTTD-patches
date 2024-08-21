@@ -152,14 +152,14 @@ static uint16_t ParseKeycode(const char *start, const char *end)
  * @param hotkey The hotkey object to add the keycodes to
  * @param value The string to parse
  */
-static void ParseHotkeys(Hotkey *hotkey, const char *value)
+static void ParseHotkeys(Hotkey &hotkey, const char *value)
 {
 	const char *start = value;
 	while (*start != '\0') {
 		const char *end = start;
 		while (*end != '\0' && *end != ',') end++;
 		uint16_t keycode = ParseKeycode(start, end);
-		if (keycode != 0) hotkey->AddKeycode(keycode);
+		if (keycode != 0) hotkey.AddKeycode(keycode);
 		start = (*end == ',') ? end + 1: end;
 	}
 }
@@ -213,10 +213,10 @@ static std::string KeycodeToString(uint16_t keycode)
  * @param hotkey The keycodes of this hotkey need to be converted to a string.
  * @return A string representation of all keycodes.
  */
-std::string SaveKeycodes(const Hotkey *hotkey)
+std::string SaveKeycodes(const Hotkey &hotkey)
 {
 	std::string str;
-	for (auto keycode : hotkey->keycodes) {
+	for (auto keycode : hotkey.keycodes) {
 		if (!str.empty()) str += ",";
 		str += KeycodeToString(keycode);
 	}
@@ -263,9 +263,17 @@ void Hotkey::AddKeycode(uint16_t keycode)
 	this->keycodes.insert(keycode);
 }
 
-HotkeyList::HotkeyList(const char *ini_group, Hotkey *items, GlobalHotkeyHandlerFunc global_hotkey_handler) :
-	global_hotkey_handler(global_hotkey_handler), ini_group(ini_group), items(items)
+HotkeyList::HotkeyList(const char *ini_group, std::vector<Hotkey> items, GlobalHotkeyHandlerFunc global_hotkey_handler) :
+	global_hotkey_handler(global_hotkey_handler), ini_group(ini_group), items(std::move(items))
 {
+	if (_hotkey_lists == nullptr) _hotkey_lists = new std::vector<HotkeyList*>();
+	_hotkey_lists->push_back(this);
+}
+
+HotkeyList::HotkeyList(const char *ini_group, std::span<const Hotkey> items, GlobalHotkeyHandlerFunc global_hotkey_handler) :
+	global_hotkey_handler(global_hotkey_handler), ini_group(ini_group)
+{
+	this->items.assign(items.begin(), items.end());
 	if (_hotkey_lists == nullptr) _hotkey_lists = new std::vector<HotkeyList*>();
 	_hotkey_lists->push_back(this);
 }
@@ -283,10 +291,10 @@ void HotkeyList::Load(const IniFile &ini)
 {
 	const IniGroup *group = ini.GetGroup(this->ini_group);
 	if (group == nullptr) return;
-	for (Hotkey *hotkey = this->items; hotkey->name != nullptr; ++hotkey) {
-		const IniItem *item = group->GetItem(hotkey->name);
+	for (Hotkey &hotkey : this->items) {
+		const IniItem *item = group->GetItem(hotkey.name);
 		if (item != nullptr) {
-			hotkey->keycodes.clear();
+			hotkey.keycodes.clear();
 			if (item->value.has_value()) ParseHotkeys(hotkey, item->value->c_str());
 		}
 	}
@@ -299,8 +307,8 @@ void HotkeyList::Load(const IniFile &ini)
 void HotkeyList::Save(IniFile &ini) const
 {
 	IniGroup &group = ini.GetOrCreateGroup(this->ini_group);
-	for (const Hotkey *hotkey = this->items; hotkey->name != nullptr; ++hotkey) {
-		IniItem &item = group.GetOrCreateItem(hotkey->name);
+	for (const Hotkey &hotkey : this->items) {
+		IniItem &item = group.GetOrCreateItem(hotkey.name);
 		item.SetValue(SaveKeycodes(hotkey));
 	}
 }
@@ -313,11 +321,11 @@ void HotkeyList::Save(IniFile &ini) const
  */
 int HotkeyList::CheckMatch(uint16_t keycode, bool global_only) const
 {
-	for (const Hotkey *list = this->items; list->name != nullptr; ++list) {
-		auto begin = list->keycodes.begin();
-		auto end = list->keycodes.end();
+	for (const Hotkey &list : this->items) {
+		auto begin = list.keycodes.begin();
+		auto end = list.keycodes.end();
 		if (std::find(begin, end, keycode | WKC_GLOBAL_HOTKEY) != end || (!global_only && std::find(begin, end, keycode) != end)) {
-			return list->num;
+			return list.num;
 		}
 	}
 	return -1;

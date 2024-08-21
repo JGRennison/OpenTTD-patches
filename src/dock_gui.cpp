@@ -318,7 +318,6 @@ static Hotkey dockstoolbar_hotkeys[] = {
 	Hotkey('6', "buoy", WID_DT_BUOY),
 	Hotkey('7', "river", WID_DT_RIVER),
 	Hotkey(_dockstoolbar_aqueduct_keys, "aqueduct", WID_DT_BUILD_AQUEDUCT),
-	HOTKEY_LIST_END
 };
 HotkeyList BuildDocksToolbarWindow::hotkeys("dockstoolbar", dockstoolbar_hotkeys, DockToolbarGlobalHotkeys);
 

@@ -1265,7 +1265,6 @@ static Hotkey scriptdebug_hotkeys[] = {
 	Hotkey('F', "break_string", WID_SCRD_BREAK_STR_EDIT_BOX),
 	Hotkey('C', "match_case", WID_SCRD_MATCH_CASE_BTN),
 	Hotkey(WKC_RETURN, "continue", WID_SCRD_CONTINUE_BTN),
-	HOTKEY_LIST_END
 };
 HotkeyList ScriptDebugWindow::hotkeys("aidebug", scriptdebug_hotkeys, ScriptDebugGlobalHotkeys);
 

@@ -183,7 +183,6 @@ static EventState AirportToolbarGlobalHotkeys(int hotkey)
 static Hotkey airtoolbar_hotkeys[] = {
 	Hotkey('1', "airport", WID_AT_AIRPORT),
 	Hotkey('2', "demolish", WID_AT_DEMOLISH),
-	HOTKEY_LIST_END
 };
 HotkeyList BuildAirToolbarWindow::hotkeys("airtoolbar", airtoolbar_hotkeys, AirportToolbarGlobalHotkeys);
 

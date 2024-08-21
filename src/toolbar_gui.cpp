@@ -2339,7 +2339,6 @@ static Hotkey maintoolbar_hotkeys[] = {
 	Hotkey((uint16_t)0, "template_replacement", MTHK_TEMPLATE_REPLACEMENT),
 	Hotkey((uint16_t)0, "train_slots", MTHK_TRAIN_SLOTS),
 	Hotkey((uint16_t)0, "train_counters", MTHK_TRAIN_COUNTERS),
-	HOTKEY_LIST_END
 };
 HotkeyList MainToolbarWindow::hotkeys("maintoolbar", maintoolbar_hotkeys);
 
@@ -2724,7 +2723,6 @@ static Hotkey scenedit_maintoolbar_hotkeys[] = {
 	Hotkey('L', "terraform", MTEHK_TERRAFORM),
 	Hotkey('M', "smallmap", MTEHK_SMALLMAP),
 	Hotkey('V', "extra_viewport", MTEHK_EXTRA_VIEWPORT),
-	HOTKEY_LIST_END
 };
 HotkeyList ScenarioEditorToolbarWindow::hotkeys("scenedit_maintoolbar", scenedit_maintoolbar_hotkeys);
 

@@ -2285,7 +2285,6 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 static Hotkey buildvehicle_hotkeys[] = {
 	Hotkey('F', "focus_filter_box", BVHK_FOCUS_FILTER_BOX),
-	HOTKEY_LIST_END
 };
 HotkeyList BuildVehicleWindow::hotkeys("buildvehicle", buildvehicle_hotkeys);
 

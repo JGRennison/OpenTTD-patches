@@ -917,7 +917,6 @@ static Hotkey roadtoolbar_hotkeys[] = {
 	Hotkey('R', "remove", WID_ROT_REMOVE),
 	Hotkey('C', "convert", WID_ROT_CONVERT_ROAD),
 	Hotkey('9', "waypoint", WID_ROT_BUILD_WAYPOINT),
-	HOTKEY_LIST_END
 };
 HotkeyList BuildRoadToolbarWindow::road_hotkeys("roadtoolbar", roadtoolbar_hotkeys, RoadToolbarGlobalHotkeys);
 
@@ -934,7 +933,6 @@ static Hotkey tramtoolbar_hotkeys[] = {
 	Hotkey('R', "remove", WID_ROT_REMOVE),
 	Hotkey('C', "convert", WID_ROT_CONVERT_ROAD),
 	Hotkey('9', "waypoint", WID_ROT_BUILD_WAYPOINT),
-	HOTKEY_LIST_END
 };
 HotkeyList BuildRoadToolbarWindow::tram_hotkeys("tramtoolbar", tramtoolbar_hotkeys, TramToolbarGlobalHotkeys);
 
@@ -1762,13 +1760,11 @@ public:
 
 static Hotkey buildroadstop_hotkeys[] = {
 	Hotkey('F', "focus_filter_box", BROSHK_FOCUS_FILTER_BOX),
-	HOTKEY_LIST_END
 };
 HotkeyList BuildRoadStationWindow::road_hotkeys("buildroadstop", buildroadstop_hotkeys);
 
 static Hotkey buildtramstop_hotkeys[] = {
 	Hotkey('F', "focus_filter_box", BROSHK_FOCUS_FILTER_BOX),
-	HOTKEY_LIST_END
 };
 HotkeyList BuildRoadStationWindow::tram_hotkeys("buildtramstop", buildtramstop_hotkeys);
 

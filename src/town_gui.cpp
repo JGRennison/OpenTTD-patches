@@ -1253,7 +1253,6 @@ public:
 
 static Hotkey towndirectory_hotkeys[] = {
 	Hotkey('F', "focus_filter_box", TDHK_FOCUS_FILTER_BOX),
-	HOTKEY_LIST_END
 };
 HotkeyList TownDirectoryWindow::hotkeys("towndirectory", towndirectory_hotkeys);
 

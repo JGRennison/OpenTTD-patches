@@ -609,7 +609,6 @@ static Hotkey global_hotkeys[] = {
 	Hotkey((uint16_t)0,  "switch_viewport_route_overlay_mode", GHK_SWITCH_VIEWPORT_ROUTE_OVERLAY_MODE),
 	Hotkey((uint16_t)0,  "switch_viewport_map_slope_mode", GHK_SWITCH_VIEWPORT_MAP_SLOPE_MODE),
 	Hotkey((uint16_t)0,  "switch_viewport_map_height_mode", GHK_SWITCH_VIEWPORT_MAP_HEIGHT_MODE),
-	HOTKEY_LIST_END
 };
 HotkeyList MainWindow::hotkeys("global", global_hotkeys);
 

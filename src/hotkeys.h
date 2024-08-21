@@ -30,8 +30,6 @@ struct Hotkey {
 	btree::btree_set<uint16_t> keycodes;
 };
 
-#define HOTKEY_LIST_END Hotkey((uint16_t)0, nullptr, -1)
-
 struct IniFile;
 
 /**
@@ -40,7 +38,8 @@ struct IniFile;
 struct HotkeyList {
 	typedef EventState (*GlobalHotkeyHandlerFunc)(int hotkey);
 
-	HotkeyList(const char *ini_group, Hotkey *items, GlobalHotkeyHandlerFunc global_hotkey_handler = nullptr);
+	HotkeyList(const char *ini_group, std::vector<Hotkey> items, GlobalHotkeyHandlerFunc global_hotkey_handler = nullptr);
+	HotkeyList(const char *ini_group, std::span<const Hotkey> items, GlobalHotkeyHandlerFunc global_hotkey_handler = nullptr);
 	~HotkeyList();
 
 	void Load(const IniFile &ini);
@@ -51,7 +50,7 @@ struct HotkeyList {
 	GlobalHotkeyHandlerFunc global_hotkey_handler;
 private:
 	const char *ini_group;
-	Hotkey *items;
+	std::vector<Hotkey> items;
 
 	/**
 	 * Dummy private copy constructor to prevent compilers from

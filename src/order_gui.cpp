@@ -3816,7 +3816,6 @@ static Hotkey order_hotkeys[] = {
 	Hotkey((uint16_t)0, "duplicate", OHK_DUPLICATE),
 	Hotkey((uint16_t)0, "retarget_jump", OHK_RETARGET_JUMP),
 	Hotkey((uint16_t)0, "close", OHK_CLOSE),
-	HOTKEY_LIST_END
 };
 HotkeyList OrdersWindow::hotkeys("order", order_hotkeys);
 

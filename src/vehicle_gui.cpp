@@ -4473,7 +4473,6 @@ public:
 
 static Hotkey vehicleview_hotkeys[] = {
 	Hotkey('H', "honk", WID_VV_HONK_HORN),
-	HOTKEY_LIST_END
 };
 HotkeyList VehicleViewWindow::hotkeys("vehicleview", vehicleview_hotkeys);
 

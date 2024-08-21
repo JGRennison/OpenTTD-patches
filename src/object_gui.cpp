@@ -690,7 +690,6 @@ static EventState BuildObjectGlobalHotkeys(int hotkey)
 
 static Hotkey buildobject_hotkeys[] = {
 	Hotkey('F', "focus_filter_box", BOHK_FOCUS_FILTER_BOX),
-	HOTKEY_LIST_END
 };
 HotkeyList BuildObjectWindow::hotkeys("buildobject", buildobject_hotkeys, BuildObjectGlobalHotkeys);
 
