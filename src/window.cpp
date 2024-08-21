@@ -40,6 +40,8 @@
 #include "guitimer_func.h"
 #include "news_func.h"
 #include "core/backup_type.hpp"
+#include "timer/timer.h"
+#include "timer/timer_window.h"
 
 #include <bitset>
 
@@ -3253,7 +3255,8 @@ void CallWindowRealtimeTickEvent(uint delta_ms)
 void UpdateWindows()
 {
 	static std::chrono::steady_clock::time_point last_time = std::chrono::steady_clock::now();
-	uint delta_ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - last_time).count();
+	auto delta_ms_duration = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - last_time);
+	uint delta_ms = delta_ms_duration.count();
 
 	if (delta_ms == 0) return;
 
@@ -3264,6 +3267,7 @@ void UpdateWindows()
 
 	ProcessPendingPerformanceMeasurements();
 
+	TimerManager<TimerWindow>::Elapsed(delta_ms_duration);
 	CallWindowRealtimeTickEvent(delta_ms);
 
 	static GUITimer network_message_timer = GUITimer(1);
