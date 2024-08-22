@@ -2228,6 +2228,7 @@ STR_SCHDISPATCH_MOVE_SCHEDULE                                   :{BLACK}Change p
 STR_SCHDISPATCH_DATE_WALLCLOCK_TINY_FLAGGED                     :{TT_TIME}*
 STR_SCHDISPATCH_SLOT_TOOLTIP                                    :{BLACK}{TT_TIME}
 STR_SCHDISPATCH_SLOT_TOOLTIP_RELATIVE                           : ({TIME_HHMM} from start)
+STR_SCHDISPATCH_SLOT_TOOLTIP_VEHICLE                            :{}Vehicle's departure slot
 STR_SCHDISPATCH_SLOT_TOOLTIP_LAST                               :{}Last departure slot
 STR_SCHDISPATCH_SLOT_TOOLTIP_NEXT                               :{}Next available departure slot
 STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE                              :{}Departure slot may be used more than once
