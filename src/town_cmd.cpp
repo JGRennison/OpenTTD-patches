@@ -275,7 +275,7 @@ enum TownGrowthResult {
 //	GROWTH_SEARCH_RUNNING >=  1
 };
 
-static bool BuildTownHouse(Town *t, TileIndex tile);
+static bool TryBuildTownHouse(Town *t, TileIndex tile);
 static Town *CreateRandomTown(uint attempts, uint32_t townnameparts, TownSize size, bool city, TownLayout layout);
 
 static void TownDrawHouseLift(const TileInfo *ti)
@@ -833,7 +833,7 @@ static void TileLoop_Town(TileIndex tile)
 				}
 			}
 
-			BuildTownHouse(t, tile);
+			TryBuildTownHouse(t, tile);
 		}
 	}
 
@@ -1335,7 +1335,7 @@ static bool GrowTownWithExtraHouse(Town *t, TileIndex tile)
 
 		/* If there are enough neighbors stop here */
 		if (counter >= 3) {
-			if (BuildTownHouse(t, tile)) {
+			if (TryBuildTownHouse(t, tile)) {
 				_grow_town_result = GROWTH_SUCCEED;
 				return true;
 			}
@@ -1900,7 +1900,7 @@ static void GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, DiagDirection t
 
 				/* And build a house.
 				 * Set result to -1 if we managed to build it. */
-				if (BuildTownHouse(t1, house_tile)) {
+				if (TryBuildTownHouse(t1, house_tile)) {
 					_grow_town_result = GROWTH_SUCCEED;
 				}
 			}
@@ -3140,7 +3140,7 @@ CommandCost CmdBuildHouse(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
  * @param tile The tile to try building on.
  * @return false iff no house can be built on this tile.
  */
-static bool BuildTownHouse(Town *t, TileIndex tile)
+static bool TryBuildTownHouse(Town *t, TileIndex tile)
 {
 	/* forbidden building here by town layout */
 	if (!TownLayoutAllowsHouseHere(t, TileArea(tile, 1, 1))) return false;

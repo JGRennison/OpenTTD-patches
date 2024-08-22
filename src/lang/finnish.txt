@@ -2130,17 +2130,8 @@ STR_CONFIG_SETTING_AI                                           :Kilpailijat
 STR_CONFIG_SETTING_AI_NPC                                       :Tietokonepelaajat
 STR_CONFIG_SETTING_NETWORK                                      :Verkko
 
-STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS                        :Junien käyttämä reitinetsijä: {STRING}
-STR_CONFIG_SETTING_PATHFINDER_FOR_TRAINS_HELPTEXT               :Junien käyttämä reitinetsijä
-STR_CONFIG_SETTING_PATHFINDER_FOR_ROAD_VEHICLES                 :Ajoneuvojen käyttämä reitinetsijä: {STRING}
-STR_CONFIG_SETTING_PATHFINDER_FOR_ROAD_VEHICLES_HELPTEXT        :Ajoneuvojen käyttämä reitinetsijä
-STR_CONFIG_SETTING_PATHFINDER_FOR_SHIPS                         :Laivojen käyttämä reitinetsijä: {STRING}
-STR_CONFIG_SETTING_PATHFINDER_FOR_SHIPS_HELPTEXT                :Laivojen käyttämä reitinetsijä
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS                           :Automaattinen kääntyminen opastimilla: {STRING}
 STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :Sallii junien kääntymisen opastimen edessä pitkän odotusajan jälkeen
-###length 2
-STR_CONFIG_SETTING_PATHFINDER_NPF                               :NPF
-STR_CONFIG_SETTING_PATHFINDER_YAPF                              :YAPF {BLUE}(Suositeltu)
 
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Muuta asetusarvo
 
@@ -2794,7 +2785,6 @@ STR_BUILD_DEPOT_TRAIN_ORIENTATION_TOOLTIP                       :{BLACK}Valitse 
 
 # Rail waypoint construction window
 STR_WAYPOINT_CAPTION                                            :{WHITE}Reittipiste
-STR_WAYPOINT_GRAPHICS_TOOLTIP                                   :{BLACK}Valitse reittipisteen tyyppi
 
 # Rail station construction window
 STR_STATION_BUILD_RAIL_CAPTION                                  :{WHITE}Rautatieaseman valinta
@@ -2807,8 +2797,23 @@ STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Valitse 
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Vedä ja pudota
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Rakenna asema vetämällä ja pudottamalla
 
-STR_STATION_BUILD_STATION_CLASS_TOOLTIP                         :{BLACK}Valitse asemaluokka
-STR_STATION_BUILD_STATION_TYPE_TOOLTIP                          :{BLACK}Valitse asematyyppi
+STR_PICKER_MODE_ALL                                             :Kaikki
+STR_PICKER_MODE_ALL_TOOLTIP                                     :Valitse, näytetäänkö kohteet kaikista luokista
+STR_PICKER_MODE_USED                                            :Käytössä
+STR_PICKER_MODE_USED_TOOLTIP                                    :Valitse, näytetäänkö vain olemassa olevat kohteet
+STR_PICKER_MODE_SAVED                                           :Tallennettu
+STR_PICKER_MODE_SAVED_TOOLTIP                                   :Valitse, näytetäänkö vain tallennetut kohteet
+
+STR_PICKER_STATION_CLASS_TOOLTIP                                :Valitse näytettävä asemien luokka
+STR_PICKER_STATION_TYPE_TOOLTIP                                 :Valitse rakennettavan aseman tyyppi. Ctrl+napsautus lisää tallennettuihin tai poistaa tallennetuista
+STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Valitse näytettävä reittipisteiden luokka
+STR_PICKER_WAYPOINT_TYPE_TOOLTIP                                :Valitse rakennettava reittipiste. Ctrl+napsautus lisää tallennettuihin tai poistaa tallennetuista
+STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP                           :Valitse näytettävä linja-autopysäkkien luokka
+STR_PICKER_ROADSTOP_BUS_TYPE_TOOLTIP                            :Valitse rakennettavan linja-autopysäkin tyyppi. Ctrl+napsautus lisää tallennettuihin tai poistaa tallennetuista
+STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Valitse näytettävä lastauslaitureiden luokka
+STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :Valitse rakennettavan lastauslaiturin tyyppi. Ctrl+napsautus lisää tallennettuihin tai poistaa tallennetuista
+STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Valitse näytettävä objektien luokka
+STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :Valitse rakennettavan objektin tyyppi. Ctrl+napsautus lisää tallennettuihin tai poistaa tallennetuista. Ctrl+napsautus+veto valitsee alueen vinottain. Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion
 
 STR_STATION_CLASS_DFLT                                          :Oletus
 STR_STATION_CLASS_DFLT_STATION                                  :Oletusasema
@@ -2951,8 +2956,6 @@ STR_LANDSCAPING_TOOLTIP_PURCHASE_LAND                           :{BLACK}Osta maa
 
 # Object construction window
 STR_OBJECT_BUILD_CAPTION                                        :{WHITE}Objektin valinta
-STR_OBJECT_BUILD_TOOLTIP                                        :{BLACK}Valitse rakennettava objekti. Ctrl+napsautus+veto valitaksesi alueen vinottain. Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion
-STR_OBJECT_BUILD_CLASS_TOOLTIP                                  :{BLACK}Valitse rakennettavan objektin luokka
 STR_OBJECT_BUILD_PREVIEW_TOOLTIP                                :{BLACK}Objektin esikatselu
 STR_OBJECT_BUILD_SIZE                                           :{BLACK}Koko: {GOLD}{NUM}×{NUM} ruutua
 

@@ -1514,8 +1514,10 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32_
 	if (!ValParamRailType(rt)) return CMD_ERROR;
 
 	/* Check if the given station class is valid */
-	if ((uint)spec_class >= StationClass::GetClassCount() || spec_class == STAT_CLASS_WAYP) return CMD_ERROR;
-	if (spec_index >= StationClass::Get(spec_class)->GetSpecCount()) return CMD_ERROR;
+	if (static_cast<uint>(spec_class) >= StationClass::GetClassCount()) return CMD_ERROR;
+	const StationClass *cls = StationClass::Get(spec_class);
+	if (IsWaypointClass(*cls)) return CMD_ERROR;
+	if (spec_index >= cls->GetSpecCount()) return CMD_ERROR;
 	if (plat_len == 0 || numtracks == 0) return CMD_ERROR;
 
 	int w_org, h_org;
@@ -2140,10 +2142,12 @@ CommandCost CmdBuildRoadStop(TileIndex tile, DoCommandFlag flags, uint32_t p1, u
 	uint16_t spec_index          = GB(p3, 16, 16);
 
 	/* Check if the given station class is valid */
-	if ((uint)spec_class >= RoadStopClass::GetClassCount() || spec_class == ROADSTOP_CLASS_WAYP) return CMD_ERROR;
-	if (spec_index >= RoadStopClass::Get(spec_class)->GetSpecCount()) return CMD_ERROR;
+	if (static_cast<uint>(spec_class) >= RoadStopClass::GetClassCount()) return CMD_ERROR;
+	const RoadStopClass *cls = RoadStopClass::Get(spec_class);
+	if (IsWaypointClass(*cls)) return CMD_ERROR;
+	if (spec_index >= cls->GetSpecCount()) return CMD_ERROR;
 
-	const RoadStopSpec *roadstopspec = RoadStopClass::Get(spec_class)->GetSpec(spec_index);
+	const RoadStopSpec *roadstopspec = cls->GetSpec(spec_index);
 	if (roadstopspec != nullptr) {
 		if (type && roadstopspec->stop_type != ROADSTOPTYPE_FREIGHT && roadstopspec->stop_type != ROADSTOPTYPE_ALL) return CMD_ERROR;
 		if (!type && roadstopspec->stop_type != ROADSTOPTYPE_PASSENGER && roadstopspec->stop_type != ROADSTOPTYPE_ALL) return CMD_ERROR;
@@ -3758,7 +3762,7 @@ void FillTileDescRailStation(TileIndex tile, TileDesc *td)
 	const StationSpec *spec = GetStationSpec(tile);
 
 	if (spec != nullptr) {
-		td->station_class = StationClass::Get(spec->cls_id)->name;
+		td->station_class = StationClass::Get(spec->class_index)->name;
 		td->station_name  = spec->name;
 
 		if (spec->grf_prop.grffile != nullptr) {
@@ -3775,7 +3779,7 @@ void FillTileDescRailStation(TileIndex tile, TileDesc *td)
 void FillTileDescAirport(TileIndex tile, TileDesc *td)
 {
 	const AirportSpec *as = Station::GetByTile(tile)->airport.GetSpec();
-	td->airport_class = AirportClass::Get(as->cls_id)->name;
+	td->airport_class = AirportClass::Get(as->class_index)->name;
 	td->airport_name = as->name;
 
 	const AirportTileSpec *ats = AirportTileSpec::GetByTile(tile);

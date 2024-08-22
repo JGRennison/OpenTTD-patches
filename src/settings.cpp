@@ -66,6 +66,7 @@
 #include "smallmap_gui.h"
 #include "roadveh.h"
 #include "newgrf_config.h"
+#include "picker_func.h"
 #include "fios.h"
 #include "load_check.h"
 #include "strings_func.h"
@@ -109,6 +110,7 @@ std::string _config_file; ///< Configuration file of OpenTTD.
 std::string _config_file_text;
 std::string _private_file; ///< Private configuration file of OpenTTD.
 std::string _secrets_file; ///< Secrets configuration file of OpenTTD.
+std::string _favs_file; ///< Picker favourites configuration file of OpenTTD.
 
 static ErrorList _settings_error_list; ///< Errors while loading minimal settings.
 
@@ -2849,6 +2851,7 @@ void LoadFromConfig(bool startup)
 	ConfigIniFile generic_ini(_config_file, &_config_file_text);
 	ConfigIniFile private_ini(_private_file);
 	ConfigIniFile secrets_ini(_secrets_file);
+	ConfigIniFile favs_ini(_favs_file);
 
 	if (!startup) ResetCurrencies(false); // Initialize the array of currencies, without preserving the custom one
 
@@ -2938,6 +2941,7 @@ void LoadFromConfig(bool startup)
 		_grfconfig_static  = GRFLoadConfig(generic_ini, "newgrf-static", true);
 		AILoadConfig(generic_ini, "ai_players");
 		GameLoadConfig(generic_ini, "game_scripts");
+		PickerLoadConfig(favs_ini);
 
 		PrepareOldDiffCustom();
 		IniLoadSettings(generic_ini, _old_gameopt_settings, "gameopt", &_settings_newgame, false);
@@ -2988,6 +2992,13 @@ void SaveToConfig(SaveToConfigFlags flags)
 		HandleSecretsSettingDescs(secrets_ini, IniSaveSettings, IniSaveSettingList);
 		SaveVersionInConfig(secrets_ini);
 		secrets_ini.SaveToDisk(_secrets_file);
+	}
+
+	if (flags & STCF_FAVS) {
+		ConfigIniFile favs_ini(_favs_file);
+		PickerSaveConfig(favs_ini);
+		SaveVersionInConfig(favs_ini);
+		favs_ini.SaveToDisk(_favs_file);
 	}
 
 	if ((flags & STCF_GENERIC) == 0) return;

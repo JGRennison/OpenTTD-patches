@@ -218,7 +218,7 @@ struct TerraformToolbarWindow : Window {
 	{
 		/* Don't show the place object button when there are no objects to place. */
 		NWidgetStacked *show_object = this->GetWidget<NWidgetStacked>(WID_TT_SHOW_PLACE_OBJECT);
-		show_object->SetDisplayedPlane(ObjectClass::HasUIClass() ? 0 : SZSP_NONE);
+		show_object->SetDisplayedPlane(ShouldShowBuildObjectPicker() ? 0 : SZSP_NONE);
 		SetWidgetDisabledState(WID_TT_BUY_LAND, _settings_game.construction.purchase_land_permitted == 0);
 	}
 

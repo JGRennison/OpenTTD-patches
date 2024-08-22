@@ -89,6 +89,9 @@ struct StationResolverObject : public ResolverObject {
 	uint32_t GetDebugID() const override;
 };
 
+static const uint32_t STATION_CLASS_LABEL_DEFAULT = 'DFLT';
+static const uint32_t STATION_CLASS_LABEL_WAYPOINT = 'WAYP';
+
 enum StationClassID : uint16_t {
 	STAT_CLASS_BEGIN = 0,    ///< the lowest valid value
 	STAT_CLASS_DFLT = 0,     ///< Default station class.
@@ -124,8 +127,8 @@ enum StationSpecIntlFlags {
 };
 
 /** Station specification. */
-struct StationSpec {
-	StationSpec() : cls_id(STAT_CLASS_DFLT), name(0),
+struct StationSpec : NewGRFSpecBase<StationClassID> {
+	StationSpec() : name(0),
 		disallowed_platforms(0), disallowed_lengths(0),
 		cargo_threshold(0), cargo_triggers(0),
 		callback_mask(0), flags(0), pylons(0), wires(0), blocked(0),
@@ -137,7 +140,6 @@ struct StationSpec {
 	 * evaluating callbacks.
 	 */
 	GRFFilePropsBase<NUM_CARGO + 3> grf_prop;
-	StationClassID cls_id;     ///< The class to which this spec belongs.
 	StringID name;             ///< Name of this station.
 
 	/**
@@ -198,6 +200,16 @@ struct StationSpec {
 using StationClass = NewGRFClass<StationSpec, StationClassID, STAT_CLASS_MAX>;
 
 const StationSpec *GetStationSpec(TileIndex t);
+
+/**
+ * Test if a StationClass is the waypoint class.
+ * @param cls StationClass to test.
+ * @return true if the class is the waypoint class.
+ */
+inline bool IsWaypointClass(const StationClass &cls)
+{
+	return cls.global_id == STATION_CLASS_LABEL_WAYPOINT;
+}
 
 /* Evaluate a tile's position within a station, and return the result a bitstuffed format. */
 uint32_t GetPlatformInfo(Axis axis, uint8_t tile, int platforms, int length, int x, int y, bool centred);

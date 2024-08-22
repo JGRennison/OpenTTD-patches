@@ -5,21 +5,12 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file object.h Functions related to objects. */
+/** @file picker_func.h Functions/types etc. related to non-GUI parts of the Picker system. */
 
-#ifndef OBJECT_H
-#define OBJECT_H
+#ifndef PICKER_FUNC_H
+#define PICKER_FUNC_H
 
-#include "tile_type.h"
-#include "company_type.h"
-#include "object_type.h"
+void PickerLoadConfig(const IniFile &ini);
+void PickerSaveConfig(IniFile &ini);
 
-void UpdateCompanyHQ(TileIndex tile, uint score);
-
-void BuildObject(ObjectType type, TileIndex tile, CompanyID owner = OWNER_NONE, struct Town *town = nullptr, uint8_t view = 0);
-
-bool ShouldShowBuildObjectPicker();
-Window *ShowBuildObjectPicker();
-void ShowBuildObjectPickerAndSelect(const ObjectSpec *spec);
-
-#endif /* OBJECT_H */
+#endif /* PICKER_FUNC_H */

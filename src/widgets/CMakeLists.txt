@@ -40,6 +40,7 @@ add_files(
     object_widget.h
     order_widget.h
     osk_widget.h
+    picker_widget.h
     plans_widget.h
     rail_widget.h
     road_widget.h

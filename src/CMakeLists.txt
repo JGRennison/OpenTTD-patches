@@ -358,6 +358,9 @@ add_files(
     palette_func.h
     pbs.cpp
     pbs.h
+    picker_func.h
+    picker_gui.cpp
+    picker_gui.h
     plans.cpp
     plans_base.h
     plans_cmd.cpp

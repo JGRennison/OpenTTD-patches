@@ -34,7 +34,7 @@ class FreeTypeFontCache : public TrueTypeFontCache {
 private:
 	FT_Face face;  ///< The font face associated with this font.
 
-	void SetFontSize(FontSize fs, FT_Face face, int pixels);
+	void SetFontSize(int pixels);
 	const void *InternalGetFontTable(uint32_t tag, size_t &length) override;
 	const Sprite *InternalGetGlyph(GlyphID key, bool aa) override;
 
@@ -61,10 +61,10 @@ FreeTypeFontCache::FreeTypeFontCache(FontSize fs, FT_Face face, int pixels) : Tr
 {
 	assert(face != nullptr);
 
-	this->SetFontSize(fs, face, pixels);
+	this->SetFontSize(pixels);
 }
 
-void FreeTypeFontCache::SetFontSize(FontSize, FT_Face, int pixels)
+void FreeTypeFontCache::SetFontSize(int pixels)
 {
 	if (pixels == 0) {
 		/* Try to determine a good height based on the minimal height recommended by the font. */
@@ -106,7 +106,6 @@ void FreeTypeFontCache::SetFontSize(FontSize, FT_Face, int pixels)
 	}
 
 	if (err == FT_Err_Ok) {
-		this->units_per_em = this->face->units_per_EM;
 		this->ascender     = this->face->size->metrics.ascender >> 6;
 		this->descender    = this->face->size->metrics.descender >> 6;
 		this->height       = this->ascender - this->descender;
@@ -249,7 +248,7 @@ FreeTypeFontCache::~FreeTypeFontCache()
 void FreeTypeFontCache::ClearFontCache()
 {
 	/* Font scaling might have changed, determine font size anew if it was automatically selected. */
-	if (this->face != nullptr) this->SetFontSize(this->fs, this->face, this->req_size);
+	if (this->face != nullptr) this->SetFontSize(this->req_size);
 
 	this->TrueTypeFontCache::ClearFontCache();
 }

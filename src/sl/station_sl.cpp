@@ -120,12 +120,12 @@ void AfterLoadStations()
 		for (uint i = 0; i < st->speclist.size(); i++) {
 			if (st->speclist[i].grfid == 0) continue;
 
-			st->speclist[i].spec = StationClass::GetByGrf(st->speclist[i].grfid, st->speclist[i].localidx, nullptr);
+			st->speclist[i].spec = StationClass::GetByGrf(st->speclist[i].grfid, st->speclist[i].localidx);
 		}
 		for (uint i = 0; i < st->roadstop_speclist.size(); i++) {
 			if (st->roadstop_speclist[i].grfid == 0) continue;
 
-			st->roadstop_speclist[i].spec = RoadStopClass::GetByGrf(st->roadstop_speclist[i].grfid, st->roadstop_speclist[i].localidx, nullptr);
+			st->roadstop_speclist[i].spec = RoadStopClass::GetByGrf(st->roadstop_speclist[i].grfid, st->roadstop_speclist[i].localidx);
 		}
 
 		if (Station::IsExpected(st)) {

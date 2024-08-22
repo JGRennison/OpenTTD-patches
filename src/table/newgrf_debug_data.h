@@ -1612,15 +1612,15 @@ class NIHObject : public NIHelper {
 		char buffer[1024];
 		output.print("Debug Info:");
 		const ObjectSpec *spec = ObjectSpec::GetByTile(index);
-		if (spec) {
+		if (spec != nullptr) {
 			ObjectID id = GetObjectIndex(index);
 			const Object *obj = Object::Get(id);
 			char *b = buffer + seprintf(buffer, lastof(buffer), "  index: %u, type ID: %u", id, GetObjectType(index));
 			if (spec->grf_prop.grffile != nullptr) {
 				b += seprintf(b, lastof(buffer), "  (local ID: %u)", spec->grf_prop.local_id);
 			}
-			if (spec->cls_id != INVALID_OBJECT_CLASS) {
-				uint class_id = ObjectClass::Get(spec->cls_id)->global_id;
+			if (spec->class_index != INVALID_OBJECT_CLASS) {
+				uint class_id = ObjectClass::Get(spec->class_index)->global_id;
 				b += seprintf(b, lastof(buffer), ", class ID: %c%c%c%c", class_id >> 24, class_id >> 16, class_id >> 8, class_id);
 			}
 			output.print(buffer);
@@ -2484,8 +2484,8 @@ class NIHRoadStop : public NIHelper {
 		char buffer[1024];
 		output.print("Debug Info:");
 		const RoadStopSpec *spec = GetRoadStopSpec(index);
-		if (spec) {
-			uint class_id = RoadStopClass::Get(spec->cls_id)->global_id;
+		if (spec != nullptr) {
+			uint class_id = RoadStopClass::Get(spec->class_index)->global_id;
 			char *b = buffer + seprintf(buffer, lastof(buffer), "  class ID: %c%c%c%c", class_id >> 24, class_id >> 16, class_id >> 8, class_id);
 			if (spec->grf_prop.grffile != nullptr) {
 				b += seprintf(b, lastof(buffer), "  (local ID: %u)", spec->grf_prop.local_id);
