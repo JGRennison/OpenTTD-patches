@@ -177,8 +177,11 @@ struct StationSpec : NewGRFSpecBase<StationClassID> {
 
 	uint8_t flags; ///< Bitmask of flags, bit 0: use different sprite set; bit 1: divide cargo about by station size
 
-	uint8_t bridge_height[8]; ///< Minimum height for a bridge above, 0 for none
-	uint8_t bridge_disallowed_pillars[8]; ///< Disallowed pillar flags for a bridge above
+	struct BridgeAboveFlags {
+		uint8_t height = UINT8_MAX;     ///< Minimum height for a bridge above, 0 for none
+		uint8_t disallowed_pillars = 0; ///< Disallowed pillar flags for a bridge above
+	};
+	std::vector<BridgeAboveFlags> bridge_above_flags; ///< List of bridge above flags.
 
 	enum class TileFlags : uint8_t {
 		None = 0,
@@ -194,6 +197,12 @@ struct StationSpec : NewGRFSpecBase<StationClassID> {
 
 	/** Custom platform layouts, keyed by platform and length combined. */
 	std::unordered_map<uint16_t, std::vector<uint8_t>> layouts;
+
+	BridgeAboveFlags GetBridgeAboveFlags(uint gfx) const
+	{
+		if (gfx < this->bridge_above_flags.size()) return this->bridge_above_flags[gfx];
+		return {};
+	}
 };
 DECLARE_ENUM_AS_BIT_SET(StationSpec::TileFlags);
 

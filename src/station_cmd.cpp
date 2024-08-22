@@ -924,15 +924,14 @@ CommandCost CheckBuildableTile(TileIndex tile, uint invalid_dirs, int &allowed_z
 CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, uint8_t layout, TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
 		BridgeType bridge_type, TransportType bridge_transport_type)
 {
-	assert(layout < 8);
-
-	if (statspec && HasBit(statspec->internal_flags, SSIF_BRIDGE_HEIGHTS_SET)) {
-		if (statspec->bridge_height[layout] == 0) return CommandCost(INVALID_STRING_ID);
-		if (GetTileMaxZ(tile) + statspec->bridge_height[layout] > bridge_height) {
+	if (statspec != nullptr && HasBit(statspec->internal_flags, SSIF_BRIDGE_HEIGHTS_SET)) {
+		int height_above = statspec->GetBridgeAboveFlags(layout).height;
+		if (height_above == 0) return CommandCost(INVALID_STRING_ID);
+		if (GetTileMaxZ(tile) + height_above > bridge_height) {
 			return CommandCost(STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION);
 		}
 	} else if (!statspec) {
-		// default stations/waypoints
+		/* Default stations/waypoints */
 		const int height = layout < 4 ? 2 : 5;
 		if (GetTileMaxZ(tile) + height > bridge_height) return CommandCost(STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION);
 	} else {
@@ -940,18 +939,22 @@ CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statsp
 	}
 
 	BridgePiecePillarFlags disallowed_pillar_flags;
-	if (statspec && HasBit(statspec->internal_flags, SSIF_BRIDGE_DISALLOWED_PILLARS_SET)) {
-		// pillar flags set by NewGRF
-		disallowed_pillar_flags = (BridgePiecePillarFlags) statspec->bridge_disallowed_pillars[layout];
+	if (statspec != nullptr && HasBit(statspec->internal_flags, SSIF_BRIDGE_DISALLOWED_PILLARS_SET)) {
+		/* Pillar flags set by NewGRF */
+		disallowed_pillar_flags = (BridgePiecePillarFlags) statspec->GetBridgeAboveFlags(layout).disallowed_pillars;
 	} else if (!statspec) {
-		// default stations/waypoints
-		static const uint8_t st_flags[8] = { 0x50, 0xA0, 0x50, 0xA0, 0x50 | 0x26, 0xA0 | 0x1C, 0x50 | 0x89, 0xA0 | 0x43 };
-		disallowed_pillar_flags = (BridgePiecePillarFlags) st_flags[layout];
+		/* Default stations/waypoints */
+		if (layout < 8) {
+			static const uint8_t st_flags[8] = { 0x50, 0xA0, 0x50, 0xA0, 0x50 | 0x26, 0xA0 | 0x1C, 0x50 | 0x89, 0xA0 | 0x43 };
+			disallowed_pillar_flags = (BridgePiecePillarFlags) st_flags[layout];
+		} else {
+			disallowed_pillar_flags = (BridgePiecePillarFlags) 0;
+		}
 	} else if ((GetStationTileFlags(layout, statspec) & StationSpec::TileFlags::Blocked) == StationSpec::TileFlags::Blocked) {
-		// non-track station tiles
+		/* Non-track station tiles */
 		disallowed_pillar_flags = (BridgePiecePillarFlags) 0;
 	} else {
-		// tracked station tiles
+		/* Tracked station tiles */
 		const Axis axis = HasBit(layout, 0) ? AXIS_Y : AXIS_X;
 		disallowed_pillar_flags = (BridgePiecePillarFlags) (axis == AXIS_X ? 0x50 : 0xA0);
 	}

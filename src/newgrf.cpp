@@ -2148,23 +2148,33 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 				break;
 			}
 
-			case A0RPI_STATION_MIN_BRIDGE_HEIGHT:
-				if (MappedPropertyLengthMismatch(buf, 8, mapping_entry)) break;
-				[[fallthrough]];
+			case A0RPI_STATION_MIN_BRIDGE_HEIGHT: {
+				SetBit(statspec->internal_flags, SSIF_BRIDGE_HEIGHTS_SET);
+				size_t length = buf->ReadExtendedByte();
+				if (statspec->bridge_above_flags.size() < length) statspec->bridge_above_flags.resize(length);
+				for (size_t i = 0; i < length; i++) {
+					statspec->bridge_above_flags[i].height = buf->ReadByte();
+				}
+				break;
+			}
+
 			case 0x1B: // Minimum height for a bridge above
 				SetBit(statspec->internal_flags, SSIF_BRIDGE_HEIGHTS_SET);
+				if (statspec->bridge_above_flags.size() < 8) statspec->bridge_above_flags.resize(8);
 				for (uint i = 0; i < 8; i++) {
-					statspec->bridge_height[i] = buf->ReadByte();
+					statspec->bridge_above_flags[i].height = buf->ReadByte();
 				}
 				break;
 
-			case A0RPI_STATION_DISALLOWED_BRIDGE_PILLARS:
-				if (MappedPropertyLengthMismatch(buf, 8, mapping_entry)) break;
+			case A0RPI_STATION_DISALLOWED_BRIDGE_PILLARS: {
 				SetBit(statspec->internal_flags, SSIF_BRIDGE_DISALLOWED_PILLARS_SET);
-				for (uint i = 0; i < 8; i++) {
-					statspec->bridge_disallowed_pillars[i] = buf->ReadByte();
+				size_t length = buf->ReadExtendedByte();
+				if (statspec->bridge_above_flags.size() < length) statspec->bridge_above_flags.resize(length);
+				for (size_t i = 0; i < length; i++) {
+					statspec->bridge_above_flags[i].disallowed_pillars = buf->ReadByte();
 				}
 				break;
+			}
 
 			case 0x1C: // Station Name
 				AddStringForMapping(buf->ReadWord(), &statspec->name);

@@ -201,17 +201,37 @@
 	<h3 id="a0stations"><a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Stations">Action 0 - Stations</a></h3>
 	<h4 id="station_min_bridge_height"><a href="https://newgrf-specs.tt-wiki.net/wiki/Action0/Stations#Minimum_bridge_height_.281B.29">Minimum bridge height (1B, or mappable property: station_min_bridge_height)</a></h4>
 	<p>This property allows building bridges over stations.<br />
-	The bridge height property defines minimum clearances required for a bridge for each of the 8 station layouts (or 0 to not allow any bridge). Values are given in height level units (1 level == 8px).<br />
-	Each height value is 1 byte, the total property length is 8 bytes.
+	The bridge height property defines minimum clearances required for a bridge for each of the station layouts (or 0 to not allow any bridge). Values are given in height level units (1 level == 8px).<br />
+	</p>
+
+	<p>Fixed length of 8 values:<br />
+	Each height value is 1 byte, the number of values (one for each station layout) is 8, the total property length is 8 bytes.
 	</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_station_prop1B</font>, version 1</p>
+
+	<p>Variable length:<br />
+	Each height value is 1 byte, the number of values (one for each station layout) is variable, the total property length is variable.<br />
+	The mappable property must be used, not variable 1B. The number of values is determined from the length.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_station_min_bridge_height</font>, version 1</p>
+
 	<h4 id="station_disallowed_bridge_pillars">Disallowed bridge pillars (mappable property: station_disallowed_bridge_pillars)</h4>
 	<p>This property describes which bridge pillars are not allowed on the station tile.<br />
-	It consists of 8 pillar flags, for each of the 8 station layouts.<br />
-	Each set of flags is 1 byte, the total property length is 8 bytes.<br />
+	It consists of N pillar flags, for each of the N station layouts.<br />
+	Each set of flags is 1 byte.<br />
 	Each set of flags has the format described in the bridge_pillar_flags property section, below.
 	</p>
+
+	<p>Fixed length of 8 values:<br />
+	Each set of flags is 1 byte, the number of values (one for each station layout) is 8, the total property length is 8 bytes.
+	</p>
 	<p>This is indicated by the feature name: <font face="monospace">action0_station_disallowed_bridge_pillars</font>, version 1</p>
+
+	<p>Variable length:<br />
+	Each set of flags is 1 byte, the number of values (one for each station layout) is variable, the total property length is variable.<br />
+	The number of values is determined from the length.
+	</p>
+	<p>This is indicated by the feature name: <font face="monospace">action0_station_disallowed_bridge_pillars</font>, version 2</p>
 
 	<br />
 	The 8 station layouts are described below.
