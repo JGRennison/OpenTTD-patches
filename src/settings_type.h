@@ -148,6 +148,11 @@ struct TimeSettings {
 		return (ticks.base() / this->ticks_per_minute) + this->clock_offset;
 	}
 
+	Ticks GetTickMinutesRemainder(StateTicks ticks) const
+	{
+		return static_cast<Ticks>((ticks.base() % this->ticks_per_minute));
+	}
+
 	TickMinutes NowInTickMinutes() const
 	{
 		extern StateTicks _state_ticks;

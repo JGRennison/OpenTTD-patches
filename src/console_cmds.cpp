@@ -2809,7 +2809,13 @@ DEF_CONSOLE_CMD(ConGetFullDate)
 	IConsolePrintF(CC_DEFAULT, "Tick counter: " OTTD_PRINTF64, _tick_counter);
 	IConsolePrintF(CC_DEFAULT, "Tick counter (scaled): " OTTD_PRINTF64, _scaled_tick_counter);
 	IConsolePrintF(CC_DEFAULT, "State ticks: " OTTD_PRINTF64 " (offset: " OTTD_PRINTF64 ")", _state_ticks.base(), DateDetail::_state_ticks_offset.base());
-	IConsolePrintF(CC_DEFAULT, "Effective day length: %d", DayLengthFactor());
+	IConsolePrintF(CC_DEFAULT, "Effective economy speed reduction factor: %d", DayLengthFactor());
+	if (!CalTime::IsCalendarFrozen()) IConsolePrintF(CC_DEFAULT, "Ticks per calendar day: %d", TicksPerCalendarDay());
+	if (_settings_time.time_in_minutes) {
+		Ticks remainder = _settings_time.GetTickMinutesRemainder(_state_ticks);
+		ClockFaceMinutes hhmm = _settings_time.ToTickMinutes(_state_ticks).ToClockFaceMinutes();
+		IConsolePrintF(CC_DEFAULT, "Timetable time: %02d:%02d + %d ticks", hhmm.ClockHour(), hhmm.ClockMinute(), remainder);
+	}
 	return true;
 }
 
