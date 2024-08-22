@@ -398,7 +398,7 @@ static const int TOWN_GROWTH_TICKS        = 70;  ///< cycle duration for towns t
 static const int INDUSTRY_CUT_TREE_TICKS  = INDUSTRY_PRODUCE_TICKS * 2; ///< cycle duration for lumber mill's extra action
 
 /** An initial value for StateTicks when starting a new game */
-static constexpr StateTicks INITIAL_STATE_TICKS_VALUE = 1 << 24;
+static constexpr StateTicks INITIAL_STATE_TICKS_VALUE = 128 * 24 * 60 * 74; // Value chosen to make it an integer multiple of various convenient values
 
 /** Invalid state ticks value */
 static constexpr StateTicks INVALID_STATE_TICKS = INT64_MIN;
