@@ -1151,7 +1151,7 @@ static void HandleStationPlacement(TileIndex start, TileIndex end)
 static bool StationUsesDefaultType(const BaseStation *bst)
 {
 	for (TileIndex t : bst->train_station) {
-		if (bst->TileBelongsToRailStation(t) && IsRailStation(t) && GetCustomStationSpecIndex(t) == 0) return true;
+		if (bst->TileBelongsToRailStation(t) && HasStationRail(t) && GetCustomStationSpecIndex(t) == 0) return true;
 	}
 	return false;
 }
@@ -2263,7 +2263,7 @@ public:
 			}
 			for (const auto &sm : wp->speclist) {
 				if (sm.spec == nullptr) continue;
-				items.insert({0, 0, sm.spec->class_index, sm.spec->index});
+				items.insert({sm.grfid, sm.localidx, sm.spec->class_index, sm.spec->index});
 			}
 		}
 	}
