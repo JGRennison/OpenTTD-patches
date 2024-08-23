@@ -261,12 +261,16 @@ struct BridgeSetYComparator {
 	}
 };
 
+using ChildStoreID = uint32_t;
+static constexpr ChildStoreID NO_CHILD_STORE = UINT32_MAX;
+static constexpr ChildStoreID CHILD_SPRITE_STORE_TAG = 1 << 31;
+
 /** Data structure storing rendering information */
 struct ViewportDrawer {
 	TunnelToMapStorage tunnel_to_map_x;
 	TunnelToMapStorage tunnel_to_map_y;
 
-	int *last_child;
+	ChildStoreID last_child;
 
 	SpriteCombineMode combine_sprites;               ///< Current mode of "sprite combining". @see StartSpriteCombine
 	uint combine_psd_index;
@@ -277,7 +281,7 @@ struct ViewportDrawer {
 
 	int foundation[FOUNDATION_PART_END];             ///< Foundation sprites (index into parent_sprites_to_draw).
 	FoundationPart foundation_part;                  ///< Currently active foundation for ground sprite drawing.
-	int *last_foundation_child[FOUNDATION_PART_END]; ///< Tail of ChildSprite list of the foundations. (index into child_screen_sprites_to_draw)
+	ChildStoreID last_foundation_child[FOUNDATION_PART_END]; ///< Tail of ChildSprite list of the foundations. (index into child_screen_sprites_to_draw)
 	Point foundation_offset[FOUNDATION_PART_END];    ///< Pixel offset for ground sprites on the foundations.
 };
 static ViewportDrawer _vd;
@@ -332,6 +336,15 @@ struct ViewportDrawerDynamic {
 		dpi_for_text.height = UnScaleByZoom(this->dpi.height, this->dpi.zoom);
 		dpi_for_text.zoom   = ZOOM_LVL_MIN;
 		return dpi_for_text;
+	}
+
+	inline void SetChild(ChildStoreID store_index, int child)
+	{
+		if ((store_index & CHILD_SPRITE_STORE_TAG) != 0) {
+			this->child_screen_sprites_to_draw[store_index & ~CHILD_SPRITE_STORE_TAG].next = child;
+		} else {
+			this->parent_sprites_to_draw[store_index].first_child = child;
+		}
 	}
 };
 
@@ -1108,7 +1121,7 @@ static void AddChildSpriteToFoundation(SpriteID image, PaletteID pal, const SubS
 	Point offs = _vd.foundation_offset[foundation_part];
 
 	/* Change the active ChildSprite list to the one of the foundation */
-	int *old_child = _vd.last_child;
+	ChildStoreID old_child = _vd.last_child;
 	_vd.last_child = _vd.last_foundation_child[foundation_part];
 
 	AddChildSpriteScreen(image, pal, offs.x + extra_offs_x, offs.y + extra_offs_y, false, sub, false, ChildScreenSpritePositionMode::NonRelative);
@@ -1178,8 +1191,8 @@ void OffsetGroundSprite(int x, int y)
 		default: NOT_REACHED();
 	}
 
-	/* _vd.last_child == nullptr if foundation sprite was clipped by the viewport bounds */
-	if (_vd.last_child != nullptr) _vd.foundation[_vd.foundation_part] = (uint)_vdd->parent_sprites_to_draw.size() - 1;
+	/* _vd.last_child == NO_CHILD_STORE if foundation sprite was clipped by the viewport bounds */
+	if (_vd.last_child != NO_CHILD_STORE) _vd.foundation[_vd.foundation_part] = (uint)_vdd->parent_sprites_to_draw.size() - 1;
 
 	_vd.foundation_offset[_vd.foundation_part].x = x * ZOOM_BASE;
 	_vd.foundation_offset[_vd.foundation_part].y = y * ZOOM_BASE;
@@ -1263,7 +1276,7 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 		return;
 	}
 
-	_vd.last_child = nullptr;
+	_vd.last_child = NO_CHILD_STORE;
 
 	Point pt = RemapCoords(x, y, z);
 	int tmp_left, tmp_top, tmp_x = pt.x, tmp_y = pt.y;
@@ -1303,6 +1316,8 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 		return;
 	}
 
+	_vd.last_child = static_cast<ChildStoreID>(_vdd->parent_sprites_to_draw.size());
+
 	ParentSpriteToDraw &ps = _vdd->parent_sprites_to_draw.emplace_back();
 	ps.x = tmp_x;
 	ps.y = tmp_y;
@@ -1330,8 +1345,6 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 
 	/* bit 15 of ps.height */
 	// ps.comparison_done = false;
-
-	_vd.last_child = &ps.first_child;
 
 	if (_vd.combine_sprites == SPRITE_COMBINE_PENDING) {
 		_vd.combine_sprites = SPRITE_COMBINE_ACTIVE;
@@ -1442,7 +1455,7 @@ void AddChildSpriteScreen(SpriteID image, PaletteID pal, int x, int y, bool tran
 	dbg_assert((image & SPRITE_MASK) < MAX_SPRITES);
 
 	/* If the ParentSprite was clipped by the viewport bounds, do not draw the ChildSprites either */
-	if (_vd.last_child == nullptr) return;
+	if (_vd.last_child == NO_CHILD_STORE) return;
 
 	/* make the sprites transparent with the right palette */
 	if (transparent) {
@@ -1450,7 +1463,8 @@ void AddChildSpriteScreen(SpriteID image, PaletteID pal, int x, int y, bool tran
 		pal = PALETTE_TO_TRANSPARENT;
 	}
 
-	*_vd.last_child = (uint)_vdd->child_screen_sprites_to_draw.size();
+	_vdd->SetChild(_vd.last_child, (uint)_vdd->child_screen_sprites_to_draw.size());
+	const ChildStoreID child_store = static_cast<ChildStoreID>(_vdd->child_screen_sprites_to_draw.size()) | CHILD_SPRITE_STORE_TAG;
 
 	ChildScreenSpriteToDraw &cs = _vdd->child_screen_sprites_to_draw.emplace_back();
 	cs.image = image;
@@ -1464,9 +1478,9 @@ void AddChildSpriteScreen(SpriteID image, PaletteID pal, int x, int y, bool tran
 	/* Append the sprite to the active ChildSprite list.
 	 * If the active ParentSprite is a foundation, update last_foundation_child as well.
 	 * Note: ChildSprites of foundations are NOT sequential in the vector, as selection sprites are added at last. */
-	if (_vd.last_foundation_child[0] == _vd.last_child) _vd.last_foundation_child[0] = &cs.next;
-	if (_vd.last_foundation_child[1] == _vd.last_child) _vd.last_foundation_child[1] = &cs.next;
-	_vd.last_child = &cs.next;
+	if (_vd.last_foundation_child[0] == _vd.last_child) _vd.last_foundation_child[0] = child_store;
+	if (_vd.last_foundation_child[1] == _vd.last_child) _vd.last_foundation_child[1] = child_store;
+	_vd.last_child = child_store;
 }
 
 static void AddStringToDraw(ViewportDrawerDynamic *vdd, int x, int y, StringID string, uint64_t params_1, uint64_t params_2, Colours colour, uint16_t width)
@@ -1921,8 +1935,8 @@ static void ViewportAddLandscape()
 				_vd.foundation_part = FOUNDATION_PART_NONE;
 				_vd.foundation[0] = -1;
 				_vd.foundation[1] = -1;
-				_vd.last_foundation_child[0] = nullptr;
-				_vd.last_foundation_child[1] = nullptr;
+				_vd.last_foundation_child[0] = NO_CHILD_STORE;
+				_vd.last_foundation_child[1] = NO_CHILD_STORE;
 
 				bool no_ground_tiles = min_visible_height > 0;
 				_tile_type_procs[tile_type]->draw_tile_proc(&_cur_ti, { min_visible_height, no_ground_tiles });
@@ -3960,7 +3974,7 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint
 	_vdd->dpi.left = left & mask;
 	_vdd->dpi.top = top & mask;
 	_vdd->dpi.pitch = _cur_dpi->pitch;
-	_vd.last_child = nullptr;
+	_vd.last_child = NO_CHILD_STORE;
 
 	_vdd->offset_x = UnScaleByZoomLower(_vdd->dpi.left - (vp->virtual_left & mask), vp->zoom);
 	_vdd->offset_y = UnScaleByZoomLower(_vdd->dpi.top - (vp->virtual_top & mask), vp->zoom);
