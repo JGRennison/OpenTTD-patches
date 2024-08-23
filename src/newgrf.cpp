@@ -9213,9 +9213,9 @@ static bool ChangeGRFParamType(size_t len, ByteReader *buf)
 		GrfMsg(2, "StaticGRFInfo: expected 1 byte for 'INFO'->'PARA'->'TYPE' but got {}, ignoring this field", len);
 		buf->Skip(len);
 	} else {
-		GRFParameterType type = (GRFParameterType)buf->ReadByte();
+		uint8_t type = buf->ReadByte();
 		if (type < PTYPE_END) {
-			_cur_parameter->type = type;
+			_cur_parameter->type = (GRFParameterType)type;
 		} else {
 			GrfMsg(3, "StaticGRFInfo: unknown parameter type {}, ignoring this field", type);
 		}
