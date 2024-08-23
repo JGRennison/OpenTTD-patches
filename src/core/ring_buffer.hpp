@@ -202,19 +202,6 @@ private:
 		return (a.ring == b.ring) && (a.pos == b.pos);
 	}
 
-public:
-	friend bool operator==(const const_iterator &a, const iterator &b) noexcept
-	{
-		return ring_buffer::iter_equal(a, b);
-	}
-
-	friend bool operator==(const const_reverse_iterator &a, const reverse_iterator &b) noexcept
-	{
-		return ring_buffer::iter_equal(a, b);
-	}
-
-	ring_buffer() = default;
-
 	template <typename U>
 	void construct_from(const U &other)
 	{
@@ -229,6 +216,19 @@ public:
 			ptr += sizeof(T);
 		}
 	}
+
+public:
+	friend bool operator==(const const_iterator &a, const iterator &b) noexcept
+	{
+		return ring_buffer::iter_equal(a, b);
+	}
+
+	friend bool operator==(const const_reverse_iterator &a, const reverse_iterator &b) noexcept
+	{
+		return ring_buffer::iter_equal(a, b);
+	}
+
+	ring_buffer() = default;
 
 	ring_buffer(const ring_buffer &other)
 	{
