@@ -181,7 +181,8 @@ UBool ScriptRun::next()
                 // now that we have a final script code, fix any open
                 // characters we pushed before we knew the script code.
                 while (startSP < parenSP) {
-                    parenStack[++startSP].scriptCode = scriptCode;
+                    auto idx = ++startSP;
+                    if (idx >= 0) parenStack[idx].scriptCode = scriptCode;
                 }
             }
 
