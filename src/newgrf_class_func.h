@@ -19,6 +19,8 @@ void NewGRFClass<Tspec, Tindex, Tmax>::Reset()
 	NewGRFClass::classes.clear();
 	NewGRFClass::classes.shrink_to_fit();
 
+	NewGRFClass::grf_index.clear();
+
 	NewGRFClass::InsertDefaults();
 }
 
@@ -131,6 +133,18 @@ const Tspec *NewGRFClass<Tspec, Tindex, Tmax>::GetSpec(uint index) const
 	return index < this->GetSpecCount() ? this->spec[index] : nullptr;
 }
 
+template <typename Tspec, typename Tindex, Tindex Tmax>
+void NewGRFClass<Tspec, Tindex, Tmax>::PrepareIndices()
+{
+	for (const auto &cls : NewGRFClass::classes) {
+		for (const auto &spec : cls.spec) {
+			if (spec == nullptr) continue;
+			uint32_t grfid = spec->grf_prop.grffile == nullptr ? 0 : spec->grf_prop.grffile->grfid;
+			NewGRFClass::grf_index[NewGRFClass::GrfHashKey(grfid, spec->grf_prop.local_id)] = spec;
+		}
+	}
+}
+
 /**
  * Retrieve a spec by GRF location.
  * @param grfid    GRF ID of spec.
@@ -141,13 +155,8 @@ const Tspec *NewGRFClass<Tspec, Tindex, Tmax>::GetSpec(uint index) const
 template <typename Tspec, typename Tindex, Tindex Tmax>
 const Tspec *NewGRFClass<Tspec, Tindex, Tmax>::GetByGrf(uint32_t grfid, uint16_t local_id)
 {
-	for (const auto &cls : NewGRFClass::classes) {
-		for (const auto &spec : cls.spec) {
-			if (spec == nullptr) continue;
-			if (spec->grf_prop.local_id != local_id) continue;
-			if ((spec->grf_prop.grffile == nullptr ? 0 : spec->grf_prop.grffile->grfid) == grfid) return spec;
-		}
-	}
+	auto iter = NewGRFClass::grf_index.find(NewGRFClass::GrfHashKey(grfid, local_id));
+	if (iter != NewGRFClass::grf_index.end()) return iter->second;
 
 	return nullptr;
 }

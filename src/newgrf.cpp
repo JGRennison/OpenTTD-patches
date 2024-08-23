@@ -11763,6 +11763,11 @@ static void AfterLoadGRFs()
 	/* Deallocate temporary loading data */
 	_gted.clear();
 	_grm_sprites.clear();
+
+	ObjectClass::PrepareIndices();
+	StationClass::PrepareIndices();
+	AirportClass::PrepareIndices();
+	RoadStopClass::PrepareIndices();
 }
 
 /**

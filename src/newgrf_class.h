@@ -11,6 +11,7 @@
 #define NEWGRF_CLASS_H
 
 #include "strings_type.h"
+#include "3rdparty/robin_hood/robin_hood.h"
 
 #include <vector>
 
@@ -39,6 +40,12 @@ private:
 	 * @note This may be reallocated during initialization so pointers may be invalidated.
 	 */
 	static inline std::vector<NewGRFClass<Tspec, Tindex, Tmax>> classes;
+	static inline robin_hood::unordered_flat_map<uint64_t, const Tspec *> grf_index;
+
+	static inline uint64_t GrfHashKey(uint32_t grfid, uint16_t local_id)
+	{
+		return (static_cast<uint64_t>(local_id) << 32) | grfid;
+	}
 
 	/** Initialise the defaults. */
 	static void InsertDefaults();
@@ -86,6 +93,7 @@ public:
 	static bool HasUIClass();
 	static NewGRFClass *Get(Tindex class_index);
 
+	static void PrepareIndices();
 	static const Tspec *GetByGrf(uint32_t grfid, uint16_t local_id);
 };
 
