@@ -2,7 +2,7 @@
 
 * * *
 
-### v0.61.0 (2014-08-23)
+### v0.61.0 (2024-08-23)
 * Fix crash in road pathfinder when path exceeds distance limit (2048 tiles).
 * Fix crash which could occur in build airport window.
 * Fix crash which could occur during drawing in rare circumstances.
