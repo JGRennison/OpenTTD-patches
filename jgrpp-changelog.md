@@ -2,6 +2,32 @@
 
 * * *
 
+### v0.61.0 (2014-08-23)
+* Fix crash in road pathfinder when path exceeds distance limit (2048 tiles).
+* Fix crash which could occur in build airport window.
+* Fix crash which could occur during drawing in rare circumstances.
+* Fix multiplayer desync when copying programmable pre-signal program.
+* Fix advice messages about duplicate orders for non-goto orders.
+* Fix speed of very fast ships on aqueducts.
+* Fix train unit ID allocation when moving an engine to a new train, when at the train limit.
+* Rename day length factor setting to economy speed reduction factor setting.
+* Add setting to scale the industry event rate.
+* Improve handling of refit in station when using articulated vehicles and simultaneous unload.
+* Simplify and clarify cargo scaling mode settings.
+* Add ctrl-clicking sign in sign list window to open extra viewport at sign coordinates.
+* Scheduled dispatch:
+  * Store last dispatched information individually for each vehicle.
+  * Add conditional order sub-type to test the vehicle's last dispatch slot and properties, at the time that the vehicle was assigned its dispatch slot.
+  * Show slots for different clock hours on separate lines.
+  * Fix prediction of dispatch slot assignments in the departure boards window.
+* Template-based train replacement:
+  * Fix wrong replacement count when trains only differed from the template by refit.
+* Hotkeys:
+  * Add unset hotkeys for duplicate and change jump target in order window.
+  * Add unset hotkey for refit in order window.
+  * Change default hotkey for the picker window to /.
+* Bump trunk base from commit 45886e50b21fd1dee461e910267781e264574790 to commit f90172206615460d687339a1a663473025105f06.
+
 ### v0.60.2 (2024-07-11)
 * Fix crash opening landscape window when there are no available objects.
 * Fix crash which can occur when NewGRFs overwrite a recolour sprite with a normal sprite.
