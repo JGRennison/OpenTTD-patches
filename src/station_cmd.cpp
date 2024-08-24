@@ -4869,6 +4869,7 @@ CommandCost CmdExchangeStationNames(TileIndex tile, DoCommandFlag flags, uint32_
 		st2->cached_name.clear();
 		std::swap(st->name, st2->name);
 		std::swap(st->string_id, st2->string_id);
+		std::swap(st->indtype, st2->indtype);
 		std::swap(st->extra_name_index, st2->extra_name_index);
 		st->UpdateVirtCoord();
 		st2->UpdateVirtCoord();
