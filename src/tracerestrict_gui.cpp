@@ -606,18 +606,17 @@ static bool ShouldHideTypeDropDownListItem(TraceRestrictDropDownListItemFlags fl
  */
 static const TraceRestrictDropDownListSet *GetSortedCargoTypeDropDownListSet()
 {
-	static StringID cargo_list_str[NUM_CARGO + 1];
+	static StringID cargo_list_str[NUM_CARGO];
 	static uint cargo_list_id[NUM_CARGO];
-	static const TraceRestrictDropDownListSet cargo_list = {
-		cargo_list_str, cargo_list_id,
-	};
+	static TraceRestrictDropDownListSet cargo_list({}, {});
 
 	for (size_t i = 0; i < _sorted_standard_cargo_specs.size(); ++i) {
 		const CargoSpec *cs = _sorted_cargo_specs[i];
 		cargo_list_str[i] = cs->name;
 		cargo_list_id[i] = cs->Index();
 	}
-	cargo_list_str[_sorted_standard_cargo_specs.size()] = INVALID_STRING_ID;
+	cargo_list.string_array = std::span<const StringID>(cargo_list_str, _sorted_standard_cargo_specs.size());
+	cargo_list.value_array = std::span<const uint>(cargo_list_id, _sorted_standard_cargo_specs.size());
 
 	return &cargo_list;
 }
