@@ -548,6 +548,11 @@ STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE                    :Intervalo de te
 
 STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :Mensual: A produción de carga por mes é escalada.{}{}Tempo de xogo: A produción de carga por unidade de tempo de xogo é escalada (a produción de carga por mes tamén é escalada polo factor de lonxitude do día). Pode non ser posible alcanzar factores de escalado moi altos.
 
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_NORMAL                      :Normal
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_ECON_SPEED_REDUCTION_MULT   :Multiplicar polo factor de redución de velocidade económica
+
+STR_CONFIG_SETTING_CARGO_SCALE_VALUE_ECON_SPEED_REDUCTION_MULT  :{NUM}% x factor de redución de velocidade económica
+
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :Sen vilas por enriba da altitude: {STRING}
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :Non se constrúen vilas por enriba da altitude especificada durante a creación do mapa.
 
@@ -706,6 +711,9 @@ STR_CONFIG_SETTING_PURCHASED_LAND_CLEAR_GROUND_HELPTEXT         :Se está habili
 
 STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY                  :Xerar só industrias primarias: {STRING}
 STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY_HELPTEXT         :Se está habilitado, só se xeran industrias primarias durante o xogo e a xeración de mapas.
+
+STR_CONFIG_SETTING_INDUSTRY_EVENT_RATE                          :Ratio de eventos industriais: {STRING}
+STR_CONFIG_SETTING_INDUSTRY_EVENT_RATE_HELPTEXT                 :Escala a frecuencia dos eventos industriais por período económico en modo de cronometraxe en tempo real ou por mes/ano en modo de cronometraxe en calendario. Isto inclúe cambios na produción industrial, apertura e peche.
 
 STR_PURCHASE_LAND_PERMITTED_NO                                  :No
 STR_PURCHASE_LAND_PERMITTED_SINGLE                              :Si, un cadro por vez
@@ -1006,9 +1014,11 @@ STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :adianto
 
 STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT                           :seguinte slot de saída
 STR_TRACE_RESTRICT_DISPATCH_SLOT_LAST                           :último slot de saída
+STR_TRACE_RESTRICT_DISPATCH_SLOT_VEH                            :slot de saída do vehículo
 
 STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_NEXT                     :seguinte
 STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_LAST                     :último
+STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_VEH                      :vehículo
 
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}Valor
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}Restrición de busca de rutas
@@ -2160,6 +2170,7 @@ STR_SCHDISPATCH_MOVE_SCHEDULE                                   :{BLACK}Cambiar 
 STR_SCHDISPATCH_DATE_WALLCLOCK_TINY_FLAGGED                     :{TT_TIME}*
 STR_SCHDISPATCH_SLOT_TOOLTIP                                    :{BLACK}{TT_TIME}
 STR_SCHDISPATCH_SLOT_TOOLTIP_RELATIVE                           : ({TIME_HHMM} dende o inicio)
+STR_SCHDISPATCH_SLOT_TOOLTIP_VEHICLE                            :{}Slot de saída do vehículo
 STR_SCHDISPATCH_SLOT_TOOLTIP_LAST                               :{}Último slot de saída
 STR_SCHDISPATCH_SLOT_TOOLTIP_NEXT                               :{}Seguinte slot de saída dispoñible
 STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE                              :{}O slot de saída pódese usar máis dunha vez
@@ -2168,9 +2179,19 @@ STR_SCHDISPATCH_SLOT_TOOLTIP_TAG                                :{}Etiqueta {NUM
 STR_SCHDISPATCH_SLOT_TOOLTIP_TAG_NAMED                          :{}Etiqueta {NUM}: {STRING}
 
 STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}Sen saídas previas.
+STR_SCHDISPATCH_SUMMARY_VEHICLE_NO_LAST_DEPARTURE               :{BLACK}Este vehículo non saíu.
+STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAILS                       : ({STRING})
+STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_SEPARATOR              :, {STRING}
+STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_WAS_FIRST              :primeiro slot
+STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_WAS_LAST               :derradeiro slot
+STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG                    :etiqueta {NUM}
+STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG_NAMED              :etiqueta {NUM} ({STRING})
 
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}Última saída ás {TT_TIME}.
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}A última saída aínda non saíu, sairá ás {TT_TIME}.
+
+STR_SCHDISPATCH_SUMMARY_VEHICLE_DEPARTURE_PAST                  :{BLACK}Este vehículo saíu ás {TT_TIME}{STRING}.
+STR_SCHDISPATCH_SUMMARY_VEHICLE_DEPARTURE_FUTURE                :{BLACK}Este vehículo aínda non saíu, sairá ás {TT_TIME}{STRING}.
 
 STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}Este programa require {COMMA} vehículo{P "" s}.
 STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}Este programa repítese cada {STRING}.

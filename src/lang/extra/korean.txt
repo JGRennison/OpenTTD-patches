@@ -548,6 +548,11 @@ STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE                    :산업시설 �
 
 STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :월별: 1개월당 화물 생산량이 조정됩니다.{}{}게임 시간: 게임 시간의 단위 당 화물 생산량이 조정됩니다. (또한 1개월당 화물 생산량은 1일의 길이 조절 설정에 의해 조정되기도 합니다.) 매우 높은 값은 적용되지 않을 수도 있습니다.
 
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_NORMAL                      :보통
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_ECON_SPEED_REDUCTION_MULT   :경제 속도 감소 계수만큼 곱하기
+
+STR_CONFIG_SETTING_CARGO_SCALE_VALUE_ECON_SPEED_REDUCTION_MULT  :{NUM}% x 경제 속도 감소 계수
+
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :이 고도 위에는 도시를 생성하지 않음: {STRING}
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :지도를 생성할 때 특정 고도 위에는 도시를 만들지 않도록 만듭니다.
 
@@ -1009,9 +1014,11 @@ STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :조착
 
 STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT                           :다음 출발 슬롯
 STR_TRACE_RESTRICT_DISPATCH_SLOT_LAST                           :마지막 출발 슬롯
+STR_TRACE_RESTRICT_DISPATCH_SLOT_VEH                            :차량의 출발 슬롯
 
 STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_NEXT                     :다음
 STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_LAST                     :마지막
+STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_VEH                      :차량
 
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}값
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}경로 탐색 제한
@@ -2165,6 +2172,7 @@ STR_SCHDISPATCH_MOVE_SCHEDULE                                   :{BLACK}일정 �
 STR_SCHDISPATCH_DATE_WALLCLOCK_TINY_FLAGGED                     :{TT_TIME}*
 STR_SCHDISPATCH_SLOT_TOOLTIP                                    :{BLACK}{TT_TIME}
 STR_SCHDISPATCH_SLOT_TOOLTIP_RELATIVE                           : (시작 시간으로부터 {TIME_HHMM})
+STR_SCHDISPATCH_SLOT_TOOLTIP_VEHICLE                            :{}차량의 출발 슬롯
 STR_SCHDISPATCH_SLOT_TOOLTIP_LAST                               :{}마지막 출발 슬롯
 STR_SCHDISPATCH_SLOT_TOOLTIP_NEXT                               :{}다음 이용 가능한 출발 슬롯
 STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE                              :{}출발 슬롯을 1번 이상 재사용 가능함
@@ -2173,9 +2181,19 @@ STR_SCHDISPATCH_SLOT_TOOLTIP_TAG                                :{}태그 {NUM}
 STR_SCHDISPATCH_SLOT_TOOLTIP_TAG_NAMED                          :{}태그 {NUM}: {STRING}
 
 STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}이전 출발이 없습니다.
+STR_SCHDISPATCH_SUMMARY_VEHICLE_NO_LAST_DEPARTURE               :{BLACK}이 차량은 아직 출발하지 않았습니다.
+STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAILS                       : ({STRING})
+STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_SEPARATOR              :, {STRING}
+STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_WAS_FIRST              :첫 번째 슬롯
+STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_WAS_LAST               :마지막 슬롯
+STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG                    :태그 {NUM}
+STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG_NAMED              :태그 {NUM} ({STRING})
 
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}최근 출발: {TT_TIME}
 STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}최근 배차된 열차가 아직 출발하지 않았습니다. {TT_TIME}에 출발할 예정입니다.
+
+STR_SCHDISPATCH_SUMMARY_VEHICLE_DEPARTURE_PAST                  :{BLACK}이 차량은 {TT_TIME}{STRING}에 출발했습니다.
+STR_SCHDISPATCH_SUMMARY_VEHICLE_DEPARTURE_FUTURE                :{BLACK}이 차량은 아직 출발하지 않았습니다. {TT_TIME}{STRING}에 출발할 예정입니다.
 
 STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}이 일정에는 {COMMA}대의 열차가 필요합니다.
 STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}이 일정은 {STRING}마다 반복됩니다.
