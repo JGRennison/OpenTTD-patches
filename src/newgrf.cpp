@@ -8473,11 +8473,13 @@ static void ParamSet(ByteReader *buf)
 
 						case 0x08: // General sprites
 							switch (op) {
-								case 0:
+								case 0: {
 									/* Return space reserved during reservation stage */
-									src1 = _grm_sprites[GRFLocation(_cur.grffile->grfid, _cur.nfo_line)].first;
-									GrfMsg(4, "ParamSet: GRM: Using pre-allocated sprites at {}", src1);
+									const auto &grm_alloc = _grm_sprites[GRFLocation(_cur.grffile->grfid, _cur.nfo_line)];
+									src1 = grm_alloc.first;
+									GrfMsg(4, "ParamSet: GRM: Using pre-allocated sprites at {} (count: {})", src1, grm_alloc.second);
 									break;
+								}
 
 								case 1:
 									src1 = _cur.spriteid;
