@@ -172,10 +172,15 @@ static bool IsVariableVeryCheap(uint16_t variable, GrfSpecFeature scope_feature)
 	return false;
 }
 
-static bool IsVariableIndependentOfSpecialTempStorage(uint16_t variable)
+static bool IsPermanentStorageLoadIndependentOfSpecialTempStorage(GrfSpecFeature feature)
+{
+	return feature != GSF_FAKE_TOWNS;
+}
+
+static bool IsVariableIndependentOfSpecialTempStorage(GrfSpecFeature feature, uint16_t variable)
 {
 	/* This is a very conservative whitelist */
-	return variable < 0x40 || variable == 0x7C || variable == 0x7D;
+	return variable < 0x40 || variable == 0x7D || (variable == 0x7C && IsPermanentStorageLoadIndependentOfSpecialTempStorage(feature));
 }
 
 static bool IsFeatureUsableForDSE(GrfSpecFeature feature)
@@ -2237,7 +2242,7 @@ static VarAction2ProcedureAnnotation *OptimiseVarAction2GetFilledProcedureAnnota
 	return anno;
 }
 
-static uint OptimiseVarAction2InsertSpecialStoreOps(DeterministicSpriteGroup *group, uint offset, uint32_t values[16], uint16_t mask)
+static uint OptimiseVarAction2InsertSpecialStoreOps(DeterministicSpriteGroup *group, GrfSpecFeature scope_feature, uint offset, uint32_t values[16], uint16_t mask)
 {
 	uint added = 0;
 	for (uint8_t bit : SetBitIterator(mask)) {
@@ -2253,7 +2258,7 @@ static uint OptimiseVarAction2InsertSpecialStoreOps(DeterministicSpriteGroup *gr
 				break;
 			}
 			if (next.variable == 0x7D && next.parameter == 0x100u + bit) break;
-			if (!IsVariableIndependentOfSpecialTempStorage(next.variable)) break; // crude whitelist of variables which will never read special registers
+			if (!IsVariableIndependentOfSpecialTempStorage(scope_feature, next.variable)) break; // crude whitelist of variables which will never read special registers
 		}
 		if (skip) continue;
 		DeterministicSpriteGroupAdjust store = {};
@@ -2375,7 +2380,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupPopulateLastVarReadAnnotat
 	}
 }
 
-static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicSpriteGroup *group, VarAction2GroupVariableTracking *var_tracking)
+static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicSpriteGroup *group, GrfSpecFeature scope_feature, VarAction2GroupVariableTracking *var_tracking)
 {
 	if (HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_INSERT_JUMPS)) return;
 
@@ -2399,7 +2404,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 				/* Don't try to skip over: unpredictable or unusable special stores, unskippable procedure calls, permanent stores, or another jump */
 				if (prev.operation == DSGA_OP_STO && (prev.type != DSGA_TYPE_NONE || prev.variable != 0x1A || prev.shift_num != 0 || prev.and_mask >= 0x100)) break;
 				if (prev.operation == DSGA_OP_STO_NC && prev.divmod_val >= 0x100) {
-					if (prev.divmod_val < 0x110 && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && IsVariableIndependentOfSpecialTempStorage(adjust.variable)) {
+					if (prev.divmod_val < 0x110 && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && IsVariableIndependentOfSpecialTempStorage(scope_feature, adjust.variable)) {
 						/* Storing a constant in a special register */
 						if (!HasBit(special_stores_mask, prev.divmod_val - 0x100)) {
 							special_stores[prev.divmod_val - 0x100] = prev.and_mask;
@@ -2414,7 +2419,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 				if (prev.variable == 0x7E) {
 					const VarAction2ProcedureCallVarReadAnnotation &anno = _varaction2_proc_call_var_read_annotations[prev.jump];
 					if (anno.unskippable) break;
-					if (anno.anno->special_register_mask != 0 && !IsVariableIndependentOfSpecialTempStorage(adjust.variable)) break;
+					if (anno.anno->special_register_mask != 0 && !IsVariableIndependentOfSpecialTempStorage(scope_feature, adjust.variable)) break;
 					if ((anno.relevant_stores & ~ok_stores).any()) break;
 					ok_stores |= anno.last_reads;
 
@@ -2461,7 +2466,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 						adj.adjust_flags |= DSGAF_END_BLOCK;
 						adj.jump = inc;
 						if (special_stores_mask) {
-							uint added = OptimiseVarAction2InsertSpecialStoreOps(group, index + 1, special_stores, special_stores_mask);
+							uint added = OptimiseVarAction2InsertSpecialStoreOps(group, scope_feature, index + 1, special_stores, special_stores_mask);
 
 							/* Fixup offsets */
 							if (i > (int)index) i += added;
@@ -2833,7 +2838,7 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 	if (!dse_candidate) group->adjusts.shrink_to_fit();
 }
 
-static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSpriteGroup *group, VarAction2GroupVariableTracking *var_tracking, bool no_changes)
+static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSpriteGroup *group, GrfSpecFeature scope_feature, VarAction2GroupVariableTracking *var_tracking, bool no_changes)
 {
 	std::bitset<256> all_bits;
 	std::bitset<256> propagate_bits;
@@ -3096,7 +3101,7 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 					/* Procedure is skippable, makes no stores we need, and the return value is also not needed */
 					erase_adjust(i);
 					if (anno->special_register_mask) {
-						OptimiseVarAction2InsertSpecialStoreOps(group, i, anno->special_register_values, anno->special_register_mask);
+						OptimiseVarAction2InsertSpecialStoreOps(group, scope_feature, i, anno->special_register_values, anno->special_register_mask);
 						restart();
 					} else {
 						i--;
@@ -3211,9 +3216,11 @@ void HandleVarAction2OptimisationPasses()
 			}
 		}
 
+		const GrfSpecFeature scope_feature = GetGrfSpecFeatureForScope(group->feature, group->var_scope);
+
 		/* Always run this even DSGF_NO_DSE is set because the load/store tracking is needed to re-calculate the input bits,
 		 * even if no stores are actually eliminated */
-		std::bitset<256> in_bits = HandleVarAction2DeadStoreElimination(group, var_tracking, group->dsg_flags & DSGF_NO_DSE);
+		std::bitset<256> in_bits = HandleVarAction2DeadStoreElimination(group, scope_feature, var_tracking, group->dsg_flags & DSGF_NO_DSE);
 		if (var_tracking == nullptr && in_bits.any()) {
 			var_tracking = _cur.GetVarAction2GroupVariableTracking(group, true);
 			var_tracking->in = in_bits;
@@ -3221,12 +3228,10 @@ void HandleVarAction2OptimisationPasses()
 			var_tracking->in = in_bits;
 		}
 
-		const GrfSpecFeature scope_feature = GetGrfSpecFeatureForScope(group->feature, group->var_scope);
-
 		OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(group);
 		OptimiseVarAction2DeterministicSpriteGroupAdjustOrdering(group, scope_feature);
 		if (group->dsg_flags & DSGF_CHECK_INSERT_JUMP) {
-			OptimiseVarAction2DeterministicSpriteGroupInsertJumps(group, var_tracking);
+			OptimiseVarAction2DeterministicSpriteGroupInsertJumps(group, scope_feature, var_tracking);
 		}
 		if (group->dsg_flags & DSGF_CHECK_EXPENSIVE_VARS) {
 			OptimiseVarAction2DeterministicSpriteGroupExpensiveVars(group, scope_feature);
