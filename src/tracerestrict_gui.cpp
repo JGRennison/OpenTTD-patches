@@ -351,8 +351,8 @@ static const StringID _news_control_value_str[] = {
 	STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL_SHORT,
 };
 static const uint _news_control_value_val[] = {
-	TRRVF_REVERSE,
-	TRRVF_CANCEL_REVERSE,
+	TRNCF_TRAIN_NOT_STUCK,
+	TRNCF_CANCEL_TRAIN_NOT_STUCK,
 };
 
 /** value drop down list for news control types strings and values */
