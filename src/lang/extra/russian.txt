@@ -205,14 +205,14 @@ STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_HELPTEXT                 :Если эта
 STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_IF_BREAKDOWNS_ON         :только если включены поломки
 
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER                     :Срок эксплуатации транспортных средств не истекает после: {STRING}
-STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_HELPTEXT            :Транспортные средства, срок эксплуатации которых закончился бы в этом году, будут доступны всегда.{}Снижение надёжности двигателя также прекращается по достижении этого года
+STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_HELPTEXT            :Транспортные средства, у которых срок эксплуатации закончился бы в указаном году, будут доступны всегда.{}Снижение надёжности двигателя также прекращается по пришествию указаного года.
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_VALUE               :{NUM}
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_ZERO                :Отключено
 
-STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER                  :Запрет транспортных средств, выпущенные после: {STRING}
-STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_HELPTEXT         :Транспортные средства, которые должны быть выпущены в этом или следующем году, не появятся
+STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER                  :Запретить транспорт, выпущенный после: {STRING}
+STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_HELPTEXT         :Транспортные средства, которые должны быть выпущены в указаном или последующих годах, не появятся.
 STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_VALUE            :{NUM}
-STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_ZERO             :Отключено
+STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_ZERO             :Нет
 
 STR_CONFIG_SETTING_SHOW_WAGON_INTRO_YEAR                        :Показывать год выпуска вагона в окне сборки транспортного средства: {STRING}
 STR_CONFIG_SETTING_SHOW_WAGON_INTRO_YEAR_HELPTEXT               :Добавить ли строку в окно создания транспортного средства, показывающую год выпуска вагонов поезда.
