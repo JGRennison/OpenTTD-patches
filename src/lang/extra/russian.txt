@@ -99,7 +99,7 @@ STR_GRAPH_LAST_72_PRODUCTION_INTERVALS_TIME_LABEL               :{TINY_FONT}{BLA
 
 STR_SMALLMAP_SCREENSHOT                                         :{BLACK}Скриншот
 
-STR_NEWS_VEHICLE_NO_DEPOT_ORDER                                 :{WHITE}{VEHICLE} не имеет задания на посещение депо в своём расписании  
+STR_NEWS_VEHICLE_NO_DEPOT_ORDER                                 :{WHITE}{VEHICLE} не имеет задания на посещение депо в своём расписании
 STR_NEWS_TRAIN_OVERSHOT_STATION                                 :{WHITE}{VEHICLE} не смог остановиться в {STRING} из-за чрезмерной скорости
 
 STR_NEWS_ROAD_REBUILDING_PERIODS                                :{BIG_FONT}{BLACK}Дорожный хаос в городе {TOWN}!{}{}Программа реконструкции дорог, профинансированая компанией {STRING} принесёт автомобилистам полгода страданий!
