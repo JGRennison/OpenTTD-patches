@@ -1634,6 +1634,7 @@ STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SELL_VEL                   :{CREAM}Heading 
 
 STR_VEHICLE_LOAD_THROUGH_ABORTED_INSUFFICIENT_TRACK             :{WHITE}{VEHICLE}: through load aborted due to insufficient track at {STATION}
 STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT                          :{WHITE}{VEHICLE}: through load aborted due to depot at {STATION}
+STR_VEHICLE_LOAD_THROUGH_NOT_ALLOWED_PASSENGERS                 :{WHITE}{VEHICLE}: through load is not allowed for passengers
 
 STR_RUNNING                                                     :{LTBLUE}Running
 

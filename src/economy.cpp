@@ -1988,6 +1988,11 @@ static void LoadUnloadVehicle(Vehicle *front)
 				/* Passengers may not be through-loaded */
 				if (v->cargo_cap > 0 && IsCargoInClass(v->cargo_type, CC_PASSENGERS)) {
 					pull_through_mode = false;
+					if (_local_company == v->owner) {
+						SetDParam(0, front->index);
+						AddNewsItem(STR_VEHICLE_LOAD_THROUGH_NOT_ALLOWED_PASSENGERS, NT_ADVICE, NF_INCOLOUR | NF_SMALL | NF_VEHICLE_PARAM0,
+								NR_VEHICLE, front->index);
+					}
 					break;
 				}
 				/* Disallow through-load when any part of train is in a depot, to prevent cheating */
