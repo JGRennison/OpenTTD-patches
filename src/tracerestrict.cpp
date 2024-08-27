@@ -797,12 +797,13 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 
 					case TRIT_REVERSE:
 						switch (static_cast<TraceRestrictReverseValueField>(GetTraceRestrictValue(item))) {
-							case TRRVF_REVERSE:
-								out.flags |= TRPRF_REVERSE;
+							case TRRVF_REVERSE_BEHIND:
+								out.flags |= TRPRF_REVERSE_BEHIND;
 								break;
 
-							case TRRVF_CANCEL_REVERSE:
-								out.flags &= ~TRPRF_REVERSE;
+							case TRRVF_CANCEL_REVERSE_BEHIND:
+								out.flags &= ~TRPRF_REVERSE_BEHIND;
+								break;
 								break;
 
 							default:
@@ -1401,12 +1402,12 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 
 				case TRIT_REVERSE:
 					switch (static_cast<TraceRestrictReverseValueField>(GetTraceRestrictValue(item))) {
-						case TRRVF_REVERSE:
-							actions_used_flags |= TRPAUF_REVERSE;
+						case TRRVF_REVERSE_BEHIND:
+							actions_used_flags |= TRPAUF_REVERSE_BEHIND;
 							break;
 
-						case TRRVF_CANCEL_REVERSE:
-							if (condstack.empty()) actions_used_flags &= ~TRPAUF_REVERSE;
+						case TRRVF_CANCEL_REVERSE_BEHIND:
+							if (condstack.empty()) actions_used_flags &= ~TRPAUF_REVERSE_BEHIND;
 							break;
 
 						default:
@@ -1749,7 +1750,7 @@ void TraceRestrictCheckRefreshSignals(const TraceRestrictProgram *prog, size_t o
 
 	if (IsHeadless()) return;
 
-	if (!((old_actions_used_flags ^ prog->actions_used_flags) & (TRPAUF_RESERVE_THROUGH_ALWAYS | TRPAUF_REVERSE))) return;
+	if (!((old_actions_used_flags ^ prog->actions_used_flags) & (TRPAUF_RESERVE_THROUGH_ALWAYS | TRPAUF_REVERSE_BEHIND))) return;
 
 	if (old_size == 0 && prog->refcount == 1) return; // Program is new, no need to refresh again
 

@@ -337,8 +337,8 @@ static const StringID _reverse_value_str[] = {
 	STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL,
 };
 static const uint _reverse_value_val[] = {
-	TRRVF_REVERSE,
-	TRRVF_CANCEL_REVERSE,
+	TRRVF_REVERSE_BEHIND,
+	TRRVF_CANCEL_REVERSE_BEHIND,
 };
 
 /** value drop down list for reverse types strings and values */
@@ -1606,11 +1606,11 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 
 			case TRIT_REVERSE:
 				switch (static_cast<TraceRestrictReverseValueField>(GetTraceRestrictValue(item))) {
-					case TRRVF_REVERSE:
+					case TRRVF_REVERSE_BEHIND:
 						instruction_string = STR_TRACE_RESTRICT_REVERSE_SIG;
 						break;
 
-					case TRRVF_CANCEL_REVERSE:
+					case TRRVF_CANCEL_REVERSE_BEHIND:
 						instruction_string = STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL;
 						break;
 

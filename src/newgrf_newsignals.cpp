@@ -113,7 +113,7 @@ uint GetNewSignalsRestrictedSignalsInfo(const TraceRestrictProgram *prog, TileIn
 	if (prog != nullptr) {
 		result |= 1;
 		if ((prog->actions_used_flags & TRPAUF_RESERVE_THROUGH_ALWAYS) && !IsTileType(tile, MP_TUNNELBRIDGE)) result |= 2;
-		if ((prog->actions_used_flags & TRPAUF_REVERSE) && !IsTileType(tile, MP_TUNNELBRIDGE)) result |= 4;
+		if ((prog->actions_used_flags & TRPAUF_REVERSE_BEHIND) && !IsTileType(tile, MP_TUNNELBRIDGE)) result |= 4;
 	}
 	return result;
 }

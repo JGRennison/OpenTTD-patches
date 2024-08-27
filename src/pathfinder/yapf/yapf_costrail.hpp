@@ -298,7 +298,7 @@ private:
 			flags_to_check |= TRPAUF_NO_PBS_BACK_PENALTY;
 		}
 		if (GetSignalType(tile, TrackdirToTrack(trackdir)) == SIGTYPE_PBS && !HasSignalOnTrackdir(tile, trackdir)) {
-			flags_to_check |= TRPAUF_REVERSE;
+			flags_to_check |= TRPAUF_REVERSE_BEHIND;
 		}
 		if (prog != nullptr && prog->actions_used_flags & flags_to_check) {
 			prog->Execute(Yapf().GetVehicle(), TraceRestrictProgramInput(tile, trackdir, &TraceRestrictPreviousSignalCallback, &n), out);
@@ -312,7 +312,7 @@ private:
 				n.m_segment->m_end_segment_reason |= ESRB_DEAD_END;
 				return true;
 			}
-			if (out.flags & TRPRF_REVERSE && flags_to_check & TRPAUF_REVERSE && !n.flags_u.flags_s.m_reverse_pending) {
+			if (out.flags & TRPRF_REVERSE_BEHIND && flags_to_check & TRPAUF_REVERSE_BEHIND && !n.flags_u.flags_s.m_reverse_pending) {
 				n.flags_u.flags_s.m_reverse_pending = true;
 				n.m_segment->m_end_segment_reason |= ESRB_REVERSE;
 			}

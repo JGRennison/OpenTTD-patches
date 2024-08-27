@@ -645,7 +645,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 					au_flags = TRPAUF_SPEED_RESTRICTION;
 				} else {
 					/* Passing through a signal from the rear side */
-					au_flags = TRPAUF_SPEED_RESTRICTION | TRPAUF_REVERSE;
+					au_flags = TRPAUF_SPEED_RESTRICTION | TRPAUF_REVERSE_BEHIND;
 				}
 				uint16_t speed_restriction = lookahead->speed_restriction;
 				if (v != nullptr) {
@@ -654,7 +654,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 						TraceRestrictProgramResult out;
 						TraceRestrictProgramInput input(tile, trackdir, nullptr, nullptr);
 						prog->Execute(v, input, out);
-						if (out.flags & TRPRF_REVERSE && au_flags & TRPAUF_REVERSE) {
+						if (out.flags & TRPRF_REVERSE_BEHIND && au_flags & TRPAUF_REVERSE_BEHIND) {
 							lookahead->AddReverse(z);
 						}
 						if (out.flags & TRPRF_SPEED_RESTRICTION_SET) {
@@ -666,7 +666,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 						}
 					}
 				}
-				if (!(au_flags & TRPAUF_REVERSE)) {
+				if (!(au_flags & TRPAUF_REVERSE_BEHIND)) {
 					/* Passing through a signal from the front side */
 					uint16_t signal_speed = GetRailTypeInfo(rt)->max_speed;
 					if (signal_speed == 0 || (speed_restriction != 0 && speed_restriction < signal_speed)) signal_speed = speed_restriction;

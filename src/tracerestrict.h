@@ -310,8 +310,8 @@ enum TraceRestrictWaitAtPbsValueField : uint8_t {
  * TraceRestrictItem value field, for TRIT_REVERSE
  */
 enum TraceRestrictReverseValueField : uint8_t {
-	TRRVF_REVERSE                      = 0,       ///< Reverse
-	TRRVF_CANCEL_REVERSE               = 1,       ///< Cancel reverse
+	TRRVF_REVERSE_BEHIND               = 0,       ///< Reverse behind signal
+	TRRVF_CANCEL_REVERSE_BEHIND        = 1,       ///< Cancel reverse behind signal
 };
 
 /**
@@ -440,7 +440,7 @@ enum TraceRestrictProgramResultFlags : uint16_t {
 	TRPRF_LONG_RESERVE            = 1 << 2,  ///< Long reserve is set
 	TRPRF_WAIT_AT_PBS             = 1 << 3,  ///< Wait at PBS signal is set
 	TRPRF_PBS_RES_END_WAIT        = 1 << 4,  ///< PBS reservations ending at this signal wait is set
-	TRPRF_REVERSE                 = 1 << 5,  ///< Reverse behind signal
+	TRPRF_REVERSE_BEHIND          = 1 << 5,  ///< Reverse behind signal
 	TRPRF_SPEED_RESTRICTION_SET   = 1 << 6,  ///< Speed restriction field set
 	TRPRF_TRAIN_NOT_STUCK         = 1 << 7,  ///< Train is not stuck
 	TRPRF_NO_PBS_BACK_PENALTY     = 1 << 8,  ///< Do not apply PBS back penalty
@@ -465,7 +465,7 @@ enum TraceRestrictProgramActionsUsedFlags : uint32_t {
 	TRPAUF_SLOT_RELEASE_FRONT     = 1 << 6,  ///< Slot release (front) action is present
 	TRPAUF_PBS_RES_END_WAIT       = 1 << 7,  ///< PBS reservations ending at this signal wait action is present
 	TRPAUF_PBS_RES_END_SLOT       = 1 << 8,  ///< PBS reservations ending at this signal slot action is present
-	TRPAUF_REVERSE                = 1 << 9,  ///< Reverse behind signal
+	TRPAUF_REVERSE_BEHIND         = 1 << 9,  ///< Reverse behind signal
 	TRPAUF_SPEED_RESTRICTION      = 1 << 10, ///< Speed restriction
 	TRPAUF_TRAIN_NOT_STUCK        = 1 << 11, ///< Train is not stuck
 	TRPAUF_CHANGE_COUNTER         = 1 << 12, ///< Change counter value is present
