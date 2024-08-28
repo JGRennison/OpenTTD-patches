@@ -1025,6 +1025,8 @@ STR_TRACE_RESTRICT_TRAIN_STATUS_REQUIRES_SERVICE                :requires servic
 STR_TRACE_RESTRICT_TRAIN_STATUS_STOPPING_AT_STATION_WAYPOINT    :stopping at station/waypoint
 STR_TRACE_RESTRICT_REVERSE_SIG                                  :Reverse behind signal
 STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL                           :Cancel reverse behind signal
+STR_TRACE_RESTRICT_REVERSE_AT_SIG                               :Reverse at PBS signal
+STR_TRACE_RESTRICT_REVERSE_AT_SIG_CANCEL                        :Cancel reverse at PBS signal
 STR_TRACE_RESTRICT_SET_SPEED_RESTRICTION                        :Restrict train speed to: {VELOCITY}
 STR_TRACE_RESTRICT_REMOVE_SPEED_RESTRICTION                     :Remove train speed restriction
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK                              :Train is not stuck, do not show news reports about waiting at this PBS signal

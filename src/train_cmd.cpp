@@ -84,6 +84,7 @@ DECLARE_ENUM_AS_BIT_SET(ChooseTrainTrackFlags)
 enum ChooseTrainTrackResultFlags {
 	CTTRF_NONE                  = 0,      ///< No flags
 	CTTRF_RESERVATION_MADE      = 0x01,   ///< A reservation was made
+	CTTRF_REVERSE_AT_SIGNAL     = 0x02,   ///< Reverse at signal
 };
 DECLARE_ENUM_AS_BIT_SET(ChooseTrainTrackResultFlags)
 
@@ -4329,12 +4330,12 @@ static void TryLongReserveChooseTrainTrack(Train *v, TileIndex tile, Trackdir td
 						long_reserve = (out.flags & TRPRF_LONG_RESERVE);
 					}
 					if (!long_reserve) return;
-					if (prog != nullptr && prog->actions_used_flags & (TRPAUF_WAIT_AT_PBS | TRPAUF_SLOT_ACQUIRE)) {
+					if (prog != nullptr && prog->actions_used_flags & (TRPAUF_WAIT_AT_PBS | TRPAUF_SLOT_ACQUIRE | TRPAUF_REVERSE_AT)) {
 						TraceRestrictProgramResult out;
 						TraceRestrictProgramInput input(exit_tile, exit_td, nullptr, nullptr);
 						input.permitted_slot_operations = TRPISP_ACQUIRE;
 						prog->Execute(v, input, out);
-						if (out.flags & TRPRF_WAIT_AT_PBS) {
+						if (out.flags & (TRPRF_WAIT_AT_PBS | TRPRF_REVERSE_AT)) {
 							return;
 						}
 					}
@@ -4436,7 +4437,7 @@ static ChooseTrainTrackResult ChooseTrainTrack(Train *v, TileIndex tile, DiagDir
 		if (track != INVALID_TRACK && HasPbsSignalOnTrackdir(tile, TrackEnterdirToTrackdir(track, enterdir)) && !IsNoEntrySignal(tile, track)) {
 			if (IsRestrictedSignal(tile) && v->force_proceed != TFP_SIGNAL) {
 				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, track);
-				if (prog != nullptr && prog->actions_used_flags & (TRPAUF_WAIT_AT_PBS | TRPAUF_SLOT_ACQUIRE | TRPAUF_TRAIN_NOT_STUCK)) {
+				if (prog != nullptr && prog->actions_used_flags & (TRPAUF_WAIT_AT_PBS | TRPAUF_SLOT_ACQUIRE | TRPAUF_TRAIN_NOT_STUCK | TRPAUF_REVERSE_AT)) {
 					TraceRestrictProgramResult out;
 					TraceRestrictProgramInput input(tile, TrackEnterdirToTrackdir(track, enterdir), nullptr, nullptr);
 					input.permitted_slot_operations = TRPISP_ACQUIRE;
@@ -4444,7 +4445,10 @@ static ChooseTrainTrackResult ChooseTrainTrack(Train *v, TileIndex tile, DiagDir
 					if (out.flags & TRPRF_TRAIN_NOT_STUCK && !(v->track & TRACK_BIT_WORMHOLE) && !(v->track == TRACK_BIT_DEPOT)) {
 						v->wait_counter = 0;
 					}
-					if (out.flags & TRPRF_WAIT_AT_PBS) {
+					if (out.flags & TRPRF_REVERSE_AT) {
+						result_flags |= CTTRF_REVERSE_AT_SIGNAL;
+					}
+					if (out.flags & (TRPRF_WAIT_AT_PBS | TRPRF_REVERSE_AT)) {
 						if (mark_stuck) MarkTrainAsStuck(v, true);
 						return { track, result_flags };
 					}
@@ -4672,7 +4676,7 @@ static ChooseTrainTrackResult ChooseTrainTrack(Train *v, TileIndex tile, DiagDir
  * @param first_tile_okay True if no path should be reserved if the current tile is a safe position.
  * @return Result flags.
  */
-TryPathReserveResultFlags TryPathReserveResultFlags(Train *v, bool mark_as_stuck, bool first_tile_okay)
+TryPathReserveResultFlags TryPathReserveWithResultFlags(Train *v, bool mark_as_stuck, bool first_tile_okay)
 {
 	dbg_assert(v->IsFrontEngine());
 
@@ -4767,16 +4771,20 @@ TryPathReserveResultFlags TryPathReserveResultFlags(Train *v, bool mark_as_stuck
 
 	if (Rail90DegTurnDisallowedTilesFromDiagDir(origin.tile, new_tile, exitdir)) reachable &= ~TrackCrossesTracks(TrackdirToTrack(origin.trackdir));
 
-	bool res_made = false;
+	TryPathReserveResultFlags result_flags = TPRRF_NONE;
 	if (reachable != TRACK_BIT_NONE) {
 		ChooseTrainTrackResult result = ChooseTrainTrack(v, new_tile, exitdir, reachable, CTTF_FORCE_RES | (mark_as_stuck ? CTTF_MARK_STUCK : CTTF_NONE));
-		if (result.ctt_flags & CTTRF_RESERVATION_MADE) res_made = true;
+		if (result.ctt_flags & CTTRF_RESERVATION_MADE) {
+			result_flags |= TPRRF_RESERVATION_OK;
+		} else if (result.ctt_flags & CTTRF_REVERSE_AT_SIGNAL) {
+			result_flags |= TPRRF_REVERSE_AT_SIGNAL;
+		}
 	}
 
-	if (!res_made) {
+	if ((result_flags & TPRRF_RESERVATION_OK) == 0) {
 		/* Free the depot reservation as well. */
 		if (v->track == TRACK_BIT_DEPOT && v->tile == origin.tile) SetDepotReservation(v->tile, false);
-		return false;
+		return result_flags;
 	}
 
 	if (HasBit(v->flags, VRF_TRAIN_STUCK)) {
@@ -4785,7 +4793,7 @@ TryPathReserveResultFlags TryPathReserveResultFlags(Train *v, bool mark_as_stuck
 	}
 	ClrBit(v->flags, VRF_TRAIN_STUCK);
 	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) FillTrainReservationLookAhead(v);
-	return true;
+	return result_flags;
 }
 
 
@@ -5679,10 +5687,13 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 				if (!CheckCompatibleRail(v, gp.new_tile, enterdir)) goto invalid_rail;
 
 				TrackBits chosen_track;
+				bool reverse_at_signal = false;
 				if (prev == nullptr) {
 					/* Currently the locomotive is active. Determine which one of the
 					 * available tracks to choose */
-					chosen_track = TrackToTrackBits(ChooseTrainTrack(v, gp.new_tile, enterdir, bits, CTTF_MARK_STUCK | CTTF_NON_LOOKAHEAD).track);
+					ChooseTrainTrackResult result = ChooseTrainTrack(v, gp.new_tile, enterdir, bits, CTTF_MARK_STUCK | CTTF_NON_LOOKAHEAD);
+					chosen_track = TrackToTrackBits(result.track);
+					reverse_at_signal = (result.ctt_flags & CTTRF_REVERSE_AT_SIGNAL);
 					dbg_assert_msg_tile(chosen_track & (bits | GetReservedTrackbits(gp.new_tile)), gp.new_tile, "0x%X, 0x%X, 0x%X", chosen_track, bits, GetReservedTrackbits(gp.new_tile));
 
 					if (v->force_proceed != TFP_NONE && IsPlainRailTile(gp.new_tile) && HasSignals(gp.new_tile)) {
@@ -5705,6 +5716,11 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					if ((red_signals & chosen_track) && v->force_proceed == TFP_NONE) {
 						/* In front of a red signal */
 						Trackdir i = FindFirstTrackdir(trackdirbits);
+
+						if (reverse_at_signal) {
+							ClrBit(v->flags, VRF_TRAIN_STUCK);
+							goto reverse_train_direction;
+						}
 
 						/* Don't handle stuck trains here. */
 						if (HasBit(v->flags, VRF_TRAIN_STUCK)) return false;
@@ -6706,9 +6722,10 @@ static bool TrainLocoHandler(Train *v, bool mode)
 		bool turn_around = v->wait_counter % (_settings_game.pf.wait_for_pbs_path * DAY_TICKS) == 0 && _settings_game.pf.reverse_at_signals;
 
 		if (!turn_around && v->wait_counter % _settings_game.pf.path_backoff_interval != 0 && v->force_proceed == TFP_NONE) return true;
-		if (!TryPathReserve(v)) {
+		TryPathReserveResultFlags path_result = TryPathReserveWithResultFlags(v);
+		if ((path_result & TPRRF_RESERVATION_OK) == 0) {
 			/* Still stuck. */
-			if (turn_around) ReverseTrainDirection(v);
+			if (turn_around || (path_result & TPRRF_REVERSE_AT_SIGNAL)) ReverseTrainDirection(v);
 
 			if (HasBit(v->flags, VRF_TRAIN_STUCK) && v->wait_counter > 2 * _settings_game.pf.wait_for_pbs_path * DAY_TICKS) {
 				/* Show message to player. */

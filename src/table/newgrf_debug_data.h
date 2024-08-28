@@ -2279,6 +2279,7 @@ class NIHTraceRestrict : public NIHelper {
 		CA(RESERVE_THROUGH_ALWAYS)
 		CA(CMB_SIGNAL_MODE_CTRL)
 		CA(ORDER_CONDITIONALS)
+		CA(REVERSE_AT)
 #undef CA
 		output.print("");
 

@@ -335,10 +335,14 @@ static const TraceRestrictDropDownListSet _train_status_value = {
 static const StringID _reverse_value_str[] = {
 	STR_TRACE_RESTRICT_REVERSE_SIG,
 	STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL,
+	STR_TRACE_RESTRICT_REVERSE_AT_SIG,
+	STR_TRACE_RESTRICT_REVERSE_AT_SIG_CANCEL,
 };
 static const uint _reverse_value_val[] = {
 	TRRVF_REVERSE_BEHIND,
 	TRRVF_CANCEL_REVERSE_BEHIND,
+	TRRVF_REVERSE_AT,
+	TRRVF_CANCEL_REVERSE_AT,
 };
 
 /** value drop down list for reverse types strings and values */
@@ -1612,6 +1616,14 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 
 					case TRRVF_CANCEL_REVERSE_BEHIND:
 						instruction_string = STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL;
+						break;
+
+					case TRRVF_REVERSE_AT:
+						instruction_string = STR_TRACE_RESTRICT_REVERSE_AT_SIG;
+						break;
+
+					case TRRVF_CANCEL_REVERSE_AT:
+						instruction_string = STR_TRACE_RESTRICT_REVERSE_AT_SIG_CANCEL;
 						break;
 
 					default:

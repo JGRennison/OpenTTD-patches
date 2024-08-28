@@ -804,6 +804,13 @@ void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInp
 							case TRRVF_CANCEL_REVERSE_BEHIND:
 								out.flags &= ~TRPRF_REVERSE_BEHIND;
 								break;
+
+							case TRRVF_REVERSE_AT:
+								out.flags |= TRPRF_REVERSE_AT;
+								break;
+
+							case TRRVF_CANCEL_REVERSE_AT:
+								out.flags &= ~TRPRF_REVERSE_AT;
 								break;
 
 							default:
@@ -1408,6 +1415,14 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 
 						case TRRVF_CANCEL_REVERSE_BEHIND:
 							if (condstack.empty()) actions_used_flags &= ~TRPAUF_REVERSE_BEHIND;
+							break;
+
+						case TRRVF_REVERSE_AT:
+							actions_used_flags |= TRPAUF_REVERSE_AT;
+							break;
+
+						case TRRVF_CANCEL_REVERSE_AT:
+							if (condstack.empty()) actions_used_flags &= ~TRPAUF_REVERSE_AT;
 							break;
 
 						default:

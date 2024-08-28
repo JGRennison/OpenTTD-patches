@@ -80,7 +80,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_TRACE_RESTRICT_OWNER,             XSCF_NULL,                1,   1, "tracerestrict_owner",              nullptr, nullptr, nullptr          },
 	{ XSLFI_TRACE_RESTRICT_ORDRCND,           XSCF_NULL,                4,   4, "tracerestrict_order_cond",         nullptr, nullptr, nullptr          },
 	{ XSLFI_TRACE_RESTRICT_STATUSCND,         XSCF_NULL,                2,   2, "tracerestrict_status_cond",        nullptr, nullptr, nullptr          },
-	{ XSLFI_TRACE_RESTRICT_REVERSE,           XSCF_NULL,                1,   1, "tracerestrict_reverse",            nullptr, nullptr, nullptr          },
+	{ XSLFI_TRACE_RESTRICT_REVERSE,           XSCF_NULL,                2,   2, "tracerestrict_reverse",            nullptr, nullptr, nullptr          },
 	{ XSLFI_TRACE_RESTRICT_NEWSCTRL,          XSCF_NULL,                1,   1, "tracerestrict_newsctrl",           nullptr, nullptr, nullptr          },
 	{ XSLFI_TRACE_RESTRICT_COUNTER,           XSCF_NULL,                1,   1, "tracerestrict_counter",            nullptr, nullptr, "TRRC"           },
 	{ XSLFI_TRACE_RESTRICT_TIMEDATE,          XSCF_NULL,                2,   2, "tracerestrict_timedate",           nullptr, nullptr, nullptr          },

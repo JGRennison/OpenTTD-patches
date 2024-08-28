@@ -174,7 +174,7 @@ enum TraceRestrictItemType : uint8_t {
 	TRIT_COND_RESERVATION_THROUGH = 32,   ///< Test if train reservation passes through tile
 
 	TRIT_COND_END                 = 48,   ///< End (exclusive) of conditional item types, note that this has the same value as TRIT_REVERSE
-	TRIT_REVERSE                  = 48,   ///< Reverse behind signal
+	TRIT_REVERSE                  = 48,   ///< Reverse behind/at signal
 	TRIT_SPEED_RESTRICTION        = 49,   ///< Speed restriction
 	TRIT_NEWS_CONTROL             = 50,   ///< News control
 	TRIT_COUNTER                  = 51,   ///< Change counter value
@@ -312,6 +312,8 @@ enum TraceRestrictWaitAtPbsValueField : uint8_t {
 enum TraceRestrictReverseValueField : uint8_t {
 	TRRVF_REVERSE_BEHIND               = 0,       ///< Reverse behind signal
 	TRRVF_CANCEL_REVERSE_BEHIND        = 1,       ///< Cancel reverse behind signal
+	TRRVF_REVERSE_AT                   = 2,       ///< Reverse at PBS signal
+	TRRVF_CANCEL_REVERSE_AT            = 3,       ///< Cancel reverse at PBS signal
 };
 
 /**
@@ -448,6 +450,7 @@ enum TraceRestrictProgramResultFlags : uint16_t {
 	TRPRF_RM_SPEED_ADAPT_EXEMPT   = 1 << 10, ///< Remove speed adaptation exemption
 	TRPRF_SIGNAL_MODE_NORMAL      = 1 << 11, ///< Combined normal/shunt signal mode control: normal
 	TRPRF_SIGNAL_MODE_SHUNT       = 1 << 12, ///< Combined normal/shunt signal mode control: shunt
+	TRPRF_REVERSE_AT              = 1 << 13, ///< Reverse at PBS signal is set
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramResultFlags)
 
@@ -476,6 +479,7 @@ enum TraceRestrictProgramActionsUsedFlags : uint32_t {
 	TRPAUF_RESERVE_THROUGH_ALWAYS = 1 << 17, ///< Reserve through action is unconditionally set
 	TRPAUF_CMB_SIGNAL_MODE_CTRL   = 1 << 18, ///< Combined normal/shunt signal mode control
 	TRPAUF_ORDER_CONDITIONALS     = 1 << 19, ///< Order conditionals are present
+	TRPAUF_REVERSE_AT             = 1 << 20, ///< Reverse at signal
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
 

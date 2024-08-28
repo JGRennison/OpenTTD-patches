@@ -86,6 +86,7 @@ void FreeTrainTrackReservation(Train *v, TileIndex origin = INVALID_TILE, Trackd
 enum TryPathReserveResultFlags {
 	TPRRF_NONE                  = 0,      ///< No flags
 	TPRRF_RESERVATION_OK        = 0x01,   ///< Reservation OK
+	TPRRF_REVERSE_AT_SIGNAL     = 0x02,   ///< Reverse at signal
 };
 DECLARE_ENUM_AS_BIT_SET(TryPathReserveResultFlags)
 
