@@ -1314,9 +1314,16 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 					if (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) return CMD_ERROR;
 					break;
 
+				case OCV_DISPATCH_SLOT: {
+					if (occ != OCC_IS_TRUE && occ != OCC_IS_FALSE) return CMD_ERROR;
+					uint submode = GB(new_order.GetConditionValue(), ODCB_SRC_START, ODCB_SRC_COUNT);
+					if (submode < ODCS_BEGIN || submode >= ODCS_END) return CMD_ERROR;
+					break;
+				}
+
 				case OCV_PERCENT:
 					if (occ != OCC_EQUALS) return CMD_ERROR;
-					/* FALL THROUGH */
+					[[fallthrough]];
 				case OCV_LOAD_PERCENTAGE:
 				case OCV_RELIABILITY:
 					if (new_order.GetConditionValue() > 100) return CMD_ERROR;
@@ -2071,6 +2078,12 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 				case OCV_TIME_DATE:
 				case OCV_TIMETABLE:
 					break;
+
+				case OCV_DISPATCH_SLOT: {
+					uint submode = GB(data, ODCB_SRC_START, ODCB_SRC_COUNT);
+					if (submode < ODCS_BEGIN || submode >= ODCS_END) return CMD_ERROR;
+					break;
+				}
 
 				default:
 					if (data > 2047) return CMD_ERROR;

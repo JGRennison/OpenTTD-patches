@@ -308,9 +308,11 @@ enum OrderDispatchConditionBits {
 };
 
 enum OrderDispatchConditionSources : uint8_t {
+	ODCS_BEGIN               = 0,
 	ODCS_NEXT                = 0,
 	ODCS_LAST                = 1,
 	ODCS_VEH                 = 2,
+	ODCS_END,
 };
 
 enum OrderDispatchConditionModes : uint8_t {
