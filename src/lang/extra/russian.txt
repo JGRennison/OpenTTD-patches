@@ -1570,18 +1570,19 @@ STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_SHORT_END              :{ORANGE}{DEPOT}
 STR_BREAKDOWN_TYPE_CRITICAL                                     :Механическая неисправность
 STR_BREAKDOWN_TYPE_EM_STOP                                      :Аварийная остановка
 STR_BREAKDOWN_TYPE_LOW_SPEED                                    :Ограничена до {VELOCITY}
-STR_BREAKDOWN_TYPE_LOW_POWER                                    :{COMMA}% Мощности
-STR_BREAKDOWN_TYPE_HIT_RV                                       :Столкновение с дорожным транспортным средством
-STR_BREAKDOWN_TYPE_BRAKES_OVERHEATED                            :Тормоза перегрелись
+STR_BREAKDOWN_TYPE_LOW_POWER                                    :{COMMA}% мощности
+STR_BREAKDOWN_TYPE_HIT_RV                                       :Столкновение с автотранспортом
+STR_BREAKDOWN_TYPE_BRAKES_OVERHEATED                            :Перегрев тормозов
 STR_BREAKDOWN_TYPE_DEPOT                                        :Направление в ангар {STATION} для ремонта
 STR_BREAKDOWN_TYPE_LANDING                                      :Направление в {STATION} для аварийной посадки
 
-STR_ERROR_TRAIN_TOO_HEAVY                                       :{WHITE}{VEHICLE} слишком тяжелое
+STR_ERROR_TRAIN_TOO_HEAVY                                       :{WHITE}{VEHICLE} весит слишком много
 
 STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SELL_VEL                   :{CREAM}Направление на {PUSH_COLOUR}{RED}продажу{POP_COLOUR} в {DEPOT}, {VELOCITY}
 
-STR_VEHICLE_LOAD_THROUGH_ABORTED_INSUFFICIENT_TRACK             :{WHITE}{VEHICLE}: загрузка прервана из-за недостаточного пути на {STATION}
-STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT                          :{WHITE}{VEHICLE}: загрузка прервана из-за депо в {STATION}
+STR_VEHICLE_LOAD_THROUGH_ABORTED_INSUFFICIENT_TRACK             :{WHITE}{VEHICLE}: сквозная загрузка прервана из-за недостаточного пути на {STATION}
+STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT                          :{WHITE}{VEHICLE}: сквозная загрузка прервана из-за депо в {STATION}
+STR_VEHICLE_LOAD_THROUGH_NOT_ALLOWED_PASSENGERS                 :{WHITE}{VEHICLE}: сквозная загрузка не допустима для пассажиров
 
 STR_RUNNING                                                     :{LTBLUE}Эксплуатируется
 
@@ -2258,12 +2259,12 @@ STR_ERROR_STATION_ATTACHED_TO_INDUSTRY                          :{WHITE}... ст
 STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_EXTRA                     :{STRING}{}{BLACK}Ctrl+клик для преобразования фрагментов пути вместо целых клеток.
 
 STR_CONFIG_SETTING_ALLOW_SHARES                                 :Разрешить торговлю акциями других компаний: {STRING}
-STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :Разрешает торговлю акциями транспортных компаний. Акции выпускаются компаниями только через некоторое время после основания.
+STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :При включении позволяет торговать акциями транспортных компаний. Акции выпускаются компаниями только через некоторое время после основания.
 
 STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES                         :Минимальный возраст компании для выпуска акций: {STRING}
 STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_HELPTEXT                :Минимальный возраст, которого должна достичь компания для начала выпуска акций, которые смогут покупать и продавать другие игроки.
 STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_VALUE                   :{COMMA} {P год года лет}
-STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_NO_MIN                  :без ограничений по возрасту
+STR_CONFIG_SETTING_MIN_YEARS_FOR_SHARES_NO_MIN                  :отсутствует
 
 STR_COMPANY_VIEW_SHARES_OWNED_BY                                :{WHITE}({COMMA}% владеет {COMPANY})
 
