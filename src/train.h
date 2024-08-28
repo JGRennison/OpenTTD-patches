@@ -81,7 +81,20 @@ uint8_t FreightWagonMult(CargoID cargo);
 void CheckTrainsLengths();
 
 void FreeTrainTrackReservation(Train *v, TileIndex origin = INVALID_TILE, Trackdir orig_td = INVALID_TRACKDIR);
-bool TryPathReserve(Train *v, bool mark_as_stuck = false, bool first_tile_okay = false);
+
+/** Result flags for TryPathReserveWithResultFlags */
+enum TryPathReserveResultFlags {
+	TPRRF_NONE                  = 0,      ///< No flags
+	TPRRF_RESERVATION_OK        = 0x01,   ///< Reservation OK
+};
+DECLARE_ENUM_AS_BIT_SET(TryPathReserveResultFlags)
+
+TryPathReserveResultFlags TryPathReserveWithResultFlags(Train *v, bool mark_as_stuck = false, bool first_tile_okay = false);
+
+inline bool TryPathReserve(Train *v, bool mark_as_stuck = false, bool first_tile_okay = false)
+{
+	return TryPathReserveWithResultFlags(v, mark_as_stuck, first_tile_okay) & TPRRF_RESERVATION_OK;
+}
 
 void DeleteVisibleTrain(Train *v);
 

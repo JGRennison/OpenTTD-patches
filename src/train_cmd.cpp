@@ -4670,15 +4670,15 @@ static ChooseTrainTrackResult ChooseTrainTrack(Train *v, TileIndex tile, DiagDir
  * @param v The vehicle
  * @param mark_as_stuck Should the train be marked as stuck on a failed reservation?
  * @param first_tile_okay True if no path should be reserved if the current tile is a safe position.
- * @return True if a path could be reserved.
+ * @return Result flags.
  */
-bool TryPathReserve(Train *v, bool mark_as_stuck, bool first_tile_okay)
+TryPathReserveResultFlags TryPathReserveResultFlags(Train *v, bool mark_as_stuck, bool first_tile_okay)
 {
 	dbg_assert(v->IsFrontEngine());
 
 	ClearLookAheadIfInvalid(v);
 
-	if (v->lookahead != nullptr && HasBit(v->lookahead->flags, TRLF_DEPOT_END)) return true;
+	if (v->lookahead != nullptr && HasBit(v->lookahead->flags, TRLF_DEPOT_END)) return TPRRF_RESERVATION_OK;
 
 	/* We have to handle depots specially as the track follower won't look
 	 * at the depot tile itself but starts from the next tile. If we are still
@@ -4686,18 +4686,18 @@ bool TryPathReserve(Train *v, bool mark_as_stuck, bool first_tile_okay)
 	if (v->track == TRACK_BIT_DEPOT) {
 		if (HasDepotReservation(v->tile)) {
 			if (mark_as_stuck) MarkTrainAsStuck(v);
-			return false;
+			return TPRRF_NONE;
 		} else {
 			/* Depot not reserved, but the next tile might be. */
 			TileIndex next_tile = TileAddByDiagDir(v->tile, GetRailDepotDirection(v->tile));
-			if (HasReservedTracks(next_tile, DiagdirReachesTracks(GetRailDepotDirection(v->tile)))) return false;
+			if (HasReservedTracks(next_tile, DiagdirReachesTracks(GetRailDepotDirection(v->tile)))) return TPRRF_NONE;
 		}
 	}
 
 	if (IsTileType(v->tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExitOnly(v->tile) &&
 			TrackdirEntersTunnelBridge(v->tile, v->GetVehicleTrackdir())) {
 		/* prevent any attempt to reserve the wrong way onto a tunnel/bridge exit */
-		return false;
+		return TPRRF_NONE;
 	}
 	if (IsTunnelBridgeWithSignalSimulation(v->tile) && ((v->track & TRACK_BIT_WORMHOLE) || TrackdirEntersTunnelBridge(v->tile, v->GetVehicleTrackdir()))) {
 		DiagDirection tunnel_bridge_dir = GetTunnelBridgeDirection(v->tile);
@@ -4720,10 +4720,10 @@ bool TryPathReserve(Train *v, bool mark_as_stuck, bool first_tile_okay)
 					v_pos += TileOffsByDiagDir(tunnel_bridge_dir);
 				}
 				if (v_pos == exit) {
-					return CheckTrainStayInWormHolePathReserve(v, exit);
+					return CheckTrainStayInWormHolePathReserve(v, exit) ? TPRRF_RESERVATION_OK : TPRRF_NONE;
 				}
 			}
-			return false;
+			return TPRRF_NONE;
 		}
 	}
 
@@ -4736,7 +4736,7 @@ bool TryPathReserve(Train *v, bool mark_as_stuck, bool first_tile_okay)
 	 * make matters worse. */
 	if (other_train != nullptr && other_train->index != v->index) {
 		if (mark_as_stuck) MarkTrainAsStuck(v);
-		return false;
+		return TPRRF_NONE;
 	}
 	/* If we have a reserved path and the path ends at a safe tile, we are finished already. */
 	if (origin.okay && (v->tile != origin.tile || first_tile_okay)) {
@@ -4747,7 +4747,7 @@ bool TryPathReserve(Train *v, bool mark_as_stuck, bool first_tile_okay)
 			FillTrainReservationLookAhead(v);
 			TryLongReserveChooseTrainTrackFromReservationEnd(v, true);
 		}
-		return true;
+		return TPRRF_RESERVATION_OK;
 	}
 
 	/* If we are in a depot, tentatively reserve the depot. */
