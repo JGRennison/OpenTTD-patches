@@ -135,7 +135,7 @@ uint16_t RXCompressUint(uint32_t num)
 {
 	if (num <= 0x100) return num;
 	if (num <= 0x7900) return 0x100 + ((num - 0x100) >> 3);
-	return std::min<uint32_t>(UINT16_MAX, 0x1000 + ((num - 0x7900) >> 6));
+	return ClampTo<uint16_t>(0x1000 + ((num - 0x7900) >> 6));
 }
 
 /**
