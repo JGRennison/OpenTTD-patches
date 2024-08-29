@@ -975,8 +975,10 @@ STR_TRACE_RESTRICT_TRAIN_STATUS_LOST                            :потерян�
 STR_TRACE_RESTRICT_TRAIN_STATUS_REQUIRES_SERVICE                :требует обслуживания
 STR_TRACE_RESTRICT_TRAIN_STATUS_STOPPING_AT_STATION_WAYPOINT    :остановка на станции/маршрутной точке
 STR_TRACE_RESTRICT_REVERSE_SIG                                  :Задний ход за сигналом
-STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL                           :Отмена заднего хода за сигналом
-STR_TRACE_RESTRICT_SET_SPEED_RESTRICTION                        :Ограничьте скорость поезда до: {VELOCITY}
+STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL                           :Отменить задний ход за сигналом
+STR_TRACE_RESTRICT_REVERSE_AT_SIG                               :Задний ход на маршрутном сигнале
+STR_TRACE_RESTRICT_REVERSE_AT_SIG_CANCEL                        :Отменить задний ход на маршруном сигнале
+STR_TRACE_RESTRICT_SET_SPEED_RESTRICTION                        :Ограничить скорость поезда до: {VELOCITY}
 STR_TRACE_RESTRICT_REMOVE_SPEED_RESTRICTION                     :Снять ограничение скорости поездов
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK                              :Поезд не застрял, не показывать репортажи об ожидании на этом маршрутном сигнале
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL                       :Отменить поезд не застрял, не показывать репортажи об ожидании на этом маршрутном сигнале
