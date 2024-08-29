@@ -828,7 +828,12 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 				case VEH_TRAIN: {
 					RailType param_type = GetRailTypeTranslation(parameter, object->ro.grffile);
 					if (param_type == INVALID_RAILTYPE) return 0x00;
-					RailType tile_type = GetTileRailTypeByTrackBit(v->tile, Train::From(v)->track);
+					RailType tile_type;
+					if (Train::From(v)->IsVirtual()) {
+						tile_type = Train::From(v)->railtype;
+					} else {
+						tile_type = GetTileRailTypeByTrackBit(v->tile, Train::From(v)->track);
+					}
 					if (tile_type == param_type) return 0x0F;
 					return (HasPowerOnRail(param_type, tile_type) ? 0x04 : 0x00) |
 							(IsCompatibleRail(param_type, tile_type) ? 0x02 : 0x00) |
