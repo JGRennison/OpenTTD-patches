@@ -7611,7 +7611,7 @@ void TrainBrakesOverheatedBreakdown(Vehicle *v, int speed, int max_speed)
 		ShowVehicleViewWindow(t);
 	}
 
-	t->crash_anim_pos = std::min<uint>(1500, t->crash_anim_pos + Clamp(((speed - max_speed) * speed) / 2, 0, 500));
+	t->crash_anim_pos = static_cast<uint16_t>(std::min<uint>(1500, t->crash_anim_pos + Clamp(((speed - max_speed) * speed) / 2, 0, 500)));
 	if (t->crash_anim_pos < 1500) return;
 
 	t->breakdown_ctr = 2;
