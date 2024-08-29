@@ -579,6 +579,11 @@ static SigInfo ExploreSegment(Owner owner)
 	return info;
 }
 
+static inline uint8_t ClampAspect(uint aspect)
+{
+	return static_cast<uint8_t>(std::min<uint>(aspect, GetMaximumSignalAspect()));
+}
+
 static uint8_t GetSignalledTunnelBridgeEntranceForwardAspect(TileIndex tile, TileIndex tile_exit)
 {
 	if (!IsTunnelBridgeSignalSimulationEntrance(tile)) return 0;
@@ -590,20 +595,20 @@ static uint8_t GetSignalledTunnelBridgeEntranceForwardAspect(TileIndex tile, Til
 			if (GetBridgeEntranceSimulatedSignalState(tile, i) == SIGNAL_STATE_GREEN) {
 				aspect++;
 			} else {
-				return std::min<uint>(aspect, GetMaximumSignalAspect());
+				return ClampAspect(aspect);
 			}
 		}
 		if (GetTunnelBridgeExitSignalState(tile_exit) == SIGNAL_STATE_GREEN) aspect += GetTunnelBridgeExitSignalAspect(tile_exit);
-		return std::min<uint>(aspect, GetMaximumSignalAspect());
+		return ClampAspect(aspect);
 	} else {
 		int free_tiles = GetAvailableFreeTilesInSignalledTunnelBridge(tile, tile_exit, tile);
 		if (free_tiles == INT_MAX) {
 			uint aspect = signal_count;
 			if (GetTunnelBridgeExitSignalState(tile_exit) == SIGNAL_STATE_GREEN) aspect += GetTunnelBridgeExitSignalAspect(tile_exit);
-			return std::min<uint>(aspect, GetMaximumSignalAspect());
+			return ClampAspect(aspect);
 		} else {
 			if (free_tiles < (int)spacing) return 0;
-			return std::min<uint>((free_tiles / spacing) - 1, GetMaximumSignalAspect());
+			return ClampAspect((free_tiles / spacing) - 1);
 		}
 	}
 }
@@ -1330,7 +1335,7 @@ void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8_t aspect)
 {
 	AdjustSignalAspectIfNonIncStyle(tile, TrackdirToTrack(trackdir), aspect);
 
-	aspect = std::min<uint8_t>(aspect + 1, GetMaximumSignalAspect());
+	aspect = ClampAspect(aspect + 1);
 	Owner owner = GetTileOwner(tile);
 	DiagDirection exitdir = TrackdirToExitdir(ReverseTrackdir(trackdir));
 	DiagDirection enterdir = ReverseDiagDir(exitdir);
@@ -1338,7 +1343,7 @@ void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8_t aspect)
 	if (IsTileType(tile, MP_TUNNELBRIDGE) && TrackdirExitsTunnelBridge(tile, trackdir)) {
 		TileIndex other = GetOtherTunnelBridgeEnd(tile);
 		if (IsBridge(tile)) RefreshBridgeOnExitAspectChange(other, tile);
-		aspect = std::min<uint>(GetSignalledTunnelBridgeEntranceForwardAspect(other, tile) + 1, GetMaximumSignalAspect());
+		aspect = ClampAspect(GetSignalledTunnelBridgeEntranceForwardAspect(other, tile) + 1);
 		tile = other;
 		wormhole = true;
 	} else {
@@ -1385,7 +1390,7 @@ void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8_t aspect)
 							SetSignalAspect(tile, track, aspect);
 							MarkSingleSignalDirty(tile, reversedir);
 							AdjustSignalAspectIfNonIncStyle(tile, TrackdirToTrack(trackdir), aspect);
-							aspect = std::min<uint8_t>(aspect + 1, GetMaximumSignalAspect());
+							aspect = ClampAspect(aspect + 1);
 						} else if (IsOnewaySignal(tile, track)) {
 							return; // one-way signal facing the wrong way
 						}
@@ -1445,7 +1450,7 @@ void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8_t aspect)
 						SetTunnelBridgeExitSignalAspect(tile, aspect);
 						MarkTunnelBridgeSignalDirty(tile, true);
 						if (IsBridge(tile)) RefreshBridgeOnExitAspectChange(other, tile);
-						aspect = std::min<uint>(GetSignalledTunnelBridgeEntranceForwardAspect(other, tile) + 1, GetMaximumSignalAspect());
+						aspect = ClampAspect(GetSignalledTunnelBridgeEntranceForwardAspect(other, tile) + 1);
 					}
 					enterdir = GetTunnelBridgeDirection(other);
 					exitdir = ReverseDiagDir(enterdir);
@@ -1459,7 +1464,7 @@ void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8_t aspect)
 							if (GetTunnelBridgeEntranceSignalAspect(tile) == aspect) return;
 							SetTunnelBridgeEntranceSignalAspect(tile, aspect);
 							MarkTunnelBridgeSignalDirty(tile, false);
-							aspect = std::min<uint>(aspect + 1, GetMaximumSignalAspect());
+							aspect = ClampAspect(aspect + 1);
 						}
 					}
 					exitdir = TrackdirToExitdir(trackdir);
