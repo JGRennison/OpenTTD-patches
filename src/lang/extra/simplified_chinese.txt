@@ -976,6 +976,8 @@ STR_TRACE_RESTRICT_TRAIN_STATUS_REQUIRES_SERVICE                :需要维护
 STR_TRACE_RESTRICT_TRAIN_STATUS_STOPPING_AT_STATION_WAYPOINT    :正停放在车站或路点
 STR_TRACE_RESTRICT_REVERSE_SIG                                  :在信号前掉头
 STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL                           :取消在信号前掉头
+STR_TRACE_RESTRICT_REVERSE_AT_SIG                               :在路径信号前掉头
+STR_TRACE_RESTRICT_REVERSE_AT_SIG_CANCEL                        :取消在路径信号前掉头
 STR_TRACE_RESTRICT_SET_SPEED_RESTRICTION                        :列车限速：{VELOCITY}
 STR_TRACE_RESTRICT_REMOVE_SPEED_RESTRICTION                     :移除列车限速
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK                              :列车未被卡住，不显示有关列车在此信号前等待的消息
@@ -1095,7 +1097,7 @@ STR_TRACE_RESTRICT_ERROR_CAN_T_DUPLICATE_ITEM                   :{WHITE}无法�
 STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE                        :{WHITE}数值太大，最大值是 {DECIMAL}
 STR_TRACE_RESTRICT_ERROR_NO_PROGRAM                             :没有寻路限制程序
 STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE                       :偏移量过大
-STR_TRACE_RESTRICT_ERROR_CAN_T_CHANGE_CONDITIONALITY            :不能更改约束
+STR_TRACE_RESTRICT_ERROR_CAN_T_CHANGE_CONDITIONALITY            :不能更改寻路限制
 STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ENDIF                     :不能移除“结束判断”
 STR_TRACE_RESTRICT_ERROR_CAN_T_SHALLOW_REMOVE_IF_ELIF           :不能删除当前块缩进，存在一个及以上的“否则如果”、“或如果”、“否则”块
 STR_TRACE_RESTRICT_ERROR_VALIDATE_END_CONDSTACK                 :检查失败：条件栈在退出时非空
@@ -1542,8 +1544,8 @@ STR_VEHICLE_VIEW_ORDER_NUMBER                                   :{COMMA}: {STRIN
 STR_VEHICLE_STATUS_LOADING_UNLOADING_ADVANCE                    :{STRING}，{VELOCITY}
 STR_VEHICLE_STATUS_BROKEN_DOWN_VEL                              :{RED}损坏 - {STRING}，{LTBLUE} {VELOCITY}
 STR_VEHICLE_STATUS_BROKEN_DOWN_VEL_SHORT                        :{RED}损坏 - {STRING}
-STR_VEHICLE_STATUS_TRAIN_STUCK_WAIT_RESTRICTION                 :{ORANGE}等待寻路约束期限
-STR_VEHICLE_STATUS_TRAIN_WAITING_TIMETABLE                      :{ORANGE}等待时刻表期限
+STR_VEHICLE_STATUS_TRAIN_STUCK_WAIT_RESTRICTION                 :{ORANGE}等待放行（寻路限制）
+STR_VEHICLE_STATUS_TRAIN_WAITING_TIMETABLE                      :{ORANGE}等待放行（时刻表）
 STR_VEHICLE_STATUS_TRAIN_REVERSING                              :{ORANGE}换向中，{VELOCITY}
 STR_VEHICLE_STATUS_TRAIN_MOVING_DEPOT                           :{ORANGE}正在车库中移动
 
@@ -1582,6 +1584,7 @@ STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SELL_VEL                   :{CREAM}正前�
 
 STR_VEHICLE_LOAD_THROUGH_ABORTED_INSUFFICIENT_TRACK             :{WHITE}{VEHICLE}：由于 {STATION} 的轨道不匹配，无法通行
 STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT                          :{WHITE}{VEHICLE}：由于 {STATION} 的车库，无法通行
+STR_VEHICLE_LOAD_THROUGH_NOT_ALLOWED_PASSENGERS                 :{WHITE}{VEHICLE}：无法使用通过式装载装载旅客
 
 STR_RUNNING                                                     :{LTBLUE}正在运行
 
@@ -2173,6 +2176,7 @@ STR_SCHDISPATCH_MOVE_SCHEDULE                                   :{BLACK}更改�
 STR_SCHDISPATCH_DATE_WALLCLOCK_TINY_FLAGGED                     :{TT_TIME}*
 STR_SCHDISPATCH_SLOT_TOOLTIP                                    :{BLACK}{TT_TIME}
 STR_SCHDISPATCH_SLOT_TOOLTIP_RELATIVE                           :（自开始 {TIME_HHMM} 后）
+STR_SCHDISPATCH_SLOT_TOOLTIP_VEHICLE                            :{}载具发车时间
 STR_SCHDISPATCH_SLOT_TOOLTIP_LAST                               :{}最近发车时间
 STR_SCHDISPATCH_SLOT_TOOLTIP_NEXT                               :{}下一可用发车时间
 STR_SCHDISPATCH_SLOT_TOOLTIP_REUSE                              :{}发车时间可被多次使用
