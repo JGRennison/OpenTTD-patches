@@ -176,7 +176,7 @@ CommandCost CmdRemoveLeagueTableElement(DoCommandFlag flags, LeagueTableElementI
 	return CommandCost();
 }
 
-CommandCost CmdCreateLeagueTable(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdCreateLeagueTable(TileIndex tile, DoCommandFlag flags, const CommandAuxiliaryBase *aux_data)
 {
 	CommandAuxData<LeagueTableCmdData> data;
 	CommandCost ret = data.Load(aux_data);
@@ -187,7 +187,7 @@ CommandCost CmdCreateLeagueTable(TileIndex tile, DoCommandFlag flags, uint32_t p
 	return res;
 }
 
-CommandCost CmdCreateLeagueTableElement(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdCreateLeagueTableElement(TileIndex tile, DoCommandFlag flags, const CommandAuxiliaryBase *aux_data)
 {
 	CommandAuxData<LeagueTableElementCmdData> data;
 	CommandCost ret = data.Load(aux_data);

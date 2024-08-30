@@ -41,7 +41,7 @@
 	if (header != nullptr) data.header = header->GetEncodedText();
 	if (footer != nullptr) data.footer = footer->GetEncodedText();
 
-	if (!ScriptObject::DoCommandEx(0, 0, 0, 0, CMD_CREATE_LEAGUE_TABLE, nullptr, &data, &ScriptInstance::DoCommandReturnLeagueTableID)) return LEAGUE_TABLE_INVALID;
+	if (!ScriptObject::DoCommandAux(0, &data, CMD_CREATE_LEAGUE_TABLE, &ScriptInstance::DoCommandReturnLeagueTableID)) return LEAGUE_TABLE_INVALID;
 
 	/* In case of test-mode, we return LeagueTableID 0 */
 	return (ScriptLeagueTable::LeagueTableID)0;
@@ -84,7 +84,7 @@
 	data.text_str = std::move(encoded_text);
 	data.score = encoded_score;
 
-	if (!ScriptObject::DoCommandEx(0, 0, 0, 0, CMD_CREATE_LEAGUE_TABLE_ELEMENT, nullptr, &data, &ScriptInstance::DoCommandReturnLeagueTableElementID)) return LEAGUE_TABLE_ELEMENT_INVALID;
+	if (!ScriptObject::DoCommandAux(0, &data, CMD_CREATE_LEAGUE_TABLE_ELEMENT, &ScriptInstance::DoCommandReturnLeagueTableElementID)) return LEAGUE_TABLE_ELEMENT_INVALID;
 
 	/* In case of test-mode, we return LeagueTableElementID 0 */
 	return (ScriptLeagueTable::LeagueTableElementID)0;

@@ -269,8 +269,8 @@ CommandProcEx CmdSetTimetableStart;
 
 CommandProc CmdOpenCloseAirport;
 
-CommandProcEx CmdCreateLeagueTable;
-CommandProcEx CmdCreateLeagueTableElement;
+CommandProcAux CmdCreateLeagueTable;
+CommandProcAux CmdCreateLeagueTableElement;
 CommandProc CmdUpdateLeagueTableElementData;
 CommandProcEx CmdUpdateLeagueTableElementScore;
 CommandProc CmdRemoveLeagueTableElement;
