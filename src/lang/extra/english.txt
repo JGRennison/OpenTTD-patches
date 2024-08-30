@@ -187,7 +187,7 @@ STR_CONFIG_SETTING_CARGO_DELIVERY_MODE                          :Cargo delivery 
 STR_CONFIG_SETTING_CARGO_DELIVERY_MODE_HELPTEXT                 :The method used to distribute cargo delivered to a station to industries in the station's catchment area.{}The "original" mode distributes all cargo to the closest industry (measured from the station sign tile).{}The "balanced" mode distributes cargo equally to all accepting industries in the station's catchment area.
 
 STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL                          :Train braking model: {STRING2}
-STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL_HELPTEXT                 :Select the physics model for train braking. The "original" model allows trains to stop instantly. In the "realistic" model, trains have a stopping distance and will reserve ahead accordingly, trains cannot stop instantly.{}{}The "realistic" model has many implications for signalling and track layout design, and is therefore an advanced feature which may not be suitable for beginners. In particular pre-signals and two-way signals are not permitted, and PBS is used for all signalling.
+STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL_HELPTEXT                 :Select the physics model for train braking. The "original" model allows trains to stop instantly. In the "realistic" model, trains have a stopping distance and will reserve ahead accordingly, trains cannot stop instantly.{}{}The "realistic" model has many implications for signalling and track layout design, and is therefore an advanced feature which may not be suitable for beginners. In particular pre-signals and two-way signals are not permitted, and path reservations are used for all signalling.
 
 STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED             :Realistic train braking is aspect limited: {STRING2}
 STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED_HELPTEXT    :In the realistic train braking model, limit the look-ahead of trains to the aspect of signals (i.e. do not allow reserving and looking ahead an unlimited number of signals).{}This requires a NewGRF which provides multi-aspect signals.{}{}This is an expert setting which will likely increase gameplay difficulty and will require additional thought about signal types and placement.
@@ -238,7 +238,7 @@ STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT                    :Drive-through t
 STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT_HELPTEXT           :Enable emulation of drive-through train depots. Trains can move between depots placed back to back, optionally with intermediary depots in between.
 
 STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE                :Warn if train is stuck due to a routing restriction: {STRING2}
-STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE_HELPTEXT       :Trigger messages about trains which are stuck waiting at a PBS signal for a long time because of a routing restriction
+STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE_HELPTEXT       :Trigger messages about trains which are stuck waiting at a path signal for a long time because of a routing restriction.
 
 STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER                          :Warn if a vehicle does not have a depot order: {STRING2}
 STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_HELPTEXT                 :When enabled and when reviewing vehicle orders is also enabled, a news message gets sent when a train, road vehicle or ship does not have a depot order in its schedule
@@ -593,7 +593,7 @@ STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA          :{STRING}{}This 
 STR_CONFIG_SETTING_TOWN_CARGO_SCALE_MODE                        :Town cargo production scaling mode: {STRING2}
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE                    :Industry cargo production scaling mode: {STRING2}
 
-STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :The scaling factor for cargo production per month/production interval may optionally be multiplied by the economy speed reduction factor.
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :The scaling factor for cargo production per month/production interval may optionally be multiplied by the value of the economy speed reduction factor setting.
 
 STR_CONFIG_SETTING_CARGO_SCALE_MODE_NORMAL                      :Normal
 STR_CONFIG_SETTING_CARGO_SCALE_MODE_ECON_SPEED_REDUCTION_MULT   :Multiply by economy speed reduction factor
@@ -883,12 +883,12 @@ STR_TRACE_RESTRICT_VARIABLE_LAST_VISITED_STATION                :last visited st
 STR_TRACE_RESTRICT_VARIABLE_CARGO                               :cargo
 STR_TRACE_RESTRICT_VARIABLE_LOAD_PERCENT                        :load percentage
 STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION                     :entry direction
-STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL                    :PBS entry signal
-STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG               :entered signal of PBS block
-STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL                  :PBS end signal
-STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG             :signal at current end of PBS reservation
-STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE                    :PBS reservation end tile
-STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE_LONG               :tile at end of PBS reservation from this signal
+STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL                    :Path start signal
+STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG               :signal at start of current path reservation
+STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL                  :Path end signal
+STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG             :signal at current end of path reservation
+STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE                    :Path reservation end tile
+STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE_LONG               :tile at end of path reservation from this signal
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP                         :train group
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT                          :train in slot
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY                      :slot occupancy
@@ -907,8 +907,8 @@ STR_TRACE_RESTRICT_VARIABLE_TRAIN_OWNER                         :train owner
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_STATUS                        :train status
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_ENGINE_CLASS                  :engine class
 STR_TRACE_RESTRICT_VARIABLE_ORDER_TARGET_DIRECTION              :direction of order target
-STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH                 :PBS reservation passes tile
-STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH_SHORT           :PBS reservation
+STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH                 :Path reservation passes tile
+STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH_SHORT           :Path reservation
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :undefined
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED                       :{PUSH_COLOUR}{RED}undefined{POP_COLOUR}
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER                  :{STRING} {STRING} {STRING} {COMMA} then
@@ -955,12 +955,12 @@ STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL                       :Cancel reserve 
 STR_TRACE_RESTRICT_LONG_RESERVE                                 :Long reserve
 STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL                          :Cancel long reserve
 STR_TRACE_RESTRICT_LONG_RESERVE_UNLESS_STOPPING                 :Long reserve (unless stopping)
-STR_TRACE_RESTRICT_WAIT_AT_PBS                                  :Wait at PBS signal
-STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL                           :Cancel wait at PBS signal
-STR_TRACE_RESTRICT_PBS_RES_END_WAIT                             :Wait at start PBS signal for reservation ending here
-STR_TRACE_RESTRICT_PBS_RES_END_WAIT_CANCEL                      :Cancel wait at start PBS signal for reservation ending here
-STR_TRACE_RESTRICT_PBS_RES_END_WAIT_SHORT                       :Wait at start PBS...
-STR_TRACE_RESTRICT_PBS_RES_END_WAIT_CANCEL_SHORT                :Cancel wait at start PBS...
+STR_TRACE_RESTRICT_WAIT_AT_PBS                                  :Wait at path signal
+STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL                           :Cancel wait at path signal
+STR_TRACE_RESTRICT_PBS_RES_END_WAIT                             :Wait at start path signal for reservation ending here
+STR_TRACE_RESTRICT_PBS_RES_END_WAIT_CANCEL                      :Cancel wait at start path signal for reservation ending here
+STR_TRACE_RESTRICT_PBS_RES_END_WAIT_SHORT                       :Wait at start signal...
+STR_TRACE_RESTRICT_PBS_RES_END_WAIT_CANCEL_SHORT                :Cancel wait at start signal...
 STR_TRACE_RESTRICT_PF_PENALTY                                   :Penalty
 STR_TRACE_RESTRICT_PF_VALUE_SMALL                               :small
 STR_TRACE_RESTRICT_PF_VALUE_MEDIUM                              :medium
@@ -989,17 +989,17 @@ STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :Try to acquire
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :Release (front)
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK                            :Release (back)
 STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE                      :Release (on reserve)
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :PBS end: Acquire or wait
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :PBS end: Try to acquire
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :PBS end: Release
-STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :Acquire slot: {STRING1}{BLACK}{STRING}, or wait at PBS signal
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :Path end: Acquire or wait
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :Path end: Try to acquire
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :Path end: Release
+STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :Acquire slot: {STRING1}{BLACK}{STRING}, or wait at path signal
 STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :Try to acquire slot: {STRING1}{BLACK}{STRING}, or continue anyway
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :Release slot: {STRING1}{BLACK}{STRING} (front of train)
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :Release slot: {STRING1}{BLACK}{STRING} (back of train)
-STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :Release slot: {STRING1}{BLACK}{STRING} (on PBS reserve)
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :PBS reservation ending here: Acquire slot: {STRING1}{BLACK}{STRING}, or wait at start
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :PBS reservation ending here: Acquire slot: {STRING1}{BLACK}{STRING}, or continue anyway
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :PBS reservation ending here: Release slot: {STRING1}{BLACK}{STRING}
+STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :Release slot: {STRING1}{BLACK}{STRING} (on path reserve)
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :Path reservation ending here: Acquire slot: {STRING1}{BLACK}{STRING}, or wait at start
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :Path reservation ending here: Acquire slot: {STRING1}{BLACK}{STRING}, or continue anyway
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :Path reservation ending here: Release slot: {STRING1}{BLACK}{STRING}
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED                           :[{STRING}] {TRSLOT}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}Slot{CONSUME_ARG}{P "" s}: {LTBLUE}
@@ -1025,18 +1025,18 @@ STR_TRACE_RESTRICT_TRAIN_STATUS_REQUIRES_SERVICE                :requires servic
 STR_TRACE_RESTRICT_TRAIN_STATUS_STOPPING_AT_STATION_WAYPOINT    :stopping at station/waypoint
 STR_TRACE_RESTRICT_REVERSE_SIG                                  :Reverse behind signal
 STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL                           :Cancel reverse behind signal
-STR_TRACE_RESTRICT_REVERSE_AT_SIG                               :Reverse at PBS signal
-STR_TRACE_RESTRICT_REVERSE_AT_SIG_CANCEL                        :Cancel reverse at PBS signal
+STR_TRACE_RESTRICT_REVERSE_AT_SIG                               :Reverse at path signal
+STR_TRACE_RESTRICT_REVERSE_AT_SIG_CANCEL                        :Cancel reverse at path signal
 STR_TRACE_RESTRICT_SET_SPEED_RESTRICTION                        :Restrict train speed to: {VELOCITY}
 STR_TRACE_RESTRICT_REMOVE_SPEED_RESTRICTION                     :Remove train speed restriction
-STR_TRACE_RESTRICT_TRAIN_NOT_STUCK                              :Train is not stuck, do not show news reports about waiting at this PBS signal
-STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL                       :Cancel train is not stuck, do not show news reports about waiting at this PBS signal
+STR_TRACE_RESTRICT_TRAIN_NOT_STUCK                              :Train is not stuck, do not show news reports about waiting at this path signal
+STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL                       :Cancel train is not stuck, do not show news reports about waiting at this path signal
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_SHORT                        :Train is not stuck...
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK_CANCEL_SHORT                 :Cancel train is not stuck...
-STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY                          :Do not apply the penalty for passing this PBS signal from the back
-STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL                   :Cancel do not apply the penalty for passing this PBS signal from the back
-STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_SHORT                    :No PBS back penalty
-STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL_SHORT             :Cancel no PBS back penalty
+STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY                          :Do not apply the penalty for passing this path signal from the back
+STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL                   :Cancel do not apply the penalty for passing this path signal from the back
+STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_SHORT                    :No path signal back penalty
+STR_TRACE_RESTRICT_NO_PBS_BACK_PENALTY_CANCEL_SHORT             :Cancel no path signal back penalty
 STR_TRACE_RESTRICT_MAKE_TRAIN_SPEED_ADAPTATION_EXEMPT           :Make train exempt from automatic speed adaptation
 STR_TRACE_RESTRICT_REMOVE_TRAIN_SPEED_ADAPTATION_EXEMPT         :Remove train exemption from automatic speed adaptation
 STR_TRACE_RESTRICT_MAKE_TRAIN_SPEED_ADAPTATION_EXEMPT_SHORT     :Make exempt
