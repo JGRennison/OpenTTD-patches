@@ -202,5 +202,10 @@ inline uint8_t GetForwardAspectFollowingTrackAndIncrement(TileIndex tile, Trackd
 
 void UpdateSignalReserveThroughBit(TileIndex tile, Track track, bool update_signal);
 void UpdateAllSignalReserveThroughBits();
+void UpdateSignalSpecialPropagationFlag(TileIndex tile, Track track, const struct TraceRestrictProgram *prog, bool update_signal);
+void UpdateRailSignalSpecialPropagationFlag(TileIndex tile, Track track, const struct TraceRestrictProgram *prog, bool update_signal);
+void UpdateTunnelBridgeSignalSpecialPropagationFlag(TileIndex tile, bool update_signal);
+void UpdateTunnelBridgeSignalSpecialPropagationFlag(TileIndex tile, Track track, const TraceRestrictProgram *prog, bool update_signal);
+void UpdateAllSignalsSpecialPropagationFlag();
 
 #endif /* SIGNAL_FUNC_H */

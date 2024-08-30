@@ -622,6 +622,18 @@ inline uint8_t GetTunnelBridgeSignalStyle(TileIndex t)
 	}
 }
 
+inline bool GetTunnelBridgeSignalSpecialPropagationFlag(TileIndex t)
+{
+	dbg_assert_tile(IsRailTunnelBridgeTile(t), t);
+	return HasBit(_m[t].m1, 5);
+}
+
+inline void SetTunnelBridgeSignalSpecialPropagationFlag(TileIndex t, bool special)
+{
+	dbg_assert_tile(IsRailTunnelBridgeTile(t), t);
+	SB(_m[t].m1, 5, 1, special ? 1 : 0);
+}
+
 void AddRailTunnelBridgeInfrastructure(Company *c, TileIndex begin, TileIndex end);
 void SubtractRailTunnelBridgeInfrastructure(Company *c, TileIndex begin, TileIndex end);
 void AddRailTunnelBridgeInfrastructure(TileIndex begin, TileIndex end);

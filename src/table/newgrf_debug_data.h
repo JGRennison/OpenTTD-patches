@@ -1419,6 +1419,7 @@ void DumpTileSignalsInfo(char *buffer, const char *last, uint index, NIExtraInfo
 			b += seprintf(b, last, "  trackdir: %d, state: %d", td, state);
 			if (_extra_aspects > 0 && state == SIGNAL_STATE_GREEN) seprintf(b, last, ", aspect: %d", GetSignalAspect(index, TrackdirToTrack(td)));
 			if (GetSignalAlwaysReserveThrough(index, TrackdirToTrack(td))) seprintf(b, last, ", always reserve through");
+			if (GetSignalSpecialPropagationFlag(index, TrackdirToTrack(td))) seprintf(b, last, ", special propagation flag");
 			output.print(buffer);
 		}
 	}
@@ -1438,6 +1439,10 @@ void DumpTunnelBridgeSignalsInfo(char *buffer, const char *last, uint index, NIE
 		const SignalState state = GetTunnelBridgeExitSignalState(index);
 		b += seprintf(b, last, "  Exit: state: %d", state);
 		if (_extra_aspects > 0 && state == SIGNAL_STATE_GREEN) b += seprintf(b, last, ", aspect: %d", GetTunnelBridgeExitSignalAspect(index));
+		output.print(buffer);
+	}
+	if (GetTunnelBridgeSignalSpecialPropagationFlag(index)) {
+		seprintf(buffer, last, "  Special propagation flag");
 		output.print(buffer);
 	}
 	TileIndex end = GetOtherTunnelBridgeEnd(index);
