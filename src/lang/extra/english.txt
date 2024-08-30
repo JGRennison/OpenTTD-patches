@@ -593,7 +593,7 @@ STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA          :{STRING}{}This 
 STR_CONFIG_SETTING_TOWN_CARGO_SCALE_MODE                        :Town cargo production scaling mode: {STRING2}
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE                    :Industry cargo production scaling mode: {STRING2}
 
-STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :The scaling factor for cargo production per month/production interval may optionally be multiplied by the economy speed reduction factor.
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :The scaling factor for cargo production per month/production interval may optionally be multiplied by the value of the economy speed reduction factor setting.
 
 STR_CONFIG_SETTING_CARGO_SCALE_MODE_NORMAL                      :Normal
 STR_CONFIG_SETTING_CARGO_SCALE_MODE_ECON_SPEED_REDUCTION_MULT   :Multiply by economy speed reduction factor
