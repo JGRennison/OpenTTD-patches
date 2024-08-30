@@ -416,6 +416,13 @@ static SigInfo ExploreSegment(Owner owner)
 									info.flags |= SF_PBS;
 								}
 							}
+							if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && GetSignalSpecialPropagationFlag(tile, track)) {
+								const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, track);
+								if (prog != nullptr && prog->actions_used_flags & TRPAUF_PBS_RES_END_WAIT) {
+									/* Reservations ending here could be forced to wait, so treat signals blocks leading up to this signal as PBS */
+									info.flags |= SF_PBS;
+								}
+							}
 
 							/* if it is a presignal EXIT in OUR direction, count it */
 							if (IsExitSignal(sig)) { // found presignal exit
@@ -492,6 +499,20 @@ static SigInfo ExploreSegment(Owner owner)
 				if (tracks == TRACK_BIT_HORZ || tracks == TRACK_BIT_VERT) tracks = tracks_masked;
 
 				if (IsTunnelBridgeWithSignalSimulation(tile)) {
+					auto handle_entrance = [&]() {
+						if (_extra_aspects > 0) {
+							info.out_signal_tile = tile;
+							info.out_signal_trackdir = GetTunnelBridgeEntranceTrackdir(tile, tunnel_bridge_dir);
+						}
+						if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && GetTunnelBridgeSignalSpecialPropagationFlag(tile)) {
+							const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, FindFirstTrack(GetAcrossTunnelBridgeTrackBits(tile)));
+							if (prog != nullptr && prog->actions_used_flags & TRPAUF_PBS_RES_END_WAIT) {
+								/* Reservations ending here could be forced to wait, so treat signals blocks leading up to this signal as PBS */
+								info.flags |= SF_PBS;
+							}
+						}
+					};
+
 					if (enterdir == INVALID_DIAGDIR) {
 						// incoming from the wormhole, onto signal
 						if (!(info.flags & SF_TRAIN) && IsTunnelBridgeSignalSimulationExit(tile)) { // tunnel entrance is ignored
@@ -502,10 +523,7 @@ static SigInfo ExploreSegment(Owner owner)
 							info.flags |= SF_FULL;
 							return info;
 						}
-						if (_extra_aspects > 0 && IsTunnelBridgeSignalSimulationEntrance(tile)) {
-							info.out_signal_tile = tile;
-							info.out_signal_trackdir = GetTunnelBridgeEntranceTrackdir(tile, tunnel_bridge_dir);
-						}
+						if (IsTunnelBridgeSignalSimulationEntrance(tile)) handle_entrance();
 						Trackdir exit_track = GetTunnelBridgeExitTrackdir(tile, tunnel_bridge_dir);
 						exitdir = TrackdirToExitdir(exit_track);
 						enterdir = ReverseDiagDir(exitdir);
@@ -525,10 +543,7 @@ static SigInfo ExploreSegment(Owner owner)
 								return info;
 							}
 						}
-						if (_extra_aspects > 0 && IsTunnelBridgeSignalSimulationEntrance(tile)) {
-							info.out_signal_tile = tile;
-							info.out_signal_trackdir = GetTunnelBridgeEntranceTrackdir(tile, tunnel_bridge_dir);
-						}
+						if (IsTunnelBridgeSignalSimulationEntrance(tile)) handle_entrance();
 						if (!(info.flags & SF_TRAIN)) {
 							if (HasVehicleOnPos(tile, VEH_TRAIN, reinterpret_cast<void *>((uintptr_t)tile), &TrainInWormholeTileEnum)) info.flags |= SF_TRAIN;
 							if (!(info.flags & SF_TRAIN) && IsTunnelBridgeSignalSimulationExit(tile)) {
@@ -785,6 +800,13 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 			}
 			SignalState old_state = GetTunnelBridgeExitSignalState(tile);
 			SignalState new_state = (info.flags & SF_TRAIN) ? SIGNAL_STATE_RED : SIGNAL_STATE_GREEN;
+			if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && new_state == SIGNAL_STATE_GREEN && GetTunnelBridgeSignalSpecialPropagationFlag(tile)) {
+				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, FindFirstTrack(GetAcrossTunnelBridgeTrackBits(tile)));
+				if (prog != nullptr && prog->actions_used_flags & TRPAUF_WAIT_AT_PBS) {
+					/* Reservations starting here could be forced to wait, so default to red */
+					new_state = SIGNAL_STATE_RED;
+				}
+			}
 			bool refresh = false;
 			if (old_state != new_state) {
 				SetTunnelBridgeExitSignalState(tile, new_state);
@@ -865,6 +887,13 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 					} else { /* traditional combo */
 						if (!info.num_green && info.num_exits) newstate = SIGNAL_STATE_RED;
 					}
+				}
+			}
+			if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && newstate == SIGNAL_STATE_GREEN && GetSignalSpecialPropagationFlag(tile, track)) {
+				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, track);
+				if (prog != nullptr && prog->actions_used_flags & (TRPAUF_WAIT_AT_PBS | TRPAUF_REVERSE_AT)) {
+					/* Reservations starting here could be forced to wait, so default to red */
+					newstate = SIGNAL_STATE_RED;
 				}
 			}
 		}
@@ -2003,6 +2032,67 @@ void UpdateAllSignalReserveThroughBits()
 					UpdateSignalReserveThroughBit(tile, track, false);
 				}
 			} while (bits != TRACK_BIT_NONE);
+		}
+	} while (++tile != MapSize());
+}
+
+void UpdateSignalSpecialPropagationFlag(TileIndex tile, Track track, const struct TraceRestrictProgram *prog, bool update_signal)
+{
+	if (IsTileType(tile, MP_RAILWAY)) {
+		UpdateRailSignalSpecialPropagationFlag(tile, track, prog, update_signal);
+	} else {
+		UpdateTunnelBridgeSignalSpecialPropagationFlag(tile, track, prog, update_signal);
+	}
+}
+
+void UpdateRailSignalSpecialPropagationFlag(TileIndex tile, Track track, const TraceRestrictProgram *prog, bool update_signal)
+{
+	bool is_special = (prog != nullptr && prog->actions_used_flags & TRPAUF_SPECIAL_ASPECT_PROPAGATION_FLAG_MASK);
+
+	if (is_special || GetSignalSpecialPropagationFlag(tile, track)) {
+		SetSignalSpecialPropagationFlag(tile, track, is_special);
+		if (update_signal && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+			AddTrackToSignalBuffer(tile, track, GetTileOwner(tile));
+			UpdateSignalsInBuffer();
+		}
+	}
+}
+
+void UpdateTunnelBridgeSignalSpecialPropagationFlag(TileIndex tile, bool update_signal)
+{
+	if (!IsTunnelBridgeRestrictedSignal(tile) && !GetTunnelBridgeSignalSpecialPropagationFlag(tile)) return;
+
+	Track track = FindFirstTrack(GetAcrossTunnelBridgeTrackBits(tile));
+	UpdateTunnelBridgeSignalSpecialPropagationFlag(tile, track, GetExistingTraceRestrictProgram(tile, track), false);
+}
+
+void UpdateTunnelBridgeSignalSpecialPropagationFlag(TileIndex tile, Track track, const TraceRestrictProgram *prog, bool update_signal)
+{
+	bool is_special = (prog != nullptr && prog->actions_used_flags & TRPAUF_SPECIAL_ASPECT_PROPAGATION_FLAG_MASK);
+
+	if (is_special || GetTunnelBridgeSignalSpecialPropagationFlag(tile)) {
+		SetTunnelBridgeSignalSpecialPropagationFlag(tile, is_special);
+		if (update_signal && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+			AddTrackToSignalBuffer(tile, track, GetTileOwner(tile));
+			UpdateSignalsInBuffer();
+		}
+	}
+}
+
+void UpdateAllSignalsSpecialPropagationFlag()
+{
+	TileIndex tile = 0;
+	do {
+		if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile)) {
+			TrackBits bits = GetTrackBits(tile);
+			do {
+				Track track = RemoveFirstTrack(&bits);
+				if (HasSignalOnTrack(tile, track)) {
+					UpdateRailSignalSpecialPropagationFlag(tile, track, GetExistingTraceRestrictProgram(tile, track), false);
+				}
+			} while (bits != TRACK_BIT_NONE);
+		} else if (IsTunnelBridgeWithSignalSimulation(tile)) {
+			UpdateTunnelBridgeSignalSpecialPropagationFlag(tile, false);
 		}
 	} while (++tile != MapSize());
 }

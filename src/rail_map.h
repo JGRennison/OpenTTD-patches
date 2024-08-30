@@ -442,6 +442,20 @@ inline void SetSignalAlwaysReserveThrough(TileIndex t, Track track, bool reserve
 	SB(_me[t].m7, pos, 1, reserve_through ? 1 : 0);
 }
 
+inline bool GetSignalSpecialPropagationFlag(TileIndex t, Track track)
+{
+	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
+	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 6 : 5;
+	return HasBit(_m[t].m1, pos);
+}
+
+inline void SetSignalSpecialPropagationFlag(TileIndex t, Track track, bool special)
+{
+	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
+	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 6 : 5;
+	SB(_m[t].m1, pos, 1, special ? 1 : 0);
+}
+
 /**
  * Set the states of the signals (Along/AgainstTrackDir)
  * @param tile  the tile to set the states for

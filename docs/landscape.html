@@ -463,6 +463,8 @@
          </tr>
         </table>
         <ul>
+         <li style="color: blue">m1 bit 6: special signal propagation flag set for signal 0 or 1</li>
+         <li style="color: blue">m1 bit 5: special signal propagation flag set for signal 2 or 3</li>
          <li>m2 bit 7: Signal 0 and 1: set = semaphore signals, clear = light signals</li>
          <li>m2 bit 3: Signal 2 and 3: set = semaphore signals, clear = light signals</li>
          <li>m2 bits 6..4: type of signal 0 and 1 (same values as m2 bits 2..0)</li>
@@ -1756,6 +1758,7 @@
       </table>
       If signal simulation entrance or exit:
       <ul>
+       <li>m1 bit 5: special signal propagation flag set</li>
        <li>m2 bit 15: for bridge entrances only: storage for visual red/green state of signals starting from 15 is allocated outside the map array</li>
        <li>m2 bits 14..4: for bridge entrances only: for signals 0..10 on bridge, signal is visually red if corresponding bit in 4..14 is set</li>
        <li>m3 bit 7: the signal style is non-zero (style stored outside the map array)</li>

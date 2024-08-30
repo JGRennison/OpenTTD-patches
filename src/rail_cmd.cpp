@@ -1444,6 +1444,8 @@ static void ClearBridgeTunnelSignalSimulation(TileIndex entrance, TileIndex exit
 	if (IsBridge(entrance)) ClearBridgeEntranceSimulatedSignals(entrance);
 	ClrTunnelBridgeSignalSimulationEntrance(entrance);
 	ClrTunnelBridgeSignalSimulationExit(exit);
+	SetTunnelBridgeSignalSpecialPropagationFlag(entrance, false);
+	SetTunnelBridgeSignalSpecialPropagationFlag(exit, false);
 }
 
 static void SetupBridgeTunnelSignalSimulation(TileIndex entrance, TileIndex exit)
@@ -1451,6 +1453,8 @@ static void SetupBridgeTunnelSignalSimulation(TileIndex entrance, TileIndex exit
 	SetTunnelBridgeSignalSimulationEntrance(entrance);
 	SetTunnelBridgeEntranceSignalState(entrance, SIGNAL_STATE_GREEN);
 	SetTunnelBridgeSignalSimulationExit(exit);
+	UpdateTunnelBridgeSignalSpecialPropagationFlag(entrance, false);
+	UpdateTunnelBridgeSignalSpecialPropagationFlag(exit, false);
 	if (_extra_aspects > 0) {
 		SetTunnelBridgeEntranceSignalAspect(entrance, 0);
 		UpdateAspectDeferred(entrance, GetTunnelBridgeEntranceTrackdir(entrance));
@@ -1791,6 +1795,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t p
 			SetSignalVariant(tile, track, sigvar);
 			SetSignalStyle(tile, track, signal_style);
 			UpdateSignalReserveThroughBit(tile, track, false);
+			SetSignalSpecialPropagationFlag(tile, track, false);
 		}
 
 		/* Subtract old signal infrastructure count. */
@@ -1804,6 +1809,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t p
 				SetSignalVariant(tile, track, sigvar);
 				SetSignalStyle(tile, track, signal_style);
 				UpdateSignalReserveThroughBit(tile, track, false);
+				SetSignalSpecialPropagationFlag(tile, track, false);
 				while (num_dir_cycle-- > 0) CycleSignalSide(tile, track);
 			} else {
 				if (convert_signal) {
@@ -1830,6 +1836,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t p
 						if (sigtype == SIGTYPE_NO_ENTRY) CycleSignalSide(tile, track);
 
 						UpdateSignalReserveThroughBit(tile, track, false);
+						UpdateRailSignalSpecialPropagationFlag(tile, track, GetExistingTraceRestrictProgram(tile, track), false);
 					}
 
 				} else if (ctrl_pressed) {
@@ -1864,11 +1871,13 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t p
 			 * direction of the first signal given as parameter by CmdBuildManySignals */
 			SetPresentSignals(tile, (GetPresentSignals(tile) & ~SignalOnTrack(track)) | (p2 & SignalOnTrack(track)));
 			SetSignalVariant(tile, track, sigvar);
-			if (IsPresignalProgrammable(tile, track))
+			if (IsPresignalProgrammable(tile, track)) {
 				FreeSignalProgram(SignalReference(tile, track));
+			}
 			SetSignalType(tile, track, sigtype);
 			SetSignalStyle(tile, track, signal_style);
 			UpdateSignalReserveThroughBit(tile, track, false);
+			UpdateRailSignalSpecialPropagationFlag(tile, track, GetExistingTraceRestrictProgram(tile, track), false);
 		}
 
 		/* Add new signal infrastructure count. */

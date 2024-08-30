@@ -98,7 +98,7 @@ the array so you can quickly see what is used and what is not.
     <tr>
       <td rowspan=3>1</td>
       <td class="caption">rail</td>
-      <td class="bits" rowspan=3><span class="used" title="Ship docking tile status (for half-tile with water)">X</span><span class="free">OO</span><span class="used" title="Owner">X XXXX</span></td>
+      <td class="bits"><span class="used" title="Ship docking tile status (for half-tile with water)">X</span><span class="free">OO</span><span class="used" title="Owner">X XXXX</span></td>
       <td class="bits"><span class="free">OOOO</span> <span class="used" title="Reserved tracks">XXXX</span> <span class="free">OOOO OOOO</span></td>
       <td class="bits"><span class="free">OOOO OOOO</span> </td>
       <td class="bits"><span class="free">OOOO</span> <span class="used" title="Ground type: fences, snow, desert">XXXX</span></td>
@@ -109,6 +109,7 @@ the array so you can quickly see what is used and what is not.
     </tr>
     <tr>
       <td class="caption">rail with signals</td>
+      <td class="bits"><span class="used" title="Ship docking tile status (for half-tile with water)">X</span><span class="patch" title="Special signal propagation flags">PP</span><span class="used" title="Owner">X XXXX</span></td>
       <td class="bits"><span class="free">OOO</span><span class="patch" title="1 or more routing restrictions present">P</span> <span class="used" title="Reserved tracks">XXXX</span> <span class="used" title="Signal types and sempahore/lights">XXXX XXXX</span></td>
       <td class="bits"><span class="used" title="Signals present">XXXX</span> <span class="free">OOOO</span></td>
       <td class="bits"><span class="used" title="Signals colors">XXXX</span> <span class="used" title="Ground type: fences, snow, desert">XXXX</span></td>
@@ -118,6 +119,7 @@ the array so you can quickly see what is used and what is not.
     </tr>
     <tr>
       <td class="caption">depot</td>
+      <td class="bits"><span class="used" title="Ship docking tile status (for half-tile with water)">X</span><span class="free">OO</span><span class="used" title="Owner">X XXXX</span></td>
       <td class="bits"><span class="pool" title="Depot index on pool">XXXX XXXX XXXX XXXX</span></td>
       <td class="bits"><span class="free">OOOO</span> <span class="free">OOOO</span></td>
       <td class="bits"><span class="free">OOOO</span> <span class="used" title="Ground type: fences, snow, desert (fences on depot are not valid)">XXXX</span></td>
@@ -292,7 +294,7 @@ the array so you can quickly see what is used and what is not.
     <tr>
       <td rowspan=4>9</td>
       <td class="caption">tunnel entrance</td>
-      <td class="bits" rowspan=3><span class="free">OOO</span> <span class="used" title="Owner">XXXXX</span></td>
+      <td class="bits" rowspan=3><span class="free">OO</span><span class="patch" title="special signal propagation flag (rail only)">P</span> <span class="used" title="Owner">XXXXX</span></td>
       <td class="bits"><span class="patch-pool" title="Tunnel index on pool (or overflow sentinel)">PPPP PPPP PPPP PPPP</span></td>
       <td class="bits" rowspan=4><span class="rearrange" title="Owner of tram (road only; a rearrangement can free some of these bits)">XXXX</span> <span class="free">OOOO</span><br /><span class="patch" title="New signal style is non-zero (rail only)">P</span> <span class="patch" title="Routing restrictions present on entrance/exit signal(s)">P</span> <span class="patch" title="Entrance/exit signal aspects (rail only)">PPPPPP</span></td>
       <td class="bits"><span class="free">OO</span><span class="used" title="Road type">XX XXXX</span></td>

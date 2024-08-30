@@ -1740,6 +1740,7 @@ bool TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref)
 		TraceRestrictProgram *prog = _tracerestrictprogram_pool.Get(iter->second.program_id);
 
 		bool update_reserve_through = (prog->actions_used_flags & TRPAUF_RESERVE_THROUGH_ALWAYS);
+		bool update_special_propagation = (prog->actions_used_flags & TRPAUF_SPECIAL_ASPECT_PROPAGATION_FLAG_MASK);
 
 		/* Check to see if another mapping needs to be removed as well,
 		 * do this before decrementing the refcount */
@@ -1761,6 +1762,9 @@ bool TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref)
 		if (update_reserve_through && IsTileType(tile, MP_RAILWAY)) {
 			UpdateSignalReserveThroughBit(tile, track, true);
 		}
+		if (update_special_propagation) {
+			UpdateSignalSpecialPropagationFlag(tile, track, nullptr, true);
+		}
 		return true;
 	} else {
 		return false;
@@ -1775,6 +1779,15 @@ void TraceRestrictCheckRefreshSignals(const TraceRestrictProgram *prog, size_t o
 			TileIndex tile = GetTraceRestrictRefIdTileIndex(data[i]);
 			Track track = GetTraceRestrictRefIdTrack(data[i]);
 			if (IsTileType(tile, MP_RAILWAY)) UpdateSignalReserveThroughBit(tile, track, true);
+		}
+	}
+
+	if (((old_actions_used_flags ^ prog->actions_used_flags) & TRPAUF_SPECIAL_ASPECT_PROPAGATION_FLAG_MASK)) {
+		const TraceRestrictRefId *data = prog->GetRefIdsPtr();
+		for (uint i = 0; i < prog->refcount; i++) {
+			TileIndex tile = GetTraceRestrictRefIdTileIndex(data[i]);
+			Track track = GetTraceRestrictRefIdTrack(data[i]);
+			UpdateSignalSpecialPropagationFlag(tile, track, prog, true);
 		}
 	}
 
@@ -1796,6 +1809,10 @@ void TraceRestrictCheckRefreshSingleSignal(const TraceRestrictProgram *prog, Tra
 		TileIndex tile = GetTraceRestrictRefIdTileIndex(ref);
 		Track track = GetTraceRestrictRefIdTrack(ref);
 		if (IsTileType(tile, MP_RAILWAY)) UpdateSignalReserveThroughBit(tile, track, true);
+	}
+
+	if (((old_actions_used_flags ^ prog->actions_used_flags) & TRPAUF_SPECIAL_ASPECT_PROPAGATION_FLAG_MASK)) {
+		UpdateSignalSpecialPropagationFlag(GetTraceRestrictRefIdTileIndex(ref), GetTraceRestrictRefIdTrack(ref), prog, true);
 	}
 }
 
