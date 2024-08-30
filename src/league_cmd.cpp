@@ -18,6 +18,7 @@
 #include "window_func.h"
 #include "core/pool_func.hpp"
 #include "company_base.h"
+#include "core/format.hpp"
 
 #include "safeguards.h"
 
@@ -216,4 +217,9 @@ CommandCost CmdUpdateLeagueTableElementScore(TileIndex tile, DoCommandFlag flags
 CommandCost CmdRemoveLeagueTableElement(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	return CmdRemoveLeagueTableElement(flags, p1);
+}
+
+std::string LeagueTableElementCmdData::GetDebugSummary() const
+{
+	return fmt::format("t: {}, r: {}, c: {}, type: {}, targ: {}", this->table, this->rating, this->company, this->link_type, this->link_target);
 }

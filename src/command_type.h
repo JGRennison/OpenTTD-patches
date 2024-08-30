@@ -730,14 +730,21 @@ typedef void CommandCallback(const CommandCost &result, TileIndex tile, uint32_t
 
 struct CommandSerialisationBuffer;
 
+struct CommandAuxiliaryDeserialisationSrc {
+	std::span<const uint8_t> src;
+	std::string &debug_summary;
+};
+
 struct CommandAuxiliaryBase {
 	virtual ~CommandAuxiliaryBase() {}
 
 	virtual CommandAuxiliaryBase *Clone() const = 0;
 
-	virtual std::optional<std::span<const uint8_t>> GetDeserialisationSrc() const = 0;
+	virtual std::optional<CommandAuxiliaryDeserialisationSrc> GetDeserialisationSrc() const = 0;
 
 	virtual void Serialise(CommandSerialisationBuffer &buffer) const = 0;
+
+	virtual std::string GetDebugSummary() const { return {}; }
 };
 
 struct CommandAuxiliaryPtr : public std::unique_ptr<CommandAuxiliaryBase>

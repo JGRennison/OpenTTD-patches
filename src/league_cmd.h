@@ -64,6 +64,8 @@ struct LeagueTableElementCmdData : public CommandAuxiliarySerialisable<LeagueTab
 		buffer.Recv_string(this->score,    SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK);
 		return CommandCost();
 	}
+
+	std::string GetDebugSummary() const override;
 };
 
 #endif /* LEAGUE_CMD_H */

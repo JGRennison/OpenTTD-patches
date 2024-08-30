@@ -711,11 +711,8 @@ static void DumpSubCommandLogEntry(char *&buffer, const char *last, const Comman
 		}
 		buffer += seprintf(buffer, last, "cmd: 0x%08X (%s)", entry.cmd, GetCommandName(entry.cmd));
 
-		switch (entry.cmd & CMD_ID_MASK) {
-			case CMD_CHANGE_SETTING:
-			case CMD_CHANGE_COMPANY_SETTING:
-				buffer += seprintf(buffer, last, " [%s]", entry.text.c_str());
-				break;
+		if (!entry.text.empty()) {
+			buffer += seprintf(buffer, last, " [%s]", entry.text.c_str());
 		}
 }
 
@@ -921,7 +918,7 @@ static void DebugLogCommandLogEntry(const CommandLogEntry &entry)
 	debug_print("command", 0, buffer);
 }
 
-static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd, CommandLogEntryFlag log_flags, const char *text)
+static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd, CommandLogEntryFlag log_flags, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	if (res.Failed()) log_flags |= CLEF_CMD_FAILED;
 	if (_generating_world) log_flags |= CLEF_GENERATING_WORLD;
@@ -938,6 +935,7 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32
 				current.current_company == _current_company && current.local_company == _local_company) {
 			current.log_flags |= log_flags | CLEF_TWICE;
 			current.log_flags &= ~CLEF_ONLY_SENDING;
+			if (current.text.empty() && aux_data != nullptr) current.text = aux_data->GetDebugSummary();
 			DebugLogCommandLogEntry(current);
 			return;
 		}
@@ -950,6 +948,7 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32
 			if (text != nullptr) str.assign(text);
 			break;
 	}
+	if (str.empty() && aux_data != nullptr) str = aux_data->GetDebugSummary();
 
 	cmd_log.log[cmd_log.next] = CommandLogEntry(tile, p1, p2, p3, cmd, log_flags, std::move(str));
 	DebugLogCommandLogEntry(cmd_log.log[cmd_log.next]);
@@ -1021,7 +1020,7 @@ bool DoCommandPEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_
 	if (aux_data != nullptr) log_flags |= CLEF_AUX_DATA;
 	if (!random_state.Check()) log_flags |= CLEF_RANDOM;
 	if (order_backup_update_counter != OrderBackup::GetUpdateCounter()) log_flags |= CLEF_ORDER_BACKUP;
-	AppendCommandLogEntry(res, tile, p1, p2, p3, cmd, log_flags, text);
+	AppendCommandLogEntry(res, tile, p1, p2, p3, cmd, log_flags, text, aux_data);
 
 	if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_POST_COMMAND)) && !(GetCommandFlags(cmd) & CMD_LOG_AUX)) {
 		CheckCachesFlags flags = CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG;
@@ -1070,7 +1069,7 @@ CommandCost DoCommandPScript(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t 
 	if (aux_data != nullptr) log_flags |= CLEF_AUX_DATA;
 	if (!random_state.Check()) log_flags |= CLEF_RANDOM;
 	if (order_backup_update_counter != OrderBackup::GetUpdateCounter()) log_flags |= CLEF_ORDER_BACKUP;
-	AppendCommandLogEntry(res, tile, p1, p2, p3, cmd, log_flags, text);
+	AppendCommandLogEntry(res, tile, p1, p2, p3, cmd, log_flags, text, aux_data);
 
 	if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_POST_COMMAND)) && !(GetCommandFlags(cmd) & CMD_LOG_AUX)) {
 		CheckCachesFlags flags = CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG;

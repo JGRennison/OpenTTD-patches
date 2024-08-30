@@ -58,6 +58,11 @@ struct PlanLineCmdData : public CommandAuxiliarySerialisable<PlanLineCmdData> {
 		}
 		return CommandCost();
 	}
+
+	std::string GetDebugSummary() const override
+	{
+		return stdstr_fmt("%u tiles", (uint32_t)this->tiles.size());
+	}
 };
 
 bool AddPlanLine(PlanID plan, TileVector tiles)
