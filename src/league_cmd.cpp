@@ -193,13 +193,7 @@ CommandCost CmdCreateLeagueTableElement(TileIndex tile, DoCommandFlag flags, uin
 	CommandCost ret = data.Load(aux_data);
 	if (ret.Failed()) return ret;
 
-	LeagueTableID table = GB(p1, 0, 8);
-	int64_t rating = p3;
-	CompanyID company = (CompanyID)GB(p1, 8, 8);
-	LinkType link_type = (LinkType)GB(p1, 16, 8);
-	LinkTargetID link_target = (LinkTargetID)p2;
-
-	auto [res, id] = CmdCreateLeagueTableElement(flags, table, rating, company, data->text_str, data->score, link_type, link_target);
+	auto [res, id] = CmdCreateLeagueTableElement(flags, data->table, data->rating, data->company, data->text_str, data->score, data->link_type, data->link_target);
 	res.SetResultData(id);
 	return res;
 }

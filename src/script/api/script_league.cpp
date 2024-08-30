@@ -76,10 +76,15 @@
 	EnforcePrecondition(LEAGUE_TABLE_ELEMENT_INVALID, IsValidLink(Link((::LinkType)link_type, link_target)));
 
 	LeagueTableElementCmdData data;
+	data.table = table;
+	data.rating = rating;
+	data.company = c;
+	data.link_type = (::LinkType)link_type;
+	data.link_target = (::LinkTargetID)link_target;
 	data.text_str = std::move(encoded_text);
 	data.score = encoded_score;
 
-	if (!ScriptObject::DoCommandEx(0, table | (c << 8) | (link_type << 16), link_target, rating, CMD_CREATE_LEAGUE_TABLE_ELEMENT, nullptr, &data, &ScriptInstance::DoCommandReturnLeagueTableElementID)) return LEAGUE_TABLE_ELEMENT_INVALID;
+	if (!ScriptObject::DoCommandEx(0, 0, 0, 0, CMD_CREATE_LEAGUE_TABLE_ELEMENT, nullptr, &data, &ScriptInstance::DoCommandReturnLeagueTableElementID)) return LEAGUE_TABLE_ELEMENT_INVALID;
 
 	/* In case of test-mode, we return LeagueTableElementID 0 */
 	return (ScriptLeagueTable::LeagueTableElementID)0;
