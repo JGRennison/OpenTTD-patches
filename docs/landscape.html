@@ -512,8 +512,8 @@
          <li>m4 bits 7..4: bit clear = signal 3..0 shows red</li>
          <li style="color: blue">m6 bits 7..4: signal style for signal 0 and 1</li>
          <li style="color: blue">m6 bits 3..0: signal style for signal 2 and 3</li>
-         <li style="color: blue">m7 bits 7: reserve through always set for signal 0 or 1</li>
-         <li style="color: blue">m7 bits 6: reserve through always set for signal 2 or 3</li>
+         <li style="color: blue">m7 bit 7: reserve through always set for signal 0 or 1</li>
+         <li style="color: blue">m7 bit 6: reserve through always set for signal 2 or 3</li>
          <li style="color: blue">m7 bits 5..3: signal aspect for signal 0 or 1 (only valid if signal is present and not red, and multi-aspect signalling is in effect)</li>
          <li style="color: blue">m7 bits 2..0: signal aspect for signal 2 or 3 (only valid if signal is present and not red, and multi-aspect signalling is in effect)</li>
         </ul>
@@ -1020,6 +1020,22 @@
        </tr>
 
        <tr>
+        <td nowrap valign=top><tt>04</tt>..<tt>05</tt>&nbsp; </td>
+        <td align=left>road waypoints
+         <table>
+          <tr>
+           <td><tt>04</tt>&nbsp; </td>
+           <td align=left>drive through X</td>
+          </tr>
+          <tr>
+           <td><tt>05</tt>&nbsp; </td>
+           <td align=left>drive through Y</td>
+          </tr>
+         </table>
+        </td>
+       </tr>
+
+       <tr>
         <td nowrap valign=top><tt>00</tt>..<tt>05</tt>&nbsp; </td>
         <td align=left>ship dock
          <table>
@@ -1064,7 +1080,7 @@
      <li style="color: blue">m8 bits 14..12: <a href="#RoadCachedOneWayState">Road cached one way state</a></li>
      <li>m8 bits 11..6: <a href="#TramType">Tramtype</a></li>
      <li>m8 bits 5..0: <a href="#TrackType">track type</a> for railway stations/waypoints</li>
-     <li>m8 bits 5..0: custom road stop id; 0 means standard graphics</li>
+     <li>m8 bits 5..0: custom road stop/waypoint id; 0 means standard graphics</li>
     </ul>
    </td>
   </tr>

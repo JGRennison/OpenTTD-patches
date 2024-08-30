@@ -13,6 +13,7 @@
     span.abuse    { font-family: "Courier New", Courier, mono; background-color: rgb(255, 100, 100); }
     span.rearrange{ font-family: "Courier New", Courier, mono; background-color: rgb(160, 160, 255); }
     span.patch-pool{ font-family: "Courier New", Courier, mono; background: repeating-linear-gradient(-45deg, rgb(255, 165,   0), rgb(255, 165,   0) 10px, rgb(220, 120, 255) 10px, rgb(220, 120, 255) 20px); }
+    span.mr       { margin-right: 0.25em; }
 
     td.bits    { white-space: nowrap; text-align: center; font-family: "Courier New", Courier, mono; }
     td.caption { white-space: nowrap; text-align: left; }
@@ -196,7 +197,7 @@ the array so you can quickly see what is used and what is not.
       <td class="bits" rowspan=2><span class="used" title="Random bits">XXXX</span> <span class="free">OOOO</span></td>
       <td class="bits" rowspan=2><span class="used" title="Custom station specifications ID">XXXX XXXX</span></td>
       <td class="bits"><span class="used" title="Graphics index">XXXX XXXX</span></td>
-      <td class="bits" rowspan=2><span class="used" title="May have pylons">X</span> <span class="patch" title="Station type (extra bit)">P</span><span class="used" title="Station type">XXX</span> <span class="used" title="Reserved track">X</span><span class="patch" title="May have wires (moved from bit 6)">P</span><span class="used" title="Tile is blocked">X</span></td>
+      <td class="bits" rowspan=2><span class="used mr" title="May have pylons">X</span><span class="used mr" title="Station type">XXXX</span><span class="used mr" title="Reserved track">X</span><span class="used mr" title="May have wires">X</span><span class="used" title="Tile is blocked">X</span></td>
       <td class="bits" rowspan=2><span class="used" title="Animation frame">XXXX XXXX</span></td>
       <td class="bits" rowspan=2><span class="free">OOOO OOOO OO</span><span class="used" title="Railway type">XX XXXX</span></td>
     </tr>
@@ -209,14 +210,14 @@ the array so you can quickly see what is used and what is not.
       <td class="bits"><span class="used" title="Owner of tram">XXXX</span> <span class="free">OO</span><span class="patch" title="Disallow vehicles to go a specific direction (drive-through road stop)">PP</span></td>
       <td class="bits" rowspan=2><span class="free">OO</span><span class="used" title="Roadtype for road stop">XX XXXX</span></td>
       <td class="bits" rowspan=2><span class="usable" title="Graphics index">OOOO O</span><span class="used" title="Graphics index: 00 (exit towards NE), 01 (exit towards SE), 02 (exit towards SW), 03 (exit towards NW), 04 (drive through X), 05 (drive through Y)">XXX</span></td>
-      <td class="bits" rowspan=6><span class="free">O<span class="patch" title="Station type (extra bit)">P</span></span><span class="used" title="Station type">XXX</span> <span class="free">OOO</span></td>
+      <td class="bits" rowspan=6><span class="free">O</span><span class="used" title="Station type">XXX X</span><span class="free">OOO</span></td>
       <td class="bits" rowspan=2><span class="free">OOO</span><span class="used" title="Owner of road">X XXXX</span></td>
       <td class="bits"><span class="free">O</span><span class="patch" title="Road cached one way state">PPP</span> <span class="used" title="Tram type">XXXX XX</span> <span class="used" title="Custom road stops specifications ID">XXXXXX</span></td>
     </tr>
     <tr>
       <td class="caption">road waypoint</td>
-      <td class="bits"><span class="used" title="Owner of tram">XXXX</span> <span class="patch" title="Pavement type">PP</span> <span class="patch" title="Disallow vehicles to go a specific direction (drive-through road stop)">PP</span></td>
-      <td class="bits"><span class="patch" title="Snow/desert present">P</span> <span class="patch" title="Road cached one way state">PPP</span> <span class="used" title="Tram type">XXXX XX</span> <span class="used" title="Custom road stops specifications ID">XXXXXX</span></td>
+      <td class="bits"><span class="used" title="Owner of tram">XXXX</span> <span class="used" title="Pavement type">XX</span><span class="patch" title="Disallow vehicles to go a specific direction (drive-through road stop)">PP</span></td>
+      <td class="bits"><span class="used" title="Snow/desert present">X</span><span class="patch" title="Road cached one way state">PPP</span> <span class="used" title="Tram type">XXXX XX</span> <span class="used" title="Custom road stops specifications ID">XXXXXX</span></td>
     </tr>
     <tr>
       <td class="caption">airport</td>
