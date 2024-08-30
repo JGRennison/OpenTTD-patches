@@ -117,12 +117,12 @@ STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED        :{WHITE}Реал
 
 STR_CONFIG_SETTING_DELIVERY_BALANCED                            :сбалансированное
 
-STR_CONFIG_SETTING_RUNNING_COSTS_IN_DEPOT                       :Эксплуатационные расходы на транспортные средства в депо: {STRING}
-STR_CONFIG_SETTING_RUNNING_COSTS_IN_DEPOT_HELPTEXT              :Установить уровень затрат на техническое обслуживание и эксплуатацию транспортных средств в ожидании в депо (без остановок)
+STR_CONFIG_SETTING_RUNNING_COSTS_IN_DEPOT                       :Расходы на эксплуатацию транспортов, стоящих в депо: {STRING}
+STR_CONFIG_SETTING_RUNNING_COSTS_IN_DEPOT_HELPTEXT              :Установить уровень затрат на техническое обслуживание и эксплуатацию транспортных средств, ожидающих в депо (не остановленных).
 STR_CONFIG_SETTING_RUNNING_COSTS_IN_DEPOT_VALUE                 :1 / {COMMA}
 
-STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED                   :Эксплуатационные расходы неподвижных транспортных средств: {STRING}
-STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED_HELPTEXT          :Установить уровень расходов на техническое обслуживание и эксплуатацию транспортных средств, когда они стоят на месте, но не находятся в депо
+STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED                   :Расходы на эксплуатацию остановившегося транспорта: {STRING}
+STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED_HELPTEXT          :Установить уровень расходов на техническое обслуживание и эксплуатацию транспортных средств, когда они неподвижны, но не находятся в депо.
 STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED_VALUE             :1 / {COMMA}
 
 STR_CONFIG_SETTING_MONEY_CHEAT_MULTIPLAYER                      :Позволить многопользовательским клиентам использовать чит на деньги: {STRING}
