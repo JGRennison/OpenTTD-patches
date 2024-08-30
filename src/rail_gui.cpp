@@ -1966,7 +1966,7 @@ public:
 	{
 		switch (widget) {
 			case WID_BS_STYLE:
-				_cur_signal_style = std::min<uint>(index, _num_new_signal_styles);
+				_cur_signal_style = static_cast<uint8_t>(std::min<uint>(index, _num_new_signal_styles));
 				this->SetDisableStates();
 				this->SetDirty();
 				break;

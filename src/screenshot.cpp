@@ -1077,7 +1077,7 @@ static void SmallMapCallback(void *userdata, void *buf, uint y, uint pitch, uint
  */
 bool MakeSmallMapScreenshot(unsigned int width, unsigned int height, SmallMapWindow *window)
 {
-	_screenshot_name[0] = '\0';
+	_screenshot_name.clear();
 	bool ret = _cur_screenshot_format->proc(MakeScreenshotName(SCREENSHOT_NAME, _cur_screenshot_format->extension), SmallMapCallback, window, width, height, BlitterFactory::GetCurrentBlitter()->GetScreenDepth(), _cur_palette.palette);
 	ShowScreenshotResultMessage(SC_SMALLMAP, ret);
 	return ret;
