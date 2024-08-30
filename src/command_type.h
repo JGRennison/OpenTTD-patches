@@ -598,7 +598,7 @@ static_assert(CMD_END <= CMD_ID_MASK + 1);
  *
  * This enumeration defines flags for the _command_proc_table.
  */
-enum CommandFlags {
+enum CommandFlags : uint16_t {
 	CMD_SERVER    =  0x001, ///< the command can only be initiated by the server
 	CMD_SPECTATOR =  0x002, ///< the command may be initiated by a spectator
 	CMD_OFFLINE   =  0x004, ///< the command cannot be executed in a multiplayer game; single-player only
@@ -610,12 +610,17 @@ enum CommandFlags {
 	CMD_DEITY     =  0x100, ///< the command may be executed by COMPANY_DEITY
 	CMD_STR_CTRL  =  0x200, ///< the command's string may contain control strings
 	CMD_NO_EST    =  0x400, ///< the command is never estimated.
-	CMD_PROCEX    =  0x800, ///< the command proc function has extended parameters
 	CMD_SERVER_NS = 0x1000, ///< the command can only be initiated by the server (this is not executed in spectator mode)
 	CMD_LOG_AUX   = 0x2000, ///< the command should be logged in the auxiliary log instead of the main log
 	CMD_P1_TILE   = 0x4000, ///< use p1 for money text and error tile
 };
 DECLARE_ENUM_AS_BIT_SET(CommandFlags)
+
+enum CommandArgMode : uint8_t {
+	CMD_ARG_STD,
+	CMD_ARG_EX,
+	CMD_ARG_AUX,
+};
 
 /** Types of commands we have. */
 enum CommandType {
@@ -662,6 +667,7 @@ struct CommandAuxiliaryBase;
  */
 typedef CommandCost CommandProc(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text);
 typedef CommandCost CommandProcEx(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data);
+typedef CommandCost CommandProcAux(TileIndex tile, DoCommandFlag flags, const CommandAuxiliaryBase *aux_data);
 
 /**
  * Define a command with the flags which belongs to it.
@@ -673,21 +679,33 @@ struct Command {
 	union {
 		CommandProc *proc;      ///< The procedure to actually execute
 		CommandProcEx *procex;  ///< The procedure to actually execute, extended parameters
+		CommandProcAux *procaux;  ///< The procedure to actually execute, only auxiliary parameter
 	};
 	const char *name;   ///< A human readable name for the procedure
 	CommandFlags flags; ///< The (command) flags to that apply to this command
 	CommandType type;   ///< The type of command.
+	CommandArgMode mode; ///< The command argument mode
 
 	Command(CommandProc *proc, const char *name, CommandFlags flags, CommandType type)
-			: proc(proc), name(name), flags(flags & ~CMD_PROCEX), type(type) {}
+			: proc(proc), name(name), flags(flags), type(type), mode(CMD_ARG_STD) {}
 	Command(CommandProcEx *procex, const char *name, CommandFlags flags, CommandType type)
-			: procex(procex), name(name), flags(flags | CMD_PROCEX), type(type) {}
+			: procex(procex), name(name), flags(flags), type(type), mode(CMD_ARG_EX) {}
+	Command(CommandProcAux *procaux, const char *name, CommandFlags flags, CommandType type)
+			: procaux(procaux), name(name), flags(flags), type(type), mode(CMD_ARG_AUX) {}
 
 	inline CommandCost Execute(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data) const {
-		if (this->flags & CMD_PROCEX) {
-			return this->procex(tile, flags, p1, p2, p3, text, aux_data);
-		} else {
-			return this->proc(tile, flags, p1, p2, text);
+		switch (this->mode) {
+			case CMD_ARG_STD:
+				return this->proc(tile, flags, p1, p2, text);
+
+			case CMD_ARG_EX:
+				return this->procex(tile, flags, p1, p2, p3, text, aux_data);
+
+			case CMD_ARG_AUX:
+				return this->procaux(tile, flags, aux_data);
+
+			default:
+				NOT_REACHED();
 		}
 	}
 };
