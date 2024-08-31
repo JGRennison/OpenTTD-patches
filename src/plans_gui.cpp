@@ -23,6 +23,9 @@
 #include "textbuf_gui.h"
 #include "tilehighlight_func.h"
 #include "strings_func.h"
+#include "sortlist_type.h"
+#include "stringfilter_type.h"
+#include "querystring_gui.h"
 #include "core/pool_func.hpp"
 #include "core/geometry_func.hpp"
 #include "widgets/plans_widget.h"
@@ -36,6 +39,12 @@ static constexpr NWidgetPart _nested_plans_widgets[] = {
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+	EndContainer(),
+
+	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_PLN_SORT_ORDER), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
+		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_PLN_SORT_CRITERIA), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_SORT_CRITERIA),
+		NWidget(WWT_EDITBOX, COLOUR_GREY, WID_PLN_FILTER), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 	EndContainer(),
 
 	NWidget(NWID_HORIZONTAL),
@@ -77,6 +86,8 @@ static WindowDesc _plans_desc(__FILE__, __LINE__,
 	std::begin(_nested_plans_widgets), std::end(_nested_plans_widgets)
 );
 
+typedef GUIList<const Plan*, const bool &> GUIPlanList;
+
 struct PlansWindow : Window {
 	typedef struct {
 		bool is_plan;
@@ -93,7 +104,126 @@ struct PlansWindow : Window {
 	Dimension company_icon_spr_dim; ///< dimensions of company icon
 	WindowToken current_dragging_viewport_window = 0;
 
-	PlansWindow(WindowDesc *desc) : Window(desc)
+private:
+	/* Runtime saved values */
+	static Listing last_sorting;
+
+	/* Constants for sorting plans */
+	static inline const StringID sorter_names[] = {
+		STR_SORT_BY_PLAN_ID,
+		STR_SORT_BY_NAME,
+		STR_SORT_BY_DATE,
+		STR_SORT_BY_OWNER,
+	};
+	static const std::initializer_list<GUIPlanList::SortFunction * const> sorter_funcs;
+
+	StringFilter string_filter;             ///< Filter for plans
+	QueryString planname_editbox;           ///< Filter editbox
+
+	GUIPlanList plans{PlansWindow::last_sorting.order};
+
+	void BuildSortPlanList()
+	{
+		if (this->plans.NeedRebuild()) {
+			this->plans.clear();
+			this->plans.reserve(Plan::GetNumItems());
+
+			for (Plan *p : Plan::Iterate()) {
+				if (!p->IsListable()) continue;
+				if (this->string_filter.IsEmpty()) {
+					this->plans.push_back(p);
+				} else if (p->HasName()) {
+					this->string_filter.ResetState();
+					this->string_filter.AddLine(p->name);
+					if (this->string_filter.GetState()) this->plans.push_back(p);
+				}
+			}
+
+			this->plans.RebuildDone();
+			this->SetDirty();
+		}
+		/* Always sort the plans. */
+		this->plans.Sort();
+		this->SetWidgetDirty(WID_PLN_LIST); // Force repaint of the displayed plans.
+
+		this->RebuildList();
+	}
+
+	void RebuildList()
+	{
+		int old_focused_plan_id = this->selected == INT_MAX ? INT_MAX : this->list[this->selected].plan_id;
+		this->selected = INT_MAX;
+
+		int sbcnt = 0;
+		this->list.clear();
+		bool seen_current_plan = false;
+		for (const Plan *p : this->plans) {
+			ListItem li;
+			li.is_plan = true;
+			li.plan_id = p->index;
+			this->list.push_back(li);
+			if (old_focused_plan_id == p->index) this->selected = sbcnt;
+			sbcnt++;
+
+			if (p->show_lines) {
+				const int sz = (int) p->lines.size();
+				sbcnt += sz;
+				li.is_plan = false;
+				for (int i = 0; i < sz; i++) {
+					li.line_id = i;
+					this->list.push_back(li);
+				}
+			}
+
+			if (p == _current_plan) seen_current_plan = true;
+		}
+
+		if (!seen_current_plan && _current_plan != nullptr) {
+			_current_plan->SetFocus(false);
+			_current_plan = nullptr;
+		}
+
+		if (this->selected == INT_MAX) ResetObjectToPlace();
+
+		this->vscroll->SetCount(sbcnt);
+	}
+
+	/** Sort by plan ID */
+	static bool PlanIDSorter(const Plan * const &a, const Plan * const &b, const bool &order)
+	{
+		return a->index < b->index;
+	}
+
+	/** Sort by plan name */
+	static bool PlanNameSorter(const Plan * const &a, const Plan * const &b, const bool &order)
+	{
+		if (a->HasName() && b->HasName()) {
+			return StrNaturalCompare(a->name, b->name) < 0;
+		} else if (a->HasName()) {
+			return true;
+		} else if (b->HasName()) {
+			return false;
+		} else {
+			return a->index < b->index;
+		}
+	}
+
+	/** Sort by plan date */
+	static bool PlanDateSorter(const Plan * const &a, const Plan * const &b, const bool &order)
+	{
+		if (a->creation_date == b->creation_date) return a->index < b->index;
+		return a->creation_date < b->creation_date;
+	}
+
+	/** Sort by plan owner */
+	static bool PlanOwnerSorter(const Plan * const &a, const Plan * const &b, const bool &order)
+	{
+		if (a->owner == b->owner) return PlanNameSorter(a, b, order);
+		return a->owner < b->owner;
+	}
+
+public:
+	PlansWindow(WindowDesc *desc) : Window(desc), planname_editbox(MAX_LENGTH_PLAN_NAME_CHARS * MAX_CHAR_LENGTH, MAX_LENGTH_PLAN_NAME_CHARS)
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_PLN_SCROLLBAR);
@@ -104,13 +234,19 @@ struct PlansWindow : Window {
 		this->FinishInitNested();
 
 		this->selected = INT_MAX;
-		RebuildList();
+		this->plans.SetListing(this->last_sorting);
+		this->plans.SetSortFuncs(PlansWindow::sorter_funcs);
+		this->plans.ForceRebuild();
+		this->BuildSortPlanList();
+
+		this->querystrings[WID_PLN_FILTER] = &this->planname_editbox;
+		this->planname_editbox.cancel_button = QueryString::ACTION_CLEAR;
 	}
 
 	void Close(int data = 0) override
 	{
 		this->list.clear();
-		if (_current_plan) {
+		if (_current_plan != nullptr) {
 			_current_plan->SetFocus(false);
 			_current_plan = nullptr;
 		}
@@ -124,7 +260,7 @@ struct PlansWindow : Window {
 				DoCommandP(0, 0, 0, CMD_ADD_PLAN, CcAddPlan);
 				break;
 			case WID_PLN_ADD_LINES:
-				if (_current_plan) HandlePlacePushButton(this, widget, SPR_CURSOR_MOUSE, HT_POINT | HT_MAP);
+				if (_current_plan != nullptr) HandlePlacePushButton(this, widget, SPR_CURSOR_MOUSE, HT_POINT | HT_MAP);
 				break;
 			case WID_PLN_DELETE:
 				if (this->selected != INT_MAX) {
@@ -136,15 +272,15 @@ struct PlansWindow : Window {
 				}
 				break;
 			case WID_PLN_HIDE_ALL: {
-				for (Plan *p : Plan::Iterate()) {
-					if (p->IsListable()) p->SetVisibility(false);
+				for (const Plan *p : this->plans) {
+					if (p->IsListable()) const_cast<Plan *>(p)->SetVisibility(false);
 				}
 				this->SetWidgetDirty(WID_PLN_LIST);
 				break;
 			}
 
 			case WID_PLN_RENAME: {
-				if (_current_plan) {
+				if (_current_plan != nullptr) {
 					SetDParamStr(0, _current_plan->GetName().c_str());
 					ShowQueryString(STR_JUST_RAW_STRING, STR_PLANS_QUERY_RENAME_PLAN,
 						MAX_LENGTH_PLAN_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_LEN_IN_CHARS);
@@ -160,17 +296,17 @@ struct PlansWindow : Window {
 			}
 
 			case WID_PLN_SHOW_ALL: {
-				for (Plan *p : Plan::Iterate()) {
-					if (p->IsListable()) p->SetVisibility(true);
+				for (const Plan *p : this->plans) {
+					if (p->IsListable()) const_cast<Plan *>(p)->SetVisibility(true);
 				}
 				this->SetWidgetDirty(WID_PLN_LIST);
 				break;
 			}
 			case WID_PLN_VISIBILITY:
-				if (_current_plan) _current_plan->ToggleVisibilityByAll();
+				if (_current_plan != nullptr) _current_plan->ToggleVisibilityByAll();
 				break;
 			case WID_PLN_COLOUR: {
-				if (_current_plan) {
+				if (_current_plan != nullptr) {
 					DropDownList list;
 					auto add_colour = [&](Colours colour) {
 						list.push_back(MakeDropDownListStringItem(STR_COLOUR_DARK_BLUE + colour, colour, false));
@@ -225,7 +361,7 @@ struct PlansWindow : Window {
 						this->InvalidateData(INVALID_PLAN);
 					}
 				} else {
-					if (_current_plan) {
+					if (_current_plan != nullptr) {
 						_current_plan->SetFocus(false);
 						_current_plan = nullptr;
 					}
@@ -234,6 +370,18 @@ struct PlansWindow : Window {
 				this->SetDirty();
 				break;
 			}
+
+			case WID_PLN_SORT_ORDER: // Click on sort order button
+				this->plans.ToggleSortOrder();
+				this->plans.ForceResort();
+				this->BuildSortPlanList();
+				this->SetWidgetDirty(WID_PLN_SORT_ORDER);
+				break;
+
+			case WID_PLN_SORT_CRITERIA: // Click on sort criteria dropdown
+				ShowDropDownMenu(this, PlansWindow::sorter_names, this->plans.SortType(), WID_PLN_SORT_CRITERIA, 0, 0);
+				break;
+
 			default: break;
 		}
 	}
@@ -242,8 +390,16 @@ struct PlansWindow : Window {
 	{
 		switch (widget) {
 			case WID_PLN_COLOUR:
-				if (_current_plan && index < COLOUR_END) {
+				if (_current_plan != nullptr && index < COLOUR_END) {
 					_current_plan->SetPlanColour((Colours)index);
+				}
+				break;
+
+			case WID_PLN_SORT_CRITERIA:
+				if (this->plans.SortType() != index) {
+					this->plans.SetSortType(index);
+					this->last_sorting = this->plans.GetListing(); // Store new sorting order.
+					this->BuildSortPlanList();
 				}
 				break;
 		}
@@ -258,7 +414,7 @@ struct PlansWindow : Window {
 
 	bool AllPlansHidden() const
 	{
-		for (Plan *p : Plan::Iterate()) {
+		for (const Plan *p : this->plans) {
 			if (p->IsVisible()) return false;
 		}
 		return true;
@@ -284,6 +440,10 @@ struct PlansWindow : Window {
 	virtual void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		switch (widget) {
+			case WID_PLN_SORT_ORDER:
+				this->DrawSortButtonState(widget, this->plans.IsDescSortOrder() ? SBS_DOWN : SBS_UP);
+				break;
+
 			case WID_PLN_LIST: {
 				Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
 				uint y = ir.top; // Offset from top of widget.
@@ -341,6 +501,10 @@ struct PlansWindow : Window {
 			case WID_PLN_COLOUR:
 				SetDParam(0, _current_plan ? STR_COLOUR_DARK_BLUE + _current_plan->colour : STR_PLANS_COLOUR);
 				break;
+
+			case WID_PLN_SORT_CRITERIA:
+				SetDParam(0, PlansWindow::sorter_names[this->plans.SortType()]);
+				break;
 		}
 	}
 
@@ -352,6 +516,22 @@ struct PlansWindow : Window {
 	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
 	{
 		switch (widget) {
+			case WID_PLN_SORT_ORDER: {
+				Dimension d = GetStringBoundingBox(this->GetWidget<NWidgetCore>(widget)->widget_data);
+				d.width += padding.width + Window::SortButtonWidth() * 2; // Doubled since the string is centred and it also looks better.
+				d.height += padding.height;
+				size = maxdim(size, d);
+				break;
+			}
+
+			case WID_PLN_SORT_CRITERIA: {
+				Dimension d = GetStringListBoundingBox(PlansWindow::sorter_names);
+				d.width += padding.width;
+				d.height += padding.height;
+				size = maxdim(size, d);
+				break;
+			}
+
 			case WID_PLN_LIST:
 				this->company_icon_spr_dim = GetSpriteSize(SPR_COMPANY_ICON);
 				resize.height = std::max<int>(GetCharacterHeight(FS_NORMAL), SETTING_BUTTON_HEIGHT);
@@ -397,7 +577,7 @@ struct PlansWindow : Window {
 	virtual void OnPlaceObject(Point pt, TileIndex tile) override
 	{
 		/* A player can't add lines to a public plan of another company. */
-		if (_current_plan && _current_plan->owner == _local_company) VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_DRAW_PLANLINE);
+		if (_current_plan != nullptr && _current_plan->owner == _local_company) VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_DRAW_PLANLINE);
 	}
 
 	/** The drawing of a line is in progress. */
@@ -414,7 +594,7 @@ struct PlansWindow : Window {
 		}
 
 		const TileIndex tile = TileVirtXY(pt.x, pt.y);
-		if (_current_plan && tile < MapSize()) {
+		if (_current_plan != nullptr && tile < MapSize()) {
 			if (_ctrl_pressed && _current_plan->temp_line->tiles.empty() && _current_plan->last_tile != INVALID_TILE) {
 				_current_plan->StoreTempTile(_current_plan->last_tile);
 				_current_plan->last_tile = INVALID_TILE;
@@ -427,14 +607,14 @@ struct PlansWindow : Window {
 	/** The drawing of a line ends up normally. */
 	virtual void OnPlaceMouseUp(ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, Point pt, TileIndex start_tile, TileIndex end_tile) override
 	{
-		if (_current_plan) _current_plan->ValidateNewLine();
+		if (_current_plan != nullptr) _current_plan->ValidateNewLine();
 		this->current_dragging_viewport_window = 0;
 	}
 
 	/** The drawing of a line is aborted. */
 	virtual void OnPlaceObjectAbort() override
 	{
-		if (_current_plan) {
+		if (_current_plan != nullptr) {
 			_current_plan->temp_line->MarkDirty();
 			_current_plan->temp_line->Clear();
 		}
@@ -443,37 +623,12 @@ struct PlansWindow : Window {
 		this->SetWidgetDirty(WID_PLN_ADD_LINES);
 	}
 
-	void RebuildList()
+	void OnEditboxChanged(WidgetID wid) override
 	{
-		int old_focused_plan_id = this->selected == INT_MAX ? INT_MAX : this->list[this->selected].plan_id;
-		this->selected = INT_MAX;
-
-		int sbcnt = 0;
-		this->list.clear();
-		for (Plan *p : Plan::Iterate()) {
-			if (!p->IsListable()) continue;
-
-			ListItem li;
-			li.is_plan = true;
-			li.plan_id = p->index;
-			this->list.push_back(li);
-			if (old_focused_plan_id == p->index) this->selected = sbcnt;
-			sbcnt++;
-
-			if (p->show_lines) {
-				const int sz = (int) p->lines.size();
-				sbcnt += sz;
-				li.is_plan = false;
-				for (int i = 0; i < sz; i++) {
-					li.line_id = i;
-					this->list.push_back(li);
-				}
-			}
+		if (wid == WID_PLN_FILTER) {
+			this->string_filter.SetFilterTerm(this->planname_editbox.text.buf);
+			this->InvalidateData(INVALID_PLAN);
 		}
-
-		if (this->selected == INT_MAX) ResetObjectToPlace();
-
-		this->vscroll->SetCount(sbcnt);
 	}
 
 	virtual void OnInvalidateData(int data = 0, bool gui_scope = true) override
@@ -488,7 +643,8 @@ struct PlansWindow : Window {
 			}
 		}
 
-		RebuildList();
+		this->plans.ForceRebuild();
+		this->BuildSortPlanList();
 	}
 
 	void SelectPlan(PlanID plan_index)
@@ -511,6 +667,16 @@ struct PlansWindow : Window {
 			}
 		}
 	}
+};
+
+Listing PlansWindow::last_sorting = {false, 0};
+
+/** Available plan sorting functions. */
+const std::initializer_list<GUIPlanList::SortFunction * const> PlansWindow::sorter_funcs = {
+	&PlanIDSorter,
+	&PlanNameSorter,
+	&PlanDateSorter,
+	&PlanOwnerSorter,
 };
 
 /** Show the window to manage plans. */
