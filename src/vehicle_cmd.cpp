@@ -1385,6 +1385,7 @@ CommandCost CmdTemplateVehicleFromTrain(TileIndex tile, DoCommandFlag flags, uin
 		for (; clicked != nullptr; clicked = clicked->Next()) {
 			tmp = new TemplateVehicle(clicked->engine_type);
 			SetupTemplateVehicleFromVirtual(tmp, prev, clicked);
+			tmp->owner = _current_company;
 			prev = tmp;
 		}
 
