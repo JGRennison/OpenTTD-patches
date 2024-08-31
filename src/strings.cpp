@@ -110,11 +110,7 @@ StringParameter *StringParameters::GetNextParameterPointer()
  */
 void SetDParamMaxValue(size_t n, uint64_t max_value, uint min_count, FontSize size)
 {
-	uint num_digits = 1;
-	while (max_value >= 10) {
-		num_digits++;
-		max_value /= 10;
-	}
+	uint num_digits = GetBase10DigitsRequired(max_value);
 	SetDParamMaxDigits(n, std::max(min_count, num_digits), size);
 }
 

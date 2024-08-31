@@ -433,6 +433,21 @@ constexpr inline T SaturatingAdd(T a, T b)
 #endif
 }
 
+/**
+ * Return number of base 10 digits required for an unsigned value.
+ */
+template<typename T, std::enable_if_t<std::is_unsigned_v<T>, int> = 0>
+constexpr inline uint GetBase10DigitsRequired(T x)
+{
+	if (sizeof(T) <= sizeof(uint32_t) || x <= UINT32_MAX) {
+		extern uint GetBase10DigitsRequired32(uint32_t x);
+		return GetBase10DigitsRequired32(static_cast<uint32_t>(x));
+	} else {
+		extern uint GetBase10DigitsRequired64(uint64_t x);
+		return GetBase10DigitsRequired64(x);
+	}
+}
+
 
 uint32_t IntSqrt(uint32_t num);
 uint32_t IntSqrt64(uint64_t num);

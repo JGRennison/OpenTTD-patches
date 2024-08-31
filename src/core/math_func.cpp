@@ -147,3 +147,23 @@ uint32_t RXDecompressUint(uint16_t num)
 	if (num > 0x100) return ((num - 0x100) << 3) + 0x100;
 	return num;
 }
+
+/* Algorithm from https://lemire.me/blog/2021/05/28/computing-the-number-of-digits-of-an-integer-quickly/ */
+uint GetBase10DigitsRequired32(uint32_t x)
+{
+	static uint32_t table[] = {9, 99, 999, 9999, 99999, 999999, 9999999, 99999999, 999999999};
+	int log2 = std::countl_zero<uint32_t>(1) - std::countl_zero<uint32_t>(x | 1);
+	int log10approx = (9 * log2) >> 5;
+	if (x > table[log10approx]) log10approx++;
+	return log10approx + 1;
+}
+
+uint GetBase10DigitsRequired64(uint64_t x)
+{
+	/* Rather than using a huge lookup table for 64 bit values, use a loop */
+	uint64_t threshold = 10;
+	for (uint i = 1; i < 20; i++, threshold *= 10) {
+		if (x < threshold) return i;
+	}
+	return 20; // Largest number of digits required for uint64_t
+}
