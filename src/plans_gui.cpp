@@ -44,6 +44,7 @@ static constexpr NWidgetPart _nested_plans_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_PLN_SORT_ORDER), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
 		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_PLN_SORT_CRITERIA), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_SORT_CRITERIA),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_PLN_OWN_ONLY), SetDataTip(STR_PLANS_OWN_ONLY, STR_PLANS_OWN_ONLY_TOOLTIP),
 		NWidget(WWT_EDITBOX, COLOUR_GREY, WID_PLN_FILTER), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 	EndContainer(),
 
@@ -119,6 +120,7 @@ private:
 
 	StringFilter string_filter;             ///< Filter for plans
 	QueryString planname_editbox;           ///< Filter editbox
+	bool own_only = false;
 
 	GUIPlanList plans{PlansWindow::last_sorting.order};
 
@@ -128,8 +130,9 @@ private:
 			this->plans.clear();
 			this->plans.reserve(Plan::GetNumItems());
 
-			for (Plan *p : Plan::Iterate()) {
+			for (const Plan *p : Plan::Iterate()) {
 				if (!p->IsListable()) continue;
+				if (this->own_only && p->owner != _local_company) continue;
 				if (this->string_filter.IsEmpty()) {
 					this->plans.push_back(p);
 				} else if (p->HasName()) {
@@ -380,6 +383,13 @@ public:
 
 			case WID_PLN_SORT_CRITERIA: // Click on sort criteria dropdown
 				ShowDropDownMenu(this, PlansWindow::sorter_names, this->plans.SortType(), WID_PLN_SORT_CRITERIA, 0, 0);
+				break;
+
+			case WID_PLN_OWN_ONLY:
+				this->own_only = !this->own_only;
+				this->SetWidgetLoweredState(WID_PLN_OWN_ONLY, this->own_only);
+				this->SetWidgetDirty(WID_PLN_OWN_ONLY);
+				this->InvalidateData(INVALID_PLAN);
 				break;
 
 			default: break;

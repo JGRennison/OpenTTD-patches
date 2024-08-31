@@ -1937,6 +1937,8 @@ STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{RAW_STRING}: {
 STR_PLANS_LIST_ITEM_LINE                                        : -- Line #{NUM}: {NUM} segment{P "" s}
 STR_PLANS_LIST_TOOLTIP                                          :{BLACK}Double click any item in the list to (un)fold the related plan.{}Ctrl+Click to scroll to.
 STR_PLANS_QUERY_RENAME_PLAN                                     :{WHITE}Rename plan
+STR_PLANS_OWN_ONLY                                              :{BLACK}Own only
+STR_PLANS_OWN_ONLY_TOOLTIP                                      :{BLACK}Own show plans which you own
 STR_SORT_BY_PLAN_ID                                             :Plan ID
 STR_SORT_BY_OWNER                                               :Owner
 STR_SORT_BY_DATE                                                :Date
