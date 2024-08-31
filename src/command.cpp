@@ -698,16 +698,16 @@ static void DumpSubCommandLogEntry(char *&buffer, const char *last, const Comman
 				fc(CLEF_ORDER_BACKUP, 'o'), fc(CLEF_RANDOM, 'r'), fc(CLEF_TWICE, '2'),
 				script_fc(), fc(CLEF_AUX_DATA, 'b'), fc(CLEF_MY_CMD, 'm'), fc(CLEF_ONLY_SENDING, 's'),
 				fc(CLEF_ESTIMATE_ONLY, 'e'), fc(CLEF_TEXT, 't'), fc(CLEF_GENERATING_WORLD, 'g'), fc(CLEF_CMD_FAILED, 'f'));
-		buffer += seprintf(buffer, last, " %7d x %7d, ", TileX(entry.tile), TileY(entry.tile));
+		buffer += seprintf(buffer, last, "cc: %3u, lc: %3u", (uint) entry.current_company, (uint) entry.local_company);
+		if (_network_server) {
+			buffer += seprintf(buffer, last, ", client: %4u", entry.client_id);
+		}
+		buffer += seprintf(buffer, last, " | %*u x %*u | ", MapDigitsX(), TileX(entry.tile), MapDigitsY(), TileY(entry.tile));
 		if (GetCommandArgMode(entry.cmd) != CMD_ARG_AUX) {
 			buffer += seprintf(buffer, last, "p1: 0x%08X, p2: 0x%08X, ", entry.p1, entry.p2);
 			if (entry.p3 != 0) {
 				buffer += seprintf(buffer, last, "p3: 0x" OTTD_PRINTFHEX64PAD ", ", entry.p3);
 			}
-		}
-		buffer += seprintf(buffer, last, "cc: %3u, lc: %3u, ", (uint) entry.current_company, (uint) entry.local_company);
-		if (_network_server) {
-			buffer += seprintf(buffer, last, "client: %4u, ", entry.client_id);
 		}
 		buffer += seprintf(buffer, last, "cmd: 0x%08X (%s)", entry.cmd, GetCommandName(entry.cmd));
 
