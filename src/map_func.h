@@ -115,6 +115,26 @@ inline uint MapMaxY()
 }
 
 /**
+ * Get the number of base-10 digits required for the size of the map along the X
+ * @return the number of digits required
+ */
+inline uint MapDigitsX()
+{
+	extern uint _map_digits_x;
+	return _map_digits_x;
+}
+
+/**
+ * Get the number of base-10 digits required for the size of the map along the Y
+ * @return the number of digits required
+ */
+inline uint MapDigitsY()
+{
+	extern uint _map_digits_y;
+	return _map_digits_y;
+}
+
+/**
  * Scales the given value by the map size, where the given value is
  * for a 256 by 256 map.
  * @param n the value to scale
