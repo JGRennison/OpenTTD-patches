@@ -9,10 +9,8 @@
 
 #include "../stdafx.h"
 #include "../rail_map.h"
+#include "../string_func.h"
 #include "dbg_helpers.h"
-
-#include <sstream>
-#include <iomanip>
 
 #include "../safeguards.h"
 
@@ -62,10 +60,7 @@ std::string ValueStr(SignalType t)
 /** Translate TileIndex into string. */
 std::string TileStr(TileIndex tile)
 {
-	std::stringstream ss;
-	ss << "0x" << std::setfill('0') << std::setw(4) << std::hex << tile; // 0x%04X
-	ss << " (" << TileX(tile) << ", " << TileY(tile) << ")";
-	return ss.str();
+	return stdstr_fmt("0x%04X (%u, %u)", tile, TileX(tile), TileY(tile));
 }
 
 /**

@@ -47,8 +47,6 @@
 #	include "../3rdparty/nlohmann/json.hpp"
 #	include <charconv>
 #endif
-#include <sstream>
-#include <iomanip>
 #include <tuple>
 
 #ifdef DEBUG_DUMP_COMMANDS
@@ -261,20 +259,19 @@ std::string GenerateCompanyPasswordHash(const std::string &password, const std::
 	size_t password_length = password.size();
 	size_t password_server_id_length = password_server_id.size();
 
-	std::ostringstream salted_password;
+	std::string salted_password_string;
 	/* Add the password with the server's ID and game seed as the salt. */
 	for (uint i = 0; i < NETWORK_SERVER_ID_LENGTH - 1; i++) {
 		char password_char = (i < password_length ? password[i] : 0);
 		char server_id_char = (i < password_server_id_length ? password_server_id[i] : 0);
 		char seed_char = password_game_seed >> (i % 32);
-		salted_password << (char)(password_char ^ server_id_char ^ seed_char); // Cast needed, otherwise interpreted as integer to format
+		salted_password_string += (char)(password_char ^ server_id_char ^ seed_char); // Cast needed, otherwise interpreted as integer to format
 	}
 
 	Md5 checksum;
 	MD5Hash digest;
 
 	/* Generate the MD5 hash */
-	std::string salted_password_string = salted_password.str();
 	checksum.Append(salted_password_string.data(), salted_password_string.size());
 	checksum.Finish(digest);
 
