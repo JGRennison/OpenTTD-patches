@@ -1279,7 +1279,7 @@ CommandCost CmdReplaceTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint3
 
 	vehicle = vehicle->First();
 
-	Train* train = Train::From(vehicle);
+	Train *train = Train::From(vehicle);
 	if (!train->IsVirtual()) {
 		return CMD_ERROR;
 	}
@@ -1321,7 +1321,7 @@ CommandCost CmdReplaceTemplateVehicle(TileIndex tile, DoCommandFlag flags, uint3
 			template_vehicle->name = std::move(name);
 		}
 
-		// Make sure our replacements still point to the correct thing.
+		/* Make sure our replacements still point to the correct thing. */
 		if (old_ID != INVALID_VEHICLE && old_ID != template_vehicle->index) {
 			bool reindex = false;
 			for (TemplateReplacement *tr : TemplateReplacement::Iterate()) {
@@ -1385,6 +1385,7 @@ CommandCost CmdTemplateVehicleFromTrain(TileIndex tile, DoCommandFlag flags, uin
 		for (; clicked != nullptr; clicked = clicked->Next()) {
 			tmp = new TemplateVehicle(clicked->engine_type);
 			SetupTemplateVehicleFromVirtual(tmp, prev, clicked);
+			tmp->owner = _current_company;
 			prev = tmp;
 		}
 

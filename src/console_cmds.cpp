@@ -3027,10 +3027,10 @@ DEF_CONSOLE_CMD(ConDumpRoadTypes)
 			grfid = grf->grfid;
 			grfs.insert(std::pair<uint32_t, const GRFFile *>(grfid, grf));
 		}
-		IConsolePrintF(CC_DEFAULT, "  %02u %s %c%c%c%c, Flags: %c%c%c%c%c, Extra Flags: %c%c%c%c, GRF: %08X, %s",
+		IConsolePrintF(CC_DEFAULT, "  %02u %s %s, Flags: %c%c%c%c%c, Extra Flags: %c%c%c%c, GRF: %08X, %s",
 				(uint) rt,
 				RoadTypeIsTram(rt) ? "Tram" : "Road",
-				rti->label >> 24, rti->label >> 16, rti->label >> 8, rti->label,
+				NewGRFLabelDumper().Label(rti->label),
 				HasBit(rti->flags, ROTF_CATENARY)                   ? 'c' : '-',
 				HasBit(rti->flags, ROTF_NO_LEVEL_CROSSING)          ? 'l' : '-',
 				HasBit(rti->flags, ROTF_NO_HOUSES)                  ? 'X' : '-',
@@ -3085,9 +3085,9 @@ DEF_CONSOLE_CMD(ConDumpRailTypes)
 			grfid = grf->grfid;
 			grfs.insert(std::pair<uint32_t, const GRFFile *>(grfid, grf));
 		}
-		IConsolePrintF(CC_DEFAULT, "  %02u %c%c%c%c, Flags: %c%c%c%c%c%c, Ctrl Flags: %c%c%c%c, GRF: %08X, %s",
+		IConsolePrintF(CC_DEFAULT, "  %02u %s, Flags: %c%c%c%c%c%c, Ctrl Flags: %c%c%c%c, GRF: %08X, %s",
 				(uint) rt,
-				rti->label >> 24, rti->label >> 16, rti->label >> 8, rti->label,
+				NewGRFLabelDumper().Label(rti->label),
 				HasBit(rti->flags, RTF_CATENARY)            ? 'c' : '-',
 				HasBit(rti->flags, RTF_NO_LEVEL_CROSSING)   ? 'l' : '-',
 				HasBit(rti->flags, RTF_HIDDEN)              ? 'h' : '-',
@@ -3197,10 +3197,10 @@ DEF_CONSOLE_CMD(ConDumpCargoTypes)
 			grfid = grf->grfid;
 			grfs.insert(std::pair<uint32_t, const GRFFile *>(grfid, grf));
 		}
-		IConsolePrintF(CC_DEFAULT, "  %02u Bit: %2u, Label: %c%c%c%c, Callback mask: 0x%02X, Cargo class: %c%c%c%c%c%c%c%c%c%c%c, GRF: %08X, %s",
+		IConsolePrintF(CC_DEFAULT, "  %02u Bit: %2u, Label: %s, Callback mask: 0x%02X, Cargo class: %c%c%c%c%c%c%c%c%c%c%c, GRF: %08X, %s",
 				(uint) i,
 				spec->bitnum,
-				spec->label.base() >> 24, spec->label.base() >> 16, spec->label.base() >> 8, spec->label.base(),
+				NewGRFLabelDumper().Label(spec->label.base()),
 				spec->callback_mask,
 				(spec->classes & CC_PASSENGERS)   != 0 ? 'p' : '-',
 				(spec->classes & CC_MAIL)         != 0 ? 'm' : '-',
@@ -3314,10 +3314,10 @@ DEF_CONSOLE_CMD(ConDumpGrfCargoTables)
 			char *b = buffer;
 			for (const CargoSpec *cs : CargoSpec::Iterate()) {
 				if (grf->cargo_map[cs->Index()] == i) {
-					b += seprintf(b, lastof(buffer), "%s%02u[%c%c%c%c]", (b == buffer) ? ": " : ", ", cs->Index(), GB(cs->label.base(), 24, 8), GB(cs->label.base(), 16, 8), GB(cs->label.base(), 8, 8), GB(cs->label.base(), 0, 8));
+					b += seprintf(b, lastof(buffer), "%s%02u[%s]", (b == buffer) ? ": " : ", ", cs->Index(), NewGRFLabelDumper().Label(cs->label.base()));
 				}
 			}
-			IConsolePrintF(CC_DEFAULT, "  %c%c%c%c%s", GB(cl.base(), 24, 8), GB(cl.base(), 16, 8), GB(cl.base(), 8, 8), GB(cl.base(), 0, 8), buffer);
+			IConsolePrintF(CC_DEFAULT, "  %s%s", NewGRFLabelDumper().Label(cl.base()), buffer);
 			i++;
 		}
 	}

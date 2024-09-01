@@ -1298,9 +1298,18 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
  */
 void SmallMapWindow::SwitchMapType(SmallMapType map_type)
 {
+	uint columns = this->GetNumberColumnsLegend(this->GetWidget<NWidgetCore>(WID_SM_LEGEND)->GetCurrentRect().Width());
+	int old_height = this->GetLegendHeight(columns);
+
 	this->RaiseWidget(WID_SM_CONTOUR + this->map_type);
 	this->map_type = map_type;
 	this->LowerWidget(WID_SM_CONTOUR + this->map_type);
+
+	int new_height = this->GetLegendHeight(columns);
+
+	if (new_height != old_height) {
+		this->ReInit(0, new_height - old_height);
+	}
 
 	this->SetupWidgetData();
 
@@ -1321,9 +1330,10 @@ void SmallMapWindow::SwitchMapType(SmallMapType map_type)
 inline uint SmallMapWindow::GetNumberRowsLegend(uint columns) const
 {
 	/* Reserve one column for link colours */
-	uint num_rows_linkstats = CeilDiv(_smallmap_cargo_count, columns - 1);
-	uint num_rows_others = CeilDiv(std::max(_smallmap_industry_count, _smallmap_company_count), columns);
-	return std::max({this->min_number_of_fixed_rows, num_rows_linkstats, num_rows_others});
+	uint num_rows = this->min_number_of_fixed_rows;
+	if (this->map_type == SMT_LINKSTATS) num_rows = std::max(num_rows, CeilDiv(_smallmap_cargo_count, columns - 1));
+	if (this->map_type == SMT_INDUSTRY) num_rows = std::max(num_rows, CeilDiv(std::max(_smallmap_industry_count, _smallmap_company_count), columns));
+	return num_rows;
 }
 
 /**

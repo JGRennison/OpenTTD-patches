@@ -32,6 +32,8 @@ uint _map_size_x;    ///< Size of the map along the X
 uint _map_size_y;    ///< Size of the map along the Y
 uint _map_size;      ///< The number of tiles on the map
 uint _map_tile_mask; ///< _map_size - 1 (to mask the mapsize)
+uint _map_digits_x;  ///< Number of base-10 digits for _map_size_x
+uint _map_digits_y;  ///< Number of base-10 digits for _map_size_y
 
 Tile *_m = nullptr;          ///< Tiles of the map
 TileExtended *_me = nullptr; ///< Extended Tiles of the map
@@ -80,6 +82,8 @@ void AllocateMap(uint size_x, uint size_y)
 	_map_size_y = size_y;
 	_map_size = size_x * size_y;
 	_map_tile_mask = _map_size - 1;
+	_map_digits_x = GetBase10DigitsRequired(_map_size_x);
+	_map_digits_y = GetBase10DigitsRequired(_map_size_y);
 
 #if defined(__linux__) && defined(MADV_HUGEPAGE)
 	if (_munmap_size != 0) {

@@ -459,4 +459,11 @@ void InitGRFGlobalVars();
 
 const char *GetExtendedVariableNameById(int id);
 
+struct NewGRFLabelDumper {
+	const char *Label(uint32_t label);
+
+private:
+	char buffer[12];
+};
+
 #endif /* NEWGRF_H */

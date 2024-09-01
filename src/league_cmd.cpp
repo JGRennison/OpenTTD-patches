@@ -18,6 +18,7 @@
 #include "window_func.h"
 #include "core/pool_func.hpp"
 #include "company_base.h"
+#include "core/format.hpp"
 
 #include "safeguards.h"
 
@@ -176,7 +177,7 @@ CommandCost CmdRemoveLeagueTableElement(DoCommandFlag flags, LeagueTableElementI
 	return CommandCost();
 }
 
-CommandCost CmdCreateLeagueTable(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdCreateLeagueTable(TileIndex tile, DoCommandFlag flags, const CommandAuxiliaryBase *aux_data)
 {
 	CommandAuxData<LeagueTableCmdData> data;
 	CommandCost ret = data.Load(aux_data);
@@ -187,19 +188,13 @@ CommandCost CmdCreateLeagueTable(TileIndex tile, DoCommandFlag flags, uint32_t p
 	return res;
 }
 
-CommandCost CmdCreateLeagueTableElement(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
+CommandCost CmdCreateLeagueTableElement(TileIndex tile, DoCommandFlag flags, const CommandAuxiliaryBase *aux_data)
 {
 	CommandAuxData<LeagueTableElementCmdData> data;
 	CommandCost ret = data.Load(aux_data);
 	if (ret.Failed()) return ret;
 
-	LeagueTableID table = GB(p1, 0, 8);
-	int64_t rating = p3;
-	CompanyID company = (CompanyID)GB(p1, 8, 8);
-	LinkType link_type = (LinkType)GB(p1, 16, 8);
-	LinkTargetID link_target = (LinkTargetID)p2;
-
-	auto [res, id] = CmdCreateLeagueTableElement(flags, table, rating, company, data->text_str, data->score, link_type, link_target);
+	auto [res, id] = CmdCreateLeagueTableElement(flags, data->table, data->rating, data->company, data->text_str, data->score, data->link_type, data->link_target);
 	res.SetResultData(id);
 	return res;
 }
@@ -222,4 +217,9 @@ CommandCost CmdUpdateLeagueTableElementScore(TileIndex tile, DoCommandFlag flags
 CommandCost CmdRemoveLeagueTableElement(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
 	return CmdRemoveLeagueTableElement(flags, p1);
+}
+
+std::string LeagueTableElementCmdData::GetDebugSummary() const
+{
+	return fmt::format("t: {}, r: {}, c: {}, type: {}, targ: {}", this->table, this->rating, this->company, this->link_type, this->link_target);
 }

@@ -105,3 +105,37 @@ TEST_CASE("SaturatingAdd")
 	CHECK(SaturatingAdd<uint8_t>(255, 1) == 255);
 	CHECK(SaturatingAdd<uint8_t>(0, 254) == 254);
 }
+
+TEST_CASE("GetBase10DigitsRequired")
+{
+	CHECK(GetBase10DigitsRequired<uint32_t>(0) == 1);
+	CHECK(GetBase10DigitsRequired<uint32_t>(1) == 1);
+	CHECK(GetBase10DigitsRequired<uint32_t>(9) == 1);
+	CHECK(GetBase10DigitsRequired<uint32_t>(10) == 2);
+	CHECK(GetBase10DigitsRequired<uint32_t>(99) == 2);
+	CHECK(GetBase10DigitsRequired<uint32_t>(100) == 3);
+	CHECK(GetBase10DigitsRequired<uint32_t>(999) == 3);
+	CHECK(GetBase10DigitsRequired<uint32_t>(1000) == 4);
+	CHECK(GetBase10DigitsRequired<uint32_t>(9999) == 4);
+	CHECK(GetBase10DigitsRequired<uint32_t>(10000) == 5);
+	CHECK(GetBase10DigitsRequired<uint32_t>(99999) == 5);
+	CHECK(GetBase10DigitsRequired<uint32_t>(100000) == 6);
+	CHECK(GetBase10DigitsRequired<uint32_t>(999999) == 6);
+	CHECK(GetBase10DigitsRequired<uint32_t>(1000000) == 7);
+	CHECK(GetBase10DigitsRequired<uint32_t>(9999999) == 7);
+	CHECK(GetBase10DigitsRequired<uint32_t>(10000000) == 8);
+	CHECK(GetBase10DigitsRequired<uint32_t>(99999999) == 8);
+	CHECK(GetBase10DigitsRequired<uint32_t>(100000000) == 9);
+	CHECK(GetBase10DigitsRequired<uint32_t>(999999999) == 9);
+	CHECK(GetBase10DigitsRequired<uint32_t>(1000000000) == 10);
+	CHECK(GetBase10DigitsRequired<uint32_t>(UINT32_MAX) == 10);
+	CHECK(GetBase10DigitsRequired<uint64_t>(9999999999ULL) == 10);
+	CHECK(GetBase10DigitsRequired<uint64_t>(10000000000ULL) == 11);
+	CHECK(GetBase10DigitsRequired<uint64_t>(99999999999ULL) == 11);
+	CHECK(GetBase10DigitsRequired<uint64_t>(100000000000ULL) == 12);
+	CHECK(GetBase10DigitsRequired<uint64_t>(999999999999ULL) == 12);
+	CHECK(GetBase10DigitsRequired<uint64_t>(1000000000000000000ULL) == 19);
+	CHECK(GetBase10DigitsRequired<uint64_t>(9999999999999999999ULL) == 19);
+	CHECK(GetBase10DigitsRequired<uint64_t>(10000000000000000000ULL) == 20);
+	CHECK(GetBase10DigitsRequired<uint64_t>(UINT64_MAX) == 20);
+}

@@ -303,9 +303,8 @@ TBTRDiffFlags TrainTemplateDifference(const Train *t, const TemplateVehicle *tv)
 void BreakUpRemainders(Train *t)
 {
 	while (t != nullptr) {
-		Train *move;
 		if (HasBit(t->subtype, GVSF_ENGINE)) {
-			move = t;
+			Train *move = t;
 			t = t->Next();
 			DoCommand(move->tile, move->index | (1 << 22), INVALID_VEHICLE, DC_EXEC, CMD_MOVE_RAIL_VEHICLE);
 			NeutralizeStatus(move);
@@ -315,19 +314,12 @@ void BreakUpRemainders(Train *t)
 	}
 }
 
-/* Make sure the real train wagon has the right cargo */
-void CopyWagonStatus(TemplateVehicle *from, Train *to)
-{
-	to->cargo_type = from->cargo_type;
-	to->cargo_subtype = from->cargo_subtype;
-}
-
 uint CountTrainsNeedingTemplateReplacement(GroupID g_id, const TemplateVehicle *tv)
 {
 	uint count = 0;
 	if (tv == nullptr) return count;
 
-	for (Train *t : Train::IterateFrontOnly()) {
+	for (const Train *t : Train::IterateFrontOnly()) {
 		if (t->IsPrimaryVehicle() && t->group_id == g_id && TrainTemplateDifference(t, tv) != TBTRDF_NONE) {
 			count++;
 		}
@@ -336,7 +328,7 @@ uint CountTrainsNeedingTemplateReplacement(GroupID g_id, const TemplateVehicle *
 }
 
 /* Refit each vehicle in t as is in tv, assume t and tv contain the same types of vehicles */
-CommandCost CmdRefitTrainFromTemplate(Train *t, TemplateVehicle *tv, DoCommandFlag flags)
+CommandCost CmdRefitTrainFromTemplate(Train *t, const TemplateVehicle *tv, DoCommandFlag flags)
 {
 	CommandCost cost(t->GetExpenseType(false));
 
@@ -353,7 +345,7 @@ CommandCost CmdRefitTrainFromTemplate(Train *t, TemplateVehicle *tv, DoCommandFl
 }
 
 /* Set unit direction of each vehicle in t as is in tv, assume t and tv contain the same types of vehicles */
-CommandCost CmdSetTrainUnitDirectionFromTemplate(Train *t, TemplateVehicle *tv, DoCommandFlag flags)
+CommandCost CmdSetTrainUnitDirectionFromTemplate(Train *t, const TemplateVehicle *tv, DoCommandFlag flags)
 {
 	CommandCost cost(t->GetExpenseType(false));
 
@@ -373,7 +365,7 @@ CommandCost CmdSetTrainUnitDirectionFromTemplate(Train *t, TemplateVehicle *tv, 
  *  actually moving vehicles around to work properly.
  *  We do this worst-cast test instead.
  */
-CommandCost TestBuyAllTemplateVehiclesInChain(TemplateVehicle *tv, TileIndex tile)
+CommandCost TestBuyAllTemplateVehiclesInChain(const TemplateVehicle *tv, TileIndex tile)
 {
 	CommandCost cost(EXPENSES_NEW_VEHICLES);
 
@@ -428,7 +420,7 @@ void UpdateAllTemplateVehicleImages()
 		if (tv->Prev() == nullptr) {
 			Backup<CompanyID> cur_company(_current_company, tv->owner, FILE_LINE);
 			StringID err;
-			Train* t = VirtualTrainFromTemplateVehicle(tv, err, 0);
+			Train *t = VirtualTrainFromTemplateVehicle(tv, err, 0);
 			if (t != nullptr) {
 				int tv_len = 0;
 				for (TemplateVehicle *u = tv; u != nullptr; u = u->Next()) {

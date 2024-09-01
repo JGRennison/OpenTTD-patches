@@ -13,6 +13,10 @@
 /** Widgets of the #PlansWindow class. */
 enum PlansWidgets : WidgetID {
 	WID_PLN_CAPTION,        ///< Caption of the window.
+	WID_PLN_SORT_ORDER,     ///< Direction of sort dropdown.
+	WID_PLN_SORT_CRITERIA,  ///< Criteria of sort dropdown.
+	WID_PLN_OWN_ONLY,       ///< Only show own plans.
+	WID_PLN_FILTER,         ///< Filter of name.
 	WID_PLN_LIST,
 	WID_PLN_SCROLLBAR,
 	WID_PLN_NEW,

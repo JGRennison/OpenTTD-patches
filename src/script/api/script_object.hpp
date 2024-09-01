@@ -110,6 +110,11 @@ protected:
 		return ScriptObject::DoCommandEx(tile, p1, p2, 0, cmd, text.c_str(), nullptr, callback);
 	}
 
+	static bool DoCommandAux(TileIndex tile, const CommandAuxiliaryBase *aux_data, uint cmd, Script_SuspendCallbackProc *callback = nullptr)
+	{
+		return ScriptObject::DoCommandEx(tile, 0, 0, 0, cmd, nullptr, aux_data, callback);
+	}
+
 	/**
 	 * Store the latest command executed by the script.
 	 */
