@@ -11941,3 +11941,22 @@ const char *GetExtendedVariableNameById(int id)
 
 	return nullptr;
 }
+
+static bool IsLabelPrintable(uint32_t l)
+{
+	for (uint i = 0; i < 4; i++) {
+		if ((l & 0xFF) < 0x20 || (l & 0xFF) > 0x7F) return false;
+		l >>= 8;
+	}
+	return true;
+}
+
+const char *NewGRFLabelDumper::Label(uint32_t label)
+{
+	if (IsLabelPrintable(label)) {
+		seprintf(this->buffer, lastof(this->buffer), "%c%c%c%c", label >> 24, label >> 16, label >> 8, label);
+	} else {
+		seprintf(this->buffer, lastof(this->buffer), "0x%08X", BSWAP32(label));
+	}
+	return this->buffer;
+}

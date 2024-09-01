@@ -49,26 +49,7 @@ static uint GetTownInspectWindowNumber(const Town *town)
 	return GetInspectWindowNumber(GSF_FAKE_TOWNS, town->index);
 }
 
-static bool IsLabelPrintable(uint32_t l)
-{
-	for (uint i = 0; i < 4; i++) {
-		if ((l & 0xFF) < 0x20 || (l & 0xFF) > 0x7F) return false;
-		l >>= 8;
-	}
-	return true;
-}
-
-struct label_dumper {
-	inline const char *Label(uint32_t label)
-	{
-		if (IsLabelPrintable(label)) {
-			seprintf(this->buffer, lastof(this->buffer), "%c%c%c%c", label >> 24, label >> 16, label >> 8, label);
-		} else {
-			seprintf(this->buffer, lastof(this->buffer), "0x%08X", BSWAP32(label));
-		}
-		return this->buffer;
-	}
-
+struct label_dumper : public NewGRFLabelDumper {
 	inline const char *RailTypeLabel(RailType rt)
 	{
 		return this->Label(GetRailTypeInfo(rt)->label);
@@ -78,9 +59,6 @@ struct label_dumper {
 	{
 		return this->Label(GetRoadTypeInfo(rt)->label);
 	}
-
-private:
-	char buffer[64];
 };
 
 static void DumpRailTypeList(NIExtraInfoOutput &output, const char *prefix, RailTypes rail_types, RailTypes mark = RAILTYPES_NONE)
@@ -1364,9 +1342,9 @@ class NIHCargo : public NIHelper {
 		output.print(buffer);
 
 		const CargoSpec *spec = CargoSpec::Get(index);
-		seprintf(buffer, lastof(buffer), "  Bit: %2u, Label: %c%c%c%c, Callback mask: 0x%02X",
+		seprintf(buffer, lastof(buffer), "  Bit: %2u, Label: %s, Callback mask: 0x%02X",
 				spec->bitnum,
-				spec->label.base() >> 24, spec->label.base() >> 16, spec->label.base() >> 8, spec->label.base(),
+				label_dumper().Label(spec->label.base()),
 				spec->callback_mask);
 		output.print(buffer);
 		int written = seprintf(buffer, lastof(buffer), "  Cargo class: %s%s%s%s%s%s%s%s%s%s%s",
@@ -1626,7 +1604,7 @@ class NIHObject : public NIHelper {
 			}
 			if (spec->class_index != INVALID_OBJECT_CLASS) {
 				uint class_id = ObjectClass::Get(spec->class_index)->global_id;
-				b += seprintf(b, lastof(buffer), ", class ID: %c%c%c%c", class_id >> 24, class_id >> 16, class_id >> 8, class_id);
+				b += seprintf(b, lastof(buffer), ", class ID: %s", label_dumper().Label(class_id));
 			}
 			output.print(buffer);
 			seprintf(buffer, lastof(buffer), "  view: %u, colour: %u, effective foundation: %u", obj->view, obj->colour, GetObjectEffectiveFoundationType(index));
@@ -2492,7 +2470,7 @@ class NIHRoadStop : public NIHelper {
 		const RoadStopSpec *spec = GetRoadStopSpec(index);
 		if (spec != nullptr) {
 			uint class_id = RoadStopClass::Get(spec->class_index)->global_id;
-			char *b = buffer + seprintf(buffer, lastof(buffer), "  class ID: %c%c%c%c", class_id >> 24, class_id >> 16, class_id >> 8, class_id);
+			char *b = buffer + seprintf(buffer, lastof(buffer), "  class ID: %s", label_dumper().Label(class_id));
 			if (spec->grf_prop.grffile != nullptr) {
 				b += seprintf(b, lastof(buffer), "  (local ID: %u)", spec->grf_prop.local_id);
 			}
