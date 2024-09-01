@@ -105,14 +105,17 @@
 #include <sys/types.h>
 #include <algorithm>
 #include <functional>
-#include <iostream>
 #include <iterator>
 #include <limits>
 #include <type_traits>
 #include <new>
-#include <ostream>
 #include <string>
 #include <utility>
+
+#ifndef BTREE_NO_IOSTREAM
+#include <iostream>
+#include <ostream>
+#endif
 
 namespace btree {
 
@@ -1160,6 +1163,7 @@ class btree : public Params::key_compare {
     return btree_compare_keys(key_comp(), x, y);
   }
 
+#ifndef BTREE_NO_IOSTREAM
   // Dump the btree to the specified ostream. Requires that operator<< is
   // defined for Key and Value.
   void dump(std::ostream &os) const {
@@ -1167,6 +1171,7 @@ class btree : public Params::key_compare {
       internal_dump(os, root(), 0);
     }
   }
+#endif
 
   // Verifies the structure of the btree.
   void verify() const;
@@ -1398,8 +1403,10 @@ class btree : public Params::key_compare {
   // Deletes a node and all of its children.
   void internal_clear(node_type *node);
 
+#ifndef BTREE_NO_IOSTREAM
   // Dumps a node and all of its children to the specified ostream.
   void internal_dump(std::ostream &os, const node_type *node, int level) const;
+#endif
 
   // Verifies the tree structure of node.
   int internal_verify(const node_type *node,
@@ -2400,6 +2407,7 @@ void btree<P>::internal_clear(node_type *node) {
   }
 }
 
+#ifndef BTREE_NO_IOSTREAM
 template <typename P>
 void btree<P>::internal_dump(
     std::ostream &os, const node_type *node, int level) const {
@@ -2416,6 +2424,7 @@ void btree<P>::internal_dump(
     internal_dump(os, node->child(node->count()), level + 1);
   }
 }
+#endif
 
 template <typename P>
 int btree<P>::internal_verify(

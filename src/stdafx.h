@@ -393,6 +393,9 @@ typedef uint64_t unaligned_uint64;
 /* JSON: Don't include IO stream headers/support */
 #define JSON_NO_IO
 
+/* cpp-btree: Don't include IO stream headers, dump support */
+#define BTREE_NO_IOSTREAM
+
 [[noreturn]] void CDECL usererror(const char *str, ...) WARN_FORMAT(1, 2);
 [[noreturn]] void CDECL error(const char *str, ...) WARN_FORMAT(1, 2);
 [[noreturn]] void CDECL assert_msg_error(int line, const char *file, const char *expr, const char *extra, const char *str, ...) WARN_FORMAT(5, 6);

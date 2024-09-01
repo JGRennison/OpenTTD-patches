@@ -99,9 +99,11 @@ class btree_container {
   void swap(self_type &x) {
     tree_.swap(x.tree_);
   }
+#ifndef BTREE_NO_IOSTREAM
   void dump(std::ostream &os) const {
     tree_.dump(os);
   }
+#endif
   void verify() const {
     tree_.verify();
   }
@@ -140,11 +142,13 @@ class btree_container {
   Tree tree_;
 };
 
+#ifndef BTREE_NO_IOSTREAM
 template <typename T>
 inline std::ostream& operator<<(std::ostream &os, const btree_container<T> &b) {
   b.dump(os);
   return os;
 }
+#endif
 
 // A common base class for btree_set and safe_btree_set.
 template <typename Tree>
