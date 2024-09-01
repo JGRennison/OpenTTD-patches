@@ -1882,6 +1882,11 @@ STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{STRING}: {NUM}
 STR_PLANS_LIST_ITEM_LINE                                        : -- Линия #{NUM}: {NUM} сегмент{P "" а ов}
 STR_PLANS_LIST_TOOLTIP                                          :{BLACK}Дважды щелкните любой элемент в списке, чтобы (раз)свернуть связанный с ним план.{}Ctrl+клик - прокрутить до.
 STR_PLANS_QUERY_RENAME_PLAN                                     :{WHITE}Переименовать план
+STR_PLANS_OWN_ONLY                                              :{BLACK}Только свои
+STR_PLANS_OWN_ONLY_TOOLTIP                                      :{BLACK}Показать ваши планы
+STR_SORT_BY_PLAN_ID                                             :Идентификатор плана
+STR_SORT_BY_OWNER                                               :Владелец
+STR_SORT_BY_DATE                                                :Дата
 
 STR_WARNING_LOADGAME_REMOVED_UNCORRECTABLE_VEHICLES             :{WHITE}Удалено {NUM} транспорт{P "" а ов}, которые были признаны некорректными во время загрузки
 
