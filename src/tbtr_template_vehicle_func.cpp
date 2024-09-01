@@ -33,10 +33,6 @@
 #include "window_gui.h"
 #include "zoom_func.h"
 
-
-#include <map>
-#include <stdio.h>
-
 #include "safeguards.h"
 
 bool _template_vehicle_images_valid = false;

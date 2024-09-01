@@ -45,9 +45,6 @@
 #include "tbtr_template_gui_create.h"
 #include "tbtr_template_vehicle.h"
 
-#include <iostream>
-#include <stdio.h>
-
 #include "safeguards.h"
 
 enum TemplateReplaceWindowWidgets {
