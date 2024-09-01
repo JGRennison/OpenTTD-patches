@@ -24,7 +24,7 @@
 
 #ifdef USE_SCOPE_INFO
 
-std::vector<std::function<int(char *, const char *)>> _scope_stack;
+std::vector<ScopeStackRecord> _scope_stack;
 
 int WriteScopeLog(char *buf, const char *last)
 {
@@ -34,7 +34,7 @@ int WriteScopeLog(char *buf, const char *last)
 		int depth = 0;
 		for (auto it = _scope_stack.rbegin(); it != _scope_stack.rend(); ++it, depth++) {
 			b += seprintf(b, last, "\n    %2d: ", depth);
-			b += (*it)(b, last);
+			b += it->functor(it->target, b, last);
 		}
 		b += seprintf(b, last, "\n\n");
 	}

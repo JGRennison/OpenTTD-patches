@@ -12,7 +12,6 @@
 
 #include "tile_type.h"
 
-#include <functional>
 #include <vector>
 
 struct Vehicle;
@@ -21,12 +20,19 @@ struct Window;
 
 #ifdef USE_SCOPE_INFO
 
-extern std::vector<std::function<int(char *, const char *)>> _scope_stack;
+struct ScopeStackRecord {
+	using ScopeStackFunctor = int (*)(void *, char *, const char *);
+
+	ScopeStackFunctor functor;
+	void *target;
+};
+
+extern std::vector<ScopeStackRecord> _scope_stack;
 
 struct scope_info_func_obj {
-	scope_info_func_obj(std::function<int(char *, const char *)> func)
+	scope_info_func_obj(ScopeStackRecord record)
 	{
-		_scope_stack.emplace_back(std::move(func));
+		_scope_stack.emplace_back(record);
 	}
 
 	scope_info_func_obj(const scope_info_func_obj &copysrc) = delete;
@@ -43,16 +49,17 @@ int WriteScopeLog(char *buf, const char *last);
 
 /**
  * This creates a lambda in the current scope with the specified capture which outputs the given args as a format string.
- * This lambda is then captured by reference in a std::function which is pushed onto the scope stack
+ * This lambda is then captured by pointer in a ScopeStackRecord which is pushed onto the scope stack
  * The scope stack is popped at the end of the scope
  */
 #define SCOPE_INFO_FMT(capture, ...) \
 	auto SCOPE_INFO_PASTE(_sc_lm_, __LINE__) = capture (char *buf, const char *last) { \
 		return seprintf(buf, last, __VA_ARGS__); \
 	}; \
-	scope_info_func_obj SCOPE_INFO_PASTE(_sc_obj_, __LINE__) ([&](char *buf, const char *last) -> int { \
-		return SCOPE_INFO_PASTE(_sc_lm_, __LINE__) (buf, last); \
-	});
+	scope_info_func_obj SCOPE_INFO_PASTE(_sc_obj_, __LINE__) (ScopeStackRecord{ [](void *target, char *buf, const char *last) -> int { \
+		auto targ = static_cast<decltype(& SCOPE_INFO_PASTE(_sc_lm_, __LINE__))>(target); \
+		return (*targ)(buf, last); \
+	}, static_cast<void *>(& SCOPE_INFO_PASTE(_sc_lm_, __LINE__)) });
 
 #else /* USE_SCOPE_INFO */
 
