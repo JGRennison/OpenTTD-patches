@@ -26,6 +26,7 @@
 
 #include "32bpp_anim.hpp"
 #include "32bpp_sse2.hpp"
+#include "../cpu.h"
 
 /** A partially 32 bpp blitter with palette animation. */
 class Blitter_32bppSSE2_Anim : public Blitter_32bppAnim {

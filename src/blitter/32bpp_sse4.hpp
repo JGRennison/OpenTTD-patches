@@ -25,6 +25,7 @@
 #endif
 
 #include "32bpp_ssse3.hpp"
+#include "../cpu.h"
 
 /** The SSE4 32 bpp blitter (without palette animation). */
 class Blitter_32bppSSE4 : public Blitter_32bppSSSE3 {

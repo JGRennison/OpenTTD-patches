@@ -27,6 +27,7 @@
 #include "32bpp_anim.hpp"
 #include "32bpp_anim_sse2.hpp"
 #include "32bpp_sse4.hpp"
+#include "../cpu.h"
 
 #undef MARGIN_NORMAL_THRESHOLD
 #define MARGIN_NORMAL_THRESHOLD 4
