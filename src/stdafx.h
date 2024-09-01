@@ -390,6 +390,9 @@ typedef uint64_t unaligned_uint64;
 /* Upstream: For the FMT library we only want to use the headers, not link to some library. */
 //#define FMT_HEADER_ONLY
 
+/* JSON: Don't include IO stream headers/support */
+#define JSON_NO_IO
+
 [[noreturn]] void CDECL usererror(const char *str, ...) WARN_FORMAT(1, 2);
 [[noreturn]] void CDECL error(const char *str, ...) WARN_FORMAT(1, 2);
 [[noreturn]] void CDECL assert_msg_error(int line, const char *file, const char *expr, const char *extra, const char *str, ...) WARN_FORMAT(5, 6);
