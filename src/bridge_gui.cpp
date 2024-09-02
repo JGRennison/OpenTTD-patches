@@ -166,7 +166,7 @@ private:
 	}
 
 public:
-	BuildBridgeWindow(WindowDesc *desc, TileIndex start, TileIndex end, uint32_t br_type, GUIBridgeList &&bl) : Window(desc),
+	BuildBridgeWindow(WindowDesc &desc, TileIndex start, TileIndex end, uint32_t br_type, GUIBridgeList &&bl) : Window(desc),
 		start_tile(start),
 		end_tile(end),
 		type(br_type),
@@ -353,7 +353,7 @@ static WindowDesc _build_bridge_desc(__FILE__, __LINE__,
 	WDP_AUTO, "build_bridge", 200, 114,
 	WC_BUILD_BRIDGE, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_build_bridge_widgets), std::end(_nested_build_bridge_widgets)
+	_nested_build_bridge_widgets
 );
 
 /**
@@ -461,7 +461,7 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 	}
 
 	if (!bl.empty()) {
-		new BuildBridgeWindow(&_build_bridge_desc, start, end, type, std::move(bl));
+		new BuildBridgeWindow(_build_bridge_desc, start, end, type, std::move(bl));
 	} else {
 		ShowErrorMessage(STR_ERROR_CAN_T_BUILD_BRIDGE_HERE, errmsg, WL_INFO, TileX(end) * TILE_SIZE, TileY(end) * TILE_SIZE);
 	}

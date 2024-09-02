@@ -154,7 +154,7 @@ public:
 	 * @param variant Which aspect of the order to display/edit: load or unload.
 	 * @pre \c v != nullptr
 	 */
-	CargoTypeOrdersWindow(WindowDesc *desc, const Vehicle *v, VehicleOrderID order_id, CargoTypeOrdersWindowVariant variant) : Window(desc)
+	CargoTypeOrdersWindow(WindowDesc &desc, const Vehicle *v, VehicleOrderID order_id, CargoTypeOrdersWindowVariant variant) : Window(desc)
 	{
 		this->variant = variant;
 		this->cargo_type_order_dropdown = (this->variant == CTOWV_LOAD) ? _cargo_type_load_order_drowdown : _cargo_type_unload_order_drowdown;
@@ -409,7 +409,7 @@ static WindowDesc _cargo_type_load_orders_widgets (__FILE__, __LINE__,
 	WDP_AUTO, nullptr, 195, 186,
 	WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, WC_VEHICLE_ORDERS,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_cargo_type_orders_widgets), std::end(_nested_cargo_type_orders_widgets)
+	_nested_cargo_type_orders_widgets
 );
 
 /** Window description for the 'unload' variant of CargoTypeOrdersWindow. */
@@ -417,7 +417,7 @@ static WindowDesc _cargo_type_unload_orders_widgets (__FILE__, __LINE__,
 	WDP_AUTO, nullptr, 195, 186,
 	WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, WC_VEHICLE_ORDERS,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_cargo_type_orders_widgets), std::end(_nested_cargo_type_orders_widgets)
+	_nested_cargo_type_orders_widgets
 );
 
 /**
@@ -432,7 +432,7 @@ void ShowCargoTypeOrdersWindow(const Vehicle *v, Window *parent, VehicleOrderID 
 {
 	WindowDesc &desc = (variant == CTOWV_LOAD) ? _cargo_type_load_orders_widgets : _cargo_type_unload_orders_widgets;
 	CloseWindowById(desc.cls, v->index);
-	CargoTypeOrdersWindow *w = new CargoTypeOrdersWindow(&desc, v, order_id, variant);
+	CargoTypeOrdersWindow *w = new CargoTypeOrdersWindow(desc, v, order_id, variant);
 	w->parent = parent;
 }
 
@@ -1927,7 +1927,7 @@ private:
 	}
 
 public:
-	OrdersWindow(WindowDesc *desc, const Vehicle *v) : GeneralVehicleWindow(desc, v)
+	OrdersWindow(WindowDesc &desc, const Vehicle *v) : GeneralVehicleWindow(desc, v)
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_O_SCROLLBAR);
@@ -3758,7 +3758,7 @@ public:
 	void OnResize() override
 	{
 		/* Update the scroll bar */
-		this->vscroll->SetCapacityFromWidget(this, WID_O_ORDER_LIST);
+		this->vscroll->SetCapacityFromWidget(this, WID_O_ORDER_LIST, WidgetDimensions::scaled.framerect.Vertical());
 	}
 
 	virtual void OnFocus(Window *previously_focused_window) override
@@ -3963,7 +3963,7 @@ static WindowDesc _orders_train_desc(__FILE__, __LINE__,
 	WDP_AUTO, "view_vehicle_orders_train", 384, 100,
 	WC_VEHICLE_ORDERS, WC_VEHICLE_VIEW,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_orders_train_widgets), std::end(_nested_orders_train_widgets),
+	_nested_orders_train_widgets,
 	&OrdersWindow::hotkeys
 );
 
@@ -4115,7 +4115,7 @@ static WindowDesc _orders_desc(__FILE__, __LINE__,
 	WDP_AUTO, "view_vehicle_orders", 384, 100,
 	WC_VEHICLE_ORDERS, WC_VEHICLE_VIEW,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_orders_widgets), std::end(_nested_orders_widgets),
+	_nested_orders_widgets,
 	&OrdersWindow::hotkeys
 );
 
@@ -4152,7 +4152,7 @@ static WindowDesc _other_orders_desc(__FILE__, __LINE__,
 	WDP_AUTO, "view_vehicle_orders_competitor", 384, 86,
 	WC_VEHICLE_ORDERS, WC_VEHICLE_VIEW,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_other_orders_widgets), std::end(_nested_other_orders_widgets),
+	_nested_other_orders_widgets,
 	&OrdersWindow::hotkeys
 );
 
@@ -4169,8 +4169,8 @@ void ShowOrdersWindow(const Vehicle *v)
 	 * TODO Rewrite the order GUI to not use different WindowDescs.
 	 */
 	if (v->owner != _local_company) {
-		new OrdersWindow(&_other_orders_desc, v);
+		new OrdersWindow(_other_orders_desc, v);
 	} else {
-		new OrdersWindow(v->IsGroundVehicle() ? &_orders_train_desc : &_orders_desc, v);
+		new OrdersWindow(v->IsGroundVehicle() ? _orders_train_desc : _orders_desc, v);
 	}
 }

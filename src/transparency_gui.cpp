@@ -52,7 +52,7 @@ void PostTransparencyOptionLoad()
 class TransparenciesWindow : public Window
 {
 public:
-	TransparenciesWindow(WindowDesc *desc, int window_number) : Window(desc)
+	TransparenciesWindow(WindowDesc &desc, int window_number) : Window(desc)
 	{
 		this->InitNested(window_number);
 	}
@@ -178,7 +178,7 @@ static WindowDesc _transparency_desc(__FILE__, __LINE__,
 	WDP_MANUAL, "toolbar_transparency", 0, 0,
 	WC_TRANSPARENCY_TOOLBAR, WC_NONE,
 	0,
-	std::begin(_nested_transparency_widgets), std::end(_nested_transparency_widgets)
+	_nested_transparency_widgets
 );
 
 /**
@@ -186,5 +186,5 @@ static WindowDesc _transparency_desc(__FILE__, __LINE__,
  */
 void ShowTransparencyToolbar()
 {
-	AllocateWindowDescFront<TransparenciesWindow>(&_transparency_desc, 0);
+	AllocateWindowDescFront<TransparenciesWindow>(_transparency_desc, 0);
 }

@@ -83,6 +83,8 @@ void RebuildTownKdtree()
 	_town_kdtree.Build(townids.begin(), townids.end());
 }
 
+/** Set if a town is being generated. */
+static bool _generating_town = false;
 
 /**
  * Check if a town 'owns' a bridge.
@@ -498,6 +500,8 @@ void ClearAllTownCachedNames()
 static void ChangePopulation(Town *t, int mod)
 {
 	t->cache.population += mod;
+	if (_generating_town) [[unlikely]] return;
+
 	InvalidateWindowData(WC_TOWN_VIEW, t->index); // Cargo requirements may appear/vanish for small populations
 	if (_settings_client.gui.population_in_label) t->UpdateVirtCoord();
 
@@ -2171,6 +2175,8 @@ static void UpdateTownGrowth(Town *t);
  */
 static void DoCreateTown(Town *t, TileIndex tile, uint32_t townnameparts, TownSize size, bool city, TownLayout layout, bool manual)
 {
+	AutoRestoreBackup backup(_generating_town, true);
+
 	t->xy = tile;
 	t->cache.num_houses = 0;
 	t->time_until_rebuild = 10;
@@ -2214,9 +2220,6 @@ static void DoCreateTown(Town *t, TileIndex tile, uint32_t townnameparts, TownSi
 	}
 	t->townnameparts = townnameparts;
 
-	t->UpdateVirtCoord();
-	InvalidateWindowData(WC_TOWN_DIRECTORY, 0, TDIWD_FORCE_REBUILD);
-
 	t->InitializeLayout(layout);
 
 	t->larger_town = city;
@@ -2233,6 +2236,9 @@ static void DoCreateTown(Town *t, TileIndex tile, uint32_t townnameparts, TownSi
 	do {
 		GrowTown(t);
 	} while (--i);
+
+	t->UpdateVirtCoord();
+	InvalidateWindowData(WC_TOWN_DIRECTORY, 0, TDIWD_FORCE_REBUILD);
 
 	t->cache.num_houses -= x;
 	UpdateTownRadius(t);
@@ -2979,15 +2985,15 @@ static void BuildTownHouse(Town *t, TileIndex tile, const HouseSpec *hs, HouseID
 	uint8_t construction_stage = 0;
 
 	if (_generating_world || _game_mode == GM_EDITOR) {
-		uint32_t r = Random();
+		uint32_t construction_random = Random();
 
 		construction_stage = TOWN_HOUSE_COMPLETED;
-		if (Chance16(1, 7)) construction_stage = GB(r, 0, 2);
+		if (_generating_world && Chance16(1, 7)) construction_stage = GB(construction_random, 0, 2);
 
 		if (construction_stage == TOWN_HOUSE_COMPLETED) {
 			ChangePopulation(t, hs->population);
 		} else {
-			construction_counter = GB(r, 2, 2);
+			construction_counter = GB(construction_random, 2, 2);
 		}
 	}
 
@@ -3863,8 +3869,17 @@ uint GetMaskOfTownActions(int *nump, CompanyID cid, const Town *t)
 		for (uint i = 0; i != lengthof(_town_action_costs); i++) {
 			const TownActions cur = (TownActions)(1 << i);
 
-			/* Is the company not able to bribe ? */
-			if (cur == TACT_BRIBE && (!_settings_game.economy.bribe || t->ratings[cid] >= RATING_BRIBE_MAXIMUM)) continue;
+			/* Is the company prohibited from bribing ? */
+			if (cur == TACT_BRIBE) {
+				/* Company can't bribe if setting is disabled */
+				if (!_settings_game.economy.bribe) continue;
+				/* Company can bribe if another company has exclusive transport rights,
+				 * or its standing with the town is less than outstanding. */
+				if (t->ratings[cid] >= RATING_BRIBE_MAXIMUM) {
+					if (t->exclusivity == _current_company) continue;
+					if (t->exclusive_counter == 0) continue;
+				}
+			}
 
 			/* Is the company not able to buy exclusive rights ? */
 			if (cur == TACT_BUY_RIGHTS && (!_settings_game.economy.exclusive_rights || t->exclusive_counter != 0)) continue;

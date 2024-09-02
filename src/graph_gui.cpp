@@ -51,7 +51,7 @@ static_assert(static_cast<int64_t>(INT64_MAX_IN_DOUBLE) < INT64_MAX);
 /****************/
 
 struct GraphLegendWindow : Window {
-	GraphLegendWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
+	GraphLegendWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
 		this->InitNested(window_number);
 
@@ -148,12 +148,12 @@ static WindowDesc _graph_legend_desc(__FILE__, __LINE__,
 	WDP_AUTO, "graph_legend", 0, 0,
 	WC_GRAPH_LEGEND, WC_NONE,
 	0,
-	std::begin(_nested_graph_legend_widgets), std::end(_nested_graph_legend_widgets)
+	_nested_graph_legend_widgets
 );
 
 static void ShowGraphLegend()
 {
-	AllocateWindowDescFront<GraphLegendWindow>(&_graph_legend_desc, 0);
+	AllocateWindowDescFront<GraphLegendWindow>(_graph_legend_desc, 0);
 }
 
 /** Contains the interval of a graph's data. */
@@ -507,7 +507,7 @@ protected:
 	}
 
 
-	BaseGraphWindow(WindowDesc *desc, StringID format_str_y_axis) :
+	BaseGraphWindow(WindowDesc &desc, StringID format_str_y_axis) :
 			Window(desc),
 			format_str_y_axis(format_str_y_axis)
 	{
@@ -674,7 +674,7 @@ public:
 /********************/
 
 struct OperatingProfitGraphWindow : BaseGraphWindow {
-	OperatingProfitGraphWindow(WindowDesc *desc, WindowNumber window_number) :
+	OperatingProfitGraphWindow(WindowDesc &desc, WindowNumber window_number) :
 			BaseGraphWindow(desc, STR_JUST_CURRENCY_SHORT)
 	{
 		this->num_on_x_axis = GRAPH_NUM_MONTHS;
@@ -718,13 +718,13 @@ static WindowDesc _operating_profit_desc(__FILE__, __LINE__,
 	WDP_AUTO, "graph_operating_profit", 0, 0,
 	WC_OPERATING_PROFIT, WC_NONE,
 	0,
-	std::begin(_nested_operating_profit_widgets), std::end(_nested_operating_profit_widgets)
+	_nested_operating_profit_widgets
 );
 
 
 void ShowOperatingProfitGraph()
 {
-	AllocateWindowDescFront<OperatingProfitGraphWindow>(&_operating_profit_desc, 0);
+	AllocateWindowDescFront<OperatingProfitGraphWindow>(_operating_profit_desc, 0);
 }
 
 
@@ -733,7 +733,7 @@ void ShowOperatingProfitGraph()
 /****************/
 
 struct IncomeGraphWindow : BaseGraphWindow {
-	IncomeGraphWindow(WindowDesc *desc, WindowNumber window_number) :
+	IncomeGraphWindow(WindowDesc &desc, WindowNumber window_number) :
 			BaseGraphWindow(desc, STR_JUST_CURRENCY_SHORT)
 	{
 		this->num_on_x_axis = GRAPH_NUM_MONTHS;
@@ -777,12 +777,12 @@ static WindowDesc _income_graph_desc(__FILE__, __LINE__,
 	WDP_AUTO, "graph_income", 0, 0,
 	WC_INCOME_GRAPH, WC_NONE,
 	0,
-	std::begin(_nested_income_graph_widgets), std::end(_nested_income_graph_widgets)
+	_nested_income_graph_widgets
 );
 
 void ShowIncomeGraph()
 {
-	AllocateWindowDescFront<IncomeGraphWindow>(&_income_graph_desc, 0);
+	AllocateWindowDescFront<IncomeGraphWindow>(_income_graph_desc, 0);
 }
 
 /*******************/
@@ -795,7 +795,7 @@ struct ExcludingCargoBaseGraphWindow : BaseGraphWindow {
 	Scrollbar *vscroll; ///< Cargo list scrollbar.
 	uint legend_width;  ///< Width of legend 'blob'.
 
-	ExcludingCargoBaseGraphWindow(WindowDesc *desc, StringID format_str_y_axis):
+	ExcludingCargoBaseGraphWindow(WindowDesc &desc, StringID format_str_y_axis):
 			BaseGraphWindow(desc, format_str_y_axis)
 	{}
 
@@ -911,7 +911,7 @@ struct ExcludingCargoBaseGraphWindow : BaseGraphWindow {
 struct DeliveredCargoGraphWindow : ExcludingCargoBaseGraphWindow {
 	bool graph_by_cargo_mode = false;
 
-	DeliveredCargoGraphWindow(WindowDesc *desc, WindowNumber window_number) :
+	DeliveredCargoGraphWindow(WindowDesc &desc, WindowNumber window_number) :
 			ExcludingCargoBaseGraphWindow(desc, STR_JUST_COMMA)
 	{
 		this->num_on_x_axis = GRAPH_NUM_MONTHS;
@@ -1102,12 +1102,12 @@ static WindowDesc _delivered_cargo_graph_desc(__FILE__, __LINE__,
 	WDP_AUTO, "graph_delivered_cargo", 0, 0,
 	WC_DELIVERED_CARGO, WC_NONE,
 	0,
-	std::begin(_nested_delivered_cargo_graph_widgets), std::end(_nested_delivered_cargo_graph_widgets)
+	_nested_delivered_cargo_graph_widgets
 );
 
 void ShowDeliveredCargoGraph()
 {
-	AllocateWindowDescFront<DeliveredCargoGraphWindow>(&_delivered_cargo_graph_desc, 0);
+	AllocateWindowDescFront<DeliveredCargoGraphWindow>(_delivered_cargo_graph_desc, 0);
 }
 
 /***********************/
@@ -1115,7 +1115,7 @@ void ShowDeliveredCargoGraph()
 /***********************/
 
 struct PerformanceHistoryGraphWindow : BaseGraphWindow {
-	PerformanceHistoryGraphWindow(WindowDesc *desc, WindowNumber window_number) :
+	PerformanceHistoryGraphWindow(WindowDesc &desc, WindowNumber window_number) :
 			BaseGraphWindow(desc, STR_JUST_COMMA)
 	{
 		this->num_on_x_axis = GRAPH_NUM_MONTHS;
@@ -1166,12 +1166,12 @@ static WindowDesc _performance_history_desc(__FILE__, __LINE__,
 	WDP_AUTO, "graph_performance", 0, 0,
 	WC_PERFORMANCE_HISTORY, WC_NONE,
 	0,
-	std::begin(_nested_performance_history_widgets), std::end(_nested_performance_history_widgets)
+	_nested_performance_history_widgets
 );
 
 void ShowPerformanceHistoryGraph()
 {
-	AllocateWindowDescFront<PerformanceHistoryGraphWindow>(&_performance_history_desc, 0);
+	AllocateWindowDescFront<PerformanceHistoryGraphWindow>(_performance_history_desc, 0);
 }
 
 /*****************/
@@ -1179,7 +1179,7 @@ void ShowPerformanceHistoryGraph()
 /*****************/
 
 struct CompanyValueGraphWindow : BaseGraphWindow {
-	CompanyValueGraphWindow(WindowDesc *desc, WindowNumber window_number) :
+	CompanyValueGraphWindow(WindowDesc &desc, WindowNumber window_number) :
 			BaseGraphWindow(desc, STR_JUST_CURRENCY_SHORT)
 	{
 		this->num_on_x_axis = GRAPH_NUM_MONTHS;
@@ -1223,12 +1223,12 @@ static WindowDesc _company_value_graph_desc(__FILE__, __LINE__,
 	WDP_AUTO, "graph_company_value", 0, 0,
 	WC_COMPANY_VALUE, WC_NONE,
 	0,
-	std::begin(_nested_company_value_graph_widgets), std::end(_nested_company_value_graph_widgets)
+	_nested_company_value_graph_widgets
 );
 
 void ShowCompanyValueGraph()
 {
-	AllocateWindowDescFront<CompanyValueGraphWindow>(&_company_value_graph_desc, 0);
+	AllocateWindowDescFront<CompanyValueGraphWindow>(_company_value_graph_desc, 0);
 }
 
 /*****************/
@@ -1240,7 +1240,7 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 	Scrollbar *vscroll; ///< Cargo list scrollbar.
 	uint legend_width;  ///< Width of legend 'blob'.
 
-	PaymentRatesGraphWindow(WindowDesc *desc, WindowNumber window_number) :
+	PaymentRatesGraphWindow(WindowDesc &desc, WindowNumber window_number) :
 			BaseGraphWindow(desc, STR_JUST_CURRENCY_SHORT)
 	{
 		this->num_on_x_axis = 20;
@@ -1573,13 +1573,13 @@ static WindowDesc _cargo_payment_rates_desc(__FILE__, __LINE__,
 	WDP_AUTO, "graph_cargo_payment_rates", 0, 0,
 	WC_PAYMENT_RATES, WC_NONE,
 	0,
-	std::begin(_nested_cargo_payment_rates_widgets), std::end(_nested_cargo_payment_rates_widgets)
+	_nested_cargo_payment_rates_widgets
 );
 
 
 void ShowCargoPaymentRates()
 {
-	AllocateWindowDescFront<PaymentRatesGraphWindow>(&_cargo_payment_rates_desc, 0);
+	AllocateWindowDescFront<PaymentRatesGraphWindow>(_cargo_payment_rates_desc, 0);
 }
 
 /*****************************/
@@ -1590,7 +1590,7 @@ struct PerformanceRatingDetailWindow : Window {
 	static CompanyID company;
 	int timeout;
 
-	PerformanceRatingDetailWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
+	PerformanceRatingDetailWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
 		this->UpdateCompanyStats();
 
@@ -1867,12 +1867,12 @@ static WindowDesc _performance_rating_detail_desc(__FILE__, __LINE__,
 	WDP_AUTO, "league_details", 0, 0,
 	WC_PERFORMANCE_DETAIL, WC_NONE,
 	0,
-	std::begin(_nested_performance_rating_detail_widgets), std::end(_nested_performance_rating_detail_widgets)
+	_nested_performance_rating_detail_widgets
 );
 
 void ShowPerformanceRatingDetail()
 {
-	AllocateWindowDescFront<PerformanceRatingDetailWindow>(&_performance_rating_detail_desc, 0);
+	AllocateWindowDescFront<PerformanceRatingDetailWindow>(_performance_rating_detail_desc, 0);
 }
 
 void InitializeGraphGui()
@@ -1892,7 +1892,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 	CargoTypes legend_excluded_cargo;
 	CargoTypes present_cargoes;
 
-	StationCargoGraphWindow(WindowDesc *desc, WindowNumber window) :
+	StationCargoGraphWindow(WindowDesc &desc, WindowNumber window) :
 		BaseGraphWindow(desc, STR_JUST_COMMA)
 	{
 		station_id = static_cast<uint16_t>(window);
@@ -2143,12 +2143,12 @@ static WindowDesc _station_cargo_desc(__FILE__, __LINE__,
 	WDP_AUTO, "graph_station_cargo", 0, 0,
 	WC_STATION_CARGO, WC_NONE,
 	0,
-	std::begin(_nested_station_cargo_widgets), std::end(_nested_station_cargo_widgets)
+	_nested_station_cargo_widgets
 );
 
 
 void ShowStationCargo(StationID station_id)
 {
-	AllocateWindowDescFront<StationCargoGraphWindow>(&_station_cargo_desc, station_id);
+	AllocateWindowDescFront<StationCargoGraphWindow>(_station_cargo_desc, station_id);
 }
 

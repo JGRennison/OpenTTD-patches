@@ -70,7 +70,7 @@ static WindowDesc _departures_desc(__FILE__, __LINE__,
 	WDP_AUTO, "depatures", 260, 246,
 	WC_DEPARTURES_BOARD, WC_NONE,
 	0,
-	std::begin(_nested_departures_list), std::end(_nested_departures_list)
+	_nested_departures_list
 );
 
 static uint cached_date_width = 0;         ///< The cached maximum width required to display a date.
@@ -86,7 +86,7 @@ void FlushDeparturesWindowTextCaches()
 	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 1);
 }
 
-template<bool Twaypoint = false>
+template<bool Twaypoint>
 struct DeparturesWindow : public Window {
 protected:
 	StationID station;         ///< The station whose departures we're showing.
@@ -233,7 +233,7 @@ protected:
 
 public:
 
-	DeparturesWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc),
+	DeparturesWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc),
 		station(window_number),
 		departures_invalid(true),
 		vehicles_invalid(true),
@@ -570,7 +570,7 @@ public:
  */
 void ShowStationDepartures(StationID station)
 {
-	AllocateWindowDescFront<DeparturesWindow<> >(&_departures_desc, station);
+	AllocateWindowDescFront<DeparturesWindow<false>>(_departures_desc, station);
 }
 
 /**
@@ -579,7 +579,7 @@ void ShowStationDepartures(StationID station)
  */
 void ShowWaypointDepartures(StationID waypoint)
 {
-	AllocateWindowDescFront<DeparturesWindow<true> >(&_departures_desc, waypoint);
+	AllocateWindowDescFront<DeparturesWindow<true>>(_departures_desc, waypoint);
 }
 
 template<bool Twaypoint>

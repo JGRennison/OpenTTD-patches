@@ -1116,26 +1116,58 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 	return CommandCost();
 }
 
+static bool ExecuteAllowListCtrlAction(CompanyAllowListCtrlAction action, Company *c, const std::string &public_key)
+{
+	switch (action) {
+		case CALCA_ADD:
+			return c->allow_list.Add(public_key);
+
+		case CALCA_REMOVE:
+			return c->allow_list.Remove(public_key);
+
+		default:
+			NOT_REACHED();
+	}
+}
+
 /**
- * Add the given public key to the allow list of this company.
+ * Add or remove the given public key to the allow list of this company.
  * @param flags Operation to perform.
- * @param public_key The public key of the client to add.
+ * @param action The action to perform.
+ * @param public_key The public key of the client to add or remove.
  * @return The cost of this operation or an error.
  */
-CommandCost CmdCompanyAddAllowList(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdCompanyAllowListCtrl(DoCommandFlag flags, CompanyAllowListCtrlAction action, const std::string &public_key)
 {
-	return CMD_ERROR; // Not implemented at this time
+	Company *c = Company::GetIfValid(_current_company);
+	if (c == nullptr) return CMD_ERROR;
 
-/*
+	/* The public key length includes the '\0'. */
+	if (public_key.size() != NETWORK_PUBLIC_KEY_LENGTH - 1) return CMD_ERROR;
+
+	switch (action) {
+		case CALCA_ADD:
+		case CALCA_REMOVE:
+			break;
+
+		default:
+			return CMD_ERROR;
+	}
+
 	if (flags & DC_EXEC) {
-		if (Company::Get(_current_company)->allow_list.Add(public_key)) {
+		if (ExecuteAllowListCtrlAction(action, c, public_key)) {
 			InvalidateWindowData(WC_CLIENT_LIST, 0);
 			SetWindowDirty(WC_COMPANY, _current_company);
 		}
 	}
 
 	return CommandCost();
-*/
+}
+
+CommandCost CmdCompanyAllowListCtrl(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+{
+	if (StrEmpty(text)) return CMD_ERROR;
+	return CmdCompanyAllowListCtrl(flags, static_cast<CompanyAllowListCtrlAction>(p1), std::string{text});
 }
 
 /**

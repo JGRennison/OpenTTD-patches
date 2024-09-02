@@ -311,8 +311,8 @@ STR_BUTTON_CANCEL                                               :{BLACK}Cancelar
 STR_BUTTON_OK                                                   :{BLACK}Confirmar
 
 # On screen keyboard window
-STR_OSK_KEYBOARD_LAYOUT                                         :\1234567890'« qwertyuiop+´asdfghjklçº~<zxcvbnm,.-
-STR_OSK_KEYBOARD_LAYOUT_CAPS                                    :|!"#$%&/()=?» QWERTYUIOP*`ASDFGHJKLÇª^>ZXCVBNM;:_
+STR_OSK_KEYBOARD_LAYOUT                                         :`1234567890-= qwertyuiop[]asdfghjkl;'#\zxcvbnm,./ .
+STR_OSK_KEYBOARD_LAYOUT_CAPS                                    :¬!"£$%^&*()_+ QWERTYUIOP{{}}ASDFGHJKL:@~|ZXCVBNM<>? .
 
 # Measurement tooltip
 STR_MEASURE_LENGTH                                              :{BLACK}Tamanho: {NUM}
@@ -1489,6 +1489,9 @@ STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Avisar se o luc
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Quando ativo, uma notícia é enviada quando um veículo não gerou lucro num ano
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Quando ativo, uma notícia é enviada quando um veículo não gerou qualquer lucro durante um período
 
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE                             :Avisar se um veículo começar a ficar velho: {STRING}
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE_HELPTEXT                    :Quando ativo, será enviada uma notícia quando um veículo começar a ficar velho
+
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Veículos nunca expiram: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Quando ativo, todos os modelos de veículos permanecerão disponíveis para sempre após a sua introdução
 
@@ -1499,7 +1502,7 @@ STR_CONFIG_SETTING_TIMEKEEPING_UNITS_CALENDAR                   :Calendário
 STR_CONFIG_SETTING_TIMEKEEPING_UNITS_WALLCLOCK                  :Relógio de parede
 
 STR_CONFIG_SETTING_MINUTES_PER_YEAR                             :Minutos por ano: {STRING}
-STR_CONFIG_SETTING_MINUTES_PER_YEAR_HELPTEXT                    :Escolher o número de minutos num ano civil. Valor por omissão é 12 minutos. Defina como 0 para impedir que a hora do calendário seja alterada. Esta configuração não afeta a simulação económica do jogo e só está disponível ao usar a cronometragem do relógio de parede
+STR_CONFIG_SETTING_MINUTES_PER_YEAR_HELPTEXT                    :Escolher o número de minutos por cada ano do calendário. O padrão é 12 minutos. Defina como 0 (zero) para impedir que a hora do calendário seja alterada. O aumento da duração do ano civil retarda a introdução de veículos, casas e outras infra-estruturas. Não afeta a velocidade do veículo nem a simulação económica, exceto a inflação. Esta configuração só está disponível ao usar o relógio de parede
 
 STR_CONFIG_SETTING_MINUTES_PER_YEAR_VALUE                       :{NUM}
 ###setting-zero-is-special
@@ -5053,6 +5056,8 @@ STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :{WHITE}Não é 
 
 STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :{WHITE}Muito junto de uma estação/local de carga já existente
 STR_ERROR_STATION_TOO_SPREAD_OUT                                :{WHITE}... estação muito extensa
+STR_ERROR_STATION_DISALLOWED_NUMBER_TRACKS                      :{WHITE}... número de linhas não suportado
+STR_ERROR_STATION_DISALLOWED_LENGTH                             :{WHITE}... comprimento não suportado
 STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Demasiadas estações/locais de carga
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Demasiadas partes na estação ferroviária
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Demasiadas paragens de autocarro

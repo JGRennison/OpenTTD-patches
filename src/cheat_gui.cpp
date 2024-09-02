@@ -244,7 +244,7 @@ struct CheatWindow : Window {
 	Dimension box;      ///< Dimension of box sprite
 	Dimension icon;     ///< Dimension of company icon sprite
 
-	CheatWindow(WindowDesc *desc) : Window(desc)
+	CheatWindow(WindowDesc &desc) : Window(desc)
 	{
 		this->InitNested();
 	}
@@ -526,7 +526,7 @@ static WindowDesc _cheats_desc(__FILE__, __LINE__,
 	WDP_AUTO, "cheats", 0, 0,
 	WC_CHEATS, WC_NONE,
 	0,
-	std::begin(_nested_cheat_widgets), std::end(_nested_cheat_widgets)
+	_nested_cheat_widgets
 );
 
 bool CheatWindowMayBeShown()
@@ -539,6 +539,6 @@ void ShowCheatWindow()
 {
 	CloseWindowById(WC_CHEATS, 0);
 	if (CheatWindowMayBeShown()) {
-		new CheatWindow(&_cheats_desc);
+		new CheatWindow(_cheats_desc);
 	}
 }

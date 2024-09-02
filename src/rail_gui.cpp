@@ -162,7 +162,12 @@ void CcRailDepot(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_
 
 	if (IsTileType(tile, MP_RAILWAY)) {
 		PlaceExtraDepotRail(tile, _place_depot_extra_dir[dir], _place_depot_extra_track[dir]);
-		PlaceExtraDepotRail(tile, _place_depot_extra_dir[dir + 4], _place_depot_extra_track[dir + 4]);
+
+		/* Don't place the rail straight out of the depot of there is another depot across from it. */
+		TileIndex double_depot_tile = tile + TileOffsByDiagDir(dir);
+		bool is_double_depot = IsValidTile(double_depot_tile) && IsRailDepotTile(double_depot_tile);
+		if (!is_double_depot) PlaceExtraDepotRail(tile, _place_depot_extra_dir[dir + 4], _place_depot_extra_track[dir + 4]);
+
 		PlaceExtraDepotRail(tile, _place_depot_extra_dir[dir + 8], _place_depot_extra_track[dir + 8]);
 	}
 }
@@ -515,7 +520,7 @@ struct BuildRailToolbarWindow : Window {
 	RailType railtype;    ///< Rail type to build.
 	int last_user_action; ///< Last started user action.
 
-	BuildRailToolbarWindow(WindowDesc *desc, RailType railtype) : Window(desc)
+	BuildRailToolbarWindow(WindowDesc &desc, RailType railtype) : Window(desc)
 	{
 		this->CreateNestedTree();
 		if (!_settings_client.gui.show_rail_polyline_tool) {
@@ -1098,7 +1103,7 @@ static WindowDesc _build_rail_desc(__FILE__, __LINE__,
 	WDP_ALIGN_TOOLBAR, "toolbar_rail", 0, 0,
 	WC_BUILD_TOOLBAR, WC_NONE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_build_rail_widgets), std::end(_nested_build_rail_widgets),
+	_nested_build_rail_widgets,
 	&BuildRailToolbarWindow::hotkeys
 );
 
@@ -1119,7 +1124,7 @@ Window *ShowBuildRailToolbar(RailType railtype)
 	CloseWindowByClass(WC_BUILD_TOOLBAR);
 	_cur_railtype = railtype;
 	_remove_button_clicked = false;
-	return new BuildRailToolbarWindow(&_build_rail_desc, railtype);
+	return new BuildRailToolbarWindow(_build_rail_desc, railtype);
 }
 
 /* TODO: For custom stations, respect their allowed platforms/lengths bitmasks!
@@ -1268,7 +1273,7 @@ private:
 	}
 
 public:
-	BuildRailStationWindow(WindowDesc *desc, Window *parent) : PickerWindow(desc, parent, TRANSPORT_RAIL, StationPickerCallbacks::instance)
+	BuildRailStationWindow(WindowDesc &desc, Window *parent) : PickerWindow(desc, parent, TRANSPORT_RAIL, StationPickerCallbacks::instance)
 	{
 		this->coverage_height = 2 * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
 		this->ConstructWindow();
@@ -1623,14 +1628,14 @@ static WindowDesc _station_builder_desc(__FILE__, __LINE__,
 	WDP_AUTO, "build_station_rail", 0, 0,
 	WC_BUILD_STATION, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_station_builder_widgets), std::end(_nested_station_builder_widgets),
+	_nested_station_builder_widgets,
 	&BuildRailStationWindow::hotkeys
 );
 
 /** Open station build window */
 static Window *ShowStationBuilder(Window *parent)
 {
-	return new BuildRailStationWindow(&_station_builder_desc, parent);
+	return new BuildRailStationWindow(_station_builder_desc, parent);
 }
 
 struct BuildSignalWindow : public PickerWindowBase {
@@ -1742,7 +1747,7 @@ private:
 	}
 
 public:
-	BuildSignalWindow(WindowDesc *desc, Window *parent) : PickerWindowBase(desc, parent)
+	BuildSignalWindow(WindowDesc &desc, Window *parent) : PickerWindowBase(desc, parent)
 	{
 		this->CreateNestedTree();
 		this->SetSignalUIMode();
@@ -2110,7 +2115,7 @@ static WindowDesc _signal_builder_desc(__FILE__, __LINE__,
 	WDP_AUTO, nullptr, 0, 0,
 	WC_BUILD_SIGNAL, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_signal_builder_widgets), std::end(_nested_signal_builder_widgets),
+	_nested_signal_builder_widgets,
 	&BuildSignalWindow::hotkeys
 );
 
@@ -2119,11 +2124,11 @@ static WindowDesc _signal_builder_desc(__FILE__, __LINE__,
  */
 static void ShowSignalBuilder(Window *parent)
 {
-	new BuildSignalWindow(&_signal_builder_desc, parent);
+	new BuildSignalWindow(_signal_builder_desc, parent);
 }
 
 struct BuildRailDepotWindow : public PickerWindowBase {
-	BuildRailDepotWindow(WindowDesc *desc, Window *parent) : PickerWindowBase(desc, parent)
+	BuildRailDepotWindow(WindowDesc &desc, Window *parent) : PickerWindowBase(desc, parent)
 	{
 		this->InitNested(TRANSPORT_RAIL);
 		this->LowerWidget(WID_BRAD_DEPOT_NE + _build_depot_direction);
@@ -2192,12 +2197,12 @@ static WindowDesc _build_depot_desc(__FILE__, __LINE__,
 	WDP_AUTO, nullptr, 0, 0,
 	WC_BUILD_DEPOT, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_build_depot_widgets), std::end(_nested_build_depot_widgets)
+	_nested_build_depot_widgets
 );
 
 static void ShowBuildTrainDepotPicker(Window *parent)
 {
-	new BuildRailDepotWindow(&_build_depot_desc, parent);
+	new BuildRailDepotWindow(_build_depot_desc, parent);
 }
 
 class WaypointPickerCallbacks : public PickerCallbacksNewGRFClass<StationClass> {
@@ -2274,7 +2279,7 @@ public:
 /* static */ WaypointPickerCallbacks WaypointPickerCallbacks::instance;
 
 struct BuildRailWaypointWindow : public PickerWindow {
-	BuildRailWaypointWindow(WindowDesc *desc, Window *parent) : PickerWindow(desc, parent, TRANSPORT_RAIL, WaypointPickerCallbacks::instance)
+	BuildRailWaypointWindow(WindowDesc &desc, Window *parent) : PickerWindow(desc, parent, TRANSPORT_RAIL, WaypointPickerCallbacks::instance)
 	{
 		this->ConstructWindow();
 		this->InvalidateData();
@@ -2303,14 +2308,14 @@ static WindowDesc _build_waypoint_desc(__FILE__, __LINE__,
 	WDP_AUTO, "build_waypoint", 0, 0,
 	WC_BUILD_WAYPOINT, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_build_waypoint_widgets), std::end(_nested_build_waypoint_widgets),
+	_nested_build_waypoint_widgets,
 	&BuildRailWaypointWindow::hotkeys
 );
 
 static void ShowBuildWaypointPicker(Window *parent)
 {
 	if (!WaypointPickerCallbacks::instance.IsActive()) return;
-	new BuildRailWaypointWindow(&_build_waypoint_desc, parent);
+	new BuildRailWaypointWindow(_build_waypoint_desc, parent);
 }
 
 /**

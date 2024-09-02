@@ -353,7 +353,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 		MAX_SUMMARY_WARNINGS = 10,
 	};
 
-	TimetableWindow(WindowDesc *desc, WindowNumber window_number) :
+	TimetableWindow(WindowDesc &desc, WindowNumber window_number) :
 			GeneralVehicleWindow(desc, Vehicle::Get(window_number)),
 			sel_index(-1),
 			show_expected(true)
@@ -1269,7 +1269,7 @@ static WindowDesc _timetable_desc(__FILE__, __LINE__,
 	WDP_AUTO, "view_vehicle_timetable", 400, 130,
 	WC_VEHICLE_TIMETABLE, WC_VEHICLE_VIEW,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_timetable_widgets), std::end(_nested_timetable_widgets)
+	_nested_timetable_widgets
 );
 
 /**
@@ -1280,7 +1280,7 @@ void ShowTimetableWindow(const Vehicle *v)
 {
 	CloseWindowById(WC_VEHICLE_DETAILS, v->index, false);
 	CloseWindowById(WC_VEHICLE_ORDERS, v->index, false);
-	AllocateWindowDescFront<TimetableWindow>(&_timetable_desc, v->index);
+	AllocateWindowDescFront<TimetableWindow>(_timetable_desc, v->index);
 }
 
 void SetTimetableWindowsDirty(const Vehicle *v, SetTimetableWindowsDirtyFlags flags)

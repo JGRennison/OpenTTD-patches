@@ -253,13 +253,14 @@ void Win32FontCache::ClearFontCache()
 		}
 	}
 
+	UniquePtrSpriteAllocator allocator;
+	BlitterFactory::GetCurrentBlitter()->Encode(spritecollection, allocator);
+
 	GlyphEntry new_glyph;
-	new_glyph.sprite = BlitterFactory::GetCurrentBlitter()->Encode(spritecollection, SimpleSpriteAlloc);
+	new_glyph.data = std::move(allocator.data);
 	new_glyph.width = gm.gmCellIncX;
 
-	this->SetGlyphPtr(key, &new_glyph);
-
-	return new_glyph.sprite;
+	return this->SetGlyphPtr(key, std::move(new_glyph)).GetSprite();
 }
 
 /* virtual */ GlyphID Win32FontCache::MapCharToGlyph(char32_t key, bool allow_fallback)
@@ -353,9 +354,10 @@ void LoadWin32Font(FontSize fs)
 {
 	FontCacheSubSetting *settings = GetFontCacheSubSetting(fs);
 
-	if (settings->font.empty()) return;
+	std::string font = GetFontCacheFontName(fs);
+	if (font.empty()) return;
 
-	const char *font_name = settings->font.c_str();
+	const char *font_name = font.c_str();
 	LOGFONT logfont;
 	MemSetT(&logfont, 0);
 	logfont.lfPitchAndFamily = fs == FS_MONO ? FIXED_PITCH : VARIABLE_PITCH;
@@ -367,8 +369,8 @@ void LoadWin32Font(FontSize fs)
 		logfont = *(const LOGFONT *)settings->os_handle;
 	} else if (strchr(font_name, '.') != nullptr) {
 		/* Might be a font file name, try load it. */
-		if (!TryLoadFontFromFile(settings->font, logfont)) {
-			ShowInfo("Unable to load file '{}' for {} font, using default windows font selection instead", font_name, FontSizeToName(fs));
+		if (!TryLoadFontFromFile(font, logfont)) {
+			ShowInfo("Unable to load file '{}' for {} font, using default windows font selection instead", font, FontSizeToName(fs));
 		}
 	}
 
@@ -378,24 +380,4 @@ void LoadWin32Font(FontSize fs)
 	}
 
 	LoadWin32Font(fs, logfont, settings->size, font_name);
-}
-
-/**
- * Load a TrueType font from a file.
- * @param fs The font size to load.
- * @param file_name Path to the font file.
- * @param size Requested font size.
- */
-void LoadWin32Font(FontSize fs, const std::string &file_name, uint size)
-{
-	LOGFONT logfont;
-	MemSetT(&logfont, 0);
-	logfont.lfPitchAndFamily = fs == FS_MONO ? FIXED_PITCH : VARIABLE_PITCH;
-	logfont.lfCharSet = DEFAULT_CHARSET;
-	logfont.lfOutPrecision = OUT_OUTLINE_PRECIS;
-	logfont.lfClipPrecision = CLIP_DEFAULT_PRECIS;
-
-	if (TryLoadFontFromFile(file_name, logfont)) {
-		LoadWin32Font(fs, logfont, size, file_name.c_str());
-	}
 }

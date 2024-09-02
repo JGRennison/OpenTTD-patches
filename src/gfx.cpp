@@ -523,11 +523,12 @@ void GfxBlitterCtx::SetColourRemap(TextColour colour)
  *                  will be drawn in the right direction.
  * @param underline Whether to underline what has been drawn or not.
  * @param truncation Whether to perform string truncation or not.
+ * @param default_colour Colour of text if not specified within string.
  *
  * @return In case of left or center alignment the right most pixel we have drawn to.
  *         In case of right alignment the left most pixel we have drawn to.
  */
-static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, int right, StringAlignment align, bool underline, bool truncation)
+static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, int right, StringAlignment align, bool underline, bool truncation, TextColour default_colour)
 {
 	if (line.CountRuns() == 0) return 0;
 
@@ -623,6 +624,7 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 
 			FontCache *fc = f->fc;
 			TextColour colour = f->colour;
+			if (colour == TC_INVALID) colour = default_colour;
 			colour_has_shadow = (colour & TC_NO_SHADE) == 0 && (colour & ~TC_FORCED) != TC_BLACK;
 			ctx.SetColourRemap(do_shadow ? TC_BLACK : colour); // the last run also sets the colour for the truncation dots
 			if (do_shadow && (!fc->GetDrawGlyphShadow() || !colour_has_shadow)) continue;
@@ -637,9 +639,9 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 				/* Not a valid glyph (empty) */
 				if (glyph == 0xFFFF) continue;
 
-				int begin_x = positions[i].x     + left - offset_x;
-				int end_x   = positions[i + 1].x + left - offset_x  - 1;
-				int top     = positions[i].y + y;
+				int begin_x = positions[i].left + left - offset_x;
+				int end_x = positions[i].right + left - offset_x;
+				int top = positions[i].top + y;
 
 				/* Truncated away. */
 				if (truncation && (begin_x < min_x || end_x > max_x)) continue;
@@ -699,10 +701,10 @@ int DrawString(int left, int right, int top, std::string_view str, TextColour co
 		return 0;
 	}
 
-	Layouter layout(str, INT32_MAX, colour, fontsize);
+	Layouter layout(str, INT32_MAX, fontsize);
 	if (layout.empty()) return 0;
 
-	return DrawLayoutLine(*layout.front(), top, left, right, align, underline, true);
+	return DrawLayoutLine(*layout.front(), top, left, right, align, underline, true, colour);
 }
 
 /**
@@ -736,7 +738,7 @@ int DrawString(int left, int right, int top, StringID str, TextColour colour, St
 int GetStringHeight(std::string_view str, int maxw, FontSize fontsize)
 {
 	assert(maxw > 0);
-	Layouter layout(str, maxw, TC_FROMSTRING, fontsize);
+	Layouter layout(str, maxw, fontsize);
 	return layout.GetBounds().height;
 }
 
@@ -812,7 +814,7 @@ int DrawStringMultiLine(int left, int right, int top, int bottom, std::string_vi
 	 * do we really want to support fonts of 0 or less pixels high? */
 	if (maxh <= 0) return top;
 
-	Layouter layout(str, maxw, colour, fontsize);
+	Layouter layout(str, maxw, fontsize);
 	int total_height = layout.GetBounds().height;
 	int y;
 	switch (align & SA_VERT_MASK) {
@@ -841,7 +843,7 @@ int DrawStringMultiLine(int left, int right, int top, int bottom, std::string_vi
 			last_line = y + line_height;
 			if (first_line > y) first_line = y;
 
-			DrawLayoutLine(*line, y, left, right, align, underline, false);
+			DrawLayoutLine(*line, y, left, right, align, underline, false, colour);
 		}
 		y += line_height;
 	}
@@ -882,7 +884,7 @@ int DrawStringMultiLine(int left, int right, int top, int bottom, StringID str, 
  */
 Dimension GetStringBoundingBox(std::string_view str, FontSize start_fontsize)
 {
-	Layouter layout(str, INT32_MAX, TC_FROMSTRING, start_fontsize);
+	Layouter layout(str, INT32_MAX, start_fontsize);
 	return layout.GetBounds();
 }
 
@@ -925,39 +927,6 @@ Dimension GetStringListBoundingBox(std::span<const StringID> list, FontSize font
 		d = maxdim(d, GetStringBoundingBox(str, fontsize));
 	}
 	return d;
-}
-
-/**
- * Get the leading corner of a character in a single-line string relative
- * to the start of the string.
- * @param str String containing the character.
- * @param ch Pointer to the character in the string.
- * @param start_fontsize Font size to start the text with.
- * @return Upper left corner of the glyph associated with the character.
- */
-Point GetCharPosInString(std::string_view str, const char *ch, FontSize start_fontsize)
-{
-	/* Ensure "ch" is inside "str" or at the exact end. */
-	assert(ch >= str.data() && (ch - str.data()) <= static_cast<ptrdiff_t>(str.size()));
-	auto it_ch = str.begin() + (ch - str.data());
-
-	Layouter layout(str, INT32_MAX, TC_FROMSTRING, start_fontsize);
-	return layout.GetCharPosition(it_ch);
-}
-
-/**
- * Get the character from a string that is drawn at a specific position.
- * @param str String to test.
- * @param x Position relative to the start of the string.
- * @param start_fontsize Font size to start the text with.
- * @return Index of the character position or -1 if there is no character at the position.
- */
-ptrdiff_t GetCharAtPosition(std::string_view str, int x, FontSize start_fontsize)
-{
-	if (x < 0) return -1;
-
-	Layouter layout(str, INT32_MAX, TC_FROMSTRING, start_fontsize);
-	return layout.GetCharAtPosition(x, 0);
 }
 
 /**

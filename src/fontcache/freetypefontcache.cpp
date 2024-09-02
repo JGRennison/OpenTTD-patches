@@ -163,7 +163,8 @@ void LoadFreeTypeFont(FontSize fs)
 {
 	FontCacheSubSetting *settings = GetFontCacheSubSetting(fs);
 
-	if (settings->font.empty()) return;
+	std::string font = GetFontCacheFontName(fs);
+	if (font.empty()) return;
 
 	if (_library == nullptr) {
 		if (FT_Init_FreeType(&_library) != FT_Err_Ok) {
@@ -174,7 +175,7 @@ void LoadFreeTypeFont(FontSize fs)
 		DEBUG(fontcache, 2, "Initialized");
 	}
 
-	const char *font_name = settings->font.c_str();
+	const char *font_name = font.c_str();
 	FT_Face face = nullptr;
 
 	/* If font is an absolute path to a ttf, try loading that first. */
@@ -202,34 +203,6 @@ void LoadFreeTypeFont(FontSize fs)
 		FT_Done_Face(face);
 	}
 }
-
-/**
- * Load a TrueType font from a file.
- * @param fs The font size to load.
- * @param file_name Path to the font file.
- * @param size Requested font size.
- */
-void LoadFreeTypeFont(FontSize fs, const std::string &file_name, uint size)
-{
-	if (_library == nullptr) {
-		if (FT_Init_FreeType(&_library) != FT_Err_Ok) {
-			ShowInfo("Unable to initialize FreeType, using sprite fonts instead");
-			return;
-		}
-
-		Debug(fontcache, 2, "Initialized");
-	}
-
-	FT_Face face = nullptr;
-	int32_t index = 0;
-	FT_Error error = FT_New_Face(_library, file_name.c_str(), index, &face);
-	if (error == FT_Err_Ok) {
-		LoadFont(fs, face, file_name.c_str(), size);
-	} else {
-		FT_Done_Face(face);
-	}
-}
-
 
 /**
  * Free everything that was allocated for this font cache.
@@ -303,13 +276,14 @@ const Sprite *FreeTypeFontCache::InternalGetGlyph(GlyphID key, bool aa)
 		}
 	}
 
+	UniquePtrSpriteAllocator allocator;
+	BlitterFactory::GetCurrentBlitter()->Encode(spritecollection, allocator);
+
 	GlyphEntry new_glyph;
-	new_glyph.sprite = BlitterFactory::GetCurrentBlitter()->Encode(spritecollection, SimpleSpriteAlloc);
-	new_glyph.width  = slot->advance.x >> 6;
+	new_glyph.data = std::move(allocator.data);
+	new_glyph.width = slot->advance.x >> 6;
 
-	this->SetGlyphPtr(key, &new_glyph);
-
-	return new_glyph.sprite;
+	return this->SetGlyphPtr(key, std::move(new_glyph)).GetSprite();
 }
 
 

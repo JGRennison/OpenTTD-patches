@@ -250,7 +250,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		}
 	};
 
-	SchdispatchWindow(WindowDesc *desc, WindowNumber window_number) :
+	SchdispatchWindow(WindowDesc &desc, WindowNumber window_number) :
 			GeneralVehicleWindow(desc, Vehicle::Get(window_number))
 	{
 		this->CreateNestedTree();
@@ -1539,7 +1539,7 @@ static WindowDesc _schdispatch_desc(__FILE__, __LINE__,
 	WDP_AUTO, "scheduled_dispatch_slots", 400, 130,
 	WC_SCHDISPATCH_SLOTS, WC_VEHICLE_TIMETABLE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_schdispatch_widgets), std::end(_nested_schdispatch_widgets)
+	_nested_schdispatch_widgets
 );
 
 /**
@@ -1548,7 +1548,7 @@ static WindowDesc _schdispatch_desc(__FILE__, __LINE__,
  */
 void ShowSchdispatchWindow(const Vehicle *v)
 {
-	AllocateWindowDescFront<SchdispatchWindow>(&_schdispatch_desc, v->index);
+	AllocateWindowDescFront<SchdispatchWindow>(_schdispatch_desc, v->index);
 }
 
 enum ScheduledDispatchAddSlotsWindowWidgets {
@@ -1569,7 +1569,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 	ClockFaceMinutes step;
 	ClockFaceMinutes end;
 
-	ScheduledDispatchAddSlotsWindow(WindowDesc *desc, WindowNumber window_number, SchdispatchWindow *parent) :
+	ScheduledDispatchAddSlotsWindow(WindowDesc &desc, WindowNumber window_number, SchdispatchWindow *parent) :
 			Window(desc)
 	{
 		this->start = _settings_time.NowInTickMinutes().ToClockFaceMinutes();
@@ -1746,14 +1746,14 @@ static WindowDesc _scheduled_dispatch_add_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_SET_DATE, WC_NONE,
 	0,
-	std::begin(_nested_scheduled_dispatch_add_widgets), std::end(_nested_scheduled_dispatch_add_widgets)
+	_nested_scheduled_dispatch_add_widgets
 );
 
 void ShowScheduledDispatchAddSlotsWindow(SchdispatchWindow *parent, int window_number)
 {
 	CloseWindowByClass(WC_SET_DATE);
 
-	new ScheduledDispatchAddSlotsWindow(&_scheduled_dispatch_add_desc, window_number, parent);
+	new ScheduledDispatchAddSlotsWindow(_scheduled_dispatch_add_desc, window_number, parent);
 }
 
 void SchdispatchInvalidateWindows(const Vehicle *v)

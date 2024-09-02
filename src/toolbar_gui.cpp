@@ -2114,7 +2114,7 @@ static ToolbarButtonProc * const _toolbar_button_procs[] = {
 struct MainToolbarWindow : Window {
 	GUITimer timer;
 
-	MainToolbarWindow(WindowDesc *desc) : Window(desc)
+	MainToolbarWindow(WindowDesc &desc) : Window(desc)
 	{
 		MainToolbarScaleAdjuster scale_adjust;
 
@@ -2414,7 +2414,7 @@ static WindowDesc _toolb_normal_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_MAIN_TOOLBAR, WC_NONE,
 	WDF_NO_FOCUS | WDF_NO_CLOSE,
-	std::begin(_nested_toolbar_normal_widgets), std::end(_nested_toolbar_normal_widgets),
+	_nested_toolbar_normal_widgets,
 	&MainToolbarWindow::hotkeys
 );
 
@@ -2504,7 +2504,7 @@ enum MainToolbarEditorHotkeys {
 struct ScenarioEditorToolbarWindow : Window {
 	GUITimer timer;
 
-	ScenarioEditorToolbarWindow(WindowDesc *desc) : Window(desc)
+	ScenarioEditorToolbarWindow(WindowDesc &desc) : Window(desc)
 	{
 		MainToolbarScaleAdjuster scale_adjust;
 
@@ -2770,7 +2770,7 @@ static constexpr NWidgetPart _nested_toolb_scen_inner_widgets[] = {
 
 static std::unique_ptr<NWidgetBase> MakeScenarioToolbar()
 {
-	return MakeNWidgets(std::begin(_nested_toolb_scen_inner_widgets), std::end(_nested_toolb_scen_inner_widgets), std::make_unique<NWidgetScenarioToolbarContainer>());
+	return MakeNWidgets(_nested_toolb_scen_inner_widgets, std::make_unique<NWidgetScenarioToolbarContainer>());
 }
 
 static constexpr NWidgetPart _nested_toolb_scen_widgets[] = {
@@ -2781,7 +2781,7 @@ static WindowDesc _toolb_scen_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_MAIN_TOOLBAR, WC_NONE,
 	WDF_NO_FOCUS | WDF_NO_CLOSE,
-	std::begin(_nested_toolb_scen_widgets), std::end(_nested_toolb_scen_widgets),
+	_nested_toolb_scen_widgets,
 	&ScenarioEditorToolbarWindow::hotkeys
 );
 
@@ -2789,9 +2789,9 @@ static WindowDesc _toolb_scen_desc(__FILE__, __LINE__,
 void AllocateToolbar()
 {
 	if (_game_mode == GM_EDITOR) {
-		new ScenarioEditorToolbarWindow(&_toolb_scen_desc);
+		new ScenarioEditorToolbarWindow(_toolb_scen_desc);
 	} else {
-		new MainToolbarWindow(&_toolb_normal_desc);
+		new MainToolbarWindow(_toolb_normal_desc);
 	}
 }
 

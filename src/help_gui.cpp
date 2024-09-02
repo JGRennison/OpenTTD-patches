@@ -121,7 +121,7 @@ struct GameManualTextfileWindow : public TextfileWindow {
 /** Window class displaying the help window. */
 struct HelpWindow : public Window {
 
-	HelpWindow(WindowDesc *desc, WindowNumber number) : Window(desc)
+	HelpWindow(WindowDesc &desc, WindowNumber number) : Window(desc)
 	{
 		this->InitNested(number);
 
@@ -197,10 +197,10 @@ static WindowDesc _helpwin_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_HELPWIN, WC_NONE,
 	0,
-	std::begin(_nested_helpwin_widgets), std::end(_nested_helpwin_widgets)
+	_nested_helpwin_widgets
 );
 
 void ShowHelpWindow()
 {
-	AllocateWindowDescFront<HelpWindow>(&_helpwin_desc, 0);
+	AllocateWindowDescFront<HelpWindow>(_helpwin_desc, 0);
 }

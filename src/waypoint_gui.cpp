@@ -73,7 +73,7 @@ public:
 	 * @param desc The description of the window.
 	 * @param window_number The window number, in this case the waypoint's ID.
 	 */
-	WaypointWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
+	WaypointWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
 		this->wp = Waypoint::Get(window_number);
 		if (wp->string_id == STR_SV_STNAME_WAYPOINT) {
@@ -249,7 +249,7 @@ static WindowDesc _waypoint_view_desc(__FILE__, __LINE__,
 	WDP_AUTO, "view_waypoint", 260, 118,
 	WC_WAYPOINT_VIEW, WC_NONE,
 	0,
-	std::begin(_nested_waypoint_view_widgets), std::end(_nested_waypoint_view_widgets)
+	_nested_waypoint_view_widgets
 );
 
 /**
@@ -258,5 +258,5 @@ static WindowDesc _waypoint_view_desc(__FILE__, __LINE__,
  */
 void ShowWaypointWindow(const Waypoint *wp)
 {
-	AllocateWindowDescFront<WaypointWindow>(&_waypoint_view_desc, wp->index);
+	AllocateWindowDescFront<WaypointWindow>(_waypoint_view_desc, wp->index);
 }

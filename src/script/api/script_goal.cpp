@@ -70,7 +70,7 @@
 {
 	EnforceDeityMode(false);
 	EnforcePrecondition(false, IsValidGoal(goal_id));
-	Goal *g = Goal::Get(goal_id);
+	const Goal *g = Goal::Get(goal_id);
 	EnforcePrecondition(false, IsValidGoalDestination((ScriptCompany::CompanyID)g->company, type, destination));
 
 	return ScriptObject::DoCommandEx(0, goal_id, destination, type, CMD_SET_GOAL_DESTINATION);
@@ -112,7 +112,7 @@
 	EnforcePrecondition(false, IsValidGoal(goal_id));
 	EnforceDeityMode(false);
 
-	Goal *g = Goal::Get(goal_id);
+	const Goal *g = Goal::Get(goal_id);
 	return g != nullptr && g->completed;
 }
 

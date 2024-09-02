@@ -1759,7 +1759,7 @@ class TraceRestrictWindow: public Window {
 	int base_share_plane;                                                       ///< base plane for TR_WIDGET_SEL_SHARE widget
 
 public:
-	TraceRestrictWindow(WindowDesc *desc, TileIndex tile, Track track)
+	TraceRestrictWindow(WindowDesc &desc, TileIndex tile, Track track)
 			: Window(desc)
 	{
 		this->tile = tile;
@@ -3616,7 +3616,7 @@ static WindowDesc _program_desc(__FILE__, __LINE__,
 	WDP_AUTO, "trace_restrict_gui", 384, 100,
 	WC_TRACE_RESTRICT, WC_BUILD_SIGNAL,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_program_widgets), std::end(_nested_program_widgets)
+	_nested_program_widgets
 );
 
 /**
@@ -3628,7 +3628,7 @@ void ShowTraceRestrictProgramWindow(TileIndex tile, Track track)
 		return;
 	}
 
-	new TraceRestrictWindow(&_program_desc, tile, track);
+	new TraceRestrictWindow(_program_desc, tile, track);
 }
 
 /** Slot GUI widget IDs */
@@ -3831,7 +3831,7 @@ private:
 	}
 
 public:
-	TraceRestrictSlotWindow(WindowDesc *desc, WindowNumber window_number) : BaseVehicleListWindow(desc, window_number)
+	TraceRestrictSlotWindow(WindowDesc &desc, WindowNumber window_number) : BaseVehicleListWindow(desc, window_number)
 	{
 		this->CreateNestedTree();
 
@@ -4286,7 +4286,7 @@ static WindowDesc _slot_window_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_tr_slots", 525, 246,
 	WC_TRACE_RESTRICT_SLOTS, WC_NONE,
 	0,
-	std::begin(_nested_slot_widgets), std::end(_nested_slot_widgets)
+	_nested_slot_widgets
 );
 
 /**
@@ -4298,7 +4298,7 @@ void ShowTraceRestrictSlotWindow(CompanyID company, VehicleType vehtype)
 	if (!Company::IsValidID(company)) return;
 
 	WindowNumber num = VehicleListIdentifier(VL_SLOT_LIST, vehtype, company).Pack();
-	AllocateWindowDescFront<TraceRestrictSlotWindow>(&_slot_window_desc, num);
+	AllocateWindowDescFront<TraceRestrictSlotWindow>(_slot_window_desc, num);
 }
 
 /**
@@ -4444,7 +4444,7 @@ private:
 	}
 
 public:
-	TraceRestrictCounterWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
+	TraceRestrictCounterWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
 		this->ctr_company = (Owner)window_number;
 		this->CreateNestedTree();
@@ -4652,7 +4652,7 @@ static WindowDesc _counter_window_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_tr_counters", 525, 246,
 	WC_TRACE_RESTRICT_COUNTERS, WC_NONE,
 	0,
-	std::begin(_nested_counter_widgets), std::end(_nested_counter_widgets)
+	_nested_counter_widgets
 );
 
 /**
@@ -4663,5 +4663,5 @@ void ShowTraceRestrictCounterWindow(CompanyID company)
 {
 	if (!Company::IsValidID(company)) return;
 
-	AllocateWindowDescFront<TraceRestrictCounterWindow>(&_counter_window_desc, (WindowNumber)company);
+	AllocateWindowDescFront<TraceRestrictCounterWindow>(_counter_window_desc, (WindowNumber)company);
 }

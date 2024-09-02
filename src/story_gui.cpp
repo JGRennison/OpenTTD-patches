@@ -593,7 +593,7 @@ protected:
 	}
 
 public:
-	StoryBookWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
+	StoryBookWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_SB_SCROLLBAR);
@@ -973,14 +973,14 @@ static WindowDesc _story_book_desc(__FILE__, __LINE__,
 	WDP_AUTO, "view_story", 400, 300,
 	WC_STORY_BOOK, WC_NONE,
 	0,
-	std::begin(_nested_story_book_widgets), std::end(_nested_story_book_widgets)
+	_nested_story_book_widgets
 );
 
 static WindowDesc _story_book_gs_desc(__FILE__, __LINE__,
 	WDP_CENTER, "view_story_gs", 400, 300,
 	WC_STORY_BOOK, WC_NONE,
 	0,
-	std::begin(_nested_story_book_widgets), std::end(_nested_story_book_widgets)
+	_nested_story_book_widgets
 );
 
 static CursorID TranslateStoryPageButtonCursor(StoryPageButtonCursor cursor)
@@ -1055,6 +1055,6 @@ void ShowStoryBook(CompanyID company, uint16_t page_id, bool centered)
 {
 	if (!Company::IsValidID(company)) company = (CompanyID)INVALID_COMPANY;
 
-	StoryBookWindow *w = AllocateWindowDescFront<StoryBookWindow>(centered ? &_story_book_gs_desc : &_story_book_desc, company, true);
+	StoryBookWindow *w = AllocateWindowDescFront<StoryBookWindow>(centered ? _story_book_gs_desc : _story_book_desc, company, true);
 	if (page_id != INVALID_STORY_PAGE) w->SetSelectedPage(page_id);
 }

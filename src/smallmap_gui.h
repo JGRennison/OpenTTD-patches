@@ -200,7 +200,7 @@ protected:
 public:
 	friend class NWidgetSmallmapDisplay;
 
-	SmallMapWindow(WindowDesc *desc, int window_number);
+	SmallMapWindow(WindowDesc &desc, int window_number);
 
 	static void RebuildColourIndexIfNecessary();
 

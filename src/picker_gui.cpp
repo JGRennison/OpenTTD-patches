@@ -156,7 +156,7 @@ static const std::initializer_list<PickerClassList::FilterFunction * const> _cla
 static const std::initializer_list<PickerTypeList::SortFunction * const> _type_sorter_funcs = { TypeIDSorter }; ///< Sort functions of the #PickerTypeList.
 static const std::initializer_list<PickerTypeList::FilterFunction * const> _type_filter_funcs = { TypeTagNameFilter }; ///< Filter functions of the #PickerTypeList.
 
-PickerWindow::PickerWindow(WindowDesc *desc, Window *parent, int window_number, PickerCallbacks &callbacks) : PickerWindowBase(desc, parent), callbacks(callbacks),
+PickerWindow::PickerWindow(WindowDesc &desc, Window *parent, int window_number, PickerCallbacks &callbacks) : PickerWindowBase(desc, parent), callbacks(callbacks),
 	class_editbox(EDITBOX_MAX_SIZE * MAX_CHAR_LENGTH, EDITBOX_MAX_SIZE),
 	type_editbox(EDITBOX_MAX_SIZE * MAX_CHAR_LENGTH, EDITBOX_MAX_SIZE)
 {
@@ -671,7 +671,7 @@ std::unique_ptr<NWidgetBase> MakePickerClassWidgets()
 		EndContainer(),
 	};
 
-	return MakeNWidgets(std::begin(picker_class_widgets), std::end(picker_class_widgets), nullptr);
+	return MakeNWidgets(picker_class_widgets, nullptr);
 }
 
 /** Create nested widgets for the type picker widgets. */
@@ -707,5 +707,5 @@ std::unique_ptr<NWidgetBase> MakePickerTypeWidgets()
 		EndContainer(),
 	};
 
-	return MakeNWidgets(std::begin(picker_type_widgets), std::end(picker_type_widgets), nullptr);
+	return MakeNWidgets(picker_type_widgets, nullptr);
 }

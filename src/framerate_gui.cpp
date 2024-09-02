@@ -440,7 +440,7 @@ struct FramerateWindow : Window {
 
 	static constexpr int MIN_ELEMENTS = 5;      ///< smallest number of elements to display
 
-	FramerateWindow(WindowDesc *desc, WindowNumber number) : Window(desc)
+	FramerateWindow(WindowDesc &desc, WindowNumber number) : Window(desc)
 	{
 		this->InitNested(number);
 		this->small = this->IsShaded();
@@ -725,7 +725,7 @@ static WindowDesc _framerate_display_desc(__FILE__, __LINE__,
 	WDP_AUTO, "framerate_display", 0, 0,
 	WC_FRAMERATE_DISPLAY, WC_NONE,
 	0,
-	std::begin(_framerate_window_widgets), std::end(_framerate_window_widgets)
+	_framerate_window_widgets
 );
 
 
@@ -751,7 +751,7 @@ struct FrametimeGraphWindow : Window {
 	PerformanceElement element; ///< what element this window renders graph for
 	Dimension graph_size;       ///< size of the main graph area (excluding axis labels)
 
-	FrametimeGraphWindow(WindowDesc *desc, WindowNumber number) : Window(desc)
+	FrametimeGraphWindow(WindowDesc &desc, WindowNumber number) : Window(desc)
 	{
 		this->element = (PerformanceElement)number;
 		this->horizontal_scale = 4;
@@ -1017,7 +1017,7 @@ static WindowDesc _frametime_graph_window_desc(__FILE__, __LINE__,
 	WDP_AUTO, "frametime_graph", 140, 90,
 	WC_FRAMETIME_GRAPH, WC_NONE,
 	0,
-	std::begin(_frametime_graph_window_widgets), std::end(_frametime_graph_window_widgets)
+	_frametime_graph_window_widgets
 );
 
 
@@ -1025,14 +1025,14 @@ static WindowDesc _frametime_graph_window_desc(__FILE__, __LINE__,
 /** Open the general framerate window */
 void ShowFramerateWindow()
 {
-	AllocateWindowDescFront<FramerateWindow>(&_framerate_display_desc, 0);
+	AllocateWindowDescFront<FramerateWindow>(_framerate_display_desc, 0);
 }
 
 /** Open a graph window for a performance element */
 void ShowFrametimeGraphWindow(PerformanceElement elem)
 {
 	if (elem < PFE_FIRST || elem >= PFE_MAX) return; // maybe warn?
-	AllocateWindowDescFront<FrametimeGraphWindow>(&_frametime_graph_window_desc, elem, true);
+	AllocateWindowDescFront<FrametimeGraphWindow>(_frametime_graph_window_desc, elem, true);
 }
 
 /** Print performance statistics to game console */

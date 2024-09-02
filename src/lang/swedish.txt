@@ -310,8 +310,8 @@ STR_BUTTON_CANCEL                                               :{BLACK}Avbryt
 STR_BUTTON_OK                                                   :{BLACK}OK
 
 # On screen keyboard window
-STR_OSK_KEYBOARD_LAYOUT                                         :`1234567890-=\qwertyuiop[]asdfghjkl;'  zxcvbnm,./ .
-STR_OSK_KEYBOARD_LAYOUT_CAPS                                    :~!@#$%^&*()_+|QWERTYUIOP{{}}ASDFGHJKL:"  ZXCVBNM<>? .
+STR_OSK_KEYBOARD_LAYOUT                                         :`1234567890-= qwertyuiop[]asdfghjkl;'#\zxcvbnm,./ .
+STR_OSK_KEYBOARD_LAYOUT_CAPS                                    :¬!"£$%^&*()_+ QWERTYUIOP{{}}ASDFGHJKL:@~|ZXCVBNM<>? .
 
 # Measurement tooltip
 STR_MEASURE_LENGTH                                              :{BLACK}Längd: {NUM}
@@ -1085,6 +1085,7 @@ STR_GAME_OPTIONS_BASE_MUSIC                                     :{BLACK}Musikpak
 STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :{BLACK}Välj vilket musikpaket som ska användas
 STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :{BLACK}Yttligare information om musikpaketet
 
+STR_GAME_OPTIONS_ONLINE_CONTENT                                 :Hämta innehåll
 STR_GAME_OPTIONS_ONLINE_CONTENT_TOOLTIP                         :Kontrollera om det finns nytt och uppdaterat innehåll att ladda ned
 
 STR_GAME_OPTIONS_SOCIAL_PLUGINS_NONE                            :{LTBLUE}(inga tillägg för att integrera med sociala plattformar installerade)
@@ -1486,6 +1487,9 @@ STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Varna om ett fo
 ###length 2
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Om det är aktiverat skickas ett nyhetsmeddelande ut när ett fordon inte har gått med vinst under ett år
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Om det är aktiverat skickas ett nyhetsmeddelande ut när ett fordon inte har gått med vinst under en period
+
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE                             :Varna om ett fordon börjar bli gammalt: {STRING}
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE_HELPTEXT                    :Om det är aktiverat skickas ett nyhetsmeddelande ut när ett fordon börjar bli gammalt
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Fordon blir aldrig gamla: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Om det är aktiverat förblir alla fordonstyper tillgängliga i obegränsad tid efter att de introducerats
@@ -2478,6 +2482,7 @@ STR_NETWORK_CLIENT_LIST_PLAYER_NAME_QUERY_CAPTION               :Ditt spelarnamn
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_TOOLTIP                    :{BLACK}Administrativa handlingar att utföra för denna klient
 STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_TOOLTIP                   :{BLACK}Administrativa handlingar att utföra för detta företag
 STR_NETWORK_CLIENT_LIST_JOIN_TOOLTIP                            :{BLACK}Gå med i detta företag
+STR_NETWORK_CLIENT_LIST_COMPANY_AUTHORIZE_TOOLTIP               :{BLACK}Tillåt att denna klient ansluter till ditt företag
 STR_NETWORK_CLIENT_LIST_CHAT_CLIENT_TOOLTIP                     :{BLACK}Skicka ett meddelande till denna spelare
 STR_NETWORK_CLIENT_LIST_CHAT_COMPANY_TOOLTIP                    :{BLACK}Skicka ett meddelande till alla spelare i detta företag
 STR_NETWORK_CLIENT_LIST_CHAT_SPECTATOR_TOOLTIP                  :{BLACK}Skicka ett meddelande till alla åskådare
@@ -2802,12 +2807,28 @@ STR_PICKER_MODE_ALL                                             :Alla
 STR_PICKER_MODE_ALL_TOOLTIP                                     :Slå av/på visning av objekt från alla klasser
 STR_PICKER_MODE_USED                                            :Använda
 STR_PICKER_MODE_USED_TOOLTIP                                    :Slå av/på visning av endast existerande objekt
+STR_PICKER_MODE_SAVED                                           :Sparade
+STR_PICKER_MODE_SAVED_TOOLTIP                                   :Slå av/på visning av endast sparade objekt
 
+STR_PICKER_STATION_CLASS_TOOLTIP                                :Välj vilken klass av stationer som ska visas
+STR_PICKER_STATION_TYPE_TOOLTIP                                 :Välj en stationstyp att bygga. Ctrl+Klick för att lägga till eller ta bort i sparade objekt
+STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Välj vilken klass av riktmärken som ska visas
+STR_PICKER_WAYPOINT_TYPE_TOOLTIP                                :Välj ett riktmärke att bygga. Ctrl+Klick för att lägga till eller ta bort i sparade objekt
+STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP                           :Välj vilken klass av busstationer som ska visas
+STR_PICKER_ROADSTOP_BUS_TYPE_TOOLTIP                            :Välj en busstationstyp att bygga. Ctrl+Klick för att lägga till eller ta bort i sparade objekt
+STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Välj vilken klass av laststationer som ska visas
+STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :Välj en laststationstyp att bygga. Ctrl+Klick för att lägga till eller ta bort i sparade objekt
+STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Välj vilken klass av objekt som ska visas
+STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :Välj en objektstyp att bygga. Ctrl+Klick för att lägga till eller ta bort i sparade objekt. Ctrl+Klick+Drag för att välja ytan diagonalt. Håll även in Shift för att endast visa uppskattad kostnad
 STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Välj vilken stadszon som ska visas
+STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Välj en hustyp att bygga. Ctrl+Klick för att lägga till eller ta bort i sparade objekt
 
 STR_HOUSE_PICKER_CAPTION                                        :Husval
 
-STR_HOUSE_PICKER_CLASS_ZONE4                                    :Innerförorterna
+STR_HOUSE_PICKER_CLASS_ZONE1                                    :Gräns
+STR_HOUSE_PICKER_CLASS_ZONE2                                    :Utkanter
+STR_HOUSE_PICKER_CLASS_ZONE3                                    :Yttrerförorter
+STR_HOUSE_PICKER_CLASS_ZONE4                                    :Innerförorter
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Stadskärnan
 
 STR_STATION_CLASS_DFLT                                          :Original
@@ -5034,6 +5055,8 @@ STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :{WHITE}Kan inte
 
 STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :{WHITE}Angränsar till mer än en station/hållplats
 STR_ERROR_STATION_TOO_SPREAD_OUT                                :{WHITE}... stationen för utspridd
+STR_ERROR_STATION_DISALLOWED_NUMBER_TRACKS                      :{WHITE}... antalet spår stöds ej
+STR_ERROR_STATION_DISALLOWED_LENGTH                             :{WHITE}... längden stöds ej
 STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}För många stationer/hållplatser
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}För många delar på järnvägsstationen
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}För många busshållplatser

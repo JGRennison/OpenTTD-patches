@@ -13,7 +13,7 @@
 #include "palette_func.h"
 #include "core/endian_func.hpp"
 
-#define MKCOLOUR(x)         TO_LE32X(x)
+#define MKCOLOUR(x)         TO_LE32(x)
 
 #define MKCOLOUR_XXXX(x)    (MKCOLOUR(0x01010101) * (uint)(x))
 #define MKCOLOUR_X0X0(x)    (MKCOLOUR(0x01000100) * (uint)(x))

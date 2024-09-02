@@ -311,8 +311,8 @@ STR_BUTTON_CANCEL                                               :{BLACK}Cancel·
 STR_BUTTON_OK                                                   :{BLACK}D'acord
 
 # On screen keyboard window
-STR_OSK_KEYBOARD_LAYOUT                                         :`1234567890-=\qwertyuiop[]asdfghjkl;'  zxcvbnm,./ .
-STR_OSK_KEYBOARD_LAYOUT_CAPS                                    :~!@#$%^&*()_+|QWERTYUIOP{{}}ASDFGHJKL:"  ZXCVBNM<>? .
+STR_OSK_KEYBOARD_LAYOUT                                         :`1234567890-= qwertyuiop[]asdfghjkl;'#\zxcvbnm,./ .
+STR_OSK_KEYBOARD_LAYOUT_CAPS                                    :¬!"£$%^&*()_+ QWERTYUIOP{{}}ASDFGHJKL:@~|ZXCVBNM<>? .
 
 # Measurement tooltip
 STR_MEASURE_LENGTH                                              :{BLACK}Llargada: {NUM}
@@ -1489,6 +1489,9 @@ STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Avisa si el ben
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Si està activat, s'envia un missatge de notícia quan un vehicle no ha tingut beneficis durant l'any.
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Si està activat, s'envia un missatge de notícia quan un vehicle no ha obtingut benefici durant un període.
 
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE                             :Avisa si el vehicle és vell: {STRING}
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE_HELPTEXT                    :Si està activat, s'envia un missatge de notícia quan un vehicle és vell.
+
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Els vehicles mai caduquen: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Si està activat, tots els models de vehicles continuen disponibles per sempre després de la seva introducció.
 
@@ -1499,7 +1502,7 @@ STR_CONFIG_SETTING_TIMEKEEPING_UNITS_CALENDAR                   :Calendari
 STR_CONFIG_SETTING_TIMEKEEPING_UNITS_WALLCLOCK                  :Rellotge de paret
 
 STR_CONFIG_SETTING_MINUTES_PER_YEAR                             :Minuts per any: {STRING}
-STR_CONFIG_SETTING_MINUTES_PER_YEAR_HELPTEXT                    :Trieu el nombre de minuts d'un any de calendari. Per defecte són 12 minuts. Establiu-ho a 0 per a parar el temps del calendari. Aquesta opció no afecta a la simulació econòmica de la partida i només està disponible quan es fa servir el temps amb rellotge de paret.
+STR_CONFIG_SETTING_MINUTES_PER_YEAR_HELPTEXT                    :Trieu el nombre de minuts d'un any de calendari. Per defecte són 12 minuts. Establiu-ho a 0 per a parar el temps del calendari. Si s'augmenta la durada de l'any del calendari s'alenteix la introducció de vehicles, cases i altres tipus d'infraestructures noves. No afecta a la velocitat dels vehicles o de la simulació econòmica, excepte per la inflació. Aquesta opció només està disponible quan es fa servir el temps amb rellotge de paret.
 
 STR_CONFIG_SETTING_MINUTES_PER_YEAR_VALUE                       :{NUM}
 ###setting-zero-is-special
@@ -5053,6 +5056,8 @@ STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :{WHITE}Aquí no
 
 STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :{WHITE}Fusiona més d'una estació/àrea de càrrega existent
 STR_ERROR_STATION_TOO_SPREAD_OUT                                :{WHITE}... estació massa extensa
+STR_ERROR_STATION_DISALLOWED_NUMBER_TRACKS                      :{WHITE}... nombre de vies no vàlid
+STR_ERROR_STATION_DISALLOWED_LENGTH                             :{WHITE}... llargada no vàlida
 STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Massa estacions/àrees de càrrega
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Hi ha massa parts d'estacions de tren
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Massa parades d'autobús

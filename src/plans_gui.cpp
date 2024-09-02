@@ -84,7 +84,7 @@ static WindowDesc _plans_desc(__FILE__, __LINE__,
 	WDP_AUTO, "plans", 350, 100,
 	WC_PLANS, WC_NONE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_plans_widgets), std::end(_nested_plans_widgets)
+	_nested_plans_widgets
 );
 
 typedef GUIList<const Plan*, const bool &> GUIPlanList;
@@ -226,7 +226,7 @@ private:
 	}
 
 public:
-	PlansWindow(WindowDesc *desc) : Window(desc), planname_editbox(MAX_LENGTH_PLAN_NAME_CHARS * MAX_CHAR_LENGTH, MAX_LENGTH_PLAN_NAME_CHARS)
+	PlansWindow(WindowDesc &desc) : Window(desc), planname_editbox(MAX_LENGTH_PLAN_NAME_CHARS * MAX_CHAR_LENGTH, MAX_LENGTH_PLAN_NAME_CHARS)
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_PLN_SCROLLBAR);
@@ -693,7 +693,7 @@ const std::initializer_list<GUIPlanList::SortFunction * const> PlansWindow::sort
 void ShowPlansWindow()
 {
 	if (BringWindowToFrontById(WC_PLANS, 0) != nullptr) return;
-	new PlansWindow(&_plans_desc);
+	new PlansWindow(_plans_desc);
 }
 
 /**

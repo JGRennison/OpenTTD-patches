@@ -281,7 +281,7 @@ struct NetworkChatWindow : public Window {
 	 * @param type The type of destination.
 	 * @param dest The actual destination index.
 	 */
-	NetworkChatWindow(WindowDesc *desc, DestType type, int dest) : Window(desc), message_editbox(NETWORK_CHAT_LENGTH)
+	NetworkChatWindow(WindowDesc &desc, DestType type, int dest) : Window(desc), message_editbox(NETWORK_CHAT_LENGTH)
 	{
 		this->dtype   = type;
 		this->dest    = dest;
@@ -505,7 +505,7 @@ static constexpr NWidgetPart _nested_chat_window_widgets[] = {
 		NWidget(WWT_PANEL, COLOUR_GREY, WID_NC_BACKGROUND),
 			NWidget(NWID_HORIZONTAL),
 				NWidget(WWT_TEXT, COLOUR_GREY, WID_NC_DESTINATION), SetMinimalSize(62, 12), SetPadding(1, 0, 1, 0), SetAlignment(SA_VERT_CENTER | SA_RIGHT), SetDataTip(STR_NULL, STR_NULL),
-				NWidget(WWT_EDITBOX, COLOUR_GREY, WID_NC_TEXTBOX), SetMinimalSize(100, 12), SetPadding(1, 0, 1, 0), SetResize(1, 0),
+				NWidget(WWT_EDITBOX, COLOUR_GREY, WID_NC_TEXTBOX), SetMinimalSize(100, 0), SetPadding(1, 0, 1, 0), SetResize(1, 0),
 																	SetDataTip(STR_NETWORK_CHAT_OSKTITLE, STR_NULL),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_NC_SENDBUTTON), SetMinimalSize(62, 12), SetPadding(1, 0, 1, 0), SetDataTip(STR_NETWORK_CHAT_SEND, STR_NULL),
 			EndContainer(),
@@ -518,7 +518,7 @@ static WindowDesc _chat_window_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_SEND_NETWORK_MSG, WC_NONE,
 	WDF_NETWORK,
-	std::begin(_nested_chat_window_widgets), std::end(_nested_chat_window_widgets)
+	_nested_chat_window_widgets
 );
 
 
@@ -530,5 +530,5 @@ static WindowDesc _chat_window_desc(__FILE__, __LINE__,
 void ShowNetworkChatQueryWindow(DestType type, int dest)
 {
 	CloseWindowByClass(WC_SEND_NETWORK_MSG);
-	new NetworkChatWindow(&_chat_window_desc, type, dest);
+	new NetworkChatWindow(_chat_window_desc, type, dest);
 }

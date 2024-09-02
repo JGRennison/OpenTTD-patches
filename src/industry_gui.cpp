@@ -320,7 +320,7 @@ static WindowDesc _build_industry_desc(__FILE__, __LINE__,
 	WDP_AUTO, "build_industry", 170, 212,
 	WC_BUILD_INDUSTRY, WC_NONE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_build_industry_widgets), std::end(_nested_build_industry_widgets)
+	_nested_build_industry_widgets
 );
 
 /** Build (fund or prospect) a new industry, */
@@ -424,7 +424,7 @@ class BuildIndustryWindow : public Window {
 	}
 
 public:
-	BuildIndustryWindow() : Window(&_build_industry_desc)
+	BuildIndustryWindow() : Window(_build_industry_desc)
 	{
 		this->selected_type = INVALID_INDUSTRYTYPE;
 
@@ -867,7 +867,7 @@ class IndustryViewWindow : public Window
 	int cheat_line_height;    ///< Height of each line for the #WID_IV_INFO panel
 
 public:
-	IndustryViewWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
+	IndustryViewWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
 		this->flags |= WF_DISABLE_VP_SCROLL;
 		this->editbox_line = IL_NONE;
@@ -1278,12 +1278,12 @@ static WindowDesc _industry_view_desc(__FILE__, __LINE__,
 	WDP_AUTO, "view_industry", 260, 120,
 	WC_INDUSTRY_VIEW, WC_NONE,
 	0,
-	std::begin(_nested_industry_view_widgets), std::end(_nested_industry_view_widgets)
+	_nested_industry_view_widgets
 );
 
 void ShowIndustryViewWindow(int industry)
 {
-	AllocateWindowDescFront<IndustryViewWindow>(&_industry_view_desc, industry);
+	AllocateWindowDescFront<IndustryViewWindow>(_industry_view_desc, industry);
 }
 
 /** Widget definition of the industry directory gui */
@@ -1693,7 +1693,7 @@ protected:
 	}
 
 public:
-	IndustryDirectoryWindow(WindowDesc *desc, WindowNumber) : Window(desc), industry_editbox(MAX_FILTER_LENGTH * MAX_CHAR_LENGTH, MAX_FILTER_LENGTH)
+	IndustryDirectoryWindow(WindowDesc &desc, WindowNumber) : Window(desc), industry_editbox(MAX_FILTER_LENGTH * MAX_CHAR_LENGTH, MAX_FILTER_LENGTH)
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_ID_VSCROLLBAR);
@@ -1894,8 +1894,8 @@ public:
 
 	void OnResize() override
 	{
-		this->vscroll->SetCapacityFromWidget(this, WID_ID_INDUSTRY_LIST);
-		this->hscroll->SetCapacityFromWidget(this, WID_ID_INDUSTRY_LIST);
+		this->vscroll->SetCapacityFromWidget(this, WID_ID_INDUSTRY_LIST, WidgetDimensions::scaled.framerect.Vertical());
+		this->hscroll->SetCapacityFromWidget(this, WID_ID_INDUSTRY_LIST, WidgetDimensions::scaled.framerect.Horizontal());
 	}
 
 	void OnEditboxChanged(WidgetID wid) override
@@ -1980,13 +1980,13 @@ static WindowDesc _industry_directory_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_industries", 428, 190,
 	WC_INDUSTRY_DIRECTORY, WC_NONE,
 	0,
-	std::begin(_nested_industry_directory_widgets), std::end(_nested_industry_directory_widgets),
+	_nested_industry_directory_widgets,
 	&IndustryDirectoryWindow::hotkeys
 );
 
 void ShowIndustryDirectory()
 {
-	AllocateWindowDescFront<IndustryDirectoryWindow>(&_industry_directory_desc, 0);
+	AllocateWindowDescFront<IndustryDirectoryWindow>(_industry_directory_desc, 0);
 }
 
 /** Widgets of the industry cargoes window. */
@@ -2024,7 +2024,7 @@ static WindowDesc _industry_cargoes_desc(__FILE__, __LINE__,
 	WDP_AUTO, "industry_cargoes", 300, 210,
 	WC_INDUSTRY_CARGOES, WC_NONE,
 	0,
-	std::begin(_nested_industry_cargoes_widgets), std::end(_nested_industry_cargoes_widgets)
+	_nested_industry_cargoes_widgets
 );
 
 /** Available types of field. */
@@ -2608,7 +2608,7 @@ struct IndustryCargoesWindow : public Window {
 	Dimension ind_textsize;   ///< Size to hold any industry type text, as well as STR_INDUSTRY_CARGOES_SELECT_INDUSTRY.
 	Scrollbar *vscroll;
 
-	IndustryCargoesWindow(int id) : Window(&_industry_cargoes_desc)
+	IndustryCargoesWindow(int id) : Window(_industry_cargoes_desc)
 	{
 		this->OnInit();
 		this->CreateNestedTree();
@@ -3275,7 +3275,7 @@ struct IndustryCargoesWindow : public Window {
 
 	void OnResize() override
 	{
-		this->vscroll->SetCapacityFromWidget(this, WID_IC_PANEL, WidgetDimensions::scaled.framerect.top + CargoesField::small_height);
+		this->vscroll->SetCapacityFromWidget(this, WID_IC_PANEL, WidgetDimensions::scaled.framerect.Vertical() + CargoesField::small_height);
 	}
 
 	bool IsNewGRFInspectable() const override

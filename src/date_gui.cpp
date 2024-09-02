@@ -40,7 +40,7 @@ struct SetDateWindow : Window {
 	 * @param max_year the maximum year (inclusive) to show in the year dropdown
 	 * @param callback the callback to call once a date has been selected
 	 */
-	SetDateWindow(WindowDesc *desc, WindowNumber window_number, Window *parent, EconTime::Date initial_date, EconTime::Year min_year, EconTime::Year max_year,
+	SetDateWindow(WindowDesc &desc, WindowNumber window_number, Window *parent, EconTime::Date initial_date, EconTime::Year min_year, EconTime::Year max_year,
 				SetTickCallback *callback, StringID button_text, StringID button_tooltip) :
 			Window(desc),
 			callback(callback),
@@ -185,7 +185,7 @@ struct SetMinutesWindow : SetDateWindow
 	TickMinutes minutes;
 
 	/** Constructor. */
-	SetMinutesWindow(WindowDesc *desc, WindowNumber window_number, Window *parent, StateTicks initial_tick, EconTime::Year min_year, EconTime::Year max_year,
+	SetMinutesWindow(WindowDesc &desc, WindowNumber window_number, Window *parent, StateTicks initial_tick, EconTime::Year min_year, EconTime::Year max_year,
 				SetTickCallback *callback, StringID button_text, StringID button_tooltip) :
 			SetDateWindow(desc, window_number, parent, 0, min_year, max_year, callback, button_text, button_tooltip),
 			minutes(_settings_time.ToTickMinutes(initial_tick))
@@ -348,14 +348,14 @@ static WindowDesc _set_date_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_SET_DATE, WC_NONE,
 	0,
-	std::begin(_nested_set_date_widgets), std::end(_nested_set_date_widgets)
+	_nested_set_date_widgets
 );
 
 static WindowDesc _set_minutes_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_SET_DATE, WC_NONE,
 	0,
-	std::begin(_nested_set_minutes_widgets), std::end(_nested_set_minutes_widgets)
+	_nested_set_minutes_widgets
 );
 
 /**
@@ -373,8 +373,8 @@ void ShowSetDateWindow(Window *parent, int window_number, StateTicks initial_tic
 	CloseWindowByClass(WC_SET_DATE);
 
 	if (!_settings_time.time_in_minutes) {
-		new SetDateWindow(&_set_date_desc, window_number, parent, StateTicksToDate(initial_tick), min_year, max_year, callback, button_text, button_tooltip);
+		new SetDateWindow(_set_date_desc, window_number, parent, StateTicksToDate(initial_tick), min_year, max_year, callback, button_text, button_tooltip);
 	} else {
-		new SetMinutesWindow(&_set_minutes_desc, window_number, parent, initial_tick, min_year, max_year, callback, button_text, button_tooltip);
+		new SetMinutesWindow(_set_minutes_desc, window_number, parent, initial_tick, min_year, max_year, callback, button_text, button_tooltip);
 	}
 }

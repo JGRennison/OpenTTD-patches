@@ -19,7 +19,7 @@
 #include "safeguards.h"
 
 struct ScreenshotWindow : Window {
-	ScreenshotWindow(WindowDesc *desc) : Window(desc)
+	ScreenshotWindow(WindowDesc &desc) : Window(desc)
 	{
 		this->CreateNestedTree();
 		this->FinishInitNested();
@@ -73,13 +73,13 @@ static WindowDesc _screenshot_window_desc(__FILE__, __LINE__,
 	WDP_AUTO, "take_a_screenshot", 200, 100,
 	WC_SCREENSHOT, WC_NONE,
 	0,
-	std::begin(_nested_screenshot), std::end(_nested_screenshot)
+	_nested_screenshot
 );
 
 void ShowScreenshotWindow()
 {
 	CloseWindowById(WC_SCREENSHOT, 0);
-	new ScreenshotWindow(&_screenshot_window_desc);
+	new ScreenshotWindow(_screenshot_window_desc);
 }
 
 void SetScreenshotWindowHidden(bool hidden)

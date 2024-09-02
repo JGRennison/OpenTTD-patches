@@ -12,6 +12,7 @@
 #include "landscape.h"
 #include "error.h"
 #include "gui.h"
+#include "gfx_layout.h"
 #include "command_func.h"
 #include "company_func.h"
 #include "town.h"
@@ -61,7 +62,7 @@ static WindowDesc _land_info_desc(__FILE__, __LINE__,
 	WDP_AUTO, nullptr, 0, 0,
 	WC_LAND_INFO, WC_NONE,
 	0,
-	std::begin(_nested_land_info_widgets), std::end(_nested_land_info_widgets)
+	_nested_land_info_widgets
 );
 
 class LandInfoWindow : public Window {
@@ -107,7 +108,7 @@ public:
 		}
 	}
 
-	LandInfoWindow(TileIndex tile) : Window(&_land_info_desc), tile(tile)
+	LandInfoWindow(TileIndex tile) : Window(_land_info_desc), tile(tile)
 	{
 		this->InitNested();
 
@@ -434,7 +435,7 @@ static WindowDesc _about_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_GAME_OPTIONS, WC_NONE,
 	0,
-	std::begin(_nested_about_widgets), std::end(_nested_about_widgets)
+	_nested_about_widgets
 );
 
 static const std::initializer_list<const std::string_view> _credits = {
@@ -514,7 +515,7 @@ struct AboutWindow : public Window {
 	static const uint TIMER_INTERVAL = 2100; ///< Scrolling interval, scaled by line text line height. This value chosen to maintain parity: 2100 / GetCharacterHeight(FS_NORMAL) = 150ms
 	GUITimer timer;
 
-	AboutWindow() : Window(&_about_desc)
+	AboutWindow() : Window(_about_desc)
 	{
 		this->InitNested(WN_GAME_OPTIONS_ABOUT);
 
@@ -699,7 +700,7 @@ static WindowDesc _tool_tips_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0, // Coordinates and sizes are not used,
 	WC_TOOLTIPS, WC_NONE,
 	WDF_NO_FOCUS | WDF_NO_CLOSE,
-	std::begin(_nested_tooltips_widgets), std::end(_nested_tooltips_widgets)
+	_nested_tooltips_widgets
 );
 
 /** Window for displaying a tooltip. */
@@ -713,7 +714,7 @@ struct TooltipsWindow : public Window
 	int viewport_virtual_top;         ///< Owner viewport state: top
 	bool delete_next_mouse_loop;      ///< Delete window on the next mouse loop
 
-	TooltipsWindow(Window *parent, StringID str, uint paramcount, TooltipCloseCondition close_tooltip) : Window(&_tool_tips_desc)
+	TooltipsWindow(Window *parent, StringID str, uint paramcount, TooltipCloseCondition close_tooltip) : Window(_tool_tips_desc)
 	{
 		this->parent = parent;
 		this->string_id = str;
@@ -851,6 +852,25 @@ static int GetCaretWidth()
 	return GetCharacterWidth(FS_NORMAL, '_');
 }
 
+/**
+ * Reposition edit text box rect based on textbuf length can caret position.
+ * @param r Initial rect of edit text box.
+ * @param tb The Textbuf being processed.
+ * @return Updated rect.
+ */
+static Rect ScrollEditBoxTextRect(Rect r, const Textbuf &tb)
+{
+	const int linewidth = tb.pixels + GetCaretWidth();
+	const int boxwidth = r.Width();
+	if (linewidth <= boxwidth) return r;
+
+	/* Extend to cover whole string. This is left-aligned, adjusted by caret position. */
+	r = r.WithWidth(linewidth, false);
+
+	/* Slide so that the caret is at the centre unless limited by bounds of the line, i.e. near either end. */
+	return r.Translate(-std::clamp(tb.caretxoffs - (boxwidth / 2), 0, linewidth - boxwidth), 0);
+}
+
 void QueryString::DrawEditBox(const Window *w, WidgetID wid) const
 {
 	const NWidgetLeaf *wi = w->GetWidget<NWidgetLeaf>(wid);
@@ -876,24 +896,29 @@ void QueryString::DrawEditBox(const Window *w, WidgetID wid) const
 	/* Limit the drawing of the string inside the widget boundaries */
 	DrawPixelInfo dpi;
 	if (!FillDrawPixelInfo(&dpi, fr)) return;
+	/* Keep coordinates relative to the window. */
+	dpi.left += fr.left;
+	dpi.top += fr.top;
 
 	AutoRestoreBackup dpi_backup(_cur_dpi, &dpi);
 
 	/* We will take the current widget length as maximum width, with a small
 	 * space reserved at the end for the caret to show */
 	const Textbuf *tb = &this->text;
-	int delta = std::min(0, (fr.right - fr.left) - tb->pixels - GetCaretWidth());
-
-	if (tb->caretxoffs + delta < 0) delta = -tb->caretxoffs;
+	fr = ScrollEditBoxTextRect(fr, *tb);
 
 	/* If we have a marked area, draw a background highlight. */
-	if (tb->marklength != 0) GfxFillRect(delta + tb->markxoffs, 0, delta + tb->markxoffs + tb->marklength - 1, fr.bottom - fr.top, PC_GREY);
+	if (tb->marklength != 0) GfxFillRect(fr.left + tb->markxoffs, fr.top, fr.left + tb->markxoffs + tb->marklength - 1, fr.bottom, PC_GREY);
 
-	DrawString(delta, tb->pixels, 0, tb->buf, TC_YELLOW);
+	DrawString(fr.left, fr.right, CenterBounds(fr.top, fr.bottom, GetCharacterHeight(FS_NORMAL)), tb->buf, TC_YELLOW);
 	bool focussed = w->IsWidgetGloballyFocused(wid) || IsOSKOpenedFor(w, wid);
 	if (focussed && tb->caret) {
-		int caret_width = GetStringBoundingBox("_").width;
-		DrawString(tb->caretxoffs + delta, tb->caretxoffs + delta + caret_width, 0, "_", TC_WHITE);
+		int caret_width = GetCaretWidth();
+		if (rtl) {
+			DrawString(fr.right - tb->pixels + tb->caretxoffs - caret_width, fr.right - tb->pixels + tb->caretxoffs, CenterBounds(fr.top, fr.bottom, GetCharacterHeight(FS_NORMAL)), "_", TC_WHITE);
+		} else {
+			DrawString(fr.left + tb->caretxoffs, fr.left + tb->caretxoffs + caret_width, CenterBounds(fr.top, fr.bottom, GetCharacterHeight(FS_NORMAL)), "_", TC_WHITE);
+		}
 	}
 }
 
@@ -917,10 +942,9 @@ Point QueryString::GetCaretPosition(const Window *w, WidgetID wid) const
 
 	/* Clamp caret position to be inside out current width. */
 	const Textbuf *tb = &this->text;
-	int delta = std::min(0, (r.right - r.left) - tb->pixels - GetCaretWidth());
-	if (tb->caretxoffs + delta < 0) delta = -tb->caretxoffs;
+	r = ScrollEditBoxTextRect(r, *tb);
 
-	Point pt = {r.left + tb->caretxoffs + delta, r.top};
+	Point pt = {r.left + tb->caretxoffs, r.top};
 	return pt;
 }
 
@@ -946,14 +970,13 @@ Rect QueryString::GetBoundingRect(const Window *w, WidgetID wid, const char *fro
 
 	/* Clamp caret position to be inside our current width. */
 	const Textbuf *tb = &this->text;
-	int delta = std::min(0, r.Width() - tb->pixels - GetCaretWidth());
-	if (tb->caretxoffs + delta < 0) delta = -tb->caretxoffs;
+	r = ScrollEditBoxTextRect(r, *tb);
 
 	/* Get location of first and last character. */
-	Point p1 = GetCharPosInString(tb->buf, from, FS_NORMAL);
-	Point p2 = from != to ? GetCharPosInString(tb->buf, to, FS_NORMAL) : p1;
+	const auto p1 = GetCharPosInString(tb->buf, from, FS_NORMAL);
+	const auto p2 = from != to ? GetCharPosInString(tb->buf, to, FS_NORMAL) : p1;
 
-	return { Clamp(r.left + p1.x + delta, r.left, r.right), r.top, Clamp(r.left + p2.x + delta, r.left, r.right), r.bottom };
+	return { Clamp(r.left + p1.left, r.left, r.right), r.top, Clamp(r.left + p2.right, r.left, r.right), r.bottom };
 }
 
 /**
@@ -979,10 +1002,9 @@ ptrdiff_t QueryString::GetCharAtPosition(const Window *w, WidgetID wid, const Po
 
 	/* Clamp caret position to be inside our current width. */
 	const Textbuf *tb = &this->text;
-	int delta = std::min(0, r.Width() - tb->pixels - GetCaretWidth());
-	if (tb->caretxoffs + delta < 0) delta = -tb->caretxoffs;
+	r = ScrollEditBoxTextRect(r, *tb);
 
-	return ::GetCharAtPosition(tb->buf, pt.x - delta - r.left);
+	return ::GetCharAtPosition(tb->buf, pt.x - r.left);
 }
 
 void QueryString::ClickEditBox(Window *w, Point pt, WidgetID wid, int click_count, bool focus_changed)
@@ -1021,7 +1043,7 @@ struct QueryStringWindow : public Window
 	QueryStringFlags flags; ///< Flags controlling behaviour of the window.
 	Dimension warning_size; ///< How much space to use for the warning text
 
-	QueryStringWindow(StringID str, StringID caption, uint max_bytes, uint max_chars, WindowDesc *desc, Window *parent, CharSetFilter afilter, QueryStringFlags flags) :
+	QueryStringWindow(StringID str, StringID caption, uint max_bytes, uint max_chars, WindowDesc &desc, Window *parent, CharSetFilter afilter, QueryStringFlags flags) :
 			Window(desc), editbox(max_bytes, max_chars)
 	{
 		this->editbox.text.Assign(str);
@@ -1130,7 +1152,7 @@ static constexpr NWidgetPart _nested_query_string_widgets[] = {
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_QS_CAPTION), SetDataTip(STR_JUST_STRING, STR_NULL), SetTextStyle(TC_WHITE),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_GREY),
-		NWidget(WWT_EDITBOX, COLOUR_GREY, WID_QS_TEXT), SetMinimalSize(256, 12), SetFill(1, 1), SetPadding(2, 2, 2, 2),
+		NWidget(WWT_EDITBOX, COLOUR_GREY, WID_QS_TEXT), SetMinimalSize(256, 0), SetFill(1, 0), SetPadding(2, 2, 2, 2),
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_GREY, WID_QS_WARNING), EndContainer(),
 	NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
@@ -1144,7 +1166,7 @@ static WindowDesc _query_string_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_QUERY_STRING, WC_NONE,
 	0,
-	std::begin(_nested_query_string_widgets), std::end(_nested_query_string_widgets)
+	_nested_query_string_widgets
 );
 
 /**
@@ -1160,7 +1182,7 @@ static WindowDesc _query_string_desc(__FILE__, __LINE__,
 void ShowQueryString(StringID str, StringID caption, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags)
 {
 	CloseWindowByClass(WC_QUERY_STRING);
-	new QueryStringWindow(str, caption, ((flags & QSF_LEN_IN_CHARS) ? MAX_CHAR_LENGTH : 1) * maxsize, maxsize, &_query_string_desc, parent, afilter, flags);
+	new QueryStringWindow(str, caption, ((flags & QSF_LEN_IN_CHARS) ? MAX_CHAR_LENGTH : 1) * maxsize, maxsize, _query_string_desc, parent, afilter, flags);
 }
 
 /**
@@ -1175,7 +1197,7 @@ struct QueryWindow : public Window {
 	std::string caption_str;
 	mutable std::string message_str;
 
-	QueryWindow(WindowDesc *desc, StringID caption, StringID message, Window *parent, QueryCallbackProc *callback) : Window(desc)
+	QueryWindow(WindowDesc &desc, StringID caption, StringID message, Window *parent, QueryCallbackProc *callback) : Window(desc)
 	{
 		/* Create a backup of the variadic arguments to strings because it will be
 		 * overridden pretty often. We will copy these back for drawing */
@@ -1190,7 +1212,7 @@ struct QueryWindow : public Window {
 		this->FinishInitNested(WN_CONFIRM_POPUP_QUERY);
 	}
 
-	QueryWindow(WindowDesc *desc, std::string caption, std::string message, Window *parent, QueryCallbackProc *callback) : Window(desc)
+	QueryWindow(WindowDesc &desc, std::string caption, std::string message, Window *parent, QueryCallbackProc *callback) : Window(desc)
 	{
 		this->precomposed = true;
 		this->message = STR_EMPTY;
@@ -1318,7 +1340,7 @@ static WindowDesc _query_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_CONFIRM_POPUP_QUERY, WC_NONE,
 	WDF_MODAL,
-	std::begin(_nested_query_widgets), std::end(_nested_query_widgets)
+	_nested_query_widgets
 );
 
 static void RemoveExistingQueryWindow(Window *parent, QueryCallbackProc *callback)
@@ -1351,7 +1373,7 @@ void ShowQuery(StringID caption, StringID message, Window *parent, QueryCallback
 
 	RemoveExistingQueryWindow(parent, callback);
 
-	QueryWindow *q = new QueryWindow(&_query_desc, caption, message, parent, callback);
+	QueryWindow *q = new QueryWindow(_query_desc, caption, message, parent, callback);
 	if (focus) SetFocusedWindow(q);
 }
 
@@ -1370,7 +1392,7 @@ void ShowQuery(std::string caption, std::string message, Window *parent, QueryCa
 
 	RemoveExistingQueryWindow(parent, callback);
 
-	QueryWindow *q = new QueryWindow(&_query_desc, std::move(caption), std::move(message), parent, callback);
+	QueryWindow *q = new QueryWindow(_query_desc, std::move(caption), std::move(message), parent, callback);
 	if (focus) SetFocusedWindow(q);
 }
 
@@ -1394,7 +1416,7 @@ static constexpr NWidgetPart _modifier_key_toggle_widgets[] = {
 };
 
 struct ModifierKeyToggleWindow : Window {
-	ModifierKeyToggleWindow(WindowDesc *desc, WindowNumber window_number) :
+	ModifierKeyToggleWindow(WindowDesc &desc, WindowNumber window_number) :
 			Window(desc)
 	{
 		this->InitNested(window_number);
@@ -1451,10 +1473,10 @@ static WindowDesc _modifier_key_toggle_desc(__FILE__, __LINE__,
 	WDP_AUTO, "modifier_key_toggle", 0, 0,
 	WC_MODIFIER_KEY_TOGGLE, WC_NONE,
 	WDF_NO_FOCUS,
-	std::begin(_modifier_key_toggle_widgets), std::end(_modifier_key_toggle_widgets)
+	_modifier_key_toggle_widgets
 );
 
 void ShowModifierKeyToggleWindow()
 {
-	AllocateWindowDescFront<ModifierKeyToggleWindow>(&_modifier_key_toggle_desc, 0);
+	AllocateWindowDescFront<ModifierKeyToggleWindow>(_modifier_key_toggle_desc, 0);
 }

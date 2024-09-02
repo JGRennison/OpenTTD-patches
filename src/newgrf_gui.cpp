@@ -163,7 +163,7 @@ struct NewGRFParametersWindow : public Window {
 	bool action14present;  ///< True if action14 information is present.
 	bool editable;         ///< Allow editing parameters.
 
-	NewGRFParametersWindow(WindowDesc *desc, bool is_baseset, GRFConfig *c, bool editable) : Window(desc),
+	NewGRFParametersWindow(WindowDesc &desc, bool is_baseset, GRFConfig *c, bool editable) : Window(desc),
 		grf_config(c),
 		clicked_button(INT32_MAX),
 		clicked_dropdown(false),
@@ -560,13 +560,13 @@ static WindowDesc _newgrf_parameters_desc(__FILE__, __LINE__,
 	WDP_CENTER, "settings_newgrf_config", 500, 208,
 	WC_GRF_PARAMETERS, WC_NONE,
 	0,
-	std::begin(_nested_newgrf_parameter_widgets), std::end(_nested_newgrf_parameter_widgets)
+	_nested_newgrf_parameter_widgets
 );
 
 void OpenGRFParameterWindow(bool is_baseset, GRFConfig *c, bool editable)
 {
 	CloseWindowByClass(WC_GRF_PARAMETERS);
-	new NewGRFParametersWindow(&_newgrf_parameters_desc, is_baseset, c, editable);
+	new NewGRFParametersWindow(_newgrf_parameters_desc, is_baseset, c, editable);
 }
 
 /** Window for displaying the textfile of a NewGRF. */
@@ -650,7 +650,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 	Scrollbar *vscroll;
 	Scrollbar *vscroll2;
 
-	NewGRFWindow(WindowDesc *desc, bool editable, bool show_params, bool execute, GRFConfig **orig_list) : Window(desc), filter_editbox(EDITBOX_MAX_SIZE)
+	NewGRFWindow(WindowDesc &desc, bool editable, bool show_params, bool execute, GRFConfig **orig_list) : Window(desc), filter_editbox(EDITBOX_MAX_SIZE)
 	{
 		this->avail_sel   = nullptr;
 		this->avail_pos   = -1;
@@ -813,8 +813,8 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 
 	void OnResize() override
 	{
-		this->vscroll->SetCapacityFromWidget(this, WID_NS_FILE_LIST);
-		this->vscroll2->SetCapacityFromWidget(this, WID_NS_AVAIL_LIST);
+		this->vscroll->SetCapacityFromWidget(this, WID_NS_FILE_LIST, WidgetDimensions::scaled.framerect.Vertical());
+		this->vscroll2->SetCapacityFromWidget(this, WID_NS_AVAIL_LIST, WidgetDimensions::scaled.framerect.Vertical());
 	}
 
 	void SetStringParameters(WidgetID widget) const override
@@ -1050,7 +1050,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 			case WID_NS_FILE_LIST: { // Select an active GRF.
 				ResetObjectToPlace();
 
-				uint i = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_NS_FILE_LIST);
+				uint i = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_NS_FILE_LIST, WidgetDimensions::scaled.framerect.top);
 
 				GRFConfig *c;
 				for (c = this->actives; c != nullptr && i > 0; c = c->next, i--) {}
@@ -1113,7 +1113,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 			case WID_NS_AVAIL_LIST: { // Select a non-active GRF.
 				ResetObjectToPlace();
 
-				auto it = this->vscroll2->GetScrolledItemFromWidget(this->avails, pt.y, this, WID_NS_AVAIL_LIST);
+				auto it = this->vscroll2->GetScrolledItemFromWidget(this->avails, pt.y, this, WID_NS_AVAIL_LIST, WidgetDimensions::scaled.framerect.top);
 				this->active_sel = nullptr;
 				CloseWindowByClass(WC_GRF_PARAMETERS);
 				if (it != this->avails.end()) {
@@ -1409,7 +1409,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 				for (from_prev = &this->actives; *from_prev != this->active_sel; from_prev = &(*from_prev)->next, from_pos++) {}
 
 				/* Gets the drag-and-drop destination offset. Ignore the last dummy line. */
-				int to_pos = std::min(this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_NS_FILE_LIST), this->vscroll->GetCount() - 2);
+				int to_pos = std::min(this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_NS_FILE_LIST, WidgetDimensions::scaled.framerect.top), this->vscroll->GetCount() - 2);
 				if (to_pos != from_pos) { // Don't move NewGRF file over itself.
 					/* Get pointer to destination position. */
 					GRFConfig **to_prev = &this->actives;
@@ -1427,7 +1427,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 					this->InvalidateData();
 				}
 			} else if (this->avail_sel != nullptr) {
-				int to_pos = std::min(this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_NS_FILE_LIST), this->vscroll->GetCount() - 1);
+				int to_pos = std::min(this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_NS_FILE_LIST, WidgetDimensions::scaled.framerect.top), this->vscroll->GetCount() - 1);
 				this->AddGRFToActive(to_pos);
 			}
 		} else if (widget == WID_NS_AVAIL_LIST && this->active_sel != nullptr) {
@@ -1451,7 +1451,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 
 		if (widget == WID_NS_FILE_LIST && (this->active_sel != nullptr || this->avail_sel != nullptr)) {
 			/* An NewGRF file is dragged over the active list. */
-			int to_pos = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_NS_FILE_LIST);
+			int to_pos = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_NS_FILE_LIST, WidgetDimensions::scaled.framerect.top);
 			/* Skip the last dummy line if the source is from the active list. */
 			to_pos = std::min(to_pos, this->vscroll->GetCount() - (this->active_sel != nullptr ? 2 : 1));
 
@@ -1902,7 +1902,7 @@ static constexpr NWidgetPart _nested_newgrf_availables_widgets[] = {
 		/* Left side, available grfs, filter edit box. */
 		NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_wide, 0),
 			NWidget(WWT_TEXT, COLOUR_MAUVE), SetFill(0, 1), SetDataTip(STR_NEWGRF_FILTER_TITLE, STR_NULL),
-			NWidget(WWT_EDITBOX, COLOUR_MAUVE, WID_NS_FILTER), SetFill(1, 0), SetMinimalSize(50, 12), SetResize(1, 0),
+			NWidget(WWT_EDITBOX, COLOUR_MAUVE, WID_NS_FILTER), SetFill(1, 0), SetResize(1, 0),
 					SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 		EndContainer(),
 
@@ -1975,9 +1975,9 @@ static constexpr NWidgetPart _nested_newgrf_infopanel_widgets[] = {
 /** Construct nested container widget for managing the lists and the info panel of the NewGRF GUI. */
 std::unique_ptr<NWidgetBase> NewGRFDisplay()
 {
-	std::unique_ptr<NWidgetBase> avs = MakeNWidgets(std::begin(_nested_newgrf_availables_widgets), std::end(_nested_newgrf_availables_widgets), nullptr);
-	std::unique_ptr<NWidgetBase> acs = MakeNWidgets(std::begin(_nested_newgrf_actives_widgets), std::end(_nested_newgrf_actives_widgets), nullptr);
-	std::unique_ptr<NWidgetBase> inf = MakeNWidgets(std::begin(_nested_newgrf_infopanel_widgets), std::end(_nested_newgrf_infopanel_widgets), nullptr);
+	std::unique_ptr<NWidgetBase> avs = MakeNWidgets(_nested_newgrf_availables_widgets, nullptr);
+	std::unique_ptr<NWidgetBase> acs = MakeNWidgets(_nested_newgrf_actives_widgets, nullptr);
+	std::unique_ptr<NWidgetBase> inf = MakeNWidgets(_nested_newgrf_infopanel_widgets, nullptr);
 
 	return std::make_unique<NWidgetNewGRFDisplay>(std::move(avs), std::move(acs), std::move(inf));
 }
@@ -2004,7 +2004,7 @@ static WindowDesc _newgrf_desc(__FILE__, __LINE__,
 	WDP_CENTER, "settings_newgrf", 300, 263,
 	WC_GAME_OPTIONS, WC_NONE,
 	0,
-	std::begin(_nested_newgrf_widgets), std::end(_nested_newgrf_widgets)
+	_nested_newgrf_widgets
 );
 
 /**
@@ -2062,7 +2062,7 @@ void PostCheckNewGRFLoadWarnings()
 void ShowNewGRFSettings(bool editable, bool show_params, bool exec_changes, GRFConfig **config)
 {
 	CloseWindowByClass(WC_GAME_OPTIONS);
-	new NewGRFWindow(&_newgrf_desc, editable, show_params, exec_changes, config);
+	new NewGRFWindow(_newgrf_desc, editable, show_params, exec_changes, config);
 }
 
 /** Widget parts of the save preset window. */
@@ -2095,7 +2095,7 @@ static WindowDesc _save_preset_desc(__FILE__, __LINE__,
 	WDP_CENTER, "save_preset", 140, 110,
 	WC_SAVE_PRESET, WC_GAME_OPTIONS,
 	WDF_MODAL,
-	std::begin(_nested_save_preset_widgets), std::end(_nested_save_preset_widgets)
+	_nested_save_preset_widgets
 );
 
 /** Class for the save preset window. */
@@ -2109,7 +2109,7 @@ struct SavePresetWindow : public Window {
 	 * Constructor of the save preset window.
 	 * @param initial_text Initial text to display in the edit box, or \c nullptr.
 	 */
-	SavePresetWindow(const char *initial_text) : Window(&_save_preset_desc), presetname_editbox(32)
+	SavePresetWindow(const char *initial_text) : Window(_save_preset_desc), presetname_editbox(32)
 	{
 		this->presets = GetGRFPresetList();
 		this->selected = -1;
@@ -2205,7 +2205,7 @@ struct SavePresetWindow : public Window {
 
 	void OnResize() override
 	{
-		this->vscroll->SetCapacityFromWidget(this, WID_SVP_PRESET_LIST);
+		this->vscroll->SetCapacityFromWidget(this, WID_SVP_PRESET_LIST, WidgetDimensions::scaled.framerect.Vertical());
 	}
 };
 
@@ -2236,7 +2236,7 @@ static WindowDesc _scan_progress_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_MODAL_PROGRESS, WC_NONE,
 	0,
-	std::begin(_nested_scan_progress_widgets), std::end(_nested_scan_progress_widgets)
+	_nested_scan_progress_widgets
 );
 
 /** Window for showing the progress of NewGRF scanning. */
@@ -2245,7 +2245,7 @@ struct ScanProgressWindow : public Window {
 	int scanned;           ///< The number of NewGRFs that we have seen.
 
 	/** Create the window. */
-	ScanProgressWindow() : Window(&_scan_progress_desc), scanned(0)
+	ScanProgressWindow() : Window(_scan_progress_desc), scanned(0)
 	{
 		this->InitNested(1);
 	}

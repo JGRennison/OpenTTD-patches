@@ -206,7 +206,7 @@ static void PlaceProc_Measure(TileIndex tile)
 struct TerraformToolbarWindow : Window {
 	int last_user_action; ///< Last started user action.
 
-	TerraformToolbarWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
+	TerraformToolbarWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
 		/* This is needed as we like to have the tree available on OnInit. */
 		this->CreateNestedTree();
@@ -423,7 +423,7 @@ static WindowDesc _terraform_desc(__FILE__, __LINE__,
 	WDP_MANUAL, "toolbar_landscape", 0, 0,
 	WC_SCEN_LAND_GEN, WC_NONE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_terraform_widgets), std::end(_nested_terraform_widgets),
+	_nested_terraform_widgets,
 	&TerraformToolbarWindow::hotkeys
 );
 
@@ -438,13 +438,13 @@ Window *ShowTerraformToolbar(Window *link)
 
 	Window *w;
 	if (link == nullptr) {
-		w = AllocateWindowDescFront<TerraformToolbarWindow>(&_terraform_desc, 0);
+		w = AllocateWindowDescFront<TerraformToolbarWindow>(_terraform_desc, 0);
 		return w;
 	}
 
 	/* Delete the terraform toolbar to place it again. */
 	CloseWindowById(WC_SCEN_LAND_GEN, 0, true);
-	w = AllocateWindowDescFront<TerraformToolbarWindow>(&_terraform_desc, 0);
+	w = AllocateWindowDescFront<TerraformToolbarWindow>(_terraform_desc, 0);
 	/* Align the terraform toolbar under the main toolbar. */
 	w->top -= w->height;
 	w->SetDirty();
@@ -608,7 +608,7 @@ static void ResetLandscapeConfirmationCallback(Window *, bool confirmed)
 struct ScenarioEditorLandscapeGenerationWindow : Window {
 	int last_user_action; ///< Last started user action.
 
-	ScenarioEditorLandscapeGenerationWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
+	ScenarioEditorLandscapeGenerationWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
 		this->CreateNestedTree();
 		this->SetButtonStates();
@@ -843,7 +843,7 @@ static WindowDesc _scen_edit_land_gen_desc(__FILE__, __LINE__,
 	WDP_AUTO, "toolbar_landscape_scen", 0, 0,
 	WC_SCEN_LAND_GEN, WC_NONE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_scen_edit_land_gen_widgets), std::end(_nested_scen_edit_land_gen_widgets),
+	_nested_scen_edit_land_gen_widgets,
 	&ScenarioEditorLandscapeGenerationWindow::hotkeys
 );
 
@@ -853,5 +853,5 @@ static WindowDesc _scen_edit_land_gen_desc(__FILE__, __LINE__,
  */
 Window *ShowEditorTerraformToolbar()
 {
-	return AllocateWindowDescFront<ScenarioEditorLandscapeGenerationWindow>(&_scen_edit_land_gen_desc, 0);
+	return AllocateWindowDescFront<ScenarioEditorLandscapeGenerationWindow>(_scen_edit_land_gen_desc, 0);
 }

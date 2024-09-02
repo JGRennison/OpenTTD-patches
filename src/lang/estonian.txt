@@ -1541,6 +1541,7 @@ STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Hoiata, kui sõ
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Kui on aktiveeritud, siis teavitatakse mängijat sõidukitest mis ei ole viimase aasta jooksul suutnud kasumit teenida
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Kui aktiveeritud, saadetakse uudis, kui sõiduk ei ole ajavahemikus kasumit teeninud
 
+
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Sõidukid ei aegu: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Kui on aktiveeritud, siis jäävad kõik sõidukite tüübid igavesti avatuks
 
@@ -2856,6 +2857,9 @@ STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Ehita ja
 
 STR_PICKER_MODE_ALL                                             :Kõik
 
+STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Vali, milliseid veoautojaamu näidatakse
+STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Vali näidatud asulaosa
+STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Vali, millist maja ehitada. Ctrl+ klõps lisab või eemaldab salvestatud asjadest
 
 STR_HOUSE_PICKER_CAPTION                                        :Maja valik
 

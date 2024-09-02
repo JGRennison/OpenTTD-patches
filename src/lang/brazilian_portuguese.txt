@@ -311,8 +311,8 @@ STR_BUTTON_CANCEL                                               :{BLACK}Cancelar
 STR_BUTTON_OK                                                   :{BLACK}OK
 
 # On screen keyboard window
-STR_OSK_KEYBOARD_LAYOUT                                         :`1234567890-=\qwertyuiop[]asdfghjkl;'  zxcvbnm,./ .
-STR_OSK_KEYBOARD_LAYOUT_CAPS                                    :~!@#$%^&*()_+|QWERTYUIOP{{}}ASDFGHJKL:"  ZXCVBNM<>? .
+STR_OSK_KEYBOARD_LAYOUT                                         :`1234567890-= qwertyuiop[]asdfghjkl;'#\zxcvbnm,./ .
+STR_OSK_KEYBOARD_LAYOUT_CAPS                                    :¬!"£$%^&*()_+ QWERTYUIOP{{}}ASDFGHJKL:@~|ZXCVBNM<>? .
 
 # Measurement tooltip
 STR_MEASURE_LENGTH                                              :{BLACK}Comprimento: {NUM}
@@ -1478,7 +1478,7 @@ STR_CONFIG_SETTING_WARN_LOST_VEHICLE                            :Avisar se o ve�
 STR_CONFIG_SETTING_WARN_LOST_VEHICLE_HELPTEXT                   :Mostrar mensagens sobre veículos que não conseguem encontrar um caminho para o destino programado
 
 STR_CONFIG_SETTING_ORDER_REVIEW                                 :Revisar as ordens dos veículos: {STRING}
-STR_CONFIG_SETTING_ORDER_REVIEW_HELPTEXT                        :Quando ativado, as ordens dos veículos são periodicamente verificadas e alguns problemas evidentes, quando detectados, são relatados com uma mensagem de aviso
+STR_CONFIG_SETTING_ORDER_REVIEW_HELPTEXT                        :Quando ativado, as ordens dos veículos são periodicamente verificadas e alguns problemas obvios, quando detetados, são relatados por meio de uma mensagem
 ###length 3
 STR_CONFIG_SETTING_ORDER_REVIEW_OFF                             :Não
 STR_CONFIG_SETTING_ORDER_REVIEW_EXDEPOT                         :Sim, mas excluir veículos parados
@@ -1486,8 +1486,11 @@ STR_CONFIG_SETTING_ORDER_REVIEW_ON                              :De todos os ve�
 
 STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Avisar se o rendimento de um veículo está negativo: {STRING}
 ###length 2
-STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Quando ativado, uma mensagem de aviso será exibida quando um veículo não gerou lucro durante um ano
-STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Quando ativado, uma mensagem de aviso será exibida quando um veículo não gerou qualquer lucro durante um período
+STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Quando ativado, uma mensagem será exibida quando um veículo não gerou lucro durante um ano
+STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Quando ativado, uma mensagem será exibida quando um veículo não gerou qualquer lucro durante um período
+
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE                             :Avisar se um veículo está ficando velho: {STRING}
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE_HELPTEXT                    :Quando ativado, uma mensagem será exibida quando um veículo está ficando velho
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Veículos nunca saem de linha: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Quando ativado, todos os modelos de veículos permanecerão disponíveis para sempre após a sua introdução
@@ -1499,7 +1502,7 @@ STR_CONFIG_SETTING_TIMEKEEPING_UNITS_CALENDAR                   :Calendário
 STR_CONFIG_SETTING_TIMEKEEPING_UNITS_WALLCLOCK                  :Relógio de parede
 
 STR_CONFIG_SETTING_MINUTES_PER_YEAR                             :Minutos por ano: {STRING}
-STR_CONFIG_SETTING_MINUTES_PER_YEAR_HELPTEXT                    :Escolher o número de minutos em um ano do calendário. O padrão é 12 minutos. Defina como 0 para o tempo do calendário não mudar. Essa configuração não afeta a simulação econômica do jogo e só está disponível quando o tempo é baseado em relógio de parede
+STR_CONFIG_SETTING_MINUTES_PER_YEAR_HELPTEXT                    :Escolher o número de minutos em um ano do calendário. O padrão é 12 minutos. Defina como 0 para o tempo do calendário não mudar. Aumentar a duração do ano do calendário torna mais lenta a introdução de veículos, casas e outras infraestruturas. Isso não afeta a velocidade dos veículos nem a simulação econômica, exceto a inflação. Essa configuração só está disponível quando o tempo é baseado em relógio de parede
 
 STR_CONFIG_SETTING_MINUTES_PER_YEAR_VALUE                       :{NUM}
 ###setting-zero-is-special
@@ -5053,6 +5056,8 @@ STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :{WHITE}Não é 
 
 STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :{WHITE}Adjacente a mais de uma estação/local de carga existente
 STR_ERROR_STATION_TOO_SPREAD_OUT                                :{WHITE}... estação muito extensa
+STR_ERROR_STATION_DISALLOWED_NUMBER_TRACKS                      :{WHITE}... número de linhas não suportado
+STR_ERROR_STATION_DISALLOWED_LENGTH                             :{WHITE}... comprimento não suportado
 STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Há estações/locais de carga demais
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Há partes de estação ferroviária demais
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Há paradas de ônibus demais

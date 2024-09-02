@@ -295,7 +295,7 @@ void Blitter_32bppOptimized::Draw(Blitter::BlitterParams *bp, BlitterMode mode, 
 	this->Draw<false>(bp, mode, zoom);
 }
 
-template <bool Tpal_to_rgb> Sprite *Blitter_32bppOptimized::EncodeInternal(const SpriteLoader::SpriteCollection &sprite, AllocatorProc *allocator)
+template <bool Tpal_to_rgb> Sprite *Blitter_32bppOptimized::EncodeInternal(const SpriteLoader::SpriteCollection &sprite, SpriteAllocator &allocator)
 {
 	/* streams of pixels (a, r, g, b channels)
 	 *
@@ -471,7 +471,7 @@ template <bool Tpal_to_rgb> Sprite *Blitter_32bppOptimized::EncodeInternal(const
 		len += lengths[z][0] + lengths[z][1];
 	}
 
-	Sprite *dest_sprite = (Sprite *)allocator(sizeof(Sprite) + sizeof(SpriteData) + len);
+	Sprite *dest_sprite = allocator.Allocate<Sprite>(sizeof(Sprite) + sizeof(SpriteData) + len);
 
 	if (len == 0) {
 		/* Mark sprite as having no levels at all, and therefore replaceable */
@@ -507,10 +507,10 @@ template <bool Tpal_to_rgb> Sprite *Blitter_32bppOptimized::EncodeInternal(const
 	return dest_sprite;
 }
 
-template Sprite *Blitter_32bppOptimized::EncodeInternal<true>(const SpriteLoader::SpriteCollection &sprite, AllocatorProc *allocator);
-template Sprite *Blitter_32bppOptimized::EncodeInternal<false>(const SpriteLoader::SpriteCollection &sprite, AllocatorProc *allocator);
+template Sprite *Blitter_32bppOptimized::EncodeInternal<true>(const SpriteLoader::SpriteCollection &sprite, SpriteAllocator &allocator);
+template Sprite *Blitter_32bppOptimized::EncodeInternal<false>(const SpriteLoader::SpriteCollection &sprite, SpriteAllocator &allocator);
 
-Sprite *Blitter_32bppOptimized::Encode(const SpriteLoader::SpriteCollection &sprite, AllocatorProc *allocator)
+Sprite *Blitter_32bppOptimized::Encode(const SpriteLoader::SpriteCollection &sprite, SpriteAllocator &allocator)
 {
 	return this->EncodeInternal<true>(sprite, allocator);
 }

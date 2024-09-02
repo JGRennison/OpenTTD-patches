@@ -801,7 +801,7 @@ static WindowDesc _linkgraph_legend_desc(__FILE__, __LINE__,
 	WDP_AUTO, "toolbar_linkgraph", 0, 0,
 	WC_LINKGRAPH_LEGEND, WC_NONE,
 	0,
-	std::begin(_nested_linkgraph_legend_widgets), std::end(_nested_linkgraph_legend_widgets)
+	_nested_linkgraph_legend_widgets
 );
 
 /**
@@ -809,10 +809,10 @@ static WindowDesc _linkgraph_legend_desc(__FILE__, __LINE__,
  */
 void ShowLinkGraphLegend()
 {
-	AllocateWindowDescFront<LinkGraphLegendWindow>(&_linkgraph_legend_desc, 0);
+	AllocateWindowDescFront<LinkGraphLegendWindow>(_linkgraph_legend_desc, 0);
 }
 
-LinkGraphLegendWindow::LinkGraphLegendWindow(WindowDesc *desc, int window_number) : Window(desc)
+LinkGraphLegendWindow::LinkGraphLegendWindow(WindowDesc &desc, int window_number) : Window(desc)
 {
 	this->num_cargo = _sorted_cargo_specs.size();
 

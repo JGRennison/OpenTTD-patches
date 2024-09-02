@@ -1481,6 +1481,7 @@ STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Warnen wann en 
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Wann ugeschalt, gëtt e Noorichtemessage gesent, wann e Gefier ee Joer laang kee Profit gemeet huet
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Wann ugeschalt gëtt e Message geschéckt wann e Gefier eng Period laang kee Profit gemet huet
 
+
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Gefierer lafen nie of: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Wann ugeschalt, bleiwen all Modeller vu Gefierer éiweg verfügbar
 
@@ -2790,6 +2791,10 @@ STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}D'Statio
 
 
 
+STR_HOUSE_PICKER_CLASS_ZONE1                                    :Rand
+STR_HOUSE_PICKER_CLASS_ZONE2                                    :Ausseberäich
+STR_HOUSE_PICKER_CLASS_ZONE3                                    :Aner Viruerter
+STR_HOUSE_PICKER_CLASS_ZONE4                                    :Bannescht Viruerter
 
 STR_STATION_CLASS_DFLT                                          :Standard
 STR_STATION_CLASS_DFLT_STATION                                  :Standardstatioun

@@ -186,7 +186,7 @@ struct WindowDesc {
 
 	WindowDesc(const char * const file, const int line, WindowPosition default_pos, const char *ini_key, int16_t def_width_trad, int16_t def_height_trad,
 			WindowClass window_class, WindowClass parent_class, uint32_t flags,
-			const NWidgetPart *nwid_begin, const NWidgetPart *nwid_end, HotkeyList *hotkeys = nullptr, WindowDesc *ini_parent = nullptr);
+			const std::span<const NWidgetPart> nwid_parts, HotkeyList *hotkeys = nullptr, WindowDesc *ini_parent = nullptr);
 
 	~WindowDesc();
 
@@ -197,8 +197,7 @@ struct WindowDesc {
 	WindowClass parent_cls;        ///< Class of the parent window. @see WindowClass
 	const char *ini_key;           ///< Key to store window defaults in openttd.cfg. \c nullptr if nothing shall be stored.
 	uint32_t flags;                ///< Flags. @see WindowDefaultFlag
-	const NWidgetPart *nwid_begin; ///< Beginning of nested widget parts describing the window.
-	const NWidgetPart *nwid_end;   ///< Ending of nested widget parts describing the window.
+	const std::span<const NWidgetPart> nwid_parts; ///< Span of nested widget parts describing the window.
 	HotkeyList *hotkeys;           ///< Hotkeys for the window.
 	WindowDesc *ini_parent;        ///< Other window desc to use for WindowDescPreferences.
 
@@ -338,12 +337,12 @@ protected:
 	virtual ~Window();
 
 public:
-	Window(WindowDesc *desc);
+	Window(WindowDesc &desc);
 
 	virtual void Close(int data = 0);
 	static void DeleteClosedWindows();
 
-	WindowDesc *window_desc;    ///< Window description
+	WindowDesc &window_desc;    ///< Window description
 	WindowFlags flags;          ///< Window flags
 	WindowNumber window_number; ///< Window number within the window class
 
@@ -1088,7 +1087,7 @@ inline const NWID *Window::GetWidget(WidgetID widnum) const
 class PickerWindowBase : public Window {
 
 public:
-	PickerWindowBase(WindowDesc *desc, Window *parent) : Window(desc)
+	PickerWindowBase(WindowDesc &desc, Window *parent) : Window(desc)
 	{
 		this->parent = parent;
 	}
@@ -1108,9 +1107,9 @@ Window *FindWindowFromPt(int x, int y);
  * @return %Window pointer of the newly created window, or the existing one if \a return_existing is set, or \c nullptr.
  */
 template <typename Wcls>
-Wcls *AllocateWindowDescFront(WindowDesc *desc, int window_number, bool return_existing = false)
+Wcls *AllocateWindowDescFront(WindowDesc &desc, int window_number, bool return_existing = false)
 {
-	Wcls *w = static_cast<Wcls *>(BringWindowToFrontById(desc->cls, window_number));
+	Wcls *w = static_cast<Wcls *>(BringWindowToFrontById(desc.cls, window_number));
 	if (w != nullptr) return return_existing ? w : nullptr;
 	return new Wcls(desc, window_number);
 }
@@ -1171,7 +1170,7 @@ inline bool MayBeShown(const Window *w)
 struct GeneralVehicleWindow : public Window {
 	const Vehicle *vehicle;
 
-	GeneralVehicleWindow(WindowDesc *desc, const Vehicle *v) : Window(desc), vehicle(v) {}
+	GeneralVehicleWindow(WindowDesc &desc, const Vehicle *v) : Window(desc), vehicle(v) {}
 };
 
 #endif /* WINDOW_GUI_H */

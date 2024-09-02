@@ -23,7 +23,7 @@ public:
 
 	void Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom) override {};
 	void DrawColourMappingRect(void *dst, int width, int height, PaletteID pal) override {};
-	Sprite *Encode(const SpriteLoader::SpriteCollection &sprite, AllocatorProc *allocator) override;
+	Sprite *Encode(const SpriteLoader::SpriteCollection &sprite, SpriteAllocator &allocator) override;
 	void *MoveTo(void *video, int x, int y) override { return nullptr; };
 	void SetPixel(void *video, int x, int y, uint8_t colour) override {};
 	void SetPixel32(void *video, int x, int y, uint8_t colour, uint32_t colour32) override {};
