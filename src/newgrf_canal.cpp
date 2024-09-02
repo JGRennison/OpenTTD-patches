@@ -30,7 +30,7 @@ struct CanalScopeResolver : public ScopeResolver {
 	}
 
 	uint32_t GetRandomBits() const override;
-	uint32_t GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra *extra) const override;
+	uint32_t GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra &extra) const override;
 };
 
 /** Resolver object for canals. */
@@ -59,7 +59,7 @@ struct CanalResolverObject : public ResolverObject {
 	return IsTileType(this->tile, MP_WATER) ? GetWaterTileRandomBits(this->tile) : 0;
 }
 
-/* virtual */ uint32_t CanalScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra *extra) const
+/* virtual */ uint32_t CanalScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra &extra) const
 {
 	switch (variable) {
 		/* Height of tile */
@@ -102,7 +102,7 @@ struct CanalResolverObject : public ResolverObject {
 
 	DEBUG(grf, 1, "Unhandled canal variable 0x%02X", variable);
 
-	extra->available = false;
+	extra.available = false;
 	return UINT_MAX;
 }
 

@@ -816,6 +816,7 @@ STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Opuść edytor 
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Wyjście
 
+
 # Settings menu
 ###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Opcje gry
@@ -3178,6 +3179,9 @@ STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Przecią
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Buduj stację używając „przeciągnij i upuść”
 
 
+
+
+STR_HOUSE_PICKER_CLASS_ZONE5                                    :Centrum miasta
 
 STR_STATION_CLASS_DFLT                                          :Standardowa
 STR_STATION_CLASS_DFLT_STATION                                  :Standardowa stacja

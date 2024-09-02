@@ -110,11 +110,14 @@ void ResetHouses()
  */
 HouseResolverObject::HouseResolverObject(HouseID house_id, TileIndex tile, Town *town,
 		CallbackID callback, uint32_t param1, uint32_t param2,
-		bool not_yet_constructed, uint8_t initial_random_bits, CargoTypes watched_cargo_triggers)
+		bool not_yet_constructed, uint8_t initial_random_bits, CargoTypes watched_cargo_triggers, int view)
 	: ResolverObject(GetHouseSpecGrf(house_id), callback, param1, param2),
-	house_scope(*this, house_id, tile, town, not_yet_constructed, initial_random_bits, watched_cargo_triggers),
+	house_scope(*this, house_id, tile, town, not_yet_constructed, initial_random_bits, watched_cargo_triggers, view),
 	town_scope(*this, town, not_yet_constructed) // Don't access StorePSA if house is not yet constructed.
 {
+	/* Tile must be valid and a house tile, unless not yet constructed in which case it may also be INVALID_TILE. */
+	assert((IsValidTile(tile) && (not_yet_constructed || IsTileType(tile, MP_HOUSE))) || (not_yet_constructed && tile == INVALID_TILE));
+
 	this->root_spritegroup = HouseSpec::Get(house_id)->grf_prop.spritegroup[0];
 }
 
@@ -204,6 +207,15 @@ void InitializeBuildingCounts()
 }
 
 /**
+ * Get read-only span of total HouseID building counts.
+ * @return span of HouseID building counts.
+ */
+std::span<const uint> GetBuildingHouseIDCounts()
+{
+	return _building_counts.id_count;
+}
+
+/**
  * IncreaseBuildingCount()
  * Increase the count of a building when it has been added by a town.
  * @param t The town that the building is being built in
@@ -244,14 +256,12 @@ void DecreaseBuildingCount(Town *t, HouseID house_id)
 /* virtual */ uint32_t HouseScopeResolver::GetRandomBits() const
 {
 	/* Note: Towns build houses over houses. So during construction checks 'tile' may be a valid but unrelated house. */
-	assert_tile(IsValidTile(this->tile) && (this->not_yet_constructed || IsTileType(this->tile, MP_HOUSE)), this->tile);
 	return this->not_yet_constructed ? this->initial_random_bits : GetHouseRandomBits(this->tile);
 }
 
 /* virtual */ uint32_t HouseScopeResolver::GetTriggers() const
 {
 	/* Note: Towns build houses over houses. So during construction checks 'tile' may be a valid but unrelated house. */
-	assert_tile(IsValidTile(this->tile) && (this->not_yet_constructed || IsTileType(this->tile, MP_HOUSE)), this->tile);
 	return this->not_yet_constructed ? 0 : GetHouseTriggers(this->tile);
 }
 
@@ -409,8 +419,34 @@ uint32_t HouseScopeResolver::OtherHouseIDVariable(uint32_t parameter, F func) co
 /**
  * @note Used by the resolver to get values for feature 07 deterministic spritegroups.
  */
-/* virtual */ uint32_t HouseScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra *extra) const
+/* virtual */ uint32_t HouseScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra &extra) const
 {
+	if (this->tile == INVALID_TILE) {
+		/* House does not yet exist, nor is it being planned to exist. Provide some default values intead. */
+		switch (variable) {
+			case 0x40: return TOWN_HOUSE_COMPLETED | this->view << 2; /* Construction stage. */
+			case 0x41: return 0;
+			case 0x42: return 0;
+			case 0x43: return 0;
+			case 0x44: return 0;
+			case 0x45: return _generating_world ? 1 : 0;
+			case 0x46: return 0;
+			case 0x47: return 0;
+			case 0x60: return 0;
+			case 0x61: return 0;
+			case 0x62: return 0;
+			case 0x63: return 0;
+			case 0x64: return 0;
+			case 0x65: return 0;
+			case 0x66: return 0xFFFFFFFF; /* Class and ID of nearby house. */
+			case 0x67: return 0;
+		}
+
+		DEBUG(grf, 1, "Unhandled house variable 0x%X", variable);
+		extra.available = false;
+		return UINT_MAX;
+	}
+
 	switch (variable) {
 		/* Construction stage. */
 		case 0x40: return (IsTileType(this->tile, MP_HOUSE) ? GetHouseBuildingStage(this->tile) : 0) | TileHash2Bit(TileX(this->tile), TileY(this->tile)) << 2;
@@ -456,7 +492,7 @@ uint32_t HouseScopeResolver::OtherHouseIDVariable(uint32_t parameter, F func) co
 		case A2VRI_HOUSE_OTHER_CLASS_TOWN_COUNT: return this->OtherHouseIDVariable(parameter, [&](HouseID new_house) { return this->town->cache.building_counts.class_count[HouseSpec::Get(new_house)->class_id]; });
 
 		/* Land info for nearby tiles. */
-		case 0x62: return GetNearbyTileInformation(parameter, this->tile, this->ro.grffile->grf_version >= 8, extra->mask);
+		case 0x62: return GetNearbyTileInformation(parameter, this->tile, this->ro.grffile->grf_version >= 8, extra.mask);
 
 		/* Current animation frame of nearby house tiles */
 		case 0x63: {
@@ -532,7 +568,7 @@ uint32_t HouseScopeResolver::OtherHouseIDVariable(uint32_t parameter, F func) co
 
 	DEBUG(grf, 1, "Unhandled house variable 0x%X", variable);
 
-	extra->available = false;
+	extra.available = false;
 	return UINT_MAX;
 }
 
@@ -540,7 +576,7 @@ uint32_t HouseScopeResolver::OtherHouseIDVariable(uint32_t parameter, F func) co
 /**
  * @note Used by the resolver to get values for feature 07 deterministic spritegroups.
  */
-/* virtual */ uint32_t FakeHouseScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra *extra) const
+/* virtual */ uint32_t FakeHouseScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra &extra) const
 {
 	switch (variable) {
 		/* Construction stage. */
@@ -594,16 +630,16 @@ uint32_t HouseScopeResolver::OtherHouseIDVariable(uint32_t parameter, F func) co
 
 	DEBUG(grf, 1, "Unhandled house variable 0x%X", variable);
 
-	extra->available = false;
+	extra.available = false;
 	return UINT_MAX;
 }
 
 uint16_t GetHouseCallback(CallbackID callback, uint32_t param1, uint32_t param2, HouseID house_id, Town *town, TileIndex tile,
-		bool not_yet_constructed, uint8_t initial_random_bits, CargoTypes watched_cargo_triggers)
+		bool not_yet_constructed, uint8_t initial_random_bits, CargoTypes watched_cargo_triggers, int view)
 {
 	if (tile != INVALID_TILE) {
 		HouseResolverObject object(house_id, tile, town, callback, param1, param2,
-				not_yet_constructed, initial_random_bits, watched_cargo_triggers);
+				not_yet_constructed, initial_random_bits, watched_cargo_triggers, view);
 		return object.ResolveCallback();
 	} else {
 		FakeHouseResolverObject object(house_id, callback, param1, param2);

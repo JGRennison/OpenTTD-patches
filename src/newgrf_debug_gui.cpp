@@ -208,7 +208,7 @@ public:
 	 * @param avail Return whether the variable is available.
 	 * @return The resolved variable's value.
 	 */
-	virtual uint Resolve(uint index, uint var, uint param, GetVariableExtra *extra) const = 0;
+	virtual uint Resolve(uint index, uint var, uint param, GetVariableExtra &extra) const = 0;
 
 	/**
 	 * Used to decide if the PSA needs a parameter or not.
@@ -725,7 +725,7 @@ struct NewGRFInspectWindow : Window {
 					auto iter = this->var60params.find(niv->var);
 					if (iter != this->var60params.end()) param = iter->second;
 				}
-				uint value = nih->Resolve(index, niv->var, param, &extra);
+				uint value = nih->Resolve(index, niv->var, param, extra);
 
 				if (!extra.available) continue;
 

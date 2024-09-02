@@ -430,7 +430,7 @@ static uint32_t PositionHelper(const Vehicle *v, bool consecutive)
 	return chain_before | chain_after << 8 | (chain_before + chain_after + consecutive) << 16;
 }
 
-static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object, uint16_t variable, uint32_t parameter, GetVariableExtra *extra)
+static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *object, uint16_t variable, uint32_t parameter, GetVariableExtra &extra)
 {
 	if (_sprite_group_resolve_check_veh_check) {
 		switch (variable) {
@@ -476,7 +476,7 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 				break;
 
 			case 0x80 + 0x32:
-				if (extra->mask & (VS_HIDDEN | VS_TRAIN_SLOWING)) {
+				if (extra.mask & (VS_HIDDEN | VS_TRAIN_SLOWING)) {
 					_sprite_group_resolve_check_veh_check = false;
 				}
 				break;
@@ -507,7 +507,7 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 				switch (v->type) {
 					case VEH_TRAIN:
 					case VEH_SHIP:
-						if (extra->mask & 0x7F) {
+						if (extra.mask & 0x7F) {
 							_sprite_group_resolve_check_veh_check = false;
 						}
 						break;
@@ -563,7 +563,7 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 			return v->grf_cache.position_same_id_length;
 
 		case 0x42: { // Consist cargo information
-			if ((extra->mask & 0x00FFFFFF) == 0) {
+			if ((extra.mask & 0x00FFFFFF) == 0) {
 				if (!HasBit(v->grf_cache.cache_valid, NCVV_CONSIST_CARGO_INFORMATION_UD)) {
 					uint8_t user_def_data = 0;
 					if (v->type == VEH_TRAIN) {
@@ -1102,11 +1102,11 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 
 	DEBUG(grf, 1, "Unhandled vehicle variable 0x%X, type 0x%X", variable, (uint)v->type);
 
-	extra->available = false;
+	extra.available = false;
 	return UINT_MAX;
 }
 
-/* virtual */ uint32_t VehicleScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra *extra) const
+/* virtual */ uint32_t VehicleScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra &extra) const
 {
 	if (this->v == nullptr) {
 		/* Vehicle does not exist, so we're in a purchase list */
@@ -1135,7 +1135,7 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 			case 0xF2: return 0; // Cargo subtype
 		}
 
-		extra->available = false;
+		extra.available = false;
 		return UINT_MAX;
 	}
 
@@ -1600,7 +1600,7 @@ void FillNewGRFVehicleCache(const Vehicle *v)
 		/* Only resolve when the cache isn't valid. */
 		if (HasBit(v->grf_cache.cache_valid, cache_entry[1])) continue;
 		GetVariableExtra extra;
-		ro.GetScope(VSG_SCOPE_SELF)->GetVariable(cache_entry[0], 0, &extra);
+		ro.GetScope(VSG_SCOPE_SELF)->GetVariable(cache_entry[0], 0, extra);
 	}
 
 	/* Make sure really all bits are set. */

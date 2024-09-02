@@ -32,7 +32,7 @@ static const HouseID INVALID_HOUSE_ID = 0xFFFF;
 static const uint HOUSE_NUM_ACCEPTS = 16; ///< Max number of cargoes accepted by a tile
 static const uint HOUSE_ORIGINAL_NUM_ACCEPTS = 3; ///< Original number of accepted cargo types.
 
-enum BuildingFlags {
+enum BuildingFlags : uint8_t {
 	TILE_NO_FLAG         =       0,
 	TILE_SIZE_1x1        = 1U << 0,
 	TILE_NOT_SLOPED      = 1U << 1,
@@ -50,7 +50,7 @@ enum BuildingFlags {
 };
 DECLARE_ENUM_AS_BIT_SET(BuildingFlags)
 
-enum HouseZonesBits {
+enum HouseZonesBits : uint8_t {
 	HZB_BEGIN     = 0,
 	HZB_TOWN_EDGE = 0,
 	HZB_TOWN_OUTSKIRT,
@@ -80,7 +80,7 @@ enum HouseZones : uint16_t {        ///< Bit  Value       Meaning
 };
 DECLARE_ENUM_AS_BIT_SET(HouseZones)
 
-enum HouseExtraFlags {
+enum HouseExtraFlags : uint8_t {
 	NO_EXTRA_FLAG            =       0,
 	BUILDING_IS_HISTORICAL   = 1U << 0,  ///< this house will only appear during town generation in random games, thus the historical
 	BUILDING_IS_PROTECTED    = 1U << 1,  ///< towns and AI will not remove this house, while human players will be able to
@@ -143,6 +143,8 @@ inline HouseID GetTranslatedHouseID(HouseID hid)
 	const HouseSpec *hs = HouseSpec::Get(hid);
 	return hs->grf_prop.override == INVALID_HOUSE_ID ? hid : hs->grf_prop.override;
 }
+
+void ShowBuildHousePicker(struct Window *);
 
 StringID GetHouseName(HouseID house, TileIndex tile = INVALID_TILE);
 void DrawHouseImage(HouseID house_id, int left, int top, int right, int bottom);

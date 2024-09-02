@@ -3042,17 +3042,16 @@ static CommandCost CheckCanBuildHouse(HouseID house, const Town *t, bool manual)
 
 
 /**
- * Really build a house.
- * @param t town to build house in
- * @param tile house location
- * @param house house type
- * @param random_bits random bits for the house
+ * Build a house at this tile.
+ * @param t The town the house will belong to.
+ * @param tile The tile to try building on.
+ * @param hs The @a HouseSpec of the house.
+ * @param house The @a HouseID of the house.
+ * @param random_bits The random data to be associated with the house.
  */
-static void DoBuildHouse(Town *t, TileIndex tile, HouseID house, uint8_t random_bits)
+static void BuildTownHouse(Town *t, TileIndex tile, const HouseSpec *hs, HouseID house, uint8_t random_bits)
 {
 	t->cache.num_houses++;
-
-	const HouseSpec *hs = HouseSpec::Get(house);
 
 	/* Special houses that there can be only one of. */
 	if (hs->building_flags & BUILDING_IS_CHURCH) {
@@ -3130,7 +3129,7 @@ CommandCost CmdBuildHouse(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
 		if (!HouseAllowsConstruction(house, tile, t, random_bits)) return_cmd_error(STR_ERROR_BUILDING_NOT_ALLOWED);
 	}
 
-	if (flags & DC_EXEC) DoBuildHouse(t, tile, house, random_bits);
+	if (flags & DC_EXEC) BuildTownHouse(t, tile, HouseSpec::Get(house), house, random_bits);
 	return CommandCost();
 }
 
@@ -3204,11 +3203,54 @@ static bool TryBuildTownHouse(Town *t, TileIndex tile)
 		/* Check if GRF allows this house */
 		if (!HouseAllowsConstruction(house, tile, t, random_bits)) continue;
 
-		DoBuildHouse(t, tile, house, random_bits);
+		BuildTownHouse(t, tile, HouseSpec::Get(house), house, random_bits);
 		return true;
 	}
 
 	return false;
+}
+
+CommandCost CmdPlaceHouse(DoCommandFlag flags, TileIndex tile, HouseID house)
+{
+	if (_game_mode != GM_EDITOR) return CMD_ERROR;
+	if (Town::GetNumItems() == 0) return_cmd_error(STR_ERROR_MUST_FOUND_TOWN_FIRST);
+
+	if (static_cast<size_t>(house) >= HouseSpec::Specs().size()) return CMD_ERROR;
+	const HouseSpec *hs = HouseSpec::Get(house);
+	if (!hs->enabled) return CMD_ERROR;
+
+	Town *t = ClosestTownFromTile(tile, UINT_MAX);
+
+	int max_z = GetTileMaxZ(tile);
+
+	/* Make sure there is no slope? */
+	bool noslope = (hs->building_flags & TILE_NOT_SLOPED) != 0;
+
+	uint w = (hs->building_flags & BUILDING_2_TILES_X) ? 2 : 1;
+	uint h = (hs->building_flags & BUILDING_2_TILES_Y) ? 2 : 1;
+
+	CommandCost cost = CanBuildHouseHere(TileArea(tile, w, h), t->index, max_z, noslope);
+	if (!cost.Succeeded()) return cost;
+
+	if (flags & DC_EXEC) {
+		BuildTownHouse(t, tile, hs, house, Random());
+	}
+
+	return CommandCost();
+}
+
+/**
+ * Place a town house (scenario editor or worldgen only).
+ * @param tile Tile to place house on.
+ * @param flags Type of operation.
+ * @param p1 House ID.
+ * @param p2 Unused.
+ * @param text Unused.
+ * @return Empty cost or an error.
+ */
+CommandCost CmdPlaceHouse(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+{
+	return CmdPlaceHouse(flags, tile, static_cast<HouseID>(p1));
 }
 
 /**
@@ -4619,3 +4661,8 @@ extern const TileTypeProcs _tile_type_town_procs = {
 	GetFoundation_Town,      // get_foundation_proc
 	TerraformTile_Town,      // terraform_tile_proc
 };
+
+std::span<const DrawBuildingsTileStruct> GetTownDrawTileData()
+{
+	return _town_draw_tile_data;
+}

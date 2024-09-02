@@ -170,6 +170,7 @@ CommandProc CmdTownCargoGoal;
 CommandProc CmdTownSetText;
 CommandProc CmdExpandTown;
 CommandProc CmdDeleteTown;
+CommandProc CmdPlaceHouse;
 
 CommandProc CmdChangeSetting;
 CommandProc CmdChangeCompanySetting;
@@ -441,6 +442,7 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdTownSetText,    CMD_LOG_AUX | CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT ), // CMD_TOWN_SET_TEXT
 	DEF_CMD(CmdExpandTown,                             CMD_DEITY, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_EXPAND_TOWN
 	DEF_CMD(CmdDeleteTown,                           CMD_OFFLINE, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_DELETE_TOWN
+	DEF_CMD(CmdPlaceHouse,                             CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_PLACE_HOUSE
 
 	DEF_CMD(CmdOrderRefit,                                     0, CMDT_ROUTE_MANAGEMENT      ), // CMD_ORDER_REFIT
 	DEF_CMD(CmdCloneOrder,                                     0, CMDT_ROUTE_MANAGEMENT      ), // CMD_CLONE_ORDER

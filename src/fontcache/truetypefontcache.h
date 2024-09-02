@@ -11,7 +11,6 @@
 #define TRUETYPEFONTCACHE_H
 
 #include "../fontcache.h"
-#include "../3rdparty/cpp-btree/btree_map.h"
 
 
 static const int MAX_FONT_SIZE = 72; ///< Maximum font size.
@@ -27,9 +26,6 @@ protected:
 
 	int req_size;  ///< Requested font size.
 	int used_size; ///< Used font size.
-
-	using FontTable = btree::btree_map<uint32_t, std::pair<size_t, const void *>>; ///< Table with font table cache
-	FontTable font_tables; ///< Cached font tables.
 
 	/** Container for information about a glyph. */
 	struct GlyphEntry {
@@ -56,7 +52,6 @@ protected:
 	GlyphEntry *GetGlyphPtr(GlyphID key);
 	void SetGlyphPtr(GlyphID key, const GlyphEntry *glyph, bool duplicate = false);
 
-	virtual const void *InternalGetFontTable(uint32_t tag, size_t &length) = 0;
 	virtual const Sprite *InternalGetGlyph(GlyphID key, bool aa) = 0;
 
 public:
@@ -73,7 +68,6 @@ public:
 
 
 	const Sprite *GetGlyph(GlyphID key) override;
-	const void *GetFontTable(uint32_t tag, size_t &length) override;
 	void ClearFontCache() override;
 	uint GetGlyphWidth(GlyphID key) override;
 	bool GetDrawGlyphShadow() override;
