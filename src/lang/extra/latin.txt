@@ -21,10 +21,6 @@ STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Mutare p
 
 # Programmable Pre-Signals
 
-#House construction window (for SE only)
-
-#Town select window (for SE only)
-
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Altitudo nivis lineae:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Tollere altitudinem lineae nivis
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Inclinere altitudinem lineae nivis

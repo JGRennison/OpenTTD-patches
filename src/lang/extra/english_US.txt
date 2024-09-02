@@ -52,10 +52,6 @@ STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capacity: {CA
 
 # Programmable Pre-Signals
 
-#House construction window (for SE only)
-
-#Town select window (for SE only)
-
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Snow line height:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Move the snow line height up one
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Move the snow line height down one

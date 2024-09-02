@@ -8,10 +8,6 @@ STR_BUTTON_RENAME                                               :{BLACK}Semmi mi
 
 # Programmable Pre-Signals
 
-#House construction window (for SE only)
-
-#Town select window (for SE only)
-
 # Town tooltip
 
 # Cargo type orders Window

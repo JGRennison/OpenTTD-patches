@@ -26,10 +26,6 @@ STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capaciteit: {
 
 # Programmable Pre-Signals
 
-#House construction window (for SE only)
-
-#Town select window (for SE only)
-
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Hoogte van sneeuwgrens:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Verhoog de sneeuwgrens met één
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Verlaag de sneeuwgrens met één

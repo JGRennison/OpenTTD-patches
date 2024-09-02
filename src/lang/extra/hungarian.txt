@@ -26,10 +26,6 @@ STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Kapacitás: {
 
 # Programmable Pre-Signals
 
-#House construction window (for SE only)
-
-#Town select window (for SE only)
-
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Hóhatár:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}A hóhatár megnövelése eggyel
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}A hóhatár csökkentése eggyel

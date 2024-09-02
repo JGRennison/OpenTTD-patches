@@ -26,10 +26,6 @@ STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Ładowność:
 
 # Programmable Pre-Signals
 
-#House construction window (for SE only)
-
-#Town select window (for SE only)
-
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Śnieg od wysokości:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Podnieś wysokość śniegu o jeden w górę
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Obniż wysokość śniegu o jeden w dół

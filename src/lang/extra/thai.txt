@@ -18,10 +18,6 @@ STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}เป�
 
 # Programmable Pre-Signals
 
-#House construction window (for SE only)
-
-#Town select window (for SE only)
-
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}เส้นความสูงเขตหิมะ:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}ปรับเปลี่ยนความสูงของหิมะขึ้นไป 1 ระดับ
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}ปรับเปลี่ยนความสูงของหิมะลงมา 1 ระดับ

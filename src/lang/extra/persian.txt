@@ -20,10 +20,6 @@ STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}فعال
 
 # Programmable Pre-Signals
 
-#House construction window (for SE only)
-
-#Town select window (for SE only)
-
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}ارتفاع خط برف:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}اضافه کردن یک واحد به ارتفاع خط برف
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}کم کردن یک واحد از ارتفاع خط برف

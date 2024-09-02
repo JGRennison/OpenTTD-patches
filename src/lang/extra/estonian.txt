@@ -23,10 +23,6 @@ STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Vaheta l
 
 # Programmable Pre-Signals
 
-#House construction window (for SE only)
-
-#Town select window (for SE only)
-
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Lumepiiri kõrgus:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Lumepiiri liigutamine ühe võrra üles
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Lumepiiri liigutamine ühe võrra alla

@@ -26,10 +26,6 @@ STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Kapacita: {CA
 
 # Programmable Pre-Signals
 
-#House construction window (for SE only)
-
-#Town select window (for SE only)
-
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Výška hranice snehu:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Zvýšiť výšku hranice snehu o jedno
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Znížiť výšku hranice snehu o jedno

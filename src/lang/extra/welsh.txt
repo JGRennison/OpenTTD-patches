@@ -23,10 +23,6 @@ STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Toglu tr
 
 # Programmable Pre-Signals
 
-#House construction window (for SE only)
-
-#Town select window (for SE only)
-
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Uchder Llinell Eira:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Symud y llinell eira un yn uwch
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Symud y llinell eira un yn is
