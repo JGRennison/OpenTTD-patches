@@ -23,6 +23,8 @@ constexpr uint32_t MAX_NUMBER_OF_NODES = 65536;
 
 /** Yapf Node Key that represents a single patch of interconnected water within a water region. */
 struct CYapfRegionPatchNodeKey {
+	using HashKey = uint32_t;
+
 	WaterRegionPatchDesc m_water_region_patch;
 
 	inline void Set(const WaterRegionPatchDesc &water_region_patch)
@@ -30,8 +32,8 @@ struct CYapfRegionPatchNodeKey {
 		m_water_region_patch = water_region_patch;
 	}
 
-	inline uint32_t CalcHash() const { return CalculateWaterRegionPatchHash(m_water_region_patch); }
-	inline bool operator==(const CYapfRegionPatchNodeKey &other) const { return CalcHash() == other.CalcHash(); }
+	inline uint32_t GetHashKey() const { return CalculateWaterRegionPatchHash(m_water_region_patch); }
+	inline bool operator==(const CYapfRegionPatchNodeKey &other) const { return GetHashKey() == other.GetHashKey(); }
 };
 
 inline uint ManhattanDistance(const CYapfRegionPatchNodeKey &a, const CYapfRegionPatchNodeKey &b)

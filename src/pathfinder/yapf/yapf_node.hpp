@@ -12,6 +12,8 @@
 
 /** Yapf Node Key that evaluates hash from (and compares) tile & exit dir. */
 struct CYapfNodeKeyExitDir {
+	using HashKey = uint32_t;
+
 	TileIndex      m_tile;
 	Trackdir       m_td;
 	DiagDirection  m_exitdir;
@@ -23,7 +25,7 @@ struct CYapfNodeKeyExitDir {
 		m_exitdir = (m_td == INVALID_TRACKDIR) ? INVALID_DIAGDIR : TrackdirToExitdir(m_td);
 	}
 
-	inline int CalcHash() const
+	inline HashKey GetHashKey() const
 	{
 		return m_exitdir | (m_tile << 2);
 	}
@@ -43,7 +45,9 @@ struct CYapfNodeKeyExitDir {
 
 struct CYapfNodeKeyTrackDir : public CYapfNodeKeyExitDir
 {
-	inline int CalcHash() const
+	using HashKey = uint32_t;
+
+	inline HashKey GetHashKey() const
 	{
 		return m_td | (m_tile << 4);
 	}
