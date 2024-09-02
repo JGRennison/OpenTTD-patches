@@ -34,9 +34,6 @@
 #include "tbtr_template_vehicle.h"
 #include "tbtr_template_vehicle_func.h"
 #include "scope.h"
-#include <sstream>
-#include <iomanip>
-#include <cctype>
 
 #include "table/strings.h"
 

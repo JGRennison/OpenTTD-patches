@@ -25,6 +25,7 @@
 #endif
 
 #include "32bpp_sse_type.h"
+#include "../cpu.h"
 
 /** Base methods for 32bpp SSE blitters. */
 class Blitter_32bppSSE_Base {

@@ -14,6 +14,7 @@
 #include "../debug.h"
 #include <atomic>
 #include <bit>
+#include <chrono>
 
 #ifdef RANDOM_DEBUG
 #include "../network/network.h"

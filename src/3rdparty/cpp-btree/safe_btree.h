@@ -392,9 +392,11 @@ class safe_btree {
     ++x.generation_;
     tree_.swap(x.tree_);
   }
+#ifndef BTREE_NO_IOSTREAM
   void dump(std::ostream &os) const {
     tree_.dump(os);
   }
+#endif
   void verify() const {
     tree_.verify();
   }

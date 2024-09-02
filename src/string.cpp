@@ -349,11 +349,11 @@ std::string StrMakeValid(std::string_view str, StringValidationSettings settings
 	auto buf = str.data();
 	auto last = buf + str.size() - 1;
 
-	std::ostringstream dst;
-	std::ostreambuf_iterator<char> dst_iter(dst);
+	std::string dst;
+	auto dst_iter = std::back_inserter(dst);
 	StrMakeValid(dst_iter, buf, last, settings);
 
-	return dst.str();
+	return dst;
 }
 
 /**

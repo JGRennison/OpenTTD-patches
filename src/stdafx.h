@@ -387,8 +387,14 @@ typedef uint32_t unaligned_uint32;
 typedef uint64_t unaligned_uint64;
 #endif /* __GNUC__ || __clang__ */
 
-/* For the FMT library we only want to use the headers, not link to some library. */
-#define FMT_HEADER_ONLY
+/* Upstream: For the FMT library we only want to use the headers, not link to some library. */
+//#define FMT_HEADER_ONLY
+
+/* JSON: Don't include IO stream headers/support */
+#define JSON_NO_IO
+
+/* cpp-btree: Don't include IO stream headers, dump support */
+#define BTREE_NO_IOSTREAM
 
 [[noreturn]] void CDECL usererror(const char *str, ...) WARN_FORMAT(1, 2);
 [[noreturn]] void CDECL error(const char *str, ...) WARN_FORMAT(1, 2);

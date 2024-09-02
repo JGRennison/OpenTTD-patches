@@ -128,6 +128,7 @@ add_files(
     debug.h
     debug_desync.h
     debug_settings.h
+    debug_tictoc.h
     dedicated.cpp
     departures.cpp
     departures_func.h

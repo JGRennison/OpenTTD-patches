@@ -4,6 +4,7 @@ add_files(
     yapf.hpp
     yapf_base.hpp
     yapf_cache.h
+    yapf_common.cpp
     yapf_common.hpp
     yapf_costbase.hpp
     yapf_costcache.hpp
