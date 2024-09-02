@@ -104,8 +104,6 @@ STR_SORT_BY_VEHICLES_CALLING                                    :Number of vehic
 STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST                      :Cargo capacity/Running cost
 STR_SORT_BY_VEHICLE_COUNT                                       :Vehicle count
 
-STR_SCENEDIT_TOOLBAR_PLACE_HOUSE                                :{BLACK}Place house
-
 STR_SETTINGS_MENU_ZONING                                        :Zoning
 
 STR_SETTINGS_MENU_MONEY_TEXT_EFFECTS                            :Income/cost texts displayed
@@ -711,7 +709,6 @@ STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST_PER_CARGO_OVERRIDE     :{ORANGE}Cargo d
 STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS                         :{ORANGE}Map mode
 STR_CONFIG_SETTING_VEHICLE_ROUTE_OVERLAY                        :{ORANGE}Vehicle route overlay
 STR_CONFIG_SETTING_SHARING                                      :{ORANGE}Infrastructure sharing
-STR_CONFIG_SETTING_SCENARIO_EDITOR                              :{ORANGE}Scenario Editor
 
 STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE                  :Re-route road vehicles when road layout changes: {STRING2}
 STR_CONFIG_SETTING_REROUTE_RV_ON_LAYOUT_CHANGE_HELPTEXT         :Whether to re-route all road vehicles on the map when the road layout is changed.{}This can improve road vehicle responsiveness to a changing road layout at the expense of performance.{}Note that if this is set to "Yes", town growth can trigger re-routing of road vehicles which may cause slow-downs on large maps.
@@ -795,20 +792,6 @@ STR_CONFIG_SETTING_COPY_CLONE_ADD_TO_GROUP_HELPTEXT             :Set whether clo
 
 STR_CONFIG_SETTING_REMAIN_IF_NEXT_ORDER_SAME_STATION            :Remain in station if next order is for same station: {STRING2}
 STR_CONFIG_SETTING_REMAIN_IF_NEXT_ORDER_SAME_STATION_HELPTEXT   :If a vehicle's next order is for the same station it would be about to leave, start loading/unloading again instead of leaving.
-
-STR_CONFIG_SETTING_SCENARIO_MULTIPLE_BUILDINGS                  :Allow multiple churches/stadiums: {STRING2}
-STR_CONFIG_SETTING_SCENARIO_MULTIPLE_BUILDINGS_HELPTEXT         :Allow manually adding churches and stadiums when there is already one present in the town.
-
-STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_DATES                  :Ignore house year restrictions: {STRING2}
-STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_DATES_HELPTEXT         :Allow manually adding houses which are not available for the current date.
-STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES                  :Ignore house zone restrictions: {STRING2}
-STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_HELPTEXT         :Allow manually adding houses which are not suitable for the target town zone.
-STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_GRF                    :Ignore house GRF restrictions: {STRING2}
-STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_GRF_HELPTEXT           :Allow manually adding houses even if this is not permitted by the house GRF.
-
-STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_OFF              :Off
-STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_WITHIN_TOWN      :Within town
-STR_CONFIG_SETTING_SCENARIO_HOUSE_IGNORE_ZONES_ANYWHERE         :Anywhere
 
 STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS                   :When auto-fill dragging, continue past stations/waypoints: {STRING2}
 STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS_HELPTEXT          :Select the behaviour of signal placement when Ctrl+dragging signals. If disabled, signal placement stops when reaching a station/waypoint tile. If enabled, signal placement continues on the far side of rail stations/waypoints
@@ -1254,36 +1237,6 @@ STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_TRAM_TO_WAYPOINT               :{BLACK}Convert 
 STR_WATERWAYS_TOOLBAR_CREATE_RIVER_IN_GAME_TOOLTIP              :{BLACK}Place rivers
 
 STR_LANDSCAPING_TOOLTIP_RULER_TOOL                              :{BLACK}Use a virtual ruler to measure distance and height
-
-#House construction window (for SE only)
-STR_HOUSE_BUILD_CAPTION                                         :{WHITE}House Selection
-STR_HOUSE_BUILD_CUSTOM_CAPTION                                  :{WHITE}{RAW_STRING}
-STR_HOUSE_BUILD_HOUSESET_LIST_TOOLTIP                           :{BLACK}Select set of houses
-STR_HOUSE_BUILD_SELECT_HOUSE_TOOLTIP                            :{BLACK}Select house to build
-STR_HOUSE_BUILD_HOUSE_NAME                                      :{GOLD}{STRING1}
-STR_HOUSE_BUILD_HISTORICAL_BUILDING                             :{GOLD}(historical building)
-STR_HOUSE_BUILD_HOUSE_POPULATION                                :{BLACK}Population: {GOLD}{NUM}
-STR_HOUSE_BUILD_HOUSE_ZONES                                     :{BLACK}House zones: {STRING1} {STRING1} {STRING1} {STRING1} {STRING1}
-STR_HOUSE_BUILD_HOUSE_ZONE_DISABLED                             :{GRAY}{NUM}
-STR_HOUSE_BUILD_HOUSE_ZONE_ENABLED                              :{GOLD}{NUM}
-STR_HOUSE_BUILD_LANDSCAPE                                       :{BLACK}Landscape: {STRING}
-STR_HOUSE_BUILD_LANDSCAPE_ABOVE_OR_BELOW_SNOWLINE               :{GOLD}above or below snowline
-STR_HOUSE_BUILD_LANDSCAPE_ONLY_ABOVE_SNOWLINE                   :{GOLD}only above snowline
-STR_HOUSE_BUILD_LANDSCAPE_ONLY_BELOW_SNOWLINE                   :{GOLD}only below snowline
-STR_HOUSE_BUILD_YEARS                                           :{BLACK}Years: {STRING1}{GOLD} - {STRING1}
-STR_HOUSE_BUILD_YEARS_BAD_YEAR                                  :{RED}{NUM}
-STR_HOUSE_BUILD_YEARS_GOOD_YEAR                                 :{GOLD}{NUM}
-STR_HOUSE_BUILD_SUPPLIED_CARGO                                  :{BLACK}Supplies: {GOLD}{CARGO_LIST}
-STR_HOUSE_BUILD_ACCEPTED_CARGO                                  :{BLACK}Accepts: {GOLD}{RAW_STRING}
-STR_HOUSE_BUILD_CARGO_FIRST                                     :{STRING2}
-STR_HOUSE_BUILD_CARGO_SEPARATED                                 :, {STRING2}
-STR_HOUSE_BUILD_CARGO_VALUE_JUST_NAME                           :{1:STRING}
-STR_HOUSE_BUILD_CARGO_VALUE_EIGHTS                              :({COMMA}/8 {STRING})
-STR_BASIC_HOUSE_SET_NAME                                        :Basic houses
-
-#Town select window (for SE only)
-STR_SELECT_TOWN_CAPTION                                         :{WHITE}Select town
-STR_SELECT_TOWN_LIST_ITEM                                       :{BLACK}{TOWN}
 
 STR_TREES_REMOVE_TREES_BUTTON                                   :{BLACK}Remove all Trees
 STR_TREES_REMOVE_TREES_TOOLTIP                                  :{BLACK}Remove all Trees over landscape
@@ -1956,7 +1909,6 @@ STR_GAME_SAVELOAD_ERROR_HELI_OILRIG_BUG                         :Savegame has a 
 STR_QUERY_CLEAR_AREA_CAPTION                                    :{WHITE}Clear area
 STR_CLEAR_AREA_CONFIRMATION_TEXT                                :{YELLOW}You are about to destroy an important structure. Are you sure?
 
-STR_ERROR_CAN_T_BUILD_HOUSE_HERE                                :{WHITE}Can't build house here...
 STR_ERROR_BUILDING_NOT_ALLOWED_IN_THIS_TOWN_ZONE                :{WHITE}... not allowed in this town zone.
 STR_ERROR_BUILDING_NOT_ALLOWED_ABOVE_SNOW_LINE                  :{WHITE}... not allowed above the snow line.
 STR_ERROR_BUILDING_NOT_ALLOWED_BELOW_SNOW_LINE                  :{WHITE}... not allowed below the snow line.
@@ -1965,8 +1917,6 @@ STR_ERROR_TOO_MANY_HOUSE_TYPES                                  :{WHITE}... too 
 STR_ERROR_BUILDING_IS_TOO_OLD                                   :{WHITE}... building is too old.
 STR_ERROR_BUILDING_IS_TOO_MODERN                                :{WHITE}... building is too modern.
 STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN                    :{WHITE}... only one building of this type is allowed in a town.
-STR_ERROR_NO_MORE_BUILDINGS_ALLOWED_PER_TOWN                    :{WHITE}... too many buildings of this type in the town.
-STR_ERROR_BUILDING_NOT_ALLOWED                                  :{WHITE}... the building is not allowed.
 STR_ERROR_TOO_MANY_DOCKS                                        :{WHITE}Too many docks
 STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Can't build road waypoint here...
 STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Can't remove road waypoint here...

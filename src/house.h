@@ -147,8 +147,5 @@ inline HouseID GetTranslatedHouseID(HouseID hid)
 void ShowBuildHousePicker(struct Window *);
 
 StringID GetHouseName(HouseID house, TileIndex tile = INVALID_TILE);
-void DrawHouseImage(HouseID house_id, int left, int top, int right, int bottom);
-void AddProducedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &produced);
-void AddAcceptedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &acceptance, CargoTypes *always_accepted = nullptr);
 
 #endif /* HOUSE_H */

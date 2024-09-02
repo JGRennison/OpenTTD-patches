@@ -97,27 +97,6 @@ struct HouseResolverObject : public ResolverObject {
 	uint32_t GetDebugID() const override;
 };
 
-/** Resolver object to be used for fake houses (feature 07 spritegroups). */
-struct FakeHouseResolverObject : public ResolverObject {
-	FakeHouseScopeResolver house_scope;
-	FakeTownScopeResolver  town_scope;
-
-	FakeHouseResolverObject(HouseID house_id,
-			CallbackID callback = CBID_NO_CALLBACK, uint32_t param1 = 0, uint32_t param2 = 0);
-
-	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, VarSpriteGroupScopeOffset relative = 0) override
-	{
-		switch (scope) {
-			case VSG_SCOPE_SELF:   return &this->house_scope;
-			case VSG_SCOPE_PARENT: return &this->town_scope;
-			default: return ResolverObject::GetScope(scope, relative);
-		}
-	}
-
-	GrfSpecFeature GetFeature() const override;
-	uint32_t GetDebugID() const override;
-};
-
 /**
  * Makes class IDs unique to each GRF file.
  * Houses can be assigned class IDs which are only comparable within the GRF

@@ -523,7 +523,6 @@ add_files(
     town.h
     town_cmd.cpp
     town_gui.cpp
-    town_gui.h
     town_kdtree.h
     town_map.h
     town_type.h
