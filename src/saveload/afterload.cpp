@@ -4132,7 +4132,7 @@ bool AfterLoadGame()
 			};
 
 			for (Order *order = order_list->GetFirstOrder(); order != nullptr; order = order->next) {
-				/* Fixup station ID for OCV_CARGO_WAITING, OCV_CARGO_ACCEPTANCE, OCV_FREE_PLATFORMS, OCV_CARGO_WAITING_AMOUNT */
+				/* Fixup station ID for OCV_CARGO_WAITING, OCV_CARGO_ACCEPTANCE, OCV_FREE_PLATFORMS, OCV_CARGO_WAITING_AMOUNT, OCV_CARGO_WAITING_AMOUNT_PERCENTAGE */
 				if (order->IsType(OT_CONDITIONAL) && ConditionVariableHasStationID(order->GetConditionVariable())) {
 					StationID next_id =  get_real_station(order);
 					SB(order->GetXData2Ref(), 0, 16, next_id + 1);

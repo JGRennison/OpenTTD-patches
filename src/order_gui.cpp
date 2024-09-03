@@ -642,6 +642,7 @@ static const OrderConditionVariable _order_conditional_variable[] = {
 	OCV_REQUIRES_SERVICE,
 	OCV_CARGO_WAITING,
 	OCV_CARGO_WAITING_AMOUNT,
+	OCV_CARGO_WAITING_AMOUNT_PERCENTAGE,
 	OCV_CARGO_ACCEPTANCE,
 	OCV_FREE_PLATFORMS,
 	OCV_SLOT_OCCUPANCY,
@@ -1047,7 +1048,8 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				SetDParam(2, CargoSpec::Get(order->GetConditionValue())->name);
 				SetDParam(3, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator());
 				SetDParam(4, order->GetXData());
-			} else if (ocv == OCV_CARGO_WAITING_AMOUNT) {
+			} else if (ocv == OCV_CARGO_WAITING_AMOUNT || ocv == OCV_CARGO_WAITING_AMOUNT_PERCENTAGE) {
+				const bool percent_mode = (ocv == OCV_CARGO_WAITING_AMOUNT_PERCENTAGE);
 				ArrayStringParameters<10> tmp_params;
 				StringID substr;
 
@@ -1055,13 +1057,23 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				tmp_params.SetParam(1, CargoSpec::Get(order->GetConditionValue())->name);
 				set_station_id(2, tmp_params);
 
+				auto output_condition_value = [&](int param_offset) {
+					if (percent_mode) {
+						auto capacity_params = MakeParameters(GB(order->GetXData(), 0, 16), CargoSpec::Get(order->GetConditionValue())->name);
+						_temp_special_strings[0] = GetStringWithArgs(STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY, capacity_params);
+						tmp_params.SetParam(param_offset, SPECSTR_TEMP_START);
+					} else {
+						tmp_params.SetParam(param_offset, order->GetConditionValue());
+						tmp_params.SetParam(param_offset + 1, GB(order->GetXData(), 0, 16));
+					}
+				};
+
 				if (GB(order->GetXData(), 16, 16) == 0) {
-					substr = STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY;
+					substr = percent_mode ? STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_DISPLAY : STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY;
 					tmp_params.SetParam(4, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator());
-					tmp_params.SetParam(5, order->GetConditionValue());
-					tmp_params.SetParam(6, GB(order->GetXData(), 0, 16));
+					output_condition_value(5);
 				} else {
-					substr = STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY;
+					substr = percent_mode ? STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_VIA_DISPLAY : STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY;
 					const Station *via_st = Station::GetIfValid(GB(order->GetXData(), 16, 16) - 2);
 					if (via_st == nullptr) {
 						tmp_params.SetParam(4, STR_ORDER_CONDITIONAL_UNDEFINED_STATION);
@@ -1070,8 +1082,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 						tmp_params.SetParam(5, via_st->index);
 					}
 					tmp_params.SetParam(6, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator());
-					tmp_params.SetParam(7, order->GetConditionValue());
-					tmp_params.SetParam(8, GB(order->GetXData(), 0, 16));
+					output_condition_value(7);
 				}
 				_temp_special_strings[0] = GetStringWithArgs(substr, tmp_params);
 				SetDParam(0, SPECSTR_TEMP_START);
@@ -2298,7 +2309,7 @@ public:
 					OrderConditionVariable ocv = (order == nullptr) ? OCV_LOAD_PERCENTAGE : order->GetConditionVariable();
 					bool is_cargo = (ocv == OCV_CARGO_ACCEPTANCE || ocv == OCV_CARGO_WAITING);
 					bool is_slot_occupancy = (ocv == OCV_SLOT_OCCUPANCY || ocv == OCV_VEH_IN_SLOT);
-					bool is_auxiliary_cargo = (ocv == OCV_CARGO_LOAD_PERCENTAGE || ocv == OCV_CARGO_WAITING_AMOUNT);
+					bool is_auxiliary_cargo = (ocv == OCV_CARGO_LOAD_PERCENTAGE || ConditionVariableTestsCargoWaitingAmount(ocv));
 					bool is_counter = (ocv == OCV_COUNTER_VALUE);
 					bool is_time_date = (ocv == OCV_TIME_DATE);
 					bool is_timetable = (ocv == OCV_TIMETABLE);
@@ -2347,7 +2358,7 @@ public:
 						aux_sel->SetDisplayedPlane(SZSP_NONE);
 					}
 
-					if (ocv == OCV_CARGO_WAITING_AMOUNT) {
+					if (ConditionVariableTestsCargoWaitingAmount(ocv)) {
 						aux2_sel->SetDisplayedPlane(DP_COND_AUX2_VIA);
 					} else if (is_sched_dispatch) {
 						this->GetWidget<NWidgetCore>(WID_O_COND_SCHED_TEST)->widget_data = STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_NEXT + GB(order->GetConditionValue(), ODCB_SRC_START, ODCB_SRC_COUNT);
@@ -2611,6 +2622,7 @@ public:
 							break;
 
 						case OCV_CARGO_WAITING_AMOUNT:
+						case OCV_CARGO_WAITING_AMOUNT_PERCENTAGE:
 						case OCV_COUNTER_VALUE:
 							value = GB(order->GetXData(), 0, 16);
 							break;
@@ -3270,6 +3282,7 @@ public:
 						break;
 
 					case OCV_CARGO_WAITING_AMOUNT:
+					case OCV_CARGO_WAITING_AMOUNT_PERCENTAGE:
 					case OCV_COUNTER_VALUE:
 						value = GB(order->GetXData(), 0, 16);
 						break;
@@ -3379,6 +3392,7 @@ public:
 
 				case OCV_COUNTER_VALUE:
 				case OCV_TIME_DATE:
+				case OCV_CARGO_WAITING_AMOUNT_PERCENTAGE:
 					value = Clamp(value, 0, 0xFFFF);
 					break;
 

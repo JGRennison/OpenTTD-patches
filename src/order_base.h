@@ -67,6 +67,7 @@ void ClearOrderDestinationRefcountMap();
  * OCV_TIMETABLE: Timetable lateness/earliness
  * OCV_TIME_DATE: Time/date
  * OCV_CARGO_WAITING_AMOUNT: Bits 0-15: Cargo quantity comparison value, Bits 16-31: Via station ID + 2
+ * OCV_CARGO_WAITING_AMOUNT_PERCENTAGE: Bits 0-15: Cargo quantity comparison value, Bits 16-31: Via station ID + 2
  * OCV_CARGO_LOAD_PERCENTAGE: Cargo percentage comparison value
  * OCV_DISPATCH_SLOT: Bits 0-15: Dispatch schedule ID
  * OCV_PERCENT: Bits 0-7: Jump counter
@@ -77,6 +78,7 @@ void ClearOrderDestinationRefcountMap();
  * OCV_CARGO_ACCEPTANCE: Bits 0-15: Station ID to test + 1
  * OCV_FREE_PLATFORMS: Bits 0-15: Station ID to test + 1
  * OCV_CARGO_WAITING_AMOUNT: Bits 0-15: Station ID to test + 1
+ * OCV_CARGO_WAITING_AMOUNT_PERCENTAGE: Bits 0-15: Station ID to test + 1
  */
 
 struct OrderExtraInfo {

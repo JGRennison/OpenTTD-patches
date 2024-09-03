@@ -59,6 +59,7 @@ STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :Counter value
 STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :Current time/date
 STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :Timetable state
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Dispatch slot
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :Waiting cargo / capacity
 
 ##after STR_ORDER_STOP_LOCATION_FAR_END
 STR_ORDER_STOP_LOCATION_THROUGH                                 :[through load]
@@ -1773,11 +1774,15 @@ STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :Jump to order {
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :Jump to order {COMMA} when Load percentage of {STRING} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :Jump to order {COMMA} when {STRING} at {STRING1} {STRING} {CARGO_SHORT}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :Jump to order {COMMA} when {STRING} at {STRING1} via {STRING1} {STRING} {CARGO_SHORT}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_DISPLAY             :Jump to order {COMMA} when {STRING} at {STRING1} {STRING} {STRING}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_VIA_DISPLAY         :Jump to order {COMMA} when {STRING} at {STRING1} via {STRING1} {STRING} {STRING}
 STR_ORDER_CONDITIONAL_COUNTER                                   :Jump to order {COMMA} when value of {TRCOUNTER} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :Jump to order {COMMA} when value of {PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_TIME_HHMM                                 :Jump to order {COMMA} when {STRING} {STRING} {TIME_HHMM}
 STR_ORDER_CONDITIONAL_TIMETABLE                                 :Jump to order {COMMA} when {STRING} {STRING} {TT_TICKS}
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DISPLAY                     :Jump to order {COMMA} when {STRING} {STRING} {STRING}
+
+STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY            :{COMMA} percent of {STRING} capacity
 
 STR_ORDER_TRY_ACQUIRE_SLOT                                      :Try to acquire slot: {STRING1}
 STR_ORDER_RELEASE_SLOT                                          :Release slot: {STRING1}
