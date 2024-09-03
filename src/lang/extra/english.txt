@@ -599,7 +599,7 @@ STR_CONFIG_SETTING_CARGO_SCALE_MODE_ECON_SPEED_REDUCTION_MULT   :Multiply by eco
 STR_CONFIG_SETTING_CARGO_SCALE_VALUE_ECON_SPEED_REDUCTION_MULT  :{NUM}% x economy speed reduction factor
 
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :No towns above height level: {STRING2}
-STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :No towns above the specified height level are built during map creation.
+STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :Towns can only be placed at or below this height level.
 
 STR_CONFIG_SETTING_MIN_TOWN_LAND_AREA                           :Minimum contiguous land area for towns: {STRING2}
 STR_CONFIG_SETTING_MIN_TOWN_LAND_AREA_HELPTEXT                  :Towns can only be placed on contiguous landmasses of at least this many tiles.
