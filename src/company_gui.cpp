@@ -332,7 +332,7 @@ struct CompanyFinancesWindow : Window {
 	bool small;             ///< Window is toggled to 'small'.
 	int query_widget;       ///< The widget associated with the current text query input.
 
-	CompanyFinancesWindow(WindowDesc *desc, CompanyID company) : Window(desc)
+	CompanyFinancesWindow(WindowDesc &desc, CompanyID company) : Window(desc)
 	{
 		const Company *c = Company::Get(company);
 		this->max_money = std::max<Money>(abs(c->money) * 2, INT32_MAX);
@@ -577,7 +577,7 @@ static WindowDesc _company_finances_desc(__FILE__, __LINE__,
 	WDP_AUTO, "company_finances", 0, 0,
 	WC_FINANCES, WC_NONE,
 	0,
-	std::begin(_nested_company_finances_widgets), std::end(_nested_company_finances_widgets)
+	_nested_company_finances_widgets
 );
 
 /**
@@ -590,7 +590,7 @@ void ShowCompanyFinances(CompanyID company)
 	if (!Company::IsValidID(company)) return;
 	if (BringWindowToFrontById(WC_FINANCES, company)) return;
 
-	new CompanyFinancesWindow(&_company_finances_desc, company);
+	new CompanyFinancesWindow(_company_finances_desc, company);
 }
 
 /* Association of liveries to livery classes */
@@ -713,7 +713,7 @@ private:
 	}
 
 public:
-	SelectCompanyLiveryWindow(WindowDesc *desc, CompanyID company, GroupID group) : Window(desc)
+	SelectCompanyLiveryWindow(WindowDesc &desc, CompanyID company, GroupID group) : Window(desc)
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_SCL_MATRIX_SCROLLBAR);
@@ -1125,14 +1125,14 @@ static WindowDesc _select_company_livery_desc(__FILE__, __LINE__,
 	WDP_AUTO, "company_color_scheme", 0, 0,
 	WC_COMPANY_COLOUR, WC_NONE,
 	0,
-	std::begin(_nested_select_company_livery_widgets), std::end(_nested_select_company_livery_widgets)
+	_nested_select_company_livery_widgets
 );
 
 void ShowCompanyLiveryWindow(CompanyID company, GroupID group)
 {
 	SelectCompanyLiveryWindow *w = (SelectCompanyLiveryWindow *)BringWindowToFrontById(WC_COMPANY_COLOUR, company);
 	if (w == nullptr) {
-		new SelectCompanyLiveryWindow(&_select_company_livery_desc, company, group);
+		new SelectCompanyLiveryWindow(_select_company_livery_desc, company, group);
 	} else if (group != INVALID_GROUP) {
 		w->SetSelectedGroup(company, group);
 	}
@@ -1392,7 +1392,7 @@ class SelectCompanyManagerFaceWindow : public Window
 	}
 
 public:
-	SelectCompanyManagerFaceWindow(WindowDesc *desc, Window *parent) : Window(desc)
+	SelectCompanyManagerFaceWindow(WindowDesc &desc, Window *parent) : Window(desc)
 	{
 		this->advanced = false;
 		this->CreateNestedTree();
@@ -1750,7 +1750,7 @@ static WindowDesc _select_company_manager_face_desc(__FILE__, __LINE__,
 	WDP_AUTO, nullptr, 0, 0,
 	WC_COMPANY_MANAGER_FACE, WC_NONE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_select_company_manager_face_widgets), std::end(_nested_select_company_manager_face_widgets)
+	_nested_select_company_manager_face_widgets
 );
 
 /**
@@ -1763,7 +1763,7 @@ static void DoSelectCompanyManagerFace(Window *parent)
 	if (!Company::IsValidID((CompanyID)parent->window_number)) return;
 
 	if (BringWindowToFrontById(WC_COMPANY_MANAGER_FACE, parent->window_number)) return;
-	new SelectCompanyManagerFaceWindow(&_select_company_manager_face_desc, parent);
+	new SelectCompanyManagerFaceWindow(_select_company_manager_face_desc, parent);
 }
 
 static constexpr NWidgetPart _nested_company_infrastructure_widgets[] = {
@@ -1802,7 +1802,7 @@ struct CompanyInfrastructureWindow : Window
 
 	Scrollbar *vscroll;  ///< Scrollbar
 
-	CompanyInfrastructureWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
+	CompanyInfrastructureWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
 		this->UpdateRailRoadTypes();
 
@@ -2130,7 +2130,7 @@ struct CompanyInfrastructureWindow : Window
 
 	void FindWindowPlacementAndResize(int def_width, int def_height) override
 	{
-		if (this->window_desc->GetPreferences().pref_height == 0) {
+		if (this->window_desc.GetPreferences().pref_height == 0) {
 			def_height = this->nested_root->smallest_y + this->height_extra;
 		}
 		Window::FindWindowPlacementAndResize(def_width, def_height);
@@ -2154,7 +2154,7 @@ static WindowDesc _company_infrastructure_desc(__FILE__, __LINE__,
 	WDP_AUTO, "company_infrastructure", 0, 0,
 	WC_COMPANY_INFRASTRUCTURE, WC_NONE,
 	0,
-	std::begin(_nested_company_infrastructure_widgets), std::end(_nested_company_infrastructure_widgets)
+	_nested_company_infrastructure_widgets
 );
 
 /**
@@ -2164,7 +2164,7 @@ static WindowDesc _company_infrastructure_desc(__FILE__, __LINE__,
 static void ShowCompanyInfrastructure(CompanyID company)
 {
 	if (!Company::IsValidID(company)) return;
-	AllocateWindowDescFront<CompanyInfrastructureWindow>(&_company_infrastructure_desc, company);
+	AllocateWindowDescFront<CompanyInfrastructureWindow>(_company_infrastructure_desc, company);
 }
 
 static constexpr NWidgetPart _nested_company_widgets[] = {
@@ -2297,7 +2297,7 @@ struct CompanyWindow : Window
 		CWP_BUTTONS_OTHER,     ///< Buttons of the other companies.
 	};
 
-	CompanyWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
+	CompanyWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
 		this->InitNested(window_number);
 		this->owner = (Owner)this->window_number;
@@ -2754,7 +2754,7 @@ static WindowDesc _company_desc(__FILE__, __LINE__,
 	WDP_AUTO, "company", 0, 0,
 	WC_COMPANY, WC_NONE,
 	0,
-	std::begin(_nested_company_widgets), std::end(_nested_company_widgets)
+	_nested_company_widgets
 );
 
 /**
@@ -2765,7 +2765,7 @@ void ShowCompany(CompanyID company)
 {
 	if (!Company::IsValidID(company)) return;
 
-	AllocateWindowDescFront<CompanyWindow>(&_company_desc, company);
+	AllocateWindowDescFront<CompanyWindow>(_company_desc, company);
 }
 
 /**
@@ -2788,7 +2788,7 @@ void DirtyAllCompanyInfrastructureWindows()
 }
 
 struct BuyCompanyWindow : Window {
-	BuyCompanyWindow(WindowDesc *desc, WindowNumber window_number, bool hostile_takeover) : Window(desc), hostile_takeover(hostile_takeover)
+	BuyCompanyWindow(WindowDesc &desc, WindowNumber window_number, bool hostile_takeover) : Window(desc), hostile_takeover(hostile_takeover)
 	{
 		this->InitNested(window_number);
 		this->owner = _local_company;
@@ -2907,7 +2907,7 @@ static WindowDesc _buy_company_desc(__FILE__, __LINE__,
 	WDP_AUTO, nullptr, 0, 0,
 	WC_BUY_COMPANY, WC_NONE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_buy_company_widgets), std::end(_nested_buy_company_widgets)
+	_nested_buy_company_widgets
 );
 
 /**
@@ -2919,6 +2919,6 @@ void ShowBuyCompanyDialog(CompanyID company, bool hostile_takeover)
 {
 	auto window = BringWindowToFrontById(WC_BUY_COMPANY, company);
 	if (window == nullptr) {
-		new BuyCompanyWindow(&_buy_company_desc, company, hostile_takeover);
+		new BuyCompanyWindow(_buy_company_desc, company, hostile_takeover);
 	}
 }

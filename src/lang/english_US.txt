@@ -437,6 +437,9 @@ STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Abandon scenari
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Quit
 
+STR_SCENEDIT_TOWN_MENU_BUILD_TOWN                               :Generate towns
+STR_SCENEDIT_TOWN_MENU_PACE_HOUSE                               :Place houses
+
 # Settings menu
 ###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Game options
@@ -1485,6 +1488,9 @@ STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Warn if a vehic
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :When enabled, a news message gets sent when a vehicle has not made any profit within a year
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :When enabled, a news message gets sent when a vehicle has not made any profit within a period
 
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE                             :Warn if a vehicle is getting old: {STRING}
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE_HELPTEXT                    :When enabled, a news message gets sent when a vehicle is getting old
+
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Vehicles never expire: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :When enabled, all vehicle models remain available forever after their introduction
 
@@ -1495,7 +1501,7 @@ STR_CONFIG_SETTING_TIMEKEEPING_UNITS_CALENDAR                   :Calendar
 STR_CONFIG_SETTING_TIMEKEEPING_UNITS_WALLCLOCK                  :Wallclock
 
 STR_CONFIG_SETTING_MINUTES_PER_YEAR                             :Minutes per year: {STRING}
-STR_CONFIG_SETTING_MINUTES_PER_YEAR_HELPTEXT                    :Choose the number of minutes in a calendar year. The default is 12 minutes. Set to 0 to stop calendar time from changing. This setting does not affect the economic simulation of the game, and is only available when using wallclock timekeeping
+STR_CONFIG_SETTING_MINUTES_PER_YEAR_HELPTEXT                    :Choose the number of minutes in a calendar year. The default is 12 minutes. Set to 0 to stop calendar time from changing. Increasing the length of the calendar year slows down the introduction of vehicles, houses, and other infrastructure. It does not affect vehicle speed or economic simulation, except for inflation. This setting is only available when using wallclock timekeeping
 
 STR_CONFIG_SETTING_MINUTES_PER_YEAR_VALUE                       :{NUM}
 ###setting-zero-is-special
@@ -2814,6 +2820,16 @@ STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Select a truck 
 STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :Select a truck station type to build. Ctrl+Click to add or remove in saved items
 STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Select an object class to display
 STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :Select an object type to build. Ctrl+Click to add or remove in saved items. Ctrl+Click+Drag to select the area diagonally. Also press Shift to show cost estimate only
+STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Select a town zone to display
+STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Select a house type to build. Ctrl+Click to add or remove in saved items
+
+STR_HOUSE_PICKER_CAPTION                                        :House Selection
+
+STR_HOUSE_PICKER_CLASS_ZONE1                                    :Edge
+STR_HOUSE_PICKER_CLASS_ZONE2                                    :Outskirts
+STR_HOUSE_PICKER_CLASS_ZONE3                                    :Outer Suburbs
+STR_HOUSE_PICKER_CLASS_ZONE4                                    :Inner Suburbs
+STR_HOUSE_PICKER_CLASS_ZONE5                                    :Town center
 
 STR_STATION_CLASS_DFLT                                          :Default
 STR_STATION_CLASS_DFLT_STATION                                  :Default station
@@ -5001,6 +5017,7 @@ STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... ther
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Road work in progress
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Can't delete this town...{}A station or depot is referring to the town or a town owned tile can't be removed
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... there is no suitable place for a statue in the center of this town
+STR_ERROR_CAN_T_BUILD_HOUSE                                     :{WHITE}Can't build house...
 
 # Industry related errors
 STR_ERROR_TOO_MANY_INDUSTRIES                                   :{WHITE}... too many industries
@@ -5038,6 +5055,8 @@ STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :{WHITE}Can't bu
 
 STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :{WHITE}Adjoins more than one existing station/loading area
 STR_ERROR_STATION_TOO_SPREAD_OUT                                :{WHITE}... station too spread out
+STR_ERROR_STATION_DISALLOWED_NUMBER_TRACKS                      :{WHITE}... unsupported number of tracks
+STR_ERROR_STATION_DISALLOWED_LENGTH                             :{WHITE}... unsupported length
 STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Too many stations/loading areas
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Too many railroad station parts
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Too many bus stops

@@ -983,7 +983,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_JOIN(Packet &p)
 	uint32_t newgrf_version = p.Recv_uint32();
 
 	/* Check if the client has revision control enabled */
-	if (!IsNetworkCompatibleVersion(client_revision.c_str()) || _openttd_newgrf_version != newgrf_version) {
+	if (!IsNetworkCompatibleVersion(client_revision) || _openttd_newgrf_version != newgrf_version) {
 		/* Different revisions!! */
 		return this->SendError(NETWORK_ERROR_WRONG_REVISION);
 	}

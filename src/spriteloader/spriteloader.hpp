@@ -17,7 +17,6 @@
 #include <array>
 
 struct Sprite;
-typedef void *AllocatorProc(size_t size);
 
 /** The different colour components a sprite can have. */
 enum SpriteColourComponent {
@@ -86,6 +85,32 @@ public:
 	virtual ~SpriteLoader() = default;
 };
 
+/** Interface for something that can allocate memory for a sprite. */
+class SpriteAllocator {
+public:
+	virtual ~SpriteAllocator() = default;
+
+	/**
+	 * Allocate memory for a sprite.
+	 * @tparam T Type to return memory as.
+	 * @param size Size of memory to allocate in bytes.
+	 * @return Pointer to allocated memory.
+	 */
+	template <typename T>
+	T *Allocate(size_t size)
+	{
+		return static_cast<T *>(this->AllocatePtr(size));
+	}
+
+protected:
+	/**
+	 * Allocate memory for a sprite.
+	 * @param size Size of memory to allocate.
+	 * @return Pointer to allocated memory.
+	 */
+	virtual void *AllocatePtr(size_t size) = 0;
+};
+
 /** Interface for something that can encode a sprite. */
 class SpriteEncoder {
 	bool supports_missing_zoom_levels = false;
@@ -133,7 +158,7 @@ public:
 	/**
 	 * Convert a sprite from the loader to our own format.
 	 */
-	virtual Sprite *Encode(const SpriteLoader::SpriteCollection &sprite, AllocatorProc *allocator) = 0;
+	virtual Sprite *Encode(const SpriteLoader::SpriteCollection &sprite, SpriteAllocator &allocator) = 0;
 
 	/**
 	 * Get the value which the height and width on a sprite have to be aligned by.

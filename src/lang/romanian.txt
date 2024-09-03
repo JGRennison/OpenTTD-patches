@@ -437,6 +437,7 @@ STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Ieșire din edi
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Ieșire din joc
 
+
 # Settings menu
 ###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Opțiunile jocului
@@ -1477,6 +1478,7 @@ STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Avertisment dac
 ###length 2
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Când este activat, un mesaj de știri este trimis atunci când un vehicul nu a realizat niciun profit într-un an
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Când este activat, un mesaj de știri este trimis atunci când un vehicul nu a realizat niciun profit într-o perioadă
+
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Vehiculele nu expiră niciodată: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :După activare, toate modelele de vehicule rămân disponibile permanent după introducerea lor
@@ -2783,6 +2785,8 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Lungimea
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Alege lungimea platformei gării
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Drag & Drop
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Construiește o stație prin drag & drop
+
+
 
 
 

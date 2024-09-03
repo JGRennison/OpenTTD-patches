@@ -208,7 +208,7 @@ public:
 	 * @param avail Return whether the variable is available.
 	 * @return The resolved variable's value.
 	 */
-	virtual uint Resolve(uint index, uint var, uint param, GetVariableExtra *extra) const = 0;
+	virtual uint Resolve(uint index, uint var, uint param, GetVariableExtra &extra) const = 0;
 
 	/**
 	 * Used to decide if the PSA needs a parameter or not.
@@ -422,7 +422,7 @@ struct NewGRFInspectWindow : Window {
 		if (v == nullptr) this->chain_index = 0;
 	}
 
-	NewGRFInspectWindow(WindowDesc *desc, WindowNumber wno) : Window(desc)
+	NewGRFInspectWindow(WindowDesc &desc, WindowNumber wno) : Window(desc)
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_NGRFI_SCROLLBAR);
@@ -725,7 +725,7 @@ struct NewGRFInspectWindow : Window {
 					auto iter = this->var60params.find(niv->var);
 					if (iter != this->var60params.end()) param = iter->second;
 				}
-				uint value = nih->Resolve(index, niv->var, param, &extra);
+				uint value = nih->Resolve(index, niv->var, param, extra);
 
 				if (!extra.available) continue;
 
@@ -1240,14 +1240,14 @@ static WindowDesc _newgrf_inspect_chain_desc(__FILE__, __LINE__,
 	WDP_AUTO, "newgrf_inspect_chain", 400, 300,
 	WC_NEWGRF_INSPECT, WC_NONE,
 	0,
-	std::begin(_nested_newgrf_inspect_chain_widgets), std::end(_nested_newgrf_inspect_chain_widgets)
+	_nested_newgrf_inspect_chain_widgets
 );
 
 static WindowDesc _newgrf_inspect_desc(__FILE__, __LINE__,
 	WDP_AUTO, "newgrf_inspect", 400, 300,
 	WC_NEWGRF_INSPECT, WC_NONE,
 	0,
-	std::begin(_nested_newgrf_inspect_widgets), std::end(_nested_newgrf_inspect_widgets)
+	_nested_newgrf_inspect_widgets
 );
 
 /**
@@ -1265,7 +1265,7 @@ void ShowNewGRFInspectWindow(GrfSpecFeature feature, uint index, const uint32_t 
 	if (!IsNewGRFInspectable(feature, index)) return;
 
 	WindowNumber wno = GetInspectWindowNumber(feature, index);
-	WindowDesc *desc = (feature == GSF_TRAINS || feature == GSF_ROADVEHICLES || feature == GSF_SHIPS) ? &_newgrf_inspect_chain_desc : &_newgrf_inspect_desc;
+	WindowDesc &desc = (feature == GSF_TRAINS || feature == GSF_ROADVEHICLES || feature == GSF_SHIPS) ? _newgrf_inspect_chain_desc : _newgrf_inspect_desc;
 	NewGRFInspectWindow *w = AllocateWindowDescFront<NewGRFInspectWindow>(desc, wno, true);
 	w->SetCallerGRFID(grfid);
 }
@@ -1408,7 +1408,7 @@ struct SpriteAlignerWindow : Window {
 	static bool crosshair;
 	const Action5Type *act5_type = nullptr; ///< Sprite Area of current selected sprite.
 
-	SpriteAlignerWindow(WindowDesc *desc, WindowNumber wno) : Window(desc)
+	SpriteAlignerWindow(WindowDesc &desc, WindowNumber wno) : Window(desc)
 	{
 		/* On first opening, set initial zoom to current zoom level. */
 		if (SpriteAlignerWindow::zoom == ZOOM_LVL_END) SpriteAlignerWindow::zoom = _gui_zoom;
@@ -1804,7 +1804,7 @@ static WindowDesc _sprite_aligner_desc(__FILE__, __LINE__,
 	WDP_AUTO, "sprite_aligner", 400, 300,
 	WC_SPRITE_ALIGNER, WC_NONE,
 	0,
-	std::begin(_nested_sprite_aligner_widgets), std::end(_nested_sprite_aligner_widgets)
+	_nested_sprite_aligner_widgets
 );
 
 /**
@@ -1812,7 +1812,7 @@ static WindowDesc _sprite_aligner_desc(__FILE__, __LINE__,
  */
 void ShowSpriteAlignerWindow()
 {
-	AllocateWindowDescFront<SpriteAlignerWindow>(&_sprite_aligner_desc, 0);
+	AllocateWindowDescFront<SpriteAlignerWindow>(_sprite_aligner_desc, 0);
 }
 
 const char *GetNewGRFCallbackName(CallbackID cbid)

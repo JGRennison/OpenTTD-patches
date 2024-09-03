@@ -568,6 +568,7 @@ STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Fàg deasaiche 
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Fàg an-seo
 
+
 # Settings menu
 ###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Roghainnean a' gheama
@@ -1487,6 +1488,7 @@ STR_CONFIG_SETTING_ORDER_REVIEW_ON                              :Sgrùdaich a h-
 STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Thoir rabhadh nuair a dh'adhbharaicheas carbad call airgid: {STRING}
 ###length 2
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Nuair a bhios seo air, thèid brath a chur mur an do rinn carbad prothaid feadh bliadhna
+
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Chan fhalbh an ùine air carbadan gu bràth: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Ma tha seo air, bidh a h-uile modail dhe charbad ri làimh gu bràth tuilleadh an dèidh an tionnsgnadh
@@ -2575,6 +2577,8 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Faide na
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Tagh dè cho fad ’s a bhios an stèisean
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Slaod is leig às
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Tog stèisean le slaodadh is leigeil às
+
+
 
 
 

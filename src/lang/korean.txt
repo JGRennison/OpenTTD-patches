@@ -438,6 +438,9 @@ STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :시나리오 �
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :게임 종료
 
+STR_SCENEDIT_TOWN_MENU_BUILD_TOWN                               :도시 생성
+STR_SCENEDIT_TOWN_MENU_PACE_HOUSE                               :건물 건설
+
 # Settings menu
 ###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :게임 기본 설정
@@ -1475,7 +1478,7 @@ STR_CONFIG_SETTING_WARN_LOST_VEHICLE                            :차량이 길�
 STR_CONFIG_SETTING_WARN_LOST_VEHICLE_HELPTEXT                   :다음 목적지로 가기 위한 경로를 찾을 수 없는 차량이 있으면 뉴스 메시지로 알려줍니다.
 
 STR_CONFIG_SETTING_ORDER_REVIEW                                 :차량의 경로를 검사: {STRING}
-STR_CONFIG_SETTING_ORDER_REVIEW_HELPTEXT                        :이 설정을 켜면, 차량의 경로를 주기적으로 검사하여 문제가 발견되면 뉴스 메시지로 알려줍니다.
+STR_CONFIG_SETTING_ORDER_REVIEW_HELPTEXT                        :이 설정을 켜면, 차량의 경로를 주기적으로 검사하여 문제가 발견되면 뉴스 메시지로 알려줍니다
 ###length 3
 STR_CONFIG_SETTING_ORDER_REVIEW_OFF                             :검사하지 않음
 STR_CONFIG_SETTING_ORDER_REVIEW_EXDEPOT                         :정지한 차량을 제외하고 검사
@@ -1485,6 +1488,9 @@ STR_CONFIG_SETTING_WARN_INCOME_LESS                             :차량의 수�
 ###length 2
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :이 설정을 켜면, 지난 해에 수익이 없는 차량이 있으면 뉴스 메시지로 알려줍니다
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :이 설정을 켜면, 지난 기간에 수익이 없는 차량이 있으면 뉴스 메시지로 알려줍니다
+
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE                             :차량이 오래되면 경고하기: {STRING}
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE_HELPTEXT                    :이 설정을 켜면, 차량이 오래되었을 때 뉴스 메시지로 알려줍니다
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :옛날 차량을 사라지지 않고 계속 만들 수 있게 함: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :이 설정을 켜면, 오래된 차량 모델을 포함하여 모든 차량 모델을 도입 이후에 계속 사용할 수 있게 됩니다.
@@ -1496,7 +1502,7 @@ STR_CONFIG_SETTING_TIMEKEEPING_UNITS_CALENDAR                   :달력
 STR_CONFIG_SETTING_TIMEKEEPING_UNITS_WALLCLOCK                  :벽시계
 
 STR_CONFIG_SETTING_MINUTES_PER_YEAR                             :1년의 길이: {STRING}{ORANGE}분
-STR_CONFIG_SETTING_MINUTES_PER_YEAR_HELPTEXT                    :달력의 1년을 몇 분으로 할 지 선택합니다. 기본값은 12분입니다. 달력 시간이 변하는 것을 막으려면 0으로 설정하세요. 이 설정은 게임의 경제 시뮬레이션에는 영향을 미치지 않고, 벽시계 시간 설정을 사용할 때만 이용 가능합니다
+STR_CONFIG_SETTING_MINUTES_PER_YEAR_HELPTEXT                    :달력의 1년을 몇 분으로 할 지 선택합니다. 기본값은 12분입니다. 달력 시간이 변하는 것을 막으려면 0으로 설정하세요. 1년의 길이를 늘리면 차량, 주택 및 기타 기반 시설 도입이 느려집니다. 인플레이션을 제외하고 차량 속력이나 경제 시뮬레이션에는 영향을 미치지 않습니다. 이 설정은 벽시계 시간 모드를 사용할 때만 사용할 수 있습니다
 
 STR_CONFIG_SETTING_MINUTES_PER_YEAR_VALUE                       :{NUM}
 ###setting-zero-is-special
@@ -1931,8 +1937,8 @@ STR_CONFIG_SETTING_SEMAPHORE_BUILD_BEFORE_DATE_HELPTEXT         :전자식 신�
 STR_CONFIG_SETTING_CYCLE_SIGNAL_TYPES                           :신호기를 CTRL 클릭할 때 바뀌는 신호기의 종류: {STRING}
 STR_CONFIG_SETTING_CYCLE_SIGNAL_TYPES_HELPTEXT                  :신호기 건설에서 CTRL+클릭할 때 바뀌는 신호기의 종류를 선택합니다
 ###length 2
-STR_CONFIG_SETTING_CYCLE_SIGNAL_GROUP                           :경로 신호기만 보여주기
-STR_CONFIG_SETTING_CYCLE_SIGNAL_ALL                             :모두 보여주기
+STR_CONFIG_SETTING_CYCLE_SIGNAL_GROUP                           :현재 사용 중인 신호기만
+STR_CONFIG_SETTING_CYCLE_SIGNAL_ALL                             :모든 신호기
 
 STR_CONFIG_SETTING_SIGNAL_GUI_MODE                              :보여줄 신호기 종류: {STRING}
 STR_CONFIG_SETTING_SIGNAL_GUI_MODE_HELPTEXT                     :신호기 창에서 보여줄 신호기 종류를 선택하세요
@@ -2710,7 +2716,7 @@ STR_MISSING_GRAPHICS_ERROR_QUIT                                 :{BLACK}OpenTTD 
 STR_TRANSPARENCY_CAPTION                                        :{WHITE}투명 설정
 STR_TRANSPARENT_SIGNS_TOOLTIP                                   :{BLACK}역명판을 보여줄 지 선택합니다. 고정하려면 CTRL+클릭하세요
 STR_TRANSPARENT_TREES_TOOLTIP                                   :{BLACK}나무를 보여줄 지 선택합니다. 고정하려면 CTRL+클릭하세요
-STR_TRANSPARENT_HOUSES_TOOLTIP                                  :{BLACK}집을 보여줄 지 선택합니다. 고정하려면 CTRL+클릭하세요
+STR_TRANSPARENT_HOUSES_TOOLTIP                                  :{BLACK}건물을 보여줄 지 선택합니다. 고정하려면 CTRL+클릭하세요
 STR_TRANSPARENT_INDUSTRIES_TOOLTIP                              :{BLACK}산업시설을 보여줄 지 선택합니다. 고정하려면 CTRL+클릭하세요
 STR_TRANSPARENT_BUILDINGS_TOOLTIP                               :{BLACK}정거장, 차량기지, 경유지 등과 같은 건물을 보여줄 지 선택합니다. 고정하려면 CTRL+클릭하세요
 STR_TRANSPARENT_BRIDGES_TOOLTIP                                 :{BLACK}다리를 보여줄 지 선택합니다. 고정하려면 CTRL+클릭하세요
@@ -2792,8 +2798,8 @@ STR_STATION_BUILD_RAIL_CAPTION                                  :{WHITE}철도 �
 STR_STATION_BUILD_ORIENTATION                                   :{BLACK}방향 선택
 STR_STATION_BUILD_RAILROAD_ORIENTATION_TOOLTIP                  :{BLACK}철도역 방향을 설정합니다
 STR_STATION_BUILD_NUMBER_OF_TRACKS                              :{BLACK}선로 수
-STR_STATION_BUILD_NUMBER_OF_TRACKS_TOOLTIP                      :{BLACK}철도역 플랫폼 개수를 설정합니다
-STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}플랫폼 길이
+STR_STATION_BUILD_NUMBER_OF_TRACKS_TOOLTIP                      :{BLACK}철도역 승강장 개수를 설정합니다
+STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}승강장 길이
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}철도역 길이를 설정합니다
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}드래그 & 드롭
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}드래그 & 드롭으로 역을 건설합니다
@@ -2815,6 +2821,16 @@ STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :표시할 트�
 STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :설치하려는 트럭 적하장 종류를 선택하세요. CTRL+클릭하면 즐겨찾기 추가/제거가 가능합니다
 STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :표시할 오브젝트 종류를 선택하세요
 STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :설치하려는 오브젝트 종류를 선택합니다. CTRL+클릭+드래그하면 대각선 방향의 영역을 선택할 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
+STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :표시할 도시 구역을 선택하세요
+STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :지으려는 건물 종류를 선택하세요. CTRL+클릭하면 즐겨찾기 추가/제거가 가능합니다
+
+STR_HOUSE_PICKER_CAPTION                                        :건물 선택
+
+STR_HOUSE_PICKER_CLASS_ZONE1                                    :가장자리
+STR_HOUSE_PICKER_CLASS_ZONE2                                    :교외
+STR_HOUSE_PICKER_CLASS_ZONE3                                    :바깥쪽 시내
+STR_HOUSE_PICKER_CLASS_ZONE4                                    :안쪽 시내
+STR_HOUSE_PICKER_CLASS_ZONE5                                    :도시 중심
 
 STR_STATION_CLASS_DFLT                                          :기본
 STR_STATION_CLASS_DFLT_STATION                                  :기본 역
@@ -5002,6 +5018,7 @@ STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... 지�
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}도로 작업이 진행 중입니다
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}이 도시를 삭제할 수 없습니다...{}도시나 도시 소유의 땅에 역, 정류장, 항구, 공항 또는 차량기지, 차고지, 정박소 등이 존재하면 도시를 삭제할 수 없습니다.
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... 이 도시의 중심에 동상을 세우기 적합한 장소가 없습니다
+STR_ERROR_CAN_T_BUILD_HOUSE                                     :{WHITE}건물을 지을 수 없습니다...
 
 # Industry related errors
 STR_ERROR_TOO_MANY_INDUSTRIES                                   :{WHITE}... 산업시설이 너무 많습니다
@@ -5015,7 +5032,7 @@ STR_ERROR_ONLY_ONE_ALLOWED_PER_TOWN                             :{WHITE}... 한 
 STR_ERROR_CAN_ONLY_BE_BUILT_IN_TOWNS_WITH_POPULATION_OF_1200    :{WHITE}... 인구 1200명 이상의 도시에만 지을 수 있습니다
 STR_ERROR_CAN_ONLY_BE_BUILT_IN_RAINFOREST                       :{WHITE}... 열대우림 지역에만 지을 수 있습니다
 STR_ERROR_CAN_ONLY_BE_BUILT_IN_DESERT                           :{WHITE}... 사막 지역에만 지을 수 있습니다
-STR_ERROR_CAN_ONLY_BE_BUILT_IN_TOWNS                            :{WHITE}... 도시 안의 집이 있는 위치에만 지을 수 있습니다
+STR_ERROR_CAN_ONLY_BE_BUILT_IN_TOWNS                            :{WHITE}... 도시 안의 건물이 있는 위치에만 지을 수 있습니다
 STR_ERROR_CAN_ONLY_BE_BUILT_NEAR_TOWN_CENTER                    :{WHITE}... 도시의 가운데 근처에만 지을 수 있습니다
 STR_ERROR_CAN_ONLY_BE_BUILT_IN_LOW_AREAS                        :{WHITE}... 낮은 지역에만 지을 수 있습니다
 STR_ERROR_CAN_ONLY_BE_POSITIONED                                :{WHITE}... 지도 가장자리 근처에만 놓을 수 있습니다
@@ -5039,6 +5056,8 @@ STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :{WHITE}여기�
 
 STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :{WHITE}두 개 이상의 역이 인접합니다
 STR_ERROR_STATION_TOO_SPREAD_OUT                                :{WHITE}... 역이 너무 크게 퍼져있습니다
+STR_ERROR_STATION_DISALLOWED_NUMBER_TRACKS                      :{WHITE}... 지원하지 않는 선로 수입니다
+STR_ERROR_STATION_DISALLOWED_LENGTH                             :{WHITE}... 지원하지 않는 길이입니다
 STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}역이 너무 많습니다
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}철도역 조각이 너무 많습니다
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}버스 정류장이 너무 많습니다

@@ -298,7 +298,7 @@ uint32_t StationScopeResolver::GetNearbyStationInfo(uint32_t parameter, StationS
 	}
 }
 
-/* virtual */ uint32_t StationScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra *extra) const
+/* virtual */ uint32_t StationScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra &extra) const
 {
 	if (this->st == nullptr) {
 		/* Station does not exist, so we're in a purchase list or the land slope check callback. */
@@ -316,8 +316,8 @@ uint32_t StationScopeResolver::GetNearbyStationInfo(uint32_t parameter, StationS
 					TileIndex tile = this->tile;
 					if (parameter != 0) tile = GetNearbyTile(parameter, tile, true, this->axis); // only perform if it is required
 
-					uint32_t result = GetNearbyTileInformation(tile, this->ro.grffile->grf_version >= 8, extra->mask);
-					if (extra->mask & SLOPE_EW) {
+					uint32_t result = GetNearbyTileInformation(tile, this->ro.grffile->grf_version >= 8, extra.mask);
+					if (extra.mask & SLOPE_EW) {
 						Slope tileh = GetTileSlope(tile);
 						if (this->axis == AXIS_Y && HasBit(tileh, CORNER_W) != HasBit(tileh, CORNER_E)) result ^= SLOPE_EW;
 					}
@@ -328,7 +328,7 @@ uint32_t StationScopeResolver::GetNearbyStationInfo(uint32_t parameter, StationS
 			case 0xFA: return ClampTo<uint16_t>(CalTime::CurDate() - CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR); // Build date, clamped to a 16 bit value
 		}
 
-		extra->available = false;
+		extra.available = false;
 		return UINT_MAX;
 	}
 
@@ -377,8 +377,8 @@ uint32_t StationScopeResolver::GetNearbyStationInfo(uint32_t parameter, StationS
 			TileIndex tile = this->tile;
 			if (parameter != 0) tile = GetNearbyTile(parameter, tile); // only perform if it is required
 
-			uint32_t result = GetNearbyTileInformation(tile, this->ro.grffile->grf_version >= 8, extra->mask);
-			if (extra->mask & SLOPE_EW) {
+			uint32_t result = GetNearbyTileInformation(tile, this->ro.grffile->grf_version >= 8, extra.mask);
+			if (extra.mask & SLOPE_EW) {
 				Slope tileh = GetTileSlope(tile);
 				if (axis == AXIS_Y && HasBit(tileh, CORNER_W) != HasBit(tileh, CORNER_E)) result ^= SLOPE_EW;
 			}
@@ -429,10 +429,10 @@ uint32_t StationScopeResolver::GetNearbyStationInfo(uint32_t parameter, StationS
 		case 0xFA: return ClampTo<uint16_t>(this->st->build_date - CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR);
 	}
 
-	return this->st->GetNewGRFVariable(this->ro, variable, parameter, &(extra->available));
+	return this->st->GetNewGRFVariable(this->ro, variable, parameter, extra.available);
 }
 
-uint32_t Station::GetNewGRFVariable(const ResolverObject &object, uint16_t variable, uint8_t parameter, bool *available) const
+uint32_t Station::GetNewGRFVariable(const ResolverObject &object, uint16_t variable, uint8_t parameter, bool &available) const
 {
 	switch (variable) {
 		case 0x48: { // Accepted cargo types
@@ -494,11 +494,11 @@ uint32_t Station::GetNewGRFVariable(const ResolverObject &object, uint16_t varia
 
 	DEBUG(grf, 1, "Unhandled station variable 0x%X", variable);
 
-	*available = false;
+	available = false;
 	return UINT_MAX;
 }
 
-uint32_t Waypoint::GetNewGRFVariable(const ResolverObject &object, uint16_t variable, uint8_t parameter, bool *available) const
+uint32_t Waypoint::GetNewGRFVariable(const ResolverObject &object, uint16_t variable, uint8_t parameter, bool &available) const
 {
 	switch (variable) {
 		case 0x48: return 0; // Accepted cargo types
@@ -526,7 +526,7 @@ uint32_t Waypoint::GetNewGRFVariable(const ResolverObject &object, uint16_t vari
 
 	DEBUG(grf, 1, "Unhandled station variable 0x%X", variable);
 
-	*available = false;
+	available = false;
 	return UINT_MAX;
 }
 

@@ -494,6 +494,7 @@ STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Lahku redaktori
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Välju
 
+
 # Settings menu
 ###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Mängu seadistus
@@ -1539,6 +1540,7 @@ STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Hoiata, kui sõ
 ###length 2
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Kui on aktiveeritud, siis teavitatakse mängijat sõidukitest mis ei ole viimase aasta jooksul suutnud kasumit teenida
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Kui aktiveeritud, saadetakse uudis, kui sõiduk ei ole ajavahemikus kasumit teeninud
+
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Sõidukid ei aegu: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Kui on aktiveeritud, siis jäävad kõik sõidukite tüübid igavesti avatuks
@@ -2853,7 +2855,19 @@ STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Vali rau
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Lohistamine
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Ehita jaam kasutades hiirega lohistamist
 
+STR_PICKER_MODE_ALL                                             :Kõik
 
+STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Vali, milliseid veoautojaamu näidatakse
+STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Vali näidatud asulaosa
+STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Vali, millist maja ehitada. Ctrl+ klõps lisab või eemaldab salvestatud asjadest
+
+STR_HOUSE_PICKER_CAPTION                                        :Maja valik
+
+STR_HOUSE_PICKER_CLASS_ZONE1                                    :Äär
+STR_HOUSE_PICKER_CLASS_ZONE2                                    :Äärealad
+STR_HOUSE_PICKER_CLASS_ZONE3                                    :Äärelinnad
+STR_HOUSE_PICKER_CLASS_ZONE4                                    :Eeslinnad
+STR_HOUSE_PICKER_CLASS_ZONE5                                    :Kesklinn
 
 STR_STATION_CLASS_DFLT                                          :Vaikimisi
 STR_STATION_CLASS_DFLT_STATION                                  :Vaikimisi jaam
@@ -5038,6 +5052,7 @@ STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... pole
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Teede ehitamine
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Seda asulat ei saa kõrvaldada...{}Jaam või depoo viitab asulale, või asulale kuuluvat ruutu ei saa kõrvaldada
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... asula keskuses ei leidu kujule sobivat kohta
+STR_ERROR_CAN_T_BUILD_HOUSE                                     :{WHITE}Maja ei saa ehitada...
 
 # Industry related errors
 STR_ERROR_TOO_MANY_INDUSTRIES                                   :{WHITE}... liiga palju tööstuseid

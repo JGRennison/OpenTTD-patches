@@ -372,8 +372,8 @@ STR_BUTTON_CANCEL                                               :{BLACK}Ακύρ
 STR_BUTTON_OK                                                   :{BLACK}OK
 
 # On screen keyboard window
-STR_OSK_KEYBOARD_LAYOUT                                         :`1234567890-=\qwertyuiop[]asdfghjkl;'  zxcvbnm,./ .
-STR_OSK_KEYBOARD_LAYOUT_CAPS                                    :~!@#$%^&*()_+|QWERTYUIOP{{}}ASDFGHJKL:"  ZXCVBNM<>? .
+STR_OSK_KEYBOARD_LAYOUT                                         :`1234567890-= qwertyuiop[]asdfghjkl;'#\zxcvbnm,./ .
+STR_OSK_KEYBOARD_LAYOUT_CAPS                                    :¬!"£$%^&*()_+ QWERTYUIOP{{}}ASDFGHJKL:@~|ZXCVBNM<>? .
 
 # Measurement tooltip
 STR_MEASURE_LENGTH                                              :{BLACK}Μήκος: {NUM}
@@ -498,6 +498,9 @@ STR_SCENEDIT_FILE_MENU_LOAD_HEIGHTMAP                           :Φόρτωση 
 STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Έξοδος από το πρόγραμμα επεξεργασίας σεναρίων
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Έξοδος
+
+STR_SCENEDIT_TOWN_MENU_BUILD_TOWN                               :Δημιουργία πόλεων
+STR_SCENEDIT_TOWN_MENU_PACE_HOUSE                               :Τοποθέτηση σπιτιών
 
 # Settings menu
 ###length 16
@@ -1578,6 +1581,9 @@ STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Ειδοποί�
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Όταν είναι ενεργοποιημένη, εμφανίζεται ειδοποίηση όταν κάποιο όχημα δεν έχει αποφέρει κέρδος εντός ενός έτους
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Όταν είναι ενεργοποιημένη, εμφανίζεται ειδοποίηση όταν κάποιο όχημα δεν έχει αποφέρει κέρδος εντός μιας περιόδου
 
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE                             :Ειδοποίηση όταν ένα όχημα παλιώσει: {STRING}
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE_HELPTEXT                    :Όταν είναι ενεργοποιημένη, εμφανίζεται ειδοποίηση όταν κάποιο όχημα παλιώνει
+
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Τα οχήματα δεν λήγουν ποτέ: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Όταν είναι ενεργοποιημένη, όλα τα μοντέλα οχημάτων παραμένουν διαθέσιμα για πάντα μετά την παρουσίασή τους
 
@@ -1588,7 +1594,7 @@ STR_CONFIG_SETTING_TIMEKEEPING_UNITS_CALENDAR                   :Ημερολό�
 STR_CONFIG_SETTING_TIMEKEEPING_UNITS_WALLCLOCK                  :Ρολόι τοίχου
 
 STR_CONFIG_SETTING_MINUTES_PER_YEAR                             :Λεπτά ανά έτος: {STRING}
-STR_CONFIG_SETTING_MINUTES_PER_YEAR_HELPTEXT                    :Επιλέξτε τον αριθμό των λεπτών σε ένα ημερολογιακό έτος. Η προεπιλογή είναι 12 λεπτά. Ρυθμίστε στο 0 για να σταματήσετε την αλλαγή της ημερολογιακής ώρας. Αυτή η ρύθμιση δεν επηρεάζει την οικονομική προσομοίωση του παιχνιδιού και είναι διαθέσιμη μόνο όταν χρησιμοποιείτε χρονομέτρηση ρολογιού τοίχου
+STR_CONFIG_SETTING_MINUTES_PER_YEAR_HELPTEXT                    :Επιλέξτε τον αριθμό των λεπτών σε ένα ημερολογιακό έτος. Η προεπιλογή είναι 12 λεπτά. Ρυθμίστε στο 0 για να σταματήσετε την αλλαγή της ημερολογιακής ώρας. Η αύξηση της διάρκειας του ημερολογιακού έτους επιβραδύνει την εισαγωγή οχημάτων, σπιτιών και άλλων υποδομών. Δεν επηρεάζει την ταχύτητα του οχήματος ή την οικονομική προσομοίωση, εκτός από τον πληθωρισμό. Αυτή η ρύθμιση είναι διαθέσιμη μόνο όταν χρησιμοποιείται χρονομέτρηση ρολογιού τοίχου
 
 STR_CONFIG_SETTING_MINUTES_PER_YEAR_VALUE                       :{NUM}
 ###setting-zero-is-special
@@ -2883,7 +2889,7 @@ STR_WAYPOINT_CAPTION                                            :{WHITE}Σημε
 STR_STATION_BUILD_RAIL_CAPTION                                  :{WHITE}Επιλογή Σιδηροδρομικού Σταθμού
 STR_STATION_BUILD_ORIENTATION                                   :{BLACK}Προσανατολισμός
 STR_STATION_BUILD_RAILROAD_ORIENTATION_TOOLTIP                  :{BLACK}Επιλογή προσανατολισμού σιδηροδρομικού σταθμού
-STR_STATION_BUILD_NUMBER_OF_TRACKS                              :{BLACK}Αριθμός γραμμών
+STR_STATION_BUILD_NUMBER_OF_TRACKS                              :{BLACK}Αριθμός σιδηροτροχιών
 STR_STATION_BUILD_NUMBER_OF_TRACKS_TOOLTIP                      :{BLACK}Επιλέξτε τον αριθμό πλατφορμών για το σιδηροδρομικό σταθμό
 STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Μήκος πλατφόρμας
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Επιλέξτε το μήκος του σιδηροδρομικού σταθμού
@@ -2907,6 +2913,16 @@ STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Επιλογή 
 STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :Επιλογή κατηγορίας σταθμών φορτηγών για κατασκευή. Ctrl+κλικ για προσθήκη σε ή αφαίρεση από αποθηκευμένα στοιχεία
 STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Επιλογή κατηγορίας αντικειμένων για εμφάνιση
 STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :Επιλογή κατηγορίας αντικειμένων για εμφάνιση. Ctrl+κλικ για προσθήκη σε ή αφαίρεση από αποθηκευμένα στοιχεία. Ctrl+κλικ+σύρσιμο για να επιλεγεί διαγώνια περιοχή. Επίσης, πατήστε Shift για εμφάνιση εκτιμώμενου κόστους μόνο
+STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Επιλέξτε τη ζώνη της πόλης που θέλετε να εμφανίσετε
+STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Επιλογή τύπου σπιτιού για κατασκευή. Ctrl+κλικ για προσθήκη σε ή αφαίρεση από αποθηκευμένα στοιχεία
+
+STR_HOUSE_PICKER_CAPTION                                        :Επιλογή Σπιτιού
+
+STR_HOUSE_PICKER_CLASS_ZONE1                                    :Άκρη
+STR_HOUSE_PICKER_CLASS_ZONE2                                    :Περίχωρα
+STR_HOUSE_PICKER_CLASS_ZONE3                                    :Εξωτερικά Προάστια
+STR_HOUSE_PICKER_CLASS_ZONE4                                    :Εσωτερικά Προάστια
+STR_HOUSE_PICKER_CLASS_ZONE5                                    :Κέντρο της πόλης
 
 STR_STATION_CLASS_DFLT                                          :Προεπιλεγμένος
 STR_STATION_CLASS_DFLT_STATION                                  :Προεπιλεγμένος σταθμός
@@ -5102,6 +5118,7 @@ STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... δε
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Έργα οδοποιίας σε εξέλιξη
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Δεν γίνεται να διαγραφεί η πόλη...{}Ένας σταθμός ή ένα αμαξοστάσιο που αναφέρεται στην πόλη ή ένα τετραγωνίδιο της πόλης δεν μπορεί να αφαιρεθεί
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... δεν υπάρχει κατάλληλο μέρος για άγαλμα στο κέντρο αυτής της πόλης
+STR_ERROR_CAN_T_BUILD_HOUSE                                     :{WHITE}Δεν ήταν δυνατό το χτίσιμο του σπιτιού...
 
 # Industry related errors
 STR_ERROR_TOO_MANY_INDUSTRIES                                   :{WHITE}... πάρα πολλές βιομηχανίες
@@ -5139,6 +5156,8 @@ STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :{WHITE}Δεν �
 
 STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :{WHITE}Γειτονεύει με περισσότερες από μια υπάρχουσες περιοχές σταθμών/φόρτωσης
 STR_ERROR_STATION_TOO_SPREAD_OUT                                :{WHITE}... ο σταθμός είναι υπερβολικά απλωμένος
+STR_ERROR_STATION_DISALLOWED_NUMBER_TRACKS                      :{WHITE}... μη υποστηριζόμενος αριθμός σιδηροτροχιών
+STR_ERROR_STATION_DISALLOWED_LENGTH                             :{WHITE}... μη υποστηριζόμενο μήκος
 STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Πάρα πολλές περιοχές σταθμών/φόρτωσης
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Πάρα πολλά κομμάτια σιδηροδρομικού σταθμού
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Πάρα πολλές στάσεις λεωφορείου

@@ -438,6 +438,7 @@ STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Editörden çı
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Oyundan Çık
 
+
 # Settings menu
 ###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Seçenekler
@@ -1481,6 +1482,7 @@ STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Bir aracın gel
 ###length 2
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Etkinleştirildiğinde, eğer bir araç bir yıl içerisinde hiç kâr etmezse bir haber mesajı gönderilir.
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Etkinleştirildiğinde, eğer bir araç bir periyot içerisinde hiç kâr etmezse bir haber mesajı gönderilir.
+
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Eski araçlar sürekli üretilsin: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Etkinleştirildiğinde, tüm araç modelleri piyasaya çıkışlarından itibaren sonsuza dek satın alınabilir.
@@ -2788,6 +2790,8 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Platform
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Tren istasyonu uzunluğu seç
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Sürükle Bırak
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Sürükle bırak tekniğiyle istasyon kur
+
+
 
 
 

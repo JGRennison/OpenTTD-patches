@@ -385,6 +385,7 @@ STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :ออกจา
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :ออก
 
+
 # Settings menu
 ###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :ตัวเลือกเกม
@@ -1292,6 +1293,7 @@ STR_CONFIG_SETTING_ORDER_REVIEW_ON                              :แจ้งเ
 STR_CONFIG_SETTING_WARN_INCOME_LESS                             :เตือนเมื่อรายได้ของยานพาหนะติดลบ: {STRING}
 ###length 2
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :เมื่อเปิดใช้งาน จะแสดงข้อความแจ้งเตือนเมื่อพาหนะไม่สามารถทำกำไรได้เมื่อครบกำหนดสิ้นปี
+
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :ยานพาหนะไม่หมดอายุ: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :เมื่อเปิดใช้งาน พาหนะทั้งหมดจะยังสามารถซื้อได้ตลอดไปหลังจากหมดช่วงระยะเวลา
@@ -2409,6 +2411,8 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}คว�
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}เลือกความยาวของชานชาลา
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}ลากและวาง
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}สร้างสถานีโดยใช้การลากและวาง
+
+
 
 
 

@@ -104,7 +104,7 @@ std::string _windows_file;
 /** Window description constructor. */
 WindowDesc::WindowDesc(const char * const file, const int line, WindowPosition def_pos, const char *ini_key, int16_t def_width_trad, int16_t def_height_trad,
 			WindowClass window_class, WindowClass parent_class, uint32_t flags,
-			const NWidgetPart *nwid_begin, const NWidgetPart *nwid_end, HotkeyList *hotkeys, WindowDesc *ini_parent) :
+			const std::span<const NWidgetPart> nwid_parts, HotkeyList *hotkeys, WindowDesc *ini_parent) :
 	file(file),
 	line(line),
 	default_pos(def_pos),
@@ -112,8 +112,7 @@ WindowDesc::WindowDesc(const char * const file, const int line, WindowPosition d
 	parent_cls(parent_class),
 	ini_key(ini_key),
 	flags(flags),
-	nwid_begin(nwid_begin),
-	nwid_end(nwid_end),
+	nwid_parts(nwid_parts),
 	hotkeys(hotkeys),
 	ini_parent(ini_parent),
 	prefs({ false, 0, 0 }),
@@ -202,10 +201,10 @@ void WindowDesc::SaveToConfig()
 void Window::ApplyDefaults()
 {
 	if (this->nested_root != nullptr && this->nested_root->GetWidgetOfType(WWT_STICKYBOX) != nullptr) {
-		if (this->window_desc->GetPreferences().pref_sticky) this->flags |= WF_STICKY;
+		if (this->window_desc.GetPreferences().pref_sticky) this->flags |= WF_STICKY;
 	} else {
 		/* There is no stickybox; clear the preference in case someone tried to be funny */
-		this->window_desc->prefs.pref_sticky = false;
+		this->window_desc.prefs.pref_sticky = false;
 	}
 }
 
@@ -634,7 +633,7 @@ static void DispatchLeftClickEvent(Window *w, int x, int y, int click_count)
 	bool focused_widget_changed = false;
 	/* If clicked on a window that previously did not have focus */
 	if (_focused_window != w &&                 // We already have focus, right?
-			(w->window_desc->flags & WDF_NO_FOCUS) == 0 &&  // Don't lose focus to toolbars
+			(w->window_desc.flags & WDF_NO_FOCUS) == 0 &&  // Don't lose focus to toolbars
 			widget_type != WWT_CLOSEBOX) {          // Don't change focused window if 'X' (close button) was clicked
 		focused_widget_changed = true;
 		SetFocusedWindow(w);
@@ -700,11 +699,11 @@ static void DispatchLeftClickEvent(Window *w, int x, int y, int click_count)
 
 		case WWT_DEFSIZEBOX: {
 			if (_ctrl_pressed) {
-				w->window_desc->GetPreferences().pref_width = w->width;
-				w->window_desc->GetPreferences().pref_height = w->height;
+				w->window_desc.GetPreferences().pref_width = w->width;
+				w->window_desc.GetPreferences().pref_height = w->height;
 			} else {
-				int16_t def_width = std::max<int16_t>(std::min<int16_t>(w->window_desc->GetDefaultWidth(), _screen.width), w->nested_root->smallest_x);
-				int16_t def_height = std::max<int16_t>(std::min<int16_t>(w->window_desc->GetDefaultHeight(), _screen.height - 50), w->nested_root->smallest_y);
+				int16_t def_width = std::max<int16_t>(std::min<int16_t>(w->window_desc.GetDefaultWidth(), _screen.width), w->nested_root->smallest_x);
+				int16_t def_height = std::max<int16_t>(std::min<int16_t>(w->window_desc.GetDefaultHeight(), _screen.height - 50), w->nested_root->smallest_y);
 
 				int dx = (w->resize.step_width  == 0) ? 0 : def_width  - w->width;
 				int dy = (w->resize.step_height == 0) ? 0 : def_height - w->height;
@@ -733,7 +732,7 @@ static void DispatchLeftClickEvent(Window *w, int x, int y, int click_count)
 		case WWT_STICKYBOX:
 			w->flags ^= WF_STICKY;
 			nw->SetDirty(w);
-			if (_ctrl_pressed) w->window_desc->GetPreferences().pref_sticky = (w->flags & WF_STICKY) != 0;
+			if (_ctrl_pressed) w->window_desc.GetPreferences().pref_sticky = (w->flags & WF_STICKY) != 0;
 			return;
 
 		default:
@@ -771,9 +770,9 @@ static void DispatchRightClickEvent(Window *w, int x, int y)
 	}
 
 	/* Right-click close is enabled and there is a closebox. */
-	if (_settings_client.gui.right_click_wnd_close == RCC_YES && (w->window_desc->flags & WDF_NO_CLOSE) == 0) {
+	if (_settings_client.gui.right_click_wnd_close == RCC_YES && (w->window_desc.flags & WDF_NO_CLOSE) == 0) {
 		w->Close();
-	} else if (_settings_client.gui.right_click_wnd_close == RCC_YES_EXCEPT_STICKY && (w->flags & WF_STICKY) == 0 && (w->window_desc->flags & WDF_NO_CLOSE) == 0) {
+	} else if (_settings_client.gui.right_click_wnd_close == RCC_YES_EXCEPT_STICKY && (w->flags & WF_STICKY) == 0 && (w->window_desc.flags & WDF_NO_CLOSE) == 0) {
 		/* Right-click close is enabled, but excluding sticky windows. */
 		w->Close();
 	} else if (_settings_client.gui.hover_delay_ms == 0 && !w->OnTooltip(pt, wid->index, TCC_RIGHT_CLICK) && wid->tool_tip != 0) {
@@ -1005,7 +1004,7 @@ void Window::ReInit(int rx, int ry, bool reposition)
 	if (reposition) {
 		Point pt = this->OnInitialPosition(this->nested_root->smallest_x, this->nested_root->smallest_y, window_number);
 		this->InitializePositionSize(pt.x, pt.y, this->nested_root->smallest_x, this->nested_root->smallest_y);
-		this->FindWindowPlacementAndResize(this->window_desc->GetDefaultWidth(), this->window_desc->GetDefaultHeight());
+		this->FindWindowPlacementAndResize(this->window_desc.GetDefaultWidth(), this->window_desc.GetDefaultHeight());
 	}
 
 	ResizeWindow(this, dx, dy, true, false);
@@ -1498,9 +1497,9 @@ void Window::ChangeWindowClass(WindowClass cls)
 void Window::InitializeData(WindowNumber window_number)
 {
 	/* Set up window properties; some of them are needed to set up smallest size below */
-	this->ChangeWindowClass(this->window_desc->cls);
+	this->ChangeWindowClass(this->window_desc.cls);
 	this->SetWhiteBorder();
-	if (this->window_desc->default_pos == WDP_CENTER) this->flags |= WF_CENTERED;
+	if (this->window_desc.default_pos == WDP_CENTER) this->flags |= WF_CENTERED;
 	this->owner = INVALID_OWNER;
 	this->nested_focus = nullptr;
 	this->window_number = window_number;
@@ -1786,17 +1785,17 @@ Point GetToolbarAlignedWindowPosition(int window_width)
  *
  * @return Coordinate of the top-left corner of the new window.
  */
-static Point LocalGetWindowPlacement(const WindowDesc *desc, int16_t sm_width, int16_t sm_height, int window_number)
+static Point LocalGetWindowPlacement(const WindowDesc &desc, int16_t sm_width, int16_t sm_height, int window_number)
 {
 	Point pt;
 	const Window *w;
 
-	int16_t default_width  = std::max(desc->GetDefaultWidth(),  sm_width);
-	int16_t default_height = std::max(desc->GetDefaultHeight(), sm_height);
+	int16_t default_width  = std::max(desc.GetDefaultWidth(),  sm_width);
+	int16_t default_height = std::max(desc.GetDefaultHeight(), sm_height);
 
-	if (desc->parent_cls != WC_NONE && (w = FindWindowById(desc->parent_cls, window_number)) != nullptr) {
+	if (desc.parent_cls != WC_NONE && (w = FindWindowById(desc.parent_cls, window_number)) != nullptr) {
 		bool rtl = _current_text_dir == TD_RTL;
-		if (desc->parent_cls == WC_BUILD_TOOLBAR || desc->parent_cls == WC_SCEN_LAND_GEN) {
+		if (desc.parent_cls == WC_BUILD_TOOLBAR || desc.parent_cls == WC_SCEN_LAND_GEN) {
 			pt.x = w->left + (rtl ? w->width - default_width : 0);
 			pt.y = w->top + w->height;
 			return pt;
@@ -1822,7 +1821,7 @@ static Point LocalGetWindowPlacement(const WindowDesc *desc, int16_t sm_width, i
 		}
 	}
 
-	switch (desc->default_pos) {
+	switch (desc.default_pos) {
 		case WDP_ALIGN_TOOLBAR: // Align to the toolbar
 			return GetToolbarAlignedWindowPosition(default_width);
 
@@ -1860,7 +1859,7 @@ static Point LocalGetWindowPlacement(const WindowDesc *desc, int16_t sm_width, i
  */
 void Window::CreateNestedTree()
 {
-	this->nested_root = MakeWindowNWidgetTree(this->window_desc->nwid_begin, this->window_desc->nwid_end, &this->shade_select);
+	this->nested_root = MakeWindowNWidgetTree(this->window_desc.nwid_parts, &this->shade_select);
 	this->nested_root->FillWidgetLookup(this->widget_lookup);
 }
 
@@ -1874,7 +1873,7 @@ void Window::FinishInitNested(WindowNumber window_number)
 	this->ApplyDefaults();
 	Point pt = this->OnInitialPosition(this->nested_root->smallest_x, this->nested_root->smallest_y, window_number);
 	this->InitializePositionSize(pt.x, pt.y, this->nested_root->smallest_x, this->nested_root->smallest_y);
-	this->FindWindowPlacementAndResize(this->window_desc->GetDefaultWidth(), this->window_desc->GetDefaultHeight());
+	this->FindWindowPlacementAndResize(this->window_desc.GetDefaultWidth(), this->window_desc.GetDefaultHeight());
 	this->ProcessScheduledResize();
 }
 
@@ -1892,7 +1891,7 @@ void Window::InitNested(WindowNumber window_number)
  * Empty constructor, initialization has been moved to #InitNested() called from the constructor of the derived class.
  * @param desc The description of the window.
  */
-Window::Window(WindowDesc *desc) : window_desc(desc), scale(_gui_scale), mouse_capture_widget(-1)
+Window::Window(WindowDesc &desc) : window_desc(desc), scale(_gui_scale), mouse_capture_widget(-1)
 {
 	static uint64_t last_window_token = 0;
 	last_window_token++;
@@ -2596,7 +2595,7 @@ static bool MaybeBringWindowToFront(Window *w)
 
 	for (Window *u : Window::IterateFromBack(w->z_front)) {
 		/* A modal child will prevent the activation of the parent window */
-		if (u->parent == w && (u->window_desc->flags & WDF_MODAL)) {
+		if (u->parent == w && (u->window_desc.flags & WDF_MODAL)) {
 			u->SetWhiteBorder();
 			u->SetDirty();
 			return false;
@@ -2742,7 +2741,7 @@ void HandleToolbarHotkey(int hotkey)
 
 	Window *w = FindWindowById(WC_MAIN_TOOLBAR, 0);
 	if (w != nullptr) {
-		if (w->window_desc->hotkeys != nullptr) {
+		if (w->window_desc.hotkeys != nullptr) {
 			if (hotkey >= 0 && w->OnHotkey(hotkey) == ES_HANDLED) return;
 		}
 	}
@@ -2786,8 +2785,8 @@ void HandleKeypress(uint keycode, char32_t key)
 	/* Call the event, start with the uppermost window, but ignore the toolbar. */
 	for (Window *w : Window::IterateFromFront()) {
 		if (w->window_class == WC_MAIN_TOOLBAR) continue;
-		if (w->window_desc->hotkeys != nullptr) {
-			int hotkey = w->window_desc->hotkeys->CheckMatch(keycode);
+		if (w->window_desc.hotkeys != nullptr) {
+			int hotkey = w->window_desc.hotkeys->CheckMatch(keycode);
 			if (hotkey >= 0 && w->OnHotkey(hotkey) == ES_HANDLED) return;
 		}
 		if (w->OnKeyPress(key, keycode) == ES_HANDLED) return;
@@ -2796,8 +2795,8 @@ void HandleKeypress(uint keycode, char32_t key)
 	Window *w = FindWindowById(WC_MAIN_TOOLBAR, 0);
 	/* When there is no toolbar w is null, check for that */
 	if (w != nullptr) {
-		if (w->window_desc->hotkeys != nullptr) {
-			int hotkey = w->window_desc->hotkeys->CheckMatch(keycode);
+		if (w->window_desc.hotkeys != nullptr) {
+			int hotkey = w->window_desc.hotkeys->CheckMatch(keycode);
 			if (hotkey >= 0 && w->OnHotkey(hotkey) == ES_HANDLED) return;
 		}
 		if (w->OnKeyPress(key, keycode) == ES_HANDLED) return;
@@ -3521,7 +3520,7 @@ void CloseNonVitalWindows()
 {
 	/* Note: the container remains stable, even when deleting windows. */
 	for (Window *w : Window::Iterate()) {
-		if ((w->window_desc->flags & WDF_NO_CLOSE) == 0 &&
+		if ((w->window_desc.flags & WDF_NO_CLOSE) == 0 &&
 				(w->flags & WF_STICKY) == 0) { // do not delete windows which are 'pinned'
 
 			w->Close();
@@ -3540,7 +3539,7 @@ void CloseAllNonVitalWindows()
 {
 	/* Note: the container remains stable, even when closing windows. */
 	for (Window *w : Window::Iterate()) {
-		if ((w->window_desc->flags & WDF_NO_CLOSE) == 0) {
+		if ((w->window_desc.flags & WDF_NO_CLOSE) == 0) {
 			w->Close();
 		}
 	}
@@ -3565,7 +3564,7 @@ void CloseConstructionWindows()
 {
 	/* Note: the container remains stable, even when deleting windows. */
 	for (Window *w : Window::Iterate()) {
-		if (w->window_desc->flags & WDF_CONSTRUCTION) {
+		if (w->window_desc.flags & WDF_CONSTRUCTION) {
 			w->Close();
 		}
 	}
@@ -3578,7 +3577,7 @@ void CloseNetworkClientWindows()
 {
 	/* Note: the container remains stable, even when deleting windows. */
 	for (Window *w : Window::Iterate()) {
-		if (w->window_desc->flags & WDF_NETWORK) {
+		if (w->window_desc.flags & WDF_NETWORK) {
 			w->Close();
 		}
 	}

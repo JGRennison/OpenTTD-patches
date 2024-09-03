@@ -29,7 +29,7 @@ struct SubsidyListWindow : Window {
 	Scrollbar *vscroll;
 	Dimension cargo_icon_size;
 
-	SubsidyListWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
+	SubsidyListWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_SUL_SCROLLBAR);
@@ -233,7 +233,7 @@ struct SubsidyListWindow : Window {
 
 	void OnResize() override
 	{
-		this->vscroll->SetCapacityFromWidget(this, WID_SUL_PANEL);
+		this->vscroll->SetCapacityFromWidget(this, WID_SUL_PANEL, WidgetDimensions::scaled.framerect.Vertical());
 	}
 
 	/**
@@ -269,11 +269,11 @@ static WindowDesc _subsidies_list_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_subsidies", 500, 127,
 	WC_SUBSIDIES_LIST, WC_NONE,
 	0,
-	std::begin(_nested_subsidies_list_widgets), std::end(_nested_subsidies_list_widgets)
+	_nested_subsidies_list_widgets
 );
 
 
 void ShowSubsidiesList()
 {
-	AllocateWindowDescFront<SubsidyListWindow>(&_subsidies_list_desc, 0);
+	AllocateWindowDescFront<SubsidyListWindow>(_subsidies_list_desc, 0);
 }

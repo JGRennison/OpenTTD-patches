@@ -192,6 +192,14 @@ public:
 	SpriteCache& operator=(SpriteCache &&other) = default;
 };
 
+/** SpriteAllocator that allocates memory from the sprite cache. */
+struct CacheSpriteAllocator final : public SpriteAllocator {
+	SpriteDataBuffer last_sprite_allocation;
+
+protected:
+	void *AllocatePtr(size_t size) override;
+};
+
 inline bool IsMapgenSpriteID(SpriteID sprite)
 {
 	return IsInsideMM(sprite, SPR_MAPGEN_BEGIN, SPR_MAPGEN_END);

@@ -96,7 +96,7 @@ enum TemplateReplaceWindowWidgets {
 	TRW_WIDGET_SEL_TMPL_DISPLAY_CREATE,
 };
 
-static constexpr NWidgetPart _widgets[] = {
+static constexpr NWidgetPart _template_replace_widgets[] = {
 	// Title bar
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
@@ -174,14 +174,14 @@ static constexpr NWidgetPart _widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _replace_rail_vehicle_desc(__FILE__, __LINE__,
+static WindowDesc _template_replace_desc(__FILE__, __LINE__,
 	WDP_AUTO,
-	"template replace window",
+	"template_replace",
 	456, 156,
 	WC_TEMPLATEGUI_MAIN,
 	WC_NONE,                     // parent window class
 	WDF_CONSTRUCTION,
-	std::begin(_widgets), std::end(_widgets)
+	_template_replace_widgets
 );
 
 enum {
@@ -215,7 +215,7 @@ private:
 	uint old_text_width = 0;
 
 public:
-	TemplateReplaceWindow(WindowDesc *wdesc) : Window(wdesc)
+	TemplateReplaceWindow(WindowDesc &wdesc) : Window(wdesc)
 	{
 		this->sel_railtype = INVALID_RAILTYPE;
 
@@ -928,7 +928,7 @@ public:
 void ShowTemplateReplaceWindow()
 {
 	if (BringWindowToFrontById(WC_TEMPLATEGUI_MAIN, 0) == nullptr) {
-		new TemplateReplaceWindow(&_replace_rail_vehicle_desc);
+		new TemplateReplaceWindow(_template_replace_desc);
 	}
 }
 

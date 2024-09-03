@@ -178,7 +178,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 	return count << 16 | std::min<uint>(closest_dist, 0xFFFF);
 }
 
-/* virtual */ uint32_t IndustriesScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra *extra) const
+/* virtual */ uint32_t IndustriesScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra &extra) const
 {
 	if (this->ro.callback == CBID_INDUSTRY_LOCATION) {
 		/* Variables available during construction check. */
@@ -229,7 +229,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 
 		DEBUG(grf, 1, "Unhandled variable 0x%X (no available industry) in callback 0x%x", variable, this->ro.callback);
 
-		extra->available = false;
+		extra.available = false;
 		return UINT_MAX;
 	}
 
@@ -292,7 +292,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 		/* Land info of nearby tiles */
 		case 0x62:
 			if (this->tile == INVALID_TILE) break;
-			return GetNearbyIndustryTileInformation(parameter, this->tile, INVALID_INDUSTRY, false, this->ro.grffile->grf_version >= 8, extra->mask);
+			return GetNearbyIndustryTileInformation(parameter, this->tile, INVALID_INDUSTRY, false, this->ro.grffile->grf_version >= 8, extra.mask);
 
 		/* Animation stage of nearby tiles */
 		case 0x63: {
@@ -332,7 +332,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 				layout_filter = GB(reg, 0, 8);
 				town_filter = HasBit(reg, 8);
 			}
-			return this->GetCountAndDistanceOfClosestInstance(parameter, layout_filter, town_filter, extra->mask);
+			return this->GetCountAndDistanceOfClosestInstance(parameter, layout_filter, town_filter, extra.mask);
 		}
 
 		case 0x69:
@@ -439,7 +439,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 
 	DEBUG(grf, 1, "Unhandled industry variable 0x%X", variable);
 
-	extra->available = false;
+	extra.available = false;
 	return UINT_MAX;
 }
 

@@ -135,8 +135,8 @@ typedef std::unordered_map<uint32_t, NamedGRFIdentifier> GameInfoNewGRFLookupTab
 
 extern NetworkServerGameInfo _network_game_info;
 
-const char *GetNetworkRevisionString();
-bool IsNetworkCompatibleVersion(const char *other, bool extended = false);
+std::string_view GetNetworkRevisionString();
+bool IsNetworkCompatibleVersion(std::string_view other, bool extended = false);
 void CheckGameCompatibility(NetworkGameInfo &ngi, bool extended = false);
 
 void FillStaticNetworkServerGameInfo();

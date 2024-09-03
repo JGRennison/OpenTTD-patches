@@ -43,13 +43,13 @@ static WindowDesc _background_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_BOOTSTRAP, WC_NONE,
 	WDF_NO_CLOSE,
-	std::begin(_background_widgets), std::end(_background_widgets)
+	_background_widgets
 );
 
 /** The background for the game. */
 class BootstrapBackground : public Window {
 public:
-	BootstrapBackground() : Window(&_background_desc)
+	BootstrapBackground() : Window(_background_desc)
 	{
 		this->InitNested(0);
 		CLRBITS(this->flags, WF_WHITE_BORDER);
@@ -79,13 +79,13 @@ static WindowDesc _bootstrap_errmsg_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_BOOTSTRAP, WC_NONE,
 	WDF_MODAL | WDF_NO_CLOSE,
-	std::begin(_nested_bootstrap_errmsg_widgets), std::end(_nested_bootstrap_errmsg_widgets)
+	_nested_bootstrap_errmsg_widgets
 );
 
 /** The window for a failed bootstrap. */
 class BootstrapErrorWindow : public Window {
 public:
-	BootstrapErrorWindow() : Window(&_bootstrap_errmsg_desc)
+	BootstrapErrorWindow() : Window(_bootstrap_errmsg_desc)
 	{
 		this->InitNested(1);
 	}
@@ -136,7 +136,7 @@ static WindowDesc _bootstrap_download_status_window_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_NETWORK_STATUS_WINDOW, WC_NONE,
 	WDF_MODAL | WDF_NO_CLOSE,
-	std::begin(_nested_bootstrap_download_status_window_widgets), std::end(_nested_bootstrap_download_status_window_widgets)
+	_nested_bootstrap_download_status_window_widgets
 );
 
 
@@ -144,7 +144,7 @@ static WindowDesc _bootstrap_download_status_window_desc(__FILE__, __LINE__,
 struct BootstrapContentDownloadStatusWindow : public BaseNetworkContentDownloadStatusWindow {
 public:
 	/** Simple call the constructor of the superclass. */
-	BootstrapContentDownloadStatusWindow() : BaseNetworkContentDownloadStatusWindow(&_bootstrap_download_status_window_desc)
+	BootstrapContentDownloadStatusWindow() : BaseNetworkContentDownloadStatusWindow(_bootstrap_download_status_window_desc)
 	{
 	}
 
@@ -188,7 +188,7 @@ static WindowDesc _bootstrap_query_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_CONFIRM_POPUP_QUERY, WC_NONE,
 	WDF_NO_CLOSE,
-	std::begin(_bootstrap_query_widgets), std::end(_bootstrap_query_widgets)
+	_bootstrap_query_widgets
 );
 
 /** The window for the query. It can't use the generic query window as that uses sprites that don't exist yet. */
@@ -197,7 +197,7 @@ class BootstrapAskForDownloadWindow : public Window, ContentCallback {
 
 public:
 	/** Start listening to the content client events. */
-	BootstrapAskForDownloadWindow() : Window(&_bootstrap_query_desc)
+	BootstrapAskForDownloadWindow() : Window(_bootstrap_query_desc)
 	{
 		this->InitNested(WN_CONFIRM_POPUP_QUERY_BOOTSTRAP);
 		_network_content_client.AddCallback(this);

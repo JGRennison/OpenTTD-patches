@@ -126,7 +126,7 @@ class BuildTreesWindow : public Window
 	}
 
 public:
-	BuildTreesWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc), tree_to_plant(-1), mode(PM_NORMAL)
+	BuildTreesWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc), tree_to_plant(-1), mode(PM_NORMAL)
 	{
 		this->CreateNestedTree();
 		ResetObjectToPlace();
@@ -309,11 +309,11 @@ static WindowDesc _build_trees_desc(__FILE__, __LINE__,
 	WDP_AUTO, "build_tree", 0, 0,
 	WC_BUILD_TREES, WC_NONE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_build_trees_widgets), std::end(_nested_build_trees_widgets)
+	_nested_build_trees_widgets
 );
 
 void ShowBuildTreesToolbar()
 {
 	if (_game_mode != GM_EDITOR && !Company::IsValidID(_local_company)) return;
-	AllocateWindowDescFront<BuildTreesWindow>(&_build_trees_desc, 0);
+	AllocateWindowDescFront<BuildTreesWindow>(_build_trees_desc, 0);
 }

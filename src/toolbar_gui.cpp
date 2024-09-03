@@ -16,6 +16,7 @@
 #include "dropdown_type.h"
 #include "dropdown_func.h"
 #include "dropdown_common_type.h"
+#include "house.h"
 #include "vehicle_gui.h"
 #include "rail_gui.h"
 #include "road.h"
@@ -1368,12 +1369,18 @@ static CallBackFunction ToolbarScenGenLand(Window *w)
 	return CBF_NONE;
 }
 
-
-static CallBackFunction ToolbarScenGenTown(Window *w)
+static CallBackFunction ToolbarScenGenTownClick(Window *w)
 {
-	w->HandleButtonClick(WID_TE_TOWN_GENERATE);
-	if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
-	ShowFoundTownWindow();
+	PopupMainToolbarMenu(w, WID_TE_TOWN_GENERATE, {STR_SCENEDIT_TOWN_MENU_BUILD_TOWN, STR_SCENEDIT_TOWN_MENU_PACE_HOUSE});
+	return CBF_NONE;
+}
+
+static CallBackFunction ToolbarScenGenTown(int index)
+{
+	switch (index) {
+		case 0: ShowFoundTownWindow(); break;
+		case 1: ShowBuildHousePicker(nullptr); break;
+	}
 	return CBF_NONE;
 }
 
@@ -2107,7 +2114,7 @@ static ToolbarButtonProc * const _toolbar_button_procs[] = {
 struct MainToolbarWindow : Window {
 	GUITimer timer;
 
-	MainToolbarWindow(WindowDesc *desc) : Window(desc)
+	MainToolbarWindow(WindowDesc &desc) : Window(desc)
 	{
 		MainToolbarScaleAdjuster scale_adjust;
 
@@ -2407,7 +2414,7 @@ static WindowDesc _toolb_normal_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_MAIN_TOOLBAR, WC_NONE,
 	WDF_NO_FOCUS | WDF_NO_CLOSE,
-	std::begin(_nested_toolbar_normal_widgets), std::end(_nested_toolbar_normal_widgets),
+	_nested_toolbar_normal_widgets,
 	&MainToolbarWindow::hotkeys
 );
 
@@ -2427,7 +2434,7 @@ static MenuClickedProc * const _scen_toolbar_dropdown_procs[] = {
 	nullptr,              // 9
 	nullptr,              // 10
 	nullptr,              // 11
-	nullptr,              // 12
+	ToolbarScenGenTown,   // 12
 	nullptr,              // 13
 	ToolbarScenBuildRoad, // 14
 	ToolbarScenBuildTram, // 15
@@ -2453,7 +2460,7 @@ static ToolbarButtonProc * const _scen_toolbar_button_procs[] = {
 	ToolbarZoomInClick,
 	ToolbarZoomOutClick,
 	ToolbarScenGenLand,
-	ToolbarScenGenTown,
+	ToolbarScenGenTownClick,
 	ToolbarScenGenIndustry,
 	ToolbarScenBuildRoadClick,
 	ToolbarScenBuildTramClick,
@@ -2497,7 +2504,7 @@ enum MainToolbarEditorHotkeys {
 struct ScenarioEditorToolbarWindow : Window {
 	GUITimer timer;
 
-	ScenarioEditorToolbarWindow(WindowDesc *desc) : Window(desc)
+	ScenarioEditorToolbarWindow(WindowDesc &desc) : Window(desc)
 	{
 		MainToolbarScaleAdjuster scale_adjust;
 
@@ -2592,7 +2599,7 @@ struct ScenarioEditorToolbarWindow : Window {
 			case MTEHK_SETTINGS:               ShowGameOptions(); break;
 			case MTEHK_SAVEGAME:               MenuClickSaveLoad(); break;
 			case MTEHK_GENLAND:                ToolbarScenGenLand(this); break;
-			case MTEHK_GENTOWN:                ToolbarScenGenTown(this); break;
+			case MTEHK_GENTOWN:                ToolbarScenGenTownClick(this); break;
 			case MTEHK_GENINDUSTRY:            ToolbarScenGenIndustry(this); break;
 			case MTEHK_BUILD_ROAD:             ToolbarScenBuildRoadClick(this); break;
 			case MTEHK_BUILD_TRAM:             ToolbarScenBuildTramClick(this); break;
@@ -2763,7 +2770,7 @@ static constexpr NWidgetPart _nested_toolb_scen_inner_widgets[] = {
 
 static std::unique_ptr<NWidgetBase> MakeScenarioToolbar()
 {
-	return MakeNWidgets(std::begin(_nested_toolb_scen_inner_widgets), std::end(_nested_toolb_scen_inner_widgets), std::make_unique<NWidgetScenarioToolbarContainer>());
+	return MakeNWidgets(_nested_toolb_scen_inner_widgets, std::make_unique<NWidgetScenarioToolbarContainer>());
 }
 
 static constexpr NWidgetPart _nested_toolb_scen_widgets[] = {
@@ -2774,7 +2781,7 @@ static WindowDesc _toolb_scen_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_MAIN_TOOLBAR, WC_NONE,
 	WDF_NO_FOCUS | WDF_NO_CLOSE,
-	std::begin(_nested_toolb_scen_widgets), std::end(_nested_toolb_scen_widgets),
+	_nested_toolb_scen_widgets,
 	&ScenarioEditorToolbarWindow::hotkeys
 );
 
@@ -2782,9 +2789,9 @@ static WindowDesc _toolb_scen_desc(__FILE__, __LINE__,
 void AllocateToolbar()
 {
 	if (_game_mode == GM_EDITOR) {
-		new ScenarioEditorToolbarWindow(&_toolb_scen_desc);
+		new ScenarioEditorToolbarWindow(_toolb_scen_desc);
 	} else {
-		new MainToolbarWindow(&_toolb_normal_desc);
+		new MainToolbarWindow(_toolb_normal_desc);
 	}
 }
 

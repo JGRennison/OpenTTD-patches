@@ -360,6 +360,7 @@ STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Far frá tilbur
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Gevst
 
+
 # Settings menu
 ###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Spæl møguleikar
@@ -1240,6 +1241,7 @@ STR_CONFIG_SETTING_ORDER_REVIEW_ON                              :Av øllum flutn
 STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Ávara um eitt flutningstól hevur negativa inntøku: {STRING}
 ###length 2
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Um gilda, fær tú boð tá eitt flutningstól ikki hevur havt nakran vinning í eitt kalendara ár
+
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Flutningstól ganga ongantíð út: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Um gilda, eru øll sløg av flutningstólum altíð tøk eftir tey eru komin í nýtslu
@@ -2169,6 +2171,8 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Pall lon
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Vel hvussu lang tokstøðin skal verða
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Toga & Slepp
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Bygg eina støð vi at nýta toga & slepp
+
+
 
 
 

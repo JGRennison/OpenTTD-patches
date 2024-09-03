@@ -211,11 +211,11 @@ public:
 		this->plugins = SocialIntegration::GetPlugins();
 
 		if (this->plugins.empty()) {
-			auto widget = MakeNWidgets(std::begin(_nested_social_plugins_none_widgets), std::end(_nested_social_plugins_none_widgets), nullptr);
+			auto widget = MakeNWidgets(_nested_social_plugins_none_widgets, nullptr);
 			this->Add(std::move(widget));
 		} else {
 			for (size_t i = 0; i < this->plugins.size(); i++) {
-				auto widget = MakeNWidgets(std::begin(_nested_social_plugins_widgets), std::end(_nested_social_plugins_widgets), nullptr);
+				auto widget = MakeNWidgets(_nested_social_plugins_widgets, nullptr);
 				this->Add(std::move(widget));
 			}
 		}
@@ -373,7 +373,7 @@ struct GameOptionsWindow : Window {
 	};
 	QueryTextItem current_query_text_item = QueryTextItem::None;
 
-	GameOptionsWindow(WindowDesc *desc) : Window(desc)
+	GameOptionsWindow(WindowDesc &desc) : Window(desc)
 	{
 		this->opt = &GetGameSettings();
 		this->reload = false;
@@ -1259,14 +1259,14 @@ static WindowDesc _game_options_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_GAME_OPTIONS, WC_NONE,
 	0,
-	std::begin(_nested_game_options_widgets), std::end(_nested_game_options_widgets)
+	_nested_game_options_widgets
 );
 
 /** Open the game options window. */
 void ShowGameOptions()
 {
 	CloseWindowByClass(WC_GAME_OPTIONS);
-	new GameOptionsWindow(&_game_options_desc);
+	new GameOptionsWindow(_game_options_desc);
 }
 
 static int SETTING_HEIGHT = 11;    ///< Height of a single setting in the tree view in pixels
@@ -2397,6 +2397,7 @@ static SettingsContainer &GetSettingsTree()
 			advisors->Add(new SettingEntry("gui.no_depot_order_warn"));
 			advisors->Add(new SettingEntry("gui.vehicle_income_warn"));
 			advisors->Add(new SettingEntry("gui.lost_vehicle_warn"));
+			advisors->Add(new SettingEntry("gui.old_vehicle_warn"));
 			advisors->Add(new SettingEntry("gui.restriction_wait_vehicle_warn"));
 			advisors->Add(new SettingEntry("gui.show_finances"));
 			advisors->Add(new SettingEntry("news_display.economy"));
@@ -2748,17 +2749,6 @@ static SettingsContainer &GetSettingsTree()
 			ai->Add(new SettingEntry("difficulty.override_town_settings_in_multiplayer"));
 		}
 
-		SettingsPage *scenario = main->Add(new SettingsPage(STR_CONFIG_SETTING_SCENARIO_EDITOR));
-		scenario->hide_callback = []() -> bool {
-			return _game_mode == GM_NORMAL;
-		};
-		{
-			scenario->Add(new SettingEntry("scenario.multiple_buildings"));
-			scenario->Add(new SettingEntry("scenario.house_ignore_dates"));
-			scenario->Add(new SettingEntry("scenario.house_ignore_zones"));
-			scenario->Add(new SettingEntry("scenario.house_ignore_grf"));
-		}
-
 		SettingsPage *network = main->Add(new SettingsPage(STR_CONFIG_SETTING_NETWORK));
 		{
 			network->Add(new SettingEntry("network.use_relay_service"));
@@ -2819,7 +2809,7 @@ struct GameSettingsWindow : Window {
 
 	Scrollbar *vscroll;
 
-	GameSettingsWindow(WindowDesc *desc) : Window(desc), filter_editbox(50)
+	GameSettingsWindow(WindowDesc &desc) : Window(desc), filter_editbox(50)
 	{
 		this->warn_missing = WHR_NONE;
 		this->warn_lines = 0;
@@ -3420,7 +3410,7 @@ static constexpr NWidgetPart _nested_settings_selection_widgets[] = {
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL), SetPIP(WidgetDimensions::unscaled.frametext.left, WidgetDimensions::unscaled.hsep_wide, WidgetDimensions::unscaled.frametext.right),
 				NWidget(WWT_TEXT, COLOUR_MAUVE), SetFill(0, 1), SetDataTip(STR_CONFIG_SETTING_FILTER_TITLE, STR_NULL),
-				NWidget(WWT_EDITBOX, COLOUR_MAUVE, WID_GS_FILTER), SetMinimalSize(50, 12), SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP), SetFill(1, 0), SetResize(1, 0),
+				NWidget(WWT_EDITBOX, COLOUR_MAUVE, WID_GS_FILTER), SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP), SetFill(1, 0), SetResize(1, 0),
 			EndContainer(),
 		EndContainer(),
 	EndContainer(),
@@ -3446,14 +3436,14 @@ static WindowDesc _settings_selection_desc(__FILE__, __LINE__,
 	WDP_CENTER, "settings", 510, 450,
 	WC_GAME_OPTIONS, WC_NONE,
 	0,
-	std::begin(_nested_settings_selection_widgets), std::end(_nested_settings_selection_widgets)
+	_nested_settings_selection_widgets
 );
 
 /** Open advanced settings window. */
 void ShowGameSettings()
 {
 	CloseWindowByClass(WC_GAME_OPTIONS);
-	new GameSettingsWindow(&_settings_selection_desc);
+	new GameSettingsWindow(_settings_selection_desc);
 }
 
 
@@ -3529,7 +3519,7 @@ void DrawBoolButton(int x, int y, bool state, bool clickable)
 struct CustomCurrencyWindow : Window {
 	int query_widget;
 
-	CustomCurrencyWindow(WindowDesc *desc) : Window(desc)
+	CustomCurrencyWindow(WindowDesc &desc) : Window(desc)
 	{
 		this->InitNested();
 
@@ -3754,12 +3744,12 @@ static WindowDesc _cust_currency_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_CUSTOM_CURRENCY, WC_NONE,
 	0,
-	std::begin(_nested_cust_currency_widgets), std::end(_nested_cust_currency_widgets)
+	_nested_cust_currency_widgets
 );
 
 /** Open custom currency window. */
 static void ShowCustCurrency()
 {
 	CloseWindowById(WC_CUSTOM_CURRENCY, 0);
-	new CustomCurrencyWindow(&_cust_currency_desc);
+	new CustomCurrencyWindow(_cust_currency_desc);
 }

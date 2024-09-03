@@ -437,6 +437,7 @@ STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Gwaredu a'r gol
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Gadael
 
+
 # Settings menu
 ###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Dewisiadau Gêm
@@ -1482,6 +1483,7 @@ STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Rhybuddio os yw
 ###length 2
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Pan fo wedi'i alluogi, fe yrrir neges newyddion pan fo cerbyd heb wneud elw yn ystod blwyddyn calendr
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Pan fo wedi'i alluogi, fe yrrir neges newyddion pan fo cerbyd heb wneud elw yn ystod cyfnod
+
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Nid yw cerbydau'n darfod: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Pan fo wedi'i alluogi, bydd bob math o gerbyd yn aros ar gael am byth wedi eu cyflwyniad gyntaf
@@ -2793,6 +2795,8 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Hyd y pl
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Dewiswch hyd yr orsaf reilffordd
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Llusgo a Gollwng
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Adeiladu gorsaf gan ddefnyddio llusgo a gollwng
+
+
 
 
 

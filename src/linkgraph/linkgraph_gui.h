@@ -135,7 +135,7 @@ void ShowLinkGraphLegend();
  */
 struct LinkGraphLegendWindow : Window {
 public:
-	LinkGraphLegendWindow(WindowDesc *desc, int window_number);
+	LinkGraphLegendWindow(WindowDesc &desc, int window_number);
 	void SetOverlay(LinkGraphOverlay *overlay);
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override;

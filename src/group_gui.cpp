@@ -78,21 +78,19 @@ static constexpr NWidgetPart _nested_group_widgets[] = {
 		/* right part */
 		NWidget(NWID_VERTICAL),
 			NWidget(NWID_HORIZONTAL),
-				NWidget(NWID_VERTICAL),
+				NWidget(NWID_VERTICAL, NC_EQUALSIZE),
 					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_GL_GROUP_BY_ORDER), SetFill(1, 1), SetMinimalSize(0, 12), SetDataTip(STR_STATION_VIEW_GROUP, STR_TOOLTIP_GROUP_ORDER),
 					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_GL_SORT_BY_ORDER), SetFill(1, 1), SetMinimalSize(0, 12), SetDataTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
 				EndContainer(),
-				NWidget(NWID_VERTICAL),
-					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_GL_GROUP_BY_DROPDOWN), SetFill(1, 0), SetMinimalSize(0, 12), SetDataTip(0x0, STR_TOOLTIP_GROUP_ORDER),
-					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_GL_SORT_BY_DROPDOWN), SetFill(1, 0), SetMinimalSize(0, 12), SetDataTip(0x0, STR_TOOLTIP_SORT_CRITERIA),
+				NWidget(NWID_VERTICAL, NC_EQUALSIZE),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_GL_GROUP_BY_DROPDOWN), SetFill(1, 1), SetMinimalSize(0, 12), SetDataTip(0x0, STR_TOOLTIP_GROUP_ORDER),
+					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_GL_SORT_BY_DROPDOWN), SetFill(1, 1), SetMinimalSize(0, 12), SetDataTip(0x0, STR_TOOLTIP_SORT_CRITERIA),
 				EndContainer(),
-				NWidget(NWID_VERTICAL),
-					NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(0, 12), SetResize(1, 0), EndContainer(),
+				NWidget(NWID_VERTICAL, NC_EQUALSIZE),
+					NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalTextLines(1, WidgetDimensions::unscaled.framerect.Vertical()), SetFill(0, 1), SetResize(1, 0), EndContainer(),
 					NWidget(NWID_HORIZONTAL),
-						NWidget(NWID_SELECTION, INVALID_COLOUR, WID_GL_FILTER_BY_CARGO_SEL),
-							NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_GL_FILTER_BY_CARGO), SetMinimalSize(167, 12), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_FILTER_CRITERIA),
-						EndContainer(),
-						NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(0, 12), SetResize(1, 0), EndContainer(),
+						NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_GL_FILTER_BY_CARGO), SetMinimalSize(0, 12), SetFill(0, 1), SetDataTip(STR_JUST_STRING, STR_TOOLTIP_FILTER_CRITERIA),
+						NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(0, 12), SetFill(0, 1), SetResize(1, 0), EndContainer(),
 					EndContainer(),
 				EndContainer(),
 			EndContainer(),
@@ -477,7 +475,7 @@ private:
 	}
 
 public:
-	VehicleGroupWindow(WindowDesc *desc, WindowNumber window_number) : BaseVehicleListWindow(desc, window_number)
+	VehicleGroupWindow(WindowDesc &desc, WindowNumber window_number) : BaseVehicleListWindow(desc, window_number)
 	{
 		this->CreateNestedTree();
 
@@ -1315,14 +1313,14 @@ static WindowDesc _other_group_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_groups", 460, 246,
 	WC_INVALID, WC_NONE,
 	0,
-	std::begin(_nested_group_widgets), std::end(_nested_group_widgets)
+	_nested_group_widgets
 );
 
 static WindowDesc _train_group_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_groups_train", 525, 246,
 	WC_TRAINS_LIST, WC_NONE,
 	0,
-	std::begin(_nested_group_widgets), std::end(_nested_group_widgets)
+	_nested_group_widgets
 );
 
 /**
@@ -1339,10 +1337,10 @@ void ShowCompanyGroup(CompanyID company, VehicleType vehicle_type, GroupID group
 	const WindowNumber num = VehicleListIdentifier(VL_GROUP_LIST, vehicle_type, company).Pack();
 	VehicleGroupWindow *w;
 	if (vehicle_type == VEH_TRAIN) {
-		w = AllocateWindowDescFront<VehicleGroupWindow>(&_train_group_desc, num, need_existing_window);
+		w = AllocateWindowDescFront<VehicleGroupWindow>(_train_group_desc, num, need_existing_window);
 	} else {
 		_other_group_desc.cls = GetWindowClassForVehicleType(vehicle_type);
-		w = AllocateWindowDescFront<VehicleGroupWindow>(&_other_group_desc, num, need_existing_window);
+		w = AllocateWindowDescFront<VehicleGroupWindow>(_other_group_desc, num, need_existing_window);
 	}
 	if (w != nullptr) w->SelectGroup(group);
 }

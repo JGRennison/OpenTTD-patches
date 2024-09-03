@@ -114,7 +114,7 @@ static WindowDesc _normal_news_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_NEWS_WINDOW, WC_NONE,
 	0,
-	std::begin(_nested_normal_news_widgets), std::end(_nested_normal_news_widgets)
+	_nested_normal_news_widgets
 );
 
 /* New vehicles news items. */
@@ -141,7 +141,7 @@ static WindowDesc _vehicle_news_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_NEWS_WINDOW, WC_NONE,
 	0,
-	std::begin(_nested_vehicle_news_widgets), std::end(_nested_vehicle_news_widgets)
+	_nested_vehicle_news_widgets
 );
 
 /* Company news items. */
@@ -169,7 +169,7 @@ static WindowDesc _company_news_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_NEWS_WINDOW, WC_NONE,
 	0,
-	std::begin(_nested_company_news_widgets), std::end(_nested_company_news_widgets)
+	_nested_company_news_widgets
 );
 
 /* Thin news items. */
@@ -192,7 +192,7 @@ static WindowDesc _thin_news_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_NEWS_WINDOW, WC_NONE,
 	0,
-	std::begin(_nested_thin_news_widgets), std::end(_nested_thin_news_widgets)
+	_nested_thin_news_widgets
 );
 
 /* Small news items. */
@@ -218,7 +218,7 @@ static WindowDesc _small_news_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_NEWS_WINDOW, WC_NONE,
 	0,
-	std::begin(_nested_small_news_widgets), std::end(_nested_small_news_widgets)
+	_nested_small_news_widgets
 );
 
 /**
@@ -232,11 +232,11 @@ static WindowDesc *_news_window_layout[] = {
 	&_company_news_desc, ///< NF_COMPANY
 };
 
-WindowDesc *GetNewsWindowLayout(NewsFlag flags)
+WindowDesc &GetNewsWindowLayout(NewsFlag flags)
 {
 	uint layout = GB(flags, NFB_WINDOW_LAYOUT, NFB_WINDOW_LAYOUT_COUNT);
 	assert(layout < lengthof(_news_window_layout));
-	return _news_window_layout[layout];
+	return *_news_window_layout[layout];
 }
 
 /**
@@ -285,7 +285,7 @@ struct NewsWindow : Window {
 	static const uint TIMER_INTERVAL = 210; ///< Scrolling interval, scaled by line text line height. This value chosen to maintain the 15ms at normal zoom.
 	GUITimer timer;
 
-	NewsWindow(WindowDesc *desc, const NewsItem *ni) : Window(desc), ni(ni)
+	NewsWindow(WindowDesc &desc, const NewsItem *ni) : Window(desc), ni(ni)
 	{
 		NewsWindow::duration = 16650;
 		const Window *w = FindWindowByClass(WC_SEND_NETWORK_MSG);
@@ -297,7 +297,7 @@ struct NewsWindow : Window {
 		this->CreateNestedTree();
 
 		/* For company news with a face we have a separate headline in param[0] */
-		if (desc == &_company_news_desc) this->GetWidget<NWidgetCore>(WID_N_TITLE)->widget_data = this->ni->params[0].data;
+		if (&desc == &_company_news_desc) this->GetWidget<NWidgetCore>(WID_N_TITLE)->widget_data = this->ni->params[0].data;
 
 		NWidgetCore *nwid = this->GetWidget<NWidgetCore>(WID_N_SHOW_GROUP);
 		if (ni->reftype1 == NR_VEHICLE && nwid != nullptr) {
@@ -1111,7 +1111,7 @@ struct MessageHistoryWindow : Window {
 
 	Scrollbar *vscroll;
 
-	MessageHistoryWindow(WindowDesc *desc) : Window(desc)
+	MessageHistoryWindow(WindowDesc &desc) : Window(desc)
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_MH_SCROLLBAR);
@@ -1173,7 +1173,7 @@ struct MessageHistoryWindow : Window {
 			 * could be invalid, so ensure it's correct now. Potentially this means that item clicked on might be
 			 * different as well. */
 			this->vscroll->SetCount(std::size(_news));
-			auto ni = this->vscroll->GetScrolledItemFromWidget(_news, pt.y, this, widget);
+			auto ni = this->vscroll->GetScrolledItemFromWidget(_news, pt.y, this, widget, WidgetDimensions::scaled.framerect.top);
 			if (ni == std::end(_news)) return;
 
 			ShowNewsMessage(ni);
@@ -1182,7 +1182,7 @@ struct MessageHistoryWindow : Window {
 
 	void OnResize() override
 	{
-		this->vscroll->SetCapacityFromWidget(this, WID_MH_BACKGROUND);
+		this->vscroll->SetCapacityFromWidget(this, WID_MH_BACKGROUND, WidgetDimensions::scaled.framerect.Vertical());
 	}
 };
 
@@ -1209,12 +1209,12 @@ static WindowDesc _message_history_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_news", 400, 140,
 	WC_MESSAGE_HISTORY, WC_NONE,
 	0,
-	std::begin(_nested_message_history), std::end(_nested_message_history)
+	_nested_message_history
 );
 
 /** Display window with news messages history */
 void ShowMessageHistory()
 {
 	CloseWindowById(WC_MESSAGE_HISTORY, 0);
-	new MessageHistoryWindow(&_message_history_desc);
+	new MessageHistoryWindow(_message_history_desc);
 }

@@ -399,6 +399,7 @@ STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Изход от
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Изход
 
+
 # Settings menu
 ###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Игрови опции
@@ -1370,6 +1371,7 @@ STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Предупр�
 ###length 2
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Ако тази опция бъде активирана, ще получите съобщение ако някое от вашите ПС не е донесло печалба през изминалата година
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Ако тази опция бъде активирана, ще получите съобщение ако някое от вашите ПС не е донесло печалба през периода
+
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :ПС не губят валидност: {STRING.n}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Ако тази опция бъде активирана, всички модели на превозните средства, ще бъдат възможни за производство завинаги
@@ -2462,6 +2464,8 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Дълж
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Дължина на ЖП гарата
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Влачене & Пускане
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Строене на станция чрез изтегляне
+
+
 
 
 

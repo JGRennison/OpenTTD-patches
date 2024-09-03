@@ -91,6 +91,7 @@ enum WidgetType : uint8_t {
 	NWID_CUSTOM,          ///< General Custom widget.
 
 	/* Nested widget part types. */
+	WPT_ATTRIBUTE_BEGIN, ///< Begin marker for attribute NWidgetPart types.
 	WPT_RESIZE,       ///< Widget part for specifying resizing.
 	WPT_MINSIZE,      ///< Widget part for specifying minimal size.
 	WPT_MINTEXTLINES, ///< Widget part for specifying minimal number of lines of text.
@@ -101,10 +102,12 @@ enum WidgetType : uint8_t {
 	WPT_PIPRATIO,     ///< Widget part for specifying pre/inter/post ratio for containers.
 	WPT_TEXTSTYLE,    ///< Widget part for specifying text colour.
 	WPT_ALIGNMENT,    ///< Widget part for specifying text/image alignment.
-	WPT_ENDCONTAINER, ///< Widget part to denote end of a container.
-	WPT_FUNCTION,     ///< Widget part for calling a user function.
 	WPT_SCROLLBAR,    ///< Widget part for attaching a scrollbar.
 	WPT_ASPECT,       ///< Widget part for sepcifying aspect ratio.
+	WPT_ATTRIBUTE_END, ///< End marker for attribute NWidgetPart types.
+
+	WPT_FUNCTION, ///< Widget part for calling a user function.
+	WPT_ENDCONTAINER, ///< Widget part to denote end of a container.
 
 	/* Pushable window widget types. */
 	WWT_MASK = 0x7F,
@@ -1387,8 +1390,8 @@ constexpr NWidgetPart NWidgetFunction(NWidgetFunctionType *func_ptr)
 }
 
 bool IsContainerWidgetType(WidgetType tp);
-std::unique_ptr<NWidgetBase> MakeNWidgets(const NWidgetPart *nwid_begin, const NWidgetPart *nwid_end, std::unique_ptr<NWidgetBase> container);
-std::unique_ptr<NWidgetBase> MakeWindowNWidgetTree(const NWidgetPart *nwid_begin, const NWidgetPart *nwid_end, NWidgetStacked **shade_select);
+std::unique_ptr<NWidgetBase> MakeNWidgets(std::span<const NWidgetPart> nwid_parts, std::unique_ptr<NWidgetBase> container);
+std::unique_ptr<NWidgetBase> MakeWindowNWidgetTree(std::span<const NWidgetPart> nwid_parts, NWidgetStacked **shade_select);
 
 std::unique_ptr<NWidgetBase> MakeCompanyButtonRows(WidgetID widget_first, WidgetID widget_last, Colours button_colour, int max_length, StringID button_tooltip, bool resizable = true);
 

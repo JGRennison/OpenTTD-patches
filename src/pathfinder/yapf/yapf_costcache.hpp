@@ -14,7 +14,7 @@
 
 /**
  * CYapfSegmentCostCacheNoneT - the formal only yapf cost cache provider that implements
- * PfNodeCacheFetch() and PfNodeCacheFlush() callbacks. Used when nodes don't have CachedData
+ * PfNodeCacheFetch(). Used when nodes don't have CachedData
  * defined (they don't count with any segment cost caching).
  */
 template <class Types>
@@ -32,16 +32,7 @@ public:
 	{
 		return false;
 	}
-
-	/**
-	 * Called by YAPF to flush the cached segment cost data back into cache storage.
-	 *  Current cache implementation doesn't use that.
-	 */
-	inline void PfNodeCacheFlush(Node &)
-	{
-	}
 };
-
 
 /**
  * CYapfSegmentCostCacheLocalT - the yapf cost cache provider that implements fake segment
@@ -79,16 +70,7 @@ public:
 		Yapf().ConnectNodeToCachedData(n, *new (m_local_cache.Append()) CachedData(key));
 		return false;
 	}
-
-	/**
-	 * Called by YAPF to flush the cached segment cost data back into cache storage.
-	 *  Current cache implementation doesn't use that.
-	 */
-	inline void PfNodeCacheFlush(Node &)
-	{
-	}
 };
-
 
 /**
  * Base class for segment cost cache providers. Contains global counter
@@ -207,14 +189,6 @@ public:
 		CachedData &item = m_global_cache.Get(key, &found);
 		Yapf().ConnectNodeToCachedData(n, item);
 		return found;
-	}
-
-	/**
-	 * Called by YAPF to flush the cached segment cost data back into cache storage.
-	 *  Current cache implementation doesn't use that.
-	 */
-	inline void PfNodeCacheFlush(Node &)
-	{
 	}
 };
 

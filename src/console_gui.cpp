@@ -17,6 +17,7 @@
 #include "string_func.h"
 #include "strings_func.h"
 #include "gfx_func.h"
+#include "gfx_layout.h"
 #include "settings_type.h"
 #include "console_func.h"
 #include "rev.h"
@@ -108,7 +109,7 @@ static WindowDesc _console_window_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_CONSOLE, WC_NONE,
 	0,
-	std::begin(_nested_console_window_widgets), std::end(_nested_console_window_widgets)
+	_nested_console_window_widgets
 );
 
 struct IConsoleWindow : Window
@@ -119,7 +120,7 @@ struct IConsoleWindow : Window
 	int cursor_width;
 	GUITimer truncate_timer;
 
-	IConsoleWindow() : Window(&_console_window_desc)
+	IConsoleWindow() : Window(_console_window_desc)
 	{
 		_iconsole_mode = ICONSOLE_OPENED;
 
@@ -309,10 +310,10 @@ struct IConsoleWindow : Window
 	{
 		int delta = std::min<int>(this->width - this->line_offset - _iconsole_cmdline.pixels - ICON_RIGHT_BORDERWIDTH, 0);
 
-		Point p1 = GetCharPosInString(_iconsole_cmdline.buf, from, FS_NORMAL);
-		Point p2 = from != to ? GetCharPosInString(_iconsole_cmdline.buf, to, FS_NORMAL) : p1;
+		const auto p1 = GetCharPosInString(_iconsole_cmdline.buf, from, FS_NORMAL);
+		const auto p2 = from != to ? GetCharPosInString(_iconsole_cmdline.buf, to, FS_NORMAL) : p1;
 
-		Rect r = {this->line_offset + delta + p1.x, this->height - this->line_height, this->line_offset + delta + p2.x, this->height};
+		Rect r = {this->line_offset + delta + p1.left, this->height - this->line_height, this->line_offset + delta + p2.right, this->height};
 		return r;
 	}
 

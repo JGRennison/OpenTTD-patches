@@ -381,6 +381,7 @@ STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Senariobouwer �
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Ofslute
 
+
 # Settings menu
 ###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Spulopsjes
@@ -1296,6 +1297,7 @@ STR_CONFIG_SETTING_ORDER_REVIEW_ON                              :Fan alle fiertu
 STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Warskôgje at de fertsjinsten fan in fiertúch negatyf binne: {STRING}
 ###length 2
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :By ynskeakeljen wurdt der berjochte at in fiertúch it ôfrûnne jier gjin winst makke hat
+
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Fiertugen ferinne nea: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :By ynskeakeljen bliuwe alle fiertugen foar ivich beskikber
@@ -2272,6 +2274,8 @@ STR_STATION_BUILD_NUMBER_OF_TRACKS_TOOLTIP                      :{BLACK}Selektea
 STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Stasjon lengte
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Selektear lengte fan treinstasjon
 STR_STATION_BUILD_DRAG_DROP                                     :Sleepe en los litte
+
+
 
 
 

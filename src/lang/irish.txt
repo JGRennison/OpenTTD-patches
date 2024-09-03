@@ -395,6 +395,7 @@ STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Fág eagarthói
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Scoir
 
+
 # Settings menu
 ###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Roghanna an chluiche
@@ -1342,6 +1343,7 @@ STR_CONFIG_SETTING_ORDER_REVIEW_ON                              :ar gach feithic
 STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Tabhair rabhadh má tá ioncam feithicile diúltach: {STRING}
 ###length 2
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Má dhéantar é a chumasú, seoltar teachtaireacht nuachta más rud é nach ndearna feithicil brabús ar bith i mbliain féilire
+
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Ní imíonn feithiclí as dáta riamh: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Má dhéantar é a chumasú beidh gach cineál feithicle ar fáil go deo tar éis é a thabhairt isteach
@@ -2549,6 +2551,8 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Fad an a
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Roghnaigh fad an stáisiúin iarnróid
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Tarraing & Scaoil
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Tóg stáisiún ag úsáid tarraing & scaoil
+
+
 
 
 

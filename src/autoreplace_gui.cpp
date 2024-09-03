@@ -263,7 +263,7 @@ class ReplaceVehicleWindow : public Window {
 	}
 
 public:
-	ReplaceVehicleWindow(WindowDesc *desc, VehicleType vehicletype, GroupID id_g) : Window(desc)
+	ReplaceVehicleWindow(WindowDesc &desc, VehicleType vehicletype, GroupID id_g) : Window(desc)
 	{
 		this->sel_railtype = INVALID_RAILTYPE;
 		this->sel_roadtype = INVALID_ROADTYPE;
@@ -715,10 +715,10 @@ static constexpr NWidgetPart _nested_replace_rail_vehicle_widgets[] = {
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 		NWidget(WWT_PANEL, COLOUR_GREY),
-			NWidget(WWT_LABEL, COLOUR_GREY), SetDataTip(STR_REPLACE_VEHICLE_VEHICLES_IN_USE, STR_REPLACE_VEHICLE_VEHICLES_IN_USE_TOOLTIP), SetFill(1, 1), SetMinimalSize(0, 12), SetResize(1, 0),
+			NWidget(WWT_LABEL, COLOUR_GREY), SetDataTip(STR_REPLACE_VEHICLE_VEHICLES_IN_USE, STR_REPLACE_VEHICLE_VEHICLES_IN_USE_TOOLTIP), SetFill(1, 1), SetMinimalTextLines(1, WidgetDimensions::unscaled.framerect.Vertical()), SetResize(1, 0),
 		EndContainer(),
 		NWidget(WWT_PANEL, COLOUR_GREY),
-			NWidget(WWT_LABEL, COLOUR_GREY), SetDataTip(STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES, STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES_TOOLTIP), SetFill(1, 1), SetMinimalSize(0, 12), SetResize(1, 0),
+			NWidget(WWT_LABEL, COLOUR_GREY), SetDataTip(STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES, STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES_TOOLTIP), SetFill(1, 1), SetMinimalTextLines(1, WidgetDimensions::unscaled.framerect.Vertical()), SetResize(1, 0),
 		EndContainer(),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
@@ -766,7 +766,7 @@ static WindowDesc _replace_rail_vehicle_desc(__FILE__, __LINE__,
 	WDP_AUTO, "replace_vehicle_train", 500, 140,
 	WC_REPLACE_VEHICLE, WC_NONE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_replace_rail_vehicle_widgets), std::end(_nested_replace_rail_vehicle_widgets)
+	_nested_replace_rail_vehicle_widgets
 );
 
 static constexpr NWidgetPart _nested_replace_road_vehicle_widgets[] = {
@@ -779,10 +779,10 @@ static constexpr NWidgetPart _nested_replace_road_vehicle_widgets[] = {
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 		NWidget(WWT_PANEL, COLOUR_GREY),
-			NWidget(WWT_LABEL, COLOUR_GREY), SetDataTip(STR_REPLACE_VEHICLE_VEHICLES_IN_USE, STR_REPLACE_VEHICLE_VEHICLES_IN_USE_TOOLTIP), SetFill(1, 1), SetMinimalSize(0, 12), SetResize(1, 0),
+			NWidget(WWT_LABEL, COLOUR_GREY), SetDataTip(STR_REPLACE_VEHICLE_VEHICLES_IN_USE, STR_REPLACE_VEHICLE_VEHICLES_IN_USE_TOOLTIP), SetFill(1, 1), SetMinimalTextLines(1, WidgetDimensions::unscaled.framerect.Vertical()), SetResize(1, 0),
 		EndContainer(),
 		NWidget(WWT_PANEL, COLOUR_GREY),
-			NWidget(WWT_LABEL, COLOUR_GREY), SetDataTip(STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES, STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES_TOOLTIP), SetFill(1, 1), SetMinimalSize(0, 12), SetResize(1, 0),
+			NWidget(WWT_LABEL, COLOUR_GREY), SetDataTip(STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES, STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES_TOOLTIP), SetFill(1, 1), SetMinimalTextLines(1, WidgetDimensions::unscaled.framerect.Vertical()), SetResize(1, 0),
 		EndContainer(),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
@@ -824,7 +824,7 @@ static WindowDesc _replace_road_vehicle_desc(__FILE__, __LINE__,
 	WDP_AUTO, "replace_vehicle_road", 500, 140,
 	WC_REPLACE_VEHICLE, WC_NONE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_replace_road_vehicle_widgets), std::end(_nested_replace_road_vehicle_widgets)
+	_nested_replace_road_vehicle_widgets
 );
 
 static constexpr NWidgetPart _nested_replace_vehicle_widgets[] = {
@@ -837,10 +837,10 @@ static constexpr NWidgetPart _nested_replace_vehicle_widgets[] = {
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
 		NWidget(WWT_PANEL, COLOUR_GREY),
-			NWidget(WWT_LABEL, COLOUR_GREY), SetDataTip(STR_REPLACE_VEHICLE_VEHICLES_IN_USE, STR_REPLACE_VEHICLE_VEHICLES_IN_USE_TOOLTIP), SetFill(1, 1), SetMinimalSize(0, 12), SetResize(1, 0),
+			NWidget(WWT_LABEL, COLOUR_GREY), SetDataTip(STR_REPLACE_VEHICLE_VEHICLES_IN_USE, STR_REPLACE_VEHICLE_VEHICLES_IN_USE_TOOLTIP), SetFill(1, 1), SetMinimalTextLines(1, WidgetDimensions::unscaled.framerect.Vertical()), SetResize(1, 0),
 		EndContainer(),
 		NWidget(WWT_PANEL, COLOUR_GREY),
-			NWidget(WWT_LABEL, COLOUR_GREY), SetDataTip(STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES, STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES_TOOLTIP), SetFill(1, 1), SetMinimalSize(0, 12), SetResize(1, 0),
+			NWidget(WWT_LABEL, COLOUR_GREY), SetDataTip(STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES, STR_REPLACE_VEHICLE_AVAILABLE_VEHICLES_TOOLTIP), SetFill(1, 1), SetMinimalTextLines(1, WidgetDimensions::unscaled.framerect.Vertical()), SetResize(1, 0),
 		EndContainer(),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL, NC_EQUALSIZE),
@@ -878,7 +878,7 @@ static WindowDesc _replace_vehicle_desc(__FILE__, __LINE__,
 	WDP_AUTO, "replace_vehicle", 456, 118,
 	WC_REPLACE_VEHICLE, WC_NONE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_replace_vehicle_widgets), std::end(_nested_replace_vehicle_widgets)
+	_nested_replace_vehicle_widgets
 );
 
 /**
@@ -889,11 +889,9 @@ static WindowDesc _replace_vehicle_desc(__FILE__, __LINE__,
 void ShowReplaceGroupVehicleWindow(GroupID id_g, VehicleType vehicletype)
 {
 	CloseWindowById(WC_REPLACE_VEHICLE, vehicletype);
-	WindowDesc *desc;
 	switch (vehicletype) {
-		case VEH_TRAIN: desc = &_replace_rail_vehicle_desc; break;
-		case VEH_ROAD:  desc = &_replace_road_vehicle_desc; break;
-		default:        desc = &_replace_vehicle_desc;      break;
+		case VEH_TRAIN: new ReplaceVehicleWindow(_replace_rail_vehicle_desc, vehicletype, id_g); break;
+		case VEH_ROAD:  new ReplaceVehicleWindow(_replace_road_vehicle_desc, vehicletype, id_g); break;
+		default:        new ReplaceVehicleWindow(_replace_vehicle_desc, vehicletype, id_g);      break;
 	}
-	new ReplaceVehicleWindow(desc, vehicletype, id_g);
 }

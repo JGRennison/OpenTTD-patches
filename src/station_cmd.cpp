@@ -1609,9 +1609,8 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32_
 		/* Perform NewStation checks */
 
 		/* Check if the station size is permitted */
-		if (HasBit(statspec->disallowed_platforms, std::min(numtracks - 1, 7)) || HasBit(statspec->disallowed_lengths, std::min(plat_len - 1, 7))) {
-			return CMD_ERROR;
-		}
+		if (HasBit(statspec->disallowed_platforms, std::min(numtracks - 1, 7))) return_cmd_error(STR_ERROR_STATION_DISALLOWED_NUMBER_TRACKS);
+		if (HasBit(statspec->disallowed_lengths, std::min(plat_len - 1, 7))) return_cmd_error(STR_ERROR_STATION_DISALLOWED_LENGTH);
 
 		/* Check if the station is buildable */
 		if (HasBit(statspec->callback_mask, CBM_STATION_AVAIL)) {

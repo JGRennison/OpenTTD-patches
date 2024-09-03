@@ -311,8 +311,8 @@ STR_BUTTON_CANCEL                                               :{BLACK}Cancel·
 STR_BUTTON_OK                                                   :{BLACK}D'acord
 
 # On screen keyboard window
-STR_OSK_KEYBOARD_LAYOUT                                         :`1234567890-=\qwertyuiop[]asdfghjkl;'  zxcvbnm,./ .
-STR_OSK_KEYBOARD_LAYOUT_CAPS                                    :~!@#$%^&*()_+|QWERTYUIOP{{}}ASDFGHJKL:"  ZXCVBNM<>? .
+STR_OSK_KEYBOARD_LAYOUT                                         :`1234567890-= qwertyuiop[]asdfghjkl;'#\zxcvbnm,./ .
+STR_OSK_KEYBOARD_LAYOUT_CAPS                                    :¬!"£$%^&*()_+ QWERTYUIOP{{}}ASDFGHJKL:@~|ZXCVBNM<>? .
 
 # Measurement tooltip
 STR_MEASURE_LENGTH                                              :{BLACK}Llargada: {NUM}
@@ -437,6 +437,9 @@ STR_SCENEDIT_FILE_MENU_LOAD_HEIGHTMAP                           :Carrega un mapa
 STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Surt de l'editor d'escenaris
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Surt
+
+STR_SCENEDIT_TOWN_MENU_BUILD_TOWN                               :Genera poblacions
+STR_SCENEDIT_TOWN_MENU_PACE_HOUSE                               :Posa cases
 
 # Settings menu
 ###length 16
@@ -1486,6 +1489,9 @@ STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Avisa si el ben
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Si està activat, s'envia un missatge de notícia quan un vehicle no ha tingut beneficis durant l'any.
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Si està activat, s'envia un missatge de notícia quan un vehicle no ha obtingut benefici durant un període.
 
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE                             :Avisa si el vehicle és vell: {STRING}
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE_HELPTEXT                    :Si està activat, s'envia un missatge de notícia quan un vehicle és vell.
+
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Els vehicles mai caduquen: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Si està activat, tots els models de vehicles continuen disponibles per sempre després de la seva introducció.
 
@@ -1496,7 +1502,7 @@ STR_CONFIG_SETTING_TIMEKEEPING_UNITS_CALENDAR                   :Calendari
 STR_CONFIG_SETTING_TIMEKEEPING_UNITS_WALLCLOCK                  :Rellotge de paret
 
 STR_CONFIG_SETTING_MINUTES_PER_YEAR                             :Minuts per any: {STRING}
-STR_CONFIG_SETTING_MINUTES_PER_YEAR_HELPTEXT                    :Trieu el nombre de minuts d'un any de calendari. Per defecte són 12 minuts. Establiu-ho a 0 per a parar el temps del calendari. Aquesta opció no afecta a la simulació econòmica de la partida i només està disponible quan es fa servir el temps amb rellotge de paret.
+STR_CONFIG_SETTING_MINUTES_PER_YEAR_HELPTEXT                    :Trieu el nombre de minuts d'un any de calendari. Per defecte són 12 minuts. Establiu-ho a 0 per a parar el temps del calendari. Si s'augmenta la durada de l'any del calendari s'alenteix la introducció de vehicles, cases i altres tipus d'infraestructures noves. No afecta a la velocitat dels vehicles o de la simulació econòmica, excepte per la inflació. Aquesta opció només està disponible quan es fa servir el temps amb rellotge de paret.
 
 STR_CONFIG_SETTING_MINUTES_PER_YEAR_VALUE                       :{NUM}
 ###setting-zero-is-special
@@ -2798,7 +2804,33 @@ STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Seleccio
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Arrossega i solta
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Construeix una estació amb el mètode arrossega i solta.
 
+STR_PICKER_MODE_ALL                                             :Tots
+STR_PICKER_MODE_ALL_TOOLTIP                                     :Commuta entre mostrar o no els elements de totes les classes.
+STR_PICKER_MODE_USED                                            :Fets servir
+STR_PICKER_MODE_USED_TOOLTIP                                    :Commuta entre mostrar o no només els elements que ja s'hagin construït.
+STR_PICKER_MODE_SAVED                                           :Desats
+STR_PICKER_MODE_SAVED_TOOLTIP                                   :Commuta entre mostrar o no només els elements desats.
 
+STR_PICKER_STATION_CLASS_TOOLTIP                                :Trieu quina classe d'estació voleu veure.
+STR_PICKER_STATION_TYPE_TOOLTIP                                 :Trieu quin tipus d'estació voleu construir. Amb Ctrl+clic, s'afegeix o es trau l'element de la llista de desats.
+STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Trieu quina classe de punts de control voleu veure.
+STR_PICKER_WAYPOINT_TYPE_TOOLTIP                                :Trieu quin tipus de punt de control voleu construir. Amb Ctrl+clic, s'afegeix o es trau l'element de la llista de desats.
+STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP                           :Trieu quina classe d'estacions d'autobús voleu veure.
+STR_PICKER_ROADSTOP_BUS_TYPE_TOOLTIP                            :Trieu quin tipus d'estació d'autobús voleu construir. Amb Ctrl+clic, s'afegeix o es trau l'element de la llista de desats.
+STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Trieu quina classe d'estació de camions voleu veure.
+STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :Trieu un tipus d'estació de camió a construir. Amb Ctrl+clic, s'afegeix o es trau l'element de la llista de desats.
+STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Trieu quina classe d'objectes voleu veure.
+STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :Trieu quin tipus d'objecte voleu construir. Amb Ctrl+clic, s'afegeix o es trau l'element de la llista de desats. Amb Ctrl+clic+arrossega es selecciona l'àrea en diagonal. Amb Maj, només es mostrarà el cost estimat de l'acció.
+STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Trieu quina zona de població voleu veure.
+STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Trieu quin tipus de casa construir. Amb Ctrl+clic, s'afegeix o es trau l'element de la llista de desats.
+
+STR_HOUSE_PICKER_CAPTION                                        :Selecció de cases
+
+STR_HOUSE_PICKER_CLASS_ZONE1                                    :Vora
+STR_HOUSE_PICKER_CLASS_ZONE2                                    :Afores
+STR_HOUSE_PICKER_CLASS_ZONE3                                    :Suburbi exterior
+STR_HOUSE_PICKER_CLASS_ZONE4                                    :Suburbi interior
+STR_HOUSE_PICKER_CLASS_ZONE5                                    :Centre de la població
 
 STR_STATION_CLASS_DFLT                                          :Per defecte
 STR_STATION_CLASS_DFLT_STATION                                  :Estació per defecte
@@ -4986,6 +5018,7 @@ STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}...no qu
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Obres en progrés
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}No es pot eliminar aquesta població...{}Hi ha una estació, un dipòsit o una cel·la pertanyent a la població que no pot ser eliminada
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... no hi ha un lloc adequat per situar l'estàtua al centre d'aquesta població
+STR_ERROR_CAN_T_BUILD_HOUSE                                     :{WHITE}La casa no es pot construir...
 
 # Industry related errors
 STR_ERROR_TOO_MANY_INDUSTRIES                                   :{WHITE}... massa indústries
@@ -5023,6 +5056,8 @@ STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :{WHITE}Aquí no
 
 STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :{WHITE}Fusiona més d'una estació/àrea de càrrega existent
 STR_ERROR_STATION_TOO_SPREAD_OUT                                :{WHITE}... estació massa extensa
+STR_ERROR_STATION_DISALLOWED_NUMBER_TRACKS                      :{WHITE}... nombre de vies no vàlid
+STR_ERROR_STATION_DISALLOWED_LENGTH                             :{WHITE}... llargada no vàlida
 STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Massa estacions/àrees de càrrega
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Hi ha massa parts d'estacions de tren
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Massa parades d'autobús

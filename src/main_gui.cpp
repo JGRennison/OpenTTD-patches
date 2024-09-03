@@ -246,7 +246,7 @@ struct MainWindow : Window
 	static const uint LINKGRAPH_REFRESH_PERIOD = 7650;
 	static const uint LINKGRAPH_DELAY = 450;
 
-	MainWindow(WindowDesc *desc) : Window(desc)
+	MainWindow(WindowDesc &desc) : Window(desc)
 	{
 		this->InitNested(0);
 		CLRBITS(this->flags, WF_WHITE_BORDER);
@@ -616,7 +616,7 @@ static WindowDesc _main_window_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_MAIN_WINDOW, WC_NONE,
 	WDF_NO_CLOSE,
-	std::begin(_nested_main_window_widgets), std::end(_nested_main_window_widgets),
+	_nested_main_window_widgets,
 	&MainWindow::hotkeys
 );
 
@@ -647,7 +647,7 @@ void SetupColoursAndInitialWindow()
 		}
 	}
 
-	new MainWindow(&_main_window_desc);
+	new MainWindow(_main_window_desc);
 
 	/* XXX: these are not done */
 	switch (_game_mode) {

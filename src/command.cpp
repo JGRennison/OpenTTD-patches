@@ -65,7 +65,6 @@ CommandProc CmdTerraformLand;
 CommandProc CmdBuildObject;
 CommandProc CmdPurchaseLandArea;
 CommandProc CmdBuildObjectArea;
-CommandProc CmdBuildHouse;
 CommandProc CmdSellLandArea;
 
 CommandProc CmdBuildTunnel;
@@ -170,6 +169,7 @@ CommandProc CmdTownCargoGoal;
 CommandProc CmdTownSetText;
 CommandProc CmdExpandTown;
 CommandProc CmdDeleteTown;
+CommandProc CmdPlaceHouse;
 
 CommandProc CmdChangeSetting;
 CommandProc CmdChangeCompanySetting;
@@ -189,7 +189,7 @@ CommandProc CmdBuildLock;
 
 CommandProc CmdCreateSubsidy;
 CommandProc CmdCompanyCtrl;
-CommandProc CmdCompanyAddAllowList;
+CommandProc CmdCompanyAllowListCtrl;
 CommandProc CmdCustomNewsItem;
 CommandProc CmdCreateGoal;
 CommandProc CmdRemoveGoal;
@@ -344,7 +344,6 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdBuildObject,  CMD_DEITY | CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_OBJECT
 	DEF_CMD(CmdPurchaseLandArea, CMD_NO_WATER | CMD_AUTO | CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_PURCHASE_LAND_AREA
 	DEF_CMD(CmdBuildObjectArea,  CMD_NO_WATER | CMD_AUTO | CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_OBJECT_AREA
-	DEF_CMD(CmdBuildHouse,   CMD_DEITY | CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_HOUSE
 	DEF_CMD(CmdBuildTunnel,                 CMD_DEITY | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_TUNNEL
 	DEF_CMD(CmdRemoveFromRailStation,                          0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_REMOVE_FROM_RAIL_STATION
 	DEF_CMD(CmdConvertRail,                                    0, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_CONVERT_RAIL
@@ -441,6 +440,7 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdTownSetText,    CMD_LOG_AUX | CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT ), // CMD_TOWN_SET_TEXT
 	DEF_CMD(CmdExpandTown,                             CMD_DEITY, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_EXPAND_TOWN
 	DEF_CMD(CmdDeleteTown,                           CMD_OFFLINE, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_DELETE_TOWN
+	DEF_CMD(CmdPlaceHouse,                             CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_PLACE_HOUSE
 
 	DEF_CMD(CmdOrderRefit,                                     0, CMDT_ROUTE_MANAGEMENT      ), // CMD_ORDER_REFIT
 	DEF_CMD(CmdCloneOrder,                                     0, CMDT_ROUTE_MANAGEMENT      ), // CMD_CLONE_ORDER
@@ -454,7 +454,7 @@ static const Command _command_proc_table[] = {
 	DEF_CMD(CmdBuildCanal,                  CMD_DEITY | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION), // CMD_BUILD_CANAL
 	DEF_CMD(CmdCreateSubsidy,                          CMD_DEITY, CMDT_OTHER_MANAGEMENT      ), // CMD_CREATE_SUBSIDY
 	DEF_CMD(CmdCompanyCtrl, CMD_SPECTATOR | CMD_CLIENT_ID | CMD_NO_EST, CMDT_SERVER_SETTING  ), // CMD_COMPANY_CTRL
-	DEF_CMD(CmdCompanyAddAllowList,                                CMD_NO_TEST, CMDT_SERVER_SETTING        ), // CMD_COMPANY_ADD_ALLOW_LIST
+	DEF_CMD(CmdCompanyAllowListCtrl,                               CMD_NO_TEST, CMDT_SERVER_SETTING        ), // CMD_COMPANY_ALLOW_LIST_CTRL
 	DEF_CMD(CmdCustomNewsItem,          CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT      ), // CMD_CUSTOM_NEWS_ITEM
 	DEF_CMD(CmdCreateGoal,              CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT      ), // CMD_CREATE_GOAL
 	DEF_CMD(CmdRemoveGoal,                             CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT      ), // CMD_REMOVE_GOAL

@@ -85,7 +85,7 @@ GrfSpecFeature GetGrfSpecFeatureForParentScope(GrfSpecFeature feature)
 	}
 }
 
-static inline uint32_t GetVariable(const ResolverObject &object, ScopeResolver *scope, uint16_t variable, uint32_t parameter, GetVariableExtra *extra)
+static inline uint32_t GetVariable(const ResolverObject &object, ScopeResolver *scope, uint16_t variable, uint32_t parameter, GetVariableExtra &extra)
 {
 	uint32_t value;
 	switch (variable) {
@@ -136,10 +136,10 @@ static inline uint32_t GetVariable(const ResolverObject &object, ScopeResolver *
  * @param[out] available Set to false, in case the variable does not exist.
  * @return Value
  */
-/* virtual */ uint32_t ScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra *extra) const
+/* virtual */ uint32_t ScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra &extra) const
 {
 	DEBUG(grf, 1, "Unhandled scope variable 0x%X", variable);
-	extra->available = false;
+	extra.available = false;
 	return UINT_MAX;
 }
 
@@ -304,9 +304,9 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 			/* Note: 'last_value' and 'reseed' are shared between the main chain and the procedure */
 		} else if (adjust.variable == 0x7B) {
 			_sprite_group_resolve_check_veh_check = false;
-			value = GetVariable(object, scope, adjust.parameter, last_value, &extra);
+			value = GetVariable(object, scope, adjust.parameter, last_value, extra);
 		} else {
-			value = GetVariable(object, scope, adjust.variable, adjust.parameter, &extra);
+			value = GetVariable(object, scope, adjust.variable, adjust.parameter, extra);
 		}
 
 		if (!extra.available) {

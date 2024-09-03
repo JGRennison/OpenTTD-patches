@@ -486,7 +486,7 @@ protected:
 	}
 
 public:
-	CompanyStationsWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
+	CompanyStationsWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
 		/* Load initial filter state. */
 		this->filter = CompanyStationsWindow::initial_state;
@@ -684,7 +684,7 @@ public:
 	{
 		switch (widget) {
 			case WID_STL_LIST: {
-				auto it = this->vscroll->GetScrolledItemFromWidget(this->stations, pt.y, this, WID_STL_LIST);
+				auto it = this->vscroll->GetScrolledItemFromWidget(this->stations, pt.y, this, WID_STL_LIST, WidgetDimensions::scaled.framerect.top);
 				if (it == this->stations.end()) return; // click out of list bound
 
 				const Station *st = *it;
@@ -875,7 +875,7 @@ static WindowDesc _company_stations_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_stations", 358, 162,
 	WC_STATION_LIST, WC_NONE,
 	0,
-	std::begin(_nested_company_stations_widgets), std::end(_nested_company_stations_widgets)
+	_nested_company_stations_widgets
 );
 
 /**
@@ -887,7 +887,7 @@ void ShowCompanyStations(CompanyID company)
 {
 	if (!Company::IsValidID(company)) return;
 
-	AllocateWindowDescFront<CompanyStationsWindow>(&_company_stations_desc, company);
+	AllocateWindowDescFront<CompanyStationsWindow>(_company_stations_desc, company);
 }
 
 static constexpr NWidgetPart _nested_station_view_widgets[] = {
@@ -1435,7 +1435,7 @@ struct StationViewWindow : public Window {
 
 	bool place_object_active = false;
 
-	StationViewWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc),
+	StationViewWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc),
 		scroll_to_row(INT_MAX), grouping_index(0)
 	{
 		this->rating_lines  = ALH_RATING;
@@ -2393,7 +2393,7 @@ static WindowDesc _station_view_desc(__FILE__, __LINE__,
 	WDP_AUTO, "view_station", 249, 117,
 	WC_STATION_VIEW, WC_NONE,
 	0,
-	std::begin(_nested_station_view_widgets), std::end(_nested_station_view_widgets)
+	_nested_station_view_widgets
 );
 
 /**
@@ -2403,7 +2403,7 @@ static WindowDesc _station_view_desc(__FILE__, __LINE__,
  */
 void ShowStationViewWindow(StationID station)
 {
-	AllocateWindowDescFront<StationViewWindow>(&_station_view_desc, station);
+	AllocateWindowDescFront<StationViewWindow>(_station_view_desc, station);
 }
 
 /** Struct containing TileIndex and StationID */
@@ -2538,7 +2538,7 @@ struct SelectStationWindow : Window {
 	TileArea area; ///< Location of new station
 	Scrollbar *vscroll;
 
-	SelectStationWindow(WindowDesc *desc, const CommandContainer &cmd, TileArea ta) :
+	SelectStationWindow(WindowDesc &desc, const CommandContainer &cmd, TileArea ta) :
 		Window(desc),
 		select_station_cmd(cmd),
 		area(ta)
@@ -2670,7 +2670,7 @@ static WindowDesc _select_station_desc(__FILE__, __LINE__,
 	WDP_AUTO, "build_station_join", 200, 180,
 	WC_SELECT_STATION, WC_NONE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_select_station_widgets), std::end(_nested_select_station_widgets)
+	_nested_select_station_widgets
 );
 
 
@@ -2720,7 +2720,7 @@ void ShowSelectBaseStationIfNeeded(const CommandContainer &cmd, TileArea ta)
 {
 	if (StationJoinerNeeded<T>(cmd, ta)) {
 		if (!_settings_client.gui.persistent_buildingtools) ResetObjectToPlace();
-		new SelectStationWindow<T>(&_select_station_desc, cmd, ta);
+		new SelectStationWindow<T>(_select_station_desc, cmd, ta);
 	} else {
 		DoCommandP(&cmd);
 	}
@@ -2754,7 +2754,7 @@ static WindowDesc _station_rating_tooltip_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_STATION_RATING_TOOLTIP, WC_NONE,
 	0,
-	std::begin(_nested_station_rating_tooltip_widgets), std::end(_nested_station_rating_tooltip_widgets)
+	_nested_station_rating_tooltip_widgets
 	);
 
 bool GetNewGrfRating(const Station *st, const CargoSpec *cs, const GoodsEntry *ge, int *new_grf_rating);
@@ -2779,7 +2779,7 @@ private:
 public:
 	std::string data[RATING_TOOLTIP_MAX_LINES + 1]{};
 
-	StationRatingTooltipWindow(Window *parent, const Station *st, const CargoSpec *cs) : Window(&_station_rating_tooltip_desc)
+	StationRatingTooltipWindow(Window *parent, const Station *st, const CargoSpec *cs) : Window(_station_rating_tooltip_desc)
 	{
 		this->parent = parent;
 		this->st = st;

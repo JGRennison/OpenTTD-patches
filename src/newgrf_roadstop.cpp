@@ -105,7 +105,7 @@ uint32_t RoadStopScopeResolver::GetNearbyRoadStopsInfo(uint32_t parameter, RoadS
 	}
 }
 
-uint32_t RoadStopScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra *extra) const
+uint32_t RoadStopScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra &extra) const
 {
 	auto get_road_type_variable = [&](RoadTramType rtt) -> uint32_t {
 		RoadType rt;
@@ -191,7 +191,7 @@ uint32_t RoadStopScopeResolver::GetVariable(uint16_t variable, uint32_t paramete
 			if (this->tile == INVALID_TILE) return 0;
 			TileIndex tile = this->tile;
 			if (parameter != 0) tile = GetNearbyTile(parameter, tile); // only perform if it is required
-			return GetNearbyTileInformation(tile, this->ro.grffile->grf_version >= 8, extra->mask);
+			return GetNearbyTileInformation(tile, this->ro.grffile->grf_version >= 8, extra.mask);
 		}
 
 		/* Road stop info of nearby tiles */
@@ -260,9 +260,9 @@ uint32_t RoadStopScopeResolver::GetVariable(uint16_t variable, uint32_t paramete
 		case 0xFA: return ClampTo<uint16_t>((this->st == nullptr ? CalTime::CurDate() : this->st->build_date) - CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR); // build date
 	}
 
-	if (this->st != nullptr) return this->st->GetNewGRFVariable(this->ro, variable, parameter, &(extra->available));
+	if (this->st != nullptr) return this->st->GetNewGRFVariable(this->ro, variable, parameter, extra.available);
 
-	extra->available = false;
+	extra.available = false;
 	return UINT_MAX;
 }
 

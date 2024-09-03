@@ -1065,7 +1065,7 @@ void SmallMapWindow::SetupWidgetData()
 	this->GetWidget<NWidgetStacked>(WID_SM_SELECT_BUTTONS)->SetDisplayedPlane(plane);
 }
 
-SmallMapWindow::SmallMapWindow(WindowDesc *desc, int window_number) : Window(desc), refresh(GUITimer())
+SmallMapWindow::SmallMapWindow(WindowDesc &desc, int window_number) : Window(desc), refresh(GUITimer())
 {
 	_smallmap_industry_highlight = INVALID_INDUSTRYTYPE;
 	this->overlay = std::make_unique<LinkGraphOverlay>(this, WID_SM_MAP, 0, this->GetOverlayCompanyMask(), 1);
@@ -1857,8 +1857,8 @@ static std::unique_ptr<NWidgetBase> SmallMapDisplay()
 {
 	std::unique_ptr<NWidgetBase> map_display = std::make_unique<NWidgetSmallmapDisplay>();
 
-	map_display = MakeNWidgets(std::begin(_nested_smallmap_display), std::end(_nested_smallmap_display), std::move(map_display));
-	map_display = MakeNWidgets(std::begin(_nested_smallmap_bar), std::end(_nested_smallmap_bar), std::move(map_display));
+	map_display = MakeNWidgets(_nested_smallmap_display, std::move(map_display));
+	map_display = MakeNWidgets(_nested_smallmap_bar, std::move(map_display));
 	return map_display;
 }
 
@@ -1894,7 +1894,7 @@ static WindowDesc _smallmap_desc(__FILE__, __LINE__,
 	WDP_AUTO, "smallmap", 484, 314,
 	WC_SMALLMAP, WC_NONE,
 	0,
-	std::begin(_nested_smallmap_widgets), std::end(_nested_smallmap_widgets)
+	_nested_smallmap_widgets
 );
 
 /**
@@ -1902,7 +1902,7 @@ static WindowDesc _smallmap_desc(__FILE__, __LINE__,
  */
 void ShowSmallMap()
 {
-	AllocateWindowDescFront<SmallMapWindow>(&_smallmap_desc, 0);
+	AllocateWindowDescFront<SmallMapWindow>(_smallmap_desc, 0);
 }
 
 /**

@@ -19,7 +19,6 @@ enum GroupListWidgets : WidgetID {
 	WID_GL_SORT_BY_ORDER,            ///< Sort order.
 	WID_GL_SORT_BY_DROPDOWN,         ///< Sort by dropdown list.
 	WID_GL_FILTER_BY_CARGO,          ///< Filter vehicle by cargo type.
-	WID_GL_FILTER_BY_CARGO_SEL,      ///< Filter vehicle by cargo type panel selector.
 	WID_GL_LIST_VEHICLE_SCROLLBAR,   ///< Scrollbar for the list.
 	WID_GL_AVAILABLE_VEHICLES,       ///< Available vehicles.
 	WID_GL_MANAGE_VEHICLES_DROPDOWN, ///< Manage vehicles dropdown list.

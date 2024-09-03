@@ -67,7 +67,7 @@ struct ScriptListWindow : public Window {
 	 * @param slot The company we're changing the Script for.
 	 * @param show_all Whether to show all available versions.
 	 */
-	ScriptListWindow(WindowDesc *desc, CompanyID slot, bool show_all) : Window(desc),
+	ScriptListWindow(WindowDesc &desc, CompanyID slot, bool show_all) : Window(desc),
 		slot(slot), show_all(show_all)
 	{
 		if (slot == OWNER_DEITY) {
@@ -274,7 +274,7 @@ static WindowDesc _script_list_desc(__FILE__, __LINE__,
 	WDP_CENTER, "settings_script_list", 200, 234,
 	WC_SCRIPT_LIST, WC_NONE,
 	0,
-	std::begin(_nested_script_list_widgets), std::end(_nested_script_list_widgets)
+	_nested_script_list_widgets
 );
 
 /**
@@ -285,7 +285,7 @@ static WindowDesc _script_list_desc(__FILE__, __LINE__,
 void ShowScriptListWindow(CompanyID slot, bool show_all)
 {
 	CloseWindowByClass(WC_SCRIPT_LIST);
-	new ScriptListWindow(&_script_list_desc, slot, show_all);
+	new ScriptListWindow(_script_list_desc, slot, show_all);
 }
 
 
@@ -311,7 +311,7 @@ struct ScriptSettingsWindow : public Window {
 	 * @param desc The description of the window.
 	 * @param slot The company we're changing the settings for.
 	 */
-	ScriptSettingsWindow(WindowDesc *desc, CompanyID slot) : Window(desc),
+	ScriptSettingsWindow(WindowDesc &desc, CompanyID slot) : Window(desc),
 		slot(slot),
 		clicked_button(-1),
 		clicked_dropdown(false),
@@ -629,7 +629,7 @@ static WindowDesc _script_settings_desc(__FILE__, __LINE__,
 	WDP_CENTER, "settings_script", 500, 208,
 	WC_SCRIPT_SETTINGS, WC_NONE,
 	0,
-	std::begin(_nested_script_settings_widgets), std::end(_nested_script_settings_widgets)
+	_nested_script_settings_widgets
 );
 
 /**
@@ -640,7 +640,7 @@ void ShowScriptSettingsWindow(CompanyID slot)
 {
 	CloseWindowByClass(WC_SCRIPT_LIST);
 	CloseWindowByClass(WC_SCRIPT_SETTINGS);
-	new ScriptSettingsWindow(&_script_settings_desc, slot);
+	new ScriptSettingsWindow(_script_settings_desc, slot);
 }
 
 
@@ -797,7 +797,7 @@ struct ScriptDebugWindow : public Window {
 	 * @param desc The description of the window.
 	 * @param number The window number (actually unused).
 	 */
-	ScriptDebugWindow(WindowDesc *desc, WindowNumber number, Owner show_company) : Window(desc), break_editbox(MAX_BREAK_STR_STRING_LENGTH)
+	ScriptDebugWindow(WindowDesc &desc, WindowNumber number, Owner show_company) : Window(desc), break_editbox(MAX_BREAK_STR_STRING_LENGTH)
 	{
 		this->filter = ScriptDebugWindow::initial_state;
 		this->break_string_filter = {&this->filter.case_sensitive_break_check, false};
@@ -1217,7 +1217,7 @@ struct ScriptDebugWindow : public Window {
 	void OnResize() override
 	{
 		this->vscroll->SetCapacityFromWidget(this, WID_SCRD_LOG_PANEL, WidgetDimensions::scaled.framerect.Vertical());
-		this->hscroll->SetCapacityFromWidget(this, WID_SCRD_LOG_PANEL);
+		this->hscroll->SetCapacityFromWidget(this, WID_SCRD_LOG_PANEL, WidgetDimensions::scaled.framerect.Horizontal());
 	}
 
 	static HotkeyList hotkeys;
@@ -1321,7 +1321,7 @@ static WindowDesc _script_debug_desc(__FILE__, __LINE__,
 	WDP_AUTO, "script_debug", 600, 450,
 	WC_SCRIPT_DEBUG, WC_NONE,
 	0,
-	std::begin(_nested_script_debug_widgets), std::end(_nested_script_debug_widgets),
+	_nested_script_debug_widgets,
 	&ScriptDebugWindow::hotkeys
 );
 
@@ -1353,7 +1353,7 @@ Window *ShowScriptDebugWindow(CompanyID show_company, bool new_window)
 				return w;
 			}
 		}
-		return new ScriptDebugWindow(&_script_debug_desc, i, show_company);
+		return new ScriptDebugWindow(_script_debug_desc, i, show_company);
 	} else {
 		ShowErrorMessage(STR_ERROR_AI_DEBUG_SERVER_ONLY, INVALID_STRING_ID, WL_INFO);
 	}

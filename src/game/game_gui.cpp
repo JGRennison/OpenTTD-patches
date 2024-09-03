@@ -77,7 +77,7 @@ static WindowDesc _gs_config_desc(__FILE__, __LINE__,
 	WDP_CENTER, "settings_gs_config", 500, 350,
 	WC_GAME_OPTIONS, WC_NONE,
 	0,
-	std::begin(_nested_gs_config_widgets), std::end(_nested_gs_config_widgets)
+	_nested_gs_config_widgets
 );
 
 bool UserIsAllowedToChangeGameScript()
@@ -101,7 +101,7 @@ struct GSConfigWindow : public Window {
 	typedef std::vector<const ScriptConfigItem *> VisibleSettingsList; ///< typdef for a vector of script settings
 	VisibleSettingsList visible_settings; ///< List of visible GS settings
 
-	GSConfigWindow() : Window(&_gs_config_desc),
+	GSConfigWindow() : Window(_gs_config_desc),
 		clicked_button(-1),
 		clicked_dropdown(false),
 		closing_dropdown(false),

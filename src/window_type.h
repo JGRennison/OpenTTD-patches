@@ -403,8 +403,8 @@ enum WindowClass {
 
 	/**
 	 * Build house; %Window numbers:
-	 *  - 0 = #BuildHouseWidgets
-	*/
+	 *   - 0 = #BuildHouseWidgets
+	 */
 	WC_BUILD_HOUSE,
 
 	/**

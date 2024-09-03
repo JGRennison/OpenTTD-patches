@@ -287,7 +287,6 @@ enum Commands {
 	CMD_BUILD_OBJECT,                 ///< build an object
 	CMD_PURCHASE_LAND_AREA,           ///< purchase an area of landscape
 	CMD_BUILD_OBJECT_AREA,            ///< build an area of objects
-	CMD_BUILD_HOUSE,                  ///< build a house
 	CMD_BUILD_TUNNEL,                 ///< build a tunnel
 
 	CMD_REMOVE_FROM_RAIL_STATION,     ///< remove a (rectangle of) tiles from a rail station
@@ -386,6 +385,7 @@ enum Commands {
 	CMD_TOWN_SET_TEXT,                ///< set the custom text of a town
 	CMD_EXPAND_TOWN,                  ///< expand a town
 	CMD_DELETE_TOWN,                  ///< delete a town
+	CMD_PLACE_HOUSE,                  ///< place a house
 
 	CMD_ORDER_REFIT,                  ///< change the refit information of an order (for "goto depot" )
 	CMD_CLONE_ORDER,                  ///< clone (and share) an order
@@ -399,7 +399,7 @@ enum Commands {
 
 	CMD_CREATE_SUBSIDY,               ///< create a new subsidy
 	CMD_COMPANY_CTRL,                 ///< used in multiplayer to create a new companies etc.
-	CMD_COMPANY_ADD_ALLOW_LIST,       ///< Used in multiplayer to add a client's public key to the company's allow list.
+	CMD_COMPANY_ALLOW_LIST_CTRL,      ///< Used in multiplayer to add/remove a client's public key to/from the company's allow list.
 	CMD_CUSTOM_NEWS_ITEM,             ///< create a custom news message
 	CMD_CREATE_GOAL,                  ///< create a new goal
 	CMD_REMOVE_GOAL,                  ///< remove a goal

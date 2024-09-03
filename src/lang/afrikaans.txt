@@ -387,6 +387,7 @@ STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Verlaat redigee
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Verlaat
 
+
 # Settings menu
 ###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Spel opsies
@@ -1304,6 +1305,7 @@ STR_CONFIG_SETTING_ORDER_REVIEW_ON                              :Van alle voertu
 STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Waarsku as 'n voertuig se inkomste negatief is: {STRING}
 ###length 2
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :As dit geaktiveer is, word daar 'n nuus boodskap gestuur wanneer, in 'n kalenderjaar, 'n voertuig nie wins gemaak het nie.
+
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Voertuie verval nooit nie: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :As dit geaktiveer is, sal voertuig modelle altyd beskikbaar bly, na die bekendstelling daarvan
@@ -2393,6 +2395,8 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Perron l
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Kies treinstasie lengte
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Sleep & Drop
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Bou 'n stasie gebruikend sleep & drop
+
+
 
 
 

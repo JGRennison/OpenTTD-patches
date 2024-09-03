@@ -112,7 +112,7 @@ class BuildObjectWindow : public PickerWindow {
 	int info_height; ///< The height of the info box.
 
 public:
-	BuildObjectWindow(WindowDesc *desc, WindowNumber) : PickerWindow(desc, nullptr, 0, ObjectPickerCallbacks::instance), info_height(1)
+	BuildObjectWindow(WindowDesc &desc, WindowNumber) : PickerWindow(desc, nullptr, 0, ObjectPickerCallbacks::instance), info_height(1)
 	{
 		ResetObjectToPlace();
 		this->ConstructWindow();
@@ -399,7 +399,7 @@ static WindowDesc _build_object_desc(__FILE__, __LINE__,
 	WDP_AUTO, "build_object", 0, 0,
 	WC_BUILD_OBJECT, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_build_object_widgets), std::end(_nested_build_object_widgets),
+	_nested_build_object_widgets,
 	&BuildObjectWindow::hotkeys
 );
 
@@ -413,7 +413,7 @@ Window *ShowBuildObjectPicker()
 {
 	/* Don't show the place object button when there are no objects to place. */
 	if (ObjectPickerCallbacks::instance.IsActive()) {
-		return AllocateWindowDescFront<BuildObjectWindow>(&_build_object_desc, 0);
+		return AllocateWindowDescFront<BuildObjectWindow>(_build_object_desc, 0);
 	}
 	return nullptr;
 }
@@ -423,7 +423,7 @@ void ShowBuildObjectPickerAndSelect(const ObjectSpec *spec)
 {
 	if (spec == nullptr || !spec->IsAvailable() || !ObjectPickerCallbacks::instance.IsActive() || spec->class_index == INVALID_OBJECT_CLASS) return;
 
-	BuildObjectWindow *w = AllocateWindowDescFront<BuildObjectWindow>(&_build_object_desc, 0, true);
+	BuildObjectWindow *w = AllocateWindowDescFront<BuildObjectWindow>(_build_object_desc, 0, true);
 	if (w != nullptr) {
 		w->PickItem(spec->class_index, spec->index);
 	}

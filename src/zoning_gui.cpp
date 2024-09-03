@@ -71,7 +71,7 @@ static const ZoningModeInfo &ZoningEvaluationModeToInfo(ZoningEvaluationMode ev_
 
 struct ZoningWindow : public Window {
 
-	ZoningWindow(WindowDesc *desc, int window_number)
+	ZoningWindow(WindowDesc &desc, int window_number)
 			: Window(desc)
 	{
 		this->InitNested(window_number);
@@ -184,10 +184,10 @@ static WindowDesc _zoning_desc (__FILE__, __LINE__,
 	WDP_CENTER, "zoning_gui", 0, 0,
 	WC_ZONING_TOOLBAR, WC_NONE,
 	0,
-	std::begin(_nested_zoning_widgets), std::end(_nested_zoning_widgets)
+	_nested_zoning_widgets
 );
 
 void ShowZoningToolbar()
 {
-	AllocateWindowDescFront<ZoningWindow>(&_zoning_desc, 0);
+	AllocateWindowDescFront<ZoningWindow>(_zoning_desc, 0);
 }

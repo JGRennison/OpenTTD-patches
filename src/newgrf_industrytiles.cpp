@@ -62,7 +62,7 @@ uint32_t GetRelativePosition(TileIndex tile, TileIndex ind_tile)
 	return ((y & 0xF) << 20) | ((x & 0xF) << 16) | (y << 8) | x;
 }
 
-/* virtual */ uint32_t IndustryTileScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra *extra) const
+/* virtual */ uint32_t IndustryTileScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra &extra) const
 {
 	switch (variable) {
 		/* Construction state of the tile: a value between 0 and 3 */
@@ -82,7 +82,7 @@ uint32_t GetRelativePosition(TileIndex tile, TileIndex ind_tile)
 
 		/* Land info of nearby tiles */
 		case 0x60: return GetNearbyIndustryTileInformation(parameter, this->tile,
-				this->industry == nullptr ? (IndustryID)INVALID_INDUSTRY : this->industry->index, true, this->ro.grffile->grf_version >= 8, extra->mask);
+				this->industry == nullptr ? (IndustryID)INVALID_INDUSTRY : this->industry->index, true, this->ro.grffile->grf_version >= 8, extra.mask);
 
 		/* Animation stage of nearby tiles */
 		case 0x61: {
@@ -99,7 +99,7 @@ uint32_t GetRelativePosition(TileIndex tile, TileIndex ind_tile)
 
 	DEBUG(grf, 1, "Unhandled industry tile variable 0x%X", variable);
 
-	extra->available = false;
+	extra.available = false;
 	return UINT_MAX;
 }
 

@@ -436,7 +436,7 @@ protected:
 	}
 
 public:
-	NetworkGameWindow(WindowDesc *desc) : Window(desc), name_editbox(NETWORK_CLIENT_NAME_LENGTH), filter_editbox(120)
+	NetworkGameWindow(WindowDesc &desc) : Window(desc), name_editbox(NETWORK_CLIENT_NAME_LENGTH), filter_editbox(120)
 	{
 		this->list_pos = SLP_INVALID;
 		this->server = nullptr;
@@ -902,7 +902,7 @@ static constexpr NWidgetPart _nested_network_game_widgets[] = {
 				NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_wide, 0),
 					NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
 						NWidget(WWT_TEXT, COLOUR_LIGHT_BLUE, WID_NG_FILTER_LABEL), SetDataTip(STR_LIST_FILTER_TITLE, STR_NULL),
-						NWidget(WWT_EDITBOX, COLOUR_LIGHT_BLUE, WID_NG_FILTER), SetMinimalSize(251, 12), SetFill(1, 0), SetResize(1, 0),
+						NWidget(WWT_EDITBOX, COLOUR_LIGHT_BLUE, WID_NG_FILTER), SetMinimalSize(251, 0), SetFill(1, 0), SetResize(1, 0),
 											SetDataTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 					EndContainer(),
 					NWidget(NWID_HORIZONTAL),
@@ -928,7 +928,7 @@ static constexpr NWidgetPart _nested_network_game_widgets[] = {
 				NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_wide, 0),
 					NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
 						NWidget(WWT_TEXT, COLOUR_LIGHT_BLUE, WID_NG_CLIENT_LABEL), SetDataTip(STR_NETWORK_SERVER_LIST_PLAYER_NAME, STR_NULL),
-						NWidget(WWT_EDITBOX, COLOUR_LIGHT_BLUE, WID_NG_CLIENT), SetMinimalSize(151, 12), SetFill(1, 0), SetResize(1, 0),
+						NWidget(WWT_EDITBOX, COLOUR_LIGHT_BLUE, WID_NG_CLIENT), SetMinimalSize(151, 0), SetFill(1, 0), SetResize(1, 0),
 											SetDataTip(STR_NETWORK_SERVER_LIST_PLAYER_NAME_OSKTITLE, STR_NETWORK_SERVER_LIST_ENTER_NAME_TOOLTIP),
 					EndContainer(),
 					NWidget(NWID_VERTICAL, NC_EQUALSIZE), SetPIP(0, WidgetDimensions::unscaled.vsep_sparse, 0),
@@ -970,7 +970,7 @@ static WindowDesc _network_game_window_desc(__FILE__, __LINE__,
 	WDP_CENTER, "list_servers", 1000, 730,
 	WC_NETWORK_WINDOW, WC_NONE,
 	WDF_NETWORK,
-	std::begin(_nested_network_game_widgets), std::end(_nested_network_game_widgets)
+	_nested_network_game_widgets
 );
 
 void ShowNetworkGameWindow()
@@ -987,14 +987,14 @@ void ShowNetworkGameWindow()
 		}
 	}
 
-	new NetworkGameWindow(&_network_game_window_desc);
+	new NetworkGameWindow(_network_game_window_desc);
 }
 
 struct NetworkStartServerWindow : public Window {
 	WidgetID widget_id;          ///< The widget that has the pop-up input menu
 	QueryString name_editbox;    ///< Server name editbox.
 
-	NetworkStartServerWindow(WindowDesc *desc) : Window(desc), name_editbox(NETWORK_NAME_LENGTH)
+	NetworkStartServerWindow(WindowDesc &desc) : Window(desc), name_editbox(NETWORK_NAME_LENGTH)
 	{
 		this->InitNested(WN_NETWORK_WINDOW_START);
 
@@ -1177,7 +1177,7 @@ static constexpr NWidgetPart _nested_network_start_server_window_widgets[] = {
 				NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0),
 					/* Game name widgets */
 					NWidget(WWT_TEXT, COLOUR_LIGHT_BLUE, WID_NSS_GAMENAME_LABEL), SetFill(1, 0), SetDataTip(STR_NETWORK_START_SERVER_NEW_GAME_NAME, STR_NULL),
-					NWidget(WWT_EDITBOX, COLOUR_LIGHT_BLUE, WID_NSS_GAMENAME), SetMinimalSize(10, 12), SetFill(1, 0), SetDataTip(STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE, STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP),
+					NWidget(WWT_EDITBOX, COLOUR_LIGHT_BLUE, WID_NSS_GAMENAME), SetFill(1, 0), SetDataTip(STR_NETWORK_START_SERVER_NEW_GAME_NAME_OSKTITLE, STR_NETWORK_START_SERVER_NEW_GAME_NAME_TOOLTIP),
 				EndContainer(),
 
 				NWidget(NWID_HORIZONTAL, NC_EQUALSIZE), SetPIP(0, WidgetDimensions::unscaled.hsep_wide, 0),
@@ -1237,7 +1237,7 @@ static WindowDesc _network_start_server_window_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_NETWORK_WINDOW, WC_NONE,
 	WDF_NETWORK,
-	std::begin(_nested_network_start_server_window_widgets), std::end(_nested_network_start_server_window_widgets)
+	_nested_network_start_server_window_widgets
 );
 
 static void ShowNetworkStartServerWindow()
@@ -1246,7 +1246,7 @@ static void ShowNetworkStartServerWindow()
 
 	CloseWindowById(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_GAME);
 
-	new NetworkStartServerWindow(&_network_start_server_window_desc);
+	new NetworkStartServerWindow(_network_start_server_window_desc);
 }
 
 /* The window below gives information about the connected clients
@@ -1311,7 +1311,7 @@ static WindowDesc _client_list_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_clients", 220, 300,
 	WC_CLIENT_LIST, WC_NONE,
 	WDF_NETWORK,
-	std::begin(_nested_client_list_widgets), std::end(_nested_client_list_widgets)
+	_nested_client_list_widgets
 );
 
 /**
@@ -1653,7 +1653,7 @@ private:
 	}
 
 public:
-	NetworkClientListWindow(WindowDesc *desc, WindowNumber window_number) :
+	NetworkClientListWindow(WindowDesc &desc, WindowNumber window_number) :
 			Window(desc),
 			hover_index(-1),
 			player_self_index(-1),
@@ -2100,7 +2100,7 @@ public:
 
 void ShowClientList()
 {
-	AllocateWindowDescFront<NetworkClientListWindow>(&_client_list_desc, 0);
+	AllocateWindowDescFront<NetworkClientListWindow>(_client_list_desc, 0);
 }
 
 NetworkJoinStatus _network_join_status; ///< The status of joining.
@@ -2111,7 +2111,7 @@ uint32_t _network_join_bytes_total;     ///< The total number of bytes to downlo
 struct NetworkJoinStatusWindow : Window {
 	std::shared_ptr<NetworkAuthenticationPasswordRequest> request;
 
-	NetworkJoinStatusWindow(WindowDesc *desc) : Window(desc)
+	NetworkJoinStatusWindow(WindowDesc &desc) : Window(desc)
 	{
 		this->parent = FindWindowById(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_GAME);
 		this->InitNested(WN_NETWORK_STATUS_WINDOW_JOIN);
@@ -2145,7 +2145,7 @@ struct NetworkJoinStatusWindow : Window {
 						progress = 15 + _network_join_bytes * (100 - 15) / _network_join_bytes_total;
 						break;
 				}
-				DrawFrameRect(ir.WithWidth(ir.Width() * progress / 100, false), COLOUR_MAUVE, FR_NONE);
+				DrawFrameRect(ir.WithWidth(ir.Width() * progress / 100, _current_text_dir == TD_RTL), COLOUR_MAUVE, FR_NONE);
 				DrawString(ir.left, ir.right, CenterBounds(ir.top, ir.bottom, GetCharacterHeight(FS_NORMAL)), STR_NETWORK_CONNECTING_1 + _network_join_status, TC_FROMSTRING, SA_HOR_CENTER);
 				break;
 			}
@@ -2229,13 +2229,13 @@ static WindowDesc _network_join_status_window_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_NETWORK_STATUS_WINDOW, WC_NONE,
 	WDF_MODAL | WDF_NETWORK,
-	std::begin(_nested_network_join_status_window_widgets), std::end(_nested_network_join_status_window_widgets)
+	_nested_network_join_status_window_widgets
 );
 
 void ShowJoinStatusWindow()
 {
 	CloseWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
-	new NetworkJoinStatusWindow(&_network_join_status_window_desc);
+	new NetworkJoinStatusWindow(_network_join_status_window_desc);
 }
 
 void ShowNetworkNeedPassword(NetworkPasswordType npt, std::shared_ptr<NetworkAuthenticationPasswordRequest> request)
@@ -2256,7 +2256,7 @@ void ShowNetworkNeedPassword(NetworkPasswordType npt, std::shared_ptr<NetworkAut
 struct NetworkCompanyPasswordWindow : public Window {
 	QueryString password_editbox; ///< Password editbox.
 
-	NetworkCompanyPasswordWindow(WindowDesc *desc, Window *parent) : Window(desc), password_editbox(NETWORK_PASSWORD_LENGTH)
+	NetworkCompanyPasswordWindow(WindowDesc &desc, Window *parent) : Window(desc), password_editbox(NETWORK_PASSWORD_LENGTH)
 	{
 		this->InitNested(0);
 		this->parent = parent;
@@ -2342,14 +2342,14 @@ static WindowDesc _network_company_password_window_desc(__FILE__, __LINE__,
 	WDP_AUTO, nullptr, 0, 0,
 	WC_COMPANY_PASSWORD_WINDOW, WC_NONE,
 	WDF_NETWORK,
-	std::begin(_nested_network_company_password_window_widgets), std::end(_nested_network_company_password_window_widgets)
+	_nested_network_company_password_window_widgets
 );
 
 void ShowNetworkCompanyPasswordWindow(Window *parent)
 {
 	CloseWindowById(WC_COMPANY_PASSWORD_WINDOW, 0);
 
-	new NetworkCompanyPasswordWindow(&_network_company_password_window_desc, parent);
+	new NetworkCompanyPasswordWindow(_network_company_password_window_desc, parent);
 }
 
 /**
@@ -2360,7 +2360,7 @@ struct NetworkAskRelayWindow : public Window {
 	std::string relay_connection_string;  ///< The relay server we want to connect to.
 	std::string token;                    ///< The token for this connection.
 
-	NetworkAskRelayWindow(WindowDesc *desc, Window *parent, const std::string &server_connection_string, const std::string &relay_connection_string, const std::string &token) :
+	NetworkAskRelayWindow(WindowDesc &desc, Window *parent, const std::string &server_connection_string, const std::string &relay_connection_string, const std::string &token) :
 		Window(desc),
 		server_connection_string(server_connection_string),
 		relay_connection_string(relay_connection_string),
@@ -2451,7 +2451,7 @@ static WindowDesc _network_ask_relay_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_NETWORK_ASK_RELAY, WC_NONE,
 	WDF_MODAL | WDF_NETWORK,
-	std::begin(_nested_network_ask_relay_widgets), std::end(_nested_network_ask_relay_widgets)
+	_nested_network_ask_relay_widgets
 );
 
 /**
@@ -2465,14 +2465,14 @@ void ShowNetworkAskRelay(const std::string &server_connection_string, const std:
 	CloseWindowByClass(WC_NETWORK_ASK_RELAY, NRWCD_HANDLED);
 
 	Window *parent = GetMainWindow();
-	new NetworkAskRelayWindow(&_network_ask_relay_desc, parent, server_connection_string, relay_connection_string, token);
+	new NetworkAskRelayWindow(_network_ask_relay_desc, parent, server_connection_string, relay_connection_string, token);
 }
 
 /**
  * Window used for asking if the user wants to participate in the automated survey.
  */
 struct NetworkAskSurveyWindow : public Window {
-	NetworkAskSurveyWindow(WindowDesc *desc, Window *parent) :
+	NetworkAskSurveyWindow(WindowDesc &desc, Window *parent) :
 		Window(desc)
 	{
 		this->parent = parent;
@@ -2549,7 +2549,7 @@ static WindowDesc _network_ask_survey_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_NETWORK_ASK_SURVEY, WC_NONE,
 	WDF_MODAL,
-	std::begin(_nested_network_ask_survey_widgets), std::end(_nested_network_ask_survey_widgets)
+	_nested_network_ask_survey_widgets
 );
 
 /**
@@ -2563,7 +2563,7 @@ void ShowNetworkAskSurvey()
 	CloseWindowByClass(WC_NETWORK_ASK_SURVEY);
 
 	Window *parent = GetMainWindow();
-	new NetworkAskSurveyWindow(&_network_ask_survey_desc, parent);
+	new NetworkAskSurveyWindow(_network_ask_survey_desc, parent);
 }
 
 /** Window for displaying the textfile of a survey result. */

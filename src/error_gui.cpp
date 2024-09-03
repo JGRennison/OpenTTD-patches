@@ -46,7 +46,7 @@ static WindowDesc _errmsg_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_ERRMSG, WC_NONE,
 	0,
-	std::begin(_nested_errmsg_widgets), std::end(_nested_errmsg_widgets)
+	_nested_errmsg_widgets
 );
 
 static constexpr NWidgetPart _nested_errmsg_face_widgets[] = {
@@ -66,7 +66,7 @@ static WindowDesc _errmsg_face_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_ERRMSG, WC_NONE,
 	0,
-	std::begin(_nested_errmsg_face_widgets), std::end(_nested_errmsg_face_widgets)
+	_nested_errmsg_face_widgets
 );
 
 /**
@@ -173,7 +173,7 @@ private:
 	uint height_extra;              ///< Height of the #extra_msg string in pixels in the #WID_EM_MESSAGE widget.
 
 public:
-	ErrmsgWindow(const ErrorMessageData &data) : Window(data.HasFace() ? &_errmsg_face_desc : &_errmsg_desc), ErrorMessageData(data)
+	ErrmsgWindow(const ErrorMessageData &data) : Window(data.HasFace() ? _errmsg_face_desc : _errmsg_desc), ErrorMessageData(data)
 	{
 		this->InitNested();
 	}

@@ -158,8 +158,8 @@ struct BaseSet {
 	 */
 	const char *GetTextfile(TextfileType type) const
 	{
-		for (uint i = 0; i < NUM_FILES; i++) {
-			const char *textfile = ::GetTextfile(type, BASESET_DIR, this->files[i].filename.c_str());
+		for (const auto &file : this->files) {
+			const char *textfile = ::GetTextfile(type, BASESET_DIR, file.filename.c_str());
 			if (textfile != nullptr) {
 				return textfile;
 			}

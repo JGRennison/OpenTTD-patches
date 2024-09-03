@@ -21,8 +21,10 @@
 #include "../../settings_type.h"
 #include "../../string_func.h"
 #include "../../rev.h"
+#include "../../core/format.hpp"
 #include "../network_func.h"
 #include "../network.h"
+#include "../network_internal.h"
 #include "packet.h"
 
 #include "../../safeguards.h"
@@ -41,40 +43,39 @@ NetworkServerGameInfo _network_game_info; ///< Information about our game.
  * Get the network version string used by this build.
  * The returned string is guaranteed to be at most NETWORK_REVISON_LENGTH bytes.
  */
-const char *GetNetworkRevisionString()
+std::string_view GetNetworkRevisionString()
 {
-	/* This will be allocated on heap and never free'd, but only once so not a "real" leak. */
-	static char *network_revision = nullptr;
+	static std::string network_revision;
 
-	if (!network_revision) {
-		/* Start by taking a chance on the full revision string. */
-		network_revision = stredup(_openttd_revision);
-		/* Ensure it's not longer than the packet buffer length. */
-		if (strlen(network_revision) >= NETWORK_REVISION_LENGTH - 1) network_revision[NETWORK_REVISION_LENGTH - 1] = '\0';
-
-		/* Tag names are not mangled further. */
+	if (network_revision.empty()) {
+#if !defined(NETWORK_INTERNAL_H)
+#	error("network_internal.h must be included, otherwise the debug related preprocessor tokens won't be picked up correctly.")
+#elif !defined(ENABLE_NETWORK_SYNC_EVERY_FRAME)
+		/* Just a standard build. */
+		network_revision = _openttd_revision;
+#else
+		/* Build for debugging that sends the first part of the seed every frame, practically syncing every frame. */
+		network_revision = stdstr_fmt("dbg_sync-%s", _openttd_revision);
+#endif
 		if (_openttd_revision_tagged) {
-			DEBUG(net, 3, "Network revision name: %s", network_revision);
-			return network_revision;
-		}
+			/* Tagged; do not mangle further, though ensure it's not too long. */
+			if (network_revision.size() >= NETWORK_REVISION_LENGTH) network_revision.resize(NETWORK_REVISION_LENGTH - 1);
+		} else {
+			/* Not tagged; add the githash suffix while ensuring the string does not become too long. */
+			assert(_openttd_revision_modified < 3);
+			std::string githash_suffix = fmt::format("-{}{}", "gum"[_openttd_revision_modified], _openttd_revision_hash);
+			if (githash_suffix.size() > GITHASH_SUFFIX_LEN) githash_suffix.resize(GITHASH_SUFFIX_LEN);
 
-		/* Prepare a prefix of the git hash.
-		 * Size is length + 1 for terminator, +2 for -g prefix. */
-		assert(_openttd_revision_modified < 3);
-		char githash_suffix[GITHASH_SUFFIX_LEN + 1] = "-";
-		githash_suffix[1] = "gum"[_openttd_revision_modified];
-		for (uint i = 2; i < GITHASH_SUFFIX_LEN; i++) {
-			githash_suffix[i] = _openttd_revision_hash[i-2];
-		}
+			/* Where did the hash start in the original string? Overwrite from that position, unless that would create a too long string. */
+			size_t hash_end = network_revision.find_last_of('-');
+			if (hash_end == std::string::npos) hash_end = network_revision.size();
+			if (hash_end + githash_suffix.size() >= NETWORK_REVISION_LENGTH) hash_end = NETWORK_REVISION_LENGTH - githash_suffix.size() - 1;
 
-		/* Where did the hash start in the original string?
-		 * Overwrite from that position, unless that would go past end of packet buffer length. */
-		ptrdiff_t hashofs = strrchr(_openttd_revision, '-') - _openttd_revision;
-		if (hashofs + strlen(githash_suffix) + 1 > NETWORK_REVISION_LENGTH) hashofs = strlen(network_revision) - strlen(githash_suffix);
-		/* Replace the git hash in revision string. */
-		strecpy(network_revision + hashofs, githash_suffix, network_revision + NETWORK_REVISION_LENGTH);
-		assert(strlen(network_revision) < NETWORK_REVISION_LENGTH); // strlen does not include terminator, constant does, hence strictly less than
-		DEBUG(net, 3, "Network revision name: %s", network_revision);
+			/* Replace the git hash in revision string. */
+			network_revision.replace(hash_end, std::string::npos, githash_suffix);
+		}
+		assert(network_revision.size() < NETWORK_REVISION_LENGTH); // size does not include terminator, constant does, hence strictly less than
+		DEBUG(net, 3, "Network revision name: %s", network_revision.c_str());
 	}
 
 	return network_revision;
@@ -82,12 +83,14 @@ const char *GetNetworkRevisionString()
 
 /**
  * Extract the git hash from the revision string.
- * @param revstr The revision string (formatted as DATE-BRANCH-GITHASH).
+ * @param revision_string The revision string (formatted as DATE-BRANCH-GITHASH).
  * @return The git has part of the revision.
  */
-static const char *ExtractNetworkRevisionHash(const char *revstr)
+static std::string_view ExtractNetworkRevisionHash(std::string_view revision_string)
 {
-	return strrchr(revstr, '-');
+	size_t index = revision_string.find_last_of('-');
+	if (index == std::string::npos) return {};
+	return revision_string.substr(index);
 }
 
 /**
@@ -95,18 +98,23 @@ static const char *ExtractNetworkRevisionHash(const char *revstr)
  * First tries to match the full string, if that fails, attempts to compare just git hashes.
  * @param other the version string to compare to
  */
-bool IsNetworkCompatibleVersion(const char *other, bool extended)
+bool IsNetworkCompatibleVersion(std::string_view other, bool extended)
 {
-	if (strncmp(GetNetworkRevisionString(), other, (extended ? NETWORK_LONG_REVISION_LENGTH : NETWORK_REVISION_LENGTH) - 1) == 0) return true;
+	std::string_view our_revision = GetNetworkRevisionString();
+	if (our_revision == other) return true;
 
 	/* If this version is tagged, then the revision string must be a complete match,
 	 * since there is no git hash suffix in it.
 	 * This is needed to avoid situations like "1.9.0-beta1" comparing equal to "2.0.0-beta1".  */
 	if (_openttd_revision_tagged) return false;
 
-	const char *hash1 = ExtractNetworkRevisionHash(GetNetworkRevisionString());
-	const char *hash2 = ExtractNetworkRevisionHash(other);
-	return hash1 != nullptr && hash2 != nullptr && strncmp(hash1, hash2, GITHASH_SUFFIX_LEN) == 0;
+	/* One of the versions is for some sort of debugging, but not both. */
+	if (other.starts_with("dbg_seed") != our_revision.starts_with("dbg_seed")) return false;
+	if (other.starts_with("dbg_sync") != our_revision.starts_with("dbg_sync")) return false;
+
+	std::string_view hash1 = ExtractNetworkRevisionHash(our_revision);
+	std::string_view hash2 = ExtractNetworkRevisionHash(other);
+	return hash1 == hash2;
 }
 
 /**
@@ -115,7 +123,7 @@ bool IsNetworkCompatibleVersion(const char *other, bool extended)
 void CheckGameCompatibility(NetworkGameInfo &ngi, bool extended)
 {
 	/* Check if we are allowed on this server based on the revision-check. */
-	ngi.version_compatible = IsNetworkCompatibleVersion(ngi.server_revision.c_str(), extended);
+	ngi.version_compatible = IsNetworkCompatibleVersion(ngi.server_revision, extended);
 	ngi.compatible = ngi.version_compatible;
 
 	/* Check if we have all the GRFs on the client-system too. */

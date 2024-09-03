@@ -330,6 +330,7 @@ add_files(
     newgrf_storage.h
     newgrf_text.cpp
     newgrf_text.h
+    newgrf_text_type.h
     newgrf_town.cpp
     newgrf_town.h
     newgrf_townname.cpp
@@ -523,7 +524,6 @@ add_files(
     town.h
     town_cmd.cpp
     town_gui.cpp
-    town_gui.h
     town_kdtree.h
     town_map.h
     town_type.h

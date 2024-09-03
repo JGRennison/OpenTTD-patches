@@ -162,7 +162,12 @@ void CcRailDepot(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_
 
 	if (IsTileType(tile, MP_RAILWAY)) {
 		PlaceExtraDepotRail(tile, _place_depot_extra_dir[dir], _place_depot_extra_track[dir]);
-		PlaceExtraDepotRail(tile, _place_depot_extra_dir[dir + 4], _place_depot_extra_track[dir + 4]);
+
+		/* Don't place the rail straight out of the depot of there is another depot across from it. */
+		TileIndex double_depot_tile = tile + TileOffsByDiagDir(dir);
+		bool is_double_depot = IsValidTile(double_depot_tile) && IsRailDepotTile(double_depot_tile);
+		if (!is_double_depot) PlaceExtraDepotRail(tile, _place_depot_extra_dir[dir + 4], _place_depot_extra_track[dir + 4]);
+
 		PlaceExtraDepotRail(tile, _place_depot_extra_dir[dir + 8], _place_depot_extra_track[dir + 8]);
 	}
 }
@@ -515,7 +520,7 @@ struct BuildRailToolbarWindow : Window {
 	RailType railtype;    ///< Rail type to build.
 	int last_user_action; ///< Last started user action.
 
-	BuildRailToolbarWindow(WindowDesc *desc, RailType railtype) : Window(desc)
+	BuildRailToolbarWindow(WindowDesc &desc, RailType railtype) : Window(desc)
 	{
 		this->CreateNestedTree();
 		if (!_settings_client.gui.show_rail_polyline_tool) {
@@ -1098,7 +1103,7 @@ static WindowDesc _build_rail_desc(__FILE__, __LINE__,
 	WDP_ALIGN_TOOLBAR, "toolbar_rail", 0, 0,
 	WC_BUILD_TOOLBAR, WC_NONE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_build_rail_widgets), std::end(_nested_build_rail_widgets),
+	_nested_build_rail_widgets,
 	&BuildRailToolbarWindow::hotkeys
 );
 
@@ -1119,7 +1124,7 @@ Window *ShowBuildRailToolbar(RailType railtype)
 	CloseWindowByClass(WC_BUILD_TOOLBAR);
 	_cur_railtype = railtype;
 	_remove_button_clicked = false;
-	return new BuildRailToolbarWindow(&_build_rail_desc, railtype);
+	return new BuildRailToolbarWindow(_build_rail_desc, railtype);
 }
 
 /* TODO: For custom stations, respect their allowed platforms/lengths bitmasks!
@@ -1268,7 +1273,7 @@ private:
 	}
 
 public:
-	BuildRailStationWindow(WindowDesc *desc, Window *parent) : PickerWindow(desc, parent, TRANSPORT_RAIL, StationPickerCallbacks::instance)
+	BuildRailStationWindow(WindowDesc &desc, Window *parent) : PickerWindow(desc, parent, TRANSPORT_RAIL, StationPickerCallbacks::instance)
 	{
 		this->coverage_height = 2 * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
 		this->ConstructWindow();
@@ -1623,14 +1628,14 @@ static WindowDesc _station_builder_desc(__FILE__, __LINE__,
 	WDP_AUTO, "build_station_rail", 0, 0,
 	WC_BUILD_STATION, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_station_builder_widgets), std::end(_nested_station_builder_widgets),
+	_nested_station_builder_widgets,
 	&BuildRailStationWindow::hotkeys
 );
 
 /** Open station build window */
 static Window *ShowStationBuilder(Window *parent)
 {
-	return new BuildRailStationWindow(&_station_builder_desc, parent);
+	return new BuildRailStationWindow(_station_builder_desc, parent);
 }
 
 struct BuildSignalWindow : public PickerWindowBase {
@@ -1742,7 +1747,7 @@ private:
 	}
 
 public:
-	BuildSignalWindow(WindowDesc *desc, Window *parent) : PickerWindowBase(desc, parent)
+	BuildSignalWindow(WindowDesc &desc, Window *parent) : PickerWindowBase(desc, parent)
 	{
 		this->CreateNestedTree();
 		this->SetSignalUIMode();
@@ -2053,12 +2058,12 @@ static constexpr NWidgetPart _nested_signal_builder_widgets[] = {
 				NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_SEMAPHORE_COMBO), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_SEMAPHORE_COMBO_TOOLTIP), EndContainer(),
 			EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BS_SEMAPHORE_PROG_SEL),
-				NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_SEMAPHORE_PROG), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_SEMAPHORE_PROG_TOOLTIP), EndContainer(), SetFill(1, 1),
+				NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_SEMAPHORE_PROG), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_SEMAPHORE_PROG_TOOLTIP), EndContainer(),
 			EndContainer(),
-			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_SEMAPHORE_PBS), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_SEMAPHORE_PBS_TOOLTIP), EndContainer(), SetFill(1, 1),
-			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_SEMAPHORE_PBS_OWAY), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_SEMAPHORE_PBS_OWAY_TOOLTIP), EndContainer(), SetFill(1, 1),
+			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_SEMAPHORE_PBS), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_SEMAPHORE_PBS_TOOLTIP), EndContainer(),
+			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_SEMAPHORE_PBS_OWAY), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_SEMAPHORE_PBS_OWAY_TOOLTIP), EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BS_SEMAPHORE_NOEN_SEL),
-				NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_SEMAPHORE_NO_ENTRY), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_SEMAPHORE_NO_ENTRY_TOOLTIP), EndContainer(), SetFill(1, 1),
+				NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_SEMAPHORE_NO_ENTRY), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_SEMAPHORE_NO_ENTRY_TOOLTIP), EndContainer(),
 			EndContainer(),
 			NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WID_BS_CONVERT), SetDataTip(SPR_IMG_SIGNAL_CONVERT, STR_BUILD_SIGNAL_CONVERT_TOOLTIP), SetFill(1, 1),
 			NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WID_BS_TRACE_RESTRICT), SetDataTip(SPR_IMG_SETTINGS, STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP), SetFill(1, 1),
@@ -2077,12 +2082,12 @@ static constexpr NWidgetPart _nested_signal_builder_widgets[] = {
 				NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_ELECTRIC_COMBO), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_ELECTRIC_COMBO_TOOLTIP), EndContainer(),
 			EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BS_ELECTRIC_PROG_SEL),
-				NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_ELECTRIC_PROG), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_ELECTRIC_PROG_TOOLTIP), EndContainer(), SetFill(1, 1),
+				NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_ELECTRIC_PROG), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_ELECTRIC_PROG_TOOLTIP), EndContainer(),
 			EndContainer(),
-			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_ELECTRIC_PBS), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP), EndContainer(), SetFill(1, 1),
-			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_ELECTRIC_PBS_OWAY), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP), EndContainer(), SetFill(1, 1),
+			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_ELECTRIC_PBS), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP), EndContainer(),
+			NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_ELECTRIC_PBS_OWAY), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP), EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BS_ELECTRIC_NOEN_SEL),
-				NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_ELECTRIC_NO_ENTRY), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_ELECTRIC_NO_ENTRY_TOOLTIP), EndContainer(), SetFill(1, 1),
+				NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_BS_ELECTRIC_NO_ENTRY), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_ELECTRIC_NO_ENTRY_TOOLTIP), EndContainer(),
 			EndContainer(),
 			NWidget(WWT_PANEL, COLOUR_DARK_GREEN), SetDataTip(STR_NULL, STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP), SetFill(1, 1),
 				NWidget(WWT_LABEL, COLOUR_DARK_GREEN, WID_BS_DRAG_SIGNALS_DENSITY_LABEL), SetDataTip(STR_JUST_INT, STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP), SetTextStyle(TC_ORANGE), SetFill(1, 1),
@@ -2096,7 +2101,7 @@ static constexpr NWidgetPart _nested_signal_builder_widgets[] = {
 			EndContainer(),
 			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BS_PROGRAM_SEL),
 				NWidget(WWT_IMGBTN, COLOUR_DARK_GREEN, WID_BS_PROGRAM), SetDataTip(SPR_IMG_SETTINGS, STR_PROGRAM_SIGNAL_TOOLTIP), SetFill(1, 1),
-				NWidget(WWT_PANEL, COLOUR_DARK_GREEN), EndContainer(), SetFill(1, 1),
+				NWidget(WWT_PANEL, COLOUR_DARK_GREEN), EndContainer(),
 			EndContainer(),
 		EndContainer(),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BS_STYLE_SEL),
@@ -2110,7 +2115,7 @@ static WindowDesc _signal_builder_desc(__FILE__, __LINE__,
 	WDP_AUTO, nullptr, 0, 0,
 	WC_BUILD_SIGNAL, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_signal_builder_widgets), std::end(_nested_signal_builder_widgets),
+	_nested_signal_builder_widgets,
 	&BuildSignalWindow::hotkeys
 );
 
@@ -2119,11 +2124,11 @@ static WindowDesc _signal_builder_desc(__FILE__, __LINE__,
  */
 static void ShowSignalBuilder(Window *parent)
 {
-	new BuildSignalWindow(&_signal_builder_desc, parent);
+	new BuildSignalWindow(_signal_builder_desc, parent);
 }
 
 struct BuildRailDepotWindow : public PickerWindowBase {
-	BuildRailDepotWindow(WindowDesc *desc, Window *parent) : PickerWindowBase(desc, parent)
+	BuildRailDepotWindow(WindowDesc &desc, Window *parent) : PickerWindowBase(desc, parent)
 	{
 		this->InitNested(TRANSPORT_RAIL);
 		this->LowerWidget(WID_BRAD_DEPOT_NE + _build_depot_direction);
@@ -2192,12 +2197,12 @@ static WindowDesc _build_depot_desc(__FILE__, __LINE__,
 	WDP_AUTO, nullptr, 0, 0,
 	WC_BUILD_DEPOT, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_build_depot_widgets), std::end(_nested_build_depot_widgets)
+	_nested_build_depot_widgets
 );
 
 static void ShowBuildTrainDepotPicker(Window *parent)
 {
-	new BuildRailDepotWindow(&_build_depot_desc, parent);
+	new BuildRailDepotWindow(_build_depot_desc, parent);
 }
 
 class WaypointPickerCallbacks : public PickerCallbacksNewGRFClass<StationClass> {
@@ -2274,7 +2279,7 @@ public:
 /* static */ WaypointPickerCallbacks WaypointPickerCallbacks::instance;
 
 struct BuildRailWaypointWindow : public PickerWindow {
-	BuildRailWaypointWindow(WindowDesc *desc, Window *parent) : PickerWindow(desc, parent, TRANSPORT_RAIL, WaypointPickerCallbacks::instance)
+	BuildRailWaypointWindow(WindowDesc &desc, Window *parent) : PickerWindow(desc, parent, TRANSPORT_RAIL, WaypointPickerCallbacks::instance)
 	{
 		this->ConstructWindow();
 		this->InvalidateData();
@@ -2303,14 +2308,14 @@ static WindowDesc _build_waypoint_desc(__FILE__, __LINE__,
 	WDP_AUTO, "build_waypoint", 0, 0,
 	WC_BUILD_WAYPOINT, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_build_waypoint_widgets), std::end(_nested_build_waypoint_widgets),
+	_nested_build_waypoint_widgets,
 	&BuildRailWaypointWindow::hotkeys
 );
 
 static void ShowBuildWaypointPicker(Window *parent)
 {
 	if (!WaypointPickerCallbacks::instance.IsActive()) return;
-	new BuildRailWaypointWindow(&_build_waypoint_desc, parent);
+	new BuildRailWaypointWindow(_build_waypoint_desc, parent);
 }
 
 /**

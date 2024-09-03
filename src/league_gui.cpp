@@ -86,7 +86,7 @@ private:
 	}
 
 public:
-	PerformanceLeagueWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
+	PerformanceLeagueWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
 		this->InitNested(window_number);
 		this->companies.ForceRebuild();
@@ -204,12 +204,12 @@ static WindowDesc _performance_league_desc(__FILE__, __LINE__,
 	WDP_AUTO, "performance_league", 0, 0,
 	WC_COMPANY_LEAGUE, WC_NONE,
 	0,
-	std::begin(_nested_performance_league_widgets), std::end(_nested_performance_league_widgets)
+	_nested_performance_league_widgets
 );
 
 void ShowPerformanceLeagueTable()
 {
-	AllocateWindowDescFront<PerformanceLeagueWindow>(&_performance_league_desc, 0);
+	AllocateWindowDescFront<PerformanceLeagueWindow>(_performance_league_desc, 0);
 }
 
 static void HandleLinkClick(Link link)
@@ -298,7 +298,7 @@ private:
 	}
 
 public:
-	ScriptLeagueWindow(WindowDesc *desc, LeagueTableID table) : Window(desc)
+	ScriptLeagueWindow(WindowDesc &desc, LeagueTableID table) : Window(desc)
 	{
 		this->table = table;
 		this->BuildTable();
@@ -439,13 +439,13 @@ static WindowDesc _script_league_desc(__FILE__, __LINE__,
 	WDP_AUTO, "script_league", 0, 0,
 	WC_COMPANY_LEAGUE, WC_NONE,
 	0,
-	std::begin(_nested_script_league_widgets), std::end(_nested_script_league_widgets)
+	_nested_script_league_widgets
 );
 
 void ShowScriptLeagueTable(LeagueTableID table)
 {
 	if (!LeagueTable::IsValidID(table)) return;
-	AllocateWindowDescFront<ScriptLeagueWindow>(&_script_league_desc, table);
+	AllocateWindowDescFront<ScriptLeagueWindow>(_script_league_desc, table);
 }
 
 void ShowFirstLeagueTable()

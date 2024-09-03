@@ -438,6 +438,9 @@ STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Abandonner l'é
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Quitter
 
+STR_SCENEDIT_TOWN_MENU_BUILD_TOWN                               :Générer des villes
+STR_SCENEDIT_TOWN_MENU_PACE_HOUSE                               :Placer des maisons
+
 # Settings menu
 ###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Options du Jeu
@@ -1083,6 +1086,7 @@ STR_GAME_OPTIONS_BASE_MUSIC                                     :{BLACK}Musique 
 STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :{BLACK}Sélectionner la musique de base à utiliser
 STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :{BLACK}Informations additionnelles sur la musique de base
 
+STR_GAME_OPTIONS_ONLINE_CONTENT                                 :Obtenir le contenu
 STR_GAME_OPTIONS_ONLINE_CONTENT_TOOLTIP                         :Vérifier les contenus nouveaux ou mis à jour téléchargeables
 
 STR_GAME_OPTIONS_SOCIAL_PLUGINS_NONE                            :{LTBLUE}(aucun plugin d'intégration avec les plateformes sociales installé)
@@ -1470,11 +1474,11 @@ STR_CONFIG_SETTING_COMPANY_STARTING_COLOUR_SECONDARY_HELPTEXT   :Choisir une sec
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :Les aéroports n'expirent jamais{NBSP}: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :Activer ce paramètre fait que chaque type d'aéroports reste toujours disponible après son introduction
 
-STR_CONFIG_SETTING_WARN_LOST_VEHICLE                            :Avertir qu'un véhicule est perdu{NBSP}: {STRING}
+STR_CONFIG_SETTING_WARN_LOST_VEHICLE                            :Alerter en cas de véhicule perdu{NBSP}: {STRING}
 STR_CONFIG_SETTING_WARN_LOST_VEHICLE_HELPTEXT                   :Génère des messages au sujet des véhicules incapables de trouver un chemin vers leur destination
 
 STR_CONFIG_SETTING_ORDER_REVIEW                                 :Vérifier les ordres des véhicules{NBSP}: {STRING}
-STR_CONFIG_SETTING_ORDER_REVIEW_HELPTEXT                        :Quand il est actif, les ordres des véhicules sont vérifiés périodiquement, et les quelques problèmes évidents détectés sont rapportés par un message d'information
+STR_CONFIG_SETTING_ORDER_REVIEW_HELPTEXT                        :Si activé, les ordres des véhicules seront vérifiés périodiquement, et les quelques problèmes évidents détectés seront rapportés par un message d'information
 ###length 3
 STR_CONFIG_SETTING_ORDER_REVIEW_OFF                             :Non
 STR_CONFIG_SETTING_ORDER_REVIEW_EXDEPOT                         :De tous, sauf de ceux à l'arrêt
@@ -1482,11 +1486,14 @@ STR_CONFIG_SETTING_ORDER_REVIEW_ON                              :De tous les vé
 
 STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Alerter en cas de revenu négatif pour un véhicule{NBSP}: {STRING}
 ###length 2
-STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Quand il est actif, un message d'information est envoyé lorsqu'un véhicule n'a fait aucun bénéfice au cours d'une année
-STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Quand il est actif, un message d'information est envoyé lorsqu'un véhicule n'a fait aucun bénéfice au cours d'une période
+STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Si activé, un message d'information sera envoyé lorsqu'un véhicule n'a fait aucun bénéfice au cours d'une année
+STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Si activé, un message d'information sera envoyé lorsqu'un véhicule n'a fait aucun bénéfice au cours d'une période
+
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE                             :Alerter si un véhicule devient vieux{NBSP}: {STRING}
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE_HELPTEXT                    :Si activé, un message d'information sera envoyé lorsqu'un véhicule devient vieux
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Les véhicules n'expirent jamais{NBSP}: {STRING}
-STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Quand il est actif, tous les modèles de véhicule restent disponibles pour toujours après leur introduction
+STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Si activé, tous les modèles de véhicule restent disponibles pour toujours après leur introduction
 
 STR_CONFIG_SETTING_TIMEKEEPING_UNITS                            :Mesure du temps{NBSP}: {STRING}
 STR_CONFIG_SETTING_TIMEKEEPING_UNITS_HELPTEXT                   :Sélectionner les unités de mesure du temps pour la partie. Ce choix ne peut pas être modifié par la suite.{}{}"Calendrier" correspond à l’expérience classique d'OpenTTD, avec une année de 12 mois et chaque mois ayant de 28 à 31 jours.{}{}Quand le temps est basé sur la "pendule", la production de marchandises et les finances sont basées sur des incréments d'une minute, équivalent à des mois de 30 jours dans le mode "calendrier". Ceux-ci sont groupés par période de 12 minutes, équivalent à une année dans le mode "calendrier".{}{}Quelque soit le mode, il y a toujours un calendrier classique, utilisé pour les dates d'introduction des véhicules, maisons, et autres infrastructures
@@ -1495,7 +1502,7 @@ STR_CONFIG_SETTING_TIMEKEEPING_UNITS_CALENDAR                   :Calendrier
 STR_CONFIG_SETTING_TIMEKEEPING_UNITS_WALLCLOCK                  :Pendule
 
 STR_CONFIG_SETTING_MINUTES_PER_YEAR                             :Minutes par année{NBSP}: {STRING}
-STR_CONFIG_SETTING_MINUTES_PER_YEAR_HELPTEXT                    :Sélectionner le nombre de minutes dans une année calendaire. La valeur par défaut est 12 minutes.Régler sur 0 pour arrêter la progression du calendrier. Ce paramètre n'affecte pas la simulation économique du jeu, et il n'est disponible qu'en utilisant le mode "pendule"
+STR_CONFIG_SETTING_MINUTES_PER_YEAR_HELPTEXT                    :Sélectionner le nombre de minutes dans une année calendaire. La valeur par défaut est 12 minutes. Régler sur 0 pour arrêter la progression du calendrier. Augmenter cette valeur ralentit la mise à disposition de véhicules, maisons, et autres infrastructures. Cela n'affecte ni la vitesse des véhicules, ni la simulation économique, excepté l'inflation. Ce paramètre n'est disponible qu'en utilisant le mode "pendule".
 
 STR_CONFIG_SETTING_MINUTES_PER_YEAR_VALUE                       :{NUM}
 ###setting-zero-is-special
@@ -1508,7 +1515,7 @@ STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT                :Modifier la pro
 STR_CONFIG_SETTING_CARGO_SCALE_VALUE                            :{NUM}%
 
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE                            :Renouveler automatiquement les véhicules vieillissants{NBSP}: {STRING}
-STR_CONFIG_SETTING_AUTORENEW_VEHICLE_HELPTEXT                   :Quand il est actif, un véhicule approchant de la fin de sa durée de vie est automatiquement remplacé quand les conditions du renouvellement sont remplies
+STR_CONFIG_SETTING_AUTORENEW_VEHICLE_HELPTEXT                   :Si activé, un véhicule approchant de la fin de sa durée de vie sera automatiquement remplacé quand les conditions du renouvellement seront remplies
 
 STR_CONFIG_SETTING_AUTORENEW_MONTHS                             :Renouveler automatiquement quand le véhicule est {STRING} l'âge maximum
 STR_CONFIG_SETTING_AUTORENEW_MONTHS_HELPTEXT                    :Âge relatif pour considérer le renouvellement automatique d'un véhicule
@@ -1537,7 +1544,7 @@ STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS_HELPTEXT                :Épaisseur de l
 STR_CONFIG_SETTING_SHOW_NEWGRF_NAME                             :Afficher le nom du NewGRF dans la fenêtre d'achat des véhicules{NBSP}: {STRING}
 STR_CONFIG_SETTING_SHOW_NEWGRF_NAME_HELPTEXT                    :Ajoute une ligne à la fenêtre d'achat des véhicules, montrant de quel NewGRF provient le véhicule sélectionné
 STR_CONFIG_SETTING_SHOW_CARGO_IN_LISTS                          :Afficher les cargaisons que peuvent transporter les véhicules dans les fenêtres de liste{NBSP}: {STRING}
-STR_CONFIG_SETTING_SHOW_CARGO_IN_LISTS_HELPTEXT                 :Quand il est actif, ce qu'un véhicule peut transporter est affiché au dessus de lui dans les listes de véhicules
+STR_CONFIG_SETTING_SHOW_CARGO_IN_LISTS_HELPTEXT                 :Si activé, ce qu'un véhicule peut transporter est affiché au dessus de lui dans les listes de véhicules
 
 STR_CONFIG_SETTING_LANDSCAPE                                    :Paysage{NBSP}: {STRING}
 STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :Les paysages définissent les scénarios de jouabilité classique avec différentes marchandises et exigences pour la croissance des villes. Les NewGRFs et les scripts de jeux autorisent cependant un contrôle plus fin
@@ -2476,6 +2483,7 @@ STR_NETWORK_CLIENT_LIST_PLAYER_NAME_QUERY_CAPTION               :Votre nom de je
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_TOOLTIP                    :{BLACK}Actions administratives à accomplir pour ce client
 STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_TOOLTIP                   :{BLACK}Actions administratives à accomplir pour cette compagnie
 STR_NETWORK_CLIENT_LIST_JOIN_TOOLTIP                            :{BLACK}Rejoindre cette compagnie
+STR_NETWORK_CLIENT_LIST_COMPANY_AUTHORIZE_TOOLTIP               :{BLACK}Autoriser ce client à joindre votre compagnie
 STR_NETWORK_CLIENT_LIST_CHAT_CLIENT_TOOLTIP                     :{BLACK}Envoyer un message à cette personne
 STR_NETWORK_CLIENT_LIST_CHAT_COMPANY_TOOLTIP                    :{BLACK}Envoyer un message à tous les joueurs de cette compagnie
 STR_NETWORK_CLIENT_LIST_CHAT_SPECTATOR_TOOLTIP                  :{BLACK}Envoyer un message à tous les spectateurs
@@ -2796,7 +2804,33 @@ STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Choisir 
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Glisser/Déposer
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Construire une gare par glisser/déposer
 
+STR_PICKER_MODE_ALL                                             :Tout
+STR_PICKER_MODE_ALL_TOOLTIP                                     :Basculer l'affichage des éléments de toutes les classes
+STR_PICKER_MODE_USED                                            :Utilisé
+STR_PICKER_MODE_USED_TOOLTIP                                    :Basculer l'affichage exclusif d'éléments existants
+STR_PICKER_MODE_SAVED                                           :Sauvegardé
+STR_PICKER_MODE_SAVED_TOOLTIP                                   :Basculer l'affichage exclusif des éléments sauvegardés
 
+STR_PICKER_STATION_CLASS_TOOLTIP                                :Séléctionner un type de station à afficher
+STR_PICKER_STATION_TYPE_TOOLTIP                                 :Séléctionner un type de station à construire. Ctrl+Clic pour ajouter ou retirer des éléments sauvegardés.
+STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Séléctionner un type de point à afficher
+STR_PICKER_WAYPOINT_TYPE_TOOLTIP                                :Séléctionner un point à construire. Ctrl+Clic pour ajouter ou retirer des éléments sauvegardés.
+STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP                           :Séléctionner un type d'arrêt de bus à afficher
+STR_PICKER_ROADSTOP_BUS_TYPE_TOOLTIP                            :Séléctionner un type d'arrêt de bus à construire. Ctrl+Clic pour ajouter ou retirer des éléments sauvegardés.
+STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Séléctionner un type d'aire de chargement à afficher
+STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :Séléctionner un type d'aire de chargement à construire. Ctrl+Clic pour ajouter ou retirer des éléments sauvegardés.
+STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Séléctionner un type d'objet à afficher
+STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :Séléctionner un type d'objet à construire. Ctrl+Clic pour ajouter ou retirer des éléments sauvegardés. Ctrl+Clic+Déplacer pour séléctionner en diagonale. Shift pour afficher seulement le coût estimé.
+STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Séléctionner un type de zone de ville à afficher
+STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Séléctionner un type de maison à construire. Ctrl+Clic pour ajouter ou retirer des éléments sauvegardés.
+
+STR_HOUSE_PICKER_CAPTION                                        :Séléction de maison
+
+STR_HOUSE_PICKER_CLASS_ZONE1                                    :Bord
+STR_HOUSE_PICKER_CLASS_ZONE2                                    :Périphérie
+STR_HOUSE_PICKER_CLASS_ZONE3                                    :Banlieue extérieure
+STR_HOUSE_PICKER_CLASS_ZONE4                                    :Banlieue intérieure
+STR_HOUSE_PICKER_CLASS_ZONE5                                    :Centre-ville
 
 STR_STATION_CLASS_DFLT                                          :Par défaut
 STR_STATION_CLASS_DFLT_STATION                                  :Stations par défaut
@@ -4984,6 +5018,7 @@ STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... il n
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Route en travaux
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Impossible de supprimer cette ville...{}Une station ou un dépôt fait référence à cette ville ou une propriété municipale ne peut pas être supprimée.
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... aucun emplacement convenable disponible pour une statue dans ce centre-ville
+STR_ERROR_CAN_T_BUILD_HOUSE                                     :{WHITE}Impossible de construire une maison
 
 # Industry related errors
 STR_ERROR_TOO_MANY_INDUSTRIES                                   :{WHITE}... trop d'industries
@@ -5021,6 +5056,8 @@ STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :{WHITE}Impossib
 
 STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :{WHITE}Adjacent à plus d'une gare à la fois
 STR_ERROR_STATION_TOO_SPREAD_OUT                                :{WHITE}... gare trop étendue
+STR_ERROR_STATION_DISALLOWED_NUMBER_TRACKS                      :{WHITE}... nombre de voies non supporté
+STR_ERROR_STATION_DISALLOWED_LENGTH                             :{WHITE}... longueur non supportée
 STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Trop de gares
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Trop de parties de gare
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Trop d'arrêts d'autobus

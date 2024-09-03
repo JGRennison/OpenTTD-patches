@@ -13,6 +13,8 @@
 /** key for cached segment cost for rail YAPF */
 struct CYapfRailSegmentKey
 {
+	using HashKey = uint32_t;
+
 	uint32_t  m_value;
 
 	inline CYapfRailSegmentKey(const CYapfNodeKeyTrackDir &node_key)
@@ -30,7 +32,7 @@ struct CYapfRailSegmentKey
 		m_value = (((int)node_key.m_tile) << 4) | node_key.m_td;
 	}
 
-	inline int32_t CalcHash() const
+	inline HashKey GetHashKey() const
 	{
 		return m_value;
 	}

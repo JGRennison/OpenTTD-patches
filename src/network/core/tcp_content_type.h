@@ -12,6 +12,7 @@
 #ifndef NETWORK_CORE_TCP_CONTENT_TYPE_H
 #define NETWORK_CORE_TCP_CONTENT_TYPE_H
 
+#include "../../string_type.h"
 #include "../../3rdparty/md5/md5.h"
 #include <vector>
 

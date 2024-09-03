@@ -1214,11 +1214,25 @@ static CommandCost TerraformTile_Object(TileIndex tile, DoCommandFlag flags, int
 {
 	ObjectType type = GetObjectType(tile);
 
+	auto update_water_class = [&]() {
+		if (GetWaterClass(tile) == WATER_CLASS_CANAL) {
+			Company *c = Company::GetIfValid(GetTileOwner(tile));
+			if (c != nullptr) {
+				c->infrastructure.water--;
+				DirtyCompanyInfrastructureWindows(c->index);
+			}
+		}
+		SetWaterClass(tile, WATER_CLASS_INVALID);
+	};
+
 	if (type == OBJECT_OWNED_LAND) {
 		/* Owned land remains unsold */
 		CommandCost ret = CheckTileOwnership(tile);
 		if (ret.Succeeded()) {
-			if (flags & DC_EXEC) SetObjectGroundTypeDensity(tile, OBJECT_GROUND_GRASS, 0);
+			if (flags & DC_EXEC) {
+				SetObjectGroundTypeDensity(tile, OBJECT_GROUND_GRASS, 0);
+				update_water_class();
+			}
 			return CommandCost();
 		}
 	} else if (AutoslopeEnabled() && type != OBJECT_TRANSMITTER && type != OBJECT_LIGHTHOUSE) {
@@ -1228,6 +1242,7 @@ static CommandCost TerraformTile_Object(TileIndex tile, DoCommandFlag flags, int
 			if (flags & DC_EXEC) {
 				SetObjectFoundationType(tile, tileh_new, type, spec);
 				if (spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) SetObjectGroundTypeDensity(tile, OBJECT_GROUND_GRASS, 0);
+				update_water_class();
 			}
 		};
 

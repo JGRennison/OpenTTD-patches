@@ -534,6 +534,7 @@ STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Izhod iz urejev
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Izhod
 
+
 # Settings menu
 ###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Možnosti igre
@@ -1437,6 +1438,7 @@ STR_CONFIG_SETTING_ORDER_REVIEW_ON                              :Vseh vozil
 STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Opozori, če je prihodek vozila negativen: {STRING}
 ###length 2
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Če je omogočeno, se odpre sporočilo, v kolikor neko vozilo ni ustvarilo dobička v koledarskem letu.
+
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Vozila nikoli ne dotrajajo: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Če je omogočeno, vsi modeli vozil ostanejo omogočeni po uvedbi.
@@ -2519,6 +2521,8 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Dolžina
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Izberi dolžino železniške postaje
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Vleci in spusti
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Zgradi postajo s povleci in spusti
+
+
 
 
 

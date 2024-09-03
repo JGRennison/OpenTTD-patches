@@ -243,7 +243,7 @@ typedef std::vector<GuiInstruction> GuiInstructionList;
 
 class ProgramWindow: public Window {
 public:
-	ProgramWindow(WindowDesc *desc, SignalReference ref): Window(desc)
+	ProgramWindow(WindowDesc &desc, SignalReference ref): Window(desc)
 	{
 		// this->InitNested(desc, (ref.tile << 3) | ref.track);
 		this->tile = ref.tile;
@@ -962,7 +962,7 @@ static WindowDesc _program_desc(__FILE__, __LINE__,
 	WDP_AUTO, "signal_program", 384, 100,
 	WC_SIGNAL_PROGRAM, WC_BUILD_SIGNAL,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_program_widgets), std::end(_nested_program_widgets)
+	_nested_program_widgets
 );
 
 void ShowSignalProgramWindow(SignalReference ref)
@@ -970,5 +970,5 @@ void ShowSignalProgramWindow(SignalReference ref)
 	uint32_t window_id = (ref.tile << 3) | ref.track;
 	if (BringWindowToFrontById(WC_SIGNAL_PROGRAM, window_id) != nullptr) return;
 
-	new ProgramWindow(&_program_desc, ref);
+	new ProgramWindow(_program_desc, ref);
 }

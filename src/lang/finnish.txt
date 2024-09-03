@@ -310,8 +310,8 @@ STR_BUTTON_CANCEL                                               :{BLACK}Peruuta
 STR_BUTTON_OK                                                   :{BLACK}OK
 
 # On screen keyboard window
-STR_OSK_KEYBOARD_LAYOUT                                         :§1234567890+´ qwertyuiopå¨asdfghjklöä' zxcvbnm,.- .
-STR_OSK_KEYBOARD_LAYOUT_CAPS                                    :½!"#¤%&/()=?` QWERTYUIOPÅ^ASDFGHJKLÖÄ* ZXCVBNM;:_ .
+STR_OSK_KEYBOARD_LAYOUT                                         :§1234567890+´ qwertyuiopå¨asdfghjklöä'<zxcvbnm,.- .
+STR_OSK_KEYBOARD_LAYOUT_CAPS                                    :½!"#¤%&/()=?` QWERTYUIOPÅ^ASDFGHJKLÖÄ*>ZXCVBNM;:_ .
 
 # Measurement tooltip
 STR_MEASURE_LENGTH                                              :{BLACK}Pituus: {NUM}
@@ -436,6 +436,9 @@ STR_SCENEDIT_FILE_MENU_LOAD_HEIGHTMAP                           :Lataa korkeuska
 STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Sulje skenaariomuokkain
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Lopeta
+
+STR_SCENEDIT_TOWN_MENU_BUILD_TOWN                               :Luo kuntia
+STR_SCENEDIT_TOWN_MENU_PACE_HOUSE                               :Sijoita taloja
 
 # Settings menu
 ###length 16
@@ -1485,6 +1488,9 @@ STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Varoita, jos ku
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Mikäli käytössä, uutisviesti lähetetään, jos kulkuneuvo ei ole tuottanut rahaa vuoden aikana
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Mikäli käytössä, uutisviesti lähetetään, jos kulkuneuvo ei ole tuottanut rahaa jakson aikana
 
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE                             :Varoita, jos kulkuneuvo on tulossa vanhaksi: {STRING}
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE_HELPTEXT                    :Mikäli käytössä, uutisviesti lähetetään, jos kulkuneuvo on tulossa vanhaksi
+
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Kulkuneuvot eivät vanhene: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Mikäli käytössä, kaikki kulkuneuvot ovat saatavilla ikuisesti niiden julkistamisen jälkeen
 
@@ -1495,7 +1501,7 @@ STR_CONFIG_SETTING_TIMEKEEPING_UNITS_CALENDAR                   :Kalenteri
 STR_CONFIG_SETTING_TIMEKEEPING_UNITS_WALLCLOCK                  :Seinäkello
 
 STR_CONFIG_SETTING_MINUTES_PER_YEAR                             :Minuuttia vuodessa: {STRING}
-STR_CONFIG_SETTING_MINUTES_PER_YEAR_HELPTEXT                    :Valitse minuuttien määrä kalenterivuodessa. Oletusarvo on 12 minuuttia. Aseta arvoksi 0, jos et halua kalenteriajan muuttuvan. Tämä asetus ei vaikuta pelin taloussimulaatioon, ja se on valittavissa vain seinäkelloaikaa käytettäessä
+STR_CONFIG_SETTING_MINUTES_PER_YEAR_HELPTEXT                    :Valitse minuuttien määrä kalenterivuodessa. Oletusarvo on 12 minuuttia. Aseta arvoksi 0, jos et halua kalenteriajan muuttuvan. Kalenterivuoden pidentäminen hidastaa kulkuneuvojen, talojen ja muun infrastruktuurin käyttöönottoa. Se ei vaikuta kulkuneuvojen nopeuteen eikä taloussimulaatioon inflaatiota lukuun ottamatta. Tämä asetus on valittavissa vain seinäkelloaikaa käytettäessä
 
 STR_CONFIG_SETTING_MINUTES_PER_YEAR_VALUE                       :{NUM}
 ###setting-zero-is-special
@@ -1508,7 +1514,7 @@ STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT                :Skaalaa tuotant
 STR_CONFIG_SETTING_CARGO_SCALE_VALUE                            :{NUM}{NBSP}%
 
 STR_CONFIG_SETTING_AUTORENEW_VEHICLE                            :Uudista kulkuneuvo automaattisesti, kun se vanhenee: {STRING}
-STR_CONFIG_SETTING_AUTORENEW_VEHICLE_HELPTEXT                   :Mikäli käytössä, lähellä käyttöikänsä loppua oleva kulkuneuvo korvataan automaattisesti
+STR_CONFIG_SETTING_AUTORENEW_VEHICLE_HELPTEXT                   :Mikäli käytössä, lähellä käyttöikänsä loppua oleva kulkuneuvo korvataan automaattisesti uudistamisehtojen täyttyessä
 
 STR_CONFIG_SETTING_AUTORENEW_MONTHS                             :Uudista automaattisesti {STRING}
 STR_CONFIG_SETTING_AUTORENEW_MONTHS_HELPTEXT                    :Suhteellinen ikä, jonka jälkeen kulkuneuvo voidaan uudistaa automaattisesti
@@ -2814,6 +2820,16 @@ STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Valitse näytet
 STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :Valitse rakennettavan lastauslaiturin tyyppi. Ctrl+napsautus lisää tallennettuihin tai poistaa tallennetuista
 STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Valitse näytettävä objektien luokka
 STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :Valitse rakennettavan objektin tyyppi. Ctrl+napsautus lisää tallennettuihin tai poistaa tallennetuista. Ctrl+napsautus+veto valitsee alueen vinottain. Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion
+STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Valitse näytettävä kunnan vyöhyke
+STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Valitse rakennettavan talon tyyppi. Ctrl+napsautus lisää tallennettuihin tai poistaa tallennetuista
+
+STR_HOUSE_PICKER_CAPTION                                        :Talojen valinta
+
+STR_HOUSE_PICKER_CLASS_ZONE1                                    :Reuna-alueet
+STR_HOUSE_PICKER_CLASS_ZONE2                                    :Laitamat
+STR_HOUSE_PICKER_CLASS_ZONE3                                    :Ulommat lähiöt
+STR_HOUSE_PICKER_CLASS_ZONE4                                    :Sisemmät lähiöt
+STR_HOUSE_PICKER_CLASS_ZONE5                                    :Keskusta
 
 STR_STATION_CLASS_DFLT                                          :Oletus
 STR_STATION_CLASS_DFLT_STATION                                  :Oletusasema
@@ -5001,6 +5017,7 @@ STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... kart
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Tietyöt ovat käynnissä.
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Kuntaa ei voida poistaa...{}Asema tai varikko viittaa kuntaan tai kunnan omistamaa ruutua ei voida poistaa
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... tämän kunnan keskustassa ei ole sopivaa paikkaa patsaalle
+STR_ERROR_CAN_T_BUILD_HOUSE                                     :{WHITE}Taloa ei voida rakentaa…
 
 # Industry related errors
 STR_ERROR_TOO_MANY_INDUSTRIES                                   :{WHITE}... liikaa teollisuuslaitoksia
@@ -5038,6 +5055,8 @@ STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :{WHITE}Lentoken
 
 STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :{WHITE}Vieressä on useampi kuin yksi olemassaoleva asema tai kuormausalue.
 STR_ERROR_STATION_TOO_SPREAD_OUT                                :{WHITE}... asema liian levittäytynyt
+STR_ERROR_STATION_DISALLOWED_NUMBER_TRACKS                      :{WHITE}… raiteiden lukumäärää ei tueta
+STR_ERROR_STATION_DISALLOWED_LENGTH                             :{WHITE}… pituutta ei tueta
 STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Liian monta asemaa ja lastausaluetta.
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Rautatieasema on jakautunut liian moneen osaan
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Liian monta linja-autopysäkkiä.

@@ -271,7 +271,7 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 		if (HasBit(wp->waypoint_flags, WPF_ROAD)) return CMD_ERROR;
 		if (wp->owner != _current_company) return_cmd_error(STR_ERROR_TOO_CLOSE_TO_ANOTHER_WAYPOINT);
 
-		/* check if we want to expand an already existing waypoint? */
+		/* Check if we want to expand an already existing waypoint. */
 		if (wp->train_station.tile != INVALID_TILE) {
 			CommandCost ret = CanExpandRailStation(wp, new_location);
 			if (ret.Failed()) return ret;
@@ -280,7 +280,7 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 		CommandCost ret = wp->rect.BeforeAddRect(start_tile, width, height, StationRect::ADD_TEST);
 		if (ret.Failed()) return ret;
 	} else {
-		/* allocate and initialize new waypoint */
+		/* Check if we can create a new waypoint. */
 		if (!Waypoint::CanAllocateItem()) return_cmd_error(STR_ERROR_TOO_MANY_STATIONS_LOADING);
 	}
 

@@ -311,8 +311,8 @@ STR_BUTTON_CANCEL                                               :{BLACK}Cancelar
 STR_BUTTON_OK                                                   :{BLACK}OK
 
 # On screen keyboard window
-STR_OSK_KEYBOARD_LAYOUT                                         :`1234567890-=\qwertyuiop[]asdfghjkl;'  zxcvbnm,./ .
-STR_OSK_KEYBOARD_LAYOUT_CAPS                                    :~!@#$%^&*()_+|QWERTYUIOP{{}}ASDFGHJKL:"  ZXCVBNM<>? .
+STR_OSK_KEYBOARD_LAYOUT                                         :`1234567890-= qwertyuiop[]asdfghjkl;'#\zxcvbnm,./ .
+STR_OSK_KEYBOARD_LAYOUT_CAPS                                    :¬!"£$%^&*()_+ QWERTYUIOP{{}}ASDFGHJKL:@~|ZXCVBNM<>? .
 
 # Measurement tooltip
 STR_MEASURE_LENGTH                                              :{BLACK}Comprimento: {NUM}
@@ -437,6 +437,9 @@ STR_SCENEDIT_FILE_MENU_LOAD_HEIGHTMAP                           :Abrir mapa de a
 STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Sair do editor de cenários
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Sair
+
+STR_SCENEDIT_TOWN_MENU_BUILD_TOWN                               :Gerar localidades
+STR_SCENEDIT_TOWN_MENU_PACE_HOUSE                               :Colocar casas
 
 # Settings menu
 ###length 16
@@ -1475,7 +1478,7 @@ STR_CONFIG_SETTING_WARN_LOST_VEHICLE                            :Avisar se o ve�
 STR_CONFIG_SETTING_WARN_LOST_VEHICLE_HELPTEXT                   :Mostrar mensagens sobre veículos que não conseguem encontrar um caminho para o destino programado
 
 STR_CONFIG_SETTING_ORDER_REVIEW                                 :Revisar as ordens dos veículos: {STRING}
-STR_CONFIG_SETTING_ORDER_REVIEW_HELPTEXT                        :Quando ativado, as ordens dos veículos são periodicamente verificadas e alguns problemas evidentes, quando detectados, são relatados com uma mensagem de aviso
+STR_CONFIG_SETTING_ORDER_REVIEW_HELPTEXT                        :Quando ativado, as ordens dos veículos são periodicamente verificadas e alguns problemas obvios, quando detetados, são relatados por meio de uma mensagem
 ###length 3
 STR_CONFIG_SETTING_ORDER_REVIEW_OFF                             :Não
 STR_CONFIG_SETTING_ORDER_REVIEW_EXDEPOT                         :Sim, mas excluir veículos parados
@@ -1483,8 +1486,11 @@ STR_CONFIG_SETTING_ORDER_REVIEW_ON                              :De todos os ve�
 
 STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Avisar se o rendimento de um veículo está negativo: {STRING}
 ###length 2
-STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Quando ativado, uma mensagem de aviso será exibida quando um veículo não gerou lucro durante um ano
-STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Quando ativado, uma mensagem de aviso será exibida quando um veículo não gerou qualquer lucro durante um período
+STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Quando ativado, uma mensagem será exibida quando um veículo não gerou lucro durante um ano
+STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Quando ativado, uma mensagem será exibida quando um veículo não gerou qualquer lucro durante um período
+
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE                             :Avisar se um veículo está ficando velho: {STRING}
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE_HELPTEXT                    :Quando ativado, uma mensagem será exibida quando um veículo está ficando velho
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Veículos nunca saem de linha: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Quando ativado, todos os modelos de veículos permanecerão disponíveis para sempre após a sua introdução
@@ -1496,7 +1502,7 @@ STR_CONFIG_SETTING_TIMEKEEPING_UNITS_CALENDAR                   :Calendário
 STR_CONFIG_SETTING_TIMEKEEPING_UNITS_WALLCLOCK                  :Relógio de parede
 
 STR_CONFIG_SETTING_MINUTES_PER_YEAR                             :Minutos por ano: {STRING}
-STR_CONFIG_SETTING_MINUTES_PER_YEAR_HELPTEXT                    :Escolher o número de minutos em um ano do calendário. O padrão é 12 minutos. Defina como 0 para o tempo do calendário não mudar. Essa configuração não afeta a simulação econômica do jogo e só está disponível quando o tempo é baseado em relógio de parede
+STR_CONFIG_SETTING_MINUTES_PER_YEAR_HELPTEXT                    :Escolher o número de minutos em um ano do calendário. O padrão é 12 minutos. Defina como 0 para o tempo do calendário não mudar. Aumentar a duração do ano do calendário torna mais lenta a introdução de veículos, casas e outras infraestruturas. Isso não afeta a velocidade dos veículos nem a simulação econômica, exceto a inflação. Essa configuração só está disponível quando o tempo é baseado em relógio de parede
 
 STR_CONFIG_SETTING_MINUTES_PER_YEAR_VALUE                       :{NUM}
 ###setting-zero-is-special
@@ -2815,6 +2821,16 @@ STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Selecionar uma 
 STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :Escolher um tipo de estação de caminhões para construir. Ctrl+Clique para adicionar ou remover nos itens salvos
 STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Selecionar uma classe de objeto para mostrar
 STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :Escolher um tipo de objeto para construir. Ctrl+Clique para adicionar ou remover nos itens salvos. Ctrl+Clique+Arraste para selecionar a área diagonalmente. Pressione também Shift para só mostrar o custo estimado
+STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Selecionar uma zona urbana para mostrar
+STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Selecionar um tipo de casa para construir. Ctrl+Clique para adicionar ou remover nos itens salvos
+
+STR_HOUSE_PICKER_CAPTION                                        :Seleção de Casas
+
+STR_HOUSE_PICKER_CLASS_ZONE1                                    :Borda
+STR_HOUSE_PICKER_CLASS_ZONE2                                    :Subúrbio
+STR_HOUSE_PICKER_CLASS_ZONE3                                    :Periferia Distante
+STR_HOUSE_PICKER_CLASS_ZONE4                                    :Periferia Próxima
+STR_HOUSE_PICKER_CLASS_ZONE5                                    :Centro da cidade
 
 STR_STATION_CLASS_DFLT                                          :Padrão
 STR_STATION_CLASS_DFLT_STATION                                  :Estação padrão
@@ -5002,6 +5018,7 @@ STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... não
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Trabalhos sendo realizados na estrada
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Não é possível remover esta localidade...{}Uma estação ou depósito refere-se à localidade ou não é possível remover um quadrado que pertence à mesma
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... não há local adequado para uma estátua no centro desta localidade
+STR_ERROR_CAN_T_BUILD_HOUSE                                     :{WHITE}Não é possível construir casa...
 
 # Industry related errors
 STR_ERROR_TOO_MANY_INDUSTRIES                                   :{WHITE}... há indústrias demais
@@ -5039,6 +5056,8 @@ STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :{WHITE}Não é 
 
 STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :{WHITE}Adjacente a mais de uma estação/local de carga existente
 STR_ERROR_STATION_TOO_SPREAD_OUT                                :{WHITE}... estação muito extensa
+STR_ERROR_STATION_DISALLOWED_NUMBER_TRACKS                      :{WHITE}... número de linhas não suportado
+STR_ERROR_STATION_DISALLOWED_LENGTH                             :{WHITE}... comprimento não suportado
 STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Há estações/locais de carga demais
 STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Há partes de estação ferroviária demais
 STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Há paradas de ônibus demais

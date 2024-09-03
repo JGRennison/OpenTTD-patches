@@ -171,6 +171,7 @@ struct GUISettings : public TimeSettings {
 	bool        lost_vehicle_warn;                               ///< if a vehicle can't find its destination, show a warning
 	bool        restriction_wait_vehicle_warn;                   ///< if a vehicle is waiting for an extended time due to a routing restriction, show a warning
 	uint8_t     order_review_system;                             ///< perform order reviews on vehicles
+	bool        old_vehicle_warn;                                ///< if a vehicle is getting old, show a warning
 	uint8_t     no_depot_order_warn;                             ///< if a non-air vehicle doesn't have at least one depot order, show a warning
 	bool        vehicle_income_warn;                             ///< if a vehicle isn't generating income, show a warning
 	bool        show_finances;                                   ///< show finances at end of year
@@ -843,15 +844,6 @@ struct DebugSettings {
 	uint32_t chicken_bits;                   ///< chicken bits
 	uint32_t newgrf_optimiser_flags;         ///< NewGRF optimiser flags
 };
-
-/** Scenario editor settings. */
-struct ScenarioSettings {
-	bool multiple_buildings;                 ///< allow manually adding more than one church/stadium
-	bool house_ignore_dates;                 ///< allow manually adding houses regardless of date restrictions
-	uint8_t house_ignore_zones;              ///< allow manually adding houses regardless of zone restrictions
-	bool house_ignore_grf;                   ///< allow manually adding houses regardless of GRF restrictions
-};
-
 /** Settings related to currency/unit systems. */
 struct ClientLocaleSettings {
 	bool sync_locale_network_server;         ///< sync locale settings with network server
@@ -893,7 +885,6 @@ struct ClientSettings {
 	SoundSettings        sound;              ///< sound effect settings
 	MusicSettings        music;              ///< settings related to music/sound
 	NewsSettings         news_display;       ///< news display settings.
-	ScenarioSettings     scenario;           ///< scenario editor settings
 };
 
 /** The current settings for this game. */

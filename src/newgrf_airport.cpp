@@ -154,14 +154,14 @@ void AirportOverrideManager::SetEntitySpec(AirportSpec *as)
 	}
 }
 
-/* virtual */ uint32_t AirportScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra *extra) const
+/* virtual */ uint32_t AirportScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra &extra) const
 {
 	switch (variable) {
 		case 0x40: return this->layout;
 	}
 
 	if (this->st == nullptr) {
-		extra->available = false;
+		extra.available = false;
 		return UINT_MAX;
 	}
 
@@ -173,7 +173,7 @@ void AirportOverrideManager::SetEntitySpec(AirportSpec *as)
 		case 0xFA: return ClampTo<uint16_t>((this->st->build_date - CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR).base());
 	}
 
-	return this->st->GetNewGRFVariable(this->ro, variable, parameter, &(extra->available));
+	return this->st->GetNewGRFVariable(this->ro, variable, parameter, extra.available);
 }
 
 GrfSpecFeature AirportResolverObject::GetFeature() const

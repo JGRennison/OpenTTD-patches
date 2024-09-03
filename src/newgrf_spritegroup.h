@@ -634,7 +634,7 @@ struct ScopeResolver {
 	virtual uint32_t GetRandomBits() const;
 	virtual uint32_t GetTriggers() const;
 
-	virtual uint32_t GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra *extra) const;
+	virtual uint32_t GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra &extra) const;
 	virtual void StorePSA(uint reg, int32_t value);
 };
 

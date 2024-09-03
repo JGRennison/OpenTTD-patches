@@ -15,6 +15,7 @@
 #include "strings_func.h"
 #include "gfx_type.h"
 #include "gfx_func.h"
+#include "gfx_layout.h"
 #include "window_func.h"
 #include "core/alloc_func.hpp"
 
@@ -311,18 +312,55 @@ void Textbuf::UpdateWidth()
 /** Update pixel position of the caret. */
 void Textbuf::UpdateCaretPosition()
 {
-	this->caretxoffs = this->chars > 1 ? GetCharPosInString(this->buf, this->buf + this->caretpos, FS_NORMAL).x : 0;
+	const auto pos = GetCharPosInString(this->buf, this->buf + this->caretpos, FS_NORMAL);
+	this->caretxoffs = _current_text_dir == TD_LTR ? pos.left : pos.right;
 }
 
 /** Update pixel positions of the marked text area. */
 void Textbuf::UpdateMarkedText()
 {
 	if (this->markend != 0) {
-		this->markxoffs  = GetCharPosInString(this->buf, this->buf + this->markpos, FS_NORMAL).x;
-		this->marklength = GetCharPosInString(this->buf, this->buf + this->markend, FS_NORMAL).x - this->markxoffs;
+		const auto pos = GetCharPosInString(this->buf, this->buf + this->markpos, FS_NORMAL);
+		const auto end = GetCharPosInString(this->buf, this->buf + this->markend, FS_NORMAL);
+		this->markxoffs = std::min(pos.left, end.left);
+		this->marklength = std::max(pos.right, end.right) - this->markxoffs;
 	} else {
 		this->markxoffs = this->marklength = 0;
 	}
+}
+
+/**
+ * Move to previous character position.
+ * @param what Move ITER_CHARACTER or ITER_WORD.
+ * @return true iff able to move.
+ */
+bool Textbuf::MovePrev(StringIterator::IterType what)
+{
+	if (this->caretpos == 0) return false;
+
+	size_t pos = this->char_iter->Prev(what);
+	if (pos == StringIterator::END) return true;
+
+	this->caretpos = static_cast<uint16_t>(pos);
+	this->UpdateCaretPosition();
+	return true;
+}
+
+/**
+ * Move to next character position.
+ * @param what Move ITER_CHARACTER or ITER_WORD.
+ * @return true iff able to move.
+ */
+bool Textbuf::MoveNext(StringIterator::IterType what)
+{
+	if (this->caretpos >= this->bytes - 1) return false;
+
+	size_t pos = this->char_iter->Next(what);
+	if (pos == StringIterator::END) return true;
+
+	this->caretpos = static_cast<uint16_t>(pos);
+	this->UpdateCaretPosition();
+	return true;
 }
 
 /**
@@ -336,26 +374,14 @@ bool Textbuf::MovePos(uint16_t keycode)
 	switch (keycode) {
 		case WKC_LEFT:
 		case WKC_CTRL | WKC_LEFT: {
-			if (this->caretpos == 0) break;
-
-			size_t pos = this->char_iter->Prev(keycode & WKC_CTRL ? StringIterator::ITER_WORD : StringIterator::ITER_CHARACTER);
-			if (pos == StringIterator::END) return true;
-
-			this->caretpos = (uint16_t)pos;
-			this->UpdateCaretPosition();
-			return true;
+			auto move_type = (keycode & WKC_CTRL) != 0 ? StringIterator::ITER_WORD : StringIterator::ITER_CHARACTER;
+			return (_current_text_dir == TD_LTR) ? this->MovePrev(move_type) : this->MoveNext(move_type);
 		}
 
 		case WKC_RIGHT:
 		case WKC_CTRL | WKC_RIGHT: {
-			if (this->caretpos >= this->bytes - 1) break;
-
-			size_t pos = this->char_iter->Next(keycode & WKC_CTRL ? StringIterator::ITER_WORD : StringIterator::ITER_CHARACTER);
-			if (pos == StringIterator::END) return true;
-
-			this->caretpos = (uint16_t)pos;
-			this->UpdateCaretPosition();
-			return true;
+			auto move_type = (keycode & WKC_CTRL) != 0 ? StringIterator::ITER_WORD : StringIterator::ITER_CHARACTER;
+			return (_current_text_dir == TD_LTR) ? this->MoveNext(move_type) : this->MovePrev(move_type);
 		}
 
 		case WKC_HOME:

@@ -360,6 +360,7 @@ STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Hætta í korta
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Hætta
 
+
 # Settings menu
 ###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Stillingar
@@ -1239,6 +1240,7 @@ STR_CONFIG_SETTING_ORDER_REVIEW_ON                              :Allra farartæk
 STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Birta viðvörun ef tap er af rekstri farartækis: {STRING}
 ###length 2
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Þegar þessi stilling er virk, eru frétta boð send ef farartæki hafa ekki skilað hagnaði síðasta dagatals ár
+
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Farartæki úreldast aldrei: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Ef þessi stilling er virk, eru öll farartæki alltaf í boði eftir að þau voru fyrst kynnt til sögunnar
@@ -2220,6 +2222,8 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Lengd le
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Veldu lengd lestarstöðvar
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Draga & Sleppa
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Byggja lestarstöð með 'draga og sleppa' aðferðinni
+
+
 
 
 

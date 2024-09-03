@@ -1398,7 +1398,7 @@ struct BuildVehicleWindowBase : Window {
 	Train **virtual_train_out;                  ///< Virtual train ptr
 	bool listview_mode;                         ///< If set, only display the available vehicles and do not show a 'build' button.
 
-	BuildVehicleWindowBase(WindowDesc *desc, TileIndex tile, VehicleType type, Train **virtual_train_out) : Window(desc)
+	BuildVehicleWindowBase(WindowDesc &desc, TileIndex tile, VehicleType type, Train **virtual_train_out) : Window(desc)
 	{
 		this->vehicle_type = type;
 		this->tile = tile;
@@ -1602,7 +1602,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		}
 	}
 
-	BuildVehicleWindow(WindowDesc *desc, TileIndex tile, VehicleType type, Train **virtual_train_out) : BuildVehicleWindowBase(desc, tile, type, virtual_train_out), vehicle_editbox(MAX_LENGTH_VEHICLE_NAME_CHARS * MAX_CHAR_LENGTH, MAX_LENGTH_VEHICLE_NAME_CHARS)
+	BuildVehicleWindow(WindowDesc &desc, TileIndex tile, VehicleType type, Train **virtual_train_out) : BuildVehicleWindowBase(desc, tile, type, virtual_train_out), vehicle_editbox(MAX_LENGTH_VEHICLE_NAME_CHARS * MAX_CHAR_LENGTH, MAX_LENGTH_VEHICLE_NAME_CHARS)
 	{
 		this->sel_engine = INVALID_ENGINE;
 
@@ -2454,7 +2454,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		}
 	}
 
-	BuildVehicleWindowTrainAdvanced(WindowDesc *desc, TileIndex tile, Train **virtual_train_out) : BuildVehicleWindowBase(desc, tile, VEH_TRAIN, virtual_train_out)
+	BuildVehicleWindowTrainAdvanced(WindowDesc &desc, TileIndex tile, Train **virtual_train_out) : BuildVehicleWindowBase(desc, tile, VEH_TRAIN, virtual_train_out)
 	{
 		this->loco.sel_engine             = INVALID_ENGINE;
 		this->loco.sort_criteria          = _last_sort_criteria_loco;
@@ -3299,7 +3299,7 @@ static WindowDesc _build_vehicle_desc(__FILE__, __LINE__,
 	WDP_AUTO, "build_vehicle", 240, 268,
 	WC_BUILD_VEHICLE, WC_NONE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_build_vehicle_widgets), std::end(_nested_build_vehicle_widgets),
+	_nested_build_vehicle_widgets,
 	&BuildVehicleWindow::hotkeys
 );
 
@@ -3307,7 +3307,7 @@ static WindowDesc _build_template_vehicle_desc(__FILE__, __LINE__,
 	WDP_AUTO, "build_template_vehicle", 240, 268,
 	WC_BUILD_VIRTUAL_TRAIN, WC_CREATE_TEMPLATE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_build_vehicle_widgets), std::end(_nested_build_vehicle_widgets),
+	_nested_build_vehicle_widgets,
 	&BuildVehicleWindow::hotkeys, &_build_vehicle_desc
 );
 
@@ -3315,7 +3315,7 @@ static WindowDesc _build_vehicle_desc_train_advanced(__FILE__, __LINE__,
 	WDP_AUTO, "build_vehicle_dual", 480, 268,
 	WC_BUILD_VEHICLE, WC_NONE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_build_vehicle_widgets_train_advanced), std::end(_nested_build_vehicle_widgets_train_advanced),
+	_nested_build_vehicle_widgets_train_advanced,
 	&BuildVehicleWindow::hotkeys
 );
 
@@ -3323,7 +3323,7 @@ static WindowDesc _build_template_vehicle_desc_advanced(__FILE__, __LINE__,
 	WDP_AUTO, "build_template_vehicle_dual", 480, 268,
 	WC_BUILD_VIRTUAL_TRAIN, WC_CREATE_TEMPLATE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_build_vehicle_widgets_train_advanced), std::end(_nested_build_vehicle_widgets_train_advanced),
+	_nested_build_vehicle_widgets_train_advanced,
 	&BuildVehicleWindow::hotkeys, &_build_vehicle_desc_train_advanced
 );
 
@@ -3341,9 +3341,9 @@ void ShowBuildVehicleWindow(const TileIndex tile, const VehicleType type)
 	CloseWindowById(WC_BUILD_VEHICLE, num);
 
 	if (type == VEH_TRAIN && _settings_client.gui.dual_pane_train_purchase_window) {
-		new BuildVehicleWindowTrainAdvanced(&_build_vehicle_desc_train_advanced, tile, nullptr);
+		new BuildVehicleWindowTrainAdvanced(_build_vehicle_desc_train_advanced, tile, nullptr);
 	} else {
-		new BuildVehicleWindow(&_build_vehicle_desc, tile, type, nullptr);
+		new BuildVehicleWindow(_build_vehicle_desc, tile, type, nullptr);
 	}
 }
 
@@ -3354,8 +3354,8 @@ void ShowTemplateTrainBuildVehicleWindow(Train **virtual_train)
 	CloseWindowById(WC_BUILD_VIRTUAL_TRAIN, 0);
 
 	if (_settings_client.gui.dual_pane_train_purchase_window) {
-		new BuildVehicleWindowTrainAdvanced(&_build_template_vehicle_desc_advanced, INVALID_TILE, virtual_train);
+		new BuildVehicleWindowTrainAdvanced(_build_template_vehicle_desc_advanced, INVALID_TILE, virtual_train);
 	} else {
-		new BuildVehicleWindow(&_build_template_vehicle_desc, INVALID_TILE, VEH_TRAIN, virtual_train);
+		new BuildVehicleWindow(_build_template_vehicle_desc, INVALID_TILE, VEH_TRAIN, virtual_train);
 	}
 }

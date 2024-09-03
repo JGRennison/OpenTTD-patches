@@ -518,6 +518,7 @@ STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Forlasi scenaro
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Forlasi
 
+
 # Settings menu
 ###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Ludaj agordoj
@@ -1513,6 +1514,7 @@ STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Avertu se gajno
 ###length 2
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Kiam tiu ĉi agordo estas aktiva, aperas anonco kiam iu veturilo ne faris profiton dum jaro
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Kiam tiu ĉi agordo estas aktiva, aperas anonco kiam iu veturilo ne faris profiton dum periodo
+
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Veturiloj neniam eluziĝas: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Se tiu ĉi agordo estas aktiva, ĉiuj modeloj de veturiloj restos aĉeteblaj por ĉiam post ekhaveblo
@@ -2750,6 +2752,8 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Platform
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Elektu longon de stacidomo
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Tiru k metu
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Tiru por konstrui stacidomon
+
+
 
 
 

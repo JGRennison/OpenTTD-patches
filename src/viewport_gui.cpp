@@ -58,7 +58,7 @@ static constexpr NWidgetPart _nested_extra_viewport_widgets[] = {
 
 class ExtraViewportWindow : public Window {
 public:
-	ExtraViewportWindow(WindowDesc *desc, int window_number, TileIndex tile) : Window(desc)
+	ExtraViewportWindow(WindowDesc &desc, int window_number, TileIndex tile) : Window(desc)
 	{
 		this->InitNested(window_number);
 
@@ -184,7 +184,7 @@ static WindowDesc _extra_viewport_desc(__FILE__, __LINE__,
 	WDP_AUTO, "extra_viewport", 300, 268,
 	WC_EXTRA_VIEWPORT, WC_NONE,
 	0,
-	std::begin(_nested_extra_viewport_widgets), std::end(_nested_extra_viewport_widgets)
+	_nested_extra_viewport_widgets
 );
 
 /**
@@ -198,7 +198,7 @@ void ShowExtraViewportWindow(TileIndex tile)
 	/* find next free window number for extra viewport */
 	while (FindWindowById(WC_EXTRA_VIEWPORT, i) != nullptr) i++;
 
-	new ExtraViewportWindow(&_extra_viewport_desc, i, tile);
+	new ExtraViewportWindow(_extra_viewport_desc, i, tile);
 }
 
 /**

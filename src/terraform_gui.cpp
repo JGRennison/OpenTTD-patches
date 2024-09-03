@@ -12,6 +12,7 @@
 #include "clear_map.h"
 #include "company_func.h"
 #include "company_base.h"
+#include "house.h"
 #include "gui.h"
 #include "window_gui.h"
 #include "window_func.h"
@@ -33,7 +34,6 @@
 #include "engine_override.h"
 #include "terraform_gui.h"
 #include "cheat_func.h"
-#include "town_gui.h"
 #include "zoom_func.h"
 
 #include "widgets/terraform_widget.h"
@@ -206,7 +206,7 @@ static void PlaceProc_Measure(TileIndex tile)
 struct TerraformToolbarWindow : Window {
 	int last_user_action; ///< Last started user action.
 
-	TerraformToolbarWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
+	TerraformToolbarWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
 		/* This is needed as we like to have the tree available on OnInit. */
 		this->CreateNestedTree();
@@ -423,7 +423,7 @@ static WindowDesc _terraform_desc(__FILE__, __LINE__,
 	WDP_MANUAL, "toolbar_landscape", 0, 0,
 	WC_SCEN_LAND_GEN, WC_NONE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_terraform_widgets), std::end(_nested_terraform_widgets),
+	_nested_terraform_widgets,
 	&TerraformToolbarWindow::hotkeys
 );
 
@@ -438,13 +438,13 @@ Window *ShowTerraformToolbar(Window *link)
 
 	Window *w;
 	if (link == nullptr) {
-		w = AllocateWindowDescFront<TerraformToolbarWindow>(&_terraform_desc, 0);
+		w = AllocateWindowDescFront<TerraformToolbarWindow>(_terraform_desc, 0);
 		return w;
 	}
 
 	/* Delete the terraform toolbar to place it again. */
 	CloseWindowById(WC_SCEN_LAND_GEN, 0, true);
-	w = AllocateWindowDescFront<TerraformToolbarWindow>(&_terraform_desc, 0);
+	w = AllocateWindowDescFront<TerraformToolbarWindow>(_terraform_desc, 0);
 	/* Align the terraform toolbar under the main toolbar. */
 	w->top -= w->height;
 	w->SetDirty();
@@ -544,9 +544,6 @@ static constexpr NWidgetPart _nested_scen_edit_land_gen_widgets[] = {
 			NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_ETT_PLACE_OBJECT), SetMinimalSize(23, 22),
 										SetFill(0, 1), SetDataTip(SPR_IMG_TRANSMITTER, STR_SCENEDIT_TOOLBAR_PLACE_OBJECT),
 			NWidget(NWID_SPACER), SetFill(1, 0),
-			NWidget(WWT_IMGBTN, COLOUR_GREY, WID_ETT_PLACE_HOUSE), SetMinimalSize(23, 22),
-										SetFill(0, 1), SetDataTip(SPR_IMG_TOWN, STR_SCENEDIT_TOOLBAR_PLACE_HOUSE),
-			NWidget(NWID_SPACER), SetFill(1, 0),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
 			NWidget(NWID_SPACER), SetFill(1, 0),
@@ -611,7 +608,7 @@ static void ResetLandscapeConfirmationCallback(Window *, bool confirmed)
 struct ScenarioEditorLandscapeGenerationWindow : Window {
 	int last_user_action; ///< Last started user action.
 
-	ScenarioEditorLandscapeGenerationWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
+	ScenarioEditorLandscapeGenerationWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
 		this->CreateNestedTree();
 		this->SetButtonStates();
@@ -690,10 +687,6 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 
 			case WID_ETT_PLACE_OBJECT: // Place transmitter button
 				ShowBuildObjectPicker();
-				break;
-
-			case WID_ETT_PLACE_HOUSE: // Place house button
-				ShowBuildHousePicker();
 				break;
 
 			case WID_ETT_INCREASE_SIZE:
@@ -842,7 +835,6 @@ static Hotkey terraform_editor_hotkeys[] = {
 	Hotkey('R', "rocky", WID_ETT_PLACE_ROCKS),
 	Hotkey('T', "desert", WID_ETT_PLACE_DESERT),
 	Hotkey('O', "object", WID_ETT_PLACE_OBJECT),
-	Hotkey('H', "house", WID_ETT_PLACE_HOUSE),
 };
 
 HotkeyList ScenarioEditorLandscapeGenerationWindow::hotkeys("terraform_editor", terraform_editor_hotkeys, TerraformToolbarEditorGlobalHotkeys);
@@ -851,7 +843,7 @@ static WindowDesc _scen_edit_land_gen_desc(__FILE__, __LINE__,
 	WDP_AUTO, "toolbar_landscape_scen", 0, 0,
 	WC_SCEN_LAND_GEN, WC_NONE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_scen_edit_land_gen_widgets), std::end(_nested_scen_edit_land_gen_widgets),
+	_nested_scen_edit_land_gen_widgets,
 	&ScenarioEditorLandscapeGenerationWindow::hotkeys
 );
 
@@ -861,5 +853,5 @@ static WindowDesc _scen_edit_land_gen_desc(__FILE__, __LINE__,
  */
 Window *ShowEditorTerraformToolbar()
 {
-	return AllocateWindowDescFront<ScenarioEditorLandscapeGenerationWindow>(&_scen_edit_land_gen_desc, 0);
+	return AllocateWindowDescFront<ScenarioEditorLandscapeGenerationWindow>(_scen_edit_land_gen_desc, 0);
 }

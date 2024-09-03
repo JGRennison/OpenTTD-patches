@@ -352,6 +352,7 @@ STR_SCENEDIT_FILE_MENU_LOAD_SCENARIO                            :उद्दे
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :बंद करा
 
+
 # Settings menu
 ###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :खेळाचे पर्याय
@@ -848,6 +849,7 @@ STR_CONFIG_SETTING_WARN_LOST_VEHICLE                            : वाहन �
 ###length 2
 
 
+
 ###length 2
 
 
@@ -1193,6 +1195,8 @@ STR_NETWORK_SERVER_MESSAGE                                      :*** {1:STRING}
 # Rail waypoint construction window
 
 # Rail station construction window
+
+
 
 
 

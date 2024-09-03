@@ -750,6 +750,7 @@ STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Выйсьці 
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Выхад
 
+
 # Settings menu
 ###length 16
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Наладкі гульні
@@ -1793,6 +1794,7 @@ STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Папярэд�
 ###length 2
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Калі ўключана, вы атрымаеце паведамленьне аб транспартным сродку, які аніразу не атрымаў прыбытак на працягу году.
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Калі ўключана, вы атрымаеце паведамленьне аб транспартным сродку, які аніразу не атрымаў прыбытак на працягу цыклу.
+
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :Транспарт ніколі не выходзіць з ужытку: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Калі ўключана, усе мадэлі транспартных сродкаў пасьля з'яўленьня застануцца даступнымі назаўжды.
@@ -3115,6 +3117,8 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Даўж
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Выберыце даўжыню станцыйных каляінаў
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Участак
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Пабудаваць станцыю на выбраным участку зямлі
+
+
 
 
 

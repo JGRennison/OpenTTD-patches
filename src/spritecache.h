@@ -40,10 +40,21 @@ enum SpriteCacheCtrlFlags {
 
 extern uint _sprite_cache_size;
 
-typedef void *AllocatorProc(size_t size);
+/** SpriteAllocate that uses malloc to allocate memory. */
+class SimpleSpriteAllocator : public SpriteAllocator {
+protected:
+	void *AllocatePtr(size_t size) override;
+};
 
-void *SimpleSpriteAlloc(size_t size);
-void *GetRawSprite(SpriteID sprite, SpriteType type, uint8_t zoom_levels, AllocatorProc *allocator = nullptr, SpriteEncoder *encoder = nullptr);
+/** SpriteAllocator that allocates memory via a unique_ptr array. */
+class UniquePtrSpriteAllocator : public SpriteAllocator {
+public:
+	std::unique_ptr<uint8_t[]> data;
+protected:
+	void *AllocatePtr(size_t size) override;
+};
+
+void *GetRawSprite(SpriteID sprite, SpriteType type, uint8_t zoom_levels, SpriteAllocator *allocator = nullptr, SpriteEncoder *encoder = nullptr);
 bool SpriteExists(SpriteID sprite);
 
 SpriteType GetSpriteType(SpriteID sprite);

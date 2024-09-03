@@ -46,7 +46,7 @@ uint32_t GetNewSignalsSideVariable()
 	return side ? 1 : 0;
 }
 
-/* virtual */ uint32_t NewSignalsScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra *extra) const
+/* virtual */ uint32_t NewSignalsScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra &extra) const
 {
 	if (this->tile == INVALID_TILE) {
 		switch (variable) {
@@ -72,7 +72,7 @@ uint32_t GetNewSignalsSideVariable()
 
 	DEBUG(grf, 1, "Unhandled new signals tile variable 0x%X", variable);
 
-	extra->available = false;
+	extra.available = false;
 	return UINT_MAX;
 }
 

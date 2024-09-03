@@ -65,7 +65,7 @@ static WindowDesc _dropdown_desc(__FILE__, __LINE__,
 	WDP_MANUAL, nullptr, 0, 0,
 	WC_DROPDOWN_MENU, WC_NONE,
 	WDF_NO_FOCUS,
-	std::begin(_nested_dropdown_menu_widgets), std::end(_nested_dropdown_menu_widgets)
+	_nested_dropdown_menu_widgets
 );
 
 /** Drop-down menu window */
@@ -98,7 +98,7 @@ struct DropdownWindow : Window {
 	 * @param persist
 	 */
 	DropdownWindow(Window *parent, DropDownList &&list, int selected, WidgetID button, const Rect wi_rect, DropDownModeFlags mode_flags, Colours wi_colour, DropDownSyncFocus sync_parent_focus)
-			: Window(&_dropdown_desc)
+			: Window(_dropdown_desc)
 			, parent_button(button)
 			, wi_rect(wi_rect)
 			, list(std::move(list))

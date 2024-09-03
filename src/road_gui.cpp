@@ -367,7 +367,7 @@ struct BuildRoadToolbarWindow : Window {
 	const RoadTypeInfo *rti;    ///< Information about current road type
 	int last_started_action;    ///< Last started user action.
 
-	BuildRoadToolbarWindow(WindowDesc *desc, WindowNumber window_number) : Window(desc)
+	BuildRoadToolbarWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
 		this->Initialize(_cur_roadtype);
 		this->InitNested(window_number);
@@ -979,7 +979,7 @@ static WindowDesc _build_road_desc(__FILE__, __LINE__,
 	WDP_ALIGN_TOOLBAR, "toolbar_road", 0, 0,
 	WC_BUILD_TOOLBAR, WC_NONE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_build_road_widgets), std::end(_nested_build_road_widgets),
+	_nested_build_road_widgets,
 	&BuildRoadToolbarWindow::road_hotkeys
 );
 
@@ -1022,7 +1022,7 @@ static WindowDesc _build_tramway_desc(__FILE__, __LINE__,
 	WDP_ALIGN_TOOLBAR, "toolbar_tramway", 0, 0,
 	WC_BUILD_TOOLBAR, WC_NONE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_build_tramway_widgets), std::end(_nested_build_tramway_widgets),
+	_nested_build_tramway_widgets,
 	&BuildRoadToolbarWindow::tram_hotkeys
 );
 
@@ -1041,7 +1041,7 @@ Window *ShowBuildRoadToolbar(RoadType roadtype)
 	CloseWindowByClass(WC_BUILD_TOOLBAR);
 	_cur_roadtype = roadtype;
 
-	return AllocateWindowDescFront<BuildRoadToolbarWindow>(RoadTypeIsRoad(_cur_roadtype) ? &_build_road_desc : &_build_tramway_desc, TRANSPORT_ROAD);
+	return AllocateWindowDescFront<BuildRoadToolbarWindow>(RoadTypeIsRoad(_cur_roadtype) ? _build_road_desc : _build_tramway_desc, TRANSPORT_ROAD);
 }
 
 static constexpr NWidgetPart _nested_build_road_scen_widgets[] = {
@@ -1077,7 +1077,7 @@ static WindowDesc _build_road_scen_desc(__FILE__, __LINE__,
 	WDP_AUTO, "toolbar_road_scen", 0, 0,
 	WC_SCEN_BUILD_TOOLBAR, WC_NONE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_build_road_scen_widgets), std::end(_nested_build_road_scen_widgets),
+	_nested_build_road_scen_widgets,
 	&BuildRoadToolbarWindow::road_hotkeys
 );
 
@@ -1112,7 +1112,7 @@ static WindowDesc _build_tramway_scen_desc(__FILE__, __LINE__,
 	WDP_AUTO, "toolbar_tram_scen", 0, 0,
 	WC_SCEN_BUILD_TOOLBAR, WC_NONE,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_build_tramway_scen_widgets), std::end(_nested_build_tramway_scen_widgets),
+	_nested_build_tramway_scen_widgets,
 	&BuildRoadToolbarWindow::tram_hotkeys
 );
 
@@ -1125,11 +1125,11 @@ Window *ShowBuildRoadScenToolbar(RoadType roadtype)
 	CloseWindowById(WC_SCEN_BUILD_TOOLBAR, TRANSPORT_ROAD);
 	_cur_roadtype = roadtype;
 
-	return AllocateWindowDescFront<BuildRoadToolbarWindow>(RoadTypeIsRoad(_cur_roadtype) ? &_build_road_scen_desc : &_build_tramway_scen_desc, TRANSPORT_ROAD);
+	return AllocateWindowDescFront<BuildRoadToolbarWindow>(RoadTypeIsRoad(_cur_roadtype) ? _build_road_scen_desc : _build_tramway_scen_desc, TRANSPORT_ROAD);
 }
 
 struct BuildRoadDepotWindow : public PickerWindowBase {
-	BuildRoadDepotWindow(WindowDesc *desc, Window *parent) : PickerWindowBase(desc, parent)
+	BuildRoadDepotWindow(WindowDesc &desc, Window *parent) : PickerWindowBase(desc, parent)
 	{
 		this->CreateNestedTree();
 
@@ -1210,12 +1210,12 @@ static WindowDesc _build_road_depot_desc(__FILE__, __LINE__,
 	WDP_AUTO, nullptr, 0, 0,
 	WC_BUILD_DEPOT, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_build_road_depot_widgets), std::end(_nested_build_road_depot_widgets)
+	_nested_build_road_depot_widgets
 );
 
 static void ShowRoadDepotPicker(Window *parent)
 {
-	new BuildRoadDepotWindow(&_build_road_depot_desc, parent);
+	new BuildRoadDepotWindow(_build_road_depot_desc, parent);
 }
 
 template <RoadStopType roadstoptype>
@@ -1346,7 +1346,7 @@ private:
 	}
 
 public:
-	BuildRoadStationWindow(WindowDesc *desc, Window *parent, RoadStopType rs) : PickerWindow(desc, parent, TRANSPORT_ROAD, GetRoadStopPickerCallbacks(rs))
+	BuildRoadStationWindow(WindowDesc &desc, Window *parent, RoadStopType rs) : PickerWindow(desc, parent, TRANSPORT_ROAD, GetRoadStopPickerCallbacks(rs))
 	{
 		this->coverage_height = 2 * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
 
@@ -1589,7 +1589,7 @@ static WindowDesc _road_station_picker_desc(__FILE__, __LINE__,
 	WDP_AUTO, "build_station_road", 0, 0,
 	WC_BUS_STATION, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_road_station_picker_widgets), std::end(_nested_road_station_picker_widgets),
+	_nested_road_station_picker_widgets,
 	&BuildRoadStationWindow::road_hotkeys
 );
 
@@ -1629,13 +1629,13 @@ static WindowDesc _tram_station_picker_desc(__FILE__, __LINE__,
 	WDP_AUTO, "build_station_tram", 0, 0,
 	WC_BUS_STATION, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_tram_station_picker_widgets), std::end(_nested_tram_station_picker_widgets),
+	_nested_tram_station_picker_widgets,
 	&BuildRoadStationWindow::tram_hotkeys
 );
 
 static void ShowRVStationPicker(Window *parent, RoadStopType rs)
 {
-	new BuildRoadStationWindow(RoadTypeIsRoad(_cur_roadtype) ? &_road_station_picker_desc : &_tram_station_picker_desc, parent, rs);
+	new BuildRoadStationWindow(RoadTypeIsRoad(_cur_roadtype) ? _road_station_picker_desc : _tram_station_picker_desc, parent, rs);
 }
 
 class RoadWaypointPickerCallbacks : public PickerCallbacksNewGRFClass<RoadStopClass> {
@@ -1718,7 +1718,7 @@ public:
 /* static */ RoadWaypointPickerCallbacks RoadWaypointPickerCallbacks::instance;
 
 struct BuildRoadWaypointWindow : public PickerWindow {
-	BuildRoadWaypointWindow(WindowDesc *desc, Window *parent) : PickerWindow(desc, parent, TRANSPORT_ROAD, RoadWaypointPickerCallbacks::instance)
+	BuildRoadWaypointWindow(WindowDesc &desc, Window *parent) : PickerWindow(desc, parent, TRANSPORT_ROAD, RoadWaypointPickerCallbacks::instance)
 	{
 		this->ConstructWindow();
 		this->InvalidateData();
@@ -1747,13 +1747,13 @@ static WindowDesc _build_road_waypoint_desc(__FILE__, __LINE__,
 	WDP_AUTO, "build_road_waypoint", 0, 0,
 	WC_BUILD_WAYPOINT, WC_BUILD_TOOLBAR,
 	WDF_CONSTRUCTION,
-	std::begin(_nested_build_road_waypoint_widgets), std::end(_nested_build_road_waypoint_widgets)
+	_nested_build_road_waypoint_widgets
 );
 
 static void ShowBuildRoadWaypointPicker(Window *parent)
 {
 	if (!RoadWaypointPickerCallbacks::instance.IsActive()) return;
-	new BuildRoadWaypointWindow(&_build_road_waypoint_desc, parent);
+	new BuildRoadWaypointWindow(_build_road_waypoint_desc, parent);
 }
 
 void InitializeRoadGui()
