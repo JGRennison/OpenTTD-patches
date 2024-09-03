@@ -53,7 +53,7 @@ enum OrderWidgets : WidgetID {
 	WID_O_TEXT_LABEL,                ///< Choose text label.
 	WID_O_DEPARTURE_VIA_TYPE,        ///< Choose departure board via subtype.
 	WID_O_SEL_COND_VALUE,            ///< Widget for conditional value or conditional cargo type.
-	WID_O_SEL_COND_AUX,              ///< Widget for auxiliary conditional cargo type.
+	WID_O_SEL_COND_AUX,              ///< Widget for auxiliary conditional cargo type. WID_O_SEL_COND_AUX... IDs must be sequential.
 	WID_O_SEL_COND_AUX2,             ///< Widget for auxiliary conditional via button.
 	WID_O_SEL_COND_AUX3,             ///< Widget for auxiliary conditional station button.
 	WID_O_SEL_COND_AUX4,             ///< Widget for auxiliary conditional refit mode button.

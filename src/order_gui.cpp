@@ -34,6 +34,7 @@
 #include "error.h"
 #include "tracerestrict.h"
 #include "scope.h"
+#include "zoom_func.h"
 #include "core/backup_type.hpp"
 
 #include "widgets/order_widget.h"
@@ -1511,9 +1512,10 @@ private:
 		DP_ROW_EMPTY       = 7, ///< Display no buttons in the top row of the ship/airplane order window.
 
 		/* WID_O_SEL_COND_VALUE */
-		DP_COND_VALUE_NUMBER = 0, ///< Display number widget
-		DP_COND_VALUE_CARGO  = 1, ///< Display dropdown widget cargo types
-		DP_COND_VALUE_SLOT   = 2, ///< Display dropdown widget tracerestrict slots
+		DP_COND_VALUE_NUMBER       = 0, ///< Display number widget
+		DP_COND_VALUE_NUMBER_SHORT = 1, ///< Display number widget (short)
+		DP_COND_VALUE_CARGO        = 2, ///< Display dropdown widget cargo types
+		DP_COND_VALUE_SLOT         = 3, ///< Display dropdown widget tracerestrict slots
 
 		/* WID_O_SEL_COND_AUX */
 		DP_COND_AUX_CARGO = 0, ///< Display dropdown widget cargo types
@@ -1552,10 +1554,8 @@ private:
 	bool can_do_refit;     ///< Vehicle chain can be refitted in depot.
 	bool can_do_autorefit; ///< Vehicle chain can be auto-refitted.
 	int query_text_widget; ///< widget which most recently called ShowQueryString
-	int current_aux_plane;
-	int current_aux2_plane;
-	int current_aux3_plane;
-	int current_aux4_plane;
+	std::array<int, 4> current_aux_planes;
+	int current_value_plane;
 	int current_mgmt_plane;
 
 	/**
@@ -1953,25 +1953,20 @@ public:
 		}
 		this->GetWidget<NWidgetStacked>(WID_O_SEL_OCCUPANCY)->SetDisplayedPlane(_settings_client.gui.show_order_occupancy_by_default ? 0 : SZSP_NONE);
 		this->SetWidgetLoweredState(WID_O_OCCUPANCY_TOGGLE, _settings_client.gui.show_order_occupancy_by_default);
-		this->current_aux_plane = SZSP_NONE;
-		this->current_aux2_plane = SZSP_NONE;
-		this->current_aux3_plane = SZSP_NONE;
-		this->current_aux4_plane = SZSP_NONE;
+		this->current_aux_planes.fill(SZSP_NONE);
+		this->current_value_plane = DP_COND_VALUE_NUMBER;
 		this->current_mgmt_plane = this->GetOrderManagementPlane();
 		if (v->owner == _local_company) {
-			NWidgetStacked *aux_sel = this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_AUX);
-			NWidgetStacked *aux2_sel = this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_AUX2);
-			NWidgetStacked *aux3_sel = this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_AUX3);
-			NWidgetStacked *aux4_sel = this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_AUX4);
-			aux_sel->independent_planes = true;
-			aux2_sel->independent_planes = true;
-			aux3_sel->independent_planes = true;
-			aux4_sel->independent_planes = true;
-			aux_sel->SetDisplayedPlane(this->current_aux_plane);
-			aux2_sel->SetDisplayedPlane(this->current_aux2_plane);
-			aux3_sel->SetDisplayedPlane(this->current_aux3_plane);
-			aux4_sel->SetDisplayedPlane(this->current_aux4_plane);
-			this->GetWidget<NWidgetStacked>(WID_O_SEL_MGMT)->SetDisplayedPlane(this->current_mgmt_plane);
+			auto setup_plane = [&](WidgetID id, int current, bool independent) {
+				NWidgetStacked *sel = this->GetWidget<NWidgetStacked>(id);
+				sel->independent_planes = independent;
+				sel->SetDisplayedPlane(current);
+			};
+			for (size_t i = 0; i < this->current_aux_planes.size(); i++) {
+				setup_plane((WidgetID)(WID_O_SEL_COND_AUX + i), this->current_aux_planes[i], true);
+			}
+			setup_plane(WID_O_SEL_COND_VALUE, this->current_value_plane, true);
+			setup_plane(WID_O_SEL_MGMT, this->current_mgmt_plane, false);
 		}
 		this->FinishInitNested(v->index);
 
@@ -2207,22 +2202,18 @@ public:
 
 		auto aux_plane_guard = scope_guard([&]() {
 			bool reinit = false;
-			if (this->current_aux_plane != aux_sel->shown_plane) {
-				this->current_aux_plane = aux_sel->shown_plane;
-				reinit = true;
-			}
-			if (this->current_aux2_plane != aux2_sel->shown_plane) {
-				this->current_aux2_plane = aux2_sel->shown_plane;
-				reinit = true;
-			}
-			if (this->current_aux3_plane != aux3_sel->shown_plane) {
-				this->current_aux3_plane = aux3_sel->shown_plane;
-				reinit = true;
-			}
-			if (this->current_aux4_plane != aux4_sel->shown_plane) {
-				this->current_aux4_plane = aux4_sel->shown_plane;
-				reinit = true;
-			}
+			auto reinit_on_plane_change = [&reinit](NWidgetStacked *sel, int &current) {
+				if (current != sel->shown_plane) {
+					current = sel->shown_plane;
+					reinit = true;
+				}
+			};
+			reinit_on_plane_change(aux_sel, this->current_aux_planes[0]);
+			reinit_on_plane_change(aux2_sel, this->current_aux_planes[1]);
+			reinit_on_plane_change(aux3_sel, this->current_aux_planes[2]);
+			reinit_on_plane_change(aux4_sel, this->current_aux_planes[3]);
+			reinit_on_plane_change(this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE), this->current_value_plane);
+
 			if ((this->current_mgmt_plane == SZSP_NONE) != (mgmt_sel->shown_plane == SZSP_NONE)) {
 				this->current_mgmt_plane = mgmt_sel->shown_plane;
 				reinit = true;
@@ -2345,6 +2336,8 @@ public:
 						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_SLOT);
 					} else if (is_sched_dispatch) {
 						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(SZSP_NONE);
+					} else if (ConditionVariableTestsCargoWaitingAmount(ocv)) {
+						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_NUMBER_SHORT);
 					} else {
 						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_NUMBER);
 					}
@@ -3941,6 +3934,8 @@ static constexpr NWidgetPart _nested_orders_train_widgets[] = {
 				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_COND_VALUE),
 					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_COND_VALUE), SetMinimalSize(124, 12), SetFill(1, 0),
 															SetDataTip(STR_JUST_COMMA, STR_ORDER_CONDITIONAL_VALUE_TOOLTIP), SetResize(1, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_COND_VALUE), SetMinimalSize(62, 12), SetFill(0, 0),
+															SetDataTip(STR_JUST_COMMA, STR_ORDER_CONDITIONAL_VALUE_TOOLTIP), SetResize(1, 0),
 					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_CARGO), SetMinimalSize(124, 12), SetFill(1, 0),
 															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_CARGO_TOOLTIP), SetResize(1, 0),
 					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_SLOT), SetMinimalSize(124, 12), SetFill(1, 0),
@@ -4087,6 +4082,8 @@ static constexpr NWidgetPart _nested_orders_widgets[] = {
 													SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP), SetResize(1, 0),
 				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_COND_VALUE),
 					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_COND_VALUE), SetMinimalSize(124, 12), SetFill(1, 0),
+															SetDataTip(STR_JUST_COMMA, STR_ORDER_CONDITIONAL_VALUE_TOOLTIP), SetResize(1, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_O_COND_VALUE), SetMinimalSize(62, 12), SetFill(0, 0),
 															SetDataTip(STR_JUST_COMMA, STR_ORDER_CONDITIONAL_VALUE_TOOLTIP), SetResize(1, 0),
 					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_CARGO), SetMinimalSize(124, 12), SetFill(1, 0),
 													SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_CARGO_TOOLTIP), SetResize(1, 0),
