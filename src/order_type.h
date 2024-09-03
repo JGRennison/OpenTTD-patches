@@ -230,6 +230,7 @@ enum ModifyOrderFlags : uint8_t {
 	MOF_COND_VALUE,      ///< The value to set the condition to.
 	MOF_COND_VALUE_2,    ///< The secondary value to set the condition to.
 	MOF_COND_VALUE_3,    ///< The tertiary value to set the condition to.
+	MOF_COND_VALUE_4,    ///< The quaternary value to set the condition to.
 	MOF_COND_STATION_ID, ///< The station ID to set the condition to.
 	MOF_COND_DESTINATION,///< Change the destination of a conditional order.
 	MOF_WAYPOINT_FLAGS,  ///< Change the waypoint flags

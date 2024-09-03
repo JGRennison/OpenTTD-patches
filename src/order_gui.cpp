@@ -1060,7 +1060,9 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				auto output_condition_value = [&](int param_offset) {
 					if (percent_mode) {
 						auto capacity_params = MakeParameters(GB(order->GetXData(), 0, 16), CargoSpec::Get(order->GetConditionValue())->name);
-						_temp_special_strings[0] = GetStringWithArgs(STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY, capacity_params);
+						bool refit = HasBit(order->GetXData2(), 16);
+						StringID capacity_str = refit ? STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY_REFIT : STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY;
+						_temp_special_strings[0] = GetStringWithArgs(capacity_str, capacity_params);
 						tmp_params.SetParam(param_offset, SPECSTR_TEMP_START);
 					} else {
 						tmp_params.SetParam(param_offset, order->GetConditionValue());
@@ -1527,6 +1529,9 @@ private:
 		/* WID_O_SEL_COND_AUX3 */
 		DP_COND_AUX3_STATION = 0, ///< Display station button
 
+		/* WID_O_SEL_COND_AUX4 */
+		DP_COND_AUX4_REFIT_MODE = 0, ///< Display refit mode button
+
 		/* WID_O_SEL_BOTTOM_MIDDLE */
 		DP_BOTTOM_MIDDLE_DELETE       = 0, ///< Display 'delete' in the middle button of the bottom row of the vehicle order window.
 		DP_BOTTOM_MIDDLE_STOP_SHARING = 1, ///< Display 'stop sharing' in the middle button of the bottom row of the vehicle order window.
@@ -1550,6 +1555,7 @@ private:
 	int current_aux_plane;
 	int current_aux2_plane;
 	int current_aux3_plane;
+	int current_aux4_plane;
 	int current_mgmt_plane;
 
 	/**
@@ -1950,17 +1956,21 @@ public:
 		this->current_aux_plane = SZSP_NONE;
 		this->current_aux2_plane = SZSP_NONE;
 		this->current_aux3_plane = SZSP_NONE;
+		this->current_aux4_plane = SZSP_NONE;
 		this->current_mgmt_plane = this->GetOrderManagementPlane();
 		if (v->owner == _local_company) {
 			NWidgetStacked *aux_sel = this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_AUX);
 			NWidgetStacked *aux2_sel = this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_AUX2);
 			NWidgetStacked *aux3_sel = this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_AUX3);
+			NWidgetStacked *aux4_sel = this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_AUX4);
 			aux_sel->independent_planes = true;
 			aux2_sel->independent_planes = true;
 			aux3_sel->independent_planes = true;
+			aux4_sel->independent_planes = true;
 			aux_sel->SetDisplayedPlane(this->current_aux_plane);
 			aux2_sel->SetDisplayedPlane(this->current_aux2_plane);
 			aux3_sel->SetDisplayedPlane(this->current_aux3_plane);
+			aux4_sel->SetDisplayedPlane(this->current_aux4_plane);
 			this->GetWidget<NWidgetStacked>(WID_O_SEL_MGMT)->SetDisplayedPlane(this->current_mgmt_plane);
 		}
 		this->FinishInitNested(v->index);
@@ -2191,6 +2201,7 @@ public:
 		NWidgetStacked *aux_sel = this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_AUX);
 		NWidgetStacked *aux2_sel = this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_AUX2);
 		NWidgetStacked *aux3_sel = this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_AUX3);
+		NWidgetStacked *aux4_sel = this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_AUX4);
 		NWidgetStacked *mgmt_sel = this->GetWidget<NWidgetStacked>(WID_O_SEL_MGMT);
 		mgmt_sel->SetDisplayedPlane(this->GetOrderManagementPlane());
 
@@ -2208,6 +2219,10 @@ public:
 				this->current_aux3_plane = aux3_sel->shown_plane;
 				reinit = true;
 			}
+			if (this->current_aux4_plane != aux4_sel->shown_plane) {
+				this->current_aux4_plane = aux4_sel->shown_plane;
+				reinit = true;
+			}
 			if ((this->current_mgmt_plane == SZSP_NONE) != (mgmt_sel->shown_plane == SZSP_NONE)) {
 				this->current_mgmt_plane = mgmt_sel->shown_plane;
 				reinit = true;
@@ -2220,6 +2235,7 @@ public:
 		aux_sel->SetDisplayedPlane(SZSP_NONE);
 		aux2_sel->SetDisplayedPlane(SZSP_NONE);
 		aux3_sel->SetDisplayedPlane(SZSP_NONE);
+		aux4_sel->SetDisplayedPlane(SZSP_NONE);
 
 		if (order == nullptr) {
 			if (row_sel != nullptr) {
@@ -2371,6 +2387,13 @@ public:
 						aux3_sel->SetDisplayedPlane(DP_COND_AUX3_STATION);
 					} else {
 						aux3_sel->SetDisplayedPlane(SZSP_NONE);
+					}
+
+					if (ocv == OCV_CARGO_WAITING_AMOUNT_PERCENTAGE) {
+						aux4_sel->SetDisplayedPlane(DP_COND_AUX4_REFIT_MODE);
+						this->SetWidgetLoweredState(WID_O_COND_AUX_REFIT_MODE, HasBit(order->GetXData2(), 16));
+					} else {
+						aux4_sel->SetDisplayedPlane(SZSP_NONE);
 					}
 
 					/* Set the strings for the dropdown boxes. */
@@ -3165,6 +3188,11 @@ public:
 				break;
 			}
 
+			case WID_O_COND_AUX_REFIT_MODE: {
+				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_4 | (HasBit(this->vehicle->GetOrder(this->OrderGetSel())->GetXData2(), 16) ? 0 : 1) << 8);
+				break;
+			}
+
 			case WID_O_TIMETABLE_VIEW:
 				ShowTimetableWindow(this->vehicle);
 				break;
@@ -3904,6 +3932,10 @@ static constexpr NWidgetPart _nested_orders_train_widgets[] = {
 					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_SCHED_TEST), SetMinimalSize(124, 12), SetFill(1, 0),
 															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_SCHED_TEST_TOOLTIP), SetResize(1, 0),
 				EndContainer(),
+				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_COND_AUX4),
+					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_O_COND_AUX_REFIT_MODE), SetMinimalSize(72, 12),
+													SetDataTip(STR_ORDER_CONDITIONAL_REFIT_MODE, STR_ORDER_CONDITIONAL_REFIT_MODE_TOOLTIP),
+				EndContainer(),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_COMPARATOR), SetMinimalSize(124, 12), SetFill(1, 0),
 															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP), SetResize(1, 0),
 				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_COND_VALUE),
@@ -4046,6 +4078,10 @@ static constexpr NWidgetPart _nested_orders_widgets[] = {
 													SetDataTip(STR_ORDER_CONDITIONAL_VIA, STR_ORDER_CONDITIONAL_VIA_TOOLTIP),
 					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_SCHED_TEST), SetMinimalSize(124, 12), SetFill(1, 0),
 															SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_SCHED_TEST_TOOLTIP), SetResize(1, 0),
+				EndContainer(),
+				NWidget(NWID_SELECTION, INVALID_COLOUR, WID_O_SEL_COND_AUX4),
+					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_O_COND_AUX_REFIT_MODE), SetMinimalSize(72, 12),
+													SetDataTip(STR_ORDER_CONDITIONAL_REFIT_MODE, STR_ORDER_CONDITIONAL_REFIT_MODE_TOOLTIP),
 				EndContainer(),
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_O_COND_COMPARATOR), SetMinimalSize(124, 12), SetFill(1, 0),
 													SetDataTip(STR_NULL, STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP), SetResize(1, 0),

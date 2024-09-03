@@ -1660,6 +1660,8 @@ STR_ORDER_CONDITIONAL_VIA                                       :{BLACK}Via
 STR_ORDER_CONDITIONAL_VIA_TOOLTIP                               :{BLACK}The via station to check the waiting cargo amount for
 STR_ORDER_CONDITIONAL_STATION                                   :{BLACK}Station
 STR_ORDER_CONDITIONAL_STATION_TOOLTIP                           :{BLACK}The station to check
+STR_ORDER_CONDITIONAL_REFIT_MODE                                :{BLACK}Refit
+STR_ORDER_CONDITIONAL_REFIT_MODE_TOOLTIP                        :{BLACK}Whether to use the estimated cargo capacity after refitting
 
 STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS                        :accepts
 STR_ORDER_CONDITIONAL_COMPARATOR_DOES_NOT_ACCEPT                :does not accept
@@ -1783,6 +1785,7 @@ STR_ORDER_CONDITIONAL_TIMETABLE                                 :Jump to order {
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DISPLAY                     :Jump to order {COMMA} when {STRING} {STRING} {STRING}
 
 STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY            :{COMMA} percent of {STRING} capacity
+STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY_REFIT      :{COMMA} percent of refit to {STRING} capacity
 
 STR_ORDER_TRY_ACQUIRE_SLOT                                      :Try to acquire slot: {STRING1}
 STR_ORDER_RELEASE_SLOT                                          :Release slot: {STRING1}

@@ -1923,7 +1923,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 				break;
 
 			case OT_CONDITIONAL:
-				if (mof != MOF_COND_VARIABLE && mof != MOF_COND_COMPARATOR && mof != MOF_COND_VALUE && mof != MOF_COND_VALUE_2 && mof != MOF_COND_VALUE_3 && mof != MOF_COND_DESTINATION && mof != MOF_COND_STATION_ID) return CMD_ERROR;
+				if (mof != MOF_COND_VARIABLE && mof != MOF_COND_COMPARATOR && mof != MOF_COND_VALUE && mof != MOF_COND_VALUE_2 && mof != MOF_COND_VALUE_3 && mof != MOF_COND_VALUE_4 && mof != MOF_COND_DESTINATION && mof != MOF_COND_STATION_ID) return CMD_ERROR;
 				break;
 
 			case OT_SLOT:
@@ -2130,6 +2130,17 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 				case OCV_CARGO_WAITING_AMOUNT_PERCENTAGE:
 					if (!(data == NEW_STATION || Station::GetIfValid(data) != nullptr)) return CMD_ERROR;
 					if (GB(order->GetXData2(), 0, 16) - 1 == data) return CMD_ERROR;
+					break;
+
+				default:
+					return CMD_ERROR;
+			}
+			break;
+
+		case MOF_COND_VALUE_4:
+			switch (order->GetConditionVariable()) {
+				case OCV_CARGO_WAITING_AMOUNT_PERCENTAGE:
+					if (data > 1) return CMD_ERROR;
 					break;
 
 				default:
@@ -2424,6 +2435,10 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 
 			case MOF_COND_VALUE_3:
 				SB(order->GetXDataRef(), 16, 16, data + 2);
+				break;
+
+			case MOF_COND_VALUE_4:
+				SB(order->GetXData2Ref(), 16, 1, data);
 				break;
 
 			case MOF_COND_STATION_ID:
@@ -3390,16 +3405,41 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 		case OCV_CARGO_WAITING_AMOUNT_PERCENTAGE: {
 			StationID next_station = GB(order->GetXData2(), 0, 16) - 1;
 			if (Station::IsValidID(next_station)) {
+				const bool refit_mode = HasBit(order->GetXData2(), 16);
+				const CargoID cargo = static_cast<CargoID>(value);
 				uint32_t waiting;
 				if (GB(order->GetXData(), 16, 16) == 0) {
-					waiting = Station::Get(next_station)->goods[value].CargoAvailableCount();
+					waiting = Station::Get(next_station)->goods[cargo].CargoAvailableCount();
 				} else {
-					waiting = Station::Get(next_station)->goods[value].CargoAvailableViaCount(GB(order->GetXData(), 16, 16) - 2);
+					waiting = Station::Get(next_station)->goods[cargo].CargoAvailableViaCount(GB(order->GetXData(), 16, 16) - 2);
 				}
 
 				uint32_t veh_capacity = 0;
-				for (const Vehicle *v_iter = v; v_iter != nullptr; v_iter = v_iter->Next()) {
-					if (v_iter->cargo_type == value) veh_capacity += v_iter->cargo_cap;
+				for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
+					if (u->cargo_type == cargo) {
+						veh_capacity += u->cargo_cap;
+					} else if (refit_mode) {
+						const Engine *e = Engine::Get(u->engine_type);
+						if (!HasBit(e->info.refit_mask, cargo)) {
+							continue;
+						}
+
+						/* Back up the vehicle's cargo type */
+						const CargoID temp_cid = u->cargo_type;
+						const uint8_t temp_subtype = u->cargo_subtype;
+
+						const_cast<Vehicle *>(u)->cargo_type = value;
+						if (e->refit_capacity_values == nullptr || !(e->callbacks_used & SGCU_REFIT_CB_ALL_CARGOES) || cargo == e->GetDefaultCargoType() || (e->type == VEH_AIRCRAFT && IsCargoInClass(cargo, CC_PASSENGERS))) {
+							/* This can be omitted when the refit capacity values are already determined, and the capacity is definitely from the refit callback */
+							const_cast<Vehicle *>(u)->cargo_subtype = GetBestFittingSubType(u, const_cast<Vehicle *>(u), cargo);
+						}
+
+						veh_capacity += e->DetermineCapacity(u, nullptr); // special mail handling for aircraft is not required here
+
+						/* Restore the original cargo type */
+						const_cast<Vehicle *>(u)->cargo_type = temp_cid;
+						const_cast<Vehicle *>(u)->cargo_subtype = temp_subtype;
+					}
 				}
 				uint32_t percentage = GB(order->GetXData(), 0, 16);
 				uint32_t threshold = static_cast<uint32_t>(((uint64_t)veh_capacity * percentage) / 100);
