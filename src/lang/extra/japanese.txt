@@ -41,8 +41,6 @@ STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOIN
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}発車
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}到着
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}経由
-STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}発車時刻表を表示
-STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}到着時刻表を表示
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}通過車両を表示
 STR_DEPARTURES_EMPTY                                            :{ORANGE}現在、ダイヤを設定している車両はありません。
 STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}発車標が設定されていません。

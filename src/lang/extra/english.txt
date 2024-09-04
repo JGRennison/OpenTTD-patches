@@ -1348,11 +1348,12 @@ STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}Show wai
 STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION} Live Travel Information
 STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} Live Travel Information
 STR_DEPARTURES_CARGO_MODE_TOOLTIP                               :{BLACK}Set cargo filter mode for arrivals/departures
-STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}D
-STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}A
+STR_DEPARTURES_DEPARTURES                                       :Departures
+STR_DEPARTURES_ARRIVALS                                         :Arrivals
+STR_DEPARTURES_BOTH_COMBINED                                    :Combined
+STR_DEPARTURES_BOTH_SEPARATE                                    :Separate
+STR_DEPARTURES_DEPARTURE_MODE_TOOLTIP                           :{BLACK}Set whether to show departures and/or arrivals
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}Via
-STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}Show timetabled departures
-STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}Show timetabled arrivals
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Show timetabled vehicles that do not stop here
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}Show upcoming trains on this station's timetable
 STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}Show upcoming road vehicles on this station's timetable
@@ -1427,8 +1428,6 @@ STR_CONFIG_DEPARTURE_LARGER_FONT                                :Use larger font
 STR_CONFIG_DEPARTURE_LARGER_FONT_HELPTEXT                       :Whether to use a larger font for lists of stations called at
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :Show icons for destinations that are docks or airports: {STRING2}
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :Whether to show icons next to destinations that are docks or airports
-STR_CONFIG_DEPARTURE_SHOW_BOTH                                  :Show arrival and departure times on the same line: {STRING2}
-STR_CONFIG_DEPARTURE_SHOW_BOTH_HELPTEXT                         :Whether arrival and departure times for a vehicle are combined into a single entry instead of being listed separately
 STR_CONFIG_DEPARTURE_SMART_TERMINUS                             :Don't show termini that can be reached sooner on a later vehicle: {STRING2}
 STR_CONFIG_DEPARTURE_SMART_TERMINUS_HELPTEXT                    :Whether to show termini that can be reached sooner on another vehicle that departs later
 STR_CONFIG_DEPARTURE_CONDITIONALS                               :Handle unpredictable conditional order jumps for departures by: {STRING2}

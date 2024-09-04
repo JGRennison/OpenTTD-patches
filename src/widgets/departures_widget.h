@@ -16,8 +16,7 @@ enum DeparturesWindowWidgets {
 	WID_DB_LIST,                ///< List of departures
 	WID_DB_SCROLLBAR,           ///< List scrollbar
 	WID_DB_CARGO_MODE,          ///< Cargo filter mode
-	WID_DB_SHOW_DEPS,           ///< Toggle departures button
-	WID_DB_SHOW_ARRS,           ///< Toggle arrivals button
+	WID_DB_DEPARTURE_MODE,      ///< Departure type mode
 	WID_DB_SHOW_VIA,            ///< Toggle via button
 	WID_DB_SHOW_TRAINS,         ///< Toggle trains button
 	WID_DB_SHOW_ROADVEHS,       ///< Toggle road vehicles button

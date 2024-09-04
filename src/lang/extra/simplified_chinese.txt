@@ -1297,8 +1297,6 @@ STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOIN
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}发
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}抵
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}经
-STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}显示表定发车载具
-STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}显示表定到达载具
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}显示表定通过载具
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}仅显示列车
 STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}仅显示汽车
@@ -1373,8 +1371,6 @@ STR_CONFIG_DEPARTURE_LARGER_FONT                                :适用较大的
 STR_CONFIG_DEPARTURE_LARGER_FONT_HELPTEXT                       :是否使用较大的字体来显示在车站列表中的即将到达的车站
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :添加标志以区分码头与机场：{STRING}
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :在目的地是码头或机场时，添加一个标志加以区分
-STR_CONFIG_DEPARTURE_SHOW_BOTH                                  :将出发和到达时间合并至一行：{STRING}
-STR_CONFIG_DEPARTURE_SHOW_BOTH_HELPTEXT                         :在同一行中显示出发和到达时间而不是将其分开
 STR_CONFIG_DEPARTURE_SMART_TERMINUS                             :不显示不久后能被另一趟载具到达的目的地：{STRING}
 STR_CONFIG_DEPARTURE_SMART_TERMINUS_HELPTEXT                    :使否显示不久后会有另一辆载具到达的目的地
 STR_CONFIG_DEPARTURE_CONDITIONALS                               :条件性调度计划处理方式：{STRING}

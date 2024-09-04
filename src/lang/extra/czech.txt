@@ -1173,8 +1173,6 @@ STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}Aktuáln
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}O
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}P
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}přes
-STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}Zobrazit odjezdy dle jízdního řádu
-STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}Zobrazit příjezdy dle jízdního řádu
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Zobrazit vozidla, která zde podle jízdního řádu nezastavují
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}Zobrazit vlaky v jízdních řádech této stanice
 STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}Zobrazit silniční vozidla v jízdních řádech této stanice
@@ -1249,8 +1247,6 @@ STR_CONFIG_DEPARTURE_LARGER_FONT                                :Používat na o
 STR_CONFIG_DEPARTURE_LARGER_FONT_HELPTEXT                       :Zda používat pro seznam obsluhovaných stanic větší font
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :Zobrazovat ikony pro cíle, které jsou doky nebo letiště: {STRING}
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :Zda zobrazovat ikony u stanic, jejichž součástí jsou doky nebo letiště
-STR_CONFIG_DEPARTURE_SHOW_BOTH                                  :Zobrazovat příjezdy a odjezdy ve stejném řádku: {STRING}
-STR_CONFIG_DEPARTURE_SHOW_BOTH_HELPTEXT                         :Zda odjezdové a příjezdové časy smísit do jednoho záznamu namísto jejich odděleného vypisování
 STR_CONFIG_DEPARTURE_SMART_TERMINUS                             :Neukazovat destinace, kterých lze dosáhnout dříve při jízdě pozdějším spojem: {STRING}
 STR_CONFIG_DEPARTURE_SMART_TERMINUS_HELPTEXT                    :Zda vypisovat cílové stanice, do kterých lze dorazit dříve jiným spojem, který odjíždí později
 STR_CONFIG_DEPARTURE_CONDITIONALS                               :Podmíněná přeskočení příkazů zpracovávat: {STRING}
