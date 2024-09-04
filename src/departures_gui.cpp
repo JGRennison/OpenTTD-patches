@@ -53,8 +53,7 @@ static constexpr NWidgetPart _nested_departures_list[] = {
 
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_PANEL, COLOUR_GREY), SetMinimalSize(0, 12), SetResize(1, 0), SetFill(1, 1), EndContainer(),
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_PAX), SetMinimalSize(6, 12), SetFill(0, 1), SetDataTip(STR_DEPARTURES_PAX, STR_DEPARTURES_PAX_TOOLTIP),
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_FREIGHT), SetMinimalSize(6, 12), SetFill(0, 1), SetDataTip(STR_DEPARTURES_FREIGHT, STR_DEPARTURES_FREIGHT_TOOLTIP),
+		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_DB_CARGO_MODE), SetFill(0, 1), SetDataTip(STR_JUST_STRING, STR_DEPARTURES_CARGO_MODE_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_ARRS), SetMinimalSize(6, 12), SetFill(0, 1), SetDataTip(STR_DEPARTURES_ARRIVALS, STR_DEPARTURES_ARRIVALS_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_DEPS), SetMinimalSize(6, 12), SetFill(0, 1), SetDataTip(STR_DEPARTURES_DEPARTURES, STR_DEPARTURES_DEPARTURES_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_VIA), SetMinimalSize(11, 12), SetFill(0, 1), SetDataTip(STR_DEPARTURES_VIA_BUTTON, STR_DEPARTURES_VIA_TOOLTIP),
@@ -86,6 +85,20 @@ void FlushDeparturesWindowTextCaches()
 	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 1);
 }
 
+enum DeparturesCargoMode : uint8_t {
+	DCF_ALL_CARGOES = 0,
+	DCF_PAX_ONLY,
+	DCF_FREIGHT_ONLY,
+
+	DCF_END
+};
+
+static const StringID _departure_cargo_mode_strings[DCF_END] = {
+	STR_CARGO_TYPE_FILTER_ALL,
+	STR_CARGO_PLURAL_PASSENGERS,
+	STR_CARGO_TYPE_FILTER_FREIGHT,
+};
+
 template<bool Twaypoint>
 struct DeparturesWindow : public Window {
 protected:
@@ -100,8 +113,7 @@ protected:
 	bool show_types[4];        ///< The vehicle types to show in the departure list.
 	bool departure_types[3];   ///< The types of departure to show in the departure list.
 	bool departure_types_both; ///< Arrivals and departures buttons disabled (shown combined as single entry)
-	bool show_pax;             ///< Show passenger vehicles
-	bool show_freight;         ///< Show freight vehicles
+	DeparturesCargoMode cargo_mode = DCF_ALL_CARGOES;
 	mutable bool scroll_refresh; ///< Whether the window should be refreshed when paused due to scrolling
 	uint min_width;            ///< The minimum width of this window.
 	Scrollbar *vscroll;
@@ -113,16 +125,6 @@ protected:
 	virtual uint GetMinWidth() const;
 	static void RecomputeDateWidth();
 	virtual void DrawDeparturesListItems(const Rect &r) const;
-
-	void ToggleCargoFilter(WidgetID widget, bool &flag)
-	{
-		flag = !flag;
-		this->SetWidgetLoweredState(widget, flag);
-		/* We need to recompute the departures list. */
-		this->calc_tick_countdown = 0;
-		/* We need to redraw the button that was pressed. */
-		this->SetWidgetDirty(widget);
-	}
 
 	void SetDepartureTypesDisabledState()
 	{
@@ -236,13 +238,9 @@ public:
 		departure_types[0] = true;
 		departure_types[1] = false;
 		departure_types[2] = false;
-		show_pax = true;
-		show_freight = true;
 		this->LowerWidget(WID_DB_SHOW_DEPS);
 		this->RaiseWidget(WID_DB_SHOW_ARRS);
 		this->RaiseWidget(WID_DB_SHOW_VIA);
-		this->LowerWidget(WID_DB_SHOW_PAX);
-		this->LowerWidget(WID_DB_SHOW_FREIGHT);
 		if (!Twaypoint) this->SetDepartureTypesDisabledState();
 
 		for (uint i = 0; i < 4; ++i) {
@@ -288,14 +286,27 @@ public:
 				size.height = 2 * resize.height;
 				size.width = this->min_width;
 				break;
+			case WID_DB_CARGO_MODE:
+				size.width = GetStringListWidth(_departure_cargo_mode_strings);
+				size.width += padding.width;
+				break;
+
 		}
 	}
 
 	virtual void SetStringParameters(WidgetID widget) const override
 	{
-		if (widget == WID_DB_CAPTION) {
-			const Station *st = Station::Get(this->station);
-			SetDParam(0, st->index);
+		switch (widget) {
+			case WID_DB_CAPTION: {
+				const Station *st = Station::Get(this->station);
+				SetDParam(0, st->index);
+				break;
+			}
+
+			case WID_DB_CARGO_MODE: {
+				SetDParam(0, _departure_cargo_mode_strings[this->cargo_mode]);
+				break;
+			}
 		}
 	}
 
@@ -419,15 +430,25 @@ public:
 				break;
 			}
 
-			case WID_DB_SHOW_PAX:
-				this->ToggleCargoFilter(widget, this->show_pax);
-				if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
+			case WID_DB_CARGO_MODE:
+				ShowDropDownMenu(this, _departure_cargo_mode_strings, this->cargo_mode, WID_DB_CARGO_MODE, 0, 0);
 				break;
+		}
+	}
 
-			case WID_DB_SHOW_FREIGHT:
-				this->ToggleCargoFilter(widget, this->show_freight);
-				if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
+
+	void OnDropdownSelect(WidgetID widget, int index) override
+	{
+		switch (widget) {
+			case WID_DB_CARGO_MODE: {
+				if (this->cargo_mode != index) {
+					this->cargo_mode = static_cast<DeparturesCargoMode>(index);
+					this->calc_tick_countdown = 0;
+					if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
+				}
+				this->SetWidgetDirty(widget);
 				break;
+			}
 		}
 	}
 
@@ -461,8 +482,8 @@ public:
 		/* Recompute the list of departures if we're due to. */
 		if (this->calc_tick_countdown <= 0) {
 			this->calc_tick_countdown = _settings_client.gui.departure_calc_frequency;
-			bool show_pax = this->show_pax;
-			bool show_freight = this->show_freight;
+			bool show_pax = this->cargo_mode != DCF_FREIGHT_ONLY;
+			bool show_freight = this->cargo_mode != DCF_PAX_ONLY;
 			if (this->departure_types[0] || _settings_client.gui.departure_show_both) {
 				this->departures = MakeDepartureList(this->station, this->vehicles, D_DEPARTURE, Twaypoint || this->departure_types[2], show_pax, show_freight);
 			} else {

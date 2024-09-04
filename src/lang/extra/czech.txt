@@ -1170,13 +1170,9 @@ STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}Zobrazit
 
 STR_DEPARTURES_CAPTION                                          :{WHITE}Aktuální dopravní informace - {STATION}
 STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}Aktuální dopravní informace - {WAYPOINT}
-STR_DEPARTURES_PAX                                              :{BLACK}{TINY_FONT}C
-STR_DEPARTURES_FREIGHT                                          :{BLACK}{TINY_FONT}N
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}O
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}P
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}přes
-STR_DEPARTURES_PAX_TOOLTIP                                      :{BLACK}Zobrazit odjezdy/příjezdy osobní dopravy
-STR_DEPARTURES_FREIGHT_TOOLTIP                                  :{BLACK}Zobrazit odjezdy/příjezdy nákladní dopravy
 STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}Zobrazit odjezdy dle jízdního řádu
 STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}Zobrazit příjezdy dle jízdního řádu
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Zobrazit vozidla, která zde podle jízdního řádu nezastavují

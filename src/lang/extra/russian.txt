@@ -1294,13 +1294,9 @@ STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}Пока
 
 STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION} Информация о путешествиях в прямом эфире
 STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} Информация о путешествиях в прямом эфире
-STR_DEPARTURES_PAX                                              :{BLACK}{TINY_FONT}Р
-STR_DEPARTURES_FREIGHT                                          :{BLACK}{TINY_FONT}Г
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}О
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}П
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}через
-STR_DEPARTURES_PAX_TOOLTIP                                      :{BLACK}Показать прибытие/отправление пассажиров
-STR_DEPARTURES_FREIGHT_TOOLTIP                                  :{BLACK}Показать прибытие/отправление грузов
 STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}Показать отправления по расписанию
 STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}Показать прибытия по расписанию
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Показать транспортные средства, которые не останавливаются здесь по расписанию

@@ -38,13 +38,9 @@ STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}発車�
 
 STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION} 発車標
 STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} 発車標
-STR_DEPARTURES_PAX                                              :{BLACK}{TINY_FONT}旅客
-STR_DEPARTURES_FREIGHT                                          :{BLACK}{TINY_FONT}貨物
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}発車
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}到着
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}経由
-STR_DEPARTURES_PAX_TOOLTIP                                      :{BLACK}旅客を運搬できる車両を表示
-STR_DEPARTURES_FREIGHT_TOOLTIP                                  :{BLACK}貨物を運搬できる車両を表示
 STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}発車時刻表を表示
 STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}到着時刻表を表示
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}通過車両を表示
