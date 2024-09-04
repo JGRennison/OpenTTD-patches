@@ -2211,7 +2211,7 @@ struct StationViewWindow : public Window {
 			}
 
 			case WID_SV_DEPARTURES: {
-				ShowStationDepartures((StationID)this->window_number);
+				ShowDeparturesWindow((StationID)this->window_number);
 				break;
 			}
 

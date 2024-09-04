@@ -114,10 +114,10 @@ static const StringID _departure_mode_strings[DM_END] = {
 	STR_DEPARTURES_BOTH_SEPARATE,
 };
 
-template<bool Twaypoint>
 struct DeparturesWindow : public Window {
 protected:
-	StationID station;         ///< The station whose departures we're showing.
+	const bool is_waypoint;    ///< Is this a waypoint.
+	const StationID station;   ///< The station/waypoint whose departures we're showing.
 	DepartureList departures;  ///< The current list of departures from this station.
 	DepartureList arrivals;    ///< The current list of arrivals from this station.
 	bool departures_invalid;   ///< The departures and arrivals list are currently invalid.
@@ -223,6 +223,7 @@ protected:
 public:
 
 	DeparturesWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc),
+		is_waypoint(Waypoint::IsValidID(window_number)),
 		station(window_number),
 		departures_invalid(true),
 		vehicles_invalid(true),
@@ -240,7 +241,7 @@ public:
 			this->LowerWidget(WID_DB_SHOW_TRAINS + i);
 		}
 
-		if (Twaypoint) {
+		if (this->is_waypoint) {
 			this->GetWidget<NWidgetCore>(WID_DB_CAPTION)->SetDataTip(STR_DEPARTURES_CAPTION_WAYPOINT, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS);
 
 			for (uint i = 0; i < 4; ++i) {
@@ -480,7 +481,7 @@ public:
 			bool show_pax = this->cargo_mode != DCF_FREIGHT_ONLY;
 			bool show_freight = this->cargo_mode != DCF_PAX_ONLY;
 			if (this->mode != DM_ARRIVALS) {
-				this->departures = MakeDepartureList(this->station, this->vehicles, D_DEPARTURE, Twaypoint || this->show_via, show_pax, show_freight);
+				this->departures = MakeDepartureList(this->station, this->vehicles, D_DEPARTURE, this->is_waypoint || this->show_via, show_pax, show_freight);
 			} else {
 				this->departures.clear();
 			}
@@ -562,22 +563,12 @@ public:
  * Shows a window of scheduled departures for a station.
  * @param station the station to show a departures window for
  */
-void ShowStationDepartures(StationID station)
+void ShowDeparturesWindow(StationID station)
 {
-	AllocateWindowDescFront<DeparturesWindow<false>>(_departures_desc, station);
+	AllocateWindowDescFront<DeparturesWindow>(_departures_desc, station);
 }
 
-/**
- * Shows a window of scheduled departures for a station.
- * @param station the station to show a departures window for
- */
-void ShowWaypointDepartures(StationID waypoint)
-{
-	AllocateWindowDescFront<DeparturesWindow<true>>(_departures_desc, waypoint);
-}
-
-template<bool Twaypoint>
-void DeparturesWindow<Twaypoint>::RecomputeDateWidth()
+void DeparturesWindow::RecomputeDateWidth()
 {
 	cached_date_width = 0;
 	cached_date_combined_width = 0;
@@ -613,8 +604,7 @@ static int PadWidth(int width)
 	return width;
 }
 
-template<bool Twaypoint>
-uint DeparturesWindow<Twaypoint>::GetMinWidth() const
+uint DeparturesWindow::GetMinWidth() const
 {
 	uint result = 0;
 
@@ -633,8 +623,7 @@ uint DeparturesWindow<Twaypoint>::GetMinWidth() const
 /**
  * Draws a list of departures.
  */
-template<bool Twaypoint>
-void DeparturesWindow<Twaypoint>::DrawDeparturesListItems(const Rect &r) const
+void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 {
 	this->scroll_refresh = false;
 

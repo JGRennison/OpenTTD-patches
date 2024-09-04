@@ -16,7 +16,6 @@
 #include "station_base.h"
 #include "widgets/departures_widget.h"
 
-void ShowStationDepartures(StationID station);
-void ShowWaypointDepartures(StationID waypoint);
+void ShowDeparturesWindow(StationID station);
 
 #endif /* DEPARTURES_GUI_H */
