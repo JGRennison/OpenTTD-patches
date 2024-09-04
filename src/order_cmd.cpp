@@ -2297,7 +2297,8 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 
 			case MOF_COND_VARIABLE: {
 				/* Check whether old conditional variable had a cargo as value */
-				OrderConditionVariable old_condition = order->GetConditionVariable();
+				const OrderConditionVariable old_condition = order->GetConditionVariable();
+				const OrderConditionVariable new_condition = (OrderConditionVariable)data;
 				bool old_var_was_cargo = (order->GetConditionVariable() == OCV_CARGO_ACCEPTANCE || order->GetConditionVariable() == OCV_CARGO_WAITING
 						|| order->GetConditionVariable() == OCV_CARGO_LOAD_PERCENTAGE || order->GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT
 						|| order->GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT_PERCENTAGE);
@@ -2305,10 +2306,14 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 				bool old_var_was_counter = (order->GetConditionVariable() == OCV_COUNTER_VALUE);
 				bool old_var_was_time = (order->GetConditionVariable() == OCV_TIME_DATE);
 				bool old_var_was_tt = (order->GetConditionVariable() == OCV_TIMETABLE);
-				order->SetConditionVariable((OrderConditionVariable)data);
 
+				order->SetConditionVariable(new_condition);
+
+				if (ConditionVariableHasStationID(new_condition) && !ConditionVariableHasStationID(old_condition)) {
+					order->SetConditionStationID(INVALID_STATION);
+				}
 				OrderConditionComparator occ = order->GetConditionComparator();
-				switch (order->GetConditionVariable()) {
+				switch (new_condition) {
 					case OCV_UNCONDITIONALLY:
 						order->SetConditionComparator(OCC_EQUALS);
 						order->SetConditionValue(0);
@@ -2351,10 +2356,16 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 						if (occ != OCC_IS_TRUE && occ != OCC_IS_FALSE) order->SetConditionComparator(OCC_IS_TRUE);
 						break;
 					case OCV_CARGO_LOAD_PERCENTAGE:
+						if (!old_var_was_cargo) order->SetConditionValue((uint16_t) GetFirstValidCargo());
+						order->GetXDataRef() = 0;
+						order->SetConditionComparator(OCC_EQUALS);
+						break;
 					case OCV_CARGO_WAITING_AMOUNT:
 					case OCV_CARGO_WAITING_AMOUNT_PERCENTAGE:
 						if (!old_var_was_cargo) order->SetConditionValue((uint16_t) GetFirstValidCargo());
-						order->GetXDataRef() = 0;
+						if (!ConditionVariableTestsCargoWaitingAmount(old_condition)) order->ClearConditionViaStation();
+						order->SetXDataLow(0);
+						order->SetXData2High(0);
 						order->SetConditionComparator(OCC_EQUALS);
 						break;
 					case OCV_REQUIRES_SERVICE:
