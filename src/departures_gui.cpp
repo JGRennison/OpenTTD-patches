@@ -248,11 +248,9 @@ public:
 				this->DisableWidget(WID_DB_SHOW_TRAINS + i);
 			}
 
-			this->DisableWidget(WID_DB_DEPARTURE_MODE);
-			this->DisableWidget(WID_DB_SHOW_VIA);
-
 			this->show_via = true;
 			this->LowerWidget(WID_DB_SHOW_VIA);
+			this->DisableWidget(WID_DB_SHOW_VIA);
 		} else {
 			this->mode = static_cast<DeparturesMode>(_settings_client.gui.departure_default_mode);
 			this->show_via = _settings_client.gui.departure_default_via;
@@ -447,18 +445,12 @@ public:
 			case WID_DB_DEPARTURE_MODE: {
 				if (this->mode != index) {
 					this->mode = static_cast<DeparturesMode>(index);
-					if (this->mode == DM_ARRIVALS) {
-						this->show_via = false;
-						this->RaiseWidget(WID_DB_SHOW_VIA);
-						this->DisableWidget(WID_DB_SHOW_VIA);
-					} else {
-						this->EnableWidget(WID_DB_SHOW_VIA);
-						this->SetWidgetLoweredState(WID_DB_SHOW_VIA, this->show_via);
-					}
 					this->calc_tick_countdown = 0;
 					if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
 				}
-				_settings_client.gui.departure_default_mode = this->mode;
+				if (!this->is_waypoint) {
+					_settings_client.gui.departure_default_mode = this->mode;
+				}
 				this->SetWidgetDirty(widget);
 				break;
 			}
@@ -489,13 +481,19 @@ public:
 			this->calc_tick_countdown = _settings_client.gui.departure_calc_frequency;
 			bool show_pax = this->cargo_mode != DCF_FREIGHT_ONLY;
 			bool show_freight = this->cargo_mode != DCF_PAX_ONLY;
+
+			DepartureCallingSettings settings;
+			settings.allow_via = this->is_waypoint || this->show_via;
+			settings.departure_no_load_test = this->is_waypoint || _settings_client.gui.departure_show_all_stops;
+			settings.show_all_stops = _settings_client.gui.departure_show_all_stops;
+
 			if (this->mode != DM_ARRIVALS) {
-				this->departures = MakeDepartureList(this->station, this->vehicles, D_DEPARTURE, this->is_waypoint || this->show_via, show_pax, show_freight);
+				this->departures = MakeDepartureList(this->station, this->vehicles, D_DEPARTURE, settings, show_pax, show_freight);
 			} else {
 				this->departures.clear();
 			}
 			if (this->mode == DM_ARRIVALS || this->mode == DM_SEPARATE) {
-				this->arrivals = MakeDepartureList(this->station, this->vehicles, D_ARRIVAL, false, show_pax, show_freight);
+				this->arrivals = MakeDepartureList(this->station, this->vehicles, D_ARRIVAL, settings, show_pax, show_freight);
 			} else {
 				this->arrivals.clear();
 			}

@@ -113,6 +113,15 @@ struct Departure {
 	}
 };
 
+struct DepartureCallingSettings {
+	bool allow_via = false;
+	bool departure_no_load_test = false;
+	bool show_all_stops = false;
+
+	bool IsDeparture(const Order *order, StationID station);
+	bool IsArrival(const Order *order, StationID station);
+};
+
 typedef std::vector<std::unique_ptr<Departure>> DepartureList;
 
 #endif /* DEPARTURES_TYPE_H */
