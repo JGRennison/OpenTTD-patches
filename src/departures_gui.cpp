@@ -253,6 +253,10 @@ public:
 
 			this->show_via = true;
 			this->LowerWidget(WID_DB_SHOW_VIA);
+		} else {
+			this->mode = static_cast<DeparturesMode>(_settings_client.gui.departure_default_mode);
+			this->show_via = _settings_client.gui.departure_default_via;
+			this->SetWidgetLoweredState(WID_DB_SHOW_VIA, this->show_via);
 		}
 
 		this->RefreshVehicleList();
@@ -361,6 +365,10 @@ public:
 				this->show_via = !this->show_via;
 				this->SetWidgetLoweredState(widget, this->show_via);
 
+				if (!this->is_waypoint) {
+					_settings_client.gui.departure_default_via = this->show_via;
+				}
+
 				/* We need to recompute the departures list. */
 				this->calc_tick_countdown = 0;
 				/* We need to redraw the button that was pressed. */
@@ -450,6 +458,7 @@ public:
 					this->calc_tick_countdown = 0;
 					if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
 				}
+				_settings_client.gui.departure_default_mode = this->mode;
 				this->SetWidgetDirty(widget);
 				break;
 			}
