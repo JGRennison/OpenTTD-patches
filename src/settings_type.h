@@ -247,7 +247,6 @@ struct GUISettings : public TimeSettings {
 	bool        departure_larger_font;                           ///< whether to show the calling at list in a larger font
 	bool        departure_destination_type;                      ///< whether to show destination types for ports and airports
 	bool        departure_show_both;                             ///< whether to show departure and arrival times on the same line
-	bool        departure_only_passengers;                       ///< whether to only show passenger services
 	bool        departure_smart_terminus;                        ///< whether to only show passenger services
 	uint8_t     departure_conditionals;                          ///< how to handle conditional orders
 	bool        departure_show_all_stops;                        ///< whether to show stops regardless of loading/unloading done at them

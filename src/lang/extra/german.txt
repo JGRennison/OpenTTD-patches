@@ -1132,8 +1132,6 @@ STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :Zeige Piktogram
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :Ob neben der Abfahrt des Fahrzeugs ein Piktogramm angezeigt werden soll, wenn das Ziel entweder ein Hafen oder ein Flughafen ist
 STR_CONFIG_DEPARTURE_SHOW_BOTH                                  :Zeige Ankunfts- und Abfahrtszeiten auf der selben Linie: {STRING}
 STR_CONFIG_DEPARTURE_SHOW_BOTH_HELPTEXT                         :Bestimmt, ob sowohl Abfahrts-, als auch Ankunftszeiten auf einer Höhe angezeigt werden sollen
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS                            :Zeige nur Abfahrten von Fahrzeugen, die Passagiere befördern können: {STRING}
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS_HELPTEXT                   :Ob nur Abfahrten von Fahrzeugen, die Passagiere befördern können, angezeigt werden sollen
 STR_CONFIG_DEPARTURE_SMART_TERMINUS                             :Zeige keine Ziele, die mit einem später abfahrenden Fahrzeug schneller erreicht werden können: {STRING}
 STR_CONFIG_DEPARTURE_SMART_TERMINUS_HELPTEXT                    :Ob Ziele angezeigt werden sollen, die mit einem später abfahrenden Fahrzeug eher erreicht werden können
 STR_CONFIG_DEPARTURE_CONDITIONALS                               :Behandle bedingte Sprünge durch: {STRING}

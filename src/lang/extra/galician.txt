@@ -1377,8 +1377,6 @@ STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :Amosar iconas p
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :Indica se se amosan iconas o lado dos destinos que son portos ou aeroportos
 STR_CONFIG_DEPARTURE_SHOW_BOTH                                  :Amosar as horas de chegada e saída na mesma liña: {STRING}
 STR_CONFIG_DEPARTURE_SHOW_BOTH_HELPTEXT                         :Indica se se amosan as horas de saída e de chegada xuntas nas saídas
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS                            :Só amosar as saídas para os vehículos que levan pasaxeiros: {STRING}
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS_HELPTEXT                   :Indica se só se amosan as saídas dos vehículos que poden levar pasaxeiros
 STR_CONFIG_DEPARTURE_SMART_TERMINUS                             :Non amosar as terminais ás que se pode chegar antes nun vehículo posterior: {STRING}
 STR_CONFIG_DEPARTURE_SMART_TERMINUS_HELPTEXT                    :Indica se se amosarán as estacións terminais as que se poida chegar antes nun vehículo que saia posteriormente
 STR_CONFIG_DEPARTURE_CONDITIONALS                               :Xestionar os saltos de orde condicional: {STRING}

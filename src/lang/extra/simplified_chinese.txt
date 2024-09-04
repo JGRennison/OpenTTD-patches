@@ -1379,8 +1379,6 @@ STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :添加标志以
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :在目的地是码头或机场时，添加一个标志加以区分
 STR_CONFIG_DEPARTURE_SHOW_BOTH                                  :将出发和到达时间合并至一行：{STRING}
 STR_CONFIG_DEPARTURE_SHOW_BOTH_HELPTEXT                         :在同一行中显示出发和到达时间而不是将其分开
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS                            :仅当载具可运输乘客时显示车次：{STRING}
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS_HELPTEXT                   :是否仅显示可以搭载乘客的载具的出发和到达信息
 STR_CONFIG_DEPARTURE_SMART_TERMINUS                             :不显示不久后能被另一趟载具到达的目的地：{STRING}
 STR_CONFIG_DEPARTURE_SMART_TERMINUS_HELPTEXT                    :使否显示不久后会有另一辆载具到达的目的地
 STR_CONFIG_DEPARTURE_CONDITIONALS                               :条件性调度计划处理方式：{STRING}

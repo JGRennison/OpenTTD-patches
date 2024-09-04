@@ -1255,8 +1255,6 @@ STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :Zobrazovat ikon
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :Zda zobrazovat ikony u stanic, jejichž součástí jsou doky nebo letiště
 STR_CONFIG_DEPARTURE_SHOW_BOTH                                  :Zobrazovat příjezdy a odjezdy ve stejném řádku: {STRING}
 STR_CONFIG_DEPARTURE_SHOW_BOTH_HELPTEXT                         :Zda odjezdové a příjezdové časy smísit do jednoho záznamu namísto jejich odděleného vypisování
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS                            :Zobrazovat záznamy jen o vozidlech, která mohou přepravovat cestující: {STRING}
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS_HELPTEXT                   :Zda ukazovat příjezdy a odjezdy jen těch spojů, které slouží přepravě cestujících
 STR_CONFIG_DEPARTURE_SMART_TERMINUS                             :Neukazovat destinace, kterých lze dosáhnout dříve při jízdě pozdějším spojem: {STRING}
 STR_CONFIG_DEPARTURE_SMART_TERMINUS_HELPTEXT                    :Zda vypisovat cílové stanice, do kterých lze dorazit dříve jiným spojem, který odjíždí později
 STR_CONFIG_DEPARTURE_CONDITIONALS                               :Podmíněná přeskočení příkazů zpracovávat: {STRING}

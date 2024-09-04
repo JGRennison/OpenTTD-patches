@@ -1432,8 +1432,6 @@ STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :Show icons for 
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :Whether to show icons next to destinations that are docks or airports
 STR_CONFIG_DEPARTURE_SHOW_BOTH                                  :Show arrival and departure times on the same line: {STRING2}
 STR_CONFIG_DEPARTURE_SHOW_BOTH_HELPTEXT                         :Whether arrival and departure times for a vehicle are combined into a single entry instead of being listed separately
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS                            :Only show entries for vehicles that can carry passengers: {STRING2}
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS_HELPTEXT                   :Whether to only show arrivals and departures of vehicles that can carry passengers
 STR_CONFIG_DEPARTURE_SMART_TERMINUS                             :Don't show termini that can be reached sooner on a later vehicle: {STRING2}
 STR_CONFIG_DEPARTURE_SMART_TERMINUS_HELPTEXT                    :Whether to show termini that can be reached sooner on another vehicle that departs later
 STR_CONFIG_DEPARTURE_CONDITIONALS                               :Handle unpredictable conditional order jumps for departures by: {STRING2}

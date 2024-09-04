@@ -102,7 +102,6 @@ protected:
 	bool departure_types_both; ///< Arrivals and departures buttons disabled (shown combined as single entry)
 	bool show_pax;             ///< Show passenger vehicles
 	bool show_freight;         ///< Show freight vehicles
-	bool cargo_buttons_disabled;///< Show pax/freight buttons disabled
 	mutable bool scroll_refresh; ///< Whether the window should be refreshed when paused due to scrolling
 	uint min_width;            ///< The minimum width of this window.
 	Scrollbar *vscroll;
@@ -123,19 +122,6 @@ protected:
 		this->calc_tick_countdown = 0;
 		/* We need to redraw the button that was pressed. */
 		this->SetWidgetDirty(widget);
-	}
-
-	void SetCargoFilterDisabledState()
-	{
-		this->cargo_buttons_disabled = _settings_client.gui.departure_only_passengers;
-		this->SetWidgetDisabledState(WID_DB_SHOW_PAX, cargo_buttons_disabled);
-		this->SetWidgetDisabledState(WID_DB_SHOW_FREIGHT, cargo_buttons_disabled);
-		if (this->cargo_buttons_disabled) {
-			this->show_pax = true;
-			this->LowerWidget(WID_DB_SHOW_PAX);
-			this->show_freight = false;
-			this->RaiseWidget(WID_DB_SHOW_FREIGHT);
-		}
 	}
 
 	void SetDepartureTypesDisabledState()
@@ -258,7 +244,6 @@ public:
 		this->LowerWidget(WID_DB_SHOW_PAX);
 		this->LowerWidget(WID_DB_SHOW_FREIGHT);
 		if (!Twaypoint) this->SetDepartureTypesDisabledState();
-		this->SetCargoFilterDisabledState();
 
 		for (uint i = 0; i < 4; ++i) {
 			show_types[i] = true;
@@ -459,13 +444,6 @@ public:
 			this->RecomputeDateWidth();
 		}
 
-		if (this->cargo_buttons_disabled != _settings_client.gui.departure_only_passengers) {
-			this->SetCargoFilterDisabledState();
-			this->calc_tick_countdown = 0;
-			this->SetWidgetDirty(WID_DB_SHOW_PAX);
-			this->SetWidgetDirty(WID_DB_SHOW_FREIGHT);
-		}
-
 		if (!Twaypoint && this->departure_types_both != _settings_client.gui.departure_show_both) {
 			this->SetDepartureTypesDisabledState();
 			this->calc_tick_countdown = 0;
@@ -483,8 +461,8 @@ public:
 		/* Recompute the list of departures if we're due to. */
 		if (this->calc_tick_countdown <= 0) {
 			this->calc_tick_countdown = _settings_client.gui.departure_calc_frequency;
-			bool show_pax = _settings_client.gui.departure_only_passengers ? true : this->show_pax;
-			bool show_freight = _settings_client.gui.departure_only_passengers ? false : this->show_freight;
+			bool show_pax = this->show_pax;
+			bool show_freight = this->show_freight;
 			if (this->departure_types[0] || _settings_client.gui.departure_show_both) {
 				this->departures = MakeDepartureList(this->station, this->vehicles, D_DEPARTURE, Twaypoint || this->departure_types[2], show_pax, show_freight);
 			} else {

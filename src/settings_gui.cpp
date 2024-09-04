@@ -2316,7 +2316,6 @@ static SettingsContainer &GetSettingsTree()
 				departureboards->Add(new SettingEntry("gui.departure_larger_font"));
 				departureboards->Add(new SettingEntry("gui.departure_destination_type"));
 				departureboards->Add(new SettingEntry("gui.departure_show_both"));
-				departureboards->Add(new SettingEntry("gui.departure_only_passengers"));
 				departureboards->Add(new SettingEntry("gui.departure_smart_terminus"));
 				departureboards->Add(new SettingEntry("gui.departure_conditionals"));
 				departureboards->Add(new SettingEntry("gui.departure_show_all_stops"));
