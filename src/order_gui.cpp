@@ -983,7 +983,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 
 		case OT_CONDITIONAL: {
 			auto set_station_id = [&order](uint index, StringParameters &sp = _global_string_params) {
-				const Station *st = Station::GetIfValid(GB(order->GetXData2(), 0, 16) - 1);
+				const Station *st = Station::GetIfValid(order->GetConditionStationID());
 				if (st == nullptr) {
 					sp.SetParam(index, STR_ORDER_CONDITIONAL_UNDEFINED_STATION);
 				} else {
@@ -1060,24 +1060,24 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 
 				auto output_condition_value = [&](int param_offset) {
 					if (percent_mode) {
-						auto capacity_params = MakeParameters(GB(order->GetXData(), 0, 16), CargoSpec::Get(order->GetConditionValue())->name);
+						auto capacity_params = MakeParameters(order->GetXDataLow(), CargoSpec::Get(order->GetConditionValue())->name);
 						bool refit = HasBit(order->GetXData2(), 16);
 						StringID capacity_str = refit ? STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY_REFIT : STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY;
 						_temp_special_strings[0] = GetStringWithArgs(capacity_str, capacity_params);
 						tmp_params.SetParam(param_offset, SPECSTR_TEMP_START);
 					} else {
 						tmp_params.SetParam(param_offset, order->GetConditionValue());
-						tmp_params.SetParam(param_offset + 1, GB(order->GetXData(), 0, 16));
+						tmp_params.SetParam(param_offset + 1, order->GetXDataLow());
 					}
 				};
 
-				if (GB(order->GetXData(), 16, 16) == 0) {
+				if (!order->HasConditionViaStation()) {
 					substr = percent_mode ? STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_DISPLAY : STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY;
 					tmp_params.SetParam(4, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator());
 					output_condition_value(5);
 				} else {
 					substr = percent_mode ? STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_VIA_DISPLAY : STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY;
-					const Station *via_st = Station::GetIfValid(GB(order->GetXData(), 16, 16) - 2);
+					const Station *via_st = Station::GetIfValid(order->GetConditionViaStationID());
 					if (via_st == nullptr) {
 						tmp_params.SetParam(4, STR_ORDER_CONDITIONAL_UNDEFINED_STATION);
 					} else {
@@ -1090,15 +1090,15 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				_temp_special_strings[0] = GetStringWithArgs(substr, tmp_params);
 				SetDParam(0, SPECSTR_TEMP_START);
 			} else if (ocv == OCV_COUNTER_VALUE) {
-				if (TraceRestrictCounter::IsValidID(GB(order->GetXData(), 16, 16))) {
+				if (TraceRestrictCounter::IsValidID(order->GetXDataHigh())) {
 					SetDParam(0, STR_ORDER_CONDITIONAL_COUNTER);
-					SetDParam(2, GB(order->GetXData(), 16, 16));
+					SetDParam(2, order->GetXDataHigh());
 				} else {
 					SetDParam(0, STR_ORDER_CONDITIONAL_INVALID_COUNTER);
 					SetDParam(2, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 				}
 				SetDParam(3, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator());
-				SetDParam(4, GB(order->GetXData(), 0, 16));
+				SetDParam(4, order->GetXDataLow());
 			} else if (ocv == OCV_TIME_DATE) {
 				SetDParam(0, (order->GetConditionValue() == TRTDVF_HOUR_MINUTE) ? STR_ORDER_CONDITIONAL_TIME_HHMM : STR_ORDER_CONDITIONAL_NUM);
 				SetDParam(2, STR_TRACE_RESTRICT_TIME_MINUTE_ITEM + order->GetConditionValue());
@@ -1112,10 +1112,11 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			} else if (ocv == OCV_DISPATCH_SLOT) {
 				const DispatchSchedule *selected_schedule = nullptr;
 				SetDParam(0, STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DISPLAY);
-				if (GB(order->GetXData(), 0, 16) != UINT16_MAX) {
+				uint16_t schedule_id = order->GetConditionDispatchScheduleID();
+				if (schedule_id != UINT16_MAX) {
 					bool have_name = false;
-					if (GB(order->GetXData(), 0, 16) < v->orders->GetScheduledDispatchScheduleCount()) {
-						const DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(GB(order->GetXData(), 0, 16));
+					if (schedule_id < v->orders->GetScheduledDispatchScheduleCount()) {
+						const DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_id);
 						selected_schedule = &ds;
 						if (!ds.ScheduleName().empty()) {
 							_temp_special_strings[0] = ds.ScheduleName();
@@ -1123,7 +1124,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 						}
 					}
 					if (!have_name) {
-						auto tmp_params = MakeParameters(GB(order->GetXData(), 0, 16) + 1);
+						auto tmp_params = MakeParameters(schedule_id + 1);
 						_temp_special_strings[0] = GetStringWithArgs(STR_TIMETABLE_ASSIGN_SCHEDULE_ID, tmp_params);
 					}
 					SetDParam(2, SPECSTR_TEMP_START);
@@ -2350,7 +2351,7 @@ public:
 						}
 						aux_sel->SetDisplayedPlane(DP_COND_AUX_CARGO);
 					} else if (is_counter) {
-						TraceRestrictCounterID ctr_id = (order != nullptr && TraceRestrictCounter::IsValidID(GB(order->GetXData(), 16, 16)) ? GB(order->GetXData(), 16, 16) : INVALID_TRACE_RESTRICT_COUNTER_ID);
+						TraceRestrictCounterID ctr_id = (order != nullptr && TraceRestrictCounter::IsValidID(order->GetXDataHigh()) ? order->GetXDataHigh() : INVALID_TRACE_RESTRICT_COUNTER_ID);
 
 						this->GetWidget<NWidgetCore>(WID_O_COND_COUNTER)->widget_data = (ctr_id != INVALID_TRACE_RESTRICT_COUNTER_ID) ? STR_TRACE_RESTRICT_COUNTER_NAME : STR_TRACE_RESTRICT_VARIABLE_UNDEFINED;
 						aux_sel->SetDisplayedPlane(DP_COND_COUNTER);
@@ -2640,7 +2641,7 @@ public:
 						case OCV_CARGO_WAITING_AMOUNT:
 						case OCV_CARGO_WAITING_AMOUNT_PERCENTAGE:
 						case OCV_COUNTER_VALUE:
-							value = GB(order->GetXData(), 0, 16);
+							value = order->GetXDataLow();
 							break;
 
 						default:
@@ -2680,7 +2681,7 @@ public:
 				const Order *order = this->vehicle->GetOrder(sel);
 
 				if (order != nullptr && order->IsType(OT_CONDITIONAL)) {
-					TraceRestrictCounterID value = GB(order->GetXData(), 16, 16);
+					TraceRestrictCounterID value = order->GetXDataHigh();
 					SetDParam(0, value);
 				}
 				break;
@@ -2690,7 +2691,7 @@ public:
 				VehicleOrderID sel = this->OrderGetSel();
 				const Order *order = this->vehicle->GetOrder(sel);
 
-				uint schedule_index = GB(order->GetXData(), 0, 16);
+				uint schedule_index = order->GetConditionDispatchScheduleID();
 				if (order != nullptr && order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OCV_DISPATCH_SLOT && schedule_index != UINT16_MAX) {
 					if (schedule_index < this->vehicle->orders->GetScheduledDispatchScheduleCount()) {
 						const DispatchSchedule &ds = this->vehicle->orders->GetDispatchScheduleByIndex(schedule_index);
@@ -3092,7 +3093,7 @@ public:
 
 			case WID_O_COND_COUNTER: {
 				int selected;
-				TraceRestrictCounterID value = GB(this->vehicle->GetOrder(this->OrderGetSel())->GetXData(), 16, 16);
+				TraceRestrictCounterID value = this->vehicle->GetOrder(this->OrderGetSel())->GetXDataHigh();
 				DropDownList list = GetCounterDropDownList(this->vehicle->owner, value, selected);
 				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_COND_COUNTER, 0, DDMF_NONE, DDSF_SHARED);
 				break;
@@ -3111,7 +3112,7 @@ public:
 			}
 
 			case WID_O_COND_SCHED_SELECT: {
-				int selected = GB(this->vehicle->GetOrder(this->OrderGetSel())->GetXData(), 0, 16);
+				int selected = this->vehicle->GetOrder(this->OrderGetSel())->GetConditionDispatchScheduleID();
 				if (selected == UINT16_MAX) selected = -1;
 
 				uint count = this->vehicle->orders->GetScheduledDispatchScheduleCount();
@@ -3164,7 +3165,7 @@ public:
 			case WID_O_COND_AUX_VIA: {
 				if (this->goto_type != OPOS_NONE) {
 					ResetObjectToPlace();
-				} else if (GB(this->vehicle->GetOrder(this->OrderGetSel())->GetXData(), 16, 16) != 0) {
+				} else if (this->vehicle->GetOrder(this->OrderGetSel())->HasConditionViaStation()) {
 					this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_3 | NEW_STATION << 8);
 				} else {
 					this->OrderClick_Goto(OPOS_COND_VIA);
@@ -3228,7 +3229,7 @@ public:
 
 					const DispatchSchedule *ds = nullptr;
 					uint16_t slot_flags = 0;
-					uint schedule_index = GB(o->GetXData(), 0, 16);
+					uint schedule_index = o->GetConditionDispatchScheduleID();
 					if (schedule_index < this->vehicle->orders->GetScheduledDispatchScheduleCount()) {
 						ds = &(this->vehicle->orders->GetDispatchScheduleByIndex(schedule_index));
 						for (const DispatchSlot &slot : ds->GetScheduledDispatch()) {
@@ -3305,7 +3306,7 @@ public:
 					case OCV_CARGO_WAITING_AMOUNT:
 					case OCV_CARGO_WAITING_AMOUNT_PERCENTAGE:
 					case OCV_COUNTER_VALUE:
-						value = GB(order->GetXData(), 0, 16);
+						value = order->GetXDataLow();
 						break;
 
 					default:

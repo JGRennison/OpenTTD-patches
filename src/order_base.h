@@ -145,7 +145,7 @@ private:
 
 	inline uint8_t &GetXFlagsRef()
 	{
-		CheckExtraInfoAlloced();
+		this->CheckExtraInfoAlloced();
 		return this->extra->xflags;
 	}
 
@@ -155,10 +155,30 @@ public:
 		return this->extra != nullptr ? this->extra->xdata : 0;
 	}
 
+	inline uint16_t GetXDataLow() const
+	{
+		return (uint16_t)GB(this->GetXData(), 0, 16);
+	}
+
+	inline uint16_t GetXDataHigh() const
+	{
+		return (uint16_t)GB(this->GetXData(), 16, 16);
+	}
+
 	inline uint32_t &GetXDataRef()
 	{
-		CheckExtraInfoAlloced();
+		this->CheckExtraInfoAlloced();
 		return this->extra->xdata;
+	}
+
+	inline void SetXDataLow(uint16_t data)
+	{
+		SB(this->GetXDataRef(), 0, 16, data);
+	}
+
+	inline void SetXDataHigh(uint16_t data)
+	{
+		SB(this->GetXDataRef(), 16, 16, data);
 	}
 
 	inline uint32_t GetXData2() const
@@ -166,10 +186,30 @@ public:
 		return this->extra != nullptr ? this->extra->xdata2 : 0;
 	}
 
+	inline uint16_t GetXData2Low() const
+	{
+		return (uint16_t)GB(this->GetXData2(), 0, 16);
+	}
+
+	inline uint16_t GetXData2High() const
+	{
+		return (uint16_t)GB(this->GetXData2(), 16, 16);
+	}
+
 	inline uint32_t &GetXData2Ref()
 	{
-		CheckExtraInfoAlloced();
+		this->CheckExtraInfoAlloced();
 		return this->extra->xdata2;
+	}
+
+	inline void SetXData2Low(uint16_t data)
+	{
+		SB(this->GetXData2Ref(), 0, 16, data);
+	}
+
+	inline void SetXData2High(uint16_t data)
+	{
+		SB(this->GetXData2Ref(), 16, 16, data);
 	}
 
 	inline uint16_t GetRawFlags() const
@@ -405,6 +445,14 @@ public:
 	inline int8_t GetJumpCounter() const { return GB(this->GetXData(), 0, 8); }
 	/** Get counter operation */
 	inline uint8_t GetCounterOperation() const { return GB(this->flags, 0, 8); }
+	/** Get condition station ID */
+	inline StationID GetConditionStationID() const { return (StationID)(this->GetXData2Low() - 1); }
+	/** Has condition via station ID */
+	inline bool HasConditionViaStation() const { return this->GetXDataHigh() != 0; }
+	/** Get condition via station ID */
+	inline StationID GetConditionViaStationID() const { return (StationID)(this->GetXDataHigh() - 2); }
+	/** Get condition dispatch scheduled ID */
+	inline uint16_t GetConditionDispatchScheduleID() const { return this->GetXDataLow(); }
 
 	/** Set how the consist must be loaded. */
 	inline void SetLoadType(OrderLoadFlags load_type)
@@ -470,6 +518,14 @@ public:
 	inline void SetJumpCounter(int8_t jump_counter) { SB(this->GetXDataRef(), 0, 8, jump_counter); }
 	/** Set counter operation */
 	inline void SetCounterOperation(uint8_t op) { SB(this->flags, 0, 8, op); }
+	/** Set condition station ID */
+	inline void SetConditionStationID(StationID st) { this->SetXData2Low(st + 1); }
+	/** Set condition via station ID */
+	inline void SetConditionViaStationID(StationID st) { this->SetXDataHigh(st + 2); }
+	/** Clear condition via station ID */
+	inline void ClearConditionViaStation() { this->SetXDataHigh(0); }
+	/** Set condition dispatch scheduled ID */
+	inline void SetConditionDispatchScheduleID(uint16_t slot) { this->SetXDataLow(slot); }
 
 	/* As conditional orders write their "skip to" order all over the flags, we cannot check the
 	 * flags to find out if timetabling is enabled. However, as conditional orders are never

@@ -3165,8 +3165,8 @@ void TraceRestrictRemoveCounterID(TraceRestrictCounterID index)
 	for (Order *o : Order::Iterate()) {
 		if (o->IsType(OT_CONDITIONAL) &&
 				(o->GetConditionVariable() == OCV_COUNTER_VALUE) &&
-				GB(o->GetXData(), 16, 16) == index) {
-			SB(o->GetXDataRef(), 16, 16, INVALID_TRACE_RESTRICT_COUNTER_ID);
+				o->GetXDataHigh() == index) {
+			o->SetXDataHigh(INVALID_TRACE_RESTRICT_COUNTER_ID);
 			changed_order = true;
 		}
 		if (o->IsType(OT_COUNTER) && o->GetDestination() == index) {

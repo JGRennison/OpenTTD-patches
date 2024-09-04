@@ -421,13 +421,13 @@ CommandCost CmdScheduledDispatchRemoveSchedule(TileIndex tile, DoCommandFlag fla
 				o->SetDispatchScheduleIndex(idx - 1);
 			}
 			if (o->IsType(OT_CONDITIONAL) && o->GetConditionVariable() == OCV_DISPATCH_SLOT) {
-				uint16_t dispatch_slot = GB(o->GetXData(), 0, 16);
-				if (dispatch_slot == UINT16_MAX) {
+				uint16_t order_schedule = o->GetConditionDispatchScheduleID();
+				if (order_schedule == UINT16_MAX) {
 					/* do nothing */
-				} else if (dispatch_slot == schedule_index) {
-					SB(o->GetXDataRef(), 0, 16, UINT16_MAX);
-				} else if (dispatch_slot > schedule_index) {
-					SB(o->GetXDataRef(), 0, 16, (uint16_t)(dispatch_slot - 1));
+				} else if (order_schedule == schedule_index) {
+					o->SetConditionDispatchScheduleID(UINT16_MAX);
+				} else if (order_schedule > schedule_index) {
+					o->SetConditionDispatchScheduleID((uint16_t)(order_schedule - 1));
 				}
 			}
 		}
@@ -687,11 +687,11 @@ CommandCost CmdScheduledDispatchSwapSchedules(TileIndex tile, DoCommandFlag flag
 				o->SetDispatchScheduleIndex((int)schedule_index_1);
 			}
 			if (o->IsType(OT_CONDITIONAL) && o->GetConditionVariable() == OCV_DISPATCH_SLOT) {
-				uint16_t dispatch_slot = GB(o->GetXData(), 0, 16);
-				if (dispatch_slot == schedule_index_1) {
-					SB(o->GetXDataRef(), 0, 16, schedule_index_2);
-				} else if (dispatch_slot == schedule_index_2) {
-					SB(o->GetXDataRef(), 0, 16, schedule_index_1);
+				uint16_t order_schedule = o->GetConditionDispatchScheduleID();
+				if (order_schedule == schedule_index_1) {
+					o->SetConditionDispatchScheduleID(schedule_index_2);
+				} else if (order_schedule == schedule_index_2) {
+					o->SetConditionDispatchScheduleID(schedule_index_1);
 				}
 			}
 		}

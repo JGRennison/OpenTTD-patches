@@ -98,7 +98,7 @@ static uint8_t GetDepartureConditionalOrderMode(const Order *order, const Vehicl
 	}
 	if (order->GetConditionVariable() == OCV_DISPATCH_SLOT) {
 		if (GB(order->GetConditionValue(), ODCB_SRC_START, ODCB_SRC_COUNT) == ODCS_VEH) {
-			auto record = records.find(std::make_pair(GB(order->GetXData(), 0, 16), v->index));
+			auto record = records.find(std::make_pair(order->GetConditionDispatchScheduleID(), v->index));
 			if (record != records.end()) {
 				/* SchdispatchCacheEntry contains a last dispatch entry, use that instead of the one stored in the vehicle */
 				extern bool EvaluateDispatchSlotConditionalOrderVehicleRecord(const Order *order, const LastDispatchRecord &record);
