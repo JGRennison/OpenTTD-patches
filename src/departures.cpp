@@ -265,11 +265,9 @@ static void ScheduledDispatchDepartureLocalFix(DepartureList &departure_list)
  * @param vehicles set of all the vehicles stopping at this station, of all vehicles types that we are interested in
  * @param type the type of departures to get (departures or arrivals)
  * @param calling_settings departure calling settings
- * @param show_pax whether to include passenger vehicles
- * @param show_freight whether to include freight vehicles
  * @return a list of departures, which is empty if an error occurred
  */
-DepartureList MakeDepartureList(StationID station, const std::vector<const Vehicle *> &vehicles, DepartureType type, DepartureCallingSettings calling_settings, bool show_pax, bool show_freight)
+DepartureList MakeDepartureList(StationID station, const std::vector<const Vehicle *> &vehicles, DepartureType type, DepartureCallingSettings calling_settings)
 {
 	/* This function is the meat of the departure boards functionality. */
 	/* As an overview, it works by repeatedly considering the best possible next departure to show. */
@@ -278,7 +276,7 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 	/* This code can probably be made more efficient. I haven't done so in order to keep both its (relative) simplicity and my (relative) sanity. */
 	/* Having written that, it's not exactly slow at the moment. */
 
-	if (!show_pax && !show_freight) return {};
+	if (!calling_settings.show_pax && !calling_settings.show_freight) return {};
 
 	/* The list of departures which will be returned as a result. */
 	std::vector<std::unique_ptr<Departure>> result;
@@ -302,7 +300,7 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 		/* We find the least order while we're at it. */
 		for (const Vehicle *v : vehicles) {
 			if (v->GetNumOrders() == 0) continue;
-			if (show_pax != show_freight) {
+			if (calling_settings.show_pax != calling_settings.show_freight) {
 				bool carries_passengers = false;
 
 				const Vehicle *u = v;
@@ -314,7 +312,7 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 					u = u->Next();
 				}
 
-				if (carries_passengers != show_pax) {
+				if (carries_passengers != calling_settings.show_pax) {
 					continue;
 				}
 			}

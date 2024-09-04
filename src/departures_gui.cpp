@@ -486,14 +486,16 @@ public:
 			settings.allow_via = this->is_waypoint || this->show_via;
 			settings.departure_no_load_test = this->is_waypoint || _settings_client.gui.departure_show_all_stops;
 			settings.show_all_stops = _settings_client.gui.departure_show_all_stops;
+			settings.show_pax = show_pax;
+			settings.show_freight = show_freight;
 
 			if (this->mode != DM_ARRIVALS) {
-				this->departures = MakeDepartureList(this->station, this->vehicles, D_DEPARTURE, settings, show_pax, show_freight);
+				this->departures = MakeDepartureList(this->station, this->vehicles, D_DEPARTURE, settings);
 			} else {
 				this->departures.clear();
 			}
 			if (this->mode == DM_ARRIVALS || this->mode == DM_SEPARATE) {
-				this->arrivals = MakeDepartureList(this->station, this->vehicles, D_ARRIVAL, settings, show_pax, show_freight);
+				this->arrivals = MakeDepartureList(this->station, this->vehicles, D_ARRIVAL, settings);
 			} else {
 				this->arrivals.clear();
 			}

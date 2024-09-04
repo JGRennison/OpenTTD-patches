@@ -117,6 +117,8 @@ struct DepartureCallingSettings {
 	bool allow_via = false;
 	bool departure_no_load_test = false;
 	bool show_all_stops = false;
+	bool show_pax = false;
+	bool show_freight = false;
 
 	bool IsDeparture(const Order *order, StationID station);
 	bool IsArrival(const Order *order, StationID station);
