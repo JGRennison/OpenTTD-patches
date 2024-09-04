@@ -415,7 +415,7 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 									status = D_TRAVELLING;
 								}
 								start_ticks -= order->GetWaitTime(); /* Added previously in VehicleSetNextDepartureTime */
-								order = (order->next == nullptr) ? v->GetFirstOrder() : order->next;
+								order = v->orders->GetNext(order);
 								require_travel_time = true;
 								continue;
 							}
@@ -478,7 +478,7 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 					if (status != D_CANCELLED) {
 						status = D_TRAVELLING;
 					}
-					order = (order->next == nullptr) ? v->GetFirstOrder() : order->next;
+					order = v->orders->GetNext(order);
 					require_travel_time = true;
 				}
 			}
@@ -557,7 +557,7 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 
 			/* Go through the order list, looping if necessary, to find a terminus. */
 			/* Get the next order, which may be the vehicle's first order. */
-			order = (order->next == nullptr) ? lod.v->GetFirstOrder() : order->next;
+			order = lod.v->orders->GetNext(order);
 			/* We only need to consider each order at most once. */
 			bool found_terminus = false;
 			CallAt c = CallAt((StationID)order->GetDestination(), d->scheduled_tick);
@@ -592,7 +592,7 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 							}
 							case 2: {
 								/* Do not take the branch */
-								order = (order->next == nullptr) ? lod.v->GetFirstOrder() : order->next;
+								order = lod.v->orders->GetNext(order);
 								continue;
 							}
 					}
@@ -625,7 +625,7 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 
 				if (order->GetType() == OT_LABEL && order->GetLabelSubType() == OLST_DEPARTURES_VIA && d->via == INVALID_STATION && pending_via == INVALID_STATION) {
 					pending_via = (StationID)order->GetDestination();
-					const Order *next = (order->next == nullptr) ? lod.v->GetFirstOrder() : order->next;
+					const Order *next = lod.v->orders->GetNext(order);
 					if (next->GetType() == OT_LABEL && next->GetLabelSubType() == OLST_DEPARTURES_VIA && (StationID)next->GetDestination() != pending_via) {
 						pending_via2 = (StationID)next->GetDestination();
 					}
@@ -651,7 +651,7 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 						order->GetNonStopType() == ONSF_NO_STOP_AT_ANY_STATION ||
 						order->GetNonStopType() == ONSF_NO_STOP_AT_DESTINATION_STATION) {
 					if (c.scheduled_tick != 0) c.scheduled_tick += order->GetWaitTime();
-					order = (order->next == nullptr) ? lod.v->GetFirstOrder() : order->next;
+					order = lod.v->orders->GetNext(order);
 					continue;
 				}
 
@@ -689,7 +689,7 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 				if (c.scheduled_tick != 0) c.scheduled_tick += order->GetWaitTime();
 
 				/* Get the next order, which may be the vehicle's first order. */
-				order = (order->next == nullptr) ? lod.v->GetFirstOrder() : order->next;
+				order = lod.v->orders->GetNext(order);
 			}
 
 			if (found_terminus) {
@@ -882,7 +882,7 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 		/* We do this in a similar way to finding the first suitable order for the vehicle. */
 
 		/* Go to the next order so we don't add the current order again. */
-		order = (order->next == nullptr) ? lod.v->GetFirstOrder() : order->next;
+		order = lod.v->orders->GetNext(order);
 		if (VehicleSetNextDepartureTime(&lod.expected_tick, &lod.scheduled_waiting_time, state_ticks_base, lod.v, order, false, schdispatch_last_planned_dispatch, dispatch_records)) {
 			lod.lateness = 0;
 		}
@@ -916,7 +916,7 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 						case 2: {
 							/* Do not take the branch */
 							lod.expected_tick -= order->GetWaitTime(); /* Added previously in VehicleSetNextDepartureTime */
-							order = (order->next == nullptr) ? lod.v->GetFirstOrder() : order->next;
+							order = lod.v->orders->GetNext(order);
 							if (VehicleSetNextDepartureTime(&lod.expected_tick, &lod.scheduled_waiting_time, state_ticks_base, lod.v, order, false, schdispatch_last_planned_dispatch, dispatch_records)) {
 								lod.lateness = 0;
 							}
@@ -949,7 +949,7 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 				}
 			}
 
-			order = (order->next == nullptr) ? lod.v->GetFirstOrder() : order->next;
+			order = lod.v->orders->GetNext(order);
 			if (VehicleSetNextDepartureTime(&lod.expected_tick, &lod.scheduled_waiting_time, state_ticks_base, lod.v, order, false, schdispatch_last_planned_dispatch, dispatch_records)) {
 				lod.lateness = 0;
 			}
