@@ -721,7 +721,7 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 					/* If the vehicle is expected to be late, we want to know what time it will arrive rather than depart. */
 					/* This is done because it looked silly to me to have a vehicle not be expected for another few days, yet it be at the same time pulling into the station. */
 					if (d->status != D_ARRIVED && d->lateness > 0) {
-						d->lateness -= least_order->order->GetWaitTime();
+						d->lateness = std::max<Ticks>(0, d->lateness - least_order->order->GetWaitTime());
 					}
 				}
 			}
