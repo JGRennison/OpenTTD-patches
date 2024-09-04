@@ -1294,7 +1294,7 @@ STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION
 STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} Informaciónd a viaxe en directo
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}D
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}A
-STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}vía
+STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}vía
 STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}Amosar as saídas programadas
 STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}Amosar as chegadas programadas
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Amosar os vehículos programados que non paran aqui

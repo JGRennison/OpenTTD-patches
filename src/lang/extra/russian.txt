@@ -1296,7 +1296,7 @@ STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION
 STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} Информация о путешествиях в прямом эфире
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}О
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}П
-STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}через
+STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}через
 STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}Показать отправления по расписанию
 STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}Показать прибытия по расписанию
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Показать транспортные средства, которые не останавливаются здесь по расписанию

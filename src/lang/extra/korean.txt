@@ -1294,7 +1294,7 @@ STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION
 STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} - 실시간 운행 정보
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}발
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}착
-STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}경유
+STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}경유
 STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}도착 시간 표시
 STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}출발 시간 표시
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}통과 차량 표시

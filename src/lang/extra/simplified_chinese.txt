@@ -1296,7 +1296,7 @@ STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION
 STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} - 实时运输信息
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}发
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}抵
-STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}经
+STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}经
 STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}显示表定发车载具
 STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}显示表定到达载具
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}显示表定通过载具

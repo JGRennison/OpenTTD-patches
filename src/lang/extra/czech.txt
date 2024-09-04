@@ -1172,7 +1172,7 @@ STR_DEPARTURES_CAPTION                                          :{WHITE}Aktuáln
 STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}Aktuální dopravní informace - {WAYPOINT}
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}O
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}P
-STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}přes
+STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}přes
 STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}Zobrazit odjezdy dle jízdního řádu
 STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}Zobrazit příjezdy dle jízdního řádu
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Zobrazit vozidla, která zde podle jízdního řádu nezastavují

@@ -1350,7 +1350,7 @@ STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOIN
 STR_DEPARTURES_CARGO_MODE_TOOLTIP                               :{BLACK}Set cargo filter mode for arrivals/departures
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}D
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}A
-STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}via
+STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}Via
 STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}Show timetabled departures
 STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}Show timetabled arrivals
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Show timetabled vehicles that do not stop here

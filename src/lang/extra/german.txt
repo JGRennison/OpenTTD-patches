@@ -1058,7 +1058,7 @@ STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION
 STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} Ankunfts- und Abfahrtszeiten
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}Ab
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}An
-STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}Durch
+STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}Durch
 STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}Zeige geplante Abfahrten
 STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}Zeige geplante Ankünfte
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Zeige geplante Durchfahrten (halten nicht an)
