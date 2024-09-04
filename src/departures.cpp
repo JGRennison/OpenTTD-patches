@@ -50,8 +50,10 @@ struct OrderDate {
 	Ticks lateness;         ///< How late this order is expected to finish
 	DepartureStatus status; ///< Whether the vehicle has arrived to carry out the order yet
 	bool have_veh_dispatch_conditionals; ///< Whether vehicle dispatch conditionals are present
+	bool arrivals_complete;       ///< arrival history is complete
 	Ticks scheduled_waiting_time; ///< Scheduled waiting time if scheduled dispatch is used
 	ScheduledDispatchVehicleRecords dispatch_records; ///< Dispatch records for this vehicle
+	std::vector<const Order *> arrival_history;
 
 	inline Ticks EffectiveWaitingTime() const
 	{
@@ -335,6 +337,7 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 			}
 
 			ScheduledDispatchVehicleRecords dispatch_records;
+			std::vector<const Order *> arrival_history;
 
 			const Order *order = v->GetOrder(v->cur_implicit_order_index % v->GetNumOrders());
 			if (order == nullptr) continue;
@@ -449,6 +452,8 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 					od.have_veh_dispatch_conditionals = have_veh_dispatch_conditionals;
 					od.scheduled_waiting_time = waiting_time;
 					od.dispatch_records = std::move(dispatch_records);
+					od.arrivals_complete = false;
+					od.arrival_history = std::move(arrival_history);
 
 					/* Reset lateness if timing is from scheduled dispatch */
 					if (should_reset_lateness) {
@@ -465,6 +470,10 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 					/* We're done with this vehicle. */
 					break;
 				} else {
+					if (type == D_ARRIVAL) {
+						arrival_history.push_back(order);
+					}
+
 					/* Go to the next order in the list. */
 					if (status != D_CANCELLED) {
 						status = D_TRAVELLING;
@@ -748,66 +757,103 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 			/* Again, we define a station as being called at if the vehicle loads from it. */
 
 			/* However, the very first thing we do is use the arrival time as the scheduled time instead of the departure time. */
-			d->scheduled_tick -= d->scheduled_waiting_time > 0 ? d->scheduled_waiting_time : order->GetWaitTime();
+			d->scheduled_tick -= d->EffectiveWaitingTime();
 
-			const Order *candidate_origin = (order->next == nullptr) ? lod.v->GetFirstOrder() : order->next;
-			bool found_origin = false;
+			/* Project back the arrival history if the vehicle is already part way along the route, this stops at conditional jumps or jump targets */
+			if (!lod.arrivals_complete) {
+				const Order *existing_history_start = lod.arrival_history.empty() ? lod.order : lod.arrival_history.front();
+				OrderID existing_history_start_idx = 0;
+				OrderID arrival_idx = 0;
+				for (OrderID i = 0; i < lod.v->GetNumOrders(); i++) {
+					const Order *o = lod.v->GetOrder(i);
+					if (o == existing_history_start) existing_history_start_idx = i;
+					if (o == lod.order) arrival_idx = i;
+				}
 
-			while (candidate_origin != lod.order) {
-				if ((candidate_origin->GetLoadType() != OLFB_NO_LOAD ||
-						calling_settings.show_all_stops) &&
-						(candidate_origin->GetType() == OT_GOTO_STATION ||
-						candidate_origin->GetType() == OT_IMPLICIT) &&
-						candidate_origin->GetDestination() != station &&
-						(candidate_origin->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
-					const Order *o = (candidate_origin->next == nullptr) ? lod.v->GetFirstOrder() : candidate_origin->next;
-					bool found_collision = false;
+				OrderID predict_history_starting_from = arrival_idx + 1;
+				if (predict_history_starting_from >= lod.v->GetNumOrders()) predict_history_starting_from = 0;
 
-					/* Check if the candidate origin's destination appears again before the original order or the station does. */
-					while (o != lod.order) {
-						if (o->GetUnloadType() == OUFB_UNLOAD) {
-							found_collision = true;
-							break;
-						}
-
-						if ((o->GetType() == OT_GOTO_STATION ||
-								o->GetType() == OT_IMPLICIT) &&
-								(o->GetDestination() == candidate_origin->GetDestination() ||
-								o->GetDestination() == station) &&
-								(o->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
-							found_collision = true;
-							break;
-						}
-
-						o = (o->next == nullptr) ? lod.v->GetFirstOrder() : o->next;
-					}
-
-					/* If it doesn't, then we have found the origin. */
-					if (!found_collision) {
-						found_origin = true;
-						break;
+				for (OrderID i = 0; i < lod.v->GetNumOrders(); i++) {
+					const Order *o = lod.v->GetOrder(i);
+					if (o->IsType(OT_CONDITIONAL)) {
+						auto stop_prediction_at = [&](OrderID target) {
+							if (target < lod.v->GetNumOrders()) {
+								if (predict_history_starting_from > existing_history_start_idx) {
+									/* Prediction range is cut into two sections by the end of the order list */
+									if (target > predict_history_starting_from || target < existing_history_start_idx) predict_history_starting_from = target;
+								} else {
+									/* Prediction range is in the middle of the order list */
+									if (target > predict_history_starting_from && target < existing_history_start_idx) predict_history_starting_from = target;
+								}
+							}
+						};
+						stop_prediction_at(i);
+						stop_prediction_at(order->GetConditionSkipToOrder());
 					}
 				}
 
-				candidate_origin = (candidate_origin->next == nullptr) ? lod.v->GetFirstOrder() : candidate_origin->next;
+				std::vector<const Order *> new_history;
+				for (const Order *o = lod.v->GetOrder(predict_history_starting_from); o != existing_history_start; o = lod.v->orders->GetNext(o)) {
+					if (o->GetType() == OT_GOTO_STATION || o->GetType() == OT_IMPLICIT) new_history.push_back(o);
+				}
+				new_history.insert(new_history.end(), lod.arrival_history.begin(), lod.arrival_history.end());
+				lod.arrival_history = std::move(new_history);
 			}
 
-			order = (candidate_origin->next == nullptr) ? lod.v->GetFirstOrder() : candidate_origin->next;
+			std::vector<std::pair<StationID, uint>> possible_origins;
 
-			while (order != lod.order) {
-				if (order->GetType() == OT_GOTO_STATION &&
-						(order->GetLoadType() != OLFB_NO_LOAD ||
-						calling_settings.show_all_stops) &&
-						(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
-					d->calling_at.push_back(CallAt((StationID)order->GetDestination()));
+			for (uint i = 0; i < (uint)lod.arrival_history.size(); i++) {
+				const Order *o = lod.arrival_history[i];
+
+				if ((o->GetType() == OT_GOTO_STATION ||
+						o->GetType() == OT_IMPLICIT) &&
+						(o->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
+					if (o->GetDestination() == station) {
+						/* Remove all possible origins */
+						possible_origins.clear();
+					} else {
+						/* Remove all possible origins of this station */
+						for (auto &item : possible_origins) {
+							if (item.first == o->GetDestination()) {
+								item.first = INVALID_STATION;
+							}
+						}
+					}
 				}
 
-				order = (order->next == nullptr) ? lod.v->GetFirstOrder() : order->next;
+				if ((o->GetLoadType() != OLFB_NO_LOAD ||
+						calling_settings.show_all_stops) &&
+						(o->GetType() == OT_GOTO_STATION ||
+						o->GetType() == OT_IMPLICIT) &&
+						o->GetDestination() != station &&
+						(o->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
+					possible_origins.push_back({ o->GetDestination(), i });
+				}
 			}
 
-			d->terminus = CallAt((StationID)candidate_origin->GetDestination());
+			const Order *origin = nullptr;
+			uint origin_arrival_history_index = 0;
+			for (const auto &item : possible_origins) {
+				if (item.first != INVALID_STATION) {
+					origin_arrival_history_index = item.second;
+					origin = lod.arrival_history[item.second];
+					break;
+				}
+			}
+			possible_origins.clear();
+			if (origin != nullptr) {
+				for (uint i = origin_arrival_history_index + 1; i < (uint)lod.arrival_history.size(); i++) {
+					const Order *o = lod.arrival_history[i];
+					if (o->GetType() == OT_GOTO_STATION &&
+							(o->GetLoadType() != OLFB_NO_LOAD ||
+							calling_settings.show_all_stops) &&
+							(o->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
+						d->calling_at.push_back(CallAt((StationID)o->GetDestination()));
+					}
+				}
 
-			if (found_origin) {
+				d->terminus = CallAt((StationID)origin->GetDestination());
+
 				bool duplicate = false;
 
 				if (_settings_client.gui.departure_merge_identical) {
@@ -823,6 +869,10 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 					result.push_back(std::move(departure_ptr));
 				}
 			}
+
+			/* A new arrival history following on from this will be filled in below */
+			lod.arrival_history.clear();
+			lod.arrivals_complete = true;
 		}
 
 		/* Save on pointer dereferences in the coming loop. */
@@ -893,6 +943,10 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 				lod.order = order;
 				found_next_order = true;
 				break;
+			} else {
+				if (type == D_ARRIVAL) {
+					lod.arrival_history.push_back(order);
+				}
 			}
 
 			order = (order->next == nullptr) ? lod.v->GetFirstOrder() : order->next;
