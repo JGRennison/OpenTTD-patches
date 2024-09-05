@@ -473,7 +473,10 @@ void PickerWindow::PickItem(int cls_id, int id)
 		invalidation_flags |= PFI_TYPE;
 	}
 
-	this->callbacks.SetSelectedClass(cls_id);
+	if (this->callbacks.GetSelectedClass() != cls_id) {
+		this->callbacks.SetSelectedClass(cls_id);
+		invalidation_flags |= PFI_TYPE;
+	}
 	this->callbacks.SetSelectedType(id);
 	this->InvalidateData(invalidation_flags);
 	CloseWindowById(WC_SELECT_STATION, 0);
