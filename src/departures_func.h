@@ -17,7 +17,7 @@
 
 #include <vector>
 
-DepartureList MakeDepartureList(StationID station, const std::vector<const Vehicle *> &vehicles, DepartureType type, DepartureCallingSettings calling_settings);
+DepartureList MakeDepartureList(DepartureOrderDestinationDetector source, const std::vector<const Vehicle *> &vehicles, DepartureType type, DepartureCallingSettings calling_settings);
 
 Ticks GetDeparturesMaxTicksAhead();
 

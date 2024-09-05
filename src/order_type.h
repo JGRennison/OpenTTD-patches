@@ -55,6 +55,8 @@ enum OrderType : uint8_t {
 	OT_END
 };
 
+using OrderTypeMask = uint16_t;
+
 enum OrderSlotSubType : uint8_t {
 	OSST_RELEASE               = 0,
 	OSST_TRY_ACQUIRE           = 1,

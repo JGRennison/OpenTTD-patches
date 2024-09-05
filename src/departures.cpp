@@ -86,29 +86,31 @@ struct OrderDateQueueItem {
 };
 
 template <typename LOAD_FILTER>
-bool IsArrivalDepartureTest(const DepartureCallingSettings &settings, const Order *order, StationID station, LOAD_FILTER load_filter)
+bool IsArrivalDepartureTest(const DepartureCallingSettings &settings, const Order *order, LOAD_FILTER load_filter)
 {
-	if (order->GetType() == OT_GOTO_STATION && (StationID)order->GetDestination() == station) {
+	if (order->GetType() == OT_GOTO_STATION) {
 		if (!settings.departure_no_load_test && !load_filter(order)) return false;
 		return settings.allow_via || ((order->GetWaitTime() != 0 || order->IsWaitTimetabled()) && !(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION));
-	} else if (order->GetType() == OT_GOTO_WAYPOINT && (StationID)order->GetDestination() == station) {
+	} else if (order->GetType() == OT_GOTO_WAYPOINT) {
 		if (settings.allow_via) return true;
 		return (order->GetWaitTime() != 0 || order->IsWaitTimetabled());
 	} else {
-		return false;
+		return true;
 	}
 }
 
-bool DepartureCallingSettings::IsDeparture(const Order *order, StationID station)
+bool DepartureCallingSettings::IsDeparture(const Order *order, const DepartureOrderDestinationDetector &source)
 {
-	return IsArrivalDepartureTest(*this, order, station, [](const Order *order) {
+	if (!source.OrderMatches(order)) return false;
+	return IsArrivalDepartureTest(*this, order, [](const Order *order) {
 		return order->GetLoadType() != OLFB_NO_LOAD;
 	});
 }
 
-bool DepartureCallingSettings::IsArrival(const Order *order, StationID station)
+bool DepartureCallingSettings::IsArrival(const Order *order, const DepartureOrderDestinationDetector &source)
 {
-	return IsArrivalDepartureTest(*this, order, station, [](const Order *order) {
+	if (!source.OrderMatches(order)) return false;
+	return IsArrivalDepartureTest(*this, order, [](const Order *order) {
 		return order->GetUnloadType() != OUFB_NO_UNLOAD;
 	});
 }
@@ -283,13 +285,13 @@ static void ScheduledDispatchDepartureLocalFix(DepartureList &departure_list)
 
 /**
  * Compute an up-to-date list of departures for a station.
- * @param station the station to compute the departures of
+ * @param source the station/etc to compute the departures of
  * @param vehicles set of all the vehicles stopping at this station, of all vehicles types that we are interested in
  * @param type the type of departures to get (departures or arrivals)
  * @param calling_settings departure calling settings
  * @return a list of departures, which is empty if an error occurred
  */
-DepartureList MakeDepartureList(StationID station, const std::vector<const Vehicle *> &vehicles, DepartureType type, DepartureCallingSettings calling_settings)
+DepartureList MakeDepartureList(DepartureOrderDestinationDetector source, const std::vector<const Vehicle *> &vehicles, DepartureType type, DepartureCallingSettings calling_settings)
 {
 	/* This function is the meat of the departure boards functionality. */
 	/* As an overview, it works by repeatedly considering the best possible next departure to show. */
@@ -435,8 +437,8 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 
 				/* If the vehicle will be stopping at and loading from this station, and its wait time is not zero, then it is a departure. */
 				/* If the vehicle will be stopping at and unloading at this station, and its wait time is not zero, then it is an arrival. */
-				if ((type == D_DEPARTURE && calling_settings.IsDeparture(order, station)) ||
-						(type == D_ARRIVAL && calling_settings.IsArrival(order, station))) {
+				if ((type == D_DEPARTURE && calling_settings.IsDeparture(order, source)) ||
+						(type == D_ARRIVAL && calling_settings.IsArrival(order, source))) {
 					/* If the departure was scheduled to have already begun and has been cancelled, do not show it. */
 					if (start_ticks < 0 && status == D_CANCELLED) {
 						break;
@@ -601,15 +603,14 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 
 				/* If we reach the original station again, then use it as the terminus. */
 				if (order->GetType() == OT_GOTO_STATION &&
-						(StationID)order->GetDestination() == station &&
+						source.OrderMatches(order) &&
 						(order->GetUnloadType() != OUFB_NO_UNLOAD ||
 						calling_settings.show_all_stops) &&
 						(((order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) || ((lod.order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) != 0))) {
 					/* If we're not calling anywhere, then skip this departure. */
 					found_terminus = (d->calling_at.size() > 0);
 					break;
-				} else if (order->GetType() == OT_GOTO_WAYPOINT &&
-					(StationID)order->GetDestination() == station) {
+				} else if (order->GetType() == OT_GOTO_WAYPOINT && source.OrderMatches(order)) {
 					/* If we're not calling anywhere, then skip this departure. */
 					found_terminus = (d->calling_at.size() > 0);
 					break;
@@ -808,7 +809,7 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 				if ((o->GetType() == OT_GOTO_STATION ||
 						o->GetType() == OT_IMPLICIT) &&
 						(o->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
-					if (o->GetDestination() == station) {
+					if (source.StationMatches(o->GetDestination())) {
 						/* Remove all possible origins */
 						possible_origins.clear();
 					} else {
@@ -825,7 +826,7 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 						calling_settings.show_all_stops) &&
 						(o->GetType() == OT_GOTO_STATION ||
 						o->GetType() == OT_IMPLICIT) &&
-						o->GetDestination() != station &&
+						!source.StationMatches(o->GetDestination()) &&
 						(o->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
 					possible_origins.push_back({ o->GetDestination(), i });
 				}
@@ -938,8 +939,8 @@ DepartureList MakeDepartureList(StationID station, const std::vector<const Vehic
 			}
 
 			/* If the order loads from this station (or unloads if we're computing arrivals) and has a wait time set, then it is suitable for being a departure. */
-			if ((type == D_DEPARTURE && calling_settings.IsDeparture(order, station)) ||
-						(type == D_ARRIVAL && calling_settings.IsArrival(order, station))) {
+			if ((type == D_DEPARTURE && calling_settings.IsDeparture(order, source)) ||
+					(type == D_ARRIVAL && calling_settings.IsArrival(order, source))) {
 				lod.order = order;
 				found_next_order = true;
 				break;

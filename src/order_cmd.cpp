@@ -45,6 +45,8 @@
 
 #include "3rdparty/robin_hood/robin_hood.h"
 
+#include <limits>
+
 #include "safeguards.h"
 
 /* DestinationID must be at least as large as every these below, because it can
@@ -52,6 +54,9 @@
  */
 static_assert(sizeof(DestinationID) >= sizeof(DepotID));
 static_assert(sizeof(DestinationID) >= sizeof(StationID));
+
+/* OrderTypeMask must be large enough for all order types */
+static_assert(std::numeric_limits<OrderTypeMask>::digits >= OT_END);
 
 OrderPool _order_pool("Order");
 INSTANTIATE_POOL_METHODS(Order)

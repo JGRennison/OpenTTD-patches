@@ -482,6 +482,15 @@ public:
 			bool show_pax = this->cargo_mode != DCF_FREIGHT_ONLY;
 			bool show_freight = this->cargo_mode != DCF_PAX_ONLY;
 
+			DepartureOrderDestinationDetector source;
+			if (this->is_waypoint) {
+				SetBit(source.order_type_mask, OT_GOTO_WAYPOINT);
+				source.destination = this->station;
+			} else {
+				SetBit(source.order_type_mask, OT_GOTO_STATION);
+				source.destination = this->station;
+			}
+
 			DepartureCallingSettings settings;
 			settings.allow_via = this->is_waypoint || this->show_via;
 			settings.departure_no_load_test = this->is_waypoint || _settings_client.gui.departure_show_all_stops;
@@ -490,12 +499,12 @@ public:
 			settings.show_freight = show_freight;
 
 			if (this->mode != DM_ARRIVALS) {
-				this->departures = MakeDepartureList(this->station, this->vehicles, D_DEPARTURE, settings);
+				this->departures = MakeDepartureList(source, this->vehicles, D_DEPARTURE, settings);
 			} else {
 				this->departures.clear();
 			}
 			if (this->mode == DM_ARRIVALS || this->mode == DM_SEPARATE) {
-				this->arrivals = MakeDepartureList(this->station, this->vehicles, D_ARRIVAL, settings);
+				this->arrivals = MakeDepartureList(source, this->vehicles, D_ARRIVAL, settings);
 			} else {
 				this->arrivals.clear();
 			}

@@ -15,6 +15,7 @@
 #include "station_base.h"
 #include "order_base.h"
 #include "vehicle_base.h"
+#include "core/bitmath_func.hpp"
 #include <vector>
 
 /** Whether or not a vehicle has arrived for a departure. */
@@ -113,6 +114,21 @@ struct Departure {
 	}
 };
 
+struct DepartureOrderDestinationDetector {
+	OrderTypeMask order_type_mask = 0;
+	DestinationID destination;
+
+	bool OrderMatches(const Order *order) const
+	{
+		return HasBit(this->order_type_mask, order->GetType()) && order->GetDestination() == this->destination;
+	}
+
+	bool StationMatches(StationID station) const
+	{
+		return HasBit(this->order_type_mask, OT_GOTO_STATION) && station == this->destination;
+	}
+};
+
 struct DepartureCallingSettings {
 	bool allow_via = false;
 	bool departure_no_load_test = false;
@@ -120,8 +136,8 @@ struct DepartureCallingSettings {
 	bool show_pax = false;
 	bool show_freight = false;
 
-	bool IsDeparture(const Order *order, StationID station);
-	bool IsArrival(const Order *order, StationID station);
+	bool IsDeparture(const Order *order, const DepartureOrderDestinationDetector &source);
+	bool IsArrival(const Order *order, const DepartureOrderDestinationDetector &source);
 };
 
 typedef std::vector<std::unique_ptr<Departure>> DepartureList;
