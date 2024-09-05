@@ -152,8 +152,12 @@ protected:
 		CompanyMask companies = 0;
 		int unitnumber_max[4] = { -1, -1, -1, -1 };
 
-		for (const Vehicle *veh : Vehicle::IterateFrontOnly()) {
-			if (veh->type < 4 && this->show_types[veh->type] && veh->IsPrimaryVehicle() && veh == veh->FirstShared()) {
+		VehicleTypeMask vt_mask = 0;
+		for (VehicleType vt = VEH_BEGIN; vt != VEH_COMPANY_END; vt++) {
+			if (this->show_types[vt]) SetBit(vt_mask, vt);
+		}
+		for (const Vehicle *veh : Vehicle::IterateTypeMaskFrontOnly(vt_mask)) {
+			if (veh->IsPrimaryVehicle() && veh == veh->FirstShared()) {
 				for (const Order *order : veh->Orders()) {
 					if ((order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT) || order->IsType(OT_IMPLICIT))
 							&& order->GetDestination() == this->station) {
