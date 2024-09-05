@@ -66,7 +66,7 @@ enum ChooseTrainTrackLookAheadStateFlags {
 
 struct ChooseTrainTrackLookAheadState {
 	uint          order_items_start = 0;  ///< Order items start for VehicleOrderSaver
-	uint16_t        flags = 0;            ///< Flags
+	uint16_t      flags = 0;              ///< Flags
 	DestinationID reverse_dest = 0;       ///< Reverse station ID when CTTLASF_REVERSE_FOUND is set
 };
 
