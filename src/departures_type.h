@@ -120,7 +120,11 @@ struct DepartureOrderDestinationDetector {
 
 	bool OrderMatches(const Order *order) const
 	{
-		return HasBit(this->order_type_mask, order->GetType()) && order->GetDestination() == this->destination;
+		if (!(HasBit(this->order_type_mask, order->GetType()) && order->GetDestination() == this->destination)) return false;
+
+		if (order->IsType(OT_GOTO_DEPOT) && (order->GetDepotActionType() & ODATFB_NEAREST_DEPOT) != 0) return false; // Filter out go to nearest depot orders
+
+		return true;
 	}
 
 	bool StationMatches(StationID station) const

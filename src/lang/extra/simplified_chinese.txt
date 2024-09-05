@@ -1292,8 +1292,7 @@ STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}显示�
 STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}货物记录
 STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}显示货物等待记录
 
-STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION} - 实时运输信息
-STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} - 实时运输信息
+STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} - 实时运输信息
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}发
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}抵
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}经

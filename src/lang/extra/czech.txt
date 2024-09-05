@@ -1168,8 +1168,7 @@ STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}Zobrazit
 STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}Historie
 STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}Zobrazit historii čekajícího nákladu
 
-STR_DEPARTURES_CAPTION                                          :{WHITE}Aktuální dopravní informace - {STATION}
-STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}Aktuální dopravní informace - {WAYPOINT}
+STR_DEPARTURES_CAPTION                                          :{WHITE}Aktuální dopravní informace - {STRING}
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}O
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}P
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}přes

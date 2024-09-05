@@ -16,6 +16,7 @@
 #include "vehicle_gui.h"
 #include "vehiclelist.h"
 #include "tracerestrict.h"
+#include "departures_gui.h"
 
 #include "safeguards.h"
 
@@ -49,4 +50,7 @@ Depot::~Depot()
 	/* Delete the depot list */
 	VehicleType vt = GetDepotVehicleType(this->xy);
 	CloseWindowById(GetWindowClassForVehicleType(vt), VehicleListIdentifier(VL_DEPOT_LIST, vt, GetTileOwner(this->xy), this->index).Pack());
+
+	/* Delete any depot departure window */
+	CloseDepotDeparturesWindow(this->xy);
 }

@@ -36,8 +36,7 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}雪線�
 STR_STATION_VIEW_DEPARTURES_BUTTON                              :{BLACK}発車標
 STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}発車標を表示します。
 
-STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION} 発車標
-STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} 発車標
+STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} 発車標
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}発車
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}到着
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}経由

@@ -1344,8 +1344,7 @@ STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}Show lis
 STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}History
 STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}Show waiting cargo history
 
-STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION} Live Travel Information
-STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} Live Travel Information
+STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING2} Live Travel Information
 STR_DEPARTURES_CARGO_MODE_TOOLTIP                               :{BLACK}Set cargo filter mode for arrivals/departures
 STR_DEPARTURES_DEPARTURES                                       :Departures
 STR_DEPARTURES_ARRIVALS                                         :Arrivals

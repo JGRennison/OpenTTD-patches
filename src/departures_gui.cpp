@@ -33,6 +33,7 @@
 #include "departures_func.h"
 #include "cargotype.h"
 #include "zoom_func.h"
+#include "depot_map.h"
 #include "core/backup_type.hpp"
 
 #include "table/sprites.h"
@@ -117,6 +118,7 @@ static const StringID _departure_mode_strings[DM_END] = {
 enum DepartureSourceType : uint8_t {
 	DST_STATION,
 	DST_WAYPOINT,
+	DST_DEPOT,
 };
 
 struct DeparturesWindow : public Window {
@@ -141,6 +143,7 @@ protected:
 	int veh_width;                         ///< current width of vehicle field
 	int group_width;                       ///< current width of group field
 	int toc_width;                         ///< current width of company field
+	std::array<uint32_t, 3> title_params{};///< title string parameters
 
 	virtual uint GetMinWidth() const;
 	static void RecomputeDateWidth();
@@ -228,21 +231,33 @@ protected:
 		this->calc_tick_countdown = 0;
 	}
 
-public:
-
-	DeparturesWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
+	void ConstructWidgetLayout(WindowNumber window_number)
 	{
 		this->SetupValues();
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_DB_SCROLLBAR);
 		this->FinishInitNested(window_number);
+	}
 
-		if (Waypoint::IsValidID(window_number)) {
+	void PostConstructSetup()
+	{
+		this->RefreshVehicleList();
+
+		if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
+	}
+
+public:
+	DeparturesWindow(WindowDesc &desc, StationID station) : Window(desc)
+	{
+		this->ConstructWidgetLayout(station);
+
+		this->title_params[1] = station;
+
+		if (Waypoint::IsValidID(station)) {
 			this->source_type = DST_WAYPOINT;
 			SetBit(this->source.order_type_mask, OT_GOTO_WAYPOINT);
-			this->source.destination = window_number;
-
-			this->GetWidget<NWidgetCore>(WID_DB_CAPTION)->SetDataTip(STR_DEPARTURES_CAPTION_WAYPOINT, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS);
+			this->source.destination = station;
+			this->title_params[0] = STR_WAYPOINT_NAME;
 
 			const Waypoint *wp = Waypoint::Get(window_number);
 			VehicleType vt;
@@ -267,6 +282,7 @@ public:
 			SetBit(this->source.order_type_mask, OT_GOTO_STATION);
 			SetBit(this->source.order_type_mask, OT_IMPLICIT);
 			this->source.destination = window_number;
+			this->title_params[0] = STR_STATION_NAME;
 
 			for (uint i = 0; i < 4; ++i) {
 				show_types[i] = true;
@@ -278,9 +294,40 @@ public:
 			this->SetWidgetLoweredState(WID_DB_SHOW_VIA, this->show_via);
 		}
 
-		this->RefreshVehicleList();
+		this->PostConstructSetup();
+	}
 
-		if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
+	static WindowNumber GetDepotWindowNumber(TileIndex tile)
+	{
+		static constexpr WindowNumber DEPARTURE_WINDOW_NUMBER_DEPOT_TAG = 1 << 31;
+		return tile | DEPARTURE_WINDOW_NUMBER_DEPOT_TAG;
+	}
+
+	struct DepotTag{};
+	DeparturesWindow(WindowDesc &desc, DepotTag tag, TileIndex tile, VehicleType vt) : Window(desc)
+	{
+		this->ConstructWidgetLayout(DeparturesWindow::GetDepotWindowNumber(tile));
+
+		this->source_type = DST_DEPOT;
+		SetBit(this->source.order_type_mask, OT_GOTO_DEPOT);
+		this->source.destination = (vt == VEH_AIRCRAFT) ? GetStationIndex(tile) : GetDepotIndex(tile);
+		this->title_params[0] = STR_DEPOT_NAME;
+		this->title_params[1] = vt;
+		this->title_params[2] = this->source.destination;
+
+		for (uint i = 0; i < 4; ++i) {
+			if (i == vt) {
+				show_types[i] = true;
+				this->LowerWidget(WID_DB_SHOW_TRAINS + i);
+			}
+			this->DisableWidget(WID_DB_SHOW_TRAINS + i);
+		}
+
+		this->show_via = true;
+		this->LowerWidget(WID_DB_SHOW_VIA);
+		this->DisableWidget(WID_DB_SHOW_VIA);
+
+		this->PostConstructSetup();
 	}
 
 	void SetupValues()
@@ -317,7 +364,9 @@ public:
 	{
 		switch (widget) {
 			case WID_DB_CAPTION: {
-				SetDParam(0, this->window_number);
+				SetDParam(0, this->title_params[0]);
+				SetDParam(1, this->title_params[1]);
+				SetDParam(2, this->title_params[2]);
 				break;
 			}
 
@@ -506,7 +555,7 @@ public:
 			ClrBit(list_source.order_type_mask, OT_IMPLICIT); // Not interested in implicit orders in this phase
 
 			DepartureCallingSettings settings;
-			settings.allow_via = (this->source_type == DST_WAYPOINT) || this->show_via;
+			settings.allow_via = (this->source_type != DST_STATION) || this->show_via;
 			settings.departure_no_load_test = (this->source_type == DST_WAYPOINT) || _settings_client.gui.departure_show_all_stops;
 			settings.show_all_stops = _settings_client.gui.departure_show_all_stops;
 			settings.show_pax = show_pax;
@@ -598,6 +647,21 @@ public:
 void ShowDeparturesWindow(StationID station)
 {
 	AllocateWindowDescFront<DeparturesWindow>(_departures_desc, station);
+}
+
+/**
+ * Shows a window of scheduled departures for a station.
+ * @param station the station to show a departures window for
+ */
+void ShowDepotDeparturesWindow(TileIndex tile, VehicleType vt)
+{
+	if (BringWindowToFrontById(_departures_desc.cls, DeparturesWindow::GetDepotWindowNumber(tile)) != nullptr) return;
+	new DeparturesWindow(_departures_desc, DeparturesWindow::DepotTag{}, tile, vt);
+}
+
+void CloseDepotDeparturesWindow(TileIndex tile)
+{
+	CloseWindowById(WC_DEPARTURES_BOARD, DeparturesWindow::GetDepotWindowNumber(tile));
 }
 
 void DeparturesWindow::RecomputeDateWidth()

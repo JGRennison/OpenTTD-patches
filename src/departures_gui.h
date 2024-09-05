@@ -14,8 +14,11 @@
 
 #include "departures_type.h"
 #include "station_base.h"
+#include "vehicle_type.h"
 #include "widgets/departures_widget.h"
 
 void ShowDeparturesWindow(StationID station);
+void ShowDepotDeparturesWindow(TileIndex tile, VehicleType vt);
+void CloseDepotDeparturesWindow(TileIndex tile);
 
 #endif /* DEPARTURES_GUI_H */

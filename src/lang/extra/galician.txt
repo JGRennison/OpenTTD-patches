@@ -1290,8 +1290,7 @@ STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}Amosa a 
 STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}Historial
 STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}Amosa o historial de carga a espera
 
-STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION} Informaciónd a viaxe en directo
-STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} Informaciónd a viaxe en directo
+STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} Informaciónd a viaxe en directo
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}D
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}A
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}vía
