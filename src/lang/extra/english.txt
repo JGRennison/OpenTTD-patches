@@ -1353,12 +1353,12 @@ STR_DEPARTURES_BOTH_SEPARATE                                    :Separate
 STR_DEPARTURES_DEPARTURE_MODE_TOOLTIP                           :{BLACK}Set whether to show departures and/or arrivals
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}Via
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Show timetabled vehicles that do not stop here
-STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}Show upcoming trains on this station's timetable
-STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}Show upcoming road vehicles on this station's timetable
-STR_DEPARTURES_SHOW_SHIPS_TOOLTIP                               :{BLACK}Show upcoming ships on this station's timetable
-STR_DEPARTURES_SHOW_AIRCRAFT_TOOLTIP                            :{BLACK}Show upcoming aircraft on this station's timetable
+STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}Show timetabled trains
+STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}Show timetabled road vehicles
+STR_DEPARTURES_SHOW_SHIPS_TOOLTIP                               :{BLACK}Show timetabled ships
+STR_DEPARTURES_SHOW_AIRCRAFT_TOOLTIP                            :{BLACK}Show timetabled aircraft
 STR_DEPARTURES_SHOW_TYPE_TOOLTIP_CTRL_SUFFIX                    :{BLACK}{STRING}. Ctrl+Click to show exclusively.
-STR_DEPARTURES_EMPTY                                            :{ORANGE}No vehicles are currently timetabled for this station.
+STR_DEPARTURES_EMPTY                                            :{ORANGE}No vehicles are currently timetabled.
 STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}No timetable information has been requested.
 STR_DEPARTURES_TIME                                             :{ORANGE}{STRING1}
 STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{STRING1} {GREEN}{UP_ARROW}
