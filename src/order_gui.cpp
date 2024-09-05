@@ -987,7 +987,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				if (st == nullptr) {
 					sp.SetParam(index, STR_ORDER_CONDITIONAL_UNDEFINED_STATION);
 				} else {
-					sp.SetParam(index, STR_JUST_STATION);
+					sp.SetParam(index, STR_STATION_NAME);
 					sp.SetParam(index + 1, st->index);
 				}
 			};
@@ -1081,7 +1081,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 					if (via_st == nullptr) {
 						tmp_params.SetParam(4, STR_ORDER_CONDITIONAL_UNDEFINED_STATION);
 					} else {
-						tmp_params.SetParam(4, STR_JUST_STATION);
+						tmp_params.SetParam(4, STR_STATION_NAME);
 						tmp_params.SetParam(5, via_st->index);
 					}
 					tmp_params.SetParam(6, STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator());
