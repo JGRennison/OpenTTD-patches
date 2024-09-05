@@ -1344,6 +1344,21 @@ public:
 		}
 	};
 
+	struct VehicleFrontOnlyTypeMaskFilter {
+		VehicleTypeMask vt_mask;
+
+		bool operator() (size_t index)
+		{
+#if OTTD_UPPER_TAGGED_PTR
+			uintptr_t vptr = _vehicle_pool.GetRaw(index);
+			return !VehiclePoolOps::IsNonFrontVehiclePtr(vptr) && HasBit(this->vt_mask, VehiclePoolOps::GetVehicleType(vptr));
+#else
+			const Vehicle *v = Vehicle::Get(index);
+			return HasBit(this->vt_mask, v->type) && v->Previous() == nullptr;
+#endif
+		}
+	};
+
 	/**
 	 * Returns an iterable ensemble of all valid vehicles of the given type
 	 * @param vt the VehicleType to filter
@@ -1374,6 +1389,17 @@ public:
 	static Pool::IterateWrapperFiltered<Vehicle, VehicleFrontOnlyTypeFilter> IterateTypeFrontOnly(VehicleType vt, size_t from = 0)
 	{
 		return Pool::IterateWrapperFiltered<Vehicle, VehicleFrontOnlyTypeFilter>(from, VehicleFrontOnlyTypeFilter{ vt });
+	}
+
+	/**
+	 * Returns an iterable ensemble of all valid front vehicles of the given type
+	 * @param VehicleTypeMask the set of VehicleType to filter, as a VehicleTypeMask
+	 * @param from index of the first vehicle to consider
+	 * @return an iterable ensemble of all valid front vehicles of the given type
+	 */
+	static Pool::IterateWrapperFiltered<Vehicle, VehicleFrontOnlyTypeMaskFilter> IterateTypeMaskFrontOnly(VehicleTypeMask vt_mask, size_t from = 0)
+	{
+		return Pool::IterateWrapperFiltered<Vehicle, VehicleFrontOnlyTypeMaskFilter>(from, VehicleFrontOnlyTypeMaskFilter{ vt_mask });
 	}
 };
 
