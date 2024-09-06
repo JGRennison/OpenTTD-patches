@@ -184,13 +184,19 @@ public:
 				break;
 
 			case WID_BT_MODE_FOREST_SM:
+<<<<<<< HEAD
 				// assert(_game_mode == GM_EDITOR);
+=======
+>>>>>>> f75549bafb (Remove assert statements that cause crashes when using groves and forests in normal games)
 				this->mode = PM_FOREST_SM;
 				this->UpdateMode();
 				break;
 
 			case WID_BT_MODE_FOREST_LG:
+<<<<<<< HEAD
 				// assert(_game_mode == GM_EDITOR);
+=======
+>>>>>>> f75549bafb (Remove assert statements that cause crashes when using groves and forests in normal games)
 				this->mode = PM_FOREST_LG;
 				this->UpdateMode();
 				break;
