@@ -223,6 +223,7 @@ uint32_t RoadStopScopeResolver::GetVariable(uint16_t variable, uint32_t paramete
 
 		/* 16 bit road stop ID of nearby tiles */
 		case 0x6B: {
+			if (this->tile == INVALID_TILE) return 0xFFFFFFFF;
 			TileIndex nearby_tile = GetNearbyTile(parameter, this->tile);
 
 			if (!IsAnyRoadStopTile(nearby_tile)) return 0xFFFFFFFF;
