@@ -184,13 +184,13 @@ public:
 				break;
 
 			case WID_BT_MODE_FOREST_SM:
-				assert(_game_mode == GM_EDITOR);
+				// assert(_game_mode == GM_EDITOR);
 				this->mode = PM_FOREST_SM;
 				this->UpdateMode();
 				break;
 
 			case WID_BT_MODE_FOREST_LG:
-				assert(_game_mode == GM_EDITOR);
+				// assert(_game_mode == GM_EDITOR);
 				this->mode = PM_FOREST_LG;
 				this->UpdateMode();
 				break;
