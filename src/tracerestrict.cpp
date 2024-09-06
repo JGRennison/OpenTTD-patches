@@ -2895,10 +2895,10 @@ void TraceRestrictRemoveSlotID(TraceRestrictSlotID index)
 		for (size_t i = 0; i < prog->items.size(); i++) {
 			TraceRestrictItem &item = prog->items[i]; // note this is a reference,
 			if ((GetTraceRestrictType(item) == TRIT_SLOT || GetTraceRestrictType(item) == TRIT_COND_TRAIN_IN_SLOT) && GetTraceRestrictValue(item) == index) {
-				SetTraceRestrictValueDefault(item, TRVT_SLOT_INDEX); // this updates the instruction in-place
+				SetTraceRestrictValue(item, INVALID_TRACE_RESTRICT_SLOT_ID); // this updates the instruction in-place
 			}
 			if ((GetTraceRestrictType(item) == TRIT_COND_SLOT_OCCUPANCY) && GetTraceRestrictValue(item) == index) {
-				SetTraceRestrictValueDefault(item, TRVT_SLOT_INDEX_INT); // this updates the instruction in-place
+				SetTraceRestrictValue(item, INVALID_TRACE_RESTRICT_SLOT_ID); // this updates the instruction in-place
 			}
 			if (IsTraceRestrictDoubleItem(item)) i++;
 		}
@@ -3155,7 +3155,7 @@ void TraceRestrictRemoveCounterID(TraceRestrictCounterID index)
 		for (size_t i = 0; i < prog->items.size(); i++) {
 			TraceRestrictItem &item = prog->items[i]; // note this is a reference,
 			if ((GetTraceRestrictType(item) == TRIT_COUNTER || GetTraceRestrictType(item) == TRIT_COND_COUNTER_VALUE) && GetTraceRestrictValue(item) == index) {
-				SetTraceRestrictValueDefault(item, TRVT_COUNTER_INDEX_INT); // this updates the instruction in-place
+				SetTraceRestrictValue(item, INVALID_TRACE_RESTRICT_COUNTER_ID); // this updates the instruction in-place
 			}
 			if (IsTraceRestrictDoubleItem(item)) i++;
 		}
