@@ -457,10 +457,6 @@ void RemoveAllTrees()
  */
 uint PlaceTreeGroupAroundTile(TileIndex tile, TreeType treetype, uint radius, uint count, bool set_zone)
 {
-<<<<<<< HEAD
-	// dbg_assert(_game_mode == GM_EDITOR); // Due to InteractiveRandom being used in this function
-=======
->>>>>>> d0dc688d03 (Remove dbg_assert function that checks if gamemode is editor or crashes game.)
 	dbg_assert(treetype < TREE_TOYLAND + TREE_COUNT_TOYLAND);
 	const bool allow_desert = treetype == TREE_CACTUS;
 	uint planted = 0;
