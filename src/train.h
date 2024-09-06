@@ -518,6 +518,15 @@ protected: // These functions should not be called outside acceleration code.
 	{
 		return false;
 	}
+
+private:
+	void UpdateTrainSpeedAdaptationLimitInternal(uint16_t speed);
+
+public:
+	inline void UpdateTrainSpeedAdaptationLimit(uint16_t speed)
+	{
+		if (speed != this->signal_speed_restriction) this->UpdateTrainSpeedAdaptationLimitInternal(speed);
+	}
 };
 
 struct TrainDecelerationStats {

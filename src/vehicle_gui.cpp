@@ -2940,7 +2940,7 @@ struct VehicleDetailsWindow : Window {
 	bool vehicle_weight_ratio_line_shown;
 	bool vehicle_slots_line_shown;
 	bool vehicle_speed_restriction_line_shown;
-	bool vehicle_speed_adaptation_exempt_line_shown;
+	bool vehicle_speed_adaptation_line_shown;
 
 	enum DropDownAction {
 		VDWDDA_CLEAR_SPEED_RESTRICTION,
@@ -3047,10 +3047,9 @@ struct VehicleDetailsWindow : Window {
 		return Train::From(v)->speed_restriction != 0;
 	}
 
-	bool ShouldShowSpeedAdaptationExemptLine(const Vehicle *v) const
+	bool ShouldShowSpeedAdaptationLine(const Vehicle *v) const
 	{
-		if (v->type != VEH_TRAIN) return false;
-		return HasBit(Train::From(v)->flags, VRF_SPEED_ADAPTATION_EXEMPT);
+		return (v->type == VEH_TRAIN && _settings_game.vehicle.train_speed_adaptation);
 	}
 
 	std::vector<TraceRestrictSlotID> GetVehicleSlots(const Vehicle *v) const
@@ -3076,13 +3075,13 @@ struct VehicleDetailsWindow : Window {
 				this->vehicle_weight_ratio_line_shown = ShouldShowWeightRatioLine(v);
 				this->vehicle_slots_line_shown = ShouldShowSlotsLine(v);
 				this->vehicle_speed_restriction_line_shown = ShouldShowSpeedRestrictionLine(v);
-				this->vehicle_speed_adaptation_exempt_line_shown = ShouldShowSpeedAdaptationExemptLine(v);
+				this->vehicle_speed_adaptation_line_shown = ShouldShowSpeedAdaptationLine(v);
 				int lines = 4;
 				if (this->vehicle_group_line_shown) lines++;
 				if (this->vehicle_weight_ratio_line_shown) lines++;
 				if (this->vehicle_slots_line_shown) lines++;
 				if (this->vehicle_speed_restriction_line_shown) lines++;
-				if (this->vehicle_speed_adaptation_exempt_line_shown) lines++;
+				if (this->vehicle_speed_adaptation_line_shown) lines++;
 				size.height = lines * GetCharacterHeight(FS_NORMAL) + padding.height;
 
 				for (uint i = 0; i < 5; i++) SetDParamMaxValue(i, INT16_MAX);
@@ -3358,9 +3357,16 @@ struct VehicleDetailsWindow : Window {
 					tr.top += GetCharacterHeight(FS_NORMAL);
 				}
 
-				bool should_show_speed_adaptation_exempt = this->ShouldShowSpeedAdaptationExemptLine(v);
-				if (should_show_speed_adaptation_exempt) {
-					DrawString(tr, STR_VEHICLE_INFO_SPEED_ADAPTATION_EXEMPT);
+				bool should_show_speed_adaptation = this->ShouldShowSpeedAdaptationLine(v);
+				if (should_show_speed_adaptation) {
+					if (HasBit(this->flags, VRF_SPEED_ADAPTATION_EXEMPT)) {
+						DrawString(tr, STR_VEHICLE_INFO_SPEED_ADAPTATION_EXEMPT);
+					} else if (Train::From(v)->signal_speed_restriction != 0) {
+						SetDParam(0, Train::From(v)->signal_speed_restriction);
+						DrawString(tr, STR_VEHICLE_INFO_SPEED_ADAPTATION_LIMIT);
+					} else {
+						DrawString(tr, STR_VEHICLE_INFO_SPEED_ADAPTATION_NONE);
+					}
 					tr.top += GetCharacterHeight(FS_NORMAL);
 				}
 
@@ -3368,7 +3374,7 @@ struct VehicleDetailsWindow : Window {
 						this->vehicle_weight_ratio_line_shown != should_show_weight_ratio ||
 						this->vehicle_slots_line_shown != should_show_slots ||
 						this->vehicle_speed_restriction_line_shown != should_show_speed_restriction ||
-						this->vehicle_speed_adaptation_exempt_line_shown != should_show_speed_adaptation_exempt) {
+						this->vehicle_speed_adaptation_line_shown != should_show_speed_adaptation) {
 					const_cast<VehicleDetailsWindow *>(this)->ReInit();
 				}
 				break;

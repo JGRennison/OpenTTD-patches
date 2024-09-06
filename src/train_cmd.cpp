@@ -1643,6 +1643,7 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 		v->last_loading_station = INVALID_STATION;
 		v->reverse_distance = 0;
 		v->speed_restriction = 0;
+		v->signal_speed_restriction = 0;
 
 		v->engine_type = e->index;
 		v->gcache.first_engine = INVALID_ENGINE; // needs to be set before first callback
@@ -4907,7 +4908,7 @@ static void TrainEnterStation(Train *v, StationID station)
 		v->current_order.MakeWaiting();
 		v->current_order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
 		v->cur_speed = 0;
-		v->signal_speed_restriction = 0;
+		v->UpdateTrainSpeedAdaptationLimit(0);
 		return;
 	}
 
@@ -7727,7 +7728,7 @@ void ApplySignalTrainAdaptationSpeed(Train *v, TileIndex tile, uint16_t track)
 
 				if (signal_speed == 0) {
 					/* unrestricted signal ahead, disregard speed adaptation at earlier signal */
-					v->signal_speed_restriction = 0;
+					v->UpdateTrainSpeedAdaptationLimit(0);
 					return;
 				}
 				if (signal_speed > speed) {
@@ -7738,7 +7739,7 @@ void ApplySignalTrainAdaptationSpeed(Train *v, TileIndex tile, uint16_t track)
 		}
 	}
 
-	v->signal_speed_restriction = speed;
+	v->UpdateTrainSpeedAdaptationLimit(speed);
 }
 
 uint16_t GetLowestSpeedTrainAdaptationSpeedAtSignal(TileIndex tile, uint16_t track)
@@ -7774,6 +7775,14 @@ uint16_t Train::GetMaxWeight() const
 	}
 
 	return weight;
+}
+
+void Train::UpdateTrainSpeedAdaptationLimitInternal(uint16_t speed)
+{
+	this->signal_speed_restriction = speed;
+	if (!HasBit(this->flags, VRF_SPEED_ADAPTATION_EXEMPT)) {
+		SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
+	}
 }
 
 /**
