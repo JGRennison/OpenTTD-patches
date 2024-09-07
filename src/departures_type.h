@@ -140,8 +140,8 @@ struct DepartureCallingSettings {
 	bool show_pax = false;
 	bool show_freight = false;
 
-	bool IsDeparture(const Order *order, const DepartureOrderDestinationDetector &source);
-	bool IsArrival(const Order *order, const DepartureOrderDestinationDetector &source);
+	bool IsDeparture(const Order *order, const DepartureOrderDestinationDetector &source) const;
+	bool IsArrival(const Order *order, const DepartureOrderDestinationDetector &source) const;
 };
 
 typedef std::vector<std::unique_ptr<Departure>> DepartureList;

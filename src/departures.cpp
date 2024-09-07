@@ -99,7 +99,7 @@ bool IsArrivalDepartureTest(const DepartureCallingSettings &settings, const Orde
 	}
 }
 
-bool DepartureCallingSettings::IsDeparture(const Order *order, const DepartureOrderDestinationDetector &source)
+bool DepartureCallingSettings::IsDeparture(const Order *order, const DepartureOrderDestinationDetector &source) const
 {
 	if (!source.OrderMatches(order)) return false;
 	return IsArrivalDepartureTest(*this, order, [](const Order *order) {
@@ -107,7 +107,7 @@ bool DepartureCallingSettings::IsDeparture(const Order *order, const DepartureOr
 	});
 }
 
-bool DepartureCallingSettings::IsArrival(const Order *order, const DepartureOrderDestinationDetector &source)
+bool DepartureCallingSettings::IsArrival(const Order *order, const DepartureOrderDestinationDetector &source) const
 {
 	if (!source.OrderMatches(order)) return false;
 	return IsArrivalDepartureTest(*this, order, [](const Order *order) {
@@ -283,6 +283,184 @@ static void ScheduledDispatchDepartureLocalFix(DepartureList &departure_list)
 	});
 }
 
+static bool IsVehicleUsableForDepartures(const Vehicle *v, const DepartureCallingSettings &calling_settings)
+{
+	if (v->GetNumOrders() == 0) return false;
+	if (calling_settings.show_pax != calling_settings.show_freight) {
+		bool carries_passengers = false;
+
+		const Vehicle *u = v;
+		while (u != nullptr) {
+			if (u->cargo_cap > 0 && IsCargoInClass(u->cargo_type, CC_PASSENGERS)) {
+				carries_passengers = true;
+				break;
+			}
+			u = u->Next();
+		}
+
+		if (carries_passengers != calling_settings.show_pax) {
+			return false;
+		}
+	}
+
+	/* If the vehicle is stopped in a depot, ignore it. */
+	if (v->IsStoppedInDepot()) {
+		return false;
+	}
+
+	return true;
+}
+
+static void GetDepartureCandidateOrderDatesFromVehicle(std::vector<OrderDate> &next_orders, const Vehicle *v, const DepartureOrderDestinationDetector &source, const DepartureType type,
+		const DepartureCallingSettings &calling_settings, const Ticks max_ticks, ScheduledDispatchCache &schdispatch_last_planned_dispatch)
+{
+	if (!IsVehicleUsableForDepartures(v, calling_settings)) return;
+
+	ScheduledDispatchVehicleRecords dispatch_records;
+	std::vector<const Order *> arrival_history;
+
+	const StateTicks state_ticks_base = _state_ticks;
+
+	const Order *order = v->GetOrder(v->cur_implicit_order_index % v->GetNumOrders());
+	if (order == nullptr) return;
+	Ticks start_ticks = -((Ticks)v->current_order_time);
+	if (v->cur_timetable_order_index != INVALID_VEH_ORDER_ID && v->cur_timetable_order_index != v->cur_real_order_index) {
+		/* vehicle is taking a conditional order branch, adjust start time to compensate */
+		const Order *real_current_order = v->GetOrder(v->cur_real_order_index);
+		const Order *real_timetable_order = v->GetOrder(v->cur_timetable_order_index);
+		if (real_timetable_order->IsType(OT_CONDITIONAL)) {
+			start_ticks += (real_timetable_order->GetWaitTime() - real_current_order->GetTravelTime());
+		} else {
+			/* This can also occur with implicit orders, when there are no real orders, do nothing */
+		}
+	}
+	DepartureStatus status = D_TRAVELLING;
+	bool should_reset_lateness = false;
+	Ticks waiting_time = 0;
+
+	/* If the vehicle is heading for a depot to stop there, then its departures are cancelled. */
+	if (v->current_order.IsType(OT_GOTO_DEPOT) && v->current_order.GetDepotActionType() & ODATFB_HALT) {
+		status = D_CANCELLED;
+	}
+
+	bool require_travel_time = true;
+	if (v->current_order.IsAnyLoadingType() || v->current_order.IsType(OT_WAITING)) {
+		/* Account for the vehicle having reached the current order and being in the loading phase. */
+		status = D_ARRIVED;
+		start_ticks -= order->GetTravelTime() + ((v->lateness_counter < 0) ? v->lateness_counter : 0);
+		require_travel_time = false;
+	}
+
+	bool have_veh_dispatch_conditionals = false;
+	for (const Order *order : v->Orders()) {
+		if (order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OCV_DISPATCH_SLOT && GB(order->GetConditionValue(), ODCB_SRC_START, ODCB_SRC_COUNT) == ODCS_VEH) {
+			have_veh_dispatch_conditionals = true;
+		}
+	}
+
+	/* Loop through the vehicle's orders until we've found a suitable order or we've determined that no such order exists. */
+	/* We only need to consider each order at most once. */
+	for (int i = v->GetNumOrders() * (have_veh_dispatch_conditionals ? 8 : 1); i > 0; --i) {
+		if (VehicleSetNextDepartureTime(&start_ticks, &waiting_time, state_ticks_base, v, order, status == D_ARRIVED, schdispatch_last_planned_dispatch, dispatch_records)) {
+			should_reset_lateness = true;
+		}
+
+		/* If the order is a conditional branch, handle it. */
+		if (order->IsType(OT_CONDITIONAL)) {
+			switch (GetDepartureConditionalOrderMode(order, v, state_ticks_base + start_ticks, dispatch_records)) {
+					case 0: {
+						/* Give up */
+						break;
+					}
+					case 1: {
+						/* Take the branch */
+						if (status != D_CANCELLED) {
+							status = D_TRAVELLING;
+						}
+						order = v->GetOrder(order->GetConditionSkipToOrder());
+						if (order == nullptr) {
+							break;
+						}
+
+						start_ticks -= order->GetTravelTime();
+						require_travel_time = false;
+						continue;
+					}
+					case 2: {
+						/* Do not take the branch */
+						if (status != D_CANCELLED) {
+							status = D_TRAVELLING;
+						}
+						start_ticks -= order->GetWaitTime(); /* Added previously in VehicleSetNextDepartureTime */
+						order = v->orders->GetNext(order);
+						require_travel_time = true;
+						continue;
+					}
+			}
+			break;
+		}
+
+		/* If the scheduled departure date is too far in the future, stop. */
+		if (start_ticks - v->lateness_counter > max_ticks) {
+			break;
+		}
+
+		/* If an order has a 0 travel time, and it's not explictly set, then stop. */
+		if (require_travel_time && order->GetTravelTime() == 0 && !order->IsTravelTimetabled() && !order->IsType(OT_IMPLICIT)) {
+			break;
+		}
+
+		/* If the vehicle will be stopping at and loading from this station, and its wait time is not zero, then it is a departure. */
+		/* If the vehicle will be stopping at and unloading at this station, and its wait time is not zero, then it is an arrival. */
+		if ((type == D_DEPARTURE && calling_settings.IsDeparture(order, source)) ||
+				(type == D_ARRIVAL && calling_settings.IsArrival(order, source))) {
+			/* If the departure was scheduled to have already begun and has been cancelled, do not show it. */
+			if (start_ticks < 0 && status == D_CANCELLED) {
+				break;
+			}
+
+			OrderDate od{};
+			od.order = order;
+			od.v = v;
+			/* We store the expected date for now, so that vehicles will be shown in order of expected time. */
+			od.expected_tick = start_ticks;
+			od.lateness = v->lateness_counter > 0 ? v->lateness_counter : 0;
+			od.status = status;
+			od.have_veh_dispatch_conditionals = have_veh_dispatch_conditionals;
+			od.scheduled_waiting_time = waiting_time;
+			od.dispatch_records = std::move(dispatch_records);
+			od.arrivals_complete = false;
+			od.arrival_history = std::move(arrival_history);
+
+			/* Reset lateness if timing is from scheduled dispatch */
+			if (should_reset_lateness) {
+				od.lateness = 0;
+			}
+
+			/* If we are early, use the scheduled date as the expected date. We also take lateness to be zero. */
+			if (!should_reset_lateness && v->lateness_counter < 0 && !(v->current_order.IsAnyLoadingType() || v->current_order.IsType(OT_WAITING))) {
+				od.expected_tick -= v->lateness_counter;
+			}
+
+			next_orders.push_back(std::move(od));
+
+			/* We're done with this vehicle. */
+			break;
+		} else {
+			if (type == D_ARRIVAL) {
+				arrival_history.push_back(order);
+			}
+
+			/* Go to the next order in the list. */
+			if (status != D_CANCELLED) {
+				status = D_TRAVELLING;
+			}
+			order = v->orders->GetNext(order);
+			require_travel_time = true;
+		}
+	}
+}
+
 /**
  * Compute an up-to-date list of departures for a station.
  * @param source the station/etc to compute the departures of
@@ -316,175 +494,10 @@ DepartureList MakeDepartureList(DepartureOrderDestinationDetector source, const 
 	/* Cache for scheduled departure time */
 	ScheduledDispatchCache schdispatch_last_planned_dispatch;
 
-	{
-		/* Get the first order for each vehicle for the station we're interested in that doesn't have No Loading set. */
-		/* We find the least order while we're at it. */
-		for (const Vehicle *v : vehicles) {
-			if (v->GetNumOrders() == 0) continue;
-			if (calling_settings.show_pax != calling_settings.show_freight) {
-				bool carries_passengers = false;
-
-				const Vehicle *u = v;
-				while (u != nullptr) {
-					if (u->cargo_cap > 0 && IsCargoInClass(u->cargo_type, CC_PASSENGERS)) {
-						carries_passengers = true;
-						break;
-					}
-					u = u->Next();
-				}
-
-				if (carries_passengers != calling_settings.show_pax) {
-					continue;
-				}
-			}
-
-			ScheduledDispatchVehicleRecords dispatch_records;
-			std::vector<const Order *> arrival_history;
-
-			const Order *order = v->GetOrder(v->cur_implicit_order_index % v->GetNumOrders());
-			if (order == nullptr) continue;
-			Ticks start_ticks = -((Ticks)v->current_order_time);
-			if (v->cur_timetable_order_index != INVALID_VEH_ORDER_ID && v->cur_timetable_order_index != v->cur_real_order_index) {
-				/* vehicle is taking a conditional order branch, adjust start time to compensate */
-				const Order *real_current_order = v->GetOrder(v->cur_real_order_index);
-				const Order *real_timetable_order = v->GetOrder(v->cur_timetable_order_index);
-				if (real_timetable_order->IsType(OT_CONDITIONAL)) {
-					start_ticks += (real_timetable_order->GetWaitTime() - real_current_order->GetTravelTime());
-				} else {
-					/* This can also occur with implicit orders, when there are no real orders, do nothing */
-				}
-			}
-			DepartureStatus status = D_TRAVELLING;
-			bool should_reset_lateness = false;
-			Ticks waiting_time = 0;
-
-			/* If the vehicle is stopped in a depot, ignore it. */
-			if (v->IsStoppedInDepot()) {
-				continue;
-			}
-
-			/* If the vehicle is heading for a depot to stop there, then its departures are cancelled. */
-			if (v->current_order.IsType(OT_GOTO_DEPOT) && v->current_order.GetDepotActionType() & ODATFB_HALT) {
-				status = D_CANCELLED;
-			}
-
-			bool require_travel_time = true;
-			if (v->current_order.IsAnyLoadingType() || v->current_order.IsType(OT_WAITING)) {
-				/* Account for the vehicle having reached the current order and being in the loading phase. */
-				status = D_ARRIVED;
-				start_ticks -= order->GetTravelTime() + ((v->lateness_counter < 0) ? v->lateness_counter : 0);
-				require_travel_time = false;
-			}
-
-			bool have_veh_dispatch_conditionals = false;
-			for (const Order *order : v->Orders()) {
-				if (order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OCV_DISPATCH_SLOT && GB(order->GetConditionValue(), ODCB_SRC_START, ODCB_SRC_COUNT) == ODCS_VEH) {
-					have_veh_dispatch_conditionals = true;
-				}
-			}
-
-			/* Loop through the vehicle's orders until we've found a suitable order or we've determined that no such order exists. */
-			/* We only need to consider each order at most once. */
-			for (int i = v->GetNumOrders() * (have_veh_dispatch_conditionals ? 8 : 1); i > 0; --i) {
-				if (VehicleSetNextDepartureTime(&start_ticks, &waiting_time, state_ticks_base, v, order, status == D_ARRIVED, schdispatch_last_planned_dispatch, dispatch_records)) {
-					should_reset_lateness = true;
-				}
-
-				/* If the order is a conditional branch, handle it. */
-				if (order->IsType(OT_CONDITIONAL)) {
-					switch (GetDepartureConditionalOrderMode(order, v, state_ticks_base + start_ticks, dispatch_records)) {
-							case 0: {
-								/* Give up */
-								break;
-							}
-							case 1: {
-								/* Take the branch */
-								if (status != D_CANCELLED) {
-									status = D_TRAVELLING;
-								}
-								order = v->GetOrder(order->GetConditionSkipToOrder());
-								if (order == nullptr) {
-									break;
-								}
-
-								start_ticks -= order->GetTravelTime();
-								require_travel_time = false;
-								continue;
-							}
-							case 2: {
-								/* Do not take the branch */
-								if (status != D_CANCELLED) {
-									status = D_TRAVELLING;
-								}
-								start_ticks -= order->GetWaitTime(); /* Added previously in VehicleSetNextDepartureTime */
-								order = v->orders->GetNext(order);
-								require_travel_time = true;
-								continue;
-							}
-					}
-					break;
-				}
-
-				/* If the scheduled departure date is too far in the future, stop. */
-				if (start_ticks - v->lateness_counter > max_ticks) {
-					break;
-				}
-
-				/* If an order has a 0 travel time, and it's not explictly set, then stop. */
-				if (require_travel_time && order->GetTravelTime() == 0 && !order->IsTravelTimetabled() && !order->IsType(OT_IMPLICIT)) {
-					break;
-				}
-
-				/* If the vehicle will be stopping at and loading from this station, and its wait time is not zero, then it is a departure. */
-				/* If the vehicle will be stopping at and unloading at this station, and its wait time is not zero, then it is an arrival. */
-				if ((type == D_DEPARTURE && calling_settings.IsDeparture(order, source)) ||
-						(type == D_ARRIVAL && calling_settings.IsArrival(order, source))) {
-					/* If the departure was scheduled to have already begun and has been cancelled, do not show it. */
-					if (start_ticks < 0 && status == D_CANCELLED) {
-						break;
-					}
-
-					OrderDate od{};
-					od.order = order;
-					od.v = v;
-					/* We store the expected date for now, so that vehicles will be shown in order of expected time. */
-					od.expected_tick = start_ticks;
-					od.lateness = v->lateness_counter > 0 ? v->lateness_counter : 0;
-					od.status = status;
-					od.have_veh_dispatch_conditionals = have_veh_dispatch_conditionals;
-					od.scheduled_waiting_time = waiting_time;
-					od.dispatch_records = std::move(dispatch_records);
-					od.arrivals_complete = false;
-					od.arrival_history = std::move(arrival_history);
-
-					/* Reset lateness if timing is from scheduled dispatch */
-					if (should_reset_lateness) {
-						od.lateness = 0;
-					}
-
-					/* If we are early, use the scheduled date as the expected date. We also take lateness to be zero. */
-					if (!should_reset_lateness && v->lateness_counter < 0 && !(v->current_order.IsAnyLoadingType() || v->current_order.IsType(OT_WAITING))) {
-						od.expected_tick -= v->lateness_counter;
-					}
-
-					next_orders.push_back(std::move(od));
-
-					/* We're done with this vehicle. */
-					break;
-				} else {
-					if (type == D_ARRIVAL) {
-						arrival_history.push_back(order);
-					}
-
-					/* Go to the next order in the list. */
-					if (status != D_CANCELLED) {
-						status = D_TRAVELLING;
-					}
-					order = v->orders->GetNext(order);
-					require_travel_time = true;
-				}
-			}
-		}
+	/* Get the first order for each vehicle for the station we're interested in that doesn't have No Loading set. */
+	/* We find the least order while we're at it. */
+	for (const Vehicle *v : vehicles) {
+		GetDepartureCandidateOrderDatesFromVehicle(next_orders, v, source, type, calling_settings, max_ticks, schdispatch_last_planned_dispatch);
 	}
 
 	/* No suitable orders found? Then stop. */
