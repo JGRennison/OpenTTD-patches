@@ -7816,3 +7816,11 @@ CommandCost CmdSetTrainSpeedRestriction(TileIndex tile, DoCommandFlag flags, uin
 	}
 	return CommandCost();
 }
+
+bool Train::StopFoundAtVehiclePosition() const
+{
+	ChooseTrainTrackLookAheadState lookahead_state;
+	VehicleOrderSaver orders(const_cast<Train *>(this));
+	orders.AdvanceOrdersFromVehiclePosition(lookahead_state);
+	return HasBit(lookahead_state.flags, CTTLASF_STOP_FOUND);
+}

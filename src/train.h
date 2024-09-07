@@ -527,6 +527,8 @@ public:
 	{
 		if (speed != this->signal_speed_restriction) this->UpdateTrainSpeedAdaptationLimitInternal(speed);
 	}
+
+	bool StopFoundAtVehiclePosition() const;
 };
 
 struct TrainDecelerationStats {

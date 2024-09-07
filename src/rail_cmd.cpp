@@ -647,6 +647,19 @@ static inline bool ValParamTrackOrientation(Track track)
 	return IsValidTrack(track);
 }
 
+static void ReReserveTrainPath(Train *v)
+{
+	const bool consider_stopped = (((v->vehstatus & VS_STOPPED) && v->cur_speed == 0) || v->current_order.IsType(OT_LOADING));
+	const bool at_safe_waiting_position = IsSafeWaitingPosition(v, v->tile, v->GetVehicleTrackdir(), true, _settings_game.pf.forbid_90_deg);
+
+	/* Don't extend the train's path if it's stopped or loading, and at a safe position. */
+	if (consider_stopped && at_safe_waiting_position) return;
+
+	if (!at_safe_waiting_position || (v->UsingRealisticBraking() && !v->StopFoundAtVehiclePosition())) {
+		TryPathReserve(v, true);
+	}
+}
+
 /**
  * Build a single piece of rail
  * @param tile tile  to build on
@@ -1141,7 +1154,7 @@ CommandCost CmdRemoveSingleRail(TileIndex tile, DoCommandFlag flags, uint32_t p1
 			YapfNotifyTrackLayoutChange(tile, track);
 		}
 
-		if (v != nullptr) TryPathReserve(v, true);
+		if (v != nullptr) ReReserveTrainPath(v);
 	}
 
 	_rail_track_endtile = tile;
@@ -1458,15 +1471,6 @@ static void SetupBridgeTunnelSignalSimulation(TileIndex entrance, TileIndex exit
 	if (_extra_aspects > 0) {
 		SetTunnelBridgeEntranceSignalAspect(entrance, 0);
 		UpdateAspectDeferred(entrance, GetTunnelBridgeEntranceTrackdir(entrance));
-	}
-}
-
-static void ReReserveTrainPath(Train *v)
-{
-	/* Extend the train's path if it's not stopped or loading, or not at a safe position. */
-	if (!(((v->vehstatus & VS_STOPPED) && v->cur_speed == 0) || v->current_order.IsType(OT_LOADING)) ||
-			!IsSafeWaitingPosition(v, v->tile, v->GetVehicleTrackdir(), true, _settings_game.pf.forbid_90_deg)) {
-		TryPathReserve(v, true);
 	}
 }
 
@@ -2719,7 +2723,7 @@ CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 		}
 
 		for (uint i = 0; i < vehicles_affected.size(); ++i) {
-			TryPathReserve(vehicles_affected[i], true);
+			ReReserveTrainPath(vehicles_affected[i]);
 		}
 	}
 
@@ -3036,7 +3040,7 @@ CommandCost CmdConvertRailTrack(TileIndex tile, DoCommandFlag flags, uint32_t p1
 		}
 
 		for (uint i = 0; i < vehicles_affected.size(); ++i) {
-			TryPathReserve(vehicles_affected[i], true);
+			ReReserveTrainPath(vehicles_affected[i]);
 		}
 	} while (advance_tile());
 
@@ -3085,7 +3089,7 @@ static CommandCost RemoveTrainDepot(TileIndex tile, DoCommandFlag flags)
 		DoClearSquare(tile);
 		AddSideToSignalBuffer(tile, dir, owner);
 		YapfNotifyTrackLayoutChange(tile, DiagDirToDiagTrack(dir));
-		if (v != nullptr) TryPathReserve(v, true);
+		if (v != nullptr) ReReserveTrainPath(v);
 		DeleteNewGRFInspectWindow(GSF_RAILTYPES, tile);
 	}
 
