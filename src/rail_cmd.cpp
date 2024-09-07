@@ -649,7 +649,7 @@ static inline bool ValParamTrackOrientation(Track track)
 
 static void ReReserveTrainPath(Train *v)
 {
-	const bool consider_stopped = (((v->vehstatus & VS_STOPPED) && v->cur_speed == 0) || v->current_order.IsType(OT_LOADING));
+	const bool consider_stopped = (((v->vehstatus & VS_STOPPED) && v->cur_speed == 0) || v->current_order.IsAnyLoadingType());
 	const bool at_safe_waiting_position = IsSafeWaitingPosition(v, v->tile, v->GetVehicleTrackdir(), true, _settings_game.pf.forbid_90_deg);
 
 	/* Don't extend the train's path if it's stopped or loading, and at a safe position. */
