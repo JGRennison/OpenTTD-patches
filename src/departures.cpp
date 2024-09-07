@@ -246,7 +246,7 @@ static void ScheduledDispatchDepartureLocalFix(DepartureList &departure_list)
 	}
 
 	for (auto& pair : separated_departure) {
-		auto d_list = pair.second;
+		std::vector<Departure *> &d_list = pair.second;
 
 		/* If the group is scheduled dispatch, then */
 		if (HasBit(d_list[0]->vehicle->vehicle_flags, VF_SCHEDULED_DISPATCH)) {
