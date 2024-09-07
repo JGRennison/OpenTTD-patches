@@ -461,6 +461,115 @@ static void GetDepartureCandidateOrderDatesFromVehicle(std::vector<OrderDate> &n
 	}
 }
 
+struct DepartureViaTerminusState {
+	/* We keep track of potential via stations along the way. If we call at a station immediately after going via it, then it is the via station. */
+	StationID candidate_via = INVALID_STATION;
+	StationID pending_via = INVALID_STATION;
+	StationID pending_via2 = INVALID_STATION;
+
+	/* We only need to consider each order at most once. */
+	bool found_terminus = false;
+
+	bool CheckOrder(const Vehicle *v, Departure *d, const Order *order, DepartureOrderDestinationDetector source, DepartureCallingSettings calling_settings);
+	bool HandleCallingPoint(Departure *d, const Order *order, CallAt c);
+};
+
+/**
+ * Check the order terminus and via states.
+ * @return true to stop at this order
+ */
+bool DepartureViaTerminusState::CheckOrder(const Vehicle *v, Departure *d, const Order *order, DepartureOrderDestinationDetector source, DepartureCallingSettings calling_settings)
+{
+	/* If we reach the original station again, then use it as the terminus. */
+	if (order->GetType() == OT_GOTO_STATION &&
+			source.OrderMatches(order) &&
+			(order->GetUnloadType() != OUFB_NO_UNLOAD ||
+			calling_settings.show_all_stops) &&
+			(((order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) || ((d->order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) != 0))) {
+		/* If we're not calling anywhere, then skip this departure. */
+		this->found_terminus = (d->calling_at.size() > 0);
+		return true;
+	} else if (order->GetType() == OT_GOTO_WAYPOINT && source.OrderMatches(order)) {
+		/* If we're not calling anywhere, then skip this departure. */
+		this->found_terminus = (d->calling_at.size() > 0);
+		return true;
+	}
+
+	/* Check if we're going via this station. */
+	if ((order->GetNonStopType() == ONSF_NO_STOP_AT_ANY_STATION ||
+			order->GetNonStopType() == ONSF_NO_STOP_AT_DESTINATION_STATION) &&
+			order->GetType() == OT_GOTO_STATION &&
+			d->via == INVALID_STATION) {
+		this->candidate_via = (StationID)order->GetDestination();
+	}
+
+	if (order->GetType() == OT_LABEL && order->GetLabelSubType() == OLST_DEPARTURES_VIA && d->via == INVALID_STATION && this->pending_via == INVALID_STATION) {
+		this->pending_via = (StationID)order->GetDestination();
+		const Order *next = v->orders->GetNext(order);
+		if (next->GetType() == OT_LABEL && next->GetLabelSubType() == OLST_DEPARTURES_VIA && (StationID)next->GetDestination() != this->pending_via) {
+			this->pending_via2 = (StationID)next->GetDestination();
+		}
+	}
+
+	if (order->GetType() == OT_LABEL && order->GetLabelSubType() == OLST_DEPARTURES_REMOVE_VIA && !d->calling_at.empty()) {
+		d->remove_vias.push_back({ (StationID)order->GetDestination(), (uint)(d->calling_at.size() - 1) });
+	}
+
+	return false;
+}
+
+bool DepartureViaTerminusState::HandleCallingPoint(Departure *d, const Order *order, CallAt c)
+{
+	/* If this order's station is already in the calling, then the previous called at station is the terminus. */
+	if (std::find(d->calling_at.begin(), d->calling_at.end(), c) != d->calling_at.end()) {
+		this->found_terminus = true;
+		return true;
+	}
+
+	/* If appropriate, add the station to the calling at list and make it the candidate terminus. */
+	if ((order->GetType() == OT_GOTO_STATION ||
+			order->GetType() == OT_IMPLICIT) &&
+			order->GetNonStopType() != ONSF_NO_STOP_AT_ANY_STATION &&
+			order->GetNonStopType() != ONSF_NO_STOP_AT_DESTINATION_STATION) {
+		if (d->via == INVALID_STATION && pending_via != INVALID_STATION) {
+			d->via = this->pending_via;
+			d->via2 = this->pending_via2;
+		}
+		if (d->via == INVALID_STATION && this->candidate_via == (StationID)order->GetDestination()) {
+			d->via = (StationID)order->GetDestination();
+		}
+		d->terminus = c;
+		d->calling_at.push_back(c);
+	}
+
+	/* If we unload all at this station, then it is the terminus. */
+	if (order->GetType() == OT_GOTO_STATION &&
+			order->GetUnloadType() == OUFB_UNLOAD) {
+		if (d->calling_at.size() > 0) {
+			this->found_terminus = true;
+		}
+		return true;
+	}
+
+	return false;
+}
+
+/**
+ * Determine whether this order is an ignorable calling point.
+ */
+static bool IsIgnorableCallingAtOrder(const Order *order, DepartureCallingSettings calling_settings)
+{
+	if ((order->GetUnloadType() == OUFB_NO_UNLOAD &&
+			!calling_settings.show_all_stops) ||
+			(order->GetType() != OT_GOTO_STATION &&
+			order->GetType() != OT_IMPLICIT) ||
+			order->GetNonStopType() == ONSF_NO_STOP_AT_ANY_STATION ||
+			order->GetNonStopType() == ONSF_NO_STOP_AT_DESTINATION_STATION) {
+		return true;
+	}
+	return false;
+}
+
 /**
  * Compute an up-to-date list of departures for a station.
  * @param source the station/etc to compute the departures of
@@ -565,22 +674,17 @@ DepartureList MakeDepartureList(DepartureOrderDestinationDetector source, const 
 			/* A departure goes via a station if it is the first station for which the vehicle has an order to go via or non-stop via. */
 			/* Multiple departures on the same journey may go via different stations. That a departure can go via at most one station is intentional. */
 
-			/* We keep track of potential via stations along the way. If we call at a station immediately after going via it, then it is the via station. */
-			StationID candidate_via = INVALID_STATION;
-			StationID pending_via = INVALID_STATION;
-			StationID pending_via2 = INVALID_STATION;
+			DepartureViaTerminusState via_state{};
 
 			/* Go through the order list, looping if necessary, to find a terminus. */
 			/* Get the next order, which may be the vehicle's first order. */
 			order = lod.v->orders->GetNext(order);
-			/* We only need to consider each order at most once. */
-			bool found_terminus = false;
 			CallAt c = CallAt((StationID)order->GetDestination(), d->scheduled_tick);
 			for (uint i = order_iteration_limit; i > 0; --i) {
 				/* If we reach the order at which the departure occurs again, then use the departure station as the terminus. */
 				if (order == lod.order) {
 					/* If we're not calling anywhere, then skip this departure. */
-					found_terminus = (d->calling_at.size() > 0);
+					via_state.found_terminus = (d->calling_at.size() > 0);
 					break;
 				}
 
@@ -614,40 +718,7 @@ DepartureList MakeDepartureList(DepartureOrderDestinationDetector source, const 
 					break;
 				}
 
-				/* If we reach the original station again, then use it as the terminus. */
-				if (order->GetType() == OT_GOTO_STATION &&
-						source.OrderMatches(order) &&
-						(order->GetUnloadType() != OUFB_NO_UNLOAD ||
-						calling_settings.show_all_stops) &&
-						(((order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) || ((lod.order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) != 0))) {
-					/* If we're not calling anywhere, then skip this departure. */
-					found_terminus = (d->calling_at.size() > 0);
-					break;
-				} else if (order->GetType() == OT_GOTO_WAYPOINT && source.OrderMatches(order)) {
-					/* If we're not calling anywhere, then skip this departure. */
-					found_terminus = (d->calling_at.size() > 0);
-					break;
-				}
-
-				/* Check if we're going via this station. */
-				if ((order->GetNonStopType() == ONSF_NO_STOP_AT_ANY_STATION ||
-						order->GetNonStopType() == ONSF_NO_STOP_AT_DESTINATION_STATION) &&
-						order->GetType() == OT_GOTO_STATION &&
-						d->via == INVALID_STATION) {
-					candidate_via = (StationID)order->GetDestination();
-				}
-
-				if (order->GetType() == OT_LABEL && order->GetLabelSubType() == OLST_DEPARTURES_VIA && d->via == INVALID_STATION && pending_via == INVALID_STATION) {
-					pending_via = (StationID)order->GetDestination();
-					const Order *next = lod.v->orders->GetNext(order);
-					if (next->GetType() == OT_LABEL && next->GetLabelSubType() == OLST_DEPARTURES_VIA && (StationID)next->GetDestination() != pending_via) {
-						pending_via2 = (StationID)next->GetDestination();
-					}
-				}
-
-				if (order->GetType() == OT_LABEL && order->GetLabelSubType() == OLST_DEPARTURES_REMOVE_VIA && !d->calling_at.empty()) {
-					d->remove_vias.push_back({ (StationID)order->GetDestination(), (uint)(d->calling_at.size() - 1) });
-				}
+				if (via_state.CheckOrder(lod.v, d, order, source, calling_settings)) break;
 
 				if (c.scheduled_tick != 0 && (order->GetTravelTime() != 0 || order->IsTravelTimetabled())) {
 					c.scheduled_tick += order->GetTravelTime(); /* TODO smart terminal may not work correctly */
@@ -658,47 +729,13 @@ DepartureList MakeDepartureList(DepartureOrderDestinationDetector source, const 
 				c.station = (StationID)order->GetDestination();
 
 				/* We're not interested in this order any further if we're not calling at it. */
-				if ((order->GetUnloadType() == OUFB_NO_UNLOAD &&
-						!calling_settings.show_all_stops) ||
-						(order->GetType() != OT_GOTO_STATION &&
-						order->GetType() != OT_IMPLICIT) ||
-						order->GetNonStopType() == ONSF_NO_STOP_AT_ANY_STATION ||
-						order->GetNonStopType() == ONSF_NO_STOP_AT_DESTINATION_STATION) {
+				if (IsIgnorableCallingAtOrder(order, calling_settings)) {
 					if (c.scheduled_tick != 0) c.scheduled_tick += order->GetWaitTime();
 					order = lod.v->orders->GetNext(order);
 					continue;
 				}
 
-				/* If this order's station is already in the calling, then the previous called at station is the terminus. */
-				if (std::find(d->calling_at.begin(), d->calling_at.end(), c) != d->calling_at.end()) {
-					found_terminus = true;
-					break;
-				}
-
-				/* If appropriate, add the station to the calling at list and make it the candidate terminus. */
-				if ((order->GetType() == OT_GOTO_STATION ||
-						order->GetType() == OT_IMPLICIT) &&
-						order->GetNonStopType() != ONSF_NO_STOP_AT_ANY_STATION &&
-						order->GetNonStopType() != ONSF_NO_STOP_AT_DESTINATION_STATION) {
-					if (d->via == INVALID_STATION && pending_via != INVALID_STATION) {
-						d->via = pending_via;
-						d->via2 = pending_via2;
-					}
-					if (d->via == INVALID_STATION && candidate_via == (StationID)order->GetDestination()) {
-						d->via = (StationID)order->GetDestination();
-					}
-					d->terminus = c;
-					d->calling_at.push_back(c);
-				}
-
-				/* If we unload all at this station, then it is the terminus. */
-				if (order->GetType() == OT_GOTO_STATION &&
-						order->GetUnloadType() == OUFB_UNLOAD) {
-					if (d->calling_at.size() > 0) {
-						found_terminus = true;
-					}
-					break;
-				}
+				if (via_state.HandleCallingPoint(d, order, c)) break;
 
 				if (c.scheduled_tick != 0) c.scheduled_tick += order->GetWaitTime();
 
@@ -706,7 +743,7 @@ DepartureList MakeDepartureList(DepartureOrderDestinationDetector source, const 
 				order = lod.v->orders->GetNext(order);
 			}
 
-			if (found_terminus) {
+			if (via_state.found_terminus) {
 				/* Add the departure to the result list. */
 				bool duplicate = false;
 
