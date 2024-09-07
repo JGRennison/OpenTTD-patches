@@ -4184,15 +4184,10 @@ static constexpr NWidgetPart _nested_other_orders_widgets[] = {
 			NWidget(WWT_PANEL, COLOUR_GREY, WID_O_OCCUPANCY_LIST), SetMinimalSize(50, 0), SetFill(0, 1), SetDataTip(STR_NULL, STR_ORDERS_OCCUPANCY_LIST_TOOLTIP),
 															SetScrollbar(WID_O_SCROLLBAR), EndContainer(),
 		EndContainer(),
-		NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_O_SCROLLBAR),
-	EndContainer(),
-
-	/* First button row. */
-	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_PANEL, COLOUR_GREY), SetFill(1, 0), SetResize(1, 0),
+		NWidget(NWID_VERTICAL),
+			NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_O_SCROLLBAR),
+			NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 		EndContainer(),
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_O_OCCUPANCY_TOGGLE), SetMinimalSize(36, 12), SetDataTip(STR_ORDERS_OCCUPANCY_BUTTON, STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP),
-		NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 	EndContainer(),
 };
 
