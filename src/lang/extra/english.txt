@@ -1380,6 +1380,9 @@ STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{RAW_ST
 STR_DEPARTURES_TINY                                             :{TINY_FONT}{STRING2}
 STR_DEPARTURES_VIA_DESCRIPTOR                                   :{STRING1}{STRING}
 STR_DEPARTURES_VIA_AND                                          :{STRING} and {STRING}
+STR_DEPARTURES_SOURCE_MODE_TOOLTIP                              :{BLACK}Set whether to show live departures, or a 24 hour timetable of scheduled dispatch departures.
+STR_DEPARTURES_SOURCE_MODE_LIVE                                 :Live
+STR_DEPARTURES_SOURCE_MODE_SCHEDULE_24_HOUR                     :24 hour schedule
 
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
 STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
@@ -1402,6 +1405,7 @@ STR_DEPARTURES_ARRIVED                                          :{GREEN}Arrived
 STR_DEPARTURES_DELAYED                                          :{YELLOW}Delayed
 STR_DEPARTURES_EXPECTED                                         :{YELLOW}Expt {STRING1}
 STR_DEPARTURES_CANCELLED                                        :{RED}Cancelled
+STR_DEPARTURES_SCHEDULED                                        :{GREEN}Scheduled
 
 STR_CONFIG_SETTING_DEPARTUREBOARDS                              :{ORANGE}Departure boards
 STR_CONFIG_MAX_DEPARTURES                                       :Show at most {STRING2} departure board entries for each station
