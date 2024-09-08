@@ -439,7 +439,7 @@ public:
 	void Fork(Path *base, uint cap, int free_cap, uint dist);
 
 	inline bool GetAnnosSetFlag() const { return HasBit(this->parent_storage, 0); }
-	inline void SetAnnosSetFlag(bool flag) { SB(this->parent_storage, 0, 1, flag ? 1 : 0); }
+	inline void SetAnnosSetFlag(bool flag) { AssignBit(this->parent_storage, 0, flag); }
 
 protected:
 

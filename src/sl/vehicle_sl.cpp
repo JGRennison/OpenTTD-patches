@@ -1452,7 +1452,7 @@ void Load_VEHS()
 		}
 
 		if (SlXvIsFeaturePresent(XSLFI_AUTO_TIMETABLE, 1, 4)) {
-			SB(v->vehicle_flags, VF_SEPARATION_ACTIVE, 1, _old_ahead_separation ? 1 : 0);
+			AssignBit(v->vehicle_flags, VF_SEPARATION_ACTIVE, _old_ahead_separation);
 		}
 
 		if (SlXvIsFeaturePresent(XSLFI_TIMETABLES_START_TICKS, 2, 2) && v->timetable_start != 0 && _old_timetable_start_subticks != 0) {
@@ -1744,7 +1744,7 @@ void SlProcessVENC()
 		CheckVehicleVENCProp(v->vcache.cached_cargo_age_period, venc.vcache.cached_cargo_age_period, v, "cached_cargo_age_period");
 		CheckVehicleVENCProp(v->vcache.cached_vis_effect, venc.vcache.cached_vis_effect, v, "cached_vis_effect");
 		if (HasBit(v->vcache.cached_veh_flags ^ venc.vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT)) {
-			SB(v->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT, 1, HasBit(venc.vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT) ? 1 : 0);
+			AssignBit(v->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT, HasBit(venc.vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT));
 			LogVehicleVENCMessage(v, "VCF_LAST_VISUAL_EFFECT");
 		}
 	}

@@ -56,7 +56,7 @@ void SetBridgeEntranceSimulatedSignalStateExtended(TileIndex t, uint16_t signal,
 inline void SetBridgeEntranceSimulatedSignalState(TileIndex t, uint16_t signal, SignalState state)
 {
 	if (signal < BRIDGE_M2_SIGNAL_STATE_COUNT) {
-		SB(_m[t].m2, signal + BRIDGE_M2_SIGNAL_STATE_OFFSET, 1, (state == SIGNAL_STATE_RED) ? 1 : 0);
+		AssignBit(_m[t].m2, signal + BRIDGE_M2_SIGNAL_STATE_OFFSET, state == SIGNAL_STATE_RED);
 	} else {
 		SetBridgeEntranceSimulatedSignalStateExtended(t, signal, state);
 	}

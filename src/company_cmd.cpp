@@ -1239,7 +1239,7 @@ CommandCost CmdSetCompanyColour(TileIndex tile, DoCommandFlag flags, uint32_t p1
 
 	if (flags & DC_EXEC) {
 		if (!second) {
-			if (scheme != LS_DEFAULT) SB(c->livery[scheme].in_use, 0, 1, colour != INVALID_COLOUR);
+			if (scheme != LS_DEFAULT) AssignBit(c->livery[scheme].in_use, 0, colour != INVALID_COLOUR);
 			if (colour == INVALID_COLOUR) colour = c->livery[LS_DEFAULT].colour1;
 			c->livery[scheme].colour1 = colour;
 
@@ -1252,7 +1252,7 @@ CommandCost CmdSetCompanyColour(TileIndex tile, DoCommandFlag flags, uint32_t p1
 				CompanyAdminUpdate(c);
 			}
 		} else {
-			if (scheme != LS_DEFAULT) SB(c->livery[scheme].in_use, 1, 1, colour != INVALID_COLOUR);
+			if (scheme != LS_DEFAULT) AssignBit(c->livery[scheme].in_use, 1, colour != INVALID_COLOUR);
 			if (colour == INVALID_COLOUR) colour = c->livery[LS_DEFAULT].colour2;
 			c->livery[scheme].colour2 = colour;
 

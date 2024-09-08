@@ -947,7 +947,7 @@ PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res, Follo
 
 void ApplyAvailableFreeTunnelBridgeTiles(TrainReservationLookAhead *lookahead, int free_tiles, TileIndex tile, TileIndex end)
 {
-	SB(lookahead->flags, TRLF_TB_EXIT_FREE, 1, free_tiles == INT_MAX ? 1 : 0);
+	AssignBit(lookahead->flags, TRLF_TB_EXIT_FREE, free_tiles == INT_MAX);
 	if (free_tiles == INT_MAX) {
 		/* whole tunnel/bridge is empty */
 		if (unlikely(end == INVALID_TILE)) end = GetOtherTunnelBridgeEnd(tile);
@@ -1250,7 +1250,7 @@ void FillTrainReservationLookAhead(Train *v)
 	PBSTileInfo res = FollowReservation(v->owner, GetRailTypeInfo(v->railtype)->all_compatible_railtypes, tile, trackdir, flags, v, v->lookahead.get());
 
 	if (IsTunnelBridgeWithSignalSimulation(res.tile) && TrackdirEntersTunnelBridge(res.tile, res.trackdir)) {
-		SB(v->lookahead->flags, TRLF_CHUNNEL, 1, (IsTunnel(res.tile) && Tunnel::GetByTile(res.tile)->is_chunnel) ? 1 : 0);
+		AssignBit(v->lookahead->flags, TRLF_CHUNNEL, IsTunnel(res.tile) && Tunnel::GetByTile(res.tile)->is_chunnel);
 		if (v->lookahead->current_position < v->lookahead->reservation_end_position - ((int)TILE_SIZE * (1 + v->lookahead->tunnel_bridge_reserved_tiles))) {
 			/* Vehicle is not itself in this tunnel/bridge, scan how much is available */
 			TileIndex end = INVALID_TILE;

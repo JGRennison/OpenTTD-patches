@@ -1664,8 +1664,8 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlag flags, const Engin
 
 		if (e->flags & ENGINE_EXCLUSIVE_PREVIEW) SetBit(v->vehicle_flags, VF_BUILT_AS_PROTOTYPE);
 		v->SetServiceIntervalIsPercent(Company::Get(_current_company)->settings.vehicle.servint_ispercent);
-		SB(v->vehicle_flags, VF_AUTOMATE_TIMETABLE, 1, Company::Get(_current_company)->settings.vehicle.auto_timetable_by_default);
-		SB(v->vehicle_flags, VF_TIMETABLE_SEPARATION, 1, Company::Get(_current_company)->settings.vehicle.auto_separation_by_default);
+		AssignBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE, Company::Get(_current_company)->settings.vehicle.auto_timetable_by_default);
+		AssignBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION, Company::Get(_current_company)->settings.vehicle.auto_separation_by_default);
 
 		v->group_id = DEFAULT_GROUP;
 
@@ -2398,7 +2398,7 @@ CommandCost CmdSellRailWagon(DoCommandFlag flags, Vehicle *t, uint16_t data, uin
 				/* Copy other important data from the front engine */
 				new_head->CopyVehicleConfigAndStatistics(first);
 				new_head->speed_restriction = first->speed_restriction;
-				SB(Train::From(new_head)->flags, VRF_SPEED_ADAPTATION_EXEMPT, 1, GB(Train::From(first)->flags, VRF_SPEED_ADAPTATION_EXEMPT, 1));
+				AssignBit(Train::From(new_head)->flags, VRF_SPEED_ADAPTATION_EXEMPT, HasBit(Train::From(first)->flags, VRF_SPEED_ADAPTATION_EXEMPT));
 			}
 			GroupStatistics::CountVehicle(new_head, 1); // after copying over the profit, if required
 		} else if (v->IsPrimaryVehicle() && data & (MAKE_ORDER_BACKUP_FLAG >> 20)) {
@@ -2508,7 +2508,7 @@ static void MarkTrainAsStuck(Train *v, bool waiting_restriction = false)
 	if (!HasBit(v->flags, VRF_TRAIN_STUCK)) {
 		/* It is the first time the problem occurred, set the "train stuck" flag. */
 		SetBit(v->flags, VRF_TRAIN_STUCK);
-		SB(v->flags, VRF_WAITING_RESTRICTION, 1, waiting_restriction ? 1 : 0);
+		AssignBit(v->flags, VRF_WAITING_RESTRICTION, waiting_restriction);
 
 		v->wait_counter = 0;
 
@@ -4048,7 +4048,7 @@ public:
 		this->v->cur_real_order_index = this->old_index;
 		this->v->cur_implicit_order_index = this->old_impl_index;
 		this->v->cur_timetable_order_index = this->old_tt_index;
-		SB(this->v->gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS, 1, suppress_implicit_orders ? 1: 0);
+		AssignBit(this->v->gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS, suppress_implicit_orders);
 		if (this->clear_saved_order_ptr) _choose_train_track_saved_current_order = nullptr;
 		this->restored = true;
 	}
@@ -7171,8 +7171,8 @@ Train* BuildVirtualRailVehicle(EngineID eid, StringID &error, uint32_t user, boo
 
 	v->SetServiceInterval(Company::Get(_current_company)->settings.vehicle.servint_trains);
 	v->SetServiceIntervalIsPercent(Company::Get(_current_company)->settings.vehicle.servint_ispercent);
-	SB(v->vehicle_flags, VF_AUTOMATE_TIMETABLE, 1, Company::Get(_current_company)->settings.vehicle.auto_timetable_by_default);
-	SB(v->vehicle_flags, VF_TIMETABLE_SEPARATION, 1, Company::Get(_current_company)->settings.vehicle.auto_separation_by_default);
+	AssignBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE, Company::Get(_current_company)->settings.vehicle.auto_timetable_by_default);
+	AssignBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION, Company::Get(_current_company)->settings.vehicle.auto_separation_by_default);
 
 	v->railtype = rvi->railtype;
 	_new_vehicle_id = v->index;

@@ -570,16 +570,16 @@ public:
 		if (this->HasNoTimetableTimes()) return;
 		if (this->IsType(OT_CONDITIONAL) || this->IsType(OT_GOTO_DEPOT)) {
 			if (this->extra == nullptr && !timetabled) return;
-			SB(this->GetXFlagsRef(), 0, 1, timetabled ? 1 : 0);
+			AssignBit(this->GetXFlagsRef(), 0, timetabled);
 		} else {
-			SB(this->flags, 3, 1, timetabled ? 1 : 0);
+			AssignBit(this->flags, 3, timetabled);
 		}
 	}
 
 	/** Set if the travel time is explicitly timetabled (unless the order is conditional). */
 	inline void SetTravelTimetabled(bool timetabled)
 	{
-		if (!this->IsType(OT_CONDITIONAL) && !this->HasNoTimetableTimes()) SB(this->flags, 7, 1, timetabled ? 1 : 0);
+		if (!this->IsType(OT_CONDITIONAL) && !this->HasNoTimetableTimes()) AssignBit(this->flags, 7, timetabled);
 	}
 
 	/**
@@ -607,7 +607,7 @@ public:
 	/** Set if the wait time is fixed */
 	inline void SetWaitFixed(bool fixed)
 	{
-		if (fixed != this->IsWaitFixed()) SB(this->GetXFlagsRef(), 1, 1, fixed ? 1 : 0);
+		if (fixed != this->IsWaitFixed()) AssignBit(this->GetXFlagsRef(), 1, fixed);
 	}
 
 	/** Does this order have a fixed travel time? */
@@ -616,7 +616,7 @@ public:
 	/** Set if the travel time is fixed */
 	inline void SetTravelFixed(bool fixed)
 	{
-		if (!this->IsType(OT_CONDITIONAL) && fixed != IsTravelFixed()) SB(this->GetXFlagsRef(), 4, 1, fixed ? 1 : 0);
+		if (!this->IsType(OT_CONDITIONAL) && fixed != IsTravelFixed()) AssignBit(this->GetXFlagsRef(), 4, fixed);
 	}
 
 	/** Get the leave type */
@@ -914,7 +914,7 @@ public:
 	 * Set whether to re-use dispatch slots
 	 * @param  delay  New maximum allow delay
 	 */
-	inline void SetScheduledDispatchReuseSlots(bool reuse_slots) { SB(this->scheduled_dispatch_flags, SDF_REUSE_SLOTS, 1, reuse_slots ? 1 : 0); }
+	inline void SetScheduledDispatchReuseSlots(bool reuse_slots) { AssignBit(this->scheduled_dispatch_flags, SDF_REUSE_SLOTS, reuse_slots); }
 
 	/**
 	 * Get the scheduled dispatch maximum alowed delay, in scaled tick

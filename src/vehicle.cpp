@@ -406,7 +406,7 @@ void Vehicle::UpdateIsDrawn()
 				((this->type == VEH_TRAIN && Train::From(this)->track == TRACK_BIT_WORMHOLE) ||
 				(this->type == VEH_ROAD && RoadVehicle::From(this)->state == RVSB_WORMHOLE))));
 
-	SB(this->vcache.cached_veh_flags, VCF_IS_DRAWN, 1, drawn ? 1 : 0);
+	AssignBit(this->vcache.cached_veh_flags, VCF_IS_DRAWN, drawn);
 }
 
 void UpdateAllVehiclesIsDrawn()

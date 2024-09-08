@@ -3974,7 +3974,7 @@ CommandCost CmdOverrideTownSetting(TileIndex tile, DoCommandFlag flags, uint32_t
 	}
 
 	if (flags & DC_EXEC) {
-		SB(t->override_flags, setting, 1, is_override ? 1 : 0);
+		AssignBit(t->override_flags, setting, is_override);
 		if (is_override) {
 			switch (setting) {
 				case TSOF_OVERRIDE_GROWTH:
@@ -3982,7 +3982,7 @@ CommandCost CmdOverrideTownSetting(TileIndex tile, DoCommandFlag flags, uint32_t
 				case TSOF_OVERRIDE_BUILD_ROADS:
 				case TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS:
 				case TSOF_OVERRIDE_BUILD_BRIDGES:
-					SB(t->override_values, setting, 1, value & 1);
+					AssignBit(t->override_values, setting, value & 1);
 					break;
 				case TSOF_OVERRIDE_BUILD_TUNNELS:
 					t->build_tunnels = (TownTunnelMode)value;

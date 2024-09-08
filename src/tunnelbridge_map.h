@@ -481,7 +481,7 @@ inline SignalState GetTunnelBridgeExitSignalState(TileIndex t)
 inline void SetTunnelBridgeEntranceSignalState(TileIndex t, SignalState state)
 {
 	assert_tile(IsTunnelBridgeSignalSimulationEntrance(t), t);
-	SB(_me[t].m6, 0, 1, (state == SIGNAL_STATE_GREEN) ? 1 : 0);
+	AssignBit(_me[t].m6, 0, state == SIGNAL_STATE_GREEN);
 }
 
 /**
@@ -493,7 +493,7 @@ inline void SetTunnelBridgeEntranceSignalState(TileIndex t, SignalState state)
 inline void SetTunnelBridgeExitSignalState(TileIndex t, SignalState state)
 {
 	assert_tile(IsTunnelBridgeSignalSimulationExit(t), t);
-	SB(_me[t].m6, 7, 1, (state == SIGNAL_STATE_GREEN) ? 1 : 0);
+	AssignBit(_me[t].m6, 7, state == SIGNAL_STATE_GREEN);
 }
 
 inline bool IsTunnelBridgeSemaphore(TileIndex t)
@@ -505,7 +505,7 @@ inline bool IsTunnelBridgeSemaphore(TileIndex t)
 inline void SetTunnelBridgeSemaphore(TileIndex t, bool is_semaphore)
 {
 	assert_tile(IsTunnelBridgeWithSignalSimulation(t), t);
-	SB(_me[t].m6, 1, 1, is_semaphore ? 1 : 0);
+	AssignBit(_me[t].m6, 1, is_semaphore);
 }
 
 inline bool IsTunnelBridgePBS(TileIndex t)
@@ -522,7 +522,7 @@ inline bool IsTunnelBridgeEffectivelyPBS(TileIndex t)
 inline void SetTunnelBridgePBS(TileIndex t, bool is_pbs)
 {
 	assert_tile(IsTunnelBridgeWithSignalSimulation(t), t);
-	SB(_me[t].m6, 6, 1, is_pbs ? 1 : 0);
+	AssignBit(_me[t].m6, 6, is_pbs);
 }
 
 inline uint8_t GetTunnelBridgeEntranceSignalAspect(TileIndex t)
@@ -578,7 +578,7 @@ inline bool IsTunnelBridgeRestrictedSignal(TileIndex tile)
 inline void SetTunnelBridgeRestrictedSignal(TileIndex tile, bool is_restricted)
 {
 	assert_tile(IsTunnelBridgeWithSignalSimulation(tile), tile);
-	SB(_m[tile].m3, 6, 1, is_restricted);
+	AssignBit(_m[tile].m3, 6, is_restricted);
 }
 
 inline Trackdir GetTunnelBridgeExitTrackdir(TileIndex t, DiagDirection tunnel_bridge_dir)
@@ -631,7 +631,7 @@ inline bool GetTunnelBridgeSignalSpecialPropagationFlag(TileIndex t)
 inline void SetTunnelBridgeSignalSpecialPropagationFlag(TileIndex t, bool special)
 {
 	dbg_assert_tile(IsRailTunnelBridgeTile(t), t);
-	SB(_m[t].m1, 5, 1, special ? 1 : 0);
+	AssignBit(_m[t].m1, 5, special);
 }
 
 void AddRailTunnelBridgeInfrastructure(Company *c, TileIndex begin, TileIndex end);

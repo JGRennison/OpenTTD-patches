@@ -1903,7 +1903,7 @@ bool AfterLoadGame()
 				} else {
 					/* The "lift has destination" bit has been moved from
 					 * m5[7] to m7[0]. */
-					SB(_me[t].m7, 0, 1, HasBit(_m[t].m5, 7));
+					AssignBit(_me[t].m7, 0, HasBit(_m[t].m5, 7));
 					ClrBit(_m[t].m5, 7);
 
 					/* The "lift is moving" bit has been removed, as it does
@@ -1913,7 +1913,7 @@ bool AfterLoadGame()
 					/* The position of the lift goes from m1[7..0] to m6[7..2],
 					 * making m1 totally free, now. The lift position does not
 					 * have to be a full byte since the maximum value is 36. */
-					SetLiftPosition(t, GB(_m[t].m1, 0, 6 ));
+					SetLiftPosition(t, GB(_m[t].m1, 0, 6));
 
 					_m[t].m1 = 0;
 					_m[t].m3 = 0;
@@ -3457,7 +3457,7 @@ bool AfterLoadGame()
 	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
 		// re-arrange vehicle_flags
 		for (Vehicle *v : Vehicle::Iterate()) {
-			SB(v->vehicle_flags, VF_AUTOMATE_TIMETABLE, 1, GB(v->vehicle_flags, 6, 1));
+			AssignBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE, HasBit(v->vehicle_flags, 6));
 			SB(v->vehicle_flags, VF_STOP_LOADING, 4, GB(v->vehicle_flags, 7, 4));
 		}
 	}
@@ -3465,14 +3465,14 @@ bool AfterLoadGame()
 	if (SlXvIsFeaturePresent(XSLFI_CHILLPP, SL_CHILLPP_232)) {
 		// re-arrange vehicle_flags
 		for (Vehicle *v : Vehicle::Iterate()) {
-			SB(v->vehicle_flags, VF_AUTOMATE_TIMETABLE, 1, GB(v->vehicle_flags, 7, 1));
-			SB(v->vehicle_flags, VF_PATHFINDER_LOST, 1, GB(v->vehicle_flags, 8, 1));
+			AssignBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE, HasBit(v->vehicle_flags, 7));
+			AssignBit(v->vehicle_flags, VF_PATHFINDER_LOST, HasBit(v->vehicle_flags, 8));
 			SB(v->vehicle_flags, VF_SERVINT_IS_CUSTOM, 7, 0);
 		}
 	} else if (SlXvIsFeaturePresent(XSLFI_CHILLPP)) {
 		// re-arrange vehicle_flags
 		for (Vehicle *v : Vehicle::Iterate()) {
-			SB(v->vehicle_flags, VF_AUTOMATE_TIMETABLE, 1, GB(v->vehicle_flags, 6, 1));
+			AssignBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE, HasBit(v->vehicle_flags, 6));
 			SB(v->vehicle_flags, VF_STOP_LOADING, 9, 0);
 		}
 	}
@@ -4025,7 +4025,7 @@ bool AfterLoadGame()
 
 	if (SlXvIsFeaturePresent(XSLFI_AUTO_TIMETABLE, 1, 3)) {
 		for (Vehicle *v : Vehicle::Iterate()) {
-			SB(v->vehicle_flags, VF_TIMETABLE_SEPARATION, 1, _settings_game.order.old_timetable_separation);
+			AssignBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION, _settings_game.order.old_timetable_separation);
 		}
 	}
 

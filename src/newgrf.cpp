@@ -1780,7 +1780,7 @@ static ChangeInfoResult AircraftVehicleChangeInfo(uint engine, int numinfo, int 
 				break;
 
 			case 0x0A: // Large
-				SB(avi->subtype, 1, 1, (buf.ReadByte() != 0 ? 1 : 0)); // AIR_FAST
+				AssignBit(avi->subtype, 1, buf.ReadByte() != 0); // AIR_FAST
 				break;
 
 			case PROP_AIRCRAFT_COST_FACTOR: // 0x0B Cost factor
@@ -2363,8 +2363,8 @@ static ChangeInfoResult BridgeChangeInfo(uint brid, int numinfo, int prop, const
 			case A0RPI_BRIDGE_AVAILABILITY_FLAGS: {
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				uint8_t flags = buf.ReadByte();
-				SB(bridge->ctrl_flags, BSCF_NOT_AVAILABLE_TOWN, 1, HasBit(flags, 0) ? 1 : 0);
-				SB(bridge->ctrl_flags, BSCF_NOT_AVAILABLE_AI_GS, 1, HasBit(flags, 1) ? 1 : 0);
+				AssignBit(bridge->ctrl_flags, BSCF_NOT_AVAILABLE_TOWN, HasBit(flags, 0));
+				AssignBit(bridge->ctrl_flags, BSCF_NOT_AVAILABLE_AI_GS, HasBit(flags, 1));
 				break;
 			}
 
@@ -4154,22 +4154,22 @@ static ChangeInfoResult SignalsChangeInfo(uint id, int numinfo, int prop, const 
 		switch (prop) {
 			case A0RPI_SIGNALS_ENABLE_PROGRAMMABLE_SIGNALS:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				SB(_cur.grffile->new_signal_ctrl_flags, NSCF_PROGSIG, 1, (buf.ReadByte() != 0 ? 1 : 0));
+				AssignBit(_cur.grffile->new_signal_ctrl_flags, NSCF_PROGSIG, buf.ReadByte() != 0);
 				break;
 
 			case A0RPI_SIGNALS_ENABLE_NO_ENTRY_SIGNALS:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				SB(_cur.grffile->new_signal_ctrl_flags, NSCF_NOENTRYSIG, 1, (buf.ReadByte() != 0 ? 1 : 0));
+				AssignBit(_cur.grffile->new_signal_ctrl_flags, NSCF_NOENTRYSIG, buf.ReadByte() != 0);
 				break;
 
 			case A0RPI_SIGNALS_ENABLE_RESTRICTED_SIGNALS:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				SB(_cur.grffile->new_signal_ctrl_flags, NSCF_RESTRICTEDSIG, 1, (buf.ReadByte() != 0 ? 1 : 0));
+				AssignBit(_cur.grffile->new_signal_ctrl_flags, NSCF_RESTRICTEDSIG, buf.ReadByte() != 0);
 				break;
 
 			case A0RPI_SIGNALS_ENABLE_SIGNAL_RECOLOUR:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				SB(_cur.grffile->new_signal_ctrl_flags, NSCF_RECOLOUR_ENABLED, 1, (buf.ReadByte() != 0 ? 1 : 0));
+				AssignBit(_cur.grffile->new_signal_ctrl_flags, NSCF_RECOLOUR_ENABLED, buf.ReadByte() != 0);
 				break;
 
 			case A0RPI_SIGNALS_EXTRA_ASPECTS:
@@ -4179,7 +4179,7 @@ static ChangeInfoResult SignalsChangeInfo(uint id, int numinfo, int prop, const 
 
 			case A0RPI_SIGNALS_NO_DEFAULT_STYLE:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				SB(_cur.grffile->new_signal_style_mask, 0, 1, (buf.ReadByte() != 0 ? 0 : 1));
+				AssignBit(_cur.grffile->new_signal_style_mask, 0, buf.ReadByte() != 0);
 				break;
 
 			case A0RPI_SIGNALS_DEFINE_STYLE: {
@@ -4212,7 +4212,7 @@ static ChangeInfoResult SignalsChangeInfo(uint id, int numinfo, int prop, const 
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				uint8_t value = buf.ReadByte();
 				if (_cur.grffile->current_new_signal_style != nullptr) {
-					SB(_cur.grffile->current_new_signal_style->style_flags, NSSF_NO_ASPECT_INC, 1, (value != 0 ? 1 : 0));
+					AssignBit(_cur.grffile->current_new_signal_style->style_flags, NSSF_NO_ASPECT_INC, value != 0);
 				}
 				break;
 			}
@@ -4221,7 +4221,7 @@ static ChangeInfoResult SignalsChangeInfo(uint id, int numinfo, int prop, const 
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				uint8_t value = buf.ReadByte();
 				if (_cur.grffile->current_new_signal_style != nullptr) {
-					SB(_cur.grffile->current_new_signal_style->style_flags, NSSF_ALWAYS_RESERVE_THROUGH, 1, (value != 0 ? 1 : 0));
+					AssignBit(_cur.grffile->current_new_signal_style->style_flags, NSSF_ALWAYS_RESERVE_THROUGH, value != 0);
 				}
 				break;
 			}
@@ -4240,7 +4240,7 @@ static ChangeInfoResult SignalsChangeInfo(uint id, int numinfo, int prop, const 
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				uint8_t value = buf.ReadByte();
 				if (_cur.grffile->current_new_signal_style != nullptr) {
-					SB(_cur.grffile->current_new_signal_style->style_flags, NSSF_LOOKAHEAD_SINGLE_SIGNAL, 1, (value != 0 ? 1 : 0));
+					AssignBit(_cur.grffile->current_new_signal_style->style_flags, NSSF_LOOKAHEAD_SINGLE_SIGNAL, value != 0);
 				}
 				break;
 			}
@@ -4267,7 +4267,7 @@ static ChangeInfoResult SignalsChangeInfo(uint id, int numinfo, int prop, const 
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				uint8_t value = buf.ReadByte();
 				if (_cur.grffile->current_new_signal_style != nullptr) {
-					SB(_cur.grffile->current_new_signal_style->style_flags, NSSF_OPPOSITE_SIDE, 1, (value != 0 ? 1 : 0));
+					AssignBit(_cur.grffile->current_new_signal_style->style_flags, NSSF_OPPOSITE_SIDE, value != 0);
 				}
 				break;
 			}
@@ -4276,7 +4276,7 @@ static ChangeInfoResult SignalsChangeInfo(uint id, int numinfo, int prop, const 
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				uint8_t value = buf.ReadByte();
 				if (_cur.grffile->current_new_signal_style != nullptr) {
-					SB(_cur.grffile->current_new_signal_style->style_flags, NSSF_COMBINED_NORMAL_SHUNT, 1, (value != 0 ? 1 : 0));
+					AssignBit(_cur.grffile->current_new_signal_style->style_flags, NSSF_COMBINED_NORMAL_SHUNT, value != 0);
 				}
 				break;
 			}
@@ -4285,7 +4285,7 @@ static ChangeInfoResult SignalsChangeInfo(uint id, int numinfo, int prop, const 
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				uint8_t value = buf.ReadByte();
 				if (_cur.grffile->current_new_signal_style != nullptr) {
-					SB(_cur.grffile->current_new_signal_style->style_flags, NSSF_REALISTIC_BRAKING_ONLY, 1, (value != 0 ? 1 : 0));
+					AssignBit(_cur.grffile->current_new_signal_style->style_flags, NSSF_REALISTIC_BRAKING_ONLY, value != 0);
 				}
 				break;
 			}
@@ -4294,7 +4294,7 @@ static ChangeInfoResult SignalsChangeInfo(uint id, int numinfo, int prop, const 
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				uint8_t value = buf.ReadByte();
 				if (_cur.grffile->current_new_signal_style != nullptr) {
-					SB(_cur.grffile->current_new_signal_style->style_flags, NSSF_BOTH_SIDES, 1, (value != 0 ? 1 : 0));
+					AssignBit(_cur.grffile->current_new_signal_style->style_flags, NSSF_BOTH_SIDES, value != 0);
 				}
 				break;
 			}
@@ -4647,27 +4647,27 @@ static ChangeInfoResult RailTypeChangeInfo(uint id, int numinfo, int prop, const
 
 			case A0RPI_RAILTYPE_ENABLE_PROGRAMMABLE_SIGNALS:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				SB(rti->ctrl_flags, RTCF_PROGSIG, 1, (buf.ReadByte() != 0 ? 1 : 0));
+				AssignBit(rti->ctrl_flags, RTCF_PROGSIG, buf.ReadByte() != 0);
 				break;
 
 			case A0RPI_RAILTYPE_ENABLE_NO_ENTRY_SIGNALS:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				SB(rti->ctrl_flags, RTCF_NOENTRYSIG, 1, (buf.ReadByte() != 0 ? 1 : 0));
+				AssignBit(rti->ctrl_flags, RTCF_NOENTRYSIG, buf.ReadByte() != 0);
 				break;
 
 			case A0RPI_RAILTYPE_ENABLE_RESTRICTED_SIGNALS:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				SB(rti->ctrl_flags, RTCF_RESTRICTEDSIG, 1, (buf.ReadByte() != 0 ? 1 : 0));
+				AssignBit(rti->ctrl_flags, RTCF_RESTRICTEDSIG, buf.ReadByte() != 0);
 				break;
 
 			case A0RPI_RAILTYPE_DISABLE_REALISTIC_BRAKING:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				SB(rti->ctrl_flags, RTCF_NOREALISTICBRAKING, 1, (buf.ReadByte() != 0 ? 1 : 0));
+				AssignBit(rti->ctrl_flags, RTCF_NOREALISTICBRAKING, buf.ReadByte() != 0);
 				break;
 
 			case A0RPI_RAILTYPE_ENABLE_SIGNAL_RECOLOUR:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				SB(rti->ctrl_flags, RTCF_RECOLOUR_ENABLED, 1, (buf.ReadByte() != 0 ? 1 : 0));
+				AssignBit(rti->ctrl_flags, RTCF_RECOLOUR_ENABLED, buf.ReadByte() != 0);
 				break;
 
 			case A0RPI_RAILTYPE_EXTRA_ASPECTS:
@@ -9512,7 +9512,7 @@ struct GRFFeatureTest {
 		uint16_t version = (this->feature != nullptr) ? this->feature->version : 0;
 		bool has_feature = (version >= this->min_version && version <= this->max_version);
 		if (this->platform_var_bit > 0) {
-			SB(_cur.grffile->var9D_overlay, this->platform_var_bit, 1, has_feature ? 1 : 0);
+			AssignBit(_cur.grffile->var9D_overlay, this->platform_var_bit, has_feature);
 			grfmsg(2, "Action 14 feature test: feature test: setting bit %u of var 0x9D to %u, %u", platform_var_bit, has_feature ? 1 : 0, _cur.grffile->var9D_overlay);
 		}
 		if (this->test_91_value > 0) {
@@ -9686,7 +9686,7 @@ struct GRFPropertyMapAction {
 			}
 		}
 		if (this->ttd_ver_var_bit > 0) {
-			SB(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, 1, success ? 1 : 0);
+			AssignBit(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, success);
 		}
 		if (this->test_91_value > 0 && success) {
 			include(_cur.grffile->var91_values, this->test_91_value);
@@ -9750,7 +9750,7 @@ struct GRFPropertyMapAction {
 			}
 		}
 		if (this->ttd_ver_var_bit > 0) {
-			SB(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, 1, success ? 1 : 0);
+			AssignBit(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, success);
 		}
 		if (this->test_91_value > 0 && success) {
 			include(_cur.grffile->var91_values, this->test_91_value);
@@ -9809,7 +9809,7 @@ struct GRFPropertyMapAction {
 			}
 		}
 		if (this->ttd_ver_var_bit > 0) {
-			SB(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, 1, success ? 1 : 0);
+			AssignBit(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, success);
 		}
 		if (this->test_91_value > 0 && success) {
 			include(_cur.grffile->var91_values, this->test_91_value);
@@ -9843,7 +9843,7 @@ struct GRFPropertyMapAction {
 			}
 		}
 		if (this->ttd_ver_var_bit > 0) {
-			SB(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, 1, success ? 1 : 0);
+			AssignBit(_cur.grffile->var8D_overlay, this->ttd_ver_var_bit, success);
 		}
 		if (this->test_91_value > 0 && success) {
 			include(_cur.grffile->var91_values, this->test_91_value);

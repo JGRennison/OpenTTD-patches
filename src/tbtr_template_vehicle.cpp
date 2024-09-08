@@ -209,7 +209,7 @@ static void MarkTrainsInGroupAsPendingTemplateReplacement(GroupID gid, const Tem
 		if (!t->IsFrontEngine() || t->owner != owner || t->group_id >= NEW_GROUP) continue;
 
 		if (std::binary_search(groups.begin(), groups.end(), t->group_id)) {
-			SB(t->vehicle_flags, VF_REPLACEMENT_PENDING, 1, (tv != nullptr && ShouldServiceTrainForTemplateReplacement(t, tv)) ? 1 : 0);
+			AssignBit(t->vehicle_flags, VF_REPLACEMENT_PENDING, tv != nullptr && ShouldServiceTrainForTemplateReplacement(t, tv));
 		}
 	}
 }
@@ -222,7 +222,7 @@ void MarkTrainsUsingTemplateAsPendingTemplateReplacement(const TemplateVehicle *
 		if (!t->IsFrontEngine() || t->owner != owner || t->group_id >= NEW_GROUP) continue;
 
 		if (GetTemplateIDByGroupIDRecursive(t->group_id) == tv->index) {
-			SB(t->vehicle_flags, VF_REPLACEMENT_PENDING, 1, ShouldServiceTrainForTemplateReplacement(t, tv) ? 1 : 0);
+			AssignBit(t->vehicle_flags, VF_REPLACEMENT_PENDING, ShouldServiceTrainForTemplateReplacement(t, tv));
 		}
 	}
 }

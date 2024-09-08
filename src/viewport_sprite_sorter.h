@@ -51,7 +51,7 @@ struct __attribute__ ((aligned (16))) ParentSpriteToDraw {
 	uint16_t height;                ///< sprite height, bit 15: comparison_done: used during sprite sorting: true if sprite has been compared with all other sprites
 
 	bool IsComparisonDone() const { return HasBit(this->height, 15); }
-	void SetComparisonDone(bool done) { SB(this->height, 15, 1, done ? 1 : 0); }
+	void SetComparisonDone(bool done) { AssignBit(this->height, 15, done); }
 };
 static_assert((sizeof(ParentSpriteToDraw) % 16) == 0);
 static_assert(sizeof(ParentSpriteToDraw) <= 64);

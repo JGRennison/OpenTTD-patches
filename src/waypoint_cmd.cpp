@@ -672,7 +672,7 @@ CommandCost CmdSetWaypointLabelHidden(TileIndex tile, DoCommandFlag flags, uint3
 	}
 
 	if (flags & DC_EXEC) {
-		SB(wp->waypoint_flags, WPF_HIDE_LABEL, 1, p2 != 0 ? 1 : 0);
+		AssignBit(wp->waypoint_flags, WPF_HIDE_LABEL, p2 != 0);
 
 		if (HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES) &&
 				!(_local_company != wp->owner && wp->owner != OWNER_NONE && !HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS))) {

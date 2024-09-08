@@ -70,7 +70,7 @@ public:
 	SpriteType GetType() const { return this->type; }
 	void SetType(SpriteType type) { this->type = type; }
 	bool GetWarned() const { return HasBit(this->flags, SCCF_WARNED); }
-	void SetWarned(bool warned) { SB(this->flags, SCCF_WARNED, 1, warned ? 1 : 0); }
+	void SetWarned(bool warned) { AssignBit(this->flags, SCCF_WARNED, warned); }
 	bool GetHasPalette() const { return GB(this->flags, SCC_PAL_ZOOM_START, 6) != 0; }
 	bool GetHasNonPalette() const { return GB(this->flags, SCC_32BPP_ZOOM_START, 6) != 0; }
 

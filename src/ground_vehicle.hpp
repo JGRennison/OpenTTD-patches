@@ -141,7 +141,7 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 			}
 			if (incl != 0) zero_slope_resist = false;
 		}
-		SB(this->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST, 1, zero_slope_resist ? 1 : 0);
+		AssignBit(this->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST, zero_slope_resist);
 
 		return incl;
 	}

@@ -1085,7 +1085,7 @@ void UpdateNewVirtualTrainFromSource(Train *v, const T *src)
 		static const TemplateVehicle *GetTrainMultiheadOtherPart(const TemplateVehicle *src) { return src; }
 	};
 
-	SB(v->flags, VRF_REVERSE_DIRECTION, 1, helper::IsTrainPartReversed(src) ? 1 : 0);
+	AssignBit(v->flags, VRF_REVERSE_DIRECTION, helper::IsTrainPartReversed(src));
 
 	if (v->IsMultiheaded()) {
 		const T *other = helper::GetTrainMultiheadOtherPart(src);

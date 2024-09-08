@@ -459,7 +459,7 @@ inline bool IsStationTileBlocked(TileIndex t)
 inline void SetStationTileBlocked(TileIndex t, bool b)
 {
 	assert(HasStationRail(t));
-	SB(_me[t].m6, 0, 1, b ? 1 : 0);
+	AssignBit(_me[t].m6, 0, b);
 }
 
 /**
@@ -483,7 +483,7 @@ inline bool CanStationTileHaveWires(TileIndex t)
 inline void SetStationTileHaveWires(TileIndex t, bool b)
 {
 	assert(HasStationRail(t));
-	SB(_me[t].m6, 1, 1, b ? 1 : 0);
+	AssignBit(_me[t].m6, 1, b);
 }
 
 /**
@@ -507,7 +507,7 @@ inline bool CanStationTileHavePylons(TileIndex t)
 inline void SetStationTileHavePylons(TileIndex t, bool b)
 {
 	assert(HasStationRail(t));
-	SB(_me[t].m6, 7, 1, b ? 1 : 0);
+	AssignBit(_me[t].m6, 7, b);
 }
 
 /**
@@ -587,7 +587,7 @@ inline bool HasStationReservation(TileIndex t)
 inline void SetRailStationReservation(TileIndex t, bool b)
 {
 	dbg_assert_tile(HasStationRail(t), t);
-	SB(_me[t].m6, 2, 1, b ? 1 : 0);
+	AssignBit(_me[t].m6, 2, b);
 }
 
 /**

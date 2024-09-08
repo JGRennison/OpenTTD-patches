@@ -113,7 +113,7 @@ void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev
 	tmp->cargo_subtype = virt->cargo_subtype;
 	tmp->cargo_cap = virt->cargo_cap;
 
-	SB(tmp->ctrl_flags, TVCF_REVERSED, 1, HasBit(virt->flags, VRF_REVERSE_DIRECTION) ? 1 : 0);
+	AssignBit(tmp->ctrl_flags, TVCF_REVERSED, HasBit(virt->flags, VRF_REVERSE_DIRECTION));
 
 	if (virt->Previous() == nullptr) {
 		uint cargo_weight = 0;

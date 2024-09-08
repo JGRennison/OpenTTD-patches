@@ -257,7 +257,7 @@ struct VehiclePoolOps {
 	static constexpr VehicleType GetVehicleType(uintptr_t ptr) { return static_cast<VehicleType>(GB(ptr, 60, 3)); }
 	static constexpr bool IsNonFrontVehiclePtr(uintptr_t ptr) { return HasBit(ptr, 63); }
 
-	static constexpr void SetIsNonFrontVehiclePtr(uintptr_t &ptr, bool non_front) { SB(ptr, 63, 1, non_front ? 1 : 0); }
+	static constexpr void SetIsNonFrontVehiclePtr(uintptr_t &ptr, bool non_front) { AssignBit(ptr, 63, non_front); }
 };
 
 typedef Pool<Vehicle, VehicleID, 512, 0xFF000, PT_NORMAL, false, true, VehiclePoolOps> VehiclePool;
@@ -1002,9 +1002,9 @@ public:
 
 	inline bool ServiceIntervalIsPercent() const { return HasBit(this->vehicle_flags, VF_SERVINT_IS_PERCENT); }
 
-	inline void SetServiceIntervalIsCustom(bool on) { SB(this->vehicle_flags, VF_SERVINT_IS_CUSTOM, 1, on); }
+	inline void SetServiceIntervalIsCustom(bool on) { AssignBit(this->vehicle_flags, VF_SERVINT_IS_CUSTOM, on); }
 
-	inline void SetServiceIntervalIsPercent(bool on) { SB(this->vehicle_flags, VF_SERVINT_IS_PERCENT, 1, on); }
+	inline void SetServiceIntervalIsPercent(bool on) { AssignBit(this->vehicle_flags, VF_SERVINT_IS_PERCENT, on); }
 
 	inline void ResetDepotUnbunching() { this->unbunch_state.reset(); }
 
@@ -1616,7 +1616,7 @@ public:
 		if (EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD) _sprite_group_resolve_check_veh_curvature_check = true;
 		((T *)this)->T::GetImage(current_direction, EIT_ON_MAP, &seq);
 		if (EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD) {
-			SB(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT, 1, _sprite_group_resolve_check_veh_check ? 0 : 1);
+			AssignBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT, !_sprite_group_resolve_check_veh_check);
 			if (unlikely(!_sprite_group_resolve_check_veh_curvature_check)) {
 				SetBit(this->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE);
 				this->vcache.cached_image_curvature = this->GetVehicleCurvature();

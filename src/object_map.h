@@ -177,7 +177,7 @@ inline bool GetObjectHasViewportMapViewOverride(TileIndex t)
 inline void SetObjectHasViewportMapViewOverride(TileIndex t, bool map_view_override)
 {
 	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
-	SB(_m[t].m4, 4, 1, map_view_override ? 1 : 0);
+	AssignBit(_m[t].m4, 4, map_view_override);
 }
 
 /**

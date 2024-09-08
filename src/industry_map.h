@@ -88,7 +88,7 @@ IndustryType GetIndustryType(TileIndex tile);
 inline void SetIndustryCompleted(TileIndex tile)
 {
 	dbg_assert_tile(IsTileType(tile, MP_INDUSTRY), tile);
-	SB(_m[tile].m1, 7, 1, 1);
+	SetBit(_m[tile].m1, 7);
 }
 
 /**

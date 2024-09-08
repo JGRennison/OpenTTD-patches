@@ -103,7 +103,7 @@ void SetBridgeEntranceSimulatedSignalStateExtended(TileIndex t, uint16_t signal,
 	uint16_t slot = offset >> 6;
 	uint16_t bit = offset & 0x3F;
 	if (slot >= lbss.signal_red_bits.size()) lbss.signal_red_bits.resize(slot + 1);
-	SB(lbss.signal_red_bits[slot], bit, 1, (uint64_t) ((state == SIGNAL_STATE_RED) ? 1 : 0));
+	AssignBit(lbss.signal_red_bits[slot], bit, state == SIGNAL_STATE_RED);
 	_m[t].m2 |= BRIDGE_M2_SIGNAL_STATE_EXT_FLAG;
 }
 

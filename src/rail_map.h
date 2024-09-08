@@ -84,7 +84,7 @@ inline bool HasSignals(TileIndex t)
 inline void SetHasSignals(TileIndex tile, bool signals)
 {
 	dbg_assert_tile(IsPlainRailTile(tile), tile);
-	SB(_m[tile].m5, 6, 1, signals);
+	AssignBit(_m[tile].m5, 6, signals);
 }
 
 /**
@@ -243,7 +243,7 @@ inline void SetTrackReservation(TileIndex t, TrackBits b)
 	dbg_assert(!TracksOverlap(b));
 	Track track = RemoveFirstTrack(&b);
 	SB(_m[t].m2, 8, 3, track == INVALID_TRACK ? 0 : track + 1);
-	SB(_m[t].m2, 11, 1, (uint8_t)(b != TRACK_BIT_NONE));
+	AssignBit(_m[t].m2, 11, b != TRACK_BIT_NONE);
 }
 
 /**
@@ -300,7 +300,7 @@ inline bool HasDepotReservation(TileIndex t)
 inline void SetDepotReservation(TileIndex t, bool b)
 {
 	dbg_assert_tile(IsRailDepot(t), t);
-	SB(_m[t].m5, 4, 1, (uint8_t)b);
+	AssignBit(_m[t].m5, 4, b);
 }
 
 /**
@@ -439,7 +439,7 @@ inline void SetSignalAlwaysReserveThrough(TileIndex t, Track track, bool reserve
 {
 	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
 	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 7 : 6;
-	SB(_me[t].m7, pos, 1, reserve_through ? 1 : 0);
+	AssignBit(_me[t].m7, pos, reserve_through);
 }
 
 inline bool GetSignalSpecialPropagationFlag(TileIndex t, Track track)
@@ -453,7 +453,7 @@ inline void SetSignalSpecialPropagationFlag(TileIndex t, Track track, bool speci
 {
 	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
 	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 6 : 5;
-	SB(_m[t].m1, pos, 1, special ? 1 : 0);
+	AssignBit(_m[t].m1, pos, special);
 }
 
 /**
@@ -618,7 +618,7 @@ inline bool IsRestrictedSignal(TileIndex tile)
 inline void SetRestrictedSignal(TileIndex tile, bool is_restricted)
 {
 	dbg_assert_tile(GetRailTileType(tile) == RAIL_TILE_SIGNALS, tile);
-	SB(_m[tile].m2, 12, 1, is_restricted);
+	AssignBit(_m[tile].m2, 12, is_restricted);
 }
 
 

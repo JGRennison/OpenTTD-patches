@@ -355,7 +355,7 @@ inline bool HasTileWaterGround(TileIndex t)
 inline void SetDockingTile(TileIndex t, bool b)
 {
 	dbg_assert(IsTileType(t, MP_WATER) || IsTileType(t, MP_RAILWAY) || IsTileType(t, MP_STATION) || IsTileType(t, MP_TUNNELBRIDGE));
-	SB(_m[t].m1, 7, 1, b ? 1 : 0);
+	AssignBit(_m[t].m1, 7, b);
 }
 
 /**
@@ -513,7 +513,7 @@ inline void MakeLock(TileIndex t, Owner o, DiagDirection d, WaterClass wc_lower,
 inline void SetNonFloodingWaterTile(TileIndex t, bool b)
 {
 	dbg_assert(IsTileType(t, MP_WATER));
-	SB(_m[t].m3, 0, 1, b ? 1 : 0);
+	AssignBit(_m[t].m3, 0, b);
 }
 /**
  * Checks whether the tile is marked as a non-flooding water tile.

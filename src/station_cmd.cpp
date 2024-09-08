@@ -4902,7 +4902,7 @@ CommandCost CmdSetStationCargoAllowedSupply(TileIndex tile, DoCommandFlag flags,
 
 	if (flags & DC_EXEC) {
 		GoodsEntry &ge = st->goods[cid];
-		SB(ge.status, GoodsEntry::GES_NO_CARGO_SUPPLY, 1, HasBit(p2, 8) ? 0 : 1);
+		AssignBit(ge.status, GoodsEntry::GES_NO_CARGO_SUPPLY, !HasBit(p2, 8));
 		InvalidateWindowData(WC_STATION_VIEW, st->index, -1);
 	}
 
