@@ -89,6 +89,7 @@ struct Departure {
 	std::vector<RemoveVia> remove_vias;    ///< Vias to remove when using smart terminus.
 	DepartureStatus status;                ///< Whether the vehicle has arrived yet for this departure
 	DepartureType type;                    ///< The type of the departure (departure or arrival)
+	bool show_as_via;                      ///< Show as via departure
 	const Vehicle *vehicle;                ///< The vehicle performing this departure
 	const Order *order;                    ///< The order corresponding to this departure
 	Ticks scheduled_waiting_time;          ///< Scheduled waiting time if scheduled dispatch is used
@@ -108,8 +109,8 @@ struct Departure {
 			this->vehicle->type == d.vehicle->type &&
 			this->via == d.via &&
 			this->via2 == d.via2 &&
-			this->type == d.type
-			;
+			this->type == d.type &&
+			this->show_as_via == d.show_as_via;
 	}
 
 	inline Ticks EffectiveWaitingTime() const
@@ -142,14 +143,50 @@ struct DepartureOrderDestinationDetector {
 };
 
 struct DepartureCallingSettings {
-	bool allow_via = false;
-	bool departure_no_load_test = false;
-	bool show_all_stops = false;
-	bool show_pax = false;
-	bool show_freight = false;
+private:
+	uint8_t flags = 0;
+
+	struct FlagBits {
+		enum {
+			AllowVia = 0,
+			CheckShowAsViaType,
+			DepartureNoLoadTest,
+			ShowAllStops,
+			ShowPax,
+			ShowFreight,
+		};
+	};
+
+public:
+	inline bool AllowVia() const { return HasBit(this->flags, FlagBits::AllowVia); }
+	inline bool CheckShowAsViaType() const { return HasBit(this->flags, FlagBits::CheckShowAsViaType); }
+	inline bool DepartureNoLoadTest() const { return HasBit(this->flags, FlagBits::DepartureNoLoadTest); }
+	inline bool ShowAllStops() const { return HasBit(this->flags, FlagBits::ShowAllStops); }
+	inline bool ShowPax() const { return HasBit(this->flags, FlagBits::ShowPax); }
+	inline bool ShowFreight() const { return HasBit(this->flags, FlagBits::ShowFreight); }
+
+	inline void SetViaMode(bool allow_via, bool check_show_as_via_type)
+	{
+		AssignBit(this->flags, FlagBits::AllowVia, allow_via);
+		AssignBit(this->flags, FlagBits::CheckShowAsViaType, check_show_as_via_type);
+	}
+	inline void SetDepartureNoLoadTest(bool no_test)
+	{
+		AssignBit(this->flags, FlagBits::DepartureNoLoadTest, no_test);
+	}
+	inline void SetShowAllStops(bool all_stops)
+	{
+		AssignBit(this->flags, FlagBits::ShowAllStops, all_stops);
+	}
+	inline void SetCargoFilter(bool pax, bool freight)
+	{
+		AssignBit(this->flags, FlagBits::ShowPax, pax);
+		AssignBit(this->flags, FlagBits::ShowFreight, freight);
+	}
 
 	bool IsDeparture(const Order *order, const DepartureOrderDestinationDetector &source) const;
 	bool IsArrival(const Order *order, const DepartureOrderDestinationDetector &source) const;
+	bool ShouldShowAsVia(const Order *order) const;
 };
 
 typedef std::vector<std::unique_ptr<Departure>> DepartureList;

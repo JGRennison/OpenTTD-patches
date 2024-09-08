@@ -1062,10 +1062,10 @@ STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Zeige ge
 STR_DEPARTURES_SHOW_TYPE_TOOLTIP_CTRL_SUFFIX                    :{BLACK}{STRING}. Strg+Klick zur exklusiven Anzeige.
 STR_DEPARTURES_EMPTY                                            :{ORANGE}Aktuell sind für diese Station keine Fahrzeuge geplant.
 STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}Es wurde keine Fahrplanauskunft angefordert.
-STR_DEPARTURES_TIME                                             :{ORANGE}{STRING}
-STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{STRING} {GREEN}{UP_ARROW}
-STR_DEPARTURES_TIME_ARR                                         :{ORANGE}{STRING} {RED}{DOWN_ARROW}
-STR_DEPARTURES_TIME_BOTH                                        :{ORANGE}{STRING} {RED}{DOWN_ARROW} {ORANGE}{STRING} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TIME                                             :{COLOUR}{STRING}
+STR_DEPARTURES_TIME_DEP                                         :{COLOUR}{STRING} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TIME_ARR                                         :{COLOUR}{STRING} {RED}{DOWN_ARROW}
+STR_DEPARTURES_TIME_BOTH                                        :{COLOUR}{STRING} {RED}{DOWN_ARROW} {COLOUR}{STRING} {GREEN}{UP_ARROW}
 STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STATION}{STRING}
 STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STATION}{STRING} über {STRING}
 STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STATION}{STRING} über

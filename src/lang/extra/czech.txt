@@ -1180,10 +1180,10 @@ STR_DEPARTURES_SHOW_AIRCRAFT_TOOLTIP                            :{BLACK}Zobrazit
 STR_DEPARTURES_SHOW_TYPE_TOOLTIP_CTRL_SUFFIX                    :{BLACK}{STRING}. Ctrl+kliknutí je zobrazí samostatně.
 STR_DEPARTURES_EMPTY                                            :{ORANGE}Tuto stanici aktuálně nemá v jízdním řádu žádné vozidlo.
 STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}Nejsou požadovány žádné informace z jízdního řádu.
-STR_DEPARTURES_TIME                                             :{ORANGE}{STRING}
-STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{STRING} {GREEN}{UP_ARROW}
-STR_DEPARTURES_TIME_ARR                                         :{ORANGE}{STRING} {RED}{DOWN_ARROW}
-STR_DEPARTURES_TIME_BOTH                                        :{ORANGE}{STRING} {RED}{DOWN_ARROW} {ORANGE}{STRING} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TIME                                             :{COLOUR}{STRING}
+STR_DEPARTURES_TIME_DEP                                         :{COLOUR}{STRING} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TIME_ARR                                         :{COLOUR}{STRING} {RED}{DOWN_ARROW}
+STR_DEPARTURES_TIME_BOTH                                        :{COLOUR}{STRING} {RED}{DOWN_ARROW} {COLOUR}{STRING} {GREEN}{UP_ARROW}
 STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STATION}{STRING}
 STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STATION}{STRING} přes {STRING}
 STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STATION}{STRING} přes

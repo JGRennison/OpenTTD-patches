@@ -596,11 +596,10 @@ public:
 			ClrBit(list_source.order_type_mask, OT_IMPLICIT); // Not interested in implicit orders in this phase
 
 			DepartureCallingSettings settings;
-			settings.allow_via = (this->source_type != DST_STATION) || this->show_via;
-			settings.departure_no_load_test = (this->source_type == DST_WAYPOINT) || _settings_client.gui.departure_show_all_stops;
-			settings.show_all_stops = _settings_client.gui.departure_show_all_stops;
-			settings.show_pax = show_pax;
-			settings.show_freight = show_freight;
+			settings.SetViaMode((this->source_type != DST_STATION) || this->show_via, (this->source_type == DST_STATION) && this->show_via);
+			settings.SetDepartureNoLoadTest((this->source_type == DST_WAYPOINT) || _settings_client.gui.departure_show_all_stops);
+			settings.SetShowAllStops(_settings_client.gui.departure_show_all_stops);
+			settings.SetCargoFilter(show_pax, show_freight);
 
 			if (this->mode != DM_ARRIVALS) {
 				this->departures = MakeDepartureList(this->source_mode, list_source, this->vehicles, D_DEPARTURE, settings);
@@ -869,20 +868,24 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 		if (d->terminus == INVALID_STATION) continue;
 
 		StringID time_str;
+		TextColour time_colour = d->show_as_via ? TC_YELLOW : TC_ORANGE;
 		if (this->mode == DM_COMBINED) {
 			time_str = STR_DEPARTURES_TIME_BOTH;
-			SetDParam(0, STR_JUST_TT_TIME_ABS);
-			SetDParam(1, d->scheduled_tick - d->EffectiveWaitingTime());
-			SetDParam(2, STR_JUST_TT_TIME_ABS);
-			SetDParam(3, d->scheduled_tick);
+			SetDParam(0, time_colour);
+			SetDParam(1, STR_JUST_TT_TIME_ABS);
+			SetDParam(2, d->scheduled_tick - d->EffectiveWaitingTime());
+			SetDParam(3, time_colour);
+			SetDParam(4, STR_JUST_TT_TIME_ABS);
+			SetDParam(5, d->scheduled_tick);
 		} else {
 			if (this->mode == DM_SEPARATE) {
 				time_str = (d->type == D_DEPARTURE) ? STR_DEPARTURES_TIME_DEP : STR_DEPARTURES_TIME_ARR;
 			} else {
 				time_str = STR_DEPARTURES_TIME;
 			}
-			SetDParam(0, STR_JUST_TT_TIME_ABS);
-			SetDParam(1, d->scheduled_tick);
+			SetDParam(0, time_colour);
+			SetDParam(1, STR_JUST_TT_TIME_ABS);
+			SetDParam(2, d->scheduled_tick);
 		}
 		ltr ? DrawString(              text_left, text_left + time_width, y + 1, time_str)
 			: DrawString(text_right - time_width,             text_right, y + 1, time_str);

@@ -86,14 +86,19 @@ struct OrderDateQueueItem {
 	}
 };
 
+inline bool IsStationOrderWithWait(const Order *order)
+{
+	return ((order->GetWaitTime() != 0 || order->IsWaitTimetabled()) && !(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION));
+}
+
 template <typename LOAD_FILTER>
-bool IsArrivalDepartureTest(const DepartureCallingSettings &settings, const Order *order, LOAD_FILTER load_filter)
+bool IsArrivalDepartureTest(DepartureCallingSettings settings, const Order *order, LOAD_FILTER load_filter)
 {
 	if (order->GetType() == OT_GOTO_STATION) {
-		if (!settings.departure_no_load_test && !load_filter(order)) return false;
-		return settings.allow_via || ((order->GetWaitTime() != 0 || order->IsWaitTimetabled()) && !(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION));
+		if (!settings.DepartureNoLoadTest() && !load_filter(order)) return false;
+		return settings.AllowVia() || IsStationOrderWithWait(order);
 	} else if (order->GetType() == OT_GOTO_WAYPOINT) {
-		if (settings.allow_via) return true;
+		if (settings.AllowVia()) return true;
 		return (order->GetWaitTime() != 0 || order->IsWaitTimetabled());
 	} else {
 		return true;
@@ -114,6 +119,11 @@ bool DepartureCallingSettings::IsArrival(const Order *order, const DepartureOrde
 	return IsArrivalDepartureTest(*this, order, [](const Order *order) {
 		return order->GetUnloadType() != OUFB_NO_UNLOAD;
 	});
+}
+
+bool DepartureCallingSettings::ShouldShowAsVia(const Order *order) const
+{
+	return this->CheckShowAsViaType() && (order->GetType() == OT_GOTO_STATION) && !IsStationOrderWithWait(order);
 }
 
 static uint8_t GetNonScheduleDepartureConditionalOrderMode(const Order *order, const Vehicle *v, StateTicks eval_tick)
@@ -291,10 +301,10 @@ static void ScheduledDispatchDepartureLocalFix(DepartureList &departure_list)
 	});
 }
 
-static bool IsVehicleUsableForDepartures(const Vehicle *v, const DepartureCallingSettings &calling_settings)
+static bool IsVehicleUsableForDepartures(const Vehicle *v, DepartureCallingSettings calling_settings)
 {
 	if (v->GetNumOrders() == 0) return false;
-	if (calling_settings.show_pax != calling_settings.show_freight) {
+	if (calling_settings.ShowPax() != calling_settings.ShowFreight()) {
 		bool carries_passengers = false;
 
 		const Vehicle *u = v;
@@ -306,7 +316,7 @@ static bool IsVehicleUsableForDepartures(const Vehicle *v, const DepartureCallin
 			u = u->Next();
 		}
 
-		if (carries_passengers != calling_settings.show_pax) {
+		if (carries_passengers != calling_settings.ShowPax()) {
 			return false;
 		}
 	}
@@ -320,7 +330,7 @@ static bool IsVehicleUsableForDepartures(const Vehicle *v, const DepartureCallin
 }
 
 static void GetDepartureCandidateOrderDatesFromVehicle(std::vector<OrderDate> &next_orders, const Vehicle *v, const DepartureOrderDestinationDetector &source, const DepartureType type,
-		const DepartureCallingSettings &calling_settings, const Ticks max_ticks, ScheduledDispatchCache &schdispatch_last_planned_dispatch)
+		DepartureCallingSettings calling_settings, const Ticks max_ticks, ScheduledDispatchCache &schdispatch_last_planned_dispatch)
 {
 	if (!IsVehicleUsableForDepartures(v, calling_settings)) return;
 
@@ -492,7 +502,7 @@ bool DepartureViaTerminusState::CheckOrder(const Vehicle *v, Departure *d, const
 	if (order->GetType() == OT_GOTO_STATION &&
 			source.OrderMatches(order) &&
 			(order->GetUnloadType() != OUFB_NO_UNLOAD ||
-			calling_settings.show_all_stops) &&
+			calling_settings.ShowAllStops()) &&
 			(((order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) || ((d->order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) != 0))) {
 		/* If we're not calling anywhere, then skip this departure. */
 		this->found_terminus = (d->calling_at.size() > 0);
@@ -568,7 +578,7 @@ bool DepartureViaTerminusState::HandleCallingPoint(Departure *d, const Order *or
 static bool IsIgnorableCallingAtOrder(const Order *order, DepartureCallingSettings calling_settings)
 {
 	if ((order->GetUnloadType() == OUFB_NO_UNLOAD &&
-			!calling_settings.show_all_stops) ||
+			!calling_settings.ShowAllStops()) ||
 			(order->GetType() != OT_GOTO_STATION &&
 			order->GetType() != OT_IMPLICIT) ||
 			order->GetNonStopType() == ONSF_NO_STOP_AT_ANY_STATION ||
@@ -605,7 +615,7 @@ static bool ProcessArrivalHistory(Departure *d, std::span<const Order *> arrival
 		}
 
 		if ((o->GetLoadType() != OLFB_NO_LOAD ||
-				calling_settings.show_all_stops) &&
+				calling_settings.ShowAllStops()) &&
 				(o->GetType() == OT_GOTO_STATION ||
 				o->GetType() == OT_IMPLICIT) &&
 				!source.StationMatches(o->GetDestination()) &&
@@ -629,7 +639,7 @@ static bool ProcessArrivalHistory(Departure *d, std::span<const Order *> arrival
 			const Order *o = arrival_history[i];
 			if (o->GetType() == OT_GOTO_STATION &&
 					(o->GetLoadType() != OLFB_NO_LOAD ||
-					calling_settings.show_all_stops) &&
+					calling_settings.ShowAllStops()) &&
 					(o->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
 				d->calling_at.push_back(CallAt((StationID)o->GetDestination()));
 			}
@@ -660,7 +670,7 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 	/* This code can probably be made more efficient. I haven't done so in order to keep both its (relative) simplicity and my (relative) sanity. */
 	/* Having written that, it's not exactly slow at the moment. */
 
-	if (!calling_settings.show_pax && !calling_settings.show_freight) return {};
+	if (!calling_settings.ShowPax() && !calling_settings.ShowFreight()) return {};
 
 	/* The list of departures which will be returned as a result. */
 	std::vector<std::unique_ptr<Departure>> result;
@@ -725,6 +735,7 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 		d->status = lod.status;
 		d->vehicle = lod.v;
 		d->type = type;
+		d->show_as_via = calling_settings.ShouldShowAsVia(lod.order);
 		d->order = lod.order;
 		d->scheduled_waiting_time = lod.scheduled_waiting_time;
 
@@ -1119,6 +1130,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateFromSourceOrder(const Order
 	d.status = D_SCHEDULED;
 	d.vehicle = this->v;
 	d.type = this->type;
+	d.show_as_via = this->calling_settings.ShouldShowAsVia(source_order);
 	d.order = source_order;
 	d.scheduled_waiting_time = 0;
 

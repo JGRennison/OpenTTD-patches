@@ -1304,10 +1304,10 @@ STR_DEPARTURES_SHOW_AIRCRAFT_TOOLTIP                            :{BLACK}仅显�
 STR_DEPARTURES_SHOW_TYPE_TOOLTIP_CTRL_SUFFIX                    :{BLACK}{STRING}。按住 <Ctrl> 键点击设置仅显示此类型载具
 STR_DEPARTURES_EMPTY                                            :{ORANGE}当前没有载具列入车站时刻表
 STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}没有被请求的时刻表信息
-STR_DEPARTURES_TIME                                             :{ORANGE}{STRING}
-STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{STRING} {GREEN}{UP_ARROW}
-STR_DEPARTURES_TIME_ARR                                         :{ORANGE}{STRING} {RED}{DOWN_ARROW}
-STR_DEPARTURES_TIME_BOTH                                        :{ORANGE}{STRING} {RED}{DOWN_ARROW} {ORANGE}{STRING} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TIME                                             :{COLOUR}{STRING}
+STR_DEPARTURES_TIME_DEP                                         :{COLOUR}{STRING} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TIME_ARR                                         :{COLOUR}{STRING} {RED}{DOWN_ARROW}
+STR_DEPARTURES_TIME_BOTH                                        :{COLOUR}{STRING} {RED}{DOWN_ARROW} {COLOUR}{STRING} {GREEN}{UP_ARROW}
 STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STATION}{STRING}
 STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STATION}{STRING}经由{STRING}
 STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STATION}{STRING}经由

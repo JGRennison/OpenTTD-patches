@@ -43,10 +43,10 @@ STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}経由
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}通過車両を表示
 STR_DEPARTURES_EMPTY                                            :{ORANGE}現在、ダイヤを設定している車両はありません。
 STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}発車標が設定されていません。
-STR_DEPARTURES_TIME                                             :{ORANGE}{STRING}
-STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{STRING} {GREEN}{UP_ARROW}
-STR_DEPARTURES_TIME_ARR                                         :{ORANGE}{STRING} {RED}{DOWN_ARROW}
-STR_DEPARTURES_TIME_BOTH                                        :{ORANGE}{STRING} {RED}{DOWN_ARROW} {ORANGE}{STRING} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TIME                                             :{COLOUR}{STRING}
+STR_DEPARTURES_TIME_DEP                                         :{COLOUR}{STRING} {GREEN}{UP_ARROW}
+STR_DEPARTURES_TIME_ARR                                         :{COLOUR}{STRING} {RED}{DOWN_ARROW}
+STR_DEPARTURES_TIME_BOTH                                        :{COLOUR}{STRING} {RED}{DOWN_ARROW} {COLOUR}{STRING} {GREEN}{UP_ARROW}
 STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STATION}{STRING}
 STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STATION}{STRING} 経由 {STRING}経由
 STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STATION}{STRING} 経由
