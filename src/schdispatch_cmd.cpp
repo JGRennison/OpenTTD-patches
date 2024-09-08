@@ -890,6 +890,6 @@ void DispatchSchedule::SetSupplementaryName(ScheduledDispatchSupplementaryNameTy
 	if (name.empty()) {
 		this->supplementary_names.erase(key);
 	} else {
-		this->supplementary_names.insert({ key, std::move(name) });
+		this->supplementary_names[key] = std::move(name);
 	}
 }
