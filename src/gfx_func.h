@@ -213,6 +213,7 @@ uint8_t GetCharacterWidth(FontSize size, char32_t key);
 uint8_t GetDigitWidth(FontSize size = FS_NORMAL);
 void GetBroadestDigit(uint *front, uint *next, FontSize size = FS_NORMAL);
 uint64_t GetBroadestDigitsValue(uint count, FontSize size = FS_NORMAL);
+uint GetBroadestHourDigitsValue(FontSize size = FS_NORMAL);
 
 extern int font_height_cache[FS_END];
 

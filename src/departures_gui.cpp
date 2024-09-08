@@ -714,24 +714,35 @@ void DeparturesWindow::RecomputeDateWidth()
 	cached_status_width = std::max((GetStringBoundingBox(STR_DEPARTURES_ON_TIME)).width, cached_status_width);
 	cached_status_width = std::max((GetStringBoundingBox(STR_DEPARTURES_DELAYED)).width, cached_status_width);
 	cached_status_width = std::max((GetStringBoundingBox(STR_DEPARTURES_CANCELLED)).width, cached_status_width);
+	cached_status_width = std::max((GetStringBoundingBox(STR_DEPARTURES_SCHEDULED)).width, cached_status_width);
 
-	uint interval = cached_date_display_method ? _settings_time.ticks_per_minute : DAY_TICKS;
-	uint count = cached_date_display_method ? 24*60 : 365;
-
-	for (uint i = 0; i < count; ++i) {
-		SetDParam(0, STR_JUST_TT_TIME_ABS);
-		SetDParam(1, INT_MAX - (i*interval));
-		SetDParam(2, STR_JUST_TT_TIME_ABS);
-		SetDParam(3, INT_MAX - (i*interval));
-		cached_date_width = std::max(GetStringBoundingBox(STR_DEPARTURES_TIME_DEP).width, cached_date_width);
+	auto eval_tick = [&](StateTicks tick) {
+		SetDParam(0, TC_ORANGE);
+		SetDParam(1, STR_JUST_TT_TIME_ABS);
+		SetDParam(2, tick);
+		SetDParam(3, TC_ORANGE);
+		SetDParam(4, STR_JUST_TT_TIME_ABS);
+		SetDParam(5, tick);
+		cached_date_width = std::max(GetStringBoundingBox(STR_DEPARTURES_TIME).width, cached_date_width);
 		cached_date_combined_width = std::max(GetStringBoundingBox(STR_DEPARTURES_TIME_BOTH).width, cached_date_combined_width);
+
+		SetDParam(0, STR_JUST_TT_TIME_ABS);
+		SetDParam(1, tick);
 		cached_status_width = std::max((GetStringBoundingBox(STR_DEPARTURES_EXPECTED)).width, cached_status_width);
+	};
+
+	if (_settings_time.time_in_minutes) {
+		StateTicks tick = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(GetBroadestHourDigitsValue(), (int)GetBroadestDigitsValue(2)));
+		eval_tick(tick);
+	} else {
+		for (uint i = 0; i < 365; ++i) {
+			eval_tick(INT_MAX - (i * DAY_TICKS));
+		}
 	}
 
-	SetDParam(0, 0);
+	SetDParam(0, STR_JUST_TT_TIME_ABS);
+	SetDParam(1, 0);
 	cached_date_arrow_width = GetStringBoundingBox(STR_DEPARTURES_TIME_DEP).width - GetStringBoundingBox(STR_DEPARTURES_TIME).width;
-
-	cached_date_width -= cached_date_arrow_width;
 }
 
 uint DeparturesWindow::GetScrollbarCapacity() const

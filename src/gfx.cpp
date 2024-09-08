@@ -1344,6 +1344,29 @@ uint64_t GetBroadestDigitsValue(uint count, FontSize size)
 }
 
 /**
+ * Return some number in the range 0 - 23 that is suitable for string size computations.
+ * @param size  Font of the number
+ * @return The number.
+ */
+uint GetBroadestHourDigitsValue(FontSize size)
+{
+	int widths[2] = { -1, -1 };
+	uint8_t values[2] = { 0, 0 };
+	for (char c = '9'; c >= '0'; c--) {
+		int w = GetCharacterWidth(size, c);
+		auto test = [&](uint i) {
+			if (w > widths[i]) {
+				widths[i] = w;
+				values[i] = (uint8_t)(c - '0');
+			}
+		};
+		if (c <= '2') test(0);
+		test(1);
+	}
+	return (values[0] * 10) + values[1];
+}
+
+/**
  * Determine the broadest digits for guessing the maximum width of a n-digit number.
  * @param[out] front Broadest digit, which is not 0. (Use this digit as first digit for numbers with more than one digit.)
  * @param[out] next Broadest digit, including 0. (Use this digit for all digits, except the first one; or for numbers with only one digit.)
