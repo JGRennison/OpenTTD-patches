@@ -1383,6 +1383,7 @@ static void ChangeMinutesPerYear(int32_t new_value)
 	}
 
 	UpdateEffectiveDayLengthFactor();
+	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 1);
 
 	/* If the setting value is not the default, force the game to use wallclock timekeeping units.
 	 * This can only happen in the menu, since the pre_cb ensures this setting can only be changed there, or if we're already using wallclock units.

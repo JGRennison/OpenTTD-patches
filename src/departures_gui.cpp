@@ -585,7 +585,8 @@ public:
 		}
 
 		/* Recompute the minimum date display width if the cached one is no longer valid. */
-		if (cached_date_width == 0 ||
+		if (cached_status_width == 0 ||
+				((cached_date_width == 0) != (!_settings_time.time_in_minutes && CalTime::IsCalendarFrozen())) ||
 				_settings_time.time_in_minutes != cached_date_display_method) {
 			this->RecomputeDateWidth();
 		}
@@ -686,6 +687,7 @@ public:
 			}
 			if (!_settings_time.time_in_minutes && this->show_arrival_times) {
 				this->show_arrival_times = false;
+				this->RaiseWidget(WID_DB_SHOW_TIMES);
 			}
 			this->SetWidgetDisabledState(WID_DB_SHOW_TIMES, this->mode == DM_ARRIVALS || !_settings_time.time_in_minutes);
 			this->SetupValues();
@@ -749,7 +751,8 @@ void DeparturesWindow::RecomputeDateWidth()
 	if (_settings_time.time_in_minutes) {
 		StateTicks tick = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(GetBroadestHourDigitsValue(), (int)GetBroadestDigitsValue(2)));
 		eval_tick(tick);
-	} else {
+	} else if (!CalTime::IsCalendarFrozen()) {
+		/* If the calendar is frozen, all dates are the same, so just don't show anything */
 		for (uint i = 0; i < 365; ++i) {
 			eval_tick(INT_MAX - (i * DAY_TICKS));
 		}
@@ -901,28 +904,33 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 
 		if (d->terminus == INVALID_STATION) continue;
 
-		StringID time_str;
-		TextColour time_colour = d->show_as_via ? TC_YELLOW : TC_ORANGE;
-		if (this->mode == DM_COMBINED) {
-			time_str = STR_DEPARTURES_TIME_BOTH;
-			SetDParam(0, time_colour);
-			SetDParam(1, STR_JUST_TT_TIME_ABS);
-			SetDParam(2, d->scheduled_tick - d->EffectiveWaitingTime());
-			SetDParam(3, time_colour);
-			SetDParam(4, STR_JUST_TT_TIME_ABS);
-			SetDParam(5, d->scheduled_tick);
-		} else {
-			if (this->mode == DM_SEPARATE) {
-				time_str = (d->type == D_DEPARTURE) ? STR_DEPARTURES_TIME_DEP : STR_DEPARTURES_TIME_ARR;
+		if (time_width > 0) {
+			StringID time_str;
+			TextColour time_colour = d->show_as_via ? TC_YELLOW : TC_ORANGE;
+			if (this->mode == DM_COMBINED) {
+				time_str = STR_DEPARTURES_TIME_BOTH;
+				SetDParam(0, time_colour);
+				SetDParam(1, STR_JUST_TT_TIME_ABS);
+				SetDParam(2, d->scheduled_tick - d->EffectiveWaitingTime());
+				SetDParam(3, time_colour);
+				SetDParam(4, STR_JUST_TT_TIME_ABS);
+				SetDParam(5, d->scheduled_tick);
 			} else {
-				time_str = STR_DEPARTURES_TIME;
+				if (this->mode == DM_SEPARATE) {
+					time_str = (d->type == D_DEPARTURE) ? STR_DEPARTURES_TIME_DEP : STR_DEPARTURES_TIME_ARR;
+				} else {
+					time_str = STR_DEPARTURES_TIME;
+				}
+				SetDParam(0, time_colour);
+				SetDParam(1, STR_JUST_TT_TIME_ABS);
+				SetDParam(2, d->scheduled_tick);
 			}
-			SetDParam(0, time_colour);
-			SetDParam(1, STR_JUST_TT_TIME_ABS);
-			SetDParam(2, d->scheduled_tick);
+			if (ltr) {
+				DrawString(              text_left, text_left + time_width, y + 1, time_str);
+			} else {
+				DrawString(text_right - time_width,             text_right, y + 1, time_str);
+			}
 		}
-		ltr ? DrawString(              text_left, text_left + time_width, y + 1, time_str)
-			: DrawString(text_right - time_width,             text_right, y + 1, time_str);
 
 		if (_settings_client.gui.departure_show_vehicle_type) {
 			StringID type = STR_DEPARTURES_TYPE_TRAIN;
