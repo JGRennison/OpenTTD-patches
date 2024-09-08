@@ -301,6 +301,52 @@ static void ScheduledDispatchDepartureLocalFix(DepartureList &departure_list)
 	});
 }
 
+static void ScheduledDispatchSmartTerminusDetection(DepartureList &departure_list)
+{
+	btree::btree_map<StationID, StateTicks> earliest_seen;
+
+	for (auto iter = departure_list.rbegin(); iter != departure_list.rend(); ++iter) {
+		Departure *d = iter->get();
+		if (d->show_as_via) continue;
+
+		size_t calling_at_size = d->calling_at.size();
+		while (calling_at_size >= 2) {
+			if (d->terminus.scheduled_tick != 0) {
+				auto iter = earliest_seen.find(d->terminus.station);
+				if (iter != earliest_seen.end() && iter->second <= d->terminus.scheduled_tick) {
+					/* Terminus can be reached at same or earlier time on a later vehicle */
+					calling_at_size--;
+					size_t new_terminus_offset = calling_at_size - 1;
+					d->terminus = CallAt(d->calling_at[new_terminus_offset]);
+
+					auto remove_via = [&](StationID st) {
+						if (d->via2 == st) d->via2 = INVALID_STATION;
+						if (d->via == st) {
+							d->via = d->via2;
+							d->via2 = INVALID_STATION;
+						}
+					};
+					remove_via(d->terminus.station);
+					for (const RemoveVia &rv : d->remove_vias) {
+						if (rv.calling_at_offset == new_terminus_offset) {
+							remove_via(rv.via);
+						}
+					}
+					continue; // Try again with new terminus
+				}
+			}
+			break;
+		}
+
+		for (const CallAt &c : d->calling_at) {
+			if (c.scheduled_tick != 0) {
+				StateTicks &seen = earliest_seen[c.station];
+				if (seen == 0 || c.scheduled_tick < seen) seen = c.scheduled_tick;
+			}
+		}
+	}
+}
+
 static bool IsVehicleUsableForDepartures(const Vehicle *v, DepartureCallingSettings calling_settings)
 {
 	if (v->GetNumOrders() == 0) return false;
@@ -805,7 +851,7 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 				if (via_state.CheckOrder(lod.v, d, order, source, calling_settings)) break;
 
 				if (c.scheduled_tick != 0 && (order->GetTravelTime() != 0 || order->IsTravelTimetabled())) {
-					c.scheduled_tick += order->GetTravelTime(); /* TODO smart terminal may not work correctly */
+					c.scheduled_tick += order->GetTravelTime();
 				} else {
 					c.scheduled_tick = 0;
 				}
@@ -838,42 +884,6 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 
 				if (!duplicate) {
 					result.push_back(std::move(departure_ptr));
-
-					if (_settings_client.gui.departure_smart_terminus && type == D_DEPARTURE && !d->show_as_via) {
-						for (uint i = 0; i < (uint)(result.size() - 1); ++i) {
-							Departure *d_first = result[i].get();
-							if (d_first->show_as_via) continue;
-							uint k = (uint)d_first->calling_at.size() - 2;
-							uint j = (uint)d->calling_at.size();
-							while (j > 0) {
-								CallAt c = CallAt(d->calling_at[j - 1]);
-
-								if (d_first->terminus >= c && d_first->calling_at.size() >= 2) {
-									d_first->terminus = CallAt(d_first->calling_at[k]);
-									auto remove_via = [&](StationID st) {
-										if (d_first->via2 == st) d_first->via2 = INVALID_STATION;
-										if (d_first->via == st) {
-											d_first->via = d_first->via2;
-											d_first->via2 = INVALID_STATION;
-										}
-									};
-									remove_via(d_first->terminus.station);
-									for (const RemoveVia &rv : d_first->remove_vias) {
-										if (rv.calling_at_offset == k) {
-											remove_via(rv.via);
-										}
-									}
-
-									if (k == 0) break;
-
-									k--;
-									j = (uint)d->calling_at.size();
-								} else {
-									j--;
-								}
-							}
-						}
-					}
 
 					/* If the vehicle is expected to be late, we want to know what time it will arrive rather than depart. */
 					/* This is done because it looked silly to me to have a vehicle not be expected for another few days, yet it be at the same time pulling into the station. */
@@ -1048,7 +1058,12 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 		}
 	}
 
-	if (type == D_DEPARTURE) ScheduledDispatchDepartureLocalFix(result);
+	if (type == D_DEPARTURE) {
+		ScheduledDispatchDepartureLocalFix(result);
+		if (_settings_client.gui.departure_smart_terminus) {
+			ScheduledDispatchSmartTerminusDetection(result);
+		}
+	}
 
 	/* Done. Phew! */
 	return result;
