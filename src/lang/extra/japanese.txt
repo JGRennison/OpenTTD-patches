@@ -36,17 +36,10 @@ STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}雪線�
 STR_STATION_VIEW_DEPARTURES_BUTTON                              :{BLACK}発車標
 STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}発車標を表示します。
 
-STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION} 発車標
-STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} 発車標
-STR_DEPARTURES_PAX                                              :{BLACK}{TINY_FONT}旅客
-STR_DEPARTURES_FREIGHT                                          :{BLACK}{TINY_FONT}貨物
+STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} 発車標
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}発車
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}到着
-STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}経由
-STR_DEPARTURES_PAX_TOOLTIP                                      :{BLACK}旅客を運搬できる車両を表示
-STR_DEPARTURES_FREIGHT_TOOLTIP                                  :{BLACK}貨物を運搬できる車両を表示
-STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}発車時刻表を表示
-STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}到着時刻表を表示
+STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}経由
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}通過車両を表示
 STR_DEPARTURES_EMPTY                                            :{ORANGE}現在、ダイヤを設定している車両はありません。
 STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}発車標が設定されていません。
@@ -101,8 +94,6 @@ STR_CONFIG_DEPARTURE_LARGER_FONT                                :発車標の停
 STR_CONFIG_DEPARTURE_LARGER_FONT_HELPTEXT                       :発車標に表示されている停車場案内を通常より大きいめのフォントで表示します。
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :発車標にて行先が港湾や空港の場合はアイコンを表示: {STRING}
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :発車標にて、行先が港湾や空港の場合は、船や飛行機のアイコンを表示します。
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS                            :発車標を旅客車両のみ表示: {STRING}
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS_HELPTEXT                   :発車標を、旅客を運搬できる車両のみ表示します。
 STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS                             :発車標の停車場案内に運転停車の停車場を含む: {STRING}
 STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS_HELPTEXT                    :発車標に表示されている停車場案内に運転停車の停車場を含めて表示します。
 

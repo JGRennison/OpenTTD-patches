@@ -148,7 +148,7 @@ public:
 				break;
 
 			case WID_W_DEPARTURES: // show departure times of vehicles
-				ShowWaypointDepartures((StationID)this->wp->index);
+				ShowDeparturesWindow((StationID)this->wp->index);
 				break;
 
 			case WID_W_CATCHMENT:

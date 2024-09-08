@@ -649,7 +649,7 @@ public:
 			TrainDepotMoveVehicle(v, sel, gdvp.head);
 		} else if (v != nullptr) {
 			SetObjectToPlaceWnd(SPR_CURSOR_MOUSE, PAL_NONE, HT_DRAG, this);
-			SetMouseCursorVehicle(v, EIT_PURCHASE);
+			SetMouseCursorVehicle(v, EIT_IN_DEPOT);
 			_cursor.vehchain = _ctrl_pressed;
 
 			this->sel = v->index;

@@ -105,7 +105,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_INFRA_SHARING,                    XSCF_NULL,                2,   2, "infra_sharing",                    nullptr, nullptr, "CPDP"           },
 	{ XSLFI_VARIABLE_DAY_LENGTH,              XSCF_NULL,                7,   7, "variable_day_length",              nullptr, nullptr, nullptr          },
 	{ XSLFI_ORDER_OCCUPANCY,                  XSCF_NULL,                2,   2, "order_occupancy",                  nullptr, nullptr, nullptr          },
-	{ XSLFI_MORE_COND_ORDERS,                 XSCF_NULL,               18,  18, "more_cond_orders",                 nullptr, nullptr, nullptr          },
+	{ XSLFI_MORE_COND_ORDERS,                 XSCF_NULL,               19,  19, "more_cond_orders",                 nullptr, nullptr, nullptr          },
 	{ XSLFI_EXTRA_LARGE_MAP,                  XSCF_NULL,                0,   1, "extra_large_map",                  nullptr, nullptr, nullptr          },
 	{ XSLFI_REVERSE_AT_WAYPOINT,              XSCF_NULL,                1,   1, "reverse_at_waypoint",              nullptr, nullptr, nullptr          },
 	{ XSLFI_VEH_LIFETIME_PROFIT,              XSCF_NULL,                1,   1, "veh_lifetime_profit",              nullptr, nullptr, nullptr          },

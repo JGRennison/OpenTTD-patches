@@ -223,6 +223,7 @@ uint32_t RoadStopScopeResolver::GetVariable(uint16_t variable, uint32_t paramete
 
 		/* 16 bit road stop ID of nearby tiles */
 		case 0x6B: {
+			if (this->tile == INVALID_TILE) return 0xFFFFFFFF;
 			TileIndex nearby_tile = GetNearbyTile(parameter, this->tile);
 
 			if (!IsAnyRoadStopTile(nearby_tile)) return 0xFFFFFFFF;
@@ -691,26 +692,32 @@ void StationUpdateRoadStopCachedTriggers(BaseStation *st)
 
 void DumpRoadStopSpriteGroup(const BaseStation *st, const RoadStopSpec *spec, SpriteGroupDumper &dumper)
 {
-	CargoID ctype = SpriteGroupCargo::SG_DEFAULT_NA;
+	char buffer[64];
+	bool writen_group = false;
 
-	if (st == nullptr) {
-		/* No station, so we are in a purchase list */
-		ctype = SpriteGroupCargo::SG_PURCHASE;
-	} else if (Station::IsExpected(st)) {
-		const Station *station = Station::From(st);
-		/* Pick the first cargo that we have waiting */
-		for (const CargoSpec *cs : CargoSpec::Iterate()) {
-			if (spec->grf_prop.spritegroup[cs->Index()] != nullptr &&
-					station->goods[cs->Index()].CargoTotalCount() > 0) {
-				ctype = cs->Index();
-				break;
+	for (uint i = 0; i < NUM_CARGO + 3; i++) {
+		if (spec->grf_prop.spritegroup[i] != nullptr) {
+			if (writen_group) {
+				dumper.Print("");
+			} else {
+				writen_group = true;
 			}
+			switch (i) {
+				case SpriteGroupCargo::SG_DEFAULT:
+					seprintf(buffer, lastof(buffer), "SG_DEFAULT");
+					break;
+				case SpriteGroupCargo::SG_PURCHASE:
+					seprintf(buffer, lastof(buffer), "SG_PURCHASE");
+					break;
+				case SpriteGroupCargo::SG_DEFAULT_NA:
+					seprintf(buffer, lastof(buffer), "SG_DEFAULT_NA");
+					break;
+				default:
+					seprintf(buffer, lastof(buffer), "Cargo: %u", i);
+					break;
+			}
+			dumper.Print(buffer);
+			dumper.DumpSpriteGroup(spec->grf_prop.spritegroup[i], 0);
 		}
 	}
-
-	if (spec->grf_prop.spritegroup[ctype] == nullptr) {
-		ctype = SpriteGroupCargo::SG_DEFAULT;
-	}
-
-	dumper.DumpSpriteGroup(spec->grf_prop.spritegroup[ctype], 0);
 }

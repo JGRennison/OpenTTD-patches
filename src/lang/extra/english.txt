@@ -14,7 +14,6 @@ STR_JUST_TT_TICKS                                               :{TT_TICKS}
 STR_JUST_TT_TICKS_LONG                                          :{TT_TICKS_LONG}
 STR_JUST_TT_TIME                                                :{TT_TIME}
 STR_JUST_TT_TIME_ABS                                            :{TT_TIME_ABS}
-STR_JUST_STATION                                                :{STATION}
 
 STR_RED_INT                                                     :{RED}{NUM}
 
@@ -59,6 +58,7 @@ STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :Counter value
 STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :Current time/date
 STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :Timetable state
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Dispatch slot
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :Waiting cargo / capacity
 
 ##after STR_ORDER_STOP_LOCATION_FAR_END
 STR_ORDER_STOP_LOCATION_THROUGH                                 :[through load]
@@ -558,7 +558,7 @@ STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_WATER              :Enable competit
 STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_AIR                :Enable competitors to buy and renew aircraft in hangars: {STRING2}
 
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION                       :Enable train speed adaptation: {STRING2}
-STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :When enabled, faster trains adjust their speed to match slower trains in front.
+STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :When enabled, faster trains adjust their speed when passing signals to attempt to match slower trains in front.{}This may not be appropriate for some signalling styles or layouts, and can be disabled and re-enabled on a per-train basis using signal routing restrictions.
 
 STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES                 :Road vehicles slow down in curves: {STRING2}
 STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES_HELPTEXT        :When enabled, road vehicles slow down in curves. (Only with realistic acceleration)
@@ -1344,24 +1344,21 @@ STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}Show lis
 STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}History
 STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}Show waiting cargo history
 
-STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION} Live Travel Information
-STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} Live Travel Information
-STR_DEPARTURES_PAX                                              :{BLACK}{TINY_FONT}P
-STR_DEPARTURES_FREIGHT                                          :{BLACK}{TINY_FONT}F
-STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}D
-STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}A
-STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}via
-STR_DEPARTURES_PAX_TOOLTIP                                      :{BLACK}Show passenger arrivals/departures
-STR_DEPARTURES_FREIGHT_TOOLTIP                                  :{BLACK}Show freight arrivals/departures
-STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}Show timetabled departures
-STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}Show timetabled arrivals
+STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING2} Live Travel Information
+STR_DEPARTURES_CARGO_MODE_TOOLTIP                               :{BLACK}Set cargo filter mode for arrivals/departures
+STR_DEPARTURES_DEPARTURES                                       :Departures
+STR_DEPARTURES_ARRIVALS                                         :Arrivals
+STR_DEPARTURES_BOTH_COMBINED                                    :Combined
+STR_DEPARTURES_BOTH_SEPARATE                                    :Separate
+STR_DEPARTURES_DEPARTURE_MODE_TOOLTIP                           :{BLACK}Set whether to show departures and/or arrivals
+STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}Via
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Show timetabled vehicles that do not stop here
-STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}Show upcoming trains on this station's timetable
-STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}Show upcoming road vehicles on this station's timetable
-STR_DEPARTURES_SHOW_SHIPS_TOOLTIP                               :{BLACK}Show upcoming ships on this station's timetable
-STR_DEPARTURES_SHOW_AIRCRAFT_TOOLTIP                            :{BLACK}Show upcoming aircraft on this station's timetable
+STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}Show timetabled trains
+STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}Show timetabled road vehicles
+STR_DEPARTURES_SHOW_SHIPS_TOOLTIP                               :{BLACK}Show timetabled ships
+STR_DEPARTURES_SHOW_AIRCRAFT_TOOLTIP                            :{BLACK}Show timetabled aircraft
 STR_DEPARTURES_SHOW_TYPE_TOOLTIP_CTRL_SUFFIX                    :{BLACK}{STRING}. Ctrl+Click to show exclusively.
-STR_DEPARTURES_EMPTY                                            :{ORANGE}No vehicles are currently timetabled for this station.
+STR_DEPARTURES_EMPTY                                            :{ORANGE}No vehicles are currently timetabled.
 STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}No timetable information has been requested.
 STR_DEPARTURES_TIME                                             :{ORANGE}{STRING1}
 STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{STRING1} {GREEN}{UP_ARROW}
@@ -1383,6 +1380,9 @@ STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{RAW_ST
 STR_DEPARTURES_TINY                                             :{TINY_FONT}{STRING2}
 STR_DEPARTURES_VIA_DESCRIPTOR                                   :{STRING1}{STRING}
 STR_DEPARTURES_VIA_AND                                          :{STRING} and {STRING}
+STR_DEPARTURES_SOURCE_MODE_TOOLTIP                              :{BLACK}Set whether to show live departures, or a 24 hour timetable of scheduled dispatch departures.
+STR_DEPARTURES_SOURCE_MODE_LIVE                                 :Live
+STR_DEPARTURES_SOURCE_MODE_SCHEDULE_24_HOUR                     :24 hour schedule
 
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
 STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
@@ -1405,6 +1405,7 @@ STR_DEPARTURES_ARRIVED                                          :{GREEN}Arrived
 STR_DEPARTURES_DELAYED                                          :{YELLOW}Delayed
 STR_DEPARTURES_EXPECTED                                         :{YELLOW}Expt {STRING1}
 STR_DEPARTURES_CANCELLED                                        :{RED}Cancelled
+STR_DEPARTURES_SCHEDULED                                        :{GREEN}Scheduled
 
 STR_CONFIG_SETTING_DEPARTUREBOARDS                              :{ORANGE}Departure boards
 STR_CONFIG_MAX_DEPARTURES                                       :Show at most {STRING2} departure board entries for each station
@@ -1429,10 +1430,6 @@ STR_CONFIG_DEPARTURE_LARGER_FONT                                :Use larger font
 STR_CONFIG_DEPARTURE_LARGER_FONT_HELPTEXT                       :Whether to use a larger font for lists of stations called at
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :Show icons for destinations that are docks or airports: {STRING2}
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :Whether to show icons next to destinations that are docks or airports
-STR_CONFIG_DEPARTURE_SHOW_BOTH                                  :Show arrival and departure times on the same line: {STRING2}
-STR_CONFIG_DEPARTURE_SHOW_BOTH_HELPTEXT                         :Whether arrival and departure times for a vehicle are combined into a single entry instead of being listed separately
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS                            :Only show entries for vehicles that can carry passengers: {STRING2}
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS_HELPTEXT                   :Whether to only show arrivals and departures of vehicles that can carry passengers
 STR_CONFIG_DEPARTURE_SMART_TERMINUS                             :Don't show termini that can be reached sooner on a later vehicle: {STRING2}
 STR_CONFIG_DEPARTURE_SMART_TERMINUS_HELPTEXT                    :Whether to show termini that can be reached sooner on another vehicle that departs later
 STR_CONFIG_DEPARTURE_CONDITIONALS                               :Handle unpredictable conditional order jumps for departures by: {STRING2}
@@ -1618,6 +1615,8 @@ STR_VEHICLE_AUTO_GROUP_CARGO_LIST                               : ({CARGO_LIST})
 
 STR_VEHICLE_INFO_SPEED_RESTRICTION                              :{BLACK}Speed restriction: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_SPEED_ADAPTATION_EXEMPT                        :{BLACK}Exempt from speed adaptation
+STR_VEHICLE_INFO_SPEED_ADAPTATION_LIMIT                         :{BLACK}Speed adaptation: {LTBLUE}{VELOCITY}
+STR_VEHICLE_INFO_SPEED_ADAPTATION_NONE                          :{BLACK}Speed adaptation: {LTBLUE}None
 
 STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE_AND_SPEED      :{LTBLUE}{ENGINE}{BLACK}   Built: {LTBLUE}{NUM}{BLACK} Value: {LTBLUE}{CURRENCY_LONG} {BLACK}Max. speed: {LTBLUE}{VELOCITY}
 STR_VEHICLE_DETAILS_TRAIN_WAGON_VALUE_AND_SPEED                 :{LTBLUE}{ENGINE}{BLACK}   Value: {LTBLUE}{CURRENCY_LONG} {BLACK}Max. speed: {LTBLUE}{VELOCITY}
@@ -1659,6 +1658,8 @@ STR_ORDER_CONDITIONAL_VIA                                       :{BLACK}Via
 STR_ORDER_CONDITIONAL_VIA_TOOLTIP                               :{BLACK}The via station to check the waiting cargo amount for
 STR_ORDER_CONDITIONAL_STATION                                   :{BLACK}Station
 STR_ORDER_CONDITIONAL_STATION_TOOLTIP                           :{BLACK}The station to check
+STR_ORDER_CONDITIONAL_REFIT_MODE                                :{BLACK}Refit
+STR_ORDER_CONDITIONAL_REFIT_MODE_TOOLTIP                        :{BLACK}Whether to use the estimated cargo capacity after refitting
 
 STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS                        :accepts
 STR_ORDER_CONDITIONAL_COMPARATOR_DOES_NOT_ACCEPT                :does not accept
@@ -1773,11 +1774,16 @@ STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :Jump to order {
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :Jump to order {COMMA} when Load percentage of {STRING} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :Jump to order {COMMA} when {STRING} at {STRING1} {STRING} {CARGO_SHORT}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :Jump to order {COMMA} when {STRING} at {STRING1} via {STRING1} {STRING} {CARGO_SHORT}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_DISPLAY             :Jump to order {COMMA} when {STRING} at {STRING1} {STRING} {STRING}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_VIA_DISPLAY         :Jump to order {COMMA} when {STRING} at {STRING1} via {STRING1} {STRING} {STRING}
 STR_ORDER_CONDITIONAL_COUNTER                                   :Jump to order {COMMA} when value of {TRCOUNTER} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :Jump to order {COMMA} when value of {PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_TIME_HHMM                                 :Jump to order {COMMA} when {STRING} {STRING} {TIME_HHMM}
 STR_ORDER_CONDITIONAL_TIMETABLE                                 :Jump to order {COMMA} when {STRING} {STRING} {TT_TICKS}
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DISPLAY                     :Jump to order {COMMA} when {STRING} {STRING} {STRING}
+
+STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY            :{COMMA} percent of {STRING} capacity
+STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY_REFIT      :{COMMA} percent of refit to {STRING} capacity
 
 STR_ORDER_TRY_ACQUIRE_SLOT                                      :Try to acquire slot: {STRING1}
 STR_ORDER_RELEASE_SLOT                                          :Release slot: {STRING1}

@@ -30,6 +30,7 @@ enum DepotWidgets : WidgetID {
 	WID_D_VEHICLE_LIST,    ///< List of vehicles.
 	WID_D_STOP_ALL,        ///< Stop all button.
 	WID_D_START_ALL,       ///< Start all button.
+	WID_D_DEPARTURES,      ///< Departures button.
 };
 
 #endif /* WIDGETS_DEPOT_WIDGET_H */

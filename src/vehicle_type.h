@@ -39,6 +39,9 @@ DECLARE_POSTFIX_INCREMENT(VehicleType)
 template <> struct EnumPropsT<VehicleType> : MakeEnumPropsT<VehicleType, uint8_t, VEH_TRAIN, VEH_END, VEH_INVALID, 3> {};
 DECLARE_ENUM_AS_ADDABLE(VehicleType)
 
+using VehicleTypeMask = uint8_t;
+static_assert(VEH_END <= 8);
+
 struct Vehicle;
 struct Train;
 struct RoadVehicle;

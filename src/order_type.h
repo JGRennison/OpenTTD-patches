@@ -55,6 +55,8 @@ enum OrderType : uint8_t {
 	OT_END
 };
 
+using OrderTypeMask = uint16_t;
+
 enum OrderSlotSubType : uint8_t {
 	OSST_RELEASE               = 0,
 	OSST_TRY_ACQUIRE           = 1,
@@ -186,12 +188,18 @@ enum OrderConditionVariable {
 	OCV_TIME_DATE,          ///< Skip based on current time/date
 	OCV_TIMETABLE,          ///< Skip based on timetable state
 	OCV_DISPATCH_SLOT,      ///< Skip based on scheduled dispatch slot state
+	OCV_CARGO_WAITING_AMOUNT_PERCENTAGE, ///< Skip based on the amount of a specific cargo waiting at station, relative to the vehicle capacity
 	OCV_END
 };
 
 inline bool ConditionVariableHasStationID(OrderConditionVariable ocv)
 {
-	return ocv == OCV_CARGO_WAITING || ocv == OCV_CARGO_ACCEPTANCE || ocv == OCV_FREE_PLATFORMS || ocv == OCV_CARGO_WAITING_AMOUNT;
+	return ocv == OCV_CARGO_WAITING || ocv == OCV_CARGO_ACCEPTANCE || ocv == OCV_FREE_PLATFORMS || ocv == OCV_CARGO_WAITING_AMOUNT || ocv == OCV_CARGO_WAITING_AMOUNT_PERCENTAGE;
+}
+
+inline bool ConditionVariableTestsCargoWaitingAmount(OrderConditionVariable ocv)
+{
+	return ocv == OCV_CARGO_WAITING_AMOUNT || ocv == OCV_CARGO_WAITING_AMOUNT_PERCENTAGE;
 }
 
 /**
@@ -224,6 +232,7 @@ enum ModifyOrderFlags : uint8_t {
 	MOF_COND_VALUE,      ///< The value to set the condition to.
 	MOF_COND_VALUE_2,    ///< The secondary value to set the condition to.
 	MOF_COND_VALUE_3,    ///< The tertiary value to set the condition to.
+	MOF_COND_VALUE_4,    ///< The quaternary value to set the condition to.
 	MOF_COND_STATION_ID, ///< The station ID to set the condition to.
 	MOF_COND_DESTINATION,///< Change the destination of a conditional order.
 	MOF_WAYPOINT_FLAGS,  ///< Change the waypoint flags

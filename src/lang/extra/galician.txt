@@ -1290,17 +1290,10 @@ STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}Amosa a 
 STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}Historial
 STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}Amosa o historial de carga a espera
 
-STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION} Informaciónd a viaxe en directo
-STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} Informaciónd a viaxe en directo
-STR_DEPARTURES_PAX                                              :{BLACK}{TINY_FONT}P
-STR_DEPARTURES_FREIGHT                                          :{BLACK}{TINY_FONT}C
+STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} Informaciónd a viaxe en directo
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}D
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}A
-STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}vía
-STR_DEPARTURES_PAX_TOOLTIP                                      :{BLACK}Amosar as saídas de pasaxeiros
-STR_DEPARTURES_FREIGHT_TOOLTIP                                  :{BLACK}Amosar as saídas de cargas
-STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}Amosar as saídas programadas
-STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}Amosar as chegadas programadas
+STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}vía
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Amosar os vehículos programados que non paran aqui
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}Amosar próximos trens nos horarios desta estación
 STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}Amosar próximos vehículos de estrada nos horarios desta estación
@@ -1375,10 +1368,6 @@ STR_CONFIG_DEPARTURE_LARGER_FONT                                :Usar unha fonte
 STR_CONFIG_DEPARTURE_LARGER_FONT_HELPTEXT                       :Indica se se amosa unha fonte maior para as listas de estacións as que se está chamando
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :Amosar iconas para os destinos que son portos ou aeroportos: {STRING}
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :Indica se se amosan iconas o lado dos destinos que son portos ou aeroportos
-STR_CONFIG_DEPARTURE_SHOW_BOTH                                  :Amosar as horas de chegada e saída na mesma liña: {STRING}
-STR_CONFIG_DEPARTURE_SHOW_BOTH_HELPTEXT                         :Indica se se amosan as horas de saída e de chegada xuntas nas saídas
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS                            :Só amosar as saídas para os vehículos que levan pasaxeiros: {STRING}
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS_HELPTEXT                   :Indica se só se amosan as saídas dos vehículos que poden levar pasaxeiros
 STR_CONFIG_DEPARTURE_SMART_TERMINUS                             :Non amosar as terminais ás que se pode chegar antes nun vehículo posterior: {STRING}
 STR_CONFIG_DEPARTURE_SMART_TERMINUS_HELPTEXT                    :Indica se se amosarán as estacións terminais as que se poida chegar antes nun vehículo que saia posteriormente
 STR_CONFIG_DEPARTURE_CONDITIONALS                               :Xestionar os saltos de orde condicional: {STRING}

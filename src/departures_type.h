@@ -15,19 +15,28 @@
 #include "station_base.h"
 #include "order_base.h"
 #include "vehicle_base.h"
+#include "core/bitmath_func.hpp"
 #include <vector>
 
 /** Whether or not a vehicle has arrived for a departure. */
 enum DepartureStatus : uint8_t {
 	D_TRAVELLING = 0,
-	D_ARRIVED = 1,
-	D_CANCELLED = 2,
+	D_ARRIVED,
+	D_CANCELLED,
+	D_SCHEDULED,
 };
 
 /** The type of departures. */
 enum DepartureType : uint8_t {
 	D_DEPARTURE = 0,
 	D_ARRIVAL = 1,
+};
+
+enum DeparturesSourceMode : uint8_t {
+	DSM_LIVE,
+	DSM_SCHEDULE_24H,
+
+	DSM_END
 };
 
 struct CallAt {
@@ -111,6 +120,36 @@ struct Departure {
 			return this->order->GetWaitTime();
 		}
 	}
+};
+
+struct DepartureOrderDestinationDetector {
+	OrderTypeMask order_type_mask = 0;
+	DestinationID destination;
+
+	bool OrderMatches(const Order *order) const
+	{
+		if (!(HasBit(this->order_type_mask, order->GetType()) && order->GetDestination() == this->destination)) return false;
+
+		if (order->IsType(OT_GOTO_DEPOT) && (order->GetDepotActionType() & ODATFB_NEAREST_DEPOT) != 0) return false; // Filter out go to nearest depot orders
+
+		return true;
+	}
+
+	bool StationMatches(StationID station) const
+	{
+		return HasBit(this->order_type_mask, OT_GOTO_STATION) && station == this->destination;
+	}
+};
+
+struct DepartureCallingSettings {
+	bool allow_via = false;
+	bool departure_no_load_test = false;
+	bool show_all_stops = false;
+	bool show_pax = false;
+	bool show_freight = false;
+
+	bool IsDeparture(const Order *order, const DepartureOrderDestinationDetector &source) const;
+	bool IsArrival(const Order *order, const DepartureOrderDestinationDetector &source) const;
 };
 
 typedef std::vector<std::unique_ptr<Departure>> DepartureList;

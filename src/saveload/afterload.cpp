@@ -4132,17 +4132,17 @@ bool AfterLoadGame()
 			};
 
 			for (Order *order = order_list->GetFirstOrder(); order != nullptr; order = order->next) {
-				/* Fixup station ID for OCV_CARGO_WAITING, OCV_CARGO_ACCEPTANCE, OCV_FREE_PLATFORMS, OCV_CARGO_WAITING_AMOUNT */
+				/* Fixup station ID for OCV_CARGO_WAITING, OCV_CARGO_ACCEPTANCE, OCV_FREE_PLATFORMS, OCV_CARGO_WAITING_AMOUNT, OCV_CARGO_WAITING_AMOUNT_PERCENTAGE */
 				if (order->IsType(OT_CONDITIONAL) && ConditionVariableHasStationID(order->GetConditionVariable())) {
-					StationID next_id =  get_real_station(order);
-					SB(order->GetXData2Ref(), 0, 16, next_id + 1);
-					if (next_id != INVALID_STATION && GB(order->GetXData(), 16, 16) - 2 == next_id) {
+					StationID next_id = get_real_station(order);
+					order->SetConditionStationID(next_id);
+					if (next_id != INVALID_STATION && order->GetConditionViaStationID() == next_id) {
 						/* Duplicate next and via, remove via */
-						SB(order->GetXDataRef(), 16, 16, 0);
+						order->ClearConditionViaStation();
 					}
-					if (GB(order->GetXData(), 16, 16) != 0 && !Station::IsValidID(GB(order->GetXData(), 16, 16) - 2)) {
+					if (order->HasConditionViaStation() && !Station::IsValidID(order->GetConditionViaStationID())) {
 						/* Via station is invalid */
-						SB(order->GetXDataRef(), 16, 16, INVALID_STATION + 2);
+						order->SetConditionViaStationID(INVALID_STATION);
 					}
 				}
 			}

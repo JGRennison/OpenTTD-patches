@@ -624,14 +624,15 @@ CommandCost CmdAutomateTimetable(TileIndex index, DoCommandFlag flags, uint32_t 
 	if (flags & DC_EXEC) {
 		for (Vehicle *v2 = v->FirstShared(); v2 != nullptr; v2 = v2->NextShared()) {
 			if (HasBit(p2, 0)) {
-				/* Automated timetable. Set flags and clear current times. */
+				/* Automated timetable. Set flags and clear current times if also auto-separating. */
 				SetBit(v2->vehicle_flags, VF_AUTOMATE_TIMETABLE);
 				ClrBit(v2->vehicle_flags, VF_AUTOFILL_TIMETABLE);
 				ClrBit(v2->vehicle_flags, VF_AUTOFILL_PRES_WAIT_TIME);
-				ClrBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
-				v2->timetable_start = 0;
-				v2->lateness_counter = 0;
-				v2->current_loading_time = 0;
+				if (HasBit(v2->vehicle_flags, VF_TIMETABLE_SEPARATION)) {
+					ClrBit(v2->vehicle_flags, VF_TIMETABLE_STARTED);
+					v2->timetable_start = 0;
+					v2->lateness_counter = 0;
+				}
 				v2->ClearSeparation();
 			} else {
 				/* De-automate timetable. Clear flags. */

@@ -1285,12 +1285,12 @@ void FillTrainReservationLookAhead(Train *v)
 
 				if (signal_speed == 0) {
 					/* unrestricted signal ahead, remove current speed adaptation */
-					v->signal_speed_restriction = 0;
+					v->UpdateTrainSpeedAdaptationLimit(0);
 					break;
 				}
 				if (signal_speed > v->signal_speed_restriction) {
 					/* signal ahead with higher speed, increase current speed adaptation */
-					v->signal_speed_restriction = signal_speed;
+					v->UpdateTrainSpeedAdaptationLimit(signal_speed);
 				}
 			}
 		}

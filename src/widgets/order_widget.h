@@ -45,6 +45,7 @@ enum OrderWidgets : WidgetID {
 	WID_O_COND_AUX_VIA,              ///< Condition via button.
 	WID_O_COND_SCHED_TEST,           ///< Choose scheduled dispatch test.
 	WID_O_COND_AUX_STATION,          ///< Condition station button.
+	WID_O_COND_AUX_REFIT_MODE,       ///< Condition refit mode button.
 	WID_O_SLOT,                      ///< Choose slot to try acquire/release.
 	WID_O_COUNTER_OP,                ///< Choose counter operation.
 	WID_O_CHANGE_COUNTER,            ///< Choose counter to change.
@@ -52,9 +53,10 @@ enum OrderWidgets : WidgetID {
 	WID_O_TEXT_LABEL,                ///< Choose text label.
 	WID_O_DEPARTURE_VIA_TYPE,        ///< Choose departure board via subtype.
 	WID_O_SEL_COND_VALUE,            ///< Widget for conditional value or conditional cargo type.
-	WID_O_SEL_COND_AUX,              ///< Widget for auxiliary conditional cargo type.
+	WID_O_SEL_COND_AUX,              ///< Widget for auxiliary conditional cargo type. WID_O_SEL_COND_AUX... IDs must be sequential.
 	WID_O_SEL_COND_AUX2,             ///< Widget for auxiliary conditional via button.
 	WID_O_SEL_COND_AUX3,             ///< Widget for auxiliary conditional station button.
+	WID_O_SEL_COND_AUX4,             ///< Widget for auxiliary conditional refit mode button.
 	WID_O_SEL_MGMT,                  ///< Widget for management buttons.
 	WID_O_SEL_TOP_LEFT,              ///< #NWID_SELECTION widget for left part of the top row of the 'your train' order window.
 	WID_O_SEL_TOP_MIDDLE,            ///< #NWID_SELECTION widget for middle part of the top row of the 'your train' order window.

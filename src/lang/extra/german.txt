@@ -1054,17 +1054,10 @@ STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}Zeige Li
 STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}Historie
 STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}Zeige Verlauf der wartenden Frachten
 
-STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION} Ankunfts- und Abfahrtszeiten
-STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} Ankunfts- und Abfahrtszeiten
-STR_DEPARTURES_PAX                                              :{BLACK}{TINY_FONT}P
-STR_DEPARTURES_FREIGHT                                          :{BLACK}{TINY_FONT}F
+STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} Ankunfts- und Abfahrtszeiten
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}Ab
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}An
-STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}Durch
-STR_DEPARTURES_PAX_TOOLTIP                                      :{BLACK}Zeige Passagier-Abfahrten
-STR_DEPARTURES_FREIGHT_TOOLTIP                                  :{BLACK}Zeige Fracht-Abfahrten
-STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}Zeige geplante Abfahrten
-STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}Zeige geplante Ankünfte
+STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}Durch
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Zeige geplante Durchfahrten (halten nicht an)
 STR_DEPARTURES_SHOW_TYPE_TOOLTIP_CTRL_SUFFIX                    :{BLACK}{STRING}. Strg+Klick zur exklusiven Anzeige.
 STR_DEPARTURES_EMPTY                                            :{ORANGE}Aktuell sind für diese Station keine Fahrzeuge geplant.
@@ -1130,10 +1123,6 @@ STR_CONFIG_DEPARTURE_LARGER_FONT                                :Benutze größe
 STR_CONFIG_DEPARTURE_LARGER_FONT_HELPTEXT                       :Ob eine größere Schriftart für die Liste der Stationen, an denen das Fahrzeug hält, benutzt werden soll
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :Zeige Piktogramm für Ziele, die Häfen oder Flughäfen sind: {STRING}
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :Ob neben der Abfahrt des Fahrzeugs ein Piktogramm angezeigt werden soll, wenn das Ziel entweder ein Hafen oder ein Flughafen ist
-STR_CONFIG_DEPARTURE_SHOW_BOTH                                  :Zeige Ankunfts- und Abfahrtszeiten auf der selben Linie: {STRING}
-STR_CONFIG_DEPARTURE_SHOW_BOTH_HELPTEXT                         :Bestimmt, ob sowohl Abfahrts-, als auch Ankunftszeiten auf einer Höhe angezeigt werden sollen
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS                            :Zeige nur Abfahrten von Fahrzeugen, die Passagiere befördern können: {STRING}
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS_HELPTEXT                   :Ob nur Abfahrten von Fahrzeugen, die Passagiere befördern können, angezeigt werden sollen
 STR_CONFIG_DEPARTURE_SMART_TERMINUS                             :Zeige keine Ziele, die mit einem später abfahrenden Fahrzeug schneller erreicht werden können: {STRING}
 STR_CONFIG_DEPARTURE_SMART_TERMINUS_HELPTEXT                    :Ob Ziele angezeigt werden sollen, die mit einem später abfahrenden Fahrzeug eher erreicht werden können
 STR_CONFIG_DEPARTURE_CONDITIONALS                               :Behandle bedingte Sprünge durch: {STRING}

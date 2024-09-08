@@ -1290,17 +1290,10 @@ STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}출발/�
 STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}화물량 이력
 STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}대기 화물량 이력을 보여줍니다
 
-STR_DEPARTURES_CAPTION                                          :{WHITE}{STATION} - 실시간 운행 정보
-STR_DEPARTURES_CAPTION_WAYPOINT                                 :{WHITE}{WAYPOINT} - 실시간 운행 정보
-STR_DEPARTURES_PAX                                              :{BLACK}{TINY_FONT}여
-STR_DEPARTURES_FREIGHT                                          :{BLACK}{TINY_FONT}화
+STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} - 실시간 운행 정보
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}발
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}착
-STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}{TINY_FONT}경유
-STR_DEPARTURES_PAX_TOOLTIP                                      :{BLACK}여객 차량 표시
-STR_DEPARTURES_FREIGHT_TOOLTIP                                  :{BLACK}화물 차량 표시
-STR_DEPARTURES_DEPARTURES_TOOLTIP                               :{BLACK}도착 시간 표시
-STR_DEPARTURES_ARRIVALS_TOOLTIP                                 :{BLACK}출발 시간 표시
+STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}경유
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}통과 차량 표시
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}이 역의 시간표에 진입 중인 열차 표시
 STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}이 역의 시간표에 진입 중인 자동차 표시
@@ -1375,10 +1368,6 @@ STR_CONFIG_DEPARTURE_LARGER_FONT                                :정차역을 �
 STR_CONFIG_DEPARTURE_LARGER_FONT_HELPTEXT                       :정차역을 큰 글씨로 보이게 할 지 설정합니다.
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :항구나 공항이 목적지일 경우 아이콘 보이기: {STRING}
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :항구나 공항이 목적지일 경우 아이콘을 보이게 할 지 설정합니다.
-STR_CONFIG_DEPARTURE_SHOW_BOTH                                  :출발과 도착을 한 줄로 표시하기: {STRING}
-STR_CONFIG_DEPARTURE_SHOW_BOTH_HELPTEXT                         :출발과 도착을 한 줄로 표시할 지 설정합니다.
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS                            :여객 차량만 표시하기: {STRING}
-STR_CONFIG_DEPARTURE_ONLY_PASSENGERS_HELPTEXT                   :승객을 수송할 수 있는 차량만 표시할 지 설정합니다.
 STR_CONFIG_DEPARTURE_SMART_TERMINUS                             :나중에 도착할 차량은 행선지 보이지 않기: {STRING}
 STR_CONFIG_DEPARTURE_SMART_TERMINUS_HELPTEXT                    :나중에 도착할 차량은 행선지 보이지 않기
 STR_CONFIG_DEPARTURE_CONDITIONALS                               :조건부 경로 계산: {STRING}
