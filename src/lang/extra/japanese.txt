@@ -55,9 +55,8 @@ STR_DEPARTURES_TOC                                              :{ORANGE}{COMPAN
 STR_DEPARTURES_GROUP                                            :{ORANGE}{GROUP}
 STR_DEPARTURES_VEH                                              :{ORANGE}{VEHICLE}
 STR_DEPARTURES_CALLING_AT                                       :{ORANGE}停車場:
-STR_DEPARTURES_CALLING_AT_FIRST_STATION                         :{STATION}
-STR_DEPARTURES_CALLING_AT_STATION                               :{STRING}, {STATION}
-STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{STRING} 終点、{STATION}でございます
+STR_DEPARTURES_CALLING_AT_STATION                               :{STRING}, {STRING}
+STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{STRING} 終点、{STRING}でございます
 STR_DEPARTURES_CALLING_AT_LIST                                  :{ORANGE}{STRING}.
 
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}

@@ -18,6 +18,7 @@ enum DeparturesWindowWidgets {
 	WID_DB_CARGO_MODE,          ///< Cargo filter mode
 	WID_DB_DEPARTURE_MODE,      ///< Departure type mode
 	WID_DB_SOURCE_MODE,         ///< Departure source mode
+	WID_DB_SHOW_TIMES,          ///< Toggle show times button
 	WID_DB_SHOW_VIA,            ///< Toggle via button
 	WID_DB_SHOW_TRAINS,         ///< Toggle trains button
 	WID_DB_SHOW_ROADVEHS,       ///< Toggle road vehicles button

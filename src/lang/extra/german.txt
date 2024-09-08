@@ -1074,11 +1074,10 @@ STR_DEPARTURES_TOC                                              :{ORANGE}{COMPAN
 STR_DEPARTURES_GROUP                                            :{ORANGE}{GROUP}
 STR_DEPARTURES_VEH                                              :{ORANGE}{VEHICLE}
 STR_DEPARTURES_CALLING_AT                                       :{ORANGE}Hält in:
-STR_DEPARTURES_CALLING_AT_FIRST_STATION                         :{STATION}
-STR_DEPARTURES_CALLING_AT_STATION                               :{STRING}, {STATION}
-STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{STRING} und {STATION}
+STR_DEPARTURES_CALLING_AT_STATION                               :{STRING}, {STRING}
+STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{STRING} und {STRING}
 STR_DEPARTURES_CALLING_AT_LIST                                  :{ORANGE}{STRING}.
-STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{STRING}. Diese Fahrt verkehrt über {STATION}.
+STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{STRING}. Diese Fahrt verkehrt über {STRING}.
 
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
 STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}

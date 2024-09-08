@@ -1351,6 +1351,8 @@ STR_DEPARTURES_ARRIVALS                                         :Arrivals
 STR_DEPARTURES_BOTH_COMBINED                                    :Combined
 STR_DEPARTURES_BOTH_SEPARATE                                    :Separate
 STR_DEPARTURES_DEPARTURE_MODE_TOOLTIP                           :{BLACK}Set whether to show departures and/or arrivals
+STR_DEPARTURES_TIMES_BUTTON                                     :{BLACK}Times
+STR_DEPARTURES_TIMES_TOOLTIP                                    :{BLACK}Show timetabled destination arrival times
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}Via
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Show timetabled vehicles that do not stop here
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}Show timetabled trains
@@ -1372,11 +1374,11 @@ STR_DEPARTURES_TOC                                              :{ORANGE}{COMPAN
 STR_DEPARTURES_GROUP                                            :{ORANGE}{GROUP}
 STR_DEPARTURES_VEH                                              :{ORANGE}{VEHICLE}
 STR_DEPARTURES_CALLING_AT                                       :{ORANGE}Calling at:
-STR_DEPARTURES_CALLING_AT_FIRST_STATION                         :{STATION}
-STR_DEPARTURES_CALLING_AT_STATION                               :{RAW_STRING}, {STATION}
-STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{RAW_STRING} and {STATION}
+STR_DEPARTURES_CALLING_AT_STATION                               :{RAW_STRING}, {STRING2}
+STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{RAW_STRING} and {STRING2}
 STR_DEPARTURES_CALLING_AT_LIST                                  :{ORANGE}{RAW_STRING}.
-STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{RAW_STRING}. This service continues to {STATION}.
+STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{RAW_STRING}. This service continues to {STRING2}.
+STR_DEPARTURES_CALLING_AT_STATION_WITH_TIME                     :{STATION} ({TT_TIME_ABS})
 STR_DEPARTURES_TINY                                             :{TINY_FONT}{STRING2}
 STR_DEPARTURES_VIA_DESCRIPTOR                                   :{STRING1}{STRING}
 STR_DEPARTURES_VIA_AND                                          :{STRING} and {STRING}
