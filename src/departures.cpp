@@ -1373,7 +1373,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlots()
 		for (size_t i = 1; i < slots.size(); i++) {
 			for (size_t j = start_number_departures; j != done_first_slot_departures; j++) {
 				std::unique_ptr<Departure> d = std::make_unique<Departure>(*this->result[j]); // Clone departure
-				d->scheduled_tick += slots[i].offset - first_offset;
+				d->ShiftTimes(slots[i].offset - first_offset);
 				this->result.push_back(std::move(d));
 			}
 		}
@@ -1381,7 +1381,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlots()
 		for (uint i = 1; i < this->anno.repetition; i++) {
 			for (size_t j = start_number_departures; j != done_schedule_departures; j++) {
 				std::unique_ptr<Departure> d = std::make_unique<Departure>(*this->result[j]); // Clone departure
-				d->scheduled_tick += this->ds.GetScheduledDispatchDuration() * i;
+				d->ShiftTimes(this->ds.GetScheduledDispatchDuration() * i);
 				this->result.push_back(std::move(d));
 			}
 		}
@@ -1468,12 +1468,16 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 	}
 
 	for (std::unique_ptr<Departure> &d : result) {
-		if (d->scheduled_tick < start_tick) {
-			d->scheduled_tick += CeilDivT<StateTicksDelta>(start_tick - d->scheduled_tick, tick_duration).AsTicks() * tick_duration;
+		StateTicks new_tick = d->scheduled_tick;
+		if (new_tick < start_tick) {
+			new_tick += CeilDivT<StateTicksDelta>(start_tick - new_tick, tick_duration).AsTicks() * tick_duration;
 		}
-		if (d->scheduled_tick > start_tick) {
-			StateTicksDelta delta = (d->scheduled_tick - start_tick);
-			d->scheduled_tick -= (delta / tick_duration).AsTicksT<uint>() * tick_duration;
+		if (new_tick > start_tick) {
+			StateTicksDelta delta = (new_tick - start_tick);
+			new_tick -= (delta / tick_duration).AsTicksT<uint>() * tick_duration;
+		}
+		if (new_tick != d->scheduled_tick) {
+			d->ShiftTimes(new_tick - d->scheduled_tick);
 		}
 	}
 

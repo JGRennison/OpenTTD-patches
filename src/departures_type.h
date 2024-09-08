@@ -121,6 +121,18 @@ struct Departure {
 			return this->order->GetWaitTime();
 		}
 	}
+
+	inline void ShiftTimes(StateTicksDelta delta)
+	{
+		this->scheduled_tick += delta;
+		auto adjust_call = [&](CallAt &c) {
+			if (c.scheduled_tick != 0) c.scheduled_tick += delta;
+		};
+		adjust_call(this->terminus);
+		for (CallAt &c : this->calling_at) {
+			adjust_call(c);
+		}
+	}
 };
 
 struct DepartureOrderDestinationDetector {
