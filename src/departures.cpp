@@ -839,9 +839,10 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 				if (!duplicate) {
 					result.push_back(std::move(departure_ptr));
 
-					if (_settings_client.gui.departure_smart_terminus && type == D_DEPARTURE) {
-						for (uint i = 0; i < result.size() - 1; ++i) {
+					if (_settings_client.gui.departure_smart_terminus && type == D_DEPARTURE && !d->show_as_via) {
+						for (uint i = 0; i < (uint)(result.size() - 1); ++i) {
 							Departure *d_first = result[i].get();
+							if (d_first->show_as_via) continue;
 							uint k = (uint)d_first->calling_at.size() - 2;
 							uint j = (uint)d->calling_at.size();
 							while (j > 0) {
