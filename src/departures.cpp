@@ -301,15 +301,19 @@ static void ScheduledDispatchDepartureLocalFix(DepartureList &departure_list)
 	});
 }
 
-static void ScheduledDispatchSmartTerminusDetection(DepartureList &departure_list)
+static void ScheduledDispatchSmartTerminusDetection(DepartureList &departure_list, Ticks loop_duration = 0)
 {
 	btree::btree_map<StationID, StateTicks> earliest_seen;
 
-	for (auto iter = departure_list.rbegin(); iter != departure_list.rend(); ++iter) {
-		Departure *d = iter->get();
-		if (d->show_as_via) continue;
-
+	auto check_departure = [&](Departure *d) {
 		size_t calling_at_size = d->calling_at.size();
+
+		/* If the terminus has already been moved back, find the right starting offset */
+		while (calling_at_size >= 2) {
+			if (d->terminus == d->calling_at[calling_at_size - 1]) break;
+			calling_at_size--;
+		}
+
 		while (calling_at_size >= 2) {
 			if (d->terminus.scheduled_tick != 0) {
 				auto iter = earliest_seen.find(d->terminus.station);
@@ -343,6 +347,28 @@ static void ScheduledDispatchSmartTerminusDetection(DepartureList &departure_lis
 				StateTicks &seen = earliest_seen[c.station];
 				if (seen == 0 || c.scheduled_tick < seen) seen = c.scheduled_tick;
 			}
+		}
+	};
+
+	for (auto iter = departure_list.rbegin(); iter != departure_list.rend(); ++iter) {
+		Departure *d = iter->get();
+		if (d->show_as_via) continue;
+
+		check_departure(d);
+	}
+
+	if (loop_duration > 0) {
+		/* Second pass: offset all earliest seen by the loop duration, and run through again.
+		 * This is so that departures at the end can be compared with departures at the start of the next schedule period/day. */
+		for (auto &it : earliest_seen) {
+			it.second += loop_duration;
+		}
+
+		for (auto iter = departure_list.rbegin(); iter != departure_list.rend(); ++iter) {
+			Departure *d = iter->get();
+			if (d->show_as_via) continue;
+
+			check_departure(d);
 		}
 	}
 }
@@ -1484,6 +1510,10 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 	std::sort(result.begin(), result.end(), [](std::unique_ptr<Departure> &a, std::unique_ptr<Departure> &b) -> bool {
 		return a->scheduled_tick < b->scheduled_tick;
 	});
+
+	if (type == D_DEPARTURE && _settings_client.gui.departure_smart_terminus) {
+		ScheduledDispatchSmartTerminusDetection(result, tick_duration);
+	}
 
 	return result;
 }
