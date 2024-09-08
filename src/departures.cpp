@@ -1296,7 +1296,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlots()
 	const auto &slots = this->ds.GetScheduledDispatch();
 	if (this->departure_dependant_condition_found) {
 		/* Need to evaluate every slot individually */
-		for (size_t i = 1; i < slots.size(); i++) {
+		for (uint i = 1; i < (uint)slots.size(); i++) {
 			this->EvaluateSlotIndex(i);
 		}
 
@@ -1307,7 +1307,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlots()
 			});
 			for (uint i = 1; i < this->anno.repetition; i++) {
 				this->ds.SetScheduledDispatchStartTick(this->ds.GetScheduledDispatchStartTick() + this->ds.GetScheduledDispatchDuration());
-				for (size_t j = 0; j < slots.size(); j++) {
+				for (uint j = 0; j < (uint)slots.size(); j++) {
 					this->EvaluateSlotIndex(j);
 				}
 			}
