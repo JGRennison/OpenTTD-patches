@@ -1721,8 +1721,8 @@ STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :Перейти 
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :Перейти к заданию {COMMA} когда Процент загрузки {STRING} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :Перейти к заданию {COMMA} когда {STRING} на {STRING} {STRING} {CARGO_SHORT}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :Перейти к заданию {COMMA} когда {STRING} на {STRING} через {STRING} {STRING} {CARGO_SHORT}
-STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_DISPLAY             :Перейти к заданию {COMMA} когда {STRING} на {STRING1} {STRING} {STRING}
-STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_VIA_DISPLAY         :Перейти к заданию {COMMA} когда {STRING} на {STRING1} через {STRING1} {STRING} {STRING}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_DISPLAY             :Перейти к заданию {COMMA} когда {STRING} на {STRING} {STRING} {STRING}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_VIA_DISPLAY         :Перейти к заданию {COMMA} когда {STRING} на {STRING} через {STRING} {STRING} {STRING}
 STR_ORDER_CONDITIONAL_COUNTER                                   :Перейти к заданию {COMMA} когда значение {TRCOUNTER} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :Перейти к заданию {COMMA} когда значение {PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_TIME_HHMM                                 :Перейти к заданию {COMMA} когда {STRING} {STRING} {TIME_HHMM}
