@@ -27,6 +27,7 @@ STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :Значени�
 STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :Текущее время/дата
 STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :Состояние расписания
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Диспетчерский слот
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :Доступный груз/вместимость
 
 STR_ORDER_STOP_LOCATION_THROUGH                                 :[через нагрузку]
 
@@ -512,7 +513,7 @@ STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_WATER              :Конкуре�
 STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_AIR                :Конкуренты могут покупать и обновлять авиатранспорт в ангарах: {STRING}
 
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION                       :Включить адаптацию скорости поезда: {STRING}
-STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :Если включено, более быстрые поезда регулируют свою скорость, чтобы соответствовать более медленным поездам впереди.
+STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :Если включено, то более быстрые поезда будут регулировать свою скорость при прохождении сигналов, пытаясь сравняться с более медленными поездами впереди.{}Это может быть неприемлемо для некоторых типов сигнализации или схем, и может быть отключено и снова включено для каждого поезда с помощью ограничений маршрутизации сигналов.
 
 STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES                 :Автотранспорт замедляется на поворотах: {STRING}
 STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES_HELPTEXT        :Если включено, то дорожные транспортные средства замедляются на поворотах (только при реалистичном ускорении).
@@ -552,7 +553,7 @@ STR_CONFIG_SETTING_CARGO_SCALE_MODE_ECON_SPEED_REDUCTION_MULT   :Умножен�
 STR_CONFIG_SETTING_CARGO_SCALE_VALUE_ECON_SPEED_REDUCTION_MULT  :{NUM}% x Коэффициент уменьшения скорости экономики
 
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :Никаких городов выше уровня: {STRING}
-STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :Во время создания карты не строятся города выше указанного уровня высоты.
+STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :Города будут размещены только на указанном или меньшем уровне высоты.
 
 STR_CONFIG_SETTING_MIN_TOWN_LAND_AREA                           :Минимальная площадь прилегающей территории для городов: {STRING}
 STR_CONFIG_SETTING_MIN_TOWN_LAND_AREA_HELPTEXT                  :Города могут быть размещены только на примыкающих территориях, занимающих, как минимум, указанное количество клеток.
@@ -1292,17 +1293,21 @@ STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}Пока
 STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}История
 STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}Показать историю ожидающих грузов
 
-STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} Информация о путешествиях в прямом эфире
-STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}О
-STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}П
+STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} Информация о путешествиях в реальном времени
+STR_DEPARTURES_CARGO_MODE_TOOLTIP                               :{BLACK}Установите режим фильтрации грузов для прибытий/отбытий
+STR_DEPARTURES_DEPARTURES                                       :Прибытия
+STR_DEPARTURES_ARRIVALS                                         :Отбытия
+STR_DEPARTURES_BOTH_COMBINED                                    :Совмещённо
+STR_DEPARTURES_BOTH_SEPARATE                                    :Отдельно
+STR_DEPARTURES_DEPARTURE_MODE_TOOLTIP                           :{BLACK}Установите, что показывать - отбытия и/или прибытия
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}через
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Показать транспортные средства, которые не останавливаются здесь по расписанию
-STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}Показать предстоящие поезда в расписании этой станции
-STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}Показать предстоящие рейсы автотранспорта по расписанию этой станции
-STR_DEPARTURES_SHOW_SHIPS_TOOLTIP                               :{BLACK}Показать ближайшие суда в расписании этой станции
-STR_DEPARTURES_SHOW_AIRCRAFT_TOOLTIP                            :{BLACK}Показать предстоящие самолеты в расписании этой станции
+STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}Показать расписание поездов
+STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}Показать расписание автотранспорта
+STR_DEPARTURES_SHOW_SHIPS_TOOLTIP                               :{BLACK}Показать расписание судов
+STR_DEPARTURES_SHOW_AIRCRAFT_TOOLTIP                            :{BLACK}Показать расписание самолётов
 STR_DEPARTURES_SHOW_TYPE_TOOLTIP_CTRL_SUFFIX                    :{BLACK}{STRING}. Ctrl+клик - показывать эксклюзивно.
-STR_DEPARTURES_EMPTY                                            :{ORANGE}В настоящее время на эту станцию не запланировано ни одного транспортного средства.
+STR_DEPARTURES_EMPTY                                            :{ORANGE}Расписание для транспорта не составлено.
 STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}Информация о расписании не запрашивалась.
 STR_DEPARTURES_TIME                                             :{ORANGE}{STRING}
 STR_DEPARTURES_TIME_DEP                                         :{ORANGE}{STRING} {GREEN}{UP_ARROW}
@@ -1324,6 +1329,9 @@ STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{STRING
 STR_DEPARTURES_TINY                                             :{TINY_FONT}{STRING}
 STR_DEPARTURES_VIA_DESCRIPTOR                                   :{STRING}{STRING}
 STR_DEPARTURES_VIA_AND                                          :{STRING} и {STRING}
+STR_DEPARTURES_SOURCE_MODE_TOOLTIP                              :{BLACK}Установите, показывать ли отправления в реальном времени или 24-часовое расписание отправлений по расписанию..
+STR_DEPARTURES_SOURCE_MODE_LIVE                                 :Реальное время
+STR_DEPARTURES_SOURCE_MODE_SCHEDULE_24_HOUR                     :24-часовое расписание
 
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
 STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
@@ -1346,6 +1354,7 @@ STR_DEPARTURES_ARRIVED                                          :{GREEN}Приб
 STR_DEPARTURES_DELAYED                                          :{YELLOW}Задержка
 STR_DEPARTURES_EXPECTED                                         :{YELLOW}Ожид {STRING}
 STR_DEPARTURES_CANCELLED                                        :{RED}Отменён
+STR_DEPARTURES_SCHEDULED                                        :{GREEN}Запланирован
 
 STR_CONFIG_SETTING_DEPARTUREBOARDS                              :{ORANGE}Доски отправления
 STR_CONFIG_MAX_DEPARTURES                                       :Показывать не более {STRING} записей на доске отправления для каждой станции
@@ -1555,6 +1564,8 @@ STR_VEHICLE_AUTO_GROUP_CARGO_LIST                               : ({CARGO_LIST})
 
 STR_VEHICLE_INFO_SPEED_RESTRICTION                              :{BLACK}Ограничение скорости: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_SPEED_ADAPTATION_EXEMPT                        :{BLACK}Освобождение от адаптации скорости
+STR_VEHICLE_INFO_SPEED_ADAPTATION_LIMIT                         :{BLACK}Адаптация скорости: {LTBLUE}{VELOCITY}
+STR_VEHICLE_INFO_SPEED_ADAPTATION_NONE                          :{BLACK}Адаптация скорости: {LTBLUE}Нет
 
 STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE_AND_SPEED      :{LTBLUE}{ENGINE}{BLACK}   Собрано: {LTBLUE}{NUM}{BLACK} Значение: {LTBLUE}{CURRENCY_LONG} {BLACK}Макс. скорость: {LTBLUE}{VELOCITY}
 STR_VEHICLE_DETAILS_TRAIN_WAGON_VALUE_AND_SPEED                 :{LTBLUE}{ENGINE}{BLACK}   Значение: {LTBLUE}{CURRENCY_LONG} {BLACK}Макс. скорость: {LTBLUE}{VELOCITY}
@@ -1596,6 +1607,8 @@ STR_ORDER_CONDITIONAL_VIA                                       :{BLACK}Чере
 STR_ORDER_CONDITIONAL_VIA_TOOLTIP                               :{BLACK}Станция для проверки количества ожидающих грузов для
 STR_ORDER_CONDITIONAL_STATION                                   :{BLACK}Станция
 STR_ORDER_CONDITIONAL_STATION_TOOLTIP                           :{BLACK}Станция для проверки
+STR_ORDER_CONDITIONAL_REFIT_MODE                                :{BLACK}Переоборудование
+STR_ORDER_CONDITIONAL_REFIT_MODE_TOOLTIP                        :{BLACK}Использовать ли расчетную грузоподъемность после переоборудования
 
 STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS                        :принимает
 STR_ORDER_CONDITIONAL_COMPARATOR_DOES_NOT_ACCEPT                :не принимает
@@ -1708,11 +1721,16 @@ STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :Перейти 
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :Перейти к заданию {COMMA} когда Процент загрузки {STRING} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :Перейти к заданию {COMMA} когда {STRING} на {STRING} {STRING} {CARGO_SHORT}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :Перейти к заданию {COMMA} когда {STRING} на {STRING} через {STRING} {STRING} {CARGO_SHORT}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_DISPLAY             :Перейти к заданию {COMMA} когда {STRING} на {STRING1} {STRING} {STRING}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_VIA_DISPLAY         :Перейти к заданию {COMMA} когда {STRING} на {STRING1} через {STRING1} {STRING} {STRING}
 STR_ORDER_CONDITIONAL_COUNTER                                   :Перейти к заданию {COMMA} когда значение {TRCOUNTER} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :Перейти к заданию {COMMA} когда значение {PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_TIME_HHMM                                 :Перейти к заданию {COMMA} когда {STRING} {STRING} {TIME_HHMM}
 STR_ORDER_CONDITIONAL_TIMETABLE                                 :Перейти к заданию {COMMA} когда {STRING} {STRING} {TT_TICKS}
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DISPLAY                     :Перейти к заданию {COMMA} когда {STRING} {STRING} {STRING}
+
+STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY            :{COMMA} процент от {STRING} вместимости
+STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY_REFIT      :{COMMA} процент переоборудования от {STRING} вместимости
 
 STR_ORDER_TRY_ACQUIRE_SLOT                                      :Попытаться приобрести слот: {STRING}
 STR_ORDER_RELEASE_SLOT                                          :Освободить слот: {STRING}
