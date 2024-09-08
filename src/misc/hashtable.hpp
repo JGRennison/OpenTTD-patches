@@ -53,7 +53,7 @@ public:
 	}
 
 	/** item count */
-	inline int Count() const
+	inline size_t Count() const
 	{
 		return this->data.size();
 	}

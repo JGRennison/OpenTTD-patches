@@ -51,13 +51,13 @@ public:
 	/** return number of open nodes */
 	inline int OpenCount()
 	{
-		return m_open.Count();
+		return (int)m_open.Count();
 	}
 
 	/** return number of closed nodes */
 	inline int ClosedCount()
 	{
-		return m_closed.Count();
+		return (int)m_closed.Count();
 	}
 
 	/** allocate new data item from m_arr */
