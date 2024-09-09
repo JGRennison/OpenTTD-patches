@@ -1317,7 +1317,7 @@ STR_DEPARTURES_CALLING_AT                                       :{ORANGE}정차�
 STR_DEPARTURES_CALLING_AT_STATION                               :{STRING}, {STRING}
 STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{STRING}, {STRING}
 STR_DEPARTURES_CALLING_AT_LIST                                  :{ORANGE}{STRING}
-STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{STRING} / {STATION} 반복
+STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{STRING} / {STRING} 반복
 STR_DEPARTURES_TINY                                             :{TINY_FONT}{STRING}
 STR_DEPARTURES_VIA_DESCRIPTOR                                   :{STRING}{STRING}
 STR_DEPARTURES_VIA_AND                                          :{STRING} 및 {STRING}
