@@ -1508,6 +1508,10 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 	}
 
 	std::sort(result.begin(), result.end(), [](std::unique_ptr<Departure> &a, std::unique_ptr<Departure> &b) -> bool {
+		if (a->scheduled_tick == b->scheduled_tick) {
+			return std::tie(a->terminus.station, a->terminus.scheduled_tick, a->vehicle->index)
+					< std::tie(b->terminus.station, b->terminus.scheduled_tick, b->vehicle->index);
+		}
 		return a->scheduled_tick < b->scheduled_tick;
 	});
 
