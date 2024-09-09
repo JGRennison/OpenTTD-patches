@@ -710,9 +710,23 @@ static bool ProcessArrivalHistory(Departure *d, std::span<const Order *> arrival
 	}
 	possible_origins.clear();
 	if (origin != nullptr) {
+		bool check_no_load_mode = false;
+		if (calling_settings.ShowAllStops() && d->show_as == DSA_NORMAL) {
+			check_no_load_mode = true;
+			d->show_as = DSA_NO_LOAD;
+		}
+		auto check_order = [&](const Order *o) {
+			if (check_no_load_mode && o->IsType(OT_GOTO_STATION) && o->GetLoadType() != OLFB_NO_LOAD) {
+				d->show_as = DSA_NORMAL;
+				check_no_load_mode = false;
+			}
+		};
+		check_order(origin);
+
 		for (uint i = origin_arrival_history_index + 1; i < (uint)arrival_history.size(); i++) {
 			const Order *o = arrival_history[i];
 			if (IsStationIDCallingPointOrder(o)) {
+				check_order(o);
 				if (o->IsType(OT_GOTO_STATION) && (o->GetLoadType() != OLFB_NO_LOAD || calling_settings.ShowAllStops())) {
 					d->calling_at.push_back(CallAt((StationID)o->GetDestination()));
 				} else if (o->IsType(OT_GOTO_WAYPOINT) && calling_settings.ShowAllStops()) {
