@@ -137,6 +137,16 @@ enum ShowSignalDefaultMode {
 	SSDM_RESTRICTED_RECOLOUR,
 };
 
+/** Whether to build public roads */
+enum PublicRoadsConstruction : uint8_t {
+	PRC_BEGIN = 0,
+	PRC_NONE = PRC_BEGIN,         ///< Generate no public roads
+	PRC_WITH_CURVES,              ///< Generate roads with lots of curves
+	PRC_AVOID_CURVES,             ///< Generate roads avoiding curves if possible
+
+	PRC_END
+};
+
 /** Settings related to time display. This may be loaded from the savegame and/or overriden by the client. */
 struct TimeSettings {
 	bool   time_in_minutes;                  ///< whether to use the hh:mm conversion when printing dates
@@ -511,7 +521,7 @@ struct GameCreationSettings {
 	bool     lakes_allowed_in_deserts;       ///< are lakes allowed in deserts?
 	uint8_t  amount_of_rocks;                ///< the amount of rocks
 	uint8_t  height_affects_rocks;           ///< the affect that map height has on rocks
-	uint8_t  build_public_roads;             ///< build public roads connecting towns
+	PublicRoadsConstruction build_public_roads; ///< build public roads connecting towns
 };
 
 /** Settings related to construction in-game */

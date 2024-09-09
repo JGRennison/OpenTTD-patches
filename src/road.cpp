@@ -40,13 +40,6 @@
 
 uint32_t _road_layout_change_counter = 0;
 
-/** Whether to build public roads */
-enum PublicRoadsConstruction {
-	PRC_NONE,         ///< Generate no public roads
-	PRC_WITH_CURVES,  ///< Generate roads with lots of curves
-	PRC_AVOID_CURVES, ///< Generate roads avoiding curves if possible
-};
-
 /**
  * Return if the tile is a valid tile for a crossing.
  *
