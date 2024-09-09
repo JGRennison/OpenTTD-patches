@@ -1184,9 +1184,9 @@ STR_DEPARTURES_TIME                                             :{COLOUR}{STRING
 STR_DEPARTURES_TIME_DEP                                         :{COLOUR}{STRING} {GREEN}{UP_ARROW}
 STR_DEPARTURES_TIME_ARR                                         :{COLOUR}{STRING} {RED}{DOWN_ARROW}
 STR_DEPARTURES_TIME_BOTH                                        :{COLOUR}{STRING} {RED}{DOWN_ARROW} {COLOUR}{STRING} {GREEN}{UP_ARROW}
-STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STATION}{STRING}
-STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STATION}{STRING} přes {STRING}
-STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STATION}{STRING} přes
+STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STRING}{STRING}
+STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STRING}{STRING} přes {STRING}
+STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STRING}{STRING} přes
 STR_DEPARTURES_VIA                                              :{ORANGE}přes {STRING}
 STR_DEPARTURES_TOC                                              :{ORANGE}{COMPANY}
 STR_DEPARTURES_GROUP                                            :{ORANGE}{GROUP}

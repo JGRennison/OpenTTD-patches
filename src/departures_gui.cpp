@@ -823,6 +823,17 @@ uint DeparturesWindow::GetMinWidth() const
 	return result + ScaleGUITrad(140);
 }
 
+/* Uses 2 parameters */
+static void FillBaseStationDParam(size_t n, StationID id)
+{
+	if (Waypoint::IsValidID(id)) {
+		SetDParam(n, STR_WAYPOINT_NAME);
+	} else {
+		SetDParam(n, STR_STATION_NAME);
+	}
+	SetDParam(n + 1, id);
+}
+
 /**
  * Draws a list of departures.
  */
@@ -1048,8 +1059,8 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 
 			if (via == INVALID_STATION) {
 				/* Only show the terminus. */
-				SetDParam(0, d->terminus.station);
-				SetDParam(1, icon);
+				FillBaseStationDParam(0, d->terminus.station);
+				SetDParam(2, icon);
 				DrawString(dest_left, dest_right, y + 1, STR_DEPARTURES_TERMINUS);
 			} else {
 				auto set_via_dparams = [&](uint offset) {
@@ -1087,16 +1098,16 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 					SetDParam(offset, SPECSTR_TEMP_START);
 				};
 				/* Show the terminus and the via station. */
-				SetDParam(0, d->terminus.station);
-				SetDParam(1, icon);
-				set_via_dparams(2);
+				FillBaseStationDParam(0, d->terminus.station);
+				SetDParam(2, icon);
+				set_via_dparams(3);
 				int text_width = (GetStringBoundingBox(STR_DEPARTURES_TERMINUS_VIA_STATION)).width;
 
 				if (dest_left + text_width < dest_right) {
 					/* They will both fit, so show them both. */
-					SetDParam(0, d->terminus.station);
-					SetDParam(1, icon);
-					set_via_dparams(2);
+					FillBaseStationDParam(0, d->terminus.station);
+					SetDParam(2, icon);
+					set_via_dparams(3);
 					DrawString(dest_left, dest_right, y + 1, STR_DEPARTURES_TERMINUS_VIA_STATION);
 				} else {
 					/* They won't both fit, so switch between showing the terminus and the via station approximately every 4 seconds. */
@@ -1104,8 +1115,8 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 						set_via_dparams(0);
 						DrawString(dest_left, dest_right, y + 1, STR_DEPARTURES_VIA);
 					} else {
-						SetDParam(0, d->terminus.station);
-						SetDParam(1, icon);
+						FillBaseStationDParam(0, d->terminus.station);
+						SetDParam(2, icon);
 						DrawString(dest_left, dest_right, y + 1, STR_DEPARTURES_TERMINUS_VIA);
 					}
 					this->scroll_refresh = true;
@@ -1188,18 +1199,19 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 		/* STR_DEPARTURES_CALLING_AT_LAST_STATION :{STATION} & {RAW_STRING}*/
 		std::string buffer;
 
-		auto station_str = [&](const CallAt &c) -> StringID {
+		/* Uses 3 or 4 parameters */
+		auto fill_calling_at_dparam = [&](size_t n, const CallAt &c) {
 			if (c.scheduled_tick != 0 && arrival_time_width > 0) {
-				return STR_DEPARTURES_CALLING_AT_STATION_WITH_TIME;
-			} else {
-				return STR_STATION_NAME;
+				SetDParam(n, STR_DEPARTURES_CALLING_AT_STATION_WITH_TIME);
+				n++;
 			}
+			FillBaseStationDParam(n, c.station);
+			SetDParam(n + 2, c.scheduled_tick);
 		};
 
 		if (d->calling_at.size() != 0) {
-			SetDParam(0, d->calling_at[0].station);
-			SetDParam(1, d->calling_at[0].scheduled_tick);
-			std::string calling_at_buffer = GetString(station_str(d->calling_at[0]));
+			fill_calling_at_dparam(0, d->calling_at[0]);
+			std::string calling_at_buffer = GetString(STR_JUST_STRING3);
 
 			const CallAt *continues_to = nullptr;
 
@@ -1217,17 +1229,13 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 						break;
 					}
 					SetDParamStr(0, std::move(calling_at_buffer));
-					SetDParam(1, station_str(d->calling_at[i]));
-					SetDParam(2, d->calling_at[i].station);
-					SetDParam(3, d->calling_at[i].scheduled_tick);
+					fill_calling_at_dparam(1, d->calling_at[i]);
 					calling_at_buffer = GetString(STR_DEPARTURES_CALLING_AT_STATION);
 				}
 
 				/* Finally, finish off with " and <station>". */
 				SetDParamStr(0, std::move(calling_at_buffer));
-				SetDParam(1, station_str(d->calling_at[i]));
-				SetDParam(2, d->calling_at[i].station);
-				SetDParam(3, d->calling_at[i].scheduled_tick);
+				fill_calling_at_dparam(1, d->calling_at[i]);
 				calling_at_buffer = GetString(STR_DEPARTURES_CALLING_AT_LAST_STATION);
 			}
 
@@ -1235,9 +1243,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 			if (continues_to == nullptr) {
 				buffer = GetString(STR_DEPARTURES_CALLING_AT_LIST);
 			} else {
-				SetDParam(1, station_str(*continues_to));
-				SetDParam(2, continues_to->station);
-				SetDParam(3, continues_to->scheduled_tick);
+				fill_calling_at_dparam(1, *continues_to);
 				buffer = GetString(STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS);
 			}
 
