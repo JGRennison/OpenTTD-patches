@@ -1252,8 +1252,6 @@ STR_CONFIG_DEPARTURE_CONDITIONALS_HELPTEXT                      :Jak by mělo b�
 STR_CONFIG_DEPARTURE_CONDITIONALS_1                             :vynechávajíc
 STR_CONFIG_DEPARTURE_CONDITIONALS_2                             :předpokládajíc, že budou vykonány
 STR_CONFIG_DEPARTURE_CONDITIONALS_3                             :předpokládajíc, že nebudou vykonány
-STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS                             :Zobrazovat všechny stanice bez ohledu na nakládání/nenakládání: {STRING}
-STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS_HELPTEXT                    :Zda stanice, ve kterých vozidlo pouze nakládá, budou zobrazeny v seznamu obsluhovaných stanic
 STR_CONFIG_DEPARTURE_MERGE_IDENTICAL                            :Spojit shodné záznamy: {STRING}
 STR_CONFIG_DEPARTURE_MERGE_IDENTICAL_HELPTEXT                   :Zda by identické záznamy v jízdním řádu měly být spojeny do jednoho
 

@@ -1374,8 +1374,6 @@ STR_CONFIG_DEPARTURE_CONDITIONALS_HELPTEXT                      :조건부 경�
 STR_CONFIG_DEPARTURE_CONDITIONALS_1                             :하지 않기
 STR_CONFIG_DEPARTURE_CONDITIONALS_2                             :지나치지 않을 것으로 계산
 STR_CONFIG_DEPARTURE_CONDITIONALS_3                             :지나칠 것으로 계산
-STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS                             :싣거나 하차하지 않아도 정차역에 보이기: {STRING}
-STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS_HELPTEXT                    :단지 정차만 하는 역도 정차역에 보일지 설정합니다.
 STR_CONFIG_DEPARTURE_MERGE_IDENTICAL                            :동일한 정보 합치기: {STRING}
 STR_CONFIG_DEPARTURE_MERGE_IDENTICAL_HELPTEXT                   :동일한 정보를 하나로 합칠 지 설정합니다.
 

@@ -93,8 +93,6 @@ STR_CONFIG_DEPARTURE_LARGER_FONT                                :発車標の停
 STR_CONFIG_DEPARTURE_LARGER_FONT_HELPTEXT                       :発車標に表示されている停車場案内を通常より大きいめのフォントで表示します。
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :発車標にて行先が港湾や空港の場合はアイコンを表示: {STRING}
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :発車標にて、行先が港湾や空港の場合は、船や飛行機のアイコンを表示します。
-STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS                             :発車標の停車場案内に運転停車の停車場を含む: {STRING}
-STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS_HELPTEXT                    :発車標に表示されている停車場案内に運転停車の停車場を含めて表示します。
 
 # Town tooltip
 

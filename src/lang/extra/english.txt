@@ -1353,6 +1353,8 @@ STR_DEPARTURES_BOTH_SEPARATE                                    :Separate
 STR_DEPARTURES_DEPARTURE_MODE_TOOLTIP                           :{BLACK}Set whether to show departures and/or arrivals
 STR_DEPARTURES_TIMES_BUTTON                                     :{BLACK}Times
 STR_DEPARTURES_TIMES_TOOLTIP                                    :{BLACK}Show timetabled destination arrival times
+STR_DEPARTURES_EMPTY_BUTTON                                     :{BLACK}Empty
+STR_DEPARTURES_EMPTY_TOOLTIP                                    :{BLACK}Include departures, arrivals and stations called at where the vehicle is running empty or does not load/unload cargo.
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}Via
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Show timetabled vehicles that do not stop here
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}Show timetabled trains
@@ -1439,8 +1441,6 @@ STR_CONFIG_DEPARTURE_CONDITIONALS_HELPTEXT                      :How unpredictab
 STR_CONFIG_DEPARTURE_CONDITIONALS_1                             :giving up
 STR_CONFIG_DEPARTURE_CONDITIONALS_2                             :assuming they will be taken
 STR_CONFIG_DEPARTURE_CONDITIONALS_3                             :assuming they will not be taken
-STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS                             :Show all stations called at regardless of loading/unloading: {STRING2}
-STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS_HELPTEXT                    :Whether stations that a vehicle only loads from will be shown in the calling at list
 STR_CONFIG_DEPARTURE_MERGE_IDENTICAL                            :Merge identical entries: {STRING2}
 STR_CONFIG_DEPARTURE_MERGE_IDENTICAL_HELPTEXT                   :Whether identical departure board entries should be merged into a single one
 

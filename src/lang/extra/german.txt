@@ -1129,8 +1129,6 @@ STR_CONFIG_DEPARTURE_CONDITIONALS_HELPTEXT                      :Wie mit bedingt
 STR_CONFIG_DEPARTURE_CONDITIONALS_1                             :aufgeben
 STR_CONFIG_DEPARTURE_CONDITIONALS_2                             :annehmen sie würden genommen
 STR_CONFIG_DEPARTURE_CONDITIONALS_3                             :annehmen sie würden nicht genommen
-STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS                             :Zeige alle Haltepunkte, gleich ob be- oder entladen wird: {STRING}
-STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS_HELPTEXT                    :Ob Stationen, an denen das Fahrzeug nur belädt, in der Liste der Stationen, an denen das Fahrzeug hält, angezeigt werden sollent
 STR_CONFIG_DEPARTURE_MERGE_IDENTICAL                            :Zusammenführen von identischen Abfahrten: {STRING}
 STR_CONFIG_DEPARTURE_MERGE_IDENTICAL_HELPTEXT                   :Ob identische Abfahrten zu einer einzelnen Abfahrt zusammengeführt werden sollen
 

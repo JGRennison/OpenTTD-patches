@@ -1376,8 +1376,6 @@ STR_CONFIG_DEPARTURE_CONDITIONALS_HELPTEXT                      :当计算出发
 STR_CONFIG_DEPARTURE_CONDITIONALS_1                             :放弃处理
 STR_CONFIG_DEPARTURE_CONDITIONALS_2                             :假定载具经过车站
 STR_CONFIG_DEPARTURE_CONDITIONALS_3                             :假定载具不经过车站
-STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS                             :在装载/卸载过程中显示所有的车站：{STRING}
-STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS_HELPTEXT                    :当正在装卸作业时车站是否会被显示在呼叫列表上
 STR_CONFIG_DEPARTURE_MERGE_IDENTICAL                            :合并相同的车次：{STRING}
 STR_CONFIG_DEPARTURE_MERGE_IDENTICAL_HELPTEXT                   :相同的出发看板车次是否会被合并到一个车次上
 

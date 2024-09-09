@@ -1374,8 +1374,6 @@ STR_CONFIG_DEPARTURE_CONDITIONALS_HELPTEXT                      :Cómo se deben 
 STR_CONFIG_DEPARTURE_CONDITIONALS_1                             :renunciando
 STR_CONFIG_DEPARTURE_CONDITIONALS_2                             :supoñendo que se collerán
 STR_CONFIG_DEPARTURE_CONDITIONALS_3                             :supoñendo que non se collerán
-STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS                             :Amosar todas as estacións que se chaman independentemente de se se carga/descarga: {STRING}
-STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS_HELPTEXT                    :Indica se se amosarán as estacións nas que o vehículo só carga na lista de 'Chamando'
 STR_CONFIG_DEPARTURE_MERGE_IDENTICAL                            :Combinar saídas idénticas: {STRING}
 STR_CONFIG_DEPARTURE_MERGE_IDENTICAL_HELPTEXT                   :Indica se as saídas idénticas se deberían combinar nunha única saída
 

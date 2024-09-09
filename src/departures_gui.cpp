@@ -57,6 +57,7 @@ static constexpr NWidgetPart _nested_departures_list[] = {
 		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_DB_SOURCE_MODE), SetFill(1, 1), SetResize(1, 0), SetDataTip(STR_JUST_STRING, STR_DEPARTURES_SOURCE_MODE_TOOLTIP),
 		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_DB_DEPARTURE_MODE), SetFill(1, 1), SetResize(1, 0), SetDataTip(STR_JUST_STRING, STR_DEPARTURES_DEPARTURE_MODE_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_TIMES), SetMinimalSize(11, 12), SetFill(0, 1), SetDataTip(STR_DEPARTURES_TIMES_BUTTON, STR_DEPARTURES_TIMES_TOOLTIP),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_EMPTY), SetMinimalSize(11, 12), SetFill(0, 1), SetDataTip(STR_DEPARTURES_EMPTY_BUTTON, STR_DEPARTURES_EMPTY_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_VIA), SetMinimalSize(11, 12), SetFill(0, 1), SetDataTip(STR_DEPARTURES_VIA_BUTTON, STR_DEPARTURES_VIA_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_TRAINS), SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_TRAIN, STR_NULL),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_ROADVEHS), SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_LORRY, STR_NULL),
@@ -144,6 +145,7 @@ protected:
 	DeparturesMode mode = DM_DEPARTURES;
 	DeparturesSourceMode source_mode = DSM_LIVE;
 	bool show_via = false;
+	bool show_empty = false;
 	bool show_arrival_times = false;
 	mutable bool scroll_refresh; ///< Whether the window should be refreshed when paused due to scrolling
 	uint min_width = 400;                  ///< The minimum width of this window.
@@ -253,9 +255,27 @@ protected:
 
 	void PostConstructSetup()
 	{
+		this->show_empty = _settings_client.gui.departure_default_show_empty;
+		this->SetWidgetLoweredState(WID_DB_SHOW_EMPTY, this->show_empty);
+		this->UpdateViaButtonState();
+
 		this->RefreshVehicleList();
 
 		if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
+	}
+
+	void UpdateViaButtonState()
+	{
+		NWidgetCore *btn = this->GetWidget<NWidgetCore>(WID_DB_SHOW_VIA);
+		bool disabled = (this->source_type != DST_STATION);
+		if (disabled != btn->IsDisabled()) {
+			btn->SetDisabled(disabled);
+			btn->SetDirty(this);
+		}
+		if (this->show_via != btn->IsLowered()) {
+			btn->SetLowered(this->show_via);
+			btn->SetDirty(this);
+		}
 	}
 
 public:
@@ -287,8 +307,6 @@ public:
 			}
 
 			this->show_via = true;
-			this->LowerWidget(WID_DB_SHOW_VIA);
-			this->DisableWidget(WID_DB_SHOW_VIA);
 		} else {
 			this->source_type = DST_STATION;
 			SetBit(this->source.order_type_mask, OT_GOTO_STATION);
@@ -303,7 +321,6 @@ public:
 
 			this->mode = static_cast<DeparturesMode>(_settings_client.gui.departure_default_mode);
 			this->show_via = _settings_client.gui.departure_default_via;
-			this->SetWidgetLoweredState(WID_DB_SHOW_VIA, this->show_via);
 		}
 
 		this->PostConstructSetup();
@@ -336,8 +353,6 @@ public:
 		}
 
 		this->show_via = true;
-		this->LowerWidget(WID_DB_SHOW_VIA);
-		this->DisableWidget(WID_DB_SHOW_VIA);
 
 		this->PostConstructSetup();
 	}
@@ -457,9 +472,22 @@ public:
 				if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
 				break;
 
+			case WID_DB_SHOW_EMPTY:
+				this->show_empty = !this->show_empty;
+				this->SetWidgetLoweredState(widget, this->show_empty);
+
+				_settings_client.gui.departure_default_show_empty = this->show_empty;
+
+				/* We need to recompute the departures list. */
+				this->calc_tick_countdown = 0;
+				/* We need to redraw the button that was pressed. */
+				this->SetWidgetDirty(widget);
+				if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
+				break;
+
 			case WID_DB_SHOW_VIA:
 				this->show_via = !this->show_via;
-				this->SetWidgetLoweredState(widget, this->show_via);
+				this->UpdateViaButtonState();
 
 				if (this->source_type == DST_STATION) {
 					_settings_client.gui.departure_default_via = this->show_via;
@@ -467,8 +495,6 @@ public:
 
 				/* We need to recompute the departures list. */
 				this->calc_tick_countdown = 0;
-				/* We need to redraw the button that was pressed. */
-				this->SetWidgetDirty(widget);
 				if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
 				break;
 
@@ -609,8 +635,8 @@ public:
 
 			DepartureCallingSettings settings;
 			settings.SetViaMode((this->source_type != DST_STATION) || this->show_via, (this->source_type == DST_STATION) && this->show_via);
-			settings.SetDepartureNoLoadTest((this->source_type == DST_WAYPOINT) || _settings_client.gui.departure_show_all_stops);
-			settings.SetShowAllStops(_settings_client.gui.departure_show_all_stops);
+			settings.SetDepartureNoLoadTest(this->show_empty);
+			settings.SetShowAllStops(this->show_empty);
 			settings.SetCargoFilter(show_pax, show_freight);
 			settings.SetSmartTerminusEnabled(_settings_client.gui.departure_smart_terminus && (this->source_type == DST_STATION));
 

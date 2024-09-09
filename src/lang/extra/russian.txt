@@ -1385,8 +1385,6 @@ STR_CONFIG_DEPARTURE_CONDITIONALS_HELPTEXT                      :Как след
 STR_CONFIG_DEPARTURE_CONDITIONALS_1                             :сдающийся
 STR_CONFIG_DEPARTURE_CONDITIONALS_2                             :предполагая, что их возьмут
 STR_CONFIG_DEPARTURE_CONDITIONALS_3                             :предполагая, что их не возьмут
-STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS                             :Показывать все станции, вызываемые независимо от погрузки/разгрузки: {STRING}
-STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS_HELPTEXT                    :Будут ли станции, с которых транспортное средство только загружается, отображаться в списке вызываемых станций
 STR_CONFIG_DEPARTURE_MERGE_IDENTICAL                            :Объединять одинаковые записи: {STRING}
 STR_CONFIG_DEPARTURE_MERGE_IDENTICAL_HELPTEXT                   :Следует ли объединять идентичные записи на доске отправления в одну
 
