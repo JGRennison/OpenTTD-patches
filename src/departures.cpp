@@ -129,7 +129,9 @@ bool DepartureCallingSettings::IsArrival(const Order *order, const DepartureOrde
 
 DepartureShowAs DepartureCallingSettings::GetShowAsType(const Order *order, DepartureType type) const
 {
-	if (this->CheckShowAsViaType() && (order->GetType() == OT_GOTO_STATION) && !IsStationOrderWithWait(order)) return DSA_VIA;
+	if (this->CheckShowAsViaType() && order->IsType(OT_GOTO_STATION) && !IsStationOrderWithWait(order)) return DSA_VIA;
+	if (order->IsType(OT_GOTO_WAYPOINT)) return order->IsWaitTimetabled() ? DSA_NO_LOAD : DSA_VIA;
+	if (order->IsType(OT_GOTO_DEPOT)) return DSA_NO_LOAD;
 	if (order->IsType(OT_GOTO_STATION)) {
 		if (type == D_DEPARTURE && !DepartureLoadFilter(order)) return DSA_NO_LOAD;
 		if (type == D_ARRIVAL && !ArrivalLoadFilter(order)) return DSA_NO_LOAD;
