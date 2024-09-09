@@ -584,8 +584,7 @@ bool DepartureViaTerminusState::CheckOrder(const Vehicle *v, Departure *d, const
 	/* If we reach the original station again, then use it as the terminus. */
 	if (order->GetType() == OT_GOTO_STATION &&
 			source.OrderMatches(order) &&
-			(order->GetUnloadType() != OUFB_NO_UNLOAD ||
-			calling_settings.ShowAllStops()) &&
+			(order->GetUnloadType() != OUFB_NO_UNLOAD || calling_settings.ShowAllStops()) &&
 			(((order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) || ((d->order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) != 0))) {
 		/* If we're not calling anywhere, then skip this departure. */
 		this->found_terminus = (d->calling_at.size() > 0);
@@ -644,8 +643,7 @@ bool DepartureViaTerminusState::HandleCallingPoint(Departure *d, const Order *or
 	}
 
 	/* If we unload all at this station, then it is the terminus. */
-	if (order->GetType() == OT_GOTO_STATION &&
-			order->GetUnloadType() == OUFB_UNLOAD) {
+	if (order->GetType() == OT_GOTO_STATION && order->GetUnloadType() == OUFB_UNLOAD) {
 		if (d->calling_at.size() > 0) {
 			this->found_terminus = true;
 		}
@@ -660,10 +658,8 @@ bool DepartureViaTerminusState::HandleCallingPoint(Departure *d, const Order *or
  */
 static bool IsIgnorableCallingAtOrder(const Order *order, DepartureCallingSettings calling_settings)
 {
-	if ((order->GetUnloadType() == OUFB_NO_UNLOAD &&
-			!calling_settings.ShowAllStops()) ||
-			(order->GetType() != OT_GOTO_STATION &&
-			order->GetType() != OT_IMPLICIT) ||
+	if ((order->GetType() != OT_GOTO_STATION && order->GetType() != OT_IMPLICIT) ||
+			(order->GetUnloadType() == OUFB_NO_UNLOAD && !calling_settings.ShowAllStops()) ||
 			order->GetNonStopType() == ONSF_NO_STOP_AT_ANY_STATION ||
 			order->GetNonStopType() == ONSF_NO_STOP_AT_DESTINATION_STATION) {
 		return true;
@@ -697,10 +693,8 @@ static bool ProcessArrivalHistory(Departure *d, std::span<const Order *> arrival
 			}
 		}
 
-		if ((o->GetLoadType() != OLFB_NO_LOAD ||
-				calling_settings.ShowAllStops()) &&
-				(o->GetType() == OT_GOTO_STATION ||
-				o->GetType() == OT_IMPLICIT) &&
+		if ((o->GetType() == OT_GOTO_STATION || o->GetType() == OT_IMPLICIT) &&
+				(o->GetLoadType() != OLFB_NO_LOAD || calling_settings.ShowAllStops()) &&
 				!source.StationMatches(o->GetDestination()) &&
 				(o->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
 			possible_origins.push_back({ o->GetDestination(), i });
@@ -721,8 +715,7 @@ static bool ProcessArrivalHistory(Departure *d, std::span<const Order *> arrival
 		for (uint i = origin_arrival_history_index + 1; i < (uint)arrival_history.size(); i++) {
 			const Order *o = arrival_history[i];
 			if (o->GetType() == OT_GOTO_STATION &&
-					(o->GetLoadType() != OLFB_NO_LOAD ||
-					calling_settings.ShowAllStops()) &&
+					(o->GetLoadType() != OLFB_NO_LOAD || calling_settings.ShowAllStops()) &&
 					(o->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
 				d->calling_at.push_back(CallAt((StationID)o->GetDestination()));
 			}
