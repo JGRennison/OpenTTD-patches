@@ -47,30 +47,12 @@ struct CallAt {
 	CallAt(const StationID& s, StateTicks t) : station(s), scheduled_tick(t) { }
 	CallAt(const CallAt& c) : station(c.station), scheduled_tick(c.scheduled_tick) { }
 
-	inline bool operator==(const CallAt& c) const {
+	inline bool operator==(const CallAt& c) const
+	{
 		return this->station == c.station;
 	}
 
-	inline bool operator!=(const CallAt& c) const {
-		return this->station != c.station;
-	}
-
-	inline bool operator>=(const CallAt& c) const {
-		return this->station == c.station &&
-				this->scheduled_tick != 0 &&
-				c.scheduled_tick != 0 &&
-				this->scheduled_tick >= c.scheduled_tick;
-	}
-
-	CallAt& operator=(const CallAt& c) {
-		this->station = c.station;
-		this->scheduled_tick = c.scheduled_tick;
-		return *this;
-	}
-
-	inline bool operator==(StationID s) const {
-		return this->station == s;
-	}
+	CallAt& operator=(const CallAt& c) = default;
 };
 
 struct RemoveVia {
