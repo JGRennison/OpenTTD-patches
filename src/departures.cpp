@@ -683,7 +683,10 @@ static bool ProcessArrivalHistory(Departure *d, std::span<const Order *> arrival
 				o->GetType() == OT_IMPLICIT) &&
 				(o->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
 			if (source.StationMatches(o->GetDestination())) {
-				/* Remove all possible origins */
+				/* Same as source order, remove all possible origins */
+				possible_origins.clear();
+			} else if (!calling_settings.ShowAllStops() && o->IsType(OT_GOTO_STATION) && o->GetLoadType() == OLFB_NO_LOAD && (o->GetUnloadType() & (OUFB_TRANSFER | OUFB_UNLOAD)) != 0) {
+				/* All cargo unloaded, remove all possible origins */
 				possible_origins.clear();
 			} else {
 				/* Remove all possible origins of this station */
