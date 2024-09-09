@@ -148,6 +148,7 @@ private:
 			ShowAllStops,
 			ShowPax,
 			ShowFreight,
+			SmartTerminusEnabled,
 		};
 	};
 
@@ -158,6 +159,7 @@ public:
 	inline bool ShowAllStops() const { return HasBit(this->flags, FlagBits::ShowAllStops); }
 	inline bool ShowPax() const { return HasBit(this->flags, FlagBits::ShowPax); }
 	inline bool ShowFreight() const { return HasBit(this->flags, FlagBits::ShowFreight); }
+	inline bool SmartTerminusEnabled() const { return HasBit(this->flags, FlagBits::SmartTerminusEnabled); }
 
 	inline void SetViaMode(bool allow_via, bool check_show_as_via_type)
 	{
@@ -176,6 +178,10 @@ public:
 	{
 		AssignBit(this->flags, FlagBits::ShowPax, pax);
 		AssignBit(this->flags, FlagBits::ShowFreight, freight);
+	}
+	inline void SetSmartTerminusEnabled(bool enabled)
+	{
+		AssignBit(this->flags, FlagBits::SmartTerminusEnabled, enabled);
 	}
 
 	bool IsDeparture(const Order *order, const DepartureOrderDestinationDetector &source) const;

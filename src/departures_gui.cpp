@@ -612,6 +612,7 @@ public:
 			settings.SetDepartureNoLoadTest((this->source_type == DST_WAYPOINT) || _settings_client.gui.departure_show_all_stops);
 			settings.SetShowAllStops(_settings_client.gui.departure_show_all_stops);
 			settings.SetCargoFilter(show_pax, show_freight);
+			settings.SetSmartTerminusEnabled(_settings_client.gui.departure_smart_terminus && (this->source_type == DST_STATION));
 
 			if (this->mode != DM_ARRIVALS) {
 				this->departures = MakeDepartureList(this->source_mode, list_source, this->vehicles, D_DEPARTURE, settings);

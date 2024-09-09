@@ -1093,7 +1093,7 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 
 	if (type == D_DEPARTURE) {
 		ScheduledDispatchDepartureLocalFix(result);
-		if (_settings_client.gui.departure_smart_terminus) {
+		if (calling_settings.SmartTerminusEnabled()) {
 			ScheduledDispatchSmartTerminusDetection(result);
 		}
 	}
@@ -1511,7 +1511,7 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 		return a->scheduled_tick < b->scheduled_tick;
 	});
 
-	if (type == D_DEPARTURE && _settings_client.gui.departure_smart_terminus) {
+	if (type == D_DEPARTURE && calling_settings.SmartTerminusEnabled()) {
 		ScheduledDispatchSmartTerminusDetection(result, tick_duration);
 	}
 
