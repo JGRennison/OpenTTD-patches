@@ -309,6 +309,7 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 
 static RoadType _public_road_type;
 static const uint _public_road_hash_size = 8U; ///< The number of bits the hash for river finding should have.
+static PublicRoadsConstruction _public_road_mode = PRC_NONE;
 
 /** Helper function to check if a slope along a certain direction is going up an inclined slope. */
 static bool IsUpwardsSlope(const Slope slope, DiagDirection road_direction)
@@ -893,7 +894,7 @@ static int32_t PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode
 		}
 	}
 
-	if (_settings_game.game_creation.build_public_roads == PRC_AVOID_CURVES &&
+	if (_public_road_mode == PRC_AVOID_CURVES &&
 		parent->path.parent != nullptr &&
 		DiagdirBetweenTiles(parent->path.parent->node.tile, parent->path.node.tile) != DiagdirBetweenTiles(parent->path.node.tile, current->tile)) {
 		cost += 1;
@@ -977,9 +978,11 @@ void PostProcessNetworks(AyStar &finder, const std::vector<std::unique_ptr<TownN
 /**
 * Build the public road network connecting towns using AyStar.
 */
-void GeneratePublicRoads()
+void GeneratePublicRoads(PublicRoadsConstruction build_mode)
 {
-	if (_settings_game.game_creation.build_public_roads == PRC_NONE) return;
+	if (build_mode == PRC_NONE) return;
+
+	_public_road_mode = build_mode;
 
 	std::vector<TileIndex> towns;
 	towns.clear();

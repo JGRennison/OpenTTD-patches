@@ -30,7 +30,6 @@ enum TerraformToolbarWidgets : WidgetID {
 /** Widgets of the #ScenarioEditorLandscapeGenerationWindow class. */
 enum EditorTerraformToolbarWidgets : WidgetID {
 	WID_ETT_SHOW_PLACE_DESERT,                   ///< Should the place desert button be shown?
-	WID_ETT_SHOW_PUBLIC_ROADS,                   ///< Should the public roads button be shown?
 	WID_ETT_START,                               ///< Used for iterations.
 	WID_ETT_DOTS = WID_ETT_START,                ///< Invisible widget for rendering the terraform size on.
 	WID_ETT_BUTTONS_START,                       ///< Start of pushable buttons.

@@ -46,7 +46,7 @@ void GenerateClearTile();
 void GenerateIndustries();
 void GenerateObjects();
 void GenerateTrees();
-void GeneratePublicRoads();
+extern void GeneratePublicRoads(PublicRoadsConstruction build_mode);
 
 void StartupEconomy();
 void StartupCompanies();
@@ -157,7 +157,7 @@ static void _GenerateWorld()
 				GenerateIndustries();
 				GenerateObjects();
 				GenerateTrees();
-				GeneratePublicRoads();
+				GeneratePublicRoads(_settings_game.game_creation.build_public_roads);
 			}
 		}
 
