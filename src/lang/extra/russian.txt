@@ -1300,6 +1300,8 @@ STR_DEPARTURES_ARRIVALS                                         :Отбытия
 STR_DEPARTURES_BOTH_COMBINED                                    :Совмещённо
 STR_DEPARTURES_BOTH_SEPARATE                                    :Отдельно
 STR_DEPARTURES_DEPARTURE_MODE_TOOLTIP                           :{BLACK}Установите, что показывать - отбытия и/или прибытия
+STR_DEPARTURES_TIMES_BUTTON                                     :{BLACK}Время
+STR_DEPARTURES_TIMES_TOOLTIP                                    :{BLACK}Показать время прибытия в пункт назначения по расписанию
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}через
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Показать транспортные средства, которые не останавливаются здесь по расписанию
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}Показать расписание поездов
@@ -1325,6 +1327,7 @@ STR_DEPARTURES_CALLING_AT_STATION                               :{STRING}, {STRI
 STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{STRING} и {STRING}
 STR_DEPARTURES_CALLING_AT_LIST                                  :{ORANGE}{STRING}.
 STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{STRING}. Эта служба продолжает {STRING}.
+STR_DEPARTURES_CALLING_AT_STATION_WITH_TIME                     :{STATION} ({TT_TIME_ABS})
 STR_DEPARTURES_TINY                                             :{TINY_FONT}{STRING}
 STR_DEPARTURES_VIA_DESCRIPTOR                                   :{STRING}{STRING}
 STR_DEPARTURES_VIA_AND                                          :{STRING} и {STRING}
