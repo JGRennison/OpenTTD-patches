@@ -63,6 +63,7 @@ struct RemoveVia {
 enum DepartureShowAs : uint8_t {
 	DSA_NORMAL,
 	DSA_VIA,
+	DSA_NO_LOAD,
 };
 
 /** A scheduled departure. */

@@ -914,6 +914,10 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 					break;
 
 				case DSA_VIA:
+					time_colour = TC_SILVER;
+					break;
+
+				case DSA_NO_LOAD:
 					time_colour = TC_YELLOW;
 					break;
 			}

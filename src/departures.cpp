@@ -105,25 +105,35 @@ bool IsArrivalDepartureTest(DepartureCallingSettings settings, const Order *orde
 	}
 }
 
+static bool DepartureLoadFilter(const Order *order)
+{
+	return order->GetLoadType() != OLFB_NO_LOAD;
+}
+
+static bool ArrivalLoadFilter(const Order *order)
+{
+	return order->GetUnloadType() != OUFB_NO_UNLOAD;
+}
+
 bool DepartureCallingSettings::IsDeparture(const Order *order, const DepartureOrderDestinationDetector &source) const
 {
 	if (!source.OrderMatches(order)) return false;
-	return IsArrivalDepartureTest(*this, order, [](const Order *order) {
-		return order->GetLoadType() != OLFB_NO_LOAD;
-	});
+	return IsArrivalDepartureTest(*this, order, DepartureLoadFilter);
 }
 
 bool DepartureCallingSettings::IsArrival(const Order *order, const DepartureOrderDestinationDetector &source) const
 {
 	if (!source.OrderMatches(order)) return false;
-	return IsArrivalDepartureTest(*this, order, [](const Order *order) {
-		return order->GetUnloadType() != OUFB_NO_UNLOAD;
-	});
+	return IsArrivalDepartureTest(*this, order, ArrivalLoadFilter);
 }
 
 DepartureShowAs DepartureCallingSettings::GetShowAsType(const Order *order, DepartureType type) const
 {
 	if (this->CheckShowAsViaType() && (order->GetType() == OT_GOTO_STATION) && !IsStationOrderWithWait(order)) return DSA_VIA;
+	if (order->IsType(OT_GOTO_STATION)) {
+		if (type == D_DEPARTURE && !DepartureLoadFilter(order)) return DSA_NO_LOAD;
+		if (type == D_ARRIVAL && !ArrivalLoadFilter(order)) return DSA_NO_LOAD;
+	}
 	return DSA_NORMAL;
 }
 
