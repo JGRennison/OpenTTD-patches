@@ -121,9 +121,10 @@ bool DepartureCallingSettings::IsArrival(const Order *order, const DepartureOrde
 	});
 }
 
-bool DepartureCallingSettings::ShouldShowAsVia(const Order *order) const
+DepartureShowAs DepartureCallingSettings::GetShowAsType(const Order *order, DepartureType type) const
 {
-	return this->CheckShowAsViaType() && (order->GetType() == OT_GOTO_STATION) && !IsStationOrderWithWait(order);
+	if (this->CheckShowAsViaType() && (order->GetType() == OT_GOTO_STATION) && !IsStationOrderWithWait(order)) return DSA_VIA;
+	return DSA_NORMAL;
 }
 
 static uint8_t GetNonScheduleDepartureConditionalOrderMode(const Order *order, const Vehicle *v, StateTicks eval_tick)
@@ -352,7 +353,7 @@ static void ScheduledDispatchSmartTerminusDetection(DepartureList &departure_lis
 
 	for (auto iter = departure_list.rbegin(); iter != departure_list.rend(); ++iter) {
 		Departure *d = iter->get();
-		if (d->show_as_via) continue;
+		if (d->show_as != DSA_NORMAL) continue;
 
 		check_departure(d);
 	}
@@ -366,7 +367,7 @@ static void ScheduledDispatchSmartTerminusDetection(DepartureList &departure_lis
 
 		for (auto iter = departure_list.rbegin(); iter != departure_list.rend(); ++iter) {
 			Departure *d = iter->get();
-			if (d->show_as_via) continue;
+			if (d->show_as != DSA_NORMAL) continue;
 
 			check_departure(d);
 		}
@@ -807,7 +808,7 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 		d->status = lod.status;
 		d->vehicle = lod.v;
 		d->type = type;
-		d->show_as_via = calling_settings.ShouldShowAsVia(lod.order);
+		d->show_as = calling_settings.GetShowAsType(lod.order, type);
 		d->order = lod.order;
 		d->scheduled_waiting_time = lod.scheduled_waiting_time;
 
@@ -1179,7 +1180,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateFromSourceOrder(const Order
 	d.status = D_SCHEDULED;
 	d.vehicle = this->v;
 	d.type = this->type;
-	d.show_as_via = this->calling_settings.ShouldShowAsVia(source_order);
+	d.show_as = this->calling_settings.GetShowAsType(source_order, type);
 	d.order = source_order;
 	d.scheduled_waiting_time = 0;
 

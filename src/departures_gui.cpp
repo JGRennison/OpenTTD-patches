@@ -907,7 +907,16 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 
 		if (time_width > 0) {
 			StringID time_str;
-			TextColour time_colour = d->show_as_via ? TC_YELLOW : TC_ORANGE;
+			TextColour time_colour;
+			switch (d->show_as) {
+				default:
+					time_colour = TC_ORANGE;
+					break;
+
+				case DSA_VIA:
+					time_colour = TC_YELLOW;
+					break;
+			}
 			if (this->mode == DM_COMBINED) {
 				time_str = STR_DEPARTURES_TIME_BOTH;
 				SetDParam(0, time_colour);
