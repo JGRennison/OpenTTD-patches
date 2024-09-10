@@ -582,8 +582,6 @@ public:
 				if (this->source_type == DST_STATION) {
 					_settings_client.gui.departure_default_mode = this->mode;
 				}
-				this->SetWidgetDisabledState(WID_DB_SHOW_TIMES, this->mode == DM_ARRIVALS || !_settings_time.time_in_minutes);
-				this->SetWidgetDirty(WID_DB_SHOW_TIMES);
 				this->SetWidgetDirty(widget);
 				break;
 			}
@@ -716,7 +714,7 @@ public:
 				this->show_arrival_times = false;
 				this->RaiseWidget(WID_DB_SHOW_TIMES);
 			}
-			this->SetWidgetDisabledState(WID_DB_SHOW_TIMES, this->mode == DM_ARRIVALS || !_settings_time.time_in_minutes);
+			this->SetWidgetDisabledState(WID_DB_SHOW_TIMES, !_settings_time.time_in_minutes);
 			this->SetupValues();
 			this->ReInit();
 			if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
@@ -810,7 +808,7 @@ uint DeparturesWindow::GetMinWidth() const
 	/* Time */
 	result = (this->mode == DM_COMBINED) ? cached_date_combined_width : cached_date_width;
 
-	if (this->show_arrival_times && _settings_time.time_in_minutes && this->mode != DM_ARRIVALS) {
+	if (this->show_arrival_times && _settings_time.time_in_minutes) {
 		result += PadWidth(cached_date_width);
 	}
 
@@ -883,7 +881,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 	int time_width = (this->mode == DM_COMBINED) ? cached_date_combined_width : cached_date_width;
 
 	int arrival_time_width = 0;
-	if (this->show_arrival_times && _settings_time.time_in_minutes && this->mode != DM_ARRIVALS) {
+	if (this->show_arrival_times && _settings_time.time_in_minutes) {
 		arrival_time_width = cached_date_width;
 	}
 
