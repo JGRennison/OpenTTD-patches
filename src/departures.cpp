@@ -45,6 +45,13 @@ static constexpr Ticks INVALID_DEPARTURE_TICKS = INT32_MIN;
 using ScheduledDispatchCache = btree::btree_map<const DispatchSchedule *, btree::btree_set<StateTicks>>;
 using ScheduledDispatchVehicleRecords = btree::btree_map<std::pair<uint, VehicleID>, LastDispatchRecord>;
 
+CallAtTargetID CallAtTargetID::FromOrder(const Order *order)
+{
+	uint32_t id = order->GetDestination();
+	if (order->IsType(OT_GOTO_DEPOT)) id |= DEPOT_TAG;
+	return CallAtTargetID(id);
+}
+
 struct ArrivalHistoryEntry {
 	const Order *order;
 	Ticks offset;
@@ -323,7 +330,7 @@ static void ScheduledDispatchDepartureLocalFix(DepartureList &departure_list)
 
 static void ScheduledDispatchSmartTerminusDetection(DepartureList &departure_list, Ticks loop_duration = 0)
 {
-	btree::btree_map<StationID, StateTicks> earliest_seen;
+	btree::btree_map<CallAtTargetID, StateTicks> earliest_seen;
 
 	auto check_departure = [&](Departure *d) {
 		size_t calling_at_size = d->calling_at.size();
@@ -336,12 +343,12 @@ static void ScheduledDispatchSmartTerminusDetection(DepartureList &departure_lis
 
 		while (calling_at_size >= 2) {
 			if (d->terminus.scheduled_tick != 0) {
-				auto iter = earliest_seen.find(d->terminus.station);
+				auto iter = earliest_seen.find(d->terminus.target);
 				if (iter != earliest_seen.end() && iter->second <= d->terminus.scheduled_tick) {
 					/* Terminus can be reached at same or earlier time on a later vehicle */
 					calling_at_size--;
 					size_t new_terminus_offset = calling_at_size - 1;
-					d->terminus = CallAt(d->calling_at[new_terminus_offset]);
+					d->terminus = d->calling_at[new_terminus_offset];
 
 					auto remove_via = [&](StationID st) {
 						if (d->via2 == st) d->via2 = INVALID_STATION;
@@ -350,7 +357,9 @@ static void ScheduledDispatchSmartTerminusDetection(DepartureList &departure_lis
 							d->via2 = INVALID_STATION;
 						}
 					};
-					remove_via(d->terminus.station);
+					if (d->terminus.target.IsStationID()) {
+						remove_via(d->terminus.target.GetStationID());
+					}
 					for (const RemoveVia &rv : d->remove_vias) {
 						if (rv.calling_at_offset == new_terminus_offset) {
 							remove_via(rv.via);
@@ -364,7 +373,7 @@ static void ScheduledDispatchSmartTerminusDetection(DepartureList &departure_lis
 
 		for (const CallAt &c : d->calling_at) {
 			if (c.scheduled_tick != 0) {
-				StateTicks &seen = earliest_seen[c.station];
+				StateTicks &seen = earliest_seen[c.target];
 				if (seen == 0 || c.scheduled_tick < seen) seen = c.scheduled_tick;
 			}
 		}
@@ -571,10 +580,11 @@ static void GetDepartureCandidateOrderDatesFromVehicle(std::vector<OrderDate> &n
 	}
 }
 
-static bool IsStationIDCallingPointOrder(const Order *order)
+static bool IsCallingPointTargetOrder(const Order *order)
 {
 	if ((order->IsType(OT_GOTO_STATION) || order->IsType(OT_IMPLICIT)) && (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) return true;
 	if (order->IsType(OT_GOTO_WAYPOINT) && order->IsWaitTimetabled()) return true;
+	if (order->IsType(OT_GOTO_DEPOT) && ((order->GetDepotActionType() & ODATFB_NEAREST_DEPOT) == 0) && (order->IsWaitTimetabled() || (order->GetDepotActionType() & ODATFB_HALT) != 0)) return true;
 	return false;
 }
 
@@ -636,9 +646,9 @@ bool DepartureViaTerminusState::CheckOrder(const Vehicle *v, Departure *d, const
 
 bool DepartureViaTerminusState::HandleCallingPoint(Departure *d, const Order *order, CallAt c, DepartureCallingSettings calling_settings)
 {
-	if (!IsStationIDCallingPointOrder(order)) return false;
+	if (!IsCallingPointTargetOrder(order)) return false;
 
-	if (order->IsType(OT_GOTO_WAYPOINT)) {
+	if (order->IsType(OT_GOTO_WAYPOINT) || order->IsType(OT_GOTO_DEPOT)) {
 		if (!calling_settings.ShowAllStops()) return false;
 	} else {
 		if (!calling_settings.ShowAllStops() && order->GetUnloadType() == OUFB_NO_UNLOAD) return false;
@@ -650,6 +660,11 @@ bool DepartureViaTerminusState::HandleCallingPoint(Departure *d, const Order *or
 		return true;
 	}
 
+	d->terminus = c;
+	d->calling_at.push_back(c);
+
+	if (order->IsType(OT_GOTO_DEPOT)) return (order->GetDepotActionType() & ODATFB_HALT) != 0;
+
 	/* Add the station to the calling at list and make it the candidate terminus. */
 	if (d->via == INVALID_STATION && pending_via != INVALID_STATION) {
 		d->via = this->pending_via;
@@ -658,8 +673,6 @@ bool DepartureViaTerminusState::HandleCallingPoint(Departure *d, const Order *or
 	if (d->via == INVALID_STATION && this->candidate_via == (StationID)order->GetDestination()) {
 		d->via = (StationID)order->GetDestination();
 	}
-	d->terminus = c;
-	d->calling_at.push_back(c);
 
 	/* If we unload all at this station and departure load tests are not disabled, then it is the terminus. */
 	if (order->GetType() == OT_GOTO_STATION && order->GetUnloadType() == OUFB_UNLOAD && !calling_settings.DepartureNoLoadTest()) {
@@ -692,7 +705,7 @@ static bool ProcessArrivalHistory(Departure *d, std::span<ArrivalHistoryEntry> a
 	for (uint i = 0; i < (uint)arrival_history.size(); i++) {
 		const Order *o = arrival_history[i].order;
 
-		if (IsStationIDCallingPointOrder(o)) {
+		if (IsCallingPointTargetOrder(o)) {
 			if (source.StationMatches(o->GetDestination())) {
 				/* Same as source order, remove all possible origins */
 				possible_origins.clear();
@@ -707,7 +720,7 @@ static bool ProcessArrivalHistory(Departure *d, std::span<ArrivalHistoryEntry> a
 					}
 				}
 
-				if (o->IsType(OT_GOTO_WAYPOINT)) {
+				if (o->IsType(OT_GOTO_WAYPOINT) || o->IsType(OT_GOTO_DEPOT)) {
 					if (calling_settings.ShowAllStops()) possible_origins.push_back({ o->GetDestination(), i });
 				} else {
 					if (calling_settings.ShowAllStops() || o->GetLoadType() != OLFB_NO_LOAD) possible_origins.push_back({ o->GetDestination(), i });
@@ -742,19 +755,19 @@ static bool ProcessArrivalHistory(Departure *d, std::span<ArrivalHistoryEntry> a
 
 		auto make_call_at = [&](const ArrivalHistoryEntry &entry) -> CallAt {
 			if (entry.offset == INVALID_DEPARTURE_TICKS) {
-				return CallAt((StationID)entry.order->GetDestination());
+				return CallAt(entry.order);
 			} else {
-				return CallAt((StationID)entry.order->GetDestination(), entry.offset + arrival_offset);
+				return CallAt(entry.order, entry.offset + arrival_offset);
 			}
 		};
 
 		for (uint i = origin_arrival_history_index + 1; i < (uint)arrival_history.size(); i++) {
 			const Order *o = arrival_history[i].order;
-			if (IsStationIDCallingPointOrder(o)) {
+			if (IsCallingPointTargetOrder(o)) {
 				check_order(o);
 				if (o->IsType(OT_GOTO_STATION) && (o->GetLoadType() != OLFB_NO_LOAD || calling_settings.ShowAllStops())) {
 					d->calling_at.push_back(make_call_at(arrival_history[i]));
-				} else if (o->IsType(OT_GOTO_WAYPOINT) && calling_settings.ShowAllStops()) {
+				} else if ((o->IsType(OT_GOTO_WAYPOINT) || o->IsType(OT_GOTO_DEPOT))&& calling_settings.ShowAllStops()) {
 					d->calling_at.push_back(make_call_at(arrival_history[i]));
 				}
 			}
@@ -880,7 +893,7 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 			order = lod.v->orders->GetNext(order);
 			StateTicks departure_tick = d->scheduled_tick;
 			bool travel_time_required = true;
-			CallAt c = CallAt((StationID)order->GetDestination(), departure_tick);
+			CallAt c = CallAt(order, departure_tick);
 			for (uint i = order_iteration_limit; i > 0; --i) {
 				/* If we reach the order at which the departure occurs again, then use the departure station as the terminus. */
 				if (order == lod.order) {
@@ -927,7 +940,7 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 				}
 				if (c.scheduled_tick != 0) c.scheduled_tick = departure_tick;
 
-				c.station = (StationID)order->GetDestination();
+				c.target = CallAtTargetID::FromOrder(order);
 
 				/* We're not interested in this order any further if we're not calling at it. */
 				if (via_state.HandleCallingPoint(d, order, c, calling_settings)) break;
@@ -1013,7 +1026,7 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 
 					cumul += o->GetTravelTime() + o->GetWaitTime();
 
-					if (o->GetType() == OT_GOTO_STATION || o->GetType() == OT_IMPLICIT || (o->IsType(OT_GOTO_WAYPOINT) && o->IsWaitTimetabled())) {
+					if (IsCallingPointTargetOrder(o)) {
 						new_history.push_back({ o, cumul });
 					}
 				}
@@ -1266,7 +1279,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateFromSourceOrder(const Order
 
 		order = this->v->orders->GetNext(order);
 		bool travel_time_required = true;
-		CallAt c = CallAt((StationID)order->GetDestination(), departure_tick);
+		CallAt c = CallAt(order, departure_tick);
 		for (uint i = order_iteration_limit; i > 0; --i) {
 			/* If we reach the order at which the departure occurs again, then use the departure station as the terminus. */
 			if (order == source_order) {
@@ -1313,7 +1326,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateFromSourceOrder(const Order
 				c.scheduled_tick = 0;
 			}
 			if (c.scheduled_tick != 0) c.scheduled_tick = departure_tick;
-			c.station = (StationID)order->GetDestination();
+			c.target = CallAtTargetID::FromOrder(order);
 
 			/* We're not interested in this order any further if we're not calling at it. */
 			if (via_state.HandleCallingPoint(&d, order, c, this->calling_settings)) break;
@@ -1579,8 +1592,8 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 
 	std::sort(result.begin(), result.end(), [](std::unique_ptr<Departure> &a, std::unique_ptr<Departure> &b) -> bool {
 		if (a->scheduled_tick == b->scheduled_tick) {
-			return std::tie(a->terminus.station, a->terminus.scheduled_tick, a->vehicle->index)
-					< std::tie(b->terminus.station, b->terminus.scheduled_tick, b->vehicle->index);
+			return std::tie(a->terminus.target, a->terminus.scheduled_tick, a->vehicle->index)
+					< std::tie(b->terminus.target, b->terminus.scheduled_tick, b->vehicle->index);
 		}
 		return a->scheduled_tick < b->scheduled_tick;
 	});

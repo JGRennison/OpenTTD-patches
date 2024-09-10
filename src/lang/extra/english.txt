@@ -1368,19 +1368,19 @@ STR_DEPARTURES_TIME                                             :{COLOUR}{STRING
 STR_DEPARTURES_TIME_DEP                                         :{COLOUR}{STRING1} {GREEN}{UP_ARROW}
 STR_DEPARTURES_TIME_ARR                                         :{COLOUR}{STRING1} {RED}{DOWN_ARROW}
 STR_DEPARTURES_TIME_BOTH                                        :{COLOUR}{STRING1} {RED}{DOWN_ARROW} {COLOUR}{STRING1} {GREEN}{UP_ARROW}
-STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STRING1}{STRING}
-STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STRING1}{STRING} via {STRING}
-STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STRING1}{STRING} via
+STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STRING2}{STRING}
+STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STRING2}{STRING} via {STRING}
+STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STRING2}{STRING} via
 STR_DEPARTURES_VIA                                              :{ORANGE}via {STRING}
 STR_DEPARTURES_TOC                                              :{ORANGE}{COMPANY}
 STR_DEPARTURES_GROUP                                            :{ORANGE}{GROUP}
 STR_DEPARTURES_VEH                                              :{ORANGE}{VEHICLE}
 STR_DEPARTURES_CALLING_AT                                       :{ORANGE}Calling at:
-STR_DEPARTURES_CALLING_AT_STATION                               :{RAW_STRING}, {STRING3}
-STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{RAW_STRING} and {STRING3}
+STR_DEPARTURES_CALLING_AT_STATION                               :{RAW_STRING}, {STRING4}
+STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{RAW_STRING} and {STRING4}
 STR_DEPARTURES_CALLING_AT_LIST                                  :{ORANGE}{RAW_STRING}.
-STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{RAW_STRING}. This service continues to {STRING3}.
-STR_DEPARTURES_CALLING_AT_STATION_WITH_TIME                     :{STRING1} ({TT_TIME_ABS})
+STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{RAW_STRING}. This service continues to {STRING4}.
+STR_DEPARTURES_CALLING_AT_STATION_WITH_TIME                     :{STRING2} ({TT_TIME_ABS})
 STR_DEPARTURES_TINY                                             :{TINY_FONT}{STRING2}
 STR_DEPARTURES_VIA_DESCRIPTOR                                   :{STRING1}{STRING}
 STR_DEPARTURES_VIA_AND                                          :{STRING} and {STRING}

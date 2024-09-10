@@ -39,17 +39,44 @@ enum DeparturesSourceMode : uint8_t {
 	DSM_END
 };
 
+struct CallAtTargetID {
+private:
+	static constexpr uint32_t DEPOT_TAG = 1 << 31;
+
+	uint32_t id;
+
+	constexpr CallAtTargetID(uint32_t id) : id(id) {}
+
+public:
+	constexpr CallAtTargetID() : id(INVALID_STATION) {}
+
+	static CallAtTargetID FromOrder(const Order *order);
+	static constexpr CallAtTargetID FromStation(StationID station) { return CallAtTargetID(station); }
+
+	inline bool IsValid() const { return id != INVALID_STATION; }
+	inline bool IsStationID() const { return (id & DEPOT_TAG) == 0; }
+	inline StationID GetStationID() const { return (StationID)this->id; }
+	inline DestinationID GetDepotDestinationID() const { return this->id & ~DEPOT_TAG; }
+	inline bool MatchesStationID(StationID st) const { return this->IsStationID() && st == this->GetStationID(); }
+
+	bool operator==(const CallAtTargetID& c) const = default;
+	auto operator<=>(const CallAtTargetID& c) const = default;
+};
+
 struct CallAt {
-	StationID station;
+	CallAtTargetID target;
 	StateTicks scheduled_tick;
 
-	CallAt(const StationID& s) : station(s), scheduled_tick(0) { }
-	CallAt(const StationID& s, StateTicks t) : station(s), scheduled_tick(t) { }
-	CallAt(const CallAt& c) : station(c.station), scheduled_tick(c.scheduled_tick) { }
+	CallAt(CallAtTargetID target) : target(target), scheduled_tick(0) {}
+	CallAt(CallAtTargetID target, StateTicks t) : target(target), scheduled_tick(t) {}
+	CallAt(const Order *order) : target(CallAtTargetID::FromOrder(order)), scheduled_tick(0) {}
+	CallAt(const Order *order, StateTicks t) : target(CallAtTargetID::FromOrder(order)), scheduled_tick(t) {}
+
+	inline bool IsValid() const { return this->target.IsValid(); }
 
 	inline bool operator==(const CallAt& c) const
 	{
-		return this->station == c.station;
+		return this->target == c.target;
 	}
 
 	CallAt& operator=(const CallAt& c) = default;
@@ -72,7 +99,7 @@ struct Departure {
 	Ticks lateness = 0;                    ///< How delayed the departure is expected to be
 	StationID via = INVALID_STATION;       ///< The station the departure should list as going via
 	StationID via2 = INVALID_STATION;      ///< Secondary station the departure should list as going via
-	CallAt terminus = INVALID_STATION;     ///< The station at which the vehicle will terminate following this departure
+	CallAt terminus = CallAtTargetID();    ///< The station at which the vehicle will terminate following this departure
 	std::vector<CallAt> calling_at;        ///< The stations both called at and unloaded at by the vehicle after this departure before it terminates
 	std::vector<RemoveVia> remove_vias;    ///< Vias to remove when using smart terminus.
 	DepartureStatus status{};              ///< Whether the vehicle has arrived yet for this departure
