@@ -78,8 +78,6 @@ struct CallAt {
 	{
 		return this->target == c.target;
 	}
-
-	CallAt& operator=(const CallAt& c) = default;
 };
 
 struct RemoveVia {
