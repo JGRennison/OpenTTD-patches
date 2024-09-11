@@ -93,7 +93,7 @@ struct OrderDateQueueItem {
 	uint order_data_index;
 	Ticks tick;
 
-	bool operator<(const OrderDateQueueItem &other)
+	bool operator<(const OrderDateQueueItem &other) const
 	{
 		/* Sort in opposite order */
 		return std::tie(this->tick, this->order_data_index) > std::tie(other.tick, other.order_data_index);
