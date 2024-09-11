@@ -27,6 +27,7 @@ STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :{G=m}카운터 
 STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :{G=f}현재 시각/날짜
 STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :{G=f}시간표 상태
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :{G=m}배차일정 슬롯
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :{G=m}대기 화물 / 수송량
 
 STR_ORDER_STOP_LOCATION_THROUGH                                 :[차례로 나눠 싣기]
 
@@ -959,6 +960,8 @@ STR_TRACE_RESTRICT_TRAIN_STATUS_REQUIRES_SERVICE                :{G=f}정비 요
 STR_TRACE_RESTRICT_TRAIN_STATUS_STOPPING_AT_STATION_WAYPOINT    :{G=f}역/경유지에서 정지하는 중
 STR_TRACE_RESTRICT_REVERSE_SIG                                  :신호기 뒤에서 회차
 STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL                           :신호기 뒤에서 회차 취소
+STR_TRACE_RESTRICT_REVERSE_AT_SIG                               :경로 신호기 뒤에서 회차
+STR_TRACE_RESTRICT_REVERSE_AT_SIG_CANCEL                        :경로 신호기 뒤에서 회차 취소
 STR_TRACE_RESTRICT_SET_SPEED_RESTRICTION                        :열차 속력 제한: {VELOCITY}
 STR_TRACE_RESTRICT_REMOVE_SPEED_RESTRICTION                     :열차 속력 제한 해제
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK                              :이 열차는 멈춘 게 아니므로, 이 경로 신호기에서 기다리는 것에 대한 뉴스 메시지를 표시하지 않음
@@ -1291,9 +1294,16 @@ STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}화물�
 STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}대기 화물량 이력을 보여줍니다
 
 STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} - 실시간 운행 정보
+STR_DEPARTURES_CARGO_MODE_TOOLTIP                               :{BLACK}발착 전광판에 화물 필터 모드 설정
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}발
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}착
-STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}경유
+STR_DEPARTURES_BOTH_COMBINED                                    :혼합
+STR_DEPARTURES_BOTH_SEPARATE                                    :분리
+STR_DEPARTURES_DEPARTURE_MODE_TOOLTIP                           :{BLACK}출발이나 도착을 보여줄지 설정합니다
+STR_DEPARTURES_TIMES_BUTTON                                     :{BLACK}시각
+STR_DEPARTURES_TIMES_TOOLTIP                                    :{BLACK}시간표 상 목적지 도착 시각을 보여줍니다
+STR_DEPARTURES_EMPTY_BUTTON                                     :{BLACK}공차
+STR_DEPARTURES_EMPTY_TOOLTIP                                    :{BLACK}공차로 수송하거나, 화물을 싣고 내리지 않는 정차 역을 포함합니다.STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}경유
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}통과 차량 표시
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}이 역의 시간표에 진입 중인 열차 표시
 STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}이 역의 시간표에 진입 중인 자동차 표시
@@ -1318,9 +1328,13 @@ STR_DEPARTURES_CALLING_AT_STATION                               :{STRING}, {STRI
 STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{STRING}, {STRING}
 STR_DEPARTURES_CALLING_AT_LIST                                  :{ORANGE}{STRING}
 STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{STRING} / {STRING} 반복
+STR_DEPARTURES_CALLING_AT_STATION_WITH_TIME                     :{STRING} ({TT_TIME_ABS})
 STR_DEPARTURES_TINY                                             :{TINY_FONT}{STRING}
 STR_DEPARTURES_VIA_DESCRIPTOR                                   :{STRING}{STRING}
 STR_DEPARTURES_VIA_AND                                          :{STRING} 및 {STRING}
+STR_DEPARTURES_SOURCE_MODE_TOOLTIP                              :{BLACK}실시간 발착 상황을 볼지, 24시간 기준 배차 일정 출발 계획 시각을 볼지 설정합니다
+STR_DEPARTURES_SOURCE_MODE_LIVE                                 :실시간
+STR_DEPARTURES_SOURCE_MODE_SCHEDULE_24_HOUR                     :24시간 계획
 
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
 STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
@@ -1343,6 +1357,7 @@ STR_DEPARTURES_ARRIVED                                          :{GREEN}도착
 STR_DEPARTURES_DELAYED                                          :{YELLOW}지연
 STR_DEPARTURES_EXPECTED                                         :{YELLOW}{STRING}
 STR_DEPARTURES_CANCELLED                                        :{RED}취소됨
+STR_DEPARTURES_SCHEDULED                                        :{GREEN}계획됨
 
 STR_CONFIG_SETTING_DEPARTUREBOARDS                              :{ORANGE}출발/도착 정보
 STR_CONFIG_MAX_DEPARTURES                                       :한 역마다 최대 {STRING} 개의 정보를 보이기
@@ -1550,6 +1565,8 @@ STR_VEHICLE_AUTO_GROUP_CARGO_LIST                               : ({CARGO_LIST})
 
 STR_VEHICLE_INFO_SPEED_RESTRICTION                              :{BLACK}속력 제한: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_SPEED_ADAPTATION_EXEMPT                        :{BLACK}속력 제한 취소
+STR_VEHICLE_INFO_SPEED_ADAPTATION_LIMIT                         :{BLACK}속력 제한: {LTBLUE}{VELOCITY}
+STR_VEHICLE_INFO_SPEED_ADAPTATION_NONE                          :{BLACK}속력 제한: {LTBLUE}없음
 
 STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE_AND_SPEED      :{LTBLUE}{ENGINE}{BLACK}   생산: {LTBLUE}{NUM}{BLACK} 가격: {LTBLUE}{CURRENCY_LONG} {BLACK}최고 속도: {LTBLUE}{VELOCITY}
 STR_VEHICLE_DETAILS_TRAIN_WAGON_VALUE_AND_SPEED                 :{LTBLUE}{ENGINE}{BLACK}   가격: {LTBLUE}{CURRENCY_LONG} {BLACK}최고 속도: {LTBLUE}{VELOCITY}
@@ -1591,6 +1608,8 @@ STR_ORDER_CONDITIONAL_VIA                                       :{BLACK}경유
 STR_ORDER_CONDITIONAL_VIA_TOOLTIP                               :{BLACK}대기 화물량을 확인할 경유 역을 선택하세요
 STR_ORDER_CONDITIONAL_STATION                                   :{BLACK}역
 STR_ORDER_CONDITIONAL_STATION_TOOLTIP                           :{BLACK}확인할 역을 선택하세요
+STR_ORDER_CONDITIONAL_REFIT_MODE                                :{BLACK}개조
+STR_ORDER_CONDITIONAL_REFIT_MODE_TOOLTIP                        :{BLACK}개조 후 추정 화물 용량을 사용할지 여부를 선택하세요
 
 STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS                        :받을 때
 STR_ORDER_CONDITIONAL_COMPARATOR_DOES_NOT_ACCEPT                :받지 않을 때
@@ -1703,11 +1722,16 @@ STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :[조건 경로]
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :[조건 경로] {COMMA}번 경로로 건너뛰기 ({STRING}의 적재율 {STRING} {COMMA}일 때)
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :[조건 경로] {COMMA}번 경로로 건너뛰기 ({2:STRING}(으)로 가는 {1:STRING} {3:STRING} {4:CARGO_SHORT}일 때)
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :[조건 경로] {COMMA}번 경로로 건너뛰기 ({3:STRING}(을)를 경유하여 {2:STRING}(으)로 가는 {1:STRING} {4:STRING} {5:CARGO_SHORT}일 때)
+STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_DISPLAY             :[조건 경로] {COMMA}번 경로로 건너뛰기 ({2:STRING}(으)로 가는 {1:STRING} {3:STRING} {4:STRING}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_VIA_DISPLAY         :[조건 경로] {COMMA}번 경로로 건너뛰기 ({3:STRING}(을)를 경유하여 {2:STRING}(으)로 가는 {1:STRING} {4:STRING} {5:STRING}
 STR_ORDER_CONDITIONAL_COUNTER                                   :[조건 경로] {COMMA}번 경로로 건너뛰기 ({TRCOUNTER}의 값 {STRING} {COMMA}일 때)
 STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :[조건 경로] {COMMA}번 경로로 건너뛰기 ({PUSH_COLOUR}{RED}{STRING}{POP_COLOUR}의 값 {STRING} {COMMA}일 때)
 STR_ORDER_CONDITIONAL_TIME_HHMM                                 :[조건 경로] {COMMA}번 경로로 건너뛰기 ({STRING} {STRING} {TIME_HHMM}일 때)
 STR_ORDER_CONDITIONAL_TIMETABLE                                 :[조건 경로] {COMMA}번 경로로 건너뛰기 ({STRING} {STRING} {TT_TICKS}일 때)
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DISPLAY                     :[조건 경로] {COMMA}번 경로로 건너뛰기 (배차 일정 "{STRING}"의 {STRING}이 {STRING})
+
+STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY            :{1:STRING} 수송량의 {COMMA} 퍼센트
+STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY_REFIT      :개조될 {1:STRING} 수송량의 {COMMA} 퍼센트
 
 STR_ORDER_RELEASE_SLOT                                          :슬롯 해제: {STRING}
 
@@ -1818,6 +1842,11 @@ STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{STRING}: 선 {
 STR_PLANS_LIST_ITEM_LINE                                        : -- 선 #{NUM}: {NUM} 선분
 STR_PLANS_LIST_TOOLTIP                                          :{BLACK}더블 클릭하여 계획을 접거나 펼 수 있습니다.
 STR_PLANS_QUERY_RENAME_PLAN                                     :{WHITE}이름 바꾸기
+STR_PLANS_OWN_ONLY                                              :{BLACK}내 계획만
+STR_PLANS_OWN_ONLY_TOOLTIP                                      :{BLACK}내 회사 소유의 계획만 보여줍니다
+STR_SORT_BY_PLAN_ID                                             :계획 ID
+STR_SORT_BY_OWNER                                               :소유주
+STR_SORT_BY_DATE                                                :날짜
 
 STR_WARNING_LOADGAME_REMOVED_UNCORRECTABLE_VEHICLES             :{WHITE}게임을 불러오는 도중 수정 불가능한 오류 차량 {NUM}대가 제거되었습니다.
 
