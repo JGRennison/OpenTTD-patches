@@ -1519,8 +1519,9 @@ STR_ERROR_TRAIN_TOO_HEAVY                                       :{WHITE}{VEHICLE
 
 STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SELL_VEL                   :{CREAM}{PUSH_COLOUR}{RED}판매{POP_COLOUR}: {DEPOT} ({VELOCITY})
 
-STR_VEHICLE_LOAD_THROUGH_ABORTED_INSUFFICIENT_TRACK             :{WHITE}{VEHICLE}: {STATION}의 선로 길이가 충분하지 않아 차례로 나눠 싣기가 중단되었습니다.
-STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT                          :{WHITE}{VEHICLE}: {STATION}의 차량기지 때문에 차례로 나눠 싣기가 중단되었습니다.
+STR_VEHICLE_LOAD_THROUGH_ABORTED_INSUFFICIENT_TRACK             :{WHITE}{VEHICLE}: {STATION}의 선로 길이가 충분하지 않아 차례로 나눠 싣기가 중단되었습니다
+STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT                          :{WHITE}{VEHICLE}: {STATION}의 차량기지 때문에 차례로 나눠 싣기가 중단되었습니다
+STR_VEHICLE_LOAD_THROUGH_NOT_ALLOWED_PASSENGERS                 :{WHITE}{VEHICLE}: 승객은 나눠 싣기를 할 수 없습니다
 
 STR_RUNNING                                                     :{LTBLUE}운행 중
 
