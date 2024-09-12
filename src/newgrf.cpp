@@ -12,6 +12,7 @@
 #include <stdarg.h>
 
 #include "newgrf_internal.h"
+#include "core/backup_type.hpp"
 #include "core/container_func.hpp"
 #include "core/bit_cast.hpp"
 #include "debug.h"
@@ -156,6 +157,12 @@ public:
 	{
 		uint32_t val = ReadWord();
 		return val | (ReadWord() << 16);
+	}
+
+	uint32_t PeekDWord()
+	{
+		AutoRestoreBackup backup(this->data, this->data);
+		return this->ReadDWord();
 	}
 
 	uint32_t ReadVarSize(uint8_t size)
@@ -1950,7 +1957,7 @@ static ChangeInfoResult StationChangeInfo(uint stid, int numinfo, int prop, cons
 					NewGRFSpriteLayout *dts = &statspec->renderdata.emplace_back();
 					dts->consistent_max_offset = UINT16_MAX; // Spritesets are unknown, so no limit.
 
-					if (buf.HasData(4) && *(unaligned_uint32*)buf.Data() == 0) {
+					if (buf.HasData(4) && buf.PeekDWord() == 0) {
 						buf.Skip(4);
 						extern const DrawTileSprites _station_display_datas_rail[8];
 						dts->Clone(&_station_display_datas_rail[t % 8]);
