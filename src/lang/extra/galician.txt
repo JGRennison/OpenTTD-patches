@@ -1306,9 +1306,9 @@ STR_DEPARTURES_TIME                                             :{COLOUR}{STRING
 STR_DEPARTURES_TIME_DEP                                         :{COLOUR}{STRING} {GREEN}{UP_ARROW}
 STR_DEPARTURES_TIME_ARR                                         :{COLOUR}{STRING} {RED}{DOWN_ARROW}
 STR_DEPARTURES_TIME_BOTH                                        :{COLOUR}{STRING} {RED}{DOWN_ARROW} {COLOUR}{STRING} {GREEN}{UP_ARROW}
-STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STATION}{STRING}
-STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STATION}{STRING} vía {STRING}
-STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STATION}{STRING} vía
+STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STRING}{STRING}
+STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STRING}{STRING} vía {STRING}
+STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STRING}{STRING} vía
 STR_DEPARTURES_VIA                                              :{ORANGE}vía {STRING}
 STR_DEPARTURES_TOC                                              :{ORANGE}{COMPANY}
 STR_DEPARTURES_GROUP                                            :{ORANGE}{GROUP}
@@ -1374,8 +1374,6 @@ STR_CONFIG_DEPARTURE_CONDITIONALS_HELPTEXT                      :Cómo se deben 
 STR_CONFIG_DEPARTURE_CONDITIONALS_1                             :renunciando
 STR_CONFIG_DEPARTURE_CONDITIONALS_2                             :supoñendo que se collerán
 STR_CONFIG_DEPARTURE_CONDITIONALS_3                             :supoñendo que non se collerán
-STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS                             :Amosar todas as estacións que se chaman independentemente de se se carga/descarga: {STRING}
-STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS_HELPTEXT                    :Indica se se amosarán as estacións nas que o vehículo só carga na lista de 'Chamando'
 STR_CONFIG_DEPARTURE_MERGE_IDENTICAL                            :Combinar saídas idénticas: {STRING}
 STR_CONFIG_DEPARTURE_MERGE_IDENTICAL_HELPTEXT                   :Indica se as saídas idénticas se deberían combinar nunha única saída
 

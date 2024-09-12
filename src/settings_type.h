@@ -137,6 +137,16 @@ enum ShowSignalDefaultMode {
 	SSDM_RESTRICTED_RECOLOUR,
 };
 
+/** Whether to build public roads */
+enum PublicRoadsConstruction : uint8_t {
+	PRC_BEGIN = 0,
+	PRC_NONE = PRC_BEGIN,         ///< Generate no public roads
+	PRC_WITH_CURVES,              ///< Generate roads with lots of curves
+	PRC_AVOID_CURVES,             ///< Generate roads avoiding curves if possible
+
+	PRC_END
+};
+
 /** Settings related to time display. This may be loaded from the savegame and/or overriden by the client. */
 struct TimeSettings {
 	bool   time_in_minutes;                  ///< whether to use the hh:mm conversion when printing dates
@@ -248,10 +258,10 @@ struct GUISettings : public TimeSettings {
 	bool        departure_destination_type;                      ///< whether to show destination types for ports and airports
 	bool        departure_smart_terminus;                        ///< whether to only show passenger services
 	uint8_t     departure_conditionals;                          ///< how to handle conditional orders
-	bool        departure_show_all_stops;                        ///< whether to show stops regardless of loading/unloading done at them
 	bool        departure_merge_identical;                       ///< whether to merge identical departures
 	uint8_t     departure_default_mode;                          ///< default mode for non-waypoint departure board window
-	bool        departure_default_via;                           ///< default via type for non-waypoint departure board window
+	bool        departure_default_via;                           ///< default via type for station departure board window
+	bool        departure_default_show_empty;                    ///< default show empty mode for departure board window
 	RightClickClose right_click_wnd_close;                       ///< close window with right click
 	bool        pause_on_newgame;                                ///< whether to start new games paused or not
 	SignalGUISettings signal_gui_mode;                           ///< select which signal types are shown in the signal GUI
@@ -511,7 +521,7 @@ struct GameCreationSettings {
 	bool     lakes_allowed_in_deserts;       ///< are lakes allowed in deserts?
 	uint8_t  amount_of_rocks;                ///< the amount of rocks
 	uint8_t  height_affects_rocks;           ///< the affect that map height has on rocks
-	uint8_t  build_public_roads;             ///< build public roads connecting towns
+	PublicRoadsConstruction build_public_roads; ///< build public roads connecting towns
 };
 
 /** Settings related to construction in-game */

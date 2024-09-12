@@ -1775,10 +1775,6 @@ static void ChangeTrackTypeSortMode(int32_t new_value) {
 	MarkWholeScreenDirty();
 }
 
-static void PublicRoadsSettingChange(int32_t new_value) {
-	InvalidateWindowClassesData(WC_SCEN_LAND_GEN);
-}
-
 static void TrainSpeedAdaptationChanged(int32_t new_value) {
 	extern void ClearAllSignalSpeedRestrictions();
 	ClearAllSignalSpeedRestrictions();

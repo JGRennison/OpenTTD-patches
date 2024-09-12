@@ -1353,6 +1353,8 @@ STR_DEPARTURES_BOTH_SEPARATE                                    :Separate
 STR_DEPARTURES_DEPARTURE_MODE_TOOLTIP                           :{BLACK}Set whether to show departures and/or arrivals
 STR_DEPARTURES_TIMES_BUTTON                                     :{BLACK}Times
 STR_DEPARTURES_TIMES_TOOLTIP                                    :{BLACK}Show timetabled destination arrival times
+STR_DEPARTURES_EMPTY_BUTTON                                     :{BLACK}Empty
+STR_DEPARTURES_EMPTY_TOOLTIP                                    :{BLACK}Include departures, arrivals and stations called at where the vehicle is running empty or does not load/unload cargo.
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}Via
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Show timetabled vehicles that do not stop here
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}Show timetabled trains
@@ -1366,19 +1368,19 @@ STR_DEPARTURES_TIME                                             :{COLOUR}{STRING
 STR_DEPARTURES_TIME_DEP                                         :{COLOUR}{STRING1} {GREEN}{UP_ARROW}
 STR_DEPARTURES_TIME_ARR                                         :{COLOUR}{STRING1} {RED}{DOWN_ARROW}
 STR_DEPARTURES_TIME_BOTH                                        :{COLOUR}{STRING1} {RED}{DOWN_ARROW} {COLOUR}{STRING1} {GREEN}{UP_ARROW}
-STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STATION}{STRING}
-STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STATION}{STRING} via {STRING}
-STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STATION}{STRING} via
+STR_DEPARTURES_TERMINUS                                         :{ORANGE}{STRING2}{STRING}
+STR_DEPARTURES_TERMINUS_VIA_STATION                             :{ORANGE}{STRING2}{STRING} via {STRING}
+STR_DEPARTURES_TERMINUS_VIA                                     :{ORANGE}{STRING2}{STRING} via
 STR_DEPARTURES_VIA                                              :{ORANGE}via {STRING}
 STR_DEPARTURES_TOC                                              :{ORANGE}{COMPANY}
 STR_DEPARTURES_GROUP                                            :{ORANGE}{GROUP}
 STR_DEPARTURES_VEH                                              :{ORANGE}{VEHICLE}
 STR_DEPARTURES_CALLING_AT                                       :{ORANGE}Calling at:
-STR_DEPARTURES_CALLING_AT_STATION                               :{RAW_STRING}, {STRING2}
-STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{RAW_STRING} and {STRING2}
+STR_DEPARTURES_CALLING_AT_STATION                               :{RAW_STRING}, {STRING4}
+STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{RAW_STRING} and {STRING4}
 STR_DEPARTURES_CALLING_AT_LIST                                  :{ORANGE}{RAW_STRING}.
-STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{RAW_STRING}. This service continues to {STRING2}.
-STR_DEPARTURES_CALLING_AT_STATION_WITH_TIME                     :{STATION} ({TT_TIME_ABS})
+STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{RAW_STRING}. This service continues to {STRING4}.
+STR_DEPARTURES_CALLING_AT_STATION_WITH_TIME                     :{STRING2} ({TT_TIME_ABS})
 STR_DEPARTURES_TINY                                             :{TINY_FONT}{STRING2}
 STR_DEPARTURES_VIA_DESCRIPTOR                                   :{STRING1}{STRING}
 STR_DEPARTURES_VIA_AND                                          :{STRING} and {STRING}
@@ -1439,8 +1441,6 @@ STR_CONFIG_DEPARTURE_CONDITIONALS_HELPTEXT                      :How unpredictab
 STR_CONFIG_DEPARTURE_CONDITIONALS_1                             :giving up
 STR_CONFIG_DEPARTURE_CONDITIONALS_2                             :assuming they will be taken
 STR_CONFIG_DEPARTURE_CONDITIONALS_3                             :assuming they will not be taken
-STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS                             :Show all stations called at regardless of loading/unloading: {STRING2}
-STR_CONFIG_DEPARTURE_SHOW_ALL_STOPS_HELPTEXT                    :Whether stations that a vehicle only loads from will be shown in the calling at list
 STR_CONFIG_DEPARTURE_MERGE_IDENTICAL                            :Merge identical entries: {STRING2}
 STR_CONFIG_DEPARTURE_MERGE_IDENTICAL_HELPTEXT                   :Whether identical departure board entries should be merged into a single one
 

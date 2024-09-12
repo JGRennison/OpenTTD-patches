@@ -2317,7 +2317,6 @@ static SettingsContainer &GetSettingsTree()
 				departureboards->Add(new SettingEntry("gui.departure_destination_type"));
 				departureboards->Add(new SettingEntry("gui.departure_smart_terminus"));
 				departureboards->Add(new SettingEntry("gui.departure_conditionals"));
-				departureboards->Add(new SettingEntry("gui.departure_show_all_stops"));
 				departureboards->Add(new SettingEntry("gui.departure_merge_identical"));
 			}
 
