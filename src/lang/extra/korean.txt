@@ -1303,7 +1303,8 @@ STR_DEPARTURES_DEPARTURE_MODE_TOOLTIP                           :{BLACK}출발�
 STR_DEPARTURES_TIMES_BUTTON                                     :{BLACK}시각
 STR_DEPARTURES_TIMES_TOOLTIP                                    :{BLACK}시간표 상 목적지 도착 시각을 보여줍니다
 STR_DEPARTURES_EMPTY_BUTTON                                     :{BLACK}공차
-STR_DEPARTURES_EMPTY_TOOLTIP                                    :{BLACK}공차로 수송하거나, 화물을 싣고 내리지 않는 정차 역을 포함합니다.STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}경유
+STR_DEPARTURES_EMPTY_TOOLTIP                                    :{BLACK}공차로 수송하거나, 화물을 싣고 내리지 않는 정차 역을 포함합니다.
+STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}경유
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}통과 차량 표시
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}이 역의 시간표에 진입 중인 열차 표시
 STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}이 역의 시간표에 진입 중인 자동차 표시
