@@ -1329,7 +1329,7 @@ STR_DEPARTURES_CALLING_AT_STATION                               :{STRING}, {STRI
 STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{STRING} и {STRING}
 STR_DEPARTURES_CALLING_AT_LIST                                  :{ORANGE}{STRING}.
 STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{STRING}. Эта служба продолжает {STRING}.
-STR_DEPARTURES_CALLING_AT_STATION_WITH_TIME                     :{STATION} ({TT_TIME_ABS})
+STR_DEPARTURES_CALLING_AT_STATION_WITH_TIME                     :{STRING} ({TT_TIME_ABS})
 STR_DEPARTURES_TINY                                             :{TINY_FONT}{STRING}
 STR_DEPARTURES_VIA_DESCRIPTOR                                   :{STRING}{STRING}
 STR_DEPARTURES_VIA_AND                                          :{STRING} и {STRING}
