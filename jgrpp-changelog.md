@@ -2,6 +2,48 @@
 
 * * *
 
+### v0.62.0 (2024-09-14)
+* Fix the picker tool not updating the list of available items in build windows when changing the selected class.
+* Fix terraform of owned land or object tiles using automatic clear ground not removing water.
+* Fix station name exchange with stations which got their name from a nearby industry.
+* Fix small map window screenshots not working.
+* Fix crash when viewing game script strings after the game script has been replaced by a different script with no strings.
+* Routing restrictions:
+  * Fix crash when opening the cargo type dropdown.
+  * Add reverse at path signal sub-action.
+  * Automatic green signals for block signals on plain line when using realistic braking now takes into account the presence of wait-related routing restriction programs.
+  * Fix deleting a slot changing the subtype of referencing instructions.
+* Template-based train replacement:
+  * Fix clone template from train creating templates with the wrong owner.
+  * Fix wrong or missing engine sprite used in drag/drop cursor.
+* Departure boards:
+  * Add scheduled dispatch 24 hour timetable mode.
+  * Add button to show calling point arrival/departure times.
+  * Allow all arrival/departure modes for waypoints.
+  * Add departures support for depots.
+  * Change departure time text colour depending on via and non-load/unload type.
+  * Fix handling of conditional orders in arrivals mode.
+  * Fix smart terminus detection considering via and non-station departures.
+  * Allow depot and waypoint orders with wait times to be calling points.
+  * Increase maximum number of live departure entries.
+  * Various window layout and settings changes.
+* Scheduled dispatch:
+  * Fix duplicating orders not working with scheduled dispatch conditional orders.
+  * Fix renaming dispatch schedule tags which already had a name.
+* Orders windows:
+  * Fix clearing/preserving station IDs when changing conditional order variable.
+  * Add conditional order for waiting cargo as percentage of vehicle capacity.
+  * Move occupancy display/toggle to top bar.
+* Add sorting and name filtering to the plans window.
+* Avoid unnecessary reservation extensions when editing track under trains loading in stations.
+* Change small map window legend panel to resize depending on display mode.
+* Show train speed adaptation information in vehicle details window when enabled.
+* When turning on timetable automate, only reset the timetable start and lateness when auto-separation is also enabled.
+* Show a vehicle advice message if train through-load is ignored due to the train carrying passengers or the train being partially in a depot.
+* Always enable the public roads button in the scenario editor.
+* Change default hotkey for switch viewport vehicle route overlay mode to Ctrl+/.
+* Bump trunk base from commit f90172206615460d687339a1a663473025105f06 to commit 7116f143d51ddb9cec29af18ffcdaa93cd11d4d8.
+
 ### v0.61.0 (2024-08-23)
 * Fix crash in road pathfinder when path exceeds distance limit (2048 tiles).
 * Fix crash which could occur in build airport window.
