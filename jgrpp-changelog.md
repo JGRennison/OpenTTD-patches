@@ -73,7 +73,7 @@
 ### v0.60.2 (2024-07-11)
 * Fix crash opening landscape window when there are no available objects.
 * Fix crash which can occur when NewGRFs overwrite a recolour sprite with a normal sprite.
-* Fix one-way signalled bridges with parrallel diagonal tracks on the exit tile applying one-way behaviour to the bypassing track.
+* Fix one-way signalled bridges with parallel diagonal tracks on the exit tile applying one-way behaviour to the bypassing track.
 * Fix the acceleration/braking scaling setting not immediately updating running trains when the setting is changed, this could cause multiplayer desyncs.
 * Fix the pathfinder not considering a signalled tunnel/bridge entrance or exit tile as a valid place to end a reservation in some cases.
 * Bump trunk base from commit b2218e75d4dea4261c6638579d3e501080b85bdc to commit 45886e50b21fd1dee461e910267781e264574790.
