@@ -1178,9 +1178,6 @@ STR_ERROR_CANNOT_USE_SELF                                       :{WHITE}Non se p
 STR_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS               :{WHITE}Non se pode condicionalmente depender de sinais bidirecionais
 STR_ERROR_INVALID_SIGNAL                                        :{WHITE}O sinal non é válido
 
-STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_ROAD_TO_WAYPOINT               :{BLACK}Convertir estrada en punto de ruta. Ctrl permite unir puntos de ruta. Shift alterna entre construír ou amosar o coste estimado
-STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_TRAM_TO_WAYPOINT               :{BLACK}Convertir tranvía en punto de ruta. Ctrl permite unir puntos de ruta. Shift alterna entre construír ou amosar o coste estimado
-
 STR_WATERWAYS_TOOLBAR_CREATE_RIVER_IN_GAME_TOOLTIP              :{BLACK}Colocar ríos
 
 STR_LANDSCAPING_TOOLTIP_RULER_TOOL                              :{BLACK}Usa unha regra virtual para medir a distancia e altura
@@ -1839,9 +1836,6 @@ STR_ERROR_BUILDING_IS_TOO_OLD                                   :{WHITE}... a co
 STR_ERROR_BUILDING_IS_TOO_MODERN                                :{WHITE}... a construción é demasiado moderna.
 STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN                    :{WHITE}... só se permite unha construción deste tipo na localidade.
 STR_ERROR_TOO_MANY_DOCKS                                        :{WHITE}Demasiados portos
-STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Non se pode construír un punto de ruta de estrada aqui...
-STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Non se pode eliminar o punto de ruta aqui...
-STR_ERROR_MUST_REMOVE_ROADWAYPOINT_FIRST                        :{WHITE}Debes eliminar o punto de ruta de estrada primeiro
 STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}... tipo de sinal non axeitado
 STR_ERROR_RESTRICTED_SIGNAL                                     :{WHITE}... o sinal ten un programa de restrición de ruta adxunto
 STR_ERROR_SIGNAL_CHANGES                                        :{WHITE}O número de avaliacións de pre-sinais programables excedeu o límite.
@@ -1859,8 +1853,6 @@ STR_ERROR_CANT_PURCHASE_OTHER_COMPANY_DEPOT                     :{WHITE}O depós
 STR_ERROR_DEPOT_HAS_WRONG_RAIL_TYPE                             :{WHITE}O depósito non pode ser usado para construír trens con este tipo de vías.
 
 STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING                 :{WHITE}Achegándose tren en movemento...
-
-STR_ERROR_NO_ROAD_WAYPOINT                                      :{WHITE}Non hai punto de ruta de estrada...
 
 # Plan related errors
 STR_ERROR_TOO_MANY_PLANS                                        :{WHITE}... demasiados avións
@@ -2207,8 +2199,6 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Vender u
 STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Non se pode comprar un 25% das accións desta compañía...
 STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Non se pode vender un 25% das accións desta compañía...
 STR_ERROR_PROTECTED                                             :{WHITE}Esta compañía aínda non é suficientemente antiga para comerciar con accións...
-
-STR_TOWN_DIRECTORY_INFO                                         :{BLACK}{STRING}, Vilas: {COMMA}
 
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR                         :{BLACK}Barra de ferramentas principal máis grande
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP                 :{BLACK}Marca esta caixa para aumentar a escala da barra de ferramentas principal

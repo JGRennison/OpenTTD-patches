@@ -5214,7 +5214,7 @@ static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				[[fallthrough]];
 			case 0x0C: // The draw mode
-				rs->draw_mode = (RoadStopDrawMode)buf.ReadByte();
+				rs->draw_mode = static_cast<RoadStopDrawMode>(buf.ReadByte());
 				break;
 
 			case A0RPI_ROADSTOP_TRIGGER_CARGOES:
@@ -5257,7 +5257,7 @@ static ChangeInfoResult RoadStopChangeInfo(uint id, int numinfo, int prop, const
 				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
 				[[fallthrough]];
 			case 0x12: // General flags
-				rs->flags = (uint16_t)buf.ReadDWord(); // Future-proofing, size this as 4 bytes, but we only need two bytes' worth of flags at present
+				rs->flags = (uint16_t)buf.ReadDWord(); // Future-proofing, size this as 4 bytes, but we only need two byte's worth of flags at present
 				break;
 
 			case A0RPI_ROADSTOP_MIN_BRIDGE_HEIGHT:
@@ -7333,6 +7333,7 @@ static constexpr auto _action5_types = std::to_array<Action5Type>({
 	/* 0x16 */ { A5BLOCK_ALLOW_OFFSET, SPR_AIRPORT_PREVIEW_BASE,     1, SPR_AIRPORT_PREVIEW_COUNT,                   "Airport preview graphics" },
 	/* 0x17 */ { A5BLOCK_ALLOW_OFFSET, SPR_RAILTYPE_TUNNEL_BASE,     1, RAILTYPE_TUNNEL_BASE_COUNT,                  "Railtype tunnel base"     },
 	/* 0x18 */ { A5BLOCK_ALLOW_OFFSET, SPR_PALETTE_BASE,             1, PALETTE_SPRITE_COUNT,                        "Palette"                  },
+	/* 0x19 */ { A5BLOCK_ALLOW_OFFSET, SPR_ROAD_WAYPOINTS_BASE,      1, ROAD_WAYPOINTS_SPRITE_COUNT,                 "Road waypoints"           },
 });
 
 /**

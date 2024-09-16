@@ -152,7 +152,7 @@ public:
 			/* Cycle through the drawing modes */
 			ChangeRenderMode(this->viewport, wheel < 0);
 			this->SetDirty();
-		} else if (_settings_client.gui.scrollwheel_scrolling != 2) {
+		} else if (_settings_client.gui.scrollwheel_scrolling != SWS_OFF) {
 			ZoomInOrOutToCursorWindow(wheel < 0, this);
 		}
 	}

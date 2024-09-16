@@ -1181,9 +1181,6 @@ STR_ERROR_CANNOT_USE_SELF                                       :{WHITE}Нево
 STR_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS               :{WHITE}Не может условно зависеть от двунаправленных сигналов
 STR_ERROR_INVALID_SIGNAL                                        :{WHITE}Недопустимый сигнал
 
-STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_ROAD_TO_WAYPOINT               :{BLACK}Преобразовать дорогу в маршрутную точку. Ctrl включает соединение маршрутных точек. Shift переключает построение/показ сметы расходов
-STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_TRAM_TO_WAYPOINT               :{BLACK}Преобразовать трамвайный путь в маршрутную точку. Ctrl включает соединение маршрутных точек. Shift переключает построение/показ сметы расходов
-
 STR_WATERWAYS_TOOLBAR_CREATE_RIVER_IN_GAME_TOOLTIP              :{BLACK}Разместить реки
 
 STR_LANDSCAPING_TOOLTIP_RULER_TOOL                              :{BLACK}Использовать виртуальную линейку для измерения расстояния и высоты
@@ -1872,9 +1869,6 @@ STR_ERROR_BUILDING_IS_TOO_OLD                                   :{WHITE}... зд
 STR_ERROR_BUILDING_IS_TOO_MODERN                                :{WHITE}... здание слишком новое.
 STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN                    :{WHITE}... в городе разрешено только одно здание такого типа.
 STR_ERROR_TOO_MANY_DOCKS                                        :{WHITE}Слишком много доков
-STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Невозможно построить здесь дорожную маршрутную точку...
-STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Невозможно удалить дорожную маршрутную точку здесь...
-STR_ERROR_MUST_REMOVE_ROADWAYPOINT_FIRST                        :{WHITE}Сначала необходимо удалить дорожную маршрутную точку
 STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}... неподходящий тип сигнала
 STR_ERROR_RESTRICTED_SIGNAL                                     :{WHITE}... сигнал прикреплён программу ограничения маршрутизации
 STR_ERROR_SIGNAL_CHANGES                                        :{WHITE}Превышен предел количество программируемых пресигналов
@@ -1892,8 +1886,6 @@ STR_ERROR_CANT_PURCHASE_OTHER_COMPANY_DEPOT                     :{WHITE}Депо
 STR_ERROR_DEPOT_HAS_WRONG_RAIL_TYPE                             :{WHITE}Депо нельзя использовать для постройки поездов с этим типом рельсов.
 
 STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING                 :{WHITE}Приближается поезд...
-
-STR_ERROR_NO_ROAD_WAYPOINT                                      :{WHITE}Отсутствует дорожная маршрутная точка
 
 # Plan related errors
 STR_ERROR_TOO_MANY_PLANS                                        :{WHITE}... слишком много планов
@@ -2242,8 +2234,6 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Прод
 STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Невозможно купить 25% акций этой компании...
 STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Невозможно продать 25% акций этой компании...
 STR_ERROR_PROTECTED                                             :{WHITE}Эта компания ещё не выпускает акции...
-
-STR_TOWN_DIRECTORY_INFO                                         :{BLACK}{STRING}, Города: {COMMA}
 
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR                         :{BLACK}Увеличенная главная панель инструментов
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP                 :{BLACK}Установите этот флажок, чтобы увеличить масштаб главной панели инструментов

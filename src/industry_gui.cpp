@@ -1188,6 +1188,13 @@ public:
 		}
 	}
 
+	void OnMouseWheel(int wheel) override
+	{
+		if (_settings_client.gui.scrollwheel_scrolling != SWS_OFF) {
+			DoZoomInOutWindow(wheel < 0 ? ZOOM_IN : ZOOM_OUT, this);
+		}
+	}
+
 	void OnQueryTextFinished(char *str) override
 	{
 		if (StrEmpty(str)) return;
@@ -1290,7 +1297,7 @@ void ShowIndustryViewWindow(int industry)
 static constexpr NWidgetPart _nested_industry_directory_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
-		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_INDUSTRY_DIRECTORY_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_ID_CAPTION), SetDataTip(STR_INDUSTRY_DIRECTORY_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
 		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
@@ -1725,6 +1732,11 @@ public:
 	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
+			case WID_ID_CAPTION:
+				SetDParam(0, this->vscroll->GetCount());
+				SetDParam(1, Industry::GetNumItems());
+				break;
+
 			case WID_ID_DROPDOWN_CRITERIA:
 				SetDParam(0, IndustryDirectoryWindow::sorter_names[this->industries.SortType()]);
 				break;

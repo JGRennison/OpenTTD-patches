@@ -195,9 +195,6 @@ static void LoadSpriteTables()
 	/* Misc GUI sprites. */
 	LoadGrfFile("misc_gui.grf", SPR_MISC_GUI_BASE, false);
 
-	/* Road waypoints sprites. */
-	LoadGrfFile("road_waypoints.grf", SPR_ROAD_WAYPOINTS_BASE, false);
-
 	/* Fill duplicate original signal graphics sprite block */
 	for (uint i = 0; i < DUP_ORIGINAL_SIGNALS_SPRITE_COUNT; i++) {
 		DupSprite(SPR_ORIGINAL_SIGNALS_BASE + i, SPR_DUP_ORIGINAL_SIGNALS_BASE + i);

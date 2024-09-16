@@ -969,9 +969,6 @@ STR_ERROR_CANNOT_USE_SELF                                       :{WHITE}Kann kei
 STR_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS               :{WHITE}Kann nicht bedingt von einem bidirektionalen Signal abhängen
 STR_ERROR_INVALID_SIGNAL                                        :{WHITE}Ungültiges Signal
 
-STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_ROAD_TO_WAYPOINT               :{BLACK}Wandle Straße in Wegpunkt um. Strg aktiviert das Verbinden von Wegpunkten. Umschalt schaltet zwischen Bauen und Kostenvoranschlag um
-STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_TRAM_TO_WAYPOINT               :{BLACK}Wandle Straßenbahngleis in Wegpunkt um. Strg aktiviert das Verbinden von Wegpunkten. Umschalt schaltet zwischen Bauen und Kostenvoranschlag um
-
 STR_WATERWAYS_TOOLBAR_CREATE_RIVER_IN_GAME_TOOLTIP              :{BLACK}Flüsse platzieren
 
 STR_LANDSCAPING_TOOLTIP_RULER_TOOL                              :{BLACK}Benutze einen virtuellen Zollstock, um Entfernung und Höhe zu messen
@@ -1491,9 +1488,6 @@ STR_ERROR_BUILDING_IS_TOO_OLD                                   :{WHITE}... Geb�
 STR_ERROR_BUILDING_IS_TOO_MODERN                                :{WHITE}... Gebäude ist zu modern
 STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN                    :{WHITE}... nur ein Gebäude dieses Typs ist in einer Stadt erlaubt
 STR_ERROR_TOO_MANY_DOCKS                                        :{WHITE}Zu viele Docks
-STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Wegpunkt kann hier nicht gebaut werden...
-STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Wegpunkt kann hier nicht entfernt werden...
-STR_ERROR_MUST_REMOVE_ROADWAYPOINT_FIRST                        :{WHITE}Wegpunkt muss erst abgerissen werden
 STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}... ungeeignete Signalart
 STR_ERROR_SIGNAL_CHANGES                                        :{WHITE}Anzahl der Auswertungen von programmierbaren Signalen übersteigt das Limit
 
@@ -1510,8 +1504,6 @@ STR_ERROR_CANT_PURCHASE_OTHER_COMPANY_DEPOT                     :{WHITE}Depot is
 STR_ERROR_DEPOT_HAS_WRONG_RAIL_TYPE                             :{WHITE}Depot kann nicht für die Erzeugung von Zügen dieses Gleistyps verwendet werden.
 
 STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING                 :{WHITE}Herannahneder Zug ...
-
-STR_ERROR_NO_ROAD_WAYPOINT                                      :{WHITE}Da ist kein Wegpunkt ...
 
 # Plan related errors
 STR_ERROR_TOO_MANY_PLANS                                        :{WHITE}... zu viele Pläne

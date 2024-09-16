@@ -783,6 +783,13 @@ public:
 		}
 	}
 
+	void OnMouseWheel(int wheel) override
+	{
+		if (_settings_client.gui.scrollwheel_scrolling != SWS_OFF) {
+			DoZoomInOutWindow(wheel < 0 ? ZOOM_IN : ZOOM_OUT, this);
+		}
+	}
+
 	/**
 	 * Some data on this window has become invalid.
 	 * @param data Information about the changed data.
@@ -889,7 +896,7 @@ void ShowTownViewWindow(TownID town)
 static constexpr NWidgetPart _nested_town_directory_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
-		NWidget(WWT_CAPTION, COLOUR_BROWN), SetDataTip(STR_TOWN_DIRECTORY_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_TD_CAPTION), SetDataTip(STR_TOWN_DIRECTORY_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_SHADEBOX, COLOUR_BROWN),
 		NWidget(WWT_DEFSIZEBOX, COLOUR_BROWN),
 		NWidget(WWT_STICKYBOX, COLOUR_BROWN),
@@ -904,7 +911,7 @@ static constexpr NWidgetPart _nested_town_directory_widgets[] = {
 			NWidget(WWT_PANEL, COLOUR_BROWN, WID_TD_LIST), SetDataTip(0x0, STR_TOWN_DIRECTORY_LIST_TOOLTIP),
 							SetFill(1, 0), SetResize(1, 1), SetScrollbar(WID_TD_SCROLLBAR), EndContainer(),
 			NWidget(WWT_PANEL, COLOUR_BROWN),
-				NWidget(WWT_TEXT, COLOUR_BROWN, WID_TD_WORLD_POPULATION), SetPadding(2, 0, 2, 2), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_TOWN_DIRECTORY_INFO, STR_NULL),
+				NWidget(WWT_TEXT, COLOUR_BROWN, WID_TD_WORLD_POPULATION), SetPadding(2, 0, 2, 2), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_TOWN_POPULATION, STR_NULL),
 			EndContainer(),
 		EndContainer(),
 		NWidget(NWID_VERTICAL),
@@ -1022,10 +1029,13 @@ public:
 	void SetStringParameters(WidgetID widget) const override
 	{
 		switch (widget) {
+			case WID_TD_CAPTION:
+				SetDParam(0, this->vscroll->GetCount());
+				SetDParam(1, Town::GetNumItems());
+				break;
+
 			case WID_TD_WORLD_POPULATION:
-				SetDParam(0, STR_TOWN_POPULATION);
-				SetDParam(1, GetWorldPopulation());
-				SetDParam(2, Town::GetNumItems());
+				SetDParam(0, GetWorldPopulation());
 				break;
 
 			case WID_TD_SORT_CRITERIA:
@@ -1129,10 +1139,8 @@ public:
 				break;
 			}
 			case WID_TD_WORLD_POPULATION: {
-				SetDParam(0, STR_TOWN_POPULATION);
-				SetDParamMaxDigits(1, 10);
-				SetDParamMaxDigits(2, 5);
-				Dimension d = GetStringBoundingBox(STR_TOWN_DIRECTORY_INFO);
+				SetDParamMaxDigits(0, 10);
+				Dimension d = GetStringBoundingBox(STR_TOWN_POPULATION);
 				d.width += padding.width;
 				d.height += padding.height;
 				size = maxdim(size, d);

@@ -1181,9 +1181,6 @@ STR_ERROR_CANNOT_USE_SELF                                       :{WHITE}자신�
 STR_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS               :{WHITE}양방향 신호기를 설정할 수 없습니다.
 STR_ERROR_INVALID_SIGNAL                                        :{WHITE}유효하지 않은 신호기
 
-STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_ROAD_TO_WAYPOINT               :{BLACK}도로에 경유지를 건설합니다. CTRL 키를 사용하면 근처 경유지와 연결할 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
-STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_TRAM_TO_WAYPOINT               :{BLACK}전찻길에 경유지를 건설합니다. CTRL 키를 사용하면 근처 경유지와 연결할 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
-
 STR_WATERWAYS_TOOLBAR_CREATE_RIVER_IN_GAME_TOOLTIP              :{BLACK}강 만들기
 
 STR_LANDSCAPING_TOOLTIP_RULER_TOOL                              :{BLACK}거리와 고도를 측정하기 위한 가상의 자를 사용합니다.
@@ -1871,9 +1868,6 @@ STR_ERROR_BUILDING_IS_TOO_OLD                                   :{WHITE}... 건�
 STR_ERROR_BUILDING_IS_TOO_MODERN                                :{WHITE}... 아직 건물을 지을 수 없습니다.
 STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN                    :{WHITE}... 이 종류의 건물은 오직 하나만 지을 수 있습니다.
 STR_ERROR_TOO_MANY_DOCKS                                        :{WHITE}항구가 너무 많습니다!
-STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}여기에 도로 경유지를 설치할 수 없습니다...
-STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}이 도로 경유지를 제거할 수 없습니다...
-STR_ERROR_MUST_REMOVE_ROADWAYPOINT_FIRST                        :{WHITE}도로 경유지를 먼저 제거하십시오
 STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}... 적절하지 않은 신호기 종류입니다
 STR_ERROR_RESTRICTED_SIGNAL                                     :{WHITE}... 신호기에 경로 제한 프로그램이 있습니다
 STR_ERROR_SIGNAL_CHANGES                                        :{WHITE}프로그램 신호기가 한 번에 바꿀 수 있는 제한 횟수를 넘어섰습니다.
@@ -1891,8 +1885,6 @@ STR_ERROR_CANT_PURCHASE_OTHER_COMPANY_DEPOT                     :{WHITE}기지�
 STR_ERROR_DEPOT_HAS_WRONG_RAIL_TYPE                             :{WHITE}이 선로 종류에 맞는 차량을 건설할 수 없는 차량기지입니다
 
 STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING                 :{WHITE}움직이는 열차가 접근 중입니다...
-
-STR_ERROR_NO_ROAD_WAYPOINT                                      :{WHITE}도로 경유지가 없습니다...
 
 # Plan related errors
 STR_ERROR_TOO_MANY_PLANS                                        :{WHITE}... 계획 수가 너무 많습니다
@@ -2241,8 +2233,6 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}이 회�
 STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}이 회사 지분의 25%를 매입할 수 없습니다...
 STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}이 회사 지분의 25%를 매도할 수 없습니다...
 STR_ERROR_PROTECTED                                             :{WHITE}이 회사는 지분을 거래할 수 있을 만큼 오래되지 않았습니다...
-
-STR_TOWN_DIRECTORY_INFO                                         :{BLACK}{STRING}, 도시: {COMMA}
 
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR                         :{BLACK}큰 메인 메뉴
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP                 :{BLACK}메인 메뉴의 크기를 키우려면 이 항목에 체크하세요

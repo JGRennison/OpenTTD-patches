@@ -352,7 +352,7 @@ void DrawRoadStopTile(int x, int y, RoadType roadtype, const RoadStopSpec *spec,
 
 	RoadStopDrawMode draw_mode;
 	if (HasBit(spec->flags, RSF_DRAW_MODE_REGISTER)) {
-		draw_mode = (RoadStopDrawMode)GetRegister(0x100);
+		draw_mode = static_cast<RoadStopDrawMode>(GetRegister(0x100));
 	} else {
 		draw_mode = spec->draw_mode;
 	}

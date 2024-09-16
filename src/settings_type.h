@@ -131,6 +131,13 @@ enum ViewportScrollMode {
 	VSM_END,                ///< Number of scroll mode settings.
 };
 
+/** Settings related to scroll wheel behavior. */
+enum ScrollWheelScrollingSetting {
+	SWS_ZOOM_MAP = 0,       ///< Scroll wheel zooms the map.
+	SWS_SCROLL_MAP = 1,     ///< Scroll wheel scrolls the map.
+	SWS_OFF = 2             ///< Scroll wheel has no effect.
+};
+
 enum ShowSignalDefaultMode {
 	SSDM_OFF,
 	SSDM_ON,

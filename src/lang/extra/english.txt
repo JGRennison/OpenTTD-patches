@@ -1231,9 +1231,6 @@ STR_ERROR_CANNOT_USE_SELF                                       :{WHITE}Can't co
 STR_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS               :{WHITE}Cannot conditionally depend upon bidirectional signals
 STR_ERROR_INVALID_SIGNAL                                        :{WHITE}Invalid signal
 
-STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_ROAD_TO_WAYPOINT               :{BLACK}Convert road to waypoint. Ctrl enables joining waypoints. Shift toggles building/showing cost estimate
-STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_TRAM_TO_WAYPOINT               :{BLACK}Convert tram to waypoint. Ctrl enables joining waypoints. Shift toggles building/showing cost estimate
-
 STR_WATERWAYS_TOOLBAR_CREATE_RIVER_IN_GAME_TOOLTIP              :{BLACK}Place rivers
 
 STR_LANDSCAPING_TOOLTIP_RULER_TOOL                              :{BLACK}Use a virtual ruler to measure distance and height
@@ -1926,9 +1923,6 @@ STR_ERROR_BUILDING_IS_TOO_OLD                                   :{WHITE}... buil
 STR_ERROR_BUILDING_IS_TOO_MODERN                                :{WHITE}... building is too modern.
 STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN                    :{WHITE}... only one building of this type is allowed in a town.
 STR_ERROR_TOO_MANY_DOCKS                                        :{WHITE}Too many docks
-STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Can't build road waypoint here...
-STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Can't remove road waypoint here...
-STR_ERROR_MUST_REMOVE_ROADWAYPOINT_FIRST                        :{WHITE}Must remove road waypoint first
 STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}... unsuitable signal type
 STR_ERROR_RESTRICTED_SIGNAL                                     :{WHITE}... signal has attached routing restriction program
 STR_ERROR_SIGNAL_CHANGES                                        :{WHITE}Number of programmable pre-signal evaluations exceeded limit
@@ -1946,8 +1940,6 @@ STR_ERROR_CANT_PURCHASE_OTHER_COMPANY_DEPOT                     :{WHITE}Depot is
 STR_ERROR_DEPOT_HAS_WRONG_RAIL_TYPE                             :{WHITE}Depot cannot be used to build trains with this rail type.
 
 STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING                 :{WHITE}Moving train approaching...
-
-STR_ERROR_NO_ROAD_WAYPOINT                                      :{WHITE}There is no road waypoint
 
 # Plan related errors
 STR_ERROR_TOO_MANY_PLANS                                        :{WHITE}... too many plans
@@ -2299,8 +2291,6 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Sell 25%
 STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Can't buy 25% share in this company...
 STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Can't sell 25% share in this company...
 STR_ERROR_PROTECTED                                             :{WHITE}This company is not old enough to trade shares yet...
-
-STR_TOWN_DIRECTORY_INFO                                         :{BLACK}{STRING1}, Towns: {COMMA}
 
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR                         :{BLACK}Bigger main toolbar
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP                 :{BLACK}Check this box to increase the scale of the main toolbar

@@ -1065,9 +1065,6 @@ STR_ERROR_CANNOT_USE_SELF                                       :{WHITE}Nelze ko
 STR_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS               :{WHITE}Nelze podmíněně záviset na obousměrných návěstidlech
 STR_ERROR_INVALID_SIGNAL                                        :{WHITE}Neplatné návěstidlo
 
-STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_ROAD_TO_WAYPOINT               :{BLACK}Postavit na silnici směrovací bod. Ctrl zapíná spojování směrovacích bodů. Shift vyvolá zobrazení odhadu ceny
-STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_TRAM_TO_WAYPOINT               :{BLACK}Postavit na tramvajové trati směrovací bod. Ctrl zapíná spojování směrovacích bodů. Shift vyvolá zobrazení odhadu ceny
-
 STR_WATERWAYS_TOOLBAR_CREATE_RIVER_IN_GAME_TOOLTIP              :{BLACK}Vytvářet řeky
 
 STR_LANDSCAPING_TOOLTIP_RULER_TOOL                              :{BLACK}Použít virtuální pravítko pro měření vzdálenosti a výšky
@@ -1668,9 +1665,6 @@ STR_ERROR_BUILDING_IS_TOO_OLD                                   :{WHITE}... budo
 STR_ERROR_BUILDING_IS_TOO_MODERN                                :{WHITE}... budova je přílš moderní.
 STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN                    :{WHITE}... ve městě je povolena pouze jedna budova tohoto typu.
 STR_ERROR_TOO_MANY_DOCKS                                        :{WHITE}Příliš mnoho přístavů
-STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Zde nelze postavit silniční směrovací bod...
-STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Nelze odebrat silniční směrovací bod...
-STR_ERROR_MUST_REMOVE_ROADWAYPOINT_FIRST                        :{WHITE}Je nutné nejprve odstranit silniční směrovací bod
 STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}... nevhodný typ návěstidla
 STR_ERROR_SIGNAL_CHANGES                                        :{WHITE}Počet vyhodnocení programovatelných před-návěstidel překročil mez
 
@@ -1687,8 +1681,6 @@ STR_ERROR_CANT_PURCHASE_OTHER_COMPANY_DEPOT                     :{WHITE}Depo pat
 STR_ERROR_DEPOT_HAS_WRONG_RAIL_TYPE                             :{WHITE}Depo nelze využít pro nákup vozidel na tento typ dráhy.
 
 STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING                 :{WHITE}Blíží se vlak...
-
-STR_ERROR_NO_ROAD_WAYPOINT                                      :{WHITE}Není zde žádný silniční směrovací bod
 
 # Plan related errors
 STR_ERROR_TOO_MANY_PLANS                                        :{WHITE}... příliš mnoho plánů
@@ -1970,8 +1962,6 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}Prodat 2
 STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}Nelze koupit podíl v této společnosti...
 STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}Nelze prodat podíl v této společnosti...
 STR_ERROR_PROTECTED                                             :{WHITE}Tato společnost zatím neobchoduje s akciemi...
-
-STR_TOWN_DIRECTORY_INFO                                         :{BLACK}{STRING}, počet měst: {COMMA}
 
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR                         :{BLACK}Zvětšit hlavní lištu
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP                 :{BLACK}Zaškrtni pro zvětšení hlavní lišty nástrojů

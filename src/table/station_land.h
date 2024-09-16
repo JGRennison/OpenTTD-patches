@@ -763,14 +763,14 @@ static const DrawTileSeqStruct _station_display_datas_0171[] = {
 	TILE_SEQ_END()
 };
 
-/* drive-through bus stop X */
+/* road waypoint X */
 static const DrawTileSeqStruct _station_display_datas_road_waypoint_X[] = {
 	TILE_SEQ_LINE( 0,  0,  0,  16,  3, 16, SPR_ROAD_WAYPOINT_X_W | (1U << PALETTE_MODIFIER_COLOUR))
 	TILE_SEQ_LINE( 0, 13,  0,  16,  3, 16, SPR_ROAD_WAYPOINT_X_E | (1U << PALETTE_MODIFIER_COLOUR))
 	TILE_SEQ_END()
 };
 
-/* drive-through bus stop Y */
+/* road waypoint Y */
 static const DrawTileSeqStruct _station_display_datas_road_waypoint_Y[] = {
 	TILE_SEQ_LINE(13,  0,  0,  3,  16, 16, SPR_ROAD_WAYPOINT_Y_W | (1U << PALETTE_MODIFIER_COLOUR))
 	TILE_SEQ_LINE( 0,  0,  0,  3,  16, 16, SPR_ROAD_WAYPOINT_Y_E | (1U << PALETTE_MODIFIER_COLOUR))

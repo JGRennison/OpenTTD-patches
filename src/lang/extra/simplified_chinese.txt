@@ -1180,9 +1180,6 @@ STR_ERROR_CANNOT_USE_SELF                                       :{WHITE}不能�
 STR_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS               :{WHITE}不能有条件地依赖于双向信号
 STR_ERROR_INVALID_SIGNAL                                        :{WHITE}无效信号
 
-STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_ROAD_TO_WAYPOINT               :{BLACK}在道路上建设路点{}按住 Ctrl 键加入路点。按住 Shift 键显示费用
-STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_TRAM_TO_WAYPOINT               :{BLACK}在电车道上建设路点{}按住 Ctrl 键加入路点。按住 Shift 键显示费用
-
 STR_WATERWAYS_TOOLBAR_CREATE_RIVER_IN_GAME_TOOLTIP              :{BLACK}放置河流
 
 STR_LANDSCAPING_TOOLTIP_RULER_TOOL                              :{BLACK}使用虚拟直尺来测量距离和高度差
@@ -1844,9 +1841,6 @@ STR_ERROR_BUILDING_IS_TOO_OLD                                   :{WHITE}……�
 STR_ERROR_BUILDING_IS_TOO_MODERN                                :{WHITE}……此建筑太新了
 STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN                    :{WHITE}……此建筑在一个城镇里最多只允许存在一个
 STR_ERROR_TOO_MANY_DOCKS                                        :{WHITE}船坞太多了
-STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}不能在这里建立道路路点
-STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}不能在这里拆除道路路点
-STR_ERROR_MUST_REMOVE_ROADWAYPOINT_FIRST                        :{WHITE}必须先拆除道路路点
 STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}……不适合的信号类型
 STR_ERROR_RESTRICTED_SIGNAL                                     :{WHITE}……信号已配置寻路限制程序
 STR_ERROR_SIGNAL_CHANGES                                        :{WHITE}可编程逻辑信号评估次数超过限制
@@ -1864,8 +1858,6 @@ STR_ERROR_CANT_PURCHASE_OTHER_COMPANY_DEPOT                     :{WHITE}车库�
 STR_ERROR_DEPOT_HAS_WRONG_RAIL_TYPE                             :{WHITE}车库不能被用来建设需要这种类型的铁轨的列车
 
 STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING                 :{WHITE}列车已占用此轨道……
-
-STR_ERROR_NO_ROAD_WAYPOINT                                      :{WHITE}这里没有道路路点……
 
 # Plan related errors
 STR_ERROR_TOO_MANY_PLANS                                        :{WHITE}……计划太多了
@@ -2214,8 +2206,6 @@ STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}出售�
 STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}不能购买此公司的股份……
 STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}不能出售此公司的股份……
 STR_ERROR_PROTECTED                                             :{WHITE}这个公司刚刚开业，还不能进行股权交易……
-
-STR_TOWN_DIRECTORY_INFO                                         :{BLACK}{STRING}，城镇：{COMMA}
 
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR                         :{BLACK}更大的主工具栏
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP                 :{BLACK}增加主工具栏的大小

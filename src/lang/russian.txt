@@ -947,9 +947,11 @@ STR_SMALLMAP_TOWN                                               :{TINY_FONT}{WHI
 STR_SMALLMAP_DISABLE_ALL                                        :{BLACK}Выключить все
 STR_SMALLMAP_ENABLE_ALL                                         :{BLACK}Включить все
 STR_SMALLMAP_SHOW_HEIGHT                                        :{BLACK}Рельеф
+STR_SMALLMAP_SHOW_INDUSTRY_NAMES                                :{BLACK}Показывать названия предприятий
 STR_SMALLMAP_TOOLTIP_DISABLE_ALL_INDUSTRIES                     :{BLACK}Скрыть все предприятия на карте
 STR_SMALLMAP_TOOLTIP_ENABLE_ALL_INDUSTRIES                      :{BLACK}Показать все предприятия на карте
 STR_SMALLMAP_TOOLTIP_SHOW_HEIGHT                                :{BLACK}Отображение рельефа на карте
+STR_SMALLMAP_TOOLTIP_SHOW_INDUSTRY_NAMES                        :{BLACK}Показать/убрать названия предприятий
 STR_SMALLMAP_TOOLTIP_DISABLE_ALL_COMPANIES                      :{BLACK}Скрыть собственность всех компаний
 STR_SMALLMAP_TOOLTIP_ENABLE_ALL_COMPANIES                       :{BLACK}Показать собственность всех компаний на карте
 STR_SMALLMAP_TOOLTIP_DISABLE_ALL_CARGOS                         :{BLACK}Не отображать грузы на карте
@@ -3055,6 +3057,8 @@ STR_ROAD_TOOLBAR_TOOLTIP_BUILD_AUTOROAD                         :{BLACK}Стро
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_AUTOTRAM                         :{BLACK}Строительство трамвайных путей в автоматическом режиме. Ctrl+щелчок - удаление путей. При нажатом Shift - оценка стоимости строительства.
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_VEHICLE_DEPOT               :{BLACK}Строительство гаражей (для приобретения и обслуживания автомобилей). При нажатом Shift{NBSP}- оценка стоимости строительства.
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAM_VEHICLE_DEPOT               :{BLACK}Строительство трамвайных депо (для приобретения и обслуживания трамваев). При нажатом Shift - оценка стоимости строительства.
+STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_ROAD_TO_WAYPOINT               :{BLACK}Установка маршрутных точек на дорогах. Ctrl+щелчок по другой точке объединит их. При нажатом Shift - оценка стоимости строительства.
+STR_ROAD_TOOLBAR_TOOLTIP_CONVERT_TRAM_TO_WAYPOINT               :{BLACK}Установка маршрутных точек на трамвайных путях. Ctrl+щелчок по другой точке объединит их. При нажатом Shift - оценка стоимости строительства.
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_BUS_STATION                      :{BLACK}Строительство автобусных остановок. Ctrl+щелчок - объединение новой остановки с существующей. Shift+щелчок - оценка стоимости строительства.
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_PASSENGER_TRAM_STATION           :{BLACK}Строительство трамвайных остановок. Ctrl+щелчок - объединение новой остановки с существующей. Shift+щелчок - оценка стоимости строительства.
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRUCK_LOADING_BAY                :{BLACK}Строительство грузовых терминалов. Ctrl+щелчок - объединение нового терминала с существующим. Shift+щелчок - оценка стоимости строительства.
@@ -3791,7 +3795,7 @@ STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}К пр�
 STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Введите название таблички
 
 # Town directory window
-STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Города
+STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Города ({COMMA} / {COMMA})
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- Нет -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
 STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (Мегаполис){BLACK} ({COMMA})
@@ -4125,7 +4129,7 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_YEAR                      :{WHITE}{CURRENC
 STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_PERIOD                    :{WHITE}{CURRENCY_LONG}/цикл
 
 # Industry directory
-STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}Предприятия
+STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}Предприятия ({COMMA} / {COMMA})
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- Нет -
 STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% перевезено){BLACK}
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
@@ -5279,11 +5283,14 @@ STR_ERROR_WAYPOINT_ADJOINS_MORE_THAN_ONE_EXISTING               :{WHITE}Прим
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_WAYPOINT                         :{WHITE}Слишком близко к другой маршрутной точке
 
 STR_ERROR_CAN_T_BUILD_TRAIN_WAYPOINT                            :{WHITE}Здесь невозможно поставить маршрутную точку...
+STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Здесь невозможно поставить маршрутную точку...
 STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :{WHITE}Не удалось установить здесь буй...
 STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :{WHITE}Невозможно переименовать маршрутную точку...
 
 STR_ERROR_CAN_T_REMOVE_TRAIN_WAYPOINT                           :{WHITE}Невозможно удалить маршрутную точку...
+STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Невозможно удалить маршрутную точку...
 STR_ERROR_MUST_REMOVE_RAILWAYPOINT_FIRST                        :{WHITE}Сначала удалите маршрутную точку
+STR_ERROR_MUST_REMOVE_ROADWAYPOINT_FIRST                        :{WHITE}Сначала удалите маршрутную точку
 STR_ERROR_BUOY_IN_THE_WAY                                       :{WHITE}... буй мешает
 STR_ERROR_BUOY_IS_IN_USE                                        :{WHITE}... этот буй используется другой компанией!
 
@@ -5531,6 +5538,7 @@ STR_ERROR_NO_STOP_ARTICULATED_VEHICLE                           :{WHITE}Отсу
 STR_ERROR_AIRPORT_NO_PLANES                                     :{WHITE}Этот самолёт не может приземлиться на вертолётной площадке
 STR_ERROR_AIRPORT_NO_HELICOPTERS                                :{WHITE}Этот вертолёт не может приземлиться в данном аэропорту
 STR_ERROR_NO_RAIL_WAYPOINT                                      :{WHITE}Маршрутные точки отсутствуют
+STR_ERROR_NO_ROAD_WAYPOINT                                      :{WHITE}Маршрутные точки отсутствуют
 STR_ERROR_NO_BUOY                                               :{WHITE}Буи отсутствуют
 
 # Timetable related errors
