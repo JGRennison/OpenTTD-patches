@@ -475,6 +475,41 @@ struct CompanyLiveriesStructHandler final : public TypedSaveLoadStructHandler<Co
 	void LoadCheck(CompanyProperties *cprops) const override { this->Load(cprops); }
 };
 
+struct CompanyAllowListStructHandler final : public TypedSaveLoadStructHandler<CompanyAllowListStructHandler, CompanyProperties> {
+public:
+	struct KeyWrapper {
+		std::string key;
+	};
+
+	NamedSaveLoadTable GetDescription() const override
+	{
+		static const NamedSaveLoad description[] = {
+			NSLT("key", SLE_SSTR(KeyWrapper, key, SLE_STR)),
+		};
+		return description;
+	}
+
+	void Save(CompanyProperties *cprops) const override
+	{
+		SlSetStructListLength(cprops->allow_list.size());
+		for (std::string &str : cprops->allow_list) {
+			SlObjectSaveFiltered(&str, this->GetLoadDescription());
+		}
+	}
+
+	void Load(CompanyProperties *cprops) const override
+	{
+		size_t num_keys = SlGetStructListLength(UINT32_MAX);
+		cprops->allow_list.clear();
+		cprops->allow_list.resize(num_keys);
+		for (std::string &str : cprops->allow_list) {
+			SlObjectLoadFiltered(&str, this->GetLoadDescription());
+		}
+	}
+
+	void LoadCheck(CompanyProperties *cprops) const override { this->Load(cprops); }
+};
+
 /* Save/load of companies */
 static const NamedSaveLoad _company_desc[] = {
 	NSL("name_2",                           SLE_VAR(CompanyProperties, name_2,                SLE_UINT32)),
@@ -543,6 +578,7 @@ static const NamedSaveLoad _company_desc[] = {
 	NSLT_STRUCT<CompanyCurEconomyStructHandler>("cur_economy"),
 	NSLT_STRUCTLIST<CompanyOldEconomyStructHandler>("old_economy"),
 	NSLT_STRUCTLIST<CompanyLiveriesStructHandler>("liveries"),
+	NSLT_STRUCTLIST<CompanyAllowListStructHandler>("allow_list"),
 };
 
 struct PLYRNonTableHelper {
