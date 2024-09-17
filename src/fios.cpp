@@ -166,6 +166,8 @@ bool FiosBrowseTo(const FiosItem *item)
 			s = _fios_path->find_last_of(PATHSEPCHAR);
 			if (s != std::string::npos) {
 				_fios_path->erase(s + 1); // go up a directory
+			} else {
+				*_fios_path += PATHSEP; // Add trailing path separator if there isn't one
 			}
 			break;
 		}
