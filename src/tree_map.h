@@ -57,6 +57,20 @@ enum TreeGround {
 	TREE_GROUND_ROUGH_SNOW  = 4, ///< A snow tile that is rough underneath.
 };
 
+/**
+ * Enumeration for tree growth stages.
+ *
+ * This enumeration defines the stages of tree growth for tiles with trees on it.
+ */
+enum class TreeGrowthStage : uint {
+	Growing1 = 0,  ///< First stage of growth
+	Growing2 = 1,  ///< Second stage of growth
+	Growing3 = 2,  ///< Third stage of growth
+	Grown = 3,  ///< Fully grown tree
+	Dying1 = 4,  ///< First stage of dying
+	Dying2 = 5,  ///< Second stage of dying
+	Dead = 6,  ///< Dead tree
+};
 
 /**
  * Returns the treetype of a tile.
@@ -170,27 +184,27 @@ inline void AddTreeCount(TileIndex t, int c)
 }
 
 /**
- * Returns the tree growth status.
+ * Returns the tree growth stage.
  *
- * This function returns the tree growth status of a tile with trees.
+ * This function returns the tree growth stage of a tile with trees.
  *
- * @param t The tile to get the tree growth status
- * @return The tree growth status
+ * @param t The tile to get the tree growth stage
+ * @return The tree growth stage
  * @pre Tile must be of type MP_TREES
  */
-inline uint GetTreeGrowth(TileIndex t)
+inline TreeGrowthStage GetTreeGrowth(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_TREES), t);
-	return GB(_m[t].m5, 0, 3);
+	return static_cast<TreeGrowthStage>(GB(_m[t].m5, 0, 3));
 }
 
 /**
- * Add a value to the tree growth status.
+ * Add a value to the tree growth stage.
  *
- * This function adds a value to the tree grow status of a tile.
+ * This function adds a value to the tree grow stage of a tile.
  *
  * @param t The tile to add the value on
- * @param a The value to add on the tree growth status
+ * @param a The value to add on the tree growth stage
  * @pre Tile must be of type MP_TREES
  */
 inline void AddTreeGrowth(TileIndex t, int a)
@@ -200,19 +214,19 @@ inline void AddTreeGrowth(TileIndex t, int a)
 }
 
 /**
- * Sets the tree growth status of a tile.
+ * Sets the tree growth stage of a tile.
  *
- * This function sets the tree growth status of a tile directly with
+ * This function sets the tree growth stage of a tile directly with
  * the given value.
  *
- * @param t The tile to change the tree growth status
+ * @param t The tile to change the tree growth stage
  * @param g The new value
  * @pre Tile must be of type MP_TREES
  */
-inline void SetTreeGrowth(TileIndex t, uint g)
+inline void SetTreeGrowth(TileIndex t, TreeGrowthStage g)
 {
 	dbg_assert_tile(IsTileType(t, MP_TREES), t); // XXX incomplete
-	SB(_m[t].m5, 0, 3, g);
+	SB(_m[t].m5, 0, 3, static_cast<uint>(g));
 }
 
 /**
@@ -235,11 +249,11 @@ inline void ClearOldTreeCounter(TileIndex t)
  * @param t The tile to make a tree-tile from
  * @param type The type of the tree
  * @param count the number of trees
- * @param growth the growth status
+ * @param growth the growth stage
  * @param ground the ground type
  * @param density the density (not the number of trees)
  */
-inline void MakeTree(TileIndex t, TreeType type, uint count, uint growth, TreeGround ground, uint density)
+inline void MakeTree(TileIndex t, TreeType type, uint count, TreeGrowthStage growth, TreeGround ground, uint density)
 {
 	SetTileType(t, MP_TREES);
 	SetTileOwner(t, OWNER_NONE);
@@ -247,7 +261,7 @@ inline void MakeTree(TileIndex t, TreeType type, uint count, uint growth, TreeGr
 	_m[t].m2 = ground << 6 | density << 4 | 0;
 	_m[t].m3 = type;
 	_m[t].m4 = 0 << 5 | 0 << 2;
-	_m[t].m5 = count << 6 | growth;
+	_m[t].m5 = count << 6 | static_cast<uint>(growth);
 	SB(_me[t].m6, 2, 4, 0);
 	_me[t].m7 = 0;
 }

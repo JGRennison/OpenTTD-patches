@@ -2576,7 +2576,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}O seu no
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Possível perda de conexão
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}No{P 0 "" s} último{P 0 "" s} {NUM} segundo{P "" s} nenhum dado foi recebido do servidor
 
-###length 22
+###length 23
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :erro geral
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :erro de dessincronização
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :não foi possível carregar o mapa
@@ -2589,6 +2589,7 @@ STR_NETWORK_ERROR_CLIENT_WRONG_REVISION                         :revisão incorr
 STR_NETWORK_ERROR_CLIENT_NAME_IN_USE                            :nome já está a ser utilizado
 STR_NETWORK_ERROR_CLIENT_WRONG_PASSWORD                         :palavra-chave incorrecta
 STR_NETWORK_ERROR_CLIENT_NOT_ON_ALLOW_LIST                      :não está na lista de permissões
+STR_NETWORK_ERROR_CLIENT_NO_AUTHENTICATION_METHOD_AVAILABLE     :nenhum dos métodos de autenticação solicitados está disponível
 STR_NETWORK_ERROR_CLIENT_COMPANY_MISMATCH                       :ID da empresa errado na aplicação de rede
 STR_NETWORK_ERROR_CLIENT_KICKED                                 :avisado pelo servidor
 STR_NETWORK_ERROR_CLIENT_CHEATER                                :estava a tentar usar batota

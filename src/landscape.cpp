@@ -86,6 +86,9 @@ extern const uint8_t _slope_to_sprite_offset[32] = {
 	0, 0, 0, 0, 0, 0, 0, 16, 0, 0,  0, 17,  0, 15, 18, 0,
 };
 
+static const uint TILE_UPDATE_FREQUENCY_LOG = 8;  ///< The logarithm of how many ticks it takes between tile updates (log base 2).
+static const uint TILE_UPDATE_FREQUENCY = 1 << TILE_UPDATE_FREQUENCY_LOG;  ///< How many ticks it takes between tile updates (has to be a power of 2).
+
 /**
  * Description of the snow line throughout the year.
  *
@@ -732,7 +735,7 @@ void SetupTileLoopCounts()
 	_tile_loop_counts.resize(DayLengthFactor());
 	if (DayLengthFactor() == 0) return;
 
-	uint64_t count_per_tick_fp16 = (static_cast<uint64_t>(1) << (MapLogX() + MapLogY() + 8)) / DayLengthFactor();
+	uint64_t count_per_tick_fp16 = (static_cast<uint64_t>(1) << (MapLogX() + MapLogY() + TILE_UPDATE_FREQUENCY_LOG)) / DayLengthFactor();
 	uint64_t accumulator = 0;
 	for (uint &count : _tile_loop_counts) {
 		accumulator += count_per_tick_fp16;
@@ -743,17 +746,17 @@ void SetupTileLoopCounts()
 }
 
 /**
- * Gradually iterate over all tiles on the map, calling their TileLoopProcs once every 256 ticks.
+ * Gradually iterate over all tiles on the map, calling their TileLoopProcs once every TILE_UPDATE_FREQUENCY ticks.
  */
 void RunTileLoop(bool apply_day_length)
 {
-	/* We update every tile every 256 ticks, so divide the map size by 2^8 = 256 */
+	/* We update every tile every TILE_UPDATE_FREQUENCY ticks, so divide the map size by 2^TILE_UPDATE_FREQUENCY_LOG = TILE_UPDATE_FREQUENCY */
 	uint count;
 	if (apply_day_length && DayLengthFactor() > 1) {
 		count = _tile_loop_counts[TickSkipCounter()];
 		if (count == 0) return;
 	} else {
-		count = 1 << (MapLogX() + MapLogY() - 8);
+		count = 1 << (MapLogX() + MapLogY() - TILE_UPDATE_FREQUENCY_LOG);
 	}
 
 	PerformanceAccumulator framerate(PFE_GL_LANDSCAPE);
@@ -766,8 +769,8 @@ void RunTileLoop(bool apply_day_length)
 
 	SCOPE_INFO_FMT([&], "RunTileLoop: tile: %dx%d", TileX(tile), TileY(tile));
 
-	/* Manually update tile 0 every 256 ticks - the LFSR never iterates over it itself.  */
-	if (_tick_counter % 256 == 0) {
+	/* Manually update tile 0 every TILE_UPDATE_FREQUENCY ticks - the LFSR never iterates over it itself.  */
+	if (_tick_counter % TILE_UPDATE_FREQUENCY == 0) {
 		_tile_type_procs[GetTileType(0)]->tile_loop_proc(0);
 		count--;
 	}
@@ -1008,7 +1011,7 @@ static void CreateDesertOrRainForest(uint desert_tropic_line)
 		}
 	}
 
-	for (uint i = 0; i != 256; i++) {
+	for (uint i = 0; i != TILE_UPDATE_FREQUENCY; i++) {
 		if ((i % 64) == 0) IncreaseGeneratingWorldProgress(GWP_LANDSCAPE);
 
 		RunTileLoop();
@@ -1361,7 +1364,7 @@ static void CreateRivers()
 
 	uint wells = ScaleByMapSize(4 << _settings_game.game_creation.amount_of_rivers);
 	const uint num_short_rivers = wells - std::max(1u, wells / 10);
-	SetGeneratingWorldProgress(GWP_RIVER, wells + 256 / 64); // Include the tile loop calls below.
+	SetGeneratingWorldProgress(GWP_RIVER, wells + TILE_UPDATE_FREQUENCY / 64); // Include the tile loop calls below.
 
 	for (; wells > num_short_rivers; wells--) {
 		IncreaseGeneratingWorldProgress(GWP_RIVER);
@@ -1389,7 +1392,7 @@ static void CreateRivers()
 	ConvertGroundTilesIntoWaterTiles();
 
 	/* Run tile loop to update the ground density. */
-	for (uint i = 0; i != 256; i++) {
+	for (uint i = 0; i != TILE_UPDATE_FREQUENCY; i++) {
 		if (i % 64 == 0) IncreaseGeneratingWorldProgress(GWP_RIVER);
 		RunTileLoop();
 	}

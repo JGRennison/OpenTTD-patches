@@ -1119,9 +1119,9 @@ struct TimetableWindow : GeneralVehicleWindow {
 		}
 	}
 
-	void OnQueryTextFinished(char *str) override
+	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (str == nullptr) return;
+		if (!str.has_value()) return;
 
 		const Vehicle *v = this->vehicle;
 
@@ -1132,11 +1132,11 @@ struct TimetableWindow : GeneralVehicleWindow {
 			case WID_VT_CHANGE_TIME: {
 				uint32_t p2;
 				if (this->query_is_speed_query) {
-					uint64_t display_speed = StrEmpty(str) ? 0 : std::strtoul(str, nullptr, 10);
+					uint64_t display_speed = str->empty() ? 0 : std::strtoul(str->c_str(), nullptr, 10);
 					uint64_t val = ConvertDisplaySpeedToKmhishSpeed(display_speed, v->type);
 					p2 = std::min<uint>(val, UINT16_MAX);
 				} else {
-					p2 = ParseTimetableDuration(str);
+					p2 = ParseTimetableDuration(str->c_str());
 				}
 
 				ExecuteTimetableCommand(v, this->change_timetable_all, this->sel_index, (this->sel_index % 2 == 1) ? (this->query_is_speed_query ? MTF_TRAVEL_SPEED : MTF_TRAVEL_TIME) : MTF_WAIT_TIME, p2, false);
@@ -1144,9 +1144,9 @@ struct TimetableWindow : GeneralVehicleWindow {
 			}
 
 			case WID_VT_START_DATE: {
-				if (StrEmpty(str)) break;
+				if (str->empty()) break;
 				char *end;
-				int32_t val = std::strtol(str, &end, 10);
+				int32_t val = std::strtol(str->c_str(), &end, 10);
 				if (!(end != nullptr && *end == 0)) break;
 				if (EconTime::UsingWallclockUnits() && !_settings_time.time_in_minutes) {
 					ChangeTimetableStartIntl(v->index | (this->set_start_date_all ? 1 << 20 : 0), _state_ticks + (val * TICKS_PER_SECOND));
@@ -1166,7 +1166,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 			}
 
 			case WID_VT_ADD_VEH_GROUP: {
-				DoCommandP(0, VehicleListIdentifier(VL_SINGLE_VEH, v->type, v->owner, v->index).Pack(), CargoFilterCriteria::CF_ANY, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), nullptr, str);
+				DoCommandP(0, VehicleListIdentifier(VL_SINGLE_VEH, v->type, v->owner, v->index).Pack(), CargoFilterCriteria::CF_ANY, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), nullptr, str->c_str());
 				break;
 			}
 		}

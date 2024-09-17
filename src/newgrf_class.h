@@ -31,9 +31,9 @@ private:
 	/* Tspec must be of NewGRFSpecBase<Tindex>. */
 	static_assert(std::is_base_of_v<NewGRFSpecBase<Tindex>, Tspec>);
 
-	uint ui_count = 0;         ///< Number of specs in this class potentially available to the user.
-	Tindex index;              ///< Index of class within the list of classes.
-	std::vector<Tspec *> spec; ///< List of specifications.
+	uint ui_count = 0;                     ///< Number of specs in this class potentially available to the user.
+	Tindex index = static_cast<Tindex>(0); ///< Index of class within the list of classes.
+	std::vector<Tspec *> spec;             ///< List of specifications.
 
 	/**
 	 * The actual classes.

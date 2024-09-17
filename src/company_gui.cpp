@@ -524,19 +524,19 @@ struct CompanyFinancesWindow : Window {
 		}
 	}
 
-	void OnQueryTextFinished(char *str) override
+	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
 		/* Was 'cancel' pressed or nothing entered? */
-		if (str == nullptr || StrEmpty(str)) return;
+		if (!str.has_value() || str->empty()) return;
 
 		if (this->query_widget == WID_CF_INCREASE_LOAN) {
 			const Company *c = Company::Get((CompanyID)this->window_number);
-			Money amount = std::min<Money>(std::strtoull(str, nullptr, 10) / GetCurrency().rate, _economy.max_loan - c->current_loan);
+			Money amount = std::min<Money>(std::strtoull(str->c_str(), nullptr, 10) / GetCurrency().rate, _economy.max_loan - c->current_loan);
 			amount = LOAN_INTERVAL * CeilDivT<Money>(amount, LOAN_INTERVAL);
 			DoCommandP(0, amount >> 32, (amount & 0xFFFFFFFC) | 2, CMD_INCREASE_LOAN | CMD_MSG(STR_ERROR_CAN_T_BORROW_ANY_MORE_MONEY));
 		} else if (this->query_widget == WID_CF_REPAY_LOAN) {
 			const Company *c = Company::Get((CompanyID)this->window_number);
-			Money amount = std::min<Money>(std::strtoull(str, nullptr, 10) / GetCurrency().rate, c->current_loan);
+			Money amount = std::min<Money>(std::strtoull(str->c_str(), nullptr, 10) / GetCurrency().rate, c->current_loan);
 			amount = LOAN_INTERVAL * CeilDivT<Money>(amount, LOAN_INTERVAL);
 			DoCommandP(0, amount >> 32, (amount & 0xFFFFFFFC) | 2, CMD_DECREASE_LOAN | CMD_MSG(STR_ERROR_CAN_T_REPAY_LOAN));
 		}
@@ -1729,12 +1729,12 @@ public:
 		}
 	}
 
-	void OnQueryTextFinished(char *str) override
+	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (str == nullptr) return;
+		if (!str.has_value()) return;
 		/* Set a new company manager face number */
-		if (!StrEmpty(str)) {
-			this->face = std::strtoul(str, nullptr, 10);
+		if (!str->empty()) {
+			this->face = std::strtoul(str->c_str(), nullptr, 10);
 			ScaleAllCompanyManagerFaceBits(this->face);
 			ShowErrorMessage(STR_FACE_FACECODE_SET, INVALID_STRING_ID, WL_INFO);
 			this->UpdateData();
@@ -2690,27 +2690,27 @@ struct CompanyWindow : Window
 		this->RaiseButtons();
 	}
 
-	void OnQueryTextFinished(char *str) override
+	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (str == nullptr) return;
+		if (!str.has_value()) return;
 
 		switch (this->query_widget) {
 			default: NOT_REACHED();
 
 			case WID_C_GIVE_MONEY:
-				DoCommandPEx(0, this->window_number, 0, (std::strtoull(str, nullptr, 10) / GetCurrency().rate), CMD_GIVE_MONEY | CMD_MSG(STR_ERROR_CAN_T_GIVE_MONEY), CcGiveMoney);
+				DoCommandPEx(0, this->window_number, 0, (std::strtoull(str->c_str(), nullptr, 10) / GetCurrency().rate), CMD_GIVE_MONEY | CMD_MSG(STR_ERROR_CAN_T_GIVE_MONEY), CcGiveMoney);
 				break;
 
 			case WID_C_PRESIDENT_NAME:
-				DoCommandP(0, 0, 0, CMD_RENAME_PRESIDENT | CMD_MSG(STR_ERROR_CAN_T_CHANGE_PRESIDENT), nullptr, str);
+				DoCommandP(0, 0, 0, CMD_RENAME_PRESIDENT | CMD_MSG(STR_ERROR_CAN_T_CHANGE_PRESIDENT), nullptr, str->c_str());
 				break;
 
 			case WID_C_COMPANY_NAME:
-				DoCommandP(0, 0, 0, CMD_RENAME_COMPANY | CMD_MSG(STR_ERROR_CAN_T_CHANGE_COMPANY_NAME), nullptr, str);
+				DoCommandP(0, 0, 0, CMD_RENAME_COMPANY | CMD_MSG(STR_ERROR_CAN_T_CHANGE_COMPANY_NAME), nullptr, str->c_str());
 				break;
 
 			case WID_C_COMPANY_JOIN:
-				NetworkClientRequestMove((CompanyID)this->window_number, str);
+				NetworkClientRequestMove((CompanyID)this->window_number, *str);
 				break;
 		}
 	}

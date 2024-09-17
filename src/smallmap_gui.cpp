@@ -1121,7 +1121,7 @@ SmallMapWindow::SmallMapWindow(WindowDesc &desc, int window_number) : Window(des
 {
 	_smallmap_industry_highlight = INVALID_INDUSTRYTYPE;
 	this->overlay = std::make_unique<LinkGraphOverlay>(this, WID_SM_MAP, 0, this->GetOverlayCompanyMask(), 1);
-	this->InitNested(window_number);
+	this->CreateNestedTree();
 	this->LowerWidget(WID_SM_CONTOUR + this->map_type);
 
 	this->RebuildColourIndexIfNecessary();
@@ -1132,6 +1132,7 @@ SmallMapWindow::SmallMapWindow(WindowDesc &desc, int window_number) : Window(des
 	this->SetWidgetLoweredState(WID_SM_SHOW_IND_NAMES, this->show_ind_names);
 
 	this->SetupWidgetData();
+	this->FinishInitNested(window_number);
 
 	this->SetZoomLevel(ZLC_INITIALIZE, nullptr);
 	this->SmallMapCenterOnCurrentPos();

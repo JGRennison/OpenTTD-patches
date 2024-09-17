@@ -586,11 +586,11 @@ public:
 		this->SetDirty();
 	}
 
-	void OnQueryTextFinished(char *str) override
+	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (str != nullptr && (this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && !editInProgress) {
+		if (str.has_value() && (this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && !editInProgress) {
 			const TemplateVehicle *tmp = this->templates[this->selected_template_index];
-			DoCommandP(0, tmp->index, 0, CMD_RENAME_TMPL_REPLACE | CMD_MSG(STR_TMPL_CANT_RENAME), nullptr, str);
+			DoCommandP(0, tmp->index, 0, CMD_RENAME_TMPL_REPLACE | CMD_MSG(STR_TMPL_CANT_RENAME), nullptr, str->c_str());
 		}
 	}
 

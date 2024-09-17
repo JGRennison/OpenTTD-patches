@@ -1093,9 +1093,9 @@ public:
 		_cursor.vehchain = false;
 	}
 
-	void OnQueryTextFinished(char *str) override
+	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (str != nullptr) DoCommandP(0, this->group_rename, 0, CMD_ALTER_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_RENAME), nullptr, str);
+		if (str.has_value()) DoCommandP(0, this->group_rename, 0, CMD_ALTER_GROUP | CMD_MSG(STR_ERROR_GROUP_CAN_T_RENAME), nullptr, str->c_str());
 		this->group_rename = INVALID_GROUP;
 	}
 

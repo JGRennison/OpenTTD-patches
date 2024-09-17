@@ -415,11 +415,11 @@ public:
 		}
 	}
 
-	virtual void OnQueryTextFinished(char *str) override
+	virtual void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (_current_plan == nullptr || str == nullptr) return;
+		if (_current_plan == nullptr || !str.has_value()) return;
 
-		DoCommandP(0, _current_plan->index, 0, CMD_RENAME_PLAN | CMD_MSG(STR_ERROR_CAN_T_RENAME_PLAN), nullptr, str);
+		DoCommandP(0, _current_plan->index, 0, CMD_RENAME_PLAN | CMD_MSG(STR_ERROR_CAN_T_RENAME_PLAN), nullptr, str->c_str());
 	}
 
 	bool AllPlansHidden() const

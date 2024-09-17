@@ -2575,7 +2575,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Je spele
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Mogelijk verbinding verbroken
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}In de afgelopen {NUM} seconde{P "" n} is er geen data ontvangen van de server
 
-###length 22
+###length 23
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :algemene fout
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :desynchronisatiefout
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :kan kaart niet laden
@@ -2588,6 +2588,7 @@ STR_NETWORK_ERROR_CLIENT_WRONG_REVISION                         :foute revisie
 STR_NETWORK_ERROR_CLIENT_NAME_IN_USE                            :naam al in gebruik
 STR_NETWORK_ERROR_CLIENT_WRONG_PASSWORD                         :fout spelwachtwoord
 STR_NETWORK_ERROR_CLIENT_NOT_ON_ALLOW_LIST                      :niet op toegestane lijst
+STR_NETWORK_ERROR_CLIENT_NO_AUTHENTICATION_METHOD_AVAILABLE     :geen van de gevraagde verificatiemethoden is beschikbaar
 STR_NETWORK_ERROR_CLIENT_COMPANY_MISMATCH                       :verkeerd bedrijfsnummer in verstuurd commando
 STR_NETWORK_ERROR_CLIENT_KICKED                                 :eruit geschopt door server
 STR_NETWORK_ERROR_CLIENT_CHEATER                                :probeerde vals te spelen

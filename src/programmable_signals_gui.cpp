@@ -508,15 +508,15 @@ public:
 		//OnPaint(); // this appears to cause visual artefacts
 	}
 
-	virtual void OnQueryTextFinished(char *str) override
+	virtual void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (!StrEmpty(str)) {
+		if (str.has_value() && !str->empty()) {
 			SignalInstruction *si = this->GetSelected();
 			if (!si || si->Opcode() != PSO_IF) return;
 			SignalIf *sif = static_cast <SignalIf*>(si);
 			if (!IsConditionComparator(sif->condition)) return;
 
-			uint value = atoi(str);
+			uint value = atoi(str->c_str());
 
 			uint32_t p1 = 0, p2 = 0;
 			SB(p1, 0, 3, this->track);

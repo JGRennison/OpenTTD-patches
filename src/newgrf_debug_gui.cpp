@@ -1102,19 +1102,19 @@ struct NewGRFInspectWindow : Window {
 		}
 	}
 
-	void OnQueryTextFinished(char *str) override
+	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (StrEmpty(str)) return;
+		if (!str.has_value() || str->empty()) return;
 
 		if (this->current_edit_param == 0 && this->sprite_dump) {
-			auto iter = this->nfo_line_lines.find(atoi(str));
+			auto iter = this->nfo_line_lines.find(atoi(str->c_str()));
 			if (iter != this->nfo_line_lines.end()) {
 				this->vscroll->SetPosition(std::min<int>(iter->second, std::max<int>(0, this->vscroll->GetCount() - this->vscroll->GetCapacity())));
 				this->SetWidgetDirty(WID_NGRFI_MAINPANEL);
 				this->SetWidgetDirty(WID_NGRFI_SCROLLBAR);
 			}
 		} else if (this->current_edit_param != 0 && !this->sprite_dump) {
-			this->var60params[this->current_edit_param] = std::strtol(str, nullptr, 16);
+			this->var60params[this->current_edit_param] = std::strtol(str->c_str(), nullptr, 16);
 			this->SetDirty();
 		}
 	}
@@ -1674,11 +1674,11 @@ struct SpriteAlignerWindow : Window {
 		}
 	}
 
-	void OnQueryTextFinished(char *str) override
+	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (StrEmpty(str)) return;
+		if (!str.has_value() || str->empty()) return;
 
-		this->current_sprite = atoi(str);
+		this->current_sprite = atoi(str->c_str());
 		if (this->current_sprite >= GetMaxSpriteID()) this->current_sprite = 0;
 		while (GetSpriteType(this->current_sprite) != SpriteType::Normal) {
 			this->current_sprite = (this->current_sprite + 1) % GetMaxSpriteID();

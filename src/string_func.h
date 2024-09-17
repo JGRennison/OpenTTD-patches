@@ -62,7 +62,7 @@ char *str_replace_wchar(char *str, const char *last, char32_t find, char32_t rep
 bool strtolower(char *str);
 bool strtolower(std::string &str, std::string::size_type offs = 0);
 
-[[nodiscard]] bool StrValid(const char *str, const char *last) NOACCESS(2);
+[[nodiscard]] bool StrValid(std::span<const char> str);
 void StrTrimInPlace(std::string &str);
 std::string_view StrTrimView(std::string_view str);
 

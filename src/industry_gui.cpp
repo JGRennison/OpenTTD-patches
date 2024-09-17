@@ -396,7 +396,7 @@ class BuildIndustryWindow : public Window {
 
 		std::string cargostring;
 		size_t numcargo = 0;
-		size_t firstcargo;
+		size_t firstcargo = 0;
 
 		for (size_t j = 0; j < cargolist.size(); j++) {
 			if (!IsValidCargoID(cargolist[j])) continue;
@@ -1195,12 +1195,12 @@ public:
 		}
 	}
 
-	void OnQueryTextFinished(char *str) override
+	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (StrEmpty(str)) return;
+		if (!str.has_value() || str->empty()) return;
 
 		Industry *i = Industry::Get(this->window_number);
-		uint value = atoi(str);
+		uint value = atoi(str->c_str());
 		switch (this->editbox_line) {
 			case IL_NONE: NOT_REACHED();
 

@@ -2215,18 +2215,16 @@ public:
 		}
 	}
 
-	virtual void OnQueryTextFinished(char *str) override
+	virtual void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (StrEmpty(str)) {
-			return;
-		}
+		if (!str.has_value() || str->empty()) return;
 
 		TraceRestrictItem item = GetSelected();
 		TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
 		uint value;
 
 		if (IsIntegerValueType(type) || type == TRVT_PF_PENALTY) {
-			value = ConvertIntegerValue(type, atoi(str), false);
+			value = ConvertIntegerValue(type, atoi(str->c_str()), false);
 			if (value >= (1 << TRIFA_VALUE_COUNT)) {
 				SetDParam(0, ConvertIntegerValue(type, (1 << TRIFA_VALUE_COUNT) - 1, true));
 				SetDParam(1, 0);
@@ -2239,7 +2237,7 @@ public:
 			}
 		} else if (IsDecimalValueType(type)) {
 			char tmp_buffer[32];
-			strecpy(tmp_buffer, str, lastof(tmp_buffer));
+			strecpy(tmp_buffer, str->c_str(), lastof(tmp_buffer));
 			str_replace_wchar(tmp_buffer, lastof(tmp_buffer), GetDecimalSeparatorChar(), '.');
 			value = ConvertDecimalToValue(type, atof(tmp_buffer));
 			if (value >= (1 << TRIFA_VALUE_COUNT)) {
@@ -2251,7 +2249,7 @@ public:
 				return;
 			}
 		} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT || type == TRVT_TIME_DATE_INT) {
-			value = atoi(str);
+			value = atoi(str->c_str());
 			TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_DUAL_ITEM, this->selected_instruction - 1, value, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 			return;
 		} else {
@@ -4164,15 +4162,15 @@ public:
 		_cursor.vehchain = false;
 	}
 
-	virtual void OnQueryTextFinished(char *str) override
+	virtual void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (str != nullptr) {
+		if (str.has_value()) {
 			if (this->slot_set_max_occupancy) {
-				if (!StrEmpty(str)) DoCommandP(0, this->slot_rename | (1 << 16), atoi(str), CMD_ALTER_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY));
+				if (!str->empty()) DoCommandP(0, this->slot_rename | (1 << 16), atoi(str->c_str()), CMD_ALTER_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY));
 			} else if (this->slot_rename == NEW_TRACE_RESTRICT_SLOT_ID) {
-				DoCommandP(0, this->vli.vtype, 0, CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), nullptr, str);
+				DoCommandP(0, this->vli.vtype, 0, CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), nullptr, str->c_str());
 			} else {
-				DoCommandP(0, this->slot_rename, 0, CMD_ALTER_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME), nullptr, str);
+				DoCommandP(0, this->slot_rename, 0, CMD_ALTER_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME), nullptr, str->c_str());
 			}
 		}
 		this->slot_rename = INVALID_TRACE_RESTRICT_SLOT_ID;
@@ -4590,20 +4588,20 @@ public:
 		}
 	}
 
-	virtual void OnQueryTextFinished(char *str) override
+	virtual void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (str != nullptr) {
+		if (str.has_value()) {
 			switch (this->qto) {
 				case QTO_RENAME:
 					if (this->ctr_qt_op == NEW_TRACE_RESTRICT_COUNTER_ID) {
-						DoCommandP(0, 0, 0, CMD_CREATE_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE), nullptr, str);
+						DoCommandP(0, 0, 0, CMD_CREATE_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE), nullptr, str->c_str());
 					} else {
-						DoCommandP(0, this->ctr_qt_op, 0, CMD_ALTER_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_RENAME), nullptr, str);
+						DoCommandP(0, this->ctr_qt_op, 0, CMD_ALTER_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_RENAME), nullptr, str->c_str());
 					}
 					break;
 
 				case QTO_SET_VALUE:
-					if (!StrEmpty(str)) DoCommandP(0, this->ctr_qt_op | (1 << 16), atoi(str), CMD_ALTER_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_MODIFY));
+					if (!str->empty()) DoCommandP(0, this->ctr_qt_op | (1 << 16), atoi(str->c_str()), CMD_ALTER_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_MODIFY));
 					break;
 			}
 		}

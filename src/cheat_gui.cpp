@@ -490,29 +490,29 @@ struct CheatWindow : Window {
 		this->SetDirty();
 	}
 
-	void OnQueryTextFinished(char *str) override
+	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
 		/* Was 'cancel' pressed or nothing entered? */
-		if (str == nullptr || StrEmpty(str)) return;
+		if (!str.has_value() || str->empty()) return;
 
 		const CheatEntry *ce = &_cheats_ui[clicked_widget];
 
 		if (ce->type == SLF_ALLOW_CONTROL) {
 			char tmp_buffer[32];
-			strecpy(tmp_buffer, str, lastof(tmp_buffer));
+			strecpy(tmp_buffer, str->c_str(), lastof(tmp_buffer));
 			str_replace_wchar(tmp_buffer, lastof(tmp_buffer), GetDecimalSeparatorChar(), '.');
 			DoCommandP(0, (uint32_t)clicked_widget, (uint32_t)Clamp<uint64_t>(atof(tmp_buffer) * 65536.0, 1 << 16, MAX_INFLATION), CMD_CHEAT_SETTING);
 			return;
 		}
 		if (ce->mode == CNM_MONEY) {
 			if (!_networking) *ce->been_used = true;
-			DoCommandPEx(0, 0, 0, (std::strtoll(str, nullptr, 10) / GetCurrency().rate), IsNetworkSettingsAdmin() ? CMD_MONEY_CHEAT_ADMIN : CMD_MONEY_CHEAT);
+			DoCommandPEx(0, 0, 0, (std::strtoll(str->c_str(), nullptr, 10) / GetCurrency().rate), IsNetworkSettingsAdmin() ? CMD_MONEY_CHEAT_ADMIN : CMD_MONEY_CHEAT);
 			return;
 		}
 
 		if (_networking) return;
 		int oldvalue = (int32_t)ReadValue(ce->variable, ce->type);
-		int value = atoi(str);
+		int value = atoi(str->c_str());
 		*ce->been_used = true;
 		value = ce->proc(value, value - oldvalue);
 

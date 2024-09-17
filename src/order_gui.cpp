@@ -3390,11 +3390,11 @@ public:
 		}
 	}
 
-	void OnQueryTextFinished(char *str) override
+	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (this->query_text_widget == WID_O_COND_VALUE && !StrEmpty(str)) {
+		if (this->query_text_widget == WID_O_COND_VALUE && str.has_value() && !str->empty()) {
 			VehicleOrderID sel = this->OrderGetSel();
-			uint value = atoi(str);
+			uint value = atoi(str->c_str());
 
 			switch (this->vehicle->GetOrder(sel)->GetConditionVariable()) {
 				case OCV_MAX_SPEED:
@@ -3419,7 +3419,7 @@ public:
 					break;
 
 				case OCV_TIMETABLE: {
-					value = Clamp(ParseTimetableDuration(str), 0, 0xFFFF);
+					value = Clamp(ParseTimetableDuration(str->c_str()), 0, 0xFFFF);
 					break;
 				}
 
@@ -3430,18 +3430,18 @@ public:
 			this->ModifyOrder(sel, MOF_COND_VALUE | value << 8);
 		}
 
-		if (this->query_text_widget == WID_O_COUNTER_VALUE && !StrEmpty(str)) {
+		if (this->query_text_widget == WID_O_COUNTER_VALUE && str.has_value() && !str->empty()) {
 			VehicleOrderID sel = this->OrderGetSel();
-			uint value = Clamp(atoi(str), 0, 0xFFFF);
+			uint value = Clamp(atoi(str->c_str()), 0, 0xFFFF);
 			this->ModifyOrder(sel, MOF_COUNTER_VALUE | value << 8);
 		}
 
 		if (this->query_text_widget == WID_O_ADD_VEH_GROUP) {
-			DoCommandP(0, VehicleListIdentifier(VL_SINGLE_VEH, this->vehicle->type, this->vehicle->owner, this->vehicle->index).Pack(), CargoFilterCriteria::CF_ANY, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), nullptr, str);
+			DoCommandP(0, VehicleListIdentifier(VL_SINGLE_VEH, this->vehicle->type, this->vehicle->owner, this->vehicle->index).Pack(), CargoFilterCriteria::CF_ANY, CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), nullptr, str.has_value() ? str->c_str() : nullptr);
 		}
 
-		if (this->query_text_widget == WID_O_TEXT_LABEL && str != nullptr) {
-			this->ModifyOrder(this->OrderGetSel(), MOF_LABEL_TEXT, true, str);
+		if (this->query_text_widget == WID_O_TEXT_LABEL && str.has_value()) {
+			this->ModifyOrder(this->OrderGetSel(), MOF_LABEL_TEXT, true, str->c_str());
 		}
 	}
 

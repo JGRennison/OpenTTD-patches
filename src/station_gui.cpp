@@ -2350,11 +2350,11 @@ struct StationViewWindow : public Window {
 		}
 	}
 
-	void OnQueryTextFinished(char *str) override
+	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (str == nullptr) return;
+		if (!str.has_value()) return;
 
-		DoCommandP(0, this->window_number, _ctrl_pressed ? 1 : 0, CMD_RENAME_STATION | CMD_MSG(STR_ERROR_CAN_T_RENAME_STATION), nullptr, str);
+		DoCommandP(0, this->window_number, _ctrl_pressed ? 1 : 0, CMD_RENAME_STATION | CMD_MSG(STR_ERROR_CAN_T_RENAME_STATION), nullptr, str->c_str());
 	}
 
 	void OnResize() override

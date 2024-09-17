@@ -803,11 +803,11 @@ public:
 		this->ResizeWindowAsNeeded();
 	}
 
-	void OnQueryTextFinished(char *str) override
+	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (str == nullptr) return;
+		if (!str.has_value()) return;
 
-		DoCommandP(0, this->window_number, 0, (IsNonAdminNetworkClient() ? CMD_RENAME_TOWN_NON_ADMIN : CMD_RENAME_TOWN) | CMD_MSG(STR_ERROR_CAN_T_RENAME_TOWN), nullptr, str);
+		DoCommandP(0, this->window_number, 0, (IsNonAdminNetworkClient() ? CMD_RENAME_TOWN_NON_ADMIN : CMD_RENAME_TOWN) | CMD_MSG(STR_ERROR_CAN_T_RENAME_TOWN), nullptr, str->c_str());
 	}
 
 	bool IsNewGRFInspectable() const override

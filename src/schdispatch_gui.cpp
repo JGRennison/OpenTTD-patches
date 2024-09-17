@@ -1332,11 +1332,11 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		}
 	}
 
-	virtual void OnQueryTextFinished(char *str) override
+	virtual void OnQueryTextFinished(std::optional<std::string> str) override
 	{
 		if (!this->TimeUnitsUsable()) return;
 
-		if (str == nullptr) return;
+		if (!str.has_value()) return;
 		const Vehicle *v = this->vehicle;
 
 		switch (this->clicked_widget) {
@@ -1345,10 +1345,10 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			case WID_SCHDISPATCH_ADD: {
 				if (!this->IsScheduleSelected()) break;
 
-				if (StrEmpty(str)) break;
+				if (str->empty()) break;
 
 				char *end;
-				int32_t val = std::strtoul(str, &end, 10);
+				int32_t val = std::strtoul(str->c_str(), &end, 10);
 				if (val >= 0 && end != nullptr && *end == 0) {
 					uint minutes = (val % 100) % 60;
 					uint hours = (val / 100) % 24;
@@ -1361,10 +1361,10 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			case WID_SCHDISPATCH_SET_START_DATE: {
 				if (!this->IsScheduleSelected()) break;
 
-				if (StrEmpty(str)) break;
+				if (str->empty()) break;
 
 				char *end;
-				int32_t val = std::strtoul(str, &end, 10);
+				int32_t val = std::strtoul(str->c_str(), &end, 10);
 				if (val >= 0 && end != nullptr && *end == 0) {
 					uint minutes = (val % 100) % 60;
 					uint hours = (val / 100) % 24;
@@ -1376,7 +1376,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 			case WID_SCHDISPATCH_SET_DURATION: {
 				if (!this->IsScheduleSelected()) break;
-				Ticks val = ParseTimetableDuration(str);
+				Ticks val = ParseTimetableDuration(str->c_str());
 
 				if (val > 0) {
 					DoCommandP(0, v->index | (this->schedule_index << 20), val, CMD_SCHEDULED_DISPATCH_SET_DURATION | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
@@ -1387,22 +1387,22 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			case WID_SCHDISPATCH_SET_DELAY: {
 				if (!this->IsScheduleSelected()) break;
 
-				if (StrEmpty(str)) break;
+				if (str->empty()) break;
 
-				DoCommandP(0, v->index | (this->schedule_index << 20), ParseTimetableDuration(str), CMD_SCHEDULED_DISPATCH_SET_DELAY | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
+				DoCommandP(0, v->index | (this->schedule_index << 20), ParseTimetableDuration(str->c_str()), CMD_SCHEDULED_DISPATCH_SET_DELAY | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
 				break;
 			}
 
 			case WID_SCHDISPATCH_RENAME: {
-				if (str == nullptr) return;
+				if (!this->IsScheduleSelected()) break;
 
-				DoCommandP(0, v->index | (this->schedule_index << 20), 0, CMD_SCHEDULED_DISPATCH_RENAME_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_RENAME_SCHEDULE), nullptr, str);
+				DoCommandP(0, v->index | (this->schedule_index << 20), 0, CMD_SCHEDULED_DISPATCH_RENAME_SCHEDULE | CMD_MSG(STR_ERROR_CAN_T_RENAME_SCHEDULE), nullptr, str->c_str());
 				break;
 			}
 
 			case WID_SCHDISPATCH_ADJUST: {
 				if (!this->IsScheduleSelected()) break;
-				Ticks val = ParseTimetableDuration(str);
+				Ticks val = ParseTimetableDuration(str->c_str());
 
 				if (val != 0) {
 					DoCommandP(0, v->index | (this->schedule_index << 20), val, CMD_SCHEDULED_DISPATCH_ADJUST | CMD_MSG(STR_ERROR_CAN_T_TIMETABLE_VEHICLE));
@@ -1411,11 +1411,9 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			}
 
 			case WID_SCHDISPATCH_MANAGEMENT: {
-				if (str == nullptr) return;
-
 				switch (this->click_subaction & 0xFFFF) {
 					case SCH_MD_RENAME_TAG:
-						DoCommandP(0, v->index | (this->schedule_index << 20), this->click_subaction >> 16, CMD_SCHEDULED_DISPATCH_RENAME_TAG | CMD_MSG(STR_ERROR_CAN_T_RENAME_DEPARTURE_TAG), nullptr, str);
+						DoCommandP(0, v->index | (this->schedule_index << 20), this->click_subaction >> 16, CMD_SCHEDULED_DISPATCH_RENAME_TAG | CMD_MSG(STR_ERROR_CAN_T_RENAME_DEPARTURE_TAG), nullptr, str->c_str());
 						break;
 				}
 				break;

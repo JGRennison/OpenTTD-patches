@@ -526,8 +526,8 @@ struct BuildRailToolbarWindow : Window {
 		if (!_settings_client.gui.show_rail_polyline_tool) {
 			this->GetWidget<NWidgetStacked>(WID_RAT_POLYRAIL_SEL)->SetDisplayedPlane(SZSP_NONE);
 		}
-		this->FinishInitNested(TRANSPORT_RAIL);
 		this->SetupRailToolbar(railtype);
+		this->FinishInitNested(TRANSPORT_RAIL);
 		this->DisableWidget(WID_RAT_REMOVE);
 		this->OnInvalidateData();
 		this->last_user_action = INVALID_WID_RAT;

@@ -52,7 +52,7 @@ void AddFixedViewportRoutePath(VehicleID veh);
 void RemoveFixedViewportRoutePath(VehicleID veh);
 void ChangeFixedViewportRoutePath(VehicleID from, VehicleID to);
 
-bool DoZoomInOutWindow(ZoomStateChange how, Window *w, bool stop_following = true);
+bool DoZoomInOutWindow(ZoomStateChange how, Window *w);
 void ZoomInOrOutToCursorWindow(bool in, Window * w);
 void ConstrainAllViewportsZoom();
 Point GetTileZoomCenterWindow(bool in, Window * w);

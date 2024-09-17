@@ -2637,9 +2637,9 @@ public:
 		this->SetDirty();
 	}
 
-	void OnQueryTextFinished(char *str) override
+	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		DoCommandP(0, this->window_number, this->GetCargoFilter(), CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), nullptr, str);
+		DoCommandP(0, this->window_number, this->GetCargoFilter(), CMD_CREATE_GROUP_FROM_LIST | CMD_MSG(STR_ERROR_GROUP_CAN_T_CREATE), nullptr, str.has_value() ? str->c_str() : nullptr);
 	}
 
 	virtual void OnPlaceObject(Point pt, TileIndex tile) override
@@ -3584,12 +3584,12 @@ struct VehicleDetailsWindow : Window {
 		}
 	}
 
-	void OnQueryTextFinished(char *str) override
+	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (str == nullptr || StrEmpty(str)) return;
+		if (!str.has_value() || str->empty()) return;
 
 		const Vehicle *v = Vehicle::Get(this->window_number);
-		DoCommandP(v->tile, v->index, ConvertDisplaySpeedToKmhishSpeed(std::strtoul(str, nullptr, 10), VEH_TRAIN), CMD_SET_TRAIN_SPEED_RESTRICTION | CMD_MSG(STR_ERROR_CAN_T_CHANGE_SPEED_RESTRICTION));
+		DoCommandP(v->tile, v->index, ConvertDisplaySpeedToKmhishSpeed(std::strtoul(str->c_str(), nullptr, 10), VEH_TRAIN), CMD_SET_TRAIN_SPEED_RESTRICTION | CMD_MSG(STR_ERROR_CAN_T_CHANGE_SPEED_RESTRICTION));
 	}
 
 	void OnResize() override
@@ -4317,11 +4317,11 @@ public:
 		return Window::OnHotkey(hotkey);
 	}
 
-	void OnQueryTextFinished(char *str) override
+	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
-		if (str == nullptr) return;
+		if (!str.has_value()) return;
 
-		DoCommandP(0, this->window_number, 0, CMD_RENAME_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_RENAME_TRAIN + Vehicle::Get(this->window_number)->type), nullptr, str);
+		DoCommandP(0, this->window_number, 0, CMD_RENAME_VEHICLE | CMD_MSG(STR_ERROR_CAN_T_RENAME_TRAIN + Vehicle::Get(this->window_number)->type), nullptr, str->c_str());
 	}
 
 	virtual void OnDropdownSelect(WidgetID widget, int index) override
@@ -4413,7 +4413,7 @@ public:
 	void OnMouseWheel(int wheel) override
 	{
 		if (_settings_client.gui.scrollwheel_scrolling != SWS_OFF) {
-			DoZoomInOutWindow(wheel < 0 ? ZOOM_IN : ZOOM_OUT, this, false);
+			DoZoomInOutWindow(wheel < 0 ? ZOOM_IN : ZOOM_OUT, this);
 		}
 	}
 

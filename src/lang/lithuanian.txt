@@ -2727,7 +2727,7 @@ STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Jūsų �
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Galimas ryšio praradimas
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :{WHITE}Paskutines {NUM} sekund{P ė ės žių} jokių duomenų iš serverio
 
-###length 22
+###length 23
 STR_NETWORK_ERROR_CLIENT_GENERAL                                :klaida
 STR_NETWORK_ERROR_CLIENT_DESYNC                                 :sinchronizacijos klaida
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :negali užkrauti žemėlapio
@@ -3199,7 +3199,7 @@ STR_INDUSTRY_CARGOES_SELECT_INDUSTRY_TOOLTIP                    :{BLACK}Pasirink
 
 # Land area window
 STR_LAND_AREA_INFORMATION_CAPTION                               :{WHITE}Informacija apie žemės plotą
-STR_LAND_AREA_INFORMATION_LOCATION_TOOLTIP                      :{BLACK}Centruoti šį žemės lopinėlį pagrindiniame lange. Spragtelėjus laikant nuspaustą Ctrl klavišą, bus atidarytas naujas peržiūros langas su vaizdu į šį lopinėlį
+STR_LAND_AREA_INFORMATION_LOCATION_TOOLTIP                      :{BLACK}Centruoti šį žemės lopinėlį pagrindiniame lange. Spragtelėkite laikant nuspaustą Ctrl klavišą, kad atidarytumėte naują peržiūros langą su vaizdu į šį lopinėlį
 STR_LAND_AREA_INFORMATION_COST_TO_CLEAR_N_A                     :{BLACK}Išvalymo kaina: {LTBLUE}NĖRA
 STR_LAND_AREA_INFORMATION_COST_TO_CLEAR                         :{BLACK}Išvalymo kaina: {RED}{CURRENCY_LONG}
 STR_LAND_AREA_INFORMATION_REVENUE_WHEN_CLEARED                  :{BLACK}pajamos ištrynus: {LTBLUE}{CURRENCY_LONG}
@@ -4056,6 +4056,7 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_YEAR                      :{WHITE}{CURRENC
 STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_PERIOD                    :{WHITE}{CURRENCY_LONG} per metus
 
 # Industry directory
+STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}Gamyklos ({COMMA} iš {COMMA})
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- Nieko -
 STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% transportuota){BLACK}
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
@@ -4072,6 +4073,7 @@ STR_INDUSTRY_DIRECTORY_FILTER_NONE                              :(tuščia)
 # Industry view
 STR_INDUSTRY_VIEW_CAPTION                                       :{WHITE}{INDUSTRY}
 STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}Praėjusio mėnesio produkcija:
+STR_INDUSTRY_VIEW_PRODUCTION_LAST_MINUTE_TITLE                  :{BLACK}Praėjusios minutės produkcija:
 STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_LONG}{STRING}{BLACK} ({COMMA}% transportuota)
 STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Centruoti gamyklą pagrindiniame lange. Spragtelėjus laikant nuspaustą Ctrl klavišą, bus atidarytas naujas peržiūros langas su vaizdu į šią gamyklą
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Gamybos sparta: {YELLOW}{COMMA}%
