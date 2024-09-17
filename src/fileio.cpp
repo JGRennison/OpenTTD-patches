@@ -30,6 +30,7 @@
 #include <sys/stat.h>
 #include <array>
 #include <sstream>
+#include <filesystem>
 
 #include "safeguards.h"
 
@@ -878,8 +879,10 @@ void DetermineBasePaths(const char *exe)
 			AppendPathSeparator(tmp);
 			_searchpaths[SP_WORKING_DIR] = tmp;
 		} else {
-			_searchpaths[SP_WORKING_DIR] = _config_file.substr(0, end + 1);
+			tmp = FS2OTTD(std::filesystem::weakly_canonical(std::filesystem::path(OTTD2FS(_config_file))).parent_path());
 		}
+		AppendPathSeparator(tmp);
+		_searchpaths[SP_WORKING_DIR] = tmp;
 	}
 
 	/* Change the working directory to that one of the executable */
