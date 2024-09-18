@@ -1122,7 +1122,11 @@ int AdvanceTrainReservationLookaheadEnd(const Train *v, int lookahead_end_positi
 	uint8_t known_signals_ahead = 1;
 	bool allow_skip_no_aspect_inc = false;
 	if (v->IsInDepot()) {
-		known_signals_ahead = _extra_aspects + 1;
+		if (_default_signal_style_lookahead_extra_aspects == 0xFF) {
+			/* Default signal style (depot) has unlimited lookahead */
+			return v->lookahead->reservation_end_position + 1;
+		}
+		known_signals_ahead = _default_signal_style_lookahead_extra_aspects + 1;
 		allow_skip_no_aspect_inc = true;
 	}
 	for (const TrainReservationLookAheadItem &item : v->lookahead->items) {
@@ -1143,7 +1147,7 @@ int AdvanceTrainReservationLookaheadEnd(const Train *v, int lookahead_end_positi
 			if (item.start <= threshold) {
 				/* Signal is within visual range */
 				uint8_t style = item.data_aux >> 8;
-				uint8_t max_aspect = (style == 0) ? _extra_aspects : _new_signal_styles[style - 1].lookahead_extra_aspects;
+				uint8_t max_aspect = (style == 0) ? _default_signal_style_lookahead_extra_aspects : _new_signal_styles[style - 1].lookahead_extra_aspects;
 				if (max_aspect == 0xFF) {
 					/* This signal has unlimited lookahead */
 					return v->lookahead->reservation_end_position + 1;

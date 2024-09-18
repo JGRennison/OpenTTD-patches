@@ -3447,6 +3447,7 @@ DEF_CONSOLE_CMD(ConDumpSignalStyles)
 	IConsolePrintF(CC_DEFAULT, "    r = realistic braking only");
 	IConsolePrintF(CC_DEFAULT, "    b = both sides");
 	IConsolePrintF(CC_DEFAULT, "  Extra aspects: %u", _extra_aspects);
+	IConsolePrintF(CC_DEFAULT, "  Default style extra aspects: %u", _default_signal_style_lookahead_extra_aspects);
 
 	btree::btree_map<uint32_t, const GRFFile *> grfs;
 	for (uint8_t i = 0; i < _num_new_signal_styles; i++) {

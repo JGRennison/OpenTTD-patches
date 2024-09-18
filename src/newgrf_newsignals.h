@@ -50,6 +50,8 @@ struct NewSignalStyle {
 	PalSpriteID signals[SIGTYPE_END][2][2];
 };
 extern std::array<NewSignalStyle, MAX_NEW_SIGNAL_STYLES> _new_signal_styles;
+extern uint8_t _default_signal_style_lookahead_extra_aspects;
+
 struct NewSignalStyleMapping {
 	uint32_t grfid = 0;
 	uint8_t grf_local_id = 0;

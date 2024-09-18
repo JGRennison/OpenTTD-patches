@@ -20,6 +20,7 @@
 
 std::vector<const GRFFile *> _new_signals_grfs;
 std::array<NewSignalStyle, MAX_NEW_SIGNAL_STYLES> _new_signal_styles;
+uint8_t _default_signal_style_lookahead_extra_aspects = 0;
 std::array<NewSignalStyleMapping, MAX_NEW_SIGNAL_STYLES> _new_signal_style_mapping;
 uint8_t _num_new_signal_styles = 0;
 uint16_t _enabled_new_signal_styles_mask = 0;

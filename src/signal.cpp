@@ -1884,6 +1884,7 @@ static bool DetermineExtraAspectsVariable()
 {
 	bool changed = false;
 	uint8_t new_extra_aspects = 0;
+	uint8_t default_style_aspects = 0;
 
 	_signal_style_masks = {};
 
@@ -1893,9 +1894,13 @@ static bool DetermineExtraAspectsVariable()
 		for (RailType r = RAILTYPE_BEGIN; r != RAILTYPE_END; r++) {
 			const RailTypeInfo *rti = GetRailTypeInfo(r);
 			new_extra_aspects = std::max<uint8_t>(new_extra_aspects, rti->signal_extra_aspects);
+			default_style_aspects = std::max<uint8_t>(default_style_aspects, rti->signal_extra_aspects);
 		}
 		for (const GRFFile *grf : _new_signals_grfs) {
 			new_extra_aspects = std::max<uint8_t>(new_extra_aspects, grf->new_signal_extra_aspects);
+			if (HasBit(grf->new_signal_style_mask, 0)) {
+				default_style_aspects = std::max<uint8_t>(default_style_aspects, grf->new_signal_extra_aspects);
+			}
 		}
 	}
 
@@ -1943,6 +1948,7 @@ static bool DetermineExtraAspectsVariable()
 	}
 
 	_extra_aspects = new_extra_aspects;
+	_default_signal_style_lookahead_extra_aspects = (default_style_aspects > 0) ? default_style_aspects : 255;
 
 	SimpleChecksum64 checksum;
 	checksum.Update(SimpleHash32(_extra_aspects));
