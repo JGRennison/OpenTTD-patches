@@ -375,13 +375,14 @@ public:
 			case WID_AP_AIRPORT_LIST: {
 				Rect row = r.WithHeight(this->line_height).Shrink(WidgetDimensions::scaled.bevel);
 				Rect text = r.WithHeight(this->line_height).Shrink(WidgetDimensions::scaled.matrix);
-				AirportClass *apclass = AirportClass::Get(_selected_airport_class);
-				for (uint i = this->vscroll->GetPosition(); this->vscroll->IsVisible(i) && i < apclass->GetSpecCount(); i++) {
-					const AirportSpec *as = apclass->GetSpec(i);
+				const auto specs = AirportClass::Get(_selected_airport_class)->Specs();
+				auto [first, last] = this->vscroll->GetVisibleRangeIterators(specs);
+				for (auto it = first; it != last; ++it) {
+					const AirportSpec *as = *it;
 					if (!as->IsAvailable()) {
 						GfxFillRect(row, PC_BLACK, FILLRECT_CHECKER);
 					}
-					DrawString(text, as->name, ((int)i == _selected_airport_index) ? TC_WHITE : TC_BLACK);
+					DrawString(text, as->name, (static_cast<int>(as->index) == _selected_airport_index) ? TC_WHITE : TC_BLACK);
 					row = row.Translate(0, this->line_height);
 					text = text.Translate(0, this->line_height);
 				}
@@ -527,10 +528,9 @@ public:
 	{
 		/* First try to select an airport in the selected class. */
 		AirportClass *sel_apclass = AirportClass::Get(_selected_airport_class);
-		for (uint i = 0; i < sel_apclass->GetSpecCount(); i++) {
-			const AirportSpec *as = sel_apclass->GetSpec(i);
+		for (const AirportSpec *as : sel_apclass->Specs()) {
 			if (as->IsAvailable()) {
-				this->SelectOtherAirport(i);
+				this->SelectOtherAirport(as->index);
 				return;
 			}
 		}

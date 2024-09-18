@@ -2179,9 +2179,11 @@ static void ParseCompanyPasswordStorageSecret(const std::string &value)
 static void UpdateClientConfigValues()
 {
 	NetworkServerUpdateGameInfo();
+
+	InvalidateWindowData(WC_CLIENT_LIST, 0);
+
 	if (_network_server) {
 		NetworkServerSendConfigUpdate();
-		SetWindowClassesDirty(WC_CLIENT_LIST);
 	}
 }
 

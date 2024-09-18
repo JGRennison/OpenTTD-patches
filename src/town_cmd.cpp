@@ -837,14 +837,21 @@ static void AddProducedCargo_Town(TileIndex tile, CargoArray &produced)
 	AddProducedHouseCargo(GetHouseType(tile), tile, produced);
 }
 
-static inline void AddAcceptedCargoSetMask(CargoID cargo, uint amount, CargoArray &acceptance, CargoTypes *always_accepted)
+/**
+ * Fill cargo acceptance array and always_accepted mask, if cargo ID is valid.
+ * @param cargo Cargo type to add.
+ * @param amount Amount of cargo to add.
+ * @param[out] acceptance Output array containing amount of cargo accepted.
+ * @param[out] always_accepted Output mask of accepted cargo types.
+ */
+static void AddAcceptedCargoSetMask(CargoID cargo, uint amount, CargoArray &acceptance, CargoTypes &always_accepted)
 {
 	if (cargo == INVALID_CARGO || amount == 0) return;
 	acceptance[cargo] += amount;
-	SetBit(*always_accepted, cargo);
+	SetBit(always_accepted, cargo);
 }
 
-static void AddAcceptedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &acceptance, CargoTypes *always_accepted)
+static void AddAcceptedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &acceptance, CargoTypes &always_accepted)
 {
 	const HouseSpec *hs = HouseSpec::Get(house_id);
 	Town *t = (tile == INVALID_TILE) ? nullptr : Town::GetByTile(tile);
@@ -888,7 +895,7 @@ static void AddAcceptedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &
 	}
 }
 
-static void AddAcceptedCargo_Town(TileIndex tile, CargoArray &acceptance, CargoTypes *always_accepted)
+static void AddAcceptedCargo_Town(TileIndex tile, CargoArray &acceptance, CargoTypes &always_accepted)
 {
 	AddAcceptedHouseCargo(GetHouseType(tile), tile, acceptance, always_accepted);
 }

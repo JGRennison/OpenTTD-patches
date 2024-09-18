@@ -7989,7 +7989,7 @@ static void ScanInfo(ByteReader &buf)
 
 	if (grf_version < 2 || grf_version > 8) {
 		SetBit(_cur.grfconfig->flags, GCF_INVALID);
-		Debug(grf, 0, "{}: NewGRF \"{}\" (GRFID %08X) uses GRF version {}, which is incompatible with this version of OpenTTD.", _cur.grfconfig->GetDisplayPath(), StrMakeValid(name), BSWAP32(grfid), grf_version);
+		Debug(grf, 0, "{}: NewGRF \"{}\" (GRFID {:08X}) uses GRF version {}, which is incompatible with this version of OpenTTD.", _cur.grfconfig->GetDisplayPath(), StrMakeValid(name), BSWAP32(grfid), grf_version);
 	}
 
 	/* GRF IDs starting with 0xFF are reserved for internal TTDPatch use */
@@ -11848,13 +11848,13 @@ void LoadNewGRF(uint load_index, uint num_baseset)
 		}
 
 		if (stage == GLS_RESERVE) {
-			static const uint32_t overrides[][2] = {
-				{ 0x44442202, 0x44440111 }, // UKRS addons modifies UKRS
-				{ 0x6D620402, 0x6D620401 }, // DBSetXL ECS extension modifies DBSetXL
-				{ 0x4D656f20, 0x4D656F17 }, // LV4cut modifies LV4
+			static const std::pair<uint32_t, uint32_t> default_grf_overrides[] = {
+				{ BSWAP32(0x44442202), BSWAP32(0x44440111) }, // UKRS addons modifies UKRS
+				{ BSWAP32(0x6D620402), BSWAP32(0x6D620401) }, // DBSetXL ECS extension modifies DBSetXL
+				{ BSWAP32(0x4D656f20), BSWAP32(0x4D656F17) }, // LV4cut modifies LV4
 			};
-			for (size_t i = 0; i < lengthof(overrides); i++) {
-				SetNewGRFOverride(BSWAP32(overrides[i][0]), BSWAP32(overrides[i][1]));
+			for (const auto &grf_override : default_grf_overrides) {
+				SetNewGRFOverride(grf_override.first, grf_override.second);
 			}
 		}
 

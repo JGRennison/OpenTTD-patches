@@ -331,7 +331,7 @@ static INT_PTR CALLBACK HelpDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARAM
 			 * buffer in OTTD2FS might not be large enough (512 chars). */
 			const size_t help_msg_buf_size = ((q - help_msg.get()) * 3) / 2;
 			auto help_msg_buf = std::make_unique<wchar_t[]>(help_msg_buf_size);
-			SetDlgItemText(wnd, 11, convert_to_fs(help_msg.get(), help_msg_buf.get(), help_msg_buf_size));
+			SetDlgItemText(wnd, 11, convert_to_fs(help_msg.get(), {help_msg_buf.get(), help_msg_buf_size}));
 			SendDlgItemMessage(wnd, 11, WM_SETFONT, (WPARAM)GetStockObject(ANSI_FIXED_FONT), FALSE);
 		} return TRUE;
 
@@ -365,7 +365,7 @@ void ShowInfoI(const char *str)
 			/* We need to put the text in a separate buffer because the default
 			 * buffer in OTTD2FS might not be large enough (512 chars). */
 			wchar_t help_msg_buf[8192];
-			MessageBox(GetActiveWindow(), convert_to_fs(str, help_msg_buf, lengthof(help_msg_buf)), L"OpenTTD", MB_ICONINFORMATION | MB_OK);
+			MessageBox(GetActiveWindow(), convert_to_fs(str, help_msg_buf), L"OpenTTD", MB_ICONINFORMATION | MB_OK);
 		}
 		MyShowCursor(old);
 	}
@@ -375,7 +375,7 @@ char *getcwd(char *buf, size_t size)
 {
 	wchar_t path[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH - 1, path);
-	convert_from_fs(path, buf, size);
+	convert_from_fs(path, {buf, size});
 	return buf;
 }
 
@@ -424,7 +424,7 @@ void DetermineBasePaths(const char *exe)
 	} else {
 		/* Use the folder of the config file as working directory. */
 		wchar_t config_dir[MAX_PATH];
-		wcsncpy(path, convert_to_fs(_config_file, path, lengthof(path)), lengthof(path));
+		convert_to_fs(_config_file, path);
 		if (!GetFullPathName(path, static_cast<DWORD>(std::size(config_dir)), config_dir, nullptr)) {
 			DEBUG(misc, 0, "GetFullPathName failed (%lu)\n", GetLastError());
 			_searchpaths[SP_WORKING_DIR].clear();
@@ -442,7 +442,7 @@ void DetermineBasePaths(const char *exe)
 		_searchpaths[SP_BINARY_DIR].clear();
 	} else {
 		wchar_t exec_dir[MAX_PATH];
-		wcsncpy(path, convert_to_fs(exe, path, std::size(path)), lengthof(path));
+		convert_to_fs(exe, path);
 		if (!GetFullPathName(path, static_cast<DWORD>(std::size(exec_dir)), exec_dir, nullptr)) {
 			DEBUG(misc, 0, "GetFullPathName failed (%lu)\n", GetLastError());
 			_searchpaths[SP_BINARY_DIR].clear();
@@ -517,37 +517,33 @@ std::wstring OTTD2FS(const std::string &name)
 /**
  * Convert to OpenTTD's encoding from that of the environment in
  * UNICODE. OpenTTD encoding is UTF8, local is wide.
- * @param name pointer to a valid string that will be converted
- * @param utf8_buf pointer to a valid buffer that will receive the converted string
- * @param buflen length in characters of the receiving buffer
- * @return pointer to utf8_buf. If conversion fails the string is of zero-length
+ * @param src wide string that will be converted
+ * @param dst_buf span of valid char buffer that will receive the converted string
+ * @return pointer to dst_buf. If conversion fails the string is of zero-length
  */
-char *convert_from_fs(const wchar_t *name, char *utf8_buf, size_t buflen)
+char *convert_from_fs(const std::wstring_view src, std::span<char> dst_buf)
 {
 	/* Convert UTF-16 string to UTF-8. */
-	int len = WideCharToMultiByte(CP_UTF8, 0, name, -1, utf8_buf, (int)buflen, nullptr, nullptr);
-	if (len == 0) utf8_buf[0] = '\0';
+	int len = WideCharToMultiByte(CP_UTF8, 0, src.data(), static_cast<int>(src.size()), dst_buf.data(), static_cast<int>(dst_buf.size() - 1U), nullptr, nullptr);
+	dst_buf[len] = '\0';
 
-	return utf8_buf;
+	return dst_buf.data();
 }
 
 
 /**
  * Convert from OpenTTD's encoding to that of the environment in
  * UNICODE. OpenTTD encoding is UTF8, local is wide.
- * @param name pointer to a valid string that will be converted
- * @param system_buf pointer to a valid wide-char buffer that will receive the
- * converted string
- * @param buflen length in wide characters of the receiving buffer
- * @param console_cp convert to the console encoding instead of the normal system encoding.
- * @return pointer to system_buf. If conversion fails the string is of zero-length
+ * @param src string that will be converted
+ * @param dst_buf span of valid wide-char buffer that will receive the converted string
+ * @return pointer to dst_buf. If conversion fails the string is of zero-length
  */
-wchar_t *convert_to_fs(const std::string_view name, wchar_t *system_buf, size_t buflen)
+wchar_t *convert_to_fs(const std::string_view src, std::span<wchar_t> dst_buf)
 {
-	int len = MultiByteToWideChar(CP_UTF8, 0, name.data(), (int)name.size(), system_buf, (int)buflen);
-	system_buf[len] = '\0';
+	int len = MultiByteToWideChar(CP_UTF8, 0, src.data(), static_cast<int>(src.size()), dst_buf.data(), static_cast<int>(dst_buf.size() - 1U));
+	dst_buf[len] = '\0';
 
-	return system_buf;
+	return dst_buf.data();
 }
 
 /** Determine the current user's locale. */
@@ -624,8 +620,8 @@ int OTTDStringCompare(std::string_view s1, std::string_view s2)
 	}
 
 	wchar_t s1_buf[512], s2_buf[512];
-	convert_to_fs(s1, s1_buf, lengthof(s1_buf));
-	convert_to_fs(s2, s2_buf, lengthof(s2_buf));
+	convert_to_fs(s1, s1_buf);
+	convert_to_fs(s2, s2_buf);
 
 	return CompareString(MAKELCID(_current_language->winlangid, SORT_DEFAULT), NORM_IGNORECASE, s1_buf, -1, s2_buf, -1);
 }

@@ -949,7 +949,7 @@ static INT_PTR CALLBACK CrashDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARA
 			}
 
 			SetDlgItemText(wnd, 10, crash_desc_buf);
-			SetDlgItemText(wnd, 11, convert_to_fs(dos_nl, crash_msgW, crash_msgW_length));
+			SetDlgItemText(wnd, 11, convert_to_fs(dos_nl, {crash_msgW, crash_msgW_length}));
 			SendDlgItemMessage(wnd, 11, WM_SETFONT, (WPARAM)GetStockObject(ANSI_FIXED_FONT), FALSE);
 			SetWndSize(wnd, -1);
 		} return TRUE;

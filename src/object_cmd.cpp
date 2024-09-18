@@ -808,7 +808,7 @@ static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlag flags)
 	return cost;
 }
 
-static void AddAcceptedCargo_Object(TileIndex tile, CargoArray &acceptance, CargoTypes *always_accepted)
+static void AddAcceptedCargo_Object(TileIndex tile, CargoArray &acceptance, CargoTypes &always_accepted)
 {
 	if (!IsObjectType(tile, OBJECT_HQ)) return;
 
@@ -823,7 +823,7 @@ static void AddAcceptedCargo_Object(TileIndex tile, CargoArray &acceptance, Carg
 	CargoID pass = GetCargoIDByLabel(CT_PASSENGERS);
 	if (IsValidCargoID(pass)) {
 		acceptance[pass] += std::max(1U, level);
-		SetBit(*always_accepted, pass);
+		SetBit(always_accepted, pass);
 	}
 
 	/* Top town building generates 4, HQ can make up to 8. The
@@ -833,7 +833,7 @@ static void AddAcceptedCargo_Object(TileIndex tile, CargoArray &acceptance, Carg
 	CargoID mail = GetCargoIDByLabel(CT_MAIL);
 	if (IsValidCargoID(mail)) {
 		acceptance[mail] += std::max(1U, level / 2);
-		SetBit(*always_accepted, mail);
+		SetBit(always_accepted, mail);
 	}
 }
 

@@ -129,6 +129,33 @@ char *strecpy(char *dst, const char *src, const char *last, bool quiet_mode)
 }
 
 /**
+ * Copies characters from one buffer to another.
+ *
+ * Copies the source string to the destination buffer with respect of the
+ * terminating null-character and the size of the destination buffer.
+ *
+ * @note usage: strecpy(dst, src);
+ *
+ * @param dst The destination buffer
+ * @param src The buffer containing the string to copy
+ */
+void strecpy(std::span<char> dst, std::string_view src)
+{
+	/* Ensure source string fits with NUL terminator; dst must be at least 1 character longer than src. */
+	if (std::empty(dst) || std::size(src) >= std::size(dst) - 1U) {
+#if defined(STRGEN) || defined(SETTINGSGEN)
+		error("String too long for destination buffer");
+#else /* STRGEN || SETTINGSGEN */
+		DEBUG(misc, 0, "String too long for destination buffer");
+		src = src.substr(0, std::size(dst) - 1U);
+#endif /* STRGEN || SETTINGSGEN */
+	}
+
+	auto it = std::copy(std::begin(src), std::end(src), std::begin(dst));
+	*it = '\0';
+}
+
+/**
  * Create a duplicate of the given string.
  * @param s    The string to duplicate.
  * @param last The last character that is safe to duplicate. If nullptr, the whole string is duplicated.
