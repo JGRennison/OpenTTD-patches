@@ -4186,7 +4186,7 @@ static ChangeInfoResult SignalsChangeInfo(uint id, int numinfo, int prop, const 
 
 			case A0RPI_SIGNALS_NO_DEFAULT_STYLE:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
-				AssignBit(_cur.grffile->new_signal_style_mask, 0, buf.ReadByte() != 0);
+				AssignBit(_cur.grffile->new_signal_style_mask, 0, buf.ReadByte() == 0);
 				break;
 
 			case A0RPI_SIGNALS_DEFINE_STYLE: {
