@@ -27,6 +27,7 @@ STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :计数器值
 STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :当前时间/日期
 STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :时刻表状态
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :调度槽位
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :等待中货物 / 容量
 
 STR_ORDER_STOP_LOCATION_THROUGH                                 :[通过式装载]
 
@@ -40,7 +41,6 @@ STR_RIVERS_EXTREMELY_MANY                                       :{RED}极多
 
 STR_CONFIG_SETTING_BRIBE_HELPTEXT_PERIODS                       :允许公司尝试贿赂当地的城镇管理机构。如果贿赂被检察机关发现，公司将无法在该镇活动半周期。
 
-STR_CONFIG_SETTING_ALLOW_EXCLUSIVE_HELPTEXT_PERIODS             :如果一家公司购买了一个城镇的独家运输权，对手的车站（乘客和货物）将在一个周期内无法收到任何货物。
 
 STR_COMMA_SEPARATOR                                             :,{SP}
 
@@ -272,7 +272,6 @@ STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW              :将机车与车
 STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_HELPTEXT     :启用后列车购买窗口在分开的二栏列表中分别展示列机车和车厢
 
 STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_DUAL_BUTTONS :分别在列车购买窗口展示按钮组：{STRING}
-STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_DUAL_BUTTONS_HELPTEXT :启用后在列车购买窗口的列机车和车厢列表中，它们共通的一组按钮会分别显示两次
 
 STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL                    :隐藏路点标签：{STRING}
 STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL_HELPTEXT           :启用后可以在路点窗口选择隐藏路点名称{}这在路点仅用于装饰时可以改善观感
@@ -512,7 +511,7 @@ STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_WATER              :允许其他公
 STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_AIR                :允许其他公司在机库内购买与维护飞机：{STRING}
 
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION                       :启用列车速度调整：{STRING}
-STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :当开启后，较快的列车会将速度调整到前方较慢的列车的速度
+STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :当开启后，较快的列车会在经过信号时调整速度以与前方较慢列车的速度相匹配。{}“速度调整”功能可能不适用于部分信号设置风格；此功能可以使用信号“寻路限制”功能针对特定列车手动启用或禁用。
 
 STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES                 :道路车辆在转弯处减速：{STRING}
 STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES_HELPTEXT        :当开启后，道路车辆将在转弯处减速（仅当真实加速开启时启用）
@@ -544,7 +543,7 @@ STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA          :{STRING}{}本�
 STR_CONFIG_SETTING_TOWN_CARGO_SCALE_MODE                        :城镇货物生产缩放使用的时间间隔：{STRING}
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE                    :工业货物生产缩放使用的时间间隔：{STRING}
 
-STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :每月或每生产周期的货物产量比例系数可以选择乘以经济速度降低系数。
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :每月或每生产周期的货物产量比例系数可以选择乘以“经济速度因子”选项的数值。
 
 STR_CONFIG_SETTING_CARGO_SCALE_MODE_NORMAL                      :普通
 STR_CONFIG_SETTING_CARGO_SCALE_MODE_ECON_SPEED_REDUCTION_MULT   :乘以经济速度因子
@@ -552,7 +551,7 @@ STR_CONFIG_SETTING_CARGO_SCALE_MODE_ECON_SPEED_REDUCTION_MULT   :乘以经济速
 STR_CONFIG_SETTING_CARGO_SCALE_VALUE_ECON_SPEED_REDUCTION_MULT  :{NUM}% × 经济速度因子
 
 STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT                            :城镇最高海拔：{STRING}
-STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :在此高度之上将没有城镇生成
+STR_CONFIG_SETTING_TOWN_ABOVE_HEIGHT_HELPTEXT                   :城镇只能建在这个高度或低于这个高度的地方
 
 STR_CONFIG_SETTING_MIN_TOWN_LAND_AREA                           :城镇最小距离格数：{STRING}
 STR_CONFIG_SETTING_MIN_TOWN_LAND_AREA_HELPTEXT                  :城镇最小距离被设置为该值设定的格数
@@ -1290,8 +1289,16 @@ STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}货物�
 STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}显示货物等待记录
 
 STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} - 实时运输信息
-STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}发
-STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}抵
+STR_DEPARTURES_CARGO_MODE_TOOLTIP                               :{BLACK}设置载具到达与出发显示货物类型过滤规则
+STR_DEPARTURES_DEPARTURES                                       :出发
+STR_DEPARTURES_ARRIVALS                                         :到达
+STR_DEPARTURES_BOTH_COMBINED                                    :组合
+STR_DEPARTURES_BOTH_SEPARATE                                    :分离
+STR_DEPARTURES_DEPARTURE_MODE_TOOLTIP                           :{BLACK}控制载具到达与出发显示
+STR_DEPARTURES_TIMES_BUTTON                                     :{BLACK}时间
+STR_DEPARTURES_TIMES_TOOLTIP                                    :{BLACK}显示到达载具计划时间
+STR_DEPARTURES_EMPTY_BUTTON                                     :{BLACK}空转
+STR_DEPARTURES_EMPTY_TOOLTIP                                    :{BLACK}包括出发、到达时间与非营业站点，即载具经过或停留但不装载客货的站点。
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}经
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}显示表定通过载具
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}仅显示列车
@@ -1317,9 +1324,13 @@ STR_DEPARTURES_CALLING_AT_STATION                               :{STRING}、{STR
 STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{STRING}、{STRING}
 STR_DEPARTURES_CALLING_AT_LIST                                  :{ORANGE}{STRING}。
 STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{STRING}。此服务延续到 {STRING}
+STR_DEPARTURES_CALLING_AT_STATION_WITH_TIME                     :{STRING}（{TT_TIME_ABS}）
 STR_DEPARTURES_TINY                                             :{TINY_FONT}{STRING}
 STR_DEPARTURES_VIA_DESCRIPTOR                                   :{STRING}{STRING}
 STR_DEPARTURES_VIA_AND                                          :{STRING} 与 {STRING}
+STR_DEPARTURES_SOURCE_MODE_TOOLTIP                              :{BLACK}选择显示实时到发顺序或 24 小时到发顺序（即读取在计划调度中设置的时刻表）
+STR_DEPARTURES_SOURCE_MODE_LIVE                                 :实时
+STR_DEPARTURES_SOURCE_MODE_SCHEDULE_24_HOUR                     :24 小时
 
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
 STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
@@ -1342,6 +1353,7 @@ STR_DEPARTURES_ARRIVED                                          :{GREEN}到达
 STR_DEPARTURES_DELAYED                                          :{YELLOW}延误
 STR_DEPARTURES_EXPECTED                                         :{YELLOW}约 {STRING}
 STR_DEPARTURES_CANCELLED                                        :{RED}取消
+STR_DEPARTURES_SCHEDULED                                        :{GREEN}已计划
 
 STR_CONFIG_SETTING_DEPARTUREBOARDS                              :{ORANGE}出发看板
 STR_CONFIG_MAX_DEPARTURES                                       :车站看板车次上限：{STRING}
@@ -1549,6 +1561,8 @@ STR_VEHICLE_AUTO_GROUP_CARGO_LIST                               :（{CARGO_LIST}
 
 STR_VEHICLE_INFO_SPEED_RESTRICTION                              :{BLACK}限速：{LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_SPEED_ADAPTATION_EXEMPT                        :{BLACK}解除限速
+STR_VEHICLE_INFO_SPEED_ADAPTATION_LIMIT                         :{BLACK}速度调整：{LTBLUE}{VELOCITY}
+STR_VEHICLE_INFO_SPEED_ADAPTATION_NONE                          :{BLACK}速度调整：{LTBLUE}无
 
 STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE_AND_SPEED      :{LTBLUE}{ENGINE}{BLACK}   建造年份： {LTBLUE}{NUM}{BLACK} 价值：{LTBLUE}{CURRENCY_LONG} {BLACK}最高速度：{LTBLUE}{VELOCITY}
 STR_VEHICLE_DETAILS_TRAIN_WAGON_VALUE_AND_SPEED                 :{LTBLUE}{ENGINE}{BLACK}   价值：{LTBLUE}{CURRENCY_LONG} {BLACK}最高速度{LTBLUE}{VELOCITY}
@@ -1580,16 +1594,18 @@ STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :槽位内载具
 
 STR_ORDER_CONDITIONAL_NEXT_STATION                              :下一站
 STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}货物对比车站数据
-STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}列车槽位检查占用率：
-STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP                           :{BLACK}检查计数器值：
-STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP                         :{BLACK}当前时间日期域检查值：
-STR_ORDER_CONDITIONAL_TIMETABLE_TOOLTIP                         :{BLACK}时刻表域检查值：
-STR_ORDER_CONDITIONAL_SCHED_SELECT_TOOLTIP                      :{BLACK}要使用的调度时刻表
-STR_ORDER_CONDITIONAL_SCHED_TEST_TOOLTIP                        :{BLACK}要测试的调度时刻表
+STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}检查的槽位
+STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP                           :{BLACK}检查的计数器值
+STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP                         :{BLACK}检查的时间信息
+STR_ORDER_CONDITIONAL_TIMETABLE_TOOLTIP                         :{BLACK}检查的时刻表项
+STR_ORDER_CONDITIONAL_SCHED_SELECT_TOOLTIP                      :{BLACK}要使用的计划调度时刻表
+STR_ORDER_CONDITIONAL_SCHED_TEST_TOOLTIP                        :{BLACK}要测试的计划调度时刻表
 STR_ORDER_CONDITIONAL_VIA                                       :{BLACK}经由
-STR_ORDER_CONDITIONAL_VIA_TOOLTIP                               :{BLACK}经由站检查等待货物总量：
-STR_ORDER_CONDITIONAL_STATION                                   :{BLACK}站
-STR_ORDER_CONDITIONAL_STATION_TOOLTIP                           :{BLACK}站以检查
+STR_ORDER_CONDITIONAL_VIA_TOOLTIP                               :{BLACK}经由某站的货物总量
+STR_ORDER_CONDITIONAL_STATION                                   :{BLACK}车站
+STR_ORDER_CONDITIONAL_STATION_TOOLTIP                           :{BLACK}被检查的车站
+STR_ORDER_CONDITIONAL_REFIT_MODE                                :{BLACK}改装
+STR_ORDER_CONDITIONAL_REFIT_MODE_TOOLTIP                        :{BLACK}是否使用改装后的货物容量
 
 STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS                        :接受
 STR_ORDER_CONDITIONAL_COMPARATOR_DOES_NOT_ACCEPT                :不接受
@@ -1702,11 +1718,16 @@ STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :跳至 #{COMMA}
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :跳至 #{COMMA} [如果{STRING}装载比例{STRING} {COMMA}%]
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :跳至 #{0:COMMA} [如果 {2:STRING} 的{1:STRING}数{3:STRING} {4:CARGO_SHORT}]
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :跳至 #{0:COMMA} [如果 {2:STRING} 经由 {3:STRING} 的{1:STRING}数{4:STRING} {5:CARGO_SHORT}]
+STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_DISPLAY             :跳至 #{0:COMMA} [如果 {2:STRING} 的{1:STRING}数{3:STRING}{4:STRING}]
+STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_VIA_DISPLAY         :跳至 #{0:COMMA} [如果 {2:STRING} 经由 {3:STRING} 的{1:STRING}数{4:STRING}{5:STRING}]
 STR_ORDER_CONDITIONAL_COUNTER                                   :跳至 #{COMMA} [如果数值：{TRCOUNTER} {STRING} {COMMA} ]
 STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :跳至 #{COMMA} [如果数值：{PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {COMMA} ]
 STR_ORDER_CONDITIONAL_TIME_HHMM                                 :跳至 #{COMMA} [如果 {STRING} {STRING} {TIME_HHMM} ]
 STR_ORDER_CONDITIONAL_TIMETABLE                                 :跳至 #{COMMA} [如果{STRING}{STRING}{TT_TICKS}]
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DISPLAY                     :跳至 #{COMMA} [如果 {STRING} {STRING} {STRING} ]
+
+STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY            :列车{1:STRING}容量的 {0:COMMA}%
+STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY_REFIT      :列车改装为{1:STRING}类型时容量的 {0:COMMA}%
 
 STR_ORDER_TRY_ACQUIRE_SLOT                                      :尝试占用：{STRING}
 STR_ORDER_RELEASE_SLOT                                          :退出槽位：{STRING}
@@ -1818,6 +1839,11 @@ STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{STRING}: {NUM}
 STR_PLANS_LIST_ITEM_LINE                                        : -- #{NUM}：{NUM} 条线段
 STR_PLANS_LIST_TOOLTIP                                          :{BLACK}双击列表中的任意物品折叠相关联的计划{}按住 <Ctrl> 键操作移动到相应位置
 STR_PLANS_QUERY_RENAME_PLAN                                     :{WHITE}重命名计划
+STR_PLANS_OWN_ONLY                                              :{BLACK}当前公司
+STR_PLANS_OWN_ONLY_TOOLTIP                                      :{BLACK}仅显示当前公司的计划
+STR_SORT_BY_PLAN_ID                                             :计划编号
+STR_SORT_BY_OWNER                                               :所有者
+STR_SORT_BY_DATE                                                :日期
 
 STR_WARNING_LOADGAME_REMOVED_UNCORRECTABLE_VEHICLES             :{WHITE}由于在加载过程中无可挽回的错误，已经移除了{NUM} 辆车
 
