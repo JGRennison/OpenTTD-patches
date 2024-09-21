@@ -4128,6 +4128,23 @@ DEF_CONSOLE_CMD(ConFindNonRealisticBrakingSignal)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConFindMissingObject)
+{
+	if (argc == 0) {
+		IConsolePrint(CC_HELP, "Find the next object tile where the spec is missing");
+		return true;
+	}
+
+	extern TileIndex FindMissingObjectTile();
+	TileIndex t = FindMissingObjectTile();
+	if (t != INVALID_TILE) {
+		ScrollMainWindowToTile(t);
+		SetRedErrorSquare(t);
+	}
+
+	return true;
+}
+
 
 DEF_CONSOLE_CMD(ConDumpInfo)
 {
@@ -4324,6 +4341,7 @@ void IConsoleStdLibRegister()
 	IConsole::CmdRegister("fps_wnd",                 ConFramerateWindow);
 
 	IConsole::CmdRegister("find_non_realistic_braking_signal", ConFindNonRealisticBrakingSignal);
+	IConsole::CmdRegister("find_missing_object",     ConFindMissingObject);
 
 	IConsole::CmdRegister("getfulldate",             ConGetFullDate,      nullptr, true);
 	IConsole::CmdRegister("dump_command_log",        ConDumpCommandLog,   nullptr, true);

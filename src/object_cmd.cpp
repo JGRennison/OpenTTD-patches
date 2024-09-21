@@ -1294,3 +1294,16 @@ extern const TileTypeProcs _tile_type_object_procs = {
 	GetFoundation_Object,        // get_foundation_proc
 	TerraformTile_Object,        // terraform_tile_proc
 };
+
+TileIndex FindMissingObjectTile()
+{
+	for (TileIndex t = 0; t < MapSize(); t++) {
+		if (IsTileType(t, MP_OBJECT)) {
+			const Object *obj = Object::GetByTile(t);
+			const ObjectSpec *spec = ObjectSpec::Get(obj->type);
+			if (!spec->IsEnabled()) return t;
+		}
+	}
+
+	return INVALID_TILE;
+}
