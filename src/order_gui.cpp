@@ -180,9 +180,7 @@ public:
 
 	void Close(int data = 0) override
 	{
-		if (!FocusWindowById(WC_VEHICLE_ORDERS, this->window_number)) {
-			MarkDirtyFocusedRoutePaths(this->vehicle);
-		}
+		FocusWindowById(WC_VEHICLE_ORDERS, this->window_number);
 		this->Window::Close();
 	}
 
@@ -291,20 +289,6 @@ public:
 			SetDParam(0, this->vehicle->index);
 			SetDParam(1, this->order_id + 1);
 			SetDParam(2, this->vehicle->GetOrder(this->order_id)->GetDestination());
-		}
-	}
-
-	virtual void OnFocus(Window *previously_focused_window) override
-	{
-		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
-			MarkDirtyFocusedRoutePaths(this->vehicle);
-		}
-	}
-
-	virtual void OnFocusLost(bool closing, Window *newly_focused_window) override
-	{
-		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
-			MarkDirtyFocusedRoutePaths(this->vehicle);
 		}
 	}
 
@@ -1994,9 +1978,7 @@ public:
 	{
 		CloseWindowById(WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, this->window_number, false);
 		CloseWindowById(WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, this->window_number, false);
-		if (!FocusWindowById(WC_VEHICLE_VIEW, this->window_number)) {
-			MarkDirtyFocusedRoutePaths(this->vehicle);
-		}
+		FocusWindowById(WC_VEHICLE_VIEW, this->window_number);
 		this->GeneralVehicleWindow::Close();
 	}
 
@@ -3795,20 +3777,6 @@ public:
 	{
 		/* Update the scroll bar */
 		this->vscroll->SetCapacityFromWidget(this, WID_O_ORDER_LIST, WidgetDimensions::scaled.framerect.Vertical());
-	}
-
-	virtual void OnFocus(Window *previously_focused_window) override
-	{
-		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
-			MarkDirtyFocusedRoutePaths(this->vehicle);
-		}
-	}
-
-	virtual void OnFocusLost(bool closing, Window *newly_focused_window) override
-	{
-		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
-			MarkDirtyFocusedRoutePaths(this->vehicle);
-		}
 	}
 
 	bool OnTooltip(Point pt, WidgetID widget, TooltipCloseCondition close_cond) override

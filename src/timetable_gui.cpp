@@ -368,9 +368,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 	void Close(int data = 0) override
 	{
-		if (!FocusWindowById(WC_VEHICLE_VIEW, this->window_number)) {
-			MarkDirtyFocusedRoutePaths(this->vehicle);
-		}
+		FocusWindowById(WC_VEHICLE_VIEW, this->window_number);
 		this->GeneralVehicleWindow::Close();
 	}
 
@@ -1186,20 +1184,6 @@ struct TimetableWindow : GeneralVehicleWindow {
 		this->GetWidget<NWidgetStacked>(WID_VT_ARRIVAL_DEPARTURE_SELECTION)->SetDisplayedPlane(_settings_client.gui.timetable_arrival_departure ? 0 : SZSP_NONE);
 		this->GetWidget<NWidgetStacked>(WID_VT_EXPECTED_SELECTION)->SetDisplayedPlane(_settings_client.gui.timetable_arrival_departure ? 0 : 1);
 		this->GetWidget<NWidgetStacked>(WID_VT_SEL_SHARED)->SetDisplayedPlane(this->vehicle->owner == _local_company && _ctrl_pressed ? 1 : 0);
-	}
-
-	virtual void OnFocus(Window *previously_focused_window) override
-	{
-		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
-			MarkDirtyFocusedRoutePaths(this->vehicle);
-		}
-	}
-
-	virtual void OnFocusLost(bool closing, Window *newly_focused_window) override
-	{
-		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
-			MarkDirtyFocusedRoutePaths(this->vehicle);
-		}
 	}
 
 	const Vehicle *GetVehicle()

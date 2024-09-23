@@ -264,9 +264,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 	void Close(int data = 0) override
 	{
-		if (!FocusWindowById(WC_VEHICLE_VIEW, this->window_number)) {
-			MarkDirtyFocusedRoutePaths(this->vehicle);
-		}
+		FocusWindowById(WC_VEHICLE_VIEW, this->window_number);
 		this->GeneralVehicleWindow::Close();
 	}
 
@@ -1428,20 +1426,6 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		this->vscroll->SetCapacityFromWidget(this, WID_SCHDISPATCH_MATRIX);
 		NWidgetCore *nwi = this->GetWidget<NWidgetCore>(WID_SCHDISPATCH_MATRIX);
 		this->num_columns = nwi->current_x / nwi->resize_x;
-	}
-
-	virtual void OnFocus(Window *previously_focused_window) override
-	{
-		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
-			MarkDirtyFocusedRoutePaths(this->vehicle);
-		}
-	}
-
-	virtual void OnFocusLost(bool closing, Window *newly_focused_window) override
-	{
-		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
-			MarkDirtyFocusedRoutePaths(this->vehicle);
-		}
 	}
 
 	bool OnVehicleSelect(const Vehicle *v) override

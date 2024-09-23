@@ -48,6 +48,7 @@ void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile, Viewp
 void MarkDirtyFocusedRoutePaths(const Vehicle *veh);
 void CheckMarkDirtyViewportRoutePaths(const Vehicle *veh);
 void CheckMarkDirtyViewportRoutePaths();
+void HandleViewportRoutePathFocusChange(const Window *old, const Window *focused);
 void AddFixedViewportRoutePath(VehicleID veh);
 void RemoveFixedViewportRoutePath(VehicleID veh);
 void ChangeFixedViewportRoutePath(VehicleID from, VehicleID to);

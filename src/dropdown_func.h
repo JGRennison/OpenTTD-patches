@@ -19,7 +19,7 @@ void ShowDropDownMenu(Window *w, std::span<const StringID> strings, int selected
 /* Hide drop down menu of a parent window */
 int HideDropDownMenu(Window *pw);
 
-void GetParentWindowInfo(Window *w, WindowClass &parent_wc, WindowNumber &parent_wn);
+void GetDropDownParentWindowInfo(const Window *w, WindowClass &parent_wc, WindowNumber &parent_wn);
 
 /* Helper functions for commonly used drop down list items. */
 std::unique_ptr<DropDownListItem> MakeDropDownListDividerItem();

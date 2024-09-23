@@ -440,6 +440,7 @@ void SetFocusedWindow(Window *w)
 	/* Remember which window was previously focused */
 	Window *old_focused = _focused_window;
 	_focused_window = w;
+	HandleViewportRoutePathFocusChange(old_focused, w);
 
 	/* So we can inform it that it lost focus */
 	if (old_focused != nullptr) old_focused->OnFocusLost(false, w);
@@ -1089,6 +1090,7 @@ void Window::Close([[maybe_unused]] int data)
 	/* Make sure we don't try to access this window as the focused window when it doesn't exist anymore. */
 	if (_focused_window == this) {
 		_focused_window = nullptr;
+		HandleViewportRoutePathFocusChange(this, nullptr);
 		this->OnFocusLost(true, nullptr);
 	}
 

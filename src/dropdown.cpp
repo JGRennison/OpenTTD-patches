@@ -508,9 +508,9 @@ int HideDropDownMenu(Window *pw)
 	return -1;
 }
 
-void GetParentWindowInfo(Window *w, WindowClass &parent_wc, WindowNumber &parent_wn)
+void GetDropDownParentWindowInfo(const Window *w, WindowClass &parent_wc, WindowNumber &parent_wn)
 {
-	DropdownWindow *dw = dynamic_cast<DropdownWindow*>(w);
+	const DropdownWindow *dw = dynamic_cast<const DropdownWindow *>(w);
 	assert(dw != nullptr);
 	Window *parent = FindWindowByToken(dw->parent_wnd_token);
 	if (parent != nullptr) {

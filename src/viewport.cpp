@@ -2506,13 +2506,13 @@ static void ViewportDrawStrings(ViewportDrawerDynamic *vdd, ZoomLevel zoom, cons
 	}
 }
 
-static inline Vehicle *GetVehicleFromWindow(Window *w)
+static inline Vehicle *GetVehicleFromWindow(const Window *w)
 {
 	if (w != nullptr) {
 		WindowClass wc = w->window_class;
 		WindowNumber wn = w->window_number;
 
-		if (wc == WC_DROPDOWN_MENU) GetParentWindowInfo(w, wc, wn);
+		if (wc == WC_DROPDOWN_MENU) GetDropDownParentWindowInfo(w, wc, wn);
 
 		switch (wc) {
 			case WC_VEHICLE_VIEW:
@@ -2523,7 +2523,7 @@ static inline Vehicle *GetVehicleFromWindow(Window *w)
 			case WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS:
 			case WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS:
 			case WC_SCHDISPATCH_SLOTS:
-				if (wn != INVALID_VEHICLE) return Vehicle::Get(wn);
+				if (wn != INVALID_VEHICLE) return Vehicle::GetIfValid(wn);
 				break;
 			case WC_TRAINS_LIST:
 			case WC_ROADVEH_LIST:
@@ -4886,6 +4886,15 @@ void CheckMarkDirtyViewportRoutePaths()
 	}
 	for (auto &it : _vp_fixed_route_overlays) {
 		it.MarkAllDirty(Vehicle::GetIfValid(it.veh));
+	}
+}
+
+void HandleViewportRoutePathFocusChange(const Window *old, const Window *focused)
+{
+	const Vehicle *old_v = (old != nullptr) ? GetVehicleFromWindow(old) : nullptr;
+	const Vehicle *new_v = (focused != nullptr) ? GetVehicleFromWindow(focused) : nullptr;
+	if (old_v != new_v) {
+		_vp_focused_window_route_overlay.MarkAllDirty(new_v);
 	}
 }
 

@@ -959,34 +959,9 @@ struct RefitWindow : public Window {
 	void Close(int data = 0) override
 	{
 		if (this->window_number != INVALID_VEHICLE) {
-			if (!FocusWindowById(WC_VEHICLE_VIEW, this->window_number)) {
-				if (this->window_number != INVALID_VEHICLE) {
-					const Vehicle *v = Vehicle::Get(this->window_number);
-					MarkDirtyFocusedRoutePaths(v);
-				}
-			}
+			FocusWindowById(WC_VEHICLE_VIEW, this->window_number);
 		}
 		this->Window::Close();
-	}
-
-	void OnFocus(Window *previously_focused_window) override
-	{
-		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
-			if (this->window_number != INVALID_VEHICLE) {
-				const Vehicle *v = Vehicle::Get(this->window_number);
-				MarkDirtyFocusedRoutePaths(v);
-			}
-		}
-	}
-
-	void OnFocusLost(bool closing, Window *newly_focused_window) override
-	{
-		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
-			if (this->window_number != INVALID_VEHICLE) {
-				const Vehicle *v = Vehicle::Get(this->window_number);
-				MarkDirtyFocusedRoutePaths(v);
-			}
-		}
 	}
 
 	void OnInit() override
@@ -2278,14 +2253,6 @@ private:
 		BP_SHARED_ORDERS, ///< Show the normal caption.
 	};
 
-	void RefreshRouteOverlay() const
-	{
-		if (this->vli.type == VL_SHARED_ORDERS) {
-			const Vehicle *v = Vehicle::GetIfValid(this->vli.index);
-			MarkDirtyFocusedRoutePaths(v);
-		}
-	}
-
 public:
 	VehicleListWindow(WindowDesc &desc, WindowNumber window_number) : BaseVehicleListWindow(desc, window_number)
 	{
@@ -2321,18 +2288,7 @@ public:
 	void Close(int data = 0) override
 	{
 		*this->sorting = this->vehgroups.GetListing();
-		this->RefreshRouteOverlay();
 		this->Window::Close();
-	}
-
-	virtual void OnFocus(Window *previously_focused_window) override
-	{
-		this->RefreshRouteOverlay();
-	}
-
-	virtual void OnFocusLost(bool closing, Window *newly_focused_window) override
-	{
-		this->RefreshRouteOverlay();
 	}
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
@@ -2966,12 +2922,7 @@ struct VehicleDetailsWindow : Window {
 	void Close(int data = 0) override
 	{
 		if (this->window_number != INVALID_VEHICLE) {
-			if (!FocusWindowById(WC_VEHICLE_VIEW, this->window_number)) {
-				if (this->window_number != INVALID_VEHICLE) {
-					const Vehicle *v = Vehicle::Get(this->window_number);
-					MarkDirtyFocusedRoutePaths(v);
-				}
-			}
+			FocusWindowById(WC_VEHICLE_VIEW, this->window_number);
 		}
 		this->Window::Close();
 	}
@@ -3600,26 +3551,6 @@ struct VehicleDetailsWindow : Window {
 			this->vscroll->SetCapacityFromWidget(this, WID_VD_MATRIX);
 		}
 	}
-
-	virtual void OnFocus(Window *previously_focused_window) override
-	{
-		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
-			if (this->window_number != INVALID_VEHICLE) {
-				const Vehicle *v = Vehicle::Get(this->window_number);
-				MarkDirtyFocusedRoutePaths(v);
-			}
-		}
-	}
-
-	virtual void OnFocusLost(bool closing, Window *newly_focused_window) override
-	{
-		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
-			if (this->window_number != INVALID_VEHICLE) {
-				const Vehicle *v = Vehicle::Get(this->window_number);
-				MarkDirtyFocusedRoutePaths(v);
-			}
-		}
-	}
 };
 
 /** Vehicle details window descriptor. */
@@ -3916,10 +3847,6 @@ public:
 
 	void Close([[maybe_unused]] int data = 0) override
 	{
-		if (this->window_number != INVALID_VEHICLE) {
-			const Vehicle *v = Vehicle::Get(this->window_number);
-			MarkDirtyFocusedRoutePaths(v);
-		}
 		CloseWindowById(WC_VEHICLE_ORDERS, this->window_number, false);
 		CloseWindowById(WC_VEHICLE_REFIT, this->window_number, false);
 		CloseWindowById(WC_VEHICLE_DETAILS, this->window_number, false);
@@ -3931,26 +3858,6 @@ public:
 		}
 
 		this->Window::Close();
-	}
-
-	virtual void OnFocus(Window *previously_focused_window) override
-	{
-		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
-			if (this->window_number != INVALID_VEHICLE) {
-				const Vehicle *v = Vehicle::Get(this->window_number);
-				MarkDirtyFocusedRoutePaths(v);
-			}
-		}
-	}
-
-	virtual void OnFocusLost(bool closing, Window *newly_focused_window) override
-	{
-		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
-			if (this->window_number != INVALID_VEHICLE) {
-				const Vehicle *v = Vehicle::Get(this->window_number);
-				MarkDirtyFocusedRoutePaths(v);
-			}
-		}
 	}
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
