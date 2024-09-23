@@ -3040,6 +3040,20 @@ DEF_CONSOLE_CMD(ConStFlowStats)
 	return true;
 }
 
+DEF_CONSOLE_CMD(ConSlotsStats)
+{
+	if (argc == 0) {
+		IConsolePrint(CC_HELP, "Dump routing restrictions slots and counter stats.");
+		return true;
+	}
+
+	extern void DumpTraceRestrictSlotsStats(char *b, const char *last);
+	char buffer[32768];
+	DumpTraceRestrictSlotsStats(buffer, lastof(buffer));
+	PrintLineByLine(buffer);
+	return true;
+}
+
 DEF_CONSOLE_CMD(ConDumpGameEvents)
 {
 	if (argc == 0) {
@@ -4352,6 +4366,7 @@ void IConsoleStdLibRegister()
 	IConsole::CmdRegister("dump_veh_stats",          ConVehicleStats,     nullptr, true);
 	IConsole::CmdRegister("dump_map_stats",          ConMapStats,         nullptr, true);
 	IConsole::CmdRegister("dump_st_flow_stats",      ConStFlowStats,      nullptr, true);
+	IConsole::CmdRegister("dump_slot_stats",         ConSlotsStats,       nullptr, true);
 	IConsole::CmdRegister("dump_game_events",        ConDumpGameEvents,   nullptr, true);
 	IConsole::CmdRegister("dump_load_debug_log",     ConDumpLoadDebugLog, nullptr, true);
 	IConsole::CmdRegister("dump_load_debug_config",  ConDumpLoadDebugConfig, nullptr, true);

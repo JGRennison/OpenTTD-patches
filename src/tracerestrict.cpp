@@ -25,6 +25,7 @@
 #include "scope_info.h"
 #include "vehicle_func.h"
 #include "date_func.h"
+#include "strings_func.h"
 #include "3rdparty/cpp-btree/btree_map.h"
 
 #include <vector>
@@ -3297,4 +3298,53 @@ CommandCost CmdAlterTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, ui
 	}
 
 	return CommandCost();
+}
+
+void DumpTraceRestrictSlotsStats(char *buffer, const char *last)
+{
+	struct cstats {
+		uint slotstats[VEH_END] = {};
+		uint counters = 0;
+	};
+	std::map<Owner, cstats> cstatmap;
+
+	for (const TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
+		cstatmap[slot->owner].slotstats[slot->vehicle_type]++;
+	}
+
+	for (TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
+		cstatmap[ctr->owner].counters++;
+	}
+
+	auto print_stats = [&](const cstats &cs) {
+		auto line = [&](uint count, const char *type) {
+			if (count > 0) {
+				buffer += seprintf(buffer, last, "  %10s slots: %5u\n", type, count);
+			}
+		};
+		line(cs.slotstats[VEH_TRAIN], "train");
+		line(cs.slotstats[VEH_ROAD], "road");
+		line(cs.slotstats[VEH_SHIP], "ship");
+		line(cs.slotstats[VEH_AIRCRAFT], "aircraft");
+		if (cs.counters > 0) {
+			buffer += seprintf(buffer, last, "          counters: %5u\n", cs.counters);
+		}
+		buffer += seprintf(buffer, last, "\n");
+	};
+
+	cstats totals{};
+	for (auto &it : cstatmap) {
+		buffer += seprintf(buffer, last, "%u: ", (uint) it.first);
+		SetDParam(0, it.first);
+		buffer = strecpy(buffer, GetString(STR_COMPANY_NAME).c_str(), last, true);
+		buffer += seprintf(buffer, last, "\n");
+		print_stats(it.second);
+
+		for (VehicleType vt = VEH_BEGIN; vt != VEH_END; vt++) {
+			totals.slotstats[vt] += it.second.slotstats[vt];
+		}
+		totals.counters += it.second.counters;
+	}
+	buffer += seprintf(buffer, last, "Totals\n");
+	print_stats(totals);
 }
