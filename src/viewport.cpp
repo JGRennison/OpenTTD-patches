@@ -417,17 +417,16 @@ private:
 		}
 	};
 
-	void PrepareVehicleRoutePathsConditionalOrder(const Vehicle *veh, const Order *order, PrepareRouteStepState &state, bool conditional, uint depth);
-	bool PrepareVehicleRouteSteps(const Vehicle *veh);
-	bool PrepareVehicleRoutePaths(const Vehicle *veh);
-	void MarkAllRouteStepsDirty(const Vehicle *veh);
-	void MarkAllRoutePathsDirty(const Vehicle *veh);
+	void PrepareRoutePathsConditionalOrder(const Vehicle *veh, const Order *order, PrepareRouteStepState &state, bool conditional, uint depth);
+	void PrepareRouteSteps(const Vehicle *veh);
+	void PrepareRoutePaths(const Vehicle *veh);
+	void PrepareRouteStepsAndMarkDirtyIfChanged(const Vehicle *veh);
+	void PrepareRoutePathsAndMarkDirtyIfChanged(const Vehicle *veh);
 
 public:
-	void PrepareVehicleRoute(const Vehicle *veh);
+	void PrepareRouteAndMarkDirtyIfChanged(const Vehicle *veh);
 	void DrawVehicleRouteSteps(const Viewport *vp);
 	void DrawVehicleRoutePath(const Viewport *vp, ViewportDrawerDynamic *vdd);
-	void MarkAllDirty(const Vehicle *veh);
 
 	inline bool HasVehicleRouteSteps() const { return !this->route_steps.empty(); }
 };
@@ -693,7 +692,6 @@ void InitializeWindowViewport(Window *w, int x, int y,
 		vp->follow_vehicle = (VehicleID)(follow_flags & 0xFFFFF);
 		veh = Vehicle::Get(vp->follow_vehicle);
 		pt = MapXYZToViewport(vp, veh->x_pos, veh->y_pos, veh->z_pos);
-		MarkDirtyFocusedRoutePaths(veh);
 	} else {
 		x = TileX(follow_flags) * TILE_SIZE;
 		y = TileY(follow_flags) * TILE_SIZE;
@@ -2556,7 +2554,7 @@ static bool ViewportVehicleRouteShouldSkipOrder(const Order *order)
 	}
 }
 
-void ViewportRouteOverlay::PrepareVehicleRoutePathsConditionalOrder(const Vehicle *veh, const Order *order, PrepareRouteStepState &state, bool conditional, uint depth)
+void ViewportRouteOverlay::PrepareRoutePathsConditionalOrder(const Vehicle *veh, const Order *order, PrepareRouteStepState &state, bool conditional, uint depth)
 {
 	/* Prevent excessive recursion */
 	if (depth >= 10) return;
@@ -2570,7 +2568,7 @@ void ViewportRouteOverlay::PrepareVehicleRoutePathsConditionalOrder(const Vehicl
 		if (ViewportVehicleRouteShouldSkipOrder(order)) continue;
 
 		if (order->IsType(OT_CONDITIONAL)) {
-			this->PrepareVehicleRoutePathsConditionalOrder(veh, veh->GetOrder(order->GetConditionSkipToOrder()), state,
+			this->PrepareRoutePathsConditionalOrder(veh, veh->GetOrder(order->GetConditionSkipToOrder()), state,
 					conditional || order->GetConditionVariable() != OCV_UNCONDITIONALLY, depth + 1);
 			if (order->GetConditionVariable() == OCV_UNCONDITIONALLY) return;
 
@@ -2588,63 +2586,62 @@ void ViewportRouteOverlay::PrepareVehicleRoutePathsConditionalOrder(const Vehicl
 	}
 }
 
-bool ViewportRouteOverlay::PrepareVehicleRoutePaths(const Vehicle *veh)
+void ViewportRouteOverlay::PrepareRoutePaths(const Vehicle *veh)
 {
-	if (veh == nullptr) return false;
+	this->route_paths.clear();
 
-	if (this->route_paths.empty()) {
-		PrepareRouteStepState state;
+	if (veh == nullptr || !_settings_client.gui.show_vehicle_route) return;
 
-		TileIndex from_tile = INVALID_TILE;
-		bool conditional = false;
-		auto handle_order = [&](const Order *order) -> bool {
-			if (ViewportVehicleRouteShouldSkipOrder(order)) return false;
+	PrepareRouteStepState state;
 
-			if (order->IsType(OT_CONDITIONAL) && from_tile != INVALID_TILE) {
-				state.reset(from_tile);
-				this->PrepareVehicleRoutePathsConditionalOrder(veh, order, state,
-						conditional || order->GetConditionVariable() != OCV_UNCONDITIONALLY, 0);
-				if (order->GetConditionVariable() == OCV_UNCONDITIONALLY) {
-					from_tile = INVALID_TILE;
-					return true;
-				}
-				conditional = true;
-				return false;
+	TileIndex from_tile = INVALID_TILE;
+	bool conditional = false;
+	auto handle_order = [&](const Order *order) -> bool {
+		if (ViewportVehicleRouteShouldSkipOrder(order)) return false;
+
+		if (order->IsType(OT_CONDITIONAL) && from_tile != INVALID_TILE) {
+			state.reset(from_tile);
+			this->PrepareRoutePathsConditionalOrder(veh, order, state,
+					conditional || order->GetConditionVariable() != OCV_UNCONDITIONALLY, 0);
+			if (order->GetConditionVariable() == OCV_UNCONDITIONALLY) {
+				from_tile = INVALID_TILE;
+				return true;
 			}
-
-			const TileIndex to_tile = order->GetLocation(veh, veh->type == VEH_AIRCRAFT);
-			if (to_tile == INVALID_TILE) return false;
-
-			if (from_tile != INVALID_TILE) {
-				DrawnPathRouteTileLine path = { from_tile, to_tile, conditional };
-				if (path.from_tile > path.to_tile) std::swap(path.from_tile, path.to_tile);
-				this->route_paths.push_back(path);
-			}
-
-			from_tile = to_tile;
-			conditional = false;
-
-			return true;
-		};
-		for (const Order *order : veh->Orders()) {
-			handle_order(order);
+			conditional = true;
+			return false;
 		}
+
+		const TileIndex to_tile = order->GetLocation(veh, veh->type == VEH_AIRCRAFT);
+		if (to_tile == INVALID_TILE) return false;
+
 		if (from_tile != INVALID_TILE) {
-			/* Handle wrap around from last order back to first */
-			for (const Order *order : veh->Orders()) {
-				if (handle_order(order)) break;
-			}
+			DrawnPathRouteTileLine path = { from_tile, to_tile, conditional };
+			if (path.from_tile > path.to_tile) std::swap(path.from_tile, path.to_tile);
+			this->route_paths.push_back(path);
 		}
 
-		/* Remove duplicate lines */
-		std::sort(this->route_paths.begin(), this->route_paths.end());
-		auto unique_end = std::unique(this->route_paths.begin(), this->route_paths.end(), [](const DrawnPathRouteTileLine &a, const DrawnPathRouteTileLine &b) {
-			/* Consider elements with the same tile values but different order_conditional values as equal */
-			return a.from_tile == b.from_tile && a.to_tile == b.to_tile;
-		});
-		this->route_paths.erase(unique_end, this->route_paths.end());
+		from_tile = to_tile;
+		conditional = false;
+
+		return true;
+	};
+	for (const Order *order : veh->Orders()) {
+		handle_order(order);
 	}
-	return true;
+	if (from_tile != INVALID_TILE) {
+		/* Handle wrap around from last order back to first */
+		for (const Order *order : veh->Orders()) {
+			if (handle_order(order)) break;
+		}
+	}
+
+	/* Remove duplicate lines */
+	std::sort(this->route_paths.begin(), this->route_paths.end());
+	auto unique_end = std::unique(this->route_paths.begin(), this->route_paths.end(), [](const DrawnPathRouteTileLine &a, const DrawnPathRouteTileLine &b) {
+		/* Consider elements with the same tile values but different order_conditional values as equal */
+		return a.from_tile == b.from_tile && a.to_tile == b.to_tile;
+	});
+	this->route_paths.erase(unique_end, this->route_paths.end());
 }
 
 /** Draw the route of a vehicle. */
@@ -2781,46 +2778,44 @@ static inline void DrawRouteStep(const Viewport * const vp, const TileIndex tile
 	}
 }
 
-bool ViewportRouteOverlay::PrepareVehicleRouteSteps(const Vehicle *veh)
+void ViewportRouteOverlay::PrepareRouteSteps(const Vehicle *veh)
 {
-	if (veh == nullptr) return false;
+	this->route_steps.clear();
 
-	if (this->route_steps.empty()) {
-		/* Prepare data. */
-		uint16_t order_rank = 0;
-		for (const Order *order : veh->Orders()) {
-			order_rank++;
-			if (ViewportVehicleRouteShouldSkipOrder(order)) continue;
-			const TileIndex tile = order->GetLocation(veh, veh->type == VEH_AIRCRAFT);
-			if (tile == INVALID_TILE) continue;
-			RouteStepOrderType type = RSOT_INVALID;
-			switch (order->GetType()) {
-				case OT_GOTO_STATION:
-					type = (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) != 0 ? RSOT_VIA_STATION : RSOT_GOTO_STATION;
-					break;
+	if (veh == nullptr || !_settings_client.gui.show_vehicle_route_steps) return;
 
-				case OT_IMPLICIT:
-					type = RSOT_IMPLICIT;
-					break;
+	/* Prepare data. */
+	uint16_t order_rank = 0;
+	for (const Order *order : veh->Orders()) {
+		order_rank++;
+		if (ViewportVehicleRouteShouldSkipOrder(order)) continue;
+		const TileIndex tile = order->GetLocation(veh, veh->type == VEH_AIRCRAFT);
+		if (tile == INVALID_TILE) continue;
+		RouteStepOrderType type = RSOT_INVALID;
+		switch (order->GetType()) {
+			case OT_GOTO_STATION:
+				type = (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) != 0 ? RSOT_VIA_STATION : RSOT_GOTO_STATION;
+				break;
 
-				case OT_GOTO_WAYPOINT:
-					type = RSOT_WAYPOINT;
-					break;
+			case OT_IMPLICIT:
+				type = RSOT_IMPLICIT;
+				break;
 
-				case OT_GOTO_DEPOT:
-					type = RSOT_DEPOT;
-					break;
+			case OT_GOTO_WAYPOINT:
+				type = RSOT_WAYPOINT;
+				break;
 
-				default:
-					break;
-			}
-			if (type != RSOT_INVALID) {
-				this->route_steps[tile].push_back(std::pair<uint16_t, RouteStepOrderType>(order_rank, type));
-			}
+			case OT_GOTO_DEPOT:
+				type = RSOT_DEPOT;
+				break;
+
+			default:
+				break;
+		}
+		if (type != RSOT_INVALID) {
+			this->route_steps[tile].push_back(std::pair<uint16_t, RouteStepOrderType>(order_rank, type));
 		}
 	}
-
-	return true;
 }
 
 void ViewportPrepareVehicleRoute()
@@ -2829,48 +2824,11 @@ void ViewportPrepareVehicleRoute()
 	if (!_settings_client.gui.show_vehicle_route_steps && !_settings_client.gui.show_vehicle_route) return;
 
 	const Vehicle *focused_veh = GetVehicleFromWindow(_focused_window);
-	_vp_focused_window_route_overlay.PrepareVehicleRoute(focused_veh);
+	_vp_focused_window_route_overlay.PrepareRouteAndMarkDirtyIfChanged(focused_veh);
 	for (auto &it : _vp_fixed_route_overlays) {
 		const Vehicle *v = Vehicle::GetIfValid(it.veh);
-		it.PrepareVehicleRoute(v);
+		it.PrepareRouteAndMarkDirtyIfChanged(v);
 		it.enabled = !(v != nullptr && focused_veh != nullptr && v->FirstShared() == focused_veh->FirstShared());
-	}
-}
-
-void ViewportRouteOverlay::PrepareVehicleRoute(const Vehicle *veh)
-{
-	if (_settings_client.gui.show_vehicle_route_steps && veh != nullptr && this->PrepareVehicleRouteSteps(veh)) {
-		if (this->route_steps != this->route_steps_last_mark_dirty) {
-			for (RouteStepsMap::const_iterator cit = this->route_steps.begin(); cit != this->route_steps.end(); cit++) {
-				MarkRouteStepDirty(cit);
-			}
-			this->route_steps_last_mark_dirty = this->route_steps;
-		}
-	}
-	if (_settings_client.gui.show_vehicle_route) {
-		if (veh == nullptr) {
-			if (!this->route_paths.empty()) {
-				/* make sure we remove any leftover paths */
-				MarkRoutePathsDirty(this->route_paths);
-				this->route_paths.clear();
-				this->route_paths_last_mark_dirty.clear();
-			}
-		} else {
-			if (this->PrepareVehicleRoutePaths(veh)) {
-				if (this->route_paths_last_mark_dirty != this->route_paths) {
-					/* make sure we're not drawing a partial path */
-					MarkRoutePathsDirty(this->route_paths);
-					this->route_paths_last_mark_dirty = this->route_paths;
-				}
-			} else {
-				if (!this->route_paths.empty()) {
-					/* make sure we remove any leftover paths */
-					MarkRoutePathsDirty(this->route_paths);
-					this->route_paths.clear();
-					this->route_paths_last_mark_dirty.clear();
-				}
-			}
-		}
 	}
 }
 
@@ -4649,14 +4607,18 @@ static void MarkRouteStepDirty(const TileIndex tile, uint order_nr)
 	}
 }
 
-void ViewportRouteOverlay::MarkAllRouteStepsDirty(const Vehicle *veh)
+void ViewportRouteOverlay::PrepareRouteStepsAndMarkDirtyIfChanged(const Vehicle *veh)
 {
-	this->PrepareVehicleRouteSteps(veh);
-	for (RouteStepsMap::const_iterator cit = this->route_steps.begin(); cit != this->route_steps.end(); ++cit) {
-		MarkRouteStepDirty(cit);
+	this->PrepareRouteSteps(veh);
+	if (this->route_steps != this->route_steps_last_mark_dirty) {
+		for (RouteStepsMap::const_iterator cit = this->route_steps_last_mark_dirty.begin(); cit != this->route_steps_last_mark_dirty.end(); cit++) {
+			MarkRouteStepDirty(cit);
+		}
+		for (RouteStepsMap::const_iterator cit = this->route_steps.begin(); cit != this->route_steps.end(); ++cit) {
+			MarkRouteStepDirty(cit);
+		}
+		this->route_steps_last_mark_dirty = this->route_steps;
 	}
-	this->route_steps_last_mark_dirty.swap(this->route_steps);
-	this->route_steps.clear();
 }
 
 /**
@@ -4842,51 +4804,20 @@ static void MarkRoutePathsDirty(const std::vector<DrawnPathRouteTileLine> &lines
 	}
 }
 
-void ViewportRouteOverlay::MarkAllRoutePathsDirty(const Vehicle *veh)
+void ViewportRouteOverlay::PrepareRoutePathsAndMarkDirtyIfChanged(const Vehicle *veh)
 {
-	if (_settings_client.gui.show_vehicle_route) {
-		this->PrepareVehicleRoutePaths(veh);
-	}
-	for (const auto &iter : this->route_paths) {
-		MarkTileLineDirty(iter.from_tile, iter.to_tile, VMDF_NOT_LANDSCAPE);
-	}
-	this->route_paths_last_mark_dirty.swap(this->route_paths);
-	this->route_paths.clear();
-}
-
-void ViewportRouteOverlay::MarkAllDirty(const Vehicle *veh)
-{
-	this->MarkAllRoutePathsDirty(veh);
-	this->MarkAllRouteStepsDirty(veh);
-}
-
-void MarkDirtyFocusedRoutePaths(const Vehicle *veh)
-{
-	_vp_focused_window_route_overlay.MarkAllDirty(veh);
-}
-
-void CheckMarkDirtyViewportRoutePaths(const Vehicle *veh)
-{
-	if (veh == nullptr) return;
-
-	const Vehicle *focused_veh = GetVehicleFromWindow(_focused_window);
-	if (focused_veh != nullptr && veh == focused_veh) {
-		MarkDirtyFocusedRoutePaths(veh);
-	}
-	for (auto &it : _vp_fixed_route_overlays) {
-		if (it.veh == veh->index) it.MarkAllDirty(veh);
+	this->PrepareRoutePaths(veh);
+	if (this->route_paths_last_mark_dirty != this->route_paths) {
+		MarkRoutePathsDirty(this->route_paths_last_mark_dirty);
+		MarkRoutePathsDirty(this->route_paths);
+		this->route_paths_last_mark_dirty = this->route_paths;
 	}
 }
 
-void CheckMarkDirtyViewportRoutePaths()
+void ViewportRouteOverlay::PrepareRouteAndMarkDirtyIfChanged(const Vehicle *veh)
 {
-	const Vehicle *focused_veh = GetVehicleFromWindow(_focused_window);
-	if (focused_veh != nullptr) {
-		MarkDirtyFocusedRoutePaths(focused_veh);
-	}
-	for (auto &it : _vp_fixed_route_overlays) {
-		it.MarkAllDirty(Vehicle::GetIfValid(it.veh));
-	}
+	this->PrepareRoutePathsAndMarkDirtyIfChanged(veh);
+	this->PrepareRouteStepsAndMarkDirtyIfChanged(veh);
 }
 
 void HandleViewportRoutePathFocusChange(const Window *old, const Window *focused)
@@ -4894,7 +4825,7 @@ void HandleViewportRoutePathFocusChange(const Window *old, const Window *focused
 	const Vehicle *old_v = (old != nullptr) ? GetVehicleFromWindow(old) : nullptr;
 	const Vehicle *new_v = (focused != nullptr) ? GetVehicleFromWindow(focused) : nullptr;
 	if (old_v != new_v) {
-		_vp_focused_window_route_overlay.MarkAllDirty(new_v);
+		_vp_focused_window_route_overlay.PrepareRouteAndMarkDirtyIfChanged(new_v);
 	}
 }
 
@@ -4908,7 +4839,7 @@ void RemoveFixedViewportRoutePath(VehicleID veh)
 {
 	container_unordered_remove_if(_vp_fixed_route_overlays, [&](FixedVehicleViewportRouteOverlay &it) -> bool {
 		if (it.veh == veh) {
-			it.MarkAllDirty(Vehicle::GetIfValid(it.veh));
+			it.PrepareRouteAndMarkDirtyIfChanged(nullptr);
 			return true;
 		}
 		return false;
