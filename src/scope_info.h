@@ -18,7 +18,7 @@ struct Vehicle;
 struct BaseStation;
 struct Window;
 
-#ifdef USE_SCOPE_INFO
+#if !defined(DISABLE_SCOPE_INFO)
 
 struct ScopeStackRecord {
 	using ScopeStackFunctor = int (*)(void *, char *, const char *);
@@ -61,11 +61,11 @@ int WriteScopeLog(char *buf, const char *last);
 		return (*targ)(buf, last); \
 	}, static_cast<void *>(& SCOPE_INFO_PASTE(_sc_lm_, __LINE__)) });
 
-#else /* USE_SCOPE_INFO */
+#else /* defined(DISABLE_SCOPE_INFO) */
 
 #define SCOPE_INFO_FMT(...) { }
 
-#endif /* USE_SCOPE_INFO */
+#endif /* DISABLE_SCOPE_INFO */
 
 /**
  * This is a set of helper functions to print useful info from within a SCOPE_INFO_FMT statement.

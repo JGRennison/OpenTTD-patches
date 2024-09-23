@@ -22,7 +22,7 @@
 
 #include "safeguards.h"
 
-#ifdef USE_SCOPE_INFO
+#if !defined(DISABLE_SCOPE_INFO)
 
 std::vector<ScopeStackRecord> _scope_stack;
 

@@ -143,7 +143,7 @@ char *CrashLog::LogCompiler(char *buffer, const char *last) const
 	return buffer;
 }
 
-#ifdef USE_SCOPE_INFO
+#if !defined(DISABLE_SCOPE_INFO)
 /* virtual */ char *CrashLog::LogScopeInfo(char *buffer, const char *last) const
 {
 	return buffer + WriteScopeLog(buffer, last);
@@ -581,7 +581,7 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last)
 		return self->LogError(buffer, last, CrashLog::message);
 	});
 
-#ifdef USE_SCOPE_INFO
+#if !defined(DISABLE_SCOPE_INFO)
 	buffer = this->TryCrashLogFaultSection(buffer, last, "scope", [](CrashLog *self, char *buffer, const char *last) -> char * {
 		if (IsGameThread()) {
 			buffer += WriteScopeLog(buffer, last);
@@ -755,7 +755,7 @@ char *CrashLog::FillInconsistencyLog(char *buffer, const char *last, const Incon
 
 	buffer += UTCTime::Format(buffer, last, "Inconsistency at: %Y-%m-%d %H:%M:%S (UTC)\n");
 
-#ifdef USE_SCOPE_INFO
+#if !defined(DISABLE_SCOPE_INFO)
 	buffer += WriteScopeLog(buffer, last);
 #endif
 

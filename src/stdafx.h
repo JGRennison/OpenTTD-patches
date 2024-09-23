@@ -498,10 +498,6 @@ inline void free(const void *ptr)
 	#define PREFETCH_NTA(address)
 #endif
 
-#if !defined(DISABLE_SCOPE_INFO)
-#define USE_SCOPE_INFO
-#endif
-
 #define SINGLE_ARG(...) __VA_ARGS__
 
 #if defined(DEDICATED)

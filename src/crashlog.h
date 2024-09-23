@@ -126,7 +126,7 @@ protected:
 	 */
 	virtual char *LogCrashTrailer(char *buffer, const char *last) const;
 
-#ifdef USE_SCOPE_INFO
+#if !defined(DISABLE_SCOPE_INFO)
 	/**
 	 * Writes the scope info log to the buffer.
 	 * This may only be called when IsMainThread() returns true
