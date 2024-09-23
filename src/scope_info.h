@@ -21,34 +21,35 @@ struct Window;
 #if !defined(DISABLE_SCOPE_INFO)
 
 struct ScopeStackRecord {
-	using ScopeStackFunctor = int (*)(void *, char *, const char *);
+	using ScopeStackFunctor = int (*)(ScopeStackRecord *, char *, const char *);
 
 	ScopeStackFunctor functor;
-	void *target;
+	ScopeStackRecord *next;
 };
 
-extern std::vector<ScopeStackRecord> _scope_stack;
+extern ScopeStackRecord *_scope_stack_head;
 
 template <typename T>
-struct scope_info_func_obj {
+struct FunctorScopeStackRecord : public ScopeStackRecord {
 private:
 	T func;
 
 public:
-	scope_info_func_obj(T func) : func(std::move(func))
+	FunctorScopeStackRecord(T func) : func(std::move(func))
 	{
-		auto trampoline = [](void *target, char *buf, const char *last) -> int {
-			auto targ = static_cast<T *>(target);
-			return (*targ)(buf, last);
+		this->functor = [](ScopeStackRecord *record, char *buf, const char *last) -> int {
+			FunctorScopeStackRecord *self = static_cast<FunctorScopeStackRecord *>(record);
+			return self->func(buf, last);
 		};
-		_scope_stack.push_back({ trampoline, static_cast<void *>(&this->func) });
+		this->next = _scope_stack_head;
+		_scope_stack_head = this;
 	}
 
-	scope_info_func_obj(const scope_info_func_obj &copysrc) = delete;
+	FunctorScopeStackRecord(const FunctorScopeStackRecord &copysrc) = delete;
 
-	~scope_info_func_obj()
+	~FunctorScopeStackRecord()
 	{
-		_scope_stack.pop_back();
+		_scope_stack_head = this->next;
 	}
 };
 
@@ -60,7 +61,7 @@ int WriteScopeLog(char *buf, const char *last);
  * The scope stack is popped at the end of the scope
  */
 #define SCOPE_INFO_FMT(capture, ...) \
-	scope_info_func_obj _sc_lm_ ## __LINE__ (capture (char *buf, const char *last) { \
+	FunctorScopeStackRecord _sc_lm_ ## __LINE__ (capture (char *buf, const char *last) { \
 		return seprintf(buf, last, __VA_ARGS__); \
 	});
 

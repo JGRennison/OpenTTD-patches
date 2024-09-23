@@ -24,17 +24,17 @@
 
 #if !defined(DISABLE_SCOPE_INFO)
 
-std::vector<ScopeStackRecord> _scope_stack;
+ScopeStackRecord *_scope_stack_head = nullptr;
 
 int WriteScopeLog(char *buf, const char *last)
 {
 	char *b = buf;
-	if (!_scope_stack.empty()) {
+	if (_scope_stack_head != nullptr) {
 		b += seprintf(b, last, "Within context:");
 		int depth = 0;
-		for (auto it = _scope_stack.rbegin(); it != _scope_stack.rend(); ++it, depth++) {
+		for (ScopeStackRecord *record = _scope_stack_head; record != nullptr; record = record->next, depth++) {
 			b += seprintf(b, last, "\n    %2d: ", depth);
-			b += it->functor(it->target, b, last);
+			b += record->functor(record, b, last);
 		}
 		b += seprintf(b, last, "\n\n");
 	}
