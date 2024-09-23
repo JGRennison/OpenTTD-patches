@@ -2025,6 +2025,9 @@ class NIHTown : public NIHelper {
 				t->growth_rate, t->grow_counter, t->time_until_rebuild, HasBit(t->flags, TOWN_IS_GROWING) ? 1 : 0,HasBit(t->flags, TOWN_CUSTOM_GROWTH) ? 1 : 0);
 		output.print(buffer);
 
+		seprintf(buffer, lastof(buffer), "  Road layout: %s", GetStringPtr(STR_CONFIG_SETTING_TOWN_LAYOUT_DEFAULT + t->layout));
+		output.print(buffer);
+
 		if (t->have_ratings != 0) {
 			output.print("  Company ratings:");
 			for (uint8_t bit : SetBitIterator(t->have_ratings)) {
