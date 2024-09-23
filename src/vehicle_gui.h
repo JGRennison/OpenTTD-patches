@@ -132,7 +132,7 @@ void SetMouseCursorVehicle(const Vehicle *v, EngineImageType image_type);
  */
 inline bool HasFocusedVehicleChanged(const VehicleID vid, Window *ref_window)
 {
-	if (ref_window) {
+	if (ref_window != nullptr) {
 		WindowClass wc = ref_window->window_class;
 		WindowNumber wn = ref_window->window_number;
 
@@ -148,6 +148,7 @@ inline bool HasFocusedVehicleChanged(const VehicleID vid, Window *ref_window)
 			case WC_VEHICLE_VIEW:
 			case WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS:
 			case WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS:
+			case WC_SCHDISPATCH_SLOTS:
 				return ((uint32_t) wn != vid);
 		}
 	}

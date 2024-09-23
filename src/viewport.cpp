@@ -2508,7 +2508,7 @@ static void ViewportDrawStrings(ViewportDrawerDynamic *vdd, ZoomLevel zoom, cons
 
 static inline Vehicle *GetVehicleFromWindow(Window *w)
 {
-	if (w) {
+	if (w != nullptr) {
 		WindowClass wc = w->window_class;
 		WindowNumber wn = w->window_number;
 
@@ -2522,6 +2522,7 @@ static inline Vehicle *GetVehicleFromWindow(Window *w)
 			case WC_VEHICLE_REFIT:
 			case WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS:
 			case WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS:
+			case WC_SCHDISPATCH_SLOTS:
 				if (wn != INVALID_VEHICLE) return Vehicle::Get(wn);
 				break;
 			case WC_TRAINS_LIST:

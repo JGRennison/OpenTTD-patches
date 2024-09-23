@@ -1095,7 +1095,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 						list.push_back(MakeDropDownListStringItem(ds.ScheduleName(), i, false));
 					}
 				}
-				ShowDropDownList(this, std::move(list), order->GetDispatchScheduleIndex(), WID_VT_ASSIGN_SCHEDULE);
+				ShowDropDownList(this, std::move(list), order->GetDispatchScheduleIndex(), WID_VT_ASSIGN_SCHEDULE, 0, DDMF_NONE, DDSF_SHARED);
 				break;
 			}
 		}

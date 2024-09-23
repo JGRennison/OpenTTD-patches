@@ -1155,7 +1155,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					SetDParamStr(1, name);
 					add_item(name.empty() ? STR_SCHDISPATCH_RENAME_DEPARTURE_TAG : STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_NAMED, SCH_MD_RENAME_TAG | (tag << 16));
 				}
-				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGEMENT);
+				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGEMENT, 0, DDMF_NONE, DDSF_SHARED);
 				break;
 			}
 
@@ -1221,7 +1221,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					add_item(name.empty() ? STR_SCHDISPATCH_TAG_DEPARTURE : STR_SCHDISPATCH_TAG_DEPARTURE_NAMED, flag_bit, false);
 				}
 
-				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGE_SLOT);
+				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGE_SLOT, 0, DDMF_NONE, DDSF_SHARED);
 				break;
 			}
 
@@ -1433,6 +1433,13 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	virtual void OnFocus(Window *previously_focused_window) override
 	{
 		if (HasFocusedVehicleChanged(this->window_number, previously_focused_window)) {
+			MarkDirtyFocusedRoutePaths(this->vehicle);
+		}
+	}
+
+	virtual void OnFocusLost(bool closing, Window *newly_focused_window) override
+	{
+		if (HasFocusedVehicleChanged(this->window_number, newly_focused_window)) {
 			MarkDirtyFocusedRoutePaths(this->vehicle);
 		}
 	}
