@@ -954,8 +954,15 @@ class NIHHouse : public NIHelper {
 			b += seprintf(b, lastof(buffer), "  (local ID: %u)", hs->grf_prop.local_id);
 		}
 		output.print(buffer);
-		seprintf(buffer, lastof(buffer), "  building_flags: 0x%X", hs->building_flags);
+
+		auto zone_flag = [&](HouseZonesBits zone) -> char {
+			if (HasBit(hs->building_availability, zone)) return '0' + zone;
+			return '-';
+		};
+		seprintf(buffer, lastof(buffer), "  building_flags: 0x%X, zones: %c%c%c%c%c", hs->building_flags,
+				zone_flag(HZB_TOWN_EDGE), zone_flag(HZB_TOWN_OUTSKIRT), zone_flag(HZB_TOWN_OUTER_SUBURB), zone_flag(HZB_TOWN_INNER_SUBURB), zone_flag(HZB_TOWN_CENTRE));
 		output.print(buffer);
+
 		seprintf(buffer, lastof(buffer), "  extra_flags: 0x%X, ctrl_flags: 0x%X", hs->extra_flags, hs->ctrl_flags);
 		output.print(buffer);
 		seprintf(buffer, lastof(buffer), "  remove_rating_decrease: %u, minimum_life: %u", hs->remove_rating_decrease, hs->minimum_life);
