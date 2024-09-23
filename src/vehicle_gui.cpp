@@ -45,6 +45,7 @@
 #include "tracerestrict.h"
 #include "depot_base.h"
 #include "hotkeys.h"
+#include "schdispatch.h"
 
 #include <vector>
 #include <algorithm>
@@ -3907,7 +3908,6 @@ public:
 		this->GetWidget<NWidgetCore>(WID_VV_START_STOP)->tool_tip       = STR_VEHICLE_VIEW_TRAIN_STATUS_START_STOP_TOOLTIP + v->type;
 		this->GetWidget<NWidgetCore>(WID_VV_RENAME)->tool_tip           = STR_VEHICLE_DETAILS_TRAIN_RENAME + v->type;
 		this->GetWidget<NWidgetCore>(WID_VV_REFIT)->tool_tip            = STR_VEHICLE_VIEW_TRAIN_REFIT_TOOLTIP + v->type;
-		this->GetWidget<NWidgetCore>(WID_VV_SHOW_ORDERS)->tool_tip      = STR_VEHICLE_VIEW_TRAIN_ORDERS_TOOLTIP + v->type;
 		this->GetWidget<NWidgetCore>(WID_VV_SHOW_DETAILS)->tool_tip     = STR_VEHICLE_VIEW_TRAIN_SHOW_DETAILS_TOOLTIP + v->type;
 		this->GetWidget<NWidgetCore>(WID_VV_CLONE)->tool_tip            = STR_VEHICLE_VIEW_CLONE_TRAIN_INFO + v->type;
 
@@ -4272,6 +4272,8 @@ public:
 			case WID_VV_SHOW_ORDERS: // show orders
 				if (_ctrl_pressed) {
 					ShowTimetableWindow(v);
+				} else if (_shift_pressed) {
+					ShowSchdispatchWindow(v);
 				} else {
 					ShowOrdersWindow(v);
 				}
@@ -4397,6 +4399,12 @@ public:
 			const Vehicle *v = Vehicle::Get(this->window_number);
 			SetDParam(0, STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP + v->type);
 			GuiShowTooltips(this, STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA, close_cond, 1);
+			return true;
+		}
+		if (widget == WID_VV_SHOW_ORDERS) {
+			const Vehicle *v = Vehicle::Get(this->window_number);
+			SetDParam(0, STR_VEHICLE_VIEW_TRAIN_ORDERS_TOOLTIP + v->type);
+			GuiShowTooltips(this, STR_VEHICLE_VIEW_SHOW_ORDERS_TOOLTIP_EXTRA, close_cond, 1);
 			return true;
 		}
 		return false;
