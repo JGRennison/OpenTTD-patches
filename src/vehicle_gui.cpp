@@ -3924,6 +3924,7 @@ public:
 		CloseWindowById(WC_VEHICLE_REFIT, this->window_number, false);
 		CloseWindowById(WC_VEHICLE_DETAILS, this->window_number, false);
 		CloseWindowById(WC_VEHICLE_TIMETABLE, this->window_number, false);
+		CloseWindowById(WC_SCHDISPATCH_SLOTS, this->window_number, false);
 
 		if (this->fixed_route_overlay_active) {
 			RemoveFixedViewportRoutePath(this->window_number);
