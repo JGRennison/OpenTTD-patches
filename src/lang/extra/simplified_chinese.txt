@@ -41,7 +41,6 @@ STR_RIVERS_EXTREMELY_MANY                                       :{RED}极多
 
 STR_CONFIG_SETTING_BRIBE_HELPTEXT_PERIODS                       :允许公司尝试贿赂当地的城镇管理机构。如果贿赂被检察机关发现，公司将无法在该镇活动半周期。
 
-
 STR_COMMA_SEPARATOR                                             :,{SP}
 
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :英里/小时
