@@ -700,6 +700,11 @@ CommandCost CmdStartStopVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1
 		/* Unbunching data is no longer valid. */
 		v->ResetDepotUnbunching();
 
+		/* Prevent any attempt to update timetable for current order if now stopped in depot. */
+		if (v->IsStoppedInDepot() && (flags & DC_AUTOREPLACE) == 0) {
+			v->cur_timetable_order_index = INVALID_VEH_ORDER_ID;
+		}
+
 		v->MarkDirty();
 		SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
 		SetWindowDirty(WC_VEHICLE_DEPOT, v->tile);
