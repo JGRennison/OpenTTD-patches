@@ -1897,6 +1897,7 @@ public:
 
 				this->expecting_inserted_item = static_cast<TraceRestrictItem>(0);
 
+				this->RaiseButtons();
 				this->UpdateButtonState();
 				break;
 			}
@@ -2218,6 +2219,7 @@ public:
 
 			case TR_WIDGET_GOTO_SIGNAL: {
 				ScrollMainWindowToTile(this->tile);
+				this->RaiseButtons();
 				this->UpdateButtonState();
 				break;
 			}
@@ -2964,6 +2966,7 @@ private:
 			/* Update scrollbar size */
 			this->vscroll->SetCount(this->GetItemCount(prog));
 		}
+		this->RaiseButtons();
 		this->UpdateButtonState();
 	}
 
@@ -3019,10 +3022,7 @@ private:
 		}
 	}
 
-	/**
-	 * Update button states, text values, etc.
-	 */
-	void UpdateButtonState()
+	void RaiseButtons()
 	{
 		this->RaiseWidget(TR_WIDGET_INSERT);
 		this->RaiseWidget(TR_WIDGET_REMOVE);
@@ -3039,7 +3039,13 @@ private:
 		this->RaiseWidget(TR_WIDGET_VALUE_SIGNAL);
 		this->RaiseWidget(TR_WIDGET_VALUE_TILE);
 		this->RaiseWidget(TR_WIDGET_LEFT_AUX_DROPDOWN);
+	}
 
+	/**
+	 * Update button states, text values, etc.
+	 */
+	void UpdateButtonState()
+	{
 		NWidgetStacked *left_2_sel = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_LEFT_2);
 		NWidgetStacked *left_sel   = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_LEFT);
 		NWidgetStacked *left_aux_sel = this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_LEFT_AUX);
