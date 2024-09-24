@@ -846,7 +846,7 @@ STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH                 :경로 예약�
 STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH_SHORT           :경로 예약
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :정의되지 않음
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED                       :{PUSH_COLOUR}{RED}정의되지 않음{POP_COLOUR}
-STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER                  :{STRING} {STRING} {STRING} {COMMA}{P 3 "이" ""}라면
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER                  :{STRING} {STRING} {STRING} {COMMA} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_SPEED                    :{STRING} {STRING} {STRING} {VELOCITY} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_WEIGHT                   :{STRING} {STRING} {STRING} {WEIGHT_SHORT} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_POWER                    :{STRING} {STRING} {STRING} {POWER} (이)라면
@@ -860,23 +860,23 @@ STR_TRACE_RESTRICT_CONDITIONAL_ORDER_DEPOT                      :{STRING} {STRIN
 STR_TRACE_RESTRICT_CONDITIONAL_CARGO                            :{STRING} 열차가 {2:STRING}{G 2 "을" "를"} {1:STRING}
 STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_DIRECTION                  :{STRING} 열차가 타일에 진입한 방향 {STRING} {STRING}
 STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE                :{STRING} 열차의 진입 방향 {STRING} 신호기의 {STRING}
-STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_TYPE                :{STRING} 열차가 {STRING} {STRING}{G 2 "이" ""}라면
+STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_TYPE                :{STRING} 열차가 {STRING} {STRING} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX                       :{STRING} {STRING} {STRING} {NUM} x {NUM} 에 위치한다면
-STR_TRACE_RESTRICT_CONDITIONAL_GROUP                            :{STRING} 열차의 소속 그룹 {STRING} {GROUP}{G 2 "이" ""}라면
-STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING} 열차의 소속 그룹 {STRING} {BLACK}{STRING}{G 2 "이" ""}라면 {STRING}
+STR_TRACE_RESTRICT_CONDITIONAL_GROUP                            :{STRING} 열차의 소속 그룹 {STRING} {GROUP} (이)라면
+STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING} 열차의 소속 그룹 {STRING} {BLACK}{STRING} (이)라면 {STRING}
 STR_TRACE_RESTRICT_CONDITIONAL_OWNER                            :{STRING} {STRING} {STRING} {COMPANY} {COMPANY_NUM} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING} 열차가 {STRING} {TRSLOT} 슬롯에 있으면
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} 열차의 소속 슬롯 {STRING} {STRING} {BLACK}{STRING}
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{STRING} 슬롯 {2:TRSLOT}의 {1:STRING} {3:STRING} {4:COMMA}{P 4 "이" ""}라면
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} {2:STRING}의 {1:STRING} {BLACK}{3:STRING}{STRING} {5:COMMA}{P 5 "이" ""}라면
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{STRING} 슬롯 {2:TRSLOT}의 {1:STRING} {3:STRING} {4:COMMA} (이)라면
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} {2:STRING}의 {1:STRING} {BLACK}{3:STRING}{STRING} {5:COMMA} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING} 열차가 {2:STRING}{1:STRING.case1}
-STR_TRACE_RESTRICT_CONDITIONAL_COUNTER                          :{STRING} 열차의 카운터 값: {TRCOUNTER} {STRING}{3:COMMA}{P 3 "이" ""}라면
-STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING} 열차의 카운터 값: {STRING} {BLACK}{STRING} {STRING} {4:COMMA}{P 4 "이" ""}라면
+STR_TRACE_RESTRICT_CONDITIONAL_COUNTER                          :{STRING} 열차의 카운터 값: {TRCOUNTER} {STRING}{3:COMMA} (이)라면
+STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING} 열차의 카운터 값: {STRING} {BLACK}{STRING} {STRING} {4:COMMA} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_ENGINE_CLASSES                   :{STRING} 열차가 {2:STRING}{1:STRING.case1}
-STR_TRACE_RESTRICT_CONDITIONAL_TARGET_DIRECTION                 :{0:STRING} {1:STRING}의 칸 {2:STRING} 이 신호보다 {3:STRING} 이면
-STR_TRACE_RESTRICT_CONDITIONAL_PASSES_TILE_INDEX                :{STRING} {STRING} {STRING} {NUM} x {NUM} 이면
-STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}정의되지 않음 {BLACK}{STRING}이라면
-STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}정의되지 않음 {BLACK}{STRING}이라면
+STR_TRACE_RESTRICT_CONDITIONAL_TARGET_DIRECTION                 :{0:STRING} {1:STRING}의 칸 {2:STRING} 이 신호보다 {3:STRING} (이)라면
+STR_TRACE_RESTRICT_CONDITIONAL_PASSES_TILE_INDEX                :{STRING} {STRING} {STRING} {NUM} x {NUM} (이)라면
+STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}정의되지 않음 {BLACK}{STRING} (이)라면
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}정의되지 않음 {BLACK}{STRING} (이)라면
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :경로 탐색에서 우선순위를 {COMMA} 만큼 뒤로
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM_PRESET                       :경로 탐색에서 우선순위를 {STRING} 낮추기
 STR_TRACE_RESTRICT_WHITE                                        :{WHITE}
@@ -943,9 +943,9 @@ STR_TRACE_RESTRICT_COUNTER_NAME                                 :{TRCOUNTER}
 STR_TRACE_RESTRICT_COUNTER_INCREASE                             :증가
 STR_TRACE_RESTRICT_COUNTER_DECREASE                             :감소
 STR_TRACE_RESTRICT_COUNTER_SET                                  :설정
-STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM                        :카운터: {0:STRING}의 값을 {1:COMMA}만큼 증가
-STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM                        :카운터: {0:STRING}의 값을 {1:COMMA}만큼 감소
-STR_TRACE_RESTRICT_COUNTER_SET_ITEM                             :카운터: {0:STRING}의 값을 {1:COMMA}(으)로 설정
+STR_TRACE_RESTRICT_COUNTER_INCREASE_ITEM                        :카운터 증가: {0:STRING}의 값을 {1:COMMA}만큼
+STR_TRACE_RESTRICT_COUNTER_DECREASE_ITEM                        :카운터 감소: {0:STRING}의 값을 {1:COMMA}만큼
+STR_TRACE_RESTRICT_COUNTER_SET_ITEM                             :카운터 설정: {0:STRING}의 값 = {1:COMMA}
 STR_TRACE_RESTRICT_TRAIN_STATUS_EMPTY                           :{G=f}빈 상태
 STR_TRACE_RESTRICT_TRAIN_STATUS_FULL                            :{G=f}가득 찬 상태
 STR_TRACE_RESTRICT_TRAIN_STATUS_BROKEN_DOWN                     :{G=f}고장난 상태
@@ -1292,8 +1292,8 @@ STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}대기 �
 
 STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} - 실시간 운행 정보
 STR_DEPARTURES_CARGO_MODE_TOOLTIP                               :{BLACK}발착 전광판에 화물 필터 모드 설정
-STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}발
-STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}착
+STR_DEPARTURES_DEPARTURES                                       :발
+STR_DEPARTURES_ARRIVALS                                         :착
 STR_DEPARTURES_BOTH_COMBINED                                    :혼합
 STR_DEPARTURES_BOTH_SEPARATE                                    :분리
 STR_DEPARTURES_DEPARTURE_MODE_TOOLTIP                           :{BLACK}출발이나 도착을 보여줄지 설정합니다
@@ -1353,7 +1353,7 @@ STR_DEPARTURES_STATION_PORTAIRPORT                              :{ORANGE} {SHIP}
 STR_DEPARTURES_ON_TIME                                          :{GREEN}정시운행
 STR_DEPARTURES_ARRIVED                                          :{GREEN}도착
 STR_DEPARTURES_DELAYED                                          :{YELLOW}지연
-STR_DEPARTURES_EXPECTED                                         :{YELLOW}{STRING}
+STR_DEPARTURES_EXPECTED                                         :{YELLOW}{STRING} 예정
 STR_DEPARTURES_CANCELLED                                        :{RED}취소됨
 STR_DEPARTURES_SCHEDULED                                        :{GREEN}계획됨
 
@@ -1728,8 +1728,8 @@ STR_ORDER_CONDITIONAL_TIME_HHMM                                 :[조건 경로]
 STR_ORDER_CONDITIONAL_TIMETABLE                                 :[조건 경로] {COMMA}번 경로로 건너뛰기 ({STRING} {STRING} {TT_TICKS}일 때)
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DISPLAY                     :[조건 경로] {COMMA}번 경로로 건너뛰기 (배차 일정 "{STRING}"의 {STRING}이 {STRING})
 
-STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY            :{1:STRING} 수송량의 {0:COMMA} 퍼센트
-STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY_REFIT      :개조될 {1:STRING} 수송량의 {0:COMMA} 퍼센트
+STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY            :{1:STRING} 수송량의 {COMMA} 퍼센트
+STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY_REFIT      :개조될 {1:STRING} 수송량의 {COMMA} 퍼센트
 
 STR_ORDER_RELEASE_SLOT                                          :슬롯 해제: {STRING}
 
