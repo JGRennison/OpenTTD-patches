@@ -162,6 +162,9 @@ void SetLocalCompany(CompanyID new_company)
 	InvalidateWindowClassesData(WC_GOALS_LIST);
 	ClearZoningCaches();
 	InvalidatePlanCaches();
+
+	extern void TraceRestrictClearRecentSlotsAndCounters();
+	TraceRestrictClearRecentSlotsAndCounters();
 }
 
 /**

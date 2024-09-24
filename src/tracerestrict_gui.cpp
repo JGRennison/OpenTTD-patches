@@ -48,9 +48,52 @@
 #include "zoom_func.h"
 #include "group_gui_list.h"
 #include "newgrf_debug.h"
+#include "core/ring_buffer.hpp"
 #include "3rdparty/cpp-btree/btree_map.h"
 
 #include "safeguards.h"
+
+static constexpr uint RECENT_SLOT_HISTORY_SIZE = 8;
+static std::array<ring_buffer<TraceRestrictSlotID>, VEH_COMPANY_END> _recent_slots;
+static ring_buffer<TraceRestrictCounterID> _recent_counters;
+
+static void EraseRecentSlotOrCounter(ring_buffer<uint16_t> &ring, uint16_t id)
+{
+	for (auto it = ring.begin(); it != ring.end();) {
+		if (*it == id) {
+			it = ring.erase(it);
+		} else {
+			++it;
+		}
+	}
+}
+
+static void RecordRecentSlotOrCounter(ring_buffer<uint16_t> &ring, uint16_t id)
+{
+	EraseRecentSlotOrCounter(ring, id);
+	if (ring.size() >= RECENT_SLOT_HISTORY_SIZE) ring.erase(ring.begin() + RECENT_SLOT_HISTORY_SIZE - 1, ring.end());
+	ring.push_front(id);
+}
+
+void TraceRestrictEraseRecentSlot(TraceRestrictSlotID index)
+{
+	for (ring_buffer<TraceRestrictSlotID> &ring : _recent_slots) {
+		EraseRecentSlotOrCounter(ring, index);
+	}
+}
+
+void TraceRestrictEraseRecentCounter(TraceRestrictCounterID index)
+{
+	EraseRecentSlotOrCounter(_recent_counters, index);
+}
+
+void TraceRestrictClearRecentSlotsAndCounters()
+{
+	for (auto &it : _recent_slots) {
+		it.clear();
+	}
+	_recent_counters.clear();
+}
 
 /** Widget IDs */
 enum TraceRestrictWindowWidgets {
@@ -2273,6 +2316,18 @@ public:
 				/* This is a special company drop-down or group/slot-index drop-down */
 				SetTraceRestrictValue(item, index);
 				TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+				if (type.value_type == TRVT_SLOT_INDEX || type.value_type == TRVT_SLOT_INDEX_INT) {
+					const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(index);
+					if (slot != nullptr && slot->owner == _local_company && slot->vehicle_type < _recent_slots.size()) {
+						RecordRecentSlotOrCounter(_recent_slots[slot->vehicle_type], index);
+					}
+				}
+				if (type.value_type == TRVT_COUNTER_INDEX_INT) {
+					const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(index);
+					if (ctr != nullptr && ctr->owner == _local_company) {
+						RecordRecentSlotOrCounter(_recent_counters , index);
+					}
+				}
 				return;
 			}
 			if (type.value_type == TRVT_ORDER_TARGET_DIAGDIR && widget == TR_WIDGET_LEFT_AUX_DROPDOWN) {
@@ -4168,7 +4223,7 @@ public:
 			if (this->slot_set_max_occupancy) {
 				if (!str->empty()) DoCommandP(0, this->slot_rename | (1 << 16), atoi(str->c_str()), CMD_ALTER_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY));
 			} else if (this->slot_rename == NEW_TRACE_RESTRICT_SLOT_ID) {
-				DoCommandP(0, this->vli.vtype, 0, CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), nullptr, str->c_str());
+				DoCommandP(0, this->vli.vtype, 0, CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), CcCreateTraceRestrictSlot, str->c_str());
 			} else {
 				DoCommandP(0, this->slot_rename, 0, CMD_ALTER_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME), nullptr, str->c_str());
 			}
@@ -4279,6 +4334,17 @@ public:
 		if (this->vehicle_sel == vehicle) ResetObjectToPlace();
 	}
 };
+
+void CcCreateTraceRestrictSlot(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+{
+	if (result.Succeeded() && result.HasResultData()) {
+		TraceRestrictSlotID id = static_cast<TraceRestrictSlotID>(result.GetResultData());
+		const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(id);
+		if (slot != nullptr && slot->vehicle_type < _recent_slots.size()) {
+			RecordRecentSlotOrCounter(_recent_slots[slot->vehicle_type], id);
+		}
+	}
+}
 
 static WindowDesc _slot_window_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_tr_slots", 525, 246,
@@ -4594,7 +4660,7 @@ public:
 			switch (this->qto) {
 				case QTO_RENAME:
 					if (this->ctr_qt_op == NEW_TRACE_RESTRICT_COUNTER_ID) {
-						DoCommandP(0, 0, 0, CMD_CREATE_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE), nullptr, str->c_str());
+						DoCommandP(0, 0, 0, CMD_CREATE_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE), CcCreateTraceRestrictCounter, str->c_str());
 					} else {
 						DoCommandP(0, this->ctr_qt_op, 0, CMD_ALTER_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_RENAME), nullptr, str->c_str());
 					}
@@ -4645,6 +4711,13 @@ public:
 		ShowQueryString(STR_EMPTY, STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
 	}
 };
+
+void CcCreateTraceRestrictCounter(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
+{
+	if (result.Succeeded() && result.HasResultData()) {
+		RecordRecentSlotOrCounter(_recent_counters, static_cast<TraceRestrictCounterID>(result.GetResultData()));
+	}
+}
 
 static WindowDesc _counter_window_desc(__FILE__, __LINE__,
 	WDP_AUTO, "list_tr_counters", 525, 246,

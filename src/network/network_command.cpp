@@ -56,6 +56,8 @@ static CommandCallback * const _callback_table[] = {
 	/* 0x21 */ CcMoveNewVirtualEngine,
 	/* 0x22 */ CcAddNewSchDispatchSchedule,
 	/* 0x23 */ CcSwapSchDispatchSchedules,
+	/* 0x24 */ CcCreateTraceRestrictSlot,
+	/* 0x25 */ CcCreateTraceRestrictCounter,
 };
 
 /** Local queue of packets waiting for handling. */

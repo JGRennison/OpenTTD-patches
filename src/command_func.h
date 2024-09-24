@@ -169,4 +169,8 @@ CommandCallback CcMoveNewVirtualEngine;
 CommandCallback CcAddNewSchDispatchSchedule;
 CommandCallback CcSwapSchDispatchSchedules;
 
+/* tracerestrict_gui.cpp */
+CommandCallback CcCreateTraceRestrictSlot;
+CommandCallback CcCreateTraceRestrictCounter;
+
 #endif /* COMMAND_FUNC_H */

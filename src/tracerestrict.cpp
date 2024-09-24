@@ -2932,6 +2932,9 @@ void TraceRestrictRemoveSlotID(TraceRestrictSlotID index)
 			RemoveProgramSlotDependencies(index, sr);
 		}
 	}
+
+	extern void TraceRestrictEraseRecentSlot(TraceRestrictSlotID index);
+	TraceRestrictEraseRecentSlot(index);
 }
 
 static bool IsUniqueSlotName(const char *name)
@@ -2965,16 +2968,19 @@ CommandCost CmdCreateTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint
 	if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
 	if (!IsUniqueSlotName(text)) return_cmd_error(STR_ERROR_NAME_MUST_BE_UNIQUE);
 
+	CommandCost result;
+
 	if (flags & DC_EXEC) {
 		TraceRestrictSlot *slot = new TraceRestrictSlot(_current_company, vehtype);
 		slot->name = text;
+		result.SetResultData(slot->index);
 
 		/* Update windows */
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
 	}
 
-	return CommandCost();
+	return result;
 }
 
 
@@ -3189,6 +3195,9 @@ void TraceRestrictRemoveCounterID(TraceRestrictCounterID index)
 			RemoveProgramCounterDependencies(index, sr);
 		}
 	}
+
+	extern void TraceRestrictEraseRecentCounter(TraceRestrictCounterID index);
+	TraceRestrictEraseRecentCounter(index);
 }
 
 /**
@@ -3210,16 +3219,19 @@ CommandCost CmdCreateTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, u
 	if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
 	if (!IsUniqueCounterName(text)) return_cmd_error(STR_ERROR_NAME_MUST_BE_UNIQUE);
 
+	CommandCost result;
+
 	if (flags & DC_EXEC) {
 		TraceRestrictCounter *ctr = new TraceRestrictCounter(_current_company);
 		ctr->name = text;
+		result.SetResultData(ctr->index);
 
 		/* Update windows */
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT_COUNTERS);
 	}
 
-	return CommandCost();
+	return result;
 }
 
 

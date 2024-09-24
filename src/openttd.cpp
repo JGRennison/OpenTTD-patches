@@ -510,6 +510,7 @@ static void ShutdownGame()
 	ClearZoningCaches();
 	InvalidatePlanCaches();
 	ClearOrderDestinationRefcountMap();
+	TraceRestrictClearRecentSlotsAndCounters();
 
 	/* No NewGRFs were loaded when it was still bootstrapping. */
 	if (_game_mode != GM_BOOTSTRAP) ResetNewGRFData();
