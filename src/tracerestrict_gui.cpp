@@ -726,18 +726,24 @@ DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &
 	GUIList<const TraceRestrictSlot*> list;
 	DropDownList dlist;
 
-	for (const TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
-		if (!show_other_types && slot->vehicle_type != vehtype) continue;
-		if (slot->owner == owner) {
-			list.push_back(slot);
+	if (_ctrl_pressed && !_recent_slots[vehtype].empty()) {
+		for (TraceRestrictSlotID id : _recent_slots[vehtype]) {
+			list.push_back(TraceRestrictSlot::Get(id));
 		}
+	} else {
+		for (const TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
+			if (!show_other_types && slot->vehicle_type != vehtype) continue;
+			if (slot->owner == owner) {
+				list.push_back(slot);
+			}
+		}
+
+		if (list.size() == 0) return dlist;
+
+		list.ForceResort();
+		_slot_sort_veh_type = vehtype;
+		list.Sort(show_other_types ? &SlotVehTypeNameSorter : &SlotNameSorter);
 	}
-
-	if (list.size() == 0) return dlist;
-
-	list.ForceResort();
-	_slot_sort_veh_type = vehtype;
-	list.Sort(show_other_types ? &SlotVehTypeNameSorter : &SlotNameSorter);
 
 	selected = -1;
 
@@ -773,16 +779,22 @@ DropDownList GetCounterDropDownList(Owner owner, TraceRestrictCounterID ctr_id, 
 	GUIList<const TraceRestrictCounter*> list;
 	DropDownList dlist;
 
-	for (const TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
-		if (ctr->owner == owner) {
-			list.push_back(ctr);
+	if (_ctrl_pressed && !_recent_counters.empty()) {
+		for (TraceRestrictCounterID id : _recent_counters) {
+			list.push_back(TraceRestrictCounter::Get(id));
 		}
+	} else {
+		for (const TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
+			if (ctr->owner == owner) {
+				list.push_back(ctr);
+			}
+		}
+
+		if (list.size() == 0) return dlist;
+
+		list.ForceResort();
+		list.Sort(&CounterNameSorter);
 	}
-
-	if (list.size() == 0) return dlist;
-
-	list.ForceResort();
-	list.Sort(&CounterNameSorter);
 
 	selected = -1;
 
@@ -2782,6 +2794,31 @@ public:
 				SetDParam(0, (this->base_share_plane == DPS_UNSHARE) ? STR_TRACE_RESTRICT_UNSHARE_TOOLTIP : STR_TRACE_RESTRICT_SHARE_TOOLTIP);
 				GuiShowTooltips(this, STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA, close_cond, 1);
 				return true;
+			}
+
+			case TR_WIDGET_VALUE_DROPDOWN:{
+				switch (GetTraceRestrictTypeProperties(this->GetSelected()).value_type) {
+					case TRVT_SLOT_INDEX:
+						SetDParam(0, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP);
+						GuiShowTooltips(this, STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA, close_cond, 1);
+						return true;
+
+					default:
+						return false;
+				}
+			}
+
+			case TR_WIDGET_LEFT_AUX_DROPDOWN: {
+				switch (GetTraceRestrictTypeProperties(this->GetSelected()).value_type) {
+					case TRVT_SLOT_INDEX_INT:
+					case TRVT_COUNTER_INDEX_INT:
+						SetDParam(0, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP);
+						GuiShowTooltips(this, STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA, close_cond, 1);
+						return true;
+
+					default:
+						return false;
+				}
 			}
 
 			default:
