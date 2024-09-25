@@ -1624,7 +1624,19 @@
      </li>
      <li style="color: blue">m2 bit 3: rail bridge heads opposite track is reserved, too</li>
      <li>m3 bits 7..4: <a href="#OwnershipInfo">owner</a> of tram</li>
-     <li>m4: <a href="#RoadType">Roadtype</a></li>
+     <li style="color: blue">m4 bits 7..6: bits to disallow vehicles to go a specific direction (road bridge)
+      <table>
+       <tr>
+        <td align=left>bit 0: </td>
+        <td>set = disallow driving in south-west or south-east direction</td>
+       </tr>
+       <tr>
+        <td align=left>bit 1: </td>
+        <td>set = disallow driving in north-west or north-east direction</td>
+       </tr>
+      </table>
+     </li>
+     <li>m4 bits 5..0: <a href="#RoadType">Roadtype</a></li>
      <li style="color: blue">m4 bits 5..0: rail bridge heads track layout: bit set = track present:
       <table style="color: blue">
        <tr>

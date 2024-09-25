@@ -322,6 +322,8 @@ inline SpriteID TileZoneCheckOneWayRoadEvaluation(TileIndex tile)
 				return SPR_ZONING_INNER_HIGHLIGHT_GREEN;
 			} else if (IsNormalRoadTile(tile) && GetDisallowedRoadDirections(tile) != DRD_NONE) {
 				return SPR_ZONING_INNER_HIGHLIGHT_LIGHT_BLUE;
+			} else if (IsRoadBridgeTile(tile) && GetBridgeDisallowedRoadDirections(tile) != DRD_NONE) {
+				return SPR_ZONING_INNER_HIGHLIGHT_LIGHT_BLUE;
 			} else {
 				return SPR_ZONING_INNER_HIGHLIGHT_PURPLE;
 			}

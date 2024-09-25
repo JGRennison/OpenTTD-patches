@@ -101,6 +101,7 @@ enum SlXvFeatureIndex {
 	XSLFI_MORE_VEHICLE_ORDERS,                    ///< More vehicle orders - VehicleOrderID is 16 bits instead of 8
 	XSLFI_ORDER_FLAGS_EXTRA,                      ///< Order flags field extra size
 	XSLFI_ONE_WAY_DT_ROAD_STOP,                   ///< One-way drive-through road stops
+	XSLFI_ONE_WAY_ROAD_BRIDGE,                    ///< One-way road bridges
 	XSLFI_ONE_WAY_ROAD_STATE,                     ///< One-way road state cache
 	XSLFI_VENC_CHUNK,                             ///< VENC chunk
 	XSLFI_ANIMATED_TILE_EXTRA,                    ///< Animated tile extra info

@@ -1709,12 +1709,40 @@ static void DrawBridgeRoadBits(TileIndex head_tile, int x, int y, int z, int off
 
 	/* The sprites under the vehicles are drawn as SpriteCombine. StartSpriteCombine() has already been called
 	 * The bounding boxes here are the same as for bridge front/roof */
-	for (uint i = 0; i < lengthof(seq_back); ++i) {
-		if (seq_back[i] != 0) {
-			AddSortableSpriteToDraw(seq_back[i], PAL_NONE,
+	auto draw_back_sprite = [&](StringID spr, bool transparent) {
+		if (spr != 0) {
+			AddSortableSpriteToDraw(spr, PAL_NONE,
 				x, y, size_x[offset], size_y[offset], 0x28, z,
-				trans_back[i]);
+				transparent);
 		}
+	};
+
+	/* Draw first 3 back sprites, then any one-way sprite, then remaining back sprites (catenary) */
+	for (uint i = 0; i < 3; ++i) {
+		draw_back_sprite(seq_back[i], trans_back[i]);
+	}
+	if (head && road_rti != nullptr) {
+		DisallowedRoadDirections drd = GetBridgeDisallowedRoadDirections(head_tile);
+		if (drd != DRD_NONE) {
+			SpriteID oneway = GetCustomRoadSprite(road_rti, head_tile, ROTSG_ONEWAY);
+			if (oneway == 0) oneway = SPR_ONEWAY_BASE;
+
+			int z_offset = 0;
+			if (offset == 2 || offset == 5) {        // SLOPE_NE, SLOPE_NW
+				oneway += SPR_ONEWAY_SLOPE_N_OFFSET;
+				z_offset = TILE_HEIGHT / 2;
+			} else if (offset == 3 || offset == 4) { // SLOPE_SE, SLOPE_SW
+				oneway += SPR_ONEWAY_SLOPE_S_OFFSET;
+				z_offset = TILE_HEIGHT / 2;
+			}
+			static constexpr uint8_t is_x_axis = 0x16;
+			AddSortableSpriteToDraw(oneway + drd - 1 + (HasBit(is_x_axis, offset) ? 0 : 3), PAL_NONE,
+				x + 8, y + 8, size_x[offset], size_y[offset], 0x28, z + z_offset,
+				false);
+		}
+	}
+	for (uint i = 3; i < lengthof(seq_back); ++i) {
+		draw_back_sprite(seq_back[i], trans_back[i]);
 	}
 
 	/* Start a new SpriteCombine for the front part */
@@ -2896,11 +2924,31 @@ static TrackStatus GetTileTrackStatus_TunnelBridge(TileIndex tile, TransportType
 	DiagDirection dir = GetTunnelBridgeDirection(tile);
 
 	if (side != INVALID_DIAGDIR && side == dir) return 0;
+
+	TrackBits bits;
 	if (mode == TRANSPORT_ROAD && IsRoadCustomBridgeHeadTile(tile)) {
-		TrackBits bits = _road_trackbits[GetCustomBridgeHeadRoadBits(tile, (RoadTramType)GB(sub_mode, 0, 8))];
-		return CombineTrackStatus(TrackBitsToTrackdirBits(bits), TRACKDIR_BIT_NONE);
+		bits = _road_trackbits[GetCustomBridgeHeadRoadBits(tile, (RoadTramType)GB(sub_mode, 0, 8))];
+	} else {
+		bits = (mode == TRANSPORT_RAIL) ? GetTunnelBridgeTrackBits(tile) : DiagDirToDiagTrackBits(dir);
 	}
-	return CombineTrackStatus(TrackBitsToTrackdirBits(mode == TRANSPORT_RAIL ? GetTunnelBridgeTrackBits(tile) : DiagDirToDiagTrackBits(dir)), TRACKDIR_BIT_NONE);
+
+	DisallowedRoadDirections drd = DRD_NONE;
+	if (mode == TRANSPORT_ROAD && (RoadTramType)GB(sub_mode, 0, 8) == RTT_ROAD) {
+		RoadCachedOneWayState rcows = GetRoadCachedOneWayState(tile);
+		switch (rcows) {
+			case RCOWS_NORMAL:
+			case RCOWS_NON_JUNCTION_A:
+			case RCOWS_NON_JUNCTION_B:
+			case RCOWS_NO_ACCESS:
+				drd = (DisallowedRoadDirections)rcows;
+				break;
+
+			default:
+				NOT_REACHED();
+		}
+	}
+	const uint drd_to_multiplier[DRD_END] = { 0x101, 0x100, 0x1, 0x0 };
+	return CombineTrackStatus((TrackdirBits)(bits * drd_to_multiplier[drd]), TRACKDIR_BIT_NONE);
 }
 
 static void UpdateRoadTunnelBridgeInfrastructure(TileIndex begin, TileIndex end, bool add) {

@@ -213,6 +213,7 @@ static DisallowedRoadDirections GetOneWayRoadTileDisallowedRoadDirections(TileIn
 {
 	if (IsNormalRoadTile(tile)) return GetDisallowedRoadDirections(tile);
 	if (IsDriveThroughStopTile(tile)) return GetDriveThroughStopDisallowedRoadDirections(tile);
+	if (IsRoadBridgeTile(tile)) return GetBridgeDisallowedRoadDirections(tile);
 	return DRD_NONE;
 }
 
@@ -712,6 +713,10 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 				if (other_bits == ROAD_NONE) SetRoadType(other_end, rtt, INVALID_ROADTYPE);
 
 				if (IsBridge(tile)) {
+					if (rtt == RTT_ROAD) {
+						SetBridgeDisallowedRoadDirections(tile, DRD_NONE);
+						SetBridgeDisallowedRoadDirections(other_end, DRD_NONE);
+					}
 					SetCustomBridgeHeadRoadBits(tile, rtt, bits);
 					SetCustomBridgeHeadRoadBits(other_end, rtt, other_bits);
 				}
@@ -1253,7 +1258,51 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 					if (MirrorRoadBits(entrance_piece) != pieces) goto do_clear;
 					pieces = axial_pieces;
 				}
-				if ((existing & pieces) == pieces) return_cmd_error(STR_ERROR_ALREADY_BUILT);
+
+				if (rtt == RTT_ROAD && (GetBridgeDisallowedRoadDirections(tile) != DRD_NONE || toggle_drd != DRD_NONE) &&
+						((existing | pieces) != axial_pieces || (GetCustomBridgeHeadRoadBits(other_end, rtt) & ~axial_pieces) != 0)) {
+					/* Junctions cannot be one-way */
+					return_cmd_error(STR_ERROR_ONEWAY_ROADS_CAN_T_HAVE_JUNCTION);
+				}
+
+				if ((existing & pieces) == pieces) {
+					/* We only want to set the (dis)allowed road directions */
+					if (toggle_drd != DRD_NONE && rtt == RTT_ROAD) {
+						if ((pieces & ~axial_pieces) != 0 || GetCustomBridgeHeadRoadBits(other_end, rtt) != axial_pieces) return_cmd_error(STR_ERROR_ONEWAY_ROADS_CAN_T_HAVE_JUNCTION);
+
+						Owner owner = GetRoadOwner(tile, rtt);
+						if (owner != OWNER_NONE) {
+							CommandCost ret = CheckOwnership(owner, tile);
+							if (ret.Failed()) return ret;
+						}
+
+						DisallowedRoadDirections dis_existing = GetBridgeDisallowedRoadDirections(tile);
+						DisallowedRoadDirections dis_new      = dis_existing ^ toggle_drd;
+
+						/* We allow removing disallowed directions to break up
+						 * deadlocks, but adding them can break articulated
+						 * vehicles. As such, only when less is disallowed,
+						 * i.e. bits are removed, we skip the vehicle check. */
+						if (CountBits(dis_existing) <= CountBits(dis_new)) {
+							CommandCost ret = TunnelBridgeIsFree(tile, other_end);
+							if (ret.Failed()) return ret;
+						}
+
+						/* Ignore half built tiles */
+						if (flags & DC_EXEC) {
+							SetBridgeDisallowedRoadDirections(tile, dis_new);
+							SetBridgeDisallowedRoadDirections(other_end, dis_new);
+							MarkTileDirtyByTile(tile);
+							MarkTileDirtyByTile(other_end);
+							NotifyRoadLayoutChanged(CountBits(dis_existing) > CountBits(dis_new));
+							UpdateRoadCachedOneWayStatesAroundTile(tile);
+							UpdateRoadCachedOneWayStatesAroundTile(other_end);
+						}
+						return CommandCost();
+					}
+					return_cmd_error(STR_ERROR_ALREADY_BUILT);
+				}
+
 				if ((pieces & ~axial_pieces) && !_settings_game.construction.build_on_slopes) {
 					return_cmd_error(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
 				}
@@ -1359,6 +1408,8 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 					AddRoadTunnelBridgeInfrastructure(tile, other_end);
 					NotifyRoadLayoutChanged(true);
 					if (rtt == RTT_ROAD) {
+						SetBridgeDisallowedRoadDirections(tile, DRD_NONE);
+						SetBridgeDisallowedRoadDirections(other_end, DRD_NONE);
 						UpdateRoadCachedOneWayStatesAroundTile(tile);
 						UpdateRoadCachedOneWayStatesAroundTile(other_end);
 					}
@@ -2210,8 +2261,13 @@ void DrawRoadBits(TileInfo *ti, RoadBits road, RoadBits tram, Roadside roadside,
 	DrawRoadOverlays(ti, pal, road_rti, tram_rti, road_offset, tram_offset);
 
 	/* Draw one way */
-	if (is_road_tile && road_rti != nullptr) {
-		DisallowedRoadDirections drd = GetDisallowedRoadDirections(ti->tile);
+	if (road_rti != nullptr) {
+		DisallowedRoadDirections drd = DRD_NONE;
+		if (is_road_tile) {
+			drd = GetDisallowedRoadDirections(ti->tile);
+		} else if (IsTileType(ti->tile, MP_TUNNELBRIDGE)) {
+			drd = GetBridgeDisallowedRoadDirections(ti->tile);
+		}
 		if (drd != DRD_NONE) {
 			SpriteID oneway = GetCustomRoadSprite(road_rti, ti->tile, ROTSG_ONEWAY);
 
