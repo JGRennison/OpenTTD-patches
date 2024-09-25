@@ -25,6 +25,7 @@
 #include "error.h"
 #include "scope.h"
 #include "zoom_func.h"
+#include "tracerestrict.h"
 
 #include "table/sprites.h"
 #include "table/strings.h"
@@ -591,6 +592,12 @@ public:
 				SB(p2, 1, 2, SCF_SLOT_COUNTER);
 				SB(p2, 3, 27, index);
 
+				if (widget == PROGRAM_WIDGET_COND_SLOT) {
+					TraceRestrictRecordRecentSlot(index);
+				} else {
+					TraceRestrictRecordRecentCounter(index);
+				}
+
 				DoCommandP(this->tile, p1, p2, CMD_MODIFY_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_MODIFY_INSTRUCTION));
 			}
 		}
@@ -641,6 +648,25 @@ public:
 		}
 	}
 
+	bool OnTooltip(Point pt, WidgetID widget, TooltipCloseCondition close_cond) override
+	{
+		switch (widget) {
+			case PROGRAM_WIDGET_COND_SLOT: {
+				SetDParam(0, STR_PROGSIG_COND_SLOT_TOOLTIP);
+				GuiShowTooltips(this, STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA, close_cond, 1);
+				return true;
+			}
+
+			case PROGRAM_WIDGET_COND_COUNTER: {
+				SetDParam(0, STR_PROGSIG_COND_COUNTER_TOOLTIP);
+				GuiShowTooltips(this, STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA, close_cond, 1);
+				return true;
+			}
+
+			default:
+				return false;
+		}
+	}
 
 	virtual void SetStringParameters(WidgetID widget) const override
 	{

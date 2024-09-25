@@ -3490,10 +3490,12 @@ public:
 				break;
 
 			case WID_O_COND_SLOT:
+				TraceRestrictRecordRecentSlot(index);
 				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE | index << 8);
 				break;
 
 			case WID_O_COND_COUNTER:
+				TraceRestrictRecordRecentCounter(index);
 				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | index << 8);
 				break;
 
@@ -3520,6 +3522,7 @@ public:
 			}
 
 			case WID_O_SLOT:
+				TraceRestrictRecordRecentSlot(index);
 				this->ModifyOrder(this->OrderGetSel(), MOF_SLOT | index << 8);
 				break;
 
@@ -3528,6 +3531,7 @@ public:
 				break;
 
 			case WID_O_CHANGE_COUNTER:
+				TraceRestrictRecordRecentCounter(index);
 				this->ModifyOrder(this->OrderGetSel(), MOF_COUNTER_ID | index << 8);
 				break;
 
@@ -3790,6 +3794,15 @@ public:
 				}
 				return false;
 			}
+
+			case WID_O_COND_SLOT:
+			case WID_O_COND_COUNTER:
+			case WID_O_SLOT:
+			case WID_O_CHANGE_COUNTER:
+				SetDParam(0, this->GetWidget<NWidgetCore>(widget)->tool_tip);
+				GuiShowTooltips(this, STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA, close_cond, 1);
+				return true;
+
 			default:
 				return false;
 		}
