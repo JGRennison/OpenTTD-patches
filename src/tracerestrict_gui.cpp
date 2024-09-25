@@ -2808,7 +2808,7 @@ public:
 				return true;
 			}
 
-			case TR_WIDGET_VALUE_DROPDOWN:{
+			case TR_WIDGET_VALUE_DROPDOWN: {
 				switch (GetTraceRestrictTypeProperties(this->GetSelected()).value_type) {
 					case TRVT_SLOT_INDEX:
 						SetDParam(0, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP);
