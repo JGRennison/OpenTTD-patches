@@ -1187,6 +1187,8 @@ void TraceRestrictRemoveVehicleFromAllSlots(VehicleID id);
 void TraceRestrictTransferVehicleOccupantInAllSlots(VehicleID from, VehicleID to);
 void TraceRestrictGetVehicleSlots(VehicleID id, std::vector<TraceRestrictSlotID> &out);
 
+void TraceRestrictRecordRecentSlot(TraceRestrictSlotID index);
+void TraceRestrictRecordRecentCounter(TraceRestrictCounterID index);
 void TraceRestrictClearRecentSlotsAndCounters();
 
 static const uint MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS = 128; ///< The maximum length of a slot name in characters including '\0'

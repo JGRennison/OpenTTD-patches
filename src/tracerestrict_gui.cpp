@@ -87,6 +87,22 @@ void TraceRestrictEraseRecentCounter(TraceRestrictCounterID index)
 	EraseRecentSlotOrCounter(_recent_counters, index);
 }
 
+void TraceRestrictRecordRecentSlot(TraceRestrictSlotID index)
+{
+	const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(index);
+	if (slot != nullptr && slot->owner == _local_company && slot->vehicle_type < _recent_slots.size()) {
+		RecordRecentSlotOrCounter(_recent_slots[slot->vehicle_type], index);
+	}
+}
+
+void TraceRestrictRecordRecentCounter(TraceRestrictCounterID index)
+{
+	const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(index);
+	if (ctr != nullptr && ctr->owner == _local_company) {
+		RecordRecentSlotOrCounter(_recent_counters , index);
+	}
+}
+
 void TraceRestrictClearRecentSlotsAndCounters()
 {
 	for (auto &it : _recent_slots) {
@@ -2331,16 +2347,10 @@ public:
 				SetTraceRestrictValue(item, index);
 				TraceRestrictDoCommandP(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
 				if (type.value_type == TRVT_SLOT_INDEX || type.value_type == TRVT_SLOT_INDEX_INT) {
-					const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(index);
-					if (slot != nullptr && slot->owner == _local_company && slot->vehicle_type < _recent_slots.size()) {
-						RecordRecentSlotOrCounter(_recent_slots[slot->vehicle_type], index);
-					}
+					TraceRestrictRecordRecentSlot(index);
 				}
 				if (type.value_type == TRVT_COUNTER_INDEX_INT) {
-					const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(index);
-					if (ctr != nullptr && ctr->owner == _local_company) {
-						RecordRecentSlotOrCounter(_recent_counters , index);
-					}
+					TraceRestrictRecordRecentCounter(index);
 				}
 				return;
 			}
@@ -4381,11 +4391,7 @@ public:
 void CcCreateTraceRestrictSlot(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Succeeded() && result.HasResultData()) {
-		TraceRestrictSlotID id = static_cast<TraceRestrictSlotID>(result.GetResultData());
-		const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(id);
-		if (slot != nullptr && slot->vehicle_type < _recent_slots.size()) {
-			RecordRecentSlotOrCounter(_recent_slots[slot->vehicle_type], id);
-		}
+		TraceRestrictRecordRecentSlot(static_cast<TraceRestrictSlotID>(result.GetResultData()));
 	}
 }
 
@@ -4758,7 +4764,7 @@ public:
 void CcCreateTraceRestrictCounter(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	if (result.Succeeded() && result.HasResultData()) {
-		RecordRecentSlotOrCounter(_recent_counters, static_cast<TraceRestrictCounterID>(result.GetResultData()));
+		TraceRestrictRecordRecentCounter(static_cast<TraceRestrictCounterID>(result.GetResultData()));
 	}
 }
 
