@@ -456,9 +456,9 @@ static void HandleAutodirPlacement()
 	 * snap point without altering the user with the "already built" error. Don't
 	 * execute the command right away, firstly check if tracks are being overbuilt. */
 	if (!(_thd.place_mode & HT_POLY) || _shift_pressed ||
-			DoCommand(&cmd, DC_AUTO | DC_NO_WATER).GetErrorMessage() != STR_ERROR_ALREADY_BUILT) {
+			DoCommand(cmd, DC_AUTO | DC_NO_WATER).GetErrorMessage() != STR_ERROR_ALREADY_BUILT) {
 		/* place tracks */
-		if (!DoCommandP(&cmd)) return;
+		if (!DoCommandP(cmd)) return;
 	}
 
 	/* save new snap points for the polyline tool */

@@ -161,7 +161,7 @@ void NetworkExecuteLocalCommandQueue()
 		_current_company = cp->company;
 		_cmd_client_id = cp->client_id;
 		cp->cmd |= CMD_NETWORK_COMMAND;
-		DoCommandP(&(*cp), cp->my_cmd);
+		DoCommandP(*cp, cp->my_cmd);
 
 		record_sync_event = true;
 	}

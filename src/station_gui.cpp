@@ -2616,7 +2616,7 @@ struct SelectStationWindow : Window {
 		   (distant_join ? _stations_nearby_list[st_index] : NEW_STATION));
 
 		/* Execute stored Command */
-		DoCommandP(&this->select_station_cmd);
+		DoCommandP(this->select_station_cmd);
 
 		/* Close Window; this might cause double frees! */
 		CloseWindowById(WC_SELECT_STATION, 0);
@@ -2700,7 +2700,7 @@ static bool StationJoinerNeeded(const CommandContainer &cmd, TileArea ta)
 	if (!_ctrl_pressed) return false;
 
 	/* Now check if we could build there */
-	if (DoCommand(&cmd, CommandFlagsToDCFlags(GetCommandFlags(cmd.cmd))).Failed()) return false;
+	if (DoCommand(cmd, CommandFlagsToDCFlags(GetCommandFlags(cmd.cmd))).Failed()) return false;
 
 	/* Test for adjacent station or station below selection.
 	 * If adjacent-stations is disabled and we are building next to a station, do not show the selection window.
@@ -2722,7 +2722,7 @@ void ShowSelectBaseStationIfNeeded(const CommandContainer &cmd, TileArea ta)
 		if (!_settings_client.gui.persistent_buildingtools) ResetObjectToPlace();
 		new SelectStationWindow<T>(_select_station_desc, cmd, ta);
 	} else {
-		DoCommandP(&cmd);
+		DoCommandP(cmd);
 	}
 }
 

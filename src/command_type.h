@@ -770,22 +770,28 @@ private:
 };
 
 /**
- * Structure for buffering the build command when selecting a station to join.
+ * Struct representation of a command call (excluding callback)
  */
-struct CommandContainer {
+struct BaseCommandContainer {
+	uint32_t cmd;                    ///< command being executed.
 	TileIndex tile;                  ///< tile command being executed on.
 	uint32_t p1;                     ///< parameter p1.
 	uint32_t p2;                     ///< parameter p2.
-	uint32_t cmd;                    ///< command being executed.
 	uint64_t p3;                     ///< parameter p3. (here for alignment)
-	CommandCallback *callback;       ///< any callback function executed upon successful completion of the command.
 	std::string text;                ///< possible text sent for name changes etc.
 	CommandAuxiliaryPtr aux_data;    ///< Auxiliary command data
 };
 
+/**
+ * Struct representation of a command call (including callback)
+ */
+struct CommandContainer : public BaseCommandContainer {
+	CommandCallback *callback;       ///< any callback function executed upon successful completion of the command.
+};
+
 inline CommandContainer NewCommandContainerBasic(TileIndex tile, uint32_t p1, uint32_t p2, uint32_t cmd, CommandCallback *callback = nullptr)
 {
-	return { tile, p1, p2, cmd, 0, callback, {}, nullptr };
+	return { { cmd, tile, p1, p2, 0, {}, nullptr }, callback };
 }
 
 #endif /* COMMAND_TYPE_H */

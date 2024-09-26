@@ -128,9 +128,9 @@ static bool IsQueryConfirmIndustryOrRailStationInArea(TileIndex start_tile, Tile
 
 static CommandContainer _demolish_area_command;
 
-static void DemolishAreaConfirmationCallback(Window*, bool confirmed) {
+static void DemolishAreaConfirmationCallback(Window *, bool confirmed) {
 	if (confirmed) {
-		DoCommandP(&_demolish_area_command);
+		DoCommandP(_demolish_area_command);
 	}
 }
 

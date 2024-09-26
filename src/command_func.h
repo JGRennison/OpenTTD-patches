@@ -44,9 +44,9 @@ inline CommandCost DoCommandAux(TileIndex tile, const CommandAuxiliaryBase *aux_
 	return DoCommandEx(tile, 0, 0, 0, flags, cmd, nullptr, aux_data);
 }
 
-inline CommandCost DoCommand(const CommandContainer *container, DoCommandFlag flags)
+inline CommandCost DoCommand(const BaseCommandContainer &container, DoCommandFlag flags)
 {
-	return DoCommandEx(container->tile, container->p1, container->p2, container->p3, flags, container->cmd & CMD_ID_MASK, container->text.c_str(), container->aux_data.get());
+	return DoCommandEx(container.tile, container.p1, container.p2, container.p3, flags, container.cmd & CMD_ID_MASK, container.text.c_str(), container.aux_data.get());
 }
 
 bool DoCommandPEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd, CommandCallback *callback = nullptr, const char *text = nullptr, const CommandAuxiliaryBase *aux_data = nullptr, bool my_cmd = true);
@@ -61,9 +61,9 @@ inline bool DoCommandPAux(TileIndex tile, const CommandAuxiliaryBase *aux_data, 
 	return DoCommandPEx(tile, 0, 0, 0, cmd, callback, nullptr, aux_data, my_cmd);
 }
 
-inline bool DoCommandP(const CommandContainer *container, bool my_cmd = true)
+inline bool DoCommandP(const CommandContainer &container, bool my_cmd = true)
 {
-	return DoCommandPEx(container->tile, container->p1, container->p2, container->p3, container->cmd, container->callback, container->text.c_str(), container->aux_data.get(), my_cmd);
+	return DoCommandPEx(container.tile, container.p1, container.p2, container.p3, container.cmd, container.callback, container.text.c_str(), container.aux_data.get(), my_cmd);
 }
 
 CommandCost DoCommandPScript(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd, CommandCallback *callback, const char *text, bool my_cmd, bool estimate_only, bool asynchronous, const CommandAuxiliaryBase *aux_data);
