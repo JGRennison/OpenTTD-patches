@@ -85,6 +85,11 @@ public:
 	{
 		return *(this->data);
 	}
+
+	inline bool HasData() const
+	{
+		return this->data != nullptr;
+	}
 };
 
 #endif /* COMMAND_AUX_H */

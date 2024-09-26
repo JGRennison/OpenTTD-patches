@@ -13,6 +13,7 @@
 #include "core/bitmath_func.hpp"
 #include "core/container_func.hpp"
 #include "core/pool_func.hpp"
+#include "core/format.hpp"
 #include "command_func.h"
 #include "company_func.h"
 #include "viewport_func.h"
@@ -1873,16 +1874,28 @@ void TraceRestrictNotifySignalRemoval(TileIndex tile, Track track)
 	if (removed) InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 }
 
-/**
- * Helper function to perform parameter bit-packing and call DoCommandP, for instruction modification actions
- */
-void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg)
+static uint32_t GetTraceRestrictCommandP1(Track track, TraceRestrictDoCommandType type, uint32_t offset)
 {
 	uint32_t p1 = 0;
 	SB(p1, 0, 3, track);
 	SB(p1, 3, 5, type);
 	assert(offset < (1 << 16));
 	SB(p1, 8, 16, offset);
+	return p1;
+}
+
+BaseCommandContainer GetTraceRestrictCommandContainer(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg)
+{
+	uint32_t p1 = GetTraceRestrictCommandP1(track, type, offset);
+	return NewBaseCommandContainerBasic(tile, p1, value, CMD_PROGRAM_TRACERESTRICT_SIGNAL | CMD_MSG(error_msg));
+}
+
+/**
+ * Helper function to perform parameter bit-packing and call DoCommandP, for instruction modification actions
+ */
+void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg)
+{
+	uint32_t p1 = GetTraceRestrictCommandP1(track, type, offset);
 	DoCommandP(tile, p1, value, CMD_PROGRAM_TRACERESTRICT_SIGNAL | CMD_MSG(error_msg));
 }
 
@@ -2977,10 +2990,12 @@ static bool IsUniqueSlotName(const char *name)
  * @param p1 bitstuffed elements
  * - p2 = (bit 0 - 2) - vehicle type
  * @param p2   unused
+ * @param p3   unused
  * @param text new slot name
+ * @param aux_data optional follow-up command
  * @return the cost of this operation or an error
  */
-CommandCost CmdCreateTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdCreateTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	if (!TraceRestrictSlot::CanAllocateItem()) return CMD_ERROR;
 	if (StrEmpty(text)) return CMD_ERROR;
@@ -2993,6 +3008,12 @@ CommandCost CmdCreateTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint
 	if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
 	if (!IsUniqueSlotName(text)) return_cmd_error(STR_ERROR_NAME_MUST_BE_UNIQUE);
 
+	CommandAuxData<TraceRestrictFollowUpCmdData> follow_up_cmd;
+	if (aux_data != nullptr) {
+		CommandCost ret = follow_up_cmd.Load(aux_data);
+		if (ret.Failed()) return ret;
+	}
+
 	CommandCost result;
 
 	if (flags & DC_EXEC) {
@@ -3000,9 +3021,22 @@ CommandCost CmdCreateTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint
 		slot->name = text;
 		result.SetResultData(slot->index);
 
+		if (follow_up_cmd.HasData()) {
+			CommandCost follow_up_res = follow_up_cmd->ExecuteWithValue(slot->index, flags);
+			if (follow_up_res.Failed()) {
+				delete slot;
+				return follow_up_res;
+			}
+		}
+
 		/* Update windows */
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+	} else if (follow_up_cmd.HasData()) {
+		TraceRestrictSlot *slot = new TraceRestrictSlot(_current_company, vehtype);
+		CommandCost follow_up_res = follow_up_cmd->ExecuteWithValue(slot->index, flags);
+		delete slot;
+		if (follow_up_res.Failed()) return follow_up_res;
 	}
 
 	return result;
@@ -3234,7 +3268,7 @@ void TraceRestrictRemoveCounterID(TraceRestrictCounterID index)
  * @param text new counter name
  * @return the cost of this operation or an error
  */
-CommandCost CmdCreateTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
+CommandCost CmdCreateTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, uint64_t p3, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	if (!TraceRestrictCounter::CanAllocateItem()) return CMD_ERROR;
 	if (StrEmpty(text)) return CMD_ERROR;
@@ -3244,6 +3278,12 @@ CommandCost CmdCreateTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, u
 	if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
 	if (!IsUniqueCounterName(text)) return_cmd_error(STR_ERROR_NAME_MUST_BE_UNIQUE);
 
+	CommandAuxData<TraceRestrictFollowUpCmdData> follow_up_cmd;
+	if (aux_data != nullptr) {
+		CommandCost ret = follow_up_cmd.Load(aux_data);
+		if (ret.Failed()) return ret;
+	}
+
 	CommandCost result;
 
 	if (flags & DC_EXEC) {
@@ -3251,9 +3291,22 @@ CommandCost CmdCreateTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, u
 		ctr->name = text;
 		result.SetResultData(ctr->index);
 
+		if (follow_up_cmd.HasData()) {
+			CommandCost follow_up_res = follow_up_cmd->ExecuteWithValue(ctr->index, flags);
+			if (follow_up_res.Failed()) {
+				delete ctr;
+				return follow_up_res;
+			}
+		}
+
 		/* Update windows */
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT_COUNTERS);
+	} else if (follow_up_cmd.HasData()) {
+		TraceRestrictCounter *ctr = new TraceRestrictCounter(_current_company);
+		CommandCost follow_up_res = follow_up_cmd->ExecuteWithValue(ctr->index, flags);
+		delete ctr;
+		if (follow_up_res.Failed()) return follow_up_res;
 	}
 
 	return result;
@@ -3335,6 +3388,51 @@ CommandCost CmdAlterTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, ui
 	}
 
 	return CommandCost();
+}
+
+void TraceRestrictFollowUpCmdData::Serialise(BufferSerialisationRef buffer) const
+{
+	this->cmd.SerialiseBaseCommandContainer(buffer);
+}
+
+CommandCost TraceRestrictFollowUpCmdData::Deserialise(DeserialisationBuffer &buffer)
+{
+	const char *err = this->cmd.DeserialiseBaseCommandContainer(buffer, false);
+	if (err != nullptr) return CMD_ERROR;
+
+	return CommandCost();
+}
+
+CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCommandFlag flags) const
+{
+	BaseCommandContainer cmd = this->cmd;
+	switch (cmd.cmd & CMD_ID_MASK) {
+		case CMD_PROGRAM_TRACERESTRICT_SIGNAL:
+			SetTraceRestrictValue(cmd.p2, value);
+			break;
+
+		case CMD_MODIFY_SIGNAL_INSTRUCTION:
+			SB(cmd.p2, 3, 27, value);
+			break;
+
+		case CMD_MODIFY_ORDER:
+			SB(cmd.p2, 8, 16, value);
+			break;
+
+		default:
+			return CMD_ERROR;
+	}
+
+	return DoCommand(cmd, flags);
+}
+
+std::string TraceRestrictFollowUpCmdData::GetDebugSummary() const
+{
+	auto out = fmt::memory_buffer();
+	fmt::format_to(std::back_inserter(out), "follow up: {} x {}, p1: 0x{:08X}, p2: 0x{:08X}", TileX(this->cmd.tile), TileY(this->cmd.tile), this->cmd.p1, this->cmd.p2);
+	if (this->cmd.p3 != 0) fmt::format_to(std::back_inserter(out), ", p3: 0x{:016X}", this->cmd.p3);
+	fmt::format_to(std::back_inserter(out), ", cmd: 0x{:08X} ({})", this->cmd.cmd, GetCommandName(this->cmd.cmd));
+	return fmt::to_string(out);
 }
 
 void DumpTraceRestrictSlotsStats(char *buffer, const char *last)

@@ -23,6 +23,7 @@
 #include "tilehighlight_func.h"
 #include "dropdown_func.h"
 #include "dropdown_type.h"
+#include "dropdown_common_type.h"
 #include "gui.h"
 #include "gfx_func.h"
 #include "rail_map.h"
@@ -742,7 +743,12 @@ DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &
 	GUIList<const TraceRestrictSlot*> list;
 	DropDownList dlist;
 
-	if (_ctrl_pressed && !_recent_slots[vehtype].empty()) {
+	std::unique_ptr<DropDownListStringItem> new_item = std::make_unique<DropDownListStringItem>(STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION, NEW_TRACE_RESTRICT_SLOT_ID, false);
+	new_item->SetColourFlags(TC_FORCED);
+	dlist.emplace_back(std::move(new_item));
+	dlist.push_back(MakeDropDownListDividerItem());
+
+	if (_ctrl_pressed) {
 		for (TraceRestrictSlotID id : _recent_slots[vehtype]) {
 			list.push_back(TraceRestrictSlot::Get(id));
 		}
@@ -795,7 +801,12 @@ DropDownList GetCounterDropDownList(Owner owner, TraceRestrictCounterID ctr_id, 
 	GUIList<const TraceRestrictCounter*> list;
 	DropDownList dlist;
 
-	if (_ctrl_pressed && !_recent_counters.empty()) {
+	std::unique_ptr<DropDownListStringItem> new_item = std::make_unique<DropDownListStringItem>(STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, NEW_TRACE_RESTRICT_COUNTER_ID, false);
+	new_item->SetColourFlags(TC_FORCED);
+	dlist.emplace_back(std::move(new_item));
+	dlist.push_back(MakeDropDownListDividerItem());
+
+	if (_ctrl_pressed) {
 		for (TraceRestrictCounterID id : _recent_counters) {
 			list.push_back(TraceRestrictCounter::Get(id));
 		}
@@ -1829,6 +1840,20 @@ class TraceRestrictWindow: public Window {
 	int base_copy_plane;                                                        ///< base plane for TR_WIDGET_SEL_COPY widget
 	int base_share_plane;                                                       ///< base plane for TR_WIDGET_SEL_SHARE widget
 
+	enum QuerySubMode {
+		QSM_DEFAULT,
+		QSM_NEW_SLOT,
+		QSM_NEW_COUNTER,
+	};
+	QuerySubMode query_submode = QSM_DEFAULT;                                   ///< sub-mode for query strings
+
+	void TraceRestrictShowQueryString(StringID str, StringID caption, uint maxsize, CharSetFilter afilter, QueryStringFlags flags, QuerySubMode query_submode = QSM_DEFAULT)
+	{
+		CloseWindowByClass(WC_QUERY_STRING);
+		this->query_submode = query_submode;
+		ShowQueryString(str, caption, maxsize, this, afilter, flags);
+	}
+
 public:
 	TraceRestrictWindow(WindowDesc &desc, TileIndex tile, Track track)
 			: Window(desc)
@@ -2071,10 +2096,10 @@ public:
 				TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
 				if (IsIntegerValueType(type)) {
 					SetDParam(0, ConvertIntegerValue(type, GetTraceRestrictValue(item), true));
-					ShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_VALUE_CAPTION, 10, this, CS_NUMERAL, QSF_NONE);
+					this->TraceRestrictShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_VALUE_CAPTION, 10, CS_NUMERAL, QSF_NONE);
 				} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT || type == TRVT_TIME_DATE_INT) {
 					SetDParam(0, *(TraceRestrictProgram::InstructionAt(this->GetProgram()->items, this->selected_instruction - 1) + 1));
-					ShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_VALUE_CAPTION, 10, this, CS_NUMERAL, QSF_NONE);
+					this->TraceRestrictShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_VALUE_CAPTION, 10, CS_NUMERAL, QSF_NONE);
 				}
 				break;
 			}
@@ -2089,7 +2114,7 @@ public:
 					SetDParam(1, decimal);
 					std::string saved = std::move(_settings_game.locale.digit_group_separator);
 					_settings_game.locale.digit_group_separator.clear();
-					ShowQueryString(STR_JUST_DECIMAL, STR_TRACE_RESTRICT_VALUE_CAPTION, 16, this, CS_NUMERAL_DECIMAL, QSF_NONE);
+					this->TraceRestrictShowQueryString(STR_JUST_DECIMAL, STR_TRACE_RESTRICT_VALUE_CAPTION, 16, CS_NUMERAL_DECIMAL, QSF_NONE);
 					_settings_game.locale.digit_group_separator = std::move(saved);
 				}
 				break;
@@ -2294,6 +2319,28 @@ public:
 
 		TraceRestrictItem item = GetSelected();
 		TraceRestrictValueType type = GetTraceRestrictTypeProperties(item).value_type;
+
+		switch (this->query_submode) {
+			case QSM_DEFAULT:
+				break;
+
+			case QSM_NEW_SLOT:
+				if (type == TRVT_SLOT_INDEX || type == TRVT_SLOT_INDEX_INT) {
+					TraceRestrictFollowUpCmdData aux;
+					aux.cmd = GetTraceRestrictCommandContainer(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+					DoCommandPEx(0, VEH_TRAIN, 0, 0, CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), CcCreateTraceRestrictSlot, str->c_str(), &aux);
+				}
+				return;
+
+			case QSM_NEW_COUNTER:
+				if (type == TRVT_COUNTER_INDEX_INT) {
+					TraceRestrictFollowUpCmdData aux;
+					aux.cmd = GetTraceRestrictCommandContainer(this->tile, this->track, TRDCT_MODIFY_ITEM, this->selected_instruction - 1, item, STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM);
+					DoCommandPEx(0, 0, 0, 0, CMD_CREATE_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE), CcCreateTraceRestrictCounter, str->c_str(), &aux);
+				}
+				return;
+		}
+
 		uint value;
 
 		if (IsIntegerValueType(type) || type == TRVT_PF_PENALTY) {
@@ -2342,6 +2389,14 @@ public:
 
 		if (widget == TR_WIDGET_VALUE_DROPDOWN || widget == TR_WIDGET_LEFT_AUX_DROPDOWN) {
 			TraceRestrictTypePropertySet type = GetTraceRestrictTypeProperties(item);
+			if (((widget == TR_WIDGET_VALUE_DROPDOWN && type.value_type == TRVT_SLOT_INDEX) || (widget == TR_WIDGET_LEFT_AUX_DROPDOWN && type.value_type == TRVT_SLOT_INDEX_INT)) && index == NEW_TRACE_RESTRICT_SLOT_ID) {
+				this->TraceRestrictShowQueryString(STR_EMPTY, STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS, QSM_NEW_SLOT);
+				return;
+			}
+			if (widget == TR_WIDGET_LEFT_AUX_DROPDOWN && type.value_type == TRVT_COUNTER_INDEX_INT && index == NEW_TRACE_RESTRICT_COUNTER_ID) {
+				this->TraceRestrictShowQueryString(STR_EMPTY, STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS, QSM_NEW_COUNTER);
+				return;
+			}
 			if ((widget == TR_WIDGET_VALUE_DROPDOWN && this->value_drop_down_is_company) || type.value_type == TRVT_GROUP_INDEX || type.value_type == TRVT_SLOT_INDEX || type.value_type == TRVT_SLOT_INDEX_INT || type.value_type == TRVT_COUNTER_INDEX_INT || type.value_type == TRVT_TIME_DATE_INT) {
 				/* This is a special company drop-down or group/slot-index drop-down */
 				SetTraceRestrictValue(item, index);
@@ -2429,7 +2484,7 @@ public:
 							penalty_value = GetTraceRestrictValue(item);
 						}
 						SetDParam(0, penalty_value);
-						ShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_VALUE_CAPTION, 10, this, CS_NUMERAL, QSF_NONE);
+						this->TraceRestrictShowQueryString(STR_JUST_INT, STR_TRACE_RESTRICT_VALUE_CAPTION, 10, CS_NUMERAL, QSF_NONE);
 						return;
 					} else {
 						SetTraceRestrictValue(item, value);
@@ -3341,14 +3396,7 @@ private:
 								middle_sel->SetDisplayedPlane(DPM_SLOT_OP);
 								this->EnableWidget(TR_WIDGET_SLOT_OP);
 							}
-
-							for (const TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
-								if (slot->vehicle_type != VEH_TRAIN && !IsTraceRestrictTypeNonMatchingVehicleTypeSlot(GetTraceRestrictType(item))) continue;
-								if (slot->owner == this->GetOwner()) {
-									this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
-									break;
-								}
-							}
+							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
 
 							this->GetWidget<NWidgetCore>(TR_WIDGET_SLOT_OP)->widget_data =
 									GetDropDownStringByValue(&_slot_op_subtypes, GetTraceRestrictCombinedAuxCondOpField(item));
@@ -3368,14 +3416,7 @@ private:
 							right_sel->SetDisplayedPlane(DPR_VALUE_INT);
 							left_aux_sel->SetDisplayedPlane(DPLA_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_INT);
-
-							for (const TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
-								if (slot->vehicle_type != VEH_TRAIN && !IsTraceRestrictTypeNonMatchingVehicleTypeSlot(GetTraceRestrictType(item))) continue;
-								if (slot->owner == this->GetOwner()) {
-									this->EnableWidget(TR_WIDGET_LEFT_AUX_DROPDOWN);
-									break;
-								}
-							}
+							this->EnableWidget(TR_WIDGET_LEFT_AUX_DROPDOWN);
 
 							switch (GetTraceRestrictValue(item)) {
 								case INVALID_TRACE_RESTRICT_SLOT_ID:
@@ -3420,13 +3461,7 @@ private:
 								this->GetWidget<NWidgetCore>(TR_WIDGET_COUNTER_OP)->widget_data =
 										GetDropDownStringByValue(&_counter_op_cond_ops, GetTraceRestrictCondOp(item));
 							}
-
-							for (const TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
-								if (ctr->owner == this->GetOwner()) {
-									this->EnableWidget(TR_WIDGET_LEFT_AUX_DROPDOWN);
-									break;
-								}
-							}
+							this->EnableWidget(TR_WIDGET_LEFT_AUX_DROPDOWN);
 
 							switch (GetTraceRestrictValue(item)) {
 								case INVALID_TRACE_RESTRICT_COUNTER_ID:

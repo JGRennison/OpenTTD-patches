@@ -15,6 +15,7 @@
 #include "core/enum_type.hpp"
 #include "core/pool_type.hpp"
 #include "core/container_func.hpp"
+#include "command_aux.h"
 #include "command_func.h"
 #include "rail_map.h"
 #include "tile_type.h"
@@ -1151,6 +1152,7 @@ enum TraceRestrictDoCommandType : uint8_t {
 	TRDCT_PROG_RESET,                        ///< reset program state of signal
 };
 
+BaseCommandContainer GetTraceRestrictCommandContainer(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg);
 void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value, StringID error_msg);
 
 void TraceRestrictProgMgmtWithSourceDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommandType type,
@@ -1265,6 +1267,15 @@ struct TraceRestrictCounter : TraceRestrictCounterPool::PoolItem<&_tracerestrict
 	{
 		this->UpdateValue(TraceRestrictCounter::ApplyValue(this->value, op, value));
 	}
+};
+
+struct TraceRestrictFollowUpCmdData : public CommandAuxiliarySerialisable<TraceRestrictFollowUpCmdData> {
+	BaseCommandContainer cmd;
+
+	virtual void Serialise(BufferSerialisationRef buffer) const override;
+	CommandCost Deserialise(DeserialisationBuffer &buffer);
+	CommandCost ExecuteWithValue(uint16_t value, DoCommandFlag flags) const;
+	std::string GetDebugSummary() const override;
 };
 
 #endif /* TRACERESTRICT_H */

@@ -276,12 +276,12 @@ CommandProcEx CmdUpdateLeagueTableElementScore;
 CommandProc CmdRemoveLeagueTableElement;
 
 CommandProc CmdProgramSignalTraceRestrict;
-CommandProc CmdCreateTraceRestrictSlot;
+CommandProcEx CmdCreateTraceRestrictSlot;
 CommandProc CmdAlterTraceRestrictSlot;
 CommandProc CmdDeleteTraceRestrictSlot;
 CommandProc CmdAddVehicleTraceRestrictSlot;
 CommandProc CmdRemoveVehicleTraceRestrictSlot;
-CommandProc CmdCreateTraceRestrictCounter;
+CommandProcEx CmdCreateTraceRestrictCounter;
 CommandProc CmdAlterTraceRestrictCounter;
 CommandProc CmdDeleteTraceRestrictCounter;
 
@@ -912,7 +912,7 @@ static void DebugLogCommandLogEntry(const CommandLogEntry &entry)
 {
 	if (_debug_command_level <= 0) return;
 
-	char buffer[256];
+	char buffer[512];
 	char *b = buffer;
 	DumpSubCommandLogEntry(b, lastof(buffer), entry);
 	debug_print("command", 0, buffer);

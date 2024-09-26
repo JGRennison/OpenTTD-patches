@@ -3425,6 +3425,33 @@ public:
 		if (this->query_text_widget == WID_O_TEXT_LABEL && str.has_value()) {
 			this->ModifyOrder(this->OrderGetSel(), MOF_LABEL_TEXT, true, str->c_str());
 		}
+
+		if ((this->query_text_widget == WID_O_COND_SLOT || this->query_text_widget == WID_O_COND_COUNTER || this->query_text_widget == WID_O_SLOT) && str.has_value() && !str->empty()) {
+			TraceRestrictFollowUpCmdData aux;
+			aux.cmd = NewBaseCommandContainerBasic(this->vehicle->tile, this->vehicle->index, 0, CMD_MODIFY_ORDER | CMD_MSG(STR_ERROR_CAN_T_MODIFY_THIS_ORDER));
+			aux.cmd.p3 = this->OrderGetSel();
+			switch (this->query_text_widget) {
+				case WID_O_COND_SLOT:
+					aux.cmd.p2 = MOF_COND_VALUE;
+					break;
+
+				case WID_O_COND_COUNTER:
+					aux.cmd.p2 = MOF_COND_VALUE_2;
+					break;
+
+				case WID_O_SLOT:
+					aux.cmd.p2 = MOF_SLOT;
+					break;
+
+				default:
+					NOT_REACHED();
+			}
+			if (this->query_text_widget == WID_O_COND_COUNTER) {
+				DoCommandPEx(0, 0, 0, 0, CMD_CREATE_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE), CcCreateTraceRestrictCounter, str->c_str(), &aux);
+			} else {
+				DoCommandPEx(0, this->vehicle->type, 0, 0, CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), CcCreateTraceRestrictSlot, str->c_str(), &aux);
+			}
+		}
 	}
 
 	void OnDropdownSelect(WidgetID widget, int index) override
@@ -3490,11 +3517,21 @@ public:
 				break;
 
 			case WID_O_COND_SLOT:
+				if (index == NEW_TRACE_RESTRICT_SLOT_ID) {
+					this->query_text_widget = widget;
+					ShowQueryString(STR_EMPTY, STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+					break;
+				}
 				TraceRestrictRecordRecentSlot(index);
 				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE | index << 8);
 				break;
 
 			case WID_O_COND_COUNTER:
+				if (index == NEW_TRACE_RESTRICT_COUNTER_ID) {
+					this->query_text_widget = widget;
+					ShowQueryString(STR_EMPTY, STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+					break;
+				}
 				TraceRestrictRecordRecentCounter(index);
 				this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE_2 | index << 8);
 				break;
@@ -3522,6 +3559,11 @@ public:
 			}
 
 			case WID_O_SLOT:
+				if (index == NEW_TRACE_RESTRICT_SLOT_ID) {
+					this->query_text_widget = widget;
+					ShowQueryString(STR_EMPTY, STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+					break;
+				}
 				TraceRestrictRecordRecentSlot(index);
 				this->ModifyOrder(this->OrderGetSel(), MOF_SLOT | index << 8);
 				break;

@@ -334,7 +334,7 @@ public:
 				SignalConditionComparable *vc = static_cast<SignalConditionComparable*>(sif->condition);
 
 				SetDParam(0, vc->value);
-				//ShowQueryString(STR_JUST_INT, STR_PROGSIG_CONDITION_VALUE_CAPT, 5, 100, this, CS_NUMERAL, QSF_NONE);
+				this->query_submode = QSM_DEFAULT;
 				ShowQueryString(STR_JUST_INT, STR_PROGSIG_CONDITION_VALUE_CAPT, 5, this, CS_NUMERAL, QSF_NONE);
 				this->UpdateButtonState();
 			} break;
@@ -513,16 +513,39 @@ public:
 	{
 		if (str.has_value() && !str->empty()) {
 			SignalInstruction *si = this->GetSelected();
-			if (!si || si->Opcode() != PSO_IF) return;
+			if (si == nullptr) return;
+
+			uint32_t p1 = 0;
+			SB(p1, 0, 3, this->track);
+			SB(p1, 3, 16, si->Id());
+
+			switch (this->query_submode) {
+				case QSM_DEFAULT:
+					break;
+
+				case QSM_NEW_SLOT:
+				case QSM_NEW_COUNTER: {
+					uint p2 = 0;
+					SB(p2, 0, 1, 1);
+					SB(p2, 1, 2, SCF_SLOT_COUNTER);
+					TraceRestrictFollowUpCmdData aux;
+					aux.cmd = NewBaseCommandContainerBasic(this->tile, p1, p2, CMD_MODIFY_SIGNAL_INSTRUCTION | CMD_MSG(STR_ERROR_CAN_T_MODIFY_INSTRUCTION));
+					if (this->query_submode == QSM_NEW_SLOT) {
+						DoCommandPEx(0, VEH_TRAIN, 0, 0, CMD_CREATE_TRACERESTRICT_SLOT | CMD_MSG(STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE), CcCreateTraceRestrictSlot, str->c_str(), &aux);
+					} else {
+						DoCommandPEx(0, 0, 0, 0, CMD_CREATE_TRACERESTRICT_COUNTER | CMD_MSG(STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE), CcCreateTraceRestrictCounter, str->c_str(), &aux);
+					}
+					return;
+				}
+			}
+
+			if (si->Opcode() != PSO_IF) return;
 			SignalIf *sif = static_cast <SignalIf*>(si);
 			if (!IsConditionComparator(sif->condition)) return;
 
 			uint value = atoi(str->c_str());
 
-			uint32_t p1 = 0, p2 = 0;
-			SB(p1, 0, 3, this->track);
-			SB(p1, 3, 16, si->Id());
-
+			uint32_t p2 = 0;
 			SB(p2, 0, 1, 1);
 			SB(p2, 1, 2, SCF_VALUE);
 			SB(p2, 3, 27, value);
@@ -584,6 +607,17 @@ public:
 
 			case PROGRAM_WIDGET_COND_SLOT:
 			case PROGRAM_WIDGET_COND_COUNTER: {
+				if (widget == PROGRAM_WIDGET_COND_SLOT && index == NEW_TRACE_RESTRICT_SLOT_ID) {
+					this->query_submode = QSM_NEW_SLOT;
+					ShowQueryString(STR_EMPTY, STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+					return;
+				}
+				if (widget == PROGRAM_WIDGET_COND_COUNTER && index == NEW_TRACE_RESTRICT_COUNTER_ID) {
+					this->query_submode = QSM_NEW_COUNTER;
+					ShowQueryString(STR_EMPTY, STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION, MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS, this, CS_ALPHANUMERAL, QSF_ENABLE_DEFAULT | QSF_LEN_IN_CHARS);
+					return;
+				}
+
 				uint64_t p1 = 0, p2 = 0;
 				SB(p1, 0, 3, this->track);
 				SB(p1, 3, 16, ins->Id());
@@ -917,6 +951,13 @@ private:
 	int selected_instruction;
 	Scrollbar *vscroll;
 	int current_aux_plane;
+
+	enum QuerySubMode {
+		QSM_DEFAULT,
+		QSM_NEW_SLOT,
+		QSM_NEW_COUNTER,
+	};
+	QuerySubMode query_submode = QSM_DEFAULT;
 };
 
 static constexpr NWidgetPart _nested_program_widgets[] = {
