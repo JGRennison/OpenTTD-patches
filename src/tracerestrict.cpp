@@ -2183,6 +2183,31 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 		return_cmd_error(STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE);
 	}
 
+	if (type == TRDCT_INSERT_ITEM || type == TRDCT_MODIFY_ITEM) {
+		switch (GetTraceRestrictTypeProperties(item).value_type) {
+			case TRVT_SLOT_INDEX:
+			case TRVT_SLOT_INDEX_INT:
+				if (GetTraceRestrictValue(item) != INVALID_TRACE_RESTRICT_SLOT_ID) {
+					const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(GetTraceRestrictValue(item));
+					if (slot == nullptr) return CMD_ERROR;
+					if (slot->vehicle_type != VEH_TRAIN && !IsTraceRestrictTypeNonMatchingVehicleTypeSlot(GetTraceRestrictType(item))) return CMD_ERROR;
+					if (slot->owner != _current_company) return CMD_ERROR;
+				}
+				break;
+
+			case TRVT_COUNTER_INDEX_INT:
+				if (GetTraceRestrictValue(item) != INVALID_TRACE_RESTRICT_COUNTER_ID) {
+					const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(GetTraceRestrictValue(item));
+					if (ctr == nullptr) return CMD_ERROR;
+					if (ctr->owner != _current_company) return CMD_ERROR;
+				}
+				break;
+
+			default:
+				break;
+		}
+	}
+
 	/* Copy program */
 	std::vector<TraceRestrictItem> items;
 	if (prog != nullptr) items = prog->items;
