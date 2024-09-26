@@ -94,6 +94,7 @@ public:
 	const uint8_t *GetDeserialisationBuffer() const { return this->buffer.data(); }
 	size_t GetDeserialisationBufferSize() const { return this->buffer.size(); }
 	PacketSize &GetDeserialisationPosition() { return this->pos; }
+	void RaiseDeserialisationError();
 	bool CanDeserialiseBytes(size_t bytes_to_read, bool raise_error) { return this->CanReadFromPacket(bytes_to_read, raise_error); }
 
 	bool CanWriteToPacket(size_t bytes_to_write);
@@ -241,6 +242,7 @@ struct SubPacketDeserialiser : public BufferDeserialisationHelper<SubPacketDeser
 	const uint8_t *GetDeserialisationBuffer() const { return this->data; }
 	size_t GetDeserialisationBufferSize() const { return this->size; }
 	PacketSize &GetDeserialisationPosition() { return this->pos; }
+	void RaiseDeserialisationError();
 	bool CanDeserialiseBytes(size_t bytes_to_read, bool raise_error);
 };
 

@@ -17,32 +17,6 @@
 #include <optional>
 #include <vector>
 
-struct CommandDeserialisationBuffer : public BufferDeserialisationHelper<CommandDeserialisationBuffer> {
-	const uint8_t *buffer;
-	size_t size;
-	size_t pos = 0;
-	bool error = false;
-
-	CommandDeserialisationBuffer(const uint8_t *buffer, size_t size) : buffer(buffer), size(size) {}
-
-	const uint8_t *GetDeserialisationBuffer() const { return this->buffer; }
-	size_t GetDeserialisationBufferSize() const { return this->size; }
-	size_t &GetDeserialisationPosition() { return this->pos; }
-
-	bool CanDeserialiseBytes(size_t bytes_to_read, bool raise_error)
-	{
-		if (this->error) return false;
-
-		/* Check if variable is within packet-size */
-		if (this->pos + bytes_to_read > this->size) {
-			if (raise_error) this->error = true;
-			return false;
-		}
-
-		return true;
-	}
-};
-
 struct CommandAuxiliarySerialised : public CommandAuxiliaryBase {
 	std::vector<uint8_t> serialised_data;
 	mutable std::string debug_summary;
@@ -85,7 +59,7 @@ public:
 		std::optional<CommandAuxiliaryDeserialisationSrc> deserialise_from = base->GetDeserialisationSrc();
 		if (deserialise_from.has_value()) {
 			this->store = T();
-			CommandDeserialisationBuffer buffer(deserialise_from->src.data(), deserialise_from->src.size());
+			DeserialisationBuffer buffer(deserialise_from->src.data(), deserialise_from->src.size());
 			CommandCost res = this->store->Deserialise(buffer);
 			if (res.Failed()) return res;
 			if (buffer.error || buffer.pos != buffer.size) {

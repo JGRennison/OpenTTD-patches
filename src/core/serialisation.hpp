@@ -106,6 +106,8 @@ struct BufferSerialisationHelper {
 		T *self = const_cast<T *>(static_cast<const T *>(this));
 		return self->GetSerialisationBuffer().size();
 	}
+
+	struct BufferSerialisationRef AsBufferSerialisationRef();
 };
 
 void BufferRecvStringValidate(std::string &buffer, StringValidationSettings settings);
@@ -124,6 +126,11 @@ private:
 	}
 
 public:
+	void RaiseRecvError()
+	{
+		return static_cast<T *>(this)->RaiseDeserialisationError();
+	}
+
 	bool CanRecvBytes(size_t bytes_to_read, bool raise_error = true)
 	{
 		return static_cast<T *>(this)->CanDeserialiseBytes(bytes_to_read, raise_error);
@@ -341,6 +348,9 @@ public:
 
 		return { view.begin(), view.end() };
 	}
+
+	struct DeserialisationBuffer BorrowAsDeserialisationBuffer();
+	void ReturnDeserialisationBuffer(struct DeserialisationBuffer &&);
 };
 
 struct BufferSerialisationRef : public BufferSerialisationHelper<BufferSerialisationRef> {
@@ -352,5 +362,69 @@ struct BufferSerialisationRef : public BufferSerialisationHelper<BufferSerialisa
 	std::vector<uint8_t> &GetSerialisationBuffer() { return this->buffer; }
 	size_t GetSerialisationLimit() const { return this->limit; }
 };
+
+template <typename T>
+BufferSerialisationRef BufferSerialisationHelper<T>::AsBufferSerialisationRef()
+{
+	T *self = static_cast<T *>(this);
+	return BufferSerialisationRef(self->GetSerialisationBuffer(), self->GetSerialisationLimit());
+}
+
+struct DeserialisationBuffer : public BufferDeserialisationHelper<DeserialisationBuffer> {
+	const uint8_t *buffer;
+	size_t size;
+	size_t pos = 0;
+	bool error = false;
+
+	DeserialisationBuffer(const uint8_t *buffer, size_t size) : buffer(buffer), size(size) {}
+
+	const uint8_t *GetDeserialisationBuffer() const { return this->buffer; }
+	size_t GetDeserialisationBufferSize() const { return this->size; }
+	size_t &GetDeserialisationPosition() { return this->pos; }
+
+	void RaiseDeserialisationError()
+	{
+		this->error = true;
+	}
+
+	bool CanDeserialiseBytes(size_t bytes_to_read, bool raise_error)
+	{
+		if (this->error) return false;
+
+		/* Check if variable is within packet-size */
+		if (this->pos + bytes_to_read > this->size) {
+			if (raise_error) this->RaiseDeserialisationError();
+			return false;
+		}
+
+		return true;
+	}
+};
+
+template <typename T>
+DeserialisationBuffer BufferDeserialisationHelper<T>::BorrowAsDeserialisationBuffer()
+{
+	T *self = static_cast<T *>(this);
+	auto &pos = self->GetDeserialisationPosition();
+
+	return DeserialisationBuffer(self->GetBuffer() + pos, self->GetBufferSize() - pos);
+}
+
+template <typename T>
+void BufferDeserialisationHelper<T>::ReturnDeserialisationBuffer(DeserialisationBuffer &&b)
+{
+	T *self = static_cast<T *>(this);
+
+	if (b.error) {
+		/* Propagate error */
+		self->RaiseDeserialisationError();
+		return;
+	}
+
+	auto &pos = self->GetDeserialisationPosition();
+	this->CanRecvBytes(b.pos);
+	pos += b.pos;
+	b.buffer = nullptr;
+}
 
 #endif /* SERIALISATION_HPP */

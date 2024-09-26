@@ -48,7 +48,7 @@ struct PlanLineCmdData : public CommandAuxiliarySerialisable<PlanLineCmdData> {
 		}
 	}
 
-	CommandCost Deserialise(CommandDeserialisationBuffer &buffer)
+	CommandCost Deserialise(DeserialisationBuffer &buffer)
 	{
 		uint32_t size = buffer.Recv_uint32();
 		if (!buffer.CanRecvBytes(size * 4)) return CMD_ERROR;

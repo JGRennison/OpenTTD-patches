@@ -24,7 +24,7 @@ struct LeagueTableCmdData : public CommandAuxiliarySerialisable<LeagueTableCmdDa
 		buffer.Send_string(this->footer);
 	}
 
-	CommandCost Deserialise(CommandDeserialisationBuffer &buffer)
+	CommandCost Deserialise(DeserialisationBuffer &buffer)
 	{
 		buffer.Recv_string(this->title,  SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK);
 		buffer.Recv_string(this->header, SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK);
@@ -53,7 +53,7 @@ struct LeagueTableElementCmdData : public CommandAuxiliarySerialisable<LeagueTab
 		buffer.Send_string(this->score);
 	}
 
-	CommandCost Deserialise(CommandDeserialisationBuffer &buffer)
+	CommandCost Deserialise(DeserialisationBuffer &buffer)
 	{
 		this->table = buffer.Recv_uint8();
 		this->rating = buffer.Recv_uint64();

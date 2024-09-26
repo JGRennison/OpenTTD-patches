@@ -112,6 +112,10 @@ bool Packet::CanWriteToPacket(size_t bytes_to_write)
  *  see the comment before Send_bool for more info.
  */
 
+void Packet::RaiseDeserialisationError()
+{
+	this->cs->NetworkSocketHandler::MarkClosed();
+}
 
 /**
  * Is it safe to read from the packet, i.e. didn't we run over the buffer?
@@ -128,7 +132,7 @@ bool Packet::CanReadFromPacket(size_t bytes_to_read, bool close_connection)
 
 	/* Check if variable is within packet-size */
 	if (this->pos + bytes_to_read > this->Size()) {
-		if (close_connection) this->cs->NetworkSocketHandler::MarkClosed();
+		if (close_connection) this->RaiseDeserialisationError();
 		return false;
 	}
 
@@ -238,10 +242,15 @@ size_t Packet::Recv_bytes(std::span<uint8_t> span)
 	return this->TransferOut(tranfer_to_span, span);
 }
 
+void SubPacketDeserialiser::RaiseDeserialisationError()
+{
+	this->cs->NetworkSocketHandler::MarkClosed();
+}
+
 bool SubPacketDeserialiser::CanDeserialiseBytes(size_t bytes_to_read, bool raise_error)
 {
 	if (this->pos + bytes_to_read > this->size) {
-		if (raise_error) this->cs->NetworkSocketHandler::MarkClosed();
+		if (raise_error) this->RaiseDeserialisationError();
 		return false;
 	}
 
