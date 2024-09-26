@@ -1440,3 +1440,44 @@ void CommandCost::SetResultData(uint32_t result)
 		this->inl.result = result;
 	}
 }
+
+void BaseCommandContainer::SerialiseBaseCommandContainer(BufferSerialisationRef b) const
+{
+	b.Send_uint32(this->cmd);
+	b.Send_uint32(this->p1);
+	b.Send_uint32(this->p2);
+	b.Send_uint64(this->p3);
+	b.Send_uint32(this->tile);
+	b.Send_string(this->text.c_str());
+
+	size_t aux_data_size_pos = b.GetSendOffset();
+	b.Send_uint16(0);
+	if (this->aux_data != nullptr) {
+		this->aux_data->Serialise(b);
+		b.SendAtOffset_uint16(aux_data_size_pos, (uint16_t)(b.GetSendOffset() - aux_data_size_pos - 2));
+	}
+}
+
+const char *BaseCommandContainer::DeserialiseBaseCommandContainer(DeserialisationBuffer &b, bool allow_str_ctrl)
+{
+	this->cmd     = b.Recv_uint32();
+	if (!IsValidCommand(this->cmd))        return "invalid command";
+	if ((this->cmd & CMD_FLAGS_MASK) != 0) return "invalid command flag";
+
+	this->p1      = b.Recv_uint32();
+	this->p2      = b.Recv_uint32();
+	this->p3      = b.Recv_uint64();
+	this->tile    = b.Recv_uint32();
+
+	StringValidationSettings settings = (allow_str_ctrl && (GetCommandFlags(this->cmd) & CMD_STR_CTRL) != 0) ? SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK : SVS_REPLACE_WITH_QUESTION_MARK;
+	b.Recv_string(this->text, settings);
+
+	uint16_t aux_data_size = b.Recv_uint16();
+	if (aux_data_size > 0 && b.CanRecvBytes(aux_data_size, true)) {
+		CommandAuxiliarySerialised *aux_data = new CommandAuxiliarySerialised();
+		this->aux_data.reset(aux_data);
+		aux_data->serialised_data.resize(aux_data_size);
+		b.Recv_binary((aux_data->serialised_data.data()), aux_data_size);
+	}
+	return nullptr;
+}

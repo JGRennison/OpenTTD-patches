@@ -264,31 +264,18 @@ void NetworkDistributeCommands()
 const char *NetworkGameSocketHandler::ReceiveCommand(Packet &p, CommandPacket &cp)
 {
 	cp.company = (CompanyID)p.Recv_uint8();
-	cp.cmd     = p.Recv_uint32();
-	if (!IsValidCommand(cp.cmd))               return "invalid command";
+
+	DeserialisationBuffer buf = p.BorrowAsDeserialisationBuffer();
+	const char *err = cp.DeserialiseBaseCommandContainer(buf, !_network_server);
+	p.ReturnDeserialisationBuffer(std::move(buf));
+	if (err != nullptr) return err;
+
 	if (GetCommandFlags(cp.cmd) & CMD_OFFLINE) return "single-player only command";
-	if ((cp.cmd & CMD_FLAGS_MASK) != 0)        return "invalid command flag";
-
-	cp.p1      = p.Recv_uint32();
-	cp.p2      = p.Recv_uint32();
-	cp.p3      = p.Recv_uint64();
-	cp.tile    = p.Recv_uint32();
-
-	StringValidationSettings settings = (!_network_server && GetCommandFlags(cp.cmd) & CMD_STR_CTRL) != 0 ? SVS_ALLOW_CONTROL_CODE | SVS_REPLACE_WITH_QUESTION_MARK : SVS_REPLACE_WITH_QUESTION_MARK;
-	p.Recv_string(cp.text, settings);
 
 	uint8_t callback = p.Recv_uint8();
 	if (callback >= lengthof(_callback_table))  return "invalid callback";
 
 	cp.callback = _callback_table[callback];
-
-	uint16_t aux_data_size = p.Recv_uint16();
-	if (aux_data_size > 0 && p.CanReadFromPacket(aux_data_size, true)) {
-		CommandAuxiliarySerialised *aux_data = new CommandAuxiliarySerialised();
-		cp.aux_data.reset(aux_data);
-		aux_data->serialised_data.resize(aux_data_size);
-		p.Recv_binary((aux_data->serialised_data.data()), aux_data_size);
-	}
 
 	return nullptr;
 }
@@ -301,12 +288,7 @@ const char *NetworkGameSocketHandler::ReceiveCommand(Packet &p, CommandPacket &c
 void NetworkGameSocketHandler::SendCommand(Packet &p, const CommandPacket &cp)
 {
 	p.Send_uint8 (cp.company);
-	p.Send_uint32(cp.cmd);
-	p.Send_uint32(cp.p1);
-	p.Send_uint32(cp.p2);
-	p.Send_uint64(cp.p3);
-	p.Send_uint32(cp.tile);
-	p.Send_string(cp.text.c_str());
+	cp.SerialiseBaseCommandContainer(p.AsBufferSerialisationRef());
 
 	uint8_t callback = 0;
 	while (callback < lengthof(_callback_table) && _callback_table[callback] != cp.callback) {
@@ -318,12 +300,4 @@ void NetworkGameSocketHandler::SendCommand(Packet &p, const CommandPacket &cp)
 		callback = 0; // _callback_table[0] == nullptr
 	}
 	p.Send_uint8 (callback);
-
-	size_t aux_data_size_pos = p.GetSendOffset();
-	p.Send_uint16(0);
-	if (cp.aux_data != nullptr) {
-		CommandSerialisationBuffer serialiser(p.GetSerialisationBuffer(), p.GetSerialisationLimit());
-		cp.aux_data->Serialise(serialiser);
-		p.SendAtOffset_uint16(aux_data_size_pos, (uint16_t)(p.GetSendOffset() - aux_data_size_pos - 2));
-	}
 }

@@ -780,6 +780,9 @@ struct BaseCommandContainer {
 	uint64_t p3;                     ///< parameter p3. (here for alignment)
 	std::string text;                ///< possible text sent for name changes etc.
 	CommandAuxiliaryPtr aux_data;    ///< Auxiliary command data
+
+	void SerialiseBaseCommandContainer(struct BufferSerialisationRef b) const;
+	const char *DeserialiseBaseCommandContainer(struct DeserialisationBuffer &b, bool allow_str_ctrl);
 };
 
 /**
