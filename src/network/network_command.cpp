@@ -319,11 +319,11 @@ void NetworkGameSocketHandler::SendCommand(Packet &p, const CommandPacket &cp)
 	}
 	p.Send_uint8 (callback);
 
-	size_t aux_data_size_pos = p.Size();
+	size_t aux_data_size_pos = p.GetSendOffset();
 	p.Send_uint16(0);
 	if (cp.aux_data != nullptr) {
 		CommandSerialisationBuffer serialiser(p.GetSerialisationBuffer(), p.GetSerialisationLimit());
 		cp.aux_data->Serialise(serialiser);
-		p.WriteAtOffset_uint16(aux_data_size_pos, (uint16_t)(p.Size() - aux_data_size_pos - 2));
+		p.SendAtOffset_uint16(aux_data_size_pos, (uint16_t)(p.GetSendOffset() - aux_data_size_pos - 2));
 	}
 }

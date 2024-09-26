@@ -98,8 +98,6 @@ public:
 
 	bool CanWriteToPacket(size_t bytes_to_write);
 
-	void WriteAtOffset_uint16(size_t offset, uint16_t);
-
 	/* Reading/receiving of packets */
 	size_t ReadRawPacketSize() const;
 	bool HasPacketSizeData() const;

@@ -27,6 +27,7 @@ void   BufferSend_string(std::vector<uint8_t> &buffer, size_t limit, const std::
 size_t BufferSend_binary_until_full(std::vector<uint8_t> &buffer, size_t limit, const uint8_t *begin, const uint8_t *end);
 void   BufferSend_binary(std::vector<uint8_t> &buffer, size_t limit, const uint8_t *data, const size_t size);
 void   BufferSend_buffer(std::vector<uint8_t> &buffer, size_t limit, const uint8_t *data, const size_t size);
+void   BufferSendAtOffset_uint16(std::vector<uint8_t> &buffer, size_t offset, uint16_t data);
 
 template <typename T>
 struct BufferSerialisationHelper {
@@ -92,6 +93,18 @@ struct BufferSerialisationHelper {
 	void Send_buffer(const std::vector<uint8_t> &data)
 	{
 		this->Send_buffer(data.data(), data.size());
+	}
+
+	void SendAtOffset_uint16(size_t offset, uint16_t data)
+	{
+		T *self = static_cast<T *>(this);
+		BufferSendAtOffset_uint16(self->GetSerialisationBuffer(), offset, data);
+	}
+
+	size_t GetSendOffset() const
+	{
+		T *self = const_cast<T *>(static_cast<const T *>(this));
+		return self->GetSerialisationBuffer().size();
 	}
 };
 

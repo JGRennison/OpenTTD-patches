@@ -153,6 +153,17 @@ void BufferSend_buffer(std::vector<uint8_t> &buffer, size_t limit, const uint8_t
 	buffer.insert(buffer.end(), data, data + size);
 }
 
+/**
+ * Send a uint16_t at the given offset in the written buffer.
+ * @param data The data to send.
+ */
+void BufferSendAtOffset_uint16(std::vector<uint8_t> &buffer, size_t offset, uint16_t data)
+{
+	assert(offset + 1 < buffer.size());
+	buffer[offset]     = GB(data, 0, 8);
+	buffer[offset + 1] = GB(data, 8, 8);
+}
+
 void BufferRecvStringValidate(std::string &buffer, StringValidationSettings settings)
 {
 	StrMakeValidInPlace(buffer, settings);
