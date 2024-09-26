@@ -175,20 +175,21 @@ void debug_print(const char *dbg, int level, const char *buf)
 #endif
 	}
 
-	char buffer[512];
-	seprintf(buffer, lastof(buffer), "%sdbg: [%s:%d] %s\n", log_prefix().GetLogPrefix(), dbg, level, buf);
+	auto buffer = fmt::memory_buffer();
+	fmt::format_to(std::back_inserter(buffer), "{}dbg: [{}:{}] {}\n", log_prefix().GetLogPrefix(), dbg, level, buf);
+	buffer.push_back('\0'); // str_strip_colours/fputs require a null-terminated buffer
 
-	str_strip_colours(buffer);
+	str_strip_colours(buffer.data());
 
 	/* do not write desync messages to the console on Windows platforms, as they do
 	 * not seem able to handle text direction change characters in a console without
 	 * crashing, and NetworkTextMessage includes these */
 #if defined(_WIN32)
 	if (strcmp(dbg, "desync") != 0) {
-		fputs(buffer, stderr);
+		fputs(buffer.data(), stderr);
 	}
 #else
-	fputs(buffer, stderr);
+	fputs(buffer.data(), stderr);
 #endif
 
 	if (_debug_remote_console.load()) {
