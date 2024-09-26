@@ -792,9 +792,14 @@ struct CommandContainer : public BaseCommandContainer {
 	CommandCallback *callback;       ///< any callback function executed upon successful completion of the command.
 };
 
+inline BaseCommandContainer NewBaseCommandContainerBasic(TileIndex tile, uint32_t p1, uint32_t p2, uint32_t cmd)
+{
+	return { cmd, tile, p1, p2, 0, {}, nullptr };
+}
+
 inline CommandContainer NewCommandContainerBasic(TileIndex tile, uint32_t p1, uint32_t p2, uint32_t cmd, CommandCallback *callback = nullptr)
 {
-	return { { cmd, tile, p1, p2, 0, {}, nullptr }, callback };
+	return { NewBaseCommandContainerBasic(tile, p1, p2, cmd), callback };
 }
 
 #endif /* COMMAND_TYPE_H */
