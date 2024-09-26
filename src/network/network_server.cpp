@@ -860,7 +860,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendRConResult(uint16_t colour
 	assert(this->rcon_reply_key != nullptr);
 
 	std::vector<uint8_t> message;
-	BufferSerialiser buffer(message);
+	BufferSerialisationRef buffer(message);
 	buffer.Send_uint16(colour);
 	buffer.Send_string(command);
 

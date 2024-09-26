@@ -291,7 +291,7 @@ std::vector<uint8_t> GenerateGeneralPasswordHash(const std::string &password, co
 
 	std::vector<uint8_t> data;
 	data.reserve(password_server_id.size() + password.size() + 10);
-	BufferSerialiser buffer(data);
+	BufferSerialisationRef buffer(data);
 
 	buffer.Send_uint64(password_game_seed);
 	buffer.Send_string(password_server_id);

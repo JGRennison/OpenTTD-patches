@@ -343,13 +343,14 @@ public:
 	}
 };
 
-struct BufferSerialiser : public BufferSerialisationHelper<BufferSerialiser> {
+struct BufferSerialisationRef : public BufferSerialisationHelper<BufferSerialisationRef> {
 	std::vector<uint8_t> &buffer;
+	size_t limit;
 
-	BufferSerialiser(std::vector<uint8_t> &buffer) : buffer(buffer) {}
+	BufferSerialisationRef(std::vector<uint8_t> &buffer, size_t limit = std::numeric_limits<size_t>::max()) : buffer(buffer), limit(limit) {}
 
 	std::vector<uint8_t> &GetSerialisationBuffer() { return this->buffer; }
-	size_t GetSerialisationLimit() const { return std::numeric_limits<size_t>::max(); }
+	size_t GetSerialisationLimit() const { return this->limit; }
 };
 
 #endif /* SERIALISATION_HPP */

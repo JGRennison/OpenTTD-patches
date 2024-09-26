@@ -742,7 +742,7 @@ struct CommandAuxiliaryBase {
 
 	virtual std::optional<CommandAuxiliaryDeserialisationSrc> GetDeserialisationSrc() const = 0;
 
-	virtual void Serialise(CommandSerialisationBuffer &buffer) const = 0;
+	virtual void Serialise(struct BufferSerialisationRef buffer) const = 0;
 
 	virtual std::string GetDebugSummary() const { return {}; }
 };

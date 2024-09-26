@@ -40,7 +40,7 @@ CommandCost CmdAddPlan(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_
 struct PlanLineCmdData : public CommandAuxiliarySerialisable<PlanLineCmdData> {
 	TileVector tiles;
 
-	virtual void Serialise(CommandSerialisationBuffer &buffer) const override
+	virtual void Serialise(BufferSerialisationRef buffer) const override
 	{
 		buffer.Send_uint32((uint32_t)this->tiles.size());
 		for (TileIndex t : this->tiles) {

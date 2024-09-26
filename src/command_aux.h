@@ -43,16 +43,6 @@ struct CommandDeserialisationBuffer : public BufferDeserialisationHelper<Command
 	}
 };
 
-struct CommandSerialisationBuffer : public BufferSerialisationHelper<CommandSerialisationBuffer> {
-	std::vector<uint8_t> &buffer;
-	size_t limit;
-
-	CommandSerialisationBuffer(std::vector<uint8_t> &buffer, size_t limit) : buffer(buffer), limit(limit) {}
-
-	std::vector<uint8_t> &GetSerialisationBuffer() { return this->buffer; }
-	size_t GetSerialisationLimit() const { return this->limit; }
-};
-
 struct CommandAuxiliarySerialised : public CommandAuxiliaryBase {
 	std::vector<uint8_t> serialised_data;
 	mutable std::string debug_summary;
@@ -67,7 +57,7 @@ struct CommandAuxiliarySerialised : public CommandAuxiliaryBase {
 		return CommandAuxiliaryDeserialisationSrc{ std::span<const uint8_t>(this->serialised_data.data(), this->serialised_data.size()), this->debug_summary };
 	}
 
-	virtual void Serialise(CommandSerialisationBuffer &buffer) const override { buffer.Send_binary(this->serialised_data.data(), this->serialised_data.size()); }
+	virtual void Serialise(BufferSerialisationRef buffer) const override { buffer.Send_binary(this->serialised_data.data(), this->serialised_data.size()); }
 
 	virtual std::string GetDebugSummary() const override { return std::move(this->debug_summary); }
 };

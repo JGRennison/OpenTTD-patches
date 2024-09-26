@@ -17,7 +17,7 @@ struct LeagueTableCmdData : public CommandAuxiliarySerialisable<LeagueTableCmdDa
 	std::string header;
 	std::string footer;
 
-	virtual void Serialise(CommandSerialisationBuffer &buffer) const override
+	virtual void Serialise(BufferSerialisationRef buffer) const override
 	{
 		buffer.Send_string(this->title);
 		buffer.Send_string(this->header);
@@ -42,7 +42,7 @@ struct LeagueTableElementCmdData : public CommandAuxiliarySerialisable<LeagueTab
 	std::string text_str;
 	std::string score;
 
-	virtual void Serialise(CommandSerialisationBuffer &buffer) const override
+	virtual void Serialise(BufferSerialisationRef buffer) const override
 	{
 		buffer.Send_uint8(this->table);
 		buffer.Send_uint64(this->rating);

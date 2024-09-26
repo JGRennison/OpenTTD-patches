@@ -439,7 +439,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendKeyPasswordPacket(PacketTy
 	crypto_wipe(shared_secret.data(), shared_secret.size());
 
 	std::vector<uint8_t> message;
-	BufferSerialiser buffer(message);
+	BufferSerialisationRef buffer(message);
 
 	/* Put monotonically increasing counter in message */
 	buffer.Send_uint64(_next_key_message_id);
