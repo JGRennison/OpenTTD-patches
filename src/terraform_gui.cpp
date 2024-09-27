@@ -881,14 +881,6 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 		show_desert->SetDisplayedPlane(_settings_game.game_creation.landscape == LT_TROPIC ? 0 : SZSP_NONE);
 	}
 
-	void SetStringParameters(WidgetID widget) const override
-	{
-		if (widget == WID_ETT_PUBLIC_ROADS_TYPE_DROPDOWN)
-		{
-			//SetDParam(0, GetRoadTypeInfo(this->public_road_type)->strings.name);
-		}
-	}
-
 	static HotkeyList hotkeys;
 };
 
