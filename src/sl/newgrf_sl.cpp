@@ -119,7 +119,7 @@ static void Load_NGRF_common(GRFConfig *&grfconfig)
 		if (IsSavegameVersionBefore(SLV_101)) c->SetSuitablePalette();
 		AppendToGRFConfigList(&grfconfig, c);
 	}
-	DEBUG(sl, 2, "Loaded %u NewGRFs", GetGRFConfigListNonStaticCount(grfconfig));
+	Debug(sl, 2, "Loaded {} NewGRFs", GetGRFConfigListNonStaticCount(grfconfig));
 }
 
 static void Load_NGRF()

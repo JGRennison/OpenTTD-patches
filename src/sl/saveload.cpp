@@ -195,11 +195,11 @@ void MemoryDumper::Flush(SaveFilter &writer)
 	this->FinaliseBlock();
 
 	size_t block_count = this->blocks.size();
-	DEBUG(sl, 3, "About to serialise " PRINTF_SIZE " bytes in " PRINTF_SIZE " blocks", this->completed_block_bytes, block_count);
+	Debug(sl, 3, "About to serialise {} bytes in {} blocks", this->completed_block_bytes, block_count);
 	for (size_t i = 0; i < block_count; i++) {
 		writer.Write(this->blocks[i].data, this->blocks[i].size);
 	}
-	DEBUG(sl, 3, "Serialised " PRINTF_SIZE " bytes in " PRINTF_SIZE " blocks",  this->completed_block_bytes, block_count);
+	Debug(sl, 3, "Serialised {} bytes in {} blocks",  this->completed_block_bytes, block_count);
 
 	writer.Finish();
 }
@@ -440,7 +440,7 @@ static void SlNullPointers()
 		}
 
 		if (ch.ptrs_proc != nullptr) {
-			DEBUG(sl, 3, "Nulling pointers for %s", ChunkIDDumper()(ch.id));
+			Debug(sl, 3, "Nulling pointers for {}", ChunkIDDumper()(ch.id));
 			ch.ptrs_proc();
 		}
 	}
@@ -498,22 +498,6 @@ struct ThreadSlErrorException {
 [[noreturn]] void SlErrorCorrupt(std::string msg)
 {
 	SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME, std::move(msg));
-}
-
-/**
- * Issue an SlErrorCorrupt with a format string.
- * @param format format string
- * @param ... arguments to format string
- * @note This function does never return as it throws an exception to
- *       break out of all the saveload code.
- */
-[[noreturn]] void CDECL SlErrorCorruptFmt(const char *format, ...)
-{
-	va_list va;
-	va_start(va, format);
-	std::string str = stdstr_vfmt(format, va);
-	va_end(va);
-	SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME, std::move(str));
 }
 
 typedef void (*AsyncSaveFinishProc)();                      ///< Callback for when the savegame loading is finished.
@@ -843,8 +827,8 @@ int SlIterateArray()
 	/* After reading in the whole array inside the loop
 	 * we must have read in all the data, so we must be at end of current block. */
 	if (_next_offs != 0 && _sl.reader->GetSize() != _next_offs) {
-		DEBUG(sl, 1, "Invalid chunk size: " PRINTF_SIZE " != " PRINTF_SIZE, _sl.reader->GetSize(), _next_offs);
-		SlErrorCorruptFmt("Invalid chunk size iterating array - expected to be at position " PRINTF_SIZE ", actually at " PRINTF_SIZE, _next_offs, _sl.reader->GetSize());
+		Debug(sl, 1, "Invalid chunk size: {} != {}", _sl.reader->GetSize(), _next_offs);
+		SlErrorCorruptFmt("Invalid chunk size iterating array - expected to be at position {}, actually at {}", _next_offs, _sl.reader->GetSize());
 	}
 
 	for (;;) {
@@ -873,7 +857,7 @@ int SlIterateArray()
 				index = _sl.array_index++;
 				break;
 			default:
-				DEBUG(sl, 0, "SlIterateArray error");
+				Debug(sl, 0, "SlIterateArray error");
 				return -1; // error
 		}
 
@@ -1218,7 +1202,7 @@ static void SlString(void *ptr, size_t length, VarType conv)
 					return;
 				case SLE_VAR_STRB:
 					if (len >= length) {
-						DEBUG(sl, 1, "String length in savegame is bigger than buffer, truncating");
+						Debug(sl, 1, "String length in savegame is bigger than buffer, truncating");
 						SlCopyBytes(ptr, length);
 						SlSkipBytes(len - length);
 						len = length - 1;
@@ -2332,7 +2316,7 @@ SaveLoadTableData SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecia
 				if (type == SLE_FILE_END) break;
 
 				if ((type & SLE_FILE_TYPE_MASK) >= SLE_FILE_TABLE_END || (type & SLE_FILE_TYPE_MASK) == SLE_FILE_END) {
-					SlErrorCorruptFmt("Invalid table field type: 0x%X", type);
+					SlErrorCorruptFmt("Invalid table field type: 0x{:X}", type);
 				}
 
 				std::string key;
@@ -2343,7 +2327,7 @@ SaveLoadTableData SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecia
 					if (special_handler != nullptr && special_handler->MissingField(key, type, saveloads)) continue; // Special handler took responsibility for missing field
 
 					/* SLA_LOADCHECK triggers this debug statement a lot and is perfectly normal. */
-					DEBUG(sl, _sl.action == SLA_LOAD ? 2 : 6, "Field '%s' of type 0x%02X not found, skipping", key.c_str(), type);
+					Debug(sl, _sl.action == SLA_LOAD ? 2 : 6, "Field '{}' of type 0x{:02X} not found, skipping", key, type);
 
 					SaveLoadType saveload_type;
 					SaveLoadStructHandler *struct_handler = nullptr;
@@ -2378,7 +2362,7 @@ SaveLoadTableData SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecia
 				 * the savegame version and add conversion code. */
 				uint8_t correct_type = GetSavegameTableFileType(*sld_it->save_load);
 				if (correct_type != type) {
-					DEBUG(sl, 1, "Field type for '%s' was expected to be 0x%02X but 0x%02X was found", key.c_str(), correct_type, type);
+					Debug(sl, 1, "Field type for '{}' was expected to be 0x{:02X} but 0x{:02X} was found", key, correct_type, type);
 					SlErrorCorrupt("Field type is different than expected");
 				}
 				saveloads.push_back(*sld_it->save_load);
@@ -2491,7 +2475,7 @@ void SlLoadTableOrRiffFiltered(const SaveLoadTable &slt, void *object)
 	SlObjectLoadFiltered(object, slt);
 	if (SlIsTableChunk() && SlIterateArray() != -1) {
 		uint32_t id = _sl.current_chunk_id;
-		SlErrorCorruptFmt("Too many %s entries", ChunkIDDumper()(id));
+		SlErrorCorruptFmt("Too many {} entries", ChunkIDDumper()(id));
 	}
 }
 
@@ -2666,7 +2650,7 @@ static void SlLoadChunk(const ChunkHandler &ch)
 		if (ch.special_proc(ch.id, CSLSO_PRE_LOAD) == CSLSOR_LOAD_CHUNK_CONSUMED) return;
 	}
 
-	DEBUG(sl, 2, "Loading chunk %s", ChunkIDDumper()(ch.id));
+	Debug(sl, 2, "Loading chunk {}", ChunkIDDumper()(ch.id));
 
 	uint8_t m = SlReadByte();
 	size_t len;
@@ -2699,12 +2683,12 @@ static void SlLoadChunk(const ChunkHandler &ch)
 		case CH_TABLE:
 			_sl.array_index = 0;
 			ch.load_proc();
-			if (_next_offs != 0) SlErrorCorruptFmt("Invalid array length in %s", ChunkIDDumper()(ch.id));
+			if (_next_offs != 0) SlErrorCorruptFmt("Invalid array length in {}", ChunkIDDumper()(ch.id));
 			break;
 		case CH_SPARSE_ARRAY:
 		case CH_SPARSE_TABLE:
 			ch.load_proc();
-			if (_next_offs != 0) SlErrorCorruptFmt("Invalid array length in %s", ChunkIDDumper()(ch.id));
+			if (_next_offs != 0) SlErrorCorruptFmt("Invalid array length in {}", ChunkIDDumper()(ch.id));
 			break;
 		default:
 			if ((m & 0xF) == CH_RIFF) {
@@ -2714,7 +2698,7 @@ static void SlLoadChunk(const ChunkHandler &ch)
 				SlRIFFSpringPPCheck(len);
 				if (SlXvIsFeaturePresent(XSLFI_RIFF_HEADER_60_BIT)) {
 					if (len != 0) {
-						SlErrorCorruptFmt("RIFF chunk too large: %s", ChunkIDDumper()(ch.id));
+						SlErrorCorruptFmt("RIFF chunk too large: {}", ChunkIDDumper()(ch.id));
 					}
 					len = SlReadUint32();
 				}
@@ -2726,17 +2710,17 @@ static void SlLoadChunk(const ChunkHandler &ch)
 				endoffs = _sl.reader->GetSize() + len;
 				ch.load_proc();
 				if (_sl.reader->GetSize() != endoffs) {
-					DEBUG(sl, 1, "Invalid chunk size: " PRINTF_SIZE " != " PRINTF_SIZE ", (" PRINTF_SIZE ")  for %s", _sl.reader->GetSize(), endoffs, len, ChunkIDDumper()(ch.id));
-					SlErrorCorruptFmt("Invalid chunk size - expected to be at position " PRINTF_SIZE ", actually at " PRINTF_SIZE ", length: " PRINTF_SIZE " for %s",
+					Debug(sl, 1, "Invalid chunk size: {} != {}, ({}) for {}", _sl.reader->GetSize(), endoffs, len, ChunkIDDumper()(ch.id));
+					SlErrorCorruptFmt("Invalid chunk size - expected to be at position {}, actually at {}, length: {} for {}",
 							endoffs, _sl.reader->GetSize(), len, ChunkIDDumper()(ch.id));
 				}
 			} else {
-				SlErrorCorruptFmt("Invalid chunk type for %s", ChunkIDDumper()(ch.id));
+				SlErrorCorruptFmt("Invalid chunk type for {}", ChunkIDDumper()(ch.id));
 			}
 			break;
 	}
 
-	if (_sl.expect_table_header) SlErrorCorruptFmt("Table chunk without header: %s", ChunkIDDumper()(ch.id));
+	if (_sl.expect_table_header) SlErrorCorruptFmt("Table chunk without header: {}", ChunkIDDumper()(ch.id));
 }
 
 /**
@@ -2751,9 +2735,9 @@ static void SlLoadCheckChunk(const ChunkHandler *ch, uint32_t chunk_id)
 	}
 
 	if (ch == nullptr) {
-		DEBUG(sl, 1, "Discarding chunk %s", ChunkIDDumper()(chunk_id));
+		Debug(sl, 1, "Discarding chunk {}", ChunkIDDumper()(chunk_id));
 	} else {
-		DEBUG(sl, 2, "Loading chunk %s", ChunkIDDumper()(chunk_id));
+		Debug(sl, 2, "Loading chunk {}", ChunkIDDumper()(chunk_id));
 	}
 
 	uint8_t m = SlReadByte();
@@ -2787,7 +2771,7 @@ static void SlLoadCheckChunk(const ChunkHandler *ch, uint32_t chunk_id)
 		case CH_TABLE:
 			_sl.array_index = 0;
 			if (ext_flags) {
-				SlErrorCorruptFmt("CH_ARRAY does not take chunk header extension flags: 0x%X in %s", ext_flags, ChunkIDDumper()(chunk_id));
+				SlErrorCorruptFmt("CH_ARRAY does not take chunk header extension flags: 0x{:X} in {}", ext_flags, ChunkIDDumper()(chunk_id));
 			}
 			if (ch != nullptr && ch->load_check_proc) {
 				ch->load_check_proc();
@@ -2799,7 +2783,7 @@ static void SlLoadCheckChunk(const ChunkHandler *ch, uint32_t chunk_id)
 		case CH_SPARSE_ARRAY:
 		case CH_SPARSE_TABLE:
 			if (ext_flags) {
-				SlErrorCorruptFmt("CH_SPARSE_ARRAY does not take chunk header extension flags: 0x%X in %s", ext_flags, ChunkIDDumper()(chunk_id));
+				SlErrorCorruptFmt("CH_SPARSE_ARRAY does not take chunk header extension flags: 0x{:X} in {}", ext_flags, ChunkIDDumper()(chunk_id));
 			}
 			if (ch != nullptr && ch->load_check_proc) {
 				ch->load_check_proc();
@@ -2811,7 +2795,7 @@ static void SlLoadCheckChunk(const ChunkHandler *ch, uint32_t chunk_id)
 		default:
 			if ((m & 0xF) == CH_RIFF) {
 				if (ext_flags != (ext_flags & SLCEHF_BIG_RIFF)) {
-					SlErrorCorruptFmt("Unknown chunk header extension flags for CH_RIFF: 0x%X in %s", ext_flags, ChunkIDDumper()(chunk_id));
+					SlErrorCorruptFmt("Unknown chunk header extension flags for CH_RIFF: 0x{:X} in {}", ext_flags, ChunkIDDumper()(chunk_id));
 				}
 				/* Read length */
 				len = (SlReadByte() << 16) | ((m >> 4) << 24);
@@ -2822,12 +2806,12 @@ static void SlLoadCheckChunk(const ChunkHandler *ch, uint32_t chunk_id)
 						SlErrorCorrupt("RIFF chunk too large");
 					}
 					len = SlReadUint32();
-					if (ext_flags & SLCEHF_BIG_RIFF) SlErrorCorruptFmt("XSLFI_RIFF_HEADER_60_BIT and SLCEHF_BIG_RIFF both present in %s", ChunkIDDumper()(chunk_id));
+					if (ext_flags & SLCEHF_BIG_RIFF) SlErrorCorruptFmt("XSLFI_RIFF_HEADER_60_BIT and SLCEHF_BIG_RIFF both present in {}", ChunkIDDumper()(chunk_id));
 				}
 				if (ext_flags & SLCEHF_BIG_RIFF) {
 					uint64_t full_len = len | (static_cast<uint64_t>(SlReadUint32()) << 28);
 					if (full_len >= (1LL << 32)) {
-						SlErrorCorruptFmt("Chunk size too large: " OTTD_PRINTFHEX64 " in %s", full_len, ChunkIDDumper()(chunk_id));
+						SlErrorCorruptFmt("Chunk size too large: {} in {}", full_len, ChunkIDDumper()(chunk_id));
 					}
 					len = static_cast<size_t>(full_len);
 				}
@@ -2839,17 +2823,17 @@ static void SlLoadCheckChunk(const ChunkHandler *ch, uint32_t chunk_id)
 					SlSkipBytes(len);
 				}
 				if (_sl.reader->GetSize() != endoffs) {
-					DEBUG(sl, 1, "Invalid chunk size: " PRINTF_SIZE " != " PRINTF_SIZE ", (" PRINTF_SIZE ") for %s", _sl.reader->GetSize(), endoffs, len, ChunkIDDumper()(chunk_id));
-					SlErrorCorruptFmt("Invalid chunk size - expected to be at position " PRINTF_SIZE ", actually at " PRINTF_SIZE ", length: " PRINTF_SIZE " for %s",
+					Debug(sl, 1, "Invalid chunk size: {} != {}, ({}) for {}", _sl.reader->GetSize(), endoffs, len, ChunkIDDumper()(chunk_id));
+					SlErrorCorruptFmt("Invalid chunk size - expected to be at position {}, actually at {}, length: {} for {}",
 							endoffs, _sl.reader->GetSize(), len, ChunkIDDumper()(chunk_id));
 				}
 			} else {
-				SlErrorCorruptFmt("Invalid chunk type for: %s", ChunkIDDumper()(chunk_id));
+				SlErrorCorruptFmt("Invalid chunk type for: {}", ChunkIDDumper()(chunk_id));
 			}
 			break;
 	}
 
-	if (_sl.expect_table_header) SlErrorCorruptFmt("Table chunk without header: %s", ChunkIDDumper()(chunk_id));
+	if (_sl.expect_table_header) SlErrorCorruptFmt("Table chunk without header: {}", ChunkIDDumper()(chunk_id));
 }
 
 /**
@@ -2880,7 +2864,7 @@ static void SlSaveChunk(const ChunkHandler &ch)
 
 	_sl.current_chunk_id = ch.id;
 	SlWriteUint32(ch.id);
-	DEBUG(sl, 2, "Saving chunk %s", ChunkIDDumper()(ch.id));
+	Debug(sl, 2, "Saving chunk {}", ChunkIDDumper()(ch.id));
 
 	size_t written = 0;
 	if (GetDebugLevel(DebugLevelID::sl) >= 3) written = SlGetBytesWritten();
@@ -2910,9 +2894,9 @@ static void SlSaveChunk(const ChunkHandler &ch)
 		default: NOT_REACHED();
 	}
 
-	if (_sl.expect_table_header) SlErrorCorruptFmt("Table chunk without header: %s", ChunkIDDumper()(ch.id));
+	if (_sl.expect_table_header) SlErrorCorruptFmt("Table chunk without header: {}", ChunkIDDumper()(ch.id));
 
-	DEBUG(sl, 3, "Saved chunk %s (" PRINTF_SIZE " bytes)", ChunkIDDumper()(ch.id), SlGetBytesWritten() - written);
+	Debug(sl, 3, "Saved chunk {} ({} bytes)", ChunkIDDumper()(ch.id), SlGetBytesWritten() - written);
 }
 
 /** Save all chunks */
@@ -2958,12 +2942,12 @@ static void SlLoadChunks()
 		} else {
 			const ChunkHandler *ch = SlFindChunkHandler(id);
 			if (ch == nullptr) {
-				SlErrorCorruptFmt("Unknown chunk type: %s", ChunkIDDumper()(id));
+				SlErrorCorruptFmt("Unknown chunk type: {}", ChunkIDDumper()(id));
 			} else {
 				SlLoadChunk(*ch);
 			}
 		}
-		DEBUG(sl, 3, "Loaded chunk %s (" PRINTF_SIZE " bytes)", ChunkIDDumper()(id), SlGetBytesRead() - read);
+		Debug(sl, 3, "Loaded chunk {} ({} bytes)", ChunkIDDumper()(id), SlGetBytesRead() - read);
 	}
 }
 
@@ -2989,10 +2973,10 @@ static void SlLoadCheckChunks()
 			ch = nullptr;
 		} else {
 			ch = SlFindChunkHandler(id);
-			if (ch == nullptr) SlErrorCorruptFmt("Unknown chunk type: %s", ChunkIDDumper()(id));
+			if (ch == nullptr) SlErrorCorruptFmt("Unknown chunk type: {}", ChunkIDDumper()(id));
 		}
 		SlLoadCheckChunk(ch, id);
-		DEBUG(sl, 3, "Loaded chunk %s (" PRINTF_SIZE " bytes)", ChunkIDDumper()(id), SlGetBytesRead() - read);
+		Debug(sl, 3, "Loaded chunk {} ({} bytes)", ChunkIDDumper()(id), SlGetBytesRead() - read);
 	}
 }
 
@@ -3013,7 +2997,7 @@ static void SlFixPointers()
 			if (ch.special_proc(ch.id, CSLSO_PRE_PTRS) == CSLSOR_LOAD_CHUNK_CONSUMED) continue;
 		}
 		if (ch.ptrs_proc != nullptr) {
-			DEBUG(sl, 3, "Fixing pointers for %s", ChunkIDDumper()(ch.id));
+			Debug(sl, 3, "Fixing pointers for {}", ChunkIDDumper()(ch.id));
 			ch.ptrs_proc();
 		}
 	}
@@ -3057,7 +3041,7 @@ struct FileReader : LoadFilter {
 	{
 		clearerr(this->file);
 		if (fseek(this->file, this->begin, SEEK_SET)) {
-			DEBUG(sl, 1, "Could not reset the file reading");
+			Debug(sl, 1, "Could not reset the file reading");
 		}
 	}
 };
@@ -3821,7 +3805,7 @@ static SaveOrLoadResult SaveFileToDisk(bool threaded)
 		uint8_t compression;
 		const SaveLoadFormat *fmt = GetSavegameFormat(_savegame_format, &compression, _sl.save_flags);
 
-		DEBUG(sl, 3, "Using compression format: %s, level: %u", fmt->name, compression);
+		Debug(sl, 3, "Using compression format: {}, level: {}", fmt->name, compression);
 
 		/* We have written our stuff to memory, now write it to file! */
 		uint32_t hdr[2] = { fmt->tag, TO_BE32((uint32_t) (SAVEGAME_VERSION | SAVEGAME_VERSION_EXT) << 16) };
@@ -3844,7 +3828,7 @@ static SaveOrLoadResult SaveFileToDisk(bool threaded)
 		 * cancelled due to a client disconnecting. */
 		if (_sl.error_str != STR_NETWORK_ERROR_LOSTCONNECTION) {
 			/* Skip the "colour" character */
-			DEBUG(sl, 0, "%s%s", strip_leading_colours(GetString(GetSaveLoadErrorType())), GetString(GetSaveLoadErrorMessage()).c_str());
+			Debug(sl, 0, "{}{}", strip_leading_colours(GetString(GetSaveLoadErrorType())), GetString(GetSaveLoadErrorMessage()));
 			asfp = SaveFileError;
 		}
 
@@ -3886,7 +3870,7 @@ static SaveOrLoadResult DoSave(std::shared_ptr<SaveFilter> writer, bool threaded
 	SaveFileStart();
 
 	if (!threaded || !StartNewThread(&_async_save_thread.save_thread, "ottd:savegame", &SaveFileToDisk, true)) {
-		if (threaded) DEBUG(sl, 1, "Cannot create savegame thread, reverting to single-threaded mode...");
+		if (threaded) Debug(sl, 1, "Cannot create savegame thread, reverting to single-threaded mode...");
 
 		SaveOrLoadResult result = SaveFileToDisk(false);
 		SaveFileDone();
@@ -3952,10 +3936,10 @@ struct ThreadedLoadFilter : LoadFilter {
 	{
 		std::unique_lock<std::mutex> lk(this->mutex);
 		if (!StartNewThread(&this->read_thread, "ottd:loadgame", &ThreadedLoadFilter::RunThread, this)) {
-			DEBUG(sl, 1, "Failed to start load read thread, reading non-threaded");
+			Debug(sl, 1, "Failed to start load read thread, reading non-threaded");
 			this->no_thread = true;
 		} else {
-			DEBUG(sl, 2, "Started load read thread");
+			Debug(sl, 2, "Started load read thread");
 		}
 	}
 
@@ -3969,7 +3953,7 @@ struct ThreadedLoadFilter : LoadFilter {
 		this->full_cv.notify_all();
 		if (this->read_thread.joinable()) {
 			this->read_thread.join();
-			DEBUG(sl, 2, "Joined load read thread");
+			Debug(sl, 2, "Joined load read thread");
 		}
 	}
 
@@ -4067,7 +4051,7 @@ static SaveOrLoadResult DoLoad(std::shared_ptr<LoadFilter> reader, bool load_che
 	for (;;) {
 		/* No loader found, treat as version 0 and use LZO format */
 		if (fmt == endof(_saveload_formats)) {
-			DEBUG(sl, 0, "Unknown savegame type, trying to load it as the buggy format");
+			Debug(sl, 0, "Unknown savegame type, trying to load it as the buggy format");
 			_sl.lf->Reset();
 			_sl_version = SL_MIN_VERSION;
 			_sl_minor_version = 0;
@@ -4106,14 +4090,14 @@ static SaveOrLoadResult DoLoad(std::shared_ptr<LoadFilter> reader, bool load_che
 
 			if (_sl_version >= SLV_SAVELOAD_LIST_LENGTH) {
 				if (_sl_is_ext_version) {
-					DEBUG(sl, 0, "Got an extended savegame version with a base version in the upstream mode range, giving up");
+					Debug(sl, 0, "Got an extended savegame version with a base version in the upstream mode range, giving up");
 					SlError(STR_GAME_SAVELOAD_ERROR_TOO_NEW_SAVEGAME);
 				} else {
 					_sl_upstream_mode = true;
 				}
 			}
 
-			DEBUG(sl, 1, "Loading savegame version %d%s%s%s%s", _sl_version, _sl_is_ext_version ? " (extended)" : "",
+			Debug(sl, 1, "Loading savegame version {}{}{}{}{}", _sl_version, _sl_is_ext_version ? " (extended)" : "",
 					_sl_maybe_springpp ? " which might be SpringPP" : "", _sl_maybe_chillpp ? " which might be ChillPP" : "", _sl_upstream_mode ? " (upstream mode)" : "");
 
 			/* Is the version higher than the current? */
@@ -4127,9 +4111,7 @@ static SaveOrLoadResult DoLoad(std::shared_ptr<LoadFilter> reader, bool load_che
 
 	/* loader for this savegame type is not implemented? */
 	if (fmt->init_load == nullptr) {
-		char err_str[64];
-		seprintf(err_str, lastof(err_str), "Loader for '%s' is not available.", fmt->name);
-		SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR, err_str);
+		SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR, fmt::format("Loader for '{}' is not available.", fmt->name));
 	}
 
 	_sl.lf = fmt->init_load(std::move(_sl.lf));
@@ -4199,9 +4181,9 @@ static SaveOrLoadResult DoLoad(std::shared_ptr<LoadFilter> reader, bool load_che
 		_load_check_data.sl_is_ext_version = _sl_is_ext_version;
 
 		if (GetDebugLevel(DebugLevelID::sl) > 0) {
-			_load_check_data.version_name = stdstr_fmt("Version %d%s%s", original_sl_version, _sl_is_ext_version ? ", extended" : "", _sl_upstream_mode ? ", upstream mode" : "");
+			_load_check_data.version_name = fmt::format("Version {}{}{}", original_sl_version, _sl_is_ext_version ? ", extended" : "", _sl_upstream_mode ? ", upstream mode" : "");
 			if (_sl_version != original_sl_version) {
-				_load_check_data.version_name += stdstr_fmt(" as %d", _sl_version);
+				_load_check_data.version_name += fmt::format(" as {}", _sl_version);
 			}
 			if (_sl_xv_feature_versions[XSLFI_CHILLPP] >= SL_CHILLPP_232) {
 				_load_check_data.version_name += ", ChillPP v14.7";
@@ -4247,10 +4229,10 @@ static SaveOrLoadResult DoLoad(std::shared_ptr<LoadFilter> reader, bool load_che
 			extern std::string _sl_xv_version_label;
 			extern SaveLoadVersion _sl_xv_upstream_version;
 			if (!_sl_xv_version_label.empty()) {
-				_load_check_data.version_name += stdstr_fmt(", labelled: %s", _sl_xv_version_label.c_str());
+				_load_check_data.version_name += fmt::format(", labelled: {}", _sl_xv_version_label);
 			}
 			if (_sl_xv_upstream_version > 0) {
-				_load_check_data.version_name += stdstr_fmt(", upstream version: %d", _sl_xv_upstream_version);
+				_load_check_data.version_name += fmt::format(", upstream version: {}", _sl_xv_upstream_version);
 			}
 		}
 	} else {
@@ -4284,7 +4266,7 @@ SaveOrLoadResult LoadWithFilter(std::shared_ptr<LoadFilter> reader)
 		ClearSaveLoadState();
 
 		/* Skip the "colour" character */
-		DEBUG(sl, 0, "%s%s", strip_leading_colours(GetString(GetSaveLoadErrorType())), GetString(GetSaveLoadErrorMessage()).c_str());
+		Debug(sl, 0, "{}{}", strip_leading_colours(GetString(GetSaveLoadErrorType())), GetString(GetSaveLoadErrorMessage()));
 
 		return SL_REINIT;
 	}
@@ -4361,7 +4343,7 @@ SaveOrLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, 
 		std::string temp_save_filename_suffix;
 
 		if (fop == SLO_SAVE) {
-			temp_save_filename_suffix = stdstr_fmt(".tmp-%08x", InteractiveRandom());
+			temp_save_filename_suffix = fmt::format(".tmp-{:08x}", InteractiveRandom());
 			fh = FioFOpenFile(filename + temp_save_filename_suffix, "wb", sb, nullptr, &temp_save_filename);
 		} else {
 			fh = FioFOpenFile(filename, "rb", sb);
@@ -4378,7 +4360,7 @@ SaveOrLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, 
 
 		if (fop == SLO_SAVE) { // SAVE game
 			if (temp_save_filename.size() <= temp_save_filename_suffix.size()) SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_WRITEABLE, "Failed to get temporary file name");
-			DEBUG(desync, 1, "save: %s; %s", debug_date_dumper().HexDate(), filename.c_str());
+			Debug(desync, 1, "save: {}; {}", debug_date_dumper().HexDate(), filename);
 			if (!_settings_client.gui.threaded_saves) threaded = false;
 
 			return DoSave(std::make_shared<FileWriter>(fh, temp_save_filename, temp_save_filename.substr(0, temp_save_filename.size() - temp_save_filename_suffix.size())), threaded);
@@ -4386,14 +4368,14 @@ SaveOrLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, 
 
 		/* LOAD game */
 		assert(fop == SLO_LOAD || fop == SLO_CHECK);
-		DEBUG(desync, 1, "load: %s", filename.c_str());
+		Debug(desync, 1, "load: {}", filename);
 		return DoLoad(std::make_shared<FileReader>(fh), fop == SLO_CHECK);
 	} catch (...) {
 		/* This code may be executed both for old and new save games. */
 		ClearSaveLoadState();
 
 		/* Skip the "colour" character */
-		if (fop != SLO_CHECK) DEBUG(sl, 0, "%s%s", strip_leading_colours(GetString(GetSaveLoadErrorType())), GetString(GetSaveLoadErrorMessage()).c_str());
+		if (fop != SLO_CHECK) Debug(sl, 0, "{}{}", strip_leading_colours(GetString(GetSaveLoadErrorType())), GetString(GetSaveLoadErrorMessage()));
 
 		/* A saver/loader exception!! reinitialize all variables to prevent crash! */
 		return (fop == SLO_LOAD) ? SL_REINIT : SL_ERROR;
@@ -4415,13 +4397,13 @@ void DoAutoOrNetsave(FiosNumberedSaveName &counter, bool threaded, FiosNumberedS
 		filename = counter.Filename();
 		if (lt_counter != nullptr && counter.GetLastNumber() == 0) {
 			std::string lt_path = lt_counter->FilenameUsingMaxSaves(_settings_client.gui.max_num_lt_autosaves);
-			DEBUG(sl, 2, "Renaming autosave '%s' to long-term file '%s'", filename.c_str(), lt_path.c_str());
+			Debug(sl, 2, "Renaming autosave '{}' to long-term file '{}'", filename, lt_path);
 			std::string dir = FioFindDirectory(AUTOSAVE_DIR);
 			FioRenameFile(dir + filename, dir + lt_path);
 		}
 	}
 
-	DEBUG(sl, 2, "Autosaving to '%s'", filename.c_str());
+	Debug(sl, 2, "Autosaving to '{}'", filename);
 	if (SaveOrLoad(filename, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, threaded, SMF_ZSTD_OK) != SL_OK) {
 		ShowErrorMessage(STR_ERROR_AUTOSAVE_FAILED, INVALID_STRING_ID, WL_ERROR);
 	}
@@ -4528,7 +4510,7 @@ void SlUnreachablePlaceholder()
 
 SaveLoadVersion SlExecWithSlVersionStart(SaveLoadVersion use_version)
 {
-	DEBUG(sl, 4, "SlExecWithSlVersion start: %u", use_version);
+	Debug(sl, 4, "SlExecWithSlVersion start: {}", use_version);
 	SaveLoadVersion old_ver = _sl_version;
 	_sl_version = use_version;
 	return old_ver;
@@ -4536,7 +4518,7 @@ SaveLoadVersion SlExecWithSlVersionStart(SaveLoadVersion use_version)
 
 void SlExecWithSlVersionEnd(SaveLoadVersion old_version)
 {
-	DEBUG(sl, 4, "SlExecWithSlVersion end");
+	Debug(sl, 4, "SlExecWithSlVersion end");
 	_sl_version = old_version;
 }
 

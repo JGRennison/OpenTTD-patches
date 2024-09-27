@@ -9,6 +9,7 @@
 
 #include "../stdafx.h"
 #include "pool_type.hpp"
+#include "format.hpp"
 
 #include "../safeguards.h"
 
@@ -32,4 +33,17 @@
 	for (PoolBase *pool : *PoolBase::GetPools()) {
 		if (pool->type & pt) pool->CleanPool();
 	}
+}
+
+/* These are here to avoid needing formatting includes in pool_func */
+[[noreturn]] void PoolOutOfRangeError(const char *name, size_t index, size_t max_size)
+{
+	[[noreturn]] extern void SlErrorCorrupt(std::string msg);
+	SlErrorCorrupt(fmt::format("{} index {} out of range ({})", name, index, max_size));
+}
+
+[[noreturn]] void PoolIndexAlreadyInUseError(const char *name, size_t index)
+{
+	[[noreturn]] extern void SlErrorCorrupt(std::string msg);
+	SlErrorCorrupt(fmt::format("{} index {} already in use", name, index));
 }

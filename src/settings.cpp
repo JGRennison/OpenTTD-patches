@@ -3705,14 +3705,14 @@ static void LoadSettingsPatx(void *object)
 
 	uint32_t flags = SlReadUint32();
 	// flags are not in use yet, reserve for future expansion
-	if (flags != 0) SlErrorCorruptFmt("PATX chunk: unknown chunk header flags: 0x%X", flags);
+	if (flags != 0) SlErrorCorruptFmt("PATX chunk: unknown chunk header flags: 0x{:X}", flags);
 
 	uint32_t settings_count = SlReadUint32();
 	for (uint32_t i = 0; i < settings_count; i++) {
 		SlObject(&current_setting, _settings_ext_load_desc);
 
 		// flags are not in use yet, reserve for future expansion
-		if (current_setting.flags != 0) SlErrorCorruptFmt("PATX chunk: unknown setting header flags: 0x%X", current_setting.flags);
+		if (current_setting.flags != 0) SlErrorCorruptFmt("PATX chunk: unknown setting header flags: 0x{:X}", current_setting.flags);
 
 		// now try to find corresponding setting
 		bool exact_match = false;
@@ -3730,7 +3730,7 @@ static void LoadSettingsPatx(void *object)
 			size_t read = SlGetBytesRead();
 			SlObjectMember(object, sld);
 			if (SlGetBytesRead() != read + current_setting.setting_length) {
-				SlErrorCorruptFmt("PATX chunk: setting read length mismatch for setting: '%s'", current_setting.name);
+				SlErrorCorruptFmt("PATX chunk: setting read length mismatch for setting: '{}'", current_setting.name);
 			}
 			if (setting->IsIntSetting()) {
 				const IntSettingDesc *int_setting = setting->AsIntSetting();
@@ -3775,29 +3775,29 @@ void LoadSettingsPlyx(bool skip)
 
 	uint32_t chunk_flags = SlReadUint32();
 	// flags are not in use yet, reserve for future expansion
-	if (chunk_flags != 0) SlErrorCorruptFmt("PLYX chunk: unknown chunk header flags: 0x%X", chunk_flags);
+	if (chunk_flags != 0) SlErrorCorruptFmt("PLYX chunk: unknown chunk header flags: 0x{:X}", chunk_flags);
 
 	uint32_t company_count = SlReadUint32();
 	for (uint32_t i = 0; i < company_count; i++) {
 		uint32_t company_id = SlReadUint32();
-		if (company_id >= MAX_COMPANIES) SlErrorCorruptFmt("PLYX chunk: invalid company ID: %u", company_id);
+		if (company_id >= MAX_COMPANIES) SlErrorCorruptFmt("PLYX chunk: invalid company ID: {}", company_id);
 
 		const Company *c = nullptr;
 		if (!skip) {
 			c = Company::GetIfValid(company_id);
-			if (c == nullptr) SlErrorCorruptFmt("PLYX chunk: non-existant company ID: %u", company_id);
+			if (c == nullptr) SlErrorCorruptFmt("PLYX chunk: non-existant company ID: {}", company_id);
 		}
 
 		uint32_t company_flags = SlReadUint32();
 		// flags are not in use yet, reserve for future expansion
-		if (company_flags != 0) SlErrorCorruptFmt("PLYX chunk: unknown company flags: 0x%X", company_flags);
+		if (company_flags != 0) SlErrorCorruptFmt("PLYX chunk: unknown company flags: 0x{:X}", company_flags);
 
 		uint32_t settings_count = SlReadUint32();
 		for (uint32_t j = 0; j < settings_count; j++) {
 			SlObject(&current_setting, _settings_ext_load_desc);
 
 			// flags are not in use yet, reserve for future expansion
-			if (current_setting.flags != 0) SlErrorCorruptFmt("PLYX chunk: unknown setting header flags: 0x%X", current_setting.flags);
+			if (current_setting.flags != 0) SlErrorCorruptFmt("PLYX chunk: unknown setting header flags: 0x{:X}", current_setting.flags);
 
 			if (skip) {
 				SlSkipBytes(current_setting.setting_length);
@@ -3820,7 +3820,7 @@ void LoadSettingsPlyx(bool skip)
 				size_t read = SlGetBytesRead();
 				SlObjectMember(const_cast<CompanySettings *>(&(c->settings)), sld);
 				if (SlGetBytesRead() != read + current_setting.setting_length) {
-					SlErrorCorruptFmt("PLYX chunk: setting read length mismatch for setting: '%s'", current_setting.name);
+					SlErrorCorruptFmt("PLYX chunk: setting read length mismatch for setting: '{}'", current_setting.name);
 				}
 				if (setting->IsIntSetting()) {
 					const IntSettingDesc *int_setting = setting->AsIntSetting();

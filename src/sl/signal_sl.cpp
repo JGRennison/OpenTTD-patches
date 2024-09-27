@@ -137,7 +137,7 @@ static void Save_SPRG()
 			i != e; ++i) {
 		SignalReference ref = i->first;
 		if(!HasProgrammableSignals(ref)) {
-			DEBUG(sl, 0, "Programmable pre-signal information for (%x, %d) has been leaked!",
+			Debug(sl, 0, "Programmable pre-signal information for ({:#X}, {}) has been leaked!",
 						ref.tile, ref.track);
 			++i;
 			FreeSignalProgram(ref);
@@ -236,7 +236,7 @@ static void DoFixups(FixupList &l, InstructionList &il)
 		*(i.ptr) = il[id];
 
 		if (i.type != PSO_INVALID && (*(i.ptr))->Opcode() != i.type) {
-			DEBUG(sl, 0, "Expected Id %d to be %d, but was in fact %d", id, i.type, (*(i.ptr))->Opcode());
+			Debug(sl, 0, "Expected Id {} to be {}, but was in fact {}", id, i.type, (*(i.ptr))->Opcode());
 			NOT_REACHED();
 		}
 	}

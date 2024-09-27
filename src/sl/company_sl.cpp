@@ -760,7 +760,7 @@ static void Load_PLYP()
 	std::array<uint8_t, 16> token;
 	ReadBuffer::GetCurrent()->CopyBytes(token.data(), 16);
 	if (token != _network_company_password_storage_token) {
-		DEBUG(sl, 2, "Skipping encrypted company passwords");
+		Debug(sl, 2, "Skipping encrypted company passwords");
 		SlSkipBytes(size - 16);
 		return;
 	}
@@ -791,9 +791,9 @@ static void Load_PLYP()
 
 			ReadBuffer::GetCurrent()->SkipBytes(SlReadByte()); // Skip padding
 		});
-		DEBUG(sl, 2, "Decrypted company passwords");
+		Debug(sl, 2, "Decrypted company passwords");
 	} else {
-		DEBUG(sl, 2, "Failed to decrypt company passwords");
+		Debug(sl, 2, "Failed to decrypt company passwords");
 	}
 }
 

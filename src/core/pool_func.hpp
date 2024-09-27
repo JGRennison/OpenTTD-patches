@@ -162,20 +162,20 @@ DEFINE_POOL_METHOD(void *)::GetNew(size_t size, Pool::ParamType param)
  * @param size size of item
  * @param index index of item
  * @return pointer to allocated item
- * @note SlErrorCorruptFmt() on failure! (index out of range or already used)
+ * @note SlErrorCorrupt() on failure! (index out of range or already used)
  */
 DEFINE_POOL_METHOD(void *)::GetNew(size_t size, size_t index, Pool::ParamType param)
 {
-	[[noreturn]] extern void SlErrorCorruptFmt(const char *format, ...);
-
-	if (index >= Tmax_size) {
-		SlErrorCorruptFmt("%s index " PRINTF_SIZE " out of range (" PRINTF_SIZE ")", this->name, index, Tmax_size);
+	if (unlikely(index >= Tmax_size)) {
+		[[noreturn]] extern void PoolOutOfRangeError(const char *name, size_t index, size_t max_size);
+		PoolOutOfRangeError(this->name, index, Tmax_size);
 	}
 
 	if (index >= this->size) this->ResizeFor(index);
 
-	if (this->data[index] != Tops::NullValue()) {
-		SlErrorCorruptFmt("%s index " PRINTF_SIZE " already in use", this->name, index);
+	if (unlikely(this->data[index] != Tops::NullValue())) {
+		[[noreturn]] extern void PoolIndexAlreadyInUseError(const char *name, size_t index);
+		PoolIndexAlreadyInUseError(this->name, index);
 	}
 
 	return this->AllocateItem(size, index, param);

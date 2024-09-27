@@ -95,7 +95,7 @@ static void Load_CHTS()
 		struct UnknownCheatHandler : public TableHeaderSpecialHandler {
 			bool MissingField(const std::string &key, uint8_t type, std::vector<SaveLoad> &saveloads) override {
 				if (type == SLE_FILE_I8) {
-					DEBUG(sl, 1, "CHTS chunk: Unknown cheat field: '%s'", key.c_str());
+					Debug(sl, 1, "CHTS chunk: Unknown cheat field: '{}'", key);
 					saveloads.push_back(SLEG_VAR(_unknown_cheat_fields[key], SLE_BOOL));
 					return true;
 				}
@@ -142,7 +142,7 @@ static void Load_CHTX()
 
 	uint32_t chunk_flags = SlReadUint32();
 	// flags are not in use yet, reserve for future expansion
-	if (chunk_flags != 0) SlErrorCorruptFmt("CHTX chunk: unknown chunk header flags: 0x%X", chunk_flags);
+	if (chunk_flags != 0) SlErrorCorruptFmt("CHTX chunk: unknown chunk header flags: 0x{:X}", chunk_flags);
 
 	uint32_t cheat_count = SlReadUint32();
 	for (uint32_t i = 0; i < cheat_count; i++) {
@@ -158,7 +158,7 @@ static void Load_CHTX()
 			}
 		}
 		if (!found) {
-			DEBUG(sl, 1, "CHTX chunk: Could not find cheat: '%s'", current_cheat.name);
+			Debug(sl, 1, "CHTX chunk: Could not find cheat: '{}'", current_cheat.name);
 			_unknown_cheat_fields[std::string(current_cheat.name) + ".been_used"] = current_cheat.cht.been_used;
 			_unknown_cheat_fields[std::string(current_cheat.name) + ".value"] = current_cheat.cht.value;
 		}

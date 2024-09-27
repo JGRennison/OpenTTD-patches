@@ -14,6 +14,7 @@
 #include "../core/endian_type.hpp"
 #include "../fios.h"
 #include "../load_check.h"
+#include "../debug.h"
 #include <array>
 
 #include "saveload.h"
@@ -42,7 +43,7 @@ static void Load_MAPS()
 {
 	SlLoadTableOrRiffFiltered(_map_dimensions);
 	if (!ValidateMapSize(_map_dim_x, _map_dim_y)) {
-		SlErrorCorruptFmt("Invalid map size: %u x %u", _map_dim_x, _map_dim_y);
+		SlErrorCorruptFmt("Invalid map size: {} x {}", _map_dim_x, _map_dim_y);
 	}
 	AllocateMap(_map_dim_x, _map_dim_y);
 }

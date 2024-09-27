@@ -345,21 +345,21 @@ bool SlXvCheckSpecialSavegameVersions()
 	extern SaveLoadVersion _sl_version;
 
 	if (_sl_version == SL_TRACE_RESTRICT_2000) {
-		DEBUG(sl, 1, "Loading a trace restrict patch savegame version %d as version 194", _sl_version);
+		Debug(sl, 1, "Loading a trace restrict patch savegame version {} as version 194", _sl_version);
 		_sl_version = SLV_194;
 		_sl_is_faked_ext = true;
 		_sl_xv_feature_versions[XSLFI_TRACE_RESTRICT] = 1;
 		return true;
 	}
 	if (_sl_version == SL_TRACE_RESTRICT_2001) {
-		DEBUG(sl, 1, "Loading a trace restrict patch savegame version %d as version 195", _sl_version);
+		Debug(sl, 1, "Loading a trace restrict patch savegame version {} as version 195", _sl_version);
 		_sl_version = SLV_195;
 		_sl_is_faked_ext = true;
 		_sl_xv_feature_versions[XSLFI_TRACE_RESTRICT] = 6;
 		return true;
 	}
 	if (_sl_version == SL_TRACE_RESTRICT_2002) {
-		DEBUG(sl, 1, "Loading a trace restrict patch savegame version %d as version 196", _sl_version);
+		Debug(sl, 1, "Loading a trace restrict patch savegame version {} as version 196", _sl_version);
 		_sl_version = SLV_196;
 		_sl_is_faked_ext = true;
 		_sl_xv_feature_versions[XSLFI_TRACE_RESTRICT] = 6;
@@ -370,7 +370,7 @@ bool SlXvCheckSpecialSavegameVersions()
 		return true;
 	}
 	if (_sl_version >= SL_JOKER_1_19 && _sl_version <= SL_JOKER_1_27) { /* 278 - 286 */
-		DEBUG(sl, 1, "Loading a JokerPP savegame version %d as version 197", _sl_version);
+		Debug(sl, 1, "Loading a JokerPP savegame version {} as version 197", _sl_version);
 		_sl_xv_feature_versions[XSLFI_JOKERPP] = _sl_version;
 		_sl_xv_feature_versions[XSLFI_TOWN_CARGO_ADJ] = 1;
 		_sl_xv_feature_versions[XSLFI_TEMPLATE_REPLACEMENT] = 1;
@@ -400,7 +400,7 @@ bool SlXvCheckSpecialSavegameVersions()
 		return true;
 	}
 	if (_sl_version >= SL_CHILLPP_232 && _sl_version <= SL_CHILLPP_233) { /* 232 - 233 */
-		DEBUG(sl, 1, "Loading a ChillPP v14.7 savegame version %d as version 160", _sl_version);
+		Debug(sl, 1, "Loading a ChillPP v14.7 savegame version {} as version 160", _sl_version);
 		_sl_xv_feature_versions[XSLFI_CHILLPP] = _sl_version;
 		_sl_xv_feature_versions[XSLFI_ZPOS_32_BIT] = 1;
 		_sl_xv_feature_versions[XSLFI_TOWN_CARGO_ADJ] = 1;
@@ -424,49 +424,49 @@ void SlXvSpringPPSpecialSavegameVersions()
 	extern SaveLoadVersion _sl_version;
 
 	if (_sl_version == SL_SPRING_2013_v2_0_102) { /* 220 */
-		DEBUG(sl, 1, "Loading a SpringPP 2013 v2.0.102 savegame version %d as version 187", _sl_version);
+		Debug(sl, 1, "Loading a SpringPP 2013 v2.0.102 savegame version {} as version 187", _sl_version);
 
 		_sl_version = SLV_187;
 		_sl_is_faked_ext = true;
 		_sl_xv_feature_versions[XSLFI_SPRINGPP] = 1;
 	} else if (_sl_version == SL_SPRING_2013_v2_1_108) { /* 221 */
-		DEBUG(sl, 1, "Loading a SpringPP 2013 v2.1.108 savegame version %d as version 188", _sl_version);
+		Debug(sl, 1, "Loading a SpringPP 2013 v2.1.108 savegame version {} as version 188", _sl_version);
 
 		_sl_version = SLV_188;
 		_sl_is_faked_ext = true;
 		_sl_xv_feature_versions[XSLFI_SPRINGPP] = 2;
 	} else if (_sl_version == SL_SPRING_2013_v2_1_147) { /* 222 */
-		DEBUG(sl, 1, "Loading a SpringPP 2013 v2.1.147 savegame version %d as version 194", _sl_version);
+		Debug(sl, 1, "Loading a SpringPP 2013 v2.1.147 savegame version {} as version 194", _sl_version);
 
 		_sl_version = SLV_194;
 		_sl_is_faked_ext = true;
 		_sl_xv_feature_versions[XSLFI_SPRINGPP] = 4; // Note that this break in numbering is deliberate
 	} else if (_sl_version == SL_SPRING_2013_v2_3_XXX) { /* 223 */
-		DEBUG(sl, 1, "Loading a SpringPP 2013 v2.3.xxx savegame version %d as version 194", _sl_version);
+		Debug(sl, 1, "Loading a SpringPP 2013 v2.3.xxx savegame version {} as version 194", _sl_version);
 
 		_sl_version = SLV_194;
 		_sl_is_faked_ext = true;
 		_sl_xv_feature_versions[XSLFI_SPRINGPP] = 3; // Note that this break in numbering is deliberate
 	} else if (_sl_version == SL_SPRING_2013_v2_3_b3) { /* 224 */
-		DEBUG(sl, 1, "Loading a SpringPP 2013 v2.3.b3 savegame version %d as version 194", _sl_version);
+		Debug(sl, 1, "Loading a SpringPP 2013 v2.3.b3 savegame version {} as version 194", _sl_version);
 
 		_sl_version = SLV_194;
 		_sl_is_faked_ext = true;
 		_sl_xv_feature_versions[XSLFI_SPRINGPP] = 5;
 	} else if (_sl_version == SL_SPRING_2013_v2_3_b4) { /* 225 */
-		DEBUG(sl, 1, "Loading a SpringPP 2013 v2.3.b4 savegame version %d as version 194", _sl_version);
+		Debug(sl, 1, "Loading a SpringPP 2013 v2.3.b4 savegame version {} as version 194", _sl_version);
 
 		_sl_version = SLV_194;
 		_sl_is_faked_ext = true;
 		_sl_xv_feature_versions[XSLFI_SPRINGPP] = 6;
 	} else if (_sl_version == SL_SPRING_2013_v2_3_b5) { /* 226 */
-		DEBUG(sl, 1, "Loading a SpringPP 2013 v2.3.b5 savegame version %d as version 195", _sl_version);
+		Debug(sl, 1, "Loading a SpringPP 2013 v2.3.b5 savegame version {} as version 195", _sl_version);
 
 		_sl_version = SLV_195;
 		_sl_is_faked_ext = true;
 		_sl_xv_feature_versions[XSLFI_SPRINGPP] = 7;
 	} else if (_sl_version == SL_SPRING_2013_v2_4) { /* 227 */
-		DEBUG(sl, 1, "Loading a SpringPP 2013 v2.4 savegame version %d as version 195", _sl_version);
+		Debug(sl, 1, "Loading a SpringPP 2013 v2.4 savegame version {} as version 195", _sl_version);
 
 		_sl_version = SLV_195;
 		_sl_is_faked_ext = true;
@@ -497,7 +497,7 @@ void SlXvChillPPSpecialSavegameVersions()
 	extern SaveLoadVersion _sl_version;
 
 	if (_sl_version == SL_CHILLPP_201) { /* 201 */
-		DEBUG(sl, 1, "Loading a ChillPP v8 savegame version %d as version 143", _sl_version);
+		Debug(sl, 1, "Loading a ChillPP v8 savegame version {} as version 143", _sl_version);
 		_sl_xv_feature_versions[XSLFI_CHILLPP] = _sl_version;
 		_sl_xv_feature_versions[XSLFI_ZPOS_32_BIT] = 1;
 		_sl_xv_feature_versions[XSLFI_TOWN_CARGO_ADJ] = 1;
@@ -634,11 +634,11 @@ static void Load_SLXI()
 	_sl_is_ext_version = true;
 
 	uint32_t version = SlReadUint32();
-	if (version > _sl_xv_slxi_chunk_version) SlErrorCorruptFmt("SLXI chunk: version: %u is too new (expected max: %u)", version, _sl_xv_slxi_chunk_version);
+	if (version > _sl_xv_slxi_chunk_version) SlErrorCorruptFmt("SLXI chunk: version: {} is too new (expected max: {})", version, _sl_xv_slxi_chunk_version);
 
 	uint32_t chunk_flags = SlReadUint32();
 	// flags are not in use yet, reserve for future expansion
-	if (chunk_flags != 0) SlErrorCorruptFmt("SLXI chunk: unknown chunk header flags: 0x%X", chunk_flags);
+	if (chunk_flags != 0) SlErrorCorruptFmt("SLXI chunk: unknown chunk header flags: 0x{:X}", chunk_flags);
 
 	char name_buffer[256];
 	const SaveLoad xlsi_sub_chunk_name_desc[] = {
@@ -675,7 +675,7 @@ static void Load_SLXI()
 					if (flags & XSCF_EXTRA_DATA_PRESENT) {
 						SlSkipBytes(SlReadUint32()); // skip extra data field
 					}
-					DEBUG(sl, 1, "SLXI chunk: too large version for feature: '%s', version: %d, max version: %d, ignoring", name_buffer, version, info->max_version);
+					Debug(sl, 1, "SLXI chunk: too large version for feature: '{}', version: {}, max version: {}, ignoring", name_buffer, version, info->max_version);
 				} else {
 					version_error(STR_GAME_SAVELOAD_ERROR_TOO_NEW_FEATURE_VERSION, name_buffer, version, info->max_version);
 				}
@@ -690,15 +690,15 @@ static void Load_SLXI()
 							size_t read = SlGetBytesRead();
 							info->load_proc(info, extra_data_size);
 							if (SlGetBytesRead() != read + extra_data_size) {
-								SlErrorCorruptFmt("SLXI chunk: feature: %s, version: %d, extra data length mismatch", name_buffer, version);
+								SlErrorCorruptFmt("SLXI chunk: feature: {}, version: {}, extra data length mismatch", name_buffer, version);
 							}
 						} else {
-							SlErrorCorruptFmt("SLXI chunk: feature: %s, version: %d, unexpectedly includes extra data", name_buffer, version);
+							SlErrorCorruptFmt("SLXI chunk: feature: {}, version: {}, unexpectedly includes extra data", name_buffer, version);
 						}
 					}
 				}
 
-				DEBUG(sl, 1, "SLXI chunk: found known feature: '%s', version: %d, max version: %d", name_buffer, version, info->max_version);
+				Debug(sl, 1, "SLXI chunk: found known feature: '{}', version: {}, max version: {}", name_buffer, version, info->max_version);
 			}
 		} else {
 			if (flags & XSCF_IGNORABLE_UNKNOWN) {
@@ -707,7 +707,7 @@ static void Load_SLXI()
 				if (flags & XSCF_EXTRA_DATA_PRESENT) {
 					SlSkipBytes(SlReadUint32()); // skip extra data field
 				}
-				DEBUG(sl, 1, "SLXI chunk: unknown feature: '%s', version: %d, ignoring", name_buffer, version);
+				Debug(sl, 1, "SLXI chunk: unknown feature: '{}', version: {}, ignoring", name_buffer, version);
 			} else {
 				version_error(STR_GAME_SAVELOAD_ERROR_UNKNOWN_FEATURE, name_buffer, version, 0);
 			}
@@ -721,7 +721,7 @@ static void Load_SLXI()
 				uint32_t chunk_id = SlReadUint32();
 				if (discard_chunks) {
 					_sl_xv_discardable_chunk_ids.push_back(chunk_id);
-					DEBUG(sl, 2, "SLXI chunk: unknown feature: '%s', discarding chunk: %c%c%c%c", name_buffer, chunk_id >> 24, chunk_id >> 16, chunk_id >> 8, chunk_id);
+					Debug(sl, 2, "SLXI chunk: unknown feature: '{}', discarding chunk: {}", name_buffer, ChunkIDDumper()(chunk_id));
 				}
 			}
 		}
@@ -730,7 +730,7 @@ static void Load_SLXI()
 
 static void IgnoreWrongLengthExtraData(const SlxiSubChunkInfo *info, uint32_t length)
 {
-	DEBUG(sl, 1, "SLXI chunk: feature: '%s', version: %d, has data of wrong length: %u", info->name, _sl_xv_feature_versions[info->index], length);
+	Debug(sl, 1, "SLXI chunk: feature: '{}', version: {}, has data of wrong length: {}", info->name, _sl_xv_feature_versions[info->index], length);
 	ReadBuffer::GetCurrent()->SkipBytes(length);
 }
 
@@ -738,7 +738,7 @@ static void loadVL(const SlxiSubChunkInfo *info, uint32_t length)
 {
 	_sl_xv_version_label.resize(length);
 	ReadBuffer::GetCurrent()->CopyBytes(reinterpret_cast<uint8_t *>(_sl_xv_version_label.data()), length);
-	DEBUG(sl, 2, "SLXI version label: %s", _sl_xv_version_label.c_str());
+	Debug(sl, 2, "SLXI version label: {}", _sl_xv_version_label);
 }
 
 static uint32_t saveVL(const SlxiSubChunkInfo *info, bool dry_run)
@@ -756,7 +756,7 @@ static void loadUV(const SlxiSubChunkInfo *info, uint32_t length)
 			auto tmp_params = MakeParameters(_sl_xv_version_label.empty() ? STR_EMPTY : STR_GAME_SAVELOAD_FROM_VERSION, _sl_xv_version_label, "upstream savegame version", _sl_xv_upstream_version, SL_MAX_VERSION - 1);
 			SlError(STR_JUST_RAW_STRING, GetStringWithArgs(STR_GAME_SAVELOAD_ERROR_TOO_NEW_FEATURE_VERSION, tmp_params));
 		}
-		DEBUG(sl, 2, "SLXI upstream version: %u", _sl_xv_upstream_version);
+		Debug(sl, 2, "SLXI upstream version: {}", _sl_xv_upstream_version);
 	} else {
 		IgnoreWrongLengthExtraData(info, length);
 	}

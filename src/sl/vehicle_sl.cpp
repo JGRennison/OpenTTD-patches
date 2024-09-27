@@ -601,7 +601,7 @@ void AfterLoadVehiclesPhase2(bool part_of_load)
 void AfterLoadVehiclesRemoveAnyFoundInvalid()
 {
 	if (!_load_invalid_vehicles_to_delete.empty()) {
-		DEBUG(sl, 0, "Removing %u vehicles found to be uncorrectably invalid during load", (uint)_load_invalid_vehicles_to_delete.size());
+		Debug(sl, 0, "Removing {} vehicles found to be uncorrectably invalid during load", _load_invalid_vehicles_to_delete.size());
 		SetDParam(0, (uint)_load_invalid_vehicles_to_delete.size());
 		ShowErrorMessage(STR_WARNING_LOADGAME_REMOVED_UNCORRECTABLE_VEHICLES, INVALID_STRING_ID, WL_CRITICAL);
 		GroupStatistics::UpdateAfterLoad();
@@ -1721,7 +1721,7 @@ static void LogVehicleVENCMessage(const Vehicle *v, const char *var)
 		length++;
 	}
 	WriteVehicleInfo(p, lastof(log_buffer), v, v->First(), length);
-	DEBUG(desync, 0, "%s", log_buffer);
+	Debug(desync, 0, "{}", log_buffer);
 	LogDesyncMsg(log_buffer);
 }
 
