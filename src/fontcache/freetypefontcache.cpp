@@ -167,7 +167,7 @@ void LoadFreeTypeFont(FontSize fs)
 
 	if (_library == nullptr) {
 		if (FT_Init_FreeType(&_library) != FT_Err_Ok) {
-			ShowInfoF("Unable to initialize FreeType, using sprite fonts instead");
+			ShowInfo("Unable to initialize FreeType, using sprite fonts instead");
 			return;
 		}
 

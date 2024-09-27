@@ -108,13 +108,7 @@ std::string GetDebugString();
 /* Shorter form for passing filename and linenumber */
 #define FILE_LINE __FILE__, __LINE__
 
-void ShowInfoI(const char *str);
-void CDECL ShowInfoF(const char *str, ...) WARN_FORMAT(1, 2);
-
-inline void ShowInfoI(const std::string &str)
-{
-	ShowInfoI(str.c_str());
-}
+void ShowInfoI(std::string_view str);
 
 #define ShowInfo(format_string, ...) ShowInfoI(fmt::format(FMT_STRING(format_string), ## __VA_ARGS__))
 

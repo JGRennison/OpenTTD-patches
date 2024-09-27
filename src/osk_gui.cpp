@@ -174,7 +174,7 @@ struct OskWindow : public Window {
 					/* Window gets deleted when the parent window removes itself. */
 					return;
 				} else { // or reset to original string
-					qs->text.Assign(this->orig_str.c_str());
+					qs->text.Assign(this->orig_str);
 					qs->text.MovePos(WKC_END);
 					this->OnEditboxChanged(WID_OSK_TEXT);
 					this->Close();
@@ -379,11 +379,11 @@ void GetKeyboardLayout()
 	}
 
 	if (has_error) {
-		ShowInfoF("The keyboard layout you selected contains invalid chars. Please check those chars marked with ^.");
-		ShowInfoF("Normal keyboard:  %s", keyboard[0].c_str());
-		ShowInfoF("                  %s", errormark[0].c_str());
-		ShowInfoF("Caps Lock:        %s", keyboard[1].c_str());
-		ShowInfoF("                  %s", errormark[1].c_str());
+		ShowInfo("The keyboard layout you selected contains invalid chars. Please check those chars marked with ^.");
+		ShowInfo("Normal keyboard:  {}", keyboard[0]);
+		ShowInfo("                  {}", errormark[0]);
+		ShowInfo("Caps Lock:        {}", keyboard[1]);
+		ShowInfo("                  {}", errormark[1]);
 	}
 }
 

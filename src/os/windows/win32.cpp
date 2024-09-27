@@ -345,17 +345,17 @@ static INT_PTR CALLBACK HelpDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARAM
 	return FALSE;
 }
 
-void ShowInfoI(const char *str)
+void ShowInfoI(std::string_view str)
 {
 	if (_has_console) {
-		fprintf(stderr, "%s\n", str);
+		fmt::print(stderr, "{}\n", str);
 	} else {
 		bool old;
 		ReleaseCapture();
 		_left_button_clicked = _left_button_down = false;
 
 		old = MyShowCursor(true);
-		if (strlen(str) > 2048) {
+		if (str.size() > 2048) {
 			/* The minimum length of the help message is 2048. Other messages sent via
 			 * ShowInfo are much shorter, or so long they need this way of displaying
 			 * them anyway. */
