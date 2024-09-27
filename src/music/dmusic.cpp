@@ -1111,7 +1111,7 @@ const char *MusicDriver_DMusic::Start(const StringList &parm)
 	_playback.preload_time = GetDriverParamInt(parm, "preload", 50);
 
 	int pIdx = GetDriverParamInt(parm, "port", -1);
-	if (_debug_driver_level > 0) {
+	if (GetDebugLevel(DebugLevelID::driver) > 0) {
 		/* Print all valid output ports. */
 		char desc[DMUS_MAX_DESCRIPTION];
 

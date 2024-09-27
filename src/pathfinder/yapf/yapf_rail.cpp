@@ -403,7 +403,7 @@ public:
 		if (max_penalty != 0) pf1.DisableCache(true);
 		FindDepotData result1 = pf1.FindNearestDepotTwoWay(v, t1, td1, t2, td2, max_penalty, reverse_penalty);
 
-		if (_debug_yapfdesync_level > 0 || _debug_desync_level >= 2) {
+		if (GetDebugLevel(DebugLevelID::yapfdesync) > 0 || GetDebugLevel(DebugLevelID::desync) >= 2) {
 			Tpf pf2;
 			pf2.DisableCache(true);
 			FindDepotData result2 = pf2.FindNearestDepotTwoWay(v, t1, td1, t2, td2, max_penalty, reverse_penalty);
@@ -484,7 +484,7 @@ public:
 		/* Create pathfinder instance */
 		Tpf pf1;
 		bool result1;
-		if (_debug_yapfdesync_level < 1 && _debug_desync_level < 2) {
+		if (GetDebugLevel(DebugLevelID::yapfdesync) < 1 && GetDebugLevel(DebugLevelID::desync) < 2) {
 			result1 = pf1.FindNearestSafeTile(v, t1, td, override_railtype, false);
 		} else {
 			bool found_path_1, found_path_2;
@@ -592,7 +592,7 @@ public:
 		Tpf pf1;
 		Trackdir result1;
 
-		if (_debug_yapfdesync_level < 1 && _debug_desync_level < 2) {
+		if (GetDebugLevel(DebugLevelID::yapfdesync) < 1 && GetDebugLevel(DebugLevelID::desync) < 2) {
 			result1 = pf1.ChooseRailTrack(v, tile, enterdir, tracks, path_found, reserve_track, target, dest);
 		} else {
 			result1 = pf1.ChooseRailTrack(v, tile, enterdir, tracks, path_found, false, nullptr, nullptr);
@@ -664,7 +664,7 @@ public:
 		Tpf pf1;
 		bool result1 = pf1.CheckReverseTrain(v, t1, td1, t2, td2, reverse_penalty);
 
-		if (_debug_yapfdesync_level > 0 || _debug_desync_level >= 2) {
+		if (GetDebugLevel(DebugLevelID::yapfdesync) > 0 || GetDebugLevel(DebugLevelID::desync) >= 2) {
 			Tpf pf2;
 			pf2.DisableCache(true);
 			bool result2 = pf2.CheckReverseTrain(v, t1, td1, t2, td2, reverse_penalty);

@@ -10,6 +10,7 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
+#include <array>
 #include <string>
 
 /* Debugging messages policy:
@@ -26,43 +27,55 @@
  * 6.. - extremely detailed spamming
  */
 
+enum class DebugLevelID : uint8_t {
+	driver,
+	grf,
+	map,
+	misc,
+	net,
+	sprite,
+	oldloader,
+	yapf,
+	fontcache,
+	script,
+	sl,
+	gamelog,
+	desync,
+	yapfdesync,
+	console,
+	linkgraph,
+	sound,
+	command,
+#ifdef RANDOM_DEBUG
+	random,
+	statecsum,
+#endif
+	END,
+};
+static constexpr uint DebugLevelCount = static_cast<uint>(DebugLevelID::END);
+
+extern std::array<int8_t, DebugLevelCount> _debug_levels;
+
+inline int8_t GetDebugLevel(DebugLevelID id) {
+	return _debug_levels[static_cast<uint>(id)];
+}
+
+const char *GetDebugLevelName(DebugLevelID id);
+
 /**
  * Output a line of debugging information.
  * @param name Category
  * @param level Debugging level, higher levels means more detailed information.
  */
-#define DEBUG(name, level, ...) do { if ((level) == 0 || _debug_ ## name ## _level >= (level)) debug(#name, level, __VA_ARGS__); } while (false)
-
-extern int _debug_driver_level;
-extern int _debug_grf_level;
-extern int _debug_map_level;
-extern int _debug_misc_level;
-extern int _debug_net_level;
-extern int _debug_sprite_level;
-extern int _debug_oldloader_level;
-extern int _debug_yapf_level;
-extern int _debug_fontcache_level;
-extern int _debug_script_level;
-extern int _debug_sl_level;
-extern int _debug_gamelog_level;
-extern int _debug_desync_level;
-extern int _debug_yapfdesync_level;
-extern int _debug_console_level;
-extern int _debug_linkgraph_level;
-extern int _debug_sound_level;
-extern int _debug_command_level;
-#ifdef RANDOM_DEBUG
-extern int _debug_random_level;
-extern int _debug_statecsum_level;
-#endif
+#define DEBUG(name, level, ...) do { if ((level) == 0 || GetDebugLevel(DebugLevelID::name) >= (level)) debug(DebugLevelID::name, level, __VA_ARGS__); } while (false)
 
 extern const char *_savegame_DBGL_data;
 extern std::string _loadgame_DBGL_data;
 extern bool _save_DBGC_data;
 extern std::string _loadgame_DBGC_data;
 
-void CDECL debug(const char *dbg, int level, const char *format, ...) WARN_FORMAT(3, 4);
-void debug_print(const char *dbg, int level, const char *buf);
+void CDECL debug(DebugLevelID dbg, int8_t level, const char *format, ...) WARN_FORMAT(3, 4);
+void debug_print(DebugLevelID dbg, int8_t level, const char *msg);
 
 char *DumpDebugFacilityNames(char *buf, char *last);
 void SetDebugString(const char *s, void (*error_func)(const char *));

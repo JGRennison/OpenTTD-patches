@@ -622,5 +622,5 @@ void WaterRegionCheckCaches(std::function<void(const char *)> log)
 
 void PrintWaterRegionDebugInfo(TileIndex tile)
 {
-	if (_debug_map_level >= 9) GetUpdatedWaterRegion(tile).PrintDebugInfo();
+	if (GetDebugLevel(DebugLevelID::map) >= 9) GetUpdatedWaterRegion(tile).PrintDebugInfo();
 }

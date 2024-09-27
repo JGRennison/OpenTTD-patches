@@ -15,13 +15,28 @@
 
 #define ShowInfo(format_string, ...) ShowInfoI(fmt::format(FMT_STRING(format_string), ## __VA_ARGS__))
 
+template <typename... T>
+void DebugIntl(DebugLevelID dbg, int8_t level, fmt::format_string<T...> msg, T&&... args)
+{
+	fmt::memory_buffer buf{};
+
+	extern void DebugIntlSetup(fmt::memory_buffer &buf, DebugLevelID id, int8_t level);
+	DebugIntlSetup(buf, dbg, level);
+	size_t prefix_size = buf.size();
+
+	fmt::format_to(std::back_inserter(buf), msg, std::forward<T>(args)...);
+
+	extern void debug_print_partial_buffer(DebugLevelID dbg, int8_t level, fmt::memory_buffer &buf, size_t prefix_size);
+	debug_print_partial_buffer(dbg, level, buf, prefix_size);
+}
+
 /**
  * Ouptut a line of debugging information.
  * @param name The category of debug information.
  * @param level The maximum debug level this message should be shown at. When the debug level for this category is set lower, then the message will not be shown.
  * @param format_string The formatting string of the message.
  */
-#define Debug(name, level, format_string, ...) do { if ((level) == 0 || _debug_ ## name ## _level >= (level)) debug_print(#name, level, fmt::format(FMT_STRING(format_string), ## __VA_ARGS__).c_str()); } while (false)
+#define Debug(name, level, format_string, ...) do { if ((level) == 0 || GetDebugLevel(DebugLevelID::name) >= (level)) DebugIntl(DebugLevelID::name, level, FMT_STRING(format_string), ## __VA_ARGS__); } while (false)
 
 [[noreturn]] void usererror_str(const char *msg);
 [[noreturn]] void fatalerror_str(const char *msg);

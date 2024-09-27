@@ -219,7 +219,7 @@ static void _GenerateWorld()
 		if (_network_dedicated) DEBUG(net, 3, "Map generated, starting game");
 		DEBUG(desync, 1, "new_map: %08x", _settings_game.game_creation.generation_seed);
 
-		if (_debug_desync_level > 0) {
+		if (GetDebugLevel(DebugLevelID::desync) > 0) {
 			char name[MAX_PATH];
 			seprintf(name, lastof(name), "dmp_cmds_%08x_%08x.sav", _settings_game.game_creation.generation_seed, EconTime::CurDate().base());
 			SaveOrLoad(name, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, false, SMF_ZSTD_OK);

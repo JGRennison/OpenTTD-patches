@@ -1415,7 +1415,7 @@ const char *VideoDriver_Win32OpenGL::AllocateContext()
 		int attribs[] = {
 			WGL_CONTEXT_MAJOR_VERSION_ARB, 4,
 			WGL_CONTEXT_MINOR_VERSION_ARB, 5,
-			WGL_CONTEXT_FLAGS_ARB, _debug_driver_level >= 8 ? WGL_CONTEXT_DEBUG_BIT_ARB : 0,
+			WGL_CONTEXT_FLAGS_ARB, GetDebugLevel(DebugLevelID::driver) >= 8 ? WGL_CONTEXT_DEBUG_BIT_ARB : 0,
 			_hasWGLARBCreateContextProfile ? WGL_CONTEXT_PROFILE_MASK_ARB : 0, WGL_CONTEXT_CORE_PROFILE_BIT_ARB, // Terminate list if WGL_ARB_create_context_profile isn't supported.
 			0
 		};

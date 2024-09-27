@@ -147,7 +147,7 @@ void HttpThread()
 		curl_easy_reset(curl);
 		curl_slist *headers = nullptr;
 
-		if (_debug_net_level >= 5) {
+		if (GetDebugLevel(DebugLevelID::net) >= 5) {
 			curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 		}
 

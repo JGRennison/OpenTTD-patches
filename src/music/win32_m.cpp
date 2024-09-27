@@ -376,7 +376,7 @@ const char *MusicDriver_Win32::Start(const StringList &parm)
 	const char *portname = GetDriverParam(parm, "portname");
 
 	/* Enumerate ports either for selecting port by name, or for debug output */
-	if (portname != nullptr || _debug_driver_level > 0) {
+	if (portname != nullptr || GetDebugLevel(DebugLevelID::driver) > 0) {
 		uint numports = midiOutGetNumDevs();
 		DEBUG(driver, 1, "Win32-MIDI: Found %d output devices:", numports);
 		for (uint tryport = 0; tryport < numports; tryport++) {

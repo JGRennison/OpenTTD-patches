@@ -1633,7 +1633,7 @@ void StateGameLoop()
 		CallWindowGameTickEvent();
 		NewsLoop();
 	} else {
-		if (_debug_desync_level > 2 && DateDetail::_tick_skip_counter == 0 && EconTime::CurDateFract() == 0 && (EconTime::CurDate().base() & 0x1F) == 0) {
+		if (GetDebugLevel(DebugLevelID::desync) > 2 && DateDetail::_tick_skip_counter == 0 && EconTime::CurDateFract() == 0 && (EconTime::CurDate().base() & 0x1F) == 0) {
 			/* Save the desync savegame if needed. */
 			char name[MAX_PATH];
 			seprintf(name, lastof(name), "dmp_cmds_%08x_%08x.sav", _settings_game.game_creation.generation_seed, EconTime::CurDate().base());

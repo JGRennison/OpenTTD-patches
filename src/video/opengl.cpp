@@ -434,7 +434,7 @@ void APIENTRY DebugOutputCallback([[maybe_unused]] GLenum source, GLenum type, [
 void SetupDebugOutput()
 {
 #ifndef NO_DEBUG_MESSAGES
-	if (_debug_driver_level < 6) return;
+	if (GetDebugLevel(DebugLevelID::driver) < 6) return;
 
 	if (IsOpenGLVersionAtLeast(4, 3)) {
 		BindGLProc(_glDebugMessageControl, "glDebugMessageControl");
@@ -447,11 +447,11 @@ void SetupDebugOutput()
 	if (_glDebugMessageControl != nullptr && _glDebugMessageCallback != nullptr) {
 		/* Enable debug output. As synchronous debug output costs performance, we only enable it with a high debug level. */
 		_glEnable(GL_DEBUG_OUTPUT);
-		if (_debug_driver_level >= 8) _glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		if (GetDebugLevel(DebugLevelID::driver) >= 8) _glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
 		_glDebugMessageCallback(&DebugOutputCallback, nullptr);
 		/* Enable all messages on highest debug level.*/
-		_glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, _debug_driver_level >= 9 ? GL_TRUE : GL_FALSE);
+		_glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GetDebugLevel(DebugLevelID::driver) >= 9 ? GL_TRUE : GL_FALSE);
 		/* Get debug messages for errors and undefined/deprecated behaviour. */
 		_glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_ERROR, GL_DONT_CARE, 0, nullptr, GL_TRUE);
 		_glDebugMessageControl(GL_DONT_CARE, GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR, GL_DONT_CARE, 0, nullptr, GL_TRUE);

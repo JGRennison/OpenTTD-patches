@@ -198,7 +198,7 @@ void TCPConnecter::OnResolved(addrinfo *ai)
 		}
 	}
 
-	if (_debug_net_level >= 6) {
+	if (GetDebugLevel(DebugLevelID::net) >= 6) {
 		if (this->addresses.empty()) {
 			DEBUG(net, 6, "%s did not resolve", this->connection_string.c_str());
 		} else {
@@ -392,9 +392,7 @@ bool TCPConnecter::CheckActivity()
 	}
 
 	DEBUG(net, 3, "Connected to %s", this->connection_string.c_str());
-	if (_debug_net_level >= 5) {
-		DEBUG(net, 5, "- using %s", NetworkAddress::GetPeerName(connected_socket).c_str());
-	}
+	DEBUG(net, 5, "- using %s", NetworkAddress::GetPeerName(connected_socket).c_str());
 
 	this->OnConnect(connected_socket);
 	this->status = Status::Connected;

@@ -2896,7 +2896,7 @@ static void SlSaveChunk(const ChunkHandler &ch)
 	DEBUG(sl, 2, "Saving chunk %s", ChunkIDDumper()(ch.id));
 
 	size_t written = 0;
-	if (_debug_sl_level >= 3) written = SlGetBytesWritten();
+	if (GetDebugLevel(DebugLevelID::sl) >= 3) written = SlGetBytesWritten();
 
 	_sl.block_mode = ch.type;
 	_sl.block_flags = 0;
@@ -2962,7 +2962,7 @@ static void SlLoadChunks()
 	for (uint32_t id = SlReadUint32(); id != 0; id = SlReadUint32()) {
 		_sl.current_chunk_id = id;
 		size_t read = 0;
-		if (_debug_sl_level >= 3) read = SlGetBytesRead();
+		if (GetDebugLevel(DebugLevelID::sl) >= 3) read = SlGetBytesRead();
 
 		_sl.chunk_block_modes[id] = ReadBuffer::GetCurrent()->PeekByte();
 
@@ -2994,7 +2994,7 @@ static void SlLoadCheckChunks()
 	for (id = SlReadUint32(); id != 0; id = SlReadUint32()) {
 		_sl.current_chunk_id = id;
 		size_t read = 0;
-		if (_debug_sl_level >= 3) read = SlGetBytesRead();
+		if (GetDebugLevel(DebugLevelID::sl) >= 3) read = SlGetBytesRead();
 
 		_sl.chunk_block_modes[id] = ReadBuffer::GetCurrent()->PeekByte();
 
@@ -4211,7 +4211,7 @@ static SaveOrLoadResult DoLoad(std::shared_ptr<LoadFilter> reader, bool load_che
 		if (_load_check_data.want_grf_compatibility) _load_check_data.grf_compatibility = IsGoodGRFConfigList(_load_check_data.grfconfig);
 		_load_check_data.sl_is_ext_version = _sl_is_ext_version;
 
-		if (_debug_sl_level > 0) {
+		if (GetDebugLevel(DebugLevelID::sl) > 0) {
 			_load_check_data.version_name = stdstr_fmt("Version %d%s%s", original_sl_version, _sl_is_ext_version ? ", extended" : "", _sl_upstream_mode ? ", upstream mode" : "");
 			if (_sl_version != original_sl_version) {
 				_load_check_data.version_name += stdstr_fmt(" as %d", _sl_version);

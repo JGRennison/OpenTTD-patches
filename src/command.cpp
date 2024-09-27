@@ -910,12 +910,12 @@ error:
 
 static void DebugLogCommandLogEntry(const CommandLogEntry &entry)
 {
-	if (_debug_command_level <= 0) return;
+	if (GetDebugLevel(DebugLevelID::command) <= 0) return;
 
 	char buffer[512];
 	char *b = buffer;
 	DumpSubCommandLogEntry(b, lastof(buffer), entry);
-	debug_print("command", 0, buffer);
+	debug_print(DebugLevelID::command, 0, buffer);
 }
 
 static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd, CommandLogEntryFlag log_flags, const char *text, const CommandAuxiliaryBase *aux_data)
@@ -1193,7 +1193,7 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32_t p1, uint32_t p2, uint64_
 	assert(exec_as_spectator ? _current_company == COMPANY_SPECTATOR : cur_company.Verify());
 
 	auto log_desync_cmd = [&](const char *prefix) {
-		if (_debug_desync_level >= 1) {
+		if (GetDebugLevel(DebugLevelID::desync) >= 1) {
 			std::string aux_str;
 			if (aux_data != nullptr) {
 				std::vector<uint8_t> buffer;
@@ -1209,11 +1209,9 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32_t p1, uint32_t p2, uint64_
 				text_buf = "\"\"";
 			}
 
-			/* Use stdstr_fmt and debug_print to avoid truncation limits of DEBUG, text/aux_data may be very large */
-			std::string dbg_info = stdstr_fmt("%s: %s; company: %02x; tile: %06x (%u x %u); p1: %08x; p2: %08x; p3: " OTTD_PRINTFHEX64PAD "; cmd: %08x; %s <%s> (%s)",
+			DEBUG(desync, 1, "%s: %s; company: %02x; tile: %06x (%u x %u); p1: %08x; p2: %08x; p3: " OTTD_PRINTFHEX64PAD "; cmd: %08x; %s <%s> (%s)",
 					prefix, debug_date_dumper().HexDate(), (int)_current_company, tile, TileX(tile), TileY(tile), p1, p2, p3,
 					cmd & ~CMD_NETWORK_COMMAND, text_buf.c_str(), aux_str.c_str(), GetCommandName(cmd));
-			debug_print("desync", 1, dbg_info.c_str());
 		}
 	};
 

@@ -135,7 +135,7 @@ public:
 
 		const bool destination_found = (m_pBestDestNode != nullptr);
 
-		if (_debug_yapf_level >= 3) {
+		if (GetDebugLevel(DebugLevelID::yapf) >= 3) {
 			const UnitID veh_idx = (m_veh != nullptr) ? m_veh->unitnumber : 0;
 			const char ttc = Yapf().TransportTypeChar();
 			const float cache_hit_ratio = (m_stats_cache_hits == 0) ? 0.0f : ((float)m_stats_cache_hits / (float)(m_stats_cache_hits + m_stats_cost_calcs) * 100.0f);

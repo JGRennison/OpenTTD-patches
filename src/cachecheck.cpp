@@ -84,7 +84,7 @@ static bool SignalInfraTotalMatches()
 void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckCachesFlags flags)
 {
 	if (!force_check) {
-		int desync_level = _debug_desync_level;
+		int desync_level = GetDebugLevel(DebugLevelID::desync);
 
 		if (unlikely(HasChickenBit(DCBF_DESYNC_CHECK_PERIODIC)) && desync_level < 1) {
 			desync_level = 1;

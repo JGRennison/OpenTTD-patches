@@ -117,7 +117,7 @@ public:
 #else
 #	define LANDINFOD_LEVEL 1
 #endif
-		if (_debug_misc_level >= LANDINFOD_LEVEL) {
+		if (GetDebugLevel(DebugLevelID::misc) >= LANDINFOD_LEVEL) {
 			DEBUG(misc, LANDINFOD_LEVEL, "TILE: %#x (%i,%i)", tile, TileX(tile), TileY(tile));
 			if (IsTunnelTile(tile)) {
 				DEBUG(misc, LANDINFOD_LEVEL, "tunnel pool size: %u", (uint)Tunnel::GetPoolSize());
