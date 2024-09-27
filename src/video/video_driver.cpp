@@ -217,5 +217,5 @@ void VideoDriver::InvalidateGameOptionsWindow()
  */
 /* static */ std::string VideoDriver::GetCaption()
 {
-	return stdstr_fmt("OpenTTD %s", _openttd_revision);
+	return fmt::format("OpenTTD {}", _openttd_revision);
 }

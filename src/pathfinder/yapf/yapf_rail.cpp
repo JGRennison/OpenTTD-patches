@@ -39,18 +39,18 @@ template <typename Tpf> void DumpState(Tpf &pf1, Tpf &pf2)
 	FILE *f1 = nullptr;
 	FILE *f2 = nullptr;
 	for(;;) {
-		fn1 = stdstr_fmt("yapf-%d-%u-1.txt", pid, num);
+		fn1 = fmt::format("yapf-{}-{}-1.txt", pid, num);
 		f1 = fopen(fn1.c_str(), "wx");
 		if (f1 == nullptr && errno == EEXIST) {
 			num++;
 			continue;
 		}
-		fn2 = stdstr_fmt("yapf-%d-%u-2.txt", pid, num);
+		fn2 = fmt::format("yapf-{}-{}-2.txt", pid, num);
 		f2 = fopen(fn2.c_str(), "w");
 		num++;
 		break;
 	}
-	DEBUG(desync, 0, "Dumping YAPF state to %s and %s", fn1.c_str(), fn2.c_str());
+	Debug(desync, 0, "Dumping YAPF state to {} and {}", fn1, fn2);
 #else
 	FILE *f1 = fopen("yapf1.txt", "wt");
 	FILE *f2 = fopen("yapf2.txt", "wt");

@@ -40,9 +40,6 @@ void strecpy(std::span<char> dst, std::string_view src);
 int CDECL seprintf(char *str, const char *last, const char *format, ...) WARN_FORMAT(3, 4) NOACCESS(2);
 int CDECL vseprintf(char *str, const char *last, const char *format, va_list ap) WARN_FORMAT(3, 0) NOACCESS(2);
 
-std::string CDECL stdstr_fmt(const char *str, ...) WARN_FORMAT(1, 2);
-std::string stdstr_vfmt(const char *str, va_list va) WARN_FORMAT(1, 0);
-
 std::string FormatArrayAsHex(std::span<const uint8_t> data, bool upper_case = true);
 
 char *StrMakeValidInPlace(char *str, const char *last, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK) NOACCESS(2);

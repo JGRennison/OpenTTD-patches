@@ -846,3 +846,8 @@ SQInteger Squirrel::GetOpsTillSuspend()
 {
 	return this->vm->_ops_till_suspend;
 }
+
+std::string SquirrelMakeCannotResizeError(size_t newsize)
+{
+	return fmt::format("cannot resize to {}", newsize);
+}

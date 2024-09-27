@@ -1183,9 +1183,9 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32_t p1, uint32_t p2, uint64_
 	SetTownRatingTestMode(false);
 
 	if (!random_state.Check()) {
-		std::string msg = stdstr_fmt("Random seed changed in test command: company: %02x; tile: %06x (%u x %u); p1: %08x; p2: %08x; p3: " OTTD_PRINTFHEX64PAD "; cmd: %08x; \"%s\"%s (%s)",
+		std::string msg = fmt::format("Random seed changed in test command: company: {:02x}; tile: {:06x} ({} x {}); p1: {:08x}; p2: {:08x}; p3: {:016x}; cmd: {:08x}; \"{}\"{} ({})",
 				(int)_current_company, tile, TileX(tile), TileY(tile), p1, p2, p3, cmd & ~CMD_NETWORK_COMMAND, text, aux_data != nullptr ? ", aux data present" : "", GetCommandName(cmd));
-		DEBUG(desync, 0, "msg: %s; %s", debug_date_dumper().HexDate(), msg.c_str());
+		Debug(desync, 0, "msg: {}; {}", debug_date_dumper().HexDate(), msg);
 		LogDesyncMsg(std::move(msg));
 	}
 
@@ -1209,9 +1209,9 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32_t p1, uint32_t p2, uint64_
 				text_buf = "\"\"";
 			}
 
-			DEBUG(desync, 1, "%s: %s; company: %02x; tile: %06x (%u x %u); p1: %08x; p2: %08x; p3: " OTTD_PRINTFHEX64PAD "; cmd: %08x; %s <%s> (%s)",
+			Debug(desync, 1, "{}: {}; company: {:02x}; tile: {:06x} ({} x {}); p1: {:08x}; p2: {:08x}; p3: {:016x}; cmd: {:08x}; {} <{}> ({})",
 					prefix, debug_date_dumper().HexDate(), (int)_current_company, tile, TileX(tile), TileY(tile), p1, p2, p3,
-					cmd & ~CMD_NETWORK_COMMAND, text_buf.c_str(), aux_str.c_str(), GetCommandName(cmd));
+					cmd & ~CMD_NETWORK_COMMAND, text_buf, aux_str, GetCommandName(cmd));
 		}
 	};
 
@@ -1365,12 +1365,12 @@ void CommandCost::UseTextRefStack(const GRFFile *grffile, uint num_registers)
 std::string CommandCost::SummaryMessage(StringID cmd_msg) const
 {
 	if (this->Succeeded()) {
-		return stdstr_fmt("Success: cost: " OTTD_PRINTF64, (int64_t) this->GetCost());
+		return fmt::format("Success: cost: {}", (int64_t) this->GetCost());
 	} else {
 		const uint textref_stack_size = this->GetTextRefStackSize();
 		if (textref_stack_size > 0) StartTextRefStackUsage(this->GetTextRefStackGRF(), textref_stack_size, this->GetTextRefStack());
 
-		std::string buf = stdstr_fmt("Failed: cost: " OTTD_PRINTF64, (int64_t) this->GetCost());
+		std::string buf = fmt::format("Failed: cost: {}", (int64_t) this->GetCost());
 		if (cmd_msg != 0) {
 			buf += ' ';
 			GetString(StringBuilder(buf), cmd_msg);

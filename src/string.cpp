@@ -170,42 +170,6 @@ char *stredup(const char *s, const char *last)
 	return tmp;
 }
 
-std::string stdstr_vfmt(const char *str, va_list va)
-{
-	std::string out;
-
-	va_list va2;
-	va_copy(va2, va);
-
-	static constexpr int DEFAULT_BUFFER_SIZE = 1024;
-	char buf[DEFAULT_BUFFER_SIZE];
-
-	int len = vsnprintf(buf, DEFAULT_BUFFER_SIZE, str, va);
-	if (len >= DEFAULT_BUFFER_SIZE) {
-		/* buffer was too small */
-		out.resize(len);
-		vsnprintf(out.data(), len + 1, str, va2);
-	} else if (len > 0) {
-		out.assign(buf, len);
-	}
-	va_end(va2);
-	return out;
-}
-
-/**
- * Format, "printf", into a std::string.
- * @param str The formatting string.
- * @return The formatted string.
- */
-std::string CDECL stdstr_fmt(const char *str, ...)
-{
-	va_list va;
-	va_start(va, str);
-	std::string output = stdstr_vfmt(str, va);
-	va_end(va);
-	return output;
-}
-
 /**
  * Scan the string for old values of SCC_ENCODED and fix it to
  * it's new, static value.

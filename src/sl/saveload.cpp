@@ -2309,7 +2309,7 @@ SaveLoadTableData SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecia
 
 			/* Check that there is only one active SaveLoad for a given name. */
 			[[maybe_unused]] auto duplicate = std::adjacent_find(key_lookup.begin(), key_lookup.end());
-			assert_msg(duplicate == key_lookup.end(), "%s", duplicate->name.data());
+			assert_str(duplicate == key_lookup.end(), duplicate->name.data());
 
 			while (true) {
 				uint8_t type = SlReadByte();
@@ -3097,7 +3097,7 @@ struct FileWriter : SaveFilter {
 			SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_WRITEABLE, "Failed to stat temporary save file");
 		}
 		if ((size_t)st.st_size != save_size) {
-			SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_WRITEABLE, stdstr_fmt("Temporary save file does not have expected file size: " PRINTF_SIZE " != " PRINTF_SIZE, (size_t)st.st_size, save_size));
+			SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_WRITEABLE, fmt::format("Temporary save file does not have expected file size: {} != {}", st.st_size, save_size));
 		}
 
 		if (!FioRenameFile(this->temp_name, this->target_name)) SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_WRITEABLE, "Failed to rename temporary save file to target name");

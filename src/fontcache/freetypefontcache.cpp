@@ -41,7 +41,7 @@ public:
 	~FreeTypeFontCache();
 	void ClearFontCache() override;
 	GlyphID MapCharToGlyph(char32_t key, bool allow_fallback = true) override;
-	std::string GetFontName() override { return stdstr_fmt("%s, %s", face->family_name, face->style_name); }
+	std::string GetFontName() override { return fmt::format("{}, {}", face->family_name, face->style_name); }
 	bool IsBuiltInFont() override { return false; }
 	const void *GetOSHandle() override { return &face; }
 };

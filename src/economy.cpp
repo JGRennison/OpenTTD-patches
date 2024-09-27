@@ -658,9 +658,9 @@ void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner)
 	cur_company.Restore();
 
 	if (new_owner != INVALID_OWNER) {
-		AppendSpecialEventsLogEntry(stdstr_fmt("Company merge: old: %u, new %u", old_owner, new_owner));
+		AppendSpecialEventsLogEntry(fmt::format("Company merge: old: {}, new {}", old_owner, new_owner));
 	} else {
-		AppendSpecialEventsLogEntry(stdstr_fmt("Company deletion: old: %u", old_owner));
+		AppendSpecialEventsLogEntry(fmt::format("Company deletion: old: {}", old_owner));
 	}
 
 	RegisterGameEvents(new_owner != INVALID_OWNER ? GEF_COMPANY_MERGE : GEF_COMPANY_DELETE);

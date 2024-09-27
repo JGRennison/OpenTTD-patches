@@ -268,7 +268,7 @@ static void ShowHelp()
 {
 	char buf[2048];
 
-	std::string msg = stdstr_fmt("OpenTTD %s\n", _openttd_revision);
+	std::string msg = fmt::format("OpenTTD {}\n", _openttd_revision);
 	msg += "\n"
 		"\n"
 		"Command line options:\n"

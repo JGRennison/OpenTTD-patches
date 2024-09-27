@@ -799,7 +799,7 @@ std::string FiosNumberedSaveName::FilenameUsingMaxSaves(int max_saves)
 
 std::string FiosNumberedSaveName::FilenameUsingNumber(int num, const char *suffix) const
 {
-	return stdstr_fmt("%s%u%s.sav", this->prefix.c_str(), num, suffix);
+	return fmt::format("{}{}{}.sav", this->prefix, num, suffix);
 }
 
 /**
@@ -808,5 +808,5 @@ std::string FiosNumberedSaveName::FilenameUsingNumber(int num, const char *suffi
  */
 std::string FiosNumberedSaveName::Extension()
 {
-	return stdstr_fmt("-%s.sav", this->prefix.c_str());
+	return fmt::format("-{}.sav", this->prefix);
 }

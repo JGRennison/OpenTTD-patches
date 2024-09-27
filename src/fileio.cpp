@@ -305,7 +305,7 @@ FILE *FioFOpenFile(const std::string &filename, const char *mode, Subdirectory s
 		if (it != _tar_filelist[subdir].end()) {
 			f = FioFOpenFileTar(it->second, filesize);
 			if (output_filename != nullptr && f != nullptr) {
-				*output_filename = stdstr_fmt("%s" PATHSEP "%s", ((*it).second).tar_filename.c_str(), filename.c_str());
+				*output_filename = fmt::format("{}" PATHSEP "{}", ((*it).second).tar_filename, filename);
 			}
 		}
 	}

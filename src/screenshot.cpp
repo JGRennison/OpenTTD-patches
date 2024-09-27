@@ -737,7 +737,7 @@ static const char *MakeScreenshotName(const char *default_fn, const char *ext, b
 		if (!FileExists(_full_screenshot_path)) break;
 		/* If file exists try another one with same name, but just with a higher index */
 		_screenshot_name.erase(len);
-		_screenshot_name += stdstr_fmt("#%u.%s", serial, ext);
+		_screenshot_name += fmt::format("#{}.{}", serial, ext);
 	}
 
 	return _full_screenshot_path.c_str();

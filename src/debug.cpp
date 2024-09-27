@@ -135,7 +135,7 @@ void debug_print_intl(DebugLevelID dbg, int8_t level, const char *buf, size_t pr
 			unsigned int num = 0;
 			int pid = getpid();
 			for(;;) {
-				std::string fn = stdstr_fmt("random-out-%d-%u.log", pid, num);
+				std::string fn = fmt::format("random-out-{}-{}.log", pid, num);
 				f = FioFOpenFile(fn.c_str(), "wx", AUTOSAVE_DIR);
 				if (f == nullptr && errno == EEXIST) {
 					num++;

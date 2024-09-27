@@ -23,5 +23,5 @@ std::string ValueStr(EndSegmentReasonBits bits)
 		"REVERSE"
 	};
 
-	return stdstr_fmt("0x%04X (%s)", bits, ComposeNameT(bits, end_segment_reason_names, "UNK", ESRB_NONE, "NONE").c_str());
+	return fmt::format("0x{:04X} ({})", bits, ComposeNameT(bits, end_segment_reason_names, "UNK", ESRB_NONE, "NONE"));
 }

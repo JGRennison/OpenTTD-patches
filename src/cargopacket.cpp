@@ -95,8 +95,8 @@ std::string DumpCargoPacketDeferredPaymentStats()
 			}
 		}
 	}
-	buffer += stdstr_fmt("Deferred payment count: %u\n", (uint) _cargo_packet_deferred_payments.size());
-	buffer += stdstr_fmt("Total cargo packets: %u\n", (uint)CargoPacket::GetNumItems());
+	fmt::format_to(std::back_inserter(buffer), "Deferred payment count: {}\n", _cargo_packet_deferred_payments.size());
+	fmt::format_to(std::back_inserter(buffer), "Total cargo packets: {}\n", CargoPacket::GetNumItems());
 	return buffer;
 }
 

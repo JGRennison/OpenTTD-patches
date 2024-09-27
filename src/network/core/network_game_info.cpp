@@ -55,7 +55,7 @@ std::string_view GetNetworkRevisionString()
 		network_revision = _openttd_revision;
 #else
 		/* Build for debugging that sends the first part of the seed every frame, practically syncing every frame. */
-		network_revision = stdstr_fmt("dbg_sync-%s", _openttd_revision);
+		network_revision = fmt::format("dbg_sync-{}", _openttd_revision);
 #endif
 		if (_openttd_revision_tagged) {
 			/* Tagged; do not mangle further, though ensure it's not too long. */
@@ -75,7 +75,7 @@ std::string_view GetNetworkRevisionString()
 			network_revision.replace(hash_end, std::string::npos, githash_suffix);
 		}
 		assert(network_revision.size() < NETWORK_REVISION_LENGTH); // size does not include terminator, constant does, hence strictly less than
-		DEBUG(net, 3, "Network revision name: %s", network_revision.c_str());
+		Debug(net, 3, "Network revision name: %s", network_revision);
 	}
 
 	return network_revision;
@@ -518,7 +518,7 @@ void DeserializeNetworkGameInfoExtended(Packet &p, NetworkGameInfo &info)
 					break;
 
 				case NST_LOOKUP_ID: {
-					DEBUG(net, 0, "Unexpected NST_LOOKUP_ID in DeserializeNetworkGameInfoExtended");
+					Debug(net, 0, "Unexpected NST_LOOKUP_ID in DeserializeNetworkGameInfoExtended");
 					return;
 				}
 

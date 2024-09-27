@@ -2685,7 +2685,7 @@ static void SaveVersionInConfig(IniFile &ini)
 {
 	IniGroup &group = ini.GetOrCreateGroup("version");
 	group.GetOrCreateItem("version_string").SetValue(_openttd_revision);
-	group.GetOrCreateItem("version_number").SetValue(stdstr_fmt("%08X", _openttd_newgrf_version));
+	group.GetOrCreateItem("version_number").SetValue(fmt::format("{:08X}", _openttd_newgrf_version));
 	group.GetOrCreateItem("ini_version").SetValue(std::to_string(INIFILE_VERSION));
 }
 
@@ -2701,11 +2701,11 @@ static void GraphicsSetSaveConfig(IniFile &ini)
 	group.Clear();
 
 	group.GetOrCreateItem("name").SetValue(used_set->name);
-	group.GetOrCreateItem("shortname").SetValue(stdstr_fmt("%08X", BSWAP32(used_set->shortname)));
+	group.GetOrCreateItem("shortname").SetValue(fmt::format("{:08X}", BSWAP32(used_set->shortname)));
 
 	const GRFConfig *extra_cfg = used_set->GetExtraConfig();
 	if (extra_cfg != nullptr && extra_cfg->num_params > 0) {
-		group.GetOrCreateItem("extra_version").SetValue(stdstr_fmt("%u", extra_cfg->version));
+		group.GetOrCreateItem("extra_version").SetValue(fmt::format("{}", extra_cfg->version));
 		group.GetOrCreateItem("extra_params").SetValue(GRFBuildParamList(extra_cfg));
 	}
 }

@@ -60,7 +60,7 @@ std::string ValueStr(SignalType t)
 /** Translate TileIndex into string. */
 std::string TileStr(TileIndex tile)
 {
-	return stdstr_fmt("0x%04X (%u, %u)", tile, TileX(tile), TileY(tile));
+	return fmt::format("0x{:04X} ({}, {})", tile, TileX(tile), TileY(tile));
 }
 
 /**

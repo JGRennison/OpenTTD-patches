@@ -141,12 +141,11 @@ void ScriptScanner::RegisterScript(ScriptInfo *info)
 
 std::string ScriptScanner::GetConsoleList(bool newest_only) const
 {
-	std::string p;
-	p += stdstr_fmt("List of %s:\n", this->GetScannerName());
+	std::string p = fmt::format("List of {}:\n", this->GetScannerName());
 	const ScriptInfoList &list = newest_only ? this->info_single_list : this->info_list;
 	for (const auto &item : list) {
 		ScriptInfo *i = item.second;
-		p += stdstr_fmt("%10s (v%d): %s\n", i->GetName().c_str(), i->GetVersion(), i->GetDescription().c_str());
+		fmt::format_to(std::back_inserter(p), "{:10} (v{}): {}\n", i->GetName(), i->GetVersion(), i->GetDescription());
 	}
 	p += "\n";
 

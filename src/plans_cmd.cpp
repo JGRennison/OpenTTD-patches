@@ -17,6 +17,7 @@
 #include "company_base.h"
 #include "string_func.h"
 #include "window_gui.h"
+#include "core/format.hpp"
 #include "table/strings.h"
 
 /**
@@ -61,7 +62,7 @@ struct PlanLineCmdData : public CommandAuxiliarySerialisable<PlanLineCmdData> {
 
 	std::string GetDebugSummary() const override
 	{
-		return stdstr_fmt("%u tiles", (uint32_t)this->tiles.size());
+		return fmt::format("{} tiles", this->tiles.size());
 	}
 };
 

@@ -1183,11 +1183,12 @@ static void GfxBlitter(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, in
 
 #ifdef WITH_ASSERT
 	auto failure_info = [&]() -> std::string {
-		std::string msg = stdstr_fmt("sprite: %u, zoom: %u", sprite_id, zoom);
-		if (sub != nullptr) msg += stdstr_fmt(", sub(%d, %d, %d, %d)", sub->left, sub->top, sub->right, sub->bottom);
-		msg += stdstr_fmt("\nbp.skip_left: %u, bp.width: %u, sprite->width: %u, (%u)", bp.skip_left, bp.width, sprite->width, UnScaleByZoom(sprite->width, zoom));
-		msg += stdstr_fmt("\nbp.skip_top: %u, bp.height: %u, sprite->height: %u, (%u)", bp.skip_top, bp.height, sprite->height, UnScaleByZoom(sprite->height, zoom));
-		return msg;
+		auto buffer = fmt::memory_buffer();
+		fmt::format_to(std::back_inserter(buffer), "sprite: {}, zoom: {}", sprite_id, zoom);
+		if (sub != nullptr) fmt::format_to(std::back_inserter(buffer), ", sub({}, {}, {}, {})", sub->left, sub->top, sub->right, sub->bottom);
+		fmt::format_to(std::back_inserter(buffer), "\nbp.skip_left: {}, bp.width: {}, sprite->width: {}, ({})", bp.skip_left, bp.width, sprite->width, UnScaleByZoom(sprite->width, zoom));
+		fmt::format_to(std::back_inserter(buffer), "\nbp.skip_top: {}, bp.height: {}, sprite->height: {}, ({})", bp.skip_top, bp.height, sprite->height, UnScaleByZoom(sprite->height, zoom));
+		return fmt::to_string(buffer);
 	};
 	assert_str(bp.skip_left + bp.width <= UnScaleByZoom(sprite->width, zoom), failure_info());
 	assert_str(bp.skip_top + bp.height <= UnScaleByZoom(sprite->height, zoom), failure_info());

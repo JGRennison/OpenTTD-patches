@@ -108,8 +108,8 @@ private:
 	{
 		newsize = (newsize > 0)?newsize:4;
 		if (newsize > SIZE_MAX / sizeof(T)) {
-			std::string msg = stdstr_fmt("cannot resize to " PRINTF_SIZE, (size_t)newsize);
-			throw Script_FatalError(std::move(msg));
+			extern std::string SquirrelMakeCannotResizeError(size_t newsize);
+			throw Script_FatalError(SquirrelMakeCannotResizeError(newsize));
 		}
 		_vals = (T*)SQ_REALLOC(_vals, _allocated * sizeof(T), newsize * sizeof(T));
 		_allocated = (size_t)newsize;
