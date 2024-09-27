@@ -738,11 +738,9 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 
 	void OnDropdownSelect(WidgetID widget, int index) override
 	{
-		switch (widget) {
-			case WID_ETT_PUBLIC_ROADS_TYPE_DROPDOWN: {
-				this->public_road_type = (RoadType)index;
-				break;
-			}
+		if (widget == WID_ETT_PUBLIC_ROADS_TYPE_DROPDOWN)
+		{
+			this->public_road_type = (RoadType)index;
 		}
 
 		this->SetDirty();
@@ -837,10 +835,9 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 
 	void SetStringParameters(WidgetID widget) const override
 	{
-		switch (widget) {
-			case WID_ETT_PUBLIC_ROADS_TYPE_DROPDOWN:
+		if (widget == WID_ETT_PUBLIC_ROADS_TYPE_DROPDOWN)
+		{
 				SetDParam(0, GetRoadTypeInfo(this->public_road_type)->strings.name);
-				break;
 		}
 	}
 
