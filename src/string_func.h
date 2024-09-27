@@ -49,6 +49,13 @@ char *StrMakeValidInPlace(char *str, const char *last, StringValidationSettings 
 [[nodiscard]] std::string StrMakeValid(std::string_view str, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK);
 void StrMakeValidInPlace(char *str, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK);
 
+inline void StrMakeValidInPlace(std::string &str, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK)
+{
+	if (str.empty()) return;
+	char *buf = str.data();
+	str.resize(StrMakeValidInPlace(buf, buf + str.size(), settings) - buf);
+}
+
 const char *str_fix_scc_encoded(char *str, const char *last) NOACCESS(2);
 void str_strip_colours(char *str);
 const char *strip_leading_colours(const char *str);

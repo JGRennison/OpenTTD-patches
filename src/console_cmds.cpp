@@ -338,13 +338,6 @@ DEF_CONSOLE_CMD(ConZoomToLevel)
 		case 0:
 			IConsolePrint(CC_HELP, "Set the current zoom level of the main viewport.");
 			IConsolePrint(CC_HELP, "Usage: 'zoomto <level>'.");
-			IConsolePrintF(
-				CC_WARNING,
-				ZOOM_LVL_MIN < _settings_client.gui.zoom_min ?
-					"- The lowest zoom-in level allowed by current client settings is %u." :
-					"- The lowest supported zoom-in level is %u.",
-				std::max(ZOOM_LVL_MIN, _settings_client.gui.zoom_min)
-			);
 
 			if (ZOOM_LVL_MIN < _settings_client.gui.zoom_min) {
 				IConsolePrint(CC_HELP, "The lowest zoom-in level allowed by current client settings is {}.", std::max(ZOOM_LVL_MIN, _settings_client.gui.zoom_min));
@@ -1195,7 +1188,7 @@ DEF_CONSOLE_CMD(ConOfferCompanySale)
 
 	/* Check valid range */
 	if (!Company::IsValidID(index)) {
-		IConsolePrintF(CC_ERROR, "Company does not exist. Company-id must be between 1 and %d.", MAX_COMPANIES);
+		IConsolePrint(CC_ERROR, "Company does not exist. Company-id must be between 1 and {}.", MAX_COMPANIES);
 		return true;
 	}
 
@@ -1220,11 +1213,11 @@ DEF_CONSOLE_CMD(ConMergeCompanies)
 
 	/* Check valid range */
 	if (!Company::IsValidID(main_company)) {
-		IConsolePrintF(CC_ERROR, "Main company does not exist. Company-id must be between 1 and %d.", MAX_COMPANIES);
+		IConsolePrint(CC_ERROR, "Main company does not exist. Company-id must be between 1 and {}.", MAX_COMPANIES);
 		return true;
 	}
 	if (!Company::IsValidID(to_merge_company)) {
-		IConsolePrintF(CC_ERROR, "Company to merge does not exist. Company-id must be between 1 and %d.", MAX_COMPANIES);
+		IConsolePrint(CC_ERROR, "Company to merge does not exist. Company-id must be between 1 and {}.", MAX_COMPANIES);
 		return true;
 	}
 
@@ -1779,7 +1772,7 @@ DEF_CONSOLE_CMD(ConGetDate)
 		return true;
 	}
 
-	IConsolePrintF(CC_DEFAULT, "Date: %04d-%02d-%02d", CalTime::CurYear().base(), CalTime::CurMonth() + 1, CalTime::CurDay());
+	IConsolePrint(CC_DEFAULT, "Date: {:04}-{:02}-{:02}", CalTime::CurYear(), CalTime::CurMonth() + 1, CalTime::CurDay());
 	return true;
 }
 
@@ -1966,7 +1959,7 @@ DEF_CONSOLE_CMD(ConDebugLevel)
 	if (argc == 1) {
 		IConsolePrint(CC_DEFAULT, "Current debug-level: '{}'", GetDebugString());
 	} else {
-		SetDebugString(argv[1], [](const char *err) { IConsolePrint(CC_ERROR, err); });
+		SetDebugString(argv[1], [](std::string err) { IConsolePrint(CC_ERROR, err); });
 	}
 
 	return true;
@@ -2098,7 +2091,7 @@ DEF_CONSOLE_CMD(ConCompanies)
 		std::string colour = GetString(STR_COLOUR_DARK_BLUE + _company_colours[c->index]);
 		IConsolePrint(CC_INFO, "#:{}({}) Company Name: '{}'  Year Founded: {}  Age: {}  Money: {}  Loan: {}  Value: {}  (T:{}, R:{}, P:{}, S:{}) {}",
 			c->index + 1, colour, company_name,
-			c->InauguratedDisplayYear(), c->age_years.base(), (int64_t)c->money, (int64_t)c->current_loan, (int64_t)CalculateCompanyValue(c),
+			c->InauguratedDisplayYear(), c->age_years, (int64_t)c->money, (int64_t)c->current_loan, (int64_t)CalculateCompanyValue(c),
 			c->group_all[VEH_TRAIN].num_vehicle,
 			c->group_all[VEH_ROAD].num_vehicle,
 			c->group_all[VEH_AIRCRAFT].num_vehicle,
@@ -2379,9 +2372,9 @@ DEF_CONSOLE_CMD(ConCompanyPasswordHash)
 	NetworkServerSetCompanyPassword(company_id, password, true);
 
 	if (StrEmpty(password)) {
-		IConsolePrintF(CC_WARNING, "Company password hash cleared");
+		IConsolePrint(CC_WARNING, "Company password hash cleared");
 	} else {
-		IConsolePrintF(CC_WARNING, "Company password hash changed to: %s", password);
+		IConsolePrint(CC_WARNING, "Company password hash changed to: {}", password);
 	}
 
 	return true;
@@ -2399,7 +2392,7 @@ DEF_CONSOLE_CMD(ConCompanyPasswordHashes)
 		SetDParam(0, c->index);
 		std::string company_name = GetString(STR_COMPANY_NAME);
 
-		IConsolePrintF(CC_INFO, "#:%d(%s) Company Name: '%s'  Hash: '%s'",
+		IConsolePrint(CC_INFO, "#:{}({}) Company Name: '{}'  Hash: '{}'",
 			c->index + 1, GetStringPtr(STR_COLOUR_DARK_BLUE + _company_colours[c->index]), company_name.c_str(), _network_company_states[c->index].password.c_str());
 	}
 
@@ -2789,11 +2782,11 @@ DEF_CONSOLE_CMD(ConResetBlockedHeliports)
 			st->airport.flags = 0;
 			count++;
 			SetDParam(0, st->index);
-			IConsolePrintF(CC_DEFAULT, "Unblocked: %s", GetString(STR_STATION_NAME).c_str());
+			IConsolePrint(CC_DEFAULT, "Unblocked: {}", GetString(STR_STATION_NAME));
 		}
 	}
 
-	IConsolePrintF(CC_DEFAULT, "Unblocked %u heliports", count);
+	IConsolePrint(CC_DEFAULT, "Unblocked {} heliports", count);
 	return true;
 }
 
@@ -2907,19 +2900,19 @@ DEF_CONSOLE_CMD(ConGetFullDate)
 		return true;
 	}
 
-	IConsolePrintF(CC_DEFAULT, "Calendar Date: %04d-%02d-%02d (%d), fract: %i, sub_fract: %i", CalTime::CurYear().base(), CalTime::CurMonth() + 1, CalTime::CurDay(), CalTime::CurDate().base(), CalTime::CurDateFract(), CalTime::Detail::now.sub_date_fract);
-	IConsolePrintF(CC_DEFAULT, "Economy Date: %04d-%02d-%02d (%d), fract: %i, tick skip: %i", EconTime::CurYear().base(), EconTime::CurMonth() + 1, EconTime::CurDay(), EconTime::CurDate().base(), EconTime::CurDateFract(), TickSkipCounter());
-	IConsolePrintF(CC_DEFAULT, "Period display offset: %d", EconTime::Detail::period_display_offset.base());
-	IConsolePrintF(CC_DEFAULT, "Elapsed years: %d", EconTime::Detail::years_elapsed.base());
-	IConsolePrintF(CC_DEFAULT, "Tick counter: " OTTD_PRINTF64, _tick_counter);
-	IConsolePrintF(CC_DEFAULT, "Tick counter (scaled): " OTTD_PRINTF64, _scaled_tick_counter);
-	IConsolePrintF(CC_DEFAULT, "State ticks: " OTTD_PRINTF64 " (offset: " OTTD_PRINTF64 ")", _state_ticks.base(), DateDetail::_state_ticks_offset.base());
-	IConsolePrintF(CC_DEFAULT, "Effective economy speed reduction factor: %d", DayLengthFactor());
-	if (!CalTime::IsCalendarFrozen()) IConsolePrintF(CC_DEFAULT, "Ticks per calendar day: %d", TicksPerCalendarDay());
+	IConsolePrint(CC_DEFAULT, "Calendar Date: {:04}-{:02}-{:02} ({}), fract: {}, sub_fract: {}", CalTime::CurYear(), CalTime::CurMonth() + 1, CalTime::CurDay(), CalTime::CurDate(), CalTime::CurDateFract(), CalTime::Detail::now.sub_date_fract);
+	IConsolePrint(CC_DEFAULT, "Economy Date: {:04}-{:02}-{:02} ({}), fract: {}, tick skip: {}", EconTime::CurYear(), EconTime::CurMonth() + 1, EconTime::CurDay(), EconTime::CurDate(), EconTime::CurDateFract(), TickSkipCounter());
+	IConsolePrint(CC_DEFAULT, "Period display offset: {}", EconTime::Detail::period_display_offset);
+	IConsolePrint(CC_DEFAULT, "Elapsed years: {}", EconTime::Detail::years_elapsed);
+	IConsolePrint(CC_DEFAULT, "Tick counter: {}", _tick_counter);
+	IConsolePrint(CC_DEFAULT, "Tick counter (scaled): {}", _scaled_tick_counter);
+	IConsolePrint(CC_DEFAULT, "State ticks: {} (offset: {})", _state_ticks, DateDetail::_state_ticks_offset);
+	IConsolePrint(CC_DEFAULT, "Effective economy speed reduction factor: {}", DayLengthFactor());
+	if (!CalTime::IsCalendarFrozen()) IConsolePrint(CC_DEFAULT, "Ticks per calendar day: {}", TicksPerCalendarDay());
 	if (_settings_time.time_in_minutes) {
 		Ticks remainder = _settings_time.GetTickMinutesRemainder(_state_ticks);
 		ClockFaceMinutes hhmm = _settings_time.ToTickMinutes(_state_ticks).ToClockFaceMinutes();
-		IConsolePrintF(CC_DEFAULT, "Timetable time: %02d:%02d + %d ticks", hhmm.ClockHour(), hhmm.ClockMinute(), remainder);
+		IConsolePrint(CC_DEFAULT, "Timetable time: {:02}:{:02} + {} ticks", hhmm.ClockHour(), hhmm.ClockMinute(), remainder);
 	}
 	return true;
 }
@@ -2972,12 +2965,12 @@ DEF_CONSOLE_CMD(ConDumpInflation)
 		return true;
 	}
 
-	IConsolePrintF(CC_DEFAULT, "interest_rate: %u", _economy.interest_rate);
-	IConsolePrintF(CC_DEFAULT, "infl_amount: %u", _economy.infl_amount);
-	IConsolePrintF(CC_DEFAULT, "infl_amount_pr: %u", _economy.infl_amount_pr);
-	IConsolePrintF(CC_DEFAULT, "inflation_prices: %f", _economy.inflation_prices / 65536.0);
-	IConsolePrintF(CC_DEFAULT, "inflation_payment: %f", _economy.inflation_payment / 65536.0);
-	IConsolePrintF(CC_DEFAULT, "inflation ratio: %f", (double) _economy.inflation_prices / (double) _economy.inflation_payment);
+	IConsolePrint(CC_DEFAULT, "interest_rate: {}", _economy.interest_rate);
+	IConsolePrint(CC_DEFAULT, "infl_amount: {}", _economy.infl_amount);
+	IConsolePrint(CC_DEFAULT, "infl_amount_pr: {}", _economy.infl_amount_pr);
+	IConsolePrint(CC_DEFAULT, "inflation_prices: {}", _economy.inflation_prices / 65536.0);
+	IConsolePrint(CC_DEFAULT, "inflation_payment: {}", _economy.inflation_payment / 65536.0);
+	IConsolePrint(CC_DEFAULT, "inflation ratio: {}", (double) _economy.inflation_prices / (double) _economy.inflation_payment);
 	return true;
 }
 
@@ -3020,9 +3013,9 @@ DEF_CONSOLE_CMD(ConMapStats)
 	PrintLineByLine(buffer);
 
 	IConsolePrint(CC_DEFAULT, "");
-	IConsolePrintF(CC_DEFAULT, "towns: %u", (uint) Town::GetNumItems());
-	IConsolePrintF(CC_DEFAULT, "industries: %u", (uint) Industry::GetNumItems());
-	IConsolePrintF(CC_DEFAULT, "objects: %u", (uint) Object::GetNumItems());
+	IConsolePrint(CC_DEFAULT, "towns: {}", Town::GetNumItems());
+	IConsolePrint(CC_DEFAULT, "industries: {}", Industry::GetNumItems());
+	IConsolePrint(CC_DEFAULT, "objects: {}", Object::GetNumItems());
 	return true;
 }
 
@@ -3063,9 +3056,9 @@ DEF_CONSOLE_CMD(ConDumpGameEvents)
 
 	char buffer[256];
 	DumpGameEventFlags(_game_events_since_load, buffer, lastof(buffer));
-	IConsolePrintF(CC_DEFAULT, "Since load: %s", buffer);
+	IConsolePrint(CC_DEFAULT, "Since load: {}", buffer);
 	DumpGameEventFlags(_game_events_overall, buffer, lastof(buffer));
-	IConsolePrintF(CC_DEFAULT, "Overall: %s", buffer);
+	IConsolePrint(CC_DEFAULT, "Overall: {}", buffer);
 	return true;
 }
 
@@ -3101,11 +3094,11 @@ DEF_CONSOLE_CMD(ConDumpLinkgraphJobs)
 		return true;
 	}
 
-	IConsolePrintF(CC_DEFAULT, PRINTF_SIZE " link graph jobs", LinkGraphJob::GetNumItems());
+	IConsolePrint(CC_DEFAULT, PRINTF_SIZE " link graph jobs", LinkGraphJob::GetNumItems());
 	for (const LinkGraphJob *lgj : LinkGraphJob::Iterate()) {
-		IConsolePrintF(CC_DEFAULT, "  Job: %5u, nodes: %u, cost: " OTTD_PRINTF64U ", started: %d, ends in: %d, duration: %d",
+		IConsolePrint(CC_DEFAULT, "  Job: {:5}, nodes: {}, cost: {}, started: {}, ends in: {}, duration: {}",
 				lgj->index, lgj->Graph().Size(), lgj->Graph().CalculateCostEstimate(),
-				(int)(lgj->StartTick() - _scaled_tick_counter), (int)(lgj->JoinTick() - _scaled_tick_counter), (int)(lgj->JoinTick() - lgj->StartTick()));
+				(int)(lgj->StartTick() - _scaled_tick_counter), (lgj->JoinTick() - _scaled_tick_counter), (lgj->JoinTick() - lgj->StartTick()));
 	 }
 	return true;
 }
@@ -3117,17 +3110,17 @@ DEF_CONSOLE_CMD(ConDumpRoadTypes)
 		return true;
 	}
 
-	IConsolePrintF(CC_DEFAULT, "  Flags:");
-	IConsolePrintF(CC_DEFAULT, "    c = catenary");
-	IConsolePrintF(CC_DEFAULT, "    l = no level crossings");
-	IConsolePrintF(CC_DEFAULT, "    X = no houses");
-	IConsolePrintF(CC_DEFAULT, "    h = hidden");
-	IConsolePrintF(CC_DEFAULT, "    T = buildable by towns");
-	IConsolePrintF(CC_DEFAULT, "  Extra flags:");
-	IConsolePrintF(CC_DEFAULT, "    s = not available to scripts (AI/GS)");
-	IConsolePrintF(CC_DEFAULT, "    t = not modifiable by towns");
-	IConsolePrintF(CC_DEFAULT, "    T = disallow tunnels");
-	IConsolePrintF(CC_DEFAULT, "    c = disallow collisions with trains for vehicles of this type");
+	IConsolePrint(CC_DEFAULT, "  Flags:");
+	IConsolePrint(CC_DEFAULT, "    c = catenary");
+	IConsolePrint(CC_DEFAULT, "    l = no level crossings");
+	IConsolePrint(CC_DEFAULT, "    X = no houses");
+	IConsolePrint(CC_DEFAULT, "    h = hidden");
+	IConsolePrint(CC_DEFAULT, "    T = buildable by towns");
+	IConsolePrint(CC_DEFAULT, "  Extra flags:");
+	IConsolePrint(CC_DEFAULT, "    s = not available to scripts (AI/GS)");
+	IConsolePrint(CC_DEFAULT, "    t = not modifiable by towns");
+	IConsolePrint(CC_DEFAULT, "    T = disallow tunnels");
+	IConsolePrint(CC_DEFAULT, "    c = disallow collisions with trains for vehicles of this type");
 
 	btree::btree_map<uint32_t, const GRFFile *> grfs;
 	for (RoadType rt = ROADTYPE_BEGIN; rt < ROADTYPE_END; rt++) {
@@ -3146,7 +3139,7 @@ DEF_CONSOLE_CMD(ConDumpRoadTypes)
 			grfid = grf->grfid;
 			grfs.insert(std::pair<uint32_t, const GRFFile *>(grfid, grf));
 		}
-		IConsolePrintF(CC_DEFAULT, "  %02u %s %s, Flags: %c%c%c%c%c, Extra Flags: %c%c%c%c, GRF: %08X, %s",
+		IConsolePrint(CC_DEFAULT, "  {:2} {} {}, Flags: {}{}{}{}{}, Extra Flags: {}{}{}{}, GRF: {:08X},{}",
 				(uint) rt,
 				RoadTypeIsTram(rt) ? "Tram" : "Road",
 				NewGRFLabelDumper().Label(rti->label),
@@ -3164,7 +3157,7 @@ DEF_CONSOLE_CMD(ConDumpRoadTypes)
 		);
 	}
 	for (const auto &grf : grfs) {
-		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grf.first), grf.second->filename.c_str());
+		IConsolePrint(CC_DEFAULT, "  GRF: {:08X} = {}", BSWAP32(grf.first), grf.second->filename);
 	}
 	return true;
 }
@@ -3176,16 +3169,16 @@ DEF_CONSOLE_CMD(ConDumpRailTypes)
 		return true;
 	}
 
-	IConsolePrintF(CC_DEFAULT, "  Flags:");
-	IConsolePrintF(CC_DEFAULT, "    c = catenary");
-	IConsolePrintF(CC_DEFAULT, "    l = no level crossings");
-	IConsolePrintF(CC_DEFAULT, "    h = hidden");
-	IConsolePrintF(CC_DEFAULT, "    s = no sprite combine");
-	IConsolePrintF(CC_DEFAULT, "    a = allow 90° turns");
-	IConsolePrintF(CC_DEFAULT, "    d = disallow 90° turns");
-	IConsolePrintF(CC_DEFAULT, "  Ctrl flags:");
-	IConsolePrintF(CC_DEFAULT, "    p = signal graphics callback enabled for programmable pre-signals");
-	IConsolePrintF(CC_DEFAULT, "    r = signal graphics callback restricted signal flag enabled");
+	IConsolePrint(CC_DEFAULT, "  Flags:");
+	IConsolePrint(CC_DEFAULT, "    c = catenary");
+	IConsolePrint(CC_DEFAULT, "    l = no level crossings");
+	IConsolePrint(CC_DEFAULT, "    h = hidden");
+	IConsolePrint(CC_DEFAULT, "    s = no sprite combine");
+	IConsolePrint(CC_DEFAULT, "    a = allow 90° turns");
+	IConsolePrint(CC_DEFAULT, "    d = disallow 90° turns");
+	IConsolePrint(CC_DEFAULT, "  Ctrl flags:");
+	IConsolePrint(CC_DEFAULT, "    p = signal graphics callback enabled for programmable pre-signals");
+	IConsolePrint(CC_DEFAULT, "    r = signal graphics callback restricted signal flag enabled");
 
 	btree::btree_map<uint32_t, const GRFFile *> grfs;
 	for (RailType rt = RAILTYPE_BEGIN; rt < RAILTYPE_END; rt++) {
@@ -3204,7 +3197,7 @@ DEF_CONSOLE_CMD(ConDumpRailTypes)
 			grfid = grf->grfid;
 			grfs.insert(std::pair<uint32_t, const GRFFile *>(grfid, grf));
 		}
-		IConsolePrintF(CC_DEFAULT, "  %02u %s, Flags: %c%c%c%c%c%c, Ctrl Flags: %c%c%c%c, GRF: %08X, %s",
+		IConsolePrint(CC_DEFAULT, "  {:2} {}, Flags: {}{}{}{}{}{}, Ctrl Flags: {}{}{}{}, GRF: {:08X}, {}",
 				(uint) rt,
 				NewGRFLabelDumper().Label(rti->label),
 				HasBit(rti->flags, RTF_CATENARY)            ? 'c' : '-',
@@ -3222,7 +3215,7 @@ DEF_CONSOLE_CMD(ConDumpRailTypes)
 		);
 	}
 	for (const auto &grf : grfs) {
-		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grf.first), grf.second->filename.c_str());
+		IConsolePrint(CC_DEFAULT, "  GRF: {:08X} = {}", BSWAP32(grf.first), grf.second->filename);
 	}
 	return true;
 }
@@ -3234,20 +3227,20 @@ DEF_CONSOLE_CMD(ConDumpBridgeTypes)
 		return true;
 	}
 
-	IConsolePrintF(CC_DEFAULT, "  Ctrl flags:");
-	IConsolePrintF(CC_DEFAULT, "    c = custom pillar flags");
-	IConsolePrintF(CC_DEFAULT, "    i = invalid pillar flags");
-	IConsolePrintF(CC_DEFAULT, "    t = not available to towns");
-	IConsolePrintF(CC_DEFAULT, "    s = not available to scripts (AI/GS)");
+	IConsolePrint(CC_DEFAULT, "  Ctrl flags:");
+	IConsolePrint(CC_DEFAULT, "    c = custom pillar flags");
+	IConsolePrint(CC_DEFAULT, "    i = invalid pillar flags");
+	IConsolePrint(CC_DEFAULT, "    t = not available to towns");
+	IConsolePrint(CC_DEFAULT, "    s = not available to scripts (AI/GS)");
 
 	btree::btree_set<uint32_t> grfids;
 	for (BridgeType bt = 0; bt < MAX_BRIDGES; bt++) {
 		const BridgeSpec *spec = GetBridgeSpec(bt);
 		uint32_t grfid = GetStringGRFID(spec->material);
 		if (grfid != 0) grfids.insert(grfid);
-		IConsolePrintF(CC_DEFAULT, "  %02u Year: %7u, Min: %3u, Max: %5u, Flags: %02X, Ctrl Flags: %c%c%c%c, Pillars: %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X, GRF: %08X, %s",
+		IConsolePrint(CC_DEFAULT, "  {:2} Year: {:7}, Min: {:3}, Max: {:5}, Flags: {:02X}, Ctrl Flags: {}{}{}{}, Pillars: {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X}, GRF: {:08X}, {}",
 				(uint) bt,
-				spec->avail_year.base(),
+				spec->avail_year,
 				spec->min_length,
 				spec->max_length,
 				spec->flags,
@@ -3274,7 +3267,7 @@ DEF_CONSOLE_CMD(ConDumpBridgeTypes)
 	for (uint32_t grfid : grfids) {
 		extern GRFFile *GetFileByGRFID(uint32_t grfid);
 		const GRFFile *grffile = GetFileByGRFID(grfid);
-		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grfid), grffile ? grffile->filename.c_str() : "????");
+		IConsolePrint(CC_DEFAULT, "  GRF: {:08X} = {}", BSWAP32(grfid), grffile ? (std::string_view)grffile->filename : "????");
 	}
 	return true;
 }
@@ -3286,18 +3279,18 @@ DEF_CONSOLE_CMD(ConDumpCargoTypes)
 		return true;
 	}
 
-	IConsolePrintF(CC_DEFAULT, "  Cargo classes:");
-	IConsolePrintF(CC_DEFAULT, "    p = passenger");
-	IConsolePrintF(CC_DEFAULT, "    m = mail");
-	IConsolePrintF(CC_DEFAULT, "    x = express");
-	IConsolePrintF(CC_DEFAULT, "    a = armoured");
-	IConsolePrintF(CC_DEFAULT, "    b = bulk");
-	IConsolePrintF(CC_DEFAULT, "    g = piece goods");
-	IConsolePrintF(CC_DEFAULT, "    l = liquid");
-	IConsolePrintF(CC_DEFAULT, "    r = refrigerated");
-	IConsolePrintF(CC_DEFAULT, "    h = hazardous");
-	IConsolePrintF(CC_DEFAULT, "    c = covered/sheltered");
-	IConsolePrintF(CC_DEFAULT, "    S = special");
+	IConsolePrint(CC_DEFAULT, "  Cargo classes:");
+	IConsolePrint(CC_DEFAULT, "    p = passenger");
+	IConsolePrint(CC_DEFAULT, "    m = mail");
+	IConsolePrint(CC_DEFAULT, "    x = express");
+	IConsolePrint(CC_DEFAULT, "    a = armoured");
+	IConsolePrint(CC_DEFAULT, "    b = bulk");
+	IConsolePrint(CC_DEFAULT, "    g = piece goods");
+	IConsolePrint(CC_DEFAULT, "    l = liquid");
+	IConsolePrint(CC_DEFAULT, "    r = refrigerated");
+	IConsolePrint(CC_DEFAULT, "    h = hazardous");
+	IConsolePrint(CC_DEFAULT, "    c = covered/sheltered");
+	IConsolePrint(CC_DEFAULT, "    S = special");
 
 	btree::btree_map<uint32_t, const GRFFile *> grfs;
 	for (CargoID i = 0; i < NUM_CARGO; i++) {
@@ -3316,7 +3309,7 @@ DEF_CONSOLE_CMD(ConDumpCargoTypes)
 			grfid = grf->grfid;
 			grfs.insert(std::pair<uint32_t, const GRFFile *>(grfid, grf));
 		}
-		IConsolePrintF(CC_DEFAULT, "  %02u Bit: %2u, Label: %s, Callback mask: 0x%02X, Cargo class: %c%c%c%c%c%c%c%c%c%c%c, GRF: %08X, %s",
+		IConsolePrint(CC_DEFAULT, "  {:2} Bit: {:2}, Label: {}, Callback mask: 0x{:02X}, Cargo class: {}{}{}{}{}{}{}{}{}{}{}, GRF: {:08X}, {}",
 				(uint) i,
 				spec->bitnum,
 				NewGRFLabelDumper().Label(spec->label.base()),
@@ -3337,7 +3330,7 @@ DEF_CONSOLE_CMD(ConDumpCargoTypes)
 		);
 	}
 	for (const auto &grf : grfs) {
-		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grf.first), grf.second->filename.c_str());
+		IConsolePrint(CC_DEFAULT, "  GRF: {:08X} = {}", BSWAP32(grf.first), grf.second->filename);
 	}
 	return true;
 }
@@ -3387,7 +3380,7 @@ DEF_CONSOLE_CMD(ConDumpTile)
 					return true;
 				}
 				DumpTileInfo(buffer, lastof(buffer), (TileIndex)result);
-				IConsolePrintF(CC_DEFAULT, "  %s", buffer);
+				IConsolePrint(CC_DEFAULT, "  {}", buffer);
 				return true;
 			}
 			break;
@@ -3401,7 +3394,7 @@ DEF_CONSOLE_CMD(ConDumpTile)
 					return true;
 				}
 				DumpTileInfo(buffer, lastof(buffer), TileXY(x, y));
-				IConsolePrintF(CC_DEFAULT, "  %s", buffer);
+				IConsolePrint(CC_DEFAULT, "  {}", buffer);
 				return true;
 			}
 			break;
@@ -3420,23 +3413,22 @@ DEF_CONSOLE_CMD(ConDumpGrfCargoTables)
 
 	const std::vector<GRFFile *> &files = GetAllGRFFiles();
 
-	char buffer[256];
+	auto buffer = fmt::memory_buffer();
 
 	for (const GRFFile *grf : files) {
 		if (grf->cargo_list.empty()) continue;
 
-		IConsolePrintF(CC_DEFAULT, "[%08X] %s: %u cargoes", BSWAP32(grf->grfid), grf->filename.c_str(), uint(grf->cargo_list.size()));
+		IConsolePrint(CC_DEFAULT, "[{:08X}] {}: {} cargoes", BSWAP32(grf->grfid), grf->filename, grf->cargo_list.size());
 
 		uint i = 0;
 		for (const CargoLabel &cl : grf->cargo_list) {
-			buffer[0] = 0;
-			char *b = buffer;
+			buffer.clear();
 			for (const CargoSpec *cs : CargoSpec::Iterate()) {
 				if (grf->cargo_map[cs->Index()] == i) {
-					b += seprintf(b, lastof(buffer), "%s%02u[%s]", (b == buffer) ? ": " : ", ", cs->Index(), NewGRFLabelDumper().Label(cs->label.base()));
+					fmt::format_to(std::back_inserter(buffer), "{}{:02}[{}]", buffer.size() == 0 ? ": " : ", ", cs->Index(), NewGRFLabelDumper().Label(cs->label.base()));
 				}
 			}
-			IConsolePrintF(CC_DEFAULT, "  %s%s", NewGRFLabelDumper().Label(cl.base()), buffer);
+			IConsolePrint(CC_DEFAULT, "  {}{}", NewGRFLabelDumper().Label(cl.base()), std::string_view{buffer.data(), buffer.size()});
 			i++;
 		}
 	}
@@ -3451,17 +3443,17 @@ DEF_CONSOLE_CMD(ConDumpSignalStyles)
 		return true;
 	}
 
-	IConsolePrintF(CC_DEFAULT, "  Flags:");
-	IConsolePrintF(CC_DEFAULT, "    n = no aspect increment");
-	IConsolePrintF(CC_DEFAULT, "    a = always reserve through");
-	IConsolePrintF(CC_DEFAULT, "    l = lookahead aspects set");
-	IConsolePrintF(CC_DEFAULT, "    o = opposite side");
-	IConsolePrintF(CC_DEFAULT, "    s = lookahead single signal");
-	IConsolePrintF(CC_DEFAULT, "    c = combined normal and shunt");
-	IConsolePrintF(CC_DEFAULT, "    r = realistic braking only");
-	IConsolePrintF(CC_DEFAULT, "    b = both sides");
-	IConsolePrintF(CC_DEFAULT, "  Extra aspects: %u", _extra_aspects);
-	IConsolePrintF(CC_DEFAULT, "  Default style extra aspects: %u", _default_signal_style_lookahead_extra_aspects);
+	IConsolePrint(CC_DEFAULT, "  Flags:");
+	IConsolePrint(CC_DEFAULT, "    n = no aspect increment");
+	IConsolePrint(CC_DEFAULT, "    a = always reserve through");
+	IConsolePrint(CC_DEFAULT, "    l = lookahead aspects set");
+	IConsolePrint(CC_DEFAULT, "    o = opposite side");
+	IConsolePrint(CC_DEFAULT, "    s = lookahead single signal");
+	IConsolePrint(CC_DEFAULT, "    c = combined normal and shunt");
+	IConsolePrint(CC_DEFAULT, "    r = realistic braking only");
+	IConsolePrint(CC_DEFAULT, "    b = both sides");
+	IConsolePrint(CC_DEFAULT, "  Extra aspects: {}", _extra_aspects);
+	IConsolePrint(CC_DEFAULT, "  Default style extra aspects: {}", _default_signal_style_lookahead_extra_aspects);
 
 	btree::btree_map<uint32_t, const GRFFile *> grfs;
 	for (uint8_t i = 0; i < _num_new_signal_styles; i++) {
@@ -3472,7 +3464,7 @@ DEF_CONSOLE_CMD(ConDumpSignalStyles)
 			grfid = style.grffile->grfid;
 			grfs.insert(std::pair<uint32_t, const GRFFile *>(grfid, style.grffile));
 		}
-		IConsolePrintF(CC_DEFAULT, "  %2u: GRF: %08X, Local: %2u, Extra aspects: %3u, Flags: %c%c%c%c%c%c%c%c, %s",
+		IConsolePrint(CC_DEFAULT, "  {:2}: GRF: {:08X}, Local: {:2}, Extra aspects: {:3}, Flags: {}{}{}{}{}{}{}{}, {}",
 				(uint) (i + 1),
 				BSWAP32(grfid),
 				style.grf_local_id,
@@ -3489,7 +3481,7 @@ DEF_CONSOLE_CMD(ConDumpSignalStyles)
 		);
 	}
 	for (const auto &grf : grfs) {
-		IConsolePrintF(CC_DEFAULT, "  GRF: %08X = %s", BSWAP32(grf.first), grf.second->filename.c_str());
+		IConsolePrint(CC_DEFAULT, "  GRF: {:08X} = {}", BSWAP32(grf.first), grf.second->filename);
 	}
 
 	return true;
@@ -3625,7 +3617,7 @@ DEF_CONSOLE_CMD(ConViewportDebug)
 
 	extern uint32_t _viewport_debug_flags;
 	if (argc == 1) {
-		IConsolePrintF(CC_DEFAULT, "Viewport debug flags: %X", _viewport_debug_flags);
+		IConsolePrint(CC_DEFAULT, "Viewport debug flags: {:X}", _viewport_debug_flags);
 	} else {
 		_viewport_debug_flags = std::strtoul(argv[1], nullptr, 16);
 	}
@@ -3686,7 +3678,7 @@ DEF_CONSOLE_CMD(ConGfxDebug)
 
 	extern uint32_t _gfx_debug_flags;
 	if (argc == 1) {
-		IConsolePrintF(CC_DEFAULT, "Gfx debug flags: %X", _gfx_debug_flags);
+		IConsolePrint(CC_DEFAULT, "Gfx debug flags: {:X}", _gfx_debug_flags);
 	} else {
 		_gfx_debug_flags = std::strtoul(argv[1], nullptr, 16);
 	}
@@ -3731,7 +3723,7 @@ DEF_CONSOLE_CMD(ConMiscDebug)
 	}
 
 	if (argc == 1) {
-		IConsolePrintF(CC_DEFAULT, "Misc debug flags: %X", _misc_debug_flags);
+		IConsolePrint(CC_DEFAULT, "Misc debug flags: {:X}", _misc_debug_flags);
 	} else {
 		_misc_debug_flags = std::strtoul(argv[1], nullptr, 16);
 	}
@@ -3747,7 +3739,7 @@ DEF_CONSOLE_CMD(ConSetNewGRFOptimiserFlags)
 	}
 
 	if (argc == 1) {
-		IConsolePrintF(CC_DEFAULT, "NewGRF optimiser flags: %X", _settings_game.debug.newgrf_optimiser_flags);
+		IConsolePrint(CC_DEFAULT, "NewGRF optimiser flags: {:X}", _settings_game.debug.newgrf_optimiser_flags);
 	} else {
 		if (_game_mode == GM_MENU || (_networking && !_network_server)) {
 			IConsolePrint(CC_ERROR, "This command is only available in-game and in the editor, and not as a network client.");
@@ -3799,7 +3791,7 @@ DEF_CONSOLE_CMD(ConBankruptCompany)
 
 	CompanyID company_id = (CompanyID)(atoi(argv[1]) - 1);
 	if (!Company::IsValidID(company_id)) {
-		IConsolePrintF(CC_DEFAULT, "Unknown company. Company range is between 1 and %d.", MAX_COMPANIES);
+		IConsolePrint(CC_DEFAULT, "Unknown company. Company range is between 1 and {}.", MAX_COMPANIES);
 		return true;
 	}
 
@@ -3827,7 +3819,7 @@ DEF_CONSOLE_CMD(ConDeleteCompany)
 
 	CompanyID company_id = (CompanyID)(atoi(argv[1]) - 1);
 	if (!Company::IsValidID(company_id)) {
-		IConsolePrintF(CC_DEFAULT, "Unknown company. Company range is between 1 and %d.", MAX_COMPANIES);
+		IConsolePrint(CC_DEFAULT, "Unknown company. Company range is between 1 and {}.", MAX_COMPANIES);
 		return true;
 	}
 
@@ -4021,14 +4013,14 @@ DEF_CONSOLE_CMD(ConSwitchBaseset)
 		}
 	}
 
-	IConsolePrintF(CC_WARNING, "No such baseset: %s.", argv[1]);
+	IConsolePrint(CC_WARNING, "No such baseset: {}.", argv[1]);
 	return 1;
 }
 
 static bool ConConditionalCommon(uint8_t argc, char *argv[], int value, const char *value_name, const char *name)
 {
 	if (argc < 4) {
-		IConsolePrintF(CC_WARNING, "- Execute command if %s is within the specified range. Usage: '%s <minimum> <maximum> <command...>'", value_name, name);
+		IConsolePrint(CC_WARNING, "- Execute command if {} is within the specified range. Usage: '{} <minimum> <maximum> <command...>'", value_name, name);
 		return true;
 	}
 

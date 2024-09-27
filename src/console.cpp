@@ -90,7 +90,7 @@ void IConsoleFree()
  * @param colour_code The colour of the command.
  * @param string The message to output on the console (notice, error, etc.)
  */
-void IConsolePrint(TextColour colour_code, const std::string &string)
+void IConsolePrint(TextColour colour_code, std::string string)
 {
 	assert(IsValidConsoleColour(colour_code));
 
@@ -105,38 +105,20 @@ void IConsolePrint(TextColour colour_code, const std::string &string)
 		return;
 	}
 
-	/* Create a copy of the string, strip it of colours and invalid
-	 * characters and (when applicable) assign it to the console buffer */
-	std::string str = StrMakeValid(string, SVS_NONE);
+	/* Strip string of colours and invalid characters in place,
+	 * and (when applicable) assign it to the console buffer */
+	StrMakeValidInPlace(string, SVS_NONE);
 
 	if (_network_dedicated) {
-		NetworkAdminConsole("console", str);
-		fmt::print("{}{}\n", log_prefix().GetLogPrefix(), str);
+		NetworkAdminConsole("console", string);
+		fmt::print("{}{}\n", log_prefix().GetLogPrefix(), string);
 		fflush(stdout);
-		IConsoleWriteToLogFile(str);
+		IConsoleWriteToLogFile(string);
 		return;
 	}
 
-	IConsoleWriteToLogFile(str);
-	IConsoleGUIPrint(colour_code, std::move(str));
-}
-
-/**
- * Handle the printing of text entered into the console or redirected there
- * by any other means. Uses printf() style format, for more information look
- * at IConsolePrint()
- */
-void CDECL IConsolePrintF(TextColour colour_code, const char *format, ...)
-{
-	assert(IsValidConsoleColour(colour_code));
-
-	va_list va;
-
-	va_start(va, format);
-	std::string buf = stdstr_vfmt(format, va);
-	va_end(va);
-
-	IConsolePrint(colour_code, buf);
+	IConsoleWriteToLogFile(string);
+	IConsoleGUIPrint(colour_code, std::move(string));
 }
 
 /**

@@ -15,7 +15,6 @@
 #include "../../network/network.h"
 #include "../../genworld.h"
 #include "../../string_func.h"
-#include "../../string_func_extra.h"
 #include "../../strings_func.h"
 #include "../../scope_info.h"
 #include "../../map_func.h"

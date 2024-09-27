@@ -2440,7 +2440,7 @@ static void AILoadConfig(const IniFile &ini, const char *grpname)
 		config->Change(item.name);
 		if (!config->HasScript()) {
 			if (item.name != "none") {
-				DEBUG(script, 0, "The AI by the name '%s' was no longer found, and removed from the list.", item.name.c_str());
+				Debug(script, 0, "The AI by the name '{}' was no longer found, and removed from the list.", item.name);
 				continue;
 			}
 		}
@@ -2467,7 +2467,7 @@ static void GameLoadConfig(const IniFile &ini, const char *grpname)
 	config->Change(item.name);
 	if (!config->HasScript()) {
 		if (item.name != "none") {
-			DEBUG(script, 0, "The GameScript by the name '%s' was no longer found, and removed from the list.", item.name.c_str());
+			Debug(script, 0, "The GameScript by the name '{}' was no longer found, and removed from the list.", item.name);
 			return;
 		}
 	}
@@ -3426,7 +3426,7 @@ void IConsoleSetSetting(const char *name, const char *value, bool force_newgame)
 	const SettingDesc *sd = GetSettingFromName(name);
 
 	if (sd == nullptr || ((sd->flags & SF_NO_NEWGAME) && (_game_mode == GM_MENU || force_newgame))) {
-		IConsolePrintF(CC_WARNING, "'%s' is an unknown setting.", name);
+		IConsolePrint(CC_WARNING, "'{}' is an unknown setting.", name);
 		return;
 	}
 
@@ -3476,14 +3476,14 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 	const SettingDesc *sd = GetSettingFromName(name);
 
 	if (sd == nullptr || ((sd->flags & SF_NO_NEWGAME) && (_game_mode == GM_MENU || force_newgame))) {
-		IConsolePrintF(CC_WARNING, "'%s' is an unknown setting.", name);
+		IConsolePrint(CC_WARNING, "'{}' is an unknown setting.", name);
 		return;
 	}
 
 	const void *object = (_game_mode == GM_MENU || force_newgame) ? &_settings_newgame : &_settings_game;
 
 	if (sd->IsStringSetting()) {
-		IConsolePrintF(CC_WARNING, "Current value for '%s' is: '%s'", name, sd->AsStringSetting()->Read(object).c_str());
+		IConsolePrint(CC_WARNING, "Current value for '{}' is: '{}'", name, sd->AsStringSetting()->Read(object));
 	} else if (sd->IsIntSetting()) {
 		const IntSettingDesc *int_setting = sd->AsIntSetting();
 
@@ -3509,10 +3509,10 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 		sd->FormatValue(value, lastof(value), object);
 
 		if (show_min_max) {
-			IConsolePrintF(CC_WARNING, "Current value for '%s' is: '%s' (min: %s" OTTD_PRINTF64 ", max: " OTTD_PRINTF64 ")",
+			IConsolePrint(CC_WARNING, "Current value for '{}' is: '{}' (min: {}, max: {})",
 				name, value, (sd->flags & SF_GUI_0_IS_SPECIAL) ? "(0) " : "", min_value, max_value);
 		} else {
-			IConsolePrintF(CC_WARNING, "Current value for '%s' is: '%s'",
+			IConsolePrint(CC_WARNING, "Current value for '{}' is: '{}'",
 				name, value);
 		}
 	}
@@ -3531,9 +3531,9 @@ static void IConsoleListSettingsTable(const SettingTable &table, const char *pre
 			char defvalue[80];
 			int_setting->FormatIntValue(defvalue, lastof(defvalue), int_setting->def);
 			TextColour colour = (int_setting->Read(&GetGameSettings()) != int_setting->def) ? CC_WARNING : CC_DEFAULT;
-			IConsolePrintF(colour, "%s = %s (default: %s)", sd->name, value, defvalue);
+			IConsolePrint(colour, "{} = {} (default: {})", sd->name, value, defvalue);
 		} else {
-			IConsolePrintF(CC_DEFAULT, "%s = %s", sd->name, value);
+			IConsolePrint(CC_DEFAULT, "{} = {}", sd->name, value);
 		}
 	}
 }
@@ -3545,7 +3545,7 @@ static void IConsoleListSettingsTable(const SettingTable &table, const char *pre
  */
 void IConsoleListSettings(const char *prefilter, bool show_defaults)
 {
-	IConsolePrintF(CC_WARNING, "All settings with their current %s:", show_defaults ? "and default values" : "value");
+	IConsolePrint(CC_WARNING, "All settings with their current {}:", show_defaults ? "and default values" : "value");
 
 	for (auto &table : _generic_setting_tables) {
 		IConsoleListSettingsTable(table, prefilter, show_defaults);
@@ -3557,7 +3557,7 @@ void IConsoleListSettings(const char *prefilter, bool show_defaults)
 		IConsoleListSettingsTable(table, prefilter, show_defaults);
 	}
 
-	IConsolePrintF(CC_WARNING, "Use 'setting' command to change a value");
+	IConsolePrint(CC_WARNING, "Use 'setting' command to change a value");
 }
 
 struct LoadSettingsItem {
@@ -3616,7 +3616,7 @@ static void LoadSettings(std::initializer_list<SettingTable> settings, std::init
 				break;
 			case SettingsCompatType::Xref:
 				if (item.compat.ext_feature_test.IsFeaturePresent(_sl_version, item.compat.version_from, item.compat.version_to)) {
-					DEBUG(sl, 3, "PATS chunk: Loading xref setting: '%s'", item.compat.name.c_str());
+					Debug(sl, 3, "PATS chunk: Loading xref setting: '{}'", item.compat.name);
 
 					/* Generate a new SaveLoad from the xref target using the version params from the source */
 					SaveLoad sld = item.setting->save;
@@ -3737,7 +3737,7 @@ static void LoadSettingsPatx(void *object)
 				int_setting->MakeValueValidAndWrite(object, int_setting->Read(object));
 			}
 		} else {
-			DEBUG(sl, 1, "PATX chunk: Could not find setting: '%s', ignoring", current_setting.name);
+			Debug(sl, 1, "PATX chunk: Could not find setting: '{}', ignoring", current_setting.name);
 			SlSkipBytes(current_setting.setting_length);
 		}
 	}
@@ -3827,7 +3827,7 @@ void LoadSettingsPlyx(bool skip)
 					int_setting->MakeValueValidAndWrite(&(c->settings), int_setting->Read(&(c->settings)));
 				}
 			} else {
-				DEBUG(sl, 1, "PLYX chunk: Could not find company setting: '%s', ignoring", current_setting.name);
+				Debug(sl, 1, "PLYX chunk: Could not find company setting: '{}', ignoring", current_setting.name);
 				SlSkipBytes(current_setting.setting_length);
 			}
 		}

@@ -40,7 +40,6 @@
 #include "../fileio_func.h"
 #include "../gamelog.h"
 #include "../string_func.h"
-#include "../string_func_extra.h"
 #include "../fios.h"
 #include "../load_check.h"
 #include "../error.h"

@@ -249,7 +249,7 @@ void CDECL debug(DebugLevelID dbg, int8_t level, const char *format, ...)
  * @param s Text describing the wanted debugging levels.
  * @param error_func The function to call if a parse error occurs.
  */
-void SetDebugString(const char *s, void (*error_func)(const char *))
+void SetDebugString(const char *s, void (*error_func)(std::string))
 {
 	int v;
 	char *end;
@@ -292,9 +292,7 @@ void SetDebugString(const char *s, void (*error_func)(const char *))
 		if (found != DebugLevelID::END) {
 			new_levels[found] = v;
 		} else {
-			char buf[1024];
-			seprintf(buf, lastof(buf), "Unknown debug level '%*s'", (int)(s - t), t);
-			error_func(buf);
+			error_func(fmt::format("Unknown debug level '{}'", std::string_view(t, s - t)));
 			return;
 		}
 	}

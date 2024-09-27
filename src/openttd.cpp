@@ -802,7 +802,7 @@ int openttd_main(std::span<char * const> arguments)
 			videodriver = "dedicated";
 			blitter = "null";
 			dedicated = true;
-			SetDebugString("net=3", ShowInfoI);
+			SetDebugString("net=3", [](std::string err) { ShowInfoI(err); });
 			if (mgo.opt != nullptr) {
 				scanner->dedicated_host = ParseFullConnectionString(mgo.opt, scanner->dedicated_port);
 			}
@@ -823,7 +823,7 @@ int openttd_main(std::span<char * const> arguments)
 #if defined(_WIN32)
 				CreateConsole();
 #endif
-				if (mgo.opt != nullptr) SetDebugString(mgo.opt, ShowInfoI);
+				if (mgo.opt != nullptr) SetDebugString(mgo.opt, [](std::string err) { ShowInfoI(err); });
 				break;
 			}
 		case 'e':

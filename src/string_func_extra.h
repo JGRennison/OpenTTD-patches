@@ -12,13 +12,6 @@
 #include <string>
 #include <limits>
 
-inline void StrMakeValidInPlace(std::string &str, StringValidationSettings settings = SVS_REPLACE_WITH_QUESTION_MARK)
-{
-	if (str.empty()) return;
-	char *buf = str.data();
-	str.resize(StrMakeValidInPlace(buf, buf + str.size(), settings) - buf);
-}
-
 template <typename F>
 inline void ProcessLineByLine(char *buf, F line_functor)
 {

@@ -333,7 +333,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::CloseConnection(NetworkRecvSta
 	}
 
 	NetworkAdminClientError(this->client_id, NETWORK_ERROR_CONNECTION_LOST);
-	DEBUG(net, 3, "[%s] Client #%u closed connection", ServerNetworkGameSocketHandler::GetName(), this->client_id);
+	Debug(net, 3, "[{}] Client #{} closed connection", ServerNetworkGameSocketHandler::GetName(), this->client_id);
 
 	/* We just lost one client :( */
 	if (this->status >= STATUS_AUTHORIZED) _network_game_info.clients_on--;
@@ -449,7 +449,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendError(NetworkErrorCode err
 
 		this->GetClientName(client_name, lastof(client_name));
 
-		DEBUG(net, 1, "'%s' made an error and has been disconnected: %s", client_name, GetString(strid).c_str());
+		Debug(net, 1, "'{}' made an error and has been disconnected: {}", client_name, GetString(strid));
 
 		if (error == NETWORK_ERROR_KICKED && !reason.empty()) {
 			NetworkTextMessage(NETWORK_ACTION_KICKED, CC_DEFAULT, false, client_name, reason, strid);
@@ -470,7 +470,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendError(NetworkErrorCode err
 
 		NetworkAdminClientError(this->client_id, error);
 	} else {
-		DEBUG(net, 1, "Client %d made an error and has been disconnected: %s", this->client_id, GetString(strid).c_str());
+		Debug(net, 1, "Client {} made an error and has been disconnected: {}", this->client_id, GetString(strid));
 	}
 
 	/* The client made a mistake, so drop the connection now! */
@@ -1038,7 +1038,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_IDENTIFY(Packet
 	ci->client_name = client_name;
 	ci->client_playas = playas;
 	//ci->public_key = this->peer_public_key;
-	DEBUG(desync, 1, "client: %s; client: %02x; company: %02x", debug_date_dumper().HexDate(), (int)ci->index, (int)ci->client_playas);
+	Debug(desync, 1, "client: {}; client: {:02x}; company: {:02x}", debug_date_dumper().HexDate(), (int)ci->index, (int)ci->client_playas);
 
 	/* Make sure companies to which people try to join are not autocleaned */
 	Company *c = Company::GetIfValid(playas);
@@ -1127,22 +1127,22 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_SETTINGS_PASSWO
 
 	/* Check settings password. Deny if no password is set */
 	if (!p.CanReadFromPacket(1)) {
-		if (this->settings_authed) DEBUG(net, 0, "[settings-ctrl] client-id %d deauthed", this->client_id);
+		if (this->settings_authed) Debug(net, 0, "[settings-ctrl] client-id {} deauthed", this->client_id);
 		this->settings_authed = false;
 	} else if (_settings_authorized_key_handler.IsAllowed(this->peer_public_key)) {
 		/* Public key in allow list */
-		DEBUG(net, 0, "[settings-ctrl] client-id %d (pubkey)", this->client_id);
+		Debug(net, 0, "[settings-ctrl] client-id {} (pubkey)", this->client_id);
 		this->settings_authed = true;
 		this->settings_auth_failures = 0;
 	} else if (_settings_client.network.settings_password.empty() ||
 			!this->ParseKeyPasswordPacket(p, ss, _settings_client.network.settings_password, nullptr, 0)) {
-		DEBUG(net, 0, "[settings-ctrl] wrong password from client-id %d", this->client_id);
+		Debug(net, 0, "[settings-ctrl] wrong password from client-id {}", this->client_id);
 		NetworkServerSendRconDenied(this->client_id);
 		this->settings_authed = false;
 		NetworkRecvStatus status = this->HandleAuthFailure(this->settings_auth_failures);
 		if (status != NETWORK_RECV_STATUS_OKAY) return status;
 	} else {
-		DEBUG(net, 0, "[settings-ctrl] client-id %d", this->client_id);
+		Debug(net, 0, "[settings-ctrl] client-id {}", this->client_id);
 		this->settings_authed = true;
 		this->settings_auth_failures = 0;
 	}
@@ -1184,7 +1184,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_MAP_OK(Packet &
 		NetworkTextMessage(NETWORK_ACTION_JOIN, CC_DEFAULT, false, client_name, "", this->client_id);
 		InvalidateWindowData(WC_CLIENT_LIST, 0);
 
-		DEBUG(net, 3, "[%s] Client #%u (%s) joined as %s", ServerNetworkGameSocketHandler::GetName(), this->client_id, this->GetClientIP(), client_name);
+		Debug(net, 3, "[{}] Client #{} ({}) joined as {}", ServerNetworkGameSocketHandler::GetName(), this->client_id, this->GetClientIP(), client_name);
 
 		/* Mark the client as pre-active, and wait for an ACK
 		 *  so we know it is done loading and in sync with us */
@@ -1246,18 +1246,18 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet 
 	NetworkClientInfo *ci = this->GetInfo();
 
 	if (err != nullptr) {
-		IConsolePrintF(CC_ERROR, "WARNING: %s from client %d (IP: %s).", err, ci->client_id, this->GetClientIP());
+		IConsolePrint(CC_ERROR, "WARNING: {} from client {} (IP: {}).", err, ci->client_id, this->GetClientIP());
 		return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
 	}
 
 
 	if ((GetCommandFlags(cp.cmd) & (CMD_SERVER | CMD_SERVER_NS)) && ci->client_id != CLIENT_ID_SERVER && !this->settings_authed) {
-		IConsolePrintF(CC_ERROR, "WARNING: server only command %u from client %u (IP: %s), kicking...", cp.cmd & CMD_ID_MASK, ci->client_id, this->GetClientIP());
+		IConsolePrint(CC_ERROR, "WARNING: server only command {} from client {} (IP: {}), kicking...", cp.cmd & CMD_ID_MASK, ci->client_id, this->GetClientIP());
 		return this->SendError(NETWORK_ERROR_KICKED);
 	}
 
 	if ((GetCommandFlags(cp.cmd) & CMD_SPECTATOR) == 0 && !Company::IsValidID(cp.company) && ci->client_id != CLIENT_ID_SERVER && !this->settings_authed) {
-		IConsolePrintF(CC_ERROR, "WARNING: spectator (client: %u, IP: %s) issued non-spectator command %u, kicking...", ci->client_id, this->GetClientIP(), cp.cmd & CMD_ID_MASK);
+		IConsolePrint(CC_ERROR, "WARNING: spectator (client: {}, IP: {}) issued non-spectator command {}, kicking...", ci->client_id, this->GetClientIP(), cp.cmd & CMD_ID_MASK);
 		return this->SendError(NETWORK_ERROR_KICKED);
 	}
 
@@ -1268,7 +1268,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet 
 	 */
 	if (!(cp.cmd == CMD_COMPANY_CTRL && cp.p1 == 0 && ci->client_playas == COMPANY_NEW_COMPANY) && ci->client_playas != cp.company &&
 			!((GetCommandFlags(cp.cmd) & (CMD_SERVER | CMD_SERVER_NS)) && this->settings_authed)) {
-		IConsolePrintF(CC_ERROR, "WARNING: client %d (IP: %s) tried to execute a command as company %d, kicking...",
+		IConsolePrint(CC_ERROR, "WARNING: client {} (IP: {}) tried to execute a command as company {}, kicking...",
 		               ci->client_playas + 1, this->GetClientIP(), cp.company + 1);
 		return this->SendError(NETWORK_ERROR_COMPANY_MISMATCH);
 	}
@@ -1306,7 +1306,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet &p
 
 	/* The client was never joined.. thank the client for the packet, but ignore it */
 	if (this->status < STATUS_DONE_MAP || this->HasClientQuit()) {
-		DEBUG(net, 2, "non-joined client %d reported an error and is closing its connection (%s) (%d, %d, %d)", this->client_id, GetString(GetNetworkErrorMsg(errorno)).c_str(), rx_status, status, last_pkt_type);
+		Debug(net, 2, "non-joined client {} reported an error and is closing its connection ({}) ({}, {}, {})", this->client_id, GetString(GetNetworkErrorMsg(errorno)), rx_status, status, last_pkt_type);
 		return this->CloseConnection(NETWORK_RECV_STATUS_CLIENT_QUIT);
 	}
 
@@ -1314,7 +1314,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet &p
 
 	StringID strid = GetNetworkErrorMsg(errorno);
 
-	DEBUG(net, 1, "'%s' reported an error and is closing its connection (%s) (%d, %d, %d)", client_name, GetString(strid).c_str(), rx_status, status, last_pkt_type);
+	Debug(net, 1, "'{}' reported an error and is closing its connection ({}) ({}, {}, {})", client_name, GetString(strid), rx_status, status, last_pkt_type);
 
 	NetworkTextMessage(NETWORK_ACTION_LEAVE, CC_DEFAULT, false, client_name, "", strid);
 
@@ -1355,7 +1355,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_DESYNC_LOG(Pack
 	uint size = p.Recv_uint16();
 	this->desync_log.resize(this->desync_log.size() + size);
 	p.Recv_binary((uint8_t *)(this->desync_log.data() + this->desync_log.size() - size), size);
-	DEBUG(net, 2, "Received %u bytes of client desync log", size);
+	Debug(net, 2, "Received {} bytes of client desync log", size);
 	this->receive_limit += p.Size();
 	return NETWORK_RECV_STATUS_OKAY;
 }
@@ -1367,7 +1367,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_DESYNC_MSG(Pack
 	uint8_t tick_skip_counter = p.Recv_uint8();
 	std::string msg;
 	p.Recv_string(msg);
-	DEBUG(desync, 0, "Client-id %d desync msg: %s", this->client_id, msg.c_str());
+	Debug(desync, 0, "Client-id {} desync msg: {}", this->client_id, msg);
 	extern void LogRemoteDesyncMsg(EconTime::Date date, EconTime::DateFract date_fract, uint8_t tick_skip_counter, uint32_t src_id, std::string msg);
 	LogRemoteDesyncMsg(date, date_fract, tick_skip_counter, this->client_id, std::move(msg));
 	return NETWORK_RECV_STATUS_OKAY;
@@ -1377,7 +1377,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_DESYNC_SYNC_DAT
 {
 	uint32_t frame_count = p.Recv_uint32();
 
-	DEBUG(net, 2, "Received desync sync data: %u frames", frame_count);
+	Debug(net, 2, "Received desync sync data: {} frames", frame_count);
 
 	if (frame_count == 0 || _network_sync_record_counts.empty()) return NETWORK_RECV_STATUS_OKAY;
 
@@ -1406,25 +1406,25 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_DESYNC_SYNC_DAT
 			uint32_t seed_1 = p.Recv_uint32();
 			uint64_t state_checksum = p.Recv_uint64();
 			if (j == local_item_count) {
-				this->desync_frame_info = stdstr_fmt("Desync subframe count mismatch: extra client record: %08X, %s", frame, GetSyncRecordEventName(event));
+				this->desync_frame_info = fmt::format("Desync subframe count mismatch: extra client record: {:08X}, {}", frame, GetSyncRecordEventName(event));
 				return NETWORK_RECV_STATUS_OKAY;
 			}
 
 			const NetworkSyncRecord &record = _network_sync_records[record_offset + j];
 			if (j != 0 && record.frame != event) {
-				this->desync_frame_info = stdstr_fmt("Desync subframe event mismatch: %08X, client: %s != server: %s",
+				this->desync_frame_info = fmt::format("Desync subframe event mismatch: {:08X}, client: {} != server: {}",
 						frame, GetSyncRecordEventName(event), GetSyncRecordEventName((NetworkSyncRecordEvents)record.frame));
 				return NETWORK_RECV_STATUS_OKAY;
 			}
 			if (seed_1 != record.seed_1 || state_checksum != record.state_checksum) {
-				this->desync_frame_info = stdstr_fmt("Desync subframe mismatch: %08X, %s%s%s",
+				this->desync_frame_info = fmt::format("Desync subframe mismatch: {:08X}, {}{}{}",
 						frame, GetSyncRecordEventName(event), (seed_1 != record.seed_1) ? ", seed" : "", (state_checksum != record.state_checksum) ? ", state checksum" : "");
 				return NETWORK_RECV_STATUS_OKAY;
 			}
 		}
 		if (local_item_count > item_count) {
 			const NetworkSyncRecord &record = _network_sync_records[record_offset + item_count];
-			this->desync_frame_info = stdstr_fmt("Desync subframe count mismatch: extra server record: %08X, %s", frame, GetSyncRecordEventName((NetworkSyncRecordEvents)record.frame));
+			this->desync_frame_info = fmt::format("Desync subframe count mismatch: extra server record: {:08X}, {}", frame, GetSyncRecordEventName((NetworkSyncRecordEvents)record.frame));
 			return NETWORK_RECV_STATUS_OKAY;
 		}
 	}
@@ -1607,7 +1607,7 @@ void NetworkServerSendChat(NetworkAction action, DestType desttype, int dest, co
 			break;
 		}
 		default:
-			DEBUG(net, 1, "Received unknown chat destination type %d; doing broadcast instead", desttype);
+			Debug(net, 1, "Received unknown chat destination type {}; doing broadcast instead", desttype);
 			[[fallthrough]];
 
 		case DESTTYPE_BROADCAST:
@@ -1668,7 +1668,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_CHAT(Packet &p)
 			NetworkServerSendChat(action, desttype, dest, msg, this->client_id, data);
 			break;
 		default:
-			IConsolePrintF(CC_ERROR, "WARNING: invalid chat action from client %d (IP: %s).", ci->client_id, this->GetClientIP());
+			IConsolePrint(CC_ERROR, "WARNING: invalid chat action from client {} (IP: {}).", ci->client_id, this->GetClientIP());
 			return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
 	}
 	return NETWORK_RECV_STATUS_OKAY;
@@ -1742,13 +1742,13 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_RCON(Packet &p)
 			return this->HandleAuthFailure(this->rcon_auth_failures);
 		}
 		if (!this->ParseKeyPasswordPacket(p, ss, _settings_client.network.rcon_password, &command, NETWORK_RCONCOMMAND_LENGTH)) {
-			DEBUG(net, 0, "[rcon] wrong password from client-id %d", this->client_id);
+			Debug(net, 0, "[rcon] wrong password from client-id {}", this->client_id);
 			NetworkServerSendRconDenied(this->client_id);
 			return this->HandleAuthFailure(this->rcon_auth_failures);
 		}
 	}
 
-	DEBUG(net, 3, "[rcon] Client-id %d executed: %s", this->client_id, command.c_str());
+	Debug(net, 3, "[rcon] Client-id {} executed:{}", this->client_id, command);
 
 	_redirect_console_to_client = this->client_id;
 	this->rcon_reply_key = ss.shared_data.data() + 32; /* second key */
@@ -1776,7 +1776,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_MOVE(Packet &p)
 
 		/* Incorrect password sent, return! */
 		if (_network_company_states[company_id].password.compare(password) != 0) {
-			DEBUG(net, 2, "Wrong password from client-id #%d for company #%d", this->client_id, company_id + 1);
+			Debug(net, 2, "Wrong password from client-id #{} for company #{}", this->client_id, company_id + 1);
 			return NETWORK_RECV_STATUS_OKAY;
 		}
 	}
@@ -1790,7 +1790,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::HandleAuthFailure(uint &failur
 {
 	failure_count++;
 	if (_settings_client.network.max_auth_failures != 0 && failure_count >= _settings_client.network.max_auth_failures) {
-		DEBUG(net, 0, "Kicked client-id #%d due to too many failed authentication attempts", this->client_id);
+		Debug(net, 0, "Kicked client-id #{} due to too many failed authentication attempts", this->client_id);
 		return this->SendError(NETWORK_ERROR_KICKED);
 	} else {
 		return NETWORK_RECV_STATUS_OKAY;
@@ -1819,7 +1819,7 @@ const char *ServerNetworkGameSocketHandler::GetClientStatusName(ClientStatus sta
 
 std::string ServerNetworkGameSocketHandler::GetDebugInfo() const
 {
-	return stdstr_fmt("status: %d (%s)", this->status, GetClientStatusName(this->status));
+	return fmt::format("status: {} ({})", this->status, GetClientStatusName(this->status));
 }
 
 /**
@@ -1868,7 +1868,7 @@ void NetworkUpdateClientInfo(ClientID client_id)
 
 	if (ci == nullptr) return;
 
-	DEBUG(desync, 1, "client: %s; client: %02x; company: %02x", debug_date_dumper().HexDate(), client_id, (int)ci->client_playas);
+	Debug(desync, 1, "client: {}; client: {:02x}; company: {:02x}", debug_date_dumper().HexDate(), client_id, (int)ci->client_playas);
 
 	for (NetworkClientSocket *cs : NetworkClientSocket::Iterate()) {
 		if (cs->status >= ServerNetworkGameSocketHandler::STATUS_AUTHORIZED) {
@@ -1922,13 +1922,13 @@ static void NetworkAutoCleanCompanies()
 			if (_settings_client.network.autoclean_unprotected != 0 && c->months_empty > _settings_client.network.autoclean_unprotected && _network_company_states[c->index].password.empty()) {
 				/* Shut the company down */
 				DoCommandP(0, CCA_DELETE | c->index << 16 | CRR_AUTOCLEAN << 24, 0, CMD_COMPANY_CTRL);
-				IConsolePrintF(CC_DEFAULT, "Auto-cleaned company #%d with no password", c->index + 1);
+				IConsolePrint(CC_DEFAULT, "Auto-cleaned company #{} with no password", c->index + 1);
 			}
 			/* Is the company empty for autoclean_protected-months, and there is a protection? */
 			if (_settings_client.network.autoclean_protected != 0 && c->months_empty > _settings_client.network.autoclean_protected && !_network_company_states[c->index].password.empty()) {
 				/* Unprotect the company */
 				_network_company_states[c->index].password.clear();
-				IConsolePrintF(CC_DEFAULT, "Auto-removed protection from company #%d", c->index + 1);
+				IConsolePrint(CC_DEFAULT, "Auto-removed protection from company #{}", c->index + 1);
 				c->months_empty = 0;
 				NetworkServerUpdateCompanyPassworded(c->index, false);
 			}
@@ -1936,7 +1936,7 @@ static void NetworkAutoCleanCompanies()
 			if (_settings_client.network.autoclean_novehicles != 0 && c->months_empty > _settings_client.network.autoclean_novehicles && !HasBit(has_vehicles, c->index)) {
 				/* Shut the company down */
 				DoCommandP(0, CCA_DELETE | c->index << 16 | CRR_AUTOCLEAN << 24, 0, CMD_COMPANY_CTRL);
-				IConsolePrintF(CC_DEFAULT, "Auto-cleaned company #%d with no vehicles", c->index + 1);
+				IConsolePrint(CC_DEFAULT, "Auto-cleaned company #{} with no vehicles", c->index + 1);
 			}
 		} else {
 			/* It is not empty, reset the date */
@@ -2067,12 +2067,14 @@ void NetworkServer_Tick(bool send_frame)
 			case NetworkClientSocket::STATUS_ACTIVE:
 				if (lag > _settings_client.network.max_lag_time) {
 					/* Client did still not report in within the specified limit. */
-					IConsolePrintF(CC_ERROR, cs->last_packet + std::chrono::milliseconds(lag * MILLISECONDS_PER_TICK) > std::chrono::steady_clock::now() ?
-							/* A packet was received in the last three game days, so the client is likely lagging behind. */
-								"Client #%d (IP: %s) is dropped because the client's game state is more than %d ticks behind" :
-							/* No packet was received in the last three game days; sounds like a lost connection. */
-								"Client #%d (IP: %s) is dropped because the client did not respond for more than %d ticks",
-							cs->client_id, cs->GetClientIP(), lag);
+
+					if (cs->last_packet + std::chrono::milliseconds(lag * MILLISECONDS_PER_TICK) > std::chrono::steady_clock::now()) {
+						/* A packet was received in the last three game days, so the client is likely lagging behind. */
+						IConsolePrint(CC_WARNING, "Client #{} (IP: {}) is dropped because the client's game state is more than {} ticks behind.", cs->client_id, cs->GetClientIP(), lag);
+					} else {
+						/* No packet was received in the last three game days; sounds like a lost connection. */
+						IConsolePrint(CC_WARNING, "Client #{} (IP: {}) is dropped because the client did not respond for more than {} ticks.", cs->client_id, cs->GetClientIP(), lag);
+					}
 					cs->SendError(NETWORK_ERROR_TIMEOUT_COMPUTER);
 					continue;
 				}
@@ -2083,13 +2085,13 @@ void NetworkServer_Tick(bool send_frame)
 				 * slow, but the connection is likely severed. Mentioning
 				 * frame_freq is not useful in this case. */
 				if (lag > (uint)DAY_TICKS && cs->lag_test == 0 && cs->last_packet + std::chrono::seconds(2) > std::chrono::steady_clock::now()) {
-					IConsolePrintF(CC_WARNING, "[%d] Client #%d is slow, try increasing [network.]frame_freq to a higher value!", _frame_counter, cs->client_id);
+					IConsolePrint(CC_WARNING, "[{}] Client #{} is slow, try increasing [network.]frame_freq to a higher value!", _frame_counter, cs->client_id);
 					cs->lag_test = 1;
 				}
 
 				if (cs->last_frame_server - cs->last_token_frame >= _settings_client.network.max_lag_time) {
 					/* This is a bad client! It didn't send the right token back within time. */
-					IConsolePrintF(CC_ERROR, "Client #%d is dropped because it fails to send valid acks", cs->client_id);
+					IConsolePrint(CC_ERROR, "Client #{} is dropped because it fails to send valid acks", cs->client_id);
 					cs->SendError(NETWORK_ERROR_TIMEOUT_COMPUTER);
 					continue;
 				}
@@ -2102,7 +2104,7 @@ void NetworkServer_Tick(bool send_frame)
 				/* NewGRF check and authorized states should be handled almost instantly.
 				 * So give them some lee-way, likewise for the query with inactive. */
 				if (lag > _settings_client.network.max_init_time) {
-					IConsolePrintF(CC_ERROR, "Client #%d is dropped because it took longer than %d ticks to start the joining process", cs->client_id, _settings_client.network.max_init_time);
+					IConsolePrint(CC_ERROR, "Client #{} is dropped because it took longer than {} ticks to start the joining process", cs->client_id, _settings_client.network.max_init_time);
 					cs->SendError(NETWORK_ERROR_TIMEOUT_COMPUTER);
 					continue;
 				}
@@ -2126,7 +2128,7 @@ void NetworkServer_Tick(bool send_frame)
 			case NetworkClientSocket::STATUS_MAP:
 				/* Downloading the map... this is the amount of time since starting the saving. */
 				if (lag > _settings_client.network.max_download_time) {
-					IConsolePrintF(CC_ERROR, "Client #%d is dropped because it took longer than %d ticks to download the map", cs->client_id, _settings_client.network.max_download_time);
+					IConsolePrint(CC_ERROR, "Client #{} is dropped because it took longer than {} ticks to download the map", cs->client_id, _settings_client.network.max_download_time);
 					cs->SendError(NETWORK_ERROR_TIMEOUT_MAP);
 					continue;
 				}
@@ -2136,7 +2138,7 @@ void NetworkServer_Tick(bool send_frame)
 			case NetworkClientSocket::STATUS_PRE_ACTIVE:
 				/* The map has been sent, so this is for loading the map and syncing up. */
 				if (lag > _settings_client.network.max_join_time) {
-					IConsolePrintF(CC_ERROR, "Client #%d is dropped because it took longer than %d ticks to join", cs->client_id, _settings_client.network.max_join_time);
+					IConsolePrint(CC_ERROR, "Client #{} is dropped because it took longer than {} ticks to join", cs->client_id, _settings_client.network.max_join_time);
 					cs->SendError(NETWORK_ERROR_TIMEOUT_JOIN);
 					continue;
 				}
@@ -2146,7 +2148,7 @@ void NetworkServer_Tick(bool send_frame)
 			case NetworkClientSocket::STATUS_AUTH_COMPANY:
 				/* These don't block? */
 				if (lag > _settings_client.network.max_password_time) {
-					IConsolePrintF(CC_ERROR, "Client #%d is dropped because it took longer than %d ticks to enter the password", cs->client_id, _settings_client.network.max_password_time);
+					IConsolePrint(CC_ERROR, "Client #{} is dropped because it took longer than {} ticks to enter the password", cs->client_id, _settings_client.network.max_password_time);
 					cs->SendError(NETWORK_ERROR_TIMEOUT_PASSWORD);
 					continue;
 				}
@@ -2204,7 +2206,7 @@ static IntervalTimer<TimerGameRealtime> _network_restart_map_timer({std::chrono:
 	/* If setting is 0, this feature is disabled. */
 	if (_settings_client.network.restart_hours == 0) return;
 
-	DEBUG(net, 3, "Auto-restarting map: %d hours played", _settings_client.network.restart_hours);
+	Debug(net, 3, "Auto-restarting map: {} hours played", _settings_client.network.restart_hours);
 	NetworkRestartMap();
 });
 
@@ -2226,7 +2228,7 @@ static void NetworkCheckRestartMapYear()
 	if (_settings_client.network.restart_game_year == 0) return;
 
 	if (CalTime::CurYear() >= _settings_client.network.restart_game_year) {
-		DEBUG(net, 3, "Auto-restarting map: year %d reached", CalTime::CurYear().base());
+		Debug(net, 3, "Auto-restarting map: year {} reached", CalTime::CurYear());
 		NetworkRestartMap();
 	}
 }
@@ -2293,7 +2295,7 @@ void NetworkServerShowStatusToConsole()
 		const char *status;
 
 		status = (cs->status < (ptrdiff_t)lengthof(stat_str) ? stat_str[cs->status] : "unknown");
-		IConsolePrintF(CC_INFO, "Client #%1d  name: '%s'  status: '%s'  frame-lag: %3d  company: %1d  IP: %s",
+		IConsolePrint(CC_INFO, "Client #{} name: '{}'  status: '{}'  frame-lag: {}  company: {}  IP: {}",
 			cs->client_id, ci->client_name.c_str(), status, lag,
 			ci->client_playas + (Company::IsValidID(ci->client_playas) ? 1 : 0),
 			cs->GetClientIP());
@@ -2479,7 +2481,7 @@ void ServerNetworkGameSocketHandler::GetClientName(char *client_name, const char
 	const NetworkClientInfo *ci = this->GetInfo();
 
 	if (ci == nullptr || ci->client_name.empty()) {
-		seprintf(client_name, last, "Client #%4d", this->client_id);
+		seprintf(client_name, last, "Client #%d", this->client_id);
 	} else {
 		strecpy(client_name, ci->client_name.c_str(), last);
 	}
@@ -2492,13 +2494,13 @@ void NetworkPrintClients()
 {
 	for (NetworkClientInfo *ci : NetworkClientInfo::Iterate()) {
 		if (_network_server) {
-			IConsolePrintF(CC_INFO, "Client #%1d  name: '%s'  company: %1d  IP: %s",
+			IConsolePrint(CC_INFO, "Client #{}  name: '{}'  company: {}  IP: {}",
 					ci->client_id,
 					ci->client_name.c_str(),
 					ci->client_playas + (Company::IsValidID(ci->client_playas) ? 1 : 0),
 					ci->client_id == CLIENT_ID_SERVER ? "server" : NetworkClientSocket::GetByClientID(ci->client_id)->GetClientIP());
 		} else {
-			IConsolePrintF(CC_INFO, "Client #%1d  name: '%s'  company: %1d",
+			IConsolePrint(CC_INFO, "Client #{}  name: '{}'  company: {}",
 					ci->client_id,
 					ci->client_name.c_str(),
 					ci->client_playas + (Company::IsValidID(ci->client_playas) ? 1 : 0));

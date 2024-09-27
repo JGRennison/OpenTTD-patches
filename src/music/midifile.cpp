@@ -1108,7 +1108,7 @@ static bool CmdDumpSMF(uint8_t argc, char *argv[])
 		IConsolePrint(CC_ERROR, "Filename too long.");
 		return false;
 	}
-	IConsolePrintF(CC_INFO, "Dumping MIDI to: %s", fnbuf);
+	IConsolePrint(CC_INFO, "Dumping MIDI to: {}", fnbuf);
 
 	if (_midifile_instance->WriteSMF(fnbuf)) {
 		IConsolePrint(CC_INFO, "File written successfully.");

@@ -102,7 +102,7 @@ void CDECL debug(DebugLevelID dbg, int8_t level, const char *format, ...) WARN_F
 void debug_print(DebugLevelID dbg, int8_t level, const char *msg);
 
 char *DumpDebugFacilityNames(char *buf, char *last);
-void SetDebugString(const char *s, void (*error_func)(const char *));
+void SetDebugString(const char *s, void (*error_func)(std::string));
 std::string GetDebugString();
 
 /* Shorter form for passing filename and linenumber */

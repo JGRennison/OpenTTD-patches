@@ -193,7 +193,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::CloseConnection(NetworkRecvSta
 	if (this->status == STATUS_CLOSING) return status;
 
 	if (!this->HasClientQuit()) {
-		DEBUG(net, 3, "Closed client connection %d", this->client_id);
+		Debug(net, 3, "Closed client connection {}", this->client_id);
 
 		SetBlocking(this->sock);
 
@@ -208,7 +208,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::CloseConnection(NetworkRecvSta
 		CSleep(3 * MILLISECONDS_PER_TICK);
 	}
 
-	DEBUG(net, 1, "Shutdown client connection %d", this->client_id);
+	Debug(net, 1, "Shutdown client connection {}", this->client_id);
 
 	if (status == NETWORK_RECV_STATUS_DESYNC) {
 		this->status = STATUS_CLOSING;
@@ -332,9 +332,9 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 				if (_sync_state_checksum != _state_checksum.state) info.flags |= DesyncExtraInfo::DEIF_STATE;
 
 				ShowNetworkError(STR_NETWORK_ERROR_DESYNC);
-				DEBUG(desync, 1, "sync_err: %s {%x, " OTTD_PRINTFHEX64 "} != {%x, " OTTD_PRINTFHEX64 "}",
+				Debug(desync, 1, "sync_err: {} {{{:X}, {:X}}} != {{{:X}, {:X}}}",
 						debug_date_dumper().HexDate(), _sync_seed_1, _sync_state_checksum, _random.state[0], _state_checksum.state);
-				DEBUG(net, 0, "Sync error detected!");
+				Debug(net, 0, "Sync error detected!");
 
 				std::string desync_log;
 				DesyncDeferredSaveInfo deferred_save;
@@ -364,7 +364,7 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 
 			_sync_frame = 0;
 		} else if (_sync_frame < _frame_counter) {
-			DEBUG(net, 1, "Missed frame for sync-test: %d / %d", _sync_frame, _frame_counter);
+			Debug(net, 1, "Missed frame for sync-test: {} / {}", _sync_frame, _frame_counter);
 			_sync_frame = 0;
 		}
 	}
@@ -665,7 +665,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendDesyncSyncData()
 	}
 
 	if ((size_t)total != _network_sync_records.size()) {
-		DEBUG(net, 0, "Network sync record error");
+		Debug(net, 0, "Network sync record error");
 		return NETWORK_RECV_STATUS_OKAY;
 	}
 
@@ -908,7 +908,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_CHECK_NEWGRFS(P
 			/* We do not know this GRF, bail out of initialization */
 			char buf[sizeof(c.md5sum) * 2 + 1];
 			md5sumToString(buf, lastof(buf), c.md5sum);
-			DEBUG(grf, 0, "NewGRF %08X not found; checksum %s", BSWAP32(c.grfid), buf);
+			Debug(grf, 0, "NewGRF {:08X} not found; checksum {}", BSWAP32(c.grfid), buf);
 			ret = NETWORK_RECV_STATUS_NEWGRF_MISMATCH;
 		}
 	}
@@ -1158,13 +1158,13 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_FRAME(Packet &p
 	/* Receive the token. */
 	if (p.CanReadFromPacket(sizeof(uint8_t))) this->token = p.Recv_uint8();
 
-	DEBUG(net, 7, "Received FRAME %d", _frame_counter_server);
+	Debug(net, 7, "Received FRAME {}", _frame_counter_server);
 
 	/* Let the server know that we received this frame correctly
 	 *  We do this only once per day, to save some bandwidth ;) */
 	if (!_network_first_time && last_ack_frame < _frame_counter) {
 		last_ack_frame = _frame_counter + DAY_TICKS;
-		DEBUG(net, 7, "Sent ACK at %d", _frame_counter);
+		Debug(net, 7, "Sent ACK at {}", _frame_counter);
 		SendAck();
 	}
 
@@ -1194,7 +1194,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_COMMAND(Packet 
 	cp.my_cmd   = p.Recv_bool();
 
 	if (err != nullptr) {
-		IConsolePrintF(CC_ERROR, "WARNING: %s from server, dropping...", err);
+		IConsolePrint(CC_ERROR, "WARNING: {} from server, dropping...", err);
 		return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 	}
 
@@ -1297,7 +1297,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_DESYNC_LOG(Pack
 	uint size = p.Recv_uint16();
 	this->server_desync_log.resize(this->server_desync_log.size() + size);
 	p.Recv_binary((uint8_t *)(this->server_desync_log.data() + this->server_desync_log.size() - size), size);
-	DEBUG(net, 2, "Received %u bytes of server desync log", size);
+	Debug(net, 2, "Received {} bytes of server desync log", size);
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
@@ -1312,7 +1312,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_QUIT(Packet &p)
 		NetworkTextMessage(NETWORK_ACTION_LEAVE, CC_DEFAULT, false, ci->client_name, "", STR_NETWORK_MESSAGE_CLIENT_LEAVING);
 		delete ci;
 	} else {
-		DEBUG(net, 1, "Unknown client (%d) is leaving the game", client_id);
+		Debug(net, 1, "Unknown client ({}) is leaving the game", client_id);
 	}
 
 	InvalidateWindowData(WC_CLIENT_LIST, 0);
@@ -1406,7 +1406,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_MOVE(Packet &p)
 
 	if (client_id == 0) {
 		/* definitely an invalid client id, debug message and do nothing. */
-		DEBUG(net, 1, "Received invalid client index = 0");
+		Debug(net, 1, "Received invalid client index = 0");
 		return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 	}
 
@@ -1508,7 +1508,7 @@ const char *ClientNetworkGameSocketHandler::GetServerStatusName(ServerStatus sta
 
 std::string ClientNetworkGameSocketHandler::GetDebugInfo() const
 {
-	return stdstr_fmt("status: %d (%s)", this->status, GetServerStatusName(this->status));
+	return fmt::format("status: {} ({})", this->status, GetServerStatusName(this->status));
 }
 
 static void ResetClientConnectionKeyStates()

@@ -11,7 +11,6 @@
 
 #include "../../stdafx.h"
 #include "../../string_func.h"
-#include "../../string_func_extra.h"
 #include "../../command_type.h"
 
 #include "packet.h"

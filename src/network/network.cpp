@@ -384,9 +384,9 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 	builder.Utf8Encode(_current_text_dir == TD_LTR ? CHAR_TD_LRM : CHAR_TD_RLM);
 	GetString(builder, strid);
 
-	DEBUG(desync, 1, "msg: %s; %s", debug_date_dumper().HexDate(), message.c_str());
-	IConsolePrintF(colour, "%s", message.c_str());
-	NetworkAddChatMessage(colour, _settings_client.gui.network_chat_timeout, message.c_str());
+	Debug(desync, 1, "msg: {}; {}", debug_date_dumper().HexDate(), message);
+	IConsolePrint(colour, message);
+	NetworkAddChatMessage(colour, _settings_client.gui.network_chat_timeout, message);
 }
 
 /* Calculate the frame-lag of a client */

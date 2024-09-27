@@ -249,7 +249,7 @@ struct IConsoleWindow : Window
 				/* We always want the ] at the left side; we always force these strings to be left
 				 * aligned anyway. So enforce this in all cases by adding a left-to-right marker,
 				 * otherwise it will be drawn at the wrong side with right-to-left texts. */
-				IConsolePrintF(CC_COMMAND, LRM "] %s", _iconsole_cmdline.buf);
+				IConsolePrint(CC_COMMAND, LRM "] {}", _iconsole_cmdline.buf);
 				const char *cmd = IConsoleHistoryAdd(_iconsole_cmdline.buf);
 				IConsoleClearCommand();
 
@@ -351,7 +351,7 @@ void IConsoleGUIInit()
 
 	IConsoleClearBuffer();
 
-	IConsolePrintF(CC_WARNING, "OpenTTD Game Console Revision 7 - %s", _openttd_revision);
+	IConsolePrint(CC_WARNING, "OpenTTD Game Console Revision 7 - {}", _openttd_revision);
 	IConsolePrint(CC_WHITE,  "------------------------------------");
 	IConsolePrint(CC_WHITE,  "use \"help\" for more information");
 	IConsolePrint(CC_WHITE,  "");

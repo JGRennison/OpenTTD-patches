@@ -25,7 +25,6 @@
 #include "saveload.h"
 #include "../debug.h"
 #include "../string_func.h"
-#include "../string_func_extra.h"
 #include "../strings_func.h"
 #include "../core/bitmath_func.hpp"
 #include "../vehicle_base.h"

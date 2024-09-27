@@ -9,7 +9,6 @@
 
 #include "../stdafx.h"
 #include "serialisation.hpp"
-#include "../string_func_extra.h"
 
 /**
  * Is it safe to write to the packet, i.e. didn't we run over the buffer?

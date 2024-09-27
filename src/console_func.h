@@ -22,7 +22,7 @@ void IConsoleFree();
 void IConsoleClose();
 
 /* console output */
-void IConsolePrint(TextColour colour_code, const std::string &string);
+void IConsolePrint(TextColour colour_code, std::string string);
 
 /**
  * Handle the printing of text entered into the console or redirected there
@@ -44,8 +44,6 @@ inline void IConsolePrint(TextColour colour_code, fmt::format_string<A, Args...>
 	 * Otherwise the calls that do no need formatting will still use this function. */
 	IConsolePrint(colour_code, fmt::format(format, std::forward<A>(first_arg), std::forward<Args>(other_args)...));
 }
-
-void CDECL IConsolePrintF(TextColour colour_code, const char *format, ...) WARN_FORMAT(2, 3);
 
 /* Parser */
 void IConsoleCmdExec(const std::string &command_string, const uint recurse_count = 0);
