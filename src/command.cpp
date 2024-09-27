@@ -915,7 +915,7 @@ static void DebugLogCommandLogEntry(const CommandLogEntry &entry)
 	char buffer[512];
 	char *b = buffer;
 	DumpSubCommandLogEntry(b, lastof(buffer), entry);
-	debug_print(DebugLevelID::command, 0, buffer);
+	debug_print(DebugLevelID::command, 1, buffer);
 }
 
 static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd, CommandLogEntryFlag log_flags, const char *text, const CommandAuxiliaryBase *aux_data)
