@@ -12,7 +12,7 @@
 #include "network_query.h"
 #include "network_gamelist.h"
 #include "../error.h"
-#include "../debug_fmt.h"
+#include "../debug.h"
 
 #include "table/strings.h"
 

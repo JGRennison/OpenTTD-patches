@@ -8,7 +8,7 @@
 /** @file network_admin.cpp Server part of the admin network protocol. */
 
 #include "../stdafx.h"
-#include "../debug_fmt.h"
+#include "../debug.h"
 #include "../strings_func.h"
 #include "../date_func.h"
 #include "core/network_game_info.h"

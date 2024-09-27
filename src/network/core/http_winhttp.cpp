@@ -10,7 +10,7 @@
  */
 
 #include "../../stdafx.h"
-#include "../../debug_fmt.h"
+#include "../../debug.h"
 #include "../../rev.h"
 #include "../network_internal.h"
 

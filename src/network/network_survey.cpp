@@ -13,7 +13,6 @@
 #include "network_func.h"
 #include "../settings_type.h"
 #include "../debug.h"
-#include "../debug_fmt.h"
 #include "../survey.h"
 
 #include "../3rdparty/nlohmann/json.hpp"

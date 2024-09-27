@@ -19,7 +19,6 @@
 #include "dropdown_func.h"
 #include "gfx_layout.h"
 #include "debug.h"
-#include "debug_fmt.h"
 #include "openttd.h"
 
 #include "widgets/misc_widget.h"

@@ -15,7 +15,6 @@
 #include "../3rdparty/monocypher/monocypher.h"
 #include "../core/random_func.hpp"
 #include "../debug.h"
-#include "../debug_fmt.h"
 #include "../string_func.h"
 
 #include "../safeguards.h"

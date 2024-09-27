@@ -13,7 +13,6 @@
 #include "3rdparty/openttd_social_integration_api/openttd_social_integration_api.h"
 
 #include "debug.h"
-#include "debug_fmt.h"
 #include "fileio_func.h"
 #include "library_loader.h"
 #include "rev.h"

@@ -11,7 +11,6 @@
 #include "fileio_func.h"
 #include "spriteloader/spriteloader.hpp"
 #include "debug.h"
-#include "debug_fmt.h"
 #include "fios.h"
 #include "string_func.h"
 #include "tar_type.h"

@@ -22,7 +22,7 @@
 #include "clear_func.h"
 #include "tree_map.h"
 #include "scope.h"
-#include "debug_fmt.h"
+#include "debug.h"
 #include "table/tree_land.h"
 #include "blitter/32bpp_base.hpp"
 

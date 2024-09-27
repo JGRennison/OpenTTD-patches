@@ -13,7 +13,6 @@
 #include "network/network_func.h"
 #include "network/network_admin.h"
 #include "debug.h"
-#include "debug_fmt.h"
 #include "console_func.h"
 #include "settings_type.h"
 

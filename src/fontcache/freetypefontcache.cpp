@@ -9,7 +9,6 @@
 
 #include "../stdafx.h"
 #include "../debug.h"
-#include "../debug_fmt.h"
 #include "../fontcache.h"
 #include "../fontdetection.h"
 #include "../blitter/factory.hpp"

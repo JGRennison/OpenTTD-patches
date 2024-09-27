@@ -12,7 +12,6 @@
 #include "signature.h"
 
 #include "debug.h"
-#include "debug_fmt.h"
 #include "fileio_func.h"
 #include "string_func.h"
 

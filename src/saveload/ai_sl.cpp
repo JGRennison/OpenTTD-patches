@@ -9,7 +9,6 @@
 
 #include "../stdafx.h"
 #include "../debug.h"
-#include "../debug_fmt.h"
 
 #include "saveload.h"
 #include "compat/ai_sl_compat.h"

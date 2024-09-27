@@ -32,7 +32,6 @@
 #include "smallmap_gui.h"
 #include "window_func.h"
 #include "debug.h"
-#include "debug_fmt.h"
 #include "unit_conversion.h"
 #include "tracerestrict.h"
 #include "game/game_text.hpp"

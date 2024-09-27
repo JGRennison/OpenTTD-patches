@@ -8,7 +8,7 @@
  /** @file water_regions.cpp Handles dividing the water in the map into square regions to assist pathfinding. */
 
 #include "stdafx.h"
-#include "debug_fmt.h"
+#include "debug.h"
 #include "map_func.h"
 #include "water_regions.h"
 #include "map_func.h"

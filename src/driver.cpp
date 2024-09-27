@@ -9,7 +9,6 @@
 
 #include "stdafx.h"
 #include "debug.h"
-#include "debug_fmt.h"
 #include "error.h"
 #include "sound/sound_driver.hpp"
 #include "music/music_driver.hpp"

@@ -12,7 +12,6 @@
 #include "console_func.h"
 #include "core/math_func.hpp"
 #include "debug.h"
-#include "debug_fmt.h"
 #include "debug_tictoc.h"
 #include "string_func.h"
 #include "fileio_func.h"

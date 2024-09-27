@@ -9,7 +9,6 @@
 
 #include "../../stdafx.h"
 #include "../../debug.h"
-#include "../../debug_fmt.h"
 #include "font_osx.h"
 #include "../../core/math_func.hpp"
 #include "../../blitter/factory.hpp"

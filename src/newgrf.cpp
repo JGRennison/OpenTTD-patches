@@ -16,7 +16,6 @@
 #include "core/container_func.hpp"
 #include "core/bit_cast.hpp"
 #include "debug.h"
-#include "debug_fmt.h"
 #include "fileio_func.h"
 #include "engine_func.h"
 #include "engine_base.h"

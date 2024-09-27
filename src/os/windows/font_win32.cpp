@@ -9,7 +9,6 @@
 
 #include "../../stdafx.h"
 #include "../../debug.h"
-#include "../../debug_fmt.h"
 #include "../../blitter/factory.hpp"
 #include "../../core/alloc_func.hpp"
 #include "../../core/math_func.hpp"
