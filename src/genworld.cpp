@@ -46,7 +46,7 @@ void GenerateClearTile();
 void GenerateIndustries();
 void GenerateObjects();
 void GenerateTrees();
-extern void GeneratePublicRoads(PublicRoadsConstruction build_mode);
+extern void GeneratePublicRoads(PublicRoadsConstruction build_mode, RoadType road_type = GetTownRoadType());
 
 void StartupEconomy();
 void StartupCompanies();

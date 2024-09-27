@@ -977,8 +977,13 @@ void PostProcessNetworks(AyStar &finder, const std::vector<std::unique_ptr<TownN
 
 /**
 * Build the public road network connecting towns using AyStar.
+*
+* @param build_mode Whether to build public roads, and with or without curves.
+* @param road_type The road type to build public roads with. Defaults to the road type returned from GetTownRoadType().
+*
+* @see GetTownRoadType()
 */
-void GeneratePublicRoads(PublicRoadsConstruction build_mode)
+void GeneratePublicRoads(PublicRoadsConstruction build_mode, RoadType road_type = GetTownRoadType())
 {
 	if (build_mode == PRC_NONE) return;
 
@@ -1012,7 +1017,7 @@ void GeneratePublicRoads(PublicRoadsConstruction build_mode)
 		towns.pop_back();
 	}
 
-	_public_road_type = GetTownRoadType();
+	_public_road_type = road_type;
 	robin_hood::unordered_flat_set<TileIndex> checked_towns;
 
 	std::unique_ptr<TownNetwork> new_main_network = std::make_unique<TownNetwork>();
