@@ -43,6 +43,8 @@
 #include "table/strings.h"
 
 #include "safeguards.h"
+#include <dropdown_func.h>
+#include <core/geometry_func.hpp>
 
 enum DemolishConfirmMode {
 	DCM_OFF,
@@ -566,7 +568,7 @@ static constexpr NWidgetPart _nested_scen_edit_land_gen_widgets[] = {
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_ETT_RESET_LANDSCAPE), SetMinimalSize(160, 12),
 								SetFill(1, 0), SetDataTip(STR_TERRAFORM_RESET_LANDSCAPE, STR_TERRAFORM_RESET_LANDSCAPE_TOOLTIP), SetPadding(1, 2, 0, 2),
 		NWidget(WWT_LABEL, COLOUR_GREY, WID_ETT_PUBLIC_ROADS_TYPE_LABEL), SetDataTip(STR_TERRAFORM_PUBLIC_ROADS_TYPE, STR_NULL), SetFill(1, 0),
-		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_ETT_PUBLIC_ROADS_TYPE_DROPDOWN), SetMinimalSize(160, 12), SetDataTip(STR_JUST_STRING, STR_NULL),
+		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_ETT_PUBLIC_ROADS_TYPE_DROPDOWN), SetMinimalSize(160, 12), SetDataTip(STR_EMPTY, STR_NULL),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_ETT_PUBLIC_ROADS), SetMinimalSize(160, 12),
 								SetFill(1, 0), SetDataTip(STR_TERRAFORM_PUBLIC_ROADS, STR_TERRAFORM_PUBLIC_ROADS_TOOLTIP), SetPadding(1, 2, 0, 2),
 		NWidget(NWID_SPACER), SetMinimalSize(0, 2),
@@ -606,10 +608,11 @@ static void ResetLandscapeConfirmationCallback(Window *, bool confirmed)
 	}
 }
 
+static RoadType _public_road_type = GetTownRoadType(); ///< Public road type. This is static to preserve the selected road type between window openings.
+
 /** Landscape generation window handler in the scenario editor. */
 struct ScenarioEditorLandscapeGenerationWindow : Window {
 	int last_user_action;      ///< Last started user action.
-	RoadType public_road_type; ///< Public road type.
 
 	ScenarioEditorLandscapeGenerationWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
@@ -617,7 +620,6 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 		this->SetButtonStates();
 		this->FinishInitNested(window_number);
 		this->last_user_action = INVALID_WID_ETT;
-		this->public_road_type = GetTownRoadType();
 	}
 
 	void OnPaint() override
@@ -631,27 +633,50 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
-		if (widget != WID_ETT_DOTS) return;
-
-		size.width  = std::max<uint>(size.width,  ScaleGUITrad(59));
+		size.width = std::max<uint>(size.width, ScaleGUITrad(59));
 		size.height = std::max<uint>(size.height, ScaleGUITrad(31));
 	}
 
 	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
-		if (widget != WID_ETT_DOTS) return;
+		switch (widget) {
+			case WID_ETT_DOTS:
+			{
+				int center_x = RoundDivSU(r.left + r.right, 2);
+				int center_y = RoundDivSU(r.top + r.bottom, 2);
 
-		int center_x = RoundDivSU(r.left + r.right, 2);
-		int center_y = RoundDivSU(r.top + r.bottom, 2);
+				int n = _terraform_size * _terraform_size;
+				const int8_t *coords = &_multi_terraform_coords[0][0];
 
-		int n = _terraform_size * _terraform_size;
-		const int8_t *coords = &_multi_terraform_coords[0][0];
+				assert(n != 0);
+				do {
+					DrawSprite(SPR_WHITE_POINT, PAL_NONE, center_x + ScaleGUITrad(coords[0]), center_y + ScaleGUITrad(coords[1]));
+					coords += 2;
+				} while (--n);
+				break;
+			}
+			case WID_ETT_PUBLIC_ROADS_TYPE_DROPDOWN:
+			{
+				// instead of using a string put the dropdownlist entry in there instead
+				// @see DropdownWindow::DrawWidget()
+				const RoadTypeInfo *rti = GetRoadTypeInfo(_public_road_type);
 
-		assert(n != 0);
-		do {
-			DrawSprite(SPR_WHITE_POINT, PAL_NONE, center_x + ScaleGUITrad(coords[0]), center_y + ScaleGUITrad(coords[1]));
-			coords += 2;
-		} while (--n);
+				Dimension d = { 0, 0 };
+				d = maxdim(d, GetSpriteSize(rti->gui_sprites.build_x_road));
+				SetDParam(0, rti->strings.menu_text);
+				SetDParam(1, rti->max_speed / 2);
+				StringID str = rti->max_speed > 0 ? STR_TOOLBAR_RAILTYPE_VELOCITY : STR_JUST_STRING;
+
+				auto item = MakeDropDownListIconItem(d, rti->gui_sprites.build_x_road, PAL_NONE, str, _public_road_type);
+				auto item_height = item->Height();
+
+				Rect ir = r.Shrink(WidgetDimensions::scaled.dropdownlist);
+				int y = ir.top;
+				Rect full{ir.left, y, ir.right, y + item_height - 1};
+				item->Draw(full, full.Shrink(WidgetDimensions::scaled.dropdowntext, RectPadding::zero), false, this->GetWidget<NWidgetCore>(widget)->colour);
+				break;
+			}
+		}
 	}
 
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
@@ -720,7 +745,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 				extern void GeneratePublicRoads(PublicRoadsConstruction build_mode, RoadType road_type);
 				PublicRoadsConstruction build_mode = _settings_game.game_creation.build_public_roads;
 				if (build_mode == PRC_NONE) build_mode = PRC_WITH_CURVES;
-				GeneratePublicRoads(build_mode, this->public_road_type);
+				GeneratePublicRoads(build_mode, _public_road_type);
 				break;
 			}
 
@@ -728,7 +753,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 				break;
 
 			case WID_ETT_PUBLIC_ROADS_TYPE_DROPDOWN: { // Select public road type
-				ShowDropDownList(this, GetScenRoadTypeDropDownList(RTTB_ROAD), this->public_road_type, widget);
+				ShowDropDownList(this, GetScenRoadTypeDropDownList(RTTB_ROAD), _public_road_type, widget);
 				break;
 			}
 
@@ -740,7 +765,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 	{
 		if (widget == WID_ETT_PUBLIC_ROADS_TYPE_DROPDOWN)
 		{
-			this->public_road_type = (RoadType)index;
+			_public_road_type = (RoadType)index;
 		}
 
 		this->SetDirty();
@@ -837,7 +862,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 	{
 		if (widget == WID_ETT_PUBLIC_ROADS_TYPE_DROPDOWN)
 		{
-				SetDParam(0, GetRoadTypeInfo(this->public_road_type)->strings.name);
+			//SetDParam(0, GetRoadTypeInfo(this->public_road_type)->strings.name);
 		}
 	}
 
