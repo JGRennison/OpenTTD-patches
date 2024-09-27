@@ -35,6 +35,8 @@
 #include "terraform_gui.h"
 #include "cheat_func.h"
 #include "zoom_func.h"
+#include "road_gui.h"
+#include "town.h"
 
 #include "widgets/terraform_widget.h"
 
@@ -563,6 +565,8 @@ static constexpr NWidgetPart _nested_scen_edit_land_gen_widgets[] = {
 								SetFill(1, 0), SetDataTip(STR_TERRAFORM_SE_NEW_WORLD, STR_TERRAFORM_TOOLTIP_GENERATE_RANDOM_LAND), SetPadding(0, 2, 0, 2),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_ETT_RESET_LANDSCAPE), SetMinimalSize(160, 12),
 								SetFill(1, 0), SetDataTip(STR_TERRAFORM_RESET_LANDSCAPE, STR_TERRAFORM_RESET_LANDSCAPE_TOOLTIP), SetPadding(1, 2, 0, 2),
+		NWidget(WWT_LABEL, COLOUR_GREY, WID_ETT_PUBLIC_ROADS_TYPE_LABEL), SetDataTip(STR_TERRAFORM_PUBLIC_ROADS_TYPE, STR_NULL), SetFill(1, 0),
+		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_ETT_PUBLIC_ROADS_TYPE_DROPDOWN), SetMinimalSize(160, 12),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_ETT_PUBLIC_ROADS), SetMinimalSize(160, 12),
 								SetFill(1, 0), SetDataTip(STR_TERRAFORM_PUBLIC_ROADS, STR_TERRAFORM_PUBLIC_ROADS_TOOLTIP), SetPadding(1, 2, 0, 2),
 		NWidget(NWID_SPACER), SetMinimalSize(0, 2),
@@ -604,7 +608,8 @@ static void ResetLandscapeConfirmationCallback(Window *, bool confirmed)
 
 /** Landscape generation window handler in the scenario editor. */
 struct ScenarioEditorLandscapeGenerationWindow : Window {
-	int last_user_action; ///< Last started user action.
+	int last_user_action;      ///< Last started user action.
+	RoadType public_road_type;
 
 	ScenarioEditorLandscapeGenerationWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
@@ -612,6 +617,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 		this->SetButtonStates();
 		this->FinishInitNested(window_number);
 		this->last_user_action = INVALID_WID_ETT;
+		this->public_road_type = GetTownRoadType();
 	}
 
 	void OnPaint() override
@@ -718,8 +724,28 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 				break;
 			}
 
+			case WID_ETT_PUBLIC_ROADS_TYPE_LABEL: // Don't crash when you click on the label
+				break;
+
+			case WID_ETT_PUBLIC_ROADS_TYPE_DROPDOWN: { // Select public road type
+				ShowDropDownList(this, GetScenRoadTypeDropDownList(RTTB_ROAD), GetTownRoadType(), widget);
+				break;
+			}
+
 			default: NOT_REACHED();
 		}
+	}
+
+	void OnDropdownSelect(WidgetID widget, int index) override
+	{
+		switch (widget) {
+			case WID_ETT_PUBLIC_ROADS_TYPE_DROPDOWN: {
+				this->public_road_type = (RoadType)index;
+				break;
+			}
+		}
+
+		this->SetDirty();
 	}
 
 	void OnTimeout() override

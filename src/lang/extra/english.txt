@@ -1241,6 +1241,7 @@ STR_TREES_REMOVE_TREES_TOOLTIP                                  :{BLACK}Remove a
 
 STR_TERRAFORM_PUBLIC_ROADS                                      :{BLACK}Build public roads
 STR_TERRAFORM_PUBLIC_ROADS_TOOLTIP                              :{BLACK}Build public roads between the towns on the map
+STR_TERRAFORM_PUBLIC_ROADS_TYPE                                 :{BLACK}Public roads type
 
 STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP_ALL                        :All industries
 
