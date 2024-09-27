@@ -1131,8 +1131,6 @@ inline void SlLoadTableOrRiffFiltered(const NamedSaveLoadTable &slt, void *objec
 	SlLoadTableOrRiffFiltered(SlTableHeaderOrRiff(slt), object);
 }
 
-[[noreturn]] void CDECL SlErrorFmt(StringID string, const char *msg, ...) WARN_FORMAT(2, 3);
-
 bool SaveloadCrashWithMissingNewGRFs();
 
 void SlResetVENC();

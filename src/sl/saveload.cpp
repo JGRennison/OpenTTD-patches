@@ -489,18 +489,6 @@ struct ThreadSlErrorException {
 }
 
 /**
- * As SlError, except that it takes a format string and additional parameters
- */
-[[noreturn]] void CDECL SlErrorFmt(StringID string, const char *msg, ...)
-{
-	va_list va;
-	va_start(va, msg);
-	std::string str = stdstr_vfmt(msg, va);
-	va_end(va);
-	SlError(string, std::move(str));
-}
-
-/**
  * Error handler for corrupt savegames. Sets everything up to show the
  * error message and to clean up the mess of a partial savegame load.
  * @param msg Location the corruption has been spotted.
@@ -3448,7 +3436,7 @@ struct LZMALoadFilter : LoadFilter {
 			/* inflate the data */
 			lzma_ret r = lzma_code(&this->lzma, LZMA_RUN);
 			if (r == LZMA_STREAM_END) break;
-			if (r != LZMA_OK) SlErrorFmt(STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR, "liblzma returned error code: %u", r);
+			if (r != LZMA_OK) SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR, fmt::format("liblzma returned error code: {}", r));
 		} while (this->lzma.avail_out != 0);
 
 		return size - this->lzma.avail_out;
@@ -3498,7 +3486,7 @@ struct LZMASaveFilter : SaveFilter {
 				this->chain->Write(this->buf, n);
 			}
 			if (r == LZMA_STREAM_END) break;
-			if (r != LZMA_OK) SlErrorFmt(STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR, "liblzma returned error code: %u", r);
+			if (r != LZMA_OK) SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR, fmt::format("liblzma returned error code: {}", r));
 		} while (this->lzma.avail_in || !this->lzma.avail_out);
 	}
 
