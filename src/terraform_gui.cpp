@@ -717,10 +717,10 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 				break;
 
 			case WID_ETT_PUBLIC_ROADS: { // Build public roads
-				extern void GeneratePublicRoads(PublicRoadsConstruction build_mode);
+				extern void GeneratePublicRoads(PublicRoadsConstruction build_mode, RoadType road_type);
 				PublicRoadsConstruction build_mode = _settings_game.game_creation.build_public_roads;
 				if (build_mode == PRC_NONE) build_mode = PRC_WITH_CURVES;
-				GeneratePublicRoads(build_mode);
+				GeneratePublicRoads(build_mode, this->public_road_type);
 				break;
 			}
 
