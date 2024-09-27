@@ -753,7 +753,30 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 				break;
 
 			case WID_ETT_PUBLIC_ROADS_TYPE_DROPDOWN: { // Select public road type
-				ShowDropDownList(this, GetScenRoadTypeDropDownList(RTTB_ROAD), _public_road_type, widget);
+				auto road_types = GetScenRoadTypeDropDownList(RTTB_ROAD);
+				auto town_road = GetTownRoadType();
+				// check if the town road is an available road type
+				bool has_town_road = false;
+				for (auto rt = road_types.begin(); rt < road_types.end(); rt++)
+				{
+					if ((RoadType)rt->get()->result == town_road)
+					{
+						has_town_road = true;
+						break;
+					}
+				}
+
+				if (!has_town_road)
+				{
+					// taken from GetScenRoadTypeDropDownList()
+					const RoadTypeInfo *rti = GetRoadTypeInfo(town_road);
+					SetDParam(0, rti->strings.menu_text);
+					SetDParam(1, rti->max_speed / 2);
+					StringID str = rti->max_speed > 0 ? STR_TOOLBAR_RAILTYPE_VELOCITY : STR_JUST_STRING;
+					road_types.push_back(MakeDropDownListIconItem(GetSpriteSize(rti->gui_sprites.build_x_road), rti->gui_sprites.build_x_road, PAL_NONE, str, town_road, false));
+				}
+
+				ShowDropDownList(this, std::move(road_types), _public_road_type, widget);
 				break;
 			}
 
