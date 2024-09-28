@@ -3509,7 +3509,7 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 		sd->FormatValue(value, lastof(value), object);
 
 		if (show_min_max) {
-			IConsolePrint(CC_WARNING, "Current value for '{}' is: '{}' (min: {}, max: {})",
+			IConsolePrint(CC_WARNING, "Current value for '{}' is: '{}' (min: {}{}, max: {})",
 				name, value, (sd->flags & SF_GUI_0_IS_SPECIAL) ? "(0) " : "", min_value, max_value);
 		} else {
 			IConsolePrint(CC_WARNING, "Current value for '{}' is: '{}'",

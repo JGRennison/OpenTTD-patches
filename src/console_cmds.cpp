@@ -3094,7 +3094,7 @@ DEF_CONSOLE_CMD(ConDumpLinkgraphJobs)
 		return true;
 	}
 
-	IConsolePrint(CC_DEFAULT, PRINTF_SIZE " link graph jobs", LinkGraphJob::GetNumItems());
+	IConsolePrint(CC_DEFAULT, "{} link graph jobs", LinkGraphJob::GetNumItems());
 	for (const LinkGraphJob *lgj : LinkGraphJob::Iterate()) {
 		IConsolePrint(CC_DEFAULT, "  Job: {:5}, nodes: {}, cost: {}, started: {}, ends in: {}, duration: {}",
 				lgj->index, lgj->Graph().Size(), lgj->Graph().CalculateCostEstimate(),
