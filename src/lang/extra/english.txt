@@ -1239,6 +1239,7 @@ STR_LANDSCAPING_TOOLTIP_RULER_TOOL                              :{BLACK}Use a vi
 STR_TREES_REMOVE_TREES_BUTTON                                   :{BLACK}Remove all Trees
 STR_TREES_REMOVE_TREES_TOOLTIP                                  :{BLACK}Remove all Trees over landscape
 
+STR_TERRAFORM_PUBLIC_ROADS_GENERATION_CAPTION                   :{WHITE}Public Roads
 STR_TERRAFORM_PUBLIC_ROADS                                      :{BLACK}Build public roads
 STR_TERRAFORM_PUBLIC_ROADS_TOOLTIP                              :{BLACK}Build public roads between the towns on the map
 STR_TERRAFORM_PUBLIC_ROADS_TYPE                                 :{BLACK}Public roads type

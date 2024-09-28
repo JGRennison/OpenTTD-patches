@@ -45,11 +45,14 @@ enum EditorTerraformToolbarWidgets : WidgetID {
 	WID_ETT_DECREASE_SIZE,                       ///< Downwards arrow button to decrease terraforming size.
 	WID_ETT_NEW_SCENARIO,                        ///< Button for generating a new scenario.
 	WID_ETT_RESET_LANDSCAPE,                     ///< Button for removing all company-owned property.
-	WID_ETT_PUBLIC_ROADS,                        ///< Button for creating public roads.
-	WID_ETT_PUBLIC_ROADS_TYPE_LABEL,             ///< Label for public road type selection dropdown.
-	WID_ETT_PUBLIC_ROADS_TYPE_DROPDOWN,          ///< Dropdown for public road type selection.
 
 	INVALID_WID_ETT = -1,
+};
+
+enum EditorPublicRoadsWindowWidgets : WidgetID {
+	WID_PR_PUBLIC_ROADS_TYPE_LABEL,    ///< Label for public road type selection dropdown.
+	WID_PR_PUBLIC_ROADS_TYPE_DROPDOWN, ///< Dropdown for public road type selection.
+	WID_PR_PUBLIC_ROADS,               ///< Button for creating public roads.
 };
 
 #endif /* WIDGETS_TERRAFORM_WIDGET_H */

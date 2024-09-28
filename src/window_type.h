@@ -481,6 +481,12 @@ enum WindowClass {
 	WC_SCEN_LAND_GEN,
 
 	/**
+	 * Public roads generation (in Scenario Editor); %Window numbers:
+	 *   - 0 = #PublicRoadsWidgets
+	 */
+	WC_SCEN_PUBLIC_ROADS,
+
+	/**
 	 * Generate landscape (newgame); %Window numbers:
 	 *   - GLWM_SCENARIO = #CreateScenarioWidgets
 	 *   - #GenerateLandscapeWindowMode = #GenerateLandscapeWidgets
