@@ -193,14 +193,14 @@ void debug_print_partial_buffer(DebugLevelID dbg, int8_t level, fmt::memory_buff
  * @param level Debug level.
  * @param buf Text line to output.
  */
-void debug_print(DebugLevelID dbg, int8_t level, const char *msg)
+void debug_print(DebugLevelID dbg, int8_t level, std::string_view msg)
 {
 	fmt::memory_buffer buf{};
 
 	DebugIntlSetup(buf, dbg, level);
 	size_t prefix_size = buf.size();
 
-	buf.append(msg, msg + strlen(msg));
+	buf.append(msg.begin(), msg.end());
 	debug_print_partial_buffer(dbg, level, buf, prefix_size);
 }
 
