@@ -727,6 +727,11 @@ template <typename Char> class basic_format_parse_context {
     next_arg_id_ = -1;
     do_check_arg_id(id);
   }
+
+  FMT_CONSTEXPR bool is_manual_arg_count_non_matching(size_t expected) {
+    return next_arg_id_ >= 0 && static_cast<size_t>(next_arg_id_) != expected;
+  };
+
   FMT_CONSTEXPR void check_arg_id(basic_string_view<Char>) {}
   FMT_CONSTEXPR void check_dynamic_spec(int arg_id);
 };
@@ -2535,6 +2540,7 @@ FMT_CONSTEXPR FMT_INLINE void parse_format_string(
       }
     }
     handler.on_text(begin, end);
+    handler.on_format_string_end();
     return;
   }
   struct writer {
@@ -2557,11 +2563,14 @@ FMT_CONSTEXPR FMT_INLINE void parse_format_string(
     // Doing two passes with memchr (one for '{' and another for '}') is up to
     // 2.5x faster than the naive one-pass implementation on big format strings.
     const Char* p = begin;
-    if (*begin != '{' && !find<IS_CONSTEXPR>(begin + 1, end, Char('{'), p))
+    if (*begin != '{' && !find<IS_CONSTEXPR>(begin + 1, end, Char('{'), p)) {
+      handler.on_format_string_end();
       return write(begin, end);
+    }
     write(begin, p);
     begin = parse_replacement_field(p, end, handler);
   }
+  handler.on_format_string_end();
 }
 
 template <typename T, bool = is_named_arg<T>::value> struct strip_named_arg {
@@ -2677,6 +2686,12 @@ template <typename Char, typename... Args> class format_string_checker {
     context_.advance_to(begin);
     // id >= 0 check is a workaround for gcc 10 bug (#2065).
     return id >= 0 && id < num_args ? parse_funcs_[id](context_) : begin;
+  }
+
+  FMT_CONSTEXPR void on_format_string_end() {
+    if (context_.is_manual_arg_count_non_matching(static_cast<size_t>(num_args))) {
+        on_error("too many arguments for format");
+    }
   }
 
   FMT_CONSTEXPR void on_error(const char* message) {
