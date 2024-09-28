@@ -28,6 +28,21 @@ inline void ProcessLineByLine(char *buf, F line_functor)
 	if (p < p2) line_functor(p);
 }
 
+template <typename F>
+inline void ProcessLineByLine(std::string_view str, F line_functor)
+{
+	const char *p = str.begin();
+	const char *p2 = str.begin();
+	/* Process output line by line */
+	for (; p2 != str.end(); p2++) {
+		if (*p2 == '\n') {
+			line_functor(std::string_view(p, p2));
+			p = p2 + 1;
+		}
+	}
+	if (p < p2) line_functor(std::string_view(p, p2));
+}
+
 /*
  * Cut down version of std::from_chars, base is fixed at 10.
  * Returns true on success

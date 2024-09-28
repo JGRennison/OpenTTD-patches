@@ -1491,27 +1491,13 @@ DEF_CONSOLE_CMD(ConReload)
 
 /**
  * Print a text buffer line by line to the console. Lines are separated by '\n'.
- * @param buf The buffer to print.
- * @note All newlines are replace by '\0' characters.
- */
-static void PrintLineByLine(char *buf)
-{
-	ProcessLineByLine(buf, [&](const char *line) {
-		IConsolePrint(CC_DEFAULT, line);
-	});
-}
-
-/**
- * Print a text buffer line by line to the console. Lines are separated by '\n'.
  * @param full_string The multi-line string to print.
  */
-static void PrintLineByLine(const std::string &full_string)
+static void PrintLineByLine(std::string_view full_string)
 {
-	std::istringstream in(full_string);
-	std::string line;
-	while (std::getline(in, line)) {
-		IConsolePrint(CC_DEFAULT, line);
-	}
+	ProcessLineByLine(full_string, [&](std::string_view line) {
+		IConsolePrint(CC_DEFAULT, std::string{line});
+	});
 }
 
 DEF_CONSOLE_CMD(ConListAILibs)
