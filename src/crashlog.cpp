@@ -468,11 +468,13 @@ char *CrashLog::LogPlugins(char *buffer, const char *last) const
 char *CrashLog::LogGamelog(char *buffer, const char *last) const
 {
 	if (_game_events_since_load || _game_events_overall) {
-		buffer += seprintf(buffer, last, "Events: ");
-		buffer = DumpGameEventFlags(_game_events_since_load, buffer, last);
-		buffer += seprintf(buffer, last, ", ");
-		buffer = DumpGameEventFlags(_game_events_overall, buffer, last);
-		buffer += seprintf(buffer, last, "\n\n");
+		format_to_fixed_z buf(buffer, last);
+		buf.append("Events: ");
+		DumpGameEventFlags(_game_events_since_load, buf);
+		buf.append(", ");
+		DumpGameEventFlags(_game_events_overall, buf);
+		buf.append("\n\n");
+		buffer = buf.finalise();
 	}
 
 	CrashLog::gamelog_buffer = buffer;
@@ -513,11 +515,12 @@ char *CrashLog::LogRecentNews(char *buffer, const char *last) const
  */
 char *CrashLog::LogCommandLog(char *buffer, const char *last) const
 {
-	buffer = DumpCommandLog(buffer, last, nullptr);
-	buffer += seprintf(buffer, last, "\n");
-	buffer = DumpSpecialEventsLog(buffer, last);
-	buffer += seprintf(buffer, last, "\n");
-	return buffer;
+	format_to_fixed_z buf(buffer, last);
+	DumpCommandLog(buf);
+	buf.push_back('\n');
+	DumpSpecialEventsLog(buf);
+	buf.push_back('\n');
+	return buf.finalise();
 }
 
 /**
@@ -728,7 +731,10 @@ char *CrashLog::FillDesyncCrashLog(char *buffer, const char *last, const DesyncE
 	buffer = this->LogCommandLog(buffer, last);
 	buffer = this->LogGamelog(buffer, last);
 	buffer = this->LogRecentNews(buffer, last);
-	buffer = DumpDesyncMsgLog(buffer, last);
+
+	format_to_fixed_z desync_buf(buffer, last);
+	DumpDesyncMsgLog(desync_buf);
+	buffer = desync_buf.finalise();
 
 	bool have_cache_log = false;
 	CheckCaches(true, [&](const char *str) {
@@ -772,7 +778,10 @@ char *CrashLog::FillInconsistencyLog(char *buffer, const char *last, const Incon
 	buffer = this->LogCommandLog(buffer, last);
 	buffer = this->LogGamelog(buffer, last);
 	buffer = this->LogRecentNews(buffer, last);
-	buffer = DumpDesyncMsgLog(buffer, last);
+
+	format_to_fixed_z desync_buf(buffer, last);
+	DumpDesyncMsgLog(desync_buf);
+	buffer = desync_buf.finalise();
 
 	if (!info.check_caches_result.empty()) {
 		buffer += seprintf(buffer, last, "CheckCaches:\n");

@@ -4667,7 +4667,11 @@ char *Vehicle::DumpVehicleFlags(char *b, const char *last, bool include_tile) co
 	}
 	if (include_tile) {
 		b += seprintf(b, last, ", [");
-		b = DumpTileInfo(b, last, this->tile);
+
+		format_to_fixed_z tileinfobuf(b, last);
+		DumpTileInfo(tileinfobuf, this->tile);
+		b = tileinfobuf.finalise();
+
 		b += seprintf(b, last, "]");
 		TileIndex vtile = TileVirtXY(this->x_pos, this->y_pos);
 		if (this->tile != vtile) b += seprintf(b, last, ", VirtXYTile: %X (%u x %u)", vtile, TileX(vtile), TileY(vtile));
@@ -4922,7 +4926,7 @@ void GetVehicleSet(VehicleSet &set, Vehicle *v, uint8_t num_vehicles)
 	}
 }
 
-void DumpVehicleStats(char *buffer, const char *last)
+void DumpVehicleStats(struct format_target &buffer)
 {
 	struct vtypestats {
 		uint count[2] = { 0, 0 };
@@ -4957,7 +4961,7 @@ void DumpVehicleStats(char *buffer, const char *last)
 	auto print_stats = [&](const cstats &cs, bool show_non_company) {
 		auto line = [&](const vtypestats &vs, const char *type) {
 			if (vs.count[0] || vs.count[1]) {
-				buffer += seprintf(buffer, last, "  %10s: primary: %5u, secondary: %5u\n", type, vs.count[0], vs.count[1]);
+				buffer.format("  {:10}: primary: {:5}, secondary: {:5}\n", type, vs.count[0], vs.count[1]);
 			}
 		};
 		line(cs.vstats[VEH_TRAIN], "train");
@@ -4970,15 +4974,15 @@ void DumpVehicleStats(char *buffer, const char *last)
 		}
 		line(cs.virt_train, "virt train");
 		line(cs.template_train, "tmpl train");
-		buffer += seprintf(buffer, last, "\n");
+		buffer.push_back('\n');
 	};
 
 	cstats totals{};
 	for (auto &it : cstatmap) {
-		buffer += seprintf(buffer, last, "%u: ", (uint) it.first);
+		buffer.format("{}: ", it.first);
 		SetDParam(0, it.first);
-		buffer = strecpy(buffer, GetString(STR_COMPANY_NAME).c_str(), last, true);
-		buffer += seprintf(buffer, last, "\n");
+		buffer.append(GetString(STR_COMPANY_NAME));
+		buffer.push_back('\n');
 		print_stats(it.second, false);
 
 		for (VehicleType vt = VEH_BEGIN; vt != VEH_END; vt++) {
@@ -4987,9 +4991,9 @@ void DumpVehicleStats(char *buffer, const char *last)
 		totals.virt_train += it.second.virt_train;
 		totals.template_train += it.second.template_train;
 	}
-	buffer += seprintf(buffer, last, "Totals\n");
+	buffer.append("Totals\n");
 	print_stats(totals, true);
-	buffer += seprintf(buffer, last, "Total vehicles: %u\n", (uint)Vehicle::GetNumItems());
+	buffer.format("Total vehicles: {}\n", Vehicle::GetNumItems());
 }
 
 void AdjustVehicleStateTicksBase(StateTicksDelta delta)

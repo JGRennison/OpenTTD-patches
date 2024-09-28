@@ -2910,11 +2910,9 @@ DEF_CONSOLE_CMD(ConDumpCommandLog)
 		return true;
 	}
 
-	char buffer[2048];
-	DumpCommandLog(buffer, lastof(buffer), [&](char *current) -> char * {
-		PrintLineByLine(buffer);
-		return buffer;
-	});
+	format_buffer buffer;
+	DumpCommandLog(buffer);
+	PrintLineByLine(buffer);
 	return true;
 }
 
@@ -2925,8 +2923,8 @@ DEF_CONSOLE_CMD(ConDumpSpecialEventsLog)
 		return true;
 	}
 
-	char buffer[32768];
-	DumpSpecialEventsLog(buffer, lastof(buffer));
+	format_buffer buffer;
+	DumpSpecialEventsLog(buffer);
 	PrintLineByLine(buffer);
 	return true;
 }
@@ -2938,8 +2936,8 @@ DEF_CONSOLE_CMD(ConDumpDesyncMsgLog)
 		return true;
 	}
 
-	char buffer[32768];
-	DumpDesyncMsgLog(buffer, lastof(buffer));
+	format_buffer buffer;
+	DumpDesyncMsgLog(buffer);
 	PrintLineByLine(buffer);
 	return true;
 }
@@ -2979,9 +2977,9 @@ DEF_CONSOLE_CMD(ConVehicleStats)
 		return true;
 	}
 
-	extern void DumpVehicleStats(char *buffer, const char *last);
-	char buffer[32768];
-	DumpVehicleStats(buffer, lastof(buffer));
+	extern void DumpVehicleStats(format_target &buffer);
+	format_buffer buffer;
+	DumpVehicleStats(buffer);
 	PrintLineByLine(buffer);
 	return true;
 }
@@ -2993,9 +2991,9 @@ DEF_CONSOLE_CMD(ConMapStats)
 		return true;
 	}
 
-	extern void DumpMapStats(char *b, const char *last);
-	char buffer[32768];
-	DumpMapStats(buffer, lastof(buffer));
+	extern void DumpMapStats(format_target &buffer);
+	format_buffer buffer;
+	DumpMapStats(buffer);
 	PrintLineByLine(buffer);
 
 	IConsolePrint(CC_DEFAULT, "");
@@ -3012,9 +3010,9 @@ DEF_CONSOLE_CMD(ConStFlowStats)
 		return true;
 	}
 
-	extern void DumpStationFlowStats(char *b, const char *last);
-	char buffer[32768];
-	DumpStationFlowStats(buffer, lastof(buffer));
+	extern void DumpStationFlowStats(format_target &buffer);
+	format_buffer buffer;
+	DumpStationFlowStats(buffer);
 	PrintLineByLine(buffer);
 	return true;
 }
@@ -3026,9 +3024,9 @@ DEF_CONSOLE_CMD(ConSlotsStats)
 		return true;
 	}
 
-	extern void DumpTraceRestrictSlotsStats(char *b, const char *last);
-	char buffer[32768];
-	DumpTraceRestrictSlotsStats(buffer, lastof(buffer));
+	extern void DumpTraceRestrictSlotsStats(format_target &buffer);
+	format_buffer buffer;
+	DumpTraceRestrictSlotsStats(buffer);
 	PrintLineByLine(buffer);
 	return true;
 }
@@ -3040,10 +3038,11 @@ DEF_CONSOLE_CMD(ConDumpGameEvents)
 		return true;
 	}
 
-	char buffer[256];
-	DumpGameEventFlags(_game_events_since_load, buffer, lastof(buffer));
+	format_buffer buffer;
+	DumpGameEventFlags(_game_events_since_load, buffer);
 	IConsolePrint(CC_DEFAULT, "Since load: {}", buffer);
-	DumpGameEventFlags(_game_events_overall, buffer, lastof(buffer));
+	buffer.clear();
+	DumpGameEventFlags(_game_events_overall, buffer);
 	IConsolePrint(CC_DEFAULT, "Overall: {}", buffer);
 	return true;
 }
@@ -3349,8 +3348,6 @@ DEF_CONSOLE_CMD(ConDumpVehicle)
  */
 DEF_CONSOLE_CMD(ConDumpTile)
 {
-	char buffer[128];
-
 	switch (argc) {
 		case 0:
 			IConsolePrint(CC_HELP, "Dump the map state of a given tile.");
@@ -3365,8 +3362,10 @@ DEF_CONSOLE_CMD(ConDumpTile)
 					IConsolePrint(CC_ERROR, "Tile does not exist.");
 					return true;
 				}
-				DumpTileInfo(buffer, lastof(buffer), (TileIndex)result);
-				IConsolePrint(CC_DEFAULT, "  {}", buffer);
+				format_buffer buffer;
+				buffer.append("  ");
+				DumpTileInfo(buffer, (TileIndex)result);
+				IConsolePrint(CC_DEFAULT, buffer.to_string());
 				return true;
 			}
 			break;
@@ -3379,8 +3378,10 @@ DEF_CONSOLE_CMD(ConDumpTile)
 					IConsolePrint(CC_ERROR, "Tile does not exist.");
 					return true;
 				}
-				DumpTileInfo(buffer, lastof(buffer), TileXY(x, y));
-				IConsolePrint(CC_DEFAULT, "  {}", buffer);
+				format_buffer buffer;
+				buffer.append("  ");
+				DumpTileInfo(buffer, TileXY(x, y));
+				IConsolePrint(CC_DEFAULT, buffer.to_string());
 				return true;
 			}
 			break;
@@ -3399,7 +3400,7 @@ DEF_CONSOLE_CMD(ConDumpGrfCargoTables)
 
 	const std::vector<GRFFile *> &files = GetAllGRFFiles();
 
-	auto buffer = fmt::memory_buffer();
+	format_buffer buffer;
 
 	for (const GRFFile *grf : files) {
 		if (grf->cargo_list.empty()) continue;
@@ -3411,10 +3412,10 @@ DEF_CONSOLE_CMD(ConDumpGrfCargoTables)
 			buffer.clear();
 			for (const CargoSpec *cs : CargoSpec::Iterate()) {
 				if (grf->cargo_map[cs->Index()] == i) {
-					fmt::format_to(std::back_inserter(buffer), "{}{:02}[{}]", buffer.size() == 0 ? ": " : ", ", cs->Index(), NewGRFLabelDumper().Label(cs->label.base()));
+					buffer.format("{}{:02}[{}]", buffer.size() == 0 ? ": " : ", ", cs->Index(), NewGRFLabelDumper().Label(cs->label.base()));
 				}
 			}
-			IConsolePrint(CC_DEFAULT, "  {}{}", NewGRFLabelDumper().Label(cl.base()), std::string_view{buffer.data(), buffer.size()});
+			IConsolePrint(CC_DEFAULT, "  {}{}", NewGRFLabelDumper().Label(cl.base()), buffer);
 			i++;
 		}
 	}
@@ -3480,9 +3481,9 @@ DEF_CONSOLE_CMD(ConSpriteCacheStats)
 		return true;
 	}
 
-	extern void DumpSpriteCacheStats(char *buffer, const char *last);
-	char buffer[8192];
-	DumpSpriteCacheStats(buffer, lastof(buffer));
+	extern void DumpSpriteCacheStats(format_target &buffer);
+	format_buffer buffer;
+	DumpSpriteCacheStats(buffer);
 	PrintLineByLine(buffer);
 	return true;
 }

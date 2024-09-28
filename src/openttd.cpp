@@ -242,9 +242,11 @@ void assert_str_error(int line, const char *file, const char *expr, const std::s
 }
 
 const char *assert_tile_info(uint32_t tile) {
-	static char buffer[128];
-	DumpTileInfo(buffer, lastof(buffer), tile);
-	return buffer;
+	fmt::memory_buffer *buf = new fmt::memory_buffer(); // leak it on purpose, we're about to crash anyway...
+	format_to_buffer out(*buf);
+	DumpTileInfo(out, tile);
+	buf->push_back('\0');
+	return buf->data();
 }
 
 /**
@@ -393,46 +395,33 @@ static void WriteSavegameInfo(const char *name)
 
 static void WriteSavegameDebugData(const char *name)
 {
-	char *buf = MallocT<char>(4096);
-	char *buflast = buf + 4095;
-	char *p = buf;
-	auto bump_size = [&]() {
-		size_t offset = p - buf;
-		size_t new_size = buflast - buf + 1 + 4096;
-		buf = ReallocT<char>(buf, new_size);
-		buflast = buf + new_size - 1;
-		p = buf + offset;
-	};
-	p += seprintf(p, buflast, "Name:         %s\n", name);
+	format_buffer out;
+
+	out.format("Name:         {}\n", name);
 	if (_load_check_data.debug_log_data.size()) {
-		p += seprintf(p, buflast, "%u bytes of debug log data in savegame\n", (uint) _load_check_data.debug_log_data.size());
-		std::string buffer = _load_check_data.debug_log_data;
-		ProcessLineByLine(buffer.data(), [&](const char *line) {
-			if (buflast - p <= 1024) bump_size();
-			p += seprintf(p, buflast, "> %s\n", line);
+		out.format("{} bytes of debug log data in savegame\n", _load_check_data.debug_log_data.size());
+		ProcessLineByLine(_load_check_data.debug_log_data, [&](std::string_view line) {
+			out.format("> {}\n", line);
 		});
 	} else {
-		p += seprintf(p, buflast, "No debug log data in savegame\n");
+		out.format("No debug log data in savegame\n");
 	}
 	if (_load_check_data.debug_config_data.size()) {
-		p += seprintf(p, buflast, "%u bytes of debug config data in savegame\n", (uint) _load_check_data.debug_config_data.size());
-		std::string buffer = _load_check_data.debug_config_data;
-		ProcessLineByLine(buffer.data(), [&](const char *line) {
-			if (buflast - p <= 1024) bump_size();
-			p += seprintf(p, buflast, "> %s\n", line);
+		out.format("{} bytes of debug config data in savegame\n", _load_check_data.debug_config_data.size());
+		ProcessLineByLine(_load_check_data.debug_config_data, [&](std::string_view line) {
+			out.format("> {}\n", line);
 		});
 	} else {
-		p += seprintf(p, buflast, "No debug config data in savegame\n");
+		out.format("No debug config data in savegame\n");
 	}
 
 	/* ShowInfo put output to stderr, but version information should go
 	 * to stdout; this is the only exception */
 #if !defined(_WIN32)
-	printf("%s\n", buf);
+	fmt::print("{}\n", out);
 #else
-	ShowInfoI(buf);
+	ShowInfoI(out);
 #endif
-	free(buf);
 }
 
 

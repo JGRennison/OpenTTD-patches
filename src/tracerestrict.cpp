@@ -3435,7 +3435,7 @@ std::string TraceRestrictFollowUpCmdData::GetDebugSummary() const
 	return fmt::to_string(out);
 }
 
-void DumpTraceRestrictSlotsStats(char *buffer, const char *last)
+void DumpTraceRestrictSlotsStats(format_target &buffer)
 {
 	struct cstats {
 		uint slotstats[VEH_END] = {};
@@ -3454,7 +3454,7 @@ void DumpTraceRestrictSlotsStats(char *buffer, const char *last)
 	auto print_stats = [&](const cstats &cs) {
 		auto line = [&](uint count, const char *type) {
 			if (count > 0) {
-				buffer += seprintf(buffer, last, "  %10s slots: %5u\n", type, count);
+				buffer.format("  {:10} slots: {:5}\n", type, count);
 			}
 		};
 		line(cs.slotstats[VEH_TRAIN], "train");
@@ -3462,17 +3462,17 @@ void DumpTraceRestrictSlotsStats(char *buffer, const char *last)
 		line(cs.slotstats[VEH_SHIP], "ship");
 		line(cs.slotstats[VEH_AIRCRAFT], "aircraft");
 		if (cs.counters > 0) {
-			buffer += seprintf(buffer, last, "          counters: %5u\n", cs.counters);
+			buffer.format("          counters: {:5}\n", cs.counters);
 		}
-		buffer += seprintf(buffer, last, "\n");
+		buffer.push_back('\n');
 	};
 
 	cstats totals{};
 	for (auto &it : cstatmap) {
-		buffer += seprintf(buffer, last, "%u: ", (uint) it.first);
+		buffer.format("{}: ", it.first);
 		SetDParam(0, it.first);
-		buffer = strecpy(buffer, GetString(STR_COMPANY_NAME).c_str(), last, true);
-		buffer += seprintf(buffer, last, "\n");
+		buffer.append(GetString(STR_COMPANY_NAME));
+		buffer.push_back('\n');
 		print_stats(it.second);
 
 		for (VehicleType vt = VEH_BEGIN; vt != VEH_END; vt++) {
@@ -3480,6 +3480,6 @@ void DumpTraceRestrictSlotsStats(char *buffer, const char *last)
 		}
 		totals.counters += it.second.counters;
 	}
-	buffer += seprintf(buffer, last, "Totals\n");
+	buffer.append("Totals\n");
 	print_stats(totals);
 }

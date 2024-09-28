@@ -367,25 +367,24 @@ struct DesyncMsgLog {
 	}
 
 	template <typename F>
-	char *Dump(char *buffer, const char *last, const char *prefix, F handler)
+	void Dump(format_target &buffer, const char *prefix, F handler)
 	{
-		if (!this->count) return buffer;
+		if (this->count == 0) return;
 
 		const unsigned int count = std::min<unsigned int>(this->count, (uint)this->log.size());
 		unsigned int log_index = (this->next + (uint)this->log.size() - count) % (uint)this->log.size();
 		unsigned int display_num = this->count - count;
 
-		buffer += seprintf(buffer, last, "%s:\n Showing most recent %u of %u messages\n", prefix, count, this->count);
+		buffer.format("{}:\n Showing most recent {} of {} messages\n", prefix, count, this->count);
 
 		for (unsigned int i = 0 ; i < count; i++) {
 			const DesyncMsgLogEntry &entry = this->log[log_index];
 
-			buffer += handler(display_num, buffer, last, entry);
+			handler(display_num, buffer, entry);
 			log_index = (log_index + 1) % this->log.size();
 			display_num++;
 		}
-		buffer += seprintf(buffer, last, "\n");
-		return buffer;
+		buffer.push_back('\n');
 	}
 };
 
@@ -397,17 +396,16 @@ void ClearDesyncMsgLog()
 	_desync_msg_log.Clear();
 }
 
-char *DumpDesyncMsgLog(char *buffer, const char *last)
+void DumpDesyncMsgLog(format_target &buffer)
 {
-	buffer = _desync_msg_log.Dump(buffer, last, "Desync Msg Log", [](int display_num, char *buffer, const char *last, const DesyncMsgLogEntry &entry) -> int {
+	_desync_msg_log.Dump(buffer, "Desync Msg Log", [](int display_num, format_target &buffer, const DesyncMsgLogEntry &entry) {
 		EconTime::YearMonthDay ymd = EconTime::ConvertDateToYMD(entry.date);
-		return seprintf(buffer, last, "%5u | %4i-%02i-%02i, %2i, %3i | %s\n", display_num, ymd.year.base(), ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter, entry.msg.c_str());
+		buffer.format("{:5} | {:4}-{:02}-{:02}, {:2}, {:3} | {}\n", display_num, ymd.year, ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter, entry.msg);
 	});
-	buffer = _remote_desync_msg_log.Dump(buffer, last, "Remote Client Desync Msg Log", [](int display_num, char *buffer, const char *last, const DesyncMsgLogEntry &entry) -> int {
+	_remote_desync_msg_log.Dump(buffer, "Remote Client Desync Msg Log", [](int display_num, format_target &buffer, const DesyncMsgLogEntry &entry) {
 		EconTime::YearMonthDay ymd = EconTime::ConvertDateToYMD(entry.date);
-		return seprintf(buffer, last, "%5u | Client %5u | %4i-%02i-%02i, %2i, %3i | %s\n", display_num, entry.src_id, ymd.year.base(), ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter, entry.msg.c_str());
+		buffer.format("{:5} | Client {:5} | {:4}-{:02}-{:02}, {:2}, {:3} | {}\n", display_num, entry.src_id, ymd.year, ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter, entry.msg);
 	});
-	return buffer;
 }
 
 void LogDesyncMsg(std::string msg)

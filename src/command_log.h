@@ -13,6 +13,6 @@
 #include <functional>
 
 void ClearCommandLog();
-char *DumpCommandLog(char *buffer, const char *last, std::function<char *(char *)> flush);
+void DumpCommandLog(struct format_target &buffer);
 
 #endif /* COMMAND_LOG_H */

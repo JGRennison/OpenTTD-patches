@@ -492,6 +492,6 @@ inline TileIndex RandomTileSeed(uint32_t r)
 
 uint GetClosestWaterDistance(TileIndex tile, bool water);
 
-char *DumpTileInfo(char *b, const char *last, TileIndex tile);
+void DumpTileInfo(struct format_target &buffer, TileIndex tile);
 
 #endif /* MAP_FUNC_H */

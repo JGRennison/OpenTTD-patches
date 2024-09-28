@@ -1166,11 +1166,11 @@ void GfxClearFontSpriteCache()
 	}
 }
 
-void DumpSpriteCacheStats(char *buffer, const char *last)
+void DumpSpriteCacheStats(format_target &buffer)
 {
 	uint target_size = GetTargetSpriteSize();
-	buffer += seprintf(buffer, last, "Sprite cache: entries: %u, size: %u, target: %u, percent used: %.1f%%\n",
-			(uint)_spritecache.size(), (uint)_spritecache_bytes_used, target_size, (100.0f * _spritecache_bytes_used) / target_size);
+	buffer.format("Sprite cache: entries: {}, size: {}, target: {}, percent used: {:.1f}%\n",
+			_spritecache.size(), _spritecache_bytes_used, target_size, (100.0f * _spritecache_bytes_used) / target_size);
 
 	uint types[(uint)SpriteType::Invalid] = {};
 	uint have_data = 0;
@@ -1198,16 +1198,16 @@ void DumpSpriteCacheStats(char *buffer, const char *last)
 			if (depth < lengthof(depths)) depths[depth]++;
 		}
 	}
-	buffer += seprintf(buffer, last, "  Normal: %u, MapGen: %u, Font: %u, Recolour: %u\n",
+	buffer.format("  Normal: {}, MapGen: {}, Font: {}, Recolour: {}\n",
 			types[(uint)SpriteType::Normal], types[(uint)SpriteType::MapGen], types[(uint)SpriteType::Font], types[(uint)SpriteType::Recolour]);
-	buffer += seprintf(buffer, last, "  Data loaded: %u, Warned: %u, 8bpp: %u, 32bpp: %u\n",
+	buffer.format("  Data loaded: {}, Warned: {}, 8bpp: {}, 32bpp: {}\n",
 			have_data, have_warned, have_8bpp, have_32bpp);
-	buffer += seprintf(buffer, last, "  Cache prune events: %u, pruned entry total: " PRINTF_SIZE ", pruned data total: " PRINTF_SIZE "\n",
+	buffer.format("  Cache prune events: {}, pruned entry total: {}, pruned data total: {}\n",
 			_spritecache_prune_events, _spritecache_prune_entries, _spritecache_prune_total);
-	buffer += seprintf(buffer, last, "  Normal:\n");
-	buffer += seprintf(buffer, last, "    Partial zoom: %u\n", have_partial_zoom);
+	buffer.append("  Normal:\n");
+	buffer.format("    Partial zoom: {}\n", have_partial_zoom);
 	for (uint i = 0; i < lengthof(depths); i++) {
-		if (depths[i] > 0) buffer += seprintf(buffer, last, "    Data depth %u: %u\n", i, depths[i]);
+		if (depths[i] > 0) buffer.format("    Data depth {}: {}\n", i, depths[i]);
 	}
 }
 

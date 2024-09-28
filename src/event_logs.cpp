@@ -13,6 +13,7 @@
 #include "date_func.h"
 #include "company_func.h"
 #include "walltime_func.h"
+#include "core/format.hpp"
 #include <array>
 #include <string>
 
@@ -27,11 +28,10 @@ EconTime::DateFract _game_load_date_fract;
 uint8_t _game_load_tick_skip_counter;
 StateTicks _game_load_state_ticks;
 
-char *DumpGameEventFlags(GameEventFlags events, char *b, const char *last)
+void DumpGameEventFlags(GameEventFlags events, format_target &buffer)
 {
-	if (b <= last) *b = 0;
 	auto dump = [&](char c, GameEventFlags ev) {
-		if (events & ev) b += seprintf(b, last, "%c", c);
+		if (events & ev) buffer.push_back(c);
 	};
 	dump('d', GEF_COMPANY_DELETE);
 	dump('m', GEF_COMPANY_MERGE);
@@ -43,7 +43,6 @@ char *DumpGameEventFlags(GameEventFlags events, char *b, const char *last)
 	dump('j', GEF_INDUSTRY_DELETE);
 	dump('v', GEF_VIRT_TRAIN);
 	dump('r', GEF_RM_INVALID_RV);
-	return b;
 }
 
 struct SpecialEventLogEntry {
@@ -82,10 +81,10 @@ void AppendSpecialEventsLogEntry(std::string message)
 	_special_event_log.count++;
 }
 
-char *DumpSpecialEventsLog(char *buffer, const char *last)
+void DumpSpecialEventsLog(format_target &buffer)
 {
 	const unsigned int count = std::min<unsigned int>(_special_event_log.count, 64);
-	buffer += seprintf(buffer, last, "Special Events Log:\n Showing most recent %u of %u events\n", count, _special_event_log.count);
+	buffer.format("Special Events Log:\n Showing most recent {} of {} events\n", count, _special_event_log.count);
 
 	unsigned int log_index = _special_event_log.next;
 	for (unsigned int i = 0 ; i < count; i++) {
@@ -97,10 +96,9 @@ char *DumpSpecialEventsLog(char *buffer, const char *last)
 		const SpecialEventLogEntry &entry = _special_event_log.log[log_index];
 
 		EconTime::YearMonthDay ymd = EconTime::ConvertDateToYMD(entry.date);
-		buffer += seprintf(buffer, last, " %3u | %4i-%02i-%02i, %2i, %3i | cc: %3u, lc: %3u | %s\n",
+		buffer.format(" {:3} | {:4}-{:02}-{:02}, {:2}, {:3} | cc: {:3}, lc: {:3} | {}\n",
 				i, ymd.year.base(), ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter, (uint) entry.current_company, (uint) entry.local_company, entry.msg.c_str());
 	}
-	return buffer;
 }
 
 void ClearSpecialEventsLog()

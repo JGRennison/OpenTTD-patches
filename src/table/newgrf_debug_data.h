@@ -195,7 +195,11 @@ class NIHVehicle : public NIHelper {
 		}
 
 		b = buffer + seprintf(buffer, lastof(buffer), "  ");
-		b = DumpTileInfo(b, lastof(buffer), v->tile);
+
+		format_to_fixed_z tileinfobuf(b, lastof(buffer));
+		DumpTileInfo(tileinfobuf, v->tile);
+		b = tileinfobuf.finalise();
+
 		if (buffer[2] == 't') buffer[2] = 'T';
 		output.print(buffer);
 

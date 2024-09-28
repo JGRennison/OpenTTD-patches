@@ -568,28 +568,27 @@ static const char *tile_type_names[16] = {
 	"INVALID_F",
 };
 
-char *DumpTileInfo(char *b, const char *last, TileIndex tile)
+void DumpTileInfo(format_target &buffer, TileIndex tile)
 {
 	if (tile == INVALID_TILE) {
-		b += seprintf(b, last, "tile: %X (INVALID_TILE)", tile);
+		buffer.format("tile: {:X} (INVALID_TILE)", tile);
 	} else {
-		b += seprintf(b, last, "tile: %X (%u x %u)", tile, TileX(tile), TileY(tile));
+		buffer.format("tile: {:X} ({} x {})", tile, TileX(tile), TileY(tile));
 	}
 	if (!_m || !_me) {
-		b += seprintf(b, last, ", NO MAP ALLOCATED");
+		buffer.append(", NO MAP ALLOCATED");
 	} else {
 		if (tile >= MapSize()) {
-			b += seprintf(b, last, ", TILE OUTSIDE MAP");
+			buffer.append(", TILE OUTSIDE MAP");
 		} else {
-			b += seprintf(b, last, ", type: %02X (%s), height: %02X, data: %02X %04X %02X %02X %02X %02X %02X %04X",
+			buffer.format(", type: {:02X} ({}), height: {:02X}, data: {:02X} {:04X} {:02X} {:02X} {:02X} {:02X} {:02X} {:04X}",
 					_m[tile].type, tile_type_names[GB(_m[tile].type, 4, 4)], _m[tile].height,
 					_m[tile].m1, _m[tile].m2, _m[tile].m3, _m[tile].m4, _m[tile].m5, _me[tile].m6, _me[tile].m7, _me[tile].m8);
 		}
 	}
-	return b;
 }
 
-void DumpMapStats(char *b, const char *last)
+void DumpMapStats(format_target &buffer)
 {
 	std::array<uint, 16> tile_types;
 	uint restricted_signals = 0;
@@ -658,26 +657,26 @@ void DumpMapStats(char *b, const char *last)
 	}
 
 	for (uint type = 0; type < 16; type++) {
-		if (tile_types[type]) b += seprintf(b, last, "%-20s %20u\n", tile_type_names[type], tile_types[type]);
+		if (tile_types[type]) buffer.format("{:<20} {:20}\n", tile_type_names[type], tile_types[type]);
 	}
 
-	b += seprintf(b, last, "\n");
+	buffer.push_back('\n');
 
-	if (restricted_signals) b += seprintf(b, last, "restricted signals   %20u\n", restricted_signals);
-	if (prog_signals)       b += seprintf(b, last, "prog signals         %20u\n", prog_signals);
-	if (dual_rail_type)     b += seprintf(b, last, "dual rail type       %20u\n", dual_rail_type);
-	if (road_works)         b += seprintf(b, last, "road works           %20u\n", road_works);
+	if (restricted_signals) buffer.format("restricted signals   {:20}\n", restricted_signals);
+	if (prog_signals)       buffer.format("prog signals         {:20}\n", prog_signals);
+	if (dual_rail_type)     buffer.format("dual rail type       {:20}\n", dual_rail_type);
+	if (road_works)         buffer.format("road works           {:20}\n", road_works);
 
 	for (auto it : tunnel_bridge_stats) {
-		b = strecpy(b, it.first & TBB_BRIDGE ? "bridge" : "tunnel", last, true);
-		if (it.first & TBB_ROAD) b = strecpy(b, ", road", last, true);
-		if (it.first & TBB_TRAM) b = strecpy(b, ", tram", last, true);
-		if (it.first & TBB_RAIL) b = strecpy(b, ", rail", last, true);
-		if (it.first & TBB_WATER) b = strecpy(b, ", water", last, true);
-		if (it.first & TBB_CUSTOM_HEAD) b = strecpy(b, ", custom head", last, true);
-		if (it.first & TBB_DUAL_RT) b = strecpy(b, ", dual rail type", last, true);
-		if (it.first & TBB_SIGNALLED) b = strecpy(b, ", signalled", last, true);
-		if (it.first & TBB_SIGNALLED_BIDI) b = strecpy(b, ", bidi", last, true);
-		b += seprintf(b, last, ": %u\n", it.second);
+		buffer.append(it.first & TBB_BRIDGE ? "bridge" : "tunnel");
+		if (it.first & TBB_ROAD) buffer.append(", road");
+		if (it.first & TBB_TRAM) buffer.append(", tram");
+		if (it.first & TBB_RAIL) buffer.append(", rail");
+		if (it.first & TBB_WATER) buffer.append(", water");
+		if (it.first & TBB_CUSTOM_HEAD) buffer.append(", custom head");
+		if (it.first & TBB_DUAL_RT) buffer.append(", dual rail type");
+		if (it.first & TBB_SIGNALLED) buffer.append(", signalled");
+		if (it.first & TBB_SIGNALLED_BIDI) buffer.append(", bidi");
+		buffer.format(": {}\n", it.second);
 	}
 }

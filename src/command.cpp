@@ -678,7 +678,7 @@ void ClearCommandLog()
 	_command_log_aux.Reset();
 }
 
-static void DumpSubCommandLogEntry(char *&buffer, const char *last, const CommandLogEntry &entry)
+static void DumpSubCommandLogEntry(format_target &buffer, const CommandLogEntry &entry)
 {
 		auto fc = [&](CommandLogEntryFlag flag, char c) -> char {
 			return entry.log_flags & flag ? c : '-';
@@ -690,33 +690,33 @@ static void DumpSubCommandLogEntry(char *&buffer, const char *last, const Comman
 		};
 
 		EconTime::YearMonthDay ymd = EconTime::ConvertDateToYMD(entry.date);
-		buffer += seprintf(buffer, last, "%4i-%02i-%02i, %2i, %3i", ymd.year.base(), ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter);
+		buffer.format("{:4}-{:02}-{:02}, {:2}, {:3}", ymd.year.base(), ymd.month + 1, ymd.day, entry.date_fract, entry.tick_skip_counter);
 		if (_networking) {
-			buffer += seprintf(buffer, last, ", %08X", entry.frame_counter);
+			buffer.format(", {:08X}", entry.frame_counter);
 		}
-		buffer += seprintf(buffer, last, " | %c%c%c%c%c%c%c%c%c%c%c | ",
+		buffer.format(" | {}{}{}{}{}{}{}{}{}{}{} | ",
 				fc(CLEF_ORDER_BACKUP, 'o'), fc(CLEF_RANDOM, 'r'), fc(CLEF_TWICE, '2'),
 				script_fc(), fc(CLEF_AUX_DATA, 'b'), fc(CLEF_MY_CMD, 'm'), fc(CLEF_ONLY_SENDING, 's'),
 				fc(CLEF_ESTIMATE_ONLY, 'e'), fc(CLEF_TEXT, 't'), fc(CLEF_GENERATING_WORLD, 'g'), fc(CLEF_CMD_FAILED, 'f'));
-		buffer += seprintf(buffer, last, "cc: %3u, lc: %3u", (uint) entry.current_company, (uint) entry.local_company);
+		buffer.format("cc: {:3}, lc: {:3}", (uint) entry.current_company, (uint) entry.local_company);
 		if (_network_server) {
-			buffer += seprintf(buffer, last, ", client: %4u", entry.client_id);
+			buffer.format(", client: {:4}", entry.client_id);
 		}
-		buffer += seprintf(buffer, last, " | %*u x %*u | ", MapDigitsX(), TileX(entry.tile), MapDigitsY(), TileY(entry.tile));
+		buffer.format(" | {:{}} x {:{}} | ", TileX(entry.tile), MapDigitsX(), TileY(entry.tile), MapDigitsY());
 		if (GetCommandArgMode(entry.cmd) != CMD_ARG_AUX) {
-			buffer += seprintf(buffer, last, "p1: 0x%08X, p2: 0x%08X, ", entry.p1, entry.p2);
+			buffer.format("p1: 0x{:08X}, p2: 0x{:08X}, ", entry.p1, entry.p2);
 			if (entry.p3 != 0) {
-				buffer += seprintf(buffer, last, "p3: 0x" OTTD_PRINTFHEX64PAD ", ", entry.p3);
+				buffer.format("p3: 0x{:016X}, ", entry.p3);
 			}
 		}
-		buffer += seprintf(buffer, last, "cmd: 0x%08X (%s)", entry.cmd, GetCommandName(entry.cmd));
+		buffer.format("cmd: 0x{:08X} ({})", entry.cmd, GetCommandName(entry.cmd));
 
 		if (!entry.text.empty()) {
-			buffer += seprintf(buffer, last, " [%s]", entry.text.c_str());
+			buffer.format(" [{}]", entry.text);
 		}
 }
 
-static void DumpSubCommandLog(char *&buffer, const char *last, const CommandLog &cmd_log, const unsigned int count, std::function<char *(char *)> &flush)
+static void DumpSubCommandLog(format_target &buffer, const CommandLog &cmd_log, const unsigned int count)
 {
 	unsigned int log_index = cmd_log.next;
 	for (unsigned int i = 0 ; i < count; i++) {
@@ -726,29 +726,26 @@ static void DumpSubCommandLog(char *&buffer, const char *last, const CommandLog 
 			log_index = (uint)cmd_log.log.size() - 1;
 		}
 
-		buffer += seprintf(buffer, last, " %3u | ", i);
+		buffer.format(" {:3} | ", i);
 
 		const CommandLogEntry &entry = cmd_log.log[log_index];
-		DumpSubCommandLogEntry(buffer, last, entry);
+		DumpSubCommandLogEntry(buffer, entry);
 
-		buffer += seprintf(buffer, last, "\n");
-		if (flush) buffer = flush(buffer);
+		buffer.push_back('\n');
 	}
 }
 
-char *DumpCommandLog(char *buffer, const char *last, std::function<char *(char *)> flush)
+void DumpCommandLog(format_target &buffer)
 {
 	const unsigned int count = std::min<unsigned int>(_command_log.count, 256);
-	buffer += seprintf(buffer, last, "Command Log:\n Showing most recent %u of %u commands\n", count, _command_log.count);
-	DumpSubCommandLog(buffer, last, _command_log, count, flush);
+	buffer.format("Command Log:\n Showing most recent {} of {} commands\n", count, _command_log.count);
+	DumpSubCommandLog(buffer, _command_log, count);
 
 	if (_command_log_aux.count > 0) {
 		const unsigned int aux_count = std::min<unsigned int>(_command_log_aux.count, 32);
-		buffer += seprintf(buffer, last, "\n Showing most recent %u of %u commands (aux log)\n", aux_count, _command_log_aux.count);
-		DumpSubCommandLog(buffer, last, _command_log_aux, aux_count, flush);
+		buffer.format("\n Showing most recent {} of {} commands (aux log)\n", aux_count, _command_log_aux.count);
+		DumpSubCommandLog(buffer, _command_log_aux, aux_count);
 	}
-	if (flush) buffer = flush(buffer);
-	return buffer;
 }
 
 /**
@@ -912,9 +909,8 @@ static void DebugLogCommandLogEntry(const CommandLogEntry &entry)
 {
 	if (GetDebugLevel(DebugLevelID::command) <= 0) return;
 
-	char buffer[512];
-	char *b = buffer;
-	DumpSubCommandLogEntry(b, lastof(buffer), entry);
+	format_buffer buffer;
+	DumpSubCommandLogEntry(buffer, entry);
 	debug_print(DebugLevelID::command, 1, buffer);
 }
 

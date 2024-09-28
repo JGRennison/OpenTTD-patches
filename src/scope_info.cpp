@@ -141,7 +141,9 @@ const char *scope_dumper::StationInfo(const BaseStation *st)
 
 const char *scope_dumper::TileInfo(TileIndex tile)
 {
-	DumpTileInfo(this->buffer, lastof(this->buffer), tile);
+	format_to_fixed_z tileinfobuf(this->buffer, lastof(this->buffer));
+	DumpTileInfo(tileinfobuf, tile);
+	tileinfobuf.finalise();
 	return this->buffer;
 }
 

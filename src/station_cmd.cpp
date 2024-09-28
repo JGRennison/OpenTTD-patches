@@ -5739,7 +5739,7 @@ void FlowStatMap::SortStorage()
 	}
 }
 
-void DumpStationFlowStats(char *b, const char *last)
+void DumpStationFlowStats(format_target &buffer)
 {
 	btree::btree_map<uint, uint> count_map;
 	btree::btree_map<uint, uint> invalid_map;
@@ -5753,13 +5753,13 @@ void DumpStationFlowStats(char *b, const char *last)
 			}
 		}
 	}
-	b += seprintf(b, last, "Flow state shares size distribution:\n");
+	buffer.append("Flow state shares size distribution:\n");
 	for (const auto &it : count_map) {
-		b += seprintf(b, last, "%-5u %-5u\n", it.first, it.second);
+		buffer.format("{:<5} {:<5}\n", it.first, it.second);
 	}
-	b += seprintf(b, last, "Flow state shares invalid state distribution:\n");
+	buffer.append("Flow state shares invalid state distribution:\n");
 	for (const auto &it : invalid_map) {
-		b += seprintf(b, last, "%-2u %-5u\n", it.first, it.second);
+		buffer.format("{:<2} {:<5}\n", it.first, it.second);
 	}
 }
 

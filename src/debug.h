@@ -127,7 +127,7 @@ private:
 
 void ClearDesyncMsgLog();
 void LogDesyncMsg(std::string msg);
-char *DumpDesyncMsgLog(char *buffer, const char *last);
+void DumpDesyncMsgLog(struct format_target &buffer);
 
 void DebugSendRemoteMessages();
 void DebugReconsiderSendRemoteMessages();
