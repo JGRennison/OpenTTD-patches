@@ -3629,6 +3629,8 @@ template <typename Char> struct format_handler {
     return begin;
   }
 
+  FMT_CONSTEXPR void on_format_string_end() {}
+
   FMT_NORETURN void on_error(const char* message) { report_error(message); }
 };
 

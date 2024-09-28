@@ -915,6 +915,11 @@ template <typename Char = char> class parse_context {
     next_arg_id_ = -1;
     do_check_arg_id(id);
   }
+
+  FMT_CONSTEXPR bool is_manual_arg_count_non_matching(size_t expected) {
+    return next_arg_id_ >= 0 && static_cast<size_t>(next_arg_id_) != expected;
+  };
+
   FMT_CONSTEXPR void check_arg_id(basic_string_view<Char>) {
     next_arg_id_ = -1;
   }
@@ -1627,6 +1632,7 @@ FMT_CONSTEXPR void parse_format_string(basic_string_view<Char> fmt,
     }
   }
   handler.on_text(begin, end);
+  handler.on_format_string_end();
 }
 
 // Checks char specs and returns true iff the presentation type is char-like.
@@ -1708,6 +1714,12 @@ class format_string_checker {
     if (id >= 0 && id < NUM_ARGS) return parse_funcs_[id](context_);
     while (begin != end && *begin != '}') ++begin;
     return begin;
+  }
+
+  FMT_CONSTEXPR void on_format_string_end() {
+    if (context_.is_manual_arg_count_non_matching(static_cast<size_t>(NUM_ARGS))) {
+        on_error("too many arguments for format");
+    }
   }
 
   FMT_NORETURN FMT_CONSTEXPR void on_error(const char* message) {
