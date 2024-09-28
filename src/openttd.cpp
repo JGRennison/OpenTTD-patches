@@ -248,20 +248,6 @@ const char *assert_tile_info(uint32_t tile) {
 }
 
 /**
- * Shows some information on the console/a popup box depending on the OS.
- * @param str the text to show.
- */
-void CDECL ShowInfoF(const char *str, ...)
-{
-	va_list va;
-	char buf[1024];
-	va_start(va, str);
-	vseprintf(buf, lastof(buf), str, va);
-	va_end(va);
-	ShowInfoI(buf);
-}
-
-/**
  * Show the help message when someone passed a wrong parameter.
  */
 static void ShowHelp()
