@@ -572,6 +572,7 @@ add_files(
     viewport_type.h
     void_cmd.cpp
     void_map.h
+    walltime_func.cpp
     walltime_func.h
     water.h
     water_cmd.cpp
