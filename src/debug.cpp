@@ -158,7 +158,7 @@ void debug_print_intl(DebugLevelID dbg, int8_t level, const char *buf, size_t pr
 	 * not seem able to handle text direction change characters in a console without
 	 * crashing, and NetworkTextMessage includes these */
 #if defined(_WIN32)
-	if (strcmp(dbg, "desync") != 0) {
+	if (dbg != DebugLevelID::desync) {
 		fputs(buf, stderr);
 	}
 #else
