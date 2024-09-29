@@ -164,19 +164,18 @@ size_t SocialIntegration::GetPluginCount()
 	return _plugins.size();
 }
 
-char *SocialIntegration::LogPluginSummary(char *buffer, const char *last)
+void SocialIntegration::LogPluginSummary(format_target &buffer)
 {
 	extern const char *PluginStateToString(SocialIntegrationPlugin::State state);
 
 	for (auto &plugin : _plugins) {
-		buffer += seprintf(buffer, last, "  %s:\n", plugin->external.name.c_str());
-		buffer += seprintf(buffer, last, "    Version: %s\n", plugin->external.version.c_str());
-		buffer += seprintf(buffer, last, "    Basepath: %s\n", plugin->external.basepath.c_str());
-		buffer += seprintf(buffer, last, "    State: %s\n", PluginStateToString(plugin->external.state));
+		buffer.format("  {}:\n", plugin->external.name);
+		buffer.format("    Version: {}\n", plugin->external.version);
+		buffer.format("    Basepath: {}\n", plugin->external.basepath);
+		buffer.format("    State: {}\n", PluginStateToString(plugin->external.state));
 	}
 
-	buffer += seprintf(buffer, last, "\n");
-	return buffer;
+	buffer.push_back('\n');
 }
 
 void SocialIntegration::Initialize()

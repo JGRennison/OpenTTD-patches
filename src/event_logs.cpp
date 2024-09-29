@@ -106,14 +106,13 @@ void ClearSpecialEventsLog()
 	_special_event_log.Reset();
 }
 
-char *LogGameLoadDateTimes(char *buffer, const char *last)
+void LogGameLoadDateTimes(format_target &buffer)
 {
 	if (_game_load_time != 0) {
-		buffer += seprintf(buffer, last, "Game loaded at: %i-%02i-%02i (%i, %i), (" OTTD_PRINTF64 " state ticks ago), ",
+		buffer.format("Game loaded at: {}-{:02}-{:02} ({}, {}), ({} state ticks ago), ",
 				_game_load_cur_date_ymd.year.base(), _game_load_cur_date_ymd.month + 1, _game_load_cur_date_ymd.day,
 				_game_load_date_fract, _game_load_tick_skip_counter, (_state_ticks - _game_load_state_ticks).base());
-		buffer += UTCTime::Format(buffer, last, _game_load_time, "%Y-%m-%d %H:%M:%S");
-		buffer += seprintf(buffer, last, "\n");
+		UTCTime::FormatTo(buffer, _game_load_time, "%Y-%m-%d %H:%M:%S");
+		buffer.push_back('\n');
 	}
-	return buffer;
 }

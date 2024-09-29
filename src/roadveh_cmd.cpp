@@ -1626,7 +1626,7 @@ static bool CheckRestartLoadingAtRoadStop(RoadVehicle *v)
 
 bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *prev)
 {
-	SCOPE_INFO_FMT([&], "IndividualRoadVehicleController: %s, %s", scope_dumper().VehicleInfo(v), scope_dumper().VehicleInfo(prev));
+	SCOPE_INFO_FMT([&], "IndividualRoadVehicleController: {}, {}", scope_dumper().VehicleInfo(v), scope_dumper().VehicleInfo(prev));
 	if (v->overtaking & RVSB_DRIVE_SIDE && v->IsFrontEngine())  {
 		if (IsNonOvertakingStationTile(v->tile, DirToDiagDir(v->direction))) {
 			/* Force us to be not overtaking! */

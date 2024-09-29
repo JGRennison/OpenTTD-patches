@@ -3495,8 +3495,8 @@ DEF_CONSOLE_CMD(ConDumpVersion)
 		return true;
 	}
 
-	char buffer[65536];
-	CrashLog::VersionInfoLog(buffer, lastof(buffer));
+	format_buffer buffer;
+	CrashLog::VersionInfoLog(buffer);
 	PrintLineByLine(buffer);
 	return true;
 }

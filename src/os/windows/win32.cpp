@@ -24,6 +24,7 @@
 #include "../../fios.h"
 #include "../../core/alloc_func.hpp"
 #include "../../openttd.h"
+#include "../../core/format.hpp"
 #include "../../core/random_func.hpp"
 #include "../../string_func.h"
 #include "../../crashlog.h"
@@ -722,14 +723,13 @@ static void Win32SetThreadName(uint id, const char *name)
 	_thread_name_map[id] = name;
 }
 
-int GetCurrentThreadName(char *str, const char *last)
+void GetCurrentThreadName(format_target &buffer)
 {
 	std::lock_guard<std::mutex> lock(_thread_name_map_mutex);
 	auto iter = _thread_name_map.find(GetCurrentThreadId());
 	if (iter != _thread_name_map.end()) {
-		return seprintf(str, last, "%s", iter->second.c_str());
+		buffer.append(iter->second);
 	}
-	return 0;
 }
 
 #ifdef _MSC_VER

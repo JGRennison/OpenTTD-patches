@@ -374,14 +374,12 @@ static bool LoadIntList(const char *str, void *array, int nelems, VarType type)
 /**
  * Convert an integer-array (intlist) to a string representation. Each value
  * is separated by a comma or a space character
- * @param buf output buffer where the string-representation will be stored
- * @param last last item to write to in the output buffer
+ * @param buf The buffer to format into.
  * @param array pointer to the integer-arrays that is read from
  * @param nelems the number of elements the array holds.
  * @param type the type of elements the array holds (eg INT8, UINT16, etc.)
- * @return The pointer to the terminating null-character in the destination buffer
  */
-char *ListSettingDesc::FormatValue(char *buf, const char *last, const void *object) const
+void ListSettingDesc::FormatValue(format_target &buf, const void *object) const
 {
 	const uint8_t *p = static_cast<const uint8_t *>(GetVariableAddress(object, this->save));
 	int i, v = 0;
@@ -397,42 +395,41 @@ char *ListSettingDesc::FormatValue(char *buf, const char *last, const void *obje
 			case SLE_VAR_U32: v = *(const uint32_t *)p; p += 4; break;
 			default: NOT_REACHED();
 		}
+		if (i != 0) buf.push_back(',');
 		if (IsSignedVarMemType(this->save.conv)) {
-			buf += seprintf(buf, last, (i == 0) ? "%d" : ",%d", v);
+			buf.format("{}", (int)v);
 		} else {
-			buf += seprintf(buf, last, (i == 0) ? "%u" : ",%u", v);
+			buf.format("{}", (uint)v);
 		}
 	}
-	return buf;
 }
 
-char *OneOfManySettingDesc::FormatSingleValue(char *buf, const char *last, uint id) const
+void OneOfManySettingDesc::FormatSingleValue(format_target &buf, uint id) const
 {
 	if (id >= this->many.size()) {
-		return buf + seprintf(buf, last, "%d", id);
+		buf.format("{}", id);
+		return;
 	}
-	return strecpy(buf, this->many[id].c_str(), last);
+	buf.append(this->many[id]);
 }
 
-char *OneOfManySettingDesc::FormatIntValue(char *buf, const char *last, uint32_t value) const
+void OneOfManySettingDesc::FormatIntValue(format_target &buf, uint32_t value) const
 {
-	return this->FormatSingleValue(buf, last, value);
+	this->FormatSingleValue(buf, value);
 }
 
-char *ManyOfManySettingDesc::FormatIntValue(char *buf, const char *last, uint32_t value) const
+void ManyOfManySettingDesc::FormatIntValue(format_target &buf, uint32_t value) const
 {
 	uint bitmask = (uint)value;
 	if (bitmask == 0) {
-		buf[0] = '\0';
-		return buf;
+		return;
 	}
 	bool first = true;
 	for (uint id : SetBitIterator(bitmask)) {
-		if (!first) buf = strecpy(buf, "|", last);
-		buf = this->FormatSingleValue(buf, last, id);
+		if (!first) buf.push_back('|');
+		this->FormatSingleValue(buf, id);
 		first = false;
 	}
-	return buf;
 }
 
 /**
@@ -854,8 +851,8 @@ static void IniSaveSettings(IniFile &ini, const SettingTable &settings_table, co
 
 		if (!item.value.has_value() || !sd->IsSameValue(&item, object)) {
 			/* Value has changed, get the new value and put it into a buffer */
-			char buf[512];
-			sd->FormatValue(buf, lastof(buf), object);
+			format_buffer buf;
+			sd->FormatValue(buf, object);
 
 			/* The value is different, that means we have to write it to the ini */
 			item.value.emplace(buf);
@@ -863,20 +860,24 @@ static void IniSaveSettings(IniFile &ini, const SettingTable &settings_table, co
 	}
 }
 
-char *IntSettingDesc::FormatValue(char *buf, const char *last, const void *object) const
+void IntSettingDesc::FormatValue(format_target &buf, const void *object) const
 {
 	uint32_t i = (uint32_t)this->Read(object);
-	return this->FormatIntValue(buf, last, i);
+	this->FormatIntValue(buf, i);
 }
 
-char *IntSettingDesc::FormatIntValue(char *buf, const char *last, uint32_t value) const
+void IntSettingDesc::FormatIntValue(format_target &buf, uint32_t value) const
 {
-	return buf + seprintf(buf, last, IsSignedVarMemType(this->save.conv) ? "%d" : "%u", value);
+	if (IsSignedVarMemType(this->save.conv)) {
+		buf.format("{}", (int)value);
+	} else {
+		buf.format("{}", (uint)value);
+	}
 }
 
-char *BoolSettingDesc::FormatIntValue(char *buf, const char *last, uint32_t value) const
+void BoolSettingDesc::FormatIntValue(format_target &buf, uint32_t value) const
 {
-	return strecpy(buf, (value != 0) ? "true" : "false", last);
+	buf.append((value != 0) ? "true" : "false");
 }
 
 bool IntSettingDesc::IsSameValue(const IniItem *item, void *object) const
@@ -897,23 +898,22 @@ void IntSettingDesc::ResetToDefault(void *object) const
 	this->Write(object, this->def);
 }
 
-char *StringSettingDesc::FormatValue(char *buf, const char *last, const void *object) const
+void StringSettingDesc::FormatValue(format_target &buf, const void *object) const
 {
 	const std::string &str = this->Read(object);
 	switch (GetVarMemType(this->save.conv)) {
-		case SLE_VAR_STR: strecpy(buf, str.c_str(), last); break;
+		case SLE_VAR_STR:
+			buf.append(str);
+			break;
 
 		case SLE_VAR_STRQ:
-			if (str.empty()) {
-				buf[0] = '\0';
-			} else {
-				buf += seprintf(buf, last, "\"%s\"", str.c_str());
+			if (!str.empty()) {
+				buf.format("\"{}\"", str);
 			}
 			break;
 
 		default: NOT_REACHED();
 	}
-	return buf;
 }
 
 bool StringSettingDesc::IsSameValue(const IniItem *item, void *object) const
@@ -1470,7 +1470,7 @@ static void TrainBrakingModelChanged(int32_t new_value)
 			}
 		}
 		Train *v_cur = nullptr;
-		SCOPE_INFO_FMT([&v_cur], "TrainBrakingModelChanged: %s", scope_dumper().VehicleInfo(v_cur));
+		SCOPE_INFO_FMT([&v_cur], "TrainBrakingModelChanged: {}", scope_dumper().VehicleInfo(v_cur));
 		extern bool _long_reserve_disabled;
 		_long_reserve_disabled = true;
 		for (Train *v : Train::IterateFrontOnly()) {
@@ -1487,7 +1487,7 @@ static void TrainBrakingModelChanged(int32_t new_value)
 		}
 	} else if (new_value == TBM_ORIGINAL && (_game_mode == GM_NORMAL || _game_mode == GM_EDITOR)) {
 		Train *v_cur = nullptr;
-		SCOPE_INFO_FMT([&v_cur], "TrainBrakingModelChanged: %s", scope_dumper().VehicleInfo(v_cur));
+		SCOPE_INFO_FMT([&v_cur], "TrainBrakingModelChanged: {}", scope_dumper().VehicleInfo(v_cur));
 		for (Train *v : Train::IterateFrontOnly()) {
 			v_cur = v;
 			if (!v->IsPrimaryVehicle() || (v->vehstatus & VS_CRASHED) != 0 || HasBit(v->subtype, GVSF_VIRTUAL) || v->track == TRACK_BIT_DEPOT) {
@@ -3253,7 +3253,7 @@ CommandCost CmdChangeSetting(TileIndex tile, DoCommandFlag flags, uint32_t p1, u
 	if (!sd->IsEditable(true)) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		SCOPE_INFO_FMT([=], "CmdChangeSetting: %s -> %d", sd->name, p2);
+		SCOPE_INFO_FMT([=], "CmdChangeSetting: {} -> {}", sd->name, p2);
 
 		sd->AsIntSetting()->ChangeValue(&GetGameSettings(), p2, ConfigSaveFlagsUsingGameSettingsFor(sd));
 	}
@@ -3280,7 +3280,7 @@ CommandCost CmdChangeCompanySetting(TileIndex tile, DoCommandFlag flags, uint32_
 	if (!sd->IsIntSetting()) return CMD_ERROR;
 
 	if (flags & DC_EXEC) {
-		SCOPE_INFO_FMT([=], "CmdChangeCompanySetting: %s -> %d", sd->name, p2);
+		SCOPE_INFO_FMT([=], "CmdChangeCompanySetting: {} -> {}", sd->name, p2);
 
 		sd->AsIntSetting()->ChangeValue(&Company::Get(_current_company)->settings, p2, STCF_NONE);
 	}
@@ -3505,8 +3505,8 @@ void IConsoleGetSetting(const char *name, bool force_newgame)
 			}
 		}
 
-		char value[20];
-		sd->FormatValue(value, lastof(value), object);
+		format_buffer value;
+		sd->FormatValue(value, object);
 
 		if (show_min_max) {
 			IConsolePrint(CC_WARNING, "Current value for '{}' is: '{}' (min: {}{}, max: {})",
@@ -3524,12 +3524,12 @@ static void IConsoleListSettingsTable(const SettingTable &table, const char *pre
 		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		if (prefilter != nullptr && strstr(sd->name, prefilter) == nullptr) continue;
 		if ((sd->flags & SF_NO_NEWGAME) && _game_mode == GM_MENU) continue;
-		char value[80];
-		sd->FormatValue(value, lastof(value), &GetGameSettings());
+		format_buffer value;
+		sd->FormatValue(value, &GetGameSettings());
 		if (show_defaults && sd->IsIntSetting()) {
 			const IntSettingDesc *int_setting = sd->AsIntSetting();
-			char defvalue[80];
-			int_setting->FormatIntValue(defvalue, lastof(defvalue), int_setting->def);
+			format_buffer defvalue;
+			int_setting->FormatIntValue(defvalue, int_setting->def);
 			TextColour colour = (int_setting->Read(&GetGameSettings()) != int_setting->def) ? CC_WARNING : CC_DEFAULT;
 			IConsolePrint(colour, "{} = {} (default: {})", sd->name, value, defvalue);
 		} else {

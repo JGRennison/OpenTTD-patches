@@ -1195,7 +1195,7 @@ void Vehicle::PreDestructor()
 {
 	if (CleaningPool()) return;
 
-	SCOPE_INFO_FMT([this], "Vehicle::PreDestructor: %s", scope_dumper().VehicleInfo(this));
+	SCOPE_INFO_FMT([this], "Vehicle::PreDestructor: {}", scope_dumper().VehicleInfo(this));
 
 	if (Station::IsValidID(this->last_station_visited)) {
 		Station *st = Station::Get(this->last_station_visited);
@@ -1366,7 +1366,7 @@ static void RunVehicleDayProc()
 
 	/* Run the day_proc for every DAY_TICKS vehicle starting at _date_fract. */
 	Vehicle *v = nullptr;
-	SCOPE_INFO_FMT([&v], "RunVehicleDayProc: %s", scope_dumper().VehicleInfo(v));
+	SCOPE_INFO_FMT([&v], "RunVehicleDayProc: {}", scope_dumper().VehicleInfo(v));
 	for (size_t i = EconTime::CurDateFract(); i < Vehicle::GetPoolSize(); i += DAY_TICKS) {
 		v = Vehicle::Get(i);
 		if (v == nullptr) continue;
@@ -1417,7 +1417,7 @@ static void RunVehicleCalendarDayProc()
 	if (_game_mode != GM_NORMAL) return;
 
 	Vehicle *v = nullptr;
-	SCOPE_INFO_FMT([&v], "RunVehicleCalendarDayProc: %s", scope_dumper().VehicleInfo(v));
+	SCOPE_INFO_FMT([&v], "RunVehicleCalendarDayProc: {}", scope_dumper().VehicleInfo(v));
 	for (size_t i = CalTime::CurDateFract(); i < Vehicle::GetPoolSize(); i += DAY_TICKS) {
 		v = Vehicle::Get(i);
 		if (v == nullptr) continue;
@@ -1628,7 +1628,7 @@ void CallVehicleTicks()
 		 */
 
 		Vehicle *v = nullptr;
-		SCOPE_INFO_FMT([&v], "CallVehicleTicks -> OnPeriodic: %s", scope_dumper().VehicleInfo(v));
+		SCOPE_INFO_FMT([&v], "CallVehicleTicks -> OnPeriodic: {}", scope_dumper().VehicleInfo(v));
 		for (size_t i = (size_t)(_scaled_tick_counter & 0x1FF); i < Vehicle::GetPoolSize(); i += 0x200) {
 			v = Vehicle::Get(i);
 			if (v == nullptr) continue;
@@ -1658,7 +1658,7 @@ void CallVehicleTicks()
 	{
 		PerformanceMeasurer framerate(PFE_GL_ECONOMY);
 		Station *si_st = nullptr;
-		SCOPE_INFO_FMT([&si_st], "CallVehicleTicks: LoadUnloadStation: %s", scope_dumper().StationInfo(si_st));
+		SCOPE_INFO_FMT([&si_st], "CallVehicleTicks: LoadUnloadStation: {}", scope_dumper().StationInfo(si_st));
 		for (Station *st : Station::Iterate()) {
 			si_st = st;
 			LoadUnloadStation(st);
@@ -1677,7 +1677,7 @@ void CallVehicleTicks()
 	}
 
 	Vehicle *v = nullptr;
-	SCOPE_INFO_FMT([&v], "CallVehicleTicks: %s", scope_dumper().VehicleInfo(v));
+	SCOPE_INFO_FMT([&v], "CallVehicleTicks: {}", scope_dumper().VehicleInfo(v));
 	{
 		for (VehicleID id : _remove_from_tick_effect_veh_cache) {
 			_tick_effect_veh_cache.erase(id);
@@ -1754,7 +1754,7 @@ void CallVehicleTicks()
 	Backup<CompanyID> sell_cur_company(_current_company, FILE_LINE);
 	for (VehicleID index : _vehicles_to_sell) {
 		Vehicle *v = Vehicle::Get(index);
-		SCOPE_INFO_FMT([v], "CallVehicleTicks: sell: %s", scope_dumper().VehicleInfo(v));
+		SCOPE_INFO_FMT([v], "CallVehicleTicks: sell: {}", scope_dumper().VehicleInfo(v));
 		const bool is_train = (v->type == VEH_TRAIN);
 
 		sell_cur_company.Change(v->owner);
@@ -1784,7 +1784,7 @@ void CallVehicleTicks()
 	for (VehicleID index : _vehicles_to_templatereplace) {
 		Train *t = Train::Get(index);
 
-		SCOPE_INFO_FMT([t], "CallVehicleTicks: template replace: %s", scope_dumper().VehicleInfo(t));
+		SCOPE_INFO_FMT([t], "CallVehicleTicks: template replace: {}", scope_dumper().VehicleInfo(t));
 
 		auto it = _vehicles_to_autoreplace.find(index);
 		assert(it != _vehicles_to_autoreplace.end());
@@ -1869,7 +1869,7 @@ void CallVehicleTicks()
 	Backup<CompanyID> repair_cur_company(_current_company, FILE_LINE);
 	for (VehicleID index : _vehicles_to_pay_repair) {
 		Vehicle *v = Vehicle::Get(index);
-		SCOPE_INFO_FMT([v], "CallVehicleTicks: repair: %s", scope_dumper().VehicleInfo(v));
+		SCOPE_INFO_FMT([v], "CallVehicleTicks: repair: {}", scope_dumper().VehicleInfo(v));
 
 		ExpensesType type = INVALID_EXPENSES;
 		_current_company = v->owner;

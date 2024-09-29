@@ -892,9 +892,9 @@ int openttd_main(std::span<char * const> arguments)
 		case 'x': scanner->save_config = false; break;
 		case 'J': _quit_after_days = Clamp(atoi(mgo.opt), 0, INT_MAX); break;
 		case 'Z': {
-			char buffer[65536];
-			CrashLog::VersionInfoLog(buffer, lastof(buffer));
-			fputs(buffer, stdout);
+			format_buffer buffer;
+			CrashLog::VersionInfoLog(buffer);
+			fputs(buffer.c_str(), stdout);
 			return ret;
 		}
 		case 'X': only_local_path = true; break;

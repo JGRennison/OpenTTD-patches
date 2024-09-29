@@ -312,7 +312,7 @@ void HandleSharingCompanyDeletion(Owner owner)
 	YapfNotifyTrackLayoutChange(INVALID_TILE, INVALID_TRACK);
 
 	Vehicle *si_v = nullptr;
-	SCOPE_INFO_FMT([&si_v], "HandleSharingCompanyDeletion: veh: %s", scope_dumper().VehicleInfo(si_v));
+	SCOPE_INFO_FMT([&si_v], "HandleSharingCompanyDeletion: veh: {}", scope_dumper().VehicleInfo(si_v));
 	for (Vehicle *v : Vehicle::IterateFrontOnly()) {
 		si_v = v;
 		if (!IsCompanyBuildableVehicleType(v)) continue;

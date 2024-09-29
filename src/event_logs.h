@@ -49,6 +49,6 @@ void AppendSpecialEventsLogEntry(std::string message);
 void DumpSpecialEventsLog(struct format_target &buffer);
 void ClearSpecialEventsLog();
 
-char *LogGameLoadDateTimes(char *buffer, const char *last);
+void LogGameLoadDateTimes(struct format_target &buffer);
 
 #endif /* EVENT_LOGS_H */

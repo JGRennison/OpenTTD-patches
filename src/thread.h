@@ -33,11 +33,9 @@ void SetCurrentThreadName(const char *name);
 
 /**
  * Get the name of the current thread, if any.
- * @param str The start of the buffer.
- * @param last The last char of the buffer.
- * @return Number of chars written to str.
+ * @param buffer The output buffer.
  */
-int GetCurrentThreadName(char *str, const char *last);
+void GetCurrentThreadName(struct format_target &buffer);
 
 /**
  * Set the current thread as the "main" thread

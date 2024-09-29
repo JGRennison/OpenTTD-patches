@@ -2550,19 +2550,18 @@ void NetworkServerNewCompany(const Company *c, NetworkClientInfo *ci)
 	}
 }
 
-char *NetworkServerDumpClients(char *buffer, const char *last)
+void NetworkServerDumpClients(format_target &buffer)
 {
 	for (NetworkClientInfo *ci : NetworkClientInfo::Iterate()) {
-		buffer += seprintf(buffer, last, "  #%d: name: '%s', company: %u",
+		buffer.format("  #{}: name: '{}', company: {}",
 				ci->client_id,
-				ci->client_name.c_str(),
+				ci->client_name,
 				ci->client_playas);
 		if (ci->join_date != 0) {
 			EconTime::YearMonthDay ymd = EconTime::ConvertDateToYMD(ci->join_date);
-			buffer += seprintf(buffer, last, ", joined: %4i-%02i-%02i, %i, %i, frame: %08X",
-					ymd.year.base(), ymd.month + 1, ymd.day, ci->join_date_fract, ci->join_tick_skip_counter, ci->join_frame);
+			buffer.format(", joined: {:4}-{:02}-{:02}, {}, {}, frame: {:08X}",
+					ymd.year, ymd.month + 1, ymd.day, ci->join_date_fract, ci->join_tick_skip_counter, ci->join_frame);
 		}
-		buffer += seprintf(buffer, last, "\n");
+		buffer.push_back('\n');
 	}
-	return buffer;
 }

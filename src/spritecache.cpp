@@ -522,7 +522,7 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 	SpriteFile &file = *sc->file;
 	size_t file_pos = sc->file_pos;
 
-	SCOPE_INFO_FMT([&], "ReadSprite: pos: " PRINTF_SIZE ", id: %u, file: (%s), type: %s", file_pos, id, file.GetSimplifiedFilename().c_str(), GetSpriteTypeName(sprite_type));
+	SCOPE_INFO_FMT([&], "ReadSprite: pos: {}, id: {}, file: ({}), type: {}", file_pos, id, file.GetSimplifiedFilename(), GetSpriteTypeName(sprite_type));
 
 	assert(sprite_type != SpriteType::Recolour);
 	assert(IsMapgenSpriteID(id) == (sprite_type == SpriteType::MapGen));
@@ -687,7 +687,7 @@ bool LoadNextSprite(int load_index, SpriteFile &file, uint file_sprite_id)
 {
 	size_t file_pos = file.GetPos();
 
-	SCOPE_INFO_FMT([&], "LoadNextSprite: pos: " PRINTF_SIZE ", file: %s, load_index: %d, file_sprite_id: %u, container_ver: %u", file_pos, file.GetSimplifiedFilename().c_str(), load_index, file_sprite_id, file.GetContainerVersion());
+	SCOPE_INFO_FMT([&], "LoadNextSprite: pos: {}, file: {}, load_index: {}, file_sprite_id: {}, container_ver: {}", file_pos, file.GetSimplifiedFilename(), load_index, file_sprite_id, file.GetContainerVersion());
 
 	/* Read sprite header. */
 	uint32_t num = file.GetContainerVersion() >= 2 ? file.ReadDword() : file.ReadWord();

@@ -101,7 +101,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 		if (desync_level == 1 && _state_ticks.base() % 500 != 0) return;
 	}
 
-	SCOPE_INFO_FMT([flags], "CheckCaches: %X", flags);
+	SCOPE_INFO_FMT([flags], "CheckCaches: {:X}", flags);
 
 	std::vector<std::string> saved_messages;
 	std::function<void(const char *)> log_orig;

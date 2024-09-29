@@ -117,14 +117,15 @@ static const std::string _vehicle_type_to_string[] = {
  */
 static void SurveySettingsTable(nlohmann::json &survey, const SettingTable &table, void *object, bool skip_if_default)
 {
-	char buf[512];
+	format_buffer buf;
 	for (auto &sd : table) {
 		/* Skip any old settings we no longer save/load. */
 		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 
 		if (skip_if_default && sd->IsDefaultValue(object)) continue;
-		sd->FormatValue(buf, lastof(buf), object);
+		sd->FormatValue(buf, object);
 		survey[sd->name] = buf;
+		buf.clear();
 	}
 }
 

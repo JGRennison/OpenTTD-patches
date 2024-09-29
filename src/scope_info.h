@@ -21,7 +21,7 @@ struct Window;
 #if !defined(DISABLE_SCOPE_INFO)
 
 struct ScopeStackRecord {
-	using ScopeStackFunctor = int (*)(ScopeStackRecord *, char *, const char *);
+	using ScopeStackFunctor = void (*)(ScopeStackRecord *, struct format_target &);
 
 	ScopeStackFunctor functor;
 	ScopeStackRecord *next;
@@ -37,9 +37,9 @@ private:
 public:
 	FunctorScopeStackRecord(T func) : func(std::move(func))
 	{
-		this->functor = [](ScopeStackRecord *record, char *buf, const char *last) -> int {
+		this->functor = [](ScopeStackRecord *record, struct format_target &buffer) {
 			FunctorScopeStackRecord *self = static_cast<FunctorScopeStackRecord *>(record);
-			return self->func(buf, last);
+			self->func(buffer);
 		};
 		this->next = _scope_stack_head;
 		_scope_stack_head = this;
@@ -53,16 +53,16 @@ public:
 	}
 };
 
-int WriteScopeLog(char *buf, const char *last);
+void WriteScopeLog(struct format_target &buffer);
 
 /**
- * This creates a lambda in the current scope with the specified capture which outputs the given args as a format string.
+ * This creates a lambda in the current scope with the specified capture which outputs the given args as a fmt format string.
  * This lambda is then captured by pointer in a ScopeStackRecord which is pushed onto the scope stack
  * The scope stack is popped at the end of the scope
  */
 #define SCOPE_INFO_FMT(capture, ...) \
-	FunctorScopeStackRecord _sc_lm_ ## __LINE__ (capture (char *buf, const char *last) { \
-		return seprintf(buf, last, __VA_ARGS__); \
+	FunctorScopeStackRecord _sc_lm_ ## __LINE__ (capture (struct format_target &buffer) { \
+		buffer.format(__VA_ARGS__); \
 	});
 
 #else /* defined(DISABLE_SCOPE_INFO) */

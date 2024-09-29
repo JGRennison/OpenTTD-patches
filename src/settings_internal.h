@@ -144,12 +144,10 @@ struct SettingDesc {
 
 	/**
 	 * Format the value of the setting associated with this object.
-	 * @param buf The before of the buffer to format into.
-	 * @param last The end of the buffer to format into.
+	 * @param buf The buffer to format into.
 	 * @param object The object the setting is in.
-	 * @return The pointer to the terminating null-character in the destination buffer
 	 */
-	virtual char *FormatValue(char *buf, const char *last, const void *object) const = 0;
+	virtual void FormatValue(struct format_target &buf, const void *object) const = 0;
 
 	/**
 	 * Parse/read the value from the Ini item into the setting associated with this object.
@@ -253,8 +251,8 @@ struct IntSettingDesc : SettingDesc {
 	void MakeValueValidAndWrite(const void *object, int32_t value) const;
 
 	virtual size_t ParseValue(const char *str) const;
-	char *FormatValue(char *buf, const char *last, const void *object) const override;
-	virtual char *FormatIntValue(char *buf, const char *last, uint32_t value) const;
+	void FormatValue(struct format_target &buf, const void *object) const override;
+	virtual void FormatIntValue(struct format_target &buf, uint32_t value) const;
 	void ParseValue(const IniItem *item, void *object) const override;
 	bool IsSameValue(const IniItem *item, void *object) const override;
 	bool IsDefaultValue(void *object) const override;
@@ -280,7 +278,7 @@ struct BoolSettingDesc : IntSettingDesc {
 
 	bool IsBoolSetting() const override { return true; }
 	size_t ParseValue(const char *str) const override;
-	char *FormatIntValue(char *buf, const char *last, uint32_t value) const override;
+	void FormatIntValue(struct format_target &buf, uint32_t value) const override;
 };
 
 /** One of many setting. */
@@ -302,10 +300,10 @@ struct OneOfManySettingDesc : IntSettingDesc {
 	OnConvert *many_cnvt;          ///< callback procedure when loading value mechanism fails
 
 	static size_t ParseSingleValue(const char *str, size_t len, const std::vector<std::string> &many);
-	char *FormatSingleValue(char *buf, const char *last, uint id) const;
+	void FormatSingleValue(struct format_target &buf, uint id) const;
 
 	size_t ParseValue(const char *str) const override;
-	char *FormatIntValue(char *buf, const char *last, uint32_t value) const override;
+	void FormatIntValue(struct format_target &buf, uint32_t value) const override;
 };
 
 /** Many of many setting. */
@@ -319,7 +317,7 @@ struct ManyOfManySettingDesc : OneOfManySettingDesc {
 			str_val, cat, pre_check, post_callback, get_title_cb, get_help_cb, set_value_dparams_cb, get_def_cb, many, many_cnvt) {}
 
 	size_t ParseValue(const char *str) const override;
-	char *FormatIntValue(char *buf, const char *last, uint32_t value) const override;
+	void FormatIntValue(struct format_target &buf, uint32_t value) const override;
 };
 
 /** String settings. */
@@ -352,7 +350,7 @@ struct StringSettingDesc : SettingDesc {
 	bool IsStringSetting() const override { return true; }
 	void ChangeValue(const void *object, std::string &newval, SaveToConfigFlags ini_save_flags) const;
 
-	char *FormatValue(char *buf, const char *last, const void *object) const override;
+	void FormatValue(struct format_target &buf, const void *object) const override;
 	void ParseValue(const IniItem *item, void *object) const override;
 	bool IsSameValue(const IniItem *item, void *object) const override;
 	bool IsDefaultValue(void *object) const override;
@@ -371,7 +369,7 @@ struct ListSettingDesc : SettingDesc {
 
 	const char *def;        ///< default value given when none is present
 
-	char *FormatValue(char *buf, const char *last, const void *object) const override;
+	void FormatValue(struct format_target &buf, const void *object) const override;
 	void ParseValue(const IniItem *item, void *object) const override;
 	bool IsSameValue(const IniItem *item, void *object) const override;
 	bool IsDefaultValue(void *object) const override;
@@ -385,7 +383,7 @@ struct NullSettingDesc : SettingDesc {
 	NullSettingDesc(const SaveLoad &save, const char *name, const char *patx_name) :
 		SettingDesc(save, name, SF_NOT_IN_CONFIG, nullptr, false, patx_name) {}
 
-	char *FormatValue(char *buf, const char *last, const void *object) const override { NOT_REACHED(); }
+	void FormatValue(struct format_target &buf, const void *object) const override { NOT_REACHED(); }
 	void ParseValue(const IniItem *item, void *object) const override { NOT_REACHED(); }
 	bool IsSameValue(const IniItem *item, void *object) const override { NOT_REACHED(); }
 	bool IsDefaultValue(void *object) const override { NOT_REACHED(); }

@@ -11,6 +11,7 @@
 #include "../../textbuf_gui.h"
 #include "../../openttd.h"
 #include "../../crashlog.h"
+#include "../../core/format.hpp"
 #include "../../core/random_func.hpp"
 #include "../../debug.h"
 #include "../../string_func.h"
@@ -275,18 +276,17 @@ void SetCurrentThreadName([[maybe_unused]] const char *threadName)
 #endif /* defined(__APPLE__) */
 }
 
-int GetCurrentThreadName(char *str, const char *last)
+void GetCurrentThreadName(format_target &buf)
 {
 #if !defined(NO_THREADS) && defined(__GLIBC__)
 #if __GLIBC_PREREQ(2, 12)
 	char buffer[16];
 	int result = pthread_getname_np(pthread_self(), buffer, sizeof(buffer));
 	if (result == 0) {
-		return seprintf(str, last, "%s", buffer);
+		buf.append(buffer);
 	}
 #endif
 #endif
-	return 0;
 }
 
 #if !defined(NO_THREADS)

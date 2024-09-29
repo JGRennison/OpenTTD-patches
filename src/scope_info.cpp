@@ -18,6 +18,7 @@
 #include "map_func.h"
 #include "window_func.h"
 #include "window_gui.h"
+#include "core/format.hpp"
 #include "table/strings.h"
 
 #include "safeguards.h"
@@ -26,19 +27,17 @@
 
 ScopeStackRecord *_scope_stack_head = nullptr;
 
-int WriteScopeLog(char *buf, const char *last)
+void WriteScopeLog(struct format_target &buffer)
 {
-	char *b = buf;
 	if (_scope_stack_head != nullptr) {
-		b += seprintf(b, last, "Within context:");
+		buffer.append("Within context:");
 		int depth = 0;
 		for (ScopeStackRecord *record = _scope_stack_head; record != nullptr; record = record->next, depth++) {
-			b += seprintf(b, last, "\n    %2d: ", depth);
-			b += record->functor(record, b, last);
+			buffer.format("\n    {:2}: ", depth);
+			record->functor(record, buffer);
 		}
-		b += seprintf(b, last, "\n\n");
+		buffer.append("\n\n");
 	}
-	return b - buf;
 }
 
 #endif

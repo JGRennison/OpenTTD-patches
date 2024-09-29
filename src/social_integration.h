@@ -44,7 +44,7 @@ public:
 	static std::vector<SocialIntegrationPlugin *> GetPlugins();
 
 	static size_t GetPluginCount();
-	static char *LogPluginSummary(char *buffer, const char *last);
+	static void LogPluginSummary(struct format_target &buffer);
 
 	/**
 	 * Initialize the social integration system, loading any social integration plugins that are available.
