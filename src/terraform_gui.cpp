@@ -45,6 +45,7 @@
 #include "table/strings.h"
 
 #include "safeguards.h"
+#include <dropdown_common_type.h>
 
 enum DemolishConfirmMode {
 	DCM_OFF,
@@ -536,12 +537,13 @@ struct PublicRoadsWindow : Window {
 				break;
 
 			case WID_PR_PUBLIC_ROADS_TYPE_DROPDOWN: { // Select public road type
-				auto road_types = GetScenRoadTypeDropDownList(RTTB_ROAD);
+				auto road_types = GetScenRoadTypeDropDownList(RTTB_ROAD, true);
+				auto road_types_list = DropDownList{};
 				auto town_road = GetTownRoadType();
 				// check if the town road is an available road type
 				bool has_town_road = false;
-				for (auto rt = road_types.begin(); rt < road_types.end(); rt++) {
-					if ((RoadType)rt->get()->result == town_road) {
+				for (auto rt_iter = road_types.begin(); rt_iter < road_types.end(); rt_iter++) {
+					if ((RoadType)rt_iter->get()->result == town_road) {
 						has_town_road = true;
 						break;
 					}
@@ -549,7 +551,7 @@ struct PublicRoadsWindow : Window {
 				if (!has_town_road) {
 					// taken from GetScenRoadTypeDropDownList()
 					const RoadTypeInfo *rti = GetRoadTypeInfo(town_road);
-					SetDParam(0, rti->strings.menu_text);
+					SetDParam(0, rti->strings.name);
 					SetDParam(1, rti->max_speed / 2);
 					StringID str = rti->max_speed > 0 ? STR_TOOLBAR_RAILTYPE_VELOCITY : STR_JUST_STRING;
 					road_types.push_back(MakeDropDownListIconItem(GetSpriteSize(rti->gui_sprites.build_x_road), rti->gui_sprites.build_x_road, PAL_NONE, str, town_road, false));
@@ -588,7 +590,7 @@ struct PublicRoadsWindow : Window {
 
 				Dimension d = { 0, 0 };
 				d = maxdim(d, GetSpriteSize(rti->gui_sprites.build_x_road));
-				SetDParam(0, rti->strings.menu_text);
+				SetDParam(0, rti->strings.name);
 				SetDParam(1, rti->max_speed / 2);
 				StringID str = rti->max_speed > 0 ? STR_TOOLBAR_RAILTYPE_VELOCITY : STR_JUST_STRING;
 
@@ -608,12 +610,13 @@ struct PublicRoadsWindow : Window {
 	{
 		if (widget != WID_PR_PUBLIC_ROADS_TYPE_DROPDOWN) return;
 
-		// find the max width and height of each roadtype
-		auto entries = GetScenRoadTypeDropDownList(RTTB_ROAD);
-		auto d = GetDropDownListDimension(entries);
-		size.width = d.width;
+		// max height of each roadtype
+		auto entries = GetScenRoadTypeDropDownList(RTTB_ROAD, true);
 		for (auto e = entries.begin(); e < entries.end(); e++)
 			size.height = std::max(size.height, e->get()->Height());
+		// just use the width of the dropdown list
+		auto d = GetDropDownListDimension(entries);
+		size.width = std::max(size.width, d.width + padding.width);
 	}
 };
 
