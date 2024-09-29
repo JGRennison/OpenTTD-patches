@@ -1704,7 +1704,7 @@ static const NIVariable _niv_railtypes[] = {
 	NIV_END()
 };
 
-static void PrintTypeLabels(char *buffer, const char *last, const char *prefix, uint32_t label, const uint32_t *alternate_labels, size_t alternate_labels_count, std::function<void(const char *)> &print)
+static void PrintTypeLabels(char *buffer, const char *last, const char *prefix, uint32_t label, const uint32_t *alternate_labels, size_t alternate_labels_count, std::function<void(std::string_view)> &print)
 {
 	if (alternate_labels_count > 0) {
 		char *b = buffer;

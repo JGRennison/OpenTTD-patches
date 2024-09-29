@@ -148,7 +148,7 @@ struct NIVariable {
 };
 
 struct NIExtraInfoOutput {
-	std::function<void(const char *)> print;
+	std::function<void(std::string_view)> print;
 	std::function<void(uint)> register_next_line_click_flag_toggle;
 	uint32_t flags;
 };
@@ -584,8 +584,8 @@ struct NewGRFInspectWindow : Window {
 			}
 		});
 
-		auto line_handler = [&](const char *buf) {
-			if (this->log_console) DEBUG(misc, 0, "  %s", buf);
+		auto line_handler = [&](std::string_view buf) {
+			if (this->log_console) Debug(misc, 0, "  {}", buf);
 
 			int offset = i++;
 			offset -= this->vscroll->GetPosition();
