@@ -42,6 +42,7 @@
 #include "newgrf_station.h"
 #include "core/backup_type.hpp"
 #include "picker_gui.h"
+#include "newgrf_extension.h"
 
 #include "widgets/road_widget.h"
 #include "table/strings.h"
@@ -97,6 +98,10 @@ static bool IsRoadStopEverAvailable(const RoadStopSpec *spec, StationType type)
 
 	if (HasBit(spec->flags, RSF_BUILD_MENU_ROAD_ONLY) && !RoadTypeIsRoad(_cur_roadtype)) return false;
 	if (HasBit(spec->flags, RSF_BUILD_MENU_TRAM_ONLY) && !RoadTypeIsTram(_cur_roadtype)) return false;
+
+	if (type == STATION_ROADWAYPOINT && spec->stop_type != ROADSTOPTYPE_ALL) {
+		if (spec->grf_prop.grffile != nullptr && HasBit(spec->grf_prop.grffile->observed_feature_tests, GFTOF_ROAD_STOPS)) return true;
+	}
 
 	switch (spec->stop_type) {
 		case ROADSTOPTYPE_ALL: return true;
