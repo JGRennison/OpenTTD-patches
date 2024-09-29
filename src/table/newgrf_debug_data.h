@@ -796,6 +796,10 @@ class NIHStation : public NIHelper {
 			output.print(buffer);
 		}
 
+		const StationClass *cls = StationClass::Get(statspec->class_index);
+		seprintf(buffer, lastof(buffer), "Class ID: %s", label_dumper().Label(cls->global_id));
+		output.print(buffer);
+
 		for (size_t i = 0; i < statspec->renderdata.size(); i++) {
 			seprintf(buffer, lastof(buffer), "Tile Layout %u:", (uint)i);
 			output.print(buffer);
