@@ -687,7 +687,7 @@ void CrashLog::FillDesyncCrashLog(format_target &buffer, const DesyncExtraInfo &
 	DumpDesyncMsgLog(buffer);
 
 	bool have_cache_log = false;
-	CheckCaches(true, [&](const char *str) {
+	CheckCaches(true, [&](std::string_view str) {
 		if (!have_cache_log) buffer.append("CheckCaches:\n");
 		buffer.format("  {}\n", str);
 		have_cache_log = true;

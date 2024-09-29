@@ -582,21 +582,19 @@ void DebugInitAllWaterRegions()
 	}
 }
 
-void WaterRegionCheckCaches(std::function<void(const char *)> log)
+void WaterRegionCheckCaches(std::function<void(std::string_view)> log)
 {
-	char cclog_buffer[1024];
-#define CCLOG(...) { \
-	char *cc_log_pos = cclog_buffer + seprintf(cclog_buffer, lastof(cclog_buffer), "Region: %u x %u to %u x %u: ", \
-			x * WATER_REGION_EDGE_LENGTH, y * WATER_REGION_EDGE_LENGTH, (x * WATER_REGION_EDGE_LENGTH) + WATER_REGION_EDGE_MASK, (y * WATER_REGION_EDGE_LENGTH) + WATER_REGION_EDGE_MASK); \
-	seprintf(cc_log_pos, lastof(cclog_buffer), __VA_ARGS__); \
-	DEBUG(desync, 0, "%s", cclog_buffer); \
-	if (log) log(cclog_buffer); \
-}
-
 	const uint32_t size_x = GetWaterRegionMapSizeX();
 	const uint32_t size_y = GetWaterRegionMapSizeY();
 	for (uint32_t y = 0; y < size_y; y++) {
 		for (uint32_t x = 0; x < size_x; x++) {
+			auto cclog = [&]<typename... T>(fmt::format_string<T...> fmtstr, T&&... args) {
+				format_buffer cc_buffer;
+				cc_buffer.format("Region: {} x {} to {} x {}: ", x * WATER_REGION_EDGE_LENGTH, y * WATER_REGION_EDGE_LENGTH, (x * WATER_REGION_EDGE_LENGTH) + WATER_REGION_EDGE_MASK, (y * WATER_REGION_EDGE_LENGTH) + WATER_REGION_EDGE_MASK);
+				cc_buffer.format(fmtstr, std::forward<T>(args)...);
+				log(cc_buffer);
+			};
+
 			WaterRegionReference wr = GetWaterRegionRef(x, y);
 			if (!wr.IsInitialized()) continue;
 
@@ -607,17 +605,16 @@ void WaterRegionCheckCaches(std::function<void(const char *)> log)
 			wr.ForceUpdate();
 
 			if (old_has_cross_region_aqueducts != wr.HasCrossRegionAqueducts()) {
-				CCLOG("Has cross region aqueducts mismatch: %u -> %u", old_has_cross_region_aqueducts, wr.HasCrossRegionAqueducts());
+				cclog("Has cross region aqueducts mismatch: {} -> {}", old_has_cross_region_aqueducts, wr.HasCrossRegionAqueducts());
 			}
 			if (old_number_of_patches != wr.NumberOfPatches()) {
-				CCLOG("Number of patches mismatch: %u -> %u", old_number_of_patches, wr.NumberOfPatches());
+				cclog("Number of patches mismatch: {} -> {}", old_number_of_patches, wr.NumberOfPatches());
 			}
 			if (old_patch_labels != wr.CopyPatchLabelArray()) {
-				CCLOG("Patch label mismatch");
+				cclog("Patch label mismatch");
 			}
 		}
 	}
-#undef CCLOG
 }
 
 void PrintWaterRegionDebugInfo(TileIndex tile)

@@ -3514,8 +3514,8 @@ DEF_CONSOLE_CMD(ConCheckCaches)
 	if (broadcast) {
 		DoCommandP(0, 0, 0, CMD_DESYNC_CHECK);
 	} else {
-		auto logger = [&](const char *str) {
-			IConsolePrint(CC_WARNING, str);
+		auto logger = [&](std::string_view str) {
+			IConsolePrint(CC_WARNING, std::string{str});
 		};
 		CheckCaches(true, logger, CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG);
 	}

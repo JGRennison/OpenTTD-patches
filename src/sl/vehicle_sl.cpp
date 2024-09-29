@@ -1711,18 +1711,18 @@ void SlResetVENC()
 
 static void LogVehicleVENCMessage(const Vehicle *v, const char *var)
 {
-	char log_buffer[1024];
+	format_buffer buffer;
 
-	char *p = log_buffer + seprintf(log_buffer, lastof(log_buffer), "[load]: vehicle cache mismatch: %s", var);
+	buffer.format("[load]: vehicle cache mismatch: {}", var);
 
-	extern void WriteVehicleInfo(char *&p, const char *last, const Vehicle *u, const Vehicle *v, uint length);
+	extern void WriteVehicleInfo(format_target &buffer, const Vehicle *u, const Vehicle *v, uint length);
 	uint length = 0;
 	for (const Vehicle *u = v->First(); u != v; u = u->Next()) {
 		length++;
 	}
-	WriteVehicleInfo(p, lastof(log_buffer), v, v->First(), length);
-	Debug(desync, 0, "{}", log_buffer);
-	LogDesyncMsg(log_buffer);
+	WriteVehicleInfo(buffer, v, v->First(), length);
+	debug_print(DebugLevelID::desync, 0, buffer);
+	LogDesyncMsg(buffer.to_string());
 }
 
 template <typename T>

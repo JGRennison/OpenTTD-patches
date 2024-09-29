@@ -1470,23 +1470,21 @@ uint32_t CompanyInfrastructure::GetTramTotal() const
 	return total;
 }
 
-char *CompanyInfrastructure::Dump(char *buffer, const char *last) const
+void CompanyInfrastructure::Dump(format_target &buffer) const
 {
 	uint rail_total = 0;
 	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
-		if (rail[rt]) buffer += seprintf(buffer, last, "Rail: %s: %u\n", GetStringPtr(GetRailTypeInfo(rt)->strings.name), rail[rt]);
+		if (rail[rt]) buffer.format("Rail: {}: {}\n", GetStringPtr(GetRailTypeInfo(rt)->strings.name), rail[rt]);
 		rail_total += rail[rt];
 	}
-	buffer += seprintf(buffer, last, "Total Rail: %u\n", rail_total);
-	buffer += seprintf(buffer, last, "Signal: %u\n", signal);
+	buffer.format("Total Rail: {}\n", rail_total);
+	buffer.format("Signal: {}\n", signal);
 	for (RoadType rt = ROADTYPE_BEGIN; rt != ROADTYPE_END; rt++) {
-		if (road[rt]) buffer += seprintf(buffer, last, "%s: %s: %u\n", RoadTypeIsTram(rt) ? "Tram" : "Road", GetStringPtr(GetRoadTypeInfo(rt)->strings.name), road[rt]);
+		if (road[rt]) buffer.format("{}: {}: {}\n", RoadTypeIsTram(rt) ? "Tram" : "Road", GetStringPtr(GetRoadTypeInfo(rt)->strings.name), road[rt]);
 	}
-	buffer += seprintf(buffer, last, "Total Road: %u\n", this->GetRoadTotal());
-	buffer += seprintf(buffer, last, "Total Tram: %u\n", this->GetTramTotal());
-	buffer += seprintf(buffer, last, "Water: %u\n", water);
-	buffer += seprintf(buffer, last, "Station: %u\n", station);
-	buffer += seprintf(buffer, last, "Airport: %u\n", airport);
-
-	return buffer;
+	buffer.format("Total Road: {}\n", this->GetRoadTotal());
+	buffer.format("Total Tram: {}\n", this->GetTramTotal());
+	buffer.format("Water: {}\n", water);
+	buffer.format("Station: {}\n", station);
+	buffer.format("Airport: {}\n", airport);
 }

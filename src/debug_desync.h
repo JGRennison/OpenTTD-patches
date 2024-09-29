@@ -22,6 +22,6 @@ enum CheckCachesFlags : uint32_t {
 };
 DECLARE_ENUM_AS_BIT_SET(CheckCachesFlags)
 
-extern void CheckCaches(bool force_check, std::function<void(const char *)> log = nullptr, CheckCachesFlags flags = CHECK_CACHE_ALL);
+extern void CheckCaches(bool force_check, std::function<void(std::string_view)> log = nullptr, CheckCachesFlags flags = CHECK_CACHE_ALL);
 
 #endif /* DEBUG_DESYNC_H */

@@ -48,7 +48,7 @@ struct CompanyInfrastructure {
 	uint32_t GetRoadTotal() const;
 	uint32_t GetTramTotal() const;
 
-	char *Dump(char *buffer, const char *last) const;
+	void Dump(struct format_target &buffer) const;
 
 	bool operator==(const CompanyInfrastructure &) const = default;
 };

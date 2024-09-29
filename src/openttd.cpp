@@ -1538,18 +1538,18 @@ void SwitchToMode(SwitchMode new_mode)
 	SmallMapWindow::RebuildColourIndexIfNecessary();
 }
 
-void WriteVehicleInfo(char *&p, const char *last, const Vehicle *u, const Vehicle *v, uint length)
+void WriteVehicleInfo(format_target &buffer, const Vehicle *u, const Vehicle *v, uint length)
 {
-	p += seprintf(p, last, ": type %i, vehicle %i (%i), company %i, unit number %i, wagon %i, engine: ",
+	buffer.format(": type {}, vehicle {} ({}), company {}, unit number {}, wagon {}, engine: ",
 			(int)u->type, u->index, v->index, (int)u->owner, v->unitnumber, length);
 	SetDParam(0, u->engine_type);
-	p = strecpy(p, GetString(STR_ENGINE_NAME).c_str(), last, true);
+	buffer.append(GetString(STR_ENGINE_NAME));
 	uint32_t grfid = u->GetGRFID();
 	if (grfid) {
-		p += seprintf(p, last, ", GRF: %08X", BSWAP32(grfid));
+		buffer.format(", GRF:{:08X}", BSWAP32(grfid));
 		GRFConfig *grfconfig = GetGRFConfig(grfid);
 		if (grfconfig) {
-			p += seprintf(p, last, ", %s, %s", grfconfig->GetName(), grfconfig->filename.c_str());
+			buffer.format(", {}, {}", grfconfig->GetName(), grfconfig->filename);
 		}
 	}
 }

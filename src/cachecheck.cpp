@@ -36,7 +36,7 @@
 
 extern void AfterLoadCompanyStats();
 extern void RebuildTownCaches(bool cargo_update_required, bool old_map_position);
-extern void WriteVehicleInfo(char *&p, const char *last, const Vehicle *u, const Vehicle *v, uint length);
+extern void WriteVehicleInfo(format_target &buffer, const Vehicle *u, const Vehicle *v, uint length);
 
 static bool SignalInfraTotalMatches()
 {
@@ -81,7 +81,7 @@ static bool SignalInfraTotalMatches()
  * the cached value and what the value would
  * be when calculated from the 'base' data.
  */
-void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckCachesFlags flags)
+void CheckCaches(bool force_check, std::function<void(std::string_view)> log, CheckCachesFlags flags)
 {
 	if (!force_check) {
 		int desync_level = GetDebugLevel(DebugLevelID::desync);
@@ -104,51 +104,57 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 	SCOPE_INFO_FMT([flags], "CheckCaches: {:X}", flags);
 
 	std::vector<std::string> saved_messages;
-	std::function<void(const char *)> log_orig;
+	std::function<void(std::string_view)> log_orig;
 	if (flags & CHECK_CACHE_EMIT_LOG) {
 		log_orig = std::move(log);
-		log = [&saved_messages, &log_orig](const char *str) {
+		log = [&saved_messages, &log_orig](std::string_view str) {
 			if (log_orig) log_orig(str);
 			saved_messages.emplace_back(str);
 		};
 	}
 
-	char cclog_buffer[1024];
-	auto cclog_common = [&]() {
-		DEBUG(desync, 0, "%s", cclog_buffer);
+	format_buffer cc_buffer;
+
+	auto cclog_output = [&](std::string_view str) {
+		debug_print(DebugLevelID::desync, 0, str);
 		if (log) {
-			log(cclog_buffer);
+			log(str);
 		} else {
-			LogDesyncMsg(cclog_buffer);
+			LogDesyncMsg(std::string{str});
 		}
 	};
 
-#define CCLOG(...) { \
-	seprintf(cclog_buffer, lastof(cclog_buffer), __VA_ARGS__); \
-	cclog_common(); \
-}
-
-	auto output_veh_info = [&](char *&p, const Vehicle *u, const Vehicle *v, uint length) {
-		WriteVehicleInfo(p, lastof(cclog_buffer), u, v, length);
+	auto cclog_start = [&]<typename... T>(fmt::format_string<T...> fmtstr, T&&... args) {
+		cc_buffer.clear();
+		cc_buffer.format(fmtstr, std::forward<T>(args)...);
 	};
-	auto output_veh_info_single = [&](char *&p, const Vehicle *v) {
+
+	auto cclog = [&]<typename... T>(fmt::format_string<T...> fmtstr, T&&... args) {
+		cclog_start(fmtstr, std::forward<T>(args)...);
+		cclog_output(cc_buffer);
+	};
+
+	auto output_veh_info = [&](const Vehicle *u, const Vehicle *v, uint length) {
+		WriteVehicleInfo(cc_buffer, u, v, length);
+	};
+	auto output_veh_info_single = [&](const Vehicle *v) {
 		uint length = 0;
 		for (const Vehicle *u = v->First(); u != v; u = u->Next()) {
 			length++;
 		}
-		WriteVehicleInfo(p, lastof(cclog_buffer), v, v->First(), length);
+		WriteVehicleInfo(cc_buffer, v, v->First(), length);
 	};
 
 #define CCLOGV(...) { \
-	char *p = cclog_buffer + seprintf(cclog_buffer, lastof(cclog_buffer), __VA_ARGS__); \
-	output_veh_info(p, u, v, length); \
-	cclog_common(); \
+	cclog_start(__VA_ARGS__); \
+	output_veh_info(u, v, length); \
+	cclog_output(cc_buffer); \
 }
 
 #define CCLOGV1(...) { \
-	char *p = cclog_buffer + seprintf(cclog_buffer, lastof(cclog_buffer), __VA_ARGS__); \
-	output_veh_info_single(p, v); \
-	cclog_common(); \
+	cclog_start(__VA_ARGS__); \
+	output_veh_info_single(v); \
+	cclog_output(cc_buffer); \
 }
 
 	if (flags & CHECK_CACHE_GENERAL) {
@@ -182,48 +188,48 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 		uint i = 0;
 		for (Town *t : Town::Iterate()) {
 			if (old_town_caches[i].num_houses != t->cache.num_houses) {
-				CCLOG("town cache num_houses mismatch: town %i, (old size: %u, new size: %u)", (int)t->index, old_town_caches[i].num_houses, t->cache.num_houses);
+				cclog("town cache num_houses mismatch: town {}, (old size: {}, new size: {})", t->index, old_town_caches[i].num_houses, t->cache.num_houses);
 			}
 			if (old_town_caches[i].population != t->cache.population) {
-				CCLOG("town cache population mismatch: town %i, (old size: %u, new size: %u)", (int)t->index, old_town_caches[i].population, t->cache.population);
+				cclog("town cache population mismatch: town {}i, (old size: {}, new size: {})", t->index, old_town_caches[i].population, t->cache.population);
 			}
 			if (old_town_caches[i].part_of_subsidy != t->cache.part_of_subsidy) {
-				CCLOG("town cache population mismatch: town %i, (old size: %u, new size: %u)", (int)t->index, old_town_caches[i].part_of_subsidy, t->cache.part_of_subsidy);
+				cclog("town cache population mismatch: town {}, (old size: {}, new size: {})", t->index, old_town_caches[i].part_of_subsidy, t->cache.part_of_subsidy);
 			}
 			if (old_town_caches[i].squared_town_zone_radius != t->cache.squared_town_zone_radius) {
-				CCLOG("town cache squared_town_zone_radius mismatch: town %i", (int)t->index);
+				cclog("town cache squared_town_zone_radius mismatch: town {}", t->index);
 			}
 			if (old_town_caches[i].building_counts != t->cache.building_counts) {
-				CCLOG("town cache building_counts mismatch: town %i", (int)t->index);
+				cclog("town cache building_counts mismatch: town {}", t->index);
 			}
 			if (old_town_stations_nears[i] != t->stations_near) {
-				CCLOG("town stations_near mismatch: town %i, (old size: %u, new size: %u)", (int)t->index, (uint)old_town_stations_nears[i].size(), (uint)t->stations_near.size());
+				cclog("town stations_near mismatch: town {}, (old size: {}, new size: {})", t->index, old_town_stations_nears[i].size(), t->stations_near.size());
 			}
 			i++;
 		}
 		i = 0;
 		for (Station *st : Station::Iterate()) {
 			if (old_station_industries_nears[i] != st->industries_near) {
-				CCLOG("station industries_near mismatch: st %i, (old size: %u, new size: %u)", (int)st->index, (uint)old_station_industries_nears[i].size(), (uint)st->industries_near.size());
+				cclog("station industries_near mismatch: st {}, (old size: {}, new size: {})", (int)st->index, (uint)old_station_industries_nears[i].size(), (uint)st->industries_near.size());
 			}
 			if (!(old_station_catchment_tiles[i] == st->catchment_tiles)) {
-				CCLOG("station catchment_tiles mismatch: st %i", (int)st->index);
+				cclog("station catchment_tiles mismatch: st {}", (int)st->index);
 			}
 			if (!(old_station_tiles[i] == st->station_tiles)) {
-				CCLOG("station station_tiles mismatch: st %i, (old: %u, new: %u)", (int)st->index, old_station_tiles[i], st->station_tiles);
+				cclog("station station_tiles mismatch: st {}, (old: {}, new: {})", (int)st->index, old_station_tiles[i], st->station_tiles);
 			}
 			i++;
 		}
 		i = 0;
 		for (Industry *ind : Industry::Iterate()) {
 			if (old_industry_stations_nears[i] != ind->stations_near) {
-				CCLOG("industry stations_near mismatch: ind %i, (old size: %u, new size: %u)", (int)ind->index, (uint)old_industry_stations_nears[i].size(), (uint)ind->stations_near.size());
+				cclog("industry stations_near mismatch: ind {}, (old size: {}, new size: {})", (int)ind->index, (uint)old_industry_stations_nears[i].size(), (uint)ind->stations_near.size());
 			}
 			StationList stlist;
 			if (ind->neutral_station != nullptr && !_settings_game.station.serve_neutral_industries) {
 				stlist.insert(ind->neutral_station);
 				if (ind->stations_near != stlist) {
-					CCLOG("industry neutral station stations_near mismatch: ind %i, (recalc size: %u, neutral size: %u)", (int)ind->index, (uint)ind->stations_near.size(), (uint)stlist.size());
+					cclog("industry neutral station stations_near mismatch: ind {}, (recalc size: {}, neutral size: {})", (int)ind->index, (uint)ind->stations_near.size(), (uint)stlist.size());
 				}
 			} else {
 				ForAllStationsAroundTiles(ind->location, [ind, &stlist](Station *st, TileIndex tile) {
@@ -232,7 +238,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 					return true;
 				});
 				if (ind->stations_near != stlist) {
-					CCLOG("industry FindStationsAroundTiles mismatch: ind %i, (recalc size: %u, find size: %u)", (int)ind->index, (uint)ind->stations_near.size(), (uint)stlist.size());
+					cclog("industry FindStationsAroundTiles mismatch: ind {}, (recalc size: {}, find size: {})", (int)ind->index, (uint)ind->stations_near.size(), (uint)stlist.size());
 				}
 			}
 			i++;
@@ -249,17 +255,18 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 		uint i = 0;
 		for (const Company *c : Company::Iterate()) {
 			if (old_infrastructure[i] != c->infrastructure) {
-				CCLOG("infrastructure cache mismatch: company %i", (int)c->index);
-				char buffer[4096];
-				old_infrastructure[i].Dump(buffer, lastof(buffer));
-				CCLOG("Previous:");
-				ProcessLineByLine(buffer, [&](const char *line) {
-					CCLOG("  %s", line);
+				cclog("infrastructure cache mismatch: company {}", (int)c->index);
+				format_buffer infra_buffer;
+				old_infrastructure[i].Dump(infra_buffer);
+				cclog("Previous:");
+				ProcessLineByLine(infra_buffer, [&](std::string_view line) {
+					cclog("  {}", line);
 				});
-				c->infrastructure.Dump(buffer, lastof(buffer));
-				CCLOG("Recalculated:");
-				ProcessLineByLine(buffer, [&](const char *line) {
-					CCLOG("  %s", line);
+				infra_buffer.clear();
+				c->infrastructure.Dump(infra_buffer);
+				cclog("Recalculated:");
+				ProcessLineByLine(infra_buffer, [&](std::string_view line) {
+					cclog("  {}", line);
 				});
 				if (old_infrastructure[i].signal != c->infrastructure.signal && _network_server && !HasChickenBit(DCBF_DESYNC_CHECK_PERIODIC_SIGNALS)) {
 					DoCommandP(0, 0, _settings_game.debug.chicken_bits | (1 << DCBF_DESYNC_CHECK_PERIODIC_SIGNALS), CMD_CHANGE_SETTING, nullptr, "debug.chicken_bits");
@@ -289,7 +296,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 		for (Vehicle *v : Vehicle::Iterate()) {
 			extern bool ValidateVehicleTileHash(const Vehicle *v);
 			if (!ValidateVehicleTileHash(v)) {
-				CCLOG("vehicle tile hash mismatch: type %i, vehicle %i, company %i, unit number %i", (int)v->type, v->index, (int)v->owner, v->unitnumber);
+				cclog("vehicle tile hash mismatch: type {}, vehicle {}, company {}, unit number {}", (int)v->type, v->index, (int)v->owner, v->unitnumber);
 			}
 
 			extern void FillNewGRFVehicleCache(const Vehicle *v);
@@ -352,7 +359,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 				}
 				if (veh_cache[length].cached_max_speed != u->vcache.cached_max_speed || veh_cache[length].cached_cargo_age_period != u->vcache.cached_cargo_age_period ||
 						veh_cache[length].cached_vis_effect != u->vcache.cached_vis_effect || HasBit(veh_cache[length].cached_veh_flags ^ u->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT)) {
-					CCLOGV("vehicle cache mismatch: %c%c%c%c",
+					CCLOGV("vehicle cache mismatch: {}{}{}{}",
 							veh_cache[length].cached_max_speed != u->vcache.cached_max_speed ? 'm' : '-',
 							veh_cache[length].cached_cargo_age_period != u->vcache.cached_cargo_age_period ? 'c' : '-',
 							veh_cache[length].cached_vis_effect != u->vcache.cached_vis_effect ? 'v' : '-',
@@ -386,7 +393,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 					CCLOGV("vehicle_flags mismatch");
 				}
 				auto print_gv_cache_diff = [&](const char *vtype, const GroundVehicleCache &a, const GroundVehicleCache &b) {
-					CCLOGV("%s ground vehicle cache mismatch: %c%c%c%c%c%c%c%c%c%c",
+					CCLOGV("{} ground vehicle cache mismatch: {}{}{}{}{}{}{}{}{}{}",
 							vtype,
 							a.cached_weight != b.cached_weight ? 'w' : '-',
 							a.cached_slope_resistance != b.cached_slope_resistance ? 'r' : '-',
@@ -405,7 +412,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 							print_gv_cache_diff("train", gro_cache[length], Train::From(u)->gcache);
 						}
 						if (tra_cache[length] != Train::From(u)->tcache) {
-							CCLOGV("train cache mismatch: %c%c%c%c%c%c%c%c%c%c%c",
+							CCLOGV("train cache mismatch: {}{}{}{}{}{}{}{}{}{}{}",
 									tra_cache[length].cached_override != Train::From(u)->tcache.cached_override ? 'o' : '-',
 									tra_cache[length].cached_curve_speed_mod != Train::From(u)->tcache.cached_curve_speed_mod ? 'C' : '-',
 									tra_cache[length].cached_tflags != Train::From(u)->tcache.cached_tflags ? 'f' : '-',
@@ -435,7 +442,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 						break;
 					case VEH_AIRCRAFT:
 						if (air_cache[length] != Aircraft::From(u)->acache) {
-							CCLOGV("Aircraft vehicle cache mismatch: %c%c",
+							CCLOGV("Aircraft vehicle cache mismatch: {}{}",
 									air_cache[length].cached_max_range != Aircraft::From(u)->acache.cached_max_range ? 'r' : '-',
 									air_cache[length].cached_max_range_sqr != Aircraft::From(u)->acache.cached_max_range_sqr ? 's' : '-');
 						}
@@ -466,7 +473,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 			if (v->cargo.TotalCount() != old_count) SetBit(changed, 1);
 			if (v->cargo.CargoPeriodsInTransit() != old_cargo_periods_in_transit) SetBit(changed, 2);
 			if (changed != 0) {
-				CCLOGV1("vehicle cargo cache mismatch: %c%c%c",
+				CCLOGV1("vehicle cargo cache mismatch: {}{}{}",
 						HasBit(changed, 0) ? 'f' : '-',
 						HasBit(changed, 1) ? 't' : '-',
 						HasBit(changed, 2) ? 'p' : '-');
@@ -486,7 +493,7 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 				if (st->goods[c].data->cargo.TotalCount() != old_count) SetBit(changed, 0);
 				if (st->goods[c].data->cargo.CargoPeriodsInTransit() != old_cargo_periods_in_transit) SetBit(changed, 1);
 				if (changed != 0) {
-					CCLOG("station cargo cache mismatch: station %i, company %i, cargo %u: %c%c",
+					cclog("station cargo cache mismatch: station {}, company {}, cargo {}: {}{}",
 							st->index, (int)st->owner, c,
 							HasBit(changed, 0) ? 't' : '-',
 							HasBit(changed, 1) ? 'd' : '-');
@@ -502,12 +509,12 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 			}
 			UpdateStationDockingTiles(st);
 			if (ta.tile != st->docking_station.tile || ta.w != st->docking_station.w || ta.h != st->docking_station.h) {
-				CCLOG("station docking mismatch: station %i, company %i, prev: (%X, %u, %u), recalc: (%X, %u, %u)",
+				cclog("station docking mismatch: station {}, company {}, prev: ({:X}, {}, {}), recalc: ({:X}, {}, {})",
 						st->index, (int)st->owner, ta.tile, ta.w, ta.h, st->docking_station.tile, st->docking_station.w, st->docking_station.h);
 			}
 			for (TileIndex tile : ta) {
 				if ((docking_tiles.find(tile) != docking_tiles.end()) != IsDockingTile(tile)) {
-					CCLOG("docking tile mismatch: tile %i", (int)tile);
+					cclog("docking tile mismatch: tile {}", (int)tile);
 				}
 			}
 		}
@@ -534,14 +541,14 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 			extern std::string ValidateTemplateReplacementCaches();
 			std::string template_validation_result = ValidateTemplateReplacementCaches();
 			if (!template_validation_result.empty()) {
-				CCLOG("Template replacement cache validation failed: %s", template_validation_result.c_str());
+				cclog("Template replacement cache validation failed: {}", template_validation_result);
 			}
 		}
 
-		if (!TraceRestrictSlot::ValidateVehicleIndex()) CCLOG("Trace restrict slot vehicle index validation failed");
+		if (!TraceRestrictSlot::ValidateVehicleIndex()) cclog("Trace restrict slot vehicle index validation failed");
 		TraceRestrictSlot::ValidateSlotOccupants(log);
 
-		if (!CargoPacket::ValidateDeferredCargoPayments()) CCLOG("Cargo packets deferred payments validation failed");
+		if (!CargoPacket::ValidateDeferredCargoPayments()) cclog("Cargo packets deferred payments validation failed");
 
 		if (_order_destination_refcount_map_valid) {
 			btree::btree_map<uint32_t, uint32_t> saved_order_destination_refcount_map = std::move(_order_destination_refcount_map);
@@ -553,15 +560,15 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 				}
 			}
 			IntialiseOrderDestinationRefcountMap();
-			if (saved_order_destination_refcount_map != _order_destination_refcount_map) CCLOG("Order destination refcount map mismatch");
+			if (saved_order_destination_refcount_map != _order_destination_refcount_map) cclog("Order destination refcount map mismatch");
 		} else {
-			CCLOG("Order destination refcount map not valid");
+			cclog("Order destination refcount map not valid");
 		}
 	}
 
 	if (flags & CHECK_CACHE_WATER_REGIONS) {
-		extern void WaterRegionCheckCaches(std::function<void(const char *)> log);
-		WaterRegionCheckCaches(log);
+		extern void WaterRegionCheckCaches(std::function<void(std::string_view)> log);
+		WaterRegionCheckCaches(cclog_output);
 	}
 
 	if ((flags & CHECK_CACHE_EMIT_LOG) && !saved_messages.empty()) {
@@ -573,7 +580,6 @@ void CheckCaches(bool force_check, std::function<void(const char *)> log, CheckC
 		}
 	}
 
-#undef CCLOG
 #undef CCLOGV
 #undef CCLOGV1
 }
