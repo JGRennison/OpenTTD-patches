@@ -632,6 +632,7 @@ static constexpr NWidgetPart _nested_scen_edit_public_roads_widgets[] = {
 			NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_PR_PUBLIC_ROADS_TYPE_DROPDOWN), SetMinimalSize(160, 24), SetDataTip(STR_EMPTY, STR_NULL), SetPadding(1, 2, 0, 2),
 			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_PR_PUBLIC_ROADS), SetMinimalSize(160, 12),
 				SetFill(1, 0), SetDataTip(STR_TERRAFORM_PUBLIC_ROADS, STR_TERRAFORM_PUBLIC_ROADS_TOOLTIP), SetPadding(1, 2, 0, 2),
+			NWidget(NWID_SPACER), SetMinimalSize(0, 2),
 	EndContainer(),
 };
 
