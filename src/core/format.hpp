@@ -58,50 +58,86 @@ struct fmt::formatter<T, Char, std::enable_if_t<std::is_base_of<StrongTypedefBas
 	}
 };
 
+/**
+ * Base fmt format target class. Users should take by reference.
+ * Not directly instatiable, use format_to_buffer, format_buffer, format_to_fixed or format_to_fixed_z.
+ */
 struct format_target {
 protected:
-	fmt::detail::buffer<char> &buffer; // This can point to any subtype of fmt::basic_memory_buffer
-
-	format_target(fmt::detail::buffer<char> &buffer) : buffer(buffer) {}
-
-	struct fixed_fmt_buffer final : public fmt::detail::buffer<char> {
-		char discard[32];
-
-		fixed_fmt_buffer(char *dst, size_t size) : buffer(dst, 0, size) {}
-		void grow(size_t) override;
-		bool has_overflowed() const { return this->data() == this->discard; }
+	enum {
+		FL_FIXED = 1,
+		FL_FIXED_Z = 2,
+		FL_OVERFLOW = 4,
 	};
+
+	fmt::detail::buffer<char> &target; // This can point to any subtype of fmt::basic_memory_buffer
+	uint8_t flags;
+
+	format_target(fmt::detail::buffer<char> &buffer, uint8_t flags) : target(buffer), flags(flags) {}
+	~format_target() = default;
 
 public:
 	format_target(const format_target &other) = delete;
 	format_target& operator=(const format_target &other) = delete;
 
+	size_t get_position() const;
+	void restore_position(size_t);
+	inline const char *data() const;
+	inline char *data() { return const_cast<char *>(const_cast<const format_target *>(this)->data()); }
+
 	template <typename... T>
 	void format(fmt::format_string<T...> fmtstr, T&&... args)
 	{
-		fmt::detail::vformat_to(this->buffer, fmt::string_view(fmtstr), fmt::make_format_args(args...), {});
+		if (has_overflowed()) return;
+		fmt::detail::vformat_to(this->target, fmt::string_view(fmtstr), fmt::make_format_args(args...), {});
 	}
 
 	void push_back(char c)
 	{
-		this->buffer.push_back(c);
+		if (has_overflowed()) return;
+		this->target.push_back(c);
 	}
 
 	template <typename U>
 	void append(const U* begin, const U* end)
 	{
-		this->buffer.append<U>(begin, end);
+		if (has_overflowed()) return;
+		this->target.append<U>(begin, end);
 	}
 
 	void append(std::string_view str) { this->append(str.begin(), str.end()); }
+
+	template <typename F>
+	void append_ptr_last_func(size_t to_reserve, F func)
+	{
+		this->target.try_reserve(this->target.size() + to_reserve);
+		char *buf = this->target.data() + this->target.size();
+		const char *last = this->target.data() + this->target.capacity() - 1;
+		if (last > buf) {
+			char *result = func(buf, last);
+			this->target.try_resize(result - this->target.data());
+		}
+	}
+
+	bool has_overflowed() const { return (this->flags & FL_OVERFLOW) != 0; }
+	bool is_fixed_z() const { return (this->flags & FL_FIXED_Z) != 0; }
 };
 
+/**
+ * format_target subtype which outputs to an existing fmt::basic_memory_buffer/fmt::memory_buffer.
+ */
 struct format_to_buffer : public format_target {
 	template <size_t SIZE, typename Allocator>
-	format_to_buffer(fmt::basic_memory_buffer<char, SIZE, Allocator> &buffer) : format_target(buffer) {}
+	format_to_buffer(fmt::basic_memory_buffer<char, SIZE, Allocator> &buffer) : format_target(buffer, 0) {}
 };
 
-struct format_buffer : public format_to_buffer {
+/**
+ * format_to_buffer subtype where the fmt::memory_buffer is built-in.
+ *
+ * Includes convenience wrappers to access the buffer.
+ * Can be used as a fmt argument.
+ */
+struct format_buffer final : public format_to_buffer {
 	fmt::memory_buffer buffer;
 
 	format_buffer() : format_to_buffer(buffer) {}
@@ -119,6 +155,14 @@ struct format_buffer : public format_to_buffer {
 
 	std::string to_string() const { return std::string(this->buffer.data(), this->buffer.size()); }
 	operator std::string_view() const { return std::string_view(this->buffer.data(), this->buffer.size()); }
+
+	/* Return a null terminated c string, this may cause the buffer to re-allocated to make room for the null terminator */
+	const char *c_str()
+	{
+		if (this->size() == this->capacity()) this->buffer.try_reserve(this->capacity() + 1);
+		*(this->end()) = '\0';
+		return this->data();
+	}
 };
 
 template <>
@@ -137,37 +181,89 @@ struct fmt::formatter<format_buffer, char> : fmt::formatter<std::string_view> {
 	}
 };
 
-struct format_to_fixed_base : public format_target {
+/*
+ * The destructors of buffer and format_target are both protected,
+ * so not having a virtual destructor is safe.
+ * gcc (not clang) still complains though.
+ */
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
+#endif /* __GNUC__ */
+
+struct format_to_fixed_base : private fmt::detail::buffer<char>, public format_target {
+	friend format_target;
 private:
-	fixed_fmt_buffer target_buffer;
+	char * const buffer_ptr;
 	const size_t buffer_size;
+	char discard[32];
+
+	fmt::detail::buffer<char> &base_buffer() { return *static_cast<fmt::detail::buffer<char> *>(this); }
+	const fmt::detail::buffer<char> &base_buffer() const { return *static_cast<const fmt::detail::buffer<char> *>(this); }
+
+	void grow(size_t) override;
+	void restore_position_impl(size_t size);
 
 protected:
-	format_to_fixed_base(char *dst, size_t size) : format_target(this->target_buffer), target_buffer(dst, size), buffer_size(size) {}
+	format_to_fixed_base(char *dst, size_t size, uint flags) : buffer(dst, 0, size), format_target(this->base_buffer(), flags), buffer_ptr(dst), buffer_size(size) {}
+	~format_to_fixed_base() = default;
 
 public:
 	size_t written() const
 	{
-		return this->target_buffer.has_overflowed() ? this->buffer_size : this->target_buffer.size();
+		return (this->flags & FL_OVERFLOW) != 0 ? this->buffer_size : this->base_buffer().size();
 	}
 };
 
+/**
+ * format_target subtype for writing to a fixed-size char buffer.
+ *
+ * Does not null-terminate.
+ */
 struct format_to_fixed final : public format_to_fixed_base {
-	format_to_fixed(char *dst, size_t size) : format_to_fixed_base(dst, size) {}
+	format_to_fixed(char *dst, size_t size) : format_to_fixed_base(dst, size, FL_FIXED) {}
 };
 
+/**
+ * format_target subtype for writing to a fixed-size char buffer (using ptr, last semantics).
+ *
+ * Null-termination only occurs when the finalise method is called.
+ */
 struct format_to_fixed_z final : public format_to_fixed_base {
 	char *initial_dst;
 
-	format_to_fixed_z(char *dst, const char *last) : format_to_fixed_base(dst, last - dst), initial_dst(dst) {}
+	format_to_fixed_z(char *dst, const char *last) : format_to_fixed_base(dst, last - dst, FL_FIXED | FL_FIXED_Z), initial_dst(dst) {}
 
-	/* Add null-terminator */
+	/**
+	 * Add null terminator, and return pointer to end of string/null terminator.
+	 */
 	char *finalise()
 	{
 		size_t written = this->written();
 		this->initial_dst[written] = '\0';
 		return this->initial_dst + written;
 	}
+
+	/**
+	 * If src is an instance of format_to_fixed_z, cast to format_to_fixed_z *, otherwise return nullptr.
+	 */
+	static inline format_to_fixed_z *from_format_target(format_target &src)
+	{
+		return src.is_fixed_z() ? static_cast<format_to_fixed_z *>(&src) : nullptr;
+	}
 };
+
+const char *format_target::data() const
+{
+	if ((this->flags & FL_FIXED) != 0) {
+		return static_cast<const format_to_fixed_base *>(this)->buffer_ptr;
+	} else {
+		return this->target.data();
+	}
+}
+
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif /* __GNUC__ */
 
 #endif /* FORMAT_HPP */
