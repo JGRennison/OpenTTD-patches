@@ -13,22 +13,6 @@
 #include <limits>
 
 template <typename F>
-inline void ProcessLineByLine(char *buf, F line_functor)
-{
-	char *p = buf;
-	char *p2 = buf;
-	/* Print output line by line */
-	for (; *p2 != '\0'; p2++) {
-		if (*p2 == '\n') {
-			*p2 = '\0';
-			line_functor(p);
-			p = p2 + 1;
-		}
-	}
-	if (p < p2) line_functor(p);
-}
-
-template <typename F>
 inline void ProcessLineByLine(std::string_view str, F line_functor)
 {
 	const char *p = str.begin();
