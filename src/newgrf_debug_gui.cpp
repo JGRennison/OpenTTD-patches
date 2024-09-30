@@ -603,9 +603,9 @@ struct NewGRFInspectWindow : Window {
 			bool collapsed = false;
 			const SpriteGroup *collapse_group = nullptr;
 			uint collapse_lines = 0;
-			char tmp_buf[256];
-			SpriteGroupDumper dumper([&](const SpriteGroup *group, DumpSpriteGroupPrintOp operation, uint32_t highlight_tag, const char *buf) {
-				if (this->log_console && operation == DSGPO_PRINT) DEBUG(misc, 0, "  %s", buf);
+			format_buffer tmp_buf;
+			SpriteGroupDumper dumper([&](const SpriteGroup *group, DumpSpriteGroupPrintOp operation, uint32_t highlight_tag, std::string_view buf) {
+				if (this->log_console && operation == DSGPO_PRINT) Debug(misc, 0, "  {}", buf);
 
 				if (operation == DSGPO_NFO_LINE) {
 					btree::btree_map<int, uint16_t> &lines = const_cast<NewGRFInspectWindow *>(this)->nfo_line_lines;
@@ -623,7 +623,8 @@ struct NewGRFInspectWindow : Window {
 					collapse_lines = 0;
 				}
 				if (operation == DSGPO_END && collapsed && collapse_group == group) {
-					seprintf(tmp_buf, lastof(tmp_buf), "%sCOLLAPSED: %u lines omitted", buf, collapse_lines);
+					tmp_buf.clear();
+					tmp_buf.format("{}COLLAPSED: {} lines omitted", buf, collapse_lines);
 					buf = tmp_buf;
 					collapsed = false;
 					highlight_tag = 0;

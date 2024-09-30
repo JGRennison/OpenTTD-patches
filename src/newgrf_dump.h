@@ -20,14 +20,13 @@ enum DumpSpriteGroupPrintOp {
 	DSGPO_NFO_LINE,
 };
 
-using DumpSpriteGroupPrinter = std::function<void(const struct SpriteGroup *, DumpSpriteGroupPrintOp, uint32_t, const char *)>;
+using DumpSpriteGroupPrinter = std::function<void(const struct SpriteGroup *, DumpSpriteGroupPrintOp, uint32_t, std::string_view)>;
 
 struct SpriteGroupDumper {
 	bool use_shadows = false;
 	bool more_details = false;
 
 private:
-	char buffer[1024];
 	DumpSpriteGroupPrinter print_fn;
 
 	const SpriteGroup *top_default_group = nullptr;
@@ -39,18 +38,15 @@ private:
 		SGDF_RANGE            = 1 << 1,
 	};
 
-	char *DumpSpriteGroupAdjust(char *p, const char *last, const struct DeterministicSpriteGroupAdjust &adjust, const char *padding, uint32_t &highlight_tag, uint &conditional_indent);
-	void DumpSpriteGroup(const struct SpriteGroup *sg, const char *prefix, uint flags);
+	void DumpSpriteGroupAdjust(struct format_buffer &buffer, const struct DeterministicSpriteGroupAdjust &adjust, uint32_t &highlight_tag, uint &conditional_indent);
+	void DumpSpriteGroup(struct format_buffer &buffer, const struct SpriteGroup *sg, const char *prefix, uint flags);
 
 public:
 	SpriteGroupDumper(DumpSpriteGroupPrinter print) : print_fn(print) {}
 
-	void DumpSpriteGroup(const SpriteGroup *sg, uint flags)
-	{
-		this->DumpSpriteGroup(sg, "", flags);
-	}
+	void DumpSpriteGroup(const SpriteGroup *sg, uint flags);
 
-	void Print(const char *msg)
+	void Print(std::string_view msg)
 	{
 		this->print_fn(nullptr, DSGPO_PRINT, 0, msg);
 	}
