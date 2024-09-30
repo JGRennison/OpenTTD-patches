@@ -473,27 +473,36 @@ struct NewGRFInspectWindow : Window {
 		}
 	}
 
+	void DrawStringV(const Rect &r, int offset, fmt::string_view fmtstr, fmt::format_args args) const
+	{
+		offset -= this->vscroll->GetPosition();
+		if (!this->log_console && (offset < 0 || offset >= this->vscroll->GetCapacity())) return;
+
+		format_buffer buffer;
+		if (this->log_console) buffer.append("  "); // indent when writing to console
+		buffer.vformat(fmtstr, args);
+		std::string_view view = buffer;
+
+		if (this->log_console) {
+			debug_print(DebugLevelID::misc, 0, buffer);
+			view.remove_prefix(2);
+		}
+
+		if (offset < 0 || offset >= this->vscroll->GetCapacity()) return;
+
+		::DrawString(r.Shrink(WidgetDimensions::scaled.frametext).Shrink(0, offset * this->resize.step_height, 0, 0), view, TC_BLACK);
+	}
+
 	/**
 	 * Helper function to draw a string (line) in the window.
 	 * @param r      The (screen) rectangle we must draw within
 	 * @param offset The offset (in lines) we want to draw for
 	 * @param format The format string
 	 */
-	void WARN_FORMAT(4, 5) DrawString(const Rect &r, int offset, const char *format, ...) const
+	template <typename... T>
+	void DrawString(const Rect &r, int offset, fmt::format_string<T...> fmtstr, T&&... args) const
 	{
-		char buf[1024];
-
-		va_list va;
-		va_start(va, format);
-		vseprintf(buf, lastof(buf), format, va);
-		va_end(va);
-
-		if (this->log_console) DEBUG(misc, 0, "  %s", buf);
-
-		offset -= this->vscroll->GetPosition();
-		if (offset < 0 || offset >= this->vscroll->GetCapacity()) return;
-
-		::DrawString(r.Shrink(WidgetDimensions::scaled.frametext).Shrink(0, offset * this->resize.step_height, 0, 0), buf, TC_BLACK);
+		this->DrawStringV(r, offset, fmtstr, fmt::make_format_args(args...));
 	}
 
 	void DrawWidget(const Rect &r, WidgetID widget) const override
@@ -503,10 +512,10 @@ struct NewGRFInspectWindow : Window {
 				const Vehicle *v = Vehicle::Get(this->GetFeatureIndex());
 				if (GetFeatureNum(this->window_number) == GSF_SHIPS) {
 					Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
-					char buffer[64];
+					format_buffer buffer;
 					uint count = 0;
 					for (const Vehicle *u = v->First(); u != nullptr; u = u->Next()) count++;
-					seprintf(buffer, lastof(buffer), "Part %u of %u", this->chain_index + 1, count);
+					buffer.format("Part {} of {}", this->chain_index + 1, count);
 					::DrawString(ir.left, ir.right, ir.top, buffer, TC_BLACK);
 					break;
 				}
@@ -553,7 +562,7 @@ struct NewGRFInspectWindow : Window {
 		if (this->log_console) {
 			GetFeatureHelper(this->window_number)->SetStringParameters(this->GetFeatureIndex());
 			std::string buf = GetString(STR_NEWGRF_INSPECT_CAPTION);
-			if (!buf.empty()) DEBUG(misc, 0, "*** %s ***", strip_leading_colours(buf));
+			if (!buf.empty()) Debug(misc, 0, "*** {} ***", strip_leading_colours(buf));
 		}
 
 		uint index = this->GetFeatureIndex();
@@ -567,7 +576,7 @@ struct NewGRFInspectWindow : Window {
 		auto guard = scope_guard([&]() {
 			if (this->log_console) {
 				const_cast<NewGRFInspectWindow*>(this)->log_console = false;
-				DEBUG(misc, 0, "*** END ***");
+				Debug(misc, 0, "*** END ***");
 			}
 
 			const int32_t count = i;
@@ -687,11 +696,11 @@ struct NewGRFInspectWindow : Window {
 		uint32_t grfid = nih->GetGRFID(index);
 		if (grfid) {
 			this->DrawString(r, i++, "GRF:");
-			this->DrawString(r, i++, "  ID: %08X", BSWAP32(grfid));
+			this->DrawString(r, i++, "  ID: {:08X}", BSWAP32(grfid));
 			GRFConfig *grfconfig = GetGRFConfig(grfid);
 			if (grfconfig) {
-				this->DrawString(r, i++, "  Name: %s", grfconfig->GetName());
-				this->DrawString(r, i++, "  File: %s", grfconfig->filename.c_str());
+				this->DrawString(r, i++, "  Name: {}", grfconfig->GetName());
+				this->DrawString(r, i++, "  File: {}", grfconfig->filename);
 			}
 		}
 
@@ -707,14 +716,14 @@ struct NewGRFInspectWindow : Window {
 				if (niv->var >= 0x100) {
 					const char *name = GetExtendedVariableNameById(niv->var);
 					if (name != nullptr) {
-						char buf[512];
+						format_buffer buffer;
 						if (HasVariableParameter(niv)) {
 							if (widest_num == 0) widest_num = GetBroadestDigitsValue(2);
-							seprintf(buf, lastof(buf), "  %s [%u]: ", name, widest_num);
+							buffer.format("  {} [{}]: ", name, widest_num);
 						} else {
-							seprintf(buf, lastof(buf), "  %s: ", name);
+							buffer.format("  {}: ", name);
 						}
-						prefix_width = std::max<int>(prefix_width, GetStringBoundingBox(buf).width);
+						prefix_width = std::max<int>(prefix_width, GetStringBoundingBox(buffer).width);
 					}
 				}
 			}
@@ -733,24 +742,25 @@ struct NewGRFInspectWindow : Window {
 				if (niv->var >= 0x100) {
 					const char *name = GetExtendedVariableNameById(niv->var);
 					if (name != nullptr) {
-						char buf[512];
+						format_buffer buffer;
 						if (has_param) {
-							seprintf(buf, lastof(buf), "  %s [%02X]: ", name, param);
+							buffer.format("  {} [{:02X}]: ", name, param);
 						} else {
-							seprintf(buf, lastof(buf), "  %s: ", name);
+							buffer.format("  {}: ", name);
 						}
 						if (_current_text_dir == TD_RTL) {
-							this->DrawString(r, i++, "%s%08x (%s)", buf, value, niv->name);
+							this->DrawString(r, i++, "{}{:08x} ({})", buffer, value, niv->name);
 						} else {
-							if (this->log_console) DEBUG(misc, 0, "  %s%08x (%s)", buf, value, niv->name);
+							if (this->log_console) Debug(misc, 0, "  {}{:08x} ({})", buffer, value, niv->name);
 
 							int offset = i - this->vscroll->GetPosition();
 							i++;
 							if (offset >= 0 && offset < this->vscroll->GetCapacity()) {
 								Rect sr = r.Shrink(WidgetDimensions::scaled.frametext).Shrink(0, offset * this->resize.step_height, 0, 0);
-								int edge = ::DrawString(sr.left, sr.right, sr.top, buf, TC_BLACK);
-								seprintf(buf, lastof(buf), "%08x (%s)", value, niv->name);
-								::DrawString(std::max(edge, sr.left + prefix_width), sr.right, sr.top, buf, TC_BLACK);
+								int edge = ::DrawString(sr.left, sr.right, sr.top, buffer, TC_BLACK);
+								buffer.clear();
+								buffer.format("{:08x} ({})", value, niv->name);
+								::DrawString(std::max(edge, sr.left + prefix_width), sr.right, sr.top, buffer, TC_BLACK);
 							}
 						}
 					}
@@ -758,9 +768,9 @@ struct NewGRFInspectWindow : Window {
 				}
 
 				if (has_param) {
-					this->DrawString(r, i++, "  %02x[%02x]: %08x (%s)", niv->var, param, value, niv->name);
+					this->DrawString(r, i++, "  {:02x}[{:02x}]: {:08x} ({})", niv->var, param, value, niv->name);
 				} else {
-					this->DrawString(r, i++, "  %02x: %08x (%s)", niv->var, value, niv->name);
+					this->DrawString(r, i++, "  {:02x}: {:08x} ({})", niv->var, value, niv->name);
 				}
 			}
 		}
@@ -770,7 +780,7 @@ struct NewGRFInspectWindow : Window {
 			auto psa = nih->GetPSA(index, grfid);
 			if (!psa.empty()) {
 				if (nih->PSAWithParameter()) {
-					this->DrawString(r, i++, "Persistent storage [%08X]:", BSWAP32(grfid));
+					this->DrawString(r, i++, "Persistent storage [{:08X}]:", BSWAP32(grfid));
 				} else {
 					this->DrawString(r, i++, "Persistent storage:");
 				}
@@ -781,10 +791,10 @@ struct NewGRFInspectWindow : Window {
 				}
 				const uint psa_limit = (last_non_blank + 3) & ~3;
 				for (uint j = 0; j < psa_limit; j += 4) {
-					this->DrawString(r, i++, "  %i: %i %i %i %i", j, psa[j], psa[j + 1], psa[j + 2], psa[j + 3]);
+					this->DrawString(r, i++, "  {}: {} {} {} {}", j, psa[j], psa[j + 1], psa[j + 2], psa[j + 3]);
 				}
 				if (last_non_blank != (uint)psa.size()) {
-					this->DrawString(r, i++, "  %i to %i are all 0", psa_limit, (uint)(psa.size() - 1));
+					this->DrawString(r, i++, "  {} to {} are all 0", psa_limit, (psa.size() - 1));
 				}
 			}
 		}
@@ -816,7 +826,7 @@ struct NewGRFInspectWindow : Window {
 						NOT_REACHED();
 				}
 
-				this->DrawString(r, i++, "  %02x: %s (%s)", nip->prop, GetString(string).c_str(), nip->name);
+				this->DrawString(r, i++, "  {:02x}: {} ({})", nip->prop, GetString(string), nip->name);
 			}
 		}
 
@@ -834,9 +844,9 @@ struct NewGRFInspectWindow : Window {
 					}
 
 					if (!HasBit(value, nic->cb_bit)) continue;
-					this->DrawString(r, i++, "  %03x: %s", nic->cb_id, nic->name);
+					this->DrawString(r, i++, "  {:03x}: {}", nic->cb_id, nic->name);
 				} else {
-					this->DrawString(r, i++, "  %03x: %s (unmasked)", nic->cb_id, nic->name);
+					this->DrawString(r, i++, "  {:03x}: {} (unmasked)", nic->cb_id, nic->name);
 				}
 			}
 		}
