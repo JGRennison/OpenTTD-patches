@@ -96,6 +96,12 @@ public:
 		fmt::detail::vformat_to(this->target, fmt::string_view(fmtstr), fmt::make_format_args(args...), {});
 	}
 
+	void vformat(fmt::string_view fmtstr, fmt::format_args args)
+	{
+		if (has_overflowed()) return;
+		fmt::detail::vformat_to(this->target, fmtstr, args, {});
+	}
+
 	void push_back(char c)
 	{
 		if (has_overflowed()) return;
