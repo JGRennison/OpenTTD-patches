@@ -14,33 +14,24 @@
 
 void format_to_fixed_base::grow(size_t capacity)
 {
-	if (this->size() == this->capacity()) {
+	if (this->buffer::size() == this->buffer::capacity()) {
 		/* Buffer is full, use the discard area for the overflow */
-		this->clear();
-		this->set(this->discard, sizeof(this->discard));
+		this->buffer::clear();
+		this->buffer::set(this->discard, sizeof(this->discard));
 		this->flags |= FL_OVERFLOW;
 	}
 }
 
-size_t format_target::get_position() const
+void format_target::restore_size(size_t size)
 {
 	if ((this->flags & FL_FIXED) != 0) {
-		return static_cast<const format_to_fixed_base *>(this)->written();
-	} else {
-		return this->target.size();
-	}
-}
-
-void format_target::restore_position(size_t size)
-{
-	if ((this->flags & FL_FIXED) != 0) {
-		static_cast<format_to_fixed_base *>(this)->restore_position_impl(size);
+		static_cast<format_to_fixed_base *>(this)->restore_size_impl(size);
 	} else {
 		return this->target.try_resize(size);
 	}
 }
 
-void format_to_fixed_base::restore_position_impl(size_t size)
+void format_to_fixed_base::restore_size_impl(size_t size)
 {
 		this->buffer::set(this->buffer_ptr, this->buffer_size);
 		this->buffer::try_resize(size);

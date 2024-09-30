@@ -305,12 +305,12 @@ class CrashLogUnix : public CrashLog {
 		if (uname(&name) < 0) return;
 
 		if (strcmp(name.sysname, "Linux") == 0) {
-			size_t orig = buffer.get_position();
+			size_t orig = buffer.size();
 			buffer.append("Distro version:\n");
 
 			const char *args[] = { "/bin/sh", "-c", "lsb_release -a || find /etc -maxdepth 1 -type f -a \\( -name '*release' -o -name '*version' \\) -exec head -v {} \\+", nullptr };
 			if (!ExecReadStdout("/bin/sh", const_cast<char* const*>(args), buffer)) {
-				buffer.restore_position(orig);
+				buffer.restore_size(orig);
 			}
 		}
 	}
@@ -471,7 +471,7 @@ class CrashLogUnix : public CrashLog {
 
 		pid_t tid = syscall(SYS_gettid);
 
-		size_t orig = buffer.get_position();
+		size_t orig = buffer.size();
 		buffer.append("GDB info:\n");
 
 		char tid_buffer[16];
@@ -511,7 +511,7 @@ class CrashLogUnix : public CrashLog {
 
 		add_arg(nullptr);
 		if (!ExecReadStdoutThroughFile("gdb", const_cast<char* const*>(&(args[0])), buffer)) {
-			buffer.restore_position(orig);
+			buffer.restore_size(orig);
 		}
 #endif /* WITH_DBG_GDB */
 	}
@@ -568,7 +568,7 @@ class CrashLogUnix : public CrashLog {
 			const int ptr_str_size = (2 + sizeof(void*) * 2);
 #if defined(WITH_DL2)
 			if (dladdr_result && info.dli_fname && dl_lm != nullptr) {
-				size_t saved_position = buffer.get_position();
+				size_t saved_position = buffer.size();
 				char addr_ptr_buffer[64];
 				/* subtract one to get the line before the return address, i.e. the function call line */
 				seprintf(addr_ptr_buffer, lastof(addr_ptr_buffer), PRINTF_SIZEX, (char *)trace[i] - (char *)dl_lm->l_addr - 1);
@@ -584,17 +584,17 @@ class CrashLogUnix : public CrashLog {
 					nullptr,
 				};
 				buffer.format(" [{:02}] {:{}} {:<40} ", i, fmt::ptr(trace[i]), ptr_str_size, info.dli_fname);
-				size_t start_pos = buffer.get_position();
+				size_t start_pos = buffer.size();
 				bool result = ExecReadStdout("addr2line", const_cast<char* const*>(args), buffer);
 				if (result) {
-					std::string_view result_str = std::string_view(buffer.data() + start_pos, buffer.get_position() - start_pos);
+					std::string_view result_str = std::string_view(buffer.data() + start_pos, buffer.size() - start_pos);
 					if (result_str.find("??") == result_str.npos) {
 						while (result_str.ends_with("\n\n")) result_str.remove_suffix(1); // Replace double newlines with single newlines
-						buffer.restore_position(start_pos + result_str.size());
+						buffer.restore_size(start_pos + result_str.size());
 						continue;
 					}
 				}
-				buffer.restore_position(saved_position);
+				buffer.restore_size(saved_position);
 			}
 #endif /* WITH_DL2 */
 #if defined(WITH_BFD)

@@ -80,10 +80,15 @@ public:
 	format_target(const format_target &other) = delete;
 	format_target& operator=(const format_target &other) = delete;
 
-	size_t get_position() const;
-	void restore_position(size_t);
-	inline const char *data() const;
-	inline char *data() { return const_cast<char *>(const_cast<const format_target *>(this)->data()); }
+	inline size_t size() const noexcept;
+	void restore_size(size_t);
+	inline const char *data() const noexcept;
+	inline char *data() noexcept { return const_cast<char *>(const_cast<const format_target *>(this)->data()); }
+
+	char *begin() noexcept { return this->data(); }
+	char *end() noexcept { return this->data() + this->size(); }
+	const char *begin() const noexcept { return this->data(); }
+	const char *end() const noexcept { return this->data() + this->size(); }
 
 	template <typename... T>
 	void format(fmt::format_string<T...> fmtstr, T&&... args)
@@ -202,7 +207,7 @@ private:
 	const fmt::detail::buffer<char> &base_buffer() const { return *static_cast<const fmt::detail::buffer<char> *>(this); }
 
 	void grow(size_t) override;
-	void restore_position_impl(size_t size);
+	void restore_size_impl(size_t size);
 
 protected:
 	format_to_fixed_base(char *dst, size_t size, uint flags) : buffer(dst, 0, size), format_target(this->base_buffer(), flags), buffer_ptr(dst), buffer_size(size) {}
@@ -253,12 +258,21 @@ struct format_to_fixed_z final : public format_to_fixed_base {
 	}
 };
 
-const char *format_target::data() const
+const char *format_target::data() const noexcept
 {
 	if ((this->flags & FL_FIXED) != 0) {
 		return static_cast<const format_to_fixed_base *>(this)->buffer_ptr;
 	} else {
 		return this->target.data();
+	}
+}
+
+size_t format_target::size() const noexcept
+{
+	if ((this->flags & FL_FIXED) != 0) {
+		return static_cast<const format_to_fixed_base *>(this)->written();
+	} else {
+		return this->target.size();
 	}
 }
 

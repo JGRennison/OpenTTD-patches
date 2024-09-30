@@ -212,7 +212,7 @@ class CrashLogOSX : public CrashLog {
 #if !defined(WITHOUT_DBG_LLDB)
 		pid_t pid = getpid();
 
-		size_t buffer_orig = buffer.get_position();
+		size_t buffer_orig = buffer.size();
 		buffer.append("LLDB info:\n");
 
 		char pid_buffer[16];
@@ -244,7 +244,7 @@ class CrashLogOSX : public CrashLog {
 
 		add_arg(nullptr);
 		if (!ExecReadStdoutThroughFile("lldb", const_cast<char* const*>(&(args[0])), buffer)) {
-			buffer.restore_position(buffer_orig);
+			buffer.restore_size(buffer_orig);
 		}
 #endif /* !WITHOUT_DBG_LLDB */
 	}
