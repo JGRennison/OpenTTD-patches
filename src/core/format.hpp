@@ -123,6 +123,17 @@ public:
 		}
 	}
 
+	template <typename F>
+	void append_span_func(size_t to_reserve, F func)
+	{
+		this->target.try_reserve(this->target.size() + to_reserve);
+		const auto size = this->target.size();
+		const auto capacity = this->target.capacity();
+		if (size == capacity) return;
+		size_t written = func(std::span<char>{this->target.data() + size, capacity - size});
+		this->target.try_resize(size + written);
+	}
+
 	bool has_overflowed() const { return (this->flags & FL_OVERFLOW) != 0; }
 };
 

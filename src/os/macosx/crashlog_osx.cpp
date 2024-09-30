@@ -97,16 +97,17 @@ static bool ExecReadStdoutThroughFile(const char *file, char *const *args, forma
 		lseek(fd, 0, SEEK_SET);
 		bool ok = true;
 		while (ok && !buffer.has_overflowed()) {
-			buffer.append_ptr_last_func(2048, [&](char *buf, const char *last) -> char * {
-				ssize_t res = read(fd, buf, last - buf);
+			buffer.append_span_func(2048, [&](std::span<char> buf) -> size_t {
+				ssize_t res = read(fd, buf.data(), buf.size());
 				if (res < 0) {
 					if (errno != EINTR) ok = false;
+					return 0;
 				} else if (res == 0) {
 					ok = false;
+					return 0;
 				} else {
-					buf += res;
+					return (size_t)res;
 				}
-				return buf;
 			});
 		}
 		buffer.push_back('\n');
