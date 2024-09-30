@@ -270,4 +270,60 @@ size_t format_target::size() const noexcept
 #pragma GCC diagnostic pop
 #endif /* __GNUC__ */
 
+struct format_lambda_output {
+	template <typename F> friend struct format_lambda_wrapper;
+private:
+	fmt::format_context::iterator iter;
+
+	format_lambda_output(fmt::format_context::iterator iter) : iter(iter) {}
+	format_lambda_output(const format_lambda_output &other) = delete;
+	format_lambda_output& operator=(const format_lambda_output &other) = delete;
+
+public:
+	template <typename... T>
+	void format(fmt::format_string<T...> fmtstr, T&&... args)
+	{
+		this->iter = fmt::format_to(this->iter, fmtstr, std::forward<T>(args)...);
+	}
+};
+
+template <typename F>
+struct format_lambda_wrapper {
+	F lm;
+
+	format_lambda_wrapper(F lm) : lm(std::move(lm)) {}
+
+	fmt::format_context::iterator execute(fmt::format_context::iterator iter) const
+	{
+		format_lambda_output output(iter);
+		this->lm(output);
+		return output.iter;
+	}
+};
+
+template <typename F>
+struct fmt::formatter<format_lambda_wrapper<F>> {
+	constexpr fmt::format_parse_context::iterator parse(fmt::format_parse_context &ctx) {
+		return ctx.begin();
+	}
+
+	fmt::format_context::iterator format(const format_lambda_wrapper<F>& obj, format_context &ctx) const {
+		return obj.execute(ctx.out());
+	}
+};
+
+/**
+ * Wraps a lambda of type: [...](format_lambda_output &out, args...) {}
+ * as a callable of type [...](args...) which is suitable for use as an argument to fmt::format.
+ */
+template <typename F>
+auto format_lambda(F func)
+{
+	return [func = std::move(func)]<typename... T>(T&&... args) -> auto {
+		return format_lambda_wrapper([&](format_lambda_output &output) {
+			func(output, std::forward<T>(args)...);
+		});
+	};
+};
+
 #endif /* FORMAT_HPP */
