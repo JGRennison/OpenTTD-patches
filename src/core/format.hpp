@@ -66,8 +66,7 @@ struct format_target {
 protected:
 	enum {
 		FL_FIXED = 1,
-		FL_FIXED_Z = 2,
-		FL_OVERFLOW = 4,
+		FL_OVERFLOW = 2,
 	};
 
 	fmt::detail::buffer<char> &target; // This can point to any subtype of fmt::basic_memory_buffer
@@ -125,7 +124,6 @@ public:
 	}
 
 	bool has_overflowed() const { return (this->flags & FL_OVERFLOW) != 0; }
-	bool is_fixed_z() const { return (this->flags & FL_FIXED_Z) != 0; }
 };
 
 /**
@@ -237,7 +235,7 @@ struct format_to_fixed final : public format_to_fixed_base {
 struct format_to_fixed_z final : public format_to_fixed_base {
 	char *initial_dst;
 
-	format_to_fixed_z(char *dst, const char *last) : format_to_fixed_base(dst, last - dst, FL_FIXED | FL_FIXED_Z), initial_dst(dst) {}
+	format_to_fixed_z(char *dst, const char *last) : format_to_fixed_base(dst, last - dst, FL_FIXED), initial_dst(dst) {}
 
 	/**
 	 * Add null terminator, and return pointer to end of string/null terminator.
@@ -247,14 +245,6 @@ struct format_to_fixed_z final : public format_to_fixed_base {
 		size_t written = this->written();
 		this->initial_dst[written] = '\0';
 		return this->initial_dst + written;
-	}
-
-	/**
-	 * If src is an instance of format_to_fixed_z, cast to format_to_fixed_z *, otherwise return nullptr.
-	 */
-	static inline format_to_fixed_z *from_format_target(format_target &src)
-	{
-		return src.is_fixed_z() ? static_cast<format_to_fixed_z *>(&src) : nullptr;
 	}
 };
 
