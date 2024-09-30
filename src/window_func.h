@@ -74,6 +74,6 @@ bool EditBoxInGlobalFocus();
 bool FocusedWindowIsConsole();
 Point GetCaretPosition();
 
-char *DumpWindowInfo(char *b, const char *last, const Window *w);
+void DumpWindowInfo(struct format_target &buffer, const Window *w);
 
 #endif /* WINDOW_FUNC_H */

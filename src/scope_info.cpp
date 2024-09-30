@@ -148,6 +148,8 @@ const char *scope_dumper::TileInfo(TileIndex tile)
 
 const char *scope_dumper::WindowInfo(const Window *w)
 {
-	DumpWindowInfo(this->buffer, lastof(this->buffer), w);
+	format_to_fixed_z buf(this->buffer, lastof(this->buffer));
+	DumpWindowInfo(buf, w);
+	buf.finalise();
 	return this->buffer;
 }
