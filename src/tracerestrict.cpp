@@ -2773,28 +2773,27 @@ bool TraceRestrictSlot::ValidateVehicleIndex()
 	return ok;
 }
 
-void TraceRestrictSlot::ValidateSlotOccupants(std::function<void(const char *)> log)
+void TraceRestrictSlot::ValidateSlotOccupants(std::function<void(std::string_view)> log)
 {
-	char cclog_buffer[1024];
-#define CCLOG(...) { \
-	seprintf(cclog_buffer, lastof(cclog_buffer), __VA_ARGS__); \
-	DEBUG(desync, 0, "%s", cclog_buffer); \
-	if (log) log(cclog_buffer); \
-}
+	format_buffer buffer;
+	auto cclog = [&]<typename... T>(fmt::format_string<T...> fmtstr, T&&... args) {
+		buffer.format(fmtstr, std::forward<T>(args)...);
+		debug_print(DebugLevelID::desync, 0, buffer);
+		if (log) log(buffer);
+	};
 
 	for (const TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
 		for (VehicleID id : slot->occupants) {
 			const Vehicle *v = Vehicle::GetIfValid(id);
 			if (v) {
-				if (v->type != slot->vehicle_type) CCLOG("Slot %u (%s) has wrong vehicle type (%u, %u): %s", slot->index, slot->name.c_str(), v->type, slot->vehicle_type, scope_dumper().VehicleInfo(v));
-				if (!v->IsPrimaryVehicle()) CCLOG("Slot %u (%s) has non-primary vehicle: %s", slot->index, slot->name.c_str(), scope_dumper().VehicleInfo(v));
-				if (!HasBit(v->vehicle_flags, VF_HAVE_SLOT)) CCLOG("Slot %u (%s) has vehicle without VF_HAVE_SLOT: %s", slot->index, slot->name.c_str(), scope_dumper().VehicleInfo(v));
+				if (v->type != slot->vehicle_type) cclog("Slot {} ({}) has wrong vehicle type ({}, {}): {}", slot->index, slot->name, v->type, slot->vehicle_type, scope_dumper().VehicleInfo(v));
+				if (!v->IsPrimaryVehicle()) cclog("Slot {} ({}) has non-primary vehicle: {}", slot->index, slot->name, scope_dumper().VehicleInfo(v));
+				if (!HasBit(v->vehicle_flags, VF_HAVE_SLOT)) cclog("Slot {} ({}) has vehicle without VF_HAVE_SLOT: {}", slot->index, slot->name, scope_dumper().VehicleInfo(v));
 			} else {
-				CCLOG("Slot %u (%s) has non-existent vehicle ID: %u", slot->index, slot->name.c_str(), id);
+				cclog("Slot {} ({}) has non-existent vehicle ID: {}", slot->index, slot->name, id);
 			}
 		}
 	}
-#undef CCLOG
 }
 
 /** Slot pool is about to be cleared */

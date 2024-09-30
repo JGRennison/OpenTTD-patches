@@ -1210,7 +1210,7 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 
 	static void RebuildVehicleIndex();
 	static bool ValidateVehicleIndex();
-	static void ValidateSlotOccupants(std::function<void(const char *)> log);
+	static void ValidateSlotOccupants(std::function<void(std::string_view)> log);
 	static void PreCleanPool();
 
 	TraceRestrictSlot(CompanyID owner = INVALID_COMPANY, VehicleType type = VEH_TRAIN)
