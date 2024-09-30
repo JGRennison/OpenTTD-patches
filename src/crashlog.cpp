@@ -157,16 +157,16 @@ void CrashLog::LogCompiler(format_target &buffer) const
 /* virtual */ char *CrashLog::TryCrashLogFaultSection(char *buffer, const char *last, const char *section_name, CrashLogSectionWriter writer)
 {
 	/* Stub implementation; not all OSes support internal fault handling. */
-	this->FlushCrashLogBuffer();
-	format_to_fixed_z buf(buffer, last);
+	this->FlushCrashLogBuffer(buffer);
+	format_to_fixed buf(buffer, last - buffer);
 	writer(this, buf);
-	return buf.finalise();
+	return buffer + buf.written();
 }
 
 /* virtual */ void CrashLog::CrashLogFaultSectionCheckpoint(format_target &buffer) const
 {
 	/* Stub implementation; not all OSes support this. */
-	const_cast<CrashLog *>(this)->FlushCrashLogBuffer();
+	const_cast<CrashLog *>(this)->FlushCrashLogBuffer(buffer.end());
 }
 
 /**
@@ -621,6 +621,7 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last)
 	});
 
 	buffer += seprintf(buffer, last, "*** End of OpenTTD Crash Report ***\n");
+	*buffer = '\0';
 	this->StopCrashLogFaultHandler();
 	return buffer;
 }
@@ -782,11 +783,11 @@ bool CrashLog::WriteCrashLog(std::string_view data, char *filename, const char *
 	return data.size() == written;
 }
 
-void CrashLog::FlushCrashLogBuffer()
+void CrashLog::FlushCrashLogBuffer(const char *end)
 {
 	if (this->crash_buffer_write == nullptr) return;
 
-	size_t len = strlen(this->crash_buffer_write);
+	size_t len = ttd_strnlen(this->crash_buffer_write, end - this->crash_buffer_write);
 	if (len == 0) return;
 
 	if (this->crash_file != nullptr) {
@@ -801,9 +802,9 @@ void CrashLog::FlushCrashLogBuffer()
 	this->crash_buffer_write += len;
 }
 
-void CrashLog::CloseCrashLogFile()
+void CrashLog::CloseCrashLogFile(const char *end)
 {
-	this->FlushCrashLogBuffer();
+	this->FlushCrashLogBuffer(end);
 	if (this->crash_file != nullptr) {
 		FioFCloseFile(this->crash_file);
 		this->crash_file = nullptr;
@@ -963,8 +964,8 @@ void CrashLog::MakeCrashLog(char *buffer, const char *last)
 	}
 	this->crash_buffer_write = buffer;
 
-	this->FillCrashLog(buffer, last);
-	this->CloseCrashLogFile();
+	char *end = this->FillCrashLog(buffer, last);
+	this->CloseCrashLogFile(end);
 	printf("Crash log generated.\n\n");
 
 

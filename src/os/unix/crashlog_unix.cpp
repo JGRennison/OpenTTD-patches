@@ -701,7 +701,7 @@ class CrashLogUnix : public CrashLog {
 	 */
 	/* virtual */ char *TryCrashLogFaultSection(char *buffer, const char *last, const char *section_name, CrashLogSectionWriter writer) override
 	{
-		this->FlushCrashLogBuffer();
+		this->FlushCrashLogBuffer(buffer);
 		internal_fault_saved_buffer = buffer;
 
 		int signum = setjmp(internal_fault_jmp_buf);
@@ -727,9 +727,9 @@ class CrashLogUnix : public CrashLog {
 			return buffer;
 		}
 
-		format_to_fixed_z buf(buffer, last);
+		format_to_fixed buf(buffer, last - buffer);
 		writer(this, buf);
-		buffer = buf.finalise();
+		buffer += buf.written();
 
 		internal_fault_saved_buffer = nullptr;
 		return buffer;
@@ -739,12 +739,11 @@ class CrashLogUnix : public CrashLog {
 	{
 		if (internal_fault_saved_buffer == nullptr) return;
 
-		char *b = format_to_fixed_z::from_format_target(buffer)->finalise();
+		char *b = buffer.end();
 		if (b > internal_fault_saved_buffer) {
 			internal_fault_saved_buffer = b;
+			const_cast<CrashLogUnix *>(this)->FlushCrashLogBuffer(b);
 		}
-
-		const_cast<CrashLogUnix *>(this)->FlushCrashLogBuffer();
 	}
 #endif /* __GLIBC__ && WITH_SIGACTION */
 

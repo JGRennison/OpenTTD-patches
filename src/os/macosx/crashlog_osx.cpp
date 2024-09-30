@@ -368,8 +368,8 @@ public:
 		}
 		this->crash_buffer_write = buffer;
 
-		this->FillCrashLog(buffer, last);
-		this->CloseCrashLogFile();
+		char *end = this->FillCrashLog(buffer, last);
+		this->CloseCrashLogFile(end);
 		printf("Crash log generated.\n\n");
 
 		printf("Writing crash savegame...\n");

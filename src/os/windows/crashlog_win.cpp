@@ -588,13 +588,13 @@ static const uint MAX_FRAMES     = 64;
 	 */
 	/* virtual */ char *CrashLogWindows::TryCrashLogFaultSection(char *buffer, const char *last, const char *section_name, CrashLogSectionWriter writer)
 	{
-		this->FlushCrashLogBuffer();
+		this->FlushCrashLogBuffer(buffer);
 		this->internal_fault_saved_buffer = buffer;
 
 		__try {
-			format_to_fixed_z buf(buffer, last);
+			format_to_fixed buf(buffer, last - buffer);
 			writer(this, buf);
-			buffer = buf.finalise();
+			buffer += buf.written();
 		} __except (EXCEPTION_EXECUTE_HANDLER) {
 			if (this->internal_fault_saved_buffer == nullptr) {
 				/* if we get here, things are unrecoverable */
@@ -622,7 +622,7 @@ static const uint MAX_FRAMES     = 64;
 	 */
 	/* virtual */ char *CrashLogWindows::TryCrashLogFaultSection(char *buffer, const char *last, const char *section_name, CrashLogSectionWriter writer)
 	{
-		this->FlushCrashLogBuffer();
+		this->FlushCrashLogBuffer(buffer);
 		this->internal_fault_saved_buffer = buffer;
 
 		int exception_num = setjmp(this->internal_fault_jmp_buf);
@@ -641,9 +641,9 @@ static const uint MAX_FRAMES     = 64;
 			return buffer;
 		}
 
-		format_to_fixed_z buf(buffer, last);
+		format_to_fixed buf(buffer, last - buffer);
 		writer(this, buf);
-		buffer = buf.finalise();
+		buffer += buf.written();
 
 		this->internal_fault_saved_buffer = nullptr;
 		return buffer;
@@ -656,12 +656,11 @@ static const uint MAX_FRAMES     = 64;
 
 		if (self->internal_fault_saved_buffer == nullptr) return;
 
-		char *b = format_to_fixed_z::from_format_target(buffer)->finalise();
+		char *b = buffer.end();
 		if (b > self->internal_fault_saved_buffer) {
 			self->internal_fault_saved_buffer = b;
+			self->FlushCrashLogBuffer(b);
 		}
-
-		self->FlushCrashLogBuffer();
 	}
 
 extern bool CloseConsoleLogIfActive();

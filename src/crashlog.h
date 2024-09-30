@@ -147,8 +147,8 @@ public:
 	virtual ~CrashLog() = default;
 
 	char *FillCrashLog(char *buffer, const char *last);
-	void FlushCrashLogBuffer();
-	void CloseCrashLogFile();
+	void FlushCrashLogBuffer(const char *end);
+	void CloseCrashLogFile(const char *end);
 	void FillDesyncCrashLog(struct format_target &buffer, const DesyncExtraInfo &info) const;
 	void FillInconsistencyLog(struct format_target &buffer, const InconsistencyExtraInfo &info) const;
 	void FillVersionInfoLog(struct format_target &buffer) const;
