@@ -1679,15 +1679,13 @@ void AnalyseEngineCallbacks()
 
 void DumpVehicleSpriteGroup(const Vehicle *v, SpriteGroupDumper &dumper)
 {
-	char buffer[512];
 	const Engine *e = Engine::Get(v->engine_type);
 	const SpriteGroup *root_spritegroup = nullptr;
 
 	if (v->IsGroundVehicle()) {
 		root_spritegroup = GetWagonOverrideSpriteSet(v->engine_type, v->cargo_type, v->GetGroundVehicleCache()->first_engine);
 		if (root_spritegroup != nullptr) {
-			seprintf(buffer, lastof(buffer), "Wagon Override for cargo: %u, engine type: %u", v->cargo_type, v->GetGroundVehicleCache()->first_engine);
-			dumper.Print(buffer);
+			dumper.Print(fmt::format("Wagon Override for cargo: {}, engine type: {}", v->cargo_type, v->GetGroundVehicleCache()->first_engine));
 		}
 	}
 
@@ -1696,12 +1694,11 @@ void DumpVehicleSpriteGroup(const Vehicle *v, SpriteGroupDumper &dumper)
 		assert(cargo < std::size(e->grf_prop.spritegroup));
 		if (e->grf_prop.spritegroup[cargo] != nullptr) {
 			root_spritegroup = e->grf_prop.spritegroup[cargo];
-			seprintf(buffer, lastof(buffer), "Cargo: %u", cargo);
+			dumper.Print(fmt::format("Cargo: {}", cargo));
 		} else {
 			root_spritegroup = e->grf_prop.spritegroup[SpriteGroupCargo::SG_DEFAULT];
-			seprintf(buffer, lastof(buffer), "SG_DEFAULT");
+			dumper.Print("SG_DEFAULT");
 		}
-		dumper.Print(buffer);
 	}
 
 	dumper.DumpSpriteGroup(root_spritegroup, 0);
@@ -1711,16 +1708,15 @@ void DumpVehicleSpriteGroup(const Vehicle *v, SpriteGroupDumper &dumper)
 			dumper.Print("");
 			switch (i) {
 				case SpriteGroupCargo::SG_DEFAULT:
-					seprintf(buffer, lastof(buffer), "OTHER SPRITE GROUP: SG_DEFAULT");
+					dumper.Print("OTHER SPRITE GROUP: SG_DEFAULT");
 					break;
 				case SpriteGroupCargo::SG_PURCHASE:
-					seprintf(buffer, lastof(buffer), "OTHER SPRITE GROUP: SG_PURCHASE");
+					dumper.Print("OTHER SPRITE GROUP: SG_PURCHASE");
 					break;
 				default:
-					seprintf(buffer, lastof(buffer), "OTHER SPRITE GROUP: Cargo: %u", i);
+					dumper.Print(fmt::format("OTHER SPRITE GROUP: Cargo: {}", i));
 					break;
 			}
-			dumper.Print(buffer);
 			dumper.DumpSpriteGroup(e->grf_prop.spritegroup[i], 0);
 		}
 	}

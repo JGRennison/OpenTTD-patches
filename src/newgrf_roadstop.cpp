@@ -692,7 +692,6 @@ void StationUpdateRoadStopCachedTriggers(BaseStation *st)
 
 void DumpRoadStopSpriteGroup(const BaseStation *st, const RoadStopSpec *spec, SpriteGroupDumper &dumper)
 {
-	char buffer[64];
 	bool writen_group = false;
 
 	for (uint i = 0; i < NUM_CARGO + 3; i++) {
@@ -704,19 +703,18 @@ void DumpRoadStopSpriteGroup(const BaseStation *st, const RoadStopSpec *spec, Sp
 			}
 			switch (i) {
 				case SpriteGroupCargo::SG_DEFAULT:
-					seprintf(buffer, lastof(buffer), "SG_DEFAULT");
+					dumper.Print("SG_DEFAULT");
 					break;
 				case SpriteGroupCargo::SG_PURCHASE:
-					seprintf(buffer, lastof(buffer), "SG_PURCHASE");
+					dumper.Print("SG_PURCHASE");
 					break;
 				case SpriteGroupCargo::SG_DEFAULT_NA:
-					seprintf(buffer, lastof(buffer), "SG_DEFAULT_NA");
+					dumper.Print("SG_DEFAULT_NA");
 					break;
 				default:
-					seprintf(buffer, lastof(buffer), "Cargo: %u", i);
+					dumper.Print(fmt::format("Cargo: {}", i));
 					break;
 			}
-			dumper.Print(buffer);
 			dumper.DumpSpriteGroup(spec->grf_prop.spritegroup[i], 0);
 		}
 	}

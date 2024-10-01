@@ -171,7 +171,7 @@ uint8_t GetReverseRoadTypeTranslation(RoadType roadtype, const GRFFile *grffile)
 
 void DumpRoadTypeSpriteGroup(RoadType rt, SpriteGroupDumper &dumper)
 {
-	char buffer[64];
+	format_buffer buffer;
 	const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
 
 	static const char *sprite_group_names[] =  {
@@ -192,10 +192,10 @@ void DumpRoadTypeSpriteGroup(RoadType rt, SpriteGroupDumper &dumper)
 
 	for (RoadTypeSpriteGroup rtsg = (RoadTypeSpriteGroup)0; rtsg < ROTSG_END; rtsg = (RoadTypeSpriteGroup)(rtsg + 1)) {
 		if (rti->group[rtsg] != nullptr) {
-			char *b = buffer;
-			b += seprintf(b, lastof(buffer), "%s: %s", RoadTypeIsTram(rt) ? "Tram" : "Road", sprite_group_names[rtsg]);
+			buffer.clear();
+			buffer.format("{}: {}", RoadTypeIsTram(rt) ? "Tram" : "Road", sprite_group_names[rtsg]);
 			if (rti->grffile[rtsg] != nullptr) {
-				b += seprintf(b, lastof(buffer), ", GRF: %08X", BSWAP32(rti->grffile[rtsg]->grfid));
+				buffer.format(", GRF: {:08X}", BSWAP32(rti->grffile[rtsg]->grfid));
 			}
 			dumper.Print(buffer);
 			dumper.DumpSpriteGroup(rti->group[rtsg], 0);

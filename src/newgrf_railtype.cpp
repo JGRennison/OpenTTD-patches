@@ -275,7 +275,7 @@ uint8_t GetReverseRailTypeTranslation(RailType railtype, const GRFFile *grffile)
 
 void DumpRailTypeSpriteGroup(RailType rt, SpriteGroupDumper &dumper)
 {
-	char buffer[64];
+	format_buffer buffer;
 	const RailTypeInfo *rti = GetRailTypeInfo(rt);
 
 	static const char *sprite_group_names[] =  {
@@ -303,10 +303,10 @@ void DumpRailTypeSpriteGroup(RailType rt, SpriteGroupDumper &dumper)
 			} else {
 				non_first_group = true;
 			}
-			char *b = buffer;
-			b = strecpy(b, sprite_group_names[rtsg], lastof(buffer));
+			buffer.clear();
+			buffer.append(sprite_group_names[rtsg]);
 			if (rti->grffile[rtsg] != nullptr) {
-				b += seprintf(b, lastof(buffer), ", GRF: %08X", BSWAP32(rti->grffile[rtsg]->grfid));
+				buffer.format(", GRF: {:08X}", BSWAP32(rti->grffile[rtsg]->grfid));
 			}
 			dumper.Print(buffer);
 			dumper.DumpSpriteGroup(rti->group[rtsg], 0);
