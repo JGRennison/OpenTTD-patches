@@ -12,28 +12,32 @@
 
 #include "../safeguards.h"
 
-void format_to_fixed_base::grow(size_t capacity)
-{
-	if (this->buffer::size() == this->buffer::capacity()) {
-		/* Buffer is full, use the discard area for the overflow */
-		this->buffer::clear();
-		this->buffer::set(this->discard, sizeof(this->discard));
-		this->flags |= FL_OVERFLOW;
-	}
-}
-
 void format_target::restore_size(size_t size)
 {
 	if ((this->flags & FL_FIXED) != 0) {
-		static_cast<format_to_fixed_base *>(this)->restore_size_impl(size);
+		this->flags &= ~FL_OVERFLOW;
+		static_cast<format_to_fixed_base *>(this)->inner.restore_size_impl(size);
 	} else {
 		return this->target.try_resize(size);
 	}
 }
 
-void format_to_fixed_base::restore_size_impl(size_t size)
+void format_to_fixed_base::inner_wrapper::grow(size_t capacity)
 {
-		this->buffer::set(this->buffer_ptr, this->buffer_size);
-		this->buffer::try_resize(size);
-		this->flags &= ~FL_OVERFLOW;
+	if (this->size() == this->capacity()) {
+		/* Buffer is full, use the discard area for the overflow */
+		this->clear();
+		this->set(this->discard, sizeof(this->discard));
+
+		char *target = reinterpret_cast<char *>(this);
+		target -= cpp_offsetof(format_to_fixed_base, inner);
+		format_to_fixed_base *fixed = reinterpret_cast<format_to_fixed_base *>(target);
+		fixed->flags |= FL_OVERFLOW;
+	}
+}
+
+void format_to_fixed_base::inner_wrapper::restore_size_impl(size_t size)
+{
+	this->set(this->buffer_ptr, this->buffer_size);
+	this->try_resize(size);
 }

@@ -201,37 +201,32 @@ struct fmt::formatter<format_buffer, char> : fmt::formatter<std::string_view> {
 	}
 };
 
-/*
- * The destructors of buffer and format_target are both protected,
- * so not having a virtual destructor is safe.
- * gcc (not clang) still complains though.
- */
-#if defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wnon-virtual-dtor"
-#endif /* __GNUC__ */
-
-struct format_to_fixed_base : private fmt::detail::buffer<char>, public format_target {
+struct format_to_fixed_base : public format_target {
 	friend format_target;
 private:
-	char * const buffer_ptr;
-	const size_t buffer_size;
-	char discard[32];
+	/* Use an inner wrapper struct so that the fmt::detail::buffer<char> methods don't create ambiguous overloads or
+	 * otherwise interfere with format_target (even with private inheritance).
+	 * Casting from the inner_wrapper to the containing format_to_fixed_base is slightly ugly, but only required within grow(). */
+	struct inner_wrapper final : public fmt::detail::buffer<char> {
+		char * const buffer_ptr;
+		const size_t buffer_size;
+		char discard[32];
 
-	fmt::detail::buffer<char> &base_buffer() { return *static_cast<fmt::detail::buffer<char> *>(this); }
-	const fmt::detail::buffer<char> &base_buffer() const { return *static_cast<const fmt::detail::buffer<char> *>(this); }
+		void grow(size_t) override;
+		void restore_size_impl(size_t size);
 
-	void grow(size_t) override;
-	void restore_size_impl(size_t size);
+		inner_wrapper(char *dst, size_t size) : buffer(dst, 0, size), buffer_ptr(dst), buffer_size(size) {}
+	};
+	inner_wrapper inner;
 
 protected:
-	format_to_fixed_base(char *dst, size_t size, uint flags) : buffer(dst, 0, size), format_target(this->base_buffer(), flags), buffer_ptr(dst), buffer_size(size) {}
+	format_to_fixed_base(char *dst, size_t size, uint flags) : format_target(this->inner, flags), inner(dst, size) {}
 	~format_to_fixed_base() = default;
 
 public:
 	size_t written() const
 	{
-		return (this->flags & FL_OVERFLOW) != 0 ? this->buffer_size : this->base_buffer().size();
+		return (this->flags & FL_OVERFLOW) != 0 ? this->inner.buffer_size : this->inner.size();
 	}
 };
 
@@ -268,7 +263,7 @@ struct format_to_fixed_z final : public format_to_fixed_base {
 const char *format_target::data() const noexcept
 {
 	if ((this->flags & FL_FIXED) != 0) {
-		return static_cast<const format_to_fixed_base *>(this)->buffer_ptr;
+		return static_cast<const format_to_fixed_base *>(this)->inner.buffer_ptr;
 	} else {
 		return this->target.data();
 	}
@@ -282,10 +277,6 @@ size_t format_target::size() const noexcept
 		return this->target.size();
 	}
 }
-
-#if defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif /* __GNUC__ */
 
 struct format_lambda_output {
 	template <typename F> friend struct format_lambda_wrapper;
