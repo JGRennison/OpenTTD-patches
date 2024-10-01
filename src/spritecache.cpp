@@ -192,7 +192,7 @@ uint GetSpriteCountForFile(const std::string &filename, SpriteID begin, SpriteID
 			SpriteCache *sc = GetSpriteCache(i);
 			if (sc->file == file) {
 				count++;
-				DEBUG(sprite, 4, "Sprite: %u", i);
+				Debug(sprite, 4, "Sprite: {}", i);
 			}
 		}
 	}
@@ -529,7 +529,7 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 	assert(IsMapgenSpriteID(id) == (sprite_type == SpriteType::MapGen));
 	assert(sc->GetType() == sprite_type);
 
-	DEBUG(sprite, 9, "Load sprite %d", id);
+	Debug(sprite, 9, "Load sprite {}", id);
 
 	SpriteLoader::SpriteCollection sprite;
 	uint8_t sprite_avail = 0;
@@ -861,7 +861,7 @@ static void DeleteEntriesFromSpriteCache(size_t target)
 		GetSpriteCache(it.id)->RemoveByMissingZoomLevels(it.missing_zoom_levels);
 	}
 
-	DEBUG(sprite, 3, "DeleteEntriesFromSpriteCache, deleted: " PRINTF_SIZE " of " PRINTF_SIZE ", freed: " PRINTF_SIZE ", in use: " PRINTF_SIZE " --> " PRINTF_SIZE ", delta: " PRINTF_SIZE ", requested: " PRINTF_SIZE,
+	Debug(sprite, 3, "DeleteEntriesFromSpriteCache, deleted: {} of {}, freed: {}, in use: {} --> {}, delta: {}, requested: {}",
 			candidates.size(), total_candidates, candidate_bytes, initial_in_use, GetSpriteCacheUsage(), initial_in_use - GetSpriteCacheUsage(), target);
 
 	_spritecache_prune_events++;
@@ -884,7 +884,7 @@ void IncreaseSpriteLRU()
 
 	/* Adjust all LRU values */
 	if (_sprite_lru_counter >= 0xC0000000) {
-		DEBUG(sprite, 5, "Fixing lru %u, inuse=" PRINTF_SIZE, _sprite_lru_counter, GetSpriteCacheUsage());
+		Debug(sprite, 5, "Fixing lru {}, inuse={}", _sprite_lru_counter, GetSpriteCacheUsage());
 
 		for (SpriteID i = 0; i != _spritecache.size(); i++) {
 			SpriteCache *sc = GetSpriteCache(i);
@@ -944,7 +944,7 @@ static void *HandleInvalidSpriteRequest(SpriteID sprite, SpriteType requested, S
 
 	uint8_t warning_level = sc->GetWarned() ? 6 : 0;
 	sc->SetWarned(true);
-	DEBUG(sprite, warning_level, "Tried to load %s sprite #%d as a %s sprite. Probable cause: NewGRF interference", GetSpriteTypeName(available), sprite, GetSpriteTypeName(requested));
+	Debug(sprite, warning_level, "Tried to load {} sprite #{} as a {} sprite. Probable cause: NewGRF interference", GetSpriteTypeName(available), sprite, GetSpriteTypeName(requested));
 
 	switch (requested) {
 		case SpriteType::Normal:
@@ -978,7 +978,7 @@ void *GetRawSprite(SpriteID sprite, SpriteType type, uint8_t zoom_levels, Sprite
 	assert(type < SpriteType::Invalid);
 
 	if (!SpriteExists(sprite)) {
-		DEBUG(sprite, 1, "Tried to load non-existing sprite #%d. Probable cause: Wrong/missing NewGRFs", sprite);
+		Debug(sprite, 1, "Tried to load non-existing sprite #{}. Probable cause: Wrong/missing NewGRFs", sprite);
 
 		/* SPR_IMG_QUERY is a BIG FAT RED ? */
 		sprite = SPR_IMG_QUERY;
