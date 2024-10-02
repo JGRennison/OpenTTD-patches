@@ -594,7 +594,7 @@ static const uint MAX_FRAMES     = 64;
 		__try {
 			format_to_fixed buf(buffer, last - buffer);
 			writer(this, buf);
-			buffer += buf.written();
+			buffer += buf.size();
 		} __except (EXCEPTION_EXECUTE_HANDLER) {
 			if (this->internal_fault_saved_buffer == nullptr) {
 				/* if we get here, things are unrecoverable */
@@ -643,7 +643,7 @@ static const uint MAX_FRAMES     = 64;
 
 		format_to_fixed buf(buffer, last - buffer);
 		writer(this, buf);
-		buffer += buf.written();
+		buffer += buf.size();
 
 		this->internal_fault_saved_buffer = nullptr;
 		return buffer;

@@ -160,7 +160,7 @@ void CrashLog::LogCompiler(format_target &buffer) const
 	this->FlushCrashLogBuffer(buffer);
 	format_to_fixed buf(buffer, last - buffer);
 	writer(this, buf);
-	return buffer + buf.written();
+	return buffer + buf.size();
 }
 
 /* virtual */ void CrashLog::CrashLogFaultSectionCheckpoint(format_target &buffer) const

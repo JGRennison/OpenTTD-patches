@@ -224,10 +224,20 @@ protected:
 	~format_to_fixed_base() = default;
 
 public:
-	size_t written() const
+	char *data() noexcept { return this->inner.buffer_ptr; }
+	const char *data() const noexcept { return this->inner.buffer_ptr; }
+
+	size_t size() const noexcept
 	{
 		return (this->flags & FL_OVERFLOW) != 0 ? this->inner.buffer_size : this->inner.size();
 	}
+
+	char *begin() noexcept { return this->data(); }
+	char *end() noexcept { return this->data() + this->size(); }
+	const char *begin() const noexcept { return this->data(); }
+	const char *end() const noexcept { return this->data() + this->size(); }
+
+	operator std::string_view() const { return std::string_view(this->data(), this->size()); }
 };
 
 /**
@@ -237,6 +247,7 @@ public:
  */
 struct format_to_fixed final : public format_to_fixed_base {
 	format_to_fixed(char *dst, size_t size) : format_to_fixed_base(dst, size, FL_FIXED) {}
+	format_to_fixed(std::span<char> buf) : format_to_fixed_base(buf.data(), buf.size(), FL_FIXED) {}
 };
 
 /**
@@ -245,18 +256,16 @@ struct format_to_fixed final : public format_to_fixed_base {
  * Null-termination only occurs when the finalise method is called.
  */
 struct format_to_fixed_z final : public format_to_fixed_base {
-	char *initial_dst;
-
-	format_to_fixed_z(char *dst, const char *last) : format_to_fixed_base(dst, last - dst, FL_FIXED), initial_dst(dst) {}
+	format_to_fixed_z(char *dst, const char *last) : format_to_fixed_base(dst, last - dst, FL_FIXED) {}
 
 	/**
 	 * Add null terminator, and return pointer to end of string/null terminator.
 	 */
 	char *finalise()
 	{
-		size_t written = this->written();
-		this->initial_dst[written] = '\0';
-		return this->initial_dst + written;
+		size_t written = this->size();
+		this->data()[written] = '\0';
+		return this->data() + written;
 	}
 };
 
@@ -272,7 +281,7 @@ const char *format_target::data() const noexcept
 size_t format_target::size() const noexcept
 {
 	if ((this->flags & FL_FIXED) != 0) {
-		return static_cast<const format_to_fixed_base *>(this)->written();
+		return static_cast<const format_to_fixed_base *>(this)->size();
 	} else {
 		return this->target.size();
 	}

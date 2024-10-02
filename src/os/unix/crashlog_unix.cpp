@@ -731,7 +731,7 @@ class CrashLogUnix : public CrashLog {
 
 		format_to_fixed buf(buffer, last - buffer);
 		writer(this, buf);
-		buffer += buf.written();
+		buffer += buf.size();
 
 		internal_fault_saved_buffer = nullptr;
 		return buffer;
