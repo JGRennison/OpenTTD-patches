@@ -360,20 +360,28 @@ static void WriteSavegameDebugData(const char *name)
 {
 	format_buffer out;
 
-	out.format("Name:         {}\n", name);
+	if (!StrEmpty(name)) out.format("Name: {}\n", name);
+	auto write_box = [&](std::string_view msg) {
+		auto top = out.append_as_span(msg.size() + 4);
+		std::fill(top.begin(), top.end(), '#');
+		out.format("\n# {} #\n", msg);
+		auto bottom = out.append_as_span(msg.size() + 4);
+		std::fill(bottom.begin(), bottom.end(), '#');
+		out.push_back('\n');
+	};
 	if (_load_check_data.debug_log_data.size()) {
-		out.format("{} bytes of debug log data in savegame\n", _load_check_data.debug_log_data.size());
-		ProcessLineByLine(_load_check_data.debug_log_data, [&](std::string_view line) {
-			out.format("> {}\n", line);
-		});
+		write_box(fmt::format("Start of debug log data ({} bytes)", _load_check_data.debug_log_data.size()));
+		out.append(_load_check_data.debug_log_data);
+		if (!_load_check_data.debug_log_data.empty() && _load_check_data.debug_log_data.back() != '\n') out.push_back('\n');
+		write_box("End of debug log data");
 	} else {
 		out.format("No debug log data in savegame\n");
 	}
 	if (_load_check_data.debug_config_data.size()) {
-		out.format("{} bytes of debug config data in savegame\n", _load_check_data.debug_config_data.size());
-		ProcessLineByLine(_load_check_data.debug_config_data, [&](std::string_view line) {
-			out.format("> {}\n", line);
-		});
+		write_box(fmt::format("Start of debug config data ({} bytes)", _load_check_data.debug_config_data.size()));
+		out.append(_load_check_data.debug_config_data);
+		if (!_load_check_data.debug_config_data.empty() && _load_check_data.debug_config_data.back() != '\n') out.push_back('\n');
+		write_box("End of debug config data");
 	} else {
 		out.format("No debug config data in savegame\n");
 	}
