@@ -183,15 +183,21 @@ class NIHVehicle : public NIHelper {
 		output.register_next_line_click_flag_toggle(1 << flag_shift);
 		char *b = buffer;
 		if (output.flags & (1 << flag_shift)) {
-			b += seprintf(b, lastof(buffer), "  [-] Flags:\n");
-			b = v->DumpVehicleFlagsMultiline(b, lastof(buffer), "    ", "  ");
-			ProcessLineByLine(buffer, output.print);
+			b += seprintf(b, lastof(buffer), "  [-] Flags:");
+			output.print(buffer);
+
+			format_to_fixed vfbuf(buffer, sizeof(buffer));
+			v->DumpVehicleFlagsMultiline(vfbuf, "    ", "  ");
+			ProcessLineByLine(vfbuf, output.print);
+
 			seprintf(buffer, lastof(buffer), "    Tile hash: %s", (v->hash_tile_current != INVALID_TILE) ? "yes" : "no");
 			output.print(buffer);
 		} else {
 			b += seprintf(b, lastof(buffer), "  [+] Flags: ");
-			b = v->DumpVehicleFlags(b, lastof(buffer), false);
-			output.print(buffer);
+
+			format_to_fixed vfbuf(std::span<char>(b, endof(buffer)));
+			v->DumpVehicleFlags(vfbuf, false);
+			output.print(std::string_view{buffer, vfbuf.end()});
 		}
 
 		b = buffer + seprintf(buffer, lastof(buffer), "  ");

@@ -42,24 +42,23 @@ void WriteScopeLog(struct format_target &buffer)
 
 #endif
 
-// helper functions
 const char *scope_dumper::CompanyInfo(int company_id)
 {
-	char *b = this->buffer;
-	const char *last = lastof(this->buffer);
-	b += seprintf(b, last, "%d (", company_id);
+	format_to_fixed_z buf(this->buffer, lastof(this->buffer));
+	buf.format("{} (", company_id);
 	SetDParam(0, company_id);
-	b = strecpy(b, GetString(STR_COMPANY_NAME).c_str(), last);
-	b += seprintf(b, last, ")");
+	buf.append(GetString(STR_COMPANY_NAME));
+	buf.push_back(')');
+	buf.finalise();
 	return buffer;
 }
 
 const char *scope_dumper::VehicleInfo(const Vehicle *v)
 {
-	char *b = this->buffer;
-	const char *last = lastof(this->buffer);
+	format_to_fixed_z buf(this->buffer, lastof(this->buffer));
+
 	auto dump_flags = [&](const Vehicle *u) {
-		b = u->DumpVehicleFlags(b, last, true);
+		u->DumpVehicleFlags(buf, true);
 	};
 	auto dump_name = [&](const Vehicle *u) {
 		if (u->type < VEH_COMPANY_END) {
@@ -69,61 +68,61 @@ const char *scope_dumper::VehicleInfo(const Vehicle *v)
 				"Ship",
 				"Aircraft",
 			};
-			b = strecpy(b, veh_type[u->type], last, true);
+			buf.append(veh_type[u->type]);
 			if (u->unitnumber > 0) {
-				b += seprintf(b, last, " %u", u->unitnumber);
+				buf.format(" {}", u->unitnumber);
 			} else {
-				b += seprintf(b, last, " [N/A]");
+				buf.append(" [N/A]");
 			}
 			if (!u->name.empty()) {
-				b += seprintf(b, last, " (%s)", u->name.c_str());
+				buf.format(" ({})", u->name.c_str());
 			}
 		} else if (u->type == VEH_EFFECT) {
-			b += seprintf(b, last, "Effect Vehicle: subtype: %u", u->subtype);
+			buf.format("Effect Vehicle: subtype: {}", u->subtype);
 		} else if (u->type == VEH_DISASTER) {
-			b += seprintf(b, last, "Disaster Vehicle: subtype: %u", u->subtype);
+			buf.format("Disaster Vehicle: subtype: {}", u->subtype);
 		}
 	};
 	if (v) {
-		b += seprintf(b, last, "veh: %u: (", v->index);
+		buf.format("veh: {}: (", v->index);
 		if (Vehicle::GetIfValid(v->index) != v) {
-			b += seprintf(b, last, "INVALID PTR: %p)", v);
+			buf.format("INVALID PTR: {})", fmt::ptr(v));
 			return this->buffer;
 		}
 		dump_name(v);
-		b += seprintf(b, last, ", c:%d, ", (int) v->owner);
+		buf.format(", c:{}, ", (int)v->owner);
 		dump_flags(v);
 		if (v->First() && v->First() != v) {
-			b += seprintf(b, last, ", front: %u: (", v->First()->index);
+			buf.format(", front: {}: (", v->First()->index);
 			if (Vehicle::GetIfValid(v->First()->index) != v->First()) {
-				b += seprintf(b, last, "INVALID PTR: %p)", v->First());
+				buf.format("INVALID PTR: {})", fmt::ptr(v->First()));
 				return this->buffer;
 			}
 			dump_name(v->First());
-			b += seprintf(b, last, ", ");
+			buf.append(", ");
 			dump_flags(v->First());
-			b += seprintf(b, last, ")");
+			buf.push_back(')');
 		}
-		b += seprintf(b, last, ")");
+		buf.push_back(')');
 	} else {
-		b += seprintf(b, last, "veh: nullptr");
+		buf.append("veh: nullptr");
 	}
+	buf.finalise();
 	return this->buffer;
 }
 
 const char *scope_dumper::StationInfo(const BaseStation *st)
 {
-	char *b = this->buffer;
-	const char *last = lastof(this->buffer);
+	format_to_fixed_z buf(this->buffer, lastof(this->buffer));
 
 	if (st) {
 		const bool waypoint = Waypoint::IsExpected(st);
-		b += seprintf(b, last, "%s: %u: (", waypoint ? "waypoint" : "station", st->index);
+		buf.format("{}: {}: (", waypoint ? "waypoint" : "station", st->index);
 		SetDParam(0, st->index);
-		b = strecpy(b, GetString(waypoint ? STR_WAYPOINT_NAME : STR_STATION_NAME).c_str(), last);
-		b += seprintf(b, last, ", c:%d, facil: ", (int) st->owner);
+		buf.append(GetString(waypoint ? STR_WAYPOINT_NAME : STR_STATION_NAME));
+		buf.format(", c:{}, facil: ", (int)st->owner);
 		auto dump_facil = [&](char c, StationFacility flag) {
-			if (st->facilities & flag) b += seprintf(b, last, "%c", c);
+			if (st->facilities & flag) buf.push_back(c);
 		};
 		dump_facil('R', FACIL_TRAIN);
 		dump_facil('T', FACIL_TRUCK_STOP);
@@ -131,10 +130,11 @@ const char *scope_dumper::StationInfo(const BaseStation *st)
 		dump_facil('A', FACIL_AIRPORT);
 		dump_facil('D', FACIL_DOCK);
 		dump_facil('W', FACIL_WAYPOINT);
-		b += seprintf(b, last, ")");
+		buf.push_back(')');
 	} else {
-		b += seprintf(b, last, "station/waypoint: nullptr");
+		buf.append("station/waypoint: nullptr");
 	}
+	buf.finalise();
 	return this->buffer;
 }
 

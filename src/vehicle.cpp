@@ -4638,71 +4638,65 @@ void DumpVehicleFlagsGeneric(const Vehicle *v, T dump, U dump_header)
 	}
 }
 
-char *Vehicle::DumpVehicleFlags(char *b, const char *last, bool include_tile) const
+void Vehicle::DumpVehicleFlags(format_target &buffer, bool include_tile) const
 {
 	bool first_header = true;
 	auto dump = [&](char c, const char *name, bool flag) {
-		if (flag) b += seprintf(b, last, "%c", c);
+		if (flag) buffer.push_back(c);
 	};
 	auto dump_header = [&](const char* header, const char *header_long) {
 		if (first_header) {
 			first_header = false;
 		} else {
-			b = strecpy(b, ", ", last, true);
+			buffer.append(", ");
 		}
-		b = strecpy(b, header, last, true);
+		buffer.append(header);
 	};
 	if (!this->IsGroundVehicle()) {
-		b += seprintf(b, last, "st:%X", this->subtype);
+		buffer.format("st: {:X}", this->subtype);
 		first_header = false;
 	}
 	DumpVehicleFlagsGeneric(this, dump, dump_header);
 	if (this->type == VEH_TRAIN) {
 		const Train *t = Train::From(this);
-		b += seprintf(b, last, ", trk: 0x%02X", (uint) t->track);
-		if (t->reverse_distance > 0) b += seprintf(b, last, ", rev: %u", t->reverse_distance);
+		buffer.format(", trk: 0x{:02X}", (uint)t->track);
+		if (t->reverse_distance > 0) buffer.format(", rev: {}", t->reverse_distance);
 	} else if (this->type == VEH_ROAD) {
 		const RoadVehicle *r = RoadVehicle::From(this);
-		b += seprintf(b, last, ", rvs:%X, rvf:%X", r->state, r->frame);
+		buffer.format(", rvs: {:X}, rvf: {:X}", r->state, r->frame);
 	}
 	if (include_tile) {
-		b += seprintf(b, last, ", [");
-
-		format_to_fixed_z tileinfobuf(b, last);
-		DumpTileInfo(tileinfobuf, this->tile);
-		b = tileinfobuf.finalise();
-
-		b += seprintf(b, last, "]");
+		buffer.append(", [");
+		DumpTileInfo(buffer, this->tile);
+		buffer.push_back(']');
 		TileIndex vtile = TileVirtXY(this->x_pos, this->y_pos);
-		if (this->tile != vtile) b += seprintf(b, last, ", VirtXYTile: %X (%u x %u)", vtile, TileX(vtile), TileY(vtile));
+		if (this->tile != vtile) buffer.format(", VirtXYTile: {:X} ({} x {})", vtile, TileX(vtile), TileY(vtile));
 	}
-	if (this->cargo_payment) b += seprintf(b, last, ", CP");
-	return b;
+	if (this->cargo_payment) buffer.append(", CP");
 }
 
 
-char *Vehicle::DumpVehicleFlagsMultiline(char *b, const char *last, const char *base_indent, const char *extra_indent) const
+void Vehicle::DumpVehicleFlagsMultiline(format_target &buffer, const char *base_indent, const char *extra_indent) const
 {
 	auto dump = [&](char c, const char *name, bool flag) {
-		if (flag) b += seprintf(b, last, "%s%s%s\n", base_indent, extra_indent, name);
+		if (flag) buffer.format("{}{}{}\n", base_indent, extra_indent, name);
 	};
 	auto dump_header = [&](const char* header, const char *header_long) {
-		b += seprintf(b, last, "%s%s\n", base_indent, header_long);
+		buffer.format("{}{}\n", base_indent, header_long);
 	};
 	if (!this->IsGroundVehicle()) {
-		b += seprintf(b, last, "%ssubtype: %X\n", base_indent, this->subtype);
+		buffer.format("{}subtype: {:X}\n", base_indent, this->subtype);
 	}
 	DumpVehicleFlagsGeneric(this, dump, dump_header);
 	if (this->type == VEH_TRAIN) {
 		const Train *t = Train::From(this);
-		b += seprintf(b, last, "%strack: 0x%02X\n", base_indent, (uint) t->track);
-		if (t->reverse_distance > 0) b += seprintf(b, last, "%sreverse_distance: %u\n", base_indent, t->reverse_distance);
+		buffer.format("{}track: 0x{:02X}\n", base_indent, (uint)t->track);
+		if (t->reverse_distance > 0) buffer.format("{}reverse_distance: {}\n", base_indent, t->reverse_distance);
 	} else if (this->type == VEH_ROAD) {
 		const RoadVehicle *r = RoadVehicle::From(this);
-		b += seprintf(b, last, "%sRV state:%X\n%sRV frame:%X\n", base_indent, r->state, base_indent, r->frame);
+		buffer.format("{}RV state: {:X}\n{}RV frame: {:X}\n", base_indent, r->state, base_indent, r->frame);
 	}
-	if (this->cargo_payment) b += seprintf(b, last, "%scargo_payment present\n", base_indent);
-	return b;
+	if (this->cargo_payment) buffer.format("{}cargo_payment present\n", base_indent);
 }
 
 void VehiclesYearlyLoop()

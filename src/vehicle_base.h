@@ -1250,8 +1250,8 @@ public:
 		this->sprite_seq_bounds = this->sprite_seq.GetBounds();
 	}
 
-	char *DumpVehicleFlags(char *b, const char *last, bool include_tile) const;
-	char *DumpVehicleFlagsMultiline(char *b, const char *last, const char *base_indent, const char *extra_indent) const;
+	void DumpVehicleFlags(struct format_target &buffer, bool include_tile) const;
+	void DumpVehicleFlagsMultiline(struct format_target &buffer, const char *base_indent, const char *extra_indent) const;
 
 	/**
 	 * Iterator to iterate orders
