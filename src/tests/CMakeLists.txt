@@ -1,5 +1,6 @@
 add_test_files(
     bitmath_func.cpp
+    format_target.cpp
     landscape_partial_pixel_z.cpp
     math_func.cpp
     mock_environment.h
