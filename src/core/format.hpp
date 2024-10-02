@@ -120,6 +120,7 @@ public:
 	template <typename F>
 	void append_ptr_last_func(size_t to_reserve, F func)
 	{
+		if (has_overflowed()) return;
 		this->target.try_reserve(this->target.size() + to_reserve);
 		char *buf = this->target.data() + this->target.size();
 		const char *last = this->target.data() + this->target.capacity() - 1;
@@ -132,12 +133,21 @@ public:
 	template <typename F>
 	void append_span_func(size_t to_reserve, F func)
 	{
+		if (has_overflowed()) return;
 		this->target.try_reserve(this->target.size() + to_reserve);
 		const auto size = this->target.size();
 		const auto capacity = this->target.capacity();
 		if (size == capacity) return;
 		size_t written = func(std::span<char>{this->target.data() + size, capacity - size});
 		this->target.try_resize(size + written);
+	}
+
+	std::span<char> append_as_span(size_t to_append)
+	{
+		if (has_overflowed()) return {};
+		const auto orig_size = this->target.size();
+		this->target.try_resize(orig_size + to_append);
+		return std::span<char>(this->target.data() + orig_size, this->target.size() - orig_size);
 	}
 
 	bool has_overflowed() const { return (this->flags & FL_OVERFLOW) != 0; }
