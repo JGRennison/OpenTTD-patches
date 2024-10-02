@@ -291,7 +291,7 @@ static void ShowHelp()
 	 * to stdout; this is the only exception */
 #if !defined(_WIN32)
 	msg += "\n";
-	fputs(msg.c_str(), stdout);
+	fwrite(msg.data(), 1, msg.size(), stdout);
 #else
 	ShowInfoI(msg);
 #endif
@@ -308,9 +308,8 @@ static void WriteSavegameInfo(const char *name)
 
 	GamelogInfo(_load_check_data.gamelog_actions, &last_ottd_rev, &ever_modified, &removed_newgrfs);
 
-	char buf[65536];
-	char *p = buf;
-	p += seprintf(p, lastof(buf), "Name:         %s\n", name);
+	format_buffer buffer;
+	buffer.format("Name:         {}\n", name);
 	const char *type = "";
 	extern bool _sl_is_faked_ext;
 	extern bool _sl_is_ext_version;
@@ -319,38 +318,39 @@ static void WriteSavegameInfo(const char *name)
 	} else if (_sl_is_ext_version) {
 		type = " (extended)";
 	}
-	p += seprintf(p, lastof(buf), "Savegame ver: %d%s\n", _sl_version, type);
+	buffer.format("Savegame ver: {}{}\n", _sl_version, type);
 	if (!_sl_xv_version_label.empty()) {
-		p += seprintf(p, lastof(buf), "    Version label: %s\n", _sl_xv_version_label.c_str());
+		buffer.format("    Version label: {}\n", _sl_xv_version_label);
 	}
 	if (_sl_xv_upstream_version != SL_MIN_VERSION) {
-		p += seprintf(p, lastof(buf), "    Upstream version: %u\n", _sl_xv_upstream_version);
+		buffer.format("    Upstream version: {}\n", _sl_xv_upstream_version);
 	}
 	for (size_t i = 0; i < XSLFI_SIZE; i++) {
 		if (_sl_xv_feature_versions[i] > 0) {
-			p += seprintf(p, lastof(buf), "    Feature: %s = %d\n", SlXvGetFeatureName((SlXvFeatureIndex) i), _sl_xv_feature_versions[i]);
+			buffer.format("    Feature: {} = {}\n", SlXvGetFeatureName((SlXvFeatureIndex) i), _sl_xv_feature_versions[i]);
 		}
 	}
-	p += seprintf(p, lastof(buf), "NewGRF ver:   0x%08X\n", last_ottd_rev);
-	p += seprintf(p, lastof(buf), "Modified:     %d\n", ever_modified);
+	buffer.format("NewGRF ver:   0x{:08X}\n", last_ottd_rev);
+	buffer.format("Modified:     {}\n", ever_modified);
 
 	if (removed_newgrfs) {
-		p += seprintf(p, lastof(buf), "NewGRFs have been removed\n");
+		buffer.append("NewGRFs have been removed\n");
 	}
 
-	p = strecpy(p, "NewGRFs:\n", lastof(buf));
+	buffer.append("NewGRFs:\n");
 	if (_load_check_data.HasNewGrfs()) {
 		for (GRFConfig *c = _load_check_data.grfconfig; c != nullptr; c = c->next) {
 			char md5sum[33];
 			md5sumToString(md5sum, lastof(md5sum), HasBit(c->flags, GCF_COMPATIBLE) ? c->original_md5sum : c->ident.md5sum);
-			p += seprintf(p, lastof(buf), "%08X %s %s\n", BSWAP32(c->ident.grfid), md5sum, c->filename.c_str());
+			buffer.format("{:08X} {} {}\n", BSWAP32(c->ident.grfid), md5sum, c->filename);
 		}
 	}
 
 	/* ShowInfo put output to stderr, but version information should go
 	 * to stdout; this is the only exception */
 #if !defined(_WIN32)
-	printf("%s\n", buf);
+	buffer.push_back('\n');
+	fwrite(buffer.data(), 1, buffer.size(), stdout);
 #else
 	ShowInfoI(buf);
 #endif
@@ -381,7 +381,8 @@ static void WriteSavegameDebugData(const char *name)
 	/* ShowInfo put output to stderr, but version information should go
 	 * to stdout; this is the only exception */
 #if !defined(_WIN32)
-	fmt::print("{}\n", out);
+	out.push_back('\n');
+	fwrite(out.data(), 1, out.size(), stdout);
 #else
 	ShowInfoI(out);
 #endif
@@ -833,7 +834,7 @@ int openttd_main(std::span<char * const> arguments)
 					SetDParamStr(0, _load_check_data.error_msg);
 					GetString(StringBuilder(buf), _load_check_data.error);
 					buf += '\n';
-					fputs(buf.c_str(), stderr);
+					fwrite(buf.data(), 1, buf.size(), stderr);
 				}
 				return ret;
 			}
@@ -857,7 +858,7 @@ int openttd_main(std::span<char * const> arguments)
 		case 'Z': {
 			format_buffer buffer;
 			CrashLog::VersionInfoLog(buffer);
-			fputs(buffer.c_str(), stdout);
+			fwrite(buffer.data(), 1, buffer.size(), stdout);
 			return ret;
 		}
 		case 'X': only_local_path = true; break;
@@ -1573,8 +1574,7 @@ void StateGameLoop()
 	} else {
 		if (GetDebugLevel(DebugLevelID::desync) > 2 && DateDetail::_tick_skip_counter == 0 && EconTime::CurDateFract() == 0 && (EconTime::CurDate().base() & 0x1F) == 0) {
 			/* Save the desync savegame if needed. */
-			char name[MAX_PATH];
-			seprintf(name, lastof(name), "dmp_cmds_%08x_%08x.sav", _settings_game.game_creation.generation_seed, EconTime::CurDate().base());
+			std::string name = fmt::format("dmp_cmds_{:08x}_{:08x}.sav", _settings_game.game_creation.generation_seed, EconTime::CurDate());
 			SaveOrLoad(name, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, false);
 		}
 
