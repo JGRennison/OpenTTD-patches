@@ -53,7 +53,7 @@ private:
 	/**
 	 * Internal command to log the message in a common way.
 	 */
-	static void Log(ScriptLogTypes::ScriptLogType level, const std::string &message);
+	static void Log(ScriptLogTypes::ScriptLogType level, std::string_view message);
 };
 
 #endif /* SCRIPT_LOG_HPP */
