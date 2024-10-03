@@ -30,7 +30,7 @@ debug_inline static uint TileHeight(TileIndex tile)
 {
 	/* this method is inlined in many places and is performance-critical, drop assertion in non-debug builds */
 #ifdef _DEBUG
-	dbg_assert_msg(tile < MapSize(), "tile: 0x%X, size: 0x%X", tile, MapSize());
+	dbg_assert_tile(tile < MapSize(), tile);
 #endif
 	return _m[tile].height;
 }
@@ -59,7 +59,7 @@ inline uint TileHeightOutsideMap(int x, int y)
  */
 inline void SetTileHeight(TileIndex tile, uint height)
 {
-	dbg_assert_msg(tile < MapSize(), "tile: 0x%X, size: 0x%X", tile, MapSize());
+	dbg_assert_tile(tile < MapSize(), tile);
 	dbg_assert(height <= MAX_TILE_HEIGHT);
 	_m[tile].height = height;
 }
@@ -100,7 +100,7 @@ debug_inline static TileType GetTileType(TileIndex tile)
 {
 	/* this method is inlined in many places and is performance-critical, drop assertion in non-debug builds */
 #ifdef _DEBUG
-	dbg_assert_msg(tile < MapSize(), "tile: 0x%X, size: 0x%X", tile, MapSize());
+	dbg_assert_tile(tile < MapSize(), tile);
 #endif
 	return (TileType)GB(_m[tile].type, 4, 4);
 }
@@ -114,7 +114,7 @@ debug_inline static TileType GetTileType(TileIndex tile)
  */
 inline bool IsInnerTile(TileIndex tile)
 {
-	dbg_assert_msg(tile < MapSize(), "tile: 0x%X, size: 0x%X", tile, MapSize());
+	dbg_assert_tile(tile < MapSize(), tile);
 
 	uint x = TileX(tile);
 	uint y = TileY(tile);
@@ -136,11 +136,11 @@ inline bool IsInnerTile(TileIndex tile)
  */
 inline void SetTileType(TileIndex tile, TileType type)
 {
-	dbg_assert_msg(tile < MapSize(), "tile: 0x%X, size: 0x%X, type: %d", tile, MapSize(), type);
+	dbg_assert_tile(tile < MapSize(), tile);
 	/* VOID tiles (and no others) are exactly allowed at the lower left and right
 	 * edges of the map. If _settings_game.construction.freeform_edges is true,
 	 * the upper edges of the map are also VOID tiles. */
-	dbg_assert_msg(IsInnerTile(tile) == (type != MP_VOID), "tile: 0x%X (%d), type: %d", tile, IsInnerTile(tile), type);
+	dbg_assert_tile(IsInnerTile(tile) == (type != MP_VOID), tile);
 	SB(_m[tile].type, 4, 4, type);
 }
 
@@ -183,8 +183,8 @@ inline bool IsValidTile(TileIndex tile)
  */
 inline Owner GetTileOwner(TileIndex tile)
 {
-	dbg_assert_msg(IsValidTile(tile), "tile: 0x%X, size: 0x%X", tile, MapSize());
-	dbg_assert_msg(!IsTileType(tile, MP_HOUSE) && !IsTileType(tile, MP_INDUSTRY), "tile: 0x%X (%d)", tile, GetTileType(tile));
+	dbg_assert_tile(IsValidTile(tile), tile);
+	dbg_assert_tile(!IsTileType(tile, MP_HOUSE) && !IsTileType(tile, MP_INDUSTRY), tile);
 
 	return (Owner)GB(_m[tile].m1, 0, 5);
 }
@@ -202,8 +202,8 @@ inline Owner GetTileOwner(TileIndex tile)
  */
 inline void SetTileOwner(TileIndex tile, Owner owner)
 {
-	dbg_assert_msg(IsValidTile(tile), "tile: 0x%X, size: 0x%X, owner: %d", tile, MapSize(), owner);
-	dbg_assert_msg(!IsTileType(tile, MP_HOUSE) && !IsTileType(tile, MP_INDUSTRY), "tile: 0x%X (%d), owner: %d", tile, GetTileType(tile), owner);
+	dbg_assert_tile(IsValidTile(tile), tile);
+	dbg_assert_tile(!IsTileType(tile, MP_HOUSE) && !IsTileType(tile, MP_INDUSTRY), tile);
 
 	SB(_m[tile].m1, 0, 5, owner);
 }
@@ -228,8 +228,8 @@ inline bool IsTileOwner(TileIndex tile, Owner owner)
  */
 inline void SetTropicZone(TileIndex tile, TropicZone type)
 {
-	dbg_assert_msg(tile < MapSize(), "tile: 0x%X, size: 0x%X, type: %d", tile, MapSize(), type);
-	dbg_assert_msg(!IsTileType(tile, MP_VOID) || type == TROPICZONE_NORMAL, "tile: 0x%X (%d), type: %d", tile, GetTileType(tile), type);
+	dbg_assert_tile(tile < MapSize(), tile);
+	dbg_assert_tile(!IsTileType(tile, MP_VOID) || type == TROPICZONE_NORMAL, tile);
 	SB(_m[tile].type, 0, 2, type);
 }
 
@@ -241,7 +241,7 @@ inline void SetTropicZone(TileIndex tile, TropicZone type)
  */
 inline TropicZone GetTropicZone(TileIndex tile)
 {
-	dbg_assert_msg(tile < MapSize(), "tile: 0x%X, size: 0x%X", tile, MapSize());
+	dbg_assert_tile(tile < MapSize(), tile);
 	return (TropicZone)GB(_m[tile].type, 0, 2);
 }
 
@@ -253,7 +253,7 @@ inline TropicZone GetTropicZone(TileIndex tile)
  */
 inline uint8_t GetAnimationFrame(TileIndex t)
 {
-	dbg_assert_msg(IsTileType(t, MP_HOUSE) || IsTileType(t, MP_OBJECT) || IsTileType(t, MP_INDUSTRY) || IsTileType(t, MP_STATION), "tile: 0x%X (%d)", t, GetTileType(t));
+	dbg_assert_tile(IsTileType(t, MP_HOUSE) || IsTileType(t, MP_OBJECT) || IsTileType(t, MP_INDUSTRY) || IsTileType(t, MP_STATION), t);
 	return _me[t].m7;
 }
 
@@ -265,7 +265,7 @@ inline uint8_t GetAnimationFrame(TileIndex t)
  */
 inline void SetAnimationFrame(TileIndex t, uint8_t frame)
 {
-	dbg_assert_msg(IsTileType(t, MP_HOUSE) || IsTileType(t, MP_OBJECT) || IsTileType(t, MP_INDUSTRY) || IsTileType(t, MP_STATION), "tile: 0x%X (%d)", t, GetTileType(t));
+	dbg_assert_tile(IsTileType(t, MP_HOUSE) || IsTileType(t, MP_OBJECT) || IsTileType(t, MP_INDUSTRY) || IsTileType(t, MP_STATION), t);
 	_me[t].m7 = frame;
 }
 

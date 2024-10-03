@@ -580,7 +580,7 @@ void DumpTileInfo(format_target &buffer, TileIndex tile)
 		buffer.append(", NO MAP ALLOCATED");
 	} else {
 		if (tile >= MapSize()) {
-			buffer.append(", TILE OUTSIDE MAP");
+			buffer.format(", TILE OUTSIDE MAP (map size: 0x{:X})", MapSize());
 		} else {
 			buffer.format(", type: {:02X} ({}), height: {:02X}, data: {:02X} {:04X} {:02X} {:02X} {:02X} {:02X} {:02X} {:04X}",
 					_m[tile].type, tile_type_names[GB(_m[tile].type, 4, 4)], _m[tile].height,
