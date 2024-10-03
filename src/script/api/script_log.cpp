@@ -57,7 +57,7 @@
 	}
 
 	/* Also still print to debug window */
-	DEBUG(script, level, "[%d] [%c] %s", (uint)ScriptObject::GetRootCompany(), logc, line.text.c_str());
+	Debug(script, level, "[{}] [{}] {}", (uint)ScriptObject::GetRootCompany(), logc, line.text);
 	InvalidateWindowClassesData(WC_SCRIPT_DEBUG, ScriptObject::GetRootCompany());
 }
 

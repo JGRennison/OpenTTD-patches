@@ -104,7 +104,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 /* static */ void ScriptObject::SetLastCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	ScriptStorage *s = GetStorage();
-	DEBUG(script, 6, "SetLastCommand company=%02d tile=%06x p1=%08x p2=%08x p3=" OTTD_PRINTFHEX64PAD " cmd=%d", s->root_company, tile, p1, p2, p3, cmd);
+	Debug(script, 6, "SetLastCommand company={} tile={:X} p1={:X} p2={:X} p3={:X} cmd={:X}", s->root_company, tile, p1, p2, p3, cmd);
 	s->last_tile = tile;
 	s->last_p1 = p1;
 	s->last_p2 = p2;
@@ -115,7 +115,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 /* static */ bool ScriptObject::CheckLastCommand(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd)
 {
 	ScriptStorage *s = GetStorage();
-	DEBUG(script, 6, "CheckLastCommand company=%02d tile=%06x p1=%08x p2=%08x p3=" OTTD_PRINTFHEX64PAD " cmd=%d", s->root_company, tile, p1, p2, p3, cmd);
+	Debug(script, 6, "CheckLastCommand company={} tile={:X} p1={:X} p2={:X} p3={:X} cmd={:X}", s->root_company, tile, p1, p2, p3, cmd);
 	if (s->last_tile != tile) return false;
 	if (s->last_p1 != p1) return false;
 	if (s->last_p2 != p2) return false;

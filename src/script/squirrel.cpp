@@ -73,13 +73,11 @@ struct ScriptAllocator {
 			/* Do not allow allocating more than the allocation limit, except when an error is
 			 * already as then the allocation is for throwing that error in Squirrel, the
 			 * associated stack trace information and while cleaning up the AI. */
-			this->error_thrown = true;
-			char buff[128];
-			seprintf(buff, lastof(buff), "Maximum memory allocation exceeded by " PRINTF_SIZE " bytes when allocating " PRINTF_SIZE " bytes",
-				this->allocated_size + requested_size - this->allocation_limit, requested_size);
 			/* Don't leak the rejected allocation. */
 			free(p);
-			throw Script_FatalError(buff);
+			this->error_thrown = true;
+			throw Script_FatalError(fmt::format("Maximum memory allocation exceeded by {} bytes when allocating {} bytes",
+					this->allocated_size + requested_size - this->allocation_limit, requested_size));
 		}
 
 		if (p == nullptr) {
@@ -93,9 +91,7 @@ struct ScriptAllocator {
 			}
 
 			this->error_thrown = true;
-			char buff[64];
-			seprintf(buff, lastof(buff), "Out of memory. Cannot allocate " PRINTF_SIZE " bytes", requested_size);
-			throw Script_FatalError(buff);
+			throw Script_FatalError(fmt::format("Out of memory. Cannot allocate {} bytes", requested_size));
 		}
 	}
 
@@ -215,18 +211,16 @@ void Squirrel::SetMemoryAllocationLimit(size_t limit) noexcept
 
 void Squirrel::CompileError(HSQUIRRELVM vm, const SQChar *desc, const SQChar *source, SQInteger line, SQInteger column)
 {
-	SQChar buf[1024];
-
-	seprintf(buf, lastof(buf), "Error %s:" OTTD_PRINTF64 "/" OTTD_PRINTF64 ": %s", source, line, column, desc);
+	std::string msg = fmt::format("Error {}:{}/{}: {}", source, line, column, desc);
 
 	/* Check if we have a custom print function */
 	Squirrel *engine = (Squirrel *)sq_getforeignptr(vm);
 	engine->crashed = true;
 	SQPrintFunc *func = engine->print_func;
 	if (func == nullptr) {
-		DEBUG(misc, 0, "[Squirrel] Compile error: %s", buf);
+		Debug(misc, 0, "[Squirrel] Compile error: {}", msg);
 	} else {
-		(*func)(true, buf);
+		(*func)(true, msg);
 	}
 }
 
@@ -235,7 +229,7 @@ void Squirrel::ErrorPrintFunc(HSQUIRRELVM vm, const std::string &s)
 	/* Check if we have a custom print function */
 	SQPrintFunc *func = ((Squirrel *)sq_getforeignptr(vm))->print_func;
 	if (func == nullptr) {
-		fprintf(stderr, "%s", s.c_str());
+		fmt::print(stderr, "{}", s);
 	} else {
 		(*func)(true, s);
 	}
@@ -252,7 +246,7 @@ void Squirrel::RunError(HSQUIRRELVM vm, const SQChar *error)
 	Squirrel *engine = (Squirrel *)sq_getforeignptr(vm);
 	SQPrintFunc *func = engine->print_func;
 	if (func == nullptr) {
-		fprintf(stderr, "%s", msg.c_str());
+		fmt::print(stderr, "{}", msg);
 	} else {
 		(*func)(true, msg);
 	}
@@ -283,7 +277,7 @@ void Squirrel::PrintFunc(HSQUIRRELVM vm, const std::string &s)
 	/* Check if we have a custom print function */
 	SQPrintFunc *func = ((Squirrel *)sq_getforeignptr(vm))->print_func;
 	if (func == nullptr) {
-		printf("%s", s.c_str());
+		fmt::print("{}", s);
 	} else {
 		(*func)(false, s);
 	}
@@ -341,8 +335,8 @@ void Squirrel::AddClassBegin(const char *class_name, const char *parent_class)
 	sq_pushstring(this->vm, class_name, -1);
 	sq_pushstring(this->vm, parent_class, -1);
 	if (SQ_FAILED(sq_get(this->vm, -3))) {
-		DEBUG(misc, 0, "[squirrel] Failed to initialize class '%s' based on parent class '%s'", class_name, parent_class);
-		DEBUG(misc, 0, "[squirrel] Make sure that '%s' exists before trying to define '%s'", parent_class, class_name);
+		Debug(misc, 0, "[squirrel] Failed to initialize class '{}' based on parent class '{}'", class_name, parent_class);
+		Debug(misc, 0, "[squirrel] Make sure that '{}' exists before trying to define '{}'", parent_class, class_name);
 		return;
 	}
 	sq_newclass(this->vm, SQTrue);
@@ -426,7 +420,7 @@ bool Squirrel::CallMethod(HSQOBJECT instance, const char *method_name, HSQOBJECT
 	/* Find the function-name inside the script */
 	sq_pushstring(this->vm, method_name, -1);
 	if (SQ_FAILED(sq_get(this->vm, -2))) {
-		DEBUG(misc, 0, "[squirrel] Could not find '%s' in the class", method_name);
+		Debug(misc, 0, "[squirrel] Could not find '{}' in the class", method_name);
 		sq_settop(this->vm, top);
 		return false;
 	}
@@ -488,14 +482,14 @@ bool Squirrel::CallBoolMethod(HSQOBJECT instance, const char *method_name, bool 
 	}
 
 	if (SQ_FAILED(sq_get(vm, -2))) {
-		DEBUG(misc, 0, "[squirrel] Failed to find class by the name '%s%s'", prepend_API_name ? engine->GetAPIName() : "", class_name.c_str());
+		Debug(misc, 0, "[squirrel] Failed to find class by the name '{}{}'", prepend_API_name ? engine->GetAPIName() : "", class_name);
 		sq_settop(vm, oldtop);
 		return false;
 	}
 
 	/* Create the instance */
 	if (SQ_FAILED(sq_createinstance(vm, -1))) {
-		DEBUG(misc, 0, "[squirrel] Failed to create instance for class '%s%s'", prepend_API_name ? engine->GetAPIName() : "", class_name.c_str());
+		Debug(misc, 0, "[squirrel] Failed to create instance for class '{}{}'", prepend_API_name ? engine->GetAPIName() : "", class_name);
 		sq_settop(vm, oldtop);
 		return false;
 	}
@@ -738,7 +732,7 @@ bool Squirrel::LoadScript(HSQUIRRELVM vm, const std::string &script, bool in_roo
 	}
 
 	vm->_ops_till_suspend = ops_left;
-	DEBUG(misc, 0, "[squirrel] Failed to compile '%s'", script.c_str());
+	Debug(misc, 0, "[squirrel] Failed to compile '{}'", script);
 	return false;
 }
 

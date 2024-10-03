@@ -138,8 +138,7 @@ bool ScriptInstance::LoadCompatibilityScripts(const std::string &api_version, Su
 		this->allow_text_param_mismatch = true;
 	}
 
-	char script_name[32];
-	seprintf(script_name, lastof(script_name), "compat_%s.nut", api_version.c_str());
+	std::string script_name = fmt::format("compat_{}.nut", api_version);
 	for (Searchpath sp : _valid_searchpaths) {
 		std::string buf = FioGetDirectory(sp, dir);
 		buf += script_name;
@@ -148,7 +147,7 @@ bool ScriptInstance::LoadCompatibilityScripts(const std::string &api_version, Su
 		if (this->engine->LoadScript(buf)) return true;
 
 		ScriptLog::Error("Failed to load API compatibility script");
-		DEBUG(script, 0, "Error compiling / running API compatibility script: %s", buf.c_str());
+		Debug(script, 0, "Error compiling / running API compatibility script: {}", buf);
 		return false;
 	}
 
@@ -167,9 +166,7 @@ bool ScriptInstance::LoadCompatibilityScripts(const std::string &api_version, Su
 			break;
 	}
 
-	char not_found_msg[128];
-	seprintf(not_found_msg, lastof(not_found_msg), "API compatibility script not found: %s%s", script_name, message_suffix);
-	ScriptLog::Warning(not_found_msg);
+	ScriptLog::Warning(fmt::format("API compatibility script not found: {}{}", script_name, message_suffix));
 	return true;
 }
 
@@ -193,7 +190,7 @@ void ScriptInstance::Continue()
 
 void ScriptInstance::Died()
 {
-	DEBUG(script, 0, "The script died unexpectedly.");
+	Debug(script, 0, "The script died unexpectedly.");
 	this->is_dead = true;
 	this->in_shutdown = true;
 
@@ -700,7 +697,7 @@ void ScriptInstance::LoadOnStack(ScriptData *data)
 		LoadObjects(vm, data);
 		this->is_save_data_on_stack = true;
 	} catch (Script_FatalError &e) {
-		ScriptLog::Warning(fmt::format("Loading failed: {}", e.GetErrorMessage()).c_str());
+		ScriptLog::Warning(fmt::format("Loading failed: {}", e.GetErrorMessage()));
 		/* Discard partially loaded savegame data and version. */
 		sq_settop(vm, top);
 	}
@@ -772,7 +769,7 @@ bool ScriptInstance::DoCommandCallback(const CommandCost &result, TileIndex tile
 	ScriptObject::ActiveInstance active(this);
 
 	if (!ScriptObject::CheckLastCommand(tile, p1, p2, p3, cmd)) {
-		DEBUG(script, 1, "DoCommandCallback terminating a script, last command does not match expected command");
+		Debug(script, 1, "DoCommandCallback terminating a script, last command does not match expected command");
 		return false;
 	}
 

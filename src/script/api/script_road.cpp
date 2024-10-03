@@ -96,7 +96,7 @@
 {
 	if (!ScriptMap::IsValidTile(tile)) return false;
 	if (!IsRoadTypeAvailable(road_type)) return false;
-	
+
 	return ::MayHaveRoad(tile) && HasBit(::GetPresentRoadTypes(tile), (::RoadType)road_type);
 }
 

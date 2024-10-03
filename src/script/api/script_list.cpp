@@ -638,7 +638,7 @@ SQInteger ScriptList::Begin()
 SQInteger ScriptList::Next()
 {
 	if (!this->initialized) {
-		DEBUG(script, 0, "Next() is invalid as Begin() is never called");
+		Debug(script, 0, "Next() is invalid as Begin() is never called");
 		return 0;
 	}
 	return this->sorter->Next();
@@ -652,7 +652,7 @@ bool ScriptList::IsEmpty()
 bool ScriptList::IsEnd()
 {
 	if (!this->initialized) {
-		DEBUG(script, 0, "IsEnd() is invalid as Begin() is never called");
+		Debug(script, 0, "IsEnd() is invalid as Begin() is never called");
 		return true;
 	}
 	return this->sorter->IsEnd();

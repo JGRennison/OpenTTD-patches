@@ -39,7 +39,7 @@ bool ScriptScanner::AddFile(const std::string &filename, size_t, const std::stri
 	try {
 		this->engine->LoadScript(filename);
 	} catch (Script_FatalError &e) {
-		DEBUG(script, 0, "Fatal error '%s' when trying to load the script '%s'.", e.GetErrorMessage().c_str(), filename.c_str());
+		Debug(script, 0, "Fatal error '{}' when trying to load the script '{}'.", e.GetErrorMessage(), filename);
 		return false;
 	}
 	return true;
@@ -99,7 +99,7 @@ void ScriptScanner::RegisterScript(ScriptInfo *info)
 
 	/* Check if GetShortName follows the rules */
 	if (info->GetShortName().size() != 4) {
-		DEBUG(script, 0, "The script '%s' returned a string from GetShortName() which is not four characaters. Unable to load the script.", info->GetName().c_str());
+		Debug(script, 0, "The script '{}' returned a string from GetShortName() which is not four characters. Unable to load the script.", info->GetName());
 		delete info;
 		return;
 	}
@@ -116,10 +116,10 @@ void ScriptScanner::RegisterScript(ScriptInfo *info)
 			return;
 		}
 
-		DEBUG(script, 1, "Registering two scripts with the same name and version");
-		DEBUG(script, 1, "  1: %s", this->info_list[script_name]->GetMainScript().c_str());
-		DEBUG(script, 1, "  2: %s", info->GetMainScript().c_str());
-		DEBUG(script, 1, "The first is taking precedence.");
+		Debug(script, 1, "Registering two scripts with the same name and version");
+		Debug(script, 1, "  1: {}", this->info_list[script_name]->GetMainScript());
+		Debug(script, 1, "  2: {}", info->GetMainScript());
+		Debug(script, 1, "The first is taking precedence.");
 
 		delete info;
 		return;
