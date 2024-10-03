@@ -187,6 +187,17 @@ void debug_print_partial_buffer(DebugLevelID dbg, int8_t level, fmt::memory_buff
 	debug_print_intl(dbg, level, buf.data(), prefix_size);
 }
 
+void DebugIntlVFmt(DebugLevelID dbg, int8_t level, fmt::string_view msg, fmt::format_args args)
+{
+	fmt::memory_buffer buf{};
+
+	DebugIntlSetup(buf, dbg, level);
+	size_t prefix_size = buf.size();
+
+	fmt::vformat_to(std::back_inserter(buf), msg, args);
+	debug_print_partial_buffer(dbg, level, buf, prefix_size);
+}
+
 /**
  * Internal function for outputting the debug line.
  * @param dbg Debug category.

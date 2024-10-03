@@ -73,16 +73,8 @@ const char *GetDebugLevelName(DebugLevelID id);
 template <typename... T>
 void DebugIntl(DebugLevelID dbg, int8_t level, fmt::format_string<T...> msg, T&&... args)
 {
-	fmt::memory_buffer buf{};
-
-	extern void DebugIntlSetup(fmt::memory_buffer &buf, DebugLevelID id, int8_t level);
-	DebugIntlSetup(buf, dbg, level);
-	size_t prefix_size = buf.size();
-
-	fmt::format_to(std::back_inserter(buf), msg, std::forward<T>(args)...);
-
-	extern void debug_print_partial_buffer(DebugLevelID dbg, int8_t level, fmt::memory_buffer &buf, size_t prefix_size);
-	debug_print_partial_buffer(dbg, level, buf, prefix_size);
+	extern void DebugIntlVFmt(DebugLevelID dbg, int8_t level, fmt::string_view msg, fmt::format_args args);
+	DebugIntlVFmt(dbg, level, msg, fmt::make_format_args(args...));
 }
 
 /**
@@ -110,7 +102,12 @@ std::string GetDebugString();
 
 void ShowInfoI(std::string_view str);
 
-#define ShowInfo(format_string, ...) ShowInfoI(fmt::format(FMT_STRING(format_string), ## __VA_ARGS__))
+template <typename... T>
+void ShowInfo(fmt::format_string<T...> msg, T&&... args)
+{
+	extern void ShowInfoVFmt(fmt::string_view msg, fmt::format_args args);
+	ShowInfoVFmt(msg, fmt::make_format_args(args...));
+}
 
 struct log_prefix {
 	const char *GetLogPrefix(bool force = false);

@@ -372,6 +372,19 @@ void ShowInfoI(std::string_view str)
 	}
 }
 
+void ShowInfoVFmt(fmt::string_view msg, fmt::format_args args)
+{
+	fmt::memory_buffer buf{};
+	fmt::vformat_to(std::back_inserter(buf), msg, args);
+	if (_has_console) {
+		buf.push_back('\n');
+		fwrite(buf.data(), 1, buf.size(), stderr);
+	} else {
+		/* Forward to ShowInfoI */
+		ShowInfoI({ buf.data(), buf.size() });
+	}
+}
+
 char *getcwd(char *buf, size_t size)
 {
 	wchar_t path[MAX_PATH];

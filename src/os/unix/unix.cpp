@@ -208,6 +208,14 @@ void ShowInfoI(std::string_view str)
 	fmt::print(stderr, "{}\n", str);
 }
 
+void ShowInfoVFmt(fmt::string_view msg, fmt::format_args args)
+{
+	fmt::memory_buffer buf{};
+	fmt::vformat_to(std::back_inserter(buf), msg, args);
+	buf.push_back('\n');
+	fwrite(buf.data(), 1, buf.size(), stderr);
+}
+
 #if !defined(__APPLE__)
 void ShowOSErrorBox(const char *buf, bool)
 {
