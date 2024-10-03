@@ -352,7 +352,7 @@ static void WriteSavegameInfo(const char *name)
 	buffer.push_back('\n');
 	fwrite(buffer.data(), 1, buffer.size(), stdout);
 #else
-	ShowInfoI(buf);
+	ShowInfoI(buffer);
 #endif
 }
 
