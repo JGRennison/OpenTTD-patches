@@ -15,19 +15,26 @@
 	FatalErrorI(fmt::format("NOT_REACHED triggered at line {} of {}", line, file));
 }
 
-void assert_str_error(int line, const char *file, const char *expr, const char *str)
+void assert_str_error(int line, const char *file, const char *expr, std::string_view str)
 {
 	std::string msg;
 
 	fmt::format_to(std::back_inserter(msg), "Assertion failed at line {} of {}: {}", line, file, expr);
-	if (str != nullptr) {
+	if (!str.empty()) {
 		msg += '\n';
 		msg += str;
 	}
 	FatalErrorI(msg);
 }
 
-void assert_str_error(int line, const char *file, const char *expr, const std::string &str)
+/* Do strlen here instead of assert call site for common char* case */
+void assert_str_error(int line, const char *file, const char *expr, const char *str)
 {
-	assert_str_error(line, file, expr, str.c_str());
+	assert_str_error(line, file, expr, std::string_view(str));
+}
+
+/* Don't require an extra argument for common case of no extra info */
+void assert_str_error(int line, const char *file, const char *expr)
+{
+	assert_str_error(line, file, expr, {});
 }

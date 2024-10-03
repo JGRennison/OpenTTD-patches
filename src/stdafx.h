@@ -396,20 +396,22 @@ typedef uint64_t unaligned_uint64;
 /* cpp-btree: Don't include IO stream headers, dump support */
 #define BTREE_NO_IOSTREAM
 
-[[noreturn]] void CDECL assert_msg_error(int line, const char *file, const char *expr, const char *extra, const char *str, ...) WARN_FORMAT(5, 6);
+[[noreturn]] void CDECL assert_msg_error(int line, const char *file, const char *expr, const char *str, ...) WARN_FORMAT(4, 5);
+[[noreturn]] void assert_str_error(int line, const char *file, const char *expr, std::string_view str);
 [[noreturn]] void assert_str_error(int line, const char *file, const char *expr, const char *str);
-[[noreturn]] void assert_str_error(int line, const char *file, const char *expr, const std::string &str);
-const char *assert_tile_info(uint32_t tile);
+[[noreturn]] void assert_str_error(int line, const char *file, const char *expr);
+[[noreturn]] void CDECL assert_msg_tile_error(int line, const char *file, const char *expr, uint32_t tile, const char *str, ...) WARN_FORMAT(5, 6);
+[[noreturn]] void assert_tile_error(int line, const char *file, const char *expr, uint32_t tile);
 [[noreturn]] void not_reached_error(int line, const char *file);
 #define NOT_REACHED() not_reached_error(__LINE__, __FILE__);
 
 /* Asserts are enabled if NDEBUG isn't defined or WITH_ASSERT is defined. */
 #if !defined(NDEBUG) || defined(WITH_ASSERT)
 #	undef assert
-#	define assert(expression) do { if (unlikely(!(expression))) assert_str_error(__LINE__, __FILE__, #expression, nullptr); } while (false)
-#	define assert_msg(expression, ...) do { if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, nullptr, __VA_ARGS__); } while (false)
-#	define assert_msg_tile(expression, tile, ...) do { if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, assert_tile_info(tile), __VA_ARGS__); } while (false)
-#	define assert_tile(expression, tile) do { if (unlikely(!(expression))) assert_str_error(__LINE__, __FILE__, #expression, assert_tile_info(tile)); } while (false)
+#	define assert(expression) do { if (unlikely(!(expression))) assert_str_error(__LINE__, __FILE__, #expression); } while (false)
+#	define assert_msg(expression, ...) do { if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, __VA_ARGS__); } while (false)
+#	define assert_msg_tile(expression, tile, ...) do { if (unlikely(!(expression))) assert_msg_tile_error(__LINE__, __FILE__, #expression, tile, __VA_ARGS__); } while (false)
+#	define assert_tile(expression, tile) do { if (unlikely(!(expression))) assert_tile_error(__LINE__, __FILE__, #expression, tile); } while (false)
 #	define assert_str(expression, str) do { if (unlikely(!(expression))) assert_str_error(__LINE__, __FILE__, #expression, str); } while (false)
 #else
 #	undef assert

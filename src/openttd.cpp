@@ -183,33 +183,42 @@ void FatalErrorI(const std::string &str)
 	fatalerror_common(str.c_str());
 }
 
-void CDECL assert_msg_error(int line, const char *file, const char *expr, const char *extra, const char *str, ...)
+void CDECL assert_msg_error(int line, const char *file, const char *expr, const char *str, ...)
 {
 	if (CrashLog::HaveAlreadyCrashed()) DoOSAbort();
 
-	va_list va;
 	char buf[2048];
 
-	char *b = buf;
-	b += seprintf(b, lastof(buf), "Assertion failed at line %i of %s: %s\n\t", line, file, expr);
-
-	if (extra != nullptr) {
-		b += seprintf(b, lastof(buf), "%s\n\t", extra);
-	}
-
+	va_list va;
 	va_start(va, str);
-	vseprintf(b, lastof(buf), str, va);
+	vseprintf(buf, lastof(buf), str, va);
 	va_end(va);
 
-	fatalerror_common(buf);
+	assert_str_error(line, file, expr, buf);
 }
 
-const char *assert_tile_info(uint32_t tile) {
-	fmt::memory_buffer *buf = new fmt::memory_buffer(); // leak it on purpose, we're about to crash anyway...
-	format_to_buffer out(*buf);
+void CDECL assert_msg_tile_error(int line, const char *file, const char *expr, uint32_t tile, const char *str, ...)
+{
+	char buf[2048];
+
+	format_to_fixed_z out(buf, lastof(buf));
 	DumpTileInfo(out, tile);
-	buf->push_back('\0');
-	return buf->data();
+	out.append(", ");
+
+	va_list va;
+	va_start(va, str);
+	vseprintf(out.finalise(), lastof(buf), str, va);
+	va_end(va);
+
+	assert_str_error(line, file, expr, buf);
+}
+
+void assert_tile_error(int line, const char *file, const char *expr, uint32_t tile)
+{
+	format_buffer out;
+	DumpTileInfo(out, tile);
+
+	assert_str_error(line, file, expr, out);
 }
 
 /**
