@@ -2398,13 +2398,17 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 			int j = i - 1;
 			int skip_count = 0;
 			const DeterministicSpriteGroupAdjustFlags skip_mask = adjust.adjust_flags & (DSGAF_SKIP_ON_ZERO | DSGAF_SKIP_ON_LSB_SET);
+			std::vector<int> move_adjusts;
+			std::bitset<256> move_vars;
+			bool independent_of_special_temp_storage = IsVariableIndependentOfSpecialTempStorage(scope_feature, adjust.variable);
+
 			while (j >= 0) {
 				DeterministicSpriteGroupAdjust &prev = group->adjusts[j];
 
 				/* Don't try to skip over: unpredictable or unusable special stores, unskippable procedure calls, permanent stores, or another jump */
 				if (prev.operation == DSGA_OP_STO && (prev.type != DSGA_TYPE_NONE || prev.variable != 0x1A || prev.shift_num != 0 || prev.and_mask >= 0x100)) break;
 				if (prev.operation == DSGA_OP_STO_NC && prev.divmod_val >= 0x100) {
-					if (prev.divmod_val < 0x110 && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && IsVariableIndependentOfSpecialTempStorage(scope_feature, adjust.variable)) {
+					if (prev.divmod_val < 0x110 && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && independent_of_special_temp_storage) {
 						/* Storing a constant in a special register */
 						if (!HasBit(special_stores_mask, prev.divmod_val - 0x100)) {
 							special_stores[prev.divmod_val - 0x100] = prev.and_mask;
@@ -2419,7 +2423,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 				if (prev.variable == 0x7E) {
 					const VarAction2ProcedureCallVarReadAnnotation &anno = _varaction2_proc_call_var_read_annotations[prev.jump];
 					if (anno.unskippable) break;
-					if (anno.anno->special_register_mask != 0 && !IsVariableIndependentOfSpecialTempStorage(scope_feature, adjust.variable)) break;
+					if (anno.anno->special_register_mask != 0 && !independent_of_special_temp_storage) break;
 					if ((anno.relevant_stores & ~ok_stores).any()) break;
 					ok_stores |= anno.last_reads;
 
@@ -2432,7 +2436,30 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 
 				/* Reached a store which can't be skipped over because the value is needed later */
 				if (prev.operation == DSGA_OP_STO && !ok_stores[prev.and_mask]) break;
-				if (prev.operation == DSGA_OP_STO_NC && prev.divmod_val < 0x100 && !ok_stores[prev.divmod_val]) break;
+				if (prev.operation == DSGA_OP_STO_NC && prev.divmod_val < 0x100 && !ok_stores[prev.divmod_val]) {
+					/* For STO_NC, see if we can move it */
+					if (prev.variable == 0x1C || prev.variable == 0x7C || prev.variable == 0x7D || prev.variable == 0x7E) {
+						/* Too complicated to try to move stores from procedure calls, other loads from temp/perm storage or var 1C */
+						break;
+					}
+					move_adjusts.push_back(j);
+					move_vars.set(prev.divmod_val);
+					if (!IsVariableIndependentOfSpecialTempStorage(scope_feature, prev.variable)) independent_of_special_temp_storage = false;
+
+					/* This adjust will be moved before the jump, so mark it as skipped for checking the threshold */
+					skip_count++;
+				}
+
+				if (!move_adjusts.empty()) {
+					if (prev.variable == 0x7B && prev.parameter == 0x7D) {
+						/* Unpredictable load, moving the store before this might clobber the read value */
+						break;
+					}
+					if (prev.variable == 0x7D && move_vars[prev.parameter & 0xFF]) {
+						/* Can't move the store before a load of the same temp store variable */
+						break;
+					}
+				}
 
 				if (prev.variable == 0x7D && (prev.adjust_flags & DSGAF_LAST_VAR_READ)) {
 					/* The stored value is no longer needed after this, we can skip the corresponding store */
@@ -2444,7 +2471,17 @@ static void OptimiseVarAction2DeterministicSpriteGroupInsertJumps(DeterministicS
 
 				j--;
 			}
-			if (j < i - 1 && (i - j) > (skip_count + 2)) {
+			/* j is the exclusive lower bound (may be -1) */
+			if ((i - j) > (skip_count + 2)) {
+				/* Handle moved adjusts first, move_adjusts is filled whilst iterating backwards.
+				 * The nearest/lowest index values are at the end. */
+				while (!move_adjusts.empty()) {
+					/* Move the nearest move_adjust to the start of the range (j + 1) */
+					std::rotate(group->adjusts.data() + j + 1, group->adjusts.data() + move_adjusts.back(), group->adjusts.data() + move_adjusts.back() + 1);
+					move_adjusts.pop_back();
+					j++; // The moved adjust is now outside of the jump range, this also preserves the order of moved adjusts
+				}
+
 				auto mark_end_block = [&](uint index, uint inc) {
 					if (group->adjusts[index].variable == 0x7E) {
 						/* Procedure call, can't mark this as an end block directly, so insert a NOOP and use that */
