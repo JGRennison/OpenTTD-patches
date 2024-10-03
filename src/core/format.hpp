@@ -273,9 +273,9 @@ struct format_to_fixed_z final : public format_to_fixed_base {
 	 */
 	char *finalise()
 	{
-		size_t written = this->size();
-		this->data()[written] = '\0';
-		return this->data() + written;
+		char *terminator = this->end();
+		*terminator = '\0';
+		return terminator;
 	}
 };
 
