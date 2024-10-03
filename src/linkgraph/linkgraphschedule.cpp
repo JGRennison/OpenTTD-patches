@@ -83,15 +83,15 @@ void LinkGraphSchedule::SpawnNext()
 			jobs_to_execute.emplace_back(job.get(), cost);
 			if (this->running.empty() || job->JoinTick() >= this->running.back()->JoinTick()) {
 				this->running.push_back(std::move(job));
-				DEBUG(linkgraph, 3, "LinkGraphSchedule::SpawnNext(): Running job: id: %u, nodes: %u, cost: " OTTD_PRINTF64U ", duration_multiplier: %u",
+				Debug(linkgraph, 3, "LinkGraphSchedule::SpawnNext(): Running job: id: {}, nodes: {}, cost: {}, duration_multiplier: {}",
 						lg->index, lg->Size(), cost, duration_multiplier);
 			} else {
-				// find right place to insert
+				/* Find right place to insert */
 				auto iter = std::upper_bound(this->running.begin(), this->running.end(), job->JoinTick(), [](ScaledTickCounter a, const std::unique_ptr<LinkGraphJob> &b) {
 					return a < b->JoinTick();
 				});
 				this->running.insert(iter, std::move(job));
-				DEBUG(linkgraph, 3, "LinkGraphSchedule::SpawnNext(): Running job (re-ordering): id: %u, nodes: %u, cost: " OTTD_PRINTF64U ", duration_multiplier: %u",
+				Debug(linkgraph, 3, "LinkGraphSchedule::SpawnNext(): Running job (re-ordering): id: {}, nodes: {}, cost: {}, duration_multiplier: {}",
 						lg->index, lg->Size(), cost, duration_multiplier);
 			}
 		} else {
@@ -103,7 +103,7 @@ void LinkGraphSchedule::SpawnNext()
 
 	LinkGraphJobGroup::ExecuteJobSet(std::move(jobs_to_execute));
 
-	DEBUG(linkgraph, 2, "LinkGraphSchedule::SpawnNext(): Linkgraph job totals: cost: " OTTD_PRINTF64U ", budget: " OTTD_PRINTF64U ", scaling: %u, scheduled: " PRINTF_SIZE ", running: " PRINTF_SIZE,
+	Debug(linkgraph, 2, "LinkGraphSchedule::SpawnNext(): Linkgraph job totals: cost: {}, budget: {}, scaling: {}, scheduled: {}, running: {}",
 			total_cost, cost_budget, scaling, this->schedule.size(), this->running.size());
 }
 
@@ -283,7 +283,7 @@ void LinkGraphJobGroup::JoinThread()
 	ScaledTickCounter bucket_join_tick = 0;
 	auto flush_bucket = [&]() {
 		if (!bucket_cost) return;
-		DEBUG(linkgraph, 2, "LinkGraphJobGroup::ExecuteJobSet: Creating Job Group: jobs: " PRINTF_SIZE ", cost: %u, join after: " OTTD_PRINTF64,
+		Debug(linkgraph, 2, "LinkGraphJobGroup::ExecuteJobSet: Creating Job Group: jobs: {}, cost: {}, join after: {}",
 				bucket.size(), bucket_cost, bucket_join_tick - _scaled_tick_counter);
 		auto group = std::make_shared<LinkGraphJobGroup>(constructor_token(), std::move(bucket));
 		group->SpawnThread();
