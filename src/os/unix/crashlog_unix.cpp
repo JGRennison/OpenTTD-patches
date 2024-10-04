@@ -270,7 +270,7 @@ static bool ExecReadStdoutThroughFile(const char *file, char *const *args, forma
 /**
  * Unix implementation for the crash logger.
  */
-class CrashLogUnix : public CrashLog {
+class CrashLogUnix final : public CrashLog {
 	/** Signal that has been thrown. */
 	int signum;
 #ifdef WITH_SIGACTION
@@ -279,6 +279,48 @@ class CrashLogUnix : public CrashLog {
 	bool signal_instruction_ptr_valid;
 	void *signal_instruction_ptr;
 #endif
+	int crash_file = -1;
+
+	bool OpenLogFile(const char *filename) override
+	{
+		int fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, S_IRUSR | S_IWUSR);
+		if (fd >= 0) {
+			this->crash_file = fd;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	void WriteToFd(int fd, std::string_view data)
+	{
+		while (!data.empty()) {
+			ssize_t res = write(fd, data.data(), data.size());
+			if (res < 0) {
+				if (errno != EINTR) break;
+			} else if (res == 0) {
+				break;
+			} else {
+				data.remove_prefix(res);
+			}
+		}
+	}
+
+	void WriteToLogFile(std::string_view data) override
+	{
+		this->WriteToFd(this->crash_file, data);
+	}
+
+	void WriteToStdout(std::string_view data) override
+	{
+		this->WriteToFd(STDOUT_FILENO, data);
+	}
+
+	void CloseLogFile() override
+	{
+		close(this->crash_file);
+		this->crash_file = -1;
+	}
 
 	void LogOSVersion(format_target &buffer) const override
 	{
@@ -716,8 +758,10 @@ class CrashLogUnix : public CrashLog {
 			buffer = internal_fault_saved_buffer;
 			internal_fault_saved_buffer = nullptr;
 
-			buffer += seprintf(buffer, last, "\nSomething went seriously wrong when attempting to fill the '%s' section of the crash log: signal: %s (%d).\n", section_name, strsignal(signum), signum);
-			buffer += seprintf(buffer, last, "This is probably due to an invalid pointer or other corrupt data.\n\n");
+			buffer = format_to_fixed_z::format_to(buffer, last,
+					"\nSomething went seriously wrong when attempting to fill the '{}' section of the crash log: signal: {} ({}).\n"
+					"This is probably due to an invalid pointer or other corrupt data.\n\n",
+					section_name, strsignal(signum), signum);
 
 			sigset_t sigs;
 			sigemptyset(&sigs);

@@ -68,9 +68,11 @@ void CrashLogWindowsInitThread();
 /**
  * Windows implementation for the crash logger.
  */
-class CrashLogWindows : public CrashLog {
+class CrashLogWindows final : public CrashLog {
 	/** Information about the encountered exception */
 	EXCEPTION_POINTERS *ep;
+
+	HANDLE crash_file = INVALID_HANDLE_VALUE;
 
 public:
 	DWORD crash_thread_id;
@@ -89,6 +91,60 @@ protected:
 	void CrashLogFaultSectionCheckpoint(format_target &buffer) const override;
 
 public:
+
+	bool OpenLogFile(const char *filename) override
+	{
+		wchar_t wfilename[MAX_PATH];
+		convert_to_fs(filename, wfilename);
+		HANDLE file = CreateFile(wfilename, GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, 0, 0);
+		if (file != INVALID_HANDLE_VALUE) {
+			this->crash_file = file;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	void WriteToFile(HANDLE file, std::string_view data)
+	{
+		while (!data.empty()) {
+			DWORD written = 0;
+			bool ok = WriteFile(file, data.data(), (DWORD)data.size(), &written, nullptr);
+			if (!ok) {
+				break;
+			} else if (written == 0) {
+				break;
+			} else {
+				data.remove_prefix(written);
+			}
+		}
+	}
+
+	void WriteToLogFile(std::string_view data) override
+	{
+		this->WriteToFile(this->crash_file, data);
+	}
+
+	void WriteToStdout(std::string_view data) override
+	{
+		HANDLE file = GetStdHandle(STD_OUTPUT_HANDLE);
+		if (GetFileType(file) == FILE_TYPE_CHAR) {
+			wchar_t wdata[2048];
+			int len = MultiByteToWideChar(CP_UTF8, 0, data.data(), static_cast<int>(data.size()), wdata, sizeof(wdata));
+			if (len > 0) {
+				WriteConsoleW(file, wdata, len, nullptr, nullptr);
+			}
+		} else {
+			this->WriteToFile(file, data);
+		}
+	}
+
+	void CloseLogFile() override
+	{
+		CloseHandle(this->crash_file);
+		this->crash_file = INVALID_HANDLE_VALUE;
+	}
+
 #if defined(_MSC_VER)
 	int WriteCrashDump(char *filename, const char *filename_last) const override;
 #endif /* _MSC_VER */
@@ -598,8 +654,10 @@ static const uint MAX_FRAMES     = 64;
 			buffer = this->internal_fault_saved_buffer;
 			this->internal_fault_saved_buffer = nullptr;
 
-			buffer += seprintf(buffer, last, "\nSomething went seriously wrong when attempting to fill the '%s' section of the crash log: exception: %.8X.\n", section_name, GetExceptionCode());
-			buffer += seprintf(buffer, last, "This is probably due to an invalid pointer or other corrupt data.\n\n");
+			buffer = format_to_fixed_z::format_to(buffer, last,
+					"\nSomething went seriously wrong when attempting to fill the '{}' section of the crash log: exception: {:08X}.\n"
+					"This is probably due to an invalid pointer or other corrupt data.\n\n",
+					section_name, GetExceptionCode());
 		}
 
 		this->internal_fault_saved_buffer = nullptr;
@@ -629,8 +687,10 @@ static const uint MAX_FRAMES     = 64;
 			buffer = this->internal_fault_saved_buffer;
 			this->internal_fault_saved_buffer = nullptr;
 
-			buffer += seprintf(buffer, last, "\nSomething went seriously wrong when attempting to fill the '%s' section of the crash log: exception: %.8X.\n", section_name, exception_num);
-			buffer += seprintf(buffer, last, "This is probably due to an invalid pointer or other corrupt data.\n\n");
+			buffer = format_to_fixed_z::format_to(buffer, last,
+					"\nSomething went seriously wrong when attempting to fill the '{}' section of the crash log: exception: {:08X}.\n"
+					"This is probably due to an invalid pointer or other corrupt data.\n\n",
+					section_name, (DWORD)exception_num);
 
 			return buffer;
 		}

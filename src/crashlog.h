@@ -129,9 +129,6 @@ protected:
 	virtual void CrashLogFaultSectionCheckpoint(struct format_target &buffer) const;
 
 public:
-	/** Buffer for the filename name prefix */
-	char name_buffer[64];
-	FILE *crash_file = nullptr;
 	const char *crash_buffer_write = nullptr;
 
 	/** Buffer for the filename of the crash log */
@@ -153,13 +150,19 @@ public:
 	/** Stub destructor to silence some compilers. */
 	virtual ~CrashLog() = default;
 
+	virtual bool OpenLogFile(const char *filename) = 0;
+	virtual void WriteToLogFile(std::string_view data) = 0;
+	virtual void WriteToStdout(std::string_view data) = 0;
+	virtual void CloseLogFile() = 0;
+
 	char *FillCrashLog(char *buffer, const char *last);
 	void FlushCrashLogBuffer(const char *end);
 	void CloseCrashLogFile(const char *end);
 	void FillDesyncCrashLog(struct format_target &buffer, const DesyncExtraInfo &info) const;
 	void FillInconsistencyLog(struct format_target &buffer, const InconsistencyExtraInfo &info) const;
 	void FillVersionInfoLog(struct format_target &buffer) const;
-	bool WriteCrashLog(std::string_view data, char *filename, const char *filename_last, const char *name = "crash", FILE **crashlog_file = nullptr) const;
+	void PrepareLogFileName(char *filename, const char *filename_last, const char *name) const;
+	bool WriteGeneralLogFile(std::string_view data, char *filename, const char *filename_last, const char *name, FILE **keep_file_open = nullptr) const;
 
 	/**
 	 * Write the (crash) dump to a file.
@@ -181,7 +184,7 @@ public:
 	void MakeDesyncCrashLog(const std::string *log_in, std::string *log_out, const DesyncExtraInfo &info) const;
 	static bool WriteDesyncSavegame(const char *log_data, const char *name_buffer);
 	void MakeInconsistencyLog(const InconsistencyExtraInfo &info) const;
-	void MakeCrashSavegameAndScreenshot();
+	void MakeCrashSavegameAndScreenshot(const char *name_buffer);
 
 	void SendSurvey() const;
 

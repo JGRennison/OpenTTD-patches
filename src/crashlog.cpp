@@ -517,7 +517,7 @@ void CrashLog::LogSettings(format_target &buffer) const
 char *CrashLog::FillCrashLog(char *buffer, const char *last)
 {
 	this->StartCrashLogFaultHandler();
-	buffer += seprintf(buffer, last, "*** OpenTTD Crash Report ***\n\n");
+	buffer = format_to_fixed_z::format_to(buffer, last, "*** OpenTTD Crash Report ***\n\n");
 
 	buffer = this->TryCrashLogFaultSection(buffer, last, "emergency test", [](CrashLog *self, format_target &buffer) {
 		if (GamelogTestEmergency()) {
@@ -536,7 +536,7 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last)
 		LogGameLoadDateTimes(buffer);
 	});
 
-	buffer += seprintf(buffer, last, "\n");
+	buffer = format_to_fixed_z::format_to(buffer, last, "\n");
 
 	buffer = this->TryCrashLogFaultSection(buffer, last, "message", [](CrashLog *self, format_target &buffer) {
 		self->LogError(buffer, CrashLog::message);
@@ -620,7 +620,7 @@ char *CrashLog::FillCrashLog(char *buffer, const char *last)
 		self->LogCrashTrailer(buffer);
 	});
 
-	buffer += seprintf(buffer, last, "*** End of OpenTTD Crash Report ***\n");
+	buffer = format_to_fixed_z::format_to(buffer, last, "*** End of OpenTTD Crash Report ***\n");
 	*buffer = '\0';
 	this->StopCrashLogFaultHandler();
 	return buffer;
@@ -758,25 +758,37 @@ void CrashLog::FillVersionInfoLog(format_target &buffer) const
 }
 
 /**
+ * Prepare the log file name.
+ * @param data          The data to write to the disk.
+ * @param filename      Output for the filename of the written file.
+ * @param filename_last The last position in the filename buffer.
+ */
+void CrashLog::PrepareLogFileName(char *filename, const char *filename_last, const char *name) const
+{
+	format_to_fixed_z::format_to(filename, filename_last, "{}{}.log", _personal_dir, name);
+}
+
+/**
  * Write the crash log to a file.
  * @note On success the filename will be filled with the full path of the
  *       crash log file. Make sure filename is at least \c MAX_PATH big.
  * @param data          The data to write to the disk.
  * @param filename      Output for the filename of the written file.
  * @param filename_last The last position in the filename buffer.
+ * @param keep_file_open If non-nullptr, store the FILE * instead of closing it after writing.
  * @return true when the crash log was successfully written.
  */
-bool CrashLog::WriteCrashLog(std::string_view data, char *filename, const char *filename_last, const char *name, FILE **crashlog_file) const
+bool CrashLog::WriteGeneralLogFile(std::string_view data, char *filename, const char *filename_last, const char *name, FILE **keep_file_open) const
 {
-	seprintf(filename, filename_last, "%s%s.log", _personal_dir.c_str(), name);
+	this->PrepareLogFileName(filename, filename_last, name);
 
 	FILE *file = FioFOpenFile(filename, "w", NO_DIRECTORY);
 	if (file == nullptr) return false;
 
 	size_t written = (!data.empty()) ? fwrite(data.data(), 1, data.size(), file) : 0;
 
-	if (crashlog_file) {
-		*crashlog_file = file;
+	if (keep_file_open != nullptr) {
+		*keep_file_open = file;
 	} else {
 		FioFCloseFile(file);
 	}
@@ -790,13 +802,9 @@ void CrashLog::FlushCrashLogBuffer(const char *end)
 	size_t len = ttd_strnlen(this->crash_buffer_write, end - this->crash_buffer_write);
 	if (len == 0) return;
 
-	if (this->crash_file != nullptr) {
-		fwrite(this->crash_buffer_write, 1, len, this->crash_file);
-		fflush(this->crash_file);
-	}
+	this->WriteToLogFile(std::string_view(this->crash_buffer_write, len));
 #if !defined(_WIN32)
-	fwrite(this->crash_buffer_write, 1, len, stdout);
-	fflush(stdout);
+	this->WriteToStdout(std::string_view(this->crash_buffer_write, len));
 #endif
 
 	this->crash_buffer_write += len;
@@ -805,10 +813,7 @@ void CrashLog::FlushCrashLogBuffer(const char *end)
 void CrashLog::CloseCrashLogFile(const char *end)
 {
 	this->FlushCrashLogBuffer(end);
-	if (this->crash_file != nullptr) {
-		FioFCloseFile(this->crash_file);
-		this->crash_file = nullptr;
-	}
+	this->CloseLogFile();
 }
 
 /* virtual */ int CrashLog::WriteCrashDump(char *filename, const char *filename_last) const
@@ -834,7 +839,7 @@ void CrashLog::CloseCrashLogFile(const char *end)
 	try {
 		GamelogEmergency();
 
-		seprintf(filename, filename_last, "%s%s.sav", _personal_dir.c_str(), name);
+		format_to_fixed_z::format_to(filename, filename_last, "{}{}.sav", _personal_dir, name);
 
 		/* Don't do a threaded saveload. */
 		return SaveOrLoad(filename, SLO_SAVE, DFT_GAME_FILE, NO_DIRECTORY, false) == SL_OK;
@@ -858,7 +863,7 @@ void CrashLog::CloseCrashLogFile(const char *end)
 	if (_m == nullptr) return false;
 
 	try {
-		seprintf(filename, filename_last, "%s%s.sav", _personal_dir.c_str(), name);
+		format_to_fixed_z::format_to(filename, filename_last, "{}{}.sav", _personal_dir, name);
 
 		return SaveOrLoad(filename, SLO_SAVE, DFT_GAME_FILE, NO_DIRECTORY, true) == SL_OK;
 	} catch (...) {
@@ -928,8 +933,13 @@ void CrashLog::MakeCrashLog(char *buffer, const char *last)
 	if (CrashLog::HaveAlreadyCrashed()) return;
 	CrashLog::RegisterCrashed();
 
-	char *name_buffer_date = this->name_buffer + seprintf(this->name_buffer, lastof(this->name_buffer), "crash-");
-	UTCTime::Format(name_buffer_date, lastof(this->name_buffer), "%Y%m%dT%H%M%SZ");
+	char name_buffer[64];
+	{
+		format_to_fixed_z buf(name_buffer, lastof(name_buffer));
+		buf.append("crash-");
+		UTCTime::FormatTo(buf, "%Y%m%dT%H%M%SZ");
+		buf.finalise();
+	}
 
 #ifdef DEDICATED
 	if (!_settings_client.gui.keep_all_autosave) {
@@ -939,34 +949,39 @@ void CrashLog::MakeCrashLog(char *buffer, const char *last)
 		if (num >= 0) {
 			std::string old_file = autosave.FilenameUsingNumber(num, "");
 			char save_suffix[MAX_PATH];
-			seprintf(save_suffix, lastof(save_suffix), "-(%s)", this->name_buffer);
+			format_to_fixed_z::format_to(save_suffix, lastof(save_suffix), "-({})", name_buffer);
 			std::string new_file = autosave.FilenameUsingNumber(num, save_suffix);
 			if (CopyAutosave(old_file, new_file)) {
-				printf("Saving copy of last autosave: %s -> %s\n\n", old_file.c_str(), new_file.c_str());
+				format_buffer_fixed<1024> buf;
+				buf.format("Saving copy of last autosave: {} -> {}\n\n", old_file, new_file);
+				this->WriteToStdout(buf);
 			}
 		}
 	}
 #endif
 
 	if (!VideoDriver::EmergencyAcquireGameLock(20, 2)) {
-		printf("Failed to acquire gamelock before filling crash log\n\n");
+		this->WriteToStdout("Failed to acquire gamelock before filling crash log\n\n");
 	}
 
-	printf("Crash encountered, generating crash log...\n");
+	this->WriteToStdout("Crash encountered, generating crash log...\n");
 
-	printf("Writing crash log to disk...\n");
-	bool bret = this->WriteCrashLog({}, this->crashlog_filename, lastof(this->crashlog_filename), this->name_buffer, &(this->crash_file));
+	this->WriteToStdout("Writing crash log to disk...\n");
+	this->PrepareLogFileName(this->crashlog_filename, lastof(this->crashlog_filename), name_buffer);
+	bool bret = this->OpenLogFile(this->crashlog_filename);
 	if (bret) {
-		printf("Crash log written to %s. Please add this file to any bug reports.\n\n", this->crashlog_filename);
+		format_buffer_fixed<1024> buf;
+		buf.format("Crash log written to {}. Please add this file to any bug reports.\n\n", this->crashlog_filename);
+		this->WriteToStdout(buf);
 	} else {
-		printf("Writing crash log failed. Please attach the output above to any bug reports.\n\n");
-		seprintf(this->crashlog_filename, lastof(this->crashlog_filename), "(failed to write crash log)");
+		this->WriteToStdout("Writing crash log failed. Please attach the output above to any bug reports.\n\n");
+		strecpy(this->crashlog_filename, "(failed to write crash log)");
 	}
 	this->crash_buffer_write = buffer;
 
 	char *end = this->FillCrashLog(buffer, last);
 	this->CloseCrashLogFile(end);
-	printf("Crash log generated.\n\n");
+	this->WriteToStdout("Crash log generated.\n\n");
 
 
 	/* Don't mention writing crash dumps because not all platforms support it. */
@@ -974,8 +989,10 @@ void CrashLog::MakeCrashLog(char *buffer, const char *last)
 	if (dret < 0) {
 		printf("Writing crash dump failed.\n\n");
 	} else if (dret > 0) {
-		printf("Crash dump written to %s. Please add this file to any bug reports.\n\n", this->crashdump_filename);
-		seprintf(this->crashdump_filename, lastof(this->crashdump_filename), "(failed to write crash dump)");
+		format_buffer_fixed<1024> buf;
+		buf.format("Crash dump written to {}. Please add this file to any bug reports.\n\n", this->crashdump_filename);
+		this->WriteToStdout(buf);
+		strecpy(this->crashdump_filename, "(failed to write crash dump)");
 	}
 
 	SetScreenshotAuxiliaryText("Crash Log", buffer);
@@ -983,10 +1000,10 @@ void CrashLog::MakeCrashLog(char *buffer, const char *last)
 	_save_DBGC_data = true;
 
 	if (!VideoDriver::EmergencyAcquireGameLock(1000, 5)) {
-		printf("Failed to acquire gamelock before writing crash savegame and screenshot, proceeding without lock as current owner is probably stuck\n\n");
+		this->WriteToStdout("Failed to acquire gamelock before writing crash savegame and screenshot, proceeding without lock as current owner is probably stuck\n\n");
 	}
 
-	CrashLog::MakeCrashSavegameAndScreenshot();
+	CrashLog::MakeCrashSavegameAndScreenshot(name_buffer);
 }
 
 void CrashLog::MakeCrashLogWithStackBuffer()
@@ -1005,15 +1022,19 @@ void CrashLog::MakeDesyncCrashLog(const std::string *log_in, std::string *log_ou
 {
 	char filename[MAX_PATH];
 
-	format_buffer buffer;
-
 	const char *mode = _network_server ? "server" : "client";
 
 	char name_buffer[64];
-	char *name_buffer_date = name_buffer + seprintf(name_buffer, lastof(name_buffer), "desync-%s-", mode);
-	UTCTime::Format(name_buffer_date, lastof(this->name_buffer), "%Y%m%dT%H%M%SZ");
+	{
+		format_to_fixed_z buf(name_buffer, lastof(name_buffer));
+		buf.format("desync-{}-", mode);
+		UTCTime::FormatTo(buf, "%Y%m%dT%H%M%SZ");
+		buf.finalise();
+	}
 
 	printf("Desync encountered (%s), generating desync log...\n", mode);
+
+	format_buffer buffer;
 	this->FillDesyncCrashLog(buffer, info);
 
 	if (log_out) log_out->assign(buffer);
@@ -1023,7 +1044,7 @@ void CrashLog::MakeDesyncCrashLog(const std::string *log_in, std::string *log_ou
 		buffer.append(*log_in);
 	}
 
-	bool bret = this->WriteCrashLog(buffer, filename, lastof(filename), name_buffer, info.log_file);
+	bool bret = this->WriteGeneralLogFile(buffer, filename, lastof(filename), name_buffer, info.log_file);
 	if (bret) {
 		printf("Desync log written to %s. Please add this file to any bug reports.\n\n", filename);
 	} else {
@@ -1065,16 +1086,20 @@ void CrashLog::MakeInconsistencyLog(const InconsistencyExtraInfo &info) const
 {
 	char filename[MAX_PATH];
 
-	format_buffer buffer;
-
 	char name_buffer[64];
-	char *name_buffer_date = name_buffer + seprintf(name_buffer, lastof(name_buffer), "inconsistency-");
-	UTCTime::Format(name_buffer_date, lastof(this->name_buffer), "%Y%m%dT%H%M%SZ");
+	{
+		format_to_fixed_z buf(name_buffer, lastof(name_buffer));
+		buf.append("inconsistency-");
+		UTCTime::FormatTo(buf, "%Y%m%dT%H%M%SZ");
+		buf.finalise();
+	}
 
 	printf("Inconsistency encountered, generating diagnostics log...\n");
+
+	format_buffer buffer;
 	this->FillInconsistencyLog(buffer, info);
 
-	bool bret = this->WriteCrashLog(buffer, filename, lastof(filename), name_buffer);
+	bool bret = this->WriteGeneralLogFile(buffer, filename, lastof(filename), name_buffer);
 	if (bret) {
 		printf("Inconsistency log written to %s. Please add this file to any bug reports.\n\n", filename);
 	} else {
@@ -1098,24 +1123,24 @@ void CrashLog::MakeInconsistencyLog(const InconsistencyExtraInfo &info) const
  * information like paths to the console.
  * @return true when everything is made successfully.
  */
-void CrashLog::MakeCrashSavegameAndScreenshot()
+void CrashLog::MakeCrashSavegameAndScreenshot(const char *name_buffer)
 {
 	printf("Writing crash savegame...\n");
-	bool bret = this->WriteSavegame(this->savegame_filename, lastof(this->savegame_filename), this->name_buffer);
+	bool bret = this->WriteSavegame(this->savegame_filename, lastof(this->savegame_filename), name_buffer);
 	if (bret) {
 		printf("Crash savegame written to %s. Please add this file and the last (auto)save to any bug reports.\n\n", this->savegame_filename);
 	} else {
 		printf("Writing crash savegame failed. Please attach the last (auto)save to any bug reports.\n\n");
-		seprintf(this->savegame_filename, lastof(this->savegame_filename), "(failed to write crash savegame)");
+		strecpy(this->savegame_filename, "(failed to write crash savegame)");
 	}
 
 	printf("Writing crash screenshot...\n");
-	bret = this->WriteScreenshot(this->screenshot_filename, lastof(this->screenshot_filename), this->name_buffer);
+	bret = this->WriteScreenshot(this->screenshot_filename, lastof(this->screenshot_filename), name_buffer);
 	if (bret) {
 		printf("Crash screenshot written to %s. Please add this file to any bug reports.\n\n", this->screenshot_filename);
 	} else {
 		printf("Writing crash screenshot failed.\n\n");
-		seprintf(this->screenshot_filename, lastof(this->screenshot_filename), "(failed to write crash screenshot)");
+		strecpy(this->screenshot_filename, "(failed to write crash screenshot)");
 	}
 
 	this->SendSurvey();

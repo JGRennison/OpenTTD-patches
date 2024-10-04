@@ -120,13 +120,56 @@ static bool ExecReadStdoutThroughFile(const char *file, char *const *args, forma
 /**
  * OSX implementation for the crash logger.
  */
-class CrashLogOSX : public CrashLog {
+class CrashLogOSX final : public CrashLog {
 	/** Signal that has been thrown. */
 	int signum;
 	siginfo_t *si;
 	[[maybe_unused]] void *context;
 	bool signal_instruction_ptr_valid;
 	void *signal_instruction_ptr;
+
+	int crash_file = -1;
+
+	bool OpenLogFile(const char *filename) override
+	{
+		int fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, S_IRUSR | S_IWUSR);
+		if (fd >= 0) {
+			this->crash_file = fd;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	void WriteToFd(int fd, std::string_view data)
+	{
+		while (!data.empty()) {
+			ssize_t res = write(fd, data.data(), data.size());
+			if (res < 0) {
+				if (errno != EINTR) break;
+			} else if (res == 0) {
+				break;
+			} else {
+				data.remove_prefix(res);
+			}
+		}
+	}
+
+	void WriteToLogFile(std::string_view data) override
+	{
+		this->WriteToFd(this->crash_file, data);
+	}
+
+	void WriteToStdout(std::string_view data) override
+	{
+		this->WriteToFd(STDOUT_FILENO, data);
+	}
+
+	void CloseLogFile() override
+	{
+		close(this->crash_file);
+		this->crash_file = -1;
+	}
 
 	void LogOSVersion(format_target &buffer) const override
 	{
@@ -341,26 +384,34 @@ public:
 	{
 		bool ret = true;
 
-		printf("Crash encountered, generating crash log...\n");
+		this->WriteToStdout("Crash encountered, generating crash log...\n");
 
-		char *name_buffer_date = this->name_buffer + seprintf(this->name_buffer, lastof(this->name_buffer), "crash-");
-		UTCTime::Format(name_buffer_date, lastof(this->name_buffer), "%Y%m%dT%H%M%SZ");
+		char name_buffer[64];
+		{
+			format_to_fixed_z buf(name_buffer, lastof(name_buffer));
+			buf.append("crash-");
+			UTCTime::FormatTo(buf, "%Y%m%dT%H%M%SZ");
+			buf.finalise();
+		}
 
-		printf("Writing crash log to disk...\n");
-		bool bret = this->WriteCrashLog("", this->crashlog_filename, lastof(this->crashlog_filename), this->name_buffer, &(this->crash_file));
+		this->WriteToStdout("Writing crash log to disk...\n");
+		this->PrepareLogFileName(this->crashlog_filename, lastof(this->crashlog_filename), name_buffer);
+		bool bret = this->OpenLogFile(this->crashlog_filename);
 		if (bret) {
-			printf("Crash log written to %s. Please add this file to any bug reports.\n\n", this->crashlog_filename);
+			format_buffer_fixed<1024> buf;
+			buf.format("Crash log written to {}. Please add this file to any bug reports.\n\n", this->crashlog_filename);
+			this->WriteToStdout(buf);
 		} else {
-			printf("Writing crash log failed. Please attach the output above to any bug reports.\n\n");
+			this->WriteToStdout("Writing crash log failed. Please attach the output above to any bug reports.\n\n");
 			ret = false;
 		}
 		this->crash_buffer_write = buffer;
 
 		char *end = this->FillCrashLog(buffer, last);
 		this->CloseCrashLogFile(end);
-		printf("Crash log generated.\n\n");
+		this->WriteToStdout("Crash log generated.\n\n");
 
-		printf("Writing crash savegame...\n");
+		this->WriteToStdout("Writing crash savegame...\n");
 		_savegame_DBGL_data = buffer;
 		_save_DBGC_data = true;
 		if (!this->WriteSavegame(this->savegame_filename, lastof(this->savegame_filename), name_buffer)) {
@@ -368,7 +419,7 @@ public:
 			ret = false;
 		}
 
-		printf("Writing crash screenshot...\n");
+		this->WriteToStdout("Writing crash screenshot...\n");
 		SetScreenshotAuxiliaryText("Crash Log", buffer);
 		if (!this->WriteScreenshot(this->screenshot_filename, lastof(this->screenshot_filename), name_buffer)) {
 			this->screenshot_filename[0] = '\0';
