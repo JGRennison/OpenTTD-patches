@@ -37,6 +37,7 @@
 #include "zoom_func.h"
 #include "road_gui.h"
 #include "town.h"
+#include "dropdown_common_type.h"
 #include "dropdown_func.h"
 #include "core/geometry_func.hpp"
 
@@ -45,7 +46,6 @@
 #include "table/strings.h"
 
 #include "safeguards.h"
-#include <dropdown_common_type.h>
 
 enum DemolishConfirmMode {
 	DCM_OFF,
