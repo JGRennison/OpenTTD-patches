@@ -108,11 +108,10 @@ public:
 		this->target.push_back(c);
 	}
 
-	template <typename U>
-	void append(const U* begin, const U* end)
+	void append(const char* begin, const char* end)
 	{
 		if (has_overflowed()) return;
-		this->target.append<U>(begin, end);
+		this->target.append<char>(begin, end);
 	}
 
 	void append(std::string_view str) { this->append(str.begin(), str.end()); }
