@@ -128,6 +128,9 @@ void InitRoadTypes()
 		}
 	}
 	std::sort(_sorted_roadtypes.begin(), _sorted_roadtypes.end(), CompareRoadTypes);
+
+	extern void ClearPublicRoadsWindowSelectedPublicRoadsType();
+	ClearPublicRoadsWindowSelectedPublicRoadsType();
 }
 
 void InitRoadTypesCaches()

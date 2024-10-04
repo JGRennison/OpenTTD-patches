@@ -513,6 +513,11 @@ static void CommonRaiseLowerBigLand(TileIndex tile, int mode)
 
 static RoadType _selected_public_road_type = INVALID_ROADTYPE; ///< Public road type. This is static to preserve the selected road type between window openings.
 
+void ClearPublicRoadsWindowSelectedPublicRoadsType()
+{
+	_selected_public_road_type = INVALID_ROADTYPE;
+}
+
 /** Public roads selector and builder mini-window. */
 struct PublicRoadsWindow : Window {
 
@@ -520,6 +525,10 @@ struct PublicRoadsWindow : Window {
 	{
 		this->CreateNestedTree();
 		this->FinishInitNested(window_number);
+	}
+
+	void OnInit() override
+	{
 		if (_selected_public_road_type == INVALID_ROADTYPE) _selected_public_road_type = GetTownRoadType();
 	}
 
