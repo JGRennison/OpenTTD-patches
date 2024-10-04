@@ -671,8 +671,7 @@ struct BuildRailToolbarWindow : Window {
 	{
 		if (widget == WID_RAT_POLYRAIL) {
 			Dimension d = GetSpriteSize(SPR_BLOT);
-			uint offset = this->IsWidgetLowered(WID_RAT_POLYRAIL) ? 1 : 0;
-			DrawSprite(SPR_BLOT, PALETTE_TO_GREY, (r.left + r.right - d.width) / 2 + offset, (r.top + r.bottom - d.height) / 2 + offset);
+			DrawSprite(SPR_BLOT, PALETTE_TO_GREY, (r.left + r.right - d.width) / 2, (r.top + r.bottom - d.height) / 2);
 		}
 	}
 
