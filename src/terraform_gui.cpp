@@ -511,7 +511,7 @@ static void CommonRaiseLowerBigLand(TileIndex tile, int mode)
 	}
 }
 
-static RoadType _public_road_type = GetTownRoadType(); ///< Public road type. This is static to preserve the selected road type between window openings.
+static RoadType _selected_public_road_type = GetTownRoadType(); ///< Public road type. This is static to preserve the selected road type between window openings.
 
 /** Public roads selector and builder mini-window. */
 struct PublicRoadsWindow : Window {
@@ -529,7 +529,7 @@ struct PublicRoadsWindow : Window {
 				extern void GeneratePublicRoads(PublicRoadsConstruction build_mode, RoadType road_type);
 				PublicRoadsConstruction build_mode = _settings_game.game_creation.build_public_roads;
 				if (build_mode == PRC_NONE) build_mode = PRC_WITH_CURVES;
-				GeneratePublicRoads(build_mode, _public_road_type);
+				GeneratePublicRoads(build_mode, _selected_public_road_type);
 				break;
 			}
 
@@ -557,7 +557,7 @@ struct PublicRoadsWindow : Window {
 					road_types.push_back(MakeDropDownListIconItem(GetSpriteSize(rti->gui_sprites.build_x_road), rti->gui_sprites.build_x_road, PAL_NONE, str, town_road, false));
 				}
 
-				ShowDropDownList(this, std::move(road_types), _public_road_type, widget);
+				ShowDropDownList(this, std::move(road_types), _selected_public_road_type, widget);
 				break;
 			}
 		}
@@ -566,7 +566,7 @@ struct PublicRoadsWindow : Window {
 	void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		if (widget == WID_PR_PUBLIC_ROADS_TYPE_DROPDOWN) {
-			_public_road_type = (RoadType)index;
+			_selected_public_road_type = (RoadType)index;
 		}
 
 		this->SetDirty();
@@ -586,7 +586,7 @@ struct PublicRoadsWindow : Window {
 			{
 				// instead of using a string put the dropdownlist entry in there instead
 				// @see DropdownWindow::DrawWidget()
-				const RoadTypeInfo *rti = GetRoadTypeInfo(_public_road_type);
+				const RoadTypeInfo *rti = GetRoadTypeInfo(_selected_public_road_type);
 
 				Dimension d = { 0, 0 };
 				d = maxdim(d, GetSpriteSize(rti->gui_sprites.build_x_road));
@@ -594,7 +594,7 @@ struct PublicRoadsWindow : Window {
 				SetDParam(1, rti->max_speed / 2);
 				StringID str = rti->max_speed > 0 ? STR_TOOLBAR_RAILTYPE_VELOCITY : STR_JUST_STRING;
 
-				auto item = MakeDropDownListIconItem(d, rti->gui_sprites.build_x_road, PAL_NONE, str, _public_road_type);
+				auto item = MakeDropDownListIconItem(d, rti->gui_sprites.build_x_road, PAL_NONE, str, _selected_public_road_type);
 				auto item_height = item->Height();
 
 				Rect ir = r.Shrink(WidgetDimensions::scaled.dropdownlist);
