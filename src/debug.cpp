@@ -211,7 +211,7 @@ void debug_print(DebugLevelID dbg, int8_t level, std::string_view msg)
 	DebugIntlSetup(buf, dbg, level);
 	size_t prefix_size = buf.size();
 
-	buf.append(msg.begin(), msg.end());
+	buf.append(msg.data(), msg.data() + msg.size());
 	debug_print_partial_buffer(dbg, level, buf, prefix_size);
 }
 
