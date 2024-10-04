@@ -114,7 +114,7 @@ public:
 		this->target.append<char>(begin, end);
 	}
 
-	void append(std::string_view str) { this->append(str.begin(), str.end()); }
+	void append(std::string_view str) { this->append(str.data(), str.data() + str.size()); }
 
 	template <typename F>
 	void append_ptr_last_func(size_t to_reserve, F func)
