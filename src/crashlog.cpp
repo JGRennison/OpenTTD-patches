@@ -889,32 +889,6 @@ void CrashLog::CloseCrashLogFile(const char *end)
 	return res;
 }
 
-#ifdef DEDICATED
-static bool CopyAutosave(const std::string &old_name, const std::string &new_name)
-{
-	FILE *old_fh = FioFOpenFile(old_name, "rb", AUTOSAVE_DIR);
-	if (old_fh == nullptr) return false;
-	auto guard1 = scope_guard([=]() {
-		FioFCloseFile(old_fh);
-	});
-	FILE *new_fh = FioFOpenFile(new_name, "wb", AUTOSAVE_DIR);
-	if (new_fh == nullptr) return false;
-	auto guard2 = scope_guard([=]() {
-		FioFCloseFile(new_fh);
-	});
-
-	char buffer[4096 * 4];
-	size_t length;
-	do {
-		length = fread(buffer, 1, lengthof(buffer), old_fh);
-		if (fwrite(buffer, 1, length, new_fh) != length) {
-			return false;
-		}
-	} while (length == lengthof(buffer));
-	return true;
-}
-#endif
-
 void CrashLog::SendSurvey() const
 {
 	if (_game_mode == GM_NORMAL) {
@@ -947,11 +921,26 @@ void CrashLog::MakeCrashLog(char *buffer, const char *last)
 		FiosNumberedSaveName &autosave = GetAutoSaveFiosNumberedSaveName();
 		int num = autosave.GetLastNumber();
 		if (num >= 0) {
-			std::string old_file = autosave.FilenameUsingNumber(num, "");
-			char save_suffix[MAX_PATH];
-			format_to_fixed_z::format_to(save_suffix, lastof(save_suffix), "-({})", name_buffer);
-			std::string new_file = autosave.FilenameUsingNumber(num, save_suffix);
-			if (CopyAutosave(old_file, new_file)) {
+			char old_file[MAX_PATH];
+			{
+				format_to_fixed_z buf(old_file, lastof(old_file));
+				buf.append(autosave.GetSavePath());
+				autosave.FilenameUsingNumber(buf, num, "");
+				buf.finalise();
+			}
+			char new_file[MAX_PATH];
+			{
+				char save_suffix[MAX_PATH];
+				format_to_fixed_z::format_to(save_suffix, lastof(save_suffix), "-({})", name_buffer);
+
+				format_to_fixed_z buf(new_file, lastof(new_file));
+				buf.append(autosave.GetSavePath());
+				autosave.FilenameUsingNumber(buf, num, save_suffix);
+				buf.finalise();
+			}
+
+			extern bool FioCopyFile(const char *old_name, const char *new_name);
+			if (FioCopyFile(old_file, new_file)) {
 				format_buffer_fixed<1024> buf;
 				buf.format("Saving copy of last autosave: {} -> {}\n\n", old_file, new_file);
 				this->WriteToStdout(buf);

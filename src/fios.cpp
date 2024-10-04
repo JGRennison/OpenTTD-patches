@@ -21,6 +21,7 @@
 #include "strings_func.h"
 #include "tar_type.h"
 #include "core/container_func.hpp"
+#include "core/format.hpp"
 #include <sys/stat.h>
 #include <functional>
 #include <optional>
@@ -750,6 +751,8 @@ FiosNumberedSaveName::FiosNumberedSaveName(const std::string &prefix) : prefix(p
 	static std::optional<std::string> _autosave_path;
 	if (!_autosave_path) _autosave_path = FioFindDirectory(AUTOSAVE_DIR);
 
+	this->save_path = *_autosave_path;
+
 	static std::string _prefix; ///< Static as the lambda needs access to it.
 
 	/* Callback for FiosFileScanner. */
@@ -794,12 +797,12 @@ std::string FiosNumberedSaveName::Filename()
 std::string FiosNumberedSaveName::FilenameUsingMaxSaves(int max_saves)
 {
 	if (++this->number >= max_saves) this->number = 0;
-	return this->FilenameUsingNumber(this->number, "");
+	return fmt::format("{}{}.sav", this->prefix, this->number);
 }
 
-std::string FiosNumberedSaveName::FilenameUsingNumber(int num, const char *suffix) const
+void FiosNumberedSaveName::FilenameUsingNumber(format_target &buffer, int num, const char *suffix) const
 {
-	return fmt::format("{}{}{}.sav", this->prefix, num, suffix);
+	buffer.format("{}{}{}.sav", this->prefix, num, suffix);
 }
 
 /**

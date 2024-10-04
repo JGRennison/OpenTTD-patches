@@ -122,6 +122,9 @@ bool HandleBootstrap();
 void OnTick_Companies(bool main_tick);
 void OnTick_LinkGraph();
 
+FiosNumberedSaveName &GetAutoSaveFiosNumberedSaveName();
+FiosNumberedSaveName &GetLongTermAutoSaveFiosNumberedSaveName();
+
 extern Company *DoStartupNewCompany(bool is_ai, CompanyID company = INVALID_COMPANY);
 extern void OSOpenBrowser(const std::string &url);
 extern void ShowOSErrorBox(const char *buf, bool system);
@@ -1006,6 +1009,11 @@ int openttd_main(std::span<char * const> arguments)
 		ShutdownGame();
 		return ret;
 	}
+
+#ifdef DEDICATED
+	/* Pre-initialise autosave sequence for dedicated servers (for autosave copy on crash) */
+	GetAutoSaveFiosNumberedSaveName();
+#endif
 
 	VideoDriver::GetInstance()->ClaimMousePointer();
 

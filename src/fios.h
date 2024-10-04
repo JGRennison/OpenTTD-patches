@@ -79,11 +79,13 @@ struct FiosNumberedSaveName {
 	FiosNumberedSaveName(const std::string &prefix);
 	std::string Filename();
 	std::string FilenameUsingMaxSaves(int max_saves);
-	std::string FilenameUsingNumber(int num, const char *suffix) const;
+	void FilenameUsingNumber(struct format_target &buffer, int num, const char *suffix) const;
 	std::string Extension();
 	int GetLastNumber() const { return this->number; }
+	std::string_view GetSavePath() const { return this->save_path; }
 private:
 	std::string prefix;
+	std::string save_path;
 	int number;
 };
 
