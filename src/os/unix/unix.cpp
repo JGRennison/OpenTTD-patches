@@ -17,6 +17,7 @@
 #include "../../string_func.h"
 #include "../../fios.h"
 #include "../../thread.h"
+#include "../../scope.h"
 
 
 #include <dirent.h>
@@ -25,6 +26,7 @@
 #include <time.h>
 #include <signal.h>
 #include <pthread.h>
+#include <fcntl.h>
 
 #ifdef WITH_SDL2
 #include <SDL.h>
@@ -99,6 +101,46 @@ bool FiosIsValidFile(const char *path, const struct dirent *ent, struct stat *sb
 bool FiosIsHiddenFile(const struct dirent *ent)
 {
 	return ent->d_name[0] == '.';
+}
+
+bool FioCopyFile(const char *old_name, const char *new_name)
+{
+	int old_fd = open(old_name, O_RDONLY, 0);
+	if (old_fd < 0) return false;
+	auto guard1 = scope_guard([=]() {
+		close(old_fd);
+	});
+	int new_fd = open(new_name, O_CREAT | O_WRONLY | O_TRUNC, 0666);
+	if (new_fd < 0) return false;
+	auto guard2 = scope_guard([=]() {
+		close(new_fd);
+	});
+
+	char buffer[4096 * 4];
+	while (true) {
+		ssize_t res = read(old_fd, buffer, lengthof(buffer));
+		if (res < 0) {
+			if (errno == EINTR) continue;
+			return false;
+		} else if (res == 0) {
+			break;
+		}
+
+		size_t pos = 0;
+		size_t len = (size_t)res;
+
+		while (pos < len) {
+			res = write(new_fd, buffer + pos, len - pos);
+			if (res < 0) {
+				if (errno != EINTR) return false;;
+			} else if (res == 0) {
+				return false;
+			} else {
+				pos += (size_t)res;
+			}
+		}
+	}
+	return true;
 }
 
 #ifdef WITH_ICONV

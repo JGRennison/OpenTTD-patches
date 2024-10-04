@@ -238,6 +238,15 @@ bool FiosIsHiddenFile(const struct dirent *ent)
 	return (ent->dir->fd.dwFileAttributes & (FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM)) != 0;
 }
 
+bool FioCopyFile(const char *old_name, const char *new_name)
+{
+	wchar_t w_old_name[MAX_PATH];
+	wchar_t w_new_name[MAX_PATH];
+	convert_to_fs(old_name, w_old_name);
+	convert_to_fs(new_name, w_new_name);
+	return CopyFileW(w_old_name, w_new_name, false) != 0;
+}
+
 std::optional<uint64_t> FiosGetDiskFreeSpace(const std::string &path)
 {
 	UINT sem = SetErrorMode(SEM_FAILCRITICALERRORS);  // disable 'no-disk' message box
