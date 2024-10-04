@@ -423,7 +423,7 @@ void BufferDeserialisationHelper<T>::ReturnDeserialisationBuffer(Deserialisation
 
 	auto &pos = self->GetDeserialisationPosition();
 	this->CanRecvBytes(b.pos);
-	pos += b.pos;
+	pos += static_cast<std::remove_reference_t<decltype(pos)>>(b.pos);
 	b.buffer = nullptr;
 }
 
