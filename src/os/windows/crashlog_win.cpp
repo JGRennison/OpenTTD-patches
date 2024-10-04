@@ -160,7 +160,7 @@ static const char *GetAccessViolationTypeString(uint type)
 		buffer.format(
 				" Exception:  {:08X}\n"
 				" Location:   {:X}\n",
-				(int)record->ExceptionCode,
+				record->ExceptionCode,
 				(size_t)record->ExceptionAddress
 		);
 		if (record->ExceptionCode == 0xC0000005 && record->NumberParameters == 2) {
