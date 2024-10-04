@@ -599,7 +599,7 @@ struct PublicRoadsWindow : Window {
 
 				Rect ir = r.Shrink(WidgetDimensions::scaled.dropdownlist);
 				int y = ir.top;
-				Rect full{ ir.left, y, ir.right, y + item_height - 1 };
+				Rect full{ ir.left, y, ir.right, y + (int)item_height - 1 };
 				item->Draw(full, full.Shrink(WidgetDimensions::scaled.dropdowntext, RectPadding::zero), false, this->GetWidget<NWidgetCore>(widget)->colour);
 				break;
 			}
