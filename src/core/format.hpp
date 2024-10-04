@@ -278,6 +278,18 @@ struct format_to_fixed_z final : public format_to_fixed_base {
 	}
 };
 
+/**
+ * format_target subtype for writing to a built-in fixed-size char buffer.
+ *
+ * Does not null-terminate.
+ */
+template<size_t N>
+struct format_buffer_fixed final : public format_to_fixed_base {
+	char strbuffer[N];
+
+	format_buffer_fixed() : format_to_fixed_base(this->strbuffer, N, FL_FIXED) {}
+};
+
 const char *format_target::data() const noexcept
 {
 	if ((this->flags & FL_FIXED) != 0) {
