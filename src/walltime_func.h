@@ -27,19 +27,9 @@ struct LocalTimeToStruct {
 	}
 };
 
-/** Helper for safely converting a std::time_t to a UTC time std::tm using gmtime_s. */
+/** Helper for safely converting a std::time_t to a UTC time std::tm. */
 struct UTCTimeToStruct {
-	static inline std::tm ToTimeStruct(std::time_t time_since_epoch)
-	{
-		std::tm time = {};
-#ifdef _WIN32
-		/* Windows has swapped the parameters around for gmtime_s. */
-		gmtime_s(&time, &time_since_epoch);
-#else
-		gmtime_r(&time_since_epoch, &time);
-#endif
-		return time;
-	}
+	static std::tm ToTimeStruct(std::time_t time_since_epoch);
 };
 
 /**

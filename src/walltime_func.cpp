@@ -11,7 +11,46 @@
 #include "walltime_func.h"
 #include "core/format.hpp"
 
+#include <chrono>
+
 #include "safeguards.h"
+
+std::tm UTCTimeToStruct::ToTimeStruct(std::time_t time_since_epoch)
+{
+	std::tm time = {};
+
+#if (defined(__cpp_lib_chrono) && __cpp_lib_chrono >= 201907L) || (defined(__GNUC__) && (__GNUC__ >= 11))
+
+	const std::chrono::time_point syst = std::chrono::system_clock::from_time_t(time_since_epoch);
+	const std::chrono::sys_days sysday = std::chrono::floor<std::chrono::days>(syst);
+	const std::chrono::year_month_day ymd{sysday};
+	const std::chrono::sys_days first_day_of_year = std::chrono::year_month_day(ymd.year(), std::chrono::January, std::chrono::day(1));
+	const std::chrono::weekday weekday{sysday};
+	const std::chrono::hh_mm_ss tod{syst - sysday};
+
+	time.tm_sec = tod.seconds().count();
+	time.tm_min = tod.minutes().count();
+	time.tm_hour = tod.hours().count();
+	time.tm_mday = (int)(uint)ymd.day();
+	time.tm_mon = (int)(uint)ymd.month() - 1;
+	time.tm_year = (int)ymd.year() - 1900;
+	time.tm_wday = weekday.c_encoding();
+	time.tm_yday = (sysday - first_day_of_year).count();
+	time.tm_mday = (int)(uint)ymd.day();
+
+#else /* chrono */
+
+#ifdef _WIN32
+	/* Windows has swapped the parameters around for gmtime_s. */
+	gmtime_s(&time, &time_since_epoch);
+#else
+	gmtime_r(&time_since_epoch, &time);
+#endif
+
+#endif /* chrono */
+
+	return time;
+}
 
 #ifndef _MSC_VER
 		/* GCC bug #39438; unlike for printf where the appropriate attribute prevent the
