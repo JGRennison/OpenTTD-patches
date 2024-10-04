@@ -128,10 +128,6 @@ class CrashLogOSX : public CrashLog {
 	bool signal_instruction_ptr_valid;
 	void *signal_instruction_ptr;
 
-	char filename_log[MAX_PATH];        ///< Path of crash.log
-	char filename_save[MAX_PATH];       ///< Path of crash.sav
-	char filename_screenshot[MAX_PATH]; ///< Path of crash.(png|bmp|pcx)
-
 	void LogOSVersion(format_target &buffer) const override
 	{
 		int ver_maj, ver_min, ver_bug;
@@ -324,10 +320,6 @@ public:
 	 */
 	CrashLogOSX(int signum, siginfo_t *si, void *context) : signum(signum), si(si), context(context)
 	{
-		filename_log[0] = '\0';
-		filename_save[0] = '\0';
-		filename_screenshot[0] = '\0';
-
 		this->signal_instruction_ptr_valid = false;
 
 #ifdef WITH_UCONTEXT
@@ -342,12 +334,7 @@ public:
 #endif /* WITH_UCONTEXT */
 	}
 
-	CrashLogOSX(DesyncTag tag) : signum(0), si(nullptr), context(nullptr), signal_instruction_ptr_valid(false)
-	{
-		filename_log[0] = '\0';
-		filename_save[0] = '\0';
-		filename_screenshot[0] = '\0';
-	}
+	CrashLogOSX(DesyncTag tag) : signum(0), si(nullptr), context(nullptr), signal_instruction_ptr_valid(false) {}
 
 	/** Generate the crash log. */
 	bool MakeOSXCrashLog(char *buffer, const char *last)
@@ -360,9 +347,9 @@ public:
 		UTCTime::Format(name_buffer_date, lastof(this->name_buffer), "%Y%m%dT%H%M%SZ");
 
 		printf("Writing crash log to disk...\n");
-		bool bret = this->WriteCrashLog("", this->filename_log, lastof(this->filename_log), this->name_buffer, &(this->crash_file));
+		bool bret = this->WriteCrashLog("", this->crashlog_filename, lastof(this->crashlog_filename), this->name_buffer, &(this->crash_file));
 		if (bret) {
-			printf("Crash log written to %s. Please add this file to any bug reports.\n\n", this->filename_log);
+			printf("Crash log written to %s. Please add this file to any bug reports.\n\n", this->crashlog_filename);
 		} else {
 			printf("Writing crash log failed. Please attach the output above to any bug reports.\n\n");
 			ret = false;
@@ -376,15 +363,15 @@ public:
 		printf("Writing crash savegame...\n");
 		_savegame_DBGL_data = buffer;
 		_save_DBGC_data = true;
-		if (!this->WriteSavegame(filename_save, lastof(filename_save), this->name_buffer)) {
-			filename_save[0] = '\0';
+		if (!this->WriteSavegame(this->savegame_filename, lastof(this->savegame_filename), name_buffer)) {
+			this->savegame_filename[0] = '\0';
 			ret = false;
 		}
 
 		printf("Writing crash screenshot...\n");
 		SetScreenshotAuxiliaryText("Crash Log", buffer);
-		if (!this->WriteScreenshot(filename_screenshot, lastof(filename_screenshot), this->name_buffer)) {
-			filename_screenshot[0] = '\0';
+		if (!this->WriteScreenshot(this->screenshot_filename, lastof(this->screenshot_filename), name_buffer)) {
+			this->screenshot_filename[0] = '\0';
 			ret = false;
 		}
 
@@ -411,7 +398,7 @@ public:
 				 "This will greatly help debugging. The correct place to do this is https://www.tt-forums.net/viewtopic.php?f=33&t=73469"
 				 " or https://github.com/JGRennison/OpenTTD-patches\n\n"
 				 "Generated file(s):\n%s\n%s\n%s",
-				 this->filename_log, this->filename_save, this->filename_screenshot);
+				 this->crashlog_filename, this->savegame_filename, this->screenshot_filename);
 
 		ShowMacDialog(crash_title, message, "Quit");
 	}

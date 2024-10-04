@@ -143,6 +143,13 @@ public:
 	/** Buffer for the filename of the crash screenshot */
 	char screenshot_filename[MAX_PATH];
 
+	CrashLog() {
+		this->crashlog_filename[0] = '\0';
+		this->crashdump_filename[0] = '\0';
+		this->savegame_filename[0] = '\0';
+		this->screenshot_filename[0] = '\0';
+	}
+
 	/** Stub destructor to silence some compilers. */
 	virtual ~CrashLog() = default;
 

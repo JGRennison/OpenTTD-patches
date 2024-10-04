@@ -101,13 +101,7 @@ public:
 	 * @param ep the data related to the exception.
 	 */
 	CrashLogWindows(EXCEPTION_POINTERS *ep = nullptr) :
-		ep(ep), crash_thread_id(GetCurrentThreadId())
-	{
-		this->crashlog_filename[0] = '\0';
-		this->crashdump_filename[0] = '\0';
-		this->screenshot_filename[0] = '\0';
-		this->name_buffer[0] = '\0';
-	}
+		ep(ep), crash_thread_id(GetCurrentThreadId()) {}
 
 	/**
 	 * Points to the current crash log.
