@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "console_internal.h"
+#include "crashlog.h"
 #include "debug.h"
 #include "engine_func.h"
 #include "landscape.h"

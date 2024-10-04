@@ -693,11 +693,15 @@ void SetSelfAsGameThread()
 
 static BOOL (WINAPI *_SetThreadStackGuarantee)(PULONG) = nullptr;
 
-void PerThreadSetup()
+void PerThreadSetup(bool non_main_thread)
 {
 	if (_SetThreadStackGuarantee != nullptr) {
 		ULONG stacksize = 65536;
 		_SetThreadStackGuarantee(&stacksize);
+	}
+	if (non_main_thread) {
+		extern void CrashLogWindowsInitThread();
+		CrashLogWindowsInitThread();
 	}
 }
 

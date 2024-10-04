@@ -12,7 +12,6 @@
 
 #include "debug.h"
 #include "error_func.h"
-#include "crashlog.h"
 #include <system_error>
 #include <thread>
 #include <mutex>
@@ -51,7 +50,7 @@ void SetSelfAsGameThread();
 /**
  * Perform per-thread setup
  */
-void PerThreadSetup();
+void PerThreadSetup(bool non_main_thread);
 
 /**
  * Setup thread functionality required for later calls to PerThreadSetup
@@ -105,8 +104,7 @@ inline bool StartNewThread(std::thread *thr, const char *name, TFn&& _Fx, TArgs&
 				}
 
 				SetCurrentThreadName(name);
-				PerThreadSetup();
-				CrashLog::InitThread();
+				PerThreadSetup(true);
 				try {
 					/* Call user function with the given arguments. */
 					F(A...);

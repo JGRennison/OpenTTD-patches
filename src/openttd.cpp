@@ -714,7 +714,7 @@ static std::vector<OptionData> CreateOptions()
 int openttd_main(std::span<char * const> arguments)
 {
 	SetSelfAsMainThread();
-	PerThreadSetup();
+	PerThreadSetup(false);
 	SlXvSetStaticCurrentVersions();
 
 	_game_session_stats.start_time = std::chrono::steady_clock::now();

@@ -316,7 +316,7 @@ void SetSelfAsGameThread()
 #endif
 }
 
-void PerThreadSetup() { }
+void PerThreadSetup(bool non_main_thread) { }
 
 void PerThreadSetupInit() { }
 

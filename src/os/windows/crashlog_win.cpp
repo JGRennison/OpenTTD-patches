@@ -56,6 +56,8 @@
 #pragma GCC diagnostic ignored "-Wclobbered"
 #endif
 
+void CrashLogWindowsInitThread();
+
 [[noreturn]] static void ImmediateExitProcess(uint exit_code)
 {
 	/* TerminateProcess may fail in some special edge cases, fall back to ExitProcess in this case */
@@ -783,7 +785,7 @@ static void CDECL CustomAbort(int)
 
 /* static */ void CrashLog::InitialiseCrashLog()
 {
-	CrashLog::InitThread();
+	CrashLogWindowsInitThread();
 
 	/* SIGABRT is not an unhandled exception, so we need to intercept it. */
 	signal(SIGABRT, CustomAbort);
@@ -802,7 +804,10 @@ static void CDECL CustomAbort(int)
 	}
 }
 
-/* static */ void CrashLog::InitThread()
+/**
+ * Prepare crash log handler for a newly started thread.
+ */
+void CrashLogWindowsInitThread()
 {
 #if defined(_M_AMD64) || defined(_M_ARM64)
 	CONTEXT ctx;
