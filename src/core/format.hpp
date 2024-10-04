@@ -276,6 +276,18 @@ struct format_to_fixed_z final : public format_to_fixed_base {
 		*terminator = '\0';
 		return terminator;
 	}
+
+	/**
+	 * Convenience wrapper to set up a format_to_fixed_z, call format, then finalise it (adding a null-terminator).
+	 * This is broadly equivalent to seprintf.
+	 */
+	template <typename... T>
+	static char *format_to(char *dst, const char *last, fmt::format_string<T...> fmtstr, T&&... args)
+	{
+		format_to_fixed_z buf(dst, last);
+		buf.vformat(fmtstr, fmt::make_format_args(args...));
+		return buf.finalise();
+	}
 };
 
 /**
