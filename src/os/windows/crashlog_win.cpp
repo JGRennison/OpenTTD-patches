@@ -47,11 +47,9 @@
 
 /* fmt format specification for 32/64-bit addresses. */
 #ifdef _M_AMD64
-#define FMT_PTR "0x{:016}" PRINTF_SIZEX_SUFFIX
-#define FMT_LOC "{:.16}" PRINTF_SIZEX_SUFFIX
+#define FMT_LOC "{:016X}"
 #else
-#define FMT_PTR "0x{:08}" PRINTF_SIZEX_SUFFIX
-#define FMT_LOC "{:.8}" PRINTF_SIZEX_SUFFIX
+#define FMT_LOC "{:08X}"
 #endif
 
 #if !defined(_MSC_VER) && defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 3))
@@ -174,7 +172,7 @@ static const char *GetAccessViolationTypeString(uint type)
 		} else {
 			for (uint i = 0; i < (uint) record->NumberParameters; i++) {
 				buffer.format(
-						" Info %u:     " FMT_LOC "\n",
+						" Info {}:     " FMT_LOC "\n",
 						i,
 						(size_t)record->ExceptionInformation[i]
 				);
@@ -221,11 +219,11 @@ static const char *GetAccessViolationTypeString(uint type)
 	buffer.append("Registers:\n");
 #ifdef _M_AMD64
 	buffer.format(
-		" RAX: " FMT_LOC " RBX: " FMT_LOC " RCX: " FMT_LOC " RDX: " FMT_LOC "\n"
-		" RSI: " FMT_LOC " RDI: " FMT_LOC " RBP: " FMT_LOC " RSP: " FMT_LOC "\n"
-		" R8:  " FMT_LOC " R9:  " FMT_LOC " R10: " FMT_LOC " R11: " FMT_LOC "\n"
-		" R12: " FMT_LOC " R13: " FMT_LOC " R14: " FMT_LOC " R15: " FMT_LOC "\n"
-		" RIP: " FMT_LOC " EFLAGS: {:.8X}\n",
+		" RAX: {:016X} RBX: {:016X} RCX: {:016X} RDX: {:016X}\n"
+		" RSI: {:016X} RDI: {:016X} RBP: {:016X} RSP: {:016X}\n"
+		" R8:  {:016X} R9:  {:016X} R10: {:016X} R11: {:016X}\n"
+		" R12: {:016X} R13: {:016X} R14: {:016X} R15: {:016X}\n"
+		" RIP: {:016X} EFLAGS: {:08X}\n",
 		ep->ContextRecord->Rax,
 		ep->ContextRecord->Rbx,
 		ep->ContextRecord->Rcx,
@@ -247,9 +245,9 @@ static const char *GetAccessViolationTypeString(uint type)
 	);
 #elif defined(_M_IX86)
 	buffer.format(
-		" EAX: {:.8X} EBX: {:.8X} ECX: {:.8X} EDX: {:.8X}\n"
-		" ESI: {:.8X} EDI: {:.8X} EBP: {:.8X} ESP: {:.8X}\n"
-		" EIP: {:.8X} EFLAGS: {:.8X}\n",
+		" EAX: {:08X} EBX: {:08X} ECX: {:08X} EDX: {:08X}\n"
+		" ESI: {:08X} EDI: {:08X} EBP: {:08X} ESP: {:08X}\n"
+		" EIP: {:08X} EFLAGS: {:08X}\n",
 		ep->ContextRecord->Eax,
 		ep->ContextRecord->Ebx,
 		ep->ContextRecord->Ecx,
@@ -263,14 +261,14 @@ static const char *GetAccessViolationTypeString(uint type)
 	);
 #elif defined(_M_ARM64)
 	buffer.format(
-		" X0:  " FMT_LOC " X1:  " FMT_LOC " X2:  " FMT_LOC " X3:  " FMT_LOC "\n"
-		" X4:  " FMT_LOC " X5:  " FMT_LOC " X6:  " FMT_LOC " X7:  " FMT_LOC "\n"
-		" X8:  " FMT_LOC " X9:  " FMT_LOC " X10: " FMT_LOC " X11: " FMT_LOC "\n"
-		" X12: " FMT_LOC " X13: " FMT_LOC " X14: " FMT_LOC " X15: " FMT_LOC "\n"
-		" X16: " FMT_LOC " X17: " FMT_LOC " X18: " FMT_LOC " X19: " FMT_LOC "\n"
-		" X20: " FMT_LOC " X21: " FMT_LOC " X22: " FMT_LOC " X23: " FMT_LOC "\n"
-		" X24: " FMT_LOC " X25: " FMT_LOC " X26: " FMT_LOC " X27: " FMT_LOC "\n"
-		" X28: " FMT_LOC " Fp:  " FMT_LOC " Lr:  " FMT_LOC "\n",
+		" X0:  {:016X} X1:  {:016X} X2:  {:016X} X3:  {:016X}\n"
+		" X4:  {:016X} X5:  {:016X} X6:  {:016X} X7:  {:016X}\n"
+		" X8:  {:016X} X9:  {:016X} X10: {:016X} X11: {:016X}\n"
+		" X12: {:016X} X13: {:016X} X14: {:016X} X15: {:016X}\n"
+		" X16: {:016X} X17: {:016X} X18: {:016X} X19: {:016X}\n"
+		" X20: {:016X} X21: {:016X} X22: {:016X} X23: {:016X}\n"
+		" X24: {:016X} X25: {:016X} X26: {:016X} X27: {:016X}\n"
+		" X28: {:016X} Fp:  {:016X} Lr:  {:016X}\n",
 		ep->ContextRecord->X0,
 		ep->ContextRecord->X1,
 		ep->ContextRecord->X2,
@@ -319,7 +317,7 @@ static const char *GetAccessViolationTypeString(uint type)
 		if (IsBadReadPtr(b, 1)) {
 			buffer.append(" ??"); // OCR: WAS: , 0);
 		} else {
-			buffer.format(" {:.2X}", *b);
+			buffer.format(" {:02X}", *b);
 		}
 		b++;
 	}
@@ -453,7 +451,7 @@ static const uint MAX_FRAMES     = 64;
 			}
 
 			/* Print module and instruction pointer. */
-			buffer.format("[{:02}] {:<20} " FMT_PTR, num, mod_name, (uintptr_t) frame.AddrPC.Offset);
+			buffer.format("[{:02}] {:<20} 0x" FMT_LOC, num, mod_name, (uintptr_t) frame.AddrPC.Offset);
 
 			/* Get symbol name and line info if possible. */
 			DWORD64 offset;
