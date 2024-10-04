@@ -15,10 +15,11 @@
 template <typename F>
 inline void ProcessLineByLine(std::string_view str, F line_functor)
 {
-	const char *p = str.begin();
-	const char *p2 = str.begin();
+	const char *p = str.data();
+	const char *p2 = str.data();
+	const char *end = str.data() + str.size();
 	/* Process output line by line */
-	for (; p2 != str.end(); p2++) {
+	for (; p2 != end; p2++) {
 		if (*p2 == '\n') {
 			line_functor(std::string_view(p, p2));
 			p = p2 + 1;
