@@ -320,10 +320,14 @@ void CDECL _intl_grfmsg(int severity, const char *str, ...)
  * is no file information available during that time.
  * @param severity debugging severity level, see debug.h
  * @param msg the message
+ * @param msg format arguments
  */
-void GrfMsgI(int severity, const std::string &msg)
+void GrfInfoVFmt(int severity, fmt::string_view msg, fmt::format_args args)
 {
-	Debug(grf, severity, "[{}:{}] {}", _cur.grfconfig->filename, _cur.nfo_line, msg);
+	format_buffer buf;
+	buf.format("[{}:{}] ", _cur.grfconfig->filename, _cur.nfo_line);
+	buf.vformat(msg, args);
+	debug_print(DebugLevelID::grf, severity, buf);
 }
 
 /**

@@ -437,8 +437,14 @@ void ResetPersistentNewGRFData();
 #define grfmsg(severity, ...) do { if ((severity) == 0 || GetDebugLevel(DebugLevelID::grf) >= (severity)) _intl_grfmsg(severity, __VA_ARGS__); } while(false)
 void CDECL _intl_grfmsg(int severity, const char *str, ...) WARN_FORMAT(2, 3);
 
-void GrfMsgI(int severity, const std::string &msg);
-#define GrfMsg(severity, format_string, ...) do { if ((severity) == 0 || GetDebugLevel(DebugLevelID::grf) >= (severity)) GrfMsgI(severity, fmt::format(FMT_STRING(format_string), ## __VA_ARGS__)); } while(false)
+template <typename... T>
+void GrfMsgIntl(int severity, fmt::format_string<T...> msg, T&&... args)
+{
+	extern void GrfInfoVFmt(int severity, fmt::string_view msg, fmt::format_args args);
+	GrfInfoVFmt(severity, msg, fmt::make_format_args(args...));
+}
+
+#define GrfMsg(severity, format_string, ...) do { if ((severity) == 0 || GetDebugLevel(DebugLevelID::grf) >= (severity)) GrfMsgIntl(severity, FMT_STRING(format_string), ## __VA_ARGS__); } while(false)
 
 bool GetGlobalVariable(uint8_t param, uint32_t *value, const GRFFile *grffile);
 
