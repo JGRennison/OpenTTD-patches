@@ -662,7 +662,7 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 			SetDParamStr(5, std::move(buf));
 			StringID msg;
 			if (EconTime::UsingWallclockUnits()) {
-				msg = (DayLengthFactor() > 1) ? STR_LINKGRAPH_STATS_TOOLTIP_PRODUCTION_INTERVAL : STR_LINKGRAPH_STATS_TOOLTIP_MINUTE;
+				msg = ReplaceWallclockMinutesUnit() ? STR_LINKGRAPH_STATS_TOOLTIP_PRODUCTION_INTERVAL : STR_LINKGRAPH_STATS_TOOLTIP_MINUTE;
 			} else {
 				msg = STR_LINKGRAPH_STATS_TOOLTIP_MONTH;
 			}

@@ -525,7 +525,7 @@ protected:
 		if (EconTime::UsingWallclockUnits()) {
 			auto *wid = this->GetWidget<NWidgetCore>(WID_GRAPH_FOOTER);
 			if (wid != nullptr) {
-				wid->SetDataTip((DayLengthFactor() > 1) ? STR_GRAPH_LAST_72_PRODUCTION_INTERVALS_TIME_LABEL : STR_GRAPH_LAST_72_MINUTES_TIME_LABEL, STR_NULL);
+				wid->SetDataTip(ReplaceWallclockMinutesUnit() ? STR_GRAPH_LAST_72_PRODUCTION_INTERVALS_TIME_LABEL : STR_GRAPH_LAST_72_MINUTES_TIME_LABEL, STR_NULL);
 			}
 		}
 
@@ -929,7 +929,7 @@ struct DeliveredCargoGraphWindow : ExcludingCargoBaseGraphWindow {
 		if (EconTime::UsingWallclockUnits()) {
 			auto *wid = this->GetWidget<NWidgetCore>(WID_GRAPH_FOOTER);
 			if (wid != nullptr) {
-				wid->SetDataTip((DayLengthFactor() > 1) ? STR_GRAPH_LAST_72_PRODUCTION_INTERVALS_TIME_LABEL : STR_GRAPH_LAST_72_MINUTES_TIME_LABEL, STR_NULL);
+				wid->SetDataTip(ReplaceWallclockMinutesUnit() ? STR_GRAPH_LAST_72_PRODUCTION_INTERVALS_TIME_LABEL : STR_GRAPH_LAST_72_MINUTES_TIME_LABEL, STR_NULL);
 			}
 		}
 

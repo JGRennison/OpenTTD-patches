@@ -1758,7 +1758,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 
 				case SCC_UNITS_MONTHS_OR_MINUTES: { // {UNITS_MONTHS_OR_MINUTES}
 					uint8_t realtime = EconTime::UsingWallclockUnits(_game_mode == GM_MENU);
-					if (realtime > 0 && DayLengthFactor() > 1) realtime++;
+					if (realtime > 0 && ReplaceWallclockMinutesUnit()) realtime++;
 					const auto &x = _units_time_months_or_minutes[realtime];
 					auto tmp_params = MakeParameters(x.c.ToDisplay(args.GetNextParameter<int64_t>()), x.decimal_places);
 					FormatString(builder, GetStringPtr(x.s), tmp_params);
@@ -1775,7 +1775,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 
 				case SCC_UNITS_YEARS_OR_MINUTES: { // {UNITS_YEARS_OR_MINUTES}
 					uint8_t realtime = EconTime::UsingWallclockUnits(_game_mode == GM_MENU);
-					if (realtime > 0 && DayLengthFactor() > 1) realtime++;
+					if (realtime > 0 && ReplaceWallclockMinutesUnit()) realtime++;
 					const auto &x = _units_time_years_or_minutes[realtime];
 					auto tmp_params = MakeParameters(x.c.ToDisplay(args.GetNextParameter<int64_t>()), x.decimal_places);
 					FormatString(builder, GetStringPtr(x.s), tmp_params);

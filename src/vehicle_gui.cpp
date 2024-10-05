@@ -2883,7 +2883,7 @@ static StringID _service_interval_dropdown_wallclock_daylength[] = {
 std::span<const StringID> GetServiceIntervalDropDownTexts()
 {
 	if (EconTime::UsingWallclockUnits()) {
-		return DayLengthFactor() > 1 ? _service_interval_dropdown_wallclock_daylength : _service_interval_dropdown_wallclock;
+		return ReplaceWallclockMinutesUnit() ? _service_interval_dropdown_wallclock_daylength : _service_interval_dropdown_wallclock;
 	} else {
 		return _service_interval_dropdown_calendar;
 	}
@@ -3365,13 +3365,13 @@ struct VehicleDetailsWindow : Window {
 				/* We're using wallclock units. Show minutes since last serviced. */
 				if (EconTime::UsingWallclockUnits()) {
 					int minutes_since_serviced = (EconTime::CurDate() - v->date_of_last_service).base() / EconTime::DAYS_IN_ECONOMY_WALLCLOCK_MONTH;
-					SetDParam(1, DayLengthFactor() > 1 ? STR_VEHICLE_DETAILS_LAST_SERVICE_PRODUCTION_INTERVALS_AGO : STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO);
+					SetDParam(1, ReplaceWallclockMinutesUnit() ? STR_VEHICLE_DETAILS_LAST_SERVICE_PRODUCTION_INTERVALS_AGO : STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO);
 					SetDParam(2, minutes_since_serviced);
 					StringID str;
 					if (v->ServiceIntervalIsPercent()) {
 						str = STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT;
 					} else {
-						str = DayLengthFactor() > 1 ? STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PRODUCTION_INTERVALS : STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES;
+						str = ReplaceWallclockMinutesUnit() ? STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PRODUCTION_INTERVALS : STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES;
 					}
 					DrawString(tr.left, tr.right, CenterBounds(r.top, r.bottom, GetCharacterHeight(FS_NORMAL)), str);
 					break;
@@ -3486,7 +3486,7 @@ struct VehicleDetailsWindow : Window {
 			if (v->ServiceIntervalIsPercent()) {
 				tool_tip = widget == WID_VD_INCREASE_SERVICING_INTERVAL ? STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_PERCENT : STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_PERCENT;
 			} else if (EconTime::UsingWallclockUnits()) {
-				if (DayLengthFactor() > 1) {
+				if (ReplaceWallclockMinutesUnit()) {
 					tool_tip = widget == WID_VD_INCREASE_SERVICING_INTERVAL ? STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_PRODINT : STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_PRODINT;
 				} else {
 					tool_tip = widget == WID_VD_INCREASE_SERVICING_INTERVAL ? STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_MINUTES : STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_MINUTES;

@@ -2052,7 +2052,7 @@ struct StationViewWindow : public Window {
 		}
 
 		if (EconTime::UsingWallclockUnits()) {
-			DrawString(tr, (DayLengthFactor() > 1) ? STR_STATION_VIEW_SUPPLY_RATINGS_TITLE_PRODUCTION_INTERVAL : STR_STATION_VIEW_SUPPLY_RATINGS_TITLE_MINUTE);
+			DrawString(tr, ReplaceWallclockMinutesUnit() ? STR_STATION_VIEW_SUPPLY_RATINGS_TITLE_PRODUCTION_INTERVAL : STR_STATION_VIEW_SUPPLY_RATINGS_TITLE_MINUTE);
 		} else {
 			DrawString(tr, STR_STATION_VIEW_SUPPLY_RATINGS_TITLE_MONTH);
 		}

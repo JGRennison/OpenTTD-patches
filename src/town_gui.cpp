@@ -603,7 +603,7 @@ public:
 
 		StringID str_last_period;
 		if (EconTime::UsingWallclockUnits()) {
-			str_last_period = (DayLengthFactor() > 1) ? STR_TOWN_VIEW_CARGO_LAST_PRODUCTION_INTERVAL_MAX : STR_TOWN_VIEW_CARGO_LAST_MINUTE_MAX;
+			str_last_period = ReplaceWallclockMinutesUnit() ? STR_TOWN_VIEW_CARGO_LAST_PRODUCTION_INTERVAL_MAX : STR_TOWN_VIEW_CARGO_LAST_MINUTE_MAX;
 		} else {
 			str_last_period = STR_TOWN_VIEW_CARGO_LAST_MONTH_MAX;
 		}

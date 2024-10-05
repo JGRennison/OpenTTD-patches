@@ -38,6 +38,11 @@ inline uint8_t DayLengthFactor()
 	return DateDetail::_effective_day_length;
 }
 
+inline bool ReplaceWallclockMinutesUnit()
+{
+	return DayLengthFactor() > 1 || _settings_time.time_in_minutes;
+}
+
 inline Ticks TicksPerCalendarDay()
 {
 	return DateDetail::_ticks_per_calendar_day;

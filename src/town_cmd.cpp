@@ -3630,7 +3630,7 @@ static CommandCost TownActionRoadRebuild(Town *t, DoCommandFlag flags)
 
 		StringID msg;
 		if (EconTime::UsingWallclockUnits()) {
-			msg = (DayLengthFactor() > 1) ? STR_NEWS_ROAD_REBUILDING_PERIODS : STR_NEWS_ROAD_REBUILDING_MINUTES;
+			msg = ReplaceWallclockMinutesUnit() ? STR_NEWS_ROAD_REBUILDING_PERIODS : STR_NEWS_ROAD_REBUILDING_MINUTES;
 		} else {
 			msg = STR_NEWS_ROAD_REBUILDING_MONTHS;
 		}
@@ -3787,7 +3787,7 @@ static CommandCost TownActionBuyRights(Town *t, DoCommandFlag flags)
 		CompanyNewsInformation *cni = new CompanyNewsInformation(Company::Get(_current_company));
 		SetDParam(0, STR_NEWS_EXCLUSIVE_RIGHTS_TITLE);
 		if (EconTime::UsingWallclockUnits()) {
-			SetDParam(1, (DayLengthFactor() > 1) ? STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_PERIOD : STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES);
+			SetDParam(1, ReplaceWallclockMinutesUnit() ? STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_PERIOD : STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES);
 		} else {
 			SetDParam(1, STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MONTHS);
 		}

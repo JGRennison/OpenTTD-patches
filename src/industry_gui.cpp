@@ -986,7 +986,7 @@ public:
 			if (first) {
 				if (has_accept) ir.top += WidgetDimensions::scaled.vsep_wide;
 				if (EconTime::UsingWallclockUnits()) {
-					DrawString(ir, (DayLengthFactor() > 1) ? STR_INDUSTRY_VIEW_PRODUCTION_LAST_PRODUCTION_INTERVAL_TITLE : STR_INDUSTRY_VIEW_PRODUCTION_LAST_MINUTE_TITLE);
+					DrawString(ir, ReplaceWallclockMinutesUnit() ? STR_INDUSTRY_VIEW_PRODUCTION_LAST_PRODUCTION_INTERVAL_TITLE : STR_INDUSTRY_VIEW_PRODUCTION_LAST_MINUTE_TITLE);
 				} else {
 					DrawString(ir, STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE);
 				}
