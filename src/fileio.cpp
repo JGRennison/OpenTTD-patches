@@ -384,7 +384,7 @@ bool FioRenameFile(const std::string &oldname, const std::string &newname)
 #if defined(_WIN32)
 	return MoveFileExW(OTTD2FS(oldname).c_str(), OTTD2FS(newname).c_str(), MOVEFILE_COPY_ALLOWED | MOVEFILE_REPLACE_EXISTING) != 0;
 #else
-	return rename(oldname.c_str(), newname.c_str()) == 0;
+	return rename(OTTD2FS(oldname).c_str(), OTTD2FS(newname).c_str()) == 0;
 #endif
 }
 

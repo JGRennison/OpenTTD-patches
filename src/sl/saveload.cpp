@@ -3091,7 +3091,7 @@ struct FileWriter : SaveFilter {
 		int stat_result = _wstat(OTTD2FS(this->temp_name).c_str(), &st);
 #else
 		struct stat st;
-		int stat_result = stat(this->temp_name.c_str(), &st);
+		int stat_result = stat(OTTD2FS(this->temp_name).c_str(), &st);
 #endif
 		if (stat_result != 0) {
 			SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_WRITEABLE, "Failed to stat temporary save file");
