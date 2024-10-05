@@ -1067,6 +1067,7 @@ STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA                          :{STRING}{}{BLAC
 STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}寻路限制
 STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}点击一个指令以选择{}按住 <Ctrl> 键点击来切换指令的目标（若存在）
 STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP                            :高亮显示所有共享该程序的信号
+STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA                  :{STRING}{}{BLACK}按住 <Ctrl> 键点击以列出最近使用项
 STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING           :{STRING} {PUSH_COLOUR}{RED}（需要真实制动）{POP_COLOUR}
 STR_TRACE_RESTRICT_WARNING_SIGNAL_MODE_CONTROL_ONLY             :{STRING} {PUSH_COLOUR}{RED}（仅适用于信号模式控制操作）{POP_COLOUR}
 STR_TRACE_RESTRICT_WARNING_NO_SIGNAL_MODE_CONTROL               :{STRING} {PUSH_COLOUR}{RED}（不适用于信号模式控制操作）{POP_COLOUR}
@@ -1484,7 +1485,9 @@ STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION                       :{WHITE}重命�
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT                    :{STRING}。按住 <Shift> 键操作以选择
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU                             :{BLACK}取消发送载具到车库/机库。按住 <Ctrl> 键操作以来选择目录。Shift+ 点击来选择车库/机库
 
-STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA                     :{STRING}{BLACK}{}Shift+ 点击以关闭/启用路径覆盖，即使窗口未聚焦
+STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA                     :{STRING}{BLACK}{}按住 <Shift> 键点击以忽略窗口聚焦状态强制切换路径覆盖层
+
+STR_VEHICLE_VIEW_SHOW_ORDERS_TOOLTIP_EXTRA                      :{STRING}{BLACK}{}按住 <Shift> 键点击以显示时刻表计划调度窗口
 
 STR_VEHICLE_VIEW_ORDER_NUMBER                                   :{COMMA}: {STRING}
 
@@ -1597,12 +1600,12 @@ STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}检查�
 STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP                           :{BLACK}检查的计数器值
 STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP                         :{BLACK}检查的时间信息
 STR_ORDER_CONDITIONAL_TIMETABLE_TOOLTIP                         :{BLACK}检查的时刻表项
-STR_ORDER_CONDITIONAL_SCHED_SELECT_TOOLTIP                      :{BLACK}要使用的计划调度时刻表
-STR_ORDER_CONDITIONAL_SCHED_TEST_TOOLTIP                        :{BLACK}要测试的计划调度时刻表
+STR_ORDER_CONDITIONAL_SCHED_SELECT_TOOLTIP                      :{BLACK}使用的计划调度时刻表
+STR_ORDER_CONDITIONAL_SCHED_TEST_TOOLTIP                        :{BLACK}测试的计划调度时刻表
 STR_ORDER_CONDITIONAL_VIA                                       :{BLACK}经由
 STR_ORDER_CONDITIONAL_VIA_TOOLTIP                               :{BLACK}经由某站的货物总量
 STR_ORDER_CONDITIONAL_STATION                                   :{BLACK}车站
-STR_ORDER_CONDITIONAL_STATION_TOOLTIP                           :{BLACK}被检查的车站
+STR_ORDER_CONDITIONAL_STATION_TOOLTIP                           :{BLACK}检查的车站
 STR_ORDER_CONDITIONAL_REFIT_MODE                                :{BLACK}改装
 STR_ORDER_CONDITIONAL_REFIT_MODE_TOOLTIP                        :{BLACK}是否使用改装后的货物容量
 
