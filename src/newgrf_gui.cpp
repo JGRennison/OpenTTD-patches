@@ -108,8 +108,7 @@ static void ShowNewGRFInfo(const GRFConfig *c, const Rect &r, bool show_params)
 	}
 
 	/* Prepare and draw MD5 sum */
-	md5sumToString(buff, lastof(buff), c->ident.md5sum);
-	SetDParamStr(0, buff);
+	SetDParamStr(0, md5sumToString(c->ident.md5sum));
 	tr.top = DrawStringMultiLine(tr, STR_NEWGRF_SETTINGS_MD5SUM);
 
 	/* Show GRF parameter list */

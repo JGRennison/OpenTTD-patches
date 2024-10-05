@@ -309,9 +309,7 @@ void CrashLog::LogConfiguration(format_target &buffer) const
 	if (_grfconfig_static != nullptr) {
 		buffer.append("Static NewGRFs present:\n");
 		for (GRFConfig *c = _grfconfig_static; c != nullptr; c = c->next) {
-			char md5sum[33];
-			md5sumToString(md5sum, lastof(md5sum), c->ident.md5sum);
-			buffer.format(" GRF ID: {:08X}, checksum {}, {}, '{}'\n", BSWAP32(c->ident.grfid), md5sum, c->GetDisplayPath(), GetDefaultLangGRFStringFromGRFText(c->name));
+			buffer.format(" GRF ID: {:08X}, checksum {}, {}, '{}'\n", BSWAP32(c->ident.grfid), c->ident.md5sum, c->GetDisplayPath(), GetDefaultLangGRFStringFromGRFText(c->name));
 		}
 		buffer.push_back('\n');
 	}

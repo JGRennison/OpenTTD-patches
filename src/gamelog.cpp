@@ -104,11 +104,8 @@ void GamelogReset()
  */
 static void PrintGrfInfo(format_target &buffer, uint grfid, const MD5Hash *md5sum, const GRFConfig *gc)
 {
-	char txt[40];
-
 	if (md5sum != nullptr) {
-		md5sumToString(txt, lastof(txt), *md5sum);
-		buffer.format("GRF ID {:08X}, checksum {}", BSWAP32(grfid), txt);
+		buffer.format("GRF ID {:08X}, checksum {}", BSWAP32(grfid), *md5sum);
 	} else {
 		buffer.format("GRF ID {:08X}", BSWAP32(grfid));
 	}
