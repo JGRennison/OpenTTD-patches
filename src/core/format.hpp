@@ -58,6 +58,37 @@ struct fmt::formatter<T, Char, std::enable_if_t<std::is_base_of<StrongTypedefBas
 	}
 };
 
+struct fmt_formattable_output {
+private:
+	fmt::format_context::iterator iter;
+
+public:
+	fmt_formattable_output(fmt::format_context::iterator iter) : iter(iter) {}
+	fmt_formattable_output(const fmt_formattable_output &other) = delete;
+	fmt_formattable_output& operator=(const fmt_formattable_output &other) = delete;
+
+	fmt::format_context::iterator get_iter() const { return this->iter; }
+
+	template <typename... T>
+	void format(fmt::format_string<T...> fmtstr, T&&... args)
+	{
+		this->iter = fmt::format_to(this->iter, fmtstr, std::forward<T>(args)...);
+	}
+};
+
+template <typename T, typename Char>
+struct fmt::formatter<T, Char, std::enable_if_t<std::is_base_of<fmt_formattable, T>::value>> {
+	constexpr fmt::format_parse_context::iterator parse(fmt::format_parse_context &ctx) {
+		return ctx.begin();
+	}
+
+	fmt::format_context::iterator format(const T& obj, format_context &ctx) const {
+		fmt_formattable_output output(ctx.out());
+		obj.fmt_format_value(output);
+		return output.get_iter();
+	}
+};
+
 /**
  * Base fmt format target class. Users should take by reference.
  * Not directly instatiable, use format_to_buffer, format_buffer, format_to_fixed or format_to_fixed_z.
@@ -320,57 +351,27 @@ size_t format_target::size() const noexcept
 	}
 }
 
-struct format_lambda_output {
-	template <typename F> friend struct format_lambda_wrapper;
-private:
-	fmt::format_context::iterator iter;
-
-	format_lambda_output(fmt::format_context::iterator iter) : iter(iter) {}
-	format_lambda_output(const format_lambda_output &other) = delete;
-	format_lambda_output& operator=(const format_lambda_output &other) = delete;
-
-public:
-	template <typename... T>
-	void format(fmt::format_string<T...> fmtstr, T&&... args)
-	{
-		this->iter = fmt::format_to(this->iter, fmtstr, std::forward<T>(args)...);
-	}
-};
-
 template <typename F>
-struct format_lambda_wrapper {
+struct format_lambda_wrapper : public fmt_formattable {
 	F lm;
 
 	format_lambda_wrapper(F lm) : lm(std::move(lm)) {}
 
-	fmt::format_context::iterator execute(fmt::format_context::iterator iter) const
+	void fmt_format_value(fmt_formattable_output &output) const
 	{
-		format_lambda_output output(iter);
 		this->lm(output);
-		return output.iter;
-	}
-};
-
-template <typename F>
-struct fmt::formatter<format_lambda_wrapper<F>> {
-	constexpr fmt::format_parse_context::iterator parse(fmt::format_parse_context &ctx) {
-		return ctx.begin();
-	}
-
-	fmt::format_context::iterator format(const format_lambda_wrapper<F>& obj, format_context &ctx) const {
-		return obj.execute(ctx.out());
 	}
 };
 
 /**
- * Wraps a lambda of type: [...](format_lambda_output &out, args...) {}
+ * Wraps a lambda of type: [...](fmt_formattable_output &out, args...) {}
  * as a callable of type [...](args...) which is suitable for use as an argument to fmt::format.
  */
 template <typename F>
 auto format_lambda(F func)
 {
 	return [func = std::move(func)]<typename... T>(T&&... args) -> auto {
-		return format_lambda_wrapper([&](format_lambda_output &output) {
+		return format_lambda_wrapper([&](fmt_formattable_output &output) {
 			func(output, std::forward<T>(args)...);
 		});
 	};

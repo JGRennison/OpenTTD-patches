@@ -639,7 +639,7 @@ void SpriteGroupDumper::DumpSpriteGroup(format_buffer &buffer, const SpriteGroup
 		}
 	});
 
-	auto extra_info = format_lambda([&](format_lambda_output &out) {
+	auto extra_info = format_lambda([&](fmt_formattable_output &out) {
 		if (sg->sg_flags & SGF_ACTION6) out.format(" (action 6 modified)");
 		if (sg->sg_flags & SGF_SKIP_CB) out.format(" (skip CB)");
 		if (this->more_details) {
@@ -647,7 +647,7 @@ void SpriteGroupDumper::DumpSpriteGroup(format_buffer &buffer, const SpriteGroup
 		}
 	});
 
-	auto get_scope_name = format_lambda([&](format_lambda_output &out, VarSpriteGroupScope var_scope, VarSpriteGroupScopeOffset var_scope_count) {
+	auto get_scope_name = format_lambda([&](fmt_formattable_output &out, VarSpriteGroupScope var_scope, VarSpriteGroupScopeOffset var_scope_count) {
 		if (var_scope == VSG_SCOPE_RELATIVE) {
 			out.format("{}[{}, ", _sg_scope_names[var_scope], _sg_relative_scope_modes[GB(var_scope_count, 8, 2)]);
 			uint8_t offset = GB(var_scope_count, 0, 8);
