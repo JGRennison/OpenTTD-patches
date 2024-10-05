@@ -150,10 +150,12 @@ bool GetArgumentInteger(uint32_t *value, const char *arg)
  * @param name String to remove the underscores from.
  * @return A copy of \a name, without underscores.
  */
-std::string RemoveUnderscores(std::string name)
+std::string RemoveUnderscores(std::string_view name)
 {
-	name.erase(std::remove(name.begin(), name.end(), '_'), name.end());
-	return name;
+	std::string output;
+	output.reserve(name.size());
+	std::copy_if(std::begin(name), std::end(name), std::back_inserter(output), [](char c) { return c != '_'; });
+	return output;
 }
 
 /**
@@ -161,7 +163,7 @@ std::string RemoveUnderscores(std::string name)
  * @param name name of the command that will be used
  * @param proc function that will be called upon execution of command
  */
-/* static */ void IConsole::CmdRegister(const std::string &name, IConsoleCmdProc *proc, IConsoleHook *hook, bool unlisted)
+/* static */ void IConsole::CmdRegister(std::string_view name, IConsoleCmdProc *proc, IConsoleHook *hook, bool unlisted)
 {
 	IConsole::Commands().try_emplace(RemoveUnderscores(name), name, proc, hook, unlisted);
 }
@@ -171,7 +173,7 @@ std::string RemoveUnderscores(std::string name)
  * @param name command to be found
  * @return return Cmdstruct of the found command, or nullptr on failure
  */
-/* static */ IConsoleCmd *IConsole::CmdGet(const std::string &name)
+/* static */ IConsoleCmd *IConsole::CmdGet(std::string_view name)
 {
 	auto item = IConsole::Commands().find(RemoveUnderscores(name));
 	if (item != IConsole::Commands().end()) return &item->second;
@@ -183,7 +185,7 @@ std::string RemoveUnderscores(std::string name)
  * @param name name of the alias that will be used
  * @param cmd name of the command that 'name' will be alias of
  */
-/* static */ void IConsole::AliasRegister(const std::string &name, const std::string &cmd)
+/* static */ void IConsole::AliasRegister(std::string_view name, std::string_view cmd)
 {
 	auto result = IConsole::Aliases().try_emplace(RemoveUnderscores(name), name, cmd);
 	if (!result.second) IConsolePrint(CC_ERROR, "An alias with the name '{}' already exists.", name);
@@ -194,7 +196,7 @@ std::string RemoveUnderscores(std::string name)
  * @param name alias to be found
  * @return return Aliasstruct of the found alias, or nullptr on failure
  */
-/* static */ IConsoleAlias *IConsole::AliasGet(const std::string &name)
+/* static */ IConsoleAlias *IConsole::AliasGet(std::string_view name)
 {
 	auto item = IConsole::Aliases().find(RemoveUnderscores(name));
 	if (item != IConsole::Aliases().end()) return &item->second;

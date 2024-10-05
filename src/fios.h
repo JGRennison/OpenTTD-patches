@@ -76,7 +76,7 @@ const char *FindScenario(const ContentInfo *ci, bool md5sum);
  * A savegame name automatically numbered.
  */
 struct FiosNumberedSaveName {
-	FiosNumberedSaveName(const std::string &prefix);
+	FiosNumberedSaveName(std::string_view prefix);
 	std::string Filename();
 	std::string FilenameUsingMaxSaves(int max_saves);
 	void FilenameUsingNumber(struct format_target &buffer, int num, const char *suffix) const;

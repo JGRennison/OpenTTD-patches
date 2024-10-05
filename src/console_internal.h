@@ -34,7 +34,7 @@ enum ConsoleHookResult {
 typedef bool IConsoleCmdProc(uint8_t argc, char *argv[]);
 typedef ConsoleHookResult IConsoleHook(bool echo);
 struct IConsoleCmd {
-	IConsoleCmd(const std::string &name, IConsoleCmdProc *proc, IConsoleHook *hook, bool unlisted) : name(name), proc(proc), hook(hook), unlisted(unlisted) {}
+	IConsoleCmd(std::string_view name, IConsoleCmdProc *proc, IConsoleHook *hook, bool unlisted) : name(name), proc(proc), hook(hook), unlisted(unlisted) {}
 
 	std::string name;         ///< name of command
 	IConsoleCmdProc *proc;    ///< process executed when command is typed
@@ -55,7 +55,7 @@ struct IConsoleCmd {
  * - ";" allows for combining commands (see example 'ng')
  */
 struct IConsoleAlias {
-	IConsoleAlias(const std::string &name, const std::string &cmdline) : name(name), cmdline(cmdline) {}
+	IConsoleAlias(std::string_view name, std::string_view cmdline) : name(name), cmdline(cmdline) {}
 
 	std::string name;           ///< name of the alias
 	std::string cmdline;        ///< command(s) that is/are being aliased
@@ -71,10 +71,10 @@ struct IConsole
 	static AliasList &Aliases();
 
 	/* Commands */
-	static void CmdRegister(const std::string &name, IConsoleCmdProc *proc, IConsoleHook *hook = nullptr, bool unlisted = false);
-	static IConsoleCmd *CmdGet(const std::string &name);
-	static void AliasRegister(const std::string &name, const std::string &cmd);
-	static IConsoleAlias *AliasGet(const std::string &name);
+	static void CmdRegister(std::string_view name, IConsoleCmdProc *proc, IConsoleHook *hook = nullptr, bool unlisted = false);
+	static IConsoleCmd *CmdGet(std::string_view name);
+	static void AliasRegister(std::string_view name, std::string_view cmd);
+	static IConsoleAlias *AliasGet(std::string_view name);
 };
 
 /* console functions */

@@ -148,7 +148,7 @@ struct NewsItem {
 /** Container for a single string to be passed as NewsAllocatedData. */
 struct NewsStringData : NewsAllocatedData {
 	std::string string; ///< The string to retain.
-	NewsStringData(const std::string &str) : string(str) {}
+	NewsStringData(std::string str) : string(std::move(str)) {}
 };
 
 /**

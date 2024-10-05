@@ -482,7 +482,7 @@ static void IConsoleTabCompletion()
 	match_input.prefix = std::string(input, cmdptr - input);
 	if (match_input.prefix.empty()) return;
 
-	extern std::string RemoveUnderscores(std::string name);
+	extern std::string RemoveUnderscores(std::string_view name);
 	match_input_no_underscores.prefix = RemoveUnderscores(match_input.prefix);
 	if (match_input_no_underscores.prefix.empty()) return;
 

@@ -392,11 +392,7 @@ struct NullSettingDesc : SettingDesc {
 
 typedef std::initializer_list<std::unique_ptr<const SettingDesc>> SettingTable;
 
-const SettingDesc *GetSettingFromName(const char *name);
-inline const SettingDesc *GetSettingFromName(const std::string &name)
-{
-	return GetSettingFromName(name.c_str());
-}
+const SettingDesc *GetSettingFromName(std::string_view name);
 
 bool SetSettingValue(const IntSettingDesc *sd, int32_t value, bool force_newgame = false);
 bool SetSettingValue(const StringSettingDesc *sd, const std::string value, bool force_newgame = false);

@@ -746,7 +746,7 @@ void ScanScenarios()
  * Constructs FiosNumberedSaveName. Initial number is the most recent save, or -1 if not found.
  * @param prefix The prefix to use to generate a filename.
  */
-FiosNumberedSaveName::FiosNumberedSaveName(const std::string &prefix) : prefix(prefix), number(-1)
+FiosNumberedSaveName::FiosNumberedSaveName(std::string_view prefix) : prefix(prefix), number(-1)
 {
 	static std::optional<std::string> _autosave_path;
 	if (!_autosave_path) _autosave_path = FioFindDirectory(AUTOSAVE_DIR);

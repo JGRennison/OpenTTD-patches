@@ -41,9 +41,9 @@ public:
 		other.storage = nullptr;
 	}
 
-	inline TinyString(const std::string &other) noexcept
+	inline TinyString(std::string_view other) noexcept
 	{
-		if (!other.empty()) this->storage = stredup(other.c_str());
+		if (!other.empty()) this->storage = stredup(other.data(), other.data() + other.size());
 	}
 
 	inline TinyString(const char *str) noexcept
@@ -81,10 +81,10 @@ public:
 		return *this;
 	}
 
-	inline TinyString &operator=(const std::string &other)
+	inline TinyString &operator=(std::string_view other)
 	{
 		this->clear();
-		if (!other.empty()) this->storage = stredup(other.c_str());
+		if (!other.empty()) this->storage = stredup(other.data(), other.data() + other.size());
 		return *this;
 	}
 

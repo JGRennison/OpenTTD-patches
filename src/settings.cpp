@@ -3157,12 +3157,12 @@ void IntSettingDesc::ChangeValue(const void *object, int32_t newval, SaveToConfi
  * @return Pointer to the setting description of setting \a name if it can be found,
  *         \c nullptr indicates failure to obtain the description.
  */
-static const SettingDesc *GetSettingFromName(const char *name, const SettingTable &settings)
+static const SettingDesc *GetSettingFromName(std::string_view name, const SettingTable &settings)
 {
 	/* First check all full names */
 	for (auto &sd : settings) {
 		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
-		if (strcmp(sd->name, name) == 0) return sd.get();
+		if (sd->name == name) return sd.get();
 	}
 
 	/* Then check the shortcut variant of the name. */
@@ -3171,7 +3171,7 @@ static const SettingDesc *GetSettingFromName(const char *name, const SettingTabl
 		const char *short_name = strchr(sd->name, '.');
 		if (short_name != nullptr) {
 			short_name++;
-			if (strcmp(short_name, name) == 0) return sd.get();
+			if (short_name == name) return sd.get();
 		}
 	}
 
@@ -3184,9 +3184,9 @@ static const SettingDesc *GetSettingFromName(const char *name, const SettingTabl
  * @return Pointer to the setting description of setting \a name if it can be found,
  *         \c nullptr indicates failure to obtain the description.
  */
-static const SettingDesc *GetCompanySettingFromName(const char *name)
+static const SettingDesc *GetCompanySettingFromName(std::string_view name)
 {
-	if (strncmp(name, "company.", 8) == 0) name += 8;
+	if (name.starts_with("company.")) name.remove_prefix(8);
 	return GetSettingFromName(name, _company_settings);
 }
 
@@ -3196,7 +3196,7 @@ static const SettingDesc *GetCompanySettingFromName(const char *name)
  * @return Pointer to the setting description of setting \a name if it can be found,
  *         \c nullptr indicates failure to obtain the description.
  */
-const SettingDesc *GetSettingFromName(const char *name)
+const SettingDesc *GetSettingFromName(std::string_view name)
 {
 	for (auto &table : _generic_setting_tables) {
 		auto sd = GetSettingFromName(name, table);
