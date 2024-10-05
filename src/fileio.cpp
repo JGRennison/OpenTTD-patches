@@ -876,7 +876,7 @@ void DetermineBasePaths(const char *exe)
 			/* _config_file is not in a folder, so use current directory. */
 			tmp = cwd;
 		} else {
-			tmp = FS2OTTD(std::filesystem::weakly_canonical(std::filesystem::path(OTTD2FS(_config_file))).parent_path());
+			tmp = FS2OTTD((std::string)(std::filesystem::weakly_canonical(std::filesystem::path(OTTD2FS(_config_file))).parent_path()));
 		}
 		AppendPathSeparator(tmp);
 		_searchpaths[SP_WORKING_DIR] = tmp;

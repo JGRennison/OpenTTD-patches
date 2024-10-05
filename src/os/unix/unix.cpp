@@ -176,7 +176,7 @@ static const char *GetLocalCode()
  * Convert between locales, which from and which to is set in the calling
  * functions OTTD2FS() and FS2OTTD().
  */
-static std::string convert_tofrom_fs(iconv_t convd, const std::string &name)
+static std::string convert_tofrom_fs(iconv_t convd, std::string_view name)
 {
 	/* There are different implementations of iconv. The older ones,
 	 * e.g. SUSv2, pass a const pointer, whereas the newer ones, e.g.
@@ -195,8 +195,8 @@ static std::string convert_tofrom_fs(iconv_t convd, const std::string &name)
 	char *outbuf = buf.data();
 	iconv(convd, nullptr, nullptr, nullptr, nullptr);
 	if (iconv(convd, &inbuf, &inlen, &outbuf, &outlen) == (size_t)(-1)) {
-		DEBUG(misc, 0, "[iconv] error converting '%s'. Errno %d", name.c_str(), errno);
-		return name;
+		Debug(misc, 0, "[iconv] error converting '{}'. Errno {}", name, errno);
+		return {};
 	}
 
 	buf.resize(outbuf - buf.data());
@@ -208,15 +208,15 @@ static std::string convert_tofrom_fs(iconv_t convd, const std::string &name)
  * @param name pointer to a valid string that will be converted
  * @return pointer to a new stringbuffer that contains the converted string
  */
-std::string OTTD2FS(const std::string &name)
+std::string OTTD2FS(std::string_view name)
 {
 	static iconv_t convd = (iconv_t)(-1);
 	if (convd == (iconv_t)(-1)) {
 		const char *env = GetLocalCode();
 		convd = iconv_open(env, INTERNALCODE);
 		if (convd == (iconv_t)(-1)) {
-			DEBUG(misc, 0, "[iconv] conversion from codeset '%s' to '%s' unsupported", INTERNALCODE, env);
-			return name;
+			Debug(misc, 0, "[iconv] conversion from codeset '{}' to '{}' unsupported", INTERNALCODE, env);
+			return {};
 		}
 	}
 
@@ -228,15 +228,15 @@ std::string OTTD2FS(const std::string &name)
  * @param name valid string that will be converted
  * @return pointer to a new stringbuffer that contains the converted string
  */
-std::string FS2OTTD(const std::string &name)
+std::string FS2OTTD(std::string_view name)
 {
 	static iconv_t convd = (iconv_t)(-1);
 	if (convd == (iconv_t)(-1)) {
 		const char *env = GetLocalCode();
 		convd = iconv_open(INTERNALCODE, env);
 		if (convd == (iconv_t)(-1)) {
-			DEBUG(misc, 0, "[iconv] conversion from codeset '%s' to '%s' unsupported", env, INTERNALCODE);
-			return name;
+			Debug(misc, 0, "[iconv] conversion from codeset '{}' to '{}' unsupported", env, INTERNALCODE);
+			return {};
 		}
 	}
 
@@ -311,7 +311,7 @@ void OSOpenBrowser(const std::string &url)
 	args[1] = url.c_str();
 	args[2] = nullptr;
 	execvp(args[0], const_cast<char * const *>(args));
-	DEBUG(misc, 0, "Failed to open url: %s", url.c_str());
+	Debug(misc, 0, "Failed to open url: {}", url);
 	exit(0);
 }
 #endif /* __APPLE__ */

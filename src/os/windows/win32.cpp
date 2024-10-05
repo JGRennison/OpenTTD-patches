@@ -507,14 +507,14 @@ std::optional<std::string> GetClipboardContents()
  * @see the current code-page comes from video\win32_v.cpp, event-notification
  * WM_INPUTLANGCHANGE
  */
-std::string FS2OTTD(const std::wstring &name)
+std::string FS2OTTD(std::wstring_view name)
 {
 	int name_len = (name.length() >= INT_MAX) ? INT_MAX : (int)name.length();
-	int len = WideCharToMultiByte(CP_UTF8, 0, name.c_str(), name_len, nullptr, 0, nullptr, nullptr);
+	int len = WideCharToMultiByte(CP_UTF8, 0, name.data(), name_len, nullptr, 0, nullptr, nullptr);
 	if (len <= 0) return std::string();
 	char *utf8_buf = AllocaM(char, len + 1);
 	utf8_buf[len] = '\0';
-	WideCharToMultiByte(CP_UTF8, 0, name.c_str(), name_len, utf8_buf, len, nullptr, nullptr);
+	WideCharToMultiByte(CP_UTF8, 0, name.data(), name_len, utf8_buf, len, nullptr, nullptr);
 	return std::string(utf8_buf, static_cast<size_t>(len));
 }
 
@@ -525,14 +525,14 @@ std::string FS2OTTD(const std::wstring &name)
  * @param console_cp convert to the console encoding instead of the normal system encoding.
  * @return converted string; if failed string is of zero-length
  */
-std::wstring OTTD2FS(const std::string &name)
+std::wstring OTTD2FS(std::string_view name)
 {
 	int name_len = (name.length() >= INT_MAX) ? INT_MAX : (int)name.length();
-	int len = MultiByteToWideChar(CP_UTF8, 0, name.c_str(), name_len, nullptr, 0);
+	int len = MultiByteToWideChar(CP_UTF8, 0, name.data(), name_len, nullptr, 0);
 	if (len <= 0) return std::wstring();
 	wchar_t *system_buf = AllocaM(wchar_t, len + 1);
 	system_buf[len] = L'\0';
-	MultiByteToWideChar(CP_UTF8, 0, name.c_str(), name_len, system_buf, len);
+	MultiByteToWideChar(CP_UTF8, 0, name.data(), name_len, system_buf, len);
 	return std::wstring(system_buf, static_cast<size_t>(len));
 }
 

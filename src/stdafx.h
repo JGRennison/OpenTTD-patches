@@ -182,13 +182,13 @@
 #		define fopen(file, mode) _wfopen(OTTD2FS(file).c_str(), _T(mode))
 #		define unlink(file) _wunlink(OTTD2FS(file).c_str())
 
-		std::string FS2OTTD(const std::wstring &name);
-		std::wstring OTTD2FS(const std::string &name);
+		std::string FS2OTTD(std::wstring_view name);
+		std::wstring OTTD2FS(std::string_view name);
 #	elif defined(WITH_ICONV)
 #		define fopen(file, mode) fopen(OTTD2FS(file).c_str(), mode)
 #		define unlink(file) unlink(OTTD2FS(file).c_str())
-		std::string FS2OTTD(const std::string &name);
-		std::string OTTD2FS(const std::string &name);
+		std::string FS2OTTD(std::string_view name);
+		std::string OTTD2FS(std::string_view name);
 #	else
 		// no override of fopen() since no transformation is required of the filename
 		template <typename T> std::string FS2OTTD(T name) { return name; }
