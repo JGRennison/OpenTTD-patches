@@ -77,7 +77,6 @@ struct MD5Hash : std::array<uint8_t, MD5_HASH_BYTES>, public fmt_formattable {
 	void fmt_format_value(struct fmt_formattable_output &output) const;
 };
 
-char *md5sumToString(char *buf, const char *last, const MD5Hash &md5sum);
 std::string md5sumToString(const MD5Hash &md5sum);
 
 struct Md5 {

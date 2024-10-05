@@ -21,21 +21,6 @@ void MD5Hash::fmt_format_value(fmt_formattable_output &output) const
 
 /**
  * Convert the md5sum to a hexadecimal string representation
- * @param buf buffer to put the md5sum into
- * @param last last character of buffer (usually lastof(buf))
- * @param md5sum the md5sum itself
- * @return a pointer to the next character after the md5sum
- * @return the string representation of the md5sum.
- */
-char *md5sumToString(char *buf, const char *last, const MD5Hash &md5sum)
-{
-	format_to_fixed_z buffer(buf, last);
-	buffer.format("{}", md5sum);
-	return buffer.finalise();
-}
-
-/**
- * Convert the md5sum to a hexadecimal string representation
  * @param md5sum the md5sum itself
  * @return the string representation of the md5sum.
  */
