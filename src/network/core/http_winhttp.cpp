@@ -294,9 +294,9 @@ NetworkHTTPRequest::~NetworkHTTPRequest()
 	_http_callbacks.erase(std::remove(_http_callbacks.begin(), _http_callbacks.end(), &this->callback), _http_callbacks.end());
 }
 
-/* static */ void NetworkHTTPSocketHandler::Connect(const std::string &uri, HTTPCallback *callback, const std::string data)
+/* static */ void NetworkHTTPSocketHandler::Connect(const std::string &uri, HTTPCallback *callback, std::string data)
 {
-	auto request = new NetworkHTTPRequest(std::wstring(uri.begin(), uri.end()), callback, data);
+	auto request = new NetworkHTTPRequest(std::wstring(uri.begin(), uri.end()), callback, std::move(data));
 	request->Connect();
 
 	std::lock_guard<std::mutex> lock(_new_http_requests_mutex);
