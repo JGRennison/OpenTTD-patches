@@ -324,32 +324,24 @@ static bool MakePNGImage(const char *name, ScreenshotCallback *callb, void *user
 	text[0].text_length = strlen(_openttd_revision);
 	text[0].compression = PNG_TEXT_COMPRESSION_NONE;
 
-	const uint32_t text_buf_length = 65536;
-	char * const text_buf = MallocT<char>(text_buf_length);
-	auto guard = scope_guard([=]() {
-		free(text_buf);
-	});
-	const char * const text_buf_last = text_buf + text_buf_length - 1;
+	format_buffer text_buf;
 
-	char *p = text_buf;
-	p += seprintf(p, text_buf_last, "Graphics set: %s (%u)\n", BaseGraphics::GetUsedSet()->name.c_str(), BaseGraphics::GetUsedSet()->version);
-	p = strecpy(p, "NewGRFs:\n", text_buf_last);
+	text_buf.format("Graphics set: {} ({})\n", BaseGraphics::GetUsedSet()->name, BaseGraphics::GetUsedSet()->version);
+	text_buf.append("NewGRFs:\n");
 	for (const GRFConfig *c = _game_mode == GM_MENU ? nullptr : _grfconfig; c != nullptr; c = c->next) {
-		p += seprintf(p, text_buf_last, "%08X ", BSWAP32(c->ident.grfid));
-		p = md5sumToString(p, text_buf_last, c->ident.md5sum);
-		p += seprintf(p, text_buf_last, " %s\n", c->filename.c_str());
+		text_buf.format("{:08X} {} {}\n", BSWAP32(c->ident.grfid), c->ident.md5sum, c->filename);
 	}
-	p = strecpy(p, "\nCompanies:\n", text_buf_last);
+	text_buf.append("\nCompanies:\n");
 	for (const Company *c : Company::Iterate()) {
 		if (c->ai_info == nullptr) {
-			p += seprintf(p, text_buf_last, "%2i: Human\n", (int)c->index);
+			text_buf.format("{:2}: Human\n", (int)c->index);
 		} else {
-			p += seprintf(p, text_buf_last, "%2i: %s (v%d)\n", (int)c->index, c->ai_info->GetName().c_str(), c->ai_info->GetVersion());
+			text_buf.format("{:2}: {} (v{})\n", (int)c->index, c->ai_info->GetName(), c->ai_info->GetVersion());
 		}
 	}
 	text[1].key = const_cast<char *>("Description");
-	text[1].text = text_buf;
-	text[1].text_length = p - text_buf;
+	text[1].text = text_buf.data();
+	text[1].text_length = text_buf.size();
 	text[1].compression = PNG_TEXT_COMPRESSION_zTXt;
 	if (_screenshot_aux_text_key && _screenshot_aux_text_value) {
 		text[2].key = const_cast<char *>(_screenshot_aux_text_key);

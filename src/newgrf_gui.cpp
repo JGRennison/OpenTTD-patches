@@ -93,9 +93,7 @@ static void ShowNewGRFInfo(const GRFConfig *c, const Rect &r, bool show_params)
 	}
 
 	/* Prepare and draw GRF ID */
-	char buff[256];
-	seprintf(buff, lastof(buff), "%08X", BSWAP32(c->ident.grfid));
-	SetDParamStr(0, buff);
+	SetDParamStr(0, fmt::format("{:08X}", BSWAP32(c->ident.grfid)));
 	tr.top = DrawStringMultiLine(tr, STR_NEWGRF_SETTINGS_GRF_ID);
 
 	if ((_settings_client.gui.newgrf_developer_tools || _settings_client.gui.newgrf_show_old_versions) && c->version != 0) {

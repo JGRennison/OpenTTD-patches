@@ -20,6 +20,7 @@
 #include "../stringfilter_type.h"
 #include "../querystring_gui.h"
 #include "../core/container_func.hpp"
+#include "../core/format.hpp"
 #include "../core/geometry_func.hpp"
 #include "../textfile_gui.h"
 #include "../fios.h"
@@ -353,27 +354,24 @@ class NetworkContentListWindow : public Window, ContentCallback {
 	/** Search external websites for content */
 	void OpenExternalSearch()
 	{
-		char url[1024];
-		const char *last = lastof(url);
+		format_buffer buffer;
 
-		char *pos = strecpy(url, "https://grfsearch.openttd.org/?", last);
+		buffer.append("https://grfsearch.openttd.org/?");
 
 		if (this->auto_select) {
-			pos = strecpy(pos, "do=searchgrfid&q=", last);
+			buffer.append("do=searchgrfid&q=");
 
 			bool first = true;
 			for (const ContentInfo *ci : this->content) {
 				if (ci->state != ContentInfo::DOES_NOT_EXIST) continue;
 
-				if (!first) pos = strecpy(pos, ",", last);
+				if (!first) buffer.push_back(',');
 				first = false;
 
-				pos += seprintf(pos, last, "%08X", ci->unique_id);
-				pos = strecpy(pos, ":", last);
-				pos = md5sumToString(pos, last, ci->md5sum);
+				buffer.format("{:08X}:{}", ci->unique_id, ci->md5sum);
 			}
 		} else {
-			pos = strecpy(pos, "do=searchtext&q=", last);
+			buffer.append("do=searchtext&q=");
 
 			/* Escape search term */
 			for (const char *search = this->filter_editbox.text.buf; *search != '\0'; search++) {
@@ -382,15 +380,14 @@ class NetworkContentListWindow : public Window, ContentCallback {
 
 				/* Escape special chars, such as &%,= */
 				if (*search < 0x30) {
-					pos += seprintf(pos, last, "%%%02X", *search);
-				} else if (pos < last) {
-					*pos = *search;
-					*++pos = '\0';
+					buffer.format("%{:02X}", *search);
+				} else {
+					buffer.push_back(*search);
 				}
 			}
 		}
 
-		OpenBrowser(url);
+		OpenBrowser(buffer.c_str());
 	}
 
 	/**

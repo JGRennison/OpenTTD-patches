@@ -2719,10 +2719,8 @@ static void GRFSaveConfig(IniFile &ini, const char *grpname, const GRFConfig *li
 
 	for (c = list; c != nullptr; c = c->next) {
 		/* Hex grfid (4 bytes in nibbles), "|", hex md5sum (16 bytes in nibbles), "|", file system path. */
-		char key[4 * 2 + 1 + 16 * 2 + 1 + MAX_PATH];
-		char *pos = key + seprintf(key, lastof(key), "%08X|", BSWAP32(c->ident.grfid));
-		pos = md5sumToString(pos, lastof(key), c->ident.md5sum);
-		seprintf(pos, lastof(key), "|%s", c->filename.c_str());
+		format_buffer key;
+		key.format("{:08X}|{}|{}", BSWAP32(c->ident.grfid), c->ident.md5sum, c->filename);
 		group.GetOrCreateItem(key).SetValue(GRFBuildParamList(c));
 	}
 }

@@ -427,16 +427,15 @@ static void CDECL HandleSavegameLoadCrash(int signum)
 {
 	ResetSignalHandlers();
 
-	char buffer[8192];
-	char *p = buffer;
-	p += seprintf(p, lastof(buffer), "Loading your savegame caused OpenTTD to crash.\n");
+	format_buffer buffer;
+	buffer.append("Loading your savegame caused OpenTTD to crash.\n");
 
 	for (const GRFConfig *c = _grfconfig; !_saveload_crash_with_missing_newgrfs && c != nullptr; c = c->next) {
 		_saveload_crash_with_missing_newgrfs = HasBit(c->flags, GCF_COMPATIBLE) || c->status == GCS_NOT_FOUND;
 	}
 
 	if (_saveload_crash_with_missing_newgrfs) {
-		p += seprintf(p, lastof(buffer),
+		buffer.append(
 			"This is most likely caused by a missing NewGRF or a NewGRF that\n"
 			"has been loaded as replacement for a missing NewGRF. OpenTTD\n"
 			"cannot easily determine whether a replacement NewGRF is of a newer\n"
@@ -452,20 +451,15 @@ static void CDECL HandleSavegameLoadCrash(int signum)
 		for (const GRFConfig *c = _grfconfig; c != nullptr; c = c->next) {
 			if (HasBit(c->flags, GCF_COMPATIBLE)) {
 				const GRFIdentifier *replaced = GetOverriddenIdentifier(c);
-				char original_md5[40];
-				char replaced_md5[40];
-				md5sumToString(original_md5, lastof(original_md5), c->original_md5sum);
-				md5sumToString(replaced_md5, lastof(replaced_md5), replaced->md5sum);
-				p += seprintf(p, lastof(buffer), "NewGRF %08X (checksum %s) not found.\n  Loaded NewGRF \"%s\" (checksum %s) with same GRF ID instead.\n", BSWAP32(c->ident.grfid), original_md5, c->filename.c_str(), replaced_md5);
+				buffer.format("NewGRF {:08X} (checksum {}) not found.\n  Loaded NewGRF \"{}\" (checksum {}) with same GRF ID instead.\n",
+						BSWAP32(c->ident.grfid), c->original_md5sum, c->filename, replaced->md5sum);
 			}
 			if (c->status == GCS_NOT_FOUND) {
-				char buf[40];
-				md5sumToString(buf, lastof(buf), c->ident.md5sum);
-				p += seprintf(p, lastof(buffer), "NewGRF %08X (%s) not found; checksum %s.\n", BSWAP32(c->ident.grfid), c->filename.c_str(), buf);
+				buffer.format("NewGRF {:08X} ({}) not found; checksum {}.\n", BSWAP32(c->ident.grfid), c->filename, c->ident.md5sum);
 			}
 		}
 	} else {
-		p += seprintf(p, lastof(buffer),
+		buffer.append(
 			"This is probably caused by a corruption in the savegame.\n"
 			"Please file a bug report and attach this savegame.\n");
 	}
