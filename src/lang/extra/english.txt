@@ -1244,6 +1244,9 @@ STR_TERRAFORM_PUBLIC_ROADS                                      :{BLACK}Build pu
 STR_TERRAFORM_PUBLIC_ROADS_TOOLTIP                              :{BLACK}Build public roads between the towns on the map
 STR_TERRAFORM_PUBLIC_ROADS_TYPE                                 :{BLACK}Public roads type
 
+STR_SCENEDIT_LANDSCAPE_MENU_LAND_GENERATION                     :Land generation
+STR_SCENEDIT_LANDSCAPE_MENU_PUBLIC_ROADS                        :Public roads
+
 STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP_ALL                        :All industries
 
 STR_LAI_RAIL_DESCRIPTION_TRACK_WITH_PROGSIGNALS                 :Railway track with programmable pre-signals

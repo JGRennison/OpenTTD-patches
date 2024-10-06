@@ -653,7 +653,7 @@ static WindowDesc _public_roads_window_desc(__FILE__, __LINE__,
 	_nested_scen_edit_public_roads_widgets
 );
 
-Window *ShowEditorPublicRoadsWindow(Window *link)
+Window *ShowEditorPublicRoadsWindow()
 {
 	return AllocateWindowDescFront<PublicRoadsWindow>(_public_roads_window_desc, 0);
 }
@@ -762,14 +762,6 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 		this->SetButtonStates();
 		this->FinishInitNested(window_number);
 		this->last_user_action = INVALID_WID_ETT;
-
-		ShowEditorPublicRoadsWindow(this);
-	}
-
-	void Close([[maybe_unused]] int data = 0) override
-	{
-		CloseWindowById(WC_SCEN_PUBLIC_ROADS, 0, false);
-		this->Window::Close();
 	}
 
 	void OnPaint() override
@@ -972,7 +964,6 @@ static EventState TerraformToolbarEditorGlobalHotkeys(int hotkey)
 	if (_game_mode != GM_EDITOR) return ES_NOT_HANDLED;
 	Window *w = ShowEditorTerraformToolbar();
 	if (w == nullptr) return ES_NOT_HANDLED;
-	ShowEditorPublicRoadsWindow(w);
 	return w->OnHotkey(hotkey);
 }
 
@@ -1002,7 +993,5 @@ static WindowDesc _scen_edit_land_gen_desc(__FILE__, __LINE__,
  */
 Window *ShowEditorTerraformToolbar()
 {
-	auto terraform_toolbar = AllocateWindowDescFront<ScenarioEditorLandscapeGenerationWindow>(_scen_edit_land_gen_desc, 0);
-	ShowEditorPublicRoadsWindow(terraform_toolbar);
-	return terraform_toolbar;
+	return AllocateWindowDescFront<ScenarioEditorLandscapeGenerationWindow>(_scen_edit_land_gen_desc, 0);
 }
