@@ -192,15 +192,15 @@ struct format_to_buffer : public format_target {
 };
 
 /**
- * format_to_buffer subtype where the fmt::memory_buffer is built-in.
- *
- * Includes convenience wrappers to access the buffer.
- * Can be used as a fmt argument.
+ * Common functionality for format_buffer and format_buffer_size.
  */
-struct format_buffer final : public format_to_buffer {
-	fmt::memory_buffer buffer;
+template <size_t SIZE>
+struct format_buffer_base : public format_to_buffer {
+private:
+	fmt::basic_memory_buffer<char, SIZE> buffer;
 
-	format_buffer() : format_to_buffer(buffer) {}
+public:
+	format_buffer_base() : format_to_buffer(buffer) {}
 
 	char *begin() noexcept { return this->buffer.begin(); }
 	char *end() noexcept { return this->buffer.end(); }
@@ -225,21 +225,40 @@ struct format_buffer final : public format_to_buffer {
 	}
 };
 
-template <>
-struct fmt::formatter<format_buffer, char> : fmt::formatter<std::string_view> {
+/**
+ * format_to_buffer subtype where the fmt::memory_buffer is built-in.
+ *
+ * Includes convenience wrappers to access the buffer.
+ * Can be used as a fmt argument.
+ */
+struct format_buffer final : public format_buffer_base<fmt::inline_buffer_size> {};
+
+/**
+ * format_to_buffer subtype where the fmt::memory_buffer is built-in.
+ * The inline buffer size is adjustable.
+ *
+ * Includes convenience wrappers to access the buffer.
+ * Can be used as a fmt argument.
+ */
+template <size_t SIZE>
+struct format_buffer_sized final : public format_buffer_base<SIZE> {};
+
+template <typename T>
+struct format_by_string_view_cast : public fmt::formatter<std::string_view> {
 	using underlying_type = std::string_view;
 	using parent = typename fmt::formatter<std::string_view>;
 
-	constexpr fmt::format_parse_context::iterator parse(fmt::format_parse_context &ctx)
-	{
-		return parent::parse(ctx);
-	}
-
-	fmt::format_context::iterator format(const format_buffer &t, format_context &ctx) const
+	fmt::format_context::iterator format(const T &t, fmt::format_context &ctx) const
 	{
 		return parent::format((std::string_view)t, ctx);
 	}
 };
+
+template <>
+struct fmt::formatter<format_buffer, char> : public format_by_string_view_cast<format_buffer> {};
+
+template <size_t SIZE>
+struct fmt::formatter<format_buffer_sized<SIZE>, char> : public format_by_string_view_cast<format_buffer_sized<SIZE>> {};
 
 struct format_to_fixed_base : public format_target {
 	friend format_target;
