@@ -832,10 +832,8 @@ static bool ReadSpriteLayout(ByteReader &buf, uint num_building_sprites, bool us
 	if (!allow_var10) valid_flags &= ~TLF_VAR10_FLAGS;
 	dts->Allocate(num_building_sprites); // allocate before reading groundsprite flags
 
-	uint16_t *max_sprite_offset = AllocaM(uint16_t, num_building_sprites + 1);
-	uint16_t *max_palette_offset = AllocaM(uint16_t, num_building_sprites + 1);
-	MemSetT(max_sprite_offset, 0, num_building_sprites + 1);
-	MemSetT(max_palette_offset, 0, num_building_sprites + 1);
+	TempBufferT<uint16_t, 16> max_sprite_offset(num_building_sprites + 1, 0);
+	TempBufferT<uint16_t, 16> max_palette_offset(num_building_sprites + 1, 0);
 
 	/* Groundsprite */
 	TileLayoutFlags flags = ReadSpriteLayoutSprite(buf, has_flags, false, use_cur_spritesets, feature, &dts->ground, max_sprite_offset, max_palette_offset);
@@ -6479,7 +6477,7 @@ static void VehicleMapSpriteGroup(ByteReader &buf, uint8_t feature, uint8_t idco
 		last_engines.resize(idcount);
 	}
 
-	EngineID *engines = AllocaM(EngineID, idcount);
+	TempBufferST<EngineID> engines(idcount);
 	for (uint i = 0; i < idcount; i++) {
 		Engine *e = GetNewEngine(_cur.grffile, (VehicleType)feature, buf.ReadExtendedByte());
 		if (e == nullptr) {
@@ -6538,7 +6536,7 @@ static void VehicleMapSpriteGroup(ByteReader &buf, uint8_t feature, uint8_t idco
 
 static void CanalMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 {
-	uint16_t *cfs = AllocaM(uint16_t, idcount);
+	TempBufferST<uint16_t> cfs(idcount);
 	for (uint i = 0; i < idcount; i++) {
 		cfs[i] = buf.ReadExtendedByte();
 	}
@@ -6570,7 +6568,7 @@ static void StationMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 		return;
 	}
 
-	uint16_t *stations = AllocaM(uint16_t, idcount);
+	TempBufferST<uint16_t> stations(idcount);
 	for (uint i = 0; i < idcount; i++) {
 		stations[i] = buf.ReadExtendedByte();
 	}
@@ -6627,7 +6625,7 @@ static void TownHouseMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 		return;
 	}
 
-	uint16_t *houses = AllocaM(uint16_t, idcount);
+	TempBufferST<uint16_t> houses(idcount);
 	for (uint i = 0; i < idcount; i++) {
 		houses[i] = buf.ReadExtendedByte();
 	}
@@ -6658,7 +6656,7 @@ static void IndustryMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 		return;
 	}
 
-	uint16_t *industries = AllocaM(uint16_t, idcount);
+	TempBufferST<uint16_t> industries(idcount);
 	for (uint i = 0; i < idcount; i++) {
 		industries[i] = buf.ReadExtendedByte();
 	}
@@ -6689,7 +6687,7 @@ static void IndustrytileMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 		return;
 	}
 
-	uint16_t *indtiles = AllocaM(uint16_t, idcount);
+	TempBufferST<uint16_t> indtiles(idcount);
 	for (uint i = 0; i < idcount; i++) {
 		indtiles[i] = buf.ReadExtendedByte();
 	}
@@ -6715,7 +6713,7 @@ static void IndustrytileMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 
 static void CargoMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 {
-	uint16_t *cargoes = AllocaM(uint16_t, idcount);
+	TempBufferST<uint16_t> cargoes(idcount);
 	for (uint i = 0; i < idcount; i++) {
 		cargoes[i] = buf.ReadExtendedByte();
 	}
@@ -6743,7 +6741,7 @@ static void CargoMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 
 static void SignalsMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 {
-	uint16_t *ids = AllocaM(uint16_t, idcount);
+	TempBufferST<uint16_t> ids(idcount);
 	for (uint i = 0; i < idcount; i++) {
 		ids[i] = buf.ReadExtendedByte();
 	}
@@ -6781,7 +6779,7 @@ static void ObjectMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 		return;
 	}
 
-	uint16_t *objects = AllocaM(uint16_t, idcount);
+	TempBufferST<uint16_t> objects(idcount);
 	for (uint i = 0; i < idcount; i++) {
 		objects[i] = buf.ReadExtendedByte();
 	}
@@ -6834,7 +6832,7 @@ static void ObjectMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 
 static void RailTypeMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 {
-	uint8_t *railtypes = AllocaM(uint8_t, idcount);
+	TempBufferST<uint8_t> railtypes(idcount);
 	for (uint i = 0; i < idcount; i++) {
 		uint16_t id = buf.ReadExtendedByte();
 		railtypes[i] = id < RAILTYPE_END ? _cur.grffile->railtype_map[id] : INVALID_RAILTYPE;
@@ -6867,7 +6865,7 @@ static void RoadTypeMapSpriteGroup(ByteReader &buf, uint8_t idcount, RoadTramTyp
 {
 	RoadType *type_map = (rtt == RTT_TRAM) ? _cur.grffile->tramtype_map : _cur.grffile->roadtype_map;
 
-	uint8_t *roadtypes = AllocaM(uint8_t, idcount);
+	TempBufferST<uint8_t> roadtypes(idcount);
 	for (uint i = 0; i < idcount; i++) {
 		uint16_t id = buf.ReadExtendedByte();
 		roadtypes[i] = id < ROADTYPE_END ? type_map[id] : INVALID_ROADTYPE;
@@ -6903,7 +6901,7 @@ static void AirportMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 		return;
 	}
 
-	uint16_t *airports = AllocaM(uint16_t, idcount);
+	TempBufferST<uint16_t> airports(idcount);
 	for (uint i = 0; i < idcount; i++) {
 		airports[i] = buf.ReadExtendedByte();
 	}
@@ -6934,7 +6932,7 @@ static void AirportTileMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 		return;
 	}
 
-	uint16_t *airptiles = AllocaM(uint16_t, idcount);
+	TempBufferST<uint16_t> airptiles(idcount);
 	for (uint i = 0; i < idcount; i++) {
 		airptiles[i] = buf.ReadExtendedByte();
 	}
@@ -6960,7 +6958,7 @@ static void AirportTileMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 
 static void RoadStopMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 {
-	uint16_t *roadstops = AllocaM(uint16_t, idcount);
+	TempBufferST<uint16_t> roadstops(idcount);
 	for (uint i = 0; i < idcount; i++) {
 		roadstops[i] = buf.ReadExtendedByte();
 	}
@@ -7016,7 +7014,7 @@ static void RoadStopMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 
 static void NewLandscapeMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 {
-	uint16_t *ids = AllocaM(uint16_t, idcount);
+	TempBufferST<uint16_t> ids(idcount);
 	for (uint i = 0; i < idcount; i++) {
 		ids[i] = buf.ReadExtendedByte();
 	}
@@ -11555,7 +11553,7 @@ static void FinalisePriceBaseMultipliers()
 
 	/* Evaluate grf overrides */
 	int num_grfs = (uint)_grf_files.size();
-	int *grf_overrides = AllocaM(int, num_grfs);
+	TempBufferST<int> grf_overrides(num_grfs);
 	for (int i = 0; i < num_grfs; i++) {
 		grf_overrides[i] = -1;
 

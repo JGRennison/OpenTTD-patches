@@ -512,7 +512,7 @@ std::string FS2OTTD(std::wstring_view name)
 	int name_len = (name.length() >= INT_MAX) ? INT_MAX : (int)name.length();
 	int len = WideCharToMultiByte(CP_UTF8, 0, name.data(), name_len, nullptr, 0, nullptr, nullptr);
 	if (len <= 0) return std::string();
-	char *utf8_buf = AllocaM(char, len + 1);
+	TempBufferST<char, 1024> utf8_buf(len + 1);
 	utf8_buf[len] = '\0';
 	WideCharToMultiByte(CP_UTF8, 0, name.data(), name_len, utf8_buf, len, nullptr, nullptr);
 	return std::string(utf8_buf, static_cast<size_t>(len));
@@ -530,7 +530,7 @@ std::wstring OTTD2FS(std::string_view name)
 	int name_len = (name.length() >= INT_MAX) ? INT_MAX : (int)name.length();
 	int len = MultiByteToWideChar(CP_UTF8, 0, name.data(), name_len, nullptr, 0);
 	if (len <= 0) return std::wstring();
-	wchar_t *system_buf = AllocaM(wchar_t, len + 1);
+	TempBufferST<wchar_t, 1024> system_buf(len + 1);
 	system_buf[len] = L'\0';
 	MultiByteToWideChar(CP_UTF8, 0, name.data(), name_len, system_buf, len);
 	return std::wstring(system_buf, static_cast<size_t>(len));
@@ -631,8 +631,8 @@ int OTTDStringCompare(std::string_view s1, std::string_view s2)
 		int len_s2 = MultiByteToWideChar(CP_UTF8, 0, s2.data(), (int)s2.size(), nullptr, 0);
 
 		if (len_s1 != 0 && len_s2 != 0) {
-			LPWSTR str_s1 = AllocaM(WCHAR, len_s1);
-			LPWSTR str_s2 = AllocaM(WCHAR, len_s2);
+			TempBufferST<WCHAR, 1024> str_s1(len_s1);
+			TempBufferST<WCHAR, 1024> str_s2(len_s2);
 
 			len_s1 = MultiByteToWideChar(CP_UTF8, 0, s1.data(), (int)s1.size(), str_s1, len_s1);
 			len_s2 = MultiByteToWideChar(CP_UTF8, 0, s2.data(), (int)s2.size(), str_s2, len_s2);

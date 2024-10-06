@@ -233,7 +233,7 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 	if (distant_join && (!_settings_game.station.distant_join_stations || !Waypoint::IsValidID(station_to_join))) return CMD_ERROR;
 
 	const StationSpec *spec = StationClass::Get(spec_class)->GetSpec(spec_index);
-	uint8_t *layout_ptr = AllocaM(uint8_t, count);
+	TempBufferST<uint8_t> layout_ptr(count);
 	if (spec == nullptr) {
 		/* The layout must be 0 for the 'normal' waypoints by design. */
 		memset(layout_ptr, 0, count);

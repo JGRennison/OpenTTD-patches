@@ -1466,10 +1466,10 @@ static void NetworkGenerateServerId()
 
 std::string NetworkGenerateRandomKeyString(uint bytes)
 {
-	uint8_t *key = AllocaM(uint8_t, bytes);
-	RandomBytesWithFallback({ key, bytes });
+	TempBufferST<uint8_t> key(bytes);
+	RandomBytesWithFallback({key.get(), bytes});
 
-	return FormatArrayAsHex({key, bytes}, false);
+	return FormatArrayAsHex({key.get(), bytes}, false);
 }
 
 /** This tries to launch the network for a given OS */

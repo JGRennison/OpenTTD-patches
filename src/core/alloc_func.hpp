@@ -128,9 +128,74 @@ inline T *ReallocT(T *t_ptr, size_t num_elements)
 	return t_ptr;
 }
 
-/** alloca() has to be called in the parent function, so define AllocaM() as a macro */
-#define AllocaM(T, num_elements) \
-	(CheckAllocationConstraints<T>(num_elements), \
-	(T*)alloca((num_elements) * sizeof(T)))
+/**
+ * Temporary buffer for elements of type T.
+ * Up to MAX_N elements are stored inline (on the stack).
+ * Requests of more than MAX_N elements use the heap/malloc.
+ * This has a similar use-case to alloca, but without the potentially problematic stack use.
+ */
+template <typename T, size_t MAX_N>
+struct TempBufferT {
+	enum InitMode {
+		NO_INIT,
+		INIT_ZERO,
+	};
+
+private:
+	T *ptr;
+	T storage[MAX_N];
+
+	void init(size_t num_elements)
+	{
+		if (num_elements > MAX_N) {
+			this->ptr = MallocT<T>(num_elements);
+		} else {
+			this->ptr = this->storage;
+		}
+	}
+
+public:
+	/** Construct with storage for num_elements elements, the elements are uninitialised. */
+	TempBufferT(size_t num_elements)
+	{
+		init(num_elements);
+	}
+
+	/** Construct with storage for num_elements elements, the elements are uninitialised. */
+	TempBufferT(size_t num_elements, const T &init_value)
+	{
+		init(num_elements);
+		std::fill_n(this->ptr, num_elements, init_value);
+	}
+
+	~TempBufferT()
+	{
+		if (this->ptr != this->storage) free(this->ptr);
+	}
+
+	TempBufferT(const TempBufferT &other) = delete;
+	TempBufferT& operator=(const TempBufferT &other) = delete;
+
+	T *get() noexcept { return this->ptr; }
+	const T *get() const noexcept { return this->ptr; }
+
+	operator T* () noexcept { return this->get(); }
+	operator const T* () const noexcept { return this->get(); }
+};
+
+template <typename T, size_t MAX_SIZE>
+using TempBufferSTParent = TempBufferT<T, std::max<size_t>(MAX_SIZE / sizeof(T), 1)>;
+
+/**
+ * Temporary buffer for elements of type T.
+ *
+ * This is a wrapper for TempBufferT which calculates the number of elements from
+ * a maximum total size. Default: 256 bytes.
+ * The minimum MAX_N is 1, even if sizeof(T) > MAX_SIZE.
+ */
+template <typename T, size_t MAX_SIZE = 256>
+struct TempBufferST : public TempBufferSTParent<T, MAX_SIZE> {
+	using TempBufferSTParent<T, MAX_SIZE>::TempBufferSTParent;
+};
 
 #endif /* ALLOC_FUNC_HPP */

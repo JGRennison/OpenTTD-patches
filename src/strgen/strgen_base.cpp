@@ -326,7 +326,7 @@ void EmitPlural(Buffer *buffer, char *buf, int)
 	int argidx = _cur_argidx;
 	int offset = -1;
 	int expected = _plural_forms[_lang.plural_form].plural_count;
-	const char **words = AllocaM(const char *, std::max(expected, MAX_PLURALS));
+	TempBufferT<const char *, 16> words(std::max(expected, MAX_PLURALS));
 	int nw = 0;
 
 	/* Parse out the number, if one exists. Otherwise default to prev arg. */
@@ -953,7 +953,7 @@ void LanguageWriter::WriteLength(uint length)
  */
 void LanguageWriter::WriteLang(const StringData &data)
 {
-	uint *in_use = AllocaM(uint, data.tabs);
+	TempBufferST<uint> in_use(data.tabs);
 	for (size_t tab = 0; tab < data.tabs; tab++) {
 		uint n = data.CountInUse((uint)tab);
 

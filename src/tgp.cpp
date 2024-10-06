@@ -570,7 +570,7 @@ static void HeightMapCurves(uint level)
 	float factor = sqrt((float)_height_map.size_x / (float)_height_map.size_y);
 	uint sx = Clamp((int)(((1 << level) * factor) + 0.5), 1, 128);
 	uint sy = Clamp((int)(((1 << level) / factor) + 0.5), 1, 128);
-	uint8_t *c = AllocaM(uint8_t, static_cast<size_t>(sx) * sy);
+	TempBufferST<uint8_t> c(static_cast<size_t>(sx) * sy);
 
 	for (uint i = 0; i < sx * sy; i++) {
 		c[i] = RandomRange(static_cast<uint32_t>(std::size(curve_maps)));

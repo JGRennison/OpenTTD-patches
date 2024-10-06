@@ -1563,12 +1563,12 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32_
 	const StationSpec *statspec = StationClass::Get(spec_class)->GetSpec(spec_index);
 
 	TileIndexDiff tile_delta = (axis == AXIS_X ? TileDiffXY(1, 0) : TileDiffXY(0, 1));
-	uint8_t *layout_ptr = AllocaM(uint8_t, numtracks * plat_len);
-	GetStationLayout(layout_ptr, numtracks, plat_len, statspec);
+	TempBufferST<uint8_t> layout_buffer(numtracks * plat_len);
+	GetStationLayout(layout_buffer, numtracks, plat_len, statspec);
 
 	{
 		TileIndex tile_track = tile_org;
-		uint8_t *check_layout_ptr = layout_ptr;
+		uint8_t *check_layout_ptr = layout_buffer;
 		for (uint i = 0; i < numtracks; i++) {
 			TileIndex tile = tile_track;
 			for (uint j = 0; j < plat_len; j++) {
@@ -1641,6 +1641,7 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32_
 
 		Company *c = Company::Get(st->owner);
 		TileIndex tile_track = tile_org;
+		uint8_t *layout_ptr = layout_buffer;
 		do {
 			TileIndex tile = tile_track;
 			int w = plat_len;

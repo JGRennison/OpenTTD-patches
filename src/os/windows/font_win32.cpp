@@ -132,7 +132,8 @@ void Win32FontCache::SetFontSize(int pixels)
 			HGDIOBJ old = SelectObject(this->dc, temp);
 
 			UINT size = GetOutlineTextMetrics(this->dc, 0, nullptr);
-			LPOUTLINETEXTMETRIC otm = (LPOUTLINETEXTMETRIC)AllocaM(BYTE, size);
+			TempBufferST<uint8_t> otm_alloc(size);
+			LPOUTLINETEXTMETRIC otm = (LPOUTLINETEXTMETRIC)otm_alloc.get();
 			GetOutlineTextMetrics(this->dc, size, otm);
 
 			/* Font height is minimum height plus the difference between the default
@@ -164,7 +165,8 @@ void Win32FontCache::SetFontSize(int pixels)
 
 	/* Query the font metrics we needed. */
 	UINT otmSize = GetOutlineTextMetrics(this->dc, 0, nullptr);
-	POUTLINETEXTMETRIC otm = (POUTLINETEXTMETRIC)AllocaM(BYTE, otmSize);
+	TempBufferST<uint8_t> otm_alloc(otmSize);
+	POUTLINETEXTMETRIC otm = (POUTLINETEXTMETRIC)otm_alloc.get();
 	GetOutlineTextMetrics(this->dc, otmSize, otm);
 
 	this->ascender = otm->otmTextMetrics.tmAscent;
@@ -209,7 +211,7 @@ void Win32FontCache::ClearFontCache()
 	if (width > MAX_GLYPH_DIM || height > MAX_GLYPH_DIM) UserError("Font glyph is too large");
 
 	/* Call GetGlyphOutline again with size to actually render the glyph. */
-	uint8_t *bmp = AllocaM(uint8_t, size);
+	TempBufferST<uint8_t> bmp(size);
 	GetGlyphOutline(this->dc, key, GGO_GLYPH_INDEX | (aa ? GGO_GRAY8_BITMAP : GGO_BITMAP), &gm, size, bmp, &mat);
 
 	/* GDI has rendered the glyph, now we allocate a sprite and copy the image into it. */

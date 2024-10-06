@@ -81,7 +81,7 @@ bool LoadNewGRFSound(SoundEntry *sound)
 	if (file.ReadByte() != 0xFF) return false;
 
 	uint8_t name_len = file.ReadByte();
-	char *name = AllocaM(char, name_len + 1);
+	TempBufferST<char> name(name_len + 1);
 	file.ReadBlock(name, name_len + 1);
 
 	/* Test string termination */
@@ -90,7 +90,7 @@ bool LoadNewGRFSound(SoundEntry *sound)
 		return false;
 	}
 
-	DEBUG(grf, 2, "LoadNewGRFSound [%s]: Sound name '%s'...", file.GetSimplifiedFilename().c_str(), name);
+	DEBUG(grf, 2, "LoadNewGRFSound [%s]: Sound name '%s'...", file.GetSimplifiedFilename().c_str(), name.get());
 
 	if (file.ReadDword() != BSWAP32('RIFF')) {
 		DEBUG(grf, 1, "LoadNewGRFSound [%s]: Missing RIFF header", file.GetSimplifiedFilename().c_str());
