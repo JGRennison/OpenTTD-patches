@@ -191,9 +191,9 @@ static bool MakeBMPImage(const char *name, ScreenshotCallback *callb, void *user
 	/* Try to use 64k of memory, store between 16 and 128 lines */
 	uint maxlines = Clamp(65536 / (w * pixelformat / 8), 16, 128); // number of lines per iteration
 
-	uint8_t *buff = MallocT<uint8_t>(maxlines * w * pixelformat / 8); // buffer which is rendered to
-	uint8_t *line = AllocaM(uint8_t, bytewidth); // one line, stored to file
-	memset(line, 0, bytewidth);
+	std::unique_ptr<uint8_t[]> buff = std::make_unique<uint8_t[]>(maxlines * w * pixelformat / 8); // buffer which is rendered to
+	std::unique_ptr<uint8_t[]> line = std::make_unique<uint8_t[]>(bytewidth); // one line, stored to file
+	memset(line.get(), 0, bytewidth);
 
 	/* Start at the bottom, since bitmaps are stored bottom up */
 	do {
@@ -201,18 +201,18 @@ static bool MakeBMPImage(const char *name, ScreenshotCallback *callb, void *user
 		h -= n;
 
 		/* Render the pixels */
-		callb(userdata, buff, h, w, n);
+		callb(userdata, buff.get(), h, w, n);
 
 		/* Write each line */
 		while (n-- != 0) {
 			if (pixelformat == 8) {
 				/* Move to 'line', leave last few pixels in line zeroed */
-				memcpy(line, buff + n * w, w);
+				memcpy(line.get(), buff.get() + n * w, w);
 			} else {
 				/* Convert from 'native' 32bpp to BMP-like 24bpp.
 				 * Works for both big and little endian machines */
-				Colour *src = ((Colour *)buff) + n * w;
-				uint8_t *dst = line;
+				Colour *src = ((Colour *)buff.get()) + n * w;
+				uint8_t *dst = line.get();
 				for (uint i = 0; i < w; i++) {
 					dst[i * 3    ] = src[i].b;
 					dst[i * 3 + 1] = src[i].g;
@@ -220,15 +220,13 @@ static bool MakeBMPImage(const char *name, ScreenshotCallback *callb, void *user
 				}
 			}
 			/* Write to file */
-			if (fwrite(line, bytewidth, 1, f) != 1) {
-				free(buff);
+			if (fwrite(line.get(), bytewidth, 1, f) != 1) {
 				fclose(f);
 				return false;
 			}
 		}
 	} while (h != 0);
 
-	free(buff);
 	fclose(f);
 
 	return true;

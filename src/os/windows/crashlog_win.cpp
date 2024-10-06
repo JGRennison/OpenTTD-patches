@@ -457,8 +457,12 @@ static const uint MAX_FRAMES     = 64;
 		CONTEXT ctx;
 		memcpy(&ctx, ep->ContextRecord, sizeof(ctx));
 
-		/* Allocate space for symbol info. */
-		IMAGEHLP_SYMBOL64 *sym_info = (IMAGEHLP_SYMBOL64*)alloca(sizeof(IMAGEHLP_SYMBOL64) + MAX_SYMBOL_LEN - 1);
+		struct SymAllocation {
+			IMAGEHLP_SYMBOL64 sym;
+			char name[MAX_SYMBOL_LEN - 1];
+		};
+		SymAllocation symalloc;
+		IMAGEHLP_SYMBOL64 *sym_info = &symalloc.sym;
 		sym_info->SizeOfStruct = sizeof(IMAGEHLP_SYMBOL64);
 		sym_info->MaxNameLength = MAX_SYMBOL_LEN;
 

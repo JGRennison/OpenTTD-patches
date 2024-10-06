@@ -757,10 +757,10 @@ struct TimetableWindow : GeneralVehicleWindow {
 				Ticks total_time = v->orders != nullptr ? v->orders->GetTimetableDurationIncomplete() : 0;
 				if (total_time <= 0 || v->GetNumOrders() <= 1 || !HasBit(v->vehicle_flags, VF_TIMETABLE_STARTED)) break;
 
-				TimetableArrivalDeparture *arr_dep = AllocaM(TimetableArrivalDeparture, v->GetNumOrders());
+				std::unique_ptr<TimetableArrivalDeparture[]> arr_dep = std::make_unique<TimetableArrivalDeparture[]>(v->GetNumOrders());
 				const VehicleOrderID cur_order = v->cur_real_order_index % v->GetNumOrders();
 
-				VehicleOrderID earlyID = BuildArrivalDepartureList(v, arr_dep) ? cur_order : (VehicleOrderID)INVALID_VEH_ORDER_ID;
+				VehicleOrderID earlyID = BuildArrivalDepartureList(v, arr_dep.get()) ? cur_order : (VehicleOrderID)INVALID_VEH_ORDER_ID;
 
 				Rect tr = r.Shrink(WidgetDimensions::scaled.framerect);
 				Dimension lock_d = GetSpriteSize(SPR_LOCK);

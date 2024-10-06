@@ -3081,12 +3081,11 @@ StringList GetGRFPresetList()
  */
 GRFConfig *LoadGRFPresetFromConfig(const char *config_name)
 {
-	size_t len = strlen(config_name) + 8;
-	char *section = (char*)alloca(len);
-	seprintf(section, section + len - 1, "preset-%s", config_name);
+	format_buffer section;
+	section.format("preset-{}", config_name);
 
 	ConfigIniFile ini(_config_file);
-	GRFConfig *config = GRFLoadConfig(ini, section, false);
+	GRFConfig *config = GRFLoadConfig(ini, section.c_str(), false);
 
 	return config;
 }
@@ -3099,12 +3098,11 @@ GRFConfig *LoadGRFPresetFromConfig(const char *config_name)
  */
 void SaveGRFPresetToConfig(const char *config_name, GRFConfig *config)
 {
-	size_t len = strlen(config_name) + 8;
-	char *section = (char*)alloca(len);
-	seprintf(section, section + len - 1, "preset-%s", config_name);
+	format_buffer section;
+	section.format("preset-{}", config_name);
 
 	ConfigIniFile ini(_config_file);
-	GRFSaveConfig(ini, section, config);
+	GRFSaveConfig(ini, section.c_str(), config);
 	ini.SaveToDisk(_config_file);
 }
 
@@ -3114,12 +3112,11 @@ void SaveGRFPresetToConfig(const char *config_name, GRFConfig *config)
  */
 void DeleteGRFPresetFromConfig(const char *config_name)
 {
-	size_t len = strlen(config_name) + 8;
-	char *section = (char*)alloca(len);
-	seprintf(section, section + len - 1, "preset-%s", config_name);
+	format_buffer section;
+	section.format("preset-{}", config_name);
 
 	ConfigIniFile ini(_config_file);
-	ini.RemoveGroup(section);
+	ini.RemoveGroup(section.c_str());
 	ini.SaveToDisk(_config_file);
 }
 

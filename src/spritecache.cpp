@@ -471,7 +471,7 @@ static void *ReadRecolourSprite(SpriteFile &file, uint num, SpriteAllocator &all
 	};
 
 	if (file.NeedsPaletteRemap()) {
-		uint8_t *dest_tmp = AllocaM(uint8_t, RECOLOUR_SPRITE_SIZE);
+		uint8_t dest_tmp[RECOLOUR_SPRITE_SIZE];
 
 		/* Only a few recolour sprites are less than 257 bytes */
 		if (num < RECOLOUR_SPRITE_SIZE) memset(dest_tmp, 0, RECOLOUR_SPRITE_SIZE);

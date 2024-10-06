@@ -1076,8 +1076,14 @@ bool VideoDriver_Win32GDI::AllocateBackingStore(int w, int h, bool force)
 
 	if (!force && w == _screen.width && h == _screen.height) return false;
 
-	BITMAPINFO *bi = (BITMAPINFO *)alloca(sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * 256);
-	memset(bi, 0, sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * 256);
+	struct BitmapInfoAllocation {
+		BITMAPINFOHEADER header;
+		RGBQUAD rgb[256];
+	};
+	BitmapInfoAllocation bmalloc;
+
+	memset(&bmalloc, 0, sizeof(BitmapInfoAllocation));
+	BITMAPINFO *bi = reinterpret_cast<BITMAPINFO *>(&bmalloc);
 	bi->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 
 	bi->bmiHeader.biWidth = this->width = w;
@@ -1114,7 +1120,13 @@ void VideoDriver_Win32GDI::MakePalette()
 	_cur_palette.count_dirty = 256;
 	_local_palette = _cur_palette;
 
-	LOGPALETTE *pal = (LOGPALETTE*)alloca(sizeof(LOGPALETTE) + (256 - 1) * sizeof(PALETTEENTRY));
+	struct PaletteAllocation {
+		LOGPALETTE pal;
+		PALETTEENTRY entries[256 - 1];
+	};
+	static_assert(sizeof(PaletteAllocation) == sizeof(LOGPALETTE) + (256 - 1) * sizeof(PALETTEENTRY));
+	PaletteAllocation palalloc;
+	LOGPALETTE *pal = &palalloc.pal;
 
 	pal->palVersion = 0x300;
 	pal->palNumEntries = 256;
