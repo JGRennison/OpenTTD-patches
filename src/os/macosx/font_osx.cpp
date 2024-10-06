@@ -90,7 +90,7 @@ bool SetFallbackFont(FontCacheSettings *settings, const std::string &language_is
 			/* Save result. */
 			callback->SetFontNames(settings, name);
 			if (!callback->FindMissingGlyphs()) {
-				DEBUG(fontcache, 2, "CT-Font for %s: %s", language_isocode.c_str(), name);
+				Debug(fontcache, 2, "CT-Font for {}: {}", language_isocode, name);
 				result = true;
 				break;
 			}
@@ -179,7 +179,7 @@ void CoreTextFontCache::SetFontSize(int pixels)
 	CFStringGetCString(font_name.get(), name, lengthof(name), kCFStringEncodingUTF8);
 	this->font_name = name;
 
-	DEBUG(fontcache, 2, "Loaded font '%s' with size %d", this->font_name.c_str(), pixels);
+	Debug(fontcache, 2, "Loaded font '{}' with size {}", this->font_name, pixels);
 }
 
 GlyphID CoreTextFontCache::MapCharToGlyph(char32_t key, bool allow_fallback)

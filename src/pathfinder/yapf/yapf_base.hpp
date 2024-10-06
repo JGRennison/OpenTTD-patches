@@ -142,7 +142,7 @@ public:
 			const int cost = destination_found ? m_pBestDestNode->m_cost : -1;
 			const int dist = destination_found ? m_pBestDestNode->m_estimate - m_pBestDestNode->m_cost : -1;
 
-			DEBUG(yapf, 3, "[YAPF%c]%c%4d- %d rounds - %d open - %d closed - CHR %4.1f%% - C %d D %d",
+			Debug(yapf, 3, "[YAPF{}]{}{:4d} - {} rounds - {} open - {} closed - CHR {:4.1f}% - C {} D {}",
 				ttc, destination_found ? '-' : '!', veh_idx, m_num_steps, m_nodes.OpenCount(), m_nodes.ClosedCount(), cache_hit_ratio, cost, dist
 			);
 		}

@@ -434,7 +434,7 @@ void UpdateAllTemplateVehicleImages()
 						u->colourmap = GetVehiclePalette(v);
 					}
 				} else {
-					DEBUG(misc, 0, "UpdateAllTemplateVehicleImages: vehicle count mismatch: %u, %u", t_len, tv_len);
+					Debug(misc, 0, "UpdateAllTemplateVehicleImages: vehicle count mismatch: {}, {}", t_len, tv_len);
 				}
 				delete t;
 			}

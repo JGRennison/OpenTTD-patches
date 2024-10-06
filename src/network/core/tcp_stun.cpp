@@ -22,7 +22,7 @@
  */
 bool NetworkStunSocketHandler::ReceiveInvalidPacket(PacketStunType type)
 {
-	DEBUG(net, 0, "[tcp/stun] Received illegal packet type %u", type);
+	Debug(net, 0, "[tcp/stun] Received illegal packet type {}", type);
 	return false;
 }
 

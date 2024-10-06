@@ -129,7 +129,7 @@
 			return TileY(this->t->xy) << 16 | (TileX(this->t->xy) & 0xFFFF);
 	}
 
-	DEBUG(grf, 1, "Unhandled town variable 0x%X", variable);
+	Debug(grf, 1, "Unhandled town variable 0x{:X}", variable);
 
 	extra.available = false;
 	return UINT_MAX;
@@ -191,7 +191,7 @@
 			return 0;
 	}
 
-	DEBUG(grf, 1, "Unhandled town variable 0x%X", variable);
+	Debug(grf, 1, "Unhandled town variable 0x{:X}", variable);
 
 	extra.available = false;
 	return UINT_MAX;

@@ -136,7 +136,7 @@ NetworkRecvStatus NetworkGameSocketHandler::HandlePacket(Packet &p)
 	PacketGameType type = (PacketGameType)p.Recv_uint8();
 
 	if (this->HasClientQuit()) {
-		DEBUG(net, 0, "[tcp/game] Received invalid packet from client %d", this->client_id);
+		Debug(net, 0, "[tcp/game] Received invalid packet from client {}", this->client_id);
 		this->CloseConnection();
 		return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 	}
@@ -144,7 +144,7 @@ NetworkRecvStatus NetworkGameSocketHandler::HandlePacket(Packet &p)
 	this->last_packet = std::chrono::steady_clock::now();
 	this->last_pkt_type = type;
 
-	DEBUG(net, 5, "[tcp/game] received packet type %d (%s) from client %d, %s", type, GetPacketGameTypeName(type), this->client_id, this->GetDebugInfo().c_str());
+	Debug(net, 5, "[tcp/game] received packet type {} ({}) from client {}, {}", type, GetPacketGameTypeName(type), this->client_id, this->GetDebugInfo());
 
 	switch (type) {
 		case PACKET_SERVER_FULL:                  return this->Receive_SERVER_FULL(p);
@@ -202,7 +202,7 @@ NetworkRecvStatus NetworkGameSocketHandler::HandlePacket(Packet &p)
 		case PACKET_SERVER_CONFIG_UPDATE:         return this->Receive_SERVER_CONFIG_UPDATE(p);
 
 		default:
-			DEBUG(net, 0, "[tcp/game] Received invalid packet type %d from client %d", type, this->client_id);
+			Debug(net, 0, "[tcp/game] Received invalid packet type {} from client {}", type, this->client_id);
 			this->CloseConnection();
 			return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 	}
@@ -233,7 +233,7 @@ NetworkRecvStatus NetworkGameSocketHandler::ReceivePackets()
  */
 NetworkRecvStatus NetworkGameSocketHandler::ReceiveInvalidPacket(PacketGameType type)
 {
-	DEBUG(net, 0, "[tcp/game] Received illegal packet type %d from client %d", type, this->client_id);
+	Debug(net, 0, "[tcp/game] Received illegal packet type {} from client {}", type, this->client_id);
 	return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 }
 
@@ -296,7 +296,7 @@ std::string NetworkGameSocketHandler::GetDebugInfo() const { return ""; }
 void NetworkGameSocketHandler::LogSentPacket(const Packet &pkt)
 {
 	PacketGameType type = (PacketGameType)pkt.GetTransmitPacketType();
-	DEBUG(net, 5, "[tcp/game] sent packet type %d (%s) to client %d, %s", type, GetPacketGameTypeName(type), this->client_id, this->GetDebugInfo().c_str());
+	Debug(net, 5, "[tcp/game] sent packet type {} ({}) to client {}, {}", type, GetPacketGameTypeName(type), this->client_id, this->GetDebugInfo());
 }
 
 void NetworkGameSocketHandler::DeferDeletion()

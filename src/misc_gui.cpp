@@ -118,32 +118,32 @@ public:
 #	define LANDINFOD_LEVEL 1
 #endif
 		if (GetDebugLevel(DebugLevelID::misc) >= LANDINFOD_LEVEL) {
-			DEBUG(misc, LANDINFOD_LEVEL, "TILE: %#x (%i,%i)", tile, TileX(tile), TileY(tile));
+			Debug(misc, LANDINFOD_LEVEL, "TILE: {:#x} ({},{})", tile, TileX(tile), TileY(tile));
 			if (IsTunnelTile(tile)) {
-				DEBUG(misc, LANDINFOD_LEVEL, "tunnel pool size: %u", (uint)Tunnel::GetPoolSize());
-				DEBUG(misc, LANDINFOD_LEVEL, "index: %#x"          , Tunnel::GetByTile(tile)->index);
-				DEBUG(misc, LANDINFOD_LEVEL, "north tile: %#x"     , Tunnel::GetByTile(tile)->tile_n);
-				DEBUG(misc, LANDINFOD_LEVEL, "south tile: %#x"     , Tunnel::GetByTile(tile)->tile_s);
-				DEBUG(misc, LANDINFOD_LEVEL, "is chunnel: %u"      , Tunnel::GetByTile(tile)->is_chunnel);
+				Debug(misc, LANDINFOD_LEVEL, "tunnel pool size: {}", (uint)Tunnel::GetPoolSize());
+				Debug(misc, LANDINFOD_LEVEL, "index: {:#x}"        , Tunnel::GetByTile(tile)->index);
+				Debug(misc, LANDINFOD_LEVEL, "north tile: {:#x}"   , Tunnel::GetByTile(tile)->tile_n);
+				Debug(misc, LANDINFOD_LEVEL, "south tile: {:#x}"   , Tunnel::GetByTile(tile)->tile_s);
+				Debug(misc, LANDINFOD_LEVEL, "is chunnel: {}"      , Tunnel::GetByTile(tile)->is_chunnel);
 			}
 			if (IsBridgeTile(tile)) {
 				const BridgeSpec *b = GetBridgeSpec(GetBridgeType(tile));
-				DEBUG(misc, LANDINFOD_LEVEL, "bridge: flags: %X, ctrl_flags: %X", b->flags, b->ctrl_flags);
+				Debug(misc, LANDINFOD_LEVEL, "bridge: flags: {:X}, ctrl_flags: {:X}", b->flags, b->ctrl_flags);
 			}
 			if (IsBridgeAbove(tile)) {
 				BridgePieceDebugInfo info = GetBridgePieceDebugInfo(tile);
-				DEBUG(misc, LANDINFOD_LEVEL, "bridge above: piece: %u, pillars: %X, pillar index: %u", info.piece, info.pillar_flags, info.pillar_index);
+				Debug(misc, LANDINFOD_LEVEL, "bridge above: piece: {}, pillars: {:X}, pillar index: {}", info.piece, info.pillar_flags, info.pillar_index);
 			}
-			DEBUG(misc, LANDINFOD_LEVEL, "type   = %#x", _m[tile].type);
-			DEBUG(misc, LANDINFOD_LEVEL, "height = %#x", _m[tile].height);
-			DEBUG(misc, LANDINFOD_LEVEL, "m1     = %#x", _m[tile].m1);
-			DEBUG(misc, LANDINFOD_LEVEL, "m2     = %#x", _m[tile].m2);
-			DEBUG(misc, LANDINFOD_LEVEL, "m3     = %#x", _m[tile].m3);
-			DEBUG(misc, LANDINFOD_LEVEL, "m4     = %#x", _m[tile].m4);
-			DEBUG(misc, LANDINFOD_LEVEL, "m5     = %#x", _m[tile].m5);
-			DEBUG(misc, LANDINFOD_LEVEL, "m6     = %#x", _me[tile].m6);
-			DEBUG(misc, LANDINFOD_LEVEL, "m7     = %#x", _me[tile].m7);
-			DEBUG(misc, LANDINFOD_LEVEL, "m8     = %#x", _me[tile].m8);
+			Debug(misc, LANDINFOD_LEVEL, "type   = {:#x}", _m[tile].type);
+			Debug(misc, LANDINFOD_LEVEL, "height = {:#x}", _m[tile].height);
+			Debug(misc, LANDINFOD_LEVEL, "m1     = {:#x}", _m[tile].m1);
+			Debug(misc, LANDINFOD_LEVEL, "m2     = {:#x}", _m[tile].m2);
+			Debug(misc, LANDINFOD_LEVEL, "m3     = {:#x}", _m[tile].m3);
+			Debug(misc, LANDINFOD_LEVEL, "m4     = {:#x}", _m[tile].m4);
+			Debug(misc, LANDINFOD_LEVEL, "m5     = {:#x}", _m[tile].m5);
+			Debug(misc, LANDINFOD_LEVEL, "m6     = {:#x}", _me[tile].m6);
+			Debug(misc, LANDINFOD_LEVEL, "m7     = {:#x}", _me[tile].m7);
+			Debug(misc, LANDINFOD_LEVEL, "m8     = {:#x}", _me[tile].m8);
 
 			PrintWaterRegionDebugInfo(tile);
 		}

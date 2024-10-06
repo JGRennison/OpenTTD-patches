@@ -997,7 +997,7 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 				MarkWholeScreenDirty();
 			}
 
-			DEBUG(desync, 1, "new_company: %s, company_id: %u", debug_date_dumper().HexDate(), c->index);
+			Debug(desync, 1, "new_company: {}, company_id: {}", debug_date_dumper().HexDate(), c->index);
 			break;
 		}
 
@@ -1016,7 +1016,7 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 			if (c != nullptr) {
 				NetworkAdminCompanyNew(c);
 				NetworkServerNewCompany(c, nullptr);
-				DEBUG(desync, 1, "new_company_ai: %s, company_id: %u", debug_date_dumper().HexDate(), c->index);
+				Debug(desync, 1, "new_company_ai: {}, company_id: {}", debug_date_dumper().HexDate(), c->index);
 			}
 			break;
 		}
@@ -1033,7 +1033,7 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 
 			if (!(flags & DC_EXEC)) return CommandCost();
 
-			DEBUG(desync, 1, "delete_company: %s, company_id: %u, reason: %u", debug_date_dumper().HexDate(), company_id, reason);
+			Debug(desync, 1, "delete_company: {}, company_id: {}, reason: {}", debug_date_dumper().HexDate(), company_id, reason);
 
 			CompanyNewsInformation *cni = new CompanyNewsInformation(c);
 
@@ -1091,7 +1091,7 @@ CommandCost CmdCompanyCtrl(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 
 			SubtractMoneyFromAnyCompany(c, CommandCost(EXPENSES_OTHER, to_merge->current_loan - to_merge->money));
 
-			DEBUG(desync, 1, "merge_companies: %s, company_id: %u, merged_company_id: %u", debug_date_dumper().HexDate(), company_id, to_merge_id);
+			Debug(desync, 1, "merge_companies: {}, company_id: {}, merged_company_id: {}", debug_date_dumper().HexDate(), company_id, to_merge_id);
 
 			CompanyNewsInformation *cni = new CompanyNewsInformation(to_merge, c);
 

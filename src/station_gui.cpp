@@ -315,7 +315,7 @@ protected:
 	{
 		if (!this->stations.NeedRebuild()) return;
 
-		DEBUG(misc, 3, "Building station list for company %d", owner);
+		Debug(misc, 3, "Building station list for company {}", owner);
 
 		this->stations.clear();
 		this->stations_per_cargo_type.fill(0);
@@ -799,7 +799,7 @@ public:
 	void OnGameTick() override
 	{
 		if (this->stations.NeedResort()) {
-			DEBUG(misc, 3, "Periodic rebuild station list company %d", this->window_number);
+			Debug(misc, 3, "Periodic rebuild station list company {}", this->window_number);
 			this->SetDirty();
 		}
 	}

@@ -100,7 +100,7 @@ bool MusicDriver_ExtMidi::IsSongPlaying()
 
 void MusicDriver_ExtMidi::SetVolume(uint8_t)
 {
-	DEBUG(driver, 1, "extmidi: set volume not implemented");
+	Debug(driver, 1, "extmidi: set volume not implemented");
 }
 
 void MusicDriver_ExtMidi::DoPlay()
@@ -125,7 +125,7 @@ void MusicDriver_ExtMidi::DoPlay()
 		}
 
 		case -1:
-			DEBUG(driver, 0, "extmidi: couldn't fork: %s", StrErrorDumper().GetLast());
+			Debug(driver, 0, "extmidi: couldn't fork: {}", StrErrorDumper().GetLast());
 			[[fallthrough]];
 
 		default:
@@ -166,7 +166,7 @@ void MusicDriver_ExtMidi::DoStop()
 
 	if (KillWait(this->pid, SIGTERM)) return;
 
-	DEBUG(driver, 0, "extmidi: gracefully stopping failed, trying the hard way");
+	Debug(driver, 0, "extmidi: gracefully stopping failed, trying the hard way");
 	/* Gracefully stopping failed. Do it the hard way
 	 * and wait till the process finally died. */
 	kill(this->pid, SIGKILL);

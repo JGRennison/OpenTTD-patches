@@ -442,7 +442,7 @@ void ShowNewGrfVehicleError(EngineID engine, StringID part1, StringID part2, GRF
 	auto log = [&](StringID str) {
 		std::string msg = GetString(str);
 		const char *start = strip_leading_colours(msg);
-		DEBUG(grf, 0, "%s", start);
+		Debug(grf, 0, "{}", start);
 		log_msg += start;
 	};
 
@@ -3549,7 +3549,7 @@ void Vehicle::CancelReservation(StationID next, Station *st)
 	for (Vehicle *v = this; v != nullptr; v = v->next) {
 		VehicleCargoList &cargo = v->cargo;
 		if (cargo.ActionCount(VehicleCargoList::MTA_LOAD) > 0) {
-			DEBUG(misc, 1, "cancelling cargo reservation");
+			Debug(misc, 1, "cancelling cargo reservation");
 			cargo.Return(UINT_MAX, &st->goods[v->cargo_type].CreateData().cargo, next, v->tile);
 		}
 		cargo.KeepAll();

@@ -701,7 +701,7 @@ const char *GetGRFStringPtr(uint32_t stringid)
 #endif
 
 	if (stringid >= _grf_text.size() || _grf_text[stringid].grfid == 0) {
-		DEBUG(misc, 0, "Invalid NewGRF string ID: %d", stringid);
+		Debug(misc, 0, "Invalid NewGRF string ID: {}", stringid);
 		return "(invalid StringID)";
 	}
 
@@ -918,12 +918,12 @@ uint RemapNewGRFStringControlCode(uint scc, std::string *buffer, const char **st
 				break;
 			}
 		}
-		if (grfid) {
+		if (grfid != 0) {
 			extern GRFFile *GetFileByGRFID(uint32_t grfid);
 			const GRFFile *grffile = GetFileByGRFID(grfid);
-			DEBUG(misc, 0, "Too many NewGRF string parameters (in %X, %s).", BSWAP32(grfid), grffile ? grffile->filename.c_str() : "????");
+			Debug(misc, 0, "Too many NewGRF string parameters (in {:08X}, {}).", BSWAP32(grfid), grffile != nullptr ? (std::string_view)grffile->filename : "????");
 		} else {
-			DEBUG(misc, 0, "Too many NewGRF string parameters.");
+			Debug(misc, 0, "Too many NewGRF string parameters.");
 		}
 	};
 

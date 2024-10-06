@@ -98,7 +98,7 @@ static void _GenerateWorld()
 	try {
 		_generating_world = true;
 		_town_noise_no_update = true;
-		if (_network_dedicated) DEBUG(net, 3, "Generating map, please wait...");
+		if (_network_dedicated) Debug(net, 3, "Generating map, please wait...");
 		/* Set the Random() seed to generation_seed so we produce the same map with the same seed */
 		_random.SetSeed(_settings_game.game_creation.generation_seed);
 
@@ -216,8 +216,8 @@ static void _GenerateWorld()
 
 		ShowNewGRFError();
 
-		if (_network_dedicated) DEBUG(net, 3, "Map generated, starting game");
-		DEBUG(desync, 1, "new_map: %08x", _settings_game.game_creation.generation_seed);
+		if (_network_dedicated) Debug(net, 3, "Map generated, starting game");
+		Debug(desync, 1, "new_map: {:08x}", _settings_game.game_creation.generation_seed);
 
 		if (GetDebugLevel(DebugLevelID::desync) > 0) {
 			char name[MAX_PATH];
@@ -232,7 +232,7 @@ static void _GenerateWorld()
 
 		if (_network_dedicated) {
 			/* Exit the game to prevent a return to main menu.  */
-			DEBUG(net, 0, "Generating map failed; closing server");
+			Debug(net, 0, "Generating map failed; closing server");
 			_exit_game = true;
 		} else {
 			SwitchToMode(_switch_mode);

@@ -32,7 +32,7 @@ public:
 
 	void OnFailure() override
 	{
-		DEBUG(net, 9, "Turn::OnFailure()");
+		Debug(net, 9, "Turn::OnFailure()");
 
 		this->handler->connecter = nullptr;
 
@@ -41,7 +41,7 @@ public:
 
 	void OnConnect(SOCKET s) override
 	{
-		DEBUG(net, 9, "Turn::OnConnect()");
+		Debug(net, 9, "Turn::OnConnect()");
 
 		this->handler->connecter = nullptr;
 
@@ -51,7 +51,7 @@ public:
 
 bool ClientNetworkTurnSocketHandler::Receive_TURN_ERROR(Packet &)
 {
-	DEBUG(net, 9, "Receive_TURN_ERROR()");
+	Debug(net, 9, "Receive_TURN_ERROR()");
 
 	this->ConnectFailure();
 
@@ -60,7 +60,7 @@ bool ClientNetworkTurnSocketHandler::Receive_TURN_ERROR(Packet &)
 
 bool ClientNetworkTurnSocketHandler::Receive_TURN_CONNECTED(Packet &p)
 {
-	DEBUG(net, 9, "Receive_TURN_CONNECTED()");
+	Debug(net, 9, "Receive_TURN_CONNECTED()");
 
 	std::string hostname = p.Recv_string(NETWORK_HOSTNAME_LENGTH);
 
@@ -80,7 +80,7 @@ bool ClientNetworkTurnSocketHandler::Receive_TURN_CONNECTED(Packet &p)
  */
 void ClientNetworkTurnSocketHandler::Connect()
 {
-	DEBUG(net, 9, "Turn::Connect()");
+	Debug(net, 9, "Turn::Connect()");
 
 	this->connect_started = true;
 	this->connecter = TCPConnecter::Create<NetworkTurnConnecter>(this, this->connection_string);

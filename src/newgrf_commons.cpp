@@ -527,12 +527,12 @@ void ErrorUnknownCallbackResult(uint32_t grfid, uint16_t cbid, uint16_t cb_res)
 
 	SetDParamStr(0, grfconfig->GetName());
 	std::string buffer = GetString(STR_NEWGRF_BUGGY);
-	DEBUG(grf, 0, "%s", strip_leading_colours(buffer));
+	Debug(grf, 0, "{}", strip_leading_colours(buffer));
 
 	SetDParam(1, cbid);
 	SetDParam(2, cb_res);
 	buffer = GetString(STR_NEWGRF_BUGGY_UNKNOWN_CALLBACK_RESULT);
-	DEBUG(grf, 0, "%s", strip_leading_colours(buffer));
+	Debug(grf, 0, "{}", strip_leading_colours(buffer));
 }
 
 /**

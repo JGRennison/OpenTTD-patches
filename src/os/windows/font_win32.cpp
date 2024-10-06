@@ -72,17 +72,17 @@ static int CALLBACK EnumFontCallback(const ENUMLOGFONTEX *logfont, const NEWTEXT
 
 	info->callback->SetFontNames(info->settings, font_name, &logfont->elfLogFont);
 	if (info->callback->FindMissingGlyphs()) return 1;
-	DEBUG(fontcache, 1, "Fallback font: %s", font_name);
+	Debug(fontcache, 1, "Fallback font: {}", font_name);
 	return 0; // stop enumerating
 }
 
 bool SetFallbackFont(FontCacheSettings *settings, const std::string &, int winlangid, MissingGlyphSearcher *callback)
 {
-	DEBUG(fontcache, 1, "Trying fallback fonts");
+	Debug(fontcache, 1, "Trying fallback fonts");
 	EFCParam langInfo;
 	if (GetLocaleInfo(MAKELCID(winlangid, SORT_DEFAULT), LOCALE_FONTSIGNATURE, (LPTSTR)&langInfo.locale, sizeof(langInfo.locale) / sizeof(wchar_t)) == 0) {
 		/* Invalid langid or some other mysterious error, can't determine fallback font. */
-		DEBUG(fontcache, 1, "Can't get locale info for fallback font (langid=0x%x)", winlangid);
+		Debug(fontcache, 1, "Can't get locale info for fallback font (langid=0x{:x})", winlangid);
 		return false;
 	}
 	langInfo.settings = settings;
@@ -179,7 +179,7 @@ void Win32FontCache::SetFontSize(int pixels)
 
 	this->fontname = FS2OTTD((LPWSTR)((BYTE *)otm + (ptrdiff_t)otm->otmpFaceName));
 
-	DEBUG(fontcache, 2, "Loaded font '%s' with size %d", this->fontname.c_str(), pixels);
+	Debug(fontcache, 2, "Loaded font '{}' with size {}", this->fontname, pixels);
 }
 
 /**

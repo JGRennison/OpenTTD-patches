@@ -108,7 +108,7 @@ void VideoDriver::StartGameThread()
 
 	if (!this->is_game_threaded) SetSelfAsGameThread();
 
-	DEBUG(driver, 1, "using %sthread for game-loop", this->is_game_threaded ? "" : "no ");
+	Debug(driver, 1, "using {}thread for game-loop", this->is_game_threaded ? "" : "no ");
 }
 
 void VideoDriver::StopGameThread()

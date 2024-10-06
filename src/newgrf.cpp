@@ -290,8 +290,8 @@ static GRFLineToSpriteOverride _grf_line_to_action6_sprite_override;
 static bool _action6_override_active = false;
 
 /**
- * DEBUG() function dedicated to newGRF debugging messages
- * Function is essentially the same as DEBUG(grf, severity, ...) with the
+ * Debug() function dedicated to newGRF debugging messages
+ * Function is essentially the same as Debug(grf, severity, ...) with the
  * addition of file:line information when parsing grf files.
  * NOTE: for the above reason(s) grfmsg() should ONLY be used for
  * loading/parsing grf files, not for runtime debug messages as there
@@ -308,7 +308,7 @@ void CDECL _intl_grfmsg(int severity, const char *str, ...)
 	vseprintf(buf, lastof(buf), str, va);
 	va_end(va);
 
-	DEBUG(grf, severity, "[%s:%d] %s", _cur.grfconfig->GetDisplayPath(), _cur.nfo_line, buf);
+	Debug(grf, severity, "[{}:{}] {}", _cur.grfconfig->GetDisplayPath(), _cur.nfo_line, buf);
 }
 
 /**
@@ -11370,7 +11370,7 @@ static void LoadNewGRFFileFromFile(GRFConfig *config, GrfLoadingStage stage, Spr
 	_cur.file = &file;
 	_cur.grfconfig = config;
 
-	DEBUG(grf, 2, "LoadNewGRFFile: Reading NewGRF-file '%s'", config->GetDisplayPath());
+	Debug(grf, 2, "LoadNewGRFFile: Reading NewGRF-file '{}'", config->GetDisplayPath());
 
 	uint8_t grf_container_version = file.GetContainerVersion();
 	if (grf_container_version == 0) {
@@ -11649,11 +11649,11 @@ static void FinalisePriceBaseMultipliers()
 				if (!HasBit(file->grf_features, _price_base_specs[p].grf_feature)) {
 					/* The grf does not define any objects of the feature,
 					 * so it must be a difficulty setting. Apply it globally */
-					DEBUG(grf, 3, "'%s' sets global price base multiplier %d to %d", file->filename.c_str(), p, price_base_multipliers[p]);
+					Debug(grf, 3, "'{}' sets global price base multiplier {} to {}", file->filename, p, price_base_multipliers[p]);
 					SetPriceBaseMultiplier(p, price_base_multipliers[p]);
 					price_base_multipliers[p] = 0;
 				} else {
-					DEBUG(grf, 3, "'%s' sets local price base multiplier %d to %d", file->filename.c_str(), p, price_base_multipliers[p]);
+					Debug(grf, 3, "'{}' sets local price base multiplier {} to {}", file->filename, p, price_base_multipliers[p]);
 				}
 			}
 		}

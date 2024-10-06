@@ -70,8 +70,8 @@ bool ValidateMapSize(uint size_x, uint size_y)
  */
 void AllocateMap(uint size_x, uint size_y)
 {
-	DEBUG(map, 2, "Min/max map size %d/%d, max map tiles %d", MIN_MAP_SIZE, MAX_MAP_SIZE, MAX_MAP_TILES);
-	DEBUG(map, 1, "Allocating map of size %dx%d", size_x, size_y);
+	Debug(map, 2, "Min/max map size {}/{}, max map tiles {}", MIN_MAP_SIZE, MAX_MAP_SIZE, MAX_MAP_TILES);
+	Debug(map, 1, "Allocating map of size {}x{}", size_x, size_y);
 
 	if (!ValidateMapSize(size_x, size_y)) {
 		FatalError("Invalid map size");
@@ -122,7 +122,7 @@ void AllocateMap(uint size_x, uint size_y)
 			}
 
 			madvise(target, total_size, MADV_HUGEPAGE);
-			DEBUG(map, 2, "Using mmap for map allocation");
+			Debug(map, 2, "Using mmap for map allocation");
 
 			buf = static_cast<uint8_t *>(target);
 			_munmap_size = total_size;

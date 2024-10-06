@@ -303,19 +303,19 @@ public:
 		uint depth = 0;
 		for (;;) {
 			if ((n1 != nullptr) != (n2 != nullptr)) {
-				DEBUG(desync, 0, "%s: node nonnull state at %u = [%d, %d]", name, depth, (n1 != nullptr), (n2 != nullptr));
+				Debug(desync, 0, "{}: node nonnull state at {} = [{}, {}]", name, depth, (n1 != nullptr), (n2 != nullptr));
 				DumpState(pf1, pf2);
 				return;
 			}
 			if (n1 == nullptr) break;
 
 			if (n1->GetTile() != n2->GetTile()) {
-				DEBUG(desync, 0, "%s tile mismatch at %u = [0x%X, 0x%X]", name, depth, n1->GetTile(), n2->GetTile());
+				Debug(desync, 0, "{} tile mismatch at {} = [0x{:X}, 0x{:X}]", name, depth, n1->GetTile(), n2->GetTile());
 				DumpState(pf1, pf2);
 				return;
 			}
 			if (n1->GetTrackdir() != n2->GetTrackdir()) {
-				DEBUG(desync, 0, "%s trackdir mismatch at %u = [0x%X, 0x%X]", name, depth, n1->GetTrackdir(), n2->GetTrackdir());
+				Debug(desync, 0, "{} trackdir mismatch at {} = [0x{:X}, 0x{:X}]", name, depth, n1->GetTrackdir(), n2->GetTrackdir());
 				DumpState(pf1, pf2);
 				return;
 			}
@@ -325,7 +325,7 @@ public:
 		}
 
 		if (check_res && (pf1.m_res_dest != pf2.m_res_dest || pf1.m_res_dest_td != pf2.m_res_dest_td)) {
-			DEBUG(desync, 0, "%s reservation target mismatch = [(0x%X, %d), (0x%X, %d)]", name, pf1.m_res_dest, pf1.m_res_dest_td, pf2.m_res_dest, pf2.m_res_dest_td);
+			Debug(desync, 0, "{} reservation target mismatch = [(0x{:X}, {}), (0x{:X}, {})]", name, pf1.m_res_dest, pf1.m_res_dest_td, pf2.m_res_dest, pf2.m_res_dest_td);
 			DumpState(pf1, pf2);
 			return;
 		}
@@ -408,7 +408,7 @@ public:
 			pf2.DisableCache(true);
 			FindDepotData result2 = pf2.FindNearestDepotTwoWay(v, t1, td1, t2, td2, max_penalty, reverse_penalty);
 			if (result1.tile != result2.tile || (result1.reverse != result2.reverse)) {
-				DEBUG(desync, 0, "CACHE ERROR: FindNearestDepotTwoWay() = [%s, %s]",
+				Debug(desync, 0, "CACHE ERROR: FindNearestDepotTwoWay() = [{}, {}]",
 						result1.tile != INVALID_TILE ? "T" : "F",
 						result2.tile != INVALID_TILE ? "T" : "F");
 				DumpState(pf1, pf2);
@@ -493,7 +493,7 @@ public:
 			pf2.DisableCache(true);
 			result1 = pf2.FindNearestSafeTile(v, t1, td, override_railtype, false, &found_path_2);
 			if (found_path_1 != found_path_2) {
-				DEBUG(desync, 0, "CACHE ERROR: FindSafeTile() = [%s, %s]", found_path_1 ? "T" : "F", found_path_2 ? "T" : "F");
+				Debug(desync, 0, "CACHE ERROR: FindSafeTile() = [{}, {}]", found_path_1 ? "T" : "F", found_path_2 ? "T" : "F");
 				DumpState(pf1, pf2);
 			} else if (found_path_2) {
 				CYapfFollowAnySafeTileRailT::stDesyncCheck(pf1, pf2, "CACHE ERROR: FindSafeTile()", true);
@@ -600,7 +600,7 @@ public:
 			pf2.DisableCache(true);
 			Trackdir result2 = pf2.ChooseRailTrack(v, tile, enterdir, tracks, path_found, reserve_track, target, dest);
 			if (result1 != result2) {
-				DEBUG(desync, 0, "CACHE ERROR: ChooseRailTrack() = [%d, %d]", result1, result2);
+				Debug(desync, 0, "CACHE ERROR: ChooseRailTrack() = [{}, {}]", result1, result2);
 				DumpState(pf1, pf2);
 			} else if (result1 != INVALID_TRACKDIR) {
 				CYapfFollowRailT::stDesyncCheck(pf1, pf2, "CACHE ERROR: ChooseRailTrack()", true);
@@ -669,7 +669,7 @@ public:
 			pf2.DisableCache(true);
 			bool result2 = pf2.CheckReverseTrain(v, t1, td1, t2, td2, reverse_penalty);
 			if (result1 != result2) {
-				DEBUG(desync, 2, "CACHE ERROR: CheckReverseTrain() = [%s, %s]", result1 ? "T" : "F", result2 ? "T" : "F");
+				Debug(desync, 2, "CACHE ERROR: CheckReverseTrain() = [{}, {}]", result1 ? "T" : "F", result2 ? "T" : "F");
 				DumpState(pf1, pf2);
 			} else if (result1) {
 				CYapfFollowRailT::stDesyncCheck(pf1, pf2, "CACHE ERROR: CheckReverseTrain()", false);
@@ -874,7 +874,7 @@ void YapfCheckRailSignalPenalties()
 		if (p0 + i * (p1 + i * p2) < 0) negative = true;
 	}
 	if (negative) {
-		DEBUG(misc, 0, "Settings: pf.yapf.rail_look_ahead_signal_p0, pf.yapf.rail_look_ahead_signal_p1, pf.yapf.rail_look_ahead_signal_p2 and pf.yapf.rail_look_ahead_max_signal "
+		Debug(misc, 0, "Settings: pf.yapf.rail_look_ahead_signal_p0, pf.yapf.rail_look_ahead_signal_p1, pf.yapf.rail_look_ahead_signal_p2 and pf.yapf.rail_look_ahead_max_signal "
 				"are set to incorrect values (i.e. resulting in negative penalties), negative penalties will be truncated");
 	}
 }

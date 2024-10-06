@@ -463,7 +463,7 @@ static void OnNewEconomyDay()
 
 	if (_quit_after_days > 0) {
 		if (--_quit_after_days == 0) {
-			DEBUG(misc, 0, "Quitting as day limit reached");
+			Debug(misc, 0, "Quitting as day limit reached");
 			_exit_game = true;
 		}
 	}

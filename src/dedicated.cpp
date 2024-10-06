@@ -53,8 +53,8 @@ void DedicatedFork()
 
 		default:
 			/* We're the parent */
-			DEBUG(net, 0, "Loading dedicated server...\n");
-			DEBUG(net, 0, "  - Forked to background with pid " PRINTF_PID_T "\n", pid);
+			Debug(net, 0, "Loading dedicated server...");
+			Debug(net, 0, "  - Forked to background with pid {}", pid);
 			exit(0);
 	}
 }

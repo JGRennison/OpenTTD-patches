@@ -606,7 +606,7 @@ static Track ChooseShipTrack(Ship *v, TileIndex tile, TrackBits tracks)
 
 		track = YapfShipChooseTrack(v, tile, path_found, v->cached_path);
 	}
-	DEBUG_UPDATESTATECHECKSUM("ChooseShipTrack: v: %u, path_found: %d, track: %d", v->index, path_found, track);
+	DEBUG_UPDATESTATECHECKSUM("ChooseShipTrack: v: {}, path_found: {}, track: {}", v->index, path_found, track);
 	UpdateStateChecksum((((uint64_t) v->index) << 32) | (path_found << 16) | track);
 
 	v->HandlePathfindingResult(path_found);
@@ -1118,7 +1118,7 @@ static void ShipController(Ship *v)
 
 bool Ship::Tick()
 {
-	DEBUG_UPDATESTATECHECKSUM("Ship::Tick: v: %u, x: %d, y: %d", this->index, this->x_pos, this->y_pos);
+	DEBUG_UPDATESTATECHECKSUM("Ship::Tick: v: {}, x: {}, y: {}", this->index, this->x_pos, this->y_pos);
 	UpdateStateChecksum((((uint64_t) this->x_pos) << 32) | this->y_pos);
 	if (!((this->vehstatus & VS_STOPPED) || this->IsWaitingInDepot())) this->running_ticks++;
 

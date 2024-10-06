@@ -1289,7 +1289,7 @@ static Trackdir RoadFindPathToDest(RoadVehicle *v, TileIndex tile, DiagDirection
 	}
 
 	best_track = YapfRoadVehicleChooseTrack(v, tile, enterdir, trackdirs, path_found, v->GetOrCreatePathCache());
-	DEBUG_UPDATESTATECHECKSUM("RoadFindPathToDest: v: %u, path_found: %d, best_track: %d", v->index, path_found, best_track);
+	DEBUG_UPDATESTATECHECKSUM("RoadFindPathToDest: v: {}, path_found: {}, best_track: {}", v->index, path_found, best_track);
 	UpdateStateChecksum((((uint64_t) v->index) << 32) | (path_found << 16) | best_track);
 	v->HandlePathfindingResult(path_found);
 
@@ -1756,7 +1756,7 @@ again:
 			v->SetRoadVehicleOvertaking(0);
 
 			if (no_advance_tile) {
-				DEBUG(misc, 0, "Road vehicle attempted to turn around on a single road piece bridge head");
+				Debug(misc, 0, "Road vehicle attempted to turn around on a single road piece bridge head");
 			}
 
 			/* Turning around */
@@ -2229,9 +2229,9 @@ Money RoadVehicle::GetRunningCost() const
 
 bool RoadVehicle::Tick()
 {
-	DEBUG_UPDATESTATECHECKSUM("RoadVehicle::Tick 1: v: %u, x: %d, y: %d", this->index, this->x_pos, this->y_pos);
+	DEBUG_UPDATESTATECHECKSUM("RoadVehicle::Tick 1: v: {}, x: {}, y: {}", this->index, this->x_pos, this->y_pos);
 	UpdateStateChecksum((((uint64_t) this->x_pos) << 32) | this->y_pos);
-	DEBUG_UPDATESTATECHECKSUM("RoadVehicle::Tick 2: v: %u, state: %d, frame: %d", this->index, this->state, this->frame);
+	DEBUG_UPDATESTATECHECKSUM("RoadVehicle::Tick 2: v: {}, state: {}, frame: {}", this->index, this->state, this->frame);
 	UpdateStateChecksum((((uint64_t) this->state) << 32) | this->frame);
 	if (this->IsFrontEngine()) {
 		if (!(this->IsRoadVehicleStopped() || this->IsWaitingInDepot())) this->running_ticks++;

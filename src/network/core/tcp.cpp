@@ -138,7 +138,7 @@ SendPacketsState NetworkTCPSocketHandler::SendPackets(bool closing_down)
 			if (!err.WouldBlock()) {
 				/* Something went wrong.. close client! */
 				if (!closing_down) {
-					DEBUG(net, 0, "Send failed: %s", err.AsString());
+					Debug(net, 0, "Send failed: {}", err.AsString());
 					this->CloseConnection();
 				}
 				return SPS_CLOSED;
@@ -188,7 +188,7 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 				NetworkError err = NetworkError::GetLast();
 				if (!err.WouldBlock()) {
 					/* Something went wrong... */
-					if (!err.IsConnectionReset()) DEBUG(net, 0, "Recv failed: %s", err.AsString());
+					if (!err.IsConnectionReset()) Debug(net, 0, "Recv failed: {}", err.AsString());
 					this->CloseConnection();
 					return nullptr;
 				}
@@ -204,7 +204,7 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 
 		/* Parse the size in the received packet and if not valid, close the connection. */
 		if (!p.ParsePacketSize()) {
-			DEBUG(net, 0, "ParsePacketSize failed, possible packet stream corruption");
+			Debug(net, 0, "ParsePacketSize failed, possible packet stream corruption");
 			this->CloseConnection();
 			return nullptr;
 		}
@@ -217,7 +217,7 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 			NetworkError err = NetworkError::GetLast();
 			if (!err.WouldBlock()) {
 				/* Something went wrong... */
-				if (!err.IsConnectionReset()) DEBUG(net, 0, "Recv failed: %s", err.AsString());
+				if (!err.IsConnectionReset()) Debug(net, 0, "Recv failed: {}", err.AsString());
 				this->CloseConnection();
 				return nullptr;
 			}
@@ -232,7 +232,7 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 	}
 
 	if (!p.PrepareToRead()) {
-		DEBUG(net, 0, "Invalid packet received (too small / decryption error)");
+		Debug(net, 0, "Invalid packet received (too small / decryption error)");
 		this->CloseConnection();
 		return nullptr;
 	}

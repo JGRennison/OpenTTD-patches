@@ -216,44 +216,6 @@ void debug_print(DebugLevelID dbg, int8_t level, std::string_view msg)
 }
 
 /**
- * Output a debug line.
- * @note Do not call directly, use the #DEBUG macro instead.
- * @param dbg Debug category.
- * @param format Text string a la printf, with optional arguments.
- */
-void CDECL debug(DebugLevelID dbg, int8_t level, const char *format, ...)
-{
-	va_list va;
-	va_start(va, format);
-	va_list va2;
-	va_copy(va2, va);
-
-	fmt::memory_buffer buf{};
-
-	DebugIntlSetup(buf, dbg, level);
-	size_t prefix_size = buf.size();
-
-	buf.resize(buf.capacity());
-
-	/* Leave one byte for newline */
-	size_t limit = buf.size() - prefix_size - 1;
-	int len = vsnprintf(buf.data() + prefix_size, limit, format, va);
-	if (len > 0 && (size_t)len >= limit) {
-		/* fixed buffer was too small */
-		buf.resize(prefix_size); // drop non-written part
-		buf.resize(prefix_size + len + 2); // reallocate, include space for newline and null terminator
-		vsnprintf(buf.data() + prefix_size, len + 1, format, va2);
-	}
-	if (len < 0) len = 0;
-	buf.resize(prefix_size + len);
-
-	debug_print_partial_buffer(dbg, level, buf, prefix_size);
-
-	va_end(va2);
-	va_end(va);
-}
-
-/**
  * Set debugging levels by parsing the text in \a s.
  * For setting individual levels a string like \c "net=3,grf=6" should be used.
  * If the string starts with a number, the number is used as global debugging level.

@@ -139,7 +139,7 @@ static inline uint32_t GetVariable(const ResolverObject &object, ScopeResolver *
  */
 /* virtual */ uint32_t ScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra &extra) const
 {
-	DEBUG(grf, 1, "Unhandled scope variable 0x%X", variable);
+	Debug(grf, 1, "Unhandled scope variable 0x{:X}", variable);
 	extra.available = false;
 	return UINT_MAX;
 }

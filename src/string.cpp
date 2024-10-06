@@ -123,7 +123,7 @@ char *strecpy(char *dst, const char *src, const char *last, bool quiet_mode)
 #if defined(STRGEN) || defined(SETTINGSGEN)
 		FatalError("String too long for destination buffer");
 #else /* STRGEN || SETTINGSGEN */
-		DEBUG(misc, quiet_mode ? 1 : 0, "String too long for destination buffer");
+		Debug(misc, quiet_mode ? 1 : 0, "String too long for destination buffer");
 #endif /* STRGEN || SETTINGSGEN */
 	}
 	return dst;
@@ -147,7 +147,7 @@ void strecpy(std::span<char> dst, std::string_view src)
 #if defined(STRGEN) || defined(SETTINGSGEN)
 		FatalError("String too long for destination buffer");
 #else /* STRGEN || SETTINGSGEN */
-		DEBUG(misc, 0, "String too long for destination buffer");
+		Debug(misc, 0, "String too long for destination buffer");
 		src = src.substr(0, std::size(dst) - 1U);
 #endif /* STRGEN || SETTINGSGEN */
 	}

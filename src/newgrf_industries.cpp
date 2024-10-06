@@ -191,7 +191,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 			case 0x82: return this->industry->town->index;
 			case 0x83:
 			case 0x84:
-			case 0x85: DEBUG(grf, 0, "NewGRFs shouldn't be doing pointer magic"); break; // not supported
+			case 0x85: Debug(grf, 0, "NewGRFs shouldn't be doing pointer magic"); break; // not supported
 
 			/* Number of the layout */
 			case 0x86: return this->industry->selected_layout;
@@ -227,7 +227,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 			return 0 | 0xFFFF;
 		}
 
-		DEBUG(grf, 1, "Unhandled variable 0x%X (no available industry) in callback 0x%x", variable, this->ro.callback);
+		Debug(grf, 1, "Unhandled variable 0x{:X} (no available industry) in callback 0x{:x}", variable, this->ro.callback);
 
 		extra.available = false;
 		return UINT_MAX;
@@ -380,7 +380,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 		case 0x82: return this->industry->town->index;
 		case 0x83:
 		case 0x84:
-		case 0x85: DEBUG(grf, 0, "NewGRFs shouldn't be doing pointer magic"); break; // not supported
+		case 0x85: Debug(grf, 0, "NewGRFs shouldn't be doing pointer magic"); break; // not supported
 		case 0x86: return this->industry->location.w;
 		case 0x87: return this->industry->location.h;// xy dimensions
 
@@ -437,7 +437,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 		}
 	}
 
-	DEBUG(grf, 1, "Unhandled industry variable 0x%X", variable);
+	Debug(grf, 1, "Unhandled industry variable 0x{:X}", variable);
 
 	extra.available = false;
 	return UINT_MAX;

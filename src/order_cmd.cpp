@@ -876,7 +876,7 @@ void OrderList::DebugCheckSanity() const
 	Ticks check_timetable_duration = 0;
 	Ticks check_total_duration = 0;
 
-	DEBUG(misc, 6, "Checking OrderList %hu for sanity...", this->index);
+	Debug(misc, 6, "Checking OrderList {} for sanity...", this->index);
 
 	for (const Order *o = this->first; o != nullptr; o = o->next) {
 		assert(this->order_index.size() > check_num_orders);
@@ -898,8 +898,8 @@ void OrderList::DebugCheckSanity() const
 		assert_msg(v->orders == this, "%p, %p", v->orders, this);
 	}
 	assert_msg(this->num_vehicles == check_num_vehicles, "%u, %u", this->num_vehicles, check_num_vehicles);
-	DEBUG(misc, 6, "... detected %u orders (%u manual), %u vehicles, %i timetabled, %i total",
-			(uint)this->GetNumOrders(), (uint)this->num_manual_orders,
+	Debug(misc, 6, "... detected {} orders ({} manual), {} vehicles, {} timetabled, {} total",
+			this->GetNumOrders(), this->num_manual_orders,
 			this->num_vehicles, this->timetable_duration, this->total_duration);
 	assert(this->CheckOrderListIndexing());
 }

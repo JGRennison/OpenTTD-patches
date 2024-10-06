@@ -100,7 +100,7 @@ struct NGRFChunkHandler : ChunkHandler {
 			AppendToGRFConfigList(&grfconfig, c);
 		}
 
-		DEBUG(sl, 2, "Loaded %u NewGRFs", GetGRFConfigListNonStaticCount(grfconfig));
+		Debug(sl, 2, "Loaded {} NewGRFs", GetGRFConfigListNonStaticCount(grfconfig));
 	}
 
 	void Load() const override

@@ -136,7 +136,7 @@ bool MusicSet::FillSetDetails(const IniFile &ini, const std::string &path, const
 				this->songinfo[i].cat_index = atoi(item->value->c_str());
 				auto songname = GetMusicCatEntryName(filename, this->songinfo[i].cat_index);
 				if (!songname.has_value()) {
-					DEBUG(grf, 0, "Base music set song missing from CAT file: %s/%d", filename.c_str(), this->songinfo[i].cat_index);
+					Debug(grf, 0, "Base music set song missing from CAT file: {}/{}", filename, this->songinfo[i].cat_index);
 					continue;
 				}
 				this->songinfo[i].songname = std::move(*songname);
@@ -161,7 +161,7 @@ bool MusicSet::FillSetDetails(const IniFile &ini, const std::string &path, const
 				if (item != nullptr && item->value.has_value() && !item->value->empty()) {
 					this->songinfo[i].songname = item->value.value();
 				} else {
-					DEBUG(grf, 0, "Base music set song name missing: %s", filename.c_str());
+					Debug(grf, 0, "Base music set song name missing: {}", filename);
 					return false;
 				}
 			}

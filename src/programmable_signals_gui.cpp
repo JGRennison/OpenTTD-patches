@@ -281,7 +281,7 @@ public:
 			} break;
 
 			case PROGRAM_WIDGET_INSERT: {
-				DEBUG(misc, 5, "Selection is %d", this->selected_instruction);
+				Debug(misc, 5, "Selection is {}", this->selected_instruction);
 				if (this->GetOwner() != _local_company || this->selected_instruction < 1)
 					return;
 				ShowDropDownMenu(this, _program_insert, -1, PROGRAM_WIDGET_INSERT, 0, 0, 0);
@@ -772,7 +772,7 @@ private:
 		uint indent = 0;
 
 		do {
-			DEBUG(misc, 5, "PSig Gui: Opcode %d", insn->Opcode());
+			Debug(misc, 5, "PSig Gui: Opcode {}", insn->Opcode());
 			switch (insn->Opcode()) {
 				case PSO_FIRST:
 				case PSO_LAST: {

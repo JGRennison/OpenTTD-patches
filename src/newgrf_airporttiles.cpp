@@ -201,7 +201,7 @@ static uint32_t GetAirportTileIDAtOffset(TileIndex tile, const Station *st, uint
 			return this->st->airport.GetSpec()->grf_prop.local_id;
 	}
 
-	DEBUG(grf, 1, "Unhandled airport tile variable 0x%X", variable);
+	Debug(grf, 1, "Unhandled airport tile variable 0x{:X}", variable);
 
 	extra.available = false;
 	return UINT_MAX;

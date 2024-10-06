@@ -905,7 +905,7 @@ int openttd_main(std::span<char * const> arguments)
 	DeterminePaths(arguments[0], only_local_path);
 	TarScanner::DoScan(TarScanner::BASESET);
 
-	if (dedicated) DEBUG(net, 3, "Starting dedicated server, version %s", _openttd_revision);
+	if (dedicated) Debug(net, 3, "Starting dedicated server, version {}", _openttd_revision);
 	if (_dedicated_forks && !dedicated) _dedicated_forks = false;
 
 #if defined(UNIX)
@@ -970,7 +970,7 @@ int openttd_main(std::span<char * const> arguments)
 	/* Initialize game palette */
 	GfxInitPalettes();
 
-	DEBUG(misc, 1, "Loading blitter...");
+	Debug(misc, 1, "Loading blitter...");
 	if (blitter.empty() && !_ini_blitter.empty()) blitter = _ini_blitter;
 	_blitter_autodetected = blitter.empty();
 	/* Activate the initial blitter.
@@ -1048,7 +1048,7 @@ int openttd_main(std::span<char * const> arguments)
 	if (musicdriver.empty() && !_ini_musicdriver.empty()) musicdriver = _ini_musicdriver;
 	_music_driver_params = std::move(musicdriver);
 	if (_music_driver_params.empty() && BaseMusic::GetUsedSet()->name == "NoMusic") {
-		DEBUG(driver, 1, "Deferring loading of music driver until a music set is loaded");
+		Debug(driver, 1, "Deferring loading of music driver until a music set is loaded");
 		DriverFactoryBase::SelectDriver("null", Driver::DT_MUSIC);
 	} else {
 		InitMusicDriver(false);
@@ -1274,7 +1274,7 @@ bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileTy
 		 * server is a better reaction than starting the server with a newly
 		 * generated map as it is quite likely to be started from a script.
 		 */
-		DEBUG(net, 0, "Loading requested map failed; closing server.");
+		Debug(net, 0, "Loading requested map failed; closing server.");
 		_exit_game = true;
 		return false;
 	}
@@ -1293,7 +1293,7 @@ bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileTy
 		 * nothing else to do than start a new game, as it might have failed
 		 * trying to reload the originally loaded savegame/scenario.
 		 */
-		DEBUG(net, 0, "Loading game failed, so a new (random) game will be started");
+		Debug(net, 0, "Loading game failed, so a new (random) game will be started");
 		MakeNewGame(false, true);
 		return false;
 	}
@@ -1669,20 +1669,20 @@ void StateGameLoop()
 
 			RecordSyncEvent(NSRE_PRE_COMPANY_STATE);
 			for (Company *c : Company::Iterate()) {
-				DEBUG_UPDATESTATECHECKSUM("Company: %u, Money: " OTTD_PRINTF64, c->index, (int64_t)c->money);
+				DEBUG_UPDATESTATECHECKSUM("Company: {}, Money: {}", c->index, (int64_t)c->money);
 				UpdateStateChecksum(c->money);
 
 				for (uint i = 0; i < ROADTYPE_END; i++) {
-					DEBUG_UPDATESTATECHECKSUM("Company: %u, road[%u]: %u", c->index, i, c->infrastructure.road[i]);
+					DEBUG_UPDATESTATECHECKSUM("Company: {}, road[{}]: {}", c->index, i, c->infrastructure.road[i]);
 					UpdateStateChecksum(c->infrastructure.road[i]);
 				}
 
 				for (uint i = 0; i < RAILTYPE_END; i++) {
-					DEBUG_UPDATESTATECHECKSUM("Company: %u, rail[%u]: %u", c->index, i, c->infrastructure.rail[i]);
+					DEBUG_UPDATESTATECHECKSUM("Company: {}, rail[{}]: {}", c->index, i, c->infrastructure.rail[i]);
 					UpdateStateChecksum(c->infrastructure.rail[i]);
 				}
 
-				DEBUG_UPDATESTATECHECKSUM("Company: %u, signal: %u, water: %u, station: %u, airport: %u",
+				DEBUG_UPDATESTATECHECKSUM("Company: {}, signal: {}, water: {}, station: {}, airport: {}",
 						c->index, c->infrastructure.signal, c->infrastructure.water, c->infrastructure.station, c->infrastructure.airport);
 				UpdateStateChecksum(c->infrastructure.signal);
 				UpdateStateChecksum(c->infrastructure.water);

@@ -1087,7 +1087,7 @@ static void GfxBlitter(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, in
 	while (HasBit(sprite->missing_zoom_levels, zoom)) {
 		sprite = sprite->next;
 		if (sprite == nullptr) {
-			DEBUG(sprite, 0, "Failed to draw sprite %u at zoom level %u as required zoom level is missing", sprite_id, zoom);
+			Debug(sprite, 0, "Failed to draw sprite {} at zoom level {} as required zoom level is missing", sprite_id, zoom);
 			return;
 		}
 	}
@@ -2182,7 +2182,7 @@ bool ToggleFullScreen(bool fs)
 {
 	bool result = VideoDriver::GetInstance()->ToggleFullscreen(fs);
 	if (_fullscreen != fs && _resolutions.empty()) {
-		DEBUG(driver, 0, "Could not find a suitable fullscreen resolution");
+		Debug(driver, 0, "Could not find a suitable fullscreen resolution");
 	}
 	return result;
 }

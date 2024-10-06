@@ -1916,7 +1916,7 @@ static bool AirportMove(Aircraft *v, const AirportFTAClass *apc)
 {
 	/* error handling */
 	if (v->pos >= apc->nofelements) {
-		DEBUG(misc, 0, "[Ap] position %d is not valid for current airport. Max position is %d", v->pos, apc->nofelements-1);
+		Debug(misc, 0, "[Ap] position {} is not valid for current airport. Max position is {}", v->pos, apc->nofelements-1);
 		assert(v->pos < apc->nofelements);
 	}
 
@@ -1955,7 +1955,7 @@ static bool AirportMove(Aircraft *v, const AirportFTAClass *apc)
 		current = current->next;
 	} while (current != nullptr);
 
-	DEBUG(misc, 0, "[Ap] cannot move further on Airport! (pos %d state %d) for vehicle %d", v->pos, v->state, v->index);
+	Debug(misc, 0, "[Ap] cannot move further on Airport! (pos {} state {}) for vehicle {}", v->pos, v->state, v->index);
 	NOT_REACHED();
 }
 
@@ -2242,7 +2242,7 @@ static bool AircraftEventHandler(Aircraft *v, int loop)
 
 bool Aircraft::Tick()
 {
-	DEBUG_UPDATESTATECHECKSUM("Aircraft::Tick: v: %u, x: %d, y: %d", this->index, this->x_pos, this->y_pos);
+	DEBUG_UPDATESTATECHECKSUM("Aircraft::Tick: v: {}, x: {}, y: {}", this->index, this->x_pos, this->y_pos);
 	UpdateStateChecksum((((uint64_t) this->x_pos) << 32) | this->y_pos);
 	if (!this->IsNormalAircraft()) return true;
 

@@ -110,7 +110,7 @@ void FreeTypeFontCache::SetFontSize(int pixels)
 		this->height       = this->ascender - this->descender;
 	} else {
 		/* Both FT_Set_Pixel_Sizes and FT_Select_Size failed. */
-		DEBUG(fontcache, 0, "Font size selection failed. Using FontCache defaults.");
+		Debug(fontcache, 0, "Font size selection failed. Using FontCache defaults.");
 	}
 
 	font_height_cache[this->fs] = this->GetHeight();
@@ -172,7 +172,7 @@ void LoadFreeTypeFont(FontSize fs)
 			return;
 		}
 
-		DEBUG(fontcache, 2, "Initialized");
+		Debug(fontcache, 2, "Initialized");
 	}
 
 	const char *font_name = font.c_str();

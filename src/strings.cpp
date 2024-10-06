@@ -2484,9 +2484,9 @@ static void GetLanguageList(const char *path)
 
 			/* Check whether the file is of the correct version */
 			if (!GetLanguageFileHeader(lmd.file.c_str(), &lmd)) {
-				DEBUG(misc, 3, "%s is not a valid language file", lmd.file.c_str());
+				Debug(misc, 3, "{} is not a valid language file", lmd.file);
 			} else if (GetLanguage(lmd.newgrflangid) != nullptr) {
-				DEBUG(misc, 3, "%s's language ID is already known", lmd.file.c_str());
+				Debug(misc, 3, "{}'s language ID is already known", lmd.file);
 			} else {
 				_languages.push_back(lmd);
 			}

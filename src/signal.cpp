@@ -92,7 +92,7 @@ SignalType NextSignalType(SignalType cur, SignalCycleGroups which_signals)
 		case SIGTYPE_PBS_ONEWAY: return block ? SIGTYPE_BLOCK      : SIGTYPE_PBS;
 		case SIGTYPE_NO_ENTRY:   return pbs   ? SIGTYPE_PBS        : SIGTYPE_BLOCK;
 		default:
-			DEBUG(map, 0, "Attempt to cycle from signal type %d", cur);
+			Debug(map, 0, "Attempt to cycle from signal type {}", cur);
 			return SIGTYPE_BLOCK; // Fortunately mostly harmless
 	}
 }
@@ -207,7 +207,7 @@ public:
 	{
 		if (this->IsFull()) {
 			overflowed = true;
-			DEBUG(misc, 0, "SignalSegment too complex. Set %s is full (maximum %d)", name, items);
+			Debug(misc, 0, "SignalSegment too complex. Set {} is full (maximum {})", name, items);
 			return false; // set is full
 		}
 
@@ -1276,7 +1276,7 @@ static void NotifyRemovingDependentSignal(SignalReference being_removed, SignalR
 	if (IsProgrammableSignal(t)) {
 		RemoveProgramDependencies(being_removed, dependant);
 	} else {
-		DEBUG(misc, 0, "Removing dependency held by non-programmable signal (Unexpected)");
+		Debug(misc, 0, "Removing dependency held by non-programmable signal (Unexpected)");
 	}
 }
 
@@ -1979,7 +1979,7 @@ void UpdateExtraAspectsVariable(bool update_always_reserve_through)
 	if (style_remap || style_change) {
 		if (_networking && !_network_server && _game_mode != GM_MENU) {
 			const char *msg = "Network client recalculating signal states and/or signal style mappings, this is likely to cause desyncs";
-			DEBUG(desync, 0, "%s", msg);
+			Debug(desync, 0, "{}", msg);
 			LogDesyncMsg(msg);
 		}
 

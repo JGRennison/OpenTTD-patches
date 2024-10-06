@@ -15,7 +15,7 @@
 #include <string>
 
 /* Debugging messages policy:
- * These should be the severities used for direct DEBUG() calls
+ * These should be the severities used for direct Debug() calls
  * maximum debugging level should be 10 if really deep, deep
  * debugging is needed.
  * (there is room for exceptions, but you have to have a good cause):
@@ -62,13 +62,6 @@ inline int8_t GetDebugLevel(DebugLevelID id) {
 }
 
 const char *GetDebugLevelName(DebugLevelID id);
-
-/**
- * Output a line of debugging information.
- * @param name Category
- * @param level Debugging level, higher levels means more detailed information.
- */
-#define DEBUG(name, level, ...) do { if ((level) == 0 || GetDebugLevel(DebugLevelID::name) >= (level)) debug(DebugLevelID::name, level, __VA_ARGS__); } while (false)
 
 template <typename... T>
 void DebugIntl(DebugLevelID dbg, int8_t level, fmt::format_string<T...> msg, T&&... args)

@@ -4545,7 +4545,7 @@ static ChooseTrainTrackResult ChooseTrainTrack(Train *v, TileIndex tile, DiagDir
 		TileIndex new_tile = res_dest.tile;
 
 		Track next_track = DoTrainPathfind(v, new_tile, dest_enterdir, tracks, path_found, do_track_reservation, &res_dest, &final_dest);
-		DEBUG_UPDATESTATECHECKSUM("ChooseTrainTrack: v: %u, path_found: %d, next_track: %d", v->index, path_found, next_track);
+		DEBUG_UPDATESTATECHECKSUM("ChooseTrainTrack: v: {}, path_found: {}, next_track: {}", v->index, path_found, next_track);
 		UpdateStateChecksum((((uint64_t) v->index) << 32) | (path_found << 16) | next_track);
 		if (new_tile == tile) best_track = next_track;
 		v->HandlePathfindingResult(path_found);
@@ -6871,7 +6871,7 @@ Money Train::GetRunningCost() const
  */
 bool Train::Tick()
 {
-	DEBUG_UPDATESTATECHECKSUM("Train::Tick: v: %u, x: %d, y: %d, track: %d", this->index, this->x_pos, this->y_pos, this->track);
+	DEBUG_UPDATESTATECHECKSUM("Train::Tick: v: {}, x: {}, y: {}, track: {}", this->index, this->x_pos, this->y_pos, this->track);
 	UpdateStateChecksum((((uint64_t) this->x_pos) << 32) | (this->y_pos << 16) | this->track);
 	if (this->IsFrontEngine()) {
 		if (!((this->vehstatus & VS_STOPPED) || this->IsWaitingInDepot()) || this->cur_speed > 0) this->running_ticks++;

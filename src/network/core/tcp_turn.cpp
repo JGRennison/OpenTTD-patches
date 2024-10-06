@@ -32,7 +32,7 @@ bool NetworkTurnSocketHandler::HandlePacket(Packet &p)
 		case PACKET_TURN_TURN_CONNECTED: return this->Receive_TURN_CONNECTED(p);
 
 		default:
-			DEBUG(net, 0, "[tcp/turn] Received invalid packet type %u", type);
+			Debug(net, 0, "[tcp/turn] Received invalid packet type {}", type);
 			return false;
 	}
 }
@@ -61,7 +61,7 @@ bool NetworkTurnSocketHandler::ReceivePackets()
  */
 bool NetworkTurnSocketHandler::ReceiveInvalidPacket(PacketTurnType type)
 {
-	DEBUG(net, 0, "[tcp/turn] Received illegal packet type %u", type);
+	Debug(net, 0, "[tcp/turn] Received illegal packet type {}", type);
 	return false;
 }
 

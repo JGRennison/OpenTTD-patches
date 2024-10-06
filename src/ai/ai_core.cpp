@@ -209,14 +209,14 @@
 	for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
 		if (_settings_game.ai_config[c] != nullptr && _settings_game.ai_config[c]->HasScript()) {
 			if (!_settings_game.ai_config[c]->ResetInfo(true)) {
-				DEBUG(script, 0, "After a reload, the AI by the name '%s' was no longer found, and removed from the list.", _settings_game.ai_config[c]->GetName().c_str());
+				Debug(script, 0, "After a reload, the AI by the name '{}' was no longer found, and removed from the list.", _settings_game.ai_config[c]->GetName());
 				_settings_game.ai_config[c]->Change(std::nullopt);
 			}
 		}
 
 		if (_settings_newgame.ai_config[c] != nullptr && _settings_newgame.ai_config[c]->HasScript()) {
 			if (!_settings_newgame.ai_config[c]->ResetInfo(false)) {
-				DEBUG(script, 0, "After a reload, the AI by the name '%s' was no longer found, and removed from the list.", _settings_newgame.ai_config[c]->GetName().c_str());
+				Debug(script, 0, "After a reload, the AI by the name '{}' was no longer found, and removed from the list.", _settings_newgame.ai_config[c]->GetName());
 				_settings_newgame.ai_config[c]->Change(std::nullopt);
 			}
 		}

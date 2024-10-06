@@ -46,7 +46,7 @@ bool NetworkCoordinatorSocketHandler::HandlePacket(Packet &p)
 		case PACKET_COORDINATOR_GC_TURN_CONNECT:       return this->Receive_GC_TURN_CONNECT(p);
 
 		default:
-			DEBUG(net, 0, "[tcp/coordinator] Received invalid packet type %u", type);
+			Debug(net, 0, "[tcp/coordinator] Received invalid packet type {}", type);
 			return false;
 	}
 }
@@ -82,7 +82,7 @@ bool NetworkCoordinatorSocketHandler::ReceivePackets()
  */
 bool NetworkCoordinatorSocketHandler::ReceiveInvalidPacket(PacketCoordinatorType type)
 {
-	DEBUG(net, 0, "[tcp/coordinator] Received illegal packet type %u", type);
+	Debug(net, 0, "[tcp/coordinator] Received illegal packet type {}", type);
 	return false;
 }
 

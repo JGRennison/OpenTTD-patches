@@ -88,7 +88,7 @@ void SetRandomSeed(uint32_t seed)
 uint32_t DoRandom(int line, const char *file)
 {
 	if (_networking && (!_network_server || (NetworkClientSocket::IsValidID(0) && NetworkClientSocket::Get(0)->status != NetworkClientSocket::STATUS_INACTIVE))) {
-		DEBUG(random, 0, "%s; %04x; %02x; %s:%d", debug_date_dumper().HexDate(), _frame_counter, (uint8_t)_current_company, file, line);
+		Debug(random, 0, "{}; {:04x}; {:02x}; {}:{}", debug_date_dumper().HexDate(), _frame_counter, (uint8_t)_current_company, file, line);
 	}
 
 	return _random.Next();
@@ -143,7 +143,7 @@ void RandomBytesWithFallback(std::span<uint8_t> buf)
 
 	static std::atomic<bool> warned_once = false;
 	bool have_warned = warned_once.exchange(true);
-	DEBUG(misc, have_warned ? 1 : 0, "Cryptographically-strong random generator unavailable; using fallback");
+	Debug(misc, have_warned ? 1 : 0, "Cryptographically-strong random generator unavailable; using fallback");
 
 	for (uint i = 0; i < buf.size(); i ++) {
 		uint64_t current_time = static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());

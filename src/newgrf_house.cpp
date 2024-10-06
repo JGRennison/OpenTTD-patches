@@ -413,7 +413,7 @@ uint32_t HouseScopeResolver::OtherHouseIDVariable(uint32_t parameter, F func) co
 			case 0x67: return 0;
 		}
 
-		DEBUG(grf, 1, "Unhandled house variable 0x%X", variable);
+		Debug(grf, 1, "Unhandled house variable 0x{:X}", variable);
 		extra.available = false;
 		return UINT_MAX;
 	}
@@ -537,7 +537,7 @@ uint32_t HouseScopeResolver::OtherHouseIDVariable(uint32_t parameter, F func) co
 		}
 	}
 
-	DEBUG(grf, 1, "Unhandled house variable 0x%X", variable);
+	Debug(grf, 1, "Unhandled house variable 0x{:X}", variable);
 
 	extra.available = false;
 	return UINT_MAX;
@@ -599,7 +599,7 @@ uint32_t HouseScopeResolver::OtherHouseIDVariable(uint32_t parameter, F func) co
 		case 0x67: return 0xFFFFFFFF;
 	}
 
-	DEBUG(grf, 1, "Unhandled house variable 0x%X", variable);
+	Debug(grf, 1, "Unhandled house variable 0x{:X}", variable);
 
 	extra.available = false;
 	return UINT_MAX;

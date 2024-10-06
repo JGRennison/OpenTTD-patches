@@ -708,8 +708,8 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_119)) {
 		_pause_mode = (_pause_mode == 2) ? PM_PAUSED_NORMAL : PM_UNPAUSED;
 	} else if (_network_dedicated && (_pause_mode & PM_PAUSED_ERROR) != 0) {
-		DEBUG(net, 0, "The loading savegame was paused due to an error state");
-		DEBUG(net, 0, "  This savegame cannot be used for multiplayer");
+		Debug(net, 0, "The loading savegame was paused due to an error state");
+		Debug(net, 0, "  This savegame cannot be used for multiplayer");
 		/* Restore the signals */
 		ResetSignalHandlers();
 		return false;
@@ -1657,27 +1657,27 @@ bool AfterLoadGame()
 					if (!(rb & DiagDirToRoadBits(dir))) continue;
 
 					if (HasAtMostOneBit(rb)) {
-						DEBUG(misc, 0, "Fixing road bridge head state (case A) at tile 0x%X", t);
+						Debug(misc, 0, "Fixing road bridge head state (case A) at tile 0x{:X}", t);
 						rb |= DiagDirToRoadBits(ReverseDiagDir(dir));
 						SetCustomBridgeHeadRoadBits(t, rtt, rb);
 					}
 
 					TileIndex end = GetOtherBridgeEnd(t);
 					if (GetRoadType(end, rtt) == INVALID_ROADTYPE) {
-						DEBUG(misc, 0, "Fixing road bridge head state (case B) at tile 0x%X -> 0x%X", t, end);
+						Debug(misc, 0, "Fixing road bridge head state (case B) at tile 0x{:X} -> 0x{:X}", t, end);
 						SetRoadType(end, rtt, rt);
 						SetCustomBridgeHeadRoadBits(end, rtt, AxisToRoadBits(DiagDirToAxis(dir)));
 						continue;
 					}
 
 					if (GetRoadType(end, rtt) != rt) {
-						DEBUG(misc, 0, "Fixing road bridge head state (case C) at tile 0x%X -> 0x%X", t, end);
+						Debug(misc, 0, "Fixing road bridge head state (case C) at tile 0x{:X} -> 0x{:X}", t, end);
 						SetRoadType(end, rtt, rt);
 					}
 
 					RoadBits end_rb = GetCustomBridgeHeadRoadBits(end, rtt);
 					if (!(end_rb & DiagDirToRoadBits(ReverseDiagDir(dir)))) {
-						DEBUG(misc, 0, "Fixing road bridge head state (case D) at tile 0x%X -> 0x%X", t, end);
+						Debug(misc, 0, "Fixing road bridge head state (case D) at tile 0x{:X} -> 0x{:X}", t, end);
 						end_rb |= DiagDirToRoadBits(ReverseDiagDir(dir));
 						if (HasAtMostOneBit(end_rb)) end_rb |= DiagDirToRoadBits(dir);
 						SetCustomBridgeHeadRoadBits(end, rtt, end_rb);
@@ -2743,7 +2743,7 @@ bool AfterLoadGame()
 			/* At some point, invalid depots were saved into the game (possibly those removed in the past?)
 			 * Remove them here, so they don't cause issues further down the line */
 			if (!IsDepotTile(d->xy)) {
-				DEBUG(sl, 0, "Removing invalid depot %d at %d, %d", d->index, TileX(d->xy), TileY(d->xy));
+				Debug(sl, 0, "Removing invalid depot {} at {}, {}", d->index, TileX(d->xy), TileY(d->xy));
 				delete d;
 				d = nullptr;
 				continue;
@@ -3708,15 +3708,15 @@ bool AfterLoadGame()
 		 * To avoid making things too cheap, clamp the price inflation factor to no lower than the payment inflation factor.
 		 */
 
-		DEBUG(sl, 3, "Inflation prices: %f", _economy.inflation_prices / 65536.0);
-		DEBUG(sl, 3, "Inflation payments: %f", _economy.inflation_payment / 65536.0);
+		Debug(sl, 3, "Inflation prices: {}", _economy.inflation_prices / 65536.0);
+		Debug(sl, 3, "Inflation payments: {}", _economy.inflation_payment / 65536.0);
 
 		_economy.inflation_prices >>= 3;
 		if (_economy.inflation_prices < _economy.inflation_payment) {
 			_economy.inflation_prices = _economy.inflation_payment;
 		}
 
-		DEBUG(sl, 3, "New inflation prices: %f", _economy.inflation_prices / 65536.0);
+		Debug(sl, 3, "New inflation prices: {}", _economy.inflation_prices / 65536.0);
 	}
 
 	if (SlXvIsFeaturePresent(XSLFI_MIGHT_USE_PAX_SIGNALS) || SlXvIsFeatureMissing(XSLFI_TRACE_RESTRICT)) {
@@ -4069,7 +4069,7 @@ bool AfterLoadGame()
 		for (Order *order : Order::Iterate()) {
 			if (order->IsType(OT_CONDITIONAL)) {
 				if (order->GetTravelTime() != 0) {
-					DEBUG(sl, 1, "Fixing: order->GetTravelTime() != 0, %u", order->GetTravelTime());
+					Debug(sl, 1, "Fixing: order->GetTravelTime() != 0, {}", order->GetTravelTime());
 					order->SetTravelTime(0);
 				}
 			}

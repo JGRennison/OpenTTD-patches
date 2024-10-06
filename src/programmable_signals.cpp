@@ -51,14 +51,14 @@ struct SignalVM {
 
 	void Execute()
 	{
-		DEBUG(misc, 6, "Begining execution of programmable pre-signal on tile %x, track %d",
+		Debug(misc, 6, "Begining execution of programmable pre-signal on tile {:x}, track {}",
 					this->program->tile, this->program->track);
 		do {
-			DEBUG(misc, 10, "  Executing instruction %d, opcode %d", this->instruction->Id(), this->instruction->Opcode());
+			Debug(misc, 10, "  Executing instruction {}, opcode {}", this->instruction->Id(), this->instruction->Opcode());
 			this->instruction->Evaluate(*this);
 		} while (this->instruction);
 
-		DEBUG(misc, 6, "Completed");
+		Debug(misc, 6, "Completed");
 	}
 };
 
@@ -199,7 +199,7 @@ void SignalSlotCondition::SetSlot(TraceRestrictSlotID slot_id)
 /*virtual*/ bool SignalSlotCondition::Evaluate(SignalVM &vm)
 {
 	if (!this->CheckSlotValid()) {
-		DEBUG(misc, 1, "Signal (%x, %d) has an invalid condition", this->this_sig.tile, this->this_sig.track);
+		Debug(misc, 1, "Signal ({:x}, {}) has an invalid condition", this->this_sig.tile, this->this_sig.track);
 		return false;
 	}
 
@@ -263,7 +263,7 @@ void SignalCounterCondition::SetCounter(TraceRestrictCounterID ctr_id)
 /*virtual*/ bool SignalCounterCondition::Evaluate(SignalVM &vm)
 {
 	if (!this->CheckCounterValid()) {
-		DEBUG(misc, 1, "Signal (%x, %d) has an invalid condition", this->this_sig.tile, this->this_sig.track);
+		Debug(misc, 1, "Signal ({:x}, {}) has an invalid condition", this->this_sig.tile, this->this_sig.track);
 		return false;
 	}
 
@@ -323,7 +323,7 @@ void SignalStateCondition::SetSignal(TileIndex tile, Trackdir track)
 /*virtual*/ bool SignalStateCondition::Evaluate(SignalVM &vm)
 {
 	if (!this->CheckSignalValid()) {
-		DEBUG(misc, 1, "Signal (%x, %d) has an invalid condition", this->this_sig.tile, this->this_sig.track);
+		Debug(misc, 1, "Signal ({:x}, {}) has an invalid condition", this->this_sig.tile, this->this_sig.track);
 		return false;
 	}
 
@@ -379,10 +379,10 @@ SignalSpecial::SignalSpecial(SignalProgram *prog, SignalOpcode op)
 void SignalSpecial::Evaluate(SignalVM &vm)
 {
 	if (this->opcode == PSO_FIRST) {
-		DEBUG(misc, 7, "  Executing First");
+		Debug(misc, 7, "  Executing First");
 		vm.instruction = this->next;
 	} else {
-		DEBUG(misc, 7, "  Executing Last");
+		Debug(misc, 7, "  Executing Last");
 		vm.instruction = nullptr;
 	}
 }
@@ -423,7 +423,7 @@ SignalIf::PseudoInstruction::PseudoInstruction(SignalProgram *prog, SignalIf *bl
 
 /*virtual*/ void SignalIf::PseudoInstruction::Evaluate(SignalVM &vm)
 {
-	DEBUG(misc, 7, "  Executing If Pseudo Instruction %s", opcode == PSO_IF_ELSE ? "Else" : "Endif");
+	Debug(misc, 7, "  Executing If Pseudo Instruction {}", opcode == PSO_IF_ELSE ? "Else" : "Endif");
 	vm.instruction = this->block->after;
 }
 
@@ -477,7 +477,7 @@ void SignalIf::SetCondition(SignalCondition *cond)
 /*virtual*/ void SignalIf::Evaluate(SignalVM &vm)
 {
 	bool is_true = this->condition->Evaluate(vm);
-	DEBUG(misc, 7, "  Executing If, taking %s branch", is_true ? "then" : "else");
+	Debug(misc, 7, "  Executing If, taking {} branch", is_true ? "then" : "else");
 	if (is_true) {
 		vm.instruction = this->if_true;
 	} else {
@@ -507,7 +507,7 @@ SignalSet::SignalSet(SignalProgram *prog, SignalState state)
 
 /*virtual*/ void SignalSet::Evaluate(SignalVM &vm)
 {
-	DEBUG(misc, 7, "  Executing SetSignal, making %s", this->to_state? "green" : "red");
+	Debug(misc, 7, "  Executing SetSignal, making {}", this->to_state? "green" : "red");
 	vm.state       = this->to_state;
 	vm.instruction = nullptr;
 }
@@ -576,9 +576,9 @@ SignalState RunSignalProgram(SignalReference ref, uint num_exits, uint num_green
 	vm.instruction = program->first_instruction;
 	vm.state = SIGNAL_STATE_RED;
 
-	DEBUG(misc, 7, "%d exits, of which %d green", vm.num_exits, vm.num_green);
+	Debug(misc, 7, "{} exits, of which {} green", vm.num_exits, vm.num_green);
 	vm.Execute();
-	DEBUG(misc, 7, "Returning %s", vm.state == SIGNAL_STATE_GREEN ? "green" : "red");
+	Debug(misc, 7, "Returning {}", vm.state == SIGNAL_STATE_GREEN ? "green" : "red");
 	return vm.state;
 }
 
@@ -647,10 +647,10 @@ void RemoveProgramCounterDependencies(TraceRestrictCounterID ctr_being_removed, 
 
 void SignalProgram::DebugPrintProgram()
 {
-	DEBUG(misc, 5, "Program %p listing", this);
+	Debug(misc, 5, "Program {} listing", fmt::ptr(this));
 	for (size_t i = 0; i < this->instructions.size(); i++) {
 		SignalInstruction *insn = this->instructions[i];
-		DEBUG(misc, 5, " %d: Opcode %d, prev %d", int(i), int(insn->Opcode()),
+		Debug(misc, 5, " {}: Opcode {}, prev {}", int(i), int(insn->Opcode()),
 					int(insn->Previous() ? insn->Previous()->Id() : -1));
 	}
 }

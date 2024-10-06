@@ -186,7 +186,7 @@ void SlNullPointers()
 	_sl_version = MAX_LOAD_SAVEGAME_VERSION;
 
 	for (const ChunkHandler &ch : ChunkHandlers()) {
-		DEBUG(sl, 3, "Nulling pointers for %c%c%c%c", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
+		Debug(sl, 3, "Nulling pointers for {:c}{:c}{:c}{:c}", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
 		ch.FixPointers();
 	}
 
@@ -442,7 +442,7 @@ int SlIterateArray()
 			case CH_TABLE:
 			case CH_ARRAY:        index = _sl.array_index++; break;
 			default:
-				DEBUG(sl, 0, "SlIterateArray error");
+				Debug(sl, 0, "SlIterateArray error");
 				return -1; // error
 		}
 
@@ -741,7 +741,7 @@ static void SlString(void *ptr, size_t length, VarType conv)
 					return;
 				case SLE_VAR_STRB:
 					if (len >= length) {
-						DEBUG(sl, 1, "String length in savegame is bigger than buffer, truncating");
+						Debug(sl, 1, "String length in savegame is bigger than buffer, truncating");
 						SlCopyBytes(ptr, length);
 						SlSkipBytes(len - length);
 						len = length - 1;
@@ -1708,7 +1708,7 @@ std::vector<SaveLoad> SlTableHeader(const SaveLoadTable &slt)
 				auto sld_it = key_lookup.find(key);
 				if (sld_it == key_lookup.end()) {
 					/* SLA_LOADCHECK triggers this debug statement a lot and is perfectly normal. */
-					DEBUG(sl, _sl.action == SLA_LOAD ? 2 : 6, "Field '%s' of type 0x%02X not found, skipping", key.c_str(), type);
+					Debug(sl, _sl.action == SLA_LOAD ? 2 : 6, "Field '{}' of type 0x{:02X} not found, skipping", key, type);
 
 					std::shared_ptr<SaveLoadHandler> handler = nullptr;
 					SaveLoadType saveload_type;
@@ -1741,7 +1741,7 @@ std::vector<SaveLoad> SlTableHeader(const SaveLoadTable &slt)
 				 * the savegame version and add conversion code. */
 				uint8_t correct_type = GetSavegameFileType(*sld_it->second);
 				if (correct_type != type) {
-					DEBUG(sl, 1, "Field type for '%s' was expected to be 0x%02X but 0x%02X was found", key.c_str(), correct_type, type);
+					Debug(sl, 1, "Field type for '{}' was expected to be 0x{:02X} but 0x{:02X} was found", key, correct_type, type);
 					SlErrorCorrupt("Field type is different than expected");
 				}
 				saveloads.push_back(*sld_it->second);
@@ -1846,7 +1846,7 @@ std::vector<SaveLoad> SlCompatTableHeader(const SaveLoadTable &slt, const SaveLo
 			if (sld_it == key_lookup.end()) {
 				/* This isn't an assert, as that leaves no information what
 				 * field was to blame. This way at least we have breadcrumbs. */
-				DEBUG(sl, 0, "internal error: saveload compatibility field '%s' not found", slc.name.c_str());
+				Debug(sl, 0, "internal error: saveload compatibility field '{}' not found", slc.name);
 				SlErrorCorrupt("Internal error with savegame compatibility");
 			}
 			for (auto &sld : sld_it->second) {
@@ -2030,7 +2030,7 @@ void SlLoadChunks()
 	const ChunkHandler *ch;
 
 	for (id = SlReadUint32(); id != 0; id = SlReadUint32()) {
-		DEBUG(sl, 2, "Loading chunk %c%c%c%c", id >> 24, id >> 16, id >> 8, id);
+		Debug(sl, 2, "Loading chunk {:c}{:c}{:c}{:c}", id >> 24, id >> 16, id >> 8, id);
 
 		ch = SlFindChunkHandler(id);
 		if (ch == nullptr) SlErrorCorrupt("Unknown chunk type");
@@ -2043,7 +2043,7 @@ void SlLoadChunkByID(uint32_t id)
 {
 	_sl.action = SLA_LOAD;
 
-	DEBUG(sl, 2, "Loading chunk %c%c%c%c", id >> 24, id >> 16, id >> 8, id);
+	Debug(sl, 2, "Loading chunk {:c}{:c}{:c}{:c}", id >> 24, id >> 16, id >> 8, id);
 
 	const ChunkHandler *ch = SlFindChunkHandler(id);
 	if (ch == nullptr) SlErrorCorrupt("Unknown chunk type");
@@ -2059,7 +2059,7 @@ void SlLoadCheckChunks()
 	const ChunkHandler *ch;
 
 	for (id = SlReadUint32(); id != 0; id = SlReadUint32()) {
-		DEBUG(sl, 2, "Loading chunk %c%c%c%c", id >> 24, id >> 16, id >> 8, id);
+		Debug(sl, 2, "Loading chunk {:c}{:c}{:c}{:c}", id >> 24, id >> 16, id >> 8, id);
 
 		ch = SlFindChunkHandler(id);
 		if (ch == nullptr) SlErrorCorrupt("Unknown chunk type");
@@ -2072,7 +2072,7 @@ void SlLoadCheckChunkByID(uint32_t id)
 {
 	_sl.action = SLA_LOAD_CHECK;
 
-	DEBUG(sl, 2, "Loading chunk %c%c%c%c", id >> 24, id >> 16, id >> 8, id);
+	Debug(sl, 2, "Loading chunk {:c}{:c}{:c}{:c}", id >> 24, id >> 16, id >> 8, id);
 
 	const ChunkHandler *ch = SlFindChunkHandler(id);
 	if (ch == nullptr) SlErrorCorrupt("Unknown chunk type");
@@ -2085,7 +2085,7 @@ void SlFixPointers()
 	_sl.action = SLA_PTRS;
 
 	for (const ChunkHandler &ch : ChunkHandlers()) {
-		DEBUG(sl, 3, "Fixing pointers for %c%c%c%c", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
+		Debug(sl, 3, "Fixing pointers for {:c}{:c}{:c}{:c}", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
 		ch.FixPointers();
 	}
 
@@ -2098,7 +2098,7 @@ void SlFixPointerChunkByID(uint32_t id)
 
 	const ChunkHandler *ch = SlFindChunkHandler(id);
 	if (ch == nullptr) SlErrorCorrupt("Unknown chunk type");
-	DEBUG(sl, 3, "Fixing pointers for %c%c%c%c", ch->id >> 24, ch->id >> 16, ch->id >> 8, ch->id);
+	Debug(sl, 3, "Fixing pointers for {:c}{:c}{:c}{:c}", ch->id >> 24, ch->id >> 16, ch->id >> 8, ch->id);
 	ch->FixPointers();
 }
 
@@ -2108,7 +2108,7 @@ void SlNullPointerChunkByID(uint32_t id)
 
 	const ChunkHandler *ch = SlFindChunkHandler(id);
 	if (ch == nullptr) SlErrorCorrupt("Unknown chunk type");
-	DEBUG(sl, 3, "Nulling pointers for %c%c%c%c", ch->id >> 24, ch->id >> 16, ch->id >> 8, ch->id);
+	Debug(sl, 3, "Nulling pointers for {:c}{:c}{:c}{:c}", ch->id >> 24, ch->id >> 16, ch->id >> 8, ch->id);
 	ch->FixPointers();
 }
 
@@ -2122,7 +2122,7 @@ static void SlSaveChunk(const ChunkHandler &ch)
 	if (ch.type == CH_READONLY) return;
 
 	SlWriteUint32(ch.id);
-	DEBUG(sl, 2, "Saving chunk %c%c%c%c", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
+	Debug(sl, 2, "Saving chunk {:c}{:c}{:c}{:c}", ch.id >> 24, ch.id >> 16, ch.id >> 8, ch.id);
 
 	_sl.block_mode = ch.type;
 	_sl.expect_table_header = (_sl.block_mode == CH_TABLE || _sl.block_mode == CH_SPARSE_TABLE);

@@ -86,7 +86,7 @@ bool IniFile::SaveToDisk(const std::string &filename)
 #endif
 
 	if (!FioRenameFile(file_new, filename)) {
-		DEBUG(misc, 0, "Renaming %s to %s failed; configuration not saved", file_new.c_str(), filename.c_str());
+		Debug(misc, 0, "Renaming {} to {} failed; configuration not saved", file_new, filename);
 	}
 
 #ifdef __EMSCRIPTEN__
