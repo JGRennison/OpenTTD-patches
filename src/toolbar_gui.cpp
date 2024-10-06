@@ -1360,12 +1360,18 @@ static CallBackFunction ToolbarScenDateForward(Window *w)
 	return CBF_NONE;
 }
 
-static CallBackFunction ToolbarScenGenLand(Window *w)
+static CallBackFunction ToolbarScenGenLandClick(Window *w)
 {
-	w->HandleButtonClick(WID_TE_LAND_GENERATE);
-	if (_settings_client.sound.click_beep) SndPlayFx(SND_15_BEEP);
+	PopupMainToolbarMenu(w, WID_TE_LAND_GENERATE, {STR_SCENEDIT_LANDSCAPE_MENU_LAND_GENERATION, STR_SCENEDIT_LANDSCAPE_MENU_PUBLIC_ROADS});
+	return CBF_NONE;
+}
 
-	ShowEditorTerraformToolbar();
+static CallBackFunction ToolbarScenGenLand(int index)
+{
+	switch (index) {
+		case 0: ShowEditorTerraformToolbar(); break;
+		case 1: ShowEditorPublicRoadsWindow(); break;
+	}
 	return CBF_NONE;
 }
 
@@ -2433,7 +2439,7 @@ static MenuClickedProc * const _scen_toolbar_dropdown_procs[] = {
 	MenuClickMap,         // 8
 	nullptr,              // 9
 	nullptr,              // 10
-	nullptr,              // 11
+	ToolbarScenGenLand,   // 11
 	ToolbarScenGenTown,   // 12
 	nullptr,              // 13
 	ToolbarScenBuildRoad, // 14
@@ -2459,7 +2465,7 @@ static ToolbarButtonProc * const _scen_toolbar_button_procs[] = {
 	ToolbarScenMapTownDir,
 	ToolbarZoomInClick,
 	ToolbarZoomOutClick,
-	ToolbarScenGenLand,
+	ToolbarScenGenLandClick,
 	ToolbarScenGenTownClick,
 	ToolbarScenGenIndustry,
 	ToolbarScenBuildRoadClick,
@@ -2598,7 +2604,7 @@ struct ScenarioEditorToolbarWindow : Window {
 			case MTEHK_FASTFORWARD:            ToolbarFastForwardClick(this); break;
 			case MTEHK_SETTINGS:               ShowGameOptions(); break;
 			case MTEHK_SAVEGAME:               MenuClickSaveLoad(); break;
-			case MTEHK_GENLAND:                ToolbarScenGenLand(this); break;
+			case MTEHK_GENLAND:                ToolbarScenGenLandClick(this); break;
 			case MTEHK_GENTOWN:                ToolbarScenGenTownClick(this); break;
 			case MTEHK_GENINDUSTRY:            ToolbarScenGenIndustry(this); break;
 			case MTEHK_BUILD_ROAD:             ToolbarScenBuildRoadClick(this); break;

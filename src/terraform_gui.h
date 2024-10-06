@@ -14,5 +14,6 @@
 
 Window *ShowTerraformToolbar(Window *link = nullptr);
 Window *ShowEditorTerraformToolbar();
+Window *ShowEditorPublicRoadsWindow();
 
 #endif /* TERRAFORM_GUI_H */
