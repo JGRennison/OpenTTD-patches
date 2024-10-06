@@ -293,28 +293,6 @@ static bool _action6_override_active = false;
  * Debug() function dedicated to newGRF debugging messages
  * Function is essentially the same as Debug(grf, severity, ...) with the
  * addition of file:line information when parsing grf files.
- * NOTE: for the above reason(s) grfmsg() should ONLY be used for
- * loading/parsing grf files, not for runtime debug messages as there
- * is no file information available during that time.
- * @param severity debugging severity level, see debug.h
- * @param str message in printf() format
- */
-void CDECL _intl_grfmsg(int severity, const char *str, ...)
-{
-	char buf[1024];
-	va_list va;
-
-	va_start(va, str);
-	vseprintf(buf, lastof(buf), str, va);
-	va_end(va);
-
-	Debug(grf, severity, "[{}:{}] {}", _cur.grfconfig->GetDisplayPath(), _cur.nfo_line, buf);
-}
-
-/**
- * Debug() function dedicated to newGRF debugging messages
- * Function is essentially the same as Debug(grf, severity, ...) with the
- * addition of file:line information when parsing grf files.
  * NOTE: for the above reason(s) GrfMsg() should ONLY be used for
  * loading/parsing grf files, not for runtime debug messages as there
  * is no file information available during that time.
@@ -981,7 +959,7 @@ static bool MappedPropertyLengthMismatch(ByteReader &buf, uint expected_size, co
 	uint length = buf.ReadExtendedByte();
 	if (length != expected_size) {
 		if (mapping_entry != nullptr) {
-			grfmsg(2, "Ignoring use of mapped property: %s, feature: %s, mapped to: %X%s, with incorrect data size: %u instead of %u",
+			GrfMsg(2, "Ignoring use of mapped property: {}, feature: {}, mapped to: {:X}{}, with incorrect data size: {} instead of {}",
 					mapping_entry->name, GetFeatureString(mapping_entry->feature),
 					mapping_entry->property_id, mapping_entry->extended ? " (extended)" : "",
 					length, expected_size);
@@ -5033,7 +5011,7 @@ static ChangeInfoResult AirportTilesChangeInfo(uint airtid, int numinfo, int pro
 	ChangeInfoResult ret = CIR_SUCCESS;
 
 	if (airtid + numinfo > NUM_AIRPORTTILES_PER_GRF) {
-		grfmsg(1, "AirportTileChangeInfo: Too many airport tiles loaded (%u), max (%u). Ignoring.", airtid + numinfo, NUM_AIRPORTTILES_PER_GRF);
+		GrfMsg(1, "AirportTileChangeInfo: Too many airport tiles loaded ({}), max ({}). Ignoring.", airtid + numinfo, NUM_AIRPORTTILES_PER_GRF);
 		return CIR_INVALID_ID;
 	}
 
@@ -5044,7 +5022,7 @@ static ChangeInfoResult AirportTilesChangeInfo(uint airtid, int numinfo, int pro
 		AirportTileSpec *tsp = _cur.grffile->airtspec[airtid + i].get();
 
 		if (prop != 0x08 && tsp == nullptr) {
-			grfmsg(2, "AirportTileChangeInfo: Attempt to modify undefined airport tile %u. Ignoring.", airtid + i);
+			GrfMsg(2, "AirportTileChangeInfo: Attempt to modify undefined airport tile {}. Ignoring.", airtid + i);
 			return CIR_INVALID_ID;
 		}
 
@@ -5053,7 +5031,7 @@ static ChangeInfoResult AirportTilesChangeInfo(uint airtid, int numinfo, int pro
 				uint8_t subs_id = buf.ReadByte();
 				if (subs_id >= NEW_AIRPORTTILE_OFFSET) {
 					/* The substitute id must be one of the original airport tiles. */
-					grfmsg(2, "AirportTileChangeInfo: Attempt to use new airport tile %u as substitute airport tile for %u. Ignoring.", subs_id, airtid + i);
+					GrfMsg(2, "AirportTileChangeInfo: Attempt to use new airport tile {} as substitute airport tile for {}. Ignoring.", subs_id, airtid + i);
 					continue;
 				}
 
@@ -5079,7 +5057,7 @@ static ChangeInfoResult AirportTilesChangeInfo(uint airtid, int numinfo, int pro
 
 				/* The airport tile being overridden must be an original airport tile. */
 				if (override >= NEW_AIRPORTTILE_OFFSET) {
-					grfmsg(2, "AirportTileChangeInfo: Attempt to override new airport tile %u with airport tile id %u. Ignoring.", override, airtid + i);
+					GrfMsg(2, "AirportTileChangeInfo: Attempt to override new airport tile {} with airport tile id {}. Ignoring.", override, airtid + i);
 					continue;
 				}
 
@@ -5360,11 +5338,11 @@ static bool HandleChangeInfoResult(const char *caller, ChangeInfoResult cir, Grf
 			return false;
 
 		case CIR_UNHANDLED:
-			grfmsg(1, "%s: Ignoring property 0x%02X of feature %s (not implemented)", caller, property, GetFeatureString(feature));
+			GrfMsg(1, "{}: Ignoring property 0x{:02X} of feature {} (not implemented)", caller, property, GetFeatureString(feature));
 			return false;
 
 		case CIR_UNKNOWN:
-			grfmsg(0, "%s: Unknown property 0x%02X of feature %s, disabling", caller, property, GetFeatureString(feature));
+			GrfMsg(0, "{}: Unknown property 0x{:02X} of feature {}, disabling", caller, property, GetFeatureString(feature));
 			[[fallthrough]];
 
 		case CIR_INVALID_ID: {
@@ -5384,13 +5362,13 @@ static GrfSpecFeatureRef ReadFeature(uint8_t raw_byte, bool allow_48 = false)
 			auto iter = remap.mapping.find(raw_byte);
 			const GRFFeatureMapRemapEntry &def = iter->second;
 			if (def.feature == GSF_ERROR_ON_USE) {
-				grfmsg(0, "Error: Unimplemented mapped feature: %s, mapped to: %02X", def.name, raw_byte);
+				GrfMsg(0, "Error: Unimplemented mapped feature: {}, mapped to: {:02X}", def.name, raw_byte);
 				GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID);
 				error->data = stredup(def.name);
 				error->param_value[1] = GSF_INVALID;
 				error->param_value[2] = raw_byte;
 			} else if (def.feature == GSF_INVALID) {
-				grfmsg(2, "Ignoring unimplemented mapped feature: %s, mapped to: %02X", def.name, raw_byte);
+				GrfMsg(2, "Ignoring unimplemented mapped feature: {}, mapped to: {:02X}", def.name, raw_byte);
 			}
 			return { def.feature, raw_byte };
 		}
@@ -5484,13 +5462,13 @@ static GRFFilePropertyDescriptor ReadAction0PropertyID(ByteReader &buf, uint8_t 
 		const GRFFilePropertyRemapEntry &def = iter->second;
 		int prop = def.id;
 		if (prop == A0RPI_UNKNOWN_ERROR) {
-			grfmsg(0, "Error: Unimplemented mapped property: %s, feature: %s, mapped to: %X", def.name, GetFeatureString(def.feature), raw_prop);
+			GrfMsg(0, "Error: Unimplemented mapped property: {}, feature: {}, mapped to: {:X}", def.name, GetFeatureString(def.feature), raw_prop);
 			GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY);
 			error->data = stredup(def.name);
 			error->param_value[1] = def.feature;
 			error->param_value[2] = raw_prop;
 		} else if (prop == A0RPI_UNKNOWN_IGNORE) {
-			grfmsg(2, "Ignoring unimplemented mapped property: %s, feature: %s, mapped to: %X", def.name, GetFeatureString(def.feature), raw_prop);
+			GrfMsg(2, "Ignoring unimplemented mapped property: {}, feature: {}, mapped to: {:X}", def.name, GetFeatureString(def.feature), raw_prop);
 		} else if (prop == A0RPI_ID_EXTENSION) {
 			uint8_t *outer_data = buf.Data();
 			size_t outer_length = buf.ReadExtendedByte();
@@ -5498,7 +5476,7 @@ static GRFFilePropertyDescriptor ReadAction0PropertyID(ByteReader &buf, uint8_t 
 			uint8_t *inner_data = buf.Data();
 			size_t inner_length = buf.ReadExtendedByte();
 			if (inner_length + (inner_data - outer_data) != outer_length) {
-				grfmsg(2, "Ignoring extended ID property with malformed lengths: %s, feature: %s, mapped to: %X", def.name, GetFeatureString(def.feature), raw_prop);
+				GrfMsg(2, "Ignoring extended ID property with malformed lengths: {}, feature: {}, mapped to: {:X}", def.name, GetFeatureString(def.feature), raw_prop);
 				buf.ResetReadPosition(outer_data);
 				return GRFFilePropertyDescriptor(A0RPI_UNKNOWN_IGNORE, &def);
 			}
@@ -5509,17 +5487,17 @@ static GRFFilePropertyDescriptor ReadAction0PropertyID(ByteReader &buf, uint8_t 
 				const GRFFilePropertyRemapEntry &ext_def = ext->second;
 				prop = ext_def.id;
 				if (prop == A0RPI_UNKNOWN_ERROR) {
-					grfmsg(0, "Error: Unimplemented mapped extended ID property: %s, feature: %s, mapped to: %X (via %X)", ext_def.name, GetFeatureString(ext_def.feature), mapped_id, raw_prop);
+					GrfMsg(0, "Error: Unimplemented mapped extended ID property: {}, feature: {}, mapped to: {:X} (via {:X})", ext_def.name, GetFeatureString(ext_def.feature), mapped_id, raw_prop);
 					GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY);
 					error->data = stredup(ext_def.name);
 					error->param_value[1] = ext_def.feature;
 					error->param_value[2] = 0xE0000 | mapped_id;
 				} else if (prop == A0RPI_UNKNOWN_IGNORE) {
-					grfmsg(2, "Ignoring unimplemented mapped extended ID property: %s, feature: %s, mapped to: %X (via %X)", ext_def.name, GetFeatureString(ext_def.feature), mapped_id, raw_prop);
+					GrfMsg(2, "Ignoring unimplemented mapped extended ID property: {}, feature: {}, mapped to: {:X} (via {:X})", ext_def.name, GetFeatureString(ext_def.feature), mapped_id, raw_prop);
 				}
 				return GRFFilePropertyDescriptor(prop, &ext_def);
 			} else {
-				grfmsg(2, "Ignoring unknown extended ID property: %s, feature: %s, mapped to: %X (via %X)", def.name, GetFeatureString(def.feature), mapped_id, raw_prop);
+				GrfMsg(2, "Ignoring unknown extended ID property: {}, feature: {}, mapped to: {:X} (via {:X})", def.name, GetFeatureString(def.feature), mapped_id, raw_prop);
 				buf.ResetReadPosition(outer_data);
 				return GRFFilePropertyDescriptor(A0RPI_UNKNOWN_IGNORE, &def);
 			}
@@ -5579,15 +5557,15 @@ static void FeatureChangeInfo(ByteReader &buf)
 	uint engine   = buf.ReadExtendedByte();
 
 	if (feature >= GSF_END) {
-		grfmsg(1, "FeatureChangeInfo: Unsupported feature %s skipping", GetFeatureString(feature_ref));
+		GrfMsg(1, "FeatureChangeInfo: Unsupported feature {} skipping", GetFeatureString(feature_ref));
 		return;
 	}
 
-	grfmsg(6, "FeatureChangeInfo: Feature %s, %d properties, to apply to %d+%d",
+	GrfMsg(6, "FeatureChangeInfo: Feature {}, {} properties, to apply to {}+{}",
 	               GetFeatureString(feature_ref), numprops, engine, numinfo);
 
 	if (handler[feature] == nullptr) {
-		if (feature != GSF_CARGOES) grfmsg(1, "FeatureChangeInfo: Unsupported feature %s, skipping", GetFeatureString(feature_ref));
+		if (feature != GSF_CARGOES) GrfMsg(1, "FeatureChangeInfo: Unsupported feature {}, skipping", GetFeatureString(feature_ref));
 		return;
 	}
 
@@ -5714,13 +5692,13 @@ static void NewSpriteSet(ByteReader &buf)
 
 	if (feature >= GSF_END) {
 		_cur.skip_sprites = num_sets * num_ents;
-		grfmsg(1, "NewSpriteSet: Unsupported feature %s, skipping %d sprites", GetFeatureString(feature_ref), _cur.skip_sprites);
+		GrfMsg(1, "NewSpriteSet: Unsupported feature {}, skipping {} sprites", GetFeatureString(feature_ref), _cur.skip_sprites);
 		return;
 	}
 
 	_cur.AddSpriteSets(feature, _cur.spriteid, first_set, num_sets, num_ents);
 
-	grfmsg(7, "New sprite set at %d of feature %s, consisting of %d sets with %d views each (total %d)",
+	GrfMsg(7, "New sprite set at {} of feature {}, consisting of {} sets with {} views each (total {})",
 		_cur.spriteid, GetFeatureString(feature), num_sets, num_ents, num_sets * num_ents
 	);
 
@@ -5897,7 +5875,7 @@ static void NewSpriteGroup(ByteReader &buf)
 	GrfSpecFeatureRef feature_ref = ReadFeature(buf.ReadByte());
 	GrfSpecFeature feature = feature_ref.id;
 	if (feature >= GSF_END) {
-		grfmsg(1, "NewSpriteGroup: Unsupported feature %s, skipping", GetFeatureString(feature_ref));
+		GrfMsg(1, "NewSpriteGroup: Unsupported feature {}, skipping", GetFeatureString(feature_ref));
 		return;
 	}
 
@@ -5954,7 +5932,7 @@ static void NewSpriteGroup(ByteReader &buf)
 						break;
 
 					default:
-						grfmsg(1, "NewSpriteGroup: Unknown 0x87 extension subtype %02X for feature %s, handling as CB failure", subtype, GetFeatureString(feature));
+						GrfMsg(1, "NewSpriteGroup: Unknown 0x87 extension subtype {:02X} for feature {}, handling as CB failure", subtype, GetFeatureString(feature));
 						stype = STYPE_CB_FAILURE;
 						break;
 				}
@@ -5986,7 +5964,7 @@ static void NewSpriteGroup(ByteReader &buf)
 					if (offset != 0) invalid = true;
 				}
 				if (invalid) {
-					grfmsg(1, "NewSpriteGroup: Unknown 0x87 extension subtype 2 relative mode: %02X %02X for feature %s, handling as CB failure", mode, offset, GetFeatureString(feature));
+					GrfMsg(1, "NewSpriteGroup: Unknown 0x87 extension subtype 2 relative mode: {:02X} {:02X} for feature {}, handling as CB failure", mode, offset, GetFeatureString(feature));
 					act_group = NewCallbackResultSpriteGroupNoTransform(CALLBACK_FAILED);
 					break;
 				}
@@ -6165,7 +6143,7 @@ static void NewSpriteGroup(ByteReader &buf)
 
 			uint8_t num_groups = buf.ReadByte();
 			if (!HasExactlyOneBit(num_groups)) {
-				grfmsg(1, "NewSpriteGroup: Random Action 2 nrand should be power of 2");
+				GrfMsg(1, "NewSpriteGroup: Random Action 2 nrand should be power of 2");
 			}
 
 			group->groups.reserve(num_groups);
@@ -6217,7 +6195,7 @@ static void NewSpriteGroup(ByteReader &buf)
 					}
 
 					if (num_loaded + num_loading == 0) {
-						grfmsg(1, "NewSpriteGroup: no result, skipping invalid RealSpriteGroup");
+						GrfMsg(1, "NewSpriteGroup: no result, skipping invalid RealSpriteGroup");
 						break;
 					}
 
@@ -6389,7 +6367,7 @@ static void NewSpriteGroup(ByteReader &buf)
 					break;
 
 				/* Loading of Tile Layout and Production Callback groups would happen here */
-				default: grfmsg(1, "NewSpriteGroup: Unsupported feature %s, skipping", GetFeatureString(feature));
+				default: GrfMsg(1, "NewSpriteGroup: Unsupported feature {}, skipping", GetFeatureString(feature));
 			}
 		}
 	}
@@ -6586,7 +6564,7 @@ static void StationMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 			StationSpec *statspec = stations[i] >= _cur.grffile->stations.size() ? nullptr : _cur.grffile->stations[stations[i]].get();
 
 			if (statspec == nullptr) {
-				grfmsg(1, "StationMapSpriteGroup: Station with ID 0x%X undefined, skipping", stations[i]);
+				GrfMsg(1, "StationMapSpriteGroup: Station with ID 0x{:X} undefined, skipping", stations[i]);
 				continue;
 			}
 
@@ -6601,12 +6579,12 @@ static void StationMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 		StationSpec *statspec = stations[i] >= _cur.grffile->stations.size() ? nullptr : _cur.grffile->stations[stations[i]].get();
 
 		if (statspec == nullptr) {
-			grfmsg(1, "StationMapSpriteGroup: Station with ID 0x%X undefined, skipping", stations[i]);
+			GrfMsg(1, "StationMapSpriteGroup: Station with ID 0x{:X} undefined, skipping", stations[i]);
 			continue;
 		}
 
 		if (statspec->grf_prop.grffile != nullptr) {
-			grfmsg(1, "StationMapSpriteGroup: Station with ID 0x%X mapped multiple times, skipping", stations[i]);
+			GrfMsg(1, "StationMapSpriteGroup: Station with ID 0x{:X} mapped multiple times, skipping", stations[i]);
 			continue;
 		}
 
@@ -6621,7 +6599,7 @@ static void StationMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 static void TownHouseMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 {
 	if (_cur.grffile->housespec.empty()) {
-		grfmsg(1, "TownHouseMapSpriteGroup: No houses defined, skipping");
+		GrfMsg(1, "TownHouseMapSpriteGroup: No houses defined, skipping");
 		return;
 	}
 
@@ -6641,7 +6619,7 @@ static void TownHouseMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 		HouseSpec *hs = houses[i] >= _cur.grffile->housespec.size() ? nullptr : _cur.grffile->housespec[houses[i]].get();
 
 		if (hs == nullptr) {
-			grfmsg(1, "TownHouseMapSpriteGroup: House %d undefined, skipping.", houses[i]);
+			GrfMsg(1, "TownHouseMapSpriteGroup: House {} undefined, skipping.", houses[i]);
 			continue;
 		}
 
@@ -6652,7 +6630,7 @@ static void TownHouseMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 static void IndustryMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 {
 	if (_cur.grffile->industryspec.empty()) {
-		grfmsg(1, "IndustryMapSpriteGroup: No industries defined, skipping");
+		GrfMsg(1, "IndustryMapSpriteGroup: No industries defined, skipping");
 		return;
 	}
 
@@ -6672,7 +6650,7 @@ static void IndustryMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 		IndustrySpec *indsp = industries[i] >= _cur.grffile->industryspec.size() ? nullptr : _cur.grffile->industryspec[industries[i]].get();
 
 		if (indsp == nullptr) {
-			grfmsg(1, "IndustryMapSpriteGroup: Industry %d undefined, skipping", industries[i]);
+			GrfMsg(1, "IndustryMapSpriteGroup: Industry {} undefined, skipping", industries[i]);
 			continue;
 		}
 
@@ -6683,7 +6661,7 @@ static void IndustryMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 static void IndustrytileMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 {
 	if (_cur.grffile->indtspec.empty()) {
-		grfmsg(1, "IndustrytileMapSpriteGroup: No industry tiles defined, skipping");
+		GrfMsg(1, "IndustrytileMapSpriteGroup: No industry tiles defined, skipping");
 		return;
 	}
 
@@ -6703,7 +6681,7 @@ static void IndustrytileMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 		IndustryTileSpec *indtsp = indtiles[i] >= _cur.grffile->indtspec.size() ? nullptr : _cur.grffile->indtspec[indtiles[i]].get();
 
 		if (indtsp == nullptr) {
-			grfmsg(1, "IndustrytileMapSpriteGroup: Industry tile %d undefined, skipping", indtiles[i]);
+			GrfMsg(1, "IndustrytileMapSpriteGroup: Industry tile {} undefined, skipping", indtiles[i]);
 			continue;
 		}
 
@@ -6766,7 +6744,7 @@ static void SignalsMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 				break;
 
 			default:
-				grfmsg(1, "SignalsMapSpriteGroup: ID not implemented: %d", id);
+				GrfMsg(1, "SignalsMapSpriteGroup: ID not implemented: {}", id);
 			break;
 		}
 	}
@@ -6800,7 +6778,7 @@ static void ObjectMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 			ObjectSpec *spec = (objects[i] >= _cur.grffile->objectspec.size()) ? nullptr : _cur.grffile->objectspec[objects[i]].get();
 
 			if (spec == nullptr) {
-				grfmsg(1, "ObjectMapSpriteGroup: Object with ID 0x%X undefined, skipping", objects[i]);
+				GrfMsg(1, "ObjectMapSpriteGroup: Object with ID 0x{:X} undefined, skipping", objects[i]);
 				continue;
 			}
 
@@ -6815,12 +6793,12 @@ static void ObjectMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 		ObjectSpec *spec = (objects[i] >= _cur.grffile->objectspec.size()) ? nullptr : _cur.grffile->objectspec[objects[i]].get();
 
 		if (spec == nullptr) {
-			grfmsg(1, "ObjectMapSpriteGroup: Object with ID 0x%X undefined, skipping", objects[i]);
+			GrfMsg(1, "ObjectMapSpriteGroup: Object with ID 0x{:X} undefined, skipping", objects[i]);
 			continue;
 		}
 
 		if (spec->grf_prop.grffile != nullptr) {
-			grfmsg(1, "ObjectMapSpriteGroup: Object with ID 0x%X mapped multiple times, skipping", objects[i]);
+			GrfMsg(1, "ObjectMapSpriteGroup: Object with ID 0x{:X} mapped multiple times, skipping", objects[i]);
 			continue;
 		}
 
@@ -6897,7 +6875,7 @@ static void RoadTypeMapSpriteGroup(ByteReader &buf, uint8_t idcount, RoadTramTyp
 static void AirportMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 {
 	if (_cur.grffile->airportspec.empty()) {
-		grfmsg(1, "AirportMapSpriteGroup: No airports defined, skipping");
+		GrfMsg(1, "AirportMapSpriteGroup: No airports defined, skipping");
 		return;
 	}
 
@@ -6917,7 +6895,7 @@ static void AirportMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 		AirportSpec *as = airports[i] >= _cur.grffile->airportspec.size() ? nullptr : _cur.grffile->airportspec[airports[i]].get();
 
 		if (as == nullptr) {
-			grfmsg(1, "AirportMapSpriteGroup: Airport %d undefined, skipping", airports[i]);
+			GrfMsg(1, "AirportMapSpriteGroup: Airport {} undefined, skipping", airports[i]);
 			continue;
 		}
 
@@ -6928,7 +6906,7 @@ static void AirportMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 static void AirportTileMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 {
 	if (_cur.grffile->airtspec.empty()) {
-		grfmsg(1, "AirportTileMapSpriteGroup: No airport tiles defined, skipping");
+		GrfMsg(1, "AirportTileMapSpriteGroup: No airport tiles defined, skipping");
 		return;
 	}
 
@@ -6948,7 +6926,7 @@ static void AirportTileMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 		AirportTileSpec *airtsp = airptiles[i] >= _cur.grffile->airtspec.size() ? nullptr : _cur.grffile->airtspec[airptiles[i]].get();
 
 		if (airtsp == nullptr) {
-			grfmsg(1, "AirportTileMapSpriteGroup: Airport tile %d undefined, skipping", airptiles[i]);
+			GrfMsg(1, "AirportTileMapSpriteGroup: Airport tile {} undefined, skipping", airptiles[i]);
 			continue;
 		}
 
@@ -6976,7 +6954,7 @@ static void RoadStopMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 			RoadStopSpec *roadstopspec = (roadstops[i] >= _cur.grffile->roadstops.size()) ? nullptr : _cur.grffile->roadstops[roadstops[i]].get();
 
 			if (roadstopspec == nullptr) {
-				grfmsg(1, "RoadStopMapSpriteGroup: Road stop with ID 0x%X does not exist, skipping", roadstops[i]);
+				GrfMsg(1, "RoadStopMapSpriteGroup: Road stop with ID 0x{:X} does not exist, skipping", roadstops[i]);
 				continue;
 			}
 
@@ -6988,7 +6966,7 @@ static void RoadStopMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 	if (!IsValidGroupID(groupid, "RoadStopMapSpriteGroup")) return;
 
 	if (_cur.grffile->roadstops.empty()) {
-		grfmsg(0, "RoadStopMapSpriteGroup: No roadstops defined, skipping.");
+		GrfMsg(0, "RoadStopMapSpriteGroup: No roadstops defined, skipping.");
 		return;
 	}
 
@@ -6996,12 +6974,12 @@ static void RoadStopMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 		RoadStopSpec *roadstopspec = (roadstops[i] >= _cur.grffile->roadstops.size()) ? nullptr : _cur.grffile->roadstops[roadstops[i]].get();
 
 		if (roadstopspec == nullptr) {
-			grfmsg(1, "RoadStopMapSpriteGroup: Road stop with ID 0x%X does not exist, skipping.", roadstops[i]);
+			GrfMsg(1, "RoadStopMapSpriteGroup: Road stop with ID 0x{:X} does not exist, skipping.", roadstops[i]);
 			continue;
 		}
 
 		if (roadstopspec->grf_prop.grffile != nullptr) {
-			grfmsg(1, "RoadStopMapSpriteGroup: Road stop with ID 0x%X mapped multiple times, skipping", roadstops[i]);
+			GrfMsg(1, "RoadStopMapSpriteGroup: Road stop with ID 0x{:X} mapped multiple times, skipping", roadstops[i]);
 			continue;
 		}
 
@@ -7039,7 +7017,7 @@ static void NewLandscapeMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 				break;
 
 			default:
-				grfmsg(1, "NewLandscapeMapSpriteGroup: ID not implemented: %d", id);
+				GrfMsg(1, "NewLandscapeMapSpriteGroup: ID not implemented: {}", id);
 			break;
 		}
 	}
@@ -7067,7 +7045,7 @@ static void FeatureMapSpriteGroup(ByteReader &buf)
 	uint8_t idcount = buf.ReadByte();
 
 	if (feature >= GSF_END) {
-		grfmsg(1, "FeatureMapSpriteGroup: Unsupported feature %s, skipping", GetFeatureString(feature_ref));
+		GrfMsg(1, "FeatureMapSpriteGroup: Unsupported feature {}, skipping", GetFeatureString(feature_ref));
 		return;
 	}
 
@@ -7078,7 +7056,7 @@ static void FeatureMapSpriteGroup(ByteReader &buf)
 		uint16_t groupid = buf.ReadWord();
 		if (!IsValidGroupID(groupid, "FeatureMapSpriteGroup")) return;
 
-		grfmsg(6, "FeatureMapSpriteGroup: Adding generic feature callback for feature %s", GetFeatureString(feature_ref));
+		GrfMsg(6, "FeatureMapSpriteGroup: Adding generic feature callback for feature {}", GetFeatureString(feature_ref));
 
 		AddGenericCallback(feature, _cur.grffile, GetGroupByID(groupid));
 		return;
@@ -7087,7 +7065,7 @@ static void FeatureMapSpriteGroup(ByteReader &buf)
 	/* Mark the feature as used by the grf (generic callbacks do not count) */
 	SetBit(_cur.grffile->grf_features, feature);
 
-	grfmsg(6, "FeatureMapSpriteGroup: Feature %s, %d ids", GetFeatureString(feature_ref), idcount);
+	GrfMsg(6, "FeatureMapSpriteGroup: Feature {}, {} ids", GetFeatureString(feature_ref), idcount);
 
 	switch (feature) {
 		case GSF_TRAINS:
@@ -7158,7 +7136,7 @@ static void FeatureMapSpriteGroup(ByteReader &buf)
 			return;
 
 		default:
-			grfmsg(1, "FeatureMapSpriteGroup: Unsupported feature %s, skipping", GetFeatureString(feature_ref));
+			GrfMsg(1, "FeatureMapSpriteGroup: Unsupported feature {}, skipping", GetFeatureString(feature_ref));
 			return;
 	}
 }
@@ -7187,7 +7165,7 @@ static void FeatureNewName(ByteReader &buf)
 	GrfSpecFeatureRef feature_ref = ReadFeature(buf.ReadByte(), true);
 	GrfSpecFeature feature = feature_ref.id;
 	if (feature >= GSF_END && feature != 0x48) {
-		grfmsg(1, "FeatureNewName: Unsupported feature %s, skipping", GetFeatureString(feature_ref));
+		GrfMsg(1, "FeatureNewName: Unsupported feature {}, skipping", GetFeatureString(feature_ref));
 		return;
 	}
 
@@ -7207,7 +7185,7 @@ static void FeatureNewName(ByteReader &buf)
 
 	uint16_t endid = id + num;
 
-	grfmsg(6, "FeatureNewName: About to rename engines %d..%d (feature %s) in language 0x%02X",
+	GrfMsg(6, "FeatureNewName: About to rename engines {}..{} (feature {}) in language 0x{:02X}",
 	               id, endid, GetFeatureString(feature), lang);
 
 	for (; id < endid && buf.HasData(); id++) {
@@ -7369,12 +7347,12 @@ static void GraphicsNew(ByteReader &buf)
 		const Action5TypeRemapEntry &def = iter->second;
 		if (def.info == nullptr) {
 			if (def.fallback_mode == GPMFM_ERROR_ON_USE) {
-				grfmsg(0, "Error: Unimplemented action 5 type: %s, mapped to: %X", def.name, type);
+				GrfMsg(0, "Error: Unimplemented action 5 type: {}, mapped to: {:X}", def.name, type);
 				GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_ACTION5_TYPE);
 				error->data = stredup(def.name);
 				error->param_value[1] = type;
 			} else if (def.fallback_mode == GPMFM_IGNORE) {
-				grfmsg(2, "Ignoring unimplemented action 5 type: %s, mapped to: %X", def.name, type);
+				GrfMsg(2, "Ignoring unimplemented action 5 type: {}, mapped to: {:X}", def.name, type);
 			}
 			_cur.skip_sprites = num;
 			return;
@@ -7385,7 +7363,7 @@ static void GraphicsNew(ByteReader &buf)
 		if ((type == 0x0D) && (num == 10) && HasBit(_cur.grfconfig->flags, GCF_SYSTEM)) {
 			/* Special not-TTDP-compatible case used in openttd.grf
 			 * Missing shore sprites and initialisation of SPR_SHORE_BASE */
-			grfmsg(2, "GraphicsNew: Loading 10 missing shore sprites from extra grf.");
+			GrfMsg(2, "GraphicsNew: Loading 10 missing shore sprites from extra grf.");
 			LoadNextSprite(SPR_SHORE_BASE +  0, *_cur.file, _cur.nfo_line++); // SLOPE_STEEP_S
 			LoadNextSprite(SPR_SHORE_BASE +  5, *_cur.file, _cur.nfo_line++); // SLOPE_STEEP_W
 			LoadNextSprite(SPR_SHORE_BASE +  7, *_cur.file, _cur.nfo_line++); // SLOPE_WSE
@@ -7402,7 +7380,7 @@ static void GraphicsNew(ByteReader &buf)
 
 		/* Supported type? */
 		if ((type >= std::size(_action5_types)) || (_action5_types[type].block_type == A5BLOCK_INVALID)) {
-			grfmsg(2, "GraphicsNew: Custom graphics (type 0x%02X) sprite block of length %u (unimplemented, ignoring)", type, num);
+			GrfMsg(2, "GraphicsNew: Custom graphics (type 0x{:02X}) sprite block of length {} (unimplemented, ignoring)", type, num);
 			_cur.skip_sprites = num;
 			return;
 		}
@@ -8096,7 +8074,7 @@ static void SpriteReplace(ByteReader &buf)
 				LoadNextSprite(load_index, *_cur.file, _cur.nfo_line); // XXX
 			} else {
 				/* Skip sprite */
-				grfmsg(0, "SpriteReplace: Ignoring attempt to replace protected sprite ID: %d", load_index);
+				GrfMsg(0, "SpriteReplace: Ignoring attempt to replace protected sprite ID: {}", load_index);
 				LoadNextSprite(-1, *_cur.file, _cur.nfo_line);
 			}
 
@@ -8519,7 +8497,7 @@ static void ParamSet(ByteReader &buf)
 							if (_cur.skip_sprites == -1) return;
 							break;
 
-						default: grfmsg(1, "ParamSet: GRM: Unsupported feature %s", GetFeatureString(feature_ref)); return;
+						default: GrfMsg(1, "ParamSet: GRM: Unsupported feature {}", GetFeatureString(feature_ref)); return;
 					}
 				} else {
 					/* Ignore GRM during initialization */
@@ -8736,7 +8714,7 @@ static void GRFInhibit(ByteReader &buf)
 
 		/* Unset activation flag */
 		if (file != nullptr && file != _cur.grfconfig) {
-			grfmsg(2, "GRFInhibit: Deactivating file '%s'", file->GetDisplayPath());
+			GrfMsg(2, "GRFInhibit: Deactivating file '{}'", file->GetDisplayPath());
 			GRFError *error = DisableGrf(STR_NEWGRF_ERROR_FORCEFULLY_DISABLED, file);
 			error->data = _cur.grfconfig->GetName();
 		}
@@ -9523,18 +9501,18 @@ struct GRFFeatureTest {
 		bool has_feature = (version >= this->min_version && version <= this->max_version);
 		if (this->platform_var_bit > 0) {
 			AssignBit(_cur.grffile->var9D_overlay, this->platform_var_bit, has_feature);
-			grfmsg(2, "Action 14 feature test: feature test: setting bit %u of var 0x9D to %u, %u", platform_var_bit, has_feature ? 1 : 0, _cur.grffile->var9D_overlay);
+			GrfMsg(2, "Action 14 feature test: feature test: setting bit {} of var 0x9D to {}, {}", platform_var_bit, has_feature ? 1 : 0, _cur.grffile->var9D_overlay);
 		}
 		if (this->test_91_value > 0) {
 			if (has_feature) {
-				grfmsg(2, "Action 14 feature test: feature test: adding test value 0x%X to var 0x91", this->test_91_value);
+				GrfMsg(2, "Action 14 feature test: feature test: adding test value 0x{:X} to var 0x91", this->test_91_value);
 				include(_cur.grffile->var91_values, this->test_91_value);
 			} else {
-				grfmsg(2, "Action 14 feature test: feature test: not adding test value 0x%X to var 0x91", this->test_91_value);
+				GrfMsg(2, "Action 14 feature test: feature test: not adding test value 0x{:X} to var 0x91", this->test_91_value);
 			}
 		}
 		if (this->platform_var_bit == 0 && this->test_91_value == 0) {
-			grfmsg(2, "Action 14 feature test: feature test: doing nothing: %u", has_feature ? 1 : 0);
+			GrfMsg(2, "Action 14 feature test: feature test: doing nothing: {}", has_feature ? 1 : 0);
 		}
 		if (this->feature != nullptr && this->feature->observation_flag != GFTOF_INVALID) {
 			SetBit(_cur.grffile->observed_feature_tests, this->feature->observation_flag);
@@ -9564,7 +9542,7 @@ static bool ChangeGRFFeatureTestName(uint8_t langid, std::string_view str)
 static bool ChangeGRFFeatureMinVersion(size_t len, ByteReader &buf)
 {
 	if (len != 2) {
-		grfmsg(2, "Action 14 feature test: expected 2 bytes for 'FTST'->'MINV' but got " PRINTF_SIZE ", ignoring this field", len);
+		GrfMsg(2, "Action 14 feature test: expected 2 bytes for 'FTST'->'MINV' but got {}, ignoring this field", len);
 		buf.Skip(len);
 	} else {
 		_current_grf_feature_test.min_version = buf.ReadWord();
@@ -9576,7 +9554,7 @@ static bool ChangeGRFFeatureMinVersion(size_t len, ByteReader &buf)
 static bool ChangeGRFFeatureMaxVersion(size_t len, ByteReader &buf)
 {
 	if (len != 2) {
-		grfmsg(2, "Action 14 feature test: expected 2 bytes for 'FTST'->'MAXV' but got " PRINTF_SIZE ", ignoring this field", len);
+		GrfMsg(2, "Action 14 feature test: expected 2 bytes for 'FTST'->'MAXV' but got {}, ignoring this field", len);
 		buf.Skip(len);
 	} else {
 		_current_grf_feature_test.max_version = buf.ReadWord();
@@ -9588,14 +9566,14 @@ static bool ChangeGRFFeatureMaxVersion(size_t len, ByteReader &buf)
 static bool ChangeGRFFeatureSetPlatformVarBit(size_t len, ByteReader &buf)
 {
 	if (len != 1) {
-		grfmsg(2, "Action 14 feature test: expected 1 byte for 'FTST'->'SETP' but got " PRINTF_SIZE ", ignoring this field", len);
+		GrfMsg(2, "Action 14 feature test: expected 1 byte for 'FTST'->'SETP' but got {}, ignoring this field", len);
 		buf.Skip(len);
 	} else {
 		uint8_t bit_number = buf.ReadByte();
 		if (bit_number >= 4 && bit_number <= 31) {
 			_current_grf_feature_test.platform_var_bit = bit_number;
 		} else {
-			grfmsg(2, "Action 14 feature test: expected a bit number >= 4 and <= 32 for 'FTST'->'SETP' but got %u, ignoring this field", bit_number);
+			GrfMsg(2, "Action 14 feature test: expected a bit number >= 4 and <= 32 for 'FTST'->'SETP' but got {}, ignoring this field", bit_number);
 		}
 	}
 	return true;
@@ -9605,7 +9583,7 @@ static bool ChangeGRFFeatureSetPlatformVarBit(size_t len, ByteReader &buf)
 static bool ChangeGRFFeatureTestSuccessResultValue(size_t len, ByteReader &buf)
 {
 	if (len != 4) {
-		grfmsg(2, "Action 14 feature test: expected 4 bytes for 'FTST'->'SVAL' but got " PRINTF_SIZE ", ignoring this field", len);
+		GrfMsg(2, "Action 14 feature test: expected 4 bytes for 'FTST'->'SVAL' but got {}, ignoring this field", len);
 		buf.Skip(len);
 	} else {
 		_current_grf_feature_test.test_91_value = buf.ReadDWord();
@@ -9674,11 +9652,11 @@ struct GRFPropertyMapAction {
 	void ExecuteFeatureIDRemapping()
 	{
 		if (this->prop_id < 0) {
-			grfmsg(2, "Action 14 %s remapping: no feature ID defined, doing nothing", this->descriptor);
+			GrfMsg(2, "Action 14 {} remapping: no feature ID defined, doing nothing", this->descriptor);
 			return;
 		}
 		if (this->name.empty()) {
-			grfmsg(2, "Action 14 %s remapping: no name defined, doing nothing", this->descriptor);
+			GrfMsg(2, "Action 14 {} remapping: no name defined, doing nothing", this->descriptor);
 			return;
 		}
 		SetBit(_cur.grffile->ctrl_flags, GFCF_HAVE_FEATURE_ID_REMAP);
@@ -9703,14 +9681,14 @@ struct GRFPropertyMapAction {
 		}
 		if (!success) {
 			if (this->fallback_mode == GPMFM_ERROR_ON_DEFINITION) {
-				grfmsg(0, "Error: Unimplemented mapped %s: %s, mapped to: 0x%02X", this->descriptor, str, this->prop_id);
+				GrfMsg(0, "Error: Unimplemented mapped {}: {}, mapped to: 0x{:02X}", this->descriptor, str, this->prop_id);
 				GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID);
 				error->data = stredup(str);
 				error->param_value[1] = GSF_INVALID;
 				error->param_value[2] = this->prop_id;
 			} else {
 				const char *str_store = stredup(str);
-				grfmsg(2, "Unimplemented mapped %s: %s, mapped to: %X, %s on use",
+				GrfMsg(2, "Unimplemented mapped {}: {}, mapped to: {:X}, {} on use",
 						this->descriptor, str, this->prop_id, (this->fallback_mode == GPMFM_IGNORE) ? "ignoring" : "error");
 				_cur.grffile->remap_unknown_property_names.emplace_back(str_store);
 				GRFFeatureMapRemapEntry &entry = _cur.grffile->feature_id_remaps.Entry(this->prop_id);
@@ -9724,15 +9702,15 @@ struct GRFPropertyMapAction {
 	void ExecutePropertyRemapping()
 	{
 		if (this->feature == GSF_INVALID) {
-			grfmsg(2, "Action 14 %s remapping: no feature defined, doing nothing", this->descriptor);
+			GrfMsg(2, "Action 14 {} remapping: no feature defined, doing nothing", this->descriptor);
 			return;
 		}
 		if (this->prop_id < 0 && this->ext_prop_id < 0) {
-			grfmsg(2, "Action 14 %s remapping: no property ID defined, doing nothing", this->descriptor);
+			GrfMsg(2, "Action 14 {} remapping: no property ID defined, doing nothing", this->descriptor);
 			return;
 		}
 		if (this->name.empty()) {
-			grfmsg(2, "Action 14 %s remapping: no name defined, doing nothing", this->descriptor);
+			GrfMsg(2, "Action 14 {} remapping: no name defined, doing nothing", this->descriptor);
 			return;
 		}
 		bool success = false;
@@ -9769,14 +9747,14 @@ struct GRFPropertyMapAction {
 			uint mapped_to = (this->prop_id > 0) ? this->prop_id : this->ext_prop_id;
 			const char *extended = (this->prop_id > 0) ? "" : " (extended)";
 			if (this->fallback_mode == GPMFM_ERROR_ON_DEFINITION) {
-				grfmsg(0, "Error: Unimplemented mapped %s: %s, feature: %s, mapped to: %X%s", this->descriptor, str, GetFeatureString(this->feature), mapped_to, extended);
+				GrfMsg(0, "Error: Unimplemented mapped {}: {}, feature: {}, mapped to: {:X}{}", this->descriptor, str, GetFeatureString(this->feature), mapped_to, extended);
 				GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY);
 				error->data = stredup(str);
 				error->param_value[1] = this->feature;
 				error->param_value[2] = ((this->prop_id > 0) ? 0 : 0xE0000) | mapped_to;
 			} else {
 				const char *str_store = stredup(str);
-				grfmsg(2, "Unimplemented mapped %s: %s, feature: %s, mapped to: %X%s, %s on use",
+				GrfMsg(2, "Unimplemented mapped {}: {}, feature: {}, mapped to: {:X}{}, {} on use",
 						this->descriptor, str, GetFeatureString(this->feature), mapped_to, extended, (this->fallback_mode == GPMFM_IGNORE) ? "ignoring" : "error");
 				_cur.grffile->remap_unknown_property_names.emplace_back(str_store);
 				if (this->prop_id > 0) {
@@ -9801,11 +9779,11 @@ struct GRFPropertyMapAction {
 	void ExecuteVariableRemapping()
 	{
 		if (this->feature == GSF_INVALID) {
-			grfmsg(2, "Action 14 %s remapping: no feature defined, doing nothing", this->descriptor);
+			GrfMsg(2, "Action 14 {} remapping: no feature defined, doing nothing", this->descriptor);
 			return;
 		}
 		if (this->name.empty()) {
-			grfmsg(2, "Action 14 %s remapping: no name defined, doing nothing", this->descriptor);
+			GrfMsg(2, "Action 14 {} remapping: no name defined, doing nothing", this->descriptor);
 			return;
 		}
 		bool success = false;
@@ -9825,18 +9803,18 @@ struct GRFPropertyMapAction {
 			include(_cur.grffile->var91_values, this->test_91_value);
 		}
 		if (!success) {
-			grfmsg(2, "Unimplemented mapped %s: %s, feature: %s, mapped to 0", this->descriptor, str, GetFeatureString(this->feature));
+			GrfMsg(2, "Unimplemented mapped {}: {}, feature: {}, mapped to 0", this->descriptor, str, GetFeatureString(this->feature));
 		}
 	}
 
 	void ExecuteAction5TypeRemapping()
 	{
 		if (this->prop_id < 0) {
-			grfmsg(2, "Action 14 %s remapping: no type ID defined, doing nothing", this->descriptor);
+			GrfMsg(2, "Action 14 {} remapping: no type ID defined, doing nothing", this->descriptor);
 			return;
 		}
 		if (this->name.empty()) {
-			grfmsg(2, "Action 14 %s remapping: no name defined, doing nothing", this->descriptor);
+			GrfMsg(2, "Action 14 {} remapping: no name defined, doing nothing", this->descriptor);
 			return;
 		}
 		bool success = false;
@@ -9860,13 +9838,13 @@ struct GRFPropertyMapAction {
 		}
 		if (!success) {
 			if (this->fallback_mode == GPMFM_ERROR_ON_DEFINITION) {
-				grfmsg(0, "Error: Unimplemented mapped %s: %s, mapped to: %X", this->descriptor, str, this->prop_id);
+				GrfMsg(0, "Error: Unimplemented mapped {}: {}, mapped to: {:X}", this->descriptor, str, this->prop_id);
 				GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_ACTION5_TYPE);
 				error->data = stredup(str);
 				error->param_value[1] = this->prop_id;
 			} else {
 				const char *str_store = stredup(str);
-				grfmsg(2, "Unimplemented mapped %s: %s, mapped to: %X, %s on use",
+				GrfMsg(2, "Unimplemented mapped {}: {}, mapped to: {:X}, {} on use",
 						this->descriptor, str, this->prop_id, (this->fallback_mode == GPMFM_IGNORE) ? "ignoring" : "error");
 				_cur.grffile->remap_unknown_property_names.emplace_back(str_store);
 				Action5TypeRemapEntry &entry = _cur.grffile->action5_type_remaps.Entry(this->prop_id);
@@ -9893,12 +9871,12 @@ static bool ChangePropertyRemapFeature(size_t len, ByteReader &buf)
 {
 	GRFPropertyMapAction &action = _current_grf_property_map_action;
 	if (len != 1) {
-		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'FEAT' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		GrfMsg(2, "Action 14 {} mapping: expected 1 byte for '{}'->'FEAT' but got {}, ignoring this field", action.descriptor, action.tag_name, len);
 		buf.Skip(len);
 	} else {
 		GrfSpecFeatureRef feature = ReadFeature(buf.ReadByte());
 		if (feature.id >= GSF_END) {
-			grfmsg(2, "Action 14 %s mapping: invalid feature ID: %s, in '%s'->'FEAT', ignoring this field", action.descriptor, GetFeatureString(feature), action.tag_name);
+			GrfMsg(2, "Action 14 {} mapping: invalid feature ID: {}, in '{}'->'FEAT', ignoring this field", action.descriptor, GetFeatureString(feature), action.tag_name);
 		} else {
 			action.feature = feature.id;
 		}
@@ -9911,7 +9889,7 @@ static bool ChangePropertyRemapPropertyId(size_t len, ByteReader &buf)
 {
 	GRFPropertyMapAction &action = _current_grf_property_map_action;
 	if (len != 1) {
-		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'PROP' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		GrfMsg(2, "Action 14 {} mapping: expected 1 byte for '{}'->'PROP' but got {}, ignoring this field", action.descriptor, action.tag_name, len);
 		buf.Skip(len);
 	} else {
 		action.prop_id = buf.ReadByte();
@@ -9924,7 +9902,7 @@ static bool ChangePropertyRemapExtendedPropertyId(size_t len, ByteReader &buf)
 {
 	GRFPropertyMapAction &action = _current_grf_property_map_action;
 	if (len != 2) {
-		grfmsg(2, "Action 14 %s mapping: expected 2 bytes for '%s'->'XPRP' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		GrfMsg(2, "Action 14 {} mapping: expected 2 bytes for '{}'->'XPRP' but got {}, ignoring this field", action.descriptor, action.tag_name, len);
 		buf.Skip(len);
 	} else {
 		action.ext_prop_id = buf.ReadWord();
@@ -9937,7 +9915,7 @@ static bool ChangePropertyRemapFeatureId(size_t len, ByteReader &buf)
 {
 	GRFPropertyMapAction &action = _current_grf_property_map_action;
 	if (len != 1) {
-		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'FTID' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		GrfMsg(2, "Action 14 {} mapping: expected 1 byte for '{}'->'FTID' but got {}, ignoring this field", action.descriptor, action.tag_name, len);
 		buf.Skip(len);
 	} else {
 		action.prop_id = buf.ReadByte();
@@ -9950,14 +9928,14 @@ static bool ChangePropertyRemapTypeId(size_t len, ByteReader &buf)
 {
 	GRFPropertyMapAction &action = _current_grf_property_map_action;
 	if (len != 1) {
-		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'TYPE' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		GrfMsg(2, "Action 14 {} mapping: expected 1 byte for '{}'->'TYPE' but got {}, ignoring this field", action.descriptor, action.tag_name, len);
 		buf.Skip(len);
 	} else {
 		uint8_t prop = buf.ReadByte();
 		if (prop < 128) {
 			action.prop_id = prop;
 		} else {
-			grfmsg(2, "Action 14 %s mapping: expected a type < 128 for '%s'->'TYPE' but got %u, ignoring this field", action.descriptor, action.tag_name, prop);
+			GrfMsg(2, "Action 14 {} mapping: expected a type < 128 for '{}'->'TYPE' but got {}, ignoring this field", action.descriptor, action.tag_name, prop);
 		}
 	}
 	return true;
@@ -9968,7 +9946,7 @@ static bool ChangePropertyRemapSetFallbackMode(size_t len, ByteReader &buf)
 {
 	GRFPropertyMapAction &action = _current_grf_property_map_action;
 	if (len != 1) {
-		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'FLBK' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		GrfMsg(2, "Action 14 {} mapping: expected 1 byte for '{}'->'FLBK' but got {}, ignoring this field", action.descriptor, action.tag_name, len);
 		buf.Skip(len);
 	} else {
 		GRFPropertyMapFallbackMode mode = (GRFPropertyMapFallbackMode) buf.ReadByte();
@@ -9981,14 +9959,14 @@ static bool ChangePropertyRemapSetTTDVerVarBit(size_t len, ByteReader &buf)
 {
 	GRFPropertyMapAction &action = _current_grf_property_map_action;
 	if (len != 1) {
-		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'SETT' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		GrfMsg(2, "Action 14 {} mapping: expected 1 byte for '{}'->'SETT' but got {}, ignoring this field", action.descriptor, action.tag_name, len);
 		buf.Skip(len);
 	} else {
 		uint8_t bit_number = buf.ReadByte();
 		if (bit_number >= 4 && bit_number <= 31) {
 			action.ttd_ver_var_bit = bit_number;
 		} else {
-			grfmsg(2, "Action 14 %s mapping: expected a bit number >= 4 and <= 32 for '%s'->'SETT' but got %u, ignoring this field", action.descriptor, action.tag_name, bit_number);
+			GrfMsg(2, "Action 14 {} mapping: expected a bit number >= 4 and <= 32 for '{}'->'SETT' but got {}, ignoring this field", action.descriptor, action.tag_name, bit_number);
 		}
 	}
 	return true;
@@ -9999,7 +9977,7 @@ static bool ChangePropertyRemapSuccessResultValue(size_t len, ByteReader &buf)
 {
 	GRFPropertyMapAction &action = _current_grf_property_map_action;
 	if (len != 4) {
-		grfmsg(2, "Action 14 %s mapping: expected 4 bytes for '%s'->'SVAL' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		GrfMsg(2, "Action 14 {} mapping: expected 4 bytes for '{}'->'SVAL' but got {}, ignoring this field", action.descriptor, action.tag_name, len);
 		buf.Skip(len);
 	} else {
 		action.test_91_value = buf.ReadDWord();
@@ -10012,14 +9990,14 @@ static bool ChangePropertyRemapSetInputShift(size_t len, ByteReader &buf)
 {
 	GRFPropertyMapAction &action = _current_grf_property_map_action;
 	if (len != 1) {
-		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'RSFT' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		GrfMsg(2, "Action 14 {} mapping: expected 1 byte for '{}'->'RSFT' but got {}, ignoring this field", action.descriptor, action.tag_name, len);
 		buf.Skip(len);
 	} else {
 		uint8_t input_shift = buf.ReadByte();
 		if (input_shift < 0x20) {
 			action.input_shift = input_shift;
 		} else {
-			grfmsg(2, "Action 14 %s mapping: expected a shift value < 0x20 for '%s'->'RSFT' but got %u, ignoring this field", action.descriptor, action.tag_name, input_shift);
+			GrfMsg(2, "Action 14 {} mapping: expected a shift value < 0x20 for '{}'->'RSFT' but got {}, ignoring this field", action.descriptor, action.tag_name, input_shift);
 		}
 	}
 	return true;
@@ -10030,14 +10008,14 @@ static bool ChangePropertyRemapSetOutputShift(size_t len, ByteReader &buf)
 {
 	GRFPropertyMapAction &action = _current_grf_property_map_action;
 	if (len != 1) {
-		grfmsg(2, "Action 14 %s mapping: expected 1 byte for '%s'->'VSFT' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		GrfMsg(2, "Action 14 {} mapping: expected 1 byte for '{}'->'VSFT' but got {}, ignoring this field", action.descriptor, action.tag_name, len);
 		buf.Skip(len);
 	} else {
 		uint8_t output_shift = buf.ReadByte();
 		if (output_shift < 0x20) {
 			action.output_shift = output_shift;
 		} else {
-			grfmsg(2, "Action 14 %s mapping: expected a shift value < 0x20 for '%s'->'VSFT' but got %u, ignoring this field", action.descriptor, action.tag_name, output_shift);
+			GrfMsg(2, "Action 14 {} mapping: expected a shift value < 0x20 for '{}'->'VSFT' but got {}, ignoring this field", action.descriptor, action.tag_name, output_shift);
 		}
 	}
 	return true;
@@ -10048,7 +10026,7 @@ static bool ChangePropertyRemapSetInputMask(size_t len, ByteReader &buf)
 {
 	GRFPropertyMapAction &action = _current_grf_property_map_action;
 	if (len != 4) {
-		grfmsg(2, "Action 14 %s mapping: expected 4 bytes for '%s'->'RMSK' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		GrfMsg(2, "Action 14 {} mapping: expected 4 bytes for '{}'->'RMSK' but got {}, ignoring this field", action.descriptor, action.tag_name, len);
 		buf.Skip(len);
 	} else {
 		action.input_mask = buf.ReadDWord();
@@ -10061,7 +10039,7 @@ static bool ChangePropertyRemapSetOutputMask(size_t len, ByteReader &buf)
 {
 	GRFPropertyMapAction &action = _current_grf_property_map_action;
 	if (len != 4) {
-		grfmsg(2, "Action 14 %s mapping: expected 4 bytes for '%s'->'VMSK' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		GrfMsg(2, "Action 14 {} mapping: expected 4 bytes for '{}'->'VMSK' but got {}, ignoring this field", action.descriptor, action.tag_name, len);
 		buf.Skip(len);
 	} else {
 		action.output_mask = buf.ReadDWord();
@@ -10074,7 +10052,7 @@ static bool ChangePropertyRemapSetOutputParam(size_t len, ByteReader &buf)
 {
 	GRFPropertyMapAction &action = _current_grf_property_map_action;
 	if (len != 4) {
-		grfmsg(2, "Action 14 %s mapping: expected 4 bytes for '%s'->'VPRM' but got " PRINTF_SIZE ", ignoring this field", action.descriptor, action.tag_name, len);
+		GrfMsg(2, "Action 14 {} mapping: expected 4 bytes for '{}'->'VPRM' but got {}, ignoring this field", action.descriptor, action.tag_name, len);
 		buf.Skip(len);
 	} else {
 		action.output_param = buf.ReadDWord();

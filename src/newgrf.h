@@ -434,9 +434,6 @@ void ReloadNewGRFData(); // in saveload/afterload.cpp
 void ResetNewGRFData();
 void ResetPersistentNewGRFData();
 
-#define grfmsg(severity, ...) do { if ((severity) == 0 || GetDebugLevel(DebugLevelID::grf) >= (severity)) _intl_grfmsg(severity, __VA_ARGS__); } while(false)
-void CDECL _intl_grfmsg(int severity, const char *str, ...) WARN_FORMAT(2, 3);
-
 template <typename... T>
 void GrfMsgIntl(int severity, fmt::format_string<T...> msg, T&&... args)
 {

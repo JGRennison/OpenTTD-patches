@@ -46,7 +46,7 @@ Tindex NewGRFClass<Tspec, Tindex, Tmax>::Allocate(uint32_t global_id)
 		return it->Index();
 	}
 
-	grfmsg(2, "ClassAllocate: already allocated %d classes, using default", Tmax);
+	GrfMsg(2, "ClassAllocate: already allocated {} classes, using default", Tmax);
 	return static_cast<Tindex>(0);
 }
 

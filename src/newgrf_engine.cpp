@@ -65,7 +65,7 @@ void SetCustomEngineSprites(EngineID engine, uint8_t cargo, const SpriteGroup *g
 	assert(cargo < std::size(e->grf_prop.spritegroup));
 
 	if (e->grf_prop.spritegroup[cargo] != nullptr) {
-		grfmsg(6, "SetCustomEngineSprites: engine %d cargo %d already has group -- replacing", engine, cargo);
+		GrfMsg(6, "SetCustomEngineSprites: engine {} cargo {} already has group -- replacing", engine, cargo);
 	}
 	e->grf_prop.spritegroup[cargo] = group;
 }
