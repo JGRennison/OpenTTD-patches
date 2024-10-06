@@ -136,11 +136,6 @@ inline T *ReallocT(T *t_ptr, size_t num_elements)
  */
 template <typename T, size_t MAX_N>
 struct TempBufferT {
-	enum InitMode {
-		NO_INIT,
-		INIT_ZERO,
-	};
-
 private:
 	T *ptr;
 	T storage[MAX_N];
