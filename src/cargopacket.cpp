@@ -8,6 +8,7 @@
 /** @file cargopacket.cpp Implementation of the cargo packets. */
 
 #include "stdafx.h"
+#include "debug.h"
 #include "station_base.h"
 #include "core/pool_func.hpp"
 #include "core/random_func.hpp"
@@ -522,6 +523,22 @@ void VehicleCargoList::PopCargo(Taction action)
 			break;
 		}
 	}
+}
+
+void VehicleCargoList::AssertCountConsistencyError() const
+{
+	assert_msg(this->action_counts[MTA_KEEP] +
+			this->action_counts[MTA_DELIVER] +
+			this->action_counts[MTA_TRANSFER] +
+			this->action_counts[MTA_LOAD] == this->count,
+			"{} + {} + {} + {} != {}, ({} in {} packets)",
+			this->action_counts[MTA_KEEP],
+			this->action_counts[MTA_DELIVER],
+			this->action_counts[MTA_TRANSFER],
+			this->action_counts[MTA_LOAD],
+			this->count,
+			this->RecalculateCargoTotal(),
+			this->packets.size());
 }
 
 /**

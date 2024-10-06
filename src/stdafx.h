@@ -389,11 +389,9 @@ struct fmt_formattable{};
 /* cpp-btree: Don't include IO stream headers, dump support */
 #define BTREE_NO_IOSTREAM
 
-[[noreturn]] void CDECL assert_msg_error(int line, const char *file, const char *expr, const char *str, ...) WARN_FORMAT(4, 5);
 [[noreturn]] void assert_str_error(int line, const char *file, const char *expr, std::string_view str);
 [[noreturn]] void assert_str_error(int line, const char *file, const char *expr, const char *str);
 [[noreturn]] void assert_str_error(int line, const char *file, const char *expr);
-[[noreturn]] void CDECL assert_msg_tile_error(int line, const char *file, const char *expr, uint32_t tile, const char *str, ...) WARN_FORMAT(5, 6);
 [[noreturn]] void assert_tile_error(int line, const char *file, const char *expr, uint32_t tile);
 [[noreturn]] void not_reached_error(int line, const char *file);
 #define NOT_REACHED() not_reached_error(__LINE__, __FILE__);
@@ -402,30 +400,23 @@ struct fmt_formattable{};
 #if !defined(NDEBUG) || defined(WITH_ASSERT)
 #	undef assert
 #	define assert(expression) do { if (unlikely(!(expression))) assert_str_error(__LINE__, __FILE__, #expression); } while (false)
-#	define assert_msg(expression, ...) do { if (unlikely(!(expression))) assert_msg_error(__LINE__, __FILE__, #expression, __VA_ARGS__); } while (false)
-#	define assert_msg_tile(expression, tile, ...) do { if (unlikely(!(expression))) assert_msg_tile_error(__LINE__, __FILE__, #expression, tile, __VA_ARGS__); } while (false)
 #	define assert_tile(expression, tile) do { if (unlikely(!(expression))) assert_tile_error(__LINE__, __FILE__, #expression, tile); } while (false)
 #	define assert_str(expression, str) do { if (unlikely(!(expression))) assert_str_error(__LINE__, __FILE__, #expression, str); } while (false)
 #else
 #	undef assert
 #	define assert(expression)
-#	define assert_msg(expression, ...)
-#	define assert_msg_tile(expression, tile, ...)
 #	define assert_tile(expression, tile)
 #	define assert_str(expression, str)
 #endif
 #if (!defined(NDEBUG) || defined(WITH_ASSERT)) && !defined(FEWER_ASSERTS)
 #	define WITH_FULL_ASSERTS
 #	define dbg_assert(expression) assert(expression)
-#	define dbg_assert_msg(expression, ...) assert_msg(expression, __VA_ARGS__)
-#	define dbg_assert_msg_tile(expression, tile, ...) assert_msg_tile(expression, tile, __VA_ARGS__)
 #	define dbg_assert_tile(expression, tile) assert_tile(expression, tile)
 #else
 #	define dbg_assert(expression)
-#	define dbg_assert_msg(expression, ...)
-#	define dbg_assert_msg_tile(expression, tile, ...)
 #	define dbg_assert_tile(expression, tile)
 #endif
+
 
 /* Define JSON_ASSERT, which is used by nlohmann-json. Otherwise the header-file
  * will re-include assert.h, and reset the assert macro. */

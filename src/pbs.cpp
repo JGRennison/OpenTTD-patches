@@ -107,7 +107,7 @@ bool TryReserveRailTrackdir(const Train *v, TileIndex tile, Trackdir td, bool tr
 bool TryReserveRailTrack(TileIndex tile, Track track, bool trigger_stations)
 {
 	assert_msg_tile((TrackdirBitsToTrackBits(GetTileTrackdirBits(tile, TRANSPORT_RAIL, 0)) & TrackToTrackBits(track)) != 0, tile,
-			"%X, %X, %X", TrackdirBitsToTrackBits(GetTileTrackdirBits(tile, TRANSPORT_RAIL, 0)), track, TrackToTrackBits(track));
+			"{:X}, {:X}, {:X}", TrackdirBitsToTrackBits(GetTileTrackdirBits(tile, TRANSPORT_RAIL, 0)), track, TrackToTrackBits(track));
 
 	if (_settings_client.gui.show_track_reservation) {
 		/* show the reserved rail if needed */
@@ -203,7 +203,7 @@ void UnreserveRailTrackdir(TileIndex tile, Trackdir td)
  */
 void UnreserveRailTrack(TileIndex tile, Track t)
 {
-	assert_msg_tile(TrackdirBitsToTrackBits(GetTileTrackdirBits(tile, TRANSPORT_RAIL, 0)) & TrackToTrackBits(t), tile, "track: %u", t);
+	assert_msg_tile(TrackdirBitsToTrackBits(GetTileTrackdirBits(tile, TRANSPORT_RAIL, 0)) & TrackToTrackBits(t), tile, "track: {:X}", t);
 
 	if (_settings_client.gui.show_track_reservation) {
 		if (IsTileType(tile, MP_TUNNELBRIDGE)) {
@@ -1310,7 +1310,7 @@ void FillTrainReservationLookAhead(Train *v)
  */
 Train *GetTrainForReservation(TileIndex tile, Track track)
 {
-	assert_msg_tile(HasReservedTracks(tile, TrackToTrackBits(track)), tile, "track: %u", track);
+	assert_msg_tile(HasReservedTracks(tile, TrackToTrackBits(track)), tile, "track: {:X}", track);
 	Trackdir  trackdir = TrackToTrackdir(track);
 
 	RailTypes rts = GetRailTypeInfo(GetTileRailTypeByTrack(tile, track))->all_compatible_railtypes;

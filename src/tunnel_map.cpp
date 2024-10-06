@@ -86,7 +86,7 @@ void Tunnel::PreCleanPool()
 TunnelID GetTunnelIndexByLookup(TileIndex t)
 {
 	auto iter = tunnel_tile_index_map.find(t);
-	assert_msg(iter != tunnel_tile_index_map.end(), "tile: 0x%X", t);
+	assert_tile(iter != tunnel_tile_index_map.end(), t);
 	return iter->second;
 }
 

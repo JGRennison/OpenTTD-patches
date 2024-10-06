@@ -103,7 +103,7 @@ void NetworkUDPSocketHandler::SendPacket(Packet &p, NetworkAddress &recv, bool a
 			this->SendPacket(frag, recv, all, broadcast, short_mtu);
 			frag.ResetState(PACKET_UDP_EX_MULTI);
 		}
-		assert_msg(current_frag == frag_count, "%u, %u", current_frag, frag_count);
+		assert_msg(current_frag == frag_count, "{}, {}", current_frag, frag_count);
 		return;
 	}
 

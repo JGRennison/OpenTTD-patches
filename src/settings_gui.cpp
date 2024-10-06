@@ -1572,7 +1572,7 @@ void SettingEntry::Init(uint8_t level)
 {
 	BaseSettingEntry::Init(level);
 	const SettingDesc *st = GetSettingFromName(this->name);
-	assert_msg(st != nullptr, "name: %s", this->name);
+	assert_msg(st != nullptr, "name: {}", this->name);
 	this->setting = st->AsIntSetting();
 }
 
@@ -3146,7 +3146,7 @@ struct GameSettingsWindow : Window {
 									val = data.val;
 								}
 							}
-							assert_msg(val >= sd->min && val <= (int)sd->max, "min: %d, max: %d, val: %d", sd->min, sd->max, val);
+							assert_msg(val >= sd->min && val <= (int)sd->max, "min: {}, max: {}, val: {}", sd->min, sd->max, val);
 							sd->SetValueDParams(0, val);
 							list.push_back(MakeDropDownListStringItem(STR_JUST_STRING2, val, false));
 						}

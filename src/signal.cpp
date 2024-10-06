@@ -832,7 +832,7 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 			continue;
 		}
 
-		assert_msg_tile(HasSignalOnTrackdir(tile, trackdir), tile, "trackdir: %u", trackdir);
+		assert_msg_tile(HasSignalOnTrackdir(tile, trackdir), tile, "trackdir: {}", trackdir);
 
 		track = TrackdirToTrack(trackdir);
 		SignalType sig = GetSignalType(tile, track);

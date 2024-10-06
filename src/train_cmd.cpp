@@ -42,6 +42,7 @@
 #include "scope_info.h"
 #include "scope.h"
 #include "core/checksum_func.hpp"
+#include "debug_dbg_assert.h"
 #include "debug_settings.h"
 #include "train_speed_adaptation.h"
 #include "event_logs.h"
@@ -280,7 +281,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 		const RailVehicleInfo *rvi_u = RailVehInfo(u->engine_type);
 
 		/* Check the this->first cache. */
-		dbg_assert_msg(u->First() == this, "u: %s, this: %s",
+		dbg_assert_msg(u->First() == this, "u: {}, this: {}",
 				scope_dumper().VehicleInfo(u), scope_dumper().VehicleInfo(this));
 
 		/* update the 'first engine' */
@@ -5696,7 +5697,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					ChooseTrainTrackResult result = ChooseTrainTrack(v, gp.new_tile, enterdir, bits, CTTF_MARK_STUCK | CTTF_NON_LOOKAHEAD);
 					chosen_track = TrackToTrackBits(result.track);
 					reverse_at_signal = (result.ctt_flags & CTTRF_REVERSE_AT_SIGNAL);
-					dbg_assert_msg_tile(chosen_track & (bits | GetReservedTrackbits(gp.new_tile)), gp.new_tile, "0x%X, 0x%X, 0x%X", chosen_track, bits, GetReservedTrackbits(gp.new_tile));
+					dbg_assert_msg_tile(chosen_track & (bits | GetReservedTrackbits(gp.new_tile)), gp.new_tile, "0x{:X}, 0x{:X}, 0x{:X}", chosen_track, bits, GetReservedTrackbits(gp.new_tile));
 
 					if (v->force_proceed != TFP_NONE && IsPlainRailTile(gp.new_tile) && HasSignals(gp.new_tile)) {
 						/* For each signal we find decrease the counter by one.

@@ -12,6 +12,7 @@
 #include "company_func.h"
 #include "date_func.h"
 #include "date_type.h"
+#include "debug.h"
 #include "window_func.h"
 #include "vehicle_base.h"
 #include "settings_type.h"
@@ -66,7 +67,7 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32_t va
 				total_delta = val - order->GetTravelTime();
 				timetable_delta = (timetabled ? val : 0) - order->GetTimetabledTravel();
 			}
-			if (order->IsType(OT_CONDITIONAL)) assert_msg(val == order->GetTravelTime(), "%u == %u", val, order->GetTravelTime());
+			if (order->IsType(OT_CONDITIONAL)) assert_msg(val == order->GetTravelTime(), "{} == {}", val, order->GetTravelTime());
 			order->SetTravelTime(val);
 			order->SetTravelTimetabled(timetabled);
 			break;
@@ -987,7 +988,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 			return;
 		}
 	} else {
-		assert_msg(real_timetable_order == real_current_order, "%u, %u", v->cur_real_order_index, v->cur_timetable_order_index);
+		assert_msg(real_timetable_order == real_current_order, "{}, {}", v->cur_real_order_index, v->cur_timetable_order_index);
 	}
 
 	if (just_started) return;

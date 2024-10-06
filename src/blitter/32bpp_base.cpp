@@ -8,6 +8,7 @@
 /** @file 32bpp_base.cpp Implementation of base for 32 bpp blitters. */
 
 #include "../stdafx.h"
+#include "../debug.h"
 #include "32bpp_base.hpp"
 #include "common.hpp"
 
@@ -144,7 +145,7 @@ void Blitter_32bppBase::ScrollBuffer(void *video, int left, int top, int width, 
 		/* Decrease height and increase top */
 		top += scroll_y;
 		height -= scroll_y;
-		assert_msg(height > 0, "%d, %d, %d, %d, %d, %d", left, top, width, height, scroll_x, scroll_y);
+		assert_msg(height > 0, "{}, {}, {}, {}, {}, {}", left, top, width, height, scroll_x, scroll_y);
 
 		/* Adjust left & width */
 		if (scroll_x >= 0) {
@@ -168,7 +169,7 @@ void Blitter_32bppBase::ScrollBuffer(void *video, int left, int top, int width, 
 
 		/* Decrease height. (scroll_y is <=0). */
 		height += scroll_y;
-		assert_msg(height > 0, "%d, %d, %d, %d, %d, %d", left, top, width, height, scroll_x, scroll_y);
+		assert_msg(height > 0, "{}, {}, {}, {}, {}, {}", left, top, width, height, scroll_x, scroll_y);
 
 		/* Adjust left & width */
 		if (scroll_x >= 0) {

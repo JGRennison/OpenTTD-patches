@@ -403,6 +403,7 @@ protected:
 		return total;
 	}
 
+	void AssertCountConsistencyError() const;
 public:
 
 	/**
@@ -410,18 +411,14 @@ public:
 	 */
 	inline void AssertCountConsistency() const
 	{
-		assert_msg(this->action_counts[MTA_KEEP] +
+#ifdef WITH_ASSERT
+		if (unlikely(this->action_counts[MTA_KEEP] +
 				this->action_counts[MTA_DELIVER] +
 				this->action_counts[MTA_TRANSFER] +
-				this->action_counts[MTA_LOAD] == this->count,
-				"%u + %u + %u + %u != %u, (%u in %u packets)",
-				this->action_counts[MTA_KEEP],
-				this->action_counts[MTA_DELIVER],
-				this->action_counts[MTA_TRANSFER],
-				this->action_counts[MTA_LOAD],
-				this->count,
-				this->RecalculateCargoTotal(),
-				(uint) this->packets.size());
+				this->action_counts[MTA_LOAD] != this->count)) {
+			this->AssertCountConsistencyError();
+		}
+#endif
 	}
 
 protected:

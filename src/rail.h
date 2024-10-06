@@ -21,6 +21,7 @@
 #include "signal_type.h"
 #include "rail_map.h"
 #include "settings_type.h"
+#include "debug_dbg_assert.h"
 #include <vector>
 
 /** Railtype flag bit numbers. */
@@ -331,7 +332,7 @@ public:
 inline const RailTypeInfo *GetRailTypeInfo(RailType railtype)
 {
 	extern RailTypeInfo _railtypes[RAILTYPE_END];
-	dbg_assert_msg(railtype < RAILTYPE_END, "%u", railtype);
+	dbg_assert_msg(railtype < RAILTYPE_END, "{}", railtype);
 	return &_railtypes[railtype];
 }
 

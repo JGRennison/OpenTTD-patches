@@ -529,12 +529,12 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 		ValidateVehicleTickCaches();
 
 		for (Vehicle *v : Vehicle::Iterate()) {
-			if (v->Previous()) assert_msg(v->Previous()->Next() == v, "%u", v->index);
-			if (v->Next()) assert_msg(v->Next()->Previous() == v, "%u", v->index);
+			if (v->Previous()) assert_msg(v->Previous()->Next() == v, "{}", v->index);
+			if (v->Next()) assert_msg(v->Next()->Previous() == v, "{}", v->index);
 		}
 		for (const TemplateVehicle *tv : TemplateVehicle::Iterate()) {
-			if (tv->Prev()) assert_msg(tv->Prev()->Next() == tv, "%u", tv->index);
-			if (tv->Next()) assert_msg(tv->Next()->Prev() == tv, "%u", tv->index);
+			if (tv->Prev()) assert_msg(tv->Prev()->Next() == tv, "{}", tv->index);
+			if (tv->Next()) assert_msg(tv->Next()->Prev() == tv, "{}", tv->index);
 		}
 
 		{

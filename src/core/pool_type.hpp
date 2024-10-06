@@ -11,6 +11,7 @@
 #define POOL_TYPE_HPP
 
 #include "enum_type.hpp"
+#include "debug_dbg_assert.h"
 #include <vector>
 
 /** Various types of a pool. */
@@ -119,7 +120,7 @@ struct Pool : PoolBase {
 
 	inline PtrType &GetRawRef(size_t index)
 	{
-		dbg_assert_msg(index < this->first_unused, "index: " PRINTF_SIZE ", first_unused: " PRINTF_SIZE ", name: %s", index, this->first_unused, this->name);
+		dbg_assert_msg(index < this->first_unused, "index: {}, first_unused: {}, name: {}", index, this->first_unused, this->name);
 		return this->data[index];
 	}
 
@@ -296,7 +297,7 @@ public:
 		{
 			if (p == nullptr) return;
 			Titem *pn = static_cast<Titem *>(p);
-			dbg_assert_msg(pn == Tpool->Get(pn->index), "name: %s", Tpool->name);
+			dbg_assert_msg(pn == Tpool->Get(pn->index), "name: {}", Tpool->name);
 			Tpool->FreeItem(pn->index);
 		}
 
@@ -329,7 +330,7 @@ public:
 				 * memory are the same (because of possible inheritance).
 				 * Use { size_t index = item->index; delete item; new (index) item; }
 				 * instead to make sure destructor is called and no memory leaks. */
-				dbg_assert_msg(ptr != Tpool->data[i], "name: %s", Tpool->name);
+				dbg_assert_msg(ptr != Tpool->data[i], "name: {}", Tpool->name);
 			}
 			return ptr;
 		}

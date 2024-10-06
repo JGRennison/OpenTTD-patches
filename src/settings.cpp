@@ -1052,7 +1052,7 @@ SettingType SettingDesc::GetType() const
  */
 const IntSettingDesc *SettingDesc::AsIntSetting() const
 {
-	assert_msg(this->IsIntSetting(), "name: %s", this->name);
+	assert_msg(this->IsIntSetting(), "name: {}", this->name);
 	return static_cast<const IntSettingDesc *>(this);
 }
 
@@ -1062,7 +1062,7 @@ const IntSettingDesc *SettingDesc::AsIntSetting() const
  */
 const StringSettingDesc *SettingDesc::AsStringSetting() const
 {
-	assert_msg(this->IsStringSetting(), "name: %s", this->name);
+	assert_msg(this->IsStringSetting(), "name: {}", this->name);
 	return static_cast<const StringSettingDesc *>(this);
 }
 
@@ -3585,7 +3585,7 @@ static void LoadSettings(std::initializer_list<SettingTable> settings, std::init
 		for (const SettingsCompat &c : compat) {
 			if (c.type == SettingsCompatType::Setting || c.type == SettingsCompatType::Xref) {
 				auto iters = names.equal_range(c.name);
-				assert_msg(iters.first != iters.second, "Setting: %s", c.name.c_str());
+				assert_msg(iters.first != iters.second, "Setting: {}", c.name);
 				for (auto it = iters.first; it != iters.second; ++it) {
 					items.push_back({ c, it->second });
 				}

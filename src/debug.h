@@ -116,4 +116,25 @@ void DumpDesyncMsgLog(struct format_target &buffer);
 void DebugSendRemoteMessages();
 void DebugReconsiderSendRemoteMessages();
 
+template <typename... T>
+[[noreturn]] void AssertMsgError(int line, const char *file, const char *expr, fmt::format_string<T...> msg, T&&... args)
+{
+	[[noreturn]] extern void AssertMsgErrorVFmt(int line, const char *file, const char *expr, fmt::string_view msg, fmt::format_args args);
+	AssertMsgErrorVFmt(line, file, expr, msg, fmt::make_format_args(args...));
+}
+template <typename... T>
+[[noreturn]] void AssertMsgTileError(int line, const char *file, const char *expr, uint32_t tile, fmt::format_string<T...> msg, T&&... args)
+{
+	[[noreturn]] extern void AssertMsgTileErrorVFmt(int line, const char *file, const char *expr, uint32_t tile, fmt::string_view msg, fmt::format_args args);
+	AssertMsgTileErrorVFmt(line, file, expr, tile, msg, fmt::make_format_args(args...));
+}
+
+#if !defined(NDEBUG) || defined(WITH_ASSERT)
+#	define assert_msg(expression, ...) do { if (unlikely(!(expression))) AssertMsgError(__LINE__, __FILE__, #expression, __VA_ARGS__); } while (false)
+#	define assert_msg_tile(expression, tile, ...) do { if (unlikely(!(expression))) AssertMsgTileError(__LINE__, __FILE__, #expression, tile, __VA_ARGS__); } while (false)
+#else
+#	define assert_msg(expression, ...)
+#	define assert_msg_tile(expression, tile, ...)
+#endif
+
 #endif /* DEBUG_H */

@@ -186,44 +186,6 @@ void FatalErrorI(const std::string &str)
 	fatalerror_common(str.c_str());
 }
 
-void CDECL assert_msg_error(int line, const char *file, const char *expr, const char *str, ...)
-{
-	if (CrashLog::HaveAlreadyCrashed()) DoOSAbort();
-
-	char buf[2048];
-
-	va_list va;
-	va_start(va, str);
-	vseprintf(buf, lastof(buf), str, va);
-	va_end(va);
-
-	assert_str_error(line, file, expr, buf);
-}
-
-void CDECL assert_msg_tile_error(int line, const char *file, const char *expr, uint32_t tile, const char *str, ...)
-{
-	char buf[2048];
-
-	format_to_fixed_z out(buf, lastof(buf));
-	DumpTileInfo(out, tile);
-	out.append(", ");
-
-	va_list va;
-	va_start(va, str);
-	vseprintf(out.finalise(), lastof(buf), str, va);
-	va_end(va);
-
-	assert_str_error(line, file, expr, buf);
-}
-
-void assert_tile_error(int line, const char *file, const char *expr, uint32_t tile)
-{
-	format_buffer out;
-	DumpTileInfo(out, tile);
-
-	assert_str_error(line, file, expr, out);
-}
-
 /**
  * Show the help message when someone passed a wrong parameter.
  */

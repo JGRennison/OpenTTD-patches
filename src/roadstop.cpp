@@ -8,6 +8,7 @@
 /** @file roadstop.cpp Implementation of the roadstop base class. */
 
 #include "stdafx.h"
+#include "debug.h"
 #include "roadveh.h"
 #include "core/pool_func.hpp"
 #include "roadstop_base.h"
@@ -497,10 +498,10 @@ void RoadStop::Entry::CheckIntegrity(const RoadStop *rs) const
 	if (!HasBit(rs->status, RSSFB_BASE_ENTRY)) return;
 
 	/* The tile 'before' the road stop must not be part of this 'line' */
-	assert_msg(!IsDriveThroughRoadStopContinuation(rs->xy, rs->xy - abs(TileOffsByDiagDir(GetRoadStopDir(rs->xy)))), "xy: %X, index: %u", rs->xy, rs->index);
+	assert_msg(!IsDriveThroughRoadStopContinuation(rs->xy, rs->xy - abs(TileOffsByDiagDir(GetRoadStopDir(rs->xy)))), "xy: {:X}, index: {}", rs->xy, rs->index);
 
 	Entry temp;
 	temp.Rebuild(rs, rs->east == this);
-	assert_msg(temp.length == this->length && temp.occupied == this->occupied, "length: %u == %u, occupied: %u == %u, xy: %X, index: %u",
+	assert_msg(temp.length == this->length && temp.occupied == this->occupied, "length: {} == {}, occupied: {} == {}, xy: {:X}, index: {}",
 			temp.length, this->length, temp.occupied, this->occupied, rs->xy, rs->index);
 }

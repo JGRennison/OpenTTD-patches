@@ -1268,8 +1268,8 @@ CommandCost DoCommandPInternal(TileIndex tile, uint32_t p1, uint32_t p2, uint64_
 	 * i.e. cost and error state are the same. */
 	if (!test_and_exec_can_differ) {
 		assert_msg(res.GetCost() == res2.GetCost() && res.Failed() == res2.Failed(),
-				"Command: cmd: 0x%X (%s), Test: %s, Exec: %s", cmd, GetCommandName(cmd),
-				res.SummaryMessage(GB(cmd, 16, 16)).c_str(), res2.SummaryMessage(GB(cmd, 16, 16)).c_str()); // sanity check
+				"Command: cmd: 0x{:X} ({}), Test: {}, Exec: {}", cmd, GetCommandName(cmd),
+				res.SummaryMessage(GB(cmd, 16, 16)), res2.SummaryMessage(GB(cmd, 16, 16))); // sanity check
 	} else if (res2.Failed()) {
 		return_dcpi(res2);
 	}

@@ -53,6 +53,7 @@
 #include "newgrf_roadstop.h"
 #include "newgrf_newsignals.h"
 #include "spritecache.h"
+#include "debug.h"
 
 #include "table/strings.h"
 #include "table/bridge_land.h"
@@ -3209,7 +3210,7 @@ static VehicleEnterTileStatus VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 				if (frame == _tunnel_visibility_frame[dir]) {
 					/* Frame should be equal to the next frame number in the RV's movement */
 					assert_msg(frame == rv->frame + 1 || rv->frame == _tunnel_turnaround_pre_visibility_frame[dir],
-							"frame: %u, rv->frame: %u, dir: %u, _tunnel_turnaround_pre_visibility_frame[dir]: %u", frame, rv->frame, dir, _tunnel_turnaround_pre_visibility_frame[dir]);
+							"frame: {}, rv->frame: {}, dir: {}, _tunnel_turnaround_pre_visibility_frame[dir]: {}", frame, rv->frame, dir, _tunnel_turnaround_pre_visibility_frame[dir]);
 					rv->tile = tile;
 					rv->InvalidateImageCache();
 					rv->state = RVSB_WORMHOLE;

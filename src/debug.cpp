@@ -18,6 +18,7 @@
 #include "settings_type.h"
 #include "date_func.h"
 #include "thread.h"
+#include "map_func.h"
 #include <array>
 #include <mutex>
 
@@ -448,4 +449,30 @@ void TicToc::PrintAndReset()
 	Debug(misc, 0, "[{}] {} us [avg: {:.1f} us]", this->state.name, this->state.chrono_sum, this->state.chrono_sum / static_cast<double>(this->state.count));
 	this->state.count = 0;
 	this->state.chrono_sum = 0;
+}
+
+[[noreturn]] void AssertMsgErrorVFmt(int line, const char *file, const char *expr, fmt::string_view msg, fmt::format_args args)
+{
+	format_buffer out;
+	out.vformat(msg, args);
+
+	assert_str_error(line, file, expr, out);
+}
+
+[[noreturn]] void AssertMsgTileErrorVFmt(int line, const char *file, const char *expr, uint32_t tile, fmt::string_view msg, fmt::format_args args)
+{
+	format_buffer out;
+	DumpTileInfo(out, tile);
+	out.append(", ");
+	out.vformat(msg, args);
+
+	assert_str_error(line, file, expr, out);
+}
+
+void assert_tile_error(int line, const char *file, const char *expr, uint32_t tile)
+{
+	format_buffer out;
+	DumpTileInfo(out, tile);
+
+	assert_str_error(line, file, expr, out);
 }
