@@ -204,21 +204,17 @@ const char *str_fix_scc_encoded(char *str, const char *last)
  */
 std::string FormatArrayAsHex(std::span<const uint8_t> data, bool upper_case)
 {
-	std::string hex_output;
-	hex_output.resize(data.size() * 2);
+	format_buffer buf;
 
-	char txt[3];
 	for (uint i = 0; i < data.size(); ++i) {
 		if (upper_case) {
-			seprintf(txt, lastof(txt), "%02X", data[i]);
+			buf.format("{:02X}", data[i]);
 		} else {
-			seprintf(txt, lastof(txt), "%02x", data[i]);
+			buf.format("{:02x}", data[i]);
 		}
-		hex_output[i * 2] = txt[0];
-		hex_output[(i * 2) + 1] = txt[1];
 	}
 
-	return hex_output;
+	return buf.to_string();
 }
 
 /**
@@ -1409,7 +1405,7 @@ const char *StrErrorDumper::Get(int errornum)
 	}
 #endif
 
-	seprintf(this->buf, lastof(this->buf), "Unknown error %d", errornum);
+	format_to_fixed_z::format_to(this->buf, lastof(this->buf), "Unknown error {}", errornum);
 	return this->buf;
 }
 

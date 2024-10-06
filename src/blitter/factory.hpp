@@ -143,20 +143,16 @@ public:
 
 	/**
 	 * Fill a buffer with information about the blitters.
-	 * @param p The buffer to fill.
-	 * @param last The last element of the buffer.
-	 * @return p The location till where we filled the buffer.
+	 * @param output The buffer to fill.
 	 */
-	static char *GetBlittersInfo(char *p, const char *last)
+	static void GetBlittersInfo(format_target &output)
 	{
-		p += seprintf(p, last, "List of blitters:\n");
+		output.append("List of blitters:\n");
 		for (auto &it : GetBlitters()) {
 			BlitterFactory *b = it.second;
-			p += seprintf(p, last, "%18s: %s\n", b->name.c_str(), b->GetDescription().c_str());
+			output.format("{:>18}: {}\n", b->name, b->GetDescription());
 		}
-		p += seprintf(p, last, "\n");
-
-		return p;
+		output.push_back('\n');
 	}
 
 	/**

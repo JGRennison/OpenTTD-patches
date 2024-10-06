@@ -85,24 +85,21 @@ const char *GetDebugLevelName(DebugLevelID id) { return _debug_level_names[stati
 
 /**
  * Dump the available debug facility names in the help text.
- * @param buf Start address for storing the output.
- * @param last Last valid address for storing the output.
- * @return Next free position in the output.
+ * @param output Where to store the output.
  */
-char *DumpDebugFacilityNames(char *buf, char *last)
+void DumpDebugFacilityNames(format_target &output)
 {
 	bool written = false;
 	for (uint i = 0; i < DebugLevelCount; i++) {
 		if (!written) {
-			buf = strecpy(buf, "List of debug facility names:\n", last);
+			output.append("List of debug facility names:\n");
 		} else {
-			buf = strecpy(buf, ", ", last);
+			output.append(", ");
 		}
-		buf = strecpy(buf, _debug_level_names[i], last);
+		output.append(_debug_level_names[i]);
 		written = true;
 	}
-	buf = strecpy(buf, "\n\n", last);
-	return buf;
+	output.append("\n\n");
 }
 
 void DebugIntlSetup(fmt::memory_buffer &buf, DebugLevelID dbg, int8_t level)

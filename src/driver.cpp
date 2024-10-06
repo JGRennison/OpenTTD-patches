@@ -216,28 +216,24 @@ void DriverFactoryBase::MarkVideoDriverOperational()
 
 /**
  * Build a human readable list of available drivers, grouped by type.
- * @param p The buffer to write to.
- * @param last The last element in the buffer.
- * @return The end of the written buffer.
+ * @param output The buffer to write to.
  */
-char *DriverFactoryBase::GetDriversInfo(char *p, const char *last)
+void DriverFactoryBase::GetDriversInfo(format_target &output)
 {
 	for (Driver::Type type = Driver::DT_BEGIN; type != Driver::DT_END; type++) {
-		p += seprintf(p, last, "List of %s drivers:\n", GetDriverTypeName(type));
+		output.format("List of {} drivers:\n", GetDriverTypeName(type));
 
 		for (int priority = 10; priority >= 0; priority--) {
 			for (auto &it : GetDrivers()) {
 				DriverFactoryBase *d = it.second;
 				if (d->type != type) continue;
 				if (d->priority != priority) continue;
-				p += seprintf(p, last, "%18s: %s\n", d->name, d->GetDescription());
+				output.format("{:>18}: {}\n", d->name, d->GetDescription());
 			}
 		}
 
-		p += seprintf(p, last, "\n");
+		output.push_back('\n');
 	}
-
-	return p;
 }
 
 /**

@@ -229,10 +229,10 @@ void assert_tile_error(int line, const char *file, const char *expr, uint32_t ti
  */
 static void ShowHelp()
 {
-	char buf[2048];
+	format_buffer msg;
 
-	std::string msg = fmt::format("OpenTTD {}\n", _openttd_revision);
-	msg += "\n"
+	msg.format("OpenTTD {}\n", _openttd_revision);
+	msg.append("\n"
 		"\n"
 		"Command line options:\n"
 		"  -v drv              = Set video driver (see below)\n"
@@ -263,46 +263,40 @@ static void ShowHelp()
 		"  -Q                  = Don't scan for/load NewGRF files on startup\n"
 		"  -QQ                 = Disable NewGRF scanning/loading entirely\n"
 		"  -Z                  = Write detailed version information and exit\n"
-		"\n";
+		"\n");
 
 	/* List the graphics packs */
-	BaseGraphics::GetSetsList(buf, lastof(buf));
-	msg += buf;
+	BaseGraphics::GetSetsList(msg);
 
 	/* List the sounds packs */
-	BaseSounds::GetSetsList(buf, lastof(buf));
-	msg += buf;
+	BaseSounds::GetSetsList(msg);
 
 	/* List the music packs */
-	BaseMusic::GetSetsList(buf, lastof(buf));
-	msg += buf;
+	BaseMusic::GetSetsList(msg);
 
 	/* List the drivers */
-	DriverFactoryBase::GetDriversInfo(buf, lastof(buf));
-	msg += buf;
+	DriverFactoryBase::GetDriversInfo(msg);
 
 	/* List the blitters */
-	BlitterFactory::GetBlittersInfo(buf, lastof(buf));
-	msg += buf;
+	BlitterFactory::GetBlittersInfo(msg);
 
 	/* List the debug facilities. */
-	DumpDebugFacilityNames(buf, lastof(buf));
-	msg += buf;
+	DumpDebugFacilityNames(msg);
 
 	/* We need to initialize the AI, so it finds the AIs */
 	AI::Initialize();
-	msg += AI::GetConsoleList(true);
+	msg.append(AI::GetConsoleList(true));
 	AI::Uninitialize(true);
 
 	/* We need to initialize the GameScript, so it finds the GSs */
 	Game::Initialize();
-	msg += Game::GetConsoleList(true);
+	msg.append(Game::GetConsoleList(true));
 	Game::Uninitialize(true);
 
 	/* ShowInfo put output to stderr, but version information should go
 	 * to stdout; this is the only exception */
 #if !defined(_WIN32)
-	msg += "\n";
+	msg.push_back('\n');
 	fwrite(msg.data(), 1, msg.size(), stdout);
 #else
 	ShowInfoI(msg);

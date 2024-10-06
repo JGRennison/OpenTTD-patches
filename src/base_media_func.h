@@ -291,31 +291,27 @@ template <class Tbase_set>
 
 /**
  * Returns a list with the sets.
- * @param p    where to print to
- * @param last the last character to print to
- * @return the last printed character
+ * @param output where to print to
  */
 template <class Tbase_set>
-/* static */ char *BaseMedia<Tbase_set>::GetSetsList(char *p, const char *last)
+/* static */ void BaseMedia<Tbase_set>::GetSetsList(struct format_target &output)
 {
-	p += seprintf(p, last, "List of " SET_TYPE " sets:\n");
+	output.append("List of " SET_TYPE " sets:\n");
 	for (const Tbase_set *s = BaseMedia<Tbase_set>::available_sets; s != nullptr; s = s->next) {
-		p += seprintf(p, last, "%18s: %s", s->name.c_str(), s->GetDescription({}).c_str());
+		output.format("{:>18}: {}", s->name, s->GetDescription({}));
 		int invalid = s->GetNumInvalid();
 		if (invalid != 0) {
 			int missing = s->GetNumMissing();
 			if (missing == 0) {
-				p += seprintf(p, last, " (%i corrupt file%s)\n", invalid, invalid == 1 ? "" : "s");
+				output.format(" ({} corrupt file{})\n", invalid, invalid == 1 ? "" : "s");
 			} else {
-				p += seprintf(p, last, " (unusable: %i missing file%s)\n", missing, missing == 1 ? "" : "s");
+				output.format(" (unusable: {} missing file{})\n", missing, missing == 1 ? "" : "s");
 			}
 		} else {
-			p += seprintf(p, last, "\n");
+			output.push_back('\n');
 		}
 	}
-	p += seprintf(p, last, "\n");
-
-	return p;
+	output.push_back('\n');
 }
 
 #include "network/core/tcp_content_type.h"
@@ -422,7 +418,7 @@ template <class Tbase_set>
 	template bool repl_type::SetSet(const set_type *set); \
 	template bool repl_type::SetSetByName(const std::string &name); \
 	template bool repl_type::SetSetByShortname(uint32_t shortname); \
-	template char *repl_type::GetSetsList(char *p, const char *last); \
+	template void repl_type::GetSetsList(struct format_target &output); \
 	template int repl_type::GetNumSets(); \
 	template int repl_type::GetIndexOfUsedSet(); \
 	template const set_type *repl_type::GetSet(int index); \

@@ -6,6 +6,7 @@ if (NOT HOST_BINARY_DIR)
     set(sourcefiles
             settingsgen.cpp
             ../core/alloc_func.cpp
+            ../core/format.cpp
             ../misc/getoptdata.cpp
             ../error.cpp
             ../ini_load.cpp

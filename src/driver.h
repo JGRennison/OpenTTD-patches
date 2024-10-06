@@ -130,7 +130,7 @@ public:
 	}
 
 	static void SelectDriver(const std::string &name, Driver::Type type);
-	static char *GetDriversInfo(char *p, const char *last);
+	static void GetDriversInfo(struct format_target &output);
 
 	/**
 	 * Get a nice description of the driver-class.

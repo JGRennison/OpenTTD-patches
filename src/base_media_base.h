@@ -208,7 +208,7 @@ public:
 	static bool SetSet(const Tbase_set *set);
 	static bool SetSetByName(const std::string &name);
 	static bool SetSetByShortname(uint32_t shortname);
-	static char *GetSetsList(char *p, const char *last);
+	static void GetSetsList(struct format_target &output);
 	static int GetNumSets();
 	static int GetIndexOfUsedSet();
 	static const Tbase_set *GetSet(int index);
