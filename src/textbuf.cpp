@@ -458,29 +458,6 @@ void Textbuf::Assign(const std::string_view text)
 }
 
 /**
- * Print a formatted string into the textbuffer.
- */
-void Textbuf::Print(const char *format, ...)
-{
-	const char *last_of = &this->buf[this->max_bytes - 1];
-	va_list va;
-	va_start(va, format);
-	vseprintf(this->buf, last_of, format, va);
-	va_end(va);
-
-	StrMakeValidInPlace(this->buf, last_of, SVS_NONE);
-
-	/* Make sure the name isn't too long for the text buffer in the number of
-	 * characters (not bytes). max_chars also counts the '\0' characters. */
-	while (Utf8StringLength(this->buf) + 1 > this->max_chars) {
-		*Utf8PrevChar(this->buf + strlen(this->buf)) = '\0';
-	}
-
-	this->UpdateSize();
-}
-
-
-/**
  * Update Textbuf type with its actual physical character and screenlength
  * Get the count of characters in the string as well as the width in pixels.
  * Useful when copying in a larger amount of text at once

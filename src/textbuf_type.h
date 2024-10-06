@@ -48,7 +48,6 @@ struct Textbuf {
 
 	void Assign(StringID string);
 	void Assign(const std::string_view text);
-	void CDECL Print(const char *format, ...) WARN_FORMAT(2, 3);
 
 	void DeleteAll();
 	bool InsertClipboard();
