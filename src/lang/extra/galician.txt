@@ -27,6 +27,7 @@ STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :Valor do contad
 STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :Data/hora actual
 STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :Estado dos horarios
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Slot de despacho
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :Agardando carga / capacidade
 
 STR_ORDER_STOP_LOCATION_THROUGH                                 :[a través da carga]
 
@@ -959,6 +960,8 @@ STR_TRACE_RESTRICT_TRAIN_STATUS_REQUIRES_SERVICE                :precisa servizo
 STR_TRACE_RESTRICT_TRAIN_STATUS_STOPPING_AT_STATION_WAYPOINT    :parando na estación/punto de ruta
 STR_TRACE_RESTRICT_REVERSE_SIG                                  :Retrodecer detrás do sinal
 STR_TRACE_RESTRICT_REVERSE_SIG_CANCEL                           :Cancelar retroceder detrás do sinal
+STR_TRACE_RESTRICT_REVERSE_AT_SIG                               :Retroceder no sinal de ruta
+STR_TRACE_RESTRICT_REVERSE_AT_SIG_CANCEL                        :Cancelar retroceso no sinal de ruta
 STR_TRACE_RESTRICT_SET_SPEED_RESTRICTION                        :Restrinxir velocidade do tren a: {VELOCITY}
 STR_TRACE_RESTRICT_REMOVE_SPEED_RESTRICTION                     :Eliminar restrición de velocidade do tren
 STR_TRACE_RESTRICT_TRAIN_NOT_STUCK                              :O tren non está atascado, non amoses novas sobre que esta gardando neste sinal PBS
@@ -1067,6 +1070,7 @@ STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA                          :{STRING}{}{BLAC
 STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}Restrición de busca de ruta
 STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}Fai click nunha instrución para seleccionala{}Ctrl+Click para desplazarte ata o obxectivo da instrución(se o hai)
 STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP                            :{BLACK}Alterna destacar todos os sinais compartindo este programa
+STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA                  :{STRING}{}{BLACK}Ctrl+Click para listar os usados recentemente
 STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING           :{STRING} {PUSH_COLOUR}{RED}(require freo realista){POP_COLOUR}
 STR_TRACE_RESTRICT_WARNING_SIGNAL_MODE_CONTROL_ONLY             :{STRING} {PUSH_COLOUR}{RED}(só para as accions de control de modo de sinais){POP_COLOUR}
 STR_TRACE_RESTRICT_WARNING_NO_SIGNAL_MODE_CONTROL               :{STRING} {PUSH_COLOUR}{RED}(non para as accións de control de modo de sinais){POP_COLOUR}
@@ -1287,9 +1291,17 @@ STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}Amosa a 
 STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}Historial
 STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}Amosa o historial de carga a espera
 
-STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} Informaciónd a viaxe en directo
+STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} Información en directo das viaxes
+STR_DEPARTURES_CARGO_MODE_TOOLTIP                               :{BLACK}Configurar o modo de filtro de mercadorías para chegadas/saídas
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}D
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}A
+STR_DEPARTURES_BOTH_COMBINED                                    :Combinado
+STR_DEPARTURES_BOTH_SEPARATE                                    :Separado
+STR_DEPARTURES_DEPARTURE_MODE_TOOLTIP                           :{BLACK}Configurar se se amosan saídas e/ou chegadas
+STR_DEPARTURES_TIMES_BUTTON                                     :{BLACK}Horarios
+STR_DEPARTURES_TIMES_TOOLTIP                                    :{BLACK}Amosar horas de chegada programadas ao destino
+STR_DEPARTURES_EMPTY_BUTTON                                     :{BLACK}Baleiro
+STR_DEPARTURES_EMPTY_TOOLTIP                                    :{BLACK}Incluir saídas, chegadas e estacións nas que o vehículo vai baleiro ou non carga/descarga mercadorías.
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}vía
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Amosar os vehículos programados que non paran aqui
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}Amosar próximos trens nos horarios desta estación
@@ -1315,9 +1327,13 @@ STR_DEPARTURES_CALLING_AT_STATION                               :{STRING}, {STRI
 STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{STRING} e {STRING}
 STR_DEPARTURES_CALLING_AT_LIST                                  :{ORANGE}{STRING}.
 STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{STRING}. Este servizo continúa ata {STRING}.
+STR_DEPARTURES_CALLING_AT_STATION_WITH_TIME                     :{STRING} ({TT_TIME_ABS})
 STR_DEPARTURES_TINY                                             :{TINY_FONT}{STRING}
 STR_DEPARTURES_VIA_DESCRIPTOR                                   :{STRING}{STRING}
 STR_DEPARTURES_VIA_AND                                          :{STRING} e {STRING}
+STR_DEPARTURES_SOURCE_MODE_TOOLTIP                              :{BLACK}Configurar se se amosan saídas en directo ou un horario de 24 horas con saídas programadas.
+STR_DEPARTURES_SOURCE_MODE_LIVE                                 :En directo
+STR_DEPARTURES_SOURCE_MODE_SCHEDULE_24_HOUR                     :Horario 24 horas programadas
 
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
 STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
@@ -1340,6 +1356,7 @@ STR_DEPARTURES_ARRIVED                                          :{GREEN}Chegadas
 STR_DEPARTURES_DELAYED                                          :{YELLOW}Demorado
 STR_DEPARTURES_EXPECTED                                         :{YELLOW}Esperado {STRING}
 STR_DEPARTURES_CANCELLED                                        :{RED}Cancelado
+STR_DEPARTURES_SCHEDULED                                        :{GREEN}Programadas
 
 STR_CONFIG_SETTING_DEPARTUREBOARDS                              :{ORANGE}Taboleiros de saídas
 STR_CONFIG_MAX_DEPARTURES                                       :Amosa como máximo {STRING} saídas en cada estación
@@ -1473,6 +1490,8 @@ STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU                             :{BLACK}Cancelar
 
 STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA                     :{STRING}{BLACK}{}Shift+Click para alternar amosar a sobreposición da ruta incluso cando a fiestra non está enfocada
 
+STR_VEHICLE_VIEW_SHOW_ORDERS_TOOLTIP_EXTRA                      :{STRING}{BLACK}{}Shift+Click para amosar a fiestra de saídas programadas
+
 STR_VEHICLE_VIEW_ORDER_NUMBER                                   :{COMMA}: {STRING}
 
 STR_VEHICLE_STATUS_LOADING_UNLOADING_ADVANCE                    :{STRING}, {VELOCITY}
@@ -1516,8 +1535,9 @@ STR_ERROR_TRAIN_TOO_HEAVY                                       :{WHITE}{VEHICLE
 
 STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SELL_VEL                   :{CREAM}Dirixíndose para {PUSH_COLOUR}{RED}venderse{POP_COLOUR} en {DEPOT}, {VELOCITY}
 
-STR_VEHICLE_LOAD_THROUGH_ABORTED_INSUFFICIENT_TRACK             :{WHITE}{VEHICLE}: a través de carga abortada por vía insuficiente en {STATION}
-STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT                          :{WHITE}{VEHICLE}: a través de carga abortada por depósito en {STATION}
+STR_VEHICLE_LOAD_THROUGH_ABORTED_INSUFFICIENT_TRACK             :{WHITE}{VEHICLE}: a carga en tránsito abortada por vía insuficiente en {STATION}
+STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT                          :{WHITE}{VEHICLE}: a carga en tránsito abortada por depósito en {STATION}
+STR_VEHICLE_LOAD_THROUGH_NOT_ALLOWED_PASSENGERS                 :{WHITE}{VEHICLE}: a carga en tránsito non está permitida para pasaxeiros
 
 STR_RUNNING                                                     :{LTBLUE}Funcionando
 
@@ -1546,6 +1566,8 @@ STR_VEHICLE_AUTO_GROUP_CARGO_LIST                               : ({CARGO_LIST})
 
 STR_VEHICLE_INFO_SPEED_RESTRICTION                              :{BLACK}Restricción de velocidade: {LTBLUE}{VELOCITY}
 STR_VEHICLE_INFO_SPEED_ADAPTATION_EXEMPT                        :{BLACK}Eximir da adaptación de velocidade
+STR_VEHICLE_INFO_SPEED_ADAPTATION_LIMIT                         :{BLACK}Adaptación de velocidade: {LTBLUE}{VELOCITY}
+STR_VEHICLE_INFO_SPEED_ADAPTATION_NONE                          :{BLACK}Adaptación de velocidade: {LTBLUE}Ningunha
 
 STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE_AND_SPEED      :{LTBLUE}{ENGINE}{BLACK}   Construído: {LTBLUE}{NUM}{BLACK} Valor: {LTBLUE}{CURRENCY_LONG} {BLACK}Velocidade máxima: {LTBLUE}{VELOCITY}
 STR_VEHICLE_DETAILS_TRAIN_WAGON_VALUE_AND_SPEED                 :{LTBLUE}{ENGINE}{BLACK}   Valor: {LTBLUE}{CURRENCY_LONG} {BLACK}Velocidade máxima: {LTBLUE}{VELOCITY}
@@ -1587,6 +1609,8 @@ STR_ORDER_CONDITIONAL_VIA                                       :{BLACK}Vía
 STR_ORDER_CONDITIONAL_VIA_TOOLTIP                               :{BLACK}A vía estación na que comprobar a cantidade de carga agardando por
 STR_ORDER_CONDITIONAL_STATION                                   :{BLACK}Estación
 STR_ORDER_CONDITIONAL_STATION_TOOLTIP                           :{BLACK}A estación a comprobar
+STR_ORDER_CONDITIONAL_REFIT_MODE                                :{BLACK}Reaxustar
+STR_ORDER_CONDITIONAL_REFIT_MODE_TOOLTIP                        :{BLACK}Se se debe usar a capacidade estimada de carga despois do reaxuste
 
 STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS                        :acepta
 STR_ORDER_CONDITIONAL_COMPARATOR_DOES_NOT_ACCEPT                :non acepta
@@ -1698,11 +1722,16 @@ STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :Saltar á orde 
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :Saltar á orde {COMMA} cando o porcentaxe de carga de {STRING} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :Saltar á orde {COMMA} cando {STRING} na {STRING} {STRING} {CARGO_SHORT}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY          :Saltar á orde {COMMA} cando {STRING} na {STRING} vía {STRING} {STRING} {CARGO_SHORT}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_DISPLAY             :Saltar á orde {COMMA} cando {STRING} na {STRING} {STRING} {STRING}
+STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_VIA_DISPLAY         :Saltar á orde {COMMA} cando {STRING} na {STRING} via {STRING} {STRING} {STRING}
 STR_ORDER_CONDITIONAL_COUNTER                                   :Saltar á orde {COMMA} cando o valor de {TRCOUNTER} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_INVALID_COUNTER                           :Saltar á orde {COMMA} cando o valor de {PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {COMMA}
 STR_ORDER_CONDITIONAL_TIME_HHMM                                 :Saltar á orde {COMMA} cando {STRING} {STRING} {TIME_HHMM}
 STR_ORDER_CONDITIONAL_TIMETABLE                                 :Saltar á orde {COMMA} cando {STRING} {STRING} {TT_TICKS}
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DISPLAY                     :Saltar a orde {COMMA} cando {STRING} {STRING} {STRING}
+
+STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY            :{COMMA} porcentaxe de {STRING} capacidade
+STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY_REFIT      :{COMMA} porcentaxe de reaxuste a {STRING} capacidade
 
 STR_ORDER_RELEASE_SLOT                                          :Liberar slot: {STRING}
 
@@ -1813,6 +1842,11 @@ STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{STRING}: {NUM}
 STR_PLANS_LIST_ITEM_LINE                                        : -- Liña #{NUM}: {NUM} segmento{P "" s}
 STR_PLANS_LIST_TOOLTIP                                          :{BLACK}Doble click calquera elemento da lista para (des)plegar o plan relacionado.{}Ctrl+Click para desprazarte a él.
 STR_PLANS_QUERY_RENAME_PLAN                                     :{WHITE}Renomear plan
+STR_PLANS_OWN_ONLY                                              :{BLACK}Só propios
+STR_PLANS_OWN_ONLY_TOOLTIP                                      :{BLACK}Amosar só os teus plans
+STR_SORT_BY_PLAN_ID                                             :ID do plan
+STR_SORT_BY_OWNER                                               :Dono
+STR_SORT_BY_DATE                                                :Data
 
 STR_WARNING_LOADGAME_REMOVED_UNCORRECTABLE_VEHICLES             :{WHITE}Eliminados {NUM} vehículos que se atoparon inválidos durante a carga
 
