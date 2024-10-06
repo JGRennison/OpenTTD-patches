@@ -3,6 +3,8 @@
  */
 
 #include "../../../stdafx.h"
+#include "../../../core/bit_cast.hpp"
+#include "../../../core/format.hpp"
 
 #include <squirrel.h>
 #include "sqpcheader.h"
@@ -16,10 +18,6 @@
 #include "squserdata.h"
 #include "sqarray.h"
 #include "sqclass.h"
-
-#include "../../../core/bit_cast.hpp"
-
-#include "../../../string_func.h"
 
 #include "../../../safeguards.h"
 
@@ -265,20 +263,20 @@ bool SQVM::CMP_OP(CmpOP op, const SQObjectPtr &o1,const SQObjectPtr &o2,SQObject
 
 void SQVM::ToString(const SQObjectPtr &o,SQObjectPtr &res)
 {
-	char buf[64];
+	format_buffer_sized<64> buf;
 	switch(type(o)) {
 	case OT_STRING:
 		res = o;
 		return;
 	case OT_FLOAT:
-		seprintf(buf, lastof(buf),"%g",_float(o));
+		buf.format("{}",_float(o));
 		break;
 	case OT_INTEGER:
-		seprintf(buf, lastof(buf),OTTD_PRINTF64,_integer(o));
+		buf.format("{}",_integer(o));
 		break;
 	case OT_BOOL:
-		seprintf(buf, lastof(buf),_integer(o)?"true":"false");
-		break;
+		res = SQString::Create(_ss(this),_integer(o)?"true":"false");
+		return;
 	case OT_TABLE:
 	case OT_USERDATA:
 	case OT_INSTANCE:
@@ -292,9 +290,9 @@ void SQVM::ToString(const SQObjectPtr &o,SQObjectPtr &res)
 		}
 		[[fallthrough]];
 	default:
-		seprintf(buf, lastof(buf),"(%s : 0x%p)",GetTypeName(o),(void*)_rawval(o));
+		buf.format("({} : 0x{:08X})",GetTypeName(o),(size_t)(void*)_rawval(o));
 	}
-	res = SQString::Create(_ss(this),buf);
+	res = SQString::Create(_ss(this),buf.data(),buf.size());
 }
 
 

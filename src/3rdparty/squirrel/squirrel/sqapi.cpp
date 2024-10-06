@@ -3,6 +3,7 @@
  */
 
 #include "../../../stdafx.h"
+#include "../../../core/format.hpp"
 
 #include <squirrel.h>
 #include "sqpcheader.h"
@@ -16,8 +17,6 @@
 #include "sqcompiler.h"
 #include "sqfuncstate.h"
 #include "sqclass.h"
-
-#include "../../../string_func.h"
 
 #include "../../../safeguards.h"
 
@@ -47,9 +46,9 @@ SQInteger sq_aux_throwobject(HSQUIRRELVM v,SQObjectPtr &e)
 
 SQInteger sq_aux_invalidtype(HSQUIRRELVM v,SQObjectType type)
 {
-	char buf[100];
-	seprintf(buf, lastof(buf), "unexpected type %s", IdType2Name(type));
-	return sq_throwerror(v, buf);
+	fmt::memory_buffer buf;
+	fmt::format_to(std::back_inserter(buf), "unexpected type {}", IdType2Name(type));
+	return sq_throwerror(v, buf.data(), buf.size());
 }
 
 HSQUIRRELVM sq_open(SQInteger initialstacksize)

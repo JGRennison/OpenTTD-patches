@@ -3,6 +3,8 @@
  */
 
 #include "../../../stdafx.h"
+#include "../../../core/alloc_func.hpp"
+#include "../../../core/format.hpp"
 
 #include <squirrel.h>
 #include "sqpcheader.h"
@@ -10,9 +12,6 @@
 #include "sqfuncproto.h"
 #include "sqclosure.h"
 #include "sqstring.h"
-
-#include "../../../core/alloc_func.hpp"
-#include "../../../string_func.h"
 
 #include "../../../safeguards.h"
 
@@ -82,15 +81,18 @@ void SQVM::Raise_Error(SQObjectPtr &desc)
 
 SQString *SQVM::PrintObjVal(const SQObject &o)
 {
-	char buf[NUMBER_MAX_CHAR+1];
 	switch(type(o)) {
 	case OT_STRING: return _string(o);
-	case OT_INTEGER:
-		seprintf(buf, lastof(buf), OTTD_PRINTF64, _integer(o));
-		return SQString::Create(_ss(this), buf);
-	case OT_FLOAT:
-		seprintf(buf, lastof(buf), "%.14g", _float(o));
-		return SQString::Create(_ss(this), buf);
+	case OT_INTEGER: {
+		format_buffer_sized<64> buf;
+		buf.format("{}", _integer(o));
+		return SQString::Create(_ss(this), buf.data(), buf.size());
+	}
+	case OT_FLOAT: {
+		format_buffer_sized<64> buf;
+		buf.format("{:.14g}", _float(o));
+		return SQString::Create(_ss(this), buf.data(), buf.size());
+	}
 	default:
 		return SQString::Create(_ss(this), GetTypeName(o));
 	}
