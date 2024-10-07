@@ -291,7 +291,7 @@ public:
 		return m_veh;
 	}
 
-	void DumpBase(DumpTarget &dmp) const
+	template <class D> void DumpBase(D &dmp) const
 	{
 		dmp.WriteStructT("m_nodes", &m_nodes);
 		dmp.WriteValue("m_num_steps", m_num_steps);

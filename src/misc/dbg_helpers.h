@@ -18,6 +18,7 @@
 #include "../signal_type.h"
 #include "../tile_type.h"
 #include "../track_type.h"
+#include "../core/arena_alloc.hpp"
 
 /** Helper template class that provides C array length and item type */
 template <typename T> struct ArrayT;
@@ -164,6 +165,35 @@ struct DumpTarget {
 			/* Still unknown, dump it */
 			BeginStruct(type_id, name, s);
 			s->Dump(*this);
+			EndStruct();
+		}
+	}
+
+	/** Dump nested object (or only its name if this instance is already known). */
+	template <typename S, uint N>
+	void WriteStructT(const char *name, const BumpAllocContainer<S, N> *s)
+	{
+		static size_t type_id = ++LastTypeId();
+
+		if (s == nullptr) {
+			/* No need to dump nullptr struct. */
+			WriteValue(name, "<null>");
+			return;
+		}
+		std::string known_as;
+		if (FindKnownName(type_id, s, known_as)) {
+			/* We already know this one, no need to dump it. */
+			std::string known_as_str = std::string("known_as.") + name;
+			WriteValue(name, known_as_str.c_str());
+		} else {
+			/* Still unknown, dump it */
+			BeginStruct(type_id, name, s);
+			size_t num_items = s->size();
+			this->WriteValue("num_items", std::to_string(num_items).c_str());
+			for (size_t i = 0; i < num_items; i++) {
+				const auto *item = s->Get(i);
+				this->WriteStructT(fmt::format("item[{}]", i).c_str(), item);
+			}
 			EndStruct();
 		}
 	}

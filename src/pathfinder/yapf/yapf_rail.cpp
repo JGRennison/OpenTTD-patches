@@ -18,6 +18,7 @@
 #include "../../newgrf_station.h"
 #include "../../tracerestrict.h"
 #include "../../debug.h"
+#include "../../misc/dbg_helpers.h"
 
 #include "../../safeguards.h"
 

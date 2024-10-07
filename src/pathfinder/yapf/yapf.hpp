@@ -14,11 +14,8 @@
 #include "../pathfinder_func.h"
 #include "yapf.h"
 
-#include "../../misc/fixedsizearray.hpp"
-#include "../../misc/array.hpp"
 #include "../../misc/hashtable.hpp"
 #include "../../misc/binaryheap.hpp"
-#include "../../misc/dbg_helpers.h"
 #include "nodelist.hpp"
 #include "../follow_track.hpp"
 #include "yapf_type.hpp"

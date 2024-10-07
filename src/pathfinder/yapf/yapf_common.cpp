@@ -10,7 +10,8 @@
 #include "../../stdafx.h"
 
 #include "yapf.hpp"
-#include "../../string_func.h"
+#include "../../core/format.hpp"
+#include "../../misc/dbg_helpers.h"
 
 #include "../../safeguards.h"
 

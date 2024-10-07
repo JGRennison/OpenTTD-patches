@@ -52,7 +52,7 @@ struct CYapfRailSegmentKey
 		return m_value == other.m_value;
 	}
 
-	void Dump(DumpTarget &dmp) const
+	template <class D> void Dump(D &dmp) const
 	{
 		dmp.WriteTile("tile", GetTile());
 		dmp.WriteEnumT("td", GetTrackdir());
@@ -104,7 +104,7 @@ struct CYapfRailSegment
 		m_hash_next = next;
 	}
 
-	void Dump(DumpTarget &dmp) const
+	template <class D> void Dump(D &dmp) const
 	{
 		dmp.WriteStructT("m_key", &m_key);
 		dmp.WriteTile("m_last_tile", m_last_tile);
@@ -252,7 +252,7 @@ struct CYapfRailNodeT
 		return length;
 	}
 
-	void Dump(DumpTarget &dmp) const
+	template <class D> void Dump(D &dmp) const
 	{
 		base::Dump(dmp);
 		dmp.WriteStructT("m_segment", m_segment);

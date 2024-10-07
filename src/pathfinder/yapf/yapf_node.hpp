@@ -35,7 +35,7 @@ struct CYapfNodeKeyExitDir {
 		return m_tile == other.m_tile && m_exitdir == other.m_exitdir;
 	}
 
-	void Dump(DumpTarget &dmp) const
+	template <class D> void Dump(D &dmp) const
 	{
 		dmp.WriteTile("m_tile", m_tile);
 		dmp.WriteEnumT("m_td", m_td);
@@ -126,7 +126,7 @@ struct CYapfNodeT {
 		return m_estimate < other.m_estimate;
 	}
 
-	void Dump(DumpTarget &dmp) const
+	template <class D> void Dump(D &dmp) const
 	{
 		dmp.WriteStructT("m_key", &m_key);
 		dmp.WriteStructT("m_parent", m_parent);
