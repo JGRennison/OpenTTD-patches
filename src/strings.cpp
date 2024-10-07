@@ -2468,7 +2468,7 @@ static bool GetLanguageFileHeader(const char *file, LanguagePackHeader *hdr)
  */
 static void GetLanguageList(const char *path)
 {
-	DIR *dir = ttd_opendir(path);
+	DIR *dir = opendir(OTTD2FS(path).c_str());
 	if (dir != nullptr) {
 		struct dirent *dirent;
 		while ((dirent = readdir(dir)) != nullptr) {

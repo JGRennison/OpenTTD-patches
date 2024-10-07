@@ -106,19 +106,6 @@ int closedir(DIR *d);
 # include <dirent.h>
 #endif /* defined(_WIN32) */
 
-/**
- * A wrapper around opendir() which will convert the string from
- * OPENTTD encoding to that of the filesystem. For all purposes this
- * function behaves the same as the original opendir function
- * @param path string to open directory of
- * @return DIR pointer
- */
-inline DIR *ttd_opendir(const char *path)
-{
-	return opendir(OTTD2FS(path).c_str());
-}
-
-
 /** Auto-close a file upon scope exit. */
 class FileCloser {
 	FILE *f;

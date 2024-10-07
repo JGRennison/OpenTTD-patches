@@ -40,7 +40,7 @@ SortingBits _savegame_sort_order = SORT_BY_DATE | SORT_DESCENDING;
 
 /* OS-specific functions are taken from their respective files (win32/unix .c) */
 extern bool FiosIsRoot(std::string_view path);
-extern bool FiosIsValidFile(const char *path, const struct dirent *ent, struct stat *sb);
+extern bool FiosIsValidFile(const fs_char *fspath, const struct dirent *ent, struct stat *sb);
 extern bool FiosIsHiddenFile(const struct dirent *ent);
 extern void FiosGetDrives(FileList &file_list);
 
@@ -377,12 +377,13 @@ static void FiosGetFileList(SaveLoadOperation fop, bool show_dirs, fios_getlist_
 	}
 
 	/* Show subdirectories */
-	if (show_dirs && (dir = ttd_opendir(_fios_path->c_str())) != nullptr) {
+	auto fspath = OTTD2FS(*_fios_path);
+	if (show_dirs && (dir = opendir(fspath.c_str())) != nullptr) {
 		while ((dirent = readdir(dir)) != nullptr) {
 			std::string d_name = FS2OTTD(dirent->d_name);
 
 			/* found file must be directory, but not '.' or '..' */
-			if (FiosIsValidFile(_fios_path->c_str(), dirent, &sb) && S_ISDIR(sb.st_mode) &&
+			if (FiosIsValidFile(fspath.c_str(), dirent, &sb) && S_ISDIR(sb.st_mode) &&
 					(!FiosIsHiddenFile(dirent) || StrStartsWithIgnoreCase(PERSONAL_DIR, d_name)) &&
 					d_name != "." && d_name != "..") {
 				fios = &file_list.emplace_back();

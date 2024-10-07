@@ -84,10 +84,10 @@ std::optional<uint64_t> FiosGetDiskFreeSpace(const std::string &path)
 	return std::nullopt;
 }
 
-bool FiosIsValidFile(const char *path, const struct dirent *ent, struct stat *sb)
+bool FiosIsValidFile(const char *fspath, const struct dirent *ent, struct stat *sb)
 {
 	format_buffer filename;
-	filename.append(path);
+	filename.append(fspath);
 	if (filename.size() == 0 || filename.data()[filename.size() - 1] != PATHSEPCHAR) return false;
 	if (filename.size() > 2 && filename.data()[filename.size() - 2] == PATHSEPCHAR) return false;
 	filename.append(ent->d_name);

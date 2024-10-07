@@ -70,7 +70,7 @@ std::vector<Searchpath> _valid_searchpaths_excluding_cwd;
 std::array<TarList, NUM_SUBDIRS> _tar_list;
 TarFileList _tar_filelist[NUM_SUBDIRS];
 
-extern bool FiosIsValidFile(const char *path, const struct dirent *ent, struct stat *sb);
+extern bool FiosIsValidFile(const fs_char *fspath, const struct dirent *ent, struct stat *sb);
 
 /**
  * Checks whether the given search path is a valid search path
@@ -344,7 +344,7 @@ void FioCreateDirectory(const std::string &name)
 	auto p = name.find_last_of(PATHSEPCHAR);
 	if (p != std::string::npos) {
 		std::string dirname = name.substr(0, p);
-		DIR *dir = ttd_opendir(dirname.c_str());
+		DIR *dir = opendir(OTTD2FS(dirname).c_str());
 		if (dir == nullptr) {
 			FioCreateDirectory(dirname); // Try creating the parent directory, if we couldn't open it
 		} else {
@@ -1129,12 +1129,15 @@ static uint ScanPath(FileScanner *fs, const char *extension, const char *path, s
 	struct dirent *dirent;
 	DIR *dir;
 
-	if (path == nullptr || (dir = ttd_opendir(path)) == nullptr) return 0;
+	if (path == nullptr) return 0;
+
+	auto fspath = OTTD2FS(path);
+	if ((dir = opendir(fspath.c_str())) == nullptr) return 0;
 
 	while ((dirent = readdir(dir)) != nullptr) {
 		std::string d_name = FS2OTTD(dirent->d_name);
 
-		if (!FiosIsValidFile(path, dirent, &sb)) continue;
+		if (!FiosIsValidFile(fspath.c_str(), dirent, &sb)) continue;
 
 		std::string filename(path);
 		filename += d_name;
