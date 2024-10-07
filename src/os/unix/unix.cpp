@@ -60,9 +60,9 @@
 
 #include "../../safeguards.h"
 
-bool FiosIsRoot(const char *path)
+bool FiosIsRoot(std::string_view path)
 {
-	return path[1] == '\0';
+	return path == PATHSEP;
 }
 
 void FiosGetDrives(FileList &)
@@ -86,16 +86,13 @@ std::optional<uint64_t> FiosGetDiskFreeSpace(const std::string &path)
 
 bool FiosIsValidFile(const char *path, const struct dirent *ent, struct stat *sb)
 {
-	char filename[MAX_PATH];
-	int res;
-	assert(path[strlen(path) - 1] == PATHSEPCHAR);
-	if (strlen(path) > 2) assert(path[strlen(path) - 2] != PATHSEPCHAR);
-	res = seprintf(filename, lastof(filename), "%s%s", path, ent->d_name);
+	format_buffer filename;
+	filename.append(path);
+	if (filename.size() == 0 || filename.data()[filename.size() - 1] != PATHSEPCHAR) return false;
+	if (filename.size() > 2 && filename.data()[filename.size() - 2] == PATHSEPCHAR) return false;
+	filename.append(ent->d_name);
 
-	/* Could we fully concatenate the path and filename? */
-	if (res >= (int)lengthof(filename) || res < 0) return false;
-
-	return stat(filename, sb) == 0;
+	return stat(filename.c_str(), sb) == 0;
 }
 
 bool FiosIsHiddenFile(const struct dirent *ent)

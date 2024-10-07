@@ -191,9 +191,9 @@ int closedir(DIR *d)
 	return 0;
 }
 
-bool FiosIsRoot(const char *file)
+bool FiosIsRoot(std::string_view path)
 {
-	return file[3] == '\0'; // C:\...
+	return path.size() == 3; // C:\...
 }
 
 void FiosGetDrives(FileList &file_list)

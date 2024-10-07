@@ -39,7 +39,7 @@ static std::string *_fios_path = nullptr;
 SortingBits _savegame_sort_order = SORT_BY_DATE | SORT_DESCENDING;
 
 /* OS-specific functions are taken from their respective files (win32/unix .c) */
-extern bool FiosIsRoot(const char *path);
+extern bool FiosIsRoot(std::string_view path);
 extern bool FiosIsValidFile(const char *path, const struct dirent *ent, struct stat *sb);
 extern bool FiosIsHiddenFile(const struct dirent *ent);
 extern void FiosGetDrives(FileList &file_list);
