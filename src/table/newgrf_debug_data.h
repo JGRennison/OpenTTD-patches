@@ -2056,6 +2056,29 @@ class NIHTown : public NIHelper {
 				output.print(buffer);
 			}
 		}
+
+		for (int tae = TAE_BEGIN; tae != TAE_END; tae++) {
+			static constexpr const char *names[] = {
+				"NONE",
+				"PASSENGERS",
+				"MAIL",
+				"GOODS",
+				"WATER",
+				"FOOD",
+			};
+			static_assert(lengthof(names) == NUM_TAE);
+
+			if (t->goal[tae] == TOWN_GROWTH_WINTER) {
+				seprintf(buffer, lastof(buffer), "  TAE_%s: TOWN_GROWTH_WINTER", names[tae - TAE_BEGIN]);
+				output.print(buffer);
+			} else if (t->goal[tae] == TOWN_GROWTH_DESERT) {
+				seprintf(buffer, lastof(buffer), "  TAE_%s: TOWN_GROWTH_DESERT", names[tae - TAE_BEGIN]);
+				output.print(buffer);
+			} else if (t->goal[tae] != 0) {
+				seprintf(buffer, lastof(buffer), "  TAE_%s: %u", names[tae - TAE_BEGIN], t->goal[tae]);
+				output.print(buffer);
+			}
+		}
 	}
 
 	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
