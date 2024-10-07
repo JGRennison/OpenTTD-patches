@@ -8,6 +8,7 @@
 /** @file signal_sl.cpp Code handling saving and loading of signals */
 
 #include "../stdafx.h"
+#include "../debug.h"
 #include "../programmable_signals.h"
 #include "../core/alloc_type.hpp"
 #include "../core/bitmath_func.hpp"

@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "tracerestrict.h"
+#include "debug.h"
 #include "train.h"
 #include "core/bitmath_func.hpp"
 #include "core/container_func.hpp"

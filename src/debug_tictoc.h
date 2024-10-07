@@ -5,12 +5,11 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** @file debug.h TicToc functionality for debugging. */
+/** @file debug_tictoc.h TicToc functionality for debugging. */
 
 #ifndef DEBUG_TICTOC_H
 #define DEBUG_TICTOC_H
 
-#include "debug.h"
 #include <chrono>
 #include <string>
 

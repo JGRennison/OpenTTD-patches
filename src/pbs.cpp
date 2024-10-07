@@ -8,6 +8,7 @@
 /** @file pbs.cpp PBS support routines */
 
 #include "stdafx.h"
+#include "debug.h"
 #include "viewport_func.h"
 #include "vehicle_func.h"
 #include "newgrf_station.h"

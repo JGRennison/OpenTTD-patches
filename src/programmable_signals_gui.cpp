@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "programmable_signals.h"
+#include "debug.h"
 #include "command_func.h"
 #include "window_func.h"
 #include "strings_func.h"

@@ -8,7 +8,6 @@
 /** @file truetypefontcache.cpp Common base implementation for font file based font caches. */
 
 #include "../stdafx.h"
-#include "../debug.h"
 #include "../fontcache.h"
 #include "../core/bitmath_func.hpp"
 #include "../gfx_layout.h"
