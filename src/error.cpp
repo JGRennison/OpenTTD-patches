@@ -36,5 +36,5 @@ void assert_str_error(int line, const char *file, const char *expr, const char *
 /* Don't require an extra argument for common case of no extra info */
 void assert_str_error(int line, const char *file, const char *expr)
 {
-	assert_str_error(line, file, expr, {});
+	assert_str_error(line, file, expr, std::string_view{});
 }
