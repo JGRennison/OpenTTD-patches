@@ -633,7 +633,11 @@ public:
 			bool rtl = _current_text_dir == TD_RTL;
 
 			const CargoSpec *cargo = FindFirstCargoWithTownAcceptanceEffect((TownAcceptanceEffect)i);
-			assert(cargo != nullptr);
+			if (cargo == nullptr) {
+				DrawString(tr.Indent(20, rtl), STR_NEWGRF_INVALID_CARGO, TC_RED);
+				tr.top += GetCharacterHeight(FS_NORMAL);
+				continue;
+			}
 
 			StringID string;
 
