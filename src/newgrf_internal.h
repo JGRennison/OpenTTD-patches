@@ -70,18 +70,17 @@ public:
 
 	/* VarAction2 temporary storage variable tracking */
 	robin_hood::unordered_flat_map<const SpriteGroup *, VarAction2GroupVariableTracking *> group_temp_store_variable_tracking;
-	UniformArenaAllocator<sizeof(VarAction2GroupVariableTracking), 1024> group_temp_store_variable_tracking_storage;
+	BumpAllocContainer<VarAction2GroupVariableTracking, 1024> group_temp_store_variable_tracking_storage;
 	robin_hood::unordered_flat_map<const SpriteGroup *, VarAction2ProcedureAnnotation *> procedure_annotations;
-	UniformArenaAllocator<sizeof(VarAction2ProcedureAnnotation), 1024> procedure_annotations_storage;
-	robin_hood::unordered_flat_map<const DeterministicSpriteGroup *, std::vector<DeterministicSpriteGroupAdjust> *> inlinable_adjust_groups;
-	UniformArenaAllocator<sizeof(std::vector<DeterministicSpriteGroupAdjust>), 1024> inlinable_adjust_groups_storage;
+	BumpAllocContainer<VarAction2ProcedureAnnotation, 1024> procedure_annotations_storage;
+	robin_hood::unordered_map<const DeterministicSpriteGroup *, std::vector<DeterministicSpriteGroupAdjust>> inlinable_adjust_groups;
 	std::vector<DeterministicSpriteGroup *> dead_store_elimination_candidates;
 
 	VarAction2GroupVariableTracking *GetVarAction2GroupVariableTracking(const SpriteGroup *group, bool make_new)
 	{
 		if (make_new) {
 			VarAction2GroupVariableTracking *&ptr = this->group_temp_store_variable_tracking[group];
-			if (!ptr) ptr = new (this->group_temp_store_variable_tracking_storage.Allocate()) VarAction2GroupVariableTracking();
+			if (ptr == nullptr) ptr = this->group_temp_store_variable_tracking_storage.New();
 			return ptr;
 		} else {
 			auto iter = this->group_temp_store_variable_tracking.find(group);
@@ -94,7 +93,7 @@ public:
 	{
 		VarAction2ProcedureAnnotation *&ptr = this->procedure_annotations[group];
 		if (ptr == nullptr) {
-			ptr = new (this->procedure_annotations_storage.Allocate()) VarAction2ProcedureAnnotation();
+			ptr = this->procedure_annotations_storage.New();
 			return std::make_pair(ptr, true);
 		} else {
 			return std::make_pair(ptr, false);
@@ -104,12 +103,10 @@ public:
 	std::vector<DeterministicSpriteGroupAdjust> *GetInlinableGroupAdjusts(const DeterministicSpriteGroup *group, bool make_new)
 	{
 		if (make_new) {
-			std::vector<DeterministicSpriteGroupAdjust> *&ptr = this->inlinable_adjust_groups[group];
-			if (ptr == nullptr) ptr = new (this->inlinable_adjust_groups_storage.Allocate()) std::vector<DeterministicSpriteGroupAdjust>();
-			return ptr;
+			return &this->inlinable_adjust_groups[group];
 		} else {
 			auto iter = this->inlinable_adjust_groups.find(group);
-			if (iter != this->inlinable_adjust_groups.end()) return iter->second;
+			if (iter != this->inlinable_adjust_groups.end()) return &iter->second;
 			return nullptr;
 		}
 	}
@@ -127,14 +124,10 @@ public:
 		this->spritegroups.clear();
 
 		this->group_temp_store_variable_tracking.clear();
-		this->group_temp_store_variable_tracking_storage.EmptyArena();
+		this->group_temp_store_variable_tracking_storage.clear();
 		this->procedure_annotations.clear();
-		this->procedure_annotations_storage.EmptyArena();
-		for (auto iter : this->inlinable_adjust_groups) {
-			iter.second->~vector<DeterministicSpriteGroupAdjust>();
-		}
+		this->procedure_annotations_storage.clear();
 		this->inlinable_adjust_groups.clear();
-		this->inlinable_adjust_groups_storage.EmptyArena();
 		this->dead_store_elimination_candidates.clear();
 	}
 

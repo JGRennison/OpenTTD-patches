@@ -41,10 +41,10 @@ public:
 
 	~DynUniformArenaAllocator()
 	{
-		EmptyArena();
+		ClearArena();
 	}
 
-	void EmptyArena()
+	void ClearArena()
 	{
 		current_block = nullptr;
 		last_freed = nullptr;
@@ -57,7 +57,7 @@ public:
 
 	void ResetArena()
 	{
-		EmptyArena();
+		ClearArena();
 		item_size = 0;
 		items_per_chunk = 0;
 	}
