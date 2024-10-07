@@ -34,6 +34,7 @@
 #include "../../thread.h"
 #include "../../library_loader.h"
 #include <array>
+#include <atomic>
 #include <map>
 #include <mutex>
 
@@ -101,13 +102,13 @@ struct DIR {
  * already in use (it's important to avoid surprises since this is such a
  * low-level routine). */
 static DIR _global_dir;
-static LONG _global_dir_is_in_use = false;
+static std::atomic<bool> _global_dir_is_in_use{false};
 
 static inline DIR *dir_calloc()
 {
 	DIR *d;
 
-	if (InterlockedExchange(&_global_dir_is_in_use, true) == (LONG)true) {
+	if (_global_dir_is_in_use.load(std::memory_order_acquire) || _global_dir_is_in_use.exchange(true) == true) {
 		d = CallocT<DIR>(1);
 	} else {
 		d = &_global_dir;
@@ -119,7 +120,7 @@ static inline DIR *dir_calloc()
 static inline void dir_free(DIR *d)
 {
 	if (d == &_global_dir) {
-		_global_dir_is_in_use = (LONG)false;
+		_global_dir_is_in_use.store(false, std::memory_order_release);
 	} else {
 		free(d);
 	}
