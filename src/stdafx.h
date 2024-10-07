@@ -408,7 +408,7 @@ struct fmt_formattable{};
 #	define assert_tile(expression, tile)
 #	define assert_str(expression, str)
 #endif
-#if (!defined(NDEBUG) || defined(WITH_ASSERT)) && !defined(FEWER_ASSERTS)
+#if (!defined(NDEBUG) || defined(WITH_ASSERT)) && defined(DBG_ASSERTS)
 #	define WITH_FULL_ASSERTS
 #	define dbg_assert(expression) assert(expression)
 #	define dbg_assert_tile(expression, tile) assert_tile(expression, tile)
