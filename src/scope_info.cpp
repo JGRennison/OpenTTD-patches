@@ -42,20 +42,19 @@ void WriteScopeLog(struct format_target &buffer)
 
 #endif
 
-const char *scope_dumper::CompanyInfo(int company_id)
+template<>
+void GeneralFmtDumper<Company, int>::fmt_format_value(format_target &buf) const
 {
-	format_to_fixed_z buf(this->buffer, lastof(this->buffer));
-	buf.format("{} (", company_id);
-	SetDParam(0, company_id);
+	buf.format("{} (", this->value);
+	SetDParam(0, this->value);
 	buf.append(GetString(STR_COMPANY_NAME));
 	buf.push_back(')');
-	buf.finalise();
-	return buffer;
 }
 
-const char *scope_dumper::VehicleInfo(const Vehicle *v)
+template<>
+void GeneralFmtDumper<Vehicle, const Vehicle *>::fmt_format_value(format_target &buf) const
 {
-	format_to_fixed_z buf(this->buffer, lastof(this->buffer));
+	const Vehicle *v = this->value;
 
 	auto dump_flags = [&](const Vehicle *u) {
 		u->DumpVehicleFlags(buf, true);
@@ -87,7 +86,7 @@ const char *scope_dumper::VehicleInfo(const Vehicle *v)
 		buf.format("veh: {}: (", v->index);
 		if (Vehicle::GetIfValid(v->index) != v) {
 			buf.format("INVALID PTR: {})", fmt::ptr(v));
-			return this->buffer;
+			return;
 		}
 		dump_name(v);
 		buf.format(", c:{}, ", (int)v->owner);
@@ -96,7 +95,7 @@ const char *scope_dumper::VehicleInfo(const Vehicle *v)
 			buf.format(", front: {}: (", v->First()->index);
 			if (Vehicle::GetIfValid(v->First()->index) != v->First()) {
 				buf.format("INVALID PTR: {})", fmt::ptr(v->First()));
-				return this->buffer;
+				return;
 			}
 			dump_name(v->First());
 			buf.append(", ");
@@ -107,15 +106,13 @@ const char *scope_dumper::VehicleInfo(const Vehicle *v)
 	} else {
 		buf.append("veh: nullptr");
 	}
-	buf.finalise();
-	return this->buffer;
 }
 
-const char *scope_dumper::StationInfo(const BaseStation *st)
+template<>
+void GeneralFmtDumper<BaseStation, const BaseStation *>::fmt_format_value(format_target &buf) const
 {
-	format_to_fixed_z buf(this->buffer, lastof(this->buffer));
-
-	if (st) {
+	const BaseStation *st = this->value;
+	if (st != nullptr) {
 		const bool waypoint = Waypoint::IsExpected(st);
 		buf.format("{}: {}: (", waypoint ? "waypoint" : "station", st->index);
 		SetDParam(0, st->index);
@@ -134,22 +131,16 @@ const char *scope_dumper::StationInfo(const BaseStation *st)
 	} else {
 		buf.append("station/waypoint: nullptr");
 	}
-	buf.finalise();
-	return this->buffer;
 }
 
-const char *scope_dumper::TileInfo(TileIndex tile)
+template<>
+void GeneralFmtDumper<DumpTileInfoTag, TileIndex>::fmt_format_value(format_target &output) const
 {
-	format_to_fixed_z tileinfobuf(this->buffer, lastof(this->buffer));
-	DumpTileInfo(tileinfobuf, tile);
-	tileinfobuf.finalise();
-	return this->buffer;
+	DumpTileInfo(output, this->value);
 }
 
-const char *scope_dumper::WindowInfo(const Window *w)
+template<>
+void GeneralFmtDumper<Window, const struct Window *>::fmt_format_value(format_target &output) const
 {
-	format_to_fixed_z buf(this->buffer, lastof(this->buffer));
-	DumpWindowInfo(buf, w);
-	buf.finalise();
-	return this->buffer;
+	DumpWindowInfo(output, this->value);
 }

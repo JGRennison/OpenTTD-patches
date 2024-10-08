@@ -1974,7 +1974,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 	if (front->type == VEH_TRAIN) station_vehicle = Train::From(front)->GetStationLoadingVehicle();
 	TileIndex station_tile = station_vehicle->tile;
 
-	SCOPE_INFO_FMT([&], "LoadUnloadVehicle: {}, {}, {}, 0x{:X}", scope_dumper().StationInfo(st), scope_dumper().VehicleInfo(front), scope_dumper().VehicleInfo(station_vehicle), station_tile);
+	SCOPE_INFO_FMT([&], "LoadUnloadVehicle: {}, {}, {}, 0x{:X}", StationInfoDumper(st), VehicleInfoDumper(front), VehicleInfoDumper(station_vehicle), station_tile);
 
 	bool pull_through_mode = false;
 	bool load_unload_not_yet_in_station = false;

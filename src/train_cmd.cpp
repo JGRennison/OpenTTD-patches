@@ -282,7 +282,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 
 		/* Check the this->first cache. */
 		dbg_assert_msg(u->First() == this, "u: {}, this: {}",
-				scope_dumper().VehicleInfo(u), scope_dumper().VehicleInfo(this));
+				VehicleInfoDumper(u), VehicleInfoDumper(this));
 
 		/* update the 'first engine' */
 		u->gcache.first_engine = this == u ? INVALID_ENGINE : first_engine;
@@ -5585,7 +5585,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 {
 	Train *first = v->First();
 	Train *prev = nullptr;
-	SCOPE_INFO_FMT([&], "TrainController: {}, {}, {}", scope_dumper().VehicleInfo(v), scope_dumper().VehicleInfo(prev), scope_dumper().VehicleInfo(nomove));
+	SCOPE_INFO_FMT([&], "TrainController: {}, {}, {}", VehicleInfoDumper(v), VehicleInfoDumper(prev), VehicleInfoDumper(nomove));
 	bool direction_changed = false; // has direction of any part changed?
 	bool update_signal_tunbridge_exit = false;
 	Direction old_direction = INVALID_DIR;
@@ -7018,7 +7018,7 @@ Trackdir Train::GetVehicleTrackdir() const
  */
 void DeleteVisibleTrain(Train *v)
 {
-	SCOPE_INFO_FMT([v], "DeleteVisibleTrain: {}", scope_dumper().VehicleInfo(v));
+	SCOPE_INFO_FMT([v], "DeleteVisibleTrain: {}", VehicleInfoDumper(v));
 
 	assert(!v->IsVirtual());
 

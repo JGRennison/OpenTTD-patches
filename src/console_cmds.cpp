@@ -3339,7 +3339,7 @@ DEF_CONSOLE_CMD(ConDumpVehicle)
 
 	const Vehicle *v = Vehicle::GetIfValid(atoi(argv[1]));
 	if (v != nullptr) {
-		IConsolePrint(CC_DEFAULT, scope_dumper().VehicleInfo(v));
+		IConsolePrint(CC_DEFAULT, "{}", VehicleInfoDumper(v));
 	} else {
 		IConsolePrint(CC_DEFAULT, "No such vehicle");
 	}

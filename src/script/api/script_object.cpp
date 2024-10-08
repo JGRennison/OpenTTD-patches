@@ -359,7 +359,7 @@ ScriptObject::ActiveInstance::~ActiveInstance()
 	if (GetCommandFlags(cmd) & CMD_CLIENT_ID && p2 == 0) p2 = UINT32_MAX;
 
 	SCOPE_INFO_FMT([=], "ScriptObject::DoCommand: tile: 0x{:X} ({} x {}), p1: 0x{:X}, p2: 0x{:X}, p3: 0x{:X}, company: {}, cmd: 0x{:X} ({}), estimate_only: {}",
-			tile, TileX(tile), TileY(tile), p1, p2, p3, scope_dumper().CompanyInfo(_current_company), cmd, GetCommandName(cmd), estimate_only);
+			tile, TileX(tile), TileY(tile), p1, p2, p3, CompanyInfoDumper(_current_company), cmd, GetCommandName(cmd), estimate_only);
 
 	/* Store the command for command callback validation. */
 	if (!estimate_only && _networking && !_generating_world) SetLastCommand(tile, p1, p2, p3, cmd);

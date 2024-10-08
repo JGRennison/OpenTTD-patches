@@ -12,12 +12,6 @@
 
 #include "tile_type.h"
 
-#include <vector>
-
-struct Vehicle;
-struct BaseStation;
-struct Window;
-
 #if !defined(DISABLE_SCOPE_INFO)
 
 struct ScopeStackRecord {
@@ -71,22 +65,21 @@ void WriteScopeLog(struct format_target &buffer);
 
 #endif /* DISABLE_SCOPE_INFO */
 
-/**
- * This is a set of helper functions to print useful info from within a SCOPE_INFO_FMT statement.
- * The use of a struct is so that when used as an argument to SCOPE_INFO_FMT/seprintf/etc, the buffer lives
- * on the stack with a lifetime which lasts until the end of the statement.
- * This avoids needing to call malloc(), which is technically unsafe within the crash logger signal handler,
- * writing directly into the seprintf buffer, or the use of a separate static buffer.
- */
-struct scope_dumper {
-	const char *CompanyInfo(int company_id);
-	const char *VehicleInfo(const Vehicle *v);
-	const char *StationInfo(const BaseStation *st);
-	const char *TileInfo(TileIndex tile);
-	const char *WindowInfo(const Window *w);
+template <typename TAG, typename T>
+struct GeneralFmtDumper : public fmt_formattable {
+	T value;
+	GeneralFmtDumper(T value) : value(value) {}
 
-private:
-	char buffer[512];
+	void fmt_format_value(struct format_target &output) const;
 };
+
+
+struct DumpTileInfoTag{};
+
+using CompanyInfoDumper = GeneralFmtDumper<struct Company, int>;
+using VehicleInfoDumper = GeneralFmtDumper<struct Vehicle, const struct Vehicle *>;
+using StationInfoDumper = GeneralFmtDumper<struct BaseStation, const struct BaseStation *>;
+using TileInfoDumper = GeneralFmtDumper<DumpTileInfoTag, TileIndex>;
+using WindowInfoDumper = GeneralFmtDumper<struct Window, const struct Window *>;
 
 #endif /* SCOPE_INFO_H */
