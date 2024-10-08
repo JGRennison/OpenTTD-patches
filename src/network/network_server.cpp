@@ -309,9 +309,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::CloseConnection(NetworkRecvSta
 
 	if (status != NETWORK_RECV_STATUS_CLIENT_QUIT && status != NETWORK_RECV_STATUS_SERVER_ERROR && !this->HasClientQuit() && this->status >= STATUS_AUTHORIZED) {
 		/* We did not receive a leave message from this client... */
-		char client_name[NETWORK_CLIENT_NAME_LENGTH];
-
-		this->GetClientName(client_name, lastof(client_name));
+		std::string client_name = this->GetClientName();
 
 		NetworkTextMessage(NETWORK_ACTION_LEAVE, CC_DEFAULT, false, client_name, "", STR_NETWORK_ERROR_CLIENT_CONNECTION_LOST);
 
@@ -446,9 +444,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendError(NetworkErrorCode err
 
 	/* Only send when the current client was in game */
 	if (this->status >= STATUS_AUTHORIZED) {
-		char client_name[NETWORK_CLIENT_NAME_LENGTH];
-
-		this->GetClientName(client_name, lastof(client_name));
+		std::string client_name = this->GetClientName();
 
 		Debug(net, 1, "'{}' made an error and has been disconnected: {}", client_name, GetString(strid));
 
@@ -1178,9 +1174,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_MAP_OK(Packet &
 {
 	/* Client has the map, now start syncing */
 	if (this->status == STATUS_DONE_MAP && !this->HasClientQuit()) {
-		char client_name[NETWORK_CLIENT_NAME_LENGTH];
-
-		this->GetClientName(client_name, lastof(client_name));
+		std::string client_name = this->GetClientName();
 
 		NetworkTextMessage(NETWORK_ACTION_JOIN, CC_DEFAULT, false, client_name, "", this->client_id);
 		InvalidateWindowData(WC_CLIENT_LIST, 0);
@@ -1299,7 +1293,6 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet &p
 {
 	/* This packets means a client noticed an error and is reporting this
 	 *  to us. Display the error and report it to the other clients */
-	char client_name[NETWORK_CLIENT_NAME_LENGTH];
 	NetworkErrorCode errorno = (NetworkErrorCode)p.Recv_uint8();
 	NetworkRecvStatus rx_status = p.CanReadFromPacket(1) ? (NetworkRecvStatus)p.Recv_uint8() : NETWORK_RECV_STATUS_OKAY;
 	int8_t status = p.CanReadFromPacket(1) ? (int8_t)p.Recv_uint8() : -1;
@@ -1311,7 +1304,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet &p
 		return this->CloseConnection(NETWORK_RECV_STATUS_CLIENT_QUIT);
 	}
 
-	this->GetClientName(client_name, lastof(client_name));
+	std::string client_name = this->GetClientName();
 
 	StringID strid = GetNetworkErrorMsg(errorno);
 
@@ -1330,7 +1323,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet &p
 	if (errorno == NETWORK_ERROR_DESYNC) {
 		std::string server_desync_log;
 		DesyncExtraInfo info;
-		info.client_name = client_name;
+		info.client_name = client_name.c_str();
 		info.client_id = this->client_id;
 		info.desync_frame_info = std::move(this->desync_frame_info);
 		CrashLog::DesyncCrashLog(&(this->desync_log), &server_desync_log, info);
@@ -1435,17 +1428,13 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_DESYNC_SYNC_DAT
 
 NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_QUIT(Packet &p)
 {
-	/* The client wants to leave. Display this and report it to the other
-	 *  clients. */
-	char client_name[NETWORK_CLIENT_NAME_LENGTH];
-
 	/* The client was never joined.. thank the client for the packet, but ignore it */
 	if (this->status < STATUS_DONE_MAP || this->HasClientQuit()) {
 		return this->CloseConnection(NETWORK_RECV_STATUS_CLIENT_QUIT);
 	}
 
-	this->GetClientName(client_name, lastof(client_name));
-
+	/* The client wants to leave. Display this and report it to the other clients. */
+	std::string client_name = this->GetClientName();
 	NetworkTextMessage(NETWORK_ACTION_LEAVE, CC_DEFAULT, false, client_name, "", STR_NETWORK_MESSAGE_CLIENT_LEAVING);
 
 	for (NetworkClientSocket *new_cs : NetworkClientSocket::Iterate()) {
@@ -2477,15 +2466,12 @@ bool NetworkCompanyHasClients(CompanyID company)
  * @param client_name The variable to write the name to.
  * @param last        The pointer to the last element of the destination buffer
  */
-void ServerNetworkGameSocketHandler::GetClientName(char *client_name, const char *last) const
+std::string ServerNetworkGameSocketHandler::GetClientName() const
 {
 	const NetworkClientInfo *ci = this->GetInfo();
+	if (ci != nullptr && !ci->client_name.empty()) return ci->client_name;
 
-	if (ci == nullptr || ci->client_name.empty()) {
-		seprintf(client_name, last, "Client #%d", this->client_id);
-	} else {
-		strecpy(client_name, ci->client_name.c_str(), last);
-	}
+	return fmt::format("Client #{}", this->client_id);
 }
 
 /**

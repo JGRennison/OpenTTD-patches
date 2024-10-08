@@ -817,23 +817,15 @@ bool IsCommandAllowedWhilePaused(uint32_t cmd)
 
 static int _docommand_recursive = 0;
 
-struct cmd_text_info_dumper {
-	const char *CommandTextInfo(const char *text, const CommandAuxiliaryBase *aux_data)
-	{
-		char *b = this->buffer;
-		const char *last = lastof(this->buffer);
-		if (text) {
-			b += seprintf(b, last, ", text: length: %u", (uint) strlen(text));
-		}
-		if (aux_data) {
-			b += seprintf(b, last, ", aux data");
-		}
-		return this->buffer;
+void FmtCommandTextInfo(format_target &out, const char *text, const CommandAuxiliaryBase *aux_data)
+{
+	if (text) {
+		out.format(", text: length: {}", strlen(text));
 	}
-
-private:
-	char buffer[64];
-};
+	if (aux_data) {
+		out.append(", aux data");
+	}
+}
 
 /**
  * This function executes a given command with the parameters from the #CommandProc parameter list.
@@ -852,7 +844,7 @@ private:
 CommandCost DoCommandEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, DoCommandFlag flags, uint32_t cmd, const char *text, const CommandAuxiliaryBase *aux_data)
 {
 	SCOPE_INFO_FMT([=], "DoCommand: tile: {:X} ({} x {}), p1: 0x{:X}, p2: 0x{:X}, p3: 0x{:X}, flags: 0x{:X}, company: {}, cmd: 0x{:X} ({}){}",
-			tile, TileX(tile), TileY(tile), p1, p2, p3, flags, scope_dumper().CompanyInfo(_current_company), cmd, GetCommandName(cmd), cmd_text_info_dumper().CommandTextInfo(text, aux_data));
+			tile, TileX(tile), TileY(tile), p1, p2, p3, flags, scope_dumper().CompanyInfo(_current_company), cmd, GetCommandName(cmd), format_lambda(FmtCommandTextInfo)(text, aux_data));
 
 	CommandCost res;
 
@@ -972,7 +964,7 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, uint32
 bool DoCommandPEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint32_t cmd, CommandCallback *callback, const char *text, const CommandAuxiliaryBase *aux_data, bool my_cmd)
 {
 	SCOPE_INFO_FMT([=], "DoCommandP: tile: {:X} ({} x {}), p1: 0x{:X}, p2: 0x{:X}, p3: 0x{:X}, company: {}, cmd: 0x{:X} ({}), my_cmd: {}{}",
-			tile, TileX(tile), TileY(tile), p1, p2, p3, scope_dumper().CompanyInfo(_current_company), cmd, GetCommandName(cmd), my_cmd, cmd_text_info_dumper().CommandTextInfo(text, aux_data));
+			tile, TileX(tile), TileY(tile), p1, p2, p3, scope_dumper().CompanyInfo(_current_company), cmd, GetCommandName(cmd), my_cmd, format_lambda(FmtCommandTextInfo)(text, aux_data));
 
 	/* Cost estimation is generally only done when the
 	 * local user presses shift while doing something.

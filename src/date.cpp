@@ -573,6 +573,6 @@ void IncreaseDate()
 
 const char *debug_date_dumper::HexDate(EconTime::Date date, EconTime::DateFract date_fract, uint8_t tick_skip_counter)
 {
-	seprintf(this->buffer, lastof(this->buffer), "date{%08x; %02x; %02x}", date.base(), date_fract, tick_skip_counter);
+	format_to_fixed_z::format_to(this->buffer, lastof(this->buffer), "date{{{:08x}; {:02x}; {:02x}}}", date, date_fract, tick_skip_counter);
 	return this->buffer;
 }

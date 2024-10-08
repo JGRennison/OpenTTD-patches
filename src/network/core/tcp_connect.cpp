@@ -100,7 +100,7 @@ void TCPConnecter::Connect(addrinfo *address)
 
 	if (this->bind_address.GetPort() > 0) {
 		if (bind(sock, (const sockaddr *)this->bind_address.GetAddress(), this->bind_address.GetAddressLength()) != 0) {
-			Debug(net, 1, "Could not bind socket on {}: {}", NetworkAddressDumper().GetAddressAsString(&(this->bind_address)), NetworkError::GetLast().AsString());
+			Debug(net, 1, "Could not bind socket on {}: {}", FormatNetworkAddress(&(this->bind_address)), NetworkError::GetLast().AsString());
 			closesocket(sock);
 			return;
 		}

@@ -456,8 +456,16 @@ struct GrfSpecFeatureRef {
 	uint8_t raw_byte;
 };
 
-const char *GetFeatureString(GrfSpecFeatureRef feature);
-const char *GetFeatureString(GrfSpecFeature feature);
+struct GetFeatureStringFormatter : public fmt_formattable {
+	GrfSpecFeatureRef feature;
+
+	GetFeatureStringFormatter(GrfSpecFeatureRef feature) : feature(feature) {}
+
+	void fmt_format_value(struct format_target &output) const;
+};
+
+GetFeatureStringFormatter GetFeatureString(GrfSpecFeatureRef feature);
+GetFeatureStringFormatter GetFeatureString(GrfSpecFeature feature);
 
 void InitGRFGlobalVars();
 

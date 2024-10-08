@@ -5410,27 +5410,30 @@ static const char *_feature_names[] = {
 };
 static_assert(lengthof(_feature_names) == GSF_END);
 
-const char *GetFeatureString(GrfSpecFeatureRef feature)
+void GetFeatureStringFormatter::fmt_format_value(format_target &output) const
 {
-	static char buffer[32];
-	if (feature.id < GSF_END) {
-		seprintf(buffer, lastof(buffer), "0x%02X (%s)", feature.raw_byte, _feature_names[feature.id]);
+	if (this->feature.id < GSF_END) {
+		output.format("0x{:02X} ({})", this->feature.raw_byte, _feature_names[this->feature.id]);
 	} else {
 		if (unlikely(HasBit(_cur.grffile->ctrl_flags, GFCF_HAVE_FEATURE_ID_REMAP))) {
 			const GRFFeatureMapRemapSet &remap = _cur.grffile->feature_id_remaps;
-			if (remap.remapped_ids[feature.raw_byte]) {
-				auto iter = remap.mapping.find(feature.raw_byte);
+			if (remap.remapped_ids[this->feature.raw_byte]) {
+				auto iter = remap.mapping.find(this->feature.raw_byte);
 				const GRFFeatureMapRemapEntry &def = iter->second;
-				seprintf(buffer, lastof(buffer), "0x%02X (%s)", feature.raw_byte, def.name);
-				return buffer;
+				output.format("0x{:02X} ({})", this->feature.raw_byte, def.name);
+				return;
 			}
 		}
-		seprintf(buffer, lastof(buffer), "0x%02X", feature.raw_byte);
+		output.format("0x{:02X}", this->feature.raw_byte);
 	}
-	return buffer;
 }
 
-const char *GetFeatureString(GrfSpecFeature feature)
+GetFeatureStringFormatter GetFeatureString(GrfSpecFeatureRef feature)
+{
+	return GetFeatureStringFormatter(feature);
+}
+
+GetFeatureStringFormatter GetFeatureString(GrfSpecFeature feature)
 {
 	uint8_t raw_byte = feature;
 	if (feature >= GSF_REAL_FEATURE_END) {
@@ -5441,7 +5444,7 @@ const char *GetFeatureString(GrfSpecFeature feature)
 			}
 		}
 	}
-	return GetFeatureString(GrfSpecFeatureRef{ feature, raw_byte });
+	return GetFeatureStringFormatter(GrfSpecFeatureRef{ feature, raw_byte });
 }
 
 struct GRFFilePropertyDescriptor {
@@ -11948,9 +11951,9 @@ static bool IsLabelPrintable(uint32_t l)
 const char *NewGRFLabelDumper::Label(uint32_t label)
 {
 	if (IsLabelPrintable(label)) {
-		seprintf(this->buffer, lastof(this->buffer), "%c%c%c%c", label >> 24, label >> 16, label >> 8, label);
+		format_to_fixed_z::format_to(this->buffer, lastof(this->buffer), "{:c}{:c}{:c}{:c}", label >> 24, label >> 16, label >> 8, label);
 	} else {
-		seprintf(this->buffer, lastof(this->buffer), "0x%08X", BSWAP32(label));
+		format_to_fixed_z::format_to(this->buffer, lastof(this->buffer), "0x{:08X}", BSWAP32(label));
 	}
 	return this->buffer;
 }

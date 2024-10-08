@@ -122,14 +122,14 @@ public:
 
 void ClientNetworkUDPSocketHandler::Receive_SERVER_RESPONSE(Packet &, NetworkAddress &client_addr)
 {
-	Debug(net, 3, "Server response from {}", NetworkAddressDumper().GetAddressAsString(client_addr));
+	Debug(net, 3, "Server response from {}", FormatNetworkAddress(client_addr));
 
 	NetworkAddServer(client_addr.GetAddressAsString(false), false, true);
 }
 
 void ClientNetworkUDPSocketHandler::Receive_EX_SERVER_RESPONSE(Packet &, NetworkAddress &client_addr)
 {
-	Debug(net, 3, "Extended server response from {}", NetworkAddressDumper().GetAddressAsString(client_addr));
+	Debug(net, 3, "Extended server response from {}", FormatNetworkAddress(client_addr));
 
 	NetworkAddServer(client_addr.GetAddressAsString(false), false, true); // TODO, mark as extended
 }

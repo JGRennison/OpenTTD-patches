@@ -74,15 +74,15 @@ void NetworkAddress::SetPort(uint16_t port)
 /**
  * Get the address as a string, e.g. 127.0.0.1:12345.
  * @param buffer the buffer to write to
- * @param last the last element in the buffer
  * @param with_family whether to add the family (e.g. IPvX).
  */
-void NetworkAddress::GetAddressAsString(char *buffer, const char *last, bool with_family)
+void NetworkAddress::GetAddressAsString(format_target &buffer, bool with_family)
 {
-	if (this->GetAddress()->ss_family == AF_INET6) buffer = strecpy(buffer, "[", last);
-	buffer = strecpy(buffer, this->GetHostname(), last);
-	if (this->GetAddress()->ss_family == AF_INET6) buffer = strecpy(buffer, "]", last);
-	buffer += seprintf(buffer, last, ":%d", this->GetPort());
+	const auto ss_family = this->GetAddress()->ss_family;
+	if (ss_family == AF_INET6) buffer.push_back('[');
+	buffer.append(this->GetHostname());
+	if (ss_family == AF_INET6) buffer.push_back(']');
+	buffer.format(":{:d}", this->GetPort());
 
 	if (with_family) {
 		char family;
@@ -91,7 +91,7 @@ void NetworkAddress::GetAddressAsString(char *buffer, const char *last, bool wit
 			case AF_INET6: family = '6'; break;
 			default:       family = '?'; break;
 		}
-		seprintf(buffer, last, " (IPv%c)", family);
+		buffer.format(" (IPv{})", family);
 	}
 }
 
@@ -102,20 +102,14 @@ void NetworkAddress::GetAddressAsString(char *buffer, const char *last, bool wit
   */
 std::string NetworkAddress::GetAddressAsString(bool with_family)
 {
-	char buf[NETWORK_HOSTNAME_LENGTH + 6 + 7];
-	this->GetAddressAsString(buf, lastof(buf), with_family);
-	return buf;
+	format_buffer_sized<100> buf;
+	this->GetAddressAsString(buf, with_family);
+	return buf.to_string();
 }
 
-/**
- * Get the address as a string, e.g. 127.0.0.1:12345.
- * @param with_family whether to add the family (e.g. IPvX).
- * @return the address
- */
-const char *NetworkAddressDumper::GetAddressAsString(NetworkAddress *addr, bool with_family)
+void FormatNetworkAddress::fmt_format_value(format_target &buffer) const
 {
-	addr->GetAddressAsString(this->buf, lastof(this->buf), with_family);
-	return this->buf;
+	this->addr->GetAddressAsString(buffer, this->with_family);
 }
 
 /**
@@ -237,8 +231,7 @@ SOCKET NetworkAddress::Resolve(int family, int socktype, int flags, SocketList *
 	hints.ai_socktype = socktype;
 
 	/* The port needs to be a string. Six is enough to contain all characters + '\0'. */
-	char port_name[6];
-	seprintf(port_name, lastof(port_name), "%u", this->GetPort());
+	std::string port_name = std::to_string(this->GetPort());
 
 	bool reset_hostname = false;
 	/* Setting both hostname to nullptr and port to 0 is not allowed.
@@ -253,7 +246,7 @@ SOCKET NetworkAddress::Resolve(int family, int socktype, int flags, SocketList *
 
 	static bool _resolve_timeout_error_message_shown = false;
 	auto start = std::chrono::steady_clock::now();
-	int e = getaddrinfo(this->hostname.empty() ? nullptr : this->hostname.c_str(), port_name, &hints, &ai);
+	int e = getaddrinfo(this->hostname.empty() ? nullptr : this->hostname.c_str(), port_name.c_str(), &hints, &ai);
 	auto end = std::chrono::steady_clock::now();
 	std::chrono::seconds duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
 	if (!_resolve_timeout_error_message_shown && duration >= std::chrono::seconds(5)) {

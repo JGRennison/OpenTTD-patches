@@ -91,7 +91,7 @@ public:
 	}
 
 	const char *GetHostname();
-	void GetAddressAsString(char *buffer, const char *last, bool with_family = true);
+	void GetAddressAsString(struct format_target &buffer, bool with_family = true);
 	std::string GetAddressAsString(bool with_family = true);
 	const sockaddr_storage *GetAddress();
 
@@ -182,22 +182,14 @@ public:
 	static const std::string GetPeerName(SOCKET sock);
 };
 
-/**
- * The use of a struct is so that when used as an argument to /seprintf/etc, the buffer lives
- * on the stack with a lifetime which lasts until the end of the statement.
- * This avoids using a static buffer which is thread-unsafe, or needing to call malloc, which would then need to be freed.
- */
-struct NetworkAddressDumper {
-	const char *GetAddressAsString(NetworkAddress *addr, bool with_family = true);
+struct FormatNetworkAddress : public fmt_formattable {
+	NetworkAddress *addr;
+	bool with_family;
 
-	inline const char *GetAddressAsString(NetworkAddress &addr, bool with_family = true)
-	{
-		return this->GetAddressAsString(&addr, with_family);
-	}
+	FormatNetworkAddress(NetworkAddress *addr, bool with_family = true) : addr(addr), with_family(with_family) {}
+	FormatNetworkAddress(NetworkAddress &addr, bool with_family = true) : addr(&addr), with_family(with_family) {}
 
-private:
-	/* 7 extra are for with_family, which adds " (IPvX)". */
-	char buf[NETWORK_HOSTNAME_PORT_LENGTH + 7];
+	void fmt_format_value(struct format_target &output) const;
 };
 
 /**

@@ -127,10 +127,10 @@ void NetworkUDPSocketHandler::SendPacket(Packet &p, NetworkAddress &recv, bool a
 
 		/* Send the buffer */
 		ssize_t res = p.TransferOut<int>(sendto, s.first, 0, (const struct sockaddr *)send.GetAddress(), send.GetAddressLength());
-		Debug(net, 7, "sendto({})",  NetworkAddressDumper().GetAddressAsString(&send));
+		Debug(net, 7, "sendto({})",  FormatNetworkAddress(&send));
 
 		/* Check for any errors, but ignore it otherwise */
-		if (res == -1) Debug(net, 1, "sendto({}) failed with: {}", NetworkAddressDumper().GetAddressAsString(&send), NetworkError::GetLast().AsString());
+		if (res == -1) Debug(net, 1, "sendto({}) failed with: {}", FormatNetworkAddress(&send), NetworkError::GetLast().AsString());
 
 		if (!all) break;
 	}
@@ -166,7 +166,7 @@ void NetworkUDPSocketHandler::ReceivePackets()
 			/* If the size does not match the packet must be corrupted.
 			 * Otherwise it will be marked as corrupted later on. */
 			if (!p.ParsePacketSize() || static_cast<size_t>(nbytes) != p.Size()) {
-				Debug(net, 1, "received a packet with mismatching size from {}, ({}, {})", NetworkAddressDumper().GetAddressAsString(&address), (uint)nbytes, (uint)p.Size());
+				Debug(net, 1, "received a packet with mismatching size from {}, ({}, {})", FormatNetworkAddress(&address), (uint)nbytes, (uint)p.Size());
 				continue;
 			}
 			if (!p.PrepareToRead()) {
@@ -203,9 +203,9 @@ void NetworkUDPSocketHandler::HandleUDPPacket(Packet &p, NetworkAddress &client_
 
 		default:
 			if (this->HasClientQuit()) {
-				Debug(net, 0, "[udp] received invalid packet type {} from {}", type, NetworkAddressDumper().GetAddressAsString(client_addr));
+				Debug(net, 0, "[udp] received invalid packet type {} from {}", type, FormatNetworkAddress(client_addr));
 			} else {
-				Debug(net, 0, "[udp] received illegal packet from {}", NetworkAddressDumper().GetAddressAsString(client_addr));
+				Debug(net, 0, "[udp] received illegal packet from {}", FormatNetworkAddress(client_addr));
 			}
 			break;
 	}
@@ -219,7 +219,7 @@ void NetworkUDPSocketHandler::Receive_EX_MULTI(Packet &p, NetworkAddress &client
 	uint16_t payload_size = p.Recv_uint16();
 
 	Debug(net, 6, "[udp] received multi-part packet from {}: {}, {}/{}, {} bytes",
-			NetworkAddressDumper().GetAddressAsString(client_addr), token, index, total, payload_size);
+			FormatNetworkAddress(client_addr), token, index, total, payload_size);
 
 	if (total == 0 || index >= total) return;
 	if (!p.CanReadFromPacket(payload_size)) return;
@@ -237,7 +237,7 @@ void NetworkUDPSocketHandler::Receive_EX_MULTI(Packet &p, NetworkAddress &client
 		}
 
 		Debug(net, 6, "[udp] merged multi-part packet from {}: {}, {} bytes",
-				NetworkAddressDumper().GetAddressAsString(client_addr), token, total_payload);
+				FormatNetworkAddress(client_addr), token, total_payload);
 
 		Packet merged(Packet::ReadTag{}, this, TCP_MTU, 0);
 		merged.ReserveBuffer(total_payload);
@@ -251,7 +251,7 @@ void NetworkUDPSocketHandler::Receive_EX_MULTI(Packet &p, NetworkAddress &client
 		 * Otherwise it will be marked as corrupted later on. */
 		if (total_payload != merged.ReadRawPacketSize()) {
 			Debug(net, 1, "received an extended packet with mismatching size from {}, ({}, {})",
-					NetworkAddressDumper().GetAddressAsString(client_addr), (uint)total_payload, (uint)merged.ReadRawPacketSize());
+					FormatNetworkAddress(client_addr), (uint)total_payload, (uint)merged.ReadRawPacketSize());
 		} else {
 			this->HandleUDPPacket(merged, client_addr);
 		}
@@ -288,7 +288,7 @@ void NetworkUDPSocketHandler::Receive_EX_MULTI(Packet &p, NetworkAddress &client
  */
 void NetworkUDPSocketHandler::ReceiveInvalidPacket(PacketUDPType type, NetworkAddress &client_addr)
 {
-	Debug(net, 0, "[udp] received packet type {} on wrong port from {}", type, NetworkAddressDumper().GetAddressAsString(client_addr));
+	Debug(net, 0, "[udp] received packet type {} on wrong port from {}", type, FormatNetworkAddress(client_addr));
 }
 
 void NetworkUDPSocketHandler::Receive_CLIENT_FIND_SERVER(Packet &p, NetworkAddress &client_addr) { this->ReceiveInvalidPacket(PACKET_UDP_CLIENT_FIND_SERVER, client_addr); }

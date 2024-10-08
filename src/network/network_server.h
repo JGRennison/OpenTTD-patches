@@ -105,7 +105,7 @@ public:
 
 	std::unique_ptr<Packet> ReceivePacket() override;
 	NetworkRecvStatus CloseConnection(NetworkRecvStatus status) override;
-	void GetClientName(char *client_name, const char *last) const;
+	std::string GetClientName() const;
 
 	void CheckNextClientToSendMap(NetworkClientSocket *ignore_cs = nullptr);
 
