@@ -386,7 +386,7 @@ typedef uint64_t unaligned_uint64;
 /* Upstream: For the FMT library we only want to use the headers, not link to some library. */
 //#define FMT_HEADER_ONLY
 
-/* This is an inheritable tag, to enable looking for a fmt_format_value method, which takes a struct fmt_formattable_output & */
+/* This is an inheritable tag, to enable looking for a fmt_format_value method, which takes a struct format_target & */
 struct fmt_formattable{};
 
 /* JSON: Don't include IO stream headers/support */

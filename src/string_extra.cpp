@@ -12,7 +12,7 @@
 #include "core/format.hpp"
 #include "3rdparty/md5/md5.h"
 
-void MD5Hash::fmt_format_value(fmt_formattable_output &output) const
+void MD5Hash::fmt_format_value(format_target &output) const
 {
 	for (size_t i = 0; i < this->size(); i++) {
 		output.format("{:02X}", (*this)[i]);

@@ -58,40 +58,9 @@ struct fmt::formatter<T, Char, std::enable_if_t<std::is_base_of<StrongTypedefBas
 	}
 };
 
-struct fmt_formattable_output {
-private:
-	fmt::format_context::iterator iter;
-
-public:
-	fmt_formattable_output(fmt::format_context::iterator iter) : iter(iter) {}
-	fmt_formattable_output(const fmt_formattable_output &other) = delete;
-	fmt_formattable_output& operator=(const fmt_formattable_output &other) = delete;
-
-	fmt::format_context::iterator get_iter() const { return this->iter; }
-
-	template <typename... T>
-	void format(fmt::format_string<T...> fmtstr, T&&... args)
-	{
-		this->iter = fmt::format_to(this->iter, fmtstr, std::forward<T>(args)...);
-	}
-};
-
-template <typename T, typename Char>
-struct fmt::formatter<T, Char, std::enable_if_t<std::is_base_of<fmt_formattable, T>::value>> {
-	constexpr fmt::format_parse_context::iterator parse(fmt::format_parse_context &ctx) {
-		return ctx.begin();
-	}
-
-	fmt::format_context::iterator format(const T& obj, format_context &ctx) const {
-		fmt_formattable_output output(ctx.out());
-		obj.fmt_format_value(output);
-		return output.get_iter();
-	}
-};
-
 /**
  * Base fmt format target class. Users should take by reference.
- * Not directly instatiable, use format_to_buffer, format_buffer, format_to_fixed or format_to_fixed_z.
+ * Not directly instantiable, use format_to_buffer, format_buffer, format_buffer_sized, format_to_fixed or format_to_fixed_z.
  */
 struct format_target {
 protected:
@@ -189,6 +158,23 @@ public:
 struct format_to_buffer : public format_target {
 	template <size_t SIZE, typename Allocator>
 	format_to_buffer(fmt::basic_memory_buffer<char, SIZE, Allocator> &buffer) : format_target(buffer, 0) {}
+
+	/** Only for internal use */
+	struct format_to_buffer_internal_tag{};
+	format_to_buffer(format_to_buffer_internal_tag tag, fmt::detail::buffer<char> &buffer, uint8_t flags) : format_target(buffer, 0) {}
+};
+
+template <typename T, typename Char>
+struct fmt::formatter<T, Char, std::enable_if_t<std::is_base_of<fmt_formattable, T>::value>> {
+	constexpr fmt::format_parse_context::iterator parse(fmt::format_parse_context &ctx) {
+		return ctx.begin();
+	}
+
+	fmt::format_context::iterator format(const T& obj, format_context &ctx) const {
+		format_to_buffer output(format_to_buffer::format_to_buffer_internal_tag{}, fmt::detail::get_container(ctx.out()), 0);
+		obj.fmt_format_value(output);
+		return ctx.out();
+	}
 };
 
 /**
@@ -199,9 +185,10 @@ struct format_buffer_base : public format_to_buffer {
 private:
 	fmt::basic_memory_buffer<char, SIZE> buffer;
 
-public:
+protected:
 	format_buffer_base() : format_to_buffer(buffer) {}
 
+public:
 	char *begin() noexcept { return this->buffer.begin(); }
 	char *end() noexcept { return this->buffer.end(); }
 	const char *begin() const noexcept { return this->buffer.begin(); }
@@ -235,7 +222,7 @@ struct format_buffer final : public format_buffer_base<fmt::inline_buffer_size> 
 
 /**
  * format_to_buffer subtype where the fmt::memory_buffer is built-in.
- * The inline buffer size is adjustable.
+ * The inline buffer size is adjustable as a template parameter.
  *
  * Includes convenience wrappers to access the buffer.
  * Can be used as a fmt argument.
@@ -376,21 +363,21 @@ struct format_lambda_wrapper : public fmt_formattable {
 
 	format_lambda_wrapper(F lm) : lm(std::move(lm)) {}
 
-	void fmt_format_value(fmt_formattable_output &output) const
+	void fmt_format_value(format_target &output) const
 	{
 		this->lm(output);
 	}
 };
 
 /**
- * Wraps a lambda of type: [...](fmt_formattable_output &out, args...) {}
+ * Wraps a lambda of type: [...](format_target &out, args...) {}
  * as a callable of type [...](args...) which is suitable for use as an argument to fmt::format.
  */
 template <typename F>
 auto format_lambda(F func)
 {
 	return [func = std::move(func)]<typename... T>(T&&... args) -> auto {
-		return format_lambda_wrapper([&](fmt_formattable_output &output) {
+		return format_lambda_wrapper([&](format_target &output) {
 			func(output, std::forward<T>(args)...);
 		});
 	};

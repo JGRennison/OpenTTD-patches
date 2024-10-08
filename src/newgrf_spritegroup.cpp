@@ -639,25 +639,25 @@ void SpriteGroupDumper::DumpSpriteGroup(format_buffer &buffer, const SpriteGroup
 		}
 	});
 
-	auto extra_info = format_lambda([&](fmt_formattable_output &out) {
-		if (sg->sg_flags & SGF_ACTION6) out.format(" (action 6 modified)");
-		if (sg->sg_flags & SGF_SKIP_CB) out.format(" (skip CB)");
+	auto extra_info = format_lambda([&](format_target &out) {
+		if (sg->sg_flags & SGF_ACTION6) out.append(" (action 6 modified)");
+		if (sg->sg_flags & SGF_SKIP_CB) out.append(" (skip CB)");
 		if (this->more_details) {
-			if (sg->sg_flags & SGF_INLINING) out.format(" (inlining)");
+			if (sg->sg_flags & SGF_INLINING) out.append(" (inlining)");
 		}
 	});
 
-	auto get_scope_name = format_lambda([&](fmt_formattable_output &out, VarSpriteGroupScope var_scope, VarSpriteGroupScopeOffset var_scope_count) {
+	auto get_scope_name = format_lambda([&](format_target &out, VarSpriteGroupScope var_scope, VarSpriteGroupScopeOffset var_scope_count) {
 		if (var_scope == VSG_SCOPE_RELATIVE) {
 			out.format("{}[{}, ", _sg_scope_names[var_scope], _sg_relative_scope_modes[GB(var_scope_count, 8, 2)]);
 			uint8_t offset = GB(var_scope_count, 0, 8);
 			if (HasBit(var_scope_count, 15)) {
-				out.format("var 0x100]");
+				out.append("var 0x100]");
 			} else {
 				out.format("{}]", offset);
 			}
 		} else {
-			out.format("{}", _sg_scope_names[var_scope]);
+			out.append(_sg_scope_names[var_scope]);
 		}
 	});
 
