@@ -1065,11 +1065,12 @@ STR_TRACE_RESTRICT_RESET_TOOLTIP                                :{BLACK}선택�
 STR_TRACE_RESTRICT_COPY_TOOLTIP                                 :{BLACK}다른 신호기에서 구문을 복사해 옵니다.
 STR_TRACE_RESTRICT_DUPLICATE_TOOLTIP                            :{BLACK}선택한 구문을 복제합니다.{}CTRL + 클릭하면 다른 신호기의 프로그램을 뒤에 덧붙입니다.
 STR_TRACE_RESTRICT_SHARE_TOOLTIP                                :{BLACK}다른 신호기와 구문을 공유합니다.
-STR_TRACE_RESTRICT_UNSHARE_TOOLTIP                              :{BLACK}다른 신호기와의 구문 공유를 해제합니다.
+STR_TRACE_RESTRICT_UNSHARE_TOOLTIP                              :{BLACK}다른 신호기와 공유한 구문을 공유 해제합니다.
 STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA                          :{STRING}{}{BLACK}CTRL + 클릭하면 다른 신호기가 이 프로그램을 공유하도록 만듭니다
 STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}경로 탐색 제한
 STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}선택하려면 구문을 클릭하십시오.{}구문에서 지정된 장소가 있다면, 지정된 장소로 가려면 구문을 CTRL + 클릭하십시오.
-STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP                            :{BLACK}이 프로그램을 공유하는 모든 신호기를 선택하여 표시합니다.
+STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP                            :{BLACK}이 프로그램을 공유하는 모든 신호기를 선택하여 표시합니다
+STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA                  :{STRING}{}{BLACK}CTRL + 클릭하면 최근 사용한 것을 표시합니다
 STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING           :{STRING} {PUSH_COLOUR}{RED}(현실적인 감속을 켜야 함){POP_COLOUR}
 STR_TRACE_RESTRICT_WARNING_SIGNAL_MODE_CONTROL_ONLY             :{STRING} {PUSH_COLOUR}{RED}(신호기 모드 조작 행동 전용){POP_COLOUR}
 STR_TRACE_RESTRICT_WARNING_NO_SIGNAL_MODE_CONTROL               :{STRING} {PUSH_COLOUR}{RED}(신호기 모드 조작 행동이 아님){POP_COLOUR}
@@ -1188,8 +1189,13 @@ STR_LANDSCAPING_TOOLTIP_RULER_TOOL                              :{BLACK}거리�
 STR_TREES_REMOVE_TREES_BUTTON                                   :{BLACK}모든 나무 제거하기
 STR_TREES_REMOVE_TREES_TOOLTIP                                  :{BLACK}전 지역에 걸쳐 나무를 모두 제거합니다.
 
+STR_TERRAFORM_PUBLIC_ROADS_GENERATION_CAPTION                   :{WHITE}공용 도로
 STR_TERRAFORM_PUBLIC_ROADS                                      :{BLACK}공용 도로 만들기
 STR_TERRAFORM_PUBLIC_ROADS_TOOLTIP                              :{BLACK}지도에서 도시 사이에 공용 도로 만들기
+STR_TERRAFORM_PUBLIC_ROADS_TYPE                                 :{BLACK}공용 도로 종류
+
+STR_SCENEDIT_LANDSCAPE_MENU_LAND_GENERATION                     :지형 생성
+STR_SCENEDIT_LANDSCAPE_MENU_PUBLIC_ROADS                        :공용 도로
 
 STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP_ALL                        :모든 산업시설
 
@@ -1489,6 +1495,8 @@ STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU                             :{BLACK}기지�
 
 STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA                     :{STRING}{BLACK}{}SHIFT + 클릭하면 창에 포커스가 없어도 경로 오버레이를 보여줄지 여부를 전환할 수 있습니다
 
+STR_VEHICLE_VIEW_SHOW_ORDERS_TOOLTIP_EXTRA                      :{STRING}{BLACK}{}SHIFT + 클릭하면 시간표 배차 일정 창을 보여줍니다
+
 STR_VEHICLE_VIEW_ORDER_NUMBER                                   :{COMMA}: {STRING}
 
 STR_VEHICLE_STATUS_LOADING_UNLOADING_ADVANCE                    :{STRING}, {VELOCITY}
@@ -1728,8 +1736,8 @@ STR_ORDER_CONDITIONAL_TIME_HHMM                                 :[조건 경로]
 STR_ORDER_CONDITIONAL_TIMETABLE                                 :[조건 경로] {COMMA}번 경로로 건너뛰기 ({STRING} {STRING} {TT_TICKS}일 때)
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DISPLAY                     :[조건 경로] {COMMA}번 경로로 건너뛰기 (배차 일정 "{STRING}"의 {STRING}이 {STRING})
 
-STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY            :{1:STRING} 수송량의 {COMMA} 퍼센트
-STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY_REFIT      :개조될 {1:STRING} 수송량의 {COMMA} 퍼센트
+STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY            :{1:STRING} 수송량의 {0:COMMA} 퍼센트
+STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY_REFIT      :개조될 {1:STRING} 수송량의 {0:COMMA} 퍼센트
 
 STR_ORDER_RELEASE_SLOT                                          :슬롯 해제: {STRING}
 
