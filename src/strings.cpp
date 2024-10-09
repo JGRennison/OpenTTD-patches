@@ -473,8 +473,8 @@ static void FormatStateTicksHHMMString(StringBuilder builder, StateTicks ticks, 
 {
 	TickMinutes minutes = _settings_time.ToTickMinutes(ticks);
 	char hour[3], minute[3];
-	seprintf(hour,   lastof(hour),   "%02i", minutes.ClockHour());
-	seprintf(minute, lastof(minute), "%02i", minutes.ClockMinute());
+	format_to_fixed_z::format_to(hour,   lastof(hour),   "{:02}", minutes.ClockHour());
+	format_to_fixed_z::format_to(minute, lastof(minute), "{:02}", minutes.ClockMinute());
 	auto tmp_params = MakeParameters(hour, minute);
 	FormatString(builder, GetStringPtr(STR_FORMAT_DATE_MINUTES), tmp_params, case_index);
 }
@@ -482,8 +482,8 @@ static void FormatStateTicksHHMMString(StringBuilder builder, StateTicks ticks, 
 static void FormatTimeHHMMString(StringBuilder builder, uint time, uint case_index)
 {
 	char hour[9], minute[3];
-	seprintf(hour,   lastof(hour),   "%02i", (int) time / 100);
-	seprintf(minute, lastof(minute), "%02i", (int) time % 100);
+	format_to_fixed_z::format_to(hour,   lastof(hour),   "{:02}", (int) time / 100);
+	format_to_fixed_z::format_to(minute, lastof(minute), "{:02}", (int) time % 100);
 	auto tmp_params = MakeParameters(hour, minute);
 	return FormatString(builder, GetStringPtr(STR_FORMAT_DATE_MINUTES), tmp_params, case_index);
 }

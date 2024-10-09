@@ -13,6 +13,7 @@
 #include "../blitter/factory.hpp"
 #include "../thread.h"
 #include "../progress.h"
+#include "../core/format.hpp"
 #include "../core/random_func.hpp"
 #include "../core/math_func.hpp"
 #include "../core/mem_func.hpp"
@@ -54,14 +55,14 @@ void InputLoop();
 #if defined(WITH_FCITX)
 static SDL_Window *_fcitx_sdl_window;
 static bool _fcitx_mode = false;
-static char _fcitx_service_name[64];
-static char _fcitx_ic_name[64];
+static std::string _fcitx_service_name;
+static std::string _fcitx_ic_name;
 static DBusConnection *_fcitx_dbus_session_conn = nullptr;
 static bool _suppress_text_event = false;
 
 static void FcitxICMethod(const char *method)
 {
-	DBusMessage *msg = dbus_message_new_method_call(_fcitx_service_name, _fcitx_ic_name, "org.fcitx.Fcitx.InputContext", method);
+	DBusMessage *msg = dbus_message_new_method_call(_fcitx_service_name.c_str(), _fcitx_ic_name.c_str(), "org.fcitx.Fcitx.InputContext", method);
 	if (!msg) return;
 	dbus_connection_send(_fcitx_dbus_session_conn, msg, NULL);
 	dbus_connection_flush(_fcitx_dbus_session_conn);
@@ -128,7 +129,7 @@ static void FcitxInit()
 		return;
 	}
 	dbus_connection_set_exit_on_disconnect(_fcitx_dbus_session_conn, false);
-	seprintf(_fcitx_service_name, lastof(_fcitx_service_name), "org.fcitx.Fcitx-%d", GetXDisplayNum());
+	_fcitx_service_name = fmt::format("org.fcitx.Fcitx-{}", GetXDisplayNum());
 
 	auto guard = scope_guard([]() {
 		if (!_fcitx_mode) FcitxDeinit();
@@ -137,7 +138,7 @@ static void FcitxInit()
 	int pid = getpid();
 	int id = -1;
 	uint32_t enable, hk1sym, hk1state, hk2sym, hk2state;
-	DBusMessage *msg = dbus_message_new_method_call(_fcitx_service_name, "/inputmethod", "org.fcitx.Fcitx.InputMethod", "CreateICv3");
+	DBusMessage *msg = dbus_message_new_method_call(_fcitx_service_name.c_str(), "/inputmethod", "org.fcitx.Fcitx.InputMethod", "CreateICv3");
 	if (!msg) return;
 	auto guard1 = scope_guard([&]() {
 		dbus_message_unref(msg);
@@ -153,13 +154,13 @@ static void FcitxInit()
 
 	if (id < 0) return;
 
-	seprintf(_fcitx_ic_name, lastof(_fcitx_ic_name), "/inputcontext_%d", id);
+	_fcitx_ic_name = fmt::format("/inputcontext_{}", id);
 	dbus_bus_add_match(_fcitx_dbus_session_conn, "type='signal', interface='org.fcitx.Fcitx.InputContext'", nullptr);
 	dbus_connection_add_filter(_fcitx_dbus_session_conn, &FcitxDBusMessageFilter, nullptr, nullptr);
 	dbus_connection_flush(_fcitx_dbus_session_conn);
 
 	uint32_t caps = CAPACITY_PREEDIT;
-	DBusMessage *msg2 = dbus_message_new_method_call(_fcitx_service_name, _fcitx_ic_name, "org.fcitx.Fcitx.InputContext", "SetCapacity");
+	DBusMessage *msg2 = dbus_message_new_method_call(_fcitx_service_name.c_str(), _fcitx_ic_name.c_str(), "org.fcitx.Fcitx.InputContext", "SetCapacity");
 	if (!msg2) return;
 	auto guard3 = scope_guard([&]() {
 		dbus_message_unref(msg2);
@@ -191,7 +192,7 @@ static bool FcitxProcessKey()
 	int type = FCITX_PRESS_KEY;
 	uint32_t event_time = 0;
 
-	DBusMessage *msg = dbus_message_new_method_call(_fcitx_service_name, _fcitx_ic_name, "org.fcitx.Fcitx.InputContext", "ProcessKeyEvent");
+	DBusMessage *msg = dbus_message_new_method_call(_fcitx_service_name.c_str(), _fcitx_ic_name.c_str(), "org.fcitx.Fcitx.InputContext", "ProcessKeyEvent");
 	if (!msg) return false;
 	auto guard1 = scope_guard([&]() {
 		dbus_message_unref(msg);
@@ -459,7 +460,7 @@ static void SetTextInputRect()
 		}
 		x += winrect.x;
 		y += winrect.y;
-		DBusMessage *msg = dbus_message_new_method_call(_fcitx_service_name, _fcitx_ic_name, "org.fcitx.Fcitx.InputContext", "SetCursorRect");
+		DBusMessage *msg = dbus_message_new_method_call(_fcitx_service_name.c_str(), _fcitx_ic_name.c_str(), "org.fcitx.Fcitx.InputContext", "SetCursorRect");
 		if (!msg) return;
 		auto guard = scope_guard([&]() {
 			dbus_message_unref(msg);

@@ -220,8 +220,7 @@ static void _GenerateWorld()
 		Debug(desync, 1, "new_map: {:08x}", _settings_game.game_creation.generation_seed);
 
 		if (GetDebugLevel(DebugLevelID::desync) > 0) {
-			char name[MAX_PATH];
-			seprintf(name, lastof(name), "dmp_cmds_%08x_%08x.sav", _settings_game.game_creation.generation_seed, EconTime::CurDate().base());
+			std::string name = fmt::format("dmp_cmds_{:08x}_{:08x}.sav", _settings_game.game_creation.generation_seed, EconTime::CurDate());
 			SaveOrLoad(name, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, false, SMF_ZSTD_OK);
 		}
 	} catch (AbortGenerateWorldSignal&) {

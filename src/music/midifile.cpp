@@ -1103,14 +1103,12 @@ static bool CmdDumpSMF(uint8_t argc, char *argv[])
 		return false;
 	}
 
-	char fnbuf[MAX_PATH] = { 0 };
-	if (seprintf(fnbuf, lastof(fnbuf), "%s%s", FiosGetScreenshotDir(), argv[1]) >= (int)lengthof(fnbuf)) {
-		IConsolePrint(CC_ERROR, "Filename too long.");
-		return false;
-	}
+	format_buffer fnbuf;
+	fnbuf.format("{}{}", FiosGetScreenshotDir(), argv[1]);
+
 	IConsolePrint(CC_INFO, "Dumping MIDI to: {}", fnbuf);
 
-	if (_midifile_instance->WriteSMF(fnbuf)) {
+	if (_midifile_instance->WriteSMF(fnbuf.c_str())) {
 		IConsolePrint(CC_INFO, "File written successfully.");
 		return true;
 	} else {

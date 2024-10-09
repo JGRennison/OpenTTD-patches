@@ -4532,6 +4532,6 @@ SaveLoadVersion GeneralUpstreamChunkLoadInfo::GetLoadVersion()
 
 const char *ChunkIDDumper::operator()(uint32_t id)
 {
-	seprintf(this->buffer, lastof(this->buffer), "%c%c%c%c", id >> 24, id >> 16, id >> 8, id);
+	format_to_fixed_z::format_to(this->buffer, lastof(this->buffer), "{:c}{:c}{:c}{:c}", id >> 24, id >> 16, id >> 8, id);
 	return this->buffer;
 }

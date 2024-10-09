@@ -19,6 +19,11 @@
 #include "stdafx.h"
 #include "os_abstraction.h"
 #include "../../string_func.h"
+
+#if defined(_WIN32)
+#include "../../core/format.hpp"
+#endif
+
 #include <mutex>
 
 #include "../../safeguards.h"
@@ -83,11 +88,9 @@ const char *NetworkError::AsString() const
 		wchar_t buffer[512];
 		if (FormatMessage(FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, nullptr, this->error,
 			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), buffer, static_cast<DWORD>(std::size(buffer)), nullptr) == 0) {
-			char errbuffer[32];
-			seprintf(errbuffer, lastof(errbuffer), "Unknown error %d", this->error);
-			this->message.assign(errbuffer);
+			this->message = fmt::format("Unknown error {}", this->error);
 		} else {
-			this->message.assign(FS2OTTD(buffer));
+			this->message = FS2OTTD(buffer);
 		}
 #else
 		this->message.assign(StrErrorDumper().Get(this->error));

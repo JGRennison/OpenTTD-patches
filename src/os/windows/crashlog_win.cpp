@@ -601,7 +601,7 @@ static const uint MAX_FRAMES     = 64;
 				CONST PMINIDUMP_CALLBACK_INFORMATION);
 		MiniDumpWriteDumpT funcMiniDumpWriteDump = (MiniDumpWriteDumpT) GetProcAddress(dbghelp, "MiniDumpWriteDump");
 		if (funcMiniDumpWriteDump != nullptr) {
-			seprintf(filename, filename_last, "%scrash.dmp", _personal_dir.c_str());
+			format_to_fixed_z::format_to(filename, filename_last, "{}crash.dmp", _personal_dir);
 			HANDLE file  = CreateFile(OTTD2FS(filename).c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, 0, 0);
 			HANDLE proc  = GetCurrentProcess();
 			DWORD procid = GetCurrentProcessId();

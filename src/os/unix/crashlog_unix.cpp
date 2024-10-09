@@ -94,7 +94,7 @@ static int GetTemporaryFD()
 {
 	char name[MAX_PATH];
 	extern std::string _personal_dir;
-	seprintf(name, lastof(name), "%sopenttd-tmp-XXXXXX", _personal_dir.c_str());
+	format_to_fixed_z::format_to(name, lastof(name), "{}openttd-tmp-XXXXXX", _personal_dir);
 	int fd = mkstemp(name);
 	if (fd != -1) {
 		/* Unlink file but leave fd open until finished with */
@@ -521,7 +521,7 @@ class CrashLogUnix final : public CrashLog {
 		char tid_buffer[16];
 		char disasm_buffer[32];
 
-		seprintf(tid_buffer, lastof(tid_buffer), "%d", tid);
+		format_to_fixed_z::format_to(tid_buffer, lastof(tid_buffer), "{:d}", tid);
 
 		std::array<const char *, 32> args;
 		size_t next_arg = 0;
@@ -543,7 +543,7 @@ class CrashLogUnix final : public CrashLog {
 
 #ifdef WITH_SIGACTION
 		if (this->GetMessage() == nullptr && this->signal_instruction_ptr_valid) {
-			seprintf(disasm_buffer, lastof(disasm_buffer), "x/1i %p", this->signal_instruction_ptr);
+			format_to_fixed_z::format_to(disasm_buffer, lastof(disasm_buffer), "x/1i {:#x}", reinterpret_cast<uintptr_t>(this->signal_instruction_ptr));
 			add_arg("-ex");
 			add_arg("set disassembly-flavor intel");
 			add_arg("-ex");
@@ -615,7 +615,7 @@ class CrashLogUnix final : public CrashLog {
 				size_t saved_position = buffer.size();
 				char addr_ptr_buffer[64];
 				/* subtract one to get the line before the return address, i.e. the function call line */
-				seprintf(addr_ptr_buffer, lastof(addr_ptr_buffer), PRINTF_SIZEX, (char *)trace[i] - (char *)dl_lm->l_addr - 1);
+				format_to_fixed_z::format_to(addr_ptr_buffer, lastof(addr_ptr_buffer), "{:x}", (char *)trace[i] - (char *)dl_lm->l_addr - 1);
 				const char *args[] = {
 					"addr2line",
 					"-e",

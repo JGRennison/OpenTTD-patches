@@ -52,7 +52,7 @@ static bool ExecReadStdoutThroughFile(const char *file, char *const *args, forma
 
 	char name[MAX_PATH];
 	extern std::string _personal_dir;
-	seprintf(name, lastof(name), "%sopenttd-tmp-XXXXXX", _personal_dir.c_str());
+	format_to_fixed_z::format_to(name, lastof(name), "{}openttd-tmp-XXXXXX", _personal_dir);
 	int fd = mkstemp(name);
 	if (fd == -1) {
 		close(null_fd);
@@ -258,7 +258,7 @@ class CrashLogOSX final : public CrashLog {
 		char pid_buffer[16];
 		char disasm_buffer[64];
 
-		seprintf(pid_buffer, lastof(pid_buffer), "%d", pid);
+		format_to_fixed_z::format_to(pid_buffer, lastof(pid_buffer), "{:d}", pid);
 
 		std::array<const char *, 32> args;
 		size_t next_arg = 0;
@@ -277,7 +277,7 @@ class CrashLogOSX final : public CrashLog {
 		add_arg(IsNonMainThread() ? "bt all" : "bt 100");
 
 		if (this->GetMessage() == nullptr && this->signal_instruction_ptr_valid) {
-			seprintf(disasm_buffer, lastof(disasm_buffer), "disassemble -b -F intel -c 1 -s %p", this->signal_instruction_ptr);
+			format_to_fixed_z::format_to(disasm_buffer, lastof(disasm_buffer), "disassemble -b -F intel -c 1 -s {:#x}", reinterpret_cast<uintptr_t>(this->signal_instruction_ptr));
 			add_arg("-o");
 			add_arg(disasm_buffer);
 		}
@@ -443,15 +443,15 @@ public:
 		static const char crash_title[] =
 			"A serious fault condition occurred in the game. The game will shut down.";
 
-		char message[1024];
-		seprintf(message, lastof(message),
-				 "Please send the generated crash information and the last (auto)save to the patchpack developer. "
-				 "This will greatly help debugging. The correct place to do this is https://www.tt-forums.net/viewtopic.php?f=33&t=73469"
-				 " or https://github.com/JGRennison/OpenTTD-patches\n\n"
-				 "Generated file(s):\n%s\n%s\n%s",
-				 this->crashlog_filename, this->savegame_filename, this->screenshot_filename);
+		format_buffer_sized<1024> message;
+		message.format(
+				"Please send the generated crash information and the last (auto)save to the patchpack developer. "
+				"This will greatly help debugging. The correct place to do this is https://www.tt-forums.net/viewtopic.php?f=33&t=73469"
+				" or https://github.com/JGRennison/OpenTTD-patches\n\n"
+				"Generated file(s):\n{}\n{}\n{}",
+				this->crashlog_filename, this->savegame_filename, this->screenshot_filename);
 
-		ShowMacDialog(crash_title, message, "Quit");
+		ShowMacDialog(crash_title, message.c_str(), "Quit");
 	}
 };
 
