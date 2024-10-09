@@ -80,6 +80,7 @@ public:
 	format_target& operator=(const format_target &other) = delete;
 
 	inline size_t size() const noexcept;
+	inline bool empty() const noexcept { return this->size() == 0; }
 	void restore_size(size_t);
 	inline const char *data() const noexcept;
 	inline char *data() noexcept { return const_cast<char *>(const_cast<const format_target *>(this)->data()); }
@@ -194,6 +195,7 @@ public:
 	const char *begin() const noexcept { return this->buffer.begin(); }
 	const char *end() const noexcept { return this->buffer.end(); }
 	size_t size() const noexcept { return this->buffer.size(); }
+	bool empty() const noexcept { return this->size() == 0; }
 	size_t capacity() const noexcept { return this->buffer.capacity(); }
 	char *data() noexcept { return this->buffer.data(); }
 	const char *data() const noexcept { return this->buffer.data(); }
@@ -277,6 +279,8 @@ public:
 	{
 		return (this->flags & FL_OVERFLOW) != 0 ? this->inner.buffer_size : this->inner.size();
 	}
+
+	bool empty() const noexcept { return this->size() == 0; }
 
 	char *begin() noexcept { return this->data(); }
 	char *end() noexcept { return this->data() + this->size(); }
