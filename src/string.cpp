@@ -51,51 +51,6 @@
 #undef vsnprintf
 
 /**
- * Safer implementation of vsnprintf; same as vsnprintf except:
- * - last instead of size, i.e. replace sizeof with lastof.
- * - return gives the amount of characters added, not what it would add.
- * @param str    buffer to write to up to last
- * @param last   last character we may write to
- * @param format the formatting (see snprintf)
- * @param ap     the list of arguments for the format
- * @return the number of added characters
- */
-int CDECL vseprintf(char *str, const char *last, const char *format, va_list ap)
-{
-	ptrdiff_t diff = last - str;
-	if (diff < 0) return 0;
-	return std::min(static_cast<int>(diff), vsnprintf(str, diff + 1, format, ap));
-}
-
-/**
- * Appends characters from one string to another.
- *
- * Appends the source string to the destination string with respect of the
- * terminating null-character and and the last pointer to the last element
- * in the destination buffer. If the last pointer is set to nullptr no
- * boundary check is performed.
- *
- * @note usage: strecat(dst, src, lastof(dst));
- * @note lastof() applies only to fixed size arrays
- *
- * @param dst The buffer containing the target string
- * @param src The buffer containing the string to append
- * @param last The pointer to the last element of the destination buffer
- * @return The pointer to the terminating null-character in the destination buffer
- */
-char *strecat(char *dst, const char *src, const char *last)
-{
-	dbg_assert(dst <= last);
-	while (*dst != '\0') {
-		if (dst == last) return dst;
-		dst++;
-	}
-
-	return strecpy(dst, src, last);
-}
-
-
-/**
  * Copies characters from one buffer to another.
  *
  * Copies the source string to the destination buffer with respect of the
@@ -682,63 +637,6 @@ bool IsValidChar(char32_t key, CharSetFilter afilter)
 		case CS_HEXADECIMAL:   return (key >= '0' && key <= '9') || (key >= 'a' && key <= 'f') || (key >= 'A' && key <= 'F');
 		default: NOT_REACHED();
 	}
-}
-
-#ifdef _WIN32
-#if defined(_MSC_VER) && _MSC_VER < 1900
-/**
- * Almost POSIX compliant implementation of \c vsnprintf for VC compiler.
- * The difference is in the value returned on output truncation. This
- * implementation returns size whereas a POSIX implementation returns
- * size or more (the number of bytes that would be written to str
- * had size been sufficiently large excluding the terminating null byte).
- */
-int CDECL vsnprintf(char *str, size_t size, const char *format, va_list ap)
-{
-	if (size == 0) return 0;
-
-	errno = 0;
-	int ret = _vsnprintf(str, size, format, ap);
-
-	if (ret < 0) {
-		if (errno != ERANGE) {
-			/* There's a formatting error, better get that looked
-			 * at properly instead of ignoring it. */
-			NOT_REACHED();
-		}
-	} else if ((size_t)ret < size) {
-		/* The buffer is big enough for the number of
-		 * characters stored (excluding null), i.e.
-		 * the string has been null-terminated. */
-		return ret;
-	}
-
-	/* The buffer is too small for _vsnprintf to write the
-	 * null-terminator at its end and return size. */
-	str[size - 1] = '\0';
-	return (int)size;
-}
-#endif /* _MSC_VER */
-
-#endif /* _WIN32 */
-
-/**
- * Safer implementation of snprintf; same as snprintf except:
- * - last instead of size, i.e. replace sizeof with lastof.
- * - return gives the amount of characters added, not what it would add.
- * @param str    buffer to write to up to last
- * @param last   last character we may write to
- * @param format the formatting (see snprintf)
- * @return the number of added characters
- */
-int CDECL seprintf(char *str, const char *last, const char *format, ...)
-{
-	va_list ap;
-
-	va_start(ap, format);
-	int ret = vseprintf(str, last, format, ap);
-	va_end(ap);
-	return ret;
 }
 
 

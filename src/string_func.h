@@ -31,14 +31,10 @@
 #include "core/bitmath_func.hpp"
 #include "string_type.h"
 
-char *strecat(char *dst, const char *src, const char *last) NOACCESS(3);
 char *strecpy(char *dst, const char *src, const char *last, bool quiet_mode = false) NOACCESS(3);
 char *stredup(const char *src, const char *last = nullptr) NOACCESS(2);
 
 void strecpy(std::span<char> dst, std::string_view src);
-
-int CDECL seprintf(char *str, const char *last, const char *format, ...) WARN_FORMAT(3, 4) NOACCESS(2);
-int CDECL vseprintf(char *str, const char *last, const char *format, va_list ap) WARN_FORMAT(3, 0) NOACCESS(2);
 
 std::string FormatArrayAsHex(std::span<const uint8_t> data, bool upper_case = true);
 
