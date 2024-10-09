@@ -16,6 +16,7 @@
 #include "newgrf_townname.h"
 #include "core/alloc_func.hpp"
 #include "string_func.h"
+#include "strings_builder.h"
 #include "strings_internal.h"
 
 #include "table/strings.h"

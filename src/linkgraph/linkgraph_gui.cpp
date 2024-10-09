@@ -18,6 +18,8 @@
 #include "../smallmap_gui.h"
 #include "../zoom_func.h"
 #include "../landscape.h"
+#include "../strings_builder.h"
+#include "../strings_func.h"
 #include "../core/geometry_func.hpp"
 #include "../widgets/link_graph_legend_widget.h"
 

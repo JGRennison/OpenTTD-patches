@@ -41,6 +41,7 @@
 #include "settings_func.h"
 #include "genworld.h"
 #include "progress.h"
+#include "strings_builder.h"
 #include "strings_func.h"
 #include "date_func.h"
 #include "vehicle_func.h"

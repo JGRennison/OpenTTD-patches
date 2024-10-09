@@ -11,6 +11,7 @@
 #include "window_gui.h"
 #include "engine_base.h"
 #include "command_func.h"
+#include "strings_builder.h"
 #include "strings_func.h"
 #include "engine_gui.h"
 #include "articulated_vehicles.h"

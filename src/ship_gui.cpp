@@ -12,6 +12,7 @@
 #include "window_gui.h"
 #include "gfx_func.h"
 #include "vehicle_gui.h"
+#include "strings_builder.h"
 #include "strings_func.h"
 #include "vehicle_func.h"
 #include "spritecache.h"

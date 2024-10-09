@@ -83,6 +83,7 @@
 #include "vehicle_base.h"
 #include "vehicle_gui.h"
 #include "blitter/factory.hpp"
+#include "strings_builder.h"
 #include "strings_func.h"
 #include "zoom_func.h"
 #include "vehicle_func.h"

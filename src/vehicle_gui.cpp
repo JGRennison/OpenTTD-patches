@@ -22,6 +22,7 @@
 #include "aircraft.h"
 #include "depot_map.h"
 #include "group_gui.h"
+#include "strings_builder.h"
 #include "strings_func.h"
 #include "vehicle_func.h"
 #include "autoreplace_gui.h"

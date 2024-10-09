@@ -18,6 +18,7 @@
 #include "company_func.h"
 #include "core/backup_type.hpp"
 #include "string_func.h"
+#include "strings_builder.h"
 #include "strings_func.h"
 #include "3rdparty/cpp-btree/btree_map.h"
 

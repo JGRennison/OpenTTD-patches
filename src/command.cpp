@@ -16,6 +16,7 @@
 #include "network/network_type.h"
 #include "network/network.h"
 #include "genworld.h"
+#include "strings_builder.h"
 #include "strings_func.h"
 #include "texteff.hpp"
 #include "town.h"
