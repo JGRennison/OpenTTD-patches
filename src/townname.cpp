@@ -103,19 +103,21 @@ std::string GetTownName(const Town *t)
  */
 bool VerifyTownName(uint32_t r, const TownNameParams *par, TownNames *town_names)
 {
-	std::string name = GetTownName(par, r);
+	format_buffer name;
+	GetTownName(StringBuilder(name), par, r);
 
 	/* Check size and width */
-	if (Utf8StringLength(name) >= MAX_LENGTH_TOWN_NAME_CHARS) return false;
+	if (Utf8StringLength(name.c_str()) >= MAX_LENGTH_TOWN_NAME_CHARS) return false;
 
 	if (town_names != nullptr) {
-		if (town_names->find(name) != town_names->end()) return false;
-		town_names->insert(name);
+		std::string str = name.to_string();
+		if (town_names->find(str) != town_names->end()) return false;
+		town_names->insert(std::move(str));
 	} else {
 		for (const Town *t : Town::Iterate()) {
 			/* We can't just compare the numbers since
 			 * several numbers may map to a single name. */
-			if (name == t->GetCachedName()) return false;
+			if ((std::string_view)name == t->GetCachedName()) return false;
 		}
 	}
 
