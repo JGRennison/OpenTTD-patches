@@ -571,8 +571,12 @@ GRFListCompatibility IsGoodGRFConfigList(GRFConfig *grfconfig)
 			/* If we have not found the exactly matching GRF try to find one with the
 			 * same grfid, as it most likely is compatible */
 			f = FindGRFConfig(c->ident.grfid, FGCM_COMPATIBLE, nullptr, c->version);
+			auto grf_info = format_lambda([](format_target &buf, GRFConfig *c) {
+				const char *name = GetDefaultLangGRFStringFromGRFText(c->name);
+				if (name != nullptr) buf.format(", name: '{}'", name);
+			});
 			if (f != nullptr) {
-				Debug(grf, 1, "NewGRF {:08X} ({}) not found; checksum {}, name: '{}'. Compatibility mode on", BSWAP32(c->ident.grfid), c->GetDisplayPath(), c->ident.md5sum, GetDefaultLangGRFStringFromGRFText(c->name));
+				Debug(grf, 1, "NewGRF {:08X} ({}) not found; checksum {}{}'. Compatibility mode on", BSWAP32(c->ident.grfid), c->GetDisplayPath(), c->ident.md5sum, grf_info(c));
 				if (!HasBit(c->flags, GCF_COMPATIBLE)) {
 					/* Preserve original_md5sum after it has been assigned */
 					SetBit(c->flags, GCF_COMPATIBLE);
@@ -585,7 +589,7 @@ GRFListCompatibility IsGoodGRFConfigList(GRFConfig *grfconfig)
 			}
 
 			/* No compatible grf was found, mark it as disabled */
-			Debug(grf, 0, "NewGRF {:08X} ({}) not found; checksum {}, name: '{}'", BSWAP32(c->ident.grfid), c->GetDisplayPath(), c->ident.md5sum, GetDefaultLangGRFStringFromGRFText(c->name));
+			Debug(grf, 0, "NewGRF {:08X} ({}) not found; checksum {}{}", BSWAP32(c->ident.grfid), c->GetDisplayPath(), c->ident.md5sum, grf_info(c));
 
 			c->status = GCS_NOT_FOUND;
 			res = GLC_NOT_FOUND;
