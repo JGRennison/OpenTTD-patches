@@ -154,17 +154,17 @@ struct BaseSet {
 	/**
 	 * Search a textfile file next to this base media.
 	 * @param type The type of the textfile to search for.
-	 * @return The filename for the textfile, \c nullptr otherwise.
+	 * @return The filename for the textfile.
 	 */
-	const char *GetTextfile(TextfileType type) const
+	std::optional<std::string> GetTextfile(TextfileType type) const
 	{
 		for (const auto &file : this->files) {
-			const char *textfile = ::GetTextfile(type, BASESET_DIR, file.filename.c_str());
-			if (textfile != nullptr) {
+			auto textfile = ::GetTextfile(type, BASESET_DIR, file.filename);
+			if (textfile.has_value()) {
 				return textfile;
 			}
 		}
-		return nullptr;
+		return std::nullopt;
 	}
 };
 

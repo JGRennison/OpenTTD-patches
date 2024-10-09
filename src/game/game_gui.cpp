@@ -428,7 +428,7 @@ struct GSConfigWindow : public Window {
 		const GameConfig *config = GameConfig::GetConfig();
 		this->SetWidgetDisabledState(WID_GSC_OPEN_URL, config->GetInfo() == nullptr || config->GetInfo()->GetURL().empty());
 		for (TextfileType tft = TFT_CONTENT_BEGIN; tft < TFT_CONTENT_END; tft++) {
-			this->SetWidgetDisabledState(WID_GSC_TEXTFILE + tft, config->GetTextfile(tft, (CompanyID)OWNER_DEITY) == nullptr);
+			this->SetWidgetDisabledState(WID_GSC_TEXTFILE + tft, !config->GetTextfile(tft, (CompanyID)OWNER_DEITY).has_value());
 		}
 		this->RebuildVisibleSettings();
 		HideDropDownMenu(this);

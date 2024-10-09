@@ -732,14 +732,14 @@ static std::vector<char> Xunzip(std::span<char> input)
 /**
  * Loads the textfile text from file and setup #lines.
  */
-/* virtual */ void TextfileWindow::LoadTextfile(const char *textfile, Subdirectory dir)
+/* virtual */ void TextfileWindow::LoadTextfile(const std::string &textfile, Subdirectory dir)
 {
 	this->lines.clear();
 	this->jumplist.clear();
 
 	if (this->GetWidget<NWidgetStacked>(WID_TF_SEL_JUMPLIST)->SetDisplayedPlane(SZSP_HORIZONTAL)) this->ReInit();
 
-	if (textfile == nullptr) return;
+	if (textfile.empty()) return;
 
 	/* Get text from file */
 	size_t filesize;
@@ -755,19 +755,14 @@ static std::vector<char> Xunzip(std::span<char> input)
 
 	if (read != buf.size()) return;
 
-#if defined(WITH_ZLIB) || defined(WITH_LIBLZMA)
-	const char *suffix = strrchr(textfile, '.');
-	if (suffix == nullptr) return;
-#endif
-
 #if defined(WITH_ZLIB)
 	/* In-place gunzip */
-	if (std::string_view(textfile).ends_with(".gz")) buf = Gunzip(buf);
+	if (textfile.ends_with(".gz")) buf = Gunzip(buf);
 #endif
 
 #if defined(WITH_LIBLZMA)
 	/* In-place xunzip */
-	if (std::string_view(textfile).ends_with(".xz")) buf = Xunzip(buf);
+	if (textfile.ends_with(".xz")) buf = Xunzip(buf);
 #endif
 
 	if (buf.empty()) return;
@@ -834,7 +829,7 @@ void TextfileWindow::LoadText(std::string_view buf)
  * @param filename The filename of the content to look for.
  * @return The path to the textfile, \c nullptr otherwise.
  */
-const char *GetTextfile(TextfileType type, Subdirectory dir, const char *filename)
+std::optional<std::string> GetTextfile(TextfileType type, Subdirectory dir, std::string_view filename)
 {
 	static const char * const prefixes[] = {
 		"readme",
@@ -844,19 +839,18 @@ const char *GetTextfile(TextfileType type, Subdirectory dir, const char *filenam
 	static_assert(lengthof(prefixes) == TFT_CONTENT_END);
 
 	/* Only the generic text file types allowed for this function */
-	if (type >= TFT_CONTENT_END) return nullptr;
+	if (type >= TFT_CONTENT_END) return std::nullopt;
 
-	const char *prefix = prefixes[type];
+	std::string_view prefix = prefixes[type];
 
-	if (filename == nullptr) return nullptr;
+	if (filename.empty()) return std::nullopt;
 
-	static char file_path[MAX_PATH];
-	strecpy(file_path, filename, lastof(file_path));
+	auto slash = filename.find_last_of(PATHSEPCHAR);
+	if (slash == std::string::npos) return std::nullopt;
 
-	char *slash = strrchr(file_path, PATHSEPCHAR);
-	if (slash == nullptr) return nullptr;
+	std::string_view base_path(filename.data(), slash + 1);
 
-	static const char * const exts[] = {
+	static const std::initializer_list<std::string_view> extensions{
 		"txt",
 		"md",
 #if defined(WITH_ZLIB)
@@ -869,15 +863,15 @@ const char *GetTextfile(TextfileType type, Subdirectory dir, const char *filenam
 #endif
 	};
 
-	for (size_t i = 0; i < lengthof(exts); i++) {
-		seprintf(slash + 1, lastof(file_path), "%s_%s.%s", prefix, GetCurrentLanguageIsoCode(), exts[i]);
+	for (auto &extension : extensions) {
+		std::string file_path = fmt::format("{}{}_{}.{}", base_path, prefix, GetCurrentLanguageIsoCode(), extension);
 		if (FioCheckFileExists(file_path, dir)) return file_path;
 
-		seprintf(slash + 1, lastof(file_path), "%s_%.2s.%s", prefix, GetCurrentLanguageIsoCode(), exts[i]);
+		file_path = fmt::format("{}{}_{:.2s}.{}", base_path, prefix, GetCurrentLanguageIsoCode(), extension);
 		if (FioCheckFileExists(file_path, dir)) return file_path;
 
-		seprintf(slash + 1, lastof(file_path), "%s.%s", prefix, exts[i]);
+		file_path = fmt::format("{}{}.{}", base_path, prefix, extension);
 		if (FioCheckFileExists(file_path, dir)) return file_path;
 	}
-	return nullptr;
+	return std::nullopt;
 }

@@ -183,7 +183,7 @@ struct GRFConfig : ZeroedMemoryAllocator {
 	void SetParams(const std::vector<uint32_t> &pars);
 	void CopyParams(const GRFConfig &src);
 
-	const char *GetTextfile(TextfileType type) const;
+	std::optional<std::string> GetTextfile(TextfileType type) const;
 	const char *GetName() const;
 	const char *GetDescription() const;
 	const char *GetURL() const;

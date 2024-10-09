@@ -105,7 +105,7 @@ struct BaseSetTextfileWindow : public TextfileWindow {
 	const std::string name; ///< Name of the content.
 	const StringID content_type; ///< STR_CONTENT_TYPE_xxx for title.
 
-	BaseSetTextfileWindow(TextfileType file_type, const std::string &name, const char *textfile, StringID content_type) : TextfileWindow(file_type), name(name), content_type(content_type)
+	BaseSetTextfileWindow(TextfileType file_type, const std::string &name, const std::string &textfile, StringID content_type) : TextfileWindow(file_type), name(name), content_type(content_type)
 	{
 		this->ConstructWindow();
 		this->LoadTextfile(textfile, BASESET_DIR);
@@ -130,7 +130,10 @@ template <class TBaseSet>
 void ShowBaseSetTextfileWindow(TextfileType file_type, const TBaseSet *baseset, StringID content_type)
 {
 	CloseWindowById(WC_TEXTFILE, file_type);
-	new BaseSetTextfileWindow(file_type, baseset->name, baseset->GetTextfile(file_type), content_type);
+	auto textfile = baseset->GetTextfile(file_type);
+	if (textfile.has_value()) {
+		new BaseSetTextfileWindow(file_type, baseset->name, textfile.value(), content_type);
+	}
 }
 
 template <class T>
@@ -1059,9 +1062,9 @@ struct GameOptionsWindow : Window {
 		this->SetWidgetDisabledState(WID_GO_BASE_MUSIC_OPEN_URL, BaseMusic::GetUsedSet() == nullptr || BaseMusic::GetUsedSet()->url.empty());
 
 		for (TextfileType tft = TFT_CONTENT_BEGIN; tft < TFT_CONTENT_END; tft++) {
-			this->SetWidgetDisabledState(WID_GO_BASE_GRF_TEXTFILE + tft, BaseGraphics::GetUsedSet() == nullptr || BaseGraphics::GetUsedSet()->GetTextfile(tft) == nullptr);
-			this->SetWidgetDisabledState(WID_GO_BASE_SFX_TEXTFILE + tft, BaseSounds::GetUsedSet() == nullptr || BaseSounds::GetUsedSet()->GetTextfile(tft) == nullptr);
-			this->SetWidgetDisabledState(WID_GO_BASE_MUSIC_TEXTFILE + tft, BaseMusic::GetUsedSet() == nullptr || BaseMusic::GetUsedSet()->GetTextfile(tft) == nullptr);
+			this->SetWidgetDisabledState(WID_GO_BASE_GRF_TEXTFILE + tft, BaseGraphics::GetUsedSet() == nullptr || !BaseGraphics::GetUsedSet()->GetTextfile(tft).has_value());
+			this->SetWidgetDisabledState(WID_GO_BASE_SFX_TEXTFILE + tft, BaseSounds::GetUsedSet() == nullptr || !BaseSounds::GetUsedSet()->GetTextfile(tft).has_value());
+			this->SetWidgetDisabledState(WID_GO_BASE_MUSIC_TEXTFILE + tft, BaseMusic::GetUsedSet() == nullptr || !BaseMusic::GetUsedSet()->GetTextfile(tft).has_value());
 		}
 
 		this->SetWidgetsDisabledState(!_network_available, WID_GO_BASE_GRF_CONTENT_DOWNLOAD, WID_GO_BASE_SFX_CONTENT_DOWNLOAD, WID_GO_BASE_MUSIC_CONTENT_DOWNLOAD);

@@ -314,7 +314,7 @@ struct AIConfigWindow : public Window {
 
 		this->SetWidgetDisabledState(WID_AIC_OPEN_URL, this->selected_slot == INVALID_COMPANY || config->GetInfo() == nullptr || config->GetInfo()->GetURL().empty());
 		for (TextfileType tft = TFT_CONTENT_BEGIN; tft < TFT_CONTENT_END; tft++) {
-			this->SetWidgetDisabledState(WID_AIC_TEXTFILE + tft, this->selected_slot == INVALID_COMPANY || (config->GetTextfile(tft, this->selected_slot) == nullptr));
+			this->SetWidgetDisabledState(WID_AIC_TEXTFILE + tft, this->selected_slot == INVALID_COMPANY || !config->GetTextfile(tft, this->selected_slot).has_value());
 		}
 	}
 };

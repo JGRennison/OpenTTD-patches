@@ -17,12 +17,7 @@
 #include <optional>
 #include <vector>
 
-const char *GetTextfile(TextfileType type, Subdirectory dir, const char *filename);
-
-inline const char *GetTextfile(TextfileType type, Subdirectory dir, const std::string &filename)
-{
-	return GetTextfile(type, dir, filename.c_str());
-}
+std::optional<std::string> GetTextfile(TextfileType type, Subdirectory dir, std::string_view filename);
 
 /** Window for displaying a textfile */
 struct TextfileWindow : public Window, MissingGlyphSearcher {
@@ -44,12 +39,7 @@ struct TextfileWindow : public Window, MissingGlyphSearcher {
 	void SetFontNames(FontCacheSettings *settings, const char *font_name, const void *os_data) override;
 	void ScrollToLine(size_t line);
 
-	virtual void LoadTextfile(const char *textfile, Subdirectory dir);
-
-	inline void LoadTextfile(const std::string &textfile, Subdirectory dir)
-	{
-		this->LoadTextfile(textfile.c_str(), dir);
-	}
+	virtual void LoadTextfile(const std::string &textfile, Subdirectory dir);
 
 protected:
 	TextfileWindow(TextfileType file_type);

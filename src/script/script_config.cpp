@@ -175,9 +175,9 @@ std::string ScriptConfig::SettingsToString() const
 	return result;
 }
 
-const char *ScriptConfig::GetTextfile(TextfileType type, CompanyID slot) const
+std::optional<std::string> ScriptConfig::GetTextfile(TextfileType type, CompanyID slot) const
 {
-	if (slot == INVALID_COMPANY || this->GetInfo() == nullptr) return nullptr;
+	if (slot == INVALID_COMPANY || this->GetInfo() == nullptr) return std::nullopt;
 
 	return ::GetTextfile(type, (slot == OWNER_DEITY) ? GAME_DIR : AI_DIR, this->GetInfo()->GetMainScript());
 }
