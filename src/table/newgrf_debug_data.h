@@ -20,7 +20,6 @@
 #include "../aircraft.h"
 #include "../object_map.h"
 #include "../waypoint_base.h"
-#include "../string_func_extra.h"
 #include "../newgrf_extension.h"
 #include "../animated_tile.h"
 #include "../clear_map.h"
@@ -63,35 +62,31 @@ struct label_dumper : public NewGRFLabelDumper {
 
 static void DumpRailTypeList(NIExtraInfoOutput &output, const char *prefix, RailTypes rail_types, RailTypes mark = RAILTYPES_NONE)
 {
-	char buffer[256];
 	for (RailType rt = RAILTYPE_BEGIN; rt < RAILTYPE_END; rt++) {
 		if (!HasBit(rail_types, rt)) continue;
 		const RailTypeInfo *rti = GetRailTypeInfo(rt);
 		if (rti->label == 0) continue;
 
-		seprintf(buffer, lastof(buffer), "%s%02u %s%s",
+		output.Print("{}{:02} {}{}",
 				prefix,
-				(uint) rt,
+				(uint)rt,
 				label_dumper().Label(rti->label),
 				HasBit(mark, rt) ? " !!!" : "");
-		output.print(buffer);
 	}
 }
 
 static void DumpRoadTypeList(NIExtraInfoOutput &output, const char *prefix, RoadTypes road_types)
 {
-	char buffer[256];
 	for (RoadType rt = ROADTYPE_BEGIN; rt < ROADTYPE_END; rt++) {
 		if (!HasBit(road_types, rt)) continue;
 		const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
 		if (rti->label == 0) continue;
 
-		seprintf(buffer, lastof(buffer), "%s%02u %s %s",
+		output.Print("{}{:02} {} {}",
 				prefix,
-				(uint) rt,
+				(uint)rt,
 				RoadTypeIsTram(rt) ? "Tram" : "Road",
 				label_dumper().Label(rti->label));
-		output.print(buffer);
 	}
 }
 
@@ -161,15 +156,15 @@ class NIHVehicle : public NIHelper {
 	{
 
 		Vehicle *v = Vehicle::Get(index);
-		output.print("Debug Info:");
+		output.Print("Debug Info:");
 		this->VehicleInfo(v, output, true, 0);
 		if (v->type == VEH_AIRCRAFT) {
-			output.print("");
-			output.print("Shadow:");
+			output.Print("");
+			output.Print("Shadow:");
 			this->VehicleInfo(v->Next(), output, false, 8);
 			if (v->Next()->Next() != nullptr) {
-				output.print("");
-				output.print("Rotor:");
+				output.Print("");
+				output.Print("Rotor:");
 				this->VehicleInfo(v->Next()->Next(), output, false, 16);
 			}
 		}
@@ -177,134 +172,102 @@ class NIHVehicle : public NIHelper {
 
 	void VehicleInfo(Vehicle *v, NIExtraInfoOutput &output, bool show_engine, uint flag_shift) const
 	{
-		char buffer[1024];
-		seprintf(buffer, lastof(buffer), "  Index: %u", v->index);
-		output.print(buffer);
+		output.Print("  Index: {}", v->index);
 		output.register_next_line_click_flag_toggle(1 << flag_shift);
-		char *b = buffer;
 		if (output.flags & (1 << flag_shift)) {
-			b += seprintf(b, lastof(buffer), "  [-] Flags:");
-			output.print(buffer);
+			output.Print("  [-] Flags:");
 
-			format_to_fixed vfbuf(buffer, sizeof(buffer));
-			v->DumpVehicleFlagsMultiline(vfbuf, "    ", "  ");
-			ProcessLineByLine(vfbuf, output.print);
+			v->DumpVehicleFlagsMultiline(output.buffer, "    ", "  ");
+			output.FinishPrintMultiline();
 
-			seprintf(buffer, lastof(buffer), "    Tile hash: %s", (v->hash_tile_current != INVALID_TILE) ? "yes" : "no");
-			output.print(buffer);
+			output.Print("    Tile hash: {}", (v->hash_tile_current != INVALID_TILE) ? "yes" : "no");
 		} else {
-			b += seprintf(b, lastof(buffer), "  [+] Flags: ");
+			output.Print("  [+] Flags: ");
 
-			format_to_fixed vfbuf(std::span<char>(b, endof(buffer)));
-			v->DumpVehicleFlags(vfbuf, false);
-			output.print(std::string_view{buffer, vfbuf.end()});
+			v->DumpVehicleFlags(output.buffer, false);
+			output.FinishPrint();
 		}
 
-		b = buffer + seprintf(buffer, lastof(buffer), "  ");
-
-		format_to_fixed_z tileinfobuf(b, lastof(buffer));
-		DumpTileInfo(tileinfobuf, v->tile);
-		b = tileinfobuf.finalise();
-
-		if (buffer[2] == 't') buffer[2] = 'T';
-		output.print(buffer);
+		output.buffer.append("  ");
+		DumpTileInfo(output.buffer, v->tile);
+		if (output.buffer.size() > 2 && output.buffer.data()[2] == 't') output.buffer.data()[2] = 'T';
+		output.FinishPrint();
 
 		TileIndex vtile = TileVirtXY(v->x_pos, v->y_pos);
 		if (v->tile != vtile) {
-			seprintf(buffer, lastof(buffer), "  VirtXYTile: %X (%u x %u)", vtile, TileX(vtile), TileY(vtile));
-			output.print(buffer);
+			output.Print("  VirtXYTile: {:X} ({} x {})", vtile, TileX(vtile), TileY(vtile));
 		}
-		b = buffer + seprintf(buffer, lastof(buffer), "  Position: %X, %X, %X, Direction: %d", v->x_pos, v->y_pos, v->z_pos, v->direction);
-		if (v->type == VEH_TRAIN) seprintf(b, lastof(buffer), ", tile margin: %d", GetTileMarginInFrontOfTrain(Train::From(v)));
-		if (v->type == VEH_SHIP) seprintf(b, lastof(buffer), ", rotation: %d", Ship::From(v)->rotation);
-		output.print(buffer);
+		output.buffer.format("  Position: {:X}, {:X}, {:X}, Direction: {}", v->x_pos, v->y_pos, v->z_pos, v->direction);
+		if (v->type == VEH_TRAIN) output.buffer.format(", tile margin: {}", GetTileMarginInFrontOfTrain(Train::From(v)));
+		if (v->type == VEH_SHIP) output.buffer.format(", rotation: {}", Ship::From(v)->rotation);
+		output.FinishPrint();
 
 		if (v->IsPrimaryVehicle()) {
-			seprintf(buffer, lastof(buffer), "  Order indices: real: %u, implicit: %u, tt: %u, current type: %s",
+			output.Print("  Order indices: real: {}, implicit: {}, tt: {}, current type: {}",
 					v->cur_real_order_index, v->cur_implicit_order_index, v->cur_timetable_order_index, GetOrderTypeName(v->current_order.GetType()));
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  Current order time: (%u, %u mins), current loading time: (%u, %u mins)",
+			output.Print("  Current order time: ({}, {} mins), current loading time: ({}, {} mins)",
 					v->current_order_time, v->current_order_time / _settings_time.ticks_per_minute,
 					v->current_loading_time, v->current_loading_time / _settings_time.ticks_per_minute);
-			output.print(buffer);
 		}
-		seprintf(buffer, lastof(buffer), "  Speed: %u, sub-speed: %u, progress: %u, acceleration: %u",
+		output.Print("  Speed: {}, sub-speed: {}, progress: {}, acceleration: {}",
 				v->cur_speed, v->subspeed, v->progress, v->acceleration);
-		output.print(buffer);
-		seprintf(buffer, lastof(buffer), "  Reliability: %u, spd_dec: %u, needs service: %s",
+		output.Print("  Reliability: {}, spd_dec: {}, needs service: {}",
 				v->reliability, v->reliability_spd_dec, v->NeedsServicing() ? "yes" : "no");
-		output.print(buffer);
-		seprintf(buffer, lastof(buffer), "  Breakdown: ctr: %u, delay: %u, since svc: %u, chance: %u",
+		output.Print("  Breakdown: ctr: {}, delay: {}, since svc: {}, chance: {}",
 				v->breakdown_ctr, v->breakdown_delay, v->breakdowns_since_last_service, v->breakdown_chance);
-		output.print(buffer);
-		seprintf(buffer, lastof(buffer), "  V Cache: max speed: %u, cargo age period: %u, vis effect: %u",
+		output.Print("  V Cache: max speed: {}, cargo age period: {}, vis effect: {}",
 				v->vcache.cached_max_speed, v->vcache.cached_cargo_age_period, v->vcache.cached_vis_effect);
-		output.print(buffer);
 		if (v->cargo_type != INVALID_CARGO) {
-			seprintf(buffer, lastof(buffer), "  V Cargo: type: %u, sub type: %u, cap: %u, transfer: %u, deliver: %u, keep: %u, load: %u",
+			output.Print("  V Cargo: type: {}, sub type: {}, cap: {}, transfer: {}, deliver: {}, keep: {}, load: {}",
 					v->cargo_type, v->cargo_subtype, v->cargo_cap,
 					v->cargo.ActionCount(VehicleCargoList::MTA_TRANSFER), v->cargo.ActionCount(VehicleCargoList::MTA_DELIVER),
 					v->cargo.ActionCount(VehicleCargoList::MTA_KEEP), v->cargo.ActionCount(VehicleCargoList::MTA_LOAD));
-			output.print(buffer);
 		}
 		if (BaseStation::IsValidID(v->last_station_visited)) {
-			seprintf(buffer, lastof(buffer), "  V Last station visited: %u, %s", v->last_station_visited, BaseStation::Get(v->last_station_visited)->GetCachedName());
-			output.print(buffer);
+			output.Print("  V Last station visited: {}, {}", v->last_station_visited, BaseStation::Get(v->last_station_visited)->GetCachedName());
 		}
 		if (BaseStation::IsValidID(v->last_loading_station)) {
-			seprintf(buffer, lastof(buffer), "  V Last loading station: %u, %s", v->last_loading_station, BaseStation::Get(v->last_loading_station)->GetCachedName());
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  V Last loading tick: " OTTD_PRINTF64 " (" OTTD_PRINTF64 ", " OTTD_PRINTF64 " mins ago)",
-					v->last_loading_tick.base(), (_state_ticks - v->last_loading_tick).base(), (_state_ticks - v->last_loading_tick).base() / _settings_time.ticks_per_minute);
-			output.print(buffer);
+			output.Print("  V Last loading station: {}, {}", v->last_loading_station, BaseStation::Get(v->last_loading_station)->GetCachedName());
+			output.Print("  V Last loading tick: {} ({}, {} mins ago)",
+					v->last_loading_tick, _state_ticks - v->last_loading_tick, (_state_ticks - v->last_loading_tick).base() / _settings_time.ticks_per_minute);
 		}
 		if (v->IsGroundVehicle()) {
 			const GroundVehicleCache &gvc = *(v->GetGroundVehicleCache());
-			seprintf(buffer, lastof(buffer), "  GV Cache: weight: %u, slope res: %u, max TE: %u, axle res: %u",
+			output.Print("  GV Cache: weight: {}, slope res: {}, max TE: {}, axle res: {}",
 					gvc.cached_weight, gvc.cached_slope_resistance, gvc.cached_max_te, gvc.cached_axle_resistance);
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  GV Cache: max track speed: %u, power: %u, air drag: %u",
+			output.Print("  GV Cache: max track speed: {}, power: {}, air drag: {}",
 					gvc.cached_max_track_speed, gvc.cached_power, gvc.cached_air_drag);
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  GV Cache: total length: %u, veh length: %u",
+			output.Print("  GV Cache: total length: {}, veh length: {}",
 					gvc.cached_total_length, gvc.cached_veh_length);
-			output.print(buffer);
 		}
 		if (v->type == VEH_TRAIN) {
 			const Train *t = Train::From(v);
-			seprintf(buffer, lastof(buffer), "  T cache: tilt: %d, speed varies by railtype: %d, curve speed mod: %d, engines: %u",
+			output.Print("  T cache: tilt: {}, speed varies by railtype: {}, curve speed mod: {}, engines: {}",
 					(t->tcache.cached_tflags & TCF_TILT) ? 1 : 0, (t->tcache.cached_tflags & TCF_SPD_RAILTYPE) ? 1 : 0, t->tcache.cached_curve_speed_mod, t->tcache.cached_num_engines);
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  T cache: RL braking: %d, decel: %u, uncapped decel: %u, centre mass: %u, braking length: %u",
+			output.Print("  T cache: RL braking: {}, decel: {}, uncapped decel: {}, centre mass: {}, braking length: {}",
 					(t->UsingRealisticBraking()) ? 1 : 0, t->tcache.cached_deceleration, t->tcache.cached_uncapped_decel, t->tcache.cached_centre_mass, t->tcache.cached_braking_length);
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  T cache: veh weight: %u, user data: %u, curve speed: %u",
+			output.Print("  T cache: veh weight: {}, user data: {}, curve speed: {}",
 					t->tcache.cached_veh_weight, t->tcache.user_def_data, t->tcache.cached_max_curve_speed);
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  Wait counter: %u, rev distance: %u, TBSN: %u",
+			output.Print("  Wait counter: {}, rev distance: {}, TBSN: {}",
 					t->wait_counter, t->reverse_distance, t->tunnel_bridge_signal_num);
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  Speed restriction: %u, signal speed restriction (ATC): %u",
+			output.Print("  Speed restriction: {}, signal speed restriction (ATC): {}",
 					t->speed_restriction, t->signal_speed_restriction);
-			output.print(buffer);
 
 			output.register_next_line_click_flag_toggle(8 << flag_shift);
-			seprintf(buffer, lastof(buffer), "  [%c] Railtype: %u (%s), compatible_railtypes: 0x" OTTD_PRINTFHEX64 ", acceleration type: %u",
+			output.Print("  [{}] Railtype: {} ({}), compatible_railtypes: 0x{}, acceleration type: {}",
 					(output.flags & (8 << flag_shift)) ? '-' : '+', t->railtype, label_dumper().RailTypeLabel(t->railtype), t->compatible_railtypes, t->GetAccelerationType());
-			output.print(buffer);
+
 			if (output.flags & (8 << flag_shift)) {
 				DumpRailTypeList(output, "    ", t->compatible_railtypes);
 			}
 
 			if (t->vehstatus & VS_CRASHED) {
-				seprintf(buffer, lastof(buffer), "  CRASHED: anim pos: %u", t->crash_anim_pos);
-				output.print(buffer);
+				output.Print("  CRASHED: anim pos: {}", t->crash_anim_pos);
 			} else if (t->crash_anim_pos > 0) {
-				seprintf(buffer, lastof(buffer), "  Brake heating: %u", t->crash_anim_pos);
-				output.print(buffer);
+				output.Print("  Brake heating: {}", t->crash_anim_pos);
 			}
 			if (t->lookahead != nullptr) {
-				output.print("  Look ahead:");
+				output.Print("  Look ahead:");
 				const TrainReservationLookAhead &l = *t->lookahead;
 				TrainDecelerationStats stats(t, l.cached_zpos);
 
@@ -314,261 +277,247 @@ class NIHVehicle : public NIHelper {
 					int speed = INT_MAX;
 					LimitSpeedFromLookAhead(speed, stats, l.current_position, position, end_speed, end_z - stats.z_pos);
 					if (speed != INT_MAX) {
-						b += seprintf(b, lastof(buffer), ", appr speed: %d", speed);
+						output.buffer.format(", appr speed: {}", speed);
 					}
 				};
 
-				b = buffer + seprintf(buffer, lastof(buffer), "    Position: current: %d, z: %d, end: %d, remaining: %d", l.current_position, stats.z_pos, l.reservation_end_position, l.reservation_end_position - l.current_position);
+				output.buffer.format("    Position: current: {}, z: {}, end: {}, remaining: {}", l.current_position, stats.z_pos, l.reservation_end_position, l.reservation_end_position - l.current_position);
 				if (l.lookahead_end_position <= l.reservation_end_position) {
-					b += seprintf(b, lastof(buffer), ", (lookahead: end: %d, remaining: %d)", l.lookahead_end_position, l.lookahead_end_position - l.current_position);
+					output.buffer.format(", (lookahead: end: {}, remaining: {})", l.lookahead_end_position, l.lookahead_end_position - l.current_position);
 				}
 				if (l.next_extend_position > l.current_position) {
-					b += seprintf(b, lastof(buffer), ", next extend position: %d (dist: %d)", l.next_extend_position, l.next_extend_position - l.current_position);
+					output.buffer.format(", next extend position: {} (dist: {})", l.next_extend_position, l.next_extend_position - l.current_position);
 				}
-				output.print(buffer);
+				output.FinishPrint();
 
 				const int overall_zpos = t->CalculateOverallZPos();
-				seprintf(buffer, lastof(buffer), "    Cached zpos: %u (actual: %u, delta: %d), positions to refresh: %u",
+				output.Print("    Cached zpos: {} (actual: {}, delta: {}), positions to refresh: {}",
 						l.cached_zpos, overall_zpos, (l.cached_zpos - overall_zpos), l.zpos_refresh_remaining);
-				output.print(buffer);
 
-				b = buffer + seprintf(buffer, lastof(buffer), "    Reservation ends at %X (%u x %u), trackdir: %02X, z: %d",
+				output.buffer.format("    Reservation ends at {:X} ({} x {}), trackdir: {:02X}, z: {}",
 						l.reservation_end_tile, TileX(l.reservation_end_tile), TileY(l.reservation_end_tile), l.reservation_end_trackdir, l.reservation_end_z);
 				if (HasBit(l.flags, TRLF_DEPOT_END)) {
 					print_braking_speed(l.reservation_end_position - TILE_SIZE, _settings_game.vehicle.rail_depot_speed_limit, l.reservation_end_z);
 				} else {
 					print_braking_speed(l.reservation_end_position, 0, l.reservation_end_z);
 				}
-				output.print(buffer);
+				output.FinishPrint();
 
-				b = buffer + seprintf(buffer, lastof(buffer), "    TB reserved tiles: %d, flags:", l.tunnel_bridge_reserved_tiles);
-				if (HasBit(l.flags, TRLF_TB_EXIT_FREE)) b += seprintf(b, lastof(buffer), "x");
-				if (HasBit(l.flags, TRLF_DEPOT_END)) b += seprintf(b, lastof(buffer), "d");
-				if (HasBit(l.flags, TRLF_APPLY_ADVISORY)) b += seprintf(b, lastof(buffer), "a");
-				if (HasBit(l.flags, TRLF_CHUNNEL)) b += seprintf(b, lastof(buffer), "c");
-				output.print(buffer);
+				output.buffer.format("    TB reserved tiles: {}, flags:", l.tunnel_bridge_reserved_tiles);
+				if (HasBit(l.flags, TRLF_TB_EXIT_FREE)) output.buffer.push_back('x');
+				if (HasBit(l.flags, TRLF_DEPOT_END)) output.buffer.push_back('d');
+				if (HasBit(l.flags, TRLF_APPLY_ADVISORY)) output.buffer.push_back('a');
+				if (HasBit(l.flags, TRLF_CHUNNEL)) output.buffer.push_back('c');
+				output.FinishPrint();
 
-				seprintf(buffer, lastof(buffer), "    Items: %u", (uint)l.items.size());
-				output.print(buffer);
+				output.Print("    Items: {}", l.items.size());
 				for (const TrainReservationLookAheadItem &item : l.items) {
-					b = buffer + seprintf(buffer, lastof(buffer), "      Start: %d (dist: %d), end: %d (dist: %d), z: %d, ",
+					output.buffer.format("      Start: {} (dist: {}), end: {} (dist: {}), z: {}, ",
 							item.start, item.start - l.current_position, item.end, item.end - l.current_position, item.z_pos);
 					switch (item.type) {
 						case TRLIT_STATION:
-							b += seprintf(b, lastof(buffer), "station: %u, %s", item.data_id, BaseStation::IsValidID(item.data_id) ? BaseStation::Get(item.data_id)->GetCachedName() : "[invalid]");
+							output.buffer.format("station: {}, {}", item.data_id, BaseStation::IsValidID(item.data_id) ? BaseStation::Get(item.data_id)->GetCachedName() : "[invalid]");
 							if (t->current_order.ShouldStopAtStation(t->last_station_visited, item.data_id, Waypoint::GetIfValid(item.data_id) != nullptr)) {
 								extern int PredictStationStoppingLocation(const Train *v, const Order *order, int station_length, DestinationID dest);
 								int stop_position = PredictStationStoppingLocation(t, &(t->current_order), item.end - item.start, item.data_id);
-								b += seprintf(b, lastof(buffer), ", stop_position: %d", item.start + stop_position);
+								output.buffer.format(", stop_position: {}", item.start + stop_position);
 								print_braking_speed(item.start + stop_position, 0, item.z_pos);
 							} else if (t->current_order.IsType(OT_GOTO_WAYPOINT) && t->current_order.GetDestination() == item.data_id && (t->current_order.GetWaypointFlags() & OWF_REVERSE)) {
 								print_braking_speed(item.start + t->gcache.cached_total_length, 0, item.z_pos);
 							}
 							break;
 						case TRLIT_REVERSE:
-							b += seprintf(b, lastof(buffer), "reverse");
+							output.buffer.format("reverse");
 							print_braking_speed(item.start + t->gcache.cached_total_length, 0, item.z_pos);
 							break;
 						case TRLIT_TRACK_SPEED:
-							b += seprintf(b, lastof(buffer), "track speed: %u", item.data_id);
+							output.buffer.format("track speed: {}", item.data_id);
 							print_braking_speed(item.start, item.data_id, item.z_pos);
 							break;
 						case TRLIT_SPEED_RESTRICTION:
-							b += seprintf(b, lastof(buffer), "speed restriction: %u", item.data_id);
+							output.buffer.format("speed restriction: {}", item.data_id);
 							if (item.data_id > 0) print_braking_speed(item.start, item.data_id, item.z_pos);
 							break;
 						case TRLIT_SIGNAL:
-							b += seprintf(b, lastof(buffer), "signal: target speed: %u, style: %u, flags:", item.data_id, item.data_aux >> 8);
-							if (HasBit(item.data_aux, TRSLAI_NO_ASPECT_INC)) b += seprintf(b, lastof(buffer), "n");
-							if (HasBit(item.data_aux, TRSLAI_NEXT_ONLY)) b += seprintf(b, lastof(buffer), "s");
-							if (HasBit(item.data_aux, TRSLAI_COMBINED)) b += seprintf(b, lastof(buffer), "c");
-							if (HasBit(item.data_aux, TRSLAI_COMBINED_SHUNT)) b += seprintf(b, lastof(buffer), "X");
+							output.buffer.format("signal: target speed: {}, style: {}, flags:", item.data_id, item.data_aux >> 8);
+							if (HasBit(item.data_aux, TRSLAI_NO_ASPECT_INC)) output.buffer.format("n");
+							if (HasBit(item.data_aux, TRSLAI_NEXT_ONLY)) output.buffer.format("s");
+							if (HasBit(item.data_aux, TRSLAI_COMBINED)) output.buffer.format("c");
+							if (HasBit(item.data_aux, TRSLAI_COMBINED_SHUNT)) output.buffer.format("X");
 							if (_settings_game.vehicle.realistic_braking_aspect_limited == TRBALM_ON &&
 									(l.lookahead_end_position == item.start || l.lookahead_end_position == item.start + 1)) {
-								b += seprintf(b, lastof(buffer), ", lookahead end");
+								output.buffer.append(", lookahead end");
 								print_braking_speed(item.start, 0, item.z_pos);
 							}
 							break;
 						case TRLIT_CURVE_SPEED:
-							b += seprintf(b, lastof(buffer), "curve speed: %u", item.data_id);
+							output.buffer.format("curve speed: {}", item.data_id);
 							if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) print_braking_speed(item.start, item.data_id, item.z_pos);
 
 							break;
 						case TRLIT_SPEED_ADAPTATION: {
 							TileIndex tile = item.data_id;
 							uint16_t td = item.data_aux;
-							b += seprintf(b, lastof(buffer), "speed adaptation: tile: %X, trackdir: %X", tile, td);
+							output.buffer.format("speed adaptation: tile: {:X}, trackdir: {:X}", tile, td);
 							if (item.end + 1 < l.reservation_end_position) {
-								b += seprintf(b, lastof(buffer), " --> %u", GetLowestSpeedTrainAdaptationSpeedAtSignal(tile, td));
+								output.buffer.format(" --> {}", GetLowestSpeedTrainAdaptationSpeedAtSignal(tile, td));
 							}
 							break;
 						}
 					}
-					output.print(buffer);
+					output.FinishPrint();
 				}
 
-				seprintf(buffer, lastof(buffer), "    Curves: %u", (uint)l.curves.size());
-				output.print(buffer);
+				output.Print("    Curves: {}", l.curves.size());
 				for (const TrainReservationLookAheadCurve &curve : l.curves) {
-					seprintf(buffer, lastof(buffer), "      Pos: %d (dist: %d), dir diff: %d", curve.position, curve.position - l.current_position, curve.dir_diff);
-					output.print(buffer);
+					output.Print("      Pos: {} (dist: {}), dir diff: {}", curve.position, curve.position - l.current_position, curve.dir_diff);
 				}
 			}
 		}
 		if (v->type == VEH_ROAD) {
 			const RoadVehicle *rv = RoadVehicle::From(v);
-			seprintf(buffer, lastof(buffer), "  Overtaking: %u, overtaking_ctr: %u, overtaking threshold: %u",
+			output.Print("  Overtaking: {}, overtaking_ctr: {}, overtaking threshold: {}",
 					rv->overtaking, rv->overtaking_ctr, rv->GetOvertakingCounterThreshold());
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  Speed: %u", rv->cur_speed);
-			output.print(buffer);
+			output.Print("  Speed: {}", rv->cur_speed);
 
-			b = buffer + seprintf(buffer, lastof(buffer), "  Path cache: ");
+			output.buffer.append("  Path cache: ");
 			if (rv->cached_path != nullptr) {
-				b += seprintf(b, lastof(buffer), "length: %u, layout ctr: %X (current: %X)", (uint)rv->cached_path->size(), rv->cached_path->layout_ctr, _road_layout_change_counter);
-				output.print(buffer);
-				b = buffer;
+				output.buffer.format("length: {}, layout ctr: {:X} (current: {:X})", rv->cached_path->size(), rv->cached_path->layout_ctr, _road_layout_change_counter);
+				output.FinishPrint();
 				uint idx = rv->cached_path->start;
 				for (uint i = 0; i < rv->cached_path->size(); i++) {
-					if ((i & 3) == 0) {
-						if (b > buffer + 4) output.print(buffer);
-						b = buffer + seprintf(buffer, lastof(buffer), "    ");
+					if (output.buffer.size() == 0) {
+						output.buffer.append("    ");
 					} else {
-						b += seprintf(b, lastof(buffer), ", ");
+						output.buffer.append(", ");
 					}
-					b += seprintf(b, lastof(buffer), "(%ux%u, %X)", TileX(rv->cached_path->tile[idx]), TileY(rv->cached_path->tile[idx]), rv->cached_path->td[idx]);
+					output.buffer.format("({}x{}, {:X})", TileX(rv->cached_path->tile[idx]), TileY(rv->cached_path->tile[idx]), rv->cached_path->td[idx]);
+					if ((i & 3) == 3) output.FinishPrint();
 					idx = (idx + 1) & RV_PATH_CACHE_SEGMENT_MASK;
 				}
-				if (b > buffer + 4) output.print(buffer);
+				if (output.buffer.size() > 0) output.FinishPrint();
+				output.buffer.clear();
 			} else {
-				b += seprintf(b, lastof(buffer), "none");
-				output.print(buffer);
+				output.buffer.append("none");
+				output.FinishPrint();
 			}
 
 			output.register_next_line_click_flag_toggle(8 << flag_shift);
-			seprintf(buffer, lastof(buffer), "  [%c] Roadtype: %u (%s), Compatible: 0x" OTTD_PRINTFHEX64,
+			output.Print("  [{}] Roadtype: {} ({}), Compatible: 0x{:X}",
 					(output.flags & (8 << flag_shift)) ? '-' : '+', rv->roadtype, label_dumper().RoadTypeLabel(rv->roadtype), rv->compatible_roadtypes);
-			output.print(buffer);
 			if (output.flags & (8 << flag_shift)) {
 				DumpRoadTypeList(output, "    ", rv->compatible_roadtypes);
 			}
 		}
 		if (v->type == VEH_SHIP) {
 			const Ship *s = Ship::From(v);
-			seprintf(buffer, lastof(buffer), "  Lost counter: %u",
+			output.Print("  Lost counter: {}",
 					s->lost_count);
-			output.print(buffer);
-			b = buffer + seprintf(buffer, lastof(buffer), "  Path cache: ");
+
+			output.buffer.format("  Path cache: ");
 			if (!s->cached_path.empty()) {
-				b += seprintf(b, lastof(buffer), "length: %u", (uint)s->cached_path.size());
-				output.print(buffer);
-				b = buffer;
+				output.buffer.format("length: {}", s->cached_path.size());
+				output.FinishPrint();
 				uint i = 0;
 				for (Trackdir td : s->cached_path) {
 					if ((i & 7) == 0) {
-						if (b > buffer) output.print(buffer);
-						b = buffer + seprintf(buffer, lastof(buffer), "    %X", td);
+						if (output.buffer.size() > 0) output.FinishPrint();
+						output.buffer.format("    {:X}", td);
 					} else {
-						b += seprintf(b, lastof(buffer), ", %X", td);
+						output.buffer.format(", {:X}", td);
 					}
 					i++;
 				}
-				if (b > buffer) output.print(buffer);
+				if (output.buffer.size() > 0) output.FinishPrint();
 			} else {
-				b += seprintf(b, lastof(buffer), "none");
-				output.print(buffer);
+				output.buffer.append("none");
+				output.FinishPrint();
 			}
 		}
 		if (v->type == VEH_AIRCRAFT) {
 			const Aircraft *a = Aircraft::From(v);
-			b = buffer + seprintf(buffer, lastof(buffer), "  Pos: %u, prev pos: %u, state: %u",
+			output.buffer.format("  Pos: {}, prev pos: {}, state: {}",
 					a->pos, a->previous_pos, a->state);
-			if (a->IsPrimaryVehicle()) b += seprintf(b, lastof(buffer), " (%s)", AirportMovementStateToString(a->state));
-			b += seprintf(b, lastof(buffer), ", flags: 0x%X", a->flags);
-			output.print(buffer);
+			if (a->IsPrimaryVehicle()) output.buffer.format(" ({})", AirportMovementStateToString(a->state));
+			output.buffer.format(", flags: 0x{:X}", a->flags);
+			output.FinishPrint();
 			if (BaseStation::IsValidID(a->targetairport)) {
-				seprintf(buffer, lastof(buffer), "  Target airport: %u, %s", a->targetairport, BaseStation::Get(a->targetairport)->GetCachedName());
-				output.print(buffer);
+				output.Print("  Target airport: {}, {}", a->targetairport, BaseStation::Get(a->targetairport)->GetCachedName());
 			}
 		}
 
-		seprintf(buffer, lastof(buffer), "  Cached sprite bounds: (%d, %d) to (%d, %d), offs: (%d, %d)",
+		output.Print("  Cached sprite bounds: ({}, {}) to ({}, {}), offs: ({}, {})",
 				v->sprite_seq_bounds.left, v->sprite_seq_bounds.top, v->sprite_seq_bounds.right, v->sprite_seq_bounds.bottom, v->x_offs, v->y_offs);
-		output.print(buffer);
 
-		seprintf(buffer, lastof(buffer), "  Current image cacheable: %s (%X), spritenum: %X",
+		output.Print("  Current image cacheable: {} ({:X}), spritenum: {:X}",
 				v->cur_image_valid_dir != INVALID_DIR ? "yes" : "no", v->cur_image_valid_dir, v->spritenum);
-		output.print(buffer);
 
 		if (HasBit(v->vehicle_flags, VF_SEPARATION_ACTIVE)) {
 			std::vector<TimetableProgress> progress_array = PopulateSeparationState(v);
 			if (!progress_array.empty()) {
-				output.print("  Separation state:");
+				output.Print("  Separation state:");
 			}
 			for (const auto &info : progress_array) {
-				b = buffer + seprintf(buffer, lastof(buffer), "    %s [%d, %d, %d], %u, ",
-						info.id == v->index ? "*" : " ", info.order_count, info.order_ticks, info.cumulative_ticks, info.id);
+				output.buffer.format("    {} [{}, {}, {}], {}, ",
+						info.id == v->index ? '*' : ' ', info.order_count, info.order_ticks, info.cumulative_ticks, info.id);
 				SetDParam(0, info.id);
-				b = strecpy(b, GetString(STR_VEHICLE_NAME).c_str(), lastof(buffer), true);
-				b += seprintf(b, lastof(buffer), ", lateness: %d", Vehicle::Get(info.id)->lateness_counter);
-				output.print(buffer);
+				output.buffer.append(GetString(STR_VEHICLE_NAME));
+				output.buffer.format(", lateness: {}", Vehicle::Get(info.id)->lateness_counter);
+				output.FinishPrint();
 			}
 		}
 
 		if (v->HasUnbunchingOrder()) {
-			output.print("  Unbunching state:");
+			output.Print("  Unbunching state:");
 			for (const Vehicle *u = v->FirstShared(); u != nullptr; u = u->NextShared()) {
-				b = buffer + seprintf(buffer, lastof(buffer), "  %s %u (unit %u):", u == v ? "*" : " ", u->index, u->unitnumber);
+				output.buffer.format("  {} {} (unit {}):", u == v ? '*' : ' ', u->index, u->unitnumber);
 
 				if (u->unbunch_state == nullptr) {
-					b += seprintf(b, lastof(buffer), " [NO DATA]");
+					output.buffer.append(" [NO DATA]");
 				}
 				if (u->vehstatus & (VS_STOPPED | VS_CRASHED)) {
-					b += seprintf(b, lastof(buffer), " [STOPPED]");
+					output.buffer.append(" [STOPPED]");
 				}
-				output.print(buffer);
+				output.FinishPrint();
 
 				if (u->unbunch_state != nullptr) {
 					auto print_tick = [&](StateTicks tick, const char *label) {
-						b = buffer + seprintf(buffer, lastof(buffer), "      %s: ", label);
+						output.buffer.format("      {}: ", label);
 						if (tick != INVALID_STATE_TICKS) {
 							if (tick > _state_ticks) {
-								b += seprintf(b, lastof(buffer), OTTD_PRINTF64 " (in " OTTD_PRINTF64 " mins)", tick.base(), (tick - _state_ticks).base() / _settings_time.ticks_per_minute);
+								output.buffer.format("{} (in {} mins)", tick, (tick - _state_ticks) / _settings_time.ticks_per_minute);
 							} else {
-								b += seprintf(b, lastof(buffer), OTTD_PRINTF64 " (" OTTD_PRINTF64 " mins ago)", tick.base(), (_state_ticks - tick).base() / _settings_time.ticks_per_minute);
+								output.buffer.format("{} ({} mins ago)", tick, (_state_ticks - tick) / _settings_time.ticks_per_minute);
 							}
 						} else {
-							b += seprintf(b, lastof(buffer), "invalid");
+							output.buffer.append("invalid");
 						}
-						output.print(buffer);
+						output.FinishPrint();
 					};
 					print_tick(u->unbunch_state->depot_unbunching_last_departure, "Last unbunch departure");
 					print_tick(u->unbunch_state->depot_unbunching_next_departure, "Next unbunch departure");
-					seprintf(buffer, lastof(buffer), "      RTT: %d (%d mins)", u->unbunch_state->round_trip_time, u->unbunch_state->round_trip_time / _settings_time.ticks_per_minute);
-					output.print(buffer);
+					output.Print("      RTT: {} ({} mins)", u->unbunch_state->round_trip_time, u->unbunch_state->round_trip_time / _settings_time.ticks_per_minute);
 				}
 			}
 		}
 
 		if (show_engine) {
 			const Engine *e = Engine::GetIfValid(v->engine_type);
-			char *b = buffer + seprintf(buffer, lastof(buffer), "  Engine: %u", v->engine_type);
+			output.buffer.format("  Engine: {}", v->engine_type);
 			if (e->grf_prop.grffile != nullptr) {
-				b += seprintf(b, lastof(buffer), " (local ID: %u)", e->grf_prop.local_id);
+				output.buffer.format(" (local ID: {})", e->grf_prop.local_id);
 			}
 			if (e->info.variant_id != INVALID_ENGINE) {
-				b += seprintf(b, lastof(buffer), ", variant of: %u", e->info.variant_id);
+				output.buffer.format(", variant of: {}", e->info.variant_id);
 				const Engine *variant_e = Engine::GetIfValid(e->info.variant_id);
 				if (variant_e->grf_prop.grffile != nullptr) {
-					b += seprintf(b, lastof(buffer), " (local ID: %u)", variant_e->grf_prop.local_id);
+					output.buffer.format(" (local ID: {})", variant_e->grf_prop.local_id);
 				}
 			}
-			output.print(buffer);
+			output.FinishPrint();
 
 			if (e != nullptr) {
-				seprintf(buffer, lastof(buffer), "    Callbacks: 0x%X, CB36 Properties: 0x" OTTD_PRINTFHEX64,
-						e->callbacks_used, e->cb36_properties_used);
-				output.print(buffer);
+				output.Print("    Callbacks: 0x{:X}, CB36 Properties: 0x{:X}", e->callbacks_used, e->cb36_properties_used);
 				uint64_t cb36_properties = e->cb36_properties_used;
 				if (!e->sprite_group_cb36_properties_used.empty()) {
 					const SpriteGroup *root_spritegroup = nullptr;
@@ -581,8 +530,7 @@ class NIHVehicle : public NIHelper {
 					auto iter = e->sprite_group_cb36_properties_used.find(root_spritegroup);
 					if (iter != e->sprite_group_cb36_properties_used.end()) {
 						cb36_properties = iter->second;
-						seprintf(buffer, lastof(buffer), "    Current sprite group: CB36 Properties: 0x" OTTD_PRINTFHEX64, iter->second);
-						output.print(buffer);
+						output.Print("    Current sprite group: CB36 Properties: 0x{:X}", iter->second);
 					}
 				}
 				if (cb36_properties != UINT64_MAX) {
@@ -592,51 +540,42 @@ class NIHVehicle : public NIHelper {
 						props = KillFirstBit(props);
 						uint16_t res = GetVehicleProperty(v, prop, CALLBACK_FAILED);
 						if (res == CALLBACK_FAILED) {
-							seprintf(buffer, lastof(buffer), "      CB36: 0x%X --> FAILED", prop);
+							output.Print("      CB36: 0x{:X} --> FAILED", prop);
 						} else {
-							seprintf(buffer, lastof(buffer), "      CB36: 0x%X --> 0x%X", prop, res);
+							output.Print("      CB36: 0x{:X} --> 0x{:X}", prop, res);
 						}
-						output.print(buffer);
 					}
 				}
 				if (e->refit_capacity_values != nullptr) {
 					const EngineRefitCapacityValue *caps = e->refit_capacity_values.get();
 					CargoTypes seen = 0;
 					while (seen != ALL_CARGOTYPES) {
-						seprintf(buffer, lastof(buffer), "    Refit capacity cache: cargoes: 0x" OTTD_PRINTFHEX64 " --> 0x%X", caps->cargoes, caps->capacity);
-						output.print(buffer);
+						output.Print("    Refit capacity cache: cargoes: 0x{:X} --> 0x{:X}", caps->cargoes, caps->capacity);
 						seen |= caps->cargoes;
 						caps++;
 					}
 				}
 				CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(e->intro_date);
 				CalTime::YearMonthDay base_ymd = CalTime::ConvertDateToYMD(e->info.base_intro);
-				seprintf(buffer, lastof(buffer), "    Intro: %4i-%02i-%02i (base: %4i-%02i-%02i), Age: %u, Base life: %u, Durations: %u %u %u (sum: %u)",
-						ymd.year.base(), ymd.month + 1, ymd.day, base_ymd.year.base(), base_ymd.month + 1, base_ymd.day,
-						e->age, e->info.base_life.base(), e->duration_phase_1, e->duration_phase_2, e->duration_phase_3,
+				output.Print("    Intro: {:4}-{:02}-{:02} (base: {:4}-{:02}-{:02}), Age: {}, Base life: {}, Durations: {} {} {} (sum: {})",
+						ymd.year, ymd.month + 1, ymd.day, base_ymd.year, base_ymd.month + 1, base_ymd.day,
+						e->age, e->info.base_life, e->duration_phase_1, e->duration_phase_2, e->duration_phase_3,
 						e->duration_phase_1 + e->duration_phase_2 + e->duration_phase_3);
-				output.print(buffer);
-				seprintf(buffer, lastof(buffer), "    Reliability: %u, spd_dec: %u (%u), start: %u, max: %u, final: %u",
+				output.Print("    Reliability: {}, spd_dec: {} ({}), start: {}, max: {}, final: {}",
 						e->reliability, e->reliability_spd_dec, e->info.decay_speed, e->reliability_start, e->reliability_max, e->reliability_final);
-				output.print(buffer);
-				seprintf(buffer, lastof(buffer), "    Cargo type: %u, refit mask: 0x" OTTD_PRINTFHEX64 ", refit cost: %u",
+				output.Print("    Cargo type: {}, refit mask: 0x{:X}, refit cost: {}",
 						e->info.cargo_type, e->info.refit_mask, e->info.refit_cost);
-				output.print(buffer);
-				seprintf(buffer, lastof(buffer), "    Cargo age period: %u, cargo load speed: %u",
+				output.Print("    Cargo age period: {}, cargo load speed: {}",
 						e->info.cargo_age_period, e->info.load_amount);
-				output.print(buffer);
-				seprintf(buffer, lastof(buffer), "    Company availability: %X, climates: %X",
+				output.Print("    Company availability: {:X}, climates: {:X}",
 						e->company_avail, e->info.climates);
-				output.print(buffer);
 
 				output.register_next_line_click_flag_toggle(2 << flag_shift);
 				if (output.flags & (2 << flag_shift)) {
-					seprintf(buffer, lastof(buffer), "    [-] Engine Misc Flags:\n");
-					output.print(buffer);
+					output.Print("    [-] Engine Misc Flags:\n");
 					auto print_bit = [&](int bit, const char *name) {
 						if (HasBit(e->info.misc_flags, bit)) {
-							seprintf(buffer, lastof(buffer), "      %s\n", name);
-							output.print(buffer);
+							output.Print("      {}\n", name);
 						}
 					};
 					print_bit(EF_RAIL_TILTS,                  "EF_RAIL_TILTS");
@@ -648,7 +587,7 @@ class NIHVehicle : public NIHelper {
 					print_bit(EF_NO_BREAKDOWN_SMOKE,          "EF_NO_BREAKDOWN_SMOKE");
 					print_bit(EF_SPRITE_STACK,                "EF_SPRITE_STACK");
 				} else {
-					seprintf(buffer, lastof(buffer), "    [+] Engine Misc Flags: %c%c%c%c%c%c%c%c",
+					output.Print("    [+] Engine Misc Flags: {}{}{}{}{}{}{}{}",
 							HasBit(e->info.misc_flags, EF_RAIL_TILTS)                  ? 't' : '-',
 							HasBit(e->info.misc_flags, EF_USES_2CC)                    ? '2' : '-',
 							HasBit(e->info.misc_flags, EF_RAIL_IS_MU)                  ? 'm' : '-',
@@ -657,49 +596,41 @@ class NIHVehicle : public NIHelper {
 							HasBit(e->info.misc_flags, EF_NO_DEFAULT_CARGO_MULTIPLIER) ? 'c' : '-',
 							HasBit(e->info.misc_flags, EF_NO_BREAKDOWN_SMOKE)          ? 'b' : '-',
 							HasBit(e->info.misc_flags, EF_SPRITE_STACK)                ? 's' : '-');
-					output.print(buffer);
 				}
 
 				if (e->type == VEH_TRAIN) {
 					const RailTypeInfo *rti = GetRailTypeInfo(e->u.rail.railtype);
-					seprintf(buffer, lastof(buffer), "    Railtype: %u (%s), Compatible: 0x" OTTD_PRINTFHEX64 ", Powered: 0x" OTTD_PRINTFHEX64 ", All compatible: 0x" OTTD_PRINTFHEX64,
+					output.Print("    Railtype: {} ({}), Compatible: 0x{:X}, Powered: 0x{:X}, All compatible: 0x{:X}",
 							e->u.rail.railtype, label_dumper().RailTypeLabel(e->u.rail.railtype), rti->compatible_railtypes, rti->powered_railtypes, rti->all_compatible_railtypes);
-					output.print(buffer);
 					static const char *engine_types[] = {
 						"SINGLEHEAD",
 						"MULTIHEAD",
 						"WAGON",
 					};
-					seprintf(buffer, lastof(buffer), "    Rail veh type: %s, power: %u", engine_types[e->u.rail.railveh_type], e->u.rail.power);
-					output.print(buffer);
+					output.Print("    Rail veh type: {}, power: {}", engine_types[e->u.rail.railveh_type], e->u.rail.power);
 				}
 				if (e->type == VEH_ROAD) {
 					output.register_next_line_click_flag_toggle(16 << flag_shift);
 					const RoadTypeInfo* rti = GetRoadTypeInfo(e->u.road.roadtype);
-					seprintf(buffer, lastof(buffer), "    [%c] Roadtype: %u (%s), Powered: 0x" OTTD_PRINTFHEX64,
+					output.Print("    [{}] Roadtype: {} ({}), Powered: 0x{:X}",
 							(output.flags & (16 << flag_shift)) ? '-' : '+', e->u.road.roadtype, label_dumper().RoadTypeLabel(e->u.road.roadtype), rti->powered_roadtypes);
-					output.print(buffer);
 					if (output.flags & (16 << flag_shift)) {
 						DumpRoadTypeList(output, "      ", rti->powered_roadtypes);
 					}
-					seprintf(buffer, lastof(buffer), "    Capacity: %u, Weight: %u, Power: %u, TE: %u, Air drag: %u, Shorten: %u",
+					output.Print("    Capacity: {}, Weight: {}, Power: {}, TE: {}, Air drag: {}, Shorten: {}",
 							e->u.road.capacity, e->u.road.weight, e->u.road.power, e->u.road.tractive_effort, e->u.road.air_drag, e->u.road.shorten_factor);
-					output.print(buffer);
 				}
 				if (e->type == VEH_SHIP) {
-					seprintf(buffer, lastof(buffer), "    Capacity: %u, Max speed: %u, Accel: %u, Ocean speed: %u, Canal speed: %u",
+					output.Print("    Capacity: {}, Max speed: {}, Accel: {}, Ocean speed: {}, Canal speed: {}",
 							e->u.ship.capacity, e->u.ship.max_speed, e->u.ship.acceleration, e->u.ship.ocean_speed_frac, e->u.ship.canal_speed_frac);
-					output.print(buffer);
 				}
 
 				output.register_next_line_click_flag_toggle(4 << flag_shift);
 				if (output.flags & (4 << flag_shift)) {
-					seprintf(buffer, lastof(buffer), "    [-] Extra Engine Flags:\n");
-					output.print(buffer);
+					output.Print("    [-] Extra Engine Flags:\n");
 					auto print_bit = [&](ExtraEngineFlags flag, const char *name) {
 						if ((e->info.extra_flags & flag) != ExtraEngineFlags::None) {
-							seprintf(buffer, lastof(buffer), "      %s\n", name);
-							output.print(buffer);
+							output.Print("      {}\n", name);
 						}
 					};
 					print_bit(ExtraEngineFlags::NoNews,          "NoNews");
@@ -707,12 +638,11 @@ class NIHVehicle : public NIHelper {
 					print_bit(ExtraEngineFlags::JoinPreview,     "JoinPreview");
 					print_bit(ExtraEngineFlags::SyncReliability, "SyncReliability");
 				} else {
-					seprintf(buffer, lastof(buffer), "    [+] Extra Engine Flags: %c%c%c%c",
+					output.Print("    [+] Extra Engine Flags: {}{}{}{}",
 							(e->info.extra_flags & ExtraEngineFlags::NoNews)          != ExtraEngineFlags::None ? 'n' : '-',
 							(e->info.extra_flags & ExtraEngineFlags::NoPreview)       != ExtraEngineFlags::None ? 'p' : '-',
 							(e->info.extra_flags & ExtraEngineFlags::JoinPreview)     != ExtraEngineFlags::None ? 'j' : '-',
 							(e->info.extra_flags & ExtraEngineFlags::SyncReliability) != ExtraEngineFlags::None ? 's' : '-');
-					output.print(buffer);
 				}
 			}
 		}
@@ -792,42 +722,36 @@ class NIHStation : public NIHelper {
 
 	/* virtual */ void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
-		char buffer[1024];
-
 		const StationSpec *statspec = GetStationSpec(index);
 		if (statspec == nullptr) return;
 
 		if (statspec->grf_prop.grffile != nullptr) {
-			seprintf(buffer, lastof(buffer), "GRF local ID: %u", statspec->grf_prop.local_id);
-			output.print(buffer);
+			output.Print("GRF local ID: {}", statspec->grf_prop.local_id);
 		}
 
 		const StationClass *cls = StationClass::Get(statspec->class_index);
-		seprintf(buffer, lastof(buffer), "Class ID: %s", label_dumper().Label(cls->global_id));
-		output.print(buffer);
+		output.Print("Class ID: {}", label_dumper().Label(cls->global_id));
 
 		for (size_t i = 0; i < statspec->renderdata.size(); i++) {
-			seprintf(buffer, lastof(buffer), "Tile Layout %u:", (uint)i);
-			output.print(buffer);
+			output.Print("Tile Layout {}:", i);
 			const NewGRFSpriteLayout &dts = statspec->renderdata[i];
 
 			const TileLayoutRegisters *registers = dts.registers;
-			auto print_reg_info = [&](char *b, uint i, bool is_parent) {
+			auto print_reg_info = [&](uint i, bool is_parent) {
 				if (registers == nullptr) {
-					output.print(buffer);
+					output.FinishPrint();
 					return;
 				}
 				const TileLayoutRegisters *reg = registers + i;
 				if (reg->flags == 0) {
-					output.print(buffer);
+					output.FinishPrint();
 					return;
 				}
-				seprintf(b, lastof(buffer), ", register flags: %X", reg->flags);
-				output.print(buffer);
+				output.buffer.format(", register flags: {:X}", reg->flags);
+				output.FinishPrint();
 				auto log_reg = [&](TileLayoutFlags flag, const char *name, uint8_t flag_reg) {
 					if (reg->flags & flag) {
-						seprintf(buffer, lastof(buffer), "  %s reg: %X", name, flag_reg);
-						output.print(buffer);
+						output.Print("  {} reg: {:X}", name, flag_reg);
 					}
 				};
 				log_reg(TLF_DODRAW, "TLF_DODRAW", reg->dodraw);
@@ -842,35 +766,32 @@ class NIHStation : public NIHelper {
 					log_reg(TLF_CHILD_Y_OFFSET, "TLF_CHILD_Y_OFFSET", reg->delta.child[1]);
 				}
 				if (reg->flags & TLF_SPRITE_VAR10) {
-					seprintf(buffer, lastof(buffer), "  TLF_SPRITE_VAR10 value: %X", reg->sprite_var10);
-					output.print(buffer);
+					output.Print("  TLF_SPRITE_VAR10 value: {:X}", reg->sprite_var10);
 				}
 				if (reg->flags & TLF_PALETTE_VAR10) {
-					seprintf(buffer, lastof(buffer), "  TLF_PALETTE_VAR10 value: %X", reg->palette_var10);
-					output.print(buffer);
+					output.Print("  TLF_PALETTE_VAR10 value: {:X}", reg->palette_var10);
 				}
 			};
 
-			char *b = buffer + seprintf(buffer, lastof(buffer), "  ground: (%X, %X)",
+			output.buffer.format("  ground: ({:X}, {:X})",
 					dts.ground.sprite, dts.ground.pal);
-			print_reg_info(b, 0, false);
+			print_reg_info(0, false); // this calls output.FinishPrint() as needed
 
 			uint offset = 0; // offset 0 is the ground sprite
 			const DrawTileSeqStruct *element;
 			foreach_draw_tile_seq(element, dts.seq) {
 				offset++;
-				char *b = buffer;
 				if (element->IsParentSprite()) {
-					b += seprintf(buffer, lastof(buffer), "  section: %X, image: (%X, %X), d: (%d, %d, %d), s: (%d, %d, %d)",
+					output.buffer.format("  section: {:X}, image: ({:X}, {:X}), d: ({}, {}, {}), s: ({}, {}, {})",
 							offset, element->image.sprite, element->image.pal,
 							element->delta_x, element->delta_y, element->delta_z,
 							element->size_x, element->size_y, element->size_z);
 				} else {
-					b += seprintf(buffer, lastof(buffer), "  section: %X, image: (%X, %X), d: (%d, %d)",
+					output.buffer.format("  section: {:X}, image: ({:X}, {:X}), d: ({}, {})",
 							offset, element->image.sprite, element->image.pal,
 							element->delta_x, element->delta_y);
 				}
-				print_reg_info(b, offset, element->IsParentSprite());
+				print_reg_info(offset, element->IsParentSprite()); // this calls output.FinishPrint() as needed
 			}
 		}
 	}
@@ -961,48 +882,41 @@ class NIHHouse : public NIHelper {
 	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
 		const HouseSpec *hs = HouseSpec::Get(GetHouseType(index));
-		char buffer[1024];
-		output.print("Debug Info:");
-		char *b = buffer + seprintf(buffer, lastof(buffer), "  House Type: %u", GetHouseType(index));
+		output.Print("Debug Info:");
+		output.buffer.format("  House Type: {}", GetHouseType(index));
 		if (hs->grf_prop.grffile != nullptr) {
-			b += seprintf(b, lastof(buffer), "  (local ID: %u)", hs->grf_prop.local_id);
+			output.buffer.format("  (local ID: {})", hs->grf_prop.local_id);
 		}
-		output.print(buffer);
+		output.FinishPrint();
 
 		auto zone_flag = [&](HouseZonesBits zone) -> char {
 			if (HasBit(hs->building_availability, zone)) return '0' + zone;
 			return '-';
 		};
-		seprintf(buffer, lastof(buffer), "  building_flags: 0x%X, zones: %c%c%c%c%c", hs->building_flags,
+		output.Print("  building_flags: 0x{:X}, zones: {}{}{}{}{}", hs->building_flags,
 				zone_flag(HZB_TOWN_EDGE), zone_flag(HZB_TOWN_OUTSKIRT), zone_flag(HZB_TOWN_OUTER_SUBURB), zone_flag(HZB_TOWN_INNER_SUBURB), zone_flag(HZB_TOWN_CENTRE));
-		output.print(buffer);
 
-		seprintf(buffer, lastof(buffer), "  extra_flags: 0x%X, ctrl_flags: 0x%X", hs->extra_flags, hs->ctrl_flags);
-		output.print(buffer);
-		seprintf(buffer, lastof(buffer), "  remove_rating_decrease: %u, minimum_life: %u", hs->remove_rating_decrease, hs->minimum_life);
-		output.print(buffer);
-		seprintf(buffer, lastof(buffer), "  population: %u, mail_generation: %u", hs->population, hs->mail_generation);
-		output.print(buffer);
-		seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", hs->animation.frames, hs->animation.status, hs->animation.speed, hs->animation.triggers);
-		output.print(buffer);
+		output.Print("  extra_flags: 0x{:X}, ctrl_flags: 0x{:X}", hs->extra_flags, hs->ctrl_flags);
+		output.Print("  remove_rating_decrease: {}, minimum_life: {}", hs->remove_rating_decrease, hs->minimum_life);
+		output.Print("  population: {}, mail_generation: {}", hs->population, hs->mail_generation);
+		output.Print("  animation: frames: {}, status: {}, speed: {}, triggers: 0x{:X}", hs->animation.frames, hs->animation.status, hs->animation.speed, hs->animation.triggers);
 
 		{
-			char *b = buffer + seprintf(buffer, lastof(buffer), "  min year: %d", hs->min_year.base());
+			output.buffer.format("  min year: {}", hs->min_year);
 			if (hs->max_year < CalTime::MAX_YEAR) {
-				seprintf(b, lastof(buffer), ", max year %d", hs->max_year.base());
+				output.buffer.format(", max year {}", hs->max_year);
 			}
-			output.print(buffer);
+			output.FinishPrint();
 		}
 
 		if (GetCleanHouseType(index) != GetHouseType(index)) {
 			hs = HouseSpec::Get(GetCleanHouseType(index));
-			b = buffer + seprintf(buffer, lastof(buffer), "  Untranslated House Type: %u", GetCleanHouseType(index));
+			output.buffer.format("  Untranslated House Type: {}", GetCleanHouseType(index));
 			if (hs->grf_prop.grffile != nullptr) {
-				b += seprintf(b, lastof(buffer), "  (local ID: %u)", hs->grf_prop.local_id);
+				output.buffer.format("  (local ID: {})", hs->grf_prop.local_id);
 			}
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "    building_flags: 0x%X", hs->building_flags);
-			output.print(buffer);
+			output.FinishPrint();
+			output.Print("    building_flags: 0x{:X}", hs->building_flags);
 		}
 	}
 
@@ -1064,18 +978,13 @@ class NIHIndustryTile : public NIHelper {
 
 	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
-		char buffer[1024];
-		output.print("Debug Info:");
-		seprintf(buffer, lastof(buffer), "  Gfx Index: %u, animated tile: %d", GetIndustryGfx(index), _animated_tiles.find(index) != _animated_tiles.end());
-		output.print(buffer);
+		output.Print("Debug Info:");
+		output.Print("  Gfx Index: {}, animated tile: {}", GetIndustryGfx(index), _animated_tiles.find(index) != _animated_tiles.end());
 		const IndustryTileSpec *indts = GetIndustryTileSpec(GetIndustryGfx(index));
 		if (indts) {
-			seprintf(buffer, lastof(buffer), "  anim_production: %u, anim_next: %u, anim_state: %u, ", indts->anim_production, indts->anim_next, indts->anim_state);
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", indts->animation.frames, indts->animation.status, indts->animation.speed, indts->animation.triggers);
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  special_flags: 0x%X, enabled: %u", indts->special_flags, indts->enabled);
-			output.print(buffer);
+			output.Print("  anim_production: {}, anim_next: {}, anim_state: {}, ", indts->anim_production, indts->anim_next, indts->anim_state);
+			output.Print("  animation: frames: {}, status: {}, speed: {}, triggers: 0x{:X}", indts->animation.frames, indts->animation.status, indts->animation.speed, indts->animation.triggers);
+			output.Print("  special_flags: 0x{:X}, enabled: {}", indts->special_flags, indts->enabled);
 		}
 	}
 
@@ -1240,74 +1149,56 @@ class NIHIndustry : public NIHelper {
 
 	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
-		char buffer[1024];
-		output.print("Debug Info:");
+		output.Print("Debug Info:");
 
 		if (!HasBit(index, 26)) {
-			seprintf(buffer, lastof(buffer), "  Index: %u", index);
-			output.print(buffer);
+			output.Print("  Index: {}", index);
 			const Industry *ind = Industry::GetIfValid(index);
 			if (ind) {
-				seprintf(buffer, lastof(buffer), "  Location: %ux%u (%X), w: %u, h: %u", TileX(ind->location.tile), TileY(ind->location.tile), ind->location.tile, ind->location.w, ind->location.h);
-				output.print(buffer);
+				output.Print("  Location: {}x{} ({:X}), w: {}, h: {}", TileX(ind->location.tile), TileY(ind->location.tile), ind->location.tile, ind->location.w, ind->location.h);
 				if (ind->neutral_station) {
-					seprintf(buffer, lastof(buffer), "  Neutral station: %u: %s", ind->neutral_station->index, ind->neutral_station->GetCachedName());
-					output.print(buffer);
+					output.Print("  Neutral station: {}: {}", ind->neutral_station->index, ind->neutral_station->GetCachedName());
 				}
-				seprintf(buffer, lastof(buffer), "  Nearby stations: %u", (uint) ind->stations_near.size());
-				output.print(buffer);
+				output.Print("  Nearby stations: {}", ind->stations_near.size());
 				for (const Station *st : ind->stations_near) {
-					seprintf(buffer, lastof(buffer), "    %u: %s", st->index, st->GetCachedName());
-					output.print(buffer);
+					output.Print("    {}: {}", st->index, st->GetCachedName());
 				}
-				output.print("  Produces:");
+				output.Print("  Produces:");
 				for (uint i = 0; i < std::size(ind->produced_cargo); i++) {
 					if (ind->produced_cargo[i] != INVALID_CARGO) {
-						seprintf(buffer, lastof(buffer), "    %s:", GetStringPtr(CargoSpec::Get(ind->produced_cargo[i])->name));
-						output.print(buffer);
-						seprintf(buffer, lastof(buffer), "      Waiting: %u, rate: %u",
+						output.Print("    {}:", GetStringPtr(CargoSpec::Get(ind->produced_cargo[i])->name));
+						output.Print("      Waiting: {}, rate: {}",
 								ind->produced_cargo_waiting[i], ind->production_rate[i]);
-						output.print(buffer);
-						seprintf(buffer, lastof(buffer), "      This month: production: %u, transported: %u",
+						output.Print("      This month: production: {}, transported: {}",
 								ind->this_month_production[i], ind->this_month_transported[i]);
-						output.print(buffer);
-						seprintf(buffer, lastof(buffer), "      Last month: production: %u, transported: %u, (%u/255)",
+						output.Print("      Last month: production: {}, transported: {}, ({}/255)",
 								ind->last_month_production[i], ind->last_month_transported[i], ind->last_month_pct_transported[i]);
-						output.print(buffer);
 					}
 				}
-				output.print("  Accepts:");
+				output.Print("  Accepts:");
 				for (uint i = 0; i < std::size(ind->accepts_cargo); i++) {
 					if (ind->accepts_cargo[i] != INVALID_CARGO) {
-						seprintf(buffer, lastof(buffer), "    %s: waiting: %u",
+						output.Print("    {}: waiting: {}",
 								GetStringPtr(CargoSpec::Get(ind->accepts_cargo[i])->name), ind->incoming_cargo_waiting[i]);
-						output.print(buffer);
 					}
 				}
-				seprintf(buffer, lastof(buffer), "  Counter: %u", ind->counter);
-				output.print(buffer);
+				output.Print("  Counter: {}", ind->counter);
 			}
 		}
 
 		const IndustrySpec *indsp = (const IndustrySpec *)this->GetSpec(index);
 		if (indsp) {
-			seprintf(buffer, lastof(buffer), "  CBM_IND_PRODUCTION_CARGO_ARRIVAL: %s", HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_CARGO_ARRIVAL) ? "yes" : "no");
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  CBM_IND_PRODUCTION_256_TICKS: %s", HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS) ? "yes" : "no");
-			output.print(buffer);
+			output.Print("  CBM_IND_PRODUCTION_CARGO_ARRIVAL: {}", HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_CARGO_ARRIVAL) ? "yes" : "no");
+			output.Print("  CBM_IND_PRODUCTION_256_TICKS: {}", HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS) ? "yes" : "no");
 			if (_industry_cargo_scaler.HasScaling() && HasBit(indsp->callback_mask, CBM_IND_PRODUCTION_256_TICKS)) {
-				seprintf(buffer, lastof(buffer), "  Counter production interval: %u", _industry_inverse_cargo_scaler.Scale(INDUSTRY_PRODUCE_TICKS));
-				output.print(buffer);
+				output.Print("  Counter production interval: {}", _industry_inverse_cargo_scaler.Scale(INDUSTRY_PRODUCE_TICKS));
 			}
-			seprintf(buffer, lastof(buffer), "  Number of layouts: %u", (uint)indsp->layouts.size());
-			output.print(buffer);
+			output.Print("  Number of layouts: {}", indsp->layouts.size());
 			for (size_t i = 0; i < indsp->layout_anim_masks.size(); i++) {
-				seprintf(buffer, lastof(buffer), "  Layout anim inhibit mask %u: " OTTD_PRINTFHEX64, (uint)i, indsp->layout_anim_masks[i]);
-				output.print(buffer);
+				output.Print("  Layout anim inhibit mask {}: {}", i, indsp->layout_anim_masks[i]);
 			}
 			if (indsp->grf_prop.grffile != nullptr) {
-				seprintf(buffer, lastof(buffer), "  GRF local ID: %u", indsp->grf_prop.local_id);
-				output.print(buffer);
+				output.Print("  GRF local ID: {}", indsp->grf_prop.local_id);
 			}
 		}
 	}
@@ -1356,19 +1247,15 @@ class NIHCargo : public NIHelper {
 
 	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
-		char buffer[1024];
-
-		output.print("Debug Info:");
-		seprintf(buffer, lastof(buffer), "  Index: %u", index);
-		output.print(buffer);
+		output.Print("Debug Info:");
+		output.Print("  Index: {}", index);
 
 		const CargoSpec *spec = CargoSpec::Get(index);
-		seprintf(buffer, lastof(buffer), "  Bit: %2u, Label: %s, Callback mask: 0x%02X",
+		output.Print("  Bit: {:2}, Label: {}, Callback mask: 0x{:02X}",
 				spec->bitnum,
 				label_dumper().Label(spec->label.base()),
 				spec->callback_mask);
-		output.print(buffer);
-		int written = seprintf(buffer, lastof(buffer), "  Cargo class: %s%s%s%s%s%s%s%s%s%s%s",
+		output.buffer.format("  Cargo class: {}{}{}{}{}{}{}{}{}{}{}",
 				(spec->classes & CC_PASSENGERS)   != 0 ? "passenger, " : "",
 				(spec->classes & CC_MAIL)         != 0 ? "mail, " : "",
 				(spec->classes & CC_EXPRESS)      != 0 ? "express, " : "",
@@ -1380,17 +1267,15 @@ class NIHCargo : public NIHelper {
 				(spec->classes & CC_HAZARDOUS)    != 0 ? "hazardous, " : "",
 				(spec->classes & CC_COVERED)      != 0 ? "covered/sheltered, " : "",
 				(spec->classes & CC_SPECIAL)      != 0 ? "special, " : "");
-		if (written >= 2 && buffer[written - 2] == ',') buffer[written - 2] = 0;
-		output.print(buffer);
+		std::string_view view = output.buffer;
+		if (view.ends_with(", ")) output.buffer.restore_size(output.buffer.size() - 2);
+		output.FinishPrint();
 
-		seprintf(buffer, lastof(buffer), "  Weight: %u, Capacity multiplier: %u", spec->weight, spec->multiplier);
-		output.print(buffer);
-		seprintf(buffer, lastof(buffer), "  Initial payment: %d, Current payment: " OTTD_PRINTF64 ", Transit periods: (%u, %u)",
+		output.Print("  Weight: {}, Capacity multiplier: {}", spec->weight, spec->multiplier);
+		output.Print("  Initial payment: {}, Current payment: {}, Transit periods: ({}, {})",
 				spec->initial_payment, (int64_t)spec->current_payment, spec->transit_periods[0], spec->transit_periods[1]);
-		output.print(buffer);
-		seprintf(buffer, lastof(buffer), "  Freight: %s, Town acceptance effect: %u, Town production effect: %u",
+		output.Print("  Freight: {}, Town acceptance effect: {}, Town production effect: {}",
 				spec->is_freight ? "yes" : "no", spec->town_acceptance_effect, spec->town_production_effect);
-		output.print(buffer);
 	}
 
 	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
@@ -1408,46 +1293,41 @@ static const NIFeature _nif_cargo = {
 
 
 /*** NewGRF signals ***/
-void DumpTileSignalsInfo(char *buffer, const char *last, uint index, NIExtraInfoOutput &output)
+void DumpTileSignalsInfo(uint index, NIExtraInfoOutput &output)
 {
 	for (Trackdir td = TRACKDIR_BEGIN; td < TRACKDIR_END; td = (Trackdir)(td + 1)) {
 		if (!IsValidTrackdir(td)) continue;
 		if (HasTrack(index, TrackdirToTrack(td)) && HasSignalOnTrackdir(index, td)) {
-			char *b = buffer;
 			const SignalState state = GetSignalStateByTrackdir(index, td);
-			b += seprintf(b, last, "  trackdir: %d, state: %d", td, state);
-			if (_extra_aspects > 0 && state == SIGNAL_STATE_GREEN) seprintf(b, last, ", aspect: %d", GetSignalAspect(index, TrackdirToTrack(td)));
-			if (GetSignalAlwaysReserveThrough(index, TrackdirToTrack(td))) seprintf(b, last, ", always reserve through");
-			if (GetSignalSpecialPropagationFlag(index, TrackdirToTrack(td))) seprintf(b, last, ", special propagation flag");
-			output.print(buffer);
+			output.buffer.format("  trackdir: {}, state: {}", td, state);
+			if (_extra_aspects > 0 && state == SIGNAL_STATE_GREEN) output.buffer.format(", aspect: {}", GetSignalAspect(index, TrackdirToTrack(td)));
+			if (GetSignalAlwaysReserveThrough(index, TrackdirToTrack(td))) output.buffer.append(", always reserve through");
+			if (GetSignalSpecialPropagationFlag(index, TrackdirToTrack(td))) output.buffer.append(", special propagation flag");
+			output.FinishPrint();
 		}
 	}
 }
 
-void DumpTunnelBridgeSignalsInfo(char *buffer, const char *last, uint index, NIExtraInfoOutput &output)
+void DumpTunnelBridgeSignalsInfo(uint index, NIExtraInfoOutput &output)
 {
 	if (IsTunnelBridgeSignalSimulationEntrance(index)) {
-		char *b = buffer;
 		const SignalState state = GetTunnelBridgeEntranceSignalState(index);
-		b += seprintf(b, last, "  Entrance: state: %d", state);
-		if (_extra_aspects > 0 && state == SIGNAL_STATE_GREEN) b += seprintf(b, last, ", aspect: %d", GetTunnelBridgeEntranceSignalAspect(index));
-		output.print(buffer);
+		output.buffer.format("  Entrance: state: {}", state);
+		if (_extra_aspects > 0 && state == SIGNAL_STATE_GREEN) output.buffer.format(", aspect: {}", GetTunnelBridgeEntranceSignalAspect(index));
+		output.FinishPrint();
 	}
 	if (IsTunnelBridgeSignalSimulationExit(index)) {
-		char *b = buffer;
 		const SignalState state = GetTunnelBridgeExitSignalState(index);
-		b += seprintf(b, last, "  Exit: state: %d", state);
-		if (_extra_aspects > 0 && state == SIGNAL_STATE_GREEN) b += seprintf(b, last, ", aspect: %d", GetTunnelBridgeExitSignalAspect(index));
-		output.print(buffer);
+		output.buffer.format("  Exit: state: {}", state);
+		if (_extra_aspects > 0 && state == SIGNAL_STATE_GREEN) output.buffer.format(", aspect: {}", GetTunnelBridgeExitSignalAspect(index));
+		output.FinishPrint();
 	}
 	if (GetTunnelBridgeSignalSpecialPropagationFlag(index)) {
-		seprintf(buffer, last, "  Special propagation flag");
-		output.print(buffer);
+		output.Print("  Special propagation flag");
 	}
 	TileIndex end = GetOtherTunnelBridgeEnd(index);
 	extern uint GetTunnelBridgeSignalSimulationSignalCount(TileIndex begin, TileIndex end);
-	seprintf(buffer, last, "  Spacing: %d, total signals: %d", GetTunnelBridgeSignalSimulationSpacing(index), GetTunnelBridgeSignalSimulationSignalCount(index, end));
-	output.print(buffer);
+	output.Print("  Spacing: {}, total signals: {}", GetTunnelBridgeSignalSimulationSpacing(index), GetTunnelBridgeSignalSimulationSignalCount(index, end));
 }
 
 static const NIVariable _niv_signals[] = {
@@ -1502,28 +1382,27 @@ class NIHSignals : public NIHelper {
 
 	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
-		char buffer[1024];
-		output.print("Debug Info:");
+		output.Print("Debug Info:");
 		if (IsTileType(index, MP_RAILWAY) && HasSignals(index)) {
-			output.print("Signals:");
-			DumpTileSignalsInfo(buffer, lastof(buffer), index, output);
+			output.Print("Signals:");
+			DumpTileSignalsInfo(index, output);
 		}
 		if (IsTunnelBridgeWithSignalSimulation(index)) {
-			output.print("Signals:");
-			DumpTunnelBridgeSignalsInfo(buffer, lastof(buffer), index, output);
+			output.Print("Signals:");
+			DumpTunnelBridgeSignalsInfo(index, output);
 		}
 		if (_settings_game.vehicle.train_speed_adaptation) {
 			SignalSpeedKey speed_key = { index, 0, (Trackdir)0 };
 			for (auto iter = _signal_speeds.lower_bound(speed_key); iter != _signal_speeds.end() && iter->first.signal_tile == index; ++iter) {
 				const auto &it = *iter;
-				char *b = buffer + seprintf(buffer, lastof(buffer), "Speed adaptation: Track: %X, last dir: %X --> speed: %u",
+				output.buffer.format("Speed adaptation: Track: {:X}, last dir: {:X} --> speed: {}",
 						it.first.signal_track, it.first.last_passing_train_dir, it.second.train_speed);
 				if (it.second.IsOutOfDate()) {
-					b += seprintf(b, lastof(buffer), ", expired");
+					output.buffer.format(", expired");
 				} else {
-					b += seprintf(b, lastof(buffer), ", expires in %u ticks", (uint)(it.second.time_stamp - _state_ticks).base());
+					output.buffer.format(", expires in {} ticks", (it.second.time_stamp - _state_ticks));
 				}
-				output.print(buffer);
+				output.FinishPrint();
 			}
 		}
 	}
@@ -1613,51 +1492,45 @@ class NIHObject : public NIHelper {
 
 	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
-		char buffer[1024];
-		output.print("Debug Info:");
+		output.Print("Debug Info:");
 		const ObjectSpec *spec = ObjectSpec::GetByTile(index);
 		if (spec != nullptr) {
 			ObjectID id = GetObjectIndex(index);
 			const Object *obj = Object::Get(id);
-			char *b = buffer + seprintf(buffer, lastof(buffer), "  index: %u, type ID: %u", id, GetObjectType(index));
+			output.buffer.format("  index: {}, type ID: {}", id, GetObjectType(index));
 			if (spec->grf_prop.grffile != nullptr) {
-				b += seprintf(b, lastof(buffer), "  (local ID: %u)", spec->grf_prop.local_id);
+				output.buffer.format("  (local ID: {})", spec->grf_prop.local_id);
 			}
 			if (spec->class_index != INVALID_OBJECT_CLASS) {
 				uint class_id = ObjectClass::Get(spec->class_index)->global_id;
-				b += seprintf(b, lastof(buffer), ", class ID: %s", label_dumper().Label(class_id));
+				output.buffer.format(", class ID: {}", label_dumper().Label(class_id));
 			}
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  view: %u, colour: %u, effective foundation: %u", obj->view, obj->colour, GetObjectEffectiveFoundationType(index));
-			output.print(buffer);
+			output.FinishPrint();
+
+			output.Print("  view: {}, colour: {}, effective foundation: {}", obj->view, obj->colour, GetObjectEffectiveFoundationType(index));
 			if (spec->ctrl_flags & OBJECT_CTRL_FLAG_USE_LAND_GROUND) {
-				seprintf(buffer, lastof(buffer), "  ground type: %u, density: %u, counter: %u, water class: %u", GetObjectGroundType(index), GetObjectGroundDensity(index), GetObjectGroundCounter(index), GetWaterClass(index));
-				output.print(buffer);
+				output.Print("  ground type: {}, density: {}, counter: {}, water class: {}", GetObjectGroundType(index), GetObjectGroundDensity(index), GetObjectGroundCounter(index), GetWaterClass(index));
 			}
-			seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", spec->animation.frames, spec->animation.status, spec->animation.speed, spec->animation.triggers);
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  size: %ux%u, height: %u, views: %u", GB(spec->size, 4, 4), GB(spec->size, 0, 4), spec->height, spec->views);
-			output.print(buffer);
+			output.Print("  animation: frames: {}, status: {}, speed: {}, triggers: 0x{:X}", spec->animation.frames, spec->animation.status, spec->animation.speed, spec->animation.triggers);
+			output.Print("  size: {}x{}, height: {}, views: {}", GB(spec->size, 4, 4), GB(spec->size, 0, 4), spec->height, spec->views);
 
 			{
 				CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(spec->introduction_date);
-				char *b = buffer + seprintf(buffer, lastof(buffer), "  intro: %i-%02i-%02i",
-						ymd.year.base(), ymd.month + 1, ymd.day);
+				output.buffer.format("  intro: {}-{:02}-{:02}",
+						ymd.year, ymd.month + 1, ymd.day);
 				if (spec->end_of_life_date < CalTime::MAX_DATE) {
 					ymd = CalTime::ConvertDateToYMD(spec->end_of_life_date);
-					seprintf(b, lastof(buffer), ", end of life: %i-%02i-%02i",
-							ymd.year.base(), ymd.month + 1, ymd.day);
+					output.buffer.format(", end of life: {}-{:02}-{:02}",
+							ymd.year, ymd.month + 1, ymd.day);
 				}
-				output.print(buffer);
+				output.FinishPrint();
 			}
 
 			output.register_next_line_click_flag_toggle(1);
-			seprintf(buffer, lastof(buffer), "  [%c] flags: 0x%X", output.flags & 1 ? '-' : '+', spec->flags);
-			output.print(buffer);
+			output.Print("  [{}] flags: 0x{:X}", output.flags & 1 ? '-' : '+', spec->flags);
 			if (output.flags & 1) {
 				auto print = [&](const char *name) {
-					seprintf(buffer, lastof(buffer), "    %s", name);
-					output.print(buffer);
+					output.Print("    {}", name);
 				};
 				auto check_flag = [&](ObjectFlags flag, const char *name) {
 					if (spec->flags & flag) print(name);
@@ -1714,17 +1587,16 @@ static const NIVariable _niv_railtypes[] = {
 	NIV_END()
 };
 
-static void PrintTypeLabels(char *buffer, const char *last, const char *prefix, uint32_t label, const uint32_t *alternate_labels, size_t alternate_labels_count, std::function<void(std::string_view)> &print)
+static void PrintTypeLabels(NIExtraInfoOutput &output, const char *prefix, uint32_t label, const uint32_t *alternate_labels, size_t alternate_labels_count)
 {
 	if (alternate_labels_count > 0) {
-		char *b = buffer;
-		b += seprintf(b, last, "%sAlternate labels: ", prefix);
+		output.buffer.format("{}Alternate labels: ", prefix);
 		for (size_t i = 0; i < alternate_labels_count; i++) {
-			if (i != 0) b += seprintf(b, last, ", ");
+			if (i != 0) output.buffer.append(", ");
 			uint32_t l = alternate_labels[i];
-			b += seprintf(b, last, "%s", label_dumper().Label(l));
+			output.buffer.append(label_dumper().Label(l));
 		}
-		print(buffer);
+		output.FinishPrint();
 	}
 }
 
@@ -1747,35 +1619,29 @@ class NIHRailType : public NIHelper {
 
 	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
-		char buffer[1024];
-
 		RailType primary = GetTileRailType(index);
 		RailType secondary = GetTileSecondaryRailTypeIfValid(index);
 
 		auto writeRailType = [&](RailType type) {
 			const RailTypeInfo *info = GetRailTypeInfo(type);
-			seprintf(buffer, lastof(buffer), "  Type: %u (%s)", type, label_dumper().RailTypeLabel(type));
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  Flags: %c%c%c%c%c%c",
+			output.Print("  Type: {} ({})", type, label_dumper().RailTypeLabel(type));
+			output.Print("  Flags: {}{}{}{}{}{}",
 					HasBit(info->flags, RTF_CATENARY) ? 'c' : '-',
 					HasBit(info->flags, RTF_NO_LEVEL_CROSSING) ? 'l' : '-',
 					HasBit(info->flags, RTF_HIDDEN) ? 'h' : '-',
 					HasBit(info->flags, RTF_NO_SPRITE_COMBINE) ? 's' : '-',
 					HasBit(info->flags, RTF_ALLOW_90DEG) ? 'a' : '-',
 					HasBit(info->flags, RTF_DISALLOW_90DEG) ? 'd' : '-');
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  Ctrl flags: %c%c%c%c",
+			output.Print("  Ctrl flags: {}{}{}{}",
 					HasBit(info->ctrl_flags, RTCF_PROGSIG) ? 'p' : '-',
 					HasBit(info->ctrl_flags, RTCF_RESTRICTEDSIG) ? 'r' : '-',
 					HasBit(info->ctrl_flags, RTCF_NOREALISTICBRAKING) ? 'b' : '-',
 					HasBit(info->ctrl_flags, RTCF_NOENTRYSIG) ? 'n' : '-');
-			output.print(buffer);
 
 			uint bit = 1;
 			auto dump_railtypes = [&](const char *name, RailTypes types, RailTypes mark) {
 				output.register_next_line_click_flag_toggle(bit);
-				seprintf(buffer, lastof(buffer), "  [%c] %s: 0x" OTTD_PRINTFHEX64, (output.flags & bit) ? '-' : '+', name, types);
-				output.print(buffer);
+				output.Print("  [{}] {}: 0x{:X}", (output.flags & bit) ? '-' : '+', name, types);
 				if (output.flags & bit) {
 					DumpRailTypeList(output, "    ", types, mark);
 				}
@@ -1786,32 +1652,27 @@ class NIHRailType : public NIHelper {
 			dump_railtypes("Compatible", info->compatible_railtypes, RAILTYPES_NONE);
 			dump_railtypes("All compatible", info->all_compatible_railtypes, ~info->compatible_railtypes);
 
-			PrintTypeLabels(buffer, lastof(buffer), "  ", info->label, (const uint32_t*) info->alternate_labels.data(), info->alternate_labels.size(), output.print);
-			seprintf(buffer, lastof(buffer), "  Cost multiplier: %u/8, Maintenance multiplier: %u/8", info->cost_multiplier, info->maintenance_multiplier);
-			output.print(buffer);
+			PrintTypeLabels(output, "  ", info->label, (const uint32_t*) info->alternate_labels.data(), info->alternate_labels.size());
+			output.Print("  Cost multiplier: {}/8, Maintenance multiplier: {}/8", info->cost_multiplier, info->maintenance_multiplier);
 
 			CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(info->introduction_date);
-			seprintf(buffer, lastof(buffer), "  Introduction date: %4i-%02i-%02i", ymd.year.base(), ymd.month + 1, ymd.day);
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  Intro required railtypes: 0x" OTTD_PRINTFHEX64, info->introduction_required_railtypes);
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  Intro railtypes: 0x" OTTD_PRINTFHEX64, info->introduces_railtypes);
-			output.print(buffer);
+			output.Print("  Introduction date: {:4}-{:02}-{:02}", ymd.year, ymd.month + 1, ymd.day);
+			output.Print("  Intro required railtypes: 0x{:X}", info->introduction_required_railtypes);
+			output.Print("  Intro railtypes: 0x{:X}", info->introduces_railtypes);
 		};
 
-		output.print("Debug Info:");
+		output.Print("Debug Info:");
 		writeRailType(primary);
 		if (secondary != INVALID_RAILTYPE) {
 			writeRailType(secondary);
 		}
 
 		if (IsTileType(index, MP_RAILWAY) && HasSignals(index)) {
-			output.print("Signals:");
-			DumpTileSignalsInfo(buffer, lastof(buffer), index, output);
+			output.Print("Signals:");
+			DumpTileSignalsInfo(index, output);
 		}
 		if (IsTileType(index, MP_RAILWAY) && IsRailDepot(index)) {
-			seprintf(buffer, lastof(buffer), "Depot: reserved: %u", HasDepotReservation(index));
-			output.print(buffer);
+			output.Print("Depot: reserved: {}", HasDepotReservation(index));
 		}
 	}
 
@@ -1894,14 +1755,11 @@ class NIHAirportTile : public NIHelper {
 
 	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
-		char buffer[1024];
-		output.print("Debug Info:");
-		seprintf(buffer, lastof(buffer), "  Gfx Index: %u", GetAirportGfx(index));
-		output.print(buffer);
+		output.Print("Debug Info:");
+		output.Print("  Gfx Index: {}", GetAirportGfx(index));
 		const AirportTileSpec *spec = AirportTileSpec::Get(GetAirportGfx(index));
 		if (spec) {
-			seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", spec->animation.frames, spec->animation.status, spec->animation.speed, spec->animation.triggers);
-			output.print(buffer);
+			output.Print("  animation: frames: {}, status: {}, speed: {}, triggers: 0x{:X}", spec->animation.frames, spec->animation.status, spec->animation.speed, spec->animation.triggers);
 		}
 	}
 };
@@ -2027,33 +1885,25 @@ class NIHTown : public NIHelper {
 	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
 		const Town *t = Town::Get(index);
-		char buffer[1024];
 
-		output.print("Debug Info:");
-		seprintf(buffer, lastof(buffer), "  Index: %u", index);
-		output.print(buffer);
-		seprintf(buffer, lastof(buffer), "  Churches: %u, Stadiums: %u", t->church_count, t->stadium_count);
-		output.print(buffer);
+		output.Print("Debug Info:");
+		output.Print("  Index: {}", index);
+		output.Print("  Churches: {}, Stadiums: {}", t->church_count, t->stadium_count);
 
-		seprintf(buffer, lastof(buffer), "  Nearby stations: %u", (uint) t->stations_near.size());
-		output.print(buffer);
+		output.Print("  Nearby stations: {}", t->stations_near.size());
 		for (const Station *st : t->stations_near) {
-			seprintf(buffer, lastof(buffer), "    %u: %s", st->index, st->GetCachedName());
-			output.print(buffer);
+			output.Print("    {}: {}", st->index, st->GetCachedName());
 		}
 
-		seprintf(buffer, lastof(buffer), "  Growth rate: %u, Growth Counter: %u, T to Rebuild: %u, Growing: %u, Custom growth: %u",
+		output.Print("  Growth rate: {}, Growth Counter: {}, T to Rebuild: {}, Growing: {}, Custom growth: {}",
 				t->growth_rate, t->grow_counter, t->time_until_rebuild, HasBit(t->flags, TOWN_IS_GROWING) ? 1 : 0,HasBit(t->flags, TOWN_CUSTOM_GROWTH) ? 1 : 0);
-		output.print(buffer);
 
-		seprintf(buffer, lastof(buffer), "  Road layout: %s", GetStringPtr(STR_CONFIG_SETTING_TOWN_LAYOUT_DEFAULT + t->layout));
-		output.print(buffer);
+		output.Print("  Road layout: {}", GetStringPtr(STR_CONFIG_SETTING_TOWN_LAYOUT_DEFAULT + t->layout));
 
 		if (t->have_ratings != 0) {
-			output.print("  Company ratings:");
+			output.Print("  Company ratings:");
 			for (uint8_t bit : SetBitIterator(t->have_ratings)) {
-				seprintf(buffer, lastof(buffer), "    %u: %d", bit, t->ratings[bit]);
-				output.print(buffer);
+				output.Print("    {}: {}", bit, t->ratings[bit]);
 			}
 		}
 
@@ -2069,14 +1919,11 @@ class NIHTown : public NIHelper {
 			static_assert(lengthof(names) == NUM_TAE);
 
 			if (t->goal[tae] == TOWN_GROWTH_WINTER) {
-				seprintf(buffer, lastof(buffer), "  TAE_%s: TOWN_GROWTH_WINTER", names[tae - TAE_BEGIN]);
-				output.print(buffer);
+				output.Print("  TAE_{}: TOWN_GROWTH_WINTER", names[tae - TAE_BEGIN]);
 			} else if (t->goal[tae] == TOWN_GROWTH_DESERT) {
-				seprintf(buffer, lastof(buffer), "  TAE_%s: TOWN_GROWTH_DESERT", names[tae - TAE_BEGIN]);
-				output.print(buffer);
+				output.Print("  TAE_{}: TOWN_GROWTH_DESERT", names[tae - TAE_BEGIN]);
 			} else if (t->goal[tae] != 0) {
-				seprintf(buffer, lastof(buffer), "  TAE_%s: %u", names[tae - TAE_BEGIN], t->goal[tae]);
-				output.print(buffer);
+				output.Print("  TAE_{}: {}", names[tae - TAE_BEGIN], t->goal[tae]);
 			}
 		}
 	}
@@ -2121,45 +1968,33 @@ class NIHStationStruct : public NIHelper {
 
 	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
-		char buffer[1024];
-		output.print("Debug Info:");
-		seprintf(buffer, lastof(buffer), "  Index: %u", index);
-		output.print(buffer);
+		output.Print("Debug Info:");
+		output.Print("  Index: {}", index);
 		const BaseStation *bst = BaseStation::GetIfValid(index);
 		if (!bst) return;
-		seprintf(buffer, lastof(buffer), "  Tile: %X (%u x %u)", bst->xy, TileX(bst->xy), TileY(bst->xy));
-		output.print(buffer);
+		output.Print("  Tile: {:X} ({} x {})", bst->xy, TileX(bst->xy), TileY(bst->xy));
 		if (bst->rect.IsEmpty()) {
-			output.print("  rect: empty");
+			output.Print("  rect: empty");
 		} else {
-			seprintf(buffer, lastof(buffer), "  rect: left: %u, right: %u, top: %u, bottom: %u", bst->rect.left, bst->rect.right, bst->rect.top, bst->rect.bottom);
-			output.print(buffer);
+			output.Print("  rect: left: {}, right: {}, top: {}, bottom: {}", bst->rect.left, bst->rect.right, bst->rect.top, bst->rect.bottom);
 		}
 		const Station *st = Station::GetIfValid(index);
 		if (st) {
 			if (st->industry) {
-				seprintf(buffer, lastof(buffer), "  Neutral industry: %u: %s", st->industry->index, st->industry->GetCachedName().c_str());
-				output.print(buffer);
+				output.Print("  Neutral industry: {}: {}", st->industry->index, st->industry->GetCachedName().c_str());
 			}
-			seprintf(buffer, lastof(buffer), "  Nearby industries: %u", (uint) st->industries_near.size());
-			output.print(buffer);
+			output.Print("  Nearby industries: {}", st->industries_near.size());
 			for (const auto &i : st->industries_near) {
-				seprintf(buffer, lastof(buffer), "    %u: %s, distance: %u", i.industry->index, i.industry->GetCachedName().c_str(), i.distance);
-				output.print(buffer);
+				output.Print("    {}: {}, distance: {}", i.industry->index, i.industry->GetCachedName().c_str(), i.distance);
 			}
-			seprintf(buffer, lastof(buffer), "  Station tiles: %u", st->station_tiles);
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  Delete counter: %u", st->delete_ctr);
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  Docking tiles: %X, %u x %u", st->docking_station.tile, st->docking_station.w, st->docking_station.h);
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  Time since: load: %u, unload: %u", st->time_since_load, st->time_since_unload);
-			output.print(buffer);
+			output.Print("  Station tiles: {}", st->station_tiles);
+			output.Print("  Delete counter: {}", st->delete_ctr);
+			output.Print("  Docking tiles: {:X}, {} x {}", st->docking_station.tile, st->docking_station.w, st->docking_station.h);
+			output.Print("  Time since: load: {}, unload: {}", st->time_since_load, st->time_since_unload);
 
 			if (st->airport.tile != INVALID_TILE) {
-				seprintf(buffer, lastof(buffer), "  Airport: type: %u (local: %u), layout: %u, rotation: %u",
+				output.Print("  Airport: type: {} (local: {}), layout: {}, rotation: {}",
 						st->airport.type, st->airport.GetSpec()->grf_prop.local_id, st->airport.layout, st->airport.rotation);
-				output.print(buffer);
 			}
 
 			for (const CargoSpec *cs : CargoSpec::Iterate()) {
@@ -2172,9 +2007,8 @@ class NIHStationStruct : public NIHelper {
 
 				const StationCargoPacketMap *pkts = ge->data != nullptr ? ge->data->cargo.Packets() : nullptr;
 
-				seprintf(buffer, lastof(buffer), "  Goods entry: %u: %s", cs->Index(), GetStringPtr(cs->name));
-				output.print(buffer);
-				char *b = buffer + seprintf(buffer, lastof(buffer), "    Status: %c%c%c%c%c%c%c",
+				output.Print("  Goods entry: {}: {}", cs->Index(), GetStringPtr(cs->name));
+				output.buffer.format("    Status: {}{}{}{}{}{}{}",
 						HasBit(ge->status, GoodsEntry::GES_ACCEPTANCE)       ? 'a' : '-',
 						HasBit(ge->status, GoodsEntry::GES_RATING)           ? 'r' : '-',
 						HasBit(ge->status, GoodsEntry::GES_EVER_ACCEPTED)    ? 'e' : '-',
@@ -2182,57 +2016,46 @@ class NIHStationStruct : public NIHelper {
 						HasBit(ge->status, GoodsEntry::GES_CURRENT_MONTH)    ? 'c' : '-',
 						HasBit(ge->status, GoodsEntry::GES_ACCEPTED_BIGTICK) ? 'b' : '-',
 						HasBit(ge->status, GoodsEntry::GES_NO_CARGO_SUPPLY)  ? 'n' : '-');
-				if (ge->data != nullptr && ge->data->MayBeRemoved()) b += seprintf(b, lastof(buffer), ", (removable)");
-				if (ge->data == nullptr) b += seprintf(b, lastof(buffer), ", (no data)");
-				output.print(buffer);
+				if (ge->data != nullptr && ge->data->MayBeRemoved()) output.buffer.append(", (removable)");
+				if (ge->data == nullptr) output.buffer.append(", (no data)");
+				output.FinishPrint();
 
 				if (ge->amount_fract > 0) {
-					seprintf(buffer, lastof(buffer), "    Amount fract: %u", ge->amount_fract);
-					output.print(buffer);
+					output.Print("    Amount fract: {}", ge->amount_fract);
 				}
 				if (pkts != nullptr && (pkts->MapSize() > 0 || ge->CargoTotalCount() > 0)) {
-					seprintf(buffer, lastof(buffer), "    Cargo packets: %u, cargo packet keys: %u, available: %u, reserved: %u",
-							(uint)pkts->size(), (uint)pkts->MapSize(), ge->CargoAvailableCount(), ge->CargoReservedCount());
-					output.print(buffer);
+					output.Print("    Cargo packets: {}, cargo packet keys: {}, available: {}, reserved: {}",
+							pkts->size(), pkts->MapSize(), ge->CargoAvailableCount(), ge->CargoReservedCount());
 				}
 				if (ge->link_graph != INVALID_LINK_GRAPH) {
-					seprintf(buffer, lastof(buffer), "    Link graph: %u, node: %u", ge->link_graph, ge->node);
-					output.print(buffer);
+					output.Print("    Link graph: {}, node: {}", ge->link_graph, ge->node);
 				}
 				if (ge->max_waiting_cargo > 0) {
-					seprintf(buffer, lastof(buffer), "    Max waiting cargo: %u", ge->max_waiting_cargo);
-					output.print(buffer);
+					output.Print("    Max waiting cargo: {}", ge->max_waiting_cargo);
 				}
 				if (ge->data != nullptr && ge->data->flows.size() > 0) {
 					size_t total_shares = 0;
 					for (const FlowStat &fs : ge->data->flows.IterateUnordered()) {
 						total_shares += fs.size();
 					}
-					seprintf(buffer, lastof(buffer), "    Flows: %u, total shares: %u", (uint)ge->data->flows.size(), (uint)total_shares);
-					output.print(buffer);
+					output.Print("    Flows: {}, total shares: {}", ge->data->flows.size(), total_shares);
 				}
 			}
 		}
 		const Waypoint *wp = Waypoint::GetIfValid(index);
 		if (wp) {
 			output.register_next_line_click_flag_toggle(1);
-			seprintf(buffer, lastof(buffer), "  [%c] flags: 0x%X", output.flags & 1 ? '-' : '+', wp->waypoint_flags);
-			output.print(buffer);
+			output.Print("  [{}] flags: 0x{:X}", output.flags & 1 ? '-' : '+', wp->waypoint_flags);
 			if (output.flags & 1) {
-				auto print = [&](const char *name) {
-					seprintf(buffer, lastof(buffer), "    %s", name);
-					output.print(buffer);
-				};
 				auto check_flag = [&](WaypointFlags flag, const char *name) {
-					if (HasBit(wp->waypoint_flags, flag)) print(name);
+					if (HasBit(wp->waypoint_flags, flag)) output.Print("    {}", name);
 				};
 				check_flag(WPF_HIDE_LABEL,   "WPF_HIDE_LABEL");
 				check_flag(WPF_ROAD,         "WPF_ROAD");
 			}
 
-			seprintf(buffer, lastof(buffer), "  road_waypoint_area: tile: %X (%u x %u), width: %u, height: %u",
+			output.Print("  road_waypoint_area: tile: {:X} ({} x {}), width: {}, height: {}",
 					wp->road_waypoint_area.tile, TileX(wp->road_waypoint_area.tile), TileY(wp->road_waypoint_area.tile), wp->road_waypoint_area.w, wp->road_waypoint_area.h);
-			output.print(buffer);
 		}
 	}
 };
@@ -2271,21 +2094,17 @@ class NIHTraceRestrict : public NIHelper {
 		const TraceRestrictProgram *prog = GetTraceRestrictProgram(ref, false);
 
 		if (prog == nullptr) {
-			output.print("No program");
+			output.Print("No program");
 			return;
 		}
 
-		char buffer[1024];
-		seprintf(buffer, lastof(buffer), "Index: %u", prog->index);
-		output.print(buffer);
-		output.print("");
+		output.Print("Index: {}", prog->index);
+		output.Print("");
 
-		seprintf(buffer, lastof(buffer), "Actions used: 0x%X", prog->actions_used_flags);
-		output.print(buffer);
+		output.Print("Actions used: 0x{:X}", prog->actions_used_flags);
 		auto check_action = [&](TraceRestrictProgramActionsUsedFlags flag, const char *label) {
 			if (prog->actions_used_flags & flag) {
-				seprintf(buffer, lastof(buffer), "  %s", label);
-				output.print(buffer);
+				output.Print("  {}", label);
 			}
 		};
 #define CA(f) check_action(TRPAUF_##f, #f);
@@ -2311,31 +2130,27 @@ class NIHTraceRestrict : public NIHelper {
 		CA(ORDER_CONDITIONALS)
 		CA(REVERSE_AT)
 #undef CA
-		output.print("");
+		output.Print("");
 
-		seprintf(buffer, lastof(buffer), "Ref count: %u", prog->refcount);
-		output.print(buffer);
+		output.Print("Ref count: {}", prog->refcount);
 		const TraceRestrictRefId *refs = prog->GetRefIdsPtr();
 		for (uint32_t i = 0; i < prog->refcount; i++) {
 			TileIndex tile = GetTraceRestrictRefIdTileIndex(refs[i]);
-			seprintf(buffer, lastof(buffer), "  %X x %X, track: %X", TileX(tile), TileY(tile), GetTraceRestrictRefIdTrack(refs[i]));
-			output.print(buffer);
+			output.Print("  {:X} x {:X}, track: {:X}", TileX(tile), TileY(tile), GetTraceRestrictRefIdTrack(refs[i]));
 		}
-		output.print("");
+		output.Print("");
 
-		seprintf(buffer, lastof(buffer), "Program: items: %u, instructions: %u", (uint)prog->items.size(), (uint)prog->GetInstructionCount());
-		output.print(buffer);
+		output.Print("Program: items: {}, instructions: {}", prog->items.size(), prog->GetInstructionCount());
 		auto iter = prog->items.begin();
 		auto end = prog->items.end();
 		while (iter != end) {
 			if (IsTraceRestrictDoubleItem(*iter)) {
-				seprintf(buffer, lastof(buffer), "  %08X %08X", *iter, *(iter + 1));
+				output.Print("  {:08X} {:08X}", *iter, *(iter + 1));
 				iter += 2;
 			} else {
-				seprintf(buffer, lastof(buffer), "  %08X", *iter);
+				output.Print("  {:08X}", *iter);
 				++iter;
 			}
-			output.print(buffer);
 		}
 	}
 };
@@ -2377,40 +2192,33 @@ class NIHRoadType : public NIHelper {
 
 	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
-		output.print("Debug Info:");
+		output.Print("Debug Info:");
 		auto writeInfo = [&](RoadTramType rtt) {
 			RoadType type = GetRoadType(index, rtt);
 			if (type == INVALID_ROADTYPE) return;
 
-			char buffer[1024];
 			const RoadTypeInfo* rti = GetRoadTypeInfo(type);
-			seprintf(buffer, lastof(buffer), "  %s Type: %u (%s)", rtt == RTT_TRAM ? "Tram" : "Road", type, label_dumper().RoadTypeLabel(type));
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "    Flags: %c%c%c%c%c",
+			output.Print("  {} Type: {} ({})", rtt == RTT_TRAM ? "Tram" : "Road", type, label_dumper().RoadTypeLabel(type));
+			output.Print("    Flags: {}{}{}{}{}",
 					HasBit(rti->flags, ROTF_CATENARY) ? 'c' : '-',
 					HasBit(rti->flags, ROTF_NO_LEVEL_CROSSING) ? 'l' : '-',
 					HasBit(rti->flags, ROTF_NO_HOUSES) ? 'X' : '-',
 					HasBit(rti->flags, ROTF_HIDDEN) ? 'h' : '-',
 					HasBit(rti->flags, ROTF_TOWN_BUILD) ? 'T' : '-');
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "    Extra Flags: %c%c%c%c",
+			output.Print("    Extra Flags:{}{}{}{}",
 					HasBit(rti->extra_flags, RXTF_NOT_AVAILABLE_AI_GS) ? 's' : '-',
 					HasBit(rti->extra_flags, RXTF_NO_TOWN_MODIFICATION) ? 't' : '-',
 					HasBit(rti->extra_flags, RXTF_NO_TUNNELS) ? 'T' : '-',
 					HasBit(rti->extra_flags, RXTF_NO_TRAIN_COLLISION) ? 'c' : '-');
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "    Collision mode: %u", rti->collision_mode);
-			output.print(buffer);
+			output.Print("    Collision mode: {}", rti->collision_mode);
 
 			output.register_next_line_click_flag_toggle((1 << rtt));
-			seprintf(buffer, lastof(buffer), "    [%c] Powered: 0x" OTTD_PRINTFHEX64, (output.flags & (1 << rtt)) ? '-' : '+', rti->powered_roadtypes);
-			output.print(buffer);
+			output.Print("    [{}] Powered: 0x{:X}", (output.flags & (1 << rtt)) ? '-' : '+', rti->powered_roadtypes);
 			if (output.flags & (1 << rtt)) {
 				DumpRoadTypeList(output, "      ", rti->powered_roadtypes);
 			}
-			PrintTypeLabels(buffer, lastof(buffer), "    ", rti->label, (const uint32_t*) rti->alternate_labels.data(), rti->alternate_labels.size(), output.print);
-			seprintf(buffer, lastof(buffer), "    Cost multiplier: %u/8, Maintenance multiplier: %u/8", rti->cost_multiplier, rti->maintenance_multiplier);
-			output.print(buffer);
+			PrintTypeLabels(output, "    ", rti->label, (const uint32_t*) rti->alternate_labels.data(), rti->alternate_labels.size());
+			output.Print("    Cost multiplier: {}/8, Maintenance multiplier: {}/8", rti->cost_multiplier, rti->maintenance_multiplier);
 		};
 		writeInfo(RTT_ROAD);
 		writeInfo(RTT_TRAM);
@@ -2512,28 +2320,23 @@ class NIHRoadStop : public NIHelper {
 
 	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
-		char buffer[1024];
-		output.print("Debug Info:");
+		output.Print("Debug Info:");
 		const RoadStopSpec *spec = GetRoadStopSpec(index);
 		if (spec != nullptr) {
 			uint class_id = RoadStopClass::Get(spec->class_index)->global_id;
-			char *b = buffer + seprintf(buffer, lastof(buffer), "  class ID: %s", label_dumper().Label(class_id));
+			output.buffer.format("  class ID: {}", label_dumper().Label(class_id));
 			if (spec->grf_prop.grffile != nullptr) {
-				b += seprintf(b, lastof(buffer), "  (local ID: %u)", spec->grf_prop.local_id);
+				output.buffer.format("  (local ID: {})", spec->grf_prop.local_id);
 			}
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  spec: stop type: %X, draw mode: %X, cargo triggers: " OTTD_PRINTFHEX64, spec->stop_type, spec->draw_mode, spec->cargo_triggers);
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  spec: callback mask: %X, flags: %X, intl flags: %X", spec->callback_mask, spec->flags, spec->internal_flags);
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  spec: build: %u, clear: %u, height: %u", spec->build_cost_multiplier, spec->clear_cost_multiplier, spec->height);
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "  animation: frames: %u, status: %u, speed: %u, triggers: 0x%X", spec->animation.frames, spec->animation.status, spec->animation.speed, spec->animation.triggers);
-			output.print(buffer);
+			output.FinishPrint();
+
+			output.Print("  spec: stop type: {:X}, draw mode: {:X}, cargo triggers: {:X}", spec->stop_type, spec->draw_mode, spec->cargo_triggers);
+			output.Print("  spec: callback mask: {:X}, flags: {:X}, intl flags: {:X}", spec->callback_mask, spec->flags, spec->internal_flags);
+			output.Print("  spec: build: {}, clear: {}, height: {}", spec->build_cost_multiplier, spec->clear_cost_multiplier, spec->height);
+			output.Print("  animation: frames: {}, status: {}, speed: {}, triggers: 0x{:X}", spec->animation.frames, spec->animation.status, spec->animation.speed, spec->animation.triggers);
 
 			const BaseStation *st = BaseStation::GetByTile(index);
-			seprintf(buffer, lastof(buffer), "  road stop: random bits: %02X, animation frame: %02X", st->GetRoadStopRandomBits(index), st->GetRoadStopAnimationFrame(index));
-			output.print(buffer);
+			output.Print("  road stop: random bits: {:02X}, animation frame: {:02X}", st->GetRoadStopRandomBits(index), st->GetRoadStopAnimationFrame(index));
 		}
 	}
 
@@ -2588,14 +2391,11 @@ class NIHNewLandscape : public NIHelper {
 
 	void ExtraInfo(uint index, NIExtraInfoOutput &output) const override
 	{
-		char buffer[1024];
-		output.print("New Landscape GRFs:");
+		output.Print("New Landscape GRFs:");
 		for (const GRFFile *grf : _new_landscape_rocks_grfs) {
-			seprintf(buffer, lastof(buffer), "  GRF: %08X", BSWAP32(grf->grfid));
-			output.print(buffer);
-			seprintf(buffer, lastof(buffer), "    Enable rocks recolour: %d, Enable drawing snowy rocks: %d",
+			output.Print("  GRF: {:08X}", BSWAP32(grf->grfid));
+			output.Print("    Enable rocks recolour: {}, Enable drawing snowy rocks: {}",
 					HasBit(grf->new_landscape_ctrl_flags, NLCF_ROCKS_RECOLOUR_ENABLED), HasBit(grf->new_landscape_ctrl_flags, NLCF_ROCKS_DRAW_SNOWY_ENABLED));
-			output.print(buffer);
 		}
 	}
 

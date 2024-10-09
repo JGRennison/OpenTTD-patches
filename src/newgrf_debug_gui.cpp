@@ -18,6 +18,7 @@
 #include "random_access_file_type.h"
 #include "spritecache.h"
 #include "string_func.h"
+#include "string_func_extra.h"
 #include "strings_func.h"
 #include "textbuf_gui.h"
 #include "vehicle_gui.h"
@@ -148,9 +149,40 @@ struct NIVariable {
 };
 
 struct NIExtraInfoOutput {
-	std::function<void(std::string_view)> print;
+	std::function<void(std::string_view)> print_handler;
 	std::function<void(uint)> register_next_line_click_flag_toggle;
+	format_buffer buffer;
 	uint32_t flags;
+
+	void FinishPrint()
+	{
+		this->print_handler(this->buffer);
+		this->buffer.clear();
+	}
+
+	void FinishPrintMultiline()
+	{
+		ProcessLineByLine(this->buffer, this->print_handler);
+		this->buffer.clear();
+	}
+
+	void PrintV(fmt::string_view fmtstr, fmt::format_args args)
+	{
+		this->buffer.vformat(fmtstr, args);
+		this->FinishPrint();
+	}
+
+	void Print(std::string_view output)
+	{
+		this->print_handler(output);
+		this->buffer.clear(); // Clear buffer anyway, even though it isn't used here
+	}
+
+	template <typename... T>
+	void Print(fmt::format_string<T...> fmtstr, T&&... args)
+	{
+		this->PrintV(fmtstr, fmt::make_format_args(args...));
+	}
 };
 
 /** Helper class to wrap some functionality/queries in. */
@@ -684,10 +716,13 @@ struct NewGRFInspectWindow : Window {
 		} else {
 			NewGRFInspectWindow *this_mutable = const_cast<NewGRFInspectWindow *>(this);
 			this_mutable->extra_info_click_flag_toggles.clear();
-			auto register_next_line_click_flag_toggle = [this_mutable, &i](uint flag) {
+
+			NIExtraInfoOutput output;
+			output.print_handler = line_handler;
+			output.register_next_line_click_flag_toggle = [this_mutable, &i](uint flag) {
 				this_mutable->extra_info_click_flag_toggles[i] = flag;
 			};
-			NIExtraInfoOutput output { line_handler, register_next_line_click_flag_toggle, this->extra_info_flags };
+			output.flags = this->extra_info_flags;
 			nih->ExtraInfo(index, output);
 		}
 
