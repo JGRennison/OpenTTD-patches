@@ -44,6 +44,7 @@
 #include "tbtr_template_gui_main.h"
 #include "tbtr_template_gui_create.h"
 #include "tbtr_template_vehicle.h"
+#include "tbtr_template_vehicle_func.h"
 
 #include "safeguards.h"
 

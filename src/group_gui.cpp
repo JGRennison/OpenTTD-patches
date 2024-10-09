@@ -31,6 +31,7 @@
 #include "newgrf_debug.h"
 #include "group_gui.h"
 #include "group_gui_list.h"
+#include "zoom_func.h"
 
 #include "widgets/group_widget.h"
 

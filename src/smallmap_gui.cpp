@@ -27,6 +27,7 @@
 #include "zoom_func.h"
 #include "object_map.h"
 #include "newgrf_object.h"
+#include "strings_func.h"
 #include "blitter/factory.hpp"
 
 #include "smallmap_colours.h"

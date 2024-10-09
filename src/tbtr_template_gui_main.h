@@ -10,17 +10,8 @@
 #ifndef TEMPLATE_GUI_H
 #define TEMPLATE_GUI_H
 
-#include "engine_type.h"
-#include "group_type.h"
-#include "vehicle_type.h"
-#include "string_func.h"
-#include "strings_func.h"
-
-#include "tbtr_template_vehicle.h"
-#include "tbtr_template_vehicle_func.h"
-
 void ShowTemplateReplaceWindow();
 
-bool TemplateVehicleClicked(const TemplateVehicle *v);
+bool TemplateVehicleClicked(const struct TemplateVehicle *v);
 
 #endif
