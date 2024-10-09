@@ -977,12 +977,12 @@ void CrashLog::MakeCrashLog(char *buffer, const char *last)
 	/* Don't mention writing crash dumps because not all platforms support it. */
 	int dret = this->WriteCrashDump(this->crashdump_filename, lastof(this->crashdump_filename));
 	if (dret < 0) {
-		printf("Writing crash dump failed.\n\n");
+		this->WriteToStdout("Writing crash dump failed.\n\n");
+		strecpy(this->crashdump_filename, "(failed to write crash dump)");
 	} else if (dret > 0) {
 		format_buffer_fixed<1024> buf;
 		buf.format("Crash dump written to {}. Please add this file to any bug reports.\n\n", this->crashdump_filename);
 		this->WriteToStdout(buf);
-		strecpy(this->crashdump_filename, "(failed to write crash dump)");
 	}
 
 	SetScreenshotAuxiliaryText("Crash Log", buffer);
