@@ -2118,7 +2118,7 @@ void ViewportSign::UpdatePosition(ZoomLevel maxzoom, int center, int top, String
 
 	this->top = top;
 
-	std::string buffer;
+	format_buffer buffer;
 
 	GetString(StringBuilder(buffer), str);
 	this->width_normal = WidgetDimensions::scaled.fullbevel.left + Align(GetStringBoundingBox(buffer).width, 2) + WidgetDimensions::scaled.fullbevel.right;

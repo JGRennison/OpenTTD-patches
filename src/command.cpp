@@ -1359,19 +1359,20 @@ std::string CommandCost::SummaryMessage(StringID cmd_msg) const
 		const uint textref_stack_size = this->GetTextRefStackSize();
 		if (textref_stack_size > 0) StartTextRefStackUsage(this->GetTextRefStackGRF(), textref_stack_size, this->GetTextRefStack());
 
-		std::string buf = fmt::format("Failed: cost: {}", (int64_t) this->GetCost());
+		format_buffer buf;
+		buf.format("Failed: cost: {}", (int64_t) this->GetCost());
 		if (cmd_msg != 0) {
-			buf += ' ';
+			buf.push_back(' ');
 			GetString(StringBuilder(buf), cmd_msg);
 		}
 		if (this->message != INVALID_STRING_ID) {
-			buf += ' ';
+			buf.push_back(' ');
 			GetString(StringBuilder(buf), this->message);
 		}
 
 		if (textref_stack_size > 0) StopTextRefStackUsage();
 
-		return buf;
+		return buf.to_string();
 	}
 }
 

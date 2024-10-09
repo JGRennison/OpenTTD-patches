@@ -75,6 +75,9 @@ protected:
 	format_target(fmt::detail::buffer<char> &buffer, uint8_t flags) : target(buffer), flags(flags) {}
 	~format_target() = default;
 
+protected:
+	fmt::detail::buffer<char> &GetTargetFmtBuffer() const { return this->target; }
+
 public:
 	format_target(const format_target &other) = delete;
 	format_target& operator=(const format_target &other) = delete;
@@ -163,6 +166,9 @@ struct format_to_buffer : public format_target {
 	/** Only for internal use */
 	struct format_to_buffer_internal_tag{};
 	format_to_buffer(format_to_buffer_internal_tag tag, fmt::detail::buffer<char> &buffer, uint8_t flags) : format_target(buffer, 0) {}
+
+	/** Only for specialised uses */
+	fmt::detail::buffer<char> &GetTargetBuffer() const { return this->GetTargetFmtBuffer(); }
 };
 
 template <typename T, typename Char>

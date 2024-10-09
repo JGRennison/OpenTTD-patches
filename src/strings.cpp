@@ -330,10 +330,10 @@ void GetString(StringBuilder builder, StringID string)
  */
 std::string GetStringWithArgs(StringID string, StringParameters &args)
 {
-	std::string result;
+	format_buffer result;
 	StringBuilder builder(result);
 	GetStringWithArgs(builder, string, args);
-	return result;
+	return result.to_string();
 }
 
 /**
@@ -422,7 +422,7 @@ static void FormatZerofillNumber(StringBuilder builder, int64_t number, int coun
 
 static void FormatHexNumber(StringBuilder builder, uint64_t number)
 {
-	fmt::format_to(builder, "0x{:X}", number);
+	builder.Format("0x{:X}", number);
 }
 
 char32_t GetDecimalSeparatorChar()
@@ -456,18 +456,18 @@ static void FormatBytes(StringBuilder builder, int64_t number)
 
 	if (number < 1024) {
 		id = 0;
-		fmt::format_to(builder, "{}", number);
+		builder.Format("{}", number);
 	} else if (number < 1024 * 10) {
-		fmt::format_to(builder, "{}{}{:02}", number / 1024, decimal_separator, (number % 1024) * 100 / 1024);
+		builder.Format("{}{}{:02}", number / 1024, decimal_separator, (number % 1024) * 100 / 1024);
 	} else if (number < 1024 * 100) {
-		fmt::format_to(builder, "{}{}{:01}", number / 1024, decimal_separator, (number % 1024) * 10 / 1024);
+		builder.Format("{}{}{:01}", number / 1024, decimal_separator, (number % 1024) * 10 / 1024);
 	} else {
 		assert(number < 1024 * 1024);
-		fmt::format_to(builder, "{}", number / 1024);
+		builder.Format("{}", number / 1024);
 	}
 
 	assert(id < lengthof(iec_prefixes));
-	fmt::format_to(builder, NBSP "{}B", iec_prefixes[id]);
+	builder.Format(NBSP "{}B", iec_prefixes[id]);
 }
 
 static void FormatStateTicksHHMMString(StringBuilder builder, StateTicks ticks, uint case_index)
@@ -1158,7 +1158,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 		 * gendered words can be before the "parameter" words, this needs to be determined before
 		 * the actual formatting.
 		 */
-		std::string buffer;
+		format_buffer buffer;
 		StringBuilder dry_run_builder(buffer);
 		if (UsingNewGRFTextStack()) {
 			/* Values from the NewGRF text stack are only copied to the normal
@@ -1189,7 +1189,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 			if (str_stack.empty()) break;
 			const char *&str = str_stack.top();
 
-			if (_scan_for_gender_data && !builder.GetTargetString()->empty()) {
+			if (_scan_for_gender_data && builder.CurrentIndex() != 0) {
 				/* Early exit when scanning for gender data if target string is already non-empty */
 				return;
 			}
@@ -1197,7 +1197,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 			if (SCC_NEWGRF_FIRST <= b && b <= SCC_NEWGRF_LAST) {
 				/* We need to pass some stuff as it might be modified. */
 				StringParameters remaining = args.GetRemainingParameters();
-				b = RemapNewGRFStringControlCode(b, builder.GetTargetString(), &str, remaining, dry_run);
+				b = RemapNewGRFStringControlCode(b, builder, &str, remaining, dry_run);
 				if (b == 0) continue;
 			}
 
@@ -1320,7 +1320,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 						/* The gender is stored at the start of the formatted string. */
 						bool old_sgd = _scan_for_gender_data;
 						_scan_for_gender_data = true;
-						std::string buffer;
+						format_buffer buffer;
 						StringBuilder tmp_builder(buffer);
 						StringParameters tmp_params = args.GetRemainingParameters(offset);
 						FormatString(tmp_builder, input, tmp_params);

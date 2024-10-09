@@ -580,9 +580,8 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 				pt.y - 2 <= std::max(pta.y, ptb.y) &&
 				check_distance()) {
 
-			std::string buf;
+			format_buffer buf;
 			StringBuilder builder(buf);
-			buf[0] = 0;
 
 			auto add_travel_time = [&](uint32_t time) {
 				if (time > 0) {

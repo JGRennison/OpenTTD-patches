@@ -38,6 +38,6 @@ struct TextRefStack *CreateTextRefStackBackup();
 void RestoreTextRefStackBackup(struct TextRefStack *backup);
 
 class StringParameters;
-uint RemapNewGRFStringControlCode(uint scc, std::string *buffer, const char **str, StringParameters &parameters, bool modify_parameters);
+uint RemapNewGRFStringControlCode(uint scc, class StringBuilder builder, const char **str, StringParameters &parameters, bool modify_parameters);
 
 #endif /* NEWGRF_TEXT_H */

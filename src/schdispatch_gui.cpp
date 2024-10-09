@@ -893,7 +893,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					auto record_iter = v->dispatch_records.find(static_cast<uint16_t>(this->schedule_index));
 					if (record_iter != v->dispatch_records.end()) {
 						const LastDispatchRecord &record = record_iter->second;
-						std::string details;
+						format_buffer details;
 						auto add_detail = [&](StringID str) {
 							auto tmp_params = MakeParameters(str);
 							GetStringWithArgs(StringBuilder(details), details.empty() ? STR_JUST_STRING : STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_SEPARATOR, tmp_params);
@@ -910,7 +910,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 							}
 						}
 
-						show_last_departure(record.dispatched, true, std::move(details));
+						show_last_departure(record.dispatched, true, details.to_string());
 					} else {
 						DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_VEHICLE_NO_LAST_DEPARTURE);
 						y += GetCharacterHeight(FS_NORMAL);

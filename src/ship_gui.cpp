@@ -86,12 +86,13 @@ void DrawShipDetails(const Vehicle *v, const Rect &r)
 			}
 		}
 
-		std::string capacity = GetString(STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY);
+		format_buffer capacity;
+		GetString(StringBuilder(capacity), STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY);
 
 		bool first = true;
 		for (CargoID i = 0; i < NUM_CARGO; i++) {
 			if (max_cargo[i] > 0) {
-				if (!first) capacity += ", ";
+				if (!first) capacity.append(", ");
 				SetDParam(0, i);
 				SetDParam(1, max_cargo[i]);
 				GetString(StringBuilder(capacity), STR_JUST_CARGO);

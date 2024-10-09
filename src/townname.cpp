@@ -65,10 +65,10 @@ static void GetTownName(StringBuilder builder, const TownNameParams *par, uint32
  */
 std::string GetTownName(const TownNameParams *par, uint32_t townnameparts)
 {
-	std::string result;
+	format_buffer result;
 	StringBuilder builder(result);
 	GetTownName(builder, par, townnameparts);
-	return result;
+	return result.to_string();
 }
 
 /**

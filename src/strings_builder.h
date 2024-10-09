@@ -11,13 +11,14 @@
 #define STRINGS_BUILDER_H
 
 #include "string_func.h"
+#include "core/format.hpp"
 
 /**
  * Equivalent to the std::back_insert_iterator in function, with some
  * convenience helpers for string concatenation.
  */
 class StringBuilder {
-	std::string *string;
+	fmt::detail::buffer<char> *string;
 
 public:
 	/* Required type for this to be an output_iterator; mimics std::back_insert_iterator. */
@@ -28,11 +29,17 @@ public:
 	using reference = void;
 
 	/**
-	 * Create the builder of an external buffer.
-	 * @param start The start location to write to.
-	 * @param last  The last location to write to.
+	 * Create the builder of an external fmt::basic_memory_buffer/fmt::memory_buffer.
+	 * @param buffer The buffer to write to.
 	 */
-	StringBuilder(std::string &string) : string(&string) {}
+	template <size_t SIZE, typename Allocator>
+	StringBuilder(fmt::basic_memory_buffer<char, SIZE, Allocator> &buffer) : string(&buffer) {}
+
+	/**
+	 * Create the builder of an external format_to_buffer or subtype.
+	 * @param buffer The buffer to write to.
+	 */
+	StringBuilder(format_to_buffer &buffer) : string(&buffer.GetTargetBuffer()) {}
 
 	/* Required operators for this to be an output_iterator; mimics std::back_insert_iterator, which has no-ops. */
 	StringBuilder &operator++() { return *this; }
@@ -69,7 +76,7 @@ public:
 	 */
 	StringBuilder &operator+=(std::string_view str)
 	{
-		*this->string += str;
+		this->string->append(str.data(), str.data() + str.size());
 		return *this;
 	}
 
@@ -79,18 +86,33 @@ public:
 	 */
 	void Utf8Encode(char32_t c)
 	{
-		auto iterator = std::back_inserter(*this->string);
-		::Utf8Encode(iterator, c);
+		if (c < 0x80) {
+			this->string->push_back((char)c);
+		} else {
+			const size_t pos = this->string->size();
+			const int8_t count = Utf8CharLen(c);
+			this->string->try_resize(pos + count);
+			::Utf8Encode(this->string->data() + pos, c);
+		}
+	}
+
+	template <typename... T>
+	void Format(fmt::format_string<T...> fmtstr, T&&... args)
+	{
+		fmt::detail::vformat_to(*this->string, fmt::string_view(fmtstr), fmt::make_format_args(args...), {});
 	}
 
 	/**
 	 * Remove the given amount of characters from the back of the string.
 	 * @param amount The amount of characters to remove.
-	 * @return true iff there was enough space and the character got added.
 	 */
 	void RemoveElementsFromBack(size_t amount)
 	{
-		this->string->erase(this->string->size() - std::min(amount, this->string->size()));
+		if (amount >= this->string->size()) {
+			this->string->clear();
+		} else {
+			this->string->try_resize(this->string->size() - amount);
+		}
 	}
 
 	/**
@@ -108,12 +130,7 @@ public:
 	 */
 	char &operator[](size_t index)
 	{
-		return (*this->string)[index];
-	}
-
-	std::string *GetTargetString()
-	{
-		return this->string;
+		return this->string->data()[index];
 	}
 };
 

@@ -82,24 +82,24 @@ std::string DumpCargoPacketDeferredPaymentStats()
 		payments[GB(it.first, 24, 8)][GB(it.first, 22, 2)] += it.second;
 	}
 
-	std::string buffer;
+	format_buffer buffer;
 	for (uint i = 0; i < 256; i++) {
 		for (uint j = 0; j < 4; j++) {
 			if (payments[i][j] != 0) {
 				SetDParam(0, i);
 				GetString(StringBuilder(buffer), STR_COMPANY_NAME);
-				buffer += " (";
+				buffer.append(" (");
 				GetString(StringBuilder(buffer), STR_REPLACE_VEHICLE_TRAIN + j);
-				buffer += "): ";
+				buffer.append("): ");
 				SetDParam(0, payments[i][j]);
 				GetString(StringBuilder(buffer), STR_JUST_CURRENCY_LONG);
-				buffer += '\n';
+				buffer.push_back('\n');
 			}
 		}
 	}
-	fmt::format_to(std::back_inserter(buffer), "Deferred payment count: {}\n", _cargo_packet_deferred_payments.size());
-	fmt::format_to(std::back_inserter(buffer), "Total cargo packets: {}\n", CargoPacket::GetNumItems());
-	return buffer;
+	buffer.format("Deferred payment count: {}\n", _cargo_packet_deferred_payments.size());
+	buffer.format("Total cargo packets: {}\n", CargoPacket::GetNumItems());
+	return buffer.to_string();
 }
 
 /**

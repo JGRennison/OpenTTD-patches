@@ -372,7 +372,7 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 		default:                            strid = STR_NETWORK_CHAT_ALL; break;
 	}
 
-	std::string message;
+	format_buffer message;
 	StringBuilder builder(message);
 	SetDParamStr(1, str);
 	SetDParam(2, data.data);
@@ -386,7 +386,7 @@ void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send,
 	GetString(builder, strid);
 
 	Debug(desync, 1, "msg: {}; {}", debug_date_dumper().HexDate(), message);
-	IConsolePrint(colour, message);
+	IConsolePrint(colour, message.to_string());
 	NetworkAddChatMessage(colour, _settings_client.gui.network_chat_timeout, message);
 }
 

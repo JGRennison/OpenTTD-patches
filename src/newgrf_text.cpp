@@ -20,6 +20,7 @@
 #include <array>
 
 #include "newgrf.h"
+#include "strings_builder.h"
 #include "strings_func.h"
 #include "newgrf_storage.h"
 #include "newgrf_text.h"
@@ -891,13 +892,13 @@ void StopTextRefStackUsage()
 /**
  * FormatString for NewGRF specific "magic" string control codes
  * @param scc   the string control code that has been read
- * @param buffer the buffer we're writing to
+ * @param builder the builder we're writing to
  * @param str   the string that we need to write
  * @param parameters the OpenTTD string formatting parameters
  * @param modify_parameters When true, modify the OpenTTD string formatting parameters.
  * @return the string control code to "execute" now
  */
-uint RemapNewGRFStringControlCode(uint scc, std::string *buffer, const char **str, StringParameters &parameters, bool modify_parameters)
+uint RemapNewGRFStringControlCode(uint scc, StringBuilder builder, const char **str, StringParameters &parameters, bool modify_parameters)
 {
 	auto too_many_newgrf_params = [&]() {
 		const char *buffer = *str;
@@ -1006,7 +1007,7 @@ uint RemapNewGRFStringControlCode(uint scc, std::string *buffer, const char **st
 
 			case SCC_NEWGRF_ROTATE_TOP_4_WORDS:     _newgrf_textrefstack.RotateTop4Words(); break;
 			case SCC_NEWGRF_PUSH_WORD:              _newgrf_textrefstack.PushWord(Utf8Consume(str)); break;
-			case SCC_NEWGRF_UNPRINT:                if (buffer != nullptr) buffer->resize(buffer->size() - std::min<size_t>(buffer->size(), Utf8Consume(str))); break;
+			case SCC_NEWGRF_UNPRINT:                builder.RemoveElementsFromBack(Utf8Consume(str)); break;
 
 			case SCC_NEWGRF_PRINT_WORD_CARGO_LONG:
 			case SCC_NEWGRF_PRINT_WORD_CARGO_SHORT:

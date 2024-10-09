@@ -177,7 +177,7 @@ static StringID GetEngineInfoCapacityStringParameter(EngineID engine)
 		auto tmp_params = MakeParameters(INVALID_CARGO, 0);
 		_temp_special_strings[1] = GetStringWithArgs(STR_JUST_CARGO, tmp_params);
 	} else {
-		std::string buffer;
+		format_buffer buffer;
 		for (uint i = 0; i < NUM_CARGO; i++) {
 			if (cap[i] == 0) continue;
 
@@ -189,7 +189,7 @@ static StringID GetEngineInfoCapacityStringParameter(EngineID engine)
 			auto tmp_params = MakeParameters(i, cap[i]);
 			GetStringWithArgs(StringBuilder(buffer), STR_JUST_CARGO, tmp_params);
 		}
-		_temp_special_strings[1] = std::move(buffer);
+		_temp_special_strings[1] = buffer.to_string();
 	}
 
 	return SPECSTR_TEMP_START + 1;

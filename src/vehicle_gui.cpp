@@ -3293,11 +3293,12 @@ struct VehicleDetailsWindow : Window {
 					std::vector<TraceRestrictSlotID> slots = this->GetVehicleSlots(v);
 
 					SetDParam(0, slots.size());
-					std::string buffer = GetString(STR_TRACE_RESTRICT_SLOT_LIST_HEADER);
+					format_buffer buffer;
+					GetString(StringBuilder(buffer), STR_TRACE_RESTRICT_SLOT_LIST_HEADER);
 
 					for (size_t i = 0; i < slots.size(); i++) {
 						if (i != 0) GetString(StringBuilder(buffer), STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR);
-						buffer += TraceRestrictSlot::Get(slots[i])->name;
+						buffer.append(TraceRestrictSlot::Get(slots[i])->name);
 					}
 					DrawString(tr, buffer);
 					tr.top += GetCharacterHeight(FS_NORMAL);
