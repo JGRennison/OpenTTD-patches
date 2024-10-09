@@ -612,7 +612,7 @@ struct GrfSpriteOffset {
 };
 
 /** Map from sprite numbers to position in the GRF file. */
-static btree::btree_map<uint32_t, GrfSpriteOffset> _grf_sprite_offsets;
+static robin_hood::unordered_flat_map<uint32_t, GrfSpriteOffset> _grf_sprite_offsets;
 
 /**
  * Get the file offset for a specific sprite in the sprite section of a GRF.

@@ -39,6 +39,7 @@
 #include "newgrf_debug.h"
 #include "roadveh.h"
 #include "core/format.hpp"
+#include "3rdparty/robin_hood/robin_hood.h"
 
 #include "widgets/station_widget.h"
 
@@ -296,7 +297,7 @@ protected:
 	};
 	static const std::initializer_list<GUIStationList::SortFunction * const> sorter_funcs;
 
-	static btree::btree_map<StationID, uint> station_vehicle_calling_counts;
+	static robin_hood::unordered_flat_map<StationID, uint> station_vehicle_calling_counts;
 
 	FilterState filter;
 	GUIStationList stations{filter.cargoes};
@@ -441,7 +442,7 @@ protected:
 			}
 		};
 
-		btree::btree_set<StationID> seen_stations;
+		robin_hood::unordered_flat_set<StationID> seen_stations;
 		for (const OrderList *l : OrderList::Iterate()) {
 			if (facilities != (FACIL_TRAIN | FACIL_TRUCK_STOP | FACIL_BUS_STOP | FACIL_AIRPORT | FACIL_DOCK)) {
 				if (!can_vehicle_use_facility(l->GetFirstSharedVehicle())) continue;
@@ -825,7 +826,7 @@ public:
 	}
 };
 
-btree::btree_map<StationID, uint> CompanyStationsWindow::station_vehicle_calling_counts;
+robin_hood::unordered_flat_map<StationID, uint> CompanyStationsWindow::station_vehicle_calling_counts;
 
 /* Available station sorting functions */
 const std::initializer_list<GUIStationList::SortFunction * const> CompanyStationsWindow::sorter_funcs = {

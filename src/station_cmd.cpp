@@ -66,6 +66,7 @@
 #include "table/strings.h"
 
 #include "3rdparty/cpp-btree/btree_set.h"
+#include "3rdparty/robin_hood/robin_hood.h"
 
 #include <bitset>
 
@@ -4468,7 +4469,7 @@ void RerouteCargoFromSource(Station *st, CargoID c, StationID source, StationID 
 	}
 }
 
-btree::btree_set<VehicleID> _delete_stale_links_vehicle_cache;
+robin_hood::unordered_flat_set<VehicleID> _delete_stale_links_vehicle_cache;
 
 void ClearDeleteStaleLinksVehicleCache()
 {

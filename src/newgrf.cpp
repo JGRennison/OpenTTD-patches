@@ -64,6 +64,7 @@
 #include "table/build_industry.h"
 
 #include "3rdparty/cpp-btree/btree_map.h"
+#include "3rdparty/robin_hood/robin_hood.h"
 
 #include "safeguards.h"
 
@@ -84,7 +85,7 @@ const std::vector<GRFFile *> &GetAllGRFFiles()
 	return _grf_files;
 }
 
-static btree::btree_map<uint16_t, const CallbackResultSpriteGroup *> _callback_result_cache;
+static robin_hood::unordered_map<uint16_t, const CallbackResultSpriteGroup *> _callback_result_cache;
 
 /** Miscellaneous GRF features, set by Action 0x0D, parameter 0x9E */
 uint8_t _misc_grf_features = 0;
@@ -523,7 +524,7 @@ StringID MapGRFStringID(uint32_t grfid, StringID str)
 	}
 }
 
-static btree::btree_map<uint32_t, uint32_t> _grf_id_overrides;
+static robin_hood::unordered_flat_map<uint32_t, uint32_t> _grf_id_overrides;
 
 /**
  * Set the override for a NewGRF

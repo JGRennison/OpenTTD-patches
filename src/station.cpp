@@ -30,6 +30,7 @@
 #include "tracerestrict.h"
 #include "newgrf_debug.h"
 #include "3rdparty/cpp-btree/btree_set.h"
+#include "3rdparty/robin_hood/robin_hood.h"
 
 #include "table/strings.h"
 
@@ -454,8 +455,8 @@ void Station::RemoveIndustryToDeliver(Industry *ind)
  */
 void Station::RemoveFromAllNearbyLists()
 {
-	btree::btree_set<TownID> towns;
-	btree::btree_set<IndustryID> industries;
+	robin_hood::unordered_flat_set<TownID> towns;
+	robin_hood::unordered_flat_set<IndustryID> industries;
 
 	for (TileIndex tile : this->catchment_tiles) {
 		TileType type = GetTileType(tile);

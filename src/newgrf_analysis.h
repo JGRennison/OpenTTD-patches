@@ -12,7 +12,7 @@
 
 #include "newgrf_commons.h"
 
-#include "3rdparty/cpp-btree/btree_set.h"
+#include "3rdparty/robin_hood/robin_hood.h"
 
 struct SpriteGroup;
 
@@ -43,7 +43,7 @@ struct AnalyseCallbackOperation {
 		uint8_t var_10_value;
 	};
 
-	btree::btree_set<const SpriteGroup *> seen;
+	robin_hood::unordered_flat_set<const SpriteGroup *> seen;
 	AnalyseCallbackOperationMode mode;
 	SpriteGroupCallbacksUsed callbacks_used = SGCU_NONE;
 	AnalyseCallbackOperationResultFlags result_flags = ACORF_NONE;
