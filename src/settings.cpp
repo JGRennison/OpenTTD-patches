@@ -1306,8 +1306,8 @@ static int32_t GetDefaultServiceInterval(VehicleType type)
  */
 static void ChangeTimekeepingUnits(int32_t)
 {
-	/* If service intervals are in time units (calendar days or real-world minutes), reset them to the correct defaults. */
-	if (!_settings_client.company.vehicle.servint_ispercent) {
+	/* If service intervals are in time units (calendar days or real-world minutes), reset them to the correct defaults if not already in a game. */
+	if (!_settings_client.company.vehicle.servint_ispercent && _game_mode != GM_NORMAL) {
 		UpdateAllServiceInterval(0);
 	}
 
