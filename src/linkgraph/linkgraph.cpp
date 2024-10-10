@@ -291,3 +291,9 @@ void LinkGraphFixupAfterLoad(bool compression_was_date)
 		convert(lgj->start_tick);
 	}
 }
+
+void LinkGraphJobSetDayLengthFactor() {
+	for (LinkGraphJob *lgj : LinkGraphJob::Iterate()) {
+		lgj->day_length_factor = DayLengthFactor();
+	}
+}

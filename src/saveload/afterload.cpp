@@ -956,6 +956,12 @@ bool AfterLoadGame()
 		LinkGraphFixupAfterLoad(SlXvIsFeatureMissing(XSLFI_LINKGRAPH_DAY_SCALE, 4));
 	}
 
+	/* Set link graph job day length factor setting. */
+	if (SlXvIsFeatureMissing(XSLFI_LINKGRAPH_DAY_SCALE, 7)) {
+		extern void LinkGraphJobSetDayLengthFactor();
+		LinkGraphJobSetDayLengthFactor();
+	}
+
 	/* Load the sprites */
 	GfxLoadSprites();
 	LoadStringWidthTable();

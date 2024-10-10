@@ -132,6 +132,7 @@ private:
 	friend upstream_sl::SaveLoadTable upstream_sl::GetLinkGraphJobDesc();
 	friend void GetLinkGraphJobDayLengthScaleAfterLoad(LinkGraphJob *lgj);
 	friend void LinkGraphFixupAfterLoad(bool compression_was_date);
+	friend void LinkGraphJobSetDayLengthFactor();
 	friend class LinkGraphSchedule;
 	friend class LinkGraphJobGroup;
 
@@ -144,6 +145,7 @@ protected:
 	ScaledTickCounter start_tick;     ///< Tick when the job was started.
 	NodeAnnotationVector nodes;       ///< Extra node data necessary for link graph calculation.
 	EdgeAnnotationVector edges;       ///< Edge data necessary for link graph calculation.
+	uint8_t day_length_factor;        ///< Day length factor for this job
 	std::atomic<bool> job_completed;  ///< Is the job still running. This is accessed by multiple threads and reads may be stale.
 	std::atomic<bool> job_aborted;    ///< Has the job been aborted. This is accessed by multiple threads and reads may be stale.
 
@@ -264,7 +266,7 @@ public:
 	 * settings have to be brutally const-casted in order to populate them.
 	 */
 	LinkGraphJob() : settings(_settings_game.linkgraph),
-			join_tick(0), start_tick(0), job_completed(false), job_aborted(false) {}
+			join_tick(0), start_tick(0), day_length_factor(1), job_completed(false), job_aborted(false) {}
 
 	LinkGraphJob(const LinkGraph &orig, uint duration_multiplier);
 	~LinkGraphJob();
@@ -312,6 +314,12 @@ public:
 	 * @return Start date.
 	 */
 	inline ScaledTickCounter StartTick() const { return this->start_tick; }
+
+	/**
+	 * Get the day length factor to use for this job.
+	 * @return Day length factor.
+	 */
+	inline uint8_t DayLengthFactor() const { return this->day_length_factor; }
 
 	/**
 	 * Set the tick when the job should be joined.

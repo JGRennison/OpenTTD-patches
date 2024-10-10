@@ -55,7 +55,7 @@ void FlowMapper::Run(LinkGraphJob &job) const
 			 * LinkGraph::Monthly(). */
 			uint runtime = (uint)Clamp<ScaledTickCounter>(job.StartTick() - job.LastCompression() + 1, 1, UINT32_MAX);
 			for (auto &it : flows) {
-				it.ScaleToMonthly(runtime);
+				it.ScaleToMonthly(runtime, job.DayLengthFactor());
 			}
 		}
 		/* Clear paths. */

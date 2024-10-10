@@ -220,6 +220,7 @@ NamedSaveLoadTable GetLinkGraphJobDesc()
 			NSL("start_tick",       SLE_CONDVAR_X(LinkGraphJob, start_tick,       SLE_FILE_I32 | SLE_VAR_U64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 1, 4))),
 			NSL("start_tick",       SLE_CONDVAR_X(LinkGraphJob, start_tick,       SLE_FILE_I64 | SLE_VAR_U64, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 5, 5))),
 			NSL("start_tick",       SLE_CONDVAR_X(LinkGraphJob, start_tick,       SLE_UINT64,                 SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 6))),
+			NSL("day_length_factor",SLE_CONDVAR_X(LinkGraphJob, day_length_factor,SLE_UINT8,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_LINKGRAPH_DAY_SCALE, 7))),
 			NSL("link_graph.index",       SLE_VAR(LinkGraphJob, link_graph.index, SLE_UINT16)),
 			NSLT_STRUCT<LinkGraphJobStructHandler>("linkgraph"),
 		};

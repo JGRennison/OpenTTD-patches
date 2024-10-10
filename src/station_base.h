@@ -241,7 +241,7 @@ public:
 
 	void ReleaseShare(StationID st);
 
-	void ScaleToMonthly(uint runtime);
+	void ScaleToMonthly(uint runtime, uint8_t day_length_factor);
 
 	/**
 	 * Return total amount of unrestricted shares.

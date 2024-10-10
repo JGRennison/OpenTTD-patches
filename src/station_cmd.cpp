@@ -5565,14 +5565,15 @@ void FlowStat::ReleaseShare(StationID st)
 /**
  * Scale all shares from link graph's runtime to monthly values.
  * @param runtime Time the link graph has been running without compression, in scaled ticks.
+ * @param day_length_factor Day length factor to use.
  * @pre runtime must be greater than 0 as we don't want infinite flow values.
  */
-void FlowStat::ScaleToMonthly(uint runtime)
+void FlowStat::ScaleToMonthly(uint runtime, uint8_t day_length_factor)
 {
 	assert(runtime > 0);
 	uint share = 0;
 	for (iterator i = this->begin(); i != this->end(); ++i) {
-		share = std::max(share + 1, ClampTo<uint>((static_cast<uint64_t>(i->first) * 30 * DAY_TICKS * DayLengthFactor()) / runtime));
+		share = std::max(share + 1, ClampTo<uint>((static_cast<uint64_t>(i->first) * 30 * DAY_TICKS * day_length_factor) / runtime));
 		if (this->unrestricted == i->first) this->unrestricted = share;
 		i->first = share;
 	}
