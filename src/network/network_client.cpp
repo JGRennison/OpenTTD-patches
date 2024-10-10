@@ -483,7 +483,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendJoin()
 	SetWindowDirty(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
 
 	auto p = std::make_unique<Packet>(my_client, PACKET_CLIENT_JOIN);
-	p->Send_string(_openttd_revision);
+	p->Send_string(GetNetworkRevisionString());
 	p->Send_uint32(_openttd_newgrf_version);
 	my_client->SendPacket(std::move(p));
 
