@@ -89,6 +89,7 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	 */
 	VariableGRFFileProps grf_prop;
 	std::vector<WagonOverride> overrides;
+	std::vector<BadgeID> badges;
 
 	SpriteGroupCallbacksUsed callbacks_used = SGCU_ALL;
 	uint64_t cb36_properties_used = UINT64_MAX;

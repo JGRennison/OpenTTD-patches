@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include "debug.h"
 #include "landscape.h"
+#include "newgrf_badge.h"
 #include "newgrf_house.h"
 #include "newgrf_spritegroup.h"
 #include "newgrf_text.h"
@@ -411,6 +412,8 @@ uint32_t HouseScopeResolver::OtherHouseIDVariable(uint32_t parameter, F func) co
 			case 0x65: return 0;
 			case 0x66: return 0xFFFFFFFF; /* Class and ID of nearby house. */
 			case 0x67: return 0;
+
+			case 0x7A: return GetBadgeVariableResult(*this->ro.grffile, HouseSpec::Get(this->house_id)->badges, parameter);
 		}
 
 		Debug(grf, 1, "Unhandled house variable 0x{:X}", variable);
@@ -534,6 +537,8 @@ uint32_t HouseScopeResolver::OtherHouseIDVariable(uint32_t parameter, F func) co
 			 * in case the newgrf was removed. */
 			return _house_mngr.GetGRFID(house_id);
 		}
+
+		case 0x7A: return GetBadgeVariableResult(*this->ro.grffile, HouseSpec::Get(this->house_id)->badges, parameter);
 	}
 
 	Debug(grf, 1, "Unhandled house variable 0x{:X}", variable);

@@ -14,6 +14,7 @@
 #include "date_type.h"
 #include "house_type.h"
 #include "newgrf_animation_type.h"
+#include "newgrf_badge_type.h"
 #include "newgrf_commons.h"
 
 /**
@@ -122,6 +123,7 @@ struct HouseSpec {
 	uint8_t processing_time;                  ///< Periodic refresh multiplier
 	uint8_t minimum_life;                     ///< The minimum number of years this house will survive before the town rebuilds it
 	CargoTypes watched_cargoes;               ///< Cargo types watched for acceptance.
+	std::vector<BadgeID> badges;
 
 	CargoLabel accepts_cargo_label[HOUSE_ORIGINAL_NUM_ACCEPTS]; ///< input landscape cargo slots
 

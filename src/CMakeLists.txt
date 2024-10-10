@@ -288,6 +288,9 @@ add_files(
     newgrf_animation_type.h
     newgrf_analysis.cpp
     newgrf_analysis.h
+    newgrf_badge.cpp
+    newgrf_badge.h
+    newgrf_badge_type.h
     newgrf_cache_check.h
     newgrf_callbacks.h
     newgrf_canal.cpp

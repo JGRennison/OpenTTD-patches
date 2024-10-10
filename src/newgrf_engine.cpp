@@ -12,6 +12,7 @@
 #include "train.h"
 #include "roadveh.h"
 #include "company_func.h"
+#include "newgrf_badge.h"
 #include "newgrf_cargo.h"
 #include "newgrf_spritegroup.h"
 #include "date_func.h"
@@ -452,6 +453,7 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 			case 0x4D:
 			case 0x60:
 			case 0x61:
+			case 0x7A:
 			case 0x7D:
 			case 0x7F:
 			case 0x80 + 0x0:
@@ -851,6 +853,8 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 				default: return 0x00;
 			}
 
+		case 0x7A: return GetBadgeVariableResult(*object->ro.grffile, v->GetEngine()->badges, parameter);
+
 		case 0xFE:
 		case 0xFF: {
 			uint16_t modflags = 0;
@@ -1126,6 +1130,9 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 			case 0x48: return Engine::Get(this->self_type)->flags; // Vehicle Type Info
 			case 0x49: return CalTime::CurYear().base(); // 'Long' format build year
 			case 0x4B: return CalTime::CurDate().base(); // Long date of last service
+
+			case 0x7A: return GetBadgeVariableResult(*this->ro.grffile, Engine::Get(this->self_type)->badges, parameter);
+
 			case 0x92: return ClampTo<uint16_t>(CalTime::CurDate() - CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR); // Date of last service
 			case 0x93: return GB(ClampTo<uint16_t>(CalTime::CurDate() - CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR), 8, 8);
 			case 0xC4: return (Clamp(CalTime::CurYear(), CalTime::ORIGINAL_BASE_YEAR, CalTime::ORIGINAL_MAX_YEAR) - CalTime::ORIGINAL_BASE_YEAR).base(); // Build year

@@ -17,6 +17,7 @@
 #include "date_type.h"
 #include "object_type.h"
 #include "newgrf_animation_type.h"
+#include "newgrf_badge_type.h"
 #include "newgrf_class.h"
 #include "newgrf_commons.h"
 #include <vector>
@@ -110,6 +111,7 @@ struct ObjectSpec : NewGRFSpecBase<ObjectClassID> {
 	uint8_t generate_amount;        ///< Number of objects which are attempted to be generated per 256^2 map during world generation.
 	ObjectViewportMapType vport_map_type; ///< Viewport map type
 	uint16_t vport_map_subtype;     ///< Viewport map subtype
+	std::vector<BadgeID> badges;
 
 	/**
 	 * Test if this object is enabled.

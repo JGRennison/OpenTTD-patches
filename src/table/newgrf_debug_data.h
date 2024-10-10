@@ -2492,6 +2492,7 @@ static const NIFeature * const _nifeatures[] = {
 	&_nif_roadstop,     // GSF_ROADSTOPS
 	&_nif_newlandscape, // GSF_NEWLANDSCAPE
 	&_nif_town,         // GSF_FAKE_TOWNS
+	nullptr,            // GSF_BADGES
 	&_nif_station_struct,  // GSF_FAKE_STATION_STRUCT
 	&_nif_tracerestrict,   // GSF_FAKE_TRACERESTRICT
 };

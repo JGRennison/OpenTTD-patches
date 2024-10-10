@@ -19,6 +19,7 @@
 #include "command_func.h"
 #include "waypoint_cmd.h"
 #include "waypoint_func.h"
+#include "newgrf_badge.h"
 #include "newgrf_station.h"
 #include "company_base.h"
 #include "strings_func.h"
@@ -1185,6 +1186,8 @@ class StationPickerCallbacks : public PickerCallbacksNewGRFClass<StationClass> {
 public:
 	StationPickerCallbacks() : PickerCallbacksNewGRFClass<StationClass>("fav_stations") {}
 
+	GrfSpecFeature GetFeature() const override { return GSF_STATIONS; }
+
 	StringID GetClassTooltip() const override { return STR_PICKER_STATION_CLASS_TOOLTIP; }
 	StringID GetTypeTooltip() const override { return STR_PICKER_STATION_TYPE_TOOLTIP; }
 
@@ -1221,6 +1224,13 @@ public:
 	{
 		const auto *spec = this->GetSpec(cls_id, id);
 		return (spec == nullptr) ? STR_STATION_CLASS_DFLT_STATION : spec->name;
+	}
+
+	std::span<const BadgeID> GetTypeBadges(int cls_id, int id) const override
+	{
+		const auto *spec = this->GetSpec(cls_id, id);
+		if (spec == nullptr) return {};
+		return spec->badges;
 	}
 
 	bool IsTypeAvailable(int cls_id, int id) const override
@@ -1368,6 +1378,7 @@ public:
 		/* 'Accepts' and 'Supplies' texts. */
 		Rect r = this->GetWidget<NWidgetBase>(WID_BRAS_COVERAGE_TEXTS)->GetCurrentRect();
 		int top = r.top;
+		if (statspec != nullptr) top = DrawBadgeNameList(Rect{r.left, top, r.right, INT_MAX}, statspec->badges, GSF_STATIONS);
 		top = DrawStationCoverageAreaText(r.left, r.right, top, SCT_ALL, rad, false) + WidgetDimensions::scaled.vsep_normal;
 		top = DrawStationCoverageAreaText(r.left, r.right, top, SCT_ALL, rad, true);
 		/* Resize background if the window is too small.
@@ -2229,6 +2240,8 @@ class WaypointPickerCallbacks : public PickerCallbacksNewGRFClass<StationClass> 
 public:
 	WaypointPickerCallbacks() : PickerCallbacksNewGRFClass<StationClass>("fav_waypoints") {}
 
+	GrfSpecFeature GetFeature() const override { return GSF_STATIONS; }
+
 	StringID GetClassTooltip() const override { return STR_PICKER_WAYPOINT_CLASS_TOOLTIP; }
 	StringID GetTypeTooltip() const override { return STR_PICKER_WAYPOINT_TYPE_TOOLTIP; }
 
@@ -2266,6 +2279,13 @@ public:
 	{
 		const auto *spec = this->GetSpec(cls_id, id);
 		return (spec == nullptr) ? STR_STATION_CLASS_WAYP_WAYPOINT : spec->name;
+	}
+
+	std::span<const BadgeID> GetTypeBadges(int cls_id, int id) const override
+	{
+		const auto *spec = this->GetSpec(cls_id, id);
+		if (spec == nullptr) return {};
+		return spec->badges;
 	}
 
 	bool IsTypeAvailable(int cls_id, int id) const override
@@ -2489,6 +2509,9 @@ DropDownList GetRailTypeDropDownList(bool for_replacement, bool all_option)
 		}
 	}
 
+	/* Shared list so that each item can take ownership. */
+	auto badge_class_list = std::make_shared<GUIBadgeClasses>(GSF_RAILTYPES);
+
 	for (const auto &rt : _sorted_railtypes) {
 		/* If it's not used ever, don't show it to the user. */
 		if (!HasBit(used_railtypes, rt)) continue;
@@ -2498,10 +2521,10 @@ DropDownList GetRailTypeDropDownList(bool for_replacement, bool all_option)
 		SetDParam(0, rti->strings.menu_text);
 		SetDParam(1, rti->max_speed);
 		if (for_replacement) {
-			list.push_back(MakeDropDownListStringItem(rti->strings.replace_text, rt, !HasBit(avail_railtypes, rt)));
+			list.push_back(MakeDropDownListBadgeItem(badge_class_list, rti->badges, GSF_RAILTYPES, rti->introduction_date, rti->strings.replace_text, rt, !HasBit(avail_railtypes, rt)));
 		} else {
 			StringID str = rti->max_speed > 0 ? STR_TOOLBAR_RAILTYPE_VELOCITY : STR_JUST_STRING;
-			list.push_back(MakeDropDownListIconItem(d, rti->gui_sprites.build_x_rail, PAL_NONE, str, rt, !HasBit(avail_railtypes, rt)));
+			list.push_back(MakeDropDownListBadgeIconItem(badge_class_list, rti->badges, GSF_RAILTYPES, rti->introduction_date, d, rti->gui_sprites.build_x_rail, PAL_NONE, str, rt, !HasBit(avail_railtypes, rt)));
 		}
 	}
 
