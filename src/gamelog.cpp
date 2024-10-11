@@ -19,8 +19,6 @@
 #include "rev.h"
 #include "3rdparty/cpp-btree/btree_map.h"
 
-#include <stdarg.h>
-
 #include "safeguards.h"
 
 extern const SaveLoadVersion SAVEGAME_VERSION;  ///< current savegame version

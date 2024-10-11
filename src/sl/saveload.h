@@ -19,7 +19,6 @@
 #include "../core/tinystring_type.hpp"
 #include "../core/strong_typedef_type.hpp"
 
-#include <stdarg.h>
 #include <vector>
 #include <array>
 #include <list>

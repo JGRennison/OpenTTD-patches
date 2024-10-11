@@ -19,7 +19,6 @@
 #include <../squirrel/sqvm.h>
 #include "../core/alloc_func.hpp"
 
-#include <stdarg.h>
 #include <map>
 
 /**

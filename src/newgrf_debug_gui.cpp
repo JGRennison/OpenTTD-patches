@@ -8,7 +8,6 @@
 /** @file newgrf_debug_gui.cpp GUIs for debugging NewGRFs. */
 
 #include "stdafx.h"
-#include <stdarg.h>
 #include <functional>
 #include "core/backup_type.hpp"
 #include "core/container_func.hpp"

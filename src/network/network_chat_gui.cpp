@@ -28,7 +28,6 @@
 
 #include "table/strings.h"
 
-#include <stdarg.h> /* va_list */
 #include <optional>
 
 #include "../safeguards.h"

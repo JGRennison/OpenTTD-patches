@@ -8,7 +8,6 @@
 /** @file debug.cpp Handling of printing debug messages. */
 
 #include "stdafx.h"
-#include <stdarg.h>
 #include "console_func.h"
 #include "core/math_func.hpp"
 #include "debug.h"

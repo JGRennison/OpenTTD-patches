@@ -103,7 +103,6 @@
 #include <atomic>
 #include <mutex>
 
-#include <stdarg.h>
 #include <system_error>
 
 #include "safeguards.h"
