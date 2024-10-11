@@ -34,6 +34,7 @@ struct SignalStyleMasks {
 	uint16_t signal_opposite_side = 0;
 	uint16_t signal_both_sides = 0;
 	uint16_t combined_normal_shunt = 0;
+	uint16_t no_auto_green = 0;
 };
 extern SignalStyleMasks _signal_style_masks;
 

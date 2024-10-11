@@ -357,14 +357,14 @@ static SigInfo ExploreSegment(Owner owner)
 
 				if (IsRailDepot(tile)) {
 					if (enterdir == INVALID_DIAGDIR) { // from 'inside' - train just entered or left the depot
-						if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) info.flags |= SF_PBS;
+						info.flags |= SF_JUNCTION;
 						if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, VEH_TRAIN, nullptr, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
 						exitdir = GetRailDepotDirection(tile);
 						tile += TileOffsByDiagDir(exitdir);
 						enterdir = ReverseDiagDir(exitdir);
 						break;
 					} else if (enterdir == GetRailDepotDirection(tile)) { // entered a depot
-						if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) info.flags |= SF_PBS;
+						info.flags |= SF_JUNCTION;
 						if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, VEH_TRAIN, nullptr, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
 						continue;
 					} else {
@@ -395,14 +395,23 @@ static SigInfo ExploreSegment(Owner owner)
 						 * ANY conventional signal in REVERSE direction
 						 * (if it is a presignal EXIT and it changes, it will be added to 'to-be-done' set later) */
 						if (HasSignalOnTrackdir(tile, reversedir)) {
-							if (IsPbsSignalNonExtended(sig) || IsNoEntrySignal(sig)) {
-								info.flags |= SF_PBS;
-								if (_extra_aspects > 0 && GetSignalStateByTrackdir(tile, reversedir) == SIGNAL_STATE_GREEN && !IsRailSpecialSignalAspect(tile, track)) {
-									_tbpset.Add(tile, reversedir);
+							if (IsNoEntrySignal(sig)) {
+								info.flags |= SF_PBS | SF_JUNCTION;
+							} else {
+								if (IsPbsSignalNonExtended(sig)) info.flags |= SF_PBS;
+								if (IsPbsSignal(sig) && (GetRailReservationTrackBits(tile) & TrackToTrackBits(track)) != TRACK_BIT_NONE) {
+									/* Effectively PBS signal is already reserved */
+									info.flags |= SF_JUNCTION;
+									if (_extra_aspects > 0 && GetSignalStateByTrackdir(tile, reversedir) == SIGNAL_STATE_GREEN && !IsRailSpecialSignalAspect(tile, track)) {
+										_tbpset.Add(tile, reversedir);
+									}
+								} else if (sig == SIGTYPE_PBS) {
+									/* Bidirectional PBS signals should stay red if not reserved */
+									info.flags |= SF_JUNCTION;
+								} else if (!_tbuset.Add(tile, reversedir)) {
+									info.flags |= SF_FULL;
+									return info;
 								}
-							} else if (!_tbuset.Add(tile, reversedir)) {
-								info.flags |= SF_FULL;
-								return info;
 							}
 						}
 
@@ -411,16 +420,16 @@ static SigInfo ExploreSegment(Owner owner)
 							if (_extra_aspects > 0) {
 								info.out_signal_tile = tile;
 								info.out_signal_trackdir = trackdir;
-								if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && GetSignalAlwaysReserveThrough(tile, track) &&
-										GetSignalStateByTrackdir(tile, trackdir) == SIGNAL_STATE_RED) {
-									info.flags |= SF_PBS;
-								}
 							}
-							if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && GetSignalSpecialPropagationFlag(tile, track)) {
+							if (GetSignalAlwaysReserveThrough(tile, track) && GetSignalStateByTrackdir(tile, trackdir) == SIGNAL_STATE_RED) {
+								/* A red always reserve through signal indicates that this signal should not be considered auto-green */
+								info.flags |= SF_JUNCTION;
+							}
+							if (GetSignalSpecialPropagationFlag(tile, track)) {
 								const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, track);
 								if (prog != nullptr && prog->actions_used_flags & TRPAUF_PBS_RES_END_WAIT) {
 									/* Reservations ending here could be forced to wait, so treat signals blocks leading up to this signal as PBS */
-									info.flags |= SF_PBS;
+									info.flags |= SF_PBS | SF_JUNCTION;
 								}
 							}
 
@@ -469,7 +478,7 @@ static SigInfo ExploreSegment(Owner owner)
 				if (DiagDirToAxis(enterdir) == GetCrossingRoadAxis(tile)) continue; // different axis
 
 				if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, VEH_TRAIN, nullptr, &TrainOnTileEnum)) info.flags |= SF_TRAIN;
-				if (_settings_game.vehicle.safer_crossings) info.flags |= SF_PBS;
+				if (_settings_game.vehicle.safer_crossings) info.flags |= SF_PBS | SF_JUNCTION;
 				tile += TileOffsByDiagDir(exitdir);
 				break;
 
@@ -504,17 +513,17 @@ static SigInfo ExploreSegment(Owner owner)
 							info.out_signal_tile = tile;
 							info.out_signal_trackdir = GetTunnelBridgeEntranceTrackdir(tile, tunnel_bridge_dir);
 						}
-						if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && GetTunnelBridgeSignalSpecialPropagationFlag(tile)) {
+						if (GetTunnelBridgeSignalSpecialPropagationFlag(tile)) {
 							const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, FindFirstTrack(GetAcrossTunnelBridgeTrackBits(tile)));
 							if (prog != nullptr && prog->actions_used_flags & TRPAUF_PBS_RES_END_WAIT) {
 								/* Reservations ending here could be forced to wait, so treat signals blocks leading up to this signal as PBS */
-								info.flags |= SF_PBS;
+								info.flags |= SF_PBS | SF_JUNCTION;
 							}
 						}
 					};
 
 					if (enterdir == INVALID_DIAGDIR) {
-						// incoming from the wormhole, onto signal
+						/* Incoming from the wormhole, onto signal */
 						if (!(info.flags & SF_TRAIN) && IsTunnelBridgeSignalSimulationExit(tile)) { // tunnel entrance is ignored
 							if (HasVehicleOnPos(GetOtherTunnelBridgeEnd(tile), VEH_TRAIN, reinterpret_cast<void *>((uintptr_t)tile), &TrainInWormholeTileEnum)) info.flags |= SF_TRAIN;
 							if (!(info.flags & SF_TRAIN) && HasVehicleOnPos(tile, VEH_TRAIN, reinterpret_cast<void *>((uintptr_t)tile), &TrainInWormholeTileEnum)) info.flags |= SF_TRAIN;
@@ -530,10 +539,12 @@ static SigInfo ExploreSegment(Owner owner)
 						tile += TileOffsByDiagDir(exitdir); // just skip to next tile
 						break;
 					} else if (_enterdir_to_trackbits[enterdir] & GetAcrossTunnelBridgeTrackBits(tile)) {
-						// NOT incoming from the wormhole!
+						/* NOT incoming from the wormhole! */
 						if (IsTunnelBridgeSignalSimulationExit(tile)) {
-							if (IsTunnelBridgePBS(tile)) {
-								info.flags |= SF_PBS;
+							if (IsTunnelBridgePBS(tile)) info.flags |= SF_PBS;
+							if (IsTunnelBridgeEffectivelyPBS(tile) && HasAcrossTunnelBridgeReservation(tile)) {
+								/* Effectively PBS exit is already reserved */
+								info.flags |= SF_JUNCTION;
 								if (_extra_aspects > 0 && GetTunnelBridgeExitSignalState(tile) == SIGNAL_STATE_GREEN) {
 									Trackdir exit_td = GetTunnelBridgeExitTrackdir(tile, tunnel_bridge_dir);
 									_tbpset.Add(tile, exit_td);
@@ -765,7 +776,12 @@ static uint8_t GetForwardAspectAndIncrement(const SigInfo &info, TileIndex tile,
 
 static inline bool IsRailCombinedNormalShuntSignalStyle(TileIndex tile, Track track)
 {
-	return _signal_style_masks.combined_normal_shunt != 0 && HasBit(_signal_style_masks.combined_normal_shunt, GetSignalStyle(tile, track));
+	return _signal_style_masks.combined_normal_shunt != 0 && NonZeroSignalStylePossiblyOnTile(tile) && HasBit(_signal_style_masks.combined_normal_shunt, GetSignalStyle(tile, track));
+}
+
+static inline bool IsRailNoAutoGreenStyle(TileIndex tile, Track track)
+{
+	return _signal_style_masks.no_auto_green != 0 && NonZeroSignalStylePossiblyOnTile(tile) && HasBit(_signal_style_masks.no_auto_green, GetSignalStyle(tile, track));
 }
 
 /**
@@ -779,14 +795,20 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 	Trackdir trackdir = INVALID_TRACKDIR;
 	Track track = INVALID_TRACK;
 
+	if (_tbuset.Items() > 1) info.flags |= SF_JUNCTION;
 	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
-		if (_tbuset.Items() > 1) info.flags |= SF_PBS;
-		if (info.flags & (SF_PBS | SF_JUNCTION)) info.flags |= SF_TRAIN;
+		if (info.flags & SF_JUNCTION) info.flags |= SF_TRAIN;
 	}
+
+	auto consider_occupied = [&](bool pbs) {
+		SigFlags occupied_mask = SF_TRAIN;
+		if (pbs) occupied_mask |= SF_JUNCTION;
+		return (info.flags & occupied_mask) != 0;
+	};
 
 	while (_tbuset.Get(&tile, &trackdir)) {
 		if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(tile)) {
-			if (IsTunnelBridgePBS(tile) || (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && HasAcrossTunnelBridgeReservation(tile))) {
+			if (HasAcrossTunnelBridgeReservation(tile)) {
 				if (_extra_aspects > 0 && GetTunnelBridgeExitSignalState(tile) == SIGNAL_STATE_GREEN) {
 					Trackdir exit_td = GetTunnelBridgeExitTrackdir(tile);
 					uint8_t aspect = GetForwardAspectAndIncrement(info, tile, exit_td);
@@ -799,8 +821,8 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 				continue;
 			}
 			SignalState old_state = GetTunnelBridgeExitSignalState(tile);
-			SignalState new_state = (info.flags & SF_TRAIN) ? SIGNAL_STATE_RED : SIGNAL_STATE_GREEN;
-			if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && new_state == SIGNAL_STATE_GREEN && GetTunnelBridgeSignalSpecialPropagationFlag(tile)) {
+			SignalState new_state = consider_occupied(IsTunnelBridgePBS(tile)) ? SIGNAL_STATE_RED : SIGNAL_STATE_GREEN;
+			if (new_state == SIGNAL_STATE_GREEN && GetTunnelBridgeSignalSpecialPropagationFlag(tile) && IsTunnelBridgeEffectivelyPBS(tile)) {
 				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, FindFirstTrack(GetAcrossTunnelBridgeTrackBits(tile)));
 				if (prog != nullptr && prog->actions_used_flags & TRPAUF_WAIT_AT_PBS) {
 					/* Reservations starting here could be forced to wait, so default to red */
@@ -838,8 +860,8 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 		SignalType sig = GetSignalType(tile, track);
 		SignalState newstate = SIGNAL_STATE_GREEN;
 
-		/* don't change signal state if tile is reserved in realistic braking mode */
-		if ((_settings_game.vehicle.train_braking_model == TBM_REALISTIC && HasBit(GetRailReservationTrackBits(tile), track))) {
+		/* Don't change signal state if tile is reserved in PBS mode (PBS signal or realistic braking mode) */
+		if (IsPbsSignal(sig) && HasBit(GetRailReservationTrackBits(tile), track)) {
 			if (_extra_aspects > 0 && GetSignalStateByTrackdir(tile, trackdir) == SIGNAL_STATE_GREEN && !IsRailSpecialSignalAspect(tile, track)) {
 				uint8_t aspect = GetForwardAspectAndIncrement(info, tile, trackdir, IsRailCombinedNormalShuntSignalStyle(tile, TrackdirToTrack(trackdir)));
 				uint8_t old_aspect = GetSignalAspect(tile, track);
@@ -853,8 +875,8 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 		}
 
 		/* determine whether the new state is red */
-		if (info.flags & SF_TRAIN || sig == SIGTYPE_NO_ENTRY) {
-			/* train in the segment */
+		if (consider_occupied(IsPbsSignalNonExtended(sig)) || sig == SIGTYPE_NO_ENTRY || IsRailNoAutoGreenStyle(tile, track)) {
+			/* train in the segment, or a junction/equivalent has been found and this signal is being treated as PBS, or this signal type should never be auto-green */
 			newstate = SIGNAL_STATE_RED;
 		} else if (sig == SIGTYPE_PROG &&
 				_num_signals_evaluated > _settings_game.construction.maximum_signal_evaluations) {
@@ -889,7 +911,7 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 					}
 				}
 			}
-			if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && newstate == SIGNAL_STATE_GREEN && GetSignalSpecialPropagationFlag(tile, track)) {
+			if (newstate == SIGNAL_STATE_GREEN && GetSignalSpecialPropagationFlag(tile, track) && IsPbsSignal(sig)) {
 				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, track);
 				if (prog != nullptr && prog->actions_used_flags & (TRPAUF_WAIT_AT_PBS | TRPAUF_REVERSE_AT)) {
 					/* Reservations starting here could be forced to wait, so default to red */
@@ -929,7 +951,7 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 
 				// Progsig dependencies
 				MarkDependencidesForUpdate(SignalReference(tile, track));
-			} else if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && GetSignalAlwaysReserveThrough(tile, track)) {
+			} else if (GetSignalAlwaysReserveThrough(tile, track)) {
 				/* for reserve through signals, add block to the global set */
 				DiagDirection exitdir = TrackdirToExitdir(ReverseTrackdir(trackdir));
 				_globset.Add(tile, exitdir); // do not check for full global set, first update all signals
@@ -1932,6 +1954,7 @@ static bool DetermineExtraAspectsVariable()
 		if (HasBit(_new_signal_styles[i].style_flags, NSSF_COMBINED_NORMAL_SHUNT)) {
 			SetBit(_signal_style_masks.combined_normal_shunt, i + 1);
 			SetBit(_signal_style_masks.no_tunnel_bridge, i + 1);
+			SetBit(_signal_style_masks.no_auto_green, i + 1);
 			_new_signal_styles[i].electric_mask &= (1 << SIGTYPE_PBS) | (1 << SIGTYPE_PBS_ONEWAY) | (1 << SIGTYPE_NO_ENTRY);
 			_new_signal_styles[i].semaphore_mask &= (1 << SIGTYPE_PBS) | (1 << SIGTYPE_PBS_ONEWAY) | (1 << SIGTYPE_NO_ENTRY);
 		}
@@ -1951,10 +1974,12 @@ static bool DetermineExtraAspectsVariable()
 	_default_signal_style_lookahead_extra_aspects = (default_style_aspects > 0) ? default_style_aspects : 255;
 
 	SimpleChecksum64 checksum;
+	checksum.Update(0); // Version number
 	checksum.Update(SimpleHash32(_extra_aspects));
 	checksum.Update(SimpleHash32(_signal_style_masks.non_aspect_inc));
 	checksum.Update(SimpleHash32(_signal_style_masks.always_reserve_through));
 	checksum.Update(SimpleHash32(_signal_style_masks.combined_normal_shunt));
+	checksum.Update(SimpleHash32(_signal_style_masks.no_auto_green));
 
 	if (checksum.state != _aspect_cfg_hash) {
 		_aspect_cfg_hash = checksum.state;
@@ -2019,7 +2044,7 @@ void UpdateSignalReserveThroughBit(TileIndex tile, Track track, bool update_sign
 
 	if (reserve_through != GetSignalAlwaysReserveThrough(tile, track)) {
 		SetSignalAlwaysReserveThrough(tile, track, reserve_through);
-		if (update_signal && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+		if (update_signal) {
 			AddTrackToSignalBuffer(tile, track, GetTileOwner(tile));
 			UpdateSignalsInBuffer();
 		}
@@ -2057,7 +2082,7 @@ void UpdateRailSignalSpecialPropagationFlag(TileIndex tile, Track track, const T
 
 	if (is_special || GetSignalSpecialPropagationFlag(tile, track)) {
 		SetSignalSpecialPropagationFlag(tile, track, is_special);
-		if (update_signal && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+		if (update_signal) {
 			AddTrackToSignalBuffer(tile, track, GetTileOwner(tile));
 			UpdateSignalsInBuffer();
 		}
@@ -2078,7 +2103,7 @@ void UpdateTunnelBridgeSignalSpecialPropagationFlag(TileIndex tile, Track track,
 
 	if (is_special || GetTunnelBridgeSignalSpecialPropagationFlag(tile)) {
 		SetTunnelBridgeSignalSpecialPropagationFlag(tile, is_special);
-		if (update_signal && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+		if (update_signal) {
 			AddTrackToSignalBuffer(tile, track, GetTileOwner(tile));
 			UpdateSignalsInBuffer();
 		}
