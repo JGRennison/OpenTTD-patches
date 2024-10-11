@@ -76,7 +76,7 @@ void DebugIntl(DebugLevelID dbg, int8_t level, fmt::format_string<T...> msg, T&&
  * @param level The maximum debug level this message should be shown at. When the debug level for this category is set lower, then the message will not be shown.
  * @param format_string The formatting string of the message.
  */
-#define Debug(name, level, format_string, ...) do { if ((level) == 0 || GetDebugLevel(DebugLevelID::name) >= (level)) DebugIntl(DebugLevelID::name, level, FMT_STRING(format_string), ## __VA_ARGS__); } while (false)
+#define Debug(name, level, format_string, ...) do { if ((level) == 0 || GetDebugLevel(DebugLevelID::name) >= (level)) DebugIntl(DebugLevelID::name, level, FMT_STRING(format_string) __VA_OPT__(,) __VA_ARGS__); } while (false)
 
 extern const char *_savegame_DBGL_data;
 extern std::string _loadgame_DBGL_data;

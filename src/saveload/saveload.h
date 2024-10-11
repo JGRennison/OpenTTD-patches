@@ -27,7 +27,7 @@ extern const SaveLoadVersion MAX_LOAD_SAVEGAME_VERSION;
 
 namespace upstream_sl {
 
-typedef void AutolengthProc(void *arg);
+typedef void AutolengthProc(int);
 
 /** Type of a chunk. */
 enum ChunkType {
@@ -914,7 +914,7 @@ int SlIterateArray();
 void SlSetStructListLength(size_t length);
 size_t SlGetStructListLength(size_t limit);
 
-void SlAutolength(AutolengthProc *proc, void *arg);
+void SlAutolength(AutolengthProc *proc, int arg);
 size_t SlGetFieldLength();
 void SlSetLength(size_t length);
 size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld);

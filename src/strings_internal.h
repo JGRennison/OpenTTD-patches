@@ -34,7 +34,7 @@ protected:
 		parameters(parameters)
 	{}
 
-	StringParameter *GetNextParameterPointer();
+	const StringParameter &GetNextParameterReference();
 
 public:
 	/**
@@ -94,8 +94,8 @@ public:
 	template <typename T>
 	T GetNextParameter()
 	{
-		auto ptr = GetNextParameterPointer();
-		return static_cast<T>(ptr->data);
+		const auto &param = GetNextParameterReference();
+		return static_cast<T>(param.data);
 	}
 
 	/**
@@ -106,8 +106,8 @@ public:
 	 */
 	const char *GetNextParameterString()
 	{
-		auto ptr = GetNextParameterPointer();
-		return ptr->string != nullptr ? ptr->string->c_str() : nullptr;
+		const auto &param = GetNextParameterReference();
+		return param.string != nullptr ? param.string->c_str() : nullptr;
 	}
 
 	/**

@@ -448,7 +448,7 @@ size_t SlGetBytesWritten();
 [[noreturn]] void SlError(StringID string, std::string extra_msg = {});
 [[noreturn]] void SlErrorCorrupt(std::string msg);
 
-#define SlErrorCorruptFmt(format_string, ...) SlErrorCorrupt(fmt::format(FMT_STRING(format_string), ## __VA_ARGS__))
+#define SlErrorCorruptFmt(format_string, ...) SlErrorCorrupt(fmt::format(FMT_STRING(format_string) __VA_OPT__(,) __VA_ARGS__))
 
 bool SaveLoadFileTypeIsScenario();
 

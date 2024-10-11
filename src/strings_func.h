@@ -117,7 +117,7 @@ inline void SetDParamStr(size_t n, std::string_view str)
 
 void CopyInDParam(const std::span<const StringParameterBackup> backup, uint offset = 0);
 void CopyOutDParam(std::vector<StringParameterBackup> &backup, size_t num);
-bool HaveDParamChanged(const std::vector<StringParameterBackup> &backup);
+bool HaveDParamChanged(const std::span<const StringParameterBackup> backup);
 
 /**
  * Get the current string parameter at index \a n from the global string parameter array.

@@ -82,9 +82,9 @@ void StringParameters::PrepareForNextRun()
  * Get the next parameter from our parameters.
  * This updates the offset, so the next time this is called the next parameter
  * will be read.
- * @return The pointer to the next parameter.
+ * @return The next parameter.
  */
-StringParameter *StringParameters::GetNextParameterPointer()
+const StringParameter &StringParameters::GetNextParameterReference()
 {
 	assert(this->next_type == 0 || (SCC_CONTROL_START <= this->next_type && this->next_type <= SCC_CONTROL_END));
 	if (this->offset >= this->parameters.size()) {
@@ -98,7 +98,7 @@ StringParameter *StringParameters::GetNextParameterPointer()
 	}
 	param.type = this->next_type;
 	this->next_type = 0;
-	return &param;
+	return param;
 }
 
 /**
@@ -165,7 +165,7 @@ void CopyOutDParam(std::vector<StringParameterBackup> &backup, size_t num)
  * @param backup The backup to check against.
  * @return True when the parameters have changed, otherwise false.
  */
-bool HaveDParamChanged(const std::vector<StringParameterBackup> &backup)
+bool HaveDParamChanged(const std::span<const StringParameterBackup> backup)
 {
 	bool changed = false;
 	for (size_t i = 0; !changed && i < backup.size(); i++) {

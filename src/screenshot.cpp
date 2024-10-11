@@ -193,7 +193,6 @@ static bool MakeBMPImage(const char *name, ScreenshotCallback *callb, void *user
 
 	std::unique_ptr<uint8_t[]> buff = std::make_unique<uint8_t[]>(maxlines * w * pixelformat / 8); // buffer which is rendered to
 	std::unique_ptr<uint8_t[]> line = std::make_unique<uint8_t[]>(bytewidth); // one line, stored to file
-	memset(line.get(), 0, bytewidth);
 
 	/* Start at the bottom, since bitmaps are stored bottom up */
 	do {
@@ -387,7 +386,7 @@ static bool MakePNGImage(const char *name, ScreenshotCallback *callb, void *user
 	maxlines = Clamp(65536 / w, 16, 128);
 
 	/* now generate the bitmap bits */
-	void *buff = CallocT<uint8_t>(static_cast<size_t>(w) * maxlines * bpp); // by default generate 128 lines at a time.
+	std::unique_ptr<uint8_t[]> buff = std::make_unique<uint8_t[]>(static_cast<size_t>(w) * maxlines * bpp); // by default generate 128 lines at a time.
 
 	y = 0;
 	do {
@@ -395,19 +394,18 @@ static bool MakePNGImage(const char *name, ScreenshotCallback *callb, void *user
 		n = std::min(h - y, maxlines);
 
 		/* render the pixels into the buffer */
-		callb(userdata, buff, y, w, n);
+		callb(userdata, buff.get(), y, w, n);
 		y += n;
 
 		/* write them to png */
 		for (i = 0; i != n; i++) {
-			png_write_row(png_ptr, (png_bytep)buff + i * w * bpp);
+			png_write_row(png_ptr, (png_bytep)buff.get() + i * w * bpp);
 		}
 	} while (y != h);
 
 	png_write_end(png_ptr, info_ptr);
 	png_destroy_write_struct(&png_ptr, &info_ptr);
 
-	free(buff);
 	fclose(f);
 	return true;
 }
@@ -494,7 +492,7 @@ static bool MakePCXImage(const char *name, ScreenshotCallback *callb, void *user
 	maxlines = Clamp(65536 / w, 16, 128);
 
 	/* now generate the bitmap bits */
-	uint8_t *buff = CallocT<uint8_t>(static_cast<size_t>(w) * maxlines); // by default generate 128 lines at a time.
+	std::unique_ptr<uint8_t[]> buff = std::make_unique<uint8_t[]>(static_cast<size_t>(w) * maxlines); // by default generate 128 lines at a time.
 
 	y = 0;
 	do {
@@ -503,12 +501,12 @@ static bool MakePCXImage(const char *name, ScreenshotCallback *callb, void *user
 		uint i;
 
 		/* render the pixels into the buffer */
-		callb(userdata, buff, y, w, n);
+		callb(userdata, buff.get(), y, w, n);
 		y += n;
 
 		/* write them to pcx */
 		for (i = 0; i != n; i++) {
-			const uint8_t *bufp = buff + i * w;
+			const uint8_t *bufp = buff.get() + i * w;
 			uint8_t runchar = bufp[0];
 			uint runcount = 1;
 			uint j;
@@ -520,13 +518,11 @@ static bool MakePCXImage(const char *name, ScreenshotCallback *callb, void *user
 				if (ch != runchar || runcount >= 0x3f) {
 					if (runcount > 1 || (runchar & 0xC0) == 0xC0) {
 						if (fputc(0xC0 | runcount, f) == EOF) {
-							free(buff);
 							fclose(f);
 							return false;
 						}
 					}
 					if (fputc(runchar, f) == EOF) {
-						free(buff);
 						fclose(f);
 						return false;
 					}
@@ -539,20 +535,16 @@ static bool MakePCXImage(const char *name, ScreenshotCallback *callb, void *user
 			/* write remaining bytes.. */
 			if (runcount > 1 || (runchar & 0xC0) == 0xC0) {
 				if (fputc(0xC0 | runcount, f) == EOF) {
-					free(buff);
 					fclose(f);
 					return false;
 				}
 			}
 			if (fputc(runchar, f) == EOF) {
-				free(buff);
 				fclose(f);
 				return false;
 			}
 		}
 	} while (y != h);
-
-	free(buff);
 
 	/* write 8-bit colour palette */
 	if (fputc(12, f) == EOF) {

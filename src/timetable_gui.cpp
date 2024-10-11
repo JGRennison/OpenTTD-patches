@@ -828,7 +828,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 					/* We aren't running on a timetable yet, so how can we be "on time"
 					 * when we aren't even "on service"/"on duty"? */
 					DrawString(tr, STR_TIMETABLE_STATUS_NOT_STARTED);
-				} else if (v->lateness_counter == 0 || (!_settings_client.gui.timetable_in_ticks && v->lateness_counter / TimetableDisplayUnitSize() == 0)) {
+				} else if (v->lateness_counter == 0 || (!_settings_client.gui.timetable_in_ticks && abs(v->lateness_counter) < TimetableDisplayUnitSize())) {
 					DrawString(tr, STR_TIMETABLE_STATUS_ON_TIME);
 				} else {
 					SetTimetableParams(0, abs(v->lateness_counter));

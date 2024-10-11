@@ -468,7 +468,7 @@ STR_FILE_MENU_EXIT                                              :退出
 # Map menu
 STR_MAP_MENU_MAP_OF_WORLD                                       :缩略地图
 STR_MAP_MENU_EXTRA_VIEWPORT                                     :额外视点
-STR_MAP_MENU_LINGRAPH_LEGEND                                    :客货流图标
+STR_MAP_MENU_LINGRAPH_LEGEND                                    :客货流图表
 STR_MAP_MENU_SIGN_LIST                                          :标志列表
 
 # Town menu
@@ -619,8 +619,8 @@ STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}货物�
 STR_GRAPH_CARGO_PAYMENT_RATES_DAYS                              :{TINY_FONT}{BLACK}运输所用天数
 STR_GRAPH_CARGO_PAYMENT_RATES_SECONDS                           :{TINY_FONT}{BLACK}运输所用秒数
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}将 10 单位（或 10,000 升）货物运输 20 个方格
-STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}全部启用
-STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}全部禁用
+STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}所有
+STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}无
 STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}在货物运输价格表中显示所有货物
 STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}在货物运费表中隐藏所有货物
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}切换显示货物
@@ -745,7 +745,7 @@ STR_SMALLMAP_CAPTION                                            :{WHITE}地图 -
 
 ###length 7
 STR_SMALLMAP_TYPE_CONTOURS                                      :地形
-STR_SMALLMAP_TYPE_VEHICLES                                      :车辆
+STR_SMALLMAP_TYPE_VEHICLES                                      :载具
 STR_SMALLMAP_TYPE_INDUSTRIES                                    :工业
 STR_SMALLMAP_TYPE_ROUTEMAP                                      :客货流
 STR_SMALLMAP_TYPE_ROUTES                                        :路线
@@ -753,7 +753,7 @@ STR_SMALLMAP_TYPE_VEGETATION                                    :植被
 STR_SMALLMAP_TYPE_OWNERS                                        :所有者
 
 STR_SMALLMAP_TOOLTIP_SHOW_LAND_CONTOURS_ON_MAP                  :{BLACK}在地图上显示等高线
-STR_SMALLMAP_TOOLTIP_SHOW_VEHICLES_ON_MAP                       :{BLACK}在地图上显示车辆
+STR_SMALLMAP_TOOLTIP_SHOW_VEHICLES_ON_MAP                       :{BLACK}显示地图上的载具
 STR_SMALLMAP_TOOLTIP_SHOW_INDUSTRIES_ON_MAP                     :{BLACK}在地图上显示工业
 STR_SMALLMAP_TOOLTIP_SHOW_LINK_STATS_ON_MAP                     :{BLACK}在地图上显示客货流
 STR_SMALLMAP_TOOLTIP_SHOW_TRANSPORT_ROUTES_ON                   :{BLACK}在地图上显示运输路线
@@ -767,7 +767,7 @@ STR_SMALLMAP_LEGENDA_ROADS                                      :{TINY_FONT}{BLA
 STR_SMALLMAP_LEGENDA_RAILROADS                                  :{TINY_FONT}{BLACK}铁路
 STR_SMALLMAP_LEGENDA_STATIONS_AIRPORTS_DOCKS                    :{TINY_FONT}{BLACK}车站/机场/码头
 STR_SMALLMAP_LEGENDA_BUILDINGS_INDUSTRIES                       :{TINY_FONT}{BLACK}建筑物/工业
-STR_SMALLMAP_LEGENDA_VEHICLES                                   :{TINY_FONT}{BLACK}车辆
+STR_SMALLMAP_LEGENDA_VEHICLES                                   :{TINY_FONT}{BLACK}载具
 STR_SMALLMAP_LEGENDA_TRAINS                                     :{TINY_FONT}{BLACK}火车
 STR_SMALLMAP_LEGENDA_ROAD_VEHICLES                              :{TINY_FONT}{BLACK}汽车
 STR_SMALLMAP_LEGENDA_SHIPS                                      :{TINY_FONT}{BLACK}船只
@@ -799,8 +799,8 @@ STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STR
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
 STR_SMALLMAP_TOWN                                               :{TINY_FONT}{WHITE}{TOWN}
-STR_SMALLMAP_DISABLE_ALL                                        :{BLACK}全部禁用
-STR_SMALLMAP_ENABLE_ALL                                         :{BLACK}全部启用
+STR_SMALLMAP_DISABLE_ALL                                        :{BLACK}无
+STR_SMALLMAP_ENABLE_ALL                                         :{BLACK}所有
 STR_SMALLMAP_SHOW_HEIGHT                                        :{BLACK}显示高度
 STR_SMALLMAP_SHOW_INDUSTRY_NAMES                                :{BLACK}显示工业名称
 STR_SMALLMAP_TOOLTIP_DISABLE_ALL_INDUSTRIES                     :{BLACK}在地图上不显示工业设施
@@ -1288,8 +1288,8 @@ STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :设置载具的
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :建设速度：{STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :AI 建设频率的上限
 
-STR_CONFIG_SETTING_VEHICLE_BREAKDOWNS                           :车辆损坏：{STRING}
-STR_CONFIG_SETTING_VEHICLE_BREAKDOWNS_HELPTEXT                  :设置维修不足的载具的故障频率
+STR_CONFIG_SETTING_VEHICLE_BREAKDOWNS                           :载具损坏：{STRING}
+STR_CONFIG_SETTING_VEHICLE_BREAKDOWNS_HELPTEXT                  :设置维护不足的载具的故障频率
 
 STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER                           :财政补贴系数：{STRING}
 STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER_HELPTEXT                  :设置获得财政补贴的线路的利润倍数
@@ -1404,10 +1404,10 @@ STR_CONFIG_SETTING_SHOWFINANCES_HELPTEXT                        :“打开”时
 STR_CONFIG_SETTING_SHOWFINANCES_HELPTEXT_PERIOD                 :如果启用，财务窗口会在每期结束时弹出，以便于检查公司的财务状况
 
 STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT                           :新的调度命令默认为“不停车”：{STRING}
-STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT_HELPTEXT                  :通常，车辆在它经过的每一个车站都会停车。“打开”本选项时，车辆会不停车的通过所有中间车站前往最终目的地。注意：这只是为每一条新调度命令设置一个默认信息，仍然可以为每条调度命令设置明确的信息
+STR_CONFIG_SETTING_NONSTOP_BY_DEFAULT_HELPTEXT                  :在正常情况下，载具会停靠经过的所有车站。如果启用此选项，载具只会停靠指令上的目的地并跳过其他车站。请注意：本设置仅改变新指令的生成方式，玩家仍可手动更改指令，使载具停靠沿途的其他车站
 
 STR_CONFIG_SETTING_STOP_LOCATION                                :新列车调度计划中默认命令为停靠在站台 {STRING} 位置
-STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :设置车辆在站台的默认停靠位置，“近端”是靠近车辆进入的那一端，“中间”是站台中间位置，“远端”是远离车辆进入的那一端。注意：本设定只改变新指令的默认设定。玩家仍可通过点击指令文字改变列车在某车站的停车位置
+STR_CONFIG_SETTING_STOP_LOCATION_HELPTEXT                       :预设列车在车站内停靠的位置。“近端”指进入车站一端；“中间”指站台中央；“远端”指远离车站进入一端。请注意本设置仅改变新指令的默认值。列车在车站内的停靠位置仍然可以通过点击指令文本手动设置
 ###length 3
 STR_CONFIG_SETTING_STOP_LOCATION_NEAR_END                       :近端
 STR_CONFIG_SETTING_STOP_LOCATION_MIDDLE                         :中间
@@ -1444,7 +1444,7 @@ STR_CONFIG_SETTING_FREIGHT_TRAINS                               :货物重量倍
 STR_CONFIG_SETTING_FREIGHT_TRAINS_HELPTEXT                      :设置列车所载货物的重量倍数。设定的数值越高，货物对列车而言越重，并影响其加速、转弯及上坡的效率
 
 STR_CONFIG_SETTING_PLANE_SPEED                                  :飞机速度因子：{STRING}
-STR_CONFIG_SETTING_PLANE_SPEED_HELPTEXT                         :设置飞机与其它车辆类型的相对速率，使飞机运输收入减少
+STR_CONFIG_SETTING_PLANE_SPEED_HELPTEXT                         :设置飞机与其它载具类型的相对速率以减少飞机运输收入
 STR_CONFIG_SETTING_PLANE_SPEED_VALUE                            :1 / {COMMA}
 
 STR_CONFIG_SETTING_PLANE_CRASHES                                :空难：{STRING}
@@ -1461,7 +1461,7 @@ STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD                            :允许在城镇
 STR_CONFIG_SETTING_STOP_ON_TOWN_ROAD_HELPTEXT                   :“打开”时允许在城市所属的道路上建设通过式车站
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD                      :允许在竞争对手所属的道路上建通过式车站：{STRING}
 STR_CONFIG_SETTING_STOP_ON_COMPETITOR_ROAD_HELPTEXT             :“打开”时，允许在其它公司所属的道路上建设通过式车站
-STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :{WHITE}当有车辆时，不可能更改此设定
+STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES            :{WHITE}当有载具时不能更改此设定
 
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE                   :基础设施维护：{STRING}
 STR_CONFIG_SETTING_INFRASTRUCTURE_MAINTENANCE_HELPTEXT          :启用时，基础设施会产生维护成本。公司所拥有的基础建设越多，维护成本也相应地越多。此设定更多影响较大的公司，而对较小的公司影响更小
@@ -1476,14 +1476,14 @@ STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS                        :总允许建设
 STR_CONFIG_SETTING_NEVER_EXPIRE_AIRPORTS_HELPTEXT               :“打开”此选项，每种类型机场出现后一直是可用的
 
 STR_CONFIG_SETTING_WARN_LOST_VEHICLE                            :当列车无法找到路线时提示：{STRING}
-STR_CONFIG_SETTING_WARN_LOST_VEHICLE_HELPTEXT                   :“打开”时，当车辆无法找到路径时给出提示
+STR_CONFIG_SETTING_WARN_LOST_VEHICLE_HELPTEXT                   :启用时将在载具无法到达指令目的地时提示
 
-STR_CONFIG_SETTING_ORDER_REVIEW                                 :检查车辆的调度计划：{STRING}
-STR_CONFIG_SETTING_ORDER_REVIEW_HELPTEXT                        :启用时，相应类型车辆的调度计划会定期检查，发现的问题会以新闻的形式报告
+STR_CONFIG_SETTING_ORDER_REVIEW                                 :检查载具调度计划：{STRING}
+STR_CONFIG_SETTING_ORDER_REVIEW_HELPTEXT                        :启用时系统会定时检查载具的调度计划，并在检测到明显异常的时候提示
 ###length 3
 STR_CONFIG_SETTING_ORDER_REVIEW_OFF                             :不检查
-STR_CONFIG_SETTING_ORDER_REVIEW_EXDEPOT                         :检查 不包括停运的车辆
-STR_CONFIG_SETTING_ORDER_REVIEW_ON                              :检查 所有车辆
+STR_CONFIG_SETTING_ORDER_REVIEW_EXDEPOT                         :检查，除停运载具外
+STR_CONFIG_SETTING_ORDER_REVIEW_ON                              :检查所有载具
 
 STR_CONFIG_SETTING_WARN_INCOME_LESS                             :若线路亏损时发出提示：{STRING}
 ###length 2
@@ -1497,7 +1497,7 @@ STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :载具永不过
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :启用时，所有载具一经面世，就可以永远选择购买使用
 
 STR_CONFIG_SETTING_TIMEKEEPING_UNITS                            :时间模式：{STRING}
-STR_CONFIG_SETTING_TIMEKEEPING_UNITS_HELPTEXT                   :选择游戏的计时模式。请注意此项无法在游戏进行时更改{}{}日历模式为经典的 OpenTTD 体验，在此模式中，一年由 12 个月组成，每个月有 28-31 天。{}{}在挂钟模式中，车辆移动、货物生产和财务计算等都以分钟为单位，一分钟约等于日历模式中的一个月，即 30 天。此模式下每 12 分钟即日历模式下的一年。{}{}两种模式都包含一个用来记录载具、房屋与其他基础设施引入日期的计时器
+STR_CONFIG_SETTING_TIMEKEEPING_UNITS_HELPTEXT                   :选择游戏的计时模式。请注意此项无法在游戏进行时更改{}{}日历模式为经典的 OpenTTD 体验，在此模式中，一年由 12 个月组成，每个月有 28-31 天。{}{}在挂钟模式中，载具移动、货物生产和财务计算等都以分钟为单位，一分钟约等于日历模式中的一个月，即 30 天。此模式下每 12 分钟即日历模式下的一年。{}{}两种模式都包含一个用来记录载具、房屋与其他基础设施引入日期的计时器
 ###length 2
 STR_CONFIG_SETTING_TIMEKEEPING_UNITS_CALENDAR                   :日历
 STR_CONFIG_SETTING_TIMEKEEPING_UNITS_WALLCLOCK                  :挂钟
@@ -1515,17 +1515,17 @@ STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE                         :工业货物产
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT                :按此比例扩大工业的货物生产规模
 STR_CONFIG_SETTING_CARGO_SCALE_VALUE                            :{NUM}%
 
-STR_CONFIG_SETTING_AUTORENEW_VEHICLE                            :当车辆报废时自动更新：{STRING}
-STR_CONFIG_SETTING_AUTORENEW_VEHICLE_HELPTEXT                   :“打开”时，车辆在临近它的报废期限时自动更新
+STR_CONFIG_SETTING_AUTORENEW_VEHICLE                            :载具到达使用年限时自动更新：{STRING}
+STR_CONFIG_SETTING_AUTORENEW_VEHICLE_HELPTEXT                   :启用时，所有符合更换条件的载具在进入车库时会被自动更新
 
 STR_CONFIG_SETTING_AUTORENEW_MONTHS                             :自动替换年龄到达使用期限{STRING}的载具
-STR_CONFIG_SETTING_AUTORENEW_MONTHS_HELPTEXT                    :设置车辆自动更新的时间
+STR_CONFIG_SETTING_AUTORENEW_MONTHS_HELPTEXT                    :如果载具距离使用期限的时间小于等于指定值，则载具进入车库时便会被自动替换
 ###length 2
 STR_CONFIG_SETTING_AUTORENEW_MONTHS_VALUE_BEFORE                :前 {COMMA} 个月
 STR_CONFIG_SETTING_AUTORENEW_MONTHS_VALUE_AFTER                 :后 {COMMA} 个月
 
 STR_CONFIG_SETTING_AUTORENEW_MONEY                              :启动自动更新需要的最少现金：{STRING}
-STR_CONFIG_SETTING_AUTORENEW_MONEY_HELPTEXT                     :启动自动更新车辆时需要保留的最少现金
+STR_CONFIG_SETTING_AUTORENEW_MONEY_HELPTEXT                     :开始自动更新载具所需的最少资金
 
 STR_CONFIG_SETTING_ERRMSG_DURATION                              :错误信息持续时间{STRING}
 STR_CONFIG_SETTING_ERRMSG_DURATION_HELPTEXT                     :红色窗口显示错误信息的持续时间，在这个时间内一些紧急的错误信息不会自动关闭，必须手动关闭
@@ -1544,8 +1544,8 @@ STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS_HELPTEXT                :图表中曲线
 
 STR_CONFIG_SETTING_SHOW_NEWGRF_NAME                             :在购买载具窗口中显示 NewGRF 的名字：{STRING}
 STR_CONFIG_SETTING_SHOW_NEWGRF_NAME_HELPTEXT                    :在购买载具窗口中添加一行，显示选中的载具来自哪个 NewGRF
-STR_CONFIG_SETTING_SHOW_CARGO_IN_LISTS                          :在列表窗口中显示车辆可以运载的货物种类 {STRING}
-STR_CONFIG_SETTING_SHOW_CARGO_IN_LISTS_HELPTEXT                 :如果启用，车辆的可运输负载将出现在车辆列表的上方
+STR_CONFIG_SETTING_SHOW_CARGO_IN_LISTS                          :在载具列表中显示可运载货物：{STRING}
+STR_CONFIG_SETTING_SHOW_CARGO_IN_LISTS_HELPTEXT                 :启用后将会在载具列表上方显示载具的可运载货物
 
 STR_CONFIG_SETTING_LANDSCAPE                                    :景观：{STRING}
 STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :此设置决定基本的游戏场景、有什么货物可供运输，以及城镇发展的所需条件。然而，NewGRF 及游戏脚本可以比此设置更加细致地设置游戏场景
@@ -1618,8 +1618,8 @@ STR_CONFIG_SETTING_EDGES_NOT_WATER                              :{WHITE}一个�
 STR_CONFIG_SETTING_STATION_SPREAD                               :最大车站范围：{STRING}
 STR_CONFIG_SETTING_STATION_SPREAD_HELPTEXT                      :设置车站的最大范围，即最大长宽。请注意较高数值会使游戏变慢
 
-STR_CONFIG_SETTING_SERVICEATHELIPAD                             :直升机在降落平台自动保养：{STRING}
-STR_CONFIG_SETTING_SERVICEATHELIPAD_HELPTEXT                    :直升飞机在降落平台自动保养，即使机场没有机库
+STR_CONFIG_SETTING_SERVICEATHELIPAD                             :直升机在降落平台自动维护：{STRING}
+STR_CONFIG_SETTING_SERVICEATHELIPAD_HELPTEXT                    :直升飞机在降落平台自动维护，即使机场没有机库
 
 STR_CONFIG_SETTING_LINK_TERRAFORM_TOOLBAR                       :链接地形工具栏与铁路 / 公路 / 船只 / 机场工具栏：{STRING}
 STR_CONFIG_SETTING_LINK_TERRAFORM_TOOLBAR_HELPTEXT              :设定否在开启建设交通设施的工具栏时同时开启地形工具栏
@@ -1654,7 +1654,7 @@ STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :建设时显示
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :建设时显示距离格数和地形高差
 
 STR_CONFIG_SETTING_LIVERIES                                     :显示公司自订涂装：{STRING}
-STR_CONFIG_SETTING_LIVERIES_HELPTEXT                            :本选项控制车辆特殊涂装方案的用法（让公司与众不同）
+STR_CONFIG_SETTING_LIVERIES_HELPTEXT                            :设置是否允许为个别载具种类指定配色，而不是为公司的所有载具指定同一种配色
 ###length 3
 STR_CONFIG_SETTING_LIVERIES_NONE                                :不显示
 STR_CONFIG_SETTING_LIVERIES_OWN                                 :本公司
@@ -1720,11 +1720,11 @@ STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_NON_CONSTRUCTION     :除建设操作
 STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_NON_LANDSCAPING      :除景观操作所有操作
 STR_CONFIG_SETTING_COMMAND_PAUSE_LEVEL_ALL_ACTIONS              :所有操作
 
-STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS                       :使用高级车辆列表：{STRING}
-STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS_HELPTEXT              :允许使用高级车辆列表，方便进行车辆分组操作
+STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS                       :使用高级载具列表：{STRING}
+STR_CONFIG_SETTING_ADVANCED_VEHICLE_LISTS_HELPTEXT              :允许使用高级载具列表，方便进行分组操作
 
 STR_CONFIG_SETTING_LOADING_INDICATORS                           :使用装货进度指示：{STRING}
-STR_CONFIG_SETTING_LOADING_INDICATORS_HELPTEXT                  :选择是否在车辆上方显示装卸货物进度
+STR_CONFIG_SETTING_LOADING_INDICATORS_HELPTEXT                  :选择是否在载具上方显示装卸货物进度
 
 STR_CONFIG_SETTING_TIMETABLE_MODE                               :时刻表使用的时间单位：{STRING}
 STR_CONFIG_SETTING_TIMETABLE_MODE_HELPTEXT                      :选择载具时刻表所使用的时间单位
@@ -1736,7 +1736,7 @@ STR_CONFIG_SETTING_TIMETABLE_MODE_TICKS                         :刻
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE             :在时刻表中显示到达时间和出发时间：{STRING}
 STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :在时刻表中显示预期的到达和出发时间
 
-STR_CONFIG_SETTING_QUICKGOTO                                    :快速创建车辆调度计划：{STRING}
+STR_CONFIG_SETTING_QUICKGOTO                                    :快捷载具调度计划创建：{STRING}
 STR_CONFIG_SETTING_QUICKGOTO_HELPTEXT                           :启用时，打开调度计划窗口时预先选定“前往”命令
 
 STR_CONFIG_SETTING_DEFAULT_RAIL_TYPE                            :默认铁路类型（新建/读取游戏后）：{STRING}
@@ -1824,16 +1824,16 @@ STR_CONFIG_SETTING_SCRIPT_MAX_MEMORY_HELPTEXT                   :单个脚本（
 STR_CONFIG_SETTING_SCRIPT_MAX_MEMORY_VALUE                      :{COMMA} MiB
 
 STR_CONFIG_SETTING_SERVINT_ISPERCENT                            :维护间隔以百分比 (%) 计算：{STRING}
-STR_CONFIG_SETTING_SERVINT_ISPERCENT_HELPTEXT                   :“打开”时，当车辆的可靠性降到他们最大可靠性的一定百分比时，他们会去保养。{}{}例如，如果一辆车的最大可靠性是 90%，而保养间隔是 20%，车辆会在可靠性为 72% 时去保养
+STR_CONFIG_SETTING_SERVINT_ISPERCENT_HELPTEXT                   :启用后，载具会在其可靠度降低至最大可靠度的一定比例时自动前往维护设施进行维护。{}{}例如，如果一辆车的最大可靠性是 90%，而维护间隔是 20%，车辆会在可靠性为 72% 时去维护
 
-STR_CONFIG_SETTING_SERVINT_TRAINS                               :火车默认保养周期：{STRING}
-STR_CONFIG_SETTING_SERVINT_TRAINS_HELPTEXT                      :如果没有为火车直接指定保养周期，设定默认火车保养周期
-STR_CONFIG_SETTING_SERVINT_ROAD_VEHICLES                        :汽车默认保养周期：{STRING}
-STR_CONFIG_SETTING_SERVINT_ROAD_VEHICLES_HELPTEXT               :如果没有为汽车指定保养周期，设定汽车的默认保养周期
-STR_CONFIG_SETTING_SERVINT_AIRCRAFT                             :飞机默认保养周期：{STRING}
-STR_CONFIG_SETTING_SERVINT_AIRCRAFT_HELPTEXT                    :如果没有为飞机指定保养周期，设定飞机的默认保养周期
-STR_CONFIG_SETTING_SERVINT_SHIPS                                :船只默认保养周期：{STRING}
-STR_CONFIG_SETTING_SERVINT_SHIPS_HELPTEXT                       :如果没有为船只设定保养周期，按照这里设定的默认保养周期执行
+STR_CONFIG_SETTING_SERVINT_TRAINS                               :火车默认维护周期：{STRING}
+STR_CONFIG_SETTING_SERVINT_TRAINS_HELPTEXT                      :如果没有为火车直接指定维护周期，设定默认火车维护周期
+STR_CONFIG_SETTING_SERVINT_ROAD_VEHICLES                        :汽车默认维护周期：{STRING}
+STR_CONFIG_SETTING_SERVINT_ROAD_VEHICLES_HELPTEXT               :如果没有为汽车指定维护周期，设定汽车的默认维护周期
+STR_CONFIG_SETTING_SERVINT_AIRCRAFT                             :飞机默认维护周期：{STRING}
+STR_CONFIG_SETTING_SERVINT_AIRCRAFT_HELPTEXT                    :如果没有为飞机指定维护周期，设定飞机的默认维护周期
+STR_CONFIG_SETTING_SERVINT_SHIPS                                :船只默认维护周期：{STRING}
+STR_CONFIG_SETTING_SERVINT_SHIPS_HELPTEXT                       :如果没有为船只设定维护周期，按照这里设定的默认维护周期执行
 ###length 3
 STR_CONFIG_SETTING_SERVINT_VALUE_DAYS                           :{COMMA}{NBSP}日
 STR_CONFIG_SETTING_SERVINT_VALUE_MINUTES                        :{COMMA}{NBSP}分
@@ -1842,8 +1842,8 @@ STR_CONFIG_SETTING_SERVINT_VALUE_PERCENTAGE                     :{COMMA}{NBSP}%
 ###setting-zero-is-special
 STR_CONFIG_SETTING_SERVINT_DISABLED                             :关闭
 
-STR_CONFIG_SETTING_NOSERVICE                                    :在无故障模式下禁用保养周期：{STRING}
-STR_CONFIG_SETTING_NOSERVICE_HELPTEXT                           :“打开”时，在无故障模式下，车辆禁用保养周期
+STR_CONFIG_SETTING_NOSERVICE                                    :在无故障模式下禁用维护周期：{STRING}
+STR_CONFIG_SETTING_NOSERVICE_HELPTEXT                           :启用时，如果载具设定为不故障，则载具不会进入车库维护
 
 STR_CONFIG_SETTING_STATION_LENGTH_LOADING_PENALTY               :站台长度装卸惩罚：{STRING}
 STR_CONFIG_SETTING_STATION_LENGTH_LOADING_PENALTY_HELPTEXT      :启用站台长度装卸惩罚。过长的火车将会在站台中装卸得更慢。此项设置不会影响寻路
@@ -1887,7 +1887,7 @@ STR_CONFIG_SETTING_NEWS_INDUSTRY_CHANGES_OTHER_HELPTEXT         :报纸报道竞
 STR_CONFIG_SETTING_NEWS_INDUSTRY_CHANGES_UNSERVED               :其它工业产量变化信息：{STRING}
 STR_CONFIG_SETTING_NEWS_INDUSTRY_CHANGES_UNSERVED_HELPTEXT      :报纸报道非玩家或竞争对手的工业产量变化
 
-STR_CONFIG_SETTING_NEWS_ADVICE                                  :对于企业车辆的建议及信息：{STRING}
+STR_CONFIG_SETTING_NEWS_ADVICE                                  :对于公司载具的建议及信息：{STRING}
 STR_CONFIG_SETTING_NEWS_ADVICE_HELPTEXT                         :显示载具需要关注的消息
 
 STR_CONFIG_SETTING_NEWS_NEW_VEHICLES                            :载具上市：{STRING}
@@ -2063,7 +2063,7 @@ STR_CONFIG_SETTING_DEMAND_SIZE                                  :在对称模式
 STR_CONFIG_SETTING_DEMAND_SIZE_HELPTEXT                         :如果把此设定赋一个少于 100% 的值，则到达某站的货物不会全部被送回始发站。{}如果此设定被赋值为 0%，則“对称”模式的表现跟“不对称”模式完全一样
 
 STR_CONFIG_SETTING_SHORT_PATH_SATURATION                        :如果最短路径的饱和度超过{STRING}，把货物改派往容量较大的路径
-STR_CONFIG_SETTING_SHORT_PATH_SATURATION_HELPTEXT               :在两个给定的站点之间常常会会有多条不同的路径。货物分配算法会优先使用最短的路径，在其饱和后再使用第二短的路径，依此类推。路径的饱和度是用运载容量和计划使用量估算的。在所有路径都饱和的时候，算法会向所有路径超额装载货物，优先使用容量较高的路径。但是在多数场合算法无法准确计算容量。此设定允许您设定在较短的路径的饱和度达到设定值之后再装载下一条路径。将此值设定为小于 100%，就可避免因过量估算容量而导致的站点超载
+STR_CONFIG_SETTING_SHORT_PATH_SATURATION_HELPTEXT               :在两个给定的站点之间常会有多条不同的路径。货物分配算法会优先使用最短的路径，在其饱和后再使用第二短的路径，依此类推。路径的饱和度是用运载容量和计划使用量估算的。在所有路径都饱和的时候，算法会向所有路径超额装载货物，优先使用容量较高的路径。但是在多数场合算法无法准确计算容量。此设定允许您设定在较短的路径的饱和度达到设定值之后再装载下一条路径。将此值设定为小于 100%，就可避免因过量估算容量而导致的站点超载
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY                  :速度单位（陆地）：{STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_NAUTICAL         :速度单位（航海）：{STRING}
@@ -2120,7 +2120,7 @@ STR_CONFIG_SETTING_INTERFACE_CONSTRUCTION                       :建设
 STR_CONFIG_SETTING_ADVISORS                                     :消息/新闻
 STR_CONFIG_SETTING_COMPANY                                      :公司
 STR_CONFIG_SETTING_ACCOUNTING                                   :财务管理
-STR_CONFIG_SETTING_VEHICLES                                     :车辆
+STR_CONFIG_SETTING_VEHICLES                                     :载具
 STR_CONFIG_SETTING_VEHICLES_PHYSICS                             :物理
 STR_CONFIG_SETTING_VEHICLES_ROUTING                             :经由
 STR_CONFIG_SETTING_VEHICLES_ORDERS                              :调度命令
@@ -2728,7 +2728,7 @@ STR_TRANSPARENT_TEXT_TOOLTIP                                    :{BLACK}调整�
 STR_TRANSPARENT_INVISIBLE_TOOLTIP                               :{BLACK}选择设置为：不显示或透明
 
 # Linkgraph legend window
-STR_LINKGRAPH_LEGEND_CAPTION                                    :{BLACK}客货流图标
+STR_LINKGRAPH_LEGEND_CAPTION                                    :{BLACK}客货流图表
 STR_LINKGRAPH_LEGEND_ALL                                        :{BLACK}全部
 STR_LINKGRAPH_LEGEND_NONE                                       :{BLACK}无
 STR_LINKGRAPH_LEGEND_SELECT_COMPANIES                           :{BLACK}选择要查看的公司
@@ -2764,7 +2764,7 @@ STR_JOIN_WAYPOINT_CAPTION                                       :{WHITE}合并�
 STR_JOIN_WAYPOINT_CREATE_SPLITTED_WAYPOINT                      :{YELLOW}建造分体路点
 
 # Generic toolbar
-STR_TOOLBAR_DISABLED_NO_VEHICLE_AVAILABLE                       :{BLACK}已禁用，由于现在没有可用于该基础设施的车辆
+STR_TOOLBAR_DISABLED_NO_VEHICLE_AVAILABLE                       :{BLACK}由于没有可使用此类设施的载具，此设施已被禁用
 
 # Rail construction toolbar
 STR_RAIL_TOOLBAR_RAILROAD_CONSTRUCTION_CAPTION                  :铁路建设
@@ -2927,7 +2927,7 @@ STR_WATERWAYS_TOOLBAR_CAPTION                                   :{WHITE}水运�
 STR_WATERWAYS_TOOLBAR_CAPTION_SE                                :{WHITE}水运
 STR_WATERWAYS_TOOLBAR_BUILD_CANALS_TOOLTIP                      :{BLACK}修建运河。按住 <Shift> 键点选以显示预计费用
 STR_WATERWAYS_TOOLBAR_BUILD_LOCKS_TOOLTIP                       :{BLACK}建设船闸。按住 <Shift> 键点选以显示预计费用
-STR_WATERWAYS_TOOLBAR_BUILD_DEPOT_TOOLTIP                       :{BLACK}建造船坞（可以购买或保养船只），按住 <Shift> 键以显示预计费用
+STR_WATERWAYS_TOOLBAR_BUILD_DEPOT_TOOLTIP                       :{BLACK}建造船坞（可以购买或维护船只），按住 <Shift> 键以显示预计费用
 STR_WATERWAYS_TOOLBAR_BUILD_DOCK_TOOLTIP                        :{BLACK}建造码头。按住 <Ctrl> 键以合并车站，按住 Shift 键以显示预计费用
 STR_WATERWAYS_TOOLBAR_BUOY_TOOLTIP                              :{BLACK}放置浮标，可以用作路点。按住 <Shift> 键操作以显示预计费用
 STR_WATERWAYS_TOOLBAR_BUILD_AQUEDUCT_TOOLTIP                    :{BLACK}建设渡槽，按住 Shift 键操作可以显示所需资金
@@ -3581,7 +3581,7 @@ STR_NEWGRF_LIST_MISSING                                         :{RED}缺失文�
 # NewGRF 'it's broken' warnings
 STR_NEWGRF_BROKEN                                               :{WHITE}NewGRF“{0:STRING}”的行为可能造成同步错误或是崩溃
 STR_NEWGRF_BROKEN_POWERED_WAGON                                 :{WHITE}{1:ENGINE}机车车厢的状态没在车库内发生变动
-STR_NEWGRF_BROKEN_VEHICLE_LENGTH                                :{WHITE}当车辆不在车库中时，这将改变“{1:ENGINE}”的车辆长度。
+STR_NEWGRF_BROKEN_VEHICLE_LENGTH                                :{WHITE}“{1:ENGINE}” 不在车库内却发生长度变动
 STR_NEWGRF_BROKEN_CAPACITY                                      :{WHITE}它会在“{1:ENGINE}”在机厂外或不在接受改装时改変其运载能力
 STR_BROKEN_VEHICLE_LENGTH                                       :{WHITE}{1:COMPANY} 所拥有的列车 {0:VEHICLE} 长度无效。这个错误可能是由 NewGRF 导致的。游戏可能会无法同步或崩溃
 
@@ -3895,10 +3895,11 @@ STR_COMPANY_VIEW_CAPTION                                        :{WHITE}{COMPANY
 STR_COMPANY_VIEW_PRESIDENT_MANAGER_TITLE                        :{WHITE}{PRESIDENT_NAME}{}{GOLD}（总裁）
 
 STR_COMPANY_VIEW_INAUGURATED_TITLE                              :{GOLD}开业时间：{WHITE}{NUM}
+STR_COMPANY_VIEW_INAUGURATED_TITLE_WALLCLOCK                    :{GOLD}开业时间：{WHITE}{NUM}（第 {NUM} 周期）
 STR_COMPANY_VIEW_COLOUR_SCHEME_TITLE                            :{GOLD}色彩方案：
 STR_COMPANY_VIEW_VEHICLES_TITLE                                 :{GOLD}载具总数：
 STR_COMPANY_VIEW_TRAINS                                         :{WHITE}列车 {COMMA} 列
-STR_COMPANY_VIEW_ROAD_VEHICLES                                  :{WHITE}车辆 {COMMA} 辆
+STR_COMPANY_VIEW_ROAD_VEHICLES                                  :{WHITE}汽车 {COMMA} 部
 STR_COMPANY_VIEW_AIRCRAFT                                       :{WHITE}飞机 {COMMA} 架
 STR_COMPANY_VIEW_SHIPS                                          :{WHITE}船舶 {COMMA} 艘
 STR_COMPANY_VIEW_VEHICLES_NONE                                  :{WHITE}无
@@ -3998,7 +3999,7 @@ STR_VEHICLE_LIST_AIRCRAFT_CAPTION                               :{WHITE}{STRING}
 
 ###length VEHICLE_TYPES
 STR_VEHICLE_LIST_TRAIN_LIST_TOOLTIP                             :{BLACK}列车 - 点击可以查看详细信息
-STR_VEHICLE_LIST_ROAD_VEHICLE_TOOLTIP                           :{BLACK}汽车 - 单击车辆可以查看详细信息
+STR_VEHICLE_LIST_ROAD_VEHICLE_TOOLTIP                           :{BLACK}汽车 - 单击载具查看详细信息
 STR_VEHICLE_LIST_SHIP_TOOLTIP                                   :{BLACK}船只列表 - 点击可以查看详细信息
 STR_VEHICLE_LIST_AIRCRAFT_TOOLTIP                               :{BLACK}飞机 - 点击可以查看详细信息
 
@@ -4010,8 +4011,8 @@ STR_VEHICLE_LIST_AVAILABLE_AIRCRAFT                             :可用的飞机
 
 STR_VEHICLE_LIST_MANAGE_LIST                                    :{BLACK}管理列表
 STR_VEHICLE_LIST_MANAGE_LIST_TOOLTIP                            :{BLACK}向列表中所有载具发出指令
-STR_VEHICLE_LIST_REPLACE_VEHICLES                               :替换车辆/飞机/船只
-STR_VEHICLE_LIST_SEND_FOR_SERVICING                             :进行保养
+STR_VEHICLE_LIST_REPLACE_VEHICLES                               :替换载具
+STR_VEHICLE_LIST_SEND_FOR_SERVICING                             :进行维护
 STR_VEHICLE_LIST_CREATE_GROUP                                   :创建分组
 STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR                     :{TINY_FONT}{BLACK}今年损益：{CURRENCY_LONG}（去年损益：{CURRENCY_LONG}）
 STR_VEHICLE_LIST_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{TINY_FONT}{BLACK}本期损益：{CURRENCY_LONG}（上期：{CURRENCY_LONG}）
@@ -4023,11 +4024,11 @@ STR_VEHICLE_LIST_SEND_ROAD_VEHICLE_TO_DEPOT                     :前往汽车车
 STR_VEHICLE_LIST_SEND_SHIP_TO_DEPOT                             :前往船坞
 STR_VEHICLE_LIST_SEND_AIRCRAFT_TO_HANGAR                        :前往机库
 
-STR_VEHICLE_LIST_MASS_STOP_LIST_TOOLTIP                         :{BLACK}点击这里可以停止列表中的{}所有车辆/船只/飞机
-STR_VEHICLE_LIST_MASS_START_LIST_TOOLTIP                        :{BLACK}点击这里可以启动列表中的{}所有车辆/船只/飞机
+STR_VEHICLE_LIST_MASS_STOP_LIST_TOOLTIP                         :{BLACK}点击以停止列表中的所有载具
+STR_VEHICLE_LIST_MASS_START_LIST_TOOLTIP                        :{BLACK}点击以启动列表中的所有载具
 STR_VEHICLE_LIST_AVAILABLE_ENGINES_TOOLTIP                      :{BLACK}显示此载具类别所有可用的设计
 
-STR_VEHICLE_LIST_SHARED_ORDERS_LIST_CAPTION                     :{WHITE}与 {COMMA} 车辆/船只/飞机共享调度计划
+STR_VEHICLE_LIST_SHARED_ORDERS_LIST_CAPTION                     :{WHITE}与 {COMMA} 部载具共享调度计划
 
 # Group window
 ###length VEHICLE_TYPES
@@ -4044,7 +4045,7 @@ STR_GROUP_DEFAULT_AIRCRAFTS                                     :未分组飞机
 
 STR_GROUP_COUNT_WITH_SUBGROUP                                   :{TINY_FONT}{COMMA} (+{COMMA})
 
-STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}组 - 点击一个组别以显示所有隶属此组的车辆。拖曳组别标签以重新排列组别的次序和层级
+STR_GROUPS_CLICK_ON_GROUP_FOR_TOOLTIP                           :{BLACK}组 - 点击组别以显示所有隶属于此组的载具。拖拽组别标签以重新排列组别的次序和层级
 STR_GROUP_CREATE_TOOLTIP                                        :{BLACK}创建分组
 STR_GROUP_DELETE_TOOLTIP                                        :{BLACK}删除分组
 STR_GROUP_RENAME_TOOLTIP                                        :{BLACK}重命名该分组
@@ -4054,8 +4055,8 @@ STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}点击�
 STR_QUERY_GROUP_DELETE_CAPTION                                  :{WHITE}删除分组
 STR_GROUP_DELETE_QUERY_TEXT                                     :{WHITE}确定要删除这个分组及其下级分组么？
 
-STR_GROUP_ADD_SHARED_VEHICLE                                    :添加共享车辆
-STR_GROUP_REMOVE_ALL_VEHICLES                                   :移除所有车辆
+STR_GROUP_ADD_SHARED_VEHICLE                                    :添加共享计划的载具
+STR_GROUP_REMOVE_ALL_VEHICLES                                   :移除所有载具
 
 STR_GROUP_RENAME_CAPTION                                        :{BLACK}重命名分组
 
@@ -4177,7 +4178,7 @@ STR_BUY_VEHICLE_SHIP_HIDE_SHOW_TOGGLE_TOOLTIP                   :{BLACK}切换�
 STR_BUY_VEHICLE_AIRCRAFT_HIDE_SHOW_TOGGLE_TOOLTIP               :{BLACK}切换是否显示飞机类型
 
 ###length VEHICLE_TYPES
-STR_QUERY_RENAME_TRAIN_TYPE_CAPTION                             :{WHITE}重命名车辆的类型
+STR_QUERY_RENAME_TRAIN_TYPE_CAPTION                             :{WHITE}重新命名列车类型
 STR_QUERY_RENAME_ROAD_VEHICLE_TYPE_CAPTION                      :{WHITE}重命名汽车型号
 STR_QUERY_RENAME_SHIP_TYPE_CAPTION                              :{WHITE}重命名船只型号
 STR_QUERY_RENAME_AIRCRAFT_TYPE_CAPTION                          :{WHITE}重命名飞机型号
@@ -4190,7 +4191,7 @@ STR_DEPOT_RENAME_DEPOT_CAPTION                                  :重命名车库
 
 STR_DEPOT_NO_ENGINE                                             :{BLACK}-
 STR_DEPOT_VEHICLE_TOOLTIP                                       :{BLACK}{ENGINE}{STRING}
-STR_DEPOT_VEHICLE_TOOLTIP_CHAIN                                 :{BLACK}{NUM} 车辆{STRING}
+STR_DEPOT_VEHICLE_TOOLTIP_CHAIN                                 :{BLACK}载具 {NUM} 部 {STRING}
 STR_DEPOT_VEHICLE_TOOLTIP_CARGO                                 :{}{CARGO_LONG}（{CARGO_SHORT}）
 
 ###length VEHICLE_TYPES
@@ -4266,7 +4267,7 @@ STR_DEPOT_MASS_START_DEPOT_SHIP_TOOLTIP                         :{BLACK}点击�
 STR_DEPOT_MASS_START_HANGAR_TOOLTIP                             :{BLACK}点击这里可以启动机库的所有飞机
 
 STR_DEPOT_DRAG_WHOLE_TRAIN_TO_SELL_TOOLTIP                      :{BLACK}将车头拖到这里可以出售整列火车
-STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}你将要出售车库中的所有车辆，确定吗？
+STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}你将要出售车库中的所有载具，确定吗？
 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}来自供货商的消息
@@ -4310,31 +4311,31 @@ STR_REPLACE_VEHICLE_ROAD_VEHICLE                                :汽车
 STR_REPLACE_VEHICLE_SHIP                                        :船只
 STR_REPLACE_VEHICLE_AIRCRAFT                                    :飞机
 
-STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}选择要更新的车辆类型
-STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}选择用来替换左侧指定车辆的新车辆
+STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}选择要替换的载具类型
+STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}选择用来替换左侧选定载具的新载具
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}开始更新
-STR_REPLACE_VEHICLES_NOW                                        :马上替换所有的车辆
+STR_REPLACE_VEHICLES_NOW                                        :立刻替换所有载具
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :只替换旧的
-STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}点击这里开始根据选定的车辆进行更新
+STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}按下以开始将左侧选定的载具替换为右侧指定的载具
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}没有更新
 STR_REPLACE_NOT_REPLACING_VEHICLE_SELECTED                      :{BLACK}请选择要更新的对象
 STR_REPLACE_REPLACING_WHEN_OLD                                  :{ENGINE} 变老旧时
 STR_REPLACE_VEHICLES_STOP                                       :{BLACK}停止更新
-STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}点击这里可以停止继续更新车辆
+STR_REPLACE_HELP_STOP_BUTTON                                    :{BLACK}按下以停止替换左侧指定的载具
 
 STR_REPLACE_ENGINE_WAGON_SELECT_HELP                            :{BLACK}可以切换 机车/挂车 替换项目
 STR_REPLACE_ENGINES                                             :机车
 STR_REPLACE_WAGONS                                              :挂车
-STR_REPLACE_ALL_RAILTYPE                                        :所有铁路车辆
+STR_REPLACE_ALL_RAILTYPE                                        :所有铁路载具
 STR_REPLACE_ALL_ROADTYPE                                        :所有道路载具
 
 ###length 2
-STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}选择要更新的车辆对应的铁路类型
-STR_REPLACE_HELP_ROADTYPE                                       :{BLACK}选择要更新的车辆对应的道路类型
+STR_REPLACE_HELP_RAILTYPE                                       :{BLACK}选择更新载具的对应铁路类型
+STR_REPLACE_HELP_ROADTYPE                                       :{BLACK}选择更新载具的对应道路类型
 ###next-name-looks-similar
 
-STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}显示用来替换左侧被选定车辆的新车辆
+STR_REPLACE_HELP_REPLACE_INFO_TAB                               :{BLACK}显示用来替换左侧选定载具的新载具
 STR_REPLACE_RAIL_VEHICLES                                       :普通列车
 STR_REPLACE_ELRAIL_VEHICLES                                     :电力机车
 STR_REPLACE_MONORAIL_VEHICLES                                   :单轨列车
@@ -4344,7 +4345,7 @@ STR_REPLACE_ROAD_VEHICLES                                       :路面交通工
 STR_REPLACE_TRAM_VEHICLES                                       :电车
 
 STR_REPLACE_REMOVE_WAGON                                        :{BLACK}移除车厢（{STRING}）：{ORANGE}{STRING}
-STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}当车辆升级可能造成列车变长时{}自动从最前面的挂车去掉若干节以保证列车长度不变
+STR_REPLACE_REMOVE_WAGON_HELP                                   :{BLACK}如果替换会使列车更长。则从列车前方开始自动移除车厢以维持目前长度
 STR_REPLACE_REMOVE_WAGON_GROUP_HELP                             :{STRING}。按下 CTRL 并点击来同样应用于子组
 
 # Vehicle view
@@ -4357,10 +4358,10 @@ STR_VEHICLE_VIEW_SHIP_CENTER_TOOLTIP                            :{BLACK}将主�
 STR_VEHICLE_VIEW_AIRCRAFT_CENTER_TOOLTIP                        :{BLACK}将主视角中心移动到飞机所在的位置。双击将会在主视角中跟踪飞机。按 <Ctrl> 键操作以在新视点中显示飞机
 
 ###length VEHICLE_TYPES
-STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP                    :{BLACK}命令列车前往车库。按住 <Ctrl> 键操作以仅作保养
-STR_VEHICLE_VIEW_ROAD_VEHICLE_SEND_TO_DEPOT_TOOLTIP             :{BLACK}命令汽车前往车库。按住 <Ctrl> 键操作以仅作保养
-STR_VEHICLE_VIEW_SHIP_SEND_TO_DEPOT_TOOLTIP                     :{BLACK}命令船舶前往船坞。按住 <Ctrl> 键操作以仅作保养
-STR_VEHICLE_VIEW_AIRCRAFT_SEND_TO_DEPOT_TOOLTIP                 :{BLACK}命令飞机前往机库。按住 <Ctrl> 键操作以仅作保养
+STR_VEHICLE_VIEW_TRAIN_SEND_TO_DEPOT_TOOLTIP                    :{BLACK}命令列车前往车库。按住 <Ctrl> 键操作以仅作维护
+STR_VEHICLE_VIEW_ROAD_VEHICLE_SEND_TO_DEPOT_TOOLTIP             :{BLACK}命令汽车前往车库。按住 <Ctrl> 键操作以仅作维护
+STR_VEHICLE_VIEW_SHIP_SEND_TO_DEPOT_TOOLTIP                     :{BLACK}命令船舶前往船坞。按住 <Ctrl> 键操作以仅作维护
+STR_VEHICLE_VIEW_AIRCRAFT_SEND_TO_DEPOT_TOOLTIP                 :{BLACK}命令飞机前往机库。按住 <Ctrl> 键操作以仅作维护
 
 ###length VEHICLE_TYPES
 STR_VEHICLE_VIEW_CLONE_TRAIN_INFO                               :{BLACK}复制这列火车。按住 <Ctrl> 键单击以共享调度计划。按住 <Shift> 键单击以显示预计费用
@@ -4381,7 +4382,7 @@ STR_VEHICLE_VIEW_AIRCRAFT_REFIT_TOOLTIP                         :{BLACK}改装�
 
 ###length VEHICLE_TYPES
 STR_VEHICLE_VIEW_TRAIN_ORDERS_TOOLTIP                           :{BLACK}显示列车的调度计划。单击的同时按住 Ctrl 以显示列车的时刻表
-STR_VEHICLE_VIEW_ROAD_VEHICLE_ORDERS_TOOLTIP                    :{BLACK}显示车辆的调度指令。单击的同时按住 Ctrl 以显示车辆的时刻表
+STR_VEHICLE_VIEW_ROAD_VEHICLE_ORDERS_TOOLTIP                    :{BLACK}显示载具的调度计划。按住 <Ctrl> 点选以显示载具时刻表
 STR_VEHICLE_VIEW_SHIP_ORDERS_TOOLTIP                            :{BLACK}显示船只的调度计划。单击的同时按住 Ctrl 以显示船只的时刻表
 STR_VEHICLE_VIEW_AIRCRAFT_ORDERS_TOOLTIP                        :{BLACK}显示飞机的调度计划。单击的同时按住 Ctrl 以显示飞机的时刻表
 
@@ -4393,7 +4394,7 @@ STR_VEHICLE_VIEW_AIRCRAFT_SHOW_DETAILS_TOOLTIP                  :{BLACK}显示�
 
 ###length VEHICLE_TYPES
 STR_VEHICLE_VIEW_TRAIN_STATUS_START_STOP_TOOLTIP                :{BLACK}当前列车动作 - 点击以 停止/启动 列车
-STR_VEHICLE_VIEW_ROAD_VEHICLE_STATUS_START_STOP_TOOLTIP         :{BLACK}当前车辆动作 - 点击以 停止/启动 车辆
+STR_VEHICLE_VIEW_ROAD_VEHICLE_STATUS_START_STOP_TOOLTIP         :{BLACK}当前载具操作 - 点击以停止/启动载具
 STR_VEHICLE_VIEW_SHIP_STATE_STATUS_STOP_TOOLTIP                 :{BLACK}当前船只动作 - 点击以 停止/启动 船只
 STR_VEHICLE_VIEW_AIRCRAFT_STATUS_START_STOP_TOOLTIP             :{BLACK}当前飞机动作 - 点击以 停止/启动 飞机
 
@@ -4454,7 +4455,7 @@ STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}今年�
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}今年损益：{LTBLUE}{CURRENCY_LONG}（去年损益：{CURRENCY_LONG}）{BLACK}最小功率：{LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{BLACK}本期损益：{LTBLUE}{CURRENCY_LONG}（上期损益：{CURRENCY_LONG}）
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD_MIN_PERFORMANCE :{BLACK}本期损益：{LTBLUE}{CURRENCY_LONG}（上期损益：{CURRENCY_LONG}）{BLACK}最小功率：{LTBLUE}{POWER_TO_WEIGHT}
-STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}可靠性：{LTBLUE}{COMMA}%  {BLACK}上次保养后抛锚的次数：{LTBLUE}{COMMA}
+STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}可靠性：{LTBLUE}{COMMA}%  {BLACK}上次维护后抛锚的次数：{LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}建造年份：{LTBLUE}{NUM}{BLACK} 价值：{LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}运载能力：{LTBLUE}无{STRING}
@@ -4465,16 +4466,16 @@ STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}运载�
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK}联运账面收入：{LTBLUE}{CURRENCY_LONG}
 
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_DAYS                     :{BLACK}每 {LTBLUE}{COMMA}{NBSP}天进行维护{BLACK}   上次维护日期：{LTBLUE}{STRING}
-STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES                  :{BLACK}维修间隔：{LTBLUE}{COMMA}{NBSP}分钟{BLACK} {STRING}
+STR_VEHICLE_DETAILS_SERVICING_INTERVAL_MINUTES                  :{BLACK}维护间隔：{LTBLUE}{COMMA}{NBSP}分钟{BLACK} {STRING}
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PERCENT                  :{BLACK}维护间隔：{LTBLUE}{COMMA}%{BLACK} {STRING}
-STR_VEHICLE_DETAILS_LAST_SERVICE_DATE                           :最近保养：{LTBLUE}{DATE_LONG}
-STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO                    :最近保养：{LTBLUE}{NUM}{NBSP}分钟前
-STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_DAYS    :将维修间隔增大 10 天。按住 <Ctrl> 点击可将维修间隔增大 5 天
-STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_MINUTES :{BLACK}将维修间隔增大 5 分。按住 <Ctrl> 点击可将维修间隔增大 1 分
-STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_PERCENT :{BLACK}将维修间隔增大 10%。按住 <Ctrl> 点击可将维修间隔增大 5%
-STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_DAYS    :{BLACK}将维修间隔缩短 10 天。按住 <Ctrl> 点击可将维修间隔缩短 5 天
-STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_MINUTES :{BLACK}将维修间隔缩短 5 分。按住 <Ctrl> 点击可将维修间隔缩短 1 分
-STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_PERCENT :{BLACK}将维修间隔缩短 10%。按住 <Ctrl> 点击可将维修间隔缩短 5%
+STR_VEHICLE_DETAILS_LAST_SERVICE_DATE                           :最近维护：{LTBLUE}{DATE_LONG}
+STR_VEHICLE_DETAILS_LAST_SERVICE_MINUTES_AGO                    :最近维护：{LTBLUE}{NUM} 分钟前
+STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_DAYS    :{BLACK}将维护间隔增加 10 天。按住 <Ctrl> 点击可将维护间隔增加 5 天
+STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_MINUTES :{BLACK}将维护间隔增加 5 分。按住 <Ctrl> 点击可将维护间隔增加 1 分
+STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_PERCENT :{BLACK}将维护间隔增加 10%。按住 <Ctrl> 点击可将维护间隔增加 5%
+STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_DAYS    :{BLACK}将维护间隔缩短 10 天。按住 <Ctrl> 点击可将维护间隔缩短 5 天
+STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_MINUTES :{BLACK}将维护间隔缩短 5 分。按住 <Ctrl> 点击可将维护间隔缩短 1 分
+STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_PERCENT :{BLACK}将维护间隔缩短 10%。按住 <Ctrl> 点击可将维护间隔缩短 5%
 
 STR_SERVICE_INTERVAL_DROPDOWN_TOOLTIP                           :{BLACK}更改服务时间间隔类型
 STR_VEHICLE_DETAILS_DEFAULT                                     :默认
@@ -4592,7 +4593,7 @@ STR_ORDER_SHIP_DEPOT_ACTION_TOOLTIP                             :{BLACK}选择�
 STR_ORDER_HANGAR_ACTION_TOOLTIP                                 :{BLACK}选择在此机库采取的措施
 ###next-name-looks-similar
 
-STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP                          :{BLACK}跳过所需的车辆数据值
+STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP                          :{BLACK}条件性指令的依据
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
 ###length 8
@@ -4600,13 +4601,13 @@ STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE                           :装载进度
 STR_ORDER_CONDITIONAL_RELIABILITY                               :可靠性
 STR_ORDER_CONDITIONAL_MAX_SPEED                                 :最大速度
 STR_ORDER_CONDITIONAL_AGE                                       :寿命（年）
-STR_ORDER_CONDITIONAL_REQUIRES_SERVICE                          :需要维修
+STR_ORDER_CONDITIONAL_REQUIRES_SERVICE                          :需要维护
 STR_ORDER_CONDITIONAL_UNCONDITIONALLY                           :总是
 STR_ORDER_CONDITIONAL_REMAINING_LIFETIME                        :剩余寿命年限（年）
 STR_ORDER_CONDITIONAL_MAX_RELIABILITY                           :最大可靠度
 ###next-name-looks-similar
 
-STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP                        :{BLACK}如何比较车辆数据值与所给数据
+STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP                        :{BLACK}载具相关数值与指定数值比对的条件
 STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS                         :等于
 STR_ORDER_CONDITIONAL_COMPARATOR_NOT_EQUALS                     :不等于
 STR_ORDER_CONDITIONAL_COMPARATOR_LESS_THAN                      :少于
@@ -4616,7 +4617,7 @@ STR_ORDER_CONDITIONAL_COMPARATOR_MORE_EQUALS                    :大于等于
 STR_ORDER_CONDITIONAL_COMPARATOR_IS_TRUE                        :为是
 STR_ORDER_CONDITIONAL_COMPARATOR_IS_FALSE                       :为否
 
-STR_ORDER_CONDITIONAL_VALUE_TOOLTIP                             :{BLACK}要比较车辆的数据值
+STR_ORDER_CONDITIONAL_VALUE_TOOLTIP                             :{BLACK}此栏指定的数值将与载具的指定数据比对
 STR_ORDER_CONDITIONAL_VALUE_CAPT                                :{WHITE}请输入要比较的值
 
 STR_ORDERS_SKIP_BUTTON                                          :{BLACK}跳过
@@ -4635,14 +4636,14 @@ STR_ORDER_CONDITIONAL                                           :条件性命令
 STR_ORDER_SHARE                                                 :共享调度计划
 STR_ORDERS_GO_TO_TOOLTIP                                        :{BLACK}在选定的指令前插入新指令，或者添加新指令至计划末尾。按 <Ctrl> 键点选车站、路点或车库以分别应用“满载任意一种货物”、“不停车前往”以及“班次均匀”。点击另一辆载具以复制其调度计划，按住 <Ctrl> 点选则可共享调度计划。如果调度计划上有任何指令涉及车库，则该载具不会自行维护
 
-STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP                  :{BLACK}显示所有共享此调度计划的{}车辆/船只/飞机
+STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP                  :{BLACK}显示所有共享此调度计划的载具
 
 # String parts to build the order string
 STR_ORDER_GO_TO_WAYPOINT                                        :经过 {WAYPOINT}
 STR_ORDER_GO_NON_STOP_TO_WAYPOINT                               :经过（不停）{WAYPOINT}
 
-STR_ORDER_SERVICE_AT                                            :维修在
-STR_ORDER_SERVICE_NON_STOP_AT                                   :维修，不停靠于
+STR_ORDER_SERVICE_AT                                            :前往维护
+STR_ORDER_SERVICE_NON_STOP_AT                                   :直接前往维护
 
 STR_ORDER_NEAREST_DEPOT                                         :最近的车库
 STR_ORDER_NEAREST_HANGAR                                        :最近的机库
@@ -4733,15 +4734,15 @@ STR_TIMETABLE_AND_TRAVEL_FOR                                    :并行驶{STRIN
 STR_TIMETABLE_TOTAL_TIME                                        :{BLACK}完成该时刻表需要 {STRING}
 STR_TIMETABLE_TOTAL_TIME_INCOMPLETE                             :{BLACK}完成该时刻表至少需要 {STRING} （时刻表尚未完成）
 
-STR_TIMETABLE_STATUS_ON_TIME                                    :{BLACK}该车辆目前正点运行
-STR_TIMETABLE_STATUS_LATE                                       :{BLACK}该车辆目前晚点 {STRING}
-STR_TIMETABLE_STATUS_EARLY                                      :{BLACK}该车辆目前提前 {STRING}
+STR_TIMETABLE_STATUS_ON_TIME                                    :{BLACK}载具目前准点运行
+STR_TIMETABLE_STATUS_LATE                                       :{BLACK}载具目前晚点 {STRING}
+STR_TIMETABLE_STATUS_EARLY                                      :{BLACK}载具目前早点 {STRING}
 STR_TIMETABLE_STATUS_NOT_STARTED                                :{BLACK}此时刻表尚未开始
 STR_TIMETABLE_STATUS_START_AT_DATE                              :{BLACK}本时刻表将在 {STRING} 开始
 STR_TIMETABLE_STATUS_START_IN_SECONDS                           :{BLACK}本时刻表将会在 {COMMA} 秒内开始
 
 STR_TIMETABLE_START                                             :{BLACK}开始时刻表
-STR_TIMETABLE_START_TOOLTIP                                     :{BLACK}选择此时刻表开始的时间。如果调度计划有完善的时刻表，则按住 <Ctrl> 键单击会根据它们的相对顺序均匀分配共享此调度计划的所有车辆的出开始时间
+STR_TIMETABLE_START_TOOLTIP                                     :{BLACK}选择此时刻表开始的时间。如果调度计划有完善的时刻表，则按住 <Ctrl> 键单击会根据它们的相对顺序均匀分配共享此调度计划的所有载具的出发时间
 
 STR_TIMETABLE_START_SECONDS_QUERY                               :直至时刻表开始的秒数
 
@@ -4758,7 +4759,7 @@ STR_TIMETABLE_CLEAR_SPEED                                       :{BLACK}取消�
 STR_TIMETABLE_CLEAR_SPEED_TOOLTIP                               :{BLACK}清除选定命令设定的限速。按住 <Ctrl> 键操作以清除所有命令的限速
 
 STR_TIMETABLE_RESET_LATENESS                                    :{BLACK}清除晚点计数器
-STR_TIMETABLE_RESET_LATENESS_TOOLTIP                            :{BLACK}重置晚点计数器，从而使车辆被视为准时到达。按 <Ctrl> 键操作以重置全分组的计数器，从而使晚点最多的载具被视为准点而其他被视为早点
+STR_TIMETABLE_RESET_LATENESS_TOOLTIP                            :{BLACK}重置晚点计数器以使载具准点。按 <Ctrl> 键操作以重置全组计数器以使晚点最多的载具被视为准点而其他被视为早点
 
 STR_TIMETABLE_AUTOFILL                                          :{BLACK}自动填充
 STR_TIMETABLE_AUTOFILL_TOOLTIP                                  :{BLACK}根据下一次运行的时间自动填充时刻表。按住 Ctrl 单击可保持等候时间
@@ -5123,8 +5124,8 @@ STR_ERROR_AIRCRAFT_MUST_BE_STOPPED_INSIDE_HANGAR                :{WHITE}……�
 
 STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT             :{WHITE}只有列车停在车库中时才能更改挂车
 STR_ERROR_TRAIN_TOO_LONG                                        :{WHITE}列车过长
-STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE                  :{WHITE}无法调转车辆方向……
-STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE_MULTIPLE_UNITS   :{WHITE}……含有多节车辆
+STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE                  :{WHITE}无法调转列车方向……
+STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE_MULTIPLE_UNITS   :{WHITE}……由多节车厢组成
 STR_ERROR_INCOMPATIBLE_RAIL_TYPES                               :铁路类型不匹配
 
 STR_ERROR_CAN_T_MOVE_VEHICLE                                    :{WHITE}无法移动载具……
@@ -5143,10 +5144,10 @@ STR_ERROR_UNBUNCHING_NO_UNBUNCHING_CONDITIONAL                  :{WHITE}……�
 
 # Autoreplace related errors
 STR_ERROR_TRAIN_TOO_LONG_AFTER_REPLACEMENT                      :{WHITE}{VEHICLE}在更新后总长会过长
-STR_ERROR_AUTOREPLACE_NOTHING_TO_DO                             :{WHITE}当前没有进行中的车辆更新计划
+STR_ERROR_AUTOREPLACE_NOTHING_TO_DO                             :{WHITE}当前没有应用自动替换/自动更新规则
 STR_ERROR_AUTOREPLACE_MONEY_LIMIT                               :（现金不够）
-STR_ERROR_AUTOREPLACE_INCOMPATIBLE_CARGO                        :{WHITE}新车辆不能装载 {STRING}
-STR_ERROR_AUTOREPLACE_INCOMPATIBLE_REFIT                        :{WHITE}新车辆无法在调度计划 {NUM} 时改装
+STR_ERROR_AUTOREPLACE_INCOMPATIBLE_CARGO                        :{WHITE}新载具无法运输 {STRING}
+STR_ERROR_AUTOREPLACE_INCOMPATIBLE_REFIT                        :{WHITE}新载具无法在调度指令 {NUM} 时改装
 
 # Rail construction errors
 STR_ERROR_IMPOSSIBLE_TRACK_COMBINATION                          :{WHITE}不可能的轨道组合
@@ -5293,12 +5294,12 @@ STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}不能�
 STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}不能出售船只……
 STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}不能出售飞机……
 
-STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}游戏中的车辆过多
-STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}不能改变保养周期……
+STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}游戏中的载具过多
+STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}不能改变维护周期……
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}……载具已撞毁
 
-STR_ERROR_CAN_T_CLONE_VEHICLE_LIST                              :{WHITE}……并非所有车辆都相同
+STR_ERROR_CAN_T_CLONE_VEHICLE_LIST                              :{WHITE}……载具并非全部相同
 
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}没有可用的载具
 STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}请改动您的 NewGRF 设置
@@ -5328,11 +5329,11 @@ STR_ERROR_CAN_T_MODIFY_THIS_ORDER                               :{WHITE}不能�
 STR_ERROR_CAN_T_MOVE_THIS_ORDER                                 :{WHITE}不能移动这条命令……
 STR_ERROR_CAN_T_SKIP_ORDER                                      :{WHITE}不能跳过当前命令……
 STR_ERROR_CAN_T_SKIP_TO_ORDER                                   :{WHITE}不能跳转到选定的命令……
-STR_ERROR_CAN_T_COPY_SHARE_ORDER                                :{WHITE}……车辆无法到达全部站点
+STR_ERROR_CAN_T_COPY_SHARE_ORDER                                :{WHITE}……载具无法前往所有站点
 STR_ERROR_CAN_T_ADD_ORDER                                       :{WHITE}……载具无法前往车站
 STR_ERROR_CAN_T_ADD_ORDER_SHARED                                :{WHITE}……一个共享此调度计划的载具无法到达那个车站
-STR_ERROR_CAN_T_COPY_ORDER_VEHICLE_LIST                         :{WHITE}……并不是所有的车辆都有相同的指令
-STR_ERROR_CAN_T_SHARE_ORDER_VEHICLE_LIST                        :{WHITE}……并不是所有的车辆都有相同的指令
+STR_ERROR_CAN_T_COPY_ORDER_VEHICLE_LIST                         :{WHITE}……载具的调度计划并非全部相同
+STR_ERROR_CAN_T_SHARE_ORDER_VEHICLE_LIST                        :{WHITE}……载具的并非全部共享同一调度计划
 
 STR_ERROR_CAN_T_SHARE_ORDER_LIST                                :{WHITE}不能共享调度计划……
 STR_ERROR_CAN_T_STOP_SHARING_ORDER_LIST                         :{WHITE}不能停止共享调度计划……
@@ -5356,7 +5357,7 @@ STR_ERROR_NO_ROAD_WAYPOINT                                      :{WHITE}没有�
 STR_ERROR_NO_BUOY                                               :{WHITE}没有浮标
 
 # Timetable related errors
-STR_ERROR_CAN_T_TIMETABLE_VEHICLE                               :{WHITE}不能给车辆编制时刻表……
+STR_ERROR_CAN_T_TIMETABLE_VEHICLE                               :{WHITE}无法为载具编制时刻表……
 STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS                       :{WHITE}载具只能在车站停靠等候
 STR_ERROR_TIMETABLE_NOT_STOPPING_HERE                           :{WHITE}此载具将不停靠本站
 STR_ERROR_TIMETABLE_INCOMPLETE                                  :{WHITE}……时刻表不完整

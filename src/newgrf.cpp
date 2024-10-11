@@ -9,8 +9,6 @@
 
 #include "stdafx.h"
 
-#include <stdarg.h>
-
 #include "newgrf_internal.h"
 #include "core/backup_type.hpp"
 #include "core/container_func.hpp"
@@ -232,8 +230,8 @@ struct GRFTempEngineData {
 		NONEMPTY,       ///< GRF defined the vehicle as refittable. If the refitmask is empty after translation (cargotypes not available), disable the vehicle.
 	};
 
-	uint16_t cargo_allowed;
-	uint16_t cargo_disallowed;
+	CargoClasses cargo_allowed;
+	CargoClasses cargo_disallowed;
 	RailTypeLabel railtypelabel;
 	uint8_t roadtramtype;
 	const GRFFile *defaultcargo_grf; ///< GRF defining the cargo translation table to use if the default cargo is the 'first refittable'.
@@ -10742,8 +10740,8 @@ static void CalculateRefitMasks()
 				static const struct DefaultRefitMasks {
 					uint8_t climate;
 					CargoLabel cargo_label;
-					CargoTypes cargo_allowed;
-					CargoTypes cargo_disallowed;
+					CargoClasses cargo_allowed;
+					CargoClasses cargo_disallowed;
 				} _default_refit_masks[] = {
 					{T | A | S | Y, CT_PASSENGERS, CC_PASSENGERS,               0},
 					{T | A | S    , CT_MAIL,       CC_MAIL,                     0},

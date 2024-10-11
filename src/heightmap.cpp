@@ -75,7 +75,7 @@ static inline uint8_t RGBToGrayscale(uint8_t red, uint8_t green, uint8_t blue)
 /**
  * The PNG Heightmap loader.
  */
-static void ReadHeightmapPNGImageData(uint8_t *map, png_structp png_ptr, png_infop info_ptr)
+static void ReadHeightmapPNGImageData(std::span<uint8_t> map, png_structp png_ptr, png_infop info_ptr)
 {
 	uint x, y;
 	uint8_t gray_palette[256];
@@ -134,7 +134,7 @@ static void ReadHeightmapPNGImageData(uint8_t *map, png_structp png_ptr, png_inf
  * If map == nullptr only the size of the PNG is read, otherwise a map
  * with grayscale pixels is allocated and assigned to *map.
  */
-static bool ReadHeightmapPNG(const char *filename, uint *x, uint *y, uint8_t **map)
+static bool ReadHeightmapPNG(const char *filename, uint *x, uint *y, std::vector<uint8_t> *map)
 {
 	FILE *fp;
 	png_structp png_ptr = nullptr;
@@ -188,7 +188,7 @@ static bool ReadHeightmapPNG(const char *filename, uint *x, uint *y, uint8_t **m
 	}
 
 	if (map != nullptr) {
-		*map = MallocT<uint8_t>(static_cast<size_t>(width) * height);
+		map->resize(static_cast<size_t>(width) * height);
 		ReadHeightmapPNGImageData(*map, png_ptr, info_ptr);
 	}
 
@@ -206,19 +206,17 @@ static bool ReadHeightmapPNG(const char *filename, uint *x, uint *y, uint8_t **m
 /**
  * The BMP Heightmap loader.
  */
-static void ReadHeightmapBMPImageData(uint8_t *map, BmpInfo *info, BmpData *data)
+static void ReadHeightmapBMPImageData(std::span<uint8_t> map, const BmpInfo &info, const BmpData &data)
 {
-	uint x, y;
 	uint8_t gray_palette[256];
 
-	if (data->palette != nullptr) {
-		uint i;
+	if (!data.palette.empty()) {
 		bool all_gray = true;
 
-		if (info->palette_size != 2) {
-			for (i = 0; i < info->palette_size && (info->palette_size != 16 || all_gray); i++) {
-				all_gray &= data->palette[i].r == data->palette[i].g && data->palette[i].r == data->palette[i].b;
-				gray_palette[i] = RGBToGrayscale(data->palette[i].r, data->palette[i].g, data->palette[i].b);
+		if (info.palette_size != 2) {
+			for (uint i = 0; i < info.palette_size && (info.palette_size != 16 || all_gray); i++) {
+				all_gray &= data.palette[i].r == data.palette[i].g && data.palette[i].r == data.palette[i].b;
+				gray_palette[i] = RGBToGrayscale(data.palette[i].r, data.palette[i].g, data.palette[i].b);
 			}
 
 			/**
@@ -227,9 +225,9 @@ static void ReadHeightmapBMPImageData(uint8_t *map, BmpInfo *info, BmpData *data
 			 * the first entry is the sea (level 0), the second one
 			 * level 1, etc.
 			 */
-			if (info->palette_size == 16 && !all_gray) {
-				for (i = 0; i < info->palette_size; i++) {
-					gray_palette[i] = 256 * i / info->palette_size;
+			if (info.palette_size == 16 && !all_gray) {
+				for (uint i = 0; i < info.palette_size; i++) {
+					gray_palette[i] = 256 * i / info.palette_size;
 				}
 			}
 		} else {
@@ -243,12 +241,12 @@ static void ReadHeightmapBMPImageData(uint8_t *map, BmpInfo *info, BmpData *data
 	}
 
 	/* Read the raw image data and convert in 8-bit grayscale */
-	for (y = 0; y < info->height; y++) {
-		uint8_t *pixel = &map[y * info->width];
-		uint8_t *bitmap = &data->bitmap[y * info->width * (info->bpp == 24 ? 3 : 1)];
+	for (uint y = 0; y < info.height; y++) {
+		uint8_t *pixel = &map[y * static_cast<size_t>(info.width)];
+		const uint8_t *bitmap = &data.bitmap[y * static_cast<size_t>(info.width) * (info.bpp == 24 ? 3 : 1)];
 
-		for (x = 0; x < info->width; x++) {
-			if (info->bpp != 24) {
+		for (uint x = 0; x < info.width; x++) {
+			if (info.bpp != 24) {
 				*pixel++ = gray_palette[*bitmap++];
 			} else {
 				*pixel++ = RGBToGrayscale(*bitmap, *(bitmap + 1), *(bitmap + 2));
@@ -263,56 +261,41 @@ static void ReadHeightmapBMPImageData(uint8_t *map, BmpInfo *info, BmpData *data
  * If map == nullptr only the size of the BMP is read, otherwise a map
  * with grayscale pixels is allocated and assigned to *map.
  */
-static bool ReadHeightmapBMP(const char *filename, uint *x, uint *y, uint8_t **map)
+static bool ReadHeightmapBMP(const char *filename, uint *x, uint *y, std::vector<uint8_t> *map)
 {
-	FILE *f;
-	BmpInfo info;
-	BmpData data;
-	BmpBuffer buffer;
+	BmpInfo info{};
+	BmpData data{};
 
-	/* Init BmpData */
-	memset(&data, 0, sizeof(data));
-
-	f = FioFOpenFile(filename, "rb", HEIGHTMAP_DIR);
-	if (f == nullptr) {
+	if (!FioCheckFileExists(filename, HEIGHTMAP_DIR)) {
 		ShowErrorMessage(STR_ERROR_BMPMAP, STR_ERROR_PNGMAP_FILE_NOT_FOUND, WL_ERROR);
 		return false;
 	}
 
-	BmpInitializeBuffer(&buffer, f);
+	RandomAccessFile file(filename, HEIGHTMAP_DIR);
 
-	if (!BmpReadHeader(&buffer, &info, &data)) {
+	if (!BmpReadHeader(file, info, data)) {
 		ShowErrorMessage(STR_ERROR_BMPMAP, STR_ERROR_BMPMAP_IMAGE_TYPE, WL_ERROR);
-		fclose(f);
-		BmpDestroyData(&data);
 		return false;
 	}
 
 	if (!IsValidHeightmapDimension(info.width, info.height)) {
 		ShowErrorMessage(STR_ERROR_BMPMAP, STR_ERROR_HEIGHTMAP_TOO_LARGE, WL_ERROR);
-		fclose(f);
-		BmpDestroyData(&data);
 		return false;
 	}
 
 	if (map != nullptr) {
-		if (!BmpReadBitmap(&buffer, &info, &data)) {
+		if (!BmpReadBitmap(file, info, data)) {
 			ShowErrorMessage(STR_ERROR_BMPMAP, STR_ERROR_BMPMAP_IMAGE_TYPE, WL_ERROR);
-			fclose(f);
-			BmpDestroyData(&data);
 			return false;
 		}
 
-		*map = MallocT<uint8_t>(static_cast<size_t>(info.width) * info.height);
-		ReadHeightmapBMPImageData(*map, &info, &data);
+		map->resize(static_cast<size_t>(info.width) * info.height);
+		ReadHeightmapBMPImageData(*map, info, data);
 	}
-
-	BmpDestroyData(&data);
 
 	*x = info.width;
 	*y = info.height;
 
-	fclose(f);
 	return true;
 }
 
@@ -323,7 +306,7 @@ static bool ReadHeightmapBMP(const char *filename, uint *x, uint *y, uint8_t **m
  * @param img_height the height of the image in pixels/tiles
  * @param map        the input map
  */
-static void GrayscaleToMapHeights(uint img_width, uint img_height, uint8_t *map)
+static void GrayscaleToMapHeights(uint img_width, uint img_height, std::span<const uint8_t> map)
 {
 	/* Defines the detail of the aspect ratio (to avoid doubles) */
 	const uint num_div = 16384;
@@ -489,7 +472,7 @@ void FixSlopes()
  * @param[in,out] map If not \c nullptr, destination to store the loaded block of image data.
  * @return Whether loading was successful.
  */
-static bool ReadHeightMap(DetailedFileType dft, const char *filename, uint *x, uint *y, uint8_t **map)
+static bool ReadHeightMap(DetailedFileType dft, const char *filename, uint *x, uint *y, std::vector<uint8_t> *map)
 {
 	switch (dft) {
 		default:
@@ -528,15 +511,13 @@ bool GetHeightmapDimensions(DetailedFileType dft, const char *filename, uint *x,
 bool LoadHeightmap(DetailedFileType dft, const char *filename)
 {
 	uint x, y;
-	uint8_t *map = nullptr;
+	std::vector<uint8_t> map;
 
 	if (!ReadHeightMap(dft, filename, &x, &y, &map)) {
-		free(map);
 		return false;
 	}
 
 	GrayscaleToMapHeights(x, y, map);
-	free(map);
 
 	FixSlopes();
 	MarkWholeScreenDirty();
