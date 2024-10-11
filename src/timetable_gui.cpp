@@ -808,7 +808,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 				Ticks total_time = v->orders != nullptr ? v->orders->GetTimetableDurationIncomplete() : 0;
 				if (total_time != 0) {
-					SetTimetableParams(0, total_time);
+					SetTimetableParams(0, total_time, true);
 					DrawString(tr, v->orders->IsCompleteTimetable() ? STR_TIMETABLE_TOTAL_TIME : STR_TIMETABLE_TOTAL_TIME_INCOMPLETE);
 				}
 				tr.top += GetCharacterHeight(FS_NORMAL);
@@ -831,7 +831,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 				} else if (v->lateness_counter == 0 || (!_settings_client.gui.timetable_in_ticks && abs(v->lateness_counter) < TimetableDisplayUnitSize())) {
 					DrawString(tr, STR_TIMETABLE_STATUS_ON_TIME);
 				} else {
-					SetTimetableParams(0, abs(v->lateness_counter));
+					SetTimetableParams(0, abs(v->lateness_counter), true);
 					DrawString(tr, v->lateness_counter < 0 ? STR_TIMETABLE_STATUS_EARLY : STR_TIMETABLE_STATUS_LATE);
 				}
 				tr.top += GetCharacterHeight(FS_NORMAL);
