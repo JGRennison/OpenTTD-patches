@@ -484,7 +484,7 @@ enum TraceRestrictProgramActionsUsedFlags : uint32_t {
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
 
-static constexpr TraceRestrictProgramActionsUsedFlags TRPAUF_SPECIAL_ASPECT_PROPAGATION_FLAG_MASK = TRPAUF_WAIT_AT_PBS | TRPAUF_REVERSE_AT | TRPAUF_PBS_RES_END_WAIT;
+static constexpr TraceRestrictProgramActionsUsedFlags TRPAUF_SPECIAL_ASPECT_PROPAGATION_FLAG_MASK = TRPAUF_WAIT_AT_PBS | TRPAUF_REVERSE_AT | TRPAUF_PBS_RES_END_WAIT | TRPAUF_RESERVE_THROUGH;
 
 /**
  * Enumeration for TraceRestrictProgramInput::permitted_slot_operations

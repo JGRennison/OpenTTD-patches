@@ -4492,7 +4492,7 @@ bool AfterLoadGame()
 	bool update_always_reserve_through = SlXvIsFeaturePresent(XSLFI_REALISTIC_TRAIN_BRAKING, 8, 10);
 	UpdateExtraAspectsVariable(update_always_reserve_through);
 
-	if (SlXvIsFeatureMissing(XSLFI_SIGNAL_SPECIAL_PROPAGATION_FLAG)) {
+	if (SlXvIsFeatureMissing(XSLFI_SIGNAL_SPECIAL_PROPAGATION_FLAG, 2)) {
 		UpdateAllSignalsSpecialPropagationFlag();
 	}
 

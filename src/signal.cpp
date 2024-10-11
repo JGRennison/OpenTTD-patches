@@ -427,6 +427,10 @@ static SigInfo ExploreSegment(Owner owner)
 							}
 							if (GetSignalSpecialPropagationFlag(tile, track)) {
 								const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, track);
+								if (prog != nullptr && (prog->actions_used_flags & TRPAUF_RESERVE_THROUGH) && GetSignalStateByTrackdir(tile, trackdir) == SIGNAL_STATE_RED) {
+									/* A red possibly reserve through signal indicates that this signal should not be considered auto-green */
+									info.flags |= SF_JUNCTION;
+								}
 								if (prog != nullptr && prog->actions_used_flags & TRPAUF_PBS_RES_END_WAIT) {
 									/* Reservations ending here could be forced to wait, so treat signals blocks leading up to this signal as PBS */
 									info.flags |= SF_PBS | SF_JUNCTION;
@@ -784,6 +788,18 @@ static inline bool IsRailNoAutoGreenStyle(TileIndex tile, Track track)
 	return _signal_style_masks.no_auto_green != 0 && NonZeroSignalStylePossiblyOnTile(tile) && HasBit(_signal_style_masks.no_auto_green, GetSignalStyle(tile, track));
 }
 
+static bool IsPossiblyReserveThroughSignal(TileIndex tile, Track track)
+{
+	if (GetSignalAlwaysReserveThrough(tile, track)) return true;
+
+	if (GetSignalSpecialPropagationFlag(tile, track)) {
+		const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, track);
+		if (prog != nullptr && (prog->actions_used_flags & TRPAUF_RESERVE_THROUGH)) return true;
+	}
+
+	return false;
+}
+
 /**
  * Update signals around segment in _tbuset
  *
@@ -951,8 +967,8 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 
 				// Progsig dependencies
 				MarkDependencidesForUpdate(SignalReference(tile, track));
-			} else if (GetSignalAlwaysReserveThrough(tile, track)) {
-				/* for reserve through signals, add block to the global set */
+			} else if (IsPossiblyReserveThroughSignal(tile, track)) {
+				/* For reserve through signals, add block to the global set */
 				DiagDirection exitdir = TrackdirToExitdir(ReverseTrackdir(trackdir));
 				_globset.Add(tile, exitdir); // do not check for full global set, first update all signals
 			}
