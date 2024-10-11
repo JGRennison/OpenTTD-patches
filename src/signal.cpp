@@ -421,11 +421,12 @@ static SigInfo ExploreSegment(Owner owner)
 								info.out_signal_tile = tile;
 								info.out_signal_trackdir = trackdir;
 							}
-							if (GetSignalAlwaysReserveThrough(tile, track) && GetSignalStateByTrackdir(tile, trackdir) == SIGNAL_STATE_RED) {
+							if ((info.flags & SF_JUNCTION) == 0 && GetSignalAlwaysReserveThrough(tile, track) && GetSignalStateByTrackdir(tile, trackdir) == SIGNAL_STATE_RED) {
 								/* A red always reserve through signal indicates that this signal should not be considered auto-green */
 								info.flags |= SF_JUNCTION;
 							}
-							if (GetSignalSpecialPropagationFlag(tile, track)) {
+							if ((info.flags & (SF_PBS | SF_JUNCTION)) != (SF_PBS | SF_JUNCTION) && GetSignalSpecialPropagationFlag(tile, track)) {
+								/* These checks can be skipped if SF_PBS and SF_JUNCTION are both already set */
 								const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, track);
 								if (prog != nullptr && (prog->actions_used_flags & TRPAUF_RESERVE_THROUGH) && GetSignalStateByTrackdir(tile, trackdir) == SIGNAL_STATE_RED) {
 									/* A red possibly reserve through signal indicates that this signal should not be considered auto-green */
@@ -517,7 +518,8 @@ static SigInfo ExploreSegment(Owner owner)
 							info.out_signal_tile = tile;
 							info.out_signal_trackdir = GetTunnelBridgeEntranceTrackdir(tile, tunnel_bridge_dir);
 						}
-						if (GetTunnelBridgeSignalSpecialPropagationFlag(tile)) {
+						if ((info.flags & (SF_PBS | SF_JUNCTION)) != (SF_PBS | SF_JUNCTION) && GetTunnelBridgeSignalSpecialPropagationFlag(tile)) {
+							/* This check can be skipped if SF_PBS and SF_JUNCTION are both already set */
 							const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, FindFirstTrack(GetAcrossTunnelBridgeTrackBits(tile)));
 							if (prog != nullptr && prog->actions_used_flags & TRPAUF_PBS_RES_END_WAIT) {
 								/* Reservations ending here could be forced to wait, so treat signals blocks leading up to this signal as PBS */
