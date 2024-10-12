@@ -779,19 +779,17 @@ void CrashLog::PrepareLogFileName(char *filename, const char *filename_last, con
  * @param keep_file_open If non-nullptr, store the FILE * instead of closing it after writing.
  * @return true when the crash log was successfully written.
  */
-bool CrashLog::WriteGeneralLogFile(std::string_view data, char *filename, const char *filename_last, const char *name, FILE **keep_file_open) const
+bool CrashLog::WriteGeneralLogFile(std::string_view data, char *filename, const char *filename_last, const char *name, std::optional<FileHandle> *keep_file_open) const
 {
 	this->PrepareLogFileName(filename, filename_last, name);
 
-	FILE *file = FioFOpenFile(filename, "w", NO_DIRECTORY);
-	if (file == nullptr) return false;
+	auto file = FioFOpenFile(filename, "w", NO_DIRECTORY);
+	if (!file.has_value()) return false;
 
-	size_t written = (!data.empty()) ? fwrite(data.data(), 1, data.size(), file) : 0;
+	size_t written = (!data.empty()) ? fwrite(data.data(), 1, data.size(), *file) : 0;
 
 	if (keep_file_open != nullptr) {
-		*keep_file_open = file;
-	} else {
-		FioFCloseFile(file);
+		*keep_file_open = std::move(file);
 	}
 	return data.size() == written;
 }

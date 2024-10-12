@@ -804,6 +804,7 @@ STR_SMALLMAP_TOWN                                               :{TINY_FONT}{WHI
 STR_SMALLMAP_DISABLE_ALL                                        :{BLACK}Disabilita tutti
 STR_SMALLMAP_ENABLE_ALL                                         :{BLACK}Abilita tutti
 STR_SMALLMAP_SHOW_HEIGHT                                        :{BLACK}Mostra altitudine
+STR_SMALLMAP_SHOW_INDUSTRY_NAMES                                :{BLACK}Mostra i nomi delle industrie
 STR_SMALLMAP_TOOLTIP_DISABLE_ALL_INDUSTRIES                     :{BLACK}Nasconde tutte le industrie dalla mappa
 STR_SMALLMAP_TOOLTIP_ENABLE_ALL_INDUSTRIES                      :{BLACK}Mostra tutte le industrie sulla mappa
 STR_SMALLMAP_TOOLTIP_SHOW_HEIGHT                                :{BLACK}Attiva/disattiva la visualizzazione della mappa altimetrica
@@ -1057,6 +1058,7 @@ STR_GAME_OPTIONS_GUI_FONT_SPRITE_TOOLTIP                        :{BLACK}Selezion
 STR_GAME_OPTIONS_GUI_FONT_AA                                    :{BLACK}Font anti-aliasing
 STR_GAME_OPTIONS_GUI_FONT_AA_TOOLTIP                            :{BLACK}Seleziona questa casella per applicare l'anti-aliasing ai caratteri ridimensionabili
 
+STR_GAME_OPTIONS_GUI_SCALE_MARK                                 :{DECIMAL}x
 
 STR_GAME_OPTIONS_PARTICIPATE_SURVEY_FRAME                       :{BLACK}Sondaggio automatizzato
 STR_GAME_OPTIONS_PARTICIPATE_SURVEY                             :{BLACK}Partecipare al sondaggio automatico
@@ -1085,6 +1087,8 @@ STR_GAME_OPTIONS_BASE_MUSIC                                     :{BLACK}Pacchett
 STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :{BLACK}Seleziona il pacchetto musicale di base da utilizzare
 STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :{BLACK}Informazioni aggiuntive sul pacchetto musicale di base
 
+STR_GAME_OPTIONS_ONLINE_CONTENT                                 :Ottieni contenuto
+STR_GAME_OPTIONS_ONLINE_CONTENT_TOOLTIP                         :Cerca contenuti nuovi e aggiornati da scaricare
 
 STR_GAME_OPTIONS_SOCIAL_PLUGINS_NONE                            :{LTBLUE}(nessun plugin installato per integrarsi con le piattaforme social)
 
@@ -1519,6 +1523,8 @@ STR_CONFIG_SETTING_WARN_INCOME_LESS                             :Avvisa se il pr
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT                    :Se abilitata, viene inviato un messaggio quando un veicolo non ha ottenuto alcun profitto per un anno
 STR_CONFIG_SETTING_WARN_INCOME_LESS_HELPTEXT_PERIOD             :Quando abilitato, viene inviato un messaggio di notizie quando un veicolo non ha generato alcun profitto durante un periodo
 
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE                             :Avvisa se un veicolo sta diventando vecchio: {STRING}
+STR_CONFIG_SETTING_WARN_OLD_VEHICLE_HELPTEXT                    :Se abilitata, viene inviato un messaggio di aggiornamento quando un veicolo sta invecchiando
 
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES                        :I veicoli non diventano mai obsoleti: {STRING}
 STR_CONFIG_SETTING_NEVER_EXPIRE_VEHICLES_HELPTEXT               :Se abilitata, dopo la loro introduzione, tutti i tipi di veicoli rimarranno sempre disponibili.
@@ -2613,6 +2619,8 @@ STR_NETWORK_ERROR_CLIENT_NOT_EXPECTED                           :ricevuto un pac
 STR_NETWORK_ERROR_CLIENT_WRONG_REVISION                         :revisione differente
 STR_NETWORK_ERROR_CLIENT_NAME_IN_USE                            :nome già in uso
 STR_NETWORK_ERROR_CLIENT_WRONG_PASSWORD                         :password errata
+STR_NETWORK_ERROR_CLIENT_NOT_ON_ALLOW_LIST                      :non nell'elenco abilitati
+STR_NETWORK_ERROR_CLIENT_NO_AUTHENTICATION_METHOD_AVAILABLE     :nessuno dei metodi di autenticazione richiesti è disponibile
 STR_NETWORK_ERROR_CLIENT_COMPANY_MISMATCH                       :company-id errato in DoCommand
 STR_NETWORK_ERROR_CLIENT_KICKED                                 :espulso dal server
 STR_NETWORK_ERROR_CLIENT_CHEATER                                :ha provato a usare un trucco
@@ -2836,7 +2844,17 @@ STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Selezion
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Drag & drop
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Costruisce una stazione con il drag & drop
 
+STR_PICKER_MODE_ALL                                             :Tutto
+STR_PICKER_MODE_ALL_TOOLTIP                                     :Attiva/disattiva la visualizzazione elementi di tutte le classi
+STR_PICKER_MODE_USED                                            :Usato
+STR_PICKER_MODE_USED_TOOLTIP                                    :Attiva/disattiva la visualizzazione solo degli elementi esistenti
+STR_PICKER_MODE_SAVED                                           :Salvato
+STR_PICKER_MODE_SAVED_TOOLTIP                                   :Attiva/disattiva la visualizzazione solo degli elementi salvati
 
+STR_PICKER_STATION_CLASS_TOOLTIP                                :Seleziona una classe di stazioni da visualizzare
+STR_PICKER_STATION_TYPE_TOOLTIP                                 :Seleziona un tipo di stazione da costruire. Ctrl+Click per aggiungere o rimuovere dagli oggetti salvati
+STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Seleziona una classe di stazioni dei camion da visualizzare
+STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :Seleziona un tipo di stazione dei camion da costruire. Ctrl+Click per aggiungere o rimuovere dagli oggetti salvati
 STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Seleziona una classe di oggetti da visualizzare
 STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :Seleziona un tipo d'oggetto da costruire. Ctrl+Clic per aggiungere o rimuovere in elementi salvati. Ctrl+Clic+trascinamento per selezionare l'area in diagonale. Premere anche Shift per mostrare solo la stima dei costi.
 
@@ -3031,6 +3049,7 @@ STR_FOUND_TOWN_RANDOM_TOWN_BUTTON                               :{BLACK}Città c
 STR_FOUND_TOWN_RANDOM_TOWN_TOOLTIP                              :{BLACK}Fonda una città in una posizione casuale
 STR_FOUND_TOWN_MANY_RANDOM_TOWNS                                :{BLACK}Alcune città casuali
 STR_FOUND_TOWN_RANDOM_TOWNS_TOOLTIP                             :{BLACK}Copre la mappa con città posizionate casualmente
+STR_FOUND_TOWN_LOAD_FROM_FILE                                   :{BLACK}Carica da file
 STR_FOUND_TOWN_EXPAND_ALL_TOWNS                                 :{BLACK}Espandi tutte le città
 STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}Fa crescere leggermente tutte le città
 
@@ -3415,14 +3434,21 @@ STR_GENERATION_ABORT_MESSAGE                                    :{YELLOW}Si è s
 STR_GENERATION_PROGRESS                                         :{WHITE}{NUM}% completato
 STR_GENERATION_PROGRESS_NUM                                     :{BLACK}{NUM} / {NUM}
 STR_GENERATION_WORLD_GENERATION                                 :{BLACK}Generazione mondo
+STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}Generazione paesaggio
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}Generazione fiumi
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}Generazione aree brulle e rocciose
+STR_GENERATION_INDUSTRY_GENERATION                              :{BLACK}Generazione industrie
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}Generazione oggetti inamovibili
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}Generazione alberi
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Impostazione partita
 STR_GENERATION_PREPARING_TILELOOP                               :{BLACK}Generazione caselle del terreno
 STR_GENERATION_PREPARING_SCRIPT                                 :{BLACK}Esecuzione script
 STR_GENERATION_PREPARING_GAME                                   :{BLACK}Preparazione della partita
+
+STR_TOWN_DATA_ERROR_LOAD_FAILED                                 :{WHITE}Caricamento dati città fallito
+STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY                  :{WHITE}file JSON mal formattato
+STR_TOWN_DATA_ERROR_TOWN_FORMATTED_INCORRECTLY                  :{WHITE}{STRING} dati mal formattati
+
 
 # NewGRF settings
 STR_NEWGRF_SETTINGS_CAPTION                                     :{WHITE}Impostazioni NewGRF
@@ -5025,6 +5051,7 @@ STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... non 
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Lavori stradali in corso
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Impossibile eliminare la città...{}Una stazione o un deposito fa ancora riferimento alla città o una casella di proprietà della città non può essere rimossa
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... non ci sono spazi adeguati per una statua nel centro di questa città
+STR_ERROR_CAN_T_BUILD_HOUSE                                     :{WHITE}Impossibile costruire una casa...
 
 # Industry related errors
 STR_ERROR_TOO_MANY_INDUSTRIES                                   :{WHITE}... troppe industrie
@@ -5099,10 +5126,12 @@ STR_ERROR_WAYPOINT_ADJOINS_MORE_THAN_ONE_EXISTING               :{WHITE}Farebbe 
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_WAYPOINT                         :{WHITE}Troppo vicino a un altro waypoint
 
 STR_ERROR_CAN_T_BUILD_TRAIN_WAYPOINT                            :{WHITE}Impossibile costruire qui un waypoint ferroviario...
+STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Impossibile costruire uno svincolo stradale qui...
 STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :{WHITE}Impossibile posizionare una boa qui...
 STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :{WHITE}Impossibile rinominare il waypoint...
 
 STR_ERROR_CAN_T_REMOVE_TRAIN_WAYPOINT                           :{WHITE}Impossibile rimuovere il waypoint ferroviario da qui...
+STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Impossibile rimuovere lo svincolo stradale qui...
 STR_ERROR_MUST_REMOVE_RAILWAYPOINT_FIRST                        :{WHITE}Bisogna rimuovere il waypoint ferroviario prima
 STR_ERROR_BUOY_IN_THE_WAY                                       :{WHITE}... boa di mezzo
 STR_ERROR_BUOY_IS_IN_USE                                        :{WHITE}... boa utilizzata da un'altra compagnia!

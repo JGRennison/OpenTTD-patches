@@ -116,16 +116,16 @@ void debug_print_intl(DebugLevelID dbg, int8_t level, const char *buf, size_t pr
 {
 
 	if (dbg == DebugLevelID::desync) {
-		static FILE *f = FioFOpenFile("commands-out.log", "wb", AUTOSAVE_DIR);
-		if (f != nullptr) {
-			fprintf(f, "%s%s", log_prefix().GetLogPrefix(true), buf + prefix_size);
-			fflush(f);
+		static std::optional<FileHandle> f = FioFOpenFile("commands-out.log", "wb", AUTOSAVE_DIR);
+		if (f.has_value()) {
+			fprintf(*f, "%s%s", log_prefix().GetLogPrefix(true), buf + prefix_size);
+			fflush(*f);
 		}
 #ifdef RANDOM_DEBUG
 	} else if (dbg == DebugLevelID::random || dbg == DebugLevelID::statecsum) {
 #if defined(UNIX) && defined(__GLIBC__)
 		static bool have_inited = false;
-		static FILE *f = nullptr;
+		static std::optional<FileHandle> f;
 
 		if (!have_inited) {
 			have_inited = true;
@@ -134,7 +134,7 @@ void debug_print_intl(DebugLevelID dbg, int8_t level, const char *buf, size_t pr
 			for(;;) {
 				std::string fn = fmt::format("random-out-{}-{}.log", pid, num);
 				f = FioFOpenFile(fn.c_str(), "wx", AUTOSAVE_DIR);
-				if (f == nullptr && errno == EEXIST) {
+				if (!f.has_value() && errno == EEXIST) {
 					num++;
 					continue;
 				}
@@ -142,10 +142,10 @@ void debug_print_intl(DebugLevelID dbg, int8_t level, const char *buf, size_t pr
 			}
 		}
 #else
-		static FILE *f = FioFOpenFile("random-out.log", "wb", AUTOSAVE_DIR);
+		static std::optional<FileHandle> f = FioFOpenFile("random-out.log", "wb", AUTOSAVE_DIR);
 #endif
-		if (f != nullptr) {
-			fprintf(f, "%s", buf + prefix_size);
+		if (f.has_value()) {
+			fputs(buf + prefix_size, *f);
 			return;
 		}
 #endif

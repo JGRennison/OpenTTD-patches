@@ -34,6 +34,7 @@
 #include "guitimer_func.h"
 #include "group_gui.h"
 #include "zoom_func.h"
+#include "news_func.h"
 
 #include "widgets/news_widget.h"
 
@@ -898,9 +899,8 @@ CommandCost CmdCustomNewsItem(TileIndex tile, DoCommandFlag flags, uint32_t p1, 
 	if (company != INVALID_OWNER && company != _local_company) return CommandCost();
 
 	if (flags & DC_EXEC) {
-		NewsStringData *news = new NewsStringData(text);
-		SetDParamStr(0, news->string);
-		AddNewsItem(STR_NEWS_CUSTOM_ITEM, type, NF_NORMAL, reftype1, p2, NR_NONE, UINT32_MAX, news);
+		SetDParamStr(0, text);
+		AddNewsItem(STR_NEWS_CUSTOM_ITEM, type, NF_NORMAL, reftype1, p2, NR_NONE, UINT32_MAX);
 	}
 
 	return CommandCost();

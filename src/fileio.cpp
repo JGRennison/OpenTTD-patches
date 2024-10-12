@@ -123,11 +123,8 @@ static void FillValidSearchPaths(bool only_local_path)
  */
 bool FioCheckFileExists(const std::string &filename, Subdirectory subdir)
 {
-	FILE *f = FioFOpenFile(filename, "rb", subdir);
-	if (f == nullptr) return false;
-
-	FioFCloseFile(f);
-	return true;
+	auto f = FioFOpenFile(filename, "rb", subdir);
+	return f.has_value();
 }
 
 /**
@@ -142,14 +139,6 @@ bool FileExists(const std::string &filename)
 #else
 	return access(OTTD2FS(filename).c_str(), 0) == 0;
 #endif
-}
-
-/**
- * Close a file in a safe way.
- */
-void FioFCloseFile(FILE *f)
-{
-	fclose(f);
 }
 
 /**
@@ -197,7 +186,7 @@ std::string FioFindDirectory(Subdirectory subdir)
 	return _personal_dir;
 }
 
-static FILE *FioFOpenFileSp(const std::string &filename, const char *mode, Searchpath sp, Subdirectory subdir, size_t *filesize, std::string *output_filename)
+static std::optional<FileHandle> FioFOpenFileSp(const std::string &filename, const char *mode, Searchpath sp, Subdirectory subdir, size_t *filesize, std::string *output_filename)
 {
 #if defined(_WIN32)
 	/* fopen is implemented as a define with ellipses for
@@ -207,7 +196,6 @@ static FILE *FioFOpenFileSp(const std::string &filename, const char *mode, Searc
 	wchar_t Lmode[5];
 	MultiByteToWideChar(CP_ACP, 0, mode, -1, Lmode, static_cast<int>(std::size(Lmode)));
 #endif
-	FILE *f = nullptr;
 	std::string buf;
 
 	if (subdir == NO_DIRECTORY) {
@@ -216,20 +204,20 @@ static FILE *FioFOpenFileSp(const std::string &filename, const char *mode, Searc
 		buf = _searchpaths[sp] + _subdirs[subdir] + filename;
 	}
 
-	f = fopen(buf.c_str(), mode);
+	auto f = FileHandle::Open(buf, mode);
 #if !defined(_WIN32)
-	if (f == nullptr && strtolower(buf, subdir == NO_DIRECTORY ? 0 : _searchpaths[sp].size() - 1) ) {
-		f = fopen(buf.c_str(), mode);
+	if (!f.has_value() && strtolower(buf, subdir == NO_DIRECTORY ? 0 : _searchpaths[sp].size() - 1) ) {
+		f = FileHandle::Open(buf, mode);
 	}
 #endif
-	if (f != nullptr && filesize != nullptr) {
+	if (f.has_value() && filesize != nullptr) {
 		/* Find the size of the file */
-		fseek(f, 0, SEEK_END);
-		*filesize = ftell(f);
-		fseek(f, 0, SEEK_SET);
+		fseek(*f, 0, SEEK_END);
+		*filesize = ftell(*f);
+		fseek(*f, 0, SEEK_SET);
 	}
 	if (output_filename != nullptr) {
-		*output_filename = (f != nullptr) ? std::move(buf) : "";
+		*output_filename = (f.has_value()) ? std::move(buf) : "";
 	}
 	return f;
 }
@@ -241,14 +229,13 @@ static FILE *FioFOpenFileSp(const std::string &filename, const char *mode, Searc
  * @return File handle of the opened file, or \c nullptr if the file is not available.
  * @note The file is read from within the tar file, and may not return \c EOF after reading the whole file.
  */
-FILE *FioFOpenFileTar(const TarFileListEntry &entry, size_t *filesize)
+static std::optional<FileHandle> FioFOpenFileTar(const TarFileListEntry &entry, size_t *filesize)
 {
-	FILE *f = fopen(entry.tar_filename.c_str(), "rb");
-	if (f == nullptr) return f;
+	auto f = FileHandle::Open(entry.tar_filename, "rb");
+	if (!f.has_value()) return std::nullopt;
 
-	if (fseek(f, entry.position, SEEK_SET) < 0) {
-		fclose(f);
-		return nullptr;
+	if (fseek(*f, entry.position, SEEK_SET) < 0) {
+		return std::nullopt;
 	}
 
 	if (filesize != nullptr) *filesize = entry.size;
@@ -261,19 +248,18 @@ FILE *FioFOpenFileTar(const TarFileListEntry &entry, size_t *filesize)
  * @param subdir Subdirectory to open.
  * @return File handle of the opened file, or \c nullptr if the file is not available.
  */
-FILE *FioFOpenFile(const std::string &filename, const char *mode, Subdirectory subdir, size_t *filesize, std::string *output_filename)
+std::optional<FileHandle> FioFOpenFile(const std::string &filename, const char *mode, Subdirectory subdir, size_t *filesize, std::string *output_filename)
 {
-	FILE *f = nullptr;
-
+	std::optional<FileHandle> f = std::nullopt;
 	assert(subdir < NUM_SUBDIRS || subdir == NO_DIRECTORY);
 
 	for (Searchpath sp : _valid_searchpaths) {
 		f = FioFOpenFileSp(filename, mode, sp, subdir, filesize, output_filename);
-		if (f != nullptr || subdir == NO_DIRECTORY) break;
+		if (f.has_value() || subdir == NO_DIRECTORY) break;
 	}
 
 	/* We can only use .tar in case of data-dir, and read-mode */
-	if (f == nullptr && mode[0] == 'r' && subdir != NO_DIRECTORY) {
+	if (!f.has_value() && mode[0] == 'r' && subdir != NO_DIRECTORY) {
 		/* Filenames in tars are always forced to be lowercase */
 		std::string resolved_name = filename;
 		strtolower(resolved_name);
@@ -284,7 +270,7 @@ FILE *FioFOpenFile(const std::string &filename, const char *mode, Subdirectory s
 		std::string token;
 		while (std::getline(ss, token, PATHSEPCHAR)) {
 			if (token == "..") {
-				if (tokens.size() < 2) return nullptr;
+				if (tokens.size() < 2) return std::nullopt;
 				tokens.pop_back();
 			} else if (token == ".") {
 				/* Do nothing. "." means current folder, but you can create tar files with "." in the path.
@@ -307,7 +293,7 @@ FILE *FioFOpenFile(const std::string &filename, const char *mode, Subdirectory s
 		TarFileList::iterator it = _tar_filelist[subdir].find(resolved_name);
 		if (it != _tar_filelist[subdir].end()) {
 			f = FioFOpenFileTar(it->second, filesize);
-			if (output_filename != nullptr && f != nullptr) {
+			if (output_filename != nullptr && f.has_value()) {
 				*output_filename = fmt::format("{}" PATHSEP "{}", ((*it).second).tar_filename, filename);
 			}
 		}
@@ -315,11 +301,11 @@ FILE *FioFOpenFile(const std::string &filename, const char *mode, Subdirectory s
 
 	/* Sometimes a full path is given. To support
 	 * the 'subdirectory' must be 'removed'. */
-	if (f == nullptr && subdir != NO_DIRECTORY) {
+	if (!f.has_value() && subdir != NO_DIRECTORY) {
 		switch (subdir) {
 			case BASESET_DIR:
 				f = FioFOpenFile(filename, mode, OLD_GM_DIR, filesize, output_filename);
-				if (f != nullptr) break;
+				if (f.has_value()) break;
 				[[fallthrough]];
 			case NEWGRF_DIR:
 				f = FioFOpenFile(filename, mode, OLD_DATA_DIR, filesize, output_filename);
@@ -520,12 +506,13 @@ bool TarScanner::AddFile(const std::string &filename, size_t, [[maybe_unused]] c
 	TarList::iterator it = _tar_list[this->subdir].find(filename);
 	if (it != _tar_list[this->subdir].end()) return false;
 
-	FILE *f = fopen(filename.c_str(), "rb");
+	auto of = FileHandle::Open(filename, "rb");
 	/* Although the file has been found there can be
 	 * a number of reasons we cannot open the file.
 	 * Most common case is when we simply have not
 	 * been given read access. */
-	if (f == nullptr) return false;
+	if (!of.has_value()) return false;
+	auto &f = *of;
 
 	_tar_list[this->subdir][filename] = std::string{};
 
@@ -550,7 +537,6 @@ bool TarScanner::AddFile(const std::string &filename, size_t, [[maybe_unused]] c
 			if (memcmp(&th, &empty[0], 512) == 0) continue;
 
 			Debug(misc, 0, "The file '{}' isn't a valid tar-file", filename);
-			fclose(f);
 			return false;
 		}
 
@@ -573,7 +559,6 @@ bool TarScanner::AddFile(const std::string &filename, size_t, [[maybe_unused]] c
 			auto [_, err] = std::from_chars(size.data(), size.data() + size.size(), skip, 8);
 			if (err != std::errc()) {
 				Debug(misc, 0, "The file '{}' has an invalid size for '{}'", filename, name);
-				fclose(f);
 				return false;
 			}
 		}
@@ -624,14 +609,12 @@ bool TarScanner::AddFile(const std::string &filename, size_t, [[maybe_unused]] c
 		skip = Align(skip, 512);
 		if (fseek(f, skip, SEEK_CUR) < 0) {
 			Debug(misc, 0, "The file '{}' can't be read as a valid tar-file", filename);
-			fclose(f);
 			return false;
 		}
 		pos += skip;
 	}
 
 	Debug(misc, 4, "Found tar '{}' with {} new files", filename, num);
-	fclose(f);
 
 	return true;
 }
@@ -678,15 +661,15 @@ bool ExtractTar(const std::string &tar_filename, Subdirectory subdir)
 
 		/* First open the file in the .tar. */
 		size_t to_copy = 0;
-		std::unique_ptr<FILE, FileDeleter> in(FioFOpenFileTar(it2.second, &to_copy));
-		if (!in) {
+		auto in = FioFOpenFileTar(it2.second, &to_copy);
+		if (!in.has_value()) {
 			Debug(misc, 6, "Extracting {} failed; could not open {}", filename, tar_filename);
 			return false;
 		}
 
 		/* Now open the 'output' file. */
-		std::unique_ptr<FILE, FileDeleter> out(fopen(filename.c_str(), "wb"));
-		if (!out) {
+		auto out = FileHandle::Open(filename, "wb");
+		if (!out.has_value()) {
 			Debug(misc, 6, "Extracting {} failed; could not open {}", filename, filename);
 			return false;
 		}
@@ -695,8 +678,8 @@ bool ExtractTar(const std::string &tar_filename, Subdirectory subdir)
 		char buffer[4096];
 		size_t read;
 		for (; to_copy != 0; to_copy -= read) {
-			read = fread(buffer, 1, std::min(to_copy, lengthof(buffer)), in.get());
-			if (read <= 0 || fwrite(buffer, 1, read, out.get()) != read) break;
+			read = fread(buffer, 1, std::min(to_copy, lengthof(buffer)), *in);
+			if (read <= 0 || fwrite(buffer, 1, read, *out) != read) break;
 		}
 
 		if (to_copy != 0) {
@@ -1080,20 +1063,18 @@ void SanitizeFilename(std::string &filename)
  */
 std::unique_ptr<char[]> ReadFileToMem(const std::string &filename, size_t &lenp, size_t maxsize)
 {
-	FILE *in = fopen(filename.c_str(), "rb");
-	if (in == nullptr) return nullptr;
+	auto in = FileHandle::Open(filename, "rb");
+	if (!in.has_value()) return nullptr;
 
-	FileCloser fc(in);
-
-	fseek(in, 0, SEEK_END);
-	size_t len = ftell(in);
-	fseek(in, 0, SEEK_SET);
+	fseek(*in, 0, SEEK_END);
+	size_t len = ftell(*in);
+	fseek(*in, 0, SEEK_SET);
 	if (len > maxsize) return nullptr;
 
 	std::unique_ptr<char[]> mem = std::make_unique<char[]>(len + 1);
 
 	mem.get()[len] = 0;
-	if (fread(mem.get(), len, 1, in) != 1) return nullptr;
+	if (fread(mem.get(), len, 1, *in) != 1) return nullptr;
 
 	lenp = len;
 	return mem;
@@ -1229,4 +1210,26 @@ uint FileScanner::Scan(const char *extension, const std::string &directory, bool
 	std::string path(directory);
 	AppendPathSeparator(path);
 	return ScanPath(this, extension, path.c_str(), path.size(), recursive);
+}
+
+/**
+ * Open an RAII file handle if possible.
+ * The canonical RAII-way is for FileHandle to open the file and throw an exception on failure, but we don't want that.
+ * @param filename UTF-8 encoded filename to open.
+ * @param mode Mode to open file.
+ * @return FileHandle, or std::nullopt on failure.
+ */
+std::optional<FileHandle> FileHandle::Open(const char *filename, const char *mode)
+{
+#if defined(_WIN32)
+	/* Windows also requires mode to be wchar_t. */
+	auto f = _wfopen(OTTD2FS(filename).c_str(), OTTD2FS(mode).c_str());
+#elif defined(WITH_ICONV)
+	auto f = fopen(OTTD2FS(filename).c_str(), mode);
+#else
+	auto f = fopen(filename, mode);
+#endif /* _WIN32 */
+
+	if (f == nullptr) return std::nullopt;
+	return FileHandle(f);
 }

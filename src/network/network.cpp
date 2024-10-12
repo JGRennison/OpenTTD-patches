@@ -1260,19 +1260,19 @@ void NetworkGameLoop()
 
 #ifdef DEBUG_DUMP_COMMANDS
 		/* Loading of the debug commands from -ddesync>=1 */
-		static FILE *f = FioFOpenFile("commands.log", "rb", SAVE_DIR);
+		static auto f = FioFOpenFile("commands.log", "rb", SAVE_DIR);
 		static EconTime::Date next_date = 0;
 		static uint next_date_fract;
 		static uint next_tick_skip_counter;
 		static std::unique_ptr<CommandPacket> cp;
 		static bool check_sync_state = false;
 		static uint32_t sync_state[2];
-		if (f == nullptr && next_date == 0) {
+		if (!f.has_value() && next_date == 0) {
 			Debug(desync, 0, "Cannot open commands.log");
 			next_date = 1;
 		}
 
-		while (f != nullptr && !feof(f)) {
+		while (f.has_value() && !feof(*f)) {
 			if (EconTime::CurDate() == next_date && EconTime::CurDateFract() == next_date_fract && TickSkipCounter() == next_tick_skip_counter) {
 				if (cp != nullptr) {
 					NetworkSendCommand(cp->tile, cp->p1, cp->p2, cp->p3, cp->cmd & ~CMD_FLAGS_MASK, nullptr, cp->text.c_str(), cp->company, cp->aux_data.get());
@@ -1302,7 +1302,7 @@ void NetworkGameLoop()
 			if (cp != nullptr || check_sync_state) break;
 
 			static char buff[65536];
-			if (fgets(buff, lengthof(buff), f) == nullptr) break;
+			if (fgets(buff, lengthof(buff), *f) == nullptr) break;
 
 			char *p = buff;
 			/* Ignore the "[date time] " part of the message */
@@ -1391,10 +1391,9 @@ void NetworkGameLoop()
 				NOT_REACHED();
 			}
 		}
-		if (f != nullptr && feof(f)) {
+		if (f.has_value() && feof(*f)) {
 			Debug(desync, 0, "End of commands.log");
-			fclose(f);
-			f = nullptr;
+			f.reset();
 		}
 #endif /* DEBUG_DUMP_COMMANDS */
 		if (_frame_counter >= _frame_counter_max) {

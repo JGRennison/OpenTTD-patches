@@ -172,13 +172,12 @@ ClientNetworkGameSocketHandler::~ClientNetworkGameSocketHandler()
 
 	delete this->GetInfo();
 
-	if (this->desync_log_file) {
+	if (this->desync_log_file.has_value()) {
 		if (!this->server_desync_log.empty()) {
-			fwrite("\n", 1, 1, this->desync_log_file);
-			fwrite(this->server_desync_log.data(), 1, this->server_desync_log.size(), this->desync_log_file);
+			fwrite("\n", 1, 1, *this->desync_log_file);
+			fwrite(this->server_desync_log.data(), 1, this->server_desync_log.size(), *this->desync_log_file);
 		}
-		FioFCloseFile(this->desync_log_file);
-		this->desync_log_file = nullptr;
+		this->desync_log_file.reset();
 	}
 
 	ResetClientConnectionKeyStates();

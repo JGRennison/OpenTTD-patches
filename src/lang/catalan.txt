@@ -2379,7 +2379,7 @@ STR_NETWORK_SERVER_LIST_DATE_CAPTION_TOOLTIP                    :{BLACK}Data act
 STR_NETWORK_SERVER_LIST_PLAY_TIME_SHORT                         :{BLACK}{NUM}{NBSP}h{NBSP}{NUM}{NBSP}m
 STR_NETWORK_SERVER_LIST_PLAY_TIME_CAPTION                       :{BLACK}Temps de joc
 STR_NETWORK_SERVER_LIST_PLAY_TIME_CAPTION_TOOLTIP               :{BLACK}Temps de joc{}sense contar pauses
-STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Idioma, versió de servidor, etc.
+STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Compatibilitat amb el servidor i informació d'autenticació
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}Clica en una partida de la llista per triar-la
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}El servidor en què vas entrar el darrer cop:
@@ -3020,6 +3020,8 @@ STR_FOUND_TOWN_RANDOM_TOWN_BUTTON                               :{BLACK}Crea una
 STR_FOUND_TOWN_RANDOM_TOWN_TOOLTIP                              :{BLACK}Funda una població en un lloc aleatori
 STR_FOUND_TOWN_MANY_RANDOM_TOWNS                                :{BLACK}Crea moltes poblacions aleatòries
 STR_FOUND_TOWN_RANDOM_TOWNS_TOOLTIP                             :{BLACK}Omple el mapa amb poblacions situades aleatòriament
+STR_FOUND_TOWN_LOAD_FROM_FILE                                   :{BLACK}Carrega d'un fitxer
+STR_FOUND_TOWN_LOAD_FROM_FILE_TOOLTIP                           :{BLACK}Importa les dades de les poblacions d'un fitxer JSON
 STR_FOUND_TOWN_EXPAND_ALL_TOWNS                                 :{BLACK}Expandeix totes les poblacions
 STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}Fes que totes les poblacions creixin una mica.
 
@@ -3272,6 +3274,7 @@ STR_SAVELOAD_SAVE_SCENARIO                                      :{WHITE}Desa l'e
 STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Carrega un escenari
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Carrega un mapa d'alçades
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Desa el mapa d'alçades
+STR_SAVELOAD_LOAD_TOWN_DATA                                     :{WHITE}Carrega les dades de les poblacions
 STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Clica aquí per anar a la carpeta predeterminada de desa/carrega actual
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} lliures
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}Llista de dispositius de disc, carpetes i arxius de partides desades
@@ -3283,6 +3286,7 @@ STR_SAVELOAD_SAVE_TOOLTIP                                       :{BLACK}Desa la 
 STR_SAVELOAD_LOAD_BUTTON                                        :{BLACK}Carrega
 STR_SAVELOAD_LOAD_TOOLTIP                                       :{BLACK}Carrega la partida seleccionada
 STR_SAVELOAD_LOAD_HEIGHTMAP_TOOLTIP                             :{BLACK}Carrega el mapa d'alçades seleccionat
+STR_SAVELOAD_LOAD_TOWN_DATA_TOOLTIP                             :{BLACK}Carrega les dades de les poblacions triades
 STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}Detalls de la partida
 STR_SAVELOAD_DETAIL_NOT_AVAILABLE                               :{BLACK}No hi ha informació disponible
 STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}: {WHITE}{STRING}
@@ -3415,6 +3419,13 @@ STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Configur
 STR_GENERATION_PREPARING_TILELOOP                               :{BLACK}Passant el bucle de cel·les
 STR_GENERATION_PREPARING_SCRIPT                                 :{BLACK}Executant l'script
 STR_GENERATION_PREPARING_GAME                                   :{BLACK}Preparant la partida
+
+STR_TOWN_DATA_ERROR_LOAD_FAILED                                 :{WHITE}Ha fallat la càrrega de dades de poblacions.
+STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY                  :{WHITE}Format del fitxer JSON incorrecte
+STR_TOWN_DATA_ERROR_TOWN_FORMATTED_INCORRECTLY                  :{WHITE}Dades de {STRING} amb format incorrecte
+STR_TOWN_DATA_ERROR_BAD_COORDINATE                              :{WHITE}Les coordenades de {STRING} tenen un format incorrecte. Cal que siguin nombres entre 0 i 1 que expressin la proporció de la dimensió total del mapa d'alçades.
+
+STR_TOWN_DATA_ERROR_FAILED_TO_FOUND_TOWN                        :{WHITE}No s'ha pogut trobar una ubicació vàlida per a {NUM} poblaci{P ó ons}. S'ha{P "" "n"} creat {P "un " ""}senyal{P "" s} a {P "la posició indicada." "les posicions indicades."}
 
 # NewGRF settings
 STR_NEWGRF_SETTINGS_CAPTION                                     :{WHITE}Paràmetres NewGRF
@@ -3999,10 +4010,10 @@ STR_VEHICLE_LIST_SHIP_CAPTION                                   :{WHITE}{STRING}
 STR_VEHICLE_LIST_AIRCRAFT_CAPTION                               :{WHITE}{STRING} - {COMMA} aeronau{P "" s}
 
 ###length VEHICLE_TYPES
-STR_VEHICLE_LIST_TRAIN_LIST_TOOLTIP                             :{BLACK}Trens - clica al tren per més informació
-STR_VEHICLE_LIST_ROAD_VEHICLE_TOOLTIP                           :{BLACK}Automòbils - clica en un vehicle per més informació
-STR_VEHICLE_LIST_SHIP_TOOLTIP                                   :{BLACK}Vaixells - clica en un vaixell per més informació
-STR_VEHICLE_LIST_AIRCRAFT_TOOLTIP                               :{BLACK}Avió - clica sobre l'avió per més informació
+STR_VEHICLE_LIST_TRAIN_LIST_TOOLTIP                             :{BLACK}Trens - Feu clic en un vehicle per a obtenir més informació. Amb Ctrl+Maj, es mostrarà el tipus de càrrega.
+STR_VEHICLE_LIST_ROAD_VEHICLE_TOOLTIP                           :{BLACK}Automòbils - Feu clic en un vehicle per a obtenir més informació. Amb Ctrl+Maj, es mostrarà el tipus de càrrega.
+STR_VEHICLE_LIST_SHIP_TOOLTIP                                   :{BLACK}Vaixells - Feu clic en un vehicle per a obtenir més informació. Amb Ctrl+Maj, es mostrarà el tipus de càrrega.
+STR_VEHICLE_LIST_AIRCRAFT_TOOLTIP                               :{BLACK}Aeronaus - Feu clic en un vehicle per a obtenir més informació. Amb Ctrl+Maj, es mostrarà el tipus de càrrega.
 
 ###length VEHICLE_TYPES
 STR_VEHICLE_LIST_AVAILABLE_TRAINS                               :Trens disponibles

@@ -11,6 +11,7 @@
 #define CRASHLOG_H
 
 #include "core/enum_type.hpp"
+#include "fileio_type.h"
 #include <string>
 #include <vector>
 
@@ -29,7 +30,7 @@ struct DesyncExtraInfo {
 	const char *client_name = nullptr;
 	int client_id = -1;
 	std::string desync_frame_info;
-	FILE **log_file = nullptr; ///< save unclosed log file handle here
+	std::optional<FileHandle> *log_file; ///< save unclosed log file handle here
 	DesyncDeferredSaveInfo *defer_savegame_write = nullptr;
 };
 DECLARE_ENUM_AS_BIT_SET(DesyncExtraInfo::Flags)
@@ -162,7 +163,7 @@ public:
 	void FillInconsistencyLog(struct format_target &buffer, const InconsistencyExtraInfo &info) const;
 	void FillVersionInfoLog(struct format_target &buffer) const;
 	void PrepareLogFileName(char *filename, const char *filename_last, const char *name) const;
-	bool WriteGeneralLogFile(std::string_view data, char *filename, const char *filename_last, const char *name, FILE **keep_file_open = nullptr) const;
+	bool WriteGeneralLogFile(std::string_view data, char *filename, const char *filename_last, const char *name, std::optional<FileHandle> *keep_file_open = nullptr) const;
 
 	/**
 	 * Write the (crash) dump to a file.

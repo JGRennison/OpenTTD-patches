@@ -12,6 +12,7 @@
 #include "window_gui.h"
 #include "gfx_func.h"
 #include "vehicle_gui.h"
+#include "vehicle_gui_base.h"
 #include "strings_builder.h"
 #include "strings_func.h"
 #include "vehicle_func.h"
@@ -45,6 +46,7 @@ void DrawShipImage(const Vehicle *v, const Rect &r, VehicleID selection, EngineI
 	int y = ScaleSpriteTrad(-1) + CenterBounds(r.top, r.bottom, 0);
 
 	seq.Draw(x, y, GetVehiclePalette(v), false);
+	if (v->cargo_cap > 0) DrawCargoIconOverlay(x, y, v->cargo_type);
 
 	if (v->index == selection) {
 		x += x_offs;

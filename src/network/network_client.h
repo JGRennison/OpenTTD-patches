@@ -39,7 +39,7 @@ private:
 
 	ServerStatus status; ///< Status of the connection with the server.
 
-	FILE *desync_log_file = nullptr;
+	std::optional<FileHandle> desync_log_file;
 	std::string server_desync_log;
 	bool emergency_save_done = false;
 

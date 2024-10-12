@@ -934,8 +934,8 @@ void NWidgetBase::ApplyAspectRatio()
 
 	uint x = this->smallest_x;
 	uint y = this->smallest_y;
-	if ((this->aspect_flags & AspectFlags::ResizeX) == AspectFlags::ResizeX) x = std::max(this->smallest_x, static_cast<uint>(this->smallest_y * std::abs(this->aspect_ratio)));
-	if ((this->aspect_flags & AspectFlags::ResizeY) == AspectFlags::ResizeY) y = std::max(this->smallest_y, static_cast<uint>(this->smallest_x / std::abs(this->aspect_ratio)));
+	if (HasFlag(this->aspect_flags, AspectFlags::ResizeX)) x = std::max(this->smallest_x, static_cast<uint>(this->smallest_y * std::abs(this->aspect_ratio)));
+	if (HasFlag(this->aspect_flags, AspectFlags::ResizeY)) y = std::max(this->smallest_y, static_cast<uint>(this->smallest_x / std::abs(this->aspect_ratio)));
 
 	this->smallest_x = x;
 	this->smallest_y = y;
@@ -2487,6 +2487,35 @@ void Scrollbar::SetCapacityFromWidget(Window *w, WidgetID widget, int padding)
 	} else {
 		this->SetCapacity(((int)nwid->current_x - padding) / (int)nwid->resize_x);
 	}
+}
+
+/**
+ * Apply 'scroll' to a rect to be drawn in.
+ * @param r Rect to be 'scrolled'.
+ * @param sb The scrollbar affecting the scroll.
+ * @param resize_step Resize step of the widget/scrollbar (1 if the scrollbar is pixel-based.)
+ * @returns Scrolled rect.
+ */
+Rect ScrollRect(Rect r, const Scrollbar &sb, int resize_step)
+{
+	const int count = sb.GetCount() * resize_step;
+	const int position = sb.GetPosition() * resize_step;
+
+	if (sb.IsVertical()) {
+		r.top -= position;
+		r.bottom = r.top + count;
+	} else {
+		bool rtl = _current_text_dir == TD_RTL;
+		if (rtl) {
+			r.right += position;
+			r.left = r.right - count;
+		} else {
+			r.left -= position;
+			r.right = r.left + count;
+		}
+	}
+
+	return r;
 }
 
 /**

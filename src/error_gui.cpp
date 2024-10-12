@@ -19,6 +19,7 @@
 #include "company_base.h"
 #include "company_func.h"
 #include "company_manager_face.h"
+#include "strings_builder.h"
 #include "strings_func.h"
 #include "zoom_func.h"
 #include "window_func.h"
@@ -374,21 +375,22 @@ void ShowErrorMessage(StringID summary_msg, StringID detailed_msg, WarningLevel 
 
 		if (textref_stack_size > 0) StartTextRefStackUsage(textref_stack_grffile, textref_stack_size, textref_stack);
 
-		std::string message = GetString(summary_msg);
+		format_buffer message;
+		GetString(StringBuilder(message), summary_msg);
 		if (detailed_msg != INVALID_STRING_ID) {
-			message += ' ';
-			message += GetString(detailed_msg);
+			message.push_back(' ');
+			GetString(StringBuilder(message), detailed_msg);
 		}
 		if (extra_msg != INVALID_STRING_ID) {
-			message += ' ';
-			message += GetString(extra_msg);
+			message.push_back(' ');
+			GetString(StringBuilder(message), extra_msg);
 		}
 
 		if (textref_stack_size > 0) StopTextRefStackUsage();
 
 		switch (wl) {
-			case WL_WARNING: IConsolePrint(CC_WARNING, message); break;
-			default:         IConsolePrint(CC_ERROR, message); break;
+			case WL_WARNING: IConsolePrint(CC_WARNING, message.to_string()); break;
+			default:         IConsolePrint(CC_ERROR, message.to_string()); break;
 		}
 	}
 

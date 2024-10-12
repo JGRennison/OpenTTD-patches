@@ -311,6 +311,20 @@ std::string GetString(StringID string)
 }
 
 /**
+ * Resolve the given StringID and append in place into an existing std::string with all the associated
+ * DParam lookups and formatting.
+ * @param result The std::string to place the translated string.
+ * @param string The unique identifier of the translatable string.
+ */
+void AppendStringInPlace(std::string &result, StringID string)
+{
+	_global_string_params.PrepareForNextRun();
+	format_buffer buffer;
+	GetStringWithArgs(StringBuilder(buffer), string, _global_string_params);
+	result += (std::string_view)buffer;
+}
+
+/**
  * Resolve the given StringID into a std::string with all the associated
  * DParam lookups and formatting.
  * @param builder   the string builder to write to
@@ -2447,11 +2461,10 @@ const LanguageMetadata *GetLanguage(uint8_t newgrflangid)
  */
 static bool GetLanguageFileHeader(const char *file, LanguagePackHeader *hdr)
 {
-	FILE *f = fopen(file, "rb");
-	if (f == nullptr) return false;
+	auto f = FileHandle::Open(file, "rb");
+	if (!f.has_value()) return false;
 
-	size_t read = fread(hdr, sizeof(*hdr), 1, f);
-	fclose(f);
+	size_t read = fread(hdr, sizeof(*hdr), 1, *f);
 
 	bool ret = read == 1 && hdr->IsValid();
 

@@ -194,18 +194,18 @@ void IniLoadFile::LoadFromDisk(const std::string &filename, Subdirectory subdir,
 	std::string comment;
 
 	size_t end;
-	FILE *in = this->OpenFile(filename, subdir, &end);
-	if (in == nullptr) return;
+	auto in = this->OpenFile(filename, subdir, &end);
+	if (!in.has_value()) return;
 
 	if (save != nullptr) {
 		save->clear();
 		if (end < (1 << 20)) save->reserve(end);
 	}
 
-	end += ftell(in);
+	end += ftell(*in);
 
 	/* for each line in the file */
-	while (static_cast<size_t>(ftell(in)) < end && fgets(buffer, sizeof(buffer), in)) {
+	while (static_cast<size_t>(ftell(*in)) < end && fgets(buffer, sizeof(buffer), *in)) {
 		if (save != nullptr) *save += buffer;
 		char c, *s;
 		/* trim whitespace from the left side */
@@ -278,7 +278,5 @@ void IniLoadFile::LoadFromDisk(const std::string &filename, Subdirectory subdir,
 	}
 
 	this->comment = std::move(comment);
-
-	fclose(in);
 }
 

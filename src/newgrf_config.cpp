@@ -258,7 +258,7 @@ void UpdateNewGRFConfigPalette(int32_t new_value)
  * @param f GRF.
  * @return Size of the data section or SIZE_MAX if the file has no separate data section.
  */
-size_t GRFGetSizeOfDataSection(FILE *f)
+size_t GRFGetSizeOfDataSection(FileHandle &f)
 {
 	extern const uint8_t _grf_cont_v2_sig[];
 	static const uint header_len = 14;
@@ -285,7 +285,7 @@ size_t GRFGetSizeOfDataSection(FILE *f)
 struct GRFMD5SumState {
 	GRFConfig *config;
 	size_t size;
-	FILE *f;
+	FileHandle f;
 };
 
 static uint _grf_md5_parallel = 0;
@@ -308,8 +308,6 @@ static void CalcGRFMD5SumFromState(const GRFMD5SumState &state)
 		checksum.Append(buffer, len);
 	}
 	checksum.Finish(state.config->ident.md5sum);
-
-	FioFCloseFile(state.f);
 }
 
 void CalcGRFMD5Thread()
@@ -320,7 +318,7 @@ void CalcGRFMD5Thread()
 			_grf_md5_empty_cv.wait(lk);
 		} else {
 			const bool full = _grf_md5_pending.size() == GRF_MD5_PENDING_MAX;
-			GRFMD5SumState state = _grf_md5_pending.back();
+			GRFMD5SumState state = std::move(_grf_md5_pending.back());
 			_grf_md5_pending.pop_back();
 			lk.unlock();
 			if (full) _grf_md5_full_cv.notify_one();
@@ -361,19 +359,18 @@ static bool CalcGRFMD5Sum(GRFConfig *config, Subdirectory subdir)
 	size_t size;
 
 	/* open the file */
-	FILE *f = FioFOpenFile(config->filename, "rb", subdir, &size);
-	if (f == nullptr) return false;
+	auto f = FioFOpenFile(config->filename, "rb", subdir, &size);
+	if (!f.has_value()) return false;
 
-	long start = ftell(f);
-	size = std::min(size, GRFGetSizeOfDataSection(f));
+	long start = ftell(*f);
+	size = std::min(size, GRFGetSizeOfDataSection(*f));
 
-	if (start < 0 || fseek(f, start, SEEK_SET) < 0) {
-		FioFCloseFile(f);
+	if (start < 0 || fseek(*f, start, SEEK_SET) < 0) {
 		return false;
 	}
 
 	/* calculate md5sum */
-	GRFMD5SumState state { config, size, f };
+	GRFMD5SumState state { config, size, std::move(*f) };
 	if (_grf_md5_parallel == 0) {
 		CalcGRFMD5SumFromState(state);
 		return true;
@@ -383,7 +380,7 @@ static bool CalcGRFMD5Sum(GRFConfig *config, Subdirectory subdir)
 	if (_grf_md5_pending.size() >= GRF_MD5_PENDING_MAX) {
 		_grf_md5_full_cv.wait(lk);
 	}
-	_grf_md5_pending.push_back(state);
+	_grf_md5_pending.push_back(std::move(state));
 	bool notify_reader = (_grf_md5_pending.size() == 1); // queue was empty
 	if ((_grf_md5_threads == 0) || ((_grf_md5_pending.size() > 1) && (_grf_md5_threads < _grf_md5_parallel))) {
 		_grf_md5_threads++;

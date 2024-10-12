@@ -2379,7 +2379,7 @@ STR_NETWORK_SERVER_LIST_DATE_CAPTION_TOOLTIP                    :{BLACK}현재 �
 STR_NETWORK_SERVER_LIST_PLAY_TIME_SHORT                         :{BLACK}{NUM}시간 {NUM}분
 STR_NETWORK_SERVER_LIST_PLAY_TIME_CAPTION                       :{BLACK}플레이 시간
 STR_NETWORK_SERVER_LIST_PLAY_TIME_CAPTION_TOOLTIP               :{BLACK}일시 정지한 시간을 제외하고{}게임을 플레이한 시간입니다
-STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}언어, 서버 버전 등
+STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}서버 호환성 및 인증 정보
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}선택하려면 목록에서 게임을 클릭하세요
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}최근에 접속한 서버:
@@ -2882,7 +2882,7 @@ STR_BRIDGE_TUBULAR_SILICON                                      :실리콘 원�
 # Road construction toolbar
 STR_ROAD_TOOLBAR_ROAD_CONSTRUCTION_CAPTION                      :{WHITE}도로 건설
 STR_ROAD_TOOLBAR_TRAM_CONSTRUCTION_CAPTION                      :{WHITE}전찻길 건설
-STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_SECTION                     :{BLACK}도로를 짓습니다. CTRL +클릭면 도로 일부분을 제거할 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
+STR_ROAD_TOOLBAR_TOOLTIP_BUILD_ROAD_SECTION                     :{BLACK}도로를 짓습니다. CTRL +클릭하면 도로 일부분을 제거할 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_TRAMWAY_SECTION                  :{BLACK}전차 선로를 짓습니다. CTRL+클릭하면 전찻길 일부분을 제거할 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_AUTOROAD                         :{BLACK}자동건설 모드로 도로를 짓습니다. CTRL 키를 누르고 있으면 건설/제거 모드를 바꿀 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
 STR_ROAD_TOOLBAR_TOOLTIP_BUILD_AUTOTRAM                         :{BLACK}자동건설 모드로 전차 선로를 짓습니다. CTRL+클릭하면 전찻길 일부분을 제거할 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
@@ -3020,6 +3020,8 @@ STR_FOUND_TOWN_RANDOM_TOWN_BUTTON                               :{BLACK}무작�
 STR_FOUND_TOWN_RANDOM_TOWN_TOOLTIP                              :{BLACK}무작위 위치에 도시를 건설합니다
 STR_FOUND_TOWN_MANY_RANDOM_TOWNS                                :{BLACK}무작위로 여러 도시 건설
 STR_FOUND_TOWN_RANDOM_TOWNS_TOOLTIP                             :{BLACK}무작위로 도시를 건설합니다
+STR_FOUND_TOWN_LOAD_FROM_FILE                                   :{BLACK}파일에서 불러오기
+STR_FOUND_TOWN_LOAD_FROM_FILE_TOOLTIP                           :{BLACK}JSON 파일에서 도시 데이터 가져오기
 STR_FOUND_TOWN_EXPAND_ALL_TOWNS                                 :{BLACK}모든 도시 확장
 STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}모든 도시를 조금씩 확장시킵니다
 
@@ -3272,6 +3274,7 @@ STR_SAVELOAD_SAVE_SCENARIO                                      :{WHITE}시나�
 STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}시나리오 불러오기
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}높이맵 불러오기
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}높이맵 저장
+STR_SAVELOAD_LOAD_TOWN_DATA                                     :{WHITE}도시 데이터 불러오기
 STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}기본 저장/불러오기 폴더로 이동하려면 여기를 클릭하세요
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} 남음
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}드라이브, 폴더, 저장된 게임 파일의 목록입니다
@@ -3283,6 +3286,7 @@ STR_SAVELOAD_SAVE_TOOLTIP                                       :{BLACK}선택�
 STR_SAVELOAD_LOAD_BUTTON                                        :{BLACK}불러오기
 STR_SAVELOAD_LOAD_TOOLTIP                                       :{BLACK}선택한 게임을 불러옵니다
 STR_SAVELOAD_LOAD_HEIGHTMAP_TOOLTIP                             :{BLACK}선택한 높이맵을 불러옵니다
+STR_SAVELOAD_LOAD_TOWN_DATA_TOOLTIP                             :{BLACK}선택한 도시 데이터를 불러옵니다
 STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}게임 상세 정보
 STR_SAVELOAD_DETAIL_NOT_AVAILABLE                               :{BLACK}사용 가능한 정보 없음
 STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}: {WHITE}{STRING}
@@ -3416,6 +3420,13 @@ STR_GENERATION_PREPARING_TILELOOP                               :{BLACK}타일 �
 STR_GENERATION_PREPARING_SCRIPT                                 :{BLACK}스크립트 생성 중
 STR_GENERATION_PREPARING_GAME                                   :{BLACK}게임 준비 중
 
+STR_TOWN_DATA_ERROR_LOAD_FAILED                                 :{WHITE}도시 데이터 불러오기 실패
+STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY                  :{WHITE}JSON 파일 형식이 올바르지 않습니다
+STR_TOWN_DATA_ERROR_TOWN_FORMATTED_INCORRECTLY                  :{WHITE}{STRING} 데이터 형식이 올바르지 않습니다
+STR_TOWN_DATA_ERROR_BAD_COORDINATE                              :{WHITE}{STRING} 좌표 형식이 올바르지 않습니다. 전체 높이맵 크기에 대한 0 ~ 1 사이의 비율 값이어야 합니다
+
+STR_TOWN_DATA_ERROR_FAILED_TO_FOUND_TOWN                        :{WHITE}{NUM}개의 도시를 세울 적절한 장소를 찾지 못했습니다. 대신 세우려고 했던 자리에 팻말을 생성하였습니다
+
 # NewGRF settings
 STR_NEWGRF_SETTINGS_CAPTION                                     :{WHITE}NewGRF 설정
 STR_NEWGRF_SETTINGS_INFO_TITLE                                  :{WHITE}NewGRF 상세 정보
@@ -3487,7 +3498,7 @@ STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}초기�
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}모든 매개 변숫값을 기본값으로 설정합니다
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :매개 변수 {NUM}번
 STR_NEWGRF_PARAMETERS_SETTING                                   :{STRING}: {ORANGE}{STRING}
-STR_NEWGRF_PARAMETERS_NUM_PARAM                                 :{LTBLUE}매개 변수 번호: {ORANGE}{NUM}
+STR_NEWGRF_PARAMETERS_NUM_PARAM                                 :{LTBLUE}매개 변수 개수: {ORANGE}{NUM}
 
 # NewGRF inspect window
 STR_NEWGRF_INSPECT_CAPTION                                      :{WHITE}NEWGRF 검사 - {STRING}
@@ -3999,10 +4010,10 @@ STR_VEHICLE_LIST_SHIP_CAPTION                                   :{WHITE}{STRING}
 STR_VEHICLE_LIST_AIRCRAFT_CAPTION                               :{WHITE}{STRING} - {COMMA}대의 항공기
 
 ###length VEHICLE_TYPES
-STR_VEHICLE_LIST_TRAIN_LIST_TOOLTIP                             :{BLACK}열차 - 열차의 정보를 보려면 클릭하세요
-STR_VEHICLE_LIST_ROAD_VEHICLE_TOOLTIP                           :{BLACK}차량 - 차량의 정보를 보려면 클릭하세요
-STR_VEHICLE_LIST_SHIP_TOOLTIP                                   :{BLACK}선박 - 선박의 정보를 보려면 클릭하세요
-STR_VEHICLE_LIST_AIRCRAFT_TOOLTIP                               :{BLACK}항공기 - 항공기 정보를 보려면 클릭하세요
+STR_VEHICLE_LIST_TRAIN_LIST_TOOLTIP                             :{BLACK}열차 - 열차의 정보를 보려면 클릭하세요. CTRL+SHIFT를 누른 채로 사용하면 화물 종류를 위에 표시합니다
+STR_VEHICLE_LIST_ROAD_VEHICLE_TOOLTIP                           :{BLACK}차량 - 차량의 정보를 보려면 클릭하세요. CTRL+SHIFT를 누른 채로 사용하면 화물 종류를 위에 표시합니다
+STR_VEHICLE_LIST_SHIP_TOOLTIP                                   :{BLACK}선박 - 선박의 정보를 보려면 클릭하세요. CTRL+SHIFT를 누른 채로 사용하면 화물 종류를 위에 표시합니다
+STR_VEHICLE_LIST_AIRCRAFT_TOOLTIP                               :{BLACK}항공기 - 항공기 정보를 보려면 클릭하세요. CTRL+SHIFT를 누른 채로 사용하면 화물 종류를 위에 표시합니다
 
 ###length VEHICLE_TYPES
 STR_VEHICLE_LIST_AVAILABLE_TRAINS                               :사용 가능한 열차

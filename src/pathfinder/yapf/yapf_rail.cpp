@@ -37,31 +37,29 @@ template <typename Tpf> void DumpState(Tpf &pf1, Tpf &pf2)
 	int pid = getpid();
 	std::string fn1;
 	std::string fn2;
-	FILE *f1 = nullptr;
-	FILE *f2 = nullptr;
+	std::optional<FileHandle> f1;
+	std::optional<FileHandle> f2;
 	for(;;) {
 		fn1 = fmt::format("yapf-{}-{}-1.txt", pid, num);
-		f1 = fopen(fn1.c_str(), "wx");
-		if (f1 == nullptr && errno == EEXIST) {
+		f1 = FileHandle::Open(fn1, "wx");
+		if (!f1.has_value() && errno == EEXIST) {
 			num++;
 			continue;
 		}
 		fn2 = fmt::format("yapf-{}-{}-2.txt", pid, num);
-		f2 = fopen(fn2.c_str(), "w");
+		f2 = FileHandle::Open(fn2, "w");
 		num++;
 		break;
 	}
 	Debug(desync, 0, "Dumping YAPF state to {} and {}", fn1, fn2);
 #else
-	FILE *f1 = fopen("yapf1.txt", "wt");
-	FILE *f2 = fopen("yapf2.txt", "wt");
+	auto f1 = FileHandle::Open("yapf1.txt", "wt");
+	auto f2 = FileHandle::Open("yapf2.txt", "wt");
 #endif
-	assert(f1 != nullptr);
-	assert(f2 != nullptr);
-	fwrite(dmp1.m_out.c_str(), 1, dmp1.m_out.size(), f1);
-	fwrite(dmp2.m_out.c_str(), 1, dmp2.m_out.size(), f2);
-	fclose(f1);
-	fclose(f2);
+	assert(f1.has_value());
+	assert(f2.has_value());
+	fwrite(dmp1.m_out.c_str(), 1, dmp1.m_out.size(), *f1);
+	fwrite(dmp2.m_out.c_str(), 1, dmp2.m_out.size(), *f2);
 }
 
 template <class Types>

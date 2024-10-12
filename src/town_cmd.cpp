@@ -62,7 +62,6 @@
 
 #include "safeguards.h"
 
-TownID _new_town_id;
 static bool _record_house_coords = false;
 static Rect _record_house_rect;
 
@@ -2391,15 +2390,13 @@ CommandCost CmdFoundTown(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 		Town *t;
 		if (random) {
 			t = CreateRandomTown(20, townnameparts, size, city, layout);
-			if (t == nullptr) {
-				cost = CommandCost(STR_ERROR_NO_SPACE_FOR_TOWN);
-			} else {
-				_new_town_id = t->index;
-			}
+			if (t == nullptr) return CommandCost(STR_ERROR_NO_SPACE_FOR_TOWN);
 		} else {
 			t = new Town(tile);
 			DoCreateTown(t, tile, townnameparts, size, city, layout, true);
 		}
+
+		cost.SetResultData(t->index);
 		UpdateNearestTownForRoadTiles(false);
 		old_generating_world.Restore();
 
@@ -2425,12 +2422,12 @@ CommandCost CmdFoundTown(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 				AddTileNewsItem(STR_NEWS_NEW_TOWN_UNSPONSORED, NT_INDUSTRY_OPEN, tile);
 			} else {
 				SetDParam(0, _current_company);
-				NewsStringData *company_name = new NewsStringData(GetString(STR_COMPANY_NAME));
+				std::string company_name = GetString(STR_COMPANY_NAME);
 
-				SetDParamStr(0, company_name->string);
+				SetDParamStr(0, company_name);
 				SetDParam(1, t->index);
 
-				AddTileNewsItem(STR_NEWS_NEW_TOWN, NT_INDUSTRY_OPEN, tile, company_name);
+				AddTileNewsItem(STR_NEWS_NEW_TOWN, NT_INDUSTRY_OPEN, tile);
 			}
 			AI::BroadcastNewEvent(new ScriptEventTownFounded(t->index));
 			Game::NewEvent(new ScriptEventTownFounded(t->index));
@@ -2619,11 +2616,15 @@ bool GenerateTowns(TownLayout layout)
 		town_names.insert(town->GetCachedName());
 	}
 
+	/* Randomised offset for city status. This means with e.g. 1-in-4 towns being cities, a map with 10 towns
+	 * may have 2 or 3 cities, instead of always 3. */
+	uint city_random_offset = Random() % _settings_game.economy.larger_towns;
+
 	/* First attempt will be made at creating the suggested number of towns.
 	 * Note that this is really a suggested value, not a required one.
 	 * We would not like the system to lock up just because the user wanted 100 cities on a 64*64 map, would we? */
 	do {
-		bool city = (_settings_game.economy.larger_towns != 0 && Chance16(1, _settings_game.economy.larger_towns));
+		bool city = (_settings_game.economy.larger_towns != 0 && ((city_random_offset + current_number) % _settings_game.economy.larger_towns)  == 0);
 		IncreaseGeneratingWorldProgress(GWP_TOWN);
 		/* Get a unique name for the town. */
 		if (!GenerateTownName(_random, &townnameparts, &town_names)) continue;
@@ -3623,10 +3624,10 @@ static CommandCost TownActionRoadRebuild(Town *t, DoCommandFlag flags)
 		t->road_build_months = 6;
 
 		SetDParam(0, _current_company);
-		NewsStringData *company_name = new NewsStringData(GetString(STR_COMPANY_NAME));
+		std::string company_name = GetString(STR_COMPANY_NAME);
 
 		SetDParam(0, t->index);
-		SetDParamStr(1, company_name->string);
+		SetDParamStr(1, std::move(company_name));
 
 		StringID msg;
 		if (EconTime::UsingWallclockUnits()) {
@@ -3634,7 +3635,7 @@ static CommandCost TownActionRoadRebuild(Town *t, DoCommandFlag flags)
 		} else {
 			msg = STR_NEWS_ROAD_REBUILDING_MONTHS;
 		}
-		AddNewsItem(msg, NT_GENERAL, NF_NORMAL, NR_TOWN, t->index, NR_NONE, UINT32_MAX, company_name);
+		AddNewsItem(msg, NT_GENERAL, NF_NORMAL, NR_TOWN, t->index, NR_NONE, UINT32_MAX);
 		AI::BroadcastNewEvent(new ScriptEventRoadReconstruction((ScriptCompany::CompanyID)(Owner)_current_company, t->index));
 		Game::NewEvent(new ScriptEventRoadReconstruction((ScriptCompany::CompanyID)(Owner)_current_company, t->index));
 	}

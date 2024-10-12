@@ -32,6 +32,7 @@
 #include "tbtr_template_vehicle.h"
 #include "core/geometry_func.hpp"
 #include "departures_gui.h"
+#include "vehicle_gui_base.h"
 
 #include "widgets/depot_widget.h"
 
@@ -902,7 +903,7 @@ struct DepotWindow : Window {
 			SetDParam(1, loaded[cargo_type]);   // {CARGO} #2
 			SetDParam(2, cargo_type);           // {SHORTCARGO} #1
 			SetDParam(3, capacity[cargo_type]); // {SHORTCARGO} #2
-			details += GetString(STR_DEPOT_VEHICLE_TOOLTIP_CARGO);
+			AppendStringInPlace(details, STR_DEPOT_VEHICLE_TOOLTIP_CARGO);
 		}
 
 		/* Show tooltip window */
@@ -1007,6 +1008,15 @@ struct DepotWindow : Window {
 			this->SetWidgetLoweredState(this->hovered_widget, false);
 			this->SetWidgetDirty(this->hovered_widget);
 			this->hovered_widget = -1;
+		}
+	}
+
+	bool last_overlay_state;
+	void OnMouseLoop() override
+	{
+		if (last_overlay_state != ShowCargoIconOverlay()) {
+			last_overlay_state = ShowCargoIconOverlay();
+			this->SetWidgetDirty(WID_D_MATRIX);
 		}
 	}
 

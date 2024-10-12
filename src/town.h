@@ -305,7 +305,6 @@ enum TownActions {
 DECLARE_ENUM_AS_BIT_SET(TownActions)
 
 extern const uint8_t _town_action_costs[TACT_COUNT];
-extern TownID _new_town_id;
 
 /**
  * Set the default name for a depot/waypoint

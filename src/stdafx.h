@@ -169,7 +169,6 @@
 #		include <io.h>
 #		include <tchar.h>
 
-#		define fopen(file, mode) _wfopen(OTTD2FS(file).c_str(), _T(mode))
 #		define unlink(file) _wunlink(OTTD2FS(file).c_str())
 
 		std::string FS2OTTD(std::wstring_view name);
@@ -177,14 +176,12 @@
 		using fs_string = std::wstring;
 		using fs_char = wchar_t;
 #	elif defined(WITH_ICONV)
-#		define fopen(file, mode) fopen(OTTD2FS(file).c_str(), mode)
 #		define unlink(file) unlink(OTTD2FS(file).c_str())
 		std::string FS2OTTD(std::string_view name);
 		std::string OTTD2FS(std::string_view name);
 		using fs_string = std::string;
 		using fs_char = char;
 #	else
-		// no override of fopen() since no transformation is required of the filename
 		template <typename T> std::string FS2OTTD(T name) { return name; }
 		template <typename T> std::string OTTD2FS(T name) { return name; }
 		using fs_string = std::string;

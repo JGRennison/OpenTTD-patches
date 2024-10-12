@@ -620,8 +620,8 @@ STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Valeur d
 STR_GRAPH_CARGO_PAYMENT_RATES_DAYS                              :{TINY_FONT}{BLACK}Jours de trajet
 STR_GRAPH_CARGO_PAYMENT_RATES_SECONDS                           :{TINY_FONT}{BLACK}Secondes de trajet
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}Prix payé pour livrer 10 unités (ou 10{NBSP}000 litres) à 20 carrés de distance
-STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}Activer tout
-STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}Désactiver tout
+STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}Tout
+STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}Aucun
 STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Afficher toutes les marchandises sur le graphique
 STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}N'afficher aucune marchandise sur le graphique
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Afficher/Cacher le type de marchandise
@@ -800,8 +800,8 @@ STR_SMALLMAP_INDUSTRY                                           :{TINY_FONT}{STR
 STR_SMALLMAP_LINKSTATS                                          :{TINY_FONT}{STRING}
 STR_SMALLMAP_COMPANY                                            :{TINY_FONT}{COMPANY}
 STR_SMALLMAP_TOWN                                               :{TINY_FONT}{WHITE}{TOWN}
-STR_SMALLMAP_DISABLE_ALL                                        :{BLACK}Désactiver tout
-STR_SMALLMAP_ENABLE_ALL                                         :{BLACK}Activer tout
+STR_SMALLMAP_DISABLE_ALL                                        :{BLACK}Aucun
+STR_SMALLMAP_ENABLE_ALL                                         :{BLACK}Tout
 STR_SMALLMAP_SHOW_HEIGHT                                        :{BLACK}Relief
 STR_SMALLMAP_SHOW_INDUSTRY_NAMES                                :{BLACK}Afficher ou non le nom des industries
 STR_SMALLMAP_TOOLTIP_DISABLE_ALL_INDUSTRIES                     :{BLACK}N'afficher aucune industrie sur la mini-carte
@@ -2379,7 +2379,7 @@ STR_NETWORK_SERVER_LIST_DATE_CAPTION_TOOLTIP                    :{BLACK}Date cou
 STR_NETWORK_SERVER_LIST_PLAY_TIME_SHORT                         :{BLACK}{NUM}h {NUM}m
 STR_NETWORK_SERVER_LIST_PLAY_TIME_CAPTION                       :{BLACK}Temps de jeu
 STR_NETWORK_SERVER_LIST_PLAY_TIME_CAPTION_TOOLTIP               :{BLACK}Temps joué quand la{}partie n'était pas en pause
-STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Langue, version du serveur, etc.
+STR_NETWORK_SERVER_LIST_INFO_ICONS_TOOLTIP                      :{BLACK}Compatibilité serveur et informations d'authentification
 
 STR_NETWORK_SERVER_LIST_CLICK_GAME_TO_SELECT                    :{BLACK}Cliquer sur une partie dans la liste pour la sélectionner
 STR_NETWORK_SERVER_LIST_LAST_JOINED_SERVER                      :{BLACK}Dernier serveur utilisé{NBSP}:
@@ -3020,6 +3020,8 @@ STR_FOUND_TOWN_RANDOM_TOWN_BUTTON                               :{BLACK}Créer u
 STR_FOUND_TOWN_RANDOM_TOWN_TOOLTIP                              :{BLACK}Fonder une ville à un emplacement choisi au hasard
 STR_FOUND_TOWN_MANY_RANDOM_TOWNS                                :{BLACK}Beaucoup de villes au hasard
 STR_FOUND_TOWN_RANDOM_TOWNS_TOOLTIP                             :{BLACK}Couvrir la carte de villes placées au hasard
+STR_FOUND_TOWN_LOAD_FROM_FILE                                   :{BLACK}Charger depuis un fichier
+STR_FOUND_TOWN_LOAD_FROM_FILE_TOOLTIP                           :{BLACK}Importer les données des villes depuis un fichier JSON
 STR_FOUND_TOWN_EXPAND_ALL_TOWNS                                 :{BLACK}Étendre toutes les villes
 STR_FOUND_TOWN_EXPAND_ALL_TOWNS_TOOLTIP                         :{BLACK}Faire croître toutes les villes légèrement
 
@@ -3272,6 +3274,7 @@ STR_SAVELOAD_SAVE_SCENARIO                                      :{WHITE}Sauvegar
 STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Charger un scénario
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Charger une carte d'altitude
 STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Sauvegarder la carte d'altitude
+STR_SAVELOAD_LOAD_TOWN_DATA                                     :{WHITE}Charger les données des villes
 STR_SAVELOAD_HOME_BUTTON                                        :{BLACK}Cliquer ici pour passer au répertoire par défaut actuel de charge/sauvegarde
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} libre{P "" s}
 STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}Liste des disques, répertoires, et fichiers de sauvegarde
@@ -3283,6 +3286,7 @@ STR_SAVELOAD_SAVE_TOOLTIP                                       :{BLACK}Sauvegar
 STR_SAVELOAD_LOAD_BUTTON                                        :{BLACK}Charger
 STR_SAVELOAD_LOAD_TOOLTIP                                       :{BLACK}Charger la partie sélectionnée
 STR_SAVELOAD_LOAD_HEIGHTMAP_TOOLTIP                             :{BLACK}Charger la carte d'altitude sélectionnée
+STR_SAVELOAD_LOAD_TOWN_DATA_TOOLTIP                             :{BLACK}Charger les données des villes sélectionnées
 STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}Détails
 STR_SAVELOAD_DETAIL_NOT_AVAILABLE                               :{BLACK}Pas d'informations disponibles
 STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}{NBSP}: {WHITE}{STRING}
@@ -3415,6 +3419,13 @@ STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Configur
 STR_GENERATION_PREPARING_TILELOOP                               :{BLACK}Rafraîchissement du terrain
 STR_GENERATION_PREPARING_SCRIPT                                 :{BLACK}Exécution du script
 STR_GENERATION_PREPARING_GAME                                   :{BLACK}Préparation du jeu
+
+STR_TOWN_DATA_ERROR_LOAD_FAILED                                 :{WHITE}Échec du chargement des données des villes
+STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY                  :{WHITE}format du fichier JSON incorrect
+STR_TOWN_DATA_ERROR_TOWN_FORMATTED_INCORRECTLY                  :{WHITE}format des données de {STRING} incorrect
+STR_TOWN_DATA_ERROR_BAD_COORDINATE                              :{WHITE}format des coordonnées de {STRING} incorrect, doit être compris entre 0 et 1 en tant que proportion de la dimension totale de la carte d'altitude
+
+STR_TOWN_DATA_ERROR_FAILED_TO_FOUND_TOWN                        :{WHITE}Pas d'emplacement valide trouvé pour fonder {NUM} ville{P "" s}. À la place, {P un des} panneau{P "" x} {P a ont} été créé{P "" s} {P "à l'" aux} emplacement{P "" s} prévu{P "" s}
 
 # NewGRF settings
 STR_NEWGRF_SETTINGS_CAPTION                                     :{WHITE}Paramètres NewGRF
@@ -3999,10 +4010,10 @@ STR_VEHICLE_LIST_SHIP_CAPTION                                   :{WHITE}{STRING}
 STR_VEHICLE_LIST_AIRCRAFT_CAPTION                               :{WHITE}{STRING} - {COMMA} aéronef{P "" s}
 
 ###length VEHICLE_TYPES
-STR_VEHICLE_LIST_TRAIN_LIST_TOOLTIP                             :{BLACK}Trains - Cliquer sur un train pour obtenir des informations
-STR_VEHICLE_LIST_ROAD_VEHICLE_TOOLTIP                           :{BLACK}Véhicules routiers - Cliquer sur un véhicule pour obtenir des informations
-STR_VEHICLE_LIST_SHIP_TOOLTIP                                   :{BLACK}Navires - Cliquer sur un navire pour obtenir des informations
-STR_VEHICLE_LIST_AIRCRAFT_TOOLTIP                               :{BLACK}Aéronef - Cliquer sur un aéronef pour obtenir des informations
+STR_VEHICLE_LIST_TRAIN_LIST_TOOLTIP                             :{BLACK}Trains - Cliquer sur un train pour obtenir des informations. Maintenir Ctrl+Shift pour afficher les types de cargo
+STR_VEHICLE_LIST_ROAD_VEHICLE_TOOLTIP                           :{BLACK}Véhicules routiers - Cliquer sur un véhicule pour obtenir des informations. Maintenir Ctrl+Shift pour afficher les types de cargo
+STR_VEHICLE_LIST_SHIP_TOOLTIP                                   :{BLACK}Navires - Cliquer sur un navire pour obtenir des informations. Maintenir Ctrl+Shift pour afficher les types de cargo
+STR_VEHICLE_LIST_AIRCRAFT_TOOLTIP                               :{BLACK}Aéronef - Cliquer sur un aéronef pour obtenir des informations. Maintenir Ctrl+Shift pour afficher les types de cargo
 
 ###length VEHICLE_TYPES
 STR_VEHICLE_LIST_AVAILABLE_TRAINS                               :Trains disponibles
@@ -4316,7 +4327,7 @@ STR_REPLACE_HELP_LEFT_ARRAY                                     :{BLACK}Choisir 
 STR_REPLACE_HELP_RIGHT_ARRAY                                    :{BLACK}Choisir le nouveau type de véhicule devant remplacer celui sélectionné à gauche
 
 STR_REPLACE_VEHICLES_START                                      :{BLACK}Démarrer le remplacement
-STR_REPLACE_VEHICLES_NOW                                        :Rempacer maintenant tous les véhicules
+STR_REPLACE_VEHICLES_NOW                                        :Remplacer maintenant tous les véhicules
 STR_REPLACE_VEHICLES_WHEN_OLD                                   :Ne remplacer que les vieux véhicules
 STR_REPLACE_HELP_START_BUTTON                                   :{BLACK}Appuyer sur ce bouton pour commencer le remplacement du type de véhicule sélectionné à gauche par celui sélectionné à droite
 STR_REPLACE_NOT_REPLACING                                       :{BLACK}Pas en cours de remplacement

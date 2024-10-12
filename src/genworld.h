@@ -90,6 +90,7 @@ void GenerateWorld(GenWorldMode mode, uint size_x, uint size_y, bool reset_setti
 void AbortGeneratingWorld();
 bool IsGeneratingWorldAborted();
 void HandleGeneratingWorldAbortion();
+void LoadTownData();
 
 /* genworld_gui.cpp */
 void SetNewLandscapeType(uint8_t landscape);

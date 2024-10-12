@@ -324,14 +324,14 @@ bool WaterRegion::MarkedValid(uint region_id)
 	return true;
 }
 
-TileIndex GetTileIndexFromLocalCoordinate(uint32_t region_x, uint32_t region_y, uint32_t local_x, uint32_t local_y)
+static TileIndex GetTileIndexFromLocalCoordinate(uint32_t region_x, uint32_t region_y, uint32_t local_x, uint32_t local_y)
 {
 	assert(local_x < WATER_REGION_EDGE_LENGTH);
 	assert(local_y < WATER_REGION_EDGE_LENGTH);
 	return TileXY(WATER_REGION_EDGE_LENGTH * region_x + local_x, WATER_REGION_EDGE_LENGTH * region_y + local_y);
 }
 
-TileIndex GetEdgeTileCoordinate(uint32_t region_x, uint32_t region_y, DiagDirection side, uint32_t x_or_y)
+static TileIndex GetEdgeTileCoordinate(uint32_t region_x, uint32_t region_y, DiagDirection side, uint32_t x_or_y)
 {
 	assert(x_or_y < WATER_REGION_EDGE_LENGTH);
 	switch (side) {
@@ -354,7 +354,7 @@ inline WaterRegionReference GetWaterRegionRef(TileIndex tile)
 	return GetWaterRegionRef(GetWaterRegionX(tile), GetWaterRegionY(tile));
 }
 
-WaterRegionReference GetUpdatedWaterRegion(uint32_t region_x, uint32_t region_y)
+static WaterRegionReference GetUpdatedWaterRegion(uint32_t region_x, uint32_t region_y)
 {
 	TWaterRegionIndex region_id = GetWaterRegionIndex(region_x, region_y);
 	WaterRegionReference ref(region_x, region_y, region_id, _water_regions[region_id]);
@@ -362,7 +362,7 @@ WaterRegionReference GetUpdatedWaterRegion(uint32_t region_x, uint32_t region_y)
 	return ref;
 }
 
-WaterRegionReference GetUpdatedWaterRegion(TileIndex tile)
+static WaterRegionReference GetUpdatedWaterRegion(TileIndex tile)
 {
 	return GetUpdatedWaterRegion(GetWaterRegionX(tile), GetWaterRegionY(tile));
 }
@@ -371,7 +371,7 @@ WaterRegionReference GetUpdatedWaterRegion(TileIndex tile)
  * Returns the index of the water region.
  * @param water_region The water region to return the index for.
  */
-TWaterRegionIndex GetWaterRegionIndex(const WaterRegionDesc &water_region)
+static TWaterRegionIndex GetWaterRegionIndex(const WaterRegionDesc &water_region)
 {
 	return GetWaterRegionIndex(water_region.x, water_region.y);
 }

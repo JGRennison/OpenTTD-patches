@@ -66,6 +66,7 @@ inline StringID MakeStringID(StringTab tab, uint index)
 
 std::string GetString(StringID string);
 const char *GetStringPtr(StringID string);
+void AppendStringInPlace(std::string &result, StringID string);
 uint32_t GetStringGRFID(StringID string);
 
 uint ConvertKmhishSpeedToDisplaySpeed(uint speed, VehicleType type);

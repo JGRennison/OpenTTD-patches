@@ -11,6 +11,7 @@
 #define MUSIC_MIDIFILE_HPP
 
 #include "../stdafx.h"
+#include "../fileio_type.h"
 #include "midi.h"
 #include <vector>
 #include <string>
@@ -46,7 +47,7 @@ struct MidiFile {
 
 	static std::string GetSMFFile(const MusicSongInfo &song);
 	static bool ReadSMFHeader(const char *filename, SMFHeader &header);
-	static bool ReadSMFHeader(FILE *file, SMFHeader &header);
+	static bool ReadSMFHeader(FileHandle &file, SMFHeader &header);
 };
 
 #endif /* MUSIC_MIDIFILE_HPP */

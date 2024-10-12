@@ -660,7 +660,7 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 			SetDParam(2, i->from_id);
 			SetDParam(3, i->to_id);
 			SetDParam(4, link.Usage() * 100 / (link.capacity + 1));
-			SetDParamStr(5, std::move(buf));
+			SetDParamStr(5, buf);
 			StringID msg;
 			if (EconTime::UsingWallclockUnits()) {
 				msg = ReplaceWallclockMinutesUnit() ? STR_LINKGRAPH_STATS_TOOLTIP_PRODUCTION_INTERVAL : STR_LINKGRAPH_STATS_TOOLTIP_MINUTE;

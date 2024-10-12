@@ -65,7 +65,7 @@ static uint8_t ReadByteFromFile(LoadgameState *ls)
 	if (ls->buffer_cur >= ls->buffer_count) {
 
 		/* Read some new bytes from the file */
-		int count = (int)fread(ls->buffer, 1, BUFFER_SIZE, ls->file);
+		int count = static_cast<int>(fread(ls->buffer, 1, BUFFER_SIZE, *ls->file));
 
 		/* We tried to read, but there is nothing in the file anymore.. */
 		if (count == 0) {
@@ -238,7 +238,7 @@ static bool VerifyOldNameChecksum(char *title, uint len)
 	return sum == sum2;
 }
 
-static inline bool CheckOldSavegameType(FILE *f, char *temp, const char *last, uint len)
+static inline bool CheckOldSavegameType(FileHandle &f, char *temp, const char *last, uint len)
 {
 	assert(last - temp + 1 >= (int)len);
 
@@ -254,7 +254,7 @@ static inline bool CheckOldSavegameType(FILE *f, char *temp, const char *last, u
 	return ret;
 }
 
-static SavegameType DetermineOldSavegameType(FILE *f, char *title, const char *last)
+static SavegameType DetermineOldSavegameType(FileHandle &f, char *title, const char *last)
 {
 	static_assert(TTD_HEADER_SIZE >= TTO_HEADER_SIZE);
 	char temp[TTD_HEADER_SIZE] = "Unknown";
@@ -295,12 +295,12 @@ bool LoadOldSaveGame(const std::string &file)
 	/* Open file */
 	ls.file = FioFOpenFile(file, "rb", NO_DIRECTORY);
 
-	if (ls.file == nullptr) {
+	if (!ls.file.has_value()) {
 		Debug(oldloader, 0, "Cannot open file '{}'", file);
 		return false;
 	}
 
-	SavegameType type = DetermineOldSavegameType(ls.file, nullptr, nullptr);
+	SavegameType type = DetermineOldSavegameType(*ls.file, nullptr, nullptr);
 
 	LoadOldMainProc *proc = nullptr;
 
@@ -319,7 +319,7 @@ bool LoadOldSaveGame(const std::string &file)
 		game_loaded = false;
 	}
 
-	fclose(ls.file);
+	ls.file.reset();
 
 	if (!game_loaded) {
 		SetSaveLoadError(STR_GAME_SAVELOAD_ERROR_DATA_INTEGRITY_CHECK_FAILED);
@@ -333,14 +333,12 @@ bool LoadOldSaveGame(const std::string &file)
 
 void GetOldSaveGameName(const std::string &file, char *title, const char *last)
 {
-	FILE *f = FioFOpenFile(file, "rb", NO_DIRECTORY);
+	auto f = FioFOpenFile(file, "rb", NO_DIRECTORY);
 
-	if (f == nullptr) {
+	if (!f.has_value()) {
 		*title = '\0';
 		return;
 	}
 
-	DetermineOldSavegameType(f, title, last);
-
-	fclose(f);
+	DetermineOldSavegameType(*f, title, last);
 }
