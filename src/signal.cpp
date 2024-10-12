@@ -826,9 +826,9 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 
 	while (_tbuset.Get(&tile, &trackdir)) {
 		if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(tile)) {
+			Trackdir exit_td = GetTunnelBridgeExitTrackdir(tile);
 			if (HasAcrossTunnelBridgeReservation(tile)) {
 				if (_extra_aspects > 0 && GetTunnelBridgeExitSignalState(tile) == SIGNAL_STATE_GREEN) {
-					Trackdir exit_td = GetTunnelBridgeExitTrackdir(tile);
 					uint8_t aspect = GetForwardAspectAndIncrement(info, tile, exit_td);
 					if (aspect != GetTunnelBridgeExitSignalAspect(tile)) {
 						SetTunnelBridgeExitSignalAspect(tile, aspect);
@@ -841,7 +841,7 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 			SignalState old_state = GetTunnelBridgeExitSignalState(tile);
 			SignalState new_state = consider_occupied(IsTunnelBridgePBS(tile)) ? SIGNAL_STATE_RED : SIGNAL_STATE_GREEN;
 			if (new_state == SIGNAL_STATE_GREEN && GetTunnelBridgeSignalSpecialPropagationFlag(tile) && IsTunnelBridgeEffectivelyPBS(tile)) {
-				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, FindFirstTrack(GetAcrossTunnelBridgeTrackBits(tile)));
+				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(exit_td));
 				if (prog != nullptr && prog->actions_used_flags & TRPAUF_WAIT_AT_PBS) {
 					/* Reservations starting here could be forced to wait, so default to red */
 					new_state = SIGNAL_STATE_RED;
@@ -856,14 +856,13 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 				const uint8_t current_aspect = (old_state == SIGNAL_STATE_GREEN) ? GetTunnelBridgeExitSignalAspect(tile) : 0;
 				uint8_t aspect;
 				if (new_state == SIGNAL_STATE_GREEN) {
-					aspect = GetForwardAspectAndIncrement(info, tile, trackdir);
+					aspect = GetForwardAspectAndIncrement(info, tile, exit_td);
 				} else {
 					aspect = 0;
 				}
 				if (aspect != current_aspect || old_state != new_state) {
 					if (new_state == SIGNAL_STATE_GREEN) SetTunnelBridgeExitSignalAspect(tile, aspect);
 					refresh = true;
-					Trackdir exit_td = GetTunnelBridgeExitTrackdir(tile);
 					PropagateAspectChange(tile, exit_td, aspect);
 				}
 			}
