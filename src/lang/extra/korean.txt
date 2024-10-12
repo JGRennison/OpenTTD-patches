@@ -1298,8 +1298,8 @@ STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}대기 �
 
 STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} - 실시간 운행 정보
 STR_DEPARTURES_CARGO_MODE_TOOLTIP                               :{BLACK}발착 전광판에 화물 필터 모드 설정
-STR_DEPARTURES_DEPARTURES                                       :발
-STR_DEPARTURES_ARRIVALS                                         :착
+STR_DEPARTURES_DEPARTURES                                       :출발
+STR_DEPARTURES_ARRIVALS                                         :도착
 STR_DEPARTURES_BOTH_COMBINED                                    :혼합
 STR_DEPARTURES_BOTH_SEPARATE                                    :분리
 STR_DEPARTURES_DEPARTURE_MODE_TOOLTIP                           :{BLACK}출발이나 도착을 보여줄지 설정합니다
