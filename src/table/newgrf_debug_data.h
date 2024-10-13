@@ -2020,6 +2020,9 @@ class NIHStationStruct : public NIHelper {
 				if (ge->data == nullptr) output.buffer.append(", (no data)");
 				output.FinishPrint();
 
+				if (ge->HasRating()) {
+					output.Print("    Time since pickup: {}", ge->time_since_pickup);
+				}
 				if (ge->amount_fract > 0) {
 					output.Print("    Amount fract: {}", ge->amount_fract);
 				}
