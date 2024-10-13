@@ -2572,8 +2572,8 @@ void ShowBuildRailToolbarWithPickTile(RailType railtype, TileIndex tile)
 				OpenBuildSignalWindow(w, GetSignalVariant(tile, track), GetSignalType(tile, track), GetSignalStyle(tile, track));
 			}
 			if (IsRailTunnelBridgeTile(tile) && IsTunnelBridgeWithSignalSimulation(tile) && HasTrack(GetTunnelBridgeTrackBits(tile), track)) {
-				OpenBuildSignalWindow(w, IsTunnelBridgeSemaphore(tile) ? SIG_SEMAPHORE : SIG_ELECTRIC,
-						IsTunnelBridgePBS(tile) ? SIGTYPE_PBS_ONEWAY : SIGTYPE_BLOCK, GetTunnelBridgeSignalStyle(tile));
+				extern SignalType GetTunnelBridgeDisplaySignalType(TileIndex tile);
+				OpenBuildSignalWindow(w, IsTunnelBridgeSemaphore(tile) ? SIG_SEMAPHORE : SIG_ELECTRIC, GetTunnelBridgeDisplaySignalType(tile), GetTunnelBridgeSignalStyle(tile));
 			}
 		}
 	}

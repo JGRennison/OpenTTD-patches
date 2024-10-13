@@ -30,7 +30,8 @@ struct SignalStyleMasks {
 	uint16_t non_aspect_inc = 0;
 	uint16_t next_only = 0;
 	uint16_t always_reserve_through = 0;
-	uint16_t no_tunnel_bridge = 0;
+	uint16_t no_tunnel_bridge_entrance = 0;
+	uint16_t no_tunnel_bridge_exit = 0;
 	uint16_t signal_opposite_side = 0;
 	uint16_t signal_both_sides = 0;
 	uint16_t combined_normal_shunt = 0;
@@ -173,7 +174,8 @@ uint8_t GetForwardAspectFollowingTrack(TileIndex tile, Trackdir trackdir);
 uint8_t GetSignalAspectGeneric(TileIndex tile, Trackdir trackdir, bool check_non_inc_style);
 void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8_t aspect);
 void UpdateAspectDeferred(TileIndex tile, Trackdir trackdir);
-void UpdateAspectDeferredWithVehicle(const Train *v, TileIndex tile, Trackdir trackdir, bool check_combined_normal_aspect);
+void UpdateAspectDeferredWithVehicleRail(const Train *v, TileIndex tile, Trackdir trackdir);
+void UpdateAspectDeferredWithVehicleTunnelBridgeExit(const Train *v, TileIndex tile, Trackdir trackdir);
 void UpdateLookaheadCombinedNormalShuntSignalDeferred(TileIndex tile, Trackdir trackdir, int lookahead_position);
 void FlushDeferredAspectUpdates();
 void FlushDeferredDetermineCombineNormalShuntMode(Train *v);
@@ -181,6 +183,7 @@ void UpdateAllSignalAspects();
 void UpdateExtraAspectsVariable(bool update_always_reserve_through = false);
 void InitialiseExtraAspectsVariable();
 bool IsRailSpecialSignalAspect(TileIndex tile, Track track);
+bool IsTunnelBridgeSpecialExitSignalAspect(TileIndex tile);
 
 inline void AdjustSignalAspectIfNonIncStyle(TileIndex tile, Track track, uint8_t &aspect)
 {

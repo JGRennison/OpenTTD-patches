@@ -24,7 +24,8 @@ struct Tunnel : TunnelPool::PoolItem<&_tunnel_pool> {
 	TileIndex tile_s; ///< South tile of tunnel.
 	uint8_t height;   ///< Tunnel height
 	bool is_chunnel;  ///< Whether this tunnel is a chunnel
-	uint8_t style;    ///< Style (new signals) of tunnel.
+	uint8_t style_n;  ///< Style (new signals) of north tile of tunnel.
+	uint8_t style_s;  ///< Style (new signals) of south tile of tunnel.
 
 	Tunnel() {}
 	~Tunnel();
@@ -32,6 +33,16 @@ struct Tunnel : TunnelPool::PoolItem<&_tunnel_pool> {
 	Tunnel(TileIndex tile_n, TileIndex tile_s, uint8_t height, bool is_chunnel) : tile_n(tile_n), tile_s(tile_s), height(height), is_chunnel(is_chunnel)
 	{
 		this->UpdateIndexes();
+	}
+
+	inline TileIndex GetOtherEnd(TileIndex tile) const
+	{
+		return this->tile_n == tile ? this->tile_s : this->tile_n;
+	}
+
+	inline uint8_t GetSignalStyle(TileIndex tile) const
+	{
+		return this->tile_n == tile ? this->style_n : this->style_s;
 	}
 
 	void UpdateIndexes();

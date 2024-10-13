@@ -4345,6 +4345,21 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (SlXvIsFeaturePresent(XSLFI_NEW_SIGNAL_STYLES) && SlXvIsFeatureMissing(XSLFI_NEW_SIGNAL_STYLES, 5)) {
+		/* Previously both tunnel ends shared the same style, set second style field to be a copy of the first */
+		for (Tunnel *tunnel : Tunnel::Iterate()) {
+			tunnel->style_s = tunnel->style_n;
+		}
+	}
+
+	if (SlXvIsFeatureMissing(XSLFI_NEW_SIGNAL_STYLES, 5)) {
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsRailTunnelBridgeTile(t) && IsTunnelBridgeSignalSimulationEntranceOnly(t)) {
+				SetTunnelBridgePBS(t, false);
+			}
+		}
+	}
+
 	if (SlXvIsFeatureMissing(XSLFI_REALISTIC_TRAIN_BRAKING, 8)) {
 		_aspect_cfg_hash = 0;
 	}

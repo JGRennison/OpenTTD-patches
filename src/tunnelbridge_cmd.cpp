@@ -1439,13 +1439,15 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlag flags)
 		}
 		DirtyAllCompanyInfrastructureWindows();
 
+		if (IsTunnelBridgeWithSignalSimulation(tile)) {
+			SetBridgeSignalStyle(tile, 0);
+			SetBridgeSignalStyle(endtile, 0);
+		}
 		if (IsTunnelBridgeSignalSimulationEntrance(tile)) {
 			ClearBridgeEntranceSimulatedSignals(tile);
-			SetBridgeSignalStyle(tile, 0);
 		}
 		if (IsTunnelBridgeSignalSimulationEntrance(endtile)) {
 			ClearBridgeEntranceSimulatedSignals(endtile);
-			SetBridgeSignalStyle(endtile, 0);
 		}
 
 		DoClearSquare(tile);
@@ -1835,6 +1837,17 @@ static void DrawTunnelBridgeRampSingleSignal(const TileInfo *ti, bool is_green, 
 	}
 }
 
+SignalType GetTunnelBridgeDisplaySignalType(TileIndex tile)
+{
+	SignalType sig_type = SIGTYPE_BLOCK;
+	if (IsTunnelBridgeSignalSimulationBidirectional(tile)) {
+		sig_type = SIGTYPE_PBS;
+	} else if (IsTunnelBridgePBS(tile)) {
+		sig_type = SIGTYPE_PBS_ONEWAY;
+	}
+	return sig_type;
+}
+
 /* Draws a signal on tunnel / bridge entrance tile. */
 static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
 {
@@ -1850,14 +1863,10 @@ static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
 	}
 
 	if (IsTunnelBridgeSignalSimulationExit(ti->tile)) {
-		SignalType type = SIGTYPE_BLOCK;
-		if (IsTunnelBridgePBS(ti->tile)) {
-			type = IsTunnelBridgeSignalSimulationEntrance(ti->tile) ? SIGTYPE_PBS : SIGTYPE_PBS_ONEWAY;
-		}
-		DrawTunnelBridgeRampSingleSignal(ti, (GetTunnelBridgeExitSignalState(ti->tile) == SIGNAL_STATE_GREEN), position ^ 1, type, true);
+		DrawTunnelBridgeRampSingleSignal(ti, (GetTunnelBridgeExitSignalState(ti->tile) == SIGNAL_STATE_GREEN), position ^ 1, GetTunnelBridgeDisplaySignalType(ti->tile), true);
 	}
 	if (IsTunnelBridgeSignalSimulationEntrance(ti->tile)) {
-		DrawTunnelBridgeRampSingleSignal(ti, (GetTunnelBridgeEntranceSignalState(ti->tile) == SIGNAL_STATE_GREEN), position, SIGTYPE_BLOCK, false);
+		DrawTunnelBridgeRampSingleSignal(ti, (GetTunnelBridgeEntranceSignalState(ti->tile) == SIGNAL_STATE_GREEN), position, GetTunnelBridgeDisplaySignalType(ti->tile), false);
 	}
 }
 
@@ -1913,7 +1922,9 @@ static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_st
 					while (true) {
 						bridge_signal_position += simulated_wormhole_signals;
 						if (bridge_signal_position >= bridge_length) {
-							if (GetTunnelBridgeExitSignalState(bridge_end_tile) == SIGNAL_STATE_GREEN) aspect += GetTunnelBridgeExitSignalAspect(bridge_end_tile);
+							if (GetTunnelBridgeExitSignalState(bridge_end_tile) == SIGNAL_STATE_GREEN) {
+								aspect += GetTunnelBridgeExitSignalAspectForInternalPropagation(bridge_end_tile);
+							}
 							break;
 						}
 						m2_position++;
@@ -1925,18 +1936,20 @@ static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_st
 			}
 
 			const RailTypeInfo *rti = GetRailTypeInfo(GetRailType(bridge_start_tile));
-			PalSpriteID sprite = GetCustomSignalSprite(rti, bridge_start_tile, SIGTYPE_BLOCK, variant, aspect, { CSSC_BRIDGE_MIDDLE }, style).sprite;
+			SignalType type = GetTunnelBridgeDisplaySignalType(bridge_start_tile);
+			PalSpriteID sprite = GetCustomSignalSprite(rti, bridge_start_tile, type, variant, aspect, { CSSC_BRIDGE_MIDDLE }, style).sprite;
 
 			if (sprite.sprite != 0) {
 				sprite.sprite += position;
 			} else {
-				if (variant == SIG_ELECTRIC) {
+				bool is_green = (state == SIGNAL_STATE_GREEN);
+				if (variant == SIG_ELECTRIC && type == SIGTYPE_BLOCK) {
 					/* Normal electric signals are picked from original sprites. */
-					sprite.sprite = SPR_ORIGINAL_SIGNALS_BASE + (position << 1) + (state == SIGNAL_STATE_GREEN ? 1 : 0);
+					sprite = { SPR_ORIGINAL_SIGNALS_BASE + ((position << 1) + is_green), PAL_NONE };
 					if (_settings_client.gui.show_all_signal_default == SSDM_ON) sprite.sprite += SPR_DUP_ORIGINAL_SIGNALS_BASE - SPR_ORIGINAL_SIGNALS_BASE;
 				} else {
 					/* All other signals are picked from add on sprites. */
-					sprite.sprite = SPR_SIGNALS_BASE + (variant * 64) + (position << 1) - 16 + (state == SIGNAL_STATE_GREEN ? 1 : 0);
+					sprite = { SPR_SIGNALS_BASE + ((type - 1) * 16 + variant * 64 + (position << 1) + is_green) + (IsSignalSpritePBS(type) ? 64 : 0), PAL_NONE };
 					if (_settings_client.gui.show_all_signal_default == SSDM_ON) sprite.sprite += SPR_DUP_SIGNALS_BASE - SPR_SIGNALS_BASE;
 				}
 				sprite.pal = PAL_NONE;
@@ -3041,14 +3054,14 @@ void SubtractRailTunnelBridgeInfrastructure(TileIndex begin, TileIndex end) {
 	UpdateRailTunnelBridgeInfrastructure(Company::GetIfValid(GetTileOwner(begin)), begin, end, false);
 }
 
-void SetTunnelBridgeSignalStyleExtended(TileIndex t, TileIndex end, uint8_t style)
+void SetTunnelBridgeSignalStyleExtended(TileIndex t, uint8_t style)
 {
 	if (IsTunnel(t)) {
-		SetTunnelSignalStyle(t, end, style);
+		SetTunnelSignalStyle(t, style);
 	} else {
 		SetBridgeSignalStyle(t, style);
-		SetBridgeSignalStyle(end, style);
 	}
+	SetTunnelBridgeCombinedNormalShuntSignalStyle(t, HasBit(_signal_style_masks.combined_normal_shunt, style));
 }
 
 static void ChangeTileOwner_TunnelBridge(TileIndex tile, Owner old_owner, Owner new_owner)

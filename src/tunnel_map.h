@@ -111,7 +111,7 @@ inline void SetTunnelIndex(TileIndex t, TunnelID id)
 	_m[t].m2 = (id >= TUNNEL_ID_MAP_LOOKUP) ? TUNNEL_ID_MAP_LOOKUP : id;
 }
 
-void SetTunnelSignalStyle(TileIndex t, TileIndex end, uint8_t style);
+void SetTunnelSignalStyle(TileIndex t, uint8_t style);
 
 inline uint8_t GetTunnelSignalStyle(TileIndex t)
 {

@@ -1509,7 +1509,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t p
 
 	SignalCycleGroups which_signals = (SignalCycleGroups)GB(p1, 9, 2);
 
-	uint signal_style = GB(p1, 19, 4);
+	uint8_t signal_style = GB(p1, 19, 4);
 	if (signal_style > _num_new_signal_styles || !HasBit(_enabled_new_signal_styles_mask, signal_style)) return CMD_ERROR;
 
 	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && IsSignalTypeUnsuitableForRealisticBraking(sigtype)) return CMD_ERROR;
@@ -1545,87 +1545,169 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t p
 		if (signal_spacing == 0) return_cmd_error(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
 		signal_spacing = Clamp<int>(signal_spacing, 1, 16);
 
-		TileIndex tile_exit = GetOtherTunnelBridgeEnd(tile);
+		const TileIndex tile_exit = GetOtherTunnelBridgeEnd(tile);
 
-		auto get_one_way_signal_count = [&]() -> uint {
+		auto get_entrance_signal_count = [&]() -> uint {
 			uint spacing;
 			if (IsTunnelBridgeWithSignalSimulation(tile)) {
 				spacing = GetTunnelBridgeSignalSimulationSpacing(tile);
 			} else {
 				spacing = GetBestTunnelBridgeSignalSimulationSpacing(tile, tile_exit, signal_spacing);
 			}
-			return 2 + (GetTunnelBridgeLength(tile, tile_exit) / spacing);
+			return 1 + (GetTunnelBridgeLength(tile, tile_exit) / spacing);
+		};
+		auto get_one_way_signal_count = [&]() -> uint {
+			return get_entrance_signal_count() + 1;
 		};
 
 		if (TracksOverlap(GetTunnelBridgeTrackBits(tile)) || TracksOverlap(GetTunnelBridgeTrackBits(tile_exit))) return_cmd_error(STR_ERROR_NO_SUITABLE_RAILROAD_TRACK);
-		bool bidirectional = HasBit(p1, 18) && (sigtype == SIGTYPE_PBS);
+		const bool bidirectional = HasBit(p1, 18) && (sigtype == SIGTYPE_PBS);
 		cost = CommandCost();
-		bool flip_variant = false;
+		bool change_variant = false;              ///< Whether to change the semaphore/normal variant state
+		bool change_variant_to_semaphore = false; ///< Semaphore/normal variant state to change to, true = semaphore
 		bool change_style = false;
-		bool is_pbs = (sigtype == SIGTYPE_PBS) || (sigtype == SIGTYPE_PBS_ONEWAY);
-		Trackdir entrance_td = TrackExitdirToTrackdir(track, GetTunnelBridgeDirection(tile));
-		bool p2_signal_in = p2 & SignalAlongTrackdir(entrance_td);
-		bool p2_signal_out = p2 & SignalAgainstTrackdir(entrance_td);
-		bool p2_active = p2_signal_in || p2_signal_out;
-		if (!IsTunnelBridgeWithSignalSimulation(tile)) { // toggle signal zero costs.
+		const bool is_pbs = (sigtype == SIGTYPE_PBS) || (sigtype == SIGTYPE_PBS_ONEWAY);
+		const Trackdir entrance_td = TrackExitdirToTrackdir(track, GetTunnelBridgeDirection(tile));
+		const bool p2_signal_in = p2 & SignalAlongTrackdir(entrance_td);
+		const bool p2_signal_out = p2 & SignalAgainstTrackdir(entrance_td);
+		const bool p2_active = p2_signal_in || p2_signal_out;
+		if (bidirectional && p2_active) return CMD_ERROR;
+		if (p2_signal_in && p2_signal_out) return CommandCost();
+		uint8_t other_end_signal_style = signal_style;
+		bool change_both_ends = false;
+
+		if (!IsTunnelBridgeWithSignalSimulation(tile)) {
+			/* Previously unsignalled tunnel/bridge */
+			change_both_ends = true;
 			if (convert_signal) return_cmd_error(STR_ERROR_THERE_ARE_NO_SIGNALS);
-			if (!(p2_signal_in && p2_signal_out)) {
-				cost = CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_SIGNALS] * get_one_way_signal_count() * (bidirectional ? 2 : 1)); // minimal 1
-				if (HasBit(_signal_style_masks.no_tunnel_bridge, signal_style)) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
-				if (!is_style_usable(sigvar, signal_style, bidirectional ? 0x11 : (is_pbs ? 0x21 : 0x1))) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
+			cost = CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_SIGNALS] * get_one_way_signal_count() * (bidirectional ? 2 : 1)); // minimal 1
+			if (bidirectional) {
+				if (HasBit(_signal_style_masks.no_tunnel_bridge_entrance | _signal_style_masks.no_tunnel_bridge_exit, signal_style)) {
+					/* Bidirectional: both ends must be the same style */
+					return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
+				}
+				if (!is_style_usable(sigvar, signal_style, 0x10)) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
+			} else {
+				if (HasBit(_signal_style_masks.no_tunnel_bridge_entrance & _signal_style_masks.no_tunnel_bridge_exit, signal_style)) {
+					/* Style is unusable for both ends */
+					return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
+				}
+				if (!is_style_usable(sigvar, signal_style, is_pbs ? 0x20 : 0x1)) {
+					/* Signal type unusable for this style */
+					return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
+				}
+				if (HasBit(_signal_style_masks.no_tunnel_bridge_entrance, signal_style)) {
+					signal_style = 0;
+				}
+				if (HasBit(_signal_style_masks.no_tunnel_bridge_exit, other_end_signal_style)) {
+					other_end_signal_style = 0;
+				}
+				if (p2_signal_out) {
+					/* Setting up tunnel/bridge in reverse direction */
+					std::swap(signal_style, other_end_signal_style);
+				}
 			}
 		} else {
-			if (HasBit(p1, 17)) return CommandCost();
+			/* Previously signalled tunnel/bridge */
+
+			if (HasBit(p1, 17)) return CommandCost(); // don't modify existing signal flag
+
 			const bool is_bidi = IsTunnelBridgeSignalSimulationBidirectional(tile);
 			bool will_be_bidi = is_bidi;
-			const bool is_semaphore = IsTunnelBridgeSemaphore(tile);
-			bool will_be_semaphore = is_semaphore;
-			bool will_be_pbs = IsTunnelBridgePBS(tile);
-			const uint8_t is_style = GetTunnelBridgeSignalStyle(tile);
-			uint8_t will_be_style = is_style;
-			if (!p2_active) {
+
+			/* Common checks for both ends and bidi state */
+			if (p2_active) {
+				change_both_ends = true;
+				will_be_bidi = false;
+				if (HasBit(_signal_style_masks.no_tunnel_bridge_entrance | _signal_style_masks.no_tunnel_bridge_exit, signal_style)) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
+			} else {
 				if (convert_signal) {
 					will_be_bidi = bidirectional && !ctrl_pressed;
-					change_style = (signal_style != is_style);
+				} else if (ctrl_pressed) {
+					will_be_bidi = false;
+				} else {
+					/* Swap direction */
+					change_both_ends = true;
+				}
+			}
+			if (is_bidi || will_be_bidi) change_both_ends = true;
+
+			auto check_tile = [&](TileIndex t) -> CommandCost {
+				const bool is_semaphore = IsTunnelBridgeSemaphore(t);
+				bool will_be_semaphore = is_semaphore;
+				bool will_be_pbs = IsTunnelBridgePBS(t);
+				const uint8_t is_style = GetTunnelBridgeSignalStyle(t);
+				uint8_t will_be_style = is_style;
+				if (p2_active) {
+					will_be_style = signal_style;
+				} else if (convert_signal) {
+					change_style = true;
 					will_be_style = signal_style;
 					will_be_pbs = is_pbs;
 					will_be_semaphore = (sigvar == SIG_SEMAPHORE);
-					if (HasBit(_signal_style_masks.no_tunnel_bridge, signal_style)) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
+					if (HasBit(_signal_style_masks.no_tunnel_bridge_entrance, signal_style) && (will_be_bidi || IsTunnelBridgeSignalSimulationEntrance(t))) {
+						return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
+					}
+					if (HasBit(_signal_style_masks.no_tunnel_bridge_exit, signal_style) && (will_be_bidi || IsTunnelBridgeSignalSimulationExit(t))) {
+						return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
+					}
 				} else if (ctrl_pressed) {
-					will_be_bidi = false;
 					will_be_pbs = !will_be_pbs;
+				} else if (!is_bidi) {
+					/* Swap direction, check signal style compatibility */
+					if (IsTunnelBridgeSignalSimulationEntrance(t)) {
+						if (HasBit(_signal_style_masks.no_tunnel_bridge_exit, is_style)) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
+					}
+					if (IsTunnelBridgeSignalSimulationExit(t)) {
+						if (HasBit(_signal_style_masks.no_tunnel_bridge_entrance, is_style)) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
+					}
 				}
-			} else if (!is_pbs) {
-				will_be_bidi = false;
+
+				if (change_variant) {
+					will_be_semaphore = change_variant_to_semaphore;
+				} else if ((p2_active && (sigvar == SIG_SEMAPHORE) != is_semaphore) ||
+						(convert_signal && (ctrl_pressed || (sigvar == SIG_SEMAPHORE) != is_semaphore))) {
+					will_be_semaphore = !is_semaphore;
+					change_variant = true;
+					change_variant_to_semaphore = will_be_semaphore;
+				}
+
+				CommandCost subcost = CommandCost(EXPENSES_CONSTRUCTION, 0);
+				if ((is_semaphore != will_be_semaphore) || (will_be_style != is_style)) {
+					uint signal_count = 0;
+					if (IsTunnelBridgeSignalSimulationEntrance(t)) signal_count += get_entrance_signal_count();
+					if (IsTunnelBridgeSignalSimulationExit(t)) signal_count += 1;
+
+					subcost.AddCost(_price[PR_CLEAR_SIGNALS] * signal_count);
+
+					if (will_be_bidi) {
+						signal_count = get_one_way_signal_count();
+					}
+
+					subcost.AddCost(_price[PR_BUILD_SIGNALS] * signal_count);
+				} else if (is_bidi != will_be_bidi) {
+					if (will_be_bidi != IsTunnelBridgeSignalSimulationEntrance(t)) {
+						subcost.AddCost(_price[will_be_bidi ? PR_BUILD_SIGNALS : PR_CLEAR_SIGNALS] * get_one_way_signal_count());
+					}
+				}
+				if (!is_style_usable(will_be_semaphore ? SIG_SEMAPHORE : SIG_ELECTRIC, will_be_style, will_be_bidi ? 0x10 : (will_be_pbs ? 0x20 : 0x1))) {
+					return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
+				}
+				return subcost;
+			};
+
+			cost = CommandCost(EXPENSES_CONSTRUCTION, 0);
+
+			CommandCost subcost = check_tile(tile);
+			if (subcost.Failed()) return subcost;
+			cost.AddCost(subcost);
+
+			if (change_both_ends) {
+				subcost = check_tile(tile_exit);
+				if (subcost.Failed()) return subcost;
+				cost.AddCost(subcost);
 			}
-			if ((p2_active && (sigvar == SIG_SEMAPHORE) != is_semaphore) ||
-					(convert_signal && (ctrl_pressed || (sigvar == SIG_SEMAPHORE) != is_semaphore))) {
-				flip_variant = true;
-				will_be_semaphore = !is_semaphore;
-			}
-			if (flip_variant || change_style) {
-				cost = CommandCost(EXPENSES_CONSTRUCTION, ((_price[PR_BUILD_SIGNALS] * (will_be_bidi ? 2 : 1)) + (_price[PR_CLEAR_SIGNALS] * (is_bidi ? 2 : 1))) *
-						get_one_way_signal_count());
-			} else if (is_bidi != will_be_bidi) {
-				cost = CommandCost(EXPENSES_CONSTRUCTION, _price[will_be_bidi ? PR_BUILD_SIGNALS : PR_CLEAR_SIGNALS] * get_one_way_signal_count());
-			}
-			if (!is_style_usable(will_be_semaphore ? SIG_SEMAPHORE : SIG_ELECTRIC, will_be_style, will_be_bidi ? 0x11 : (will_be_pbs ? 0x21 : 0x1))) return_cmd_error(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
 		}
-		auto remove_pbs_bidi = [&]() {
-			if (IsTunnelBridgeSignalSimulationBidirectional(tile)) {
-				ClrTunnelBridgeSignalSimulationExit(tile);
-				ClrTunnelBridgeSignalSimulationEntrance(tile_exit);
-			}
-		};
-		auto set_bidi = [&](TileIndex t) {
-			SetTunnelBridgeSignalSimulationEntrance(t);
-			SetTunnelBridgeEntranceSignalState(t, SIGNAL_STATE_GREEN);
-			SetTunnelBridgeSignalSimulationExit(t);
-			if (_extra_aspects > 0) {
-				SetTunnelBridgeEntranceSignalAspect(t, 0);
-				UpdateAspectDeferred(t, GetTunnelBridgeEntranceTrackdir(t));
-			}
-		};
 
 		if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
 			for (TileIndex t : { tile, tile_exit }) {
@@ -1637,6 +1719,22 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t p
 		}
 
 		if (flags & DC_EXEC) {
+			auto remove_pbs_bidi = [&]() {
+				if (IsTunnelBridgeSignalSimulationBidirectional(tile)) {
+					ClrTunnelBridgeSignalSimulationExit(tile);
+					ClrTunnelBridgeSignalSimulationEntrance(tile_exit);
+				}
+			};
+			auto set_bidi = [&](TileIndex t) {
+				SetTunnelBridgeSignalSimulationEntrance(t);
+				SetTunnelBridgeEntranceSignalState(t, SIGNAL_STATE_GREEN);
+				SetTunnelBridgeSignalSimulationExit(t);
+				if (_extra_aspects > 0) {
+					SetTunnelBridgeEntranceSignalAspect(t, 0);
+					UpdateAspectDeferred(t, GetTunnelBridgeEntranceTrackdir(t));
+				}
+			};
+
 			Company * const c = Company::Get(GetTileOwner(tile));
 			std::vector<Train *> re_reserve_trains;
 			for (TileIndex t : { tile, tile_exit }) {
@@ -1657,13 +1755,13 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t p
 			}
 			if (!p2_active && IsTunnelBridgeWithSignalSimulation(tile)) { // Toggle signal if already signals present.
 				if (convert_signal) {
-					if (flip_variant) {
-						SetTunnelBridgeSemaphore(tile, !IsTunnelBridgeSemaphore(tile));
-						SetTunnelBridgeSemaphore(tile_exit, IsTunnelBridgeSemaphore(tile));
+					if (change_variant) {
+						SetTunnelBridgeSemaphore(tile, change_variant_to_semaphore);
+						if (change_both_ends) SetTunnelBridgeSemaphore(tile_exit, change_variant_to_semaphore);
 					}
 					if (!ctrl_pressed) {
 						SetTunnelBridgePBS(tile, is_pbs);
-						SetTunnelBridgePBS(tile_exit, is_pbs);
+						if (change_both_ends) SetTunnelBridgePBS(tile_exit, is_pbs);
 						if (bidirectional) {
 							set_bidi(tile);
 							set_bidi(tile_exit);
@@ -1671,10 +1769,15 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t p
 							remove_pbs_bidi();
 						}
 					}
-					if (change_style) SetTunnelBridgeSignalStyle(tile, tile_exit, signal_style);
+					if (change_style) {
+						SetTunnelBridgeSignalStyle(tile, signal_style);
+					}
+					if (change_style && change_both_ends) {
+						SetTunnelBridgeSignalStyle(tile_exit, other_end_signal_style);
+					}
 				} else if (ctrl_pressed) {
 					SetTunnelBridgePBS(tile, !IsTunnelBridgePBS(tile));
-					SetTunnelBridgePBS(tile_exit, IsTunnelBridgePBS(tile));
+					if (change_both_ends) SetTunnelBridgePBS(tile_exit, IsTunnelBridgePBS(tile));
 					if (!IsTunnelBridgePBS(tile)) remove_pbs_bidi();
 				} else if (!IsTunnelBridgeSignalSimulationBidirectional(tile)) {
 					if (IsTunnelBridgeSignalSimulationEntrance(tile)) {
@@ -1704,20 +1807,35 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t p
 						SetupBridgeTunnelSignalSimulation(tile_exit, tile);
 					}
 				}
-				if (!(p2_signal_in && p2_signal_out)) {
-					SetTunnelBridgeSemaphore(tile, sigvar == SIG_SEMAPHORE);
+
+				SetTunnelBridgeSemaphore(tile, sigvar == SIG_SEMAPHORE);
+				SetTunnelBridgePBS(tile, is_pbs);
+				SetTunnelBridgeSignalStyle(tile, signal_style);
+				if (change_both_ends) {
 					SetTunnelBridgeSemaphore(tile_exit, sigvar == SIG_SEMAPHORE);
-					SetTunnelBridgePBS(tile, is_pbs);
 					SetTunnelBridgePBS(tile_exit, is_pbs);
-					SetTunnelBridgeSignalStyle(tile, tile_exit, signal_style);
-					if (!IsTunnelBridgePBS(tile)) remove_pbs_bidi();
+					SetTunnelBridgeSignalStyle(tile_exit, other_end_signal_style);
 				}
+				if (!IsTunnelBridgePBS(tile)) remove_pbs_bidi();
 			}
-			if (IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgeEffectivelyPBS(tile) && !HasAcrossTunnelBridgeReservation(tile)) SetTunnelBridgeExitSignalState(tile, SIGNAL_STATE_RED);
-			if (IsTunnelBridgeSignalSimulationExit(tile_exit) && IsTunnelBridgeEffectivelyPBS(tile_exit) && !HasAcrossTunnelBridgeReservation(tile_exit)) SetTunnelBridgeExitSignalState(tile_exit, SIGNAL_STATE_RED);
+
+			if (IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgeEffectivelyPBS(tile) && !HasAcrossTunnelBridgeReservation(tile)) {
+				SetTunnelBridgeExitSignalState(tile, SIGNAL_STATE_RED);
+			}
+			if (IsTunnelBridgeSignalSimulationExit(tile_exit) && IsTunnelBridgeEffectivelyPBS(tile_exit) && !HasAcrossTunnelBridgeReservation(tile_exit)) {
+				SetTunnelBridgeExitSignalState(tile_exit, SIGNAL_STATE_RED);
+			}
 			MarkBridgeOrTunnelDirty(tile);
-			AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
-			AddSideToSignalBuffer(tile_exit, INVALID_DIAGDIR, GetTileOwner(tile));
+			auto update_signal_side = [](TileIndex t) {
+				AddSideToSignalBuffer(t, INVALID_DIAGDIR, GetTileOwner(t));
+				if (IsTunnelBridgeSignalSimulationEntrance(t)) {
+					SetTunnelBridgeEntranceSignalAspect(t, 0);
+					UpdateAspectDeferred(t, GetTunnelBridgeEntranceTrackdir(t));
+				}
+				UpdateSignalsInBuffer();
+			};
+			update_signal_side(tile);
+			update_signal_side(tile_exit);
 			YapfNotifyTrackLayoutChange(tile, track);
 			YapfNotifyTrackLayoutChange(tile_exit, track);
 			if (IsTunnelBridgeWithSignalSimulation(tile)) c->infrastructure.signal += GetTunnelBridgeSignalSimulationSignalCount(tile, tile_exit);
@@ -2282,7 +2400,8 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t 
 			TraceRestrictNotifySignalRemoval(end, end_track);
 			ClearBridgeTunnelSignalSimulation(end, tile);
 			ClearBridgeTunnelSignalSimulation(tile, end);
-			SetTunnelBridgeSignalStyle(tile, end, 0);
+			SetTunnelBridgeSignalStyle(tile, 0);
+			SetTunnelBridgeSignalStyle(end, 0);
 			MarkBridgeOrTunnelDirty(tile);
 			AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
 			AddSideToSignalBuffer(end, INVALID_DIAGDIR, GetTileOwner(tile));

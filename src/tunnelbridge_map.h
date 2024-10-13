@@ -601,17 +601,22 @@ inline Trackdir GetTunnelBridgeEntranceTrackdir(TileIndex t)
 	return GetTunnelBridgeEntranceTrackdir(t, GetTunnelBridgeDirection(t));
 }
 
-inline void SetTunnelBridgeSignalStyle(TileIndex t, TileIndex end, uint8_t style)
+inline bool HasTunnelBridgeNonZeroSignalStyle(TileIndex t)
 {
-	if (style == 0 && !HasBit(_m[t].m3, 7)) return;
+	return HasBit(_m[t].m3, 7);
+}
 
-	extern void SetTunnelBridgeSignalStyleExtended(TileIndex t, TileIndex end, uint8_t style);
-	SetTunnelBridgeSignalStyleExtended(t, end, style);
+inline void SetTunnelBridgeSignalStyle(TileIndex t, uint8_t style)
+{
+	if (style == 0 && !HasTunnelBridgeNonZeroSignalStyle(t)) return;
+
+	extern void SetTunnelBridgeSignalStyleExtended(TileIndex t, uint8_t style);
+	SetTunnelBridgeSignalStyleExtended(t, style);
 }
 
 inline uint8_t GetTunnelBridgeSignalStyle(TileIndex t)
 {
-	if (likely(!HasBit(_m[t].m3, 7))) return 0;
+	if (likely(!HasTunnelBridgeNonZeroSignalStyle(t))) return 0;
 
 	if (IsTunnel(t)) {
 		extern uint8_t GetTunnelSignalStyleExtended(TileIndex t);
@@ -632,6 +637,25 @@ inline void SetTunnelBridgeSignalSpecialPropagationFlag(TileIndex t, bool specia
 {
 	dbg_assert_tile(IsRailTunnelBridgeTile(t), t);
 	AssignBit(_m[t].m1, 5, special);
+}
+
+inline bool IsTunnelBridgeCombinedNormalShuntSignalStyle(TileIndex t)
+{
+	dbg_assert_tile(IsRailTunnelBridgeTile(t), t);
+	return HasBit(_m[t].m1, 6);
+}
+
+inline void SetTunnelBridgeCombinedNormalShuntSignalStyle(TileIndex t, bool combined_normal_shunt)
+{
+	dbg_assert_tile(IsRailTunnelBridgeTile(t), t);
+	AssignBit(_m[t].m1, 6, combined_normal_shunt);
+}
+
+inline uint8_t GetTunnelBridgeExitSignalAspectForInternalPropagation(TileIndex t)
+{
+	uint8_t aspect = GetTunnelBridgeExitSignalAspect(t);
+	if (aspect > 0 && IsTunnelBridgeCombinedNormalShuntSignalStyle(t)) aspect--;
+	return aspect;
 }
 
 void AddRailTunnelBridgeInfrastructure(Company *c, TileIndex begin, TileIndex end);

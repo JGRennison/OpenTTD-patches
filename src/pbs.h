@@ -83,6 +83,7 @@ enum TrainReservationLookAheadFlags {
 	TRLF_DEPOT_END         = 1,           ///< Reservation ends at a depot
 	TRLF_APPLY_ADVISORY    = 2,           ///< Apply advisory speed limit on next iteration
 	TRLF_CHUNNEL           = 3,           ///< Reservation ends at a signalled chunnel entrance
+	TRLF_TB_CMB_DEFER      = 4,           ///< Deferred combined normal/shunt tunnel/bridge exit
 };
 
 struct TrainReservationLookAhead {

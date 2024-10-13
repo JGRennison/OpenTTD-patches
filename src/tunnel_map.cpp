@@ -98,8 +98,7 @@ TunnelID GetTunnelIndexByLookup(TileIndex t)
  */
 TileIndex GetOtherTunnelEnd(TileIndex tile)
 {
-	Tunnel *t = Tunnel::GetByTile(tile);
-	return t->tile_n == tile ? t->tile_s : t->tile_n;
+	return Tunnel::GetByTile(tile)->GetOtherEnd(tile);
 }
 
 static inline bool IsTunnelInWaySingleAxis(TileIndex tile, int z, IsTunnelInWayFlags flags, bool y_axis, TileIndexDiff tile_diff)
@@ -135,22 +134,25 @@ bool IsTunnelInWay(TileIndex tile, int z, IsTunnelInWayFlags flags)
 	return IsTunnelInWaySingleAxis(tile, z, flags, false, 1) || IsTunnelInWaySingleAxis(tile, z, flags, true, TileOffsByDiagDir(DIAGDIR_SE));
 }
 
-void SetTunnelSignalStyle(TileIndex t, TileIndex end, uint8_t style)
+void SetTunnelSignalStyle(TileIndex t, uint8_t style)
 {
 	if (style == 0) {
 		/* Style already 0 */
 		if (!HasBit(_m[t].m3, 7)) return;
 
 		ClrBit(_m[t].m3, 7);
-		ClrBit(_m[end].m3, 7);
 	} else {
 		SetBit(_m[t].m3, 7);
-		SetBit(_m[end].m3, 7);
 	}
-	Tunnel::GetByTile(t)->style = style;
+	Tunnel *tunnel = Tunnel::GetByTile(t);
+	if (t == tunnel->tile_n) {
+		tunnel->style_n = style;
+	} else {
+		tunnel->style_s = style;
+	}
 }
 
 uint8_t GetTunnelSignalStyleExtended(TileIndex t)
 {
-	return Tunnel::GetByTile(t)->style;
+	return Tunnel::GetByTile(t)->GetSignalStyle(t);
 }

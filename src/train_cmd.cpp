@@ -4345,7 +4345,7 @@ static void TryLongReserveChooseTrainTrack(Train *v, TileIndex tile, Trackdir td
 				}
 				if (!long_reserve) return;
 
-				SignalState exit_state = GetTunnelBridgeExitSignalState(exit_tile);
+				const SignalState orig_exit_state = GetTunnelBridgeExitSignalState(exit_tile);
 
 				/* reserve exit to make contiguous reservation */
 				if (IsBridge(exit_tile)) {
@@ -4353,9 +4353,14 @@ static void TryLongReserveChooseTrainTrack(Train *v, TileIndex tile, Trackdir td
 				} else {
 					SetTunnelReservation(exit_tile, true);
 				}
+				if (orig_exit_state == SIGNAL_STATE_RED && _extra_aspects > 0) {
+					SetTunnelBridgeExitSignalAspect(exit_tile, 0);
+					UpdateAspectDeferredWithVehicleTunnelBridgeExit(v, exit_tile, GetTunnelBridgeExitTrackdir(exit_tile));
+				}
 				SetTunnelBridgeExitSignalState(exit_tile, SIGNAL_STATE_GREEN);
 
 				ChooseTrainTrack(v, ft.m_new_tile, ft.m_exitdir, TrackdirBitsToTrackBits(ft.m_new_td_bits), CTTF_NO_LOOKAHEAD_VALIDATE | (force_res ? CTTF_FORCE_RES : CTTF_NONE), lookahead_state);
+				FlushDeferredDetermineCombineNormalShuntMode(v);
 
 				if (reserved_bits == GetReservedTrackbits(ft.m_new_tile)) {
 					/* next tile is still not reserved, so unreserve exit and restore signal state */
@@ -4364,9 +4369,9 @@ static void TryLongReserveChooseTrainTrack(Train *v, TileIndex tile, Trackdir td
 					} else {
 						SetTunnelReservation(exit_tile, false);
 					}
-					SetTunnelBridgeExitSignalState(exit_tile, exit_state);
+					SetTunnelBridgeExitSignalState(exit_tile, orig_exit_state);
 				} else {
-					if (_extra_aspects > 0) {
+					if (orig_exit_state == SIGNAL_STATE_GREEN && _extra_aspects > 0) {
 						SetTunnelBridgeExitSignalAspect(exit_tile, 0);
 						UpdateAspectDeferred(exit_tile, GetTunnelBridgeExitTrackdir(exit_tile));
 					}
@@ -4464,7 +4469,7 @@ static ChooseTrainTrackResult ChooseTrainTrack(Train *v, TileIndex tile, DiagDir
 			SetSignalStateByTrackdir(tile, changed_signal, SIGNAL_STATE_GREEN);
 			if (_extra_aspects > 0) {
 				SetSignalAspect(tile, track, 0);
-				UpdateAspectDeferredWithVehicle(v, tile, changed_signal, true);
+				UpdateAspectDeferredWithVehicleRail(v, tile, changed_signal);
 			}
 		} else if (!do_track_reservation) {
 			return { track, result_flags };
@@ -5287,7 +5292,7 @@ static bool IsTooCloseBehindTrain(Train *t, TileIndex tile, uint16_t distance, b
 		}
 		return true;
 	}
-    /* Cover blind spot at end of tunnel bridge. */
+	/* Cover blind spot at end of tunnel bridge. */
 	if (check_endtile){
 		if (HasVehicleOnPos(GetOtherTunnelBridgeEnd(t->tile), VEH_TRAIN, &checker, &FindSpaceBetweenTrainsEnum)) {
 			/* Revert train if not going with tunnel direction. */
@@ -5338,7 +5343,14 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
 			}
 		}
 
-		return TryPathReserve(t);
+		if (_extra_aspects > 0) {
+			SetTunnelBridgeExitSignalAspect(tile, 0);
+			UpdateAspectDeferredWithVehicleTunnelBridgeExit(t, tile, GetTunnelBridgeExitTrackdir(tile));
+		}
+
+		bool ok = TryPathReserve(t);
+		FlushDeferredDetermineCombineNormalShuntMode(t);
+		return ok;
 	};
 
 	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
@@ -5379,10 +5391,6 @@ static bool CheckTrainStayInWormHolePathReserve(Train *t, TileIndex tile)
 				ok = try_exit_reservation();
 			}
 			if (ok) {
-				if (_extra_aspects > 0) {
-					SetTunnelBridgeExitSignalAspect(tile, 0);
-					UpdateAspectDeferred(tile, GetTunnelBridgeExitTrackdir(tile));
-				}
 				mark_dirty = true;
 				if (t->lookahead->reservation_end_tile == veh_orig_tile && t->lookahead->reservation_end_position - t->lookahead->current_position <= (int)TILE_SIZE) {
 					/* Less than a tile of lookahead, advance tile */

@@ -20,7 +20,9 @@ static const NamedSaveLoad _tunnel_desc[] = {
 	NSL("tile_s",     SLE_VAR(Tunnel, tile_s, SLE_UINT32)),
 	NSL("height",     SLE_VAR(Tunnel, height, SLE_UINT8)),
 	NSL("is_chunnel", SLE_VAR(Tunnel, is_chunnel, SLE_BOOL)),
-	NSL("style",      SLE_CONDVAR_X(Tunnel, style, SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_NEW_SIGNAL_STYLES))),
+	NSL("style",      SLE_CONDVAR_X(Tunnel, style_n, SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_NEW_SIGNAL_STYLES, 1, 4))),
+	NSL("style_n",    SLE_CONDVAR_X(Tunnel, style_n, SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_NEW_SIGNAL_STYLES, 5))),
+	NSL("style_s",    SLE_CONDVAR_X(Tunnel, style_s, SLE_UINT8, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_NEW_SIGNAL_STYLES, 5))),
 };
 
 static void Save_TUNN()

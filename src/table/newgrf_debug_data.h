@@ -303,11 +303,12 @@ class NIHVehicle : public NIHelper {
 				}
 				output.FinishPrint();
 
-				output.buffer.format("    TB reserved tiles: {}, flags:", l.tunnel_bridge_reserved_tiles);
+				output.buffer.format("    TB reserved tiles: {}, flags: ", l.tunnel_bridge_reserved_tiles);
 				if (HasBit(l.flags, TRLF_TB_EXIT_FREE)) output.buffer.push_back('x');
 				if (HasBit(l.flags, TRLF_DEPOT_END)) output.buffer.push_back('d');
 				if (HasBit(l.flags, TRLF_APPLY_ADVISORY)) output.buffer.push_back('a');
 				if (HasBit(l.flags, TRLF_CHUNNEL)) output.buffer.push_back('c');
+				if (HasBit(l.flags, TRLF_TB_CMB_DEFER)) output.buffer.push_back('d');
 				output.FinishPrint();
 
 				output.Print("    Items: {}", l.items.size());
@@ -1324,6 +1325,9 @@ void DumpTunnelBridgeSignalsInfo(uint index, NIExtraInfoOutput &output)
 	}
 	if (GetTunnelBridgeSignalSpecialPropagationFlag(index)) {
 		output.Print("  Special propagation flag");
+	}
+	if (IsTunnelBridgeCombinedNormalShuntSignalStyle(index)) {
+		output.Print("  Combined normal/shunt signal style flag");
 	}
 	TileIndex end = GetOtherTunnelBridgeEnd(index);
 	extern uint GetTunnelBridgeSignalSimulationSignalCount(TileIndex begin, TileIndex end);
