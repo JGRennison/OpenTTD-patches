@@ -240,8 +240,9 @@ static bool TestStationCondition(StationID station, TraceRestrictItem item)
 
 /**
  * Execute program on train and store results in out
- * @p v may not be nullptr
- * @p out should be zero-initialised
+ * @p v Vehicle (may not be nullptr)
+ * @p input Input state
+ * @p out Output state
  */
 void TraceRestrictProgram::Execute(const Train* v, const TraceRestrictProgramInput &input, TraceRestrictProgramResult& out) const
 {
