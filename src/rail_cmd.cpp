@@ -1639,21 +1639,21 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t p
 		if (flags & DC_EXEC) {
 			Company * const c = Company::Get(GetTileOwner(tile));
 			std::vector<Train *> re_reserve_trains;
+			for (TileIndex t : { tile, tile_exit }) {
+				if (HasAcrossTunnelBridgeReservation(t)) {
+					Train *re_reserve_train = GetTrainForReservation(t, FindFirstTrack(GetAcrossTunnelBridgeReservationTrackBits(t)));
+					if (re_reserve_train != nullptr) {
+						FreeTrainTrackReservation(re_reserve_train);
+						re_reserve_trains.push_back(re_reserve_train);
+					}
+				}
+			}
 			if (IsTunnelBridgeWithSignalSimulation(tile)) {
 				c->infrastructure.signal -= GetTunnelBridgeSignalSimulationSignalCount(tile, tile_exit);
 			} else {
 				uint spacing = GetBestTunnelBridgeSignalSimulationSpacing(tile, tile_exit, signal_spacing);
 				SetTunnelBridgeSignalSimulationSpacing(tile, spacing);
 				SetTunnelBridgeSignalSimulationSpacing(tile_exit, spacing);
-				for (TileIndex t : { tile, tile_exit }) {
-					if (HasAcrossTunnelBridgeReservation(t)) {
-						Train *re_reserve_train = GetTrainForReservation(t, FindFirstTrack(GetAcrossTunnelBridgeReservationTrackBits(t)));
-						if (re_reserve_train != nullptr) {
-							FreeTrainTrackReservation(re_reserve_train);
-							re_reserve_trains.push_back(re_reserve_train);
-						}
-					}
-				}
 			}
 			if (!p2_active && IsTunnelBridgeWithSignalSimulation(tile)) { // Toggle signal if already signals present.
 				if (convert_signal) {
