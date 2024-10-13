@@ -15,7 +15,6 @@ STR_CONFIG_SETTING_AUTOSAVE                                     :オートセー
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :オートセーブの間隔を設定します
 
 STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS                    :{ORANGE}発車標
-STR_CONFIG_SETTING_INTERFACE_WALLCLOCK                          :{ORANGE}時刻
 STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}ダイヤ
 STR_CONFIG_SETTING_INTERFACE_SIGNALS                            :{ORANGE}信号
 

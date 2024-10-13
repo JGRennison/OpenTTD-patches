@@ -567,7 +567,6 @@ STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER          :Synchronizovat 
 STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER_HELPTEXT :Při připojení na server s hrou pro více hráčů bude měnit nastavení lokalizace (jednotky sil, výkonu, rychlosti apod.) tak, aby odpovídalo serverovému
 
 STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS                    :{ORANGE}Odjezdové tabule
-STR_CONFIG_SETTING_INTERFACE_WALLCLOCK                          :{ORANGE}Nástěnné hodiny
 STR_CONFIG_SETTING_INTERFACE_TIME_CLIENT                        :{ORANGE}Nastavení klienta
 STR_CONFIG_SETTING_INTERFACE_TIME_SAVEGAME                      :{ORANGE}Nastavení této mapy
 STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}Jízdní řády

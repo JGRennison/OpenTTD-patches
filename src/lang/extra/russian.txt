@@ -650,7 +650,6 @@ STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER          :Синхрон�
 STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER_HELPTEXT :При подключении к многопользовательской игре в качестве сетевого клиента измените настройки локализации, чтобы они соответствовали серверу.
 
 STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS                    :{ORANGE}Доски для отбытия
-STR_CONFIG_SETTING_INTERFACE_WALLCLOCK                          :{ORANGE}Реальное время
 STR_CONFIG_SETTING_INTERFACE_TIME_CLIENT                        :{ORANGE}Настройки клиента
 STR_CONFIG_SETTING_INTERFACE_TIME_SAVEGAME                      :{ORANGE}Настройки сохранения игры
 STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}Расписания

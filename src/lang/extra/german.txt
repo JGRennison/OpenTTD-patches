@@ -494,7 +494,6 @@ STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER          :Synchronisiere 
 STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER_HELPTEXT :Passe die Lokalisierung an einen Multiplayerserver an, wenn die Verbindung als Client aufgebaut wird.
 
 STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS                    :{ORANGE}Abfahrtstafeln
-STR_CONFIG_SETTING_INTERFACE_WALLCLOCK                          :{ORANGE}Uhr
 STR_CONFIG_SETTING_INTERFACE_TIME_CLIENT                        :{ORANGE}Client-Einstellungen
 STR_CONFIG_SETTING_INTERFACE_TIME_SAVEGAME                      :{ORANGE}Spielstand-Einstellungen
 STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}Fahrpläne

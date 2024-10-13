@@ -488,20 +488,20 @@ STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT_HELPTEXT     :Choose whether 
 STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS                     :Show leftover ticks in timetable: {STRING2}
 STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS_HELPTEXT            :When converting from ticks to days/minutes in timetables, also show any leftover ticks
 
-STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS                       :Use client time settings instead of savegame time settings: {STRING2}
-STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS_HELPTEXT              :Select whether to use local client settings for time display, instead of the time settings in the savegame.
+STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS                       :Use client timetable time settings instead of savegame time settings: {STRING2}
+STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS_HELPTEXT              :Select whether to use local client settings for timetable time display, instead of the time settings in the savegame.
 
-STR_CONFIG_SETTING_TIME_IN_MINUTES                              :Show time in minutes rather than days: {STRING2}
-STR_CONFIG_SETTING_TIME_IN_MINUTES_HELPTEXT                     :Select whether to use hours and minutes instead of days
+STR_CONFIG_SETTING_TIME_IN_MINUTES                              :Show timetable time in minutes: {STRING2}
+STR_CONFIG_SETTING_TIME_IN_MINUTES_HELPTEXT                     :Select whether to use hours and minutes instead of days (or seconds in wallclock timekeeping mode) for timetable times
 
-STR_CONFIG_SETTING_TICKS_PER_MINUTE                             :Ticks per minute: {STRING2}
-STR_CONFIG_SETTING_TICKS_PER_MINUTE_HELPTEXT                    :The number of game ticks per minute
+STR_CONFIG_SETTING_TICKS_PER_MINUTE                             :Ticks per timetable minute: {STRING2}
+STR_CONFIG_SETTING_TICKS_PER_MINUTE_HELPTEXT                    :The number of game ticks per timetable minute
 
-STR_CONFIG_SETTING_DATE_WITH_TIME                               :Show date with time in status bar: {STRING2}
-STR_CONFIG_SETTING_DATE_WITH_TIME_HELPTEXT                      :Show the real game date in the status bar as well as the time
+STR_CONFIG_SETTING_DATE_WITH_TIME                               :Show calendar date with timetable time in status bar: {STRING2}
+STR_CONFIG_SETTING_DATE_WITH_TIME_HELPTEXT                      :Show the calendar date in the status bar as well as the timetable time
 
-STR_CONFIG_SETTING_CLOCK_OFFSET                                 :Clock offset in minutes: {STRING2}
-STR_CONFIG_SETTING_CLOCK_OFFSET_HELPTEXT                        :The number of minutes the game clock is offset by
+STR_CONFIG_SETTING_CLOCK_OFFSET                                 :Timetable clock offset in minutes: {STRING2}
+STR_CONFIG_SETTING_CLOCK_OFFSET_HELPTEXT                        :The number of minutes the timetable clock is offset by
 
 STR_CONFIG_SETTING_DATE_WITH_TIME_NONE                          :None
 STR_CONFIG_SETTING_DATE_WITH_TIME_Y                             :Year
@@ -697,7 +697,7 @@ STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER          :Sync localisati
 STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER_HELPTEXT :When joining a multiplayer game as a network client, change the localisation settings to match the server
 
 STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS                    :{ORANGE}Departure boards
-STR_CONFIG_SETTING_INTERFACE_WALLCLOCK                          :{ORANGE}Wall clock
+STR_CONFIG_SETTING_INTERFACE_TIMETABLE_CLOCK                    :{ORANGE}Timetable clock
 STR_CONFIG_SETTING_INTERFACE_TIME_CLIENT                        :{ORANGE}Client settings
 STR_CONFIG_SETTING_INTERFACE_TIME_SAVEGAME                      :{ORANGE}Savegame settings
 STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}Timetables

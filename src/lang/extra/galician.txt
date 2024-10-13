@@ -650,7 +650,6 @@ STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER          :Sincronizar as 
 STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER_HELPTEXT :Cando te unes a un servidor multixogador como cliente, cambiar a localización para collere a do servidor.
 
 STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS                    :{ORANGE}Taboleiros de saídas
-STR_CONFIG_SETTING_INTERFACE_WALLCLOCK                          :{ORANGE}Reloxo de parede
 STR_CONFIG_SETTING_INTERFACE_TIME_CLIENT                        :{ORANGE}Opcións do cliente
 STR_CONFIG_SETTING_INTERFACE_TIME_SAVEGAME                      :{ORANGE}Opcións da partida
 STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}Horarios
