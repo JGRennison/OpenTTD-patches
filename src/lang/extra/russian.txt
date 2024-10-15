@@ -447,20 +447,20 @@ STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT_HELPTEXT     :Выберит�
 STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS                     :Показывать оставшиеся тики в расписании: {STRING}
 STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS_HELPTEXT            :При преобразовании тиков в дни/минуты  также показывать оставшиеся тики в расписании
 
-STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS                       :Использовать настройки времени клиента вместо настроек времени сохранения игры: {STRING}
-STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS_HELPTEXT              :Выберите, использовать ли локальные настройки клиента для отображения времени вместо настроек времени в сохраненной игре.
+STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS                       :Использовать настройки времени расписания клиента вместо настроек времени сохранения игры: {STRING}
+STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS_HELPTEXT              :Выберите, использовать ли локальные настройки клиента для отображения времени расписания вместо настроек времени в сохраненной игре.
 
-STR_CONFIG_SETTING_TIME_IN_MINUTES                              :Показывать время в минутах, а не в днях: {STRING}
-STR_CONFIG_SETTING_TIME_IN_MINUTES_HELPTEXT                     :Выберите, использовать ли часы и минуты вместо дней
+STR_CONFIG_SETTING_TIME_IN_MINUTES                              :Показывать время расписания в минутах, а не в днях: {STRING}
+STR_CONFIG_SETTING_TIME_IN_MINUTES_HELPTEXT                     :Выберите, использовать ли часы и минуты (или секунды в режиме реального времени) вместо дней для времени расписания.
 
-STR_CONFIG_SETTING_TICKS_PER_MINUTE                             :Тиков в минуте: {STRING}
-STR_CONFIG_SETTING_TICKS_PER_MINUTE_HELPTEXT                    :Количество тиков игры в одной минуте
+STR_CONFIG_SETTING_TICKS_PER_MINUTE                             :Тиков в минуте расписания: {STRING}
+STR_CONFIG_SETTING_TICKS_PER_MINUTE_HELPTEXT                    :Количество тиков игры в одной минуте расписания.
 
-STR_CONFIG_SETTING_DATE_WITH_TIME                               :Показывать дату и время в строке состояния: {STRING}
-STR_CONFIG_SETTING_DATE_WITH_TIME_HELPTEXT                      :Отображать реальную дату игры в строке состояния, а также время
+STR_CONFIG_SETTING_DATE_WITH_TIME                               :Показывать календарные дату и время расписания в строке состояния: {STRING}
+STR_CONFIG_SETTING_DATE_WITH_TIME_HELPTEXT                      :Отображать ли календарную дату в строке состояния, а также время расписания.
 
-STR_CONFIG_SETTING_CLOCK_OFFSET                                 :Смещение часов (в минутах): {STRING}
-STR_CONFIG_SETTING_CLOCK_OFFSET_HELPTEXT                        :Количество минут, на которое смещены игровые часы
+STR_CONFIG_SETTING_CLOCK_OFFSET                                 :Смещение часов расписания (в минутах): {STRING}
+STR_CONFIG_SETTING_CLOCK_OFFSET_HELPTEXT                        :Количество минут, на которое смещены часы расписания.
 
 STR_CONFIG_SETTING_DATE_WITH_TIME_NONE                          :нет
 STR_CONFIG_SETTING_DATE_WITH_TIME_Y                             :год
@@ -650,6 +650,7 @@ STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER          :Синхрон�
 STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER_HELPTEXT :При подключении к многопользовательской игре в качестве сетевого клиента измените настройки локализации, чтобы они соответствовали серверу.
 
 STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS                    :{ORANGE}Доски для отбытия
+STR_CONFIG_SETTING_INTERFACE_TIMETABLE_CLOCK                    :{ORANGE}Часы расписания
 STR_CONFIG_SETTING_INTERFACE_TIME_CLIENT                        :{ORANGE}Настройки клиента
 STR_CONFIG_SETTING_INTERFACE_TIME_SAVEGAME                      :{ORANGE}Настройки сохранения игры
 STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}Расписания
@@ -1069,6 +1070,7 @@ STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA                          :{STRING}{}{BLAC
 STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}Ограничение на прокладку маршрута
 STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}Нажмите на инструкцию, чтобы выбрать её{}Ctrl+клик - для прокрутки к цели инструкции (если таковая имеется)
 STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP                            :{BLACK}Переключение подсветки всех сигналов, использующих эту программу
+STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA                  :{STRING}{}{BLACK}Ctrl+клик - перечислить недавно использованные
 STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING           :{STRING} {PUSH_COLOUR}{RED}(требует реалистичного торможения){POP_COLOUR}
 STR_TRACE_RESTRICT_WARNING_SIGNAL_MODE_CONTROL_ONLY             :{STRING} {PUSH_COLOUR}{RED}(только для действий по управлению режимом сигнала){POP_COLOUR}
 STR_TRACE_RESTRICT_WARNING_NO_SIGNAL_MODE_CONTROL               :{STRING} {PUSH_COLOUR}{RED}(не для управления режимом сигнала){POP_COLOUR}
@@ -1187,8 +1189,13 @@ STR_LANDSCAPING_TOOLTIP_RULER_TOOL                              :{BLACK}Испо
 STR_TREES_REMOVE_TREES_BUTTON                                   :{BLACK}Удалить все деревья
 STR_TREES_REMOVE_TREES_TOOLTIP                                  :{BLACK}Удалить все деревья над ландшафтом
 
+STR_TERRAFORM_PUBLIC_ROADS_GENERATION_CAPTION                   :{WHITE}Общественные дороги
 STR_TERRAFORM_PUBLIC_ROADS                                      :{BLACK}Построить общественные дороги
 STR_TERRAFORM_PUBLIC_ROADS_TOOLTIP                              :{BLACK}Создать общественные дороги между городами на карте
+STR_TERRAFORM_PUBLIC_ROADS_TYPE                                 :{BLACK}Тип общественных дорог
+
+STR_SCENEDIT_LANDSCAPE_MENU_LAND_GENERATION                     :Генерация поверхности
+STR_SCENEDIT_LANDSCAPE_MENU_PUBLIC_ROADS                        :Общественные дороги
 
 STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP_ALL                        :Все предприятия
 
@@ -1487,6 +1494,8 @@ STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT                    :{STRING}. Shift
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU                             :{BLACK}Отменить отправку транспортного средства в депо/ангар. Ctrl+клик - меню. Shift+клик - выбрать депо/ангар
 
 STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA                     :{STRING}{BLACK}{}Shift+клик - переключить показ наложения маршрута, даже если окно не выбрано
+
+STR_VEHICLE_VIEW_SHOW_ORDERS_TOOLTIP_EXTRA                      :{STRING}{BLACK}{}Shift+клик - показать окно расписания диспетчерской службы
 
 STR_VEHICLE_VIEW_ORDER_NUMBER                                   :{COMMA}: {STRING}
 
