@@ -206,7 +206,7 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 			}
 			table[i].departure = sum;
 			if (predicted) SetBit(table[i].flags, TADF_DEPARTURE_PREDICTED);
-			if (predicted) SetBit(table[i].flags, TADF_DEPARTURE_NO_OFFSET);
+			if (no_offset) SetBit(table[i].flags, TADF_DEPARTURE_NO_OFFSET);
 		}
 
 		skip_travel = false;
