@@ -379,7 +379,6 @@ public:
 	static Path *invalid_path;
 
 	Path(NodeID n, bool source = false);
-	virtual ~Path() = default;
 
 	/** Get the node this leg passes. */
 	inline NodeID GetNode() const { return this->node; }
@@ -473,6 +472,7 @@ protected:
 	/** Get the parent leg of this one. */
 	inline void SetParent(Path *parent) { this->parent_storage = reinterpret_cast<uintptr_t>(parent) | (this->parent_storage & 1); }
 };
+static_assert(std::is_trivially_destructible_v<Path>);
 
 inline bool IsLinkGraphCargoExpress(CargoID cargo)
 {

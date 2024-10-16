@@ -30,7 +30,7 @@ public:
  * to the original meaning of "annotation" in this context. Paths are rated
  * according to the sum of distances of their edges.
  */
-class DistanceAnnotation : public Path {
+class DistanceAnnotation final : public Path {
 public:
 	typedef uint AnnotationValueType;
 
@@ -61,6 +61,7 @@ public:
 		bool operator()(const AnnoSetItem<DistanceAnnotation> &x, const AnnoSetItem<DistanceAnnotation> &y) const;
 	};
 };
+static_assert(std::is_trivially_destructible_v<DistanceAnnotation>);
 
 /**
  * Capacity-based annotation for use in the Dijkstra algorithm. This annotation
@@ -68,11 +69,12 @@ public:
  * algorithm still gives meaningful results like this as the capacity of a path
  * can only decrease or stay the same if you add more edges.
  */
-class CapacityAnnotation : public Path {
+class CapacityAnnotation final : public Path {
 	int cached_annotation;
 
 public:
 	typedef int AnnotationValueType;
+
 
 	/**
 	 * Constructor.
@@ -104,6 +106,7 @@ public:
 		bool operator()(const AnnoSetItem<CapacityAnnotation> &x, const AnnoSetItem<CapacityAnnotation> &y) const;
 	};
 };
+static_assert(std::is_trivially_destructible_v<CapacityAnnotation>);
 
 /**
  * Iterator class for getting the edges in the order of their next_edge
@@ -355,11 +358,13 @@ void MultiCommodityFlow::CleanupPaths(NodeID source_id, PathVector &paths)
 			path->Detach();
 			if (path->GetNumChildren() == 0) {
 				paths[path->GetNode()] = nullptr;
+				path->~Path();
 				this->job.path_allocator.Free(path);
 			}
 			path = parent;
 		}
 	}
+	source->~Path();
 	this->job.path_allocator.Free(source);
 	paths.clear();
 }
