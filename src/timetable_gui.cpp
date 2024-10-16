@@ -126,6 +126,8 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 	bool no_offset = false;
 	bool skip_travel = false;
 
+	btree::btree_map<uint, LastDispatchRecord> dispatch_records;
+
 	/* Cyclically loop over all orders until we reach the current one again.
 	 * As we may start at the current order, do a post-checking loop */
 	do {
@@ -154,6 +156,17 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 				case OCV_DISPATCH_SLOT: {
 					StateTicks time = _state_ticks + sum;
 					if (!no_offset) time -= v->lateness_counter;
+
+					if (GB(order->GetConditionValue(), ODCB_SRC_START, ODCB_SRC_COUNT) == ODCS_VEH) {
+						auto record = dispatch_records.find(order->GetConditionDispatchScheduleID());
+						if (record != dispatch_records.end()) {
+							/* dispatch_records contains a last dispatch entry, use that instead of the one stored in the vehicle */
+							extern bool EvaluateDispatchSlotConditionalOrderVehicleRecord(const Order *order, const LastDispatchRecord &record);
+							jump = EvaluateDispatchSlotConditionalOrderVehicleRecord(order, record->second);
+							break;
+						}
+					}
+
 					extern bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, StateTicks state_ticks, bool *predicted);
 					jump = EvaluateDispatchSlotConditionalOrder(order, v, time, &predicted);
 					break;
@@ -194,12 +207,19 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 				DispatchSchedule predicted_ds;
 				predicted_ds.BorrowSchedule(ds);
 				predicted_ds.UpdateScheduledDispatchToDate(_state_ticks + sum);
-				StateTicks slot = GetScheduledDispatchTime(predicted_ds, _state_ticks + sum + order->GetTimetabledWait()).first;
+
+				StateTicks slot;
+				int slot_index;
+				std::tie(slot, slot_index) = GetScheduledDispatchTime(predicted_ds, _state_ticks + sum + order->GetTimetabledWait());
+
 				predicted_ds.ReturnSchedule(ds);
 				if (slot == INVALID_STATE_TICKS) return;
 				sum = (slot - _state_ticks).AsTicks();
 				predicted = true;
 				no_offset = true;
+
+				extern LastDispatchRecord MakeLastDispatchRecord(const DispatchSchedule &ds, StateTicks slot, int slot_index);
+				dispatch_records[order->GetDispatchScheduleIndex()] = MakeLastDispatchRecord(ds, slot, slot_index);
 			} else {
 				if (!CanDetermineTimeTaken(order, false)) return;
 				sum += order->GetTimetabledWait();

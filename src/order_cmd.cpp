@@ -3273,7 +3273,7 @@ bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, 
 
 	const OrderDispatchConditionSources src = (OrderDispatchConditionSources)GB(order->GetConditionValue(), ODCB_SRC_START, ODCB_SRC_COUNT);
 	if (src == ODCS_VEH) {
-		if (predicted != nullptr) *predicted = true;
+		/* Don't set predicted for vehicle record tests */
 
 		auto iter = v->dispatch_records.find(schedule_index);
 		if (iter == v->dispatch_records.end()) return OrderConditionCompare(order->GetConditionComparator(), 0, 0);
