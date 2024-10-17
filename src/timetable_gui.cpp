@@ -26,6 +26,7 @@
 #include "schdispatch.h"
 #include "vehiclelist.h"
 #include "tracerestrict.h"
+#include "scope.h"
 #include "core/backup_type.hpp"
 
 #include "widgets/timetable_widget.h"
@@ -128,6 +129,19 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 
 	btree::btree_map<uint, LastDispatchRecord> dispatch_records;
 
+	/* Backup all DispatchSchedule positions for this order list, so that positions can be modified
+	 * during timetable traversal to allow conditional order prediction. */
+	const uint schedule_count = v->orders->GetScheduledDispatchScheduleCount();
+	auto schedule_position_backups = std::make_unique<DispatchSchedule::PositionBackup[]>(schedule_count);
+	for (uint i = 0; i < schedule_count; i++) {
+		schedule_position_backups[i] = v->orders->GetDispatchScheduleByIndex(i).BackupPosition();
+	}
+	auto guard = scope_guard([&]() {
+		for (uint i = 0; i < schedule_count; i++) {
+			v->orders->GetDispatchScheduleByIndex(i).RestorePosition(schedule_position_backups[i]);
+		}
+	});
+
 	/* Cyclically loop over all orders until we reach the current one again.
 	 * As we may start at the current order, do a post-checking loop */
 	do {
@@ -204,19 +218,18 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 			if (HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH) && order->IsScheduledDispatchOrder(true) && !(i == start && !travelling)) {
 				if (!no_offset) sum -= v->lateness_counter;
 				DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(order->GetDispatchScheduleIndex());
-				DispatchSchedule predicted_ds;
-				predicted_ds.BorrowSchedule(ds);
-				predicted_ds.UpdateScheduledDispatchToDate(_state_ticks + sum);
+				ds.UpdateScheduledDispatchToDate(_state_ticks + sum);
 
 				StateTicks slot;
 				int slot_index;
-				std::tie(slot, slot_index) = GetScheduledDispatchTime(predicted_ds, _state_ticks + sum + order->GetTimetabledWait());
+				std::tie(slot, slot_index) = GetScheduledDispatchTime(ds, _state_ticks + sum + order->GetTimetabledWait());
 
-				predicted_ds.ReturnSchedule(ds);
 				if (slot == INVALID_STATE_TICKS) return;
 				sum = (slot - _state_ticks).AsTicks();
 				predicted = true;
 				no_offset = true;
+
+				ds.SetScheduledDispatchLastDispatch((slot - ds.GetScheduledDispatchStartTick()).AsTicks());
 
 				extern LastDispatchRecord MakeLastDispatchRecord(const DispatchSchedule &ds, StateTicks slot, int slot_index);
 				dispatch_records[order->GetDispatchScheduleIndex()] = MakeLastDispatchRecord(ds, slot, slot_index);

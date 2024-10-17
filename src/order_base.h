@@ -827,15 +827,6 @@ private:
 	std::string name;                                                   ///< Name of dispatch schedule
 	btree::btree_map<uint32_t, std::string> supplementary_names;        ///< Supplementary name strings
 
-	inline void CopyBasicFields(const DispatchSchedule &other)
-	{
-		this->scheduled_dispatch_duration              = other.scheduled_dispatch_duration;
-		this->scheduled_dispatch_start_tick            = other.scheduled_dispatch_start_tick;
-		this->scheduled_dispatch_last_dispatch         = other.scheduled_dispatch_last_dispatch;
-		this->scheduled_dispatch_max_delay             = other.scheduled_dispatch_max_delay;
-		this->scheduled_dispatch_flags                 = other.scheduled_dispatch_flags;
-	}
-
 	/**
 	 * Flag bit numbers for scheduled_dispatch_flags
 	 */
@@ -937,17 +928,6 @@ public:
 	{
 		this->scheduled_dispatch_start_tick = backup.scheduled_dispatch_start_tick;
 		this->scheduled_dispatch_last_dispatch = backup.scheduled_dispatch_last_dispatch;
-	}
-
-	inline void BorrowSchedule(DispatchSchedule &other)
-	{
-		this->CopyBasicFields(other);
-		this->scheduled_dispatch = std::move(other.scheduled_dispatch);
-	}
-
-	inline void ReturnSchedule(DispatchSchedule &other)
-	{
-		other.scheduled_dispatch = std::move(this->scheduled_dispatch);
 	}
 
 	inline std::string &ScheduleName() { return this->name; }
