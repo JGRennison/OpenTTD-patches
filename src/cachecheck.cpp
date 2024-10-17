@@ -12,6 +12,7 @@
 #include "command_func.h"
 #include "company_base.h"
 #include "crashlog.h"
+#include "date_func.h"
 #include "debug.h"
 #include "debug_desync.h"
 #include "debug_settings.h"

@@ -17,8 +17,9 @@
 #include "depot_type.h"
 #include "station_type.h"
 #include "vehicle_type.h"
+#include "cargotype.h"
+#include "company_type.h"
 #include "date_type.h"
-#include "schdispatch.h"
 #include "gfx_type.h"
 #include "sl/saveload_common.h"
 

@@ -17,6 +17,7 @@
 #include "articulated_vehicles.h"
 #include "vehicle_func.h"
 #include "company_func.h"
+#include "date_func.h"
 #include "rail.h"
 #include "road.h"
 #include "settings_type.h"

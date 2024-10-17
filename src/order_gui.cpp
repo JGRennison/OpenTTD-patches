@@ -28,6 +28,7 @@
 #include "infrastructure_func.h"
 #include "hotkeys.h"
 #include "aircraft.h"
+#include "date_func.h"
 #include "engine_func.h"
 #include "vehicle_func.h"
 #include "vehiclelist.h"

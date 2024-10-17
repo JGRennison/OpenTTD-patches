@@ -12,6 +12,7 @@
 #ifndef DEPARTURES_TYPE_H
 #define DEPARTURES_TYPE_H
 
+#include "date_func.h"
 #include "station_base.h"
 #include "order_base.h"
 #include "vehicle_base.h"
