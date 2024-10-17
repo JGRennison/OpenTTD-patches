@@ -40,6 +40,7 @@
 #include "tracerestrict.h"
 #include "train.h"
 #include "date_func.h"
+#include "schdispatch.h"
 
 #include "table/strings.h"
 
@@ -3265,25 +3266,35 @@ bool EvaluateDispatchSlotConditionalOrderVehicleRecord(const Order *order, const
 	return OrderConditionCompare(order->GetConditionComparator(), value ? 1 : 0, 0);
 }
 
-bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, StateTicks state_ticks, bool *predicted)
+const LastDispatchRecord *GetVehicleLastDispatchRecord(const Vehicle *v, uint16_t schedule_index)
 {
+	auto iter = v->dispatch_records.find(schedule_index);
+	if (iter != v->dispatch_records.end()) return &(iter->second);
+
+	return nullptr;
+}
+
+OrderConditionEvalResult EvaluateDispatchSlotConditionalOrder(const Order *order, std::span<const DispatchSchedule> schedules, StateTicks state_ticks, GetVehicleLastDispatchRecordFunctor get_vehicle_record)
+{
+	OrderConditionEvalResult::Type result_type = OrderConditionEvalResult::Type::Certain;
+
 	uint16_t schedule_index = order->GetConditionDispatchScheduleID();
-	if (schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return false;
-	const DispatchSchedule &sched = v->orders->GetDispatchScheduleByIndex(schedule_index);
+	if (schedule_index >= schedules.size()) return OrderConditionEvalResult(false, result_type);
+	const DispatchSchedule &sched = schedules[schedule_index];
 
 	const OrderDispatchConditionSources src = (OrderDispatchConditionSources)GB(order->GetConditionValue(), ODCB_SRC_START, ODCB_SRC_COUNT);
 	if (src == ODCS_VEH) {
 		/* Don't set predicted for vehicle record tests */
 
-		auto iter = v->dispatch_records.find(schedule_index);
-		if (iter == v->dispatch_records.end()) return OrderConditionCompare(order->GetConditionComparator(), 0, 0);
+		const LastDispatchRecord *record = get_vehicle_record(schedule_index);
+		if (record == nullptr) return OrderConditionEvalResult(OrderConditionCompare(order->GetConditionComparator(), 0, 0), result_type);
 
-		return EvaluateDispatchSlotConditionalOrderVehicleRecord(order, iter->second);
+		return OrderConditionEvalResult(EvaluateDispatchSlotConditionalOrderVehicleRecord(order, *record), result_type);
 	}
 
-	if (sched.GetScheduledDispatch().empty()) return false;
+	if (sched.GetScheduledDispatch().empty()) return OrderConditionEvalResult(false, result_type);
 
-	if (predicted != nullptr) *predicted = true;
+	result_type = OrderConditionEvalResult::Type::Predicted;
 
 	int32_t offset;
 	switch (src) {
@@ -3291,7 +3302,7 @@ bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, 
 			int32_t last = sched.GetScheduledDispatchLastDispatch();
 			if (last == INVALID_SCHEDULED_DISPATCH_OFFSET) {
 				/* No last dispatched */
-				return OrderConditionCompare(order->GetConditionComparator(), 0, 0);
+				return OrderConditionEvalResult(OrderConditionCompare(order->GetConditionComparator(), 0, 0), result_type);
 			}
 			if (last < 0) {
 				last += sched.GetScheduledDispatchDuration() * (1 + (-last / sched.GetScheduledDispatchDuration()));
@@ -3304,7 +3315,7 @@ bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, 
 			StateTicks slot = GetScheduledDispatchTime(sched, state_ticks).first;
 			if (slot == INVALID_STATE_TICKS) {
 				/* No next dispatch */
-				return OrderConditionCompare(order->GetConditionComparator(), 0, 0);
+				return OrderConditionEvalResult(OrderConditionCompare(order->GetConditionComparator(), 0, 0), result_type);
 			}
 			offset = (slot - sched.GetScheduledDispatchStartTick()).base() % sched.GetScheduledDispatchDuration();
 			break;
@@ -3336,7 +3347,7 @@ bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, 
 		}
 	}
 
-	return OrderConditionCompare(order->GetConditionComparator(), value ? 1 : 0, 0);
+	return OrderConditionEvalResult(OrderConditionCompare(order->GetConditionComparator(), value ? 1 : 0, 0), result_type);
 }
 
 static std::vector<TraceRestrictSlotID> _pco_deferred_slot_acquires;
@@ -3546,7 +3557,10 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 			break;
 		}
 		case OCV_DISPATCH_SLOT: {
-			skip_order = EvaluateDispatchSlotConditionalOrder(order, v, _state_ticks, nullptr);
+			auto get_vehicle_records = [&](uint16_t schedule_index) -> const LastDispatchRecord * {
+				return GetVehicleLastDispatchRecord(v, schedule_index);
+			};
+			skip_order = EvaluateDispatchSlotConditionalOrder(order, v->orders->GetScheduledDispatchScheduleSet(), _state_ticks, get_vehicle_records).GetResult();
 			break;
 		}
 		default: NOT_REACHED();

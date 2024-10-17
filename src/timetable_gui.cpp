@@ -157,18 +157,18 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 					StateTicks time = _state_ticks + sum;
 					if (!no_offset) time -= v->lateness_counter;
 
-					if (GB(order->GetConditionValue(), ODCB_SRC_START, ODCB_SRC_COUNT) == ODCS_VEH) {
-						auto record = dispatch_records.find(order->GetConditionDispatchScheduleID());
+					auto get_vehicle_records = [&](uint16_t schedule_index) -> const LastDispatchRecord * {
+						auto record = dispatch_records.find(schedule_index);
 						if (record != dispatch_records.end()) {
 							/* dispatch_records contains a last dispatch entry, use that instead of the one stored in the vehicle */
-							extern bool EvaluateDispatchSlotConditionalOrderVehicleRecord(const Order *order, const LastDispatchRecord &record);
-							jump = EvaluateDispatchSlotConditionalOrderVehicleRecord(order, record->second);
-							break;
+							return &(record->second);
+						} else {
+							return GetVehicleLastDispatchRecord(v, schedule_index);
 						}
-					}
-
-					extern bool EvaluateDispatchSlotConditionalOrder(const Order *order, const Vehicle *v, StateTicks state_ticks, bool *predicted);
-					jump = EvaluateDispatchSlotConditionalOrder(order, v, time, &predicted);
+					};
+					OrderConditionEvalResult result = EvaluateDispatchSlotConditionalOrder(order, v->orders->GetScheduledDispatchScheduleSet(), time, get_vehicle_records);
+					if (result.IsPredicted()) predicted = true;
+					jump = result.GetResult();
 					break;
 				}
 
