@@ -809,6 +809,11 @@ enum ScheduledDispatchSupplementaryNameType : uint16_t {
 struct DispatchSchedule {
 	static constexpr uint DEPARTURE_TAG_COUNT = 4;
 
+	struct PositionBackup {
+		StateTicks scheduled_dispatch_start_tick;
+		int32_t scheduled_dispatch_last_dispatch;
+	};
+
 private:
 	friend NamedSaveLoadTable GetDispatchScheduleDescription();         ///< Saving and loading of dispatch schedules
 
@@ -922,6 +927,17 @@ public:
 	 * @return  scheduled dispatch last dispatch
 	 */
 	inline int32_t GetScheduledDispatchDelay() const { return this->scheduled_dispatch_max_delay; }
+
+	inline PositionBackup BackupPosition() const
+	{
+		return PositionBackup{ this->scheduled_dispatch_start_tick, this->scheduled_dispatch_last_dispatch };
+	}
+
+	inline void RestorePosition(PositionBackup backup)
+	{
+		this->scheduled_dispatch_start_tick = backup.scheduled_dispatch_start_tick;
+		this->scheduled_dispatch_last_dispatch = backup.scheduled_dispatch_last_dispatch;
+	}
 
 	inline void BorrowSchedule(DispatchSchedule &other)
 	{

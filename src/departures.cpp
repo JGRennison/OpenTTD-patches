@@ -1198,8 +1198,7 @@ Ticks GetDeparturesMaxTicksAhead()
 
 struct DepartureListScheduleModeSlotEvaluator {
 	struct DispatchScheduleAnno {
-		StateTicks original_start_tick;
-		int32_t original_last_dispatch;
+		DispatchSchedule::PositionBackup original_position_backup;
 		uint repetition = 0;
 		bool usable = false;
 	};
@@ -1525,8 +1524,7 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 			DispatchSchedule &ds = const_cast<Vehicle *>(v)->orders->GetDispatchScheduleByIndex(i);
 			DepartureListScheduleModeSlotEvaluator::DispatchScheduleAnno &anno = schedule_anno[i];
 
-			anno.original_start_tick = ds.GetScheduledDispatchStartTick();
-			anno.original_last_dispatch = ds.GetScheduledDispatchLastDispatch();
+			anno.original_position_backup = ds.BackupPosition();
 
 			const uint32_t duration = ds.GetScheduledDispatchDuration();
 			if (duration < _settings_time.ticks_per_minute || duration > (uint)tick_duration) continue; // Duration is obviously out of range
@@ -1557,8 +1555,7 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 				/* Restore backup */
 				DispatchSchedule &ds = const_cast<Vehicle *>(v)->orders->GetDispatchScheduleByIndex(i);
 				const DepartureListScheduleModeSlotEvaluator::DispatchScheduleAnno &anno = schedule_anno[i];
-				ds.SetScheduledDispatchStartTick(anno.original_start_tick);
-				ds.SetScheduledDispatchLastDispatch(anno.original_last_dispatch);
+				ds.RestorePosition(anno.original_position_backup);
 			}
 		});
 
