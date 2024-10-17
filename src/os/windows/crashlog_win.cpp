@@ -512,7 +512,11 @@ static const uint MAX_FRAMES     = 64;
 			/* Get symbol name and line info if possible. */
 			DWORD64 offset;
 			if (proc.pSymGetSymFromAddr64(hCur, frame.AddrPC.Offset, &offset, sym_info)) {
-				buffer.format(" {} + {}", sym_info->Name, offset);
+				if (offset > INT64_MAX) {
+					buffer.format(" {} - {}", sym_info->Name, (DWORD64)(-offset));
+				} else {
+					buffer.format(" {} + {}", sym_info->Name, offset);
+				}
 
 				DWORD line_offs;
 				IMAGEHLP_LINE64 line;
@@ -542,10 +546,11 @@ static const uint MAX_FRAMES     = 64;
 					free(demangled);
 #endif
 					if (symbol_ok && bfd_info.function_addr) {
-						if (bfd_info.function_addr > frame.AddrPC.Offset) {
-							buffer.format(" - {}", static_cast<DWORD64>(bfd_info.function_addr) - frame.AddrPC.Offset);
+						DWORD64 adjusted_addrpc = frame.AddrPC.Offset - image_base + bfd_info.image_base;
+						if (bfd_info.function_addr > adjusted_addrpc) {
+							buffer.format(" - {}", static_cast<DWORD64>(bfd_info.function_addr) - adjusted_addrpc);
 						} else {
-							buffer.format(" + {}", frame.AddrPC.Offset - static_cast<DWORD64>(bfd_info.function_addr));
+							buffer.format(" + {}", adjusted_addrpc - static_cast<DWORD64>(bfd_info.function_addr));
 						}
 					}
 				}
