@@ -43,7 +43,7 @@
 
 /* static */ ScriptGoal::GoalID ScriptGoal::New(ScriptCompany::CompanyID company, Text *goal, GoalType type, SQInteger destination)
 {
-	CCountedPtr<Text> counter(goal);
+	ScriptObjectRef counter(goal);
 
 	EnforceDeityMode(GOAL_INVALID);
 	EnforcePrecondition(GOAL_INVALID, goal != nullptr);
@@ -78,7 +78,7 @@
 
 /* static */ bool ScriptGoal::SetText(GoalID goal_id, Text *goal)
 {
-	CCountedPtr<Text> counter(goal);
+	ScriptObjectRef counter(goal);
 
 	EnforcePrecondition(false, IsValidGoal(goal_id));
 	EnforceDeityMode(false);
@@ -91,7 +91,7 @@
 
 /* static */ bool ScriptGoal::SetProgress(GoalID goal_id, Text *progress)
 {
-	CCountedPtr<Text> counter(progress);
+	ScriptObjectRef counter(progress);
 
 	EnforcePrecondition(false, IsValidGoal(goal_id));
 	EnforceDeityMode(false);
@@ -118,7 +118,7 @@
 
 /* static */ bool ScriptGoal::DoQuestion(SQInteger uniqueid, uint32_t target, bool is_client, Text *question, QuestionType type, SQInteger buttons)
 {
-	CCountedPtr<Text> counter(question);
+	ScriptObjectRef counter(question);
 
 	EnforceDeityMode(false);
 	EnforcePrecondition(false, question != nullptr);

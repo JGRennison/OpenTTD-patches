@@ -258,10 +258,7 @@ void Station::AddFacility(StationFacility new_facility_bit, TileIndex facil_xy)
  */
 void Station::MarkTilesDirty(bool cargo_change) const
 {
-	TileIndex tile = this->train_station.tile;
-	int w, h;
-
-	if (tile == INVALID_TILE) return;
+	if (this->train_station.tile == INVALID_TILE) return;
 
 	/* cargo_change is set if we're refreshing the tiles due to cargo moving
 	 * around. */
@@ -272,14 +269,10 @@ void Station::MarkTilesDirty(bool cargo_change) const
 		if (this->speclist.empty()) return;
 	}
 
-	for (h = 0; h < train_station.h; h++) {
-		for (w = 0; w < train_station.w; w++) {
-			if (this->TileBelongsToRailStation(tile)) {
-				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
-			}
-			tile += TileDiffXY(1, 0);
+	for (TileIndex tile : this->train_station) {
+		if (this->TileBelongsToRailStation(tile)) {
+			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 		}
-		tile += TileDiffXY(-w, 1);
 	}
 }
 

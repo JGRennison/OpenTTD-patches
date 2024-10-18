@@ -210,12 +210,12 @@ void LinkGraphSchedule::ShiftDates(DateDelta interval)
  */
 LinkGraphSchedule::LinkGraphSchedule()
 {
-	this->handlers[0].reset(new InitHandler);
-	this->handlers[1].reset(new DemandHandler);
-	this->handlers[2].reset(new MCFHandler<MCF1stPass>);
-	this->handlers[3].reset(new FlowMapper(false));
-	this->handlers[4].reset(new MCFHandler<MCF2ndPass>);
-	this->handlers[5].reset(new FlowMapper(true));
+	this->handlers[0] = std::make_unique<InitHandler>();
+	this->handlers[1] = std::make_unique<DemandHandler>();
+	this->handlers[2] = std::make_unique<MCFHandler<MCF1stPass>>();
+	this->handlers[3] = std::make_unique<FlowMapper>(false);
+	this->handlers[4] = std::make_unique<MCFHandler<MCF2ndPass>>();
+	this->handlers[5] = std::make_unique<FlowMapper>(true);
 }
 
 /**

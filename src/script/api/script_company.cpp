@@ -42,7 +42,7 @@
 
 /* static */ bool ScriptCompany::SetName(Text *name)
 {
-	CCountedPtr<Text> counter(name);
+	ScriptObjectRef counter(name);
 
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, name != nullptr);
@@ -64,7 +64,7 @@
 
 /* static */ bool ScriptCompany::SetPresidentName(Text *name)
 {
-	CCountedPtr<Text> counter(name);
+	ScriptObjectRef counter(name);
 
 	EnforceCompanyModeValid(false);
 	EnforcePrecondition(false, name != nullptr);

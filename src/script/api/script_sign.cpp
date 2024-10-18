@@ -34,7 +34,7 @@
 
 /* static */ bool ScriptSign::SetName(SignID sign_id, Text *name)
 {
-	CCountedPtr<Text> counter(name);
+	ScriptObjectRef counter(name);
 
 	EnforceDeityOrCompanyModeValid(false);
 	EnforcePrecondition(false, IsValidSign(sign_id));
@@ -71,7 +71,7 @@
 
 /* static */ SignID ScriptSign::BuildSign(TileIndex location, Text *name)
 {
-	CCountedPtr<Text> counter(name);
+	ScriptObjectRef counter(name);
 
 	EnforceDeityOrCompanyModeValid(INVALID_SIGN);
 	EnforcePrecondition(INVALID_SIGN, ::IsValidTile(location));

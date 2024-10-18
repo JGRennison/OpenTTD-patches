@@ -50,7 +50,7 @@ private:
 	friend upstream_sl::SaveLoadTable upstream_sl::GetLinkGraphScheduleDesc();
 
 protected:
-	std::unique_ptr<ComponentHandler> handlers[6]; ///< Handlers to be run for each job.
+	std::array<std::unique_ptr<ComponentHandler>, 6> handlers{}; ///< Handlers to be run for each job.
 	GraphList schedule;            ///< Queue for new jobs.
 	JobList running;               ///< Currently running jobs.
 

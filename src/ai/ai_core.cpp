@@ -240,18 +240,15 @@
 
 /* static */ void AI::NewEvent(CompanyID company, ScriptEvent *event)
 {
-	/* AddRef() and Release() need to be called at least once, so do it here */
-	event->AddRef();
+	ScriptObjectRef counter(event);
 
 	/* Clients should ignore events */
 	if (_networking && !_network_server) {
-		event->Release();
 		return;
 	}
 
 	/* Only AIs can have an event-queue */
 	if (!Company::IsValidAiID(company)) {
-		event->Release();
 		return;
 	}
 
@@ -259,18 +256,14 @@
 	Backup<CompanyID> cur_company(_current_company, company, FILE_LINE);
 	Company::Get(_current_company)->ai_instance->InsertEvent(event);
 	cur_company.Restore();
-
-	event->Release();
 }
 
 /* static */ void AI::BroadcastNewEvent(ScriptEvent *event, CompanyID skip_company)
 {
-	/* AddRef() and Release() need to be called at least once, so do it here */
-	event->AddRef();
+	ScriptObjectRef counter(event);
 
 	/* Clients should ignore events */
 	if (_networking && !_network_server) {
-		event->Release();
 		return;
 	}
 
@@ -278,8 +271,6 @@
 	for (CompanyID c = COMPANY_FIRST; c < MAX_COMPANIES; c++) {
 		if (c != skip_company) AI::NewEvent(c, event);
 	}
-
-	event->Release();
 }
 
 /* static */ void AI::Save(CompanyID company)
