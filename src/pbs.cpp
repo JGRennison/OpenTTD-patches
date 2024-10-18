@@ -111,18 +111,13 @@ bool TryReserveRailTrack(TileIndex tile, Track track, bool trigger_stations)
 	assert_msg_tile((TrackdirBitsToTrackBits(GetTileTrackdirBits(tile, TRANSPORT_RAIL, 0)) & TrackToTrackBits(track)) != 0, tile,
 			"{:X}, {:X}, {:X}", TrackdirBitsToTrackBits(GetTileTrackdirBits(tile, TRANSPORT_RAIL, 0)), track, TrackToTrackBits(track));
 
-	if (_settings_client.gui.show_track_reservation) {
-		/* show the reserved rail if needed */
-		if (IsTileType(tile, MP_TUNNELBRIDGE)) {
-			MarkBridgeOrTunnelDirtyOnReservationChange(tile, VMDF_NOT_MAP_MODE);
-		} else {
-			MarkTileGroundDirtyByTile(tile, VMDF_NOT_MAP_MODE);
-		}
-	}
-
 	switch (GetTileType(tile)) {
 		case MP_RAILWAY:
-			if (IsPlainRail(tile)) return TryReserveTrack(tile, track);
+			if (IsPlainRail(tile)) {
+				bool changed = TryReserveTrack(tile, track);
+				if (changed && _settings_client.gui.show_track_reservation) MarkTileGroundDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+				return changed;
+			}
 			if (IsRailDepot(tile)) {
 				if (!HasDepotReservation(tile)) {
 					SetDepotReservation(tile, true);
@@ -148,6 +143,7 @@ bool TryReserveRailTrack(TileIndex tile, Track track, bool trigger_stations)
 				}
 				SetCrossingReservation(tile, true);
 				UpdateLevelCrossing(tile, false);
+				if (_settings_client.gui.show_track_reservation) MarkTileGroundDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 				return true;
 			}
 			break;
@@ -168,11 +164,9 @@ bool TryReserveRailTrack(TileIndex tile, Track track, bool trigger_stations)
 					MarkTileGroundDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 					return true;
 				}
-				if (IsBridge(tile)) {
-					if (TryReserveRailBridgeHead(tile, track)) {
-						MarkBridgeOrTunnelDirtyOnReservationChange(tile, VMDF_NOT_MAP_MODE);
-						return true;
-					}
+				if (IsBridge(tile) && TryReserveRailBridgeHead(tile, track)) {
+					MarkBridgeOrTunnelDirtyOnReservationChange(tile, VMDF_NOT_MAP_MODE);
+					return true;
 				}
 			}
 			break;
@@ -207,14 +201,6 @@ void UnreserveRailTrack(TileIndex tile, Track t)
 {
 	assert_msg_tile(TrackdirBitsToTrackBits(GetTileTrackdirBits(tile, TRANSPORT_RAIL, 0)) & TrackToTrackBits(t), tile, "track: {:X}", t);
 
-	if (_settings_client.gui.show_track_reservation) {
-		if (IsTileType(tile, MP_TUNNELBRIDGE)) {
-			MarkBridgeOrTunnelDirtyOnReservationChange(tile, VMDF_NOT_MAP_MODE);
-		} else {
-			MarkTileGroundDirtyByTile(tile, VMDF_NOT_MAP_MODE);
-		}
-	}
-
 	switch (GetTileType(tile)) {
 		case MP_RAILWAY:
 			if (IsRailDepot(tile)) {
@@ -222,13 +208,17 @@ void UnreserveRailTrack(TileIndex tile, Track t)
 				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 				break;
 			}
-			if (IsPlainRail(tile)) UnreserveTrack(tile, t);
+			if (IsPlainRail(tile)) {
+				UnreserveTrack(tile, t);
+				if (_settings_client.gui.show_track_reservation) MarkTileGroundDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+			}
 			break;
 
 		case MP_ROAD:
 			if (IsLevelCrossing(tile)) {
 				SetCrossingReservation(tile, false);
 				UpdateLevelCrossing(tile);
+				if (_settings_client.gui.show_track_reservation) MarkTileGroundDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			}
 			break;
 
