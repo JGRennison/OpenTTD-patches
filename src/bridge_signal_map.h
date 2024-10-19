@@ -75,6 +75,8 @@ inline bool SetAllBridgeEntranceSimulatedSignalsGreen(TileIndex t)
 	}
 }
 
+void SetAllBridgeEntranceSimulatedSignalsRed(TileIndex t, TileIndex other_end);
+
 void ClearBridgeEntranceSimulatedSignalsExtended(TileIndex t);
 
 inline void ClearBridgeEntranceSimulatedSignals(TileIndex t)

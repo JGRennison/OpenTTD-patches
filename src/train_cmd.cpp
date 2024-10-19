@@ -5863,13 +5863,18 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 						}
 						MarkTileDirtyByTile(gp.new_tile, VMDF_NOT_MAP_MODE);
 						if (IsTunnelBridgeSignalSimulationBidirectional(gp.new_tile)) {
-							/* Set incoming signal in other direction to red as well */
+							/* Set incoming signals in other direction to red as well */
 							TileIndex other_end = GetOtherTunnelBridgeEnd(gp.new_tile);
 							SetTunnelBridgeEntranceSignalState(other_end, SIGNAL_STATE_RED);
 							if (_extra_aspects > 0) {
 								PropagateAspectChange(other_end, GetTunnelBridgeEntranceTrackdir(other_end), 0);
 							}
-							MarkTileDirtyByTile(other_end, VMDF_NOT_MAP_MODE);
+							if (IsBridge(other_end)) {
+								SetAllBridgeEntranceSimulatedSignalsRed(other_end, gp.new_tile);
+								MarkBridgeDirty(other_end, gp.new_tile, VMDF_NOT_MAP_MODE);
+							} else {
+								MarkTileDirtyByTile(other_end, VMDF_NOT_MAP_MODE);
+							}
 						}
 					}
 				}
