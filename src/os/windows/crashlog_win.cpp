@@ -464,7 +464,7 @@ static const uint MAX_FRAMES     = 64;
 		SymAllocation symalloc;
 		IMAGEHLP_SYMBOL64 *sym_info = &symalloc.sym;
 		sym_info->SizeOfStruct = sizeof(IMAGEHLP_SYMBOL64);
-		sym_info->MaxNameLength = MAX_SYMBOL_LEN;
+		sym_info->MaxNameLength = MAX_SYMBOL_LEN - 1;
 
 		std::array<DWORD64, 8> last_offsets = {};
 
@@ -512,6 +512,7 @@ static const uint MAX_FRAMES     = 64;
 			/* Get symbol name and line info if possible. */
 			DWORD64 offset;
 			if (proc.pSymGetSymFromAddr64(hCur, frame.AddrPC.Offset, &offset, sym_info)) {
+				sym_info->Name[MAX_SYMBOL_LEN - 1] = '\0'; // SymGetSymFromAddr64 does not null-terminate truncated symbol names, ensure that symbol name is null-terminated
 				if (offset > INT64_MAX) {
 					buffer.format(" {} - {}", sym_info->Name, (DWORD64)(-offset));
 				} else {
