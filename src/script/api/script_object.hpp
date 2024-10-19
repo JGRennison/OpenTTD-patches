@@ -21,8 +21,6 @@
 
 #include <utility>
 
-struct CommandAuxiliaryBase;
-
 /**
  * The callback function for Mode-classes.
  */
@@ -113,9 +111,9 @@ protected:
 	/**
 	 * Executes a raw DoCommand for the script.
 	 */
-	static bool DoCommandEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint cmd, const char *text = nullptr, const CommandAuxiliaryBase *aux_data = nullptr, Script_SuspendCallbackProc *callback = nullptr);
+	static bool DoCommandEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint cmd, const char *text = nullptr, const struct CommandAuxiliaryBase *aux_data = nullptr, Script_SuspendCallbackProc *callback = nullptr);
 
-	static bool DoCommandEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint cmd, const std::string &text, const CommandAuxiliaryBase *aux_data = nullptr, Script_SuspendCallbackProc *callback = nullptr)
+	static bool DoCommandEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, uint cmd, const std::string &text, const struct CommandAuxiliaryBase *aux_data = nullptr, Script_SuspendCallbackProc *callback = nullptr)
 	{
 		return ScriptObject::DoCommandEx(tile, p1, p2, p3, cmd, text.c_str(), aux_data, callback);
 	}
@@ -130,7 +128,7 @@ protected:
 		return ScriptObject::DoCommandEx(tile, p1, p2, 0, cmd, text.c_str(), nullptr, callback);
 	}
 
-	static bool DoCommandAux(TileIndex tile, const CommandAuxiliaryBase *aux_data, uint cmd, Script_SuspendCallbackProc *callback = nullptr)
+	static bool DoCommandAux(TileIndex tile, const struct CommandAuxiliaryBase *aux_data, uint cmd, Script_SuspendCallbackProc *callback = nullptr)
 	{
 		return ScriptObject::DoCommandEx(tile, 0, 0, 0, cmd, nullptr, aux_data, callback);
 	}
