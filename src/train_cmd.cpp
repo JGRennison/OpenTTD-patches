@@ -6295,11 +6295,11 @@ static Vehicle *CollectTrackbitsFromCrashedVehiclesEnum(Vehicle *v, void *data)
 static void SetSignalledBridgeTunnelGreenIfClear(TileIndex tile, TileIndex end)
 {
 	if (TunnelBridgeIsFree(tile, end, nullptr, TBIFM_ACROSS_ONLY).Succeeded()) {
-		auto process_tile = [](TileIndex t) {
+		auto process_tile = [&](TileIndex t) {
 			if (IsTunnelBridgeSignalSimulationEntrance(t)) {
 				if (IsBridge(t)) {
 					SetAllBridgeEntranceSimulatedSignalsGreen(t);
-					MarkBridgeDirty(t, VMDF_NOT_MAP_MODE);
+					MarkBridgeDirty(tile, end, VMDF_NOT_MAP_MODE);
 				}
 				SetTunnelBridgeEntranceSignalGreen(t);
 			}

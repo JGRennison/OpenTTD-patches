@@ -1825,7 +1825,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t p
 			if (IsTunnelBridgeSignalSimulationExit(tile_exit) && IsTunnelBridgeEffectivelyPBS(tile_exit) && !HasAcrossTunnelBridgeReservation(tile_exit)) {
 				SetTunnelBridgeExitSignalState(tile_exit, SIGNAL_STATE_RED);
 			}
-			MarkBridgeOrTunnelDirty(tile);
+			MarkBridgeOrTunnelDirty(tile, tile_exit);
 			auto update_signal_side = [](TileIndex t) {
 				AddSideToSignalBuffer(t, INVALID_DIAGDIR, GetTileOwner(t));
 				if (IsTunnelBridgeSignalSimulationEntrance(t)) {
@@ -2402,7 +2402,7 @@ CommandCost CmdRemoveSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t 
 			ClearBridgeTunnelSignalSimulation(tile, end);
 			SetTunnelBridgeSignalStyle(tile, 0);
 			SetTunnelBridgeSignalStyle(end, 0);
-			MarkBridgeOrTunnelDirty(tile);
+			MarkBridgeOrTunnelDirty(tile, end);
 			AddSideToSignalBuffer(tile, INVALID_DIAGDIR, GetTileOwner(tile));
 			AddSideToSignalBuffer(end, INVALID_DIAGDIR, GetTileOwner(tile));
 			YapfNotifyTrackLayoutChange(tile, track);
@@ -2817,12 +2817,7 @@ CommandCost CmdConvertRail(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 					yapf_notify_track_change(tile, GetTunnelBridgeTrackBits(tile));
 					yapf_notify_track_change(endtile, GetTunnelBridgeTrackBits(endtile));
 
-					if (IsBridge(tile)) {
-						MarkBridgeDirty(tile);
-					} else {
-						MarkTileDirtyByTile(tile);
-						MarkTileDirtyByTile(endtile);
-					}
+					MarkBridgeOrTunnelDirty(tile, endtile);
 
 					AddRailTunnelBridgeInfrastructure(tile, endtile);
 					DirtyCompanyInfrastructureWindows(Company::Get(GetTileOwner(tile))->index);
@@ -3135,12 +3130,7 @@ CommandCost CmdConvertRailTrack(TileIndex tile, DoCommandFlag flags, uint32_t p1
 					yapf_notify_track_change(tile, track_bits);
 					if (across) yapf_notify_track_change(endtile, GetPrimaryTunnelBridgeTrackBits(endtile));
 
-					if (IsBridge(tile)) {
-						MarkBridgeDirty(tile);
-					} else {
-						MarkTileDirtyByTile(tile);
-						MarkTileDirtyByTile(endtile);
-					}
+					MarkBridgeOrTunnelDirty(tile, endtile);
 
 					AddRailTunnelBridgeInfrastructure(tile, endtile);
 					DirtyCompanyInfrastructureWindows(Company::Get(GetTileOwner(tile))->index);

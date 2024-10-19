@@ -98,29 +98,34 @@ void MarkBridgeDirty(TileIndex begin, TileIndex end, DiagDirection direction, ui
 /**
  * Mark bridge tiles dirty.
  * @param tile Bridge head.
+ * @param end Other end bridge head.
+ * @param flags To tell if an update is relevant or not (for example, animations in map mode are not)
  */
-void MarkBridgeDirty(TileIndex tile, ViewportMarkDirtyFlags flags)
+void MarkBridgeDirty(TileIndex tile, TileIndex end, ViewportMarkDirtyFlags flags)
 {
-	MarkBridgeDirty(tile, GetOtherTunnelBridgeEnd(tile), GetTunnelBridgeDirection(tile), GetBridgeHeight(tile), flags);
+	MarkBridgeDirty(tile, end, GetTunnelBridgeDirection(tile), GetBridgeHeight(tile), flags);
 }
 
 /**
  * Mark bridge or tunnel tiles dirty.
  * @param tile Bridge head or tunnel entrance.
+ * @param end Other end bridge head or tunnel entrance.
+ * @param flags To tell if an update is relevant or not (for example, animations in map mode are not)
  */
-void MarkBridgeOrTunnelDirty(TileIndex tile, ViewportMarkDirtyFlags flags)
+void MarkBridgeOrTunnelDirty(TileIndex tile, TileIndex end, ViewportMarkDirtyFlags flags)
 {
 	if (IsBridge(tile)) {
-		MarkBridgeDirty(tile, flags);
+		MarkBridgeDirty(tile, end, flags);
 	} else {
 		MarkTileDirtyByTile(tile, flags);
-		MarkTileDirtyByTile(GetOtherTunnelBridgeEnd(tile), flags);
+		MarkTileDirtyByTile(end, flags);
 	}
 }
 
 /**
  * Mark bridge or tunnel tiles dirty on tunnel/bridge head reservation change
  * @param tile Bridge head or tunnel entrance.
+ * @param flags To tell if an update is relevant or not (for example, animations in map mode are not)
  */
 void MarkBridgeOrTunnelDirtyOnReservationChange(TileIndex tile, ViewportMarkDirtyFlags flags)
 {
@@ -131,7 +136,7 @@ void MarkBridgeOrTunnelDirtyOnReservationChange(TileIndex tile, ViewportMarkDirt
 			MarkTileGroundDirtyByTile(tile, flags);
 		}
 	} else if (IsBridge(tile)) {
-		MarkBridgeDirty(tile, flags);
+		MarkBridgeDirty(tile, GetOtherTunnelBridgeEnd(tile), flags);
 	} else {
 		MarkTileGroundDirtyByTile(tile, flags);
 	}

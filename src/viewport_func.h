@@ -173,8 +173,8 @@ inline void SetViewportCatchmentSpecializedStation(const Waypoint *st, bool sel)
 }
 
 void MarkBridgeDirty(TileIndex begin, TileIndex end, DiagDirection direction, uint bridge_height, ViewportMarkDirtyFlags flags = VMDF_NONE);
-void MarkBridgeDirty(TileIndex tile, ViewportMarkDirtyFlags flags = VMDF_NONE);
-void MarkBridgeOrTunnelDirty(TileIndex tile, ViewportMarkDirtyFlags flags = VMDF_NONE);
+void MarkBridgeDirty(TileIndex tile, TileIndex end, ViewportMarkDirtyFlags flags = VMDF_NONE);
+void MarkBridgeOrTunnelDirty(TileIndex tile, TileIndex end, ViewportMarkDirtyFlags flags = VMDF_NONE);
 void MarkBridgeOrTunnelDirtyOnReservationChange(TileIndex tile, ViewportMarkDirtyFlags flags = VMDF_NONE);
 
 bool IsViewportMouseHoverActive();

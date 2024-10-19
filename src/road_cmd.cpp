@@ -736,12 +736,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlag flags, RoadBits piec
 				}
 
 				/* Mark tiles dirty that have been repaved */
-				if (IsBridge(tile)) {
-					MarkBridgeDirty(tile);
-				} else {
-					MarkTileDirtyByTile(tile);
-					MarkTileDirtyByTile(other_end);
-				}
+				MarkBridgeOrTunnelDirty(tile, other_end);
 
 				AddRoadTunnelBridgeInfrastructure(tile, other_end);
 				DirtyAllCompanyInfrastructureWindows();
@@ -1406,7 +1401,7 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 						SetRoadType(other_end, rtt, rt);
 					}
 
-					MarkBridgeDirty(tile);
+					MarkBridgeDirty(tile, other_end);
 
 					AddRoadTunnelBridgeInfrastructure(tile, other_end);
 					NotifyRoadLayoutChanged(true);
@@ -3342,12 +3337,7 @@ CommandCost CmdConvertRoad(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 				FindVehicleOnPos(tile, VEH_ROAD, &affected_rvs, &UpdateRoadVehPowerProc);
 				FindVehicleOnPos(endtile, VEH_ROAD, &affected_rvs, &UpdateRoadVehPowerProc);
 
-				if (IsBridge(tile)) {
-					MarkBridgeDirty(tile);
-				} else {
-					MarkTileDirtyByTile(tile);
-					MarkTileDirtyByTile(endtile);
-				}
+				MarkBridgeOrTunnelDirty(tile, endtile);
 			}
 		}
 	}
