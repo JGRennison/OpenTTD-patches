@@ -161,7 +161,7 @@ bool TryReserveRailTrack(TileIndex tile, Track track, bool trigger_stations)
 			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL) {
 				if (IsTunnel(tile) && !HasTunnelReservation(tile)) {
 					SetTunnelReservation(tile, true);
-					MarkTileGroundDirtyByTile(tile, VMDF_NOT_MAP_MODE);
+					MarkBridgeOrTunnelDirtyOnReservationChange(tile, VMDF_NOT_MAP_MODE);
 					return true;
 				}
 				if (IsBridge(tile) && TryReserveRailBridgeHead(tile, track)) {

@@ -129,7 +129,10 @@ void MarkBridgeOrTunnelDirty(TileIndex tile, TileIndex end, ViewportMarkDirtyFla
  */
 void MarkBridgeOrTunnelDirtyOnReservationChange(TileIndex tile, ViewportMarkDirtyFlags flags)
 {
-	if (IsTunnelBridgeWithSignalSimulation(tile)) {
+	if (IsTunnelBridgeSignalSimulationBidirectional(tile)) {
+		/* Redraw whole bridge/tunnel */
+		MarkBridgeOrTunnelDirty(tile, GetOtherTunnelBridgeEnd(tile), flags);
+	} else if (IsTunnelBridgeWithSignalSimulation(tile)) {
 		if (IsBridge(tile)) {
 			MarkTileDirtyByTile(tile, flags);
 		} else {
@@ -1871,7 +1874,15 @@ static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
 		DrawTunnelBridgeRampSingleSignal(ti, (GetTunnelBridgeExitSignalState(ti->tile) == SIGNAL_STATE_GREEN), position ^ 1, GetTunnelBridgeDisplaySignalType(ti->tile), true);
 	}
 	if (IsTunnelBridgeSignalSimulationEntrance(ti->tile)) {
-		DrawTunnelBridgeRampSingleSignal(ti, (GetTunnelBridgeEntranceSignalState(ti->tile) == SIGNAL_STATE_GREEN), position, GetTunnelBridgeDisplaySignalType(ti->tile), false);
+		SignalState state = GetTunnelBridgeEntranceSignalState(ti->tile);
+		if (state == SIGNAL_STATE_GREEN && IsTunnelBridgeSignalSimulationBidirectional(ti->tile) && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+			/* Bidirectional tunnel/bridge in realistic braking mode: display green entrance signals as visually red
+			 * when entrance is not reserved, or exit signal is green. */
+			if (!HasAcrossTunnelBridgeReservation(ti->tile) || GetTunnelBridgeExitSignalState(ti->tile) == SIGNAL_STATE_GREEN) {
+				state = SIGNAL_STATE_RED;
+			}
+		}
+		DrawTunnelBridgeRampSingleSignal(ti, (state == SIGNAL_STATE_GREEN), position, GetTunnelBridgeDisplaySignalType(ti->tile), false);
 	}
 }
 
@@ -1919,6 +1930,19 @@ static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_st
 
 			SignalVariant variant = IsTunnelBridgeSemaphore(bridge_start_tile) ? SIG_SEMAPHORE : SIG_ELECTRIC;
 			SignalState state = GetBridgeEntranceSimulatedSignalState(bridge_start_tile, m2_position);
+			if (state == SIGNAL_STATE_GREEN && IsTunnelBridgeSignalSimulationBidirectional(bridge_start_tile) && _settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
+				/* Bidirectional tunnel/bridge in realistic braking mode: display green middle signals as visually red when
+				 * other end is reserved in incoming direction, or when both entrance signals are green and the entrance is not reserved. */
+				if (HasAcrossTunnelBridgeReservation(bridge_end_tile) &&
+						GetTunnelBridgeExitSignalState(bridge_end_tile) != SIGNAL_STATE_GREEN &&
+						GetTunnelBridgeEntranceSignalState(bridge_end_tile) == SIGNAL_STATE_GREEN) {
+					state = SIGNAL_STATE_RED;
+				} else if (!HasAcrossTunnelBridgeReservation(bridge_start_tile) &&
+						GetTunnelBridgeEntranceSignalState(bridge_start_tile) == SIGNAL_STATE_GREEN &&
+						GetTunnelBridgeEntranceSignalState(bridge_end_tile) == SIGNAL_STATE_GREEN) {
+					state = SIGNAL_STATE_RED;
+				}
+			}
 			uint8_t aspect = 0;
 			if (state == SIGNAL_STATE_GREEN) {
 				aspect = 1;

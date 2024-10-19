@@ -1510,6 +1510,7 @@ static void TrainBrakingModelChanged(int32_t new_value)
 
 	InvalidateWindowData(WC_BUILD_SIGNAL, 0);
 	InvalidateWindowClassesData(WC_GAME_OPTIONS);
+	MarkWholeScreenDirty();
 }
 
 /**
