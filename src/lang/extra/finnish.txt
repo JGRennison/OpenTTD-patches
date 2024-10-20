@@ -23,6 +23,8 @@ STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Muuta la
 
 # Programmable Pre-Signals
 
+#Town select window (for SE only)
+
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Lumirajan korkeus:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Siirrä lumirajaa yksi taso ylöspäin
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Siirrä lumirajaa yksi taso alaspäin

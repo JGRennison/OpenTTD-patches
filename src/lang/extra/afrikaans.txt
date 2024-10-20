@@ -21,6 +21,8 @@ STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Wissel d
 
 # Programmable Pre-Signals
 
+#Town select window (for SE only)
+
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Sneeu lyn hoogte:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Beweeg die sneeu lyn een op
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Beweeg die sneeu lyn een af

@@ -25,6 +25,8 @@ STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Slå gen
 
 # Programmable Pre-Signals
 
+#Town select window (for SE only)
+
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Snegrænse
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Flyt snegrænsen een op
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Flyt snegrænsen een ned

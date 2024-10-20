@@ -68,4 +68,11 @@ enum TownFoundingWidgets : WidgetID {
 	WID_TF_LAYOUT_RANDOM,     ///< Selection for a randomly chosen town layout.
 };
 
+/** Widgets of the #SelectTownWindow class. */
+enum SelectTownWidgets : WidgetID {
+	WID_ST_CAPTION,   ///< Caption of the window.
+	WID_ST_PANEL,     ///< Main panel.
+	WID_ST_SCROLLBAR, ///< Scrollbar of the panel.
+};
+
 #endif /* WIDGETS_TOWN_WIDGET_H */

@@ -26,6 +26,8 @@ STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capacidade: {
 
 # Programmable Pre-Signals
 
+#Town select window (for SE only)
+
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Altura linha neve:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}Mover a linha de neve um nível acima
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}Mover a linha de neve um nível abaixo

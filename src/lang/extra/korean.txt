@@ -1185,6 +1185,10 @@ STR_WATERWAYS_TOOLBAR_CREATE_RIVER_IN_GAME_TOOLTIP              :{BLACK}강 만�
 
 STR_LANDSCAPING_TOOLTIP_RULER_TOOL                              :{BLACK}거리와 고도를 측정하기 위한 가상의 자를 사용합니다.
 
+#Town select window (for SE only)
+STR_SELECT_TOWN_CAPTION                                         :{WHITE}도시 선택
+STR_SELECT_TOWN_LIST_ITEM                                       :{BLACK}{TOWN}
+
 STR_TREES_REMOVE_TREES_BUTTON                                   :{BLACK}모든 나무 제거하기
 STR_TREES_REMOVE_TREES_TOOLTIP                                  :{BLACK}전 지역에 걸쳐 나무를 모두 제거합니다.
 

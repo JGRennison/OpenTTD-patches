@@ -1535,6 +1535,127 @@ void ShowFoundTownWindow()
 	AllocateWindowDescFront<FoundTownWindow>(_found_town_desc, 0);
 }
 
+/**
+ * Window for selecting towns to build a house in.
+ */
+struct SelectTownWindow : Window {
+	TownList towns;       ///< list of towns
+	CommandContainer cmd; ///< command to build the house (CMD_PLACE_HOUSE)
+	Scrollbar *vscroll;   ///< scrollbar for the town list
+
+	SelectTownWindow(WindowDesc &desc, const CommandContainer &cmd) : Window(desc), cmd(cmd)
+	{
+		std::vector<std::pair<uint, TownID>> town_set;
+		constexpr uint MAX_TOWN_COUNT = 16;
+		for (const Town *t : Town::Iterate()) {
+			uint dist_sq = DistanceSquare(cmd.tile, t->xy);
+			if (town_set.size() >= MAX_TOWN_COUNT && dist_sq >= town_set.front().first) {
+				/* We already have enough entries and this town is further away than the furthest existing one, don't bother adding it */
+				continue;
+			}
+
+			/* Add to heap */
+			town_set.emplace_back(dist_sq, t->index);
+			std::push_heap(town_set.begin(), town_set.end());
+
+			if (town_set.size() > MAX_TOWN_COUNT) {
+				/* Remove largest from heap */
+				std::pop_heap(town_set.begin(), town_set.end());
+				town_set.pop_back();
+			}
+		}
+		std::sort_heap(town_set.begin(), town_set.end());
+		for (auto &it : town_set) {
+			this->towns.push_back(it.second);
+		}
+
+		this->CreateNestedTree();
+		this->vscroll = this->GetScrollbar(WID_ST_SCROLLBAR);
+		this->vscroll->SetCount((uint)this->towns.size());
+		this->FinishInitNested();
+	}
+
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
+	{
+		if (widget != WID_ST_PANEL) return;
+
+		/* Determine the widest string */
+		Dimension d = { 0, 0 };
+		for (uint i = 0; i < this->towns.size(); i++) {
+			SetDParam(0, this->towns[i]);
+			d = maxdim(d, GetStringBoundingBox(STR_SELECT_TOWN_LIST_ITEM));
+		}
+
+		resize.height = d.height;
+		d.height *= 5;
+		d.width += WidgetDimensions::scaled.framerect.Horizontal();
+		d.height += WidgetDimensions::scaled.framerect.Vertical();
+		size = d;
+	}
+
+	void DrawWidget(const Rect &r, WidgetID widget) const override
+	{
+		if (widget != WID_ST_PANEL) return;
+
+		Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
+		uint y = ir.top;
+		uint end = std::min<uint>(this->vscroll->GetCount(), this->vscroll->GetPosition() + this->vscroll->GetCapacity());
+		for (uint i = this->vscroll->GetPosition(); i < end; i++) {
+			SetDParam(0, this->towns[i]);
+			DrawString(ir.left, ir.right, y, STR_SELECT_TOWN_LIST_ITEM);
+			y += this->resize.step_height;
+		}
+	}
+
+	void OnClick(Point pt, WidgetID widget, int click_count) override
+	{
+		if (widget != WID_ST_PANEL) return;
+
+		uint pos = this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_ST_PANEL, WidgetDimensions::scaled.framerect.top);
+		if (pos >= this->towns.size()) return;
+
+		/* Place a house */
+		this->cmd.p2 = this->towns[pos];
+		DoCommandP(this->cmd);
+
+		/* Close the window */
+		this->Close();
+	}
+
+	void OnResize() override
+	{
+		this->vscroll->SetCapacityFromWidget(this, WID_ST_PANEL, WidgetDimensions::scaled.framerect.Vertical());
+	}
+};
+
+static const NWidgetPart _nested_select_town_widgets[] = {
+	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_CLOSEBOX, COLOUR_DARK_GREEN),
+		NWidget(WWT_CAPTION, COLOUR_DARK_GREEN, WID_ST_CAPTION), SetDataTip(STR_SELECT_TOWN_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_DEFSIZEBOX, COLOUR_DARK_GREEN),
+	EndContainer(),
+	NWidget(NWID_HORIZONTAL),
+		NWidget(WWT_PANEL, COLOUR_DARK_GREEN, WID_ST_PANEL), SetResize(1, 0), SetScrollbar(WID_ST_SCROLLBAR), EndContainer(),
+		NWidget(NWID_VERTICAL),
+			NWidget(NWID_VSCROLLBAR, COLOUR_DARK_GREEN, WID_ST_SCROLLBAR),
+			NWidget(WWT_RESIZEBOX, COLOUR_DARK_GREEN),
+		EndContainer(),
+	EndContainer(),
+};
+
+static WindowDesc _select_town_desc(__FILE__, __LINE__,
+	WDP_AUTO, "select_town", 100, 0,
+	WC_SELECT_TOWN, WC_NONE,
+	WDF_CONSTRUCTION,
+	_nested_select_town_widgets
+);
+
+static void ShowSelectTownWindow(const CommandContainer &cmd)
+{
+	CloseWindowByClass(WC_SELECT_TOWN);
+	new SelectTownWindow(_select_town_desc, cmd);
+}
+
 void InitializeTownGui()
 {
 	_town_local_authority_kdtree.Clear();
@@ -1830,7 +1951,18 @@ struct BuildHouseWindow : public PickerWindow {
 	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
 	{
 		const HouseSpec *spec = HouseSpec::Get(HousePickerCallbacks::sel_type);
-		DoCommandP(tile, spec->Index(), 0, CMD_PLACE_HOUSE | CMD_MSG(STR_ERROR_CAN_T_BUILD_HOUSE), CcPlaySound_CONSTRUCTION_OTHER);
+		CommandContainer cmd = NewCommandContainerBasic(
+			tile,
+			spec->Index(),
+			INVALID_TOWN,
+			CMD_PLACE_HOUSE | CMD_MSG(STR_ERROR_CAN_T_BUILD_HOUSE),
+			CcPlaySound_CONSTRUCTION_OTHER
+		);
+		if (_ctrl_pressed) {
+			ShowSelectTownWindow(cmd);
+		} else {
+			DoCommandP(cmd);
+		}
 	}
 
 	IntervalTimer<TimerWindow> view_refresh_interval = {std::chrono::milliseconds(2500), [this](auto) {

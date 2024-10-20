@@ -27,6 +27,8 @@ STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}積み�
 
 # Programmable Pre-Signals
 
+#Town select window (for SE only)
+
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}雪線の位置:
 STR_MAPGEN_SNOW_LINE_UP                                         :{BLACK}雪線を上げる
 STR_MAPGEN_SNOW_LINE_DOWN                                       :{BLACK}雪線を下げる

@@ -20,6 +20,8 @@ STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}لوڈ �
 
 # Programmable Pre-Signals
 
+#Town select window (for SE only)
+
 # Town tooltip
 
 STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_VEL_END                    :{ORANGE} روانگی {DEPOT} کی طرف، {VELOCITY}

@@ -2,6 +2,8 @@
 
 # Programmable Pre-Signals
 
+#Town select window (for SE only)
+
 # Town tooltip
 
 # Cargo type orders Window

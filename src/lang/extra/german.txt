@@ -972,6 +972,10 @@ STR_WATERWAYS_TOOLBAR_CREATE_RIVER_IN_GAME_TOOLTIP              :{BLACK}Flüsse 
 
 STR_LANDSCAPING_TOOLTIP_RULER_TOOL                              :{BLACK}Benutze einen virtuellen Zollstock, um Entfernung und Höhe zu messen
 
+#Town select window (for SE only)
+STR_SELECT_TOWN_CAPTION                                         :{WHITE}Wähle Stadt
+STR_SELECT_TOWN_LIST_ITEM                                       :{BLACK}{TOWN}
+
 STR_TREES_REMOVE_TREES_BUTTON                                   :{BLACK}Entferne alle Bäume
 STR_TREES_REMOVE_TREES_TOOLTIP                                  :{BLACK}Entferne alle Bäume in der Landschaft
 

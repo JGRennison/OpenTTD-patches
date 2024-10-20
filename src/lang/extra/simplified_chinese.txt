@@ -1182,6 +1182,10 @@ STR_WATERWAYS_TOOLBAR_CREATE_RIVER_IN_GAME_TOOLTIP              :{BLACK}放置�
 
 STR_LANDSCAPING_TOOLTIP_RULER_TOOL                              :{BLACK}使用虚拟直尺来测量距离和高度差
 
+#Town select window (for SE only)
+STR_SELECT_TOWN_CAPTION                                         :{WHITE}选择城镇
+STR_SELECT_TOWN_LIST_ITEM                                       :{BLACK}{TOWN}
+
 STR_TREES_REMOVE_TREES_BUTTON                                   :{BLACK}移除所有树木
 STR_TREES_REMOVE_TREES_TOOLTIP                                  :{BLACK}移除地面上的所有树木
 

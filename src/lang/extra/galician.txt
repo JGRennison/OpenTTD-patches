@@ -1185,6 +1185,10 @@ STR_WATERWAYS_TOOLBAR_CREATE_RIVER_IN_GAME_TOOLTIP              :{BLACK}Colocar 
 
 STR_LANDSCAPING_TOOLTIP_RULER_TOOL                              :{BLACK}Usa unha regra virtual para medir a distancia e altura
 
+#Town select window (for SE only)
+STR_SELECT_TOWN_CAPTION                                         :{WHITE}Selecciona localidade
+STR_SELECT_TOWN_LIST_ITEM                                       :{BLACK}{TOWN}
+
 STR_TREES_REMOVE_TREES_BUTTON                                   :{BLACK}Eliminar todas as árbores
 STR_TREES_REMOVE_TREES_TOOLTIP                                  :{BLACK}Eliminar todas as árbores da paisaxe
 

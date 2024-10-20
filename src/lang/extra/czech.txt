@@ -1068,6 +1068,10 @@ STR_WATERWAYS_TOOLBAR_CREATE_RIVER_IN_GAME_TOOLTIP              :{BLACK}Vytvář
 
 STR_LANDSCAPING_TOOLTIP_RULER_TOOL                              :{BLACK}Použít virtuální pravítko pro měření vzdálenosti a výšky
 
+#Town select window (for SE only)
+STR_SELECT_TOWN_CAPTION                                         :{WHITE}Vybrat město
+STR_SELECT_TOWN_LIST_ITEM                                       :{BLACK}{TOWN}
+
 STR_TREES_REMOVE_TREES_BUTTON                                   :{BLACK}Odstranit všechny stromy
 STR_TREES_REMOVE_TREES_TOOLTIP                                  :{BLACK}Odstraní všechny stromy z terénů
 

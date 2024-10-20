@@ -3090,7 +3090,7 @@ static bool TryBuildTownHouse(Town *t, TileIndex tile)
 	return false;
 }
 
-CommandCost CmdPlaceHouse(DoCommandFlag flags, TileIndex tile, HouseID house)
+CommandCost CmdPlaceHouse(DoCommandFlag flags, TileIndex tile, HouseID house, TownID town_id)
 {
 	if (_game_mode != GM_EDITOR) return CMD_ERROR;
 	if (Town::GetNumItems() == 0) return_cmd_error(STR_ERROR_MUST_FOUND_TOWN_FIRST);
@@ -3099,7 +3099,13 @@ CommandCost CmdPlaceHouse(DoCommandFlag flags, TileIndex tile, HouseID house)
 	const HouseSpec *hs = HouseSpec::Get(house);
 	if (!hs->enabled) return CMD_ERROR;
 
-	Town *t = ClosestTownFromTile(tile, UINT_MAX);
+	Town *t;
+	if (town_id == INVALID_TOWN) {
+		t = ClosestTownFromTile(tile, UINT_MAX);
+	} else {
+		t = Town::GetIfValid(town_id);
+		if (t == nullptr) return CMD_ERROR;
+	}
 
 	int max_z = GetTileMaxZ(tile);
 
@@ -3127,13 +3133,13 @@ CommandCost CmdPlaceHouse(DoCommandFlag flags, TileIndex tile, HouseID house)
  * @param tile Tile to place house on.
  * @param flags Type of operation.
  * @param p1 House ID.
- * @param p2 Unused.
+ * @param p2 Town ID, or INVALID_TOWN to use nearest.
  * @param text Unused.
  * @return Empty cost or an error.
  */
 CommandCost CmdPlaceHouse(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
-	return CmdPlaceHouse(flags, tile, static_cast<HouseID>(p1));
+	return CmdPlaceHouse(flags, tile, static_cast<HouseID>(p1), static_cast<TownID>(p2));
 }
 
 /**
