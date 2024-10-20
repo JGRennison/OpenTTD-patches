@@ -6477,7 +6477,7 @@ calc_heightdiff_single_direction:;
 			if (dx != 1 || dy != 1) {
 				heightdiff = CalcHeightdiff(style, 0, t0, t1);
 				SetDParam(0, DistanceManhattan(t0, t1));
-				SetDParam(1, IntSqrt64(((uint64_t)dx * (uint64_t)dx) + ((uint64_t)dy * (uint64_t)dy))); // Avoid overflow in DistanceSquare
+				SetDParam(1, IntSqrt64(DistanceSquare64(t0, t1))); // Avoid overflow in DistanceSquare
 			} else {
 				SetDParam(0, 0);
 				SetDParam(1, 0);

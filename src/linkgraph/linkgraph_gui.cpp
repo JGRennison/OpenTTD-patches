@@ -648,10 +648,8 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 				builder += "\n\n";
 				TileIndex t0 = Station::Get(i->from_id)->xy;
 				TileIndex t1 = Station::Get(i->to_id)->xy;
-				uint dx = Delta(TileX(t0), TileX(t1));
-				uint dy = Delta(TileY(t0), TileY(t1));
 				SetDParam(0, DistanceManhattan(t0, t1));
-				SetDParam(1, IntSqrt64(((uint64_t)dx * (uint64_t)dx) + ((uint64_t)dy * (uint64_t)dy))); // Avoid overflow in DistanceSquare
+				SetDParam(1, IntSqrt64(DistanceSquare64(t0, t1))); // Avoid overflow in DistanceSquare
 				GetString(builder, STR_LINKGRAPH_STATS_TOOLTIP_DISTANCE);
 			}
 

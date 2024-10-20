@@ -250,10 +250,10 @@ uint DistanceManhattan(TileIndex t0, TileIndex t1)
  * @param t1 the end tile
  * @return the distance
  */
-uint DistanceSquare(TileIndex t0, TileIndex t1)
+uint64_t DistanceSquare64(TileIndex t0, TileIndex t1)
 {
-	const int dx = TileX(t0) - TileX(t1);
-	const int dy = TileY(t0) - TileY(t1);
+	const int64_t dx = (int)TileX(t0) - (int)TileX(t1);
+	const int64_t dy = (int)TileY(t0) - (int)TileY(t1);
 	return dx * dx + dy * dy;
 }
 
