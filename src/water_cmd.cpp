@@ -1367,7 +1367,8 @@ void TileLoopWaterFlooding(FloodingBehaviour flooding_behaviour, TileIndex tile)
 		case FLOOD_ACTIVE: {
 			int non_water_neighbours = 0;
 			for (Direction dir = DIR_BEGIN; dir < DIR_END; dir++) {
-				TileIndex dest = tile + TileOffsByDir(dir);
+				TileIndex dest = AddTileIndexDiffCWrap(tile, TileIndexDiffCByDir(dir));
+				/* Contrary to drying up, flooding does not consider MP_VOID tiles. */
 				if (!IsValidTile(dest)) continue;
 				/* do not try to flood water tiles - increases performance a lot */
 				if (IsTileType(dest, MP_WATER)) continue;
@@ -1392,8 +1393,9 @@ void TileLoopWaterFlooding(FloodingBehaviour flooding_behaviour, TileIndex tile)
 		case FLOOD_DRYUP: {
 			Slope slope_here = std::get<0>(GetFoundationSlope(tile)) & ~SLOPE_HALFTILE_MASK & ~SLOPE_STEEP;
 			for (uint dir : SetBitIterator(_flood_from_dirs[slope_here])) {
-				TileIndex dest = tile + TileOffsByDir((Direction)dir);
-				if (dest >= MapSize()) continue;
+				TileIndex dest = AddTileIndexDiffCWrap(tile, TileIndexDiffCByDir(static_cast<Direction>(dir)));
+				/* Contrary to flooding, drying up does consider MP_VOID tiles. */
+				if (dest == INVALID_TILE) continue;
 
 				FloodingBehaviour dest_behaviour = GetFloodingBehaviour(dest);
 				if ((dest_behaviour == FLOOD_ACTIVE) || (dest_behaviour == FLOOD_PASSIVE)) return;
