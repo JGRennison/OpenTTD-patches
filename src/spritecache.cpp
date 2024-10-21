@@ -23,6 +23,7 @@
 #include "scope_info.h"
 #include "spritecache.h"
 #include "spritecache_internal.h"
+#include "blitter/32bpp_base.hpp"
 
 #include "table/sprites.h"
 #include "table/strings.h"
@@ -1062,10 +1063,21 @@ uint32_t GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
 			uint32_t r = 0, g = 0, b = 0, cnt = 0;
 			SpriteLoader::CommonPixel *pixel = sprite->data;
 			for (uint x = sprite->width * sprite->height; x != 0; x--) {
-				if (pixel->a) {
-					if (remap && pixel->m) {
-						const Colour c = _cur_palette.palette[remap[pixel->m]];
-						if (c.a) {
+				if (pixel->a != 0) {
+					if (pixel->m != 0) {
+						uint8_t m = pixel->m;
+						if (remap != nullptr) m = remap[m];
+
+						/* Get brightest value */
+						uint8_t rgb_max = std::max({pixel->r, pixel->g, pixel->b});
+
+						/* Black pixel (8bpp or old 32bpp image), so use default value */
+						if (rgb_max == 0) rgb_max = Blitter_32bppBase::DEFAULT_BRIGHTNESS;
+
+						/* Convert the mapping channel to a RGB value */
+						const Colour c = Blitter_32bppBase::AdjustBrightness(_cur_palette.palette[m], rgb_max);
+
+						if (c.a != 0) {
 							r += c.r;
 							g += c.g;
 							b += c.b;
@@ -1093,8 +1105,8 @@ uint32_t GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
 			/* Return the average colour. */
 			uint32_t r = 0, g = 0, b = 0, cnt = 0;
 			for (uint x = sprite->width * sprite->height; x != 0; x--) {
-				if (pixel->a) {
-					const uint col_index = remap ? remap[pixel->m] : pixel->m;
+				if (pixel->a != 0) {
+					const uint col_index = remap != nullptr ? remap[pixel->m] : pixel->m;
 					const Colour c = _cur_palette.palette[col_index];
 					r += c.r;
 					g += c.g;
@@ -1106,21 +1118,14 @@ uint32_t GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
 			return cnt ? Colour(r / cnt, g / cnt, b / cnt).data : 0;
 		} else {
 			/* Return the most used indexed colour. */
-			int cnt[256];
-			memset(cnt, 0, sizeof(cnt));
+			std::array<uint, 256> counts{};
 			for (uint x = sprite->width * sprite->height; x != 0; x--) {
-				cnt[remap ? remap[pixel->m] : pixel->m]++;
+				if (pixel->a != 0) {
+					counts[remap != nullptr ? remap[pixel->m] : pixel->m]++;
+				}
 				pixel++;
 			}
-			int cnt_max = -1;
-			uint32_t rk = 0;
-			for (uint x = 1; x < lengthof(cnt); x++) {
-				if (cnt[x] > cnt_max) {
-					rk = x;
-					cnt_max = cnt[x];
-				}
-			}
-			return rk;
+			return std::max_element(counts.begin(), counts.end()) - counts.begin();
 		}
 	}
 
