@@ -363,8 +363,6 @@ void GenerateWorld(GenWorldMode mode, uint size_x, uint size_y, bool reset_setti
 	}
 
 	_GenerateWorld();
-
-	ReInitAllWindows(false);
 }
 
 /** Town data imported from JSON files and used to place towns. */
