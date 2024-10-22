@@ -1271,7 +1271,21 @@ void ChangeWindowOwner(Owner old_owner, Owner new_owner)
 	}
 }
 
-static void BringWindowToFront(Window *w);
+static void ReorderWindowToFront(Window *w);
+
+/**
+ * Make a window the relative top-window on the screen.
+ * The window gets unshaded if it was shaded, and a white border is drawn at its edges for a brief period of time to visualize its "activation".
+ * @param w Window to activate
+ */
+void BringWindowToFront(Window *w)
+{
+	if (w->IsShaded()) w->SetShaded(false); // Restore original window size if it was shaded.
+
+	w->SetWhiteBorder();
+	ReorderWindowToFront(w);
+	w->SetDirty();
+}
 
 /**
  * Find a window and make it the relative top-window on the screen.
@@ -1284,13 +1298,7 @@ Window *BringWindowToFrontById(WindowClass cls, WindowNumber number)
 {
 	Window *w = FindWindowById(cls, number);
 
-	if (w != nullptr) {
-		if (w->IsShaded()) w->SetShaded(false); // Restore original window size if it was shaded.
-
-		w->SetWhiteBorder();
-		BringWindowToFront(w);
-		w->SetDirty();
-	}
+	if (w != nullptr) BringWindowToFront(w);
 
 	return w;
 }
@@ -1473,7 +1481,7 @@ static void RemoveWindowFromZOrdering(Window *w)
  * or lower z-priority. The window is marked dirty for a repaint
  * @param w window that is put into the relative foreground
  */
-static void BringWindowToFront(Window *w)
+static void ReorderWindowToFront(Window *w)
 {
 	RemoveWindowFromZOrdering(w);
 	AddWindowToZOrdering(w);
@@ -2425,7 +2433,7 @@ static void StartWindowDrag(Window *w)
 	_drag_delta.y = w->top  - _cursor.pos.y;
 
 	CloseWindowById(WC_DROPDOWN_MENU, 0);
-	BringWindowToFront(w);
+	ReorderWindowToFront(w);
 }
 
 /**
@@ -2443,7 +2451,7 @@ static void StartWindowSizing(Window *w, bool to_left)
 	_drag_delta.y = _cursor.pos.y;
 
 	CloseWindowById(WC_DROPDOWN_MENU, 0);
-	BringWindowToFront(w);
+	ReorderWindowToFront(w);
 }
 
 /**
@@ -2620,7 +2628,7 @@ static bool MaybeBringWindowToFront(Window *w)
 		bring_to_front = true;
 	}
 
-	if (bring_to_front) BringWindowToFront(w);
+	if (bring_to_front) ReorderWindowToFront(w);
 	return true;
 }
 

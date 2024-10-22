@@ -1095,6 +1095,7 @@ public:
 	void Close([[maybe_unused]] int data = 0) override;
 };
 
+void BringWindowToFront(Window *w);
 Window *BringWindowToFrontById(WindowClass cls, WindowNumber number);
 Window *FindWindowFromPt(int x, int y);
 
