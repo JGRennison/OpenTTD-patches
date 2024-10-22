@@ -321,7 +321,7 @@ static CommandCost DoBuildLock(TileIndex tile, DiagDirection dir, DoCommandFlag 
 {
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 
-	int delta = TileOffsByDiagDir(dir);
+	TileIndexDiff delta = TileOffsByDiagDir(dir);
 	CommandCost ret = EnsureNoVehicleOnGround(tile);
 	if (ret.Succeeded()) ret = EnsureNoVehicleOnGround(tile + delta);
 	if (ret.Succeeded()) ret = EnsureNoVehicleOnGround(tile - delta);
@@ -1392,8 +1392,8 @@ void TileLoopWaterFlooding(FloodingBehaviour flooding_behaviour, TileIndex tile)
 
 		case FLOOD_DRYUP: {
 			Slope slope_here = std::get<0>(GetFoundationSlope(tile)) & ~SLOPE_HALFTILE_MASK & ~SLOPE_STEEP;
-			for (uint dir : SetBitIterator(_flood_from_dirs[slope_here])) {
-				TileIndex dest = AddTileIndexDiffCWrap(tile, TileIndexDiffCByDir(static_cast<Direction>(dir)));
+			for (Direction dir : SetBitIterator<Direction>(_flood_from_dirs[slope_here])) {
+				TileIndex dest = AddTileIndexDiffCWrap(tile, TileIndexDiffCByDir(dir));
 				/* Contrary to flooding, drying up does consider MP_VOID tiles. */
 				if (dest == INVALID_TILE) continue;
 
@@ -1429,8 +1429,8 @@ void ConvertGroundTilesIntoWaterTiles()
 					break;
 
 				default:
-					for (uint dir : SetBitIterator(_flood_from_dirs[slope & ~SLOPE_STEEP])) {
-						TileIndex dest = TileAddByDir(tile, (Direction)dir);
+					for (Direction dir : SetBitIterator<Direction>(_flood_from_dirs[slope & ~SLOPE_STEEP])) {
+						TileIndex dest = TileAddByDir(tile, dir);
 						Slope slope_dest = GetTileSlope(dest) & ~SLOPE_STEEP;
 						if (slope_dest == SLOPE_FLAT || IsSlopeWithOneCornerRaised(slope_dest) || IsTileType(dest, MP_VOID)) {
 							MakeShore(tile);

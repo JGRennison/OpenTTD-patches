@@ -457,14 +457,14 @@ static const uint MAX_FRAMES     = 64;
 		CONTEXT ctx;
 		memcpy(&ctx, ep->ContextRecord, sizeof(ctx));
 
-		struct SymAllocation {
-			IMAGEHLP_SYMBOL64 sym;
-			char name[MAX_SYMBOL_LEN - 1];
-		};
-		SymAllocation symalloc;
-		IMAGEHLP_SYMBOL64 *sym_info = &symalloc.sym;
+		/* Allocate space for symbol info.
+		 * The total initialised size must be sufficient for a null-terminating char at sym_info->Name[sym_info->MaxNameLength],
+		 * SymGetSymFromAddr64 is not required to write a null-terminating char.
+		 * sizeof(IMAGEHLP_SYMBOL64) includes at least one char of the Name buffer. */
+		std::array<char, sizeof(IMAGEHLP_SYMBOL64) + MAX_SYMBOL_LEN> sym_info_raw{};
+		IMAGEHLP_SYMBOL64 *sym_info = reinterpret_cast<IMAGEHLP_SYMBOL64*>(sym_info_raw.data());
 		sym_info->SizeOfStruct = sizeof(IMAGEHLP_SYMBOL64);
-		sym_info->MaxNameLength = MAX_SYMBOL_LEN - 1;
+		sym_info->MaxNameLength = MAX_SYMBOL_LEN;
 
 		std::array<DWORD64, 8> last_offsets = {};
 
@@ -512,7 +512,6 @@ static const uint MAX_FRAMES     = 64;
 			/* Get symbol name and line info if possible. */
 			DWORD64 offset;
 			if (proc.pSymGetSymFromAddr64(hCur, frame.AddrPC.Offset, &offset, sym_info)) {
-				sym_info->Name[MAX_SYMBOL_LEN - 1] = '\0'; // SymGetSymFromAddr64 does not null-terminate truncated symbol names, ensure that symbol name is null-terminated
 				if (offset > INT64_MAX) {
 					buffer.format(" {} - {}", sym_info->Name, (DWORD64)(-offset));
 				} else {

@@ -280,9 +280,8 @@ public:
 
 		const size_t max_element_width = std::to_string(this->wr.number_of_patches).size();
 
-		std::array<int, 16> traversability_NW{0};
-		for (auto bitIndex : SetBitIterator(GetEdgeTraversabilityBits(DIAGDIR_NW))) *(traversability_NW.rbegin() + bitIndex) = 1;
-		Debug(map, 9, "    {:{}}", fmt::join(traversability_NW, " "), max_element_width);
+		std::string traversability = fmt::format("{:0{}b}", this->GetEdgeTraversabilityBits(DIAGDIR_NW), WATER_REGION_EDGE_LENGTH);
+		Debug(map, 9, "    {:{}}", fmt::join(traversability, " "), max_element_width);
 		Debug(map, 9, "  +{:->{}}+", "", WATER_REGION_EDGE_LENGTH * (max_element_width + 1) + 1);
 
 		for (uint y = 0; y < WATER_REGION_EDGE_LENGTH; ++y) {
@@ -296,9 +295,8 @@ public:
 		}
 
 		Debug(map, 9, "  +{:->{}}+", "", WATER_REGION_EDGE_LENGTH * (max_element_width + 1) + 1);
-		std::array<int, 16> traversability_SE{0};
-		for (auto bitIndex : SetBitIterator(this->GetEdgeTraversabilityBits(DIAGDIR_SE))) *(traversability_SE.rbegin() + bitIndex) = 1;
-		Debug(map, 9, "    {:{}}", fmt::join(traversability_SE, " "), max_element_width);
+		traversability = fmt::format("{:0{}b}", this->GetEdgeTraversabilityBits(DIAGDIR_SE), WATER_REGION_EDGE_LENGTH);
+		Debug(map, 9, "    {:{}}", fmt::join(traversability, " "), max_element_width);
 	}
 };
 

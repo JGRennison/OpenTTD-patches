@@ -1563,7 +1563,8 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32_
 
 	const StationSpec *statspec = StationClass::Get(spec_class)->GetSpec(spec_index);
 
-	TileIndexDiff tile_delta = (axis == AXIS_X ? TileDiffXY(1, 0) : TileDiffXY(0, 1));
+	TileIndexDiff tile_delta = (axis == AXIS_X ? TileDiffXY(1, 0) : TileDiffXY(0, 1)); // offset to go to the next platform tile
+	TileIndexDiff track_delta = (axis == AXIS_X ? TileDiffXY(0, 1) : TileDiffXY(1, 0)); // offset to go to the next track
 	TempBufferST<uint8_t> layout_buffer(numtracks * plat_len);
 	GetStationLayout(layout_buffer, numtracks, plat_len, statspec);
 
@@ -1579,7 +1580,7 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32_
 				}
 				tile += tile_delta;
 			}
-			tile_track += tile_delta ^ TileDiffXY(1, 1); // perpendicular to tile_delta
+			tile_track += track_delta;
 		}
 	}
 
@@ -1621,10 +1622,6 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32_
 	}
 
 	if (flags & DC_EXEC) {
-
-		uint8_t numtracks_orig;
-		Track track;
-
 		st->train_station = new_location;
 		st->AddFacility(FACIL_TRAIN, new_location.tile);
 
@@ -1636,9 +1633,9 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32_
 			st->cached_anim_triggers |= statspec->animation.triggers;
 		}
 
-		track = AxisToTrack(axis);
+		Track track = AxisToTrack(axis);
 
-		numtracks_orig = numtracks;
+		uint8_t numtracks_orig = numtracks;
 
 		Company *c = Company::Get(st->owner);
 		TileIndex tile_track = tile_org;
@@ -1702,7 +1699,7 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32_
 			} while (--w);
 			AddTrackToSignalBuffer(tile_track, track, _current_company);
 			YapfNotifyTrackLayoutChange(tile_track, track);
-			tile_track += tile_delta ^ TileDiffXY(1, 1); // perpendicular to tile_delta
+			tile_track += track_delta;
 		} while (--numtracks);
 
 		for (uint i = 0; i < affected_vehicles.size(); ++i) {
