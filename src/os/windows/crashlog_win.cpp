@@ -130,7 +130,7 @@ public:
 		HANDLE file = GetStdHandle(STD_OUTPUT_HANDLE);
 		if (GetFileType(file) == FILE_TYPE_CHAR) {
 			wchar_t wdata[2048];
-			int len = MultiByteToWideChar(CP_UTF8, 0, data.data(), static_cast<int>(data.size()), wdata, sizeof(wdata));
+			int len = MultiByteToWideChar(CP_UTF8, 0, data.data(), static_cast<int>(data.size()), wdata, static_cast<int>(std::size(wdata)));
 			if (len > 0) {
 				WriteConsoleW(file, wdata, len, nullptr, nullptr);
 			}
