@@ -78,28 +78,18 @@ void NewGrfDebugSpritePicker::FoundSpriteDuringDrawing(SpriteID sprite)
 	include(this->draw_found_sprites, sprite);
 }
 
-/**
- * Get the feature index related to the window number.
- * @param window_number The window to get the feature index from.
- * @return the feature index
- */
-static inline uint GetFeatureIndex(uint window_number)
-{
-	return GB(window_number, 0, 27);
-}
+struct InspectTargetId {
+	GrfSpecFeature grf_feature;
+	uint32_t feature_index;
 
-/**
- * Get the window number for the inspect window given a
- * feature and index.
- * @param feature The feature we want to inspect.
- * @param index   The index/identifier of the feature to inspect.
- * @return the InspectWindow (Window)Number
- */
-static inline uint GetInspectWindowNumber(GrfSpecFeature feature, uint index)
-{
-	assert((index >> 27) == 0);
-	return (feature << 27) | index;
-}
+	constexpr InspectTargetId(GrfSpecFeature grf_feature, uint32_t feature_index) : grf_feature(grf_feature), feature_index(feature_index) {}
+
+	bool IsValid() const { return this->grf_feature != GSF_INVALID; }
+
+	bool operator==(const InspectTargetId &) const = default;
+
+	static constexpr InspectTargetId Invalid() { return InspectTargetId(GSF_INVALID, 0); }
+};
 
 /**
  * The type of a property to show. This is used to
@@ -200,9 +190,9 @@ public:
 	/**
 	 * Get the parent "window_number" of a given instance.
 	 * @param index the instance to get the parent for.
-	 * @return the parent's window_number or UINT32_MAX if there is none.
+	 * @return the parent's target ID or InspectTargetId::Invalid()
 	 */
-	virtual uint GetParent(uint index) const = 0;
+	virtual InspectTargetId GetParent(uint index) const = 0;
 
 	/**
 	 * Get the instance given an index.
@@ -316,41 +306,21 @@ struct NIFeature {
 #include "table/newgrf_debug_data.h"
 
 /**
- * Get the feature number related to the window number.
- * @param window_number The window to get the feature number for.
- * @return The feature number.
- */
-static inline GrfSpecFeature GetFeatureNum(uint window_number)
-{
-	return (GrfSpecFeature)GB(window_number, 27, 5);
-}
-
-/**
- * Get the NIFeature related to the window number.
+ * Get the NIFeature related to the feature number.
  * @param window_number The window to get the NIFeature for.
  * @return the NIFeature, or nullptr is there isn't one.
  */
-static inline const NIFeature *GetFeature(uint window_number)
+static inline const NIFeature *GetFeature(GrfSpecFeature grf_feature)
 {
-	GrfSpecFeature idx = GetFeatureNum(window_number);
-	return idx < GSF_FAKE_END ? _nifeatures[idx] : nullptr;
-}
-
-/**
- * Get the NIHelper related to the window number.
- * @param window_number The window to get the NIHelper for.
- * @pre GetFeature(window_number) != nullptr
- * @return the NIHelper
- */
-static inline const NIHelper *GetFeatureHelper(uint window_number)
-{
-	return GetFeature(window_number)->helper;
+	return grf_feature < GSF_FAKE_END ? _nifeatures[grf_feature] : nullptr;
 }
 
 /** Window used for inspecting NewGRFs. */
-struct NewGRFInspectWindow : Window {
+struct NewGRFInspectWindow final : Window {
 	/** The value for the variable 60 parameters. */
 	btree::btree_map<uint16_t, uint32_t> var60params;
+
+	InspectTargetId target_id;
 
 	/** GRFID of the caller of this window, 0 if it has no caller. */
 	uint32_t caller_grfid;
@@ -419,8 +389,18 @@ struct NewGRFInspectWindow : Window {
 	 */
 	bool HasChainIndex() const
 	{
-		GrfSpecFeature f = GetFeatureNum(this->window_number);
+		GrfSpecFeature f = this->target_id.grf_feature;
 		return f == GSF_TRAINS || f == GSF_ROADVEHICLES || f == GSF_SHIPS;
+	}
+
+	const NIFeature *GetFeature() const
+	{
+		return ::GetFeature(this->target_id.grf_feature);
+	}
+
+	const NIHelper *GetFeatureHelper() const
+	{
+		return this->GetFeature()->helper;
 	}
 
 	/**
@@ -429,7 +409,7 @@ struct NewGRFInspectWindow : Window {
 	 */
 	uint GetFeatureIndex() const
 	{
-		uint index = ::GetFeatureIndex(this->window_number);
+		uint index = this->target_id.feature_index;
 		if (this->chain_index > 0) {
 			assert(this->HasChainIndex());
 			const Vehicle *v = Vehicle::Get(index);
@@ -448,17 +428,17 @@ struct NewGRFInspectWindow : Window {
 
 		assert(this->HasChainIndex());
 
-		const Vehicle *v = Vehicle::Get(::GetFeatureIndex(this->window_number));
+		const Vehicle *v = Vehicle::Get(this->target_id.feature_index);
 		v = v->Move(this->chain_index);
 		if (v == nullptr) this->chain_index = 0;
 	}
 
-	NewGRFInspectWindow(WindowDesc &desc, WindowNumber wno) : Window(desc)
+	NewGRFInspectWindow(WindowDesc &desc, InspectTargetId target_id) : Window(desc), target_id(target_id)
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_NGRFI_SCROLLBAR);
-		bool show_sprite_dump_button = GetFeatureHelper(wno)->ShowSpriteDumpButton(::GetFeatureIndex(wno));
-		bool show_options = GetFeatureHelper(wno)->ShowOptionsDropDown(::GetFeatureIndex(wno));
+		bool show_sprite_dump_button = this->GetFeatureHelper()->ShowSpriteDumpButton(target_id.feature_index);
+		bool show_options = this->GetFeatureHelper()->ShowOptionsDropDown(target_id.feature_index);
 		this->show_dropdown = show_sprite_dump_button || show_options;
 		this->GetWidget<NWidgetStacked>(WID_NGRFI_SPRITE_DUMP_SEL)->SetDisplayedPlane(show_sprite_dump_button ? 0 : SZSP_NONE);
 		this->GetWidget<NWidgetStacked>(WID_NGRFI_SPRITE_DUMP_UNOPT_SEL)->SetDisplayedPlane(show_sprite_dump_button ? 0 : SZSP_NONE);
@@ -466,10 +446,10 @@ struct NewGRFInspectWindow : Window {
 		this->SetWidgetDisabledState(WID_NGRFI_SPRITE_DUMP_UNOPT, true);
 		this->SetWidgetDisabledState(WID_NGRFI_SPRITE_DUMP_OPTIONS, !show_sprite_dump_button);
 		this->SetWidgetDisabledState(WID_NGRFI_MAIN_OPTIONS, !show_options);
-		this->FinishInitNested(wno);
+		this->FinishInitNested(0);
 
 		this->vscroll->SetCount(0);
-		this->SetWidgetDisabledState(WID_NGRFI_PARENT, GetFeatureHelper(this->window_number)->GetParent(this->GetFeatureIndex()) == UINT32_MAX);
+		this->SetWidgetDisabledState(WID_NGRFI_PARENT, !this->GetFeatureHelper()->GetParent(this->GetFeatureIndex()).IsValid());
 
 		this->OnInvalidateData(0, true);
 	}
@@ -478,7 +458,7 @@ struct NewGRFInspectWindow : Window {
 	{
 		if (widget != WID_NGRFI_CAPTION) return;
 
-		GetFeatureHelper(this->window_number)->SetStringParameters(this->GetFeatureIndex());
+		this->GetFeatureHelper()->SetStringParameters(this->GetFeatureIndex());
 	}
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
@@ -486,7 +466,7 @@ struct NewGRFInspectWindow : Window {
 		switch (widget) {
 			case WID_NGRFI_VEH_CHAIN: {
 				assert(this->HasChainIndex());
-				GrfSpecFeature f = GetFeatureNum(this->window_number);
+				GrfSpecFeature f = this->target_id.grf_feature;
 				if (f == GSF_SHIPS) {
 					size.height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
 					break;
@@ -541,7 +521,7 @@ struct NewGRFInspectWindow : Window {
 		switch (widget) {
 			case WID_NGRFI_VEH_CHAIN: {
 				const Vehicle *v = Vehicle::Get(this->GetFeatureIndex());
-				if (GetFeatureNum(this->window_number) == GSF_SHIPS) {
+				if (this->target_id.grf_feature == GSF_SHIPS) {
 					Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
 					format_buffer buffer;
 					uint count = 0;
@@ -571,7 +551,7 @@ struct NewGRFInspectWindow : Window {
 					if (sel_center > width / 2) skip = std::min(total_width - width, sel_center - width / 2);
 				}
 
-				GrfSpecFeature f = GetFeatureNum(this->window_number);
+				GrfSpecFeature f = this->target_id.grf_feature;
 				int h = GetVehicleImageCellSize((VehicleType)(VEH_TRAIN + (f - GSF_TRAINS)), EIT_IN_DEPOT).height;
 				int y = CenterBounds(br.top, br.bottom, h);
 				DrawVehicleImage(v->First(), br, INVALID_VEHICLE, EIT_IN_DETAILS, skip);
@@ -591,13 +571,13 @@ struct NewGRFInspectWindow : Window {
 		Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
 
 		if (this->log_console) {
-			GetFeatureHelper(this->window_number)->SetStringParameters(this->GetFeatureIndex());
+			this->GetFeatureHelper()->SetStringParameters(this->GetFeatureIndex());
 			std::string buf = GetString(STR_NEWGRF_INSPECT_CAPTION);
 			if (!buf.empty()) Debug(misc, 0, "*** {} ***", strip_leading_colours(buf));
 		}
 
 		uint index = this->GetFeatureIndex();
-		const NIFeature *nif  = GetFeature(this->window_number);
+		const NIFeature *nif  = this->GetFeature();
 		const NIHelper *nih   = nif->helper;
 		const void *base      = nih->GetInstance(index);
 		const void *base_spec = nih->GetSpec(index);
@@ -932,9 +912,11 @@ struct NewGRFInspectWindow : Window {
 	{
 		switch (widget) {
 			case WID_NGRFI_PARENT: {
-				const NIHelper *nih   = GetFeatureHelper(this->window_number);
-				uint index = nih->GetParent(this->GetFeatureIndex());
-				::ShowNewGRFInspectWindow(GetFeatureNum(index), ::GetFeatureIndex(index), nih->GetGRFID(this->GetFeatureIndex()));
+				const NIHelper *nih = this->GetFeatureHelper();
+				InspectTargetId target = nih->GetParent(this->GetFeatureIndex());
+				if (target.IsValid()) {
+					::ShowNewGRFInspectWindow(target.grf_feature, target.feature_index, nih->GetGRFID(this->GetFeatureIndex()));
+				}
 				break;
 			}
 
@@ -1010,7 +992,7 @@ struct NewGRFInspectWindow : Window {
 				}
 
 				/* Does this feature have variables? */
-				const NIFeature *nif  = GetFeature(this->window_number);
+				const NIFeature *nif = this->GetFeature();
 				if (nif->variables == nullptr) return;
 
 				if (line < this->first_variable_line_index) return;
@@ -1042,7 +1024,7 @@ struct NewGRFInspectWindow : Window {
 			}
 
 			case WID_NGRFI_DUPLICATE: {
-				NewGRFInspectWindow *w = new NewGRFInspectWindow(this->window_desc, this->window_number);
+				NewGRFInspectWindow *w = new NewGRFInspectWindow(this->window_desc, this->target_id);
 				w->SetCallerGRFID(this->caller_grfid);
 				break;
 			}
@@ -1103,7 +1085,7 @@ struct NewGRFInspectWindow : Window {
 
 			case WID_NGRFI_MAIN_OPTIONS: {
 				DropDownList list;
-				GetFeatureHelper(this->window_number)->FillOptionsDropDown(this->GetFeatureIndex(), list);
+				this->GetFeatureHelper()->FillOptionsDropDown(this->GetFeatureIndex(), list);
 				ShowDropDownList(this, std::move(list), 0, WID_NGRFI_MAIN_OPTIONS, 140);
 				break;
 			}
@@ -1113,7 +1095,7 @@ struct NewGRFInspectWindow : Window {
 	void OnDropdownSelect(WidgetID widget, int index) override
 	{
 		if (widget == WID_NGRFI_MAIN_OPTIONS) {
-			GetFeatureHelper(this->window_number)->OnOptionsDropdownSelect(this->GetFeatureIndex(), index);
+			this->GetFeatureHelper()->OnOptionsDropdownSelect(this->GetFeatureIndex(), index);
 			return;
 		}
 
@@ -1295,6 +1277,26 @@ static WindowDesc _newgrf_inspect_desc(__FILE__, __LINE__,
 	_nested_newgrf_inspect_widgets
 );
 
+template <typename F>
+bool IterateNewGRFInspectWindows(InspectTargetId target_id, F handler)
+{
+	if (!HaveWindowByClass(WC_NEWGRF_INSPECT)) return false;
+
+	bool found = false;
+	for (Window *w : Window::IterateFromFront()) {
+		if (w->window_class == WC_NEWGRF_INSPECT) {
+			NewGRFInspectWindow *inspect_w = dynamic_cast<NewGRFInspectWindow *>(w);
+			if (inspect_w != nullptr && inspect_w->target_id == target_id) {
+				/* Found existing window */
+				found = true;
+				if (handler(inspect_w)) return found;
+			}
+		}
+	}
+
+	return found;
+}
+
 /**
  * Show the inspect window for a given feature and index.
  * The index is normally an in-game location/identifier, such
@@ -1306,12 +1308,17 @@ static WindowDesc _newgrf_inspect_desc(__FILE__, __LINE__,
  */
 void ShowNewGRFInspectWindow(GrfSpecFeature feature, uint index, const uint32_t grfid)
 {
-	if (index >= (1 << 27)) return;
 	if (!IsNewGRFInspectable(feature, index)) return;
 
-	WindowNumber wno = GetInspectWindowNumber(feature, index);
+	bool found = IterateNewGRFInspectWindows(InspectTargetId(feature, index), [&](NewGRFInspectWindow *w) {
+		BringWindowToFront(w);
+		w->SetCallerGRFID(grfid);
+		return true;
+	});
+	if (found) return;
+
 	WindowDesc &desc = (feature == GSF_TRAINS || feature == GSF_ROADVEHICLES || feature == GSF_SHIPS) ? _newgrf_inspect_chain_desc : _newgrf_inspect_desc;
-	NewGRFInspectWindow *w = AllocateWindowDescFront<NewGRFInspectWindow>(desc, wno, true);
+	NewGRFInspectWindow *w = new NewGRFInspectWindow(desc, InspectTargetId(feature, index));
 	w->SetCallerGRFID(grfid);
 }
 
@@ -1326,10 +1333,11 @@ void ShowNewGRFInspectWindow(GrfSpecFeature feature, uint index, const uint32_t 
 void InvalidateNewGRFInspectWindow(GrfSpecFeature feature, uint index)
 {
 	if (feature == GSF_INVALID) return;
-	if (index >= (1 << 27)) return;
 
-	WindowNumber wno = GetInspectWindowNumber(feature, index);
-	InvalidateWindowData(WC_NEWGRF_INSPECT, wno);
+	IterateNewGRFInspectWindows(InspectTargetId(feature, index), [](NewGRFInspectWindow *w) {
+		w->InvalidateData(0, false);
+		return false;
+	});
 }
 
 /**
@@ -1343,10 +1351,11 @@ void InvalidateNewGRFInspectWindow(GrfSpecFeature feature, uint index)
 void DeleteNewGRFInspectWindow(GrfSpecFeature feature, uint index)
 {
 	if (feature == GSF_INVALID) return;
-	if (index >= (1 << 27)) return;
 
-	WindowNumber wno = GetInspectWindowNumber(feature, index);
-	CloseAllWindowsById(WC_NEWGRF_INSPECT, wno);
+	IterateNewGRFInspectWindows(InspectTargetId(feature, index), [](NewGRFInspectWindow *w) {
+		w->Close();
+		return false;
+	});
 
 	/* Reinitialise the land information window to remove the "debug" sprite if needed.
 	 * Note: Since we might be called from a command here, it is important to not execute
@@ -1365,8 +1374,7 @@ void DeleteNewGRFInspectWindow(GrfSpecFeature feature, uint index)
  */
 bool IsNewGRFInspectable(GrfSpecFeature feature, uint index)
 {
-	if (index >= (1 << 27)) return false;
-	const NIFeature *nif = GetFeature(GetInspectWindowNumber(feature, index));
+	const NIFeature *nif = GetFeature(feature);
 	if (nif == nullptr) return false;
 	return nif->helper->IsInspectable(index);
 }
