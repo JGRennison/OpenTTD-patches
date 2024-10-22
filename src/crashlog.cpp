@@ -239,7 +239,7 @@ void CrashLog::LogConfiguration(format_target &buffer) const
 			BlitterFactory::GetCurrentBlitter() == nullptr ? (std::string_view)"none" : BlitterFactory::GetCurrentBlitter()->GetName(),
 			BaseGraphics::GetUsedSet() == nullptr ? (std::string_view)"none" : BaseGraphics::GetUsedSet()->name,
 			BaseGraphics::GetUsedSet() == nullptr ? UINT32_MAX : BaseGraphics::GetUsedSet()->version,
-			_current_language == nullptr ? (std::string_view)"none" : _current_language->file,
+			_current_language == nullptr ? (std::string_view)"none" : StrLastPathSegment(_current_language->file.c_str()),
 			MusicDriver::GetInstance() == nullptr ? "none" : MusicDriver::GetInstance()->GetName(),
 			BaseMusic::GetUsedSet() == nullptr ? (std::string_view)"none" : BaseMusic::GetUsedSet()->name,
 			BaseMusic::GetUsedSet() == nullptr ? UINT32_MAX : BaseMusic::GetUsedSet()->version,
