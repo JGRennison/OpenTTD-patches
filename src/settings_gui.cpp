@@ -2640,6 +2640,7 @@ static SettingsContainer &GetSettingsTree()
 				towns->Add(new SettingEntry("economy.town_cargo_scale_mode"));
 				towns->Add(new SettingEntry("economy.town_growth_rate"));
 				towns->Add(new SettingEntry("economy.town_growth_cargo_transported"));
+				towns->Add(new SettingEntry("economy.default_allow_town_growth"));
 				towns->Add(new SettingEntry("economy.town_zone_calc_mode"));
 				towns->Add(new SettingEntry("economy.allow_town_roads"));
 				towns->Add(new SettingEntry("economy.allow_town_level_crossings"));

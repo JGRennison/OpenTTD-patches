@@ -771,6 +771,7 @@ struct EconomySettings {
 	TownTunnelMode town_build_tunnels;       ///< if/when towns are allowed to build road tunnels
 	uint8_t  town_max_road_slope;            ///< maximum number of consecutive sloped road tiles which towns are allowed to build
 	bool     allow_town_bridges;             ///< towns are allowed to build bridges
+	bool     default_allow_town_growth;      ///< town growth is allowed per-town by default
 	bool     infrastructure_maintenance;     ///< enable monthly maintenance fee for owner infrastructure
 	TimekeepingUnits timekeeping_units;      ///< time units to use for the game economy, either calendar or wallclock
 	uint16_t minutes_per_calendar_year;      ///< minutes per calendar year. Special value 0 means that calendar time is frozen.

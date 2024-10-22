@@ -3973,8 +3973,6 @@ CommandCost CmdOverrideTownSetting(TileIndex tile, DoCommandFlag flags, uint32_t
 	const uint8_t value = GB(p2, 8, 8);
 	switch (setting) {
 		case TSOF_OVERRIDE_GROWTH:
-			if (is_override && value != 0) return CMD_ERROR;
-			break;
 		case TSOF_OVERRIDE_BUILD_ROADS:
 		case TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS:
 		case TSOF_OVERRIDE_BUILD_BRIDGES:
@@ -3995,7 +3993,6 @@ CommandCost CmdOverrideTownSetting(TileIndex tile, DoCommandFlag flags, uint32_t
 		if (is_override) {
 			switch (setting) {
 				case TSOF_OVERRIDE_GROWTH:
-					break;
 				case TSOF_OVERRIDE_BUILD_ROADS:
 				case TSOF_OVERRIDE_BUILD_LEVEL_CROSSINGS:
 				case TSOF_OVERRIDE_BUILD_BRIDGES:
@@ -4540,6 +4537,14 @@ static CommandCost TerraformTile_Town(TileIndex tile, DoCommandFlag flags, int z
 	}
 
 	return DoCommand(tile, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
+}
+
+void UpdateTownGrowthForAllTowns()
+{
+	for (Town *t : Town::Iterate()) {
+		UpdateTownGrowth(t);
+	}
+	SetWindowClassesDirty(WC_TOWN_AUTHORITY);
 }
 
 /** Tile callback functions for a town */

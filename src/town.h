@@ -179,7 +179,7 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 
 	inline bool IsTownGrowthDisabledByOverride() const
 	{
-		return HasBit(this->override_flags, TSOF_OVERRIDE_GROWTH);
+		return !(HasBit(this->override_flags, TSOF_OVERRIDE_GROWTH) ? HasBit(this->override_values, TSOF_OVERRIDE_GROWTH) : _settings_game.economy.default_allow_town_growth);
 	}
 
 	inline bool GetAllowBuildRoads() const

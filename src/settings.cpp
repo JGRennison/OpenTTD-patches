@@ -2111,6 +2111,14 @@ static void IndustryEventRateChanged(int32_t new_value)
 	if (_game_mode != GM_MENU) StartupIndustryDailyChanges(false);
 }
 
+static void DefaultAllowTownGrowthChanged(int32_t new_value)
+{
+	if (_game_mode != GM_MENU) {
+		extern void UpdateTownGrowthForAllTowns();
+		UpdateTownGrowthForAllTowns();
+	}
+}
+
 static void TownZoneModeChanged(int32_t new_value)
 {
 	InvalidateWindowClassesData(WC_GAME_OPTIONS);

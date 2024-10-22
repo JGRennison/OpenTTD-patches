@@ -233,7 +233,7 @@ public:
 							SetDParam(1, this->town->max_road_slope);
 							break;
 						case TSOF_OVERRIDE_GROWTH:
-							SetDParam(0, STR_CONFIG_SETTING_TOWN_GROWTH_NONE);
+							SetDParam(0, HasBit(this->town->override_values, idx) ? STR_CONFIG_SETTING_ON : STR_CONFIG_SETTING_TOWN_GROWTH_NONE);
 							break;
 					}
 				}
@@ -363,7 +363,7 @@ public:
 							}
 
 							case TSOF_OVERRIDE_GROWTH:
-								SetDParam(1, overriden ? STR_CONFIG_SETTING_TOWN_GROWTH_NONE : STR_COLOUR_DEFAULT);
+								SetDParam(2, this->town->IsTownGrowthDisabledByOverride() ? STR_CONFIG_SETTING_TOWN_GROWTH_NONE : STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH_ALLOWED);
 								break;
 
 							case TSOF_OVERRIDE_BUILD_BRIDGES:
@@ -493,10 +493,11 @@ public:
 						break;
 					}
 					case TSOF_OVERRIDE_GROWTH: {
-						int value = HasBit(this->town->override_flags, idx) ? 1 : 0;
+						int value = HasBit(this->town->override_flags, idx) ? (HasBit(this->town->override_values, idx) ? 2 : 1) : 0;
 						const StringID names[] = {
 							STR_COLOUR_DEFAULT,
 							STR_CONFIG_SETTING_TOWN_GROWTH_NONE,
+							STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH_ALLOWED,
 						};
 						ShowDropDownMenu(this, names, value, WID_TA_SETTING, 0, 0);
 						break;
