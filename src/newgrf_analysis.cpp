@@ -91,6 +91,9 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 		if (op.mode == ACOM_CB_VAR && adjust.variable == 0xC) {
 			if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
 				bool found_refit_cap = false;
+				const AnalyseCallbackOperationResultFlags prev_result = op.result_flags;
+				AnalyseCallbackOperationResultFlags refit_result_flags = ACORF_NONE;
+				const AnalyseCallbackOperationResultFlags refit_result_mask = ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND | ACORF_CB_REFIT_CAP_SEEN_VAR_47;
 				for (const auto &range : this->ranges) {
 					if (range.low == range.high) {
 						switch (range.low) {
@@ -120,7 +123,7 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 								if (range.group != nullptr) {
 									AnalyseCallbackOperation cb_refit_op(ACOM_CB_REFIT_CAPACITY);
 									range.group->AnalyseCallbacks(cb_refit_op);
-									op.result_flags |= (cb_refit_op.result_flags & (ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND | ACORF_CB_REFIT_CAP_SEEN_VAR_47));
+									refit_result_flags = (cb_refit_op.result_flags & refit_result_mask);
 								}
 								break;
 						}
@@ -129,13 +132,11 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 					}
 				}
 				if (this->default_group != nullptr) {
-					AnalyseCallbackOperationResultFlags prev_result = op.result_flags;
 					this->default_group->AnalyseCallbacks(op);
-					if (found_refit_cap) {
-						const AnalyseCallbackOperationResultFlags save_mask = ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND | ACORF_CB_REFIT_CAP_SEEN_VAR_47;
-						op.result_flags &= ~save_mask;
-						op.result_flags |= (prev_result & save_mask);
-					}
+				}
+				if (found_refit_cap) {
+					/* Found a refit callback, so ignore flags in refit_result_mask from all other child groups */
+					op.result_flags = (prev_result & refit_result_mask) | (op.result_flags & ~refit_result_mask) | refit_result_flags;
 				}
 				return;
 			}
