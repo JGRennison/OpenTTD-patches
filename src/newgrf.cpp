@@ -77,6 +77,7 @@
 
 /** List of all loaded GRF files */
 static std::vector<GRFFile *> _grf_files;
+static robin_hood::unordered_map<uint32_t, GRFFile *> _grf_file_map;
 
 const std::vector<GRFFile *> &GetAllGRFFiles()
 {
@@ -314,9 +315,8 @@ void GrfInfoVFmt(int severity, fmt::string_view msg, fmt::format_args args)
  */
 GRFFile *GetFileByGRFID(uint32_t grfid)
 {
-	for (GRFFile * const file : _grf_files) {
-		if (file->grfid == grfid) return file;
-	}
+	auto iter = _grf_file_map.find(grfid);
+	if (iter != _grf_file_map.end()) return iter->second;
 	return nullptr;
 }
 
@@ -10432,6 +10432,7 @@ static void ResetNewGRF()
 	}
 
 	_grf_files.clear();
+	_grf_file_map.clear();
 	_cur.grffile   = nullptr;
 	_new_signals_grfs.clear();
 	MemSetT<NewSignalStyle>(_new_signal_styles.data(), 0, MAX_NEW_SIGNAL_STYLES);
@@ -10594,7 +10595,9 @@ static void InitNewGRFFile(const GRFConfig *config)
 	}
 
 	newfile = new GRFFile(config);
-	_grf_files.push_back(_cur.grffile = newfile);
+	_cur.grffile = newfile;
+	_grf_files.push_back(newfile);
+	_grf_file_map[newfile->grfid] = newfile;
 }
 
 /**
