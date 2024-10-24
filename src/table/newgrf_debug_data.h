@@ -518,7 +518,24 @@ class NIHVehicle : public NIHelper {
 			output.FinishPrint();
 
 			if (e != nullptr) {
-				output.Print("    Callbacks: 0x{:X}, CB36 Properties: 0x{:X}", e->callbacks_used, e->cb36_properties_used);
+				{
+					output.buffer.append("    Callback flags: ");
+					bool first = true;
+					auto add_cb_flag = [&](SpriteGroupCallbacksUsed flag, const char *name) {
+						if ((e->callbacks_used & flag) == 0) return;
+						if (!first) output.buffer.append(", ");
+						output.buffer.append(name);
+						first = false;
+					};
+					add_cb_flag(SGCU_VEHICLE_32DAY_CALLBACK, "VEHICLE_32DAY_CALLBACK");
+					add_cb_flag(SGCU_VEHICLE_REFIT_COST, "VEHICLE_REFIT_COST");
+					add_cb_flag(SGCU_RANDOM_TRIGGER, "RANDOM_TRIGGER");
+					add_cb_flag(SGCU_CB36_SPEED_RAILTYPE, "CB36_SPEED_RAILTYPE");
+					add_cb_flag(SGCU_REFIT_CB_ALL_CARGOES, "REFIT_CB_ALL_CARGOES");
+					if (first) output.buffer.append("[NONE]");
+					output.FinishPrint();
+				}
+				output.Print("    CB36 Properties: 0x{:X}", e->cb36_properties_used);
 				uint64_t cb36_properties = e->cb36_properties_used;
 				if (!e->sprite_group_cb36_properties_used.empty()) {
 					const SpriteGroup *root_spritegroup = nullptr;
