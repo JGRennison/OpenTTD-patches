@@ -44,9 +44,8 @@
 
 #include "table/strings.h"
 
-#include "3rdparty/robin_hood/robin_hood.h"
-
 #include <limits>
+#include <vector>
 
 #include "safeguards.h"
 
@@ -599,9 +598,10 @@ const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops, CargoT
  */
 CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, CargoTypes cargo_mask, const Order *first, uint hops) const
 {
-	static robin_hood::unordered_flat_set<const Order *> seen_conditional_branches;
+	static std::vector<bool> seen_orders_container;
 	if (hops == 0) {
-		seen_conditional_branches.clear();
+		if (this->GetNumOrders() == 0) return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION); // No orders at all
+		seen_orders_container.assign(this->GetNumOrders(), false);
 	}
 
 	const Order *next = first;
@@ -619,26 +619,32 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, Ca
 		}
 	}
 
+	const std::span<Order> order_span = v->orders->GetOrderVector();
+	auto seen_order = [&](const Order *o) -> std::vector<bool>::reference { return seen_orders_container[o - order_span.data()]; };
+
 	do {
-		next = this->GetNextDecisionNode(next, ++hops, cargo_mask);
+		if (seen_order(next)) return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION); // Already handled
+
+		const Order *decision_node = this->GetNextDecisionNode(next, ++hops, cargo_mask);
+
+		if (decision_node == nullptr || seen_order(decision_node)) return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION); // Invalid or already handled
+
+		seen_order(next) = true;
+		seen_order(decision_node) = true;
+
+		next = decision_node;
 
 		/* Resolve possibly nested conditionals by estimation. */
-		while (next != nullptr && next->IsType(OT_CONDITIONAL)) {
-			if (!seen_conditional_branches.insert(next).second) {
-				/* Already handled this branch */
-				return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION);
-			}
+		while (next->IsType(OT_CONDITIONAL)) {
 			/* We return both options of conditional orders. */
-			const Order *skip_to = this->GetNextDecisionNode(
-					this->GetOrderAt(next->GetConditionSkipToOrder()), hops, cargo_mask);
-			const Order *advance = this->GetNextDecisionNode(
-					this->GetNext(next), hops, cargo_mask);
-			auto seen_target = [&](const Order *target) -> bool {
-				return target->IsType(OT_CONDITIONAL) && seen_conditional_branches.contains(target);
-			};
-			if (advance == nullptr || advance == first || skip_to == advance || seen_target(advance)) {
+			const Order *skip_to = &(order_span[next->GetConditionSkipToOrder()]);
+			if (!seen_order(skip_to)) skip_to = this->GetNextDecisionNode(skip_to, hops, cargo_mask);
+			const Order *advance = this->GetNext(next);
+			if (!seen_order(advance)) advance = this->GetNextDecisionNode(advance, hops, cargo_mask);
+
+			if (advance == nullptr || advance == first || skip_to == advance || seen_order(advance)) {
 				next = (skip_to == first) ? nullptr : skip_to;
-			} else if (skip_to == nullptr || skip_to == first || seen_target(skip_to)) {
+			} else if (skip_to == nullptr || skip_to == first || seen_order(skip_to)) {
 				next = (advance == first) ? nullptr : advance;
 			} else {
 				CargoMaskedStationIDStack st1 = this->GetNextStoppingStation(v, cargo_mask, skip_to, hops);
@@ -648,10 +654,10 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, Ca
 				while (!st2.station.IsEmpty()) st1.station.Push(st2.station.Pop());
 				return st1;
 			}
+
+			if (next == nullptr || seen_order(next)) return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION);
 			++hops;
 		}
-
-		if (next == nullptr) return CargoMaskedStationIDStack(cargo_mask, INVALID_STATION);
 
 		/* Don't return a next stop if the vehicle has to unload everything. */
 		if ((next->IsType(OT_GOTO_STATION) || next->IsType(OT_IMPLICIT)) &&
