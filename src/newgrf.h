@@ -446,6 +446,7 @@ void GrfMsgIntl(int severity, fmt::format_string<T...> msg, T&&... args)
 bool GetGlobalVariable(uint8_t param, uint32_t *value, const GRFFile *grffile);
 
 StringID MapGRFStringID(uint32_t grfid, StringID str);
+StringID MapGRFStringID(const struct GRFFile *grf, StringID str);
 void ShowNewGRFError();
 uint CountSelectedGRFs(GRFConfig *grfconf);
 

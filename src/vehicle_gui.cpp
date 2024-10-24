@@ -1099,7 +1099,7 @@ struct RefitWindow : public Window {
 				assert(grffile != nullptr);
 
 				StartTextRefStackUsage(grffile, 6);
-				name = GetString(GetGRFStringID(grffile->grfid, 0xD000 + callback));
+				name = GetString(GetGRFStringID(grffile, 0xD000 + callback));
 				StopTextRefStackUsage();
 			} else {
 				SetDParam(0, offset + 1);
@@ -1574,7 +1574,7 @@ StringID GetCargoSubtypeText(const Vehicle *v)
 			if (cb >= 0x400 || (v->GetGRF()->grf_version < 8 && cb == 0xFF)) cb = CALLBACK_FAILED;
 		}
 		if (cb != CALLBACK_FAILED) {
-			return GetGRFStringID(v->GetGRFID(), 0xD000 + cb);
+			return GetGRFStringID(v->GetGRF(), 0xD000 + cb);
 		}
 	}
 	return STR_EMPTY;

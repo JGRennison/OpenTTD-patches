@@ -228,7 +228,7 @@ public:
 						if (callback_res > 0x400) {
 							ErrorUnknownCallbackResult(spec->grf_prop.grffile->grfid, CBID_OBJECT_FUND_MORE_TEXT, callback_res);
 						} else {
-							StringID message = GetGRFStringID(spec->grf_prop.grffile->grfid, 0xD000 + callback_res);
+							StringID message = GetGRFStringID(spec->grf_prop.grffile, 0xD000 + callback_res);
 							if (message != STR_NULL && message != STR_UNDEFINED) {
 								StartTextRefStackUsage(spec->grf_prop.grffile, 6);
 								/* Use all the available space left from where we stand up to the

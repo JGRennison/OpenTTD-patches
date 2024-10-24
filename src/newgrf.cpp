@@ -383,12 +383,12 @@ using StringIDMappingHandler = void(*)(StringID, uintptr_t);
  * Information for mapping static StringIDs.
  */
 struct StringIDMapping {
-	uint32_t grfid;   ///< Source NewGRF.
-	StringID source;  ///< Source StringID (GRF local).
+	const GRFFile *grf;          ///< Source NewGRF.
+	StringID source;             ///< Source StringID (GRF local).
 	StringIDMappingHandler func; ///< Function for mapping result.
 	uintptr_t func_data;         ///< Data for func.
 
-	StringIDMapping(uint32_t grfid, StringID source, uintptr_t func_data, StringIDMappingHandler func) : grfid(grfid), source(source), func(func), func_data(func_data) { }
+	StringIDMapping(const GRFFile *grf, StringID source, uintptr_t func_data, StringIDMappingHandler func) : grf(grf), source(source), func(func), func_data(func_data) { }
 };
 
 /** Strings to be mapped during load. */
@@ -402,7 +402,7 @@ static std::vector<StringIDMapping> _string_to_grf_mapping;
 static void AddStringForMapping(StringID source, StringID *target)
 {
 	*target = STR_UNDEFINED;
-	_string_to_grf_mapping.emplace_back(_cur.grffile->grfid, source, reinterpret_cast<uintptr_t>(target), nullptr);
+	_string_to_grf_mapping.emplace_back(_cur.grffile, source, reinterpret_cast<uintptr_t>(target), nullptr);
 }
 
 /**
@@ -418,7 +418,7 @@ static void AddStringForMapping(StringID source, T data, F func)
 
 	func(STR_UNDEFINED, data);
 
-	_string_to_grf_mapping.emplace_back(_cur.grffile->grfid, source, bit_cast_to_storage<uintptr_t>(data), [](StringID str, uintptr_t func_data) {
+	_string_to_grf_mapping.emplace_back(_cur.grffile, source, bit_cast_to_storage<uintptr_t>(data), [](StringID str, uintptr_t func_data) {
 		F handler;
 		handler(str, bit_cast_from_storage<T>(func_data));
 	});
@@ -495,7 +495,8 @@ static StringID TTDPStringIDToOTTDStringIDMapping(StringID str)
  * @param str StringID that we want to have the equivalent in OoenTTD.
  * @return The properly adjusted StringID.
  */
-StringID MapGRFStringID(uint32_t grfid, StringID str)
+template <typename T>
+StringID MapGRFStringIDCommon(T grfid, StringID str)
 {
 	if (IsInsideMM(str, 0xD800, 0x10000)) {
 		/* General text provided by NewGRF.
@@ -520,6 +521,17 @@ StringID MapGRFStringID(uint32_t grfid, StringID str)
 		 * Try our best to find an equivalent one. */
 		return TTDPStringIDToOTTDStringIDMapping(str);
 	}
+}
+
+StringID MapGRFStringID(uint32_t grfid, StringID str)
+{
+	return MapGRFStringIDCommon(grfid, str);
+}
+
+/* This form should be preferred over the uint32_t grfid form, to avoid redundant GRFID to GRF lookups */
+StringID MapGRFStringID(const GRFFile *grf, StringID str)
+{
+	return MapGRFStringIDCommon(grf, str);
 }
 
 static robin_hood::unordered_flat_map<uint32_t, uint32_t> _grf_id_overrides;
@@ -2298,14 +2310,14 @@ static ChangeInfoResult BridgeChangeInfo(uint brid, int numinfo, int prop, const
 				break;
 
 			case 0x10: { // purchase string
-				StringID newone = GetGRFStringID(_cur.grffile->grfid, buf.ReadWord());
+				StringID newone = GetGRFStringID(_cur.grffile, buf.ReadWord());
 				if (newone != STR_UNDEFINED) bridge->material = newone;
 				break;
 			}
 
 			case 0x11: // description of bridge with rails or roads
 			case 0x12: {
-				StringID newone = GetGRFStringID(_cur.grffile->grfid, buf.ReadWord());
+				StringID newone = GetGRFStringID(_cur.grffile, buf.ReadWord());
 				if (newone != STR_UNDEFINED) bridge->transport_name[prop - 0x11] = newone;
 				break;
 			}
@@ -2776,7 +2788,7 @@ static ChangeInfoResult GlobalVarChangeInfo(uint gvid, int numinfo, int prop, co
 
 			case 0x0A: { // Currency display names
 				uint curidx = GetNewgrfCurrencyIdConverted(gvid + i);
-				StringID newone = GetGRFStringID(_cur.grffile->grfid, buf.ReadWord());
+				StringID newone = GetGRFStringID(_cur.grffile, buf.ReadWord());
 
 				if ((newone != STR_UNDEFINED) && (curidx < CURRENCY_END)) {
 					_currency_specs[curidx].name = newone;
@@ -11128,25 +11140,25 @@ static void FinaliseIndustriesArray()
 			/* process the conversion of text at the end, so to be sure everything will be fine
 			 * and available.  Check if it does not return undefind marker, which is a very good sign of a
 			 * substitute industry who has not changed the string been examined, thus using it as such */
-			strid = GetGRFStringID(indsp->grf_prop.grffile->grfid, indsp->name);
+			strid = GetGRFStringID(indsp->grf_prop.grffile, indsp->name);
 			if (strid != STR_UNDEFINED) indsp->name = strid;
 
-			strid = GetGRFStringID(indsp->grf_prop.grffile->grfid, indsp->closure_text);
+			strid = GetGRFStringID(indsp->grf_prop.grffile, indsp->closure_text);
 			if (strid != STR_UNDEFINED) indsp->closure_text = strid;
 
-			strid = GetGRFStringID(indsp->grf_prop.grffile->grfid, indsp->production_up_text);
+			strid = GetGRFStringID(indsp->grf_prop.grffile, indsp->production_up_text);
 			if (strid != STR_UNDEFINED) indsp->production_up_text = strid;
 
-			strid = GetGRFStringID(indsp->grf_prop.grffile->grfid, indsp->production_down_text);
+			strid = GetGRFStringID(indsp->grf_prop.grffile, indsp->production_down_text);
 			if (strid != STR_UNDEFINED) indsp->production_down_text = strid;
 
-			strid = GetGRFStringID(indsp->grf_prop.grffile->grfid, indsp->new_industry_text);
+			strid = GetGRFStringID(indsp->grf_prop.grffile, indsp->new_industry_text);
 			if (strid != STR_UNDEFINED) indsp->new_industry_text = strid;
 
 			if (indsp->station_name != STR_NULL) {
 				/* STR_NULL (0) can be set by grf.  It has a meaning regarding assignation of the
 				 * station's name. Don't want to lose the value, therefore, do not process. */
-				strid = GetGRFStringID(indsp->grf_prop.grffile->grfid, indsp->station_name);
+				strid = GetGRFStringID(indsp->grf_prop.grffile, indsp->station_name);
 				if (strid != STR_UNDEFINED) indsp->station_name = strid;
 			}
 
@@ -11618,7 +11630,7 @@ extern void InitGRFTownGeneratorNames();
 static void AfterLoadGRFs()
 {
 	for (StringIDMapping &it : _string_to_grf_mapping) {
-		StringID str = MapGRFStringID(it.grfid, it.source);
+		StringID str = MapGRFStringID(it.grf, it.source);
 		if (it.func == nullptr) {
 			*reinterpret_cast<StringID *>(it.func_data) = str;
 		} else {

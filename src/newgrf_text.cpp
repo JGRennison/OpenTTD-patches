@@ -608,6 +608,20 @@ StringID AddGRFString(uint32_t grfid, uint16_t stringid, uint8_t langid_to_add, 
 }
 
 /**
+ * Returns the index for this stringid associated with its grfID.
+ * This form should be preferred over the uint32_t grfid form, to avoid redundant GRFID to GRF lookups.
+ */
+StringID GetGRFStringID(const GRFFile *grf, StringID stringid)
+{
+	if (stringid > UINT16_MAX || grf == nullptr) return STR_UNDEFINED;
+
+	auto iter = grf->string_map.find(stringid);
+	if (iter != grf->string_map.end()) return MakeStringID(TEXT_TAB_NEWGRF_START, iter->second);
+
+	return STR_UNDEFINED;
+}
+
+/**
  * Returns the index for this stringid associated with its grfID
  */
 StringID GetGRFStringID(uint32_t grfid, StringID stringid)
@@ -615,7 +629,7 @@ StringID GetGRFStringID(uint32_t grfid, StringID stringid)
 	if (stringid > UINT16_MAX) return STR_UNDEFINED;
 
 	extern GRFFile *GetFileByGRFIDExpectCurrent(uint32_t grfid);
-	GRFFile *grf = GetFileByGRFIDExpectCurrent(grfid);
+	const GRFFile *grf = GetFileByGRFIDExpectCurrent(grfid);
 	if (unlikely(grf == nullptr)) {
 		for (uint id = 0; id < (uint)_grf_text.size(); id++) {
 			if (_grf_text[id].grfid == grfid && _grf_text[id].stringid == stringid) {
@@ -1017,7 +1031,7 @@ uint RemapNewGRFStringControlCode(uint scc, StringBuilder builder, const char **
 				break;
 
 			case SCC_NEWGRF_PRINT_WORD_STRING_ID:
-				parameters.SetParam(0, MapGRFStringID(_newgrf_textrefstack.grffile->grfid, _newgrf_textrefstack.PopUnsignedWord()));
+				parameters.SetParam(0, MapGRFStringID(_newgrf_textrefstack.grffile, _newgrf_textrefstack.PopUnsignedWord()));
 				break;
 
 			case SCC_NEWGRF_PRINT_WORD_CARGO_NAME: {

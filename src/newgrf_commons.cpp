@@ -482,7 +482,7 @@ CommandCost GetErrorMessageFromLocationCallbackResult(uint16_t cb_res, const GRF
 	CommandCost res;
 
 	if (cb_res < 0x400) {
-		res = CommandCost(GetGRFStringID(grffile->grfid, 0xD000 + cb_res));
+		res = CommandCost(GetGRFStringID(grffile, 0xD000 + cb_res));
 	} else {
 		switch (cb_res) {
 			case 0x400: return res; // No error.
