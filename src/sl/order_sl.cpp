@@ -25,6 +25,20 @@ static uint16_t _old_scheduled_dispatch_start_full_date_fract;
 btree::btree_map<DispatchSchedule *, uint16_t> _old_scheduled_dispatch_start_full_date_fract_map;
 static std::vector<uint32_t> _old_scheduled_dispatch_slots;
 
+static uint32_t _order_item_ref;
+static std::vector<std::pair<std::vector<Order> *, uint32_t>> _order_item_ref_targets;
+
+void ClearOrderPoolLoadState()
+{
+	_order_item_ref = 0;
+	_order_item_ref_targets.clear();
+}
+
+void RegisterOrderPoolItemReference(std::vector<Order> *orders, uint32_t ref)
+{
+	_order_item_ref_targets.emplace_back(orders, ref);
+}
+
 /**
  * Converts this order from an old savegame's version;
  * it moves all bits to the new location.
@@ -161,7 +175,8 @@ NamedSaveLoadTable GetOrderDescription()
 		NSL("flags",         SLE_CONDVAR_X(Order, flags,              SLE_UINT16,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_FLAGS_EXTRA, 1))),
 		NSL("",             SLE_CONDNULL_X(1,                                                       SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP))),
 		NSL("dest",                SLE_VAR(Order, dest,               SLE_UINT16)),
-		NSL("next",                SLE_REF(Order, next,               REF_ORDER)),
+		NSL("next",           SLEG_CONDVAR(_order_item_ref,           SLE_FILE_U16 | SLE_VAR_U32,   SL_MIN_VERSION, SLV_69)),
+		NSL("next",         SLEG_CONDVAR_X(_order_item_ref,           SLE_UINT32,                   SLV_69, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_VECTOR, 0, 0))),
 		NSL("refit_cargo",     SLE_CONDVAR(Order, refit_cargo,        SLE_UINT8,                    SLV_36, SL_MAX_VERSION)),
 		NSL("",               SLE_CONDNULL(1,                                                       SLV_36, SLV_182)), // refit_subtype
 		NSL("occupancy",     SLE_CONDVAR_X(Order, occupancy,          SLE_UINT8,                    SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_OCCUPANCY))),
@@ -182,16 +197,6 @@ NamedSaveLoadTable GetOrderDescription()
 	return _order_desc;
 }
 
-static void Save_ORDR()
-{
-	SaveLoadTableData slt = SlTableHeader(GetOrderDescription());
-
-	for (Order *order : Order::Iterate()) {
-		SlSetArrayIndex(order->index);
-		SlObjectSaveFiltered(order, slt);
-	}
-}
-
 static void Load_ORDR()
 {
 	if (IsSavegameVersionBefore(SLV_5, 2)) {
@@ -208,8 +213,8 @@ static void Load_ORDR()
 			SlArray(orders, len, SLE_UINT16);
 
 			for (size_t i = 0; i < len; ++i) {
-				Order *o = new (i) Order();
-				o->AssignOrder(UnpackVersion4Order(orders[i]));
+				OrderPoolItem *o = new (i) OrderPoolItem();
+				o->order.AssignOrder(UnpackVersion4Order(orders[i]));
 			}
 
 			free(orders);
@@ -220,24 +225,24 @@ static void Load_ORDR()
 			SlArray(orders, len, SLE_UINT32);
 
 			for (size_t i = 0; i < len; ++i) {
-				Order *o = new (i) Order();
-				o->AssignOrder(UnpackVersion5Order(orders[i]));
+				OrderPoolItem *o = new (i) OrderPoolItem();
+				o->order.AssignOrder(UnpackVersion5Order(orders[i]));
 			}
 
 			free(orders);
 		}
 
 		/* Update all the next pointer */
-		for (Order *o : Order::Iterate()) {
+		for (OrderPoolItem *o : OrderPoolItem::Iterate()) {
 			size_t order_index = o->index;
 			/* Delete invalid orders */
-			if (o->IsType(OT_NOTHING)) {
+			if (o->order.IsType(OT_NOTHING)) {
 				delete o;
 				continue;
 			}
 			/* The orders were built like this:
 			 * While the order is valid, set the previous will get its next pointer set */
-			Order *prev = Order::GetIfValid(order_index - 1);
+			OrderPoolItem *prev = OrderPoolItem::GetIfValid(order_index - 1);
 			if (prev != nullptr) prev->next = o;
 		}
 	} else {
@@ -245,8 +250,9 @@ static void Load_ORDR()
 
 		int index;
 		while ((index = SlIterateArray()) != -1) {
-			Order *order = new (index) Order();
-			SlObjectLoadFiltered(order, slt);
+			OrderPoolItem *item = new (index) OrderPoolItem();
+			SlObjectLoadFiltered(&item->order, slt);
+			item->next_ref = _order_item_ref;
 		}
 	}
 }
@@ -257,23 +263,33 @@ void Load_ORDX()
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		Order *order = Order::GetIfValid(index);
-		assert(order != nullptr);
-		order->AllocExtraInfo();
-		SlObjectLoadFiltered(order->extra.get(), slt);
+		OrderPoolItem *item = OrderPoolItem::GetIfValid(index);
+		assert(item != nullptr);
+		item->order.AllocExtraInfo();
+		SlObjectLoadFiltered(item->order.extra.get(), slt);
 	}
 }
 
-static void Ptrs_ORDR()
+void FixupOldOrderPoolItemReferences()
 {
-	/* Orders from old savegames have pointers corrected in Load_ORDR */
-	if (IsSavegameVersionBefore(SLV_5, 2)) return;
+	extern void *IntToReference(size_t index, SLRefType rt);
 
-	SaveLoadTableData slt = SlPrepareNamedSaveLoadTableForPtrOrNull(GetOrderDescription());
-
-	for (Order *o : Order::Iterate()) {
-		SlObjectPtrOrNullFiltered(o, slt);
+	/* Orders from old savegames have pointers stored directly in next in Load_ORDR */
+	if (!IsSavegameVersionBefore(SLV_5, 2)) {
+		for (OrderPoolItem *o : OrderPoolItem::Iterate()) {
+			o->next = static_cast<OrderPoolItem *>(IntToReference(o->next_ref, REF_ORDER));
+		}
 	}
+
+	for (const auto &it : _order_item_ref_targets) {
+		OrderPoolItem *first_order = static_cast<OrderPoolItem *>(IntToReference(it.second, REF_ORDER));
+
+		for (OrderPoolItem *item = first_order; item != nullptr; item = item->next) {
+			it.first->emplace_back(std::move(item->order)); // Move order contents into vector
+		}
+	}
+
+	ClearOrderPoolLoadState();
 }
 
 NamedSaveLoadTable GetDispatchSlotDescription()
@@ -415,6 +431,41 @@ struct ScheduledDispatchNonTableHelper {
 	}
 };
 
+struct OrderVectorStructHandlerBase : public SaveLoadStructHandler {
+	NamedSaveLoadTable GetDescription() const override
+	{
+		return GetOrderDescription();
+	}
+
+	void SaveOrders(std::vector<Order> &orders) const
+	{
+		SlSetStructListLength(orders.size());
+		for (Order &order : orders) {
+			SlObjectSaveFiltered(&order, this->GetLoadDescription());
+		}
+	}
+
+	void LoadOrders(std::vector<Order> &orders) const
+	{
+		orders.resize(SlGetStructListLength(UINT32_MAX));
+		for (Order &order : orders) {
+			SlObjectLoadFiltered(&order, this->GetLoadDescription());
+		}
+	}
+};
+
+struct OrderListOrderVectorStructHandler final : public OrderVectorStructHandlerBase {
+	void Save(void *object) const override { this->SaveOrders(static_cast<OrderList *>(object)->GetOrderVector()); }
+
+	void Load(void *object) const override { this->LoadOrders(static_cast<OrderList *>(object)->GetOrderVector()); }
+};
+
+struct OrderBackupOrderVectorStructHandler final : public OrderVectorStructHandlerBase {
+	void Save(void *object) const override { this->SaveOrders(static_cast<OrderBackup *>(object)->orders); }
+
+	void Load(void *object) const override { this->LoadOrders(static_cast<OrderBackup *>(object)->orders); }
+};
+
 struct DispatchScheduleStructHandlerBase : public SaveLoadStructHandler {
 	NamedSaveLoadTable GetDescription() const override
 	{
@@ -459,11 +510,13 @@ struct OrderBackupDispatchRecordsStructHandlerBase final : public DispatchRecord
 NamedSaveLoadTable GetOrderListDescription()
 {
 	static const NamedSaveLoad _orderlist_desc[] = {
-		NSL("first",              SLE_REF(OrderList, first,                                   REF_ORDER)),
+		NSL("first",         SLEG_CONDVAR(_order_item_ref,                                    SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_69)),
+		NSL("first",       SLEG_CONDVAR_X(_order_item_ref,                                    SLE_UINT32,                 SLV_69, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_VECTOR, 0, 0))),
 		NSL("",            SLEG_CONDVAR_X(_jokerpp_separation_mode,                           SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP))),
 		NSL("",            SLE_CONDNULL_X(21,                                                             SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP))),
 
 		NSLT_STRUCTLIST<OrderListDispatchScheduleStructHandler>("dispatch_schedule"),
+		NSLT_STRUCTLIST<OrderListOrderVectorStructHandler>("order_vector"),
 	};
 
 	return _orderlist_desc;
@@ -491,11 +544,13 @@ NamedSaveLoadTable GetOrderBackupDescription()
 		NSL("vehicle_flags",               SLE_CONDVAR(OrderBackup, vehicle_flags,             SLE_FILE_U8  | SLE_VAR_U32,  SLV_176, SLV_180)),
 		NSL("vehicle_flags",             SLE_CONDVAR_X(OrderBackup, vehicle_flags,             SLE_FILE_U16 | SLE_VAR_U32,  SLV_180, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VEHICLE_FLAGS_EXTRA, 0, 0))),
 		NSL("vehicle_flags",             SLE_CONDVAR_X(OrderBackup, vehicle_flags,             SLE_UINT32,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VEHICLE_FLAGS_EXTRA, 1))),
-		NSL("orders",                          SLE_REF(OrderBackup, orders,                    REF_ORDER)),
+		NSL("orders",                     SLEG_CONDVAR(_order_item_ref,                        SLE_FILE_U16 | SLE_VAR_U32,  SL_MIN_VERSION, SLV_69)),
+		NSL("orders",                   SLEG_CONDVAR_X(_order_item_ref,                        SLE_UINT32,                  SLV_69, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_ORDER_VECTOR, 0, 0))),
 		NSL("",                         SLE_CONDNULL_X(18,                                                                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SCHEDULED_DISPATCH, 2, 2))),
 
 		NSLT_STRUCTLIST<OrderBackupDispatchScheduleStructHandler>("dispatch_schedule"),
 		NSLT_STRUCTLIST<OrderBackupDispatchRecordsStructHandlerBase>("dispatch_records"),
+		NSLT_STRUCTLIST<OrderBackupOrderVectorStructHandler>("order_vector"),
 	};
 
 	return _order_backup_desc;
@@ -530,7 +585,7 @@ static void Load_ORDL()
 	int index;
 	while ((index = SlIterateArray()) != -1) {
 		/* set num_orders to 0 so it's a valid OrderList */
-		OrderList *list = new (index) OrderList(0);
+		OrderList *list = new (index) OrderList();
 		SlObjectLoadFiltered(list, slt);
 		if (SlXvIsFeaturePresent(XSLFI_JOKERPP)) {
 			if (_jokerpp_separation_mode == 0) {
@@ -545,6 +600,11 @@ static void Load_ORDL()
 			for (DispatchSchedule &ds : list->GetScheduledDispatchScheduleSet()) {
 				helper.LoadDispatchSchedule(ds);
 			}
+		}
+
+		if (SlXvIsFeatureMissing(XSLFI_ORDER_VECTOR)) {
+			/* Orders are separate in the order pool, record this to be fixed up later */
+			RegisterOrderPoolItemReference(&list->GetOrderVector(), _order_item_ref);
 		}
 	}
 
@@ -609,6 +669,11 @@ void Load_BKOR()
 				}
 			}
 		}
+
+		if (SlXvIsFeatureMissing(XSLFI_ORDER_VECTOR)) {
+			/* Orders are separate in the order pool, record this to be fixed up later */
+			RegisterOrderPoolItemReference(&ob->orders, _order_item_ref);
+		}
 	}
 }
 
@@ -623,7 +688,7 @@ static void Ptrs_BKOR()
 
 static const ChunkHandler order_chunk_handlers[] = {
 	{ 'BKOR', Save_BKOR, Load_BKOR, Ptrs_BKOR, nullptr, CH_TABLE },
-	{ 'ORDR', Save_ORDR, Load_ORDR, Ptrs_ORDR, nullptr, CH_TABLE },
+	{ 'ORDR', nullptr,   Load_ORDR, nullptr,   nullptr, CH_READONLY },
 	{ 'ORDL', Save_ORDL, Load_ORDL, Ptrs_ORDL, nullptr, CH_TABLE },
 	{ 'ORDX', nullptr,   Load_ORDX, nullptr,   nullptr, CH_READONLY },
 };

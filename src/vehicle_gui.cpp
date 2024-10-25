@@ -1902,23 +1902,18 @@ static void DrawSmallOrderList(const Vehicle *v, int left, int right, int y, uin
 			if (++i == 4) break;
 		}
 
-		oid++;
-		order = order->next;
-		if (order == nullptr) {
-			order = v->orders->GetFirstOrder();
-			oid = 0;
-		}
+		v->orders->AdvanceOrderWithIndex(order, oid);
 	} while (oid != start);
 }
 
 /** Draw small order list in the vehicle GUI, but without the little black arrow.  This is used for shared order groups. */
-static void DrawSmallOrderList(const Order *order, int left, int right, int y, uint order_arrow_width)
+static void DrawSmallOrderList(OrderIterateWrapper<const Order> orders, int left, int right, int y, uint order_arrow_width)
 {
 	bool rtl = _current_text_dir == TD_RTL;
 	int l_offset = rtl ? 0 : order_arrow_width;
 	int r_offset = rtl ? order_arrow_width : 0;
 	int i = 0;
-	while (order != nullptr) {
+	for (const Order *order : orders) {
 		if (order->IsType(OT_GOTO_STATION)) {
 			SetDParam(0, order->GetDestination());
 			DrawString(left + l_offset, right - r_offset, y, STR_STATION_NAME, TC_BLACK, SA_LEFT, false, FS_SMALL);
@@ -1926,7 +1921,6 @@ static void DrawSmallOrderList(const Order *order, int left, int right, int y, u
 			y += GetCharacterHeight(FS_SMALL);
 			if (++i == 4) break;
 		}
-		order = order->next;
 	}
 }
 
@@ -2233,7 +2227,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 					}
 				}
 
-				if (show_orderlist) DrawSmallOrderList((vehgroup.vehicles_begin[0])->GetFirstOrder(), olr.left, olr.right, ir.top + GetCharacterHeight(FS_SMALL), this->order_arrow_width);
+				if (show_orderlist) DrawSmallOrderList((vehgroup.vehicles_begin[0])->Orders(), olr.left, olr.right, ir.top + GetCharacterHeight(FS_SMALL), this->order_arrow_width);
 
 				SetDParam(0, vehgroup.NumVehicles());
 				DrawString(ir.left, ir.right, ir.top + WidgetDimensions::scaled.framerect.top, STR_JUST_COMMA, TC_BLACK);

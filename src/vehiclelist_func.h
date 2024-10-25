@@ -30,7 +30,7 @@ void FindVehiclesWithOrder(VehiclePredicate veh_pred, OrderPredicate ord_pred, V
 		if (!veh_pred(v)) continue;
 
 		/* Vehicle is a candidate, search for a matching order. */
-		for (const Order *order = orderlist->GetFirstOrder(); order != nullptr; order = order->next) {
+		for (const Order *order : orderlist->Orders()) {
 
 			if (!ord_pred(order)) continue;
 

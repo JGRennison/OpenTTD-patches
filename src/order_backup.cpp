@@ -30,13 +30,6 @@ OrderBackup::~OrderBackup()
 {
 	if (CleaningPool()) return;
 
-	Order *o = this->orders;
-	while (o != nullptr) {
-		Order *next = o->next;
-		delete o;
-		o = next;
-	}
-
 	OrderBackup::update_counter++;
 }
 
@@ -58,14 +51,10 @@ OrderBackup::OrderBackup(const Vehicle *v, uint32_t user)
 		this->clone = (v->FirstShared() == v) ? v->NextShared() : v->FirstShared();
 	} else {
 		/* Else copy the orders */
-		Order **tail = &this->orders;
-
-		/* Count the number of orders */
 		for (const Order *order : v->Orders()) {
-			Order *copy = new Order();
-			copy->AssignOrder(*order);
-			*tail = copy;
-			tail = &copy->next;
+			Order copy;
+			copy.AssignOrder(*order);
+			this->orders.emplace_back(std::move(copy));
 		}
 
 		if (v->orders != nullptr) {
@@ -85,9 +74,9 @@ void OrderBackup::DoRestore(Vehicle *v)
 	/* If we had shared orders, recover that */
 	if (this->clone != nullptr) {
 		DoCommand(0, v->index | CO_SHARE << 30, this->clone->index, DC_EXEC, CMD_CLONE_ORDER);
-	} else if (this->orders != nullptr && OrderList::CanAllocateItem()) {
-		v->orders = new OrderList(this->orders, v);
-		this->orders = nullptr;
+	} else if (!this->orders.empty() && OrderList::CanAllocateItem()) {
+		v->orders = new OrderList(std::move(this->orders), v);
+		this->orders.clear();
 
 		v->orders->GetScheduledDispatchScheduleSet() = std::move(this->dispatch_schedules);
 
@@ -267,7 +256,7 @@ CommandCost CmdClearOrderBackup(TileIndex tile, DoCommandFlag flags, uint32_t p1
 /* static */ void OrderBackup::RemoveOrder(OrderType type, DestinationID destination, bool hangar)
 {
 	for (OrderBackup *ob : OrderBackup::Iterate()) {
-		for (Order *order = ob->orders; order != nullptr; order = order->next) {
+		for (const Order *order : ob->Orders()) {
 			OrderType ot = order->GetType();
 			if (ot == OT_GOTO_DEPOT && (order->GetDepotActionType() & ODATFB_NEAREST_DEPOT) != 0) continue;
 			if (ot == OT_GOTO_DEPOT && hangar && !IsHangarTile(ob->tile)) continue; // Not an aircraft? Can't have a hangar order.

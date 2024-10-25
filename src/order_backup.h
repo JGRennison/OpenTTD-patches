@@ -44,6 +44,7 @@ struct OrderBackup : OrderBackupPool::PoolItem<&_order_backup_pool>, BaseConsist
 private:
 	friend NamedSaveLoadTable GetOrderBackupDescription(); ///< Saving and loading of order backups.
 	friend struct OrderBackupDispatchScheduleStructHandler; ///< Saving and loading of order backups.
+	friend struct OrderBackupOrderVectorStructHandler; ///< Saving and loading of order backups.
 	friend upstream_sl::SaveLoadTable upstream_sl::GetOrderBackupDescription(); ///< Saving and loading of order backups.
 	friend void Load_BKOR();   ///< Creating empty orders upon savegame loading.
 	friend void Save_BKOR();   ///< Saving orders upon savegame saving.
@@ -53,7 +54,7 @@ private:
 	GroupID group;             ///< The group the vehicle was part of.
 
 	const Vehicle *clone;      ///< Vehicle this vehicle was a clone of.
-	Order *orders;             ///< The actual orders if the vehicle was not a clone.
+	std::vector<Order> orders; ///< The actual orders if the vehicle was not a clone.
 
 	std::vector<DispatchSchedule> dispatch_schedules; ///< Scheduled dispatch schedules
 
@@ -80,6 +81,29 @@ public:
 	static void RemoveOrder(OrderType type, DestinationID destination, bool hangar);
 
 	static uint GetUpdateCounter() { return update_counter; }
+
+	/**
+	 * Returns an iterable ensemble of orders
+	 * @return an iterable ensemble of orders
+	 */
+	OrderIterateWrapper<const Order> Orders() const { return OrderIterateWrapper<const Order>(this->orders.data(), this->orders.data() + this->orders.size()); }
+	OrderIterateWrapper<Order> Orders() { return OrderIterateWrapper<Order>(this->orders.data(), this->orders.data() + this->orders.size()); }
 };
+
+/** Iterate orders in OrderList and BackupOrder instances (not vehicle current orders) */
+template <typename F>
+void IterateAllNonVehicleOrders(F handler)
+{
+	for (OrderList *ol : OrderList::Iterate()) {
+		for (Order *o : ol->Orders()) {
+			handler(o);
+		}
+	}
+	for (OrderBackup *ob : OrderBackup::Iterate()) {
+		for (Order *o : ob->Orders()) {
+			handler(o);
+		}
+	}
+}
 
 #endif /* ORDER_BACKUP_H */

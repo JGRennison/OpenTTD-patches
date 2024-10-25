@@ -449,7 +449,7 @@ protected:
 			}
 
 			seen_stations.clear();
-			for (Order *order = l->GetFirstOrder(); order != nullptr; order = order->next) {
+			for (const Order *order : l->Orders()) {
 				if (order->IsType(OT_GOTO_STATION) || order->IsType(OT_IMPLICIT)) {
 					seen_stations.insert(order->GetDestination());
 				}

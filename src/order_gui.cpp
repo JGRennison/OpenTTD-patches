@@ -1313,7 +1313,6 @@ static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 {
 	/* Override the index as it is not coming from a pool, so would not be initialised correctly. */
 	Order order;
-	order.index = 0;
 
 	/* check depot first */
 	if (IsDepotTypeTile(tile, (TransportType)(uint)v->type) && IsInfraTileUsageAllowed(v->type, v->owner, tile)) {
@@ -1691,8 +1690,6 @@ private:
 	void OrderClick_NearestDepot()
 	{
 		Order order;
-		order.next = nullptr;
-		order.index = 0;
 		order.MakeGoToDepot(INVALID_DEPOT, ODTFB_PART_OF_ORDERS,
 				(_settings_client.gui.new_nonstop || _settings_game.order.nonstop_only) && this->vehicle->IsGroundVehicle() ? ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS : ONSF_STOP_EVERYWHERE);
 		order.SetDepotActionType(ODATFB_NEAREST_DEPOT);
@@ -1706,8 +1703,6 @@ private:
 	void OrderClick_TryAcquireSlot()
 	{
 		Order order;
-		order.next = nullptr;
-		order.index = 0;
 		order.MakeTryAcquireSlot();
 
 		this->InsertNewOrder(order.Pack());
@@ -1719,8 +1714,6 @@ private:
 	void OrderClick_ReleaseSlot()
 	{
 		Order order;
-		order.next = nullptr;
-		order.index = 0;
 		order.MakeReleaseSlot();
 
 		this->InsertNewOrder(order.Pack());
@@ -1732,8 +1725,6 @@ private:
 	void OrderClick_ChangeCounter()
 	{
 		Order order;
-		order.next = nullptr;
-		order.index = 0;
 		order.MakeChangeCounter();
 
 		this->InsertNewOrder(order.Pack());
@@ -1745,8 +1736,6 @@ private:
 	void OrderClick_TextLabel()
 	{
 		Order order;
-		order.next = nullptr;
-		order.index = 0;
 		order.MakeLabel(OLST_TEXT);
 
 		this->InsertNewOrder(order.Pack());
@@ -2513,7 +2502,7 @@ public:
 				y += line_height;
 
 				i++;
-				order = order->next;
+				order = this->vehicle->orders->GetNextNoWrap(order);
 			}
 
 			/* Reset counters for drawing the orders. */
@@ -2531,7 +2520,7 @@ public:
 			y += line_height;
 
 			i++;
-			order = order->next;
+			order = this->vehicle->orders->GetNextNoWrap(order);
 		}
 
 		if (this->vscroll->IsVisible(i)) {
@@ -2547,11 +2536,13 @@ public:
 		int line_height = this->GetWidget<NWidgetBase>(WID_O_ORDER_LIST)->resize_y;
 
 		int i = this->vscroll->GetPosition();
-		const Order *order = this->vehicle->GetOrder(i);
+
 		/* Draw the orders. */
-		while (order != nullptr) {
+		while (i < this->vehicle->GetNumOrders()) {
 			/* Don't draw anything if it extends past the end of the window. */
 			if (!this->vscroll->IsVisible(i)) break;
+
+			const Order *order = this->vehicle->GetOrder(i);
 
 			uint8_t occupancy = order->GetOccupancy();
 			if (occupancy > 0) {
@@ -2567,7 +2558,6 @@ public:
 			y += line_height;
 
 			i++;
-			order = order->next;
 		}
 	}
 
@@ -2809,8 +2799,6 @@ public:
 					VehicleOrderID order_id = this->GetOrderFromPt(_cursor.pos.y - this->top);
 					if (order_id != INVALID_VEH_ORDER_ID) {
 						Order order;
-						order.next = nullptr;
-						order.index = 0;
 						order.MakeConditional(order_id);
 
 						this->InsertNewOrder(order.Pack());
@@ -3720,8 +3708,6 @@ public:
 				}
 				if (st != nullptr && IsInfraUsageAllowed(this->vehicle->type, this->vehicle->owner, st->owner)) {
 					Order order;
-					order.next = nullptr;
-					order.index = 0;
 					order.MakeLabel(OLST_DEPARTURES_VIA);
 					order.SetDestination(st->index);
 

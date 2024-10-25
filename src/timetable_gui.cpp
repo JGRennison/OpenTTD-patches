@@ -244,13 +244,7 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 
 		skip_travel = false;
 
-		++i;
-		order = order->next;
-		if (i >= v->GetNumOrders()) {
-			i = 0;
-			assert(order == nullptr);
-			order = v->orders->GetFirstOrder();
-		}
+		v->orders->AdvanceOrderWithIndex(order, i);
 	} while (i != start);
 
 	/* When loading at a scheduled station we still have to treat the
@@ -733,7 +727,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 							order = v->GetOrder(0);
 							final_order = true;
 						} else {
-							order = order->next;
+							order = v->orders->GetNext(order);
 						}
 					} else {
 						StringID string;

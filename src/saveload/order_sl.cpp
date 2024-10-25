@@ -19,7 +19,11 @@
 
 #include "../safeguards.h"
 
+extern void RegisterOrderPoolItemReference(std::vector<Order> *orders, uint32_t ref);
+
 namespace upstream_sl {
+
+static uint32_t _order_item_ref;
 
 /**
  * Unpacks a order from savegames with version 4 and lower
@@ -55,7 +59,7 @@ SaveLoadTable GetOrderDescription()
 		     SLE_VAR(Order, type,           SLE_UINT8),
 		     SLE_VAR(Order, flags,          SLE_FILE_U8 | SLE_VAR_U16),
 		     SLE_VAR(Order, dest,           SLE_UINT16),
-		     SLE_REF(Order, next,           REF_ORDER),
+		    SLEG_VAR("next", _order_item_ref, SLE_UINT32),
 		 SLE_CONDVAR(Order, refit_cargo,    SLE_UINT8,   SLV_36, SL_MAX_VERSION),
 		 SLE_CONDVAR(Order, wait_time,      SLE_FILE_U16 | SLE_VAR_U32,  SLV_67, SL_MAX_VERSION),
 		 SLE_CONDVAR(Order, travel_time,    SLE_FILE_U16 | SLE_VAR_U32,  SLV_67, SL_MAX_VERSION),
@@ -70,77 +74,23 @@ struct ORDRChunkHandler : ChunkHandler {
 
 	void Save() const override
 	{
-		const SaveLoadTable slt = GetOrderDescription();
-		SlTableHeader(slt);
-
-		for (Order *order : Order::Iterate()) {
-			SlSetArrayIndex(order->index);
-			SlObject(order, slt);
-		}
+		NOT_REACHED();
 	}
 
 	void Load() const override
 	{
 		if (IsSavegameVersionBefore(SLV_5, 2)) {
-			/* Version older than 5.2 did not have a ->next pointer. Convert them
-			 * (in the old days, the orderlist was 5000 items big) */
-			size_t len = SlGetFieldLength();
-
-			if (IsSavegameVersionBefore(SLV_5)) {
-				/* Pre-version 5 had another layout for orders
-				 * (uint16_t instead of uint32_t) */
-				len /= sizeof(uint16_t);
-				std::vector<uint16_t> orders(len);
-
-				SlCopy(&orders[0], len, SLE_UINT16);
-
-				for (size_t i = 0; i < len; ++i) {
-					Order *o = new (i) Order();
-					o->AssignOrder(UnpackVersion4Order(orders[i]));
-				}
-			} else if (IsSavegameVersionBefore(SLV_5, 2)) {
-				len /= sizeof(uint32_t);
-				std::vector<uint32_t> orders(len);
-
-				SlCopy(&orders[0], len, SLE_UINT32);
-
-				for (size_t i = 0; i < len; ++i) {
-					new (i) Order(GB(orders[i], 0, 8), GB(orders[i], 8, 8), GB(orders[i], 16, 16));
-				}
-			}
-
-			/* Update all the next pointer */
-			for (Order *o : Order::Iterate()) {
-				size_t order_index = o->index;
-				/* Delete invalid orders */
-				if (o->IsType(OT_NOTHING)) {
-					delete o;
-					continue;
-				}
-				/* The orders were built like this:
-				 * While the order is valid, set the previous will get its next pointer set */
-				Order *prev = Order::GetIfValid(order_index - 1);
-				if (prev != nullptr) prev->next = o;
-			}
+			NOT_REACHED();
 		} else {
 			const std::vector<SaveLoad> slt = SlCompatTableHeader(GetOrderDescription(), _order_sl_compat);
 
 			int index;
 
 			while ((index = SlIterateArray()) != -1) {
-				Order *order = new (index) Order();
-				SlObject(order, slt);
+				OrderPoolItem *item = new (index) OrderPoolItem();
+				SlObject(&item->order, slt);
+				item->next_ref = _order_item_ref;
 			}
-		}
-	}
-
-	void FixPointers() const override
-	{
-		/* Orders from old savegames have pointers corrected in Load_ORDR */
-		if (IsSavegameVersionBefore(SLV_5, 2)) return;
-
-		for (Order *o : Order::Iterate()) {
-			SlObject(o, GetOrderDescription());
 		}
 	}
 };
@@ -148,7 +98,7 @@ struct ORDRChunkHandler : ChunkHandler {
 SaveLoadTable GetOrderListDescription()
 {
 	static const SaveLoad _orderlist_desc[] = {
-		SLE_REF(OrderList, first,              REF_ORDER),
+		SLEG_VAR("first",  _order_item_ref,    SLE_UINT32),
 	};
 
 	return _orderlist_desc;
@@ -176,17 +126,11 @@ struct ORDLChunkHandler : ChunkHandler {
 
 		while ((index = SlIterateArray()) != -1) {
 			/* set num_orders to 0 so it's a valid OrderList */
-			OrderList *list = new (index) OrderList(0);
+			OrderList *list = new (index) OrderList();
 			SlObject(list, slt);
+			RegisterOrderPoolItemReference(&list->GetOrderVector(), _order_item_ref);
 		}
 
-	}
-
-	void FixPointers() const override
-	{
-		for (OrderList *list : OrderList::Iterate()) {
-			SlObject(list, GetOrderListDescription());
-		}
 	}
 };
 
@@ -208,7 +152,7 @@ SaveLoadTable GetOrderBackupDescription()
 		 SLE_CONDVAR(OrderBackup, timetable_start,          SLE_FILE_U64 | SLE_VAR_I64, SLV_TIMETABLE_START_TICKS_FIX, SL_MAX_VERSION),
 		 SLE_CONDVAR(OrderBackup, vehicle_flags,            SLE_FILE_U8  | SLE_VAR_U32, SLV_176, SLV_180),
 		 SLE_CONDVAR(OrderBackup, vehicle_flags,            SLE_FILE_U16 | SLE_VAR_U32, SLV_180, SL_MAX_VERSION),
-		     SLE_REF(OrderBackup, orders,                   REF_ORDER),
+		    SLEG_VAR("orders",    _order_item_ref,          SLE_UINT32),
 	};
 
 	return _order_backup_desc;
@@ -245,6 +189,7 @@ struct BKORChunkHandler : ChunkHandler {
 			SlObject(ob, slt);
 			if (ob->cur_real_order_index == 0xFF) ob->cur_real_order_index = INVALID_VEH_ORDER_ID;
 			if (ob->cur_implicit_order_index == 0xFF) ob->cur_implicit_order_index = INVALID_VEH_ORDER_ID;
+			RegisterOrderPoolItemReference(&ob->orders, _order_item_ref);
 		}
 	}
 

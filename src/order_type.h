@@ -362,6 +362,7 @@ enum CloneOptions : uint8_t {
 };
 
 struct Order;
+struct OrderPoolItem;
 struct OrderList;
 
 #endif /* ORDER_TYPE_H */

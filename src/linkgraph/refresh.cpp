@@ -34,7 +34,7 @@
 	/* Scan orders for cargo-specific load/unload, and run LinkRefresher separately for each set of cargoes where they differ. */
 	while (cargo_mask != 0) {
 		CargoTypes iter_cargo_mask = cargo_mask;
-		for (const Order *o = v->orders->GetFirstOrder(); o != nullptr; o = o->next) {
+		for (const Order *o : v->Orders()) {
 			if (o->IsType(OT_GOTO_STATION) || o->IsType(OT_IMPLICIT)) {
 				if (o->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD) {
 					CargoMaskValueFilter<uint>(iter_cargo_mask, [&](CargoID cargo) -> uint {
@@ -262,7 +262,7 @@ std::pair<const Order *, LinkRefresher::TimetableTravelTime> LinkRefresher::Pred
 
 				/* Record the branch before executing it,
 				 * to avoid recursively executing it again. */
-				Hop hop(cur->index, skip_to->index, this->cargo, flags);
+				Hop hop(this->vehicle->orders->GetIndexOfOrder(cur), this->vehicle->orders->GetIndexOfOrder(skip_to), this->cargo, flags);
 				auto iter = this->seen_hops->lower_bound(hop);
 				if (iter == this->seen_hops->end() || *iter != hop) {
 					this->seen_hops->insert(iter, hop);
@@ -408,7 +408,7 @@ void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, TimetableT
 
 		std::tie(next, travel) = this->PredictNextOrder(cur, next, travel, flags, num_hops);
 		if (next == nullptr) break;
-		Hop hop(cur->index, next->index, this->cargo);
+		Hop hop(this->vehicle->orders->GetIndexOfOrder(cur), this->vehicle->orders->GetIndexOfOrder(next), this->cargo);
 		auto iter = this->seen_hops->lower_bound(hop);
 		if (iter != this->seen_hops->end() && *iter == hop) {
 			break;

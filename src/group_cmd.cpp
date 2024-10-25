@@ -746,7 +746,7 @@ static void GetAutoGroupMostRelevantTowns(const Vehicle *vehicle, Town* &from, T
 
 	for (int x = 0; x < num; x++)
 	{
-		Order *order = vehicle->GetOrder(x);
+		const Order *order = vehicle->GetOrder(x);
 
 		if (order->GetType() != OT_GOTO_STATION) continue;
 

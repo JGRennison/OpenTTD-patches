@@ -413,7 +413,7 @@ CommandCost CmdScheduledDispatchRemoveSchedule(TileIndex tile, DoCommandFlag fla
 	if (flags & DC_EXEC) {
 		std::vector<DispatchSchedule> &scheds = v->orders->GetScheduledDispatchScheduleSet();
 		scheds.erase(scheds.begin() + schedule_index);
-		for (Order *o = v->GetFirstOrder(); o != nullptr; o = o->next) {
+		for (Order *o : v->Orders()) {
 			int idx = o->GetDispatchScheduleIndex();
 			if (idx == (int)schedule_index) {
 				o->SetDispatchScheduleIndex(-1);
@@ -679,7 +679,7 @@ CommandCost CmdScheduledDispatchSwapSchedules(TileIndex tile, DoCommandFlag flag
 
 	if (flags & DC_EXEC) {
 		std::swap(v->orders->GetDispatchScheduleByIndex(schedule_index_1), v->orders->GetDispatchScheduleByIndex(schedule_index_2));
-		for (Order *o = v->GetFirstOrder(); o != nullptr; o = o->next) {
+		for (Order *o : v->Orders()) {
 			int idx = o->GetDispatchScheduleIndex();
 			if (idx == (int)schedule_index_1) {
 				o->SetDispatchScheduleIndex((int)schedule_index_2);

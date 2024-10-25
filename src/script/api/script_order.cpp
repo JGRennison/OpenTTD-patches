@@ -68,11 +68,11 @@ static const Order *ResolveOrder(VehicleID vehicle_id, ScriptOrder::OrderPositio
 	}
 	const Order *order = v->GetFirstOrder();
 	assert(order != nullptr);
-	while (order->GetType() == OT_IMPLICIT) order = order->next;
+	while (order->GetType() == OT_IMPLICIT) order = v->orders->GetNextNoWrap(order);
 	while (order_position > 0) {
 		order_position = (ScriptOrder::OrderPosition)(order_position - 1);
-		order = order->next;
-		while (order->GetType() == OT_IMPLICIT) order = order->next;
+		v->orders->GetNextNoWrap(order);
+		while (order->GetType() == OT_IMPLICIT) order = v->orders->GetNextNoWrap(order);
 	}
 	return order;
 }
@@ -93,11 +93,11 @@ static int ScriptOrderPositionToRealOrderPosition(VehicleID vehicle_id, ScriptOr
 	int res = (int)order_position;
 	const Order *order = v->orders->GetFirstOrder();
 	assert(order != nullptr);
-	for (; order->GetType() == OT_IMPLICIT; order = order->next) res++;
+	for (; order->GetType() == OT_IMPLICIT; order = v->orders->GetNextNoWrap(order)) res++;
 	while (order_position > 0) {
 		order_position = (ScriptOrder::OrderPosition)(order_position - 1);
-		order = order->next;
-		for (; order->GetType() == OT_IMPLICIT; order = order->next) res++;
+		order = v->orders->GetNextNoWrap(order);
+		for (; order->GetType() == OT_IMPLICIT; order = v->orders->GetNextNoWrap(order)) res++;
 	}
 
 	return res;
@@ -178,13 +178,14 @@ static int ScriptOrderPositionToRealOrderPosition(VehicleID vehicle_id, ScriptOr
 	if (num_manual_orders == 0) return ORDER_INVALID;
 
 	if (order_position == ORDER_CURRENT) {
-		int cur_order_pos = ::Vehicle::Get(vehicle_id)->cur_real_order_index;
-		const Order *order = ::Vehicle::Get(vehicle_id)->GetFirstOrder();
+		const Vehicle *v = ::Vehicle::Get(vehicle_id);
+		int cur_order_pos = v->cur_real_order_index;
+		const Order *order = v->GetFirstOrder();
 		assert(order != nullptr);
 		int num_implicit_orders = 0;
 		for (int i = 0; i < cur_order_pos; i++) {
 			if (order->GetType() == OT_IMPLICIT) num_implicit_orders++;
-			order = order->next;
+			order = v->orders->GetNextNoWrap(order);
 		}
 		int real_order_pos = cur_order_pos - num_implicit_orders;
 		assert(real_order_pos < num_manual_orders);

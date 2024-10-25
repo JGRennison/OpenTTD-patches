@@ -141,7 +141,7 @@ void MoveWaypointsToBaseStations()
 	for (OrderList *ol : OrderList::Iterate()) {
 		if (ol->GetFirstSharedVehicle()->type != VEH_TRAIN) continue;
 
-		for (Order *o = ol->GetFirstOrder(); o != nullptr; o = o->next) UpdateWaypointOrder(o);
+		for (Order *o : ol->Orders()) UpdateWaypointOrder(o);
 	}
 
 	for (Vehicle *v : Vehicle::IterateType(VEH_TRAIN)) {

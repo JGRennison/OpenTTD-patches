@@ -58,8 +58,8 @@ protected:
 	 * line.
 	 */
 	struct Hop {
-		OrderID from;  ///< Last order where vehicle could interact with cargo or absolute first order.
-		OrderID to;    ///< Next order to be processed.
+		VehicleOrderID from;  ///< Last order where vehicle could interact with cargo or absolute first order.
+		VehicleOrderID to;    ///< Next order to be processed.
 		CargoID cargo; ///< Cargo the consist is probably carrying or INVALID_CARGO if unknown.
 		uint8_t flags; ///< Flags, for branches
 
@@ -75,7 +75,7 @@ protected:
 		 * @param to Second order of the hop.
 		 * @param cargo Cargo the consist is probably carrying when passing the hop.
 		 */
-		Hop(OrderID from, OrderID to, CargoID cargo, uint8_t flags = 0) : from(from), to(to), cargo(cargo), flags(flags) {}
+		Hop(VehicleOrderID from, VehicleOrderID to, CargoID cargo, uint8_t flags = 0) : from(from), to(to), cargo(cargo), flags(flags) {}
 		bool operator<(const Hop &other) const { return std::tie(this->from, this->to, this->cargo, this->flags) < std::tie(other.from, other.to, other.cargo, other.flags); }
 		bool operator==(const Hop &other) const { return std::tie(this->from, this->to, this->cargo, this->flags) == std::tie(other.from, other.to, other.cargo, other.flags); }
 		bool operator!=(const Hop &other) const { return !(*this == other); }

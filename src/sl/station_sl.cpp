@@ -55,7 +55,7 @@ void MoveBuoysToWaypoints()
 		VehicleType vt = ol->GetFirstSharedVehicle()->type;
 		if (vt != VEH_SHIP && vt != VEH_TRAIN) continue;
 
-		for (Order *o = ol->GetFirstOrder(); o != nullptr; o = o->next) UpdateWaypointOrder(o);
+		for (Order *o : ol->Orders()) UpdateWaypointOrder(o);
 	}
 
 	for (Vehicle *v : Vehicle::Iterate()) {

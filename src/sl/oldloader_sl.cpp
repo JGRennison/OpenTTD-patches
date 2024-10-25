@@ -641,15 +641,15 @@ static bool LoadOldOrder(LoadgameState *ls, int num)
 {
 	if (!LoadChunk(ls, nullptr, order_chunk)) return false;
 
-	Order *o = new (num) Order();
-	o->AssignOrder(UnpackOldOrder(_old_order));
+	OrderPoolItem *o = new (num) OrderPoolItem();
+	o->order.AssignOrder(UnpackOldOrder(_old_order));
 
-	if (o->IsType(OT_NOTHING)) {
+	if (o->order.IsType(OT_NOTHING)) {
 		delete o;
 	} else {
 		/* Relink the orders to each other (in the orders for one vehicle are behind each other,
 		 * with an invalid order (OT_NOTHING) as indication that it is the last order */
-		Order *prev = Order::GetIfValid(num - 1);
+		OrderPoolItem *prev = OrderPoolItem::GetIfValid(num - 1);
 		if (prev != nullptr) prev->next = o;
 	}
 
@@ -1359,7 +1359,7 @@ bool LoadOldVehicle(LoadgameState *ls, int num)
 		if (_old_order_ptr != 0 && _old_order_ptr != 0xFFFFFFFF) {
 			uint max = _savegame_type == SGT_TTO ? 3000 : 5000;
 			uint old_id = RemapOrderIndex(_old_order_ptr);
-			if (old_id < max) v->old_orders = Order::Get(old_id); // don't accept orders > max number of orders
+			if (old_id < max) v->old_orders = OrderPoolItem::Get(old_id); // don't accept orders > max number of orders
 		}
 		v->current_order.AssignOrder(UnpackOldOrder(_old_order));
 

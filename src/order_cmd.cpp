@@ -105,11 +105,8 @@ void UpdateOrderDestinationRefcount(const Order *order, VehicleType type, Owner 
 	}
 }
 
-/** Clean everything up. */
-Order::~Order()
+void Order::InvalidateGuiOnRemove()
 {
-	if (CleaningPool()) return;
-
 	/* We can visit oil rigs and buoys that are not our own. They will be shown in
 	 * the list of stations. So, we need to invalidate that window if needed. */
 	if (this->IsType(OT_GOTO_STATION) || this->IsType(OT_GOTO_WAYPOINT)) {
@@ -127,7 +124,6 @@ void Order::Free()
 	this->type  = OT_NOTHING;
 	this->flags = 0;
 	this->dest  = 0;
-	this->next  = nullptr;
 	DeAllocExtraInfo();
 }
 
@@ -364,7 +360,6 @@ Order::Order(uint64_t packed)
 	this->flags   = GB(packed,  8,  16);
 	this->dest    = GB(packed, 24, 16);
 	this->extra   = nullptr;
-	this->next    = nullptr;
 	this->refit_cargo   = CARGO_NO_REFIT;
 	this->occupancy     = 0;
 	this->wait_time     = 0;
@@ -467,50 +462,28 @@ void CargoStationIDStackSet::FillNextStoppingStation(const Vehicle *v, const Ord
 	}
 }
 
-void OrderList::ReindexOrderList()
-{
-	this->order_index.clear();
-	for (Order *o = this->first; o != nullptr; o = o->next) {
-		this->order_index.push_back(o);
-	}
-}
-
-bool OrderList::CheckOrderListIndexing() const
-{
-	uint idx = 0;
-	for (Order *o = this->first; o != nullptr; o = o->next, idx++) {
-		if (idx >= this->order_index.size()) return false;
-		if (this->order_index[idx] != o) return false;
-	}
-	return idx == this->order_index.size();
-}
-
 /**
  * Recomputes everything.
- * @param chain first order in the chain
  * @param v one of vehicle that is using this orderlist
  */
-void OrderList::Initialize(Order *chain, Vehicle *v)
+void OrderList::Initialize(Vehicle *v)
 {
-	this->first = chain;
 	this->first_shared = v;
 
 	this->num_manual_orders = 0;
 	this->num_vehicles = 1;
 	this->timetable_duration = 0;
 	this->total_duration = 0;
-	this->order_index.clear();
 
 	VehicleType type = v->type;
 	Owner owner = v->owner;
 
-	for (Order *o = this->first; o != nullptr; o = o->next) {
+	for (const Order *o : this->Orders()) {
 		if (!o->IsType(OT_IMPLICIT)) ++this->num_manual_orders;
 		if (!o->IsType(OT_CONDITIONAL)) {
 			this->timetable_duration += o->GetTimetabledWait() + o->GetTimetabledTravel();
 			this->total_duration += o->GetWaitTime() + o->GetTravelTime();
 		}
-		this->order_index.push_back(o);
 		RegisterOrderDestination(o, type, owner);
 	}
 
@@ -529,7 +502,7 @@ void OrderList::Initialize(Order *chain, Vehicle *v)
 void OrderList::RecalculateTimetableDuration()
 {
 	this->timetable_duration = 0;
-	for (Order *o = this->first; o != nullptr; o = o->next) {
+	for (const Order *o : this->Orders()) {
 		if (!o->IsType(OT_CONDITIONAL)) {
 			this->timetable_duration += o->GetTimetabledWait() + o->GetTimetabledTravel();
 		}
@@ -543,59 +516,20 @@ void OrderList::RecalculateTimetableDuration()
  */
 void OrderList::FreeChain(bool keep_orderlist)
 {
-	Order *next;
 	VehicleType type = this->GetFirstSharedVehicle()->type;
 	Owner owner = this->GetFirstSharedVehicle()->owner;
-	for (Order *o = this->first; o != nullptr; o = next) {
+	for (Order *o : this->Orders()) {
 		UnregisterOrderDestination(o, type, owner);
-		next = o->next;
-		delete o;
+		if (!CleaningPool()) o->InvalidateGuiOnRemove();
 	}
+	this->orders.clear();
 
 	if (keep_orderlist) {
-		this->first = nullptr;
 		this->num_manual_orders = 0;
 		this->timetable_duration = 0;
-		this->order_index.clear();
 	} else {
 		delete this;
 	}
-}
-
-/**
- * Get a certain order of the order chain.
- * @param index zero-based index of the order within the chain.
- * @return the order at position index.
- */
-Order *OrderList::GetOrderAt(int index) const
-{
-	if (index < 0 || (uint) index >= this->order_index.size()) return nullptr;
-	return this->order_index[index];
-}
-
-Order *OrderList::GetOrderAtFromList(int index) const
-{
-	if (index < 0) return nullptr;
-
-	Order *order = this->first;
-
-	while (order != nullptr && index-- > 0) {
-		order = order->next;
-	}
-	return order;
-}
-
-/**
- * Get the index of an order of the order chain, or INVALID_VEH_ORDER_ID.
- * @param order order to get the index of.
- * @return the position index of the given order, or INVALID_VEH_ORDER_ID.
- */
-VehicleOrderID OrderList::GetIndexOfOrder(const Order *order) const
-{
-	for (VehicleOrderID index = 0; index < (VehicleOrderID)this->order_index.size(); index++) {
-		if (this->order_index[index] == order) return index;
-	}
-	return INVALID_VEH_ORDER_ID;
 }
 
 /**
@@ -738,35 +672,23 @@ CargoMaskedStationIDStack OrderList::GetNextStoppingStation(const Vehicle *v, Ca
 
 /**
  * Insert a new order into the order chain.
- * @param new_order is the order to insert into the chain.
+ * @param ins_order is the order to insert into the chain.
  * @param index is the position where the order is supposed to be inserted.
  */
-void OrderList::InsertOrderAt(Order *new_order, int index)
+void OrderList::InsertOrderAt(Order &&ins_order, VehicleOrderID index)
 {
-	if (this->first == nullptr) {
-		this->first = new_order;
-	} else {
-		if (index == 0) {
-			/* Insert as first or only order */
-			new_order->next = this->first;
-			this->first = new_order;
-		} else if (index >= this->GetNumOrders()) {
-			/* index is after the last order, add it to the end */
-			this->GetLastOrder()->next = new_order;
-		} else {
-			/* Put the new order in between */
-			Order *order = this->GetOrderAt(index - 1);
-			new_order->next = order->next;
-			order->next = new_order;
-		}
+	if (index >= this->orders.size()) {
+		index = (VehicleOrderID)this->orders.size();
 	}
+
+	Order *new_order = &*this->orders.emplace(this->orders.begin() + index, std::move(ins_order));
+
 	if (!new_order->IsType(OT_IMPLICIT)) ++this->num_manual_orders;
 	if (!new_order->IsType(OT_CONDITIONAL)) {
 		this->timetable_duration += new_order->GetTimetabledWait() + new_order->GetTimetabledTravel();
 		this->total_duration += new_order->GetWaitTime() + new_order->GetTravelTime();
 	}
 	RegisterOrderDestination(new_order, this->GetFirstSharedVehicle()->type, this->GetFirstSharedVehicle()->owner);
-	this->ReindexOrderList();
 
 	/* We can visit oil rigs and buoys that are not our own. They will be shown in
 	 * the list of stations. So, we need to invalidate that window if needed. */
@@ -782,28 +704,22 @@ void OrderList::InsertOrderAt(Order *new_order, int index)
  * Remove an order from the order list and delete it.
  * @param index is the position of the order which is to be deleted.
  */
-void OrderList::DeleteOrderAt(int index)
+void OrderList::DeleteOrderAt(VehicleOrderID index)
 {
 	if (index >= this->GetNumOrders()) return;
 
-	Order *to_remove;
+	Order *to_remove = &(this->orders[index]);
 
-	if (index == 0) {
-		to_remove = this->first;
-		this->first = to_remove->next;
-	} else {
-		Order *prev = GetOrderAt(index - 1);
-		to_remove = prev->next;
-		prev->next = to_remove->next;
-	}
 	if (!to_remove->IsType(OT_IMPLICIT)) --this->num_manual_orders;
 	if (!to_remove->IsType(OT_CONDITIONAL)) {
 		this->timetable_duration -= (to_remove->GetTimetabledWait() + to_remove->GetTimetabledTravel());
 		this->total_duration -= (to_remove->GetWaitTime() + to_remove->GetTravelTime());
 	}
 	UnregisterOrderDestination(to_remove, this->GetFirstSharedVehicle()->type, this->GetFirstSharedVehicle()->owner);
-	delete to_remove;
-	this->ReindexOrderList();
+
+	to_remove->InvalidateGuiOnRemove();
+
+	this->orders.erase(this->orders.begin() + index);
 }
 
 /**
@@ -811,32 +727,19 @@ void OrderList::DeleteOrderAt(int index)
  * @param from is the zero-based position of the order to move.
  * @param to is the zero-based position where the order is moved to.
  */
-void OrderList::MoveOrder(int from, int to)
+void OrderList::MoveOrder(VehicleOrderID from, VehicleOrderID to)
 {
 	if (from >= this->GetNumOrders() || to >= this->GetNumOrders() || from == to) return;
 
-	Order *moving_one;
-
-	/* Take the moving order out of the pointer-chain */
-	if (from == 0) {
-		moving_one = this->first;
-		this->first = moving_one->next;
+	if (from < to) {
+		/* Rotate from towards end */
+		const auto it = this->orders.begin();
+		std::rotate(it + from, it + from + 1, it + to + 1);
 	} else {
-		Order *one_before = GetOrderAtFromList(from - 1);
-		moving_one = one_before->next;
-		one_before->next = moving_one->next;
+		/* Rotate from towards begin */
+		const auto it = this->orders.begin();
+		std::rotate(it + to, it + from, it + from + 1);
 	}
-
-	/* Insert the moving_order again in the pointer-chain */
-	if (to == 0) {
-		moving_one->next = this->first;
-		this->first = moving_one;
-	} else {
-		Order *one_before = GetOrderAtFromList(to - 1);
-		moving_one->next = one_before->next;
-		one_before->next = moving_one;
-	}
-	this->ReindexOrderList();
 }
 
 /**
@@ -856,8 +759,7 @@ void OrderList::RemoveVehicle(Vehicle *v)
  */
 bool OrderList::IsCompleteTimetable() const
 {
-	for (VehicleOrderID index = 0; index < (VehicleOrderID)this->order_index.size(); index++) {
-		const Order *o = this->order_index[index];
+	for (const Order *o : this->Orders()) {
 		/* Implicit orders are, by definition, not timetabled. */
 		if (o->IsType(OT_IMPLICIT)) continue;
 		if (!o->IsCompletelyTimetabled()) return false;
@@ -879,9 +781,7 @@ void OrderList::DebugCheckSanity() const
 
 	Debug(misc, 6, "Checking OrderList {} for sanity...", this->index);
 
-	for (const Order *o = this->first; o != nullptr; o = o->next) {
-		assert(this->order_index.size() > check_num_orders);
-		assert(o == this->order_index[check_num_orders]);
+	for (const Order *o : this->Orders()) {
 		++check_num_orders;
 		if (!o->IsType(OT_IMPLICIT)) ++check_num_manual_orders;
 		if (!o->IsType(OT_CONDITIONAL)) {
@@ -902,7 +802,6 @@ void OrderList::DebugCheckSanity() const
 	Debug(misc, 6, "... detected {} orders ({} manual), {} vehicles, {} timetabled, {} total",
 			this->GetNumOrders(), this->num_manual_orders,
 			this->num_vehicles, this->timetable_duration, this->total_duration);
-	assert(this->CheckOrderListIndexing());
 }
 #endif
 
@@ -1012,7 +911,7 @@ uint GetOrderDistance(const Order *prev, const Order *cur, const Vehicle *v, int
 		conditional_depth++;
 
 		int dist1 = GetOrderDistance(prev, v->GetOrder(cur->GetConditionSkipToOrder()), v, conditional_depth);
-		int dist2 = GetOrderDistance(prev, v->orders->GetNext(cur->next), v, conditional_depth);
+		int dist2 = GetOrderDistance(prev, v->orders->GetNext(cur), v, conditional_depth);
 		return std::max(dist1, dist2);
 	}
 
@@ -1398,13 +1297,10 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 	if (sel_ord > v->GetNumOrders()) return CMD_ERROR;
 
 	if (v->GetNumOrders() >= MAX_VEH_ORDER_ID) return_cmd_error(STR_ERROR_TOO_MANY_ORDERS);
-	if (!Order::CanAllocateItem()) return_cmd_error(STR_ERROR_NO_MORE_SPACE_FOR_ORDERS);
 	if (v->orders == nullptr && !OrderList::CanAllocateItem()) return_cmd_error(STR_ERROR_NO_MORE_SPACE_FOR_ORDERS);
 
 	if (flags & DC_EXEC) {
-		Order *new_o = new Order();
-		new_o->AssignOrder(new_order);
-		InsertOrder(v, new_o, sel_ord);
+		InsertOrder(v, Order(new_order), sel_ord);
 	}
 
 	return CommandCost();
@@ -1416,13 +1312,13 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
  * @param new_o   The new order.
  * @param sel_ord The position the order should be inserted at.
  */
-void InsertOrder(Vehicle *v, Order *new_o, VehicleOrderID sel_ord)
+void InsertOrder(Vehicle *v, Order &&new_o, VehicleOrderID sel_ord)
 {
 	/* Create new order and link in list */
 	if (v->orders == nullptr) {
-		v->orders = new OrderList(new_o, v);
+		v->orders = new OrderList(std::move(new_o), v);
 	} else {
-		v->orders->InsertOrderAt(new_o, sel_ord);
+		v->orders->InsertOrderAt(std::move(new_o), sel_ord);
 	}
 
 	Vehicle *u = v->FirstShared();
@@ -1838,7 +1734,6 @@ CommandCost CmdReverseOrderList(TileIndex tile, DoCommandFlag flags, uint32_t p1
 			if (order_count < 3) return CMD_ERROR;
 			uint max_order = order_count - 1;
 			if (((order_count * 2) - 2) > MAX_VEH_ORDER_ID) return_cmd_error(STR_ERROR_TOO_MANY_ORDERS);
-			if (!Order::CanAllocateItem(order_count - 2)) return_cmd_error(STR_ERROR_NO_MORE_SPACE_FOR_ORDERS);
 			for (uint i = 0; i < order_count; i++) {
 				if (v->GetOrder(i)->IsType(OT_CONDITIONAL)) return CMD_ERROR;
 			}
@@ -2567,22 +2462,21 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
  * Check if an aircraft has enough range for an order list.
  * @param v_new Aircraft to check.
  * @param v_order Vehicle currently holding the order list.
- * @param first First order in the source order list.
  * @return True if the aircraft has enough range for the orders, false otherwise.
  */
-static bool CheckAircraftOrderDistance(const Aircraft *v_new, const Vehicle *v_order, const Order *first)
+static bool CheckAircraftOrderDistance(const Aircraft *v_new, const Vehicle *v_order)
 {
-	if (first == nullptr || v_new->acache.cached_max_range == 0) return true;
+	if (v_order->orders == nullptr || v_new->acache.cached_max_range == 0) return true;
 
 	/* Iterate over all orders to check the distance between all
 	 * 'goto' orders and their respective next order (of any type). */
-	for (const Order *o = first; o != nullptr; o = o->next) {
+	for (const Order *o : v_order->orders->Orders()) {
 		switch (o->GetType()) {
 			case OT_GOTO_STATION:
 			case OT_GOTO_DEPOT:
 			case OT_GOTO_WAYPOINT:
 				/* If we don't have a next order, we've reached the end and must check the first order instead. */
-				if (GetOrderDistance(o, o->next != nullptr ? o->next : first, v_order) > v_new->acache.cached_max_range_sqr) return false;
+				if (GetOrderDistance(o, v_order->orders->GetNext(o), v_order) > v_new->acache.cached_max_range_sqr) return false;
 				break;
 
 			default: break;
@@ -2691,7 +2585,7 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
 			}
 
 			/* Check for aircraft range limits. */
-			if (dst->type == VEH_AIRCRAFT && !CheckAircraftOrderDistance(Aircraft::From(dst), src, src->GetFirstOrder())) {
+			if (dst->type == VEH_AIRCRAFT && !CheckAircraftOrderDistance(Aircraft::From(dst), src)) {
 				return_cmd_error(STR_ERROR_AIRCRAFT_NOT_ENOUGH_RANGE);
 			}
 
@@ -2775,40 +2669,34 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
 			}
 
 			/* Check for aircraft range limits. */
-			if (dst->type == VEH_AIRCRAFT && !CheckAircraftOrderDistance(Aircraft::From(dst), src, src->GetFirstOrder())) {
+			if (dst->type == VEH_AIRCRAFT && !CheckAircraftOrderDistance(Aircraft::From(dst), src)) {
 				return_cmd_error(STR_ERROR_AIRCRAFT_NOT_ENOUGH_RANGE);
 			}
 
 			/* make sure there are orders available */
-			if (!Order::CanAllocateItem(src->GetNumOrders()) || !OrderList::CanAllocateItem()) {
+			if (!OrderList::CanAllocateItem()) {
 				return_cmd_error(STR_ERROR_NO_MORE_SPACE_FOR_ORDERS);
 			}
 
 			if (flags & DC_EXEC) {
-				Order *first = nullptr;
-				Order **order_dst;
-
 				/* If the destination vehicle had an order list, destroy the chain but keep the OrderList.
 				 * We only the order indices, if the new orders are different.
 				 * (We mainly do this to keep the order indices valid and in range.) */
 				DeleteVehicleOrders(dst, true, ShouldResetOrderIndicesOnOrderCopy(src, dst));
 				dst->dispatch_records.clear();
 
-				order_dst = &first;
+				std::vector<Order> dst_orders;
 				for (const Order *order : src->Orders()) {
-					*order_dst = new Order();
-					(*order_dst)->AssignOrder(*order);
-					order_dst = &(*order_dst)->next;
+					dst_orders.emplace_back(*order); // clone order
 				}
-				if (dst->orders == nullptr) {
-					dst->orders = new OrderList(first, dst);
-				} else {
-					assert(dst->orders->GetFirstOrder() == nullptr);
+				if (dst->orders != nullptr) {
+					assert(dst->orders->GetNumOrders() == 0);
 					assert(!dst->orders->IsShared());
 					delete dst->orders;
-					assert(OrderList::CanAllocateItem());
-					dst->orders = new OrderList(first, dst);
+					dst->orders = nullptr;
 				}
+				assert(OrderList::CanAllocateItem());
+				dst->orders = new OrderList(std::move(dst_orders), dst);
 
 				/* Copy over scheduled dispatch data */
 				assert(dst->orders != nullptr);
@@ -2873,7 +2761,7 @@ CommandCost CmdOrderRefit(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
 
 	if (cargo >= NUM_CARGO && cargo != CARGO_NO_REFIT && cargo != CARGO_AUTO_REFIT) return CMD_ERROR;
 
-	const Vehicle *v = Vehicle::GetIfValid(veh);
+	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
 	CommandCost ret = CheckOwnership(v->owner);
@@ -3578,7 +3466,7 @@ VehicleOrderID AdvanceOrderIndexDeferred(const Vehicle *v, VehicleOrderID index)
 		/* Wrap around. */
 		if (index >= v->GetNumOrders()) index = 0;
 
-		Order *order = v->GetOrder(index);
+		const Order *order = v->GetOrder(index);
 		assert(order != nullptr);
 
 		switch (order->GetType()) {

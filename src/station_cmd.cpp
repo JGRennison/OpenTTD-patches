@@ -4516,10 +4516,10 @@ void DeleteStaleLinks(Station *from)
 					/* Have all vehicles refresh their next hops before deciding to
 					 * remove the node. */
 					std::vector<Vehicle *> vehicles;
-					for (OrderList *l : OrderList::Iterate()) {
+					for (const OrderList *l : OrderList::Iterate()) {
 						bool found_from = false;
 						bool found_to = false;
-						for (Order *order = l->GetFirstOrder(); order != nullptr; order = order->next) {
+						for (const Order *order : l->Orders()) {
 							if (!order->IsType(OT_GOTO_STATION) && !order->IsType(OT_IMPLICIT)) continue;
 							if (order->GetDestination() == from->index) {
 								found_from = true;

@@ -3360,18 +3360,15 @@ void Vehicle::DeleteUnreachedImplicitOrders()
 		if (order->IsType(OT_IMPLICIT)) {
 			DeleteOrder(this, this->cur_implicit_order_index);
 			/* DeleteOrder does various magic with order_indices, so resync 'order' with 'cur_implicit_order_index' */
-			order = this->GetOrder(this->cur_implicit_order_index);
 		} else {
 			/* Skip non-implicit orders, e.g. service-orders */
-			order = order->next;
 			this->cur_implicit_order_index++;
 		}
 
 		/* Wrap around */
-		if (order == nullptr) {
-			order = this->GetOrder(0);
-			this->cur_implicit_order_index = 0;
-		}
+		if (this->cur_implicit_order_index >= this->orders->GetNumOrders()) this->cur_implicit_order_index = 0;
+
+		order = this->GetOrder(this->cur_implicit_order_index);
 	}
 }
 
@@ -3447,7 +3444,7 @@ void Vehicle::BeginLoading()
 				in_list->GetDestination() != this->last_station_visited)) {
 			bool suppress_implicit_orders = HasBit(this->GetGroundVehicleFlags(), GVF_SUPPRESS_IMPLICIT_ORDERS);
 			/* Do not create consecutive duplicates of implicit orders */
-			Order *prev_order = this->cur_implicit_order_index > 0 ? this->GetOrder(this->cur_implicit_order_index - 1) : (this->GetNumOrders() > 1 ? this->GetLastOrder() : nullptr);
+			const Order *prev_order = this->cur_implicit_order_index > 0 ? this->GetOrder(this->cur_implicit_order_index - 1) : (this->GetNumOrders() > 1 ? this->GetLastOrder() : nullptr);
 			if (prev_order == nullptr ||
 					(!prev_order->IsType(OT_IMPLICIT) && !prev_order->IsType(OT_GOTO_STATION)) ||
 					prev_order->GetDestination() != this->last_station_visited) {
@@ -3489,28 +3486,25 @@ void Vehicle::BeginLoading()
 							if (order->IsType(OT_IMPLICIT)) {
 								DeleteOrder(this, this->cur_implicit_order_index);
 								/* DeleteOrder does various magic with order_indices, so resync 'order' with 'cur_implicit_order_index' */
-								order = this->GetOrder(this->cur_implicit_order_index);
 							} else {
 								/* Skip non-implicit orders, e.g. service-orders */
-								order = order->next;
 								this->cur_implicit_order_index++;
 							}
 
 							/* Wrap around */
-							if (order == nullptr) {
-								order = this->GetOrder(0);
-								this->cur_implicit_order_index = 0;
-							}
+							if (this->cur_implicit_order_index >= this->orders->GetNumOrders()) this->cur_implicit_order_index = 0;
+
+							order = this->GetOrder(this->cur_implicit_order_index);
+
 							assert(order != nullptr);
 						}
 					}
 				} else if (!suppress_implicit_orders &&
-						((this->orders == nullptr ? OrderList::CanAllocateItem() : this->orders->GetNumOrders() < MAX_VEH_ORDER_ID)) &&
-						Order::CanAllocateItem()) {
+						((this->orders == nullptr ? OrderList::CanAllocateItem() : this->orders->GetNumOrders() < MAX_VEH_ORDER_ID))) {
 					/* Insert new implicit order */
-					Order *implicit_order = new Order();
-					implicit_order->MakeImplicit(this->last_station_visited);
-					InsertOrder(this, implicit_order, this->cur_implicit_order_index);
+					Order implicit_order;
+					implicit_order.MakeImplicit(this->last_station_visited);
+					InsertOrder(this, std::move(implicit_order), this->cur_implicit_order_index);
 					if (this->cur_implicit_order_index > 0) --this->cur_implicit_order_index;
 
 					/* InsertOrder disabled creation of implicit orders for all vehicles with the same implicit order.
@@ -3919,7 +3913,7 @@ static bool PreviousOrderIsUnbunching(const Vehicle *v)
 {
 	/* If we are headed for the first order, we must wrap around back to the last order. */
 	bool is_first_order = (v->GetOrder(v->cur_implicit_order_index) == v->GetFirstOrder());
-	Order *previous_order = (is_first_order) ? v->GetLastOrder() : v->GetOrder(v->cur_implicit_order_index - 1);
+	const Order *previous_order = (is_first_order) ? v->GetLastOrder() : v->GetOrder(v->cur_implicit_order_index - 1);
 
 	if (previous_order == nullptr || !previous_order->IsType(OT_GOTO_DEPOT)) return false;
 	return (previous_order->GetDepotActionType() & ODATFB_UNBUNCH) != 0;
@@ -5083,7 +5077,7 @@ bool VehiclesHaveSameOrderList(const Vehicle *v1, const Vehicle *v2)
 		if (o1 == nullptr && o2 == nullptr) return true;
 		if (o1 == nullptr || o2 == nullptr) return false;
 		if (!o1->Equals(*o2)) return false;
-		o1 = o1->next;
-		o2 = o2->next;
+		o1 = v1->orders->GetNextNoWrap(o1);
+		o2 = v2->orders->GetNextNoWrap(o2);
 	}
 }

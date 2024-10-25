@@ -905,7 +905,8 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 	});
 
 	VehicleOrderID first_manual_order = 0;
-	for (Order *o = v->GetFirstOrder(); o != nullptr && o->IsType(OT_IMPLICIT); o = o->next) {
+	for (Order *o : v->Orders()) {
+		if (!o->HasNoTimetableTimes() && !o->IsType(OT_IMPLICIT)) break;
 		++first_manual_order;
 	}
 

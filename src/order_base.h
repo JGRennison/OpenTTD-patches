@@ -27,7 +27,7 @@
 #include <vector>
 #include "3rdparty/cpp-btree/btree_map.h"
 
-typedef Pool<Order, OrderID, 256, 0xFF0000> OrderPool;
+typedef Pool<OrderPoolItem, OrderID, 256, 0xFF0000> OrderPool;
 typedef Pool<OrderList, OrderListID, 128, 64000> OrderListPool;
 extern OrderPool _order_pool;
 extern OrderListPool _orderlist_pool;
@@ -98,12 +98,12 @@ namespace upstream_sl {
 	class SlVehicleDisaster;
 }
 
-/* If you change this, keep in mind that it is saved on 3 places:
+/* If you change this, keep in mind that it is saved in 3 places:
  * - Load_ORDR, all the global orders
  * - Vehicle -> current_order
- * - REF_ORDER (all REFs are currently limited to 16 bits!!)
+ * - REF_ORDER
  */
-struct Order : OrderPool::PoolItem<&_order_pool> {
+struct Order {
 private:
 	friend NamedSaveLoadTable GetVehicleDescription(VehicleType vt);      ///< Saving and loading the current order of vehicles.
 	friend void Load_VEHS();                                              ///< Loading of ancient vehicles.
@@ -116,20 +116,17 @@ private:
 	friend void Load_ORDX();                                             ///< Saving and loading of orders.
 	friend void Load_VEOX();                                             ///< Saving and loading of orders.
 
-	uint16_t flags;       ///< Load/unload types, depot order/action types.
-	DestinationID dest;   ///< The destination of the order.
-
 	std::unique_ptr<OrderExtraInfo> extra; ///< Extra order info
 
-	uint8_t type;         ///< The type of order + non-stop flags
+	uint16_t flags{};              ///< Load/unload types, depot order/action types.
+	DestinationID dest{};          ///< The destination of the order.
+	uint8_t type{};                ///< The type of order + non-stop flags
+	CargoID refit_cargo{};         ///< Refit CargoID
+	uint8_t occupancy{};           ///< Estimate of vehicle occupancy on departure, for the current order, 0 indicates invalid, 1 - 101 indicate 0 - 100%
 
-	CargoID refit_cargo;  ///< Refit CargoID
-
-	uint8_t occupancy;    ///< Estimate of vehicle occupancy on departure, for the current order, 0 indicates invalid, 1 - 101 indicate 0 - 100%
-
-	TimetableTicks wait_time;    ///< How long in ticks to wait at the destination.
-	TimetableTicks travel_time;  ///< How long in ticks the journey to this destination should take.
-	uint16_t max_speed;          ///< How fast the vehicle may go on the way to the destination.
+	TimetableTicks wait_time{};    ///< How long in ticks to wait at the destination.
+	TimetableTicks travel_time{};  ///< How long in ticks the journey to this destination should take.
+	uint16_t max_speed{};          ///< How fast the vehicle may go on the way to the destination.
 
 	void AllocExtraInfo();
 	void DeAllocExtraInfo();
@@ -218,17 +215,15 @@ public:
 		return this->flags;
 	}
 
-	Order *next;          ///< Pointer to next order. If nullptr, end of list
-
 	Order() : flags(0), refit_cargo(CARGO_NO_REFIT), max_speed(UINT16_MAX) {}
 	Order(uint8_t type, uint8_t flags, DestinationID dest) : flags(flags), dest(dest), type(type), refit_cargo(CARGO_NO_REFIT), occupancy(0), wait_time(0), travel_time(0), max_speed(UINT16_MAX) {}
-	~Order();
+	~Order() {}
 
 	Order(uint64_t packed);
 
 	Order(const Order& other)
 	{
-		*this = other;
+		AssignOrder(other);
 	}
 
 	Order(Order&& other) = default;
@@ -236,8 +231,6 @@ public:
 	inline Order& operator=(Order const& other)
 	{
 		AssignOrder(other);
-		this->next = other.next;
-		this->index = other.index;
 		return *this;
 	}
 
@@ -260,6 +253,7 @@ public:
 	 */
 	inline OrderType GetType() const { return (OrderType)GB(this->type, 0, 4); }
 
+	void InvalidateGuiOnRemove();
 	void Free();
 
 	void MakeGoToStation(StationID destination);
@@ -730,7 +724,18 @@ public:
 	void ConvertFromOldSavegame();
 };
 
-void InsertOrder(Vehicle *v, Order *new_o, VehicleOrderID sel_ord);
+struct OrderPoolItem : OrderPool::PoolItem<&_order_pool> {
+	Order order;
+	OrderPoolItem *next = nullptr; ///< Pointer to next order. If nullptr, end of list
+	uint32_t next_ref = 0;
+
+	/** Make sure the item isn't zeroed. */
+	OrderPoolItem() {}
+	/** Make sure the right destructor is called as well! */
+	~OrderPoolItem() {}
+};
+
+void InsertOrder(Vehicle *v, Order &&new_o, VehicleOrderID sel_ord);
 void DeleteOrder(Vehicle *v, VehicleOrderID sel_ord);
 
 struct CargoMaskedStationIDStack {
@@ -941,6 +946,50 @@ public:
 static_assert(DispatchSchedule::DEPARTURE_TAG_COUNT == 1 + (DispatchSlot::SDSF_LAST_TAG - DispatchSlot::SDSF_FIRST_TAG));
 
 /**
+ * Iterator to iterate orders
+ * Does not support deletion/inserting orders
+ */
+template <typename T>
+struct OrderIterator {
+private:
+	T *ptr;
+
+public:
+	typedef Order value_type;
+	typedef Order *pointer;
+	typedef Order &reference;
+	typedef size_t difference_type;
+	typedef std::forward_iterator_tag iterator_category;
+
+	explicit OrderIterator(T *ptr) : ptr(ptr) {}
+
+	bool operator==(const OrderIterator &other) const { return this->ptr == other.ptr; }
+	T * operator*() const { return this->ptr; }
+
+	OrderIterator & operator++()
+	{
+		this->ptr++;
+		return *this;
+	}
+};
+
+/**
+ * Iterable ensemble of contiguous orders
+ */
+template <typename T>
+struct OrderIterateWrapper {
+private:
+	T *begin_ptr;
+	T *end_ptr;
+
+public:
+	OrderIterateWrapper(T *begin_ptr, T *end_ptr) : begin_ptr(begin_ptr), end_ptr(end_ptr) {}
+	OrderIterator<T> begin() { return OrderIterator<T>(this->begin_ptr); }
+	OrderIterator<T> end() { return OrderIterator<T>(this->end_ptr); }
+	bool empty() { return this->begin_ptr == this->end_ptr; }
+};
+
+/**
  * Shared order list linking together the linked list of orders and the list
  *  of vehicles sharing this order list.
  */
@@ -951,13 +1000,10 @@ private:
 	friend upstream_sl::SaveLoadTable upstream_sl::GetOrderListDescription(); ///< Saving and loading of order lists.
 	friend void Ptrs_ORDL(); ///< Saving and loading of order lists.
 
-	void ReindexOrderList();
-	Order *GetOrderAtFromList(int index) const;
+	std::vector<Order> orders;        ///< Order list.
 
 	VehicleOrderID num_manual_orders; ///< NOSAVE: How many manually added orders are there in the list.
 	uint num_vehicles;                ///< NOSAVE: Number of vehicles that share this order list.
-	Order *first;                     ///< First order of the order list.
-	std::vector<Order *> order_index; ///< NOSAVE: Vector index of order list.
 	Vehicle *first_shared;            ///< NOSAVE: pointer to the first vehicle in the shared order chain.
 
 	Ticks timetable_duration;         ///< NOSAVE: Total timetabled duration of the order list.
@@ -967,8 +1013,8 @@ private:
 
 public:
 	/** Default constructor producing an invalid order list. */
-	OrderList(VehicleOrderID num_orders = INVALID_VEH_ORDER_ID)
-		: num_manual_orders(0), num_vehicles(0), first(nullptr), first_shared(nullptr),
+	OrderList()
+		: num_manual_orders(0), num_vehicles(0), first_shared(nullptr),
 		  timetable_duration(0), total_duration(0) { }
 
 	/**
@@ -976,12 +1022,40 @@ public:
 	 *  @param chain pointer to the first order of the order chain
 	 *  @param v any vehicle using this orderlist
 	 */
-	OrderList(Order *chain, Vehicle *v) { this->Initialize(chain, v); }
+	OrderList(OrderPoolItem *chain, Vehicle *v)
+	{
+		for (OrderPoolItem *o = chain; o != nullptr; o = o->next) {
+			this->orders.emplace_back(std::move(o->order)); // Move order contents into vector
+		}
+		this->Initialize(v);
+	}
+
+	/**
+	 * Create an order list with the given single order for the given vehicle.
+	 *  @param order single order to use
+	 *  @param v any vehicle using this orderlist
+	 */
+	OrderList(Order &&order, Vehicle *v)
+	{
+		this->orders.emplace_back(std::move(order)); // Move order contents into vector
+		this->Initialize(v);
+	}
+
+	/**
+	 * Create an order list with the given order vector for the given vehicle.
+	 *  @param order single order to use
+	 *  @param v any vehicle using this orderlist
+	 */
+	OrderList(std::vector<Order> &&orders, Vehicle *v)
+	{
+		this->orders = std::move(orders);
+		this->Initialize(v);
+	}
 
 	/** Destructor. Invalidates OrderList for re-usage by the pool. */
 	~OrderList() {}
 
-	void Initialize(Order *chain, Vehicle *v);
+	void Initialize(Vehicle *v);
 
 	void RecalculateTimetableDuration();
 
@@ -989,17 +1063,42 @@ public:
 	 * Get the first order of the order chain.
 	 * @return the first order of the chain.
 	 */
-	inline Order *GetFirstOrder() const { return this->first; }
+	inline const Order *GetFirstOrder() const { return this->orders.empty() ? nullptr : &(this->orders.front()); }
+	inline Order *GetFirstOrder() { return const_cast<Order *>(const_cast<const OrderList *>(this)->GetFirstOrder()); }
 
-	Order *GetOrderAt(int index) const;
+	/**
+	 * Get a certain order of the order chain.
+	 * @param index zero-based index of the order.
+	 * @return the order at position index.
+	 */
+	const Order *GetOrderAt(VehicleOrderID index) const
+	{
+		if (index >= this->orders.size()) return nullptr;
+		return &(this->orders[index]);
+	}
+	inline Order *GetOrderAt(VehicleOrderID index) { return const_cast<Order *>(const_cast<const OrderList *>(this)->GetOrderAt(index)); }
 
-	VehicleOrderID GetIndexOfOrder(const Order *order) const;
+	/**
+	 * Get the index of an order of the order chain, or INVALID_VEH_ORDER_ID.
+	 * @param order order to get the index of.
+	 * @return the position index of the given order, or INVALID_VEH_ORDER_ID.
+	 */
+	VehicleOrderID GetIndexOfOrder(const Order *order) const
+	{
+		if (order >= this->orders.data() && order < this->orders.data() + this->orders.size()) {
+			return order - this->orders.data();
+		}
+		return INVALID_VEH_ORDER_ID;
+	}
+
+	std::vector<Order> &GetOrderVector() { return this->orders; }
+	const std::vector<Order> &GetOrderVector() const { return this->orders; }
 
 	/**
 	 * Get the last order of the order chain.
 	 * @return the last order of the chain.
 	 */
-	inline Order *GetLastOrder() const { return this->GetOrderAt(this->GetNumOrders() - 1); }
+	inline const Order *GetLastOrder() const { return this->orders.empty() ? nullptr : &(this->orders.back()); }
 
 	/**
 	 * Get the order after the given one or the first one, if the given one is the
@@ -1007,13 +1106,42 @@ public:
 	 * @param curr Order to find the next one for.
 	 * @return Next order.
 	 */
-	inline const Order *GetNext(const Order *curr) const { return (curr->next == nullptr) ? this->GetFirstOrder() : curr->next; }
+	inline const Order *GetNext(const Order *curr) const
+	{
+		curr++;
+		if (curr == this->orders.data() + this->orders.size()) curr = this->orders.data();
+		return curr;
+	}
+
+	/**
+	 * Get the order after the given one or nullptr, if the given one is the
+	 * last one.
+	 * @param curr Order to find the next one for.
+	 * @return Next order.
+	 */
+	inline const Order *GetNextNoWrap(const Order *curr) const
+	{
+		curr++;
+		if (curr == this->orders.data() + this->orders.size()) curr = nullptr;
+		return curr;
+	}
+
+	void AdvanceOrderWithIndex(const Order *&order, VehicleOrderID &index) const
+	{
+		order++;
+		if (order == this->orders.data() + this->orders.size()) {
+			order = this->orders.data();
+			index = 0;
+		} else {
+			index++;
+		}
+	}
 
 	/**
 	 * Get number of orders in the order list.
 	 * @return number of orders in the chain.
 	 */
-	inline VehicleOrderID GetNumOrders() const { return static_cast<VehicleOrderID>(this->order_index.size()); }
+	inline VehicleOrderID GetNumOrders() const { return static_cast<VehicleOrderID>(this->orders.size()); }
 
 	/**
 	 * Get number of manually added orders in the order list.
@@ -1024,9 +1152,9 @@ public:
 	CargoMaskedStationIDStack GetNextStoppingStation(const Vehicle *v, CargoTypes cargo_mask, const Order *first = nullptr, uint hops = 0) const;
 	const Order *GetNextDecisionNode(const Order *next, uint hops, CargoTypes &cargo_mask) const;
 
-	void InsertOrderAt(Order *new_order, int index);
-	void DeleteOrderAt(int index);
-	void MoveOrder(int from, int to);
+	void InsertOrderAt(Order &&new_order, VehicleOrderID index);
+	void DeleteOrderAt(VehicleOrderID index);
+	void MoveOrder(VehicleOrderID from, VehicleOrderID to);
 
 	/**
 	 * Is this a shared order list?
@@ -1093,7 +1221,6 @@ public:
 #ifdef WITH_ASSERT
 	void DebugCheckSanity() const;
 #endif
-	bool CheckOrderListIndexing() const;
 
 	inline std::vector<DispatchSchedule> &GetScheduledDispatchScheduleSet() { return this->dispatch_schedules; }
 	inline const std::vector<DispatchSchedule> &GetScheduledDispatchScheduleSet() const { return this->dispatch_schedules; }
@@ -1102,6 +1229,13 @@ public:
 
 	inline DispatchSchedule &GetDispatchScheduleByIndex(uint index) { return this->dispatch_schedules[index]; }
 	inline const DispatchSchedule &GetDispatchScheduleByIndex(uint index) const { return this->dispatch_schedules[index]; }
+
+	/**
+	 * Returns an iterable ensemble of orders
+	 * @return an iterable ensemble of orders
+	 */
+	OrderIterateWrapper<const Order> Orders(VehicleOrderID from = 0) const { return OrderIterateWrapper<const Order>(this->orders.data() + from, this->orders.data() + this->orders.size()); }
+	OrderIterateWrapper<Order> Orders(VehicleOrderID from = 0) { return OrderIterateWrapper<Order>(this->orders.data() + from, this->orders.data() + this->orders.size()); }
 };
 
 void UpdateOrderUIOnDateChange();

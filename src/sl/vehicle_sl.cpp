@@ -301,7 +301,7 @@ void AfterLoadVehiclesPhase1(bool part_of_load)
 		 * a) both next_shared and previous_shared are not set for pre 5,2 games
 		 * b) both next_shared and previous_shared are set for later games
 		 */
-		robin_hood::unordered_flat_map<Order*, OrderList*> mapping;
+		robin_hood::unordered_flat_map<OrderPoolItem*, OrderList*> mapping;
 
 		for (Vehicle *v : Vehicle::Iterate()) {
 			si_v = v;
@@ -324,7 +324,7 @@ void AfterLoadVehiclesPhase1(bool part_of_load)
 					}
 				} else { // OrderList was saved as such, only recalculate not saved values
 					if (v->PreviousShared() == nullptr) {
-						v->orders->Initialize(v->orders->first, v);
+						v->orders->Initialize(v);
 					}
 				}
 			}
@@ -434,6 +434,8 @@ void AfterLoadVehiclesPhase1(bool part_of_load)
 	si_v = nullptr;
 
 	CheckValidVehicles();
+
+	_order_pool.CleanPool();
 }
 
 /** Called after load for phase 2 of vehicle initialisation */

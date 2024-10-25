@@ -20,6 +20,7 @@
 #include "viewport_func.h"
 #include "window_func.h"
 #include "order_base.h"
+#include "order_backup.h"
 #include "cargotype.h"
 #include "group.h"
 #include "string_func.h"
@@ -2945,7 +2946,7 @@ void TraceRestrictRemoveSlotID(TraceRestrictSlotID index)
 	}
 
 	bool changed_order = false;
-	for (Order *o : Order::Iterate()) {
+	IterateAllNonVehicleOrders([&](Order *o) {
 		if (o->IsType(OT_CONDITIONAL) &&
 				(o->GetConditionVariable() == OCV_SLOT_OCCUPANCY || o->GetConditionVariable() == OCV_VEH_IN_SLOT) &&
 				o->GetXData() == index) {
@@ -2956,7 +2957,7 @@ void TraceRestrictRemoveSlotID(TraceRestrictSlotID index)
 			o->SetDestination(INVALID_TRACE_RESTRICT_SLOT_ID);
 			changed_order = true;
 		}
-	}
+	});
 
 	/* Update windows */
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
@@ -3229,7 +3230,7 @@ void TraceRestrictRemoveCounterID(TraceRestrictCounterID index)
 	}
 
 	bool changed_order = false;
-	for (Order *o : Order::Iterate()) {
+	IterateAllNonVehicleOrders([&](Order *o) {
 		if (o->IsType(OT_CONDITIONAL) &&
 				(o->GetConditionVariable() == OCV_COUNTER_VALUE) &&
 				o->GetXDataHigh() == index) {
@@ -3240,7 +3241,7 @@ void TraceRestrictRemoveCounterID(TraceRestrictCounterID index)
 			o->SetDestination(INVALID_TRACE_RESTRICT_COUNTER_ID);
 			changed_order = true;
 		}
-	}
+	});
 
 	/* Update windows */
 	InvalidateWindowClassesData(WC_TRACE_RESTRICT);

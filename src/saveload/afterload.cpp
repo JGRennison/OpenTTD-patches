@@ -653,9 +653,9 @@ static void StartScripts()
 template <typename F>
 void IterateVehicleAndOrderListOrders(F func)
 {
-	for (Order *order : Order::Iterate()) {
+	IterateAllNonVehicleOrders([&](Order *order) {
 		func(order);
-	}
+	});
 	for (Vehicle *v : Vehicle::IterateFrontOnly()) {
 		func(&(v->current_order));
 	}
@@ -2134,7 +2134,9 @@ bool AfterLoadGame()
 
 	if (IsSavegameVersionBefore(SLV_93)) {
 		/* Rework of orders. */
-		for (Order *order : Order::Iterate()) order->ConvertFromOldSavegame();
+		IterateAllNonVehicleOrders([&](Order *order) {
+			order->ConvertFromOldSavegame();
+		});
 
 		for (Vehicle *v : Vehicle::Iterate()) {
 			if (v->orders != nullptr && v->orders->GetFirstOrder() != nullptr && v->orders->GetFirstOrder()->IsType(OT_NOTHING)) {
@@ -2189,11 +2191,11 @@ bool AfterLoadGame()
 	}
 
 	if (SlXvIsFeaturePresent(XSLFI_JOKERPP, 1, SL_JOKER_1_23)) {
-		for (Order *order : Order::Iterate()) {
+		IterateAllNonVehicleOrders([&](Order *order) {
 			if (order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OCV_SLOT_OCCUPANCY) {
 				order->GetXDataRef() = order->GetConditionValue();
 			}
-		}
+		});
 	}
 
 	if (IsSavegameVersionBefore(SLV_84)) {
@@ -3537,16 +3539,16 @@ bool AfterLoadGame()
 	}
 
 	if (IsSavegameVersionBefore(SLV_190)) {
-		for (Order *order : Order::Iterate()) {
+		IterateAllNonVehicleOrders([&](Order *order) {
 			order->SetTravelTimetabled(order->GetTravelTime() > 0);
 			order->SetWaitTimetabled(order->GetWaitTime() > 0);
-		}
+		});
 	} else if (SlXvIsFeatureMissing(XSLFI_TIMETABLE_EXTRA)) {
-		for (Order *order : Order::Iterate()) {
+		IterateAllNonVehicleOrders([&](Order *order) {
 			if (order->IsType(OT_CONDITIONAL)) {
 				order->SetWaitTimetabled(order->GetWaitTime() > 0);
 			}
-		}
+		});
 	}
 
 	if (SlXvIsFeaturePresent(XSLFI_TT_WAIT_IN_DEPOT, 1, 1) || IsSavegameVersionBefore(SLV_190) || SlXvIsFeatureMissing(XSLFI_TIMETABLE_EXTRA)) {
@@ -4072,14 +4074,14 @@ bool AfterLoadGame()
 		for (OrderBackup *bckup : OrderBackup::Iterate()) {
 			bckup->cur_timetable_order_index = INVALID_VEH_ORDER_ID;
 		}
-		for (Order *order : Order::Iterate()) {
+		IterateAllNonVehicleOrders([&](Order *order) {
 			if (order->IsType(OT_CONDITIONAL)) {
 				if (order->GetTravelTime() != 0) {
 					Debug(sl, 1, "Fixing: order->GetTravelTime() != 0, {}", order->GetTravelTime());
 					order->SetTravelTime(0);
 				}
 			}
-		}
+		});
 #ifdef WITH_ASSERT
 		for (OrderList *order_list : OrderList::Iterate()) {
 			order_list->DebugCheckSanity();
@@ -4112,12 +4114,12 @@ bool AfterLoadGame()
 	}
 
 	if (SlXvIsFeaturePresent(XSLFI_MORE_COND_ORDERS, 1, 1)) {
-		for (Order *order : Order::Iterate()) {
+		IterateAllNonVehicleOrders([&](Order *order) {
 			/* Insertion of OCV_MAX_RELIABILITY between OCV_REMAINING_LIFETIME and OCV_CARGO_WAITING */
 			if (order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() > OCV_REMAINING_LIFETIME) {
 				order->SetConditionVariable(static_cast<OrderConditionVariable>((uint)order->GetConditionVariable() + 1));
 			}
-		}
+		});
 	}
 	if (SlXvIsFeaturePresent(XSLFI_MORE_COND_ORDERS, 1, 14)) {
 		for (OrderList *order_list : OrderList::Iterate()) {
@@ -4126,12 +4128,12 @@ bool AfterLoadGame()
 				for (uint i = 0; i < max; i++) {
 					if (order->IsType(OT_GOTO_STATION) && Station::IsValidID(order->GetDestination())) return order->GetDestination();
 
-					order = (order->next != nullptr) ? order->next : order_list->GetFirstOrder();
+					order = order_list->GetNext(order);
 				}
 				return INVALID_STATION;
 			};
 
-			for (Order *order = order_list->GetFirstOrder(); order != nullptr; order = order->next) {
+			for (Order *order : order_list->Orders()) {
 				/* Fixup station ID for OCV_CARGO_WAITING, OCV_CARGO_ACCEPTANCE, OCV_FREE_PLATFORMS, OCV_CARGO_WAITING_AMOUNT, OCV_CARGO_WAITING_AMOUNT_PERCENTAGE */
 				if (order->IsType(OT_CONDITIONAL) && ConditionVariableHasStationID(order->GetConditionVariable())) {
 					StationID next_id = get_real_station(order);

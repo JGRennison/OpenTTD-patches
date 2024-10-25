@@ -196,6 +196,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_STATION_TILE_CACHE_FLAGS,         XSCF_IGNORABLE_ALL,       1,   1, "station_tile_cache_flags",         saveSTC, loadSTC, nullptr          },
 	{ XSLFI_INDUSTRY_CARGO_TOTALS,            XSCF_NULL,                1,   1, "industry_cargo_totals",            nullptr, nullptr, nullptr          },
 	{ XSLFI_SIGNAL_SPECIAL_PROPAGATION_FLAG,  XSCF_IGNORABLE_ALL,       2,   2, "signal_special_propagation_flag",  nullptr, nullptr, nullptr          },
+	{ XSLFI_ORDER_VECTOR,                     XSCF_NULL,                1,   1, "order_vector",                     nullptr, nullptr, nullptr          },
 
 	{ XSLFI_SCRIPT_INT64,                     XSCF_NULL,                1,   1, "script_int64",                     nullptr, nullptr, nullptr          },
 	{ XSLFI_U64_TICK_COUNTER,                 XSCF_NULL,                1,   1, "u64_tick_counter",                 nullptr, nullptr, nullptr          },

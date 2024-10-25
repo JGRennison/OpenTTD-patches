@@ -699,7 +699,7 @@ void AdvanceOrderIndex(const Vehicle *v, VehicleOrderID &index)
 		/* Wrap around. */
 		if (index >= v->GetNumOrders()) index = 0;
 
-		Order *order = v->GetOrder(index);
+		const Order *order = v->GetOrder(index);
 		dbg_assert(order != nullptr);
 
 		switch (order->GetType()) {
