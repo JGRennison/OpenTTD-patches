@@ -3737,6 +3737,9 @@ static void ResetSaveloadData()
 
 	extern void ClearOrderPoolLoadState();
 	ClearOrderPoolLoadState();
+
+	extern void ClearVehicleOldOrderLoadState();
+	ClearVehicleOldOrderLoadState();
 }
 
 /**

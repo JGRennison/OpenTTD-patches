@@ -266,6 +266,18 @@ extern uint8_t _age_cargo_skip_counter; // From misc_sl.cpp
 
 static std::vector<Vehicle *> _load_invalid_vehicles_to_delete;
 
+static std::vector<std::pair<VehicleID, OrderID>> _vehicle_old_order_refs;
+
+void ClearVehicleOldOrderLoadState()
+{
+	_vehicle_old_order_refs.clear();
+}
+
+void RegisterVehicleOldOrderRef(VehicleID id, OrderID order_id)
+{
+	_vehicle_old_order_refs.emplace_back(id, order_id);
+}
+
 /** Called after load for phase 1 of vehicle initialisation */
 void AfterLoadVehiclesPhase1(bool part_of_load)
 {
@@ -301,31 +313,42 @@ void AfterLoadVehiclesPhase1(bool part_of_load)
 		 * a) both next_shared and previous_shared are not set for pre 5,2 games
 		 * b) both next_shared and previous_shared are set for later games
 		 */
-		robin_hood::unordered_flat_map<OrderPoolItem*, OrderList*> mapping;
 
-		for (Vehicle *v : Vehicle::Iterate()) {
-			si_v = v;
-			if (v->old_orders != nullptr) {
-				if (IsSavegameVersionBefore(SLV_105)) { // Pre-105 didn't save an OrderList
-					if (mapping[v->old_orders] == nullptr) {
-						/* This adds the whole shared vehicle chain for case b */
+		if (IsSavegameVersionBefore(SLV_105)) { // Pre-105 didn't save an OrderList
+			robin_hood::unordered_flat_map<OrderPoolItem *, OrderList *> mapping;
 
-						/* Creating an OrderList here is safe because the number of vehicles
-						 * allowed in these savegames matches the number of OrderLists. As
-						 * such each vehicle can get an OrderList and it will (still) fit. */
-						assert(OrderList::CanAllocateItem());
-						v->orders = mapping[v->old_orders] = new OrderList(v->old_orders, v);
-					} else {
-						v->orders = mapping[v->old_orders];
-						/* For old games (case a) we must create the shared vehicle chain */
-						if (IsSavegameVersionBefore(SLV_5, 2)) {
-							v->AddToShared(v->orders->GetFirstSharedVehicle());
-						}
+			for (const auto &it : _vehicle_old_order_refs) {
+				Vehicle *v = Vehicle::GetIfValid(it.first);
+				if (v == nullptr) continue;
+				si_v = v;
+
+				OrderPoolItem *old_orders = OrderPoolItem::Get(it.second);
+
+				OrderList *&mapping_order_list = mapping[old_orders];
+				if (mapping_order_list == nullptr) {
+					/* This adds the whole shared vehicle chain for case b */
+
+					/* Creating an OrderList here is safe because the number of vehicles
+					 * allowed in these savegames matches the number of OrderLists. As
+					 * such each vehicle can get an OrderList and it will (still) fit. */
+					assert(OrderList::CanAllocateItem());
+					v->orders = mapping_order_list = new OrderList(old_orders, v);
+				} else {
+					v->orders = mapping_order_list;
+					/* For old games (case a) we must create the shared vehicle chain */
+					if (IsSavegameVersionBefore(SLV_5, 2)) {
+						v->AddToShared(v->orders->GetFirstSharedVehicle());
 					}
-				} else { // OrderList was saved as such, only recalculate not saved values
-					if (v->PreviousShared() == nullptr) {
-						v->orders->Initialize(v);
-					}
+				}
+			}
+
+			ClearVehicleOldOrderLoadState();
+		} else {
+			for (Vehicle *v : Vehicle::Iterate()) {
+				si_v = v;
+				if (v->orders != nullptr && v->PreviousShared() == nullptr) {
+					/* OrderList was saved as such, only recalculate not saved values */
+					v->orders->Initialize(v);
 				}
 			}
 		}
@@ -721,6 +744,7 @@ static uint32_t _path_layout_ctr;
 
 static uint32_t _old_ahead_separation;
 static uint16_t _old_timetable_start_subticks;
+static uint32_t _old_order_item_ref;
 
 btree::btree_map<VehicleID, uint16_t> _old_timetable_start_subticks_map;
 
@@ -1085,7 +1109,8 @@ NamedSaveLoadTable GetVehicleDescription(VehicleType vt)
 		NSL("timetable_start",          SLE_CONDVAR_X(Vehicle, timetable_start,           SLE_INT64,                  SLV_129, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLES_START_TICKS, 3))),
 		NSL("",                        SLEG_CONDVAR_X(_old_timetable_start_subticks,      SLE_UINT16,                 SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TIMETABLES_START_TICKS, 2, 2))),
 
-		NSL("orders",                     SLE_CONDREF(Vehicle, orders,                    REF_ORDER,                  SL_MIN_VERSION, SLV_105)),
+		NSL("orders",                    SLEG_CONDVAR(_old_order_item_ref,                SLE_FILE_U16 | SLE_VAR_U32, SL_MIN_VERSION, SLV_69)),
+		NSL("orders",                    SLEG_CONDVAR(_old_order_item_ref,                SLE_UINT32,                 SLV_69, SLV_105)),
 		NSL("orders",                     SLE_CONDREF(Vehicle, orders,                    REF_ORDERLIST,              SLV_105, SL_MAX_VERSION)),
 
 		NSL("age",                        SLE_CONDVAR(Vehicle, age,                       SLE_FILE_U16 | SLE_VAR_I32, SL_MIN_VERSION, SLV_31)),
@@ -1410,6 +1435,8 @@ void Load_VEHS()
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
+		_old_order_item_ref = 0;
+
 		Vehicle *v;
 		VehicleType vtype = (VehicleType)SlReadByte();
 
@@ -1448,6 +1475,9 @@ void Load_VEHS()
 
 		/* Advanced vehicle lists got added */
 		if (IsSavegameVersionBefore(SLV_60)) v->group_id = DEFAULT_GROUP;
+
+		/* Handle pre-OrderList orders */
+		if (IsSavegameVersionBefore(SLV_105) && _old_order_item_ref != 0) RegisterVehicleOldOrderRef(index, _old_order_item_ref - 1); // -1 to go from saveload ref to index
 
 		if (SlXvIsFeaturePresent(XSLFI_CHILLPP)) {
 			_veh_cpp_packets[index] = std::move(_cpp_packets);

@@ -436,10 +436,7 @@ public:
 
 	Order current_order;                ///< The current order (+ status, like: loading)
 
-	union {
-		OrderList *orders;              ///< Pointer to the order list for this vehicle
-		OrderPoolItem *old_orders;      ///< Only used during conversion of old save games
-	};
+	OrderList *orders;                  ///< Pointer to the order list for this vehicle
 
 	NO_UNIQUE_ADDRESS NewGRFCache grf_cache; ///< Cache of often used calculated NewGRF values
 	Direction cur_image_valid_dir;      ///< NOSAVE: direction for which cur_image does not need to be regenerated on the next tick
