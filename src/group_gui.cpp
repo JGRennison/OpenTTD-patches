@@ -201,13 +201,13 @@ void SortGUIGroupOnlyList(GUIGroupOnlyList &list)
 	list.Sort([&](const Group * const &a, const Group * const &b) {
 		if (a != last_group[0]) {
 			last_group[0] = a;
-			SetDParam(0, a->index);
+			SetDParam(0, a->index | GROUP_NAME_HIERARCHY);
 			last_name[0] = GetString(STR_GROUP_NAME);
 		}
 
 		if (b != last_group[1]) {
 			last_group[1] = b;
-			SetDParam(0, b->index);
+			SetDParam(0, b->index | GROUP_NAME_HIERARCHY);
 			last_name[1] = GetString(STR_GROUP_NAME);
 		}
 
