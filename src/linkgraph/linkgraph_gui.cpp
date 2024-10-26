@@ -18,7 +18,6 @@
 #include "../smallmap_gui.h"
 #include "../zoom_func.h"
 #include "../landscape.h"
-#include "../strings_builder.h"
 #include "../strings_func.h"
 #include "../core/geometry_func.hpp"
 #include "../widgets/link_graph_legend_widget.h"
@@ -581,21 +580,20 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 				check_distance()) {
 
 			format_buffer buf;
-			StringBuilder builder(buf);
 
 			auto add_travel_time = [&](uint32_t time) {
 				if (time > 0) {
 					if (_settings_time.time_in_minutes) {
 						SetDParam(0, STR_TIMETABLE_MINUTES);
 						SetDParam(1, time / _settings_time.ticks_per_minute);
-						GetString(builder, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL);
+						AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL);
 					} else if (EconTime::UsingWallclockUnits() && DayLengthFactor() > 1) {
 						SetDParam(0, STR_UNITS_SECONDS);
 						SetDParam(1, time / (DAY_TICKS / 2));
-						GetString(builder, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL);
+						AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL);
 					} else {
 						SetDParam(0, time / (DAY_TICKS * DayLengthFactor()));
-						GetString(builder, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION);
+						AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION);
 					}
 				}
 			};
@@ -604,15 +602,15 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 				if (info_link.usage < info_link.planned) {
 					SetDParam(0, info_link.cargo);
 					SetDParam(1, info_link.usage);
-					GetString(builder, STR_LINKGRAPH_STATS_TOOLTIP_USAGE);
+					AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_USAGE);
 				} else if (info_link.planned < info_link.usage) {
 					SetDParam(0, info_link.cargo);
 					SetDParam(1, info_link.planned);
-					GetString(builder, STR_LINKGRAPH_STATS_TOOLTIP_PLANNED);
+					AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_PLANNED);
 				}
 				SetDParam(0, info_link.cargo);
 				SetDParam(1, info_link.capacity);
-				GetString(builder, STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY);
+				AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY);
 				add_travel_time(info_link.time);
 			};
 
@@ -626,11 +624,11 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 				if (j->from_id == i->to_id && j->to_id == i->from_id) {
 					back_time = j->prop.time;
 					if (j->prop.Usage() > 0 || (_ctrl_pressed && j->prop.capacity > 0)) {
-						if (_ctrl_pressed) builder += '\n';
+						if (_ctrl_pressed) buf.push_back('\n');
 						SetDParam(0, j->prop.cargo);
 						SetDParam(1, j->prop.Usage());
 						SetDParam(2, j->prop.Usage() * 100 / (j->prop.capacity + 1));
-						GetString(builder, STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION);
+						AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_RETURN_EXTENSION);
 						if (_ctrl_pressed) {
 							add_extra_info(j->prop);
 						}
@@ -645,12 +643,12 @@ bool LinkGraphOverlay::ShowTooltip(Point pt, TooltipCloseCondition close_cond)
 
 			if (_ctrl_pressed) {
 				/* Add distance information */
-				builder += "\n\n";
+				buf.append("\n\n");
 				TileIndex t0 = Station::Get(i->from_id)->xy;
 				TileIndex t1 = Station::Get(i->to_id)->xy;
 				SetDParam(0, DistanceManhattan(t0, t1));
 				SetDParam(1, IntSqrt64(DistanceSquare64(t0, t1))); // Avoid overflow in DistanceSquare
-				GetString(builder, STR_LINKGRAPH_STATS_TOOLTIP_DISTANCE);
+				AppendStringInPlace(buf, STR_LINKGRAPH_STATS_TOOLTIP_DISTANCE);
 			}
 
 			SetDParam(0, link.cargo);

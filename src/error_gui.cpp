@@ -19,7 +19,6 @@
 #include "company_base.h"
 #include "company_func.h"
 #include "company_manager_face.h"
-#include "strings_builder.h"
 #include "strings_func.h"
 #include "zoom_func.h"
 #include "window_func.h"
@@ -376,14 +375,14 @@ void ShowErrorMessage(StringID summary_msg, StringID detailed_msg, WarningLevel 
 		if (textref_stack_size > 0) StartTextRefStackUsage(textref_stack_grffile, textref_stack_size, textref_stack);
 
 		format_buffer message;
-		GetString(StringBuilder(message), summary_msg);
+		AppendStringInPlace(message, summary_msg);
 		if (detailed_msg != INVALID_STRING_ID) {
 			message.push_back(' ');
-			GetString(StringBuilder(message), detailed_msg);
+			AppendStringInPlace(message, detailed_msg);
 		}
 		if (extra_msg != INVALID_STRING_ID) {
 			message.push_back(' ');
-			GetString(StringBuilder(message), extra_msg);
+			AppendStringInPlace(message, extra_msg);
 		}
 
 		if (textref_stack_size > 0) StopTextRefStackUsage();

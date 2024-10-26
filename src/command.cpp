@@ -16,7 +16,6 @@
 #include "network/network_type.h"
 #include "network/network.h"
 #include "genworld.h"
-#include "strings_builder.h"
 #include "strings_func.h"
 #include "texteff.hpp"
 #include "town.h"
@@ -1363,11 +1362,11 @@ std::string CommandCost::SummaryMessage(StringID cmd_msg) const
 		buf.format("Failed: cost: {}", (int64_t) this->GetCost());
 		if (cmd_msg != 0) {
 			buf.push_back(' ');
-			GetString(StringBuilder(buf), cmd_msg);
+			AppendStringInPlace(buf, cmd_msg);
 		}
 		if (this->message != INVALID_STRING_ID) {
 			buf.push_back(' ');
-			GetString(StringBuilder(buf), this->message);
+			AppendStringInPlace(buf, this->message);
 		}
 
 		if (textref_stack_size > 0) StopTextRefStackUsage();

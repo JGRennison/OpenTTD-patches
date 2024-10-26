@@ -13,12 +13,12 @@
 #include "gfx_func.h"
 #include "vehicle_gui.h"
 #include "vehicle_gui_base.h"
-#include "strings_builder.h"
 #include "strings_func.h"
 #include "vehicle_func.h"
 #include "spritecache.h"
 #include "zoom_func.h"
 #include "ship.h"
+#include "core/format.hpp"
 
 #include "table/strings.h"
 
@@ -89,7 +89,7 @@ void DrawShipDetails(const Vehicle *v, const Rect &r)
 		}
 
 		format_buffer capacity;
-		GetString(StringBuilder(capacity), STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY);
+		AppendStringInPlace(capacity, STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY);
 
 		bool first = true;
 		for (CargoID i = 0; i < NUM_CARGO; i++) {
@@ -97,10 +97,10 @@ void DrawShipDetails(const Vehicle *v, const Rect &r)
 				if (!first) capacity.append(", ");
 				SetDParam(0, i);
 				SetDParam(1, max_cargo[i]);
-				GetString(StringBuilder(capacity), STR_JUST_CARGO);
+				AppendStringInPlace(capacity, STR_JUST_CARGO);
 
 				if (subtype_text[i] != 0) {
-					GetString(StringBuilder(capacity), subtype_text[i]);
+					AppendStringInPlace(capacity, subtype_text[i]);
 				}
 
 				first = false;

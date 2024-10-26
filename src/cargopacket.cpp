@@ -18,7 +18,6 @@
 #include "company_func.h"
 #include "core/backup_type.hpp"
 #include "string_func.h"
-#include "strings_builder.h"
 #include "strings_func.h"
 #include "3rdparty/cpp-btree/btree_map.h"
 
@@ -87,12 +86,12 @@ std::string DumpCargoPacketDeferredPaymentStats()
 		for (uint j = 0; j < 4; j++) {
 			if (payments[i][j] != 0) {
 				SetDParam(0, i);
-				GetString(StringBuilder(buffer), STR_COMPANY_NAME);
+				AppendStringInPlace(buffer, STR_COMPANY_NAME);
 				buffer.append(" (");
-				GetString(StringBuilder(buffer), STR_REPLACE_VEHICLE_TRAIN + j);
+				AppendStringInPlace(buffer, STR_REPLACE_VEHICLE_TRAIN + j);
 				buffer.append("): ");
 				SetDParam(0, payments[i][j]);
-				GetString(StringBuilder(buffer), STR_JUST_CURRENCY_LONG);
+				AppendStringInPlace(buffer, STR_JUST_CURRENCY_LONG);
 				buffer.push_back('\n');
 			}
 		}

@@ -41,7 +41,6 @@
 #include "settings_func.h"
 #include "genworld.h"
 #include "progress.h"
-#include "strings_builder.h"
 #include "strings_func.h"
 #include "date_func.h"
 #include "vehicle_func.h"
@@ -806,7 +805,7 @@ int openttd_main(std::span<char * const> arguments)
 					InitializeLanguagePacks(); // A language pack is needed for GetString()
 					format_buffer buf;
 					SetDParamStr(0, _load_check_data.error_msg);
-					GetString(StringBuilder(buf), _load_check_data.error);
+					AppendStringInPlace(buf, _load_check_data.error);
 					buf.push_back('\n');
 					fwrite(buf.data(), 1, buf.size(), stderr);
 				}
@@ -1486,7 +1485,11 @@ void WriteVehicleInfo(format_target &buffer, const Vehicle *u, const Vehicle *v,
 	buffer.format(": type {}, vehicle {} ({}), company {}, unit number {}, wagon {}, engine: ",
 			(int)u->type, u->index, v->index, (int)u->owner, v->unitnumber, length);
 	SetDParam(0, u->engine_type);
-	buffer.append(GetString(STR_ENGINE_NAME));
+	{
+		format_buffer engname;
+		AppendStringInPlace(engname, STR_ENGINE_NAME);
+		buffer.append(engname);
+	}
 	uint32_t grfid = u->GetGRFID();
 	if (grfid) {
 		buffer.format(", GRF:{:08X}", BSWAP32(grfid));

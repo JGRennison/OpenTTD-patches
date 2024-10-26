@@ -325,6 +325,18 @@ void AppendStringInPlace(std::string &result, StringID string)
 }
 
 /**
+ * Resolve the given StringID and append in place into an existing format_buffer with all the associated
+ * DParam lookups and formatting.
+ * @param result The format_buffer to place the translated string.
+ * @param string The unique identifier of the translatable string.
+ */
+void AppendStringInPlace(format_buffer &result, StringID string)
+{
+	_global_string_params.PrepareForNextRun();
+	GetStringWithArgs(StringBuilder(result), string, _global_string_params);
+}
+
+/**
  * Resolve the given StringID into a std::string with all the associated
  * DParam lookups and formatting.
  * @param builder   the string builder to write to

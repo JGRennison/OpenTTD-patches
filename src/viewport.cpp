@@ -83,7 +83,6 @@
 #include "vehicle_base.h"
 #include "vehicle_gui.h"
 #include "blitter/factory.hpp"
-#include "strings_builder.h"
 #include "strings_func.h"
 #include "zoom_func.h"
 #include "vehicle_func.h"
@@ -2120,14 +2119,14 @@ void ViewportSign::UpdatePosition(ZoomLevel maxzoom, int center, int top, String
 
 	format_buffer buffer;
 
-	GetString(StringBuilder(buffer), str);
+	AppendStringInPlace(buffer, str);
 	this->width_normal = WidgetDimensions::scaled.fullbevel.left + Align(GetStringBoundingBox(buffer).width, 2) + WidgetDimensions::scaled.fullbevel.right;
 	this->center = center;
 
 	/* zoomed out version */
 	if (str_small != STR_NULL) {
 		buffer.clear();
-		GetString(StringBuilder(buffer), str_small);
+		AppendStringInPlace(buffer, str_small);
 	}
 	this->width_small = WidgetDimensions::scaled.fullbevel.left + Align(GetStringBoundingBox(buffer, FS_SMALL).width, 2) + WidgetDimensions::scaled.fullbevel.right;
 

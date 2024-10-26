@@ -22,7 +22,6 @@
 #include "aircraft.h"
 #include "depot_map.h"
 #include "group_gui.h"
-#include "strings_builder.h"
 #include "strings_func.h"
 #include "vehicle_func.h"
 #include "autoreplace_gui.h"
@@ -3373,10 +3372,10 @@ struct VehicleDetailsWindow : Window {
 
 					SetDParam(0, slots.size());
 					format_buffer buffer;
-					GetString(StringBuilder(buffer), STR_TRACE_RESTRICT_SLOT_LIST_HEADER);
+					AppendStringInPlace(buffer, STR_TRACE_RESTRICT_SLOT_LIST_HEADER);
 
 					for (size_t i = 0; i < slots.size(); i++) {
-						if (i != 0) GetString(StringBuilder(buffer), STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR);
+						if (i != 0) AppendStringInPlace(buffer, STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR);
 						buffer.append(TraceRestrictSlot::Get(slots[i])->name);
 					}
 					DrawString(tr, buffer);
