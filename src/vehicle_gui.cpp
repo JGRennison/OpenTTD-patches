@@ -1624,18 +1624,20 @@ static bool VehicleNumberSorter(const Vehicle * const &a, const Vehicle * const 
 /** Sort vehicles by their name */
 static bool VehicleNameSorter(const Vehicle * const &a, const Vehicle * const &b)
 {
-	static std::string last_name[2] = { {}, {} };
+	static format_buffer last_name[2] = { {}, {} };
 
 	if (a != _last_vehicle[0]) {
 		_last_vehicle[0] = a;
 		SetDParam(0, a->index);
-		last_name[0] = GetString(STR_VEHICLE_NAME);
+		last_name[0].clear();
+		AppendStringInPlace(last_name[0], STR_VEHICLE_NAME);
 	}
 
 	if (b != _last_vehicle[1]) {
 		_last_vehicle[1] = b;
 		SetDParam(0, b->index);
-		last_name[1] = GetString(STR_VEHICLE_NAME);
+		last_name[1].clear();
+		AppendStringInPlace(last_name[1], STR_VEHICLE_NAME);
 	}
 
 	int r = StrNaturalCompare(last_name[0], last_name[1]); // Sort by name (natural sorting).

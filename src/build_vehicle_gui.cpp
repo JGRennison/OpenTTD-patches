@@ -275,18 +275,20 @@ static EngineID _last_engine[2] = { INVALID_ENGINE, INVALID_ENGINE };
  */
 static bool EngineNameSorter(const GUIEngineListItem &a, const GUIEngineListItem &b, const GUIEngineListSortCache &cache)
 {
-	static std::string last_name[2] = { {}, {} };
+	static format_buffer last_name[2] = { {}, {} };
 
 	if (a.engine_id != _last_engine[0]) {
 		_last_engine[0] = a.engine_id;
 		SetDParam(0, PackEngineNameDParam(a.engine_id, EngineNameContext::PurchaseList));
-		last_name[0] = GetString(STR_ENGINE_NAME);
+		last_name[0].clear();
+		AppendStringInPlace(last_name[0], STR_ENGINE_NAME);
 	}
 
 	if (b.engine_id != _last_engine[1]) {
 		_last_engine[1] = b.engine_id;
 		SetDParam(0, PackEngineNameDParam(b.engine_id, EngineNameContext::PurchaseList));
-		last_name[1] = GetString(STR_ENGINE_NAME);
+		last_name[1].clear();
+		AppendStringInPlace(last_name[1], STR_ENGINE_NAME);
 	}
 
 	int r = StrNaturalCompare(last_name[0], last_name[1]); // Sort by name (natural sorting).

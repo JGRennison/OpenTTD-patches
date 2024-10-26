@@ -226,7 +226,9 @@ public:
  * Includes convenience wrappers to access the buffer.
  * Can be used as a fmt argument.
  */
-struct format_buffer final : public format_buffer_base<fmt::inline_buffer_size> {};
+struct format_buffer final : public format_buffer_base<fmt::inline_buffer_size> {
+	format_buffer() {}
+};
 
 /**
  * format_to_buffer subtype where the fmt::memory_buffer is built-in.
@@ -236,7 +238,9 @@ struct format_buffer final : public format_buffer_base<fmt::inline_buffer_size> 
  * Can be used as a fmt argument.
  */
 template <size_t SIZE>
-struct format_buffer_sized final : public format_buffer_base<SIZE> {};
+struct format_buffer_sized final : public format_buffer_base<SIZE> {
+	format_buffer_sized() {}
+};
 
 template <typename T>
 struct format_by_string_view_cast : public fmt::formatter<std::string_view> {

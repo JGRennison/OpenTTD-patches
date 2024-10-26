@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "cargotype.h"
+#include "core/format.hpp"
 #include "core/geometry_func.hpp"
 #include "gfx_func.h"
 #include "newgrf_cargo.h"
@@ -199,8 +200,10 @@ std::span<const CargoSpec *> _sorted_standard_cargo_specs; ///< Standard cargo s
 /** Sort cargo specifications by their name. */
 static bool CargoSpecNameSorter(const CargoSpec * const &a, const CargoSpec * const &b)
 {
-	std::string a_name = GetString(a->name);
-	std::string b_name = GetString(b->name);
+	format_buffer a_name;
+	format_buffer b_name;
+	AppendStringInPlace(a_name, a->name);
+	AppendStringInPlace(b_name, b->name);
 
 	int res = StrNaturalCompare(a_name, b_name); // Sort by name (natural sorting).
 

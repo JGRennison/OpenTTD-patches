@@ -172,18 +172,19 @@ void BuildGuiGroupList(GUIGroupList &dst, bool fold, Owner owner, VehicleType ve
 	list.ForceResort();
 
 	/* Sort the groups by their name */
-	std::array<std::pair<const Group *, std::string>, 2> last_group{};
+	std::array<std::pair<const Group *, format_buffer>, 2> last_group{};
 
 	list.Sort([&last_group](const GUIGroupListItem &a, const GUIGroupListItem &b) -> bool {
-		if (a.group != last_group[0].first) {
-			SetDParam(0, a.group->index);
-			last_group[0] = {a.group, GetString(STR_GROUP_NAME)};
-		}
-
-		if (b.group != last_group[1].first) {
-			SetDParam(0, b.group->index);
-			last_group[1] = {b.group, GetString(STR_GROUP_NAME)};
-		}
+		auto process_group = [&](size_t index, const Group *group) {
+			if (group != last_group[index].first) {
+				last_group[index].first = group;
+				last_group[index].second.clear();
+				SetDParam(0, group->index);
+				AppendStringInPlace(last_group[index].second, STR_GROUP_NAME);
+			}
+		};
+		process_group(0, a.group);
+		process_group(1, b.group);
 
 		int r = StrNaturalCompare(last_group[0].second, last_group[1].second); // Sort by name (natural sorting).
 		if (r == 0) return a.group->number < b.group->number;
@@ -197,18 +198,20 @@ void SortGUIGroupOnlyList(GUIGroupOnlyList &list)
 {
 	/* Sort the groups by their name */
 	const Group *last_group[2] = { nullptr, nullptr };
-	std::string last_name[2] = { {}, {} };
+	format_buffer last_name[2] = { {}, {} };
 	list.Sort([&](const Group * const &a, const Group * const &b) {
 		if (a != last_group[0]) {
 			last_group[0] = a;
 			SetDParam(0, a->index | GROUP_NAME_HIERARCHY);
-			last_name[0] = GetString(STR_GROUP_NAME);
+			last_name[0].clear();
+			AppendStringInPlace(last_name[0], STR_GROUP_NAME);
 		}
 
 		if (b != last_group[1]) {
 			last_group[1] = b;
 			SetDParam(0, b->index | GROUP_NAME_HIERARCHY);
-			last_name[1] = GetString(STR_GROUP_NAME);
+			last_name[1].clear();
+			AppendStringInPlace(last_name[1], STR_GROUP_NAME);
 		}
 
 		int r = StrNaturalCompare(last_name[0], last_name[1]); // Sort by name (natural sorting).
