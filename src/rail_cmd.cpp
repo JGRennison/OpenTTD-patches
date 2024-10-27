@@ -3360,7 +3360,10 @@ void DrawSingleSignal(TileIndex tile, const RailTypeInfo *rti, Track track, Sign
 
 	bool show_restricted = (prog != nullptr);
 
-	if (type == SIGTYPE_NO_ENTRY) pos ^= 1;
+	if (type == SIGTYPE_NO_ENTRY) {
+		pos ^= 1;
+		condition = SIGNAL_STATE_RED;
+	}
 
 	uint x, y;
 	GetSignalXY(tile, pos, HasBit(_signal_style_masks.signal_opposite_side, style) != ((context.ctx_flags & CSSCF_SECOND_SIGNAL) != 0), x, y);
