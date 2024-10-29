@@ -48,7 +48,6 @@ struct CYapfRegionNodeT {
 	typedef CYapfRegionNodeT<Tkey_> Node;
 
 	Tkey_ key;
-	Node *hash_next;
 	Node *parent;
 	int cost;
 	int estimate;
@@ -56,7 +55,6 @@ struct CYapfRegionNodeT {
 	inline void Set(Node *parent, const WaterRegionPatchDesc &water_region_patch)
 	{
 		this->key.Set(water_region_patch);
-		this->hash_next = nullptr;
 		this->parent = parent;
 		this->cost = 0;
 		this->estimate = 0;
@@ -79,8 +77,6 @@ struct CYapfRegionNodeT {
 		return INVALID_DIAGDIR;
 	}
 
-	inline Node *GetHashNext() { return this->hash_next; }
-	inline void SetHashNext(Node *pNext) { this->hash_next = pNext; }
 	inline const Tkey_ &GetKey() const { return this->key; }
 	inline int GetCost() { return this->cost; }
 	inline int GetCostEstimate() { return this->estimate; }

@@ -76,7 +76,6 @@ struct CYapfRailSegment
 	TileIndex last_signal_tile = INVALID_TILE;
 	Trackdir last_signal_td = INVALID_TRACKDIR;
 	EndSegmentReasonBits end_segment_reason = ESRB_NONE;
-	CYapfRailSegment *hash_next = nullptr;
 
 	inline CYapfRailSegment(const CYapfRailSegmentKey &key) : key(key) {}
 
@@ -88,16 +87,6 @@ struct CYapfRailSegment
 	inline TileIndex GetTile() const
 	{
 		return this->key.GetTile();
-	}
-
-	inline CYapfRailSegment *GetHashNext()
-	{
-		return this->hash_next;
-	}
-
-	inline void SetHashNext(CYapfRailSegment *next)
-	{
-		this->hash_next = next;
 	}
 
 	template <class D> void Dump(D &dmp) const

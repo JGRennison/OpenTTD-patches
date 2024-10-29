@@ -67,7 +67,6 @@ struct CYapfNodeT {
 	typedef Tnode Node;
 
 	Tkey_ key;
-	Node *hash_next;
 	Node *parent;
 	int cost;
 	int estimate;
@@ -76,21 +75,10 @@ struct CYapfNodeT {
 	inline void Set(Node *parent, TileIndex tile, Trackdir td, bool is_choice)
 	{
 		this->key.Set(tile, td);
-		this->hash_next = nullptr;
 		this->parent = parent;
 		this->cost = 0;
 		this->estimate = 0;
 		this->is_choice = is_choice;
-	}
-
-	inline Node *GetHashNext()
-	{
-		return this->hash_next;
-	}
-
-	inline void SetHashNext(Node *pNext)
-	{
-		this->hash_next = pNext;
 	}
 
 	inline TileIndex GetTile() const
