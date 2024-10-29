@@ -1150,7 +1150,7 @@ CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, 
 					return ClearTile_Station(cur_tile, DC_AUTO); // Get error message.
 				}
 				/* Drive-through station in the wrong direction. */
-				if (is_drive_through && IsDriveThroughStopTile(cur_tile) && DiagDirToAxis(GetRoadStopDir(cur_tile)) != axis) {
+				if (is_drive_through && IsDriveThroughStopTile(cur_tile) && GetDriveThroughStopAxis(cur_tile) != axis) {
 					return_cmd_error(STR_ERROR_DRIVE_THROUGH_DIRECTION);
 				}
 				StationID st = GetStationIndex(cur_tile);
@@ -1563,8 +1563,8 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32_
 
 	const StationSpec *statspec = StationClass::Get(spec_class)->GetSpec(spec_index);
 
-	TileIndexDiff tile_delta = (axis == AXIS_X ? TileDiffXY(1, 0) : TileDiffXY(0, 1)); // offset to go to the next platform tile
-	TileIndexDiff track_delta = (axis == AXIS_X ? TileDiffXY(0, 1) : TileDiffXY(1, 0)); // offset to go to the next track
+	TileIndexDiff tile_delta = TileOffsByAxis(axis); // offset to go to the next platform tile
+	TileIndexDiff track_delta = TileOffsByAxis(OtherAxis(axis)); // offset to go to the next track
 	TempBufferST<uint8_t> layout_buffer(numtracks * plat_len);
 	GetStationLayout(layout_buffer, numtracks, plat_len, statspec);
 
@@ -2562,7 +2562,7 @@ CommandCost CmdRemoveRoadStop(TileIndex tile, DoCommandFlag flags, uint32_t p1, 
 				/* If we don't want to preserve our roads then restore only roads of others. */
 				if (!keep_drive_through_roads && road_owner[rtt] == _current_company) road_type[rtt] = INVALID_ROADTYPE;
 			}
-			road_bits = AxisToRoadBits(DiagDirToAxis(GetRoadStopDir(cur_tile)));
+			road_bits = AxisToRoadBits(GetDriveThroughStopAxis(cur_tile));
 			drd = GetDriveThroughStopDisallowedRoadDirections(cur_tile);
 		}
 
@@ -3542,7 +3542,7 @@ draw_default_foundation:
 			}
 		}
 	} else if (IsRoadWaypointTile(ti->tile)) {
-		RoadBits bits = GetRoadStopDir(ti->tile) == DIAGDIR_NE ? ROAD_X : ROAD_Y;
+		RoadBits bits = AxisToRoadBits(GetDriveThroughStopAxis(ti->tile));
 		extern void DrawRoadBits(TileInfo *ti, RoadBits road, RoadBits tram, Roadside roadside, bool snow_or_desert, bool draw_catenary);
 		DrawRoadBits(ti, GetRoadTypeRoad(ti->tile) != INVALID_ROADTYPE ? bits : ROAD_NONE,
 				GetRoadTypeTram(ti->tile) != INVALID_ROADTYPE ? bits : ROAD_NONE,
@@ -3604,16 +3604,13 @@ draw_default_foundation:
 		const RoadTypeInfo *road_rti = road_rt == INVALID_ROADTYPE ? nullptr : GetRoadTypeInfo(road_rt);
 		const RoadTypeInfo *tram_rti = tram_rt == INVALID_ROADTYPE ? nullptr : GetRoadTypeInfo(tram_rt);
 
-		Axis axis = GetRoadStopDir(ti->tile) == DIAGDIR_NE ? AXIS_X : AXIS_Y;
-		DiagDirection dir = GetRoadStopDir(ti->tile);
+		StationGfx view = GetStationGfx(ti->tile);
 		StationType type = GetStationType(ti->tile);
 
 		const RoadStopSpec *stopspec = GetRoadStopSpec(ti->tile);
 		RoadStopDrawMode stop_draw_mode = (RoadStopDrawMode)0;
 		if (stopspec != nullptr) {
 			stop_draw_mode = stopspec->draw_mode;
-			int view = dir;
-			if (IsDriveThroughStopTile(ti->tile)) view += 4;
 			st = BaseStation::GetByTile(ti->tile);
 			RoadStopResolverObject object(stopspec, st, ti->tile, INVALID_ROADTYPE, type, view);
 			const SpriteGroup *group = object.Resolve();
@@ -3642,7 +3639,7 @@ draw_default_foundation:
 
 		if (IsDriveThroughStopTile(ti->tile)) {
 			if (type != STATION_ROADWAYPOINT && (stopspec == nullptr || (stop_draw_mode & ROADSTOP_DRAW_MODE_OVERLAY) != 0)) {
-				uint sprite_offset = axis == AXIS_X ? 1 : 0;
+				uint sprite_offset = GetDriveThroughStopAxis(ti->tile) == AXIS_X ? 1 : 0;
 				DrawRoadOverlays(ti, PAL_NONE, road_rti, tram_rti, sprite_offset, sprite_offset);
 			}
 
@@ -3650,7 +3647,7 @@ draw_default_foundation:
 			if (drd != DRD_NONE && (stopspec == nullptr || !HasBit(stopspec->flags, RSF_NO_ONE_WAY_OVERLAY)) && road_rt != INVALID_ROADTYPE) {
 				SpriteID oneway = GetCustomRoadSprite(road_rti, ti->tile, ROTSG_ONEWAY);
 				if (oneway == 0) oneway = SPR_ONEWAY_BASE;
-				DrawGroundSpriteAt(oneway + drd - 1 + ((axis == AXIS_X) ? 0 : 3), PAL_NONE, 8, 8, 0);
+				DrawGroundSpriteAt(oneway + drd - 1 + ((GetDriveThroughStopAxis(ti->tile) == AXIS_X) ? 0 : 3), PAL_NONE, 8, 8, 0);
 			}
 		} else {
 			/* Non-drivethrough road stops are only valid for roads. */
@@ -3658,7 +3655,7 @@ draw_default_foundation:
 
 			if ((stopspec == nullptr || (stop_draw_mode & ROADSTOP_DRAW_MODE_ROAD) != 0) && road_rti->UsesOverlay()) {
 				SpriteID ground = GetCustomRoadSprite(road_rti, ti->tile, ROTSG_ROADSTOP);
-				DrawGroundSprite(ground + dir, PAL_NONE);
+				DrawGroundSprite(ground + view, PAL_NONE);
 			}
 		}
 
@@ -3876,19 +3873,17 @@ static TrackStatus GetTileTrackStatus_Station(TileIndex tile, TransportType mode
 				RoadTramType rtt = (RoadTramType)GB(sub_mode, 0, 8);
 				if (!HasTileRoadType(tile, rtt)) break;
 
-				DiagDirection dir = GetRoadStopDir(tile);
-				Axis axis = DiagDirToAxis(dir);
-
-				if (side != INVALID_DIAGDIR) {
-					if (axis != DiagDirToAxis(side) || (IsBayRoadStopTile(tile) && dir != side)) break;
-				}
-
-				TrackBits trackbits = AxisToTrackBits(axis);
-				if (IsDriveThroughStopTile(tile)) {
+				if (IsBayRoadStopTile(tile)) {
+					DiagDirection dir = GetBayRoadStopDir(tile);
+					if (side != INVALID_DIAGDIR && dir != side) break;
+					TrackBits trackbits = DiagDirToDiagTrackBits(dir);
+					trackdirbits = TrackBitsToTrackdirBits(trackbits);
+				} else {
+					Axis axis = GetDriveThroughStopAxis(tile);
+					if (side != INVALID_DIAGDIR && axis != DiagDirToAxis(side)) break;
+					TrackBits trackbits = AxisToTrackBits(axis);
 					const uint drd_to_multiplier[DRD_END] = { 0x101, 0x100, 0x1, 0x0 };
 					trackdirbits = (TrackdirBits)(trackbits * drd_to_multiplier[GetDriveThroughStopDisallowedRoadDirections(tile)]);
-				} else {
-					trackdirbits = TrackBitsToTrackdirBits(trackbits);
 				}
 			}
 			break;
@@ -5347,9 +5342,7 @@ static CommandCost TerraformTile_Station(TileIndex tile, DoCommandFlag flags, in
 			switch (GetStationType(tile)) {
 				case STATION_WAYPOINT:
 				case STATION_RAIL: {
-					DiagDirection direction = AxisToDiagDir(GetRailStationAxis(tile));
-					if (!AutoslopeCheckForEntranceEdge(tile, z_new, tileh_new, direction)) break;
-					if (!AutoslopeCheckForEntranceEdge(tile, z_new, tileh_new, ReverseDiagDir(direction))) break;
+					if (!AutoslopeCheckForAxis(tile, z_new, tileh_new, GetRailStationAxis(tile))) break;
 					return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_FOUNDATION]);
 				}
 
@@ -5359,10 +5352,10 @@ static CommandCost TerraformTile_Station(TileIndex tile, DoCommandFlag flags, in
 				case STATION_TRUCK:
 				case STATION_BUS:
 				case STATION_ROADWAYPOINT: {
-					DiagDirection direction = GetRoadStopDir(tile);
-					if (!AutoslopeCheckForEntranceEdge(tile, z_new, tileh_new, direction)) break;
 					if (IsDriveThroughStopTile(tile)) {
-						if (!AutoslopeCheckForEntranceEdge(tile, z_new, tileh_new, ReverseDiagDir(direction))) break;
+						if (!AutoslopeCheckForAxis(tile, z_new, tileh_new, GetDriveThroughStopAxis(tile))) break;
+					} else {
+						if (!AutoslopeCheckForEntranceEdge(tile, z_new, tileh_new, GetBayRoadStopDir(tile))) break;
 					}
 					return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_FOUNDATION]);
 				}

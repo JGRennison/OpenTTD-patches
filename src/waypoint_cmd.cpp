@@ -121,8 +121,8 @@ Axis GetAxisForNewWaypoint(TileIndex tile)
  */
 Axis GetAxisForNewRoadWaypoint(TileIndex tile)
 {
-	/* The axis for rail waypoints is easy. */
-	if (IsRoadWaypointTile(tile)) return DiagDirToAxis(GetRoadStopDir(tile));
+	/* The axis for existing road waypoints is easy. */
+	if (IsRoadWaypointTile(tile)) return GetDriveThroughStopAxis(tile);
 
 	/* Non-plain road type, no valid axis for waypoints. */
 	if (!IsNormalRoadTile(tile)) return INVALID_AXIS;
@@ -246,7 +246,7 @@ CommandCost CmdBuildRailWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 	StationID est = INVALID_STATION;
 
 	/* Check whether the tiles we're building on are valid rail or not. */
-	TileIndexDiff offset = TileOffsByDiagDir(AxisToDiagDir(OtherAxis(axis)));
+	TileIndexDiff offset = TileOffsByAxis(OtherAxis(axis));
 	for (int i = 0; i < count; i++) {
 		TileIndex tile = start_tile + i * offset;
 		CommandCost ret = IsValidTileForWaypoint(tile, axis, &est);
@@ -403,7 +403,7 @@ CommandCost CmdBuildRoadWaypoint(TileIndex start_tile, DoCommandFlag flags, uint
 	if (ret.Failed()) return ret;
 
 	/* Check if there is an already existing, deleted, waypoint close to us that we can reuse. */
-	TileIndex center_tile = start_tile + (count / 2) * TileOffsByDiagDir(AxisToDiagDir(OtherAxis(axis)));;
+	TileIndex center_tile = start_tile + (count / 2) * TileOffsByAxis(OtherAxis(axis));
 	if (wp == nullptr && reuse) wp = FindDeletedWaypointCloseTo(center_tile, STR_SV_STNAME_WAYPOINT, _current_company, true);
 
 	if (wp != nullptr) {

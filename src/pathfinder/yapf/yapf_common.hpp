@@ -10,6 +10,13 @@
 #ifndef YAPF_COMMON_HPP
 #define YAPF_COMMON_HPP
 
+#include "../../core/bitmath_func.hpp"
+#include "../../direction_type.h"
+#include "../../map_func.h"
+#include "../../tile_type.h"
+#include "../../track_type.h"
+#include "../pathfinder_type.h"
+
 /** YAPF origin provider base class - used when origin is one tile / multiple trackdirs */
 template <class Types>
 class CYapfOriginTileT
@@ -20,8 +27,8 @@ public:
 	typedef typename Node::Key Key;               ///< key to hash tables
 
 protected:
-	TileIndex    m_orgTile;                       ///< origin tile
-	TrackdirBits m_orgTrackdirs;                  ///< origin trackdir mask
+	TileIndex origin_tile; ///< origin tile
+	TrackdirBits origin_trackdirs; ///< origin trackdir mask
 
 	/** to access inherited path finder */
 	inline Tpf &Yapf()
@@ -35,18 +42,18 @@ public:
 	/** Set origin tile / trackdir mask */
 	void SetOrigin(TileIndex tile, TrackdirBits trackdirs)
 	{
-		m_orgTile = tile;
-		m_orgTrackdirs = trackdirs;
+		this->origin_tile = tile;
+		this->origin_trackdirs = trackdirs;
 	}
 
 	/** Called when YAPF needs to place origin nodes into open list */
 	void PfSetStartupNodes()
 	{
-		bool is_choice = (KillFirstBit(m_orgTrackdirs) != TRACKDIR_BIT_NONE);
-		for (TrackdirBits tdb = m_orgTrackdirs; tdb != TRACKDIR_BIT_NONE; tdb = KillFirstBit(tdb)) {
+		bool is_choice = (KillFirstBit(this->origin_trackdirs) != TRACKDIR_BIT_NONE);
+		for (TrackdirBits tdb = this->origin_trackdirs; tdb != TRACKDIR_BIT_NONE; tdb = KillFirstBit(tdb)) {
 			Trackdir td = (Trackdir)FindFirstBit(tdb);
 			Node &n1 = Yapf().CreateNewNode();
-			n1.Set(nullptr, m_orgTile, td, is_choice);
+			n1.Set(nullptr, this->origin_tile, td, is_choice);
 			Yapf().AddStartupNode(n1);
 		}
 	}
@@ -62,12 +69,12 @@ public:
 	typedef typename Node::Key Key;               ///< key to hash tables
 
 protected:
-	TileIndex   m_orgTile;                        ///< first origin tile
-	Trackdir    m_orgTd;                          ///< first origin trackdir
-	TileIndex   m_revTile;                        ///< second (reversed) origin tile
-	Trackdir    m_revTd;                          ///< second (reversed) origin trackdir
-	int         m_reverse_penalty;                ///< penalty to be added for using the reversed origin
-	bool        m_treat_first_red_two_way_signal_as_eol; ///< in some cases (leaving station) we need to handle first two-way signal differently
+	TileIndex origin_tile; ///< first origin tile
+	Trackdir origin_td; ///< first origin trackdir
+	TileIndex reverse_tile; ///< second (reverse) origin tile
+	Trackdir reverse_td; ///< second (reverse) origin trackdir
+	int reverse_penalty; ///< penalty to be added for using the reverse origin
+	bool treat_first_red_two_way_signal_as_eol; ///< in some cases (leaving station) we need to handle first two-way signal differently
 
 	/** to access inherited path finder */
 	inline Tpf &Yapf()
@@ -81,26 +88,26 @@ public:
 	/** set origin (tiles, trackdirs, etc.) */
 	void SetOrigin(TileIndex tile, Trackdir td, TileIndex tiler = INVALID_TILE, Trackdir tdr = INVALID_TRACKDIR, int reverse_penalty = 0, bool treat_first_red_two_way_signal_as_eol = true)
 	{
-		m_orgTile = tile;
-		m_orgTd = td;
-		m_revTile = tiler;
-		m_revTd = tdr;
-		m_reverse_penalty = reverse_penalty;
-		m_treat_first_red_two_way_signal_as_eol = treat_first_red_two_way_signal_as_eol;
+		this->origin_tile = tile;
+		this->origin_td = td;
+		this->reverse_tile = tiler;
+		this->reverse_td = tdr;
+		this->reverse_penalty = reverse_penalty;
+		this->treat_first_red_two_way_signal_as_eol = treat_first_red_two_way_signal_as_eol;
 	}
 
 	/** Called when YAPF needs to place origin nodes into open list */
 	void PfSetStartupNodes()
 	{
-		if (m_orgTile != INVALID_TILE && m_orgTd != INVALID_TRACKDIR) {
+		if (this->origin_tile != INVALID_TILE && this->origin_td != INVALID_TRACKDIR) {
 			Node &n1 = Yapf().CreateNewNode();
-			n1.Set(nullptr, m_orgTile, m_orgTd, false);
+			n1.Set(nullptr, this->origin_tile, this->origin_td, false);
 			Yapf().AddStartupNode(n1);
 		}
-		if (m_revTile != INVALID_TILE && m_revTd != INVALID_TRACKDIR) {
+		if (this->reverse_tile != INVALID_TILE && this->reverse_td != INVALID_TRACKDIR) {
 			Node &n2 = Yapf().CreateNewNode();
-			n2.Set(nullptr, m_revTile, m_revTd, false);
-			n2.m_cost = m_reverse_penalty;
+			n2.Set(nullptr, this->reverse_tile, this->reverse_td, false);
+			n2.cost = this->reverse_penalty;
 			Yapf().AddStartupNode(n2);
 		}
 	}
@@ -108,7 +115,7 @@ public:
 	/** return true if first two-way signal should be treated as dead end */
 	inline bool TreatFirstRedTwoWaySignalAsEOL()
 	{
-		return Yapf().PfGetSettings().rail_firstred_twoway_eol && m_treat_first_red_two_way_signal_as_eol;
+		return Yapf().PfGetSettings().rail_firstred_twoway_eol && this->treat_first_red_two_way_signal_as_eol;
 	}
 };
 

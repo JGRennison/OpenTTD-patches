@@ -1735,13 +1735,13 @@ void DetermineCombineNormalShuntModeWithLookahead(Train *v, TileIndex tile, Trac
 
 			CFollowTrackRail ft(v);
 			if (ft.Follow(v->lookahead->reservation_end_tile, v->lookahead->reservation_end_trackdir)) {
-				if (KillFirstBit(ft.m_new_td_bits) != TRACKDIR_BIT_NONE) {
+				if (KillFirstBit(ft.new_td_bits) != TRACKDIR_BIT_NONE) {
 					/* reached a junction tile, shouldn't be reached, just assume normal route */
 					return;
 				}
 
-				TileIndex new_tile = ft.m_new_tile;
-				Trackdir new_trackdir = FindFirstTrackdir(ft.m_new_td_bits);
+				TileIndex new_tile = ft.new_tile;
+				Trackdir new_trackdir = FindFirstTrackdir(ft.new_td_bits);
 
 				if (!(IsTileType(new_tile, MP_RAILWAY) && HasSignalOnTrackdir(new_tile, new_trackdir) && !IsNoEntrySignal(new_tile, TrackdirToTrack(new_trackdir)) &&
 						HasBit(_signal_style_masks.next_only, GetSignalStyle(new_tile, TrackdirToTrack(new_trackdir))))) {
@@ -1770,10 +1770,10 @@ void DetermineCombineNormalShuntModeWithLookahead(Train *v, TileIndex tile, Trac
 						}
 					}
 					if (ft.Follow(t, td)) {
-						TrackdirBits bits = ft.m_new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.m_new_tile));
+						TrackdirBits bits = ft.new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.new_tile));
 						if (!HasExactlyOneBit(bits)) return;
 
-						t = ft.m_new_tile;
+						t = ft.new_tile;
 						td = FindFirstTrackdir(bits);
 					} else {
 						return;

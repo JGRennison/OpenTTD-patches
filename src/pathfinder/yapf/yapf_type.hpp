@@ -10,6 +10,8 @@
 #ifndef YAPF_TYPE_HPP
 #define YAPF_TYPE_HPP
 
+#include "../../core/enum_type.hpp"
+
 /* Enum used in PfCalcCost() to see why was the segment closed. */
 enum EndSegmentReason {
 	/* The following reasons can be saved into cached segment */

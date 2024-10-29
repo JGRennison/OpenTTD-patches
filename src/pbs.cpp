@@ -515,22 +515,22 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 	};
 	while (check_tunnel_bridge() && ft.Follow(tile, trackdir)) {
 		flags &= ~FRF_TB_EXIT_FREE;
-		TrackdirBits reserved = ft.m_new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.m_new_tile));
+		TrackdirBits reserved = ft.new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.new_tile));
 
 		/* No reservation --> path end found */
 		if (reserved == TRACKDIR_BIT_NONE) {
-			if (ft.m_is_station) {
+			if (ft.is_station) {
 				/* Check skipped station tiles as well, maybe our reservation ends inside the station. */
-				TileIndexDiff diff = TileOffsByDiagDir(ft.m_exitdir);
-				while (ft.m_tiles_skipped-- > 0) {
-					ft.m_new_tile -= diff;
-					if (HasStationReservation(ft.m_new_tile)) {
+				TileIndexDiff diff = TileOffsByDiagDir(ft.exitdir);
+				while (ft.tiles_skipped-- > 0) {
+					ft.new_tile -= diff;
+					if (HasStationReservation(ft.new_tile)) {
 						if (lookahead != nullptr) {
-							lookahead->AddStation(1 + ft.m_tiles_skipped, GetStationIndex(ft.m_new_tile), z);
-							lookahead->reservation_end_position += (1 + ft.m_tiles_skipped) * TILE_SIZE;
+							lookahead->AddStation(1 + ft.tiles_skipped, GetStationIndex(ft.new_tile), z);
+							lookahead->reservation_end_position += (1 + ft.tiles_skipped) * TILE_SIZE;
 						}
-						tile = ft.m_new_tile;
-						trackdir = DiagDirToDiagTrackdir(ft.m_exitdir);
+						tile = ft.new_tile;
+						trackdir = DiagDirToDiagTrackdir(ft.exitdir);
 						break;
 					}
 				}
@@ -543,31 +543,31 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 
 		/* One-way signal against us. The reservation can't be ours as it is not
 		 * a safe position from our direction and we can never pass the signal. */
-		if (!(flags & FRF_IGNORE_ONEWAY) && HasOnewaySignalBlockingTrackdir(ft.m_new_tile, new_trackdir)) break;
+		if (!(flags & FRF_IGNORE_ONEWAY) && HasOnewaySignalBlockingTrackdir(ft.new_tile, new_trackdir)) break;
 
-		tile = ft.m_new_tile;
+		tile = ft.new_tile;
 		trackdir = new_trackdir;
 
 		if (lookahead != nullptr) {
-			if (ft.m_tiles_skipped > 0) {
+			if (ft.tiles_skipped > 0) {
 				DiagDirection skip_dir = ReverseDiagDir(TrackdirToExitdir(ReverseTrackdir(trackdir)));
 				check_direction(DiagDirToDir(skip_dir), 0, tile);
 			}
-			if (ft.m_is_station) {
-				if (ft.m_tiles_skipped > 0) {
+			if (ft.is_station) {
+				if (ft.tiles_skipped > 0) {
 					TileIndexDiff diff = TileOffsByDiagDir(TrackdirToExitdir(trackdir));
-					TileIndex start = tile - (diff * ft.m_tiles_skipped);
-					for (int i = 0; i < ft.m_tiles_skipped; i++) {
+					TileIndex start = tile - (diff * ft.tiles_skipped);
+					for (int i = 0; i < ft.tiles_skipped; i++) {
 						check_rail_type(start, trackdir, i * TILE_SIZE);
 						start += diff;
 					}
 				}
-				check_rail_type(tile, trackdir, ft.m_tiles_skipped * TILE_SIZE);
-				lookahead->AddStation(1 + ft.m_tiles_skipped, GetStationIndex(ft.m_new_tile), z);
+				check_rail_type(tile, trackdir, ft.tiles_skipped * TILE_SIZE);
+				lookahead->AddStation(1 + ft.tiles_skipped, GetStationIndex(ft.new_tile), z);
 			} else {
 				check_rail_type(tile, trackdir, 0);
 			}
-			check_direction(TrackdirToDirection(trackdir), ft.m_tiles_skipped * TILE_SIZE, tile);
+			check_direction(TrackdirToDirection(trackdir), ft.tiles_skipped * TILE_SIZE, tile);
 			if (IsTileType(tile, MP_TUNNELBRIDGE) && TrackdirEntersTunnelBridge(tile, trackdir)) {
 				uint16_t bridge_speed = 0;
 				if (IsBridge(tile)) {
@@ -686,7 +686,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 				}
 			}
 
-			lookahead->reservation_end_position += (IsDiagonalTrackdir(trackdir) ? 16 : 8) + (ft.m_tiles_skipped * 16);
+			lookahead->reservation_end_position += (IsDiagonalTrackdir(trackdir) ? 16 : 8) + (ft.tiles_skipped * 16);
 			update_z(tile, trackdir, false);
 		}
 
@@ -764,15 +764,15 @@ static void FollowReservationEnumerate(Owner o, RailTypes rts, TileIndex tile, T
 	};
 	while (check_tunnel_bridge() && ft.Follow(tile, trackdir)) {
 		flags &= ~FRF_TB_EXIT_FREE;
-		TrackdirBits reserved = ft.m_new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.m_new_tile));
+		TrackdirBits reserved = ft.new_td_bits & TrackBitsToTrackdirBits(GetReservedTrackbits(ft.new_tile));
 
-		if (ft.m_is_station) {
+		if (ft.is_station) {
 			/* Check skipped station tiles as well, maybe our reservation ends inside the station. */
-			TileIndexDiff diff = TileOffsByDiagDir(ft.m_exitdir);
-			TileIndex t = ft.m_new_tile - (ft.m_tiles_skipped * diff);
-			while (ft.m_tiles_skipped-- > 0) {
+			TileIndexDiff diff = TileOffsByDiagDir(ft.exitdir);
+			TileIndex t = ft.new_tile - (ft.tiles_skipped * diff);
+			while (ft.tiles_skipped-- > 0) {
 				if (HasStationReservation(t)) {
-					if (handler(t, DiagDirToDiagTrackdir(ft.m_exitdir))) return;
+					if (handler(t, DiagDirToDiagTrackdir(ft.exitdir))) return;
 				} else {
 					break;
 				}
@@ -790,9 +790,9 @@ static void FollowReservationEnumerate(Owner o, RailTypes rts, TileIndex tile, T
 
 		/* One-way signal against us. The reservation can't be ours as it is not
 		 * a safe position from our direction and we can never pass the signal. */
-		if (!(flags & FRF_IGNORE_ONEWAY) && HasOnewaySignalBlockingTrackdir(ft.m_new_tile, new_trackdir)) break;
+		if (!(flags & FRF_IGNORE_ONEWAY) && HasOnewaySignalBlockingTrackdir(ft.new_tile, new_trackdir)) break;
 
-		tile = ft.m_new_tile;
+		tile = ft.new_tile;
 		trackdir = new_trackdir;
 
 		if (handler(tile, trackdir)) return;
@@ -1449,13 +1449,13 @@ TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const vo
 			return INVALID_TILE;
 		}
 
-		if (KillFirstBit(ft.m_new_td_bits) != TRACKDIR_BIT_NONE) {
+		if (KillFirstBit(ft.new_td_bits) != TRACKDIR_BIT_NONE) {
 			// reached a junction tile
 			return INVALID_TILE;
 		}
 
-		tile = ft.m_new_tile;
-		trackdir = FindFirstTrackdir(ft.m_new_td_bits);
+		tile = ft.new_tile;
+		trackdir = FindFirstTrackdir(ft.new_td_bits);
 	}
 }
 
@@ -1508,22 +1508,22 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
 	}
 
 	/* Check for reachable tracks. */
-	ft.m_new_td_bits &= DiagdirReachesTrackdirs(ft.m_exitdir);
-	if (ft.m_tiles_skipped == 0 && Rail90DegTurnDisallowedTilesFromTrackdir(ft.m_old_tile, ft.m_new_tile, ft.m_old_td, forbid_90deg)) ft.m_new_td_bits &= ~TrackdirCrossesTrackdirs(trackdir);
-	if (ft.m_new_td_bits == TRACKDIR_BIT_NONE) return include_line_end;
+	ft.new_td_bits &= DiagdirReachesTrackdirs(ft.exitdir);
+	if (ft.tiles_skipped == 0 && Rail90DegTurnDisallowedTilesFromTrackdir(ft.old_tile, ft.new_tile, ft.old_td, forbid_90deg)) ft.new_td_bits &= ~TrackdirCrossesTrackdirs(trackdir);
+	if (ft.new_td_bits == TRACKDIR_BIT_NONE) return include_line_end;
 
-	if (ft.m_new_td_bits != TRACKDIR_BIT_NONE && KillFirstBit(ft.m_new_td_bits) == TRACKDIR_BIT_NONE) {
-		Trackdir td = FindFirstTrackdir(ft.m_new_td_bits);
+	if (ft.new_td_bits != TRACKDIR_BIT_NONE && KillFirstBit(ft.new_td_bits) == TRACKDIR_BIT_NONE) {
+		Trackdir td = FindFirstTrackdir(ft.new_td_bits);
 		/* PBS signal on next trackdir? Conditionally safe position. */
-		if (HasPbsSignalOnTrackdir(ft.m_new_tile, td)) {
+		if (HasPbsSignalOnTrackdir(ft.new_tile, td)) {
 			const Track track = TrackdirToTrack(td);
-			if (GetSignalType(ft.m_new_tile, track) == SIGTYPE_NO_ENTRY) return include_line_end;
-			if (GetSignalAlwaysReserveThrough(ft.m_new_tile, track)) return false;
-			if (GetSignalSpecialPropagationFlag(ft.m_new_tile, track)) {
-				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(ft.m_new_tile, track);
+			if (GetSignalType(ft.new_tile, track) == SIGTYPE_NO_ENTRY) return include_line_end;
+			if (GetSignalAlwaysReserveThrough(ft.new_tile, track)) return false;
+			if (GetSignalSpecialPropagationFlag(ft.new_tile, track)) {
+				const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(ft.new_tile, track);
 				if (prog != nullptr && prog->actions_used_flags & TRPAUF_RESERVE_THROUGH) {
 					TraceRestrictProgramResult out;
-					prog->Execute(v, TraceRestrictProgramInput(ft.m_new_tile, td, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr), out);
+					prog->Execute(v, TraceRestrictProgramInput(ft.new_tile, td, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr), out);
 					if (out.flags & TRPRF_RESERVE_THROUGH) {
 						return false;
 					}
@@ -1532,13 +1532,13 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
 			return true;
 		}
 		/* One-way PBS signal against us? Safe if end-of-line is allowed. */
-		if (IsTileType(ft.m_new_tile, MP_RAILWAY) && HasSignalOnTrackdir(ft.m_new_tile, ReverseTrackdir(td)) &&
-				GetSignalType(ft.m_new_tile, TrackdirToTrack(td)) == SIGTYPE_PBS_ONEWAY) {
+		if (IsTileType(ft.new_tile, MP_RAILWAY) && HasSignalOnTrackdir(ft.new_tile, ReverseTrackdir(td)) &&
+				GetSignalType(ft.new_tile, TrackdirToTrack(td)) == SIGTYPE_PBS_ONEWAY) {
 			return include_line_end;
 		}
-		if (IsRailTunnelBridgeTile(ft.m_new_tile) &&
-				IsTrackAcrossTunnelBridge(ft.m_new_tile, TrackdirToTrack(td)) &&
-				IsTunnelBridgeSignalSimulationExitOnly(ft.m_new_tile) && IsTunnelBridgeEffectivelyPBS(ft.m_new_tile)) {
+		if (IsRailTunnelBridgeTile(ft.new_tile) &&
+				IsTrackAcrossTunnelBridge(ft.new_tile, TrackdirToTrack(td)) &&
+				IsTunnelBridgeSignalSimulationExitOnly(ft.new_tile) && IsTunnelBridgeEffectivelyPBS(ft.new_tile)) {
 			return include_line_end;
 		}
 	}
@@ -1641,16 +1641,16 @@ bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bo
 	if (!ft.Follow(tile, trackdir)) return true;
 
 	/* Check for reachable tracks. */
-	ft.m_new_td_bits &= DiagdirReachesTrackdirs(ft.m_exitdir);
-	if (Rail90DegTurnDisallowedTilesFromTrackdir(ft.m_old_tile, ft.m_new_tile, ft.m_old_td, forbid_90deg)) ft.m_new_td_bits &= ~TrackdirCrossesTrackdirs(trackdir);
+	ft.new_td_bits &= DiagdirReachesTrackdirs(ft.exitdir);
+	if (Rail90DegTurnDisallowedTilesFromTrackdir(ft.old_tile, ft.new_tile, ft.old_td, forbid_90deg)) ft.new_td_bits &= ~TrackdirCrossesTrackdirs(trackdir);
 
-	if (HasReservedTracks(ft.m_new_tile, TrackdirBitsToTrackBits(ft.m_new_td_bits))) return false;
+	if (HasReservedTracks(ft.new_tile, TrackdirBitsToTrackBits(ft.new_td_bits))) return false;
 
-	if (ft.m_new_td_bits != TRACKDIR_BIT_NONE && KillFirstBit(ft.m_new_td_bits) == TRACKDIR_BIT_NONE) {
-		Trackdir td = FindFirstTrackdir(ft.m_new_td_bits);
+	if (ft.new_td_bits != TRACKDIR_BIT_NONE && KillFirstBit(ft.new_td_bits) == TRACKDIR_BIT_NONE) {
+		Trackdir td = FindFirstTrackdir(ft.new_td_bits);
 		/* PBS signal on next trackdir? */
-		if (HasPbsSignalOnTrackdir(ft.m_new_tile, td)) {
-			return pbs_res_end_wait_test(ft.m_new_tile, td, false);
+		if (HasPbsSignalOnTrackdir(ft.new_tile, td)) {
+			return pbs_res_end_wait_test(ft.new_tile, td, false);
 		}
 	}
 

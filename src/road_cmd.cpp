@@ -1231,7 +1231,7 @@ CommandCost CmdBuildRoad(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 			}
 			if (!IsDriveThroughStopTile(tile)) goto do_clear;
 
-			RoadBits curbits = AxisToRoadBits(DiagDirToAxis(GetRoadStopDir(tile)));
+			RoadBits curbits = AxisToRoadBits(GetDriveThroughStopAxis(tile));
 			if (pieces & ~curbits) goto do_clear;
 			pieces = curbits; // we need to pay for both roadbits
 
@@ -1777,7 +1777,7 @@ CommandCost CmdRemoveLongRoad(TileIndex start_tile, DoCommandFlag flags, uint32_
 
 		if (tile == end_tile) break;
 
-		tile += (axis == AXIS_Y) ? TileDiffXY(0, 1) : TileDiffXY(1, 0);
+		tile += TileOffsByAxis(axis);
 	}
 
 	return had_success ? cost : last_error;
@@ -2099,10 +2099,10 @@ void DrawRoadCatenary(const TileInfo *ti)
 	} else if (IsTileType(ti->tile, MP_STATION)) {
 		if (IsAnyRoadStop(ti->tile)) {
 			if (IsDriveThroughStopTile(ti->tile)) {
-				Axis axis = GetRoadStopDir(ti->tile) == DIAGDIR_NE ? AXIS_X : AXIS_Y;
+				Axis axis = GetDriveThroughStopAxis(ti->tile);
 				tram = road = (axis == AXIS_X ? ROAD_X : ROAD_Y);
 			} else {
-				tram = road = DiagDirToRoadBits(GetRoadStopDir(ti->tile));
+				tram = road = DiagDirToRoadBits(GetBayRoadStopDir(ti->tile));
 			}
 		}
 	} else if (IsTileType(ti->tile, MP_TUNNELBRIDGE)) {

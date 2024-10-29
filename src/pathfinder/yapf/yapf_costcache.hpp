@@ -10,8 +10,10 @@
 #ifndef YAPF_COSTCACHE_HPP
 #define YAPF_COSTCACHE_HPP
 
-#include "../../date_func.h"
 #include "../../core/arena_alloc.hpp"
+#include "../../misc/hashtable.hpp"
+#include "../../tile_type.h"
+#include "../../track_type.h"
 
 /**
  * CYapfSegmentCostCacheNoneT - the formal only yapf cost cache provider that implements
@@ -109,25 +111,25 @@ struct CSegmentCostCacheT : public CSegmentCostCacheBase {
 	typedef BumpAllocContainer<Tsegment, 1024> Heap;
 	typedef typename Tsegment::Key Key;    ///< key to hash table
 
-	HashTable    m_map;
-	Heap         m_heap;
+	HashTable map;
+	Heap heap;
 
 	inline CSegmentCostCacheT() {}
 
 	/** flush (clear) the cache */
 	inline void Flush()
 	{
-		m_map.Clear();
-		m_heap.clear();
+		this->map.Clear();
+		this->heap.clear();
 	}
 
 	inline Tsegment &Get(Key &key, bool *found)
 	{
-		Tsegment *item = m_map.Find(key);
+		Tsegment *item = this->map.Find(key);
 		if (item == nullptr) {
 			*found = false;
-			item = m_heap.New(key);
-			m_map.Push(*item);
+			item = this->heap.New(key);
+			this->map.Push(*item);
 		} else {
 			*found = true;
 		}
@@ -152,9 +154,9 @@ public:
 	typedef CSegmentCostCacheT<CachedData> Cache;
 
 protected:
-	Cache &m_global_cache;
+	Cache &global_cache;
 
-	inline CYapfSegmentCostCacheGlobalT() : m_global_cache(stGetGlobalCache()) {};
+	inline CYapfSegmentCostCacheGlobalT() : global_cache(stGetGlobalCache()) {};
 
 	/** to access inherited path finder */
 	inline Tpf &Yapf()
@@ -187,7 +189,7 @@ public:
 		}
 		CacheKey key(n.GetKey());
 		bool found;
-		CachedData &item = m_global_cache.Get(key, &found);
+		CachedData &item = this->global_cache.Get(key, &found);
 		Yapf().ConnectNodeToCachedData(n, item);
 		return found;
 	}
