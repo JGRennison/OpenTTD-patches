@@ -2392,17 +2392,18 @@ CommandCost CmdFoundTown(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 		Town *t;
 		if (random) {
 			t = CreateRandomTown(20, townnameparts, size, city, layout);
-			if (t == nullptr) return CommandCost(STR_ERROR_NO_SPACE_FOR_TOWN);
 		} else {
 			t = new Town(tile);
 			DoCreateTown(t, tile, townnameparts, size, city, layout, true);
 		}
 
-		cost.SetResultData(t->index);
 		UpdateNearestTownForRoadTiles(false);
 		old_generating_world.Restore();
 
-		if (t != nullptr && !StrEmpty(text)) {
+		if (t == nullptr) return CommandCost(STR_ERROR_NO_SPACE_FOR_TOWN);
+		cost.SetResultData(t->index);
+
+		if (!StrEmpty(text)) {
 			t->name = text;
 			t->UpdateVirtCoord();
 		}

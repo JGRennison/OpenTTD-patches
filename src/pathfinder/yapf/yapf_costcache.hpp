@@ -105,14 +105,10 @@ struct CSegmentCostCacheBase
  */
 template <class Tsegment>
 struct CSegmentCostCacheT : public CSegmentCostCacheBase {
-	static const int C_HASH_BITS = 14;
+	using Key = typename Tsegment::Key; ///< key to hash table
 
-	typedef CHashTableT<Tsegment, C_HASH_BITS> HashTable;
-	typedef BumpAllocContainer<Tsegment, 1024> Heap;
-	typedef typename Tsegment::Key Key;    ///< key to hash table
-
-	HashTable map;
-	Heap heap;
+	HashTable<Tsegment> map;
+	BumpAllocContainer<Tsegment, 1024> heap;
 
 	inline CSegmentCostCacheT() {}
 

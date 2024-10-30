@@ -643,7 +643,7 @@ void ReadGRFSpriteOffsets(SpriteFile &file)
 
 		/* Loop over all sprite section entries and store the file
 		 * offset for each newly encountered ID. */
-		uint32_t id, prev_id = 0;
+		SpriteID id, prev_id = 0;
 		while ((id = file.ReadDword()) != 0) {
 			if (id != prev_id) {
 				_grf_sprite_offsets[prev_id] = offset;
@@ -684,7 +684,7 @@ void ReadGRFSpriteOffsets(SpriteFile &file)
  * @param container_version Container version of the GRF.
  * @return True if a valid sprite was loaded, false on any error.
  */
-bool LoadNextSprite(int load_index, SpriteFile &file, uint file_sprite_id)
+bool LoadNextSprite(SpriteID load_index, SpriteFile &file, uint file_sprite_id)
 {
 	size_t file_pos = file.GetPos();
 
@@ -735,7 +735,7 @@ bool LoadNextSprite(int load_index, SpriteFile &file, uint file_sprite_id)
 
 	if (type == SpriteType::Invalid) return false;
 
-	if (load_index == -1) {
+	if (load_index == INVALID_SPRITE_ID) {
 		return false;
 	}
 

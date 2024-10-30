@@ -157,7 +157,7 @@ public:
 	 * @returns The amount of individual water patches present within the water region. A value of
 	 * 0 means there is no water present in the water region at all.
 	 */
-	int NumberOfPatches() const { return this->wr.number_of_patches; }
+	int NumberOfPatches() const { return static_cast<int>(this->wr.number_of_patches); }
 
 	/**
 	 * @returns Whether the water region contains aqueducts that cross the region boundaries.
@@ -173,7 +173,7 @@ public:
 	{
 		assert(this->ContainsTile(tile));
 		if (this->wr.tile_patch_labels == nullptr) {
-			return this->NumberOfPatches() == 0 ? INVALID_WATER_REGION_PATCH : 1;
+			return this->NumberOfPatches() == 0 ? INVALID_WATER_REGION_PATCH : FIRST_REGION_LABEL;
 		}
 		return (*this->wr.tile_patch_labels)[this->GetLocalIndex(tile)];
 	}
@@ -197,8 +197,8 @@ public:
 		this->wr.tile_patch_labels->fill(INVALID_WATER_REGION_PATCH);
 		this->wr.edge_traversability_bits.fill(0);
 
-		TWaterRegionPatchLabel current_label = 1;
-		TWaterRegionPatchLabel highest_assigned_label = 0;
+		TWaterRegionPatchLabel current_label = FIRST_REGION_LABEL;
+		TWaterRegionPatchLabel highest_assigned_label = INVALID_WATER_REGION_PATCH;
 
 		/* Perform connected component labeling. This uses a flooding algorithm that expands until no
 		 * additional tiles can be added. Only tiles inside the water region are considered. */
@@ -222,7 +222,7 @@ public:
 				const TrackdirBits valid_dirs = TrackBitsToTrackdirBits(GetWaterTracks(tile));
 				if (valid_dirs == TRACKDIR_BIT_NONE) continue;
 
-				TWaterRegionPatchLabel &tile_patch = (*this->wr.tile_patch_labels)[GetLocalIndex(tile)];
+				TWaterRegionPatchLabel &tile_patch = (*this->wr.tile_patch_labels)[this->GetLocalIndex(tile)];
 				if (tile_patch != INVALID_WATER_REGION_PATCH) continue;
 
 				tile_patch = current_label;
@@ -252,7 +252,7 @@ public:
 
 		this->wr.number_of_patches = highest_assigned_label;
 
-		if (this->wr.number_of_patches == 0 || (this->wr.number_of_patches == 1 && !this->HasNonMatchingPatchLabel(1))) {
+		if (this->wr.number_of_patches == 0 || (this->wr.number_of_patches == 1 && !this->HasNonMatchingPatchLabel(FIRST_REGION_LABEL))) {
 			/* No need for patch storage: trivial cases */
 			_spare_labels = std::move(this->wr.tile_patch_labels);
 		}

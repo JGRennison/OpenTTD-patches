@@ -13,14 +13,12 @@
 #include "../3rdparty/robin_hood/robin_hood.h"
 
 /**
- * class CHashTableT<Titem, Thash_bits> - simple hash table
+ * class HashTable<Titem> - simple hash table
  *  of pointers allocated elsewhere.
  *
  *  Supports: Add/Find/Remove of Titems.
  *
- * Thash_bits_ is ignored but retained for upstream compatibility
- *
- *  Your Titem must meet some extra requirements to be CHashTableT
+ *  Your Titem must meet some extra requirements to be HashTable
  *  compliant:
  *    - its constructor/destructor (if any) must be public
  *    - if the copying of item requires an extra resource management,
@@ -36,19 +34,18 @@
  *    - public method that get the key storage type:
  *        Titem::Key::HashKey GetHashKey() const;
  */
-template <class Titem_, int Thash_bits_ = 0>
-class CHashTableT {
+template <class Titem>
+class HashTable {
 public:
-	typedef Titem_ Titem;                         // make Titem_ visible from outside of class
-	typedef typename Titem_::Key Tkey;            // make Titem_::Key a property of HashTable
-	typedef typename Tkey::HashKey THashKey;      // make Titem_::Key::HashKey a property of HashTable
+	typedef typename Titem::Key Tkey;             ///< make Titem::Key a property of HashTable
+	typedef typename Tkey::HashKey THashKey;      ///< make Titem::Key::HashKey a property of HashTable
 
 private:
 	robin_hood::unordered_map<THashKey, Titem *> data;
 
 public:
 	/* default constructor */
-	inline CHashTableT()
+	inline HashTable()
 	{
 	}
 
@@ -65,7 +62,7 @@ public:
 	}
 
 	/** const item search */
-	const Titem_ *Find(const Tkey &key) const
+	const Titem *Find(const Tkey &key) const
 	{
 		auto iter = this->data.find(key.GetHashKey());
 		if (iter != this->data.end()) return iter->second;
@@ -73,7 +70,7 @@ public:
 	}
 
 	/** non-const item search */
-	Titem_ *Find(const Tkey &key)
+	Titem *Find(const Tkey &key)
 	{
 		auto iter = this->data.find(key.GetHashKey());
 		if (iter != this->data.end()) return iter->second;
@@ -81,11 +78,11 @@ public:
 	}
 
 	/** non-const item search & optional removal (if found) */
-	Titem_ *TryPop(const Tkey &key)
+	Titem *TryPop(const Tkey &key)
 	{
 		auto iter = this->data.find(key.GetHashKey());
 		if (iter != this->data.end()) {
-			Titem_ *result = iter->second;
+			Titem *result = iter->second;
 			this->data.erase(iter);
 			return result;
 		}
@@ -93,15 +90,15 @@ public:
 	}
 
 	/** non-const item search & removal */
-	Titem_ &Pop(const Tkey &key)
+	Titem &Pop(const Tkey &key)
 	{
-		Titem_ *item = TryPop(key);
+		Titem *item = TryPop(key);
 		assert(item != nullptr);
 		return *item;
 	}
 
 	/** non-const item search & optional removal (if found) */
-	bool TryPop(Titem_ &item)
+	bool TryPop(Titem &item)
 	{
 		auto iter = this->data.find(item.GetKey().GetHashKey());
 		if (iter != this->data.end()) {
@@ -112,14 +109,14 @@ public:
 	}
 
 	/** non-const item search & removal */
-	void Pop(Titem_ &item)
+	void Pop(Titem &item)
 	{
 		[[maybe_unused]] bool ret = TryPop(item);
 		assert(ret);
 	}
 
 	/** add one item - copy it from the given item */
-	void Push(Titem_ &new_item)
+	void Push(Titem &new_item)
 	{
 		this->data[new_item.GetKey().GetHashKey()] = &new_item;
 	}

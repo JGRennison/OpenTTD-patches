@@ -7406,7 +7406,7 @@ static void GraphicsNew(ByteReader &buf)
 
 	for (uint16_t n = num; n > 0; n--) {
 		_cur.nfo_line++;
-		int load_index = (replace == 0 ? _cur.spriteid++ : replace++);
+		SpriteID load_index = (replace == 0 ? _cur.spriteid++ : replace++);
 		LoadNextSprite(load_index, *_cur.file, _cur.nfo_line);
 		if (dup_oneway_sprites) {
 			DupSprite(load_index, load_index + SPR_ONEWAY_SLOPE_N_OFFSET);
@@ -8049,21 +8049,21 @@ static void SpriteReplace(ByteReader &buf)
 
 				for (uint j = 0; j < num_sprites; j++) {
 					_cur.nfo_line++;
-					LoadNextSprite(-1, *_cur.file, _cur.nfo_line);
+					LoadNextSprite(INVALID_SPRITE_ID, *_cur.file, _cur.nfo_line);
 				}
 				return;
 			}
 		}
 
 		for (uint j = 0; j < num_sprites; j++) {
-			int load_index = first_sprite + j;
+			SpriteID load_index = first_sprite + j;
 			_cur.nfo_line++;
 			if (load_index < (int)SPR_PROGSIGNAL_BASE || load_index >= (int)SPR_NEWGRFS_BASE) {
 				LoadNextSprite(load_index, *_cur.file, _cur.nfo_line); // XXX
 			} else {
 				/* Skip sprite */
 				GrfMsg(0, "SpriteReplace: Ignoring attempt to replace protected sprite ID: {}", load_index);
-				LoadNextSprite(-1, *_cur.file, _cur.nfo_line);
+				LoadNextSprite(INVALID_SPRITE_ID, *_cur.file, _cur.nfo_line);
 			}
 
 			/* Shore sprites now located at different addresses.
@@ -11757,7 +11757,7 @@ static void AfterLoadGRFs()
  * @param load_index The offset for the first sprite to add.
  * @param num_baseset Number of NewGRFs at the front of the list to look up in the baseset dir instead of the newgrf dir.
  */
-void LoadNewGRF(uint load_index, uint num_baseset)
+void LoadNewGRF(SpriteID load_index, uint num_baseset)
 {
 	/* In case of networking we need to "sync" the start values
 	 * so all NewGRFs are loaded equally. For this we use the

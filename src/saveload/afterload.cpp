@@ -1078,6 +1078,26 @@ bool AfterLoadGame()
 		cp->current_station = cp->front->last_station_visited;
 	}
 
+	if (IsSavegameVersionBefore(SLV_WATER_TILE_TYPE) && SlXvIsFeatureMissing(XSLFI_WATER_TILE_TYPE)) {
+		/* Prior to SLV_WATER_TILE_TYPE, the water tile type was stored differently from the enumeration. This has to be
+		 * converted before SLV_72 and SLV_82 conversions which use GetWaterTileType. */
+		static constexpr uint8_t WBL_COAST_FLAG = 0; ///< Flag for coast.
+
+		for (TileIndex t = 0; t < MapSize(); t++) {
+			if (!IsTileType(t, MP_WATER)) continue;
+
+			switch (GB(_m[t].m5, 4, 4)) {
+				case 0x0: /* Previously WBL_TYPE_NORMAL, Clear water or coast. */
+					SetWaterTileType(t, HasBit(_m[t].m5, WBL_COAST_FLAG) ? WATER_TILE_COAST : WATER_TILE_CLEAR);
+					break;
+
+				case 0x1: SetWaterTileType(t, WATER_TILE_LOCK); break; /* Previously WBL_TYPE_LOCK */
+				case 0x8: SetWaterTileType(t, WATER_TILE_DEPOT); break; /* Previously WBL_TYPE_DEPOT */
+				default: SetWaterTileType(t, WATER_TILE_CLEAR); break; /* Shouldn't happen... */
+			}
+		}
+	}
+
 	if (IsSavegameVersionBefore(SLV_72)) {
 		/* Locks in very old savegames had OWNER_WATER as owner */
 		for (TileIndex t = 0; t < MapSize(); t++) {

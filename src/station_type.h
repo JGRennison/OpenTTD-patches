@@ -76,18 +76,16 @@ enum StationHadVehicleOfType : uint8_t {
 };
 DECLARE_ENUM_AS_BIT_SET(StationHadVehicleOfType)
 
-/** The different catchment areas used */
-enum CatchmentArea {
-	CA_NONE            =  0, ///< Catchment when the station has no facilities
-	CA_BUS             =  3, ///< Catchment for bus stops with "modified catchment" enabled
-	CA_TRUCK           =  3, ///< Catchment for truck stops with "modified catchment" enabled
-	CA_TRAIN           =  4, ///< Catchment for train stations with "modified catchment" enabled
-	CA_DOCK            =  5, ///< Catchment for docks with "modified catchment" enabled
+/* The different catchment area sizes. */
+static constexpr uint CA_NONE = 0; ///< Catchment when the station has no facilities
+static constexpr uint CA_BUS = 3; ///< Catchment for bus stops with "modified catchment" enabled
+static constexpr uint CA_TRUCK = 3; ///< Catchment for truck stops with "modified catchment" enabled
+static constexpr uint CA_TRAIN = 4; ///< Catchment for train stations with "modified catchment" enabled
+static constexpr uint CA_DOCK = 5; ///< Catchment for docks with "modified catchment" enabled
 
-	CA_UNMODIFIED      =  4, ///< Catchment for all stations with "modified catchment" disabled
+static constexpr uint CA_UNMODIFIED = 4; ///< Catchment for all stations with "modified catchment" disabled
 
-	MAX_CATCHMENT      = 10, ///< Maximum catchment for airports with "modified catchment" enabled
-};
+static constexpr uint MAX_CATCHMENT = 10; ///< Maximum catchment for airports with "modified catchment" enabled
 
 enum StationDelivery : uint8_t {
 	SD_NEAREST_FIRST = 0, ///< Station delivers cargo only to the nearest accepting industry

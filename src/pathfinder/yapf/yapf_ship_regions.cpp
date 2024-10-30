@@ -292,7 +292,7 @@ struct CYapfRegion_TypesT
 	typedef CYapfCostRegionT<Types>           PfCost;        ///< Cost provider.
 };
 
-typedef CNodeList_HashTableT<CYapfRegionNodeT<CYapfRegionPatchNodeKey>, 12, 12> CRegionNodeListWater;
+typedef CNodeList_HashTableT<CYapfRegionNodeT<CYapfRegionPatchNodeKey>> CRegionNodeListWater;
 
 struct CYapfRegionWater : CYapfT<CYapfRegion_TypesT<CYapfRegionWater, CRegionNodeListWater>>
 {

@@ -165,6 +165,7 @@ enum SlXvFeatureIndex {
 	XSLFI_DEPOT_UNBUNCHING,                       ///< See: SLV_DEPOT_UNBUNCHING (PR #11945)
 	XSLFI_VEHICLE_ECONOMY_AGE,                    ///< See: SLV_VEHICLE_ECONOMY_AGE (PR #12141)
 	XSLFI_GROUP_NUMBERS,                          ///< See: SLV_GROUP_NUMBERS (PR #12297)
+	XSLFI_WATER_TILE_TYPE,                        ///< See: SLV_WATER_TILE_TYPE (PR #13030)
 
 	XSLFI_TABLE_PATS,                             ///< Use upstream table format for PATS
 	XSLFI_TABLE_PLYR,                             ///< Use table format for PLYR

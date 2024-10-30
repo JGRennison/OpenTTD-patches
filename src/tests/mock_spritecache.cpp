@@ -15,7 +15,7 @@
 #include "../spritecache_internal.h"
 #include "../table/sprites.h"
 
-static bool MockLoadNextSprite(int load_index)
+static bool MockLoadNextSprite(SpriteID load_index)
 {
 	SpriteDataBuffer buffer;
 	buffer.Allocate((uint32_t)sizeof(Sprite));
@@ -32,7 +32,7 @@ static bool MockLoadNextSprite(int load_index)
 	sc->flags = 0;
 
 	/* Fill with empty sprites up until the default sprite count. */
-	return (uint)load_index < SPR_OPENTTD_BASE + OPENTTD_SPRITE_COUNT;
+	return load_index < SPR_OPENTTD_BASE + OPENTTD_SPRITE_COUNT;
 }
 
 void MockGfxLoadSprites()
@@ -42,7 +42,7 @@ void MockGfxLoadSprites()
 
 	GfxInitSpriteMem();
 
-	int load_index = 0;
+	SpriteID load_index = 0;
 	while (MockLoadNextSprite(load_index)) {
 		load_index++;
 	}

@@ -257,7 +257,7 @@ typedef CYapfRailNodeT<CYapfNodeKeyExitDir>  CYapfRailNodeExitDir;
 typedef CYapfRailNodeT<CYapfNodeKeyTrackDir> CYapfRailNodeTrackDir;
 
 /* Default NodeList types */
-typedef CNodeList_HashTableT<CYapfRailNodeExitDir , 8, 10> CRailNodeListExitDir;
-typedef CNodeList_HashTableT<CYapfRailNodeTrackDir, 8, 10> CRailNodeListTrackDir;
+typedef CNodeList_HashTableT<CYapfRailNodeExitDir> CRailNodeListExitDir;
+typedef CNodeList_HashTableT<CYapfRailNodeTrackDir> CRailNodeListTrackDir;
 
 #endif /* YAPF_NODE_RAIL_HPP */

@@ -19,14 +19,14 @@
  *  Implements open list, closed list and priority queue for A-star
  *  path finder.
  */
-template <class Titem_, int Thash_bits_open_, int Thash_bits_closed_>
+template <class Titem_>
 class CNodeList_HashTableT {
 public:
 	typedef Titem_ Titem;                                        ///< Make #Titem_ visible from outside of class.
 	typedef typename Titem_::Key Key;                            ///< Make Titem_::Key a property of this class.
 	typedef BumpAllocContainer<Titem_, 4096> CItemAlloc;         ///< Type that we will use as item container.
-	typedef CHashTableT<Titem_, Thash_bits_open_  > COpenList;   ///< How pointers to open nodes will be stored.
-	typedef CHashTableT<Titem_, Thash_bits_closed_> CClosedList; ///< How pointers to closed nodes will be stored.
+	typedef HashTable<Titem_> COpenList;                         ///< How pointers to open nodes will be stored.
+	typedef HashTable<Titem_> CClosedList;                       ///< How pointers to closed nodes will be stored.
 	typedef CBinaryHeapT<Titem_> CPriorityQueue;                 ///< How the priority queue will be managed.
 
 protected:

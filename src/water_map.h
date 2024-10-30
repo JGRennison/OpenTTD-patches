@@ -16,24 +16,16 @@
 /**
  * Bit field layout of m5 for water tiles.
  */
-enum WaterTileTypeBitLayout {
-	WBL_TYPE_BEGIN        = 4,   ///< Start of the 'type' bitfield.
-	WBL_TYPE_COUNT        = 4,   ///< Length of the 'type' bitfield.
+static constexpr uint8_t WBL_TYPE_BEGIN = 4; ///< Start of the 'type' bitfield.
+static constexpr uint8_t WBL_TYPE_COUNT = 4; ///< Length of the 'type' bitfield.
 
-	WBL_TYPE_NORMAL       = 0x0, ///< Clear water or coast ('type' bitfield).
-	WBL_TYPE_LOCK         = 0x1, ///< Lock ('type' bitfield).
-	WBL_TYPE_DEPOT        = 0x8, ///< Depot ('type' bitfield).
+static constexpr uint8_t WBL_LOCK_ORIENT_BEGIN = 0; ///< Start of lock orientation bitfield.
+static constexpr uint8_t WBL_LOCK_ORIENT_COUNT = 2; ///< Length of lock orientation bitfield.
+static constexpr uint8_t WBL_LOCK_PART_BEGIN = 2; ///< Start of lock part bitfield.
+static constexpr uint8_t WBL_LOCK_PART_COUNT = 2; ///< Length of lock part bitfield.
 
-	WBL_COAST_FLAG        = 0,   ///< Flag for coast.
-
-	WBL_LOCK_ORIENT_BEGIN = 0,   ///< Start of lock orientation bitfield.
-	WBL_LOCK_ORIENT_COUNT = 2,   ///< Length of lock orientation bitfield.
-	WBL_LOCK_PART_BEGIN   = 2,   ///< Start of lock part bitfield.
-	WBL_LOCK_PART_COUNT   = 2,   ///< Length of lock part bitfield.
-
-	WBL_DEPOT_PART        = 0,   ///< Depot part flag.
-	WBL_DEPOT_AXIS        = 1,   ///< Depot axis flag.
-};
+static constexpr uint8_t WBL_DEPOT_PART = 0; ///< Depot part flag.
+static constexpr uint8_t WBL_DEPOT_AXIS = 1; ///< Depot axis flag.
 
 /** Available water tile types. */
 enum WaterTileType {
@@ -70,20 +62,25 @@ enum LockPart {
 bool IsPossibleDockingTile(TileIndex t);
 
 /**
- * Get the water tile type at a tile.
+ * Get the water tile type of a tile.
  * @param t Water tile to query.
  * @return Water tile type at the tile.
  */
 inline WaterTileType GetWaterTileType(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_WATER), t);
+	return static_cast<WaterTileType>(GB(_m[t].m5, WBL_TYPE_BEGIN, WBL_TYPE_COUNT));
+}
 
-	switch (GB(_m[t].m5, WBL_TYPE_BEGIN, WBL_TYPE_COUNT)) {
-		case WBL_TYPE_NORMAL: return HasBit(_m[t].m5, WBL_COAST_FLAG) ? WATER_TILE_COAST : WATER_TILE_CLEAR;
-		case WBL_TYPE_LOCK:   return WATER_TILE_LOCK;
-		case WBL_TYPE_DEPOT:  return WATER_TILE_DEPOT;
-		default: NOT_REACHED();
-	}
+/**
+ * Set the water tile type of a tile.
+ * @param t Water tile to set.
+ * @param type Water tile type of the tile.
+ */
+inline void SetWaterTileType(TileIndex t, WaterTileType type)
+{
+	dbg_assert_tile(IsTileType(t, MP_WATER), t);
+	SB(_m[t].m5, WBL_TYPE_BEGIN, WBL_TYPE_COUNT, to_underlying(type));
 }
 
 /**
@@ -381,7 +378,8 @@ inline void MakeShore(TileIndex t)
 	_m[t].m2 = 0;
 	_m[t].m3 = 0;
 	_m[t].m4 = 0;
-	_m[t].m5 = WBL_TYPE_NORMAL << WBL_TYPE_BEGIN | 1 << WBL_COAST_FLAG;
+	_m[t].m5 = 0;
+	SetWaterTileType(t, WATER_TILE_COAST);
 	SB(_me[t].m6, 2, 4, 0);
 	_me[t].m7 = 0;
 }
@@ -402,7 +400,8 @@ inline void MakeWater(TileIndex t, Owner o, WaterClass wc, uint8_t random_bits)
 	_m[t].m2 = 0;
 	_m[t].m3 = 0;
 	_m[t].m4 = random_bits;
-	_m[t].m5 = WBL_TYPE_NORMAL << WBL_TYPE_BEGIN;
+	_m[t].m5 = 0;
+	SetWaterTileType(t, WATER_TILE_CLEAR);
 	SB(_me[t].m6, 2, 4, 0);
 	_me[t].m7 = 0;
 }
@@ -456,7 +455,8 @@ inline void MakeShipDepot(TileIndex t, Owner o, DepotID did, DepotPart part, Axi
 	_m[t].m2 = did;
 	_m[t].m3 = 0;
 	_m[t].m4 = 0;
-	_m[t].m5 = WBL_TYPE_DEPOT << WBL_TYPE_BEGIN | part << WBL_DEPOT_PART | a << WBL_DEPOT_AXIS;
+	_m[t].m5 = part << WBL_DEPOT_PART | a << WBL_DEPOT_AXIS;
+	SetWaterTileType(t, WATER_TILE_DEPOT);
 	SB(_me[t].m6, 2, 4, 0);
 	_me[t].m7 = 0;
 }
@@ -479,7 +479,8 @@ inline void MakeLockTile(TileIndex t, Owner o, LockPart part, DiagDirection dir,
 	_m[t].m2 = 0;
 	_m[t].m3 = 0;
 	_m[t].m4 = 0;
-	_m[t].m5 = WBL_TYPE_LOCK << WBL_TYPE_BEGIN | part << WBL_LOCK_PART_BEGIN | dir << WBL_LOCK_ORIENT_BEGIN;
+	_m[t].m5 = part << WBL_LOCK_PART_BEGIN | dir << WBL_LOCK_ORIENT_BEGIN;
+	SetWaterTileType(t, WATER_TILE_LOCK);
 	SB(_me[t].m6, 2, 4, 0);
 	_me[t].m7 = 0;
 }

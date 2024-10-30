@@ -25,10 +25,11 @@ struct RoadStop : RoadStopPool::PoolItem<&_roadstop_pool> {
 	enum RoadStopStatusFlags {
 		RSSFB_BAY0_FREE  = 0, ///< Non-zero when bay 0 is free
 		RSSFB_BAY1_FREE  = 1, ///< Non-zero when bay 1 is free
-		RSSFB_BAY_COUNT  = 2, ///< Max. number of bays
 		RSSFB_BASE_ENTRY = 6, ///< Non-zero when the entries on this road stop are the primary, i.e. the ones to delete
 		RSSFB_ENTRY_BUSY = 7, ///< Non-zero when roadstop entry is busy
 	};
+
+	static constexpr uint8_t BAY_COUNT = 2; ///< Max. number of bays
 
 	/** Container for each entry point of a drive through road stop */
 	struct Entry {
@@ -80,7 +81,7 @@ struct RoadStop : RoadStopPool::PoolItem<&_roadstop_pool> {
 
 	/** Initializes a RoadStop */
 	inline RoadStop(TileIndex tile = INVALID_TILE) :
-		status((1 << RSSFB_BAY_COUNT) - 1),
+		status((1 << BAY_COUNT) - 1),
 		xy(tile)
 	{ }
 
@@ -92,7 +93,7 @@ struct RoadStop : RoadStopPool::PoolItem<&_roadstop_pool> {
 	 */
 	inline bool HasFreeBay() const
 	{
-		return GB(this->status, 0, RSSFB_BAY_COUNT) != 0;
+		return GB(this->status, 0, BAY_COUNT) != 0;
 	}
 
 	/**
@@ -102,7 +103,7 @@ struct RoadStop : RoadStopPool::PoolItem<&_roadstop_pool> {
 	 */
 	inline bool IsFreeBay(uint nr) const
 	{
-		assert(nr < RSSFB_BAY_COUNT);
+		assert(nr < BAY_COUNT);
 		return HasBit(this->status, nr);
 	}
 
@@ -197,7 +198,7 @@ private:
 	 */
 	inline void AllocateDriveThroughBay(uint nr)
 	{
-		assert(nr < RSSFB_BAY_COUNT);
+		assert(nr < BAY_COUNT);
 		ClrBit(this->status, nr);
 	}
 
@@ -207,7 +208,7 @@ private:
 	 */
 	inline void FreeBay(uint nr)
 	{
-		assert(nr < RSSFB_BAY_COUNT);
+		assert(nr < BAY_COUNT);
 		SetBit(this->status, nr);
 	}
 };
