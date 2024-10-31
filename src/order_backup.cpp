@@ -52,9 +52,7 @@ OrderBackup::OrderBackup(const Vehicle *v, uint32_t user)
 	} else {
 		/* Else copy the orders */
 		for (const Order *order : v->Orders()) {
-			Order copy;
-			copy.AssignOrder(*order);
-			this->orders.emplace_back(std::move(copy));
+			this->orders.emplace_back(*order);
 		}
 
 		if (v->orders != nullptr) {

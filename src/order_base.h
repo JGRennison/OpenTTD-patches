@@ -223,14 +223,14 @@ public:
 
 	Order(const Order& other)
 	{
-		AssignOrder(other);
+		this->AssignOrder(other);
 	}
 
 	Order(Order&& other) = default;
 
 	inline Order& operator=(Order const& other)
 	{
-		AssignOrder(other);
+		this->AssignOrder(other);
 		return *this;
 	}
 
