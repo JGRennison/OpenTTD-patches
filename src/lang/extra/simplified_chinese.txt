@@ -444,20 +444,20 @@ STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT_HELPTEXT     :选择对于新
 STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS                     :在时刻表中显示剩余的游戏刻：{STRING}
 STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS_HELPTEXT            :再把时刻表的单位由游戏刻转换为日和分钟的时候也显示剩余的游戏刻。
 
-STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS                       :使用客户端时间设置代替存档时间设置：{STRING}
-STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS_HELPTEXT              :选择是否使用本地客户端时间显示设置代替游戏存档中所保存的时间设置。
+STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS                       :使用客户端时刻表时间设置代替存档时刻表时间设置：{STRING}
+STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS_HELPTEXT              :选择是否使用本地客户端时刻表时间显示设置代替游戏存档中所保存的时刻表时间设置。
 
-STR_CONFIG_SETTING_TIME_IN_MINUTES                              :时间单位改为“分钟”：{STRING}
-STR_CONFIG_SETTING_TIME_IN_MINUTES_HELPTEXT                     :选择是否使用小时和分钟代替日
+STR_CONFIG_SETTING_TIME_IN_MINUTES                              :时刻表时间单位改为“分钟”：{STRING}
+STR_CONFIG_SETTING_TIME_IN_MINUTES_HELPTEXT                     :将时刻表时间单位由“日”（日历式）或“秒”（挂钟式）改为“时”与“分”
 
-STR_CONFIG_SETTING_TICKS_PER_MINUTE                             :每分钟游戏刻数：{STRING}
-STR_CONFIG_SETTING_TICKS_PER_MINUTE_HELPTEXT                    :设定每分钟游戏刻数
+STR_CONFIG_SETTING_TICKS_PER_MINUTE                             :每时刻表分钟游戏刻数：{STRING}
+STR_CONFIG_SETTING_TICKS_PER_MINUTE_HELPTEXT                    :设定每时刻表分钟游戏刻数
 
-STR_CONFIG_SETTING_DATE_WITH_TIME                               :同时在状态栏中显示时间和日期：{STRING}
+STR_CONFIG_SETTING_DATE_WITH_TIME                               :同时在状态栏中显示时刻表时间和日历日期：{STRING}
 STR_CONFIG_SETTING_DATE_WITH_TIME_HELPTEXT                      :既在状态栏里显示日期也显示游戏中的时间
 
-STR_CONFIG_SETTING_CLOCK_OFFSET                                 :时间偏移：{STRING}{NBSP}分
-STR_CONFIG_SETTING_CLOCK_OFFSET_HELPTEXT                        :游戏时钟的分钟偏移量
+STR_CONFIG_SETTING_CLOCK_OFFSET                                 :时刻表时间偏移：{STRING}{NBSP}分
+STR_CONFIG_SETTING_CLOCK_OFFSET_HELPTEXT                        :时刻表时钟的分钟偏移量
 
 STR_CONFIG_SETTING_DATE_WITH_TIME_NONE                          :无
 STR_CONFIG_SETTING_DATE_WITH_TIME_Y                             :年
@@ -536,6 +536,11 @@ STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO                     :无限制
 
 STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES                           :允许城镇建造桥梁：{STRING}
 STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT                  :决定城镇是否可以建造桥梁
+
+STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH                    :允许城镇发展：{STRING}
+STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH_HELPTEXT           :设置是否默认允许城镇发展
+
+STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH_ALLOWED            :允许
 
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA          :{STRING}{}本项不包括伐木场，且不一定与所有工业 NewGRF 兼容
 
@@ -647,6 +652,7 @@ STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER          :在多人联机
 STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER_HELPTEXT :当通过网络客户端加入多玩家服务器时，改变本地化设置来匹配服务器
 
 STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS                    :{ORANGE}出发看板
+STR_CONFIG_SETTING_INTERFACE_TIMETABLE_CLOCK                    :{ORANGE}时刻表时钟
 STR_CONFIG_SETTING_INTERFACE_TIME_CLIENT                        :{ORANGE}客户端设置
 STR_CONFIG_SETTING_INTERFACE_TIME_SAVEGAME                      :{ORANGE}游戏保存设置
 STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}时刻表
@@ -1189,8 +1195,13 @@ STR_SELECT_TOWN_LIST_ITEM                                       :{BLACK}{TOWN}
 STR_TREES_REMOVE_TREES_BUTTON                                   :{BLACK}移除所有树木
 STR_TREES_REMOVE_TREES_TOOLTIP                                  :{BLACK}移除地面上的所有树木
 
+STR_TERRAFORM_PUBLIC_ROADS_GENERATION_CAPTION                   :{WHITE}公共道路
 STR_TERRAFORM_PUBLIC_ROADS                                      :{BLACK}建造公共道路
 STR_TERRAFORM_PUBLIC_ROADS_TOOLTIP                              :{BLACK}建造位于在地图上的城镇之间的公共道路
+STR_TERRAFORM_PUBLIC_ROADS_TYPE                                 :{BLACK}公共道路类型
+
+STR_SCENEDIT_LANDSCAPE_MENU_LAND_GENERATION                     :地形生成
+STR_SCENEDIT_LANDSCAPE_MENU_PUBLIC_ROADS                        :公共道路
 
 STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP_ALL                        :所有工业
 
