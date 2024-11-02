@@ -144,6 +144,16 @@ private:
 
 	iterator erase_item(iterator iter, uint flow_reduction);
 
+	inline void MoveCommon(FlowStat &&other) noexcept
+	{
+		this->storage = std::move(other.storage);
+		this->count = other.count;
+		other.count = 0; // Take ownership of any storage ptr
+		this->unrestricted = other.unrestricted;
+		this->origin = other.origin;
+		this->flags = other.flags;
+	}
+
 	inline void CopyCommon(const FlowStat &other)
 	{
 		this->count = other.count;
@@ -165,9 +175,7 @@ public:
 
 	inline FlowStat(FlowStat &&other) noexcept
 	{
-		this->count = 0;
-		this->SwapShares(other);
-		this->origin = other.origin;
+		this->MoveCommon(std::move(other));
 	}
 
 	inline ~FlowStat()
@@ -184,8 +192,8 @@ public:
 
 	inline FlowStat &operator=(FlowStat &&other) noexcept
 	{
-		this->SwapShares(other);
-		this->origin = other.origin;
+		this->clear();
+		this->MoveCommon(std::move(other));
 		return *this;
 	}
 
