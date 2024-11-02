@@ -82,11 +82,12 @@ This document does not describe the player-visible changes/additions described i
 * Many fields have been widened.
 * Change underlying data structures for ScriptList, create reverse mapping on demand instead of unconditionally.
 * Split GoodsEntry structure.
+* Use row-aligned bitmap for BitmapTileArea.
 
 ### Vehicles
 
 * Cache the sprite_seq bounds.
-* Index the order list in a vector.
+* Change OrderList and OrderBackup to use a std::vector for Orders, remove use of linked lists for orders and use of order pool.
 * Observe the operation of the NewGRF when getting the vehicle image/sprite, and elide further calls to the NewGRF if it can be determined that the result will be the same.
 * Update train/road vehicle image/sprite on demand (i.e. when on screen) when image is continuously updated by GRF.
 * Add consist flag for the case where no vehicles in consist are on a slope.
