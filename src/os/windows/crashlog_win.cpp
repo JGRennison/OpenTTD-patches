@@ -513,7 +513,7 @@ static const uint MAX_FRAMES     = 64;
 			DWORD64 offset;
 			if (proc.pSymGetSymFromAddr64(hCur, frame.AddrPC.Offset, &offset, sym_info)) {
 				if (offset > INT64_MAX) {
-					buffer.format(" {} - {}", sym_info->Name, (DWORD64)(-offset));
+					buffer.format(" {} - {}", sym_info->Name, (DWORD64)(-(int64_t)offset));
 				} else {
 					buffer.format(" {} + {}", sym_info->Name, offset);
 				}
