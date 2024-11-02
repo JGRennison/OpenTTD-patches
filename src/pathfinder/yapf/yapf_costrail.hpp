@@ -504,7 +504,7 @@ public:
 	inline bool PfCalcCost(Node &n, const TrackFollower *tf)
 	{
 		dbg_assert(!n.flags_u.flags_s.target_seen);
-		dbg_assert(tf->new_tile == n.m_key.tile);
+		dbg_assert(tf->new_tile == n.key.tile);
 		dbg_assert((HasTrackdir(tf->new_td_bits, n.key.td)));
 
 		/* Does the node have some parent node? */
