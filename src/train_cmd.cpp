@@ -4032,7 +4032,15 @@ public:
 		restored(false)
 	{
 		if (_choose_train_track_saved_current_order == nullptr) {
+#if defined(__GNUC__) && (__GNUC__ >= 12)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdangling-pointer"
+#endif /* __GNUC__ */
 			_choose_train_track_saved_current_order = &(this->old_order);
+#if defined(__GNUC__) && (__GNUC__ >= 12)
+#pragma GCC diagnostic pop
+#endif /* __GNUC__ */
+
 			this->clear_saved_order_ptr = true;
 		} else {
 			this->clear_saved_order_ptr = false;
