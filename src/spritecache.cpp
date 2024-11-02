@@ -1026,6 +1026,7 @@ void *GetRawSprite(SpriteID sprite, SpriteType type, uint8_t zoom_levels, Sprite
 	}
 }
 
+#if !defined(DEDICATED)
 /**
  * Reads a sprite and finds its most representative colour.
  * @param sprite Sprite to read.
@@ -1131,6 +1132,7 @@ uint32_t GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
 
 	return 0;
 }
+#endif /* !DEDICATED */
 
 void GfxInitSpriteMem()
 {
