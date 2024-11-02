@@ -2,6 +2,45 @@
 
 * * *
 
+### v0.63.0 (2024-11-02)
+* Fix crash when pressing arrow keys in bootstrap mode.
+* Fix crash when viewing town windows when the town had an invalid cargo goal.
+* Fix crash which could occur when creating a new map on a non-dedicated multiplayer server.
+* Fix multiplayer desync which could occur when the economy speed reduction factor was changed while cargodist was in use.
+* Fix incorrect colours in viewport map mode with some basesets/GRFs (e.g. OpenGFX2).
+* Fix incorrect vehicle timetable updates when a vehicle is sent to a depot.
+* Fix issues with focused window tracking and redrawing of vehicle route overlay lines.
+* Fix handling of early road waypoint GRFs which set passenger/freight only properties.
+* Fix sorting of group list drop-downs when using the show group hierarchy in name setting.
+* Allow road bridges without custom bridge heads to be made one-way.
+* Allow manually selecting the road type used for public roads generation in the scenario editor.
+* Change per-town growth override to allow individual enable or disable, add a new setting for the default state.
+* Signals:
+  * From vanilla: path signals on plain track now default to green.
+  * Fix editing tunnel/bridge signals not resetting existing reservations.
+  * Allow signalled single-direction tunnel/bridges to use different styles/types for the entrance and exit.
+  * Allow combined normal/shunt signal styles for tunnel/bridge exit.
+  * Fix handling of signal GRFs which do not change the default signal style.
+* Routing restrictions:
+  * Ctrl-click slot/counter dropdowns to show recent slots/counters.
+  * Allow creating new slots/counters directly from drop-down.
+* Timetable window:
+  * Show long format durations for timetable duration and lateness/earliness.
+  * Fix incorrect displayed arrival/departure times after a conditional order or scheduled dispatch order.
+  * Improve prediction of scheduled dispatch conditional orders.
+* Scheduled dispatch:
+  * Fix the maximum delay schedule setting not using slots from the previous schedule duration.
+  * Shift-click vehicle window order button to open scheduled dispatch window.
+  * Close scheduled dispatch window when closing vehicle window.
+* Date/time:
+  * Move timetable/wallclock clock settings into timetable section.
+  * Replace "minutes" unit even at 1x economy speed, when using timetable minutes, to reduce ambiguity.
+  * Fix changing the timekeeping mode when in a game also modifying client settings.
+* Fix handling of relative paths for config file location.
+* Fix polyrail button blob being offset when widget lowered.
+* Fix incorrect line wrapping on Linux/ICU.
+* Bump trunk base from commit 7116f143d51ddb9cec29af18ffcdaa93cd11d4d8 to commit 9dae626237569356b1fe25c439edae3c685c49e1.
+
 ### v0.62.0 (2024-09-14)
 * Fix the picker tool not updating the list of available items in build windows when changing the selected class.
 * Fix terraform of owned land or object tiles using automatic clear ground not removing water.
