@@ -540,6 +540,11 @@ STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO                     :Sen límite
 STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES                           :As vilas poden construír pontes: {STRING}
 STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT                  :Habilitar isto permite as vilas construír pontes
 
+STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH                    :As vilas permíteselles medrar por defecto: {STRING}
+STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH_HELPTEXT           :Esta configuración controla o estado por defecto para a sobreescritura de crecemento por vila
+
+STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH_ALLOWED            :Permitido
+
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA          :{STRING}{}Isto exclúe as industrias de corte de árbores.{}Non se garante que sexa totalmente compatible con todos os NewGRFs de industria.
 
 STR_CONFIG_SETTING_TOWN_CARGO_SCALE_MODE                        :Intervalo de tempo para o escalado da produción de carga da vila: {STRING}
@@ -650,6 +655,7 @@ STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER          :Sincronizar as 
 STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER_HELPTEXT :Cando te unes a un servidor multixogador como cliente, cambiar a localización para collere a do servidor.
 
 STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS                    :{ORANGE}Taboleiros de saídas
+STR_CONFIG_SETTING_INTERFACE_TIMETABLE_CLOCK                    :{ORANGE}Reloxo do horario
 STR_CONFIG_SETTING_INTERFACE_TIME_CLIENT                        :{ORANGE}Opcións do cliente
 STR_CONFIG_SETTING_INTERFACE_TIME_SAVEGAME                      :{ORANGE}Opcións da partida
 STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}Horarios
@@ -1192,8 +1198,13 @@ STR_SELECT_TOWN_LIST_ITEM                                       :{BLACK}{TOWN}
 STR_TREES_REMOVE_TREES_BUTTON                                   :{BLACK}Eliminar todas as árbores
 STR_TREES_REMOVE_TREES_TOOLTIP                                  :{BLACK}Eliminar todas as árbores da paisaxe
 
+STR_TERRAFORM_PUBLIC_ROADS_GENERATION_CAPTION                   :{WHITE}Estradas públicas
 STR_TERRAFORM_PUBLIC_ROADS                                      :{BLACK}Construír estradas públicas
-STR_TERRAFORM_PUBLIC_ROADS_TOOLTIP                              :{BLACK}Construír estradas públicasentre as localidades do mapa
+STR_TERRAFORM_PUBLIC_ROADS_TOOLTIP                              :{BLACK}Construír estradas públicas entre as localidades do mapa
+STR_TERRAFORM_PUBLIC_ROADS_TYPE                                 :{BLACK}Tipo de estradas públicas
+
+STR_SCENEDIT_LANDSCAPE_MENU_LAND_GENERATION                     :Xeración de terra
+STR_SCENEDIT_LANDSCAPE_MENU_PUBLIC_ROADS                        :Estradas públicas
 
 STR_INDUSTRY_CARGOES_NOTIFY_SMALLMAP_ALL                        :Todas as industrias
 
