@@ -416,7 +416,7 @@ static SigInfo ExploreSegment(Owner owner)
 						}
 
 						if (HasSignalOnTrackdir(tile, trackdir)) {
-							if (!IsOnewaySignal(sig) || IsNoEntrySignal(sig)) info.flags |= SF_PBS;
+							if (!IsOnewaySignal(sig) || IsNoEntrySignal(sig)) info.flags |= SF_PBS | SF_JUNCTION;
 							if (_extra_aspects > 0) {
 								info.out_signal_tile = tile;
 								info.out_signal_trackdir = trackdir;
@@ -2029,7 +2029,7 @@ static bool DetermineExtraAspectsVariable()
 	_default_signal_style_lookahead_extra_aspects = (default_style_aspects > 0) ? default_style_aspects : 255;
 
 	SimpleChecksum64 checksum;
-	checksum.Update(0); // Version number
+	checksum.Update(1); // Version number
 	checksum.Update(SimpleHash32(_extra_aspects));
 	checksum.Update(SimpleHash32(_signal_style_masks.non_aspect_inc));
 	checksum.Update(SimpleHash32(_signal_style_masks.always_reserve_through));
