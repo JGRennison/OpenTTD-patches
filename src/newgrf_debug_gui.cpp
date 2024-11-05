@@ -100,11 +100,38 @@ enum NIType {
 	NIT_CARGO, ///< The property is a cargo
 };
 
+using NIValueReaderProc = uint(*)(const void *);
+
+struct NIValueReader {
+private:
+	union {
+		ptrdiff_t offset;       ///< Offset of the variable in the class
+		NIValueReaderProc proc; ///< Function to read the variable from the class
+	};
+	uint8_t read_size;          ///< Number of bytes (i.e. byte, word, dword etc) for use with offset, or 0xFF to use proc
+
+public:
+	constexpr NIValueReader(ptrdiff_t offset, uint8_t read_size) : offset(offset), read_size(read_size) {}
+	constexpr NIValueReader(NIValueReaderProc proc) : proc(proc), read_size(0xFF) {}
+
+	uint ReadValue(const void *base) const
+	{
+		if (this->read_size == 0xFF) return this->proc(base);
+
+		const void *ptr = (const uint8_t *)base + this->offset;
+		switch (this->read_size) {
+			case 1: return *(const uint8_t  *)ptr; break;
+			case 2: return *(const uint16_t *)ptr; break;
+			case 4: return *(const uint32_t *)ptr; break;
+			default: NOT_REACHED();
+		}
+	}
+};
+
 /** Representation of the data from a NewGRF property. */
 struct NIProperty {
 	const char *name;       ///< A (human readable) name for the property
-	ptrdiff_t offset;       ///< Offset of the variable in the class
-	uint8_t read_size;      ///< Number of bytes (i.e. byte, word, dword etc)
+	NIValueReader reader;   ///< Class value reader
 	uint8_t prop;           ///< The number of the property
 	uint8_t type;
 };
@@ -116,8 +143,7 @@ struct NIProperty {
  */
 struct NICallback {
 	const char *name;    ///< The human readable name of the callback
-	ptrdiff_t offset;    ///< Offset of the variable in the class
-	uint8_t read_size;   ///< The number of bytes (i.e. byte, word, dword etc) to read
+	NIValueReader reader;///< Class value reader
 	uint8_t cb_bit;      ///< The bit that needs to be set for this callback to be enabled
 	uint16_t cb_id;      ///< The number of the callback
 };
@@ -816,14 +842,7 @@ struct NewGRFInspectWindow final : Window {
 		if (nif->properties != nullptr) {
 			this->DrawString(r, i++, "Properties:");
 			for (const NIProperty *nip = nif->properties; nip->name != nullptr; nip++) {
-				const void *ptr = (const uint8_t *)base + nip->offset;
-				uint value;
-				switch (nip->read_size) {
-					case 1: value = *(const uint8_t  *)ptr; break;
-					case 2: value = *(const uint16_t *)ptr; break;
-					case 4: value = *(const uint32_t *)ptr; break;
-					default: NOT_REACHED();
-				}
+				uint value = nip->reader.ReadValue(base);
 
 				StringID string;
 				SetDParam(0, value);
@@ -848,14 +867,7 @@ struct NewGRFInspectWindow final : Window {
 			this->DrawString(r, i++, "Callbacks:");
 			for (const NICallback *nic = nif->callbacks; nic->name != nullptr; nic++) {
 				if (nic->cb_bit != CBM_NO_BIT) {
-					const void *ptr = (const uint8_t *)base_spec + nic->offset;
-					uint value;
-					switch (nic->read_size) {
-						case 1: value = *(const uint8_t  *)ptr; break;
-						case 2: value = *(const uint16_t *)ptr; break;
-						case 4: value = *(const uint32_t *)ptr; break;
-						default: NOT_REACHED();
-					}
+					uint value = nic->reader.ReadValue(base_spec);
 
 					if (!HasBit(value, nic->cb_bit)) continue;
 					this->DrawString(r, i++, "  {:03x}: {}", nic->cb_id, nic->name);
