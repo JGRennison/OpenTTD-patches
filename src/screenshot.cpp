@@ -330,9 +330,10 @@ static bool MakePNGImage(const char *name, ScreenshotCallback *callb, void *user
 			text_buf.format("{:2}: {} (v{})\n", (int)c->index, c->ai_info->GetName(), c->ai_info->GetVersion());
 		}
 	}
+	text_buf.push_back('\0'); // libpng expects null-terminated text
 	text[1].key = const_cast<char *>("Description");
 	text[1].text = text_buf.data();
-	text[1].text_length = text_buf.size();
+	text[1].text_length = text_buf.size() - 1;
 	text[1].compression = PNG_TEXT_COMPRESSION_zTXt;
 	if (_screenshot_aux_text_key && _screenshot_aux_text_value) {
 		text[2].key = const_cast<char *>(_screenshot_aux_text_key);
