@@ -1464,18 +1464,19 @@ CargoPayment::~CargoPayment()
 
 /**
  * Handle payment for final delivery of the given cargo packet.
+ * @param cargo The cargo type of the cargo.
  * @param cp The cargo packet to pay for.
  * @param count The number of packets to pay for.
  * @param current_tile Current tile the payment is happening on.
  */
-void CargoPayment::PayFinalDelivery(CargoPacket *cp, uint count, TileIndex current_tile)
+void CargoPayment::PayFinalDelivery(CargoID cargo, CargoPacket *cp, uint count, TileIndex current_tile)
 {
 	if (this->owner == nullptr) {
 		this->owner = Company::Get(this->front->owner);
 	}
 
 	/* Handle end of route payment */
-	Money profit = DeliverGoods(count, this->ct, this->current_station, cp->GetDistance(current_tile), cp->GetPeriodsInTransit(), this->owner, cp->GetSourceType(), cp->GetSourceID());
+	Money profit = DeliverGoods(count, cargo, this->current_station, cp->GetDistance(current_tile), cp->GetPeriodsInTransit(), this->owner, cp->GetSourceType(), cp->GetSourceID());
 
 	profit -= cp->GetFeederShare(count);
 
@@ -1489,12 +1490,13 @@ void CargoPayment::PayFinalDelivery(CargoPacket *cp, uint count, TileIndex curre
 
 /**
  * Handle payment for transfer of the given cargo packet.
+ * @param cargo The cargo type of the cargo.
  * @param cp The cargo packet to pay for; actual payment won't be made!.
  * @param count The number of packets to pay for.
  * @param current_tile Current tile the payment is happening on.
  * @return The amount of money paid for the transfer.
  */
-Money CargoPayment::PayTransfer(CargoPacket *cp, uint count, TileIndex current_tile)
+Money CargoPayment::PayTransfer(CargoID cargo, CargoPacket *cp, uint count, TileIndex current_tile)
 {
 	/* Pay transfer vehicle the difference between the payment for the journey from
 	 * the source to the current point, and the sum of the previous transfer payments */
@@ -1502,7 +1504,7 @@ Money CargoPayment::PayTransfer(CargoPacket *cp, uint count, TileIndex current_t
 			count,
 			cp->GetDistance(current_tile),
 			cp->GetPeriodsInTransit(),
-			this->ct);
+			cargo);
 
 	profit = profit * _settings_game.economy.feeder_payment_share / 100;
 
@@ -1570,7 +1572,7 @@ void PrepareUnload(Vehicle *front_v)
 						HasBit(ge->status, GoodsEntry::GES_ACCEPTANCE),
 						front_v->last_station_visited, next_station.Get(v->cargo_type),
 						GetUnloadType(v), ge,
-						front_v->cargo_payment,
+						v->cargo_type, front_v->cargo_payment,
 						v->GetCargoTile());
 				if (v->cargo.UnloadCount() > 0) SetBit(v->vehicle_flags, VF_CARGO_UNLOADING);
 			}
@@ -2128,9 +2130,6 @@ static void LoadUnloadVehicle(Vehicle *front)
 			uint amount_unloaded = _settings_game.order.gradual_loading ? std::min(cargo_count, GetLoadAmount(v)) : cargo_count;
 			bool remaining = false; // Are there cargo entities in this vehicle that can still be unloaded here?
 
-			assert(payment != nullptr);
-			payment->SetCargo(v->cargo_type);
-
 			if (!HasBit(ge->status, GoodsEntry::GES_ACCEPTANCE) && v->cargo.ActionCount(VehicleCargoList::MTA_DELIVER) > 0) {
 				/* The station does not accept our goods anymore. */
 				if (GetUnloadType(v) & (OUFB_TRANSFER | OUFB_UNLOAD)) {
@@ -2168,7 +2167,8 @@ static void LoadUnloadVehicle(Vehicle *front)
 				}
 			}
 
-			amount_unloaded = v->cargo.Unload(amount_unloaded, &ged->cargo, payment, v->GetCargoTile());
+			assert(payment != nullptr);
+			amount_unloaded = v->cargo.Unload(amount_unloaded, &ged->cargo, v->cargo_type, payment, v->GetCargoTile());
 			remaining = v->cargo.UnloadCount() > 0;
 			if (amount_unloaded > 0) {
 				dirty_vehicle = true;

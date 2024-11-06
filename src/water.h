@@ -29,7 +29,6 @@ void ClearNeighbourNonFloodingStates(TileIndex tile);
 void TileLoop_Water(TileIndex tile);
 void TileLoopWaterFlooding(FloodingBehaviour flooding_behaviour, TileIndex tile);
 bool FloodHalftile(TileIndex t);
-void DoFloodTile(TileIndex target);
 
 void ConvertGroundTilesIntoWaterTiles();
 

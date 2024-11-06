@@ -1198,7 +1198,7 @@ FloodingBehaviour GetFloodingBehaviour(TileIndex tile)
 /**
  * Floods a tile.
  */
-void DoFloodTile(TileIndex target)
+static void DoFloodTile(TileIndex target)
 {
 	assert_tile(!IsTileType(target, MP_WATER), target);
 

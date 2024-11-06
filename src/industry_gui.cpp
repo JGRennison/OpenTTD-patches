@@ -39,6 +39,7 @@
 #include "dropdown_type.h"
 #include "clear_map.h"
 #include "zoom_func.h"
+#include "graph_gui.h"
 #include "querystring_gui.h"
 #include "stringfilter_type.h"
 #include "hotkeys.h"
@@ -875,11 +876,21 @@ public:
 		this->clicked_button = 0;
 		this->info_height = WidgetDimensions::scaled.framerect.Vertical() + 2 * GetCharacterHeight(FS_NORMAL); // Info panel has at least two lines text.
 
+		const Industry *i = Industry::Get(window_number);
+
 		this->InitNested(window_number);
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_IV_VIEWPORT);
-		nvp->InitializeViewport(this, Industry::Get(window_number)->location.GetCenterTile(), ScaleZoomGUI(ZOOM_LVL_INDUSTRY));
+		nvp->InitializeViewport(this, i->location.GetCenterTile(), ScaleZoomGUI(ZOOM_LVL_INDUSTRY));
+
+		if (!i->IsCargoProduced()) this->DisableWidget(WID_IV_GRAPH);
 
 		this->InvalidateData();
+	}
+
+	void Close(int data = 0) override
+	{
+		CloseWindowById(WC_INDUSTRY_PRODUCTION, this->window_number, false);
+		this->Window::Close(data);
 	}
 
 	void OnInit() override
@@ -1170,6 +1181,10 @@ public:
 				ShowIndustryCargoesWindow(i->type);
 				break;
 			}
+
+			case WID_IV_GRAPH:
+				ShowIndustryProductionGraph(this->window_number);
+				break;
 		}
 	}
 
@@ -1278,6 +1293,7 @@ static constexpr NWidgetPart _nested_industry_view_widgets[] = {
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_CREAM, WID_IV_DISPLAY), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_INDUSTRY_DISPLAY_CHAIN, STR_INDUSTRY_DISPLAY_CHAIN_TOOLTIP),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_CREAM, WID_IV_GRAPH), SetFill(1, 0), SetResize(1, 0), SetDataTip(STR_INDUSTRY_VIEW_PRODUCTION_GRAPH, STR_INDUSTRY_VIEW_PRODUCTION_GRAPH_TOOLTIP),
 		NWidget(WWT_RESIZEBOX, COLOUR_CREAM),
 	EndContainer(),
 };

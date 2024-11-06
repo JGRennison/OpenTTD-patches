@@ -1356,6 +1356,7 @@ static void ChangeTimekeepingUnits(int32_t)
 	CloseWindowByClass(WC_OPERATING_PROFIT);
 	CloseWindowByClass(WC_INCOME_GRAPH);
 	CloseWindowByClass(WC_STATION_CARGO);
+	CloseWindowByClass(WC_INDUSTRY_PRODUCTION);
 }
 
 /**
