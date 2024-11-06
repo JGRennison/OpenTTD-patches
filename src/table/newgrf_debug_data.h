@@ -1025,40 +1025,42 @@ static const NIFeature _nif_industrytile = {
 
 
 /*** NewGRF industries ***/
+#define NIP_PRODUCED_CARGO(prop, base, slot, type, name) { name, { [](const void *b) -> uint { return static_cast<const base *>(b)->GetProduced(slot).cargo; } }, prop, type }
+#define NIP_ACCEPTED_CARGO(prop, base, slot, type, name) { name, { [](const void *b) -> uint { return static_cast<const base *>(b)->GetAccepted(slot).cargo; } }, prop, type }
 
 static const NIProperty _nip_industries[] = {
-	NIP(0x25, Industry, produced_cargo[ 0], NIT_CARGO, "produced cargo 0"),
-	NIP(0x25, Industry, produced_cargo[ 1], NIT_CARGO, "produced cargo 1"),
-	NIP(0x25, Industry, produced_cargo[ 2], NIT_CARGO, "produced cargo 2"),
-	NIP(0x25, Industry, produced_cargo[ 3], NIT_CARGO, "produced cargo 3"),
-	NIP(0x25, Industry, produced_cargo[ 4], NIT_CARGO, "produced cargo 4"),
-	NIP(0x25, Industry, produced_cargo[ 5], NIT_CARGO, "produced cargo 5"),
-	NIP(0x25, Industry, produced_cargo[ 6], NIT_CARGO, "produced cargo 6"),
-	NIP(0x25, Industry, produced_cargo[ 7], NIT_CARGO, "produced cargo 7"),
-	NIP(0x25, Industry, produced_cargo[ 8], NIT_CARGO, "produced cargo 8"),
-	NIP(0x25, Industry, produced_cargo[ 9], NIT_CARGO, "produced cargo 9"),
-	NIP(0x25, Industry, produced_cargo[10], NIT_CARGO, "produced cargo 10"),
-	NIP(0x25, Industry, produced_cargo[11], NIT_CARGO, "produced cargo 11"),
-	NIP(0x25, Industry, produced_cargo[12], NIT_CARGO, "produced cargo 12"),
-	NIP(0x25, Industry, produced_cargo[13], NIT_CARGO, "produced cargo 13"),
-	NIP(0x25, Industry, produced_cargo[14], NIT_CARGO, "produced cargo 14"),
-	NIP(0x25, Industry, produced_cargo[15], NIT_CARGO, "produced cargo 15"),
-	NIP(0x26, Industry, accepts_cargo[ 0],  NIT_CARGO, "accepted cargo 0"),
-	NIP(0x26, Industry, accepts_cargo[ 1],  NIT_CARGO, "accepted cargo 1"),
-	NIP(0x26, Industry, accepts_cargo[ 2],  NIT_CARGO, "accepted cargo 2"),
-	NIP(0x26, Industry, accepts_cargo[ 3],  NIT_CARGO, "accepted cargo 3"),
-	NIP(0x26, Industry, accepts_cargo[ 4],  NIT_CARGO, "accepted cargo 4"),
-	NIP(0x26, Industry, accepts_cargo[ 5],  NIT_CARGO, "accepted cargo 5"),
-	NIP(0x26, Industry, accepts_cargo[ 6],  NIT_CARGO, "accepted cargo 6"),
-	NIP(0x26, Industry, accepts_cargo[ 7],  NIT_CARGO, "accepted cargo 7"),
-	NIP(0x26, Industry, accepts_cargo[ 8],  NIT_CARGO, "accepted cargo 8"),
-	NIP(0x26, Industry, accepts_cargo[ 9],  NIT_CARGO, "accepted cargo 9"),
-	NIP(0x26, Industry, accepts_cargo[10],  NIT_CARGO, "accepted cargo 10"),
-	NIP(0x26, Industry, accepts_cargo[11],  NIT_CARGO, "accepted cargo 11"),
-	NIP(0x26, Industry, accepts_cargo[12],  NIT_CARGO, "accepted cargo 12"),
-	NIP(0x26, Industry, accepts_cargo[13],  NIT_CARGO, "accepted cargo 13"),
-	NIP(0x26, Industry, accepts_cargo[14],  NIT_CARGO, "accepted cargo 14"),
-	NIP(0x26, Industry, accepts_cargo[15],  NIT_CARGO, "accepted cargo 15"),
+	NIP_PRODUCED_CARGO(0x25, Industry,  0, NIT_CARGO, "produced cargo 0"),
+	NIP_PRODUCED_CARGO(0x25, Industry,  1, NIT_CARGO, "produced cargo 1"),
+	NIP_PRODUCED_CARGO(0x25, Industry,  2, NIT_CARGO, "produced cargo 2"),
+	NIP_PRODUCED_CARGO(0x25, Industry,  3, NIT_CARGO, "produced cargo 3"),
+	NIP_PRODUCED_CARGO(0x25, Industry,  4, NIT_CARGO, "produced cargo 4"),
+	NIP_PRODUCED_CARGO(0x25, Industry,  5, NIT_CARGO, "produced cargo 5"),
+	NIP_PRODUCED_CARGO(0x25, Industry,  6, NIT_CARGO, "produced cargo 6"),
+	NIP_PRODUCED_CARGO(0x25, Industry,  7, NIT_CARGO, "produced cargo 7"),
+	NIP_PRODUCED_CARGO(0x25, Industry,  8, NIT_CARGO, "produced cargo 8"),
+	NIP_PRODUCED_CARGO(0x25, Industry,  9, NIT_CARGO, "produced cargo 9"),
+	NIP_PRODUCED_CARGO(0x25, Industry, 10, NIT_CARGO, "produced cargo 10"),
+	NIP_PRODUCED_CARGO(0x25, Industry, 11, NIT_CARGO, "produced cargo 11"),
+	NIP_PRODUCED_CARGO(0x25, Industry, 12, NIT_CARGO, "produced cargo 12"),
+	NIP_PRODUCED_CARGO(0x25, Industry, 13, NIT_CARGO, "produced cargo 13"),
+	NIP_PRODUCED_CARGO(0x25, Industry, 14, NIT_CARGO, "produced cargo 14"),
+	NIP_PRODUCED_CARGO(0x25, Industry, 15, NIT_CARGO, "produced cargo 15"),
+	NIP_ACCEPTED_CARGO(0x26, Industry,  0, NIT_CARGO, "accepted cargo 0"),
+	NIP_ACCEPTED_CARGO(0x26, Industry,  1, NIT_CARGO, "accepted cargo 1"),
+	NIP_ACCEPTED_CARGO(0x26, Industry,  2, NIT_CARGO, "accepted cargo 2"),
+	NIP_ACCEPTED_CARGO(0x26, Industry,  3, NIT_CARGO, "accepted cargo 3"),
+	NIP_ACCEPTED_CARGO(0x26, Industry,  4, NIT_CARGO, "accepted cargo 4"),
+	NIP_ACCEPTED_CARGO(0x26, Industry,  5, NIT_CARGO, "accepted cargo 5"),
+	NIP_ACCEPTED_CARGO(0x26, Industry,  6, NIT_CARGO, "accepted cargo 6"),
+	NIP_ACCEPTED_CARGO(0x26, Industry,  7, NIT_CARGO, "accepted cargo 7"),
+	NIP_ACCEPTED_CARGO(0x26, Industry,  8, NIT_CARGO, "accepted cargo 8"),
+	NIP_ACCEPTED_CARGO(0x26, Industry,  9, NIT_CARGO, "accepted cargo 9"),
+	NIP_ACCEPTED_CARGO(0x26, Industry, 10, NIT_CARGO, "accepted cargo 10"),
+	NIP_ACCEPTED_CARGO(0x26, Industry, 11, NIT_CARGO, "accepted cargo 11"),
+	NIP_ACCEPTED_CARGO(0x26, Industry, 12, NIT_CARGO, "accepted cargo 12"),
+	NIP_ACCEPTED_CARGO(0x26, Industry, 13, NIT_CARGO, "accepted cargo 13"),
+	NIP_ACCEPTED_CARGO(0x26, Industry, 14, NIT_CARGO, "accepted cargo 14"),
+	NIP_ACCEPTED_CARGO(0x26, Industry, 15, NIT_CARGO, "accepted cargo 15"),
 	NIP_END()
 };
 
@@ -1182,22 +1184,22 @@ class NIHIndustry : public NIHelper {
 					output.Print("    {}: {}", st->index, st->GetCachedName());
 				}
 				output.Print("  Produces:");
-				for (uint i = 0; i < std::size(ind->produced_cargo); i++) {
-					if (ind->produced_cargo[i] != INVALID_CARGO) {
-						output.Print("    {}:", GetStringPtr(CargoSpec::Get(ind->produced_cargo[i])->name));
+				for (const auto &p : ind->Produced()) {
+					if (p.cargo != INVALID_CARGO) {
+						output.Print("    {}:", GetStringPtr(CargoSpec::Get(p.cargo)->name));
 						output.Print("      Waiting: {}, rate: {}",
-								ind->produced_cargo_waiting[i], ind->production_rate[i]);
+								p.waiting, p.rate);
 						output.Print("      This month: production: {}, transported: {}",
-								ind->this_month_production[i], ind->this_month_transported[i]);
+								p.history[THIS_MONTH].production, p.history[THIS_MONTH].transported);
 						output.Print("      Last month: production: {}, transported: {}, ({}/255)",
-								ind->last_month_production[i], ind->last_month_transported[i], ind->last_month_pct_transported[i]);
+								p.history[LAST_MONTH].production, p.history[LAST_MONTH].transported, p.history[LAST_MONTH].PctTransported());
 					}
 				}
 				output.Print("  Accepts:");
-				for (uint i = 0; i < std::size(ind->accepts_cargo); i++) {
-					if (ind->accepts_cargo[i] != INVALID_CARGO) {
+				for (const auto &a : ind->Accepted()) {
+					if (a.cargo != INVALID_CARGO) {
 						output.Print("    {}: waiting: {}",
-								GetStringPtr(CargoSpec::Get(ind->accepts_cargo[i])->name), ind->incoming_cargo_waiting[i]);
+								GetStringPtr(CargoSpec::Get(a.cargo)->name), a.waiting);
 					}
 				}
 				output.Print("  Counter: {}", ind->counter);

@@ -398,26 +398,28 @@ bool FindSubsidyIndustryCargoRoute()
 	const Industry *src_ind = Industry::GetRandom();
 	if (src_ind == nullptr) return false;
 
-	uint trans, total;
-
-	CargoID cid;
+	uint trans = 0;
+	uint total = 0;
+	CargoID cid = INVALID_CARGO;
 
 	/* Randomize cargo type */
 	int num_cargos = 0;
-	uint cargo_index;
-	for (cargo_index = 0; cargo_index < std::size(src_ind->produced_cargo); cargo_index++) {
-		if (src_ind->produced_cargo[cargo_index] != INVALID_CARGO) num_cargos++;
+	for (const auto &p : src_ind->Produced()) {
+		if (p.cargo != INVALID_CARGO) num_cargos++;
 	}
 	if (num_cargos == 0) return false; // industry produces nothing
 	int cargo_num = RandomRange(num_cargos) + 1;
-	for (cargo_index = 0; cargo_index < std::size(src_ind->produced_cargo); cargo_index++) {
-		if (src_ind->produced_cargo[cargo_index] != INVALID_CARGO) cargo_num--;
-		if (cargo_num == 0) break;
+
+	for (const auto &p : src_ind->Produced()) {
+		if (p.cargo != INVALID_CARGO) cargo_num--;
+		if (cargo_num == 0) {
+			cid = p.cargo;
+			trans = p.history[LAST_MONTH].PctTransported();
+			total = p.history[LAST_MONTH].production;
+			break;
+		}
 	}
 	assert(cargo_num == 0); // indicates loop didn't break as intended
-	cid = src_ind->produced_cargo[cargo_index];
-	trans = src_ind->last_month_pct_transported[cargo_index];
-	total = src_ind->last_month_production[cargo_index];
 
 	/* Quit if no production in this industry
 	 * or if the pct transported is already large enough

@@ -170,11 +170,11 @@ static bool CMSAMine(TileIndex tile)
 	/* No extractive industry */
 	if ((GetIndustrySpec(ind->type)->life_type & INDUSTRYLIFE_EXTRACTIVE) == 0) return false;
 
-	for (uint i = 0; i < std::size(ind->produced_cargo); i++) {
+	for (const auto &p : ind->Produced()) {
 		/* The industry extracts something non-liquid, i.e. no oil or plastic, so it is a mine.
 		 * Also the production of passengers and mail is ignored. */
-		if (ind->produced_cargo[i] != INVALID_CARGO &&
-				(CargoSpec::Get(ind->produced_cargo[i])->classes & (CC_LIQUID | CC_PASSENGERS | CC_MAIL)) == 0) {
+		if (p.cargo != INVALID_CARGO &&
+				(CargoSpec::Get(p.cargo)->classes & (CC_LIQUID | CC_PASSENGERS | CC_MAIL)) == 0) {
 			return true;
 		}
 	}
@@ -643,9 +643,8 @@ CargoArray GetProductionAroundTiles(TileIndex north_tile, int w, int h, int rad)
 		/* Skip industry with neutral station */
 		if (i->neutral_station != nullptr && !_settings_game.station.serve_neutral_industries) continue;
 
-		for (uint j = 0; j < std::size(i->produced_cargo); j++) {
-			CargoID cargo = i->produced_cargo[j];
-			if (cargo != INVALID_CARGO) produced[cargo]++;
+		for (const auto &p : i->Produced()) {
+			if (p.cargo != INVALID_CARGO) produced[p.cargo]++;
 		}
 	}
 

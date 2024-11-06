@@ -2130,12 +2130,20 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_78)) {
 		for (Industry *i : Industry::Iterate()) {
 			const IndustrySpec *indsp = GetIndustrySpec(i->type);
-			for (size_t j = 0; j < std::size(i->produced_cargo); j++) {
-				i->produced_cargo[j] = indsp->produced_cargo[j];
+			for (uint8_t j = 0; j < i->produced_cargo_count; j++) {
+				i->produced[j].cargo = indsp->produced_cargo[j];
 			}
-			for (size_t j = 0; j < std::size(i->accepts_cargo); j++) {
-				i->accepts_cargo[j] = indsp->accepts_cargo[j];
+			for (uint8_t j = 0; j < i->accepted_cargo_count; j++) {
+				i->accepted[j].cargo = indsp->accepts_cargo[j];
 			}
+		}
+	}
+
+	/* Industry cargo slots were fixed size before (and including) SLV_VEHICLE_ECONOMY_AGE (either 2/3 or 16/16),
+	 * after this they are dynamic. Trim excess slots. */
+	if (SlXvIsFeatureMissing(XSLFI_INDUSTRY_CARGO_REORGANISE) && IsSavegameVersionBeforeOrAt(SLV_VEHICLE_ECONOMY_AGE)) {
+		for (Industry *i : Industry::Iterate()) {
+			TrimIndustryAcceptedProduced(i);
 		}
 	}
 
@@ -3659,27 +3667,13 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_EXTEND_INDUSTRY_CARGO_SLOTS)) {
 		/* Make sure added industry cargo slots are cleared */
 		for (Industry *i : Industry::Iterate()) {
-			for (size_t ci = 2; ci < std::size(i->produced_cargo); ci++) {
-				i->produced_cargo[ci] = INVALID_CARGO;
-				i->produced_cargo_waiting[ci] = 0;
-				i->production_rate[ci] = 0;
-				i->last_month_production[ci] = 0;
-				i->last_month_transported[ci] = 0;
-				i->last_month_pct_transported[ci] = 0;
-				i->this_month_production[ci] = 0;
-				i->this_month_transported[ci] = 0;
-			}
-			for (size_t ci = 3; ci < std::size(i->accepts_cargo); ci++) {
-				i->accepts_cargo[ci] = INVALID_CARGO;
-				i->incoming_cargo_waiting[ci] = 0;
-			}
 			/* Make sure last_cargo_accepted_at is copied to elements for every valid input cargo.
 			 * The loading routine should put the original singular value into the first array element. */
-			for (size_t ci = 0; ci < std::size(i->accepts_cargo); ci++) {
-				if (i->accepts_cargo[ci] != INVALID_CARGO) {
-					i->last_cargo_accepted_at[ci] = i->last_cargo_accepted_at[0];
+			for (auto &a : i->Accepted()) {
+				if (a.cargo != INVALID_CARGO) {
+					a.last_accepted = i->GetAccepted(0).last_accepted;
 				} else {
-					i->last_cargo_accepted_at[ci] = 0;
+					a.last_accepted = 0;
 				}
 			}
 		}

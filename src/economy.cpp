@@ -1181,7 +1181,7 @@ void ForAcceptingIndustries(const Station *st, CargoID cargo_type, IndustryID so
 
 		if (ind->exclusive_supplier != INVALID_OWNER && ind->exclusive_supplier != st->owner) continue;
 
-		if (!f(ind, cargo_index)) break;
+		if (!f(ind, ind->accepted[cargo_index])) break;
 	}
 }
 
@@ -1196,13 +1196,13 @@ uint DeliverGoodsToIndustryNearestFirst(const Station *st, CargoID cargo_type, u
 
 	uint accepted = 0;
 
-	ForAcceptingIndustries(st, cargo_type, source, company, [&](Industry *ind, uint cargo_index) {
+	ForAcceptingIndustries(st, cargo_type, source, company, [&](Industry *ind, Industry::AcceptedCargo &acc) {
 		/* Insert the industry into _cargo_delivery_destinations, if not yet contained */
 		include(_cargo_delivery_destinations, ind);
 
-		uint amount = std::min(num_pieces, 0xFFFFu - ind->incoming_cargo_waiting[cargo_index]);
-		ind->incoming_cargo_waiting[cargo_index] += amount;
-		ind->last_cargo_accepted_at[cargo_index] = EconTime::CurDate();
+		uint amount = std::min(num_pieces, 0xFFFFu - acc.waiting);
+		acc.waiting += amount;
+		acc.last_accepted = EconTime::CurDate();
 		num_pieces -= amount;
 		accepted += amount;
 
@@ -1219,16 +1219,16 @@ uint DeliverGoodsToIndustryEqually(const Station *st, CargoID cargo_type, uint n
 {
 	struct AcceptingIndustry {
 		Industry *ind;
-		uint cargo_index;
+		Industry::AcceptedCargo *acc;
 		uint capacity;
 		uint delivered;
 	};
 
 	std::vector<AcceptingIndustry> acceptingIndustries;
 
-	ForAcceptingIndustries(st, cargo_type, source, company, [&](Industry *ind, uint cargo_index) {
-		uint capacity = 0xFFFFu - ind->incoming_cargo_waiting[cargo_index];
-		if (capacity > 0) acceptingIndustries.push_back({ ind, cargo_index, capacity, 0 });
+	ForAcceptingIndustries(st, cargo_type, source, company, [&](Industry *ind, Industry::AcceptedCargo &acc) {
+		uint capacity = 0xFFFFu - acc.waiting;
+		if (capacity > 0) acceptingIndustries.push_back({ ind, &acc, capacity, 0 });
 		return true;
 	});
 
@@ -1246,8 +1246,8 @@ uint DeliverGoodsToIndustryEqually(const Station *st, CargoID cargo_type, uint n
 	auto finalizeCargo = [&](AcceptingIndustry &e) {
 		if (e.delivered == 0) return;
 		include(_cargo_delivery_destinations, e.ind);
-		e.ind->incoming_cargo_waiting[e.cargo_index] += e.delivered;
-		e.ind->last_cargo_accepted_at[e.cargo_index] = EconTime::CurDate();
+		e.acc->waiting += e.delivered;
+		e.acc->last_accepted = EconTime::CurDate();
 		AddCargoDelivery(cargo_type, company, e.delivered, SourceType::Industry, source, st, e.ind->index);
 	};
 
@@ -1406,16 +1406,15 @@ static void TriggerIndustryProduction(Industry *i)
 			SetWindowDirty(WC_INDUSTRY_VIEW, i->index);
 		}
 	} else {
-		for (size_t ci_in = 0; ci_in < std::size(i->incoming_cargo_waiting); ci_in++) {
-			uint cargo_waiting = i->incoming_cargo_waiting[ci_in];
-			if (cargo_waiting == 0 || i->accepts_cargo[ci_in] == INVALID_CARGO) continue;
+		for (auto &acc : i->Accepted()) {
+			if (acc.waiting == 0 || acc.cargo == INVALID_CARGO) continue;
 
-			for (size_t ci_out = 0; ci_out < std::size(i->produced_cargo_waiting); ci_out++) {
-				if (i->produced_cargo[ci_out] == INVALID_CARGO) continue;
-				i->produced_cargo_waiting[ci_out] = ClampTo<uint16_t>(i->produced_cargo_waiting[ci_out] + (cargo_waiting * indspec->input_cargo_multiplier[ci_in][ci_out] / 256));
+			for (auto &prod : i->Produced()) {
+				if (prod.cargo == INVALID_CARGO) continue;
+				prod.waiting = ClampTo<uint16_t>(prod.waiting + (acc.waiting * indspec->input_cargo_multiplier[&acc - i->accepted.get()][&prod - i->produced.get()] / 256));
 			}
 
-			i->incoming_cargo_waiting[ci_in] = 0;
+			acc.waiting = 0;
 		}
 	}
 

@@ -420,13 +420,13 @@ static void AddAcceptedCargo_Industry(TileIndex tile, CargoArray &acceptance, Ca
 
 	if (itspec->special_flags & INDTILE_SPECIAL_ACCEPTS_ALL_CARGO) {
 		/* Copy all accepted cargoes from industry itself */
-		for (size_t i = 0; i < ind->accepts_cargo.size(); i++) {
-			auto pos = std::find(std::begin(accepts_cargo), std::end(accepts_cargo), ind->accepts_cargo[i]);
+		for (const auto &a : ind->Accepted()) {
+			auto pos = std::find(std::begin(accepts_cargo), std::end(accepts_cargo), a.cargo);
 			if (pos == std::end(accepts_cargo)) {
 				/* Not found, insert */
 				pos = std::find(std::begin(accepts_cargo), std::end(accepts_cargo), INVALID_CARGO);
 				if (pos == std::end(accepts_cargo)) continue; // nowhere to place, give up on this one
-				*pos = ind->accepts_cargo[i];
+				*pos = a.cargo;
 			}
 			cargo_acceptance[std::distance(std::begin(accepts_cargo), pos)] += 8;
 		}
@@ -525,18 +525,18 @@ static bool TransportIndustryGoods(TileIndex tile)
 	bool moved_cargo = false;
 
 	const uint step_limit = _industry_cargo_scaler.Scale(255);
-	for (size_t j = 0; j < std::size(i->produced_cargo_waiting); j++) {
-		uint cw = std::min<uint>(i->produced_cargo_waiting[j], step_limit);
-		if (cw > indspec->minimal_cargo && i->produced_cargo[j] != INVALID_CARGO) {
-			i->produced_cargo_waiting[j] -= cw;
+	for (auto &p : i->Produced()) {
+		uint cw = std::min<uint>(p.waiting, step_limit);
+		if (cw > indspec->minimal_cargo && p.cargo != INVALID_CARGO) {
+			p.waiting -= cw;
 
 			/* fluctuating economy? */
 			if (EconomyIsInRecession()) cw = (cw + 1) / 2;
 
-			i->this_month_production[j] = SaturatingAdd<uint32_t>(i->this_month_production[j], cw);
+			p.history[THIS_MONTH].production = SaturatingAdd<uint32_t>(p.history[THIS_MONTH].production, cw);
 
-			uint am = MoveGoodsToStation(i->produced_cargo[j], cw, SourceType::Industry, i->index, &i->stations_near, i->exclusive_consumer);
-			i->this_month_transported[j] = SaturatingAdd<uint32_t>(i->this_month_transported[j], am);
+			uint am = MoveGoodsToStation(p.cargo, cw, SourceType::Industry, i->index, &i->stations_near, i->exclusive_consumer);
+			p.history[THIS_MONTH].transported = SaturatingAdd<uint32_t>(p.history[THIS_MONTH].transported, am);
 
 			moved_cargo |= (am != 0);
 		}
@@ -1023,9 +1023,9 @@ bool IsTileForestIndustry(TileIndex tile)
 	if ((GetIndustrySpec(ind->type)->life_type & INDUSTRYLIFE_ORGANIC) == 0) return false;
 
 	/* Check for wood production */
-	for (size_t i = 0; i < std::size(ind->produced_cargo); i++) {
+	for (auto &p : ind->Produced()) {
 		/* The industry produces wood. */
-		if (ind->produced_cargo[i] != INVALID_CARGO && CargoSpec::Get(ind->produced_cargo[i])->label == CT_WOOD) return true;
+		if (p.cargo != INVALID_CARGO && CargoSpec::Get(p.cargo)->label == CT_WOOD) return true;
 	}
 
 	return false;
@@ -1172,7 +1172,7 @@ static bool SearchLumberMillTrees(TileIndex tile, void *)
 static void ChopLumberMillTrees(Industry *i)
 {
 	/* Skip production if cargo slot is invalid. */
-	if (i->produced_cargo[0] == INVALID_CARGO) return;
+	if (i->produced_cargo_count == 0 || i->produced[0].cargo == INVALID_CARGO) return;
 
 	/* We only want to cut trees if all tiles are completed. */
 	for (TileIndex tile_cur : i->location) {
@@ -1183,19 +1183,19 @@ static void ChopLumberMillTrees(Industry *i)
 
 	TileIndex tile = i->location.tile;
 	if (CircularTileSearch(&tile, 40, SearchLumberMillTrees, nullptr)) { // 40x40 tiles  to search.
-		i->produced_cargo_waiting[0] = ClampTo<uint16_t>(i->produced_cargo_waiting[0] + 45); // Found a tree, add according value to waiting cargo.
+		i->produced[0].waiting = ClampTo<uint16_t>(i->produced[0].waiting + 45); // Found a tree, add according value to waiting cargo.
 	}
 }
 
 static void ProduceIndustryGoodsFromRate(Industry *i, bool scale)
 {
-	for (size_t j = 0; j < std::size(i->produced_cargo_waiting); j++) {
-		if (i->produced_cargo[j] == INVALID_CARGO) continue;
-		uint amount = i->production_rate[j];
+	for (auto &p : i->Produced()) {
+		if (p.cargo == INVALID_CARGO) continue;
+		uint amount = p.rate;
 		if (amount != 0 && scale) {
 			amount = _industry_cargo_scaler.Scale(amount);
 		}
-		i->produced_cargo_waiting[j] = ClampTo<uint16_t>(i->produced_cargo_waiting[j] + amount);
+		p.waiting = ClampTo<uint16_t>(p.waiting + amount);
 	}
 }
 
@@ -1209,8 +1209,8 @@ static void ProduceIndustryGoods(Industry *i)
 	if ((i->counter & 0x3F) == 0) {
 		uint32_t r;
 		if (Chance16R(1, 14, r) && !indsp->random_sounds.empty()  && _settings_client.sound.ambient) {
-			for (size_t j = 0; j < std::size(i->last_month_production); j++) {
-				if (i->last_month_production[j] > 0) {
+			for (auto &p : i->Produced()) {
+				if (p.history[LAST_MONTH].production > 0) {
 					/* Play sound since last month had production */
 					SndPlayTileFx(
 						static_cast<SoundFx>(indsp->random_sounds[((r >> 16) * indsp->random_sounds.size()) >> 16]),
@@ -1839,14 +1839,33 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 	i->type = type;
 	Industry::IncIndustryTypeCount(type);
 
-	i->produced_cargo = indspec->produced_cargo;
-	i->production_rate = indspec->production_rate;
-	i->accepts_cargo = indspec->accepts_cargo;
+	i->produced_cargo_count = 0;
+	for (size_t index = 0; index < std::size(indspec->produced_cargo); ++index) {
+		if (!IsValidCargoID(indspec->produced_cargo[index])) break;
+		i->produced_cargo_count++;
+	}
+	i->produced = std::make_unique<Industry::ProducedCargo[]>(i->produced_cargo_count);
+	for (uint8_t index = 0; index < i->produced_cargo_count; ++index) {
+		Industry::ProducedCargo &p = i->produced[index];
+		p.cargo = indspec->produced_cargo[index];
+		p.rate = indspec->production_rate[index];
+	}
+
+	i->accepted_cargo_count = 0;
+	for (size_t index = 0; index < std::size(indspec->accepts_cargo); ++index) {
+		if (!IsValidCargoID(indspec->accepts_cargo[index])) break;
+		i->accepted_cargo_count++;
+	}
+	i->accepted = std::make_unique<Industry::AcceptedCargo[]>(i->accepted_cargo_count);
+	for (uint8_t index = 0; index < i->accepted_cargo_count; ++index) {
+		Industry::AcceptedCargo &a = i->accepted[index];
+		a.cargo = indspec->accepts_cargo[index];
+	}
 
 	/* Randomize inital production if non-original economy is used and there are no production related callbacks. */
 	if (!indspec->UsesOriginalEconomy()) {
-		for (size_t ci = 0; ci < std::size(i->production_rate); ci++) {
-			i->production_rate[ci] = ClampTo<uint8_t>((RandomRange(256) + 128) * i->production_rate[ci] >> 8);
+		for (auto &p : i->Produced()) {
+			p.rate = ClampTo<uint8_t>((RandomRange(256) + 128) * p.rate >> 8);
 		}
 	}
 
@@ -1893,14 +1912,14 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 	if (_generating_world) {
 		if (HasBit(indspec->callback_mask, CBM_IND_PRODUCTION_256_TICKS)) {
 			IndustryProductionCallback(i, 1);
-			for (size_t ci = 0; ci < std::size(i->last_month_production); ci++) {
-				i->last_month_production[ci] = i->produced_cargo_waiting[ci] * 8;
-				i->produced_cargo_waiting[ci] = 0;
+			for (auto &p : i->Produced()) {
+				p.history[LAST_MONTH].production = p.waiting * 8;
+				p.waiting = 0;
 			}
 		}
 
-		for (size_t ci = 0; ci < std::size(i->last_month_production); ci++) {
-			i->last_month_production[ci] += i->production_rate[ci] * 8;
+		for (auto &p : i->Produced()) {
+			p.history[LAST_MONTH].production += _industry_cargo_scaler.Scale(p.rate * 8);
 		}
 	}
 
@@ -1914,7 +1933,12 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 
 	if (HasBit(indspec->callback_mask, CBM_IND_INPUT_CARGO_TYPES)) {
 		/* Clear all input cargo types */
-		for (size_t j = 0; j < i->accepts_cargo.size(); j++) i->accepts_cargo[j] = INVALID_CARGO;
+		i->accepted_cargo_count = 0;
+		i->accepted.reset();
+
+		uint8_t cargo_count = 0;
+		std::array<CargoID, INDUSTRY_NUM_INPUTS> accepts_cargo{};
+
 		/* Query actual types */
 		uint maxcargoes = (indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED) ? INDUSTRY_NUM_INPUTS : 3;
 		for (uint j = 0; j < maxcargoes; j++) {
@@ -1928,25 +1952,43 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 			/* Industries without "unlimited" cargo types support depend on the specific order/slots of cargo types.
 			 * They need to be able to blank out specific slots without aborting the callback sequence,
 			 * and solve this by returning undefined cargo indexes. Skip these. */
-			if (cargo == INVALID_CARGO && !(indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED)) continue;
+			if (!IsValidCargoID(cargo) && !(indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED)) {
+				/* As slots are allocated as needed now, this means we do need to add a slot for the invalid cargo. */
+				accepts_cargo[cargo_count] = INVALID_CARGO;
+				cargo_count++;
+				continue;
+			}
 			/* Verify valid cargo */
 			if (std::find(indspec->accepts_cargo.begin(), indspec->accepts_cargo.end(), cargo) == indspec->accepts_cargo.end()) {
 				/* Cargo not in spec, error in NewGRF */
 				ErrorUnknownCallbackResult(indspec->grf_prop.grffile->grfid, CBID_INDUSTRY_INPUT_CARGO_TYPES, res);
 				break;
 			}
-			if (std::find(i->accepts_cargo.begin(), i->accepts_cargo.begin() + j, cargo) != i->accepts_cargo.begin() + j) {
+			if (std::find(accepts_cargo.begin(), accepts_cargo.begin() + cargo_count, cargo) != accepts_cargo.begin() + cargo_count) {
 				/* Duplicate cargo */
 				ErrorUnknownCallbackResult(indspec->grf_prop.grffile->grfid, CBID_INDUSTRY_INPUT_CARGO_TYPES, res);
 				break;
 			}
-			i->accepts_cargo[j] = cargo;
+			accepts_cargo[cargo_count] = cargo;
+			cargo_count++;
+		}
+
+		i->accepted_cargo_count = cargo_count;
+		i->accepted = std::make_unique<Industry::AcceptedCargo[]>(cargo_count);
+		for (uint8_t index = 0; index < cargo_count; ++index) {
+			Industry::AcceptedCargo &a = i->accepted[index];
+			a.cargo = accepts_cargo[index];
 		}
 	}
 
 	if (HasBit(indspec->callback_mask, CBM_IND_OUTPUT_CARGO_TYPES)) {
 		/* Clear all output cargo types */
-		for (size_t j = 0; j < i->produced_cargo.size(); j++) i->produced_cargo[j] = INVALID_CARGO;
+		i->produced_cargo_count = 0;
+		i->produced.reset();
+
+		uint8_t cargo_count = 0;
+		std::array<CargoID, INDUSTRY_NUM_INPUTS> produced_cargo{};
+
 		/* Query actual types */
 		uint maxcargoes = (indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED) ? INDUSTRY_NUM_OUTPUTS : 2;
 		for (uint j = 0; j < maxcargoes; j++) {
@@ -1958,19 +2000,32 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 			}
 			CargoID cargo = GetCargoTranslation(GB(res, 0, 8), indspec->grf_prop.grffile);
 			/* Allow older GRFs to skip slots. */
-			if (cargo == INVALID_CARGO && !(indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED)) continue;
+			if (!IsValidCargoID(cargo) && !(indspec->behaviour & INDUSTRYBEH_CARGOTYPES_UNLIMITED)) {
+				/* As slots are allocated as needed now, this means we do need to add a slot for the invalid cargo. */
+				produced_cargo[cargo_count] = INVALID_CARGO;
+				cargo_count++;
+				continue;
+			}
 			/* Verify valid cargo */
 			if (std::find(indspec->produced_cargo.begin(), indspec->produced_cargo.end(), cargo) == indspec->produced_cargo.end()) {
 				/* Cargo not in spec, error in NewGRF */
 				ErrorUnknownCallbackResult(indspec->grf_prop.grffile->grfid, CBID_INDUSTRY_OUTPUT_CARGO_TYPES, res);
 				break;
 			}
-			if (std::find(i->produced_cargo.begin(), i->produced_cargo.begin() + j, cargo) != i->produced_cargo.begin() + j) {
+			if (std::find(produced_cargo.begin(), produced_cargo.begin() + cargo_count, cargo) != produced_cargo.begin() + cargo_count) {
 				/* Duplicate cargo */
 				ErrorUnknownCallbackResult(indspec->grf_prop.grffile->grfid, CBID_INDUSTRY_OUTPUT_CARGO_TYPES, res);
 				break;
 			}
-			i->produced_cargo[j] = cargo;
+			produced_cargo[cargo_count] = cargo;
+			cargo_count++;
+		}
+
+		i->produced_cargo_count = cargo_count;
+		i->produced = std::make_unique<Industry::ProducedCargo[]>(cargo_count);
+		for (uint8_t index = 0; index < cargo_count; ++index) {
+			Industry::ProducedCargo &p = i->produced[index];
+			p.cargo = produced_cargo[index];
 		}
 	}
 
@@ -2571,20 +2626,14 @@ void GenerateIndustries()
  */
 static void UpdateIndustryStatistics(Industry *i)
 {
-	for (size_t j = 0; j < std::size(i->produced_cargo); j++) {
-		if (i->produced_cargo[j] != INVALID_CARGO) {
-			uint8_t pct = 0;
-			if (i->this_month_production[j] != 0) {
-				i->last_prod_year = EconTime::CurYear();
-				pct = ClampTo<uint8_t>(((uint64_t)i->this_month_transported[j]) * 256 / i->this_month_production[j]);
-			}
-			i->last_month_pct_transported[j] = pct;
+	for (auto &p : i->Produced()) {
+		if (p.cargo != INVALID_CARGO) {
+			if (p.history[THIS_MONTH].production != 0) i->last_prod_year = EconTime::CurYear();
 
-			i->last_month_production[j] = i->this_month_production[j];
-			i->this_month_production[j] = 0;
-
-			i->last_month_transported[j] = i->this_month_transported[j];
-			i->this_month_transported[j] = 0;
+			/* Move history from this month to last month. */
+			std::copy_backward(p.history.begin(), p.history.end() - 1, p.history.end());
+			p.history[THIS_MONTH].production = 0;
+			p.history[THIS_MONTH].transported = 0;
 		}
 	}
 }
@@ -2599,8 +2648,8 @@ void Industry::RecomputeProductionMultipliers()
 	assert(indspec->UsesOriginalEconomy());
 
 	/* Rates are rounded up, so e.g. oilrig always produces some passengers */
-	for (size_t i = 0; i < std::size(this->production_rate); i++) {
-		this->production_rate[i] = ClampTo<uint8_t>(CeilDiv(indspec->production_rate[i] * this->prod_level, PRODLEVEL_DEFAULT));
+	for (auto &p : this->Produced()) {
+		p.rate = ClampTo<uint8_t>(CeilDiv(indspec->production_rate[&p - this->produced.get()] * this->prod_level, PRODLEVEL_DEFAULT));
 	}
 }
 
@@ -2930,7 +2979,7 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 		if (original_economy) {
 			if (only_decrease || Chance16(1, 3)) {
 				/* If more than 60% transported, 66% chance of increase, else 33% chance of increase */
-				if (!only_decrease && (i->last_month_pct_transported[0] > PERCENT_TRANSPORTED_60) != Chance16(1, 3)) {
+				if (!only_decrease && (i->GetProduced(0).history[LAST_MONTH].PctTransported() > PERCENT_TRANSPORTED_60) != Chance16(1, 3)) {
 					mul = 1; // Increase production
 				} else {
 					div = 1; // Decrease production
@@ -2938,14 +2987,14 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 			}
 		} else if (_settings_game.economy.type == ET_SMOOTH) {
 			closeit = !(i->ctlflags & (INDCTL_NO_CLOSURE | INDCTL_NO_PRODUCTION_DECREASE));
-			for (size_t j = 0; j < std::size(i->produced_cargo); j++) {
-				if (i->produced_cargo[j] == INVALID_CARGO) continue;
+			for (auto &p : i->Produced()) {
+				if (p.cargo == INVALID_CARGO) continue;
 				uint32_t r = Random();
 				int old_prod, new_prod, percent;
 				/* If over 60% is transported, mult is 1, else mult is -1. */
-				int mult = (i->last_month_pct_transported[j] > PERCENT_TRANSPORTED_60) ? 1 : -1;
+				int mult = (p.history[LAST_MONTH].PctTransported() > PERCENT_TRANSPORTED_60) ? 1 : -1;
 
-				new_prod = old_prod = i->production_rate[j];
+				new_prod = old_prod = p.rate;
 
 				/* For industries with only_decrease flags (temperate terrain Oil Wells),
 				 * the multiplier will always be -1 so they will only decrease. */
@@ -2953,7 +3002,7 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 					mult = -1;
 				/* For normal industries, if over 60% is transported, 33% chance for decrease.
 				 * Bonus for very high station ratings (over 80%): 16% chance for decrease. */
-				} else if (Chance16I(1, ((i->last_month_pct_transported[j] > PERCENT_TRANSPORTED_80) ? 6 : 3), r)) {
+				} else if (Chance16I(1, ((p.history[LAST_MONTH].PctTransported() > PERCENT_TRANSPORTED_80) ? 6 : 3), r)) {
 					mult *= -1;
 				}
 
@@ -2965,7 +3014,7 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 
 				/* Prevent production to overflow or Oil Rig passengers to be over-"produced" */
 				new_prod = Clamp(new_prod, 1, 255);
-				if (IsValidCargoID(i->produced_cargo[j]) && i->produced_cargo[j] == GetCargoIDByLabel(CT_PASSENGERS) && !(indspec->behaviour & INDUSTRYBEH_NO_PAX_PROD_CLAMP)) {
+				if (IsValidCargoID(p.cargo) && p.cargo == GetCargoIDByLabel(CT_PASSENGERS) && !(indspec->behaviour & INDUSTRYBEH_NO_PAX_PROD_CLAMP)) {
 					new_prod = Clamp(new_prod, 0, 16);
 				}
 
@@ -2980,13 +3029,13 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 				}
 
 				percent = (old_prod == 0) ? 100 : (new_prod * 100 / old_prod - 100);
-				i->production_rate[j] = new_prod;
+				p.rate = new_prod;
 
 				/* Close the industry when it has the lowest possible production rate */
 				if (new_prod > 1) closeit = false;
 
 				if (abs(percent) >= 10) {
-					ReportNewsProductionChangeIndustry(i, i->produced_cargo[j], percent);
+					ReportNewsProductionChangeIndustry(i, p.cargo, percent);
 				}
 			}
 		}
@@ -3286,4 +3335,23 @@ bool IndustryCompare::operator() (const IndustryListEntry &lhs, const IndustryLi
 {
 	/* Compare by distance first and use index as a tiebreaker. */
 	return std::tie(lhs.distance, lhs.industry->index) < std::tie(rhs.distance, rhs.industry->index);
+}
+
+/**
+ * Remove unused industry accepted/produced slots -- entries after the last slot with valid cargo.
+ * @param ind Industry to trim slots.
+ */
+void TrimIndustryAcceptedProduced(Industry *ind)
+{
+	uint8_t accepted_cargo_count = 0;
+	for (uint8_t j = 0; j < ind->accepted_cargo_count; j++) {
+		if (ind->accepted[j].cargo != INVALID_CARGO) accepted_cargo_count = j + 1;
+	}
+	ind->accepted_cargo_count = accepted_cargo_count;
+
+	uint8_t produced_cargo_count = 0;
+	for (uint8_t j = 0; j < ind->produced_cargo_count; j++) {
+		if (ind->produced[j].cargo != INVALID_CARGO) produced_cargo_count = j + 1;
+	}
+	ind->produced_cargo_count = produced_cargo_count;
 }
