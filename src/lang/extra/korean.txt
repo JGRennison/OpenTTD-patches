@@ -81,8 +81,6 @@ STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED                     :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED                   :{TINY_FONT}{BLACK}1 단위(1,000 리터)의 화물을 200칸 거리만큼 운송할 때의 운송비 지급량
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_MINUTES                   :{TINY_FONT}{BLACK}운송 시간(분)
 STR_GRAPH_STATION_CARGO_CAPTION                                 :{WHITE}{STATION} - 대기 화물량 이력
-STR_GRAPH_STATION_CARGO_X_LABEL_DAYS                            :{TINY_FONT}{BLACK}{NUM}일 동안의 변동 사항
-STR_GRAPH_STATION_CARGO_X_LABEL_SECONDS                         :{TINY_FONT}{BLACK}{NUM}초 동안의 변동 사항
 STR_GRAPH_STATION_CARGO_TITLE                                   :{TINY_FONT}{BLACK}역에서 있던 화물량
 
 STR_GRAPH_CARGO_SPEED_MODE                                      :{TINY_FONT}{BLACK}평균 속력

@@ -116,12 +116,12 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Road Vehicles
 STR_VEHICLE_TYPE_SHIPS                                          :Ships
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Aircraft
 
+STR_GRAPH_X_LABEL_LAST_UNITS                                    :{TINY_FONT}{BLACK}Last {STRING1}
+
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED                     :{TINY_FONT}{BLACK}Average transit speed ({STRING})
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED                   :{TINY_FONT}{BLACK}Payment for delivering 1 unit (or 1,000 litres) of cargo a distance of 200 squares
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_MINUTES                   :{TINY_FONT}{BLACK}Minutes in transit
 STR_GRAPH_STATION_CARGO_CAPTION                                 :{WHITE}{STATION} - Waiting Cargo History
-STR_GRAPH_STATION_CARGO_X_LABEL_DAYS                            :{TINY_FONT}{BLACK}Development over the last {NUM} days
-STR_GRAPH_STATION_CARGO_X_LABEL_SECONDS                         :{TINY_FONT}{BLACK}Development over the last {NUM} seconds
 STR_GRAPH_STATION_CARGO_TITLE                                   :{TINY_FONT}{BLACK}Units of cargo waiting at the station
 
 STR_GRAPH_CARGO_SPEED_MODE                                      :{TINY_FONT}{BLACK}Average speed

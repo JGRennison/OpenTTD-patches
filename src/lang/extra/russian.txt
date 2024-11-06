@@ -81,8 +81,6 @@ STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED                     :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED                   :{TINY_FONT}{BLACK}Оплата за доставку 1 единицы (или 1000 литров) груза на расстояние 200 квадратов
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_MINUTES                   :{TINY_FONT}{BLACK}Минут в пути
 STR_GRAPH_STATION_CARGO_CAPTION                                 :{WHITE}{STATION} - История доступного груза
-STR_GRAPH_STATION_CARGO_X_LABEL_DAYS                            :{TINY_FONT}{BLACK}Развитие за последние {NUM} дней
-STR_GRAPH_STATION_CARGO_X_LABEL_SECONDS                         :{TINY_FONT}{BLACK}Развитие за последние {NUM} секунд
 STR_GRAPH_STATION_CARGO_TITLE                                   :{TINY_FONT}{BLACK}Единицы груза, доступные на станции
 
 STR_GRAPH_CARGO_SPEED_MODE                                      :{TINY_FONT}{BLACK}Средняя скорость
