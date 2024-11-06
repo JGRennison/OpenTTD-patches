@@ -202,7 +202,7 @@ protected:
 	/* These values are used if the graph is being plotted against values
 	 * rather than the dates specified by month and year. */
 	uint16_t x_values_start;
-	int16_t x_values_increment;
+	uint16_t x_values_increment;
 
 	StringID format_str_y_axis;
 	uint8_t colours[GRAPH_MAX_DATASETS];
@@ -1833,8 +1833,8 @@ struct IndustryProductionGraphWindow : BaseGraphWindow {
 		this->num_on_x_axis = GRAPH_NUM_MONTHS;
 		this->num_vert_lines = GRAPH_NUM_MONTHS;
 		this->month_increment = 1;
-		this->x_values_start = GRAPH_NUM_MONTHS;
-		this->x_values_increment = -ECONOMY_MONTH_MINUTES;
+		this->x_values_start = ECONOMY_MONTH_MINUTES;
+		this->x_values_increment = ECONOMY_MONTH_MINUTES;
 		this->draw_dates = !EconTime::UsingWallclockUnits();
 
 		this->CreateNestedTree();
@@ -1849,7 +1849,7 @@ struct IndustryProductionGraphWindow : BaseGraphWindow {
 		this->vscroll->SetCount(count);
 
 		auto *wid = this->GetWidget<NWidgetCore>(WID_GRAPH_FOOTER);
-		wid->SetDataTip(EconTime::UsingWallclockUnits() ? STR_GRAPH_LAST_24_MINUTES_TIME_LABEL : STR_EMPTY, STR_NULL);
+		wid->SetDataTip(EconTime::UsingWallclockUnits() ? (ReplaceWallclockMinutesUnit() ? STR_GRAPH_LAST_24_PRODUCTION_INTERVALS_TIME_LABEL : STR_GRAPH_LAST_24_MINUTES_TIME_LABEL) : STR_EMPTY, STR_NULL);
 
 		this->FinishInitNested(window_number);
 

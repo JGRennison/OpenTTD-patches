@@ -92,6 +92,7 @@ STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE                         :{TINY_FONT}{BLA
 STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE_TOOLTIP               :{BLACK}Amosar unha liña por cada empresa seleccionada
 STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE_TOOLTIP                 :{BLACK}Amosar unha liña por cada carga seleccionada
 
+STR_GRAPH_LAST_24_PRODUCTION_INTERVALS_TIME_LABEL               :{TINY_FONT}{BLACK}Últimos 24 intervalos de produción
 STR_GRAPH_LAST_72_PRODUCTION_INTERVALS_TIME_LABEL               :{TINY_FONT}{BLACK}Últimos 72 intervalos de produción
 
 STR_SMALLMAP_SCREENSHOT                                         :{BLACK}Captura de pantalla

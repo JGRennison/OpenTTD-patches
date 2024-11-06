@@ -92,6 +92,7 @@ STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE                         :{TINY_FONT}{BLA
 STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE_TOOLTIP               :{BLACK}Отображение одной строки для каждой выбранной компании
 STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE_TOOLTIP                 :{BLACK}Отображение одной строки для каждого выбранного груза
 
+STR_GRAPH_LAST_24_PRODUCTION_INTERVALS_TIME_LABEL               :{TINY_FONT}{BLACK}Последние 24 производственных интервала
 STR_GRAPH_LAST_72_PRODUCTION_INTERVALS_TIME_LABEL               :{TINY_FONT}{BLACK}Последние 72 производственных интервала
 
 STR_SMALLMAP_SCREENSHOT                                         :{BLACK}Скриншот

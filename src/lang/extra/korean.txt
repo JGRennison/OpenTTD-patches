@@ -92,6 +92,7 @@ STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE                         :{TINY_FONT}{BLA
 STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE_TOOLTIP               :{BLACK}선택한 회사를 각각 하나의 선으로 표시합니다
 STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE_TOOLTIP                 :{BLACK}선택한 화물를 각각 하나의 선으로 표시합니다
 
+STR_GRAPH_LAST_24_PRODUCTION_INTERVALS_TIME_LABEL               :{TINY_FONT}{BLACK}지난 24 생산기간
 STR_GRAPH_LAST_72_PRODUCTION_INTERVALS_TIME_LABEL               :{TINY_FONT}{BLACK}지난 72 생산기간
 
 STR_SMALLMAP_SCREENSHOT                                         :{BLACK}스크린샷
