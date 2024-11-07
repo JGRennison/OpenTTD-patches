@@ -30,11 +30,11 @@
 
 /* Helper for filling property tables */
 #define NIP(prop, base, variable, type, name) { name, { (ptrdiff_t)cpp_offsetof(base, variable), cpp_sizeof(base, variable) }, prop, type }
-#define NIP_END() { nullptr, { 0, 0 }, 0, 0 }
+#define NIP_END() { nullptr, {}, 0, 0 }
 
 /* Helper for filling callback tables */
 #define NIC(cb_id, base, variable, bit) { #cb_id, { (ptrdiff_t)cpp_offsetof(base, variable), cpp_sizeof(base, variable) }, bit, cb_id }
-#define NIC_END() { nullptr, { 0, 0 }, 0, 0 }
+#define NIC_END() { nullptr, {}, 0, 0 }
 
 /* Helper for filling variable tables */
 #define NIV(var, name) { name, var, NIVF_NONE }
@@ -1025,8 +1025,10 @@ static const NIFeature _nif_industrytile = {
 
 
 /*** NewGRF industries ***/
-#define NIP_PRODUCED_CARGO(prop, base, slot, type, name) { name, { [](const void *b) -> uint { return static_cast<const base *>(b)->GetProduced(slot).cargo; } }, prop, type }
-#define NIP_ACCEPTED_CARGO(prop, base, slot, type, name) { name, { [](const void *b) -> uint { return static_cast<const base *>(b)->GetAccepted(slot).cargo; } }, prop, type }
+template <typename BASE> uint NipProducedCargoReader(const void *b, uint8_t slot) { return static_cast<const BASE *>(b)->GetProduced(slot).cargo; }
+template <typename BASE> uint NipAcceptedCargoReader(const void *b, uint8_t slot) { return static_cast<const BASE *>(b)->GetAccepted(slot).cargo; }
+#define NIP_PRODUCED_CARGO(prop, base, slot, type, name) { name, NIValueReader(NipProducedCargoReader<base>, slot), prop, type }
+#define NIP_ACCEPTED_CARGO(prop, base, slot, type, name) { name, NIValueReader(NipAcceptedCargoReader<base>, slot), prop, type }
 
 static const NIProperty _nip_industries[] = {
 	NIP_PRODUCED_CARGO(0x25, Industry,  0, NIT_CARGO, "produced cargo 0"),

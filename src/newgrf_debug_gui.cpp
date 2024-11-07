@@ -100,7 +100,7 @@ enum NIType {
 	NIT_CARGO, ///< The property is a cargo
 };
 
-using NIValueReaderProc = uint(*)(const void *);
+using NIValueReaderProc = uint(*)(const void *, uint8_t);
 
 struct NIValueReader {
 private:
@@ -109,14 +109,16 @@ private:
 		NIValueReaderProc proc; ///< Function to read the variable from the class
 	};
 	uint8_t read_size;          ///< Number of bytes (i.e. byte, word, dword etc) for use with offset, or 0xFF to use proc
+	uint8_t param;              ///< Parameter for proc
 
 public:
-	constexpr NIValueReader(ptrdiff_t offset, uint8_t read_size) : offset(offset), read_size(read_size) {}
-	constexpr NIValueReader(NIValueReaderProc proc) : proc(proc), read_size(0xFF) {}
+	constexpr NIValueReader() : offset(0), read_size(0), param(0) {}
+	constexpr NIValueReader(ptrdiff_t offset, uint8_t read_size) : offset(offset), read_size(read_size), param(0) {}
+	constexpr NIValueReader(NIValueReaderProc proc, uint8_t param = 0) : proc(proc), read_size(0xFF), param(param) {}
 
 	uint ReadValue(const void *base) const
 	{
-		if (this->read_size == 0xFF) return this->proc(base);
+		if (this->read_size == 0xFF) return this->proc(base, this->param);
 
 		const void *ptr = (const uint8_t *)base + this->offset;
 		switch (this->read_size) {
@@ -130,9 +132,9 @@ public:
 
 /** Representation of the data from a NewGRF property. */
 struct NIProperty {
-	const char *name;       ///< A (human readable) name for the property
-	NIValueReader reader;   ///< Class value reader
-	uint8_t prop;           ///< The number of the property
+	const char *name;                       ///< A (human readable) name for the property
+	NO_UNIQUE_ADDRESS NIValueReader reader; ///< Class value reader
+	uint8_t prop;                           ///< The number of the property
 	uint8_t type;
 };
 
