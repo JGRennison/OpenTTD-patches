@@ -604,7 +604,7 @@ bool ScriptInstance::IsPaused()
 
 /* static */ bool ScriptInstance::LoadObjects(HSQUIRRELVM vm, ScriptData *data)
 {
-	ScriptDataVariant value = data->front();
+	ScriptDataVariant value = std::move(data->front());
 	data->pop_front();
 
 	if (std::holds_alternative<SQInteger>(value)) {
