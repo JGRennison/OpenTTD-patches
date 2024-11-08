@@ -2701,11 +2701,7 @@ static bool StationJoinerNeeded(const CommandContainer &cmd, TileArea ta)
 	/* Now check if we could build there */
 	if (DoCommand(cmd, CommandFlagsToDCFlags(GetCommandFlags(cmd.cmd))).Failed()) return false;
 
-	/* Test for adjacent station or station below selection.
-	 * If adjacent-stations is disabled and we are building next to a station, do not show the selection window.
-	 * but join the other station immediately. */
-	const T *st = FindStationsNearby<T>(ta, false, IsSpecializedStationRightType<T>(cmd));
-	return st == nullptr && (_settings_game.station.adjacent_stations || _stations_nearby_list.size() == 0);
+	return FindStationsNearby<T>(ta, false, IsSpecializedStationRightType<T>(cmd)) == nullptr;
 }
 
 /**

@@ -1062,36 +1062,34 @@ static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlag fl
 				}
 			}
 		} else {
-			/* Rail type is only valid when building a railway station; if station to
-			 * build isn't a rail station it's INVALID_RAILTYPE. */
-			if (rt != INVALID_RAILTYPE &&
-					IsPlainRailTile(tile_cur) && !HasSignals(tile_cur) &&
-					HasPowerOnRail(GetRailType(tile_cur), rt)) {
-				/* Allow overbuilding if the tile:
-				 *  - has rail, but no signals
-				 *  - it has exactly one track
-				 *  - the track is in line with the station
-				 *  - the current rail type has power on the to-be-built type (e.g. convert normal rail to el rail)
-				 */
-				TrackBits tracks = GetTrackBits(tile_cur);
-				Track track = RemoveFirstTrack(&tracks);
-				Track expected_track = HasBit(invalid_dirs, DIAGDIR_NE) ? TRACK_X : TRACK_Y;
+			/* If we are building a station with a valid railtype, we may be able to overbuild an existing rail tile. */
+			if (rt != INVALID_RAILTYPE && IsPlainRailTile(tile_cur)) {
+				/* Don't overbuild signals. */
+				if (HasSignals(tile_cur)) return_cmd_error(STR_ERROR_MUST_REMOVE_SIGNALS_FIRST);
 
-				if (tracks == TRACK_BIT_NONE && track == expected_track) {
-					/* Check for trains having a reservation for this tile. */
-					if (HasBit(GetRailReservationTrackBits(tile_cur), track)) {
-						Train *v = GetTrainForReservation(tile_cur, track);
-						if (v != nullptr) {
-							CommandCost ret = CheckTrainReservationPreventsTrackModification(v);
-							if (ret.Failed()) return ret;
-							affected_vehicles.push_back(v);
+				/* The current rail type must have power on the to-be-built type (e.g. convert normal rail to electrified rail). */
+				if (HasPowerOnRail(GetRailType(tile_cur), rt)) {
+					TrackBits tracks = GetTrackBits(tile_cur);
+					Track track = RemoveFirstTrack(&tracks);
+					Track expected_track = HasBit(invalid_dirs, DIAGDIR_NE) ? TRACK_X : TRACK_Y;
+
+					/* The existing track must align with the desired station axis. */
+					if (tracks == TRACK_BIT_NONE && track == expected_track) {
+						/* Check for trains having a reservation for this tile. */
+						if (HasBit(GetRailReservationTrackBits(tile_cur), track)) {
+							Train *v = GetTrainForReservation(tile_cur, track);
+							if (v != nullptr) {
+								CommandCost ret = CheckTrainReservationPreventsTrackModification(v);
+								if (ret.Failed()) return ret;
+								affected_vehicles.push_back(v);
+							}
 						}
+						CommandCost ret = DoCommand(tile_cur, 0, track, flags, CMD_REMOVE_SINGLE_RAIL);
+						if (ret.Failed()) return ret;
+						cost.AddCost(ret);
+						/* With flags & ~DC_EXEC CmdLandscapeClear would fail since the rail still exists */
+						continue;
 					}
-					CommandCost ret = DoCommand(tile_cur, 0, track, flags, CMD_REMOVE_SINGLE_RAIL);
-					if (ret.Failed()) return ret;
-					cost.AddCost(ret);
-					/* With flags & ~DC_EXEC CmdLandscapeClear would fail since the rail still exists */
-					continue;
 				}
 			}
 			ret = DoCommand(tile_cur, 0, 0, flags, CMD_LANDSCAPE_CLEAR);
@@ -1367,24 +1365,22 @@ CommandCost FindJoiningBaseStation(StationID existing_station, StationID station
 	assert(*st == nullptr);
 	bool check_surrounding = true;
 
-	if (_settings_game.station.adjacent_stations) {
-		if (existing_station != INVALID_STATION) {
-			if (adjacent && existing_station != station_to_join) {
-				/* You can't build an adjacent station over the top of one that
-				 * already exists. */
-				return_cmd_error(error_message);
-			} else {
-				/* Extend the current station, and don't check whether it will
-				 * be near any other stations. */
-				T *candidate = T::GetIfValid(existing_station);
-				if (candidate != nullptr && filter(candidate)) *st = candidate;
-				check_surrounding = (*st == nullptr);
-			}
+	if (existing_station != INVALID_STATION) {
+		if (adjacent && existing_station != station_to_join) {
+			/* You can't build an adjacent station over the top of one that
+			 * already exists. */
+			return_cmd_error(error_message);
 		} else {
-			/* There's no station here. Don't check the tiles surrounding this
-			 * one if the company wanted to build an adjacent station. */
-			if (adjacent) check_surrounding = false;
+			/* Extend the current station, and don't check whether it will
+			 * be near any other stations. */
+			T *candidate = T::GetIfValid(existing_station);
+			if (candidate != nullptr && filter(candidate)) *st = candidate;
+			check_surrounding = (*st == nullptr);
 		}
+	} else {
+		/* There's no station here. Don't check the tiles surrounding this
+		 * one if the company wanted to build an adjacent station. */
+		if (adjacent) check_surrounding = false;
 	}
 
 	if (check_surrounding) {

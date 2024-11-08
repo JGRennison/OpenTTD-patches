@@ -1365,7 +1365,7 @@ void TileLoopWaterFlooding(FloodingBehaviour flooding_behaviour, TileIndex tile)
 {
 	switch (flooding_behaviour) {
 		case FLOOD_ACTIVE: {
-			int non_water_neighbours = 0;
+			bool continue_flooding = false;
 			for (Direction dir = DIR_BEGIN; dir < DIR_END; dir++) {
 				TileIndex dest = AddTileIndexDiffCWrap(tile, TileIndexDiffCByDir(dir));
 				/* Contrary to drying up, flooding does not consider MP_VOID tiles. */
@@ -1373,7 +1373,11 @@ void TileLoopWaterFlooding(FloodingBehaviour flooding_behaviour, TileIndex tile)
 				/* do not try to flood water tiles - increases performance a lot */
 				if (IsTileType(dest, MP_WATER)) continue;
 
-				non_water_neighbours++;
+				/* Buoys and docks cannot be flooded, and when removed turn into flooding water. */
+				if (IsTileType(dest, MP_STATION) && (IsBuoy(dest) || IsDock(dest))) continue;
+
+				/* This neighbour tile might be floodable later if the tile is cleared, so allow flooding to continue. */
+				continue_flooding = true;
 
 				/* TREE_GROUND_SHORE is the sign of a previous flood. */
 				if (IsTileType(dest, MP_TREES) && GetTreeGround(dest) == TREE_GROUND_SHORE) continue;
@@ -1386,7 +1390,7 @@ void TileLoopWaterFlooding(FloodingBehaviour flooding_behaviour, TileIndex tile)
 
 				DoFloodTile(dest);
 			}
-			if (non_water_neighbours == 0 && IsTileType(tile, MP_WATER)) SetNonFloodingWaterTile(tile, true);
+			if (!continue_flooding && IsTileType(tile, MP_WATER)) SetNonFloodingWaterTile(tile, true);
 			break;
 		}
 

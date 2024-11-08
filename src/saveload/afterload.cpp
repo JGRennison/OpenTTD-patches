@@ -4605,6 +4605,7 @@ void ReloadNewGRFData()
 	LoadStringWidthTable();
 	/* reload vehicles */
 	ResetVehicleHash();
+	AfterLoadLabelMaps();
 	AfterLoadEngines();
 	AnalyseIndustryTileSpriteGroups();
 	extern void AnalyseHouseSpriteGroups();

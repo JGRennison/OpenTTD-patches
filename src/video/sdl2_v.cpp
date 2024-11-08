@@ -889,6 +889,10 @@ const char *VideoDriver_SDL_Base::Start(const StringList &param)
 	}
 #endif
 
+#ifdef SDL_HINT_APP_NAME
+	SDL_SetHint(SDL_HINT_APP_NAME, "OpenTTD");
+#endif
+
 	this->startup_display = FindStartupDisplay(GetDriverParamInt(param, "display", -1));
 
 	if (!CreateMainSurface(_cur_resolution.width, _cur_resolution.height, false)) {

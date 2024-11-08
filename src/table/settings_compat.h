@@ -231,7 +231,7 @@ static std::initializer_list<SettingsCompat> _settings_compat{
 	SLCX_VAR("construction.road_stop_on_town_road"),
 	SLCX_VAR("construction.road_stop_on_competitor_road"),
 	SLCX_XREF("construction.road_custom_bridge_heads", SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_JOKERPP)),
-	SLCX_VAR("station.adjacent_stations"),
+	SLCX_NULL(1, SLV_62, SLV_TABLE_CHUNKS), // station.adjacent_stations
 	SLCX_VAR("economy.station_noise_level"),
 	SLCX_VAR("station.distant_join_stations"),
 	SLCX_NULL_X(6, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SPRINGPP)), // construction.{traffic_lights, towns_build_traffic_lights, allow_building_tls_in_towns, traffic_lights_green_phase, max_tlc_size, max_tlc_distance}
