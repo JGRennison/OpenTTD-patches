@@ -319,6 +319,9 @@ struct btree_map_params
     btree_swap_helper(a->first, b->first);
     btree_swap_helper(a->second, b->second);
   }
+  static void move_construct_at(mutable_value_type *at, mutable_value_type *from) {
+    new (at) mutable_value_type(std::move(from->first), std::move(from->second));
+  }
 };
 
 // A parameters structure for holding the type parameters for a btree_set.
@@ -342,6 +345,9 @@ struct btree_set_params
   static const Key& key(const value_type &x) { return x; }
   static void swap(mutable_value_type *a, mutable_value_type *b) {
     btree_swap_helper<mutable_value_type>(*a, *b);
+  }
+  static void move_construct_at(mutable_value_type *at, mutable_value_type *from) {
+    new (at) mutable_value_type(std::move(*from));
   }
 };
 
@@ -574,6 +580,11 @@ class btree_node {
     params_type::swap(mutable_value(i), x->mutable_value(j));
   }
 
+  // Move construct value i in this node from value j in node x.
+  void value_move_construct(int i, btree_node *x, int j) {
+    params_type::move_construct_at(mutable_value(i), x->mutable_value(j));
+  }
+
   // Getters/setter for the child at position i in the node.
   btree_node* child(int i) const { return fields_.children[i]; }
   btree_node** mutable_child(int i) { return &fields_.children[i]; }
@@ -727,9 +738,6 @@ public:
   }
 
  private:
-  void value_init(int i) {
-    new (&fields_.values[i]) mutable_value_type;
-  }
   template <typename... Args>
   void value_init_args(int i, Args&&... args) {
     new (&fields_.values[i]) mutable_value_type(std::forward<Args>(args)...);
@@ -1442,6 +1450,8 @@ class btree : public Params::key_compare {
   // A never instantiated helper function that returns the key comparison
   // functor.
   static key_compare key_compare_helper();
+  // A never instantiated helper function that returns a const key_type &.
+  static const key_type &key_type_helper();
 
   // Verify that key_compare returns a bool. This is similar to the way
   // is_convertible in base/type_traits.h works. Note that key_compare_checker
@@ -1450,7 +1460,7 @@ class btree : public Params::key_compare {
   // return type of key_compare_checker() at compile time which we then check
   // against the sizeof of big_.
   static_assert(
-      sizeof(key_compare_checker(key_compare_helper()(key_type(), key_type()))) ==
+      sizeof(key_compare_checker(key_compare_helper()(key_type_helper(), key_type_helper()))) ==
       sizeof(big_),
       "key_comparison_function_must_return_bool");
 
@@ -1517,19 +1527,14 @@ void btree_node<P>::rebalance_right_to_left(btree_node *src, int to_move) {
   dbg_assert(to_move >= 1);
   dbg_assert(to_move <= src->count());
 
-  // Make room in the left node for the new values.
-  for (int i = 0; i < to_move; ++i) {
-    value_init(i + count());
-  }
-
   // Move the delimiting value to the left node and the new delimiting value
   // from the right node.
-  value_swap(count(), parent(), position());
+  value_move_construct(count(), parent(), position());
   parent()->value_swap(position(), src, to_move - 1);
 
   // Move the values from the right to the left node.
   for (int i = 1; i < to_move; ++i) {
-    value_swap(count() + i, src, i - 1);
+    value_move_construct(count() + i, src, i - 1);
   }
   // Shift the values in the right node to their correct position.
   for (int i = to_move; i < src->count(); ++i) {
@@ -1565,22 +1570,20 @@ void btree_node<P>::rebalance_left_to_right(btree_node *dest, int to_move) {
   dbg_assert(to_move <= count());
 
   // Make room in the right node for the new values.
-  for (int i = 0; i < to_move; ++i) {
-    dest->value_init(i + dest->count());
-  }
   for (int i = dest->count() - 1; i >= 0; --i) {
-    dest->value_swap(i, dest, i + to_move);
+    dest->value_move_construct(i + to_move, dest, i);
+    dest->value_destroy(i);
   }
 
   // Move the delimiting value to the right node and the new delimiting value
   // from the left node.
-  dest->value_swap(to_move - 1, parent(), position());
+  dest->value_move_construct(to_move - 1, parent(), position());
   parent()->value_swap(position(), this, count() - to_move);
   value_destroy(count() - to_move);
 
   // Move the values from the left to the right node.
   for (int i = 1; i < to_move; ++i) {
-    value_swap(count() - to_move + i, dest, i - 1);
+    dest->value_move_construct(i - 1, this, count() - to_move + i);
     value_destroy(count() - to_move + i);
   }
 
@@ -1621,16 +1624,16 @@ void btree_node<P>::split(btree_node *dest, int insert_position) {
 
   // Move values from the left sibling to the right sibling.
   for (int i = 0; i < dest->count(); ++i) {
-    dest->value_init(i);
-    value_swap(count() + i, dest, i);
+    dest->value_move_construct(i, this, count() + i);
     value_destroy(count() + i);
   }
 
   // The split key is the largest value in the left sibling.
   set_count(count() - 1);
-  parent()->insert_value(position());
-  value_swap(count(), parent(), position());
+
+  parent()->value_move_construct(parent()->count(), this, count());
   value_destroy(count());
+  parent()->insert_value_common(position());
   parent()->set_child(position() + 1, dest);
 
   if (!leaf()) {
@@ -1648,13 +1651,11 @@ void btree_node<P>::merge(btree_node *src) {
   dbg_assert(position() + 1 == src->position());
 
   // Move the delimiting value to the left node.
-  value_init(count());
-  value_swap(count(), parent(), position());
+  value_move_construct(count(), parent(), position());
 
   // Move the values from the right to the left node.
   for (int i = 0; i < src->count(); ++i) {
-    value_init(1 + count() + i);
-    value_swap(1 + count() + i, src, i);
+    value_move_construct(1 + count() + i, src, i);
     src->value_destroy(i);
   }
 
@@ -1678,39 +1679,36 @@ template <typename P>
 void btree_node<P>::swap(btree_node *x) {
   dbg_assert(leaf() == x->leaf());
 
+  btree_node *y = this;
+  if (x->count() > y->count()) btree_swap_helper(x, y);
+
+  // invariant: x->count() <= y->count()
+
   // Swap the values.
-  for (int i = count(); i < x->count(); ++i) {
-    value_init(i);
+  for (int i = 0; i < x->count(); ++i) {
+    x->value_swap(i, y, i);
   }
-  for (int i = x->count(); i < count(); ++i) {
-    x->value_init(i);
-  }
-  int n = std::max(count(), x->count());
-  for (int i = 0; i < n; ++i) {
-    value_swap(i, x, i);
-  }
-  for (int i = count(); i < x->count(); ++i) {
-    x->value_destroy(i);
-  }
-  for (int i = x->count(); i < count(); ++i) {
-    value_destroy(i);
+  for (int i = x->count(); i < y->count(); ++i) {
+    x->value_move_construct(i, y, i);
+    y->value_destroy(i);
   }
 
-  if (!leaf()) {
+  if (!x->leaf()) {
     // Swap the child pointers.
+    int n = std::max(x->count(), y->count());
     for (int i = 0; i <= n; ++i) {
-      btree_swap_helper(*mutable_child(i), *x->mutable_child(i));
+      btree_swap_helper(*x->mutable_child(i), *y->mutable_child(i));
     }
-    for (int i = 0; i <= count(); ++i) {
+    for (int i = 0; i <= y->count(); ++i) {
       x->child(i)->fields_.parent = x;
     }
     for (int i = 0; i <= x->count(); ++i) {
-      child(i)->fields_.parent = this;
+      y->child(i)->fields_.parent = y;
     }
   }
 
   // Swap the counts.
-  btree_swap_helper(fields_.count, x->fields_.count);
+  btree_swap_helper(y->fields_.count, x->fields_.count);
 }
 
 ////
