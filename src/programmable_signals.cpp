@@ -555,12 +555,10 @@ void FreeSignalProgram(SignalReference ref)
 void FreeSignalPrograms()
 {
 	_cleaning_signal_programs = true;
-	ProgramList::iterator i, e;
-	for (i = _signal_programs.begin(), e = _signal_programs.end(); i != e;) {
-		delete i->second;
-		// Must postincrement here to avoid iterator invalidation
-		_signal_programs.erase(i++);
+	for (auto &it : _signal_programs) {
+		delete it.second;
 	}
+	_signal_programs.clear();
 	_cleaning_signal_programs = false;
 }
 

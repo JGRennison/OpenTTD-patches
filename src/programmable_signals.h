@@ -9,10 +9,11 @@
 
 #ifndef PROGRAMMABLE_SIGNALS_H
 #define PROGRAMMABLE_SIGNALS_H
+
 #include "rail_map.h"
 #include "tracerestrict.h"
 #include "core/container_func.hpp"
-#include <map>
+#include "3rdparty/cpp-btree/btree_map.h"
 #include <vector>
 
 /** @defgroup progsigs Programmable Pre-Signals */
@@ -404,7 +405,7 @@ public:
 };
 
 /// The map type used for looking up signal programs
-typedef std::map<SignalReference, SignalProgram*> ProgramList;
+typedef btree::btree_map<SignalReference, SignalProgram *> ProgramList;
 
 /// The global signal program list
 extern ProgramList _signal_programs;
