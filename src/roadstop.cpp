@@ -422,7 +422,7 @@ void RoadStop::Entry::Enter(const RoadVehicle *rv)
 			GetDriveThroughStopDisallowedRoadDirections(next) == GetDriveThroughStopDisallowedRoadDirections(rs);
 }
 
-typedef std::list<const RoadVehicle *> RVList; ///< A list of road vehicles
+typedef std::vector<const RoadVehicle *> RVList; ///< A list of road vehicles
 
 /** Helper for finding RVs in a road stop. */
 struct RoadStopEntryRebuilderHelper {
