@@ -452,13 +452,13 @@ inline constexpr bool SlCheckVar(SaveLoadType cmd, VarType type, size_t length)
 			}
 			return false;
 
-		case SL_PTRRING:
+		case SL_REFRING:
 			if constexpr (sl_is_instance<T, ring_buffer>{}) {
 				return std::is_pointer_v<typename T::value_type> || sl_is_instance<typename T::value_type, std::unique_ptr>{};
 			}
 			return false;
 
-		case SL_VEC:
+		case SL_REFVEC:
 			if constexpr (sl_is_instance<T, std::vector>{}) {
 				return std::is_pointer_v<typename T::value_type> || sl_is_instance<typename T::value_type, std::unique_ptr>{};
 			}
@@ -585,8 +585,8 @@ inline constexpr void *SlVarWrapper(void* ptr)
  * @param to       Last savegame version that has the list.
  * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  */
-#define SLE_CONDPTRRING_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_PTRRING, base, variable, type, 0, from, to, extver)
-#define SLE_CONDPTRRING(base, variable, type, from, to) SLE_CONDPTRRING_X(base, variable, type, from, to, SlXvFeatureTest())
+#define SLE_CONDREFRING_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_REFRING, base, variable, type, 0, from, to, extver)
+#define SLE_CONDREFRING(base, variable, type, from, to) SLE_CONDREFRING_X(base, variable, type, from, to, SlXvFeatureTest())
 
 /**
  * Storage of a vector in some savegame versions.
@@ -597,8 +597,8 @@ inline constexpr void *SlVarWrapper(void* ptr)
  * @param to       Last savegame version that has the list.
  * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  */
-#define SLE_CONDVEC_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_VEC, base, variable, type, 0, from, to, extver)
-#define SLE_CONDVEC(base, variable, type, from, to) SLE_CONDVEC_X(base, variable, type, from, to, SlXvFeatureTest())
+#define SLE_CONDREFVEC_X(base, variable, type, from, to, extver) SLE_GENERAL_X(SL_REFVEC, base, variable, type, 0, from, to, extver)
+#define SLE_CONDREFVEC(base, variable, type, from, to) SLE_CONDREFVEC_X(base, variable, type, from, to, SlXvFeatureTest())
 
 /**
  * Storage of a variable vector in some savegame versions.
@@ -675,12 +675,12 @@ inline constexpr void *SlVarWrapper(void* ptr)
 #define SLE_REFLIST(base, variable, type) SLE_CONDREFLIST(base, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
- * Storage of a ring in every savegame version.
+ * Storage of a ring of #SL_REF elements in every savegame version.
  * @param base     Name of the class or struct containing the list.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
  */
-#define SLE_PTRRING(base, variable, type) SLE_CONDPTRRING(base, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
+#define SLE_REFRING(base, variable, type) SLE_CONDREFRING(base, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
  * Storage of a vector in every savegame version.
@@ -688,7 +688,7 @@ inline constexpr void *SlVarWrapper(void* ptr)
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
  */
-#define SLE_VEC(base, variable, type) SLE_CONDVEC(base, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
+#define SLE_VEC(base, variable, type) SLE_CONDREFVEC(base, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
  * Storage of a variable vector in every savegame version.
@@ -801,26 +801,26 @@ inline constexpr void *SlVarWrapper(void* ptr)
 #define SLEG_CONDREFLIST(variable, type, from, to) SLEG_CONDREFLIST_X(variable, type, from, to, SlXvFeatureTest())
 
 /**
- * Storage of a global ring in some savegame versions.
+ * Storage of a global reference ring in some savegame versions.
  * @param variable Name of the global variable.
  * @param type     Storage of the data in memory and in the savegame.
  * @param from     First savegame version that has the list.
  * @param to       Last savegame version that has the list.
  * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  */
-#define SLEG_CONDPTRRING_X(variable, type, from, to, extver) SLEG_GENERAL_X(SL_PTRRING, variable, type, 0, from, to, extver)
-#define SLEG_CONDPTRRING(variable, type, from, to) SLEG_CONDPTRRING_X(variable, type, from, to, SlXvFeatureTest())
+#define SLEG_CONDREFRING_X(variable, type, from, to, extver) SLEG_GENERAL_X(SL_REFRING, variable, type, 0, from, to, extver)
+#define SLEG_CONDREFRING(variable, type, from, to) SLEG_CONDREFRING_X(variable, type, from, to, SlXvFeatureTest())
 
 /**
- * Storage of a global vector in some savegame versions.
+ * Storage of a global reference vector in some savegame versions.
  * @param variable Name of the global variable.
  * @param type     Storage of the data in memory and in the savegame.
  * @param from     First savegame version that has the list.
  * @param to       Last savegame version that has the list.
  * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  */
-#define SLEG_CONDVEC_X(variable, type, from, to, extver) SLEG_GENERAL_X(SL_VEC, variable, type, 0, from, to, extver)
-#define SLEG_CONDVEC(variable, type, from, to) SLEG_CONDVEC_X(variable, type, from, to, SlXvFeatureTest())
+#define SLEG_CONDREFVEC_X(variable, type, from, to, extver) SLEG_GENERAL_X(SL_REFVEC, variable, type, 0, from, to, extver)
+#define SLEG_CONDREFVEC(variable, type, from, to) SLEG_CONDREFVEC_X(variable, type, from, to, SlXvFeatureTest())
 
 /**
  * Storage of a variable vector in some savegame versions.
@@ -876,18 +876,18 @@ inline constexpr void *SlVarWrapper(void* ptr)
 #define SLEG_REFLIST(variable, type) SLEG_CONDREFLIST(variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
- * Storage of a global ring in every savegame version.
+ * Storage of a global reference ring in every savegame version.
  * @param variable Name of the global variable.
  * @param type     Storage of the data in memory and in the savegame.
  */
-#define SLEG_PTRRING(variable, type) SLEG_CONDPTRRING(variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
+#define SLEG_REFRING(variable, type) SLEG_CONDREFRING(variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
- * Storage of a global vector in every savegame version.
+ * Storage of a global reference ector in every savegame version.
  * @param variable Name of the global variable.
  * @param type     Storage of the data in memory and in the savegame.
  */
-#define SLEG_VEC(variable, type) SLEG_CONDVEC(variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
+#define SLEG_VEC(variable, type) SLEG_CONDREFVEC(variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
  * Empty global space in some savegame versions.

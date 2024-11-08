@@ -210,7 +210,7 @@ static const SaveLoad _old_station_desc[] = {
 	SLE_CONDVAR(Station, waiting_triggers,           SLE_UINT8,                  SLV_27, SL_MAX_VERSION),
 	SLEG_CONDVAR(_num_specs,                         SLE_UINT8,                  SLV_27, SL_MAX_VERSION),
 
-	SLE_CONDVEC(Station, loading_vehicles,           REF_VEHICLE,                SLV_57, SL_MAX_VERSION),
+	SLE_CONDREFVEC(Station, loading_vehicles,        REF_VEHICLE,                SLV_57, SL_MAX_VERSION),
 
 	/* reserve extra space in savegame here. (currently 32 bytes) */
 	SLE_CONDNULL(32, SLV_2, SL_MAX_VERSION),
@@ -373,7 +373,7 @@ typedef std::pair<const StationID, CargoPacketList> StationCargoPair;
 
 static const NamedSaveLoad _cargo_list_desc[] = {
 	NSL("first",      SLE_VAR(StationCargoPair, first,  SLE_UINT16)),
-	NSL("second", SLE_PTRRING(StationCargoPair, second, REF_CARGO_PACKET)),
+	NSL("second", SLE_REFRING(StationCargoPair, second, REF_CARGO_PACKET)),
 };
 
 struct StationGoodsCargoStructHandler final : public TypedSaveLoadStructHandler<StationGoodsCargoStructHandler, GoodsEntry> {
@@ -432,7 +432,7 @@ NamedSaveLoadTable GetGoodsDesc()
 		NSL("",                          SLEG_CONDVAR(            _cargo_feeder_share,   SLE_FILE_U32 | SLE_VAR_I64, SLV_14,         SLV_65)),
 		NSL("",                          SLEG_CONDVAR(            _cargo_feeder_share,   SLE_INT64,                  SLV_65,         SLV_68)),
 		NSL("amount_fract",               SLE_CONDVAR(GoodsEntry, amount_fract,          SLE_UINT8,                  SLV_150,        SL_MAX_VERSION)),
-		NSL("",                    SLEG_CONDPTRRING_X(            _packets,              REF_CARGO_PACKET,           SLV_68,         SLV_183,        SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, 0, 0))),
+		NSL("",                    SLEG_CONDREFRING_X(            _packets,              REF_CARGO_PACKET,           SLV_68,         SLV_183,        SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, 0, 0))),
 		NSL("",                        SLEG_CONDVAR_X(            _num_dests,            SLE_UINT32,                 SLV_183,        SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_OR, XSLFI_CHILLPP))),
 		NSL("cargo.reserved_count",      SLEG_CONDVAR(            _cargo_reserved_count, SLE_UINT,                   SLV_181,        SL_MAX_VERSION)),
 		NSL("link_graph",                 SLE_CONDVAR(GoodsEntry, link_graph,            SLE_UINT16,                 SLV_183,        SL_MAX_VERSION)),

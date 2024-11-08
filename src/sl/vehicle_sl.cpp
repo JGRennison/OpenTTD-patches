@@ -1060,8 +1060,8 @@ NamedSaveLoadTable GetVehicleDescription(VehicleType vt)
 		NSL("cargo_cap",                      SLE_VAR(Vehicle, cargo_cap,                 SLE_UINT16)),
 		NSL("refit_cap",                  SLE_CONDVAR(Vehicle, refit_cap,                 SLE_UINT16,                 SLV_182, SL_MAX_VERSION)),
 		NSL("",                          SLEG_CONDVAR(_cargo_count,                       SLE_UINT16,                 SL_MIN_VERSION,  SLV_68)),
-		NSL("cargo.packets",          SLE_CONDPTRRING(Vehicle, cargo.packets,             REF_CARGO_PACKET,           SLV_68, SL_MAX_VERSION)),
-		NSL("",                    SLEG_CONDPTRRING_X(_cpp_packets,                       REF_CARGO_PACKET,           SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP))),
+		NSL("cargo.packets",          SLE_CONDREFRING(Vehicle, cargo.packets,             REF_CARGO_PACKET,           SLV_68, SL_MAX_VERSION)),
+		NSL("",                    SLEG_CONDREFRING_X(_cpp_packets,                       REF_CARGO_PACKET,           SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP))),
 		NSL("cargo.action_counts",        SLE_CONDARR(Vehicle, cargo.action_counts,       SLE_UINT, VehicleCargoList::NUM_MOVE_TO_ACTION, SLV_181, SL_MAX_VERSION)),
 		NSL("cargo_age_counter",          SLE_CONDVAR(Vehicle, cargo_age_counter,         SLE_UINT16,                 SLV_162, SL_MAX_VERSION)),
 

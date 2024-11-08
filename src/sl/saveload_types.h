@@ -109,9 +109,9 @@ enum SaveLoadTypes {
 	SL_STR,              ///< Save/load a string.
 	SL_REFLIST,          ///< Save/load a list of #SL_REF elements.
 	SL_RING,             ///< Save/load a ring of #SL_VAR elements.
-	SL_VEC,              ///< Save/load a vector of #SL_REF elements.
+	SL_REFVEC,           ///< Save/load a vector of #SL_REF elements.
 	SL_STDSTR,           ///< Save/load a std::string.
-	SL_PTRRING,          ///< Save/load a ring of #SL_REF elements.
+	SL_REFRING,          ///< Save/load a ring of #SL_REF elements.
 	SL_VARVEC,           ///< Save/load a primitive type vector.
 
 	SL_STRUCT,           ///< Save/load a struct.

@@ -1847,8 +1847,8 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld)
 		case SL_ARR:
 		case SL_STR:
 		case SL_REFLIST:
-		case SL_PTRRING:
-		case SL_VEC:
+		case SL_REFRING:
+		case SL_REFVEC:
 		case SL_RING:
 		case SL_STDSTR:
 		case SL_VARVEC:
@@ -1861,8 +1861,8 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld)
 				case SL_ARR: return SlCalcArrayLen(sld.length, sld.conv);
 				case SL_STR: return SlCalcStringLen(GetVariableAddress(object, sld), sld.length, sld.conv);
 				case SL_REFLIST: return SlCalcRefListLen<std::list<void *>>(GetVariableAddress(object, sld));
-				case SL_PTRRING: return SlCalcRefListLen<ring_buffer<void *>>(GetVariableAddress(object, sld));
-				case SL_VEC: return SlCalcRefListLen<std::vector<void *>>(GetVariableAddress(object, sld));
+				case SL_REFRING: return SlCalcRefListLen<ring_buffer<void *>>(GetVariableAddress(object, sld));
+				case SL_REFVEC: return SlCalcRefListLen<std::vector<void *>>(GetVariableAddress(object, sld));
 				case SL_RING: return SlCalcRingLen(GetVariableAddress(object, sld), sld.conv);
 				case SL_VARVEC: {
 					const size_t size_len = SlCalcConvMemLen(sld.conv);
@@ -1899,8 +1899,8 @@ static void SlFilterObjectMember(const SaveLoad &sld, std::vector<SaveLoad> &sav
 		case SL_ARR:
 		case SL_STR:
 		case SL_REFLIST:
-		case SL_PTRRING:
-		case SL_VEC:
+		case SL_REFRING:
+		case SL_REFVEC:
 		case SL_RING:
 		case SL_STDSTR:
 		case SL_VARVEC:
@@ -1919,8 +1919,8 @@ static void SlFilterObjectMember(const SaveLoad &sld, std::vector<SaveLoad> &sav
 					switch (sld.cmd) {
 						case SL_REF:
 						case SL_REFLIST:
-						case SL_PTRRING:
-						case SL_VEC:
+						case SL_REFRING:
+						case SL_REFVEC:
 						case SL_STRUCT:
 						case SL_STRUCTLIST:
 							break;
@@ -1992,8 +1992,8 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 		case SL_ARR:
 		case SL_STR:
 		case SL_REFLIST:
-		case SL_PTRRING:
-		case SL_VEC:
+		case SL_REFRING:
+		case SL_REFVEC:
 		case SL_RING:
 		case SL_STDSTR:
 		case SL_VARVEC:
@@ -2025,8 +2025,8 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 				case SL_ARR: SlArray(ptr, sld.length, conv); break;
 				case SL_STR: SlString(ptr, sld.length, sld.conv); break;
 				case SL_REFLIST: SlRefList<std::list<void *>>(ptr, (SLRefType)conv); break;
-				case SL_PTRRING: SlRefList<ring_buffer<void *>>(ptr, (SLRefType)conv); break;
-				case SL_VEC: SlRefList<std::vector<void *>>(ptr, (SLRefType)conv); break;
+				case SL_REFRING: SlRefList<ring_buffer<void *>>(ptr, (SLRefType)conv); break;
+				case SL_REFVEC: SlRefList<std::vector<void *>>(ptr, (SLRefType)conv); break;
 				case SL_RING: SlRing(ptr, conv); break;
 				case SL_VARVEC: {
 					const size_t size_len = SlCalcConvMemLen(sld.conv);
@@ -2227,8 +2227,8 @@ static uint8_t GetSavegameTableFileType(const SaveLoad &sld)
 			return SLE_FILE_U32;
 
 		case SL_REFLIST:
-		case SL_PTRRING:
-		case SL_VEC:
+		case SL_REFRING:
+		case SL_REFVEC:
 			return SLE_FILE_U32 | SLE_FILE_HAS_LENGTH_FIELD;
 
 		case SL_WRITEBYTE:
