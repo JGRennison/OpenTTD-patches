@@ -195,8 +195,8 @@ SaveLoadTable GetLinkGraphJobDesc()
 SaveLoadTable GetLinkGraphScheduleDesc()
 {
 	static const SaveLoad schedule_desc[] = {
-		SLE_REFLIST(LinkGraphSchedule, schedule, REF_LINK_GRAPH),
-		SLE_REFLIST(LinkGraphSchedule, running,  REF_LINK_GRAPH_JOB),
+		SLE_REFRING(LinkGraphSchedule, schedule, REF_LINK_GRAPH),
+		SLE_REFRING(LinkGraphSchedule, running,  REF_LINK_GRAPH_JOB),
 	};
 	return schedule_desc;
 }

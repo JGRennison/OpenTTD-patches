@@ -49,17 +49,17 @@ void LinkGraphSchedule::SpawnNext()
 {
 	if (this->schedule.empty()) return;
 
-	GraphList schedule_to_back;
+	std::vector<LinkGraph *> schedule_to_back;
 	uint64_t total_cost = 0;
 	for (auto iter = this->schedule.begin(); iter != this->schedule.end();) {
-		auto current = iter;
-		++iter;
-		const LinkGraph *lg = *current;
+		const LinkGraph *lg = *iter;
 
 		if (lg->Size() < 2) {
-			schedule_to_back.splice(schedule_to_back.end(), this->schedule, current);
+			schedule_to_back.push_back(*iter);
+			iter = this->schedule.erase(iter);
 		} else {
 			total_cost += lg->CalculateCostEstimate();
+			++iter;
 		}
 	}
 	for (auto &it : this->running) {
@@ -99,7 +99,7 @@ void LinkGraphSchedule::SpawnNext()
 		}
 	}
 
-	this->schedule.splice(this->schedule.end(), schedule_to_back);
+	this->schedule.insert(this->schedule.end(), schedule_to_back.begin(), schedule_to_back.end());
 
 	LinkGraphJobGroup::ExecuteJobSet(std::move(jobs_to_execute));
 

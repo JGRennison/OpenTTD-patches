@@ -240,8 +240,8 @@ NamedSaveLoadTable GetLinkGraphJobDesc()
 NamedSaveLoadTable GetLinkGraphScheduleDesc()
 {
 	static const NamedSaveLoad schedule_desc[] = {
-		NSL("schedule", SLE_REFLIST(LinkGraphSchedule, schedule, REF_LINK_GRAPH)),
-		NSL("running",  SLE_REFLIST(LinkGraphSchedule, running,  REF_LINK_GRAPH_JOB)),
+		NSL("schedule", SLE_REFRING(LinkGraphSchedule, schedule, REF_LINK_GRAPH)),
+		NSL("running",  SLE_REFRING(LinkGraphSchedule, running,  REF_LINK_GRAPH_JOB)),
 	};
 	return schedule_desc;
 }
