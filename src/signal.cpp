@@ -26,6 +26,7 @@
 #include "core/checksum_func.hpp"
 #include "core/hash_func.hpp"
 #include "pathfinder/follow_track.hpp"
+#include "3rdparty/cpp-btree/btree_set.h"
 
 #include "safeguards.h"
 
@@ -34,14 +35,19 @@ uint64_t _aspect_cfg_hash = 0;
 SignalStyleMasks _signal_style_masks = {};
 bool _signal_sprite_oversized = false;
 
-/// List of signals dependent upon this one
-typedef std::vector<SignalReference>     SignalDependencyList;
+/// Programmable pre-signal dependencies.
+struct SignalDependencyRecord {
+	SignalReference src;
+	SignalReference dependant;
 
-/// Map of dependencies. The key identifies the signal,
-/// the value is a list of all of the signals which depend upon that signal.
-typedef std::map<SignalReference, SignalDependencyList> SignalDependencyMap;
+	bool operator==(const SignalDependencyRecord &) const = default;
+	auto operator<=>(const SignalDependencyRecord &) const = default;
 
-static SignalDependencyMap _signal_dependencies;
+	SignalDependencyRecord(SignalReference src) : src(src), dependant(SignalReference(0, (Track)0)) {}
+	SignalDependencyRecord(SignalReference src, SignalReference dependant) : src(src), dependant(dependant) {}
+};
+static btree::btree_set<SignalDependencyRecord> _signal_dependencies;
+
 static void MarkDependencidesForUpdate(SignalReference sig);
 
 /** these are the maximums used for updating signal blocks */
@@ -1263,22 +1269,12 @@ void SetSignalsOnBothDir(TileIndex tile, Track track, Owner owner)
 void AddSignalDependency(SignalReference on, SignalReference dep)
 {
 	assert(GetTileOwner(on.tile) == GetTileOwner(dep.tile));
-	SignalDependencyList &dependencies = _signal_dependencies[on];
-	dependencies.push_back(dep);
+	_signal_dependencies.insert(SignalDependencyRecord(on, dep));
 }
 
 void RemoveSignalDependency(SignalReference on, SignalReference dep)
 {
-	SignalDependencyList &dependencies = _signal_dependencies[on];
-	auto ob = std::find(dependencies.begin(), dependencies.end(), dep);
-
-	// Destroying both signals in same command
-	if (ob == dependencies.end()) return;
-
-	dependencies.erase(ob);
-	if (dependencies.size() == 0) {
-		_signal_dependencies.erase(on);
-	}
+	_signal_dependencies.erase(SignalDependencyRecord(on, dep));
 }
 
 void FreeSignalDependencies()
@@ -1295,14 +1291,9 @@ void UpdateSignalDependency(SignalReference sr)
 
 static void MarkDependencidesForUpdate(SignalReference on)
 {
-	SignalDependencyMap::iterator f = _signal_dependencies.find(on);
-	if (f == _signal_dependencies.end()) return;
-
-	SignalDependencyList &dependencies = f->second;
-	for (const SignalReference &sr : dependencies) {
-		assert(GetTileOwner(sr.tile) == GetTileOwner(on.tile));
-
-		UpdateSignalDependency(sr);
+	for (auto iter = _signal_dependencies.lower_bound(SignalDependencyRecord(on)); iter != _signal_dependencies.end() && iter->src == on; ++iter) {
+		assert(GetTileOwner(iter->dependant.tile) == GetTileOwner(on.tile));
+		UpdateSignalDependency(iter->dependant);
 	}
 }
 
@@ -1330,25 +1321,17 @@ static void NotifyRemovingDependentSignal(SignalReference being_removed, SignalR
 void CheckRemoveSignal(TileIndex tile, Track track)
 {
 	if (!HasSignalOnTrack(tile, track)) return;
-	SignalReference thisRef(tile, track);
+	SignalReference this_ref(tile, track);
 
 	SignalType t = GetSignalType(tile, track);
 	if (IsProgrammableSignal(t)) {
-		FreeSignalProgram(thisRef);
+		FreeSignalProgram(this_ref);
 	}
 
-	SignalDependencyMap::iterator i = _signal_dependencies.find(SignalReference(tile, track)),
-			e = _signal_dependencies.end();
-
-	if (i != e) {
-		SignalDependencyList &dependencies = i->second;
-
-		for (const SignalReference &ir : dependencies) {
-			assert(GetTileOwner(ir.tile) == GetTileOwner(tile));
-			NotifyRemovingDependentSignal(thisRef, ir);
-		}
-
-		_signal_dependencies.erase(i);
+	for (auto iter = _signal_dependencies.lower_bound(SignalDependencyRecord(this_ref)); iter != _signal_dependencies.end() && iter->src == this_ref;) {
+		assert(GetTileOwner(iter->dependant.tile) == GetTileOwner(tile));
+		NotifyRemovingDependentSignal(this_ref, iter->dependant);
+		iter = _signal_dependencies.erase(iter);
 	}
 }
 

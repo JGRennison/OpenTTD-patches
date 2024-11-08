@@ -46,13 +46,13 @@ DECLARE_ENUM_AS_ADDABLE(SignalType)
  * A reference to a signal by its tile and track
  */
 struct SignalReference {
-	inline SignalReference(TileIndex t, Track tr) : tile(t), track(tr) {}
-	inline bool operator<(const SignalReference& o) const { return tile < o.tile || (tile == o.tile && track < o.track); }
-	inline bool operator==(const SignalReference& o) const { return tile == o.tile && track == o.track; }
-	inline bool operator!=(const SignalReference& o) const { return tile != o.tile || track != o.track; }
-
 	TileIndex tile;
 	Track track;
+
+	inline SignalReference(TileIndex t, Track tr) : tile(t), track(tr) {}
+
+	bool operator==(const SignalReference &) const = default;
+	auto operator<=>(const SignalReference &) const = default;
 };
 
 /**
