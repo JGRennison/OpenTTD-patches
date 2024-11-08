@@ -39,6 +39,7 @@ enum SignalType : uint8_t {
 };
 /** Helper information for extract tool. */
 template <> struct EnumPropsT<SignalType> : MakeEnumPropsT<SignalType, uint8_t, SIGTYPE_BLOCK, SIGTYPE_END, SIGTYPE_END, 3> {};
+DECLARE_ENUM_AS_ADDABLE(SignalType)
 
 /** Reference to a signal
  *
@@ -53,7 +54,6 @@ struct SignalReference {
 	TileIndex tile;
 	Track track;
 };
-DECLARE_ENUM_AS_ADDABLE(SignalType)
 
 /**
  * These are states in which a signal can be. Currently these are only two, so
