@@ -11,7 +11,6 @@
 #define MULTIMAP_HPP
 
 #include <map>
-#include <list>
 
 template<typename Tkey, typename Tvalue, typename Tcontainer, typename Tcompare>
 class MultiMap;
@@ -281,7 +280,7 @@ bool operator!=(const Tmap_iter2 &iter2, const MultiMapIterator<Tmap_iter1, Tlis
  * STL-compatible members are named in STL style, all others are named in OpenTTD
  * style.
  */
-template<typename Tkey, typename Tvalue, typename Tcontainer = std::list<Tvalue>, typename Tcompare = std::less<Tkey> >
+template<typename Tkey, typename Tvalue, typename Tcontainer, typename Tcompare = std::less<Tkey> >
 class MultiMap : public std::map<Tkey, Tcontainer, Tcompare > {
 public:
 	typedef Tcontainer List;
