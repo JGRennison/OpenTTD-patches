@@ -336,7 +336,7 @@ static const NamedSaveLoad _town_desc[] = {
 	NSL("larger_town",                     SLE_CONDVAR(Town, larger_town,           SLE_BOOL,                  SLV_56, SL_MAX_VERSION)),
 	NSL("layout",                          SLE_CONDVAR(Town, layout,                SLE_UINT8,                SLV_113, SL_MAX_VERSION)),
 
-	NSL("psa_list",                        SLE_CONDREFLIST(Town, psa_list,          REF_STORAGE,              SLV_161, SL_MAX_VERSION)),
+	NSL("psa_list",                        SLE_CONDREFVEC(Town, psa_list,           REF_STORAGE,              SLV_161, SL_MAX_VERSION)),
 
 	NSL("", SLE_CONDNULL(4, SLV_166, SLV_EXTEND_CARGOTYPES)),  ///< cargo_produced, no longer in use
 	NSL("", SLE_CONDNULL(8, SLV_EXTEND_CARGOTYPES, SLV_REMOVE_TOWN_CARGO_CACHE)),  ///< cargo_produced, no longer in use
