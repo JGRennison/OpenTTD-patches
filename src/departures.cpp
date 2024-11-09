@@ -596,6 +596,7 @@ struct DepartureViaTerminusState {
 
 	/* We only need to consider each order at most once. */
 	bool found_terminus = false;
+	bool found_halt = false;
 
 	bool CheckOrder(const Vehicle *v, Departure *d, const Order *order, DepartureOrderDestinationDetector source, DepartureCallingSettings calling_settings);
 	bool HandleCallingPoint(Departure *d, const Order *order, CallAt c, DepartureCallingSettings calling_settings);
@@ -663,7 +664,11 @@ bool DepartureViaTerminusState::HandleCallingPoint(Departure *d, const Order *or
 	d->terminus = c;
 	d->calling_at.push_back(c);
 
-	if (order->IsType(OT_GOTO_DEPOT)) return (order->GetDepotActionType() & ODATFB_HALT) != 0;
+	if (order->IsType(OT_GOTO_DEPOT)) {
+		bool is_halt = (order->GetDepotActionType() & ODATFB_HALT) != 0;
+		if (is_halt) this->found_halt = true;
+		return is_halt;
+	}
 
 	/* Add the station to the calling at list and make it the candidate terminus. */
 	if (d->via == INVALID_STATION && pending_via != INVALID_STATION) {
@@ -1224,7 +1229,7 @@ private:
 	inline bool IsDepartureDependantConditionVariable(OrderConditionVariable ocv) const { return ocv == OCV_DISPATCH_SLOT || ocv == OCV_TIME_DATE; }
 
 	uint8_t EvaluateConditionalOrder(const Order *order, StateTicks eval_tick);
-	void EvaluateDepartureFromSourceOrder(const Order *source_order, StateTicks departure_tick);
+	std::pair<const Order *, StateTicks> EvaluateDepartureFromSourceOrder(const Order *source_order, StateTicks departure_tick);
 	void EvaluateSlotIndex(uint slot_index);
 };
 
@@ -1256,8 +1261,10 @@ uint8_t DepartureListScheduleModeSlotEvaluator::EvaluateConditionalOrder(const O
 	}
 }
 
-void DepartureListScheduleModeSlotEvaluator::EvaluateDepartureFromSourceOrder(const Order *source_order, StateTicks departure_tick)
+std::pair<const Order *, StateTicks> DepartureListScheduleModeSlotEvaluator::EvaluateDepartureFromSourceOrder(const Order *source_order, StateTicks departure_tick)
 {
+	std::pair<const Order *, StateTicks> next_state = {}; //std::pair<const Order *, StateTicks>(nullptr, 0);
+
 	Departure d{};
 	d.scheduled_tick = departure_tick;
 	d.lateness = 0;
@@ -1284,11 +1291,13 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateDepartureFromSourceOrder(co
 		if (order == source_order) {
 			/* If we're not calling anywhere, then skip this departure. */
 			via_state.found_terminus = (d.calling_at.size() > 0);
+			next_state.first = nullptr;
 			break;
 		}
 
 		/* If the order is a conditional branch, handle it. */
 		if (order->IsType(OT_CONDITIONAL)) {
+			next_state.first = nullptr; // Don't try to continue from here, unless a reasonable order is found after the conditional order jump
 			if (this->IsDepartureDependantConditionVariable(order->GetConditionVariable())) this->departure_dependant_condition_found = true;
 			switch (this->EvaluateConditionalOrder(order, departure_tick)) {
 					case 0: {
@@ -1318,7 +1327,8 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateDepartureFromSourceOrder(co
 			break;
 		}
 
-		if (via_state.CheckOrder(this->v, &d, order, this->source, this->calling_settings)) break;
+		bool stop_found = false;
+		if (via_state.CheckOrder(this->v, &d, order, this->source, this->calling_settings)) stop_found = true;
 
 		departure_tick += order->GetTravelTime();
 		if (travel_time_required && order->GetTravelTime() == 0 && !order->IsTravelTimetabled()) {
@@ -1328,9 +1338,13 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateDepartureFromSourceOrder(co
 		c.target = CallAtTargetID::FromOrder(order);
 
 		/* We're not interested in this order any further if we're not calling at it. */
-		if (via_state.HandleCallingPoint(&d, order, c, this->calling_settings)) break;
+		if (!stop_found && via_state.HandleCallingPoint(&d, order, c, this->calling_settings)) stop_found = true;
 
 		departure_tick += order->GetWaitTime();
+
+		next_state = { order, departure_tick }; // Usable order to continue searching from
+
+		if (stop_found) break;
 
 		if (order->IsScheduledDispatchOrder(true)) {
 			if (d.calling_at.size() > 0) {
@@ -1348,6 +1362,13 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateDepartureFromSourceOrder(co
 		/* Add the departure to the result list. */
 		this->result.push_back(std::make_unique<Departure>(std::move(d)));
 	}
+
+	if (via_state.found_halt || c.scheduled_tick == 0) {
+		/* Found a halt order, or we don't have a usable departure time. We can't continue beyond here so clear the next state. */
+		next_state.first = nullptr;
+	}
+
+	return next_state;
 }
 
 void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndex(uint slot_index)
@@ -1363,15 +1384,18 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndex(uint slot_index)
 		this->ds.SetScheduledDispatchLastDispatch(INVALID_SCHEDULED_DISPATCH_OFFSET);
 	});
 
-	if (type == D_DEPARTURE && calling_settings.IsDeparture(this->start_order, this->source)) {
-		this->EvaluateDepartureFromSourceOrder(this->start_order, departure_tick);
-		return;
+	const Order *order = this->start_order;
+
+	while (type == D_DEPARTURE && calling_settings.IsDeparture(order, this->source)) {
+		std::tie(order, departure_tick) = this->EvaluateDepartureFromSourceOrder(order, departure_tick);
+		if (order == nullptr) return;
+		if (order->IsScheduledDispatchOrder(true)) break;
 	}
 	if (type == D_ARRIVAL) {
-		this->arrival_history.push_back({ this->start_order, (departure_tick - this->slot).AsTicks() });
+		this->arrival_history.push_back({ order, (departure_tick - this->slot).AsTicks() });
 	}
 
-	const Order *order = this->v->orders->GetNext(this->start_order);
+	order = this->v->orders->GetNext(order);
 	bool require_travel_time = true;
 
 	/* Loop through the vehicle's orders until we've found a suitable order or we've determined that no such order exists. */
@@ -1397,13 +1421,12 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndex(uint slot_index)
 
 		departure_tick += order->GetWaitTime();
 
-		if (order->IsScheduledDispatchOrder(true)) {
-			break;
-		}
+		if (order->IsScheduledDispatchOrder(true)) return;
 
-		if (type == D_DEPARTURE && this->calling_settings.IsDeparture(order, this->source)) {
-			this->EvaluateDepartureFromSourceOrder(order, departure_tick);
-			break;
+		while (type == D_DEPARTURE && this->calling_settings.IsDeparture(order, this->source)) {
+			std::tie(order, departure_tick) = this->EvaluateDepartureFromSourceOrder(order, departure_tick);
+			if (order == nullptr) return;
+			if (order->IsScheduledDispatchOrder(true)) return;
 		}
 
 		/* If the order is a conditional branch, handle it. */
