@@ -5435,6 +5435,9 @@ bool TileHighlightData::IsDraggingDiagonal()
  */
 Window *TileHighlightData::GetCallbackWnd()
 {
+	if (this->window_token != WindowToken(0)) {
+		return FindWindowByToken(this->window_token);
+	}
 	return FindWindowById(this->window_class, this->window_number);
 }
 
@@ -6631,7 +6634,7 @@ EventState VpHandlePlaceSizingDrag()
  */
 void SetObjectToPlaceWnd(CursorID icon, PaletteID pal, HighLightStyle mode, Window *w)
 {
-	SetObjectToPlace(icon, pal, mode, w->window_class, w->window_number);
+	SetObjectToPlace(icon, pal, mode, w->window_class, w->window_number, w->GetWindowToken());
 }
 
 #include "table/animcursors.h"
@@ -6643,8 +6646,9 @@ void SetObjectToPlaceWnd(CursorID icon, PaletteID pal, HighLightStyle mode, Wind
  * @param mode Mode to perform.
  * @param window_class %Window class of the window requesting the mode change.
  * @param window_num Number of the window in its class requesting the mode change.
+ * @param window_token Window token of the window in its class requesting the mode change, if non-zero.
  */
-void SetObjectToPlace(CursorID icon, PaletteID pal, HighLightStyle mode, WindowClass window_class, WindowNumber window_num)
+void SetObjectToPlace(CursorID icon, PaletteID pal, HighLightStyle mode, WindowClass window_class, WindowNumber window_num, WindowToken window_token)
 {
 	if (_thd.window_class != WC_INVALID) {
 		/* Undo clicking on button and drag & drop */
@@ -6655,6 +6659,7 @@ void SetObjectToPlace(CursorID icon, PaletteID pal, HighLightStyle mode, WindowC
 		 * this function might in some cases reset the newly set object to
 		 * place or not properly reset the original selection. */
 		_thd.window_class = WC_INVALID;
+		_thd.window_token = WindowToken(0);
 		if (w != nullptr) {
 			w->OnPlaceObjectAbort();
 			HideMeasurementTooltips();
@@ -6678,6 +6683,7 @@ void SetObjectToPlace(CursorID icon, PaletteID pal, HighLightStyle mode, WindowC
 	_thd.place_mode = mode;
 	_thd.window_class = window_class;
 	_thd.window_number = window_num;
+	_thd.window_token = window_token;
 
 	if ((mode & HT_DRAG_MASK) == HT_SPECIAL) { // special tools, like tunnels or docks start with presizing mode
 		VpStartPreSizing();

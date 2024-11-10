@@ -75,6 +75,7 @@ struct TileHighlightData {
 	HighLightStyle place_mode;     ///< Method which is used to place the selection.
 	WindowClass window_class;      ///< The \c WindowClass of the window that is responsible for the selection mode.
 	WindowNumber window_number;    ///< The \c WindowNumber of the window that is responsible for the selection mode.
+	WindowToken window_token;      ///< The \c WindowToken of the window that is responsible for the selection mode.
 
 	PaletteID square_palette;      ///< Whether to give a tile a recoloured selection.
 	TileIndex redsq;               ///< The tile that has to get a red selection.

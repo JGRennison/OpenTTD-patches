@@ -1072,7 +1072,10 @@ void Window::CloseChildWindows(WindowClass wc) const
  */
 void Window::Close([[maybe_unused]] int data)
 {
-	if (_thd.window_class == this->window_class &&
+	if (_thd.window_token == this->window_token) {
+		ResetObjectToPlace();
+	} else if (_thd.window_token == WindowToken(0) &&
+			_thd.window_class == this->window_class &&
 			_thd.window_number == this->window_number) {
 		ResetObjectToPlace();
 	}
