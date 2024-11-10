@@ -823,15 +823,17 @@ std::pair<StateTicks, int> GetScheduledDispatchTime(const DispatchSchedule &ds, 
 	if (ds.GetScheduledDispatchReuseSlots()) {
 		begin_time -= dispatch_duration;
 	}
+
+	int32_t last_dispatched_offset = ds.GetScheduledDispatchLastDispatch();
+
 	if (minimum < begin_time) {
-		begin_time -= dispatch_duration * CeilDivT<uint64_t>((begin_time - minimum).base(), dispatch_duration);
+		const uint32_t duration_adjust = (uint32_t)CeilDivT<uint64_t>((begin_time - minimum).base(), dispatch_duration);
+		begin_time -= dispatch_duration * duration_adjust;
+		last_dispatched_offset += dispatch_duration * duration_adjust;
 	}
 
-	int32_t last_dispatched_offset;
 	if (ds.GetScheduledDispatchLastDispatch() == INVALID_SCHEDULED_DISPATCH_OFFSET || ds.GetScheduledDispatchReuseSlots()) {
 		last_dispatched_offset = -1;
-	} else {
-		last_dispatched_offset = ds.GetScheduledDispatchLastDispatch();
 	}
 
 	StateTicks first_slot = INVALID_STATE_TICKS;
