@@ -33,6 +33,8 @@
 #include "departures_type.h"
 #include "schdispatch.h"
 #include "tracerestrict.h"
+#include "depot_map.h"
+#include "industry.h"
 #include "scope.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 #include "3rdparty/cpp-btree/btree_map.h"
@@ -51,6 +53,23 @@ CallAtTargetID CallAtTargetID::FromOrder(const Order *order)
 	uint32_t id = order->GetDestination();
 	if (order->IsType(OT_GOTO_DEPOT)) id |= DEPOT_TAG;
 	return CallAtTargetID(id);
+}
+
+CallAtTargetID CallAtTargetID::FromTile(TileIndex tile)
+{
+	if (IsDepotTile(tile)) {
+		return CallAtTargetID(DEPOT_TAG | (IsHangarTile(tile) ? GetStationIndex(tile) : GetDepotIndex(tile)));
+	}
+	if (IsTileType(tile, MP_STATION)) {
+		return CallAtTargetID::FromStation(GetStationIndex(tile));
+	}
+	if (IsTileType(tile, MP_INDUSTRY)) {
+		const Industry *in = Industry::GetByTile(tile);
+		if (in->neutral_station != nullptr) {
+			return CallAtTargetID::FromStation(in->neutral_station->index);
+		}
+	}
+	return CallAtTargetID();
 }
 
 struct ArrivalHistoryEntry {

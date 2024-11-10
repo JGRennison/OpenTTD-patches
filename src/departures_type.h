@@ -51,6 +51,7 @@ private:
 public:
 	constexpr CallAtTargetID() : id(INVALID_STATION) {}
 
+	static CallAtTargetID FromTile(TileIndex tile);
 	static CallAtTargetID FromOrder(const Order *order);
 	static constexpr CallAtTargetID FromStation(StationID station) { return CallAtTargetID(station); }
 

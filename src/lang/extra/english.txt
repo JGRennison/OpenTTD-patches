@@ -9,6 +9,7 @@ STR_ORDER_TEXT                                                  :{STRING6} {STRI
 STR_JUST_DECIMAL1                                               :{DECIMAL1}
 STR_JUST_TIME_HHMM                                              :{TIME_HHMM}
 STR_JUST_STRING3                                                :{STRING3}
+STR_JUST_STRING6                                                :{STRING6}
 STR_JUST_VELOCITY                                               :{VELOCITY}
 STR_JUST_TT_TICKS                                               :{TT_TICKS}
 STR_JUST_TT_TICKS_LONG                                          :{TT_TICKS_LONG}
@@ -1359,6 +1360,7 @@ STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}History
 STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}Show waiting cargo history
 
 STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING2} Live Travel Information
+STR_DEPARTURES_CAPTION_FILTER                                   :{WHITE}{STRING3} - Calling at {STRING1}
 STR_DEPARTURES_CARGO_MODE_TOOLTIP                               :{BLACK}Set cargo filter mode for arrivals/departures
 STR_DEPARTURES_DEPARTURES                                       :Departures
 STR_DEPARTURES_ARRIVALS                                         :Arrivals
@@ -1371,6 +1373,8 @@ STR_DEPARTURES_EMPTY_BUTTON                                     :{BLACK}Empty
 STR_DEPARTURES_EMPTY_TOOLTIP                                    :{BLACK}Include departures, arrivals and stations called at where the vehicle is running empty or does not load/unload cargo.
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}Via
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Show timetabled vehicles that do not stop here
+STR_DEPARTURES_FILTER_BUTTON                                    :{BLACK}Filter
+STR_DEPARTURES_FILTER_TOOLTIP                                   :{BLACK}Only show departures/arrivals calling at a particular destination.
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}Show timetabled trains
 STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}Show timetabled road vehicles
 STR_DEPARTURES_SHOW_SHIPS_TOOLTIP                               :{BLACK}Show timetabled ships

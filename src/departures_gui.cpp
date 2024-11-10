@@ -34,6 +34,7 @@
 #include "cargotype.h"
 #include "zoom_func.h"
 #include "depot_map.h"
+#include "tilehighlight_func.h"
 #include "core/backup_type.hpp"
 
 #include "table/sprites.h"
@@ -42,7 +43,7 @@
 static constexpr NWidgetPart _nested_departures_list[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_DB_CAPTION), SetDataTip(STR_DEPARTURES_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, COLOUR_GREY, WID_DB_CAPTION), SetDataTip(STR_JUST_STRING6, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_DUPLICATE), SetDataTip(STR_DEPARTURES_DUPLICATE, STR_DEPARTURES_DUPLICATE_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -60,6 +61,7 @@ static constexpr NWidgetPart _nested_departures_list[] = {
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_TIMES), SetMinimalSize(11, 12), SetFill(0, 1), SetDataTip(STR_DEPARTURES_TIMES_BUTTON, STR_DEPARTURES_TIMES_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_EMPTY), SetMinimalSize(11, 12), SetFill(0, 1), SetDataTip(STR_DEPARTURES_EMPTY_BUTTON, STR_DEPARTURES_EMPTY_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_VIA), SetMinimalSize(11, 12), SetFill(0, 1), SetDataTip(STR_DEPARTURES_VIA_BUTTON, STR_DEPARTURES_VIA_TOOLTIP),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_FILTER), SetMinimalSize(11, 12), SetFill(0, 1), SetDataTip(STR_DEPARTURES_FILTER_BUTTON, STR_DEPARTURES_FILTER_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_TRAINS), SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_TRAIN, STR_NULL),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_ROADVEHS), SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_LORRY, STR_NULL),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_SHOW_SHIPS), SetMinimalSize(14, 12), SetFill(0, 1), SetDataTip(STR_SHIP, STR_NULL),
@@ -156,6 +158,7 @@ protected:
 	int group_width;                       ///< current width of group field
 	int toc_width;                         ///< current width of company field
 	std::array<uint32_t, 3> title_params{};///< title string parameters
+	CallAtTargetID filter_target;          ///< Filter target
 
 	uint GetScrollbarCapacity() const;
 	uint GetMinWidth() const;
@@ -397,9 +400,25 @@ public:
 	{
 		switch (widget) {
 			case WID_DB_CAPTION: {
-				SetDParam(0, this->title_params[0]);
-				SetDParam(1, this->title_params[1]);
-				SetDParam(2, this->title_params[2]);
+				uint title_offset;
+				if (!this->filter_target.IsValid()) {
+					SetDParam(0, STR_DEPARTURES_CAPTION);
+					title_offset = 1;
+				} else {
+					SetDParam(0, STR_DEPARTURES_CAPTION_FILTER);
+					SetDParam(1, STR_DEPARTURES_CAPTION);
+					title_offset = 2;
+					if (Waypoint::IsValidID(this->filter_target.GetStationID())) {
+						SetDParam(5, STR_WAYPOINT_NAME);
+					} else {
+						SetDParam(5, STR_STATION_NAME);
+					}
+					SetDParam(6, this->filter_target.GetStationID());
+				}
+
+				SetDParam(title_offset + 0, this->title_params[0]);
+				SetDParam(title_offset + 1, this->title_params[1]);
+				SetDParam(title_offset + 2, this->title_params[2]);
 				break;
 			}
 
@@ -562,9 +581,26 @@ public:
 				this->CloneWindow();
 				break;
 			}
+
+			case WID_DB_FILTER: {
+				if (_thd.GetCallbackWnd() == this) {
+					ResetObjectToPlace();
+					return;
+				}
+				if (this->IsWidgetLowered(WID_DB_FILTER)) {
+					this->RaiseWidget(WID_DB_FILTER);
+					this->filter_target = CallAtTargetID();
+					this->OnInvalidateData(0, false);
+				} else {
+					this->LowerWidget(WID_DB_FILTER);
+					SetObjectToPlaceWnd(ANIMCURSOR_PICKSTATION, PAL_NONE, HT_RECT, this);
+				}
+				this->SetWidgetDirty(WID_DB_FILTER);
+				this->SetWidgetDirty(WID_DB_CAPTION);
+				break;
+			}
 		}
 	}
-
 
 	void OnDropdownSelect(WidgetID widget, int index) override
 	{
@@ -606,6 +642,25 @@ public:
 				break;
 			}
 		}
+	}
+
+	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
+	{
+		CallAtTargetID target = CallAtTargetID::FromTile(tile);
+		if (target.IsValid() && target.IsStationID()) {
+			this->filter_target = target;
+			this->OnInvalidateData(0, false);
+			ResetObjectToPlace();
+			this->LowerWidget(WID_DB_FILTER);
+			this->SetWidgetDirty(WID_DB_FILTER);
+			this->SetWidgetDirty(WID_DB_CAPTION);
+		}
+	}
+
+	void OnPlaceObjectAbort() override
+	{
+		this->RaiseWidget(WID_DB_FILTER);
+		this->SetWidgetDirty(WID_DB_FILTER);
 	}
 
 	virtual void OnGameTick() override
@@ -654,6 +709,19 @@ public:
 			} else {
 				this->arrivals.clear();
 			}
+
+			if (this->filter_target.IsValid()) {
+				auto erase_non_matching = [&](const std::unique_ptr<Departure> &d) -> bool {
+					if (d->terminus == this->filter_target) return false;
+					for (const CallAt &c : d->calling_at) {
+						if (c.target == this->filter_target) return false;
+					}
+					return true;
+				};
+				this->departures.erase(std::remove_if(this->departures.begin(), this->departures.end(), erase_non_matching), this->departures.end());
+				this->arrivals.erase(std::remove_if(this->arrivals.begin(), this->arrivals.end(), erase_non_matching), this->arrivals.end());
+			}
+
 			this->departures_invalid = false;
 			this->vscroll->SetCount(this->GetScrollbarCapacity());
 			this->SetWidgetDirty(WID_DB_LIST);
@@ -743,6 +811,17 @@ public:
 			new DeparturesWindow(_departures_desc, (StationID)this->window_number);
 		}
 	}
+
+	void NotifyRemoveStationID(StationID station)
+	{
+		if (this->filter_target.MatchesStationID(station)) {
+			this->filter_target = CallAtTargetID();
+			this->OnInvalidateData(0, false);
+			this->RaiseWidget(WID_DB_FILTER);
+			this->SetWidgetDirty(WID_DB_FILTER);
+			this->SetWidgetDirty(WID_DB_CAPTION);
+		}
+	}
 };
 
 /**
@@ -762,6 +841,21 @@ void ShowDepotDeparturesWindow(TileIndex tile, VehicleType vt)
 {
 	if (BringWindowToFrontById(_departures_desc.cls, DeparturesWindow::GetDepotWindowNumber(tile)) != nullptr) return;
 	new DeparturesWindow(_departures_desc, DeparturesWindow::DepotTag{}, tile, vt);
+}
+
+void CloseStationDeparturesWindow(StationID station)
+{
+	if (HaveWindowByClass(WC_DEPARTURES_BOARD)) {
+		for (Window *w : Window::Iterate()) {
+			if (w->window_class == WC_DEPARTURES_BOARD) {
+				if (w->window_number == station) {
+					w->Close();
+				} else {
+					static_cast<DeparturesWindow *>(w)->NotifyRemoveStationID(station);
+				}
+			}
+		}
+	}
 }
 
 void CloseDepotDeparturesWindow(TileIndex tile)

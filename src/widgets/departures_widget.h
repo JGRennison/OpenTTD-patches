@@ -26,6 +26,7 @@ enum DeparturesWindowWidgets {
 	WID_DB_SHOW_ROADVEHS,       ///< Toggle road vehicles button
 	WID_DB_SHOW_SHIPS,          ///< Toggle ships button
 	WID_DB_SHOW_PLANES,         ///< Toggle planes button
+	WID_DB_FILTER,              ///< Filter
 };
 
 #endif /* WIDGETS_DEPARTURES_WIDGET_H */
