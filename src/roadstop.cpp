@@ -475,15 +475,17 @@ static DiagDirection GetEntryDirection(bool east, Axis axis)
 /**
  * Rebuild, from scratch, the vehicles and other metadata on this stop.
  * @param rs   the roadstop this entry is part of
+ * @param side the side of the road stop to look at
  */
-void RoadStop::Entry::Rebuild(const RoadStop *rs)
+void RoadStop::Entry::Rebuild(const RoadStop *rs, int side)
 {
 	assert(HasBit(rs->status, RSSFB_BASE_ENTRY));
 
 	Axis axis = GetDriveThroughStopAxis(rs->xy);
+	if (side == -1) side = (rs->east == this);
 
 	RoadStopEntryRebuilderHelper rserh;
-	rserh.dir = GetEntryDirection(rs->east == this, axis);
+	rserh.dir = GetEntryDirection(side, axis);
 
 	this->length = 0;
 	TileIndexDiff offset = TileOffsByAxis(axis);
@@ -511,7 +513,7 @@ void RoadStop::Entry::CheckIntegrity(const RoadStop *rs) const
 	assert_msg(!IsDriveThroughRoadStopContinuation(rs->xy, rs->xy - TileOffsByAxis(GetDriveThroughStopAxis(rs->xy))), "xy: {:X}, index: {}", rs->xy, rs->index);
 
 	Entry temp;
-	temp.Rebuild(rs);
+	temp.Rebuild(rs, rs->east == this);
 	assert_msg(temp.length == this->length && temp.occupied == this->occupied, "length: {} == {}, occupied: {} == {}, xy: {:X}, index: {}",
 			temp.length, this->length, temp.occupied, this->occupied, rs->xy, rs->index);
 }
