@@ -1748,6 +1748,10 @@ void ShowScheduledDispatchAddSlotsWindow(SchdispatchWindow *parent, int window_n
 
 void SchdispatchInvalidateWindows(const Vehicle *v)
 {
+	if (_pause_mode != PM_UNPAUSED) InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
+
+	if (!HaveWindowByClass(WC_VEHICLE_TIMETABLE) && !HaveWindowByClass(WC_SCHDISPATCH_SLOTS) && !HaveWindowByClass(WC_VEHICLE_ORDERS)) return;
+
 	v = v->FirstShared();
 	for (Window *w : Window::Iterate()) {
 		if (w->window_class == WC_VEHICLE_TIMETABLE) {

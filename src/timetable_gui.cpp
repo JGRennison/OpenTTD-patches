@@ -1296,6 +1296,8 @@ void ShowTimetableWindow(const Vehicle *v)
 
 void SetTimetableWindowsDirty(const Vehicle *v, SetTimetableWindowsDirtyFlags flags)
 {
+	if (_pause_mode != PM_UNPAUSED) InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
+
 	if (!(HaveWindowByClass(WC_VEHICLE_TIMETABLE) ||
 			((flags & STWDF_SCHEDULED_DISPATCH) && HaveWindowByClass(WC_SCHDISPATCH_SLOTS)) ||
 			((flags & STWDF_ORDERS) && HaveWindowByClass(WC_VEHICLE_ORDERS)))) {

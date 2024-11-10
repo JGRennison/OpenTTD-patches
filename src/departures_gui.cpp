@@ -705,6 +705,7 @@ public:
 	{
 		this->vehicles_invalid = true;
 		this->departures_invalid = true;
+		this->calc_tick_countdown = 0;
 		if (data > 0) {
 			if (!_settings_time.time_in_minutes && this->source_mode == DSM_SCHEDULE_24H) {
 				this->source_mode = DSM_LIVE;
