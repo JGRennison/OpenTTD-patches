@@ -1123,7 +1123,7 @@ Window *FindWindowById(WindowClass cls, WindowNumber number)
 {
 	if (cls < WC_END && !_present_window_types[cls]) return nullptr;
 
-	for (Window *w : Window::IterateFromBack()) {
+	for (Window *w : Window::IterateFromFront()) {
 		if (w->window_class == cls && w->window_number == number) return w;
 	}
 
@@ -1140,7 +1140,7 @@ Window *FindWindowByClass(WindowClass cls)
 {
 	if (cls < WC_END && !_present_window_types[cls]) return nullptr;
 
-	for (Window *w : Window::IterateFromBack()) {
+	for (Window *w : Window::IterateFromFront()) {
 		if (w->window_class == cls) return w;
 	}
 
@@ -1154,7 +1154,7 @@ Window *FindWindowByClass(WindowClass cls)
  */
 Window *FindWindowByToken(WindowToken token)
 {
-	for (Window *w : Window::IterateFromBack()) {
+	for (Window *w : Window::IterateFromFront()) {
 		if (w->GetWindowToken() == token) return w;
 	}
 
@@ -1168,9 +1168,10 @@ Window *FindWindowByToken(WindowToken token)
  */
 Window *GetMainWindow()
 {
-	Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
-	assert(w != nullptr);
-	return w;
+	for (Window *w : Window::IterateFromBack()) {
+		if (w->window_class == WC_MAIN_WINDOW && w->window_number == 0) return w;
+	}
+	NOT_REACHED();
 }
 
 /**
