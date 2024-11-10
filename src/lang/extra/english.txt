@@ -1402,6 +1402,11 @@ STR_DEPARTURES_SOURCE_MODE_TOOLTIP                              :{BLACK}Set whet
 STR_DEPARTURES_SOURCE_MODE_LIVE                                 :Live
 STR_DEPARTURES_SOURCE_MODE_SCHEDULE_24_HOUR                     :24 hour schedule
 
+##default-translation STR_TRACE_RESTRICT_DUPLICATE
+STR_DEPARTURES_DUPLICATE                                        :{BLACK}Duplicate
+##default-translation STR_NEWGRF_INSPECT_DUPLICATE_TOOLTIP
+STR_DEPARTURES_DUPLICATE_TOOLTIP                                :{BLACK}Duplicate this window
+
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
 STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
 STR_DEPARTURES_TYPE_BUS                                         :{ORANGE}{BUS}

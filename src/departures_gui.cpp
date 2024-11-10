@@ -43,6 +43,7 @@ static constexpr NWidgetPart _nested_departures_list[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_DB_CAPTION), SetDataTip(STR_DEPARTURES_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_DUPLICATE), SetDataTip(STR_DEPARTURES_DUPLICATE, STR_DEPARTURES_DUPLICATE_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
 	EndContainer(),
@@ -300,7 +301,7 @@ public:
 			}
 			for (uint i = 0; i < 4; ++i) {
 				if (i == vt) {
-					show_types[i] = true;
+					this->show_types[i] = true;
 					this->LowerWidget(WID_DB_SHOW_TRAINS + i);
 				}
 				this->DisableWidget(WID_DB_SHOW_TRAINS + i);
@@ -315,7 +316,7 @@ public:
 			this->title_params[0] = STR_STATION_NAME;
 
 			for (uint i = 0; i < 4; ++i) {
-				show_types[i] = true;
+				this->show_types[i] = true;
 				this->LowerWidget(WID_DB_SHOW_TRAINS + i);
 			}
 
@@ -346,7 +347,7 @@ public:
 
 		for (uint i = 0; i < 4; ++i) {
 			if (i == vt) {
-				show_types[i] = true;
+				this->show_types[i] = true;
 				this->LowerWidget(WID_DB_SHOW_TRAINS + i);
 			}
 			this->DisableWidget(WID_DB_SHOW_TRAINS + i);
@@ -556,6 +557,11 @@ public:
 				ShowDropDownMenu(this, _departure_source_mode_strings, this->source_mode, WID_DB_SOURCE_MODE, disabled_mask, 0);
 				break;
 			}
+
+			case WID_DB_DUPLICATE: {
+				this->CloneWindow();
+				break;
+			}
 		}
 	}
 
@@ -721,6 +727,22 @@ public:
 			if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
 		}
 	}
+
+	void CloneWindow() const
+	{
+		if (this->source_type == DST_DEPOT) {
+			VehicleType vt{};
+			for (uint i = 0; i < 4; ++i) {
+				if (this->show_types[i]) {
+					vt = (VehicleType)i;
+					break;
+				}
+			}
+			new DeparturesWindow(_departures_desc, DeparturesWindow::DepotTag{}, this->window_number & (MapSize() - 1), vt);
+		} else {
+			new DeparturesWindow(_departures_desc, (StationID)this->window_number);
+		}
+	}
 };
 
 /**
@@ -744,7 +766,7 @@ void ShowDepotDeparturesWindow(TileIndex tile, VehicleType vt)
 
 void CloseDepotDeparturesWindow(TileIndex tile)
 {
-	CloseWindowById(WC_DEPARTURES_BOARD, DeparturesWindow::GetDepotWindowNumber(tile));
+	CloseAllWindowsById(WC_DEPARTURES_BOARD, DeparturesWindow::GetDepotWindowNumber(tile));
 }
 
 void DeparturesWindow::RecomputeDateWidth()

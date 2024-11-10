@@ -13,6 +13,7 @@
 /** Widgets of the WC_DEPARTURES_BOARD. */
 enum DeparturesWindowWidgets {
 	WID_DB_CAPTION,             ///< Window caption
+	WID_DB_DUPLICATE,           ///< Duplicate window
 	WID_DB_LIST,                ///< List of departures
 	WID_DB_SCROLLBAR,           ///< List scrollbar
 	WID_DB_CARGO_MODE,          ///< Cargo filter mode
