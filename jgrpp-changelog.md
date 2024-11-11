@@ -2,6 +2,21 @@
 
 * * *
 
+### v0.63.1 (2024-11-11)
+* Fix crash which could occur when a drive-through road stop was occupied by a road vehicle and a company merger/bankruptcy/deletion or multiplayer desync occurred.
+* Fix crash which could occur when creating PNG screenshots.
+* Fix signals incorrectly defaulting to green in some layouts with mixed one-way and two-way path signals.
+* From vanilla: fix incorrect transfer costs for non-passenger cargoes.
+* Scheduled dispatch:
+  * Fix departure slots being incorrectly reused when using a non-zero maximum delay.
+* Departure boards:
+  * Fix scheduled dispatch 24 hour mode only showing departures/arrivals in the outgoing direction for routes only scheduled at one end.
+  * Fix wrong times in scheduled dispatch 24 hour mode when the start order has a missing travel time.
+  * Add button to filter displayed departures/arrivals by a station/waypoint calling point.
+  * Allow opening more than one departure window for the same station/waypoint/depot.
+  * Update departure board windows immediately when changing timetables or dispatch schedules when the game is paused.
+* Bump trunk base from commit 9dae626237569356b1fe25c439edae3c685c49e1 to commit c9bd21d57986105ed08627967e5bcac5a0f0768e.
+
 ### v0.63.0 (2024-11-02)
 * Fix crash when pressing arrow keys in bootstrap mode.
 * Fix crash when viewing town windows when the town had an invalid cargo goal.
