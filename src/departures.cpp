@@ -818,7 +818,7 @@ static bool ProcessArrivalHistory(Departure *d, std::span<ArrivalHistoryEntry> a
  * @param calling_settings departure calling settings
  * @return a list of departures, which is empty if an error occurred
  */
-static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector source, const std::vector<const Vehicle *> &vehicles, DepartureType type, DepartureCallingSettings calling_settings)
+static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector source, const std::span<const Vehicle *> vehicles, DepartureType type, DepartureCallingSettings calling_settings)
 {
 	/* This function is the meat of the departure boards functionality. */
 	/* As an overview, it works by repeatedly considering the best possible next departure to show. */
@@ -1547,7 +1547,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlots()
 	}
 }
 
-static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDetector source, const std::vector<const Vehicle *> &vehicles, DepartureType type,
+static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDetector source, const std::span<const Vehicle *> vehicles, DepartureType type,
 		DepartureCallingSettings calling_settings, const StateTicks start_tick, const StateTicks end_tick, const uint max_departure_slots_per_schedule)
 {
 	const Ticks tick_duration = (end_tick - start_tick).AsTicks();
@@ -1662,7 +1662,7 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
  * @param calling_settings departure calling settings
  * @return a list of departures, which is empty if an error occurred
  */
-DepartureList MakeDepartureList(DeparturesSourceMode source_mode, DepartureOrderDestinationDetector source, const std::vector<const Vehicle *> &vehicles,
+DepartureList MakeDepartureList(DeparturesSourceMode source_mode, DepartureOrderDestinationDetector source, const std::span<const Vehicle *> vehicles,
 		DepartureType type, DepartureCallingSettings calling_settings)
 {
 	switch (source_mode) {
