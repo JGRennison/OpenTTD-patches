@@ -1420,6 +1420,11 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndex(uint slot_index)
 	/* Loop through the vehicle's orders until we've found a suitable order or we've determined that no such order exists. */
 	/* We only need to consider each order at most once. */
 	for (int i = this->v->GetNumOrders(); i > 0; --i) {
+		/* If an order has a 0 travel time, and it's not explictly set, then stop. */
+		if (require_travel_time && order->GetTravelTime() == 0 && !order->IsTravelTimetabled() && !order->IsType(OT_IMPLICIT) && !order->IsType(OT_CONDITIONAL)) {
+			break;
+		}
+
 		departure_tick += order->GetTravelTime();
 
 		if (type == D_ARRIVAL && this->calling_settings.IsArrival(order, this->source)) {
@@ -1478,11 +1483,6 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndex(uint slot_index)
 					continue;
 				}
 			}
-			break;
-		}
-
-		/* If an order has a 0 travel time, and it's not explictly set, then stop. */
-		if (require_travel_time && order->GetTravelTime() == 0 && !order->IsTravelTimetabled() && !order->IsType(OT_IMPLICIT)) {
 			break;
 		}
 
