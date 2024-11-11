@@ -1242,6 +1242,7 @@ struct DepartureListScheduleModeSlotEvaluator {
 	DepartureType type;
 	DepartureCallingSettings calling_settings;
 	std::vector<ArrivalHistoryEntry> &arrival_history;
+	std::vector<std::pair<const Order *, StateTicks>> *dispatch_arrival_ticks; // This may be nullptr if not required
 
 	StateTicks slot{};
 	uint slot_index{};
@@ -1255,6 +1256,7 @@ private:
 	uint8_t EvaluateConditionalOrder(const Order *order, StateTicks eval_tick);
 	std::pair<const Order *, StateTicks> EvaluateDepartureFromSourceOrder(const Order *source_order, StateTicks departure_tick);
 	void EvaluateSlotIndex(uint slot_index);
+	void CheckSourceOrderArrival(const Order *order, StateTicks departure_tick);
 };
 
 uint8_t DepartureListScheduleModeSlotEvaluator::EvaluateConditionalOrder(const Order *order, StateTicks eval_tick) {
@@ -1395,6 +1397,13 @@ std::pair<const Order *, StateTicks> DepartureListScheduleModeSlotEvaluator::Eva
 	return next_state;
 }
 
+void DepartureListScheduleModeSlotEvaluator::CheckSourceOrderArrival(const Order *order, StateTicks departure_tick)
+{
+	if (this->dispatch_arrival_ticks != nullptr && departure_tick != this->slot) {
+		this->dispatch_arrival_ticks->emplace_back(order, departure_tick - order->GetWaitTime());
+	}
+}
+
 void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndex(uint slot_index)
 {
 	this->slot_index = slot_index;
@@ -1413,7 +1422,10 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndex(uint slot_index)
 	while (type == D_DEPARTURE && calling_settings.IsDeparture(order, this->source)) {
 		std::tie(order, departure_tick) = this->EvaluateDepartureFromSourceOrder(order, departure_tick);
 		if (order == nullptr) return;
-		if (order->IsScheduledDispatchOrder(true)) break;
+		if (order->IsScheduledDispatchOrder(true)) {
+			this->CheckSourceOrderArrival(order, departure_tick);
+			return;
+		}
 	}
 	if (type == D_ARRIVAL) {
 		this->arrival_history.push_back({ order, (departure_tick - this->slot).AsTicks() });
@@ -1450,12 +1462,18 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndex(uint slot_index)
 
 		departure_tick += order->GetWaitTime();
 
-		if (order->IsScheduledDispatchOrder(true)) return;
+		if (order->IsScheduledDispatchOrder(true)) {
+			this->CheckSourceOrderArrival(order, departure_tick);
+			return;
+		}
 
 		while (type == D_DEPARTURE && this->calling_settings.IsDeparture(order, this->source)) {
 			std::tie(order, departure_tick) = this->EvaluateDepartureFromSourceOrder(order, departure_tick);
 			if (order == nullptr) return;
-			if (order->IsScheduledDispatchOrder(true)) return;
+			if (order->IsScheduledDispatchOrder(true)) {
+				this->CheckSourceOrderArrival(order, departure_tick);
+				return;
+			}
 		}
 
 		/* If the order is a conditional branch, handle it. */
@@ -1503,6 +1521,10 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndex(uint slot_index)
 void DepartureListScheduleModeSlotEvaluator::EvaluateSlots()
 {
 	const size_t start_number_departures = this->result.size();
+
+	auto get_dispatch_arrival_ticks = [this]() -> size_t { return this->dispatch_arrival_ticks != nullptr ? this->dispatch_arrival_ticks->size() : 0; };
+	const size_t start_number_dispatch_arrival_ticks = get_dispatch_arrival_ticks();
+
 	this->departure_dependant_condition_found = false;
 	this->EvaluateSlotIndex(0);
 	const auto &slots = this->ds.GetScheduledDispatch();
@@ -1525,22 +1547,49 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlots()
 			}
 		}
 	} else {
+		const uint32_t first_offset = slots[0].offset;
+
+		/* Trivially repeat found arrival ticks */
+		const size_t done_first_slot_dispatch_arrival_ticks = get_dispatch_arrival_ticks();
+		if (done_first_slot_dispatch_arrival_ticks > start_number_dispatch_arrival_ticks) {
+			for (size_t i = 1; i < slots.size(); i++) {
+				Ticks adjustment = slots[i].offset - first_offset;
+				for (size_t j = start_number_dispatch_arrival_ticks; j != done_first_slot_dispatch_arrival_ticks; j++) {
+					std::pair<const Order *, StateTicks> record = (*this->dispatch_arrival_ticks)[j];
+					record.second += adjustment;
+					this->dispatch_arrival_ticks->push_back(record);
+				}
+			}
+		}
+		const size_t done_schedule_dispatch_arrival_ticks = get_dispatch_arrival_ticks();
+		if (done_schedule_dispatch_arrival_ticks > start_number_dispatch_arrival_ticks) {
+			for (uint i = 1; i < this->anno.repetition; i++) {
+				uint32_t adjustment = this->ds.GetScheduledDispatchDuration() * i;
+				for (size_t j = start_number_dispatch_arrival_ticks; j != done_schedule_dispatch_arrival_ticks; j++) {
+					std::pair<const Order *, StateTicks> record = (*this->dispatch_arrival_ticks)[j];
+					record.second += adjustment;
+					this->dispatch_arrival_ticks->push_back(record);
+				}
+			}
+		}
+
 		/* Trivially repeat found departures */
 		const size_t done_first_slot_departures = this->result.size();
 		if (done_first_slot_departures == start_number_departures) return;
-		const uint32_t first_offset = slots[0].offset;
 		for (size_t i = 1; i < slots.size(); i++) {
+			Ticks adjustment = slots[i].offset - first_offset;
 			for (size_t j = start_number_departures; j != done_first_slot_departures; j++) {
 				std::unique_ptr<Departure> d = std::make_unique<Departure>(*this->result[j]); // Clone departure
-				d->ShiftTimes(slots[i].offset - first_offset);
+				d->ShiftTimes(adjustment);
 				this->result.push_back(std::move(d));
 			}
 		}
 		const size_t done_schedule_departures = this->result.size();
 		for (uint i = 1; i < this->anno.repetition; i++) {
+			uint32_t adjustment = this->ds.GetScheduledDispatchDuration() * i;
 			for (size_t j = start_number_departures; j != done_schedule_departures; j++) {
 				std::unique_ptr<Departure> d = std::make_unique<Departure>(*this->result[j]); // Clone departure
-				d->ShiftTimes(this->ds.GetScheduledDispatchDuration() * i);
+				d->ShiftTimes(adjustment);
 				this->result.push_back(std::move(d));
 			}
 		}
@@ -1609,6 +1658,9 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 			}
 		});
 
+		const size_t initial_result_size = result.size();
+		std::vector<std::pair<const Order *, StateTicks>> dispatch_arrival_ticks;
+
 		for (const Order *start_order : v->Orders()) {
 			if (start_order->IsScheduledDispatchOrder(true)) {
 				const uint schedule_index = start_order->GetDispatchScheduleIndex();
@@ -1617,9 +1669,68 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 
 				DispatchSchedule &ds = const_cast<Vehicle *>(v)->orders->GetDispatchScheduleByIndex(schedule_index);
 				DepartureListScheduleModeSlotEvaluator evaluator{
-					result, v, start_order, ds, anno, schedule_index, source, type, calling_settings, arrival_history
+					result, v, start_order, ds, anno, schedule_index, source, type, calling_settings, arrival_history, calling_settings.DispatchArrivalTicksEnabled() ? &dispatch_arrival_ticks : nullptr
 				};
 				evaluator.EvaluateSlots();
+			}
+		}
+
+		if (calling_settings.DispatchArrivalTicksEnabled() && !dispatch_arrival_ticks.empty()) {
+			/* Use dispatch arrival tick map to fill in missing arrival times for vehicles dispatched from here, if required */
+			std::vector<Departure *> pending_departures;
+			for (const Order *start_order : v->Orders()) {
+				if (start_order->IsScheduledDispatchOrder(true)) {
+					pending_departures.clear();
+					for (size_t i = initial_result_size; i < result.size(); i++) {
+						Departure *d = result[i].get();
+						if (d->scheduled_waiting_time == Departure::MISSING_WAIT_TICKS && d->order == start_order) {
+							pending_departures.push_back(d);
+						}
+					}
+
+					if (pending_departures.empty()) continue;
+
+					for (const auto &it : dispatch_arrival_ticks) {
+						if (it.first != start_order) continue;
+						StateTicks arrival_tick = it.second;
+
+						size_t best_idx = SIZE_MAX;
+						StateTicks best_tick = StateTicks(INT64_MAX);
+
+						/* Evaluate pending departures */
+						for (size_t i = 0; i < pending_departures.size(); i++) {
+							const Departure *d = pending_departures[i];
+
+							StateTicks tick = d->scheduled_tick;
+							if (arrival_tick <= tick - d->order->GetWaitTime()) {
+								/* Found a usable departure */
+							} else if (arrival_tick <= tick + tick_duration - d->order->GetWaitTime()) {
+								/* Found a usable departure, with the schedule duration added (wrapping at end of schedule) */
+								tick += tick_duration;
+							} else {
+								/* Not usable */
+								continue;
+							}
+
+							/* Found first/better departure */
+							if (tick < best_tick) {
+								best_idx = i;
+								best_tick = tick;
+							}
+						}
+
+						if (best_idx != SIZE_MAX) {
+							/* Found a suitable departure for this arrival, update the waiting time (i.e. arrival time) and remove from pending list */
+							Departure *d = pending_departures[best_idx];
+							pending_departures[best_idx] = pending_departures.back();
+							pending_departures.pop_back();
+
+							d->scheduled_waiting_time = (best_tick - arrival_tick).AsTicks();
+						}
+
+						if (pending_departures.empty()) break;
+					}
+				}
 			}
 		}
 	}

@@ -698,6 +698,7 @@ public:
 			settings.SetShowAllStops(this->show_empty);
 			settings.SetCargoFilter(show_pax, show_freight);
 			settings.SetSmartTerminusEnabled(_settings_client.gui.departure_smart_terminus && (this->source_type == DST_STATION));
+			settings.SetDispatchArrivalTicksEnabled(this->mode == DM_COMBINED && this->source_mode == DSM_SCHEDULE_24H);
 
 			if (this->mode != DM_ARRIVALS) {
 				this->departures = MakeDepartureList(this->source_mode, list_source, this->vehicles, D_DEPARTURE, settings);

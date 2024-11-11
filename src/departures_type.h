@@ -184,6 +184,7 @@ private:
 			ShowPax,
 			ShowFreight,
 			SmartTerminusEnabled,
+			DispatchArrivalTicksEnabled,
 		};
 	};
 
@@ -195,6 +196,7 @@ public:
 	inline bool ShowPax() const { return HasBit(this->flags, FlagBits::ShowPax); }
 	inline bool ShowFreight() const { return HasBit(this->flags, FlagBits::ShowFreight); }
 	inline bool SmartTerminusEnabled() const { return HasBit(this->flags, FlagBits::SmartTerminusEnabled); }
+	inline bool DispatchArrivalTicksEnabled() const { return HasBit(this->flags, FlagBits::DispatchArrivalTicksEnabled); }
 
 	inline void SetViaMode(bool allow_via, bool check_show_as_via_type)
 	{
@@ -217,6 +219,10 @@ public:
 	inline void SetSmartTerminusEnabled(bool enabled)
 	{
 		AssignBit(this->flags, FlagBits::SmartTerminusEnabled, enabled);
+	}
+	inline void SetDispatchArrivalTicksEnabled(bool enabled)
+	{
+		AssignBit(this->flags, FlagBits::DispatchArrivalTicksEnabled, enabled);
 	}
 
 	bool IsDeparture(const Order *order, const DepartureOrderDestinationDetector &source) const;
