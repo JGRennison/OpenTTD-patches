@@ -1066,6 +1066,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 		if (time_width > 0) {
 			StringID time_str;
 			TextColour time_colour;
+			int offset = 0;
 			switch (d->show_as) {
 				default:
 					time_colour = TC_ORANGE;
@@ -1079,7 +1080,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 					time_colour = TC_YELLOW;
 					break;
 			}
-			if (this->mode == DM_COMBINED) {
+			if (this->mode == DM_COMBINED && d->EffectiveWaitingTime() != Departure::MISSING_WAIT_TICKS) {
 				time_str = STR_DEPARTURES_TIME_BOTH;
 				SetDParam(0, time_colour);
 				SetDParam(1, STR_JUST_TT_TIME_ABS);
@@ -1088,7 +1089,10 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 				SetDParam(4, STR_JUST_TT_TIME_ABS);
 				SetDParam(5, d->scheduled_tick);
 			} else {
-				if (this->mode == DM_SEPARATE) {
+				if (this->mode == DM_COMBINED) {
+					time_str = STR_DEPARTURES_TIME_DEP;
+					offset = time_width - (cached_date_width + cached_date_arrow_width);
+				} else if (this->mode == DM_SEPARATE) {
 					time_str = (d->type == D_DEPARTURE) ? STR_DEPARTURES_TIME_DEP : STR_DEPARTURES_TIME_ARR;
 				} else {
 					time_str = STR_DEPARTURES_TIME;
@@ -1098,7 +1102,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 				SetDParam(2, d->scheduled_tick);
 			}
 			if (ltr) {
-				DrawString(              text_left, text_left + time_width, y + 1, time_str);
+				DrawString(     text_left + offset, text_left + time_width, y + 1, time_str);
 			} else {
 				DrawString(text_right - time_width,             text_right, y + 1, time_str);
 			}

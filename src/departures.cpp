@@ -1297,7 +1297,7 @@ std::pair<const Order *, StateTicks> DepartureListScheduleModeSlotEvaluator::Eva
 	d.type = D_DEPARTURE;
 	d.show_as = this->calling_settings.GetShowAsType(source_order, D_DEPARTURE);
 	d.order = source_order;
-	d.scheduled_waiting_time = Departure::INVALID_WAIT_TICKS;
+	d.scheduled_waiting_time = source_order->IsScheduledDispatchOrder(true) ? Departure::MISSING_WAIT_TICKS : Departure::INVALID_WAIT_TICKS;
 
 	/* We'll be going through the order list later, so we need a separate variable for it. */
 	const Order *order = source_order;
