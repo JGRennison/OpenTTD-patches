@@ -95,6 +95,8 @@ enum DepartureShowAs : uint8_t {
 
 /** A scheduled departure. */
 struct Departure {
+	static constexpr Ticks INVALID_WAIT_TICKS = INT32_MIN;
+
 	StateTicks scheduled_tick = 0;         ///< The tick this departure is scheduled to finish on (i.e. when the vehicle leaves the station)
 	Ticks lateness = 0;                    ///< How delayed the departure is expected to be
 	StationID via = INVALID_STATION;       ///< The station the departure should list as going via
@@ -107,7 +109,7 @@ struct Departure {
 	DepartureShowAs show_as = DSA_NORMAL;  ///< Show as type
 	const Vehicle *vehicle = nullptr;      ///< The vehicle performing this departure
 	const Order *order = nullptr;          ///< The order corresponding to this departure
-	Ticks scheduled_waiting_time = 0;      ///< Scheduled waiting time if scheduled dispatch is used
+	Ticks scheduled_waiting_time = INVALID_WAIT_TICKS; ///< Scheduled waiting time if scheduled dispatch is used
 
 	inline bool operator==(const Departure& d) const {
 		if (this->calling_at.size() != d.calling_at.size()) return false;
@@ -129,7 +131,7 @@ struct Departure {
 
 	inline Ticks EffectiveWaitingTime() const
 	{
-		if (this->scheduled_waiting_time > 0) {
+		if (this->scheduled_waiting_time != INVALID_WAIT_TICKS) {
 			return this->scheduled_waiting_time;
 		} else {
 			return this->order->GetWaitTime();

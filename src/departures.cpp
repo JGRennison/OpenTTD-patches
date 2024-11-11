@@ -86,13 +86,13 @@ struct OrderDate {
 	DepartureStatus status; ///< Whether the vehicle has arrived to carry out the order yet
 	bool have_veh_dispatch_conditionals; ///< Whether vehicle dispatch conditionals are present
 	bool arrivals_complete;       ///< arrival history is complete
-	Ticks scheduled_waiting_time; ///< Scheduled waiting time if scheduled dispatch is used
+	Ticks scheduled_waiting_time = Departure::INVALID_WAIT_TICKS; ///< Scheduled waiting time if scheduled dispatch is used
 	ScheduledDispatchVehicleRecords dispatch_records; ///< Dispatch records for this vehicle
 	std::vector<ArrivalHistoryEntry> arrival_history;
 
 	inline Ticks EffectiveWaitingTime() const
 	{
-		if (this->scheduled_waiting_time > 0) {
+		if (this->scheduled_waiting_time != Departure::INVALID_WAIT_TICKS) {
 			return this->scheduled_waiting_time;
 		} else {
 			return this->order->GetWaitTime();
@@ -270,7 +270,7 @@ static bool VehicleSetNextDepartureTime(Ticks *previous_departure, Ticks *waitin
 				/* Failed to find a dispatch slot for this departure at all, the schedule is invalid/empty.
 				 * Just treat it as a non-dispatch order. */
 				*previous_departure += order->GetTravelTime() + order->GetWaitTime();
-				*waiting_time = 0;
+				*waiting_time = Departure::INVALID_WAIT_TICKS;
 				return false;
 			}
 
@@ -297,7 +297,7 @@ static bool VehicleSetNextDepartureTime(Ticks *previous_departure, Ticks *waitin
 
 	/* Not using schedule for this departure time */
 	*previous_departure += order->GetTravelTime() + order->GetWaitTime();
-	*waiting_time = 0;
+	*waiting_time = Departure::INVALID_WAIT_TICKS;
 	return false;
 }
 
@@ -335,7 +335,7 @@ static void ScheduledDispatchDepartureLocalFix(DepartureList &departure_list)
 				d_list[i]->scheduled_tick = departure_time_list[i];
 
 				if (d_list[i]->scheduled_waiting_time == (Ticks)d_list[i]->order->GetWaitTime()) {
-					d_list[i]->scheduled_waiting_time = 0;
+					d_list[i]->scheduled_waiting_time = Departure::INVALID_WAIT_TICKS;
 				}
 			}
 		}
@@ -500,6 +500,11 @@ static void GetDepartureCandidateOrderDatesFromVehicle(std::vector<OrderDate> &n
 	/* We only need to consider each order at most once. */
 	for (int i = v->GetNumOrders() * (have_veh_dispatch_conditionals ? 8 : 1); i > 0; --i) {
 		if (VehicleSetNextDepartureTime(&start_ticks, &waiting_time, state_ticks_base, v, order, status == D_ARRIVED, schdispatch_last_planned_dispatch, dispatch_records)) {
+			if (!should_reset_lateness && waiting_time != Departure::INVALID_WAIT_TICKS) {
+				/* Changing effective lateness to 0, so adjust waiting time to get correct arrival time */
+				waiting_time += v->lateness_counter;
+			}
+
 			should_reset_lateness = true;
 		}
 
@@ -1292,7 +1297,7 @@ std::pair<const Order *, StateTicks> DepartureListScheduleModeSlotEvaluator::Eva
 	d.type = D_DEPARTURE;
 	d.show_as = this->calling_settings.GetShowAsType(source_order, D_DEPARTURE);
 	d.order = source_order;
-	d.scheduled_waiting_time = 0;
+	d.scheduled_waiting_time = Departure::INVALID_WAIT_TICKS;
 
 	/* We'll be going through the order list later, so we need a separate variable for it. */
 	const Order *order = source_order;
@@ -1436,7 +1441,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndex(uint slot_index)
 			d.type = D_ARRIVAL;
 			d.show_as = this->calling_settings.GetShowAsType(order, D_ARRIVAL);
 			d.order = order;
-			d.scheduled_waiting_time = 0;
+			d.scheduled_waiting_time = Departure::INVALID_WAIT_TICKS;
 			if (ProcessArrivalHistory(&d, this->arrival_history, (departure_tick - this->slot).AsTicks(), this->source, this->calling_settings)) {
 				this->result.push_back(std::make_unique<Departure>(std::move(d)));
 			}

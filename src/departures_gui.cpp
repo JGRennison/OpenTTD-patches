@@ -1266,14 +1266,16 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 					/* We have no evidence that the vehicle is late, so assume it is on time. */
 					DrawString(status_left, status_right, y + 1, STR_DEPARTURES_ON_TIME);
 				} else {
-					if ((d->scheduled_tick + d->lateness) < now_date) {
+					StateTicks expected_arrival = d->scheduled_tick + d->lateness;
+					if (d->type == D_DEPARTURE) expected_arrival -= d->EffectiveWaitingTime();
+					if (expected_arrival < now_date) {
 						/* The vehicle was expected to have arrived by now, even if we knew it was going to be late. */
 						/* We assume that the train stays at least a day at a station so it won't accidentally be marked as delayed for a fraction of a day. */
 						DrawString(status_left, status_right, y + 1, STR_DEPARTURES_DELAYED);
 					} else {
 						/* The vehicle is expected to be late and is not yet due to arrive. */
 						SetDParam(0, STR_JUST_TT_TIME_ABS);
-						SetDParam(1, d->scheduled_tick + d->lateness);
+						SetDParam(1, expected_arrival);
 						DrawString(status_left, status_right, y + 1, STR_DEPARTURES_EXPECTED);
 					}
 				}
