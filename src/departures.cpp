@@ -1287,7 +1287,7 @@ uint8_t DepartureListScheduleModeSlotEvaluator::EvaluateConditionalOrder(const O
 
 std::pair<const Order *, StateTicks> DepartureListScheduleModeSlotEvaluator::EvaluateDepartureFromSourceOrder(const Order *source_order, StateTicks departure_tick)
 {
-	std::pair<const Order *, StateTicks> next_state = {}; //std::pair<const Order *, StateTicks>(nullptr, 0);
+	std::pair<const Order *, StateTicks> next_state = {};
 
 	Departure d{};
 	d.scheduled_tick = departure_tick;
