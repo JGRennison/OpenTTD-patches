@@ -1960,7 +1960,7 @@ STR_STATION_RATING_TOOLTIP_USING_CHEAT                          :Trampa activada
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING                        :Valoración da estación NewGRF: {STRING} {BLACK}baseada en
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_0                      :{GOLD}{PLUS_NUM}%
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_1                      :{LTBLUE}{PLUS_NUM}%
-STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED                         :Velocidade máxima do último vehículo: {LTBLUE}{VELOCITY} ({STRING})
+STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED                         :Velocidade máxima do último vehículo: {LTBLUE}{STRING} ({STRING})
 STR_STATION_RATING_TOOLTIP_NEWGRF_WAITUNITS                     :Cargamento agardando (de media por próxima parada): {LTBLUE}{NUM}
 STR_STATION_RATING_TOOLTIP_NEWGRF_WAITTIME                      :Tempo dende a última recollida: {LTBLUE}{NUM} día{P "" s}
 
@@ -1968,7 +1968,7 @@ STR_STATION_RATING_MAX_PERCENTAGE                               : (máx {PLUS_NU
 STR_STATION_RATING_MAX_PERCENTAGE_COMMA                         :, máx {PLUS_NUM}%
 STR_STATION_RATING_PERCENTAGE_COMMA                             :, {PLUS_NUM}%
 
-STR_STATION_RATING_TOOLTIP_SPEED                                :Velocidade máxima do último vehículo{STRING}: {COLOUR}{VELOCITY}{STRING} ({STRING})
+STR_STATION_RATING_TOOLTIP_SPEED                                :Velocidade máxima do último vehículo{STRING}: {COLOUR}{STRING}{STRING} ({STRING})
 
 STR_STATION_RATING_TOOLTIP_AGE                                  :Idade do último vehículo{STRING}: {COLOUR}{NUM} ano{P "" s}{STRING}
 

@@ -1957,7 +1957,7 @@ STR_STATION_RATING_TOOLTIP_USING_CHEAT                          :Чит акти
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING                        :Рейтинг станции NewGRF: {STRING} {BLACK}основан на
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_0                      :{GOLD}{PLUS_NUM}%
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_1                      :{LTBLUE}{PLUS_NUM}%
-STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED                         :Максимальная скорость последнего транспортного средства: {LTBLUE}{VELOCITY} ({STRING})
+STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED                         :Максимальная скорость последнего транспортного средства: {LTBLUE}{STRING} ({STRING})
 STR_STATION_RATING_TOOLTIP_NEWGRF_WAITUNITS                     :Ожидание груза (в среднем на следующую остановку): {LTBLUE}{NUM}
 STR_STATION_RATING_TOOLTIP_NEWGRF_WAITTIME                      :Время с момента последнего забора: {LTBLUE}{NUM} д{P ень ня ней}
 
@@ -1965,7 +1965,7 @@ STR_STATION_RATING_MAX_PERCENTAGE                               : (максим�
 STR_STATION_RATING_MAX_PERCENTAGE_COMMA                         :, максимум {PLUS_NUM}%
 STR_STATION_RATING_PERCENTAGE_COMMA                             :, {PLUS_NUM}%
 
-STR_STATION_RATING_TOOLTIP_SPEED                                :Максимальная скорость последнего транспорта{STRING}: {COLOUR}{VELOCITY}{STRING} ({STRING})
+STR_STATION_RATING_TOOLTIP_SPEED                                :Максимальная скорость последнего транспорта{STRING}: {COLOUR}{STRING}{STRING} ({STRING})
 
 STR_STATION_RATING_TOOLTIP_AGE                                  :Возраст последнего транспорта{STRING}: {COLOUR}{NUM} {P год года лет}{STRING}
 

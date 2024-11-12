@@ -1959,7 +1959,7 @@ STR_STATION_RATING_TOOLTIP_USING_CHEAT                          :作弊
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING                        :NewGRF 站点评价：{STRING}{BLACK}基于
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_0                      :{GOLD}{PLUS_NUM}%
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_1                      :{LTBLUE}{PLUS_NUM}%
-STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED                         :上一载具最高速度：{LTBLUE}{VELOCITY}（{STRING}）
+STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED                         :上一载具最高速度：{LTBLUE}{STRING}（{STRING}）
 STR_STATION_RATING_TOOLTIP_NEWGRF_WAITUNITS                     :车站货物等待时间：{LTBLUE}{NUM}（直达站点平均）
 STR_STATION_RATING_TOOLTIP_NEWGRF_WAITTIME                      :距离上次提货时间：{NUM} 日
 
@@ -1967,7 +1967,7 @@ STR_STATION_RATING_MAX_PERCENTAGE                               :，最大{NBSP}
 STR_STATION_RATING_MAX_PERCENTAGE_COMMA                         :，最大{NBSP}{PLUS_NUM}%
 STR_STATION_RATING_PERCENTAGE_COMMA                             :{NBSP}[{PLUS_NUM}%]
 
-STR_STATION_RATING_TOOLTIP_SPEED                                :上一载具最高速度{0:STRING}：{1:COLOUR}{2:VELOCITY}{3:STRING}（{4:STRING}）
+STR_STATION_RATING_TOOLTIP_SPEED                                :上一载具最高速度{0:STRING}：{1:COLOUR}{2:STRING}{3:STRING}（{4:STRING}）
 
 STR_STATION_RATING_TOOLTIP_AGE                                  :上一载具使用时长{0:STRING}：{1:COLOUR}{2:NUM} 年{3:STRING}
 

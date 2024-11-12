@@ -2856,22 +2856,23 @@ public:
 				line_nr++;
 
 				const uint last_speed = ge->HasVehicleEverTriedLoading() && ge->IsSupplyAllowed() ? ge->last_speed : 0xFF;
-				SetDParam(0, to_display_speed(last_speed));
+				SetDParam(0, last_speed == 0xFF ? STR_STATION_RATING_TOOLTIP_AT_LEAST_VELOCITY : STR_JUST_VELOCITY);
+				SetDParam(1, to_display_speed(last_speed));
 				switch (ge->last_vehicle_type) {
 					case VEH_TRAIN:
-						SetDParam(1, STR_STATION_RATING_TOOLTIP_TRAIN);
+						SetDParam(2, STR_STATION_RATING_TOOLTIP_TRAIN);
 						break;
 					case VEH_ROAD:
-						SetDParam(1, STR_STATION_RATING_TOOLTIP_ROAD_VEHICLE);
+						SetDParam(2, STR_STATION_RATING_TOOLTIP_ROAD_VEHICLE);
 						break;
 					case VEH_SHIP:
-						SetDParam(1, STR_STATION_RATING_TOOLTIP_SHIP);
+						SetDParam(2, STR_STATION_RATING_TOOLTIP_SHIP);
 						break;
 					case VEH_AIRCRAFT:
-						SetDParam(1, STR_STATION_RATING_TOOLTIP_AIRCRAFT);
+						SetDParam(2, STR_STATION_RATING_TOOLTIP_AIRCRAFT);
 						break;
 					default:
-						SetDParam(1, STR_STATION_RATING_TOOLTIP_INVALID);
+						SetDParam(2, STR_STATION_RATING_TOOLTIP_INVALID);
 						break;
 				}
 				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED);
@@ -2904,25 +2905,26 @@ public:
 					SetDParam(2, _rate_colours[std::min(3, speed_rating / 42)]);
 				}
 
-				SetDParam(3, to_display_speed(ge->last_speed));
-				SetDParam(4, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
-				SetDParam(5, rounded_speed_rating);
+				SetDParam(3, ge->last_speed == 0xFF ? STR_STATION_RATING_TOOLTIP_AT_LEAST_VELOCITY : STR_JUST_VELOCITY);
+				SetDParam(4, to_display_speed(ge->last_speed));
+				SetDParam(5, detailed ? STR_STATION_RATING_PERCENTAGE_COMMA : STR_EMPTY);
+				SetDParam(6, rounded_speed_rating);
 
 				switch (ge->last_vehicle_type) {
 					case VEH_TRAIN:
-						SetDParam(6, STR_STATION_RATING_TOOLTIP_TRAIN);
+						SetDParam(7, STR_STATION_RATING_TOOLTIP_TRAIN);
 						break;
 					case VEH_ROAD:
-						SetDParam(6, STR_STATION_RATING_TOOLTIP_ROAD_VEHICLE);
+						SetDParam(7, STR_STATION_RATING_TOOLTIP_ROAD_VEHICLE);
 						break;
 					case VEH_SHIP:
-						SetDParam(6, STR_STATION_RATING_TOOLTIP_SHIP);
+						SetDParam(7, STR_STATION_RATING_TOOLTIP_SHIP);
 						break;
 					case VEH_AIRCRAFT:
-						SetDParam(6, STR_STATION_RATING_TOOLTIP_AIRCRAFT);
+						SetDParam(7, STR_STATION_RATING_TOOLTIP_AIRCRAFT);
 						break;
 					default:
-						SetDParam(6, STR_STATION_RATING_TOOLTIP_INVALID);
+						SetDParam(7, STR_STATION_RATING_TOOLTIP_INVALID);
 						break;
 				}
 				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_SPEED);

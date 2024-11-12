@@ -2028,7 +2028,7 @@ STR_STATION_RATING_TOOLTIP_USING_CHEAT                          :Cheat active
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING                        :NewGRF station rating: {STRING1} {BLACK}based on
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_0                      :{GOLD}{PLUS_NUM}%
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_1                      :{LTBLUE}{PLUS_NUM}%
-STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED                         :Max speed of last vehicle: {LTBLUE}{VELOCITY} ({STRING2})
+STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED                         :Max speed of last vehicle: {LTBLUE}{STRING1} ({STRING2})
 STR_STATION_RATING_TOOLTIP_NEWGRF_WAITUNITS                     :Cargo waiting (on average per next stop): {LTBLUE}{NUM}
 STR_STATION_RATING_TOOLTIP_NEWGRF_WAITTIME                      :Time since last pickup: {LTBLUE}{NUM} day{P "" s}
 
@@ -2036,7 +2036,8 @@ STR_STATION_RATING_MAX_PERCENTAGE                               : (max {PLUS_NUM
 STR_STATION_RATING_MAX_PERCENTAGE_COMMA                         :, max {PLUS_NUM}%
 STR_STATION_RATING_PERCENTAGE_COMMA                             :, {PLUS_NUM}%
 
-STR_STATION_RATING_TOOLTIP_SPEED                                :Max speed of last vehicle{STRING1}: {COLOUR}{VELOCITY}{STRING1} ({STRING})
+STR_STATION_RATING_TOOLTIP_AT_LEAST_VELOCITY                    :at least {VELOCITY}
+STR_STATION_RATING_TOOLTIP_SPEED                                :Max speed of last vehicle{STRING1}: {COLOUR}{STRING1}{STRING1} ({STRING})
 
 STR_STATION_RATING_TOOLTIP_AGE                                  :Age of last vehicle{STRING1}: {COLOUR}{NUM} year{P "" s}{STRING1}
 

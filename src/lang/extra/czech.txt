@@ -1742,7 +1742,7 @@ STR_STATION_RATING_TOOLTIP_USING_CHEAT                          :Cheat aktivní
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING                        :Hodnocení stanic NewGRF: {STRING} {BLACK}založeno na
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_0                      :{GOLD}{PLUS_NUM}%
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_1                      :{LTBLUE}{PLUS_NUM}%
-STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED                         :Maximální rychlost posledního vozidla: {LTBLUE}{VELOCITY} ({STRING})
+STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED                         :Maximální rychlost posledního vozidla: {LTBLUE}{STRING} ({STRING})
 STR_STATION_RATING_TOOLTIP_NEWGRF_WAITUNITS                     :Čekající náklad (v průměru na další stanici): {LTBLUE}{NUM}
 STR_STATION_RATING_TOOLTIP_NEWGRF_WAITTIME                      :Čas od poslední obsluhy: {LTBLUE}{NUM} d{P en ny ní}
 
@@ -1750,7 +1750,7 @@ STR_STATION_RATING_MAX_PERCENTAGE                               : (max. {PLUS_NU
 STR_STATION_RATING_MAX_PERCENTAGE_COMMA                         :, max. {PLUS_NUM}%
 STR_STATION_RATING_PERCENTAGE_COMMA                             :, {PLUS_NUM}%
 
-STR_STATION_RATING_TOOLTIP_SPEED                                :Maximální rychlost posledního vozidla{STRING}: {COLOUR}{VELOCITY}{STRING} ({STRING})
+STR_STATION_RATING_TOOLTIP_SPEED                                :Maximální rychlost posledního vozidla{STRING}: {COLOUR}{STRING}{STRING} ({STRING})
 
 STR_STATION_RATING_TOOLTIP_AGE                                  :Stáří posledního vozidla{STRING}: {COLOUR}{NUM} {P rok roky let}{STRING}
 
