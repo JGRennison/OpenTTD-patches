@@ -214,9 +214,4 @@ macro(compile_flags)
         # rdynamic is used to get useful stack traces from crash reports.
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -rdynamic")
     endif()
-
-    if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-        # workaround for MacOS 10.13 and below which does not support std::variant, etc
-        add_definitions(-D_LIBCPP_DISABLE_AVAILABILITY)
-    endif()
 endmacro()

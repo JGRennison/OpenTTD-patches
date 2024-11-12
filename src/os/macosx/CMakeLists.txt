@@ -4,7 +4,6 @@ add_files(
     font_osx.h
     macos.h
     macos.mm
-    misc_osx.cpp
     osx_stdafx.h
     string_osx.cpp
     string_osx.h
