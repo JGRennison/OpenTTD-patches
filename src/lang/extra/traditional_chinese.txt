@@ -876,8 +876,8 @@ STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING}計數�
 STR_TRACE_RESTRICT_CONDITIONAL_ENGINE_CLASSES                   :{STRING}列車 {STRING}：{STRING}，則
 STR_TRACE_RESTRICT_CONDITIONAL_TARGET_DIRECTION                 :{STRING}格：{STRING} {STRING} 的此號誌區域比 {STRING} 更遠，則
 STR_TRACE_RESTRICT_CONDITIONAL_PASSES_TILE_INDEX                :{STRING}{STRING} {STRING} {NUM} x {NUM}，則
-STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING}{STRING}{STRING}{RED}未定義{BLACK}{STRING}，則
-STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING}{RED}未定義{BLACK}{STRING}，則
+STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING}{STRING}{STRING}{RED}未命名{BLACK}{STRING}，則
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING}{RED}未命名{BLACK}{STRING}，則
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :增加尋路懲罰：{COMMA}
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM_PRESET                       :增加尋路懲罰：{STRING}
 STR_TRACE_RESTRICT_WHITE                                        :{WHITE}
@@ -1176,7 +1176,7 @@ STR_PROGSIG_CONDITION_VALUE_CAPT                                :{WHITE}條件�
 STR_ERROR_CAN_T_INSERT_INSTRUCTION                              :{WHITE}不能插入指令
 STR_ERROR_CAN_T_MODIFY_INSTRUCTION                              :{WHITE}不能修改指令
 STR_ERROR_CAN_T_REMOVE_INSTRUCTION                              :{WHITE}不能移除指令
-STR_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                           :{WHITE}不能跳轉到未定義的號誌
+STR_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                           :{WHITE}不能跳轉到未命名的號誌
 STR_ERROR_NOT_AN_EXIT_SIGNAL                                    :{WHITE}不是一個退出號誌
 STR_ERROR_NOT_AN_PROG_SIGNAL                                    :{WHITE}不是一個可編程入口號誌
 STR_ERROR_CANNOT_USE_SELF                                       :{WHITE}不能從自己複製程序
