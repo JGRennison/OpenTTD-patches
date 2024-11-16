@@ -3987,6 +3987,11 @@ public:
 
 		this->SetWidgetDisabledState(WID_VV_ORDER_LOCATION, v->current_order.GetLocation(v) == INVALID_TILE);
 
+		const Window *mainwindow = GetMainWindow();
+		if (mainwindow->viewport->follow_vehicle == v->index) {
+			this->LowerWidget(WID_VV_LOCATION);
+		}
+
 		this->DrawWidgets();
 	}
 
@@ -4230,6 +4235,7 @@ public:
 						/* main window 'follows' vehicle */
 						mainwindow->viewport->follow_vehicle = v->index;
 					} else {
+						if (mainwindow->viewport->follow_vehicle == v->index) mainwindow->viewport->follow_vehicle = INVALID_VEHICLE;
 						ScrollMainWindowTo(v->x_pos, v->y_pos, v->z_pos);
 					}
 					this->HandleButtonClick(widget);

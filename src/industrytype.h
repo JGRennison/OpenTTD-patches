@@ -110,7 +110,6 @@ struct IndustrySpec {
 	IndustryType conflicting[3];                ///< Industries this industry cannot be close to
 	uint8_t check_proc;                         ///< Index to a procedure to check for conflicting circumstances
 	std::array<CargoID, INDUSTRY_NUM_OUTPUTS> produced_cargo{};
-	std::array<std::variant<CargoLabel, MixedCargoType>, INDUSTRY_NUM_OUTPUTS> produced_cargo_label{};
 	std::array<uint8_t, INDUSTRY_NUM_OUTPUTS> production_rate{};
 	/**
 	 * minimum amount of cargo transported to the stations.
@@ -118,7 +117,6 @@ struct IndustrySpec {
 	 */
 	uint8_t minimal_cargo;
 	std::array<CargoID, INDUSTRY_NUM_INPUTS> accepts_cargo{}; ///< 16 accepted cargoes.
-	std::array<std::variant<CargoLabel, MixedCargoType>, INDUSTRY_NUM_INPUTS> accepts_cargo_label{};
 	uint16_t input_cargo_multiplier[INDUSTRY_NUM_INPUTS][INDUSTRY_NUM_OUTPUTS]; ///< Input cargo multipliers (multiply amount of incoming cargo for the produced cargoes)
 	IndustryLifeType life_type;                 ///< This is also known as Industry production flag, in newgrf specs
 	uint8_t climate_availability;               ///< Bitmask, giving landscape enums as bit position
@@ -138,6 +136,9 @@ struct IndustrySpec {
 	GRFFileProps grf_prop;                      ///< properties related to the grf file
 	std::vector<uint8_t> random_sounds;         ///< Random sounds;
 
+	std::array<std::variant<CargoLabel, MixedCargoType>, INDUSTRY_ORIGINAL_NUM_OUTPUTS> produced_cargo_label; ///< Cargo labels of produced cargo for default industries.
+	std::array<std::variant<CargoLabel, MixedCargoType>, INDUSTRY_ORIGINAL_NUM_INPUTS> accepts_cargo_label; ///< Cargo labels of accepted cargo for default industries.
+
 	bool IsRawIndustry() const;
 	bool IsProcessingIndustry() const;
 	Money GetConstructionCost() const;
@@ -151,7 +152,6 @@ struct IndustrySpec {
  */
 struct IndustryTileSpec {
 	std::array<CargoID, INDUSTRY_NUM_INPUTS> accepts_cargo; ///< Cargo accepted by this tile
-	std::array<std::variant<CargoLabel, MixedCargoType>, INDUSTRY_NUM_INPUTS> accepts_cargo_label;
 	std::array<int8_t, INDUSTRY_NUM_INPUTS> acceptance;     ///< Level of acceptance per cargo type (signed, may be negative!)
 	Slope slopes_refused;                 ///< slope pattern on which this tile cannot be built
 	uint8_t anim_production;              ///< Animation frame to start when goods are produced
@@ -167,6 +167,8 @@ struct IndustryTileSpec {
 	IndustryTileSpecialFlags special_flags; ///< Bitmask of extra flags used by the tile
 	bool enabled;                           ///< entity still available (by default true).newgrf can disable it, though
 	GRFFileProps grf_prop;                  ///< properties related to the grf file
+
+	std::array<std::variant<CargoLabel, MixedCargoType>, INDUSTRY_ORIGINAL_NUM_INPUTS> accepts_cargo_label; ///< Cargo labels of accepted cargo for default industry tiles.
 };
 
 /* industry_cmd.cpp*/

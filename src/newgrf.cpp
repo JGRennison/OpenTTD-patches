@@ -2671,7 +2671,7 @@ static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, con
 						housespec->accepts_cargo[i] = INVALID_CARGO;
 						housespec->cargo_acceptance[i] = 0;
 					}
-					housespec->accepts_cargo_label[i] = CT_INVALID;
+					if (i < std::size(housespec->accepts_cargo_label)) housespec->accepts_cargo_label[i] = CT_INVALID;
 				}
 				break;
 			}
@@ -3456,7 +3456,7 @@ static ChangeInfoResult IndustrytilesChangeInfo(uint indtid, int numinfo, int pr
 						tsp->accepts_cargo[i] = INVALID_CARGO;
 						tsp->acceptance[i] = 0;
 					}
-					tsp->accepts_cargo_label[i] = CT_INVALID;
+					if (i < std::size(tsp->accepts_cargo_label)) tsp->accepts_cargo_label[i] = CT_INVALID;
 				}
 				break;
 			}
@@ -3683,8 +3683,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 							definition_size = UINT32_MAX;
 						}
 
-						layout.push_back(IndustryTileLayoutTile{});
-						IndustryTileLayoutTile &it = layout.back();
+						IndustryTileLayoutTile &it = layout.emplace_back();
 
 						it.ti.x = buf.ReadByte(); // Offsets from northermost tile
 						++bytes_read;
@@ -3898,7 +3897,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 					} else {
 						indsp->produced_cargo[i] = INVALID_CARGO;
 					}
-					indsp->produced_cargo_label[i] = CT_INVALID;
+					if (i < std::size(indsp->produced_cargo_label)) indsp->produced_cargo_label[i] = CT_INVALID;
 				}
 				break;
 			}
@@ -3917,7 +3916,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 					} else {
 						indsp->accepts_cargo[i] = INVALID_CARGO;
 					}
-					indsp->accepts_cargo_label[i] = CT_INVALID;
+					if (i < std::size(indsp->accepts_cargo_label)) indsp->accepts_cargo_label[i] = CT_INVALID;
 				}
 				break;
 			}
@@ -11102,7 +11101,7 @@ static void FinaliseHouseArray()
 		}
 
 		/* Apply default cargo translation map for unset cargo slots */
-		for (uint i = 0; i < lengthof(hs->accepts_cargo); ++i) {
+		for (uint i = 0; i < lengthof(hs->accepts_cargo_label); ++i) {
 			if (!IsValidCargoID(hs->accepts_cargo[i])) hs->accepts_cargo[i] = GetCargoIDByLabel(hs->accepts_cargo_label[i]);
 			/* Disable acceptance if cargo type is invalid. */
 			if (!IsValidCargoID(hs->accepts_cargo[i])) hs->cargo_acceptance[i] = 0;
@@ -11183,17 +11182,17 @@ static void FinaliseIndustriesArray()
 		}
 
 		/* Apply default cargo translation map for unset cargo slots */
-		for (uint i = 0; i < std::size(indsp.produced_cargo); ++i) {
+		for (size_t i = 0; i < std::size(indsp.produced_cargo_label); ++i) {
 			if (!IsValidCargoID(indsp.produced_cargo[i])) indsp.produced_cargo[i] = GetCargoIDByLabel(GetActiveCargoLabel(indsp.produced_cargo_label[i]));
 		}
-		for (uint i = 0; i < std::size(indsp.accepts_cargo); ++i) {
+		for (size_t i = 0; i < std::size(indsp.accepts_cargo_label); ++i) {
 			if (!IsValidCargoID(indsp.accepts_cargo[i])) indsp.accepts_cargo[i] = GetCargoIDByLabel(GetActiveCargoLabel(indsp.accepts_cargo_label[i]));
 		}
 	}
 
 	for (auto &indtsp : _industry_tile_specs) {
 		/* Apply default cargo translation map for unset cargo slots */
-		for (size_t i = 0; i < indtsp.accepts_cargo.size(); ++i) {
+		for (size_t i = 0; i < std::size(indtsp.accepts_cargo_label); ++i) {
 			if (!IsValidCargoID(indtsp.accepts_cargo[i])) indtsp.accepts_cargo[i] = GetCargoIDByLabel(GetActiveCargoLabel(indtsp.accepts_cargo_label[i]));
 		}
 	}

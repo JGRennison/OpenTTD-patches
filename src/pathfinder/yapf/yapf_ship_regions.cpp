@@ -43,14 +43,9 @@ inline uint ManhattanDistance(const CYapfRegionPatchNodeKey &a, const CYapfRegio
 
 /** Yapf Node for water regions. */
 template <class Tkey_>
-struct CYapfRegionNodeT {
+struct CYapfRegionNodeT : CYapfNodeT<Tkey_, CYapfRegionNodeT<Tkey_> > {
 	typedef Tkey_ Key;
 	typedef CYapfRegionNodeT<Tkey_> Node;
-
-	Tkey_ key;
-	Node *parent;
-	int cost;
-	int estimate;
 
 	inline void Set(Node *parent, const WaterRegionPatchDesc &water_region_patch)
 	{
@@ -67,7 +62,7 @@ struct CYapfRegionNodeT {
 
 	DiagDirection GetDiagDirFromParent() const
 	{
-		if (!this->parent) return INVALID_DIAGDIR;
+		if (this->parent == nullptr) return INVALID_DIAGDIR;
 		const int dx = this->key.water_region_patch.x - this->parent->key.water_region_patch.x;
 		const int dy = this->key.water_region_patch.y - this->parent->key.water_region_patch.y;
 		if (dx > 0 && dy == 0) return DIAGDIR_SW;
@@ -76,11 +71,6 @@ struct CYapfRegionNodeT {
 		if (dx == 0 && dy < 0) return DIAGDIR_NW;
 		return INVALID_DIAGDIR;
 	}
-
-	inline const Tkey_ &GetKey() const { return this->key; }
-	inline int GetCost() { return this->cost; }
-	inline int GetCostEstimate() { return this->estimate; }
-	inline bool operator<(const Node &other) const { return this->estimate < other.estimate; }
 };
 
 /** YAPF origin for water regions. */
@@ -88,9 +78,9 @@ template <class Types>
 class CYapfOriginRegionT
 {
 public:
-	typedef typename Types::Tpf Tpf;              ///< The pathfinder class (derived from THIS class).
-	typedef typename Types::NodeList::Titem Node; ///< This will be our node type.
-	typedef typename Node::Key Key;               ///< Key to hash tables.
+	typedef typename Types::Tpf Tpf; ///< The pathfinder class (derived from THIS class).
+	typedef typename Types::NodeList::Item Node; ///< This will be our node type.
+	typedef typename Node::Key Key; ///< Key to hash tables.
 
 protected:
 	inline Tpf &Yapf() { return *static_cast<Tpf*>(this); }
@@ -125,9 +115,9 @@ template <class Types>
 class CYapfDestinationRegionT
 {
 public:
-	typedef typename Types::Tpf Tpf;              ///< The pathfinder class (derived from THIS class).
-	typedef typename Types::NodeList::Titem Node; ///< This will be our node type.
-	typedef typename Node::Key Key;               ///< Key to hash tables.
+	typedef typename Types::Tpf Tpf; ///< The pathfinder class (derived from THIS class).
+	typedef typename Types::NodeList::Item Node; ///< This will be our node type.
+	typedef typename Node::Key Key; ///< Key to hash tables.
 
 protected:
 	Key dest;
@@ -165,10 +155,10 @@ template <class Types>
 class CYapfFollowRegionT
 {
 public:
-	typedef typename Types::Tpf Tpf;                     ///< The pathfinder class (derived from THIS class).
+	typedef typename Types::Tpf Tpf; ///< The pathfinder class (derived from THIS class).
 	typedef typename Types::TrackFollower TrackFollower;
-	typedef typename Types::NodeList::Titem Node;        ///< This will be our node type.
-	typedef typename Node::Key Key;                      ///< Key to hash tables.
+	typedef typename Types::NodeList::Item Node; ///< This will be our node type.
+	typedef typename Node::Key Key; ///< Key to hash tables.
 
 protected:
 	inline Tpf &Yapf() { return *static_cast<Tpf*>(this); }
@@ -237,10 +227,10 @@ template <class Types>
 class CYapfCostRegionT
 {
 public:
-	typedef typename Types::Tpf Tpf;              ///< The pathfinder class (derived from THIS class).
+	typedef typename Types::Tpf Tpf; ///< The pathfinder class (derived from THIS class).
 	typedef typename Types::TrackFollower TrackFollower;
-	typedef typename Types::NodeList::Titem Node; ///< This will be our node type.
-	typedef typename Node::Key Key;               ///< Key to hash tables.
+	typedef typename Types::NodeList::Item Node; ///< This will be our node type.
+	typedef typename Node::Key Key; ///< Key to hash tables.
 
 protected:
 	/** To access inherited path finder. */
@@ -292,7 +282,7 @@ struct CYapfRegion_TypesT
 	typedef CYapfCostRegionT<Types>           PfCost;        ///< Cost provider.
 };
 
-typedef CNodeList_HashTableT<CYapfRegionNodeT<CYapfRegionPatchNodeKey>> CRegionNodeListWater;
+typedef NodeList<CYapfRegionNodeT<CYapfRegionPatchNodeKey>> CRegionNodeListWater;
 
 struct CYapfRegionWater : CYapfT<CYapfRegion_TypesT<CYapfRegionWater, CRegionNodeListWater>>
 {

@@ -36,7 +36,7 @@ typedef CYapfShipNodeT<CYapfNodeKeyExitDir>  CYapfShipNodeExitDir;
 typedef CYapfShipNodeT<CYapfNodeKeyTrackDir> CYapfShipNodeTrackDir;
 
 /* Default NodeList types */
-typedef CNodeList_HashTableT<CYapfShipNodeExitDir> CShipNodeListExitDir;
-typedef CNodeList_HashTableT<CYapfShipNodeTrackDir> CShipNodeListTrackDir;
+typedef NodeList<CYapfShipNodeExitDir> CShipNodeListExitDir;
+typedef NodeList<CYapfShipNodeTrackDir> CShipNodeListTrackDir;
 
 #endif /* YAPF_NODE_SHIP_HPP */

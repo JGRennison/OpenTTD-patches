@@ -197,8 +197,7 @@ bool DLSFile::ReadDLSArticulation(FileHandle &f, DWORD list_length, std::vector<
 
 bool DLSFile::ReadDLSRegion(FileHandle &f, DWORD list_length, std::vector<DLSRegion> &out)
 {
-	out.push_back(DLSRegion());
-	DLSRegion &region = out.back();
+	DLSRegion &region = out.emplace_back();
 
 	/* Set default values. */
 	region.wave_sample.cbSize = 0;
@@ -282,8 +281,7 @@ bool DLSFile::ReadDLSRegionList(FileHandle &f, DWORD list_length, DLSInstrument 
 
 bool DLSFile::ReadDLSInstrument(FileHandle &f, DWORD list_length)
 {
-	this->instruments.push_back(DLSInstrument());
-	DLSInstrument &instrument = this->instruments.back();
+	DLSInstrument &instrument = this->instruments.emplace_back();
 
 	while (list_length > 0) {
 		ChunkHeader chunk;
@@ -354,8 +352,7 @@ bool DLSFile::ReadDLSInstrumentList(FileHandle &f, DWORD list_length)
 
 bool DLSFile::ReadDLSWave(FileHandle &f, DWORD list_length, long offset)
 {
-	this->waves.push_back(DLSWave());
-	DLSWave &wave = this->waves.back();
+	DLSWave &wave = this->waves.emplace_back();
 
 	/* Set default values. */
 	MemSetT(&wave.wave_sample, 0);

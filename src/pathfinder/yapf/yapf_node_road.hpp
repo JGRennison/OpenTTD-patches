@@ -36,7 +36,7 @@ typedef CYapfRoadNodeT<CYapfNodeKeyExitDir>  CYapfRoadNodeExitDir;
 typedef CYapfRoadNodeT<CYapfNodeKeyTrackDir> CYapfRoadNodeTrackDir;
 
 /* Default NodeList types */
-typedef CNodeList_HashTableT<CYapfRoadNodeExitDir> CRoadNodeListExitDir;
-typedef CNodeList_HashTableT<CYapfRoadNodeTrackDir> CRoadNodeListTrackDir;
+typedef NodeList<CYapfRoadNodeExitDir> CRoadNodeListExitDir;
+typedef NodeList<CYapfRoadNodeTrackDir> CRoadNodeListTrackDir;
 
 #endif /* YAPF_NODE_ROAD_HPP */
