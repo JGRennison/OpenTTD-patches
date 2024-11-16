@@ -18,10 +18,17 @@
 #include "window_gui.h"
 #include "dropdown_type.h"
 #include "cargo_type.h"
+#include <bit>
 #include <iterator>
 #include <numeric>
 
 typedef GUIList<const Vehicle*, std::nullptr_t, CargoID> GUIVehicleList;
+
+inline uint32_t GetVehicleTimetableTypeSortKey(const Vehicle *v)
+{
+	uint32_t result = v->vehicle_flags & GetBitMaskBN<uint32_t>(VF_TIMETABLE_SEPARATION, VF_AUTOMATE_TIMETABLE, VF_AUTOFILL_TIMETABLE, VF_SCHEDULED_DISPATCH);
+	return std::rotr(result, VF_AUTOMATE_TIMETABLE); // Move automate bit to LSB (least important for sorting)
+}
 
 struct GUIVehicleGroup {
 	VehicleList::const_iterator vehicles_begin;    ///< Pointer to beginning element of this vehicle group.
@@ -67,6 +74,12 @@ struct GUIVehicleGroup {
 	{
 		if (this->NumVehicles() < 1) return 0;
 		return this->vehicles_begin[0]->GetOrderOccupancyAverage();
+	}
+
+	uint32_t GetTimetableTypeSortKey() const
+	{
+		if (this->NumVehicles() < 1) return 0;
+		return GetVehicleTimetableTypeSortKey(this->vehicles_begin[0]);
 	}
 };
 

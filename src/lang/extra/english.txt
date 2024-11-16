@@ -104,6 +104,7 @@ STR_SORT_BY_MAX_SPEED_LOADED                                    :Maximum speed (
 STR_SORT_BY_VEHICLES_CALLING                                    :Number of vehicles calling
 STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST                      :Cargo capacity/Running cost
 STR_SORT_BY_VEHICLE_COUNT                                       :Vehicle count
+STR_SORT_BY_TIMETABLE_TYPE                                      :Timetable type
 
 STR_SETTINGS_MENU_ZONING                                        :Zoning
 
@@ -1517,6 +1518,9 @@ STR_VEHICLE_LIST_TIMETABLE_DELAY_LATE                           :{STRING2}, Time
 STR_VEHICLE_LIST_TIMETABLE_DELAY_EARLY                          :{STRING2}, Timetable status: {STRING1} early
 STR_VEHICLE_LIST_TIMETABLE_DELAY_ON_TIME                        :{STRING2}, Timetable status: On time
 STR_VEHICLE_LIST_ORDER_OCCUPANCY_AVERAGE                        :{STRING2}, Average order occupancy: {COMMA}%
+STR_VEHICLE_LIST_TIMETABLE_TYPE                                 :{STRING2}, Timetable type: {RAW_STRING}
+
+STR_VEHICLE_LIST_TIMETABLE_TYPE_EXTRA_ITEM                      :, {STRING}
 
 STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING2} (lifetime: {CURRENCY_LONG})
 STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE                           :Cancel servicing/send to

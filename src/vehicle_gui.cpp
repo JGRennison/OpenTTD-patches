@@ -23,6 +23,8 @@
 #include "depot_map.h"
 #include "group_gui.h"
 #include "strings_func.h"
+#include "strings_internal.h"
+#include "strings_builder.h"
 #include "vehicle_func.h"
 #include "autoreplace_gui.h"
 #include "string_func.h"
@@ -72,12 +74,14 @@ static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleTimeToLiveSor
 static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleTimetableDelaySorter;
 static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleAverageOrderOccupancySorter;
 static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleMaxSpeedLoadedSorter;
+static BaseVehicleListWindow::VehicleIndividualSortFunction VehicleTimetableTypeSorter;
 static BaseVehicleListWindow::VehicleGroupSortFunction VehicleGroupLengthSorter;
 static BaseVehicleListWindow::VehicleGroupSortFunction VehicleGroupTotalProfitThisYearSorter;
 static BaseVehicleListWindow::VehicleGroupSortFunction VehicleGroupTotalProfitLastYearSorter;
 static BaseVehicleListWindow::VehicleGroupSortFunction VehicleGroupAverageProfitThisYearSorter;
 static BaseVehicleListWindow::VehicleGroupSortFunction VehicleGroupAverageProfitLastYearSorter;
 static BaseVehicleListWindow::VehicleGroupSortFunction VehicleGroupAverageOrderOccupancySorter;
+static BaseVehicleListWindow::VehicleGroupSortFunction VehicleGroupTimetableTypeSorter;
 
 /** Wrapper to convert a VehicleIndividualSortFunction to a VehicleGroupSortFunction */
 template <BaseVehicleListWindow::VehicleIndividualSortFunction func>
@@ -104,6 +108,7 @@ enum VehicleSortType
 	VST_TIMETABLE_DELAY,
 	VST_AVERAGE_ORDER_OCCUPANCY,
 	VST_MAX_SPEED_LOADED,
+	VST_TIMETABLE_TYPE,
 };
 
 enum VehicleGroupSortType
@@ -114,6 +119,7 @@ enum VehicleGroupSortType
 	VGST_AVERAGE_PROFIT_THIS_YEAR,
 	VGST_AVERAGE_PROFIT_LAST_YEAR,
 	VGST_AVERAGE_ORDER_OCCUPANCY,
+	VGST_TIMETABLE_TYPE,
 };
 
 const std::initializer_list<BaseVehicleListWindow::VehicleGroupSortFunction * const> BaseVehicleListWindow::vehicle_group_none_sorter_funcs = {
@@ -133,6 +139,7 @@ const std::initializer_list<BaseVehicleListWindow::VehicleGroupSortFunction * co
 	&VehicleIndividualToGroupSorterWrapper<VehicleTimetableDelaySorter>,
 	&VehicleIndividualToGroupSorterWrapper<VehicleAverageOrderOccupancySorter>,
 	&VehicleIndividualToGroupSorterWrapper<VehicleMaxSpeedLoadedSorter>,
+	&VehicleIndividualToGroupSorterWrapper<VehicleTimetableTypeSorter>,
 };
 
 const std::initializer_list<const StringID> BaseVehicleListWindow::vehicle_group_none_sorter_names_calendar = {
@@ -152,6 +159,7 @@ const std::initializer_list<const StringID> BaseVehicleListWindow::vehicle_group
 	STR_SORT_BY_TIMETABLE_DELAY,
 	STR_SORT_BY_AVG_ORDER_OCCUPANCY,
 	STR_SORT_BY_MAX_SPEED_LOADED,
+	STR_SORT_BY_TIMETABLE_TYPE,
 };
 
 const std::initializer_list<const StringID> BaseVehicleListWindow::vehicle_group_none_sorter_names_wallclock = {
@@ -171,6 +179,7 @@ const std::initializer_list<const StringID> BaseVehicleListWindow::vehicle_group
 	STR_SORT_BY_TIMETABLE_DELAY,
 	STR_SORT_BY_AVG_ORDER_OCCUPANCY,
 	STR_SORT_BY_MAX_SPEED_LOADED,
+	STR_SORT_BY_TIMETABLE_TYPE,
 };
 
 const std::initializer_list<BaseVehicleListWindow::VehicleGroupSortFunction * const> BaseVehicleListWindow::vehicle_group_shared_orders_sorter_funcs = {
@@ -180,6 +189,7 @@ const std::initializer_list<BaseVehicleListWindow::VehicleGroupSortFunction * co
 	&VehicleGroupAverageProfitThisYearSorter,
 	&VehicleGroupAverageProfitLastYearSorter,
 	&VehicleGroupAverageOrderOccupancySorter,
+	&VehicleGroupTimetableTypeSorter,
 };
 
 const std::initializer_list<const StringID> BaseVehicleListWindow::vehicle_group_shared_orders_sorter_names_calendar = {
@@ -189,6 +199,7 @@ const std::initializer_list<const StringID> BaseVehicleListWindow::vehicle_group
 	STR_SORT_BY_AVERAGE_PROFIT_THIS_YEAR,
 	STR_SORT_BY_AVERAGE_PROFIT_LAST_YEAR,
 	STR_SORT_BY_AVG_ORDER_OCCUPANCY,
+	STR_SORT_BY_TIMETABLE_TYPE,
 };
 
 const std::initializer_list<const StringID> BaseVehicleListWindow::vehicle_group_shared_orders_sorter_names_wallclock = {
@@ -198,6 +209,7 @@ const std::initializer_list<const StringID> BaseVehicleListWindow::vehicle_group
 	STR_SORT_BY_AVERAGE_PROFIT_THIS_PERIOD,
 	STR_SORT_BY_AVERAGE_PROFIT_LAST_PERIOD,
 	STR_SORT_BY_AVG_ORDER_OCCUPANCY,
+	STR_SORT_BY_TIMETABLE_TYPE,
 };
 
 const std::initializer_list<const StringID> BaseVehicleListWindow::vehicle_group_by_names = {
@@ -1615,6 +1627,12 @@ static bool VehicleGroupAverageOrderOccupancySorter(const GUIVehicleGroup &a, co
 	return a.GetOrderOccupancyAverage() < b.GetOrderOccupancyAverage();
 }
 
+/** Sort vehicle groups by timetable type */
+static bool VehicleGroupTimetableTypeSorter(const GUIVehicleGroup &a, const GUIVehicleGroup &b)
+{
+	return a.GetTimetableTypeSortKey() < b.GetTimetableTypeSortKey();
+}
+
 /** Sort vehicles by their number */
 static bool VehicleNumberSorter(const Vehicle * const &a, const Vehicle * const &b)
 {
@@ -1773,6 +1791,13 @@ static bool VehicleMaxSpeedLoadedSorter(const Vehicle * const &a, const Vehicle 
 	};
 
 	int r = get_max_speed_loaded(Train::From(a)) - get_max_speed_loaded(Train::From(b));
+	return (r != 0) ? r < 0 : VehicleNumberSorter(a, b);
+}
+
+/** Sort vehicles by timetable type */
+static bool VehicleTimetableTypeSorter(const Vehicle * const &a, const Vehicle * const &b)
+{
+	int r = GetVehicleTimetableTypeSortKey(a) - GetVehicleTimetableTypeSortKey(b);
 	return (r != 0) ? r < 0 : VehicleNumberSorter(a, b);
 }
 
@@ -1974,6 +1999,22 @@ static int GetUnitNumberWidth(int digits)
 	return GetStringBoundingBox(STR_JUST_COMMA).width;
 }
 
+static std::string GetVehicleTimetableGroupString(const Vehicle *v)
+{
+	format_buffer buffer;
+	auto add_flag = [&](uint8_t flag, StringID str) {
+		if (HasBit(v->vehicle_flags, flag)) {
+			auto tmp_params = MakeParameters(str);
+			GetStringWithArgs(StringBuilder(buffer), buffer.empty() ? STR_JUST_STRING : STR_VEHICLE_LIST_TIMETABLE_TYPE_EXTRA_ITEM, tmp_params);
+		}
+	};
+	add_flag(VF_SCHEDULED_DISPATCH, STR_TIMETABLE_SCHEDULED_DISPATCH);
+	add_flag(VF_TIMETABLE_SEPARATION, STR_TIMETABLE_AUTO_SEPARATION);
+	add_flag(VF_AUTOFILL_TIMETABLE, STR_TIMETABLE_AUTOFILL);
+	add_flag(VF_AUTOMATE_TIMETABLE, STR_TIMETABLE_AUTOMATE);
+	return buffer.to_string();
+}
+
 /**
  * Draw all the vehicle list items.
  * @param selected_vehicle The vehicle that is to be highlighted.
@@ -2098,6 +2139,12 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 					break;
 				}
 
+				case VST_TIMETABLE_TYPE: {
+					str = STR_VEHICLE_LIST_TIMETABLE_TYPE;
+					SetDParamStr(3, GetVehicleTimetableGroupString(v));
+					break;
+				}
+
 				default: {
 					str = STR_JUST_STRING2;
 					break;
@@ -2128,6 +2175,14 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 					if (occupancy_average >= 16) {
 						str = STR_VEHICLE_LIST_ORDER_OCCUPANCY_AVERAGE;
 						SetDParam(3, occupancy_average - 16);
+					}
+					break;
+				}
+
+				case VGST_TIMETABLE_TYPE: {
+					if (vehgroup.NumVehicles() != 0) {
+						str = STR_VEHICLE_LIST_TIMETABLE_TYPE;
+						SetDParamStr(3, GetVehicleTimetableGroupString(vehgroup.vehicles_begin[0]));
 					}
 					break;
 				}
