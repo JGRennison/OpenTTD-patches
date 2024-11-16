@@ -171,7 +171,7 @@ STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING                :尋路至單向
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING_HELPTEXT       :啟用之後允許 YAPF 尋路器尋路至單向路徑號誌的背面
 
 STR_CONFIG_SETTING_INFLATION_FIXED_DATES                        :在 1920 年與 2090 年期間應用通貨膨脹：{STRING}
-STR_CONFIG_SETTING_INFLATION_FIXED_DATES_HELPTEXT               :當啟用時，不管遊戲是在哪年進行的，通脹將在 1920 到 2090 年間始終持續，這是 OpenTTD 1.11 以來所使用的通脹模型{}如果禁用，通脹將會在遊戲開始後 170 年裡不斷持續，這是一直使用到 OpenTTD 1.10 的模型
+STR_CONFIG_SETTING_INFLATION_FIXED_DATES_HELPTEXT               :當啟用時，不管遊戲是在哪年進行的，通脹將在 1920 到 2090 年間始終持續，這是 OpenTTD 1.11 以來所使用的通脹模型{}如果停用，通脹將會在遊戲開始後 170 年裡不斷持續，這是一直使用到 OpenTTD 1.10 的模型
 
 STR_CONFIG_SETTING_IMPROVED_BREAKDOWNS                          :啟用高級載具故障：{STRING}
 
@@ -231,16 +231,16 @@ STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT_EXTRA              :{STRING}{}“�
 STR_CONFIG_SETTING_SHOW_ALL_SIG_RESTRICTED_RECOLOUR             :僅尋路限制號誌
 
 STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES             :顯示高級尋路限制功能：{STRING}
-STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :顯示高級尋路限制功能。禁用時，某些高級功能不會在界面中顯示，但所有玩家仍然可以使用。
+STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :顯示高級尋路限制功能。停用時，某些高級功能不會在界面中顯示，但所有玩家仍然可以使用。
 
 STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES                        :顯示可編程邏輯號誌功能：{STRING}
-STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES_HELPTEXT               :顯示可編程邏輯號誌功能。禁用時，構建和配置可編程邏輯號誌的按鈕不會在界面中顯示，但所有玩家仍然可以使用。
+STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES_HELPTEXT               :顯示可編程邏輯號誌功能。停用時，構建和配置可編程邏輯號誌的按鈕不會在界面中顯示，但所有玩家仍然可以使用。
 
 STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES                     :顯示禁止進入號誌功能：{STRING}
-STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES_HELPTEXT            :顯示禁止進入號誌功能。禁用時，構建和配置禁止進入號誌的按鈕不會在界面中顯示，但所有玩家仍然可以使用。
+STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES_HELPTEXT            :顯示禁止進入號誌功能。停用時，構建和配置禁止進入號誌的按鈕不會在界面中顯示，但所有玩家仍然可以使用。
 
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES               :顯示進階裝載模式功能：{STRING}
-STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES_HELPTEXT      :展示進階裝載模式功能（通過式裝載/卸載、汽車方向等）{}當禁用時，一些進階裝載模式功能將不會在用戶界面中展示，但仍可用
+STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES_HELPTEXT      :展示進階裝載模式功能（通過式裝載/卸載、汽車方向等）{}當停用時，一些進階裝載模式功能將不會在用戶界面中展示，但仍可用
 
 STR_CONFIG_SETTING_DISABLE_TOP_VEH_LIST_MASS_ACTIONS            :停用一級載具清單的批量操作按鈕：{STRING}
 STR_CONFIG_SETTING_DISABLE_TOP_VEH_LIST_MASS_ACTIONS_HELPTEXT   :停用本項「所有載具」與「未分類群組載具」清單的部分按鈕，包括「啟停載具」與「前往車廠」。本項旨在防止誤操作帶來的問題。
@@ -274,8 +274,8 @@ STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_DUAL_BUTTONS :分別在列車
 STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL                    :隱藏號誌站標簽：{STRING}
 STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL_HELPTEXT           :啟用後可以在號誌站視窗選擇隱藏號誌站名稱{}這在號誌站僅用於裝飾時可以改善觀感
 
-STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION                      :禁用水體動畫：{STRING}
-STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_HELPTEXT             :啟用後在當前縮放大小是原始縮放大小縮放等級之外的情況下禁用水體動畫效果{}啟用之後可以防止在高倍縮放下的水體閃爍
+STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION                      :停用水體動畫：{STRING}
+STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_HELPTEXT             :啟用後在當前縮放大小是原始縮放大小縮放等級之外的情況下停用水體動畫效果{}啟用之後可以防止在高倍縮放下的水體閃爍
 STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_8X                   :8 倍縮放及以上
 STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_16X                  :16 倍縮放及以上
 STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_32X                  :32 倍縮放及以上
@@ -308,7 +308,7 @@ STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR             :使用日歷年
 STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR_HELPTEXT    :當使用大於一的經濟速度因數時，使用日歷年（日歷計時模式）或週期（掛鐘計時模式）顯示載具運行成本，而不是使用“原始年”顯示。
 
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :啟用橋隧號誌高級模式：{STRING}
-STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :啟用橋梁和隧道號誌模擬的高級模式。禁用後，不能將不在高級模式下的橋梁/隧道更改為高級模式，但其他玩家可以選擇啟用此設定並使用高級模式。
+STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :啟用橋梁和隧道號誌模擬的高級模式。停用後，不能將不在高級模式下的橋梁/隧道更改為高級模式，但其他玩家可以選擇啟用此設定並使用高級模式。
 
 STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED                    :以最高速度排序軌道類型：{STRING}
 STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED_HELPTEXT           :以兼容性和速度排序軌道並代替預設排序
@@ -422,14 +422,14 @@ STR_CONFIG_SETTING_AUTOSAVE                                     :自動儲存：
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :選擇自動存檔的週期
 
 STR_CONFIG_SETTING_AUTOSAVE_REALTIME                            :使用現實時間自動儲存：{STRING}
-STR_CONFIG_SETTING_AUTOSAVE_REALTIME_HELPTEXT                   :啟用時，自動儲存將使用現實時間，而不是遊戲時間，（在暫停遊戲時，若使用「遊戲時間」則不會自動儲存，但使用「現實時間」則會自動儲存）。{}禁用時，自動儲存將使用遊戲模擬時間
+STR_CONFIG_SETTING_AUTOSAVE_REALTIME_HELPTEXT                   :啟用時，自動儲存將使用現實時間，而不是遊戲時間，（在暫停遊戲時，若使用「遊戲時間」則不會自動儲存，但使用「現實時間」則會自動儲存）。{}停用時，自動儲存將使用遊戲模擬時間
 
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT               :掉線自動儲存：{STRING}
 STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT_HELPTEXT      :啟用後，當從伺服器斷連之後多玩家客戶端將自動儲存遊戲
 
 STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM                   :在覆蓋已經存在的遊戲存檔文件時警告：{STRING}
 STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_HELPTEXT          :在儲存高度圖或遊戲存檔覆蓋舊文件時警告
-STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_DISABLED          :禁用
+STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_DISABLED          :停用
 STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_DIFFERENT         :只在文件有變化時
 STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_DIFFERENT_UNKNOWN :只在文件有變化時或未知情況
 STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_ENABLED           :啟用
@@ -748,7 +748,7 @@ STR_CONFIG_SETTING_REMAIN_IF_NEXT_ORDER_SAME_STATION            :如果下一個
 STR_CONFIG_SETTING_REMAIN_IF_NEXT_ORDER_SAME_STATION_HELPTEXT   :如果載具的下一個指令是為當前車站，那麽載具將停留在原地裝卸貨而不是駛離當前車站
 
 STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS                   :使用 <Ctrl> 鍵拖拽設定號誌時忽略號誌站與車站：{STRING}
-STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS_HELPTEXT          :設定使用 <Ctrl> 鍵拖拽設定號誌時的行為。禁用時，當遊戲檢測到到達車站或號誌站時號誌設定停止。啟用時，號誌檢測將忽略車站與號誌站並繼續設定號誌。
+STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS_HELPTEXT          :設定使用 <Ctrl> 鍵拖拽設定號誌時的行為。停用時，當遊戲檢測到到達車站或號誌站時號誌設定停止。啟用時，號誌檢測將忽略車站與號誌站並繼續設定號誌。
 
 STR_CONFIG_SETTING_DRAG_SIGNALS_STOP_RESTRICTED_SIGNAL          :使用 <Ctrl> 鍵拖拽移除號誌時在尋路限制號誌處停止：{STRING}
 STR_CONFIG_SETTING_DRAG_SIGNALS_STOP_RESTRICTED_SIGNAL_HELPTEXT :設定使用 <Ctrl> 鍵拖拽移除號誌時的行為。啟用時，遊戲將在檢測到號誌有尋路限制程序時停止移除號誌。
@@ -759,8 +759,8 @@ STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED_NEWGRF            :{WHITE}……�
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :顯示時刻表時以刻度數目取代日為單位：{STRING}
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :在時刻表上以刻度數目取代日數顯示運行時間
 
-STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_CALENDAR           :{RED}[本設定在日曆時間模式中禁用]
-STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_WALLCLOCK          :{RED}[本設定在掛鐘時間模式中禁用]
+STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_CALENDAR           :{RED}[本設定在日曆時間模式中停用]
+STR_CONFIG_SETTING_DISABLED_TIMEKEEPING_MODE_WALLCLOCK          :{RED}[本設定在掛鐘時間模式中停用]
 
 STR_CHEAT_EDIT_MONEY_QUERY_CAPT                                 :{WHITE}增加或減少現金
 STR_CHEAT_INFLATION_COST                                        :{LTBLUE}改變支出通脹因數：{ORANGE}{DECIMAL}
