@@ -95,3 +95,13 @@ TEST_CASE("GetBitMaskFL tests")
 	CHECK(GetBitMaskFL<uint8_t>(0, 0) == 1);
 	CHECK(GetBitMaskFL<uint8_t>(3, 4) == 0x18);
 }
+
+TEST_CASE("GetBitMaskBN tests")
+{
+	CHECK(GetBitMaskBN<uint64_t>() == 0ULL);
+	CHECK(GetBitMaskBN<uint64_t>(0, 32, 63) == 0x8000000100000001ULL);
+	CHECK(GetBitMaskBN<uint32_t>(0, 31, 2) == 0x80000005);
+	CHECK(GetBitMaskBN<uint8_t>() == 0);
+	CHECK(GetBitMaskBN<uint8_t>(0, 0, 1) == 3);
+	CHECK(GetBitMaskBN<uint8_t>(7, 2) == 0x84);
+}

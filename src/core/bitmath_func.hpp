@@ -239,6 +239,21 @@ constexpr T GetBitMaskFL(const uint8_t first, const uint8_t last)
 }
 
 /**
+ * Return a bit mask of bits, set by bit number.
+ *
+ * @param bits The bits to set
+ * @pre each bit < sizeof(T) * 8
+ * @return The bit mask
+ */
+template <typename T, typename... Args>
+constexpr T GetBitMaskBN(Args... bits)
+{
+	T value = static_cast<T>(0);
+	(SetBit<T>(value, bits), ...);
+	return value;
+}
+
+/**
  * Search the first set bit in a value.
  * When no bit is set, it returns 0.
  *
