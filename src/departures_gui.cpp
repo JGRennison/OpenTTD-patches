@@ -327,6 +327,8 @@ public:
 			this->show_via = _settings_client.gui.departure_default_via;
 		}
 
+		this->source_mode = static_cast<DeparturesSourceMode>(_settings_client.gui.departure_default_source);
+
 		this->PostConstructSetup();
 	}
 
@@ -357,6 +359,7 @@ public:
 		}
 
 		this->show_via = true;
+		this->source_mode = static_cast<DeparturesSourceMode>(_settings_client.gui.departure_default_source);
 
 		this->PostConstructSetup();
 	}
@@ -638,6 +641,7 @@ public:
 					this->calc_tick_countdown = 0;
 					if (_pause_mode != PM_UNPAUSED) this->OnGameTick();
 				}
+				_settings_client.gui.departure_default_source = this->source_mode;
 				this->SetWidgetDirty(widget);
 				break;
 			}

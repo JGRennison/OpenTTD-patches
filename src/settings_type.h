@@ -267,6 +267,7 @@ struct GUISettings : public TimeSettings {
 	uint8_t     departure_conditionals;                          ///< how to handle conditional orders
 	bool        departure_merge_identical;                       ///< whether to merge identical departures
 	uint8_t     departure_default_mode;                          ///< default mode for non-waypoint departure board window
+	uint8_t     departure_default_source;                        ///< default source for departure board window
 	bool        departure_default_via;                           ///< default via type for station departure board window
 	bool        departure_default_show_empty;                    ///< default show empty mode for departure board window
 	RightClickClose right_click_wnd_close;                       ///< close window with right click
