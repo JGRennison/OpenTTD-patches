@@ -219,8 +219,8 @@ enum VarAction2AdjustInferenceFlags : uint16_t {
 DECLARE_ENUM_AS_BIT_SET(VarAction2AdjustInferenceFlags)
 
 struct VarAction2TempStoreInferenceVarSource {
-	DeterministicSpriteGroupAdjustType type;
 	uint16_t variable;
+	DeterministicSpriteGroupAdjustType type;
 	uint8_t shift_num;
 	uint32_t parameter;
 	uint32_t and_mask;
