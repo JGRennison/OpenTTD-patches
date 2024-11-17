@@ -467,7 +467,8 @@ protected:
 
 	uintptr_t parent_storage; ///< Parent leg of this one, flag in LSB of pointer
 
-	/** Get the parent leg of this one. */
+public:
+	/** Set the parent leg of this one, only for internal use, or when moving parent path. */
 	inline void SetParent(Path *parent) { this->parent_storage = reinterpret_cast<uintptr_t>(parent) | (this->parent_storage & 1); }
 };
 static_assert(std::is_trivially_destructible_v<Path>);

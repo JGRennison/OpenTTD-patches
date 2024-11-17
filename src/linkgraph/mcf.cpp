@@ -299,18 +299,15 @@ void MultiCommodityFlow::Dijkstra(NodeID source_node, PathVector &paths)
 	AnnoSet annos = AnnoSet(typename Tannotation::Comparator());
 	Tedge_iterator iter(this->job);
 	uint size = this->job.Size();
-	paths.resize(size, nullptr);
 
-	this->job.path_allocator.SetParameters(sizeof(Tannotation), (8192 - 32) / sizeof(Tannotation));
-
+	std::unique_ptr<Tannotation, FreeDeleter> local_paths(MallocT<Tannotation>(size));
 	for (NodeID node = 0; node < size; ++node) {
-		Tannotation *anno = new (this->job.path_allocator.Allocate()) Tannotation(node, node == source_node);
+		Tannotation *anno = new (local_paths.get() + node) Tannotation(node, node == source_node);
 		anno->UpdateAnnotation();
 		if (node == source_node) {
 			annos.insert(AnnoSetItem<Tannotation>(anno));
 			anno->SetAnnosSetFlag(true);
 		}
-		paths[node] = anno;
 	}
 	while (!annos.empty()) {
 		typename AnnoSet::iterator i = annos.begin();
@@ -328,7 +325,7 @@ void MultiCommodityFlow::Dijkstra(NodeID source_node, PathVector &paths)
 				if (capacity == 0) capacity = 1;
 			}
 
-			Tannotation *dest = static_cast<Tannotation *>(paths[to]);
+			Tannotation *dest = local_paths.get() + to;
 			if (dest->IsBetter(source, capacity, capacity - edge.Flow(), edge.DistanceAnno())) {
 				if (dest->GetAnnosSetFlag()) annos.erase(AnnoSetItem<Tannotation>(dest));
 				dest->Fork(source, capacity, capacity - edge.Flow(), edge.DistanceAnno());
@@ -336,6 +333,21 @@ void MultiCommodityFlow::Dijkstra(NodeID source_node, PathVector &paths)
 				annos.insert(AnnoSetItem<Tannotation>(dest));
 				dest->SetAnnosSetFlag(true);
 			}
+		}
+	}
+
+	/* Copy path nodes to path_allocator, fill output vector */
+	paths.resize(size, nullptr);
+	this->job.path_allocator.SetParameters(sizeof(Tannotation), (8192 - 32) / sizeof(Tannotation));
+	for (NodeID node = 0; node < size; ++node) {
+		/* Allocate and copy nodes */
+		paths[node] = new (this->job.path_allocator.Allocate()) Tannotation(local_paths.get()[node]);
+	}
+	for (NodeID node = 0; node < size; ++node) {
+		/* Fixup parent pointers */
+		Path *path = paths[node];
+		if (path->GetParent() != nullptr) {
+			path->SetParent(paths[path->GetParent()->GetNode()]);
 		}
 	}
 }
