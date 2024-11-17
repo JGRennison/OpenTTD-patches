@@ -42,7 +42,7 @@ RandomAccessFile::RandomAccessFile(const std::string &filename, Subdirectory sub
 	this->simplified_filename = name_without_path.substr(0, name_without_path.rfind('.'));
 	strtolower(this->simplified_filename);
 
-	this->SeekTo(static_cast<size_t>(pos), SEEK_SET);
+	this->SeekToIntl(static_cast<size_t>(pos), SEEK_SET);
 }
 
 /**
@@ -88,6 +88,30 @@ bool RandomAccessFile::AtEndOfFile() const
  * @param mode Type of seek (\c SEEK_CUR means \a pos is relative to current position, \c SEEK_SET means \a pos is absolute).
  */
 void RandomAccessFile::SeekTo(size_t pos, int mode)
+{
+	if (mode == SEEK_CUR) {
+		if (this->buffer + pos <= this->buffer_end) {
+			/* Seeking within existing buffer, no need to clear and re-read buffer */
+			this->buffer += pos;
+			return;
+		}
+	} else {
+		if (pos <= this->pos && (this->pos - pos) <= (size_t)(this->buffer_end - this->buffer_start)) {
+			/* Seeking within existing buffer, no need to clear and re-read buffer */
+			this->buffer = this->buffer_end - (this->pos - pos);
+			return;
+		}
+	}
+
+	this->SeekToIntl(pos, mode);
+}
+
+/**
+ * Seek in the current file.
+ * @param pos New position.
+ * @param mode Type of seek (\c SEEK_CUR means \a pos is relative to current position, \c SEEK_SET means \a pos is absolute).
+ */
+void RandomAccessFile::SeekToIntl(size_t pos, int mode)
 {
 	if (mode == SEEK_CUR) pos += this->GetPos();
 
@@ -144,7 +168,18 @@ uint32_t RandomAccessFile::ReadDwordIntl()
  */
 void RandomAccessFile::ReadBlock(void *ptr, size_t size)
 {
-	this->SeekTo(this->GetPos(), SEEK_SET);
+	if (this->buffer != this->buffer_end) {
+		size_t to_copy = std::min<size_t>(size, this->buffer_end - this->buffer);
+		memcpy(ptr, this->buffer, to_copy);
+		this->buffer += to_copy;
+		size -= to_copy;
+		if (size == 0) return;
+		ptr = ((char *)ptr) + to_copy;
+	}
+
+	/* Reset the buffer, so the next ReadByte will read bytes from the file. */
+	this->buffer = this->buffer_end = this->buffer_start;
+
 	this->pos += fread(ptr, 1, size, *this->file_handle);
 }
 
@@ -159,6 +194,6 @@ void RandomAccessFile::SkipBytes(size_t n)
 	if (n <= remaining) {
 		this->buffer += n;
 	} else {
-		this->SeekTo(n, SEEK_CUR);
+		this->SeekToIntl(n, SEEK_CUR);
 	}
 }

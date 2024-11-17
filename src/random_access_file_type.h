@@ -41,6 +41,8 @@ class RandomAccessFile {
 	uint16_t ReadWordIntl();
 	uint32_t ReadDwordIntl();
 
+	void SeekToIntl(size_t pos, int mode);
+
 public:
 	RandomAccessFile(const std::string &filename, Subdirectory subdir);
 	RandomAccessFile(const RandomAccessFile&) = delete;
