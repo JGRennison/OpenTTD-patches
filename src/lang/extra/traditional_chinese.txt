@@ -173,7 +173,7 @@ STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING_HELPTEXT       :啟用之後允
 STR_CONFIG_SETTING_INFLATION_FIXED_DATES                        :在 1920 年與 2090 年期間應用通貨膨脹：{STRING}
 STR_CONFIG_SETTING_INFLATION_FIXED_DATES_HELPTEXT               :當啟用時，不管遊戲是在哪年進行的，通脹將在 1920 到 2090 年間始終持續，這是 OpenTTD 1.11 以來所使用的通脹模型{}如果停用，通脹將會在遊戲開始後 170 年裡不斷持續，這是一直使用到 OpenTTD 1.10 的模型
 
-STR_CONFIG_SETTING_IMPROVED_BREAKDOWNS                          :啟用高級車輛故障：{STRING}
+STR_CONFIG_SETTING_IMPROVED_BREAKDOWNS                          :啟用高階車輛故障：{STRING}
 
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :船舶之間避免沖突：{STRING}
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :啟用時船舶將嘗試避免互相穿過。本項在禁止船舶 90 度轉向時效果最好
@@ -197,7 +197,7 @@ STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE                :在列車因為
 STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE_HELPTEXT       :當被啟用時，如果列車長時間在路徑號誌處等待，發送提示
 
 STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER                          :在車輛沒有回廠任務時提示：{STRING}
-STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_HELPTEXT                 :啟用時，若檢視車輛任務已開啟，則在列車、汽車、船舶的時刻表中沒有回廠任務時發出提示
+STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_HELPTEXT                 :啟用時，若車損已開啟，則在列車、汽車、船舶的時刻表中沒有回廠任務時發出提示
 STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_IF_BREAKDOWNS_ON         :如果車損已開啟
 
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER                     :車輛在 {STRING} 年後不會退役
@@ -213,25 +213,25 @@ STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_ZERO             :關
 STR_CONFIG_SETTING_SHOW_WAGON_INTRO_YEAR                        :在車輛製作視窗中展示車廂發售年份：{STRING}
 STR_CONFIG_SETTING_SHOW_WAGON_INTRO_YEAR_HELPTEXT               :在車輛製作視窗增加一行，顯示車廂的發售年份
 
-STR_CONFIG_SETTING_SHOW_TRAIN_LENGTH_IN_DETAILS                 :在車輛詳情視窗顯示長度：{STRING}
-STR_CONFIG_SETTING_SHOW_TRAIN_LENGTH_IN_DETAILS_HELPTEXT        :在車輛詳情視窗顯示其長度
+STR_CONFIG_SETTING_SHOW_TRAIN_LENGTH_IN_DETAILS                 :在車輛詳細資訊視窗顯示長度：{STRING}
+STR_CONFIG_SETTING_SHOW_TRAIN_LENGTH_IN_DETAILS_HELPTEXT        :在車輛詳細資訊視窗顯示其長度
 
-STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS                :在車輛詳情視窗顯示其所在群組：{STRING}
-STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS_HELPTEXT       :在車輛詳情頁面顯示其所在群組的名稱
+STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS                :在車輛詳細資訊視窗顯示其所在群組：{STRING}
+STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_IN_DETAILS_HELPTEXT       :在車輛詳細資訊頁面顯示其所在群組的名稱
 
-STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS          :在列車詳情視窗顯示列車重量比：{STRING}
-STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS_HELPTEXT :在列車詳情視窗顯示列車重量比
+STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS          :在列車詳細資訊視窗顯示列車重量比：{STRING}
+STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS_HELPTEXT :在列車詳細資訊視窗顯示列車重量比
 
 STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_RECOLOUR                 :顯示預設的限制號誌（帶藍色號誌桿）：{STRING}
-STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_RECOLOUR_HELPTEXT        :當使用預設號誌圖形時，帶有尋路限制程序的電氣號誌將顯示藍色號誌桿。這不會影響 NewGRF 號誌圖形。這樣可以更容易地從視覺上區分限制號誌。
+STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_RECOLOUR_HELPTEXT        :當使用預設號誌圖形時，帶有尋路限制邏輯的電力號誌將顯示藍色號誌桿。這不會影響 NewGRF 號誌圖形。這樣可以更容易地從視覺上區分限制號誌。
 
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF                             :使用預設圖形顯示所有號誌：{STRING}
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT                    :使用預設號誌圖形顯示所有號誌，而不是使用任何 NewGRF 號誌圖形。當 NewGRF 提供的號誌圖形不清晰或無法訪問時，這樣可以更容易看到號誌的狀態和類型。
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT_EXTRA              :{STRING}{}「僅尋路限制號誌」模式在啟用號誌柱重新著色且 NewGRF 本身不處理尋路限制號誌的不同圖形時，使用預設圖像顯示此種號誌。
 STR_CONFIG_SETTING_SHOW_ALL_SIG_RESTRICTED_RECOLOUR             :僅尋路限制號誌
 
-STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES             :顯示高級尋路限制功能：{STRING}
-STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :顯示高級尋路限制功能。停用時，某些高級功能不會在界面中顯示，但所有玩家仍然可以使用。
+STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES             :顯示高階尋路限制功能：{STRING}
+STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :顯示高階尋路限制功能。停用時，某些高階功能不會在界面中顯示，但所有玩家仍然可以使用。
 
 STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES                        :顯示可編程邏輯號誌功能：{STRING}
 STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES_HELPTEXT               :顯示可編程邏輯號誌功能。停用時，構建和配置可編程邏輯號誌的按鈕不會在界面中顯示，但所有玩家仍然可以使用。
@@ -242,14 +242,14 @@ STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES_HELPTEXT            :顯示禁止進
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES               :顯示進階裝載模式功能：{STRING}
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES_HELPTEXT      :展示進階裝載模式功能（通過式裝載/卸載、汽車方向等）{}當停用時，一些進階裝載模式功能將不會在用戶界面中展示，但仍可用
 
-STR_CONFIG_SETTING_DISABLE_TOP_VEH_LIST_MASS_ACTIONS            :停用初級車輛清單的批量操作按鈕：{STRING}
+STR_CONFIG_SETTING_DISABLE_TOP_VEH_LIST_MASS_ACTIONS            :停用初階車輛清單的批量操作按鈕：{STRING}
 STR_CONFIG_SETTING_DISABLE_TOP_VEH_LIST_MASS_ACTIONS_HELPTEXT   :停用本項「所有車輛」與「未分類群組車輛」清單的部分按鈕，包括「啟停車輛」與「前往車廠」。本項旨在防止誤操作帶來的問題。
 
 STR_CONFIG_SETTING_SHOW_DEPOT_SELL_GUI                          :顯示回廠並賣出功能：{STRING}
 STR_CONFIG_SETTING_SHOW_DEPOT_SELL_GUI_HELPTEXT                 :顯示回廠並賣出功能，開啟之後按住 <Ctrl> 鍵點擊回廠就可改變當前回廠任務模式
 
 STR_CONFIG_SETTING_OPEN_VEHICLE_GUI_CLONE_SHARE                 :共享調度任務的克隆結束後開啟新的車輛視窗：{STRING}
-STR_CONFIG_SETTING_OPEN_VEHICLE_GUI_CLONE_SHARE_HELPTEXT        :若已啟用，則當在車廠視窗克隆了一輛具有共享調度任務的車輛時開啟新克隆的車輛的詳情視窗
+STR_CONFIG_SETTING_OPEN_VEHICLE_GUI_CLONE_SHARE_HELPTEXT        :若已啟用，則當在車廠視窗克隆了一輛具有共享調度任務的車輛時開啟新克隆的車輛的詳細資訊視窗
 
 STR_CONFIG_SETTING_VEHICLE_NAMES                                :車輛名稱：{STRING}
 STR_CONFIG_SETTING_VEHICLE_NAMES_HELPTEXT                       :設定車輛名稱使用的命名方案{}這不適用於有自訂名稱的車輛
@@ -307,8 +307,8 @@ STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL_HELPTEXT                     :啟用後，鐵
 STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR             :使用日歷年或週期顯示車輛運行成本：{STRING}
 STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR_HELPTEXT    :當使用大於一的經濟速度因數時，使用日歷年（日歷計時模式）或週期（掛鐘計時模式）顯示車輛運行成本，而不是使用「起始年份」顯示。
 
-STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :啟用橋樑和隧道號誌高級模式：{STRING}
-STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :啟用橋樑和隧道號誌模擬的高級模式。停用後，不能將不在高級模式下的橋樑或隧道更改為高級模式，但其他玩家可以選擇啟用此設定並使用高級模式。
+STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :啟用橋樑和隧道號誌高階模式：{STRING}
+STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :啟用橋樑和隧道號誌模擬的高階模式。停用後，不能將不在高階模式下的橋樑或隧道更改為高階模式，但其他玩家可以選擇啟用此設定並使用高階模式。
 
 STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED                    :以最高速度排序軌道類型：{STRING}
 STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED_HELPTEXT           :以兼容性和速度排序軌道並代替預設排序
@@ -365,7 +365,7 @@ STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY                           :只允許「直
 STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY_HELPTEXT                  :只允許列車和汽車使用「直通」的調度。
 
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE                      :在地圖上顯示選中車輛的虛擬路徑：{STRING}
-STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_HELPTEXT             :當開啟並有車輛視窗被檢視的時候，在車輛調度站點和/或調度位置之間顯示標記{}選擇「僅車站」只顯示車輛在車站停車的調度（即不包括通過調度、號誌站和車廠）
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_HELPTEXT             :當開啟並有車輛視窗被檢視的時候，在車輛調度站點和/或調度位置之間顯示標註{}選擇「僅車站」只顯示車輛在車站停車的調度（即不包括通過調度、號誌站和車廠）
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_OFF                  :關閉
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_ALL_LOCATIONS        :所有調度任務
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_STATIONS_ONLY        :僅車站
@@ -373,7 +373,7 @@ STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_STATIONS_ONLY        :僅車站
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS                     :顯示車輛路徑覆蓋標志：{STRING}
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS_HELPTEXT            :當開啟並有車輛視窗被檢視的時候，在每個調度目標的位置將顯示一個標志，這個標志顯示了號誌站被經過的順序編號及其類型。
 
-STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR             :在車輛清單中使用公司顏色標記其他公司的車輛：{STRING}
+STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR             :在車輛清單中使用公司顏色標註其他公司的車輛：{STRING}
 STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR_HELPTEXT    :在開啟車站/車廠時，在顯示的車輛清單上用公司顏色標注該公司的車輛{}車站/車廠的擁有者除外
 
 STR_CONFIG_SETTING_ENABLE_SINGLE_VEH_SHARED_ORDER_GUI           :允許沒有共享調度任務的車輛使用共享調度視窗：{STRING}
@@ -682,7 +682,7 @@ STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES             :允許在橋下
 STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES_HELPTEXT    :啟用後將忽略 NewGRF 火車站與號誌站的高度限制{}這可能導致圖像錯誤
 
 STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES            :允許在橋下建設汽車站：{STRING}
-STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT   :允許把道路/有軌電車站建在橋下{}車輛通過橋樑而不停站需要橋樑的高度至少為一格，要讓車輛停靠在此類站點則要求橋樑的高度至少為兩格
+STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT   :允許把道路/有軌電車站建在橋下{}車輛通過橋樑而不停站需要橋樑的高度至少為一格，要讓車輛停靠在此類號誌站則要求橋樑的高度至少為兩格
 STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT_EXTRA :{STRING}{}{}NewGRF 道路/電車站可以覆蓋這一設定，並允許或不允許在橋下建設車站，並設定自訂的高度間隙要求
 
 STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES                    :允許在橋下建設船塢：{STRING}
@@ -708,8 +708,8 @@ STR_CONFIG_SETTING_ALLOW_CONVERT_TOWN_ROAD_NO_HOUSES_HELPTEXT   :決定玩家是
 STR_CONFIG_SETTING_PURCHASED_LAND_CLEAR_GROUND                  :使用地塊原始圖像呈現公司土地：{STRING}
 STR_CONFIG_SETTING_PURCHASED_LAND_CLEAR_GROUND_HELPTEXT         :啟用時，使用地塊的原始圖像呈現公司購買的土地，即顯示草地、沙地、雪地、海岸等。
 
-STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY                  :僅產生初級產業：{STRING}
-STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY_HELPTEXT         :啟用時，在地圖產生與遊戲進行中只會產生初級產業。
+STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY                  :僅產生初階產業：{STRING}
+STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY_HELPTEXT         :啟用時，在地圖產生與遊戲進行中只會產生初階產業。
 
 STR_CONFIG_SETTING_INDUSTRY_EVENT_RATE                          :工業事件頻率：{STRING}
 STR_CONFIG_SETTING_INDUSTRY_EVENT_RATE_HELPTEXT                 :縮放經濟週期內的工業事件頻率，包括工業生產變化、開業和倒閉。
@@ -751,7 +751,7 @@ STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS                   :使用 <Ctrl> �
 STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS_HELPTEXT          :設定使用 <Ctrl> 鍵拖拽設定號誌時的行為。停用時，當遊戲檢測到到達車站或號誌站時號誌設定停止。啟用時，號誌檢測將忽略車站與號誌站並繼續設定號誌。
 
 STR_CONFIG_SETTING_DRAG_SIGNALS_STOP_RESTRICTED_SIGNAL          :使用 <Ctrl> 鍵拖拽移除號誌時在尋路限制號誌處停止：{STRING}
-STR_CONFIG_SETTING_DRAG_SIGNALS_STOP_RESTRICTED_SIGNAL_HELPTEXT :設定使用 <Ctrl> 鍵拖拽移除號誌時的行為。啟用時，遊戲將在檢測到號誌有尋路限制程序時停止移除號誌。
+STR_CONFIG_SETTING_DRAG_SIGNALS_STOP_RESTRICTED_SIGNAL_HELPTEXT :設定使用 <Ctrl> 鍵拖拽移除號誌時的行為。啟用時，遊戲將在檢測到號誌有尋路限制邏輯時停止移除號誌。
 
 STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED                   :{WHITE}不能更改設定……
 STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED_NEWGRF            :{WHITE}……有 NewGRF 使用此設定
@@ -1008,8 +1008,8 @@ STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_LAST                     :最後一個
 STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_VEH                      :車輛
 
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}值
-STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}尋路限制程序
-STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}尋路限制程序 - 由 {COMMA} 個號誌共享
+STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}尋路限制邏輯
+STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}尋路限制邏輯 - 由 {COMMA} 個號誌共享
 STR_TRACE_RESTRICT_UP_BTN_TOOLTIP                               :{BLACK}上移所選的任務{}按住 <Ctrl> 鍵點擊以選擇單個任務而不是整個語句塊
 STR_TRACE_RESTRICT_DOWN_BTN_TOOLTIP                             :{BLACK}下移所選的任務{}按住 <Ctrl> 鍵點擊以選擇單個任務而不是整個語句塊
 STR_TRACE_RESTRICT_TYPE_TOOLTIP                                 :{BLACK}類型
@@ -1062,15 +1062,15 @@ STR_TRACE_RESTRICT_SELECT_SIGNAL                                :{BLACK}選擇�
 STR_TRACE_RESTRICT_SELECT_TILE                                  :{BLACK}選擇格子
 STR_TRACE_RESTRICT_INSERT_TOOLTIP                               :{BLACK}插入任務
 STR_TRACE_RESTRICT_REMOVE_TOOLTIP                               :{BLACK}移除所選的任務{}按住 <Ctrl> 鍵點擊以在保留其內容的前提下移除所選的條件任務
-STR_TRACE_RESTRICT_RESET_TOOLTIP                                :{BLACK}重設當前號誌（沒有受影響的共享程序）
-STR_TRACE_RESTRICT_COPY_TOOLTIP                                 :{BLACK}從另外的號誌處複製程序{}按住 <Ctrl> 鍵點擊來增加從另外的號誌複製來的程序
-STR_TRACE_RESTRICT_DUPLICATE_TOOLTIP                            :{BLACK}重複目前選擇的任務{}按住 <Ctrl> 鍵點擊可附加另一個號誌的程序
-STR_TRACE_RESTRICT_SHARE_TOOLTIP                                :{BLACK}與其他號誌共享程序
-STR_TRACE_RESTRICT_UNSHARE_TOOLTIP                              :{BLACK}停止與其他號誌共享程序且設立一份副本
-STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA                          :{STRING}{}{BLACK}按住 <Ctrl> 鍵點擊以與其他號誌共享程序
+STR_TRACE_RESTRICT_RESET_TOOLTIP                                :{BLACK}重設當前號誌（沒有受影響的共享邏輯）
+STR_TRACE_RESTRICT_COPY_TOOLTIP                                 :{BLACK}從另外的號誌處複製邏輯{}按住 <Ctrl> 鍵點擊來增加從另外的號誌複製來的邏輯
+STR_TRACE_RESTRICT_DUPLICATE_TOOLTIP                            :{BLACK}重複目前選擇的任務{}按住 <Ctrl> 鍵點擊可附加另一個號誌的邏輯
+STR_TRACE_RESTRICT_SHARE_TOOLTIP                                :{BLACK}與其他號誌共享邏輯
+STR_TRACE_RESTRICT_UNSHARE_TOOLTIP                              :{BLACK}停止與其他號誌共享邏輯且設立一份備份
+STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA                          :{STRING}{}{BLACK}按住 <Ctrl> 鍵點擊以與其他號誌共享邏輯
 STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}尋路限制
 STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}點擊一個任務以選擇{}按住 <Ctrl> 鍵點擊來切換任務的目標（如有）
-STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP                            :高亮顯示所有共享該程序的號誌
+STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP                            :高亮顯示所有共享該邏輯的號誌
 STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA                  :{STRING}{}{BLACK}按住 <Ctrl> 鍵點擊以列出最近使用項
 STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING           :{STRING} {PUSH_COLOUR}{RED}（需要真實制動）{POP_COLOUR}
 STR_TRACE_RESTRICT_WARNING_SIGNAL_MODE_CONTROL_ONLY             :{STRING} {PUSH_COLOUR}{RED}（僅適用於號誌模式控制操作）{POP_COLOUR}
@@ -1081,7 +1081,7 @@ STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM                      :{WHITE}無法�
 STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM                        :{WHITE}無法移動任務
 STR_TRACE_RESTRICT_ERROR_CAN_T_DUPLICATE_ITEM                   :{WHITE}無法重複任務
 STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE                        :{WHITE}數值太大，最大值是 {DECIMAL}
-STR_TRACE_RESTRICT_ERROR_NO_PROGRAM                             :沒有尋路限制程序
+STR_TRACE_RESTRICT_ERROR_NO_PROGRAM                             :沒有尋路限制邏輯
 STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE                       :偏移量過大
 STR_TRACE_RESTRICT_ERROR_CAN_T_CHANGE_CONDITIONALITY            :不能更改尋路限制
 STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ENDIF                     :不能移除「結束判斷」
@@ -1092,12 +1092,12 @@ STR_TRACE_RESTRICT_ERROR_VALIDATE_DUP_ELSE                      :檢查失敗：
 STR_TRACE_RESTRICT_ERROR_VALIDATE_ELIF_NO_IF                    :檢查失敗：「否則如果」沒有開頭的「如果」
 STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION           :檢查失敗：未知的任務
 STR_TRACE_RESTRICT_ERROR_SOURCE_SAME_AS_TARGET                  :來源和目標的號誌是相同的
-STR_TRACE_RESTRICT_ERROR_TARGET_ALREADY_HAS_PROGRAM             :目標號誌已有程序
+STR_TRACE_RESTRICT_ERROR_TARGET_ALREADY_HAS_PROGRAM             :目標號誌已有邏輯
 STR_TRACE_RESTRICT_ERROR_CAN_T_RESET_SIGNAL                     :{WHITE}不能重置號誌
-STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_PROGRAM                     :{WHITE}不能複製程序
-STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_APPEND_PROGRAM              :{WHITE}不能追加程序
-STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM                    :{WHITE}不能共享程序
-STR_TRACE_RESTRICT_ERROR_CAN_T_UNSHARE_PROGRAM                  :{WHITE}不能取消共享程序
+STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_PROGRAM                     :{WHITE}不能複製邏輯
+STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_APPEND_PROGRAM              :{WHITE}不能追加邏輯
+STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM                    :{WHITE}不能共享邏輯
+STR_TRACE_RESTRICT_ERROR_CAN_T_UNSHARE_PROGRAM                  :{WHITE}不能取消共享邏輯
 STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE                      :{WHITE}不能建立車坑……
 STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_DELETE                      :{WHITE}不能刪除車坑……
 STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME                      :{WHITE}不能重新命名車坑……
@@ -1110,10 +1110,10 @@ STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_RENAME                   :{WHITE}不能�
 STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_MODIFY                   :{WHITE}不能修改計數器……
 
 # Programmable Pre-Signals
-STR_PROGRAM_SIGNAL_TOOLTIP                                      :{BLACK}入口號誌程序
+STR_PROGRAM_SIGNAL_TOOLTIP                                      :{BLACK}入口號誌邏輯
 
-STR_ERR_PROGSIG_INVALID_INSTRUCTION                             :{WHITE}無法在有無效 ID 任務後插入任務
-STR_ERR_PROGSIG_INVALID_OPCODE                                  :{WHITE}無法插入此任務碼任務
+STR_ERR_PROGSIG_INVALID_INSTRUCTION                             :{WHITE}無法在有無效 ID 指令後插入指令
+STR_ERR_PROGSIG_INVALID_OPCODE                                  :{WHITE}無法插入此指令碼指令
 STR_ERR_PROGSIG_NOT_THERE                                       :{WHITE}這裡沒有可編程邏輯號誌
 STR_ERR_PROGSIG_INVALID_SIGNAL_STATE                            :{WHITE}此號誌狀態無效
 STR_ERR_PROGSIG_INVALID_CONDITION                               :{WHITE}此條件無效
@@ -1121,7 +1121,7 @@ STR_ERR_PROGSIG_INVALID_CONDITION_FIELD                         :{WHITE}此條�
 STR_ERR_PROGSIG_INVALID_COMPARATOR                              :{WHITE}此比較器無效
 STR_ERR_PROGSIG_INVALID_SIGNAL                                  :{WHITE}選擇了無效號誌
 
-STR_PROGSIG_CAPTION                                             :{WHITE}可編程入口號誌程序
+STR_PROGSIG_CAPTION                                             :{WHITE}可編程入口號誌邏輯
 STR_PROGSIG_COND_VARIABLE_TOOLTIP                               :{BLACK}比較上述條件
 STR_PROGSIG_COND_COMPARATOR_TOOLTIP                             :{BLACK}用來比較變量的操作符
 STR_PROGSIG_COND_VALUE_TOOLTIP                                  :{BLACK}比較變量相反的值
@@ -1130,15 +1130,15 @@ STR_PROGSIG_COND_SET_SIGNAL                                     :{BLACK}設定�
 STR_PROGSIG_COND_SET_SIGNAL_TOOLTIP                             :{BLACK}設定號誌參照
 STR_PROGSIG_GOTO_SIGNAL                                         :{BLACK}到號誌
 STR_PROGSIG_GOTO_SIGNAL_TOOLTIP                                 :{BLACK}到此號誌
-STR_PROGSIG_INSERT_TOOLTIP                                      :{BLACK}插入任務
-STR_PROGSIG_REMOVE_TOOLTIP                                      :{BLACK}移除所選的任務
-STR_PROGSIG_REMOVE_PROGRAM_TOOLTIP                              :{BLACK}移除整個程序
-STR_PROGSIG_COPY_PROGRAM_TOOLTIP                                :{BLACK}從已存在的號誌處複製程序
+STR_PROGSIG_INSERT_TOOLTIP                                      :{BLACK}插入指令
+STR_PROGSIG_REMOVE_TOOLTIP                                      :{BLACK}移除所選的指令
+STR_PROGSIG_REMOVE_PROGRAM_TOOLTIP                              :{BLACK}移除整個邏輯
+STR_PROGSIG_COPY_PROGRAM_TOOLTIP                                :{BLACK}從已存在的號誌處複製邏輯
 STR_PROGSIG_COND_SLOT_TOOLTIP                                   :{BLACK}比較車坑使用
 STR_PROGSIG_COND_COUNTER_TOOLTIP                                :{BLACK}比較使用值
 
-STR_PROGSIG_REMOVE_PROGRAM                                      :{BLACK}移除程序
-STR_PROGSIG_COPY_PROGRAM                                        :{BLACK}複製程序
+STR_PROGSIG_REMOVE_PROGRAM                                      :{BLACK}移除邏輯
+STR_PROGSIG_COPY_PROGRAM                                        :{BLACK}複製邏輯
 STR_PROGSIG_REMOVE                                              :{BLACK}移除
 STR_PROGSIG_INSERT                                              :插入
 STR_PROGSIG_INSERT_IF                                           :條件
@@ -1173,13 +1173,13 @@ STR_PROGSIG_CONDVAR_NUM_GREEN                                   :綠燈
 
 STR_PROGSIG_CONDITION_VALUE_CAPT                                :{WHITE}條件值
 
-STR_ERROR_CAN_T_INSERT_INSTRUCTION                              :{WHITE}不能插入任務
-STR_ERROR_CAN_T_MODIFY_INSTRUCTION                              :{WHITE}不能修改任務
-STR_ERROR_CAN_T_REMOVE_INSTRUCTION                              :{WHITE}不能移除任務
+STR_ERROR_CAN_T_INSERT_INSTRUCTION                              :{WHITE}不能插入指令
+STR_ERROR_CAN_T_MODIFY_INSTRUCTION                              :{WHITE}不能修改指令
+STR_ERROR_CAN_T_REMOVE_INSTRUCTION                              :{WHITE}不能移除指令
 STR_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                           :{WHITE}不能跳轉到未命名的號誌
 STR_ERROR_NOT_AN_EXIT_SIGNAL                                    :{WHITE}不是一個退出號誌
 STR_ERROR_NOT_AN_PROG_SIGNAL                                    :{WHITE}不是一個可編程入口號誌
-STR_ERROR_CANNOT_USE_SELF                                       :{WHITE}不能從自己複製程序
+STR_ERROR_CANNOT_USE_SELF                                       :{WHITE}不能從自己複製邏輯
 STR_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS               :{WHITE}不能有條件地依賴於雙向號誌
 STR_ERROR_INVALID_SIGNAL                                        :{WHITE}無效號誌
 
@@ -1258,20 +1258,20 @@ STR_NEWGRF_INSPECT_DUPLICATE                                    :{BLACK}複製
 STR_NEWGRF_INSPECT_DUPLICATE_TOOLTIP                            :{BLACK}複製此視窗
 STR_NEWGRF_INSPECT_SPRITE_DUMP                                  :{BLACK}S 鏈
 STR_NEWGRF_INSPECT_SPRITE_DUMP_TOOLTIP                          :{BLACK}顯示當前 Sprite 鏈
-STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT                            :{BLACK}無優
-STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP                    :{BLACK}在沒有應用任何優化的情況下顯示 Sprite 組{}{}如果之前沒有啟用，則需要重新載入 NewGRF (misc_debug 10)
+STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT                            :{BLACK}無最佳
+STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP                    :{BLACK}在沒有應用任何最佳化的情況下顯示 Sprite 組{}{}如果之前沒有啟用，則需要重新載入 NewGRF (misc_debug 10)
 STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO                             :滾動至 Sprite 序號
-STR_NEWGRF_INSPECT_SPRITE_DUMP_CLEAR                            :清除高亮與標記
-STR_NEWGRF_INSPECT_SPRITE_DUMP_MORE_DETAILS                     :顯示詳情
-STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_HIGHLIGHT               :點擊高亮
-STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_MARK                    :點擊標記
-STR_NEWGRF_INSPECT_SPRITE_DUMP_OPTIONS                          :{BLACK}額外任務與選項
-STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT          :{BLACK}點擊高亮 Sprite 組
-STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_MARK               :{BLACK}點擊標記 Sprite 組
+STR_NEWGRF_INSPECT_SPRITE_DUMP_CLEAR                            :清除亮點與標註
+STR_NEWGRF_INSPECT_SPRITE_DUMP_MORE_DETAILS                     :顯示詳細資訊
+STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_HIGHLIGHT               :點擊亮點
+STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_MARK                    :點擊標註
+STR_NEWGRF_INSPECT_SPRITE_DUMP_OPTIONS                          :{BLACK}額外指令與選項
+STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT          :{BLACK}點擊亮點 Sprite 組
+STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_MARK               :{BLACK}點擊標註 Sprite 組
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_COLLAPSE           :{BLACK}按住 <Shift> 鍵操作以折疊 Sprite 組
-STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT_TEMP     :{BLACK}按住 <Ctrl> 鍵操作以高亮臨時存儲寄存器
+STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT_TEMP     :{BLACK}按住 <Ctrl> 鍵操作以亮點臨時存儲寄存器
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS                    :號誌
-STR_NEWGRF_INSPECT_CAPTION_TRACERESTRICT                        :{HEX}/{HEX} 的尋路限制程序
+STR_NEWGRF_INSPECT_CAPTION_TRACERESTRICT                        :{HEX}/{HEX} 的尋路限制邏輯
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :未呈現且已重新映射的特徵 ID：名稱：{2:STRING}，已映射至：{5:HEX} (Sprite {3:NUM})
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY                   :未呈現且已重新映射的 Action 0 屬性特徵：{4:HEX}，名稱：{2:STRING}，已映射至：{5:HEX} (Sprite {3:NUM})
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_ACTION5_TYPE               :未呈現且已重新映射的 Action 5 類型：名稱：{2:STRING}，已映射至：{4:HEX} (Sprite {3:NUM})
@@ -1882,7 +1882,7 @@ STR_ERROR_BUILDING_IS_TOO_MODERN                                :{WHITE}……�
 STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN                    :{WHITE}……此建築物在一個市鎮裡最多只允許存在一個
 STR_ERROR_TOO_MANY_DOCKS                                        :{WHITE}船塢太多了
 STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}……不適合的號誌類型
-STR_ERROR_RESTRICTED_SIGNAL                                     :{WHITE}……號誌已配置尋路限制程序
+STR_ERROR_RESTRICTED_SIGNAL                                     :{WHITE}……號誌已配置尋路限制邏輯
 STR_ERROR_SIGNAL_CHANGES                                        :{WHITE}可編程邏輯號誌評估次數超過限制
 
 STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}橋樑相對車站太低
@@ -1950,7 +1950,7 @@ STR_ZONING_2x2_GRID                                             :2x2 路網
 STR_ZONING_3x3_GRID                                             :3x3 路網
 STR_ZONING_ONE_WAY_ROAD                                         :單行道
 
-STR_STATION_RATING_TOOLTIP_RATING_DETAILS                       :{STRING}評價詳情
+STR_STATION_RATING_TOOLTIP_RATING_DETAILS                       :{STRING}評價詳細資訊
 STR_STATION_RATING_TOOLTIP_TOTAL_RATING                         :總目標評價：{LTBLUE}{NUM}%
 
 STR_STATION_RATING_TOOLTIP_USING_CHEAT                          :作弊
@@ -2118,7 +2118,7 @@ STR_SCHDISPATCH_ADD_SCHEDULE_TOOLTIP                            :{BLACK}增加�
 STR_SCHDISPATCH_REMOVE_SCHEDULE                                 :{BLACK}移除當前時刻表
 STR_SCHDISPATCH_REMOVE_SCHEDULE_TOOLTIP                         :{BLACK}完全移除當前時刻表
 STR_SCHDISPATCH_DUPLICATE_SCHEDULE                              :{BLACK}複製當前時刻表
-STR_SCHDISPATCH_DUPLICATE_SCHEDULE_TOOLTIP                      :{BLACK}設立當前時刻表的副本
+STR_SCHDISPATCH_DUPLICATE_SCHEDULE_TOOLTIP                      :{BLACK}設立當前時刻表的備份
 STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES                        :{BLACK}追加其他車輛的時刻表
 STR_SCHDISPATCH_APPEND_VEHICLE_SCHEDULES_TOOLTIP                :{BLACK}自另一部車輛中增加時刻表發車時間
 STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS                           :恢復發車時間
