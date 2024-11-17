@@ -21,8 +21,11 @@ protected:
 			max_saturation(job.Settings().short_path_saturation)
 	{}
 
+	template<class Tannotation>
+	struct DijkstraState;
+
 	template<class Tannotation, class Tedge_iterator>
-	void Dijkstra(NodeID from, PathVector &paths);
+	void Dijkstra(NodeID from, PathVector &paths, DijkstraState<Tannotation> &state);
 
 	uint PushFlow(DemandAnnotation &anno, Path *path, uint min_step_size, uint accuracy, uint max_saturation);
 

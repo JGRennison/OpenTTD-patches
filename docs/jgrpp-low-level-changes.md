@@ -121,7 +121,7 @@ This document does not describe the player-visible changes/additions described i
 * Change FlowStat from an RB-tree to a flat map with small-object optimisation.
 * Change FlowStatMap from an RB-tree to a B-tree indexed vector.
 * Change LinkGraph::EdgeMatrix to a sparse storage format.
-* Replace MCF Dijkstra RB-tree with B-tree.
+* Replace MCF Dijkstra RB-tree queue with std::vector-based heap.
 * Reduce performance issues when deleting stale links with refit to any cargo.
 * Dynamically adjust accuracy parameters in MCF 1st pass to avoid computing large numbers of excessively small flows.
 
