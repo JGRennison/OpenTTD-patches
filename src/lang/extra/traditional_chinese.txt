@@ -1,6 +1,6 @@
 STR_CONFIG_SETTING_TREE_PLACER_PERFECT                          :完善
 
-STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT_EXTRA                   :{STRING}，“完善”改良了樹木的生長和擴散
+STR_CONFIG_SETTING_TREE_PLACER_HELPTEXT_EXTRA                   :{STRING}，「完善」改良了樹木的生長和擴散
 
 STR_FINANCES_SECTION_INFRASTRUCTURE_COSTS                       :{GOLD}基建共享
 STR_FINANCES_SECTION_INFRASTRUCTURE_INCOME                      :{GOLD}基建共享
@@ -122,13 +122,13 @@ STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED_HELPTEXT          :設定等待在
 STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED_VALUE             :1 / {COMMA}
 
 STR_CONFIG_SETTING_MONEY_CHEAT_MULTIPLAYER                      :多人連線玩家使用現金作弊：{STRING}
-STR_CONFIG_SETTING_MONEY_CHEAT_MULTIPLAYER_HELPTEXT             :啟用時允許多人連線玩家使用金錢作弊{}單機遊戲以及伺服器管理員始終可用
+STR_CONFIG_SETTING_MONEY_CHEAT_MULTIPLAYER_HELPTEXT             :啟用時允許多人連線玩家使用金錢作弊{}單人遊戲以及伺服器管理員始終啟用
 
 STR_CONFIG_SETTING_RENAME_TOWNS_MULTIPLAYER                     :多人連線玩家重新命名市鎮：{STRING}
-STR_CONFIG_SETTING_RENAME_TOWNS_MULTIPLAYER_HELPTEXT            :啟用時允許多人連線玩家重新命名市鎮{}單機遊戲以及伺服器管理員始終可用
+STR_CONFIG_SETTING_RENAME_TOWNS_MULTIPLAYER_HELPTEXT            :啟用時允許多人連線玩家重新命名市鎮{}單人遊戲以及伺服器管理員始終啟用
 
 STR_CONFIG_SETTING_OVERRIDE_TOWN_SETTINGS_MULTIPLAYER           :多人連線玩家重設市鎮設定：{STRING}
-STR_CONFIG_SETTING_OVERRIDE_TOWN_SETTINGS_MULTIPLAYER_HELPTEXT  :啟用時允許多人連線玩家重設市鎮設定{}單機遊戲以及伺服器管理員始終可用
+STR_CONFIG_SETTING_OVERRIDE_TOWN_SETTINGS_MULTIPLAYER_HELPTEXT  :啟用時允許多人連線玩家重設市鎮設定{}單人遊戲以及伺服器管理員始終啟用
 
 STR_CONFIG_SETTING_CATCHMENT_INCREASE                           :增加車站覆蓋半徑：{STRING}
 STR_CONFIG_SETTING_CATCHMENT_INCREASE_HELPTEXT                  :增加此格數的車站覆蓋半徑
@@ -168,7 +168,7 @@ STR_CONFIG_SETTING_NON_LEADING_ENGINES_KEEP_NAME                :多機車列車
 STR_CONFIG_SETTING_NON_LEADING_ENGINES_KEEP_NAME_HELPTEXT       :當一列列車中有多個機車時，保留其餘機車的自訂名稱
 
 STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING                :尋路至單向路徑號誌的背面：{STRING}
-STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING_HELPTEXT       :啟用之後允許 YAPF 尋路器尋路至單向路徑號誌的背面
+STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING_HELPTEXT       :啟用之後允許使用尋路器尋路至單向路徑號誌的背面
 
 STR_CONFIG_SETTING_INFLATION_FIXED_DATES                        :在 1920 年與 2090 年期間應用通貨膨脹：{STRING}
 STR_CONFIG_SETTING_INFLATION_FIXED_DATES_HELPTEXT               :當啟用時，不管遊戲是在哪年進行的，通脹將在 1920 到 2090 年間始終持續，這是 OpenTTD 1.11 以來所使用的通脹模型{}如果停用，通脹將會在遊戲開始後 170 年裡不斷持續，這是一直使用到 OpenTTD 1.10 的模型
@@ -182,7 +182,7 @@ STR_CONFIG_SETTING_CHUNNEL                                      :允許建設水
 STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :啟用後可以在海平面下建設隧道。建設時隧道兩端必須有寬度在 {NUM} 與 {NUM} 格之間的間隙
 
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :不同公司列車不會互相碰撞：{STRING}
-STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :這是為了防止熊孩子故意在多人遊戲中撞毀他人的列車
+STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :這是為了防止白目玩家故意在多人遊戲中撞毀他人的列車
 
 STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING               :允許鉸鏈式道路車輛超車：{STRING}
 STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING_HELPTEXT      :允許鉸鏈式道路車輛超車
@@ -191,17 +191,17 @@ STR_CONFIG_SETTING_ROADVEH_CANT_QUANTUM_TUNNEL                  :阻止道路車
 STR_CONFIG_SETTING_ROADVEH_CANT_QUANTUM_TUNNEL_HELPTEXT         :即使道路長時間堵車也不允許道路車輛穿越其他的道路車輛
 
 STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT                    :直通車輛段：{STRING}
-STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT_HELPTEXT           :啟用直通車輛段{}列車可以在背對背的兩個車廠之間穿越，並且可以穿越兩個車廠之間的所有車廠{}這需要啟用 YAPF 尋路器
+STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT_HELPTEXT           :啟用直通車輛段{}列車可以在背對背的兩個車廠之間穿越，並且可以穿越兩個車廠之間的所有車廠{}這需要啟用使用尋路器
 
 STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE                :在列車因為尋路限制長時間等待時提示：{STRING}
-STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE_HELPTEXT       :當被啟用時，如果列車長時間在路徑號誌處等待，給出提示
+STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE_HELPTEXT       :當被啟用時，如果列車長時間在路徑號誌處等待，發送提示
 
 STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER                          :在載具沒有回廠指令時提示：{STRING}
-STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_HELPTEXT                 :啟用時，若車損已開啟，則在列車、道路載具、船舶的時刻表中沒有入庫計劃時提示
+STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_HELPTEXT                 :啟用時，若檢視載具指令已開啟，則在列車、道路載具、船舶的時刻表中沒有回廠指令時發出提示
 STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_IF_BREAKDOWNS_ON         :如果車損已開啟
 
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER                     :載具在 {STRING} 年後不會退役
-STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_HELPTEXT            :在此年份及之後退役的載具將不會退役。{}發動機可靠性的衰減也會停止。
+STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_HELPTEXT            :在此年份及之後退役的載具將不會退役。{}發動機可靠性的衰退也會停止。
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_VALUE               :{NUM}
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_ZERO                :關
 
@@ -227,7 +227,7 @@ STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_RECOLOUR_HELPTEXT        :當使用預設
 
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF                             :使用預設圖形顯示所有號誌：{STRING}
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT                    :使用預設號誌圖形顯示所有號誌，而不是使用任何 NewGRF 號誌圖形。當 NewGRF 提供的號誌圖形不清晰或無法訪問時，這樣可以更容易看到號誌的狀態和類型。
-STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT_EXTRA              :{STRING}{}“僅尋路限制號誌”模式在啟用號誌柱重新著色且 NewGRF 本身不處理尋路限制號誌的不同圖形時，使用預設圖像顯示此種號誌。
+STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT_EXTRA              :{STRING}{}「僅尋路限制號誌」模式在啟用號誌柱重新著色且 NewGRF 本身不處理尋路限制號誌的不同圖形時，使用預設圖像顯示此種號誌。
 STR_CONFIG_SETTING_SHOW_ALL_SIG_RESTRICTED_RECOLOUR             :僅尋路限制號誌
 
 STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES             :顯示高級尋路限制功能：{STRING}
@@ -260,8 +260,8 @@ STR_CONFIG_SETTING_VEHICLE_NAMES_LONG                           :較長
 STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES                       :給斜坡上的樹加強陰影：{STRING}
 STR_CONFIG_SETTING_SHADED_TREES_ON_SLOPES_HELPTEXT              :使在較暗斜坡上的樹木具有較深的顏色{}這有助於改善樹木在山脈地區的觀感表現
 
-STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE                        :在摧毀結構前詢問：{STRING}
-STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_HELPTEXT               :在摧毀部分重要結構之前詢問
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE                        :在摧毀建築物前先詢問：{STRING}
+STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_HELPTEXT               :在摧毀部分重要建築物之前先詢問
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_OFF                    :關閉
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_INDUSTRY               :工業
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_ALL                    :工業及鐵路車站
@@ -269,7 +269,7 @@ STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_ALL                    :工業及鐵路
 STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW              :將機車與車廂在列車購買視窗中分開：{STRING}
 STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_HELPTEXT     :啟用後列車購買視窗在分開的兩欄清單中分別展示機車和車廂
 
-STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_DUAL_BUTTONS :分別在列車購買視窗展示按鈕組：{STRING}
+STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_DUAL_BUTTONS :分別在列車購買視窗展示按鈕群組：{STRING}
 
 STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL                    :隱藏號誌站標簽：{STRING}
 STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL_HELPTEXT           :啟用後可以在號誌站視窗選擇隱藏號誌站名稱{}這在號誌站僅用於裝飾時可以改善觀感
@@ -296,19 +296,19 @@ STR_CONFIG_SETTING_SHOW_SPEED_FIRST_IN_VEHICLE_VIEW             :在車輛視圖
 STR_CONFIG_SETTING_SHOW_SPEED_FIRST_IN_VEHICLE_VIEW_HELPTEXT    :啟用後，在車輛視圖視窗的啟動/停止欄中先顯示車輛速度，然後顯示目的地。
 
 STR_CONFIG_SETTING_SHORTEN_STATUS_VEHICLE_VIEW                  :縮短狀態車輛視圖視窗：{STRING}
-STR_CONFIG_SETTING_SHORTEN_STATUS_VEHICLE_VIEW_HELPTEXT         :啟用後，縮短用於顯示目的地的文本，在車輛視圖視窗的啟動/停止欄中顯示。
+STR_CONFIG_SETTING_SHORTEN_STATUS_VEHICLE_VIEW_HELPTEXT         :啟用後，縮短用於顯示目的地的文本，在車輛檢視視窗的啟動/停止欄中顯示。
 
 STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION                   :隱藏預設命令停止位置：{STRING}
 STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION_HELPTEXT          :啟用後，當命令停止位置與預設位置相同時，隱藏該位置。
 
 STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL                              :顯示鐵路折線工具：{STRING}
-STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL_HELPTEXT                     :啟用後，鐵路建設工具欄中包括一個按鈕，用於使用折線模式建造。
+STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL_HELPTEXT                     :啟用後，鐵路建設工具欄中包含一個按鈕，用於使用折線模式建造。
 
-STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR             :使用日歷年/週期顯示載具運行成本：{STRING}
-STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR_HELPTEXT    :當使用大於一的經濟速度因數時，使用日歷年（日歷計時模式）或週期（掛鐘計時模式）顯示載具運行成本，而不是使用“原始年”顯示。
+STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR             :使用日歷年或週期顯示載具運行成本：{STRING}
+STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR_HELPTEXT    :當使用大於一的經濟速度因數時，使用日歷年（日歷計時模式）或週期（掛鐘計時模式）顯示載具運行成本，而不是使用「起始年份」顯示。
 
-STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :啟用橋隧號誌高級模式：{STRING}
-STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :啟用橋梁和隧道號誌模擬的高級模式。停用後，不能將不在高級模式下的橋梁/隧道更改為高級模式，但其他玩家可以選擇啟用此設定並使用高級模式。
+STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :啟用橋梁和隧道號誌高級模式：{STRING}
+STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :啟用橋梁和隧道號誌模擬的高級模式。停用後，不能將不在高級模式下的橋梁或隧道更改為高級模式，但其他玩家可以選擇啟用此設定並使用高級模式。
 
 STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED                    :以最高速度排序軌道類型：{STRING}
 STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED_HELPTEXT           :以兼容性和速度排序軌道並代替預設排序
@@ -320,7 +320,7 @@ STR_CONFIG_SETTING_RAINFORESTLINE_HEIGHT                        :雨林線高度
 STR_CONFIG_SETTING_RAINFORESTLINE_HEIGHT_HELPTEXT               :控制在亞熱帶景觀中的雨林在什麽高度開始產生。雨林也影響工業產生和市鎮需求增長
 
 STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MODE                       :氣候閾值模式：{STRING}
-STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MODE_HELPTEXT              :決定雪線和雨林/沙漠交界線是根據範圍百分比自動計算還是手動指定
+STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MODE_HELPTEXT              :決定雪線和雨林或沙漠交界線是根據範圍百分比自動計算還是手動指定。
 STR_CONFIG_SETTING_CLIMATE_THRESHOLD_COVERAGE                   :自動
 STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MANUAL                     :手動
 
@@ -331,16 +331,16 @@ STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM                           :河流路徑隨
 STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM_HELPTEXT                  :更改河流路徑的隨機性。
 
 STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL                           :從丘陵頂部水源處開始產生河流：{STRING}
-STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL_HELPTEXT                  :選擇河流是否從山頂開始產生
+STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL_HELPTEXT                  :選擇河流是否從山頂開始產生。
 
 STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH                          :河岸濕潤區域寬度：{STRING}
-STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH_HELPTEXT                 :控制在亞熱帶景觀中圍繞河流兩岸產生的濕潤區域的寬度{}本設定調整河流兩岸的總寬度
+STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH_HELPTEXT                 :控制在亞熱帶景觀中圍繞河流兩岸產生的濕潤區域的寬度{}本設定調整河流兩岸的總寬度。
 
 STR_CONFIG_SETTING_LAKE_TROPICS_WIDTH                           :湖岸濕潤區域寬度：{STRING}
-STR_CONFIG_SETTING_LAKE_TROPICS_WIDTH_HELPTEXT                  :控制在亞熱帶景觀中圍繞湖泊兩岸產生的濕潤區域的寬度{}本設定調整湖泊兩岸的總寬度
+STR_CONFIG_SETTING_LAKE_TROPICS_WIDTH_HELPTEXT                  :控制在亞熱帶景觀中圍繞湖泊兩岸產生的濕潤區域的寬度{}本設定調整湖泊兩岸的總寬度。
 
 STR_CONFIG_SETTING_COAST_TROPICS_WIDTH                          :海岸濕潤區域寬度：{STRING}
-STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_HELPTEXT                 :控制亞熱帶景觀稅中圍繞海岸產生的濕潤區域的寬度
+STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_HELPTEXT                 :控制亞熱帶景觀稅中圍繞海岸產生的濕潤區域的寬度。
 
 STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_DEFAULT                  :預設
 STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_MEDIUM                   :中等
@@ -353,19 +353,19 @@ STR_CONFIG_SETTING_LAKE_SIZE_VALUE                              :{NUM}
 STR_CONFIG_SETTING_LAKE_SIZE_ZERO                               :無湖泊
 
 STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS                     :在沙漠中產生湖泊與河流：{STRING}
-STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS_HELPTEXT            :選擇河流和湖泊是否能在亞熱帶氣候的沙漠裡被產生
+STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS_HELPTEXT            :選擇河流和湖泊是否能在亞熱帶氣候的沙漠裡被產生。
 
 STR_CONFIG_SETTING_ROCKS_AMOUNT                                 :石灘大小：{STRING}
-STR_CONFIG_SETTING_ROCKS_AMOUNT_HELPTEXT                        :決定石灘的大小{}較大的值可以佔據地圖的一大部分
+STR_CONFIG_SETTING_ROCKS_AMOUNT_HELPTEXT                        :決定石灘的大小{}較大的值可以佔據地圖的一大部分。
 
 STR_CONFIG_SETTING_HEIGHT_ROCKS                                 :石灘的大小隨著高度增加而增加：{STRING}
-STR_CONFIG_SETTING_HEIGHT_ROCKS_HELPTEXT                        :決定石灘的尺寸隨高度的增加而增加的系數{}這項系數與之前設定的石灘大小值相互累積，而本項將在石灘大小值設定較小時展現出最佳的效果
+STR_CONFIG_SETTING_HEIGHT_ROCKS_HELPTEXT                        :決定石灘的尺寸隨高度的增加而增加的系數{}這項系數與之前設定的石灘大小值相互累積，而本項將在石灘大小值設定較小時展現出最佳的效果。
 
-STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY                           :只允許“不停止”調度：{STRING}
-STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY_HELPTEXT                  :只允許列車和汽車使用“不停止”的調度。
+STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY                           :只允許「直通」調度：{STRING}
+STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY_HELPTEXT                  :只允許列車和汽車使用「直通」的調度。
 
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE                      :在地圖上顯示選中載具的虛擬路徑：{STRING}
-STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_HELPTEXT             :當開啟並有載具視窗被聚焦的時候，在載具調度站點和/或調度位置之間顯示標記{}選擇“僅車站”只顯示載具在車站停車的調度（即不包括通過調度、號誌站和車廠）
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_HELPTEXT             :當開啟並有載具視窗被聚焦的時候，在載具調度站點和/或調度位置之間顯示標記{}選擇「僅車站」只顯示載具在車站停車的調度（即不包括通過調度、號誌站和車廠）
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_OFF                  :關閉
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_ALL_LOCATIONS        :所有任務調動
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_STATIONS_ONLY        :僅車站
@@ -482,7 +482,7 @@ STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_VALUE    :{COMMA}{NBSP}�
 STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_DEFAULT  :預設
 
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE                            :預設道路與電車道（開始新遊戲或載入遊戲後）：{STRING}
-STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_HELPTEXT                   :在開始或載入遊戲後選擇的道路與電車道。“最先可用”選擇最舊的道路與電車道，“最後可用”選擇最舊的道路與電車道，“最常使用”選擇當前使用最多的類型，「預設」選擇預設類型
+STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_HELPTEXT                   :在開始或載入遊戲後選擇的道路與電車道。「最先可用」選擇最舊的道路與電車道，「最後可用」選擇最舊的道路與電車道，「最常使用」選擇當前使用最多的類型，「預設」選擇預設類型
 
 STR_CONFIG_SETTING_ENABLE_BUILD_RIVER                           :允許建造河流：{STRING}
 STR_CONFIG_SETTING_ENABLE_BUILD_RIVER_HELPTEXT                  :允許在場景編輯器外建造河流
@@ -546,7 +546,7 @@ STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA          :{STRING}{}本�
 STR_CONFIG_SETTING_TOWN_CARGO_SCALE_MODE                        :市鎮貨物生產縮放使用的時間間隔：{STRING}
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE                    :工業貨物生產縮放使用的時間間隔：{STRING}
 
-STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :每月或每生產週期的貨物產量比例系數可以選擇乘以“經濟速度因數”選項的數值。
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :每月或每生產週期的貨物產量比例系數可以選擇乘以「經濟速度因數」選項的數值。
 
 STR_CONFIG_SETTING_CARGO_SCALE_MODE_NORMAL                      :普通
 STR_CONFIG_SETTING_CARGO_SCALE_MODE_ECON_SPEED_REDUCTION_MULT   :乘以經濟速度因數
@@ -582,7 +582,7 @@ STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_DYNAMIC_RANGE          :對於寒帶樹
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_DYNAMIC_RANGE_HELPTEXT :當使用季節性可變雪線時，雪線附近的樹種寒帶變體產生時的概率百分比{}0% 使用更低的（冬季）雪線，100% 使用在夏季到冬季時的所有雪線可產生區間範圍。
 
 STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS                           :建造連接市鎮的公共道路：{STRING}
-STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_HELPTEXT                  :產生連接市鎮的公共道路{}地圖越大，產生的時間越長{}“產生不含彎道的道路”選項被選用時將避免產生彎道，其結果是道路的連接將呈網格狀布局
+STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_HELPTEXT                  :產生連接市鎮的公共道路{}地圖越大，產生的時間越長{}「產生不含彎道的道路」選項被選用時將避免產生彎道，其結果是道路的連接將呈網格狀布局
 STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_NONE                      :無（預設）
 STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_WITH_CURVES               :產生包含彎道的道路
 STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_AVOID_CURVES              :產生不含彎道的道路
@@ -640,7 +640,7 @@ STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :設定在產生
 
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO                       :對此貨物重載分配模式：{STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM                 :重載{STRING}的分配模式：{STRING}
-STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_HELPTEXT              :“預設”使用預設配置{}「對稱」意味著從甲車站運往乙車站的貨物數量與從乙車站運往甲車站的大致相同{}「不對稱」意味著任何一站前往另一個車站的貨物的數量會被系統任意地決定{}「手動」意味著對於此類貨物系統不會自動分配其目的地
+STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_HELPTEXT              :「預設」使用預設配置{}「對稱」意味著從甲車站運往乙車站的貨物數量與從乙車站運往甲車站的大致相同{}「不對稱」意味著任何一站前往另一個車站的貨物的數量會被系統任意地決定{}「手動」意味著對於此類貨物系統不會自動分配其目的地
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_DEFAULT               :預設
 STR_CONFIG_SETTING_DISTRIBUTION_HELPTEXT_EXTRA                  :{STRING}{}「不對稱（平衡分布）」意味著貨物將被平均分配到接收該類型貨物的車站。「不平衡（最近距離）」意味著貨物會被送到最近的任何一個接收該類型貨物的車站。
 
@@ -650,7 +650,7 @@ STR_CONFIG_SETTING_AIRCRAFT_PATH_COST_HELPTEXT                  :這是當使用
 STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER          :在多人連線伺服器中同步本地化設定：{STRING}
 STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER_HELPTEXT :當通過網絡客戶端加入多玩家伺服器時，改變本地化設定來匹配伺服器
 
-STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS                    :{ORANGE}出發看板
+STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS                    :{ORANGE}班次顯示屏
 STR_CONFIG_SETTING_INTERFACE_TIMETABLE_CLOCK                    :{ORANGE}時刻表時鐘
 STR_CONFIG_SETTING_INTERFACE_TIME_CLIENT                        :{ORANGE}客戶端設定
 STR_CONFIG_SETTING_INTERFACE_TIME_SAVEGAME                      :{ORANGE}遊戲儲存設定
@@ -1084,12 +1084,12 @@ STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE                        :{WHITE}數值�
 STR_TRACE_RESTRICT_ERROR_NO_PROGRAM                             :沒有尋路限制程序
 STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE                       :偏移量過大
 STR_TRACE_RESTRICT_ERROR_CAN_T_CHANGE_CONDITIONALITY            :不能更改尋路限制
-STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ENDIF                     :不能移除“結束判斷”
-STR_TRACE_RESTRICT_ERROR_CAN_T_SHALLOW_REMOVE_IF_ELIF           :不能刪除當前塊縮進，存在一個及以上的“否則如果”、“或如果”、“否則”塊
+STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ENDIF                     :不能移除「結束判斷」
+STR_TRACE_RESTRICT_ERROR_CAN_T_SHALLOW_REMOVE_IF_ELIF           :不能刪除當前塊縮進，存在一個及以上的「否則如果」、「或如果」、「否則」塊
 STR_TRACE_RESTRICT_ERROR_VALIDATE_END_CONDSTACK                 :檢查失敗：條件棧在退出時非空
-STR_TRACE_RESTRICT_ERROR_VALIDATE_NO_IF                         :檢查失敗：“否則”、“否則如果”沒有開頭的“如果”
-STR_TRACE_RESTRICT_ERROR_VALIDATE_DUP_ELSE                      :檢查失敗：多個“否則”
-STR_TRACE_RESTRICT_ERROR_VALIDATE_ELIF_NO_IF                    :檢查失敗：“否則如果”沒有開頭的“如果”
+STR_TRACE_RESTRICT_ERROR_VALIDATE_NO_IF                         :檢查失敗：「否則」、「否則如果」沒有開頭的「如果」
+STR_TRACE_RESTRICT_ERROR_VALIDATE_DUP_ELSE                      :檢查失敗：多個「否則」
+STR_TRACE_RESTRICT_ERROR_VALIDATE_ELIF_NO_IF                    :檢查失敗：「否則如果」沒有開頭的「如果」
 STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION           :檢查失敗：未知的指令
 STR_TRACE_RESTRICT_ERROR_SOURCE_SAME_AS_TARGET                  :來源和目標的號誌是相同的
 STR_TRACE_RESTRICT_ERROR_TARGET_ALREADY_HAS_PROGRAM             :目標號誌已有程序
@@ -1272,8 +1272,8 @@ STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_COLLAPSE           :{BLACK}按住 <
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT_TEMP     :{BLACK}按住 <Ctrl> 鍵操作以高亮臨時存儲寄存器
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS                    :號誌
 STR_NEWGRF_INSPECT_CAPTION_TRACERESTRICT                        :{HEX}/{HEX} 的尋路限制程序
-STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :未呈現且已重新映射的特性 ID：名稱：{2:STRING}，已映射至：{5:HEX} (Sprite {3:NUM})
-STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY                   :未呈現且已重新映射的 Action 0 屬性特性：{4:HEX}，名稱：{2:STRING}，已映射至：{5:HEX} (Sprite {3:NUM})
+STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :未呈現且已重新映射的特徵 ID：名稱：{2:STRING}，已映射至：{5:HEX} (Sprite {3:NUM})
+STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY                   :未呈現且已重新映射的 Action 0 屬性特徵：{4:HEX}，名稱：{2:STRING}，已映射至：{5:HEX} (Sprite {3:NUM})
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_ACTION5_TYPE               :未呈現且已重新映射的 Action 5 類型：名稱：{2:STRING}，已映射至：{4:HEX} (Sprite {3:NUM})
 
 STR_NEWGRF_TOO_MANY_STRINGS                                     :{WHITE}對於所有的 NewGRF 沒有足夠的字符串 ID
@@ -1295,8 +1295,8 @@ STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_STR                        :{STRING}：{PUS
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TEXT                       :{YELLOW}重載此市鎮的以下設定：{}{STRING}{}{STRING}
 STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TOOLTIP                    :{BLACK}變更設定並重載
 
-STR_STATION_VIEW_DEPARTURES_BUTTON                              :{BLACK}出發看板
-STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}顯示出發看板
+STR_STATION_VIEW_DEPARTURES_BUTTON                              :{BLACK}班次顯示屏
+STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}顯示班次顯示屏
 
 STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}貨物記錄
 STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}顯示貨物等待記錄
@@ -1368,38 +1368,38 @@ STR_DEPARTURES_EXPECTED                                         :{YELLOW}約 {ST
 STR_DEPARTURES_CANCELLED                                        :{RED}取消
 STR_DEPARTURES_SCHEDULED                                        :{GREEN}已計劃
 
-STR_CONFIG_SETTING_DEPARTUREBOARDS                              :{ORANGE}出發看板
-STR_CONFIG_MAX_DEPARTURES                                       :車站看板車次上限：{STRING}
-STR_CONFIG_MAX_DEPARTURES_HELPTEXT                              :出發看板顯示車次的最大值
-STR_CONFIG_MAX_DEPARTURE_TIME                                   :最多提前 {STRING} 天顯示車次
+STR_CONFIG_SETTING_DEPARTUREBOARDS                              :{ORANGE}班次顯示屏
+STR_CONFIG_MAX_DEPARTURES                                       :車站看板班次上限：{STRING}
+STR_CONFIG_MAX_DEPARTURES_HELPTEXT                              :班次顯示屏顯示班次的最大值
+STR_CONFIG_MAX_DEPARTURE_TIME                                   :最多提前 {STRING} 天顯示班次
 STR_CONFIG_MAX_DEPARTURE_TIME_HELPTEXT                          :出發/到達信息最大顯示天數
-STR_CONFIG_MAX_DEPARTURE_TIME_MINUTES                           :最多提前 {STRING} 分鐘顯示車次
+STR_CONFIG_MAX_DEPARTURE_TIME_MINUTES                           :最多提前 {STRING} 分鐘顯示班次
 STR_CONFIG_MAX_DEPARTURE_TIME_MINUTES_HELPTEXT                  :調整顯示到達/出發時間的提前分鐘數
-STR_CONFIG_DEPARTURE_CALC_FREQUENCY                             :每 {STRING} 刻重新計算車次
+STR_CONFIG_DEPARTURE_CALC_FREQUENCY                             :每 {STRING} 刻重新計算班次
 STR_CONFIG_DEPARTURE_CALC_FREQUENCY_HELPTEXT                    :調整刷新清單的頻率
 STR_CONFIG_DEPARTURE_VEHICLE_NAME                               :在班次中顯示載具名稱：{STRING}
-STR_CONFIG_DEPARTURE_VEHICLE_NAME_HELPTEXT                      :是否在它們的出發看板車次中顯示載具名稱
+STR_CONFIG_DEPARTURE_VEHICLE_NAME_HELPTEXT                      :是否在它們的班次顯示屏班次中顯示載具名稱
 STR_CONFIG_DEPARTURE_GROUP_NAME                                 :在班次中顯示群組名稱：{STRING}
-STR_CONFIG_DEPARTURE_GROUP_NAME_HELPTEXT                        :是否在出發看板班次中顯示載具所屬群組的群組名稱
+STR_CONFIG_DEPARTURE_GROUP_NAME_HELPTEXT                        :是否在班次顯示屏班次中顯示載具所屬群組的群組名稱
 STR_CONFIG_DEPARTURE_COMPANY_NAME                               :在班次中顯示公司名稱：{STRING}
-STR_CONFIG_DEPARTURE_COMPANY_NAME_HELPTEXT                      :是否在載具出發看板班次中顯示其所屬公司的名稱
-STR_CONFIG_DEPARTURE_VEHICLE_TYPE                               :在車次中顯示載具圖標：{STRING}
-STR_CONFIG_DEPARTURE_VEHICLE_TYPE_HELPTEXT                      :是否在出發看板車次中顯示載具的類型
+STR_CONFIG_DEPARTURE_COMPANY_NAME_HELPTEXT                      :是否在載具班次顯示屏班次中顯示其所屬公司的名稱
+STR_CONFIG_DEPARTURE_VEHICLE_TYPE                               :在班次中顯示載具圖標：{STRING}
+STR_CONFIG_DEPARTURE_VEHICLE_TYPE_HELPTEXT                      :是否在班次顯示屏班次中顯示載具的類型
 STR_CONFIG_DEPARTURE_VEHICLE_COLOR                              :使用銀色顯示載具圖標：{STRING}
 STR_CONFIG_DEPARTURE_VEHICLE_COLOR_HELPTEXT                     :是否以銀色顯示載具類型標志
-STR_CONFIG_DEPARTURE_LARGER_FONT                                :適用較大的字體指示自出發車次面板中的即將到達的車站：{STRING}
+STR_CONFIG_DEPARTURE_LARGER_FONT                                :適用較大的字體指示自出發班次面板中的即將到達的車站：{STRING}
 STR_CONFIG_DEPARTURE_LARGER_FONT_HELPTEXT                       :是否使用較大的字體來顯示在車站清單中的即將到達的車站
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :增加標志以區分碼頭與機場：{STRING}
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :在目的地是碼頭或機場時，增加一個標志加以區分
 STR_CONFIG_DEPARTURE_SMART_TERMINUS                             :不顯示不久後能被另一趟載具到達的目的地：{STRING}
 STR_CONFIG_DEPARTURE_SMART_TERMINUS_HELPTEXT                    :使否顯示不久後會有另一輛載具到達的目的地
 STR_CONFIG_DEPARTURE_CONDITIONALS                               :條件性任務調動處理方式：{STRING}
-STR_CONFIG_DEPARTURE_CONDITIONALS_HELPTEXT                      :當計算出發看板車次時，條件性任務調動應被如何處理
+STR_CONFIG_DEPARTURE_CONDITIONALS_HELPTEXT                      :當計算班次顯示屏班次時，條件性任務調動應被如何處理
 STR_CONFIG_DEPARTURE_CONDITIONALS_1                             :放棄處理
 STR_CONFIG_DEPARTURE_CONDITIONALS_2                             :假設載具經過車站
 STR_CONFIG_DEPARTURE_CONDITIONALS_3                             :假設載具不經過車站
-STR_CONFIG_DEPARTURE_MERGE_IDENTICAL                            :合並相同的車次：{STRING}
-STR_CONFIG_DEPARTURE_MERGE_IDENTICAL_HELPTEXT                   :相同的出發看板車次是否會被合並到一個車次上
+STR_CONFIG_DEPARTURE_MERGE_IDENTICAL                            :合併相同的班次：{STRING}
+STR_CONFIG_DEPARTURE_MERGE_IDENTICAL_HELPTEXT                   :相同的班次顯示屏班次是否會被合併到一個班次上
 
 STR_WAYPOINT_VIEW_HIDE_VIEWPORT_LABEL                           :{BLACK}對此號誌站隱藏名稱標簽
 
@@ -1659,8 +1659,7 @@ STR_ORDERS_MANAGE_LIST_TOOLTIP                                  :{BLACK}管理�
 STR_ORDERS_MANAGE_ORDER                                         :{BLACK}管理任務調動
 STR_ORDERS_MANAGE_ORDER_TOOLTIP                                 :{BLACK}管理此任務調動
 
-STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}在指令清單的末尾或選定的指令前{}插入新增一個新指令，如按住 <Ctrl> 鍵再加入指令，點選車站會新增「滿載任一種類客貨」指令{}號誌站會新增「直達」指令{}而車廠則會新增「維護」指令
-
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}在選定的指令前插入新指令，或在指令清單的末尾新增指令。如按住 <Ctrl> 鍵再加入指令，點選車站會新增「滿載任一種類客貨」指令、點選號誌站會新增「直達」指令，而點選機廠則會新增「維護」指令。點選其他載具以複製其指令清單，按住 <Ctrl> 鍵或在選取「共享指令清單」後點選其他車輛以共享指令清單。如指令清單上有任何指令涉及機廠，則該車輛不受自動維護功能影響。
 STR_ORDER_REVERSE_ORDER_LIST                                    :反轉調度清單
 STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :將反轉調度清單增加至計劃末尾
 STR_ORDER_DUPLICATE_ORDER                                       :複製任務調動
@@ -1678,12 +1677,12 @@ STR_ORDER_LABEL_TEXT                                            :標簽：{STRIN
 STR_ORDER_LABEL_TEXT_CAPTION                                    :{WHITE}標簽
 STR_ORDER_LABEL_TEXT_BUTTON                                     :標簽
 STR_ORDER_LABEL_TEXT_BUTTON_TOOLTIP                             :{BLACK}改變標簽文本
-STR_ORDER_LABEL_DEPARTURES_VIA_BUTTON                           :出發看板經由
-STR_ORDER_LABEL_DEPARTURES_VIA                                  :出發看板：{STRING}：{STRING}
+STR_ORDER_LABEL_DEPARTURES_VIA_BUTTON                           :班次顯示屏經由
+STR_ORDER_LABEL_DEPARTURES_VIA                                  :班次顯示屏：{STRING}：{STRING}
 STR_ORDER_LABEL_DEPARTURES_SHOW_AS_VIA                          :作為經由顯示
 STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA                           :移除先前站點的經由
 STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA_SHORT                     :移除經由
-STR_ORDER_LABEL_DEPARTURES_VIA_TYPE_TOOLTIP                     :{BLACK}作為經由顯示：對於起點在此站之前且終點在此站之後的車次，在出發看板內將此站點/號誌站作為經由顯示{}雙重經由將顯示兩重{}{}移除先前站點的經由：當顯示此命令之前的調用點作為終點時，不將此站點顯示為經由站點
+STR_ORDER_LABEL_DEPARTURES_VIA_TYPE_TOOLTIP                     :{BLACK}作為經由顯示：對於起點在此站之前且終點在此站之後的班次，在班次顯示屏內將此站點/號誌站作為經由顯示{}雙重經由將顯示兩重{}{}移除先前站點的經由：當顯示此命令之前的調用點作為終點時，不將此站點顯示為經由站點
 
 STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}{STRING}%
 STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}顯示運行平均負載率{}百分比顯示的是調度使用的總平均數
@@ -1796,8 +1795,8 @@ STR_TIMETABLE_NON_TIMETABLED_BRANCH                             :{BLACK}遊戲�
 STR_TIMETABLE_WARNING_NO_SCHEDULED_DISPATCH_ORDER_ASSIGNED      :{BLACK}時刻表未分配到任務調動
 STR_TIMETABLE_WARNING_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME     :{BLACK}該計劃任務調動應當有一項時刻表等待時間
 STR_TIMETABLE_WARNING_SCHEDULE_ID                               :{BLACK}時刻表 #{NUM}：{STRING}
-STR_TIMETABLE_FILL_TIMETABLE_SUGGESTION                         :{BLACK}啟用“自動”以自動填充或更新運行或等待時間
-STR_TIMETABLE_FILL_TIMETABLE_SUGGESTION_2                       :{BLACK}（可以選擇“自動填充”選項或手動填充）
+STR_TIMETABLE_FILL_TIMETABLE_SUGGESTION                         :{BLACK}啟用「自動」以自動填充或更新運行或等待時間
+STR_TIMETABLE_FILL_TIMETABLE_SUGGESTION_2                       :{BLACK}（可以選擇「自動填充」選項或手動填充）
 
 STR_TIMETABLE_WARNINGS_OMITTED                                  :{BLACK}忽略了 {NUM} 條警告……
 
@@ -1863,15 +1862,15 @@ STR_SORT_BY_DATE                                                :日期
 STR_WARNING_LOADGAME_REMOVED_UNCORRECTABLE_VEHICLES             :{WHITE}由於在載入過程中無可挽回的錯誤，已經移除了{NUM} 輛車
 
 STR_GAME_SAVELOAD_FROM_VERSION                                  :來自 {PUSH_COLOUR}{ORANGE}{STRING}{POP_COLOUR} 版本{}
-STR_GAME_SAVELOAD_ERROR_TOO_NEW_FEATURE_VERSION                 :存檔“{0:STRING}”有 {PUSH_COLOUR}{ORANGE}{2:NUM}{POP_COLOUR} 版本的特性“{PUSH_COLOUR}{ORANGE}{1:STRING}{POP_COLOUR}”，但是最大支持版本為 {PUSH_COLOUR}{ORANGE}{3:NUM}{POP_COLOUR}
-STR_GAME_SAVELOAD_ERROR_UNKNOWN_FEATURE                         :存檔“{0:STRING}”有不受支持的未知特性“{PUSH_COLOUR}{ORANGE}{1:STRING}{POP_COLOUR}”（版本：{PUSH_COLOUR}{ORANGE}{2:NUM}{POP_COLOUR}）
+STR_GAME_SAVELOAD_ERROR_TOO_NEW_FEATURE_VERSION                 :存檔“{0:STRING}”有 {PUSH_COLOUR}{ORANGE}{2:NUM}{POP_COLOUR} 版本的特徵“{PUSH_COLOUR}{ORANGE}{1:STRING}{POP_COLOUR}”，但是最大支持版本為 {PUSH_COLOUR}{ORANGE}{3:NUM}{POP_COLOUR}
+STR_GAME_SAVELOAD_ERROR_UNKNOWN_FEATURE                         :存檔“{0:STRING}”有不支援的未知特徵“{PUSH_COLOUR}{ORANGE}{1:STRING}{POP_COLOUR}”（版本：{PUSH_COLOUR}{ORANGE}{2:NUM}{POP_COLOUR}）
 
 STR_GAME_SAVELOAD_ERROR_HUGE_AIRPORTS_PRESENT                   :存檔使用了大型機場
 STR_GAME_SAVELOAD_ERROR_HELI_OILRIG_BUG                         :存檔有一架靠近錯誤油井的直升機
 
 # Clear area query
 STR_QUERY_CLEAR_AREA_CAPTION                                    :{WHITE}清除區域
-STR_CLEAR_AREA_CONFIRMATION_TEXT                                :{YELLOW}你確定摧毀一個重要的結構嗎？
+STR_CLEAR_AREA_CONFIRMATION_TEXT                                :{YELLOW}你確定摧毀一個重要的建築物嗎？
 
 STR_ERROR_BUILDING_NOT_ALLOWED_IN_THIS_TOWN_ZONE                :{WHITE}……不允許在這個市鎮區建設
 STR_ERROR_BUILDING_NOT_ALLOWED_ABOVE_SNOW_LINE                  :{WHITE}……不允許在雪線上建設
@@ -2041,14 +2040,14 @@ STR_TMPL_SET_REFIT_AS_TEMPLATE                                  :{BLACK}與模�
 STR_TMPL_SET_REFIT_AS_TEMPLATE_TIP                              :{BLACK}列車將會重新配置以與模板完全匹配
 STR_TMPL_SET_REFIT_AS_INCOMING                                  :{BLACK}與舊列車一致
 STR_TMPL_SET_REFIT_AS_INCOMING_TIP                              :{BLACK}新列車的每一部分都會改裝以與舊列車運輸的貨物種類匹配，若不可能則進行普通改裝
-STR_TMPL_SET_OLD_ONLY                                           :{BLACK}僅老舊載具
+STR_TMPL_SET_OLD_ONLY                                           :{BLACK}僅限舊載具
 STR_TMPL_SET_OLD_ONLY_TIP                                       :{BLACK}啟用時僅自動替換老舊載具
 
 STR_TMPL_CONFIG_REFIT_AS_TEMPLATE                               :{GREEN}重新配置：模板
 STR_TMPL_CONFIG_REFIT_AS_INCOMING                               :{GOLD}重新配置：與舊一致
 STR_TMPL_CONFIG_USEDEPOT                                        :使用閒置載具
 STR_TMPL_CONFIG_KEEPREMAINDERS                                  :保留舊車廂
-STR_TMPL_CONFIG_OLD_ONLY                                        :僅老舊載具
+STR_TMPL_CONFIG_OLD_ONLY                                        :僅限舊載具
 
 STR_TMPL_SECTION_REFIT                                          :{BLACK}重新配置
 STR_TMPL_SECTION_DEPOT_VEHICLES                                 :{BLACK}車廠載具
