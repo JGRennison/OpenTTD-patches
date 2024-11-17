@@ -201,7 +201,7 @@ public:
 
 extern GrfProcessingState _cur;
 
-enum VarAction2AdjustInferenceFlags {
+enum VarAction2AdjustInferenceFlags : uint16_t {
 	VA2AIF_NONE                  = 0x00,
 
 	VA2AIF_SIGNED_NON_NEGATIVE   = 0x01,

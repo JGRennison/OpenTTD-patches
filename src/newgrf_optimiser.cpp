@@ -379,7 +379,7 @@ static bool AreVarAction2AdjustsEquivalent(VarAction2AdjustDescriptor a, VarActi
 	return false;
 }
 
-enum VarAction2AdjustsBooleanInverseResult {
+enum VarAction2AdjustsBooleanInverseResult : uint8_t {
 	VA2ABIR_NO,                               ///< Adjusts are not inverse
 	VA2ABIR_CCAT,                             ///< Adjusts are inverse (constant comparison adjust type)
 	VA2ABIR_XOR_A,                            ///< Adjusts are inverse (a has an additional XOR 1 or EQ 0 compared to b)
