@@ -167,9 +167,9 @@ public:
 
 	void *Allocate()
 	{
-		if (last_freed != nullptr) {
-			void *ptr = last_freed;
-			last_freed = *reinterpret_cast<void**>(ptr);
+		if (this->last_freed != nullptr) {
+			void *ptr = this->last_freed;
+			this->last_freed = *reinterpret_cast<void**>(ptr);
 			return ptr;
 		} else {
 			return this->base_allocator.Allocate();

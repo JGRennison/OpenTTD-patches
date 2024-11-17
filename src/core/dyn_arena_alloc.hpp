@@ -28,10 +28,10 @@ class DynUniformArenaAllocator {
 
 	void NewBlock()
 	{
-		current_block = malloc(item_size * items_per_chunk);
-		assert(current_block != nullptr);
-		next_position = 0;
-		used_blocks.push_back(current_block);
+		this->current_block = malloc(this->item_size * this->items_per_chunk);
+		assert(this->current_block != nullptr);
+		this->next_position = 0;
+		this->used_blocks.push_back(current_block);
 	}
 
 public:
@@ -41,49 +41,49 @@ public:
 
 	~DynUniformArenaAllocator()
 	{
-		ClearArena();
+		this->ClearArena();
 	}
 
 	void ClearArena()
 	{
-		current_block = nullptr;
-		last_freed = nullptr;
-		next_position = 0;
-		for (void *block : used_blocks) {
+		this->current_block = nullptr;
+		this->last_freed = nullptr;
+		this->next_position = 0;
+		for (void *block : this->used_blocks) {
 			free(block);
 		}
-		used_blocks.clear();
+		this->used_blocks.clear();
 	}
 
 	void ResetArena()
 	{
-		ClearArena();
-		item_size = 0;
-		items_per_chunk = 0;
+		this->ClearArena();
+		this->item_size = 0;
+		this->items_per_chunk = 0;
 	}
 
 	void *Allocate() {
-		assert(item_size != 0);
-		if (last_freed) {
-			void *ptr = last_freed;
-			last_freed = *reinterpret_cast<void**>(ptr);
+		assert(this->item_size != 0);
+		if (this->last_freed != nullptr) {
+			void *ptr = this->last_freed;
+			this->last_freed = *reinterpret_cast<void**>(ptr);
 			return ptr;
 		} else {
-			if (current_block == nullptr || next_position == items_per_chunk) {
-				NewBlock();
+			if (this->current_block == nullptr || this->next_position == this->items_per_chunk) {
+				this->NewBlock();
 			}
-			void *out = reinterpret_cast<char *>(current_block) + (item_size * next_position);
-			next_position++;
+			void *out = reinterpret_cast<char *>(this->current_block) + (this->item_size * this->next_position);
+			this->next_position++;
 			return out;
 		}
 	}
 
 	void Free(void *ptr) {
-		if (!ptr) return;
-		assert(current_block != nullptr);
+		if (ptr == nullptr) return;
+		assert(this->current_block != nullptr);
 
-		*reinterpret_cast<void**>(ptr) = last_freed;
-		last_freed = ptr;
+		*reinterpret_cast<void**>(ptr) = this->last_freed;
+		this->last_freed = ptr;
 	}
 
 	void SetParameters(size_t item_size, size_t items_per_chunk)
@@ -91,7 +91,7 @@ public:
 		if (item_size < sizeof(void *)) item_size = sizeof(void *);
 		if (this->item_size == item_size && this->items_per_chunk == items_per_chunk) return;
 
-		assert(current_block == nullptr);
+		assert(this->current_block == nullptr);
 		this->item_size = item_size;
 		this->items_per_chunk = items_per_chunk;
 	}
