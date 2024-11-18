@@ -731,7 +731,8 @@ static uint TryMergeVarAction2AdjustConstantOperations(DeterministicSpriteGroupA
 	return 1;
 }
 
-static inline bool IsSimpleContainerSpriteGroup(const SpriteGroup *group) {
+static inline bool IsSimpleContainerSpriteGroup(const SpriteGroup *group)
+{
 	return group != nullptr && (group->type == SGT_RANDOMIZED || group->type == SGT_REAL);
 }
 
