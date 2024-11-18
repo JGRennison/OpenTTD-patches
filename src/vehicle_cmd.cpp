@@ -251,15 +251,6 @@ CommandCost CmdSellVehicle(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 		if (!front->IsStoppedInDepot()) return_cmd_error(STR_ERROR_TRAIN_MUST_BE_STOPPED_INSIDE_DEPOT + front->type);
 	}
 
-	/* Can we actually make the order backup, i.e. are there enough orders? */
-	if (p1 & MAKE_ORDER_BACKUP_FLAG &&
-			front->orders != nullptr &&
-			!front->orders->IsShared()) {
-		/* Only happens in exceptional cases when there aren't enough orders anyhow.
-		 * Thus it should be safe to just drop the orders in that case. */
-		p1 &= ~MAKE_ORDER_BACKUP_FLAG;
-	}
-
 	if (v->type == VEH_TRAIN) {
 		ret = CmdSellRailWagon(flags, v, GB(p1, 20, 12), p2);
 	} else {
