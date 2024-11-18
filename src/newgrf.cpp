@@ -11628,6 +11628,8 @@ extern void InitGRFTownGeneratorNames();
 /** Finish loading NewGRFs and execute needed post-processing */
 static void AfterLoadGRFs()
 {
+	VarAction2OptimiseState::ReleaseCaches();
+
 	for (StringIDMapping &it : _string_to_grf_mapping) {
 		StringID str = MapGRFStringID(it.grf, it.source);
 		if (it.func == nullptr) {

@@ -230,9 +230,12 @@ struct VarAction2TempStoreInferenceVarSource {
 
 struct VarAction2TempStoreInference {
 	VarAction2AdjustInferenceFlags inference = VA2AIF_NONE;
+	const uint8_t var_index;
 	uint32_t store_constant = 0;
 	VarAction2TempStoreInferenceVarSource var_source;
 	uint version = 0;
+
+	VarAction2TempStoreInference(uint8_t var_index) : var_index(var_index) {}
 };
 
 struct VarAction2InferenceBackup {
@@ -242,9 +245,44 @@ struct VarAction2InferenceBackup {
 };
 
 struct VarAction2OptimiseState {
+	struct TempStoreState {
+	private:
+		std::vector<VarAction2TempStoreInference> storage;
+		std::vector<std::pair<uint8_t, uint8_t>> storage_index;
+
+	public:
+		VarAction2TempStoreInference *begin() { return this->storage.data(); }
+		VarAction2TempStoreInference *end() { return this->storage.data() + this->storage.size(); }
+
+		VarAction2TempStoreInference *find(uint8_t var)
+		{
+			for (const auto &it : this->storage_index) {
+				if (it.first == var) return &this->storage[it.second];
+			}
+			return nullptr;
+		}
+
+		VarAction2TempStoreInference &operator[](uint8_t var)
+		{
+			VarAction2TempStoreInference *ptr = this->find(var);
+			if (ptr != nullptr) return *ptr;
+
+			this->storage_index.emplace_back(var, static_cast<uint8_t>(this->storage.size()));
+			return this->storage.emplace_back(var);
+		}
+
+		void clear()
+		{
+			this->storage.clear();
+			this->storage_index.clear();
+		}
+	};
+
+	static TempStoreState temp_store_cache;
+
 	VarAction2AdjustInferenceFlags inference = VA2AIF_NONE;
 	uint32_t current_constant = 0;
-	btree::btree_map<uint8_t, VarAction2TempStoreInference> temp_stores;
+	TempStoreState temp_stores;
 	VarAction2InferenceBackup inference_backup;
 	VarAction2GroupVariableTracking *var_tracking = nullptr;
 	bool seen_procedure_call = false;
@@ -261,6 +299,22 @@ struct VarAction2OptimiseState {
 			this->var_tracking = _cur.GetVarAction2GroupVariableTracking(group, true);
 		}
 		return this->var_tracking;
+	}
+
+	VarAction2OptimiseState()
+	{
+		this->temp_stores = std::move(temp_store_cache);
+		this->temp_stores.clear();
+	}
+
+	~VarAction2OptimiseState()
+	{
+		temp_store_cache = std::move(this->temp_stores);
+	}
+
+	static void ReleaseCaches()
+	{
+		TempStoreState tmp = std::move(temp_store_cache);
 	}
 };
 

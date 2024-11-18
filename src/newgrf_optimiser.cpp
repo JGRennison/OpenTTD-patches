@@ -20,6 +20,8 @@
 
 #include "safeguards.h"
 
+VarAction2OptimiseState::TempStoreState VarAction2OptimiseState::temp_store_cache;
+
 static bool IsExpensiveVehicleVariable(uint16_t variable)
 {
 	switch (variable) {
@@ -866,14 +868,14 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const VarAction2Ad
 		std::bitset<256> bits;
 		bits.set();
 		for (auto &it : state.temp_stores) {
-			bits.set(it.first, false);
+			bits.set(it.var_index, false);
 		}
 		state.GetVarTracking(group)->in |= bits;
 	};
 	auto reset_store_values = [&]() {
 		for (auto &it : state.temp_stores) {
-			it.second.inference = VA2AIF_NONE;
-			it.second.version++;
+			it.inference = VA2AIF_NONE;
+			it.version++;
 		}
 		state.default_variable_version++;
 		state.special_register_store_mask = 0;
@@ -977,13 +979,13 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const VarAction2Ad
 	while (adjust.variable == 0x7D && iteration > 0) {
 		iteration--;
 		non_const_var_inference = VA2AIF_NONE;
-		auto iter = state.temp_stores.find(adjust.parameter & 0xFF);
-		if (iter == state.temp_stores.end()) {
+		const VarAction2TempStoreInference *inf = state.temp_stores.find(adjust.parameter & 0xFF);
+		if (inf == nullptr) {
 			/* Read without any previous store */
 			state.GetVarTracking(group)->in.set(adjust.parameter & 0xFF, true);
 			adjust.parameter |= (state.default_variable_version << 8);
 		} else {
-			const VarAction2TempStoreInference &store = iter->second;
+			const VarAction2TempStoreInference &store = *inf;
 			if (store.inference & VA2AIF_HAVE_CONSTANT) {
 				adjust.variable = 0x1A;
 				adjust.parameter = 0;
@@ -1023,8 +1025,8 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const VarAction2Ad
 	if (adjust.operation == DSGA_OP_STOP) {
 		for (auto &it : state.temp_stores) {
 			/* Check if some other variable is marked as a copy of permanent storage */
-			if ((it.second.inference & VA2AIF_SINGLE_LOAD) && it.second.var_source.variable == 0x7C) {
-				it.second.inference &= ~VA2AIF_SINGLE_LOAD;
+			if ((it.inference & VA2AIF_SINGLE_LOAD) && it.var_source.variable == 0x7C) {
+				it.inference &= ~VA2AIF_SINGLE_LOAD;
 			}
 		}
 	}
@@ -1178,7 +1180,7 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const VarAction2Ad
 					if (var_tracking != nullptr) {
 						std::bitset<256> bits = var_tracking->in;
 						for (auto &it : state.temp_stores) {
-							bits.set(it.first, false);
+							bits.set(it.var_index, false);
 						}
 						state.GetVarTracking(group)->in |= bits;
 					}
@@ -1197,21 +1199,21 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const VarAction2Ad
 				reset_store_values();
 			} else {
 				for (auto &it : state.temp_stores) {
-					if (seen_stores[it.first]) {
-						it.second.inference = VA2AIF_NONE;
-						it.second.version++;
+					if (seen_stores[it.var_index]) {
+						it.inference = VA2AIF_NONE;
+						it.version++;
 					} else {
 						/* See DSGA_OP_STO handler */
-						if ((it.second.inference & VA2AIF_SINGLE_LOAD) && it.second.var_source.variable == 0x7D && seen_stores[it.second.var_source.parameter & 0xFF]) {
-							it.second.inference &= ~VA2AIF_SINGLE_LOAD;
+						if ((it.inference & VA2AIF_SINGLE_LOAD) && it.var_source.variable == 0x7D && seen_stores[it.var_source.parameter & 0xFF]) {
+							it.inference &= ~VA2AIF_SINGLE_LOAD;
 						}
-						if (seen_special_store && (it.second.inference & VA2AIF_SINGLE_LOAD) && it.second.var_source.variable != 0x7D) {
-							it.second.inference &= ~VA2AIF_SINGLE_LOAD;
+						if (seen_special_store && (it.inference & VA2AIF_SINGLE_LOAD) && it.var_source.variable != 0x7D) {
+							it.inference &= ~VA2AIF_SINGLE_LOAD;
 						}
 
 						/* See DSGA_OP_STOP handler */
-						if (seen_perm_store && (it.second.inference & VA2AIF_SINGLE_LOAD) && it.second.var_source.variable == 0x7C) {
-							it.second.inference &= ~VA2AIF_SINGLE_LOAD;
+						if (seen_perm_store && (it.inference & VA2AIF_SINGLE_LOAD) && it.var_source.variable == 0x7C) {
+							it.inference &= ~VA2AIF_SINGLE_LOAD;
 						}
 					}
 				}
@@ -1645,8 +1647,8 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const VarAction2Ad
 
 							for (auto &it : state.temp_stores) {
 								/* Check if some other variable is marked as a copy of the one we are overwriting */
-								if ((it.second.inference & VA2AIF_SINGLE_LOAD) && it.second.var_source.variable == 0x7D && (it.second.var_source.parameter & 0xFF) == adjust.and_mask) {
-									it.second.inference &= ~VA2AIF_SINGLE_LOAD;
+								if ((it.inference & VA2AIF_SINGLE_LOAD) && it.var_source.variable == 0x7D && (it.var_source.parameter & 0xFF) == adjust.and_mask) {
+									it.inference &= ~VA2AIF_SINGLE_LOAD;
 								}
 							}
 							VarAction2TempStoreInference &store = state.temp_stores[adjust.and_mask];
@@ -1714,8 +1716,8 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const VarAction2Ad
 							 * Assume all variables except temp storage for now.
 							 */
 							for (auto &it : state.temp_stores) {
-								if (it.second.inference & VA2AIF_SINGLE_LOAD && it.second.var_source.variable != 0x7D) {
-									it.second.inference &= ~VA2AIF_SINGLE_LOAD;
+								if (it.inference & VA2AIF_SINGLE_LOAD && it.var_source.variable != 0x7D) {
+									it.inference &= ~VA2AIF_SINGLE_LOAD;
 								}
 							}
 						}
@@ -2810,7 +2812,7 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 		if (in_bits.any()) {
 			state.GetVarTracking(group)->out = bits;
 			for (auto &it : state.temp_stores) {
-				in_bits.set(it.first, false);
+				in_bits.set(it.var_index, false);
 			}
 			state.GetVarTracking(group)->in |= in_bits;
 		}
