@@ -161,43 +161,58 @@ public:
 		return !this->spritesets[feature].empty();
 	}
 
+	struct SpriteSetInfo {
+	private:
+		SpriteSet info;
+
+	public:
+		SpriteSetInfo() : info({ 0, UINT_MAX }) {}
+		SpriteSetInfo(SpriteSet info) : info(info) {}
+
+		/**
+		 * Check whether this set is defined.
+		 * @return true if the set is valid.
+		 * @note Spritesets with zero sprites are valid to allow callback-failures.
+		 */
+		bool IsValid() const { return this->info.num_sprites != UINT_MAX; }
+
+		/**
+		 * Returns the first sprite of this spriteset.
+		 * @return First sprite of the set.
+		 */
+		SpriteID GetSprite() const
+		{
+			assert(this->IsValid());
+			return this->info.sprite;
+		}
+
+		/**
+		 * Returns the number of sprites in this spriteset
+		 * @return Number of sprites in the set.
+		 */
+		uint GetNumEnts() const
+		{
+			assert(this->IsValid());
+			return this->info.num_sprites;
+		}
+	};
+
 	/**
-	 * Check whether a specific set is defined.
+	 * Get information for a specific set is defined.
 	 * @param feature GrfSpecFeature to check.
 	 * @param set Set to check.
-	 * @return true if the set is valid.
+	 * @return Sprite set information.
 	 * @note Spritesets with zero sprites are valid to allow callback-failures.
 	 */
-	bool IsValidSpriteSet(uint8_t feature, uint set) const
+	SpriteSetInfo GetSpriteSetInfo(uint8_t feature, uint set) const
 	{
 		assert(feature < GSF_END);
-		return this->spritesets[feature].find(set) != this->spritesets[feature].end();
-	}
-
-	/**
-	 * Returns the first sprite of a spriteset.
-	 * @param feature GrfSpecFeature to query.
-	 * @param set Set to query.
-	 * @return First sprite of the set.
-	 */
-	SpriteID GetSprite(uint8_t feature, uint set) const
-	{
-		assert(IsValidSpriteSet(feature, set));
-		return this->spritesets[feature].find(set)->second.sprite;
-	}
-
-	/**
-	 * Returns the number of sprites in a spriteset
-	 * @param feature GrfSpecFeature to query.
-	 * @param set Set to query.
-	 * @return Number of sprites in the set.
-	 */
-	uint GetNumEnts(uint8_t feature, uint set) const
-	{
-		assert(IsValidSpriteSet(feature, set));
-		return this->spritesets[feature].find(set)->second.num_sprites;
+		auto iter = this->spritesets[feature].find(set);
+		return iter != this->spritesets[feature].end() ? SpriteSetInfo(iter->second) : SpriteSetInfo();
 	}
 };
+
+using SpriteSetInfo = GrfProcessingState::SpriteSetInfo;
 
 extern GrfProcessingState _cur;
 

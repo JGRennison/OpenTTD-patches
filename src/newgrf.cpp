@@ -712,16 +712,19 @@ static TileLayoutFlags ReadSpriteLayoutSprite(ByteReader &buf, bool read_flags, 
 
 	bool custom_sprite = HasBit(grf_sprite->pal, 15) != invert_action1_flag;
 	ClrBit(grf_sprite->pal, 15);
+
 	if (custom_sprite) {
 		/* Use sprite from Action 1 */
 		uint index = GB(grf_sprite->sprite, 0, 14);
-		if (use_cur_spritesets && (!_cur.IsValidSpriteSet(feature, index) || _cur.GetNumEnts(feature, index) == 0)) {
+		SpriteSetInfo sprite_set_info;
+		if (use_cur_spritesets) sprite_set_info = _cur.GetSpriteSetInfo(feature, index);
+		if (use_cur_spritesets && (!sprite_set_info.IsValid() || sprite_set_info.GetNumEnts() == 0)) {
 			GrfMsg(1, "ReadSpriteLayoutSprite: Spritelayout uses undefined custom spriteset {}", index);
 			grf_sprite->sprite = SPR_IMG_QUERY;
 			grf_sprite->pal = PAL_NONE;
 		} else {
-			SpriteID sprite = use_cur_spritesets ? _cur.GetSprite(feature, index) : index;
-			if (max_sprite_offset != nullptr) *max_sprite_offset = use_cur_spritesets ? _cur.GetNumEnts(feature, index) : UINT16_MAX;
+			SpriteID sprite = use_cur_spritesets ? sprite_set_info.GetSprite() : index;
+			if (max_sprite_offset != nullptr) *max_sprite_offset = use_cur_spritesets ? sprite_set_info.GetNumEnts() : UINT16_MAX;
 			SB(grf_sprite->sprite, 0, SPRITE_WIDTH, sprite);
 			SetBit(grf_sprite->sprite, SPRITE_MODIFIER_CUSTOM_SPRITE);
 		}
@@ -734,12 +737,14 @@ static TileLayoutFlags ReadSpriteLayoutSprite(ByteReader &buf, bool read_flags, 
 	if (flags & TLF_CUSTOM_PALETTE) {
 		/* Use palette from Action 1 */
 		uint index = GB(grf_sprite->pal, 0, 14);
-		if (use_cur_spritesets && (!_cur.IsValidSpriteSet(feature, index) || _cur.GetNumEnts(feature, index) == 0)) {
+		SpriteSetInfo sprite_set_info;
+		if (use_cur_spritesets) sprite_set_info = _cur.GetSpriteSetInfo(feature, index);
+		if (use_cur_spritesets && (!sprite_set_info.IsValid() || sprite_set_info.GetNumEnts() == 0)) {
 			GrfMsg(1, "ReadSpriteLayoutSprite: Spritelayout uses undefined custom spriteset {} for 'palette'", index);
 			grf_sprite->pal = PAL_NONE;
 		} else {
-			SpriteID sprite = use_cur_spritesets ? _cur.GetSprite(feature, index) : index;
-			if (max_palette_offset != nullptr) *max_palette_offset = use_cur_spritesets ? _cur.GetNumEnts(feature, index) : UINT16_MAX;
+			SpriteID sprite = use_cur_spritesets ? sprite_set_info.GetSprite() : index;
+			if (max_palette_offset != nullptr) *max_palette_offset = use_cur_spritesets ? sprite_set_info.GetNumEnts() : UINT16_MAX;
 			SB(grf_sprite->pal, 0, SPRITE_WIDTH, sprite);
 			SetBit(grf_sprite->pal, SPRITE_MODIFIER_CUSTOM_SPRITE);
 		}
@@ -5786,13 +5791,15 @@ static const SpriteGroup *CreateGroupFromGroupID(uint8_t feature, uint16_t setid
 		return NewCallbackResultSpriteGroup(spriteid);
 	}
 
-	if (!_cur.IsValidSpriteSet(feature, spriteid)) {
+	const SpriteSetInfo sprite_set_info = _cur.GetSpriteSetInfo(feature, spriteid);
+
+	if (!sprite_set_info.IsValid()) {
 		GrfMsg(1, "CreateGroupFromGroupID(0x{:02X}:0x{:02X}): Sprite set {} invalid", setid, type, spriteid);
 		return nullptr;
 	}
 
-	SpriteID spriteset_start = _cur.GetSprite(feature, spriteid);
-	uint num_sprites = _cur.GetNumEnts(feature, spriteid);
+	SpriteID spriteset_start = sprite_set_info.GetSprite();
+	uint num_sprites = sprite_set_info.GetNumEnts();
 
 	/* Ensure that the sprites are loeded */
 	assert(spriteset_start + num_sprites <= _cur.spriteid);
