@@ -146,7 +146,7 @@ STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL                          :列車制動模
 STR_CONFIG_SETTING_TRAIN_BRAKING_MODEL_HELPTEXT                 :選擇列車制動的物理模型。「原版」模型允許列車立即停止。在「真實」模型中，列車擁有停止距離並需要供停止用的預留量，且無法立即停車{}{}「真實」模型對於號誌和軌道的布局設計有顯著的影響{}{PUSH_COLOUR}{GOLD}在此模式下只能使用路徑號誌{POP_COLOUR} #TODO
 
 STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED             :制動方向限制：{STRING}
-STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED_HELPTEXT    :在真實列車制動模型中，在號誌方向限制列車的前方觀察能力（即，不允許觀察和預測前方的無限數量的號誌）{}這需要 NewGRF 提供多相號誌{}{}這是一個高階設定並將增加遊戲難度，需要考慮號誌類型及其放置位置
+STR_CONFIG_SETTING_REALISTIC_BRAKING_ASPECT_LIMITED_HELPTEXT    :在真實列車制動模型中，在號誌方向限制列車的前方觀察能力（即，不允許觀察和預測前方的無限數量的號誌）{}這需要 NewGRF 提供多相號誌{}{}這是一個進階設定並將增加遊戲難度，需要考慮號誌類型及其放置位置
 
 STR_CONFIG_SETTING_LIMIT_TRAIN_ACCELERATION                     :限制列車加速：{STRING}
 STR_CONFIG_SETTING_LIMIT_TRAIN_ACCELERATION_HELPTEXT            :在使用真實列車減速模型時，同時限制列車的最大加速度
@@ -173,7 +173,7 @@ STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING_HELPTEXT       :啟用之後允
 STR_CONFIG_SETTING_INFLATION_FIXED_DATES                        :在 1920 年與 2090 年期間應用通貨膨脹：{STRING}
 STR_CONFIG_SETTING_INFLATION_FIXED_DATES_HELPTEXT               :當啟用時，不管遊戲是在哪年進行的，通脹將在 1920 到 2090 年間始終持續，這是 OpenTTD 1.11 以來所使用的通脹模型{}如果停用，通脹將會在遊戲開始後 170 年裡不斷持續，這是一直使用到 OpenTTD 1.10 的模型
 
-STR_CONFIG_SETTING_IMPROVED_BREAKDOWNS                          :啟用高階車輛故障：{STRING}
+STR_CONFIG_SETTING_IMPROVED_BREAKDOWNS                          :啟用進階車輛故障：{STRING}
 
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :船舶之間避免沖突：{STRING}
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :啟用時船舶將嘗試避免互相穿過。本項在禁止船舶 90 度轉向時效果最好
@@ -197,8 +197,8 @@ STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE                :在列車因為
 STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE_HELPTEXT       :當被啟用時，如果列車長時間在路徑號誌處等待，發送提示
 
 STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER                          :在車輛沒有回廠任務時提示：{STRING}
-STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_HELPTEXT                 :啟用時，若車損已開啟，則在列車、汽車、船舶的時刻表中沒有回廠任務時發出提示
-STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_IF_BREAKDOWNS_ON         :如果車損已開啟
+STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_HELPTEXT                 :啟用時，若車輛故障已開啟，則在列車、汽車、船舶的時刻表中沒有回廠任務時發出提示
+STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_IF_BREAKDOWNS_ON         :如果車輛故障已開啟
 
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER                     :車輛在 {STRING} 年後不會退役
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_HELPTEXT            :在此年份及之後退役的車輛將不會退役。{}發動機可靠性的衰退也會停止。
@@ -230,8 +230,8 @@ STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT                    :使用預設號
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT_EXTRA              :{STRING}{}「僅尋路限制號誌」模式在啟用號誌柱重新著色且 NewGRF 本身不處理尋路限制號誌的不同圖形時，使用預設圖像顯示此種號誌。
 STR_CONFIG_SETTING_SHOW_ALL_SIG_RESTRICTED_RECOLOUR             :僅尋路限制號誌
 
-STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES             :顯示高階尋路限制功能：{STRING}
-STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :顯示高階尋路限制功能。停用時，某些高階功能不會在界面中顯示，但所有玩家仍然可以使用。
+STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES             :顯示進階尋路限制功能：{STRING}
+STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :顯示進階尋路限制功能。停用時，某些進階功能不會在界面中顯示，但所有玩家仍然可以使用。
 
 STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES                        :顯示可編程邏輯號誌功能：{STRING}
 STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES_HELPTEXT               :顯示可編程邏輯號誌功能。停用時，構建和配置可編程邏輯號誌的按鈕不會在界面中顯示，但所有玩家仍然可以使用。
@@ -301,14 +301,14 @@ STR_CONFIG_SETTING_SHORTEN_STATUS_VEHICLE_VIEW_HELPTEXT         :啟用後，縮
 STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION                   :隱藏預設命令停止位置：{STRING}
 STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION_HELPTEXT          :啟用後，當命令停止位置與預設位置相同時，隱藏該位置。
 
-STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL                              :顯示鐵路折線工具：{STRING}
-STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL_HELPTEXT                     :啟用後，鐵路建設工具欄中包含一個按鈕，用於使用折線模式建設。
+STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL                              :顯示鐵路多段線工具：{STRING}
+STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL_HELPTEXT                     :啟用後，鐵路建設工具欄中包含一個按鈕，用於使用多段線模式建設。
 
 STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR             :使用日歷年或週期顯示車輛運行成本：{STRING}
 STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR_HELPTEXT    :當使用大於一的經濟速度因數時，使用日歷年（日歷計時模式）或週期（掛鐘計時模式）顯示車輛運行成本，而不是使用「起始年份」顯示。
 
-STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :啟用橋樑和隧道號誌高階模式：{STRING}
-STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :啟用橋樑和隧道號誌模擬的高階模式。停用後，不能將不在高階模式下的橋樑或隧道更改為高階模式，但其他玩家可以選擇啟用此設定並使用高階模式。
+STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :啟用橋樑和隧道號誌進階模式：{STRING}
+STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :啟用橋樑和隧道號誌模擬的進階模式。停用後，不能將不在進階模式下的橋樑或隧道更改為進階模式，但其他玩家可以選擇啟用此設定並使用進階模式。
 
 STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED                    :以最高速度排序軌道類型：{STRING}
 STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED_HELPTEXT           :以兼容性和速度排序軌道並代替預設排序
@@ -678,8 +678,8 @@ STR_CONFIG_SETTING_ENABLE_RAIL_CUSTOM_BRIDGE_HEADS_HELPTEXT     :允許在鐵路
 STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES              :允許在橋下建設 NewGRF 物體：{STRING}
 STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES_HELPTEXT     :允許在橋下建設 NewGRF 物體{}這可能導致圖像錯誤
 
-STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES             :允許在橋下建設 NewGRF 火車站與號誌站：{STRING}
-STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES_HELPTEXT    :啟用後將忽略 NewGRF 火車站與號誌站的高度限制{}這可能導致圖像錯誤
+STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES             :允許在橋下建設 NewGRF 鐵路站與號誌站：{STRING}
+STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES_HELPTEXT    :啟用後將忽略 NewGRF 鐵路站與號誌站的高度限制{}這可能導致圖像錯誤
 
 STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES            :允許在橋下建設汽車站：{STRING}
 STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT   :允許把道路/有軌電車站建在橋下{}車輛通過橋樑而不停站需要橋樑的高度至少為一格，要讓車輛停靠在此類號誌站則要求橋樑的高度至少為兩格
@@ -692,7 +692,7 @@ STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED                      :購買土地行
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED_HELPTEXT             :設定是否允許公司購買土地，並規定單次購買數量
 
 STR_CONFIG_SETTING_BUILD_OBJECT_PERMITTED                       :景觀物體建設上限：{STRING}
-STR_CONFIG_SETTING_BUILD_OBJECT_PERMITTED_HELPTEXT              :設定單個公司可建設的景觀物體上限
+STR_CONFIG_SETTING_BUILD_OBJECT_PERMITTED_HELPTEXT              :設定每間公司可建設的景觀物體上限
 
 STR_CONFIG_SETTING_NO_EXPIRE_OBJECTS_AFTER                      :在 {STRING} 年將沒有物體過期
 STR_CONFIG_SETTING_NO_EXPIRE_OBJECTS_AFTER_HELPTEXT             :在指定年份之後，物體不會失效
@@ -784,10 +784,10 @@ STR_LINKGRAPH_STATS_TOOLTIP_DISTANCE                            :曼哈頓距離
 
 STR_LINKGRAPH_STATS_TOOLTIP_PRODUCTION_INTERVAL                 :{BLACK} 每個生產週期有 {CARGO_LONG} 從 {STATION} 運輸至 {STATION}（運載容量的 {COMMA}%）{STRING}
 
-STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL                         :{BLACK}使用折線模式建設鐵路。按住 <Ctrl> 鍵操作以移除鐵路，按住 <Shift> 鍵操作以顯示預計成本
+STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL                         :{BLACK}使用多段線模式建設鐵路。按住 <Ctrl> 鍵操作以移除鐵路，按住 <Shift> 鍵操作以顯示預計成本
 
-STR_BUILD_SIGNAL_SEMAPHORE_PROG_TOOLTIP                         :{BLACK}可編程邏輯號誌（臂板）{}可編程邏輯號誌是一種綜合號誌，允許制定複雜的通行規則。
-STR_BUILD_SIGNAL_SEMAPHORE_NO_ENTRY_TOOLTIP                     :{BLACK}禁入號誌（臂板）{}路徑號誌燈為列車預留一條到安全停車位的路徑，而其它路徑仍然可以使用，從而允許一列以上的列車同時進入一個號誌區間。禁入號誌不允許列車逆行。
+STR_BUILD_SIGNAL_SEMAPHORE_PROG_TOOLTIP                         :{BLACK}可編程邏輯號誌（臂木）{}可編程邏輯號誌是一種綜合號誌，允許制定複雜的通行規則。
+STR_BUILD_SIGNAL_SEMAPHORE_NO_ENTRY_TOOLTIP                     :{BLACK}禁入號誌（臂木）{}路徑號誌燈為列車預留一條到安全停車位的路徑，而其它路徑仍然可以使用，從而允許一列以上的列車同時進入一個號誌區間。禁入號誌不允許列車逆行。
 STR_BUILD_SIGNAL_ELECTRIC_PROG_TOOLTIP                          :{BLACK}可編程邏輯號誌（電力）{}可編程邏輯號誌是一種綜合號誌，允許制定複雜的通行規則。
 STR_BUILD_SIGNAL_ELECTRIC_NO_ENTRY_TOOLTIP                      :{BLACK}禁入號誌（電力）{}路徑號誌燈為列車預留一條到安全停車位的路徑，而其它路徑仍然可以使用，從而允許一列以上的列車同時進入一個號誌區間。禁入號誌不允許列車逆行。
 STR_BUILD_SIGNAL_DEFAULT_STYLE                                  :預設
@@ -1010,8 +1010,8 @@ STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_VEH                      :車輛
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}值
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}尋路限制邏輯
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}尋路限制邏輯 - 由 {COMMA} 個號誌共享
-STR_TRACE_RESTRICT_UP_BTN_TOOLTIP                               :{BLACK}上移所選的任務{}按住 <Ctrl> 鍵點擊以選擇單個任務而不是整個語句塊
-STR_TRACE_RESTRICT_DOWN_BTN_TOOLTIP                             :{BLACK}下移所選的任務{}按住 <Ctrl> 鍵點擊以選擇單個任務而不是整個語句塊
+STR_TRACE_RESTRICT_UP_BTN_TOOLTIP                               :{BLACK}上移所選的任務{}按住 <Ctrl> 鍵點擊以選擇一個任務而不是整個語句塊
+STR_TRACE_RESTRICT_DOWN_BTN_TOOLTIP                             :{BLACK}下移所選的任務{}按住 <Ctrl> 鍵點擊以選擇一個任務而不是整個語句塊
 STR_TRACE_RESTRICT_TYPE_TOOLTIP                                 :{BLACK}類型
 STR_TRACE_RESTRICT_COND_COMPARATOR_TOOLTIP                      :{BLACK}比較運算符
 STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP                           :{BLACK}值
@@ -1256,19 +1256,19 @@ STR_NEWGRF_INSPECT_LOG_CONSOLE                                  :{BLACK}記錄
 STR_NEWGRF_INSPECT_LOG_CONSOLE_TOOLTIP                          :{BLACK}將此視窗的記錄明細傳送到控制台
 STR_NEWGRF_INSPECT_DUPLICATE                                    :{BLACK}複製
 STR_NEWGRF_INSPECT_DUPLICATE_TOOLTIP                            :{BLACK}複製此視窗
-STR_NEWGRF_INSPECT_SPRITE_DUMP                                  :{BLACK}S 鏈
-STR_NEWGRF_INSPECT_SPRITE_DUMP_TOOLTIP                          :{BLACK}顯示當前 Sprite 鏈
-STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT                            :{BLACK}無最佳
-STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP                    :{BLACK}在沒有應用任何最佳化的情況下顯示 Sprite 組{}{}如果之前沒有啟用，則需要重新載入 NewGRF (misc_debug 10)
-STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO                             :滾動至 Sprite 序號
+STR_NEWGRF_INSPECT_SPRITE_DUMP                                  :{BLACK}S 鏈(拼合圖鏈)
+STR_NEWGRF_INSPECT_SPRITE_DUMP_TOOLTIP                          :{BLACK}顯示目前 Sprite(拼合圖) 鏈
+STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT                            :{BLACK}U 無最佳
+STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP                    :{BLACK}在沒有應用任何最佳化的情況下顯示 Sprite(拼合圖) 組{}{}如果之前沒有啟用，則需要重新載入 NewGRF (misc_debug 10)
+STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO                             :移動至 Sprite(拼合圖) 編號
 STR_NEWGRF_INSPECT_SPRITE_DUMP_CLEAR                            :清除亮點與標註
 STR_NEWGRF_INSPECT_SPRITE_DUMP_MORE_DETAILS                     :顯示詳細資訊
 STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_HIGHLIGHT               :點擊亮點
 STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_MARK                    :點擊標註
 STR_NEWGRF_INSPECT_SPRITE_DUMP_OPTIONS                          :{BLACK}額外指令與選項
-STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT          :{BLACK}點擊亮點 Sprite 組
-STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_MARK               :{BLACK}點擊標註 Sprite 組
-STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_COLLAPSE           :{BLACK}按住 <Shift> 鍵操作以折疊 Sprite 組
+STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT          :{BLACK}點擊亮點 Sprite(拼合圖) 組
+STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_MARK               :{BLACK}點擊標註 Sprite(拼合圖) 組
+STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_COLLAPSE           :{BLACK}按住 <Shift> 鍵操作以摺疊 Sprite(拼合圖) 組
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT_TEMP     :{BLACK}按住 <Ctrl> 鍵操作以亮點臨時存儲寄存器
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS                    :號誌
 STR_NEWGRF_INSPECT_CAPTION_TRACERESTRICT                        :{HEX}/{HEX} 的尋路限制邏輯
@@ -1301,7 +1301,7 @@ STR_STATION_VIEW_DEPARTURES_TOOLTIP                             :{BLACK}顯示�
 STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}貨物記錄
 STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}顯示貨物等待記錄
 
-STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} - 實時運輸信息
+STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} - 實時運輸資訊
 STR_DEPARTURES_CARGO_MODE_TOOLTIP                               :{BLACK}設定車輛到達與出發顯示貨物類型過濾規則
 STR_DEPARTURES_DEPARTURES                                       :出發
 STR_DEPARTURES_ARRIVALS                                         :到達
@@ -1320,7 +1320,7 @@ STR_DEPARTURES_SHOW_SHIPS_TOOLTIP                               :{BLACK}僅顯�
 STR_DEPARTURES_SHOW_AIRCRAFT_TOOLTIP                            :{BLACK}僅顯示飛機
 STR_DEPARTURES_SHOW_TYPE_TOOLTIP_CTRL_SUFFIX                    :{BLACK}{STRING}。按住 <Ctrl> 鍵點擊設定僅顯示此類型車輛
 STR_DEPARTURES_EMPTY                                            :{ORANGE}當前沒有車輛列入車站時刻表
-STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}沒有被請求的時刻表信息
+STR_DEPARTURES_NONE_SELECTED                                    :{ORANGE}沒有被要求的時刻表資訊
 STR_DEPARTURES_TIME                                             :{COLOUR}{STRING}
 STR_DEPARTURES_TIME_DEP                                         :{COLOUR}{STRING} {GREEN}{UP_ARROW}
 STR_DEPARTURES_TIME_ARR                                         :{COLOUR}{STRING} {RED}{DOWN_ARROW}
@@ -1372,7 +1372,7 @@ STR_CONFIG_SETTING_DEPARTUREBOARDS                              :{ORANGE}班次�
 STR_CONFIG_MAX_DEPARTURES                                       :車站班次顯示板班次上限：{STRING}
 STR_CONFIG_MAX_DEPARTURES_HELPTEXT                              :班次顯示板顯示班次的最大值
 STR_CONFIG_MAX_DEPARTURE_TIME                                   :最多提前 {STRING} 天顯示班次
-STR_CONFIG_MAX_DEPARTURE_TIME_HELPTEXT                          :出發/到達信息最大顯示天數
+STR_CONFIG_MAX_DEPARTURE_TIME_HELPTEXT                          :出發/到達訊息最大顯示天數
 STR_CONFIG_MAX_DEPARTURE_TIME_MINUTES                           :最多提前 {STRING} 分鐘顯示班次
 STR_CONFIG_MAX_DEPARTURE_TIME_MINUTES_HELPTEXT                  :調整顯示到達/出發時間的提前分鐘數
 STR_CONFIG_DEPARTURE_CALC_FREQUENCY                             :每 {STRING} 刻重新計算班次
@@ -1467,7 +1467,7 @@ STR_VEHICLE_LIST_CHANGE_ORDER_SHIP_DEPOT                        :轉移調度至
 STR_VEHICLE_LIST_CHANGE_ORDER_AIRCRAFT_HANGAR                   :轉移調度至其他機廠
 
 STR_GROUP_EXPAND_ALL                                            :{BLACK}展開全部
-STR_GROUP_COLLAPSE_ALL                                          :{BLACK}折疊全部
+STR_GROUP_COLLAPSE_ALL                                          :{BLACK}摺疊全部
 
 STR_BUY_VEHICLE_TRAIN_LOCOMOTIVES                               :機車與車箱
 STR_BUY_VEHICLE_TRAIN_WAGONS                                    :車廂
@@ -1611,7 +1611,7 @@ STR_ORDER_CONDITIONAL_NEXT_STATION                              :下一站
 STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}貨物對比車站數據
 STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}檢查的車坑
 STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP                           :{BLACK}檢查的計數器值
-STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP                         :{BLACK}檢查的時間信息
+STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP                         :{BLACK}檢查的時間資訊
 STR_ORDER_CONDITIONAL_TIMETABLE_TOOLTIP                         :{BLACK}檢查的時刻表項
 STR_ORDER_CONDITIONAL_SCHED_SELECT_TOOLTIP                      :{BLACK}使用的調度任務時刻表
 STR_ORDER_CONDITIONAL_SCHED_TEST_TOOLTIP                        :{BLACK}測試的調度任務時刻表
@@ -1689,7 +1689,7 @@ STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}顯示�
 STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}調度使用——這展示了對於共享這些調度的車輛的當離開車站時的最近的運行平均負載率等級
 STR_ORDERS_OCCUPANCY_PERCENT                                    :{NUM}%
 
-STR_ORDERS_NEW_GROUP_TOOLTIP                                    :{BLACK}從單個車輛設立群組
+STR_ORDERS_NEW_GROUP_TOOLTIP                                    :{BLACK}從獨立車輛設立群組
 STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP_EXTRA            :{STRING}{}{BLACK}按住 <Ctrl> 鍵操作以以設立群組
 
 STR_ORDER_GO_TO_WAYPOINT_REVERSE                                :經由並在 {WAYPOINT} 掉頭
@@ -1851,7 +1851,7 @@ STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :[私有]：{STR
 STR_PLANS_LIST_ITEM_PLAN                                        :計劃 #{NUM}：{NUM} 條線（{DATE_SHORT}）
 STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{STRING}: {NUM} 條線（{DATE_SHORT}）
 STR_PLANS_LIST_ITEM_LINE                                        : -- #{NUM}：{NUM} 條線段
-STR_PLANS_LIST_TOOLTIP                                          :{BLACK}雙擊清單中的任意物品折疊相關聯的計劃{}按住 <Ctrl> 鍵操作移動到相應位置
+STR_PLANS_LIST_TOOLTIP                                          :{BLACK}雙擊清單中的任意物品摺疊相關聯的計劃{}按住 <Ctrl> 鍵操作移動到相應位置
 STR_PLANS_QUERY_RENAME_PLAN                                     :{WHITE}重新命名計劃
 STR_PLANS_OWN_ONLY                                              :{BLACK}當前公司
 STR_PLANS_OWN_ONLY_TOOLTIP                                      :{BLACK}僅顯示當前公司的計劃
@@ -2021,7 +2021,7 @@ STR_TMP_TEMPLATE_FROM_PARENT_GROUP                              :使用來自上
 STR_TMPL_GROUP_NUM_TRAINS                                       :{BLACK}{NUM}
 STR_TMPL_CREATEGUI_TITLE                                        :{WHITE}設立或編輯車輛範本
 STR_TMPL_MAINGUI_DEFINEDGROUPS                                  :{BLACK}已定義公司群組
-STR_TMPL_TMPLRPL_EX_DIFF_RAILTYPE                               :使用不同鐵軌類型的範本
+STR_TMPL_TMPLRPL_EX_DIFF_RAILTYPE                               :使用不同鐵路軌道類型的範本
 
 STR_TMPL_ADD_LOCOMOTIVE                                         :{BLACK}增加機車
 STR_TMPL_ADD_WAGON                                              :{BLACK}增加車廂
@@ -2261,7 +2261,7 @@ STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE_ON_IF_HIDDEN          :開啟，如果
 STR_CONFIG_SETTING_TOWN_NAME_TOOLTIP_MODE_ALWAYS_ON             :始終開啟
 
 STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_SHOW                        :顯示工業提示：{STRING}
-STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_SHOW_HELPTEXT               :當指針懸停在工業上時顯示相關信息
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_SHOW_HELPTEXT               :當指針懸停在工業上時顯示相關資訊
 STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_NAME                        :顯示工業名稱：{STRING}
 STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_NAME_HELPTEXT               :當指針懸停在工業上時顯示工業名稱
 STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_REQUIRED                    :顯示可接收的貨物：{STRING}
@@ -2293,7 +2293,7 @@ STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_ON_IF_HIDDEN   :如果站點名
 STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_ALWAYS_ON      :始終開啟
 
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE                  :車站評價工具提示：{STRING}
-STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_HELPTEXT         :設定是否顯示車站評價的工具提示以及信息詳細程度。
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_HELPTEXT         :設定是否顯示車站評價的工具提示以及資訊詳細程度。
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :關閉
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_SIMPLE           :簡單
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :詳細
