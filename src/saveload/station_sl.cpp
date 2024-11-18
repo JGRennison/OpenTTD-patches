@@ -78,7 +78,7 @@ static void SwapPackets(GoodsEntry *ge)
 }
 
 template <typename T>
-class SlStationSpecList : public DefaultSaveLoadHandler<SlStationSpecList<T>, BaseStation> {
+class SlStationSpecList : public VectorSaveLoadHandler<SlStationSpecList<T>, BaseStation, SpecMapping<T>> {
 public:
 	inline static const SaveLoad description[] = {
 		SLE_CONDVAR(SpecMapping<T>, grfid,    SLE_UINT32,                SLV_27,                    SL_MAX_VERSION),
@@ -87,25 +87,11 @@ public:
 	};
 	inline const static SaveLoadCompatTable compat_description = _station_spec_list_sl_compat;
 
-	void Save(BaseStation *bst) const override
-	{
-		auto &speclist = GetStationSpecList<T>(bst);
-		SlSetStructListLength(speclist.size());
-		for (auto &sm : speclist) {
-			SlObject(&sm, this->GetDescription());
-		}
-	}
+	std::vector<SpecMapping<T>> &GetVector(BaseStation *bst) const override { return GetStationSpecList<T>(bst); }
 
-	void Load(BaseStation *bst) const override
+	size_t GetLength() const override
 	{
-		uint8_t num_specs = (uint8_t)SlGetStructListLength(UINT8_MAX);
-
-		auto &speclist = GetStationSpecList<T>(bst);
-		speclist.reserve(num_specs);
-		for (size_t index = 0; index < num_specs; ++index) {
-			auto &sm = speclist.emplace_back();
-			SlObject(&sm, this->GetLoadDescription());
-		}
+		return SlGetStructListLength(UINT8_MAX);
 	}
 };
 
@@ -302,7 +288,7 @@ public:
 	}
 };
 
-class SlRoadStopTileData : public DefaultSaveLoadHandler<SlRoadStopTileData, BaseStation> {
+class SlRoadStopTileData : public VectorSaveLoadHandler<SlRoadStopTileData, BaseStation, RoadStopTileData> {
 public:
 	inline static const SaveLoad description[] = {
 	    SLE_VAR(RoadStopTileData, tile,            SLE_UINT32),
@@ -311,22 +297,7 @@ public:
 	};
 	inline const static SaveLoadCompatTable compat_description = {};
 
-	void Save(BaseStation *bst) const override
-	{
-		SlSetStructListLength(bst->custom_roadstop_tile_data.size());
-		for (uint i = 0; i < bst->custom_roadstop_tile_data.size(); i++) {
-			SlObject(&bst->custom_roadstop_tile_data[i], this->GetDescription());
-		}
-	}
-
-	void Load(BaseStation *bst) const override
-	{
-		uint32_t num_tiles = (uint32_t)SlGetStructListLength(UINT32_MAX);
-		bst->custom_roadstop_tile_data.resize(num_tiles);
-		for (uint i = 0; i < num_tiles; i++) {
-			SlObject(&bst->custom_roadstop_tile_data[i], this->GetLoadDescription());
-		}
-	}
+	std::vector<RoadStopTileData> &GetVector(BaseStation *bst) const override { return bst->custom_roadstop_tile_data; }
 };
 
 /**
