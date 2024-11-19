@@ -197,6 +197,7 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_INDUSTRY_CARGO_TOTALS,            XSCF_NULL,                1,   1, "industry_cargo_totals",            nullptr, nullptr, nullptr          },
 	{ XSLFI_SIGNAL_SPECIAL_PROPAGATION_FLAG,  XSCF_IGNORABLE_ALL,       2,   2, "signal_special_propagation_flag",  nullptr, nullptr, nullptr          },
 	{ XSLFI_ORDER_VECTOR,                     XSCF_NULL,                1,   1, "order_vector",                     nullptr, nullptr, nullptr          },
+	{ XSLFI_ERNC_CHUNK,                       XSCF_IGNORABLE_ALL,       0,   1, "ernc_chunk",                       nullptr, nullptr, "ERNC"           },
 
 	{ XSLFI_SCRIPT_INT64,                     XSCF_NULL,                1,   1, "script_int64",                     nullptr, nullptr, nullptr          },
 	{ XSLFI_U64_TICK_COUNTER,                 XSCF_NULL,                1,   1, "u64_tick_counter",                 nullptr, nullptr, nullptr          },
@@ -323,6 +324,7 @@ void SlXvSetCurrentState()
 	if (IsNetworkServerSave()) {
 		_sl_xv_feature_versions[XSLFI_VENC_CHUNK] = 1;
 		_sl_xv_feature_versions[XSLFI_TNNC_CHUNK] = 1;
+		_sl_xv_feature_versions[XSLFI_ERNC_CHUNK] = 1;
 	}
 }
 
