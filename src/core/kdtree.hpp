@@ -310,7 +310,7 @@ class Kdtree {
 	}
 
 	/** Check if the entire tree is in need of rebuilding */
-	bool IsUnbalanced()
+	bool IsUnbalanced() const
 	{
 		size_t count = this->Count();
 		if (count < 8) return false;
@@ -318,7 +318,7 @@ class Kdtree {
 	}
 
 	/** Verify that the invariant is true for a sub-tree, dbg_assert if not */
-	void CheckInvariant(size_t node_idx, int level, CoordT min_x, CoordT max_x, CoordT min_y, CoordT max_y)
+	void CheckInvariant(size_t node_idx, int level, CoordT min_x, CoordT max_x, CoordT min_y, CoordT max_y) const
 	{
 		if (node_idx == INVALID_NODE) return;
 
@@ -343,7 +343,7 @@ class Kdtree {
 	}
 
 	/** Verify the invariant for the entire tree, does nothing unless KDTREE_DEBUG is defined */
-	void CheckInvariant()
+	void CheckInvariant() const
 	{
 #ifdef KDTREE_DEBUG
 		CheckInvariant(this->root, 0, std::numeric_limits<CoordT>::min(), std::numeric_limits<CoordT>::max(), std::numeric_limits<CoordT>::min(), std::numeric_limits<CoordT>::max());
