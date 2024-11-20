@@ -144,7 +144,7 @@ using Blitter_8bppDrawing = Blitter_Null;
 using Blitter_8bppDrawing = Blitter_8bppSimple;
 #endif
 
-ViewportSignKdtree _viewport_sign_kdtree(&Kdtree_ViewportSignXYFunc);
+ViewportSignKdtree _viewport_sign_kdtree{};
 bool _viewport_sign_kdtree_valid = false;
 static int _viewport_sign_maxwidth = 0;
 
