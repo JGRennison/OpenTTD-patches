@@ -19,14 +19,14 @@ STR_ORDER_CONDITIONAL_CARGO_WAITING                             :等待貨物
 STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :接受貨物
 STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :未使用月台
 STR_ORDER_CONDITIONAL_PERCENT                                   :概率
-STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :停泊位使用
-STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :停泊位內列車
+STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :停泊位置使用
+STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :停泊位置內列車
 STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :貨物裝載百分比
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :等待貨物總量
 STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :計數器值
 STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :當前時間/日期
 STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :時刻表狀態
-STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :停泊位調度
+STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :停泊位置調度
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :等待中貨物 / 容量
 
 STR_ORDER_STOP_LOCATION_THROUGH                                 :[通過式裝載]
@@ -39,7 +39,7 @@ STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :每 {COMMA} 分
 STR_RIVERS_VERY_MANY                                            :{RED}很多
 STR_RIVERS_EXTREMELY_MANY                                       :{RED}極多
 
-STR_CONFIG_SETTING_BRIBE_HELPTEXT_PERIODS                       :容許公司嘗試賄賂地方政府。如果賄賂被調查員揭發，公司在往後半個週期內無法接觸有關地方政府。
+STR_CONFIG_SETTING_BRIBE_HELPTEXT_PERIODS                       :容許公司嘗試賄賂地方政府。如果賄賂被調查員揭發，公司在往後半週期內無法接觸有關地方政府。
 
 STR_COMMA_SEPARATOR                                             :,{SP}
 
@@ -66,7 +66,7 @@ STR_SORT_BY_VEHICLE_COUNT                                       :總車廂數
 STR_SETTINGS_MENU_ZONING                                        :分區
 
 STR_SETTINGS_MENU_MONEY_TEXT_EFFECTS                            :顯示收入/支出明細
-STR_SETTINGS_MENU_SHOW_HIDDEN_SIGNS                             :隱藏所顯示的標志名
+STR_SETTINGS_MENU_SHOW_HIDDEN_SIGNS                             :隱藏所顯示的標誌名稱
 
 STR_MAP_MENU_PLAN_LIST                                          :計劃清單
 
@@ -109,7 +109,7 @@ STR_CONFIG_SETTING_ADVISED_LEAVE_DEFAULT                        :建議將此設
 STR_CONFIG_SETTING_TRAIN_BRAKING_REALISTIC                      :真實{PUSH_COLOUR}{RED}（專家）{POP_COLOUR}
 STR_CONFIG_SETTING_TRAIN_BRAKING_ASPECT_LIMITED_ON              :開{PUSH_COLOUR}{RED}（專家、困難）{POP_COLOUR}
 
-STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED        :{WHITE}無法啟用真實制動，尚存有至少一個邏輯號誌或雙向號誌。
+STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED        :{WHITE}無法啟用真實制動，現存至少有一個邏輯號誌或雙向號誌。
 
 STR_CONFIG_SETTING_DELIVERY_BALANCED                            :平衡
 
@@ -118,7 +118,7 @@ STR_CONFIG_SETTING_RUNNING_COSTS_IN_DEPOT_HELPTEXT              :設定不在站
 STR_CONFIG_SETTING_RUNNING_COSTS_IN_DEPOT_VALUE                 :1 / {COMMA}
 
 STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED                   :車站內車輛運營費用：{STRING}
-STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED_HELPTEXT          :設定等待在車站中未停運車輛的維護及營運支出
+STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED_HELPTEXT          :設定等候在車站中未停運車輛的維護及營運支出
 STR_CONFIG_SETTING_RUNNING_COSTS_WHEN_STOPPED_VALUE             :1 / {COMMA}
 
 STR_CONFIG_SETTING_MONEY_CHEAT_MULTIPLAYER                      :多人連線玩家使用金錢作弊：{STRING}
@@ -161,8 +161,8 @@ STR_CONFIG_SETTING_TRACK_EDIT_IGNORE_REALISTIC_BRAKING_HELPTEXT :允許在修改
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT                     :通過裝載式最高速度：{STRING}
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_HELPTEXT            :列車在車站通過裝載時的最高允許速度
 
-STR_CONFIG_SETTING_RAIL_DEPOT_SPEED_LIMIT                       :鐵路車廠最高速度：{STRING}
-STR_CONFIG_SETTING_RAIL_DEPOT_SPEED_LIMIT_HELPTEXT              :列車進出車廠所允許的最高速度
+STR_CONFIG_SETTING_RAIL_DEPOT_SPEED_LIMIT                       :鐵路機廠最高速度：{STRING}
+STR_CONFIG_SETTING_RAIL_DEPOT_SPEED_LIMIT_HELPTEXT              :列車進出機廠所允許的最高速度
 
 STR_CONFIG_SETTING_NON_LEADING_ENGINES_KEEP_NAME                :多機車列車保留自訂機車名稱：{STRING}
 STR_CONFIG_SETTING_NON_LEADING_ENGINES_KEEP_NAME_HELPTEXT       :當一列列車中有多個機車時，保留其餘機車的自訂名稱
@@ -191,7 +191,7 @@ STR_CONFIG_SETTING_ROADVEH_CANT_QUANTUM_TUNNEL                  :阻止道路車
 STR_CONFIG_SETTING_ROADVEH_CANT_QUANTUM_TUNNEL_HELPTEXT         :即使道路長時間堵車也不允許道路車輛穿越其他的道路車輛
 
 STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT                    :直通車輛段：{STRING}
-STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT_HELPTEXT           :啟用直通車輛段{}列車可以在背對背的兩個車廠之間穿越，並且可以穿越兩個車廠之間的所有車廠{}這需要啟用使用尋路器
+STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT_HELPTEXT           :啟用直通車輛段{}列車可以在背對背的兩個機廠之間穿越，並且可以穿越兩個機廠之間的所有機廠{}這需要啟用使用尋路器
 
 STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE                :在列車因為尋路限制長時間等待時提示：{STRING}
 STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE_HELPTEXT       :當被啟用時，如果列車長時間在路徑號誌處等待，發送提示
@@ -365,13 +365,13 @@ STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY                           :只允許「直
 STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY_HELPTEXT                  :只允許列車和汽車使用「直通」的調度。
 
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE                      :在地圖上顯示選中車輛的虛擬路徑：{STRING}
-STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_HELPTEXT             :當開啟並有車輛視窗被檢視的時候，在車輛調度站點和/或調度位置之間顯示標註{}選擇「僅車站」只顯示車輛在車站停車的調度（即不包括通過調度、號誌站和車廠）
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_HELPTEXT             :當開啟並有車輛視窗被檢視的時候，在車輛調度車站和/或調度位置之間顯示標註{}選擇「僅車站」只顯示車輛在車站停車的調度（即不包括通過調度、號誌站和車廠）
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_OFF                  :關閉
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_ALL_LOCATIONS        :所有調度任務
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_STATIONS_ONLY        :僅車站
 
-STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS                     :顯示車輛路徑覆蓋標志：{STRING}
-STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS_HELPTEXT            :當開啟並有車輛視窗被檢視的時候，在每個調度目標的位置將顯示一個標志，這個標志顯示了號誌站被經過的順序編號及其類型。
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS                     :顯示車輛路徑覆蓋標誌：{STRING}
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS_HELPTEXT            :當開啟並有車輛視窗被檢視的時候，在每個調度目標的位置將顯示一個標誌，這個標誌顯示了號誌站被經過的順序編號及其類型。
 
 STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR             :在車輛清單中使用公司顏色標註其他公司的車輛：{STRING}
 STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR_HELPTEXT    :在開啟車站/車廠時，在顯示的車輛清單上用公司顏色標注該公司的車輛{}車站/車廠的擁有者除外
@@ -424,14 +424,14 @@ STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :選擇自動存
 STR_CONFIG_SETTING_AUTOSAVE_REALTIME                            :使用現實時間自動儲存：{STRING}
 STR_CONFIG_SETTING_AUTOSAVE_REALTIME_HELPTEXT                   :啟用時，自動儲存將使用現實時間，而不是遊戲時間，（在暫停遊戲時，若使用「遊戲時間」則不會自動儲存，但使用「現實時間」則會自動儲存）。{}停用時，自動儲存將使用遊戲模擬時間
 
-STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT               :掉線自動儲存：{STRING}
-STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT_HELPTEXT      :啟用後，當從伺服器斷連之後多玩家客戶端將自動儲存遊戲
+STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT               :下線自動儲存：{STRING}
+STR_CONFIG_SETTING_AUTOSAVE_ON_NETWORK_DISCONNECT_HELPTEXT      :啟用後，當從伺服器下線之後在多人玩家客戶端將自動儲存遊戲
 
-STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM                   :在覆蓋已經存在的遊戲存檔文件時警告：{STRING}
-STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_HELPTEXT          :在儲存高度圖或遊戲存檔覆蓋舊文件時警告
+STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM                   :在覆蓋已經存在的遊戲儲存檔案時警告：{STRING}
+STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_HELPTEXT          :在儲存高度圖或遊戲存檔覆蓋舊檔案時警告
 STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_DISABLED          :停用
-STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_DIFFERENT         :只在文件有變化時
-STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_DIFFERENT_UNKNOWN :只在文件有變化時或未知情況
+STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_DIFFERENT         :只在檔案有變化時
+STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_DIFFERENT_UNKNOWN :只在檔案有變化時或未知情況
 STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_ENABLED           :啟用
 
 STR_CONFIG_SETTING_AUTO_TIMETABLE_BY_DEFAULT                    :預設使用自動時刻表：{STRING}
@@ -503,10 +503,10 @@ STR_CONFIG_SETTING_SHARING_PAYMENT_IN_DEBT                      :允許公司繳
 STR_CONFIG_SETTING_SHARING_USED_BY_VEHICLES                     :不能更改這個設定，車輛正在使用共享設施
 STR_CONFIG_SETTING_SHARING_ORDERS_TO_OTHERS                     :不能更改這個設定，車輛有途徑其他公司設施的調度任務
 
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_RAIL               :允許其他公司在車廠內購買與維護列車：{STRING}
+STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_RAIL               :允許其他公司在機廠內購買與維護列車：{STRING}
 STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_ROAD               :允許其他公司在車廠內購買與維護汽車：{STRING}
 STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_WATER              :允許其他公司在船塢內購買與維護輪船：{STRING}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_AIR                :允許其他公司在機廠內購買與維護飛機：{STRING}
+STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_AIR                :允許其他公司在機棚內購買與維護飛機：{STRING}
 
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION                       :啟用列車速度調整：{STRING}
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :當開啟後，較快的列車會在經過號誌時調整速度以與前方較慢列車的速度相匹配。{}「速度調整」功能可能不適用於部分號誌設定風格；此功能可以使用號誌「尋路限制」功能針對特定列車手動啟用或停用。
@@ -739,7 +739,7 @@ STR_CONFIG_OCCUPANCY_SMOOTHNESS                                 :調度使用的
 STR_CONFIG_OCCUPANCY_SMOOTHNESS_HELPTEXT                        :將此項設定為 0% 時，車輛的載貨變化將立即在調度使用中反映出來。將此項設定為 100% 時，調度使用將維持不變
 
 STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE                       :克隆/複製/共享調度任務的進階設定：{STRING}
-STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE_HELPTEXT              :在克隆/複製/共享現有車輛的調度任務後：{}對於列車、汽車、船舶：如果車輛在一個車廠中，該車廠在調度任務清單中，則跳到該車廠的調度任務之一。{}對於飛機：如果飛機在機廠中，相關的機場在調度任務清單中，則跳到該機場的調度任務之一。
+STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE_HELPTEXT              :在克隆/複製/共享現有車輛的調度任務後：{}對於列車、汽車、船舶：如果車輛在一個車廠中，該車廠在調度任務清單中，則跳到該車廠的調度任務之一。{}對於飛機：如果飛機在機棚中，相關的機場在調度任務清單中，則跳到該機場的調度任務之一。
 
 STR_CONFIG_SETTING_COPY_CLONE_ADD_TO_GROUP                      :在複製 - 克隆群組中增加車輛：{STRING}
 STR_CONFIG_SETTING_COPY_CLONE_ADD_TO_GROUP_HELPTEXT             :設定是否將不共享調度任務的車輛增加到車輛克隆群組中
@@ -826,9 +826,9 @@ STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG             :當前路徑預
 STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE                    :路徑結束格
 STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE_LONG               :此號誌的路徑結束格
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP                         :列車群組
-STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT                          :當前停泊位
-STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY                      :停泊位使用率
-STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING            :剩餘停泊位使用率
+STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT                          :當前停泊位置
+STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY                      :停泊位置使用率
+STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING            :剩餘停泊位置使用率
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT                :使用率
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING_SHORT      :剩餘使用率
 STR_TRACE_RESTRICT_VARIABLE_COUNTER_VALUE                       :計數器值
@@ -866,10 +866,10 @@ STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX                       :{STRING}{STRING
 STR_TRACE_RESTRICT_CONDITIONAL_GROUP                            :{STRING}列車{STRING}在群組：“{GROUP}”內，則
 STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING}列車{STRING}在群組：“{STRING}”內{BLACK}{STRING}，則
 STR_TRACE_RESTRICT_CONDITIONAL_OWNER                            :{STRING}{STRING}{STRING}“{COMPANY}{COMPANY_NUM}”，則
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING}列車{STRING}在停泊位：“{TRSLOT}”內，則
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING}列車{STRING}在停泊位：“{STRING}”內{BLACK}{STRING}，則
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{0:STRING}停泊位：“{2:TRSLOT}”的{1:STRING}{3:STRING} {4:COMMA}，則
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{0:STRING}停泊位：“{2:STRING}”的{1:STRING}{3:STRING}{4:STRING} {5:COMMA}，則
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING}列車{STRING}在停泊位置：“{TRSLOT}”內，則
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING}列車{STRING}在停泊位置：“{STRING}”內{BLACK}{STRING}，則
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{0:STRING}停泊位置：“{2:TRSLOT}”的{1:STRING}{3:STRING} {4:COMMA}，則
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{0:STRING}停泊位置：“{2:STRING}”的{1:STRING}{3:STRING}{4:STRING} {5:COMMA}，則
 STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING}列車{STRING}狀態：{STRING}，則
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER                          :{STRING}計數器值：{TRCOUNTER} {STRING} {COMMA}，則
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING}計數器值：{STRING} {BLACK}{STRING} {STRING} {COMMA}，則
@@ -912,7 +912,7 @@ STR_TRACE_RESTRICT_DIRECTION_TUNBRIDGE_ENTRANCE                 :在進入橋隧
 STR_TRACE_RESTRICT_DIRECTION_TUNBRIDGE_EXIT                     :在離開橋隧中
 STR_TRACE_RESTRICT_COMPANY                                      :公司
 STR_TRACE_RESTRICT_UNDEFINED_COMPANY                            :未命名公司
-STR_TRACE_RESTRICT_SLOT_OP                                      :停泊位操作
+STR_TRACE_RESTRICT_SLOT_OP                                      :停泊位置操作
 STR_TRACE_RESTRICT_REVERSE                                      :倒轉
 STR_TRACE_RESTRICT_SPEED_RESTRICTION                            :限速
 STR_TRACE_RESTRICT_NEWS_CONTROL                                 :新聞控制
@@ -928,17 +928,17 @@ STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE                      :路徑退出
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :路徑結束時使用或等待
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :路徑結束時嘗試使用
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :路徑結束時退出
-STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :使用停泊位：“{STRING}”{BLACK}{STRING}，若無法使用則等待
-STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :嘗試使用停泊位：“{STRING}”{BLACK}{STRING}，若無法使用則忽略
-STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :車頭通過後退出停泊位：“{STRING}”{BLACK}{STRING}
-STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :車尾通過後退出停泊位：“{STRING}”{BLACK}{STRING}
-STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :路徑預留時退出停泊位：“{STRING}”{BLACK}{STRING}
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :路徑預留在此結束時使用停泊位：“{STRING}”{BLACK}{STRING}，若無法使用則等待
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :路徑預留在此結束時嘗試使用停泊位：“{STRING}”{BLACK}{STRING}，若無法使用則忽略
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :路徑預留在此結束時退出停泊位：“{STRING}”{BLACK}{STRING}
+STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :使用停泊位置：“{STRING}”{BLACK}{STRING}，若無法使用則等待
+STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :嘗試使用停泊位置：“{STRING}”{BLACK}{STRING}，若無法使用則忽略
+STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :車頭通過後退出停泊位置：“{STRING}”{BLACK}{STRING}
+STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :車尾通過後退出停泊位置：“{STRING}”{BLACK}{STRING}
+STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :路徑預留時退出停泊位置：“{STRING}”{BLACK}{STRING}
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :路徑預留在此結束時使用停泊位置：“{STRING}”{BLACK}{STRING}，若無法使用則等待
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :路徑預留在此結束時嘗試使用停泊位置：“{STRING}”{BLACK}{STRING}，若無法使用則忽略
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :路徑預留在此結束時退出停泊位置：“{STRING}”{BLACK}{STRING}
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED                           :[{STRING}] {TRSLOT}
-STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}停泊位{CONSUME_ARG}：{LTBLUE}
+STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}停泊位置{CONSUME_ARG}：{LTBLUE}
 STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR                          :{BLACK}，{LTBLUE}
 STR_TRACE_RESTRICT_COUNTER_NAME                                 :{TRCOUNTER}
 STR_TRACE_RESTRICT_COUNTER_INCREASE                             :增加
@@ -953,7 +953,7 @@ STR_TRACE_RESTRICT_TRAIN_STATUS_BROKEN_DOWN                     :已損壞
 STR_TRACE_RESTRICT_TRAIN_STATUS_NEEDS_REPAIR                    :需維護
 STR_TRACE_RESTRICT_TRAIN_STATUS_REVERSING                       :轉向
 STR_TRACE_RESTRICT_TRAIN_STATUS_HEADING_TO_STATION_WAYPOINT     :現正前往車站或號誌站
-STR_TRACE_RESTRICT_TRAIN_STATUS_HEADING_TO_DEPOT                :現正前往車廠
+STR_TRACE_RESTRICT_TRAIN_STATUS_HEADING_TO_DEPOT                :現正前往機廠
 STR_TRACE_RESTRICT_TRAIN_STATUS_LOADING                         :正在裝載
 STR_TRACE_RESTRICT_TRAIN_STATUS_WAITING                         :正在等待
 STR_TRACE_RESTRICT_TRAIN_STATUS_LOST                            :現正迷路
@@ -1017,20 +1017,20 @@ STR_TRACE_RESTRICT_COND_COMPARATOR_TOOLTIP                      :{BLACK}比較�
 STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP                           :{BLACK}值
 STR_TRACE_RESTRICT_CONDFLAGS_TOOLTIP                            :{BLACK}條件類型
 STR_TRACE_RESTRICT_GOTO_SIGNAL_TOOLTIP                          :{BLACK}到號誌
-STR_TRACE_RESTRICT_SLOT_OP_TOOLTIP                              :{BLACK}停泊位處理模式
-STR_TRACE_RESTRICT_SLOT_GUI_LIST_TOOLTIP                        :{BLACK}停泊位—點擊一個停泊位來列出所有屬於這個停泊位的車輛清單
-STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP                          :{BLACK}點擊建立停泊位
-STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP                          :{BLACK}刪除所選停泊位
-STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}重新命名所選停泊位
-STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}設定所選停泊位的容量
-STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}尋路限制 - 管理停泊位（{STRING}）
-STR_TRACE_RESTRICT_SLOT_MANAGE                                  :管理停泊位
+STR_TRACE_RESTRICT_SLOT_OP_TOOLTIP                              :{BLACK}停泊位置處理模式
+STR_TRACE_RESTRICT_SLOT_GUI_LIST_TOOLTIP                        :{BLACK}停泊位置 — 點擊一個停泊位置來列出所有屬於這個停泊位置的車輛清單
+STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP                          :{BLACK}點擊建立停泊位置
+STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP                          :{BLACK}刪除所選停泊位置
+STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}重新命名所選停泊位置
+STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}設定所選停泊位置的容量
+STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}尋路限制 - 管理停泊位置（{STRING}）
+STR_TRACE_RESTRICT_SLOT_MANAGE                                  :管理停泊位置
 STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY                           :{TINY_FONT}{COMMA} / {COMMA}
-STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION                          :{BLACK}重新命名停泊位
-STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION                          :{BLACK}建立停泊位
-STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION               :{BLACK}設定最大停泊位使用
-STR_TRACE_RESTRICT_SLOT_QUERY_DELETE_CAPTION                    :{WHITE}刪除停泊位
-STR_TRACE_RESTRICT_SLOT_DELETE_QUERY_TEXT                       :{WHITE}你確定你要刪除該停泊位嗎？
+STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION                          :{BLACK}重新命名停泊位置
+STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION                          :{BLACK}建立停泊位置
+STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_CAPTION               :{BLACK}設定最大停泊位置使用
+STR_TRACE_RESTRICT_SLOT_QUERY_DELETE_CAPTION                    :{WHITE}刪除停泊位置
+STR_TRACE_RESTRICT_SLOT_DELETE_QUERY_TEXT                       :{WHITE}你確定你要刪除該停泊位置嗎？
 STR_TRACE_RESTRICT_COUNTER_OP_TOOLTIP                           :{BLACK}計數器運算類型
 STR_TRACE_RESTRICT_COUNTER_GUI_LIST_TOOLTIP                     :{BLACK}計數器 - 點擊一個計數器來修改它
 STR_TRACE_RESTRICT_COUNTER_CREATE                               :{BLACK}設立
@@ -1098,12 +1098,12 @@ STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_PROGRAM                     :{WHITE}不能�
 STR_TRACE_RESTRICT_ERROR_CAN_T_COPY_APPEND_PROGRAM              :{WHITE}不能追加邏輯
 STR_TRACE_RESTRICT_ERROR_CAN_T_SHARE_PROGRAM                    :{WHITE}不能共享邏輯
 STR_TRACE_RESTRICT_ERROR_CAN_T_UNSHARE_PROGRAM                  :{WHITE}不能取消共享邏輯
-STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE                      :{WHITE}不能建立停泊位……
-STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_DELETE                      :{WHITE}不能刪除停泊位……
-STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME                      :{WHITE}不能重新命名停泊位……
-STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_ADD_VEHICLE                 :{WHITE}不能增載入具至停泊位……
-STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE              :{WHITE}不能從停泊位移除車輛……
-STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY           :{WHITE}不能設定停泊位容量……
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_CREATE                      :{WHITE}不能建立停泊位置……
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_DELETE                      :{WHITE}不能刪除停泊位置……
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_RENAME                      :{WHITE}不能重新命名停泊位置……
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_ADD_VEHICLE                 :{WHITE}不能增載入具至停泊位置……
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_REMOVE_VEHICLE              :{WHITE}不能從停泊位置移除車輛……
+STR_TRACE_RESTRICT_ERROR_SLOT_CAN_T_SET_MAX_OCCUPANCY           :{WHITE}不能設定停泊位置容量……
 STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_CREATE                   :{WHITE}不能設立計數器……
 STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_DELETE                   :{WHITE}不能刪除計數器……
 STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_RENAME                   :{WHITE}不能重新命名計數器……
@@ -1134,7 +1134,7 @@ STR_PROGSIG_INSERT_TOOLTIP                                      :{BLACK}插入�
 STR_PROGSIG_REMOVE_TOOLTIP                                      :{BLACK}移除所選的指令
 STR_PROGSIG_REMOVE_PROGRAM_TOOLTIP                              :{BLACK}移除整個邏輯
 STR_PROGSIG_COPY_PROGRAM_TOOLTIP                                :{BLACK}從已存在的號誌處複製邏輯
-STR_PROGSIG_COND_SLOT_TOOLTIP                                   :{BLACK}比較停泊位使用
+STR_PROGSIG_COND_SLOT_TOOLTIP                                   :{BLACK}比較停泊位置使用
 STR_PROGSIG_COND_COUNTER_TOOLTIP                                :{BLACK}比較使用值
 
 STR_PROGSIG_REMOVE_PROGRAM                                      :{BLACK}移除邏輯
@@ -1163,8 +1163,8 @@ STR_PROGSIG_COND_SLOT_REMAINING_COMPARE_INVALID                 :{PUSH_COLOUR}{R
 STR_PROGSIG_COND_COUNTER_COMPARE                                :{TRCOUNTER} {STRING} {NUM} 的值
 STR_PROGSIG_COND_COUNTER_COMPARE_INVALID                        :{PUSH_COLOUR}{RED}{STRING}{POP_COLOUR} {STRING} {NUM} 的值
 STR_PROGSIG_COND_SIGNAL_STATE                                   :號誌狀態
-STR_PROGSIG_COND_SLOT                                           :停泊位使用
-STR_PROGSIG_COND_SLOT_REMAINING                                 :停泊位使用剩餘
+STR_PROGSIG_COND_SLOT                                           :停泊位置使用
+STR_PROGSIG_COND_SLOT_REMAINING                                 :停泊位置使用剩餘
 STR_PROGSIG_COND_COUNTER                                        :計數器值
 STR_PROGSIG_CONDVAR_SIGNAL_STATE_SPECIFIED                      :在 {NUM} x {NUM} 的號誌是綠燈
 STR_PROGSIG_CONDVAR_SIGNAL_STATE_UNSPECIFIED                    :{PUSH_COLOUR}{RED}未特別指定的號誌{POP_COLOUR}是綠燈
@@ -1230,12 +1230,12 @@ STR_LAI_TUNNEL_DESCRIPTION_RAILROAD_SIGNAL_CHUNNEL              :包含號誌的
 STR_LAI_TUNNEL_DESCRIPTION_ROAD_CHUNNEL                         :水下道路隧道
 STR_LAI_BRIDGE_DESCRIPTION_RAILROAD_SIGNAL                      :包含號誌的鐵道橋
 
-STR_SAVELOAD_UNKNOWN_ID                                         :{YELLOW}這個文件可能來自於不同的遊戲版本
-STR_SAVELOAD_DIFFERENT_ID                                       :{YELLOW}這個文件來自於不同的遊戲版本
-STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_ID                       :{WHITE}重寫文件（不同的遊戲）
+STR_SAVELOAD_UNKNOWN_ID                                         :{YELLOW}這個檔案可能來自於不同的遊戲版本
+STR_SAVELOAD_DIFFERENT_ID                                       :{YELLOW}這個檔案來自於不同的遊戲版本
+STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_ID                       :{WHITE}重寫檔案（不同的遊戲）
 STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_VERSION_SUFFIX           :{STRING}（不同版本）
 STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_ID                     :{YELLOW}你確定覆蓋現有存檔嗎？{}{}這個存檔來自於一局不同的遊戲
-STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_VERSION_SUFFIX         :{STRING}{}{}此文件來源於不同的版本{STRING}.{}如果文件被重寫則不能被原先的遊戲版本讀取。
+STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_VERSION_SUFFIX         :{STRING}{}{}此檔案來源於不同的版本{STRING}.{}如果檔案被重寫則不能被原先的遊戲版本讀取。
 STR_SAVELOAD_OVERWRITE_WARNING_VERSION_NAME                     :（{STRING}）
 
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}雪線高度：
@@ -1311,7 +1311,7 @@ STR_DEPARTURES_DEPARTURE_MODE_TOOLTIP                           :{BLACK}控制�
 STR_DEPARTURES_TIMES_BUTTON                                     :{BLACK}時間
 STR_DEPARTURES_TIMES_TOOLTIP                                    :{BLACK}顯示到達車輛任務時間
 STR_DEPARTURES_EMPTY_BUTTON                                     :{BLACK}空轉
-STR_DEPARTURES_EMPTY_TOOLTIP                                    :{BLACK}包括出發、到達時間與非營業站點，即車輛經過或停留但不裝載客貨的站點。
+STR_DEPARTURES_EMPTY_TOOLTIP                                    :{BLACK}包括出發、到達時間與非營業車站，即車輛經過或停留但不裝載客貨的車站。
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}經
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}顯示表定通過車輛
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}僅顯示列車
@@ -1386,11 +1386,11 @@ STR_CONFIG_DEPARTURE_COMPANY_NAME_HELPTEXT                      :是否在車輛
 STR_CONFIG_DEPARTURE_VEHICLE_TYPE                               :在班次中顯示車輛圖示：{STRING}
 STR_CONFIG_DEPARTURE_VEHICLE_TYPE_HELPTEXT                      :是否在班次顯示板班次中顯示車輛的類型
 STR_CONFIG_DEPARTURE_VEHICLE_COLOR                              :使用銀色顯示車輛圖示：{STRING}
-STR_CONFIG_DEPARTURE_VEHICLE_COLOR_HELPTEXT                     :是否以銀色顯示車輛類型標志
+STR_CONFIG_DEPARTURE_VEHICLE_COLOR_HELPTEXT                     :是否以銀色顯示車輛類型標誌
 STR_CONFIG_DEPARTURE_LARGER_FONT                                :適用較大的字體標示出自班次顯示板中的即將到達的車站：{STRING}
 STR_CONFIG_DEPARTURE_LARGER_FONT_HELPTEXT                       :是否使用較大的字體來顯示在車站清單中的即將到達的車站
-STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :增加標志以區分碼頭與機場：{STRING}
-STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :在目的地是碼頭或機場時，增加一個標志加以區分
+STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :增加標誌以區分碼頭與機場：{STRING}
+STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :在目的地是碼頭或機場時，增加一個標誌加以區分
 STR_CONFIG_DEPARTURE_SMART_TERMINUS                             :不顯示不久後能被另一輛的車輛到達的目的地：{STRING}
 STR_CONFIG_DEPARTURE_SMART_TERMINUS_HELPTEXT                    :使否顯示不久後會有另一輛的車輛到達的目的地
 STR_CONFIG_DEPARTURE_CONDITIONALS                               :條件性調度任務處理方式：{STRING}
@@ -1461,10 +1461,10 @@ STR_VEHICLE_LIST_SEND_AIRCRAFT_TO_HANGAR_SELL                   :回廠並賣出
 
 STR_VEHICLE_LIST_CHANGE_ORDER_STATION                           :轉移調度至其他車站
 STR_VEHICLE_LIST_CHANGE_ORDER_WAYPOINT                          :轉移調度至其他號誌站
-STR_VEHICLE_LIST_CHANGE_ORDER_TRAIN_DEPOT                       :轉移調度至其他車廠
+STR_VEHICLE_LIST_CHANGE_ORDER_TRAIN_DEPOT                       :轉移調度至其他機廠
 STR_VEHICLE_LIST_CHANGE_ORDER_ROAD_VEHICLE_DEPOT                :轉移調度至其他車廠
 STR_VEHICLE_LIST_CHANGE_ORDER_SHIP_DEPOT                        :轉移調度至其他船塢
-STR_VEHICLE_LIST_CHANGE_ORDER_AIRCRAFT_HANGAR                   :轉移調度至其他機廠
+STR_VEHICLE_LIST_CHANGE_ORDER_AIRCRAFT_HANGAR                   :轉移調度至其他機棚
 
 STR_GROUP_EXPAND_ALL                                            :{BLACK}展開全部
 STR_GROUP_COLLAPSE_ALL                                          :{BLACK}摺疊全部
@@ -1510,7 +1510,7 @@ STR_VEHICLE_STATUS_BROKEN_DOWN_VEL_SHORT                        :{RED}損壞 - {
 STR_VEHICLE_STATUS_TRAIN_STUCK_WAIT_RESTRICTION                 :{ORANGE}等待放行（尋路限制）
 STR_VEHICLE_STATUS_TRAIN_WAITING_TIMETABLE                      :{ORANGE}等待放行（時刻表）
 STR_VEHICLE_STATUS_TRAIN_REVERSING                              :{ORANGE}轉向中，{VELOCITY}
-STR_VEHICLE_STATUS_TRAIN_MOVING_DEPOT                           :{ORANGE}正在車廠中移動
+STR_VEHICLE_STATUS_TRAIN_MOVING_DEPOT                           :{ORANGE}正在機廠中移動
 
 STR_VEHICLE_STATUS_TRAIN_STOPPING_VEL_END                       :{RED}正在停止，{VELOCITY}
 STR_VEHICLE_STATUS_HEADING_FOR_STATION_VEL_END                  :{LTBLUE}正前往 {STATION}，{VELOCITY}
@@ -1546,7 +1546,7 @@ STR_ERROR_TRAIN_TOO_HEAVY                                       :{WHITE}{VEHICLE
 STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SELL_VEL                   :{CREAM}正前往 {DEPOT} 以{PUSH_COLOUR}{RED}出售{POP_COLOUR}列車，{VELOCITY}
 
 STR_VEHICLE_LOAD_THROUGH_ABORTED_INSUFFICIENT_TRACK             :{WHITE}{VEHICLE}：由於 {STATION} 的軌道不匹配，無法通行
-STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT                          :{WHITE}{VEHICLE}：由於 {STATION} 的車廠，無法通行
+STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT                          :{WHITE}{VEHICLE}：由於 {STATION} 的機廠，無法通行
 STR_VEHICLE_LOAD_THROUGH_NOT_ALLOWED_PASSENGERS                 :{WHITE}{VEHICLE}：無法使用通過式裝載裝載旅客
 
 STR_RUNNING                                                     :{LTBLUE}正在運行
@@ -1587,7 +1587,7 @@ STR_VEHICLE_DETAILS_TRAIN_MAX_SPEED                             :{BLACK}最高�
 STR_VEHICLE_DETAILS_EXTRA_ACTIONS_TOOLTIP                       :{BLACK}額外車輛操作
 STR_VEHICLE_DETAILS_REMOVE_SPEED_RESTRICTION                    :移除限速
 STR_VEHICLE_DETAILS_SET_SPEED_RESTRICTION                       :設定限速
-STR_VEHICLE_DETAILS_REMOVE_FROM_SLOT                            :從停泊位中移除：
+STR_VEHICLE_DETAILS_REMOVE_FROM_SLOT                            :從停泊位置中移除：
 
 STR_VEHICLE_DETAILS_PRODUCTION_INTERVALS                        :生產週期
 
@@ -1605,11 +1605,11 @@ STR_ORDER_REVERSE_TOOLTIP                                       :{BLACK}改變�
 
 STR_ORDER_DROP_SELL_DEPOT                                       :賣出車輛
 
-STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :停泊位內車輛
+STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :停泊位置內車輛
 
 STR_ORDER_CONDITIONAL_NEXT_STATION                              :下一站
 STR_ORDER_CONDITIONAL_CARGO_TOOLTIP                             :{BLACK}貨物對比車站數據
-STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}檢查的停泊位
+STR_ORDER_CONDITIONAL_SLOT_TOOLTIP                              :{BLACK}檢查的停泊位置
 STR_ORDER_CONDITIONAL_COUNTER_TOOLTIP                           :{BLACK}檢查的計數器值
 STR_ORDER_CONDITIONAL_TIME_DATE_TOOLTIP                         :{BLACK}檢查的時間資訊
 STR_ORDER_CONDITIONAL_TIMETABLE_TOOLTIP                         :{BLACK}檢查的時刻表項
@@ -1665,11 +1665,11 @@ STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :將反轉調度
 STR_ORDER_DUPLICATE_ORDER                                       :複製調度任務
 STR_ORDER_CHANGE_JUMP_TARGET                                    :改變跳轉目標
 
-STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON                               :嘗試使用停泊位
-STR_ORDER_RELEASE_SLOT_BUTTON                                   :退出停泊位
+STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON                               :嘗試使用停泊位置
+STR_ORDER_RELEASE_SLOT_BUTTON                                   :退出停泊位置
 STR_ORDER_CHANGE_COUNTER_BUTTON                                 :更改計數器
-STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}退出停泊位
-STR_ORDER_TRY_ACQUIRE_SLOT_TOOLTIP                              :{BLACK}嘗試使用的停泊位
+STR_ORDER_RELEASE_SLOT_TOOLTIP                                  :{BLACK}退出停泊位置
+STR_ORDER_TRY_ACQUIRE_SLOT_TOOLTIP                              :{BLACK}嘗試使用的停泊位置
 
 STR_ORDER_CHANGE_COUNTER_TOOLTIP                                :{BLACK}要更改的計數器
 
@@ -1680,9 +1680,9 @@ STR_ORDER_LABEL_TEXT_BUTTON_TOOLTIP                             :{BLACK}改變�
 STR_ORDER_LABEL_DEPARTURES_VIA_BUTTON                           :班次顯示板經由
 STR_ORDER_LABEL_DEPARTURES_VIA                                  :班次顯示板：{STRING}：{STRING}
 STR_ORDER_LABEL_DEPARTURES_SHOW_AS_VIA                          :作為經由顯示
-STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA                           :移除先前站點的經由
+STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA                           :移除先前總站的經由
 STR_ORDER_LABEL_DEPARTURES_REMOVE_VIA_SHORT                     :移除經由
-STR_ORDER_LABEL_DEPARTURES_VIA_TYPE_TOOLTIP                     :{BLACK}作為經由顯示：對於起點在此站之前且終點在此站之後的班次，在班次顯示板內將此站點/號誌站作為經由顯示{}雙重經由將顯示兩重{}{}移除先前站點的經由：當顯示此任務之前的調用點作為終點時，不將此站點顯示為經由站點
+STR_ORDER_LABEL_DEPARTURES_VIA_TYPE_TOOLTIP                     :{BLACK}作為經由顯示：對於起點在此站之前且終點在此站之後的班次，在班次顯示板內將此車站/號誌站作為經由顯示{}雙重經由將顯示兩重{}{}移除先前總站的經由：當顯示此任務之前的調用點作為終點時，不將此車站顯示為經由車站。
 
 STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}{STRING}%
 STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}顯示運行平均負載率{}百分比顯示的是調度使用的總平均數
@@ -1727,7 +1727,7 @@ STR_ORDER_CONDITIONAL_CARGO_ACCEPTANCE                          :跳至 #{COMMA}
 STR_ORDER_CONDITIONAL_CARGO_WAITING_DISPLAY                     :跳至 #{COMMA} [如果 {STRING} {STRING}{STRING}]
 STR_ORDER_CONDITIONAL_SLOT                                      :跳至 #{COMMA} [如果“{TRSLOT}”{STRING}]
 STR_ORDER_CONDITIONAL_INVALID_SLOT                              :跳至 #{COMMA} [如果{PUSH_COLOUR}{RED}{STRING}{POP_COLOUR}{STRING} ]
-STR_ORDER_CONDITIONAL_IN_SLOT                                   :跳至 #{COMMA} [如果{STRING}停泊位：{TRSLOT} ]
+STR_ORDER_CONDITIONAL_IN_SLOT                                   :跳至 #{COMMA} [如果{STRING}停泊位置：{TRSLOT} ]
 STR_ORDER_CONDITIONAL_IN_INVALID_SLOT                           :跳至 #{COMMA} [如果{STRING}{PUSH_COLOUR}{RED}{STRING} {POP_COLOUR} ]
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY                   :跳至 #{COMMA} [如果{STRING}裝載比例{STRING} {COMMA}%]
 STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY              :跳至 #{0:COMMA} [如果 {2:STRING} 的{1:STRING}數{3:STRING} {4:CARGO_SHORT}]
@@ -1744,7 +1744,7 @@ STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY            :列車{1:STRING
 STR_ORDER_CONDITIONAL_CARGO_WAITING_PERCENT_CAPACITY_REFIT      :列車改裝為{1:STRING}類型時容量的 {0:COMMA}%
 
 STR_ORDER_TRY_ACQUIRE_SLOT                                      :嘗試使用：{STRING}
-STR_ORDER_RELEASE_SLOT                                          :退出停泊位：{STRING}
+STR_ORDER_RELEASE_SLOT                                          :退出停泊位置：{STRING}
 
 STR_TIMETABLE_MINUTES                                           :{COMMA}{NBSP}分
 STR_TIMETABLE_HOURS                                             :{COMMA}{NBSP}時
@@ -1895,7 +1895,7 @@ STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY_FOR_CHUNNEL                 :{WHITE}要下�
 STR_ERROR_CHUNNEL_ONLY_OVER_SEA                                 :{WHITE}水下隧道只被允許用來穿過海洋
 STR_ERROR_PURCHASE_LAND_LIMIT_REACHED                           :
 STR_ERROR_CANT_PURCHASE_OTHER_COMPANY_DEPOT                     :{WHITE}車廠被另一家公司所有，不允許在這裡購買車輛
-STR_ERROR_DEPOT_HAS_WRONG_RAIL_TYPE                             :{WHITE}車廠不能被用來建設需要這種類型的鐵軌的列車
+STR_ERROR_DEPOT_HAS_WRONG_RAIL_TYPE                             :{WHITE}機廠不能被用來建設需要這種類型的軌道的列車
 
 STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING                 :{WHITE}列車已使用此軌道……
 
@@ -1941,8 +1941,8 @@ STR_ZONING_INNER_INFO                                           :{BLACK}選擇�
 STR_ZONING_NO_ZONING                                            :無
 STR_ZONING_AUTHORITY                                            :市鎮範圍
 STR_ZONING_CAN_BUILD                                            :無法建設
-STR_ZONING_STA_CATCH                                            :站點覆蓋
-STR_ZONING_STA_CATCH_OPEN                                       :站點覆蓋（選中站點時）
+STR_ZONING_STA_CATCH                                            :車站覆蓋
+STR_ZONING_STA_CATCH_OPEN                                       :車站覆蓋（選中車站時）
 STR_ZONING_BUL_UNSER                                            :未覆蓋建築物
 STR_ZONING_IND_UNSER                                            :未覆蓋工業
 STR_ZONING_TRACERESTRICT                                        :尋路限制號誌
@@ -1955,11 +1955,11 @@ STR_STATION_RATING_TOOLTIP_TOTAL_RATING                         :總目標評價
 
 STR_STATION_RATING_TOOLTIP_USING_CHEAT                          :作弊
 
-STR_STATION_RATING_TOOLTIP_NEWGRF_RATING                        :NewGRF 站點評價：{STRING}{BLACK}基於
+STR_STATION_RATING_TOOLTIP_NEWGRF_RATING                        :NewGRF 車站評價：{STRING}{BLACK}基於
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_0                      :{GOLD}{PLUS_NUM}%
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_1                      :{LTBLUE}{PLUS_NUM}%
 STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED                         :上次車輛最高速度：{LTBLUE}{STRING}（{STRING}）
-STR_STATION_RATING_TOOLTIP_NEWGRF_WAITUNITS                     :車站貨物等待時間：{LTBLUE}{NUM}（直達站點平均）
+STR_STATION_RATING_TOOLTIP_NEWGRF_WAITUNITS                     :車站貨物等待時間：{LTBLUE}{NUM}（直達車站平均）
 STR_STATION_RATING_TOOLTIP_NEWGRF_WAITTIME                      :距離上次提貨時間：{NUM} 日
 
 STR_STATION_RATING_MAX_PERCENTAGE                               :，最大{NBSP}{PLUS_NUM}%
@@ -1974,7 +1974,7 @@ STR_STATION_RATING_TOOLTIP_WAITTIME                             :距離上次提
 STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP                        :距離上次提貨時間{0:STRING}：{1:STRING}（水運）
 STR_STATION_RATING_TOOLTIP_WAITTIME_VALUE                       :{COLOUR}{NUM} 日{STRING}
 
-STR_STATION_RATING_TOOLTIP_WAITUNITS                            :車站貨物等待時間{0:STRING}：{1:COLOUR}{2:NUM}{3:STRING}{PUSH_COLOUR}{BLACK}（直達站點平均）{POP_COLOUR}
+STR_STATION_RATING_TOOLTIP_WAITUNITS                            :車站貨物等待時間{0:STRING}：{1:COLOUR}{2:NUM}{3:STRING}{PUSH_COLOUR}{BLACK}（直達車站平均）{POP_COLOUR}
 
 STR_STATION_RATING_TOOLTIP_STATUE                               :市鎮內本公司雕像{0:STRING}：{1:STRING}
 STR_STATION_RATING_TOOLTIP_STATUE_NO                            :{GOLD}無{STRING}
@@ -2221,10 +2221,10 @@ STR_REFIT_SHIP_PART                                             :第 {NUM} 部�
 
 STR_VERY_REDUCED                                                :最大限度降低
 
-STR_STATION_VIEW_RENAME_TOOLTIP_EXTRA                           :{BLACK}{STRING}{}（按住 <Ctrl> 鍵點擊“{STRING}”以產生新的預設名稱）。{}{}按住 <Ctrl> 鍵點擊以與另一個站點交換名稱
-STR_ERROR_CAN_T_EXCHANGE_STATION_NAMES                          :{WHITE}無法交換站點名稱……
-STR_ERROR_STATIONS_NOT_IN_SAME_TOWN                             :{WHITE}……站點不在同一市鎮
-STR_ERROR_STATION_ATTACHED_TO_INDUSTRY                          :{WHITE}……站點已連接到工業
+STR_STATION_VIEW_RENAME_TOOLTIP_EXTRA                           :{BLACK}{STRING}{}（按住 <Ctrl> 鍵點擊“{STRING}”以產生新的預設名稱）。{}{}按住 <Ctrl> 鍵點擊以與另一個車站交換名稱
+STR_ERROR_CAN_T_EXCHANGE_STATION_NAMES                          :{WHITE}無法交換車站名稱……
+STR_ERROR_STATIONS_NOT_IN_SAME_TOWN                             :{WHITE}……車站不在同一市鎮
+STR_ERROR_STATION_ATTACHED_TO_INDUSTRY                          :{WHITE}……車站已附屬某個工業
 
 STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_EXTRA                     :{STRING}{}{BLACK}按住 <Ctrl> 鍵操作以轉換單節軌道而不是整格軌道
 
@@ -2284,12 +2284,12 @@ STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME_OFF           :關閉
 STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME_ON_IF_HIDDEN  :如果號誌站名稱已隱藏則開啟
 STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME_ALWAYS_ON     :始終開啟
 
-STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME                :站點工具提示：{STRING}
-STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_HELPTEXT       :當滑鼠指標停留站點上時顯示工具提示
-STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_CARGO               :顯示站點貨物：{STRING}
-STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_CARGO_HELPTEXT      :顯示站點評價和貨物總量
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME                :車站工具提示中顯示名稱：{STRING}
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_HELPTEXT       :將滑鼠指標停留車站上方時，在工具提示中顯示車站名稱。
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_CARGO               :車站工具提示中顯示貨物詳情：{STRING}
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_CARGO_HELPTEXT      :顯示車站評價和貨物總量
 STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_OFF            :關閉
-STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_ON_IF_HIDDEN   :如果站點名稱已隱藏則開啟
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_ON_IF_HIDDEN   :如果車站名稱已隱藏則開啟
 STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_ALWAYS_ON      :始終開啟
 
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE                  :車站評價工具提示：{STRING}
