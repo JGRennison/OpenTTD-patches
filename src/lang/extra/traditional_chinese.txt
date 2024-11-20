@@ -1232,10 +1232,10 @@ STR_LAI_BRIDGE_DESCRIPTION_RAILROAD_SIGNAL                      :包含號誌的
 
 STR_SAVELOAD_UNKNOWN_ID                                         :{YELLOW}這個檔案可能來自於不同的遊戲版本
 STR_SAVELOAD_DIFFERENT_ID                                       :{YELLOW}這個檔案來自於不同的遊戲版本
-STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_ID                       :{WHITE}重寫檔案（不同的遊戲）
+STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_ID                       :{WHITE}覆蓋檔案（不同的遊戲）
 STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_VERSION_SUFFIX           :{STRING}（不同版本）
 STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_ID                     :{YELLOW}你確定覆蓋現有存檔嗎？{}{}這個存檔來自於一局不同的遊戲
-STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_VERSION_SUFFIX         :{STRING}{}{}此檔案來源於不同的版本{STRING}.{}如果檔案被重寫則不能被原先的遊戲版本讀取。
+STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_VERSION_SUFFIX         :{STRING}{}{}此檔案來源於不同的版本{STRING}.{}如果檔案被覆蓋則不能被原先的遊戲版本讀取。
 STR_SAVELOAD_OVERWRITE_WARNING_VERSION_NAME                     :（{STRING}）
 
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}雪線高度：
