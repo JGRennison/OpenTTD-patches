@@ -543,8 +543,8 @@ STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH_ALLOWED            :允許
 
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA          :{STRING}{}本項不包括伐木場，且不一定與所有工業 NewGRF 兼容
 
-STR_CONFIG_SETTING_TOWN_CARGO_SCALE_MODE                        :市鎮貨物生產縮放使用的時間區間：{STRING}
-STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE                    :工業貨物生產縮放使用的時間區間：{STRING}
+STR_CONFIG_SETTING_TOWN_CARGO_SCALE_MODE                        :市鎮貨物生產縮放使用的區間時間：{STRING}
+STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE                    :工業貨物生產縮放使用的區間時間：{STRING}
 
 STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :每月或每生產週期的貨物產量比例系數可以選擇乘以「經濟速度因數」選項的數值。
 
