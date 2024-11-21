@@ -1660,6 +1660,7 @@ STR_ORDERS_MANAGE_ORDER                                         :{BLACK}管理�
 STR_ORDERS_MANAGE_ORDER_TOOLTIP                                 :{BLACK}管理此調度任務
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}在選定的任務前插入新任務，或在任務清單的末尾新增任務。如按住 <Ctrl> 鍵再加入任務，點選車站會新增「滿載任一種類客貨」任務、點選號誌站會新增「直達」任務，而點選機廠則會新增「維護」任務。點選其他車輛以複製其任務清單，按住 <Ctrl> 鍵或在選取「共享任務清單」後點選其他車輛以共享任務清單。如任務清單上有任何任務涉及機廠，則該車輛不受自動維護功能影響。
+
 STR_ORDER_REVERSE_ORDER_LIST                                    :反轉調度任務清單
 STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :將反轉調度任務清單增加至任務末尾
 STR_ORDER_DUPLICATE_ORDER                                       :複製調度任務
@@ -1902,7 +1903,6 @@ STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING                 :{WHITE}列車�
 # Plan related errors
 STR_ERROR_TOO_MANY_PLANS                                        :{WHITE}……計劃太多了
 STR_ERROR_TOO_MANY_NODES                                        :{WHITE}……計劃中線段的節點太多了
-STR_ERROR_NO_MORE_SPACE_FOR_LINES                               :{WHITE}線段沒有足夠的空間
 STR_ERROR_CAN_T_RENAME_PLAN                                     :{WHITE}不能重新命名計劃……
 
 STR_TRADITIONAL_TRAIN_NAME                                      :列車 #{COMMA}
@@ -2242,6 +2242,7 @@ STR_COMPANY_VIEW_BUY_SHARE_BUTTON                               :{BLACK}購買 2
 STR_COMPANY_VIEW_SELL_SHARE_BUTTON                              :{BLACK}出售 25% 公司股份
 STR_COMPANY_VIEW_BUY_SHARE_TOOLTIP                              :{BLACK}購入這所公司的 25% 股份，按住 <Shift> 鍵點擊以顯示預估的購買費用
 STR_COMPANY_VIEW_SELL_SHARE_TOOLTIP                             :{BLACK}出售這所公司的 25% 股份，按住 <Shift> 鍵點擊以顯示預估的出售所得
+
 STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS                            :{WHITE}無法購買這間公司的股份……
 STR_ERROR_CAN_T_SELL_25_SHARE_IN                                :{WHITE}無法出售這間公司的股份……
 STR_ERROR_PROTECTED                                             :{WHITE}這間公司才剛成立，還不能交易股票……

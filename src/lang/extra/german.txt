@@ -1510,7 +1510,6 @@ STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING                 :{WHITE}Herannah
 # Plan related errors
 STR_ERROR_TOO_MANY_PLANS                                        :{WHITE}... zu viele Pläne
 STR_ERROR_TOO_MANY_NODES                                        :{WHITE}... zu viele Segmente in geplanter Strecke
-STR_ERROR_NO_MORE_SPACE_FOR_LINES                               :{WHITE}Kein weiterer Platz für neue Strecken
 STR_ERROR_CAN_T_RENAME_PLAN                                     :{WHITE}Kann Plan nicht umbenennen...
 
 STR_TRADITIONAL_TRAIN_NAME                                      :Zug {COMMA}

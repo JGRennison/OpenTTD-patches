@@ -1901,7 +1901,6 @@ STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING                 :{WHITE}Приб
 # Plan related errors
 STR_ERROR_TOO_MANY_PLANS                                        :{WHITE}... слишком много планов
 STR_ERROR_TOO_MANY_NODES                                        :{WHITE}... слишком много узлов в линии плана
-STR_ERROR_NO_MORE_SPACE_FOR_LINES                               :{WHITE}Больше нет места для линий
 STR_ERROR_CAN_T_RENAME_PLAN                                     :{WHITE}Невозможно переименовать план...
 
 STR_TRADITIONAL_TRAIN_NAME                                      :Поезд №{COMMA}

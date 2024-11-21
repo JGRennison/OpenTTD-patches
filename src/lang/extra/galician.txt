@@ -1904,7 +1904,6 @@ STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING                 :{WHITE}Achegán
 # Plan related errors
 STR_ERROR_TOO_MANY_PLANS                                        :{WHITE}... demasiados avións
 STR_ERROR_TOO_MANY_NODES                                        :{WHITE}... demasiados nodos na liña do plano
-STR_ERROR_NO_MORE_SPACE_FOR_LINES                               :{WHITE}Non hai máis espazos para liñas
 STR_ERROR_CAN_T_RENAME_PLAN                                     :{WHITE}Non se pode renomear o plan...
 
 STR_TRADITIONAL_TRAIN_NAME                                      :Tren {COMMA}

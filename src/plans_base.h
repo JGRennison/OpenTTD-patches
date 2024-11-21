@@ -23,7 +23,7 @@
 
 typedef Pool<Plan, PlanID, 16, 64000> PlanPool;
 typedef std::vector<TileIndex> TileVector;
-typedef std::vector<PlanLine*> PlanLineVector;
+typedef std::vector<PlanLine> PlanLineVector;
 extern PlanPool _plan_pool;
 
 struct PlanLine {
@@ -147,7 +147,7 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 	Colours colour;
 	CalTime::Date creation_date;
 	PlanLineVector lines;
-	PlanLine *temp_line;
+	PlanLine temp_line{};
 	std::string name;
 	TileIndex last_tile;
 	bool visible;
@@ -162,23 +162,13 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 		this->visible_by_all = false;
 		this->show_lines = false;
 		this->colour = COLOUR_WHITE;
-		this->temp_line = new PlanLine();
 		this->last_tile = INVALID_TILE;
-	}
-
-	~Plan()
-	{
-		for (PlanLineVector::iterator it = lines.begin(); it != lines.end(); it++) {
-			delete (*it);
-		}
-		this->lines.clear();
-		delete temp_line;
 	}
 
 	void SetFocus(bool focused)
 	{
-		for (PlanLineVector::iterator it = lines.begin(); it != lines.end(); it++) {
-			(*it)->SetFocus(focused);
+		for (PlanLine &it : lines) {
+			it.SetFocus(focused);
 		}
 	}
 
@@ -188,8 +178,8 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 		_plan_update_counter++;
 
 		if (!do_lines) return;
-		for (PlanLineVector::iterator it = lines.begin(); it != lines.end(); it++) {
-			(*it)->SetVisibility(visible);
+		for (PlanLine &it : lines) {
+			it.SetVisibility(visible);
 		}
 	}
 
@@ -199,16 +189,14 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 		return this->visible;
 	}
 
-	PlanLine *NewLine()
+	PlanLine &NewLine()
 	{
-		PlanLine *pl = new PlanLine();
-		this->lines.push_back(pl);
-		return pl;
+		return this->lines.emplace_back();
 	}
 
 	bool StoreTempTile(TileIndex tile)
 	{
-		return this->temp_line->AppendTile(tile);
+		return this->temp_line.AppendTile(tile);
 	}
 
 	bool ValidateNewLine();
@@ -250,8 +238,8 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 		uint64_t x = 0;
 		uint64_t y = 0;
 		uint32_t count = 0;
-		for (PlanLineVector::const_iterator it = lines.begin(); it != lines.end(); it++) {
-			(*it)->AddLineToCalculateCentreTile(x, y, count);
+		for (const PlanLine &it : lines) {
+			it.AddLineToCalculateCentreTile(x, y, count);
 		}
 		if (count == 0) return INVALID_TILE;
 		return TileXY(x / count, y / count);

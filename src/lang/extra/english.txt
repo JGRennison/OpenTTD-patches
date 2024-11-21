@@ -1976,7 +1976,6 @@ STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING                 :{WHITE}Moving t
 # Plan related errors
 STR_ERROR_TOO_MANY_PLANS                                        :{WHITE}... too many plans
 STR_ERROR_TOO_MANY_NODES                                        :{WHITE}... too many nodes in plan line
-STR_ERROR_NO_MORE_SPACE_FOR_LINES                               :{WHITE}No more space for lines
 STR_ERROR_CAN_T_RENAME_PLAN                                     :{WHITE}Can't rename plan...
 
 STR_TRADITIONAL_TRAIN_NAME                                      :Train {COMMA}
