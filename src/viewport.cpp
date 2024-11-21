@@ -2907,7 +2907,7 @@ static void ViewportDrawPlans(const Viewport *vp, Blitter *blitter, DrawPixelInf
 	}
 
 	if (_current_plan && _current_plan->temp_line.tiles.size() > 1) {
-		const PlanLine &pl = _current_plan->temp_line;
+		const BasePlanLine &pl = _current_plan->temp_line;
 		TileIndex to_tile = pl.tiles[0];
 		int to_coord_delta = (int)TileY(to_tile) - (int)TileX(to_tile);
 		for (uint i = 1; i < pl.tiles.size(); i++) {
