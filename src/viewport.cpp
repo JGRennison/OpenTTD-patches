@@ -4030,9 +4030,7 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint
 		if (unlikely(_draw_widget_outlines || HasBit(_viewport_debug_flags, VDF_DISABLE_THREAD))) {
 			ViewportDoDrawRenderJob(vp, _vdd.release());
 		} else {
-			_general_worker_pool.EnqueueJob([](void *data1, void *data2, void *data3) {
-				ViewportDoDrawRenderJob(static_cast<Viewport *>(data1), static_cast<ViewportDrawerDynamic *>(data2));
-			}, vp, _vdd.release());
+			_general_worker_pool.EnqueueJob<ViewportDoDrawRenderJob>(vp, _vdd.release());
 		}
 	}
 }
@@ -4087,9 +4085,7 @@ static void ViewportDoDrawRenderJob(Viewport *vp, ViewportDrawerDynamic *vdd)
 		if (unlikely(_draw_widget_outlines || HasBit(_viewport_debug_flags, VDF_DISABLE_THREAD))) {
 			ViewportDoDrawRenderSubJob(vp, vdd, i);
 		} else {
-			_general_worker_pool.EnqueueJob([](void *data1, void *data2, void *data3) {
-				ViewportDoDrawRenderSubJob(static_cast<Viewport *>(data1), static_cast<ViewportDrawerDynamic *>(data2), static_cast<uint>(reinterpret_cast<uintptr_t>(data3)));
-			}, vp, vdd, reinterpret_cast<void *>(static_cast<uintptr_t>(i)));
+			_general_worker_pool.EnqueueJob<ViewportDoDrawRenderSubJob>(vp, vdd, i);
 		}
 	}
 
