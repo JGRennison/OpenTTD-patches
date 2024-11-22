@@ -35,6 +35,7 @@
 #include "zoom_func.h"
 #include "depot_map.h"
 #include "tilehighlight_func.h"
+#include "viewport_func.h"
 #include "core/backup_type.hpp"
 
 #include "table/sprites.h"
@@ -44,6 +45,7 @@ static constexpr NWidgetPart _nested_departures_list[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_DB_CAPTION), SetDataTip(STR_JUST_STRING6, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_PUSHIMGBTN, COLOUR_GREY, WID_DB_LOCATION), SetAspect(WidgetDimensions::ASPECT_LOCATION), SetDataTip(SPR_GOTO_LOCATION, STR_STATION_VIEW_CENTER_TOOLTIP),
 		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_DB_DUPLICATE), SetDataTip(STR_DEPARTURES_DUPLICATE, STR_DEPARTURES_DUPLICATE_TOOLTIP),
 		NWidget(WWT_SHADEBOX, COLOUR_GREY),
 		NWidget(WWT_STICKYBOX, COLOUR_GREY),
@@ -299,8 +301,10 @@ public:
 			VehicleType vt;
 			if (wp->string_id == STR_SV_STNAME_WAYPOINT) {
 				vt = HasBit(wp->waypoint_flags, WPF_ROAD) ? VEH_ROAD : VEH_TRAIN;
+				this->GetWidget<NWidgetCore>(WID_DB_LOCATION)->tool_tip = STR_WAYPOINT_VIEW_CENTER_TOOLTIP;
 			} else {
 				vt = VEH_SHIP;
+				this->GetWidget<NWidgetCore>(WID_DB_LOCATION)->tool_tip = STR_BUOY_VIEW_CENTER_TOOLTIP;
 			}
 			for (uint i = 0; i < 4; ++i) {
 				if (i == vt) {
@@ -349,6 +353,8 @@ public:
 		this->title_params[0] = STR_DEPOT_NAME;
 		this->title_params[1] = vt;
 		this->title_params[2] = this->source.destination;
+
+		this->GetWidget<NWidgetCore>(WID_DB_LOCATION)->tool_tip = STR_DEPOT_TRAIN_LOCATION_TOOLTIP + vt;
 
 		for (uint i = 0; i < 4; ++i) {
 			if (i == vt) {
@@ -600,6 +606,21 @@ public:
 				}
 				this->SetWidgetDirty(WID_DB_FILTER);
 				this->SetWidgetDirty(WID_DB_CAPTION);
+				break;
+			}
+
+			case WID_DB_LOCATION: {
+				TileIndex tile;
+				if (this->source_type == DST_DEPOT) {
+					tile = this->window_number & (MapSize() - 1);
+				} else {
+					tile = BaseStation::Get(this->window_number)->xy;
+				}
+				if (_ctrl_pressed) {
+					ShowExtraViewportWindow(tile);
+				} else {
+					ScrollMainWindowToTile(tile);
+				}
 				break;
 			}
 		}
