@@ -2515,9 +2515,10 @@ static Industry *PlaceIndustry(IndustryType type, IndustryAvailabilityCallType c
  */
 static void PlaceInitialIndustry(IndustryType type, bool try_hard)
 {
+	IncreaseGeneratingWorldProgress(GWP_INDUSTRY);
+
 	Backup<CompanyID> cur_company(_current_company, OWNER_NONE, FILE_LINE);
 
-	IncreaseGeneratingWorldProgress(GWP_INDUSTRY);
 	PlaceIndustry(type, IACT_MAPGENERATION, try_hard);
 
 	cur_company.Restore();
