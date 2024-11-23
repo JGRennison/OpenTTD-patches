@@ -335,7 +335,7 @@ public:
 						if (this->list[new_selected].is_plan) {
 							t = Plan::Get(this->list[new_selected].plan_id)->CalculateCentreTile();
 						} else {
-							t = Plan::Get(this->list[new_selected].plan_id)->lines[this->list[new_selected].line_id]->CalculateCentreTile();
+							t = Plan::Get(this->list[new_selected].plan_id)->lines[this->list[new_selected].line_id].CalculateCentreTile();
 						}
 						if (t != INVALID_TILE) ScrollMainWindowToTile(t);
 					}
@@ -353,10 +353,10 @@ public:
 						if (pt.x >= btn_left && pt.x < btn_right) _current_plan->ToggleVisibility();
 					} else {
 						_current_plan = Plan::Get(this->list[new_selected].plan_id);
-						PlanLine *pl = _current_plan->lines[this->list[new_selected].line_id];
-						pl->SetFocus(true);
+						PlanLine &pl = _current_plan->lines[this->list[new_selected].line_id];
+						pl.SetFocus(true);
 						if (pt.x >= btn_left && pt.x < btn_right) {
-							if (pl->ToggleVisibility()) _current_plan->SetVisibility(true, false);
+							if (pl.ToggleVisibility()) _current_plan->SetVisibility(true, false);
 						}
 					}
 					if (click_count > 1 && (pt.x < btn_left || pt.x >= btn_right)) {
@@ -492,10 +492,10 @@ public:
 						SetDParam(dparam_offset++, p->creation_date);
 						DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FS_NORMAL)) / 2, str, TC_IS_PALETTE_COLOUR | (TextColour)_colour_value[p->colour]);
 					} else {
-						PlanLine *pl = p->lines[list[i].line_id];
-						DrawBoolButton(btn_left, y + (this->resize.step_height - SETTING_BUTTON_HEIGHT) / 2, pl->visible, true);
+						PlanLine &pl = p->lines[list[i].line_id];
+						DrawBoolButton(btn_left, y + (this->resize.step_height - SETTING_BUTTON_HEIGHT) / 2, pl.visible, true);
 						SetDParam(0, list[i].line_id + 1);
-						SetDParam(1, pl->tiles.size() - 1);
+						SetDParam(1, pl.tiles.size() - 1);
 						DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FS_NORMAL)) / 2, STR_PLANS_LIST_ITEM_LINE, TC_WHITE);
 					}
 					y += this->resize.step_height;
@@ -605,7 +605,7 @@ public:
 
 		const TileIndex tile = TileVirtXY(pt.x, pt.y);
 		if (_current_plan != nullptr && tile < MapSize()) {
-			if (_ctrl_pressed && _current_plan->temp_line->tiles.empty() && _current_plan->last_tile != INVALID_TILE) {
+			if (_ctrl_pressed && _current_plan->temp_line.tiles.empty() && _current_plan->last_tile != INVALID_TILE) {
 				_current_plan->StoreTempTile(_current_plan->last_tile);
 				_current_plan->last_tile = INVALID_TILE;
 			}
@@ -625,8 +625,8 @@ public:
 	virtual void OnPlaceObjectAbort() override
 	{
 		if (_current_plan != nullptr) {
-			_current_plan->temp_line->MarkDirty();
-			_current_plan->temp_line->Clear();
+			_current_plan->temp_line.MarkDirty();
+			_current_plan->temp_line.Clear();
 		}
 
 		this->RaiseWidget(WID_PLN_ADD_LINES);

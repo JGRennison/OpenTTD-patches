@@ -46,7 +46,7 @@ uint8_t _extra_station_names_probability;
 const StationCargoList _empty_cargo_list{};
 const FlowStatMap _empty_flows{};
 
-StationKdtree _station_kdtree(Kdtree_StationXYFunc);
+StationKdtree _station_kdtree{};
 
 void RebuildStationKdtree()
 {

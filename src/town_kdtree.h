@@ -13,9 +13,14 @@
 #include "core/kdtree.hpp"
 #include "town.h"
 
-inline uint32_t Kdtree_TownXYFunc(TownID tid, int dim) { return (dim == 0) ? TileX(Town::Get(tid)->xy) : TileY(Town::Get(tid)->xy); }
-typedef Kdtree<TownID, decltype(&Kdtree_TownXYFunc), uint32_t, int> TownKdtree;
+struct Kdtree_TownXYFunc {
+	inline uint32_t operator()(TownID tid, int dim)
+	{
+		return (dim == 0) ? TileX(Town::Get(tid)->xy) : TileY(Town::Get(tid)->xy);
+	}
+};
 
+using TownKdtree = Kdtree<TownID, Kdtree_TownXYFunc, uint32_t, int>;
 extern TownKdtree _town_kdtree;
 extern TownKdtree _town_local_authority_kdtree;
 

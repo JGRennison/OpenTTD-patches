@@ -1137,6 +1137,9 @@ void SlProcessVENC();
 
 void SlResetTNNC();
 
+void SlResetERNC();
+void SlProcessERNC();
+
 extern std::string _savegame_format;
 extern bool _do_autosave;
 

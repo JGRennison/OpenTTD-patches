@@ -21,7 +21,7 @@ uint64_t _plan_update_counter = 0;
 uint64_t _last_plan_visibility_check = 0;
 bool _last_plan_visibility_check_result = false;
 
-void PlanLine::UpdateVisualExtents()
+void BasePlanLine::UpdateVisualExtents()
 {
 	if (IsHeadless()) return;
 
@@ -56,12 +56,12 @@ bool Plan::ValidateNewLine()
 	extern bool AddPlanLine(PlanID plan, TileVector tiles);
 
 	bool ret = false;
-	if (this->temp_line->tiles.size() > 1) {
-		this->temp_line->MarkDirty();
-		this->last_tile = this->temp_line->tiles.back();
+	if (this->temp_line.tiles.size() > 1) {
+		this->temp_line.MarkDirty();
+		this->last_tile = this->temp_line.tiles.back();
 		this->SetVisibility(true, false);
-		TileVector tiles = std::move(this->temp_line->tiles);
-		this->temp_line->Clear();
+		TileVector tiles = std::move(this->temp_line.tiles);
+		this->temp_line.Clear();
 		ret = AddPlanLine(this->index, std::move(tiles));
 	}
 	return ret;
@@ -71,15 +71,15 @@ void UpdateAreAnyPlansVisible()
 {
 	_last_plan_visibility_check = _plan_update_counter;
 
-	if (_current_plan && _current_plan->temp_line->tiles.size() > 1) {
+	if (_current_plan && _current_plan->temp_line.tiles.size() > 1) {
 		_last_plan_visibility_check_result = true;
 		return;
 	}
 
 	for (const Plan *p : Plan::Iterate()) {
 		if (!p->IsVisible()) continue;
-		for (const PlanLine *pl : p->lines) {
-			if (pl->visible) {
+		for (const PlanLine &pl : p->lines) {
+			if (pl.visible) {
 				_last_plan_visibility_check_result = true;
 				return;
 			}

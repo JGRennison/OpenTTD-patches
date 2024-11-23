@@ -10,19 +10,26 @@
 #ifndef WORKER_THREAD_H
 #define WORKER_THREAD_H
 
+#include "core/bit_cast.hpp"
 #include "core/ring_buffer_queue.hpp"
 #include <mutex>
 #include <condition_variable>
-
-typedef void WorkerJobFunc(void *, void *, void *);
+#include <tuple>
 
 struct WorkerThreadPool {
 private:
 	struct WorkerJob {
+		using WorkerJobFunc = void(WorkerJob &job);
+		using Payload = std::array<uintptr_t, 3>;
+
 		WorkerJobFunc *func;
-		void *data1;
-		void *data2;
-		void *data3;
+		Payload payload;
+
+		template <auto F, typename T, size_t... i>
+		inline void Execute(std::index_sequence<i...>)
+		{
+			F(bit_cast_from_storage<std::tuple_element_t<i, T>>(this->payload[i])...);
+		}
 	};
 
 	uint workers = 0;
@@ -35,11 +42,26 @@ private:
 
 	static void Run(WorkerThreadPool *pool);
 
+	void EnqueueWorkerJob(WorkerJob job);
+
 public:
 
 	void Start(const char *thread_name, uint max_workers);
 	void Stop();
-	void EnqueueJob(WorkerJobFunc *func, void *data1 = nullptr, void *data2 = nullptr, void *data3 = nullptr);
+
+	/* Currently supports up to 3 arguments up to sizeof(uintptr_t) */
+	template <auto F, typename... Args>
+	void EnqueueJob(Args... args)
+	{
+		using tuple_type = decltype(std::make_tuple(args...));
+
+		WorkerJob job;
+		job.payload = { bit_cast_to_storage<uintptr_t>(args)... };
+		job.func = [](WorkerJob &job) {
+			job.Execute<F, tuple_type>(std::index_sequence_for<Args...>{});
+		};
+		this->EnqueueWorkerJob(job);
+	}
 
 	~WorkerThreadPool()
 	{

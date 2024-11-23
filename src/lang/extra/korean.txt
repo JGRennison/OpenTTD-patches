@@ -1899,7 +1899,6 @@ STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING                 :{WHITE}움직�
 # Plan related errors
 STR_ERROR_TOO_MANY_PLANS                                        :{WHITE}... 계획 수가 너무 많습니다
 STR_ERROR_TOO_MANY_NODES                                        :{WHITE}... 계획이 너무 많은 선으로 이뤄졌습니다
-STR_ERROR_NO_MORE_SPACE_FOR_LINES                               :{WHITE}더 이상의 선을 위한 공간이 없습니다.
 STR_ERROR_CAN_T_RENAME_PLAN                                     :{WHITE}계획의 이름을 바꿀 수 없습니다...
 
 STR_TRADITIONAL_TRAIN_NAME                                      :열차 {COMMA}

@@ -23,23 +23,19 @@
 
 typedef Pool<Plan, PlanID, 16, 64000> PlanPool;
 typedef std::vector<TileIndex> TileVector;
-typedef std::vector<PlanLine*> PlanLineVector;
+typedef std::vector<PlanLine> PlanLineVector;
 extern PlanPool _plan_pool;
 
-struct PlanLine {
-	bool visible;
-	bool focused;
+struct BasePlanLine {
 	TileVector tiles;
 	Rect viewport_extents;
 
-	PlanLine()
+	BasePlanLine()
 	{
-		this->visible = true;
-		this->focused = false;
 		_plan_update_counter++;
 	}
 
-	~PlanLine()
+	~BasePlanLine()
 	{
 		this->Clear();
 	}
@@ -87,30 +83,6 @@ struct PlanLine {
 		return true;
 	}
 
-	void SetFocus(bool focused)
-	{
-		if (this->focused != focused) {
-			this->MarkDirty();
-			_plan_update_counter++;
-		}
-		this->focused = focused;
-	}
-
-	bool ToggleVisibility()
-	{
-		this->SetVisibility(!this->visible);
-		return this->visible;
-	}
-
-	void SetVisibility(bool visible)
-	{
-		if (this->visible != visible) {
-			this->MarkDirty();
-			_plan_update_counter++;
-		}
-		this->visible = visible;
-	}
-
 	void MarkDirty() const
 	{
 		const uint sz = (uint) this->tiles.size();
@@ -142,12 +114,41 @@ struct PlanLine {
 	void UpdateVisualExtents();
 };
 
+struct PlanLine : public BasePlanLine {
+	bool visible = true;
+	bool focused = false;
+
+	void SetFocus(bool focused)
+	{
+		if (this->focused != focused) {
+			this->MarkDirty();
+			_plan_update_counter++;
+		}
+		this->focused = focused;
+	}
+
+	bool ToggleVisibility()
+	{
+		this->SetVisibility(!this->visible);
+		return this->visible;
+	}
+
+	void SetVisibility(bool visible)
+	{
+		if (this->visible != visible) {
+			this->MarkDirty();
+			_plan_update_counter++;
+		}
+		this->visible = visible;
+	}
+};
+
 struct Plan : PlanPool::PoolItem<&_plan_pool> {
 	Owner owner;
 	Colours colour;
 	CalTime::Date creation_date;
 	PlanLineVector lines;
-	PlanLine *temp_line;
+	BasePlanLine temp_line{};
 	std::string name;
 	TileIndex last_tile;
 	bool visible;
@@ -162,23 +163,13 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 		this->visible_by_all = false;
 		this->show_lines = false;
 		this->colour = COLOUR_WHITE;
-		this->temp_line = new PlanLine();
 		this->last_tile = INVALID_TILE;
-	}
-
-	~Plan()
-	{
-		for (PlanLineVector::iterator it = lines.begin(); it != lines.end(); it++) {
-			delete (*it);
-		}
-		this->lines.clear();
-		delete temp_line;
 	}
 
 	void SetFocus(bool focused)
 	{
-		for (PlanLineVector::iterator it = lines.begin(); it != lines.end(); it++) {
-			(*it)->SetFocus(focused);
+		for (PlanLine &it : lines) {
+			it.SetFocus(focused);
 		}
 	}
 
@@ -188,8 +179,8 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 		_plan_update_counter++;
 
 		if (!do_lines) return;
-		for (PlanLineVector::iterator it = lines.begin(); it != lines.end(); it++) {
-			(*it)->SetVisibility(visible);
+		for (PlanLine &it : lines) {
+			it.SetVisibility(visible);
 		}
 	}
 
@@ -199,16 +190,14 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 		return this->visible;
 	}
 
-	PlanLine *NewLine()
+	PlanLine &NewLine()
 	{
-		PlanLine *pl = new PlanLine();
-		this->lines.push_back(pl);
-		return pl;
+		return this->lines.emplace_back();
 	}
 
 	bool StoreTempTile(TileIndex tile)
 	{
-		return this->temp_line->AppendTile(tile);
+		return this->temp_line.AppendTile(tile);
 	}
 
 	bool ValidateNewLine();
@@ -250,8 +239,8 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> {
 		uint64_t x = 0;
 		uint64_t y = 0;
 		uint32_t count = 0;
-		for (PlanLineVector::const_iterator it = lines.begin(); it != lines.end(); it++) {
-			(*it)->AddLineToCalculateCentreTile(x, y, count);
+		for (const PlanLine &it : lines) {
+			it.AddLineToCalculateCentreTile(x, y, count);
 		}
 		if (count == 0) return INVALID_TILE;
 		return TileXY(x / count, y / count);

@@ -51,7 +51,7 @@
 
 #include "safeguards.h"
 
-TownKdtree _town_local_authority_kdtree(&Kdtree_TownXYFunc);
+TownKdtree _town_local_authority_kdtree{};
 
 typedef GUIList<const Town*, const bool &> GUITownList;
 

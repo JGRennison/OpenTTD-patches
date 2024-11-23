@@ -25,8 +25,8 @@ struct PlanLineStructHandler final : public TypedSaveLoadStructHandler<PlanLineS
 	void Save(Plan *p) const override
 	{
 		SlSetStructListLength(p->lines.size());
-		for (PlanLine *pl : p->lines) {
-			SlObjectSaveFiltered(pl, this->GetLoadDescription());
+		for (PlanLine &pl : p->lines) {
+			SlObjectSaveFiltered(&pl, this->GetLoadDescription());
 		}
 	}
 
@@ -35,10 +35,9 @@ struct PlanLineStructHandler final : public TypedSaveLoadStructHandler<PlanLineS
 		size_t line_count = SlGetStructListLength(UINT32_MAX);
 		p->lines.resize(line_count);
 		for (size_t i = 0; i < line_count; i++) {
-			PlanLine *pl = new PlanLine();
-			p->lines[i] = pl;
-			SlObjectLoadFiltered(pl, this->GetLoadDescription());
-			pl->UpdateVisualExtents();
+			PlanLine &pl = p->lines[i];
+			SlObjectLoadFiltered(&pl, this->GetLoadDescription());
+			pl.UpdateVisualExtents();
 		}
 	}
 };
@@ -89,12 +88,11 @@ static void Load_PLAN()
 			const size_t line_count = SlReadUint32();
 			p->lines.resize(line_count);
 			for (size_t i = 0; i < line_count; i++) {
-				PlanLine *pl = new PlanLine();
-				p->lines[i] = pl;
+				PlanLine &pl = p->lines[i];
 				const size_t tile_count = SlReadUint32();
-				pl->tiles.resize(tile_count);
-				SlArray(pl->tiles.data(), tile_count, SLE_UINT32);
-				pl->UpdateVisualExtents();
+				pl.tiles.resize(tile_count);
+				SlArray(pl.tiles.data(), tile_count, SLE_UINT32);
+				pl.UpdateVisualExtents();
 			}
 			p->SetVisibility(false);
 		}
@@ -109,12 +107,11 @@ static void Load_PLANLINE()
 		Plan *p = Plan::Get((uint) index >> 16);
 		uint line_index = index & 0xFFFF;
 		if (p->lines.size() <= line_index) p->lines.resize(line_index + 1);
-		PlanLine *pl = new PlanLine();
-		p->lines[line_index] = pl;
+		PlanLine &pl = p->lines[line_index];
 		size_t plsz = SlGetFieldLength() / sizeof(TileIndex);
-		pl->tiles.resize(plsz);
-		SlArray(pl->tiles.data(), plsz, SLE_UINT32);
-		pl->UpdateVisualExtents();
+		pl.tiles.resize(plsz);
+		SlArray(pl.tiles.data(), plsz, SLE_UINT32);
+		pl.UpdateVisualExtents();
 	}
 
 	for (Plan *p : Plan::Iterate()) {

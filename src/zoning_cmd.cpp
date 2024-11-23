@@ -67,7 +67,7 @@ bool IsAreaWithinAcceptanceZoneOfStation(TileArea area, Owner owner, StationFaci
 {
 	StationFinder morestations(area);
 
-	for (const Station *st : *morestations.GetStations()) {
+	for (const Station *st : morestations.GetStations()) {
 		if (st->owner != owner || !(st->facilities & facility_mask)) continue;
 		Rect rect = st->GetCatchmentRect();
 		return TileArea(TileXY(rect.left, rect.top), TileXY(rect.right, rect.bottom)).Intersects(area);
@@ -168,7 +168,7 @@ SpriteID TileZoneCheckStationCatchmentEvaluation(TileIndex tile, Owner owner, bo
 
 	StationFinder stations(TileArea(tile, 1, 1));
 
-	for (const Station *st : *stations.GetStations()) {
+	for (const Station *st : stations.GetStations()) {
 		if (st->owner == owner) {
 			if (!open_window_only || FindWindowById(WC_STATION_VIEW, st->index) != nullptr) {
 				return SPR_ZONING_INNER_HIGHLIGHT_LIGHT_BLUE;
@@ -214,7 +214,7 @@ SpriteID TileZoneCheckUnservedBuildingsEvaluation(TileIndex tile, Owner owner)
 
 	StationFinder stations(TileArea(tile, 1, 1));
 
-	for (const Station *st : *stations.GetStations()) {
+	for (const Station *st : stations.GetStations()) {
 		if (st->owner == owner) {
 			return ZONING_INVALID_SPRITE_ID;
 		}

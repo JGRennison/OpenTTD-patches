@@ -231,8 +231,9 @@ struct GRFTempEngineData {
 		NONEMPTY,       ///< GRF defined the vehicle as refittable. If the refitmask is empty after translation (cargotypes not available), disable the vehicle.
 	};
 
-	CargoClasses cargo_allowed;
-	CargoClasses cargo_disallowed;
+	CargoClasses cargo_allowed;          ///< Bitmask of cargo classes that are allowed as a refit.
+	CargoClasses cargo_allowed_required; ///< Bitmask of cargo classes that are required to be all present to allow a cargo as a refit.
+	CargoClasses cargo_disallowed;       ///< Bitmask of cargo classes that are disallowed as a refit.
 	RailTypeLabel railtypelabel;
 	uint8_t roadtramtype;
 	const GRFFile *defaultcargo_grf; ///< GRF defining the cargo translation table to use if the default cargo is the 'first refittable'.
@@ -1324,6 +1325,10 @@ static ChangeInfoResult RailVehicleChangeInfo(uint engine, int numinfo, int prop
 				SB(ei->callback_mask, 8, 8, buf.ReadByte());
 				break;
 
+			case 0x32: // Cargo classes required for a refit.
+				_gted[e->index].cargo_allowed_required = buf.ReadWord();
+				break;
+
 			default:
 				ret = CommonVehicleChangeInfo(ei, prop, mapping_entry, buf);
 				break;
@@ -1525,6 +1530,10 @@ static ChangeInfoResult RoadVehicleChangeInfo(uint engine, int numinfo, int prop
 				SB(ei->callback_mask, 8, 8, buf.ReadByte());
 				break;
 
+			case 0x29: // Cargo classes required for a refit.
+				_gted[e->index].cargo_allowed_required = buf.ReadWord();
+				break;
+
 			default:
 				ret = CommonVehicleChangeInfo(ei, prop, mapping_entry, buf);
 				break;
@@ -1712,6 +1721,10 @@ static ChangeInfoResult ShipVehicleChangeInfo(uint engine, int numinfo, int prop
 				svi->acceleration = std::max<uint8_t>(1, buf.ReadByte());
 				break;
 
+			case 0x25: // Cargo classes required for a refit.
+				_gted[e->index].cargo_allowed_required = buf.ReadWord();
+				break;
+
 			default:
 				ret = CommonVehicleChangeInfo(ei, prop, mapping_entry, buf);
 				break;
@@ -1875,6 +1888,10 @@ static ChangeInfoResult AircraftVehicleChangeInfo(uint engine, int numinfo, int 
 
 			case 0x22: // Callback additional mask
 				SB(ei->callback_mask, 8, 8, buf.ReadByte());
+				break;
+
+			case 0x23: // Cargo classes required for a refit.
+				_gted[e->index].cargo_allowed_required = buf.ReadWord();
 				break;
 
 			default:
@@ -10687,16 +10704,20 @@ static CargoLabel GetActiveCargoLabel(const std::initializer_list<CargoLabel> &l
  */
 static CargoLabel GetActiveCargoLabel(const std::variant<CargoLabel, MixedCargoType> &label)
 {
-	if (std::holds_alternative<CargoLabel>(label)) return std::get<CargoLabel>(label);
-	if (std::holds_alternative<MixedCargoType>(label)) {
-		switch (std::get<MixedCargoType>(label)) {
-			case MCT_LIVESTOCK_FRUIT: return GetActiveCargoLabel({CT_LIVESTOCK, CT_FRUIT});
-			case MCT_GRAIN_WHEAT_MAIZE: return GetActiveCargoLabel({CT_GRAIN, CT_WHEAT, CT_MAIZE});
-			case MCT_VALUABLES_GOLD_DIAMONDS: return GetActiveCargoLabel({CT_VALUABLES, CT_GOLD, CT_DIAMONDS});
-			default: NOT_REACHED();
+	struct visitor {
+		CargoLabel operator()(const CargoLabel &label) { return label; }
+		CargoLabel operator()(const MixedCargoType &mixed)
+		{
+			switch (mixed) {
+				case MCT_LIVESTOCK_FRUIT: return GetActiveCargoLabel({CT_LIVESTOCK, CT_FRUIT});
+				case MCT_GRAIN_WHEAT_MAIZE: return GetActiveCargoLabel({CT_GRAIN, CT_WHEAT, CT_MAIZE});
+				case MCT_VALUABLES_GOLD_DIAMONDS: return GetActiveCargoLabel({CT_VALUABLES, CT_GOLD, CT_DIAMONDS});
+				default: NOT_REACHED();
+			}
 		}
-	}
-	NOT_REACHED();
+	};
+
+	return std::visit(visitor{}, label);
 }
 
 /**
@@ -10817,7 +10838,7 @@ static void CalculateRefitMasks()
 			if (_gted[engine].cargo_allowed != 0) {
 				/* Build up the list of cargo types from the set cargo classes. */
 				for (const CargoSpec *cs : CargoSpec::Iterate()) {
-					if (_gted[engine].cargo_allowed    & cs->classes) SetBit(mask,     cs->Index());
+					if ((_gted[engine].cargo_allowed & cs->classes) != 0 && (_gted[engine].cargo_allowed_required & cs->classes) == _gted[engine].cargo_allowed_required) SetBit(mask, cs->Index());
 					if (_gted[engine].cargo_disallowed & cs->classes) SetBit(not_mask, cs->Index());
 				}
 			}
@@ -10827,6 +10848,25 @@ static void CalculateRefitMasks()
 			/* Apply explicit refit includes/excludes. */
 			ei->refit_mask |= _gted[engine].ctt_include_mask;
 			ei->refit_mask &= ~_gted[engine].ctt_exclude_mask;
+
+			/* Custom refit mask callback. */
+			const GRFFile *file = _gted[e->index].defaultcargo_grf;
+			if (file == nullptr) file = e->GetGRF();
+			if (file != nullptr && HasBit(e->info.callback_mask, CBM_VEHICLE_CUSTOM_REFIT)) {
+				for (const CargoSpec *cs : CargoSpec::Iterate()) {
+					uint8_t local_slot = file->cargo_map[cs->Index()];
+					uint16_t callback = GetVehicleCallback(CBID_VEHICLE_CUSTOM_REFIT, cs->classes, local_slot, engine, nullptr);
+					switch (callback) {
+						case CALLBACK_FAILED:
+						case 0:
+							break; // Do nothing.
+						case 1: SetBit(ei->refit_mask, cs->Index()); break;
+						case 2: ClrBit(ei->refit_mask, cs->Index()); break;
+
+						default: ErrorUnknownCallbackResult(file->grfid, CBID_VEHICLE_CUSTOM_REFIT, callback);
+					}
+				}
+			}
 		}
 
 		/* Clear invalid cargoslots (from default vehicles or pre-NewCargo GRFs) */

@@ -144,7 +144,7 @@ using Blitter_8bppDrawing = Blitter_Null;
 using Blitter_8bppDrawing = Blitter_8bppSimple;
 #endif
 
-ViewportSignKdtree _viewport_sign_kdtree(&Kdtree_ViewportSignXYFunc);
+ViewportSignKdtree _viewport_sign_kdtree{};
 bool _viewport_sign_kdtree_valid = false;
 static int _viewport_sign_maxwidth = 0;
 
@@ -2865,27 +2865,24 @@ static void ViewportDrawPlans(const Viewport *vp, Blitter *blitter, DrawPixelInf
 	const int min_coord_delta = bounds.left / (int)(2 * ZOOM_BASE * TILE_SIZE);
 	const int max_coord_delta = (bounds.right / (int)(2 * ZOOM_BASE * TILE_SIZE)) + 1;
 
-	for (Plan *p : Plan::Iterate()) {
+	for (const Plan *p : Plan::Iterate()) {
 		if (!p->IsVisible()) continue;
-		for (PlanLineVector::iterator it = p->lines.begin(); it != p->lines.end(); it++) {
-			PlanLine *pl = *it;
-			if (!pl->visible) continue;
-
+		for (const PlanLine &pl : p->lines) {
 			if (
-				bounds.left   > pl->viewport_extents.right ||
-				bounds.right  < pl->viewport_extents.left ||
-				bounds.top    > pl->viewport_extents.bottom ||
-				bounds.bottom < pl->viewport_extents.top
+				bounds.left   > pl.viewport_extents.right ||
+				bounds.right  < pl.viewport_extents.left ||
+				bounds.top    > pl.viewport_extents.bottom ||
+				bounds.bottom < pl.viewport_extents.top
 			) {
 				continue;
 			}
 
-			TileIndex to_tile = pl->tiles[0];
+			TileIndex to_tile = pl.tiles[0];
 			int to_coord_delta = (int)TileY(to_tile) - (int)TileX(to_tile);
-			for (uint i = 1; i < pl->tiles.size(); i++) {
+			for (uint i = 1; i < pl.tiles.size(); i++) {
 				const TileIndex from_tile = to_tile;
 				const int from_coord_delta = to_coord_delta;
-				to_tile = pl->tiles[i];
+				to_tile = pl.tiles[i];
 				to_coord_delta = (int)TileY(to_tile) - (int)TileX(to_tile);
 
 				if (to_coord_delta < min_coord_delta && from_coord_delta < min_coord_delta) continue;
@@ -2900,7 +2897,7 @@ static void ViewportDrawPlans(const Viewport *vp, Blitter *blitter, DrawPixelInf
 				const int to_y = UnScaleByZoom(to_pt.y, vp->zoom);
 
 				GfxDrawLine(blitter, plan_dpi, from_x, from_y, to_x, to_y, PC_BLACK, 3);
-				if (pl->focused) {
+				if (pl.focused) {
 					GfxDrawLine(blitter, plan_dpi, from_x, from_y, to_x, to_y, PC_RED, 1);
 				} else {
 					GfxDrawLine(blitter, plan_dpi, from_x, from_y, to_x, to_y, _colour_value[p->colour], 1);
@@ -2909,14 +2906,14 @@ static void ViewportDrawPlans(const Viewport *vp, Blitter *blitter, DrawPixelInf
 		}
 	}
 
-	if (_current_plan && _current_plan->temp_line->tiles.size() > 1) {
-		PlanLine *pl = _current_plan->temp_line;
-		TileIndex to_tile = pl->tiles[0];
+	if (_current_plan && _current_plan->temp_line.tiles.size() > 1) {
+		const BasePlanLine &pl = _current_plan->temp_line;
+		TileIndex to_tile = pl.tiles[0];
 		int to_coord_delta = (int)TileY(to_tile) - (int)TileX(to_tile);
-		for (uint i = 1; i < pl->tiles.size(); i++) {
+		for (uint i = 1; i < pl.tiles.size(); i++) {
 			const TileIndex from_tile = to_tile;
 			const int from_coord_delta = to_coord_delta;
-			to_tile = pl->tiles[i];
+			to_tile = pl.tiles[i];
 			to_coord_delta = (int)TileY(to_tile) - (int)TileX(to_tile);
 
 			if (to_coord_delta < min_coord_delta && from_coord_delta < min_coord_delta) continue;
@@ -4033,9 +4030,7 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint
 		if (unlikely(_draw_widget_outlines || HasBit(_viewport_debug_flags, VDF_DISABLE_THREAD))) {
 			ViewportDoDrawRenderJob(vp, _vdd.release());
 		} else {
-			_general_worker_pool.EnqueueJob([](void *data1, void *data2, void *data3) {
-				ViewportDoDrawRenderJob(static_cast<Viewport *>(data1), static_cast<ViewportDrawerDynamic *>(data2));
-			}, vp, _vdd.release());
+			_general_worker_pool.EnqueueJob<ViewportDoDrawRenderJob>(vp, _vdd.release());
 		}
 	}
 }
@@ -4090,9 +4085,7 @@ static void ViewportDoDrawRenderJob(Viewport *vp, ViewportDrawerDynamic *vdd)
 		if (unlikely(_draw_widget_outlines || HasBit(_viewport_debug_flags, VDF_DISABLE_THREAD))) {
 			ViewportDoDrawRenderSubJob(vp, vdd, i);
 		} else {
-			_general_worker_pool.EnqueueJob([](void *data1, void *data2, void *data3) {
-				ViewportDoDrawRenderSubJob(static_cast<Viewport *>(data1), static_cast<ViewportDrawerDynamic *>(data2), static_cast<uint>(reinterpret_cast<uintptr_t>(data3)));
-			}, vp, vdd, reinterpret_cast<void *>(static_cast<uintptr_t>(i)));
+			_general_worker_pool.EnqueueJob<ViewportDoDrawRenderSubJob>(vp, vdd, i);
 		}
 	}
 

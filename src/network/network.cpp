@@ -103,8 +103,6 @@ ring_buffer<NetworkSyncRecord> _network_sync_records;
 ring_buffer<uint> _network_sync_record_counts;
 bool _record_sync_records = false;
 
-static_assert((int)NETWORK_COMPANY_NAME_LENGTH == MAX_LENGTH_COMPANY_NAME_CHARS * MAX_CHAR_LENGTH);
-
 /** The amount of clients connected */
 uint8_t _network_clients_connected = 0;
 

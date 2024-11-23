@@ -8,10 +8,14 @@
 /** @file engine_sl.cpp Code handling saving and loading of engines */
 
 #include "../stdafx.h"
+#include "saveload_buffer.h"
 #include "saveload_internal.h"
+#include "../debug.h"
 #include "../engine_base.h"
 #include "../engine_func.h"
+#include "../newgrf_callbacks.h"
 #include "../string_func.h"
+#include "../network/network.h"
 #include <vector>
 
 #include "../safeguards.h"
@@ -114,10 +118,97 @@ void AfterLoadEngines()
 	AnalyseEngineCallbacks();
 }
 
+void Save_ERNC()
+{
+	assert(_sl_xv_feature_versions[XSLFI_ERNC_CHUNK] != 0);
+
+	if (!IsNetworkServerSave()) {
+		SlSetLength(0);
+		return;
+	}
+
+	uint32_t count = 0;
+	std::span<uint8_t> result = SlSaveToTempBuffer([&]() {
+		for (const Engine *e : Engine::Iterate()) {
+			if (HasBit(e->info.callback_mask, CBM_VEHICLE_CUSTOM_REFIT)) {
+				count++;
+				SlWriteUint16(e->index);
+				SlWriteUint64(e->info.refit_mask);
+			}
+		}
+	});
+
+	SlSetLength(4 + (uint)result.size());
+	SlWriteUint32(count);
+	MemoryDumper::GetCurrent()->CopyBytes(result);
+}
+
+struct EngineRefitNetworkCache {
+	EngineID id;
+	CargoTypes refit_mask;
+};
+static std::vector<EngineRefitNetworkCache> _engine_refit_network_caches;
+
+void Load_ERNC()
+{
+	if (SlGetFieldLength() == 0) return;
+
+	if (!_networking || _network_server) {
+		SlSkipBytes(SlGetFieldLength());
+		return;
+	}
+
+	const uint32_t count = SlReadUint32();
+	_engine_refit_network_caches.reserve(count);
+	for (uint32_t idx = 0; idx < count; idx++) {
+		EngineID id = SlReadUint16();
+		CargoTypes refit_mask = SlReadUint64();
+		_engine_refit_network_caches.emplace_back(id, refit_mask);
+	}
+}
+
+void SlResetERNC()
+{
+	_engine_refit_network_caches.clear();
+}
+
+void SlProcessERNC()
+{
+	for (const EngineRefitNetworkCache &it : _engine_refit_network_caches) {
+		Engine *e = Engine::GetIfValid(it.id);
+		if (e == nullptr) continue;
+		if (e->info.refit_mask != it.refit_mask) {
+			format_buffer buffer;
+			buffer.format("[load]: engine cache mismatch: engine: {}, refit mask: {:X} != {:X}", it.id, e->info.refit_mask, it.refit_mask);
+			debug_print(DebugLevelID::desync, 0, buffer);
+			LogDesyncMsg(buffer.to_string());
+
+			e->info.refit_mask = it.refit_mask;
+		}
+	}
+
+	_engine_refit_network_caches.clear();
+	_engine_refit_network_caches.shrink_to_fit();
+}
+
+static ChunkSaveLoadSpecialOpResult Special_ERNC(uint32_t chunk_id, ChunkSaveLoadSpecialOp op)
+{
+	switch (op) {
+		case CSLSO_SHOULD_SAVE_CHUNK:
+			if (_sl_xv_feature_versions[XSLFI_ERNC_CHUNK] == 0) return CSLSOR_DONT_SAVE_CHUNK;
+			break;
+
+		default:
+			break;
+	}
+	return CSLSOR_NONE;
+}
+
 static const ChunkHandler engine_chunk_handlers[] = {
 	MakeUpstreamChunkHandler<'EIDS', GeneralUpstreamChunkLoadInfo>(),
 	MakeUpstreamChunkHandler<'ENGN', GeneralUpstreamChunkLoadInfo>(),
 	{ 'ENGS', nullptr,   Load_ENGS, nullptr, nullptr, CH_READONLY  },
+	{ 'ERNC', Save_ERNC, Load_ERNC, nullptr, nullptr, CH_RIFF, Special_ERNC },
 };
 
 extern const ChunkHandlerTable _engine_chunk_handlers(engine_chunk_handlers);

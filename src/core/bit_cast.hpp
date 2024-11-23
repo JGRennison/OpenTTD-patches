@@ -10,13 +10,13 @@
 #ifndef BIT_CAST_HPP
 #define BIT_CAST_HPP
 
+#include <type_traits>
+
 #ifdef __cpp_lib_bit_cast
 
 #include <bit>
 
 #else
-
-#include <type_traits>
 
 namespace std {
 template <typename To, typename From>
