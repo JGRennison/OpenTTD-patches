@@ -62,6 +62,7 @@ STR_SORT_BY_MAX_SPEED_LOADED                                    :최대 속력 (
 STR_SORT_BY_VEHICLES_CALLING                                    :정차 차량 수
 STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST                      :유지비 분의 수송량
 STR_SORT_BY_VEHICLE_COUNT                                       :차량 수
+STR_SORT_BY_TIMETABLE_TYPE                                      :시간표 종류
 
 STR_SETTINGS_MENU_ZONING                                        :구역 설정
 
@@ -541,6 +542,9 @@ STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT                  :도시가 다�
 
 STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH                    :도시 성장 기본 설정: {STRING}
 STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH_HELPTEXT           :이 설정을 사용하면 도시별 성장 덮어쓰기 설정에 대한 기본 상태를 제어할 수 있습니다
+
+STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_BRANCH_NON_BUILD            :도시가 만들 수 없는 도로 유형이어도 건물이 들어설 수 있으면 교차로를 만드는 것을 허용: {STRING}
+STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_BRANCH_NON_BUILD_HELPTEXT   :이 설정을 켜면, 도시가 직접 만들지는 못하지만 건물이 옆에 들어설 수 있는 도로라면 도시가 교차로를 만들 수 있게 허용합니다.{}이를 통해 플레이어가 만든 도로를 따라 건물이 일렬로 늘어나는 현상을 줄이고, 플레이어가 만든 도로가 도시 성장을 방해하는 것을 막을 수 있습니다.
 
 STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH_ALLOWED            :허용
 
@@ -1460,6 +1464,9 @@ STR_VEHICLE_LIST_TIMETABLE_DELAY_LATE                           :{STRING}, 시�
 STR_VEHICLE_LIST_TIMETABLE_DELAY_EARLY                          :{STRING}, 시간표 지연: {STRING} 일찍 운행 중
 STR_VEHICLE_LIST_TIMETABLE_DELAY_ON_TIME                        :{STRING}, 시간표 지연: 정시 운행 중
 STR_VEHICLE_LIST_ORDER_OCCUPANCY_AVERAGE                        :{STRING}, 평균 경로 사용률: {COMMA}%
+STR_VEHICLE_LIST_TIMETABLE_TYPE                                 :{STRING}, 시간표 종류: {STRING}
+
+STR_VEHICLE_LIST_TIMETABLE_TYPE_EXTRA_ITEM                      :, {STRING}
 
 STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING} (평생: {CURRENCY_LONG})
 STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE                           :점검/보내기 취소
