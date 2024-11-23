@@ -21,6 +21,14 @@
 typedef Pool<Industry, IndustryID, 64, 64000> IndustryPool;
 extern IndustryPool _industry_pool;
 
+struct IndustryLocationCacheEntry {
+	IndustryID id;
+	IndustryType type;
+	uint8_t selected_layout;
+	TileIndex tile;
+};
+static_assert(sizeof(IndustryLocationCacheEntry) == 8);
+
 static const YearDelta PROCESSING_INDUSTRY_ABANDONMENT_YEARS = 5; ///< If a processing industry doesn't produce for this many consecutive years, it may close.
 
 /*
@@ -260,6 +268,9 @@ struct Industry : IndustryPool::PoolItem<&_industry_pool> {
 		memset(&counts, 0, sizeof(counts));
 	}
 
+	void AddToLocationCache();
+	void RemoveFromLocationCache();
+
 	inline const std::string &GetCachedName() const
 	{
 		if (this->cached_name.empty()) this->FillCachedName();
@@ -272,6 +283,8 @@ private:
 protected:
 	static uint16_t counts[NUM_INDUSTRYTYPES]; ///< Number of industries per type ingame
 };
+
+void AddIndustriesToLocationCaches();
 
 void ClearAllIndustryCachedNames();
 

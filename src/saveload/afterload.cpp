@@ -4489,6 +4489,7 @@ bool AfterLoadGame()
 	/* This needs to be done after conversion. */
 	RebuildViewportKdtree();
 	ViewportMapBuildTunnelCache();
+	AddIndustriesToLocationCaches();
 
 	/* Road stops is 'only' updating some caches */
 	AfterLoadRoadStops();

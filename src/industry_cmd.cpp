@@ -44,6 +44,7 @@
 #include "cmd_helper.h"
 #include "string_func.h"
 #include "event_logs.h"
+#include "core/container_func.hpp"
 
 #include "table/strings.h"
 #include "table/industry_land.h"
@@ -187,6 +188,7 @@ Industry::~Industry()
 	delete this->psa;
 
 	DecIndustryTypeCount(this->type);
+	this->RemoveFromLocationCache();
 
 	DeleteIndustryNews(this->index);
 	CloseWindowById(WC_INDUSTRY_VIEW, this->index);
@@ -1477,8 +1479,8 @@ static CommandCost FindTownForIndustry(TileIndex tile, IndustryType type, Town *
 
 	if (_settings_game.economy.multiple_industry_per_town) return CommandCost();
 
-	for (const Industry *i : Industry::Iterate()) {
-		if (i->type == type && i->town == *t) {
+	for (const IndustryLocationCacheEntry &entry : (*t)->industry_cache) {
+		if (entry.type == type) {
 			*t = nullptr;
 			return_cmd_error(STR_ERROR_ONLY_ONE_ALLOWED_PER_TOWN);
 		}
@@ -2061,6 +2063,9 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 			gfx_idx++;
 		}
 	}
+
+	/* Needs to be done after layout and location are populated */
+	i->AddToLocationCache();
 
 	if (GetIndustrySpec(i->type)->behaviour & INDUSTRYBEH_PLANT_ON_BUILT) {
 		for (uint j = 0; j != 50; j++) PlantRandomFarmField(i);
@@ -2651,6 +2656,25 @@ void Industry::RecomputeProductionMultipliers()
 	/* Rates are rounded up, so e.g. oilrig always produces some passengers */
 	for (auto &p : this->Produced()) {
 		p.rate = ClampTo<uint8_t>(CeilDiv(indspec->production_rate[&p - this->produced.get()] * this->prod_level, PRODLEVEL_DEFAULT));
+	}
+}
+
+void Industry::AddToLocationCache()
+{
+	this->town->industry_cache.push_back({ this->index, this->type, this->selected_layout, this->location.tile });
+}
+
+void Industry::RemoveFromLocationCache()
+{
+	container_unordered_remove_once_if(this->town->industry_cache, [&](const IndustryLocationCacheEntry &entry) {
+		return entry.id == this->index;
+	});
+}
+
+void AddIndustriesToLocationCaches()
+{
+	for (Industry *ind : Industry::Iterate()) {
+		ind->AddToLocationCache();
 	}
 }
 

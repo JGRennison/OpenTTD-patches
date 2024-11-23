@@ -137,11 +137,13 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 
 	std::vector<PersistentStorage *> psa_list;
 
+	std::vector<struct IndustryLocationCacheEntry> industry_cache; ///< NOSAVE: Industry type and location cache
+
 	/**
 	 * Creates a new town.
 	 * @param tile center tile of the town
 	 */
-	Town(TileIndex tile = INVALID_TILE) : xy(tile) { }
+	Town(TileIndex tile = INVALID_TILE);
 
 	/** Destroy the town. */
 	~Town();

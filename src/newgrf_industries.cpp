@@ -153,21 +153,32 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 			cache = std::make_unique<IndustryLocationDistanceAndCountCache>();
 			MemSetT(cache->distances, 0xFF, NUM_INDUSTRYTYPES);
 			MemSetT(cache->counts, 0, NUM_INDUSTRYTYPES);
-			for (const Industry *i : Industry::Iterate()) {
-				if (i == this->industry || i->type >= NUM_INDUSTRYTYPES || i->town != this->industry->town) continue;
+			const IndustryID this_id = this->industry->index;
+			for (const IndustryLocationCacheEntry &entry : this->industry->town->industry_cache) {
+				if (entry.id == this_id || entry.type >= NUM_INDUSTRYTYPES) continue;
 
-				uint dist = DistanceManhattan(this->tile, i->location.tile);
-				if (dist < (uint)cache->distances[i->type]) cache->distances[i->type] = (uint16_t)dist;
-				cache->counts[i->type] = ClampTo<uint8_t>(cache->counts[i->type] + 1);
+				uint dist = DistanceManhattan(this->tile, entry.tile);
+				if (dist < (uint)cache->distances[entry.type]) cache->distances[entry.type] = (uint16_t)dist;
+				cache->counts[entry.type] = SaturatingAdd<uint8_t>(cache->counts[entry.type], 1);
 			}
 		}
 		closest_dist = cache->distances[ind_index];
 		count = cache->counts[ind_index];
+	} else if (town_filter) {
+		/* Count only those who match the same industry type and layout filter using the town cache */
+		const IndustryID this_id = this->industry->index;
+		for (const IndustryLocationCacheEntry &entry : this->industry->town->industry_cache) {
+			if (entry.type == ind_index && entry.id != this_id && entry.selected_layout == layout_filter) {
+				closest_dist = std::min(closest_dist, DistanceManhattan(this->tile, entry.tile));
+				count++;
+			}
+		}
+		count = std::min<uint>(count, UINT8_MAX);
 	} else {
 		/* Count only those who match the same industry type and layout filter
 		 * Unfortunately, we have to do it manually */
 		for (const Industry *i : Industry::Iterate()) {
-			if (i->type == ind_index && i != this->industry && (i->selected_layout == layout_filter || layout_filter == 0) && (!town_filter || i->town == this->industry->town)) {
+			if (i->type == ind_index && i != this->industry && i->selected_layout == layout_filter) {
 				closest_dist = std::min(closest_dist, DistanceManhattan(this->tile, i->location.tile));
 				count++;
 			}

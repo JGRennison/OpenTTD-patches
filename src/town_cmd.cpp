@@ -110,6 +110,8 @@ static bool TestTownOwnsBridge(TileIndex tile, const Town *t)
 	return town_owned;
 }
 
+Town::Town(TileIndex tile) : xy(tile) {}
+
 Town::~Town()
 {
 	if (CleaningPool()) return;
