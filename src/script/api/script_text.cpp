@@ -23,13 +23,8 @@
 
 #include "../../safeguards.h"
 
-RawText::RawText(const std::string &text) : text(text)
-{
-}
 
-
-ScriptText::ScriptText(HSQUIRRELVM vm) :
-	string(STR_NULL), param(), paramc(0)
+ScriptText::ScriptText(HSQUIRRELVM vm)
 {
 	int nparam = sq_gettop(vm) - 1;
 	if (nparam < 1) {

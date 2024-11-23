@@ -188,7 +188,7 @@ protected:
 	static const int MIN_GRID_PIXEL_SIZE    =  20; ///< Minimum distance between graph lines.
 
 	uint64_t excluded_data; ///< bitmask of the datasets that shouldn't be displayed.
-	uint8_t num_dataset;
+	uint64_t excluded_range; ///< bitmask of ranges that should not be displayed.
 	uint8_t num_on_x_axis;
 	uint8_t num_vert_lines;
 
@@ -205,8 +205,27 @@ protected:
 	uint16_t x_values_increment;
 
 	StringID format_str_y_axis;
-	uint8_t colours[GRAPH_MAX_DATASETS];
-	OverflowSafeInt64 cost[GRAPH_MAX_DATASETS][GRAPH_NUM_MONTHS]; ///< Stored costs for the last #GRAPH_NUM_MONTHS months
+
+	struct DataSet {
+		std::array<OverflowSafeInt64, GRAPH_NUM_MONTHS> values;
+		uint8_t colour;
+		uint8_t exclude_bit;
+		uint8_t range_bit;
+		uint8_t dash;
+	};
+	std::vector<DataSet> data;
+
+	std::span<const StringID> ranges = {};
+
+	/**
+	 * Get appropriate part of dataset values for the current number of horizontal points.
+	 * @param dataset Dataset to get values of
+	 * @returns span covering dataset's current valid range.
+	 */
+	std::span<const OverflowSafeInt64> GetDataSetRange(const DataSet &dataset) const
+	{
+		return {std::begin(dataset.values), std::begin(dataset.values) + this->num_on_x_axis};
+	}
 
 	/**
 	 * Get the interval that contains the graph's data. Excluded data is ignored to show smaller values in
@@ -222,11 +241,11 @@ protected:
 		current_interval.highest = INT64_MIN;
 		current_interval.lowest  = INT64_MAX;
 
-		for (int i = 0; i < this->num_dataset; i++) {
-			if (HasBit(this->excluded_data, i)) continue;
-			for (int j = 0; j < this->num_on_x_axis; j++) {
-				OverflowSafeInt64 datapoint = this->cost[i][j];
+		for (const DataSet &dataset : this->data) {
+			if (HasBit(this->excluded_data, dataset.exclude_bit)) continue;
+			if (HasBit(this->excluded_range, dataset.range_bit)) continue;
 
+			for (const OverflowSafeInt64 &datapoint : this->GetDataSetRange(dataset)) {
 				if (datapoint != INVALID_DATAPOINT) {
 					current_interval.highest = std::max(current_interval.highest, datapoint);
 					current_interval.lowest  = std::min(current_interval.lowest, datapoint);
@@ -456,60 +475,59 @@ protected:
 		uint linewidth = _settings_client.gui.graph_line_thickness;
 		uint pointoffs1 = (linewidth + 1) / 2;
 		uint pointoffs2 = linewidth + 1 - pointoffs1;
-		for (int i = 0; i < this->num_dataset; i++) {
-			if (!HasBit(this->excluded_data, i)) {
-				/* Centre the dot between the grid lines. */
-				x = r.left + (x_sep / 2);
 
-				uint8_t colour  = this->colours[i];
-				uint prev_x = INVALID_DATAPOINT_POS;
-				uint prev_y = INVALID_DATAPOINT_POS;
+		for (const DataSet &dataset : this->data) {
+			if (HasBit(this->excluded_data, dataset.exclude_bit)) continue;
+			if (HasBit(this->excluded_range, dataset.range_bit)) continue;
 
-				for (int j = 0; j < this->num_on_x_axis; j++) {
-					OverflowSafeInt64 datapoint = this->cost[i][j];
+			/* Centre the dot between the grid lines. */
+			x = r.left + (x_sep / 2);
 
-					if (datapoint != INVALID_DATAPOINT) {
-						/*
-						 * Check whether we need to reduce the 'accuracy' of the
-						 * datapoint value and the highest value to split overflows.
-						 * And when 'drawing' 'one million' or 'one million and one'
-						 * there is no significant difference, so the least
-						 * significant bits can just be removed.
-						 *
-						 * If there are more bits needed than would fit in a 32 bits
-						 * integer, so at about 31 bits because of the sign bit, the
-						 * least significant bits are removed.
-						 */
-						int mult_range = FindLastBit<uint32_t>(x_axis_offset) + FindLastBit<uint64_t>(abs(datapoint));
-						int reduce_range = std::max(mult_range - 31, 0);
+			uint prev_x = INVALID_DATAPOINT_POS;
+			uint prev_y = INVALID_DATAPOINT_POS;
 
-						/* Handle negative values differently (don't shift sign) */
-						if (datapoint < 0) {
-							datapoint = -(abs(datapoint) >> reduce_range);
-						} else {
-							datapoint >>= reduce_range;
-						}
-						y = r.top + x_axis_offset - ((r.bottom - r.top) * datapoint) / (interval_size >> reduce_range);
+			const uint dash = ScaleGUITrad(dataset.dash);
+			for (OverflowSafeInt64 datapoint : this->GetDataSetRange(dataset)) {
+				if (datapoint != INVALID_DATAPOINT) {
+					/*
+						* Check whether we need to reduce the 'accuracy' of the
+						* datapoint value and the highest value to split overflows.
+						* And when 'drawing' 'one million' or 'one million and one'
+						* there is no significant difference, so the least
+						* significant bits can just be removed.
+						*
+						* If there are more bits needed than would fit in a 32 bits
+						* integer, so at about 31 bits because of the sign bit, the
+						* least significant bits are removed.
+						*/
+					int mult_range = FindLastBit<uint32_t>(x_axis_offset) + FindLastBit<uint64_t>(abs(datapoint));
+					int reduce_range = std::max(mult_range - 31, 0);
 
-						/* Draw the point. */
-						GfxFillRect(x - pointoffs1, y - pointoffs1, x + pointoffs2, y + pointoffs2, colour);
-
-						/* Draw the line connected to the previous point. */
-						if (prev_x != INVALID_DATAPOINT_POS) GfxDrawLine(prev_x, prev_y, x, y, colour, linewidth);
-
-						prev_x = x;
-						prev_y = y;
+					/* Handle negative values differently (don't shift sign) */
+					if (datapoint < 0) {
+						datapoint = -(abs(datapoint) >> reduce_range);
 					} else {
-						prev_x = INVALID_DATAPOINT_POS;
-						prev_y = INVALID_DATAPOINT_POS;
+						datapoint >>= reduce_range;
 					}
+					y = r.top + x_axis_offset - ((r.bottom - r.top) * datapoint) / (interval_size >> reduce_range);
 
-					x += x_sep;
+					/* Draw the point. */
+					GfxFillRect(x - pointoffs1, y - pointoffs1, x + pointoffs2, y + pointoffs2, dataset.colour);
+
+					/* Draw the line connected to the previous point. */
+					if (prev_x != INVALID_DATAPOINT_POS) GfxDrawLine(prev_x, prev_y, x, y, dataset.colour, linewidth, dash);
+
+					prev_x = x;
+					prev_y = y;
+				} else {
+					prev_x = INVALID_DATAPOINT_POS;
+					prev_y = INVALID_DATAPOINT_POS;
 				}
+
+				x += x_sep;
 			}
 		}
 	}
-
 
 	BaseGraphWindow(WindowDesc &desc, StringID format_str_y_axis) :
 			Window(desc),
@@ -546,45 +564,89 @@ protected:
 public:
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
-		if (widget != WID_GRAPH_GRAPH) return;
-
-		uint x_label_width = 0;
-
-		/* Draw x-axis labels and markings for graphs based on financial quarters and years.  */
-		if (this->draw_dates) {
-			EconTime::Month month = this->month;
-			EconTime::Year year = this->year;
-			for (int i = 0; i < this->num_on_x_axis; i++) {
-				SetDParam(0, month + STR_MONTH_ABBREV_JAN);
-				SetDParam(1, year);
-				x_label_width = std::max(x_label_width, GetStringBoundingBox(month == 0 ? STR_GRAPH_X_LABEL_MONTH_YEAR : STR_GRAPH_X_LABEL_MONTH).width);
-
-				month += this->month_increment;
-				if (month >= 12) {
-					month = 0;
-					year++;
+		switch (widget) {
+			case WID_GRAPH_RANGE_MATRIX:
+				for (const StringID &str : this->ranges) {
+					size = maxdim(size, GetStringBoundingBox(str, FS_SMALL));
 				}
+
+				size.width += WidgetDimensions::scaled.framerect.Horizontal();
+				size.height += WidgetDimensions::scaled.framerect.Vertical();
+
+				/* Set fixed height for number of ranges. */
+				size.height *= static_cast<uint>(std::size(this->ranges));
+
+				resize.width = 0;
+				resize.height = 0;
+				this->GetWidget<NWidgetCore>(WID_GRAPH_RANGE_MATRIX)->SetDataTip((1 << MAT_COL_START) | (static_cast<uint16_t>(std::size(this->ranges)) << MAT_ROW_START), 0);
+				break;
+
+			case WID_GRAPH_GRAPH: {
+				uint x_label_width = 0;
+
+				/* Draw x-axis labels and markings for graphs based on financial quarters and years.  */
+				if (this->draw_dates) {
+					EconTime::Month month = this->month;
+					EconTime::Year year = this->year;
+					for (int i = 0; i < this->num_on_x_axis; i++) {
+						SetDParam(0, month + STR_MONTH_ABBREV_JAN);
+						SetDParam(1, year);
+						x_label_width = std::max(x_label_width, GetStringBoundingBox(month == 0 ? STR_GRAPH_X_LABEL_MONTH_YEAR : STR_GRAPH_X_LABEL_MONTH).width);
+
+						month += this->month_increment;
+						if (month >= 12) {
+							month = 0;
+							year++;
+						}
+					}
+				} else {
+					/* Draw x-axis labels for graphs not based on quarterly performance (cargo payment rates). */
+					StringID str = this->PrepareXAxisMaxSizeText(this->x_values_start + this->num_on_x_axis * this->x_values_increment);
+					x_label_width = GetStringBoundingBox(str, FS_SMALL).width;
+				}
+
+				SetDParam(0, this->format_str_y_axis);
+				SetDParam(1, INT64_MAX);
+				uint y_label_width = GetStringBoundingBox(STR_GRAPH_Y_LABEL).width;
+
+				size.width  = std::max<uint>(size.width,  ScaleGUITrad(5) + y_label_width + this->num_vert_lines * (x_label_width + ScaleGUITrad(5)) + ScaleGUITrad(9));
+				size.height = std::max<uint>(size.height, ScaleGUITrad(5) + (1 + MIN_GRAPH_NUM_LINES_Y * 2 + (this->draw_dates ? 3 : 1)) * GetCharacterHeight(FS_SMALL) + ScaleGUITrad(4));
+				size.height = std::max<uint>(size.height, size.width / 3);
+				break;
 			}
-		} else {
-			/* Draw x-axis labels for graphs not based on quarterly performance (cargo payment rates). */
-			StringID str = this->PrepareXAxisMaxSizeText(this->x_values_start + this->num_on_x_axis * this->x_values_increment);
-			x_label_width = GetStringBoundingBox(str, FS_SMALL).width;
+
+			default: break;
 		}
-
-		SetDParam(0, this->format_str_y_axis);
-		SetDParam(1, INT64_MAX);
-		uint y_label_width = GetStringBoundingBox(STR_GRAPH_Y_LABEL).width;
-
-		size.width  = std::max<uint>(size.width,  ScaleGUITrad(5) + y_label_width + this->num_vert_lines * (x_label_width + ScaleGUITrad(5)) + ScaleGUITrad(9));
-		size.height = std::max<uint>(size.height, ScaleGUITrad(5) + (1 + MIN_GRAPH_NUM_LINES_Y * 2 + (this->draw_dates ? 3 : 1)) * GetCharacterHeight(FS_SMALL) + ScaleGUITrad(4));
-		size.height = std::max<uint>(size.height, size.width / 3);
 	}
 
 	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
-		if (widget != WID_GRAPH_GRAPH) return;
+		switch (widget) {
+			case WID_GRAPH_GRAPH:
+				this->DrawGraph(r);
+				break;
 
-		DrawGraph(r);
+			case WID_GRAPH_RANGE_MATRIX: {
+				uint line_height = GetCharacterHeight(FS_SMALL) + WidgetDimensions::scaled.framerect.Vertical();
+				uint index = 0;
+				Rect line = r.WithHeight(line_height);
+				for (const auto &str : this->ranges) {
+					bool lowered = !HasBit(this->excluded_range, index);
+
+					/* Redraw frame if lowered */
+					if (lowered) DrawFrameRect(line, COLOUR_BROWN, FR_LOWERED);
+
+					const Rect text = line.Shrink(WidgetDimensions::scaled.framerect);
+					DrawString(text, str, TC_BLACK, SA_CENTER, false, FS_SMALL);
+
+					line = line.Translate(0, line_height);
+					++index;
+				}
+				break;
+			}
+
+			default: break;
+		}
 	}
 
 	virtual OverflowSafeInt64 GetGraphData(const Company *, int)
@@ -595,7 +657,21 @@ public:
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		/* Clicked on legend? */
-		if (widget == WID_GRAPH_KEY_BUTTON) ShowGraphLegend();
+		switch (widget) {
+			case WID_GRAPH_KEY_BUTTON:
+				ShowGraphLegend();
+				break;
+
+			case WID_GRAPH_RANGE_MATRIX: {
+				int row = GetRowFromWidget(pt.y, widget, 0, GetCharacterHeight(FS_SMALL) + WidgetDimensions::scaled.framerect.Vertical());
+
+				ToggleBit(this->excluded_range, row);
+				this->SetDirty();
+				break;
+			}
+
+			default: break;
+		}
 	}
 
 	void OnGameTick() override
@@ -650,26 +726,26 @@ public:
 		this->year = yr;
 		this->month = mo;
 
-		int numd = 0;
+		this->data.clear();
 		for (CompanyID k = COMPANY_FIRST; k < MAX_COMPANIES; k++) {
 			const Company *c = Company::GetIfValid(k);
-			if (c != nullptr) {
-				this->colours[numd] = GetColourGradient(c->colour, SHADE_LIGHTER);
-				for (int j = this->num_on_x_axis, i = 0; --j >= 0;) {
-					if (j >= c->num_valid_stat_ent) {
-						this->cost[numd][i] = INVALID_DATAPOINT;
-					} else {
-						/* Ensure we never assign INVALID_DATAPOINT, as that has another meaning.
-						 * Instead, use the value just under it. Hopefully nobody will notice. */
-						this->cost[numd][i] = std::min(GetGraphData(c, j), INVALID_DATAPOINT - 1);
-					}
-					i++;
-				}
-			}
-			numd++;
-		}
+			if (c == nullptr) continue;
 
-		this->num_dataset = numd;
+			DataSet &dataset = this->data.emplace_back();
+			dataset.colour = GetColourGradient(c->colour, SHADE_LIGHTER);
+			dataset.exclude_bit = k;
+
+			for (int j = this->num_on_x_axis, i = 0; --j >= 0;) {
+				if (j >= c->num_valid_stat_ent) {
+					dataset.values[i] = INVALID_DATAPOINT;
+				} else {
+					/* Ensure we never assign INVALID_DATAPOINT, as that has another meaning.
+					 * Instead, use the value just under it. Hopefully nobody will notice. */
+					dataset.values[i] = std::min(GetGraphData(c, j), INVALID_DATAPOINT - 1);
+				}
+				i++;
+			}
+		}
 	}
 };
 
@@ -1033,15 +1109,20 @@ struct DeliveredCargoGraphWindow : ExcludingCargoBaseGraphWindow {
 			return;
 		}
 
-		this->excluded_data = UINT64_MAX;
+		this->data.clear();
+		this->excluded_data = 0;
 		this->num_on_x_axis = nums;
 		this->year = yr;
 		this->month = mo;
 
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-			if (HasBit(_legend_excluded_cargo_production_history, cs->Index())) continue;
-			ClrBit(this->excluded_data, cs->Index());
-			this->colours[cs->Index()] = cs->legend_colour;
+			DataSet &dataset = this->data.emplace_back();
+			dataset.colour = cs->legend_colour;
+			dataset.exclude_bit = cs->Index();
+			if (HasBit(_legend_excluded_cargo_production_history, cs->Index())) {
+				SetBit(this->excluded_data, cs->Index());
+				continue;
+			}
 
 			for (int j = this->num_on_x_axis, i = 0; --j >= 0;) {
 				bool is_valid = false;
@@ -1056,12 +1137,10 @@ struct DeliveredCargoGraphWindow : ExcludingCargoBaseGraphWindow {
 						total_delivered += c->old_economy[j].delivered_cargo[cs->Index()];
 					}
 				}
-				this->cost[cs->Index()][i] = is_valid ? total_delivered : INVALID_DATAPOINT;
+				dataset.values[i] = is_valid ? total_delivered : INVALID_DATAPOINT;
 				i++;
 			}
 		}
-
-		this->num_dataset = NUM_CARGO;
 	}
 };
 
@@ -1349,13 +1428,7 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 
 	void UpdateExcludedData()
 	{
-		this->excluded_data = 0;
-
-		int i = 0;
-		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-			if (HasBit(_legend_excluded_cargo_payment_rates, cs->Index())) SetBit(this->excluded_data, i);
-			i++;
-		}
+		this->excluded_data = _legend_excluded_cargo_payment_rates;
 	}
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
@@ -1458,6 +1531,10 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 				this->OnHundredthTick();
 				this->SetDirty();
 				break;
+
+			default:
+				this->BaseGraphWindow::OnClick(pt, widget, click_count);
+				break;
 		}
 	}
 
@@ -1487,18 +1564,19 @@ struct PaymentRatesGraphWindow : BaseGraphWindow {
 	{
 		this->UpdateExcludedData();
 
-		int i = 0;
 		const float factor = 200.0f * 28.57f * 0.4f * ConvertSpeedToUnitDisplaySpeed(1 << 16, VEH_TRAIN) / (1.6f * static_cast<float>(1 << 16));
 
+		this->data.clear();
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-			this->colours[i] = cs->legend_colour;
-			for (int j = 0; j != this->num_on_x_axis; j++) {
+			DataSet &dataset = this->data.emplace_back();
+			dataset.colour = cs->legend_colour;
+			dataset.exclude_bit = cs->Index();
+
+			for (uint j = 0; j != this->num_on_x_axis; j++) {
 				const uint8_t ctt = _cargo_payment_x_mode ? static_cast<uint8_t>(factor / static_cast<float>((j + 1) * this->x_values_increment)) : (j + 1) * 4;
-				this->cost[i][j] = GetTransportedGoodsIncome(_cargo_payment_x_mode ? 1 : 10, _cargo_payment_x_mode ? 200 : 20, ctt, cs->Index());
+				dataset.values[j] = GetTransportedGoodsIncome(_cargo_payment_x_mode ? 1 : 10, _cargo_payment_x_mode ? 200 : 20, ctt, cs->Index());
 			}
-			i++;
 		}
-		this->num_dataset = i;
 	}
 
 	void SetStringParameters(WidgetID widget) const override
@@ -1827,6 +1905,11 @@ struct IndustryProductionGraphWindow : BaseGraphWindow {
 	Scrollbar *vscroll; ///< Cargo list scrollbar.
 	uint legend_width;  ///< Width of legend 'blob'.
 
+	static inline constexpr StringID RANGE_LABELS[] = {
+		STR_GRAPH_INDUSTRY_RANGE_PRODUCED,
+		STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED
+	};
+
 	IndustryProductionGraphWindow(WindowDesc &desc, WindowNumber window_number) :
 			BaseGraphWindow(desc, STR_JUST_COMMA)
 	{
@@ -1836,6 +1919,7 @@ struct IndustryProductionGraphWindow : BaseGraphWindow {
 		this->x_values_start = ECONOMY_MONTH_MINUTES;
 		this->x_values_increment = ECONOMY_MONTH_MINUTES;
 		this->draw_dates = !EconTime::UsingWallclockUnits();
+		this->ranges = RANGE_LABELS;
 
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_GRAPH_MATRIX_SCROLLBAR);
@@ -1865,15 +1949,7 @@ struct IndustryProductionGraphWindow : BaseGraphWindow {
 
 	void UpdateExcludedData()
 	{
-		this->excluded_data = 0;
-
-		int index = 0;
-		const Industry *i = Industry::Get(this->window_number);
-		for (const auto &p : i->Produced()) {
-			if (!IsValidCargoID(p.cargo)) continue;
-			if (HasBit(_legend_excluded_cargo_production_history, p.cargo)) SetBit(this->excluded_data, index);
-			index++;
-		}
+		this->excluded_data = _legend_excluded_cargo_production_history;
 	}
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
@@ -1959,14 +2035,12 @@ struct IndustryProductionGraphWindow : BaseGraphWindow {
 
 			case WID_GRAPH_DISABLE_CARGOES: {
 				/* Add all cargoes to the excluded lists. */
-				int index = 0;
 				const Industry *i = Industry::Get(this->window_number);
 				for (const auto &p : i->Produced()) {
 					if (!IsValidCargoID(p.cargo)) continue;
 
 					SetBit(_legend_excluded_cargo_production_history, p.cargo);
-					SetBit(this->excluded_data, index);
-					index++;
+					SetBit(this->excluded_data, p.cargo);
 				}
 				this->SetDirty();
 				break;
@@ -1988,6 +2062,10 @@ struct IndustryProductionGraphWindow : BaseGraphWindow {
 				}
 				break;
 			}
+
+			default:
+				this->BaseGraphWindow::OnClick(pt, widget, click_count);
+				break;
 		}
 	}
 
@@ -2021,22 +2099,34 @@ struct IndustryProductionGraphWindow : BaseGraphWindow {
 		this->year = yr;
 		this->month = mo;
 
-		int index = 0;
 		const Industry *i = Industry::Get(this->window_number);
+
+		this->data.clear();
 		for (const auto &p : i->Produced()) {
 			if (!IsValidCargoID(p.cargo)) continue;
-
 			const CargoSpec *cs = CargoSpec::Get(p.cargo);
 
-			this->colours[index] = cs->legend_colour;
+			DataSet &produced = this->data.emplace_back();
+			produced.colour = cs->legend_colour;
+			produced.exclude_bit = cs->Index();
+			produced.range_bit = 0;
+
 			for (uint j = 0; j < GRAPH_NUM_MONTHS; j++) {
-				this->cost[index][j] = p.history[GRAPH_NUM_MONTHS - j].production;
+				produced.values[j] = p.history[GRAPH_NUM_MONTHS - j].production;
 			}
-			index++;
+
+			DataSet &transported = this->data.emplace_back();
+			transported.colour = cs->legend_colour;
+			transported.exclude_bit = cs->Index();
+			transported.range_bit = 1;
+			transported.dash = 2;
+
+			for (uint j = 0; j < GRAPH_NUM_MONTHS; j++) {
+				transported.values[j] = p.history[GRAPH_NUM_MONTHS - j].transported;
+			}
 		}
 
-		this->num_dataset = index;
-		this->vscroll->SetCount(index);
+		this->vscroll->SetCount(std::size(this->data));
 
 		this->SetDirty();
 	}
@@ -2055,6 +2145,8 @@ static constexpr NWidgetPart _nested_industry_production_widgets[] = {
 			NWidget(WWT_EMPTY, COLOUR_BROWN, WID_GRAPH_GRAPH), SetMinimalSize(495, 0), SetFill(1, 1), SetResize(1, 1),
 			NWidget(NWID_VERTICAL),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 24), SetFill(0, 1),
+				NWidget(WWT_MATRIX, COLOUR_BROWN, WID_GRAPH_RANGE_MATRIX), SetFill(1, 0), SetResize(0, 0), SetMatrixDataTip(1, 0, STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO),
+				NWidget(NWID_SPACER), SetMinimalSize(0, 4),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_GRAPH_ENABLE_CARGOES), SetDataTip(STR_GRAPH_CARGO_ENABLE_ALL, STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL), SetFill(1, 0),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_BROWN, WID_GRAPH_DISABLE_CARGOES), SetDataTip(STR_GRAPH_CARGO_DISABLE_ALL, STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL), SetFill(1, 0),
 				NWidget(NWID_SPACER), SetMinimalSize(0, 4),
@@ -2209,14 +2301,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 
 	void UpdateExcludedData()
 	{
-		this->excluded_data = 0;
-
-		uint8_t i = 0;
-		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-			if (!HasBit(this->present_cargoes, cs->Index())) continue;
-			if (HasBit(legend_excluded_cargo, cs->Index())) SetBit(this->excluded_data, i);
-			i++;
-		}
+		this->excluded_data = legend_excluded_cargo;
 	}
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
@@ -2354,23 +2439,22 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 
 		this->UpdateExcludedData();
 
-		uint8_t i = 0;
+		this->data.clear();
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			if (!HasBit(this->present_cargoes, cs->Index())) continue;
-			this->colours[i] = cs->legend_colour;
+			DataSet &dataset = this->data.emplace_back();
+			dataset.colour = cs->legend_colour;
+			dataset.exclude_bit = cs->Index();
 
 			const auto &history = station->station_cargo_history[CountBits(this->present_cargoes & (cs->CargoTypesBit() - 1))];
 
 			uint offset = station->station_cargo_history_offset;
 			for (uint j = 0; j < MAX_STATION_CARGO_HISTORY_DAYS; j++) {
-				this->cost[i][j] = RXDecompressUint(history[offset]);
+				dataset.values[j] = RXDecompressUint(history[offset]);
 				offset++;
 				if (offset == MAX_STATION_CARGO_HISTORY_DAYS) offset = 0;
 			}
-			i++;
 		}
-
-		this->num_dataset = i;
 
 		this->SetDirty();
 	}

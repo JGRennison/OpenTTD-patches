@@ -836,7 +836,15 @@ struct TimetableWindow : GeneralVehicleWindow {
 				Ticks total_time = v->orders != nullptr ? v->orders->GetTimetableDurationIncomplete() : 0;
 				if (total_time != 0) {
 					SetTimetableParams(0, total_time, true);
-					DrawString(tr, v->orders->IsCompleteTimetable() ? STR_TIMETABLE_TOTAL_TIME : STR_TIMETABLE_TOTAL_TIME_INCOMPLETE);
+					StringID str;
+					if (!v->orders->IsCompleteTimetable()) {
+						str = STR_TIMETABLE_TOTAL_TIME_INCOMPLETE;
+					} else if (!_settings_client.gui.timetable_in_ticks && !_settings_client.gui.timetable_leftover_ticks && total_time % TimetableDisplayUnitSize() != 0) {
+						str = STR_TIMETABLE_APPROX_TIME;
+					} else {
+						str = STR_TIMETABLE_TOTAL_TIME;
+					}
+					DrawString(tr, str);
 				}
 				tr.top += GetCharacterHeight(FS_NORMAL);
 
