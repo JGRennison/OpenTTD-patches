@@ -210,7 +210,7 @@ STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_HELPTEXT         :在此年份及
 STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_VALUE            :{NUM}
 STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_ZERO             :關
 
-STR_CONFIG_SETTING_SHOW_WAGON_INTRO_YEAR                        :在車輛製作視窗中展示車廂發售年份：{STRING}
+STR_CONFIG_SETTING_SHOW_WAGON_INTRO_YEAR                        :在車輛製作視窗中顯示車廂發售年份：{STRING}
 STR_CONFIG_SETTING_SHOW_WAGON_INTRO_YEAR_HELPTEXT               :在車輛製作視窗增加一行，顯示車廂的發售年份
 
 STR_CONFIG_SETTING_SHOW_TRAIN_LENGTH_IN_DETAILS                 :在車輛詳細資訊視窗顯示長度：{STRING}
@@ -223,7 +223,7 @@ STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS          :在列車詳細
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS_HELPTEXT :在列車詳細資訊視窗顯示列車重量比
 
 STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_RECOLOUR                 :顯示預設的限制號誌（帶藍色號誌桿）：{STRING}
-STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_RECOLOUR_HELPTEXT        :當使用預設號誌圖形時，帶有尋路限制邏輯的電力號誌將顯示藍色號誌桿。這不會影響 NewGRF 號誌圖形。這樣可以更容易地從視覺上區分限制號誌。
+STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_RECOLOUR_HELPTEXT        :當使用預設號誌圖形時，帶有尋路限制邏輯的電氣號誌將顯示藍色號誌桿。這不會影響 NewGRF 號誌圖形。這樣可以更容易地從視覺上區分限制號誌。
 
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF                             :使用預設圖形顯示所有號誌：{STRING}
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT                    :使用預設號誌圖形顯示所有號誌，而不是使用任何 NewGRF 號誌圖形。當 NewGRF 提供的號誌圖形不清晰或無法訪問時，這樣可以更容易看到號誌的狀態和類型。
@@ -240,7 +240,7 @@ STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES                     :顯示禁止進
 STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES_HELPTEXT            :顯示禁止進入號誌功能。停用時，構建和配置禁止進入號誌的按鈕不會在界面中顯示，但所有玩家仍然可以使用。
 
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES               :顯示進階裝載模式功能：{STRING}
-STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES_HELPTEXT      :展示進階裝載模式功能（通過式裝載/卸載、汽車方向等）{}當停用時，一些進階裝載模式功能將不會在使用者界面中展示，但仍可用
+STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES_HELPTEXT      :顯示進階裝載模式功能（通過式裝載/卸載、汽車方向等）{}當停用時，一些進階裝載模式功能將不會在使用者界面中顯示，但仍可用
 
 STR_CONFIG_SETTING_DISABLE_TOP_VEH_LIST_MASS_ACTIONS            :停用初階車輛清單的批量操作按鈕：{STRING}
 STR_CONFIG_SETTING_DISABLE_TOP_VEH_LIST_MASS_ACTIONS_HELPTEXT   :停用本項「所有車輛」與「未分類群組車輛」清單的部分按鈕，包括「啟停車輛」與「前往車廠」。本項旨在防止誤操作帶來的問題。
@@ -267,9 +267,9 @@ STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_INDUSTRY               :工業
 STR_CONFIG_SETTING_DEMOLISH_CONFIRM_MODE_ALL                    :工業及鐵道車站
 
 STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW              :將機車與車廂在列車購買視窗中分開：{STRING}
-STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_HELPTEXT     :啟用後列車購買視窗在分開的兩欄清單中分別展示機車和車廂
+STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_HELPTEXT     :啟用後列車購買視窗在分開的兩欄清單中分別顯示機車和車廂
 
-STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_DUAL_BUTTONS :分別在列車購買視窗展示按鈕群組：{STRING}
+STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_DUAL_BUTTONS :分別在列車購買視窗顯示按鈕群組：{STRING}
 
 STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL                    :隱藏號誌站標簽：{STRING}
 STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL_HELPTEXT           :啟用後可以在號誌站視窗選擇隱藏號誌站名稱{}這在號誌站僅用於裝飾時可以改善觀感
@@ -481,7 +481,7 @@ STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_HELPTEXT :本項設定新
 STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_VALUE    :{COMMA}{NBSP}分
 STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_DEFAULT  :預設
 
-STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE                            :預設道路與電車道（開始新遊戲或載入遊戲後）：{STRING}
+STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE                            :預設道路與電車軌道（開始新遊戲或載入遊戲後）：{STRING}
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_HELPTEXT                   :在開始或載入遊戲後選擇的道路與電車軌道。「最先可用」選擇最舊的道路與電車軌道，「最後可用」選擇最舊的道路與電車軌道，「最常使用」選擇當前使用最多的類型，「預設」選擇預設類型
 
 STR_CONFIG_SETTING_ENABLE_BUILD_RIVER                           :允許製作河流：{STRING}
@@ -648,7 +648,7 @@ STR_CONFIG_SETTING_AIRCRAFT_PATH_COST                           :使用飛機時
 STR_CONFIG_SETTING_AIRCRAFT_PATH_COST_HELPTEXT                  :這是當使用飛機時，對於路徑（度量距離）的費用計算的縮放系數，這可以讓它們比它們實際更長或更短。這可以減小飛機由於直線飛行導致空域超出負荷的流量。
 
 STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER          :在多人連線伺服器中同步本地化設定：{STRING}
-STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER_HELPTEXT :當通過網絡用戶端加入多玩家伺服器時，改變本地化設定來符合伺服器
+STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER_HELPTEXT :當透過網絡用戶端加入多玩家伺服器時，改變本地化設定來符合伺服器
 
 STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS                    :{ORANGE}班次顯示板
 STR_CONFIG_SETTING_INTERFACE_TIMETABLE_CLOCK                    :{ORANGE}時刻表時鐘
@@ -788,8 +788,8 @@ STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL                         :{BLACK}使用�
 
 STR_BUILD_SIGNAL_SEMAPHORE_PROG_TOOLTIP                         :{BLACK}可編程邏輯號誌（臂木）{}可編程邏輯號誌是一種綜合號誌，允許制定複雜的通行規則。
 STR_BUILD_SIGNAL_SEMAPHORE_NO_ENTRY_TOOLTIP                     :{BLACK}禁止進入號誌（臂木）{}路徑號誌燈為列車預留一條到安全停車位的路徑，而其它路徑仍然可以使用，從而允許一列以上的列車同時進入一個號誌區間。禁止進入號誌不允許列車逆行。
-STR_BUILD_SIGNAL_ELECTRIC_PROG_TOOLTIP                          :{BLACK}可編程邏輯號誌（電力）{}可編程邏輯號誌是一種綜合號誌，允許制定複雜的通行規則。
-STR_BUILD_SIGNAL_ELECTRIC_NO_ENTRY_TOOLTIP                      :{BLACK}禁止進入號誌（電力）{}路徑號誌燈為列車預留一條到安全停車位的路徑，而其它路徑仍然可以使用，從而允許一列以上的列車同時進入一個號誌區間。禁止進入號誌不允許列車逆行。
+STR_BUILD_SIGNAL_ELECTRIC_PROG_TOOLTIP                          :{BLACK}可編程邏輯號誌（電氣）{}可編程邏輯號誌是一種綜合號誌，允許制定複雜的通行規則。
+STR_BUILD_SIGNAL_ELECTRIC_NO_ENTRY_TOOLTIP                      :{BLACK}禁止進入號誌（電氣）{}路徑號誌燈為列車預留一條到安全停車位的路徑，而其它路徑仍然可以使用，從而允許一列以上的列車同時進入一個號誌區間。禁止進入號誌不允許列車逆行。
 STR_BUILD_SIGNAL_DEFAULT_STYLE                                  :預設
 STR_BUILD_SIGNAL_STYLE_TOOLTIP                                  :{BLACK}選擇號誌款式
 
@@ -1086,7 +1086,7 @@ STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE                       :偏移量過大
 STR_TRACE_RESTRICT_ERROR_CAN_T_CHANGE_CONDITIONALITY            :不能更改尋路限制
 STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ENDIF                     :不能移除「結束判斷」
 STR_TRACE_RESTRICT_ERROR_CAN_T_SHALLOW_REMOVE_IF_ELIF           :不能刪除當前塊縮進，存在一個及以上的「否則如果」、「或如果」、「否則」塊
-STR_TRACE_RESTRICT_ERROR_VALIDATE_END_CONDSTACK                 :檢查失敗：條件堆疊在退出時非空
+STR_TRACE_RESTRICT_ERROR_VALIDATE_END_CONDSTACK                 :檢查失敗：條件堆疊在離開時非空
 STR_TRACE_RESTRICT_ERROR_VALIDATE_NO_IF                         :檢查失敗：「否則」、「否則如果」沒有開頭的「如果」
 STR_TRACE_RESTRICT_ERROR_VALIDATE_DUP_ELSE                      :檢查失敗：多個「否則」
 STR_TRACE_RESTRICT_ERROR_VALIDATE_ELIF_NO_IF                    :檢查失敗：「否則如果」沒有開頭的「如果」
@@ -1687,7 +1687,7 @@ STR_ORDER_LABEL_DEPARTURES_VIA_TYPE_TOOLTIP                     :{BLACK}作為�
 
 STR_ORDERS_OCCUPANCY_BUTTON                                     :{BLACK}{STRING}%
 STR_ORDERS_OCCUPANCY_BUTTON_TOOLTIP                             :{BLACK}顯示運行平均負載率{}百分比顯示的是調度使用的總平均數
-STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}調度使用——這展示了對於共享這些調度的車輛的當離開車站時的最近的運行平均負載率等級
+STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}調度使用——這顯示了對於共享這些調度的車輛的當離開車站時的最近的運行平均負載率等級
 STR_ORDERS_OCCUPANCY_PERCENT                                    :{NUM}%
 
 STR_ORDERS_NEW_GROUP_TOOLTIP                                    :{BLACK}從獨立車輛設立群組
@@ -1755,7 +1755,7 @@ STR_TIMETABLE_MINUTES_SUFFIX                                    :（{STRING}）
 STR_TIMETABLE_LEFTOVER_TICKS                                    : + {COMMA} 刻
 
 STR_TIMETABLE_AUTOMATE                                          :{BLACK}自動
-STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}通過更新每次運行的數值自動管理時刻表
+STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}透過更新每次運行的數值自動管理時刻表
 
 STR_TIMETABLE_AUTO_SEPARATION                                   :{BLACK}自動分離
 STR_TIMETABLE_AUTO_SEPARATION_TOOLTIP                           :{BLACK}自動調整時刻表開始時間以確保車輛之間保持一定的距離
