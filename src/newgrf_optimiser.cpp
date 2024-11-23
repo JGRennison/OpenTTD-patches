@@ -2215,10 +2215,11 @@ static VarAction2ProcedureAnnotation *OptimiseVarAction2GetFilledProcedureAnnota
 							/* Storing a constant */
 							anno->special_register_values[adjust.divmod_val - 0x100] = adjust.and_mask;
 							SetBit(anno->special_register_mask, adjust.divmod_val - 0x100);
+							continue;
 						} else {
 							anno->unskippable = true;
+							return;
 						}
-						return;
 					}
 					if (adjust.operation == DSGA_OP_STOP) {
 						anno->unskippable = true;
