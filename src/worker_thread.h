@@ -14,6 +14,7 @@
 #include "core/ring_buffer_queue.hpp"
 #include <mutex>
 #include <condition_variable>
+#include <array>
 #include <tuple>
 
 struct WorkerThreadPool {
