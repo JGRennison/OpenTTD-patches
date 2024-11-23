@@ -1660,7 +1660,7 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const VarAction2Ad
 								/* Updating previous store */
 								store.version++;
 							}
-							store.inference = prev_inference & (~VA2AIF_PREV_MASK);
+							store.inference = prev_inference & VA2AIF_STORE_SAVE_MASK;
 							store.store_constant = state.current_constant;
 
 							if (prev_store != nullptr) {
