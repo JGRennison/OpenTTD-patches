@@ -77,11 +77,13 @@ STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :자동차/전�
 STR_VEHICLE_TYPE_SHIPS                                          :선박
 STR_VEHICLE_TYPE_AIRCRAFT                                       :항공기
 
+STR_GRAPH_X_LABEL_LAST_UNITS                                    :{TINY_FONT}{BLACK}지난 {STRING}
+
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED                     :{TINY_FONT}{BLACK}평균 통과 속력 ({STRING})
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED                   :{TINY_FONT}{BLACK}1 단위(1,000 리터)의 화물을 200칸 거리만큼 운송할 때의 운송비 지급량
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_MINUTES                   :{TINY_FONT}{BLACK}운송 시간(분)
 STR_GRAPH_STATION_CARGO_CAPTION                                 :{WHITE}{STATION} - 대기 화물량 이력
-STR_GRAPH_STATION_CARGO_TITLE                                   :{TINY_FONT}{BLACK}역에서 있던 화물량
+STR_GRAPH_STATION_CARGO_TITLE                                   :{TINY_FONT}{BLACK}역에 있던 화물량
 
 STR_GRAPH_CARGO_SPEED_MODE                                      :{TINY_FONT}{BLACK}평균 속력
 STR_GRAPH_CARGO_TOOLTIP_TIME_MODE                               :{BLACK}그래프의 X축에 통과 시간을 표시합니다
@@ -443,8 +445,8 @@ STR_CONFIG_SETTING_AUTO_TIMETABLE_BY_DEFAULT_HELPTEXT           :새 차량에 �
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT              :배차 간격 조절을 위해 시간표를 기본으로 사용: {STRING}
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT_HELPTEXT     :배차 간격 조절을 위해 시간표를 사용하는 것을 새 차량에 대해 기본적으로 활성화할지 선택합니다.
 
-STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS                     :시간표에 남은 틱 표시하기: {STRING}
-STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS_HELPTEXT            :시간표에서 틱을 날짜/시간으로 변환할 때, 남은 틱을 표시합니다.
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS                     :시간표에 나머지 남은 틱 표시하기: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS_HELPTEXT            :시간표에서 틱을 날짜/시간으로 변환할 때, 나머지로 남은 틱을 표시합니다.
 
 STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS                       :세이브 파일 시간 설정 대신 클라이언트의 시간 설정을 사용: {STRING}
 STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS_HELPTEXT              :시간을 표시할 때 세이브 파일의 시간 설정 대신, 로컬 클라이언트 설정을 사용할 지 선택합니다.
@@ -538,6 +540,11 @@ STR_CONFIG_SETTING_TOWN_MAX_ROAD_SLOPE_ZERO                     :제한 없음
 
 STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES                           :도시가 다리를 만드는 것을 허용: {STRING}
 STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT                  :도시가 다리를 만드는 허용하려면 이 설정을 켜세요
+
+STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH                    :도시 성장 기본 설정: {STRING}
+STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH_HELPTEXT           :이 설정을 사용하면 도시별 성장 덮어쓰기 설정에 대한 기본 상태를 제어할 수 있습니다
+
+STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH_ALLOWED            :허용
 
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA          :{STRING}{}이 설정은 나무를 자르는 산업시설에는 영향을 미치지 않습니다.{}이 설정은 모든 산업시설 관련 NewGRF에 적용되지 않을 수도 있습니다.
 
@@ -649,6 +656,7 @@ STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER          :멀티플레이
 STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER_HELPTEXT :멀티플레이 서버에 접속자로 접속 시, 날짜/단위 등의 현지화 설정을 서버에 동일하게 맞춥니다.
 
 STR_CONFIG_SETTING_INTERFACE_DEPARTUREBOARDS                    :{ORANGE}출발/도착 안내
+STR_CONFIG_SETTING_INTERFACE_TIMETABLE_CLOCK                    :{ORANGE}시간표 시계
 STR_CONFIG_SETTING_INTERFACE_TIME_CLIENT                        :{ORANGE}클라이언트 설정
 STR_CONFIG_SETTING_INTERFACE_TIME_SAVEGAME                      :{ORANGE}세이브파일 설정
 STR_CONFIG_SETTING_INTERFACE_TIMETABLE                          :{ORANGE}시간표
@@ -1299,6 +1307,7 @@ STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}화물�
 STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}대기 화물량 이력을 보여줍니다
 
 STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} - 실시간 운행 정보
+STR_DEPARTURES_CAPTION_FILTER                                   :{WHITE}{STRING} - {STRING}에 정차
 STR_DEPARTURES_CARGO_MODE_TOOLTIP                               :{BLACK}발착 전광판에 화물 필터 모드 설정
 STR_DEPARTURES_DEPARTURES                                       :출발
 STR_DEPARTURES_ARRIVALS                                         :도착
@@ -1311,6 +1320,8 @@ STR_DEPARTURES_EMPTY_BUTTON                                     :{BLACK}공차
 STR_DEPARTURES_EMPTY_TOOLTIP                                    :{BLACK}공차로 수송하거나, 화물을 싣고 내리지 않는 정차 역을 포함합니다.
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}경유
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}통과 차량 표시
+STR_DEPARTURES_FILTER_BUTTON                                    :{BLACK}필터
+STR_DEPARTURES_FILTER_TOOLTIP                                   :{BLACK}특정 목적지에 정차하는 출발/도착만 보여줍니다
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}이 역의 시간표에 진입 중인 열차 표시
 STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}이 역의 시간표에 진입 중인 자동차 표시
 STR_DEPARTURES_SHOW_SHIPS_TOOLTIP                               :{BLACK}이 역의 시간표에 다가오는 선박 표시
@@ -1341,6 +1352,9 @@ STR_DEPARTURES_VIA_AND                                          :{STRING} 및 {S
 STR_DEPARTURES_SOURCE_MODE_TOOLTIP                              :{BLACK}실시간 발착 상황을 볼지, 24시간 기준 배차 일정 출발 계획 시각을 볼지 설정합니다
 STR_DEPARTURES_SOURCE_MODE_LIVE                                 :실시간
 STR_DEPARTURES_SOURCE_MODE_SCHEDULE_24_HOUR                     :24시간 계획
+
+STR_DEPARTURES_DUPLICATE                                        :{BLACK}복제
+STR_DEPARTURES_DUPLICATE_TOOLTIP                                :{BLACK}이 창을 복제합니다
 
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
 STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
@@ -1954,7 +1968,7 @@ STR_STATION_RATING_TOOLTIP_USING_CHEAT                          :치트 켜짐
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING                        :NewGRF 역 등급: {BLACK}기존 대비 {LTBLUE}{STRING}
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_0                      :{GOLD}{PLUS_NUM}%
 STR_STATION_RATING_TOOLTIP_NEWGRF_RATING_1                      :{LTBLUE}{PLUS_NUM}%
-STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED                         :마지막으로 도착한 열차의 최대 속력: {LTBLUE}{STRING} ({STRING})
+STR_STATION_RATING_TOOLTIP_NEWGRF_SPEED                         :마지막으로 도착한 열차의 최대 속력: {LTBLUE}{VELOCITY} ({STRING})
 STR_STATION_RATING_TOOLTIP_NEWGRF_WAITUNITS                     :대기 화물량 (각 목적지별 평균치): {LTBLUE}{NUM}
 STR_STATION_RATING_TOOLTIP_NEWGRF_WAITTIME                      :지난 화물 적재 이후 지난 시간: {LTBLUE}{NUM}일
 
@@ -1962,7 +1976,8 @@ STR_STATION_RATING_MAX_PERCENTAGE                               : (최대 {PLUS_
 STR_STATION_RATING_MAX_PERCENTAGE_COMMA                         :, 최대 {PLUS_NUM}%
 STR_STATION_RATING_PERCENTAGE_COMMA                             :, {PLUS_NUM}%
 
-STR_STATION_RATING_TOOLTIP_SPEED                                :마지막으로 도착한 열차의 최대 속력{STRING}: {COLOUR}{STRING}{STRING} ({STRING})
+STR_STATION_RATING_TOOLTIP_AT_LEAST_VELOCITY                    :최소 {VELOCITY}
+STR_STATION_RATING_TOOLTIP_SPEED                                :마지막으로 도착한 열차의 최대 속력{STRING}: {COLOUR}{VELOCITY}{STRING} ({STRING})
 
 STR_STATION_RATING_TOOLTIP_AGE                                  :지난 열차의 연령{STRING}: {COLOUR}{NUM}년{STRING}
 
