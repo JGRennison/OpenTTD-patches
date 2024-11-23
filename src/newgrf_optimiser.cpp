@@ -1717,7 +1717,7 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const VarAction2Ad
 							 * Assume all variables except temp storage for now.
 							 */
 							for (auto &it : state.temp_stores) {
-								if (it.inference & VA2AIF_SINGLE_LOAD && it.var_source.variable != 0x7D) {
+								if ((it.inference & VA2AIF_SINGLE_LOAD) && it.var_source.variable != 0x7D) {
 									it.inference &= ~VA2AIF_SINGLE_LOAD;
 								}
 							}
