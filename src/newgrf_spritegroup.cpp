@@ -327,7 +327,7 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 
 	object.last_value = last_value;
 
-	if (this->calculated_result) {
+	if (this->IsCalculatedResult()) {
 		/* nvar == 0 is a special case -- we turn our value into a callback result */
 		if (value != CALLBACK_FAILED) value = GB(value, 0, 15);
 		static CallbackResultSpriteGroup nvarzero(0);
@@ -354,7 +354,7 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 
 bool DeterministicSpriteGroup::GroupMayBeBypassed() const
 {
-	if (this->calculated_result) return false;
+	if (this->IsCalculatedResult()) return false;
 	if (this->adjusts.size() == 0) return true;
 	if ((this->adjusts.size() == 1 && this->adjusts[0].variable == 0x1A && (this->adjusts[0].operation == DSGA_OP_ADD || this->adjusts[0].operation == DSGA_OP_RST))) return true;
 	return false;
@@ -685,7 +685,7 @@ void SpriteGroupDumper::DumpSpriteGroup(format_buffer &buffer, const SpriteGroup
 			const SpriteGroup *default_group = dsg->default_group;
 			const std::vector<DeterministicSpriteGroupAdjust> *adjusts = &(dsg->adjusts);
 			const std::vector<DeterministicSpriteGroupRange> *ranges = &(dsg->ranges);
-			bool calculated_result = dsg->calculated_result;
+			bool calculated_result = dsg->IsCalculatedResult();
 
 			if (this->use_shadows) {
 				auto iter = _deterministic_sg_shadows.find(dsg);

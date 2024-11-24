@@ -468,7 +468,7 @@ struct DeterministicSpriteGroupRange {
 	uint32_t high;
 };
 
-enum DeterministicSpriteGroupFlags : uint8_t {
+enum DeterministicSpriteGroupFlags : uint16_t {
 	DSGF_NONE                    = 0,
 	DSGF_NO_DSE                  = 1 << 0,
 	DSGF_CB_RESULT               = 1 << 1,
@@ -478,6 +478,7 @@ enum DeterministicSpriteGroupFlags : uint8_t {
 	DSGF_CHECK_INSERT_JUMP       = 1 << 5,
 	DSGF_CB_HANDLER              = 1 << 6,
 	DSGF_INLINE_CANDIDATE        = 1 << 7,
+	DSGF_CALCULATED_RESULT       = 1 << 8,
 };
 DECLARE_ENUM_AS_BIT_SET(DeterministicSpriteGroupFlags)
 
@@ -487,7 +488,6 @@ struct DeterministicSpriteGroup : SpriteGroup {
 	VarSpriteGroupScope var_scope;
 	VarSpriteGroupScopeOffset var_scope_count;
 	DeterministicSpriteGroupSize size;
-	bool calculated_result;
 	DeterministicSpriteGroupFlags dsg_flags = DSGF_NONE;
 	std::vector<DeterministicSpriteGroupAdjust> adjusts;
 	std::vector<DeterministicSpriteGroupRange> ranges; // Dynamically allocated
@@ -499,6 +499,8 @@ struct DeterministicSpriteGroup : SpriteGroup {
 
 	void AnalyseCallbacks(AnalyseCallbackOperation &op) const override;
 	bool GroupMayBeBypassed() const;
+
+	bool IsCalculatedResult() const { return this->dsg_flags & DSGF_CALCULATED_RESULT; }
 
 protected:
 	const SpriteGroup *Resolve(ResolverObject &object) const override;

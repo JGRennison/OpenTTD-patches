@@ -1815,7 +1815,7 @@ struct CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler {
 			std::bitset<256> child_input_bits;
 
 			bool is_leaf_node = false;
-			if (sub->calculated_result) {
+			if (sub->IsCalculatedResult()) {
 				is_leaf_node = true;
 			} else {
 				is_leaf_node |= this->ProcessGroup(sub->default_group, &child_input_bits, false);
@@ -2047,7 +2047,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(Determinist
 			while (true) {
 				j++;
 				if (j == group->adjusts.size()) {
-					ok = !group->calculated_result && group->ranges.empty();
+					ok = !group->IsCalculatedResult() && group->ranges.empty();
 					break;
 				}
 				const DeterministicSpriteGroupAdjust &next = group->adjusts[j];
@@ -2233,7 +2233,7 @@ static VarAction2ProcedureAnnotation *OptimiseVarAction2GetFilledProcedureAnnota
 					if (adjust.operation == DSGA_OP_STO_NC) anno->stores.set(adjust.divmod_val, true);
 				}
 
-				if (!dsg->calculated_result) {
+				if (!dsg->IsCalculatedResult()) {
 					handle_group_contents(dsg->default_group);
 					for (const auto &range : dsg->ranges) {
 						handle_group_contents(range.group);
@@ -2340,7 +2340,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupPopulateLastVarReadAnnotat
 					anno.unskippable = true;
 				} else if (sg->type == SGT_DETERMINISTIC) {
 					const DeterministicSpriteGroup *dsg = static_cast<const DeterministicSpriteGroup *>(sg);
-					if (!dsg->calculated_result) {
+					if (!dsg->IsCalculatedResult()) {
 						if (anno.unskippable) return;
 						check_randomised_group(dsg->default_group);
 						for (const auto &range : dsg->ranges) {
@@ -2370,7 +2370,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupPopulateLastVarReadAnnotat
 
 					if (sub->dsg_flags & DSGF_REQUIRES_VAR1C) need_var1C = true;
 
-					if (!sub->calculated_result && !anno.unskippable) {
+					if (!sub->IsCalculatedResult() && !anno.unskippable) {
 						check_randomised_group(sub->default_group);
 						for (const auto &range : sub->ranges) {
 							if (anno.unskippable) break;
@@ -2630,7 +2630,7 @@ static bool IsVariableInlinable(uint16_t variable, GrfSpecFeature feature)
 static void OptimiseVarAction2CheckInliningCandidate(DeterministicSpriteGroup *group, std::vector<DeterministicSpriteGroupAdjust> &saved_adjusts)
 {
 	if (HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_PROC_INLINE)) return;
-	if (group->adjusts.size() > MAX_PROC_INLINE_ADJUST_COUNT || !group->calculated_result || group->var_scope != VSG_SCOPE_SELF) return;
+	if (group->adjusts.size() > MAX_PROC_INLINE_ADJUST_COUNT || !group->IsCalculatedResult() || group->var_scope != VSG_SCOPE_SELF) return;
 
 	for (const DeterministicSpriteGroupAdjust &adjust : group->adjusts) {
 		uint variable = adjust.variable;
@@ -2683,7 +2683,7 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 		if (adjust.operation == DSGA_OP_STOP) possible_callback_handler = true;
 	}
 
-	if (!HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_GROUP_PRUNE) && (state.inference & VA2AIF_HAVE_CONSTANT) && !group->calculated_result) {
+	if (!HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_GROUP_PRUNE) && (state.inference & VA2AIF_HAVE_CONSTANT) && !group->IsCalculatedResult()) {
 		/* Result of this sprite group is always the same, discard the unused branches */
 		const SpriteGroup *target = group->default_group;
 		for (const auto &range : group->ranges) {
@@ -2694,16 +2694,16 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 		group->default_group = target;
 		group->ranges.clear();
 	}
-	if (!HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_GROUP_PRUNE) && (state.inference & VA2AIF_ONE_OR_ZERO) && !group->calculated_result && group->ranges.size() == 1) {
+	if (!HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_GROUP_PRUNE) && (state.inference & VA2AIF_ONE_OR_ZERO) && !group->IsCalculatedResult() && group->ranges.size() == 1) {
 		/* See if sprite group uses ranges as a cast to bool, when the result is already bool */
 		const DeterministicSpriteGroupRange &r0 = group->ranges[0];
 		if (r0.low == 0 && r0.high == 0 && r0.group != nullptr && r0.group->type == SGT_CALLBACK && static_cast<const CallbackResultSpriteGroup*>(r0.group)->result == 0 &&
 				group->default_group != nullptr && group->default_group->type == SGT_CALLBACK && static_cast<const CallbackResultSpriteGroup*>(group->default_group)->result == 1) {
-			group->calculated_result = true;
+			group->dsg_flags |= DSGF_CALCULATED_RESULT;
 			group->ranges.clear();
 		} else if (r0.low == 1 && r0.high == 1 && r0.group != nullptr && r0.group->type == SGT_CALLBACK && static_cast<const CallbackResultSpriteGroup*>(r0.group)->result == 1 &&
 				group->default_group != nullptr && group->default_group->type == SGT_CALLBACK && static_cast<const CallbackResultSpriteGroup*>(group->default_group)->result == 0) {
-			group->calculated_result = true;
+			group->dsg_flags |= DSGF_CALCULATED_RESULT;
 			group->ranges.clear();
 		}
 	}
@@ -2712,9 +2712,9 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 	std::bitset<256> pending_bits;
 	bool seen_pending = false;
 	bool seen_req_var1C = false;
-	if (!group->calculated_result) {
+	if (!group->IsCalculatedResult()) {
 		bool is_cb_switch = false;
-		if (possible_callback_handler && group->adjusts.size() > 0 && !group->calculated_result &&
+		if (possible_callback_handler && group->adjusts.size() > 0 && !group->IsCalculatedResult() &&
 				IsFeatureUsableForCBQuickExit(group->feature) && !HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_CB_QUICK_EXIT)) {
 			size_t idx = group->adjusts.size() - 1;
 			const auto &adjust = group->adjusts[idx];
@@ -2827,7 +2827,7 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 		group->sg_flags |= SGF_SKIP_CB;
 	}
 
-	if (!HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_GROUP_PRUNE) && group->ranges.empty() && !group->calculated_result && !seen_req_var1C) {
+	if (!HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_GROUP_PRUNE) && group->ranges.empty() && !group->IsCalculatedResult() && !seen_req_var1C) {
 		/* There is only one option, remove any redundant adjustments when the result will be ignored anyway */
 		while (!group->adjusts.empty()) {
 			const DeterministicSpriteGroupAdjust &prev = group->adjusts.back();
@@ -2970,7 +2970,7 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 					erase_adjust(i);
 					i--;
 					if ((i + 1 < (int)group->adjusts.size() && group->adjusts[i + 1].operation == DSGA_OP_RST && group->adjusts[i + 1].variable != 0x7B) ||
-							(i + 1 == (int)group->adjusts.size() && group->ranges.empty() && !group->calculated_result)) {
+							(i + 1 == (int)group->adjusts.size() && group->ranges.empty() && !group->IsCalculatedResult())) {
 						/* Now the store is eliminated, the current value has no users */
 						while (i >= 0) {
 							const DeterministicSpriteGroupAdjust &prev = group->adjusts[i];
@@ -3138,7 +3138,7 @@ static std::bitset<256> HandleVarAction2DeadStoreElimination(DeterministicSprite
 
 			if (may_remove) {
 				if ((i + 1 < (int)group->adjusts.size() && group->adjusts[i + 1].operation == DSGA_OP_RST && group->adjusts[i + 1].variable != 0x7B) ||
-						(i + 1 == (int)group->adjusts.size() && group->ranges.empty() && !group->calculated_result)) {
+						(i + 1 == (int)group->adjusts.size() && group->ranges.empty() && !group->IsCalculatedResult())) {
 					/* Procedure is skippable, makes no stores we need, and the return value is also not needed */
 					erase_adjust(i);
 					if (anno->special_register_mask) {
@@ -3233,7 +3233,7 @@ void HandleVarAction2OptimisationPasses()
 
 	for (DeterministicSpriteGroup *group : _cur.dead_store_elimination_candidates) {
 		VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(group, false);
-		if (!group->calculated_result) {
+		if (!group->IsCalculatedResult()) {
 			/* Add bits from any groups previously marked with DSGF_VAR_TRACKING_PENDING which should now be correctly updated after DSE */
 			auto handle_group = y_combinator([&](auto handle_group, const SpriteGroup *sg) -> void {
 				if (sg != nullptr && sg->type == SGT_DETERMINISTIC) {

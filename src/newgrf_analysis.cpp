@@ -41,7 +41,7 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 	};
 
 	if (op.mode == ACOM_FIND_CB_RESULT) {
-		if (this->calculated_result) {
+		if (this->IsCalculatedResult()) {
 			op.result_flags |= ACORF_CB_RESULT_FOUND;
 			return;
 		} else if (!(op.result_flags & ACORF_CB_RESULT_FOUND)) {
@@ -86,7 +86,7 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 		return (cbr_op.result_flags & ACORF_CB_RESULT_FOUND);
 	};
 
-	if (this->adjusts.size() == 1 && !this->calculated_result && (this->adjusts[0].operation == DSGA_OP_ADD || this->adjusts[0].operation == DSGA_OP_RST)) {
+	if (this->adjusts.size() == 1 && !this->IsCalculatedResult() && (this->adjusts[0].operation == DSGA_OP_ADD || this->adjusts[0].operation == DSGA_OP_RST)) {
 		const auto &adjust = this->adjusts[0];
 		if (op.mode == ACOM_CB_VAR && adjust.variable == 0xC) {
 			if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
@@ -297,7 +297,7 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 			return;
 		}
 	}
-	if (!this->calculated_result) {
+	if (!this->IsCalculatedResult()) {
 		for (const auto &range : this->ranges) {
 			if (range.group != nullptr) range.group->AnalyseCallbacks(op);
 		}

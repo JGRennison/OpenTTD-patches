@@ -6134,7 +6134,7 @@ static void NewSpriteGroup(ByteReader &buf)
 
 			group->error_group = ranges.empty() ? group->default_group : ranges[0].group;
 			/* nvar == 0 is a special case -- we turn our value into a callback result */
-			group->calculated_result = ranges.empty();
+			if (ranges.empty()) group->dsg_flags |= DSGF_CALCULATED_RESULT;
 
 			ProcessDeterministicSpriteGroupRanges(ranges, group->ranges, group->default_group);
 
