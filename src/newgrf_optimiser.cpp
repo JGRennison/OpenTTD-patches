@@ -15,6 +15,7 @@
 #include "core/y_combinator.hpp"
 #include "scope.h"
 #include "newgrf_station.h"
+#include "3rdparty/robin_hood/robin_hood.h"
 
 #include <tuple>
 
@@ -1794,11 +1795,47 @@ struct CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler {
 	std::bitset<256> &bits;             // Needed output bits
 	const std::bitset<256> output_bits; // Snapshots of needed output bits at construction
 
+	struct ProcedureRecord {
+		VarAction2GroupVariableTracking *var_tracking = nullptr;
+		std::bitset<256> output_bits;
+		bool done = false;
+		bool is_leaf_node = false;
+	};
+	inline static robin_hood::unordered_node_map<const DeterministicSpriteGroup *, ProcedureRecord> record_map;
+	inline static std::vector<std::pair<const DeterministicSpriteGroup *, ProcedureRecord *>> record_queue;
+
 	CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler(std::bitset<256> &bits)
 			: bits(bits), output_bits(bits) {}
 
-	/* return true if non-handled leaf node found */
-	bool ProcessGroup(const SpriteGroup *sg, std::bitset<256> *input_bits, bool top_level)
+	static void DeterministicSpriteGroupDetermineProcCallIn(const DeterministicSpriteGroup *sub, const ProcedureRecord &record)
+	{
+		std::bitset<256> new_proc_call_out;
+		if (record.is_leaf_node) {
+			new_proc_call_out = record.output_bits;
+		} else {
+			std::bitset<256> output_bits = record.output_bits;
+			CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler handler(output_bits);
+			handler.ProcessGroup(sub->default_group, &new_proc_call_out, false, true);
+			for (const auto &range : sub->ranges) {
+				handler.ProcessGroup(range.group, &new_proc_call_out, false, true);
+			}
+		}
+
+		VarAction2GroupVariableTracking *var_tracking = record.var_tracking;
+		new_proc_call_out |= var_tracking->proc_call_out;
+
+		if (new_proc_call_out != var_tracking->proc_call_out) {
+			std::bitset<256> old_total = var_tracking->out | var_tracking->proc_call_out;
+			std::bitset<256> new_total = var_tracking->out | new_proc_call_out;
+			var_tracking->proc_call_out = new_proc_call_out;
+			if (old_total != new_total) {
+				CheckDeterministicSpriteGroupOutputVarBits(sub, new_total, &(var_tracking->proc_call_in), false);
+			}
+		}
+	}
+
+	/* Return true if non-handled leaf node found */
+	bool ProcessGroup(const SpriteGroup *sg, std::bitset<256> *input_bits, bool top_level, bool determine_proc_call_in = false)
 	{
 		if (sg == nullptr) return true;
 		if (IsSimpleContainerSpriteGroup(sg)) {
@@ -1812,33 +1849,66 @@ struct CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler {
 		} else if (sg->type == SGT_DETERMINISTIC) {
 			const DeterministicSpriteGroup *sub = static_cast<const DeterministicSpriteGroup *>(sg);
 
-			std::bitset<256> child_input_bits;
-
-			bool is_leaf_node = false;
-			if (sub->IsCalculatedResult()) {
-				is_leaf_node = true;
+			ProcedureRecord &record = record_map[sub];
+			if (record.done) {
+				std::bitset<256> new_bits = record.output_bits | this->output_bits;
+				if (new_bits != record.output_bits) {
+					/* Queue again, at the front of the queue (i.e. the end of the vector) */
+					record.output_bits = new_bits;
+					record.done = false;
+					record_queue.emplace_back(sub, &record);
+				}
 			} else {
-				is_leaf_node |= this->ProcessGroup(sub->default_group, &child_input_bits, false);
-				for (const auto &range : sub->ranges) {
-					is_leaf_node |= this->ProcessGroup(range.group, &child_input_bits, false);
-				}
+				record.output_bits |= this->output_bits;
 			}
 
-			VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(sub, true);
-			std::bitset<256> new_proc_call_out = (is_leaf_node ? this->output_bits : child_input_bits) | var_tracking->proc_call_out;
-			if (new_proc_call_out != var_tracking->proc_call_out) {
-				std::bitset<256> old_total = var_tracking->out | var_tracking->proc_call_out;
-				std::bitset<256> new_total = var_tracking->out | new_proc_call_out;
-				var_tracking->proc_call_out = new_proc_call_out;
-				if (old_total != new_total) {
-					CheckDeterministicSpriteGroupOutputVarBits(sub, new_total, &(var_tracking->proc_call_in), false);
+			if (record.var_tracking == nullptr) {
+				/* New procedure group, add to the front of the queue (i.e. the end of the vector) */
+				record.var_tracking = _cur.GetVarAction2GroupVariableTracking(sub, true);
+				record_queue.emplace_back(sub, &record);
+
+				bool is_leaf_node = false;
+				if (sub->IsCalculatedResult()) {
+					is_leaf_node = true;
+				} else {
+					is_leaf_node |= this->ProcessGroup(sub->default_group, nullptr, false);
+					for (const auto &range : sub->ranges) {
+						is_leaf_node |= this->ProcessGroup(range.group, nullptr, false);
+					}
 				}
+				record.is_leaf_node = is_leaf_node;
 			}
-			if (input_bits != nullptr) (*input_bits) |= var_tracking->proc_call_in;
-			if (top_level) this->bits |= var_tracking->in;
+
+			if (determine_proc_call_in) {
+				DeterministicSpriteGroupDetermineProcCallIn(sub, record);
+				if (input_bits != nullptr) (*input_bits) |= record.var_tracking->proc_call_in;
+			}
+
+			if (top_level) this->bits |= record.var_tracking->in;
 			return false;
 		} else {
 			return true;
+		}
+	}
+
+	static void HandleDeferredGroups()
+	{
+		while (!record_queue.empty()) {
+			/* DeterministicSpriteGroupDetermineProcCallIn may add more items to the queue */
+			auto it = record_queue.back();
+			record_queue.pop_back();
+			it.second->done = true;
+			DeterministicSpriteGroupDetermineProcCallIn(it.first, *(it.second));
+		}
+		record_queue.clear();
+		record_map.clear();
+	}
+
+	static void ReleaseCaches()
+	{
+		record_queue.shrink_to_fit();
+		if (record_map.empty()) {
+			robin_hood::unordered_node_map<const DeterministicSpriteGroup *, ProcedureRecord> tmp = std::move(record_map);
 		}
 	}
 };
@@ -3230,6 +3300,7 @@ void HandleVarAction2OptimisationPasses()
 	if (unlikely(HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2))) return;
 
 	PopulateRailStationAdvancedLayoutVariableUsage();
+	CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler::HandleDeferredGroups();
 
 	for (DeterministicSpriteGroup *group : _cur.dead_store_elimination_candidates) {
 		VarAction2GroupVariableTracking *var_tracking = _cur.GetVarAction2GroupVariableTracking(group, false);
@@ -3326,4 +3397,10 @@ const SpriteGroup *PruneTargetSpriteGroup(const SpriteGroup *result)
 		break;
 	}
 	return result;
+}
+
+void ReleaseVarAction2OptimisationCaches()
+{
+	CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler::ReleaseCaches();
+	VarAction2OptimiseState::ReleaseCaches();
 }

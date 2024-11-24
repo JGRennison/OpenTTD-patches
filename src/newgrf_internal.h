@@ -365,5 +365,6 @@ const SpriteGroup *PruneTargetSpriteGroup(const SpriteGroup *result);
 void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const VarAction2AdjustInfo info, DeterministicSpriteGroup *group, DeterministicSpriteGroupAdjust &adjust);
 void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, const VarAction2AdjustInfo info, DeterministicSpriteGroup *group, std::vector<DeterministicSpriteGroupAdjust> &saved_adjusts);
 void HandleVarAction2OptimisationPasses();
+void ReleaseVarAction2OptimisationCaches();
 
 #endif /* NEWGRF_INTERNAL_H */
