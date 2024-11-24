@@ -49,8 +49,10 @@ int find_index(Container const &container, typename Container::const_reference i
 	return -1;
 }
 
-template <typename C, typename UP> unsigned int container_unordered_remove_if (C &container, UP predicate) {
-	unsigned int removecount = 0;
+template <bool ONCE, typename C, typename UP>
+uint container_unordered_remove_if_generic(C &container, UP predicate)
+{
+	uint removecount = 0;
 	for (auto it = container.begin(); it != container.end();) {
 		if (predicate(*it)) {
 			removecount++;
@@ -61,6 +63,7 @@ template <typename C, typename UP> unsigned int container_unordered_remove_if (C
 				container.pop_back();
 				break;
 			}
+			if (ONCE) break;
 		} else {
 			++it;
 		}
@@ -68,10 +71,36 @@ template <typename C, typename UP> unsigned int container_unordered_remove_if (C
 	return removecount;
 }
 
-template <typename C, typename V> unsigned int container_unordered_remove(C &container, const V &value) {
-	return container_unordered_remove_if (container, [&](const typename C::value_type &v) {
+template <typename C, typename UP>
+uint container_unordered_remove_if(C &container, UP predicate)
+{
+	return container_unordered_remove_if_generic<false>(container, predicate);
+}
+
+template <typename C, typename UP>
+uint container_unordered_remove_once_if(C &container, UP predicate)
+{
+	return container_unordered_remove_if_generic<true>(container, predicate);
+}
+
+template <bool ONCE, typename C, typename V>
+unsigned int container_unordered_remove_generic(C &container, const V &value)
+{
+	return container_unordered_remove_if_generic<ONCE>(container, [&](const typename C::value_type &v) {
 		return v == value;
 	});
+}
+
+template <typename C, typename V>
+uint container_unordered_remove(C &container, const V &value)
+{
+	return container_unordered_remove_generic<false>(container, value);
+}
+
+template <typename C, typename V>
+uint container_unordered_remove_once(C &container, const V &value)
+{
+	return container_unordered_remove_generic<true>(container, value);
 }
 
 template <typename T>
