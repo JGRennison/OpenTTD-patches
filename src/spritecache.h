@@ -76,6 +76,7 @@ inline const uint8_t *GetNonSprite(SpriteID sprite, SpriteType type)
 }
 
 void GfxInitSpriteMem();
+void GfxClearSpriteCacheLoadIndex();
 void GfxClearSpriteCache();
 void GfxClearFontSpriteCache();
 void IncreaseSpriteLRU();

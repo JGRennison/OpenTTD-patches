@@ -510,6 +510,7 @@ void GfxLoadSprites()
 	GfxInitSpriteMem();
 	GfxInitPalettes();
 	LoadSpriteTables();
+	GfxClearSpriteCacheLoadIndex();
 	GfxDetermineMainColours();
 
 	UpdateRouteStepSpriteSize();

@@ -12,11 +12,15 @@
 
 #include "stdafx.h"
 
+#include "core/arena_alloc.hpp"
 #include "core/math_func.hpp"
 #include "gfx_type.h"
 #include "spriteloader/spriteloader.hpp"
+#include "3rdparty/robin_hood/robin_hood.h"
 
 #include "table/sprites.h"
+
+#include <array>
 
 /* These declarations are internal to spritecache but need to be exposed for unit-tests. */
 
@@ -80,8 +84,6 @@ private:
 		if (!this->ptr) return;
 
 		if (this->GetType() == SpriteType::Recolour) {
-			_spritecache_bytes_used -= RECOLOUR_SPRITE_SIZE;
-			free(this->ptr.release());
 			return;
 		}
 
@@ -137,20 +139,27 @@ public:
 		}
 	}
 
+	void AssignRecolourSpriteData(void *data)
+	{
+		this->Clear();
+
+		assert(this->GetType() == SpriteType::Recolour);
+
+		this->ptr.reset(data);
+	}
+
 	void Assign(SpriteDataBuffer &&other)
 	{
 		this->Clear();
 		if (!other.ptr) return;
 
+		assert(this->GetType() != SpriteType::Recolour);
+
 		this->ptr.reset(other.ptr.release());
-		if (this->GetType() == SpriteType::Recolour) {
-			_spritecache_bytes_used += RECOLOUR_SPRITE_SIZE;
-		} else {
-			this->GetSpritePtr()->size = other.size;
-			_spritecache_bytes_used += other.size;
-			if (this->GetType() == SpriteType::Normal) {
-				this->total_missing_zoom_levels = this->GetSpritePtr()->missing_zoom_levels;
-			}
+		this->GetSpritePtr()->size = other.size;
+		_spritecache_bytes_used += other.size;
+		if (this->GetType() == SpriteType::Normal) {
+			this->total_missing_zoom_levels = this->GetSpritePtr()->missing_zoom_levels;
 		}
 		other.size = 0;
 	}
@@ -198,6 +207,79 @@ struct CacheSpriteAllocator final : public SpriteAllocator {
 
 protected:
 	void *AllocatePtr(size_t size) override;
+};
+
+using RecolourSpriteCacheData = std::array<uint8_t, RECOLOUR_SPRITE_SIZE>;
+
+struct RecolourSpriteCacheItem {
+	RecolourSpriteCacheData *data;
+
+	inline bool operator==(const RecolourSpriteCacheItem &other) const noexcept
+	{
+		return memcmp(this->data->data(), other.data->data(), RECOLOUR_SPRITE_SIZE) == 0;
+	}
+};
+
+namespace robin_hood {
+	template <>
+	struct hash<RecolourSpriteCacheItem> {
+		size_t operator()(const RecolourSpriteCacheItem &item) const noexcept
+		{
+			return hash_bytes(item.data->data(), RECOLOUR_SPRITE_SIZE);
+		}
+	};
+}
+
+class RecolourSpriteCache {
+	BumpAllocContainer<RecolourSpriteCacheData, 65536 / RECOLOUR_SPRITE_SIZE> storage;
+	robin_hood::unordered_flat_set<RecolourSpriteCacheItem> items;
+	RecolourSpriteCacheData *next = nullptr;
+	uint allocated = 0;
+
+public:
+	RecolourSpriteCacheData &GetBuffer()
+	{
+		if (this->next == nullptr) this->next = this->storage.New();
+		return *this->next;
+	}
+
+	void *GetCachePtr()
+	{
+		dbg_assert(this->next != nullptr);
+		auto res = this->items.insert(RecolourSpriteCacheItem{ this->next });
+		if (res.second) {
+			/* Value was inserted */
+			_spritecache_bytes_used += RECOLOUR_SPRITE_SIZE;
+			this->allocated++;
+			void *ptr = this->next;
+			this->next = nullptr;
+			return ptr;
+		} else {
+			const RecolourSpriteCacheItem &existing = *(res.first);
+			return existing.data->data();
+		}
+	}
+
+	void ClearIndex()
+	{
+		this->items.clear();
+	}
+
+	void Clear()
+	{
+		_spritecache_bytes_used -= RECOLOUR_SPRITE_SIZE * this->allocated;
+		this->storage.clear();
+		this->items.clear();
+		this->next = nullptr;
+		this->allocated = 0;
+	}
+
+	uint GetAllocationCount() const { return this->allocated; }
+
+	~RecolourSpriteCache()
+	{
+		this->Clear();
+	}
 };
 
 inline bool IsMapgenSpriteID(SpriteID sprite)

@@ -47,6 +47,7 @@ static size_t _spritecache_prune_total = 0;
 
 static std::vector<SpriteCache> _spritecache;
 static std::vector<std::unique_ptr<SpriteFile>> _sprite_files;
+static RecolourSpriteCache _recolour_cache;
 
 static inline SpriteCache *GetSpriteCache(uint index)
 {
@@ -453,28 +454,29 @@ static bool ResizeSprites(SpriteLoader::SpriteCollection &sprite, unsigned int s
  * Load a recolour sprite into memory.
  * @param file GRF we're reading from.
  * @param num Size of the sprite in the GRF.
+ * @param buffer Output buffer to write data to.
  * @return Sprite data.
  */
-static void *ReadRecolourSprite(SpriteFile &file, uint num, SpriteAllocator &allocator)
+static void ReadRecolourSprite(SpriteFile &file, uint num, std::span<uint8_t, RECOLOUR_SPRITE_SIZE> buffer)
 {
 	/* "Normal" recolour sprites are ALWAYS 257 bytes. Then there is a small
 	 * number of recolour sprites that are 17 bytes that only exist in DOS
 	 * GRFs which are the same as 257 byte recolour sprites, but with the last
 	 * 240 bytes zeroed.  */
-	uint8_t *dest = allocator.Allocate<uint8_t>(RECOLOUR_SPRITE_SIZE);
+	uint8_t *dest = buffer.data();
 
 	auto read_data = [&](uint8_t *targ) {
 		file.ReadBlock(targ, std::min(num, RECOLOUR_SPRITE_SIZE));
 		if (num > RECOLOUR_SPRITE_SIZE) {
 			file.SkipBytes(num - RECOLOUR_SPRITE_SIZE);
+		} else if (num < RECOLOUR_SPRITE_SIZE) {
+			/* Only a few recolour sprites are less than 257 bytes */
+			memset(targ + num, 0, RECOLOUR_SPRITE_SIZE - num);
 		}
 	};
 
 	if (file.NeedsPaletteRemap()) {
 		uint8_t dest_tmp[RECOLOUR_SPRITE_SIZE];
-
-		/* Only a few recolour sprites are less than 257 bytes */
-		if (num < RECOLOUR_SPRITE_SIZE) memset(dest_tmp, 0, RECOLOUR_SPRITE_SIZE);
 		read_data(dest_tmp);
 
 		/* The data of index 0 is never used; "literal 00" according to the (New)GRF specs. */
@@ -485,7 +487,7 @@ static void *ReadRecolourSprite(SpriteFile &file, uint num, SpriteAllocator &all
 		read_data(dest);
 	}
 
-	return dest;
+	dest[0] = 0; // The data of index 0 is never used, so ensure it is always 0
 }
 
 static const char *GetSpriteTypeName(SpriteType type)
@@ -709,7 +711,9 @@ bool LoadNextSprite(SpriteID load_index, SpriteFile &file, uint file_sprite_id)
 			return false;
 		}
 		type = SpriteType::Recolour;
-		data = ReadRecolourSprite(file, num, allocator);
+		auto &buffer = _recolour_cache.GetBuffer();
+		ReadRecolourSprite(file, num, buffer);
+		data = _recolour_cache.GetCachePtr();
 	} else if (file.GetContainerVersion() >= 2 && grf_type == 0xFD) {
 		if (num != 4) {
 			/* Invalid sprite section include, ignore. */
@@ -756,8 +760,12 @@ bool LoadNextSprite(SpriteID load_index, SpriteFile &file, uint file_sprite_id)
 	sc->file_pos = file_pos;
 	sc->SetType(type);
 	if (data != nullptr) {
-		assert(data == allocator.last_sprite_allocation.GetPtr());
-		sc->Assign(std::move(allocator.last_sprite_allocation));
+		if (type == SpriteType::Recolour) {
+			sc->AssignRecolourSpriteData(data);
+		} else {
+			assert(data == allocator.last_sprite_allocation.GetPtr());
+			sc->Assign(std::move(allocator.last_sprite_allocation));
+		}
 	}
 	sc->id = file_sprite_id;
 	sc->count = count;
@@ -1139,6 +1147,7 @@ void GfxInitSpriteMem()
 	/* Reset the spritecache 'pool' */
 	_spritecache.clear();
 	_sprite_files.clear();
+	_recolour_cache.Clear();
 	assert(_spritecache_bytes_used == 0);
 	_spritecache_prune_events = 0;
 	_spritecache_prune_entries = 0;
@@ -1158,6 +1167,11 @@ void GfxClearSpriteCache()
 	}
 
 	VideoDriver::GetInstance()->ClearSystemSprites();
+}
+
+void GfxClearSpriteCacheLoadIndex()
+{
+	_recolour_cache.ClearIndex();
 }
 
 /**
@@ -1190,6 +1204,9 @@ void DumpSpriteCacheStats(format_target &buffer)
 	for (const SpriteCache &entry : _spritecache) {
 		if ((uint)entry.GetType() >= (uint)SpriteType::Invalid) continue;
 		types[(uint)entry.GetType()]++;
+
+		if (entry.GetType() == SpriteType::Recolour) continue;
+
 		if (entry.GetPtr() != nullptr) have_data++;
 		if (entry.GetHasPalette()) have_8bpp++;
 		if (entry.GetHasNonPalette()) have_32bpp++;
@@ -1207,8 +1224,8 @@ void DumpSpriteCacheStats(format_target &buffer)
 	}
 	buffer.format("  Normal: {}, MapGen: {}, Font: {}, Recolour: {}\n",
 			types[(uint)SpriteType::Normal], types[(uint)SpriteType::MapGen], types[(uint)SpriteType::Font], types[(uint)SpriteType::Recolour]);
-	buffer.format("  Data loaded: {}, Warned: {}, 8bpp: {}, 32bpp: {}\n",
-			have_data, have_warned, have_8bpp, have_32bpp);
+	buffer.format("  Data loaded: {}, Recolour loaded: {}, Warned: {}, 8bpp: {}, 32bpp: {}\n",
+			have_data, _recolour_cache.GetAllocationCount(), have_warned, have_8bpp, have_32bpp);
 	buffer.format("  Cache prune events: {}, pruned entry total: {}, pruned data total: {}\n",
 			_spritecache_prune_events, _spritecache_prune_entries, _spritecache_prune_total);
 	buffer.append("  Normal:\n");
