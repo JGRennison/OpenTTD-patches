@@ -12,6 +12,7 @@
 
 #include "script_object.hpp"
 
+#include <array>
 #include <variant>
 
 /**
