@@ -273,7 +273,7 @@ void ScriptText::_GetEncodedTextTraditional(std::back_insert_iterator<std::strin
 
 void ScriptText::_FillParamList(ParamList &params, ScriptTextList &seen_texts)
 {
-	if (std::find(seen_texts.begin(), seen_texts.end(), this) != seen_texts.end()) throw Script_FatalError(fmt::format("{}: Circular reference detected", GetGameStringName(this->string)));
+	if (std::ranges::find(seen_texts, this) != seen_texts.end()) throw Script_FatalError(fmt::format("{}: Circular reference detected", GetGameStringName(this->string)));
 	seen_texts.push_back(this);
 
 	for (int i = 0; i < this->paramc; i++) {

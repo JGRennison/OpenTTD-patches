@@ -591,7 +591,7 @@ struct BuildRailToolbarWindow : Window {
 			return false;
 		}
 
-		if (std::find(std::begin(can_build_widgets), std::end(can_build_widgets), widget) == std::end(can_build_widgets)) return false;
+		if (std::ranges::find(can_build_widgets, widget) == std::end(can_build_widgets)) return false;
 
 		GuiShowTooltips(this, STR_TOOLBAR_DISABLED_NO_VEHICLE_AVAILABLE, close_cond);
 		return true;
@@ -1180,7 +1180,7 @@ public:
 
 	bool HasClassChoice() const override
 	{
-		return std::count_if(std::begin(StationClass::Classes()), std::end(StationClass::Classes()), std::not_fn(IsWaypointClass)) > 1;
+		return std::ranges::count_if(StationClass::Classes(), std::not_fn(IsWaypointClass)) > 1;
 	}
 
 	int GetSelectedClass() const override { return _station_gui.sel_class; }
@@ -2224,7 +2224,7 @@ public:
 
 	bool HasClassChoice() const override
 	{
-		return std::count_if(std::begin(StationClass::Classes()), std::end(StationClass::Classes()), IsWaypointClass) > 1;
+		return std::ranges::count_if(StationClass::Classes(), IsWaypointClass) > 1;
 	}
 
 	void Close(int) override { ResetObjectToPlace(); }

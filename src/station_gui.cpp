@@ -2452,7 +2452,7 @@ static bool AddNearbyStation(TileIndex tile, void *user_data)
 	if (!T::IsValidID(sid)) return false;
 
 	T *st = T::Get(sid);
-	if (st->owner != _local_company || !data->is_right_type(st) || std::find(_stations_nearby_list.begin(), _stations_nearby_list.end(), sid) != _stations_nearby_list.end()) return false;
+	if (st->owner != _local_company || !data->is_right_type(st) || std::ranges::find(_stations_nearby_list, sid) != _stations_nearby_list.end()) return false;
 
 	if (st->rect.BeforeAddRect(ctx->tile, ctx->w, ctx->h, StationRect::ADD_TEST).Succeeded()) {
 		_stations_nearby_list.push_back(sid);

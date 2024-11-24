@@ -1656,7 +1656,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 		/* Select the first unshaded engine in the list as default when opening the window */
 		EngineID engine = INVALID_ENGINE;
-		auto it = std::find_if(this->eng_list.begin(), this->eng_list.end(), [&](GUIEngineListItem &item) { return !HasFlag(item.flags, EngineDisplayFlags::Shaded); });
+		auto it = std::ranges::find_if(this->eng_list, [&](GUIEngineListItem &item) { return !HasFlag(item.flags, EngineDisplayFlags::Shaded); });
 		if (it != this->eng_list.end()) engine = it->engine_id;
 		this->SelectEngine(engine);
 	}
@@ -1727,7 +1727,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		this->eng_list.Filter(this->cargo_filter_criteria);
 		if (0 == this->eng_list.size()) { // no engine passed through the filter, invalidate the previously selected engine
 			this->SelectEngine(INVALID_ENGINE);
-		} else if (std::find(this->eng_list.begin(), this->eng_list.end(), this->sel_engine) == this->eng_list.end()) { // previously selected engine didn't pass the filter, select the first engine of the list
+		} else if (std::ranges::find(this->eng_list, this->sel_engine, &GUIEngineListItem::engine_id) == this->eng_list.end()) { // previously selected engine didn't pass the filter, select the first engine of the list
 			this->SelectEngine(this->eng_list[0].engine_id);
 		}
 	}
@@ -1800,7 +1800,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 		/* ensure primary engine of variant group is in list */
 		for (const auto &variant : variants) {
-			if (std::find(list.begin(), list.end(), variant) == list.end()) {
+			if (std::ranges::find(list, variant, &GUIEngineListItem::engine_id) == list.end()) {
 				const Engine *e = Engine::Get(variant);
 				list.emplace_back(variant, e->info.variant_id, e->display_flags | EngineDisplayFlags::Shaded, 0);
 				if (e->u.rail.railveh_type != RAILVEH_WAGON) num_engines++;
@@ -1945,7 +1945,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		}
 
 		for (const auto &variant : variants) {
-			if (std::find(this->eng_list.begin(), this->eng_list.end(), variant) == this->eng_list.end()) {
+			if (std::ranges::find(this->eng_list, variant, &GUIEngineListItem::engine_id) == this->eng_list.end()) {
 				const Engine *e = Engine::Get(variant);
 				this->eng_list.emplace_back(variant, e->info.variant_id, e->display_flags | EngineDisplayFlags::Shaded, 0);
 			}
@@ -2690,7 +2690,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 		/* ensure primary engine of variant group is in list */
 		for (const auto &variant : variants) {
-			if (std::find(list.begin(), list.end(), variant) == list.end()) {
+			if (std::ranges::find(list, variant, &GUIEngineListItem::engine_id) == list.end()) {
 				const Engine *e = Engine::Get(variant);
 				list.emplace_back(variant, e->info.variant_id, e->display_flags | EngineDisplayFlags::Shaded, 0);
 			}

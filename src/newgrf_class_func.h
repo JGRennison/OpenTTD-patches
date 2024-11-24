@@ -34,7 +34,7 @@ void NewGRFClass<Tspec, Tindex, Tmax>::Reset()
 template <typename Tspec, typename Tindex, Tindex Tmax>
 Tindex NewGRFClass<Tspec, Tindex, Tmax>::Allocate(uint32_t global_id)
 {
-	auto found = std::find_if(std::begin(NewGRFClass::classes), std::end(NewGRFClass::classes), [global_id](const auto &cls) { return cls.global_id == global_id; });
+	auto found = std::ranges::find(NewGRFClass::classes, global_id, &NewGRFClass::global_id);
 
 	/* Id is already allocated, so reuse it. */
 	if (found != std::end(NewGRFClass::classes)) return found->Index();
@@ -105,7 +105,7 @@ uint NewGRFClass<Tspec, Tindex, Tmax>::GetClassCount()
 template <typename Tspec, typename Tindex, Tindex Tmax>
 uint NewGRFClass<Tspec, Tindex, Tmax>::GetUIClassCount()
 {
-	return std::count_if(std::begin(NewGRFClass::classes), std::end(NewGRFClass::classes), [](const auto &cls) { return cls.GetUISpecCount() > 0; });
+	return std::ranges::count_if(NewGRFClass::classes, [](const auto &cls) { return cls.GetUISpecCount() > 0; });
 }
 
 /**

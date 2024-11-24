@@ -1498,11 +1498,12 @@ protected:
 	 */
 	uint GetIndustryListWidth() const
 	{
-		uint width = 0;
-		for (const Industry *i : this->industries) {
-			width = std::max(width, GetStringBoundingBox(this->GetIndustryString(i)).width);
+		uint width = this->hscroll->GetCount();
+		auto [first, last] = this->vscroll->GetVisibleRangeIterators(this->industries);
+		for (auto it = first; it != last; ++it) {
+			width = std::max(width, GetStringBoundingBox(this->GetIndustryString(*it)).width);
 		}
-		return width + WidgetDimensions::scaled.framerect.Horizontal();
+		return width;
 	}
 
 	/** (Re)Build industries list */
@@ -1528,7 +1529,6 @@ protected:
 
 			this->industries.Filter(filter);
 
-			this->hscroll->SetCount(this->GetIndustryListWidth());
 			this->vscroll->SetCount(this->industries.size()); // Update scrollbar as well.
 		}
 
@@ -1687,9 +1687,7 @@ protected:
 		 * because this is the one the player interested in, and that way it is not hidden in the 'n' more cargos */
 		const CargoID cid = this->produced_cargo_filter_criteria;
 		if (cid != CargoFilterCriteria::CF_ANY && cid != CargoFilterCriteria::CF_NONE) {
-			auto filtered_ci = std::find_if(cargos.begin(), cargos.end(), [cid](const CargoInfo &ci) -> bool {
-				return ci.cargo_id == cid;
-			});
+			auto filtered_ci = std::ranges::find(cargos, cid, &CargoInfo::cargo_id);
 			if (filtered_ci != cargos.end()) {
 				std::rotate(cargos.begin(), filtered_ci, filtered_ci + 1);
 			}
@@ -1746,6 +1744,7 @@ public:
 	void OnInit() override
 	{
 		this->SetCargoFilterArray();
+		this->hscroll->SetCount(0);
 	}
 
 	void SetStringParameters(WidgetID widget) const override
@@ -1939,6 +1938,7 @@ public:
 	void OnPaint() override
 	{
 		if (this->industries.NeedRebuild()) this->BuildSortIndustriesList();
+		this->hscroll->SetCount(this->GetIndustryListWidth());
 		this->DrawWidgets();
 	}
 
@@ -2687,8 +2687,8 @@ struct IndustryCargoesWindow : public Window {
 			const IndustrySpec *indsp = GetIndustrySpec(it);
 			if (!indsp->enabled) continue;
 			this->ind_textsize = maxdim(this->ind_textsize, GetStringBoundingBox(indsp->name));
-			CargoesField::max_cargoes = std::max<uint>(CargoesField::max_cargoes, std::count_if(indsp->accepts_cargo.begin(), indsp->accepts_cargo.end(), IsValidCargoID));
-			CargoesField::max_cargoes = std::max<uint>(CargoesField::max_cargoes, std::count_if(indsp->produced_cargo.begin(), indsp->produced_cargo.end(), IsValidCargoID));
+			CargoesField::max_cargoes = std::max<uint>(CargoesField::max_cargoes, std::ranges::count_if(indsp->accepts_cargo, IsValidCargoID));
+			CargoesField::max_cargoes = std::max<uint>(CargoesField::max_cargoes, std::ranges::count_if(indsp->produced_cargo, IsValidCargoID));
 		}
 		d.width = std::max(d.width, this->ind_textsize.width);
 		d.height = this->ind_textsize.height;

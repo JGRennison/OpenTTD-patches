@@ -69,7 +69,7 @@ GrfSpecFeature GetGrfSpecFeatureForParentScope(GrfSpecFeature feature)
 	if (group == nullptr) return nullptr;
 
 	const GRFFile *grf = object.grffile;
-	auto profiler = std::find_if(_newgrf_profilers.begin(), _newgrf_profilers.end(), [&](const NewGRFProfiler &pr) { return pr.grffile == grf; });
+	auto profiler = std::ranges::find(_newgrf_profilers, grf, &NewGRFProfiler::grffile);
 
 	if (profiler == _newgrf_profilers.end() || !profiler->active) {
 		if (top_level) _temp_store.ClearChanges();

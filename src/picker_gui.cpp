@@ -50,7 +50,7 @@ PickerCallbacks::PickerCallbacks(const std::string &ini_group) : ini_group(ini_g
 PickerCallbacks::~PickerCallbacks()
 {
 	auto &callbacks = GetPickerCallbacks();
-	callbacks.erase(std::find(callbacks.begin(), callbacks.end(), this));
+	callbacks.erase(std::ranges::find(callbacks, this));
 }
 
 /**
@@ -539,7 +539,7 @@ void PickerWindow::EnsureSelectedClassIsVisible()
 	if (!this->has_class_picker) return;
 	if (this->classes.empty()) return;
 
-	auto it = std::find(std::begin(this->classes), std::end(this->classes), this->callbacks.GetSelectedClass());
+	auto it = std::ranges::find(this->classes, this->callbacks.GetSelectedClass());
 	if (it == std::end(this->classes)) return;
 
 	int pos = static_cast<int>(std::distance(std::begin(this->classes), it));
@@ -651,7 +651,7 @@ void PickerWindow::EnsureSelectedTypeIsVisible()
 	int class_index = this->callbacks.GetSelectedClass();
 	int index = this->callbacks.GetSelectedType();
 
-	auto it = std::find_if(std::begin(this->types), std::end(this->types), [class_index, index](const auto &item) { return item.class_index == class_index && item.index == index; });
+	auto it = std::ranges::find_if(this->types, [class_index, index](const auto &item) { return item.class_index == class_index && item.index == index; });
 	if (it == std::end(this->types)) return;
 
 	int pos = static_cast<int>(std::distance(std::begin(this->types), it));

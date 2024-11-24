@@ -280,7 +280,7 @@ HotkeyList::HotkeyList(const char *ini_group, std::span<const Hotkey> items, Glo
 
 HotkeyList::~HotkeyList()
 {
-	_hotkey_lists->erase(std::find(_hotkey_lists->begin(), _hotkey_lists->end(), this));
+	_hotkey_lists->erase(std::ranges::find(*_hotkey_lists, this));
 }
 
 /**

@@ -125,7 +125,7 @@ WindowDesc::WindowDesc(const char * const file, const int line, WindowPosition d
 
 WindowDesc::~WindowDesc()
 {
-	_window_descs->erase(std::find(_window_descs->begin(), _window_descs->end(), this));
+	_window_descs->erase(std::ranges::find(*_window_descs, this));
 }
 
 const WindowDescPreferences &WindowDesc::GetPreferences() const
@@ -2484,8 +2484,10 @@ static void HandleScrollbarScrolling(Window *w)
 	}
 
 	/* Find the item we want to move to. SetPosition will make sure it's inside bounds. */
-	int pos = RoundDivSU((i + _scrollbar_start_pos) * sb->GetCount(), _scrollbar_size);
-	if (rtl) pos = sb->GetCount() - sb->GetCapacity() - pos;
+	int range = sb->GetCount() - sb->GetCapacity();
+
+	int pos = RoundDivSU((i + _scrollbar_start_pos) * range, _scrollbar_size);
+	if (rtl) pos = range - pos;
 	if (sb->SetPosition(pos)) w->SetDirty();
 }
 
