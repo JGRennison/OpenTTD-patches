@@ -184,6 +184,9 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	extern void ClearNewSignalStyleMapping();
 	ClearNewSignalStyleMapping();
 
+	extern void ClearPendingSignalUpdates();
+	ClearPendingSignalUpdates();
+
 	RebuildStationKdtree();
 	RebuildTownKdtree();
 	RebuildViewportKdtree();

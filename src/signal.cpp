@@ -1603,6 +1603,12 @@ void UpdateLookaheadCombinedNormalShuntSignalDeferred(TileIndex tile, Trackdir t
 	_deferred_lookahead_combined_normal_shunt_mode.push_back({ tile, trackdir, lookahead_position });
 }
 
+void ClearPendingSignalUpdates()
+{
+	_deferred_aspect_updates.clear();
+	_deferred_aspect_updates.shrink_to_fit();
+}
+
 void FlushDeferredAspectUpdates()
 {
 	/* Iterate in reverse order to reduce backtracking when updating the aspects of a new reservation */
@@ -2023,6 +2029,8 @@ static bool DetermineExtraAspectsVariable()
 		_aspect_cfg_hash = checksum.state;
 		changed = true;
 	}
+
+	if (_extra_aspects == 0) _deferred_aspect_updates.clear();
 
 	return changed;
 }
