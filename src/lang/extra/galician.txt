@@ -64,6 +64,7 @@ STR_SORT_BY_MAX_SPEED_LOADED                                    :Velocidade máx
 STR_SORT_BY_VEHICLES_CALLING                                    :Nímerpo de vehículos chamando
 STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST                      :Capacidade de carga/Coste de mantemento
 STR_SORT_BY_VEHICLE_COUNT                                       :Nº Vehículos
+STR_SORT_BY_TIMETABLE_TYPE                                      :Tipo de horarios
 
 STR_SETTINGS_MENU_ZONING                                        :Zonificación
 
@@ -76,6 +77,8 @@ STR_VEHICLE_TYPE_TRAINS                                         :Trens
 STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :Vehículos de estrada
 STR_VEHICLE_TYPE_SHIPS                                          :Barcos
 STR_VEHICLE_TYPE_AIRCRAFT                                       :Aeronaves
+
+STR_GRAPH_X_LABEL_LAST_UNITS                                    :{TINY_FONT}{BLACK}Last {STRING}
 
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED                     :{TINY_FONT}{BLACK}Velocidade media de tránsito({STRING})
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED                   :{TINY_FONT}{BLACK}Pago pola entrega de 1 unidade (ou 1.000 litros) de carga nunha distancia de 200 cadros
@@ -1305,6 +1308,7 @@ STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}Historia
 STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}Amosa o historial de carga a espera
 
 STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} Información en directo das viaxes
+STR_DEPARTURES_CAPTION_FILTER                                   :{WHITE}{STRING} - Calling at {STRING}
 STR_DEPARTURES_CARGO_MODE_TOOLTIP                               :{BLACK}Configurar o modo de filtro de mercadorías para chegadas/saídas
 STR_DEPARTURES_DEPARTURES                                       :{BLACK}{TINY_FONT}D
 STR_DEPARTURES_ARRIVALS                                         :{BLACK}{TINY_FONT}A
@@ -1317,6 +1321,8 @@ STR_DEPARTURES_EMPTY_BUTTON                                     :{BLACK}Baleiro
 STR_DEPARTURES_EMPTY_TOOLTIP                                    :{BLACK}Incluir saídas, chegadas e estacións nas que o vehículo vai baleiro ou non carga/descarga mercadorías.
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}vía
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}Amosar os vehículos programados que non paran aqui
+STR_DEPARTURES_FILTER_BUTTON                                    :{BLACK}Filter
+STR_DEPARTURES_FILTER_TOOLTIP                                   :{BLACK}Only show departures/arrivals calling at a particular destination.
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}Amosar próximos trens nos horarios desta estación
 STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}Amosar próximos vehículos de estrada nos horarios desta estación
 STR_DEPARTURES_SHOW_SHIPS_TOOLTIP                               :{BLACK}Amosar próximos barcos nos horarios deste porto
@@ -1347,6 +1353,9 @@ STR_DEPARTURES_VIA_AND                                          :{STRING} e {STR
 STR_DEPARTURES_SOURCE_MODE_TOOLTIP                              :{BLACK}Configurar se se amosan saídas en directo ou un horario de 24 horas con saídas programadas.
 STR_DEPARTURES_SOURCE_MODE_LIVE                                 :En directo
 STR_DEPARTURES_SOURCE_MODE_SCHEDULE_24_HOUR                     :Horario 24 horas programadas
+
+STR_DEPARTURES_DUPLICATE                                        :{BLACK}Duplicate
+STR_DEPARTURES_DUPLICATE_TOOLTIP                                :{BLACK}Duplicate this window
 
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
 STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
@@ -1454,6 +1463,9 @@ STR_VEHICLE_LIST_TIMETABLE_DELAY_LATE                           :{STRING}, Obser
 STR_VEHICLE_LIST_TIMETABLE_DELAY_EARLY                          :{STRING}, Observacións do horario: {STRING} adiantado
 STR_VEHICLE_LIST_TIMETABLE_DELAY_ON_TIME                        :{STRING}, Observacións do horario: A temepo
 STR_VEHICLE_LIST_ORDER_OCCUPANCY_AVERAGE                        :{STRING}, Ocupación media das ordes: {COMMA}%
+STR_VEHICLE_LIST_TIMETABLE_TYPE                                 :{STRING}, Tipo de horario: {STRING}
+
+STR_VEHICLE_LIST_TIMETABLE_TYPE_EXTRA_ITEM                      :, {STRING}
 
 STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING} (na súa vida útil: {CURRENCY_LONG})
 STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE                           :Cancelar Servizo/Enviar a
@@ -1967,6 +1979,7 @@ STR_STATION_RATING_MAX_PERCENTAGE                               : (máx {PLUS_NU
 STR_STATION_RATING_MAX_PERCENTAGE_COMMA                         :, máx {PLUS_NUM}%
 STR_STATION_RATING_PERCENTAGE_COMMA                             :, {PLUS_NUM}%
 
+STR_STATION_RATING_TOOLTIP_AT_LEAST_VELOCITY                    :at least {VELOCITY}
 STR_STATION_RATING_TOOLTIP_SPEED                                :Velocidade máxima do último vehículo{STRING}: {COLOUR}{STRING}{STRING} ({STRING})
 
 STR_STATION_RATING_TOOLTIP_AGE                                  :Idade do último vehículo{STRING}: {COLOUR}{NUM} ano{P "" s}{STRING}
