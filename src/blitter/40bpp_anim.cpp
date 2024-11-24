@@ -463,7 +463,7 @@ void Blitter_40bppAnim::DrawColourMappingRect(void *dst, int width, int height, 
 			anim = anim - width + _screen.pitch;
 		} while (--height);
 	} else if (pal == PALETTE_NEWSPAPER) {
-		const uint8_t *remap = GetNonSprite(pal, SpriteType::Recolour) + 1;
+		const uint8_t *remap = GetNonSprite(pal, SpriteType::Recolour);
 		do {
 			for (int i = 0; i != width; i++) {
 				if (*anim == 0) *udst = MakeGrey(*udst);
@@ -475,7 +475,7 @@ void Blitter_40bppAnim::DrawColourMappingRect(void *dst, int width, int height, 
 			anim = anim - width + _screen.pitch;
 		} while (--height);
 	} else {
-		const uint8_t *remap = GetNonSprite(pal, SpriteType::Recolour) + 1;
+		const uint8_t *remap = GetNonSprite(pal, SpriteType::Recolour);
 		do {
 			for (int i = 0; i != width; i++) {
 				*anim = remap[*anim];

@@ -3973,7 +3973,7 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, uint
 				ViewportMapDraw<true, false>(vp);
 			}
 		} else {
-			_pal2trsp_remap_ptr = IsTransparencySet(TO_TREES) ? GetNonSprite(GB(PALETTE_TO_TRANSPARENT, 0, PALETTE_WIDTH), SpriteType::Recolour) + 1 : nullptr;
+			_pal2trsp_remap_ptr = IsTransparencySet(TO_TREES) ? GetNonSprite(GB(PALETTE_TO_TRANSPARENT, 0, PALETTE_WIDTH), SpriteType::Recolour) : nullptr;
 			if (_settings_client.gui.show_slopes_on_viewport_map) {
 				ViewportMapDraw<false, true>(vp);
 			} else {

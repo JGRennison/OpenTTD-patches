@@ -16,7 +16,7 @@
 
 void Blitter_8bppBase::DrawColourMappingRect(void *dst, int width, int height, PaletteID pal)
 {
-	const uint8_t *ctab = GetNonSprite(pal, SpriteType::Recolour) + 1;
+	const uint8_t *ctab = GetNonSprite(pal, SpriteType::Recolour);
 	const int screen_pitch = this->GetScreenPitch();
 
 	do {

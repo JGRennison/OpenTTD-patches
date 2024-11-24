@@ -453,7 +453,7 @@ static bool ResizeSprites(SpriteLoader::SpriteCollection &sprite, unsigned int s
 /**
  * Load a recolour sprite into memory.
  * @param file GRF we're reading from.
- * @param num Size of the sprite in the GRF.
+ * @param num Size of the sprite in the GRF, must be >= 1.
  * @param buffer Output buffer to write data to.
  * @return Sprite data.
  */
@@ -464,6 +464,10 @@ static void ReadRecolourSprite(SpriteFile &file, uint num, std::span<uint8_t, RE
 	 * GRFs which are the same as 257 byte recolour sprites, but with the last
 	 * 240 bytes zeroed.  */
 	uint8_t *dest = buffer.data();
+
+	/* The first byte of the recolour sprite is never used, so just skip it */
+	file.ReadByte();
+	num--;
 
 	auto read_data = [&](uint8_t *targ) {
 		file.ReadBlock(targ, std::min(num, RECOLOUR_SPRITE_SIZE));
@@ -479,15 +483,12 @@ static void ReadRecolourSprite(SpriteFile &file, uint num, std::span<uint8_t, RE
 		uint8_t dest_tmp[RECOLOUR_SPRITE_SIZE];
 		read_data(dest_tmp);
 
-		/* The data of index 0 is never used; "literal 00" according to the (New)GRF specs. */
-		for (uint i = 1; i < RECOLOUR_SPRITE_SIZE; i++) {
-			dest[i] = _palmap_w2d[dest_tmp[_palmap_d2w[i - 1] + 1]];
+		for (uint i = 0; i < RECOLOUR_SPRITE_SIZE; i++) {
+			dest[i] = _palmap_w2d[dest_tmp[_palmap_d2w[i]]];
 		}
 	} else {
 		read_data(dest);
 	}
-
-	dest[0] = 0; // The data of index 0 is never used, so ensure it is always 0
 }
 
 static const char *GetSpriteTypeName(SpriteType type)
@@ -1048,7 +1049,7 @@ uint32_t GetSpriteMainColour(SpriteID sprite_id, PaletteID palette_id)
 	SpriteCache *sc = GetSpriteCache(sprite_id);
 	if (sc->GetType() != SpriteType::Normal) return 0;
 
-	const uint8_t * const remap = (palette_id == PAL_NONE ? nullptr : GetNonSprite(GB(palette_id, 0, PALETTE_WIDTH), SpriteType::Recolour) + 1);
+	const uint8_t * const remap = (palette_id == PAL_NONE ? nullptr : GetNonSprite(GB(palette_id, 0, PALETTE_WIDTH), SpriteType::Recolour));
 
 	SpriteFile &file = *sc->file;
 	size_t file_pos = sc->file_pos;

@@ -26,7 +26,8 @@
 
 extern size_t _spritecache_bytes_used;
 
-static const uint RECOLOUR_SPRITE_SIZE = 257;
+/* Note that recolour sprites are 257 bytes in the GRF file format, but the first byte is useless and so skipped on read */
+static const uint RECOLOUR_SPRITE_SIZE = 256;
 
 struct SpriteCache;
 
