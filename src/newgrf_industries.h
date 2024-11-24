@@ -11,8 +11,10 @@
 #define NEWGRF_INDUSTRIES_H
 
 #include "newgrf_town.h"
+#include <bitset>
 
 struct IndustryLocationDistanceCache {
+	std::bitset<NUM_INDUSTRYTYPES> valid;
 	uint16_t distances[NUM_INDUSTRYTYPES];
 };
 

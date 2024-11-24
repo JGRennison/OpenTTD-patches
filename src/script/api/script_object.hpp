@@ -455,6 +455,15 @@ public:
 	{
 		return this->data;
 	}
+
+	/**
+	 * The arrow operator on this reference returns the reference counted object.
+	 * @return Pointer to the underlying object.
+	 */
+	const T *operator->() const
+	{
+		return this->data;
+	}
 };
 
 #endif /* SCRIPT_OBJECT_HPP */

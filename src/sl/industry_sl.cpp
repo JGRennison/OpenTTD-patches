@@ -291,7 +291,6 @@ static void Load_INDY()
 
 	_old_industry_accepted.Reset();
 	_old_industry_produced.Reset();
-	Industry::ResetIndustryCounts();
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
@@ -308,7 +307,6 @@ static void Load_INDY()
 		if (SlXvIsFeatureMissing(XSLFI_INDUSTRY_CARGO_REORGANISE)) {
 			LoadMoveOldAcceptsProduced(i);
 		}
-		Industry::IncIndustryTypeCount(i->type);
 	}
 }
 

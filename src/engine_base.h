@@ -43,9 +43,15 @@ struct EngineRefitCapacityValue {
 };
 
 struct Engine : EnginePool::PoolItem<&_engine_pool> {
+	CompanyMask company_avail;    ///< Bit for each company whether the engine is available for that company.
+	CompanyMask company_hidden;   ///< Bit for each company whether the engine is normally hidden in the build gui for that company.
+	CompanyMask preview_asked;    ///< Bit for each company which has already been offered a preview.
+
 	TinyString name;              ///< Custom name of engine.
+
 	CalTime::Date intro_date;     ///< Date of introduction of the engine.
 	int32_t age;                  ///< Age of the engine in months.
+
 	uint16_t reliability;         ///< Current reliability of the engine.
 	uint16_t reliability_spd_dec; ///< Speed of reliability decay between services (per day).
 	uint16_t reliability_start;   ///< Initial reliability of the engine.
@@ -55,17 +61,14 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	uint16_t duration_phase_2;    ///< Second reliability phase in months, keeping #reliability_max.
 	uint16_t duration_phase_3;    ///< Third reliability phase in months, decaying to #reliability_final.
 	uint8_t flags;                ///< Flags of the engine. @see EngineFlags
-	CompanyMask preview_asked;    ///< Bit for each company which has already been offered a preview.
+
 	CompanyID preview_company;    ///< Company which is currently being offered a preview \c INVALID_COMPANY means no company.
 	uint8_t preview_wait;         ///< Daily countdown timer for timeout of offering the engine to the #preview_company company.
-	CompanyMask company_avail;    ///< Bit for each company whether the engine is available for that company.
-	CompanyMask company_hidden;   ///< Bit for each company whether the engine is normally hidden in the build gui for that company.
 	uint8_t original_image_index; ///< Original vehicle image index, thus the image index of the overridden vehicle
 	VehicleType type;             ///< %Vehicle type, ie #VEH_ROAD, #VEH_TRAIN, etc.
 
 	EngineDisplayFlags display_flags; ///< NOSAVE client-side-only display flags for build engine list.
 	EngineID display_last_variant;    ///< NOSAVE client-side-only last variant selected.
-
 	EngineInfo info;
 
 	union {
@@ -74,6 +77,8 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 		ShipVehicleInfo ship;
 		AircraftVehicleInfo air;
 	} u;
+
+	uint16_t list_position;
 
 	/* NewGRF related data */
 	/**
@@ -84,7 +89,6 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	 */
 	GRFFilePropsBase<NUM_CARGO + 2> grf_prop;
 	std::vector<WagonOverride> overrides;
-	uint16_t list_position;
 
 	SpriteGroupCallbacksUsed callbacks_used = SGCU_ALL;
 	uint64_t cb36_properties_used = UINT64_MAX;

@@ -184,7 +184,6 @@ struct INDYChunkHandler : ChunkHandler {
 
 		_old_industry_accepted.Reset();
 		_old_industry_produced.Reset();
-		Industry::ResetIndustryCounts();
 
 		while ((index = SlIterateArray()) != -1) {
 			Industry *i = new (index) Industry();
@@ -200,7 +199,6 @@ struct INDYChunkHandler : ChunkHandler {
 			if (IsSavegameVersionBefore(SLV_INDUSTRY_CARGO_REORGANISE)) {
 				LoadMoveOldAcceptsProduced(i);
 			}
-			Industry::IncIndustryTypeCount(i->type);
 		}
 	}
 

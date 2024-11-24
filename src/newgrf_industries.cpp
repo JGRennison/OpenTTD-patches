@@ -95,15 +95,20 @@ uint32_t IndustriesScopeResolver::GetClosestIndustry(IndustryType type) const
 
 	if (this->location_distance_cache == nullptr) {
 		this->location_distance_cache = std::make_unique<IndustryLocationDistanceCache>();
-		MemSetT(this->location_distance_cache->distances, 0xFF, NUM_INDUSTRYTYPES);
-		for (const Industry *i : Industry::Iterate()) {
-			if (i == this->industry || i->type >= NUM_INDUSTRYTYPES) continue;
-
-			uint dist = DistanceManhattan(this->tile, i->location.tile);
-			if (dist < (uint)this->location_distance_cache->distances[i->type]) this->location_distance_cache->distances[i->type] = (uint16_t)dist;
-		}
+	} else if (this->location_distance_cache->valid.test(type)) {
+		return this->location_distance_cache->distances[type];
 	}
-	return this->location_distance_cache->distances[type];
+
+	uint32_t best_dist = UINT32_MAX;
+	const IndustryID this_id = this->industry->index;
+	for (const IndustryLocationCacheEntry &entry : Industry::industries[type]) {
+		if (entry.id == this_id) continue;
+
+		best_dist = std::min(best_dist, DistanceManhattan(tile, entry.tile));
+	}
+	this->location_distance_cache->valid.set(type);
+	this->location_distance_cache->distances[type] = best_dist;
+	return best_dist;
 }
 
 /**
@@ -177,9 +182,10 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 	} else {
 		/* Count only those who match the same industry type and layout filter
 		 * Unfortunately, we have to do it manually */
-		for (const Industry *i : Industry::Iterate()) {
-			if (i->type == ind_index && i != this->industry && i->selected_layout == layout_filter) {
-				closest_dist = std::min(closest_dist, DistanceManhattan(this->tile, i->location.tile));
+		const IndustryID this_id = this->industry->index;
+		for (const IndustryLocationCacheEntry &entry : Industry::industries[ind_index]) {
+			if (entry.id != this_id && entry.selected_layout == layout_filter) {
+				closest_dist = std::min(closest_dist, DistanceManhattan(this->tile, entry.tile));
 				count++;
 			}
 		}

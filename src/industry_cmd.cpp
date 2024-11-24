@@ -61,7 +61,7 @@ void BuildOilRig(TileIndex tile);
 static uint8_t _industry_sound_ctr;
 static TileIndex _industry_sound_tile;
 
-uint16_t Industry::counts[NUM_INDUSTRYTYPES];
+std::array<std::vector<IndustryLocationCacheEntry>, NUM_INDUSTRYTYPES> Industry::industries;
 
 IndustrySpec _industry_specs[NUM_INDUSTRYTYPES];
 IndustryTileSpec _industry_tile_specs[NUM_INDUSTRYTILES];
@@ -187,7 +187,6 @@ Industry::~Industry()
 	/* Clear the persistent storage. */
 	delete this->psa;
 
-	DecIndustryTypeCount(this->type);
 	this->RemoveFromLocationCache();
 
 	DeleteIndustryNews(this->index);
@@ -1745,35 +1744,13 @@ static CommandCost CheckIfFarEnoughFromConflictingIndustry(TileIndex tile, Indus
 {
 	const IndustrySpec *indspec = GetIndustrySpec(type);
 
-	/* On a large map with many industries, it may be faster to check an area. */
-	static const int dmax = 14;
-	if (Industry::GetNumItems() > static_cast<size_t>(dmax * dmax * 2)) {
-		const Industry *i = nullptr;
-		TileArea tile_area = TileArea(tile, 1, 1).Expand(dmax);
-		for (TileIndex atile : tile_area) {
-			if (GetTileType(atile) == MP_INDUSTRY) {
-				const Industry *i2 = Industry::GetByTile(atile);
-				if (i == i2) continue;
-				i = i2;
-				if (DistanceMax(tile, i->location.tile) > (uint)dmax) continue;
-				if (i->type == indspec->conflicting[0] ||
-						i->type == indspec->conflicting[1] ||
-						i->type == indspec->conflicting[2]) {
-					return_cmd_error(STR_ERROR_INDUSTRY_TOO_CLOSE);
-				}
-			}
-		}
-		return CommandCost();
-	}
+	for (IndustryType conflicting_type : indspec->conflicting) {
+		if (conflicting_type == IT_INVALID) continue;
 
-	for (const Industry *i : Industry::Iterate()) {
-		/* Within 14 tiles from another industry is considered close */
-		if (DistanceMax(tile, i->location.tile) > 14) continue;
+		for (const IndustryLocationCacheEntry &entry : Industry::industries[conflicting_type]) {
+			/* Within 14 tiles from another industry is considered close */
+			if (DistanceMax(tile, entry.tile) > 14) continue;
 
-		/* check if there are any conflicting industry types around */
-		if (i->type == indspec->conflicting[0] ||
-				i->type == indspec->conflicting[1] ||
-				i->type == indspec->conflicting[2]) {
 			return_cmd_error(STR_ERROR_INDUSTRY_TOO_CLOSE);
 		}
 	}
@@ -1839,7 +1816,6 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 
 	i->location = TileArea(tile, 1, 1);
 	i->type = type;
-	Industry::IncIndustryTypeCount(type);
 
 	i->produced_cargo_count = 0;
 	for (size_t index = 0; index < std::size(indspec->produced_cargo); ++index) {
@@ -2535,8 +2511,10 @@ static void PlaceInitialIndustry(IndustryType type, bool try_hard)
  */
 static uint GetCurrentTotalNumberOfIndustries()
 {
-	int total = 0;
-	for (IndustryType it = 0; it < NUM_INDUSTRYTYPES; it++) total += Industry::GetIndustryTypeCount(it);
+	uint total = 0;
+	for (const auto &industries : Industry::industries) {
+		total += static_cast<uint16_t>(std::size(industries));
+	}
 	return total;
 }
 
@@ -2662,11 +2640,16 @@ void Industry::RecomputeProductionMultipliers()
 void Industry::AddToLocationCache()
 {
 	this->town->industry_cache.push_back({ this->index, this->type, this->selected_layout, this->location.tile });
+	Industry::industries[this->type].push_back({ this->index, this->type, this->selected_layout, this->location.tile });
 }
 
 void Industry::RemoveFromLocationCache()
 {
 	container_unordered_remove_once_if(this->town->industry_cache, [&](const IndustryLocationCacheEntry &entry) {
+		return entry.id == this->index;
+	});
+
+	container_unordered_remove_once_if(Industry::industries[this->type], [&](const IndustryLocationCacheEntry &entry) {
 		return entry.id == this->index;
 	});
 }
@@ -3231,7 +3214,7 @@ void IndustryMonthlyLoop()
 
 void InitializeIndustries()
 {
-	Industry::ResetIndustryCounts();
+	Industry::industries = {};
 	_industry_sound_tile = 0;
 
 	_industry_builder.Reset();
