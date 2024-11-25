@@ -367,7 +367,7 @@ struct NewGRFInspectWindow final : Window {
 
 	bool auto_refresh = false;
 	bool log_console = false;
-	bool click_to_mark_mode = false;
+	bool click_to_mark_mode = true;
 	bool sprite_dump = false;
 	bool sprite_dump_unopt = false;
 	bool sprite_dump_more_details = false;
@@ -1088,8 +1088,8 @@ struct NewGRFInspectWindow final : Window {
 				list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO, NGIWDDO_GOTO_SPRITE, false));
 				list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_SPRITE_DUMP_CLEAR, NGIWDDO_CLEAR, false));
 				list.push_back(MakeDropDownListDividerItem());
-				list.push_back(MakeDropDownListCheckedItem(!this->click_to_mark_mode, STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_HIGHLIGHT, NGIWDDO_CLICK_TO_HIGHLIGHT, false));
 				list.push_back(MakeDropDownListCheckedItem(this->click_to_mark_mode, STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_MARK, NGIWDDO_CLICK_TO_MARK, false));
+				list.push_back(MakeDropDownListCheckedItem(!this->click_to_mark_mode, STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_HIGHLIGHT, NGIWDDO_CLICK_TO_HIGHLIGHT, false));
 				list.push_back(MakeDropDownListDividerItem());
 				list.push_back(MakeDropDownListCheckedItem(this->sprite_dump_more_details, STR_NEWGRF_INSPECT_SPRITE_DUMP_MORE_DETAILS, NGIWDDO_MORE_DETAILS, false));
 
