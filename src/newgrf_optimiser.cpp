@@ -952,6 +952,12 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const VarAction2Ad
 		return true;
 	};
 
+	/* Remove useless use of DSGA_TYPE_DIV */
+	if (adjust.type == DSGA_TYPE_DIV && adjust.add_val == 0 && adjust.divmod_val == 1) {
+		adjust.type = DSGA_TYPE_NONE;
+		adjust.divmod_val = 0;
+	}
+
 	/* Special handling of variable 7B, this uses the parameter as the variable number, and the last value as the variable's parameter.
 	 * If the last value is a known constant, it can be substituted immediately. */
 	if (adjust.variable == 0x7B) {
