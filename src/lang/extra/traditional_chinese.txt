@@ -22,7 +22,7 @@ STR_ORDER_CONDITIONAL_PERCENT                                   :概率
 STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :停泊位置使用
 STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :停泊位置內列車
 STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :貨物裝載百分比
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :等待貨物總量
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :等待貨物數量
 STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :計數器值
 STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :當前時間/日期
 STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :時刻表狀態
@@ -40,6 +40,8 @@ STR_RIVERS_VERY_MANY                                            :{RED}很多
 STR_RIVERS_EXTREMELY_MANY                                       :{RED}極多
 
 STR_CONFIG_SETTING_BRIBE_HELPTEXT_PERIODS                       :容許公司嘗試賄賂地方政府。如果賄賂被調查員揭發，公司在往後半週期內無法接觸有關地方政府。
+
+STR_CONFIG_SETTING_ALLOW_EXCLUSIVE_HELPTEXT_PERIODS             :如果一所公司購買了一個市鎮的專營權，其他公司在該市鎮的車站將在一週期之內將不會收到任何貨物與乘客
 
 STR_COMMA_SEPARATOR                                             :,{SP}
 
@@ -62,6 +64,7 @@ STR_SORT_BY_MAX_SPEED_LOADED                                    :滿載最高速
 STR_SORT_BY_VEHICLES_CALLING                                    :班次調度總數
 STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST                      :貨物容量/運行費用
 STR_SORT_BY_VEHICLE_COUNT                                       :總車廂數
+STR_SORT_BY_TIMETABLE_TYPE                                      :時刻表類型
 
 STR_SETTINGS_MENU_ZONING                                        :分區
 
@@ -74,6 +77,8 @@ STR_VEHICLE_TYPE_TRAINS                                         :列車
 STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :汽車
 STR_VEHICLE_TYPE_SHIPS                                          :船舶
 STR_VEHICLE_TYPE_AIRCRAFT                                       :飛機
+
+STR_GRAPH_X_LABEL_LAST_UNITS                                    :{TINY_FONT}{BLACK}最近的 {STRING}
 
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED                     :{TINY_FONT}{BLACK}平均運輸時間（{STRING}）
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED                   :{TINY_FONT}{BLACK}將 1 單位（或 1,000 升）貨物運輸 200 格的收入
@@ -270,6 +275,7 @@ STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW              :將機車與車
 STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_HELPTEXT     :啟用後列車購買視窗在分開的兩欄清單中分別顯示機車和車廂
 
 STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_DUAL_BUTTONS :分別在列車購買視窗顯示按鈕群組：{STRING}
+STR_CONFIG_SETTING_DUAL_PANE_TRAIN_PURCHASE_WINDOW_DUAL_BUTTONS_HELPTEXT:啟用後，列車購買視窗中的機車和車廂清單都有各自的一組按鈕。
 
 STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL                    :隱藏號誌站標簽：{STRING}
 STR_CONFIG_SETTING_ALLOW_HIDE_WAYPOINT_LABEL_HELPTEXT           :啟用後可以在號誌站視窗選擇隱藏號誌站名稱{}這在號誌站僅用於裝飾時可以改善觀感
@@ -472,12 +478,12 @@ STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE                    :自動時刻表
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE_HELPTEXT           :在每個步驟中要應用多少車輛分離的自動時刻表變化
 
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS            :舍入自動調整的時刻表的遊戲刻：{STRING}
-STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_HELPTEXT   :時刻表的「自動」功能所調整的時刻表時間沒有四舍五入。一日的時長在未縮放時為 74 遊戲刻。{}如果使用分鐘顯示時刻表時間，則會使用「每分鐘遊戲刻數」定義的數值，否則使用一天的預設時長為 74 刻。
+STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_HELPTEXT   :時刻表的「自動」功能所調整的時刻表時間沒有四舍五入。一日的時間在未縮放時為 74 遊戲刻。{}如果使用分鐘顯示時刻表時間，則會使用「每分鐘遊戲刻數」定義的數值，否則使用一天的預設時間為 74 刻。
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_VALUE      :{COMMA}{NBSP}刻
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_DEFAULT    :預設
 
-STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION          :調度任務時刻表預設時長：{STRING}
-STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_HELPTEXT :本項設定新調度任務的預設時長。預設值為 24 小時（1440 分鐘）。在使用「日」作為計時單位時，預設時長為一年。
+STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION          :調度任務時刻表預設時間：{STRING}
+STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_HELPTEXT :本項設定新調度任務的預設時間。預設值為 24 小時（1440 分鐘）。在使用「日」作為計時單位時，預設時間為一年。
 STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_VALUE    :{COMMA}{NBSP}分
 STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_DEFAULT  :預設
 
@@ -492,7 +498,7 @@ STR_CONFIG_SETTING_ENABLE_REMOVE_WATER_HELPTEXT                 :允許在場景
 
 STR_CONFIG_SETTING_SHARING_RAIL                                 :鐵道設施共享：{STRING}
 STR_CONFIG_SETTING_SHARING_ROAD                                 :道路設施共享：{STRING}
-STR_CONFIG_SETTING_SHARING_WATER                                :水運設施共享：{STRING}
+STR_CONFIG_SETTING_SHARING_WATER                                :船運設施共享：{STRING}
 STR_CONFIG_SETTING_SHARING_AIR                                  :航空設施共享：{STRING}
 STR_CONFIG_SETTING_SHARING_FEE_RAIL                             :列車通行費：{STRING}/千噸每日
 STR_CONFIG_SETTING_SHARING_FEE_ROAD                             :車輛停放費：{STRING}/日
@@ -519,7 +525,7 @@ STR_CONFIG_SETTING_SIMULATE_SIGNALS_HELPTEXT                    :號誌的大橋
 STR_CONFIG_SETTING_SIMULATE_SIGNALS_VALUE                       :{COMMA}{NBSP}格
 
 STR_CONFIG_SETTING_DAY_LENGTH_FACTOR                            :經濟速度因數：{STRING}
-STR_CONFIG_SETTING_DAY_LENGTH_FACTOR_HELPTEXT                   :本項調整經濟週期的長度，並按比例減慢週期內的遊戲事件。遊戲中的市鎮與工業貨物產出、市鎮發展、植物生長、基建設施維護成本、車站評價計算等都需要使用經濟週期。{}在日曆計時模式中，本項會影響日、月、年的長度，因此也可以用來調整與日期相關的遊戲事件，如車輛、房屋的推出與退役與雪線的季節性變化等。{}在掛鐘計時模式中本項只縮放經濟週期的時長。{}{}本設定項即為之前的「日長因數」。
+STR_CONFIG_SETTING_DAY_LENGTH_FACTOR_HELPTEXT                   :本項調整經濟週期的長度，並按比例減慢週期內的遊戲事件。遊戲中的市鎮與工業貨物產出、市鎮發展、植物生長、基建設施維護成本、車站評價計算等都需要使用經濟週期。{}在日曆計時模式中，本項會影響日、月、年的長度，因此也可以用來調整與日期相關的遊戲事件，如車輛、房屋的推出與退役與雪線的季節性變化等。{}在掛鐘計時模式中本項只縮放經濟週期的時間。{}{}本設定項即為之前的「日長因數」。
 
 STR_CONFIG_SETTING_TOWN_TUNNELS                                 :允許市鎮建設隧道：{STRING}
 STR_CONFIG_SETTING_TOWN_TUNNELS_HELPTEXT                        :在什麼條件下市鎮被允許建設道路隧道
@@ -784,7 +790,7 @@ STR_LINKGRAPH_STATS_TOOLTIP_DISTANCE                            :曼哈頓距離
 
 STR_LINKGRAPH_STATS_TOOLTIP_PRODUCTION_INTERVAL                 :{BLACK} 每個生產週期有 {CARGO_LONG} 從 {STATION} 運輸至 {STATION}（運載容量的 {COMMA}%）{STRING}
 
-STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL                         :{BLACK}使用多段線模式建設鐵道。按住 <Ctrl> 鍵操作以移除鐵道，按住 <Shift> 鍵操作以顯示預計成本
+STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL                         :{BLACK}使用多段線模式建設鐵道。按住 <Ctrl> 鍵點擊以移除鐵道，按住 <Shift> 鍵點擊以顯示預計成本
 
 STR_BUILD_SIGNAL_SEMAPHORE_PROG_TOOLTIP                         :{BLACK}可編程邏輯號誌（臂木）{}可編程邏輯號誌是一種綜合號誌，允許制定複雜的通行規則。
 STR_BUILD_SIGNAL_SEMAPHORE_NO_ENTRY_TOOLTIP                     :{BLACK}禁止進入號誌（臂木）{}路徑號誌燈為列車預留一條到安全停車位的路徑，而其它路徑仍然可以使用，從而允許一列以上的列車同時進入一個號誌區間。禁止進入號誌不允許列車逆行。
@@ -1268,8 +1274,8 @@ STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_MARK                    :點擊標註
 STR_NEWGRF_INSPECT_SPRITE_DUMP_OPTIONS                          :{BLACK}額外指令與選項
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT          :{BLACK}點擊亮點 Sprite(拼合圖) 組
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_MARK               :{BLACK}點擊標註 Sprite(拼合圖) 組
-STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_COLLAPSE           :{BLACK}按住 <Shift> 鍵操作以摺疊 Sprite(拼合圖) 組
-STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT_TEMP     :{BLACK}按住 <Ctrl> 鍵操作以亮點臨時存儲寄存器
+STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_COLLAPSE           :{BLACK}按住 <Shift> 鍵點擊以摺疊 Sprite(拼合圖) 組
+STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT_TEMP     :{BLACK}按住 <Ctrl> 鍵點擊以亮點臨時存儲寄存器
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS                    :號誌
 STR_NEWGRF_INSPECT_CAPTION_TRACERESTRICT                        :{HEX}/{HEX} 的尋路限制邏輯
 STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :未呈現且已重新映射的特徵 ID：名稱：{2:STRING}，已映射至：{5:HEX} (Sprite {3:NUM})
@@ -1302,6 +1308,7 @@ STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}貨物�
 STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}顯示貨物等待記錄
 
 STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} - 實時運輸資訊
+STR_DEPARTURES_CAPTION_FILTER                                   :{WHITE}{STRING} - 停靠於 {STRING}
 STR_DEPARTURES_CARGO_MODE_TOOLTIP                               :{BLACK}設定車輛到達與出發顯示貨物類型過濾規則
 STR_DEPARTURES_DEPARTURES                                       :出發
 STR_DEPARTURES_ARRIVALS                                         :到達
@@ -1314,6 +1321,8 @@ STR_DEPARTURES_EMPTY_BUTTON                                     :{BLACK}空轉
 STR_DEPARTURES_EMPTY_TOOLTIP                                    :{BLACK}包括出發、到達時間與非營業車站，即車輛經過或停留但不裝載客貨的車站。
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}經
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}顯示表定通過車輛
+STR_DEPARTURES_FILTER_BUTTON                                    :{BLACK}篩選
+STR_DEPARTURES_FILTER_TOOLTIP                                   :{BLACK}僅顯示在停靠於特定目的地的出發/到達航班。
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}僅顯示列車
 STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}僅顯示汽車
 STR_DEPARTURES_SHOW_SHIPS_TOOLTIP                               :{BLACK}僅顯示船舶
@@ -1344,6 +1353,9 @@ STR_DEPARTURES_VIA_AND                                          :{STRING} 與 {S
 STR_DEPARTURES_SOURCE_MODE_TOOLTIP                              :{BLACK}選擇顯示實時到發順序或 24 小時到發順序（即讀取在調度任務中設定的時刻表）
 STR_DEPARTURES_SOURCE_MODE_LIVE                                 :實時
 STR_DEPARTURES_SOURCE_MODE_SCHEDULE_24_HOUR                     :24 小時
+
+STR_DEPARTURES_DUPLICATE                                        :{BLACK}複製
+STR_DEPARTURES_DUPLICATE_TOOLTIP                                :{BLACK}複製此視窗
 
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
 STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
@@ -1403,8 +1415,8 @@ STR_CONFIG_DEPARTURE_MERGE_IDENTICAL_HELPTEXT                   :相同的班次
 
 STR_WAYPOINT_VIEW_HIDE_VIEWPORT_LABEL                           :{BLACK}對此號誌站隱藏名稱標簽
 
-STR_FINANCES_BORROW_TOOLTIP_EXTRA                               :{BLACK}{STRING}{}按住 <Shift> 鍵操作以輸入貸款總額
-STR_FINANCES_REPAY_TOOLTIP_EXTRA                                :{BLACK}{STRING}{}按住 <Shift> 鍵操作以輸入還款總額
+STR_FINANCES_BORROW_TOOLTIP_EXTRA                               :{BLACK}{STRING}{}按住 <Shift> 鍵點擊以輸入貸款總額
+STR_FINANCES_REPAY_TOOLTIP_EXTRA                                :{BLACK}{STRING}{}按住 <Shift> 鍵點擊以輸入還款總額
 STR_FINANCES_BORROW_QUERY_CAPT                                  :{WHITE}輸入貸款總額
 STR_FINANCES_REPAY_QUERY_CAPT                                   :{WHITE}輸入還款總額
 
@@ -1451,6 +1463,9 @@ STR_VEHICLE_LIST_TIMETABLE_DELAY_LATE                           :{STRING}，時�
 STR_VEHICLE_LIST_TIMETABLE_DELAY_EARLY                          :{STRING}，時刻表狀態：早點 {STRING}
 STR_VEHICLE_LIST_TIMETABLE_DELAY_ON_TIME                        :{STRING}，時刻表狀態：準時
 STR_VEHICLE_LIST_ORDER_OCCUPANCY_AVERAGE                        :{STRING}，平均負載率：{COMMA}%
+STR_VEHICLE_LIST_TIMETABLE_TYPE                                 :{STRING}，時刻表類型：{STRING}
+
+STR_VEHICLE_LIST_TIMETABLE_TYPE_EXTRA_ITEM                      :, {STRING}
 
 STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING}（服務年限：{CURRENCY_LONG}）
 STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE                           :取消維護/送往
@@ -1495,7 +1510,7 @@ STR_BUY_VEHICLE_TRAIN_TOGGLE_DUAL_PANE_TOOLTIP                  :{BLACK}切換�
 STR_QUERY_RENAME_TRAIN_TYPE_LOCOMOTIVE_CAPTION                  :{WHITE}重新命名機車類型
 STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION                       :{WHITE}重新命名車廂類型
 
-STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT                    :{STRING}。按住 <Shift> 鍵操作以選擇
+STR_VEHICLE_VIEW_SEND_TO_DEPOT_TOOLTIP_SHIFT                    :{STRING}。按住 <Shift> 鍵點擊以選擇
 STR_VEHICLE_VIEW_SEND_TO_DEPOT_MENU                             :{BLACK}取消發送車輛到車廠/機廠。按住 <Ctrl> 鍵點擊以選擇目錄。按住 <Shift> 鍵點擊以選擇車廠/機廠
 
 STR_VEHICLE_VIEW_TRAIN_CENTER_TOOLTIP_EXTRA                     :{STRING}{BLACK}{}按住 <Shift> 鍵點擊以忽略視窗焦點狀態強制切換路徑重疊層
@@ -1616,7 +1631,7 @@ STR_ORDER_CONDITIONAL_TIMETABLE_TOOLTIP                         :{BLACK}檢查�
 STR_ORDER_CONDITIONAL_SCHED_SELECT_TOOLTIP                      :{BLACK}使用的調度任務時刻表
 STR_ORDER_CONDITIONAL_SCHED_TEST_TOOLTIP                        :{BLACK}測試的調度任務時刻表
 STR_ORDER_CONDITIONAL_VIA                                       :{BLACK}經由
-STR_ORDER_CONDITIONAL_VIA_TOOLTIP                               :{BLACK}經由某站的貨物總量
+STR_ORDER_CONDITIONAL_VIA_TOOLTIP                               :{BLACK}經由某站的貨物數量
 STR_ORDER_CONDITIONAL_STATION                                   :{BLACK}車站
 STR_ORDER_CONDITIONAL_STATION_TOOLTIP                           :{BLACK}檢查的車站
 STR_ORDER_CONDITIONAL_REFIT_MODE                                :{BLACK}改裝
@@ -1691,7 +1706,7 @@ STR_ORDERS_OCCUPANCY_LIST_TOOLTIP                               :{BLACK}調度�
 STR_ORDERS_OCCUPANCY_PERCENT                                    :{NUM}%
 
 STR_ORDERS_NEW_GROUP_TOOLTIP                                    :{BLACK}從獨立車輛設立群組
-STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP_EXTRA            :{STRING}{}{BLACK}按住 <Ctrl> 鍵操作以以設立群組
+STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP_EXTRA            :{STRING}{}{BLACK}按住 <Ctrl> 鍵點擊以設立群組
 
 STR_ORDER_GO_TO_WAYPOINT_REVERSE                                :經由並在 {WAYPOINT} 掉頭
 STR_ORDER_GO_NON_STOP_TO_WAYPOINT_REVERSE                       :直達經由並在 {WAYPOINT} 掉頭
@@ -1767,7 +1782,7 @@ STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME             :{PUSH_COLOUR}{R
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_SCHEDULE_INDEX           :{NUM}{NBSP}-{NBSP}
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NAMED_SCHEDULE           :{STRING}{NBSP}-{NBSP}
 
-STR_TIMETABLE_LOCK_ORDER_TIME_TOOLTIP                           :{BLACK}鎖定/解鎖突出顯示的調度任務的時間量（按住 <Ctrl> 鍵操作以為所有調度任務設定鎖定狀態）。{}鎖定時，時刻表自動填充或自動調整不會更改時間。
+STR_TIMETABLE_LOCK_ORDER_TIME_TOOLTIP                           :{BLACK}鎖定/解鎖突出顯示的調度任務的時間量（按住 <Ctrl> 鍵點擊以為所有調度任務設定鎖定狀態）。{}鎖定時，時刻表自動填充或自動調整不會更改時間。
 
 STR_TIMETABLE_LEAVE_EARLY_ORDER                                 :[提前離開]
 STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ANY                        :[如果任意貨物裝滿則提前離開]
@@ -1852,7 +1867,7 @@ STR_PLANS_LIST_ITEM_PLAN_PRIVATE                                :[私有]：{STR
 STR_PLANS_LIST_ITEM_PLAN                                        :計劃 #{NUM}：{NUM} 條線（{DATE_SHORT}）
 STR_PLANS_LIST_ITEM_NAMED_PLAN                                  :{STRING}: {NUM} 條線（{DATE_SHORT}）
 STR_PLANS_LIST_ITEM_LINE                                        : -- #{NUM}：{NUM} 條線段
-STR_PLANS_LIST_TOOLTIP                                          :{BLACK}雙擊清單中的任意物品摺疊相關聯的計劃{}按住 <Ctrl> 鍵操作移動到相應位置
+STR_PLANS_LIST_TOOLTIP                                          :{BLACK}雙擊清單中的任意物品摺疊相關聯的計劃{}按住 <Ctrl> 鍵點擊移動到相應位置
 STR_PLANS_QUERY_RENAME_PLAN                                     :{WHITE}重新命名計劃
 STR_PLANS_OWN_ONLY                                              :{BLACK}當前公司
 STR_PLANS_OWN_ONLY_TOOLTIP                                      :{BLACK}僅顯示當前公司的計劃
@@ -1966,12 +1981,13 @@ STR_STATION_RATING_MAX_PERCENTAGE                               :，最大{NBSP}
 STR_STATION_RATING_MAX_PERCENTAGE_COMMA                         :，最大{NBSP}{PLUS_NUM}%
 STR_STATION_RATING_PERCENTAGE_COMMA                             :{NBSP}[{PLUS_NUM}%]
 
+STR_STATION_RATING_TOOLTIP_AT_LEAST_VELOCITY                    :至少 {VELOCITY}
 STR_STATION_RATING_TOOLTIP_SPEED                                :上次車輛最高速度{0:STRING}：{1:COLOUR}{2:STRING}{3:STRING}（{4:STRING}）
 
 STR_STATION_RATING_TOOLTIP_AGE                                  :上次車輛使用時間{0:STRING}：{1:COLOUR}{2:NUM} 年{3:STRING}
 
 STR_STATION_RATING_TOOLTIP_WAITTIME                             :距離上次提貨時間{0:STRING}：{1:STRING}
-STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP                        :距離上次提貨時間{0:STRING}：{1:STRING}（水運）
+STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP                        :距離上次提貨時間{0:STRING}：{1:STRING}（船運）
 STR_STATION_RATING_TOOLTIP_WAITTIME_VALUE                       :{COLOUR}{NUM} 日{STRING}
 
 STR_STATION_RATING_TOOLTIP_WAITUNITS                            :車站貨物等待時間{0:STRING}：{1:COLOUR}{2:NUM}{3:STRING}{PUSH_COLOUR}{BLACK}（直達車站平均）{POP_COLOUR}
@@ -1990,7 +2006,7 @@ STR_TMPL_RPL_TITLE                                              :{WHITE}範本�
 STR_TMPL_TEMPLATE_REPLACEMENT                                   :範本替換
 STR_TMPL_TRAINS_IN_GROUP                                        :{BLACK}群組內列車
 STR_TMPL_AVAILABLE_TEMPLATES                                    :{BLACK}可用範本
-STR_TMPL_DEFINE_TEMPLATE                                        :{BLACK}新建
+STR_TMPL_DEFINE_TEMPLATE                                        :{BLACK}建立
 STR_TMPL_EDIT_TEMPLATE                                          :{BLACK}編輯
 STR_TMPL_CREATE_CLONE_VEH                                       :{BLACK}複製
 STR_TMPL_DELETE_TEMPLATE                                        :{BLACK}刪除
@@ -2077,7 +2093,7 @@ STR_SCHDISPATCH_ENABLED                                         :{BLACK}啟用
 STR_SCHDISPATCH_ENABLED_TOOLTIP                                 :{BLACK}對此調度應用調度任務。
 STR_SCHDISPATCH_ADD                                             :{BLACK}增加發車時間
 STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}為此時刻表增加發車時間。
-STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA                               :{BLACK}{STRING}按住 <Ctrl> 鍵操作以增加多個發車時間。
+STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA                               :{BLACK}{STRING}按住 <Ctrl> 鍵點擊以增加多個發車時間。
 STR_SCHDISPATCH_ADD_CAPTION                                     :{BLACK}發車時間
 STR_SCHDISPATCH_DURATION                                        :{BLACK}持續長度
 STR_SCHDISPATCH_DURATION_TOOLTIP                                :{BLACK}設定本時刻表的持續時間長度
@@ -2226,7 +2242,7 @@ STR_ERROR_CAN_T_EXCHANGE_STATION_NAMES                          :{WHITE}無法�
 STR_ERROR_STATIONS_NOT_IN_SAME_TOWN                             :{WHITE}……車站不在同一市鎮
 STR_ERROR_STATION_ATTACHED_TO_INDUSTRY                          :{WHITE}……車站已附屬某個工業
 
-STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_EXTRA                     :{STRING}{}{BLACK}按住 <Ctrl> 鍵操作以轉換單節軌道而不是整格軌道
+STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_EXTRA                     :{STRING}{}{BLACK}按住 <Ctrl> 鍵點擊以轉換單節軌道而不是整格軌道
 
 STR_CONFIG_SETTING_ALLOW_SHARES                                 :允許購買其他公司的股票：{STRING}
 STR_CONFIG_SETTING_ALLOW_SHARES_HELPTEXT                        :啟用時容許公司買賣股票。一所公司必須經營一定年期方能買賣股票
@@ -2288,7 +2304,7 @@ STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME_ALWAYS_ON     :始終開啟
 STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME                :車站工具提示中顯示名稱：{STRING}
 STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_HELPTEXT       :將滑鼠指標停留車站上方時，在工具提示中顯示車站名稱。
 STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_CARGO               :車站工具提示中顯示貨物詳情：{STRING}
-STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_CARGO_HELPTEXT      :顯示車站評價和貨物總量
+STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_CARGO_HELPTEXT      :顯示車站評價和貨物數量
 STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_OFF            :關閉
 STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_ON_IF_HIDDEN   :如果車站名稱已隱藏則開啟
 STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_ALWAYS_ON      :始終開啟
