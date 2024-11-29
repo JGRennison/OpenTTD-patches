@@ -87,14 +87,12 @@ enum HouseExtraFlags : uint8_t {
 	SYNCHRONISED_CALLBACK_1B = 1U << 2,  ///< synchronized callback 1B will be performed, on multi tile houses
 	CALLBACK_1A_RANDOM_BITS  = 1U << 3,  ///< callback 1A needs random bits
 };
-
 DECLARE_ENUM_AS_BIT_SET(HouseExtraFlags)
 
-enum HouseCtrlFlags {
+enum HouseCtrlFlags : uint8_t {
 	HCF_NONE                 =       0,
 	HCF_NO_TRIGGERS          = 1U << 0,  ///< this house does not use random triggers
 };
-
 DECLARE_ENUM_AS_BIT_SET(HouseCtrlFlags)
 
 struct HouseSpec {
