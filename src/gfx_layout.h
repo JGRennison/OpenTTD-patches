@@ -87,7 +87,7 @@ public:
 };
 
 /** Mapping from index to font. The pointer is owned by FontColourMap. */
-using FontMap = btree::btree_map<int, Font *>;
+using FontMap = std::vector<std::pair<int, Font *>>;
 
 /**
  * Interface to glue fallback and normal layouter into one.
@@ -177,10 +177,10 @@ public:
 		FontMap runs;              ///< Accessed by our ParagraphLayout::nextLine.
 
 		FontState state_after;     ///< Font state after the line.
-		ParagraphLayouter *layout; ///< Layout of the line.
+		std::unique_ptr<ParagraphLayouter> layout = nullptr; ///< Layout of the line.
 
-		LineCacheItem() : buffer(nullptr), layout(nullptr) {}
-		~LineCacheItem() { delete layout; free(buffer); }
+		LineCacheItem() : buffer(nullptr) {}
+		~LineCacheItem() { free(buffer); }
 	};
 private:
 	typedef std::map<LineCacheKey, LineCacheItem, LineCacheCompare> LineCache;

@@ -28,7 +28,7 @@
 static const int AYSTAR_DEF_MAX_SEARCH_NODES = 10000; ///< Reference limit for #AyStar::max_search_nodes
 
 /** Return status of #AyStar methods. */
-enum AystarStatus {
+enum AyStarStatus {
 	AYSTAR_FOUND_END_NODE, ///< An end node was found.
 	AYSTAR_EMPTY_OPENLIST, ///< All items are tested, and no path has been found.
 	AYSTAR_STILL_BUSY,     ///< Some checking was done, but no path found yet, and there are still items left to try.
@@ -79,7 +79,7 @@ struct AyStar;
  *  - #AYSTAR_FOUND_END_NODE : indicates this is the end tile
  *  - #AYSTAR_DONE : indicates this is not the end tile (or direction was wrong)
  */
-typedef int32_t AyStar_EndNodeCheck(const AyStar *aystar, const OpenListNode *current);
+typedef AyStarStatus AyStar_EndNodeCheck(const AyStar *aystar, const OpenListNode *current);
 
 /**
  * Calculate the G-value for the %AyStar algorithm.
@@ -152,8 +152,8 @@ struct AyStar {
 	/* These will contain the methods for manipulating the AyStar. Only
 	 * Main() should be called externally */
 	void AddStartNode(AyStarNode *start_node, uint g);
-	int Main();
-	int Loop();
+	AyStarStatus Main();
+	AyStarStatus Loop();
 	void Free();
 	void Clear();
 	void CheckTile(AyStarNode *current, OpenListNode *parent);

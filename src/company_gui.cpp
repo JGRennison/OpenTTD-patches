@@ -328,8 +328,11 @@ static constexpr NWidgetPart _nested_company_finances_widgets[] = {
 
 /** Window class displaying the company finances. */
 struct CompanyFinancesWindow : Window {
+	static constexpr int NUM_PERIODS = WID_CF_EXPS_PRICE3 - WID_CF_EXPS_PRICE1 + 1;
+
 	Money max_money;        ///< The approximate maximum amount of money a company has had over the lifetime of this window
 	bool small;             ///< Window is toggled to 'small'.
+	uint8_t first_visible = NUM_PERIODS - 1; ///< First visible expenses column. The last column (current) is always visible.
 	int query_widget;       ///< The widget associated with the current text query input.
 
 	CompanyFinancesWindow(WindowDesc &desc, CompanyID company) : Window(desc)
@@ -342,6 +345,7 @@ struct CompanyFinancesWindow : Window {
 		this->FinishInitNested(company);
 
 		this->owner = (Owner)this->window_number;
+		this->InvalidateData();
 	}
 
 	void SetStringParameters(WidgetID widget) const override
@@ -424,12 +428,12 @@ struct CompanyFinancesWindow : Window {
 			case WID_CF_EXPS_PRICE1:
 			case WID_CF_EXPS_PRICE2:
 			case WID_CF_EXPS_PRICE3: {
+				int period = widget - WID_CF_EXPS_PRICE1;
+				if (period < this->first_visible) break;
+
 				const Company *c = Company::Get((CompanyID)this->window_number);
-				YearDelta age = std::min<YearDelta>(c->age_years, 2);
-				int wid_offset = widget - WID_CF_EXPS_PRICE1;
-				if (wid_offset <= age.base()) {
-					DrawYearColumn(r, EconTime::YearToDisplay(EconTime::CurYear().base() - (age.base() - wid_offset)), c->yearly_expenses[age.base() - wid_offset]);
-				}
+				const auto &expenses = c->yearly_expenses[NUM_PERIODS - period - 1];
+				DrawYearColumn(r, EconTime::YearToDisplay(EconTime::CurYear().base() - (NUM_PERIODS - period - 1)), expenses);
 				break;
 			}
 
@@ -540,6 +544,24 @@ struct CompanyFinancesWindow : Window {
 			amount = LOAN_INTERVAL * CeilDivT<Money>(amount, LOAN_INTERVAL);
 			DoCommandP(0, amount >> 32, (amount & 0xFFFFFFFC) | 2, CMD_DECREASE_LOAN | CMD_MSG(STR_ERROR_CAN_T_REPAY_LOAN));
 		}
+	}
+
+	void RefreshVisibleColumns()
+	{
+		for (uint period = 0; period < this->first_visible; ++period) {
+			const Company *c = Company::Get((CompanyID)this->window_number);
+			const Expenses &expenses = c->yearly_expenses[NUM_PERIODS - period - 1];
+			/* Show expenses column if it has any non-zero value in it. */
+			if (std::ranges::any_of(expenses, [](const Money &value) { return value != 0; })) {
+				this->first_visible = period;
+				break;
+			}
+		}
+	}
+
+	void OnInvalidateData(int, bool) override
+	{
+		this->RefreshVisibleColumns();
 	}
 
 	void OnHundredthTick() override

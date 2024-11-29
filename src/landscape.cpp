@@ -1144,7 +1144,7 @@ static bool FlowsDown(TileIndex begin, TileIndex end)
 }
 
 /* AyStar callback for checking whether we reached our destination. */
-static int32_t River_EndNodeCheck(const AyStar *aystar, const OpenListNode *current)
+static AyStarStatus River_EndNodeCheck(const AyStar *aystar, const OpenListNode *current)
 {
 	return current->path.node.tile == *(TileIndex*)aystar->user_target ? AYSTAR_FOUND_END_NODE : AYSTAR_DONE;
 }

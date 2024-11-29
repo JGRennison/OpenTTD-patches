@@ -164,7 +164,7 @@ void AyStar::CheckTile(AyStarNode *current, OpenListNode *parent)
  *  - #AYSTAR_FOUND_END_NODE : indicates we found the end. Path_found now is true, and in path is the path found.
  *  - #AYSTAR_STILL_BUSY : indicates we have done this tile, did not found the path yet, and have items left to try.
  */
-int AyStar::Loop()
+AyStarStatus AyStar::Loop()
 {
 	int i;
 
@@ -253,9 +253,10 @@ void AyStar::Clear()
  * @note When the algorithm is done (when the return value is not #AYSTAR_STILL_BUSY) #Clear() is called automatically.
  *       When you stop the algorithm halfway, you should call #Clear() yourself!
  */
-int AyStar::Main()
+AyStarStatus AyStar::Main()
 {
-	int r, i = 0;
+	AyStarStatus r = AYSTAR_FOUND_END_NODE;
+	int i = 0;
 	/* Loop through the OpenList
 	 *  Quit if result is no AYSTAR_STILL_BUSY or is more than loops_per_tick */
 	while ((r = this->Loop()) == AYSTAR_STILL_BUSY && (this->loops_per_tick == 0 || ++i < this->loops_per_tick)) { }

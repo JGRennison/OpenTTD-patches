@@ -319,8 +319,8 @@ static uint8_t GetSavegameFileType(const SaveLoad &sld)
 			return IsSavegameVersionBefore(SLV_69) ? SLE_FILE_U16 : SLE_FILE_U32;
 
 		case SL_REFLIST:
+		case SL_REFVECTOR:
 		case SL_REFRING:
-		case SL_REFVEC:
 			return (IsSavegameVersionBefore(SLV_69) ? SLE_FILE_U16 : SLE_FILE_U32) | SLE_FILE_HAS_LENGTH_FIELD;
 
 		case SL_SAVEBYTE:
@@ -1203,26 +1203,6 @@ static inline size_t SlCalcRefListLen(const void *list, VarType conv)
 }
 
 /**
- * Return the size in bytes of a ring buffer.
- * @param list The ring buffer to find the size of.
- * @param conv VarType type of variable that is used for calculating the size.
- */
-static inline size_t SlCalcRefRingLen(const void *list, VarType conv)
-{
-	return SlStorageHelper<ring_buffer_sl, void *>::SlCalcLen(list, conv, SL_REF);
-}
-
-/**
- * Return the size in bytes of a vector.
- * @param list The std::vector to find the size of.
- * @param conv VarType type of variable that is used for calculating the size.
- */
-static inline size_t SlCalcRefVectorLen(const void *list, VarType conv)
-{
-	return SlStorageHelper<std::vector, void *>::SlCalcLen(list, conv, SL_REF);
-}
-
-/**
  * Save/Load a list.
  * @param list The list being manipulated.
  * @param conv VarType type of variable that is used for calculating the size.
@@ -1240,6 +1220,43 @@ static void SlRefList(void *list, VarType conv)
 }
 
 /**
+ * Return the size in bytes of a vector.
+ * @param vector The std::vector to find the size of.
+ * @param conv VarType type of variable that is used for calculating the size.
+ */
+static inline size_t SlCalcRefVectorLen(const void *vector, VarType conv)
+{
+	return SlStorageHelper<std::vector, void *>::SlCalcLen(vector, conv, SL_REF);
+}
+
+/**
+ * Save/Load a vector.
+ * @param vector The vector being manipulated.
+ * @param conv VarType type of variable that is used for calculating the size.
+ */
+static void SlRefVector(void *vector, VarType conv)
+{
+	/* Automatically calculate the length? */
+	if (_sl.need_length != NL_NONE) {
+		SlSetLength(SlCalcRefVectorLen(vector, conv));
+		/* Determine length only? */
+		if (_sl.need_length == NL_CALCLENGTH) return;
+	}
+
+	SlStorageHelper<std::vector, void *>::SlSaveLoad(vector, conv, SL_REF);
+}
+
+/**
+ * Return the size in bytes of a ring buffer.
+ * @param list The ring buffer to find the size of.
+ * @param conv VarType type of variable that is used for calculating the size.
+ */
+static inline size_t SlCalcRefRingLen(const void *list, VarType conv)
+{
+	return SlStorageHelper<ring_buffer_sl, void *>::SlCalcLen(list, conv, SL_REF);
+}
+
+/**
  * Save/Load a ring buffer.
  * @param list The list being manipulated.
  * @param conv VarType type of variable that is used for calculating the size.
@@ -1254,23 +1271,6 @@ static void SlRefRing(void *list, VarType conv)
 	}
 
 	SlStorageHelper<ring_buffer_sl, void *>::SlSaveLoad(list, conv, SL_REF);
-}
-
-/**
- * Save/Load a vector.
- * @param list The list being manipulated.
- * @param conv VarType type of variable that is used for calculating the size.
- */
-static void SlRefVector(void *list, VarType conv)
-{
-	/* Automatically calculate the length? */
-	if (_sl.need_length != NL_NONE) {
-		SlSetLength(SlCalcRefVectorLen(list, conv));
-		/* Determine length only? */
-		if (_sl.need_length == NL_CALCLENGTH) return;
-	}
-
-	SlStorageHelper<std::vector, void *>::SlSaveLoad(list, conv, SL_REF);
 }
 
 /**
@@ -1452,8 +1452,8 @@ size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld)
 		case SL_ARR: return SlCalcArrayLen(sld.length, sld.conv);
 		case SL_STR: return SlCalcStringLen(GetVariableAddress(object, sld), sld.length, sld.conv);
 		case SL_REFLIST: return SlCalcRefListLen(GetVariableAddress(object, sld), sld.conv);
+		case SL_REFVECTOR: return SlCalcRefVectorLen(GetVariableAddress(object, sld), sld.conv);
 		case SL_REFRING: return SlCalcRefRingLen(GetVariableAddress(object, sld), sld.conv);
-		case SL_REFVEC: return SlCalcRefVectorLen(GetVariableAddress(object, sld), sld.conv);
 		case SL_RING: return SlCalcRingLen(GetVariableAddress(object, sld), sld.conv);
 		case SL_VECTOR: return SlCalcVectorLen(GetVariableAddress(object, sld), sld.conv);
 		case SL_STDSTR: return SlCalcStdStringLen(GetVariableAddress(object, sld));
@@ -1500,8 +1500,8 @@ static bool SlObjectMember(void *object, const SaveLoad &sld)
 		case SL_ARR:
 		case SL_STR:
 		case SL_REFLIST:
+		case SL_REFVECTOR:
 		case SL_REFRING:
-		case SL_REFVEC:
 		case SL_RING:
 		case SL_VECTOR:
 		case SL_STDSTR: {
@@ -1513,8 +1513,8 @@ static bool SlObjectMember(void *object, const SaveLoad &sld)
 				case SL_ARR: SlArray(ptr, sld.length, conv); break;
 				case SL_STR: SlString(ptr, sld.length, sld.conv); break;
 				case SL_REFLIST: SlRefList(ptr, conv); break;
+				case SL_REFVECTOR: SlRefVector(ptr, conv); break;
 				case SL_REFRING: SlRefRing(ptr, conv); break;
-				case SL_REFVEC: SlRefVector(ptr, conv); break;
 				case SL_RING: SlRing(ptr, conv); break;
 				case SL_VECTOR: SlVector(ptr, conv); break;
 				case SL_STDSTR: SlStdString(ptr, sld.conv); break;

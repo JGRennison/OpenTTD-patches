@@ -776,7 +776,7 @@ static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
 }
 
 /** AyStar callback for checking whether we reached our destination. */
-static int32_t PublicRoad_EndNodeCheck(const AyStar *aystar, const OpenListNode *current)
+static AyStarStatus PublicRoad_EndNodeCheck(const AyStar *aystar, const OpenListNode *current)
 {
 	return current->path.node.tile == static_cast<TileIndex>(reinterpret_cast<uintptr_t>(aystar->user_target)) ? AYSTAR_FOUND_END_NODE : AYSTAR_DONE;
 }

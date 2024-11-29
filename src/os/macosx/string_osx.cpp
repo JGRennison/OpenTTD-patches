@@ -104,7 +104,7 @@ public:
 
 				/* Extract font information for this run. */
 				CFRange chars = CTRunGetStringRange(run);
-				auto map = fontMapping.upper_bound(chars.location);
+				auto map = std::ranges::upper_bound(fontMapping, chars.location, std::less{}, &std::pair<int, Font *>::first);
 
 				this->emplace_back(run, map->second, buff);
 			}
@@ -150,7 +150,7 @@ static CTRunDelegateCallbacks _sprite_font_callback = {
 	&SpriteFontGetWidth
 };
 
-/* static */ ParagraphLayouter *CoreTextParagraphLayoutFactory::GetParagraphLayout(CharType *buff, CharType *buff_end, FontMap &fontMapping)
+/* static */ std::unique_ptr<ParagraphLayouter> CoreTextParagraphLayoutFactory::GetParagraphLayout(CharType *buff, CharType *buff_end, FontMap &fontMapping)
 {
 	if (!MacOSVersionIsAtLeast(10, 5, 0)) return nullptr;
 
@@ -211,7 +211,7 @@ static CTRunDelegateCallbacks _sprite_font_callback = {
 	/* Create and return typesetter for the string. */
 	CFAutoRelease<CTTypesetterRef> typesetter(CTTypesetterCreateWithAttributedString(str.get()));
 
-	return typesetter ? new CoreTextParagraphLayout(std::move(typesetter), buff, length, fontMapping) : nullptr;
+	return typesetter ? std::make_unique<CoreTextParagraphLayout>(std::move(typesetter), buff, length, fontMapping) : nullptr;
 }
 
 /* virtual */ std::unique_ptr<const ParagraphLayouter::Line> CoreTextParagraphLayout::NextLine(int max_width)

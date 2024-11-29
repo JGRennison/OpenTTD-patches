@@ -130,6 +130,7 @@ static int32_t ClickChangeDateCheat(int32_t p1, int32_t p2)
 	InvalidateWindowClassesData(WC_BUILD_STATION, 0);
 	InvalidateWindowClassesData(WC_BUS_STATION, 0);
 	InvalidateWindowClassesData(WC_BUILD_OBJECT, 0);
+	InvalidateWindowClassesData(WC_FINANCES, 0);
 	ResetSignalVariant();
 	MarkWholeScreenDirty();
 	return CalTime::CurYear().base();

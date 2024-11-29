@@ -871,7 +871,7 @@ void CompaniesYearlyLoop()
 		std::rotate(std::rbegin(c->yearly_expenses), std::rbegin(c->yearly_expenses) + 1, std::rend(c->yearly_expenses));
 		c->yearly_expenses[0] = {};
 		c->age_years++;
-		SetWindowDirty(WC_FINANCES, c->index);
+		InvalidateWindowData(WC_FINANCES, c->index);
 	}
 
 	if (_settings_client.gui.show_finances && _local_company != COMPANY_SPECTATOR) {
