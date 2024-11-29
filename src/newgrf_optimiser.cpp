@@ -2883,6 +2883,10 @@ void OptimiseVarAction2DeterministicSpriteGroup(VarAction2OptimiseState &state, 
 				group->ranges.insert(group->ranges.begin(), { group->default_group, 0, 1 });
 				extern const CallbackResultSpriteGroup *NewCallbackResultSpriteGroupNoTransform(uint16_t result);
 				group->default_group = NewCallbackResultSpriteGroupNoTransform(CALLBACK_FAILED);
+			} else if (found_zero_value && found_random_cb_value && (group->default_group == nullptr || (group->default_group->sg_flags & SGF_SKIP_CB) != 0)) {
+				/* CB switch with cases 0 and 1 both handled, and default case points to a SGF_SKIP_CB group, just replace it with a CALLBACK_FAILED */
+				extern const CallbackResultSpriteGroup *NewCallbackResultSpriteGroupNoTransform(uint16_t result);
+				group->default_group = NewCallbackResultSpriteGroupNoTransform(CALLBACK_FAILED);
 			}
 		}
 
