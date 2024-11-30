@@ -57,6 +57,8 @@ typedef int32_t TileIndexDiff;
 struct TileIndexDiffC {
 	int16_t x;      ///< The x value of the coordinate
 	int16_t y;      ///< The y value of the coordinate
+
+	bool operator==(const TileIndexDiffC &) const = default;
 };
 
 /** Minimal and maximal map width and height */

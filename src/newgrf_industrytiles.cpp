@@ -16,6 +16,7 @@
 #include "town.h"
 #include "command_func.h"
 #include "water.h"
+#include "bitmap_type.h"
 #include "newgrf_animation_base.h"
 #include "newgrf_analysis.h"
 #include "newgrf_industrytiles_analysis.h"
@@ -283,7 +284,37 @@ bool StartStopIndustryTileAnimation(TileIndex tile, IndustryAnimationTrigger iat
 
 	if (!HasBit(itspec->animation.triggers, iat)) return false;
 
-	IndustryAnimationBase::ChangeAnimationFrame(CBID_INDTILE_ANIM_START_STOP, itspec, Industry::GetByTile(tile), tile, random, iat);
+	bool inhibit_animation = false;
+	if (iat == IAT_CONSTRUCTION_STATE_CHANGE) {
+		/* Suppress animation changes according to layout anim inhibit mask */
+		const Industry *ind = Industry::GetByTile(tile);
+		const IndustrySpec *spec = GetIndustrySpec(ind->type);
+		if (ind->selected_layout != 0 && ind->selected_layout <= spec->layouts.size()) {
+			const TileIndexDiffC tile_delta = TileIndexToTileIndexDiffC(tile, ind->location.tile);
+			const uint64_t mask = spec->layout_anim_masks[ind->selected_layout - 1];
+			uint idx = 0;
+			for (IndustryTileLayoutTile it : spec->layouts[ind->selected_layout - 1]) {
+				if (it.gfx == 0xFF) continue;
+
+				if (it.ti == tile_delta) {
+					IndustryGfx gfx = GetTranslatedIndustryTileID(it.gfx);
+					if (gfx != GetIndustryGfx(tile)) break;
+
+					if (HasBit(mask, idx)) inhibit_animation = true;
+					break;
+				}
+
+				idx++;
+				if (idx == 64) break;
+			}
+		}
+	}
+
+	if (inhibit_animation) {
+		IndustryAnimationBase::ChangeAnimationFrameSoundOnly(CBID_INDTILE_ANIM_START_STOP, itspec, Industry::GetByTile(tile), tile, random, iat);
+	} else {
+		IndustryAnimationBase::ChangeAnimationFrame(CBID_INDTILE_ANIM_START_STOP, itspec, Industry::GetByTile(tile), tile, random, iat);
+	}
 	return true;
 }
 

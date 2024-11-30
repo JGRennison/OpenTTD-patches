@@ -157,6 +157,25 @@ struct AnimationBase {
 		if (GB(callback, 8, 7) != 0 && _settings_client.sound.ambient) PlayTileSound(spec->grf_prop.grffile, GB(callback, 8, 7), tile);
 	}
 
+	static void ChangeAnimationFrameSoundOnly(CallbackID cb, const Tspec *spec, Tobj *obj, TileIndex tile, uint32_t random_bits, uint32_t trigger, Textra extra_data = 0)
+	{
+		uint16_t callback = GetCallback(cb, random_bits, trigger, spec, obj, tile, extra_data);
+		if (callback == CALLBACK_FAILED) return;
+
+		switch (callback & 0xFF) {
+			case 0xFF:
+				DeleteAnimatedTile(tile);
+				break;
+
+			default:
+				break;
+		}
+
+		/* If the lower 7 bits of the upper byte of the callback
+		 * result are not empty, it is a sound effect. */
+		if (GB(callback, 8, 7) != 0 && _settings_client.sound.ambient) PlayTileSound(spec->grf_prop.grffile, GB(callback, 8, 7), tile);
+	}
+
 	static uint8_t GetAnimationSpeed(const Tspec *spec)
 	{
 		if (HasBit(spec->callback_mask, Tbase::cbm_animation_speed)) return 0;
