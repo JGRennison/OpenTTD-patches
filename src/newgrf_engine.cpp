@@ -1624,11 +1624,11 @@ void AnalyseEngineCallbacks()
 		auto process_sg = [&](const SpriteGroup *sg, bool is_purchase) {
 			if (sg == nullptr) return;
 
-			AnalyseCallbackOperation op(ACOM_CB_VAR);
-			sg->AnalyseCallbacks(op);
+			CallbackOperationAnalyser op(ACOM_CB_VAR);
+			op.AnalyseGroup(sg);
 			callbacks_used |= op.callbacks_used;
-			cb36_properties_used |= op.properties_used;
-			sg_cb36[sg] = op.properties_used;
+			cb36_properties_used |= op.cb36_properties_used;
+			sg_cb36[sg] = op.cb36_properties_used;
 			if ((op.result_flags & ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND) && !is_purchase) refit_cap_whitelist_ok = false;
 			if ((op.result_flags & ACORF_CB_REFIT_CAP_SEEN_VAR_47) && !is_purchase) refit_cap_no_var_47 = false;
 			if (!is_purchase) non_purchase_groups++;

@@ -14,226 +14,229 @@
 
 #include "safeguards.h"
 
-void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) const
+/* Returns true if group already seen before */
+bool BaseSpriteChainAnalyser::RegisterSeenDeterministicSpriteGroup(const DeterministicSpriteGroup *dsg)
 {
-	auto res = op.seen.insert(this);
+	auto res = this->seen_dsg.insert(dsg);
 	if (!res.second) {
 		/* Already seen this group */
+		return true;
+	}
+	return false;
+}
+
+const SpriteGroup *GetSwitchTargetForValue(const DeterministicSpriteGroup *dsg, uint32_t value)
+{
+	for (const auto &range : dsg->ranges) {
+		if (range.low <= value && value <= range.high) {
+			return range.group;
+		}
+	}
+	return dsg->default_group;
+}
+
+std::pair<bool, const SpriteGroup *> BaseSpriteChainAnalyser::HandleGroupBypassing(const DeterministicSpriteGroup *dsg)
+{
+	if (dsg->GroupMayBeBypassed()) {
+		/* Not clear why some GRFs do this, perhaps a way of commenting out a branch */
+		uint32_t value = (dsg->adjusts.size() == 1) ? EvaluateDeterministicSpriteGroupAdjust(dsg->size, dsg->adjusts[0], nullptr, 0, UINT_MAX) : 0;
+		return { true, GetSwitchTargetForValue(dsg, value) };
+	}
+	return { false, nullptr };
+}
+
+template <typename T>
+void SpriteChainAnalyser<T>::AnalyseGroup(const SpriteGroup *sg)
+{
+	if (sg == nullptr) return;
+
+	T *self = static_cast<T *>(this); // CRTP pattern
+	if (self->IsEarlyExitSet()) return;
+	switch (sg->type) {
+		case SGT_REAL: {
+			const RealSpriteGroup *rsg = static_cast<const RealSpriteGroup *>(sg);
+			for (const SpriteGroup *group: rsg->loaded) {
+				self->AnalyseGroup(group);
+			}
+			for (const SpriteGroup *group: rsg->loading) {
+				self->AnalyseGroup(group);
+			}
+			break;
+		}
+
+		case SGT_DETERMINISTIC: {
+			const DeterministicSpriteGroup *dsg = static_cast<const DeterministicSpriteGroup *>(sg);
+			if (this->RegisterSeenDeterministicSpriteGroup(dsg)) break; // Seen this group before
+			auto res = this->HandleGroupBypassing(dsg);
+			if (res.first) {
+				/* Bypass this group */
+				self->AnalyseGroup(res.second);
+				break;
+			}
+			self->AnalyseDeterministicSpriteGroup(dsg);
+			break;
+		}
+
+		case SGT_RANDOMIZED: {
+			const RandomizedSpriteGroup *rsg = static_cast<const RandomizedSpriteGroup *>(sg);
+			self->AnalyseRandomisedSpriteGroup(rsg);
+			break;
+		}
+
+		case SGT_CALLBACK: {
+			const CallbackResultSpriteGroup *crsg = static_cast<const CallbackResultSpriteGroup *>(sg);
+			self->AnalyseCallbackResultSpriteGroup(crsg);
+			break;
+		}
+
+		default:
+			/* Not interested in other sprite group types */
+			break;
+	}
+}
+template <typename T>
+void SpriteChainAnalyser<T>::DefaultAnalyseDeterministicSpriteGroup(const DeterministicSpriteGroup *dsg)
+{
+	T *self = static_cast<T *>(this); // CRTP pattern
+	if (!dsg->IsCalculatedResult()) {
+		for (const auto &range : dsg->ranges) {
+			self->AnalyseGroup(range.group);
+		}
+		self->AnalyseGroup(dsg->default_group);
+	}
+}
+
+template <typename T>
+void SpriteChainAnalyser<T>::DefaultAnalyseRandomisedSpriteGroup(const RandomizedSpriteGroup *rsg)
+{
+	T *self = static_cast<T *>(this); // CRTP pattern
+	for (const SpriteGroup *group: rsg->groups) {
+		self->AnalyseGroup(group);
+	}
+}
+
+static bool IsSingleVariableLoadSwitch(const DeterministicSpriteGroup *dsg)
+{
+	return dsg->adjusts.size() == 1 && !dsg->IsCalculatedResult() && (dsg->adjusts[0].operation == DSGA_OP_ADD || dsg->adjusts[0].operation == DSGA_OP_RST) && dsg->adjusts[0].type == DSGA_TYPE_NONE;
+}
+
+static bool IsSingleVariableLoadAdjustOfSpecificVariable(const DeterministicSpriteGroupAdjust &adjust, uint8_t var, uint32_t min_mask)
+{
+	return adjust.variable == var && adjust.shift_num == 0 && (adjust.and_mask & min_mask) == min_mask;
+}
+
+static bool IsTrivialSwitchOfSpecificVariable(const DeterministicSpriteGroup *dsg, uint8_t var, uint32_t min_mask)
+{
+	return IsSingleVariableLoadSwitch(dsg) && IsSingleVariableLoadAdjustOfSpecificVariable(dsg->adjusts[0], var, min_mask);
+}
+
+/* Find CB result */
+
+void FindCBResultAnalyser::AnalyseDeterministicSpriteGroup(const DeterministicSpriteGroup *dsg)
+{
+	if (dsg->IsCalculatedResult()) {
+		this->found = true;
 		return;
 	}
 
-	if (op.mode == ACOM_INDUSTRY_TILE && op.data.indtile->anim_state_at_offset) return;
-
-	auto check_1A_range = [&]() -> bool {
-		if (this->GroupMayBeBypassed()) {
-			/* Not clear why some GRFs do this, perhaps a way of commenting out a branch */
-			uint32_t value = (this->adjusts.size() == 1) ? EvaluateDeterministicSpriteGroupAdjust(this->size, this->adjusts[0], nullptr, 0, UINT_MAX) : 0;
-			for (const auto &range : this->ranges) {
-				if (range.low <= value && value <= range.high) {
-					if (range.group != nullptr) range.group->AnalyseCallbacks(op);
+	auto check_var_filter = [&](uint8_t var, uint value) -> bool {
+		if (IsTrivialSwitchOfSpecificVariable(dsg, var, 0xFF)) {
+			for (const auto &range : dsg->ranges) {
+				if (range.low == range.high && range.low == value) {
+					this->AnalyseGroup(range.group);
 					return true;
 				}
 			}
-			if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
+			this->AnalyseGroup(dsg->default_group);
 			return true;
 		}
 		return false;
 	};
+	if (check_var_filter(0xC, this->callback)) return;
+	if (this->check_var_10 && check_var_filter(0x10, this->var_10_value)) return;
+	for (const auto &range : dsg->ranges) {
+		this->AnalyseGroup(range.group);
+	}
+	this->AnalyseGroup(dsg->default_group);
+}
 
-	if (op.mode == ACOM_FIND_CB_RESULT) {
-		if (this->IsCalculatedResult()) {
-			op.result_flags |= ACORF_CB_RESULT_FOUND;
-			return;
-		} else if (!(op.result_flags & ACORF_CB_RESULT_FOUND)) {
-			if (check_1A_range()) return;
-			auto check_var_filter = [&](uint8_t var, uint value) -> bool {
-				if (this->adjusts.size() == 1 && this->adjusts[0].variable == var && (this->adjusts[0].operation == DSGA_OP_ADD || this->adjusts[0].operation == DSGA_OP_RST)) {
-					const auto &adjust = this->adjusts[0];
-					if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
-						for (const auto &range : this->ranges) {
-							if (range.low == range.high && range.low == value) {
-								if (range.group != nullptr) range.group->AnalyseCallbacks(op);
-								return true;
-							}
-						}
-						if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
-						return true;
-					}
-				}
-				return false;
-			};
-			if (check_var_filter(0xC, op.data.cb_result.callback)) return;
-			if (op.data.cb_result.check_var_10 && check_var_filter(0x10, op.data.cb_result.var_10_value)) return;
-			for (const auto &range : this->ranges) {
-				if (range.group != nullptr) range.group->AnalyseCallbacks(op);
-			}
-			if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
-		}
+void FindCBResultAnalyser::AnalyseCallbackResultSpriteGroup(const CallbackResultSpriteGroup *crsg)
+{
+	if (crsg->result != CALLBACK_FAILED) this->found = true;
+}
+
+/* Find random triggers */
+
+void FindRandomTriggerAnalyser::AnalyseDeterministicSpriteGroup(const DeterministicSpriteGroup *dsg)
+{
+	/* Only follow CBID_RANDOM_TRIGGER in callback switches */
+	if (IsTrivialSwitchOfSpecificVariable(dsg, 0xC, 0xFF)) {
+		this->AnalyseGroup(GetSwitchTargetForValue(dsg, CBID_RANDOM_TRIGGER));
 		return;
 	}
 
-	if (check_1A_range()) return;
+	this->DefaultAnalyseDeterministicSpriteGroup(dsg);
+}
 
-	if ((op.mode == ACOM_CB_VAR || op.mode == ACOM_CB_REFIT_CAPACITY) && this->var_scope != VSG_SCOPE_SELF) {
-		op.result_flags |= ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND;
+void FindRandomTriggerAnalyser::AnalyseRandomisedSpriteGroup(const RandomizedSpriteGroup *rsg)
+{
+	if (rsg->triggers != 0 || rsg->cmp_mode == RSG_CMP_ALL) {
+		this->found_trigger = true;
+		return;
 	}
 
-	auto find_cb_result = [&](const SpriteGroup *group, AnalyseCallbackOperation::FindCBResultData data) -> bool {
-		if (group == nullptr) return false;
-		AnalyseCallbackOperation cbr_op(ACOM_FIND_CB_RESULT);
-		cbr_op.data.cb_result = data;
-		group->AnalyseCallbacks(cbr_op);
-		return (cbr_op.result_flags & ACORF_CB_RESULT_FOUND);
-	};
+	this->DefaultAnalyseRandomisedSpriteGroup(rsg);
+}
 
-	if (this->adjusts.size() == 1 && !this->IsCalculatedResult() && (this->adjusts[0].operation == DSGA_OP_ADD || this->adjusts[0].operation == DSGA_OP_RST)) {
-		const auto &adjust = this->adjusts[0];
-		if (op.mode == ACOM_CB_VAR && adjust.variable == 0xC) {
-			if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
-				bool found_refit_cap = false;
-				const AnalyseCallbackOperationResultFlags prev_result = op.result_flags;
-				AnalyseCallbackOperationResultFlags refit_result_flags = ACORF_NONE;
-				const AnalyseCallbackOperationResultFlags refit_result_mask = ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND | ACORF_CB_REFIT_CAP_SEEN_VAR_47;
-				for (const auto &range : this->ranges) {
-					if (range.low == range.high) {
-						switch (range.low) {
-							case CBID_VEHICLE_32DAY_CALLBACK:
-								op.callbacks_used |= SGCU_VEHICLE_32DAY_CALLBACK;
-								break;
+/* Industry tile analysis */
 
-							case CBID_VEHICLE_REFIT_COST:
-								op.callbacks_used |= SGCU_VEHICLE_REFIT_COST;
-								break;
+void IndustryTileDataAnalyser::AnalyseDeterministicSpriteGroup(const DeterministicSpriteGroup *dsg)
+{
+	if (IsSingleVariableLoadSwitch(dsg)) {
+		const auto &adjust = dsg->adjusts[0];
 
-							case CBID_RANDOM_TRIGGER:
-								op.callbacks_used |= SGCU_RANDOM_TRIGGER;
-								break;
-
-							case CBID_VEHICLE_MODIFY_PROPERTY:
-								if (range.group != nullptr) {
-									AnalyseCallbackOperation cb36_op(ACOM_CB36_PROP);
-									range.group->AnalyseCallbacks(cb36_op);
-									op.properties_used |= cb36_op.properties_used;
-									op.callbacks_used |= cb36_op.callbacks_used;
-								}
-								break;
-
-							case CBID_VEHICLE_REFIT_CAPACITY:
-								found_refit_cap = true;
-								if (range.group != nullptr) {
-									AnalyseCallbackOperation cb_refit_op(ACOM_CB_REFIT_CAPACITY);
-									range.group->AnalyseCallbacks(cb_refit_op);
-									refit_result_flags = (cb_refit_op.result_flags & refit_result_mask);
-								}
-								break;
-						}
-					} else {
-						if (range.group != nullptr) range.group->AnalyseCallbacks(op);
+		if (IsSingleVariableLoadAdjustOfSpecificVariable(adjust, 0xC, 0xFF)) {
+			/* Check for CBID_INDTILE_ANIM_NEXT_FRAME, mark layout subset as animated if found */
+			if (this->cfg.check_anim_next_frame_cb) {
+				for (const auto &range : dsg->ranges) {
+					if (range.low <= CBID_INDTILE_ANIM_NEXT_FRAME && CBID_INDTILE_ANIM_NEXT_FRAME <= range.high) {
+						/* Found a CBID_INDTILE_ANIM_NEXT_FRAME */
+						*(this->cfg.result_mask) &= ~this->check_mask;
 					}
 				}
-				if (this->default_group != nullptr) {
-					this->default_group->AnalyseCallbacks(op);
-				}
-				if (found_refit_cap) {
-					/* Found a refit callback, so ignore flags in refit_result_mask from all other child groups */
-					op.result_flags = (prev_result & refit_result_mask) | (op.result_flags & ~refit_result_mask) | refit_result_flags;
-				}
-				return;
 			}
-		}
-		if (op.mode == ACOM_CB36_PROP && adjust.variable == 0x10) {
-			if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
-				for (const auto &range : this->ranges) {
-					if (range.low == range.high) {
-						if (range.low < 64) {
-							if (find_cb_result(range.group, { CBID_VEHICLE_MODIFY_PROPERTY, true, (uint8_t)range.low })) {
-								SetBit(op.properties_used, range.low);
-								if (range.low == 0x9) {
-									/* Speed */
-									if (range.group != nullptr) {
-										AnalyseCallbackOperation cb36_speed(ACOM_CB36_SPEED);
-										range.group->AnalyseCallbacks(cb36_speed);
-										op.callbacks_used |= cb36_speed.callbacks_used;
-									}
-								}
-							}
-						}
-					} else {
-						if (range.group != nullptr) range.group->AnalyseCallbacks(op);
-					}
+
+			/* Callback switch, skip to the default/graphics chain */
+			for (const auto &range : dsg->ranges) {
+				if (range.low == 0) {
+					this->AnalyseGroup(range.group);
+					return;
 				}
-				if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
-				return;
 			}
-		}
-		if (op.mode == ACOM_CB36_PROP && adjust.variable == 0xC) {
-			if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
-				for (const auto &range : this->ranges) {
-					if (range.low <= CBID_VEHICLE_MODIFY_PROPERTY && CBID_VEHICLE_MODIFY_PROPERTY <= range.high) {
-						if (range.group != nullptr) range.group->AnalyseCallbacks(op);
-						return;
-					}
-				}
-				if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
-				return;
-			}
-		}
-		if (op.mode == ACOM_CB36_SPEED && adjust.variable == 0x4A) {
-			op.callbacks_used |= SGCU_CB36_SPEED_RAILTYPE;
+			this->AnalyseGroup(dsg->default_group);
 			return;
 		}
-		if (op.mode == ACOM_INDUSTRY_TILE && adjust.variable == 0xC) {
-			if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
-				/* Check for CBID_INDTILE_ANIM_NEXT_FRAME, mark layout subset as animated if found */
-				if (op.data.indtile->check_anim_next_frame_cb) {
-					for (const auto &range : this->ranges) {
-						if (range.low <= CBID_INDTILE_ANIM_NEXT_FRAME && CBID_INDTILE_ANIM_NEXT_FRAME <= range.high) {
-							/* Found a CBID_INDTILE_ANIM_NEXT_FRAME */
-							*(op.data.indtile->result_mask) &= ~op.data.indtile->check_mask;
-						}
-					}
-				}
-
-				/* Callback switch, skip to the default/graphics chain */
-				for (const auto &range : this->ranges) {
-					if (range.low == 0) {
-						if (range.group != nullptr) range.group->AnalyseCallbacks(op);
-						return;
-					}
-				}
-				if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
-				return;
-			}
+		if (IsSingleVariableLoadAdjustOfSpecificVariable(adjust, 0x44, 0xFF) && dsg->var_scope == VSG_SCOPE_PARENT) {
+			/* Layout index switch */
+			this->AnalyseGroup(GetSwitchTargetForValue(dsg, this->cfg.layout_index));
+			return;
 		}
-		if (op.mode == ACOM_INDUSTRY_TILE && adjust.variable == 0x44 && this->var_scope == VSG_SCOPE_PARENT) {
-			if (adjust.shift_num == 0 && (adjust.and_mask & 0xFF) == 0xFF && adjust.type == DSGA_TYPE_NONE) {
-				/* Layout index switch */
-				for (const auto &range : this->ranges) {
-					if (range.low <= op.data.indtile->layout_index && op.data.indtile->layout_index <= range.high) {
-						if (range.group != nullptr) range.group->AnalyseCallbacks(op);
-						return;
-					}
-				}
-				if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
-				return;
-			}
-		}
-		if (op.mode == ACOM_INDUSTRY_TILE && adjust.variable == 0x43 && adjust.type == DSGA_TYPE_NONE && this->var_scope == VSG_SCOPE_SELF) {
+		if (adjust.variable == 0x43 && dsg->var_scope == VSG_SCOPE_SELF) {
 			const uint32_t effective_mask = adjust.and_mask << adjust.shift_num;
 			if (effective_mask == 0xFFFF || effective_mask == 0xFF00 || effective_mask == 0x00FF) {
 				/* Relative position switch */
 				const bool use_x = effective_mask & 0xFF;
 				const bool use_y = effective_mask & 0xFF00;
-				uint64_t default_mask = op.data.indtile->check_mask;
-				for (const auto &range : this->ranges) {
+				uint64_t default_mask = this->check_mask;
+				for (const auto &range : dsg->ranges) {
 					if (range.high - range.low < 32) {
 						uint64_t new_check_mask = 0;
 						for (uint i = range.low; i <= range.high; i++) {
 							const uint offset = i << adjust.shift_num;
 							const int16_t x = offset & 0xFF;
 							const int16_t y = (offset >> 8) & 0xFF;
-							for (uint bit : SetBitIterator<uint, uint64_t>(op.data.indtile->check_mask)) {
-								const TileIndexDiffC &ti = (*(op.data.indtile->layout))[bit].ti;
+							for (uint bit : SetBitIterator<uint, uint64_t>(this->check_mask)) {
+								const TileIndexDiffC &ti = (*(this->cfg.layout))[bit].ti;
 								if ((!use_x || ti.x == x) && (!use_y || ti.y == y)) {
 									SetBit(new_check_mask, bit);
 								}
@@ -241,94 +244,172 @@ void DeterministicSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) co
 						}
 						default_mask &= ~new_check_mask;
 						if (range.group != nullptr) {
-							AnalyseCallbackOperationIndustryTileData data = *(op.data.indtile);
-							data.check_mask = new_check_mask;
+							IndustryTileDataAnalyser sub_analyser(this->cfg, new_check_mask);
+							sub_analyser.AnalyseGroup(range.group);
 
-							AnalyseCallbackOperation sub_op(ACOM_INDUSTRY_TILE);
-							sub_op.data.indtile = &data;
-							range.group->AnalyseCallbacks(sub_op);
-
-							if (data.anim_state_at_offset) {
-								op.data.indtile->anim_state_at_offset = true;
+							if (sub_analyser.anim_state_at_offset) {
+								this->anim_state_at_offset = true;
 								return;
 							}
 						}
 					} else {
-						if (range.group != nullptr) range.group->AnalyseCallbacks(op);
+						this->AnalyseGroup(range.group);
 					}
 				}
-				if (this->default_group != nullptr) {
-					AnalyseCallbackOperationIndustryTileData data = *(op.data.indtile);
-					data.check_mask = default_mask;
+				if (dsg->default_group != nullptr) {
+					IndustryTileDataAnalyser sub_analyser(this->cfg, default_mask);
+					sub_analyser.AnalyseGroup(dsg->default_group);
 
-					AnalyseCallbackOperation sub_op(ACOM_INDUSTRY_TILE);
-					sub_op.data.indtile = &data;
-
-					this->default_group->AnalyseCallbacks(sub_op);
+					if (sub_analyser.anim_state_at_offset) {
+						this->anim_state_at_offset = true;
+						return;
+					}
 				}
 				return;
 			}
 		}
 	}
-	for (const auto &adjust : this->adjusts) {
-		if (op.mode == ACOM_CB_VAR && adjust.variable == 0xC) {
-			op.callbacks_used |= SGCU_ALL;
+
+	for (const auto &adjust : dsg->adjusts) {
+		if (adjust.variable == 0x7E) this->AnalyseGroup(adjust.subroutine);
+		if (dsg->var_scope == VSG_SCOPE_SELF && (adjust.variable == 0x44 || (adjust.variable == 0x61 && adjust.parameter == 0))) {
+			*(this->cfg.result_mask) &= ~this->check_mask;
 		}
-		if (op.mode == ACOM_CB36_PROP && adjust.variable == 0x10) {
-			if (find_cb_result(this, { CBID_VEHICLE_MODIFY_PROPERTY, false, 0 })) {
-				op.properties_used |= UINT64_MAX;
-				break;
-			}
-		}
-		if ((op.mode == ACOM_CB_VAR || op.mode == ACOM_CB_REFIT_CAPACITY) && !(adjust.variable == 0xC || adjust.variable == 0x1A || adjust.variable == 0x47 || adjust.variable == 0x7D || adjust.variable == 0x7E)) {
-			op.result_flags |= ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND;
-		}
-		if ((op.mode == ACOM_CB_VAR || op.mode == ACOM_CB_REFIT_CAPACITY) && adjust.variable == 0x47) {
-			op.result_flags |= ACORF_CB_REFIT_CAP_SEEN_VAR_47;
-		}
-		if (op.mode != ACOM_CB36_PROP && adjust.variable == 0x7E && adjust.subroutine != nullptr) {
-			adjust.subroutine->AnalyseCallbacks(op);
-		}
-		if (op.mode == ACOM_INDUSTRY_TILE && this->var_scope == VSG_SCOPE_SELF && (adjust.variable == 0x44 || (adjust.variable == 0x61 && adjust.parameter == 0))) {
-			*(op.data.indtile->result_mask) &= ~op.data.indtile->check_mask;
-		}
-		if (op.mode == ACOM_INDUSTRY_TILE && ((this->var_scope == VSG_SCOPE_SELF && adjust.variable == 0x61) || (this->var_scope == VSG_SCOPE_PARENT && adjust.variable == 0x63))) {
-			op.data.indtile->anim_state_at_offset = true;
+		if ((dsg->var_scope == VSG_SCOPE_SELF && adjust.variable == 0x61) || (dsg->var_scope == VSG_SCOPE_PARENT && adjust.variable == 0x63)) {
+			this->anim_state_at_offset = true;
 			return;
 		}
 	}
-	if (!this->IsCalculatedResult()) {
-		for (const auto &range : this->ranges) {
-			if (range.group != nullptr) range.group->AnalyseCallbacks(op);
+
+	this->DefaultAnalyseDeterministicSpriteGroup(dsg);
+}
+
+/* Callback operation analysis */
+
+void CallbackOperationAnalyser::AnalyseDeterministicSpriteGroup(const DeterministicSpriteGroup *dsg)
+{
+	if ((this->mode == ACOM_CB_VAR || this->mode == ACOM_CB_REFIT_CAPACITY) && dsg->var_scope != VSG_SCOPE_SELF) {
+		this->result_flags |= ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND;
+	}
+
+	if (IsSingleVariableLoadSwitch(dsg)) {
+		const auto &adjust = dsg->adjusts[0];
+		if (this->mode == ACOM_CB_VAR && IsSingleVariableLoadAdjustOfSpecificVariable(adjust, 0xC, 0xFF)) {
+			bool found_refit_cap = false;
+			const AnalyseCallbackOperationResultFlags prev_result = this->result_flags;
+			AnalyseCallbackOperationResultFlags refit_result_flags = ACORF_NONE;
+			const AnalyseCallbackOperationResultFlags refit_result_mask = ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND | ACORF_CB_REFIT_CAP_SEEN_VAR_47;
+			for (const auto &range : dsg->ranges) {
+				if (range.low == range.high) {
+					switch (range.low) {
+						case CBID_VEHICLE_32DAY_CALLBACK:
+							this->callbacks_used |= SGCU_VEHICLE_32DAY_CALLBACK;
+							break;
+
+						case CBID_VEHICLE_REFIT_COST:
+							this->callbacks_used |= SGCU_VEHICLE_REFIT_COST;
+							break;
+
+						case CBID_RANDOM_TRIGGER:
+							this->callbacks_used |= SGCU_RANDOM_TRIGGER;
+							break;
+
+						case CBID_VEHICLE_MODIFY_PROPERTY:
+							if (range.group != nullptr) {
+								CallbackOperationAnalyser cb36_op(ACOM_CB36_PROP);
+								cb36_op.AnalyseGroup(range.group);
+								this->cb36_properties_used |= cb36_op.cb36_properties_used;
+								this->callbacks_used |= cb36_op.callbacks_used;
+							}
+							break;
+
+						case CBID_VEHICLE_REFIT_CAPACITY:
+							found_refit_cap = true;
+							if (range.group != nullptr) {
+								CallbackOperationAnalyser cb_refit_op(ACOM_CB_REFIT_CAPACITY);
+								cb_refit_op.AnalyseGroup(range.group);
+								refit_result_flags = (cb_refit_op.result_flags & refit_result_mask);
+							}
+							break;
+					}
+				} else {
+					this->AnalyseGroup(range.group);
+				}
+			}
+			this->AnalyseGroup(dsg->default_group);
+			if (found_refit_cap) {
+				/* Found a refit callback, so ignore flags in refit_result_mask from all other child groups */
+				this->result_flags = (prev_result & refit_result_mask) | (this->result_flags & ~refit_result_mask) | refit_result_flags;
+			}
+			return;
 		}
-		if (this->default_group != nullptr) this->default_group->AnalyseCallbacks(op);
+		if (this->mode == ACOM_CB36_PROP && IsSingleVariableLoadAdjustOfSpecificVariable(adjust, 0x10, 0xFF)) {
+			for (const auto &range : dsg->ranges) {
+				if (range.low == range.high) {
+					if (range.low < 64) {
+						if (FindCBResultAnalyser::Execute(range.group, CBID_VEHICLE_MODIFY_PROPERTY, true, (uint8_t)range.low)) {
+							SetBit(this->cb36_properties_used, range.low);
+							if (range.low == 0x9) {
+								/* Speed */
+								if (range.group != nullptr) {
+									CallbackOperationAnalyser cb36_speed(ACOM_CB36_SPEED);
+									cb36_speed.AnalyseGroup(range.group);
+									this->callbacks_used |= cb36_speed.callbacks_used;
+								}
+							}
+						}
+					}
+				} else {
+					this->AnalyseGroup(range.group);
+				}
+			}
+			this->AnalyseGroup(dsg->default_group);
+			return;
+		}
+		if (this->mode == ACOM_CB36_PROP && IsSingleVariableLoadAdjustOfSpecificVariable(adjust, 0xC, 0xFF)) {
+			this->AnalyseGroup(GetSwitchTargetForValue(dsg, CBID_VEHICLE_MODIFY_PROPERTY));
+			return;
+		}
+		if (this->mode == ACOM_CB_REFIT_CAPACITY && IsSingleVariableLoadAdjustOfSpecificVariable(adjust, 0xC, 0xFF)) {
+			this->AnalyseGroup(GetSwitchTargetForValue(dsg, CBID_VEHICLE_REFIT_CAPACITY));
+			return;
+		}
 	}
+	for (const auto &adjust : dsg->adjusts) {
+		if (this->mode == ACOM_CB_VAR && adjust.variable == 0xC) {
+			this->callbacks_used |= SGCU_ALL;
+		}
+		if (this->mode == ACOM_CB36_PROP && adjust.variable == 0x10) {
+			if (FindCBResultAnalyser::Execute(dsg, CBID_VEHICLE_MODIFY_PROPERTY, false, 0)) {
+				this->cb36_properties_used |= UINT64_MAX;
+				break;
+			}
+		}
+		if ((this->mode == ACOM_CB_VAR || this->mode == ACOM_CB_REFIT_CAPACITY) && !(adjust.variable == 0xC || adjust.variable == 0x1A || adjust.variable == 0x47 || adjust.variable == 0x7D || adjust.variable == 0x7E)) {
+			this->result_flags |= ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND;
+		}
+		if ((this->mode == ACOM_CB_VAR || this->mode == ACOM_CB_REFIT_CAPACITY) && adjust.variable == 0x47) {
+			this->result_flags |= ACORF_CB_REFIT_CAP_SEEN_VAR_47;
+		}
+		if (this->mode != ACOM_CB36_PROP && adjust.variable == 0x7E) {
+			this->AnalyseGroup(adjust.subroutine);
+		}
+		if (this->mode == ACOM_CB36_SPEED && adjust.variable == 0x4A) {
+			this->callbacks_used |= SGCU_CB36_SPEED_RAILTYPE;
+			return;
+		}
+	}
+
+	this->DefaultAnalyseDeterministicSpriteGroup(dsg);
 }
 
-void CallbackResultSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) const
+void CallbackOperationAnalyser::AnalyseRandomisedSpriteGroup(const RandomizedSpriteGroup *rsg)
 {
-	if (op.mode == ACOM_FIND_CB_RESULT && this->result != CALLBACK_FAILED) op.result_flags |= ACORF_CB_RESULT_FOUND;
-}
+	this->result_flags |= ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND;
 
-void RandomizedSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) const
-{
-	op.result_flags |= ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND;
-
-	if ((op.mode == ACOM_CB_VAR || op.mode == ACOM_FIND_RANDOM_TRIGGER) && (this->triggers != 0 || this->cmp_mode == RSG_CMP_ALL)) {
-		op.callbacks_used |= SGCU_RANDOM_TRIGGER;
+	if (this->mode == ACOM_CB_VAR && (rsg->triggers != 0 || rsg->cmp_mode == RSG_CMP_ALL)) {
+		this->callbacks_used |= SGCU_RANDOM_TRIGGER;
 	}
 
-	for (const SpriteGroup *group: this->groups) {
-		if (group != nullptr) group->AnalyseCallbacks(op);
-	}
-}
-
-void RealSpriteGroup::AnalyseCallbacks(AnalyseCallbackOperation &op) const
-{
-	for (const SpriteGroup *group: this->loaded) {
-		if (group != nullptr) group->AnalyseCallbacks(op);
-	}
-	for (const SpriteGroup *group: this->loading) {
-		if (group != nullptr) group->AnalyseCallbacks(op);
-	}
+	this->DefaultAnalyseRandomisedSpriteGroup(rsg);
 }

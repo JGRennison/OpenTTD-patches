@@ -49,7 +49,6 @@ enum SpriteGroupType : uint8_t {
 struct SpriteGroup;
 typedef uint32_t SpriteGroupID;
 struct ResolverObject;
-struct AnalyseCallbackOperation;
 
 /* SPRITE_WIDTH is 24. ECS has roughly 30 sprite groups per real sprite.
  * Adding an 'extra' margin would be assuming 64 sprite groups per real
@@ -83,7 +82,6 @@ public:
 	virtual SpriteID GetResult() const { return 0; }
 	virtual uint8_t GetNumResults() const { return 0; }
 	virtual uint16_t GetCallbackResult() const { return CALLBACK_FAILED; }
-	virtual void AnalyseCallbacks(AnalyseCallbackOperation &op) const {};
 
 	static const SpriteGroup *Resolve(const SpriteGroup *group, ResolverObject &object, bool top_level = true);
 };
@@ -103,8 +101,6 @@ struct RealSpriteGroup : SpriteGroup {
 
 	std::vector<const SpriteGroup *> loaded;  ///< List of loaded groups (can be SpriteIDs or Callback results)
 	std::vector<const SpriteGroup *> loading; ///< List of loading groups (can be SpriteIDs or Callback results)
-
-	void AnalyseCallbacks(AnalyseCallbackOperation &op) const override;
 
 protected:
 	const SpriteGroup *Resolve(ResolverObject &object) const override;
@@ -497,7 +493,6 @@ struct DeterministicSpriteGroup : SpriteGroup {
 
 	const SpriteGroup *error_group; // was first range, before sorting ranges
 
-	void AnalyseCallbacks(AnalyseCallbackOperation &op) const override;
 	bool GroupMayBeBypassed() const;
 
 	bool IsCalculatedResult() const { return this->dsg_flags & DSGF_CALCULATED_RESULT; }
@@ -523,8 +518,6 @@ struct RandomizedSpriteGroup : SpriteGroup {
 	uint8_t lowest_randbit; ///< Look for this in the per-object randomized bitmask:
 
 	std::vector<const SpriteGroup *> groups; ///< Take the group with appropriate index:
-
-	void AnalyseCallbacks(AnalyseCallbackOperation &op) const override;
 
 protected:
 	const SpriteGroup *Resolve(ResolverObject &object) const override;
@@ -561,7 +554,6 @@ struct CallbackResultSpriteGroup : SpriteGroup {
 
 	uint16_t result;
 	uint16_t GetCallbackResult() const override { return this->result; }
-	void AnalyseCallbacks(AnalyseCallbackOperation &op) const override;
 };
 
 

@@ -12,12 +12,10 @@
 
 #include "industrytype.h"
 
-struct AnalyseCallbackOperationIndustryTileData {
+struct IndustryTileDataAnalyserConfig {
 	const IndustryTileLayout *layout;
-	uint64_t check_mask;
 	uint64_t *result_mask;
 	uint8_t layout_index;
-	bool anim_state_at_offset;
 	bool check_anim_next_frame_cb;
 };
 

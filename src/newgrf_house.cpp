@@ -938,9 +938,9 @@ void AnalyseHouseSpriteGroups()
 			continue;
 		}
 
-		AnalyseCallbackOperation find_triggers_op(ACOM_FIND_RANDOM_TRIGGER);
-		spec->grf_prop.spritegroup[0]->AnalyseCallbacks(find_triggers_op);
-		if ((find_triggers_op.callbacks_used & SGCU_RANDOM_TRIGGER) == 0) {
+		FindRandomTriggerAnalyser analyser;
+		analyser.AnalyseGroup(spec->grf_prop.spritegroup[0]);
+		if (!analyser.found_trigger) {
 			spec->ctrl_flags |= HCF_NO_TRIGGERS;
 		}
 	}

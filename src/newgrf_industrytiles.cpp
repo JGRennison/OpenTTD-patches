@@ -432,19 +432,16 @@ void AnalyseIndustryTileSpriteGroups()
 
 				anim_mask |= current;
 
-				AnalyseCallbackOperationIndustryTileData data;
-				data.layout = &layout;
-				data.check_mask = current;
-				data.result_mask = &anim_mask;
-				data.layout_index = idx + 1;
-				data.anim_state_at_offset = false;
-				data.check_anim_next_frame_cb = HasBit(tilespec.callback_mask, CBM_INDT_ANIM_NEXT_FRAME);
+				IndustryTileDataAnalyserConfig cfg;
+				cfg.layout = &layout;
+				cfg.result_mask = &anim_mask;
+				cfg.layout_index = idx + 1;
+				cfg.check_anim_next_frame_cb = HasBit(tilespec.callback_mask, CBM_INDT_ANIM_NEXT_FRAME);
 
-				AnalyseCallbackOperation op(ACOM_INDUSTRY_TILE);
-				op.data.indtile = &data;
-				tilespec.grf_prop.spritegroup[0]->AnalyseCallbacks(op);
+				IndustryTileDataAnalyser analyser(cfg, current);
+				analyser.AnalyseGroup(tilespec.grf_prop.spritegroup[0]);
 
-				if (data.anim_state_at_offset) {
+				if (analyser.anim_state_at_offset) {
 					/* Give up: use of get anim state of offset tiles */
 					anim_mask = 0;
 					break;
