@@ -1217,7 +1217,7 @@ class NIHIndustry : public NIHelper {
 			}
 			output.Print("  Number of layouts: {}", indsp->layouts.size());
 			for (size_t i = 0; i < indsp->layout_anim_masks.size(); i++) {
-				output.Print("  Layout anim inhibit mask {}: {}", i, indsp->layout_anim_masks[i]);
+				output.Print("  Layout anim inhibit mask {}: {:X}", i, indsp->layout_anim_masks[i]);
 			}
 			if (indsp->grf_prop.grffile != nullptr) {
 				output.Print("  GRF local ID: {}", indsp->grf_prop.local_id);
