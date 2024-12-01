@@ -16,8 +16,9 @@
 #include "rail_map.h"
 #include "tunnelbridge_map.h"
 #include "pathfinder/water_regions.h"
-#include "3rdparty/cpp-btree/btree_map.h"
 #include "core/ring_buffer.hpp"
+#include "3rdparty/cpp-btree/btree_map.h"
+#include "3rdparty/robin_hood/robin_hood.h"
 #include <array>
 #include <memory>
 
@@ -434,15 +435,14 @@ bool EnoughContiguousTilesMatchingCondition(TileIndex tile, uint threshold, Test
 
 	static_assert(MAX_MAP_TILES_BITS <= 30);
 
-	btree::btree_set<uint32_t> processed_tiles;
+	robin_hood::unordered_flat_set<uint32_t> processed_tiles;
 	ring_buffer<uint32_t> candidates;
 	uint matching_count = 0;
 
 	auto process_tile = [&](TileIndex t, DiagDirection exclude_onward_dir) {
-		auto iter = processed_tiles.lower_bound(t);
-		if (iter != processed_tiles.end() && *iter == t) {
-			/* done this tile already */
-		} else {
+		auto res = processed_tiles.insert(t);
+		if (res.second) {
+			/* Tile not done/inserted already */
 			if (proc(t, user_data)) {
 				matching_count++;
 				for (DiagDirection dir = DIAGDIR_BEGIN; dir < DIAGDIR_END; dir++) {
@@ -453,7 +453,6 @@ bool EnoughContiguousTilesMatchingCondition(TileIndex tile, uint threshold, Test
 					}
 				}
 			}
-			processed_tiles.insert(iter, t);
 		}
 	};
 	process_tile(tile, INVALID_DIAGDIR);
