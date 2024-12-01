@@ -594,7 +594,6 @@ struct TimetableWindow : GeneralVehicleWindow {
 			this->SetWidgetDisabledState(WID_VT_CLEAR_TIME, disable_time || (HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE) && !(wait_locked && clearable_when_wait_locked)));
 			this->SetWidgetDisabledState(WID_VT_CHANGE_SPEED, disable_speed);
 			this->SetWidgetDisabledState(WID_VT_CLEAR_SPEED, disable_speed);
-			this->SetWidgetDisabledState(WID_VT_SHARED_ORDER_LIST, !(v->IsOrderListShared() || _settings_client.gui.enable_single_veh_shared_order_gui));
 
 			this->SetWidgetDisabledState(WID_VT_START_DATE, v->orders == nullptr || HasBit(v->vehicle_flags, VF_TIMETABLE_SEPARATION) || HasBit(v->vehicle_flags, VF_SCHEDULED_DISPATCH));
 			this->SetWidgetDisabledState(WID_VT_RESET_LATENESS, v->orders == nullptr);
@@ -616,12 +615,13 @@ struct TimetableWindow : GeneralVehicleWindow {
 			this->DisableWidget(WID_VT_AUTOFILL);
 			this->DisableWidget(WID_VT_AUTOMATE);
 			this->DisableWidget(WID_VT_AUTO_SEPARATION);
-			this->DisableWidget(WID_VT_SHARED_ORDER_LIST);
 			this->DisableWidget(WID_VT_ADD_VEH_GROUP);
 			this->DisableWidget(WID_VT_LOCK_ORDER_TIME);
 			this->DisableWidget(WID_VT_EXTRA);
 			this->DisableWidget(WID_VT_ASSIGN_SCHEDULE);
 		}
+
+		this->SetWidgetDisabledState(WID_VT_SHARED_ORDER_LIST, !(v->IsOrderListShared() || _settings_client.gui.enable_single_veh_shared_order_gui));
 
 		this->SetWidgetLoweredState(WID_VT_AUTOFILL, HasBit(v->vehicle_flags, VF_AUTOFILL_TIMETABLE));
 		this->SetWidgetLoweredState(WID_VT_AUTOMATE, HasBit(v->vehicle_flags, VF_AUTOMATE_TIMETABLE));
