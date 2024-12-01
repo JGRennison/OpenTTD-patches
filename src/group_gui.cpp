@@ -655,7 +655,7 @@ public:
 		}
 
 		/* Disable all lists management button when the list is empty */
-		this->SetWidgetDisabledState(WID_GL_MANAGE_VEHICLES_DROPDOWN, !this->ShouldShowActionDropdownList() || _local_company != this->vli.company);
+		this->SetWidgetDisabledState(WID_GL_MANAGE_VEHICLES_DROPDOWN, !this->ShouldShowActionDropdownList());
 		this->SetWidgetsDisabledState(this->vehicles.empty() || _local_company != this->vli.company || (IsTopLevelGroupID(this->vli.index) && _settings_client.gui.disable_top_veh_list_mass_actions),
 				WID_GL_STOP_ALL,
 				WID_GL_START_ALL);
