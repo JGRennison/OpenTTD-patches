@@ -22,6 +22,7 @@
 #include "../company_base.h"
 #include "../company_func.h"
 #include "../disaster_vehicle.h"
+#include "../debug.h"
 
 #include <map>
 #include <vector>
@@ -232,6 +233,52 @@ public:
 	}
 };
 
+class SlVehicleRoadVehPath : public DefaultSaveLoadHandler<SlVehicleRoadVehPath, RoadVehicle> {
+public:
+	struct RoadVehPathElement {
+		Trackdir trackdir; ///< Trackdir for this element.
+		TileIndex tile; ///< Tile for this element.
+	};
+
+	inline static const SaveLoad description[] = {
+		SLE_VAR(RoadVehPathElement, trackdir, SLE_UINT8),
+		SLE_VAR(RoadVehPathElement, tile, SLE_UINT32),
+	};
+	inline const static SaveLoadCompatTable compat_description = {};
+
+	void Save(RoadVehicle *rv) const override
+	{
+		NOT_REACHED();
+	}
+
+	void Load(RoadVehicle *rv) const override
+	{
+		size_t count = SlGetStructListLength(UINT32_MAX);
+
+		RoadVehPathElement elem{};
+		if (count > RV_PATH_CACHE_SEGMENTS) {
+			/* Cache too long, just bin it */
+			while (count-- > 0) {
+				SlObject(&elem, this->GetLoadDescription());
+			}
+			return;
+		}
+
+		rv->cached_path = std::make_unique<RoadVehPathCache>();
+		RoadVehPathCache &cache = *(rv->cached_path);
+		cache.count = (uint8_t)count;
+
+		/* Path cache is taken from back instead of front from SLV_PATH_CACHE_FORMAT, so needs reversing. */
+		size_t i = count;
+		while (count-- > 0) {
+			SlObject(&elem, this->GetLoadDescription());
+			i--;
+			cache.td[i] = elem.trackdir;
+			cache.tile[i] = elem.tile;
+		}
+	}
+};
+
 class SlVehicleRoadVeh : public DefaultSaveLoadHandler<SlVehicleRoadVeh, Vehicle> {
 public:
 	inline static const SaveLoad description[] = {
@@ -243,8 +290,9 @@ public:
 		      SLE_VAR(RoadVehicle, overtaking_ctr,       SLE_UINT8),
 		      SLE_VAR(RoadVehicle, crashed_ctr,          SLE_UINT16),
 		      SLE_VAR(RoadVehicle, reverse_ctr,          SLE_UINT8),
-		SLEG_CONDVECTOR("path.td", _path_td,             SLE_UINT8,                  SLV_ROADVEH_PATH_CACHE, SL_MAX_VERSION),
-		SLEG_CONDVECTOR("path.tile", _path_tile,         SLE_UINT32,                 SLV_ROADVEH_PATH_CACHE, SL_MAX_VERSION),
+		SLEG_CONDVECTOR("path.td", _path_td,             SLE_UINT8,                  SLV_ROADVEH_PATH_CACHE, SLV_PATH_CACHE_FORMAT),
+		SLEG_CONDVECTOR("path.tile", _path_tile,         SLE_UINT32,                 SLV_ROADVEH_PATH_CACHE, SLV_PATH_CACHE_FORMAT),
+		SLEG_CONDSTRUCTLIST("path", SlVehicleRoadVehPath,                            SLV_PATH_CACHE_FORMAT, SL_MAX_VERSION),
 		  SLE_CONDVAR(RoadVehicle, gv_flags,             SLE_UINT16,                 SLV_139, SL_MAX_VERSION),
 	};
 	inline const static SaveLoadCompatTable compat_description = _vehicle_roadveh_sl_compat;
@@ -280,12 +328,43 @@ public:
 	}
 };
 
+class SlVehicleShipPath : public DefaultSaveLoadHandler<SlVehicleShipPath, Ship> {
+public:
+	struct ShipPathElement {
+		Trackdir trackdir; ///< Trackdir for this element.
+	};
+
+	inline static const SaveLoad description[] = {
+		SLE_VAR(ShipPathElement, trackdir, SLE_UINT8),
+	};
+	inline const static SaveLoadCompatTable compat_description = {};
+
+	void Save(Ship *s) const override
+	{
+		NOT_REACHED();
+	}
+
+	void Load(Ship *s) const override
+	{
+		size_t count = SlGetStructListLength(UINT32_MAX);
+
+		/* Since SLV_PATH_CACHE_FORMAT path cache is taken from back instead of front, so needs reversing. */
+		s->cached_path.reserve(count);
+		ShipPathElement elem{};
+		while (count-- > 0) {
+			SlObject(&elem, this->GetLoadDescription());
+			s->cached_path.push_front(elem.trackdir);
+		}
+	}
+};
+
 class SlVehicleShip : public DefaultSaveLoadHandler<SlVehicleShip, Vehicle> {
 public:
 	inline static const SaveLoad description[] = {
 		  SLEG_STRUCT("common", SlVehicleCommon),
 		      SLE_VAR(Ship, state,                     SLE_UINT8),
-		SLEG_CONDVECTOR("path", _path_td,              SLE_UINT8,                  SLV_SHIP_PATH_CACHE, SL_MAX_VERSION),
+		SLEG_CONDVECTOR("path", _path_td,              SLE_UINT8,                  SLV_SHIP_PATH_CACHE, SLV_PATH_CACHE_FORMAT),
+		SLEG_CONDSTRUCTLIST("path", SlVehicleShipPath,                             SLV_PATH_CACHE_FORMAT, SL_MAX_VERSION),
 		  SLE_CONDVAR(Ship, rotation,                  SLE_UINT8,                  SLV_SHIP_ROTATION, SL_MAX_VERSION),
 	};
 	inline const static SaveLoadCompatTable compat_description = _vehicle_ship_sl_compat;
