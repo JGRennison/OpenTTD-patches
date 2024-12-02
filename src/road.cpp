@@ -778,7 +778,7 @@ static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
 /** AyStar callback for checking whether we reached our destination. */
 static AyStarStatus PublicRoad_EndNodeCheck(const AyStar *aystar, const OpenListNode *current)
 {
-	return current->path.node.tile == static_cast<TileIndex>(reinterpret_cast<uintptr_t>(aystar->user_target)) ? AYSTAR_FOUND_END_NODE : AYSTAR_DONE;
+	return current->path.node.tile == static_cast<TileIndex>(reinterpret_cast<uintptr_t>(aystar->user_target)) ? AyStarStatus::FoundEndNode : AyStarStatus::Done;
 }
 
 /** AyStar callback when an route has been found. */
@@ -935,13 +935,13 @@ static bool PublicRoadFindPath(AyStar& finder, const TileIndex from, TileIndex t
 	start.direction = INVALID_TRACKDIR;
 	finder.AddStartNode(&start, 0);
 
-	int result = AYSTAR_STILL_BUSY;
+	AyStarStatus result = AyStarStatus::StillBusy;
 
-	while (result == AYSTAR_STILL_BUSY) {
+	while (result == AyStarStatus::StillBusy) {
 		result = finder.Main();
 	}
 
-	const bool found_path = (result == AYSTAR_FOUND_END_NODE);
+	const bool found_path = (result == AyStarStatus::FoundEndNode);
 
 	finder.Clear();
 

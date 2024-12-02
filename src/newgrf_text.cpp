@@ -534,7 +534,7 @@ void AddGRFTextToList(GRFTextList &list, uint8_t langid, uint32_t grfid, bool al
  */
 void AddGRFTextToList(GRFTextWrapper &list, uint8_t langid, uint32_t grfid, bool allow_newlines, std::string_view text_to_add)
 {
-	if (!list) list.reset(new GRFTextList());
+	if (list == nullptr) list = std::make_shared<GRFTextList>();
 	AddGRFTextToList(*list, langid, grfid, allow_newlines, text_to_add);
 }
 
@@ -546,7 +546,7 @@ void AddGRFTextToList(GRFTextWrapper &list, uint8_t langid, uint32_t grfid, bool
  */
 void AddGRFTextToList(GRFTextWrapper &list, std::string_view text_to_add)
 {
-	if (!list) list.reset(new GRFTextList());
+	if (list == nullptr) list = std::make_shared<GRFTextList>();
 	AddGRFTextToList(*list, GRFLX_UNSPECIFIED, text_to_add);
 }
 

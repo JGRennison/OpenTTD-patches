@@ -82,6 +82,7 @@ enum WidgetType : uint8_t {
 	NWID_MATRIX,          ///< Matrix container.
 	NWID_SPACER,          ///< Invisible widget that takes some space.
 	NWID_SELECTION,       ///< Stacked widgets, only one visible at a time (eg in a panel with tabs).
+	NWID_LAYER,           ///< Layered widgets, all visible together.
 	NWID_VIEWPORT,        ///< Nested widget containing a viewport.
 	NWID_BUTTON_DROPDOWN, ///< Button with a drop-down.
 	NWID_HSCROLLBAR,      ///< Horizontal scrollbar
@@ -522,7 +523,6 @@ class NWidgetStacked : public NWidgetContainer {
 public:
 	NWidgetStacked(WidgetID index);
 
-	void AdjustPaddingForZoom() override;
 	void SetupSmallestSize(Window *w) override;
 	void AssignSizePosition(SizingType sizing, int x, int y, uint given_width, uint given_height, bool rtl) override;
 	void FillWidgetLookup(WidgetLookup &widget_lookup) override;
@@ -1283,6 +1283,17 @@ constexpr NWidgetPart SetMatrixDataTip(uint8_t cols, uint8_t rows, StringID tip)
 constexpr NWidgetPart SetPadding(uint8_t top, uint8_t right, uint8_t bottom, uint8_t left)
 {
 	return NWidgetPart{WPT_PADDING, NWidgetPartPaddings{left, top, right, bottom}};
+}
+
+/**
+ * Widget part function for setting additional space around a widget.
+ * @param horizontal The padding on either side of the widget.
+ * @param vertical The padding above and below the widget.
+ * @ingroup NestedWidgetParts
+ */
+constexpr NWidgetPart SetPadding(uint8_t horizontal, uint8_t vertical)
+{
+	return NWidgetPart{WPT_PADDING, NWidgetPartPaddings{horizontal, vertical, horizontal, vertical}};
 }
 
 /**

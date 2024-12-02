@@ -2673,7 +2673,7 @@ bool AfterLoadGame()
 
 		for (auto tile = _animated_tiles.begin(); tile != _animated_tiles.end(); /* Nothing */) {
 			/* Remove if tile is not animated */
-			bool remove = _tile_type_procs[GetTileType(tile->first)]->animate_tile_proc == nullptr;
+			bool remove = !MayAnimateTile(tile->first);
 
 			if (remove) {
 				tile = _animated_tiles.erase(tile);

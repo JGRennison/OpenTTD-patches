@@ -77,14 +77,17 @@ void Load_NewGRFMapping(OverrideManagerBase &mapping)
 }
 
 static std::string _grf_name;
+static std::array<uint32_t, GRFConfig::MAX_NUM_PARAMS> _grf_param;
+static uint8_t _grf_num_params;
 
 static const NamedSaveLoad _grfconfig_desc[] = {
 	NSL("filename",            SLE_SSTR(GRFConfig, filename,         SLE_STR)),
 	NSL("ident.grfid",          SLE_VAR(GRFConfig, ident.grfid,      SLE_UINT32)),
 	NSL("ident.md5sum",         SLE_ARR(GRFConfig, ident.md5sum,     SLE_UINT8,  16)),
 	NSL("version",          SLE_CONDVAR(GRFConfig, version,          SLE_UINT32, SLV_151, SL_MAX_VERSION)),
-	NSL("param",                SLE_ARR(GRFConfig, param,            SLE_UINT32, 0x80)),
-	NSL("num_params",           SLE_VAR(GRFConfig, num_params,       SLE_UINT8)),
+	NSL("param",       SLE_CONDVARVEC_X(GRFConfig, param,            SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_NEWGRF_INFO_EXTRA, 2))),
+	NSL("param",         SLEG_CONDARR_X(_grf_param,                  SLE_UINT32, 0x80, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_NEWGRF_INFO_EXTRA, 0, 1))),
+	NSL("num_params",    SLEG_CONDVAR_X(_grf_num_params,             SLE_UINT8,  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_NEWGRF_INFO_EXTRA, 0, 1))),
 	NSL("palette",          SLE_CONDVAR(GRFConfig, palette,          SLE_UINT8,  SLV_101, SL_MAX_VERSION)),
 	NSL("grf_name",     SLEG_CONDSSTR_X(_grf_name,                   SLE_STR, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_NEWGRF_INFO_EXTRA))),
 };
@@ -115,6 +118,10 @@ static void Load_NGRF_common(GRFConfig *&grfconfig)
 		SlObjectLoadFiltered(c, sld);
 		if (SlXvIsFeaturePresent(XSLFI_NEWGRF_INFO_EXTRA)) {
 			AddGRFTextToList(c->name, 0x7F, c->ident.grfid, false, _grf_name.c_str());
+		}
+		if (SlXvIsFeatureMissing(XSLFI_NEWGRF_INFO_EXTRA, 2)) {
+			auto last = std::begin(_grf_param) + std::min<size_t>(std::size(_grf_param), _grf_num_params);
+			c->param.assign(std::begin(_grf_param), last);
 		}
 		if (IsSavegameVersionBefore(SLV_101)) c->SetSuitablePalette();
 		AppendToGRFConfigList(&grfconfig, c);
