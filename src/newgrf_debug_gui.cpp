@@ -1009,6 +1009,8 @@ struct NewGRFInspectWindow final : Window {
 				const NIFeature *nif = this->GetFeature();
 				if (nif->variables == nullptr) return;
 
+				if (nif->helper->ShowExtraInfoOnly(this->GetFeatureIndex()) || nif->helper->ShowExtraInfoIncludingGRFIDOnly(this->GetFeatureIndex())) return;
+
 				if (line < this->first_variable_line_index) return;
 				line -= this->first_variable_line_index;
 
