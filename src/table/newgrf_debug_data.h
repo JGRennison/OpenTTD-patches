@@ -182,7 +182,7 @@ class NIHVehicle : public NIHelper {
 
 			output.Print("    Tile hash: {}", (v->hash_tile_current != INVALID_TILE) ? "yes" : "no");
 		} else {
-			output.Print("  [+] Flags: ");
+			output.buffer.append("  [+] Flags: ");
 
 			v->DumpVehicleFlags(output.buffer, false);
 			output.FinishPrint();
