@@ -64,16 +64,16 @@ SaveLoadVersion _sl_xv_upstream_version;                         ///< optional S
 
 static const uint32_t _sl_xv_slxi_chunk_version = 0;             ///< current version of SLXI chunk
 
-static void loadVL(const SlxiSubChunkInfo *info, uint32_t length);
-static uint32_t saveVL(const SlxiSubChunkInfo *info, bool dry_run);
-static void loadUV(const SlxiSubChunkInfo *info, uint32_t length);
-static uint32_t saveUV(const SlxiSubChunkInfo *info, bool dry_run);
-static void loadLC(const SlxiSubChunkInfo *info, uint32_t length);
-static uint32_t saveLC(const SlxiSubChunkInfo *info, bool dry_run);
-static void loadSTC(const SlxiSubChunkInfo *info, uint32_t length);
-static uint32_t saveSTC(const SlxiSubChunkInfo *info, bool dry_run);
+static void loadVL(const SlxiSubChunkInfo &info, uint32_t length);
+static uint32_t saveVL(const SlxiSubChunkInfo &info, bool dry_run);
+static void loadUV(const SlxiSubChunkInfo &info, uint32_t length);
+static uint32_t saveUV(const SlxiSubChunkInfo &info, bool dry_run);
+static void loadLC(const SlxiSubChunkInfo &info, uint32_t length);
+static uint32_t saveLC(const SlxiSubChunkInfo &info, bool dry_run);
+static void loadSTC(const SlxiSubChunkInfo &info, uint32_t length);
+static uint32_t saveSTC(const SlxiSubChunkInfo &info, bool dry_run);
 
-const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
+const std::initializer_list<SlxiSubChunkInfo> _sl_xv_sub_chunk_infos = {
 	{ XSLFI_VERSION_LABEL,                    XSCF_IGNORABLE_ALL,       1,   1, "version_label",                    saveVL,  loadVL,  nullptr          },
 	{ XSLFI_UPSTREAM_VERSION,                 XSCF_NULL,                2,   2, "upstream_version",                 saveUV,  loadUV,  nullptr          },
 	{ XSLFI_TRACE_RESTRICT,                   XSCF_NULL,               18,  18, "tracerestrict",                    nullptr, nullptr, "TRRM,TRRP,TRRS" },
@@ -229,8 +229,6 @@ const SlxiSubChunkInfo _sl_xv_sub_chunk_infos[] = {
 	{ XSLFI_TABLE_STATION_SL,                 XSCF_NULL,                1,   1, "table_station_sl",                 nullptr, nullptr, nullptr          },
 	{ XSLFI_TABLE_LINKGRAPH_SL,               XSCF_NULL,                1,   1, "table_linkgraph_sl",               nullptr, nullptr, nullptr          },
 	{ XSLFI_TABLE_VEHICLE_SL,                 XSCF_NULL,                1,   1, "table_vehicle_sl",                 nullptr, nullptr, nullptr          },
-
-	{ XSLFI_NULL, XSCF_NULL, 0, 0, nullptr, nullptr, nullptr, nullptr }, // This is the end marker
 };
 
 /**
@@ -278,10 +276,9 @@ bool SlXvIsFeaturePresent(const std::array<uint16_t, XSLFI_SIZE> &feature_versio
  */
 const char *SlXvGetFeatureName(SlXvFeatureIndex feature)
 {
-	const SlxiSubChunkInfo *info = _sl_xv_sub_chunk_infos;
-	for (; info->index != XSLFI_NULL; ++info) {
-		if (info->index == feature) {
-			return info->name;
+	for (const SlxiSubChunkInfo &info : _sl_xv_sub_chunk_infos) {
+		if (info.index == feature) {
+			return info.name;
 		}
 	}
 	return "(unknown feature)";
@@ -311,9 +308,8 @@ void SlXvSetCurrentState()
 	SlXvResetState();
 	_sl_is_ext_version = true;
 
-	const SlxiSubChunkInfo *info = _sl_xv_sub_chunk_infos;
-	for (; info->index != XSLFI_NULL; ++info) {
-		_sl_xv_feature_versions[info->index] = info->save_version;
+	for (const SlxiSubChunkInfo &info : _sl_xv_sub_chunk_infos) {
+		_sl_xv_feature_versions[info.index] = info.save_version;
 	}
 	if (MapSizeX() > 8192 || MapSizeY() > 8192) {
 		_sl_xv_feature_versions[XSLFI_EXTRA_LARGE_MAP] = 1;
@@ -335,9 +331,8 @@ void SlXvSetStaticCurrentVersions()
 {
 	std::fill(_sl_xv_feature_static_versions.begin(), _sl_xv_feature_static_versions.end(), 0);
 
-	const SlxiSubChunkInfo *info = _sl_xv_sub_chunk_infos;
-	for (; info->index != XSLFI_NULL; ++info) {
-		_sl_xv_feature_static_versions[info->index] = info->save_version;
+	for (const SlxiSubChunkInfo &info : _sl_xv_sub_chunk_infos) {
+		_sl_xv_feature_static_versions[info.index] = info.save_version;
 	}
 }
 
@@ -565,27 +560,24 @@ static void Save_SLXI()
 	// calculate lengths
 	uint32_t item_count = 0;
 	uint32_t length = 12;
-	std::vector<uint32_t> extra_data_lengths;
-	std::vector<uint32_t> chunk_counts;
-	extra_data_lengths.resize(XSLFI_SIZE);
-	chunk_counts.resize(XSLFI_SIZE);
-	const SlxiSubChunkInfo *info = _sl_xv_sub_chunk_infos;
-	for (; info->index != XSLFI_NULL; ++info) {
-		if (_sl_xv_feature_versions[info->index] > 0) {
+	std::array<uint32_t, XSLFI_SIZE> extra_data_lengths{};
+	std::array<uint32_t, XSLFI_SIZE> chunk_counts{};
+	for (const SlxiSubChunkInfo &info : _sl_xv_sub_chunk_infos) {
+		if (_sl_xv_feature_versions[info.index] > 0) {
 			item_count++;
 			length += 6;
-			length += (uint32_t)SlCalcObjLength(info, _xlsi_sub_chunk_desc);
-			if (info->save_proc) {
-				uint32_t extra_data_length = info->save_proc(info, true);
+			length += (uint32_t)SlCalcObjLength(&info, _xlsi_sub_chunk_desc);
+			if (info.save_proc != nullptr) {
+				uint32_t extra_data_length = info.save_proc(info, true);
 				if (extra_data_length) {
-					extra_data_lengths[info->index] = extra_data_length;
+					extra_data_lengths[info.index] = extra_data_length;
 					length += 4 + extra_data_length;
 				}
 			}
-			if (info->chunk_list) {
-				uint32_t chunk_count = WriteChunkIdList(info->chunk_list, true);
+			if (info.chunk_list != nullptr) {
+				uint32_t chunk_count = WriteChunkIdList(info.chunk_list, true);
 				if (chunk_count) {
-					chunk_counts[info->index] = chunk_count;
+					chunk_counts[info.index] = chunk_count;
 					length += 4 * (1 + chunk_count);
 				}
 			}
@@ -599,30 +591,29 @@ static void Save_SLXI()
 	SlWriteUint32(item_count);                              // item count
 
 	// write data
-	info = _sl_xv_sub_chunk_infos;
-	for (; info->index != XSLFI_NULL; ++info) {
-		uint16_t save_version = _sl_xv_feature_versions[info->index];
+	for (const SlxiSubChunkInfo &info : _sl_xv_sub_chunk_infos) {
+		uint16_t save_version = _sl_xv_feature_versions[info.index];
 		if (save_version > 0) {
-			SlxiSubChunkFlags flags = info->flags;
+			SlxiSubChunkFlags flags = info.flags;
 			assert(!(flags & (XSCF_EXTRA_DATA_PRESENT | XSCF_CHUNK_ID_LIST_PRESENT)));
-			uint32_t extra_data_length = extra_data_lengths[info->index];
-			uint32_t chunk_count = chunk_counts[info->index];
+			uint32_t extra_data_length = extra_data_lengths[info.index];
+			uint32_t chunk_count = chunk_counts[info.index];
 			if (extra_data_length > 0) flags |= XSCF_EXTRA_DATA_PRESENT;
 			if (chunk_count > 0) flags |= XSCF_CHUNK_ID_LIST_PRESENT;
 			SlWriteUint32(flags);
 			SlWriteUint16(save_version);
-			SlObject(const_cast<SlxiSubChunkInfo *>(info), _xlsi_sub_chunk_desc);
+			SlObject(const_cast<SlxiSubChunkInfo *>(&info), _xlsi_sub_chunk_desc);
 
 			if (extra_data_length > 0) {
 				SlWriteUint32(extra_data_length);
 				[[maybe_unused]] size_t written = SlGetBytesWritten();
-				info->save_proc(info, false);
+				info.save_proc(info, false);
 				assert(SlGetBytesWritten() == written + extra_data_length);
 			}
 			if (chunk_count > 0) {
 				SlWriteUint32(chunk_count);
 				[[maybe_unused]] size_t written = SlGetBytesWritten();
-				WriteChunkIdList(info->chunk_list, false);
+				WriteChunkIdList(info.chunk_list, false);
 				assert(SlGetBytesWritten() == written + (chunk_count * 4));
 			}
 		}
@@ -662,17 +653,16 @@ static void Load_SLXI()
 		SlGlobList(xlsi_sub_chunk_name_desc);
 
 		// linearly scan through feature list until found name match
-		bool found = false;
-		const SlxiSubChunkInfo *info = _sl_xv_sub_chunk_infos;
-		for (; info->index != XSLFI_NULL; ++info) {
-			if (strcmp(name_buffer, info->name) == 0) {
-				found = true;
+		const SlxiSubChunkInfo *info = nullptr;
+		for (const SlxiSubChunkInfo &it : _sl_xv_sub_chunk_infos) {
+			if (strcmp(name_buffer, it.name) == 0) {
+				info = &it;
 				break;
 			}
 		}
 
 		bool discard_chunks = false;
-		if (found) {
+		if (info != nullptr) {
 			if (version > info->max_version) {
 				if (flags & XSCF_IGNORABLE_VERSION) {
 					// version too large but carry on regardless
@@ -693,7 +683,7 @@ static void Load_SLXI()
 					if (extra_data_size) {
 						if (info->load_proc) {
 							size_t read = SlGetBytesRead();
-							info->load_proc(info, extra_data_size);
+							info->load_proc(*info, extra_data_size);
 							if (SlGetBytesRead() != read + extra_data_size) {
 								SlErrorCorruptFmt("SLXI chunk: feature: {}, version: {}, extra data length mismatch", name_buffer, version);
 							}
@@ -733,27 +723,27 @@ static void Load_SLXI()
 	}
 }
 
-static void IgnoreWrongLengthExtraData(const SlxiSubChunkInfo *info, uint32_t length)
+static void IgnoreWrongLengthExtraData(const SlxiSubChunkInfo &info, uint32_t length)
 {
-	Debug(sl, 1, "SLXI chunk: feature: '{}', version: {}, has data of wrong length: {}", info->name, _sl_xv_feature_versions[info->index], length);
+	Debug(sl, 1, "SLXI chunk: feature: '{}', version: {}, has data of wrong length: {}", info.name, _sl_xv_feature_versions[info.index], length);
 	ReadBuffer::GetCurrent()->SkipBytes(length);
 }
 
-static void loadVL(const SlxiSubChunkInfo *info, uint32_t length)
+static void loadVL(const SlxiSubChunkInfo &info, uint32_t length)
 {
 	_sl_xv_version_label.resize(length);
 	ReadBuffer::GetCurrent()->CopyBytes(reinterpret_cast<uint8_t *>(_sl_xv_version_label.data()), length);
 	Debug(sl, 2, "SLXI version label: {}", _sl_xv_version_label);
 }
 
-static uint32_t saveVL(const SlxiSubChunkInfo *info, bool dry_run)
+static uint32_t saveVL(const SlxiSubChunkInfo &info, bool dry_run)
 {
 	const size_t length = strlen(_openttd_revision);
 	if (!dry_run) MemoryDumper::GetCurrent()->CopyBytes(reinterpret_cast<const uint8_t *>(_openttd_revision), length);
 	return static_cast<uint32_t>(length);
 }
 
-static void loadUV(const SlxiSubChunkInfo *info, uint32_t length)
+static void loadUV(const SlxiSubChunkInfo &info, uint32_t length)
 {
 	if (length == 2) {
 		_sl_xv_upstream_version = (SaveLoadVersion)SlReadUint16();
@@ -767,13 +757,13 @@ static void loadUV(const SlxiSubChunkInfo *info, uint32_t length)
 	}
 }
 
-static uint32_t saveUV(const SlxiSubChunkInfo *info, bool dry_run)
+static uint32_t saveUV(const SlxiSubChunkInfo &info, bool dry_run)
 {
 	if (!dry_run) SlWriteUint16(SL_MAX_VERSION - 1);
 	return 2;
 }
 
-static void loadLC(const SlxiSubChunkInfo *info, uint32_t length)
+static void loadLC(const SlxiSubChunkInfo &info, uint32_t length)
 {
 	if (length == 1) {
 		_loaded_local_company = (CompanyID) ReadBuffer::GetCurrent()->ReadByte();
@@ -782,13 +772,13 @@ static void loadLC(const SlxiSubChunkInfo *info, uint32_t length)
 	}
 }
 
-static uint32_t saveLC(const SlxiSubChunkInfo *info, bool dry_run)
+static uint32_t saveLC(const SlxiSubChunkInfo &info, bool dry_run)
 {
 	if (!dry_run) MemoryDumper::GetCurrent()->WriteByte(_local_company);
 	return 1;
 }
 
-static void loadSTC(const SlxiSubChunkInfo *info, uint32_t length)
+static void loadSTC(const SlxiSubChunkInfo &info, uint32_t length)
 {
 	extern uint64_t _station_tile_cache_hash;
 	if (length == 8) {
@@ -798,7 +788,7 @@ static void loadSTC(const SlxiSubChunkInfo *info, uint32_t length)
 	}
 }
 
-static uint32_t saveSTC(const SlxiSubChunkInfo *info, bool dry_run)
+static uint32_t saveSTC(const SlxiSubChunkInfo &info, bool dry_run)
 {
 	extern uint64_t _station_tile_cache_hash;
 	if (!dry_run) SlWriteUint64(_station_tile_cache_hash);

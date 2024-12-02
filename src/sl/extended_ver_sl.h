@@ -283,8 +283,8 @@ DECLARE_ENUM_AS_BIT_SET(SlxiSubChunkFlags)
 
 struct SlxiSubChunkInfo;
 
-typedef uint32_t SlxiSubChunkSaveProc(const SlxiSubChunkInfo *info, bool dry_run);  ///< sub chunk save procedure type, must return length and write no data when dry_run is true
-typedef void SlxiSubChunkLoadProc(const SlxiSubChunkInfo *info, uint32_t length);   ///< sub chunk load procedure, must consume length bytes
+typedef uint32_t SlxiSubChunkSaveProc(const SlxiSubChunkInfo &info, bool dry_run);  ///< sub chunk save procedure type, must return length and write no data when dry_run is true
+typedef void SlxiSubChunkLoadProc(const SlxiSubChunkInfo &info, uint32_t length);   ///< sub chunk load procedure, must consume length bytes
 
 /** Handlers and description of chunk. */
 struct SlxiSubChunkInfo {
