@@ -117,18 +117,18 @@ static bool IsQueryConfirmIndustryOrRailStationInArea(TileIndex start_tile, Tile
 	if (_settings_client.gui.demolish_confirm_mode == DCM_OFF) return false;
 
 	OrthogonalOrDiagonalTileIterator tile_iterator(end_tile, start_tile, diagonal);
-
-	bool destroying_industry_or_station = false;
-
 	for (; *tile_iterator != INVALID_TILE; ++tile_iterator) {
-		if ((_cheats.magic_bulldozer.value && IsTileType(*tile_iterator, MP_INDUSTRY)) ||
-				(_settings_client.gui.demolish_confirm_mode == DCM_INDUSTRY_RAIL_STATION && IsRailStationTile(*tile_iterator))) {
-			destroying_industry_or_station = true;
-			break;
+		TileIndex tile = *tile_iterator;
+		if (_cheats.magic_bulldozer.value && IsTileType(tile, MP_INDUSTRY)) {
+			return true;
+		}
+		if (_settings_client.gui.demolish_confirm_mode == DCM_INDUSTRY_RAIL_STATION && IsRailStationTile(tile)) {
+			/* Only warn when attempting to remove own stations */
+			if (GetTileOwner(tile) == _local_company) return true;
 		}
 	}
 
-	return destroying_industry_or_station;
+	return false;
 }
 
 static CommandContainer _demolish_area_command;
