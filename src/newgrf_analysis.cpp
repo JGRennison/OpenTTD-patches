@@ -141,13 +141,7 @@ void FindCBResultAnalyser::AnalyseDeterministicSpriteGroup(const DeterministicSp
 
 	auto check_var_filter = [&](uint8_t var, uint value) -> bool {
 		if (IsTrivialSwitchOfSpecificVariable(dsg, var, 0xFF)) {
-			for (const auto &range : dsg->ranges) {
-				if (range.low == range.high && range.low == value) {
-					this->AnalyseGroup(range.group);
-					return true;
-				}
-			}
-			this->AnalyseGroup(dsg->default_group);
+			this->AnalyseGroup(GetSwitchTargetForValue(dsg, value));
 			return true;
 		}
 		return false;
