@@ -225,6 +225,8 @@ void SetupCargoForClimate(LandscapeID l);
 bool IsDefaultCargo(CargoID cid);
 void BuildCargoLabelMap();
 
+std::optional<std::string> BuildCargoAcceptanceString(const CargoArray &acceptance, StringID label);
+
 CargoID GetCargoIDByLabelUsingMap(CargoLabel label);
 
 inline CargoID GetCargoIDByLabel(CargoLabel label)

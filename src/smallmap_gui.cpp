@@ -1220,6 +1220,7 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 				}
 				height++;
 				str = tbl->legend;
+				if (i == SMT_CONTOUR) SetDParam(0, tbl->height * TILE_HEIGHT_STEP);
 			}
 			min_width = std::max(GetStringBoundingBox(str).width, min_width);
 		}

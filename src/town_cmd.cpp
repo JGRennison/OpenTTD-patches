@@ -855,10 +855,17 @@ static void AddAcceptedCargoSetMask(CargoID cargo, uint amount, CargoArray &acce
 	SetBit(always_accepted, cargo);
 }
 
-static void AddAcceptedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &acceptance, CargoTypes &always_accepted)
+/**
+ * Determine accepted cargo for a house.
+ * @param tile Tile of house, or INVALID_TILE if not yet built.
+ * @param house HouseID of house.
+ * @param hs HouseSpec of house.
+ * @param t Town that house belongs to, or nullptr if not yet built.
+ * @param[out] acceptance CargoArray to be filled with acceptance information.
+ * @param[out] always_accepted Bitmask of always accepted cargo types
+ */
+void AddAcceptedCargoOfHouse(TileIndex tile, HouseID house, const HouseSpec *hs, Town *t, CargoArray &acceptance, CargoTypes &always_accepted)
 {
-	const HouseSpec *hs = HouseSpec::Get(house_id);
-	Town *t = (tile == INVALID_TILE) ? nullptr : Town::GetByTile(tile);
 	CargoID accepts[lengthof(hs->accepts_cargo)];
 
 	/* Set the initial accepted cargo types */
@@ -868,7 +875,7 @@ static void AddAcceptedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &
 
 	/* Check for custom accepted cargo types */
 	if (HasBit(hs->callback_mask, CBM_HOUSE_ACCEPT_CARGO)) {
-		uint16_t callback = GetHouseCallback(CBID_HOUSE_ACCEPT_CARGO, 0, 0, house_id, t, tile);
+		uint16_t callback = GetHouseCallback(CBID_HOUSE_ACCEPT_CARGO, 0, 0, house, t, tile, tile == INVALID_TILE);
 		if (callback != CALLBACK_FAILED) {
 			/* Replace accepted cargo types with translated values from callback */
 			accepts[0] = GetCargoTranslation(GB(callback,  0, 5), hs->grf_prop.grffile);
@@ -879,7 +886,7 @@ static void AddAcceptedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &
 
 	/* Check for custom cargo acceptance */
 	if (HasBit(hs->callback_mask, CBM_HOUSE_CARGO_ACCEPTANCE)) {
-		uint16_t callback = GetHouseCallback(CBID_HOUSE_CARGO_ACCEPTANCE, 0, 0, house_id, t, tile);
+		uint16_t callback = GetHouseCallback(CBID_HOUSE_CARGO_ACCEPTANCE, 0, 0, house, t, tile, tile == INVALID_TILE);
 		if (callback != CALLBACK_FAILED) {
 			AddAcceptedCargoSetMask(accepts[0], GB(callback, 0, 4), acceptance, always_accepted);
 			AddAcceptedCargoSetMask(accepts[1], GB(callback, 4, 4), acceptance, always_accepted);
@@ -901,7 +908,21 @@ static void AddAcceptedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &
 
 static void AddAcceptedCargo_Town(TileIndex tile, CargoArray &acceptance, CargoTypes &always_accepted)
 {
-	AddAcceptedHouseCargo(GetHouseType(tile), tile, acceptance, always_accepted);
+	HouseID house = GetHouseType(tile);
+	AddAcceptedCargoOfHouse(tile, house, HouseSpec::Get(house), Town::GetByTile(tile), acceptance, always_accepted);
+}
+
+/**
+ * Get accepted cargo of a house prototype.
+ * @param hs Spec of the house.
+ * @return CargoArray filled with cargo accepted by the house.
+ */
+CargoArray GetAcceptedCargoOfHouse(const HouseSpec *hs)
+{
+	CargoTypes always_accepted;
+	CargoArray acceptance{};
+	AddAcceptedCargoOfHouse(INVALID_TILE, hs->Index(), hs, nullptr, acceptance, always_accepted);
+	return acceptance;
 }
 
 static void GetTileDesc_Town(TileIndex tile, TileDesc *td)
@@ -3796,7 +3817,7 @@ static CommandCost TownActionBuyRights(Town *t, DoCommandFlag flags)
 		SetWindowClassesDirty(WC_STATION_VIEW);
 
 		/* Spawn news message */
-		CompanyNewsInformation *cni = new CompanyNewsInformation(Company::Get(_current_company));
+		auto cni = std::make_unique<CompanyNewsInformation>(Company::Get(_current_company));
 		SetDParam(0, STR_NEWS_EXCLUSIVE_RIGHTS_TITLE);
 		if (EconTime::UsingWallclockUnits()) {
 			SetDParam(1, ReplaceWallclockMinutesUnit() ? STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_PERIOD : STR_NEWS_EXCLUSIVE_RIGHTS_DESCRIPTION_MINUTES);
@@ -3805,7 +3826,7 @@ static CommandCost TownActionBuyRights(Town *t, DoCommandFlag flags)
 		}
 		SetDParam(2, t->index);
 		SetDParamStr(3, cni->company_name);
-		AddNewsItem(STR_MESSAGE_NEWS_FORMAT, NT_GENERAL, NF_COMPANY, NR_TOWN, t->index, NR_NONE, UINT32_MAX, cni);
+		AddNewsItem(STR_MESSAGE_NEWS_FORMAT, NT_GENERAL, NF_COMPANY, NR_TOWN, t->index, NR_NONE, UINT32_MAX, std::move(cni));
 		AI::BroadcastNewEvent(new ScriptEventExclusiveTransportRights((ScriptCompany::CompanyID)(Owner)_current_company, t->index));
 		Game::NewEvent(new ScriptEventExclusiveTransportRights((ScriptCompany::CompanyID)(Owner)_current_company, t->index));
 	}

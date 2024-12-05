@@ -282,6 +282,7 @@ void SetTownRatingTestMode(bool mode);
 uint GetMaskOfTownActions(int *nump, CompanyID cid, const Town *t);
 bool GenerateTowns(TownLayout layout);
 const CargoSpec *FindFirstCargoWithTownAcceptanceEffect(TownAcceptanceEffect effect);
+CargoArray GetAcceptedCargoOfHouse(const HouseSpec *hs);
 
 /** Town actions of a company. */
 enum TownActions {
