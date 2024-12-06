@@ -48,7 +48,7 @@ public:
 	RandomAccessFile(const RandomAccessFile&) = delete;
 	void operator=(const RandomAccessFile&) = delete;
 
-	virtual ~RandomAccessFile() {}
+	virtual ~RandomAccessFile() = default;
 
 	const std::string &GetFilename() const;
 	const std::string &GetSimplifiedFilename() const;

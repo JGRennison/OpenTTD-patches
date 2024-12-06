@@ -473,7 +473,7 @@ void VehicleLengthChanged(const Vehicle *u)
 		}
 		return;
 	}
-	uint32_t grfid = engine->grf_prop.grffile->grfid;
+	uint32_t grfid = engine->grf_prop.grfid;
 	GRFConfig *grfconfig = GetGRFConfig(grfid);
 	if (GamelogGRFBugReverse(grfid, engine->grf_prop.local_id) || !HasBit(grfconfig->grf_bugs, GBUG_VEH_LENGTH)) {
 		ShowNewGrfVehicleError(u->engine_type, STR_NEWGRF_BROKEN, STR_NEWGRF_BROKEN_VEHICLE_LENGTH, GBUG_VEH_LENGTH, true);

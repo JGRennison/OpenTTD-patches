@@ -278,14 +278,14 @@ static bool SearchNearbyHouseID(TileIndex tile, void *user_data)
 	if (IsTileType(tile, MP_HOUSE)) {
 		HouseID house = GetHouseType(tile); // tile been examined
 		const HouseSpec *hs = HouseSpec::Get(house);
-		if (hs->grf_prop.grffile != nullptr) { // must be one from a grf file
+		if (hs->grf_prop.HasGrfFile()) { // must be one from a grf file
 			SearchNearbyHouseData *nbhd = (SearchNearbyHouseData *)user_data;
 
 			TileIndex north_tile = tile + GetHouseNorthPart(house); // modifies 'house'!
 			if (north_tile == nbhd->north_tile) return false; // Always ignore origin house
 
 			return hs->grf_prop.local_id == nbhd->hs->grf_prop.local_id &&  // same local id as the one requested
-				hs->grf_prop.grffile->grfid == nbhd->hs->grf_prop.grffile->grfid;  // from the same grf
+				hs->grf_prop.grfid == nbhd->hs->grf_prop.grfid;  // from the same grf
 		}
 	}
 	return false;
@@ -302,14 +302,14 @@ static bool SearchNearbyHouseClass(TileIndex tile, void *user_data)
 	if (IsTileType(tile, MP_HOUSE)) {
 		HouseID house = GetHouseType(tile); // tile been examined
 		const HouseSpec *hs = HouseSpec::Get(house);
-		if (hs->grf_prop.grffile != nullptr) { // must be one from a grf file
+		if (hs->grf_prop.HasGrfFile()) { // must be one from a grf file
 			SearchNearbyHouseData *nbhd = (SearchNearbyHouseData *)user_data;
 
 			TileIndex north_tile = tile + GetHouseNorthPart(house); // modifies 'house'!
 			if (north_tile == nbhd->north_tile) return false; // Always ignore origin house
 
 			return hs->class_id == nbhd->hs->class_id &&  // same classid as the one requested
-				hs->grf_prop.grffile->grfid == nbhd->hs->grf_prop.grffile->grfid;  // from the same grf
+				hs->grf_prop.grfid == nbhd->hs->grf_prop.grfid;  // from the same grf
 		}
 	}
 	return false;
@@ -326,13 +326,13 @@ static bool SearchNearbyHouseGRFID(TileIndex tile, void *user_data)
 	if (IsTileType(tile, MP_HOUSE)) {
 		HouseID house = GetHouseType(tile); // tile been examined
 		const HouseSpec *hs = HouseSpec::Get(house);
-		if (hs->grf_prop.grffile != nullptr) { // must be one from a grf file
+		if (hs->grf_prop.HasGrfFile()) { // must be one from a grf file
 			SearchNearbyHouseData *nbhd = (SearchNearbyHouseData *)user_data;
 
 			TileIndex north_tile = tile + GetHouseNorthPart(house); // modifies 'house'!
 			if (north_tile == nbhd->north_tile) return false; // Always ignore origin house
 
-			return hs->grf_prop.grffile->grfid == nbhd->hs->grf_prop.grffile->grfid;  // from the same grf
+			return hs->grf_prop.grfid == nbhd->hs->grf_prop.grfid;  // from the same grf
 		}
 	}
 	return false;
@@ -375,9 +375,9 @@ static uint32_t GetDistanceFromNearbyHouse(uint8_t parameter, TileIndex tile, Ho
 HouseID HouseScopeResolver::GetOtherHouseID(uint32_t parameter) const
 {
 	const HouseSpec *hs = HouseSpec::Get(this->house_id);
-	if (hs->grf_prop.grffile == nullptr) return INVALID_HOUSE_ID;
+	if (!hs->grf_prop.HasGrfFile()) return INVALID_HOUSE_ID;
 
-	return _house_mngr.GetID(parameter, hs->grf_prop.grffile->grfid);
+	return _house_mngr.GetID(parameter, hs->grf_prop.grfid);
 }
 
 template <typename F>
@@ -627,7 +627,7 @@ StringID GetHouseName(HouseID house_id, TileIndex tile)
 	uint16_t callback_res = GetHouseCallback(CBID_HOUSE_CUSTOM_NAME, house_completed ? 1 : 0, 0, house_id, t, tile);
 	if (callback_res != CALLBACK_FAILED && callback_res != 0x400) {
 		if (callback_res > 0x400) {
-			ErrorUnknownCallbackResult(hs->grf_prop.grffile->grfid, CBID_HOUSE_CUSTOM_NAME, callback_res);
+			ErrorUnknownCallbackResult(hs->grf_prop.grfid, CBID_HOUSE_CUSTOM_NAME, callback_res);
 		} else {
 			StringID ret = GetGRFStringID(hs->grf_prop.grffile, 0xD000 + callback_res);
 			if (ret != STR_NULL && ret != STR_UNDEFINED) return ret;

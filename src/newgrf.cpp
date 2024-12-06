@@ -583,7 +583,10 @@ static Engine *GetNewEngine(const GRFFile *file, VehicleType type, uint16_t inte
 		EngineID engine = _engine_mngr.GetID(type, internal_id, scope_grfid);
 		if (engine != INVALID_ENGINE) {
 			Engine *e = Engine::Get(engine);
-			if (e->grf_prop.grffile == nullptr) e->grf_prop.grffile = file;
+			if (!e->grf_prop.HasGrfFile()) {
+				e->grf_prop.grfid = file->grfid;
+				e->grf_prop.grffile = file;
+			}
 			return e;
 		}
 	}
@@ -593,7 +596,8 @@ static Engine *GetNewEngine(const GRFFile *file, VehicleType type, uint16_t inte
 	if (engine != INVALID_ENGINE) {
 		Engine *e = Engine::Get(engine);
 
-		if (e->grf_prop.grffile == nullptr) {
+		if (!e->grf_prop.HasGrfFile()) {
+			e->grf_prop.grfid = file->grfid;
 			e->grf_prop.grffile = file;
 			GrfMsg(5, "Replaced engine at index {} for GRFID {:x}, type {}, index {}", e->index, BSWAP32(file->grfid), type, internal_id);
 		}
@@ -601,8 +605,8 @@ static Engine *GetNewEngine(const GRFFile *file, VehicleType type, uint16_t inte
 		/* Reserve the engine slot */
 		if (!static_access) {
 			_engine_mngr.RemoveFromIndex(engine);
-			EngineIDMapping *eid = _engine_mngr.data() + engine;
-			eid->grfid           = scope_grfid; // Note: this is INVALID_GRFID if dynamic_engines is disabled, so no reservation
+			EngineIDMapping &eid = _engine_mngr.mappings[engine];
+			eid.grfid = scope_grfid; // Note: this is INVALID_GRFID if dynamic_engines is disabled, so no reservation
 			_engine_mngr.AddToIndex(engine);
 		}
 
@@ -620,11 +624,12 @@ static Engine *GetNewEngine(const GRFFile *file, VehicleType type, uint16_t inte
 
 	/* ... it's not, so create a new one based off an existing engine */
 	Engine *e = new Engine(type, internal_id);
+	e->grf_prop.grfid = file->grfid;
 	e->grf_prop.grffile = file;
 
 	/* Reserve the engine slot */
-	assert(_engine_mngr.size() == e->index);
-	_engine_mngr.push_back({
+	assert(_engine_mngr.mappings.size() == e->index);
+	_engine_mngr.mappings.push_back({
 			scope_grfid, // Note: this is INVALID_GRFID if dynamic_engines is disabled, so no reservation
 			internal_id,
 			type,
@@ -2500,6 +2505,7 @@ static ChangeInfoResult TownHouseChangeInfo(uint hid, int numinfo, int prop, con
 					housespec->enabled = true;
 					housespec->grf_prop.local_id = hid + i;
 					housespec->grf_prop.subst_id = subs_id;
+					housespec->grf_prop.grfid = _cur.grffile->grfid;
 					housespec->grf_prop.grffile = _cur.grffile;
 					/* Set default colours for randomization, used if not overridden. */
 					housespec->random_colour[0] = COLOUR_RED;
@@ -3408,6 +3414,7 @@ static ChangeInfoResult IndustrytilesChangeInfo(uint indtid, int numinfo, int pr
 
 					tsp->grf_prop.local_id = indtid + i;
 					tsp->grf_prop.subst_id = subs_id;
+					tsp->grf_prop.grfid = _cur.grffile->grfid;
 					tsp->grf_prop.grffile = _cur.grffile;
 					_industile_mngr.AddEntityID(indtid + i, _cur.grffile->grfid, subs_id); // pre-reserve the tile slot
 				}
@@ -3666,6 +3673,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint indid, int numinfo, int prop, 
 					indsp->enabled = true;
 					indsp->grf_prop.local_id = indid + i;
 					indsp->grf_prop.subst_id = subs_id;
+					indsp->grf_prop.grfid = _cur.grffile->grfid;
 					indsp->grf_prop.grffile = _cur.grffile;
 					/* If the grf industry needs to check its surrounding upon creation, it should
 					 * rely on callbacks, not on the original placement functions */
@@ -4039,6 +4047,7 @@ static ChangeInfoResult AirportChangeInfo(uint airport, int numinfo, int prop, c
 					as->enabled = true;
 					as->grf_prop.local_id = airport + i;
 					as->grf_prop.subst_id = subs_id;
+					as->grf_prop.grfid = _cur.grffile->grfid;
 					as->grf_prop.grffile = _cur.grffile;
 					/* override the default airport */
 					_airport_mngr.Add(airport + i, _cur.grffile->grfid, subs_id);
@@ -4790,7 +4799,7 @@ static ChangeInfoResult RoadTypeChangeInfo(uint id, int numinfo, int prop, const
 	ChangeInfoResult ret = CIR_SUCCESS;
 
 	extern RoadTypeInfo _roadtypes[ROADTYPE_END];
-	RoadType *type_map = (rtt == RTT_TRAM) ? _cur.grffile->tramtype_map : _cur.grffile->roadtype_map;
+	std::array<RoadType, ROADTYPE_END> &type_map = (rtt == RTT_TRAM) ? _cur.grffile->tramtype_map : _cur.grffile->roadtype_map;
 
 	if (id + numinfo > ROADTYPE_END) {
 		GrfMsg(1, "RoadTypeChangeInfo: Road type {} is invalid, max {}, ignoring", id + numinfo, ROADTYPE_END);
@@ -4932,7 +4941,7 @@ static ChangeInfoResult RoadTypeReserveInfo(uint id, int numinfo, int prop, cons
 	ChangeInfoResult ret = CIR_SUCCESS;
 
 	extern RoadTypeInfo _roadtypes[ROADTYPE_END];
-	RoadType *type_map = (rtt == RTT_TRAM) ? _cur.grffile->tramtype_map : _cur.grffile->roadtype_map;
+	std::array<RoadType, ROADTYPE_END> &type_map = (rtt == RTT_TRAM) ? _cur.grffile->tramtype_map : _cur.grffile->roadtype_map;
 
 	if (id + numinfo > ROADTYPE_END) {
 		GrfMsg(1, "RoadTypeReserveInfo: Road type {} is invalid, max {}, ignoring", id + numinfo, ROADTYPE_END);
@@ -5063,6 +5072,7 @@ static ChangeInfoResult AirportTilesChangeInfo(uint airtid, int numinfo, int pro
 
 					tsp->grf_prop.local_id = airtid + i;
 					tsp->grf_prop.subst_id = subs_id;
+					tsp->grf_prop.grfid = _cur.grffile->grfid;
 					tsp->grf_prop.grffile = _cur.grffile;
 					_airporttile_mngr.AddEntityID(airtid + i, _cur.grffile->grfid, subs_id); // pre-reserve the tile slot
 				}
@@ -6607,12 +6617,13 @@ static void StationMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 			continue;
 		}
 
-		if (statspec->grf_prop.grffile != nullptr) {
+		if (statspec->grf_prop.HasGrfFile()) {
 			GrfMsg(1, "StationMapSpriteGroup: Station with ID 0x{:X} mapped multiple times, skipping", stations[i]);
 			continue;
 		}
 
 		statspec->grf_prop.spritegroup[SpriteGroupCargo::SG_DEFAULT] = GetGroupByID(groupid);
+		statspec->grf_prop.grfid = _cur.grffile->grfid;
 		statspec->grf_prop.grffile = _cur.grffile;
 		statspec->grf_prop.local_id = stations[i];
 		StationClass::Assign(statspec);
@@ -6821,12 +6832,13 @@ static void ObjectMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 			continue;
 		}
 
-		if (spec->grf_prop.grffile != nullptr) {
+		if (spec->grf_prop.HasGrfFile()) {
 			GrfMsg(1, "ObjectMapSpriteGroup: Object with ID 0x{:X} mapped multiple times, skipping", objects[i]);
 			continue;
 		}
 
 		spec->grf_prop.spritegroup[OBJECT_SPRITE_GROUP_DEFAULT] = GetGroupByID(groupid);
+		spec->grf_prop.grfid = _cur.grffile->grfid;
 		spec->grf_prop.grffile = _cur.grffile;
 		spec->grf_prop.local_id = objects[i];
 	}
@@ -6865,7 +6877,7 @@ static void RailTypeMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 
 static void RoadTypeMapSpriteGroup(ByteReader &buf, uint8_t idcount, RoadTramType rtt)
 {
-	RoadType *type_map = (rtt == RTT_TRAM) ? _cur.grffile->tramtype_map : _cur.grffile->roadtype_map;
+	std::array<RoadType, ROADTYPE_END> &type_map = (rtt == RTT_TRAM) ? _cur.grffile->tramtype_map : _cur.grffile->roadtype_map;
 
 	TempBufferST<uint8_t> roadtypes(idcount);
 	for (uint i = 0; i < idcount; i++) {
@@ -7002,12 +7014,13 @@ static void RoadStopMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 			continue;
 		}
 
-		if (roadstopspec->grf_prop.grffile != nullptr) {
+		if (roadstopspec->grf_prop.HasGrfFile()) {
 			GrfMsg(1, "RoadStopMapSpriteGroup: Road stop with ID 0x{:X} mapped multiple times, skipping", roadstops[i]);
 			continue;
 		}
 
 		roadstopspec->grf_prop.spritegroup[SpriteGroupCargo::SG_DEFAULT] = GetGroupByID(groupid);
+		roadstopspec->grf_prop.grfid = _cur.grffile->grfid;
 		roadstopspec->grf_prop.grffile = _cur.grffile;
 		roadstopspec->grf_prop.local_id = roadstops[i];
 		RoadStopClass::Assign(roadstopspec);
@@ -10678,18 +10691,18 @@ GRFFile::GRFFile(const GRFConfig *config)
 	}
 
 	/* Initialise rail type map with default rail types */
-	std::fill(std::begin(this->railtype_map), std::end(this->railtype_map), INVALID_RAILTYPE);
+	this->railtype_map.fill(INVALID_RAILTYPE);
 	this->railtype_map[0] = RAILTYPE_RAIL;
 	this->railtype_map[1] = RAILTYPE_ELECTRIC;
 	this->railtype_map[2] = RAILTYPE_MONO;
 	this->railtype_map[3] = RAILTYPE_MAGLEV;
 
 	/* Initialise road type map with default road types */
-	std::fill(std::begin(this->roadtype_map), std::end(this->roadtype_map), INVALID_ROADTYPE);
+	this->roadtype_map.fill(INVALID_ROADTYPE);
 	this->roadtype_map[0] = ROADTYPE_ROAD;
 
 	/* Initialise tram type map with default tram types */
-	std::fill(std::begin(this->tramtype_map), std::end(this->tramtype_map), INVALID_ROADTYPE);
+	this->tramtype_map.fill(INVALID_ROADTYPE);
 	this->tramtype_map[0] = ROADTYPE_TRAM;
 
 	/* Copy the initial parameter list
@@ -10951,7 +10964,7 @@ static void FinaliseEngineArray()
 {
 	for (Engine *e : Engine::Iterate()) {
 		if (e->GetGRF() == nullptr) {
-			const EngineIDMapping &eid = _engine_mngr[e->index];
+			const EngineIDMapping &eid = _engine_mngr.mappings[e->index];
 			if (eid.grfid != INVALID_GRFID || eid.internal_id != eid.substitute_id) {
 				e->info.string_id = STR_NEWGRF_INVALID_ENGINE;
 			}
@@ -11003,7 +11016,7 @@ static void FinaliseEngineArray()
 			/* Engine looped back on itself, so clear the variant. */
 			e->info.variant_id = INVALID_ENGINE;
 
-			GrfMsg(1, "FinaliseEngineArray: Variant of engine {:x} in '{}' loops back on itself", _engine_mngr[e->index].internal_id, e->GetGRF()->filename);
+			GrfMsg(1, "FinaliseEngineArray: Variant of engine {:x} in '{}' loops back on itself", _engine_mngr.mappings[e->index].internal_id, e->GetGRF()->filename);
 			break;
 		}
 
@@ -11236,9 +11249,9 @@ static void FinaliseIndustriesArray()
 	}
 
 	for (auto &indsp : _industry_specs) {
-		if (indsp.enabled && indsp.grf_prop.grffile != nullptr) {
+		if (indsp.enabled && indsp.grf_prop.HasGrfFile()) {
 			for (auto &conflicting : indsp.conflicting) {
-				conflicting = MapNewGRFIndustryType(conflicting, indsp.grf_prop.grffile->grfid);
+				conflicting = MapNewGRFIndustryType(conflicting, indsp.grf_prop.grfid);
 			}
 		}
 		if (!indsp.enabled) {
@@ -11271,7 +11284,7 @@ static void FinaliseObjectsArray()
 {
 	for (GRFFile * const file : _grf_files) {
 		for (auto &objectspec : file->objectspec) {
-			if (objectspec != nullptr && objectspec->grf_prop.grffile != nullptr && objectspec->IsEnabled()) {
+			if (objectspec != nullptr && objectspec->grf_prop.HasGrfFile() && objectspec->IsEnabled()) {
 				_object_mngr.SetEntitySpec(objectspec.get());
 			}
 		}

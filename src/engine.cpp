@@ -570,14 +570,10 @@ bool Engine::IsVariantHidden(CompanyID c) const
  */
 void EngineOverrideManager::ResetToDefaultMapping()
 {
-	this->clear();
+	this->mappings.clear();
 	for (VehicleType type = VEH_TRAIN; type <= VEH_AIRCRAFT; type++) {
 		for (uint internal_id = 0; internal_id < _engine_counts[type]; internal_id++) {
-			EngineIDMapping &eid = this->emplace_back();
-			eid.type            = type;
-			eid.grfid           = INVALID_GRFID;
-			eid.internal_id     = internal_id;
-			eid.substitute_id   = internal_id;
+			this->mappings.emplace_back(INVALID_GRFID, internal_id, type, internal_id);
 		}
 	}
 	this->ReIndex();
@@ -599,7 +595,7 @@ EngineID EngineOverrideManager::GetID(VehicleType type, uint16_t grf_local_id, u
 
 #ifdef _DEBUG
 	EngineID index = 0;
-	for (const EngineIDMapping &eid : *this) {
+	for (const EngineIDMapping &eid : this->mappings) {
 		if (eid.type == type && eid.grfid == grfid && eid.internal_id == grf_local_id) {
 			assert(id == index);
 			return index;
@@ -631,19 +627,19 @@ bool EngineOverrideManager::ResetToCurrentNewGRFConfig()
 
 void EngineOverrideManager::AddToIndex(EngineID id)
 {
-	this->mapping_index.insert({ HashKey((*this)[id]), id });
+	this->mapping_index.insert({ HashKey(this->mappings[id]), id });
 }
 
 void EngineOverrideManager::RemoveFromIndex(EngineID id)
 {
-	this->mapping_index.erase(HashKey((*this)[id]));
+	this->mapping_index.erase(HashKey(this->mappings[id]));
 }
 
 void EngineOverrideManager::ReIndex()
 {
 	this->mapping_index.clear();
 	EngineID index = 0;
-	for (const EngineIDMapping &eid : *this) {
+	for (const EngineIDMapping &eid : this->mappings) {
 		this->mapping_index.insert({ HashKey(eid), index });
 		index++;
 	}
@@ -657,9 +653,9 @@ void SetupEngines()
 	CloseWindowByClass(WC_ENGINE_PREVIEW);
 	_engine_pool.CleanPool();
 
-	assert(_engine_mngr.size() >= _engine_mngr.NUM_DEFAULT_ENGINES);
+	assert(_engine_mngr.mappings.size() >= EngineOverrideManager::NUM_DEFAULT_ENGINES);
 	[[maybe_unused]] uint index = 0;
-	for (const EngineIDMapping &eid : _engine_mngr) {
+	for (const EngineIDMapping &eid : _engine_mngr.mappings) {
 		/* Assert is safe; there won't be more than 256 original vehicles
 		 * in any case, and we just cleaned the pool. */
 		assert(Engine::CanAllocateItem());

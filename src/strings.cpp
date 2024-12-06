@@ -208,12 +208,22 @@ struct LoadedLanguagePack {
 
 	std::array<uint, TEXT_TAB_END> langtab_num;   ///< Offset into langpack offs
 	std::array<uint, TEXT_TAB_END> langtab_start; ///< Offset into langpack offs
+
+	std::string list_separator; ///< Current list separator string.
 };
 
 static LoadedLanguagePack _langpack;
 
 static bool _scan_for_gender_data = false;  ///< Are we scanning for the gender of the current string? (instead of formatting it)
 
+/**
+ * Get the list separator string for the current language.
+ * @returns string containing list separator to use.
+ */
+std::string_view GetListSeparator()
+{
+	return _langpack.list_separator;
+}
 
 const char *GetStringPtr(StringID string)
 {
@@ -1580,6 +1590,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 					CargoTypes cmask = args.GetNextParameter<CargoTypes>();
 					bool first = true;
 
+					std::string_view list_separator = GetListSeparator();
 					for (const auto &cs : _sorted_cargo_specs) {
 						if (!HasBit(cmask, cs->Index())) continue;
 
@@ -1587,7 +1598,7 @@ static void FormatString(StringBuilder builder, const char *str_arg, StringParam
 							first = false;
 						} else {
 							/* Add a comma if this is not the first item */
-							builder += ", ";
+							builder += list_separator;
 						}
 
 						GetStringWithArgs(builder, cs->name, args, next_substr_case_index, game_script);
@@ -2371,6 +2382,7 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	const char *c_file = StrLastPathSegment(_current_language->file);
 	_config_language_file = c_file;
 	SetCurrentGrfLangID(_current_language->newgrflangid);
+	_langpack.list_separator = GetString(STR_LIST_SEPARATOR);
 
 #ifdef _WIN32
 	extern void Win32SetCurrentLocaleName(std::string iso_code);

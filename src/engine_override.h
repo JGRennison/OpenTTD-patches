@@ -27,7 +27,9 @@ struct EngineIDMapping {
  * Stores the mapping of EngineID to the internal id of newgrfs.
  * Note: This is not part of Engine, as the data in the EngineOverrideManager and the engine pool get resetted in different cases.
  */
-struct EngineOverrideManager : std::vector<EngineIDMapping> {
+struct EngineOverrideManager {
+	std::vector<EngineIDMapping> mappings;
+
 	static const uint NUM_DEFAULT_ENGINES; ///< Number of default entries
 
 private:

@@ -1771,7 +1771,7 @@ static StringID GetHouseName(const HouseSpec *hs)
 	uint16_t callback_res = GetHouseCallback(CBID_HOUSE_CUSTOM_NAME, 1, 0, hs->Index(), nullptr, INVALID_TILE, true);
 	if (callback_res != CALLBACK_FAILED && callback_res != 0x400) {
 		if (callback_res > 0x400) {
-			ErrorUnknownCallbackResult(hs->grf_prop.grffile->grfid, CBID_HOUSE_CUSTOM_NAME, callback_res);
+			ErrorUnknownCallbackResult(hs->grf_prop.grfid, CBID_HOUSE_CUSTOM_NAME, callback_res);
 		} else {
 			StringID new_name = GetGRFStringID(hs->grf_prop.grffile->grfid, 0xD000 + callback_res);
 			if (new_name != STR_NULL && new_name != STR_UNDEFINED) {
@@ -1862,8 +1862,8 @@ public:
 	PickerItem GetPickerItem(int cls_id, int id) const override
 	{
 		const auto *spec = HouseSpec::Get(id);
-		if (spec->grf_prop.grffile == nullptr) return {0, spec->Index(), cls_id, id};
-		return {spec->grf_prop.grffile->grfid, spec->grf_prop.local_id, cls_id, id};
+		if (!spec->grf_prop.HasGrfFile()) return {0, spec->Index(), cls_id, id};
+		return {spec->grf_prop.grfid, spec->grf_prop.local_id, cls_id, id};
 	}
 
 	int GetSelectedType() const override { return sel_type; }
@@ -1918,7 +1918,7 @@ public:
 				dst.insert(item);
 			} else {
 				/* Search for spec by grfid and local index. */
-				auto it = std::ranges::find_if(specs, [&item](const HouseSpec &spec) { return spec.grf_prop.grffile != nullptr && spec.grf_prop.grffile->grfid == item.grfid && spec.grf_prop.local_id == item.local_id; });
+				auto it = std::ranges::find_if(specs, [&item](const HouseSpec &spec) { return spec.grf_prop.grfid == item.grfid && spec.grf_prop.local_id == item.local_id; });
 				if (it == specs.end()) {
 					/* Not preset, hide from UI. */
 					dst.insert({item.grfid, item.local_id, -1, -1});

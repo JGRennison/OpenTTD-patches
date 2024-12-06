@@ -937,8 +937,8 @@ static void GetTileDesc_Town(TileIndex tile, TileDesc *td)
 	}
 
 	const HouseSpec *hs = HouseSpec::Get(house);
-	if (hs->grf_prop.grffile != nullptr) {
-		const GRFConfig *gc = GetGRFConfig(hs->grf_prop.grffile->grfid);
+	if (hs->grf_prop.HasGrfFile()) {
+		const GRFConfig *gc = GetGRFConfig(hs->grf_prop.grfid);
 		td->grf = gc->GetName();
 	}
 

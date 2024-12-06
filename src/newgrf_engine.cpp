@@ -80,6 +80,7 @@ void SetCustomEngineSprites(EngineID engine, uint8_t cargo, const SpriteGroup *g
 void SetEngineGRF(EngineID engine, const GRFFile *file)
 {
 	Engine *e = Engine::Get(engine);
+	e->grf_prop.grfid = file->grfid;
 	e->grf_prop.grffile = file;
 }
 
@@ -1483,8 +1484,10 @@ void TriggerVehicle(Vehicle *v, VehicleTrigger trigger)
 /* Functions for changing the order of vehicle purchase lists */
 
 struct ListOrderChange {
-	EngineID engine;
-	uint target;      ///< local ID
+	EngineID engine; ///< Engine ID
+	uint16_t target; ///< GRF-local ID
+
+	ListOrderChange(EngineID engine, uint16_t target) : engine(engine), target(target) {}
 };
 
 static std::vector<ListOrderChange> _list_order_changes;
@@ -1495,10 +1498,10 @@ static std::vector<ListOrderChange> _list_order_changes;
  * @param target Local engine ID to move \a engine in front of
  * @note All sorting is done later in CommitVehicleListOrderChanges
  */
-void AlterVehicleListOrder(EngineID engine, uint target)
+void AlterVehicleListOrder(EngineID engine, uint16_t target)
 {
 	/* Add the list order change to a queue */
-	_list_order_changes.push_back({engine, target});
+	_list_order_changes.emplace_back(engine, target);
 }
 
 /**
@@ -1509,8 +1512,8 @@ void AlterVehicleListOrder(EngineID engine, uint target)
  */
 static bool EnginePreSort(const EngineID &a, const EngineID &b)
 {
-	const EngineIDMapping &id_a = _engine_mngr.at(a);
-	const EngineIDMapping &id_b = _engine_mngr.at(b);
+	const EngineIDMapping &id_a = _engine_mngr.mappings.at(a);
+	const EngineIDMapping &id_b = _engine_mngr.mappings.at(b);
 
 	/* 1. Sort by engine type */
 	if (id_a.type != id_b.type) return (int)id_a.type < (int)id_b.type;
@@ -1527,44 +1530,35 @@ static bool EnginePreSort(const EngineID &a, const EngineID &b)
  */
 void CommitVehicleListOrderChanges()
 {
+	/* Build a list of EngineIDs. EngineIDs are sequential from 0 up to the number of pool items with no gaps. */
+	std::vector<EngineID> ordering(Engine::GetNumItems());
+	std::iota(std::begin(ordering), std::end(ordering), 0);
+
 	/* Pre-sort engines by scope-grfid and local index */
-	std::vector<EngineID> ordering;
-	for (const Engine *e : Engine::Iterate()) {
-		ordering.push_back(e->index);
-	}
-	std::sort(ordering.begin(), ordering.end(), EnginePreSort);
+	std::ranges::sort(ordering, EnginePreSort);
 
 	/* Apply Insertion-Sort operations */
-	for (const ListOrderChange &it : _list_order_changes) {
-		EngineID source = it.engine;
-		uint local_target = it.target;
+	for (const ListOrderChange &loc : _list_order_changes) {
+		EngineID source = loc.engine;
 
-		const EngineIDMapping *id_source = _engine_mngr.data() + source;
-		if (id_source->internal_id == local_target) continue;
+		const EngineIDMapping &id_source = _engine_mngr.mappings[source];
+		if (id_source.internal_id == loc.target) continue;
 
-		EngineID target = _engine_mngr.GetID(id_source->type, local_target, id_source->grfid);
+		EngineID target = _engine_mngr.GetID(id_source.type, loc.target, id_source.grfid);
 		if (target == INVALID_ENGINE) continue;
 
-		int source_index = find_index(ordering, source);
-		int target_index = find_index(ordering, target);
+		auto it_source = std::ranges::find(ordering, source);
+		auto it_target = std::ranges::find(ordering, target);
 
-		assert(source_index >= 0 && target_index >= 0);
-		assert(source_index != target_index);
+		assert(it_source != std::end(ordering) && it_target != std::end(ordering));
+		assert(it_source != it_target);
 
-		EngineID *list = ordering.data();
-		if (source_index < target_index) {
-			--target_index;
-			for (int i = source_index; i < target_index; ++i) list[i] = list[i + 1];
-			list[target_index] = source;
-		} else {
-			for (int i = source_index; i > target_index; --i) list[i] = list[i - 1];
-			list[target_index] = source;
-		}
+		/* Move just this item to before the target. */
+		Slide(it_source, std::next(it_source), it_target);
 	}
 
 	/* Store final sort-order */
-	uint index = 0;
-	for (const EngineID &eid : ordering) {
+	for (uint16_t index = 0; const EngineID &eid : ordering) {
 		Engine::Get(eid)->list_position = index;
 		++index;
 	}

@@ -1677,7 +1677,7 @@ CommandCost CmdBuildRailStation(TileIndex tile_org, DoCommandFlag flags, uint32_
 						if (callback <= UINT8_MAX) {
 							SetStationGfx(tile, (callback & ~1) + axis);
 						} else {
-							ErrorUnknownCallbackResult(statspec->grf_prop.grffile->grfid, CBID_STATION_BUILD_TILE_LAYOUT, callback);
+							ErrorUnknownCallbackResult(statspec->grf_prop.grfid, CBID_STATION_BUILD_TILE_LAYOUT, callback);
 						}
 					}
 
@@ -3776,8 +3776,8 @@ void FillTileDescRailStation(TileIndex tile, TileDesc *td)
 		td->station_class = StationClass::Get(spec->class_index)->name;
 		td->station_name  = spec->name;
 
-		if (spec->grf_prop.grffile != nullptr) {
-			const GRFConfig *gc = GetGRFConfig(spec->grf_prop.grffile->grfid);
+		if (spec->grf_prop.HasGrfFile()) {
+			const GRFConfig *gc = GetGRFConfig(spec->grf_prop.grfid);
 			td->grf = gc->GetName();
 		}
 	}
@@ -3796,11 +3796,11 @@ void FillTileDescAirport(TileIndex tile, TileDesc *td)
 	const AirportTileSpec *ats = AirportTileSpec::GetByTile(tile);
 	td->airport_tile_name = ats->name;
 
-	if (as->grf_prop.grffile != nullptr) {
-		const GRFConfig *gc = GetGRFConfig(as->grf_prop.grffile->grfid);
+	if (as->grf_prop.HasGrfFile()) {
+		const GRFConfig *gc = GetGRFConfig(as->grf_prop.grfid);
 		td->grf = gc->GetName();
-	} else if (ats->grf_prop.grffile != nullptr) {
-		const GRFConfig *gc = GetGRFConfig(ats->grf_prop.grffile->grfid);
+	} else if (ats->grf_prop.HasGrfFile()) {
+		const GRFConfig *gc = GetGRFConfig(ats->grf_prop.grfid);
 		td->grf = gc->GetName();
 	}
 }
@@ -3828,7 +3828,7 @@ static void GetTileDesc_Station(TileIndex tile, TileDesc *td)
 			const IndustrySpec *is = GetIndustrySpec(i->type);
 			td->owner[0] = i->owner;
 			str = is->name;
-			if (is->grf_prop.grffile != nullptr) td->grf = GetGRFConfig(is->grf_prop.grffile->grfid)->GetName();
+			if (is->grf_prop.HasGrfFile()) td->grf = GetGRFConfig(is->grf_prop.grfid)->GetName();
 			break;
 		}
 		case STATION_DOCK:     str = STR_LAI_STATION_DESCRIPTION_SHIP_DOCK; break;

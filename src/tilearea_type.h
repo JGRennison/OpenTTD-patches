@@ -123,10 +123,7 @@ protected:
 	}
 
 public:
-	/** Some compilers really like this. */
-	virtual ~TileIterator()
-	{
-	}
+	virtual ~TileIterator() = default;
 
 	/**
 	 * Get the tile we are currently at.

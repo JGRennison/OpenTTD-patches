@@ -143,6 +143,7 @@ static const CmdStruct _cmd_structs[] = {
 	{"VP_TOWN_LABEL1",    EmitSingleChar, SCC_VIEWPORT_TOWN_LABEL1, 2, -1, C_NONE},
 	{"VP_TOWN_LABEL2",    EmitSingleChar, SCC_VIEWPORT_TOWN_LABEL2, 2, -1, C_NONE},
 
+	{"SPACE",             EmitSingleChar, ' ',                    0, -1, C_DONTCOUNT},
 	{"",                  EmitSingleChar, '\n',                   0, -1, C_DONTCOUNT},
 	{"{",                 EmitSingleChar, '{',                    0, -1, C_DONTCOUNT},
 	{"UP_ARROW",          EmitSingleChar, SCC_UP_ARROW,           0, -1, C_DONTCOUNT},

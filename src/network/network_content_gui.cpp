@@ -742,6 +742,7 @@ public:
 		SetDParam(0, this->selected->filesize);
 		tr.top = DrawStringMultiLine(tr, STR_CONTENT_DETAIL_FILESIZE);
 
+		std::string_view list_separator = GetListSeparator();
 		if (!this->selected->dependencies.empty()) {
 			/* List dependencies */
 			std::string buf;
@@ -752,7 +753,7 @@ public:
 					const ContentInfo *ci = *iter;
 					if (ci->id != cid) continue;
 
-					if (!buf.empty()) buf += ", ";
+					if (!buf.empty()) buf += list_separator;
 					buf += (*iter)->name;
 					break;
 				}
@@ -765,7 +766,7 @@ public:
 			/* List all tags */
 			std::string buf;
 			for (auto &tag : this->selected->tags) {
-				if (!buf.empty()) buf += ", ";
+				if (!buf.empty()) buf += list_separator;
 				buf += tag;
 			}
 			SetDParamStr(0, std::move(buf));
@@ -781,7 +782,7 @@ public:
 			for (const ContentInfo *ci : tree) {
 				if (ci == this->selected || ci->state != ContentInfo::SELECTED) continue;
 
-				if (!buf.empty()) buf += ", ";
+				if (!buf.empty()) buf += list_separator;
 				buf += ci->name;
 			}
 			if (!buf.empty()) {

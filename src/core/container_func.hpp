@@ -49,6 +49,21 @@ int find_index(Container const &container, typename Container::const_reference i
 	return -1;
 }
 
+/**
+ * Move elements between first and last to a new position, rotating elements in between as necessary.
+ * @param first Iterator to first element to move.
+ * @param last Iterator to (end-of) last element to move.
+ * @param position Iterator to where range should be moved to.
+ * @returns Iterators to first and last after being moved.
+ */
+template <typename TIter>
+auto Slide(TIter first, TIter last, TIter position) -> std::pair<TIter, TIter>
+{
+	if (last < position) return { std::rotate(first, last, position), position };
+	if (position < first) return { position, std::rotate(position, first, last) };
+	return { first, last };
+}
+
 template <bool ONCE, typename C, typename UP>
 uint container_unordered_remove_if_generic(C &container, UP predicate)
 {
