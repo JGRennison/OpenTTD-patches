@@ -43,8 +43,6 @@ STR_CONFIG_SETTING_BRIBE_HELPTEXT_PERIODS                       :容許公司嘗
 
 STR_CONFIG_SETTING_ALLOW_EXCLUSIVE_HELPTEXT_PERIODS             :如果一所公司購買了一個市鎮的專營權，其他公司在該市鎮的車站將在一週期之內將不會收到任何貨物與乘客
 
-STR_COMMA_SEPARATOR                                             :,{SP}
-
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :英里/小時
 STR_UNIT_NAME_VELOCITY_METRIC                                   :千米/小時
 STR_UNIT_NAME_VELOCITY_SI                                       :米/秒

@@ -43,8 +43,6 @@ STR_CONFIG_SETTING_BRIBE_HELPTEXT_PERIODS                       :Permitir ás em
 
 STR_CONFIG_SETTING_ALLOW_EXCLUSIVE_HELPTEXT_PERIODS             :Se unha empresa compra dereitos de transporte exclusivos para unha vila, as estacións dos opoñentes (de pasaxeiros e carga) non recibirán carga durante un período.
 
-STR_COMMA_SEPARATOR                                             :,{SP}
-
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s

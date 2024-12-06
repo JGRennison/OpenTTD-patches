@@ -183,8 +183,7 @@ static StringID GetEngineInfoCapacityStringParameter(EngineID engine)
 			if (cap[i] == 0) continue;
 
 			if (!buffer.empty()) {
-				auto tmp_params = MakeParameters();
-				GetStringWithArgs(StringBuilder(buffer), STR_COMMA_SEPARATOR, tmp_params);
+				buffer.append(GetListSeparator());
 			}
 
 			auto tmp_params = MakeParameters(i, cap[i]);

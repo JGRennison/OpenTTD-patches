@@ -43,8 +43,6 @@ STR_CONFIG_SETTING_BRIBE_HELPTEXT_PERIODS                       :회사가 지�
 
 STR_CONFIG_SETTING_ALLOW_EXCLUSIVE_HELPTEXT_PERIODS             :한 회사가 어떤 도시의 독점 수송권을 구매하면, 그 도시에 있는 상대편의 역에서는 한 기간 동안 (승객을 포함한) 그 어떠한 화물도 받을 수 없습니다
 
-STR_COMMA_SEPARATOR                                             :,{SP}
-
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :mph
 STR_UNIT_NAME_VELOCITY_METRIC                                   :km/h
 STR_UNIT_NAME_VELOCITY_SI                                       :m/s

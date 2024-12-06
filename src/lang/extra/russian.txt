@@ -43,8 +43,6 @@ STR_CONFIG_SETTING_BRIBE_HELPTEXT_PERIODS                       :Разреши�
 
 STR_CONFIG_SETTING_ALLOW_EXCLUSIVE_HELPTEXT_PERIODS              :Если компания покупает эксклюзивные права на перевозку в городе, станции соперников (пассажирские и грузовые) не будут получать грузы в течение одного периода.
 
-STR_COMMA_SEPARATOR                                             :,{SP}
-
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :миль/ч
 STR_UNIT_NAME_VELOCITY_METRIC                                   :км/ч
 STR_UNIT_NAME_VELOCITY_SI                                       :м/с
