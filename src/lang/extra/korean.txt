@@ -1938,7 +1938,7 @@ STR_BLACK_PLUS                                                  :{BLACK}+
 
 STR_DECIMAL1_WITH_SCALE                                         :{DECIMAL1} (x{DECIMAL})
 
-STR_HIERARCHY_SEPARATOR                                         :{SP}/{SP}
+STR_HIERARCHY_SEPARATOR                                         :{SPACE}/{SPACE}
 
 STR_ZONING_TOOLBAR                                              :{WHITE}구역 보기
 STR_ZONING_OUTER                                                :{BLACK}바깥쪽 타일 테두리:

@@ -1928,7 +1928,7 @@ STR_BLACK_PLUS                                                  :{BLACK}+
 
 STR_DECIMAL1_WITH_SCALE                                         :{DECIMAL1}（{DECIMAL}x）
 
-STR_HIERARCHY_SEPARATOR                                         :{SP}/{SP}
+STR_HIERARCHY_SEPARATOR                                         :{SPACE}/{SPACE}
 
 STR_ZONING_TOOLBAR                                              :{WHITE}分块工具栏
 STR_ZONING_OUTER                                                :{BLACK}外边界：

@@ -1941,7 +1941,7 @@ STR_BLACK_PLUS                                                  :{BLACK}+
 
 STR_DECIMAL1_WITH_SCALE                                         :{DECIMAL1} ({DECIMAL}x)
 
-STR_HIERARCHY_SEPARATOR                                         :{SP}/{SP}
+STR_HIERARCHY_SEPARATOR                                         :{SPACE}/{SPACE}
 
 STR_ZONING_TOOLBAR                                              :{WHITE}Barra de ferramentas de zonificación
 STR_ZONING_OUTER                                                :{BLACK}Bordes exteriores dos cadros:

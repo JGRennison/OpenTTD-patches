@@ -154,7 +154,6 @@ static const CmdStruct _cmd_structs[] = {
 	{"BUS",               EmitSingleChar, SCC_BUS,                0, -1, C_DONTCOUNT},
 	{"PLANE",             EmitSingleChar, SCC_PLANE,              0, -1, C_DONTCOUNT},
 	{"SHIP",              EmitSingleChar, SCC_SHIP,               0, -1, C_DONTCOUNT},
-	{"SP",                EmitSingleChar, 0x20,                   0, -1, C_DONTCOUNT},
 	{"NBSP",              EmitSingleChar, 0xA0,                   0, -1, C_DONTCOUNT},
 	{"COPYRIGHT",         EmitSingleChar, 0xA9,                   0, -1, C_DONTCOUNT},
 	{"DOWN_ARROW",        EmitSingleChar, SCC_DOWN_ARROW,         0, -1, C_DONTCOUNT},
