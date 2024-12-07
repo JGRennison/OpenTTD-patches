@@ -22,7 +22,7 @@
 
 struct MixerChannel {
 	/* pointer to allocated buffer memory */
-	int8_t *memory;
+	std::shared_ptr<std::vector<uint8_t>> memory;
 
 	/* current position in memory */
 	uint32_t pos;
@@ -37,8 +37,10 @@ struct MixerChannel {
 	bool is16bit;
 };
 
-static std::atomic<uint8_t> _active_channels;
-static std::atomic<uint8_t> _stop_channels;
+using MixerChannelMask = uint8_t; ///< Type representing a bitmask of mixer channels.
+
+static std::atomic<MixerChannelMask> _active_channels;
+static std::atomic<MixerChannelMask> _stop_channels;
 static MixerChannel _channels[8];
 static uint32_t _play_rate = 11025;
 static uint32_t _max_size = UINT_MAX;
@@ -77,7 +79,7 @@ static void mix_int16(MixerChannel *sc, int16_t *buffer, uint samples, uint8_t e
 	sc->samples_left -= samples;
 	assert(samples > 0);
 
-	const T *b = (const T *)sc->memory + sc->pos;
+	const T *b = reinterpret_cast<const T *>(sc->memory->data()) + sc->pos;
 	uint32_t frac_pos = sc->frac_pos;
 	uint32_t frac_speed = sc->frac_speed;
 	int volume_left = sc->volume_left * effect_vol / 255;
@@ -104,12 +106,12 @@ static void mix_int16(MixerChannel *sc, int16_t *buffer, uint samples, uint8_t e
 	}
 
 	sc->frac_pos = frac_pos;
-	sc->pos = b - (const T *)sc->memory;
+	sc->pos = b - reinterpret_cast<const T *>(sc->memory->data());
 }
 
 static void MxCloseChannel(uint8_t channel_index)
 {
-	_active_channels.fetch_and(~(1 << channel_index), std::memory_order_release);
+	_active_channels.fetch_and(~(1U << channel_index), std::memory_order_release);
 }
 
 /**
@@ -141,7 +143,7 @@ void MxMixSamples(void *buffer, uint samples)
 	}
 
 	/* Check if any channels should be stopped. */
-	uint8_t stop = _stop_channels.load(std::memory_order_acquire);
+	MixerChannelMask stop = _stop_channels.load(std::memory_order_acquire);
 	for (uint8_t idx : SetBitIterator(stop)) {
 		MxCloseChannel(idx);
 	}
@@ -156,7 +158,7 @@ void MxMixSamples(void *buffer, uint samples)
 	                    effect_vol_setting) / (127 * 127);
 
 	/* Mix each channel */
-	uint8_t active = _active_channels.load(std::memory_order_acquire);
+	MixerChannelMask active = _active_channels.load(std::memory_order_acquire);
 	for (uint8_t idx : SetBitIterator(active)) {
 		MixerChannel *mc = &_channels[idx];
 		if (mc->is16bit) {
@@ -170,27 +172,29 @@ void MxMixSamples(void *buffer, uint samples)
 
 MixerChannel *MxAllocateChannel()
 {
-	uint8_t currently_active = _active_channels.load(std::memory_order_acquire);
-	uint8_t available = ~currently_active;
+	MixerChannelMask currently_active = _active_channels.load(std::memory_order_acquire);
+	MixerChannelMask available = ~currently_active;
 	if (available == 0) return nullptr;
 
 	uint8_t channel_index = FindFirstBit(available);
 
 	MixerChannel *mc = &_channels[channel_index];
-	free(mc->memory);
 	mc->memory = nullptr;
 	return mc;
 }
 
-void MxSetChannelRawSrc(MixerChannel *mc, int8_t *mem, size_t size, uint rate, bool is16bit)
+void MxSetChannelRawSrc(MixerChannel *mc, const std::shared_ptr<std::vector<uint8_t>> &mem, uint rate, bool is16bit)
 {
 	mc->memory = mem;
 	mc->frac_pos = 0;
 	mc->pos = 0;
 
-	mc->frac_speed = (rate << 16) / _play_rate;
+	mc->frac_speed = (rate << 16U) / _play_rate;
 
+	size_t size = mc->memory->size();
 	if (is16bit) size /= 2;
+	/* Less 1 to allow for padding sample for the resampler. */
+	size -= 1;
 
 	/* adjust the magnitude to prevent overflow */
 	while (size >= _max_size) {
@@ -198,6 +202,7 @@ void MxSetChannelRawSrc(MixerChannel *mc, int8_t *mem, size_t size, uint rate, b
 		rate = (rate >> 1) + 1;
 	}
 
+	/* Scale number of samples by play rate. */
 	mc->samples_left = (uint)size * _play_rate / rate;
 	mc->is16bit = is16bit;
 }
@@ -220,8 +225,8 @@ void MxSetChannelVolume(MixerChannel *mc, uint volume, float pan)
 void MxActivateChannel(MixerChannel *mc)
 {
 	uint8_t channel_index = mc - _channels;
-	_stop_channels.fetch_and(~(1 << channel_index), std::memory_order_release);
-	_active_channels.fetch_or((1 << channel_index), std::memory_order_release);
+	_stop_channels.fetch_and(~(1U << channel_index), std::memory_order_release);
+	_active_channels.fetch_or((1U << channel_index), std::memory_order_release);
 }
 
 /**

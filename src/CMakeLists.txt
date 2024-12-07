@@ -41,6 +41,11 @@ add_files(
 )
 
 add_files(
+    soundloader_opus.cpp
+    CONDITION OpusFile_FOUND
+)
+
+add_files(
     aircraft.h
     aircraft_cmd.cpp
     aircraft_gui.cpp
@@ -377,6 +382,7 @@ add_files(
     programmable_signals.h
     progress.cpp
     progress.h
+    provider_manager.h
     querystring_gui.h
     rail.cpp
     rail.h
@@ -449,6 +455,11 @@ add_files(
     sound.cpp
     sound_func.h
     sound_type.h
+    soundloader.cpp
+    soundloader_func.h
+    soundloader_type.h
+    soundloader_raw.cpp
+    soundloader_wav.cpp
     sprite.cpp
     sprite.h
     spritecache.cpp

@@ -10,6 +10,7 @@
 #include "framerate_type.h"
 #include <chrono>
 #include "gfx_func.h"
+#include "newgrf_sound.h"
 #include "window_gui.h"
 #include "window_func.h"
 #include "table/sprites.h"
@@ -384,9 +385,7 @@ static constexpr NWidgetPart _framerate_window_widgets[] = {
 					NWidget(WWT_EMPTY, COLOUR_GREY, WID_FRW_TIMES_NAMES), SetScrollbar(WID_FRW_SCROLLBAR),
 					NWidget(WWT_EMPTY, COLOUR_GREY, WID_FRW_TIMES_CURRENT), SetScrollbar(WID_FRW_SCROLLBAR),
 					NWidget(WWT_EMPTY, COLOUR_GREY, WID_FRW_TIMES_AVERAGE), SetScrollbar(WID_FRW_SCROLLBAR),
-					NWidget(NWID_SELECTION, INVALID_COLOUR, WID_FRW_SEL_MEMORY),
-						NWidget(WWT_EMPTY, COLOUR_GREY, WID_FRW_ALLOCSIZE), SetScrollbar(WID_FRW_SCROLLBAR),
-					EndContainer(),
+					NWidget(WWT_EMPTY, COLOUR_GREY, WID_FRW_ALLOCSIZE), SetScrollbar(WID_FRW_SCROLLBAR),
 				EndContainer(),
 				NWidget(WWT_TEXT, COLOUR_GREY, WID_FRW_INFO_DATA_POINTS), SetDataTip(STR_FRAMERATE_DATA_POINTS, 0x0), SetFill(1, 0), SetResize(1, 0),
 			EndContainer(),
@@ -400,7 +399,6 @@ static constexpr NWidgetPart _framerate_window_widgets[] = {
 
 struct FramerateWindow : Window {
 	bool small;
-	bool showing_memory;
 	GUITimer next_update;
 	int num_active;
 	int num_displayed;
@@ -444,7 +442,6 @@ struct FramerateWindow : Window {
 	{
 		this->InitNested(number);
 		this->small = this->IsShaded();
-		this->showing_memory = true;
 		this->UpdateData();
 		this->num_displayed = this->num_active;
 		this->next_update.SetInterval(100);
@@ -475,7 +472,6 @@ struct FramerateWindow : Window {
 	{
 		_pf_data[PFE_GAMELOOP].expected_rate = _ticks_per_second;
 		double gl_rate = _pf_data[PFE_GAMELOOP].GetRate();
-		bool have_script = false;
 		this->rate_gameloop.SetRate(gl_rate, _pf_data[PFE_GAMELOOP].expected_rate);
 		this->speed_gameloop.SetRate(gl_rate / _pf_data[PFE_GAMELOOP].expected_rate, 1.0);
 		if (this->small) return; // in small mode, this is everything needed
@@ -488,14 +484,7 @@ struct FramerateWindow : Window {
 			this->times_longterm[e].SetTime(_pf_data[e].GetAverageDurationMilliseconds(NUM_FRAMERATE_POINTS), MILLISECONDS_PER_TICK);
 			if (_pf_data[e].num_valid > 0) {
 				new_active++;
-				if (e == PFE_GAMESCRIPT || e >= PFE_AI0) have_script = true;
 			}
-		}
-
-		if (this->showing_memory != have_script) {
-			NWidgetStacked *plane = this->GetWidget<NWidgetStacked>(WID_FRW_SEL_MEMORY);
-			plane->SetDisplayedPlane(have_script ? 0 : SZSP_VERTICAL);
-			this->showing_memory = have_script;
 		}
 
 		if (new_active != this->num_active) {
@@ -503,7 +492,6 @@ struct FramerateWindow : Window {
 			Scrollbar *sb = this->GetScrollbar(WID_FRW_SCROLLBAR);
 			sb->SetCount(this->num_active);
 			sb->SetCapacity(std::min(this->num_displayed, this->num_active));
-			this->ReInit();
 		}
 	}
 
@@ -633,6 +621,12 @@ struct FramerateWindow : Window {
 				} else {
 					SetDParam(0, Company::Get(e - PFE_AI0)->ai_instance->GetAllocatedMemory());
 				}
+				DrawString(r.left, r.right, y, STR_FRAMERATE_BYTES_GOOD, TC_FROMSTRING, SA_RIGHT);
+				y += GetCharacterHeight(FS_NORMAL);
+				drawable--;
+				if (drawable == 0) break;
+			} else if (e == PFE_SOUND) {
+				SetDParam(0, GetSoundPoolAllocatedMemory());
 				DrawString(r.left, r.right, y, STR_FRAMERATE_BYTES_GOOD, TC_FROMSTRING, SA_RIGHT);
 				y += GetCharacterHeight(FS_NORMAL);
 				drawable--;

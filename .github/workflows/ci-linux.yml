@@ -68,6 +68,9 @@ jobs:
           liblzma-dev \
           libzstd-dev \
           liblzo2-dev \
+          libogg-dev \
+          libopus-dev \
+          libopusfile-dev \
           ${{ inputs.libraries }} \
           zlib1g-dev \
           # EOF

@@ -44,6 +44,9 @@ jobs:
           mingw-w64-${{ inputs.arch }}-libpng
           mingw-w64-${{ inputs.arch }}-lld
           mingw-w64-${{ inputs.arch }}-ninja
+          mingw-w64-${{ inputs.arch }}-libogg
+          mingw-w64-${{ inputs.arch }}-opus
+          mingw-w64-${{ inputs.arch }}-opusfile
 
     - name: Install OpenGFX
       shell: bash
