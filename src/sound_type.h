@@ -10,6 +10,9 @@
 #ifndef SOUND_TYPE_H
 #define SOUND_TYPE_H
 
+#include <memory>
+#include <vector>
+
 enum class SoundSource : uint8_t {
 	BasesetOldFormat,
 	BasesetNewFormat,

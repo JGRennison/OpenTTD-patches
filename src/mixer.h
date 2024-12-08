@@ -10,6 +10,9 @@
 #ifndef MIXER_H
 #define MIXER_H
 
+#include <memory>
+#include <vector>
+
 struct MixerChannel;
 
 /**
