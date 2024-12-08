@@ -102,8 +102,6 @@ This document does not describe the player-visible changes/additions described i
 * Paginate UDP packets longer than the MTU across multiple packets.
 * Use larger "packets" where useful in TCP connections.
 * Send vehicle caches from network server to clients to avoid desyncs caused by non-deterministic NewGRFs.
-* Change network protocol to send server/join and rcon passwords in an encrypted form (key exchange) instead of in clear text.
-* Encrypt the contents of rcon messages to the server and any responses.
 
 ### Sprites/blitter
 
