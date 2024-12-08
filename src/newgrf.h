@@ -336,8 +336,7 @@ struct GRFFile : ZeroedMemoryAllocator {
 	std::vector<GRFVariableMapEntry> grf_variable_remaps;
 	std::vector<std::unique_ptr<const char, FreeDeleter>> remap_unknown_property_names;
 
-	std::array<uint32_t, 0x80> param;
-	uint param_end;  ///< one more than the highest set parameter
+	std::vector<uint32_t> param;
 
 	std::vector<GRFLabel> labels;                   ///< List of labels
 
@@ -389,8 +388,7 @@ struct GRFFile : ZeroedMemoryAllocator {
 	{
 		/* Note: We implicitly test for number < this->param.size() and return 0 for invalid parameters.
 		 *       In fact this is the more important test, as param is zeroed anyway. */
-		assert(this->param_end <= this->param.size());
-		return (number < this->param_end) ? this->param[number] : 0;
+		return (number < std::size(this->param)) ? this->param[number] : 0;
 	}
 };
 
