@@ -34,6 +34,8 @@ const size_t MAX_SLE_INT16 = INT16_MAX;
 const size_t MAX_SLE_INT32 = INT32_MAX;
 const size_t MAX_SLE_INT = INT_MAX;
 
+static constexpr uint MAX_SIGNAL_DRAG_DISTANCE = 40;
+
 /** Settings profiles and highscore tables. */
 enum SettingsProfile {
 	SP_BEGIN = 0,

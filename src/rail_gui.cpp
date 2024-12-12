@@ -1935,7 +1935,7 @@ public:
 				break;
 
 			case WID_BS_DRAG_SIGNALS_DENSITY_INCREASE:
-				if (_settings_client.gui.drag_signals_density < 20) {
+				if (_settings_client.gui.drag_signals_density < MAX_SIGNAL_DRAG_DISTANCE) {
 					_settings_client.gui.drag_signals_density++;
 					SetWindowDirty(WC_GAME_OPTIONS, WN_GAME_OPTIONS_GAME_SETTINGS);
 				}
@@ -1994,7 +1994,7 @@ public:
 		this->SetWidgetLoweredState(WID_BS_PROGRAM, _program_signal_button);
 
 		this->SetWidgetDisabledState(WID_BS_DRAG_SIGNALS_DENSITY_DECREASE, _settings_client.gui.drag_signals_density == 1);
-		this->SetWidgetDisabledState(WID_BS_DRAG_SIGNALS_DENSITY_INCREASE, _settings_client.gui.drag_signals_density == 20);
+		this->SetWidgetDisabledState(WID_BS_DRAG_SIGNALS_DENSITY_INCREASE, _settings_client.gui.drag_signals_density == MAX_SIGNAL_DRAG_DISTANCE);
 
 		if (_cur_signal_style > _num_new_signal_styles || !HasBit(_enabled_new_signal_styles_mask, _cur_signal_style)) _cur_signal_style = 0;
 
