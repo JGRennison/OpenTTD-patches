@@ -139,13 +139,12 @@ void GetArticulatedPartsEngineIDs(EngineID engine_type, bool purchase_window, st
 
 
 /**
- * Returns the default (non-refitted) capacity of a specific EngineID.
+ * Returns the default (non-refitted) cargo and capacity of a specific EngineID.
  * @param engine the EngineID of interest
- * @param cargo_type returns the default cargo type, if needed
  * @param attempt_refit cargo ID to attempt to use
- * @return capacity
+ * @return cargo and capacity
  */
-static inline uint16_t GetVehicleDefaultCapacity(EngineID engine, CargoID *cargo_type, CargoID attempt_refit = INVALID_CARGO)
+static inline std::pair<CargoID, uint16_t> GetVehicleDefaultCapacity(EngineID engine, CargoID attempt_refit = INVALID_CARGO)
 {
 	const Engine *e = Engine::Get(engine);
 	CargoID cargo = INVALID_CARGO;
@@ -156,9 +155,7 @@ static inline uint16_t GetVehicleDefaultCapacity(EngineID engine, CargoID *cargo
 			cargo = e->GetDefaultCargoType();
 		}
 	}
-	if (cargo_type != nullptr) *cargo_type = cargo;
-	if (cargo == INVALID_CARGO) return 0;
-	return e->GetDisplayDefaultCapacity(nullptr, cargo);
+	return {cargo, IsValidCargoID(cargo) ? e->GetDisplayDefaultCapacity(nullptr, cargo) : 0};
 }
 
 /**
@@ -193,9 +190,9 @@ CargoArray GetCapacityOfArticulatedParts(EngineID engine, CargoID attempt_refit)
 	const Engine *e = Engine::Get(engine);
 
 	auto get_engine_cargo = [&capacity, attempt_refit](EngineID eng) {
-		CargoID cargo_type;
-		uint16_t cargo_capacity = GetVehicleDefaultCapacity(eng, &cargo_type, attempt_refit);
-		if (cargo_type < NUM_CARGO) capacity[cargo_type] += cargo_capacity;
+		if (auto [cargo, cap] = GetVehicleDefaultCapacity(eng, attempt_refit); IsValidCargoID(cargo)) {
+			capacity[cargo] += cap;
+		}
 	};
 	get_engine_cargo(engine);
 
@@ -223,9 +220,9 @@ CargoTypes GetCargoTypesOfArticulatedParts(EngineID engine)
 	CargoTypes cargoes = 0;
 	const Engine *e = Engine::Get(engine);
 
-	CargoID cargo_type;
-	uint16_t cargo_capacity = GetVehicleDefaultCapacity(engine, &cargo_type);
-	if (cargo_type < NUM_CARGO && cargo_capacity > 0) SetBit(cargoes, cargo_type);
+	if (auto [cargo, cap] = GetVehicleDefaultCapacity(engine); IsValidCargoID(cargo) && cap > 0) {
+		SetBit(cargoes, cargo);
+	}
 
 	if (!e->IsArticulatedCallbackVehicleType()) return cargoes;
 
@@ -235,8 +232,9 @@ CargoTypes GetCargoTypesOfArticulatedParts(EngineID engine)
 		EngineID artic_engine = GetNextArticulatedPart(i, engine);
 		if (artic_engine == INVALID_ENGINE) break;
 
-		cargo_capacity = GetVehicleDefaultCapacity(artic_engine, &cargo_type);
-		if (cargo_type < NUM_CARGO && cargo_capacity > 0) SetBit(cargoes, cargo_type);
+		if (auto [cargo, cap] = GetVehicleDefaultCapacity(artic_engine); IsValidCargoID(cargo) && cap > 0) {
+			SetBit(cargoes, cargo);
+		}
 	}
 
 	return cargoes;
