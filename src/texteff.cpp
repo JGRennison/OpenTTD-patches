@@ -85,7 +85,7 @@ void UpdateTextEffect(TextEffectID te_id, StringID msg, uint64_t param1, uint64_
 
 	SetDParam(0, param1);
 	SetDParam(1, param2);
-	te->UpdatePosition(ZOOM_LVL_TEXT_EFFECT, te->center, te->top, te->string_id, te->string_id - 1);
+	te->UpdatePosition(ZOOM_LVL_TEXT_EFFECT, te->center, te->top, te->string_id);
 }
 
 void UpdateAllTextEffectVirtCoords()
@@ -94,7 +94,7 @@ void UpdateAllTextEffectVirtCoords()
 		if (te.string_id == INVALID_STRING_ID) continue;
 		SetDParam(0, te.params_1);
 		SetDParam(1, te.params_2);
-		te.UpdatePosition(ZOOM_LVL_TEXT_EFFECT, te.center, te.top, te.string_id, te.string_id - 1);
+		te.UpdatePosition(ZOOM_LVL_TEXT_EFFECT, te.center, te.top, te.string_id);
 	}
 }
 
@@ -144,7 +144,7 @@ void DrawTextEffects(ViewportDrawerDynamic *vdd, DrawPixelInfo *dpi, bool load_t
 	for (TextEffect &te : _text_effects) {
 		if (te.string_id == INVALID_STRING_ID) continue;
 		if ((te.mode == TE_RISING || show_loading) && te.top > top_threshold && te.top < bottom_threshold) {
-			ViewportAddString(vdd, dpi, ZOOM_LVL_TEXT_EFFECT, &te, te.string_id, te.string_id - 1, STR_NULL, te.params_1, te.params_2);
+			ViewportAddString(vdd, dpi, ZOOM_LVL_TEXT_EFFECT, &te, te.string_id, te.string_id, STR_NULL, te.params_1, te.params_2);
 		}
 	}
 }

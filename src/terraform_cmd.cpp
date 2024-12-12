@@ -102,8 +102,8 @@ static CommandCost TerraformTileHeight(TerraformerState *ts, TileIndex tile, int
 	assert(tile < MapSize());
 
 	/* Check range of destination height */
-	if (height < 0) return_cmd_error(STR_ERROR_ALREADY_AT_SEA_LEVEL);
-	if (height > _settings_game.construction.map_height_limit) return_cmd_error(STR_ERROR_TOO_HIGH);
+	if (height < 0) return CommandCost(STR_ERROR_ALREADY_AT_SEA_LEVEL);
+	if (height > _settings_game.construction.map_height_limit) return CommandCost(STR_ERROR_TOO_HIGH);
 
 	/*
 	 * Check if the terraforming has any effect.
@@ -296,7 +296,7 @@ CommandCost CmdTerraformLand(TileIndex tile, DoCommandFlag flags, uint32_t p1, u
 
 	Company *c = Company::GetIfValid(_current_company);
 	if (c != nullptr && GB(c->terraform_limit, 16, 16) < ts.tile_to_new_height.size()) {
-		return_cmd_error(STR_ERROR_TERRAFORM_LIMIT_REACHED);
+		return CommandCost(STR_ERROR_TERRAFORM_LIMIT_REACHED);
 	}
 
 	if (flags & DC_EXEC) {
@@ -351,7 +351,7 @@ CommandCost CmdLevelLand(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 	}
 
 	/* Check range of destination height */
-	if (h > _settings_game.construction.map_height_limit) return_cmd_error((oldh == 0) ? STR_ERROR_ALREADY_AT_SEA_LEVEL : STR_ERROR_TOO_HIGH);
+	if (h > _settings_game.construction.map_height_limit) return CommandCost((oldh == 0) ? STR_ERROR_ALREADY_AT_SEA_LEVEL : STR_ERROR_TOO_HIGH);
 
 	Money money = GetAvailableMoneyForCommand();
 	CommandCost cost(EXPENSES_CONSTRUCTION);
@@ -360,7 +360,7 @@ CommandCost CmdLevelLand(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 
 	const Company *c = Company::GetIfValid(_current_company);
 	int limit = (c == nullptr ? INT32_MAX : GB(c->terraform_limit, 16, 16));
-	if (limit == 0) return_cmd_error(STR_ERROR_TERRAFORM_LIMIT_REACHED);
+	if (limit == 0) return CommandCost(STR_ERROR_TERRAFORM_LIMIT_REACHED);
 
 	OrthogonalOrDiagonalTileIterator iter(tile, p1, HasBit(p2, 0));
 	for (; *iter != INVALID_TILE; ++iter) {

@@ -56,7 +56,7 @@ CommandCost CmdRenameDepot(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 
 	if (!reset) {
 		if (Utf8StringLength(text) >= MAX_LENGTH_DEPOT_NAME_CHARS) return CMD_ERROR;
-		if (!IsUniqueDepotName(text)) return_cmd_error(STR_ERROR_NAME_MUST_BE_UNIQUE);
+		if (!IsUniqueDepotName(text)) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
 	}
 
 	if (flags & DC_EXEC) {

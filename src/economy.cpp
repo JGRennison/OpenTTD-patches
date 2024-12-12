@@ -2575,7 +2575,7 @@ CommandCost CmdBuyShareInCompany(TileIndex tile, DoCommandFlag flags, uint32_t p
 	if (c == nullptr || !_settings_game.economy.allow_shares || _current_company == target_company) return CMD_ERROR;
 
 	/* Protect new companies from hostile takeovers */
-	if (c->age_years < _settings_game.economy.min_years_for_shares) return_cmd_error(STR_ERROR_PROTECTED);
+	if (c->age_years < _settings_game.economy.min_years_for_shares) return CommandCost(STR_ERROR_PROTECTED);
 
 	/* Those lines are here for network-protection (clients can be slow) */
 	if (GetAmountOwnedBy(c, COMPANY_SPECTATOR) == 0) return cost;
@@ -2583,7 +2583,7 @@ CommandCost CmdBuyShareInCompany(TileIndex tile, DoCommandFlag flags, uint32_t p
 	if (GetAmountOwnedBy(c, COMPANY_SPECTATOR) == 1) {
 		if (!c->is_ai) return cost; //  We can not buy out a real company (temporarily). TODO: well, enable it obviously.
 
-		if (GetAmountOwnedBy(c, _current_company) == 3 && !CheckTakeoverVehicleLimit(_current_company, target_company)) return_cmd_error(STR_ERROR_TOO_MANY_VEHICLES_IN_GAME);
+		if (GetAmountOwnedBy(c, _current_company) == 3 && !CheckTakeoverVehicleLimit(_current_company, target_company)) return CommandCost(STR_ERROR_TOO_MANY_VEHICLES_IN_GAME);
 	}
 
 
@@ -2680,7 +2680,7 @@ CommandCost CmdBuyCompany(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
 	if (target_company == _current_company) return CMD_ERROR;
 
 	/* Do not allow takeover if the resulting company would have too many vehicles. */
-	if (!CheckTakeoverVehicleLimit(_current_company, target_company)) return_cmd_error(STR_ERROR_TOO_MANY_VEHICLES_IN_GAME);
+	if (!CheckTakeoverVehicleLimit(_current_company, target_company)) return CommandCost(STR_ERROR_TOO_MANY_VEHICLES_IN_GAME);
 
 	/* Get the cost here as the company is deleted in DoAcquireCompany.
 	 * For bankruptcy this amount is calculated when the offer was made;

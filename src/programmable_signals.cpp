@@ -658,11 +658,11 @@ static CommandCost ValidateSignalTileTrack(TileIndex tile, Track track)
 	if (!IsValidTrack(track)) return CMD_ERROR;
 
 	if (!IsPlainRailTile(tile) || !HasTrack(tile, track) || !HasSignalOnTrack(tile, track) || !IsPresignalProgrammable(tile, track)) {
-		return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
+		return CommandCost(STR_ERR_PROGSIG_NOT_THERE);
 	}
 
 	if (!IsTileOwner(tile, _current_company)) {
-		return_cmd_error(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER);
+		return CommandCost(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER);
 	}
 
 	return CommandCost();
@@ -692,10 +692,10 @@ CommandCost CmdInsertSignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 
 	SignalProgram *prog = GetSignalProgram(SignalReference(tile, track));
 	if (prog == nullptr) {
-		return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
+		return CommandCost(STR_ERR_PROGSIG_NOT_THERE);
 	}
 	if (instruction_id >= prog->instructions.size()) {
-		return_cmd_error(STR_ERR_PROGSIG_INVALID_INSTRUCTION);
+		return CommandCost(STR_ERR_PROGSIG_INVALID_INSTRUCTION);
 	}
 
 	bool exec = (flags & DC_EXEC) != 0;
@@ -711,7 +711,7 @@ CommandCost CmdInsertSignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 
 		case PSO_SET_SIGNAL: {
 			SignalState ss = (SignalState) p2;
-			if (ss > SIGNAL_STATE_MAX) return_cmd_error(STR_ERR_PROGSIG_INVALID_OPCODE);
+			if (ss > SIGNAL_STATE_MAX) return CommandCost(STR_ERR_PROGSIG_INVALID_OPCODE);
 			if (!exec) return CommandCost();
 
 			SignalSet *set = new SignalSet(prog, ss);
@@ -724,7 +724,7 @@ CommandCost CmdInsertSignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 		case PSO_IF_ELSE:
 		case PSO_IF_ENDIF:
 		default:
-			return_cmd_error(STR_ERR_PROGSIG_INVALID_OPCODE);
+			return CommandCost(STR_ERR_PROGSIG_INVALID_OPCODE);
 	}
 
 	if (!exec) return CommandCost();
@@ -764,10 +764,10 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 
 	SignalProgram *prog = GetExistingSignalProgram(SignalReference(tile, track));
 	if (prog == nullptr) {
-		return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
+		return CommandCost(STR_ERR_PROGSIG_NOT_THERE);
 	}
 	if (instruction_id >= prog->instructions.size()) {
-		return_cmd_error(STR_ERR_PROGSIG_INVALID_INSTRUCTION);
+		return CommandCost(STR_ERR_PROGSIG_INVALID_INSTRUCTION);
 	}
 
 	bool exec = (flags & DC_EXEC) != 0;
@@ -777,7 +777,7 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 		case PSO_SET_SIGNAL: {
 			SignalState state = (SignalState) p2;
 			if (state > SIGNAL_STATE_MAX) {
-				return_cmd_error(STR_ERR_PROGSIG_INVALID_SIGNAL_STATE);
+				return CommandCost(STR_ERR_PROGSIG_INVALID_SIGNAL_STATE);
 			}
 			if (!exec) return CommandCost();
 			SignalSet *ss = static_cast<SignalSet*>(insn);
@@ -790,7 +790,7 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 			if (act == 0) { // Set code
 				SignalConditionCode code = (SignalConditionCode) GB(p2, 1, 8);
 				if (code > PSC_MAX) {
-					return_cmd_error(STR_ERR_PROGSIG_INVALID_CONDITION);
+					return CommandCost(STR_ERR_PROGSIG_INVALID_CONDITION);
 				}
 				if (!exec) return CommandCost();
 
@@ -834,14 +834,14 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 						SignalConditionField f = (SignalConditionField) GB(p2, 1, 2);
 						uint32_t val = GB(p2, 3, 27);
 						if (f == SCF_COMPARATOR) {
-							if (val > SGC_LAST) return_cmd_error(STR_ERR_PROGSIG_INVALID_COMPARATOR);
+							if (val > SGC_LAST) return CommandCost(STR_ERR_PROGSIG_INVALID_COMPARATOR);
 							if (!exec) return CommandCost();
 							vc->comparator = (SignalComparator) val;
 						} else if (f == SCF_VALUE) {
 							if (!exec) return CommandCost();
 							vc->value = val;
 						} else {
-							return_cmd_error(STR_ERR_PROGSIG_INVALID_CONDITION_FIELD);
+							return CommandCost(STR_ERR_PROGSIG_INVALID_CONDITION_FIELD);
 						}
 					} break;
 
@@ -852,7 +852,7 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 
 						if (!IsValidTile(ti) || !IsValidTrackdir(td) || !HasSignalOnTrackdir(ti, td)
 								|| GetTileOwner(ti) != _current_company) {
-							return_cmd_error(STR_ERR_PROGSIG_INVALID_SIGNAL);
+							return CommandCost(STR_ERR_PROGSIG_INVALID_SIGNAL);
 						}
 						if (!exec) return CommandCost();
 						sc->SetSignal(ti, td);
@@ -864,7 +864,7 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 						SignalConditionField f = (SignalConditionField) GB(p2, 1, 2);
 						uint32_t val = GB(p2, 3, 27);
 						if (f == SCF_COMPARATOR) {
-							if (val > SGC_LAST) return_cmd_error(STR_ERR_PROGSIG_INVALID_COMPARATOR);
+							if (val > SGC_LAST) return CommandCost(STR_ERR_PROGSIG_INVALID_COMPARATOR);
 							if (!exec) return CommandCost();
 							sc->comparator = (SignalComparator) val;
 						} else if (f == SCF_VALUE) {
@@ -875,7 +875,7 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 							if (!exec) return CommandCost();
 							sc->SetSlot((TraceRestrictSlotID) val);
 						} else {
-							return_cmd_error(STR_ERR_PROGSIG_INVALID_CONDITION_FIELD);
+							return CommandCost(STR_ERR_PROGSIG_INVALID_CONDITION_FIELD);
 						}
 					} break;
 
@@ -884,7 +884,7 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 						SignalConditionField f = (SignalConditionField) GB(p2, 1, 2);
 						uint32_t val = GB(p2, 3, 27);
 						if (f == SCF_COMPARATOR) {
-							if (val > SGC_LAST) return_cmd_error(STR_ERR_PROGSIG_INVALID_COMPARATOR);
+							if (val > SGC_LAST) return CommandCost(STR_ERR_PROGSIG_INVALID_COMPARATOR);
 							if (!exec) return CommandCost();
 							sc->comparator = (SignalComparator) val;
 						} else if (f == SCF_VALUE) {
@@ -895,7 +895,7 @@ CommandCost CmdModifySignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 							if (!exec) return CommandCost();
 							sc->SetCounter((TraceRestrictCounterID) val);
 						} else {
-							return_cmd_error(STR_ERR_PROGSIG_INVALID_CONDITION_FIELD);
+							return CommandCost(STR_ERR_PROGSIG_INVALID_CONDITION_FIELD);
 						}
 					} break;
 				}
@@ -937,11 +937,11 @@ CommandCost CmdRemoveSignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 
 	SignalProgram *prog = GetExistingSignalProgram(SignalReference(tile, track));
 	if (prog == nullptr) {
-		return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
+		return CommandCost(STR_ERR_PROGSIG_NOT_THERE);
 	}
 
 	if (instruction_id >= prog->instructions.size()) {
-		return_cmd_error(STR_ERR_PROGSIG_INVALID_INSTRUCTION);
+		return CommandCost(STR_ERR_PROGSIG_INVALID_INSTRUCTION);
 	}
 
 	bool exec = (flags & DC_EXEC) != 0;
@@ -959,7 +959,7 @@ CommandCost CmdRemoveSignalInstruction(TileIndex tile, DoCommandFlag flags, uint
 		case PSO_IF_ELSE:
 		case PSO_IF_ENDIF:
 		default:
-			return_cmd_error(STR_ERR_PROGSIG_INVALID_OPCODE);
+			return CommandCost(STR_ERR_PROGSIG_INVALID_OPCODE);
 	}
 
 	if (!exec) return CommandCost();
@@ -1074,7 +1074,7 @@ CommandCost CmdSignalProgramMgmt(TileIndex tile, DoCommandFlag flags, uint32_t p
 	switch (mgmt) {
 		case SPMC_REMOVE: {
 			SignalProgram *prog = GetExistingSignalProgram(SignalReference(tile, track));
-			if (prog == nullptr) return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
+			if (prog == nullptr) return CommandCost(STR_ERR_PROGSIG_NOT_THERE);
 			if (exec) {
 				prog->first_instruction->Remove();
 			}
@@ -1090,10 +1090,10 @@ CommandCost CmdSignalProgramMgmt(TileIndex tile, DoCommandFlag flags, uint32_t p
 				return CMD_ERROR;
 			}
 
-			if (!IsTileOwner(src_tile, _current_company)) return_cmd_error(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER);
+			if (!IsTileOwner(src_tile, _current_company)) return CommandCost(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER);
 
 			SignalProgram *src_prog = GetExistingSignalProgram(SignalReference(src_tile, src_track));
-			if (!src_prog) return_cmd_error(STR_ERR_PROGSIG_NOT_THERE);
+			if (!src_prog) return CommandCost(STR_ERR_PROGSIG_NOT_THERE);
 
 			if (exec) {
 				prog->first_instruction->Remove();

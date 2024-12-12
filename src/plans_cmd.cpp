@@ -31,7 +31,7 @@
  */
 CommandCost CmdAddPlan(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint32_t p2, const char *text)
 {
-	if (!Plan::CanAllocateItem()) return_cmd_error(STR_ERROR_TOO_MANY_PLANS);
+	if (!Plan::CanAllocateItem()) return CommandCost(STR_ERROR_TOO_MANY_PLANS);
 	if (flags & DC_EXEC) {
 		_new_plan = new Plan(_current_company);
 	}
@@ -94,7 +94,7 @@ CommandCost CmdAddPlanLine(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 	ret = data.Load(aux_data);
 	if (ret.Failed()) return ret;
 
-	if (data->tiles.size() > (MAX_CMD_TEXT_LENGTH / sizeof(TileIndex))) return_cmd_error(STR_ERROR_TOO_MANY_NODES);
+	if (data->tiles.size() > (MAX_CMD_TEXT_LENGTH / sizeof(TileIndex))) return CommandCost(STR_ERROR_TOO_MANY_NODES);
 	if (flags & DC_EXEC) {
 		PlanLine &pl = p->NewLine();
 		pl.tiles = std::move(data->tiles);

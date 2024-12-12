@@ -235,7 +235,7 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 			case OT_GOTO_STATION:
 				if (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) {
 					if (mtf == MTF_WAIT_TIME && clear_field) break;
-					return_cmd_error(STR_ERROR_TIMETABLE_NOT_STOPPING_HERE);
+					return CommandCost(STR_ERROR_TIMETABLE_NOT_STOPPING_HERE);
 				}
 				break;
 
@@ -246,7 +246,7 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 			case OT_CONDITIONAL:
 				break;
 
-			default: return_cmd_error(STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS);
+			default: return CommandCost(STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS);
 		}
 	}
 
@@ -255,7 +255,7 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 			case OT_GOTO_STATION:
 				if (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) {
 					if (mtf == MTF_ASSIGN_SCHEDULE && dispatch_index == -1) break;
-					return_cmd_error(STR_ERROR_TIMETABLE_NOT_STOPPING_HERE);
+					return CommandCost(STR_ERROR_TIMETABLE_NOT_STOPPING_HERE);
 				}
 				break;
 
@@ -263,7 +263,7 @@ CommandCost CmdChangeTimetable(TileIndex tile, DoCommandFlag flags, uint32_t p1,
 			case OT_GOTO_WAYPOINT:
 				break;
 
-			default: return_cmd_error(STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS);
+			default: return CommandCost(STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS);
 		}
 	}
 

@@ -727,7 +727,7 @@ CommandCost TunnelBridgeIsFree(TileIndex tile, TileIndex endtile, const Vehicle 
 		v = VehicleFromPos(endtile, type, &data, &GetVehicleTunnelBridgeProc, true);
 	}
 
-	if (v != nullptr) return_cmd_error(STR_ERROR_TRAIN_IN_THE_WAY + v->type);
+	if (v != nullptr) return CommandCost(STR_ERROR_TRAIN_IN_THE_WAY + v->type);
 	return CommandCost();
 }
 
@@ -881,7 +881,7 @@ CommandCost EnsureNoTrainOnTrackBits(TileIndex tile, TrackBits track_bits)
 	 * Such a message does not affect MP synchronisation.
 	 */
 	Vehicle *v = VehicleFromPos(tile, VEH_TRAIN, &track_bits, &EnsureNoTrainOnTrackProc, true);
-	if (v != nullptr) return_cmd_error(STR_ERROR_TRAIN_IN_THE_WAY + v->type);
+	if (v != nullptr) return CommandCost(STR_ERROR_TRAIN_IN_THE_WAY + v->type);
 	return CommandCost();
 }
 
@@ -4090,18 +4090,18 @@ CommandCost Vehicle::SendToDepot(DoCommandFlag flags, DepotCommand command, Tile
 	if (command & DEPOT_SPECIFIC) {
 		if (!(IsDepotTile(specific_depot) && GetDepotVehicleType(specific_depot) == this->type &&
 				IsInfraTileUsageAllowed(this->type, this->owner, specific_depot))) {
-			return_cmd_error(no_depot[this->type]);
+			return CommandCost(no_depot[this->type]);
 		}
 		if ((this->type == VEH_ROAD && (GetPresentRoadTypes(tile) & RoadVehicle::From(this)->compatible_roadtypes) == 0) ||
 				(this->type == VEH_TRAIN && !HasBit(Train::From(this)->compatible_railtypes, GetRailType(tile)))) {
-			return_cmd_error(no_depot[this->type]);
+			return CommandCost(no_depot[this->type]);
 		}
 		closestDepot.location = specific_depot;
 		closestDepot.destination = (this->type == VEH_AIRCRAFT) ? GetStationIndex(specific_depot) : GetDepotIndex(specific_depot);
 		closestDepot.reverse = false;
 	} else {
 		closestDepot = this->FindClosestDepot();
-		if (!closestDepot.found) return_cmd_error(no_depot[this->type]);
+		if (!closestDepot.found) return CommandCost(no_depot[this->type]);
 	}
 
 	if (flags & DC_EXEC) {

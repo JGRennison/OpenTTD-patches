@@ -678,7 +678,7 @@ CommandCost CmdPlantTree(TileIndex end_tile, DoCommandFlag flags, uint32_t p1, u
 	}
 
 	if (cost.GetCost() == 0) {
-		return_cmd_error(msg);
+		return CommandCost(msg);
 	} else {
 		return cost;
 	}

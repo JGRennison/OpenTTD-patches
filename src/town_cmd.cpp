@@ -776,7 +776,7 @@ static void TileLoop_Town(TileIndex tile)
  */
 static CommandCost ClearTile_Town(TileIndex tile, DoCommandFlag flags)
 {
-	if (flags & DC_AUTO) return_cmd_error(STR_ERROR_BUILDING_MUST_BE_DEMOLISHED);
+	if (flags & DC_AUTO) return CommandCost(STR_ERROR_BUILDING_MUST_BE_DEMOLISHED);
 	if (!CanDeleteHouse(tile)) return CMD_ERROR;
 
 	const HouseSpec *hs = HouseSpec::Get(GetHouseType(tile));
@@ -794,7 +794,7 @@ static CommandCost ClearTile_Town(TileIndex tile, DoCommandFlag flags)
 			&& !_cheats.town_rating.value
 			&& _settings_game.difficulty.town_council_tolerance != TOWN_COUNCIL_PERMISSIVE) {
 			SetDParam(0, t->index);
-			return_cmd_error(STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS);
+			return CommandCost(STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS);
 		}
 	}
 
@@ -2290,22 +2290,22 @@ static CommandCost TownCanBePlacedHere(TileIndex tile, bool city)
 {
 	/* Check if too close to the edge of map */
 	if (DistanceFromEdge(tile) < 12) {
-		return_cmd_error(STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB);
+		return CommandCost(STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB);
 	}
 
 	/* Check distance to all other towns. */
 	if (IsCloseToTown(tile, _settings_game.economy.town_min_distance)) {
-		return_cmd_error(STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN);
+		return CommandCost(STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN);
 	}
 
 	/* Check max height level. */
 	if (GetTileZ(tile) > _settings_game.economy.max_town_heightlevel) {
-		return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
+		return CommandCost(STR_ERROR_SITE_UNSUITABLE);
 	}
 
 	/* Can only build on clear flat areas, possibly with trees. */
 	if ((!IsTileType(tile, MP_CLEAR) && !IsTileType(tile, MP_TREES)) || !IsTileFlat(tile)) {
-		return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
+		return CommandCost(STR_ERROR_SITE_UNSUITABLE);
 	}
 
 	uint min_land_area = city ? _settings_game.economy.min_city_land_area : _settings_game.economy.min_town_land_area;
@@ -2315,7 +2315,7 @@ static CommandCost TownCanBePlacedHere(TileIndex tile, bool city)
 			if (IsCoastTile(t) && !IsSlopeWithOneCornerRaised(GetTileSlope(t))) return true;
 			return false;
 		}, nullptr)) {
-			return_cmd_error(STR_ERROR_SITE_UNSUITABLE);
+			return CommandCost(STR_ERROR_SITE_UNSUITABLE);
 		}
 	}
 
@@ -2375,15 +2375,15 @@ CommandCost CmdFoundTown(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint3
 
 	if (StrEmpty(text)) {
 		/* If supplied name is empty, townnameparts has to generate unique automatic name */
-		if (!VerifyTownName(townnameparts, &par)) return_cmd_error(STR_ERROR_NAME_MUST_BE_UNIQUE);
+		if (!VerifyTownName(townnameparts, &par)) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
 	} else {
 		/* If name is not empty, it has to be unique custom name */
 		if (Utf8StringLength(text) >= MAX_LENGTH_TOWN_NAME_CHARS) return CMD_ERROR;
-		if (!IsUniqueTownName(text)) return_cmd_error(STR_ERROR_NAME_MUST_BE_UNIQUE);
+		if (!IsUniqueTownName(text)) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
 	}
 
 	/* Allocate town struct */
-	if (!Town::CanAllocateItem()) return_cmd_error(STR_ERROR_TOO_MANY_TOWNS);
+	if (!Town::CanAllocateItem()) return CommandCost(STR_ERROR_TOO_MANY_TOWNS);
 
 	if (!random) {
 		CommandCost ret = TownCanBePlacedHere(tile, city);
@@ -2790,16 +2790,16 @@ static inline CommandCost CanBuildHouseHere(TileIndex tile, TownID town, bool no
 {
 	/* cannot build on these slopes... */
 	if (noslope) {
-		if (!IsTileFlat(tile)) return_cmd_error(STR_ERROR_FLAT_LAND_REQUIRED);
+		if (!IsTileFlat(tile)) return CommandCost(STR_ERROR_FLAT_LAND_REQUIRED);
 	} else {
-		if (IsSteepSlope(GetTileSlope(tile))) return_cmd_error(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
+		if (IsSteepSlope(GetTileSlope(tile))) return CommandCost(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
 	}
 
 	/* at least one RoadTypes allow building the house here? */
-	if (!RoadTypesAllowHouseHere(tile)) return_cmd_error(STR_ERROR_NO_SUITABLE_ROAD);
+	if (!RoadTypesAllowHouseHere(tile)) return CommandCost(STR_ERROR_NO_SUITABLE_ROAD);
 
 	/* building under a bridge? */
-	if (IsBridgeAbove(tile)) return_cmd_error(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
+	if (IsBridgeAbove(tile)) return CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
 
 	/* can we clear the land? */
 	CommandCost ret = DoCommand(tile, 0, 0, DC_AUTO | DC_NO_WATER | DC_TOWN, CMD_LANDSCAPE_CLEAR);
@@ -2858,14 +2858,14 @@ static inline CommandCost IsHouseTypeAllowed(HouseID house, bool above_snowline,
 	if (_settings_game.game_creation.landscape != LT_ARCTIC) {
 		if (!(hs->building_availability & (HZ_TEMP << _settings_game.game_creation.landscape))) return CMD_ERROR;
 	} else if (above_snowline) {
-		if (!(hs->building_availability & HZ_SUBARTC_ABOVE)) return_cmd_error(STR_ERROR_BUILDING_NOT_ALLOWED_ABOVE_SNOW_LINE);
+		if (!(hs->building_availability & HZ_SUBARTC_ABOVE)) return CommandCost(STR_ERROR_BUILDING_NOT_ALLOWED_ABOVE_SNOW_LINE);
 	} else {
-		if (!(hs->building_availability & HZ_SUBARTC_BELOW)) return_cmd_error(STR_ERROR_BUILDING_NOT_ALLOWED_BELOW_SNOW_LINE);
+		if (!(hs->building_availability & HZ_SUBARTC_BELOW)) return CommandCost(STR_ERROR_BUILDING_NOT_ALLOWED_BELOW_SNOW_LINE);
 	}
 
 	/* Check if the house zone is allowed for this type of houses. */
 	if (!HasBit(hs->building_availability & HZ_ZONALL, zone)) {
-		return_cmd_error(STR_ERROR_BUILDING_NOT_ALLOWED_IN_THIS_TOWN_ZONE);
+		return CommandCost(STR_ERROR_BUILDING_NOT_ALLOWED_IN_THIS_TOWN_ZONE);
 	}
 
 	return CommandCost();
@@ -2885,10 +2885,10 @@ static inline CommandCost IsAnotherHouseTypeAllowedInTown(Town *t, HouseID house
 	/* Don't let these counters overflow. Global counters are 32bit, there will never be that many houses. */
 	if (hs->class_id != HOUSE_NO_CLASS) {
 		/* id_count is always <= class_count, so it doesn't need to be checked */
-		if (t->cache.building_counts.class_count[hs->class_id] == UINT16_MAX) return_cmd_error(STR_ERROR_TOO_MANY_HOUSE_SETS);
+		if (t->cache.building_counts.class_count[hs->class_id] == UINT16_MAX) return CommandCost(STR_ERROR_TOO_MANY_HOUSE_SETS);
 	} else {
 		/* If the house has no class, check id_count instead */
-		if (t->cache.building_counts.id_count[house] == UINT16_MAX) return_cmd_error(STR_ERROR_TOO_MANY_HOUSE_TYPES);
+		if (t->cache.building_counts.id_count[house] == UINT16_MAX) return CommandCost(STR_ERROR_TOO_MANY_HOUSE_TYPES);
 	}
 
 	return CommandCost();
@@ -2985,14 +2985,14 @@ static CommandCost CheckCanBuildHouse(HouseID house, const Town *t)
 		return CMD_ERROR;
 	}
 
-	if (CalTime::CurYear() > hs->max_year) return_cmd_error(STR_ERROR_BUILDING_IS_TOO_OLD);
-	if (CalTime::CurYear() < hs->min_year) return_cmd_error(STR_ERROR_BUILDING_IS_TOO_MODERN);
+	if (CalTime::CurYear() > hs->max_year) return CommandCost(STR_ERROR_BUILDING_IS_TOO_OLD);
+	if (CalTime::CurYear() < hs->min_year) return CommandCost(STR_ERROR_BUILDING_IS_TOO_MODERN);
 
 	/* Special houses that there can be only one of. */
 	if (hs->building_flags & BUILDING_IS_CHURCH) {
-		if (t->church_count >= 1) return_cmd_error(STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN);
+		if (t->church_count >= 1) return CommandCost(STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN);
 	} else if (hs->building_flags & BUILDING_IS_STADIUM) {
-		if (t->stadium_count >= 1) return_cmd_error(STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN);
+		if (t->stadium_count >= 1) return CommandCost(STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN);
 	}
 
 	return CommandCost();
@@ -3119,7 +3119,7 @@ static bool TryBuildTownHouse(Town *t, TileIndex tile)
 CommandCost CmdPlaceHouse(DoCommandFlag flags, TileIndex tile, HouseID house, TownID town_id)
 {
 	if (_game_mode != GM_EDITOR) return CMD_ERROR;
-	if (Town::GetNumItems() == 0) return_cmd_error(STR_ERROR_MUST_FOUND_TOWN_FIRST);
+	if (Town::GetNumItems() == 0) return CommandCost(STR_ERROR_MUST_FOUND_TOWN_FIRST);
 
 	if (static_cast<size_t>(house) >= HouseSpec::Specs().size()) return CMD_ERROR;
 	const HouseSpec *hs = HouseSpec::Get(house);
@@ -3270,7 +3270,7 @@ CommandCost CmdRenameTown(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
 
 	if (!reset) {
 		if (Utf8StringLength(text) >= MAX_LENGTH_TOWN_NAME_CHARS) return CMD_ERROR;
-		if (!IsUniqueTownName(text)) return_cmd_error(STR_ERROR_NAME_MUST_BE_UNIQUE);
+		if (!IsUniqueTownName(text)) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
 	}
 
 	if (flags & DC_EXEC) {
@@ -3746,11 +3746,11 @@ static bool SearchTileForStatue(TileIndex tile, void *user_data)
  */
 static CommandCost TownActionBuildStatue(Town *t, DoCommandFlag flags)
 {
-	if (!Object::CanAllocateItem()) return_cmd_error(STR_ERROR_TOO_MANY_OBJECTS);
+	if (!Object::CanAllocateItem()) return CommandCost(STR_ERROR_TOO_MANY_OBJECTS);
 
 	TileIndex tile = t->xy;
 	StatueBuildSearchData statue_data(INVALID_TILE, 0);
-	if (!CircularTileSearch(&tile, 9, SearchTileForStatue, &statue_data)) return_cmd_error(STR_ERROR_STATUE_NO_SUITABLE_PLACE);
+	if (!CircularTileSearch(&tile, 9, SearchTileForStatue, &statue_data)) return CommandCost(STR_ERROR_STATUE_NO_SUITABLE_PLACE);
 
 	if (flags & DC_EXEC) {
 		Backup<CompanyID> cur_company(_current_company, OWNER_NONE, FILE_LINE);
@@ -4295,7 +4295,7 @@ CommandCost CheckIfAuthorityAllowsNewStation(TileIndex tile, DoCommandFlag flags
 	if (t->ratings[_current_company] > RATING_VERYPOOR || _settings_game.difficulty.town_council_tolerance == TOWN_COUNCIL_PERMISSIVE) return CommandCost();
 
 	SetDParam(0, t->index);
-	return_cmd_error(STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS);
+	return CommandCost(STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS);
 }
 
 /**
@@ -4494,7 +4494,7 @@ CommandCost CheckforTownRating(DoCommandFlag flags, Town *t, TownRatingCheckType
 
 	if (GetRating(t) < needed) {
 		SetDParam(0, t->index);
-		return_cmd_error(STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS);
+		return CommandCost(STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS);
 	}
 
 	return CommandCost();

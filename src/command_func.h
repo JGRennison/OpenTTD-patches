@@ -22,16 +22,6 @@
  */
 static const CommandCost CMD_ERROR = CommandCost(INVALID_STRING_ID);
 
-/**
- * Returns from a function with a specific StringID as error.
- *
- * This macro is used to return from a function. The parameter contains the
- * StringID which will be returned.
- *
- * @param errcode The StringID to return
- */
-#define return_cmd_error(errcode) return CommandCost(errcode);
-
 CommandCost DoCommandEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, DoCommandFlag flags, uint32_t cmd, const char *text = nullptr, const CommandAuxiliaryBase *aux_data = nullptr);
 
 inline CommandCost DoCommand(TileIndex tile, uint32_t p1, uint32_t p2, DoCommandFlag flags, uint32_t cmd, const char *text = nullptr)

@@ -1526,7 +1526,7 @@ CommandCost TraceRestrictProgram::Validate(const std::vector<TraceRestrictItem> 
 		}
 	}
 	if (!condstack.empty()) {
-		return_cmd_error(STR_TRACE_RESTRICT_ERROR_VALIDATE_END_CONDSTACK);
+		return CommandCost(STR_TRACE_RESTRICT_ERROR_VALIDATE_END_CONDSTACK);
 	}
 	return CommandCost();
 }
@@ -1911,24 +1911,24 @@ static CommandCost TraceRestrictCheckTileIsUsable(TileIndex tile, Track track)
 	switch (GetTileType(tile)) {
 		case MP_RAILWAY:
 			if (!IsPlainRailTile(tile) || !HasTrack(tile, track)) {
-				return_cmd_error(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
+				return CommandCost(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
 			}
 			if (!HasSignalOnTrack(tile, track)) {
-				return_cmd_error(STR_ERROR_THERE_ARE_NO_SIGNALS);
+				return CommandCost(STR_ERROR_THERE_ARE_NO_SIGNALS);
 			}
 			break;
 
 		case MP_TUNNELBRIDGE:
 			if (!IsRailTunnelBridgeTile(tile) || !HasBit(GetTunnelBridgeTrackBits(tile), track)) {
-				return_cmd_error(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
+				return CommandCost(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
 			}
 			if (!IsTunnelBridgeWithSignalSimulation(tile) || !IsTrackAcrossTunnelBridge(tile, track)) {
-				return_cmd_error(STR_ERROR_THERE_ARE_NO_SIGNALS);
+				return CommandCost(STR_ERROR_THERE_ARE_NO_SIGNALS);
 			}
 			break;
 
 		default:
-			return_cmd_error(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
+			return CommandCost(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
 	}
 
 	/* Check tile ownership, do this afterwards to avoid tripping up on house/industry tiles */
@@ -1982,7 +1982,7 @@ CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictItem> &ite
 		if (GetTraceRestrictCondFlags(old_item) == 0) {
 			if (GetTraceRestrictType(old_item) == TRIT_COND_ENDIF) {
 				/* This is an end if, can't remove these */
-				return_cmd_error(STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ENDIF);
+				return CommandCost(STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ENDIF);
 			} else {
 				/* This is an opening if */
 				remove_whole_block = true;
@@ -2029,7 +2029,7 @@ CommandCost TraceRestrictProgramRemoveItemAt(std::vector<TraceRestrictItem> &ite
 					}
 					if (recursion_depth == 1 && remove_whole_block && shallow_mode) {
 						/* Shallow-removing whole if block, and it contains an else/or if, bail out */
-						return_cmd_error(STR_TRACE_RESTRICT_ERROR_CAN_T_SHALLOW_REMOVE_IF_ELIF);
+						return CommandCost(STR_TRACE_RESTRICT_ERROR_CAN_T_SHALLOW_REMOVE_IF_ELIF);
 					}
 				}
 			}
@@ -2122,11 +2122,11 @@ CommandCost TraceRestrictProgramMoveItemAt(std::vector<TraceRestrictItem> &items
 	}
 
 	if (up) {
-		if (move_start == items.begin()) return_cmd_error(STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
+		if (move_start == items.begin()) return CommandCost(STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
 		std::rotate(TraceRestrictProgram::InstructionAt(items, offset - 1), move_start, move_end);
 		offset--;
 	} else {
-		if (move_end == items.end()) return_cmd_error(STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
+		if (move_end == items.end()) return CommandCost(STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM);
 		std::rotate(move_start, move_end, InstructionIteratorNext(move_end));
 		offset++;
 	}
@@ -2189,14 +2189,14 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 	bool need_existing = (type != TRDCT_INSERT_ITEM);
 	TraceRestrictProgram *prog = GetTraceRestrictProgram(MakeTraceRestrictRefId(tile, track), can_make_new);
 	if (need_existing && prog == nullptr) {
-		return_cmd_error(STR_TRACE_RESTRICT_ERROR_NO_PROGRAM);
+		return CommandCost(STR_TRACE_RESTRICT_ERROR_NO_PROGRAM);
 	}
 
 	uint32_t offset_limit_exclusive = ((type == TRDCT_INSERT_ITEM) ? 1 : 0);
 	if (prog != nullptr) offset_limit_exclusive += static_cast<uint>(prog->items.size());
 
 	if (offset >= offset_limit_exclusive) {
-		return_cmd_error(STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE);
+		return CommandCost(STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE);
 	}
 
 	if (type == TRDCT_INSERT_ITEM || type == TRDCT_MODIFY_ITEM) {
@@ -2246,7 +2246,7 @@ CommandCost CmdProgramSignalTraceRestrict(TileIndex tile, DoCommandFlag flags, u
 		case TRDCT_MODIFY_ITEM: {
 			std::vector<TraceRestrictItem>::iterator old_item = TraceRestrictProgram::InstructionAt(items, offset);
 			if (IsTraceRestrictConditional(*old_item) != IsTraceRestrictConditional(item)) {
-				return_cmd_error(STR_TRACE_RESTRICT_ERROR_CAN_T_CHANGE_CONDITIONALITY);
+				return CommandCost(STR_TRACE_RESTRICT_ERROR_CAN_T_CHANGE_CONDITIONALITY);
 			}
 			const TraceRestrictItem old_item_value = *old_item;
 			bool old_is_dual = IsTraceRestrictDoubleItem(old_item_value);
@@ -2366,7 +2366,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 
 	if (type == TRDCT_PROG_SHARE || type == TRDCT_PROG_SHARE_IF_UNMAPPED || type == TRDCT_PROG_COPY) {
 		if (self == source) {
-			return_cmd_error(STR_TRACE_RESTRICT_ERROR_SOURCE_SAME_AS_TARGET);
+			return CommandCost(STR_TRACE_RESTRICT_ERROR_SOURCE_SAME_AS_TARGET);
 		}
 	}
 	if (type == TRDCT_PROG_SHARE || type == TRDCT_PROG_SHARE_IF_UNMAPPED || type == TRDCT_PROG_COPY || type == TRDCT_PROG_COPY_APPEND) {
@@ -2377,7 +2377,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 	}
 
 	if (type == TRDCT_PROG_SHARE_IF_UNMAPPED && GetTraceRestrictProgram(self, false) != nullptr) {
-		return_cmd_error(STR_TRACE_RESTRICT_ERROR_TARGET_ALREADY_HAS_PROGRAM);
+		return CommandCost(STR_TRACE_RESTRICT_ERROR_TARGET_ALREADY_HAS_PROGRAM);
 	}
 
 	if (type != TRDCT_PROG_RESET && !TraceRestrictProgram::CanAllocateItem()) {
@@ -3008,7 +3008,7 @@ CommandCost CmdCreateTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint
 	size_t length = Utf8StringLength(text);
 	if (length <= 0) return CMD_ERROR;
 	if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
-	if (!IsUniqueSlotName(text)) return_cmd_error(STR_ERROR_NAME_MUST_BE_UNIQUE);
+	if (!IsUniqueSlotName(text)) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
 
 	CommandAuxData<TraceRestrictFollowUpCmdData> follow_up_cmd;
 	if (aux_data != nullptr) {
@@ -3098,7 +3098,7 @@ CommandCost CmdAlterTraceRestrictSlot(TileIndex tile, DoCommandFlag flags, uint3
 		size_t length = Utf8StringLength(text);
 		if (length <= 0) return CMD_ERROR;
 		if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
-		if (!IsUniqueSlotName(text)) return_cmd_error(STR_ERROR_NAME_MUST_BE_UNIQUE);
+		if (!IsUniqueSlotName(text)) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
 
 		if (flags & DC_EXEC) {
 			slot->name = text;
@@ -3278,7 +3278,7 @@ CommandCost CmdCreateTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, u
 	size_t length = Utf8StringLength(text);
 	if (length <= 0) return CMD_ERROR;
 	if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
-	if (!IsUniqueCounterName(text)) return_cmd_error(STR_ERROR_NAME_MUST_BE_UNIQUE);
+	if (!IsUniqueCounterName(text)) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
 
 	CommandAuxData<TraceRestrictFollowUpCmdData> follow_up_cmd;
 	if (aux_data != nullptr) {
@@ -3368,7 +3368,7 @@ CommandCost CmdAlterTraceRestrictCounter(TileIndex tile, DoCommandFlag flags, ui
 		size_t length = Utf8StringLength(text);
 		if (length <= 0) return CMD_ERROR;
 		if (length >= MAX_LENGTH_TRACE_RESTRICT_SLOT_NAME_CHARS) return CMD_ERROR;
-		if (!IsUniqueCounterName(text)) return_cmd_error(STR_ERROR_NAME_MUST_BE_UNIQUE);
+		if (!IsUniqueCounterName(text)) return CommandCost(STR_ERROR_NAME_MUST_BE_UNIQUE);
 
 		if (flags & DC_EXEC) {
 			ctr->name = text;
