@@ -2,6 +2,24 @@
 
 * * *
 
+### v0.63.2 (2024-12-12)
+* Fix crash which could occur when abandoning the game to return to the main menu when using multi-aspect signalling.
+* Fix order backups (preserving orders when selling and then buying a vehicle) not working for non-shared order lists.
+* Add timetable type to vehicle list sort modes.
+* Do not show the demolish remove warning dialog for rail stations of other companies which cannot be demolished.
+* Enable the management dropdown in the vehicle group window for other companies.
+* Enable the shared orders button in the timetable window for other companies.
+* Increase the maximum signal drag spacing to 40.
+* Departure boards:
+  * Fix dispatch order arrival times in live combined mode.
+  * Show predicted arrival times for dispatch orders in 24 hour schedule combined mode, don't show any if not predictable.
+  * Remember last used source mode.
+  * Add location button to window.
+* Fix not being able to build road stops with 0xFF-prefixed NewGRF class IDs.
+* Fix some NewGRFs having incorrect behaviour in some special cases.
+* Fix MacOS builds not working on MacOS 10.15.
+* Bump trunk base from commit c9bd21d57986105ed08627967e5bcac5a0f0768e to commit eacec144b03c84a5bf35b598325a100288ecc2a2.
+
 ### v0.63.1 (2024-11-11)
 * Fix crash which could occur when a drive-through road stop was occupied by a road vehicle and a company merger/bankruptcy/deletion or multiplayer desync occurred.
 * Fix crash which could occur when creating PNG screenshots.
