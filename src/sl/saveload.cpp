@@ -94,6 +94,8 @@ extern bool _sl_maybe_springpp;
 extern bool _sl_maybe_chillpp;
 extern bool _sl_upstream_mode;
 
+[[noreturn]] void SlErrorCorruptWithChunk(std::string_view msg);
+
 namespace upstream_sl {
 	void SlNullPointers();
 	void SlNullPointerChunkByID(uint32_t);
@@ -126,7 +128,7 @@ void ReadBuffer::SkipBytesSlowPath(size_t bytes)
 	bytes -= (this->bufe - this->bufp);
 	while (true) {
 		size_t len = this->reader->Read(this->buf, lengthof(this->buf));
-		if (len == 0) SlErrorCorrupt("Unexpected end of chunk");
+		if (len == 0) SlErrorCorruptWithChunk("Unexpected end of chunk");
 		this->read += len;
 		if (len >= bytes) {
 			this->bufp = this->buf + bytes;
@@ -148,7 +150,7 @@ void ReadBuffer::AcquireBytes(size_t bytes)
 	size_t target = remainder + bytes;
 	do {
 		size_t len = this->reader->Read(this->buf + total, lengthof(this->buf) - total);
-		if (len == 0) SlErrorCorrupt("Unexpected end of chunk");
+		if (len == 0) SlErrorCorruptWithChunk("Unexpected end of chunk");
 
 		total += len;
 	} while (total < target);
@@ -500,6 +502,14 @@ struct ThreadSlErrorException {
 	SlError(STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME, std::move(msg));
 }
 
+[[noreturn]] void SlErrorCorruptWithChunk(std::string_view msg)
+{
+	format_buffer out;
+	out.append(msg);
+	if (_sl.current_chunk_id != 0) out.format(" ({})", ChunkIDDumper()(_sl.current_chunk_id));
+	SlErrorCorrupt(out.to_string());
+}
+
 typedef void (*AsyncSaveFinishProc)();                      ///< Callback for when the savegame loading is finished.
 
 struct AsyncSaveThread {
@@ -670,7 +680,7 @@ uint ReadBuffer::ReadSimpleGamma()
 	uint8_t first_byte = *this->bufp++;
 	uint extra_bytes = std::countl_one<uint8_t>(first_byte);
 	if (extra_bytes == 0) return first_byte;
-	if (extra_bytes > 4) SlErrorCorrupt("Unsupported gamma");
+	if (extra_bytes > 4) SlErrorCorruptWithChunk("Unsupported gamma");
 
 	uint result = first_byte & (0x7F >> extra_bytes);
 
@@ -828,7 +838,7 @@ int SlIterateArray()
 	 * we must have read in all the data, so we must be at end of current block. */
 	if (_next_offs != 0 && _sl.reader->GetSize() != _next_offs) {
 		Debug(sl, 1, "Invalid chunk size: {} != {}", _sl.reader->GetSize(), _next_offs);
-		SlErrorCorruptFmt("Invalid chunk size iterating array - expected to be at position {}, actually at {}", _next_offs, _sl.reader->GetSize());
+		SlErrorCorruptFmt("Invalid chunk size iterating array - expected to be at position {}, actually at {}, ({})", _next_offs, _sl.reader->GetSize(), ChunkIDDumper()(_sl.current_chunk_id));
 	}
 
 	for (;;) {
@@ -1333,7 +1343,7 @@ void SlArray(void *array, size_t length, VarType conv)
 						/* If the SLE_ARR changes size, a savegame bump is required
 						 * and the developer should have written conversion lines.
 						 * Error out to make this more visible. */
-						SlErrorCorrupt("Fixed-length array is of wrong length");
+						SlErrorCorruptWithChunk("Fixed-length array is of wrong length");
 					}
 				}
 				break;
@@ -1449,54 +1459,54 @@ void *IntToReference(size_t index, SLRefType rt)
 	switch (rt) {
 		case REF_ORDERLIST:
 			if (OrderList::IsValidID(index)) return OrderList::Get(index);
-			SlErrorCorrupt("Referencing invalid OrderList");
+			SlErrorCorruptWithChunk("Referencing invalid OrderList");
 
 		case REF_ORDER:
 			if (OrderPoolItem::IsValidID(index)) return OrderPoolItem::Get(index);
 			/* in old versions, invalid order was used to mark end of order list */
 			if (IsSavegameVersionBefore(SLV_5, 2)) return nullptr;
-			SlErrorCorrupt("Referencing invalid Order");
+			SlErrorCorruptWithChunk("Referencing invalid Order");
 
 		case REF_VEHICLE_OLD:
 		case REF_VEHICLE:
 			if (Vehicle::IsValidID(index)) return Vehicle::Get(index);
-			SlErrorCorrupt("Referencing invalid Vehicle");
+			SlErrorCorruptWithChunk("Referencing invalid Vehicle");
 
 		case REF_TEMPLATE_VEHICLE:
 			if (TemplateVehicle::IsValidID(index)) return TemplateVehicle::Get(index);
-			SlErrorCorrupt("Referencing invalid TemplateVehicle");
+			SlErrorCorruptWithChunk("Referencing invalid TemplateVehicle");
 
 		case REF_STATION:
 			if (Station::IsValidID(index)) return Station::Get(index);
-			SlErrorCorrupt("Referencing invalid Station");
+			SlErrorCorruptWithChunk("Referencing invalid Station");
 
 		case REF_TOWN:
 			if (Town::IsValidID(index)) return Town::Get(index);
-			SlErrorCorrupt("Referencing invalid Town");
+			SlErrorCorruptWithChunk("Referencing invalid Town");
 
 		case REF_ROADSTOPS:
 			if (RoadStop::IsValidID(index)) return RoadStop::Get(index);
-			SlErrorCorrupt("Referencing invalid RoadStop");
+			SlErrorCorruptWithChunk("Referencing invalid RoadStop");
 
 		case REF_ENGINE_RENEWS:
 			if (EngineRenew::IsValidID(index)) return EngineRenew::Get(index);
-			SlErrorCorrupt("Referencing invalid EngineRenew");
+			SlErrorCorruptWithChunk("Referencing invalid EngineRenew");
 
 		case REF_CARGO_PACKET:
 			if (CargoPacket::IsValidID(index)) return CargoPacket::Get(index);
-			SlErrorCorrupt("Referencing invalid CargoPacket");
+			SlErrorCorruptWithChunk("Referencing invalid CargoPacket");
 
 		case REF_STORAGE:
 			if (PersistentStorage::IsValidID(index)) return PersistentStorage::Get(index);
-			SlErrorCorrupt("Referencing invalid PersistentStorage");
+			SlErrorCorruptWithChunk("Referencing invalid PersistentStorage");
 
 		case REF_LINK_GRAPH:
 			if (LinkGraph::IsValidID(index)) return LinkGraph::Get(index);
-			SlErrorCorrupt("Referencing invalid LinkGraph");
+			SlErrorCorruptWithChunk("Referencing invalid LinkGraph");
 
 		case REF_LINK_GRAPH_JOB:
 			if (LinkGraphJob::IsValidID(index)) return LinkGraphJob::Get(index);
-			SlErrorCorrupt("Referencing invalid LinkGraphJob");
+			SlErrorCorruptWithChunk("Referencing invalid LinkGraphJob");
 
 		default: NOT_REACHED();
 	}
@@ -2316,7 +2326,7 @@ SaveLoadTableData SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecia
 				if (type == SLE_FILE_END) break;
 
 				if ((type & SLE_FILE_TYPE_MASK) >= SLE_FILE_TABLE_END || (type & SLE_FILE_TYPE_MASK) == SLE_FILE_END) {
-					SlErrorCorruptFmt("Invalid table field type: 0x{:X}", type);
+					SlErrorCorruptFmt("Invalid table field type: 0x{:X} ({})", type, ChunkIDDumper()(_sl.current_chunk_id));
 				}
 
 				std::string key;
@@ -2363,7 +2373,7 @@ SaveLoadTableData SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecia
 				uint8_t correct_type = GetSavegameTableFileType(*sld_it->save_load);
 				if (correct_type != type) {
 					Debug(sl, 1, "Field type for '{}' was expected to be 0x{:02X} but 0x{:02X} was found", key, correct_type, type);
-					SlErrorCorrupt("Field type is different than expected");
+					SlErrorCorruptWithChunk("Field type is different than expected");
 				}
 				saveloads.push_back(*sld_it->save_load);
 
@@ -2501,7 +2511,7 @@ void SlSetStructListLength(size_t length)
 size_t SlGetStructListLength(size_t limit)
 {
 	size_t length = SlReadArrayLength();
-	if (length > limit) SlErrorCorrupt("List exceeds storage size");
+	if (length > limit) SlErrorCorruptWithChunk("List exceeds storage size");
 
 	return length;
 }
@@ -2607,7 +2617,7 @@ void SlLoadFromBufferRestore(const SlLoadFromBufferState &state, const uint8_t *
 {
 	ReadBuffer *reader = ReadBuffer::GetCurrent();
 	if (reader->bufp != reader->bufe || reader->bufe != buffer + length) {
-		SlErrorCorrupt("SlLoadFromBuffer: Wrong number of bytes read");
+		SlErrorCorruptWithChunk("SlLoadFromBuffer: Wrong number of bytes read");
 	}
 
 	_sl.obj_len = state.old_obj_len;
@@ -2803,7 +2813,7 @@ static void SlLoadCheckChunk(const ChunkHandler *ch, uint32_t chunk_id)
 				SlRIFFSpringPPCheck(len);
 				if (SlXvIsFeaturePresent(XSLFI_RIFF_HEADER_60_BIT)) {
 					if (len != 0) {
-						SlErrorCorrupt("RIFF chunk too large");
+						SlErrorCorruptWithChunk("RIFF chunk too large");
 					}
 					len = SlReadUint32();
 					if (ext_flags & SLCEHF_BIG_RIFF) SlErrorCorruptFmt("XSLFI_RIFF_HEADER_60_BIT and SLCEHF_BIG_RIFF both present in {}", ChunkIDDumper()(chunk_id));
