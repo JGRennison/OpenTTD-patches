@@ -2783,6 +2783,7 @@ void TraceRestrictSlot::ValidateSlotOccupants(std::function<void(std::string_vie
 		buffer.format(fmtstr, std::forward<T>(args)...);
 		debug_print(DebugLevelID::desync, 0, buffer);
 		if (log) log(buffer);
+		buffer.clear();
 	};
 
 	for (const TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
