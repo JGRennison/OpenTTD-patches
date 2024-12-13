@@ -39,10 +39,10 @@ static void Save_TRRM()
 {
 	SaveLoadTableData slt = SlTableHeader(_trace_restrict_mapping_desc);
 
-	for (TraceRestrictMapping::iterator iter = _tracerestrictprogram_mapping.begin();
-			iter != _tracerestrictprogram_mapping.end(); ++iter) {
-		SlSetArrayIndex(iter->first);
-		SlObjectSaveFiltered(&(iter->second), slt);
+	for (auto &it : _tracerestrictprogram_mapping) {
+		SlSetArrayIndex(it.first);
+		TraceRestrictMappingItem &item = it.second;
+		SlObjectSaveFiltered(&item, slt);
 	}
 }
 
@@ -197,9 +197,8 @@ static void Save_TRRC()
  */
 void AfterLoadTraceRestrict()
 {
-	for (TraceRestrictMapping::iterator iter = _tracerestrictprogram_mapping.begin();
-			iter != _tracerestrictprogram_mapping.end(); ++iter) {
-		_tracerestrictprogram_pool.Get(iter->second.program_id)->IncrementRefCount(iter->first);
+	for (const auto &it : _tracerestrictprogram_mapping) {
+		_tracerestrictprogram_pool.Get(it.second.program_id)->IncrementRefCount(it.first);
 	}
 }
 
