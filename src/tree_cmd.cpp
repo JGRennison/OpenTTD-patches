@@ -433,12 +433,9 @@ void RemoveAllTrees()
 {
 	if (_game_mode != GM_EDITOR) return;
 
-	for(uint i = 0; i < MapSizeX(); i++) {
-		for(uint j = 0; j < MapSizeY(); j++) {
-			TileIndex tile = TileXY(i, j);
-			if(GetTileType(tile) == MP_TREES) {
-				DoCommandP(tile, 0, 0, CMD_LANDSCAPE_CLEAR | CMD_MSG(STR_ERROR_CAN_T_CLEAR_THIS_AREA), CcPlaySound_EXPLOSION);
-			}
+	for (TileIndex tile = 0; tile < MapSize(); tile++) {
+		if (GetTileType(tile) == MP_TREES) {
+			DoCommandP(tile, 0, 0, CMD_LANDSCAPE_CLEAR | CMD_MSG(STR_ERROR_CAN_T_CLEAR_THIS_AREA), CcPlaySound_EXPLOSION);
 		}
 	}
 }
