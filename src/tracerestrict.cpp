@@ -2771,7 +2771,7 @@ bool TraceRestrictSlot::ValidateVehicleIndex()
 {
 	btree::btree_multimap<VehicleID, TraceRestrictSlotID> saved_slot_vehicle_index = std::move(_slot_vehicle_index);
 	RebuildVehicleIndex();
-	bool ok = multimaps_equalivalent(saved_slot_vehicle_index, _slot_vehicle_index);
+	bool ok = multimaps_equivalent(saved_slot_vehicle_index, _slot_vehicle_index);
 	_slot_vehicle_index = std::move(saved_slot_vehicle_index);
 	return ok;
 }

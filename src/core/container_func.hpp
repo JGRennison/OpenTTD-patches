@@ -119,7 +119,7 @@ uint container_unordered_remove_once(C &container, const V &value)
 }
 
 template <typename T>
-bool multimaps_equalivalent(const T &a, const T&b)
+bool multimaps_equivalent(const T &a, const T&b)
 {
 	if (a.size() != b.size()) return false;
 
