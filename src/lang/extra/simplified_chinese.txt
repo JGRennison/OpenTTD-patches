@@ -60,6 +60,7 @@ STR_SORT_BY_MAX_SPEED_LOADED                                    :满载最高速
 STR_SORT_BY_VEHICLES_CALLING                                    :车次调度总数
 STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST                      :货物容量/运行费用
 STR_SORT_BY_VEHICLE_COUNT                                       :总车厢数
+STR_SORT_BY_TIMETABLE_TYPE                                      :时刻表类型
 
 STR_SETTINGS_MENU_ZONING                                        :分区
 
@@ -72,6 +73,8 @@ STR_VEHICLE_TYPE_TRAINS                                         :列车
 STR_VEHICLE_TYPE_ROAD_VEHICLES                                  :汽车
 STR_VEHICLE_TYPE_SHIPS                                          :船舶
 STR_VEHICLE_TYPE_AIRCRAFT                                       :飞机
+
+STR_GRAPH_X_LABEL_LAST_UNITS                                    :{TINY_FONT}{BLACK}最近 {STRING}
 
 STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED                     :{TINY_FONT}{BLACK}平均运输时间（{STRING}）
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE_AVG_SPEED                   :{TINY_FONT}{BLACK}将 1 单位（或 1,000 升）货物运输 200 格的收入
@@ -88,8 +91,8 @@ STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE                         :{TINY_FONT}{BLA
 STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE_TOOLTIP               :{BLACK}显示每间公司的总运输量
 STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE_TOOLTIP                 :{BLACK}显示每种货物的总运输量
 
-STR_GRAPH_LAST_24_PRODUCTION_INTERVALS_TIME_LABEL               :{TINY_FONT}{BLACK}过去 24 个生产周期
-STR_GRAPH_LAST_72_PRODUCTION_INTERVALS_TIME_LABEL               :{TINY_FONT}{BLACK}过去 72 个生产周期
+STR_GRAPH_LAST_24_PRODUCTION_INTERVALS_TIME_LABEL               :{TINY_FONT}{BLACK}最近 24 个生产周期
+STR_GRAPH_LAST_72_PRODUCTION_INTERVALS_TIME_LABEL               :{TINY_FONT}{BLACK}最近 72 个生产周期
 
 STR_SMALLMAP_SCREENSHOT                                         :{BLACK}截图
 
@@ -132,7 +135,7 @@ STR_CONFIG_SETTING_CATCHMENT_INCREASE                           :增加车站覆
 STR_CONFIG_SETTING_CATCHMENT_INCREASE_HELPTEXT                  :增加此格数的车站覆盖半径
 
 STR_CONFIG_SETTING_STATION_RATING_CARGO_CLASS_WAIT_TIME         :货物类别影响车站评价及时间宽容度：{STRING}
-STR_CONFIG_SETTING_STATION_RATING_CARGO_CLASS_WAIT_TIME_HELPTEXT:启用时货物的类别将影响车站评价{}乘客、邮件、贵重品、食物和货物将要求更短的等待时长，散装和液体货物更为宽容
+STR_CONFIG_SETTING_STATION_RATING_CARGO_CLASS_WAIT_TIME_HELPTEXT:启用时货物的类别将影响车站评价{}乘客、邮件、贵重品、食物和货物将要求更短的等待时间，散装和液体货物更为宽容
 
 STR_CONFIG_SETTING_STATION_RATING_SIZE_CARGO_AMOUNT             :车站大小影响车站容量及时间宽容度：{STRING}
 STR_CONFIG_SETTING_STATION_RATING_SIZE_CARGO_AMOUNT_HELPTEXT    :启用时则车站大小将影响车站评价{}更大的车站可以储存更多的货物并有更大的时间宽容度
@@ -171,18 +174,18 @@ STR_CONFIG_SETTING_BACK_ONE_WAY_PBS_SAFE_WAITING_HELPTEXT       :启用之后允
 STR_CONFIG_SETTING_INFLATION_FIXED_DATES                        :在 1920 年与 2090 年期间应用通货膨胀：{STRING}
 STR_CONFIG_SETTING_INFLATION_FIXED_DATES_HELPTEXT               :当启用时，不管游戏是在哪年进行的，通胀将在 1920 到 2090 年间始终持续，这是 OpenTTD 1.11 以来所使用的通胀模型{}如果禁用，通胀将会在游戏开始后 170 年里不断持续，这是一直使用到 OpenTTD 1.10 的模型
 
-STR_CONFIG_SETTING_IMPROVED_BREAKDOWNS                          :启用高级载具故障：{STRING}
+STR_CONFIG_SETTING_IMPROVED_BREAKDOWNS                          :高级载具故障：{STRING}
 
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE                     :船舶之间避免冲突：{STRING}
 STR_CONFIG_SETTING_SHIP_COLLISION_AVOIDANCE_HELPTEXT            :启用时船舶将尝试避免互相穿过。本项在禁止船舶 90 度转向时效果最好
 
-STR_CONFIG_SETTING_CHUNNEL                                      :允许建设水下隧道：{STRING}
-STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :启用后可以在海平面下建设隧道。建设时隧道两端必须有宽度在 {NUM} 与 {NUM} 格之间的间隙
+STR_CONFIG_SETTING_CHUNNEL                                      :建设水下隧道：{STRING}
+STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :启用后可以在海平面下建设隧道。建设时隧道两端必须有宽度在 {NUM} 与 {NUM} 格之间的空间
 
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :不同公司列车不会互相碰撞：{STRING}
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :这是为了防止熊孩子故意在多人游戏中撞毁他人的列车
 
-STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING               :允许铰链式道路车辆超车：{STRING}
+STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING               :铰链式道路车辆超车：{STRING}
 STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING_HELPTEXT      :允许铰链式道路车辆超车
 
 STR_CONFIG_SETTING_ROADVEH_CANT_QUANTUM_TUNNEL                  :阻止道路车辆在堵车时穿越其他车辆：{STRING}
@@ -488,10 +491,10 @@ STR_CONFIG_SETTING_ENABLE_BUILD_RIVER_HELPTEXT                  :允许在场景
 STR_CONFIG_SETTING_ENABLE_REMOVE_WATER                          :允许移除海洋和河流：{STRING}
 STR_CONFIG_SETTING_ENABLE_REMOVE_WATER_HELPTEXT                 :允许在场景编辑器外移除海洋和河流
 
-STR_CONFIG_SETTING_SHARING_RAIL                                 :铁路设施共享：{STRING}
-STR_CONFIG_SETTING_SHARING_ROAD                                 :道路设施共享：{STRING}
-STR_CONFIG_SETTING_SHARING_WATER                                :水运设施共享：{STRING}
-STR_CONFIG_SETTING_SHARING_AIR                                  :航空设施共享：{STRING}
+STR_CONFIG_SETTING_SHARING_RAIL                                 :共享铁路设施：{STRING}
+STR_CONFIG_SETTING_SHARING_ROAD                                 :共享道路设施：{STRING}
+STR_CONFIG_SETTING_SHARING_WATER                                :共享水运设施：{STRING}
+STR_CONFIG_SETTING_SHARING_AIR                                  :共享航空设施：{STRING}
 STR_CONFIG_SETTING_SHARING_FEE_RAIL                             :列车通行费：{STRING}/千吨每日
 STR_CONFIG_SETTING_SHARING_FEE_ROAD                             :车辆停放费：{STRING}/日
 STR_CONFIG_SETTING_SHARING_FEE_WATER                            :船舶停泊费：{STRING}/日
@@ -679,9 +682,9 @@ STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES_HELPTEXT     :允许在桥下
 STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES             :允许在桥下建设 NewGRF 火车站与路点：{STRING}
 STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES_HELPTEXT    :启用后将忽略 NewGRF 火车站与路点的高度限制{}这可能导致图像错误
 
-STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES            :允许在桥下建设汽车站：{STRING}
-STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT   :允许把道路/有轨电车站建在桥下{}载具通过桥梁而不停站需要桥梁的高度至少为一格，要让载具停靠在此类站点则要求桥梁的高度至少为两格
-STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT_EXTRA :{STRING}{}{}NewGRF 道路/电车站可以覆盖这一设置，并允许或不允许在桥下建设车站，并设置自定义的高度间隙要求
+STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES            :允许在桥下建设道路车站：{STRING}
+STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT   :允许在桥梁下建设道路或有轨电车车站。{}载具通过桥梁而不停站需要桥梁的高度至少为一格，要让载具停靠在此类站点则要求桥梁的高度至少为两格
+STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT_EXTRA :{STRING}{}{}NewGRF 道路/电车站可以覆盖这一设置，并允许或不允许在桥下建设车站，并设置自定义的高度空间要求
 
 STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES                    :允许在桥下建设船坞：{STRING}
 STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES_HELPTEXT           :允许把船坞建在桥下，船坞需要两格高度的净空{}这可能导致图像错误
@@ -1300,6 +1303,7 @@ STR_STATION_VIEW_HISTORY_BUTTON                                 :{BLACK}货物�
 STR_STATION_VIEW_HISTORY_TOOLTIP                                :{BLACK}显示货物等待记录
 
 STR_DEPARTURES_CAPTION                                          :{WHITE}{STRING} - 实时运输信息
+STR_DEPARTURES_CAPTION_FILTER                                   :{WHITE}{STRING} - 停靠于 {STRING}
 STR_DEPARTURES_CARGO_MODE_TOOLTIP                               :{BLACK}设置载具到达与出发显示货物类型过滤规则
 STR_DEPARTURES_DEPARTURES                                       :出发
 STR_DEPARTURES_ARRIVALS                                         :到达
@@ -1312,6 +1316,8 @@ STR_DEPARTURES_EMPTY_BUTTON                                     :{BLACK}空转
 STR_DEPARTURES_EMPTY_TOOLTIP                                    :{BLACK}包括出发、到达时间与非营业站点，即载具经过或停留但不装载客货的站点。
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}经
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}显示表定通过载具
+STR_DEPARTURES_FILTER_BUTTON                                    :{BLACK}过滤
+STR_DEPARTURES_FILTER_TOOLTIP                                   :{BLACK}仅显示在特定站点停靠的班次
 STR_DEPARTURES_SHOW_TRAINS_TOOLTIP                              :{BLACK}仅显示列车
 STR_DEPARTURES_SHOW_ROAD_VEHICLES_TOOLTIP                       :{BLACK}仅显示汽车
 STR_DEPARTURES_SHOW_SHIPS_TOOLTIP                               :{BLACK}仅显示船舶
@@ -1342,6 +1348,9 @@ STR_DEPARTURES_VIA_AND                                          :{STRING} 与 {S
 STR_DEPARTURES_SOURCE_MODE_TOOLTIP                              :{BLACK}选择显示实时到发顺序或 24 小时到发顺序（即读取在计划调度中设置的时刻表）
 STR_DEPARTURES_SOURCE_MODE_LIVE                                 :实时
 STR_DEPARTURES_SOURCE_MODE_SCHEDULE_24_HOUR                     :24 小时
+
+STR_DEPARTURES_DUPLICATE                                        :{BLACK}复制
+STR_DEPARTURES_DUPLICATE_TOOLTIP                                :{BLACK}复制此窗口
 
 STR_DEPARTURES_TYPE_TRAIN                                       :{ORANGE}{TRAIN}
 STR_DEPARTURES_TYPE_TRAIN_SILVER                                :{SILVER}{TRAIN}
@@ -1449,6 +1458,9 @@ STR_VEHICLE_LIST_TIMETABLE_DELAY_LATE                           :{STRING}，时�
 STR_VEHICLE_LIST_TIMETABLE_DELAY_EARLY                          :{STRING}，时刻表状态：早点 {STRING}
 STR_VEHICLE_LIST_TIMETABLE_DELAY_ON_TIME                        :{STRING}，时刻表状态：准时
 STR_VEHICLE_LIST_ORDER_OCCUPANCY_AVERAGE                        :{STRING}，平均负载率：{COMMA}%
+STR_VEHICLE_LIST_TIMETABLE_TYPE                                 :{STRING}，时刻表类型：{STRING}
+
+STR_VEHICLE_LIST_TIMETABLE_TYPE_EXTRA_ITEM                      :，{STRING}
 
 STR_VEHICLE_LIST_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING}（寿命：{CURRENCY_LONG}）
 STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE                           :取消维修/送往
@@ -1964,6 +1976,7 @@ STR_STATION_RATING_MAX_PERCENTAGE                               :，最大{NBSP}
 STR_STATION_RATING_MAX_PERCENTAGE_COMMA                         :，最大{NBSP}{PLUS_NUM}%
 STR_STATION_RATING_PERCENTAGE_COMMA                             :{NBSP}[{PLUS_NUM}%]
 
+STR_STATION_RATING_TOOLTIP_AT_LEAST_VELOCITY                    :至少 {VELOCITY}
 STR_STATION_RATING_TOOLTIP_SPEED                                :上一载具最高速度{0:STRING}：{1:COLOUR}{2:STRING}{3:STRING}（{4:STRING}）
 
 STR_STATION_RATING_TOOLTIP_AGE                                  :上一载具使用时长{0:STRING}：{1:COLOUR}{2:NUM} 年{3:STRING}
