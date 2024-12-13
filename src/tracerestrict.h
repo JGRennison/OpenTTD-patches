@@ -681,7 +681,7 @@ public:
 	/** Call validation function on current program instruction list and set actions_used_flags */
 	CommandCost Validate()
 	{
-		return TraceRestrictProgram::Validate(items, actions_used_flags);
+		return TraceRestrictProgram::Validate(this->items, this->actions_used_flags);
 	}
 };
 
@@ -1213,11 +1213,7 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 	static void ValidateSlotOccupants(std::function<void(std::string_view)> log);
 	static void PreCleanPool();
 
-	TraceRestrictSlot(CompanyID owner = INVALID_COMPANY, VehicleType type = VEH_TRAIN)
-	{
-		this->owner = owner;
-		this->vehicle_type = type;
-	}
+	TraceRestrictSlot(CompanyID owner = INVALID_COMPANY, VehicleType type = VEH_TRAIN) : owner(owner), vehicle_type(type) {}
 
 	~TraceRestrictSlot()
 	{
@@ -1226,8 +1222,8 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 
 	/** Test whether vehicle ID is already an occupant */
 	bool IsOccupant(VehicleID id) const {
-		for (size_t i = 0; i < occupants.size(); i++) {
-			if (occupants[i] == id) return true;
+		for (size_t i = 0; i < this->occupants.size(); i++) {
+			if (this->occupants[i] == id) return true;
 		}
 		return false;
 	}
@@ -1254,10 +1250,7 @@ struct TraceRestrictCounter : TraceRestrictCounterPool::PoolItem<&_tracerestrict
 	std::string name;
 	std::vector<SignalReference> progsig_dependants;
 
-	TraceRestrictCounter(CompanyID owner = INVALID_COMPANY)
-	{
-		this->owner = owner;
-	}
+	TraceRestrictCounter(CompanyID owner = INVALID_COMPANY) : owner(owner) {}
 
 	void UpdateValue(int32_t new_value);
 

@@ -1964,12 +1964,14 @@ static uint32_t GetDualInstructionInitialValue(TraceRestrictItem item)
 	}
 }
 
-template <typename T> T InstructionIteratorNext(T iter)
+template <typename T>
+T InstructionIteratorNext(T iter)
 {
 	return IsTraceRestrictDoubleItem(*iter) ? iter + 2 : iter + 1;
 }
 
-template <typename T> void InstructionIteratorAdvance(T &iter)
+template <typename T>
+void InstructionIteratorAdvance(T &iter)
 {
 	iter = InstructionIteratorNext(iter);
 }
