@@ -30,7 +30,7 @@ struct DesyncExtraInfo {
 	const char *client_name = nullptr;
 	int client_id = -1;
 	std::string desync_frame_info;
-	std::optional<FileHandle> *log_file; ///< save unclosed log file handle here
+	std::optional<FileHandle> *log_file = nullptr; ///< save unclosed log file handle here
 	DesyncDeferredSaveInfo *defer_savegame_write = nullptr;
 };
 DECLARE_ENUM_AS_BIT_SET(DesyncExtraInfo::Flags)
