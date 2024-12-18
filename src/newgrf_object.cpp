@@ -642,5 +642,11 @@ void TriggerObjectAnimation(Object *o, ObjectAnimationTrigger trigger, const Obj
 
 void DumpObjectSpriteGroup(const ObjectSpec *spec, SpriteGroupDumper &dumper)
 {
-	dumper.DumpSpriteGroup(spec->grf_prop.spritegroup[0], 0);
+	dumper.DumpSpriteGroup(spec->grf_prop.spritegroup[OBJECT_SPRITE_GROUP_DEFAULT], 0);
+
+	if (spec->grf_prop.spritegroup[OBJECT_SPRITE_GROUP_PURCHASE] != nullptr && spec->grf_prop.spritegroup[OBJECT_SPRITE_GROUP_PURCHASE] != spec->grf_prop.spritegroup[OBJECT_SPRITE_GROUP_DEFAULT]) {
+		dumper.Print("");
+		dumper.Print("PURCHASE:");
+		dumper.DumpSpriteGroup(spec->grf_prop.spritegroup[OBJECT_SPRITE_GROUP_PURCHASE], 0);
+	}
 }
