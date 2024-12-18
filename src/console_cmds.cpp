@@ -3274,6 +3274,11 @@ DEF_CONSOLE_CMD(ConDumpCargoTypes)
 	IConsolePrint(CC_DEFAULT, "    r = refrigerated");
 	IConsolePrint(CC_DEFAULT, "    h = hazardous");
 	IConsolePrint(CC_DEFAULT, "    c = covered/sheltered");
+	IConsolePrint(CC_DEFAULT, "    o = oversized");
+	IConsolePrint(CC_DEFAULT, "    d = powderized");
+	IConsolePrint(CC_DEFAULT, "    n = not pourable");
+	IConsolePrint(CC_DEFAULT, "    e = potable");
+	IConsolePrint(CC_DEFAULT, "    i = non-potable");
 	IConsolePrint(CC_DEFAULT, "    S = special");
 	IConsolePrint(CC_DEFAULT, "  Town acceptance effect:");
 	IConsolePrint(CC_DEFAULT, "    P = passenger");
@@ -3301,7 +3306,7 @@ DEF_CONSOLE_CMD(ConDumpCargoTypes)
 			grfid = grf->grfid;
 			grfs.insert(std::pair<uint32_t, const GRFFile *>(grfid, grf));
 		}
-		IConsolePrint(CC_DEFAULT, "  {:2} Bit: {:2}, Label: {}, Callback mask: 0x{:02X}, Cargo class: {}{}{}{}{}{}{}{}{}{}{}, Town: {}, GRF: {:08X}, {}",
+		IConsolePrint(CC_DEFAULT, "  {:2} Bit: {:2}, Label: {}, Callback mask: 0x{:02X}, Cargo class: {}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}, Town: {}, GRF: {:08X}, {}",
 				(uint) i,
 				spec->bitnum,
 				NewGRFLabelDumper().Label(spec->label.base()),
@@ -3316,6 +3321,11 @@ DEF_CONSOLE_CMD(ConDumpCargoTypes)
 				(spec->classes & CC_REFRIGERATED) != 0 ? 'r' : '-',
 				(spec->classes & CC_HAZARDOUS)    != 0 ? 'h' : '-',
 				(spec->classes & CC_COVERED)      != 0 ? 'c' : '-',
+				(spec->classes & CC_OVERSIZED)    != 0 ? 'o' : '-',
+				(spec->classes & CC_POWDERIZED)   != 0 ? 'd' : '-',
+				(spec->classes & CC_NOT_POURABLE) != 0 ? 'n' : '-',
+				(spec->classes & CC_POTABLE)      != 0 ? 'e' : '-',
+				(spec->classes & CC_NON_POTABLE)  != 0 ? 'i' : '-',
 				(spec->classes & CC_SPECIAL)      != 0 ? 'S' : '-',
 				tae_char[spec->town_acceptance_effect - TAE_BEGIN],
 				BSWAP32(grfid),
