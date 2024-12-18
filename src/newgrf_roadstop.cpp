@@ -692,14 +692,14 @@ void StationUpdateRoadStopCachedTriggers(BaseStation *st)
 
 void DumpRoadStopSpriteGroup(const BaseStation *st, const RoadStopSpec *spec, SpriteGroupDumper &dumper)
 {
-	bool writen_group = false;
+	bool written_group = false;
 
 	for (uint i = 0; i < NUM_CARGO + 3; i++) {
 		if (spec->grf_prop.spritegroup[i] != nullptr) {
-			if (writen_group) {
+			if (written_group) {
 				dumper.Print("");
 			} else {
-				writen_group = true;
+				written_group = true;
 			}
 			switch (i) {
 				case SpriteGroupCargo::SG_DEFAULT:
