@@ -590,6 +590,9 @@ STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT                  :Enabling this s
 STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH                    :Towns are allowed to grow by default: {STRING2}
 STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH_HELPTEXT           :This settings controls the default state for the per-town growth override
 
+STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_BRANCH_NON_BUILD            :Towns are allowed to branch from road types with houses that they can't build: {STRING2}
+STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_BRANCH_NON_BUILD_HELPTEXT   :This enables towns to create junctions on road types which allow houses but which cannot be built by towns.{}This is useful to reduce snaking of houses along roads built by players and to prevent player-built roads from stunting town growth.
+
 ##default-translation STR_CONFIG_SETTING_TOWN_TUNNELS_ALLOWED
 STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH_ALLOWED            :Allowed
 

@@ -2643,6 +2643,7 @@ static SettingsContainer &GetSettingsTree()
 				towns->Add(new SettingEntry("economy.default_allow_town_growth"));
 				towns->Add(new SettingEntry("economy.town_zone_calc_mode"));
 				towns->Add(new SettingEntry("economy.allow_town_roads"));
+				towns->Add(new SettingEntry("economy.allow_town_road_branch_non_build"));
 				towns->Add(new SettingEntry("economy.allow_town_level_crossings"));
 				towns->Add(new SettingEntry("economy.allow_town_bridges"));
 				towns->Add(new SettingEntry("economy.town_build_tunnels"));

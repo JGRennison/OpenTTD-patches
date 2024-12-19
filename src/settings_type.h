@@ -760,6 +760,7 @@ struct EconomySettings {
 	TownLayout town_layout;                  ///< select town layout, @see TownLayout
 	TownCargoGenMode town_cargogen_mode;     ///< algorithm for generating cargo from houses, @see TownCargoGenMode
 	bool     allow_town_roads;               ///< towns are allowed to build roads (always allowed when generating world / in SE)
+	bool     allow_town_road_branch_non_build; ///< towns are allowed to branch from road types which they cannot build, but which allow houses
 	uint16_t town_min_distance;              ///< minimum distance between towns
 	uint8_t  max_town_heightlevel;           ///< maximum height level for towns
 	uint16_t min_town_land_area;             ///< minimum contiguous lang area for towns.

@@ -1144,7 +1144,7 @@ static bool IsRoadAllowedHere(Town *t, TileIndex tile, DiagDirection dir)
 		 * If that fails clear the land, and if that fails exit.
 		 * This is to make sure that we can build a road here later. */
 		RoadType rt = GetTownRoadType();
-		if (DoCommand(tile, ((dir == DIAGDIR_NW || dir == DIAGDIR_SE) ? ROAD_Y : ROAD_X) | (rt << 4), 0, DC_AUTO | DC_NO_WATER, CMD_BUILD_ROAD).Failed() &&
+		if (DoCommand(tile, ((dir == DIAGDIR_NW || dir == DIAGDIR_SE) ? ROAD_Y : ROAD_X) | (rt << 4), 0, DC_AUTO | DC_NO_WATER | DC_TOWN, CMD_BUILD_ROAD).Failed() &&
 				DoCommand(tile, 0, 0, DC_AUTO | DC_NO_WATER | DC_TOWN, CMD_LANDSCAPE_CLEAR).Failed()) {
 			return false;
 		}
@@ -1601,9 +1601,12 @@ static bool TownCanGrowRoad(TileIndex tile)
 {
 	if (!IsTileType(tile, MP_ROAD)) return true;
 
-	/* Allow extending on roadtypes which can be built by town, or if the road type matches the type the town will build. */
+	/* Allow extending on roadtypes which can be built by town, or if the road type matches the type the town will build.
+	 * If allow_town_road_branch_non_build is enabled and the road type allows houses, then allow extending. */
 	RoadType rt = GetRoadTypeRoad(tile);
-	return HasBit(GetRoadTypeInfo(rt)->flags, ROTF_TOWN_BUILD) || GetTownRoadType() == rt;
+	if (HasBit(GetRoadTypeInfo(rt)->flags, ROTF_TOWN_BUILD)) return true;
+	if (_settings_game.economy.allow_town_road_branch_non_build && !HasBit(GetRoadTypeInfo(rt)->flags, ROTF_NO_HOUSES)) return true;
+	return GetTownRoadType() == rt;
 }
 
 /**
