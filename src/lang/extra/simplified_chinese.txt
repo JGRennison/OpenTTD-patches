@@ -27,7 +27,7 @@ STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :计数器值
 STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :当前时间/日期
 STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :时刻表状态
 STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :调度槽位
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :等待中货物 / 容量
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :等待中货物/容量
 
 STR_ORDER_STOP_LOCATION_THROUGH                                 :[通过式装载]
 
@@ -281,8 +281,8 @@ STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_8X                   :8 倍缩放及�
 STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_16X                  :16 倍缩放及以上
 STR_CONFIG_SETTING_DISABLE_WATER_ANIMATION_32X                  :32 倍缩放及以上
 
-STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT              :默认显示调度占用情况：{STRING}
-STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT_HELPTEXT     :打开载具的调度计划窗口时默认显示每个调度的占用率
+STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT              :默认显示命令占用情况：{STRING}
+STR_CONFIG_SETTING_SHOW_ORDER_OCCUPANCY_BY_DEFAULT_HELPTEXT     :打开载具的调度计划窗口时默认显示每条命令的占用率
 
 STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME                    :在名称中显示分组层级：{STRING}
 STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME_HELPTEXT           :启用后，组别名称将包括所有父组名
@@ -290,8 +290,8 @@ STR_CONFIG_SETTING_SHOW_GROUP_HIERARCHY_NAME_HELPTEXT           :启用后，组
 STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME            :在载具名称中显示分组层级：{STRING}
 STR_CONFIG_SETTING_SHOW_VEHICLE_GROUP_HIERARCHY_NAME_HELPTEXT   :启用后，载具名称将包括所有父组名
 
-STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW            :在载具窗口中显示当前调度顺序：{STRING}
-STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW_HELPTEXT   :启用后将在载具状态栏中显示载具当前调度的顺序
+STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW            :在载具窗口中显示当前命令顺序：{STRING}
+STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW_HELPTEXT   :启用后将在载具状态栏中显示载具当前命令在调度计划中的顺序
 
 STR_CONFIG_SETTING_SHOW_SPEED_FIRST_IN_VEHICLE_VIEW             :在车辆视图窗口中先显示速度：{STRING}
 STR_CONFIG_SETTING_SHOW_SPEED_FIRST_IN_VEHICLE_VIEW_HELPTEXT    :启用后，在车辆视图窗口的启动/停止栏中先显示车辆速度，然后显示目的地。
@@ -362,17 +362,17 @@ STR_CONFIG_SETTING_ROCKS_AMOUNT_HELPTEXT                        :决定石滩的
 STR_CONFIG_SETTING_HEIGHT_ROCKS                                 :石滩的大小随着高度增加而增加：{STRING}
 STR_CONFIG_SETTING_HEIGHT_ROCKS_HELPTEXT                        :决定石滩的尺寸随高度的增加而增加的系数{}这项系数与之前设置的石滩大小值相互累积，而本项将在石滩大小值设定较小时展现出最佳的效果
 
-STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY                           :只允许“不停止”调度：{STRING}
-STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY_HELPTEXT                  :只允许列车和汽车使用“不停止”的调度。
+STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY                           :只允许“不停止”命令：{STRING}
+STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY_HELPTEXT                  :只允许列车和汽车使用“不停止”的命令。
 
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE                      :在地图上显示选中载具的虚拟路径：{STRING}
-STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_HELPTEXT             :当开启并有载具窗口被聚焦的时候，在载具调度站点和/或调度位置之间显示标记{}选择“仅车站”只显示载具在车站停车的调度（即不包括通过调度、路点和车库）
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_HELPTEXT             :当开启并有载具窗口被聚焦的时候，在载具命令站点和/或命令位置之间显示标记{}选择“仅车站”只显示载具在车站停车的命令（即不包括通过命令、路点和车库）
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_OFF                  :关闭
-STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_ALL_LOCATIONS        :所有调度计划
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_ALL_LOCATIONS        :所有命令
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_STATIONS_ONLY        :仅车站
 
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS                     :显示载具路径覆盖标志：{STRING}
-STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS_HELPTEXT            :当开启并有载具窗口被聚焦的时候，在每个调度目标的位置将显示一个标志，这个标志显示了路点被经过的顺序编号及其类型。
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS_HELPTEXT            :当开启并有载具窗口被聚焦的时候，在每条命令的位置将显示一个标志，这个标志显示了路点被经过的顺序编号及其类型。
 
 STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR             :在载具列表中使用公司颜色标记其他公司的载具：{STRING}
 STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR_HELPTEXT    :在打开车站/车库时，在显示的载具列表上用公司颜色标注该公司的载具{}车站/车库的拥有者除外
@@ -415,7 +415,7 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE              :显示载具路
 STR_CONFIG_SETTING_VIEWPORT_MAP_SHOW_VEHICLE_ROUTE_HELPTEXT     :当被启用且载具窗口被聚焦时，在载具调度计划中的地点之间连线（当前所选择路径将以黄色线段表示）
 
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH                 :载具路径样式：{STRING}
-STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_HELPTEXT        :控制每个指令所对应的位置之间的连线的样式
+STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_HELPTEXT        :控制每条命令所对应的位置之间的连线的样式
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :{COMMA} 像素虚线
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :实心直线
 
@@ -436,10 +436,10 @@ STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_DIFFERENT_UNKNOWN :只在文件有
 STR_CONFIG_SETTING_SAVEGAME_OVERWRITE_CONFIRM_ENABLED           :启用
 
 STR_CONFIG_SETTING_AUTO_TIMETABLE_BY_DEFAULT                    :默认使用自动时刻表：{STRING}
-STR_CONFIG_SETTING_AUTO_TIMETABLE_BY_DEFAULT_HELPTEXT           :选择对于新载具的调度，自动时刻表是否应被自动打开。
+STR_CONFIG_SETTING_AUTO_TIMETABLE_BY_DEFAULT_HELPTEXT           :选择是否默认启用自动时刻表
 
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT              :默认使用自动分离：{STRING}
-STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT_HELPTEXT     :选择对于新载具使否确保载具应自动保持间距。
+STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT_HELPTEXT     :选择是否默认自动启用自动分离
 
 STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS                     :在时刻表中显示剩余的游戏刻：{STRING}
 STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS_HELPTEXT            :再把时刻表的单位由游戏刻转换为日和分钟的时候也显示剩余的游戏刻。
@@ -539,6 +539,9 @@ STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT                  :决定城镇是
 
 STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH                    :允许城镇发展：{STRING}
 STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH_HELPTEXT           :设置是否默认允许城镇发展
+
+STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_BRANCH_NON_BUILD            :允许城镇在其无法建设但房屋可以生成的道路上建设路口：{STRING}
+STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_BRANCH_NON_BUILD_HELPTEXT   :允许城镇在其无法建设的道路上建设路口，前提为道路支持房屋建设。{}本选项有助于防止房屋在玩家建设的道路上绵延，也有助于防止玩家建设的道路阻挡城市发展
 
 STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH_ALLOWED            :允许
 
@@ -736,17 +739,17 @@ STR_CONFIG_SETTING_PAY_FOR_REPAIR_VEHICLE_HELPTEXT              :支付修理费
 STR_CONFIG_SETTING_REPAIR_COST                                  :修理载具的成本为载具购置成本的 1/{STRING}
 STR_CONFIG_SETTING_REPAIR_COST_HELPTEXT                         :将修理载具的成本设置为购买载具成本 1/x{}如果载具的使用年限超过其最高使用年限，则费用翻倍
 
-STR_CONFIG_OCCUPANCY_SMOOTHNESS                                 :调度占用的测量平滑度：{STRING}
-STR_CONFIG_OCCUPANCY_SMOOTHNESS_HELPTEXT                        :将此项设置为 0% 时，载具的载货变化将立即在调度占用中反映出来。将此项设置为 100% 时，调度占用将维持不变
+STR_CONFIG_OCCUPANCY_SMOOTHNESS                                 :测量命令占用时使用的平滑度：{STRING}
+STR_CONFIG_OCCUPANCY_SMOOTHNESS_HELPTEXT                        :将此项设置为 0% 时，载具的载货变化将立即在命令占用中反映出来。将此项设置为 100% 时，命令占用将维持不变
 
 STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE                       :克隆/复制/共享调度计划的进阶设置：{STRING}
-STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE_HELPTEXT              :在克隆/复制/共享现有载具的调度计划后：{}对于列车、道路载具、船舶：如果载具在一个车库中，该车库在调度计划列表中，则跳到该车库的调度计划之一。{}对于飞机：如果飞机在机库中，相关的机场在调度计划列表中，则跳到该机场的调度计划之一。
+STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE_HELPTEXT              :在克隆/复制/共享现有载具的调度计划后：{}列车、道路载具、船舶：如果载具在一个车库中，该车库在调度计划中，则跳到该车库的调度计划之一。{}飞机：如果飞机在机库中，相关的机场在调度计划列表中，则跳到该机场的调度计划之一。
 
 STR_CONFIG_SETTING_COPY_CLONE_ADD_TO_GROUP                      :在复制 - 克隆组中添加载具：{STRING}
 STR_CONFIG_SETTING_COPY_CLONE_ADD_TO_GROUP_HELPTEXT             :设置是否将不共享调度计划的载具添加到载具克隆组中
 
-STR_CONFIG_SETTING_REMAIN_IF_NEXT_ORDER_SAME_STATION            :如果下一个指令是在同一车站，则留在车站：{STRING}
-STR_CONFIG_SETTING_REMAIN_IF_NEXT_ORDER_SAME_STATION_HELPTEXT   :如果载具的下一个指令是为当前车站，那么载具将停留在原地装卸货而不是驶离当前车站
+STR_CONFIG_SETTING_REMAIN_IF_NEXT_ORDER_SAME_STATION            :如果下一条命令是在同一车站，则留在车站：{STRING}
+STR_CONFIG_SETTING_REMAIN_IF_NEXT_ORDER_SAME_STATION_HELPTEXT   :如果载具的下一条命令是为当前车站，那么载具将停留在原地装卸货而不是驶离当前车站
 
 STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS                   :使用 <Ctrl> 键拖拽设置信号时忽略路点与车站：{STRING}
 STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS_HELPTEXT          :设置使用 <Ctrl> 键拖拽设置信号时的行为。禁用时，当游戏检测到到达车站或路点时信号设置停止。启用时，信号检测将忽略车站与路点并继续设置信号。
@@ -783,7 +786,7 @@ STR_LINKGRAPH_STATS_TOOLTIP_USAGE                               :{}已使用：{
 STR_LINKGRAPH_STATS_TOOLTIP_PLANNED                             :{}已计划：{CARGO_LONG}
 STR_LINKGRAPH_STATS_TOOLTIP_DISTANCE                            :曼哈顿距离：{COMMA} 格{}直线距离：{COMMA} 格
 
-STR_LINKGRAPH_STATS_TOOLTIP_PRODUCTION_INTERVAL                 :{BLACK} 每个生产周期有 {CARGO_LONG} 从 {STATION} 运输至 {STATION}（运载容量的 {COMMA}%）{STRING}
+STR_LINKGRAPH_STATS_TOOLTIP_PRODUCTION_INTERVAL                 :{BLACK}每个生产周期有{CARGO_LONG}从 {STATION} 运输至 {STATION}（运载容量的 {COMMA}%）{STRING}
 
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL                         :{BLACK}使用折线模式建设铁路。按住 <Ctrl> 键操作以移除铁路，按住 <Shift> 键操作以显示预计成本
 
@@ -814,8 +817,8 @@ STR_TRACE_RESTRICT_CONDITIONAL_ELSE                             :否则
 STR_TRACE_RESTRICT_CONDITIONAL_ENDIF                            :判断结束
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_LENGTH                        :列车长度
 STR_TRACE_RESTRICT_VARIABLE_MAX_SPEED                           :最高速度
-STR_TRACE_RESTRICT_VARIABLE_CURRENT_ORDER                       :当前调度计划
-STR_TRACE_RESTRICT_VARIABLE_NEXT_ORDER                          :下个调度计划
+STR_TRACE_RESTRICT_VARIABLE_CURRENT_ORDER                       :当前命令
+STR_TRACE_RESTRICT_VARIABLE_NEXT_ORDER                          :下条命令
 STR_TRACE_RESTRICT_VARIABLE_LAST_VISITED_STATION                :最后经由车站
 STR_TRACE_RESTRICT_VARIABLE_CARGO                               :货物
 STR_TRACE_RESTRICT_VARIABLE_LOAD_PERCENT                        :装载百分比
@@ -843,7 +846,7 @@ STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE_WEIGHT_RATIO           :最大牵引力
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_OWNER                         :列车所有者
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_STATUS                        :列车状态
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_ENGINE_CLASS                  :机车类别
-STR_TRACE_RESTRICT_VARIABLE_ORDER_TARGET_DIRECTION              :调度目标方向
+STR_TRACE_RESTRICT_VARIABLE_ORDER_TARGET_DIRECTION              :命令方向
 STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH                 :预留路径格数
 STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH_SHORT           :预留路径
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :未定义
@@ -863,7 +866,7 @@ STR_TRACE_RESTRICT_CONDITIONAL_CARGO                            :{STRING}列车{
 STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_DIRECTION                  :{STRING}列车{STRING}从{STRING}方进入格子的，则
 STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE                :{STRING}列车{STRING}从信号{STRING}侧进入的，则
 STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_TYPE                :{STRING}列车{STRING}{STRING}，则
-STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX                       :{STRING}{STRING} {STRING} 在 {NUM} x {NUM}，则
+STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX                       :{STRING}{STRING}{STRING}在 {NUM}×{NUM}，则
 STR_TRACE_RESTRICT_CONDITIONAL_GROUP                            :{STRING}列车{STRING}在组：“{GROUP}”内，则
 STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING}列车{STRING}在组：“{STRING}”内{BLACK}{STRING}，则
 STR_TRACE_RESTRICT_CONDITIONAL_OWNER                            :{STRING}{STRING}{STRING}“{COMPANY}{COMPANY_NUM}”，则
@@ -871,12 +874,12 @@ STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING}列车{
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING}列车{STRING}在槽位：“{STRING}”内{BLACK}{STRING}，则
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{0:STRING}槽位：“{2:TRSLOT}”的{1:STRING}{3:STRING} {4:COMMA}，则
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{0:STRING}槽位：“{2:STRING}”的{1:STRING}{3:STRING}{4:STRING} {5:COMMA}，则
-STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING}列车{STRING}状态：{STRING}，则
+STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING}列车{STRING}状态：“{STRING}”，则
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER                          :{STRING}计数器值：{TRCOUNTER} {STRING} {COMMA}，则
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING}计数器值：{STRING} {BLACK}{STRING} {STRING} {COMMA}，则
-STR_TRACE_RESTRICT_CONDITIONAL_ENGINE_CLASSES                   :{STRING}列车 {STRING}：{STRING}，则
-STR_TRACE_RESTRICT_CONDITIONAL_TARGET_DIRECTION                 :{STRING}格：{STRING} {STRING} 的此信号块比 {STRING} 更远，则
-STR_TRACE_RESTRICT_CONDITIONAL_PASSES_TILE_INDEX                :{STRING}{STRING} {STRING} {NUM} x {NUM}，则
+STR_TRACE_RESTRICT_CONDITIONAL_ENGINE_CLASSES                   :{STRING}列车编组中{STRING}{STRING}，则
+STR_TRACE_RESTRICT_CONDITIONAL_TARGET_DIRECTION                 :{STRING}{STRING}目的地地块{STRING}在当前信号的{STRING}侧，则
+STR_TRACE_RESTRICT_CONDITIONAL_PASSES_TILE_INDEX                :{STRING}{STRING}{STRING} {NUM}×{NUM}，则
 STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING}{STRING}{STRING}{RED}未定义{BLACK}{STRING}，则
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING}{RED}未定义{BLACK}{STRING}，则
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :添加寻路惩罚：{COMMA}
@@ -1011,8 +1014,8 @@ STR_TRACE_RESTRICT_DISPATCH_SLOT_SHORT_VEH                      :载具
 STR_TRACE_RESTRICT_VALUE_CAPTION                                :{WHITE}值
 STR_TRACE_RESTRICT_CAPTION                                      :{WHITE}寻路限制程序
 STR_TRACE_RESTRICT_CAPTION_SHARED                               :{WHITE}寻路限制程序 - 由 {COMMA} 个信号共享
-STR_TRACE_RESTRICT_UP_BTN_TOOLTIP                               :{BLACK}上移所选的指令{}按住 <Ctrl> 键点击以选择单个指令而不是整个语句块
-STR_TRACE_RESTRICT_DOWN_BTN_TOOLTIP                             :{BLACK}下移所选的指令{}按住 <Ctrl> 键点击以选择单个指令而不是整个语句块
+STR_TRACE_RESTRICT_UP_BTN_TOOLTIP                               :{BLACK}上移所选的命令{}按住 <Ctrl> 键点击以选择单条命令而不是整个语句块
+STR_TRACE_RESTRICT_DOWN_BTN_TOOLTIP                             :{BLACK}下移所选的命令{}按住 <Ctrl> 键点击以选择单条命令而不是整个语句块
 STR_TRACE_RESTRICT_TYPE_TOOLTIP                                 :{BLACK}类型
 STR_TRACE_RESTRICT_COND_COMPARATOR_TOOLTIP                      :{BLACK}比较运算符
 STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP                           :{BLACK}值
@@ -1061,26 +1064,26 @@ STR_TRACE_RESTRICT_SHARE_ONTO                                   :{BLACK}分享�
 STR_TRACE_RESTRICT_SELECT_TARGET                                :{BLACK}选择目标
 STR_TRACE_RESTRICT_SELECT_SIGNAL                                :{BLACK}选择信号
 STR_TRACE_RESTRICT_SELECT_TILE                                  :{BLACK}选择格子
-STR_TRACE_RESTRICT_INSERT_TOOLTIP                               :{BLACK}插入指令
-STR_TRACE_RESTRICT_REMOVE_TOOLTIP                               :{BLACK}移除所选的指令{}按住 <Ctrl> 键点击以在保留其内容的前提下移除所选的条件指令
+STR_TRACE_RESTRICT_INSERT_TOOLTIP                               :{BLACK}插入命令
+STR_TRACE_RESTRICT_REMOVE_TOOLTIP                               :{BLACK}移除所选的命令{}按住 <Ctrl> 键点击以在保留其内容的前提下移除所选的条件命令
 STR_TRACE_RESTRICT_RESET_TOOLTIP                                :{BLACK}重设当前信号（没有受影响的共享程序）
 STR_TRACE_RESTRICT_COPY_TOOLTIP                                 :{BLACK}从另外的信号处复制程序{}按住 <Ctrl> 键点击来添加从另外的信号复制来的程序
-STR_TRACE_RESTRICT_DUPLICATE_TOOLTIP                            :{BLACK}重复当前选择的指令{}按住 <Ctrl> 键点击可附加另一个信号的程序
+STR_TRACE_RESTRICT_DUPLICATE_TOOLTIP                            :{BLACK}重复当前选择的命令{}按住 <Ctrl> 键点击可附加另一个信号的程序
 STR_TRACE_RESTRICT_SHARE_TOOLTIP                                :{BLACK}与其他信号共享程序
 STR_TRACE_RESTRICT_UNSHARE_TOOLTIP                              :{BLACK}停止与其他信号共享程序且创建一份副本
 STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA                          :{STRING}{}{BLACK}按住 <Ctrl> 键点击以与其他信号共享程序
 STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}寻路限制
-STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}点击一个指令以选择{}按住 <Ctrl> 键点击来切换指令的目标（若存在）
+STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}点击选择一条命令{}按住 <Ctrl> 键点击来切换命令的目标（如果目标存在）
 STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP                            :高亮显示所有共享该程序的信号
 STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA                  :{STRING}{}{BLACK}按住 <Ctrl> 键点击以列出最近使用项
 STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING           :{STRING} {PUSH_COLOUR}{RED}（需要真实制动）{POP_COLOUR}
 STR_TRACE_RESTRICT_WARNING_SIGNAL_MODE_CONTROL_ONLY             :{STRING} {PUSH_COLOUR}{RED}（仅适用于信号模式控制操作）{POP_COLOUR}
 STR_TRACE_RESTRICT_WARNING_NO_SIGNAL_MODE_CONTROL               :{STRING} {PUSH_COLOUR}{RED}（不适用于信号模式控制操作）{POP_COLOUR}
-STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM                      :{WHITE}无法插入指令
-STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM                      :{WHITE}无法修改指令
-STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM                      :{WHITE}无法移除指令
-STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM                        :{WHITE}无法移动指令
-STR_TRACE_RESTRICT_ERROR_CAN_T_DUPLICATE_ITEM                   :{WHITE}无法重复指令
+STR_TRACE_RESTRICT_ERROR_CAN_T_INSERT_ITEM                      :{WHITE}无法插入命令
+STR_TRACE_RESTRICT_ERROR_CAN_T_MODIFY_ITEM                      :{WHITE}无法修改命令
+STR_TRACE_RESTRICT_ERROR_CAN_T_REMOVE_ITEM                      :{WHITE}无法移除命令
+STR_TRACE_RESTRICT_ERROR_CAN_T_MOVE_ITEM                        :{WHITE}无法移动命令
+STR_TRACE_RESTRICT_ERROR_CAN_T_DUPLICATE_ITEM                   :{WHITE}无法重复命令
 STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE                        :{WHITE}数值太大，最大值是 {DECIMAL}
 STR_TRACE_RESTRICT_ERROR_NO_PROGRAM                             :没有寻路限制程序
 STR_TRACE_RESTRICT_ERROR_OFFSET_TOO_LARGE                       :偏移量过大
@@ -1091,7 +1094,7 @@ STR_TRACE_RESTRICT_ERROR_VALIDATE_END_CONDSTACK                 :检查失败：
 STR_TRACE_RESTRICT_ERROR_VALIDATE_NO_IF                         :检查失败：“否则”、“否则如果”没有开头的“如果”
 STR_TRACE_RESTRICT_ERROR_VALIDATE_DUP_ELSE                      :检查失败：多个“否则”
 STR_TRACE_RESTRICT_ERROR_VALIDATE_ELIF_NO_IF                    :检查失败：“否则如果”没有开头的“如果”
-STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION           :检查失败：未知的指令
+STR_TRACE_RESTRICT_ERROR_VALIDATE_UNKNOWN_INSTRUCTION           :检查失败：未知的命令
 STR_TRACE_RESTRICT_ERROR_SOURCE_SAME_AS_TARGET                  :来源和目标的信号是相同的
 STR_TRACE_RESTRICT_ERROR_TARGET_ALREADY_HAS_PROGRAM             :目标信号已有程序
 STR_TRACE_RESTRICT_ERROR_CAN_T_RESET_SIGNAL                     :{WHITE}不能重置信号
@@ -1113,8 +1116,8 @@ STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_MODIFY                   :{WHITE}不能�
 # Programmable Pre-Signals
 STR_PROGRAM_SIGNAL_TOOLTIP                                      :{BLACK}入口信号程序
 
-STR_ERR_PROGSIG_INVALID_INSTRUCTION                             :{WHITE}无法在有无效 ID 指令后插入指令
-STR_ERR_PROGSIG_INVALID_OPCODE                                  :{WHITE}无法插入此指令码指令
+STR_ERR_PROGSIG_INVALID_INSTRUCTION                             :{WHITE}无法在有无效 ID 命令后插入命令
+STR_ERR_PROGSIG_INVALID_OPCODE                                  :{WHITE}无法插入此命令码命令
 STR_ERR_PROGSIG_NOT_THERE                                       :{WHITE}这里没有可编程逻辑信号
 STR_ERR_PROGSIG_INVALID_SIGNAL_STATE                            :{WHITE}此信号状态无效
 STR_ERR_PROGSIG_INVALID_CONDITION                               :{WHITE}此条件无效
@@ -1131,8 +1134,8 @@ STR_PROGSIG_COND_SET_SIGNAL                                     :{BLACK}设置�
 STR_PROGSIG_COND_SET_SIGNAL_TOOLTIP                             :{BLACK}设置信号参照
 STR_PROGSIG_GOTO_SIGNAL                                         :{BLACK}到信号
 STR_PROGSIG_GOTO_SIGNAL_TOOLTIP                                 :{BLACK}到此信号
-STR_PROGSIG_INSERT_TOOLTIP                                      :{BLACK}插入指令
-STR_PROGSIG_REMOVE_TOOLTIP                                      :{BLACK}移除所选的指令
+STR_PROGSIG_INSERT_TOOLTIP                                      :{BLACK}插入命令
+STR_PROGSIG_REMOVE_TOOLTIP                                      :{BLACK}移除所选的命令
 STR_PROGSIG_REMOVE_PROGRAM_TOOLTIP                              :{BLACK}移除整个程序
 STR_PROGSIG_COPY_PROGRAM_TOOLTIP                                :{BLACK}从已存在的信号处复制程序
 STR_PROGSIG_COND_SLOT_TOOLTIP                                   :{BLACK}比较槽位占用
@@ -1167,16 +1170,16 @@ STR_PROGSIG_COND_SIGNAL_STATE                                   :信号状态
 STR_PROGSIG_COND_SLOT                                           :槽位占用
 STR_PROGSIG_COND_SLOT_REMAINING                                 :槽位占用剩余
 STR_PROGSIG_COND_COUNTER                                        :计数器值
-STR_PROGSIG_CONDVAR_SIGNAL_STATE_SPECIFIED                      :在 {NUM} x {NUM} 的信号是绿灯
+STR_PROGSIG_CONDVAR_SIGNAL_STATE_SPECIFIED                      :在 {NUM}×{NUM} 的信号是绿灯
 STR_PROGSIG_CONDVAR_SIGNAL_STATE_UNSPECIFIED                    :{PUSH_COLOUR}{RED}未特别指定的信号{POP_COLOUR}是绿灯
 STR_PROGSIG_CONDVAR_NUM_RED                                     :红灯
 STR_PROGSIG_CONDVAR_NUM_GREEN                                   :绿灯
 
 STR_PROGSIG_CONDITION_VALUE_CAPT                                :{WHITE}条件值
 
-STR_ERROR_CAN_T_INSERT_INSTRUCTION                              :{WHITE}不能插入指令
-STR_ERROR_CAN_T_MODIFY_INSTRUCTION                              :{WHITE}不能修改指令
-STR_ERROR_CAN_T_REMOVE_INSTRUCTION                              :{WHITE}不能移除指令
+STR_ERROR_CAN_T_INSERT_INSTRUCTION                              :{WHITE}不能插入命令
+STR_ERROR_CAN_T_MODIFY_INSTRUCTION                              :{WHITE}不能修改命令
+STR_ERROR_CAN_T_REMOVE_INSTRUCTION                              :{WHITE}不能移除命令
 STR_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL                           :{WHITE}不能跳转到未定义的信号
 STR_ERROR_NOT_AN_EXIT_SIGNAL                                    :{WHITE}不是一个退出信号
 STR_ERROR_NOT_AN_PROG_SIGNAL                                    :{WHITE}不是一个可编程入口信号
@@ -1260,22 +1263,22 @@ STR_NEWGRF_INSPECT_DUPLICATE_TOOLTIP                            :{BLACK}复制�
 STR_NEWGRF_INSPECT_SPRITE_DUMP                                  :{BLACK}S 链
 STR_NEWGRF_INSPECT_SPRITE_DUMP_TOOLTIP                          :{BLACK}显示当前 Sprite 链
 STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT                            :{BLACK}无优
-STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP                    :{BLACK}在没有应用任何优化的情况下显示 Sprite 组{}{}如果之前没有启用，则需要重新加载 NewGRF (misc_debug 10)
+STR_NEWGRF_INSPECT_SPRITE_DUMP_UNOPT_TOOLTIP                    :{BLACK}在没有应用任何优化的情况下显示 Sprite 组{}{}如果之前没有启用，则需要重新加载 NewGRF（misc_debug 10）
 STR_NEWGRF_INSPECT_SPRITE_DUMP_GOTO                             :滚动至 Sprite 序号
 STR_NEWGRF_INSPECT_SPRITE_DUMP_CLEAR                            :清除高亮与标记
 STR_NEWGRF_INSPECT_SPRITE_DUMP_MORE_DETAILS                     :显示详情
 STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_HIGHLIGHT               :点击高亮
 STR_NEWGRF_INSPECT_SPRITE_DUMP_CLICK_TO_MARK                    :点击标记
-STR_NEWGRF_INSPECT_SPRITE_DUMP_OPTIONS                          :{BLACK}额外指令与选项
+STR_NEWGRF_INSPECT_SPRITE_DUMP_OPTIONS                          :{BLACK}额外命令与选项
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT          :{BLACK}点击高亮 Sprite 组
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_MARK               :{BLACK}点击标记 Sprite 组
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_COLLAPSE           :{BLACK}按住 <Shift> 键操作以折叠 Sprite 组
 STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT_TEMP     :{BLACK}按住 <Ctrl> 键操作以高亮临时存储寄存器
 STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS                    :信号
 STR_NEWGRF_INSPECT_CAPTION_TRACERESTRICT                        :{HEX}/{HEX} 的寻路限制程序
-STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :未实现且已重映射的特性 ID：名称：{2:STRING}，已映射至：{5:HEX} (Sprite {3:NUM})
-STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY                   :未实现且已重映射的 Action 0 属性特性：{4:HEX}，名称：{2:STRING}，已映射至：{5:HEX} (Sprite {3:NUM})
-STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_ACTION5_TYPE               :未实现且已重映射的 Action 5 类型：名称：{2:STRING}，已映射至：{4:HEX} (Sprite {3:NUM})
+STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID                 :未实现且已重映射的特性 ID：名称：{2:STRING}，已映射至：{5:HEX}（Sprite {3:NUM}）
+STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY                   :未实现且已重映射的 Action 0 属性特性：{4:HEX}，名称：{2:STRING}，已映射至：{5:HEX}（Sprite {3:NUM}）
+STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_ACTION5_TYPE               :未实现且已重映射的 Action 5 类型：名称：{2:STRING}，已映射至：{4:HEX}（Sprite {3:NUM}）
 
 STR_NEWGRF_TOO_MANY_STRINGS                                     :{WHITE}对于所有的 NewGRF 没有足够的字符串 ID
 STR_NEWGRF_TOO_MANY_STRINGS_DETAIL                              :{WHITE}一些名称和文本域可能显示不正常，请尝试使用更少的 NewGRF
@@ -1400,8 +1403,8 @@ STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :添加标志以
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE_HELPTEXT                  :在目的地是码头或机场时，添加一个标志加以区分
 STR_CONFIG_DEPARTURE_SMART_TERMINUS                             :不显示不久后能被另一趟载具到达的目的地：{STRING}
 STR_CONFIG_DEPARTURE_SMART_TERMINUS_HELPTEXT                    :使否显示不久后会有另一辆载具到达的目的地
-STR_CONFIG_DEPARTURE_CONDITIONALS                               :条件性调度计划处理方式：{STRING}
-STR_CONFIG_DEPARTURE_CONDITIONALS_HELPTEXT                      :当计算出发看板车次时，条件性调度计划应被如何处理
+STR_CONFIG_DEPARTURE_CONDITIONALS                               :条件性命令处理方式：{STRING}
+STR_CONFIG_DEPARTURE_CONDITIONALS_HELPTEXT                      :计算出发看板车次时处理条件性命令的方式
 STR_CONFIG_DEPARTURE_CONDITIONALS_1                             :放弃处理
 STR_CONFIG_DEPARTURE_CONDITIONALS_2                             :假定载具经过车站
 STR_CONFIG_DEPARTURE_CONDITIONALS_3                             :假定载具不经过车站
@@ -1424,7 +1427,7 @@ STR_INDUSTRY_VIEW_NAME_TOOLTIP                                  :{STRING}
 STR_INDUSTRY_VIEW_REQUIRED_TOOLTIP_FIRST                        :{STRING}{STRING}
 STR_INDUSTRY_VIEW_REQUIRED_TOOLTIP_NEXT                         :，{STRING}{STRING}
 STR_INDUSTRY_VIEW_STOCKPILED_TOOLTIP                            :库存：{CARGO_LONG}{STRING}
-STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION                 :{CARGO_LONG}{STRING}({COMMA}%)
+STR_INDUSTRY_VIEW_TRANSPORTED_TOOLTIP_EXTENSION                 :{CARGO_LONG}{STRING}（{COMMA}%）
 
 STR_INDUSTRY_VIEW_PRODUCTION_LAST_PRODUCTION_INTERVAL_TITLE     :{BLACK}上个生产周期产量：
 
@@ -1469,12 +1472,12 @@ STR_VEHICLE_LIST_SEND_ROAD_VEHICLE_TO_DEPOT_SELL                :回库并卖出
 STR_VEHICLE_LIST_SEND_SHIP_TO_DEPOT_SELL                        :回坞并卖出
 STR_VEHICLE_LIST_SEND_AIRCRAFT_TO_HANGAR_SELL                   :回库并卖出
 
-STR_VEHICLE_LIST_CHANGE_ORDER_STATION                           :转移调度至其他车站
-STR_VEHICLE_LIST_CHANGE_ORDER_WAYPOINT                          :转移调度至其他路点
-STR_VEHICLE_LIST_CHANGE_ORDER_TRAIN_DEPOT                       :转移调度至其他车库
-STR_VEHICLE_LIST_CHANGE_ORDER_ROAD_VEHICLE_DEPOT                :转移调度至其他车库
-STR_VEHICLE_LIST_CHANGE_ORDER_SHIP_DEPOT                        :转移调度至其他船坞
-STR_VEHICLE_LIST_CHANGE_ORDER_AIRCRAFT_HANGAR                   :转移调度至其他机库
+STR_VEHICLE_LIST_CHANGE_ORDER_STATION                           :转移命令至其他车站
+STR_VEHICLE_LIST_CHANGE_ORDER_WAYPOINT                          :转移命令至其他路点
+STR_VEHICLE_LIST_CHANGE_ORDER_TRAIN_DEPOT                       :转移命令至其他车库
+STR_VEHICLE_LIST_CHANGE_ORDER_ROAD_VEHICLE_DEPOT                :转移命令至其他车库
+STR_VEHICLE_LIST_CHANGE_ORDER_SHIP_DEPOT                        :转移命令至其他船坞
+STR_VEHICLE_LIST_CHANGE_ORDER_AIRCRAFT_HANGAR                   :转移命令至其他机库
 
 STR_GROUP_EXPAND_ALL                                            :{BLACK}展开全部
 STR_GROUP_COLLAPSE_ALL                                          :{BLACK}折叠全部
@@ -1591,8 +1594,8 @@ STR_VEHICLE_INFO_SPEED_ADAPTATION_NONE                          :{BLACK}速度�
 
 STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE_AND_SPEED      :{LTBLUE}{ENGINE}{BLACK}   建造年份： {LTBLUE}{NUM}{BLACK} 价值：{LTBLUE}{CURRENCY_LONG} {BLACK}最高速度：{LTBLUE}{VELOCITY}
 STR_VEHICLE_DETAILS_TRAIN_WAGON_VALUE_AND_SPEED                 :{LTBLUE}{ENGINE}{BLACK}   价值：{LTBLUE}{CURRENCY_LONG} {BLACK}最高速度{LTBLUE}{VELOCITY}
-STR_VEHICLE_DETAILS_TRAIN_TOTAL_WEIGHT                          :{BLACK}总重：{LTBLUE}{WEIGHT_SHORT} {BLACK}（空 (- {LTBLUE}{WEIGHT_SHORT} {BLACK}(已装载）
-STR_VEHICLE_DETAILS_TRAIN_MAX_SPEED                             :{BLACK}最高速度：{LTBLUE}{VELOCITY} {BLACK}（空 (- {LTBLUE}{VELOCITY} {BLACK}(已装载）
+STR_VEHICLE_DETAILS_TRAIN_TOTAL_WEIGHT                          :{BLACK}总重：{LTBLUE}{WEIGHT_SHORT}{BLACK}（空载），{LTBLUE}{WEIGHT_SHORT}{BLACK}（满载）
+STR_VEHICLE_DETAILS_TRAIN_MAX_SPEED                             :{BLACK}最高速度：{LTBLUE}{VELOCITY}{BLACK}（空载），{LTBLUE}{VELOCITY}{BLACK}（满载）
 
 STR_VEHICLE_DETAILS_EXTRA_ACTIONS_TOOLTIP                       :{BLACK}额外载具操作
 STR_VEHICLE_DETAILS_REMOVE_SPEED_RESTRICTION                    :移除限速
@@ -1611,7 +1614,7 @@ STR_ORDER_DROP_CARGO_TYPE_LOAD                                  :以货物类型
 STR_ORDER_DROP_CARGO_TYPE_UNLOAD                                :以货物类型卸载
 
 STR_ORDER_REVERSE                                               :{BLACK}换向
-STR_ORDER_REVERSE_TOOLTIP                                       :{BLACK}改变选中调度计划的换向行为
+STR_ORDER_REVERSE_TOOLTIP                                       :{BLACK}改变选中命令的换向行为
 
 STR_ORDER_DROP_SELL_DEPOT                                       :卖出载具
 
@@ -1666,14 +1669,14 @@ STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_DOESNT_HAVE_TAG_NAMED :没有标�
 STR_ORDERS_MANAGE_LIST                                          :{BLACK}管理列表
 STR_ORDERS_MANAGE_LIST_TOOLTIP                                  :{BLACK}管理此调度列表
 
-STR_ORDERS_MANAGE_ORDER                                         :{BLACK}管理调度计划
-STR_ORDERS_MANAGE_ORDER_TOOLTIP                                 :{BLACK}管理此调度计划
+STR_ORDERS_MANAGE_ORDER                                         :{BLACK}管理命令
+STR_ORDERS_MANAGE_ORDER_TOOLTIP                                 :{BLACK}管理此命令
 
-STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}在调度列表的结尾或选定项目前{}增加一条新指令，按住 <Ctrl> 键操作以使命令为“装满任意货物”{}路点命令为“不停车”{}车库命令为“保养”
+STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}在调度列表的结尾或选定项目前{}增加一条新命令，按住 <Ctrl> 键操作以使命令为“装满任意货物”{}路点命令为“不停车”{}车库命令为“保养”
 
 STR_ORDER_REVERSE_ORDER_LIST                                    :反转调度列表
 STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :将反转调度列表添加至计划末尾
-STR_ORDER_DUPLICATE_ORDER                                       :复制调度计划
+STR_ORDER_DUPLICATE_ORDER                                       :复制命令
 STR_ORDER_CHANGE_JUMP_TARGET                                    :改变跳转目标
 
 STR_ORDER_TRY_ACQUIRE_SLOT_BUTTON                               :尝试占用槽位
@@ -1791,16 +1794,16 @@ STR_TIMETABLE_EXTRA_DROP_DOWN                                   :{BLACK}额外
 STR_TIMETABLE_EXTRA_DROP_DOWN_TOOLTIP                           :{BLACK}额外选项{}{}按规定时间离开。载具等到预定的出发时间后再离开（默认）{}提前离开：载具在装货/卸货完成后立即离开，可能在规定的出发时间前离开{}如果任何货物已满，提前离开：同上，如果任何货物已满{}如果全部装满就提前离开：同上，如果所有货物都装满
 
 STR_TIMETABLE_ASSIGN_SCHEDULE_DROP_DOWN                         :{BLACK}分配时刻表
-STR_TIMETABLE_ASSIGN_SCHEDULE_DROP_DOWN_TOOLTIP                 :{BLACK}为选定调度计划分配或取消一项计划调度时刻表
+STR_TIMETABLE_ASSIGN_SCHEDULE_DROP_DOWN_TOOLTIP                 :{BLACK}为选定的命令分配或取消一项计划调度时刻表
 STR_TIMETABLE_ASSIGN_SCHEDULE_NONE                              :无时刻表
 STR_TIMETABLE_ASSIGN_SCHEDULE_ID                                :时刻表 #{NUM}
 
 STR_TIMETABLE_AUTOSEP_TIMETABLE_INCOMPLETE                      :{BLACK}无法自动分离：时刻表不完整
 STR_TIMETABLE_AUTOSEP_OK                                        :{BLACK}时刻表已自动分离
 STR_TIMETABLE_AUTOSEP_SINGLE_VEH                                :{BLACK}无法自动分离：仅有一部载具使用此时刻表
-STR_TIMETABLE_WARNING_AUTOSEP_CONDITIONAL                       :{BLACK}无法自动分离：调度计划有条件性命令
+STR_TIMETABLE_WARNING_AUTOSEP_CONDITIONAL                       :{BLACK}无法自动分离：调度计划中有条件性命令
 STR_TIMETABLE_WARNING_AUTOSEP_MISSING_TIMINGS                   :{BLACK}无法自动分离：缺失等待时间或运行时间
-STR_TIMETABLE_WARNING_FULL_LOAD                                 :{BLACK}不建议为包含满载指令的调度计划制定时刻表
+STR_TIMETABLE_WARNING_FULL_LOAD                                 :{BLACK}不建议为包含满载命令的调度计划制定时刻表
 STR_TIMETABLE_WARNING_AUTOFILL_CONDITIONAL                      :{BLACK}自动填充选项只会选择性更新条件性命令被执行的部分
 STR_TIMETABLE_NON_TIMETABLED_BRANCH                             :{BLACK}游戏不会为所有条件性命令分支运行时间制定时刻表时间
 STR_TIMETABLE_WARNING_NO_SCHEDULED_DISPATCH_ORDER_ASSIGNED      :{BLACK}时刻表未分配到调度命令
@@ -1934,11 +1937,11 @@ STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_VIA_STATION                :{GRAY}径
 STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_WAYPOINT                   :{GRAY}点
 STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_IMPLICIT                   :{GRAY}转
 STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_DEPOT                      :{RED}库
-STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_OVERFLOW                   :{RED}{NUM}x
+STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_OVERFLOW                   :{RED}{NUM}×
 
 STR_BLACK_PLUS                                                  :{BLACK}+
 
-STR_DECIMAL1_WITH_SCALE                                         :{DECIMAL1}（{DECIMAL}x）
+STR_DECIMAL1_WITH_SCALE                                         :{DECIMAL1}（{DECIMAL}×）
 
 STR_HIERARCHY_SEPARATOR                                         :{SPACE}/{SPACE}
 
@@ -1956,8 +1959,8 @@ STR_ZONING_STA_CATCH_OPEN                                       :站点覆盖（
 STR_ZONING_BUL_UNSER                                            :未覆盖建筑
 STR_ZONING_IND_UNSER                                            :未覆盖工业
 STR_ZONING_TRACERESTRICT                                        :寻路限制信号
-STR_ZONING_2x2_GRID                                             :2x2 路网
-STR_ZONING_3x3_GRID                                             :3x3 路网
+STR_ZONING_2x2_GRID                                             :2×2 路网
+STR_ZONING_3x3_GRID                                             :3×3 路网
 STR_ZONING_ONE_WAY_ROAD                                         :单行道
 
 STR_STATION_RATING_TOOLTIP_RATING_DETAILS                       :{STRING}评价详情
@@ -2067,7 +2070,7 @@ STR_TMPL_SECTION_WHEN                                           :{BLACK}条件
 STR_TMPL_NUM_TRAINS_NEED_RPL                                    :要被替换的列车：{COLOUR}{COMMA}
 
 STR_TMPL_CARGO_SUMMARY                                          :{CARGO_LONG}
-STR_TMPL_CARGO_SUMMARY_MULTI                                    :{CARGO_LONG}（x{NUM}）
+STR_TMPL_CARGO_SUMMARY_MULTI                                    :{CARGO_LONG}（×{NUM}）
 
 STR_TMPL_RPLALLGUI_TITLE                                        :{WHITE}替换所有模板载具
 STR_TMPL_RPLALLGUI_INSET_TOP                                    :{BLACK}选择载具类型并更换
@@ -2085,7 +2088,7 @@ STR_TMPL_CANT_RENAME                                            :{WHITE}无法�
 # Scheduled Dispatch
 STR_SCHDISPATCH_CAPTION                                         :{WHITE}{VEHICLE}（计划调度）
 STR_SCHDISPATCH_ENABLED                                         :{BLACK}启用
-STR_SCHDISPATCH_ENABLED_TOOLTIP                                 :{BLACK}对此调度应用计划调度。
+STR_SCHDISPATCH_ENABLED_TOOLTIP                                 :{BLACK}对此命令应用计划调度
 STR_SCHDISPATCH_ADD                                             :{BLACK}添加发车时间
 STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}为此时刻表添加发车时间。
 STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA                               :{BLACK}{STRING}按住 <Ctrl> 键操作以添加多个发车时间。
@@ -2188,8 +2191,8 @@ STR_SCHDISPATCH_SUMMARY_NEXT_AVAILABLE_DEPARTURE                :{BLACK}下一�
 
 STR_SCHDISPATCH_SLOT_OUTSIDE_SCHEDULE                           :{BLACK}在时刻表持续时间外有一个或多个发车时间。
 
-STR_SCHDISPATCH_NOT_ASSIGNED_TO_ORDER                           :{BLACK}时刻表未分配至一项指令
-STR_SCHDISPATCH_ASSIGNED_TO_ORDER                               :{BLACK}时刻表已分配至指令 #{NUM}：{STRING}.
+STR_SCHDISPATCH_NOT_ASSIGNED_TO_ORDER                           :{BLACK}时刻表未分配至一条命令
+STR_SCHDISPATCH_ASSIGNED_TO_ORDER                               :{BLACK}时刻表已分配至命令 #{NUM}：{STRING}.
 STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_PAST                       :{BLACK}这是在 {NUM} 时或更长时间前。
 STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_FUTURE                     :{BLACK}这是在 {NUM} 时或更长时间后。
 
@@ -2209,7 +2212,7 @@ STR_ERROR_SCHDISPATCH_ADJUSTMENT_TOO_LARGE                      :{WHITE}发车�
 STR_TOOLTIP_SEPARATION_CANNOT_ENABLE                            :{STRING}{}{}{STRING}
 STR_ERROR_SEPARATION_MUTUALLY_EXCLUSIVE                         :{WHITE}计划调度、自动分离与班次均匀之间互不兼容，一次只能启用一项
 
-STR_CANNOT_ENABLE_BECAUSE_UNBUNCHING                            :由于调度计划中有班次均匀指令而无法启用
+STR_CANNOT_ENABLE_BECAUSE_UNBUNCHING                            :由于调度计划中有班次均匀命令而无法启用
 STR_CANNOT_ENABLE_BECAUSE_SCHED_DISPATCH                        :由于已启用计划调度而无法启用
 STR_CANNOT_ENABLE_BECAUSE_AUTO_SEPARATION                       :由于已启用自动分离而无法启用
 STR_CANNOT_ENABLE_BECAUSE_TIME_UNITS_UNUSABLE                   :由于时间单位不可用而无法启用。{}在设置中启用“用分钟而不是日来表示时间”
@@ -2277,7 +2280,7 @@ STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_SHOW_HELPTEXT               :当指针悬停
 STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_NAME                        :显示工业名称：{STRING}
 STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_NAME_HELPTEXT               :当指针悬停在工业上时显示工业名称
 STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_REQUIRED                    :显示可接收的货物：{STRING}
-STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_REQUIRED_HELPTEXT           :当指针悬停在工业上时显示工业可接收调度货物
+STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_REQUIRED_HELPTEXT           :当指针悬停在工业上时显示工业可接收的货物
 STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_STOCKPILED                  :显示已生产的货物：{STRING}
 STR_CONFIG_SETTING_INDUSTRY_TOOLTIP_STOCKPILED_HELPTEXT         :当指针悬停在工业上时显示工业已生产的货物
 
