@@ -1904,7 +1904,7 @@ static bool CanFollowRoad(const Town *t, TileIndex tile, DiagDirection dir)
 	if (HasTileWaterGround(target_tile)) return false;
 
 	RoadBits target_rb = GetTownRoadBits(target_tile);
-	if (TownAllowedToBuildRoads(t)) {
+	if (TownAllowedToBuildRoads(t) && TownCanGrowRoad(target_tile)) {
 		/* Check whether a road connection exists or can be build. */
 		switch (GetTileType(target_tile)) {
 			case MP_ROAD:
