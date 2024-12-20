@@ -1599,6 +1599,7 @@ static inline bool RoadTypesAllowHouseHere(TileIndex t)
  */
 static bool TownCanGrowRoad(TileIndex tile)
 {
+	if (!MayTownModifyRoad(tile)) return false;
 	if (!IsTileType(tile, MP_ROAD)) return true;
 
 	/* Allow extending on roadtypes which can be built by town, or if the road type matches the type the town will build.
