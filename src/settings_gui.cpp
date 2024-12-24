@@ -1128,10 +1128,9 @@ static constexpr NWidgetPart _nested_game_options_widgets[] = {
 							NWidget(WWT_TEXT, COLOUR_GREY), SetMinimalSize(0, 12), SetFill(1, 0), SetDataTip(STR_GAME_OPTIONS_GUI_SCALE_BEVELS, STR_NULL),
 							NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_GO_GUI_SCALE_BEVEL_BUTTON), SetAspect(WidgetDimensions::ASPECT_SETTINGS_BUTTON), SetDataTip(STR_EMPTY, STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP),
 						EndContainer(),
-						NWidget(NWID_HORIZONTAL),
-							NWidget(WWT_TEXT, COLOUR_GREY), SetMinimalSize(0, 12), SetDataTip(STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR, STR_NULL),
-							NWidget(NWID_SPACER), SetMinimalSize(1, 0), SetFill(1, 0),
-							NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_GO_GUI_SCALE_MAIN_TOOLBAR), SetMinimalSize(21, 9), SetDataTip(STR_EMPTY, STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP),
+						NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
+							NWidget(WWT_TEXT, COLOUR_GREY), SetMinimalSize(0, 12), SetFill(1, 0), SetDataTip(STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR, STR_NULL),
+							NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_GO_GUI_SCALE_MAIN_TOOLBAR), SetAspect(WidgetDimensions::ASPECT_SETTINGS_BUTTON), SetDataTip(STR_EMPTY, STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP),
 						EndContainer(),
 #ifdef HAS_TRUETYPE_FONT
 						NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_normal, 0),
