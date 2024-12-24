@@ -912,7 +912,7 @@ void StopTextRefStackUsage()
  * @param modify_parameters When true, modify the OpenTTD string formatting parameters.
  * @return the string control code to "execute" now
  */
-uint RemapNewGRFStringControlCode(uint scc, StringBuilder builder, const char **str, StringParameters &parameters, bool modify_parameters)
+char32_t RemapNewGRFStringControlCode(char32_t scc, StringBuilder builder, const char **str, StringParameters &parameters, bool modify_parameters)
 {
 	auto too_many_newgrf_params = [&]() {
 		const char *buffer = *str;

@@ -161,7 +161,7 @@ const std::initializer_list<SlxiSubChunkInfo> _sl_xv_sub_chunk_infos = {
 	{ XSLFI_REALISTIC_TRAIN_BRAKING,          XSCF_NULL,               12,  12, "realistic_train_braking",          nullptr, nullptr, nullptr          },
 	{ XSLFI_INFLATION_FIXED_DATES,            XSCF_IGNORABLE_ALL,       1,   1, "inflation_fixed_dates",            nullptr, nullptr, nullptr          },
 	{ XSLFI_WATER_FLOODING,                   XSCF_NULL,                2,   2, "water_flooding",                   nullptr, nullptr, nullptr          },
-	{ XSLFI_MORE_HOUSES,                      XSCF_NULL,                2,   2, "more_houses",                      nullptr, nullptr, nullptr          },
+	{ XSLFI_MORE_HOUSES,                      XSCF_NULL,                3,   3, "more_houses",                      nullptr, nullptr, nullptr          },
 	{ XSLFI_CUSTOM_TOWN_ZONE,                 XSCF_IGNORABLE_UNKNOWN,   1,   1, "custom_town_zone",                 nullptr, nullptr, nullptr          },
 	{ XSLFI_STATION_CARGO_HISTORY,            XSCF_NULL,                2,   2, "station_cargo_history",            nullptr, nullptr, nullptr          },
 	{ XSLFI_TRAIN_SPEED_ADAPTATION,           XSCF_NULL,                3,   3, "train_speed_adaptation",           nullptr, nullptr, "TSAS"           },

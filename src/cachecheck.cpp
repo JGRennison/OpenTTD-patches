@@ -36,7 +36,7 @@
 #include "safeguards.h"
 
 extern void AfterLoadCompanyStats();
-extern void RebuildTownCaches(bool cargo_update_required, bool old_map_position);
+extern void RebuildTownCaches(bool cargo_update_required);
 extern void WriteVehicleInfo(format_target &buffer, const Vehicle *u, const Vehicle *v, uint length);
 
 static bool SignalInfraTotalMatches()
@@ -181,7 +181,7 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 			old_industry_stations_nears.push_back(ind->stations_near);
 		}
 
-		RebuildTownCaches(false, false);
+		RebuildTownCaches(false);
 		RebuildSubsidisedSourceAndDestinationCache();
 
 		Station::RecomputeCatchmentForAll();

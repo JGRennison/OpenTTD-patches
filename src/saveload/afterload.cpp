@@ -1944,8 +1944,24 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (IsSavegameVersionBefore(SLV_INCREASE_HOUSE_LIMIT) && SlXvIsFeatureMissing(XSLFI_MORE_HOUSES, 3)) {
+		for (TileIndex t = 0; t < map_size; t++) {
+			if (IsTileType(t, MP_HOUSE)) {
+				if (SlXvIsFeaturePresent(XSLFI_MORE_HOUSES, 1, 2)) {
+					/* House type is moved from m4 + m3[6..5] to m8. */
+					SetHouseType(t, _m[t].m4 | (GB(_m[t].m3, 5, 2) << 8));
+					SB(_m[t].m3, 5, 2, 0);
+				} else {
+					/* House type is moved from m4 + m3[6] to m8. */
+					SetHouseType(t, _m[t].m4 | (GB(_m[t].m3, 6, 1) << 8));
+					ClrBit(_m[t].m3, 6);
+				}
+			}
+		}
+	}
+
 	/* Check and update house and town values */
-	UpdateHousesAndTowns(gcf_res != GLC_ALL_GOOD, true);
+	UpdateHousesAndTowns(gcf_res != GLC_ALL_GOOD);
 
 	if (IsSavegameVersionBefore(SLV_43)) {
 		for (TileIndex t = 0; t < map_size; t++) {
@@ -4239,15 +4255,6 @@ bool AfterLoadGame()
 		_settings_game.economy.inflation_fixed_dates = !IsSavegameVersionBefore(SLV_GS_INDUSTRY_CONTROL);
 	}
 
-	if (SlXvIsFeatureMissing(XSLFI_MORE_HOUSES)) {
-		for (TileIndex t = 0; t < map_size; t++) {
-			if (IsTileType(t, MP_HOUSE)) {
-				/* Move upper bit of house ID from bit 6 of m3 to bits 6..5 of m3. */
-				SB(_m[t].m3, 5, 2, GB(_m[t].m3, 6, 1));
-			}
-		}
-	}
-
 	if (SlXvIsFeatureMissing(XSLFI_CUSTOM_TOWN_ZONE)) {
 		_settings_game.economy.city_zone_0_mult = _settings_game.economy.town_zone_0_mult;
 		_settings_game.economy.city_zone_1_mult = _settings_game.economy.town_zone_1_mult;
@@ -4649,7 +4656,7 @@ void ReloadNewGRFData()
 	/* Update company statistics. */
 	AfterLoadCompanyStats();
 	/* Check and update house and town values */
-	UpdateHousesAndTowns(true, false);
+	UpdateHousesAndTowns(true);
 	/* Delete news referring to no longer existing entities */
 	DeleteInvalidEngineNews();
 	/* Update livery selection windows */

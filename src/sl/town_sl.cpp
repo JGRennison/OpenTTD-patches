@@ -25,19 +25,10 @@ static bool _town_zone_radii_no_update = false;
 extern bool _town_noise_no_update;
 extern bool IsGetTownZonesCallbackHandlerPresent();
 
-HouseID SLGetCleanHouseType(TileIndex t, bool old_map_position)
-{
-	if (old_map_position && SlXvIsFeatureMissing(XSLFI_MORE_HOUSES)) {
-		return _m[t].m4 | (GB(_m[t].m3, 6, 1) << 8);
-	} else {
-		return GetCleanHouseType(t);
-	}
-}
-
 /**
  * Rebuild all the cached variables of towns.
  */
-void RebuildTownCaches(bool cargo_update_required, bool old_map_position)
+void RebuildTownCaches(bool cargo_update_required)
 {
 	InitializeBuildingCounts();
 	RebuildTownKdtree();
@@ -51,7 +42,7 @@ void RebuildTownCaches(bool cargo_update_required, bool old_map_position)
 	for (TileIndex t = 0; t < MapSize(); t++) {
 		if (!IsTileType(t, MP_HOUSE)) continue;
 
-		HouseID house_id = GetTranslatedHouseID(SLGetCleanHouseType(t, old_map_position));
+		HouseID house_id = GetTranslatedHouseID(GetCleanHouseType(t));
 		Town *town = Town::GetByTile(t);
 		IncreaseBuildingCount(town, house_id);
 		if (IsHouseCompleted(t)) town->cache.population += HouseSpec::Get(house_id)->population;
@@ -68,10 +59,10 @@ void RebuildTownCaches(bool cargo_update_required, bool old_map_position)
 	}
 }
 
-static void CheckMultiTileHouseTypes(bool &cargo_update_required, bool old_map_position, bool translate_house_types)
+static void CheckMultiTileHouseTypes(bool &cargo_update_required, bool translate_house_types)
 {
 	auto get_clean_house_type = [&](TileIndex t) -> HouseID {
-		HouseID type = SLGetCleanHouseType(t, old_map_position);
+		HouseID type = GetCleanHouseType(t);
 		if (translate_house_types) type = GetTranslatedHouseID(type);
 		return type;
 	};
@@ -123,33 +114,25 @@ static void CheckMultiTileHouseTypes(bool &cargo_update_required, bool old_map_p
  * town, the town radius and the max passengers
  * of the town.
  */
-void UpdateHousesAndTowns(bool cargo_update_required, bool old_map_position)
+void UpdateHousesAndTowns(bool cargo_update_required)
 {
-	auto get_clean_house_type = [&](TileIndex t) -> HouseID {
-		return SLGetCleanHouseType(t, old_map_position);
-	};
 	for (TileIndex t = 0; t < MapSize(); t++) {
 		if (!IsTileType(t, MP_HOUSE)) continue;
 
-		HouseID house_id = get_clean_house_type(t);
+		HouseID house_id = GetCleanHouseType(t);
 		if (!HouseSpec::Get(house_id)->enabled && house_id >= NEW_HOUSE_OFFSET) {
 			/* The specs for this type of house are not available any more, so
 			 * replace it with the substitute original house type. */
 			house_id = _house_mngr.GetSubstituteID(house_id);
-			if (old_map_position && SlXvIsFeatureMissing(XSLFI_MORE_HOUSES)) {
-				_m[t].m4 = GB(house_id, 0, 8);
-				SB(_m[t].m3, 6, 1, GB(house_id, 8, 1));
-			} else {
-				SetHouseType(t, house_id);
-			}
+			SetHouseType(t, house_id);
 			cargo_update_required = true;
 		}
 	}
 
-	CheckMultiTileHouseTypes(cargo_update_required, old_map_position, false);
-	if (cargo_update_required || SlXvIsFeatureMissing(XSLFI_MORE_HOUSES, 2)) CheckMultiTileHouseTypes(cargo_update_required, old_map_position, true);
+	CheckMultiTileHouseTypes(cargo_update_required, false);
+	if (cargo_update_required || SlXvIsFeatureMissing(XSLFI_MORE_HOUSES, 3)) CheckMultiTileHouseTypes(cargo_update_required, true);
 
-	RebuildTownCaches(cargo_update_required, old_map_position);
+	RebuildTownCaches(cargo_update_required);
 }
 
 static const NamedSaveLoad _town_supplied_desc[] = {
