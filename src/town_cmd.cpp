@@ -1605,6 +1605,7 @@ static bool TownCanGrowRoad(TileIndex tile)
 	/* Allow extending on roadtypes which can be built by town, or if the road type matches the type the town will build.
 	 * If allow_town_road_branch_non_build is enabled and the road type allows houses, then allow extending. */
 	RoadType rt = GetRoadTypeRoad(tile);
+	if (rt == INVALID_ROADTYPE) return true;
 	if (HasBit(GetRoadTypeInfo(rt)->flags, ROTF_TOWN_BUILD)) return true;
 	if (_settings_game.economy.allow_town_road_branch_non_build && !HasBit(GetRoadTypeInfo(rt)->flags, ROTF_NO_HOUSES)) return true;
 	return GetTownRoadType() == rt;
