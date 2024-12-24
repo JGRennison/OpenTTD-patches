@@ -1913,7 +1913,7 @@ static bool CanFollowRoad(const Town *t, TileIndex tile, DiagDirection dir)
 				return target_rb != ROAD_NONE;
 
 			case MP_STATION:
-				return IsDriveThroughStopTile(target_tile);
+				return IsDriveThroughStopTile(target_tile) && DiagDirToAxis(dir) == GetDriveThroughStopAxis(target_tile);
 
 			case MP_TUNNELBRIDGE:
 				return GetTunnelBridgeTransportType(target_tile) == TRANSPORT_ROAD;
