@@ -39,7 +39,7 @@ STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_EVERY_MINUTES_CUSTOM         :每 {COMMA} 分
 STR_RIVERS_VERY_MANY                                            :{RED}很多
 STR_RIVERS_EXTREMELY_MANY                                       :{RED}极多
 
-STR_CONFIG_SETTING_BRIBE_HELPTEXT_PERIODS                       :允许公司尝试贿赂当地的城镇管理机构。如果贿赂被检察机关发现，公司将无法在该镇活动半周期。
+STR_CONFIG_SETTING_BRIBE_HELPTEXT_PERIODS                       :允许公司尝试贿赂当地的城镇管理机构。如果贿赂被检察机关发现，公司将无法在该镇活动半周期
 
 STR_UNIT_NAME_VELOCITY_IMPERIAL                                 :英里/小时
 STR_UNIT_NAME_VELOCITY_METRIC                                   :千米/小时
@@ -110,7 +110,7 @@ STR_CONFIG_SETTING_ADVISED_LEAVE_DEFAULT                        :建议将此设
 STR_CONFIG_SETTING_TRAIN_BRAKING_REALISTIC                      :真实{PUSH_COLOUR}{RED}（专家）{POP_COLOUR}
 STR_CONFIG_SETTING_TRAIN_BRAKING_ASPECT_LIMITED_ON              :开{PUSH_COLOUR}{RED}（专家、困难）{POP_COLOUR}
 
-STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED        :{WHITE}无法启用真实制动，尚存有至少一个逻辑信号或双向信号。
+STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED        :{WHITE}无法启用真实制动，尚存有至少一个逻辑信号或双向信号
 
 STR_CONFIG_SETTING_DELIVERY_BALANCED                            :平衡
 
@@ -153,11 +153,11 @@ STR_CONFIG_SETTING_LIMIT_TRAIN_ACCELERATION                     :限制列车加
 STR_CONFIG_SETTING_LIMIT_TRAIN_ACCELERATION_HELPTEXT            :在使用真实列车减速模型时，同时限制列车的最大加速度
 
 STR_CONFIG_SETTING_TRAIN_ACC_BRAKING_PERCENT                    :列车加速/制动缩放因子：{STRING}
-STR_CONFIG_SETTING_TRAIN_ACC_BRAKING_PERCENT_HELPTEXT           :列车加速制动的调整比例。{}{}该设置可以在不改变列车最高速度的情况下，用于调整列车的加速和制动。
+STR_CONFIG_SETTING_TRAIN_ACC_BRAKING_PERCENT_HELPTEXT           :列车加速制动的调整比例。{}{}该设置可以在不改变列车最高速度的情况下，用于调整列车的加速和制动
 STR_CONFIG_SETTING_TRAIN_ACC_BRAKING_PERCENT_VALUE              :{COMMA}%
 
 STR_CONFIG_SETTING_TRACK_EDIT_IGNORE_REALISTIC_BRAKING          :修改轨道时忽略真实制动：{STRING}
-STR_CONFIG_SETTING_TRACK_EDIT_IGNORE_REALISTIC_BRAKING_HELPTEXT :允许在修改轨道时忽略真实制动。启用后将不会强制根据轨道占用情况而禁止修改轨道。这可能会导致不真实的列车制动行为。
+STR_CONFIG_SETTING_TRACK_EDIT_IGNORE_REALISTIC_BRAKING_HELPTEXT :允许在修改轨道时忽略真实制动。启用后将不会强制根据轨道占用情况而禁止修改轨道。这可能会导致不真实的列车制动行为
 
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT                     :通过装载式最高速度：{STRING}
 STR_CONFIG_SETTING_THROUGH_LOAD_SPEED_LIMIT_HELPTEXT            :列车在车站通过装载时的最高允许速度
@@ -202,12 +202,12 @@ STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_HELPTEXT                 :启用时，若
 STR_CONFIG_SETTING_WARN_NO_DEPOT_ORDER_IF_BREAKDOWNS_ON         :如果车损已开启
 
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER                     :载具在 {STRING} 年后不会退场
-STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_HELPTEXT            :在此年份及之后退场的载具将不会退场。{}发动机可靠性的衰减也会停止。
+STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_HELPTEXT            :在此年份及之后退场的载具将不会退场。{}发动机可靠性的衰减也会停止
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_VALUE               :{NUM}
 STR_CONFIG_SETTING_NO_EXPIRE_VEHICLES_AFTER_ZERO                :关
 
 STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER                  :载具在 {STRING} 年后不会登场
-STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_HELPTEXT         :在此年份及之后发明的载具将不会被发明。
+STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_HELPTEXT         :在此年份及之后发明的载具将不会被发明
 STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_VALUE            :{NUM}
 STR_CONFIG_SETTING_NO_INTRODUCE_VEHICLES_AFTER_ZERO             :关
 
@@ -224,27 +224,27 @@ STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS          :在列车详情
 STR_CONFIG_SETTING_SHOW_TRAIN_WEIGHT_RATIOS_IN_DETAILS_HELPTEXT :在列车详情窗口显示列车重量比
 
 STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_RECOLOUR                 :显示默认的限制信号（带蓝色信号杆）：{STRING}
-STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_RECOLOUR_HELPTEXT        :当使用默认信号图形时，带有寻路限制程序的电气信号将显示蓝色信号杆。这不会影响 NewGRF 信号图形。这样可以更容易地从视觉上区分限制信号。
+STR_CONFIG_SETTING_SHOW_RESTRICTED_SIG_RECOLOUR_HELPTEXT        :当使用默认信号图形时，带有寻路限制程序的电气信号将显示蓝色信号杆。这不会影响 NewGRF 信号图形。这样可以更容易地从视觉上区分限制信号
 
 STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF                             :使用默认图形显示所有信号：{STRING}
-STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT                    :使用默认信号图形显示所有信号，而不是使用任何 NewGRF 信号图形。当 NewGRF 提供的信号图形不清晰或无法访问时，这样可以更容易看到信号的状态和类型。
-STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT_EXTRA              :{STRING}{}“仅寻路限制信号”模式在启用信号柱重新着色且 NewGRF 本身不处理寻路限制信号的不同图形时，使用默认图像显示此种信号。
+STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT                    :使用默认信号图形显示所有信号，而不是使用任何 NewGRF 信号图形。当 NewGRF 提供的信号图形不清晰或无法访问时，这样可以更容易看到信号的状态和类型
+STR_CONFIG_SETTING_SHOW_ALL_SIG_DEF_HELPTEXT_EXTRA              :{STRING}{}“仅寻路限制信号”模式在启用信号柱重新着色且 NewGRF 本身不处理寻路限制信号的不同图形时，使用默认图像显示此种信号
 STR_CONFIG_SETTING_SHOW_ALL_SIG_RESTRICTED_RECOLOUR             :仅寻路限制信号
 
 STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES             :显示高级寻路限制功能：{STRING}
-STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :显示高级寻路限制功能。禁用时，某些高级功能不会在界面中显示，但所有玩家仍然可以使用。
+STR_CONFIG_SETTING_SHOW_ADV_TRACE_RESTRICT_FEATURES_HELPTEXT    :显示高级寻路限制功能。禁用时，某些高级功能不会在界面中显示，但所有玩家仍然可以使用
 
 STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES                        :显示可编程逻辑信号功能：{STRING}
-STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES_HELPTEXT               :显示可编程逻辑信号功能。禁用时，构建和配置可编程逻辑信号的按钮不会在界面中显示，但所有玩家仍然可以使用。
+STR_CONFIG_SETTING_SHOW_PROGSIG_FEATURES_HELPTEXT               :显示可编程逻辑信号功能。禁用时，构建和配置可编程逻辑信号的按钮不会在界面中显示，但所有玩家仍然可以使用
 
 STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES                     :显示禁止进入信号功能：{STRING}
-STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES_HELPTEXT            :显示禁止进入信号功能。禁用时，构建和配置禁止进入信号的按钮不会在界面中显示，但所有玩家仍然可以使用。
+STR_CONFIG_SETTING_SHOW_NOENTRYSIG_FEATURES_HELPTEXT            :显示禁止进入信号功能。禁用时，构建和配置禁止进入信号的按钮不会在界面中显示，但所有玩家仍然可以使用
 
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES               :显示进阶装载模式功能：{STRING}
 STR_CONFIG_SETTING_SHOW_ADV_LOADING_MODE_FEATURES_HELPTEXT      :展示进阶装载模式功能（通过式装载/卸载、道路车辆方向等）{}当禁用时，一些进阶装载模式功能将不会在用户界面中展示，但仍可用
 
 STR_CONFIG_SETTING_DISABLE_TOP_VEH_LIST_MASS_ACTIONS            :禁用一级载具列表的批量操作按钮：{STRING}
-STR_CONFIG_SETTING_DISABLE_TOP_VEH_LIST_MASS_ACTIONS_HELPTEXT   :本项禁用“所有载具”与“未分组载具”列表的部分按钮，包括“启停载具”与“前往车库”。本项旨在防止误操作带来的问题。
+STR_CONFIG_SETTING_DISABLE_TOP_VEH_LIST_MASS_ACTIONS_HELPTEXT   :本项禁用“所有载具”与“未分组载具”列表的部分按钮，包括“启停载具”与“前往车库”。本项旨在防止误操作带来的问题
 
 STR_CONFIG_SETTING_SHOW_DEPOT_SELL_GUI                          :显示回库并卖出功能：{STRING}
 STR_CONFIG_SETTING_SHOW_DEPOT_SELL_GUI_HELPTEXT                 :显示回库并卖出功能，开启之后按住 <Ctrl> 键点击回库就可改变当前回库命令模式
@@ -294,22 +294,22 @@ STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW            :在载具窗口
 STR_CONFIG_SETTING_SHOW_ORDER_NUMBER_IN_VEHICLE_VIEW_HELPTEXT   :启用后将在载具状态栏中显示载具当前命令在调度计划中的顺序
 
 STR_CONFIG_SETTING_SHOW_SPEED_FIRST_IN_VEHICLE_VIEW             :在车辆视图窗口中先显示速度：{STRING}
-STR_CONFIG_SETTING_SHOW_SPEED_FIRST_IN_VEHICLE_VIEW_HELPTEXT    :启用后，在车辆视图窗口的启动/停止栏中先显示车辆速度，然后显示目的地。
+STR_CONFIG_SETTING_SHOW_SPEED_FIRST_IN_VEHICLE_VIEW_HELPTEXT    :启用后，在车辆视图窗口的启动/停止栏中先显示车辆速度，然后显示目的地
 
 STR_CONFIG_SETTING_SHORTEN_STATUS_VEHICLE_VIEW                  :缩短状态车辆视图窗口：{STRING}
-STR_CONFIG_SETTING_SHORTEN_STATUS_VEHICLE_VIEW_HELPTEXT         :启用后，缩短用于显示目的地的文本，在车辆视图窗口的启动/停止栏中显示。
+STR_CONFIG_SETTING_SHORTEN_STATUS_VEHICLE_VIEW_HELPTEXT         :启用后，缩短用于显示目的地的文本，在车辆视图窗口的启动/停止栏中显示
 
 STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION                   :隐藏默认命令停止位置：{STRING}
-STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION_HELPTEXT          :启用后，当命令停止位置与默认位置相同时，隐藏该位置。
+STR_CONFIG_SETTING_HIDE_DEFAULT_STOP_LOCATION_HELPTEXT          :启用后，当命令停止位置与默认位置相同时，隐藏该位置
 
 STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL                              :显示铁路折线工具：{STRING}
-STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL_HELPTEXT                     :启用后，铁路建设工具栏中包括一个按钮，用于使用折线模式建造。
+STR_CONFIG_SHOW_RAIL_POLYLINE_TOOL_HELPTEXT                     :启用后，铁路建设工具栏中包括一个按钮，用于使用折线模式建造
 
 STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR             :使用日历年/周期显示载具运行成本：{STRING}
-STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR_HELPTEXT    :当使用大于一的经济速度因子时，使用日历年（日历计时模式）或周期（挂钟计时模式）显示载具运行成本，而不是使用“原始年”显示。
+STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR_HELPTEXT    :当使用大于一的经济速度因子时，使用日历年（日历计时模式）或周期（挂钟计时模式）显示载具运行成本，而不是使用“原始年”显示
 
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :启用桥隧信号高级模式：{STRING}
-STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :启用桥梁和隧道信号模拟的高级模式。禁用后，不能将不在高级模式下的桥梁/隧道更改为高级模式，但其他玩家可以选择启用此设置并使用高级模式。
+STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :启用桥梁和隧道信号模拟的高级模式。禁用后，不能将不在高级模式下的桥梁/隧道更改为高级模式，但其他玩家可以选择启用此设置并使用高级模式
 
 STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED                    :以最高速度排序轨道类型：{STRING}
 STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED_HELPTEXT           :以兼容性和速度排序轨道并代替默认排序
@@ -326,10 +326,10 @@ STR_CONFIG_SETTING_CLIMATE_THRESHOLD_COVERAGE                   :自动
 STR_CONFIG_SETTING_CLIMATE_THRESHOLD_MANUAL                     :手动
 
 STR_CONFIG_SETTING_RIVER_MIN_LENGTH                             :河流最短长度：{STRING}
-STR_CONFIG_SETTING_RIVER_MIN_LENGTH_HELPTEXT                    :河流的最短长度，本设置这也控制湖泊的生成。
+STR_CONFIG_SETTING_RIVER_MIN_LENGTH_HELPTEXT                    :河流的最短长度，本设置这也控制湖泊的生成
 
 STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM                           :河流路径随机性：{STRING}
-STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM_HELPTEXT                  :更改河流路径的随机性。
+STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM_HELPTEXT                  :更改河流路径的随机性
 
 STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL                           :从丘陵顶部水源处开始生成河流：{STRING}
 STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL_HELPTEXT                  :选择河流是否从山顶开始生成
@@ -349,7 +349,7 @@ STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_LARGE                    :大
 STR_CONFIG_SETTING_COAST_TROPICS_WIDTH_EXTRALARGE               :极大
 
 STR_CONFIG_SETTING_LAKE_SIZE                                    :湖泊大小：{STRING}
-STR_CONFIG_SETTING_LAKE_SIZE_HELPTEXT                           :控制在河流上生成的湖泊大小。
+STR_CONFIG_SETTING_LAKE_SIZE_HELPTEXT                           :控制在河流上生成的湖泊大小
 STR_CONFIG_SETTING_LAKE_SIZE_VALUE                              :{NUM}
 STR_CONFIG_SETTING_LAKE_SIZE_ZERO                               :无湖泊
 
@@ -363,7 +363,7 @@ STR_CONFIG_SETTING_HEIGHT_ROCKS                                 :石滩的大小
 STR_CONFIG_SETTING_HEIGHT_ROCKS_HELPTEXT                        :决定石滩的尺寸随高度的增加而增加的系数{}这项系数与之前设置的石滩大小值相互累积，而本项将在石滩大小值设定较小时展现出最佳的效果
 
 STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY                           :只允许“不停止”命令：{STRING}
-STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY_HELPTEXT                  :只允许列车和汽车使用“不停止”的命令。
+STR_CONFIG_SETTING_NONSTOP_ORDER_ONLY_HELPTEXT                  :只允许列车和汽车使用“不停止”的命令
 
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE                      :在地图上显示选中载具的虚拟路径：{STRING}
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_HELPTEXT             :当开启并有载具窗口被聚焦的时候，在载具命令站点和/或命令位置之间显示标记{}选择“仅车站”只显示载具在车站停车的命令（即不包括通过命令、路点和车库）
@@ -372,7 +372,7 @@ STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_ALL_LOCATIONS        :所有命令
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_MODE_STATIONS_ONLY        :仅车站
 
 STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS                     :显示载具路径覆盖标志：{STRING}
-STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS_HELPTEXT            :当开启并有载具窗口被聚焦的时候，在每条命令的位置将显示一个标志，这个标志显示了路点被经过的顺序编号及其类型。
+STR_CONFIG_SETTING_SHOW_VEHICLE_ROUTE_STEPS_HELPTEXT            :当开启并有载具窗口被聚焦的时候，在每条命令的位置将显示一个标志，这个标志显示了路点被经过的顺序编号及其类型
 
 STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR             :在载具列表中使用公司颜色标记其他公司的载具：{STRING}
 STR_CONFIG_SETTING_SHOW_VEHICLE_LIST_COMPANY_COLOUR_HELPTEXT    :在打开车站/车库时，在显示的载具列表上用公司颜色标注该公司的载具{}车站/车库的拥有者除外
@@ -442,10 +442,10 @@ STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT              :默认使用自
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT_HELPTEXT     :选择是否默认自动启用自动分离
 
 STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS                     :在时刻表中显示剩余的游戏刻：{STRING}
-STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS_HELPTEXT            :再把时刻表的单位由游戏刻转换为日和分钟的时候也显示剩余的游戏刻。
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TICKS_HELPTEXT            :再把时刻表的单位由游戏刻转换为日和分钟的时候也显示剩余的游戏刻
 
 STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS                       :使用客户端时刻表时间设置代替存档时刻表时间设置：{STRING}
-STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS_HELPTEXT              :选择是否使用本地客户端时刻表时间显示设置代替游戏存档中所保存的时刻表时间设置。
+STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS_HELPTEXT              :选择是否使用本地客户端时刻表时间显示设置代替游戏存档中所保存的时刻表时间设置
 
 STR_CONFIG_SETTING_TIME_IN_MINUTES                              :时刻表时间单位改为“分钟”：{STRING}
 STR_CONFIG_SETTING_TIME_IN_MINUTES_HELPTEXT                     :将时刻表时间单位由“日”（日历式）或“秒”（挂钟式）改为“时”与“分”
@@ -473,12 +473,12 @@ STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE                    :自动时刻表
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_RATE_HELPTEXT           :在每个步骤中要应用多少载具分离的自动时刻表变化
 
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS            :舍入自动调整的时刻表的游戏刻：{STRING}
-STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_HELPTEXT   :时刻表的“自动”功能所调整的时刻表时间没有四舍五入。一天的时长在未缩放时为 74 游戏刻。{}如果使用分钟显示时刻表时间，则会使用“每分钟游戏刻数”定义的数值，否则使用一天的默认时长 74 刻。
+STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_HELPTEXT   :时刻表的“自动”功能所调整的时刻表时间没有四舍五入。一天的时长在未缩放时为 74 游戏刻。{}如果使用分钟显示时刻表时间，则会使用“每分钟游戏刻数”定义的数值，否则使用一天的默认时长 74 刻
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_VALUE      :{COMMA}{NBSP}刻
 STR_CONFIG_SETTING_TIMETABLE_AUTOFILL_ROUNDING_TICKS_DEFAULT    :默认
 
 STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION          :计划调度时刻表默认时长：{STRING}
-STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_HELPTEXT :本项设置新计划调度的默认时长。默认值为 24 小时（1440 分钟）。在使用“日”作为计时单位时，默认时长为一年。
+STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_HELPTEXT :本项设置新计划调度的默认时长。默认值为 24 小时（1440 分钟）。在使用“日”作为计时单位时，默认时长为一年
 STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_VALUE    :{COMMA}{NBSP}分
 STR_CONFIG_SETTING_SCHEDULED_DISPATCH_DEFAULT_DURATION_DEFAULT  :默认
 
@@ -499,7 +499,7 @@ STR_CONFIG_SETTING_SHARING_FEE_RAIL                             :列车通行费
 STR_CONFIG_SETTING_SHARING_FEE_ROAD                             :车辆停放费：{STRING}/日
 STR_CONFIG_SETTING_SHARING_FEE_WATER                            :船舶停泊费：{STRING}/日
 STR_CONFIG_SETTING_SHARING_FEE_AIR                              :机场使用费：{STRING}/日
-STR_CONFIG_SETTING_SHARING_FEE_HELPTEXT                         :本费用每 74 刻支付一次，即每一个未缩放的经济日支付一次。
+STR_CONFIG_SETTING_SHARING_FEE_HELPTEXT                         :本费用每 74 刻支付一次，即每一个未缩放的经济日支付一次
 STR_CONFIG_SETTING_SHARING_PAYMENT_IN_DEBT                      :允许公司支付费用时赊账：{STRING}
 STR_CONFIG_SETTING_SHARING_USED_BY_VEHICLES                     :不能更改这个设定，载具正在使用共享设施
 STR_CONFIG_SETTING_SHARING_ORDERS_TO_OTHERS                     :不能更改这个设定，载具有途径其他公司设施的调度计划
@@ -510,7 +510,7 @@ STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_WATER              :允许其他公
 STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_AIR                :允许其他公司在机库内购买与维护飞机：{STRING}
 
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION                       :启用列车速度调整：{STRING}
-STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :当开启后，较快的列车会在经过信号时调整速度以与前方较慢列车的速度相匹配。{}“速度调整”功能可能不适用于部分信号设置风格；此功能可以使用信号“寻路限制”功能针对特定列车手动启用或禁用。
+STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :当开启后，较快的列车会在经过信号时调整速度以与前方较慢列车的速度相匹配。{}“速度调整”功能可能不适用于部分信号设置风格；此功能可以使用信号“寻路限制”功能针对特定列车手动启用或禁用
 
 STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES                 :道路车辆在转弯处减速：{STRING}
 STR_CONFIG_SETTING_SLOW_ROAD_VEHICLES_IN_CURVES_HELPTEXT        :当开启后，道路车辆将在转弯处减速（仅当真实加速开启时启用）
@@ -520,7 +520,7 @@ STR_CONFIG_SETTING_SIMULATE_SIGNALS_HELPTEXT                    :信号的桥梁
 STR_CONFIG_SETTING_SIMULATE_SIGNALS_VALUE                       :{COMMA}{NBSP}格
 
 STR_CONFIG_SETTING_DAY_LENGTH_FACTOR                            :经济速度因子：{STRING}
-STR_CONFIG_SETTING_DAY_LENGTH_FACTOR_HELPTEXT                   :本项调整经济周期的长度，并按比例减慢周期内的游戏事件。游戏中的城镇与工业货物产出、城镇发展、植物生长、基建设施维护成本、车站评价计算等都需要使用经济周期。{}在日历计时模式中，本项会影响日、月、年的长度，因此也可以用来调整与日期相关的游戏事件，如载具、房屋的登场与退场与雪线的季节性变化等。{}在挂钟计时模式中本项只缩放经济周期的时长。{}{}本设置项即为之前的“日长因子”。
+STR_CONFIG_SETTING_DAY_LENGTH_FACTOR_HELPTEXT                   :本项调整经济周期的长度，并按比例减慢周期内的游戏事件。游戏中的城镇与工业货物产出、城镇发展、植物生长、基建设施维护成本、车站评价计算等都需要使用经济周期。{}在日历计时模式中，本项会影响日、月、年的长度，因此也可以用来调整与日期相关的游戏事件，如载具、房屋的登场与退场与雪线的季节性变化等。{}在挂钟计时模式中本项只缩放经济周期的时长。{}{}本设置项即为之前的“日长因子”
 
 STR_CONFIG_SETTING_TOWN_TUNNELS                                 :允许城镇建造隧道：{STRING}
 STR_CONFIG_SETTING_TOWN_TUNNELS_HELPTEXT                        :在什么条件下城镇被允许建造道路隧道
@@ -550,7 +550,7 @@ STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA          :{STRING}{}本�
 STR_CONFIG_SETTING_TOWN_CARGO_SCALE_MODE                        :城镇货物生产缩放使用的时间间隔：{STRING}
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_MODE                    :工业货物生产缩放使用的时间间隔：{STRING}
 
-STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :每月或每生产周期的货物产量比例系数可以选择乘以“经济速度因子”选项的数值。
+STR_CONFIG_SETTING_CARGO_SCALE_MODE_HELPTEXT                    :每月或每生产周期的货物产量比例系数可以选择乘以“经济速度因子”选项的数值
 
 STR_CONFIG_SETTING_CARGO_SCALE_MODE_NORMAL                      :普通
 STR_CONFIG_SETTING_CARGO_SCALE_MODE_ECON_SPEED_REDUCTION_MULT   :乘以经济速度因子
@@ -583,7 +583,7 @@ STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_HELPTEXT               :调整在寒带
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE                  :寒带树种范围：{STRING}
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_RANGE_HELPTEXT         :雪线附近寒带树种的大致生成区间
 STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_DYNAMIC_RANGE          :对于寒带树种的季节性雪线宽度：{STRING}
-STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_DYNAMIC_RANGE_HELPTEXT :当使用季节性可变雪线时，雪线附近的树种寒带变体生成时的概率百分比{}0% 使用更低的（冬季）雪线，100% 使用在夏季到冬季时的所有雪线可生成区间范围。
+STR_CONFIG_SETTING_TREES_AROUND_SNOWLINE_DYNAMIC_RANGE_HELPTEXT :当使用季节性可变雪线时，雪线附近的树种寒带变体生成时的概率百分比{}0% 使用更低的（冬季）雪线，100% 使用在夏季到冬季时的所有雪线可生成区间范围
 
 STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS                           :建造连接城镇的公共道路：{STRING}
 STR_CONFIG_SETTING_BUILD_PUBLIC_ROADS_HELPTEXT                  :生成连接城镇的公共道路{}地图越大，生成的时间越长{}“生成不含弯道的道路”选项被选用时将避免生成弯道，其结果是道路的连接将呈网格状布局
@@ -601,7 +601,7 @@ STR_CONFIG_SETTING_TREE_GROWTH_STATIC                           :停滞
 
 STR_CONFIG_SETTING_TOWN_ZONES                                   :{ORANGE}自定义城镇区域
 STR_CONFIG_SETTING_TOWN_ZONE_CALC_MODE                          :使用自定义城镇区域计算方式：{STRING}
-STR_CONFIG_SETTING_TOWN_ZONE_CALC_MODE_HELPTEXT                 :手动设置城镇区域。自定义城镇区域的默认设置类似于默认城镇生成设置。当区域 0 在特定的更大的值得时候一些区域只需要很小的更改。
+STR_CONFIG_SETTING_TOWN_ZONE_CALC_MODE_HELPTEXT                 :手动设置城镇区域。自定义城镇区域的默认设置类似于默认城镇生成设置。当区域 0 在特定的更大的值得时候一些区域只需要很小的更改
 STR_CONFIG_SETTING_TOWN_ZONE_0_MULT                             :城镇区域 0 因子：{STRING}
 STR_CONFIG_SETTING_TOWN_ZONE_0_MULT_HELPTEXT                    :城镇区域 0 大小因子（最外面的没有人行道的道路）这个设定适合更大的值
 STR_CONFIG_SETTING_TOWN_ZONE_1_MULT                             :城镇区域 1 因子：{STRING}
@@ -646,10 +646,10 @@ STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO                       :对此货物重
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM                 :重载{STRING}的分配模式：{STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_HELPTEXT              :“默认”使用默认配置{}“对称”意味着从甲车站运往乙车站的货物数量与从乙车站运往甲车站的大致相同{}“不对称”意味着任何一站前往另一个车站的货物的数量会被系统任意地决定{}“手动”意味着对于此类货物系统不会自动分配其目的地
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_DEFAULT               :默认
-STR_CONFIG_SETTING_DISTRIBUTION_HELPTEXT_EXTRA                  :{STRING}{}“不对称（平衡分布）”意味着货物将被平均分配到接收该类型货物的车站。“不平衡（最近距离）”意味着货物会被送到最近的任何一个接收该类型货物的车站。
+STR_CONFIG_SETTING_DISTRIBUTION_HELPTEXT_EXTRA                  :{STRING}{}“不对称（平衡分布）”意味着货物将被平均分配到接收该类型货物的车站。“不平衡（最近距离）”意味着货物会被送到最近的任何一个接收该类型货物的车站
 
 STR_CONFIG_SETTING_AIRCRAFT_PATH_COST                           :使用飞机时路径的距离缩放：{STRING}
-STR_CONFIG_SETTING_AIRCRAFT_PATH_COST_HELPTEXT                  :这是当使用飞机时，对于路径（度量距离）的费用计算的缩放系数，这可以让它们比它们实际更长或更短。这可以减小飞机由于直线飞行导致空域超载的趋势。
+STR_CONFIG_SETTING_AIRCRAFT_PATH_COST_HELPTEXT                  :这是当使用飞机时，对于路径（度量距离）的费用计算的缩放系数，这可以让它们比它们实际更长或更短。这可以减小飞机由于直线飞行导致空域超载的趋势
 
 STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER          :在多人联机服务器中同步本地化设置：{STRING}
 STR_CONFIG_SETTING_SYNC_LOCALE_SETTINGS_NETWORK_SERVER_HELPTEXT :当通过网络客户端加入多玩家服务器时，改变本地化设置来匹配服务器
@@ -710,13 +710,13 @@ STR_CONFIG_SETTING_ALLOW_CONVERT_TOWN_ROAD_NO_HOUSES            :允许将城镇
 STR_CONFIG_SETTING_ALLOW_CONVERT_TOWN_ROAD_NO_HOUSES_HELPTEXT   :决定玩家是否可以将城镇道路转为不允许生成房屋的道路类型{}此选项默认关闭，因为这可能导致城镇缩水
 
 STR_CONFIG_SETTING_PURCHASED_LAND_CLEAR_GROUND                  :使用地块原始图像呈现公司土地：{STRING}
-STR_CONFIG_SETTING_PURCHASED_LAND_CLEAR_GROUND_HELPTEXT         :启用时，使用地块的原始图像呈现公司购买的土地，即显示草地、沙地、雪地、海岸等。
+STR_CONFIG_SETTING_PURCHASED_LAND_CLEAR_GROUND_HELPTEXT         :启用时，使用地块的原始图像呈现公司购买的土地，即显示草地、沙地、雪地、海岸等
 
 STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY                  :仅生成初级产业：{STRING}
-STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY_HELPTEXT         :启用时，在地图生成与游戏进行中只会生成一级产业。
+STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY_HELPTEXT         :启用时，在地图生成与游戏进行中只会生成一级产业
 
 STR_CONFIG_SETTING_INDUSTRY_EVENT_RATE                          :工业事件频率：{STRING}
-STR_CONFIG_SETTING_INDUSTRY_EVENT_RATE_HELPTEXT                 :缩放经济周期内的工业事件频率，包括工业生产变化、开业和倒闭。
+STR_CONFIG_SETTING_INDUSTRY_EVENT_RATE_HELPTEXT                 :缩放经济周期内的工业事件频率，包括工业生产变化、开业和倒闭
 
 STR_PURCHASE_LAND_PERMITTED_NO                                  :否
 STR_PURCHASE_LAND_PERMITTED_SINGLE                              :允许单格操作
@@ -743,7 +743,7 @@ STR_CONFIG_OCCUPANCY_SMOOTHNESS                                 :测量命令占
 STR_CONFIG_OCCUPANCY_SMOOTHNESS_HELPTEXT                        :将此项设置为 0% 时，载具的载货变化将立即在命令占用中反映出来。将此项设置为 100% 时，命令占用将维持不变
 
 STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE                       :克隆/复制/共享调度计划的进阶设置：{STRING}
-STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE_HELPTEXT              :在克隆/复制/共享现有载具的调度计划后：{}列车、道路载具、船舶：如果载具在一个车库中，该车库在调度计划中，则跳到该车库的调度计划之一。{}飞机：如果飞机在机库中，相关的机场在调度计划列表中，则跳到该机场的调度计划之一。
+STR_CONFIG_SETTING_ADVANCE_ORDER_ON_CLONE_HELPTEXT              :在克隆/复制/共享现有载具的调度计划后：{}列车、道路载具、船舶：如果载具在一个车库中，该车库在调度计划中，则跳到该车库的调度计划之一。{}飞机：如果飞机在机库中，相关的机场在调度计划列表中，则跳到该机场的调度计划之一
 
 STR_CONFIG_SETTING_COPY_CLONE_ADD_TO_GROUP                      :在复制 - 克隆组中添加载具：{STRING}
 STR_CONFIG_SETTING_COPY_CLONE_ADD_TO_GROUP_HELPTEXT             :设置是否将不共享调度计划的载具添加到载具克隆组中
@@ -752,10 +752,10 @@ STR_CONFIG_SETTING_REMAIN_IF_NEXT_ORDER_SAME_STATION            :如果下一条
 STR_CONFIG_SETTING_REMAIN_IF_NEXT_ORDER_SAME_STATION_HELPTEXT   :如果载具的下一条命令是为当前车站，那么载具将停留在原地装卸货而不是驶离当前车站
 
 STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS                   :使用 <Ctrl> 键拖拽设置信号时忽略路点与车站：{STRING}
-STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS_HELPTEXT          :设置使用 <Ctrl> 键拖拽设置信号时的行为。禁用时，当游戏检测到到达车站或路点时信号设置停止。启用时，信号检测将忽略车站与路点并继续设置信号。
+STR_CONFIG_SETTING_DRAG_SIGNALS_SKIP_STATIONS_HELPTEXT          :设置使用 <Ctrl> 键拖拽设置信号时的行为。禁用时，当游戏检测到到达车站或路点时信号设置停止。启用时，信号检测将忽略车站与路点并继续设置信号
 
 STR_CONFIG_SETTING_DRAG_SIGNALS_STOP_RESTRICTED_SIGNAL          :使用 <Ctrl> 键拖拽移除信号时在寻路限制信号处停止：{STRING}
-STR_CONFIG_SETTING_DRAG_SIGNALS_STOP_RESTRICTED_SIGNAL_HELPTEXT :设置使用 <Ctrl> 键拖拽移除信号时的行为。启用时，游戏将在检测到信号有寻路限制程序时停止移除信号。
+STR_CONFIG_SETTING_DRAG_SIGNALS_STOP_RESTRICTED_SIGNAL_HELPTEXT :设置使用 <Ctrl> 键拖拽移除信号时的行为。启用时，游戏将在检测到信号有寻路限制程序时停止移除信号
 
 STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED                   :{WHITE}不能更改设置……
 STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED_NEWGRF            :{WHITE}……有 NewGRF 依赖此设置
@@ -790,10 +790,10 @@ STR_LINKGRAPH_STATS_TOOLTIP_PRODUCTION_INTERVAL                 :{BLACK}每个�
 
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL                         :{BLACK}使用折线模式建设铁路。按住 <Ctrl> 键操作以移除铁路，按住 <Shift> 键操作以显示预计成本
 
-STR_BUILD_SIGNAL_SEMAPHORE_PROG_TOOLTIP                         :{BLACK}可编程逻辑信号（臂板）{}可编程逻辑信号是一种复合信号，允许制定复杂的通行规则。
-STR_BUILD_SIGNAL_SEMAPHORE_NO_ENTRY_TOOLTIP                     :{BLACK}禁入信号（臂板）{}路径信号灯为列车预留一条到安全停车位的路径，而其它路径仍然可以使用，从而允许一列以上的列车同时进入一个信号区间。禁入信号不允许列车逆行。
-STR_BUILD_SIGNAL_ELECTRIC_PROG_TOOLTIP                          :{BLACK}可编程逻辑信号（电子）{}可编程逻辑信号是一种复合信号，允许制定复杂的通行规则。
-STR_BUILD_SIGNAL_ELECTRIC_NO_ENTRY_TOOLTIP                      :{BLACK}禁入信号（电子）{}路径信号灯为列车预留一条到安全停车位的路径，而其它路径仍然可以使用，从而允许一列以上的列车同时进入一个信号区间。禁入信号不允许列车逆行。
+STR_BUILD_SIGNAL_SEMAPHORE_PROG_TOOLTIP                         :{BLACK}可编程逻辑信号（臂板）{}可编程逻辑信号是一种复合信号，允许制定复杂的通行规则
+STR_BUILD_SIGNAL_SEMAPHORE_NO_ENTRY_TOOLTIP                     :{BLACK}禁入信号（臂板）{}路径信号灯为列车预留一条到安全停车位的路径，而其它路径仍然可以使用，从而允许一列以上的列车同时进入一个信号区间。禁入信号不允许列车逆行
+STR_BUILD_SIGNAL_ELECTRIC_PROG_TOOLTIP                          :{BLACK}可编程逻辑信号（电子）{}可编程逻辑信号是一种复合信号，允许制定复杂的通行规则
+STR_BUILD_SIGNAL_ELECTRIC_NO_ENTRY_TOOLTIP                      :{BLACK}禁入信号（电子）{}路径信号灯为列车预留一条到安全停车位的路径，而其它路径仍然可以使用，从而允许一列以上的列车同时进入一个信号区间。禁入信号不允许列车逆行
 STR_BUILD_SIGNAL_DEFAULT_STYLE                                  :默认
 STR_BUILD_SIGNAL_STYLE_TOOLTIP                                  :{BLACK}选择信号样式
 
@@ -1239,7 +1239,7 @@ STR_SAVELOAD_DIFFERENT_ID                                       :{YELLOW}这个�
 STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_ID                       :{WHITE}重写文件（不同的游戏）
 STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_VERSION_SUFFIX           :{STRING}（不同版本）
 STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_ID                     :{YELLOW}你确定覆盖现有存档吗？{}{}这个存档来自于一局不同的游戏
-STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_VERSION_SUFFIX         :{STRING}{}{}此文件来源于不同的版本{STRING}.{}如果文件被重写则不能被原先的游戏版本读取。
+STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_VERSION_SUFFIX         :{STRING}{}{}此文件来源于不同的版本{STRING}.{}如果文件被重写则不能被原先的游戏版本读取
 STR_SAVELOAD_OVERWRITE_WARNING_VERSION_NAME                     :（{STRING}）
 
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}雪线高度：
@@ -1316,7 +1316,7 @@ STR_DEPARTURES_DEPARTURE_MODE_TOOLTIP                           :{BLACK}控制�
 STR_DEPARTURES_TIMES_BUTTON                                     :{BLACK}时间
 STR_DEPARTURES_TIMES_TOOLTIP                                    :{BLACK}显示到达载具计划时间
 STR_DEPARTURES_EMPTY_BUTTON                                     :{BLACK}空转
-STR_DEPARTURES_EMPTY_TOOLTIP                                    :{BLACK}包括出发、到达时间与非营业站点，即载具经过或停留但不装载客货的站点。
+STR_DEPARTURES_EMPTY_TOOLTIP                                    :{BLACK}包括出发、到达时间与非营业站点，即载具经过或停留但不装载客货的站点
 STR_DEPARTURES_VIA_BUTTON                                       :{BLACK}经
 STR_DEPARTURES_VIA_TOOLTIP                                      :{BLACK}显示表定通过载具
 STR_DEPARTURES_FILTER_BUTTON                                    :{BLACK}过滤
@@ -1342,7 +1342,7 @@ STR_DEPARTURES_VEH                                              :{ORANGE}{VEHICL
 STR_DEPARTURES_CALLING_AT                                       :{ORANGE}前往：
 STR_DEPARTURES_CALLING_AT_STATION                               :{STRING}、{STRING}
 STR_DEPARTURES_CALLING_AT_LAST_STATION                          :{STRING}、{STRING}
-STR_DEPARTURES_CALLING_AT_LIST                                  :{ORANGE}{STRING}。
+STR_DEPARTURES_CALLING_AT_LIST                                  :{ORANGE}{STRING}
 STR_DEPARTURES_CALLING_AT_LIST_SMART_TERMINUS                   :{ORANGE}{STRING}。此服务延续到 {STRING}
 STR_DEPARTURES_CALLING_AT_STATION_WITH_TIME                     :{STRING}（{TT_TIME_ABS}）
 STR_DEPARTURES_TINY                                             :{TINY_FONT}{STRING}
@@ -1607,8 +1607,8 @@ STR_VEHICLE_DETAILS_PRODUCTION_INTERVALS                        :生产周期
 STR_VEHICLE_DETAILS_LAST_SERVICE_PRODUCTION_INTERVALS_AGO       :上次维护：{LTBLUE}{NUM} 生产周期前
 STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PRODUCTION_INTERVALS     :{BLACK}维护间隔：{LTBLUE}{COMMA}{NBSP}生产周期{BLACK}   {STRING}
 
-STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_PRODINT :{BLACK}将维修间隔增加 5 个生产周期。按住 <Ctrl> 点击可将维修间隔增加 1 个生产周期。
-STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_PRODINT :{BLACK}将维修间隔缩短 5 个生产周期。按住 <Ctrl> 点击可将维修间隔缩短 1 个生产周期。
+STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_PRODINT :{BLACK}将维修间隔增加 5 个生产周期。按住 <Ctrl> 点击可将维修间隔增加 1 个生产周期
+STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_PRODINT :{BLACK}将维修间隔缩短 5 个生产周期。按住 <Ctrl> 点击可将维修间隔缩短 1 个生产周期
 
 STR_ORDER_DROP_CARGO_TYPE_LOAD                                  :以货物类型装载
 STR_ORDER_DROP_CARGO_TYPE_UNLOAD                                :以货物类型卸载
@@ -1780,7 +1780,7 @@ STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NO_WAIT_TIME             :{PUSH_COLOUR}{R
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_SCHEDULE_INDEX           :{NUM}{NBSP}-{NBSP}
 STR_TIMETABLE_SCHEDULED_DISPATCH_ORDER_NAMED_SCHEDULE           :{STRING}{NBSP}-{NBSP}
 
-STR_TIMETABLE_LOCK_ORDER_TIME_TOOLTIP                           :{BLACK}锁定/解锁突出显示的调度任务的时间量（按住 <Ctrl> 键操作以为所有调度任务设置锁定状态）。{}锁定时，时刻表自动填充或自动调整不会更改时间。
+STR_TIMETABLE_LOCK_ORDER_TIME_TOOLTIP                           :{BLACK}锁定/解锁突出显示的调度任务的时间量（按住 <Ctrl> 键操作以为所有调度任务设置锁定状态）。{}锁定时，时刻表自动填充或自动调整不会更改时间
 
 STR_TIMETABLE_LEAVE_EARLY_ORDER                                 :[提前离开]
 STR_TIMETABLE_LEAVE_EARLY_ORDER_FULL_ANY                        :[如果任意货物装满则提前离开]
@@ -2047,7 +2047,7 @@ STR_TMPL_ADD_TOOLTIP                                            :{BLACK}将选�
 STR_TMPL_ADD_REFIT_TOOLTIP                                      :{BLACK}改装选中的载具并添加至模板
 
 STR_TMPL_SET_USEDEPOT                                           :{BLACK}使用车库闲置载具
-STR_TMPL_SET_USEDEPOT_TIP                                       :{BLACK}替换时使用车库中闲置载具以减少购买成本。{}载具必须处于停止状态，且不得有任何调度计划、分组或共享调度计划。
+STR_TMPL_SET_USEDEPOT_TIP                                       :{BLACK}替换时使用车库中闲置载具以减少购买成本。{}载具必须处于停止状态，且不得有任何调度计划、分组或共享调度计划
 STR_TMPL_SET_KEEPREMAINDERS                                     :{BLACK}保留旧车厢
 STR_TMPL_SET_KEEPREMAINDERS_TIP                                 :{BLACK}在完成模板更新之后保留所有剩下来的从老列车上卸下来的车厢并把它们设置成闲置状态以供之后的使用
 STR_TMPL_SET_REFIT_AS_TEMPLATE                                  :{BLACK}与模板一致
@@ -2080,7 +2080,7 @@ STR_TMPL_RPLALLGUI_INSET_BOTTOM                                 :{BLACK}当前�
 STR_TMPL_RPLALLGUI_BUTTON_RPLALL                                :{BLACK}替换全部
 STR_TMPL_RPLALLGUI_BUTTON_APPLY                                 :{BLACK}应用
 STR_TMPL_RPLALLGUI_BUTTON_CANCEL                                :{BLACK}取消
-STR_TMPL_RPLALLGUI_USE_TIP                                      :{BLACK}从每个列表中选择一个载具类型，然后按“替换全部”。如果你对模板列表中显示的结果满意，按“应用”来实际应用这些变化。
+STR_TMPL_RPLALLGUI_USE_TIP                                      :{BLACK}从每个列表中选择一个载具类型，然后按“替换全部”。如果你对模板列表中显示的结果满意，按“应用”来实际应用这些变化
 
 STR_TMPL_CANT_CREATE                                            :{WHITE}不能创建一个模板载具或真实载具
 STR_TMPL_CANT_RENAME                                            :{WHITE}无法重命名模板……
@@ -2090,8 +2090,8 @@ STR_SCHDISPATCH_CAPTION                                         :{WHITE}{VEHICLE
 STR_SCHDISPATCH_ENABLED                                         :{BLACK}启用
 STR_SCHDISPATCH_ENABLED_TOOLTIP                                 :{BLACK}对此命令应用计划调度
 STR_SCHDISPATCH_ADD                                             :{BLACK}添加发车时间
-STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}为此时刻表添加发车时间。
-STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA                               :{BLACK}{STRING}按住 <Ctrl> 键操作以添加多个发车时间。
+STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}为此时刻表添加发车时间
+STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA                               :{BLACK}{STRING}按住 <Ctrl> 键操作以添加多个发车时间
 STR_SCHDISPATCH_ADD_CAPTION                                     :{BLACK}发车时间
 STR_SCHDISPATCH_DURATION                                        :{BLACK}持续长度
 STR_SCHDISPATCH_DURATION_TOOLTIP                                :{BLACK}设置本时刻表的持续时间长度
@@ -2166,7 +2166,7 @@ STR_SCHDISPATCH_SLOT_TOOLTIP_TIME_SUFFIX                        :（{TT_TIME}）
 STR_SCHDISPATCH_SLOT_TOOLTIP_TAG                                :{}标签 #{NUM}
 STR_SCHDISPATCH_SLOT_TOOLTIP_TAG_NAMED                          :{}标签 #{NUM}：{STRING}
 
-STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}线路最近没有发车。
+STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE                       :{BLACK}线路最近没有发车
 STR_SCHDISPATCH_SUMMARY_VEHICLE_NO_LAST_DEPARTURE               :{BLACK}载具最近没有发车
 STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAILS                       :（{STRING}）
 STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_SEPARATOR              :，{STRING}
@@ -2175,26 +2175,26 @@ STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_WAS_LAST               :最晚发车时
 STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG                    :标签 #{NUM}
 STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAIL_TAG_NAMED              :标签 #{NUM}（{STRING}）
 
-STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}最后一班已于 {TT_TIME} 发车。
-STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}最后一班尚未发车，计划于 {TT_TIME} 发车。
+STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_PAST                     :{BLACK}最后一班已于 {TT_TIME} 发车
+STR_SCHDISPATCH_SUMMARY_LAST_DEPARTURE_FUTURE                   :{BLACK}最后一班尚未发车，计划于 {TT_TIME} 发车
 
-STR_SCHDISPATCH_SUMMARY_VEHICLE_DEPARTURE_PAST                  :{BLACK}当前载具已于 {TT_TIME} 发车{STRING}。
-STR_SCHDISPATCH_SUMMARY_VEHICLE_DEPARTURE_FUTURE                :{BLACK}当前载具尚未离开，计划于 {TT_TIME} 发车{STRING}。
+STR_SCHDISPATCH_SUMMARY_VEHICLE_DEPARTURE_PAST                  :{BLACK}当前载具已于 {TT_TIME} 发车{STRING}
+STR_SCHDISPATCH_SUMMARY_VEHICLE_DEPARTURE_FUTURE                :{BLACK}当前载具尚未离开，计划于 {TT_TIME} 发车{STRING}
 
-STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}预计时刻表至少需要 {COMMA} 辆载具。
-STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}本时刻表每 {STRING} 重复一次。
+STR_SCHDISPATCH_SUMMARY_L1                                      :{BLACK}预计时刻表至少需要 {COMMA} 辆载具
+STR_SCHDISPATCH_SUMMARY_L2                                      :{BLACK}本时刻表每 {STRING} 重复一次
 STR_SCHDISPATCH_SUMMARY_L3                                      :{BLACK}时刻表时间范围：{TT_TIME}-{TT_TIME}
-STR_SCHDISPATCH_SUMMARY_L4                                      :{BLACK}在跳过发车时间前最多允许延误 {STRING}。
+STR_SCHDISPATCH_SUMMARY_L4                                      :{BLACK}在跳过发车时间前最多允许延误 {STRING}
 STR_SCHDISPATCH_SUMMARY_NOT_ENABLED                             :{BLACK}时刻表尚未激活
 STR_SCHDISPATCH_SUMMARY_REUSE_SLOTS_ENABLED                     :{BLACK}所有发车时间可被多次使用
-STR_SCHDISPATCH_SUMMARY_NEXT_AVAILABLE_DEPARTURE                :{BLACK}下一可用发车时间：{TT_TIME}。
+STR_SCHDISPATCH_SUMMARY_NEXT_AVAILABLE_DEPARTURE                :{BLACK}下一可用发车时间：{TT_TIME}
 
-STR_SCHDISPATCH_SLOT_OUTSIDE_SCHEDULE                           :{BLACK}在时刻表持续时间外有一个或多个发车时间。
+STR_SCHDISPATCH_SLOT_OUTSIDE_SCHEDULE                           :{BLACK}在时刻表持续时间外有一个或多个发车时间
 
 STR_SCHDISPATCH_NOT_ASSIGNED_TO_ORDER                           :{BLACK}时刻表未分配至一条命令
 STR_SCHDISPATCH_ASSIGNED_TO_ORDER                               :{BLACK}时刻表已分配至命令 #{NUM}：{STRING}.
-STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_PAST                       :{BLACK}这是在 {NUM} 时或更长时间前。
-STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_FUTURE                     :{BLACK}这是在 {NUM} 时或更长时间后。
+STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_PAST                       :{BLACK}这是在 {NUM} 时或更长时间前
+STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_FUTURE                     :{BLACK}这是在 {NUM} 时或更长时间后
 
 STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_START                       :{BLACK}开始：
 STR_SCHDISPATCH_ADD_DEPARTURE_SLOTS_STEP                        :{BLACK}历时：
@@ -2294,7 +2294,7 @@ STR_CONFIG_SETTING_DEPOT_TOOLTIP_MODE_SIMPLE                    :简单
 STR_CONFIG_SETTING_DEPOT_TOOLTIP_MODE_DETAILED                  :详细
 
 STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME               :路点与浮标工具提示：{STRING}
-STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME_HELPTEXT      :当鼠标悬停在路点或浮标上时在工具提示中显示其名称。
+STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME_HELPTEXT      :当鼠标悬停在路点或浮标上时在工具提示中显示其名称
 STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME_OFF           :关闭
 STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME_ON_IF_HIDDEN  :如果路点名称已隐藏则开启
 STR_CONFIG_SETTING_WAYPOINT_VIEWPORT_TOOLTIP_NAME_ALWAYS_ON     :始终开启
@@ -2308,7 +2308,7 @@ STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_ON_IF_HIDDEN   :如果站点名
 STR_CONFIG_SETTING_STATION_VIEWPORT_TOOLTIP_NAME_ALWAYS_ON      :始终开启
 
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE                  :车站评价工具提示：{STRING}
-STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_HELPTEXT         :设置是否显示车站评价的工具提示以及信息详细程度。
+STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_HELPTEXT         :设置是否显示车站评价的工具提示以及信息详细程度
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_OFF              :关闭
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_SIMPLE           :简单
 STR_CONFIG_SETTING_STATION_RATING_TOOLTIP_MODE_DETAILED         :详细
@@ -2343,5 +2343,5 @@ STR_COMPANY_PASSWORD_MAKE_DEFAULT                               :{BLACK}默认�
 STR_COMPANY_PASSWORD_MAKE_DEFAULT_TOOLTIP                       :{BLACK}将此公司密码作为新公司的默认密码
 
 STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}密码
-STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}设置密码可以防止未经授权的用户随意加入。
+STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}设置密码可以防止未经授权的用户随意加入
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}设置公司密码
