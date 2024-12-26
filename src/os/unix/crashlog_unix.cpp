@@ -452,7 +452,7 @@ class CrashLogUnix final : public CrashLog {
 			" rsi: 0x{:016X} rdi: 0x{:016X} rbp: 0x{:016X} rsp: 0x{:016X}\n"
 			" r8:  0x{:016X} r9:  0x{:016X} r10: 0x{:016X} r11: 0x{:016X}\n"
 			" r12: 0x{:016X} r13: 0x{:016X} r14: 0x{:016X} r15: 0x{:016X}\n"
-			" rip: 0x{:016X} eflags: 0x{:08X}, err: 0x%{:X}\n\n",
+			" rip: 0x{:016X} eflags: 0x{:08X}, err: 0x{:X}\n\n",
 			gregs[REG_RAX],
 			gregs[REG_RBX],
 			gregs[REG_RCX],
