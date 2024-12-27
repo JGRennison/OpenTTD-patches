@@ -1836,6 +1836,9 @@ bool AfterLoadGame()
 
 	AfterLoadStations();
 
+	/* Station blocked, wires and pylon flags need to be stored in the map. */
+	UpdateStationTileCacheFlags(SlXvIsFeatureMissing(XSLFI_STATION_TILE_CACHE_FLAGS));
+
 	/* Time starts at 0 instead of 1920.
 	 * Account for this in older games by adding an offset */
 	if (IsSavegameVersionBefore(SLV_31)) {
@@ -3440,10 +3443,6 @@ bool AfterLoadGame()
 			c->months_of_bankruptcy = 3 * c->months_of_bankruptcy;
 		}
 	}
-
-	/* Station blocked, wires and pylon flags need to be stored in the map.
-	 * This is done here as the SLV_182 check below needs the blocked status. */
-	UpdateStationTileCacheFlags(SlXvIsFeatureMissing(XSLFI_STATION_TILE_CACHE_FLAGS));
 
 	if (IsSavegameVersionBefore(SLV_182)) {
 		/* Aircraft acceleration variable was bonkers */

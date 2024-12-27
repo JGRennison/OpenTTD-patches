@@ -66,14 +66,14 @@ public:
 	/** Notify the nodelist that we don't want to discard the given node. */
 	inline void FoundBestNode(Titem &item)
 	{
-		/* for now it is enough to invalidate this->new_node if it is our given node */
+		/* for now it is enough to invalidate new_node if it is our given node */
 		if (&item == this->new_node) {
 			this->new_node = nullptr;
 		}
 		/* TODO: do we need to store best nodes found in some extra list/array? Probably not now. */
 	}
 
-	/** insert given item as open node (into this->open_nodes and this->open_queue) */
+	/** insert given item as open node (into open_nodes and open_queue) */
 	inline void InsertOpenNode(Titem &item)
 	{
 		dbg_assert(this->closed_nodes.Find(item.GetKey()) == nullptr);
