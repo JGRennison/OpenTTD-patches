@@ -38,9 +38,13 @@ OldIndustryProduced _old_industry_produced;
 
 void LoadMoveOldAcceptsProduced(Industry *i)
 {
-	i->accepted_cargo_count = 0;
-	for (uint8_t j = 0; j < _old_industry_accepted.old_cargo.size(); j++) {
-		if (_old_industry_accepted.old_cargo[j] != INVALID_CARGO) i->accepted_cargo_count = j + 1;
+	if (IsSavegameVersionBefore(SLV_78)) {
+		i->accepted_cargo_count = INDUSTRY_ORIGINAL_NUM_INPUTS;
+	} else {
+		i->accepted_cargo_count = 0;
+		for (uint8_t j = 0; j < _old_industry_accepted.old_cargo.size(); j++) {
+			if (_old_industry_accepted.old_cargo[j] != INVALID_CARGO) i->accepted_cargo_count = j + 1;
+		}
 	}
 	i->accepted = std::make_unique<Industry::AcceptedCargo[]>(i->accepted_cargo_count);
 	for (uint8_t j = 0; j < i->accepted_cargo_count; j++) {
@@ -50,9 +54,13 @@ void LoadMoveOldAcceptsProduced(Industry *i)
 		a.last_accepted = _old_industry_accepted.old_last_accepted[j];
 	}
 
-	i->produced_cargo_count = 0;
-	for (uint8_t j = 0; j < _old_industry_produced.old_cargo.size(); j++) {
-		if (_old_industry_produced.old_cargo[j] != INVALID_CARGO) i->produced_cargo_count = j + 1;
+	if (IsSavegameVersionBefore(SLV_78)) {
+		i->produced_cargo_count = INDUSTRY_ORIGINAL_NUM_OUTPUTS;
+	} else {
+		i->produced_cargo_count = 0;
+		for (uint8_t j = 0; j < _old_industry_produced.old_cargo.size(); j++) {
+			if (_old_industry_produced.old_cargo[j] != INVALID_CARGO) i->produced_cargo_count = j + 1;
+		}
 	}
 	i->produced = std::make_unique<Industry::ProducedCargo[]>(i->produced_cargo_count);
 	for (uint8_t j = 0; j < i->produced_cargo_count; j++) {
