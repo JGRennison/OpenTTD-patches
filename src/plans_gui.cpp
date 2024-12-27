@@ -709,7 +709,9 @@ void CcAddPlan(const CommandCost &result, TileIndex tile, uint32_t p1, uint32_t 
 
 	Window *w = FindWindowById(WC_PLANS, 0);
 	if (w != nullptr) {
+		w->ClearEditBox(WID_PLN_FILTER);
 		w->InvalidateData(INVALID_PLAN, false);
+		if (_current_plan == nullptr) return;
 		((PlansWindow *) w)->SelectPlan(_current_plan->index);
 		if (!w->IsWidgetLowered(WID_PLN_ADD_LINES)) {
 			w->SetWidgetDisabledState(WID_PLN_ADD_LINES, false);
