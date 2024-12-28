@@ -1883,7 +1883,7 @@ CommandCost CmdBuildSingleSignal(TileIndex tile, DoCommandFlag flags, uint32_t p
 			}
 
 		} else {
-			if (_ctrl_pressed && GetSignalStyle(tile, track) != 0) {
+			if (ctrl_pressed && GetSignalStyle(tile, track) != 0) {
 				SignalType new_sigtype = NextSignalType(GetSignalType(tile, track), which_signals);
 				if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && IsSignalTypeUnsuitableForRealisticBraking(new_sigtype)) return CMD_ERROR;
 				if (!is_style_usable(GetSignalVariant(tile, track), GetSignalStyle(tile, track), 1 << new_sigtype)) return CommandCost(STR_ERROR_UNSUITABLE_SIGNAL_TYPE);
