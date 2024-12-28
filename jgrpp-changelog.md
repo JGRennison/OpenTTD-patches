@@ -2,6 +2,17 @@
 
 * * *
 
+### v0.63.3 (2024-12-28)
+* Fix crash when creating a new plan, when the plan text filter was active.
+* Fix server crash which occurred when a network client encountered a multiplayer desync.
+* Fix multiplayer desync which could occur when using the signal tool on an existing signal with a custom signal style.
+* Fix incorrect industry cargoes when loading very old savegame files.
+* Town growth:
+  * Add setting to allow towns to branch from non-town road types which allow houses.
+  * Fix handling of non-connecting non-buildable adjacent road tiles in town growth (in non-grid layouts).
+* From vanilla: Increase the limit of NewGRF house IDs in a single game to 4096.
+* Bump trunk base from commit eacec144b03c84a5bf35b598325a100288ecc2a2 to commit dd87bf9333bd7f62dee2f3b526e6fc6b6ee2fea1.
+
 ### v0.63.2 (2024-12-12)
 * Fix crash which could occur when abandoning the game to return to the main menu when using multi-aspect signalling.
 * Fix order backups (preserving orders when selling and then buying a vehicle) not working for non-shared order lists.
