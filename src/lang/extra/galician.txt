@@ -543,6 +543,9 @@ STR_CONFIG_SETTING_ALLOW_TOWN_BRIDGES_HELPTEXT                  :Habilitar isto 
 STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH                    :As vilas permíteselles medrar por defecto: {STRING}
 STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH_HELPTEXT           :Esta configuración controla o estado por defecto para a sobreescritura de crecemento por vila
 
+STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_BRANCH_NON_BUILD            :As vilas permíteselles crear estradas dende outras estradas con casas nas que as vilas non poden construír: {STRING}
+STR_CONFIG_SETTING_ALLOW_TOWN_ROADS_BRANCH_NON_BUILD_HELPTEXT   :Isto permite as vilas crear cruces en tipos de estrada que as vilas non poden construír.{}Isto é útil para reducir o serpenteo de casas o longo de estradas construídas polos xogadores e evitar que as estradas construídas polos xogadores bloqueen o crecemento das vilas.
+
 STR_CONFIG_SETTING_DEFAULT_ALLOW_TOWN_GROWTH_ALLOWED            :Permitido
 
 STR_CONFIG_SETTING_INDUSTRY_CARGO_SCALE_HELPTEXT_EXTRA          :{STRING}{}Isto exclúe as industrias de corte de árbores.{}Non se garante que sexa totalmente compatible con todos os NewGRFs de industria.
