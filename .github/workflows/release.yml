@@ -41,15 +41,15 @@ jobs:
     with:
       survey_key: ${{ needs.source.outputs.survey_key }}
 
-  linux_distros:
-    name: Linux (Distros)
-    needs: source
-
-    uses: ./.github/workflows/release-linux-distros.yml
-    secrets: inherit
-
-    with:
-      survey_key: ${{ needs.source.outputs.survey_key }}
+#  linux_distros:
+#    name: Linux (Distros)
+#    needs: source
+#
+#    uses: ./.github/workflows/release-linux-distros.yml
+#    secrets: inherit
+#
+#    with:
+#      survey_key: ${{ needs.source.outputs.survey_key }}
 
   linux-dedicated:
     name: Linux (Dedicated)
@@ -61,23 +61,23 @@ jobs:
     with:
       survey_key: ${{ needs.source.outputs.survey_key }}
 
-  macos:
-    name: MacOS
-    needs: source
-
-    uses: ./.github/workflows/release-macos.yml
-    secrets: inherit
-
-    with:
-      survey_key: ${{ needs.source.outputs.survey_key }}
-
-  windows:
-    name: Windows
-    needs: source
-
-    uses: ./.github/workflows/release-windows.yml
-    secrets: inherit
-
-    with:
-      is_tag: ${{ needs.source.outputs.is_tag }}
-      survey_key: ${{ needs.source.outputs.survey_key }}
+#  macos:
+#    name: MacOS
+#    needs: source
+#
+#    uses: ./.github/workflows/release-macos.yml
+#    secrets: inherit
+#
+#    with:
+#      survey_key: ${{ needs.source.outputs.survey_key }}
+#
+#  windows:
+#    name: Windows
+#    needs: source
+#
+#    uses: ./.github/workflows/release-windows.yml
+#    secrets: inherit
+#
+#    with:
+#      is_tag: ${{ needs.source.outputs.is_tag }}
+#      survey_key: ${{ needs.source.outputs.survey_key }}
