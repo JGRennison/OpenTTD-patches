@@ -303,28 +303,36 @@ struct btree_map_params
   typedef Data data_type;
   typedef Data mapped_type;
   typedef std::pair<const Key, data_type> value_type;
-  typedef std::pair<Key, data_type> mutable_value_type;
   typedef value_type* pointer;
   typedef const value_type* const_pointer;
   typedef value_type& reference;
   typedef const value_type& const_reference;
 
   enum {
-    kValueSize = sizeof(Key) + sizeof(data_type),
+    kValueSize = sizeof(value_type),
+  };
+
+  struct mutable_value_ref_wrapper {
+    value_type &target;
+
+    mutable_value_ref_wrapper(value_type &target) : target(target) {}
+
+    Key &key() { return const_cast<Key &>(target.first); }
+    data_type &value() { return target.second; }
   };
 
   static const Key& key(const value_type &x) { return x.first; }
-  static const Key& key(const mutable_value_type &x) { return x.first; }
-  static void swap(mutable_value_type *a, mutable_value_type *b) {
-    btree_swap_helper(a->first, b->first);
-    btree_swap_helper(a->second, b->second);
+  static const Key& key(mutable_value_ref_wrapper x) { return x.key(); }
+  static void swap(mutable_value_ref_wrapper a, mutable_value_ref_wrapper b) {
+    btree_swap_helper(a.key(), b.key());
+    btree_swap_helper(a.value(), b.value());
   }
-  static void move_assign(mutable_value_type *to, mutable_value_type *from) {
-   to->first = std::move(from->first);
-   to->second = std::move(from->second);
+  static void move_assign(mutable_value_ref_wrapper to, mutable_value_ref_wrapper from) {
+   to.key() = std::move(from.key());
+   to.value() = std::move(from.value());
   }
-  static void move_construct_at(mutable_value_type *at, mutable_value_type *from) {
-    new (at) mutable_value_type(std::move(from->first), std::move(from->second));
+  static void move_construct_at(mutable_value_ref_wrapper at, mutable_value_ref_wrapper from) {
+    new (&at.target) value_type(std::move(from.key()), std::move(from.value()));
   }
 };
 
@@ -336,7 +344,6 @@ struct btree_set_params
   typedef std::false_type data_type;
   typedef std::false_type mapped_type;
   typedef Key value_type;
-  typedef value_type mutable_value_type;
   typedef value_type* pointer;
   typedef const value_type* const_pointer;
   typedef value_type& reference;
@@ -346,15 +353,21 @@ struct btree_set_params
     kValueSize = sizeof(Key),
   };
 
+  struct mutable_value_ref_wrapper {
+    value_type &target;
+
+    mutable_value_ref_wrapper(value_type &target) : target(target) {}
+  };
+
   static const Key& key(const value_type &x) { return x; }
-  static void swap(mutable_value_type *a, mutable_value_type *b) {
-    btree_swap_helper<mutable_value_type>(*a, *b);
+  static void swap(mutable_value_ref_wrapper a, mutable_value_ref_wrapper b) {
+    btree_swap_helper<value_type>(a.target, b.target);
   }
-  static void move_assign(mutable_value_type *to, mutable_value_type *from) {
-   *to = std::move(*from);
+  static void move_assign(mutable_value_ref_wrapper to, mutable_value_ref_wrapper from) {
+   to.target = std::move(from.target);
   }
-  static void move_construct_at(mutable_value_type *at, mutable_value_type *from) {
-    new (at) mutable_value_type(std::move(*from));
+  static void move_construct_at(mutable_value_ref_wrapper at, mutable_value_ref_wrapper from) {
+    new (&at.target) value_type(std::move(from.target));
   }
 };
 
@@ -437,7 +450,7 @@ class btree_node {
   typedef typename Params::key_type key_type;
   typedef typename Params::data_type data_type;
   typedef typename Params::value_type value_type;
-  typedef typename Params::mutable_value_type mutable_value_type;
+  typedef typename Params::mutable_value_ref_wrapper mutable_value_ref_wrapper;
   typedef typename Params::pointer pointer;
   typedef typename Params::const_pointer const_pointer;
   typedef typename Params::reference reference;
@@ -507,14 +520,10 @@ class btree_node {
   struct leaf_fields : public base_fields {
     // The array of values. Only the first count of these values have been
     // constructed and are valid.
-    union {
-        mutable_value_type values[kNodeValues];
-        value_type non_mutable_values[kNodeValues];
-    };
+    value_type values[kNodeValues];
 
     ~leaf_fields() = delete;
   };
-  static_assert(sizeof(leaf_fields::values) == sizeof(leaf_fields::non_mutable_values));
 
   struct internal_fields : public leaf_fields {
     // The array of child pointers. The keys in children_[i] are all less than
@@ -572,14 +581,14 @@ class btree_node {
     return params_type::key(fields_.values[i]);
   }
   reference value(int i) {
-    return fields_.non_mutable_values[i];
+    return fields_.values[i];
   }
   const_reference value(int i) const {
-    return fields_.non_mutable_values[i];
+    return fields_.values[i];
   }
 
-  mutable_value_type* mutable_value(int i) {
-    return &fields_.values[i];
+  mutable_value_ref_wrapper mutable_value(int i) {
+    return mutable_value_ref_wrapper(value(i));
   }
 
   // Swap value i in this node with value j in node x.
@@ -752,10 +761,10 @@ public:
  private:
   template <typename... Args>
   void value_init_args(int i, Args&&... args) {
-    new (&fields_.values[i]) mutable_value_type(std::forward<Args>(args)...);
+    new (&fields_.values[i]) value_type(std::forward<Args>(args)...);
   }
   void value_destroy(int i) {
-    fields_.values[i].~mutable_value_type();
+    fields_.values[i].~value_type();
   }
 
  private:
