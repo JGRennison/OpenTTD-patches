@@ -3066,10 +3066,11 @@ public:
 
 	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
-		GfxDrawLine(r.left, r.top, r.right, r.top, PC_BLACK);
-		GfxDrawLine(r.left, r.bottom, r.right, r.bottom, PC_BLACK);
-		GfxDrawLine(r.left, r.top, r.left, r.bottom, PC_BLACK);
-		GfxDrawLine(r.right, r.top, r.right, r.bottom, PC_BLACK);
+		/* draw widget outlines */
+		GfxFillRect(r.left, r.top, r.right, r.top + WidgetDimensions::scaled.bevel.top - 1, PC_BLACK);
+		GfxFillRect(r.left, r.bottom - WidgetDimensions::scaled.bevel.bottom + 1, r.right, r.bottom, PC_BLACK);
+		GfxFillRect(r.left, r.top, r.left + WidgetDimensions::scaled.bevel.left - 1,  r.bottom, PC_BLACK);
+		GfxFillRect(r.right - WidgetDimensions::scaled.bevel.right + 1, r.top, r.right, r.bottom, PC_BLACK);
 
 		int y = r.top + WidgetDimensions::scaled.framerect.top + 1;
 		const int left0 = r.left + WidgetDimensions::scaled.framerect.left + 1;
