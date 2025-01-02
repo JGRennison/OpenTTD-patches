@@ -2654,8 +2654,10 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
 			/* Sanity checks */
 			if (src == nullptr || !src->IsPrimaryVehicle() || dst->type != src->type || dst == src) return CMD_ERROR;
 
-			ret = CheckOwnership(src->owner);
-			if (ret.Failed()) return ret;
+			if (!_settings_game.economy.infrastructure_sharing[src->type]) {
+				CommandCost ret = CheckOwnership(src->owner);
+				if (ret.Failed()) return ret;
+			}
 
 			/* Trucks can't copy all the orders from busses (and visa versa),
 			 * and neither can helicopters and aircraft. */
