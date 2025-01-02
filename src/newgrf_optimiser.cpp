@@ -371,7 +371,7 @@ static bool AreVarAction2AdjustsEquivalent(VarAction2AdjustDescriptor a, VarActi
 			}
 		}
 
-		if (adj_b.operation == DSGA_OP_RST) return true;
+		if (adj_b.operation == DSGA_OP_RST && adj_b.variable != 0x7B) return true;
 
 		a.index--;
 		b.index--;
@@ -2110,7 +2110,7 @@ static void OptimiseVarAction2DeterministicSpriteGroupSimplifyStores(Determinist
 
 		DeterministicSpriteGroupAdjust &adjust = group->adjusts[i];
 
-		if ((adjust.type == DSGA_TYPE_NONE || IsConstantComparisonAdjustType(adjust.type)) && adjust.operation == DSGA_OP_RST && adjust.variable != 0x7E) {
+		if ((adjust.type == DSGA_TYPE_NONE || IsConstantComparisonAdjustType(adjust.type)) && adjust.operation == DSGA_OP_RST && adjust.variable != 0x7B && adjust.variable != 0x7E) {
 			src_adjust = (int)i;
 			is_constant = (adjust.variable == 0x1A);
 			continue;
