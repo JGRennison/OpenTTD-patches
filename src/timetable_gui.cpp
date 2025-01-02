@@ -435,7 +435,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 				} else {
 					SetDParam(0, EconTime::MAX_YEAR.base() * DAYS_IN_YEAR);
 				}
-				this->deparr_time_width = GetStringBoundingBox(STR_JUST_TT_TIME).width + 4;
+				this->deparr_time_width = GetStringBoundingBox(STR_JUST_TT_TIME).width;
 				this->deparr_abbr_width = std::max(GetStringBoundingBox(STR_TIMETABLE_ARRIVAL_ABBREVIATION).width, GetStringBoundingBox(STR_TIMETABLE_DEPARTURE_ABBREVIATION).width);
 				size.width = this->deparr_abbr_width + this->deparr_time_width + padding.width;
 				[[fallthrough]];
