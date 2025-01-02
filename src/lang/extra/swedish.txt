@@ -48,8 +48,8 @@ STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Kan int
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Infoga ny order före markerad order, eller lägg till i slutet av listan. Ctrl+Klick på en station för 'full last någon godstyp', på ett riktmärke för att invertera inställningen 'non-stop som standard', och på en depå för 'service'.  Klicka på ett annat fordon för att kopiera dess ordrar eller Ctrl+Klick för att dela ordrar. En depåorder stänger av automatisk service av fordonet
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

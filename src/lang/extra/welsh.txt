@@ -47,8 +47,8 @@ STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Methu c
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Mewnosod gorchymyn newydd cyn yr orchymyn a amlygwyd, neu greu ar ddiwedd y rhestr. Mae Ctrl yn gwneud gorchymynion orsaf yn rhai 'llwyth llawn unrhyw nwyddau', gorchymynion pwyntiau llwybro 'heb aros' a gorchmynion depot 'gwasanaethu'. Mae 'Rhannu gorchmynion' neu Ctrl yn galluogi i'r cerbyd yma rannu gorchmynion gyda'r cerbyd a ddewisir. Mae clicio ar gerbyd yn copïo gorchmynion o'r cerbyd hwnnw. Mae gorchymyn depo'n analluogi gwasanaethu diofyn ar gyfer y cerbyd
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Cyr:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :Gad:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Cyr:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :Gad:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

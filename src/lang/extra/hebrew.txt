@@ -42,8 +42,8 @@ STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}לא י
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}הכנס הוראה חדשה לפני ההוראה המודגשת, או הוסף הוראה לסוף הרשימה. Ctrl גורם להוראות של תחנות להיות 'טען מטען כלשהו במלואו', נקודות ציון להיות 'ללא עצירה' והוראות מוסכים להיות 'בשירות'. 'שתף הוראות' או Ctrl מאפשר שיתוף הוראות עם כלי הרכב הנבחר. לחיצה על כלי רכב מעתיקה את ההוראות ממנו. הוראה למוסך מבטלת את הטיפולים האוטומטיים של כלי הרכב
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

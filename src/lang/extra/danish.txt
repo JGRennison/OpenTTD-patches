@@ -50,8 +50,8 @@ STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Kan ikk
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Indsæt en ny ordre før den markerede, eller i slutningen af ordrelisten. Ctrl laver stationsordrer med 'Vilkårlig fuld last', rutepunkt ordrer med 'Uden stop', og depotordrer med 'Service'. 'Deleordrer' eller Ctrl lader dette køretøj dele ordrer med det valgte køretøj. At klikke på et køretøj kopierer ordrer fra det pågældende køretøj. En depot ordre deaktiverer automatisk servicering af køretøjet
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Ank:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :Afg:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Ank:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :Afg:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

@@ -41,8 +41,8 @@ STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Servis 
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Vstavi nov ukaz pred izbranega ali pa ga dodaj na konec seznama. Ctrl naredi ukaze postaj 'napolni kakršenkoli tovor', ukaze točk poti 'non-stop' in ukaze garaž 'servis'. 'Deli ukaze' ali Ctrl deli ukaze z drugim izbranim vozilom. Klik na vozilo kopira ukaze
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

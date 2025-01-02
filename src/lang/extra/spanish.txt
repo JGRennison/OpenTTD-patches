@@ -51,8 +51,8 @@ STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}No se p
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Añade una nueva orden antes de la orden resaltada, o la añade al final de la lista. Ctrl+clic sobre estaciones ordena 'Carga completa de cualquier carga', sobre puntos de ruta ordena 'sin paradas' y sobre depósitos ordena 'mantenimiento'. Clica sobre un vehículo para copiar sus órdenes, o Ctrl+clic para también compartir sus órdenes. Una órden de depósito desactiva el mantenimiento automático del vehículo
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Ll:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :S:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Ll:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :S:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

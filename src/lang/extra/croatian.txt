@@ -44,8 +44,8 @@ STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Ne mož
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Umetni novu naredbu prije označene naredbe, ili dodaj na kraj liste. Ctrl određuje naredbe postaje 'napuni do kraja bilo koji teret', naredbe prolaznih točki 'non-stop', a naredbe spremišta 'servisiraj'. 'Dijeli naredbe' ili Ctrl dopušta da ovo vozilo dijeli naredbe s odabranim vozilom. Klik na vozilo kopira naredbe tog vozila. Naredba spremišta isključuje automatsko servisiranje vozila.
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :D:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :O:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :D:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :O:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

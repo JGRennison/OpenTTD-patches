@@ -76,8 +76,8 @@ STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Cannot 
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Insert a new order before the highlighted order, or add to end of list. Ctrl+Click on a station for 'full load any cargo', on a waypoint to invert the 'non-stop by default' setting, or on a depot for 'service'. Click on another vehicle to copy its orders or Ctrl+Click to share orders. A depot order disables automatic servicing of the vehicle
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

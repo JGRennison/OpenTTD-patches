@@ -51,8 +51,8 @@ STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Ne peut
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Insérer un nouvel ordre avant l'ordre sélectionné, ou l'ajouter à la fin. Ctrl-clic sur une station pour «{NBSP}Chargement complet par un seul type{NBSP}», sur un point de contrôle pour inverser le paramètre «{NBSP}sans arrêt par défaut{NBSP}» ou sur un dépôt pour «{NBSP}entretien{NBSP}». Cliquer sur un véhicule pour copier ses ordres ou Ctrl-clic pour les partager. Un ordre de dépôt désactive l'entretien automatique du véhicule
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

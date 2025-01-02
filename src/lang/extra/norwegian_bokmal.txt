@@ -47,8 +47,8 @@ STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Kan ikk
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Sett inn en ny ordre før den merkede ordren, eller legg til i slutten av listen. Ctrl gir ordren 'full last, enhver varetype', kontrollpunktordre 'direkte' og verkstedsordre 'vedlikehold'. 'Del ordrer' eller Ctrl lar dette kjøretøyet dele ordrer med det valgte kjøretøyet. Klikk på et kjøretøy for å kopiere ordrene fra det. En verkstedsordre slår av automatisk vedlikehold av kjøretøyet
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Ank:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :Avg:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Ank:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :Avg:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

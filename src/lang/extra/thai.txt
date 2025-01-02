@@ -41,8 +41,8 @@ STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}ไม�
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}เพิ่มรายการที่ต้องทำก่อนหน้ารายการที่เลือก หรือเพิ่มในท้ายรายการที่มีอยู่แล้ว
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :ถึง:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :ออก:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :ถึง:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :ออก:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

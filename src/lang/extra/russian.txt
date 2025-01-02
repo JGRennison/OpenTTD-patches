@@ -1797,8 +1797,8 @@ STR_TIMETABLE_FILL_TIMETABLE_SUGGESTION_2                       :{BLACK}(Аль�
 
 STR_TIMETABLE_WARNINGS_OMITTED                                  :{BLACK}{NUM} дальнейшие предупреждения опущены...
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :П:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :О:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :П:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :О:{SPACE}{SPACE}
 
 STR_DATE_MINUTES_MINUTE_TOOLTIP                                 :{BLACK}Выбрать минуту
 STR_DATE_MINUTES_HOUR_TOOLTIP                                   :{BLACK}Выбрать час

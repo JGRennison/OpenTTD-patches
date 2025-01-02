@@ -51,8 +51,8 @@ STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           : {LTBLUE}Nie mo
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Dodaj nowe polecenie na końcu listy lub przed zaznaczonym poleceniem. Użyj Ctrl, aby ustawić polecenie stacji na „pełny załadunek któregoś z towarów”, posterunku na odwrotność opcji „domyślnie bez zatrzymywania się”, a zajezdni na „serwisuj”. Kliknij na inny pojazd, aby skopiować jego polecenia lub użyj Ctrl, aby współdzielić z nim jego polecenia. Polecenie do zajezdni wyłącza automatyczne serwisowanie tego pojazdu
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :P:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :O:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :P:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :O:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

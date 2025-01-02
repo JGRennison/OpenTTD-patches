@@ -1420,8 +1420,8 @@ STR_TIMETABLE_WARNING_SCHEDULE_ID                               :{BLACK}Zeitplan
 
 STR_TIMETABLE_WARNINGS_OMITTED                                  :{BLACK}{NUM} keine weiteren Warnungen ...
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :an
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :ab
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :an{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :ab{SPACE}{SPACE}
 
 STR_DATE_MINUTES_MINUTE_TOOLTIP                                 :{BLACK}Minute auswählen
 STR_DATE_MINUTES_HOUR_TOOLTIP                                   :{BLACK}Stunde auswählen

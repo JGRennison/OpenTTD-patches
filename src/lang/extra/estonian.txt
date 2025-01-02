@@ -47,8 +47,8 @@ STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Ei leia
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Lisa uus korraldus valitud korralduse ette, või nimekirja lõppu. «Ctrl» annab jaamas korralduse «täislaadida üks veos», meldepunktis korralduse «peatuseta», ning depoos korralduse «hooldus». «Korralduste jagamine» või «Ctrl» laseb sellel sõidukil jagada korraldusi valitud sõidukiga. Sõidukil klõpsates dubleeritakse selle korraldused. Depookorralduste olemasolul sõiduk ise hoolduses ei käi
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :S:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :V:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :S:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :V:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

@@ -50,8 +50,8 @@ STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Nedoká
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Vložiť nový príkaz pred označený príkaz, alebo na koniec zoznamu. Ctrl zmení príkazy pre stanicu na 'plne nalož čokoľvek', príkazy pre smerový bod na 'nonstop' a príkazy pre depo na 'servis'. 'Zdieľať príkazy' alebo Ctrl umožní vozidlu zdieľať príkazy s vybraným vozidlom. Kliknutím na vozidlo sa skopírujú príkazy z vozidla. Príkaz na presun do depa vypne automatický servis vozidla
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :P:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :O:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :P:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :O:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

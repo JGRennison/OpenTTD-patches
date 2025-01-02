@@ -45,8 +45,8 @@ STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Ní fé
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Ionsáigh ordú nua roimh an ordú aibhsithe, nó cuir le deireadh an liosta é. Le Ctrl, beidh orduithe stáisiúin 'lasta iomlán de lastas ar bith', beidh orduithe do phointí bealaigh 'gan stad' agus beidh orduithe d'iostaí 'déan seirbhísiú'
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :I:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :F:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :I:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :F:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

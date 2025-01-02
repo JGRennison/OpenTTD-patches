@@ -42,8 +42,8 @@ STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_VEL_END                   :{ORANGE}لا ي
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}اضافة امر قبل الامر المختار, او لاخر الاوامر
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :و:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :م:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :و:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :م:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

@@ -40,8 +40,8 @@ STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Servis 
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Masukkan arahan baru ke dalam susunan senarai yang terpilih, atau tambah pada penghujung senarai. "Ctrl" mengubah arahan stesen kepada 'muatan penuh untuk apa-apa kargo', arahan halutuju 'tanpa henti', dan arahan depoh 'penyenggelaraan'. 'Arahan berkongsi' atau "Ctrl" membenarkan kenderaan ini berkongsi arahan dengan kenderaan terpilih
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :T:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :B:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :T:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :B:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

@@ -51,8 +51,8 @@ STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}No pot 
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Afegeix una nova ordre abans de la seleccionada, o afegeix-la al final de la llista. Amb Ctrl+clic, es creen ordres d'estació "carrega qualsevol càrrega", en un punt de pas per invertir la ordre "sense parada per defecte" i ordres de cotxeres de "revisió". Si es fa clic en un altre vehicle, es copien les seves ordres; amb Ctrl+clic, a més a més es compartiran les ordres. Una ordre de cotxeres desactiva la revisió automàtica del vehicle.
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

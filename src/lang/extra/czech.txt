@@ -1594,8 +1594,8 @@ STR_TIMETABLE_FILL_TIMETABLE_SUGGESTION_2                       :{BLACK}(Alterna
 
 STR_TIMETABLE_WARNINGS_OMITTED                                  :{BLACK}{NUM} další varování vynechána...
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :P:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :O:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :P:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :O:{SPACE}{SPACE}
 
 STR_DATE_MINUTES_MINUTE_TOOLTIP                                 :{BLACK}Nastavit minutu
 STR_DATE_MINUTES_HOUR_TOOLTIP                                   :{BLACK}Nastavit hodinu

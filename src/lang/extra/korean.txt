@@ -1816,8 +1816,8 @@ STR_TIMETABLE_FILL_TIMETABLE_SUGGESTION_2                       :{BLACK}(또는,
 
 STR_TIMETABLE_WARNINGS_OMITTED                                  :{BLACK}{NUM}개의 추가 경고가 생략되었습니다...
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :도착:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :출발:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :도착:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :출발:{SPACE}{SPACE}
 
 STR_DATE_MINUTES_MINUTE_TOOLTIP                                 :{BLACK}분(分) 선택
 STR_DATE_MINUTES_HOUR_TOOLTIP                                   :{BLACK}시(時) 선택

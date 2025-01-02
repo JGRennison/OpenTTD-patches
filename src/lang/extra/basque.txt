@@ -41,8 +41,8 @@ STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Berriku
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Agindu berria sartu piztutakoaren aurretik, edo zerrendaren amaieran. Ktrl hurrengo aginduak ezartzen ditu: Geltokietan "Edozein zama osorik kargatu", bidepuntuetan "Ez gelditu" eta gordailuetan "Mantenimendua". "Aginduak konpartitu" edo Ktrl ibilgailuaren aginduak konpartituko ditu. Ibilgailu batean klik eginez aginduak kopiatuko dira. Gordailu aginduek mantenimendu automatikoa desgaitzen dute
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

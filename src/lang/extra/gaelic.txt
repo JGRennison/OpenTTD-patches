@@ -41,8 +41,8 @@ STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Obair-g
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Cuir a-steach òrdugh ùr ron òrdugh a thagh thu no cuir ri deireadh na liosta e. Le Ctrl, bith òrdugh stèisein na “Luchdaich carago sam bith gu iomlan", òrdugh puinge-turais na “Gun stad" is òrdugh garaids / trèan-lainn / calaidh / hangair na “obair-ghlèidhidh". Le “Co-roinn na h-òrduighean” no Ctrl, co-roinnidh an carbad seo na h-òrduighean leis a' charbad a thagh thu. Gheibh thu lethbhreac dhe òrduighean le briogadh air carbad. Cuiridh òrdugh garaids / trèan-lainn / calaidh / hangair fèin-obair-ghlèidhidh airson a' charbaid à comas
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :R:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :F:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :R:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :F:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

@@ -51,8 +51,8 @@ STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Kan {DE
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Voegt een nieuwe order toe voor de geselecteerde order of aan het eind van de lijst. Ctrl+klik maakt stationsorders 'Eén soort vracht volledig laden', controlepost-orders 'Ga non-stop via' en depot-orders 'Onderhoud bij'. Klikken op een ander voertuig kopieert de orders van dat voertuig, Ctrl+klik om de orders te delen. Een depot-order schakelt automatisch onderhoud van een voertuig uit.
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :V:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :V:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

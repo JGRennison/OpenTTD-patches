@@ -41,8 +41,8 @@ STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Iens mi
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Inserere novum iussum ante iussum electum, aut ad finem indicis. Ctrl pressa, iussa stationum sunt 'plene quidquam onerare', iussa interlocorum 'continue', et iussa receptaculorum 'ministrare'. 'Iussa communicare' sive Ctrl facit ut iussa communicentur inter hoc ac electum vehiculum. Pressio in aliud vehiculum transcribit iussa ex illo vehiculo. Si adest iussum receptaculi, vehiculum non automatice ministratur
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :E:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :A:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :E:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

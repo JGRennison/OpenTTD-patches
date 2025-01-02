@@ -41,8 +41,8 @@ STR_VEHICLE_STATUS_CANNOT_REACH_DEPOT_SERVICE_VEL_END           :{LTBLUE}Не м
 
 STR_ORDERS_GO_TO_TOOLTIP_EXTRA                                  :{BLACK}Добавяне на назначение преди избраната или в края на списъка. Ctrl добавя назначение за 'Напълно натовари какъвто и да е товар', назначение за пътна точка 'без спиране' и назначение за депо 'обслужване'. 'Споделяне на назначенията' или Ctrl позволява на това превозно средство да сподели назначенията с друго избрано такова, когато се кликне върху него. Назначението за депо спира автоматичното обслужване на превозното средство
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :П:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :З:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :П:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :З:{SPACE}{SPACE}
 
 # Cargo type orders Window
 

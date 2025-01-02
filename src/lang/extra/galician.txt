@@ -1815,8 +1815,8 @@ STR_TIMETABLE_FILL_TIMETABLE_SUGGESTION_2                       :{BLACK}(Alterna
 
 STR_TIMETABLE_WARNINGS_OMITTED                                  :{BLACK}{NUM} avisos máis omitidos...
 
-STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Ch:
-STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :S:
+STR_TIMETABLE_ARRIVAL_ABBREVIATION                              :Ch:{SPACE}{SPACE}
+STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :S:{SPACE}{SPACE}
 
 STR_DATE_MINUTES_MINUTE_TOOLTIP                                 :{BLACK}Seleccionar minuto
 STR_DATE_MINUTES_HOUR_TOOLTIP                                   :{BLACK}Seleccionar hora
