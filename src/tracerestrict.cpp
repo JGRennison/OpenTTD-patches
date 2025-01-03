@@ -2928,6 +2928,23 @@ void TraceRestrictGetVehicleSlots(VehicleID id, std::vector<TraceRestrictSlotID>
 	}
 }
 
+template <typename F>
+bool ClearOrderTraceRestrictSlotIf(Order *o, F cond)
+{
+	bool changed_order = false;
+	if (o->IsType(OT_CONDITIONAL) &&
+			(o->GetConditionVariable() == OCV_SLOT_OCCUPANCY || o->GetConditionVariable() == OCV_VEH_IN_SLOT) &&
+			cond(static_cast<TraceRestrictSlotID>(o->GetXData()))) {
+		o->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_ID;
+		changed_order = true;
+	}
+	if (o->IsType(OT_SLOT) && cond(static_cast<TraceRestrictSlotID>(o->GetDestination()))) {
+		o->SetDestination(INVALID_TRACE_RESTRICT_SLOT_ID);
+		changed_order = true;
+	}
+	return changed_order;
+}
+
 /**
  * This is called when a slot is about to be deleted
  * Scan program pool and change any references to it to the invalid group ID, to avoid dangling references
@@ -2950,16 +2967,9 @@ void TraceRestrictRemoveSlotID(TraceRestrictSlotID index)
 
 	bool changed_order = false;
 	IterateAllNonVehicleOrders([&](Order *o) {
-		if (o->IsType(OT_CONDITIONAL) &&
-				(o->GetConditionVariable() == OCV_SLOT_OCCUPANCY || o->GetConditionVariable() == OCV_VEH_IN_SLOT) &&
-				o->GetXData() == index) {
-			o->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_ID;
-			changed_order = true;
-		}
-		if (o->IsType(OT_SLOT) && o->GetDestination() == index) {
-			o->SetDestination(INVALID_TRACE_RESTRICT_SLOT_ID);
-			changed_order = true;
-		}
+		changed_order |= ClearOrderTraceRestrictSlotIf(o, [&](TraceRestrictCounterID idx) {
+			return idx == index;
+		});
 	});
 
 	/* Update windows */
@@ -3216,6 +3226,23 @@ static bool IsUniqueCounterName(const char *name)
 	return true;
 }
 
+template <typename F>
+bool ClearOrderTraceRestrictCounterIf(Order *o, F cond)
+{
+	bool changed_order = false;
+	if (o->IsType(OT_CONDITIONAL) &&
+			(o->GetConditionVariable() == OCV_COUNTER_VALUE) &&
+			cond(static_cast<TraceRestrictCounterID>(o->GetXDataHigh()))) {
+		o->SetXDataHigh(INVALID_TRACE_RESTRICT_COUNTER_ID);
+		changed_order = true;
+	}
+	if (o->IsType(OT_COUNTER) && cond(static_cast<TraceRestrictCounterID>(o->GetDestination()))) {
+		o->SetDestination(INVALID_TRACE_RESTRICT_COUNTER_ID);
+		changed_order = true;
+	}
+	return changed_order;
+}
+
 /**
  * This is called when a counter is about to be deleted
  * Scan program pool and change any references to it to the invalid counter ID, to avoid dangling references
@@ -3234,16 +3261,9 @@ void TraceRestrictRemoveCounterID(TraceRestrictCounterID index)
 
 	bool changed_order = false;
 	IterateAllNonVehicleOrders([&](Order *o) {
-		if (o->IsType(OT_CONDITIONAL) &&
-				(o->GetConditionVariable() == OCV_COUNTER_VALUE) &&
-				o->GetXDataHigh() == index) {
-			o->SetXDataHigh(INVALID_TRACE_RESTRICT_COUNTER_ID);
-			changed_order = true;
-		}
-		if (o->IsType(OT_COUNTER) && o->GetDestination() == index) {
-			o->SetDestination(INVALID_TRACE_RESTRICT_COUNTER_ID);
-			changed_order = true;
-		}
+		changed_order |= ClearOrderTraceRestrictCounterIf(o, [&](TraceRestrictCounterID idx) {
+			return idx == index;
+		});
 	});
 
 	/* Update windows */
@@ -3438,6 +3458,22 @@ std::string TraceRestrictFollowUpCmdData::GetDebugSummary() const
 	if (this->cmd.p3 != 0) fmt::format_to(std::back_inserter(out), ", p3: 0x{:016X}", this->cmd.p3);
 	fmt::format_to(std::back_inserter(out), ", cmd: 0x{:08X} ({})", this->cmd.cmd, GetCommandName(this->cmd.cmd));
 	return fmt::to_string(out);
+}
+
+void TraceRestrictRemoveNonOwnedReferencesFromOrder(struct Order *o, Owner order_owner)
+{
+	ClearOrderTraceRestrictSlotIf(o, [&](TraceRestrictSlotID idx) {
+		if (idx == INVALID_TRACE_RESTRICT_SLOT_ID) return false;
+		const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(idx);
+		if (slot != nullptr && !slot->IsUsableByOwner(order_owner)) return true;
+		return false;
+	});
+	ClearOrderTraceRestrictCounterIf(o, [&](TraceRestrictCounterID idx) {
+		if (idx == INVALID_TRACE_RESTRICT_COUNTER_ID) return false;
+		const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(idx);
+		if (ctr != nullptr && !ctr->IsUsableByOwner(order_owner)) return true;
+		return false;
+	});
 }
 
 void DumpTraceRestrictSlotsStats(format_target &buffer)

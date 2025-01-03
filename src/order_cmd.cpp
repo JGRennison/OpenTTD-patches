@@ -2715,6 +2715,7 @@ CommandCost CmdCloneOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uint
 				std::vector<Order> dst_orders;
 				for (const Order *order : src->Orders()) {
 					dst_orders.emplace_back(*order); // clone order
+					TraceRestrictRemoveNonOwnedReferencesFromOrder(&dst_orders.back(), dst->owner);
 				}
 				if (dst->orders != nullptr) {
 					assert(dst->orders->GetNumOrders() == 0);
