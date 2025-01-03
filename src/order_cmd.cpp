@@ -1179,8 +1179,10 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 				case OCV_VEH_IN_SLOT: {
 					TraceRestrictSlotID slot = new_order.GetXData();
 					if (slot != INVALID_TRACE_RESTRICT_SLOT_ID) {
-						if (!TraceRestrictSlot::IsValidID(slot)) return CMD_ERROR;
-						if (new_order.GetConditionVariable() == OCV_VEH_IN_SLOT && TraceRestrictSlot::Get(slot)->vehicle_type != v->type) return CMD_ERROR;
+						const TraceRestrictSlot *trslot = TraceRestrictSlot::GetIfValid(slot);
+						if (trslot == nullptr) return CMD_ERROR;
+						if (new_order.GetConditionVariable() == OCV_VEH_IN_SLOT && trslot->vehicle_type != v->type) return CMD_ERROR;
+						if (!trslot->IsUsableByOwner(v->owner)) return CMD_ERROR;
 					}
 					switch (occ) {
 						case OCC_IS_TRUE:
@@ -1253,6 +1255,7 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 			if (data != INVALID_TRACE_RESTRICT_SLOT_ID) {
 				const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(data);
 				if (slot == nullptr || slot->vehicle_type != v->type) return CMD_ERROR;
+				if (!slot->IsUsableByOwner(v->owner)) return CMD_ERROR;
 			}
 			switch (new_order.GetSlotSubType()) {
 				case OSST_RELEASE:
@@ -1270,6 +1273,7 @@ static CommandCost CmdInsertOrderIntl(DoCommandFlag flags, Vehicle *v, VehicleOr
 			if (data != INVALID_TRACE_RESTRICT_COUNTER_ID) {
 				const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(data);
 				if (ctr == nullptr) return CMD_ERROR;
+				if (!ctr->IsUsableByOwner(v->owner)) return CMD_ERROR;
 			}
 			break;
 		}
@@ -1963,13 +1967,22 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 					if (data > 100) return CMD_ERROR;
 					break;
 
-				case OCV_SLOT_OCCUPANCY:
-					if (data != INVALID_TRACE_RESTRICT_SLOT_ID && !TraceRestrictSlot::IsValidID(data)) return CMD_ERROR;
+				case OCV_SLOT_OCCUPANCY: {
+					if (data != INVALID_TRACE_RESTRICT_SLOT_ID) {
+						const TraceRestrictSlot *trslot = TraceRestrictSlot::GetIfValid(data);
+						if (trslot == nullptr) return CMD_ERROR;
+						if (!trslot->IsUsableByOwner(v->owner)) return CMD_ERROR;
+					}
 					break;
+				}
 
 				case OCV_VEH_IN_SLOT:
-					if (data != INVALID_TRACE_RESTRICT_SLOT_ID && !TraceRestrictSlot::IsValidID(data)) return CMD_ERROR;
-					if (data != INVALID_TRACE_RESTRICT_SLOT_ID && TraceRestrictSlot::Get(data)->vehicle_type != v->type) return CMD_ERROR;
+					if (data != INVALID_TRACE_RESTRICT_SLOT_ID) {
+						const TraceRestrictSlot *trslot = TraceRestrictSlot::GetIfValid(data);
+						if (trslot == nullptr) return CMD_ERROR;
+						if (trslot->vehicle_type != v->type) return CMD_ERROR;
+						if (!trslot->IsUsableByOwner(v->owner)) return CMD_ERROR;
+					}
 					break;
 
 				case OCV_CARGO_ACCEPTANCE:
@@ -2005,7 +2018,11 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 					break;
 
 				case OCV_COUNTER_VALUE:
-					if (data != INVALID_TRACE_RESTRICT_COUNTER_ID && !TraceRestrictCounter::IsValidID(data)) return CMD_ERROR;
+					if (data != INVALID_TRACE_RESTRICT_COUNTER_ID) {
+						const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(data);
+						if (ctr == nullptr) return CMD_ERROR;
+						if (!ctr->IsUsableByOwner(v->owner)) return CMD_ERROR;
+					}
 					break;
 
 				case OCV_TIME_DATE:
@@ -2071,6 +2088,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 			if (data != INVALID_TRACE_RESTRICT_SLOT_ID) {
 				const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(data);
 				if (slot == nullptr || slot->vehicle_type != v->type) return CMD_ERROR;
+				if (!slot->IsUsableByOwner(v->owner)) return CMD_ERROR;
 			}
 			break;
 
@@ -2083,6 +2101,7 @@ CommandCost CmdModifyOrder(TileIndex tile, DoCommandFlag flags, uint32_t p1, uin
 			if (data != INVALID_TRACE_RESTRICT_COUNTER_ID) {
 				const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(data);
 				if (ctr == nullptr) return CMD_ERROR;
+				if (ctr->IsUsableByOwner(v->owner)) return CMD_ERROR;
 			}
 			break;
 

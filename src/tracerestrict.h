@@ -1228,6 +1228,8 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 		return false;
 	}
 
+	bool IsUsableByOwner(Owner using_owner) const { return this->owner == using_owner; }
+
 	bool Occupy(const Vehicle *v, bool force = false);
 	bool OccupyDryRun(VehicleID ids);
 	bool OccupyUsingTemporaryState(VehicleID id, TraceRestrictSlotTemporaryState *state);
@@ -1260,6 +1262,8 @@ struct TraceRestrictCounter : TraceRestrictCounterPool::PoolItem<&_tracerestrict
 	{
 		this->UpdateValue(TraceRestrictCounter::ApplyValue(this->value, op, value));
 	}
+
+	bool IsUsableByOwner(Owner using_owner) const { return this->owner == using_owner; }
 };
 
 struct TraceRestrictFollowUpCmdData : public CommandAuxiliarySerialisable<TraceRestrictFollowUpCmdData> {
