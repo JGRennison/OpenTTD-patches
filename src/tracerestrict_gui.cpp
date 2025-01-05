@@ -3625,6 +3625,9 @@ private:
 
 	void ResetObjectToPlaceAction()
 	{
+		if (this->current_placement_widget != -1) {
+			this->RaiseWidgetWhenLowered(this->current_placement_widget);
+		}
 		this->current_placement_widget = -1;
 		this->UpdatePlaceObjectPlanes();
 	}
