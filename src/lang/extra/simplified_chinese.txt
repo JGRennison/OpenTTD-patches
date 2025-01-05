@@ -601,27 +601,27 @@ STR_CONFIG_SETTING_TREE_GROWTH_STATIC                           :停滞
 
 STR_CONFIG_SETTING_TOWN_ZONES                                   :{ORANGE}自定义城镇区域
 STR_CONFIG_SETTING_TOWN_ZONE_CALC_MODE                          :使用自定义城镇区域计算方式：{STRING}
-STR_CONFIG_SETTING_TOWN_ZONE_CALC_MODE_HELPTEXT                 :手动设置城镇区域。自定义城镇区域的默认设置类似于默认城镇生成设置。当区域 0 在特定的更大的值得时候一些区域只需要很小的更改
-STR_CONFIG_SETTING_TOWN_ZONE_0_MULT                             :城镇区域 0 因子：{STRING}
-STR_CONFIG_SETTING_TOWN_ZONE_0_MULT_HELPTEXT                    :城镇区域 0 大小因子（最外面的没有人行道的道路）这个设定适合更大的值
-STR_CONFIG_SETTING_TOWN_ZONE_1_MULT                             :城镇区域 1 因子：{STRING}
-STR_CONFIG_SETTING_TOWN_ZONE_1_MULT_HELPTEXT                    :城镇区域 1 大小因子（有人行道的外部区域）这个设定在有较小的变更时效果最好
-STR_CONFIG_SETTING_TOWN_ZONE_2_MULT                             :城镇区域 2 因子：{STRING}
-STR_CONFIG_SETTING_TOWN_ZONE_2_MULT_HELPTEXT                    :城镇区域 2 大小因子（有人行道的外部区域）这个设定在有较小的变更时效果最好
-STR_CONFIG_SETTING_TOWN_ZONE_3_MULT                             :城镇区域 3 因子：{STRING}
-STR_CONFIG_SETTING_TOWN_ZONE_3_MULT_HELPTEXT                    :城镇区域 3 大小因子（带有树木的道路）这个设定在有较小的变更时效果最好
-STR_CONFIG_SETTING_TOWN_ZONE_4_MULT                             :城镇区域 4 因子：{STRING}
-STR_CONFIG_SETTING_TOWN_ZONE_4_MULT_HELPTEXT                    :城镇区域 4 大小因子（带有路灯的道路）这个设定在有较小的变更时效果最好
-STR_CONFIG_SETTING_CITY_ZONE_0_MULT                             :都市区域 0 因子：{STRING}
-STR_CONFIG_SETTING_CITY_ZONE_0_MULT_HELPTEXT                    :都市区域 0 大小因子（最外面的没有人行道的道路）这个设定适合更大的值
-STR_CONFIG_SETTING_CITY_ZONE_1_MULT                             :都市区域 1 因子：{STRING}
-STR_CONFIG_SETTING_CITY_ZONE_1_MULT_HELPTEXT                    :都市区域 1 大小因子（有人行道的外部区域）这个设定在有较小的变更时效果最好
-STR_CONFIG_SETTING_CITY_ZONE_2_MULT                             :都市区域 2 因子：{STRING}
-STR_CONFIG_SETTING_CITY_ZONE_2_MULT_HELPTEXT                    :都市区域 2 大小因子（有人行道的外部区域）这个设定在有较小的变更时效果最好
-STR_CONFIG_SETTING_CITY_ZONE_3_MULT                             :都市区域 3 因子：{STRING}
-STR_CONFIG_SETTING_CITY_ZONE_3_MULT_HELPTEXT                    :都市区域 3 大小因子（带有树木的道路）这个设定在有较小的变更时效果最好
-STR_CONFIG_SETTING_CITY_ZONE_4_MULT                             :都市区域 4 因子：{STRING}
-STR_CONFIG_SETTING_CITY_ZONE_4_MULT_HELPTEXT                    :都市区域 4 大小因子（带有路灯的道路）这个设定在有较小的变更时效果最好
+STR_CONFIG_SETTING_TOWN_ZONE_CALC_MODE_HELPTEXT                 :手动设置城镇区域。自定义城镇区域的默认设置类似于默认城镇生成设置。当城镇或都市边缘（区域 0）在特定的更大的值得时候一些区域只需要很小的更改
+STR_CONFIG_SETTING_TOWN_ZONE_0_MULT                             :城镇边缘因子：{STRING}
+STR_CONFIG_SETTING_TOWN_ZONE_0_MULT_HELPTEXT                    :城镇边缘大小因子（区域 0，最外面的没有人行道的道路）这个设定适合更大的值
+STR_CONFIG_SETTING_TOWN_ZONE_1_MULT                             :城镇郊区边缘因子：{STRING}
+STR_CONFIG_SETTING_TOWN_ZONE_1_MULT_HELPTEXT                    :城镇郊区边缘大小因子（区域 1，有人行道的外部区域）这个设定在有较小的变更时效果最好
+STR_CONFIG_SETTING_TOWN_ZONE_2_MULT                             :城镇外郊区因子：{STRING}
+STR_CONFIG_SETTING_TOWN_ZONE_2_MULT_HELPTEXT                    :城镇外郊区大小因子（区域 2，有人行道的外部区域）这个设定在有较小的变更时效果最好
+STR_CONFIG_SETTING_TOWN_ZONE_3_MULT                             :城镇内郊区因子：{STRING}
+STR_CONFIG_SETTING_TOWN_ZONE_3_MULT_HELPTEXT                    :城镇内郊区大小因子（区域 3，带有树木的道路）这个设定在有较小的变更时效果最好
+STR_CONFIG_SETTING_TOWN_ZONE_4_MULT                             :城镇中心因子：{STRING}
+STR_CONFIG_SETTING_TOWN_ZONE_4_MULT_HELPTEXT                    :城镇中心大小因子（区域 4，带有路灯的道路）这个设定在有较小的变更时效果最好
+STR_CONFIG_SETTING_CITY_ZONE_0_MULT                             :都市边缘因子：{STRING}
+STR_CONFIG_SETTING_CITY_ZONE_0_MULT_HELPTEXT                    :都市边缘大小因子（区域 0，最外面的没有人行道的道路）这个设定适合更大的值
+STR_CONFIG_SETTING_CITY_ZONE_1_MULT                             :都市郊区边因子：{STRING}
+STR_CONFIG_SETTING_CITY_ZONE_1_MULT_HELPTEXT                    :都市郊区边大小因子（区域 1，有人行道的外部区域）这个设定在有较小的变更时效果最好
+STR_CONFIG_SETTING_CITY_ZONE_2_MULT                             :都市外郊区因子：{STRING}
+STR_CONFIG_SETTING_CITY_ZONE_2_MULT_HELPTEXT                    :都市外郊区大小因子（区域 2，有人行道的外部区域）这个设定在有较小的变更时效果最好
+STR_CONFIG_SETTING_CITY_ZONE_3_MULT                             :都市内郊区因子：{STRING}
+STR_CONFIG_SETTING_CITY_ZONE_3_MULT_HELPTEXT                    :都市内郊区大小因子（区域 3，带有树木的道路）这个设定在有较小的变更时效果最好
+STR_CONFIG_SETTING_CITY_ZONE_4_MULT                             :都市中心因子：{STRING}
+STR_CONFIG_SETTING_CITY_ZONE_4_MULT_HELPTEXT                    :都市中心大小因子（区域 4，带有路灯的道路）这个设定在有较小的变更时效果最好
 
 STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED                :城镇扩张速度取决于已运输的货物：{STRING}
 STR_CONFIG_SETTING_TOWN_GROWTH_CARGO_TRANSPORTED_HELPTEXT       :城镇扩张速度取决于上个月运输到城镇的货物数量
@@ -823,12 +823,12 @@ STR_TRACE_RESTRICT_VARIABLE_LAST_VISITED_STATION                :最后经由车
 STR_TRACE_RESTRICT_VARIABLE_CARGO                               :货物
 STR_TRACE_RESTRICT_VARIABLE_LOAD_PERCENT                        :装载百分比
 STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION                     :进入方向
-STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL                    :路径预留区间起始信号
-STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG               :路径预留区间内信号
-STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL                  :路径预留区间结束信号
-STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG             :当前路径预留信号结束
-STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE                    :路径结束格
-STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE_LONG               :此信号的路径结束格
+STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL                    :预留路径起始信号
+STR_TRACE_RESTRICT_VARIABLE_PBS_ENTRY_SIGNAL_LONG               :预留路径起始信号
+STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL                  :预留路径结束信号
+STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_SIGNAL_LONG             :预留路径结束信号
+STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE                    :预留路径终止格
+STR_TRACE_RESTRICT_VARIABLE_PBS_RES_END_TILE_LONG               :预留路径终止格
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_GROUP                         :列车分组
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT                          :当前槽位
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY                      :槽位占用率
@@ -837,7 +837,7 @@ STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_SHORT                :占用率
 STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING_SHORT      :剩余占用率
 STR_TRACE_RESTRICT_VARIABLE_COUNTER_VALUE                       :计数器值
 STR_TRACE_RESTRICT_VARIABLE_TIME_DATE_VALUE                     :当前时间日期
-STR_TRACE_RESTRICT_VARIABLE_RESERVED_TILES_AHEAD                :前方预留格
+STR_TRACE_RESTRICT_VARIABLE_RESERVED_TILES_AHEAD                :预留路径格数
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_WEIGHT                        :重量
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_POWER                         :功率
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_MAX_TE                        :最大牵引力
@@ -847,7 +847,7 @@ STR_TRACE_RESTRICT_VARIABLE_TRAIN_OWNER                         :列车所有者
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_STATUS                        :列车状态
 STR_TRACE_RESTRICT_VARIABLE_TRAIN_ENGINE_CLASS                  :机车类别
 STR_TRACE_RESTRICT_VARIABLE_ORDER_TARGET_DIRECTION              :命令方向
-STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH                 :预留路径格数
+STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH                 :预留路径经过格
 STR_TRACE_RESTRICT_VARIABLE_RESERVATION_THROUGH_SHORT           :预留路径
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :未定义
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED                       :{PUSH_COLOUR}{RED}未定义{POP_COLOUR}
@@ -863,8 +863,8 @@ STR_TRACE_RESTRICT_CONDITIONAL_ORDER_STATION                    :{STRING}{STRING
 STR_TRACE_RESTRICT_CONDITIONAL_ORDER_WAYPOINT                   :{STRING}{STRING}{STRING} {WAYPOINT}，则
 STR_TRACE_RESTRICT_CONDITIONAL_ORDER_DEPOT                      :{STRING}{STRING}{STRING} {DEPOT}，则
 STR_TRACE_RESTRICT_CONDITIONAL_CARGO                            :{STRING}列车{STRING}{STRING}，则
-STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_DIRECTION                  :{STRING}列车{STRING}从{STRING}方进入格子的，则
-STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE                :{STRING}列车{STRING}从信号{STRING}侧进入的，则
+STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_DIRECTION                  :{STRING}列车{STRING}从格子{STRING}方进入格子，则
+STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE                :{STRING}列车{STRING}从信号{STRING}方通过信号，则
 STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_TYPE                :{STRING}列车{STRING}{STRING}，则
 STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX                       :{STRING}{STRING}{STRING}在 {NUM}×{NUM}，则
 STR_TRACE_RESTRICT_CONDITIONAL_GROUP                            :{STRING}列车{STRING}在组：“{GROUP}”内，则
@@ -894,12 +894,12 @@ STR_TRACE_RESTRICT_RESERVE_THROUGH_CANCEL                       :取消延续预
 STR_TRACE_RESTRICT_LONG_RESERVE                                 :接续预留
 STR_TRACE_RESTRICT_LONG_RESERVE_CANCEL                          :取消接续预留
 STR_TRACE_RESTRICT_LONG_RESERVE_UNLESS_STOPPING                 :接续预留（除非停车）
-STR_TRACE_RESTRICT_WAIT_AT_PBS                                  :等待信号
-STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL                           :取消等待信号
-STR_TRACE_RESTRICT_PBS_RES_END_WAIT                             :等待在这里结束的预留路径信号
-STR_TRACE_RESTRICT_PBS_RES_END_WAIT_CANCEL                      :取消等待在这里结束的预留路径信号
-STR_TRACE_RESTRICT_PBS_RES_END_WAIT_SHORT                       :等待路径信号开始……
-STR_TRACE_RESTRICT_PBS_RES_END_WAIT_CANCEL_SHORT                :取消等待路径信号开始……
+STR_TRACE_RESTRICT_WAIT_AT_PBS                                  :在信号前等待
+STR_TRACE_RESTRICT_WAIT_AT_PBS_CANCEL                           :取消在信号前等待
+STR_TRACE_RESTRICT_PBS_RES_END_WAIT                             :于在此终止的预留路径的起始信号前等待
+STR_TRACE_RESTRICT_PBS_RES_END_WAIT_CANCEL                      :取消于在此终止的预留路径的起始信号前等待
+STR_TRACE_RESTRICT_PBS_RES_END_WAIT_SHORT                       :于起始信号前等待……
+STR_TRACE_RESTRICT_PBS_RES_END_WAIT_CANCEL_SHORT                :取消于起始信号前等待……
 STR_TRACE_RESTRICT_PF_PENALTY                                   :惩罚
 STR_TRACE_RESTRICT_PF_VALUE_SMALL                               :小
 STR_TRACE_RESTRICT_PF_VALUE_MEDIUM                              :中
@@ -911,8 +911,8 @@ STR_TRACE_RESTRICT_DIRECTION_NE                                 :东北
 STR_TRACE_RESTRICT_DIRECTION_SE                                 :东南
 STR_TRACE_RESTRICT_DIRECTION_SW                                 :西南
 STR_TRACE_RESTRICT_DIRECTION_NW                                 :西北
-STR_TRACE_RESTRICT_DIRECTION_TUNBRIDGE_ENTRANCE                 :在进入桥隧中
-STR_TRACE_RESTRICT_DIRECTION_TUNBRIDGE_EXIT                     :在离开桥隧中
+STR_TRACE_RESTRICT_DIRECTION_TUNBRIDGE_ENTRANCE                 :正在进入桥隧
+STR_TRACE_RESTRICT_DIRECTION_TUNBRIDGE_EXIT                     :正在离开桥隧
 STR_TRACE_RESTRICT_COMPANY                                      :公司
 STR_TRACE_RESTRICT_UNDEFINED_COMPANY                            :未定义公司
 STR_TRACE_RESTRICT_SLOT_OP                                      :槽位操作
@@ -924,21 +924,21 @@ STR_TRACE_RESTRICT_PF_PENALTY_CONTROL                           :延迟控制
 STR_TRACE_RESTRICT_SPEED_ADAPTATION_CONTROL                     :速度调整控制
 STR_TRACE_RESTRICT_SIGNAL_MODE_CONTROL                          :信号模式控制
 STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT                            :占用或等待
-STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :尝试占用
+STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE                             :占用或忽略
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT                           :车头退出
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK                            :车尾退出
 STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE                      :路径退出
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :路径结束时占用或等待
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :路径结束时尝试占用
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :路径结束时退出
-STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :占用槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”，若无法占用则等待
-STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :尝试占用槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”，若无法占用则忽略
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :路径终止时占用或等待
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :路径终止时占用或忽略
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :路径终止时退出
+STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :占用槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”，若无法占用则在信号前等待
+STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :占用槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”，若无法占用则忽略
 STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :车头通过后退出槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”
 STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :车尾通过后退出槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”
-STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :路径预留时退出槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :路径预留在此结束时占用槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”，若无法占用则等待
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :路径预留在此结束时尝试占用槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”，若无法占用则忽略
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :路径预留在此结束时退出槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”
+STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :预留的路径经过此处时退出槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :预留的路径在此终止时占用槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”，若无法占用则在信号前等待
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :预留的路径在此终止时占用槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”，若无法占用则忽略
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :预留的路径在此终止时退出槽位：“{PUSH_COLOUR}{STRING}{POP_COLOUR}”
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED                           :[{STRING}] {TRSLOT}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}槽位{CONSUME_ARG}：{LTBLUE}
@@ -1021,12 +1021,12 @@ STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP                           :{BLACK}值
 STR_TRACE_RESTRICT_CONDFLAGS_TOOLTIP                            :{BLACK}条件类型
 STR_TRACE_RESTRICT_GOTO_SIGNAL_TOOLTIP                          :{BLACK}到信号
 STR_TRACE_RESTRICT_SLOT_OP_TOOLTIP                              :{BLACK}槽位处理模式
-STR_TRACE_RESTRICT_SLOT_GUI_LIST_TOOLTIP                        :{BLACK}槽位—点击一个槽位来列出所有属于这个槽位的载具列表
+STR_TRACE_RESTRICT_SLOT_GUI_LIST_TOOLTIP                        :{BLACK}槽位 - 点击一个槽位来列出所有属于这个槽位的载具列表
 STR_TRACE_RESTRICT_SLOT_CREATE_TOOLTIP                          :{BLACK}点击创建槽位
 STR_TRACE_RESTRICT_SLOT_DELETE_TOOLTIP                          :{BLACK}删除所选槽位
 STR_TRACE_RESTRICT_SLOT_RENAME_TOOLTIP                          :{BLACK}重名名所选槽位
 STR_TRACE_RESTRICT_SLOT_SET_MAX_OCCUPANCY_TOOLTIP               :{BLACK}设定所选槽位的容量
-STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}寻路限制 - 管理槽位（{STRING}）
+STR_TRACE_RESTRICT_SLOT_CAPTION                                 :{WHITE}寻路限制 - 槽位管理（{STRING}）
 STR_TRACE_RESTRICT_SLOT_MANAGE                                  :管理槽位
 STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY                           :{TINY_FONT}{COMMA} / {COMMA}
 STR_TRACE_RESTRICT_SLOT_RENAME_CAPTION                          :{BLACK}重命名槽位
@@ -1072,7 +1072,7 @@ STR_TRACE_RESTRICT_SHARE_TOOLTIP                                :{BLACK}与其�
 STR_TRACE_RESTRICT_UNSHARE_TOOLTIP                              :{BLACK}停止与其他信号共享程序且创建一份副本
 STR_TRACE_RESTRICT_SHARE_TOOLTIP_EXTRA                          :{STRING}{}{BLACK}按住 <Ctrl> 键点击以与其他信号共享程序
 STR_TRACE_RESTRICT_SIGNAL_GUI_TOOLTIP                           :{BLACK}寻路限制
-STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}点击选择一条命令{}按住 <Ctrl> 键点击来切换命令的目标（如果目标存在）
+STR_TRACE_RESTRICT_INSTRUCTION_LIST_TOOLTIP                     :{BLACK}点击选择一条命令{}按住 <Ctrl> 键点击以前往命令目标（如果目标存在）
 STR_TRACE_RESTRICT_HIGHLIGHT_TOOLTIP                            :高亮显示所有共享该程序的信号
 STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA                  :{STRING}{}{BLACK}按住 <Ctrl> 键点击以列出最近使用项
 STR_TRACE_RESTRICT_WARNING_REQUIRES_REALISTIC_BRAKING           :{STRING} {PUSH_COLOUR}{RED}（需要真实制动）{POP_COLOUR}
