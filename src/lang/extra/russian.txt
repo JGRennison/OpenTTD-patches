@@ -860,23 +860,22 @@ STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE                :{STRING} пое
 STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_TYPE                :{STRING} поезд {STRING} {STRING} затем
 STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX                       :{STRING} {STRING} {STRING} на {NUM} x {NUM} затем
 STR_TRACE_RESTRICT_CONDITIONAL_GROUP                            :{STRING} поезд {STRING} в группе: {GROUP} затем
-STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING} поезд {STRING} в группе: {STRING} {BLACK}{STRING}затем
+STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING} поезд {STRING} в группе: {PUSH_COLOUR}{STRING}{POP_COLOUR} затем
 STR_TRACE_RESTRICT_CONDITIONAL_OWNER                            :{STRING} {STRING} {STRING} {COMPANY} {COMPANY_NUM} затем
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING} поезд {STRING} в слоте: {TRSLOT} затем
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} поезд {STRING} в слоте: {STRING} {BLACK}{STRING}затем
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} поезд {STRING} в слоте: {PUSH_COLOUR}{STRING}{POP_COLOUR} затем
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{STRING} {STRING} слота: {TRSLOT} {STRING} {COMMA} затем
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} {STRING} слота: {STRING} {BLACK}{STRING} {STRING} {COMMA} затем
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} {STRING} слота: {PUSH_COLOUR}{STRING}{POP_COLOUR} {STRING} {COMMA} затем
 STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING} поезд {STRING} состояние: {STRING} затем
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER                          :{STRING} значение счётчика: {TRCOUNTER} {STRING} {COMMA} затем
-STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING} значение счётчика: {STRING} {BLACK}{STRING} {STRING} {COMMA} затем
+STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING} значение счётчика: {PUSH_COLOUR}{STRING}{POP_COLOUR} {STRING} {COMMA} затем
 STR_TRACE_RESTRICT_CONDITIONAL_ENGINE_CLASSES                   :{STRING} поезд {STRING}: {STRING} затем
 STR_TRACE_RESTRICT_CONDITIONAL_TARGET_DIRECTION                 :{STRING} клетка {STRING} {STRING} далее {STRING} чем эта сигнальная клетка затем
 STR_TRACE_RESTRICT_CONDITIONAL_PASSES_TILE_INDEX                :{STRING} {STRING} {STRING} {NUM} x {NUM} затем
-STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}неопределенный {BLACK}{STRING}затем
-STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}неопределенный {BLACK}{STRING}затем
+STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {PUSH_COLOUR}{RED}неопределенный{POP_COLOUR} затем
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {PUSH_COLOUR}{RED}неопределенный{POP_COLOUR} затем
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :Добавить штраф поиска пути: {COMMA}
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM_PRESET                       :Добавить {STRING} штраф поиска пути
-STR_TRACE_RESTRICT_WHITE                                        :{WHITE}
 STR_TRACE_RESTRICT_START                                        :Старт
 STR_TRACE_RESTRICT_END                                          :Конец
 STR_TRACE_RESTRICT_PF_DENY                                      :Отказать
@@ -924,14 +923,14 @@ STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE                      :Выпуск (�
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :Конец маршрута: Получить или ждать
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :Конец маршрута: Попытаться получить
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :Конец маршрута: Выпустить
-STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :Слот получения: {STRING}{BLACK}{STRING} или ждать на маршрутном семафоре
-STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :Попытаться получить слот: {STRING}{BLACK}{STRING}, или все равно продолжить
-STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :Освободить слот: {STRING}{BLACK}{STRING} (спереди поезда)
-STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :Освободить слот: {STRING}{BLACK}{STRING} (сзади поезда)
-STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :Освободить слот: {STRING}{BLACK}{STRING} (на резерве маршрута)
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :Резервирование маршрута заканчивается здесь: Получить слот: {STRING}{BLACK}{STRING} или подождать на старте
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :Резервирование маршрута заканчивается здесь: Получить слот: {STRING}{BLACK}{STRING} или все равно продолжить
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :Резервирование маршрута заканчивается здесь: Освободить слот: {STRING}{BLACK}{STRING}
+STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :Слот получения: {PUSH_COLOUR}{STRING}{POP_COLOUR} или ждать на маршрутном семафоре
+STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :Попытаться получить слот: {PUSH_COLOUR}{STRING}{POP_COLOUR}, или все равно продолжить
+STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :Освободить слот: {PUSH_COLOUR}{STRING}{POP_COLOUR} (спереди поезда)
+STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :Освободить слот: {PUSH_COLOUR}{STRING}{POP_COLOUR} (сзади поезда)
+STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :Освободить слот: {PUSH_COLOUR}{STRING}{POP_COLOUR} (на резерве маршрута)
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :Резервирование маршрута заканчивается здесь: Получить слот: {PUSH_COLOUR}{STRING}{POP_COLOUR} или подождать на старте
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :Резервирование маршрута заканчивается здесь: Получить слот: {PUSH_COLOUR}{STRING}{POP_COLOUR} или все равно продолжить
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :Резервирование маршрута заканчивается здесь: Освободить слот: {PUSH_COLOUR}{STRING}{POP_COLOUR}
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED                           :[{STRING}] {TRSLOT}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}Слот{CONSUME_ARG}{P а ы ""}: {LTBLUE}

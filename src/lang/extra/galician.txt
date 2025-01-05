@@ -871,23 +871,22 @@ STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE                :{STRING} o tren
 STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_TYPE                :{STRING} o tren {STRING} {STRING} then
 STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX                       :{STRING} {STRING} {STRING} en {NUM} x {NUM} then
 STR_TRACE_RESTRICT_CONDITIONAL_GROUP                            :{STRING} o tren {STRING} no grupo: {GROUP} then
-STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING} o tren {STRING} no grupo: {STRING} {BLACK}{STRING}then
+STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING} o tren {STRING} no grupo: {PUSH_COLOUR}{STRING}{POP_COLOUR} then
 STR_TRACE_RESTRICT_CONDITIONAL_OWNER                            :{STRING} {STRING} {STRING} {COMPANY} {COMPANY_NUM} then
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING} o tren {STRING} no slot: {TRSLOT} then
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} o tren {STRING} no slot: {STRING} {BLACK}{STRING}then
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} o tren {STRING} no slot: {PUSH_COLOUR}{STRING}{POP_COLOUR} then
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{STRING} {STRING} do slot: {TRSLOT} {STRING} {COMMA} then
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} {STRING} do slot: {STRING} {BLACK}{STRING} {STRING} {COMMA} then
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} {STRING} do slot: {PUSH_COLOUR}{STRING}{POP_COLOUR} {STRING} {COMMA} then
 STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING} o tren {STRING} status: {STRING} then
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER                          :{STRING} valor do contador: {TRCOUNTER} {STRING} {COMMA} then
-STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING} valor do contador: {STRING} {BLACK}{STRING} {STRING} {COMMA} then
+STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING} valor do contador: {PUSH_COLOUR}{STRING}{POP_COLOUR} {STRING} {COMMA} then
 STR_TRACE_RESTRICT_CONDITIONAL_ENGINE_CLASSES                   :{STRING} o tren {STRING}: {STRING} then
 STR_TRACE_RESTRICT_CONDITIONAL_TARGET_DIRECTION                 :{STRING} cadro de {STRING} {STRING} máis lonxe que {STRING} ca este sinal entón
 STR_TRACE_RESTRICT_CONDITIONAL_PASSES_TILE_INDEX                :{STRING} {STRING} {STRING} {NUM} x {NUM} entón
-STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}indefinido {BLACK}{STRING}then
-STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}indefinido {BLACK}{STRING}then
+STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {PUSH_COLOUR}{RED}indefinido{POP_COLOUR} then
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {PUSH_COLOUR}{RED}indefinido{POP_COLOUR} then
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :Engadir unha penalización de ruta: {COMMA}
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM_PRESET                       :Engadir unha penalización de ruta {STRING}
-STR_TRACE_RESTRICT_WHITE                                        :{WHITE}
 STR_TRACE_RESTRICT_START                                        :Comezo
 STR_TRACE_RESTRICT_END                                          :Fin
 STR_TRACE_RESTRICT_PF_DENY                                      :Denegar
@@ -935,14 +934,14 @@ STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE                      :Liberar (en res
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :Fin PBS: Adquirir ou agardar
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :Fin PBS: Intentar adquirir
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :Fin PBS: Liberar
-STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :Adquirir slot: {STRING}{BLACK}{STRING}, ou agardar no sinal de ruta PBS
-STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :Intentar adquirir slot: {STRING}{BLACK}{STRING}, ou continuar de calquera xeito
-STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :Liberar slot: {STRING}{BLACK}{STRING} (diante do tren)
-STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :Liberar slot: {STRING}{BLACK}{STRING} (detrás do tren)
-STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :Liberar slot: {STRING}{BLACK}{STRING} (en reserva PBS)
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :Reserva de ruta PBS remata aqui: Adquirir slot: {STRING}{BLACK}{STRING}, ou agardar no sinal de ruta PBS
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :Reserva de ruta PBS remata aqui: Adquirir slot: {STRING}{BLACK}{STRING}, ou continuar de calquera xeito
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :Reserva de ruta PBS remata aqui: Liberar slot: {STRING}{BLACK}{STRING}
+STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :Adquirir slot: {PUSH_COLOUR}{STRING}{POP_COLOUR}, ou agardar no sinal de ruta PBS
+STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :Intentar adquirir slot: {PUSH_COLOUR}{STRING}{POP_COLOUR}, ou continuar de calquera xeito
+STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :Liberar slot: {PUSH_COLOUR}{STRING}{POP_COLOUR} (diante do tren)
+STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :Liberar slot: {PUSH_COLOUR}{STRING}{POP_COLOUR} (detrás do tren)
+STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :Liberar slot: {PUSH_COLOUR}{STRING}{POP_COLOUR} (en reserva PBS)
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :Reserva de ruta PBS remata aqui: Adquirir slot: {PUSH_COLOUR}{STRING}{POP_COLOUR}, ou agardar no sinal de ruta PBS
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :Reserva de ruta PBS remata aqui: Adquirir slot: {PUSH_COLOUR}{STRING}{POP_COLOUR}, ou continuar de calquera xeito
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :Reserva de ruta PBS remata aqui: Liberar slot: {PUSH_COLOUR}{STRING}{POP_COLOUR}
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED                           :[{STRING}] {TRSLOT}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}Slot{CONSUME_ARG}{P "" s}: {LTBLUE}

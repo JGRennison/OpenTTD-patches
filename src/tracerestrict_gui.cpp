@@ -1230,7 +1230,6 @@ static void DrawInstructionStringConditionalInvalidValue(TraceRestrictItem item,
 {
 	instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED;
 	DrawInstructionStringConditionalCommon(item, properties);
-	SetDParam(3, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
 }
 
 /**
@@ -1261,7 +1260,6 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 		} else if (GetTraceRestrictType(item) == TRIT_COND_UNDEFINED) {
 			instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED;
 			SetDParam(0, _program_cond_type[GetTraceRestrictCondFlags(item)]);
-			SetDParam(1, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
 		} else {
 			auto insert_warning = [&](uint dparam_index, StringID warning) {
 				auto tmp_params = MakeParameters(GetDParam(dparam_index));
@@ -1405,11 +1403,9 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					if (GetTraceRestrictValue(item) == INVALID_GROUP) {
 						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR;
 						SetDParam(2, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
-						SetDParam(3, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
 					} else if (GetTraceRestrictValue(item) == DEFAULT_GROUP) {
 						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR;
 						SetDParam(2, STR_GROUP_DEFAULT_TRAINS);
-						SetDParam(3, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
 					} else {
 						const Group *g = Group::GetIfValid(GetTraceRestrictValue(item));
 						if (g != nullptr && g->owner != owner) {
@@ -1417,7 +1413,6 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 							auto tmp_params = MakeParameters(GetTraceRestrictValue(item) | GROUP_NAME_HIERARCHY, g->owner);
 							_temp_special_strings[0] = GetStringWithArgs(STR_TRACE_RESTRICT_OTHER_COMPANY_GROUP, tmp_params);
 							SetDParam(2, SPECSTR_TEMP_START);
-							SetDParam(3, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
 						} else {
 							instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_GROUP;
 							SetDParam(2, GetTraceRestrictValue(item) | GROUP_NAME_HIERARCHY);
@@ -1475,7 +1470,6 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					if (GetTraceRestrictValue(item) == INVALID_TRACE_RESTRICT_SLOT_ID) {
 						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR;
 						SetDParam(2, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
-						SetDParam(3, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
 					} else {
 						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_SLOT;
 						SetDParam(2, GetTraceRestrictValue(item));
@@ -1491,15 +1485,12 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					if (GetTraceRestrictValue(item) == INVALID_TRACE_RESTRICT_SLOT_ID) {
 						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR;
 						SetDParam(2, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
-						SetDParam(3, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
-						SetDParam(4, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
-						SetDParam(5, value);
 					} else {
 						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY;
 						SetDParam(2, GetTraceRestrictValue(item));
-						SetDParam(3, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
-						SetDParam(4, value);
 					}
+					SetDParam(3, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
+					SetDParam(4, value);
 					break;
 				}
 
@@ -1519,15 +1510,12 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					if (GetTraceRestrictValue(item) == INVALID_TRACE_RESTRICT_COUNTER_ID) {
 						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR;
 						SetDParam(1, STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED);
-						SetDParam(2, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
-						SetDParam(3, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
-						SetDParam(4, value);
 					} else {
 						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_COUNTER;
 						SetDParam(1, GetTraceRestrictValue(item));
-						SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
-						SetDParam(3, value);
 					}
+					SetDParam(2, GetDropDownStringByValue(GetCondOpDropDownListSet(properties), GetTraceRestrictCondOp(item)));
+					SetDParam(3, value);
 					break;
 				}
 
@@ -1699,7 +1687,6 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 					SetDParam(0, STR_TRACE_RESTRICT_SLOT_NAME);
 					SetDParam(1, GetTraceRestrictValue(item));
 				}
-				SetDParam(2, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
 				break;
 
 			case TRIT_REVERSE:

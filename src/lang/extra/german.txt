@@ -665,21 +665,20 @@ STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE                :{STRING} Zug {S
 STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_TYPE                :{STRING} Zug {STRING} {STRING} dann
 STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX                       :{STRING} {STRING} {STRING} auf {NUM} x {NUM} dann
 STR_TRACE_RESTRICT_CONDITIONAL_GROUP                            :{STRING} Zug {STRING} in Gruppe: {GROUP} dann
-STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING} Zug {STRING} in Gruppe: {STRING} {BLACK}{STRING}dann
+STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING} Zug {STRING} in Gruppe: {PUSH_COLOUR}{STRING}{POP_COLOUR} dann
 STR_TRACE_RESTRICT_CONDITIONAL_OWNER                            :{STRING} {STRING} {STRING} {COMPANY} {COMPANY_NUM} dann
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING} Zug {STRING} in Slot: {TRSLOT} dann
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} Zug {STRING} in Slot: {STRING} {BLACK}{STRING}dann
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} Zug {STRING} in Slot: {PUSH_COLOUR}{STRING}{POP_COLOUR} dann
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{STRING} {STRING} von Slot: {TRSLOT} {STRING} {COMMA} dann
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} {STRING} von Slot: {STRING} {BLACK}{STRING} {STRING} {COMMA} dann
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} {STRING} von Slot: {PUSH_COLOUR}{STRING}{POP_COLOUR} {STRING} {COMMA} dann
 STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING} Zug {STRING} Status: {STRING} dann
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER                          :{STRING} Zählerwert: {TRCOUNTER} {STRING} {COMMA} dann
-STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING} Zählerwert: {STRING} {BLACK}{STRING} {STRING} {COMMA} dann
+STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING} Zählerwert: {PUSH_COLOUR}{STRING}{POP_COLOUR} {STRING} {COMMA} dann
 STR_TRACE_RESTRICT_CONDITIONAL_ENGINE_CLASSES                   :{STRING} Zug {STRING}: {STRING} dann
-STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}undefiniert {BLACK}{STRING}dann
-STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}undefiniert {BLACK}{STRING}dann
+STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {PUSH_COLOUR}{RED}undefiniert{POP_COLOUR} dann
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {PUSH_COLOUR}{RED}undefiniert{POP_COLOUR} dann
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :Gebe Wegfindungsstrafe: {COMMA}
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM_PRESET                       :Gebe {STRING} Wegfindungsstrafe
-STR_TRACE_RESTRICT_WHITE                                        :{WHITE}
 STR_TRACE_RESTRICT_START                                        :Start
 STR_TRACE_RESTRICT_END                                          :Ende
 STR_TRACE_RESTRICT_PF_DENY                                      :Verbiete
@@ -725,13 +724,13 @@ STR_TRACE_RESTRICT_SLOT_RELEASE_BACK                            :löse (dahinter
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :Pfadende: erwerbe oder warte
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :Pfadende: versuche zu erwerben
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :Pfadende: löse
-STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :Erwerbe Slot {STRING}{BLACK}{STRING}, oder warte am Pfadsignal
-STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :Versuche Slot {STRING}{BLACK}{STRING} zu erwerben, oder fahre weiter
-STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :Löse Slot {STRING}{BLACK}{STRING} (vor dem Zug)
-STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :Löse Slot {STRING}{BLACK}{STRING} (hinter dem Zug)
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :Pfadreservierung endet hier: Erwerbe Slot: {STRING}{BLACK}{STRING}, oder warte am Beginn
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :Pfadreservierung endet hier: Erwerbe Slot: {STRING}{BLACK}{STRING}, oder fahre weiter
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :Pfadreservierung endet hier: Löse Slot: {STRING}{BLACK}{STRING}
+STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :Erwerbe Slot {PUSH_COLOUR}{STRING}{POP_COLOUR}, oder warte am Pfadsignal
+STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :Versuche Slot {PUSH_COLOUR}{STRING}{POP_COLOUR} zu erwerben, oder fahre weiter
+STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :Löse Slot {PUSH_COLOUR}{STRING}{POP_COLOUR} (vor dem Zug)
+STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :Löse Slot {PUSH_COLOUR}{STRING}{POP_COLOUR} (hinter dem Zug)
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :Pfadreservierung endet hier: Erwerbe Slot: {PUSH_COLOUR}{STRING}{POP_COLOUR}, oder warte am Beginn
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :Pfadreservierung endet hier: Erwerbe Slot: {PUSH_COLOUR}{STRING}{POP_COLOUR}, oder fahre weiter
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :Pfadreservierung endet hier: Löse Slot: {PUSH_COLOUR}{STRING}{POP_COLOUR}
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED                           :[{STRING}] {TRSLOT}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}Slot{CONSUME_ARG}{P "" s}: {LTBLUE}

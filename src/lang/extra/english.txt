@@ -921,23 +921,22 @@ STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE                :{STRING} train 
 STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_TYPE                :{STRING} train {STRING} {STRING} then
 STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX                       :{STRING} {STRING} {STRING} at {NUM} x {NUM} then
 STR_TRACE_RESTRICT_CONDITIONAL_GROUP                            :{STRING} train {STRING} in group: {GROUP} then
-STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING} train {STRING} in group: {STRING} {BLACK}{STRING}then
+STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING} train {STRING} in group: {PUSH_COLOUR}{STRING}{POP_COLOUR} then
 STR_TRACE_RESTRICT_CONDITIONAL_OWNER                            :{STRING} {STRING} {STRING} {COMPANY} {COMPANY_NUM} then
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING} train {STRING} in slot: {TRSLOT} then
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} train {STRING} in slot: {STRING} {BLACK}{STRING}then
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} train {STRING} in slot: {PUSH_COLOUR}{STRING}{POP_COLOUR} then
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{STRING} {STRING} of slot: {TRSLOT} {STRING} {COMMA} then
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} {STRING} of slot: {STRING} {BLACK}{STRING} {STRING} {COMMA} then
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} {STRING} of slot: {PUSH_COLOUR}{STRING}{POP_COLOUR} {STRING} {COMMA} then
 STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING} train {STRING} status: {STRING} then
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER                          :{STRING} value of counter: {TRCOUNTER} {STRING} {COMMA} then
-STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING} value of counter: {STRING} {BLACK}{STRING} {STRING} {COMMA} then
+STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING} value of counter: {PUSH_COLOUR}{STRING}{POP_COLOUR} {STRING} {COMMA} then
 STR_TRACE_RESTRICT_CONDITIONAL_ENGINE_CLASSES                   :{STRING} train {STRING}: {STRING} then
 STR_TRACE_RESTRICT_CONDITIONAL_TARGET_DIRECTION                 :{STRING} tile of {STRING} {STRING} further {STRING} than this signal tile then
 STR_TRACE_RESTRICT_CONDITIONAL_PASSES_TILE_INDEX                :{STRING} {STRING} {STRING} {NUM} x {NUM} then
-STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}undefined {BLACK}{STRING}then
-STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}undefined {BLACK}{STRING}then
+STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {PUSH_COLOUR}{RED}undefined{POP_COLOUR} then
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {PUSH_COLOUR}{RED}undefined{POP_COLOUR} then
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :Add pathfinder penalty: {COMMA}
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM_PRESET                       :Add {STRING} pathfinder penalty
-STR_TRACE_RESTRICT_WHITE                                        :{WHITE}
 STR_TRACE_RESTRICT_START                                        :Start
 STR_TRACE_RESTRICT_END                                          :End
 STR_TRACE_RESTRICT_PF_DENY                                      :Deny
@@ -985,14 +984,14 @@ STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE                      :Release (on res
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :Path end: Acquire or wait
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :Path end: Try to acquire
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :Path end: Release
-STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :Acquire slot: {STRING1}{BLACK}{STRING}, or wait at path signal
-STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :Try to acquire slot: {STRING1}{BLACK}{STRING}, or continue anyway
-STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :Release slot: {STRING1}{BLACK}{STRING} (front of train)
-STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :Release slot: {STRING1}{BLACK}{STRING} (back of train)
-STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :Release slot: {STRING1}{BLACK}{STRING} (on path reserve)
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :Path reservation ending here: Acquire slot: {STRING1}{BLACK}{STRING}, or wait at start
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :Path reservation ending here: Acquire slot: {STRING1}{BLACK}{STRING}, or continue anyway
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :Path reservation ending here: Release slot: {STRING1}{BLACK}{STRING}
+STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :Acquire slot: {PUSH_COLOUR}{STRING1}{POP_COLOUR}, or wait at path signal
+STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :Try to acquire slot: {PUSH_COLOUR}{STRING1}{POP_COLOUR}, or continue anyway
+STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :Release slot: {PUSH_COLOUR}{STRING1}{POP_COLOUR} (front of train)
+STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :Release slot: {PUSH_COLOUR}{STRING1}{POP_COLOUR} (back of train)
+STR_TRACE_RESTRICT_SLOT_RELEASE_ON_RESERVE_ITEM                 :Release slot: {PUSH_COLOUR}{STRING1}{POP_COLOUR} (on path reserve)
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :Path reservation ending here: Acquire slot: {PUSH_COLOUR}{STRING1}{POP_COLOUR}, or wait at start
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :Path reservation ending here: Acquire slot: {PUSH_COLOUR}{STRING1}{POP_COLOUR}, or continue anyway
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :Path reservation ending here: Release slot: {PUSH_COLOUR}{STRING1}{POP_COLOUR}
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED                           :[{STRING}] {TRSLOT}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}Slot{CONSUME_ARG}{P "" s}: {LTBLUE}

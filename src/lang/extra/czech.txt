@@ -752,23 +752,22 @@ STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE                :{STRING} návě
 STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_TYPE                :{STRING} vlak {STRING} {STRING},
 STR_TRACE_RESTRICT_CONDITIONAL_TILE_INDEX                       :{STRING} {STRING} {STRING} na {NUM} x {NUM},
 STR_TRACE_RESTRICT_CONDITIONAL_GROUP                            :{STRING} vlak {STRING} ve skupině {GROUP},
-STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING} vlak {STRING} ve skupině {STRING} {BLACK}{STRING},
+STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR                        :{STRING} vlak {STRING} ve skupině {PUSH_COLOUR}{STRING}{POP_COLOUR},
 STR_TRACE_RESTRICT_CONDITIONAL_OWNER                            :{STRING} {STRING} {STRING} {COMPANY} {COMPANY_NUM},
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT                             :{STRING} vlak {STRING} ve slotu {TRSLOT},
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} vlak {STRING} ve slotu {STRING} {BLACK}{STRING},
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_STR                         :{STRING} vlak {STRING} ve slotu {PUSH_COLOUR}{STRING}{POP_COLOUR},
 STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY                   :{STRING} {STRING} slotu {TRSLOT} {STRING} {COMMA},
-STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} {STRING} slotu {STRING} {BLACK}{STRING} {STRING} {COMMA},
+STR_TRACE_RESTRICT_CONDITIONAL_SLOT_OCCUPANCY_STR               :{STRING} {STRING} slotu {PUSH_COLOUR}{STRING}{POP_COLOUR} {STRING} {COMMA},
 STR_TRACE_RESTRICT_CONDITIONAL_TRAIN_STATUS                     :{STRING} vlak {STRING} stav "{STRING}",
 STR_TRACE_RESTRICT_CONDITIONAL_COUNTER                          :{STRING} hodnota počítadla {TRCOUNTER} {STRING} {COMMA},
-STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING} hodnota počítadla {STRING} {BLACK}{STRING} {STRING} {COMMA},
+STR_TRACE_RESTRICT_CONDITIONAL_COUNTER_STR                      :{STRING} hodnota počítadla {PUSH_COLOUR}{STRING}{POP_COLOUR} {STRING} {COMMA},
 STR_TRACE_RESTRICT_CONDITIONAL_ENGINE_CLASSES                   :{STRING} vlak {STRING}: {STRING},
 STR_TRACE_RESTRICT_CONDITIONAL_TARGET_DIRECTION                 :{STRING} políčko, kam vede {STRING}, {STRING} dále na {STRING} než toto políčko,
 STR_TRACE_RESTRICT_CONDITIONAL_PASSES_TILE_INDEX                :{STRING} {STRING} {STRING} {NUM} x {NUM},
-STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {RED}nedefinováno {BLACK}{STRING},
-STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {RED}nedefinováno {BLACK}{STRING},
+STR_TRACE_RESTRICT_CONDITIONAL_UNDEFINED                        :{STRING} {STRING} {STRING} {PUSH_COLOUR}{RED}nedefinováno{POP_COLOUR},
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_UNDEFINED                :{STRING} {PUSH_COLOUR}{RED}nedefinováno{POP_COLOUR},
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM                              :udělit hledači cesty přirážku {COMMA},
 STR_TRACE_RESTRICT_PF_PENALTY_ITEM_PRESET                       :udělit {STRING} přirážku hledači cesty,
-STR_TRACE_RESTRICT_WHITE                                        :{WHITE}
 STR_TRACE_RESTRICT_START                                        :Začátek úpravy:
 STR_TRACE_RESTRICT_END                                          :konec úpravy.
 STR_TRACE_RESTRICT_PF_DENY                                      :odmítnout,
@@ -814,13 +813,13 @@ STR_TRACE_RESTRICT_SLOT_RELEASE_BACK                            :uvolnit (konec 
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT                :koncové PBS: vstoupit nebo počkat
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE                 :koncové PBS: pokusit se o vstup
 STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE                     :koncové PBS: uvolnit
-STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :vstoupit do slotu {STRING}{BLACK}{STRING} nebo čekat u PBS návěstidla,
-STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :pokusit se o vstup do slotu {STRING}{BLACK}{STRING} a bez ohledu na výsledek pokračovat,
-STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :uvolnit slot {STRING}{BLACK}{STRING} při průjezdu čela vlaku kolem návěstidla,
-STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :uvolnit slot {STRING}{BLACK}{STRING} při průjezdu konce vlaku kolem návěstidla,
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :PBS rezervace končící zde: vstoupit do slotu {STRING}{BLACK}{STRING} nebo čekat u PBS návěstidla,
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :PBS rezervace končící zde: pokusit se o vstup do slotu {STRING}{BLACK}{STRING} a pokračovat,
-STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :PBS rezervace končící zde: uvolnit slot {STRING}{BLACK}{STRING} a pokračovat,
+STR_TRACE_RESTRICT_SLOT_ACQUIRE_WAIT_ITEM                       :vstoupit do slotu {PUSH_COLOUR}{STRING}{POP_COLOUR} nebo čekat u PBS návěstidla,
+STR_TRACE_RESTRICT_SLOT_TRY_ACQUIRE_ITEM                        :pokusit se o vstup do slotu {PUSH_COLOUR}{STRING}{POP_COLOUR} a bez ohledu na výsledek pokračovat,
+STR_TRACE_RESTRICT_SLOT_RELEASE_FRONT_ITEM                      :uvolnit slot {PUSH_COLOUR}{STRING}{POP_COLOUR} při průjezdu čela vlaku kolem návěstidla,
+STR_TRACE_RESTRICT_SLOT_RELEASE_BACK_ITEM                       :uvolnit slot {PUSH_COLOUR}{STRING}{POP_COLOUR} při průjezdu konce vlaku kolem návěstidla,
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_ACQUIRE_WAIT_ITEM           :PBS rezervace končící zde: vstoupit do slotu {PUSH_COLOUR}{STRING}{POP_COLOUR} nebo čekat u PBS návěstidla,
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_TRY_ACQUIRE_ITEM            :PBS rezervace končící zde: pokusit se o vstup do slotu {PUSH_COLOUR}{STRING}{POP_COLOUR} a pokračovat,
+STR_TRACE_RESTRICT_SLOT_PBS_RES_END_RELEASE_ITEM                :PBS rezervace končící zde: uvolnit slot {PUSH_COLOUR}{STRING}{POP_COLOUR} a pokračovat,
 STR_TRACE_RESTRICT_SLOT_NAME                                    :{TRSLOT}
 STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED                           :[{STRING}] {TRSLOT}
 STR_TRACE_RESTRICT_SLOT_LIST_HEADER                             :{BLACK}Slot{CONSUME_ARG}{P "" y ů}: {LTBLUE}
