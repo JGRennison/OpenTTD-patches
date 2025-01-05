@@ -688,7 +688,7 @@ static const TraceRestrictDropDownListSet *GetSortedCargoTypeDropDownListSet()
 /**
  * Get a DropDownList of the group list
  */
-static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &selected)
+static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &selected, bool include_default = true)
 {
 	GUIGroupOnlyList list;
 
@@ -704,8 +704,10 @@ static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &sel
 	DropDownList dlist;
 	selected = -1;
 
-	if (group_id == DEFAULT_GROUP) selected = DEFAULT_GROUP;
-	dlist.push_back(MakeDropDownListStringItem(STR_GROUP_DEFAULT_TRAINS, DEFAULT_GROUP, false));
+	if (include_default) {
+		if (group_id == DEFAULT_GROUP) selected = DEFAULT_GROUP;
+		dlist.push_back(MakeDropDownListStringItem(STR_GROUP_DEFAULT_TRAINS, DEFAULT_GROUP, false));
+	}
 
 	for (const Group *g : list) {
 		if (group_id == g->index) selected = group_id;
@@ -1241,8 +1243,9 @@ static void DrawInstructionStringConditionalInvalidValue(TraceRestrictItem item,
  * @param indent How many levels the instruction is indented
  * @param left Left border for text drawing
  * @param right Right border for text drawing
+ * @param owner Owning company ID
  */
-static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestrictItem item, int index, int y, bool selected, int indent, int left, int right)
+static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestrictItem item, int index, int y, bool selected, int indent, int left, int right, Owner owner)
 {
 	StringID instruction_string = INVALID_STRING_ID;
 
@@ -1408,8 +1411,17 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 						SetDParam(2, STR_GROUP_DEFAULT_TRAINS);
 						SetDParam(3, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
 					} else {
-						instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_GROUP;
-						SetDParam(2, GetTraceRestrictValue(item) | GROUP_NAME_HIERARCHY);
+						const Group *g = Group::GetIfValid(GetTraceRestrictValue(item));
+						if (g != nullptr && g->owner != owner) {
+							instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_GROUP_STR;
+							auto tmp_params = MakeParameters(GetTraceRestrictValue(item) | GROUP_NAME_HIERARCHY, g->owner);
+							_temp_special_strings[0] = GetStringWithArgs(STR_TRACE_RESTRICT_OTHER_COMPANY_GROUP, tmp_params);
+							SetDParam(2, SPECSTR_TEMP_START);
+							SetDParam(3, selected ? STR_TRACE_RESTRICT_WHITE : STR_EMPTY);
+						} else {
+							instruction_string = STR_TRACE_RESTRICT_CONDITIONAL_GROUP;
+							SetDParam(2, GetTraceRestrictValue(item) | GROUP_NAME_HIERARCHY);
+						}
 					}
 					break;
 				}
@@ -2156,7 +2168,28 @@ public:
 
 					case TRVT_GROUP_INDEX: {
 						int selected;
-						DropDownList dlist = GetGroupDropDownList(this->GetOwner(), GetTraceRestrictValue(item), selected);
+						DropDownList dlist;
+						if (_shift_pressed && _settings_game.economy.infrastructure_sharing[VEH_TRAIN]) {
+							selected = -1;
+							if (GetTraceRestrictValue(item) == DEFAULT_GROUP) selected = DEFAULT_GROUP;
+							dlist.push_back(MakeDropDownListStringItem(STR_GROUP_DEFAULT_TRAINS, DEFAULT_GROUP, false));
+
+							for (const Company *c : Company::Iterate()) {
+								if (c->index == this->GetOwner()) continue;
+
+								int cselected;
+								DropDownList clist = GetGroupDropDownList(c->index, GetTraceRestrictValue(item), cselected, false);
+								if (clist.empty()) continue;
+
+								dlist.push_back(MakeDropDownListDividerItem());
+								dlist.push_back(MakeCompanyDropDownListItem(c->index, false));
+
+								if (cselected != -1) selected = cselected;
+								dlist.insert(dlist.end(), std::make_move_iterator(clist.begin()), std::make_move_iterator(clist.end()));
+							}
+						} else {
+							dlist = GetGroupDropDownList(this->GetOwner(), GetTraceRestrictValue(item), selected);
+						}
 						ShowDropDownList(this, std::move(dlist), selected, TR_WIDGET_VALUE_DROPDOWN, 0);
 						break;
 					}
@@ -2763,7 +2796,7 @@ public:
 			}
 
 			if (i >= scroll_position && this->vscroll->IsVisible(i)) {
-				DrawInstructionString(prog, item, i, y, i == this->selected_instruction, this_indent, r.left + WidgetDimensions::scaled.framerect.left, r.right - WidgetDimensions::scaled.framerect.right);
+				DrawInstructionString(prog, item, i, y, i == this->selected_instruction, this_indent, r.left + WidgetDimensions::scaled.framerect.left, r.right - WidgetDimensions::scaled.framerect.right, this->GetOwner());
 				y += line_height;
 			}
 		}
@@ -2869,6 +2902,14 @@ public:
 						SetDParam(0, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP);
 						GuiShowTooltips(this, STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA, close_cond, 1);
 						return true;
+
+					case TRVT_GROUP_INDEX:
+						if (_settings_game.economy.infrastructure_sharing[VEH_TRAIN]) {
+							SetDParam(0, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP);
+							GuiShowTooltips(this, STR_TRACE_RESTRICT_OTHER_COMPANY_GROUPS_TOOLTIP_EXTRA, close_cond, 1);
+							return true;
+						}
+						return false;
 
 					default:
 						return false;
@@ -2991,7 +3032,7 @@ private:
 	/**
 	 * Get owner of the signal tile this window is pointing at
 	 */
-	Owner GetOwner()
+	Owner GetOwner() const
 	{
 		return GetTileOwner(this->tile);
 	}

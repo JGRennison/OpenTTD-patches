@@ -69,7 +69,7 @@ void ToggleBoundingBoxes();
 void ToggleDirtyBlocks();
 void ToggleWidgetOutlines();
 
-DropDownListItem *MakeCompanyDropDownListItem(CompanyID cid);
+std::unique_ptr<DropDownListItem> MakeCompanyDropDownListItem(CompanyID cid, bool selectable = true);
 
 extern uint _toolbar_width;
 

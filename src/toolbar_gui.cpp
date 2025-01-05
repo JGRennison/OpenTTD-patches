@@ -105,17 +105,23 @@ static CallBackFunction _last_started_action = CBF_NONE; ///< Last started user 
  */
 class DropDownListCompanyItem : public DropDownIcon<DropDownIcon<DropDownString<DropDownListItem>, true>> {
 public:
-	DropDownListCompanyItem(CompanyID company, bool shaded) : DropDownIcon<DropDownIcon<DropDownString<DropDownListItem>, true>>(SPR_COMPANY_ICON, COMPANY_SPRITE_COLOUR(company), NetworkCompanyIsPassworded(company) ? SPR_LOCK : SPR_EMPTY, PAL_NONE, STR_NULL, company, false, shaded)
+	bool selectable;
+
+	DropDownListCompanyItem(CompanyID company, bool shaded, bool selectable = true) :
+			DropDownIcon<DropDownIcon<DropDownString<DropDownListItem>, true>>(SPR_COMPANY_ICON, COMPANY_SPRITE_COLOUR(company), NetworkCompanyIsPassworded(company) ? SPR_LOCK : SPR_EMPTY, PAL_NONE, STR_NULL, company, false, shaded),
+			selectable(selectable)
 	{
 		SetDParam(0, company);
 		SetDParam(1, company);
 		this->SetString(GetString(STR_COMPANY_NAME_COMPANY_NUM));
 	}
+
+	bool Selectable() const override { return this->selectable; }
 };
 
-DropDownListItem *MakeCompanyDropDownListItem(CompanyID cid)
+std::unique_ptr<DropDownListItem> MakeCompanyDropDownListItem(CompanyID cid, bool selectable)
 {
-	return new DropDownListCompanyItem(cid, false);
+	return std::make_unique<DropDownListCompanyItem>(cid, false, selectable);
 }
 
 /**
