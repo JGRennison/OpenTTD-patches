@@ -1184,6 +1184,7 @@ void TraceRestrictRemoveGroupID(GroupID index);
 void TraceRestrictUpdateCompanyID(CompanyID old_company, CompanyID new_company);
 void TraceRestrictRemoveSlotID(TraceRestrictSlotID index);
 void TraceRestrictRemoveCounterID(TraceRestrictCounterID index);
+void TraceRestrictRemoveNonOwnedReferencesFromInstructionRange(std::span<TraceRestrictItem> instructions, Owner instructions_owner);
 void TraceRestrictRemoveNonOwnedReferencesFromOrder(struct Order *o, Owner order_owner);
 
 void TraceRestrictRemoveVehicleFromAllSlots(VehicleID id);

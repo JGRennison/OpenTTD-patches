@@ -1905,7 +1905,7 @@ void TraceRestrictDoCommandP(TileIndex tile, Track track, TraceRestrictDoCommand
 /**
  * Check whether a tile/track pair contains a usable signal
  */
-static CommandCost TraceRestrictCheckTileIsUsable(TileIndex tile, Track track)
+static CommandCost TraceRestrictCheckTileIsUsable(TileIndex tile, Track track, bool check_owner = true)
 {
 	/* Check that there actually is a signal here */
 	switch (GetTileType(tile)) {
@@ -1931,10 +1931,12 @@ static CommandCost TraceRestrictCheckTileIsUsable(TileIndex tile, Track track)
 			return CommandCost(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
 	}
 
-	/* Check tile ownership, do this afterwards to avoid tripping up on house/industry tiles */
-	CommandCost ret = CheckTileOwnership(tile);
-	if (ret.Failed()) {
-		return ret;
+	if (check_owner) {
+		/* Check tile ownership, do this afterwards to avoid tripping up on house/industry tiles */
+		CommandCost ret = CheckTileOwnership(tile);
+		if (ret.Failed()) {
+			return ret;
+		}
 	}
 
 	return CommandCost();
@@ -2372,7 +2374,8 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 		}
 	}
 	if (type == TRDCT_PROG_SHARE || type == TRDCT_PROG_SHARE_IF_UNMAPPED || type == TRDCT_PROG_COPY || type == TRDCT_PROG_COPY_APPEND) {
-		ret = TraceRestrictCheckTileIsUsable(source_tile, source_track);
+		bool check_owner = type != TRDCT_PROG_COPY && type != TRDCT_PROG_COPY_APPEND;
+		ret = TraceRestrictCheckTileIsUsable(source_tile, source_track, check_owner);
 		if (ret.Failed()) {
 			return ret;
 		}
@@ -2402,6 +2405,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 					return CMD_ERROR;
 				}
 				prog->items = source_prog->items; // copy
+				TraceRestrictRemoveNonOwnedReferencesFromInstructionRange(prog->items, _current_company);
 				prog->Validate();
 
 				TraceRestrictCheckRefreshSignals(prog, 0, TRPAUF_NONE);
@@ -2423,6 +2427,7 @@ CommandCost CmdProgramSignalTraceRestrictProgMgmt(TileIndex tile, DoCommandFlag 
 
 				prog->items.reserve(prog->items.size() + source_prog->items.size()); // this is in case prog == source_prog
 				prog->items.insert(prog->items.end(), source_prog->items.begin(), source_prog->items.end()); // append
+				TraceRestrictRemoveNonOwnedReferencesFromInstructionRange(std::span<TraceRestrictItem>(prog->items).last(source_prog->items.size()), _current_company);
 				prog->Validate();
 
 				TraceRestrictCheckRefreshSignals(prog, old_size, old_actions_used_flags);
@@ -2929,6 +2934,21 @@ void TraceRestrictGetVehicleSlots(VehicleID id, std::vector<TraceRestrictSlotID>
 }
 
 template <typename F>
+void ClearInstructionRangeTraceRestrictSlotIf(std::span<TraceRestrictItem> instructions, F cond)
+{
+	for (auto i = instructions.begin(); i < instructions.end(); ++i) {
+		TraceRestrictItem &item = *i; // note this is a reference,
+		if ((GetTraceRestrictType(item) == TRIT_SLOT || GetTraceRestrictType(item) == TRIT_COND_TRAIN_IN_SLOT) && cond(static_cast<TraceRestrictSlotID>(GetTraceRestrictValue(item)))) {
+			SetTraceRestrictValue(item, INVALID_TRACE_RESTRICT_SLOT_ID); // this updates the instruction in-place
+		}
+		if ((GetTraceRestrictType(item) == TRIT_COND_SLOT_OCCUPANCY) && cond(static_cast<TraceRestrictSlotID>(GetTraceRestrictValue(item)))) {
+			SetTraceRestrictValue(item, INVALID_TRACE_RESTRICT_SLOT_ID); // this updates the instruction in-place
+		}
+		if (IsTraceRestrictDoubleItem(item)) i++;
+	}
+}
+
+template <typename F>
 bool ClearOrderTraceRestrictSlotIf(Order *o, F cond)
 {
 	bool changed_order = false;
@@ -2953,21 +2973,14 @@ bool ClearOrderTraceRestrictSlotIf(Order *o, F cond)
 void TraceRestrictRemoveSlotID(TraceRestrictSlotID index)
 {
 	for (TraceRestrictProgram *prog : TraceRestrictProgram::Iterate()) {
-		for (size_t i = 0; i < prog->items.size(); i++) {
-			TraceRestrictItem &item = prog->items[i]; // note this is a reference,
-			if ((GetTraceRestrictType(item) == TRIT_SLOT || GetTraceRestrictType(item) == TRIT_COND_TRAIN_IN_SLOT) && GetTraceRestrictValue(item) == index) {
-				SetTraceRestrictValue(item, INVALID_TRACE_RESTRICT_SLOT_ID); // this updates the instruction in-place
-			}
-			if ((GetTraceRestrictType(item) == TRIT_COND_SLOT_OCCUPANCY) && GetTraceRestrictValue(item) == index) {
-				SetTraceRestrictValue(item, INVALID_TRACE_RESTRICT_SLOT_ID); // this updates the instruction in-place
-			}
-			if (IsTraceRestrictDoubleItem(item)) i++;
-		}
+		ClearInstructionRangeTraceRestrictSlotIf(prog->items, [&](TraceRestrictSlotID idx) {
+			return idx == index;
+		});
 	}
 
 	bool changed_order = false;
 	IterateAllNonVehicleOrders([&](Order *o) {
-		changed_order |= ClearOrderTraceRestrictSlotIf(o, [&](TraceRestrictCounterID idx) {
+		changed_order |= ClearOrderTraceRestrictSlotIf(o, [&](TraceRestrictSlotID idx) {
 			return idx == index;
 		});
 	});
@@ -3227,6 +3240,18 @@ static bool IsUniqueCounterName(const char *name)
 }
 
 template <typename F>
+void ClearInstructionRangeTraceRestrictCounterIf(std::span<TraceRestrictItem> instructions, F cond)
+{
+	for (auto i = instructions.begin(); i < instructions.end(); ++i) {
+		TraceRestrictItem &item = *i; // note this is a reference,
+		if ((GetTraceRestrictType(item) == TRIT_COUNTER || GetTraceRestrictType(item) == TRIT_COND_COUNTER_VALUE) && cond(static_cast<TraceRestrictCounterID>(GetTraceRestrictValue(item)))) {
+			SetTraceRestrictValue(item, INVALID_TRACE_RESTRICT_COUNTER_ID); // this updates the instruction in-place
+		}
+		if (IsTraceRestrictDoubleItem(item)) ++i;
+	}
+}
+
+template <typename F>
 bool ClearOrderTraceRestrictCounterIf(Order *o, F cond)
 {
 	bool changed_order = false;
@@ -3250,13 +3275,9 @@ bool ClearOrderTraceRestrictCounterIf(Order *o, F cond)
 void TraceRestrictRemoveCounterID(TraceRestrictCounterID index)
 {
 	for (TraceRestrictProgram *prog : TraceRestrictProgram::Iterate()) {
-		for (size_t i = 0; i < prog->items.size(); i++) {
-			TraceRestrictItem &item = prog->items[i]; // note this is a reference,
-			if ((GetTraceRestrictType(item) == TRIT_COUNTER || GetTraceRestrictType(item) == TRIT_COND_COUNTER_VALUE) && GetTraceRestrictValue(item) == index) {
-				SetTraceRestrictValue(item, INVALID_TRACE_RESTRICT_COUNTER_ID); // this updates the instruction in-place
-			}
-			if (IsTraceRestrictDoubleItem(item)) i++;
-		}
+		ClearInstructionRangeTraceRestrictCounterIf(prog->items, [&](TraceRestrictCounterID idx) {
+			return idx == index;
+		});
 	}
 
 	bool changed_order = false;
@@ -3458,6 +3479,22 @@ std::string TraceRestrictFollowUpCmdData::GetDebugSummary() const
 	if (this->cmd.p3 != 0) fmt::format_to(std::back_inserter(out), ", p3: 0x{:016X}", this->cmd.p3);
 	fmt::format_to(std::back_inserter(out), ", cmd: 0x{:08X} ({})", this->cmd.cmd, GetCommandName(this->cmd.cmd));
 	return fmt::to_string(out);
+}
+
+void TraceRestrictRemoveNonOwnedReferencesFromInstructionRange(std::span<TraceRestrictItem> instructions, Owner instructions_owner)
+{
+	ClearInstructionRangeTraceRestrictSlotIf(instructions, [&](TraceRestrictSlotID idx) {
+		if (idx == INVALID_TRACE_RESTRICT_SLOT_ID) return false;
+		const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(idx);
+		if (slot != nullptr && !slot->IsUsableByOwner(instructions_owner)) return true;
+		return false;
+	});
+	ClearInstructionRangeTraceRestrictCounterIf(instructions, [&](TraceRestrictCounterID idx) {
+		if (idx == INVALID_TRACE_RESTRICT_COUNTER_ID) return false;
+		const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(idx);
+		if (ctr != nullptr && !ctr->IsUsableByOwner(instructions_owner)) return true;
+		return false;
+	});
 }
 
 void TraceRestrictRemoveNonOwnedReferencesFromOrder(struct Order *o, Owner order_owner)
