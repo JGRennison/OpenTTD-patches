@@ -20,10 +20,10 @@
 
 #include "safeguards.h"
 
-	/*   exchange rate    prefix                             code
-	 *   |  separator        |           postfix              |  symbol_pos
-	 *   |   |   Euro year   |              |                 |     | name
-	 *   |   |    |          |              |                 |     |  | */
+	/*   exchange rate    prefix                       code
+	 *   |  separator       |        postfix            |  symbol_pos
+	 *   |   | Euro year    |           |               |     | name
+	 *   |   |  |           |           |               |     |  | */
 /** The original currency specifications. */
 static const std::array<CurrencySpec, CURRENCY_END> origin_currency_specs = {{
 	{    1, "", CF_NOEURO, "\u00a3",   "",             "GBP", 0, STR_GAME_OPTIONS_CURRENCY_GBP    }, ///< british pound
