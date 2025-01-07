@@ -851,7 +851,7 @@ CommandCost DoCommandEx(TileIndex tile, uint32_t p1, uint32_t p2, uint64_t p3, D
 	/* Do not even think about executing out-of-bounds tile-commands */
 	if (tile != 0 && (tile >= MapSize() || (!IsValidTile(tile) && (flags & DC_ALL_TILES) == 0))) return CMD_ERROR;
 
-	/* Chop of any CMD_MSG or other flags; we don't need those here */
+	/* Chop off any CMD_MSG or other flags; we don't need those here */
 	const Command &command = _command_proc_table[cmd & CMD_ID_MASK];
 
 	_docommand_recursive++;
